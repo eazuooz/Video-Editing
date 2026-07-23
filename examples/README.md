@@ -12,3 +12,4 @@
 | 예제 | 엔진 | 설명 |
 |---|---|---|
 | [mario-jump-physics](mario-jump-physics/) | Manim | 실제 물리 vs 비대칭 중력(게임식) 점프 비교 |
+| [jump-physics-showcase](jump-physics-showcase/) | Manim | 마리오·메트로이드·마계촌·SF2·스매시(x2)·점프킹·셀레스트·록맨X — 10개 개별 영상 + 왜/어떻게 설명, 롱폼 버전도 포함 |
