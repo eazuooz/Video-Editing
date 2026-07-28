@@ -1,5 +1,7 @@
 import {defineConfig} from 'vite';
-import motionCanvas from '@motion-canvas/vite-plugin';
+import motionCanvasPlugin from '@motion-canvas/vite-plugin';
+
+const motionCanvas = (motionCanvasPlugin as any).default ?? motionCanvasPlugin;
 
 export default defineConfig({
   plugins: [
