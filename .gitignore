@@ -9,19 +9,26 @@ __pycache__/
 *.pyc
 
 # Rendered output (large binaries, regenerate via scripts/)
+# motion-canvas/ and narration/ ARE tracked so finished video/audio can be
+# pulled on another machine (e.g. editing in Final Cut Pro) without needing
+# the GPU/model that produced them. manim/ stays placeholder-only.
 shared/output/*
 !shared/output/motion-canvas/
 !shared/output/manim/
-shared/output/motion-canvas/*
-!shared/output/motion-canvas/.gitkeep
+!shared/output/narration/
 shared/output/manim/*
 !shared/output/manim/.gitkeep
 
-# Private voice-cloning material and generated narration samples
+# Private voice-cloning material (personal reference recording) and the
+# multi-GB TTS models/venvs used to generate narration -- CUDA-only, so
+# useless on a non-NVIDIA machine anyway. Only the rendered output above
+# (the actual audio/video) needs to travel between machines.
 shared/voice-reference/
 shared/audio-samples/
 voice-clone/.venv/
 voice-clone/*.log
+qwen3-tts/.venv/
+qwen3-tts/models/
 
 # OS
 .DS_Store

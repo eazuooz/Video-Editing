@@ -29,6 +29,18 @@ MAX_CHARS = 260
 GAP_SECONDS = 0.35
 SEED = 240726
 
+# 02-balanced everywhere by default; 03-brisk (higher exaggeration, lower
+# cfg_weight -> faster, more emphatic delivery) for the Zangief screw
+# piledriver (08) and Smash Bros jump-squat (09) scenes, per the sample
+# comparison in shared/audio-samples/jump-physics/.
+BALANCED_TONE = {"exaggeration_input": 0.50, "temperature_input": 0.70, "cfgw_input": 0.50}
+BRISK_TONE = {"exaggeration_input": 0.80, "temperature_input": 0.80, "cfgw_input": 0.35}
+BRISK_SCENE_IDS = {"08", "09"}
+
+
+def tone_for_scene(scene_id: str) -> dict:
+    return BRISK_TONE if scene_id in BRISK_SCENE_IDS else BALANCED_TONE
+
 
 @dataclass
 class Chunk:
@@ -95,19 +107,19 @@ def render_chunks(chunks: list[Chunk]) -> list[Path]:
             print(f"Reusing {destination.name}")
             continue
 
+        tone = tone_for_scene(chunk.scene_id)
         generated_path = client.predict(
             text_input=chunk.text,
             language_id="ko",
             audio_prompt_path_input=handle_file(REFERENCE),
-            exaggeration_input=0.50,
-            temperature_input=0.70,
             seed_num_input=SEED,
-            cfgw_input=0.50,
             api_name="/generate_tts_audio",
+            **tone,
         )
         copy2(generated_path, destination)
         chunk_paths.append(destination)
-        print(f"Generated {destination.name}: {len(chunk.text)} characters")
+        tone_name = "brisk" if tone is BRISK_TONE else "balanced"
+        print(f"Generated {destination.name} ({tone_name}): {len(chunk.text)} characters")
 
     return chunk_paths
 
