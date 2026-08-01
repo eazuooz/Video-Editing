@@ -41,6 +41,23 @@ SCENE_GAP_SECONDS = 0.65
 TAIL_RATIO_THRESHOLD = 0.08
 MAX_RENDER_ATTEMPTS = 5
 
+# tail_ratio alone misses a subtler failure: the model stops right as the
+# syllable's amplitude was already naturally low, so the clip reads "quiet at
+# the end" even though it was cut off mid-decay. A real trailing consonant or
+# breath fades out over tens to ~150ms+ (median measured here: ~106ms); an
+# abrupt EOS-triggered stop can collapse in under 20ms while still passing the
+# loudness-only check. tail_decay_ms measures how long the last local peak
+# takes to fall to 10% of itself.
+DECAY_MS_THRESHOLD = 50.0
+
+# Speech does not have to start or end on a zero crossing, so a raw chunk
+# butted directly against the silence gap around it steps instantly from 0 to
+# whatever amplitude the chunk happened to start/end at -- an audible click.
+# A short linear fade at both edges of every chunk removes that regardless of
+# what the model produced, independent of the tail_ratio content check above
+# (which catches missing content, not this splice noise).
+FADE_SECONDS = 0.012
+
 
 @dataclass(frozen=True)
 class Job:
@@ -93,6 +110,32 @@ def _tail_ratio(wav: np.ndarray, sr: int) -> float:
     return _rms(wav[-int(sr * 0.05):]) / whole
 
 
+def _tail_decay_ms(wav: np.ndarray, sr: int) -> float:
+    window = int(sr * 0.4)
+    tail = wav[-window:] if len(wav) >= window else wav
+    if len(tail) == 0:
+        return float("inf")
+    env = np.abs(tail)
+    smooth_win = max(1, int(sr * 0.005))
+    smooth = np.convolve(env, np.ones(smooth_win) / smooth_win, mode="same")
+    if smooth.max() < 1e-4:
+        return float("inf")
+    peak_idx = int(np.argmax(smooth))
+    peak_val = smooth[peak_idx]
+    after = smooth[peak_idx:]
+    below = np.where(after < peak_val * 0.10)[0]
+    return float(below[0] / sr * 1000) if len(below) else float("inf")
+
+
+def _passes_quality(tail_ratio: float, decay_ms: float) -> bool:
+    return tail_ratio <= TAIL_RATIO_THRESHOLD and decay_ms >= DECAY_MS_THRESHOLD
+
+
+def _badness(tail_ratio: float, decay_ms: float) -> float:
+    """Lower is better; <=1.0 on both axes means it passes."""
+    return max(tail_ratio / TAIL_RATIO_THRESHOLD, DECAY_MS_THRESHOLD / max(decay_ms, 1.0))
+
+
 def _read_mono(path: Path) -> tuple[np.ndarray, int]:
     wav, sr = sf.read(path, dtype="float32", always_2d=False)
     if wav.ndim == 2:
@@ -100,11 +143,22 @@ def _read_mono(path: Path) -> tuple[np.ndarray, int]:
     return wav, sr
 
 
+def _apply_edge_fades(wav: np.ndarray, sr: int, seconds: float = FADE_SECONDS) -> np.ndarray:
+    n = min(int(sr * seconds), len(wav) // 2)
+    if n <= 1:
+        return wav
+    wav = wav.copy()
+    ramp = np.linspace(0.0, 1.0, n, dtype=np.float32)
+    wav[:n] *= ramp
+    wav[-n:] *= ramp[::-1]
+    return wav
+
+
 def needs_render(path: Path) -> bool:
     if not valid_wav(path):
         return True
     wav, sr = _read_mono(path)
-    return _tail_ratio(wav, sr) > TAIL_RATIO_THRESHOLD
+    return not _passes_quality(_tail_ratio(wav, sr), _tail_decay_ms(wav, sr))
 
 
 def render_chunks(jobs: list[Job], batch_size: int) -> None:
@@ -150,15 +204,23 @@ def render_chunks(jobs: list[Job], batch_size: int) -> None:
         if len(wavs) != len(batch):
             raise RuntimeError(f"Expected {len(batch)} WAVs, got {len(wavs)}")
         for job, wav in zip(batch, wavs, strict=True):
-            best_wav, best_ratio, attempts = wav, _tail_ratio(wav, sample_rate), 1
-            while best_ratio > TAIL_RATIO_THRESHOLD and attempts < MAX_RENDER_ATTEMPTS:
+            best_wav = wav
+            best_tail, best_decay = _tail_ratio(wav, sample_rate), _tail_decay_ms(wav, sample_rate)
+            best_score = _badness(best_tail, best_decay)
+            attempts = 1
+            while not _passes_quality(best_tail, best_decay) and attempts < MAX_RENDER_ATTEMPTS:
                 attempts += 1
                 retry_wav, retry_sr = generate_one(job.text)
-                retry_ratio = _tail_ratio(retry_wav, retry_sr)
-                if retry_ratio < best_ratio:
-                    best_wav, best_ratio = retry_wav, retry_ratio
+                retry_tail, retry_decay = _tail_ratio(retry_wav, retry_sr), _tail_decay_ms(retry_wav, retry_sr)
+                retry_score = _badness(retry_tail, retry_decay)
+                if retry_score < best_score:
+                    best_wav, best_tail, best_decay, best_score = retry_wav, retry_tail, retry_decay, retry_score
             sf.write(job.path, best_wav, sample_rate)
-            status = "clean" if best_ratio <= TAIL_RATIO_THRESHOLD else f"best of {attempts}, still soft-clipped ({best_ratio:.3f})"
+            status = (
+                "clean"
+                if _passes_quality(best_tail, best_decay)
+                else f"best of {attempts} (tail={best_tail:.3f}, decay={best_decay:.0f}ms)"
+            )
             print(
                 f"Rendered {job.scene_id}-{job.line_number:02d} "
                 f"({len(best_wav) / sample_rate:.2f}s, {status}): {job.text[:24]}"
@@ -181,6 +243,7 @@ def assemble_outputs(jobs: list[Job]) -> None:
             sample_rate = sr
         elif sample_rate != sr:
             raise RuntimeError(f"Sample-rate mismatch in {job.path}: {sr} != {sample_rate}")
+        wav = _apply_edge_fades(wav, sample_rate)
 
         start = position
         duration = len(wav) / sample_rate

@@ -11,7 +11,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // src/broll.ts is imported both by the Vite app and by
+    // scripts/check-narration-sync.ts, which runs under Node's type stripping
+    // -- and that resolver requires the explicit .ts extension.
+    "allowImportingTsExtensions": true
   },
   "include": ["src"]
 }

@@ -5,9 +5,20 @@
 // per-game videos) a "why / how" explanation card shown afterwards.
 
 import {Circle, Img, Line, Node, Rect, Txt} from '@motion-canvas/2d';
-import {all, createRef, createSignal, linear, waitFor} from '@motion-canvas/core';
+import {
+  type ThreadGenerator,
+  all,
+  createRef,
+  createSignal,
+  linear,
+  useTime,
+  waitFor,
+} from '@motion-canvas/core';
+import type {BrollWindow} from '../../broll';
 import {COLORS, FONT, MONO, TEXT_SIZE} from '../../theme';
+import {playBroll} from './broll';
 import type {ChargeState, Profile} from './profiles';
+import {FADE_OUT, POST_ROLL, PRE_ROLL, planPlayback} from './timing';
 
 export const BG = COLORS.bg;
 export const WHITE = COLORS.white;
@@ -23,7 +34,39 @@ export const PURPLE = COLORS.purple;
 const CODE_BLUE = COLORS.codeBlue;
 const CODE_COMMENT = COLORS.codeComment;
 
-const PLAYBACK_SPEED = 0.85;
+/**
+ * Wait until the scene has been running for exactly `target` seconds.
+ *
+ * Motion Canvas derives a scene's length from how long its generator runs, so
+ * this is what pins a narration-synced scene to its slot in the audio: however
+ * the animation math rounds, the scene still ends on the intended frame and the
+ * next one starts in sync with the next sentence.
+ */
+export function* padTo(target: number) {
+  const remaining = target - useTime();
+  if (remaining > 1e-6) {
+    yield* waitFor(remaining);
+  }
+}
+
+/**
+ * Run the jump animation, with any gameplay B-roll layered over it.
+ *
+ * The two run in parallel rather than in sequence: the graph keeps advancing
+ * behind the footage, so the segment still finishes with the character back on
+ * the ground, and covering the middle of it costs no extra time.
+ */
+function* animateWithBroll(
+  view: any,
+  tween: ThreadGenerator,
+  broll: BrollWindow | undefined,
+) {
+  if (!broll) {
+    yield* tween;
+    return;
+  }
+  yield* all(tween, playBroll(view, broll));
+}
 
 const TITLE_Y = -480;
 const SUBTITLE_Y = -388;
@@ -169,12 +212,21 @@ type LeftAnchorOpts = {
   spriteSrc?: string;
   spriteWidth?: number;
   loops?: number;
+  /** How long THIS call should take, in seconds; overrides `loops` for narration sync. Safe to chain multiple calls in one scene -- each is timed relative to when it starts, not to the scene's start. */
+  duration?: number;
+  /** Gameplay footage to lay over the middle of this segment. */
+  broll?: BrollWindow;
   squatMarker?: number;
   noAirControl?: boolean;
 };
 
 export function* runProfileLeftAnchor(view: any, profile: Profile, color: string, opts: LeftAnchorOpts = {}) {
-  const {spriteSrc, spriteWidth = 100, loops = 2, squatMarker, noAirControl} = opts;
+  // Captured before anything runs so `duration` means "how long THIS call
+  // takes", not "absolute scene time" -- required for scenes that chain more
+  // than one of these calls back to back (e.g. Celeste's two demos).
+  const startTime = useTime();
+  const {spriteSrc, spriteWidth = 100, squatMarker, noAirControl} = opts;
+  const {loops, animSeconds} = planPlayback(profile, opts, Boolean(profile.caption));
   const {headerGroup, captionRef} = yield* fadeHeader(view, profile.title, profile.subtitle, profile.caption);
 
   const total = profile.total;
@@ -258,15 +310,30 @@ export function* runProfileLeftAnchor(view: any, profile: Profile, color: string
     </Node>,
   );
 
-  yield* waitFor(0.1);
-  yield* t(total * loops, (total * loops) / PLAYBACK_SPEED, linear);
-  yield* waitFor(0.2);
+  yield* waitFor(PRE_ROLL);
+  yield* animateWithBroll(view, t(total * loops, animSeconds, linear), opts.broll);
+  yield* waitFor(POST_ROLL);
 
-  yield* fadeOutAll([headerGroup, captionRef, axesGroup, dataGroup]);
+  yield* fadeOutAll([headerGroup, captionRef, axesGroup, dataGroup], FADE_OUT);
+  if (opts.duration !== undefined) {
+    yield* padTo(startTime + opts.duration);
+  }
 }
 
-export function* runJumpKing(view: any, profile: Profile, chargeState: (t: number) => ChargeState, spriteSrc: string, opts: {spriteWidth?: number; loops?: number} = {}) {
-  const {spriteWidth = 90, loops = 1} = opts;
+export function* runJumpKing(
+  view: any,
+  profile: Profile,
+  chargeState: (t: number) => ChargeState,
+  spriteSrc: string,
+  opts: {spriteWidth?: number; loops?: number; duration?: number; broll?: BrollWindow} = {},
+) {
+  const startTime = useTime();
+  const {spriteWidth = 90} = opts;
+  const {loops, animSeconds} = planPlayback(
+    profile,
+    {...opts, loops: opts.loops ?? 1},
+    Boolean(profile.caption),
+  );
   const {headerGroup, captionRef} = yield* fadeHeader(view, profile.title, profile.subtitle, profile.caption);
 
   const total = profile.total;
@@ -336,17 +403,24 @@ export function* runJumpKing(view: any, profile: Profile, chargeState: (t: numbe
     </Node>,
   );
 
-  yield* waitFor(0.1);
-  yield* t(total * loops, (total * loops) / PLAYBACK_SPEED, linear);
-  yield* waitFor(0.2);
+  yield* waitFor(PRE_ROLL);
+  yield* animateWithBroll(view, t(total * loops, animSeconds, linear), opts.broll);
+  yield* waitFor(POST_ROLL);
 
-  yield* fadeOutAll([headerGroup, captionRef, axesGroup, dataGroup]);
+  yield* fadeOutAll([headerGroup, captionRef, axesGroup, dataGroup], FADE_OUT);
+  if (opts.duration !== undefined) {
+    yield* padTo(startTime + opts.duration);
+  }
 }
 
 type DualOpts = {
   spriteSrc?: string;
   spriteWidth?: number;
   loops?: number;
+  /** How long THIS call should take, in seconds; overrides `loops` for narration sync. Safe to chain multiple calls in one scene -- each is timed relative to when it starts, not to the scene's start. */
+  duration?: number;
+  /** Gameplay footage to lay over the middle of this segment. */
+  broll?: BrollWindow;
 };
 
 export function* runDualLeftAnchor(
@@ -361,7 +435,9 @@ export function* runDualLeftAnchor(
   legendB: string,
   opts: DualOpts = {},
 ) {
-  const {spriteSrc, spriteWidth = 90, loops = 3} = opts;
+  const startTime = useTime();
+  const {spriteSrc, spriteWidth = 90} = opts;
+  const {loops, animSeconds} = planPlayback(profileA, {...opts, loops: opts.loops ?? 3}, false);
   const {headerGroup} = yield* fadeHeader(view, titleText, subtitleText);
 
   const total = profileA.total;
@@ -431,11 +507,14 @@ export function* runDualLeftAnchor(
     </Node>,
   );
 
-  yield* waitFor(0.1);
-  yield* t(total * loops, (total * loops) / PLAYBACK_SPEED, linear);
-  yield* waitFor(0.2);
+  yield* waitFor(PRE_ROLL);
+  yield* animateWithBroll(view, t(total * loops, animSeconds, linear), opts.broll);
+  yield* waitFor(POST_ROLL);
 
-  yield* fadeOutAll([headerGroup, axesGroup, dataGroup]);
+  yield* fadeOutAll([headerGroup, axesGroup, dataGroup], FADE_OUT);
+  if (opts.duration !== undefined) {
+    yield* padTo(startTime + opts.duration);
+  }
 }
 
 export function* runDualSpatial(
@@ -450,7 +529,9 @@ export function* runDualSpatial(
   legendB: string,
   opts: DualOpts = {},
 ) {
-  const {spriteSrc, spriteWidth = 80, loops = 3} = opts;
+  const startTime = useTime();
+  const {spriteSrc, spriteWidth = 80} = opts;
+  const {loops, animSeconds} = planPlayback(profileA, {...opts, loops: opts.loops ?? 3}, false);
   const {headerGroup} = yield* fadeHeader(view, titleText, subtitleText);
 
   const total = profileA.total;
@@ -521,11 +602,14 @@ export function* runDualSpatial(
     </Node>,
   );
 
-  yield* waitFor(0.1);
-  yield* t(total * loops, (total * loops) / PLAYBACK_SPEED, linear);
-  yield* waitFor(0.2);
+  yield* waitFor(PRE_ROLL);
+  yield* animateWithBroll(view, t(total * loops, animSeconds, linear), opts.broll);
+  yield* waitFor(POST_ROLL);
 
-  yield* fadeOutAll([headerGroup, axesGroup, dataGroup]);
+  yield* fadeOutAll([headerGroup, axesGroup, dataGroup], FADE_OUT);
+  if (opts.duration !== undefined) {
+    yield* padTo(startTime + opts.duration);
+  }
 }
 
 function codeColor(line: string) {
