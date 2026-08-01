@@ -205,7 +205,21 @@ export function* fadeHeader(
 }
 
 export function* fadeOutAll(refs: Array<(() => any) | null | undefined>, duration = 0.3) {
-  yield* all(...refs.filter(Boolean).map(r => (r as () => any)().opacity(0, duration)));
+  const nodes = refs.filter(Boolean).map(r => (r as () => any)());
+  yield* all(...nodes.map(n => n.opacity(0, duration)));
+  // Fading only hides a node -- it stays registered in the scene's key map
+  // (Scene2D.registeredNodes), which is only cleared on scene reset. A scene
+  // that calls a builder like runProfileLeftAnchor more than once (e.g.
+  // Celeste's two demos) reuses the same tick-mark keys ("yt-0", "xl-1", ...)
+  // on the second call and crashes with "Duplicated node key" unless those
+  // keys are freed first. Node.remove() only detaches from the view tree --
+  // it does NOT do this. Node.dispose() is what actually unregisters the key
+  // (see Node.js: dispose() calls this.unregister(), remove() does not), so
+  // both are needed: remove() to detach, dispose() to free the keys.
+  for (const n of nodes) {
+    n.remove();
+    n.dispose();
+  }
 }
 
 type LeftAnchorOpts = {
