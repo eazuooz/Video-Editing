@@ -11,6 +11,7 @@ drifting away from the audio over a 5-minute video.
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -19,11 +20,15 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 ROOT = Path(__file__).resolve().parents[1]
-TIMING_JSON = (
-    ROOT / "shared" / "output" / "narration" / "qwen3-balanced"
-    / "jump-physics-qwen3-balanced.timing.json"
-)
+NARRATION_DIR = ROOT / "shared" / "output" / "narration" / "qwen3-balanced"
+TIMING_JSON = NARRATION_DIR / "jump-physics-qwen3-balanced.timing.json"
+FINAL_WAV = NARRATION_DIR / "jump-physics-qwen3-balanced.wav"
 OUTPUT_TS = ROOT / "motion-canvas" / "src" / "narration.ts"
+# @motion-canvas/ffmpeg's exporter can't render audio Vite has to serve from
+# outside the project root (see narrated.ts for why), so the audio the
+# narrated project actually imports is this synced-on-every-build copy, not
+# the canonical shared/output/ one directly.
+AUDIO_COPY = ROOT / "motion-canvas" / "src" / "assets" / "narration" / "jump-physics-qwen3-balanced.wav"
 
 RENDER_FPS = 60
 # Cut points are snapped to 30 fps rather than 60. Motion Canvas rounds every
@@ -158,8 +163,11 @@ def main() -> None:
     lines.append("")
 
     OUTPUT_TS.write_text("\n".join(lines), encoding="utf-8")
-
     print(f"Wrote {OUTPUT_TS}")
+
+    AUDIO_COPY.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(FINAL_WAV, AUDIO_COPY)
+    print(f"Synced {AUDIO_COPY}")
     print()
     total_frames = 0
     for row in rows:

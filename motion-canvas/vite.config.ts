@@ -21,11 +21,4 @@ export default defineConfig({
       output: '../shared/output/motion-canvas',
     }),
   ],
-  server: {
-    fs: {
-      // The narration WAV lives in shared/output/, outside this Vite root, so
-      // both the editor and the renderer need to be allowed to read it.
-      allow: ['..'],
-    },
-  },
 });

@@ -8,7 +8,17 @@
 
 import {makeProject} from '@motion-canvas/core';
 
-import narrationAudio from '../../shared/output/narration/qwen3-balanced/jump-physics-qwen3-balanced.wav';
+// Imported from within src/ (a synced copy -- see
+// qwen3-tts/build_motion_canvas_timing.py) rather than from
+// ../../shared/output/ directly: Vite serves out-of-root files via a
+// /@fs/<absolute-path> URL, and @motion-canvas/ffmpeg's exporter naively
+// strips only the leading "/" from that URL before handing it to ffmpeg as a
+// file path, leaving a bogus "@fs/D:/..." argument that ffmpeg can't open
+// ("Invalid argument"). That crash is fatal to the whole Vite dev process
+// (not just the render), which is why rendering silently died even before
+// showing a progress bar. Importing from inside src/ produces a plain
+// "/src/..." URL with no /@fs/ prefix, which resolves correctly.
+import narrationAudio from './assets/narration/jump-physics-qwen3-balanced.wav';
 
 import axes from './scenes/narrated/axes?scene';
 import basic from './scenes/narrated/basic?scene';
