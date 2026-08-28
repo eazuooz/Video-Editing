@@ -11,7 +11,7 @@ from render_narration_and_srt import format_timestamp, wrap_caption
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = ROOT / "narration" / "jump-physics.script.json"
+SCRIPT_PATH = ROOT / "projects" / "jump-physics" / "script" / "narration.ko.json"
 SAMPLE_PATH = ROOT / "shared" / "audio-samples" / "jump-physics" / "02-balanced.wav"
 OUTPUT_PATH = ROOT / "shared" / "output" / "narration" / "jump-physics-balanced-draft.srt"
 SAMPLE_TEXT = (

@@ -18,7 +18,7 @@ from gradio_client import Client, handle_file
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = ROOT / "narration" / "jump-physics.script.json"
+SCRIPT_PATH = ROOT / "projects" / "jump-physics" / "script" / "narration.ko.json"
 REFERENCE = ROOT / "shared" / "voice-reference" / "reference-15-35s.wav"
 CHUNK_DIR = ROOT / "shared" / "output" / "narration" / "chunks"
 OUTPUT_DIR = ROOT / "shared" / "output" / "narration"

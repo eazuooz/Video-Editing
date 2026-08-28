@@ -1,6 +1,7 @@
 import {defineConfig} from 'vite';
 import motionCanvasPlugin from '@motion-canvas/vite-plugin';
 import ffmpegPlugin from '@motion-canvas/ffmpeg';
+import projects from './projects.json';
 
 const motionCanvas = (motionCanvasPlugin as any).default ?? motionCanvasPlugin;
 const ffmpeg = (ffmpegPlugin as any).default ?? ffmpegPlugin;
@@ -12,12 +13,9 @@ export default defineConfig({
     // than an image sequence that would then need assembling by hand.
     ffmpeg(),
     motionCanvas({
-      project: [
-        // Silent scene-by-scene showcase (each game explained on screen).
-        './src/project.ts',
-        // The narrated cut: same visuals timed to the TTS narration track.
-        './src/narrated.ts',
-      ],
+      // Existing projects plus entries registered by
+      // scripts/new-video-project.ps1.
+      project: projects,
       output: '../shared/output/motion-canvas',
     }),
   ],

@@ -33,6 +33,9 @@
 
 - `shared/output/narration/qwen3-balanced/broll-cues.md`
 
+각 클립의 원본 링크와 라이선스 메모는
+`projects/jump-physics/sources/gameplay.md`에서 관리합니다.
+
 ## 파일을 안 넣으면
 
 해당 구간에 "게임 영상 자리" 안내판이 대신 표시됩니다. 안내판과 실제 영상의
