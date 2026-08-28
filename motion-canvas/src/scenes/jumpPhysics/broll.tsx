@@ -28,7 +28,8 @@ function findClip(name: string): string | undefined {
   return match?.[1];
 }
 
-// 16:9 stage, sized to leave the scene title readable above it.
+// Placeholder geometry. Real gameplay intentionally covers the full 16:9
+// canvas so the alternating "footage -> explanation" rhythm reads clearly.
 const STAGE_WIDTH = 1420;
 const STAGE_HEIGHT = 799;
 const STAGE_Y = 80;
@@ -52,24 +53,15 @@ export function brollStage(window: BrollWindow) {
         fill={COLORS.bg}
       />
       {src ? (
-        <>
-          <Video
-            src={src}
-            width={STAGE_WIDTH}
-            height={STAGE_HEIGHT}
-            y={STAGE_Y}
-            radius={18}
-            play
-            loop
-          />
-          <Txt
-            text={window.label}
-            fontFamily={FONT}
-            fontSize={TEXT_SIZE.caption}
-            fill={COLORS.greyC}
-            y={STAGE_Y + STAGE_HEIGHT / 2 + 42}
-          />
-        </>
+        <Video
+          src={src}
+          width={1920}
+          height={1080}
+          y={0}
+          radius={0}
+          play
+          loop
+        />
       ) : (
         <>
           <Rect
