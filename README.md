@@ -6,27 +6,44 @@ Motion Canvas(TypeScript)와 Manim(Python), 두 코드 기반 영상 편집/애�
 
 ```
 .
+├── projects/            # 영상별 기획·대본·출처·게시 정보
+│   └── <project-slug>/
+├── templates/           # 새 영상 프로젝트와 엔진 시작 템플릿
+├── docs/                # 반복 제작 워크플로와 운영 문서
 ├── motion-canvas/       # Motion Canvas 프로젝트 (UI 애니메이션, 텍스트, 트랜지션 등에 적합)
-│   └── src/scenes/      # 작업 중인/기본 템플릿 씬
+│   └── src/projects/    # 새 영상별 Motion Canvas 프로젝트
 ├── manim/               # Manim 프로젝트 (수학/도형/그래프 애니메이션에 적합)
-│   └── scenes/          # 작업 중인/기본 템플릿 씬
+│   └── projects/        # 새 영상별 Manim 프로젝트
 ├── examples/            # 완성해서 남겨두는 예제(소스+에셋+렌더링된 영상까지 자기완결적, git에 커밋됨)
 │   └── <example-name>/
 ├── shared/
 │   ├── assets/          # 두 엔진이 공유하는 폰트, 이미지, 오디오
-│   └── output/          # 임시 렌더링 캐시 (git에는 커밋되지 않음, scripts/로 재생성)
+│   └── output/          # 렌더·TTS 결과와 최종 전달 파일
 └── scripts/             # 렌더링/합치기 헬퍼 스크립트
 ```
 
-작업 중인 씬은 `motion-canvas/src/scenes/`, `manim/scenes/`에 두고, 결과물이 마음에 들면
-`examples/<example-name>/` 폴더를 새로 만들어 소스·에셋·최종 렌더링 영상을 함께 옮겨서
-보관하세요(예: [examples/mario-jump-physics](examples/mario-jump-physics/)).
+새 영상은 `scripts/new-video-project.ps1`로 시작합니다. 사람이 직접 관리하는 자료는
+`projects/<project-slug>/`에, 실행 코드는 각 엔진의 `projects/<project-slug>/`에 생성됩니다.
+완성된 독립 데모는 `examples/`에 보관합니다.
+
+## 새 영상 시작하기
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/new-video-project.ps1 `
+  -Slug "camera-shake" `
+  -TitleKo "카메라 흔들림은 어떻게 손맛을 만들까?" `
+  -TitleEn "How Does Camera Shake Create Impact?"
+```
+
+그다음 `projects/camera-shake/planning/outline.md`와
+`projects/camera-shake/script/narration.ko.json`부터 작성합니다. 전체 순서는
+[반복 가능한 영상 제작 워크플로](docs/VIDEO_WORKFLOW.md)에 정리되어 있습니다.
 
 ## 사전 준비
 
 - Node.js 20+ (`node -v`로 확인, 현재 환경 v24 설치됨)
 - Python 3.10+ (현재 환경 3.12/3.14 설치됨)
-- [ffmpeg](https://ffmpeg.org/download.html) — Manim 렌더링과 클립 합치기에 필수. 이 PC에는 아직 설치되어 있지 않으니 PATH에 추가해주세요.
+- [ffmpeg](https://ffmpeg.org/download.html) — Manim 렌더링과 클립 합치기에 필수
 
 ## Motion Canvas 사용법
 
@@ -36,7 +53,7 @@ npm install
 npm start
 ```
 
-`npm start`로 브라우저 편집기가 열립니다(기본 http://localhost:9000). 씬을 만들고 편집기의 **Render** 탭에서 내보내면 결과물이 `shared/output/motion-canvas`에 저장됩니다. 새 씬은 `motion-canvas/src/scenes/`에 추가하고 `src/project.ts`에 등록하세요.
+`npm start`로 브라우저 편집기가 열립니다(기본 http://localhost:9000). 씬을 만들고 편집기의 **Render** 탭에서 내보내면 결과물이 `shared/output/motion-canvas`에 저장됩니다. 새 프로젝트 생성 스크립트가 `motion-canvas/projects.json` 등록까지 처리합니다.
 
 ## Manim 사용법
 
@@ -45,17 +62,17 @@ cd manim
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-manim render -qh scenes/example_scene.py
+powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/render-manim.ps1 -Project <project-slug> -Quality qh
 ```
 
-`manim.cfg`에서 `media_dir`을 `../shared/output/manim`으로 지정해두어서, 렌더링 결과가 자동으로 `shared/output/manim`에 쌓입니다. 새 씬은 `manim/scenes/`에 파일을 추가하면 됩니다.
+프로젝트별 결과는 `shared/output/manim/<project-slug>`에 저장됩니다. 기존 예제 씬 전체를 렌더하려면 `-Project` 없이 스크립트를 실행합니다.
 
 ## 두 렌더링 결과 합치기
 
 각 엔진에서 클립을 렌더링한 뒤, `scripts/combine.ps1`로 순서대로 이어 붙입니다:
 
 ```powershell
-pwsh scripts/combine.ps1 -Clips `
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/combine.ps1 -Clips `
   "shared/output/manim/videos/example_scene/1080p60/Example.mp4", `
   "shared/output/motion-canvas/project.mp4" `
   -Out "shared/output/final.mp4"
@@ -66,5 +83,7 @@ pwsh scripts/combine.ps1 -Clips `
 ## 헬퍼 스크립트
 
 - `scripts/render-motion-canvas.ps1` — Motion Canvas 편집기 실행
-- `scripts/render-manim.ps1` — `manim/scenes` 안의 모든 씬을 렌더링
+- `scripts/render-manim.ps1` — 특정 프로젝트 또는 기존 Manim 씬 렌더링
 - `scripts/combine.ps1` — 렌더링된 클립들을 하나의 영상으로 합치기
+- `scripts/new-video-project.ps1` — 프로젝트·Motion Canvas·Manim 폴더 동시 생성
+- `scripts/check-video-project.ps1` — 매니페스트, 대본, 자막, 최종 파일 검사

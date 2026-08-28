@@ -1,7 +1,9 @@
-"""Render the jump-physics narration locally with Qwen3-TTS voice cloning.
+"""Render a project's narration locally with Qwen3-TTS voice cloning.
 
 The script is resumable: valid per-line WAV files are reused after an
 interruption, then joined into one edit-ready WAV and a timing-accurate SRT.
+
+Project-specific paths come from projects/<slug>/project.json.
 """
 
 from __future__ import annotations
@@ -11,14 +13,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-import numpy as np
-import soundfile as sf
-import torch
-from qwen_tts import Qwen3TTSModel
-
-
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = ROOT / "narration" / "jump-physics.script.json"
+SCRIPT_PATH = ROOT / "projects" / "jump-physics" / "script" / "narration.ko.json"
 REFERENCE = ROOT / "shared" / "voice-reference" / "reference-15-35s.wav"
 MODEL_DIR = ROOT / "qwen3-tts" / "models" / "Qwen3-TTS-12Hz-0.6B-Base"
 OUTPUT_DIR = ROOT / "shared" / "output" / "narration" / "qwen3-balanced"
@@ -26,6 +22,22 @@ CHUNK_DIR = OUTPUT_DIR / "chunks"
 FINAL_WAV = OUTPUT_DIR / "jump-physics-qwen3-balanced.wav"
 FINAL_SRT = OUTPUT_DIR / "jump-physics-qwen3-balanced.srt"
 TIMING_JSON = OUTPUT_DIR / "jump-physics-qwen3-balanced.timing.json"
+LANGUAGE = "Korean"
+
+
+def load_tts_dependencies() -> None:
+    """Import the GPU/audio stack only for a real render, not for --dry-run."""
+    global np, sf, torch, Qwen3TTSModel
+
+    import numpy as np_module
+    import soundfile as sf_module
+    import torch as torch_module
+    from qwen_tts import Qwen3TTSModel as model_class
+
+    np = np_module
+    sf = sf_module
+    torch = torch_module
+    Qwen3TTSModel = model_class
 
 # Small pauses make adjacent generated lines sound like a single narration,
 # while preserving a clean cut point for the video editor.
@@ -69,6 +81,56 @@ class Job:
     @property
     def path(self) -> Path:
         return CHUNK_DIR / f"{self.scene_id}-{self.line_number:02d}.wav"
+
+
+def _repo_path(relative: str) -> Path:
+    """Resolve a manifest path and reject paths outside this repository."""
+    resolved = (ROOT / relative).resolve()
+    try:
+        resolved.relative_to(ROOT.resolve())
+    except ValueError as error:
+        raise ValueError(f"Project path escapes the repository: {relative}") from error
+    return resolved
+
+
+def configure_project(project: str) -> None:
+    """Load all project-specific input and output paths from its manifest."""
+    global SCRIPT_PATH, REFERENCE, MODEL_DIR, OUTPUT_DIR, CHUNK_DIR
+    global FINAL_WAV, FINAL_SRT, TIMING_JSON, LANGUAGE
+
+    manifest_path = ROOT / "projects" / project / "project.json"
+    if not manifest_path.exists():
+        raise FileNotFoundError(f"Project manifest not found: {manifest_path}")
+
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("slug") != project:
+        raise ValueError(
+            f"Manifest slug {manifest.get('slug')!r} does not match project {project!r}"
+        )
+
+    paths = manifest.get("paths", {})
+    tts = manifest.get("tts", {})
+    required = {
+        "paths.script": paths.get("script"),
+        "tts.reference": tts.get("reference"),
+        "tts.model": tts.get("model"),
+        "tts.outputDir": tts.get("outputDir"),
+        "tts.filenameStem": tts.get("filenameStem"),
+    }
+    missing = [key for key, value in required.items() if not value]
+    if missing:
+        raise KeyError(f"Missing project settings: {', '.join(missing)}")
+
+    SCRIPT_PATH = _repo_path(str(paths["script"]))
+    REFERENCE = _repo_path(str(tts["reference"]))
+    MODEL_DIR = _repo_path(str(tts["model"]))
+    OUTPUT_DIR = _repo_path(str(tts["outputDir"]))
+    CHUNK_DIR = OUTPUT_DIR / "chunks"
+    stem = str(tts["filenameStem"])
+    FINAL_WAV = OUTPUT_DIR / f"{stem}.wav"
+    FINAL_SRT = OUTPUT_DIR / f"{stem}.srt"
+    TIMING_JSON = OUTPUT_DIR / f"{stem}.timing.json"
+    LANGUAGE = str(tts.get("language", "Korean"))
 
 
 def timestamp(seconds: float) -> str:
@@ -187,7 +249,7 @@ def render_chunks(jobs: list[Job], batch_size: int) -> None:
     def generate_one(text: str) -> tuple[np.ndarray, int]:
         wavs, sr = model.generate_voice_clone(
             text=[text],
-            language="Korean",
+            language=LANGUAGE,
             voice_clone_prompt=voice_prompt,
             non_streaming_mode=True,
         )
@@ -197,7 +259,7 @@ def render_chunks(jobs: list[Job], batch_size: int) -> None:
         batch = pending[index : index + batch_size]
         wavs, sample_rate = model.generate_voice_clone(
             text=[job.text for job in batch],
-            language="Korean",
+            language=LANGUAGE,
             voice_clone_prompt=voice_prompt,
             non_streaming_mode=True,
         )
@@ -302,12 +364,30 @@ def assemble_outputs(jobs: list[Job]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--project",
+        default="jump-physics",
+        help="Project slug under projects/ (default: jump-physics)",
+    )
     parser.add_argument("--batch-size", type=int, default=2)
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate the manifest and script without loading the TTS model",
+    )
     args = parser.parse_args()
     if args.batch_size < 1:
         raise ValueError("--batch-size must be at least 1")
 
+    configure_project(args.project)
+    print(f"Project: {args.project}")
+    print(f"Script:  {SCRIPT_PATH}")
+    print(f"Output:  {OUTPUT_DIR}")
     jobs = load_jobs()
+    if args.dry_run:
+        print(f"Dry run passed: {len(jobs)} narration lines")
+        return
+    load_tts_dependencies()
     render_chunks(jobs, args.batch_size)
     assemble_outputs(jobs)
 
