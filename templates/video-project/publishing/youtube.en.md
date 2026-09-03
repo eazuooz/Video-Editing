@@ -14,6 +14,12 @@ Use the first two lines to state the main topic clearly and include one or two n
 
 Explain what the video compares and what viewers will learn.
 
+## Music Credits
+
+Paste the exact attribution required by the approved track license. For a
+YouTube Audio Library track that requires no attribution, keep the title and
+license-check date in the internal source document.
+
 ## Chapters
 
 00:00 Introduction  

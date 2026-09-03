@@ -1,0 +1,186 @@
+{
+  "title": "What Is Frame Rate in Games? From 30 FPS to DLSS",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "What Is a Frame?",
+      "lines": [
+        "When you choose 30 FPS or 60 FPS in a game's settings, what exactly are you changing?",
+        "In a game, a frame is the result of drawing the screen once: one image.",
+        "Freeze any movement and you will find a sequence of slightly different still images; this video follows that single image into game time, responsiveness, and modern graphics technology."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "What 60 FPS Means",
+      "lines": [
+        "FPS means frames per second: the frequency of frames processed or displayed in one second.",
+        "If the screen shows 60 images in one second, we call it 60 FPS.",
+        "In modern games, however, we sometimes need to distinguish directly rendered frames from the frames actually displayed."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "Frames and Game Time",
+      "lines": [
+        "Many early games moved a character a fixed distance whenever the screen advanced by one frame.",
+        "At frame zero, X is zero; on the next frame it is one, and then two.",
+        "A frame was both an image and a time marker, so a different refresh rate could also change movement, animation, and physics speed."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "30 FPS vs 60 FPS",
+      "lines": [
+        "Imagine the same character moving the same distance during the same one second.",
+        "At 30 FPS there are 30 position samples, while at 60 FPS there are 60, including more positions in between.",
+        "The destination and travel time are unchanged, but smaller steps let a higher frame rate show the same time more densely and smoothly."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "The Frame Budget",
+      "lines": [
+        "Why not simply make every game run at the highest possible frame rate?",
+        "At 30 FPS a frame has about 33.33 milliseconds; at 60 it has 16.67, and at 120 it has 8.33.",
+        "The higher the frame rate, the smaller the time budget for physics, animation, game logic, and rendering."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "Variable Frame Rate",
+      "lines": [
+        "When more enemies, lights, and effects prevent the work from finishing on time, a reading of 60 can fall to 50 or 40.",
+        "Uneven intervals can feel rough even when average FPS is high, so we also need to inspect frame time: how long each image takes to make."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "deltaTime",
+      "lines": [
+        "Modern games often keep game time advancing at the same speed even when the display frame rate changes.",
+        "A common method is delta time: multiply speed by the real time elapsed during a frame.",
+        "Then 30-frame and 60-frame updates can reach the same position after the same one second.",
+        "Collision and physics may instead use a fixed time step for stability; the key is not to treat display frequency and game-time calculation as automatically identical."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "120 FPS and Monitor Hz",
+      "lines": [
+        "PC games can also run at 120 or even 240 FPS.",
+        "More intermediate frames can show fast motion in finer steps and provide more chances to draw the result of a new input sooner.",
+        "But FPS is the number of frames produced by the game, while hertz is the monitor's refresh frequency; they affect each other, but they are not the same concept."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "NTSC and PAL",
+      "lines": [
+        "Older console games were strongly affected by regional television standards.",
+        "NTSC regions such as Japan and North America used about 60 fields, while PAL regions in Europe and Australia used 50.",
+        "If game logic was tied to refresh and left uncorrected, it could run at the 50-to-60 ratio; that was the cost of using frames directly as time."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "Graphics Modes in the PS5 Era",
+      "lines": [
+        "Many modern console games offer a choice between image quality and frame rate on the same hardware.",
+        "On PlayStation 5, resolution or quality modes generally favor higher image quality and complex effects, while performance modes favor a higher target frame rate.",
+        "Exact resolutions and targets vary by game, so quality is not always 30 and performance is not always 60."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "What the GPU Does Per Frame",
+      "lines": [
+        "A frame can include geometry, lighting, shadows, reflections, ray tracing, and post-processing.",
+        "The frame budget does not grow when effects are added, so the quality-versus-frame-rate tradeoff is a decision about where to spend limited milliseconds."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "RTX 50 Series and Modern Rendering",
+      "lines": [
+        "Graphics cards such as the RTX 50 Series include hardware for ray tracing and AI computation, expanding the range of complex lighting that can run in real time.",
+        "Modern rendering can also reconstruct a final screen from less computation instead of calculating every pixel and every frame entirely through traditional rendering."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "The Pixel Cost of 4K",
+      "lines": [
+        "A 4K image contains about 8.29 million pixels, and ray tracing can require multiple ray samples and additional work.",
+        "As resolution and lighting costs rise, must every final pixel always be calculated directly at 4K from the beginning?"
+      ]
+    },
+    {
+      "id": "14",
+      "title": "DLSS Super Resolution",
+      "lines": [
+        "DLSS Super Resolution renders below the target output resolution and then constructs a higher-resolution image.",
+        "It is not simple enlargement: it uses multiple lower-resolution frames, motion vectors, and information from previous frames.",
+        "The goal is to reduce directly calculated pixels while restoring detail close to the output resolution.",
+        "This reconstructs pixels, which is a different job from Frame Generation creating a new image."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "Frame Generation",
+      "lines": [
+        "Frame Generation analyzes motion between two directly rendered frames and generates a new image between them.",
+        "On the timeline, directly rendered frames are blue and generated frames are purple.",
+        "Placing generated frames between rendered ones can increase displayed frame count and motion smoothness.",
+        "But a generated frame is not a new simulation of the game world, so base render speed and input latency do not improve by the same ratio."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "DLSS 4 Multi Frame Generation",
+      "lines": [
+        "DLSS 4 introduced Multi Frame Generation on the RTX 50 Series.",
+        "At launch, it could generate up to three additional frames for each directly rendered frame.",
+        "DLSS 4.5 later expanded this direction with dynamic adjustment and support for more generated frames.",
+        "Actual results depend on game support, base render rate, resolution, GPU, and CPU conditions."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "Rendered FPS vs Displayed FPS",
+      "lines": [
+        "Generated frames between directly rendered frames can raise the displayed number, but not every image comes from a new input and simulation step.",
+        "That is why Rendered FPS and Displayed FPS should be reported separately when interpreting Frame Generation."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "Why One FPS Number Is Not Enough",
+      "lines": [
+        "Input passes through game simulation and rendering, then optionally upscaling and Frame Generation, before appearing on a monitor.",
+        "Rendered FPS is the direct rendering frequency, Displayed FPS includes generated frames, and input latency is the time from a button press to visible light.",
+        "Technologies such as NVIDIA Reflex can reduce system latency, but they do not merge these concepts into one.",
+        "So inspect base render rate, frame time, presentation method, and latency instead of relying on one large number."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "Old and Modern Frame Pipelines",
+      "lines": [
+        "In many simple older games, game logic, frame creation, and display output were closely tied in one line.",
+        "A modern game can separate input, simulation, rendering, upscaling, Frame Generation, and output, and those stages do not necessarily run at the same frequency."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "Summary",
+      "lines": [
+        "A frame is one screen image, and FPS is the frequency of frames processed or displayed in one second.",
+        "At 30, 60, and 120 FPS, the frame budgets are roughly 33, 16, and 8 milliseconds.",
+        "Delta time and fixed time steps help game-world time advance consistently when display frequency changes.",
+        "Modern rendering requires us to distinguish Super Resolution, directly rendered frames, generated frames, displayed frames, and input latency.",
+        "When building a game, choose a target frame rate, measure frame time, and verify that game speed remains the same across different performance levels."
+      ]
+    }
+  ]
+}

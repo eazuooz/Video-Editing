@@ -61,6 +61,41 @@ Copy-TemplateDirectory -Source $projectTemplate -Destination $projectTarget
 Copy-TemplateDirectory -Source $motionTemplate -Destination $motionTarget
 Copy-TemplateDirectory -Source $manimTemplate -Destination $manimTarget
 
+# project.ts always imports assets/narration.wav.  A tiny valid placeholder
+# keeps the editor buildable before the first TTS render; the narration timing
+# tool replaces it with the approved project narration later.
+$audioDirectory = Join-Path $motionTarget 'assets'
+$placeholderNarration = Join-Path $audioDirectory 'narration.wav'
+New-Item -ItemType Directory -Path $audioDirectory -Force | Out-Null
+$sampleRate = 24000
+$sampleCount = 2400
+$dataLength = $sampleCount * 2
+$stream = [System.IO.File]::Open(
+    $placeholderNarration,
+    [System.IO.FileMode]::Create,
+    [System.IO.FileAccess]::Write
+)
+try {
+    $writer = [System.IO.BinaryWriter]::new($stream)
+    $writer.Write([System.Text.Encoding]::ASCII.GetBytes('RIFF'))
+    $writer.Write([int](36 + $dataLength))
+    $writer.Write([System.Text.Encoding]::ASCII.GetBytes('WAVE'))
+    $writer.Write([System.Text.Encoding]::ASCII.GetBytes('fmt '))
+    $writer.Write([int]16)
+    $writer.Write([int16]1)
+    $writer.Write([int16]1)
+    $writer.Write([int]$sampleRate)
+    $writer.Write([int]($sampleRate * 2))
+    $writer.Write([int16]2)
+    $writer.Write([int16]16)
+    $writer.Write([System.Text.Encoding]::ASCII.GetBytes('data'))
+    $writer.Write([int]$dataLength)
+    $writer.Write([byte[]]::new($dataLength))
+    $writer.Flush()
+} finally {
+    $stream.Dispose()
+}
+
 $tokens = [ordered]@{
     '{{SLUG}}' = $Slug
     '{{TITLE_KO}}' = $TitleKo
@@ -115,5 +150,8 @@ Write-Host "  Motion Canvas: $motionTarget"
 Write-Host "  Manim:         $manimTarget"
 Write-Host ""
 Write-Host "Next: edit projects/$Slug/planning/outline.md and script/narration.ko.json"
+Write-Host "After script/TTS sample approval:"
+Write-Host "  powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-project-narration.ps1 -Project $Slug"
 Write-Host "Open Motion Canvas with: npm start"
 Write-Host "Render Manim with: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/render-manim.ps1 -Project $Slug"
+Write-Host "Audio standard: docs/NARRATION_AUDIO_STANDARD.md"
