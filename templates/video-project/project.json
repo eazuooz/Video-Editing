@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "{{SLUG}}",
   "status": "planning",
   "titles": {
@@ -20,9 +20,34 @@
     "engine": "qwen3-tts",
     "language": "Korean",
     "reference": "shared/voice-reference/reference-15-35s.wav",
-    "model": "qwen3-tts/models/Qwen3-TTS-12Hz-0.6B-Base",
-    "outputDir": "shared/output/narration/{{SLUG}}/qwen3-balanced",
-    "filenameStem": "{{SLUG}}-qwen3-balanced"
+    "referenceText": "shared/voice-reference/reference-15-35s.ko.txt",
+    "model": "qwen3-tts/models/Qwen3-TTS-12Hz-1.7B-Base",
+    "outputDir": "shared/output/narration/{{SLUG}}/qwen3-1.7b-balanced-v1",
+    "filenameStem": "{{SLUG}}-qwen3-1.7b-balanced-v1",
+    "renderMode": "scene",
+    "sceneGapSeconds": 0.72,
+    "tailRatioThreshold": 0.07,
+    "tailDecayMsThreshold": 70,
+    "maxRenderAttempts": 3,
+    "maxNewTokens": 1024,
+    "edgeFadeSeconds": 0.006
+  },
+  "audio": {
+    "mixStatus": "waiting-for-music-approval",
+    "narrationTargetLufs": -16,
+    "truePeakDbtp": -1.5,
+    "gameAudioUnderNarrationDb": -16,
+    "bgmUnderNarrationDb": -22,
+    "duckingDb": -6,
+    "backgroundMusic": {
+      "required": true,
+      "approvalStatus": "pending",
+      "title": null,
+      "artist": null,
+      "source": null,
+      "license": null,
+      "attribution": null
+    }
   },
   "paths": {
     "script": "projects/{{SLUG}}/script/narration.ko.json",
@@ -31,9 +56,9 @@
     "publishingEn": "projects/{{SLUG}}/publishing/youtube.en.md",
     "motionCanvasProject": "motion-canvas/src/projects/{{SLUG}}/project.ts",
     "manimProject": "manim/projects/{{SLUG}}/scene.py",
-    "narration": "shared/output/narration/{{SLUG}}/qwen3-balanced/{{SLUG}}-qwen3-balanced.wav",
-    "captionsKo": "shared/output/narration/{{SLUG}}/qwen3-balanced/{{SLUG}}-qwen3-balanced.srt",
-    "captionsEn": "shared/output/narration/{{SLUG}}/qwen3-balanced/{{SLUG}}-qwen3-balanced.en.srt",
+    "narration": "shared/output/narration/{{SLUG}}/qwen3-1.7b-balanced-v1/{{SLUG}}-qwen3-1.7b-balanced-v1.wav",
+    "captionsKo": "shared/output/narration/{{SLUG}}/qwen3-1.7b-balanced-v1/{{SLUG}}-qwen3-1.7b-balanced-v1.srt",
+    "captionsEn": "shared/output/narration/{{SLUG}}/qwen3-1.7b-balanced-v1/{{SLUG}}-qwen3-1.7b-balanced-v1.en.srt",
     "videoClean": "shared/output/motion-canvas/{{SLUG}}.mp4",
     "videoBurnedCaptions": "shared/output/motion-canvas/{{SLUG}}-subtitled.mp4"
   }

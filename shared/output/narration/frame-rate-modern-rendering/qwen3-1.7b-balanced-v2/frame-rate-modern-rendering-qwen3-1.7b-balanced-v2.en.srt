@@ -1,0 +1,527 @@
+1
+00:00:00,000 --> 00:00:06,622
+When you choose 30 FPS or 60 FPS in a game's
+settings, what exactly are you changing?
+
+2
+00:00:06,622 --> 00:00:11,102
+In a game, a frame is the result of drawing
+the screen once: one image.
+
+3
+00:00:11,102 --> 00:00:15,460
+Freeze any movement and you will find a
+sequence of slightly different still images;
+
+4
+00:00:15,460 --> 00:00:18,161
+this video follows that single image into game
+time,
+
+5
+00:00:18,161 --> 00:00:20,800
+responsiveness, and modern graphics
+technology.
+
+6
+00:00:21,520 --> 00:00:27,452
+FPS means frames per second: the frequency of
+frames processed or displayed in one second.
+
+7
+00:00:27,452 --> 00:00:31,612
+If the screen shows 60 images in one second,
+we call it 60 FPS.
+
+8
+00:00:31,612 --> 00:00:34,519
+In modern games, however, we sometimes need to
+distinguish
+
+9
+00:00:34,519 --> 00:00:37,600
+directly rendered frames from the frames
+actually displayed.
+
+10
+00:00:38,320 --> 00:00:41,462
+Many early games moved a character a fixed
+distance
+
+11
+00:00:41,462 --> 00:00:44,092
+whenever the screen advanced by one frame.
+
+12
+00:00:44,092 --> 00:00:49,862
+At frame zero, X is zero; on the next frame it
+is one, and then two.
+
+13
+00:00:49,862 --> 00:00:52,603
+A frame was both an image and a time marker,
+
+14
+00:00:52,603 --> 00:00:58,320
+so a different refresh rate could also change
+movement, animation, and physics speed.
+
+15
+00:00:59,040 --> 00:01:03,022
+Imagine the same character moving the same
+distance during the same one second.
+
+16
+00:01:03,022 --> 00:01:05,869
+At 30 FPS there are 30 position samples,
+
+17
+00:01:05,869 --> 00:01:10,612
+while at 60 FPS there are 60, including more
+positions in between.
+
+18
+00:01:10,612 --> 00:01:13,451
+The destination and travel time are unchanged,
+
+19
+00:01:13,451 --> 00:01:18,560
+but smaller steps let a higher frame rate show
+the same time more densely and smoothly.
+
+20
+00:01:19,280 --> 00:01:23,622
+Why not simply make every game run at the
+highest possible frame rate?
+
+21
+00:01:23,622 --> 00:01:28,812
+At 30 FPS a frame has about 33.33
+milliseconds;
+
+22
+00:01:28,812 --> 00:01:33,202
+at 60 it has 16.67, and at 120 it has 8.33.
+
+23
+00:01:33,202 --> 00:01:37,278
+The higher the frame rate, the smaller the
+time budget for physics,
+
+24
+00:01:37,278 --> 00:01:39,680
+animation, game logic, and rendering.
+
+25
+00:01:40,400 --> 00:01:46,474
+When more enemies, lights, and effects prevent
+the work from finishing on time,
+
+26
+00:01:46,474 --> 00:01:49,012
+a reading of 60 can fall to 50 or 40.
+
+27
+00:01:49,012 --> 00:01:52,623
+Uneven intervals can feel rough even when
+average FPS is high,
+
+28
+00:01:52,623 --> 00:01:56,720
+so we also need to inspect frame time: how
+long each image takes to make.
+
+29
+00:01:57,440 --> 00:02:00,391
+Modern games often keep game time advancing at
+the
+
+30
+00:02:00,391 --> 00:02:03,482
+same speed even when the display frame rate
+changes.
+
+31
+00:02:03,482 --> 00:02:08,662
+A common method is delta time: multiply speed
+by the real time elapsed during a frame.
+
+32
+00:02:08,662 --> 00:02:14,222
+Then 30-frame and 60-frame updates can reach
+the same position after the same one second.
+
+33
+00:02:14,222 --> 00:02:18,679
+Collision and physics may instead use a fixed
+time step for stability; the key is not
+
+34
+00:02:18,679 --> 00:02:23,200
+to treat display frequency and game-time
+calculation as automatically identical.
+
+35
+00:02:23,920 --> 00:02:28,942
+PC games can also run at 120 or even 240 FPS.
+
+36
+00:02:28,942 --> 00:02:32,163
+More intermediate frames can show fast motion
+in finer steps
+
+37
+00:02:32,163 --> 00:02:35,572
+and provide more chances to draw the result of
+a new input sooner.
+
+38
+00:02:35,572 --> 00:02:39,363
+But FPS is the number of frames produced by
+the game, while hertz is the monitor's
+
+39
+00:02:39,363 --> 00:02:43,040
+refresh frequency; they affect each other, but
+they are not the same concept.
+
+40
+00:02:43,760 --> 00:02:48,302
+Older console games were strongly affected by
+regional television standards.
+
+41
+00:02:48,302 --> 00:02:52,425
+NTSC regions such as Japan and North America
+used about 60 fields,
+
+42
+00:02:52,425 --> 00:02:55,572
+while PAL regions in Europe and Australia used
+50.
+
+43
+00:02:55,572 --> 00:02:59,137
+If game logic was tied to refresh and left
+uncorrected,
+
+44
+00:02:59,137 --> 00:03:04,640
+it could run at the 50-to-60 ratio; that was
+the cost of using frames directly as time.
+
+45
+00:03:05,360 --> 00:03:08,656
+Many modern console games offer a choice
+between
+
+46
+00:03:08,656 --> 00:03:12,032
+image quality and frame rate on the same
+hardware.
+
+47
+00:03:12,032 --> 00:03:16,704
+On PlayStation 5, resolution or quality modes
+generally favor higher image quality
+
+48
+00:03:16,704 --> 00:03:21,112
+and complex effects, while performance modes
+favor a higher target frame rate.
+
+49
+00:03:21,112 --> 00:03:24,008
+Exact resolutions and targets vary by game,
+
+50
+00:03:24,008 --> 00:03:27,920
+so quality is not always 30 and performance is
+not always 60.
+
+51
+00:03:28,640 --> 00:03:31,741
+A frame can include geometry, lighting,
+shadows,
+
+52
+00:03:31,741 --> 00:03:34,842
+reflections, ray tracing, and post-processing.
+
+53
+00:03:34,842 --> 00:03:39,902
+The frame budget does not grow when effects
+are added, so the quality-versus-frame-rate
+
+54
+00:03:39,902 --> 00:03:43,680
+tradeoff is a decision about where to spend
+limited milliseconds.
+
+55
+00:03:44,400 --> 00:03:48,977
+Graphics cards such as the RTX 50 Series
+include hardware for ray tracing and AI
+
+56
+00:03:48,977 --> 00:03:53,622
+computation, expanding the range of complex
+lighting that can run in real time.
+
+57
+00:03:53,622 --> 00:03:58,139
+Modern rendering can also reconstruct a final
+screen from less computation instead
+
+58
+00:03:58,139 --> 00:04:02,720
+of calculating every pixel and every frame
+entirely through traditional rendering.
+
+59
+00:04:03,440 --> 00:04:06,688
+A 4K image contains about 8.29 million pixels,
+
+60
+00:04:06,688 --> 00:04:11,602
+and ray tracing can require multiple ray
+samples and additional work.
+
+61
+00:04:11,602 --> 00:04:14,162
+As resolution and lighting costs rise,
+
+62
+00:04:14,162 --> 00:04:19,280
+must every final pixel always be calculated
+directly at 4K from the beginning?
+
+63
+00:04:20,000 --> 00:04:23,672
+DLSS Super Resolution renders below the target
+output
+
+64
+00:04:23,672 --> 00:04:27,743
+resolution and then constructs a
+higher-resolution image.
+
+65
+00:04:27,743 --> 00:04:31,474
+It is not simple enlargement: it uses multiple
+lower-resolution frames,
+
+66
+00:04:31,474 --> 00:04:34,303
+motion vectors, and information from previous
+frames.
+
+67
+00:04:34,303 --> 00:04:37,308
+The goal is to reduce directly calculated
+pixels while
+
+68
+00:04:37,308 --> 00:04:40,053
+restoring detail close to the output
+resolution.
+
+69
+00:04:40,053 --> 00:04:42,245
+This reconstructs pixels,
+
+70
+00:04:42,245 --> 00:04:47,680
+which is a different job from Frame Generation
+creating a new image.
+
+71
+00:04:48,400 --> 00:04:51,531
+Frame Generation analyzes motion between two
+directly
+
+72
+00:04:51,531 --> 00:04:54,663
+rendered frames and generates a new image
+between them.
+
+73
+00:04:54,663 --> 00:05:00,823
+On the timeline, directly rendered frames are
+blue and generated frames are purple.
+
+74
+00:05:00,823 --> 00:05:04,251
+Placing generated frames between rendered ones
+can
+
+75
+00:05:04,251 --> 00:05:07,913
+increase displayed frame count and motion
+smoothness.
+
+76
+00:05:07,913 --> 00:05:11,814
+But a generated frame is not a new simulation
+of the game world,
+
+77
+00:05:11,814 --> 00:05:16,240
+so base render speed and input latency do not
+improve by the same ratio.
+
+78
+00:05:16,960 --> 00:05:22,393
+DLSS 4 introduced Multi Frame Generation on
+the RTX 50 Series.
+
+79
+00:05:22,393 --> 00:05:25,959
+At launch, it could generate up to three
+additional
+
+80
+00:05:25,959 --> 00:05:28,863
+frames for each directly rendered frame.
+
+81
+00:05:28,863 --> 00:05:32,676
+DLSS 4.5 later expanded this direction with
+dynamic
+
+82
+00:05:32,676 --> 00:05:36,403
+adjustment and support for more generated
+frames.
+
+83
+00:05:36,403 --> 00:05:39,240
+Actual results depend on game support,
+
+84
+00:05:39,240 --> 00:05:43,280
+base render rate, resolution, GPU, and CPU
+conditions.
+
+85
+00:05:44,000 --> 00:05:49,306
+Generated frames between directly rendered
+frames can raise the displayed number,
+
+86
+00:05:49,306 --> 00:05:53,193
+but not every image comes from a new input and
+simulation step.
+
+87
+00:05:53,193 --> 00:05:56,414
+That is why Rendered FPS and Displayed FPS
+should be
+
+88
+00:05:56,414 --> 00:06:00,160
+reported separately when interpreting Frame
+Generation.
+
+89
+00:06:00,880 --> 00:06:03,545
+Input passes through game simulation and
+rendering,
+
+90
+00:06:03,545 --> 00:06:07,573
+then optionally upscaling and Frame
+Generation, before appearing on a monitor.
+
+91
+00:06:07,573 --> 00:06:12,817
+Rendered FPS is the direct rendering
+frequency, Displayed FPS includes generated
+
+92
+00:06:12,817 --> 00:06:17,463
+frames, and input latency is the time from a
+button press to visible light.
+
+93
+00:06:17,463 --> 00:06:21,184
+Technologies such as NVIDIA Reflex can reduce
+system latency,
+
+94
+00:06:21,184 --> 00:06:23,853
+but they do not merge these concepts into one.
+
+95
+00:06:23,853 --> 00:06:27,246
+So inspect base render rate, frame time,
+presentation method,
+
+96
+00:06:27,246 --> 00:06:30,000
+and latency instead of relying on one large
+number.
+
+97
+00:06:30,720 --> 00:06:34,636
+In many simple older games, game logic, frame
+creation,
+
+98
+00:06:34,636 --> 00:06:38,053
+and display output were closely tied in one
+line.
+
+99
+00:06:38,053 --> 00:06:43,060
+A modern game can separate input, simulation,
+rendering, upscaling, Frame Generation,
+
+100
+00:06:43,060 --> 00:06:47,200
+and output, and those stages do not
+necessarily run at the same frequency.
+
+101
+00:06:47,920 --> 00:06:49,786
+A frame is one screen image,
+
+102
+00:06:49,786 --> 00:06:54,653
+and FPS is the frequency of frames processed
+or displayed in one second.
+
+103
+00:06:54,653 --> 00:07:01,893
+At 30, 60, and 120 FPS, the frame budgets are
+roughly 33, 16, and 8 milliseconds.
+
+104
+00:07:01,893 --> 00:07:05,306
+Delta time and fixed time steps help
+game-world time
+
+105
+00:07:05,306 --> 00:07:08,953
+advance consistently when display frequency
+changes.
+
+106
+00:07:08,953 --> 00:07:11,907
+Modern rendering requires us to distinguish
+Super Resolution,
+
+107
+00:07:11,907 --> 00:07:15,793
+directly rendered frames, generated frames,
+displayed frames, and input latency.
+
+108
+00:07:15,793 --> 00:07:20,308
+When building a game, choose a target frame
+rate, measure frame time,
+
+109
+00:07:20,308 --> 00:07:25,680
+and verify that game speed remains the same
+across different performance levels.

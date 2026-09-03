@@ -38,6 +38,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/new-video-project.ps
 그다음 `projects/camera-shake/planning/outline.md`와
 `projects/camera-shake/script/narration.ko.json`부터 작성합니다. 전체 순서는
 [반복 가능한 영상 제작 워크플로](docs/VIDEO_WORKFLOW.md)에 정리되어 있습니다.
+TTS·자막·게임 원음·BGM의 고정 기준과 승인 순서는
+[내레이션·자막·오디오 제작 기준](docs/NARRATION_AUDIO_STANDARD.md)을 따릅니다.
+
+대본과 TTS 샘플을 승인한 뒤에는 다음 한 명령으로 1.7B 장면 단위 음성, 한글·영문
+SRT, 씬 타이밍과 전체 받아쓰기 검토 파일을 만듭니다.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File scripts/build-project-narration.ps1 -Project <project-slug>
+```
+
+BGM은 후보의 라이선스와 출처를 먼저 확인하고 사용자가 선택한 뒤에만 최종 영상에
+적용합니다.
 
 ## 사전 준비
 
@@ -86,4 +99,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/combine.ps1 -Clips `
 - `scripts/render-manim.ps1` — 특정 프로젝트 또는 기존 Manim 씬 렌더링
 - `scripts/combine.ps1` — 렌더링된 클립들을 하나의 영상으로 합치기
 - `scripts/new-video-project.ps1` — 프로젝트·Motion Canvas·Manim 폴더 동시 생성
+- `scripts/build-project-narration.ps1` — 1.7B 장면 TTS·SRT·타이밍·전체 받아쓰기 생성
 - `scripts/check-video-project.ps1` — 매니페스트, 대본, 자막, 최종 파일 검사
