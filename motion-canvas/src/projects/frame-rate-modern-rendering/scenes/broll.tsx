@@ -195,14 +195,25 @@ function findClip(name: string): string {
   return match[1];
 }
 
+// Source sound already lives in the project-wide mix. Muting only the HTML
+// video playback prevents a second, unattenuated copy in the editor.
+class MixedAudioVideo extends Video {
+  protected override video(): HTMLVideoElement {
+    const element = super.video();
+    element.muted = true;
+    return element;
+  }
+}
+
 export function* playExample(view: any, index: number) {
   const example = EXAMPLES[index];
   const stage = createRef<Node>();
+  const clip = createRef<MixedAudioVideo>();
 
   view.add(
     <Node ref={stage} opacity={0}>
       <Rect width={1920} height={1080} fill={'#05070d'} />
-      <Video src={findClip(example.clip)} width={1920} height={1080} play />
+      <MixedAudioVideo ref={clip} src={findClip(example.clip)} width={1920} height={1080} play />
 
       <Rect y={-475} width={1920} height={130} fill={'#05070ddd'}>
         <Rect x={-690} width={330} height={72} radius={18} fill={'#fbbf2422'} stroke={'#fbbf24'} lineWidth={3}>
@@ -239,5 +250,6 @@ export function* playExample(view: any, index: number) {
   yield* stage().opacity(1, FADE);
   yield* waitFor(Math.max(0, example.duration - FADE * 2));
   yield* stage().opacity(0, FADE);
+  clip().pause();
   stage().remove();
 }

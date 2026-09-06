@@ -132,18 +132,31 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/render-manim.ps1 -Pr
 
 ## 7. BGM 후보 승인과 오디오 믹스
 
-자체 설명 화면처럼 내레이션만 있는 구간에는 잔잔한 BGM을 사용합니다. 음악을
+잔잔한 BGM은 영상 처음부터 끝까지 이어 깔고, 게임 원음은 그 위에 함께 재생합니다. 음악을
 선택하기 전에 곡명, 원본 미리듣기 링크, 라이선스, 출처 표기와 영상 적합성을 먼저
 제시합니다. 사용자가 곡을 선택하기 전에는 다운로드·믹스·최종 렌더를 진행하지
 않습니다.
 
-승인 뒤 `project.json`의 `audio.backgroundMusic`을 갱신하고 다음 기준으로 믹스합니다.
+승인 뒤 `project.json`의 `audio.backgroundMusic`과 실제 믹서 입력값을 갱신합니다.
+2026-09-06 승인한 기본값은 **내레이션 -16 / 게임 원음 -23 / BGM -28 LUFS**이며,
+가벼운 사이드체인 덕킹을 적용합니다. 예전의 더 작은 배경음 기준은 사용하지 않습니다.
+정확한 수치·페이드·검사 방법은 [오디오 제작 기준](NARRATION_AUDIO_STANDARD.md)의
+기본 믹스 기준을 따릅니다. 배경음만 조정할 때 내레이션과 SRT는 유지합니다.
+게임 원음이 나오는 동안에도 BGM을 끄지 않고 3dB만 낮춥니다. 씬 전환에서 음악을
+자르거나 다시 시작하지 않으며, 곡이 끝나면 1초 크로스페이드로 반복 연결합니다.
 
-- 내레이션: 약 -16 LUFS, true peak -1.5 dBTP 이하
-- 게임 원음: 내레이션보다 약 14~18dB 작게
-- BGM: 내레이션보다 약 18~24dB 작게
-- 내레이션 중 BGM을 약 4~8dB 더 낮추는 덕킹 적용
-- 게임 원음 구간에서는 BGM을 더 낮추거나 잠시 끄기
+전체 믹스 완료에는 다음 작업까지 포함됩니다.
+
+1. 원본 TTS·게임 원음·승인곡을 합쳐 최종 MP4와 편집기용 `assets/final-mix.m4a`를 생성합니다.
+2. `paths.audioMix`를 기록하고 `project.ts`의 `audio`를 전체 믹스로 연결합니다.
+   나레이션 전용 연결은 초안 단계에서만 사용합니다.
+3. 개별 Video 재생만 음소거해 원음의 이중 재생을 방지합니다. 원본 파일의 소리는 보존합니다.
+4. 배경 합산의 `amix normalize=0`, 동일 타이밍, 음량 측정과 편집기 재생을 검사합니다.
+5. 설정·측정값·대체 음악 씬을 `projects/<slug>/audio/mix-report.md`에 남깁니다.
+
+FPS의 `scripts/mix-frame-rate-audio.ps1`는 20개 씬·6.5초 예시 구간용 구현입니다.
+새 영상에서는 씬 수와 예시 구간을 맞춘 뒤 재사용합니다. 현재 명령을 임의의
+새 프로젝트에 그대로 실행하면 안 됩니다.
 
 ## 8. 렌더와 검수
 
@@ -162,8 +175,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/render-manim.ps1 -Pr
 - B-roll 출처와 파일명이 일치하는가?
 - 자막 오탈자와 줄바꿈이 자연스러운가?
 - 음량이 장면마다 갑자기 달라지지 않는가?
-- 게임 예시 구간의 작은 원음과 자체 설명 구간의 BGM이 의도대로 들리는가?
+- 게임 예시에는 작은 원음과 BGM이 동시에, 설명 구간에는 같은 BGM이 연속해서 들리는가?
 - 내레이션, 원본 음악과 BGM이 서로 경쟁하지 않는가?
+- 배경 단독 트랙에도 각 씬의 원음·BGM이 있고 편집기와 MP4에서 같은 믹스가 나오는가?
+- 편집기 `include audio`가 켜져 있고 개별 게임 Video의 소리가 중복되지 않는가?
 
 프로젝트 매니페스트에 최종 경로를 기록한 뒤 검사합니다.
 
@@ -196,7 +211,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 | 내용 | `projects/<slug>/script/narration.ko.json` | WAV, 한국어 SRT, timing JSON |
 | 장면 길이 | timing JSON + 장면 구간 설정 | Motion Canvas 타이밍 코드 |
 | B-roll·원음 | 소스 기록 + Motion Canvas B-roll 설정 | 정규화 클립, 편집 큐, 원음 믹스 |
-| 음악 | `project.json` 승인 정보 + 출처 문서 | 최종 오디오 믹스, 설명란 출처 |
+| 음악·음량 | `project.json` 승인 정보·믹스 설정 + 출처 문서 | 전체 믹스 M4A·MP4, 믹스 보고서, 설명란 출처 |
 | 영상 | Motion Canvas·Manim 소스 | MP4, 스틸 이미지 |
 | 게시 | `projects/<slug>/publishing/` | YouTube 입력 내용 |
 

@@ -19,7 +19,7 @@ Canvas 씬을 사용합니다. 음악은 후보·라이선스를 먼저 확인�
 | 프로젝트 | 상태 | 설명 |
 | --- | --- | --- |
 | [jump-physics](jump-physics/) | 완성 | 게임 점프 물리와 조작감 분석 |
-| [frame-rate-modern-rendering](frame-rate-modern-rendering/) | BGM 승인·최종 믹스 대기 | 30/60/120 FPS부터 PS5·DLSS·Frame Generation까지 |
+| [frame-rate-modern-rendering](frame-rate-modern-rendering/) | 최종 믹스·편집기 연결 완료, 게시 준비 | 30/60/120 FPS부터 PS5·DLSS·Frame Generation까지 |
 
 ## 새 프로젝트 만들기
 

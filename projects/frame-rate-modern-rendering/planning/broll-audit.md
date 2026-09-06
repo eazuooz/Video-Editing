@@ -38,15 +38,16 @@
 - 격투 게임은 02·03번에서 60fps 움직임과 프레임 단위 설계를 각각 담당한다.
 - 슈팅 게임은 06·08·18번에서 가변 FPS, 고주사율 체감, 입력 지연을 각각 담당한다.
 - 동일 원본의 재사용은 19·20번의 비교·요약 합성에만 남겼다.
-- 최종 영상 믹스는 BGM 승인 뒤 진행하며, 이 검토는 화면 적합성에 대한 승인본이다.
+- 최종 영상은 각 B-roll의 원본 소리와 설명 구간 BGM을 내레이션 우선으로 믹스했다.
 
 ## 최종 출력 검증
 
-- 검수본: shared/output/motion-canvas/frame-rate-modern-rendering.mp4
-- 출력 규격: 1920×1080, 60fps, 445.8초, H.264 영상 + AAC 내레이션
+- 최종본: shared/output/motion-canvas/frame-rate-modern-rendering.mp4
+- 출력 규격: 1920×1080, 60fps, 445.8초, H.264 영상 + 48kHz 스테레오 AAC
 - 장면 클립: 20개, SHA-256 기준 20개 모두 서로 다른 파일
 - B-roll 접촉시트: shared/output/motion-canvas/frame-rate-modern-rendering-qa/broll-contact.jpg
 - 모션그래픽 접촉시트: shared/output/motion-canvas/frame-rate-modern-rendering-qa/motion-contact.jpg
 - 한국어 SRT: 83개 큐, 영어 SRT: 109개 큐, 모두 2줄 이하·겹침 없음·445.68초 종료
 - narration 단계 자동 검사는 통과했다.
-- publish 단계에는 사용자 BGM 승인과 최종 오디오 믹스만 남았다.
+- 19개 장면의 원본 소리를 보존했다. 원본이 사실상 무음인 07번은 BGM으로 대체했다.
+- 설명 구간에는 `Nimbus — Eveningland`를 사용했고, 최종 측정값은 -17.0 LUFS / -1.6 dBTP다.

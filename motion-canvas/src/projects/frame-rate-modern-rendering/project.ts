@@ -1,6 +1,8 @@
 import {makeProject} from '@motion-canvas/core';
 
-import narration from './assets/narration.wav';
+// Shared with the final MP4: narration, source audio, and background music.
+// Regenerate with scripts/mix-frame-rate-audio.ps1 when audio inputs change.
+import finalMix from './assets/final-mix.m4a';
 import scene01 from './scenes/scene01?scene';
 import scene02 from './scenes/scene02?scene';
 import scene03 from './scenes/scene03?scene';
@@ -24,7 +26,7 @@ import scene20 from './scenes/scene20?scene';
 
 export default makeProject({
   name: 'frame-rate-modern-rendering',
-  audio: narration,
+  audio: finalMix,
   scenes: [
     scene01,
     scene02,

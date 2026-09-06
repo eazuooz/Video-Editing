@@ -40,6 +40,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/new-video-project.ps
 [반복 가능한 영상 제작 워크플로](docs/VIDEO_WORKFLOW.md)에 정리되어 있습니다.
 TTS·자막·게임 원음·BGM의 고정 기준과 승인 순서는
 [내레이션·자막·오디오 제작 기준](docs/NARRATION_AUDIO_STANDARD.md)을 따릅니다.
+2026-09-06 승인한 믹스 설정과 편집기·MP4 전체 오디오 일치 규칙을 기본값으로
+사용하며, 새 프로젝트 템플릿에 음량 설정과 `audio/mix-report.md`가 함께 포함됩니다.
 
 대본과 TTS 샘플을 승인한 뒤에는 다음 한 명령으로 1.7B 장면 단위 음성, 한글·영문
 SRT, 씬 타이밍과 전체 받아쓰기 검토 파일을 만듭니다.
