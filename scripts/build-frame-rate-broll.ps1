@@ -9,7 +9,6 @@ Set-StrictMode -Version Latest
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $python = Join-Path $repoRoot "qwen3-tts\.venv\Scripts\python.exe"
 $defaultOutputDir = Join-Path $repoRoot "motion-canvas\src\projects\frame-rate-modern-rendering\assets\gameplay"
-$legacyDir = Join-Path $repoRoot "motion-canvas\src\assets\gameplay"
 
 if (-not (Test-Path -LiteralPath $python -PathType Leaf)) {
     throw "Python environment not found: $python"
@@ -31,6 +30,7 @@ New-Item -ItemType Directory -Force -Path $CacheDir, $outputDir | Out-Null
 $downloads = [ordered]@{
     "HGmyQS09VGQ" = "https://www.youtube.com/watch?v=HGmyQS09VGQ"
     "F2347gyZp0U" = "https://www.youtube.com/watch?v=F2347gyZp0U"
+    "myGdMOcdTcE" = "https://www.youtube.com/watch?v=myGdMOcdTcE"
     "d_20X1YM28U" = "https://www.youtube.com/watch?v=d_20X1YM28U"
     "GffelVJeGws" = "https://www.youtube.com/watch?v=GffelVJeGws"
     "lbcYFgQJOLM" = "https://www.youtube.com/watch?v=lbcYFgQJOLM"
@@ -92,7 +92,7 @@ function Invoke-NormalizedClip {
     }
 }
 
-$sf2 = Join-Path $legacyDir "sf2.mp4"
+$sf2 = Join-Path $CacheDir "myGdMOcdTcE.mp4"
 $mario = Join-Path $CacheDir "HGmyQS09VGQ.mp4"
 $streetFighter6 = Join-Path $CacheDir "F2347gyZp0U.mp4"
 $forza = Join-Path $CacheDir "d_20X1YM28U.mp4"
@@ -140,24 +140,28 @@ Invoke-NormalizedClip $blackMythLaunch 14 6.5 "scene17.mp4"
 Invoke-NormalizedClip $counterStrike 12 6.5 "scene18.mp4"
 
 # Intentional summary comparison: fixed-timing arcade game versus a modern
-# multi-stage rendering workload. Audio is omitted from composite clips.
+# multi-stage rendering workload. Keep both source tracks at a conservative
+# level so the final narration-first mix can still use the original sound.
 & ffmpeg -y -loglevel error `
     -ss 0 -t 6.5 -i $sf2 `
     -ss 98 -t 6.5 -i $alanWake `
-    -filter_complex "[0:v]fps=60,scale=1280:720:force_original_aspect_ratio=increase,crop=640:720:320:0[left];[1:v]fps=60,scale=1280:720:force_original_aspect_ratio=increase,crop=640:720:320:0[right];[left][right]hstack=inputs=2,setsar=1,format=yuv420p[out]" `
-    -map "[out]" -c:v libx264 -preset medium -crf 20 -movflags +faststart `
+    -filter_complex "[0:v]fps=60,scale=1280:720:force_original_aspect_ratio=increase,crop=640:720:320:0[left];[1:v]fps=60,scale=1280:720:force_original_aspect_ratio=increase,crop=640:720:320:0[right];[left][right]hstack=inputs=2,setsar=1,format=yuv420p[out];[0:a]aresample=48000,volume=0.5[a0];[1:a]aresample=48000,volume=0.5[a1];[a0][a1]amix=inputs=2:duration=shortest:normalize=0,alimiter=limit=0.9[audio]" `
+    -map "[out]" -map "[audio]" -c:v libx264 -preset medium -crf 20 -movflags +faststart `
+    -c:a aac -b:a 160k -ar 48000 `
     (Join-Path $outputDir "scene19.mp4")
 if ($LASTEXITCODE -ne 0) { throw "ffmpeg failed: scene19.mp4" }
 
 # Intentional four-way recap. Each panel comes from a source already explained
-# in its own scene, so the repetition has an explicit summary function.
+# in its own scene, so the repetition has an explicit summary function. The
+# four original tracks are blended quietly instead of being discarded.
 & ffmpeg -y -loglevel error `
     -ss 40 -t 6.5 -i $streetFighter6 `
     -ss 14 -t 6.5 -i $overwatchCounter `
     -ss 8 -t 6.5 -i $horizon `
     -ss 10 -t 6.5 -i $starWarsOutlaws `
-    -filter_complex "[0:v]fps=60,scale=640:360,setsar=1[a];[1:v]fps=60,scale=640:360,setsar=1[b];[2:v]fps=60,scale=640:360,setsar=1[c];[3:v]fps=60,scale=640:360,setsar=1[d];[a][b][c][d]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0,format=yuv420p[out]" `
-    -map "[out]" -c:v libx264 -preset medium -crf 20 -movflags +faststart `
+    -filter_complex "[0:v]fps=60,scale=640:360,setsar=1[a];[1:v]fps=60,scale=640:360,setsar=1[b];[2:v]fps=60,scale=640:360,setsar=1[c];[3:v]fps=60,scale=640:360,setsar=1[d];[a][b][c][d]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0,format=yuv420p[out];[0:a]aresample=48000,volume=0.25[a0];[1:a]aresample=48000,volume=0.25[a1];[2:a]aresample=48000,volume=0.25[a2];[3:a]aresample=48000,volume=0.25[a3];[a0][a1][a2][a3]amix=inputs=4:duration=shortest:normalize=0,alimiter=limit=0.9[audio]" `
+    -map "[out]" -map "[audio]" -c:v libx264 -preset medium -crf 20 -movflags +faststart `
+    -c:a aac -b:a 160k -ar 48000 `
     (Join-Path $outputDir "scene20.mp4")
 if ($LASTEXITCODE -ne 0) { throw "ffmpeg failed: scene20.mp4" }
 

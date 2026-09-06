@@ -273,6 +273,9 @@ if ($Stage -in @('narration', 'publish')) {
 
 if ($Stage -eq 'publish') {
     $resolved['videoClean'] = Test-ManifestFile $manifest.paths 'videoClean'
+    if ($null -ne $manifest.paths.PSObject.Properties['audioMix']) {
+        $resolved['audioMix'] = Test-ManifestFile $manifest.paths 'audioMix'
+    }
 
     if ($schemaVersion -ge 2) {
         $music = $manifest.audio.backgroundMusic
@@ -309,6 +312,20 @@ if ($Stage -eq 'publish') {
                 Add-Failure 'final video has no audio stream'
             } else {
                 Add-Pass "final video audio codec is $audioCodec"
+            }
+            if ($resolved.ContainsKey('audioMix') -and $null -ne $resolved.audioMix) {
+                $mixJson = & $ffprobe.Source -v error -select_streams a:0 `
+                    -show_entries stream=codec_name -show_entries format=duration `
+                    -of json $resolved.audioMix
+                if ($LASTEXITCODE -ne 0) { throw 'ffprobe could not inspect the editor audio mix' }
+                $mixProbe = $mixJson | ConvertFrom-Json
+                if (@($mixProbe.streams).Count -ne 1) {
+                    Add-Failure 'editor audio mix has no single audio stream'
+                } elseif ([math]::Abs([double]$mixProbe.format.duration - $duration) -gt 0.25) {
+                    Add-Failure 'editor audio mix and final video durations differ by more than 0.25s'
+                } else {
+                    Add-Pass 'editor audio mix contains audio and matches the final video duration'
+                }
             }
             if ($null -ne $narrationDuration -and
                 [math]::Abs($duration - $narrationDuration) -gt 0.25) {

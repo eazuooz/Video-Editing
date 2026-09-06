@@ -23,16 +23,28 @@ FPS 숫자의 진짜 의미
 
 게임·기술 예시 영상 출처
 - Super Mario Bros. — Gameplay Project: https://www.youtube.com/watch?v=HGmyQS09VGQ
-- Super Smash Bros. Ultimate — Royalty Free Gameplay Footage: https://www.youtube.com/watch?v=c7WSU__eSLo
+- Street Fighter 6 — Capcom: https://www.youtube.com/watch?v=F2347gyZp0U
 - Street Fighter II — Sporefrog08: https://www.youtube.com/watch?v=myGdMOcdTcE
-- Celeste — UltraPita: https://www.youtube.com/watch?v=URBom7N3t6I
+- Forza Horizon 5 — Xbox: https://www.youtube.com/watch?v=d_20X1YM28U
 - Ratchet & Clank: Rift Apart — PlayStation: https://www.youtube.com/watch?v=GffelVJeGws
-- Cyberpunk 2077 DLSS 4 — NVIDIA GeForce: https://www.youtube.com/watch?v=avWMEd-H8Qg
-- Microsoft Flight Simulator 2024 DLSS 4 — NVIDIA GeForce: https://www.youtube.com/watch?v=MsrWR1ukPTw
+- Overwatch 2 FPS Counter — NVIDIA GeForce: https://www.youtube.com/watch?v=lbcYFgQJOLM
+- Celeste — UltraPita: https://www.youtube.com/watch?v=URBom7N3t6I
+- Overwatch High-FPS Comparison — NVIDIA GeForce: https://www.youtube.com/watch?v=LKBctwWbTOk
+- Sonic 50 Hz vs 60 Hz — redhotsonic: https://www.youtube.com/watch?v=iPhESbeKFIE
+- Horizon Forbidden West — PlayStation: https://www.youtube.com/watch?v=jbu294Nv7Q8
+- Alan Wake 2 Full Ray Tracing — NVIDIA GeForce: https://www.youtube.com/watch?v=tiUiCzzVu8g
+- Black Myth: Wukong RTX 50 Series — NVIDIA GeForce: https://www.youtube.com/watch?v=wcn25vlHgec
+- Minecraft with RTX — NVIDIA GeForce: https://www.youtube.com/watch?v=91kxRGeg9wQ
 - DLSS 4 기술 설명 — NVIDIA GeForce: https://www.youtube.com/watch?v=qQn3bsPNTyI
+- Cyberpunk 2077 DLSS 4 — NVIDIA GeForce: https://www.youtube.com/watch?v=avWMEd-H8Qg
+- Star Wars Outlaws DLSS 4 — NVIDIA GeForce: https://www.youtube.com/watch?v=dR9i2WVcXTM
+- Black Myth: Wukong DLSS 4 — NVIDIA GeForce: https://www.youtube.com/watch?v=k6YkuhUxETE
 - Counter-Strike 2 NVIDIA Reflex — NVIDIA GeForce: https://www.youtube.com/watch?v=96jRLXyjeao
 
-외부 영상은 개념 설명과 비평을 위한 짧은 무음 예시로 사용했으며, 각 장면에도 출처를 표시했습니다.
+외부 영상은 개념 설명과 비평을 위한 짧은 예시로 사용했으며, 각 장면에도 출처를 표시했습니다. 원본 소리는 제거하지 않고 내레이션을 방해하지 않는 크기로 낮춰 사용했습니다. 19·20번 장면은 앞서 소개한 자료를 비교·요약 목적으로 다시 구성했습니다.
+
+배경음악
+- Nimbus — Eveningland (YouTube Audio Library): https://www.youtube.com/audiolibrary
 
 ## 타임스탬프
 
