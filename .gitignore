@@ -8,6 +8,9 @@ motion-canvas/dist/
 __pycache__/
 *.pyc
 
+# Local PDF reference inspections (not source assets for publication)
+tmp/pdfs/
+
 # Rendered output (large binaries, regenerate via scripts/)
 # motion-canvas/ and narration/ ARE tracked so finished video/audio can be
 # pulled on another machine (e.g. editing in Final Cut Pro) without needing
@@ -18,6 +21,12 @@ shared/output/*
 !shared/output/narration/
 # Motion Canvas may leave temporary PNG sequence folders next to the final MP4.
 shared/output/motion-canvas/*/
+# Local render checkpoints/silent intermediates; completed review MP4s stay tracked.
+shared/output/motion-canvas/ai-era-cs-fundamentals-*-part-*.mp4
+shared/output/motion-canvas/ai-era-cs-fundamentals-*-visual.mp4
+# Byte-exact copies are stored as <=80 MiB gzip parts in shared/media-archives/.
+motion-canvas/src/projects/ai-era-cs-fundamentals/assets/editor-mix.wav
+motion-canvas/src/projects/ai-era-cs-fundamentals/assets/mix-v6-artist-music-review.wav
 # Scene chunks and A/B previews are reproducible TTS intermediates. Keep the
 # final WAV, SRT, timing JSON, and ASR review file instead.
 shared/output/narration/**/chunks/
@@ -34,6 +43,8 @@ shared/output/manim/*
 # (the actual audio/video) needs to travel between machines.
 shared/voice-reference/
 shared/audio-samples/
+# Creator-upload music used only for local listening review; rights not cleared.
+shared/assets/music/artist-review/
 voice-clone/.venv/
 voice-clone/*.log
 qwen3-tts/.venv/

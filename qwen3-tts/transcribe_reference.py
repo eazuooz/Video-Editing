@@ -28,14 +28,18 @@ def main() -> None:
         help="Hugging Face Whisper model id",
     )
     parser.add_argument("--language", default="korean")
+    parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     args = parser.parse_args()
 
     audio = args.audio.resolve()
     if not audio.exists():
         raise FileNotFoundError(audio)
 
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+    use_cuda = args.device == "cuda" or (args.device == "auto" and torch.cuda.is_available())
+    device = "cuda:0" if use_cuda else "cpu"
+    dtype = torch.float16 if use_cuda else torch.float32
+    if not use_cuda:
+        torch.set_num_threads(2)
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
         args.model,
         dtype=dtype,

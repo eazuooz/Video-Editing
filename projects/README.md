@@ -20,6 +20,7 @@ Canvas 씬을 사용합니다. 음악은 후보·라이선스를 먼저 확인�
 | --- | --- | --- |
 | [jump-physics](jump-physics/) | 완성 | 게임 점프 물리와 조작감 분석 |
 | [frame-rate-modern-rendering](frame-rate-modern-rendering/) | 최종 믹스·편집기 연결 완료, 게시 준비 | 30/60/120 FPS부터 PS5·DLSS·Frame Generation까지 |
+| [ai-era-cs-fundamentals](ai-era-cs-fundamentals/) | v6 전체 렌더·연속 대사·원음·BGM·한영 SRT / 음악 게시 조건·청취 승인 대기 | AI 시대의 컴공 공부법, 기초·디버깅·검증 / 12씬·17분37초 |
 
 ## 새 프로젝트 만들기
 

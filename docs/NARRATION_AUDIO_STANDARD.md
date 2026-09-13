@@ -89,7 +89,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 - 끝부분 음량과 감쇠 시간을 검사하고 기준 미달 결과는 최대 3번 다시 생성한다.
 - 매우 조용하게 닫힌 발음은 끝 단어가 온전히 인식되는지 받아쓰기로 재확인한다.
 - 전체 받아쓰기에서 문장 누락, 반복, 숫자와 고유명사 오류를 확인한다.
-- SRT 수는 모든 장면의 `lines` 수와 같아야 한다.
+- timing JSON 문단 수는 모든 장면의 `lines` 수와 같아야 한다. 긴 문단은 읽기 좋은 짧은 SRT로 나눌 수 있으며, 한영 SRT의 번호·타임코드는 서로 같아야 한다.
 - SRT는 겹치거나 역전되지 않아야 하며 마지막 자막은 음성 길이를 넘지 않는다.
 - 새 타이밍으로 Motion Canvas를 빌드해 모든 장면이 독립적으로 연결되는지 확인한다.
 
@@ -98,10 +98,30 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 
 ## 실제 게임 영상과 채널 그래픽
 
+2026-09-12 변경: **외부 자료화면에서도 우리 내레이션을 이어 가는 방식**을 새 영상의 기본으로 합니다.
+화면이 바뀌는 것과 대사가 쉬는 것은 별개입니다. 먼저 볼 동작과 의미를 말하고 자체 도식에서 풀어 줍니다.
+자료화면 원음은 보조 레이어이며, 외국어 해설이 우리 대사와 경쟁하면 더 낮춥니다.
+AI 컴공 v6 초안은 원음 -31 LUFS·BGM -28 LUFS를 제안합니다. 음성·대본 승인 상태는 별도입니다.
+2026-09-12 해당 v6 대본이 승인되었습니다. 새 합성은 앞 무음 없이 시작하며, `build-ai-cs-continuous-audio.cjs`가 원음 -31 LUFS와 연속 BGM을 처리합니다.
+실제 음악 파일/라이선스가 없으면 기본 실행은 중단합니다. `--allow-missing-bgm`은 명시적인 BGM 미포함 검토본만 만드는 옵션이며, 게시 완료로 표시하지 않습니다.
+승인된 기존 영상은 자동 변경하지 않습니다.
+
 기본 구성은 한 장면 안에서 다음 페어를 사용합니다.
 
-1. 실제 게임·공식 기술 예시 영상 1개: 보통 5~10초
+1. 실제 게임·공식 기술 예시 구간 1개: **기본19.5초**, 대체로18~24초 (2026-09-07 요청, 종전6.5초의3배)
 2. 같은 개념을 설명하는 자체 Motion Canvas 또는 Manim 화면 1개
+
+`project.json.editing.exampleSeconds`를 단일 기준으로 삼습니다. 짧은 원본은
+관련 컷을 연결하고, 반복·정지·무리한 슬로다운으로 분량만 늘리지 않습니다.
+전체길이 고정 요청이 없으면 늘어난 예시만큼 총길이를 늘리고 설명 시간은 유지합니다.
+밈은 자체 설명 위의 약2초 반응 연출로 겹칠 수 있으며 별도 시간을 중복 합산하지 않습니다.
+
+새 내레이션 연속형 프로젝트는 각 장면 앞에 예시 길이만큼 자동 무음을 넣지 않습니다.
+예시에서도 발화하고 자연스러운 호흡만 유지하며, WAV·KO/EN SRT·timing JSON에 같은 실측 시간을 사용합니다.
+기존 `after-example-meme-overlays-explanation` 프로젝트의 무음 슬롯 규칙은 구버전 재현용으로만 유지합니다.
+`project.json.editing.narrationPlacement`에 따라 생성 경로를 나눠야 하며, 플래그만 바꾸고 옛 생성기를 실행하지 않습니다.
+이미 생성된 timing JSON의 예시 길이와 매니페스트가 다르면 동기화를 중단하고 재조립을 요구합니다.
+기존 `editing` 필드가 없는 완료 프로젝트는 이전 타이밍을 유지합니다.
 
 한 화면에는 핵심 개념 하나만 보여 줍니다. 원본 영상의 고유 편집이나 자막 구성을
 복제하지 않고, 필요한 동작만 짧게 인용한 뒤 자체 설명 화면으로 전환합니다.
@@ -175,6 +195,9 @@ BGM이 함께 존재하고, 설명 구간에는 내레이션·BGM이 이어집�
 - `paths.narration`: 원본 TTS WAV. 재믹스의 입력이며 덮어쓰지 않습니다.
 - `paths.audioMix`: `motion-canvas/src/projects/<slug>/assets/final-mix.m4a`.
   내레이션·게임 원음·BGM이 모두 포함된 편집기용 마스터입니다.
+- VS Code 편집기 예외: AAC/M4A 대신 같은 믹스의 PCM WAV 또는 MP3를 별도 연결합니다.
+  최종 MP4는 H.264/AAC를 유지할 수 있습니다. 파일 존재뿐 아니라 디코딩·파형·재생을 확인합니다.
+  [VS Code 지원 형식](https://code.visualstudio.com/api/extension-guides/webview#supported-media-formats).
 - `paths.videoClean`: 위 전체 믹스가 포함된 최종 무자막 MP4입니다.
 - `paths.audioReport`: `projects/<slug>/audio/mix-report.md`. 설정, 측정값,
   원음 대체 씬과 청취 검수 결과를 기록합니다.
@@ -250,6 +273,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/mix-frame-rate-audio
 - `scripts/check-video-project.ps1 -Project <slug> -Stage publish` 통과
 - 사람이 처음부터 끝까지 듣고 승인한 뒤에만 상태를 `complete`로 변경
 
+### 연속 내레이션 검토본의 누락 방지 (v6 사례)
+
+- 자료화면 첫 순간부터 우리 대사가 나오는 배치에는 챕터 앞 예시 길이만큼의 무음을 더하지 않습니다. `editing.narrationPlacement`와 timing JSON의 배치 값이 다르면 재생성하도록 검사합니다.
+- `scripts/build-ai-cs-continuous-audio.cjs`는 이 프로젝트의 12개 자료화면과 실제 씬 경계에서 음성/원음/BGM 레이어를 따로 측정합니다. 전체 오디오가 있다는 것만으로 세 레이어가 모두 들어 있다고 판단하지 않습니다.
+- VS Code 등 AAC 호환 문제가 있는 편집기에는 `paths.editorAudioMix`의 PCM WAV를 연결하고 `paths.audioMix`의 같은 믹스 AAC를 MP4에 패킷 복사합니다. `editor-audio.generated.ts`가 활성 믹스를 가리키도록 생성합니다.
+- 곡 선택 승인과 음악 파일 확보, 게시용 사용 조건 확인은 별개입니다. 실제 포함된 곡을 미포함으로 표시하지 않되, 공식 작곡가 출처의 검토 파일이라도 조건 미확인 시 `previewUseOnly: true`와 `publishReady: false`를 유지합니다. 이 예외가 임의 곡 다운로드나 게시의 자동 허가는 아닙니다.
+- ASR 말미에 추가 문장이 나와도 즉시 실제 음성을 잘라내지 않습니다. 단어의 0초 타임스탬프·WAV 길이를 확인하고 마지막 구간을 독립 재인식한 뒤 판단합니다. 원본 증거를 보존하고 사람의 청취 승인은 따로 받습니다.
+
 ## 변경 시 다시 만들어야 하는 것
 
 | 변경한 기준 파일 | 다시 생성할 결과 |
@@ -257,6 +288,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/mix-frame-rate-audio
 | `narration.ko.json` | TTS, 한국어·번역 SRT, timing, Motion Canvas 씬 길이, 전체 믹스·MP4 |
 | 기준 음성 또는 발화문 | 모든 TTS 장면과 이후 결과 |
 | B-roll 원본·구간 | 정규화 클립, 전체 믹스 M4A·MP4, 출처표 |
+| `editing.exampleSeconds` | 예시 클립·씬 시작·WAV 재조립·KO/EN SRT·전체 믹스·MP4·편집 큐 |
 | 선택 음악 또는 배경 음량 | 전체 믹스 M4A·MP4, 믹스 보고서; 곡 변경 시 설명란 출처 |
 | Motion Canvas·Manim 코드 | 해당 영상 클립과 최종 MP4 |
 

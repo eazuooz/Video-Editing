@@ -55,7 +55,17 @@ def main() -> None:
     if missing:
         raise KeyError(f"Missing narration timing for scenes: {', '.join(missing)}")
 
-    cut_frames = [round(first_by_scene[scene["id"]]["start"] * SNAP_FPS) for scene in scenes]
+    example_seconds = float(timing.get("example_seconds", 0))
+    configured_example = float(manifest.get("editing", {}).get("exampleSeconds", 0))
+    if abs(example_seconds - configured_example) > 0.001:
+        raise ValueError("Narration timing uses an older example length; regenerate WAV and both SRTs first")
+    placement = manifest.get("editing", {}).get("narrationPlacement", "after-example-meme-overlays-explanation")
+    if timing.get("narration_placement", "after-example-meme-overlays-explanation") != placement:
+        raise ValueError("Narration placement changed; regenerate WAV and both SRTs first")
+    lead = 0.0 if placement == "continuous-across-example-and-explanation" else example_seconds
+    cut_frames = [round((first_by_scene[scene["id"]]["start"] - lead) * SNAP_FPS) for scene in scenes]
+    if cut_frames[0] != 0 or any(b <= a for a, b in zip(cut_frames, cut_frames[1:])):
+        raise ValueError("Scene starts must begin at zero and increase")
     cut_frames.append(round(float(timing["duration_seconds"]) * SNAP_FPS))
     durations = [(cut_frames[i + 1] - cut_frames[i]) / SNAP_FPS for i in range(len(scenes))]
     starts = [frame / SNAP_FPS for frame in cut_frames[:-1]]

@@ -1,28 +1,6 @@
-import {Rect, Txt, makeScene2D} from '@motion-canvas/2d';
-import {createRef, waitFor} from '@motion-canvas/core';
-
+import {makeScene2D} from '@motion-canvas/2d';
+import {paperScene} from './paper-scene';
 import {SCENE_DURATIONS} from '../timing';
-
 export default makeScene2D(function* (view) {
-  const title = createRef<Txt>();
-  const duration = SCENE_DURATIONS[2];
-
-  view.fill('#0b1020');
-  view.add(
-    <Rect width={1920} height={1080} fill={'#0b1020'}>
-      <Txt
-        ref={title}
-        text={'정리'}
-        fontFamily={'Pretendard, Noto Sans KR, sans-serif'}
-        fontWeight={800}
-        fontSize={88}
-        fill={'#ffffff'}
-        opacity={0}
-      />
-    </Rect>,
-  );
-
-  yield* title().opacity(1, 0.5);
-  yield* waitFor(Math.max(0, duration - 1));
-  yield* title().opacity(0, 0.5);
+  yield* paperScene(view,2,'정리','오늘 기억할 핵심 한 가지',SCENE_DURATIONS[2]);
 });
