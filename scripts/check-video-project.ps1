@@ -279,6 +279,12 @@ if ($Stage -eq 'publish') {
 
     if ($schemaVersion -ge 2) {
         $music = $manifest.audio.backgroundMusic
+        if ($music.PSObject.Properties['previewUseOnly'] -and [bool]$music.previewUseOnly) {
+            Add-Failure 'background music is preview-only; publication rights have not been cleared'
+        }
+        if ($music.PSObject.Properties['licenseStatus'] -and [string]$music.licenseStatus -like 'pending*') {
+            Add-Failure "background music license is '$($music.licenseStatus)'; verification is required before publication"
+        }
         if ([bool]$music.required -and [string]$music.approvalStatus -ne 'approved') {
             Add-Failure "background music approval is '$($music.approvalStatus)'; expected 'approved'"
         } else {

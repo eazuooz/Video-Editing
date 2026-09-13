@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI 시대 컴공 — 영상 구성 검토</title>
+<style>body{margin:0;background:#ffffff;color:#202020;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:20px auto;padding:0 20px}h1{font-size:23px;margin:0 0 12px}p{color:#737373;line-height:1.6}#stage canvas{display:block;width:100%;height:auto}nav{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}button,select{padding:11px 14px;background:#f2f4f7;color:#202020;border:1px solid #cbd0d6;border-radius:0;font:inherit;cursor:pointer}button:hover{border-color:#2f5faa}a{color:#2f5faa}#status{font-family:Consolas,monospace}#stage{border:1px solid #cbd0d6}</style>
+</head><body><main>
+<h1>AI 시대, 컴공생은 무엇을 공부해야 할까? — 영상 구성 검토본</h1>
+<p id="review-note">12개 챕터 × 실제 예시 영상 + 흰색 발표형 모션그래픽. 현재 음성·음악 상태를 불러오는 중입니다.</p>
+<nav><select id="chapter" aria-label="챕터"></select><button id="example">예시 영상</button><button id="meme">밈 전환</button><button id="concept">자체 설명</button><button id="listen" disabled>설명부터 듣기</button><button id="play">재생 / 정지</button><button id="mute">소리 켜기</button><span id="status">불러오는 중…</span></nav>
+<div id="stage"></div>
+<p><a href="/src/projects/ai-era-cs-fundamentals/project">Motion Canvas 편집기로 열기</a> · <a id="mix-link" href="/src/projects/ai-era-cs-fundamentals/assets/preview-source-mix.m4a">검토용 믹스</a></p>
+</main><script type="module">
+import project from '/src/projects/ai-era-cs-fundamentals/project.ts?project';
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+import {SCENE_STARTS,SCENE_DURATIONS,SCENE_TITLES,TOTAL_DURATION} from '/src/projects/ai-era-cs-fundamentals/timing.ts';
+import {EXAMPLE_SECONDS,MEME_SECONDS} from '/src/projects/ai-era-cs-fundamentals/settings.ts';
+import manifest from '../projects/ai-era-cs-fundamentals/project.json';
+const narrated=['narration-source-ready-bgm-pending','full-mix-awaiting-listening-review','full-mix-license-pending','final'].includes(manifest.audio.mixStatus);
+const continuous=manifest.editing.narrationPlacement==='continuous-across-example-and-explanation';
+const withMusic=['full-mix-awaiting-listening-review','full-mix-license-pending','final'].includes(manifest.audio.mixStatus);
+document.querySelector('#review-note').textContent=narrated
+ ? `v${manifest.scriptRevision} · 12개 챕터 균형형 TTS + 작은 예시 원음. ${continuous?'자료화면에서도 우리 설명이 이어집니다.':`예시 ${EXAMPLE_SECONDS}초 뒤 설명이 시작됩니다.`} 실제 음성 기준 타이밍과 한영 SRT를 제공합니다. ${withMusic?'연속 Blue Dream BGM 포함 · 청취 검토본. 오디오 보관함 조건과 전체 청취 승인 확인 전에는 게시하지 마세요.':'Blue Dream은 음원 파일·라이선스 확인 대기로 미포함. 전체 청취 승인 전 검토본입니다.'}`
+ : '구성 검토본: 첫 도입 샘플과 예시 원음만 있습니다. 전체 TTS와 BGM은 아직 준비 중입니다.';
+if(narrated){document.querySelector('#mix-link').href='/'+(manifest.paths.editorAudioMix??manifest.paths.audioMix).replace(/^motion-canvas\//,'');document.querySelector('#mix-link').textContent=withMusic?'TTS + 원음 + BGM 듣기':'TTS + 작은 원음 듣기 (BGM 대기)';document.querySelector('#listen').disabled=false;document.querySelector('#listen').textContent=continuous?'챕터 처음부터 듣기':'설명부터 듣기';document.title=`AI 시대 컴공 — v${manifest.scriptRevision} 전체 TTS 검토`;document.querySelector('h1').textContent=`AI 시대, 컴공생은 무엇을 공부해야 할까? — v${manifest.scriptRevision} 전체 TTS 검토본`;}
+const exampleSeconds=EXAMPLE_SECONDS;
+const fps=new URLSearchParams(location.search).get('fps')==='60'?60:30, stage=new Stage();
+stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#ffffff'});
+document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps,size:new Vector2(1920,1080),resolutionScale:1},{muted:true,paused:true});
+let rendered=-1,ready=false;
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=`${(rendered/fps).toFixed(1)} / ${TOTAL_DURATION.toFixed(1)} s`;});
+player.onRecalculated.subscribe(()=>ready=true);
+const select=document.querySelector('#chapter');
+SCENE_TITLES.forEach((title,i)=>select.add(new Option(`${String(i+1).padStart(2,'0')} ${title}`,String(i))));
+const jump=seconds=>player.requestSeek(Math.round(seconds*fps));
+select.onchange=()=>jump(SCENE_STARTS[Number(select.value)]+.2);
+document.querySelector('#example').onclick=()=>jump(SCENE_STARTS[Number(select.value)]+.2);
+document.querySelector('#meme').onclick=()=>jump(SCENE_STARTS[Number(select.value)]+exampleSeconds+.8);
+document.querySelector('#concept').onclick=()=>jump(SCENE_STARTS[Number(select.value)]+exampleSeconds+MEME_SECONDS+.2);
+document.querySelector('#play').onclick=()=>player.togglePlayback();
+document.querySelector('#listen').onclick=()=>{jump(SCENE_STARTS[Number(select.value)]+(continuous?0:exampleSeconds));player.toggleAudio(true);player.togglePlayback(true);document.querySelector('#mute').textContent='소리 끄기';};
+document.querySelector('#mute').onclick=()=>{player.toggleAudio();document.querySelector('#mute').textContent=player.onStateChanged.current.muted?'소리 켜기':'소리 끄기';};
+window.aiReview={player,stage,jump,exampleSeconds,fps,get ready(){return ready;},get rendered(){return rendered;},starts:SCENE_STARTS,durations:SCENE_DURATIONS};
+</script></body></html>

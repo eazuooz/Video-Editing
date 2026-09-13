@@ -11,6 +11,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -48,6 +50,12 @@ def load_tts_dependencies() -> None:
 # while preserving a clean cut point for the video editor.
 LINE_GAP_SECONDS = 0.28
 SCENE_GAP_SECONDS = 0.72
+EXAMPLE_SECONDS = 0.0  # opt-in via manifest; preserve older project timing
+NARRATION_PLACEMENT = "after-example-meme-overlays-explanation"
+
+
+def narration_lead_seconds() -> float:
+    return 0.0 if NARRATION_PLACEMENT == "continuous-across-example-and-explanation" else EXAMPLE_SECONDS
 
 # Qwen3-TTS occasionally predicts the end-of-audio token before a sentence's
 # trailing decay (e.g. "-니다.") has finished, clipping it mid-sound. This is
@@ -111,6 +119,7 @@ def configure_project(project: str) -> None:
     global SCRIPT_PATH, REFERENCE, REFERENCE_TEXT_PATH, MODEL_DIR, OUTPUT_DIR, CHUNK_DIR
     global FINAL_WAV, FINAL_SRT, TIMING_JSON, LANGUAGE, RENDER_MODE
     global LINE_GAP_SECONDS, SCENE_GAP_SECONDS, TAIL_RATIO_THRESHOLD
+    global EXAMPLE_SECONDS, NARRATION_PLACEMENT
     global DECAY_MS_THRESHOLD, MAX_RENDER_ATTEMPTS, MAX_NEW_TOKENS, FADE_SECONDS
 
     manifest_path = ROOT / "projects" / project / "project.json"
@@ -125,6 +134,12 @@ def configure_project(project: str) -> None:
 
     paths = manifest.get("paths", {})
     tts = manifest.get("tts", {})
+    EXAMPLE_SECONDS = float(manifest.get("editing", {}).get("exampleSeconds", 0))
+    NARRATION_PLACEMENT = manifest.get("editing", {}).get("narrationPlacement", "after-example-meme-overlays-explanation")
+    if NARRATION_PLACEMENT not in {"after-example-meme-overlays-explanation", "continuous-across-example-and-explanation"}:
+        raise ValueError(f"Unsupported narration placement: {NARRATION_PLACEMENT}")
+    if not 0 <= EXAMPLE_SECONDS <= 120:
+        raise ValueError("editing.exampleSeconds must be between 0 and 120")
     required = {
         "paths.script": paths.get("script"),
         "tts.reference": tts.get("reference"),
@@ -283,7 +298,7 @@ def needs_render(path: Path) -> bool:
     return not _passes_quality(_tail_ratio(wav, sr), _tail_decay_ms(wav, sr))
 
 
-def render_chunks(items: list[RenderItem], batch_size: int) -> None:
+def render_chunks(items: list[RenderItem], batch_size: int, force_scenes: set[str] | None = None) -> None:
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA GPU is required for local Qwen3-TTS inference.")
     if not REFERENCE.exists():
@@ -293,7 +308,14 @@ def render_chunks(items: list[RenderItem], batch_size: int) -> None:
     if REFERENCE_TEXT_PATH is not None and not REFERENCE_TEXT_PATH.exists():
         raise FileNotFoundError(f"Reference transcript not found: {REFERENCE_TEXT_PATH}")
 
-    pending = [item for item in items if needs_render(item.path)]
+    force_scenes = force_scenes or set()
+    pending = [item for item in items if item.key.split('-')[0] in force_scenes or needs_render(item.path)]
+    for item in pending:
+        if item.key.split('-')[0] in force_scenes and valid_wav(item.path):
+            stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+            previous = item.path.with_name(f"{item.path.stem}-previous-{stamp}.wav")
+            shutil.copy2(item.path, previous)
+            print(f"Preserved previous take: {previous}", flush=True)
     if not pending:
         print("All narration chunks already exist and have clean endings; reusing them.")
         return
@@ -446,6 +468,11 @@ def assemble_outputs(jobs: list[Job]) -> None:
             raise RuntimeError(f"Sample-rate mismatch in {job.path}: {sr} != {sample_rate}")
         wav = _apply_edge_fades(wav, sample_rate)
 
+        if narration_lead_seconds() and (job_index == 0 or jobs[job_index - 1].scene_id != job.scene_id):
+            lead_samples = round(narration_lead_seconds() * sample_rate)
+            pieces.append(np.zeros(lead_samples, dtype=np.float32))
+            position += lead_samples / sample_rate
+
         start = position
         duration = len(wav) / sample_rate
         end = start + duration
@@ -488,6 +515,8 @@ def assemble_outputs(jobs: list[Job]) -> None:
             {
                 "sample_rate": sample_rate,
                 "duration_seconds": position,
+                "example_seconds": EXAMPLE_SECONDS,
+                "narration_placement": NARRATION_PLACEMENT,
                 "entries": srt_entries,
             },
             ensure_ascii=False,
@@ -523,6 +552,10 @@ def assemble_scene_outputs(jobs: list[Job]) -> None:
             raise RuntimeError(f"Sample-rate mismatch in {path}: {sr} != {sample_rate}")
         wav = _apply_edge_fades(wav, sr)
         boundaries = _line_boundaries(wav, sr, [job.text for job in scene_jobs])
+        if narration_lead_seconds():
+            lead_samples = round(narration_lead_seconds() * sr)
+            pieces.append(np.zeros(lead_samples, dtype=np.float32))
+            position += lead_samples / sr
         pieces.append(wav)
         for line_index, job in enumerate(scene_jobs):
             srt_entries.append(
@@ -560,6 +593,8 @@ def assemble_scene_outputs(jobs: list[Job]) -> None:
                 "sample_rate": sample_rate,
                 "duration_seconds": position,
                 "render_mode": RENDER_MODE,
+                "example_seconds": EXAMPLE_SECONDS,
+                "narration_placement": NARRATION_PLACEMENT,
                 "entries": srt_entries,
             },
             ensure_ascii=False,
@@ -581,6 +616,7 @@ def main() -> None:
         help="Project slug under projects/ (default: jump-physics)",
     )
     parser.add_argument("--batch-size", type=int, default=2)
+    parser.add_argument("--force-scenes", default="", help="Comma-separated scene IDs to regenerate after content review; previous takes are preserved")
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -595,6 +631,10 @@ def main() -> None:
     print(f"Script:  {SCRIPT_PATH}")
     print(f"Output:  {OUTPUT_DIR}")
     jobs = load_jobs()
+    force_scenes = {value.strip().zfill(2) for value in args.force_scenes.split(',') if value.strip()}
+    unknown = force_scenes - {job.scene_id for job in jobs}
+    if unknown:
+        raise ValueError(f"Unknown forced scene IDs: {sorted(unknown)}")
     if args.dry_run:
         print(f"Dry run passed: {len(jobs)} narration lines")
         return
@@ -602,7 +642,7 @@ def main() -> None:
     items = build_render_items(jobs)
     effective_batch_size = 1 if RENDER_MODE == "scene" else args.batch_size
     print(f"Render mode: {RENDER_MODE} ({len(items)} synthesis jobs)")
-    render_chunks(items, effective_batch_size)
+    render_chunks(items, effective_batch_size, force_scenes)
     assemble_outputs(jobs)
 
 

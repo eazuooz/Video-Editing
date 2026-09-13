@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Local Motion Canvas render worker</title></head>
+<body><p>명령줄 렌더 작업 전용 페이지입니다.</p><script type="module">
+import {Renderer, Vector2} from '@motion-canvas/core';
+window.renderVideo = async ({route, name, frames, fps, width, height, firstFrame = 0}) => {
+  const {default: project} = await import(/* @vite-ignore */ `${route}?project`);
+  const errors = [];
+  project.logger.onLogged.subscribe(entry => {
+    if (entry.level === 'error') errors.push({message: entry.message, remarks: entry.remarks});
+  });
+  const renderer = new Renderer(project);
+  window.cancelRender = () => renderer.abort();
+  window.renderJob = {frame: firstFrame, firstFrame, frames, done: false, result: null, errors};
+  renderer.onFrameChanged.subscribe(frame => window.renderJob.frame = frame);
+  renderer.onFinished.subscribe(result => window.renderJob.result = result);
+  await document.fonts.ready;
+  await renderer.render({
+    ...project.meta.getFullRenderingSettings(),
+    name, range: [firstFrame / fps, (firstFrame + frames - 1) / fps], fps,
+    size: new Vector2(width, height), resolutionScale: 1,
+    // Copy the approved AAC mix into the output afterwards, without another
+    // lossy encoding. The browser's ability to play AAC is irrelevant here.
+    exporter: {name: '@motion-canvas/ffmpeg', options: {fastStart: true, includeAudio: false}},
+  });
+  window.renderJob.done = true;
+};
+</script></body></html>
