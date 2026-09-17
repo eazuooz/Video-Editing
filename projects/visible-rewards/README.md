@@ -1,6 +1,16 @@
 # 왜 조금만 더 하게 될까? | 보상이 보이는 게임 디자인
 
-새 영상 프로젝트 visible-rewards · 2026-09-16 · 1080p60 MP4 제작본 렌더 완료 · 전체 청취 승인 대기
+영상 프로젝트 visible-rewards · 2026-09-17 최종 v3 · 전체화면 / 하단 설명 제거 / 2.5D / 얼굴캠 없는 스타듀밸리 / 몬헌 와일즈
+
+## 최종 전달 파일
+
+- 영상: `shared/output/motion-canvas/visible-rewards-final.mp4` — 1920×1080 / 60fps / 375.766667초. A 내레이션 + 연속 Wanderlust + 작은 게임 원음 포함.
+- 한국어: `shared/output/motion-canvas/visible-rewards-final.ko.srt`
+- 영어: `shared/output/motion-canvas/visible-rewards-final.en.srt`
+- [노션: 04. 게임 보상](https://app.notion.com/p/3de0b1ffa61e81f48cc4d3f4dce3b4d1) — 기존 강의 형식의 독립 읽기 문서, 실제 캡처 5장. 채널 게시 주소 미확인으로 상단 영상 임베드만 대기.
+- [전달 해시·기술 검사](publishing/delivery-v3.json), [변경 기록](planning/revision-v3.md), [위키 원고](../../docs/wiki/game-design-basics/04-rewards.md).
+
+영상 하단 설명은 제거했지만 게임의 원래 HUD·메뉴·획득 안내는 유지합니다. 출처와 가정 수치는 한영 게시 설명란 및 위키에 있습니다. SRT는 별도 제공하며 영상에 구워 넣지 않았습니다.
 
 ## 현재 상태
 
@@ -13,12 +23,15 @@
 - **Wanderlust — Scott Buckley** 승인·공식 원본 확보. 내레이션과 연속 BGM을 섞은 검토본 생성.
 - 편집기는 실측 375.767초(약 6분 16초), 8개 독립 씬과 같은 오디오 검토본을 사용합니다.
 - 재사용 허용 소스에서 실제 예시 8 × 19.5초 편집. 가방 구매·확장·경험치와 강화 선택을 자체 도식과 페어로 연결.
-- 흰색 연구 발표형 설명 8개를 구현. 보상/거리/획득 후 변화, 가상 UI A/B, 확률과 남은 개수를 각각 시각화.
+- 설명 8개를 흰색·자연색 2.5D 디오라마로 변경. 캐릭터 보행, 수집, 가방 확장, 무기 선택·궤도 변화가 움직입니다.
+- 스타듀밸리는 얼굴캠 없는 소스로 교체. 2,000G 구매와 12→24칸 확장을 실제 화면으로 확인했습니다.
+- 몬헌 와일즈: **04:40.867부터 19.5초**, 방어구 제작 소재/보유량 메뉴 9.5초 + 사냥 10초. 별도 세이브의 자료이며 특정 소재 드롭을 보장하지 않습니다.
+- 새 장 대본은 승인 대기여서 합성하지 않았습니다. 기존 8장 A 내레이션과 길이, 한영 SRT 각 94개를 그대로 사용합니다.
 - 게임 원음 + 연속 Wanderlust + A 내레이션 전체 믹스 포함 MP4 생성. 375.766667초 / 22,546프레임 / H.264 + AAC. 전체 디코딩·AAC 패킷 일치 검사 통과.
 - 전체 사람 청취 승인 전까지 publishReady=false 유지.
 - 원본 TTS: shared/output/narration/visible-rewards/qwen3-1.7b-balanced-v1/visible-rewards-qwen3-1.7b-balanced-v1.wav
 - 청취용 MP3: shared/output/narration/visible-rewards/qwen3-1.7b-balanced-v1/visible-rewards-narration-wanderlust-review-v1.mp3
-- 편집기 오디오: motion-canvas/src/projects/visible-rewards/assets/final-mix.wav (MP4와 같은 믹스)
+- 편집기 오디오: motion-canvas/src/projects/visible-rewards/assets/final-mix-v2.wav (v2 및 최종 v3와 같은 믹스)
 
 ## 열기 / 재현
 
@@ -29,26 +42,39 @@ npm start -- --host 127.0.0.1 --port 9100
 
 - [간편 재생](http://127.0.0.1:9100/visible-rewards-review.html)
 - [Motion Canvas 편집기](http://127.0.0.1:9100/src/projects/visible-rewards/project)
-- MP4: `shared/output/motion-canvas/visible-rewards.mp4`
+- 최종 MP4 v3: `shared/output/motion-canvas/visible-rewards-final.mp4`
+- 이전 MP4 v2: `shared/output/motion-canvas/visible-rewards-v2.mp4` (이 PC에만 보존, 별도 복원 대상 아님)
+- 이전 v1: `shared/output/motion-canvas/visible-rewards.mp4` (보존, 새 편집기와 화면이 다름)
 - KO/EN SRT: `project.json.paths.captionsKo` / `captionsEn`. 기존 94개 큐·타임코드 유지.
 
-원본 캐시가 없는 새 환경에서는 저장소 루트에서 순서대로 실행한다.
+새 PC에서 재생/편집하려면 원본 다운로드·TTS 재합성 없이 저장소 루트에서 복원합니다.
 
 ```powershell
-node scripts/fetch-visible-rewards-media.cjs
-node scripts/prepare-visible-rewards-media.cjs
-qwen3-tts/.venv/Scripts/python.exe -X utf8 qwen3-tts/mix_visible_rewards_final.py
+node scripts/restore-media.cjs --project visible-rewards
+node scripts/verify-visible-rewards-delivery.cjs
+```
+
+화면을 다시 렌더할 때에는 기존 최종 파일을 보존하고 새 버전 이름을 사용해야 합니다. 원본 구간까지 새로 편집하는 경우에만 다음 준비 순서가 필요합니다.
+
+```powershell
+node scripts/fetch-visible-rewards-v2.cjs
+node scripts/prepare-visible-rewards-v2.cjs
+node scripts/prepare-visible-rewards-v2.cjs --v3
+# 믹스는 기존 final-mix-v2.wav/.m4a 재사용. 새 컷/타이밍으로 바꾸는 경우에만 별도 버전으로 재믹스.
 cd motion-canvas
 npx tsc --noEmit
-node scripts/render-visible-rewards.cjs --qa-only
+node scripts/render-visible-rewards.cjs --v3 --qa-only
 # 모든 씬의 캡처를 확인한 다음 렌더
-node scripts/render-visible-rewards.cjs
+node scripts/render-visible-rewards.cjs --v3
 ```
 
 오디오·최종 영상이 이미 있으면 새 버전으로 보존한다. 믹서는 기존 출력이 있으면 중단한다.
 게임 클립 재편집에는 `--rebuild`를 명시하며, 원본 캐시는 덮어쓰지 않는다.
 최종 렌더러는 승인 TTS/KO·EN SRT/마스터 AAC가 바뀌지 않았는지 해시로 확인한다.
-중간 그래픽 렌더 캐시는 v1 전용이다. 화면을 고쳐 재렌더할 때는 이름/QA 경로를 v2로 올린다.
+최종 결과가 이미 있으면 생성 단계는 생략하고 바로 재생합니다. 렌더 검사는 `shared/output/visible-rewards/visual-qa-v3/render-report.json`, 전달 검사는 `publishing/delivery-v3.json`입니다.
+현재 게임 컷은 `gameplay-v3/`, 전체 믹스는 v2 그대로, 화면 검사는 `visual-qa-v3/`로 분리했습니다.
+다음 수정은 v4 이상 새 출력 경로를 사용합니다. 같은 프레임 수의 그래픽 캐시도 디자인이 바뀌면 재사용하지 않습니다.
+새 컴퓨터에서 보는 데에는 원본 다운로드 캐시나 TTS 모델이 필요 없습니다. 편집된 `gameplay-v3`와 전체 믹스는 Git에 포함됩니다.
 
 ## 제작 순서
 

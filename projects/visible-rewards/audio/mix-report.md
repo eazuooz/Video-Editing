@@ -1,13 +1,35 @@
 # 왜 조금만 더 하게 될까? | 보상이 보이는 게임 디자인 — 오디오 믹스 보고서
 
 - 프로젝트: `visible-rewards`
-- 검수일: 2026-09-16 (기술 검사)
+- 검수일: 2026-09-17 v2 (기술 검사)
 - 현재 상태: A 내레이션 + 게임 원음 + 연속 Wanderlust 전체 믹스와 MP4 생성, 편집기 재생 확인. 전체 사람 청취 승인 대기.
 - 기준: 저장소의 `docs/NARRATION_AUDIO_STANDARD.md`
 
 ## 설정
 
-### 2026-09-16 전체 믹스 v1 (현재 사용)
+### 최종 v3 화면 변경 — 오디오 불변
+
+- `visible-rewards-final.mp4`는 아래 v2 마스터 AAC를 스트림 복사. 내레이션·BGM·원음 볼륨, 음성·자막 타이밍 모두 불변.
+- 01·03·07의 전체화면 컷을 새로 만들 때에도 오디오는 v2 클립에서 복사. 나머지 5개 컷은 파일 전체 동일.
+- v3 전체 디코딩과 마스터 AAC 일치 검사 통과. 확인 기록은 `publishing/delivery-v3.json`, 로컬 상세는 `shared/output/visible-rewards/visual-qa-v3/`.
+- 이전 각 절의 미생성/검토 상태는 당시의 보존 기록이며 현재 전달 상태가 아님.
+
+### 2026-09-17 전체 믹스 v2 (현재 사용)
+
+- 믹서: `qwen3-tts/mix_visible_rewards_final.py --version 2`.
+- 승인 A 목소리 전용 WAV, 8개 `gameplay-v2/scene*.mp4`, 승인된 Wanderlust를 입력. v1 믹스를 중복 입력하지 않음.
+- 새 Lin LP 스타듀밸리 컷의 외국어 해설은 -31 LUFS 목표. SwenAL/G-Gou/MH 제작·사냥 컷은 -23 LUFS 목표.
+- 연속 BGM -28 LUFS, 예시 중 추가 -3dB, 1초 반복 크로스페이드, 기존 사이드체인 설정 유지.
+- WAV **-15.69 LUFS / -3.10 dBTP**, AAC **-15.73 LUFS / -3.11 dBTP** 실측.
+- 375.766667초, 48kHz 스테레오. 원본 TTS 속도·피치·대사·타이밍은 그대로 유지.
+- 배경/음악/게임 단독 × 8씬 × 예시·설명 = 48개 RMS 검사 통과. 모든 예시에 원음, 전 구간에 BGM 존재.
+- 편집기 `final-mix-v2.wav` 연결 확인: muted=false, volume=1, 재생 시간이 실제 증가. 개별 게임 Video만 음소거해 중복 방지.
+- `assets/final-mix-v2.m4a`가 v2 MP4 마스터. v1 `final-mix.wav/.m4a`는 보존.
+- 상세 측정: `shared/output/visible-rewards/audio-final-v2/report.json`. 최종 MP4 검증: `shared/output/visible-rewards/visual-qa-v2/render-report.json` 생성 여부로 확인.
+- KO/EN SRT 각 94개, 번호·타임코드 동일. 마지막 375.740초. 새 장 대본은 미승인이므로 새 TTS를 합성하지 않았음.
+- 자동 측정/재생 검사는 전체 사람 청취 승인이 아님. `finalListening=pending`, `publishReady=false` 유지.
+
+### 2026-09-16 전체 믹스 v1 (보존 기록)
 
 - 믹서: `qwen3-tts/mix_visible_rewards_final.py`.
 - 길이: 375.766667초, 60fps 22,546프레임. 기존 TTS는 변경하지 않고 끝의 6.6ms만 영상 길이에 맞게 패딩.

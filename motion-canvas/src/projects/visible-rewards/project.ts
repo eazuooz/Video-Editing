@@ -1,7 +1,7 @@
 import {makeProject} from '@motion-canvas/core';
 
 // Same full mix as final MP4. PCM supports both desktop and VS Code webviews.
-import finalMix from './assets/final-mix.wav';
+import finalMix from './assets/final-mix-v2.wav';
 import scene01 from './scenes/scene01?scene';
 import scene02 from './scenes/scene02?scene';
 import scene03 from './scenes/scene03?scene';
