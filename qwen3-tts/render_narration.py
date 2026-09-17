@@ -55,7 +55,7 @@ NARRATION_PLACEMENT = "after-example-meme-overlays-explanation"
 
 
 def narration_lead_seconds() -> float:
-    return 0.0 if NARRATION_PLACEMENT == "continuous-across-example-and-explanation" else EXAMPLE_SECONDS
+    return 0.0 if NARRATION_PLACEMENT in {"continuous-across-example-and-explanation", "continuous-across-all-three-segments"} else EXAMPLE_SECONDS
 
 # Qwen3-TTS occasionally predicts the end-of-audio token before a sentence's
 # trailing decay (e.g. "-니다.") has finished, clipping it mid-sound. This is
@@ -136,7 +136,7 @@ def configure_project(project: str) -> None:
     tts = manifest.get("tts", {})
     EXAMPLE_SECONDS = float(manifest.get("editing", {}).get("exampleSeconds", 0))
     NARRATION_PLACEMENT = manifest.get("editing", {}).get("narrationPlacement", "after-example-meme-overlays-explanation")
-    if NARRATION_PLACEMENT not in {"after-example-meme-overlays-explanation", "continuous-across-example-and-explanation"}:
+    if NARRATION_PLACEMENT not in {"after-example-meme-overlays-explanation", "continuous-across-example-and-explanation", "continuous-across-all-three-segments"}:
         raise ValueError(f"Unsupported narration placement: {NARRATION_PLACEMENT}")
     if not 0 <= EXAMPLE_SECONDS <= 120:
         raise ValueError("editing.exampleSeconds must be between 0 and 120")

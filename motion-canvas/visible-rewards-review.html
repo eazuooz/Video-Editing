@@ -1,0 +1,15 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><link rel="icon" href="data:,"><title>보상이 보이는 게임 디자인</title>
+<style>body{margin:24px;color:#202020;background:white;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:auto}nav{display:flex;gap:12px;margin:18px 0}button,select{font:inherit;padding:10px;border:1px solid #cbd0d6;background:#f2f4f7}canvas{width:100%;height:auto}p{color:#737373}a{color:#2f5faa}</style>
+<main><h1>왜 조금만 더 하게 될까?</h1><p>보상이 보이는 게임 디자인 · A 내레이션 · 연속 Wanderlust · 작은 게임 원음</p><nav><select id="chapter" aria-label="챕터"></select><select id="part" aria-label="구간"><option value="0">실제 게임</option><option value="1">자체 설명</option></select><button id="play">소리 켜고 재생 / 정지</button><span id="status">로딩 중</span></nav><div id="stage"></div><p><a href="/src/projects/visible-rewards/project">Motion Canvas 편집기 열기</a></p></main>
+<script type="module">
+import project from '/src/projects/visible-rewards/project.ts?project';
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+import {SCENE_STARTS,SCENE_TITLES,TOTAL_DURATION} from '/src/projects/visible-rewards/timing.ts';
+import manifest from '../projects/visible-rewards/project.json';
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#fff'});document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});let ready=false,rendered=-1;
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=(rendered/60).toFixed(1)+' / '+TOTAL_DURATION.toFixed(1)+'초';});player.onRecalculated.subscribe(()=>ready=true);
+const chapter=document.querySelector('#chapter'),part=document.querySelector('#part');SCENE_TITLES.forEach((s,i)=>chapter.add(new Option((i+1)+'. '+s,''+i)));
+const jump=t=>player.requestSeek(Math.round(t*60));const seek=()=>{player.togglePlayback(false);jump(SCENE_STARTS[+chapter.value]+(+part.value?manifest.editing.exampleSeconds:0)+.5);};chapter.onchange=seek;part.onchange=seek;
+document.querySelector('#play').onclick=()=>{player.toggleAudio(true);player.togglePlayback();};window.rewardReview={player,stage,jump,get ready(){return ready},get rendered(){return rendered}};
+</script></html>

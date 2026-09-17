@@ -1,0 +1,11 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><link rel="icon" href="data:,"><title>첫 화면 설계 · 2.5D 검토본</title><style>body{font:17px 'Malgun Gothic',sans-serif;margin:24px;color:#202020;background:white}main{max-width:1440px;margin:auto}canvas{width:100%;height:auto}button,select{font:inherit;padding:12px;margin:8px;border:1px solid #cbd0d6;background:#f2f4f7}p{color:#737373}</style></head><body><main><h1>게임의 첫 화면은 어떻게 설계할까?</h1><p>8개 2.5D 설계 비교 · 2분 36초 무음 검토본 · 실제 야숨 영상 / 내레이션 / BGM 미포함</p><button id="play">재생 / 정지</button><button id="reset">처음으로</button><select id="chapter"></select><div id="stage"></div></main><script type="module">
+import project from '/src/projects/let-them-play/design-reel/project.ts?project';
+import {SEGMENT_SECONDS,NARRATION_FPS,SCENE_TITLES} from '/src/projects/let-them-play/timing.ts';
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#fff'});document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps:NARRATION_FPS,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});let ready=false,rendered=-1;
+player.onRecalculated.subscribe(()=>ready=true);player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame});
+const jump=t=>player.requestSeek(Math.round(t*NARRATION_FPS));document.querySelector('#play').onclick=()=>player.togglePlayback();document.querySelector('#reset').onclick=()=>{player.togglePlayback(false);jump(0)};
+const select=document.querySelector('#chapter');SCENE_TITLES.forEach((title,i)=>{const option=document.createElement('option');option.value=i;option.textContent=String(i+1).padStart(2,'0')+' · '+title;select.append(option)});select.onchange=()=>{player.togglePlayback(false);jump(Number(select.value)*SEGMENT_SECONDS)};
+window.designReel={stage,player,jump,starts:SCENE_TITLES.map((_,i)=>i*SEGMENT_SECONDS),segmentSeconds:SEGMENT_SECONDS,get ready(){return ready},get rendered(){return rendered}};
+</script></body></html>

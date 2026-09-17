@@ -1,0 +1,18 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><link rel="icon" href="data:,"><title>첫 화면의 설계 — 2.5D 디자인 샘플</title><style>
+body{margin:28px;background:#f2f4f7;color:#202020;font:16px 'Segoe UI','Malgun Gothic',sans-serif}main{max-width:1440px;margin:auto}h1{font-size:28px;letter-spacing:-1px}p{color:#737373;line-height:1.8}canvas{width:100%;height:auto;display:block}#stage{background:white;box-shadow:0 10px 45px #20202009}nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:20px 0}button,a{font:inherit;border:1px solid #cbd0d6;background:white;padding:10px 16px;border-radius:3px;cursor:pointer;color:#2f5faa;text-decoration:none}input{flex:1;accent-color:#2f5faa}#time{font-variant-numeric:tabular-nums}</style></head><body><main>
+<h1>게임의 첫 화면 — 에디토리얼 2.5D 샘플</h1><p>39.7초 · 한국어 내레이션 음량 ×1.1 + Discovery · 승인된 오리지널 모험가와 지형 디자인. 본편 8개 챕터에도 적용 완료했으며, 이 페이지는 최초 샘플 이력입니다.</p>
+<p><a href="/let-them-play-review.html">8분 1.8초 최신 본편 보기</a></p>
+<div id="stage"></div><nav><button id="play">소리 켜고 재생</button><button id="reset">처음</button><button id="compare">A/B 비교</button><input id="seek" type="range" min="0" max="39.68" step="0.016667" value="0" aria-label="재생 위치"><span id="time">0.0 / 39.7초</span></nav>
+<a href="/src/projects/let-them-play/editorial-sample/project">Motion Canvas에서 편집</a>
+<p>음악: 'Discovery' by Scott Buckley — CC BY 4.0 · <a href="https://www.scottbuckley.com.au/library/discovery/discovery/">원곡</a>. 크레딧은 영상 화면이 아닌 설명란에만 표시합니다.</p>
+</main><script type="module">
+import project from '/src/projects/let-them-play/editorial-sample/project.ts?project';
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#fff'});document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});let ready=false,rendered=-1;
+player.onRecalculated.subscribe(()=>ready=true);
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#seek').value=rendered/60;document.querySelector('#time').textContent=(rendered/60).toFixed(1)+' / 39.7초'});
+const jump=t=>player.requestSeek(Math.round(t*60));
+document.querySelector('#play').onclick=()=>{player.toggleAudio(true);player.togglePlayback()};document.querySelector('#reset').onclick=()=>{player.togglePlayback(false);jump(0)};document.querySelector('#compare').onclick=()=>{player.togglePlayback(false);jump(27)};document.querySelector('#seek').oninput=e=>{player.togglePlayback(false);jump(Number(e.target.value))};
+window.editorialReview={stage,player,jump,get ready(){return ready},get rendered(){return rendered}};
+</script></body></html>
