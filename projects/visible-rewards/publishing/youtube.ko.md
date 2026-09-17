@@ -1,5 +1,8 @@
 # YouTube 게시 정보 — 한국어
 
+최신 업로드용 텍스트: [제목](title.ko.txt), [설명 전문](description.ko.txt). 설명 전문에는 챕터·게임 자료 출처·Wanderlust 크레딧을 포함합니다.
+썸네일: [최종 PNG](thumbnails/visible-rewards-ko-v1.png), [디자인 기록](thumbnail-design.md).
+
 ## 제목
 
 왜 조금만 더 하게 될까? | 보상이 보이는 게임 디자인
@@ -7,6 +10,7 @@
 ## 썸네일 문구
 
 딱 이것만 더!
+왜 못 끌까?
 
 ## 설명
 

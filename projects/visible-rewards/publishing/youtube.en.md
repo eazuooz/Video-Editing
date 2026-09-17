@@ -1,8 +1,10 @@
 # YouTube Publishing — English
 
+Latest upload-ready translation of the Korean copy: [Title](title.en.txt) · [Full description](description.en.txt), including matching chapter timestamps, gameplay credits, and music attribution.
+
 ## Title
 
-Why Do We Keep Playing? | Making Rewards Visible
+Why Do We Keep Playing Just a Little Longer? | Game Reward Design
 
 ## Thumbnail Text
 
