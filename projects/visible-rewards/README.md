@@ -4,6 +4,8 @@
 
 ## 최종 전달 파일
 
+- 업로드 자료: [썸네일 PNG](publishing/thumbnails/visible-rewards-ko-v1.png) · [제목](publishing/title.ko.txt) · [설명 전문 — 챕터/출처 포함](publishing/description.ko.txt).
+- 영어 업로드 자료: [영어 제목](publishing/title.en.txt) · [영어 설명 전문 — 동일 챕터/출처 포함](publishing/description.en.txt).
 - 영상: `shared/output/motion-canvas/visible-rewards-final.mp4` — 1920×1080 / 60fps / 375.766667초. A 내레이션 + 연속 Wanderlust + 작은 게임 원음 포함.
 - 한국어: `shared/output/motion-canvas/visible-rewards-final.ko.srt`
 - 영어: `shared/output/motion-canvas/visible-rewards-final.en.srt`
