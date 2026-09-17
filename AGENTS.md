@@ -14,3 +14,10 @@ Before editing or creating a video, read `docs/VIDEO_WORKFLOW.md`,
 - BGM stays continuous under source sound. Honor separate script, voice and music approvals.
 - Meme references are not licenses. Record source and rights; use original reinterpretations where needed.
 - Never call a silent visual draft a completed narrated video, and do not regenerate published older projects unless requested.
+
+# Video-based wiki documents
+
+- Put the corresponding published YouTube video embed at the very top of every video-based wiki article.
+- Write the article so readers can understand it without watching the video: use approachable narrative prose, actual video screenshots, and captions explaining the action and concept.
+- Verify the channel's published video URL; do not substitute a reference/B-roll source link.
+- Preserve page locations and titles the user changes during editing. The AI-era developer-learning article belongs under `게임 업계 이야기, 프로그래밍 이야기`.
