@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width, initial-scale=1"><title>세계 고전 선택형 게임 · 60초 검토</title>
+<style>body{margin:0;background:#f3efe5;color:#25231f;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:24px auto;padding:0 24px}h1{font:30px Batang,serif}p{line-height:1.8;color:#746e63}nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0}button,select{font:inherit;background:transparent;border:1px solid #c8c0b2;padding:10px 16px;color:#25231f;cursor:pointer}#stage canvas{display:block;width:100%;height:auto}#stage{border:1px solid #c8c0b2}a{color:#51432f}audio{max-width:100%;width:560px}small{color:#746e63}#seek{width:320px}</style></head>
+<body><main>
+<h1>내 선택으로 결말이 달라지는 세계 고전 소설</h1>
+<p>60초 · 6개 씬 · Childhood BGM 포함 검토안. 전체 내레이션은 목소리 승인 후 연결합니다. 씬03은 선택 이후 원본 또는 개념도 대체 승인 대기입니다.</p>
+<nav><select id="chapter" aria-label="장면 선택"></select><button id="play">영상 + BGM 재생 / 정지</button><input id="seek" type="range" min="0" max="59.9" step="0.1" value="0" aria-label="검토 시간"><span id="status">로딩…</span></nav>
+<div id="stage"></div>
+<p><a href="/src/projects/choice-driven-classics/project">Motion Canvas 편집기</a></p>
+<h2>목소리 확인용 샘플</h2>
+<p>도입·제품·제작 방식 3문장을 모은 약13초 샘플입니다. 문장 누락이 확인된 이전 긴 샘플 대신 사용합니다. 화면 타임라인과 동기화된 전체 내레이션은 아닙니다.</p>
+<audio controls preload="metadata" src="/src/projects/choice-driven-classics/assets/voice-approval-calm-v2.wav"></audio>
+<p><a href="https://www.scottbuckley.com.au/library/childhood/" target="_blank" rel="noopener">선택곡: Childhood — Scott Buckley</a><br><small>'Childhood' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au<br><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · 60초 발췌, 음량 조정 및 페이드. 설명란에도 출처를 넣습니다.</small></p>
+</main><script type="module">
+import project from '/src/projects/choice-driven-classics/project.ts?project';
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+import {SCENE_STARTS,SCENE_DURATIONS,SCENE_TITLES,TOTAL_DURATION} from '/src/projects/choice-driven-classics/timing.ts';
+const fps=60,stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#F3EFE5'});
+document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});
+let ready=false,rendered=-1;
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=`${(rendered/fps).toFixed(1)} / 60.0 s`;document.querySelector('#seek').value=rendered/fps;});
+player.onRecalculated.subscribe(()=>ready=true);
+const select=document.querySelector('#chapter');SCENE_TITLES.forEach((title,i)=>select.add(new Option(`${i+1}. ${title}`,String(i))));
+const jump=t=>player.requestSeek(Math.round(t*fps));
+select.onchange=()=>{player.togglePlayback(false);jump(SCENE_STARTS[Number(select.value)]+1);};
+document.querySelector('#play').onclick=()=>{document.querySelector('audio').pause();player.toggleAudio(true);player.togglePlayback();};
+document.querySelector('audio').onplay=()=>player.togglePlayback(false);
+document.querySelector('#seek').oninput=e=>{player.togglePlayback(false);jump(Number(e.target.value));};
+window.classicsReview={player,stage,jump,fps,get ready(){return ready;},get rendered(){return rendered;},starts:SCENE_STARTS,durations:SCENE_DURATIONS};
+</script></body></html>

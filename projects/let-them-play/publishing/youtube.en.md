@@ -1,0 +1,70 @@
+# YouTube Publishing — English
+
+## Title
+
+How Should a Game Begin? | Opening and Tutorial Design
+
+## Alternative titles
+
+- Let Players Play First | Designing a Game's Opening
+- How Do You Design an Engaging First Scene? | Game Design
+
+## Description
+
+The instructions are clear—but when do I actually get to play?
+This video explores the game design of engaging opening scenes and tutorials that let players learn through play.
+
+What should players see first?
+What action should they try?
+Why should the result make them want to continue?
+
+We examine camera framing, visual guidance, interaction feedback, learning through failure, and when to provide the information players need.
+
+The Great Plateau in The Legend of Zelda: Breath of the Wild serves as our case study. We observe gameplay, explain the underlying design principles, and use original 2.5D A/B comparisons to illustrate different design choices.
+
+This is not an argument for removing every explanation or forcing every game to start within three minutes. It is about when players first encounter the game's core experience.
+If you design games, levels, or tutorials, try asking these three questions about your own opening scene.
+
+What game has your favorite opening, and why? Share it in the comments.
+
+Korean narration with Korean and English subtitles.
+
+The design interpretations and hypothetical comparisons are this channel's educational examples, not Nintendo's official design claims or measured user research.
+Spoiler warning: Great Plateau progression, abilities, and the paraglider.
+
+## Chapters
+
+00:00 The promise of the first scene
+01:00 Reading the character, object, and exit
+02:00 Camera framing and visual guidance
+03:00 One first action to try
+03:57 Feedback that connects action and result
+04:56 Making failure understandable
+05:57 When should the tutorial appear?
+06:59 An opening that makes you want more
+
+## Gameplay footage
+
+Archive 64 / NintendoBlackCrisis
+Part 1: https://www.youtube.com/watch?v=tOvTBrO7bPo
+Part 2: https://www.youtube.com/watch?v=kjSH8R2fk2c
+Creator's permission: https://www.nintblkc.com/archive-64
+
+The uploader identifies these as CEMU recordings. Edited excerpts illustrate game design, not original Nintendo Switch performance or image quality. Source sound is mixed quietly under our narration.
+The Legend of Zelda: Breath of the Wild © Nintendo.
+Not affiliated with or endorsed by Nintendo.
+
+## Music
+
+'Discovery' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au
+Source: https://www.scottbuckley.com.au/library/discovery/discovery/
+License: https://creativecommons.org/licenses/by/4.0/
+Edited excerpts, crossfaded looping, fades, and volume adjustments.
+
+## Further reference
+
+Let Them Play! [Game Concepts]
+https://www.youtube.com/watch?v=PlbwQ_rntCM
+Its discussion of introducing the core experience informed the topic. The Zelda analysis and comparison graphics are our own.
+
+#GameDesign #GameDevelopment #TutorialDesign

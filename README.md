@@ -1,5 +1,8 @@
 # Video Editing — Motion Canvas + Manim
 
+다른 컴퓨터에서 이어서 작업하려면 [복원·실행·진행 상태 안내](docs/CONTINUE_ON_ANOTHER_COMPUTER.md)를 먼저 확인하세요.
+대용량 영상 복원: `node scripts/restore-media.cjs` (저장소 루트, Node.js 필요).
+
 Motion Canvas(TypeScript)와 Manim(Python), 두 코드 기반 영상 편집/애니메이션 엔진을 한 저장소에서 함께 쓰기 위한 프로젝트입니다. 각자 독립적으로 렌더링한 뒤 `shared/output`에 모인 결과물을 ffmpeg로 이어 붙여 최종 영상을 만듭니다.
 
 ## 폴더 구조
