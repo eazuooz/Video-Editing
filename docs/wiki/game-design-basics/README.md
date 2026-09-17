@@ -26,3 +26,13 @@ AI 글은 사용자가 `게임 업계 이야기, 프로그래밍 이야기` 아�
 - AI 영상의 가격 표는 재사용하지 않고 지속적으로 적용할 수 있는 작업 전체 비용·검증 원칙으로 서술.
 
 페이지 주소는 `notion-publication.json`, 원고는 이 폴더의 01–04 Markdown, 로컬 캡처와 업로드 기록은 `shared/output/wiki-game-design/`에 있습니다.
+
+## 추가: 04. 게임 보상 (2026-09-17)
+
+- [Notion 문서](https://app.notion.com/p/3de0b1ffa61e81f48cc4d3f4dce3b4d1), [읽기 원고](04-rewards.md).
+- 기존 AI 글은 이동된 위치/제목을 그대로 유지. 게임 디자인 기초의 네 번째 글은 보상 문서.
+- `visible-rewards-final.mp4`에서 실제 5개 장면(01:57, 02:24, 03:12, 04:45, 05:12)을 추출하고 상황·행동·개념 캡션을 작성.
+- 원본 캡처는 `projects/visible-rewards/publishing/wiki/images/`. Notion 자체 업로드 5개로 저장하고 생성 뒤 본문·부모·이미지 존재를 재확인.
+- 본문은 영상 없이도 읽히는 서사형 7개 절과 적용 연습, 출처 안내. 실제 몬헌 화면에는 소재가 충분하며 9/10은 별도 가정이라는 점을 구분.
+- 사용자 채널의 최근 공개 영상 12개에서 해당 게시본을 찾지 못해 상단 임베드는 대기. 참고 영상이나 게임 녹화 링크로 대체하지 않음. 사용자에게 게시 주소 요청.
+- 문서·업로드·검사 상세: `projects/visible-rewards/publishing/wiki/notion-publication.json`.

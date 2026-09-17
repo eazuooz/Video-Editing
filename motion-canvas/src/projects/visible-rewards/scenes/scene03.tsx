@@ -1,5 +1,5 @@
 import {makeScene2D} from '@motion-canvas/2d';
-import {paperScene} from './paper-scene';
+import {dioramaScene as paperScene} from './diorama-scene';
 import {SCENE_DURATIONS} from '../timing';
 export default makeScene2D(function* (view) {
   yield* paperScene(view,2,SCENE_DURATIONS[2]);

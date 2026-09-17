@@ -1,5 +1,5 @@
 """Full A narration / quiet licensed gameplay / continuous Wanderlust mix."""
-import json, math, re, shutil
+import argparse, json, math, re, shutil
 from pathlib import Path
 import numpy as np
 import soundfile as sf
@@ -7,6 +7,10 @@ from prepare_visible_rewards_review import ffmpeg, measure
 from mix_visible_rewards_review import duration
 
 ROOT=Path(__file__).resolve().parents[1]
+parser=argparse.ArgumentParser()
+parser.add_argument('--version', type=int, default=1)
+version=parser.parse_args().version
+if version not in (1,2): raise ValueError('Supported mix revisions: 1, 2')
 mfile=ROOT/'projects/visible-rewards/project.json'
 m=json.loads(mfile.read_text(encoding='utf-8'))
 assert m['approvals']['voice']=='approved-A-balanced'
@@ -17,7 +21,7 @@ starts=json.loads('['+re.search(r'SCENE_STARTS = \[([^]]+)',timing).group(1).str
 total=float(re.search(r'TOTAL_DURATION = ([\d.]+)',timing).group(1))
 length=m['editing']['exampleSeconds']
 assets=ROOT/'motion-canvas/src/projects/visible-rewards/assets'
-out=ROOT/'shared/output/visible-rewards/audio-final-v1';out.mkdir(parents=True,exist_ok=True)
+out=ROOT/f'shared/output/visible-rewards/audio-final-v{version}';out.mkdir(parents=True,exist_ok=True)
 wav=out/'final-mix.wav';aac=out/'final-mix.m4a'
 if wav.exists() or aac.exists(): raise FileExistsError('Retain prior mix; choose a new version')
 source=ROOT/music['file']; n=ROOT/m['paths']['editorNarration']
@@ -25,7 +29,8 @@ stats=measure(source);gain=m['audio']['bgmTargetLufs']-float(stats['input_i'])
 count=math.ceil((total-1)/(duration(source)-1))
 args=['-n','-i',str(n)]
 for _ in range(count): args+=['-i',str(source)]
-for i in range(8): args+=['-i',str(assets/f'gameplay/scene{i+1:02}.mp4')]
+gameplay='gameplay' if version==1 else 'gameplay-v2'
+for i in range(len(starts)): args+=['-i',str(assets/f'{gameplay}/scene{i+1:02}.mp4')]
 filters=[f'[0:a]aresample=48000,pan=stereo|c0=0.70710678*c0|c1=0.70710678*c0,apad,atrim=duration={total},asplit=2[n][side]']
 for i in range(count):filters.append(f'[{i+1}:a]aresample=48000,volume={gain}dB[m{i}]')
 prev='m0'
@@ -36,7 +41,7 @@ envelope=f'pow(10,(-3*({ramps}))/20)'
 filters.append(f"[{prev}]atrim=duration={total},asetpts=PTS-STARTPTS,afade=t=in:d=0.45,afade=t=out:st={total-.45}:d=0.45,volume='{envelope}':eval=frame,asplit=2[bgm][musicreview]")
 for i,s in enumerate(starts):
  filters.append(f'[{1+count+i}:a]aresample=48000,atrim=duration={length},asetpts=PTS-STARTPTS,adelay={round(s*48000)}S:all=1[g{i}]')
-filters.append(''.join(f'[g{i}]' for i in range(8))+f'amix=inputs=8:normalize=0:duration=longest,apad,atrim=duration={total},asplit=2[game][gamereview]')
+filters.append(''.join(f'[g{i}]' for i in range(len(starts)))+f'amix=inputs={len(starts)}:normalize=0:duration=longest,apad,atrim=duration={total},asplit=2[game][gamereview]')
 filters.append('[bgm][game]amix=inputs=2:normalize=0:duration=first[bed]')
 filters.append(f'[bed][side]sidechaincompress=threshold={m["audio"]["duckingThreshold"]}:ratio={m["audio"]["duckingRatio"]}:attack=15:release=280:makeup=1,asplit=2[duck][bedreview]')
 filters.append('[n][duck]amix=inputs=2:normalize=0:duration=first,aresample=192000,alimiter=limit=0.75:level=false:latency=true:attack=5:release=80,aresample=48000[mix]')
@@ -54,8 +59,11 @@ for kind in ['bgm','game','background']:
    report['windows'].append({'layer':kind,'scene':i+1,'part':part,'rmsDbfs':round(20*math.log10(max(rms,1e-10)),2)})
 assert all(float(v['input_tp'])<=-1.5 for v in report['loudness'].values())
 assert abs(duration(wav)-total)<.03 and abs(duration(aac)-total)<.05
-shutil.copy2(wav,assets/'final-mix.wav');shutil.copy2(aac,assets/'final-mix.m4a')
-m['paths']['editorAudioMix']='motion-canvas/src/projects/visible-rewards/assets/final-mix.wav'
+stem='final-mix' if version==1 else f'final-mix-v{version}'
+shutil.copy2(wav,assets/f'{stem}.wav');shutil.copy2(aac,assets/f'{stem}.m4a')
+m['paths']['editorAudioMix']=f'motion-canvas/src/projects/visible-rewards/assets/{stem}.wav'
+m['paths']['audioMix']=f'motion-canvas/src/projects/visible-rewards/assets/{stem}.m4a'
+m['paths']['audioMeasurements']=f'shared/output/visible-rewards/audio-final-v{version}/report.json'
 m['audio']['mixStatus']='full-mix-human-review-pending';m['status']='video-production';m['publishReady']=False
 m['audio']['gameCommentaryTargetLufs']=-31
 mfile.write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

@@ -42,5 +42,6 @@ node scripts/media-archive.cjs pack path/to/large.wav shared/media-archives/proj
 | mix-v6-artist-music-review.wav (음악 포함 검토용) | 202,860,878 bytes | 183,142,257 bytes | 3 |
 | let-them-play.mp4 (2026-09-17 보관 v1) | 196,326,090 bytes | 195,062,853 bytes | 3 |
 | visible-rewards.mp4 (2026-09-17 보관 v1) | 138,772,995 bytes | 137,332,102 bytes | 2 |
+| visible-rewards-final.mp4 (2026-09-17 최종 v3) | 141,252,470 bytes | 140,605,897 bytes | 2 |
 
 조각 누락·변조·잘못된 경로·기존 파일 덮어쓰기는 검사에서 거절합니다. 회귀 검사: `node scripts/test-media-archive.cjs`.

@@ -11,11 +11,11 @@ Just One More!
 ## Description
 
 You were about to quit—but that backpack upgrade is almost within reach.
-Using Stardew Valley and Vampire Survivors as examples, we explore how visible rewards and clear goals shape game design.
+Using footage from Stardew Valley, Vampire Survivors and Monster Hunter Wilds, we explore how visible rewards and clear goals shape game design.
 
 A reward does not become desirable simply because its number is large. Players need to understand what it changes, how close they are, and what they can do next.
 
-We examine inventory upgrades, XP bars and level-up choices, the right moment to display information, and honest expectations around uncertain rewards. Real gameplay is paired with original diagrams and fictional UI comparisons.
+We examine inventory upgrades, XP bars and level-up choices, the right moment to display information, and honest expectations around uncertain rewards. Real gameplay is paired with original animated 2.5D dioramas and fictional UI comparisons.
 
 When designing rewards, ask: Why would a player want this? Can they tell how much remains? Will they feel the difference after obtaining it?
 The journey toward the reward should be fun too—not just time to endure before collecting a prize.
@@ -33,20 +33,25 @@ Stardew Valley gameplay — SwenAL
 https://www.youtube.com/watch?v=O-AHe1o0IDU
 Excerpted and edited under the uploader's explicit permission to use the footage in videos.
 
-Stardew Valley 08 - New Backpack, Salmonberry & Abandoned Mine — Khittisun Chaemdikawiwat
-https://www.youtube.com/watch?v=2_qxMaIZUds
+Lin Play's - Stardew Vally - Episode 6 - Finally, dpt BACKPACK — Lin LP (LinChronicle)
+https://www.youtube.com/watch?v=9pNkPSeCWB8
 YouTube Creative Commons Attribution license. Excerpted, assembled, resized and audio mixed.
 
 Vampire Survivors | No Commentary Gameplay (No Copyright) — G-Gou_Plays
 https://www.youtube.com/watch?v=hJRhnC2jIPE
 Excerpted under the uploader's explicit permission for reuse, editing and monetization.
 
-#1 vampire survivors gameplay pasqualina no copyright runs royalty free gameplay — No Copyright Runs
-https://www.youtube.com/watch?v=qfW-k4ytA0w
+Monster Hunter Wilds Gameplay #1 | No Copyright Gameplay | Free to Use — Xeno
+https://www.youtube.com/watch?v=3BQZCXZX5e8
+YouTube Creative Commons Attribution and explicit uploader permission. Hunting footage excerpted, assembled and audio mixed.
+
+Monster Hunter Wilds walkthrough Part 1 — Raizen Games
+https://www.youtube.com/watch?v=Qn4P0dzOFno
 YouTube Creative Commons Attribution license. Excerpted, assembled and audio mixed.
 https://creativecommons.org/licenses/by/3.0/
 
-Stardew Valley © ConcernedApe. Vampire Survivors © poncle.
+Stardew Valley © ConcernedApe. Vampire Survivors © poncle. Monster Hunter Wilds © CAPCOM.
+Monster Hunter footage shows real forging menus and hunting. The subsequent 9/10-material diagram is fictional, not a specific item's drop rate or a guaranteed number of hunts.
 Design interpretations and original diagrams are the channel's commentary, not statements of the developers' official intent.
 Concept reference: Masahiro Sakurai on Creating Games, Keeping Rewards in Sight
 https://www.youtube.com/watch?v=KePsEzN-IAM
@@ -66,9 +71,9 @@ Edited/looped and mixed under narration for this video.
 02:15 Make the difference tangible
 03:02 From XP progress to the next choice
 03:53 Not every reward needs a permanent HUD
-04:40 One item left does not mean one attempt left
+04:40 One item left does not mean one attempt left — Monster Hunter Wilds footage
 05:24 Rewards as a promise of future play
 
 ## Hashtags
 
-#GameDevelopment #GameDesign #RewardDesign #StardewValley #VampireSurvivors
+#GameDevelopment #GameDesign #RewardDesign #StardewValley #VampireSurvivors #MonsterHunterWilds
