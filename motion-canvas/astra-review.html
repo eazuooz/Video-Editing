@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><link rel="icon" href="data:,"><title>Astra 제작 사례 — 내부 화면 검토</title>
+<style>body{margin:24px;color:#202020;background:white;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:auto}nav{display:flex;gap:12px;margin:18px 0}button,select{font:inherit;padding:10px;border:1px solid #cbd0d6;background:#f2f4f7}canvas{width:100%;height:auto}p{color:#737373}a{color:#2f5faa}</style>
+<main><h1>GPT 아스트라로 만든 작품 구경하기</h1><p>중간 PPT 없는 v3 · 3분 58.5초 · 8개 게시물 / 11개 영상 · 승인 목소리 + Discovery + 작은 원음 · 재사용 허용 확인 전 게시 금지</p><nav><select id="chapter" aria-label="챕터"></select><button id="play">소리 켜고 재생 / 정지</button><span id="status">로딩 중</span></nav><div id="stage"></div><p><a href="/src/projects/gpt-astra-showcase/project">Motion Canvas 편집기 열기</a></p></main>
+<script type="module">
+import project from '/src/projects/gpt-astra-showcase/project.ts?project';
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+import {SCENE_STARTS,SCENE_TITLES,TOTAL_DURATION} from '/src/projects/gpt-astra-showcase/timing.ts';
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#fff'});document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});let ready=false,rendered=-1;
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=(rendered/60).toFixed(1)+' / '+TOTAL_DURATION.toFixed(1)+'초';});player.onRecalculated.subscribe(()=>ready=true);
+const chapter=document.querySelector('#chapter');SCENE_TITLES.forEach((s,i)=>chapter.add(new Option((i+1)+'. '+s,''+i)));
+const jump=t=>player.requestSeek(Math.round(t*60));const seek=()=>{player.togglePlayback(false);jump(SCENE_STARTS[+chapter.value]+.5);};chapter.onchange=seek;
+document.querySelector('#play').onclick=()=>{player.toggleAudio(true);player.togglePlayback();};window.astraReview={player,stage,jump,get ready(){return ready},get rendered(){return rendered}};
+</script></html>
