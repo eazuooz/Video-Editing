@@ -1,0 +1,24 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><link rel="icon" href="data:"><title>게임 개발로 먹고살기 — 본편 콘티</title>
+<style>body{margin:24px;background:#fff;color:#202020;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:auto}h1{font-size:26px}nav{display:flex;gap:12px;align-items:center;margin:18px 0}button,select{font:inherit;padding:10px 16px;border:1px solid #cbd0d6;background:#f2f4f7}canvas{width:100%;height:auto}p{color:#666}a{color:#2f5faa}</style>
+<main><h1>게임 개발로 먹고살기 — 9개 장면 콘티</h1><p>화면 설계 검토용 · 무음 · 내레이션·자료영상 삽입 전입니다. 자막 문구는 배치 샘플이며 발화 타이밍이 아닙니다.</p><nav><select id="chapter" aria-label="장면"></select><button id="play">재생 / 정지</button><span id="status">로딩 중</span></nav><div id="stage"></div><p><a id="editor" href="/src/projects/game-dev-career/project">Motion Canvas 편집기</a></p></main>
+<script type="module">
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+import board from '../projects/game-dev-career/planning/storyboard.v1.json';
+async function init(){
+  const reel=new URLSearchParams(location.search).has('reel');
+  const route=reel?'storyboard-reel/project':'project';
+  const {default:project}=await import(/* @vite-ignore */ `/src/projects/game-dev-career/${route}.ts?project`);
+  document.querySelector('#editor').href=`/src/projects/game-dev-career/${route}`;
+  let duration=0;const scenes=board.scenes.map(s=>{const start=duration;duration+=reel?6:s.estimatedSeconds;return {...s,start};});
+  const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#fff'});document.querySelector('#stage').append(stage.finalBuffer);
+  const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});let ready=false,rendered=-1;
+  player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=(rendered/60).toFixed(1)+' / '+duration+'초 (임시 콘티)';});
+  player.onRecalculated.subscribe(()=>ready=true);
+  const jump=t=>player.requestSeek(Math.round(t*60)),chapter=document.querySelector('#chapter');
+  scenes.forEach((s,i)=>chapter.add(new Option(s.id+' '+s.title,''+i)));
+  chapter.onchange=()=>{player.togglePlayback(false);jump(scenes[+chapter.value].start+.5);};
+  document.querySelector('#play').onclick=()=>player.togglePlayback();
+  window.careerBoard={player,stage,jump,scenes,duration,get ready(){return ready},get rendered(){return rendered}};
+}
+init().catch(e=>{document.querySelector('#status').textContent='로딩 실패: '+e.message;console.error(e);});
+</script></html>

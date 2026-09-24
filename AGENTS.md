@@ -5,6 +5,7 @@ Before editing or creating a video, read `docs/VIDEO_WORKFLOW.md`,
 
 - Default visual style: white research presentation, matching the user's RenderFormer PDF.
   Use shared `motion-canvas/src/styles/research-paper.ts`; no dark neon dashboard styling.
+- Default narration captions for new videos: `boxed-white-forest-v1` in `docs/CAPTION_STYLE.md` (approved 2026-09-19): opaque white square-corner box, black text/thin border, hard forest-green offset shadow. Preserve editable text, a clean master and separate KO/EN SRT alongside the Korean captioned render. Check every cue for wrapping and gameplay/UI overlap; do not restyle finished older videos automatically.
 - One independent Motion Canvas scene per script scene, with an actual example followed by an original explanation.
 - This is a game-development channel: use real code/editor/debugger/profiler/playtest footage for illustrative B-roll, including licensed foreign dev tutorials. Avoid generic office/phone/money stock unless specifically requested. Match the visible action to the chapter, prefer distinct sources, and distinguish illustrative footage from evidence of AI pricing or real workplace claims.
 - Default external-example slot: 19.5 seconds, about 3x the old 6.5-second default.

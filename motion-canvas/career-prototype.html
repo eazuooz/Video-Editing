@@ -1,0 +1,8 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>상자 열기 · 실제 동작 테스트</title><style>body{margin:0;background:#f6f8fb}canvas{width:100vw;max-height:100vh;object-fit:contain}</style><canvas width="1920" height="1080"></canvas><script type="module">
+import {initialState,openChest,drawPrototype} from '/src/projects/game-dev-career/prototype.ts';
+let state=initialState(),time=0;const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
+window.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();state=openChest(state,time);}if(e.code==='KeyR')state=initialState();if(e.code==='KeyK')state={...state,keys:0};if(e.code==='KeyF')state={...state,items:[1,2,3,4]};});
+canvas.onclick=()=>state=openChest(state,time);
+function frame(ms){time=ms/1000;drawPrototype(ctx,0,time,state);requestAnimationFrame(frame);}requestAnimationFrame(frame);
+window.chestTest={get state(){return state},reset(){state=initialState()}};
+</script></html>

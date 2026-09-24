@@ -1,0 +1,26 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><link rel="icon" href="data:,"><title>게임 개발 기본기 — 프리뷰</title>
+<style>body{margin:24px;color:#202020;background:white;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:auto}nav{display:flex;gap:12px;align-items:center;margin:18px 0}button,select{font:inherit;padding:10px 16px;border:1px solid #cbd0d6;background:#f2f4f7;cursor:pointer}canvas{width:100%;height:auto}p{color:#737373}a{color:#2f5faa}h1{font-size:26px}#sub{height:50px;text-align:center;white-space:pre-line;font-size:22px}</style>
+<main><h1>게임 개발, 무엇부터 공부해야 할까?</h1><p>6개 장면 프리뷰 · 한국어 내레이션 + Discovery · 본편의 설명 방식과 디자인을 확인하는 영상입니다.</p><nav><select id="chapter" aria-label="장면"></select><button id="play">소리 켜고 재생 / 정지</button><span id="status">로딩 중</span></nav><div id="stage"></div><div id="sub"></div><p><a href="/src/projects/game-dev-career/preview/project">Motion Canvas 편집기 열기</a></p><p>Music: 'Discovery' by Scott Buckley — CC BY 4.0. <a href="https://www.scottbuckley.com.au/library/discovery/">원곡</a> · <a href="https://creativecommons.org/licenses/by/4.0/">라이선스</a> · 발췌·음량 조정·페이드 적용.</p></main>
+<script type="module">
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+async function init(){
+const params=new URLSearchParams(location.search),captionSample=params.get('captions')==='sample',captioned=params.get('captions')==='full',hasCaptions=captionSample||captioned;
+const version=hasCaptions||params.get('v')==='2'?2:1;
+const folder=captionSample?'caption-sample':captioned?'preview-v2-captioned':version===2?'preview-v2':'preview';
+const {default:project}=await import(/* @vite-ignore */ `/src/projects/game-dev-career/${folder}/project.ts?project`);
+const timingResponse=await fetch(`/src/projects/game-dev-career/${hasCaptions?'preview-v2':folder}/timing.generated.json`);
+if(!timingResponse.ok)throw Error('타임라인 파일을 불러올 수 없습니다.');
+const fullTiming=await timingResponse.json();
+const timing=captionSample?{...fullTiming,scenes:fullTiming.scenes.slice(0,1),duration:fullTiming.scenes[0].duration}:fullTiming;
+if(version===2){document.title='게임 개발로 먹고살기 — 프리뷰 v2';document.querySelector('h1').textContent='게임 개발로 먹고살기 | 기획·프로그래밍·아트가 하는 일';document.querySelector('a').href='/src/projects/game-dev-career/preview-v2/project';}
+if(captionSample){document.querySelector('h1').textContent='게임 개발로 먹고살기 — 박스형 자막 샘플';document.querySelector('main > p').textContent='첨부 이미지 기반 자막 디자인 · 흰 박스 / 검정 테두리 / 짙은 초록 그림자';document.querySelector('a').href='/src/projects/game-dev-career/caption-sample/project';document.querySelector('#sub').style.display='none';}
+if(captioned){document.title='게임 개발로 먹고살기 — 전체 자막 프리뷰';document.querySelector('main > p').textContent='6개 장면 전체 자막 적용 · 승인된 박스형 자막 · 한국어 내레이션 + Discovery';document.querySelector('a').href='/src/projects/game-dev-career/preview-v2-captioned/project';document.querySelector('#sub').style.display='none';}
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#fff'});document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});let ready=false,rendered=-1;
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;const seconds=rendered/60;document.querySelector('#status').textContent=seconds.toFixed(1)+' / '+timing.duration.toFixed(1)+'초';document.querySelector('#sub').textContent=timing.captions.find(c=>seconds>=c.start&&seconds<c.end)?.ko??'';});player.onRecalculated.subscribe(()=>ready=true);
+const chapter=document.querySelector('#chapter');timing.scenes.forEach((s,i)=>chapter.add(new Option(s.title,''+i)));
+const jump=t=>player.requestSeek(Math.round(t*60));chapter.onchange=()=>{player.togglePlayback(false);jump(timing.scenes[+chapter.value].firstFrame/60+.5);};
+document.querySelector('#play').onclick=()=>{player.toggleAudio(true);player.togglePlayback();};window.careerReview={player,stage,jump,get ready(){return ready},get rendered(){return rendered}};
+}
+init().catch(error=>{document.querySelector('#status').textContent='로딩 실패: '+error.message;console.error(error);});
+</script></html>

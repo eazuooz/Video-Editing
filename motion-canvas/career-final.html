@@ -1,0 +1,19 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><link rel="icon" href="data:,"><title>게임 개발로 먹고살기 · 본편</title>
+<style>body{margin:24px;background:#fff;color:#202020;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:auto}h1{font-size:27px}nav{display:flex;gap:12px;align-items:center;margin:18px 0}button,select{font:inherit;padding:10px 16px;border:1px solid #cbd0d6;background:#f2f4f7;cursor:pointer}canvas{width:100%;height:auto}a{color:#2f5faa}p{color:#737373}</style>
+<main><h1>게임 개발로 먹고살기</h1><p>기획자·프로그래머·2D·3D 아티스트 역할 소개 · 전체 내레이션 / Discovery / 예시 원음</p><nav><select id="chapter" aria-label="장면"></select><button id="play">소리 켜고 재생 / 정지</button><span id="status">로딩 중</span></nav><div id="stage"></div><p><a id="editor" href="/src/projects/game-dev-career/project">Motion Canvas 편집기</a> · <a href="?clean">무자막</a> · <a href="?captions">자막판</a></p><p>Music: 'Discovery' by Scott Buckley — CC BY 4.0. <a href="https://www.scottbuckley.com.au/library/discovery/">원곡</a>. 자료화면: CC 허용이 확인된 새 게임 플레이·기획·코드·2D·3D 작업 영상. 자세한 출처와 구간은 프로젝트 게시 설명문에 있습니다.</p></main>
+<script type="module">
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+import timing from '/src/projects/game-dev-career/timing.generated.json';
+async function init(){
+ const clean=new URLSearchParams(location.search).has('clean'),file=clean?'clean.ts':'project.ts';
+ const {default:project}=await import(/* @vite-ignore */ `/src/projects/game-dev-career/${file}?project`);
+ const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#fff'});document.querySelector('#stage').append(stage.finalBuffer);
+ const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});let ready=false,rendered=-1;
+ player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=(rendered/60).toFixed(1)+' / '+timing.duration.toFixed(1)+'초';});player.onRecalculated.subscribe(()=>ready=true);
+ const chapter=document.querySelector('#chapter');timing.scenes.forEach((s,i)=>chapter.add(new Option(s.title,''+i)));const jump=t=>player.requestSeek(Math.round(t*60));
+ chapter.onchange=()=>{player.togglePlayback(false);jump(timing.scenes[+chapter.value].firstFrame/60+.5);};document.querySelector('#play').onclick=()=>{player.toggleAudio(true);player.togglePlayback();};
+ document.querySelector('#editor').href='/src/projects/game-dev-career/'+(clean?'clean':'project');
+ window.careerReview={player,stage,jump,timing,get ready(){return ready},get rendered(){return rendered}};
+}
+init().catch(e=>{document.querySelector('#status').textContent='로딩 실패: '+e.message;console.error(e);});
+</script></html>

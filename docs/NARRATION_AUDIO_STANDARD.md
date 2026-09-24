@@ -266,8 +266,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/mix-frame-rate-audio
 ## 최종 출력과 완료 조건
 
 - 기본 게시본: 1920×1080, 60fps, H.264 + AAC
-- 유튜브 본편: 고정 자막 없는 영상과 한국어·영어 SRT를 별도 제공
-- 쇼츠나 SNS용으로 필요할 때만 고정 자막 버전을 추가 생성
+- 2026-09-19 자막 기본값: 무자막 마스터와 한국어·영어 SRT를 보관하고, [흰 박스·초록 그림자 자막판](CAPTION_STYLE.md)을 기본으로 함께 제공
+- 자막판과 무자막판은 같은 길이·오디오 믹스를 사용. 스타일만 변경할 때는 TTS·믹스·SRT 타이밍을 변경하지 않음
 - `project.json`의 음악 승인 상태와 최종 파일 경로를 갱신
 - 내레이션 WAV와 전체 믹스 M4A를 구분해 보관하고 편집기·MP4의 소리를 함께 검수
 - `scripts/check-video-project.ps1 -Project <slug> -Stage publish` 통과
