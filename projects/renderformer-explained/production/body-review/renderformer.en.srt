@@ -1,0 +1,2612 @@
+1
+00:00:00,350 --> 00:00:05,070
+Can a Transformer learn to render a 3D scene
+into an image?
+
+2
+00:00:05,430 --> 00:00:13,010
+RenderFormer takes a scene made of triangles and
+predicts an image with lighting and shadows.
+
+3
+00:00:13,270 --> 00:00:17,690
+Its name may be unfamiliar, but it starts with
+the attention mechanism used in language models.
+
+4
+00:00:17,930 --> 00:00:25,650
+First, we will see how Transformers exchange
+information, then follow how that structure
+
+5
+00:00:25,650 --> 00:00:26,630
+extends to triangles and cameras.
+
+6
+00:00:26,630 --> 00:00:32,490
+Rather than memorizing every equation, focus on
+what goes in and what comes out.
+
+7
+00:00:33,667 --> 00:00:35,787
+This video has two main parts.
+
+8
+00:00:36,027 --> 00:00:44,287
+We will begin with embeddings, then cover position
+information, self-attention, encoders, and decoders.
+
+9
+00:00:44,487 --> 00:00:49,227
+Next, we will examine what changes when the
+inputs are triangles instead of words.
+
+10
+00:00:49,267 --> 00:00:55,407
+The key is a two-stage process: organize the scene,
+then form an image for a particular camera view.
+
+11
+00:00:55,587 --> 00:01:01,347
+Finally, we will review the training scenes, results,
+and conditions this approach still struggles with.
+
+12
+00:01:02,583 --> 00:01:08,363
+The Transformer was introduced in the 2017 paper
+Attention Is All You Need.
+
+13
+00:01:08,603 --> 00:01:14,003
+At the time, recurrent neural networks commonly
+passed a previous state to the next step.
+
+14
+00:01:14,243 --> 00:01:20,143
+Transformers instead centered on attention to
+directly compute relationships between positions.
+
+15
+00:01:20,363 --> 00:01:23,883
+This made it easier to process many positions in
+parallel during training.
+
+16
+00:01:24,203 --> 00:01:28,583
+The emphasis on attention refers to the main
+mechanism relating tokens to one another.
+
+17
+00:01:28,583 --> 00:01:33,983
+It does not mean the linear layers, FFNs (feed-
+forward networks), or normalization are absent.
+
+18
+00:01:35,500 --> 00:01:41,220
+The encoder on the left turns input words into
+vectors informed by their surrounding context.
+
+19
+00:01:41,260 --> 00:01:46,240
+The decoder on the right uses that information
+to predict the next output token.
+
+20
+00:01:46,340 --> 00:01:51,800
+In translation, for example, the encoder reads the
+source while the decoder builds the translation.
+
+21
+00:01:51,820 --> 00:01:56,020
+The original base model stacked six layers on
+each side.
+
+22
+00:01:56,060 --> 00:02:01,040
+Repeating a structure does not mean all the
+layers share one set of weights.
+
+23
+00:02:01,040 --> 00:02:06,000
+For now, distinguish understanding the input from
+producing an output using that understanding.
+
+24
+00:02:07,467 --> 00:02:13,307
+Neural networks cannot calculate directly with letters,
+so text is split into tokens and assigned IDs.
+
+25
+00:02:13,527 --> 00:02:19,047
+We use whole words for simplicity here, but real
+tokens can also be parts of words.
+
+26
+00:02:19,227 --> 00:02:23,347
+Assigning IDs to How, are, and you turns the
+sentence into a sequence of integers.
+
+27
+00:02:23,507 --> 00:02:29,647
+Special tokens indicate the start, the end, and
+padding used to match lengths.
+
+28
+00:02:30,027 --> 00:02:32,867
+A larger ID does not mean a more important word.
+
+29
+00:02:33,027 --> 00:02:36,947
+Think of the ID as an address used to find an
+entry in a vocabulary.
+
+30
+00:02:38,067 --> 00:02:44,187
+This small training example learns to answer How
+are you with I am fine.
+
+31
+00:02:44,367 --> 00:02:46,847
+The encoder receives the question's token IDs.
+
+32
+00:02:46,967 --> 00:02:51,667
+The decoder receives a start token and the target
+sentence shifted one position to the right.
+
+33
+00:02:52,127 --> 00:02:58,907
+It predicts I from the start token, am after I,
+and fine after I am.
+
+34
+00:02:58,907 --> 00:03:03,067
+During training, the known beginning of the
+correct answer can be supplied as input.
+
+35
+00:03:03,327 --> 00:03:07,687
+During generation, the model instead uses the
+tokens it has already produced.
+
+36
+00:03:08,833 --> 00:03:12,313
+Token IDs alone do not readily express
+relationships between words.
+
+37
+00:03:12,553 --> 00:03:16,033
+Each ID is therefore mapped to a vector of real
+numbers.
+
+38
+00:03:16,113 --> 00:03:17,633
+This is an embedding.
+
+39
+00:03:17,793 --> 00:03:21,793
+People do not manually design every word's
+numerical meaning in advance.
+
+40
+00:03:21,913 --> 00:03:26,913
+Useful vector representations are adjusted as
+the model learns its task.
+
+41
+00:03:27,053 --> 00:03:33,193
+From here on, each row is one token; the numbers
+in that row are its features.
+
+42
+00:03:34,317 --> 00:03:39,637
+Suppose our vocabulary has 11 entries, with six
+numbers representing each token.
+
+43
+00:03:39,657 --> 00:03:45,317
+For How, are, and you, we retrieve the
+corresponding three rows of the embedding table.
+
+44
+00:03:45,557 --> 00:03:48,057
+The result has three rows and six columns.
+
+45
+00:03:48,417 --> 00:03:51,917
+We are not combining all 11 words into a single
+vector.
+
+46
+00:03:52,177 --> 00:03:58,597
+Real models use much wider features. The
+original base Transformer used 512 dimensions.
+
+47
+00:03:58,717 --> 00:04:02,597
+We use small matrices here to make the
+computation easier to follow.
+
+48
+00:04:03,717 --> 00:04:07,237
+The same words can mean something different when
+their order changes.
+
+49
+00:04:07,317 --> 00:04:10,857
+A dog bit a person and a person bit a dog are
+very different stories.
+
+50
+00:04:11,217 --> 00:04:17,157
+Computing relationships from token content alone does
+not automatically provide sufficient order information.
+
+51
+00:04:17,297 --> 00:04:20,817
+We must also tell the model where each word
+appears.
+
+52
+00:04:20,937 --> 00:04:23,377
+That is the role of positional encoding.
+
+53
+00:04:23,477 --> 00:04:27,757
+We prepare information about both content and
+position.
+
+54
+00:04:28,883 --> 00:04:33,863
+The original Transformer represented positions
+with sine and cosine waves of different periods.
+
+55
+00:04:33,983 --> 00:04:39,543
+Positions 0, 1, 2, and so on are used to
+calculate their position vectors.
+
+56
+00:04:39,663 --> 00:04:45,523
+Even feature dimensions use sine, paired with
+cosine in the odd dimensions.
+
+57
+00:04:45,723 --> 00:04:50,323
+Different periods express a single position at
+multiple scales.
+
+58
+00:04:50,443 --> 00:04:52,803
+You do not need to memorize every number in the
+equation.
+
+59
+00:04:52,803 --> 00:04:59,963
+The idea is to turn one position index into a
+numerical pattern useful for learning relationships.
+
+60
+00:05:01,083 --> 00:05:04,683
+Word embeddings and positional encodings have
+matching dimensions.
+
+61
+00:05:04,843 --> 00:05:07,723
+Their corresponding numbers can therefore be
+added.
+
+62
+00:05:07,923 --> 00:05:10,983
+The number of rows and feature dimensions stays
+unchanged.
+
+63
+00:05:11,223 --> 00:05:16,803
+Each token now carries information about both
+its identity and its position.
+
+64
+00:05:17,003 --> 00:05:19,943
+This vector becomes the input to the next
+attention layer.
+
+65
+00:05:20,143 --> 00:05:26,243
+Addition alone does not establish meaning; later
+layers learn relationships from this representation.
+
+66
+00:05:27,367 --> 00:05:32,607
+Self-attention lets tokens within one sequence
+refer to one another.
+
+67
+00:05:32,827 --> 00:05:38,647
+To interpret a word, it computes which other
+expressions should be considered with it.
+
+68
+00:05:38,887 --> 00:05:43,067
+A token can receive information from several
+tokens with different weights.
+
+69
+00:05:43,387 --> 00:05:48,107
+A vector initially representing only a word
+becomes a context-aware vector.
+
+70
+00:05:48,287 --> 00:05:52,267
+Later, we will see cross-attention, which refers
+to a different sequence.
+
+71
+00:05:52,267 --> 00:05:58,687
+For now, remember that self means the
+information comes from within the same sequence.
+
+72
+00:05:59,800 --> 00:06:04,500
+One criterion may not capture several kinds of
+relationships at the same time.
+
+73
+00:06:04,680 --> 00:06:07,420
+We therefore use several attention heads in
+parallel.
+
+74
+00:06:07,660 --> 00:06:10,600
+It is like reading the same sentence from
+different perspectives.
+
+75
+00:06:10,780 --> 00:06:16,840
+But people do not assign fixed jobs such as
+grammar to one head and emotion to another.
+
+76
+00:06:17,060 --> 00:06:22,640
+Each head has its own learned projections and
+discovers useful relationships during training.
+
+77
+00:06:22,900 --> 00:06:27,580
+We will first follow one head, then see how the
+results are combined.
+
+78
+00:06:28,800 --> 00:06:34,020
+Different weight matrices transform the same
+input into Q, K, and V.
+
+79
+00:06:34,320 --> 00:06:41,560
+Q describes what information to seek, K provides
+matching features, and V contains
+
+80
+00:06:41,560 --> 00:06:42,220
+the information to pass along.
+
+81
+00:06:42,440 --> 00:06:46,320
+A query, search features, and content to
+retrieve are useful analogies.
+
+82
+00:06:46,460 --> 00:06:49,820
+But we do not manually write three separate
+sentences as inputs.
+
+83
+00:06:49,960 --> 00:06:54,280
+These are all vectors calculated from the input,
+using learned transformations.
+
+84
+00:06:54,400 --> 00:06:58,840
+Selecting information and gathering information
+use different representations.
+
+85
+00:07:00,117 --> 00:07:04,417
+Relationships computed from initial weights may
+not yet help solve the task.
+
+86
+00:07:04,637 --> 00:07:09,017
+The model gradually changes its weights to reduce
+the difference between predictions and targets.
+
+87
+00:07:09,217 --> 00:07:13,617
+Repeated updates can produce representations
+that make better use of context.
+
+88
+00:07:13,857 --> 00:07:17,797
+This does not mean a trained model understands
+every sentence perfectly.
+
+89
+00:07:17,997 --> 00:07:21,257
+Its training data and capabilities still impose
+limits.
+
+90
+00:07:21,397 --> 00:07:27,777
+Attention diagrams offer clues about how
+information is combined, but should not be treated
+
+91
+00:07:27,777 --> 00:07:28,657
+as identical to human understanding.
+
+92
+00:07:29,833 --> 00:07:31,553
+Now let us follow the computation.
+
+93
+00:07:31,613 --> 00:07:35,213
+First, Q and K produce scores used to determine
+attention weights.
+
+94
+00:07:35,273 --> 00:07:39,413
+Those scores are processed, then multiplied by V
+to gather information.
+
+95
+00:07:39,613 --> 00:07:45,933
+Q and K determine how much to attend to; V
+supplies the content being retrieved.
+
+96
+00:07:46,073 --> 00:07:49,773
+All three come from the same input, but serve
+different computational roles.
+
+97
+00:07:49,813 --> 00:07:54,353
+Keeping this distinction in mind makes the
+sequence of matrices easier to follow.
+
+98
+00:07:55,467 --> 00:07:58,907
+One row of Q corresponds to one token seeking
+information.
+
+99
+00:07:59,067 --> 00:08:02,687
+Its dot product with each key vector produces a
+score.
+
+100
+00:08:02,847 --> 00:08:06,907
+We multiply by the transposed K matrix to
+compute many tokens at once.
+
+101
+00:08:07,027 --> 00:08:12,487
+With three tokens each attending to three
+tokens, the score matrix is three by three.
+
+102
+00:08:12,607 --> 00:08:15,627
+These numbers are not yet probabilities or
+colors.
+
+103
+00:08:15,747 --> 00:08:21,027
+They are unnormalized scores measuring
+compatibility in a learned feature space.
+
+104
+00:08:22,150 --> 00:08:25,090
+Let us read the resulting matrix one row at a
+time.
+
+105
+00:08:25,430 --> 00:08:30,050
+The first row contains the first token's scores
+for attending to each token.
+
+106
+00:08:30,450 --> 00:08:35,810
+The second row is from the second token's
+perspective, and the third from the third token's.
+
+107
+00:08:36,190 --> 00:08:41,450
+The score from A to B need not equal the score
+from B to A.
+
+108
+00:08:41,890 --> 00:08:44,910
+That is because Q and K are produced by
+different transformations.
+
+109
+00:08:45,230 --> 00:08:49,250
+Even within one sentence, different tokens may
+need different information.
+
+110
+00:08:50,500 --> 00:08:53,740
+As vector dimensions increase, dot-product
+scores can grow larger.
+
+111
+00:08:53,840 --> 00:08:59,700
+Large scores can make softmax overly
+concentrated and training more difficult.
+
+112
+00:08:59,900 --> 00:09:03,520
+We therefore divide by the square root of the
+key dimension.
+
+113
+00:09:03,640 --> 00:09:07,060
+This example has six dimensions, so we divide by
+the square root of six.
+
+114
+00:09:07,220 --> 00:09:10,280
+This is not a distance between objects in space.
+
+115
+00:09:10,420 --> 00:09:14,540
+It is a scale factor controlling score magnitude
+for the attention feature dimension.
+
+116
+00:09:15,667 --> 00:09:18,247
+Next, we apply softmax to each row.
+
+117
+00:09:18,327 --> 00:09:23,407
+This produces attention weights for each token;
+each row sums to one.
+
+118
+00:09:23,667 --> 00:09:27,247
+Relatively higher scores receive more weight.
+
+119
+00:09:27,507 --> 00:09:34,587
+Rather than an objective probability of
+correlation between words, these are
+
+120
+00:09:34,587 --> 00:09:35,447
+the model's weights for combining information.
+
+121
+00:09:35,747 --> 00:09:40,207
+Ordinary encoder self-attention does not use a
+causal mask to hide future tokens.
+
+122
+00:09:40,367 --> 00:09:44,607
+It can still use a mask to exclude padding added
+to match sequence lengths.
+
+123
+00:09:45,867 --> 00:09:50,767
+Multiplying the attention weights by V gathers
+the information each token attends to.
+
+124
+00:09:50,987 --> 00:09:55,507
+A token given more weight contributes more of
+its value vector to the result.
+
+125
+00:09:55,747 --> 00:09:58,927
+The result is a new feature vector for each
+token.
+
+126
+00:09:59,187 --> 00:10:03,387
+It now reflects context retrieved from other
+tokens in the same sentence.
+
+127
+00:10:03,647 --> 00:10:08,147
+The attention-weight matrix itself is not the
+final output.
+
+128
+00:10:08,567 --> 00:10:12,227
+The gathered content is what passes to the next
+operation.
+
+129
+00:10:13,350 --> 00:10:15,590
+So far, we have examined a single head.
+
+130
+00:10:15,710 --> 00:10:21,010
+Multi-head attention performs these calculations
+in several feature spaces in parallel.
+
+131
+00:10:21,150 --> 00:10:24,510
+The original base model used eight heads.
+
+132
+00:10:24,750 --> 00:10:29,930
+Dividing 512 dimensions among eight heads gives
+each head 64 dimensions.
+
+133
+00:10:30,130 --> 00:10:34,490
+These numbers are model settings, not universal
+rules for Transformers.
+
+134
+00:10:34,670 --> 00:10:38,110
+RenderFormer uses different dimensions and a
+different number of heads.
+
+135
+00:10:39,317 --> 00:10:43,137
+For simplicity, this diagram shows only two
+heads.
+
+136
+00:10:43,257 --> 00:10:50,257
+Each head projects the input, computes Q-K scores
+and softmax, then takes a weighted sum of V.
+
+137
+00:10:50,377 --> 00:10:54,797
+Implementations may project everything with one
+large linear layer before splitting into heads.
+
+138
+00:10:54,977 --> 00:11:00,457
+This does not split the sentence into isolated
+first and second halves.
+
+139
+00:11:00,517 --> 00:11:04,077
+Each head sees the same tokens through different
+feature representations.
+
+140
+00:11:05,200 --> 00:11:09,440
+After the heads finish, each token has several
+result vectors.
+
+141
+00:11:09,640 --> 00:11:14,200
+Different head weights can yield different
+results for the same token.
+
+142
+00:11:14,440 --> 00:11:18,100
+These are multiple perspectives that have not
+yet been combined.
+
+143
+00:11:18,340 --> 00:11:21,000
+Next, we concatenate them along the feature
+dimension.
+
+144
+00:11:21,220 --> 00:11:26,680
+We are gathering each token's features, not
+increasing the number of tokens.
+
+145
+00:11:27,800 --> 00:11:32,700
+After concatenation, we multiply by an output
+weight matrix.
+
+146
+00:11:32,940 --> 00:11:37,920
+This layer combines information from the heads
+into a representation for the next layer.
+
+147
+00:11:38,200 --> 00:11:42,420
+The total feature width matches the input to
+allow a residual connection.
+
+148
+00:11:42,720 --> 00:11:45,400
+That completes the multi-head attention block.
+
+149
+00:11:45,520 --> 00:11:50,880
+Compute relationship scores, gather information,
+and mix the different perspectives.
+
+150
+00:11:52,000 --> 00:11:56,100
+Instead of passing only the new result forward,
+we add the original input as well.
+
+151
+00:11:56,240 --> 00:11:57,920
+This is a residual connection.
+
+152
+00:11:58,040 --> 00:12:02,880
+Think of it as adding this layer's update to the
+original representation.
+
+153
+00:12:03,120 --> 00:12:08,180
+It provides a direct path for information and
+gradients, helping deep models train.
+
+154
+00:12:08,400 --> 00:12:14,600
+Addition does not preserve all information forever
+or automatically solve every training problem.
+
+155
+00:12:14,740 --> 00:12:17,800
+Next comes normalization to manage the scale of
+the values.
+
+156
+00:12:18,917 --> 00:12:22,897
+The important question is which dimension we use
+to calculate the mean and variance.
+
+157
+00:12:23,037 --> 00:12:28,357
+Transformer layer normalization typically
+operates across one token's feature dimensions.
+
+158
+00:12:28,557 --> 00:12:33,097
+With tokens arranged in rows as shown, it uses
+the numbers within each row.
+
+159
+00:12:33,237 --> 00:12:40,537
+It subtracts the mean, scales using variance and a small
+stability constant, then applies learned scale and bias.
+
+160
+00:12:40,957 --> 00:12:46,257
+Distinguish this from batch normalization; it is
+not one common mean across sentences or all tokens.
+
+161
+00:12:46,257 --> 00:12:50,797
+Normalization also does not turn the data into a
+normal distribution.
+
+162
+00:12:52,000 --> 00:12:56,900
+After attention gathers information across
+tokens, we process each token's features.
+
+163
+00:12:57,180 --> 00:13:04,020
+The original Transformer's FFN places ReLU
+between two linear layers.
+
+164
+00:13:04,160 --> 00:13:08,740
+ReLU sets negative inputs to zero and passes
+positive inputs through.
+
+165
+00:13:09,040 --> 00:13:13,860
+This nonlinearity allows representations beyond
+a simple linear transformation.
+
+166
+00:13:14,220 --> 00:13:18,840
+Within a layer, the same FFN is applied to every
+token position.
+
+167
+00:13:19,967 --> 00:13:25,287
+After the first layer and activation, the
+features enter a second linear layer.
+
+168
+00:13:25,467 --> 00:13:29,747
+It projects the expanded features back to the
+model's base dimension.
+
+169
+00:13:30,027 --> 00:13:35,867
+The original base model expands 512 dimensions
+to 2,048, then returns to 512.
+
+170
+00:13:36,027 --> 00:13:39,247
+The screen illustrates the same idea with small
+matrices.
+
+171
+00:13:39,367 --> 00:13:43,607
+Matching the output size also permits the
+residual connection we saw earlier.
+
+172
+00:13:44,733 --> 00:13:49,333
+Similar matrix operations repeat, but the two
+blocks have distinct roles.
+
+173
+00:13:49,493 --> 00:13:53,073
+Attention determines how much information to
+gather from other tokens.
+
+174
+00:13:53,273 --> 00:13:58,873
+The FFN processes that information nonlinearly
+at each token position.
+
+175
+00:13:58,953 --> 00:14:03,373
+Information exchange between tokens alternates
+with feature transformations within each token.
+
+176
+00:14:03,533 --> 00:14:07,173
+Stacking these processes across layers gradually
+changes the representations.
+
+177
+00:14:08,283 --> 00:14:12,403
+Residual connection and normalization also
+follow the FFN.
+
+178
+00:14:12,563 --> 00:14:18,923
+One encoder layer consists of attention, add and
+norm, FFN, then add and norm again.
+
+179
+00:14:19,043 --> 00:14:23,603
+Passing through these layers gives each token a
+new, context-aware representation.
+
+180
+00:14:23,843 --> 00:14:30,763
+The original paper normalizes after each
+sublayer; many later models normalize before it.
+
+181
+00:14:30,883 --> 00:14:33,703
+We will keep this distinction in mind when
+looking at RenderFormer.
+
+182
+00:14:33,703 --> 00:14:38,723
+Now let us see how the decoder uses the
+encoder's information.
+
+183
+00:14:39,833 --> 00:14:44,133
+The decoder also starts by embedding tokens and
+adding position information.
+
+184
+00:14:44,293 --> 00:14:48,793
+Its input is the beginning of the output
+sentence, not the encoder's source sentence.
+
+185
+00:14:48,953 --> 00:14:55,593
+In training, start, I, and am are used to
+predict I, am, and fine, respectively.
+
+186
+00:14:55,713 --> 00:14:59,713
+This is why the inputs and targets were shifted
+by one position.
+
+187
+00:14:59,873 --> 00:15:03,553
+The model learns to predict what comes next from
+what has appeared so far.
+
+188
+00:15:04,667 --> 00:15:10,127
+The decoder likewise projects its current inputs
+into Q, K, and V.
+
+189
+00:15:10,487 --> 00:15:16,147
+The overall process of scoring and gathering
+information is the same as in self-attention.
+
+190
+00:15:16,467 --> 00:15:20,247
+But sequential output generation adds a
+condition.
+
+191
+00:15:20,507 --> 00:15:24,367
+The current position must not see future target
+tokens.
+
+192
+00:15:24,627 --> 00:15:28,687
+A mask therefore restricts the positions this
+attention can access.
+
+193
+00:15:30,150 --> 00:15:32,770
+First, multiply Q by the transpose of K.
+
+194
+00:15:32,930 --> 00:15:36,490
+Then scale the scores according to the key
+feature dimension.
+
+195
+00:15:36,610 --> 00:15:39,150
+This computation is the same as in the encoder.
+
+196
+00:15:39,250 --> 00:15:43,110
+The next step hides scores at positions that are
+not allowed.
+
+197
+00:15:43,290 --> 00:15:50,510
+The math is not entirely different; the same
+calculation follows different information-flow rules.
+
+198
+00:15:51,633 --> 00:15:56,133
+Knowing the target sentence during training does
+not mean we should reveal the next answer.
+
+199
+00:15:56,253 --> 00:16:00,413
+Otherwise, the model could learn to rely on
+information unavailable during generation.
+
+200
+00:16:00,593 --> 00:16:04,473
+The current position must only refer to the
+output prefix provided so far.
+
+201
+00:16:04,693 --> 00:16:08,313
+We enforce this by blocking attention to future
+positions.
+
+202
+00:16:08,473 --> 00:16:11,993
+This incorporates the conditions of generation
+into the training computation.
+
+203
+00:16:13,117 --> 00:16:16,177
+In a matrix, the visible region forms a
+triangle.
+
+204
+00:16:16,597 --> 00:16:19,417
+The first position can see only the first input.
+
+205
+00:16:19,837 --> 00:16:23,337
+The second can see the first and second inputs.
+
+206
+00:16:23,777 --> 00:16:26,557
+Later positions can refer to increasingly long
+prefixes.
+
+207
+00:16:26,837 --> 00:16:34,077
+Because decoder inputs are shifted, seeing the
+current input does not reveal the next target.
+
+208
+00:16:34,377 --> 00:16:36,537
+This is called a causal mask.
+
+209
+00:16:37,883 --> 00:16:42,663
+In code, prohibited scores are set to negative
+infinity before softmax.
+
+210
+00:16:42,843 --> 00:16:46,243
+Softmax turns those entries into zero weights.
+
+211
+00:16:46,323 --> 00:16:50,643
+Their information is therefore excluded from the
+weighted sum of V.
+
+212
+00:16:50,843 --> 00:16:54,783
+Weights over the allowed positions still sum to
+one.
+
+213
+00:16:54,943 --> 00:17:00,403
+A mask does not create content; it restricts
+where information can flow.
+
+214
+00:17:01,517 --> 00:17:04,277
+Multiply the masked attention weights by V.
+
+215
+00:17:04,397 --> 00:17:09,817
+The first position receives only the first
+input, because all later positions are hidden.
+
+216
+00:17:10,117 --> 00:17:13,597
+An entry with zero weight contributes none of
+its value vector.
+
+217
+00:17:13,737 --> 00:17:17,997
+Future tokens therefore cannot directly flow
+into the resulting representation.
+
+218
+00:17:18,077 --> 00:17:23,077
+Separating scoring from the weighted sum of
+content makes the mask's role clear.
+
+219
+00:17:24,200 --> 00:17:26,900
+Now consider the second and third positions.
+
+220
+00:17:26,900 --> 00:17:31,100
+They combine information from their allowed
+prefixes.
+
+221
+00:17:31,580 --> 00:17:34,620
+Each output therefore reflects a different
+amount of context.
+
+222
+00:17:34,620 --> 00:17:38,580
+During training, these positions can be
+calculated together as matrices.
+
+223
+00:17:39,100 --> 00:17:45,080
+During generation, earlier outputs are needed as later
+inputs, so tokens are usually produced sequentially.
+
+224
+00:17:45,460 --> 00:17:49,260
+Remember that parallel training and sequential
+generation are different things.
+
+225
+00:17:50,550 --> 00:17:55,030
+Combining heads works the same way even when a
+mask is used.
+
+226
+00:17:55,190 --> 00:17:59,210
+Concatenate the head outputs, then apply the
+output linear layer.
+
+227
+00:17:59,410 --> 00:18:03,530
+This mixes the different views of the available
+prefix.
+
+228
+00:18:03,730 --> 00:18:07,410
+The six-by-six matrix here belongs to this small
+illustrative example.
+
+229
+00:18:07,610 --> 00:18:11,630
+Actual matrix sizes depend on the model
+dimension and head configuration.
+
+230
+00:18:12,750 --> 00:18:16,230
+Add the original decoder representation to this
+result and normalize it.
+
+231
+00:18:16,510 --> 00:18:19,890
+So far, the decoder has processed only the
+output prefix.
+
+232
+00:18:20,170 --> 00:18:24,230
+Translation and question answering also require
+information about the original input.
+
+233
+00:18:24,530 --> 00:18:27,010
+The encoder has already prepared that
+information.
+
+234
+00:18:27,350 --> 00:18:30,890
+We now connect the decoder so it can attend to
+the encoder's output.
+
+235
+00:18:32,233 --> 00:18:36,313
+In cross-attention, Q comes from a different
+source than K and V.
+
+236
+00:18:36,413 --> 00:18:39,213
+Q is created from the decoder's current
+representation.
+
+237
+00:18:39,413 --> 00:18:42,553
+K and V are created from the input processed by
+the encoder.
+
+238
+00:18:42,693 --> 00:18:48,233
+The output side asks a question and retrieves
+useful information from the input side.
+
+239
+00:18:48,373 --> 00:18:51,113
+This structure is also central to RenderFormer.
+
+240
+00:18:51,213 --> 00:18:56,273
+There, camera-ray patches ask the questions and
+the triangle-based scene provides information.
+
+241
+00:18:57,400 --> 00:19:02,820
+Cross-attention is followed by residual
+connection, normalization, and an FFN.
+
+242
+00:19:03,040 --> 00:19:08,380
+The decoder representation now reflects both the
+output prefix and the original input context.
+
+243
+00:19:08,700 --> 00:19:12,340
+The original paper uses six such decoder layers.
+
+244
+00:19:12,680 --> 00:19:16,640
+What remains is to turn these vectors into
+predictions of the next token.
+
+245
+00:19:16,880 --> 00:19:20,400
+On the next page, we will connect this to the
+training objective.
+
+246
+00:19:21,517 --> 00:19:26,337
+The final linear layer converts each position's
+features into one score per vocabulary entry.
+
+247
+00:19:26,517 --> 00:19:30,677
+Softmax produces a probability distribution over
+possible next tokens.
+
+248
+00:19:30,857 --> 00:19:35,097
+During training, these predictions are compared
+with target tokens to compute a loss.
+
+249
+00:19:35,277 --> 00:19:41,917
+Backpropagation updates trainable parameters in
+embeddings, attention, FFNs, and more.
+
+250
+00:19:42,057 --> 00:19:47,057
+The relationships Q and K respond to are learned
+while reducing this objective.
+
+251
+00:19:47,057 --> 00:19:52,257
+All those matrix operations are now connected to
+a single prediction task.
+
+252
+00:19:53,483 --> 00:19:56,323
+We now have the basic tools of the Transformer.
+
+253
+00:19:56,503 --> 00:20:02,803
+It turns inputs into tokens, computes relationships,
+and uses other input information to produce outputs.
+
+254
+00:20:02,963 --> 00:20:07,123
+What if the input were a scene made of triangles
+instead of a sentence?
+
+255
+00:20:07,223 --> 00:20:10,543
+What if the output were image pixels instead of
+words?
+
+256
+00:20:10,823 --> 00:20:14,243
+RenderFormer applies this connection to 3D
+rendering.
+
+257
+00:20:14,403 --> 00:20:19,843
+We now move from relationships between words to
+relationships between surfaces, light, and cameras.
+
+258
+00:20:20,967 --> 00:20:26,287
+RenderFormer predicts images from triangle meshes,
+materials, lighting, and camera information.
+
+259
+00:20:26,487 --> 00:20:33,367
+A model trained on many scenes is used, so each
+new scene does not require
+
+260
+00:20:33,367 --> 00:20:34,127
+its own separate training process.
+
+261
+00:20:34,407 --> 00:20:39,507
+It addresses global illumination effects such as shadows,
+reflections, and light bouncing between surfaces.
+
+262
+00:20:39,627 --> 00:20:43,447
+This does not mean input conversion or
+normalization is unnecessary.
+
+263
+00:20:43,667 --> 00:20:49,147
+Nor does a learned prediction guarantee
+physically accurate results for every scene.
+
+264
+00:20:49,147 --> 00:20:55,907
+The goal is to learn the rendering process from scene
+to image, beyond a representation of just one scene.
+
+265
+00:20:57,250 --> 00:21:02,150
+Translation transforms one token sequence into
+another.
+
+266
+00:21:02,310 --> 00:21:07,890
+RenderFormer considers transforming a sequence
+of triangles into a sequence of image patches.
+
+267
+00:21:08,130 --> 00:21:11,490
+This motivates the analogy of translating 3D
+into 2D.
+
+268
+00:21:11,750 --> 00:21:19,130
+The original NeRF learns a scene's radiance field
+from multiple images to synthesize new views.
+
+269
+00:21:19,410 --> 00:21:24,190
+RenderFormer starts from explicit triangle
+meshes instead.
+
+270
+00:21:24,190 --> 00:21:29,690
+We should not generalize that every method in
+the NeRF family requires per-scene training.
+
+271
+00:21:30,967 --> 00:21:33,507
+Let us connect the overall process.
+
+272
+00:21:33,567 --> 00:21:37,687
+First, turn mesh, material, and emission
+information into triangle tokens.
+
+273
+00:21:37,827 --> 00:21:42,087
+The triangles exchange information to form scene
+features.
+
+274
+00:21:42,327 --> 00:21:46,267
+On the camera side, group rays pointing toward
+the image into tokens.
+
+275
+00:21:46,607 --> 00:21:51,427
+These ray tokens attend to the scene; a final
+decoder reconstructs the image.
+
+276
+00:21:51,587 --> 00:21:57,067
+It does not write pixels one by one from the
+upper left, as if generating a sentence.
+
+277
+00:21:57,067 --> 00:22:01,807
+It processes output-patch features together to
+produce an image.
+
+278
+00:22:02,933 --> 00:22:04,613
+The architecture has two stages.
+
+279
+00:22:04,733 --> 00:22:10,973
+The view-independent stage models relationships between
+triangles to obtain features useful for light transport.
+
+280
+00:22:11,193 --> 00:22:15,533
+The view-dependent stage uses those features for
+a particular camera view.
+
+281
+00:22:15,533 --> 00:22:20,953
+Reflections and occlusion change with viewing
+direction, making the second stage necessary.
+
+282
+00:22:20,973 --> 00:22:26,473
+If scene and lighting stay unchanged, the first
+stage's results may be reused across views.
+
+283
+00:22:26,473 --> 00:22:29,833
+The 12 and six layers shown belong to the
+original paper's base configuration.
+
+284
+00:22:29,833 --> 00:22:35,213
+Do not equate each layer with one physical
+bounce of light.
+
+285
+00:22:36,333 --> 00:22:39,733
+Geometry alone is not enough to render a
+triangle.
+
+286
+00:22:40,033 --> 00:22:46,913
+We also need surface orientation, reflected colors,
+roughness, and whether the surface emits light.
+
+287
+00:22:47,233 --> 00:22:49,993
+These properties are converted into vectors the
+model can process.
+
+288
+00:22:50,273 --> 00:22:54,213
+The base model uses 768-dimensional triangle
+features.
+
+289
+00:22:54,633 --> 00:23:00,993
+Spatial position is especially important, but
+the default RoPE path does not simply
+
+290
+00:23:00,993 --> 00:23:01,573
+add a position index to each token.
+
+291
+00:23:01,893 --> 00:23:05,853
+It incorporates 3D coordinates when computing
+relationships between Q and K.
+
+292
+00:23:07,100 --> 00:23:11,120
+Up close, the bunny mesh consists of many
+triangles.
+
+293
+00:23:11,340 --> 00:23:18,020
+Each has three vertex positions and can use
+vertex normals to represent smooth surfaces.
+
+294
+00:23:18,200 --> 00:23:21,680
+Normals describe which direction the surface
+faces.
+
+295
+00:23:21,880 --> 00:23:26,560
+Even the same color and material respond differently
+to light when their orientation changes.
+
+296
+00:23:26,780 --> 00:23:32,620
+Triangle counts and vertex counts differ, and
+depend on how the mesh was simplified.
+
+297
+00:23:32,800 --> 00:23:39,000
+Focus on turning a small surface element into an
+input token, rather than the bunny's exact count.
+
+298
+00:23:40,183 --> 00:23:43,643
+This page illustrates the patch inputs in the
+public code.
+
+299
+00:23:43,823 --> 00:23:51,323
+The paper describes 10 material values, while
+the public code uses 13-channel patches
+
+300
+00:23:51,323 --> 00:23:52,043
+that include normal-map channels.
+
+301
+00:23:52,103 --> 00:23:56,703
+The channels contain diffuse color, specular color,
+roughness, normal-map, and emission information.
+
+302
+00:23:56,903 --> 00:24:02,683
+For a constant material, values repeat across the
+patch; areas outside the triangle are masked.
+
+303
+00:24:02,783 --> 00:24:06,723
+Flattening, linear projection, and normalization
+map the patch to the token dimension.
+
+304
+00:24:06,723 --> 00:24:10,143
+Repeating a value does not create new material
+information.
+
+305
+00:24:10,143 --> 00:24:16,283
+Rather than assuming the goal is merely to
+increase parameter count, understand this
+
+306
+00:24:16,283 --> 00:24:16,983
+as the code's spatial patch format.
+
+307
+00:24:18,300 --> 00:24:22,760
+Linear projection can change magnitude, so
+normalization adjusts the scale.
+
+308
+00:24:23,140 --> 00:24:27,760
+RMS normalization uses the root mean square of
+the features.
+
+309
+00:24:28,120 --> 00:24:31,720
+Unlike the layer normalization seen earlier, it
+does not subtract the mean.
+
+310
+00:24:32,160 --> 00:24:36,100
+It also uses a small numerical-stability
+constant and a learned scale.
+
+311
+00:24:36,220 --> 00:24:42,920
+This can help stabilize training, but does not
+guarantee that later computations
+
+312
+00:24:42,920 --> 00:24:43,460
+use directional similarity alone.
+
+313
+00:24:43,620 --> 00:24:47,060
+For now, think of it as controlling the
+numerical scale of token features.
+
+314
+00:24:48,333 --> 00:24:51,973
+Surface normals are separately converted into
+vectors.
+
+315
+00:24:52,193 --> 00:24:59,253
+Three vertex normals, each with x, y, and z
+components, provide nine values.
+
+316
+00:24:59,433 --> 00:25:04,493
+The public code can encode them with sine and
+cosine at multiple frequencies.
+
+317
+00:25:04,653 --> 00:25:08,473
+A linear layer projects the result to the token
+dimension, followed by normalization.
+
+318
+00:25:08,533 --> 00:25:13,253
+Positions describe where a surface is; normals
+describe which way it faces.
+
+319
+00:25:13,413 --> 00:25:17,573
+Both look like 3D vectors, but their meanings
+and processing paths differ.
+
+320
+00:25:18,683 --> 00:25:23,323
+Material and normal embeddings have matching
+dimensions and can be added element by element.
+
+321
+00:25:23,583 --> 00:25:28,063
+A learned vector shared by all triangles is also
+added.
+
+322
+00:25:28,223 --> 00:25:31,423
+The code calls this vector tri_token.
+
+323
+00:25:31,523 --> 00:25:39,023
+Material and normal embeddings carry triangle-specific
+information; the shared vector provides a learned offset.
+
+324
+00:25:39,023 --> 00:25:45,763
+Calling it triangle-type information is a useful
+analogy, not a fixed label for each internal dimension.
+
+325
+00:25:45,763 --> 00:25:50,723
+In the default RoPE path, positions are passed
+to attention separately from this sum.
+
+326
+00:25:51,833 --> 00:25:54,353
+We must distinguish the branches in the code.
+
+327
+00:25:54,553 --> 00:26:01,953
+Projecting a positional encoding and adding it to the
+triangle vector belongs to the NeRF-encoding branch.
+
+328
+00:26:02,093 --> 00:26:08,013
+The default RoPE branch adds the shared triangle
+vector, material embedding, and normal embedding.
+
+329
+00:26:08,373 --> 00:26:12,873
+Position information later rotates Q and K
+inside attention.
+
+330
+00:26:13,333 --> 00:26:19,853
+Showing both formulas as always active together
+would misleadingly suggest position is added twice.
+
+331
+00:26:19,853 --> 00:26:25,013
+We will follow the default RoPE path when
+examining the paper's core architecture.
+
+332
+00:26:26,267 --> 00:26:30,087
+The tri_token declaration registers it as a
+parameter.
+
+333
+00:26:30,167 --> 00:26:33,627
+That means backpropagation updates it during
+training.
+
+334
+00:26:33,807 --> 00:26:40,307
+Its shape is one by one by feature dimension,
+allowing one vector to be added across triangles.
+
+335
+00:26:40,507 --> 00:26:45,607
+Sharing a value does not mean it never changes
+during training.
+
+336
+00:26:45,787 --> 00:26:53,547
+All triangles use the same vector in one computation,
+and training updates the shared vector itself.
+
+337
+00:26:53,827 --> 00:26:56,147
+Shared and fixed are different concepts.
+
+338
+00:26:57,267 --> 00:27:02,007
+The public code initializes this shared vector
+with normally distributed random values.
+
+339
+00:27:02,187 --> 00:27:04,367
+One point needs clarification.
+
+340
+00:27:04,507 --> 00:27:11,447
+It is generally incorrect to claim that zero
+initialization forces identical gradients
+
+341
+00:27:11,447 --> 00:27:12,147
+and makes the vector remain one-dimensional
+forever.
+
+342
+00:27:12,367 --> 00:27:18,827
+Different surrounding weights and inputs can produce
+different gradients from equal initial values.
+
+343
+00:27:18,987 --> 00:27:25,167
+Problems with symmetric initialization of all network
+weights do not automatically apply to one shared offset.
+
+344
+00:27:25,167 --> 00:27:31,607
+Choosing random initialization is not evidence
+that every alternative must fail.
+
+345
+00:27:33,150 --> 00:27:38,110
+The learned vector is not simply a numerical
+label spelling out triangle.
+
+346
+00:27:38,290 --> 00:27:42,350
+It is adjusted jointly to help the overall model
+predict images.
+
+347
+00:27:42,590 --> 00:27:49,850
+We cannot claim that dimension 12 means position
+or dimension 47 means shadow.
+
+348
+00:27:50,090 --> 00:27:53,850
+Information is generally distributed across many
+dimensions and layers.
+
+349
+00:27:54,010 --> 00:27:58,190
+Assigning roles to individual dimensions should
+only be used as a hypothetical analogy.
+
+350
+00:27:58,190 --> 00:28:04,630
+The code establishes its shape, sharing
+behavior, and status as a trainable parameter.
+
+351
+00:28:05,900 --> 00:28:09,320
+Adding a shared vector also appears in language
+models.
+
+352
+00:28:09,600 --> 00:28:14,700
+For example, BERT's segment embeddings indicate
+which sentence segment a token belongs to.
+
+353
+00:28:15,060 --> 00:28:21,040
+RenderFormer's shared triangle vector can be
+compared as learned information added in common.
+
+354
+00:28:21,440 --> 00:28:26,800
+That does not make their objectives, initialization
+details, or learned meanings identical.
+
+355
+00:28:27,120 --> 00:28:33,820
+Separate how a vector is shared from the values
+it eventually learns.
+
+356
+00:28:35,133 --> 00:28:39,653
+Learnable register tokens are added alongside
+the triangle tokens.
+
+357
+00:28:39,773 --> 00:28:42,193
+The base model has 16 of them.
+
+358
+00:28:42,293 --> 00:28:49,173
+Rather than representing individual triangles, they
+can provide extra space for scene-wide information.
+
+359
+00:28:49,393 --> 00:28:55,013
+They are prepended along the token axis, not
+added elementwise to triangle tokens.
+
+360
+00:28:55,213 --> 00:28:59,733
+With N triangles, the sequence therefore has N
+plus 16 tokens.
+
+361
+00:28:59,733 --> 00:29:04,773
+These separate register tokens are different
+from the shared tri_token vector.
+
+362
+00:29:05,900 --> 00:29:09,180
+In language, a word's position within a sentence
+matters.
+
+363
+00:29:09,460 --> 00:29:15,660
+For a mesh, actual 3D position matters more than
+its triangle's index in a file.
+
+364
+00:29:15,840 --> 00:29:19,960
+Reordering a list should not change shadows and
+reflections.
+
+365
+00:29:20,080 --> 00:29:26,720
+RoPE rotates parts of Q and K by position so
+their dot products reflect relative position.
+
+366
+00:29:26,740 --> 00:29:31,380
+RenderFormer extends this idea to the
+coordinates of a triangle's three vertices.
+
+367
+00:29:31,440 --> 00:29:36,540
+Relationship calculations therefore incorporate
+where the token's content lies in space.
+
+368
+00:29:37,783 --> 00:29:43,043
+Preprocessing can align coordinate origin and
+scale before positional encoding.
+
+369
+00:29:43,303 --> 00:29:50,203
+The inspected mesh-normalization function subtracts the
+vertex mean and divides by twice the maximum radius.
+
+370
+00:29:50,463 --> 00:29:54,703
+Its maximum radius therefore becomes 0.5, not
+one.
+
+371
+00:29:54,903 --> 00:29:59,803
+This illustrates why we should inspect actual
+formulas, not just comments or variable names.
+
+372
+00:29:59,923 --> 00:30:04,683
+Each triangle's three vertex coordinates can
+then be flattened into nine values.
+
+373
+00:30:04,683 --> 00:30:12,303
+In the shape B by T by 9, B is batch size, T is
+triangle count, and 9 contains vertex coordinates.
+
+374
+00:30:13,417 --> 00:30:17,977
+Register tokens are not real triangles, so they
+have no corresponding three vertices.
+
+375
+00:30:18,077 --> 00:30:22,597
+They still need a position reference for spatial
+positional encoding.
+
+376
+00:30:22,777 --> 00:30:27,377
+The default implementation uses the scene center
+calculated from valid triangle vertices.
+
+377
+00:30:27,597 --> 00:30:31,957
+This position is separate from the learned
+register feature vector.
+
+378
+00:30:32,137 --> 00:30:36,157
+Registers can help store global information
+through attention.
+
+379
+00:30:36,317 --> 00:30:43,597
+But triangles also communicate directly through
+global self-attention; no single register
+
+380
+00:30:43,597 --> 00:30:45,017
+is guaranteed to summarize the entire scene
+perfectly.
+
+381
+00:30:46,167 --> 00:30:51,007
+Multiplying each coordinate by several frequencies
+represents variations at different scales.
+
+382
+00:30:51,207 --> 00:30:55,887
+Here, nine coordinate components are expanded
+with six frequencies each.
+
+383
+00:30:56,087 --> 00:31:01,147
+That gives nine times six, or 54 angle-related
+values per position.
+
+384
+00:31:01,427 --> 00:31:05,807
+Low and high frequencies change at different
+rates as position changes.
+
+385
+00:31:05,927 --> 00:31:09,947
+This lets the model use relationships at
+multiple spatial scales.
+
+386
+00:31:10,207 --> 00:31:16,827
+Without these frequencies, space does not become
+one-dimensional; they enrich its representation.
+
+387
+00:31:17,967 --> 00:31:20,967
+Let us review the dimensions in the same
+diagram.
+
+388
+00:31:21,167 --> 00:31:27,527
+The paper's base model has 768 dimensions and
+six heads, giving 128 dimensions per head.
+
+389
+00:31:27,627 --> 00:31:32,747
+Nine coordinates with six frequencies provide 54
+rotation angles for feature pairs.
+
+390
+00:31:32,927 --> 00:31:36,607
+Each rotation uses two components, corresponding
+to 108 dimensions.
+
+391
+00:31:36,787 --> 00:31:39,927
+The remaining 20 dimensions are unchanged by
+this positional rotation.
+
+392
+00:31:39,987 --> 00:31:47,087
+Configuration names and internal frequency counts
+may be expressed differently in implementations,
+
+393
+00:31:47,087 --> 00:31:48,167
+so check the actual tensor shapes too.
+
+394
+00:31:49,283 --> 00:31:52,703
+Sine and cosine are used to rotate pairs of
+components.
+
+395
+00:31:52,843 --> 00:31:59,063
+Rotating two vectors according to their positions lets
+their dot product reflect the positional difference.
+
+396
+00:31:59,243 --> 00:32:02,243
+That is the key intuition for incorporating
+relative position into attention.
+
+397
+00:32:02,403 --> 00:32:08,723
+This rotates feature components, not the actual
+mesh in front of a camera.
+
+398
+00:32:08,843 --> 00:32:14,963
+Rotation preserves a pair's length, unlike
+normalization that adjusts vector magnitudes.
+
+399
+00:32:14,963 --> 00:32:21,323
+It also does not guarantee identical results
+under every rotation of a 3D scene.
+
+400
+00:32:22,433 --> 00:32:25,893
+With the inputs ready, triangles exchange
+information.
+
+401
+00:32:26,193 --> 00:32:31,573
+Emissive surfaces, illuminated surfaces, and
+nearby reflectors can affect one another.
+
+402
+00:32:31,893 --> 00:32:36,453
+Self-attention provides an information-exchange
+structure for learning such relationships from data.
+
+403
+00:32:36,793 --> 00:32:41,373
+One attention connection does not correspond
+exactly to one physical light ray.
+
+404
+00:32:41,693 --> 00:32:45,373
+The model changes its features to better predict
+rendered images.
+
+405
+00:32:45,753 --> 00:32:51,953
+The resulting tokens are latent, context-aware
+representations, not the original material values.
+
+406
+00:32:53,200 --> 00:32:56,780
+Triangle tokens are also projected into Q, K,
+and V.
+
+407
+00:32:56,900 --> 00:33:04,100
+Q and K determine attention weights, and a
+weighted sum of V transfers features.
+
+408
+00:33:04,300 --> 00:33:07,820
+The basic principle is the same as sentence
+self-attention.
+
+409
+00:33:07,920 --> 00:33:13,740
+The inputs, however, are triangles with materials,
+normals, and spatial relationships rather than words.
+
+410
+00:33:13,900 --> 00:33:18,220
+We should not read attention scores directly as
+fractions of physical light energy.
+
+411
+00:33:18,220 --> 00:33:23,660
+They are learned information-combination weights
+used to predict physical effects.
+
+412
+00:33:24,833 --> 00:33:28,153
+Let us locate the positional encoding in this
+diagram.
+
+413
+00:33:28,333 --> 00:33:32,573
+Q and K are rotated according to spatial
+coordinates before scores are computed.
+
+414
+00:33:32,593 --> 00:33:35,373
+V carries the information combined using those
+scores.
+
+415
+00:33:35,533 --> 00:33:38,753
+Position therefore influences the criterion used
+to compare tokens.
+
+416
+00:33:39,033 --> 00:33:45,033
+Nearby triangles or triangles with similar
+materials do not always receive greater attention.
+
+417
+00:33:45,173 --> 00:33:48,613
+A distant light source or a surface in a
+reflection direction may also matter.
+
+418
+00:33:48,793 --> 00:33:53,653
+Weights depend on learned features and context
+as well as position.
+
+419
+00:33:54,800 --> 00:33:57,120
+Let us put the steps together again.
+
+420
+00:33:57,320 --> 00:34:00,920
+First, calculate Q, K, and V from each token.
+
+421
+00:34:01,060 --> 00:34:05,560
+Second, rotate Q and K using position
+information and compute dot-product scores.
+
+422
+00:34:05,700 --> 00:34:09,860
+Third, apply scaling and softmax, then form a
+weighted sum of V.
+
+423
+00:34:10,060 --> 00:34:13,980
+The numbers in the diagram illustrate these
+operations at a small scale.
+
+424
+00:34:14,140 --> 00:34:21,240
+The real model calculates many tokens and heads in
+parallel, with stabilizers such as normalization.
+
+425
+00:34:22,433 --> 00:34:27,593
+After gathering information from other tokens, a
+triangle adds the result to its original representation.
+
+426
+00:34:27,813 --> 00:34:31,133
+This supports gradual updates across layers.
+
+427
+00:34:31,333 --> 00:34:36,313
+A direct path for the original input also helps
+train a deep model.
+
+428
+00:34:36,553 --> 00:34:41,413
+It is not an absolute guarantee that spatial
+information is preserved without loss.
+
+429
+00:34:41,553 --> 00:34:45,213
+Position is also supplied repeatedly through a
+separate encoding path.
+
+430
+00:34:45,393 --> 00:34:49,833
+Residual connections and positional encoding
+serve different purposes and work together.
+
+431
+00:34:50,950 --> 00:34:55,090
+The normalization here differs from the original
+Transformer described earlier.
+
+432
+00:34:55,190 --> 00:35:01,350
+RenderFormer's base architecture and inspected
+code use pre-norm RMS normalization.
+
+433
+00:35:01,570 --> 00:35:06,430
+Input scales are adjusted before the main
+attention or FFN operation.
+
+434
+00:35:06,610 --> 00:35:10,870
+Describing this as subtracting the mean to produce
+a standard normal distribution is incorrect.
+
+435
+00:35:11,090 --> 00:35:18,230
+RMS normalization uses mean-square magnitude;
+normalization does not make data normally distributed.
+
+436
+00:35:18,230 --> 00:35:23,470
+The principles connect, but the detailed blocks
+are not identical.
+
+437
+00:35:24,583 --> 00:35:29,883
+After attention gathers scene information, the
+FFN processes each token.
+
+438
+00:35:30,103 --> 00:35:34,683
+It transforms lighting-related relationships
+into features useful to later layers.
+
+439
+00:35:34,903 --> 00:35:41,043
+Organizing brightness and color is an analogy; individual
+dimensions are not directly measurable brightness values.
+
+440
+00:35:41,343 --> 00:35:44,723
+The base view-independent stage passes through
+12 such layers.
+
+441
+00:35:44,963 --> 00:35:50,483
+They are not assigned fixed physical roles, such
+as direct light first and one bounce second.
+
+442
+00:35:50,603 --> 00:35:54,143
+The full stack learns to reduce the final
+prediction error.
+
+443
+00:35:55,267 --> 00:35:59,067
+We should also check the FFN activation used.
+
+444
+00:35:59,227 --> 00:36:04,267
+The original Transformer used ReLU, while many
+other models use GELU.
+
+445
+00:36:04,447 --> 00:36:07,547
+RenderFormer's default, however, is SwiGLU.
+
+446
+00:36:07,707 --> 00:36:15,487
+SwiGLU transforms the input along two branches and
+multiplies a smoothly activated branch with the other.
+
+447
+00:36:15,607 --> 00:36:20,967
+GELU, incidentally, does not randomly pass
+negative values as if flipping a coin at runtime.
+
+448
+00:36:20,967 --> 00:36:27,907
+We distinguish general activation examples from
+the block RenderFormer actually uses.
+
+449
+00:36:29,067 --> 00:36:36,467
+In summary, position-aware attention exchanges information,
+while normalization, FFNs, and residuals update features.
+
+450
+00:36:36,607 --> 00:36:42,647
+Triangle and register tokens now carry features
+informed by relationships throughout the scene.
+
+451
+00:36:42,887 --> 00:36:46,767
+But we have not yet produced a pixel image for
+display.
+
+452
+00:36:46,987 --> 00:36:50,647
+We must now introduce the camera's location and
+viewing direction.
+
+453
+00:36:50,827 --> 00:36:54,707
+In the next stage, camera-side tokens attend to
+these scene features.
+
+454
+00:36:55,833 --> 00:37:00,853
+Each camera pixel corresponds to a ray pointing
+into the scene.
+
+455
+00:37:01,053 --> 00:37:05,933
+RenderFormer groups these rays rather than
+creating a separate token for every pixel.
+
+456
+00:37:06,133 --> 00:37:11,913
+In the base configuration, one group covers
+eight by eight pixels, or 64 rays.
+
+457
+00:37:12,213 --> 00:37:16,733
+These rays do not mean the model directly traces
+multiple light bounces through the scene.
+
+458
+00:37:16,893 --> 00:37:20,533
+They are inputs describing the camera's viewing
+directions.
+
+459
+00:37:20,533 --> 00:37:26,193
+We now have triangle tokens for the scene and
+ray tokens for the view.
+
+460
+00:37:27,317 --> 00:37:31,457
+In camera coordinates, all ray origins can be
+placed at the origin.
+
+461
+00:37:31,637 --> 00:37:36,837
+Normalize each pixel's direction, then group 64
+direction vectors.
+
+462
+00:37:37,177 --> 00:37:41,397
+With three components per direction, the basic
+input contains 192 numbers.
+
+463
+00:37:41,597 --> 00:37:46,297
+Linear projection and normalization turn these
+into a 768-dimensional token.
+
+464
+00:37:46,437 --> 00:37:50,217
+Each image patch gets one such ray-patch token.
+
+465
+00:37:50,557 --> 00:37:57,117
+Triangles and rays are not simply combined into
+one list to do the same job;
+
+466
+00:37:57,117 --> 00:37:57,937
+they become different inputs to cross-attention.
+
+467
+00:37:59,117 --> 00:38:03,357
+The view-dependent stage first retrieves scene
+features through cross-attention.
+
+468
+00:38:03,557 --> 00:38:08,737
+Self-attention between ray-patch tokens then
+exchanges image-side information.
+
+469
+00:38:08,837 --> 00:38:12,157
+An FFN processes the result.
+
+470
+00:38:12,377 --> 00:38:16,437
+Together, these operations form features needed
+for the image from this camera.
+
+471
+00:38:16,497 --> 00:38:22,377
+Cross-attention does not literally execute a
+conventional ray-triangle intersection algorithm.
+
+472
+00:38:22,457 --> 00:38:27,997
+Nor does adding self-attention guarantee the
+removal of every patch boundary or artifact.
+
+473
+00:38:27,997 --> 00:38:32,277
+We are examining how these connections can
+improve prediction quality.
+
+474
+00:38:33,467 --> 00:38:37,247
+Recall the encoder-decoder cross-attention from
+earlier.
+
+475
+00:38:37,567 --> 00:38:40,327
+Here, ray-patch representations produce Q.
+
+476
+00:38:40,667 --> 00:38:45,767
+Triangle and register features from the view-
+independent stage provide K and V.
+
+477
+00:38:46,107 --> 00:38:49,247
+The camera side queries the scene information it
+needs.
+
+478
+00:38:49,587 --> 00:38:55,507
+V contains learned features, not a lookup table
+of finished pixel colors.
+
+479
+00:38:55,967 --> 00:39:01,467
+Further processing and the final decoder are
+needed to produce actual image values.
+
+480
+00:39:02,700 --> 00:39:07,600
+Scene information retrieved by cross-attention is
+added to the original ray-side representation.
+
+481
+00:39:07,800 --> 00:39:13,980
+This accumulates information from the scene on
+top of the camera-direction representation.
+
+482
+00:39:14,140 --> 00:39:17,400
+It follows the same residual-update intuition
+introduced earlier.
+
+483
+00:39:17,600 --> 00:39:25,340
+Cross-attention itself depends on Q, so its result
+is not entirely devoid of camera information.
+
+484
+00:39:25,380 --> 00:39:31,540
+The residual path provides a stable way to use both
+the original representation and the new update.
+
+485
+00:39:32,667 --> 00:39:36,307
+The sequence exchanging information now consists
+of ray patches, not triangles.
+
+486
+00:39:36,607 --> 00:39:41,967
+Each patch attends to other patches, and the FFN
+processes the result.
+
+487
+00:39:42,347 --> 00:39:46,607
+The attention operation is familiar, but the
+sequence being processed has changed.
+
+488
+00:39:46,967 --> 00:39:51,207
+The paper's base view-dependent stage stacks six
+such blocks.
+
+489
+00:39:51,747 --> 00:39:56,967
+Unlike a language decoder, it does not hide
+future words and generate pixels sequentially.
+
+490
+00:39:57,487 --> 00:40:01,607
+It prepares patch features together to
+reconstruct the full image.
+
+491
+00:40:02,867 --> 00:40:06,567
+Ray-patch tokens are still feature vectors, not
+a pixel image.
+
+492
+00:40:06,687 --> 00:40:14,407
+The DPT decoder rearranges them into spatial grids and
+combines multiple scales into a dense image output.
+
+493
+00:40:14,507 --> 00:40:18,607
+The prediction target is HDR radiance, with a
+wide brightness range.
+
+494
+00:40:19,047 --> 00:40:23,147
+This is different from display-ready colors
+restricted to zero through one.
+
+495
+00:40:23,267 --> 00:40:30,067
+RenderFormer uses a logarithmic output space;
+reconstruction can be followed by tone mapping for display.
+
+496
+00:40:30,067 --> 00:40:33,747
+This is the final bridge from learned features
+to the image we see.
+
+497
+00:40:35,067 --> 00:40:39,927
+This diagram expands the conversion from a token
+sequence back into image space.
+
+498
+00:40:40,167 --> 00:40:44,947
+The paper takes features from the last four
+view-dependent Transformer layers.
+
+499
+00:40:45,247 --> 00:40:50,687
+Each is rearranged into a 2D patch grid and
+transformed to different spatial sizes.
+
+500
+00:40:50,847 --> 00:40:55,707
+This prepares information at multiple resolutions
+instead of using only one feature scale.
+
+501
+00:40:56,347 --> 00:41:02,607
+Rather than memorizing every channel count,
+notice the sequence regaining a spatial layout.
+
+502
+00:41:02,607 --> 00:41:06,847
+Next, features at different sizes are combined.
+
+503
+00:41:07,983 --> 00:41:13,583
+Fusion blocks progressively combine different
+feature scales and restore output resolution.
+
+504
+00:41:13,663 --> 00:41:17,203
+This process also uses convolutions and
+interpolation.
+
+505
+00:41:17,403 --> 00:41:23,403
+A Transformer-based renderer does not mean the
+entire pipeline contains no convolutions.
+
+506
+00:41:23,443 --> 00:41:30,263
+The inspected default HDR path does not use
+sigmoid to restrict output to zero through one.
+
+507
+00:41:30,263 --> 00:41:38,043
+An inverse logarithmic transform restores radiance;
+separate tone mapping prepares it for display.
+
+508
+00:41:38,383 --> 00:41:43,683
+Distinguish physical brightness prediction from display
+color representation when interpreting the results.
+
+509
+00:41:44,983 --> 00:41:49,923
+Diverse synthetic training scenes enable the
+model to learn lighting relationships.
+
+510
+00:41:50,143 --> 00:41:56,643
+Objects are placed in floor-and-wall templates
+while materials, lights, and cameras are varied.
+
+511
+00:41:56,803 --> 00:42:02,063
+Adding a wall changes not only shadows but also
+light reflected onto other surfaces.
+
+512
+00:42:02,283 --> 00:42:06,803
+The model learns by comparing its predictions
+with images from a reference renderer.
+
+513
+00:42:06,983 --> 00:42:13,583
+Log-space comparisons keep bright highlights from dominating,
+alongside losses measuring perceptual differences.
+
+514
+00:42:13,583 --> 00:42:20,583
+Not retraining for each new scene is entirely
+different from needing no training data at all.
+
+515
+00:42:21,733 --> 00:42:29,333
+Look beyond the overall impression to shadow edges,
+reflected shapes, and color bleeding between surfaces.
+
+516
+00:42:29,493 --> 00:42:34,373
+The reference is the comparison rendering; the
+middle image is RenderFormer's prediction.
+
+517
+00:42:34,653 --> 00:42:38,713
+The difference image amplifies error by a factor
+of five for visibility.
+
+518
+00:42:38,973 --> 00:42:44,533
+Darker areas indicate smaller differences; bright
+regions show where the two results disagree.
+
+519
+00:42:44,573 --> 00:42:50,713
+Generally, higher PSNR and SSIM are better,
+while lower LPIPS and FLIP are better.
+
+520
+00:42:50,713 --> 00:42:56,053
+These metrics measure different properties, so
+examine the images as well.
+
+521
+00:42:56,253 --> 00:43:03,433
+The results demonstrate learned global illumination
+effects, not perfect correctness for every scene.
+
+522
+00:43:03,433 --> 00:43:10,093
+Use the variations below to observe responses to
+changes in geometry, lighting, and materials.
+
+523
+00:43:11,217 --> 00:43:15,597
+Finally, let us summarize limitations within the
+scope of the original 2025 paper.
+
+524
+00:43:15,737 --> 00:43:19,317
+Attention becomes substantially more expensive
+as triangle counts increase.
+
+525
+00:43:19,577 --> 00:43:25,557
+Quality may fall outside the mesh sizes, materials,
+lights, and camera conditions seen during training.
+
+526
+00:43:25,797 --> 00:43:31,857
+Results resembling global illumination do not guarantee
+every physical law or perfect accuracy in every scene.
+
+527
+00:43:31,917 --> 00:43:37,597
+This research is not yet a finished general-
+purpose renderer ready for every game scene.
+
+528
+00:43:37,597 --> 00:43:44,377
+Still, treating triangle-based scene-to-image rendering
+as one learnable pipeline is an intriguing achievement.
+
+529
+00:43:44,617 --> 00:43:51,057
+Recall our progression: a structure that tokenizes
+words and computes relationships became one
+
+530
+00:43:51,057 --> 00:43:53,557
+that exchanges triangle features and retrieves
+information for a camera.
+
+531
+00:43:53,717 --> 00:43:59,837
+The input names changed, but the question remained:
+how should information be represented and connected?
+
+532
+00:43:59,837 --> 00:44:06,977
+Understanding Transformers and RenderFormer
+together in this way can make the architectures
+
+533
+00:44:06,977 --> 00:44:07,977
+of other neural-rendering studies much easier to
+follow.

@@ -333,9 +333,31 @@ if ($Stage -eq 'publish') {
                     Add-Pass 'editor audio mix contains audio and matches the final video duration'
                 }
             }
+            $membershipSeconds = 0.0
+            if ($manifest.PSObject.Properties['membershipOutro'] -and $manifest.membershipOutro.enabled) {
+                $membershipSeconds = [double]$manifest.membershipOutro.durationSeconds
+                if ([math]::Abs($membershipSeconds - 10) -gt 0.01) {
+                    Add-Failure 'membership outro must be 10 seconds'
+                }
+                if (-not $manifest.membershipOutro.appliedToFinal) {
+                    Add-Failure 'membership outro has not been verified in the final render'
+                }
+                $memberListPath = Join-Path $repoRoot $manifest.membershipOutro.rosterPath
+                if (-not (Test-Path -LiteralPath $memberListPath)) {
+                    Add-Failure 'membership roster missing'
+                } else {
+                    $memberList = Get-Content -LiteralPath $memberListPath -Raw -Encoding utf8 | ConvertFrom-Json
+                    $unverifiedMembers = @($memberList.members | Where-Object {
+                        ($_.PSObject.Properties['verified'] -and -not $_.verified) -or $_.handle -match '\u2026|\.\.\.'
+                    })
+                    if ($unverifiedMembers.Count -gt 0) {
+                        Add-Failure 'membership roster contains unconfirmed or truncated handles'
+                    }
+                }
+            }
             if ($null -ne $narrationDuration -and
-                [math]::Abs($duration - $narrationDuration) -gt 0.25) {
-                Add-Failure "video and narration durations differ by more than 0.25s"
+                [math]::Abs($duration - ($narrationDuration + $membershipSeconds)) -gt 0.25) {
+                Add-Failure "video duration must match body narration plus membership outro"
             }
             if ($null -ne $srtKoInfo -and $srtKoInfo.LastEnd -gt ($duration + 0.05)) {
                 Add-Failure 'Korean SRT extends beyond the final video'

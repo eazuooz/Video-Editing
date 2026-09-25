@@ -1,5 +1,9 @@
 # Video production defaults
 
+- Membership outro identity display: preserve the user-supplied profile image, displayed name/handle, and membership badge together. Text-only cards were rejected. Use the original screenshot/row assets, never generated substitutes; request the source image file if unavailable.
+
+- Every new final video ends with one 10-second membership thank-you scene. Follow `docs/MEMBERSHIP_OUTRO.md`; use the shared editable member list and the exact requested title `멤버쉽가입 감사드립니다.`. Do not guess truncated handles or silently update published older videos. Extend the final mix to cover the outro; preserve body subtitle timing.
+
 Before editing or creating a video, read `docs/VIDEO_WORKFLOW.md`,
 `docs/VIDEO_VISUAL_STYLE.md`, `docs/NARRATION_AUDIO_STANDARD.md`, and its project manifest.
 

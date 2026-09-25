@@ -265,6 +265,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/mix-frame-rate-audio
 
 ## 최종 출력과 완료 조건
 
+- 멤버십 엔딩: `docs/MEMBERSHIP_OUTRO.md`에 따라 본편 뒤 10초 추가. 본편 TTS 원본은 보존하고 최종 편집기 믹스만 엔딩 끝까지 연장한다. 승인된 BGM은 끊지 않고 이어 최종 끝에서 페이드하며, 무BGM 프로젝트는 무음으로 마무리한다. 새 TTS/음악을 임의로 추가하지 않는다. 감사 문구는 화면 텍스트이므로 별도 발화가 없으면 내레이션 SRT cue를 만들지 않는다.
+
 - 기본 게시본: 1920×1080, 60fps, H.264 + AAC
 - 2026-09-19 자막 기본값: 무자막 마스터와 한국어·영어 SRT를 보관하고, [흰 박스·초록 그림자 자막판](CAPTION_STYLE.md)을 기본으로 함께 제공
 - 자막판과 무자막판은 같은 길이·오디오 믹스를 사용. 스타일만 변경할 때는 TTS·믹스·SRT 타이밍을 변경하지 않음

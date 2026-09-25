@@ -1,0 +1,19 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><link rel="icon" href="data:,"><title>RenderFormer — 전체 본편</title>
+<style>body{margin:24px;background:#fff;color:#202020;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:auto}video{width:100%;background:#eee}nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0}button,select{font:inherit;padding:9px}p{color:#65728a}h1{font-size:26px}a{color:#2f5faa}</style>
+<main><h1>트랜스포머부터 RenderFormer까지</h1>
+<p>88페이지 전체 · 44분 8.75초 · 한국어 내레이션 · BGM 없음<br>본편 검토본입니다. 회원 원본 이미지 확보 후 10초 감사 엔딩을 추가합니다.</p>
+<nav><select id="variant" aria-label="영상 종류"><option value="captioned">한국어 박스 자막판</option><option value="clean">자막 없는 본편</option></select><select id="chapter" aria-label="페이지 이동"></select></nav>
+<video id="video" controls preload="metadata" playsinline></video>
+<p><a href="/src/projects/renderformer-explained/full/narrated/project">Motion Canvas 편집기</a> · <a href="/@fs/D:/Github/VideoEditing/projects/renderformer-explained/production/body-review/renderformer.ko.srt">한국어 SRT</a> · <a href="/@fs/D:/Github/VideoEditing/projects/renderformer-explained/production/body-review/renderformer.en.srt">English SRT</a></p>
+<p id="status"></p></main>
+<script type="module">
+import timing from './src/projects/renderformer-explained/full/narrated/timing.generated.json';
+const v=document.querySelector('#video'),select=document.querySelector('#chapter'),variant=document.querySelector('#variant');
+const base='/@fs/D:/Github/VideoEditing/projects/renderformer-explained/production/body-review/';
+timing.scenes.forEach((s,i)=>select.add(new Option(`${s.sourcePage}쪽 | ${s.title}`,i)));
+function load(){const t=v.currentTime||0;v.src=base+`renderformer-${variant.value}-review.mp4?revision=${timing.captionNotationRevision??'initial'}`;v.addEventListener('loadedmetadata',()=>v.currentTime=t,{once:true});}
+variant.onchange=load;select.onchange=()=>v.currentTime=timing.scenes[+select.value].firstFrame/60+.4;
+v.ontimeupdate=()=>document.querySelector('#status').textContent=`${Math.floor(v.currentTime/60)}:${String(Math.floor(v.currentTime%60)).padStart(2,'0')} / 44:09`;
+v.onerror=()=>document.querySelector('#status').textContent='파일 렌더가 아직 끝나지 않았거나 파일을 읽을 수 없습니다. 제작 상태를 확인해 주세요.';
+load();
+</script></html>

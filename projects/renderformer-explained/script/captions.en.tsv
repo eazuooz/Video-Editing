@@ -1,0 +1,534 @@
+page	cue	text
+1	0	Can a Transformer learn to render a 3D scene into an image?
+1	1	RenderFormer takes a scene made of triangles and predicts an image with lighting and shadows.
+1	2	Its name may be unfamiliar, but it starts with the attention mechanism used in language models.
+1	3	First, we will see how Transformers exchange information, then follow how that structure
+1	4	extends to triangles and cameras.
+1	5	Rather than memorizing every equation, focus on what goes in and what comes out.
+2	0	This video has two main parts.
+2	1	We will begin with embeddings, then cover position information, self-attention, encoders, and decoders.
+2	2	Next, we will examine what changes when the inputs are triangles instead of words.
+2	3	The key is a two-stage process: organize the scene, then form an image for a particular camera view.
+2	4	Finally, we will review the training scenes, results, and conditions this approach still struggles with.
+3	0	The Transformer was introduced in the 2017 paper Attention Is All You Need.
+3	1	At the time, recurrent neural networks commonly passed a previous state to the next step.
+3	2	Transformers instead centered on attention to directly compute relationships between positions.
+3	3	This made it easier to process many positions in parallel during training.
+3	4	The emphasis on attention refers to the main mechanism relating tokens to one another.
+3	5	It does not mean the linear layers, FFNs (feed-forward networks), or normalization are absent.
+4	0	The encoder on the left turns input words into vectors informed by their surrounding context.
+4	1	The decoder on the right uses that information to predict the next output token.
+4	2	In translation, for example, the encoder reads the source while the decoder builds the translation.
+4	3	The original base model stacked six layers on each side.
+4	4	Repeating a structure does not mean all the layers share one set of weights.
+4	5	For now, distinguish understanding the input from producing an output using that understanding.
+5	0	Neural networks cannot calculate directly with letters, so text is split into tokens and assigned IDs.
+5	1	We use whole words for simplicity here, but real tokens can also be parts of words.
+5	2	Assigning IDs to How, are, and you turns the sentence into a sequence of integers.
+5	3	Special tokens indicate the start, the end, and padding used to match lengths.
+5	4	A larger ID does not mean a more important word.
+5	5	Think of the ID as an address used to find an entry in a vocabulary.
+6	0	This small training example learns to answer How are you with I am fine.
+6	1	The encoder receives the question's token IDs.
+6	2	The decoder receives a start token and the target sentence shifted one position to the right.
+6	3	It predicts I from the start token, am after I, and fine after I am.
+6	4	During training, the known beginning of the correct answer can be supplied as input.
+6	5	During generation, the model instead uses the tokens it has already produced.
+7	0	Token IDs alone do not readily express relationships between words.
+7	1	Each ID is therefore mapped to a vector of real numbers.
+7	2	This is an embedding.
+7	3	People do not manually design every word's numerical meaning in advance.
+7	4	Useful vector representations are adjusted as the model learns its task.
+7	5	From here on, each row is one token; the numbers in that row are its features.
+8	0	Suppose our vocabulary has 11 entries, with six numbers representing each token.
+8	1	For How, are, and you, we retrieve the corresponding three rows of the embedding table.
+8	2	The result has three rows and six columns.
+8	3	We are not combining all 11 words into a single vector.
+8	4	Real models use much wider features. The original base Transformer used 512 dimensions.
+8	5	We use small matrices here to make the computation easier to follow.
+9	0	The same words can mean something different when their order changes.
+9	1	A dog bit a person and a person bit a dog are very different stories.
+9	2	Computing relationships from token content alone does not automatically provide sufficient order information.
+9	3	We must also tell the model where each word appears.
+9	4	That is the role of positional encoding.
+9	5	We prepare information about both content and position.
+10	0	The original Transformer represented positions with sine and cosine waves of different periods.
+10	1	Positions 0, 1, 2, and so on are used to calculate their position vectors.
+10	2	Even feature dimensions use sine, paired with cosine in the odd dimensions.
+10	3	Different periods express a single position at multiple scales.
+10	4	You do not need to memorize every number in the equation.
+10	5	The idea is to turn one position index into a numerical pattern useful for learning relationships.
+11	0	Word embeddings and positional encodings have matching dimensions.
+11	1	Their corresponding numbers can therefore be added.
+11	2	The number of rows and feature dimensions stays unchanged.
+11	3	Each token now carries information about both its identity and its position.
+11	4	This vector becomes the input to the next attention layer.
+11	5	Addition alone does not establish meaning; later layers learn relationships from this representation.
+12	0	Self-attention lets tokens within one sequence refer to one another.
+12	1	To interpret a word, it computes which other expressions should be considered with it.
+12	2	A token can receive information from several tokens with different weights.
+12	3	A vector initially representing only a word becomes a context-aware vector.
+12	4	Later, we will see cross-attention, which refers to a different sequence.
+12	5	For now, remember that self means the information comes from within the same sequence.
+13	0	One criterion may not capture several kinds of relationships at the same time.
+13	1	We therefore use several attention heads in parallel.
+13	2	It is like reading the same sentence from different perspectives.
+13	3	But people do not assign fixed jobs such as grammar to one head and emotion to another.
+13	4	Each head has its own learned projections and discovers useful relationships during training.
+13	5	We will first follow one head, then see how the results are combined.
+14	0	Different weight matrices transform the same input into Q, K, and V.
+14	1	Q describes what information to seek, K provides matching features, and V contains
+14	2	the information to pass along.
+14	3	A query, search features, and content to retrieve are useful analogies.
+14	4	But we do not manually write three separate sentences as inputs.
+14	5	These are all vectors calculated from the input, using learned transformations.
+14	6	Selecting information and gathering information use different representations.
+15	0	Relationships computed from initial weights may not yet help solve the task.
+15	1	The model gradually changes its weights to reduce the difference between predictions and targets.
+15	2	Repeated updates can produce representations that make better use of context.
+15	3	This does not mean a trained model understands every sentence perfectly.
+15	4	Its training data and capabilities still impose limits.
+15	5	Attention diagrams offer clues about how information is combined, but should not be treated
+15	6	as identical to human understanding.
+16	0	Now let us follow the computation.
+16	1	First, Q and K produce scores used to determine attention weights.
+16	2	Those scores are processed, then multiplied by V to gather information.
+16	3	Q and K determine how much to attend to; V supplies the content being retrieved.
+16	4	All three come from the same input, but serve different computational roles.
+16	5	Keeping this distinction in mind makes the sequence of matrices easier to follow.
+17	0	One row of Q corresponds to one token seeking information.
+17	1	Its dot product with each key vector produces a score.
+17	2	We multiply by the transposed K matrix to compute many tokens at once.
+17	3	With three tokens each attending to three tokens, the score matrix is three by three.
+17	4	These numbers are not yet probabilities or colors.
+17	5	They are unnormalized scores measuring compatibility in a learned feature space.
+18	0	Let us read the resulting matrix one row at a time.
+18	1	The first row contains the first token's scores for attending to each token.
+18	2	The second row is from the second token's perspective, and the third from the third token's.
+18	3	The score from A to B need not equal the score from B to A.
+18	4	That is because Q and K are produced by different transformations.
+18	5	Even within one sentence, different tokens may need different information.
+19	0	As vector dimensions increase, dot-product scores can grow larger.
+19	1	Large scores can make softmax overly concentrated and training more difficult.
+19	2	We therefore divide by the square root of the key dimension.
+19	3	This example has six dimensions, so we divide by the square root of six.
+19	4	This is not a distance between objects in space.
+19	5	It is a scale factor controlling score magnitude for the attention feature dimension.
+20	0	Next, we apply softmax to each row.
+20	1	This produces attention weights for each token; each row sums to one.
+20	2	Relatively higher scores receive more weight.
+20	3	Rather than an objective probability of correlation between words, these are
+20	4	the model's weights for combining information.
+20	5	Ordinary encoder self-attention does not use a causal mask to hide future tokens.
+20	6	It can still use a mask to exclude padding added to match sequence lengths.
+21	0	Multiplying the attention weights by V gathers the information each token attends to.
+21	1	A token given more weight contributes more of its value vector to the result.
+21	2	The result is a new feature vector for each token.
+21	3	It now reflects context retrieved from other tokens in the same sentence.
+21	4	The attention-weight matrix itself is not the final output.
+21	5	The gathered content is what passes to the next operation.
+22	0	So far, we have examined a single head.
+22	1	Multi-head attention performs these calculations in several feature spaces in parallel.
+22	2	The original base model used eight heads.
+22	3	Dividing 512 dimensions among eight heads gives each head 64 dimensions.
+22	4	These numbers are model settings, not universal rules for Transformers.
+22	5	RenderFormer uses different dimensions and a different number of heads.
+23	0	For simplicity, this diagram shows only two heads.
+23	1	Each head projects the input, computes Q-K scores and softmax, then takes a weighted sum of V.
+23	2	Implementations may project everything with one large linear layer before splitting into heads.
+23	3	This does not split the sentence into isolated first and second halves.
+23	4	Each head sees the same tokens through different feature representations.
+24	0	After the heads finish, each token has several result vectors.
+24	1	Different head weights can yield different results for the same token.
+24	2	These are multiple perspectives that have not yet been combined.
+24	3	Next, we concatenate them along the feature dimension.
+24	4	We are gathering each token's features, not increasing the number of tokens.
+25	0	After concatenation, we multiply by an output weight matrix.
+25	1	This layer combines information from the heads into a representation for the next layer.
+25	2	The total feature width matches the input to allow a residual connection.
+25	3	That completes the multi-head attention block.
+25	4	Compute relationship scores, gather information, and mix the different perspectives.
+26	0	Instead of passing only the new result forward, we add the original input as well.
+26	1	This is a residual connection.
+26	2	Think of it as adding this layer's update to the original representation.
+26	3	It provides a direct path for information and gradients, helping deep models train.
+26	4	Addition does not preserve all information forever or automatically solve every training problem.
+26	5	Next comes normalization to manage the scale of the values.
+27	0	The important question is which dimension we use to calculate the mean and variance.
+27	1	Transformer layer normalization typically operates across one token's feature dimensions.
+27	2	With tokens arranged in rows as shown, it uses the numbers within each row.
+27	3	It subtracts the mean, scales using variance and a small stability constant, then applies learned scale and bias.
+27	4	Distinguish this from batch normalization; it is not one common mean across sentences or all tokens.
+27	5	Normalization also does not turn the data into a normal distribution.
+28	0	After attention gathers information across tokens, we process each token's features.
+28	1	The original Transformer's FFN places ReLU between two linear layers.
+28	2	ReLU sets negative inputs to zero and passes positive inputs through.
+28	3	This nonlinearity allows representations beyond a simple linear transformation.
+28	4	Within a layer, the same FFN is applied to every token position.
+29	0	After the first layer and activation, the features enter a second linear layer.
+29	1	It projects the expanded features back to the model's base dimension.
+29	2	The original base model expands 512 dimensions to 2,048, then returns to 512.
+29	3	The screen illustrates the same idea with small matrices.
+29	4	Matching the output size also permits the residual connection we saw earlier.
+30	0	Similar matrix operations repeat, but the two blocks have distinct roles.
+30	1	Attention determines how much information to gather from other tokens.
+30	2	The FFN processes that information nonlinearly at each token position.
+30	3	Information exchange between tokens alternates with feature transformations within each token.
+30	4	Stacking these processes across layers gradually changes the representations.
+31	0	Residual connection and normalization also follow the FFN.
+31	1	One encoder layer consists of attention, add and norm, FFN, then add and norm again.
+31	2	Passing through these layers gives each token a new, context-aware representation.
+31	3	The original paper normalizes after each sublayer; many later models normalize before it.
+31	4	We will keep this distinction in mind when looking at RenderFormer.
+31	5	Now let us see how the decoder uses the encoder's information.
+32	0	The decoder also starts by embedding tokens and adding position information.
+32	1	Its input is the beginning of the output sentence, not the encoder's source sentence.
+32	2	In training, start, I, and am are used to predict I, am, and fine, respectively.
+32	3	This is why the inputs and targets were shifted by one position.
+32	4	The model learns to predict what comes next from what has appeared so far.
+33	0	The decoder likewise projects its current inputs into Q, K, and V.
+33	1	The overall process of scoring and gathering information is the same as in self-attention.
+33	2	But sequential output generation adds a condition.
+33	3	The current position must not see future target tokens.
+33	4	A mask therefore restricts the positions this attention can access.
+34	0	First, multiply Q by the transpose of K.
+34	1	Then scale the scores according to the key feature dimension.
+34	2	This computation is the same as in the encoder.
+34	3	The next step hides scores at positions that are not allowed.
+34	4	The math is not entirely different; the same calculation follows different information-flow rules.
+35	0	Knowing the target sentence during training does not mean we should reveal the next answer.
+35	1	Otherwise, the model could learn to rely on information unavailable during generation.
+35	2	The current position must only refer to the output prefix provided so far.
+35	3	We enforce this by blocking attention to future positions.
+35	4	This incorporates the conditions of generation into the training computation.
+36	0	In a matrix, the visible region forms a triangle.
+36	1	The first position can see only the first input.
+36	2	The second can see the first and second inputs.
+36	3	Later positions can refer to increasingly long prefixes.
+36	4	Because decoder inputs are shifted, seeing the current input does not reveal the next target.
+36	5	This is called a causal mask.
+37	0	In code, prohibited scores are set to negative infinity before softmax.
+37	1	Softmax turns those entries into zero weights.
+37	2	Their information is therefore excluded from the weighted sum of V.
+37	3	Weights over the allowed positions still sum to one.
+37	4	A mask does not create content; it restricts where information can flow.
+38	0	Multiply the masked attention weights by V.
+38	1	The first position receives only the first input, because all later positions are hidden.
+38	2	An entry with zero weight contributes none of its value vector.
+38	3	Future tokens therefore cannot directly flow into the resulting representation.
+38	4	Separating scoring from the weighted sum of content makes the mask's role clear.
+39	0	Now consider the second and third positions.
+39	1	They combine information from their allowed prefixes.
+39	2	Each output therefore reflects a different amount of context.
+39	3	During training, these positions can be calculated together as matrices.
+39	4	During generation, earlier outputs are needed as later inputs, so tokens are usually produced sequentially.
+39	5	Remember that parallel training and sequential generation are different things.
+40	0	Combining heads works the same way even when a mask is used.
+40	1	Concatenate the head outputs, then apply the output linear layer.
+40	2	This mixes the different views of the available prefix.
+40	3	The six-by-six matrix here belongs to this small illustrative example.
+40	4	Actual matrix sizes depend on the model dimension and head configuration.
+41	0	Add the original decoder representation to this result and normalize it.
+41	1	So far, the decoder has processed only the output prefix.
+41	2	Translation and question answering also require information about the original input.
+41	3	The encoder has already prepared that information.
+41	4	We now connect the decoder so it can attend to the encoder's output.
+42	0	In cross-attention, Q comes from a different source than K and V.
+42	1	Q is created from the decoder's current representation.
+42	2	K and V are created from the input processed by the encoder.
+42	3	The output side asks a question and retrieves useful information from the input side.
+42	4	This structure is also central to RenderFormer.
+42	5	There, camera-ray patches ask the questions and the triangle-based scene provides information.
+43	0	Cross-attention is followed by residual connection, normalization, and an FFN.
+43	1	The decoder representation now reflects both the output prefix and the original input context.
+43	2	The original paper uses six such decoder layers.
+43	3	What remains is to turn these vectors into predictions of the next token.
+43	4	On the next page, we will connect this to the training objective.
+44	0	The final linear layer converts each position's features into one score per vocabulary entry.
+44	1	Softmax produces a probability distribution over possible next tokens.
+44	2	During training, these predictions are compared with target tokens to compute a loss.
+44	3	Backpropagation updates trainable parameters in embeddings, attention, FFNs, and more.
+44	4	The relationships Q and K respond to are learned while reducing this objective.
+44	5	All those matrix operations are now connected to a single prediction task.
+45	0	We now have the basic tools of the Transformer.
+45	1	It turns inputs into tokens, computes relationships, and uses other input information to produce outputs.
+45	2	What if the input were a scene made of triangles instead of a sentence?
+45	3	What if the output were image pixels instead of words?
+45	4	RenderFormer applies this connection to 3D rendering.
+45	5	We now move from relationships between words to relationships between surfaces, light, and cameras.
+46	0	RenderFormer predicts images from triangle meshes, materials, lighting, and camera information.
+46	1	A model trained on many scenes is used, so each new scene does not require
+46	2	its own separate training process.
+46	3	It addresses global illumination effects such as shadows, reflections, and light bouncing between surfaces.
+46	4	This does not mean input conversion or normalization is unnecessary.
+46	5	Nor does a learned prediction guarantee physically accurate results for every scene.
+46	6	The goal is to learn the rendering process from scene to image, beyond a representation of just one scene.
+47	0	Translation transforms one token sequence into another.
+47	1	RenderFormer considers transforming a sequence of triangles into a sequence of image patches.
+47	2	This motivates the analogy of translating 3D into 2D.
+47	3	The original NeRF learns a scene's radiance field from multiple images to synthesize new views.
+47	4	RenderFormer starts from explicit triangle meshes instead.
+47	5	We should not generalize that every method in the NeRF family requires per-scene training.
+48	0	Let us connect the overall process.
+48	1	First, turn mesh, material, and emission information into triangle tokens.
+48	2	The triangles exchange information to form scene features.
+48	3	On the camera side, group rays pointing toward the image into tokens.
+48	4	These ray tokens attend to the scene; a final decoder reconstructs the image.
+48	5	It does not write pixels one by one from the upper left, as if generating a sentence.
+48	6	It processes output-patch features together to produce an image.
+49	0	The architecture has two stages.
+49	1	The view-independent stage models relationships between triangles to obtain features useful for light transport.
+49	2	The view-dependent stage uses those features for a particular camera view.
+49	3	Reflections and occlusion change with viewing direction, making the second stage necessary.
+49	4	If scene and lighting stay unchanged, the first stage's results may be reused across views.
+49	5	The 12 and six layers shown belong to the original paper's base configuration.
+49	6	Do not equate each layer with one physical bounce of light.
+50	0	Geometry alone is not enough to render a triangle.
+50	1	We also need surface orientation, reflected colors, roughness, and whether the surface emits light.
+50	2	These properties are converted into vectors the model can process.
+50	3	The base model uses 768-dimensional triangle features.
+50	4	Spatial position is especially important, but the default RoPE path does not simply
+50	5	add a position index to each token.
+50	6	It incorporates 3D coordinates when computing relationships between Q and K.
+51	0	Up close, the bunny mesh consists of many triangles.
+51	1	Each has three vertex positions and can use vertex normals to represent smooth surfaces.
+51	2	Normals describe which direction the surface faces.
+51	3	Even the same color and material respond differently to light when their orientation changes.
+51	4	Triangle counts and vertex counts differ, and depend on how the mesh was simplified.
+51	5	Focus on turning a small surface element into an input token, rather than the bunny's exact count.
+52	0	This page illustrates the patch inputs in the public code.
+52	1	The paper describes 10 material values, while the public code uses 13-channel patches
+52	2	that include normal-map channels.
+52	3	The channels contain diffuse color, specular color, roughness, normal-map, and emission information.
+52	4	For a constant material, values repeat across the patch; areas outside the triangle are masked.
+52	5	Flattening, linear projection, and normalization map the patch to the token dimension.
+52	6	Repeating a value does not create new material information.
+52	7	Rather than assuming the goal is merely to increase parameter count, understand this
+52	8	as the code's spatial patch format.
+53	0	Linear projection can change magnitude, so normalization adjusts the scale.
+53	1	RMS normalization uses the root mean square of the features.
+53	2	Unlike the layer normalization seen earlier, it does not subtract the mean.
+53	3	It also uses a small numerical-stability constant and a learned scale.
+53	4	This can help stabilize training, but does not guarantee that later computations
+53	5	use directional similarity alone.
+53	6	For now, think of it as controlling the numerical scale of token features.
+54	0	Surface normals are separately converted into vectors.
+54	1	Three vertex normals, each with x, y, and z components, provide nine values.
+54	2	The public code can encode them with sine and cosine at multiple frequencies.
+54	3	A linear layer projects the result to the token dimension, followed by normalization.
+54	4	Positions describe where a surface is; normals describe which way it faces.
+54	5	Both look like 3D vectors, but their meanings and processing paths differ.
+55	0	Material and normal embeddings have matching dimensions and can be added element by element.
+55	1	A learned vector shared by all triangles is also added.
+55	2	The code calls this vector tri_token.
+55	3	Material and normal embeddings carry triangle-specific information; the shared vector provides a learned offset.
+55	4	Calling it triangle-type information is a useful analogy, not a fixed label for each internal dimension.
+55	5	In the default RoPE path, positions are passed to attention separately from this sum.
+56	0	We must distinguish the branches in the code.
+56	1	Projecting a positional encoding and adding it to the triangle vector belongs to the NeRF-encoding branch.
+56	2	The default RoPE branch adds the shared triangle vector, material embedding, and normal embedding.
+56	3	Position information later rotates Q and K inside attention.
+56	4	Showing both formulas as always active together would misleadingly suggest position is added twice.
+56	5	We will follow the default RoPE path when examining the paper's core architecture.
+57	0	The tri_token declaration registers it as a parameter.
+57	1	That means backpropagation updates it during training.
+57	2	Its shape is one by one by feature dimension, allowing one vector to be added across triangles.
+57	3	Sharing a value does not mean it never changes during training.
+57	4	All triangles use the same vector in one computation, and training updates the shared vector itself.
+57	5	Shared and fixed are different concepts.
+58	0	The public code initializes this shared vector with normally distributed random values.
+58	1	One point needs clarification.
+58	2	It is generally incorrect to claim that zero initialization forces identical gradients
+58	3	and makes the vector remain one-dimensional forever.
+58	4	Different surrounding weights and inputs can produce different gradients from equal initial values.
+58	5	Problems with symmetric initialization of all network weights do not automatically apply to one shared offset.
+58	6	Choosing random initialization is not evidence that every alternative must fail.
+59	0	The learned vector is not simply a numerical label spelling out triangle.
+59	1	It is adjusted jointly to help the overall model predict images.
+59	2	We cannot claim that dimension 12 means position or dimension 47 means shadow.
+59	3	Information is generally distributed across many dimensions and layers.
+59	4	Assigning roles to individual dimensions should only be used as a hypothetical analogy.
+59	5	The code establishes its shape, sharing behavior, and status as a trainable parameter.
+60	0	Adding a shared vector also appears in language models.
+60	1	For example, BERT's segment embeddings indicate which sentence segment a token belongs to.
+60	2	RenderFormer's shared triangle vector can be compared as learned information added in common.
+60	3	That does not make their objectives, initialization details, or learned meanings identical.
+60	4	Separate how a vector is shared from the values it eventually learns.
+61	0	Learnable register tokens are added alongside the triangle tokens.
+61	1	The base model has 16 of them.
+61	2	Rather than representing individual triangles, they can provide extra space for scene-wide information.
+61	3	They are prepended along the token axis, not added elementwise to triangle tokens.
+61	4	With N triangles, the sequence therefore has N plus 16 tokens.
+61	5	These separate register tokens are different from the shared tri_token vector.
+62	0	In language, a word's position within a sentence matters.
+62	1	For a mesh, actual 3D position matters more than its triangle's index in a file.
+62	2	Reordering a list should not change shadows and reflections.
+62	3	RoPE rotates parts of Q and K by position so their dot products reflect relative position.
+62	4	RenderFormer extends this idea to the coordinates of a triangle's three vertices.
+62	5	Relationship calculations therefore incorporate where the token's content lies in space.
+63	0	Preprocessing can align coordinate origin and scale before positional encoding.
+63	1	The inspected mesh-normalization function subtracts the vertex mean and divides by twice the maximum radius.
+63	2	Its maximum radius therefore becomes 0.5, not one.
+63	3	This illustrates why we should inspect actual formulas, not just comments or variable names.
+63	4	Each triangle's three vertex coordinates can then be flattened into nine values.
+63	5	In the shape B by T by 9, B is batch size, T is triangle count, and 9 contains vertex coordinates.
+64	0	Register tokens are not real triangles, so they have no corresponding three vertices.
+64	1	They still need a position reference for spatial positional encoding.
+64	2	The default implementation uses the scene center calculated from valid triangle vertices.
+64	3	This position is separate from the learned register feature vector.
+64	4	Registers can help store global information through attention.
+64	5	But triangles also communicate directly through global self-attention; no single register
+64	6	is guaranteed to summarize the entire scene perfectly.
+65	0	Multiplying each coordinate by several frequencies represents variations at different scales.
+65	1	Here, nine coordinate components are expanded with six frequencies each.
+65	2	That gives nine times six, or 54 angle-related values per position.
+65	3	Low and high frequencies change at different rates as position changes.
+65	4	This lets the model use relationships at multiple spatial scales.
+65	5	Without these frequencies, space does not become one-dimensional; they enrich its representation.
+66	0	Let us review the dimensions in the same diagram.
+66	1	The paper's base model has 768 dimensions and six heads, giving 128 dimensions per head.
+66	2	Nine coordinates with six frequencies provide 54 rotation angles for feature pairs.
+66	3	Each rotation uses two components, corresponding to 108 dimensions.
+66	4	The remaining 20 dimensions are unchanged by this positional rotation.
+66	5	Configuration names and internal frequency counts may be expressed differently in implementations,
+66	6	so check the actual tensor shapes too.
+67	0	Sine and cosine are used to rotate pairs of components.
+67	1	Rotating two vectors according to their positions lets their dot product reflect the positional difference.
+67	2	That is the key intuition for incorporating relative position into attention.
+67	3	This rotates feature components, not the actual mesh in front of a camera.
+67	4	Rotation preserves a pair's length, unlike normalization that adjusts vector magnitudes.
+67	5	It also does not guarantee identical results under every rotation of a 3D scene.
+68	0	With the inputs ready, triangles exchange information.
+68	1	Emissive surfaces, illuminated surfaces, and nearby reflectors can affect one another.
+68	2	Self-attention provides an information-exchange structure for learning such relationships from data.
+68	3	One attention connection does not correspond exactly to one physical light ray.
+68	4	The model changes its features to better predict rendered images.
+68	5	The resulting tokens are latent, context-aware representations, not the original material values.
+69	0	Triangle tokens are also projected into Q, K, and V.
+69	1	Q and K determine attention weights, and a weighted sum of V transfers features.
+69	2	The basic principle is the same as sentence self-attention.
+69	3	The inputs, however, are triangles with materials, normals, and spatial relationships rather than words.
+69	4	We should not read attention scores directly as fractions of physical light energy.
+69	5	They are learned information-combination weights used to predict physical effects.
+70	0	Let us locate the positional encoding in this diagram.
+70	1	Q and K are rotated according to spatial coordinates before scores are computed.
+70	2	V carries the information combined using those scores.
+70	3	Position therefore influences the criterion used to compare tokens.
+70	4	Nearby triangles or triangles with similar materials do not always receive greater attention.
+70	5	A distant light source or a surface in a reflection direction may also matter.
+70	6	Weights depend on learned features and context as well as position.
+71	0	Let us put the steps together again.
+71	1	First, calculate Q, K, and V from each token.
+71	2	Second, rotate Q and K using position information and compute dot-product scores.
+71	3	Third, apply scaling and softmax, then form a weighted sum of V.
+71	4	The numbers in the diagram illustrate these operations at a small scale.
+71	5	The real model calculates many tokens and heads in parallel, with stabilizers such as normalization.
+72	0	After gathering information from other tokens, a triangle adds the result to its original representation.
+72	1	This supports gradual updates across layers.
+72	2	A direct path for the original input also helps train a deep model.
+72	3	It is not an absolute guarantee that spatial information is preserved without loss.
+72	4	Position is also supplied repeatedly through a separate encoding path.
+72	5	Residual connections and positional encoding serve different purposes and work together.
+73	0	The normalization here differs from the original Transformer described earlier.
+73	1	RenderFormer's base architecture and inspected code use pre-norm RMS normalization.
+73	2	Input scales are adjusted before the main attention or FFN operation.
+73	3	Describing this as subtracting the mean to produce a standard normal distribution is incorrect.
+73	4	RMS normalization uses mean-square magnitude; normalization does not make data normally distributed.
+73	5	The principles connect, but the detailed blocks are not identical.
+74	0	After attention gathers scene information, the FFN processes each token.
+74	1	It transforms lighting-related relationships into features useful to later layers.
+74	2	Organizing brightness and color is an analogy; individual dimensions are not directly measurable brightness values.
+74	3	The base view-independent stage passes through 12 such layers.
+74	4	They are not assigned fixed physical roles, such as direct light first and one bounce second.
+74	5	The full stack learns to reduce the final prediction error.
+75	0	We should also check the FFN activation used.
+75	1	The original Transformer used ReLU, while many other models use GELU.
+75	2	RenderFormer's default, however, is SwiGLU.
+75	3	SwiGLU transforms the input along two branches and multiplies a smoothly activated branch with the other.
+75	4	GELU, incidentally, does not randomly pass negative values as if flipping a coin at runtime.
+75	5	We distinguish general activation examples from the block RenderFormer actually uses.
+76	0	In summary, position-aware attention exchanges information, while normalization, FFNs, and residuals update features.
+76	1	Triangle and register tokens now carry features informed by relationships throughout the scene.
+76	2	But we have not yet produced a pixel image for display.
+76	3	We must now introduce the camera's location and viewing direction.
+76	4	In the next stage, camera-side tokens attend to these scene features.
+77	0	Each camera pixel corresponds to a ray pointing into the scene.
+77	1	RenderFormer groups these rays rather than creating a separate token for every pixel.
+77	2	In the base configuration, one group covers eight by eight pixels, or 64 rays.
+77	3	These rays do not mean the model directly traces multiple light bounces through the scene.
+77	4	They are inputs describing the camera's viewing directions.
+77	5	We now have triangle tokens for the scene and ray tokens for the view.
+78	0	In camera coordinates, all ray origins can be placed at the origin.
+78	1	Normalize each pixel's direction, then group 64 direction vectors.
+78	2	With three components per direction, the basic input contains 192 numbers.
+78	3	Linear projection and normalization turn these into a 768-dimensional token.
+78	4	Each image patch gets one such ray-patch token.
+78	5	Triangles and rays are not simply combined into one list to do the same job;
+78	6	they become different inputs to cross-attention.
+79	0	The view-dependent stage first retrieves scene features through cross-attention.
+79	1	Self-attention between ray-patch tokens then exchanges image-side information.
+79	2	An FFN processes the result.
+79	3	Together, these operations form features needed for the image from this camera.
+79	4	Cross-attention does not literally execute a conventional ray-triangle intersection algorithm.
+79	5	Nor does adding self-attention guarantee the removal of every patch boundary or artifact.
+79	6	We are examining how these connections can improve prediction quality.
+80	0	Recall the encoder-decoder cross-attention from earlier.
+80	1	Here, ray-patch representations produce Q.
+80	2	Triangle and register features from the view-independent stage provide K and V.
+80	3	The camera side queries the scene information it needs.
+80	4	V contains learned features, not a lookup table of finished pixel colors.
+80	5	Further processing and the final decoder are needed to produce actual image values.
+81	0	Scene information retrieved by cross-attention is added to the original ray-side representation.
+81	1	This accumulates information from the scene on top of the camera-direction representation.
+81	2	It follows the same residual-update intuition introduced earlier.
+81	3	Cross-attention itself depends on Q, so its result is not entirely devoid of camera information.
+81	4	The residual path provides a stable way to use both the original representation and the new update.
+82	0	The sequence exchanging information now consists of ray patches, not triangles.
+82	1	Each patch attends to other patches, and the FFN processes the result.
+82	2	The attention operation is familiar, but the sequence being processed has changed.
+82	3	The paper's base view-dependent stage stacks six such blocks.
+82	4	Unlike a language decoder, it does not hide future words and generate pixels sequentially.
+82	5	It prepares patch features together to reconstruct the full image.
+83	0	Ray-patch tokens are still feature vectors, not a pixel image.
+83	1	The DPT decoder rearranges them into spatial grids and combines multiple scales into a dense image output.
+83	2	The prediction target is HDR radiance, with a wide brightness range.
+83	3	This is different from display-ready colors restricted to zero through one.
+83	4	RenderFormer uses a logarithmic output space; reconstruction can be followed by tone mapping for display.
+83	5	This is the final bridge from learned features to the image we see.
+84	0	This diagram expands the conversion from a token sequence back into image space.
+84	1	The paper takes features from the last four view-dependent Transformer layers.
+84	2	Each is rearranged into a 2D patch grid and transformed to different spatial sizes.
+84	3	This prepares information at multiple resolutions instead of using only one feature scale.
+84	4	Rather than memorizing every channel count, notice the sequence regaining a spatial layout.
+84	5	Next, features at different sizes are combined.
+85	0	Fusion blocks progressively combine different feature scales and restore output resolution.
+85	1	This process also uses convolutions and interpolation.
+85	2	A Transformer-based renderer does not mean the entire pipeline contains no convolutions.
+85	3	The inspected default HDR path does not use sigmoid to restrict output to zero through one.
+85	4	An inverse logarithmic transform restores radiance; separate tone mapping prepares it for display.
+85	5	Distinguish physical brightness prediction from display color representation when interpreting the results.
+86	0	Diverse synthetic training scenes enable the model to learn lighting relationships.
+86	1	Objects are placed in floor-and-wall templates while materials, lights, and cameras are varied.
+86	2	Adding a wall changes not only shadows but also light reflected onto other surfaces.
+86	3	The model learns by comparing its predictions with images from a reference renderer.
+86	4	Log-space comparisons keep bright highlights from dominating, alongside losses measuring perceptual differences.
+86	5	Not retraining for each new scene is entirely different from needing no training data at all.
+87	0	Look beyond the overall impression to shadow edges, reflected shapes, and color bleeding between surfaces.
+87	1	The reference is the comparison rendering; the middle image is RenderFormer's prediction.
+87	2	The difference image amplifies error by a factor of five for visibility.
+87	3	Darker areas indicate smaller differences; bright regions show where the two results disagree.
+87	4	Generally, higher PSNR and SSIM are better, while lower LPIPS and FLIP are better.
+87	5	These metrics measure different properties, so examine the images as well.
+87	6	The results demonstrate learned global illumination effects, not perfect correctness for every scene.
+87	7	Use the variations below to observe responses to changes in geometry, lighting, and materials.
+88	0	Finally, let us summarize limitations within the scope of the original 2025 paper.
+88	1	Attention becomes substantially more expensive as triangle counts increase.
+88	2	Quality may fall outside the mesh sizes, materials, lights, and camera conditions seen during training.
+88	3	Results resembling global illumination do not guarantee every physical law or perfect accuracy in every scene.
+88	4	This research is not yet a finished general-purpose renderer ready for every game scene.
+88	5	Still, treating triangle-based scene-to-image rendering as one learnable pipeline is an intriguing achievement.
+88	6	Recall our progression: a structure that tokenizes words and computes relationships became one
+88	7	that exchanges triangle features and retrieves information for a camera.
+88	8	The input names changed, but the question remained: how should information be represented and connected?
+88	9	Understanding Transformers and RenderFormer together in this way can make the architectures
+88	10	of other neural-rendering studies much easier to follow.

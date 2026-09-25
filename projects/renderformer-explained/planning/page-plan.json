@@ -1,0 +1,973 @@
+{
+  "timingIsMeasured": false,
+  "scenes": [
+    {
+      "id": "01",
+      "title": "표지 — 삼각형을 읽고 이미지를 만드는 모델",
+      "sourcePage": 1,
+      "visual": "원본 표지 전체. 제목을 천천히 짚고 시작한다.",
+      "estimatedSecondsRange": [
+        39,
+        50
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "02",
+      "title": "목차 — 단어에서 삼각형으로",
+      "sourcePage": 2,
+      "visual": "목차의 Transformer → RenderFormer → 구현 → 데이터·결과 순서에 포인터.",
+      "estimatedSecondsRange": [
+        34,
+        44
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "03",
+      "title": "Transformer의 출발점",
+      "sourcePage": 3,
+      "visual": "원본 구조도 왼쪽 입력에서 위쪽 출력까지 이동.",
+      "estimatedSecondsRange": [
+        39,
+        50
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "04",
+      "title": "인코더와 디코더의 역할",
+      "sourcePage": 4,
+      "visual": "인코더 영역 → 디코더 영역 → 두 영역을 연결하는 화살표.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "05",
+      "title": "토큰에 번호 붙이기",
+      "sourcePage": 5,
+      "visual": "문장 → 어휘 표 → 정수 ID. SOS·EOS·PAD도 짧게 강조.",
+      "estimatedSecondsRange": [
+        36,
+        46
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "06",
+      "title": "학습용 입력과 정답을 한 칸 어긋나게 놓기",
+      "sourcePage": 6,
+      "visual": "질문 [5,8,9]와 디코더 입력 [0,6,3], 정답 [6,3,4]를 구분.",
+      "estimatedSecondsRange": [
+        37,
+        47
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "07",
+      "title": "임베딩 — 번호를 계산 가능한 벡터로",
+      "sourcePage": 7,
+      "visual": "입력 ID → 임베딩 블록 확대.",
+      "estimatedSecondsRange": [
+        30,
+        40
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "08",
+      "title": "임베딩 행렬의 크기 읽기",
+      "sourcePage": 8,
+      "visual": "11개 어휘와 3×6 출력 행렬 구분. 예시 크기와 원 논문 크기를 분리 표기.",
+      "estimatedSecondsRange": [
+        34,
+        43
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "09",
+      "title": "위치 정보가 필요한 이유",
+      "sourcePage": 9,
+      "visual": "The dog bites the man / The man bites the dog를 차례로 강조.",
+      "estimatedSecondsRange": [
+        32,
+        42
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "10",
+      "title": "사인과 코사인으로 위치를 표현하기",
+      "sourcePage": 10,
+      "visual": "pos → sin/cos → 위치 행렬. 2i와 2i+1 차원을 구분.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "11",
+      "title": "임베딩과 위치 인코딩을 더하기",
+      "sourcePage": 11,
+      "visual": "같은 크기의 두 행렬을 원소별로 더하는 경로.",
+      "estimatedSecondsRange": [
+        31,
+        41
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "12",
+      "title": "셀프 어텐션 — 같은 문장 안에서 참고하기",
+      "sourcePage": 12,
+      "visual": "한 단어에서 다른 단어로 이어지는 선을 순서대로 짚는다.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "13",
+      "title": "멀티헤드 어텐션 — 여러 관점으로 참고하기",
+      "sourcePage": 13,
+      "visual": "전체 구조에서 어텐션 연산 블록 확대.",
+      "estimatedSecondsRange": [
+        36,
+        46
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "14",
+      "title": "Q, K, V를 만드는 세 개의 투영",
+      "sourcePage": 14,
+      "visual": "동일 입력 X에서 WQ·WK·WV를 지나 Q·K·V로 갈라지는 흐름.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "15",
+      "title": "이 가중치들은 어떻게 의미를 갖게 될까?",
+      "sourcePage": 15,
+      "visual": "가중치 행렬과 학습 전·중·후 문구. 단정 표현을 교체한다.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "16",
+      "title": "세 행렬의 역할 다시 확인하기",
+      "sourcePage": 16,
+      "visual": "Q·K·V 입력부와 마지막 V 곱셈 위치를 짚는다.",
+      "estimatedSecondsRange": [
+        31,
+        41
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "17",
+      "title": "Q와 K의 전치 행렬을 곱하기",
+      "sourcePage": 17,
+      "visual": "Q의 첫 행과 K 전치의 첫 열만 포인터로 연결.",
+      "estimatedSecondsRange": [
+        31,
+        41
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "18",
+      "title": "점수 행렬의 한 행 읽기",
+      "sourcePage": 18,
+      "visual": "결과 3×3 행렬의 첫 행 → 다른 행.",
+      "estimatedSecondsRange": [
+        31,
+        40
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "19",
+      "title": "왜 루트 d로 나눌까?",
+      "sourcePage": 19,
+      "visual": "점수 → √dk로 나눔 → 조정된 점수. 예시 √6과 일반식을 구분.",
+      "estimatedSecondsRange": [
+        33,
+        43
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "20",
+      "title": "소프트맥스 — 점수를 참고 비중으로",
+      "sourcePage": 20,
+      "visual": "한 행의 점수 → 같은 행의 합이 1인 가중치.",
+      "estimatedSecondsRange": [
+        37,
+        47
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "21",
+      "title": "V를 가중합해서 새 표현 만들기",
+      "sourcePage": 21,
+      "visual": "가중치 행의 원소 → 대응 V 행 → 출력 행.",
+      "estimatedSecondsRange": [
+        33,
+        43
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "22",
+      "title": "헤드 하나에서 여러 헤드로",
+      "sourcePage": 22,
+      "visual": "단일 어텐션 블록에서 여러 헤드라는 설명을 강조.",
+      "estimatedSecondsRange": [
+        32,
+        41
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "23",
+      "title": "헤드를 나누어 계산하기",
+      "sourcePage": 23,
+      "visual": "두 헤드 예시의 갈라지는 경로를 차례로 강조.",
+      "estimatedSecondsRange": [
+        32,
+        42
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "24",
+      "title": "각 헤드가 만든 결과 확인하기",
+      "sourcePage": 24,
+      "visual": "두 출력 경로 → 위쪽 결합부. 앞 페이지에서 움직임만 이어 준다.",
+      "estimatedSecondsRange": [
+        29,
+        38
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "25",
+      "title": "이어 붙이고 출력 투영하기",
+      "sourcePage": 25,
+      "visual": "concatenate → 출력 선형층 → 원래 폭의 출력.",
+      "estimatedSecondsRange": [
+        28,
+        36
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "26",
+      "title": "잔차 연결 — 원래 표현에 변화량 더하기",
+      "sourcePage": 26,
+      "visual": "우회 경로와 덧셈 기호, 입력 X와 Attention(X) 표시.",
+      "estimatedSecondsRange": [
+        35,
+        45
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "27",
+      "title": "LayerNorm의 계산 방향",
+      "sourcePage": 27,
+      "visual": "원본 도표의 한 행을 강조. 본문 ‘열’을 ‘토큰별 특징 차원’으로 교체.",
+      "estimatedSecondsRange": [
+        39,
+        50
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "28",
+      "title": "FFN의 첫 번째 선형층과 활성화",
+      "sourcePage": 28,
+      "visual": "선형 변환 → ReLU → 결과.",
+      "estimatedSecondsRange": [
+        32,
+        42
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "29",
+      "title": "FFN의 두 번째 선형층",
+      "sourcePage": 29,
+      "visual": "중간 특징 → 두 번째 가중치 → 출력.",
+      "estimatedSecondsRange": [
+        29,
+        38
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "30",
+      "title": "어텐션과 FFN의 역할 차이",
+      "sourcePage": 30,
+      "visual": "앞의 어텐션 위치와 현재 FFN 위치를 번갈아 강조.",
+      "estimatedSecondsRange": [
+        29,
+        38
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "31",
+      "title": "인코더 블록 마무리",
+      "sourcePage": 31,
+      "visual": "FFN 출력과 이전 표현의 잔차 → 정규화 → 인코더 전체로 축소.",
+      "estimatedSecondsRange": [
+        37,
+        48
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "32",
+      "title": "디코더의 입력 임베딩과 위치 정보",
+      "sourcePage": 32,
+      "visual": "[SOS,I,am] 입력과 [I,am,fine] 정답을 분리해서 표시.",
+      "estimatedSecondsRange": [
+        30,
+        39
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "33",
+      "title": "디코더의 셀프 어텐션",
+      "sourcePage": 33,
+      "visual": "디코더 입력에서 Q·K·V로 이어지는 세 경로.",
+      "estimatedSecondsRange": [
+        30,
+        39
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "34",
+      "title": "디코더에서도 점수 계산과 스케일링",
+      "sourcePage": 34,
+      "visual": "QK 전치 → 차원 스케일링.",
+      "estimatedSecondsRange": [
+        27,
+        35
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "35",
+      "title": "미래를 가려야 하는 이유",
+      "sourcePage": 35,
+      "visual": "원본 문장의 미래 토큰을 가리는 도식. 문장 자체는 읽지 않는다.",
+      "estimatedSecondsRange": [
+        28,
+        37
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "36",
+      "title": "삼각형 모양의 인과 마스크",
+      "sourcePage": 36,
+      "visual": "마스크 행렬의 첫 행에서 마지막 행까지.",
+      "estimatedSecondsRange": [
+        29,
+        38
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "37",
+      "title": "음의 무한대와 소프트맥스",
+      "sourcePage": 37,
+      "visual": "금지된 점수 → -∞ → softmax의 0.",
+      "estimatedSecondsRange": [
+        30,
+        39
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "38",
+      "title": "마스킹된 가중치로 V 모으기",
+      "sourcePage": 38,
+      "visual": "첫 행의 [1,0,0]과 V의 첫 행.",
+      "estimatedSecondsRange": [
+        29,
+        38
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "39",
+      "title": "뒤쪽 위치는 더 긴 문맥을 사용한다",
+      "sourcePage": 39,
+      "visual": "두 번째·세 번째 출력 행으로 포인터 이동.",
+      "estimatedSecondsRange": [
+        32,
+        41
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "40",
+      "title": "디코더의 멀티헤드 출력 결합",
+      "sourcePage": 40,
+      "visual": "헤드 결합과 출력 투영, 6×6은 예시 크기로 표시.",
+      "estimatedSecondsRange": [
+        26,
+        34
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "41",
+      "title": "디코더의 잔차 연결과 정규화",
+      "sourcePage": 41,
+      "visual": "디코더 입력을 우회해 더하는 선과 Norm 블록.",
+      "estimatedSecondsRange": [
+        25,
+        33
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "42",
+      "title": "크로스 어텐션 — 다른 시퀀스를 참고하기",
+      "sourcePage": 42,
+      "visual": "Q는 디코더, K·V는 인코더에서 오는 화살표를 구분.",
+      "estimatedSecondsRange": [
+        31,
+        40
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "43",
+      "title": "디코더의 나머지 블록",
+      "sourcePage": 43,
+      "visual": "cross-attention → Add & Norm → FFN → Add & Norm → 출력부.",
+      "estimatedSecondsRange": [
+        28,
+        36
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "44",
+      "title": "출력 확률과 학습",
+      "sourcePage": 44,
+      "visual": "특징 벡터 → 어휘 수의 점수 → softmax → 정답 비교.",
+      "estimatedSecondsRange": [
+        35,
+        45
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "45",
+      "title": "단어 대신 삼각형을 넣는다면?",
+      "sourcePage": 45,
+      "visual": "원본 렌더링 예시 전체 → 그림자·반사 부분 확대.",
+      "estimatedSecondsRange": [
+        34,
+        44
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "46",
+      "title": "RenderFormer가 하려는 일",
+      "sourcePage": 46,
+      "visual": "텍스트·이미지·렌더링 비교 도식. ‘전처리 없음’과 ‘완전한’ 단정은 수정.",
+      "estimatedSecondsRange": [
+        44,
+        56
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "47",
+      "title": "삼차원에서 이차원으로 번역한다는 관점",
+      "sourcePage": 47,
+      "visual": "원본 3D→2D 도식과 문장 번역 도식을 대응. NeRF 설명은 비교 문구로 교체.",
+      "estimatedSecondsRange": [
+        39,
+        50
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "48",
+      "title": "입력부터 출력까지 한 번 연결하기",
+      "sourcePage": 48,
+      "visual": "원본의 빈 도식 영역에 편집 가능한 ‘Mesh + Material + Light → Triangle Tokens → Scene Features → Camera Ray Tokens → Image’ 보충 도식을 넣는다.",
+      "estimatedSecondsRange": [
+        36,
+        47
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "49",
+      "title": "시점 독립 단계와 시점 의존 단계",
+      "sourcePage": 49,
+      "visual": "파란색 상단 12층 → 초록색 하단 6층 → DPT.",
+      "estimatedSecondsRange": [
+        41,
+        52
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "50",
+      "title": "삼각형 하나를 토큰 하나로",
+      "sourcePage": 50,
+      "visual": "삼각형 선택 → 법선·재질·발광 임베딩과 별도의 위치 경로.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "51",
+      "title": "메시를 구성하는 삼각형과 법선",
+      "sourcePage": 51,
+      "visual": "버니 메시의 한 삼각형, 세 꼭짓점과 법선 표시. 5,696 수치는 단정하지 않는다.",
+      "estimatedSecondsRange": [
+        40,
+        51
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "52",
+      "title": "재질 임베딩 — 논문과 공개 코드 구분하기",
+      "sourcePage": 52,
+      "visual": "13×32×32 패치 도식. 상단에 ‘공개 코드 입력 형식’ 표시.",
+      "estimatedSecondsRange": [
+        46,
+        59
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "53",
+      "title": "RMSNorm — 특징의 스케일 정리하기",
+      "sourcePage": 53,
+      "visual": "RMS 수식과 입력·출력 열. epsilon과 학습 scale을 보완 표기.",
+      "estimatedSecondsRange": [
+        37,
+        48
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "54",
+      "title": "법선을 임베딩하기",
+      "sourcePage": 54,
+      "visual": "세 꼭짓점 법선 → 주파수 인코딩 → Linear → RMSNorm. 좌표와 법선 라벨을 구분.",
+      "estimatedSecondsRange": [
+        34,
+        44
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "55",
+      "title": "삼각형 임베딩의 구성 요소 더하기",
+      "sourcePage": 55,
+      "visual": "tri_token, tex_emb, vn_emb 세 행과 합산 결과.",
+      "estimatedSecondsRange": [
+        40,
+        51
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "56",
+      "title": "위치 임베딩을 더하는 코드 분기는 별도다",
+      "sourcePage": 56,
+      "visual": "원본 수식을 두 분기로 보완. 기본 RoPE와 비교용 NeRF-PE를 구분.",
+      "estimatedSecondsRange": [
+        40,
+        51
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "57",
+      "title": "tri_token은 학습되는 하나의 공유 벡터",
+      "sourcePage": 57,
+      "visual": "nn.Parameter와 [1,1,D] 부분, broadcast 동작을 강조.",
+      "estimatedSecondsRange": [
+        35,
+        46
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "58",
+      "title": "랜덤 초기화에 관한 설명 바로잡기",
+      "sourcePage": 58,
+      "visual": "기존 zeros/ones/randn 결과 표를 검증된 교체 표로 대체. 기존 오해 문구를 동시에 노출하지 않는다.",
+      "estimatedSecondsRange": [
+        44,
+        56
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "59",
+      "title": "학습된 차원의 의미는 분산되어 있다",
+      "sourcePage": 59,
+      "visual": "차원 번호별 단정 대신 ‘개념적 비유 / 고정 역할 아님’ 교체 문구.",
+      "estimatedSecondsRange": [
+        40,
+        51
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "60",
+      "title": "BERT의 타입 임베딩과 비교하기",
+      "sourcePage": 60,
+      "visual": "공통 적용·학습 가능 두 행 중심. BERT의 초기화 구현 동일시 문구는 삭제.",
+      "estimatedSecondsRange": [
+        37,
+        47
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "61",
+      "title": "레지스터 토큰을 시퀀스에 붙이기",
+      "sourcePage": 61,
+      "visual": "register 16개와 N개 삼각형을 이어 붙여 [B,16+N,768]. ‘+’를 concat 표기로 교체.",
+      "estimatedSecondsRange": [
+        38,
+        48
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "62",
+      "title": "삼각형의 순서보다 실제 위치가 중요하다",
+      "sourcePage": 62,
+      "visual": "RoPE 블록 회전 행렬과 장면의 두 삼각형.",
+      "estimatedSecondsRange": [
+        39,
+        50
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "63",
+      "title": "좌표 정규화와 [B,T,9] 텐서",
+      "sourcePage": 63,
+      "visual": "중심 이동 → 스케일 조절 → 9개 성분. 분모는 해당 공개 코드의 2rmax로 수정.",
+      "estimatedSecondsRange": [
+        39,
+        50
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "64",
+      "title": "레지스터 토큰의 위치 기준",
+      "sourcePage": 64,
+      "visual": "장면 중심 계산과 레지스터 위치 배열. ‘완전한 요약’ 문구는 완화.",
+      "estimatedSecondsRange": [
+        40,
+        51
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "65",
+      "title": "좌표를 여러 주파수로 펼치기",
+      "sourcePage": 65,
+      "visual": "[B,17,9] → [B,17,9,6]. 17은 예시 토큰 수임을 표시.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "66",
+      "title": "텐서의 크기를 숫자로 따라가기",
+      "sourcePage": 66,
+      "visual": "같은 도표를 유지하고 9×6=54, 54×2=108, 768/6=128을 차례로 강조.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "67",
+      "title": "사인·코사인과 상대 위치",
+      "sourcePage": 67,
+      "visual": "각도 → sin/cos → 2차원 회전. 원본 삼각함수 관계를 짚는다.",
+      "estimatedSecondsRange": [
+        40,
+        51
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "68",
+      "title": "시점 독립 트랜스포머의 셀프 어텐션",
+      "sourcePage": 68,
+      "visual": "상단 파란 블록의 셀프 어텐션과 삼각형 전체.",
+      "estimatedSecondsRange": [
+        36,
+        47
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "69",
+      "title": "삼각형 토큰의 Q, K, V",
+      "sourcePage": 69,
+      "visual": "tri_emb에서 세 투영으로 갈라지는 그림.",
+      "estimatedSecondsRange": [
+        35,
+        45
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "70",
+      "title": "RoPE는 Q와 K에 들어간다",
+      "sourcePage": 70,
+      "visual": "Q·K → RoPE → 점수, V는 별도 경로로 강조.",
+      "estimatedSecondsRange": [
+        36,
+        47
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "71",
+      "title": "위치가 반영된 어텐션을 한 번에 읽기",
+      "sourcePage": 71,
+      "visual": "원본 Step 1 → Step 2 → Step 3. K 회전식의 Q 오기는 K로 수정.",
+      "estimatedSecondsRange": [
+        31,
+        41
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "72",
+      "title": "시점 독립 블록의 잔차 연결",
+      "sourcePage": 72,
+      "visual": "셀프 어텐션을 우회하는 선과 합산 지점.",
+      "estimatedSecondsRange": [
+        34,
+        44
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "73",
+      "title": "RenderFormer에서는 RMSNorm을 사용한다",
+      "sourcePage": 73,
+      "visual": "LayerNorm 표기를 RMSNorm으로 교체하고 Pre-Norm 경로로 보완.",
+      "estimatedSecondsRange": [
+        41,
+        52
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "74",
+      "title": "정보 교환 뒤의 특징 갱신",
+      "sourcePage": 74,
+      "visual": "FFN 블록과 12개 층 표시.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "75",
+      "title": "GELU 그림과 실제 SwiGLU 구분하기",
+      "sourcePage": 75,
+      "visual": "기존 GELU 중심 설명을 SwiGLU 두 분기 게이트 도식으로 보완.",
+      "estimatedSecondsRange": [
+        39,
+        50
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "76",
+      "title": "시점 독립 단계에서 무엇을 얻었나?",
+      "sourcePage": 76,
+      "visual": "블록 하나 → 12층 → 갱신된 삼각형·레지스터 토큰.",
+      "estimatedSecondsRange": [
+        32,
+        42
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "77",
+      "title": "카메라를 레이 묶음으로 표현하기",
+      "sourcePage": 77,
+      "visual": "카메라 → ray map → 8×8 패치.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "78",
+      "title": "레이 방향을 토큰으로 바꾸기",
+      "sourcePage": 78,
+      "visual": "단위 방향 → 64×3=192 → 선형 투영·정규화 → 768.",
+      "estimatedSecondsRange": [
+        37,
+        48
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "79",
+      "title": "시점 의존 단계의 세 가지 계산",
+      "sourcePage": 79,
+      "visual": "Cross Attention → Self Attention → FFN 세 블록.",
+      "estimatedSecondsRange": [
+        42,
+        54
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "80",
+      "title": "Q는 레이, K와 V는 장면에서",
+      "sourcePage": 80,
+      "visual": "ray token→Q, triangle/register tokens→K·V.",
+      "estimatedSecondsRange": [
+        33,
+        43
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "81",
+      "title": "카메라 쪽 표현에도 잔차 연결",
+      "sourcePage": 81,
+      "visual": "레이 특징의 우회 경로와 크로스 어텐션 출력의 합산.",
+      "estimatedSecondsRange": [
+        34,
+        44
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "82",
+      "title": "레이 토큰 사이의 정보 교환",
+      "sourcePage": 82,
+      "visual": "레이 시퀀스의 Self Attention·FFN과 6층 표시.",
+      "estimatedSecondsRange": [
+        35,
+        45
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "83",
+      "title": "토큰에서 HDR 이미지로",
+      "sourcePage": 83,
+      "visual": "패치 토큰 → DPT → 렌더 이미지.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "84",
+      "title": "DPT의 여러 해상도 특징",
+      "sourcePage": 84,
+      "visual": "원본 구조도 상단→Reassemble 4개 경로 확대. 전체 페이지 복귀 후 다음 장.",
+      "estimatedSecondsRange": [
+        38,
+        49
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "85",
+      "title": "특징 융합과 HDR 출력 복원",
+      "sourcePage": 85,
+      "visual": "Fusion → Prediction Head → 로그 HDR 역변환 → 별도 표시용 tone mapping. Sigmoid 표기는 교체.",
+      "estimatedSecondsRange": [
+        42,
+        54
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "86",
+      "title": "무엇을 보고 학습했을까?",
+      "sourcePage": 86,
+      "visual": "네 가지 배경 템플릿 → 물체·조명·카메라 변화 → Reference와 예측 비교.",
+      "estimatedSecondsRange": [
+        43,
+        55
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "87",
+      "title": "결과 이미지는 어디를 봐야 할까?",
+      "sourcePage": 87,
+      "visual": "Reference → RenderFormer → Difference 5× 순서. 위쪽 4개 사례와 아래 변화 사례를 모두 보여 준다.",
+      "estimatedSecondsRange": [
+        59,
+        74
+      ],
+      "timingIsMeasured": false
+    },
+    {
+      "id": "88",
+      "title": "한계와 마무리 — 학습하는 렌더링 파이프라인",
+      "sourcePage": 88,
+      "visual": "원본 템플릿 그림을 유지하고 To do를 ‘토큰 수·학습 분포·물리 정확도’ 세 항목으로 교체. 같은 페이지에서 최종 요약.",
+      "estimatedSecondsRange": [
+        76,
+        95
+      ],
+      "timingIsMeasured": false
+    }
+  ]
+}

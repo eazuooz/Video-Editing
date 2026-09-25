@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><link rel="icon" href="data:,"><title>RenderFormer - 음성·애니메이션 프리뷰</title>
+<style>body{margin:24px;background:#fff;color:#202020;font:16px 'Malgun Gothic',sans-serif}main{max-width:1440px;margin:auto}canvas{width:100%;height:auto}nav{display:flex;gap:14px;align-items:center;margin:16px 0}button,select{font:inherit;padding:10px}p{color:#65728a}h1{font-size:25px}</style>
+<main><h1>트랜스포머부터 RenderFormer까지</h1><p>원본 1·14·48쪽의 대본 발췌 · 기존 목소리 · BGM 없음 · 전체 88페이지 본편이 아닌 검토용 프리뷰</p><nav><select id="chapter" aria-label="페이지"></select><button id="play">소리 켜고 재생 / 정지</button><span id="status">로딩 중</span></nav><div id="stage"></div><p><a href="/src/projects/renderformer-explained/preview/project">Motion Canvas 편집기 열기</a></p></main>
+<script type="module">
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+import project from './src/projects/renderformer-explained/preview/project.ts?project';
+import timing from './src/projects/renderformer-explained/preview/timing.generated.json';
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#fff'});document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true});let ready=false,rendered=-1;
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=(rendered/60).toFixed(1)+' / '+timing.duration.toFixed(1)+'초';});player.onRecalculated.subscribe(()=>ready=true);
+const select=document.querySelector('#chapter');timing.scenes.forEach((s,i)=>select.add(new Option(s.sourcePage+'쪽 | '+s.title,''+i)));
+const jump=t=>player.requestSeek(Math.round(t*60));select.onchange=()=>{player.togglePlayback(false);jump(timing.scenes[+select.value].firstFrame/60+.5);};
+document.querySelector('#play').onclick=()=>{player.toggleAudio(true);player.togglePlayback();};window.lectureReview={player,stage,jump,timing,get ready(){return ready},get rendered(){return rendered}};
+</script></html>
