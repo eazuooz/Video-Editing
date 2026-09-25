@@ -5,15 +5,14 @@ import {playScene} from './play-scene';
 export default makeScene2D(function* (view) {
   yield* playScene(view, {
     index: 0,
-    chapter: "01 · 첫 3분",
-    title: "스타트를 눌렀는데, 아직도 영상",
+    chapter: "01 · 첫 조작",
+    title: "스타트를 누르면, 바로 마리오",
     clip,
-    exampleLabel: "실제 예시 · 슈퍼 마리오 오디세이 — 짧은 오프닝 뒤 첫 조작",
+    exampleLabel: "슈퍼 마리오 오디세이 — 짧은 오프닝 뒤 착지·첫 조작 안내, 달리고 뛰기",
     panels: [
-      {line: 0, beat: 0, heading: "스타트 후 3분째, 아직도 영상"},
-      {line: 2, beat: 1, heading: "처음 3분: 보기와 하기의 비율"},
-      {line: 3, beat: 2, heading: "재미는 해 보고 판단한다"},
-      {line: 5, beat: 3, heading: "오늘의 질문"},
+      {line: 0, beat: 0, heading: "스타트 후 몇 분째, 아직도 영상"},
+      {line: 1, beat: 1, heading: "처음 몇 분: 보기와 하기의 비율"},
+      {line: 4, beat: 3, heading: "오늘 살펴볼 오디세이의 순서"},
     ],
   });
 });

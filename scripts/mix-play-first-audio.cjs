@@ -59,7 +59,7 @@ if (withBgm) {
 }
 filters.push(`[nar]asplit=2[nar1][key]`);
 filters.push(`${bgLabel}[key]sidechaincompress=threshold=${A.duckingThreshold}:ratio=${A.duckingRatio}:attack=15:release=280:makeup=1[ducked]`);
-filters.push(`[nar1][ducked]amix=inputs=2:normalize=0:duration=longest,atrim=0:${total},alimiter=limit=0.8:level=false[out]`);
+filters.push(`[nar1][ducked]amix=inputs=2:normalize=0:duration=longest,atrim=0:${total},alimiter=limit=0.77:level=false[out]`);
 
 const wav = path.join(assets, `${outStem}.wav`);
 run(['-hide_banner', '-v', 'error', '-y', ...inputs, '-filter_complex', filters.join(';'), '-map', '[out]', '-ar', '48000', '-c:a', 'pcm_s16le', wav]);

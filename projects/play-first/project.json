@@ -1,7 +1,13 @@
 {
   "schemaVersion": 2,
   "slug": "play-first",
-  "status": "script-v3-awaiting-approval (no Sakurai; explains Odyssey first-minutes system only)",
+  "delivery": {
+    "directory": "output/play-first",
+    "collector": "node scripts/collect-video-output.cjs play-first",
+    "required": ["captioned.mp4", "clean.mp4", "ko.srt", "en.srt"],
+    "preserveSources": true
+  },
+  "status": "final-rendered-v3; human-listening-pending",
   "membershipOutro": {
     "enabled": true,
     "durationSeconds": 10,
@@ -9,8 +15,7 @@
     "scenePath": "motion-canvas/src/shared/membership/membership-outro.tsx",
     "appliedToFinal": true,
     "verifiedIn": [
-      "shared/output/motion-canvas/play-first-20260925T133426Z.mp4 @217.5s",
-      "shared/output/motion-canvas/play-first-subtitled-20260925T134950Z.mp4 @217.5s"
+      "shared/output/motion-canvas/play-first-20260925T154051Z.mp4 @203s"
     ]
   },
   "visualStyle": "research-paper-white-v1",
@@ -65,9 +70,9 @@
     "width": 1920,
     "height": 1080,
     "fps": 60,
-    "durationSeconds": 222.46666666666667,
+    "durationSeconds": 208.23333333333335,
     "sceneCount": 5,
-    "bodySeconds": 212.46666666666667
+    "bodySeconds": 198.23333333333335
   },
   "engines": [
     "motion-canvas",
@@ -79,15 +84,16 @@
     "reference": "shared/voice-reference/reference-15-35s.wav",
     "referenceText": "shared/voice-reference/reference-15-35s.ko.txt",
     "model": "qwen3-tts/models/Qwen3-TTS-12Hz-1.7B-Base",
-    "outputDir": "shared/output/narration/play-first/qwen3-1.7b-balanced-v1",
-    "filenameStem": "play-first-qwen3-1.7b-balanced-v1",
+    "outputDir": "shared/output/narration/play-first/qwen3-1.7b-balanced-v2",
+    "filenameStem": "play-first-qwen3-1.7b-balanced-v2",
     "renderMode": "scene",
     "sceneGapSeconds": 0.72,
     "tailRatioThreshold": 0.07,
     "tailDecayMsThreshold": 70,
     "maxRenderAttempts": 3,
     "maxNewTokens": 1024,
-    "edgeFadeSeconds": 0.006
+    "edgeFadeSeconds": 0.006,
+    "previousVersion": "shared/output/narration/play-first/qwen3-1.7b-balanced-v1 (script v2; kept)"
   },
   "audio": {
     "mixStatus": "final",
@@ -123,8 +129,8 @@
       "note": "Track (235.3s) is longer than the video (222.47s): single pass, 0.45s fade in/out, runs through the membership outro."
     },
     "musicCandidates": "projects/play-first/audio/bgm-candidates.md",
-    "measuredIntegratedLufs": -16.6,
-    "measuredTruePeakDbtp": -1.6,
+    "measuredIntegratedLufs": -17,
+    "measuredTruePeakDbtp": -1.8,
     "humanListeningApproval": "pending"
   },
   "paths": {
@@ -136,11 +142,11 @@
     "audioMix": "motion-canvas/src/projects/play-first/assets/final-mix.m4a",
     "motionCanvasProject": "motion-canvas/src/projects/play-first/project.ts",
     "manimProject": "manim/projects/play-first/scene.py",
-    "narration": "shared/output/narration/play-first/qwen3-1.7b-balanced-v1/play-first-qwen3-1.7b-balanced-v1.wav",
-    "captionsKo": "shared/output/narration/play-first/qwen3-1.7b-balanced-v1/play-first-qwen3-1.7b-balanced-v1.srt",
-    "captionsEn": "shared/output/narration/play-first/qwen3-1.7b-balanced-v1/play-first-qwen3-1.7b-balanced-v1.en.srt",
-    "videoClean": "shared/output/motion-canvas/play-first-20260925T133426Z.mp4",
-    "videoBurnedCaptions": "shared/output/motion-canvas/play-first-subtitled-20260925T134950Z.mp4",
+    "narration": "shared/output/narration/play-first/qwen3-1.7b-balanced-v2/play-first-qwen3-1.7b-balanced-v2.wav",
+    "captionsKo": "shared/output/narration/play-first/qwen3-1.7b-balanced-v2/play-first-qwen3-1.7b-balanced-v2.srt",
+    "captionsEn": "shared/output/narration/play-first/qwen3-1.7b-balanced-v2/play-first-qwen3-1.7b-balanced-v2.en.srt",
+    "videoClean": "shared/output/motion-canvas/play-first-20260925T154051Z.mp4",
+    "videoBurnedCaptions": "shared/output/motion-canvas/play-first-subtitled-20260925T155719Z.mp4",
     "outline": "projects/play-first/planning/outline.md",
     "reviewScript": "projects/play-first/script/review.ko.md",
     "scriptEn": "projects/play-first/script/narration.en.json",
@@ -152,10 +158,10 @@
   },
   "publishReady": false,
   "approvals": {
-    "script": "pending-v3; v2 approved-2026-09-25 superseded by user request",
-    "voice": "pending-listening; channel balanced voice (Qwen3 1.7B, same reference) used for review render",
+    "script": "approved-v3-2026-09-26",
+    "voice": "pending-listening; same channel balanced voice, new v2 render for script v3",
     "music": "approved-discovery-2026-09-25",
-    "scriptEvidence": "2026-09-25 user: 자 영상도 이제 제작해줘",
+    "scriptEvidence": "2026-09-26 user: 설명에서도 빼줘 1번승인",
     "scriptV3Request": "2026-09-25 user: 사쿠라이는 이런건 빼줘 그냥 다시 대사랑 스크립트 만들어줘 이시스템만 설명해주면돼"
   },
   "productionRequest": {
@@ -167,7 +173,8 @@
     "preserveProjects": [
       "let-them-play"
     ],
-    "caseStudyChange": "2026-09-25 user: 이번에는 마리오 오디세이로 가자"
+    "caseStudyChange": "2026-09-25 user: 이번에는 마리오 오디세이로 가자",
+    "sakuraiInPublishing": "removed from narration, description and hashtags on user request (2026-09-26); idea origin kept only in sources/SOURCES.md"
   },
   "caseStudy": {
     "game": "Super Mario Odyssey",
@@ -211,22 +218,28 @@
     }
   },
   "finalRender": {
-    "createdAt": "2026-09-25",
-    "clean": "shared/output/motion-canvas/play-first-20260925T133426Z.mp4",
-    "captioned": "shared/output/motion-canvas/play-first-subtitled-20260925T134950Z.mp4",
-    "seconds": 222.467,
-    "frames": 13348,
-    "bgm": "Discovery — Scott Buckley (CC BY 4.0)",
-    "superseded": [
-      "shared/output/motion-canvas/play-first-20260925T131830Z.mp4 (scene04 screen overlapped heading)"
+    "createdAt": "2026-09-26",
+    "script": "v3 (no Sakurai)",
+    "clean": "shared/output/motion-canvas/play-first-20260925T154051Z.mp4",
+    "captioned": "shared/output/motion-canvas/play-first-subtitled-20260925T155719Z.mp4",
+    "vscodePreview": [
+      "shared/output/motion-canvas/play-first-20260925T154051Z-vscode-preview.webm",
+      "shared/output/motion-canvas/play-first-subtitled-20260925T155719Z-vscode-preview.webm"
     ],
-    "qa": "shared/output/play-first/qa/final/",
-    "publishingKo": "projects/play-first/publishing/youtube.ko.md",
-    "publishingEn": "projects/play-first/publishing/youtube.en.md",
+    "seconds": 208.233,
+    "bgm": "Discovery — Scott Buckley (CC BY 4.0)",
+    "examples": "27s per scene, full-frame",
+    "knownIssues": [
+      "captioned version: 2-line captions partly cover bottom in-game prompts during full-frame examples",
+      "scene05 summary diorama: adventurer overlaps label 1 for ~1-2s at beat start"
+    ],
     "openItems": [
-      "human full listen (voice, Sakurai pronunciation)",
+      "human full listen",
       "@HyungJoonJung-c… full handle",
       "member avatars/badges need original screenshot file"
+    ],
+    "superseded": [
+      "play-first-20260925T133426Z / play-first-subtitled-20260925T134950Z (script v2)"
     ]
   }
 }

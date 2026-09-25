@@ -225,6 +225,30 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 
 ## 9. YouTube 게시
 
+### 고정 납품 폴더 — 2026-09-26 사용자 지정
+
+앞으로 렌더·자막 수정이 끝날 때마다 저장소 루트 `output/<프로젝트명>/`에 최신 결과물 네 개를 모읍니다.
+`shared/output/`은 작업 산출 경로이며 사용자가 여는 최종 모음은 **루트 `output/`**입니다.
+
+- `<slug>.captioned.mp4`: 한국어 자막이 입혀진 영상
+- `<slug>.clean.mp4`: 내레이션/승인된 오디오가 있는 무자막 영상
+- `<slug>.ko.srt`: 한국어 SRT
+- `<slug>.en.srt`: 같은 타임라인의 영어 SRT
+- `index.html`: 두 영상 재생·다운로드와 검수 상태 안내
+
+```powershell
+node scripts/collect-video-output.cjs <slug>
+```
+
+프로젝트 매니페스트의 경로로만 파일을 고릅니다. 수정 시각이나 파일명 추측으로 버전을 섞지 않습니다.
+네 파일이 모두 준비되고 영상 길이·해상도·오디오 존재·한영 SRT 타임코드 검사가 통과한 뒤 복사하며 SHA-256을 대조합니다.
+원본은 이동/삭제하지 않습니다. 이전 납품 폴더는 `projects/<slug>/production/delivery-history/`로 보존하고,
+작업 중간 WAV·PNG·로그는 `output/`에 넣지 않습니다. 수집 기록은 `production/delivery-output.json`에 남깁니다.
+새 프로젝트에도 `delivery` 설정을 포함하며, 결과 안내에는 `output/index.html` 또는 프로젝트 폴더를 링크합니다.
+이 폴더는 정리 위치일 뿐 게시 승인 증명이 아닙니다. 미완료 엔딩·청취·권리 검수 상태는 그대로 표시합니다.
+과거 영상을 이 규칙만으로 재렌더하지 않습니다. `output/`은 중복 복사본이므로 Git에서는 제외하고,
+다른 컴퓨터에서는 원본 미디어 복원 후 같은 명령으로 다시 모읍니다.
+
 `projects/<slug>/publishing/`에서 언어별 제목, 설명, 챕터를 관리합니다.
 
 권장 구성:

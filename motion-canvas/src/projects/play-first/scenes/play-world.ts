@@ -78,6 +78,19 @@ export class PlayWorld extends Node {
       c.fillText('?', q[0], q[1] + 1);
     });
     const ghost = (x: number, z: number, alpha = 0.45) => fade(alpha, () => a.hero(x, z, t, 0));
+    // Original props: a round teal creature (glows blue once "taken over") and a blue throwing disc.
+    const blob = (x: number, z: number, owned: number) => {
+      const q = iso(x, z, 0);
+      a.oval(q[0] + 4, q[1] + 3, 34, 11, '#c9d3d6');
+      a.oval(q[0], q[1] - 30, 34, 30, owned > 0.5 ? '#5f8fd0' : '#6fb3a8');
+      a.oval(q[0] - 11, q[1] - 38, 7, 9, '#ffffff'); a.oval(q[0] + 11, q[1] - 38, 7, 9, '#ffffff');
+      a.oval(q[0] - 10, q[1] - 37, 3, 4, '#23343b'); a.oval(q[0] + 12, q[1] - 37, 3, 4, '#23343b');
+      if (owned > 0) a.ring(x, z, owned);
+    };
+    const disc = (x: number, z: number, h: number) => {
+      const q = iso(x, z, h);
+      a.oval(q[0], q[1], 22, 9, P.blue); a.oval(q[0], q[1] - 2, 12, 4, '#dfeaf5');
+    };
     const walkTo = (from: Point, to: Point, s: number, e: number): [number, number, number] => {
       const k = r(s, e);
       return [lerp(from[0], to[0], k), lerp(from[1], to[1], k), k > 0 && k < 1 ? 1 : 0];
@@ -136,43 +149,46 @@ export class PlayWorld extends Node {
       a.floor('grass');
       a.path([[-260, 120], [-60, 40]]); a.path([[-60, 40], [180, -110]]); a.path([[-60, 40], [230, 60]]); a.path([[-60, 40], [-120, -170]]);
       a.tree(-280, -60, 0.7); a.tree(280, -170, 0.7);
-      post(-130, -150, '무엇을 먼저 보여 줄까', P.blue, -1);
-      post(170, -100, '언제 처음 조작할까', P.blue, -1);
-      post(220, 70, '이야기는 어디에 둘까', P.blue, -1);
+      post(-130, -150, '처음 조작까지', P.blue, -1);
+      post(170, -100, '핵심 행동 하나', P.blue, -1);
+      post(220, 70, '이야기와 튜토리얼', P.blue, -1);
       const [hx, hz, walk] = walkTo([-260, 120], [-60, 40], 0.2, 2.2);
       a.hero(hx, hz, t, walk);
       a.ring(-60, 40, r(2.2, 2.8));
-    } else if (ch === 1 && beat <= 1) {
-      // Two hypothetical store trailers laid out as film strips. The "?" resolves when gameplay appears.
-      a.floor('stone');
-      const strips: [number, string[], number, string][] = [
-        [-70, ['CG', '이야기', '이야기', 'CG', '게임'], 4, 'A  이야기부터'],
-        [110, ['게임', '게임', '이야기', 'CG', '게임'], 0, 'B  게임부터'],
-      ];
-      strips.forEach(([z, cells, answer, name], si) => {
-        if (si === 1 && beat === 0) return;
-        const show = si === 1 ? r(0.2, 1.4) : (beat === 1 ? 1 : r(0.2, 1.4));
-        cells.forEach((cell, k) => {
-          const game = cell === '게임';
-          fade(Math.min(1, show * 5 - k), () => {
-            a.box(-240 + k * 120, z, 108, 62, 16, game ? '#dfeaf5' : '#eef1f3', game ? '#9fbbdb' : '#cfd6db', game ? P.blue : '#b3bec5');
-            text(cell, -240 + k * 120, z, 34, 20, game ? P.blue : P.muted, 700);
-          });
-        });
-        label(name, 350, z, 40, si ? P.blue : P.muted, 18);
-        const travel = si === 0 ? (beat === 1 ? 1 : r(1.4, 6.5)) : r(1.5, 2.1);
-        const qx = -240 + answer * 120 * travel;
-        const done = si === 0 ? (beat === 1 || travel >= 1) : travel >= 1;
-        question(qx, z, 110 + Math.sin(t * 3 + si) * 5, 1, done ? P.blue : P.red);
+    } else if (ch === 1 && beat === 0) {
+      // One action, many uses: the adventurer's original throwing disc visits three targets in turn.
+      a.floor('grass'); a.tree(-290, -160, 0.7); a.tree(290, 150, 0.6);
+      const targets: [number, number, string][] = [[-120, -120, '코인'], [120, -110, '상자'], [220, 60, '올라타기']];
+      a.hero(-200, 110, t, 0);
+      label('던지기 하나', -200, 110, 175, P.blue, 20);
+      const leg = Math.min(2, Math.floor(Math.max(0, t - 0.6) / 1.6)), k = r(0.6 + leg * 1.6, 1.6 + leg * 1.6);
+      targets.forEach(([x, z, name], i) => {
+        const hit = t > 1.6 + i * 1.6;
+        if (i === 0) a.crystal(x, z, 30 + (hit ? 60 * r(1.6, 2.4) : Math.sin(t * 2) * 4), hit ? 1 - r(2.2, 2.8) : 1);
+        if (i === 1) a.box(x, z, 60, 60, hit ? 60 * (1 - r(3.2, 3.6)) + 8 : 60, '#e8dcc2', '#c8b48f', '#a8926c');
+        if (i === 2) blob(x, z, hit ? 1 : 0);
+        fade(hit ? 1 : 0.35, () => label(name, x, z, 130, hit ? P.blue : P.muted, 19));
       });
-    } else if (ch === 1 && beat === 2) {
-      // "So what do I actually do in this game?" — a visitor in front of an unexplained display.
-      a.floor('wood');
-      screen(60, -110, 260, 170, 0.3, '???');
-      a.tree(-290, -150, 0.7);
-      a.hero(-140, 90, t, 0);
-      question(-140, 90, 230 + Math.sin(t * 2.4) * 8, 1);
-      fade(r(0.6, 1.2), () => label('그래서, 뭘 하는 게임인데?', 40, 60, 230, P.blue, 24));
+      if (t > 0.6 && t < 5.4) {
+        const from: Point = leg === 0 ? [-200, 110] : [targets[leg - 1][0], targets[leg - 1][1]];
+        disc(lerp(from[0], targets[leg][0], k), lerp(from[1], targets[leg][1], k), 60 + Math.sin(k * Math.PI) * 50);
+      }
+    } else if (ch === 1 && beat === 1) {
+      // Learn one action, and its uses keep growing: branches sprout from a single pad.
+      a.floor('stone');
+      pad(-180, 60, 0, 0.6);
+      label('배울 것은 하나', -180, 60, 120, P.blue, 20);
+      const uses = ['코인', '상자', '올라타기', '높이 뛰기', '길 열기', '날려 보내기'];
+      uses.forEach((name, i) => {
+        const on = r(0.4 + i * 0.5, 0.9 + i * 0.5);
+        const x = 20 + (i % 3) * 120, z = -140 + Math.floor(i / 3) * 150;
+        fade(on, () => {
+          a.line([iso(-180, 60, 60), iso(x, z, 30)], '#9fbbdb', 3);
+          a.box(x, z, 70, 60, 30, '#dfeaf5', '#9fbbdb', P.blue);
+          label(name, x, z, 80, P.blue, 17);
+        });
+      });
+      a.hero(-260, 150, t, 0);
     } else if (ch === 2 && beat <= 1) {
       // Story order 1-4; in beat 1 the "event" block hops to the front.
       a.floor('stone');
@@ -283,11 +299,37 @@ export class PlayWorld extends Node {
       a.ring(mx, mz, 1);
       if (beat === 1) { flag(mx, mz, r(0.2, 0.9), P.blue); fade(r(0.6, 1.2), () => label('의도해서 정한 지점', mx, mz, 185, P.blue)); }
       a.hero(mx - 40, mz + 60, t, 0);
+    } else if (ch === 4 && beat === 4) {
+      // Summary: the four steps of the first minutes, lit in order as the adventurer walks the path.
+      a.floor('grass');
+      const stops: [number, number, string][] = [[-250, 120, '짧은 오프닝'], [-80, 45, '핵심 행동 하나'], [90, -30, '본편 속 튜토리얼'], [250, -110, '놀이 뒤에 제목']];
+      a.path(stops.map(([x, z]) => [x, z] as Point));
+      const [hx, hz, walk] = walkTo([-300, 200], [230, -50], 0.3, 8);
+      stops.forEach(([x, z, s], k) => {
+        const reached = hx > x - 40;
+        a.box(x, z, 60, 50, 18, reached ? '#dfeaf5' : '#eef1f3', reached ? '#9fbbdb' : '#cfd6db', reached ? P.blue : '#b3bec5');
+        label(`${k + 1}. ${s}`, x, z, 110, reached ? P.blue : P.muted, 19);
+      });
+      a.hero(hx, hz, t, walk);
+    } else if (ch === 4 && beat === 5) {
+      // Tutorial on the main path: the separate practice yard is set aside; the lesson sits on the road ahead.
+      a.floor('grass'); a.path([[-280, 120], [0, 20], [270, -110]]);
+      a.tree(280, 140, 0.7);
+      a.box(-150, -130, 170, 110, 34, '#eef1f3', '#cfd6db', '#b3bec5');
+      for (let k = 0; k < 4; k++) a.box(-215 + k * 44, -80, 8, 8, 40, '#d5dde2', '#aab8c1', '#8ca0ad', 34);
+      label('따로 떨어진 연습장', -150, -130, 110, P.muted, 18);
+      fade(r(0.4, 0.9), () => text('✕', -150, -130, 165, 44, P.red, 700));
+      pad(40, 5, r(2.2, 2.4) * (1 - r(2.6, 2.9)), r(2.3, 2.8));
+      label('본편 길 위에서 배우기', 40, 5, 125, P.blue, 20);
+      const [hx, hz, walk] = walkTo([-280, 130], [10, 40], 0.3, 2.2);
+      const [bx, bz, bw] = walkTo([10, 40], [240, -80], 3, 6.5);
+      t < 3 ? a.hero(hx, hz, t, walk) : a.hero(bx, bz, t, bw);
     } else if (ch === 4 && beat === 2) {
       // The first-three-minutes checklist: each sign is ticked as the adventurer reaches it.
-      a.floor('grass'); a.path([[-280, 120], [-80, 40], [100, -30], [270, -110]]);
-      const qs: [number, number, string][] = [[-110, 110, '언제 처음 움직이나?'], [70, 40, '그 움직임이 재미를 말하나?'], [240, -40, '이야기는 조작 뒤에 와도 되나?']];
-      const [hx, hz, walk] = walkTo([-280, 120], [270, -110], 0.3, 7.5);
+      // Signs stand along the back edge so their labels never overlap each other or the adventurer.
+      a.floor('grass'); a.path([[-280, 160], [270, -20]]);
+      const qs: [number, number, string][] = [[-200, 20, '언제 처음 움직이나?'], [20, -60, '그 움직임이 재미를 말하나?'], [240, -140, '이야기는 조작 뒤라도 괜찮나?']];
+      const [hx, hz, walk] = walkTo([-280, 160], [270, -20], 0.3, 7.5);
       qs.forEach(([x, z, s], k) => post(x, z, s, P.blue, hx > x - 60 ? 1 : 0));
       a.hero(hx, hz, t, walk);
     } else {

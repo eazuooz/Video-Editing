@@ -20,7 +20,7 @@ const srt = fs.readFileSync(path.join(root, manifest.paths.captionsKo), 'utf8').
   return {start: a, end: b, text: lines.slice(2).join(' ')};
 });
 // Line index (within each scene) of the sentence that describes the Odyssey footage.
-const exampleLine = {'01': 4, '02': 3, '03': 2, '04': 2, '05': 2};
+const exampleLine = {'01': 2, '02': 1, '03': 0, '04': 2, '05': 0};
 const lead = 1.0;
 const scenes = starts.map((start, i) => {
   const id = String(i + 1).padStart(2, '0');

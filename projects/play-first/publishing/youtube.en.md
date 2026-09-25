@@ -17,13 +17,14 @@ At the end, three questions to check the first three minutes of your own game.
 
 ## Chapters
 
-(Chapter times will be updated from the measured v3 narration.)
+0:00 Press Start, and You're Already Mario
+0:41 A Game Explained by One Cap
+1:18 Keep the Story Short, Start in the Middle
+1:53 Not Watching, Becoming
+2:32 Tutorial and Title Come After Play
+3:18 Thank you, members
 
 ## Credits
-
-Idea reference: Masahiro Sakurai on Creating Games — "Just Let Them Play!"
-https://www.youtube.com/watch?v=PlbwQ_rntCM
-The explanations and examples in this video are the channel's own.
 
 Gameplay footage: Archive 64
 https://www.youtube.com/watch?v=4s8UTTRLiu4

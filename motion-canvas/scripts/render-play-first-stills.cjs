@@ -1,5 +1,6 @@
 // Render one frame from the middle of every diorama beat (plus each example window) for quick visual QA.
-// Start the render server first. Usage: node scripts/render-play-first-stills.cjs [port]
+// Start the render server first. Usage: node scripts/render-play-first-stills.cjs [port] [t1,t2,...]
+// With a comma-separated list of seconds, only those frames are rendered.
 const fs = require('node:fs');
 const path = require('node:path');
 const {spawnSync} = require('node:child_process');
@@ -22,6 +23,8 @@ for (const s of board.scenes) {
   }
   times.push(s.start + s.exampleStart + 10);
 }
+
+if (process.argv[3]) times.splice(0, times.length, ...process.argv[3].split(',').map(Number));
 
 async function main() {
   const host = `http://localhost:${port}`;

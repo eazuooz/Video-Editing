@@ -1,5 +1,7 @@
 # Video production defaults
 
+- Delivery default: after every completed render or subtitle revision, collect the current clean MP4, Korean-captioned MP4, KO SRT and EN SRT into repository-root `output/<slug>/` using `node scripts/collect-video-output.cjs <slug>`. Keep intermediates and old versions out of output; preserve source files. Deliver `output/index.html` as the browse entry point. Preserve pending-review/rights/outro warnings; collecting files does not mean publish approval. See `docs/VIDEO_WORKFLOW.md`.
+
 - Membership outro identity display: preserve the user-supplied profile image, displayed name/handle, and membership badge together. Text-only cards were rejected. Use the original screenshot/row assets, never generated substitutes; request the source image file if unavailable.
 
 - Every new final video ends with one 10-second membership thank-you scene. Follow `docs/MEMBERSHIP_OUTRO.md`; use the shared editable member list and the exact requested title `멤버쉽가입 감사드립니다.`. Do not guess truncated handles or silently update published older videos. Extend the final mix to cover the outro; preserve body subtitle timing.

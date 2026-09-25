@@ -25,3 +25,4 @@ report={'stage':'body-review-rendered','pages':88,'duration':2648.75,'frames':15
 (BASE/'render-progress.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
 (BASE/'progress.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
 print('Complete 88-page body review ready. Membership source and listening approval remain.',flush=True)
+run('node','scripts/collect-video-output.cjs','renderformer-explained')

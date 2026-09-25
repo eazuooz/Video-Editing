@@ -64,3 +64,4 @@ report = {'revision': timing['captionNotationRevision'], 'cues': 533, 'changedCu
           'current': str(current), 'previousPreserved': str(backup)}
 (BASE / 'caption-notation-validation.json').write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')
 print(json.dumps(report), flush=True)
+print(run('node', str(ROOT / 'scripts/collect-video-output.cjs'), 'renderformer-explained'), flush=True)

@@ -5,14 +5,13 @@ import {playScene} from './play-scene';
 export default makeScene2D(function* (view) {
   yield* playScene(view, {
     index: 1,
-    chapter: "02 · 첫인사",
-    title: "그래서, 무슨 게임인데?",
+    chapter: "02 · 핵심 행동",
+    title: "모자 하나로 알려 주는 게임",
     clip,
-    exampleLabel: "실제 예시 · 슈퍼 마리오 오디세이 — 모자 던지기와 캡처",
+    exampleLabel: "슈퍼 마리오 오디세이 — 모자로 코인·상자, 멍멍이 캡처와 튕겨 보내기",
     panels: [
-      {line: 0, beat: 0, heading: "가상의 상점 트레일러 A"},
-      {line: 1, beat: 1, heading: "궁금증이 풀리는 시점: A와 B"},
-      {line: 2, beat: 2, heading: "그래서, 뭘 하는 게임인데?"},
+      {line: 0, beat: 0, heading: "조작 후 가장 먼저: 던지기 하나"},
+      {line: 4, beat: 1, heading: "배울 것은 하나, 쓰임은 계속 늘어난다"},
     ],
   });
 });
