@@ -1,0 +1,39 @@
+# YouTube 게시 정보 — 한국어
+
+## 제목
+
+RenderFormer 논문 완전 해설 | 트랜스포머로 3D 렌더링하기 (어텐션 기초부터 코드까지)
+
+## 설명
+
+삼각형 메시만 넣으면 트랜스포머가 전역 조명까지 담긴 이미지를 그려 낼 수 있을까요? SIGGRAPH 2025 논문 RenderFormer를 트랜스포머 기초부터 공개 코드까지 한 번에 따라가는 44분 논문 해설입니다.
+
+셀프 어텐션, Q/K/V, 멀티헤드, 잔차 연결과 정규화, 디코더와 크로스 어텐션을 먼저 차근차근 정리한 뒤, RenderFormer가 삼각형을 토큰으로 바꾸는 방법, RoPE로 3D 위치를 표현하는 방법, 시점 독립·시점 의존 두 단계 구조, 카메라 레이로 이미지를 복원하는 과정을 설명합니다. 딥러닝 기반 뉴럴 렌더링, 그래픽스 AI에 관심 있는 개발자와 학생을 위한 영상입니다.
+
+▶ 챕터
+0:00 영상 안내
+1:02 트랜스포머와 입력 표현
+5:27 셀프 어텐션과 멀티헤드
+11:51 잔차 연결·정규화·FFN
+14:39 디코더·마스킹·크로스 어텐션
+19:53 RenderFormer 전체 구조
+22:35 삼각형 토큰과 공개 코드
+29:05 공간 위치 인코딩과 RoPE
+34:22 시점 독립 트랜스포머
+36:55 카메라 레이와 이미지 복원
+41:44 학습 데이터·결과·한계
+
+▶ 논문·코드 출처
+RenderFormer: Transformer-based Neural Rendering of Triangle Meshes with Global Illumination
+Chong Zeng, Yue Dong, Pieter Peers, Hongzhi Wu, Xin Tong (SIGGRAPH 2025)
+https://arxiv.org/abs/2505.21925
+공식 코드 (MIT License): https://github.com/microsoft/renderformer
+Attention Is All You Need — Vaswani et al., 2017: https://arxiv.org/abs/1706.03762
+
+이 영상은 채널이 직접 정리한 해설 자료를 바탕으로 만들었으며, 논문 저자나 Microsoft와 관련이 없습니다. 코드 설명은 공개 저장소의 특정 커밋을 기준으로 합니다.
+
+#RenderFormer #트랜스포머 #뉴럴렌더링
+
+## 태그
+
+RenderFormer, 렌더포머, 트랜스포머, 뉴럴 렌더링, 셀프 어텐션, 어텐션, RoPE, 논문 리뷰, 딥러닝, 컴퓨터 그래픽스, 전역 조명, SIGGRAPH 2025, 3D 렌더링, AI 렌더링

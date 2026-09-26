@@ -1,31 +1,37 @@
-# YouTube 게시 정보 — 한국어
+# 같은 게임도 화면이 달라지면? | 화면 비율과 시야각의 게임 디자인
 
-## 제목
+같은 게임도 화면에 무엇을 얼마나 담느냐에 따라 다르게 느껴집니다.
+화면 비율, 시야각(FOV), 대상의 화면 점유율은 어떻게 다를까요?
 
-그래픽은 멋진데, 왜 플레이하기 불편할까? | 시야와 화면 설계
+16:9와 21:9 비교, 넓은 FOV와 작은 표적의 절충, 운전석·무기·UI가 가리는 공간을 살펴봅니다.
+Forza Horizon 5와 DOOM은 게임 디자인을 설명하는 사례이며, 비교 도식은 직접 만든 2.5D 설명용 장면입니다. 실제 게임의 카메라 설정을 변경해 측정한 결과가 아닙니다.
 
-## 썸네일 문구
+중요한 것은 모든 것을 크게 보여주는 것이 아니라, 지금 보고 판단하고 행동할 단서를 잘 보여주는 것입니다.
+한국어 내레이션 · 한국어/영어 자막
 
-짧고 큰 문구 한 줄
+## 챕터
+00:00 우리가 보는 건 세상의 일부
+00:36 화면 비율은 창의 모양이다
+01:16 많이 보이면 무조건 좋을까
+01:50 표적이 작은 것도 설계다
+02:24 전체 화면이 전부 플레이 공간은 아니다
+02:59 다음 행동이 보이는 화면
 
-## 설명
 
-첫 두 줄에는 영상의 핵심 주제와 검색할 만한 단어를 자연스럽게 넣습니다.
+Gameplay
+No Copyright Gameplay — https://www.youtube.com/NoCopyrightGameplays
+Forza Horizon 5: https://www.youtube.com/watch?v=ZnCxVxfv3MM
+DOOM: https://www.youtube.com/watch?v=YANZzc_bHSU
 
-영상에서 무엇을 비교하고 무엇을 배울 수 있는지 설명합니다.
+Forza Horizon 5 footage: © Microsoft Corporation. Created under Microsoft's Game Content Usage Rules (https://www.xbox.com/en-US/developers/rules). Not endorsed by or affiliated with Microsoft.
+DOOM fan video policy: https://bethesda.net/en-NZ/news/bethesda-video-policy
 
-## 음악 출처
+Music
+'Discovery' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au
+https://www.scottbuckley.com.au/library/discovery/
+License: https://creativecommons.org/licenses/by/4.0/
 
-승인된 BGM의 라이선스가 출처 표기를 요구하면 정확한 문구를 여기에 붙입니다.
-표기가 필요 없는 YouTube 오디오 보관함 곡이라면 곡명과 라이선스 확인일만 내부
-출처 문서에 기록합니다.
+Concept reference
+https://www.youtube.com/watch?v=DGIJk0Uh8jU
 
-## 타임스탬프
-
-00:00 도입  
-00:00 첫 번째 주제  
-00:00 결론
-
-## 해시태그
-
-#게임개발 #게임디자인
+<!-- 게시 전: 원음 제3자 음악 확인 · 전체 청취 · 회원 원본 이미지로 10초 엔딩 추가 -->

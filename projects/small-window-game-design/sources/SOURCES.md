@@ -2,8 +2,8 @@
 
 ## v2 본편에 선택한 소스 (아래 과거 후보와 구분)
 
-- Forza Horizon 5: https://www.youtube.com/watch?v=ZnCxVxfv3MM — No Copyright Gameplay. 30초, 185초, 285초부터 각기 다른 주행 구간. 정확한 아웃점은 `production/full-v2/plan.json` 참조.
-- DOOM: https://www.youtube.com/watch?v=YANZzc_bHSU — No Copyright Gameplay, “DOOM - Free To Use Gameplay (60 FPS)”. 65초, 170초, 115초부터 서로 겹치지 않는 전투/관찰 구간. DOOM Eternal로 표기하지 않는다.
+- Forza Horizon 5: https://www.youtube.com/watch?v=ZnCxVxfv3MM — No Copyright Gameplay. 30초, 185초, 75초, 285초부터 각기 다른 주행 구간. 정확한 아웃점은 `production/full-v2/plan.json` 참조.
+- DOOM: https://www.youtube.com/watch?v=YANZzc_bHSU — No Copyright Gameplay, “DOOM - Free To Use Gameplay (60 FPS)”. 65초, 115초부터 서로 겹치지 않는 전투/관찰 구간. DOOM Eternal로 표기하지 않는다. 초기 170초 아이템 획득 컷은 표적 설명에 맞지 않아 최종 제외했다.
 - 두 소스의 실제 업로더 설명에서 해설·편집한 영상에 대한 재사용·수익화 허용 및 채널 크레딧 안내를 확인했다. 원본을 자체 무료 자료처럼 재배포하지 않는다.
 - Bethesda 공식 정책 확인: https://bethesda.net/en-NZ/news/bethesda-video-policy — 게임 플레이를 이용한 팬 영상과 YouTube 파트너 프로그램을 허용하되 제3자 콘텐츠는 별도 허락 대상이다.
 - Microsoft 공식 조건: https://www.xbox.com/en-US/developers/rules — 출처·비공식 안내를 설명란에 기록. 음악 등 제3자 권리는 별도이다.

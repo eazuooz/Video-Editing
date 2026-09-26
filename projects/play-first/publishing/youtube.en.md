@@ -2,21 +2,15 @@
 
 ## Title
 
-Just Let Them Play | A Game's First 3 Minutes, Through Super Mario Odyssey
-
-## Thumbnail text
-
-Still watching the intro…
+Why Super Mario Odyssey Hooks You in 3 Minutes | Game Design & Tutorial Breakdown
 
 ## Description
 
-In a game's first three minutes, are players watching or playing? Using the opening of Super Mario Odyssey, we look at game design that lets people play first.
-A short opening, one core action built into a cap, a story that starts in the middle, a tutorial inside the main game and a title that comes after play: we walk through Odyssey's first few minutes in order.
+Super Mario Odyssey lets you play almost the moment you press Start. For game designers and indie developers, this breakdown looks at how Odyssey's first three minutes are ordered, from a game design and onboarding point of view.
 
-At the end, three questions to check the first three minutes of your own game.
+A short opening, one core action built into a cap throw, a story that starts in the middle of the action, a tutorial on the main path, and a title that only appears after the first boss. We look at how to build a first experience that never makes players wait, and finish with three questions to check the first three minutes of your own game.
 
-## Chapters
-
+▶ Chapters
 0:00 Press Start, and You're Already Mario
 0:41 A Game Explained by One Cap
 1:18 Keep the Story Short, Start in the Middle
@@ -24,8 +18,7 @@ At the end, three questions to check the first three minutes of your own game.
 2:32 Tutorial and Title Come After Play
 3:18 Thank you, members
 
-## Credits
-
+▶ Credits
 Gameplay footage: Archive 64
 https://www.youtube.com/watch?v=4s8UTTRLiu4
 https://www.youtube.com/watch?v=cSig9xMlEEE
@@ -37,6 +30,8 @@ Licensed under Creative Commons: By Attribution 4.0 License
 http://creativecommons.org/licenses/by/4.0/
 Edited to length with fades and level changes, mixed under narration.
 
-## Hashtags
+#GameDesign #GameDev #SuperMarioOdyssey
 
-#GameDesign #GameDev #SuperMarioOdyssey #TutorialDesign
+## Tags
+
+game design, super mario odyssey, mario odyssey, tutorial design, onboarding, level design, game dev, indie game development, nintendo game analysis, first 3 minutes

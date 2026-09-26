@@ -11,7 +11,7 @@ const stage=process.argv[2];fs.mkdirSync(work,{recursive:true});
 if(stage==='prepare'){
   const script=read(path.join(project,'script/narration.ko.json')),timing=read(path.join(root,m.tts.outputDir,m.tts.filenameStem+'.timing.json'));
   const starts=script.scenes.map(s=>Math.round(timing.entries.find(e=>e.scene_id===s.id).start*30)*2),totalFrames=Math.round(timing.duration_seconds*30)*2;
-  const sources=[['forza',30],['forza',185],['doom',65],['doom',170],['doom',115],['forza',285]];
+  const sources=[['forza',30],['forza',185],['forza',75],['doom',65],['doom',115],['forza',285]];
   let diagramStart=0;
   const scenes=script.scenes.map((s,i)=>{
     const frames=(starts[i+1]??totalFrames)-starts[i];let gameFrames=Math.round(frames*m.editing.targetGameplayShare);
