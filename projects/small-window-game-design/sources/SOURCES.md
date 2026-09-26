@@ -19,7 +19,7 @@
   - 두 설명에서 해설·편집을 더한 재사용 허용과, 동일한 무료자료 채널로 자신의 것처럼 재배포 금지를 확인했다.
   - 설명란 크레딧 계획: `Gameplay — No Copyright Gameplay` + 실제 사용 URL.
   - 게임 IP 정책과 제3자 라디오/음악은 별도 확인 필요. 원하는 카메라 시점과 동작은 아직 프레임 미검수.
-- https://www.youtube.com/watch?v=i9OAtLUswIQ — DOOM Eternal 검색 후보. 제목만으로 허용 판정하지 않음. 사용 보류.
+- https://www.youtube.com/watch?v=i9OAtLUswIQ — DOOM Eternal 후보. 설명을 추가 조회해 편집 재사용·채널 크레딧 안내를 확인했다. 좋아요·구독 요청도 포함되어 조건의 성격을 확정하지 않았으므로 사용 보류. 사용자 계정으로 좋아요/구독하지 않음. 게임 권리 정책·내용·인아웃도 추가 확인 필요.
 - https://www.nintblkc.com/archive-64 — 편집용 재사용 안내 확인. 다른 채널/자료에 확장 적용하지 않음.
 
 ## 음악
@@ -28,9 +28,20 @@
 - https://www.scottbuckley.com.au/library/wanderlust/
 - https://www.scottbuckley.com.au/library/using-this-music/
 
-공식 CC BY 4.0 조건과 YouTube 설명란 크레딧 의무 확인. 선택 대기, 이번 프로젝트 음악 미포함.
+공식 CC BY 4.0 조건과 YouTube 설명란 크레딧 의무 확인. Discovery 사용자 선택 승인.
+기존 원본 `shared/assets/music/scott-buckley/sb_discovery.mp3`를 사용한다. 선택 확정과 실제 믹스 완료는 별도다.
 
 ## 자체 도식
 
 새 Motion Canvas 코드로 만든 설명용 도로/차/표적/모니터다. 실제 게임이나 사용자 실험 결과가 아니다.
 현재 무음 콘셉트는 실사례를 삽입한 완성본이 아니다. 소스 인아웃표·원음·권리 확인 후 최종 편집한다.
+
+## 첫 장면 승인용 영상에 실제 사용한 소스
+
+- `sources/media/forza-ZnCxVxfv3MM-30-75-avc.mp4`: 원본 30–75초 확보, H.264/AAC, 1920×1080/60fps, 45초.
+- 승인용 편집 사용 구간: 30.000–50.917초. 반복 없이 전체화면으로 재생. 원본 35/45초 스틸에서 추적 시점 주행·코너·차량 확인.
+- TTS, 소리 낮춘 원음, Discovery 포함. 아직 전체 본편/게시본이 아니다.
+- 업로더 설명에서 해설 추가 조건의 재사용 허용 재확인(yt-dlp로 실제 설명 조회). 출처: https://www.youtube.com/watch?v=ZnCxVxfv3MM
+- Microsoft 가이드: https://www.xbox.com/en-US/developers/rules — YouTube 광고 수익 예외, 출처·비공식 안내 필요. 제3자 차량·브랜드·음악 권리는 별도이므로 최종 검토 전 `publishReady=false`를 유지한다.
+- 원음 게시용 검토 미완료. 미확인 원음을 BGM 볼륨으로 숨겼다고 권리가 해결되는 것으로 취급하지 않는다.
+- 원본 회원 사진·이름·배지 자료 미확보, 전체 엔딩 제작은 별도 대기.

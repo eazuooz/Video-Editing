@@ -51,11 +51,11 @@ class WindowDiagram extends Node {
     c.restore();this.drawChildren(c);
   }
 }
-export function* windowScene(view:View2D,index:number){
+export function* windowScene(view:View2D,index:number,duration=6,showDraftLabel=true){
   view.fill(P.background);const clock=createSignal(0);
   view.add(<Txt text={titles[index]} y={-424} fontFamily={P.font} fontSize={54} fontWeight={700} fill={P.ink}/>);
   view.add(new WindowDiagram(index,()=>clock()));
   view.add(<Txt text={captions[index]} y={450} fontFamily={P.font} fontSize={32} fill={P.ink}/>);
-  view.add(<Txt text={'무음 콘셉트 · 자체 설명용 재현 · 실제 게임 미삽입'} y={-495} fontFamily={P.font} fontSize={22} fill={P.muted}/>);
-  yield* tween(6,p=>clock(p*6));
+  if(showDraftLabel)view.add(<Txt text={'무음 콘셉트 · 자체 설명용 재현 · 실제 게임 미삽입'} y={-495} fontFamily={P.font} fontSize={22} fill={P.muted}/>);
+  yield* tween(duration,p=>clock(p*duration));
 }
