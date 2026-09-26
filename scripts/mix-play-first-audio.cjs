@@ -47,11 +47,28 @@ let bgLabel = '[game]';
 if (withBgm) {
   const file = path.join(root, music.file);
   const bgmIdx = board.scenes.length + 1;
-  inputs.push('-stream_loop', '-1', '-i', file);
+  inputs.push('-i', file);
   const gain = A.bgmTargetLufs - loudness(file);
+  // A track shorter than the video is looped with the standard 1s crossfade (never a hard restart).
+  const trackSeconds = Number(spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file],
+    {encoding: 'utf8'}).stdout);
+  const fadeSeconds = A.bgmLoopCrossfadeSeconds;
+  const copies = trackSeconds >= total ? 1 : Math.ceil((total - fadeSeconds) / (trackSeconds - fadeSeconds));
+  let source = `[${bgmIdx}:a]aresample=48000,aformat=channel_layouts=stereo`;
+  if (copies > 1) {
+    const parts = Array.from({length: copies}, (_, i) => `[bgmcopy${i}]`);
+    filters.push(`${source},asplit=${copies}${parts.join('')}`);
+    let chain = parts[0];
+    for (let i = 1; i < copies; i++) {
+      const out = i === copies - 1 ? '[bgmloop]' : `[bgmx${i}]`;
+      filters.push(`${chain}${parts[i]}acrossfade=d=${fadeSeconds}:c1=tri:c2=tri${out}`);
+      chain = out;
+    }
+    source = '[bgmloop]anull';
+  }
   // Smooth -3 dB dip (0.45s ramps) only while example source sound plays.
   const ramp = windows.map(([a, b]) => `clip(min((t-${(a - 0.45).toFixed(3)})/0.45,(${(b + 0.45).toFixed(3)}-t)/0.45),0,1)`).join('+');
-  filters.push(`[${bgmIdx}:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:${total},asetpts=PTS-STARTPTS,` +
+  filters.push(`${source},atrim=0:${total},asetpts=PTS-STARTPTS,` +
     `volume=${gain.toFixed(3)}dB,volume='pow(10,${A.bgmDuringGameplayDb}/20*min(1,${ramp}))':eval=frame,` +
     `afade=t=in:d=0.45,afade=t=out:st=${(total - 0.45).toFixed(3)}:d=0.45[bgm]`);
   filters.push(`[game][bgm]amix=inputs=2:normalize=0:duration=longest[bg]`);

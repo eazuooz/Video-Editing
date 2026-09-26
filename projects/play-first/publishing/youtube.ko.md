@@ -32,9 +32,9 @@ https://www.youtube.com/watch?v=cSig9xMlEEE
 제작자가 공개한 사용 허가에 따라 사용: https://www.nintblkc.com/archive-64
 Super Mario Odyssey © Nintendo. 이 영상은 Nintendo와 관련이 없으며 Nintendo의 승인을 받지 않았습니다.
 
-음악: 'Discovery' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au
-Source: https://www.scottbuckley.com.au/library/discovery/
-License: https://creativecommons.org/licenses/by/4.0/
+음악: Wholesome Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 4.0 License
+http://creativecommons.org/licenses/by/4.0/
 영상 길이에 맞게 편집하고 페이드와 음량 조절을 적용해 내레이션 아래에 사용했습니다.
 
 ## 해시태그

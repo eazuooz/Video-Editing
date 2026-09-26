@@ -1,5 +1,19 @@
 # 출처와 사용 상태 — 2026-09-26
 
+## v2 본편에 선택한 소스 (아래 과거 후보와 구분)
+
+- Forza Horizon 5: https://www.youtube.com/watch?v=ZnCxVxfv3MM — No Copyright Gameplay. 30초, 185초, 285초부터 각기 다른 주행 구간. 정확한 아웃점은 `production/full-v2/plan.json` 참조.
+- DOOM: https://www.youtube.com/watch?v=YANZzc_bHSU — No Copyright Gameplay, “DOOM - Free To Use Gameplay (60 FPS)”. 65초, 170초, 115초부터 서로 겹치지 않는 전투/관찰 구간. DOOM Eternal로 표기하지 않는다.
+- 두 소스의 실제 업로더 설명에서 해설·편집한 영상에 대한 재사용·수익화 허용 및 채널 크레딧 안내를 확인했다. 원본을 자체 무료 자료처럼 재배포하지 않는다.
+- Bethesda 공식 정책 확인: https://bethesda.net/en-NZ/news/bethesda-video-policy — 게임 플레이를 이용한 팬 영상과 YouTube 파트너 프로그램을 허용하되 제3자 콘텐츠는 별도 허락 대상이다.
+- Microsoft 공식 조건: https://www.xbox.com/en-US/developers/rules — 출처·비공식 안내를 설명란에 기록. 음악 등 제3자 권리는 별도이다.
+- 전체 원본을 35초 간격 스틸로 확인했다. 얼굴 없는 실제 게임 플레이이며, 본편 컷은 반복/인위적 슬로다운 없이 정상 속도로 사용한다. 스틸 확인은 전체 청취나 제3자 음악 권리 확인을 대신하지 않는다.
+- 원음은 해설 아래 작게 믹스한 **검토용 본편**에 포함된다. 최종 청취 및 원음 권리 검토 전에는 `publishReady=false`이다. 작은 음량이 권리 확인을 대신하지 않는다.
+- 화면 비율·FOV 비교는 직접 그린 원근 투영 도식이다. Forza/DOOM의 실제 카메라 설정을 바꾸어 측정한 결과처럼 주장하지 않는다.
+- 화면 비율 정책 참고: https://docs.unity3d.com/6000.0/Documentation/Manual/PhysicalCameras.html (Gate Fit: crop/overscan/stretch 설명). 고정 세로 FOV 비교에서 가로를 넓혀도 물체 비율을 왜곡하지 않는다.
+
+현재 핵심 범위는 화면 프레임·비율·FOV·점유율·UI 가림이다. 아래 VR과 다른 게임 링크는 초기 조사 기록이며 본편 삽입 목록이 아니다.
+
 ## 논지 참고
 
 - https://www.youtube.com/watch?v=DGIJk0Uh8jU — 사용자가 제공한 일본어 전문을 참고해 독립 대본을 작성했다. 원본 영상/음성/캐릭터/고유 구성은 복제하지 않는다. 영상 재사용 허용으로 취급하지 않는다.
