@@ -94,6 +94,7 @@ async function main() {
   fs.renameSync(stage,dest);
   const report={slug,createdAt:new Date().toISOString(),directory:`output/${slug}`,publishReady:!!manifest.publishReady,notices,videos,cues:ko.length,files};
   fs.writeFileSync(path.join(production,'delivery-output.json'),JSON.stringify(report,null,2)+'\n');
+  require('./build-rebuild-manifests.cjs').generate(slug);
   const projects=fs.readdirSync(outputRoot,{withFileTypes:true}).filter(e=>e.isDirectory()&&!e.isSymbolicLink()&&fs.existsSync(path.join(outputRoot,e.name,'index.html')));
   fs.writeFileSync(path.join(outputRoot,'index.html'),page('영상 결과물 모음',`<p>프로젝트마다 자막 영상·무자막 영상·한글 SRT·영어 SRT를 모았습니다. 게시 전 확인 사항은 각 페이지에 표시됩니다.</p><ul>${projects.map(e=>`<li><a href="${encodeURIComponent(e.name)}/index.html">${esc(e.name)}</a></li>`).join('')}</ul>`));
   console.log(JSON.stringify({directory:dest,files:files.map(f=>f.name),duration:videos[0].duration,cues:ko.length,publishReady:!!manifest.publishReady}));

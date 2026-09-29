@@ -1,7 +1,7 @@
 # Video Editing — Motion Canvas + Manim
 
 다른 컴퓨터에서 이어서 작업하려면 [복원·실행·진행 상태 안내](docs/CONTINUE_ON_ANOTHER_COMPUTER.md)를 먼저 확인하세요.
-대용량 영상 복원: `node scripts/restore-media.cjs` (저장소 루트, Node.js 필요).
+영상·음성·BGM·압축 미디어는 Git에 넣지 않습니다. 프로젝트별 [재제작 목록](projects/rebuild-index.json)과 [미디어 보관/복원 안내](docs/MEDIA_STORAGE.md)를 확인하세요. 원본은 별도로 전달해야 합니다.
 
 Motion Canvas(TypeScript)와 Manim(Python), 두 코드 기반 영상 편집/애니메이션 엔진을 한 저장소에서 함께 쓰기 위한 프로젝트입니다. 각자 독립적으로 렌더링한 뒤 `shared/output`에 모인 결과물을 ffmpeg로 이어 붙여 최종 영상을 만듭니다.
 
@@ -17,7 +17,7 @@ Motion Canvas(TypeScript)와 Manim(Python), 두 코드 기반 영상 편집/애�
 │   └── src/projects/    # 새 영상별 Motion Canvas 프로젝트
 ├── manim/               # Manim 프로젝트 (수학/도형/그래프 애니메이션에 적합)
 │   └── projects/        # 새 영상별 Manim 프로젝트
-├── examples/            # 완성해서 남겨두는 예제(소스+에셋+렌더링된 영상까지 자기완결적, git에 커밋됨)
+├── examples/            # 예제 소스·메타데이터 (렌더 영상/음성은 로컬 전용)
 │   └── <example-name>/
 ├── shared/
 │   ├── assets/          # 두 엔진이 공유하는 폰트, 이미지, 오디오

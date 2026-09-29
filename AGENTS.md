@@ -1,5 +1,7 @@
 # Video production defaults
 
+- Git media policy (2026-09-29): never commit video, narration, sound, BGM, or compressed/split media archives. Preserve local files; external storage is required. Keep project-level `rebuild.json` updated with `node scripts/build-rebuild-manifests.cjs <slug>` and run `npm run media:check` / `npm run rebuild:check` before committing. See `docs/MEDIA_STORAGE.md`; do not reintroduce media through old branches or force-add.
+
 - Delivery default: after every completed render or subtitle revision, collect the current clean MP4, Korean-captioned MP4, KO SRT and EN SRT into repository-root `output/<slug>/` using `node scripts/collect-video-output.cjs <slug>`. Keep intermediates and old versions out of output; preserve source files. Deliver `output/index.html` as the browse entry point. Preserve pending-review/rights/outro warnings; collecting files does not mean publish approval. See `docs/VIDEO_WORKFLOW.md`.
 
 - Membership outro identity display: preserve the user-supplied profile image, displayed name/handle, and membership badge together. Text-only cards were rejected. Use the original screenshot/row assets, never generated substitutes; request the source image file if unavailable.

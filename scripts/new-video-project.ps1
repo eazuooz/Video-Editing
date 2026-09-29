@@ -144,6 +144,8 @@ if ($registeredProjects -notcontains $motionEntry) {
     [System.IO.File]::WriteAllText($registryPath, $registryJson + [Environment]::NewLine, $utf8NoBom)
 }
 
+& node (Join-Path $repoRoot 'scripts/build-rebuild-manifests.cjs') $Slug
+if ($LASTEXITCODE -ne 0) { throw 'Failed to generate the project rebuild manifest.' }
 Write-Host "Created video project '$Slug'."
 Write-Host "  Editorial:     $projectTarget"
 Write-Host "  Motion Canvas: $motionTarget"

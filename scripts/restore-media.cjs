@@ -1,4 +1,4 @@
-// Restore checked-in, lossless media archives without Git LFS or extra packages.
+// Restore LOCAL/external lossless backups. Git stores only manifest.json, not parts.
 // Usage: node scripts/restore-media.cjs [--project <slug>] [--verify-only]
 const fs = require('node:fs');
 const path = require('node:path');
@@ -22,8 +22,11 @@ async function main() {
   const base = path.join(root, 'shared', 'media-archives', ...(project ? [project] : []));
   if (!fs.existsSync(base)) throw new Error(`Archive directory not found: ${base}`);
   const files = manifests(base);
-  if (!files.length) throw new Error('No archive manifests found. Pull the complete repository first.');
+  if (!files.length) throw new Error('No local archive manifests found. See docs/MEDIA_STORAGE.md.');
   for (const file of files) {
+    const manifest = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const missing = manifest.parts.filter(p => !fs.existsSync(path.join(path.dirname(file), p.file)));
+    if (missing.length) throw new Error(`External backup required: ${file}. Transfer ${missing.map(p=>p.file).join(', ')} from your personal backup; Git intentionally excludes media archives.`);
     console.log(`${verifyOnly ? 'Verify' : 'Restore'}: ${path.relative(root, file)}`);
     if (verifyOnly) {
       const m = await verify(file);

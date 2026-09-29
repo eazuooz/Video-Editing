@@ -24,14 +24,14 @@ shared/output/*
 !shared/output/narration/
 # Motion Canvas may leave temporary PNG sequence folders next to the final MP4.
 shared/output/motion-canvas/*/
-# Local render checkpoints/silent intermediates; completed review MP4s stay tracked.
+# Local render checkpoints/silent intermediates (final media is local-only too).
 shared/output/motion-canvas/ai-era-cs-fundamentals-*-part-*.mp4
 shared/output/motion-canvas/ai-era-cs-fundamentals-*-visual.mp4
-# Byte-exact copies are stored as <=80 MiB gzip parts in shared/media-archives/.
+# Local backup archives may exist, but are never uploaded to Git.
 motion-canvas/src/projects/ai-era-cs-fundamentals/assets/editor-mix.wav
 motion-canvas/src/projects/ai-era-cs-fundamentals/assets/mix-v6-artist-music-review.wav
 # Scene chunks and A/B previews are reproducible TTS intermediates. Keep the
-# final WAV, SRT, timing JSON, and ASR review file instead.
+# SRT, timing JSON, and ASR review file instead. WAV is local-only.
 shared/output/narration/**/chunks/
 shared/output/narration/**/preview-*.wav
 shared/output/narration/**/preview-*.mp3
@@ -42,8 +42,7 @@ shared/output/manim/*
 
 # Private voice-cloning material (personal reference recording) and the
 # multi-GB TTS models/venvs used to generate narration -- CUDA-only, so
-# useless on a non-NVIDIA machine anyway. Only the rendered output above
-# (the actual audio/video) needs to travel between machines.
+# transferred separately, along with source and rendered audio/video.
 shared/voice-reference/
 shared/audio-samples/
 # Creator-upload music used only for local listening review; rights not cleared.
@@ -86,7 +85,7 @@ unreal/Intermediate/
 unreal/Saved/
 unreal/Binaries/
 
-# Rebuildable assembly fragments (completed review/final videos stay available).
+# Rebuildable assembly fragments (completed review/final videos remain local).
 shared/output/motion-canvas/let-them-play-V4-GRAPHICS-*.mp4
 shared/output/motion-canvas/let-them-play-V4-PICTURE-*.mp4
 shared/output/motion-canvas/let-them-play-V5-GAME-*.mp4
@@ -100,11 +99,11 @@ shared/output/motion-canvas/visible-rewards-GRAPHICS-v2-*.mp4
 shared/output/motion-canvas/visible-rewards-GAME-v3-*.mp4
 shared/output/motion-canvas/visible-rewards-GRAPHICS-v3-*.mp4
 
-# Lossless copies in shared/media-archives/<project>/final-video-v1/.
-# Restore after clone with: node scripts/restore-media.cjs
+# Lossless copies in shared/media-archives are LOCAL/external backups only.
+# restore-media.cjs requires archive parts transferred separately from Git.
 shared/output/motion-canvas/let-them-play.mp4
 shared/output/motion-canvas/visible-rewards.mp4
-# v2 is retained locally; the final v3 is stored in verified <=80 MiB chunks.
+# Both v2 and v3, including any compressed chunks, are local-only.
 shared/output/motion-canvas/visible-rewards-v2.mp4
 shared/output/motion-canvas/visible-rewards-final.mp4
 # Rebuildable, rights-pending Astra showcase graphics review fragments.
@@ -112,7 +111,7 @@ shared/output/motion-canvas/astra-review-v1-graphics-*.mp4
 shared/output/motion-canvas/astra-review-v2-graphics-*.mp4
 
 # 2026-09-26 user request: never commit video/audio binaries.
-# Files stay on disk; share them outside git (or via shared/media-archives when needed).
+# Files stay on disk; transfer them outside Git, never as split archives in Git.
 *.mp4
 *.MP4
 *.wav
@@ -120,3 +119,49 @@ shared/output/motion-canvas/astra-review-v2-graphics-*.mp4
 # Browser playback previews follow the same local-only media policy.
 *.webm
 *.WEBM
+
+# 2026-09-29: all sound/video, download fragments, compressed media (any case).
+*.[mM][pP]4
+*.[mM]4[vV]
+*.[mM][oO][vV]
+*.[mM][kK][vV]
+*.[wW][eE][bB][mM]
+*.[aA][vV][iI]
+*.[wW][mM][vV]
+*.[mM][pP][gG]
+*.[mM][pP][eE][gG]
+*.[mM]2[tT][sS]
+*.[mM][tT][sS]
+*.[oO][gG][vV]
+*.[fF][lL][vV]
+*.[wW][aA][vV]
+*.[wW][aA][vV][eE]
+*.[mM][pP]3
+*.[mM]4[aA]
+*.[aA][aA][cC]
+*.[fF][lL][aA][cC]
+*.[oO][gG][gG]
+*.[oO][pP][uU][sS]
+*.[aA][iI][fF]
+*.[aA][iI][fF][fF]
+*.[wW][mM][aA]
+*.[cC][aA][fF]
+*.[aA][cC]3
+*.[mM][kK][aA]
+*.[mM][pP]2
+*.part
+*.ytdl
+# Archives are not an upload workaround. Keep manifest.json alongside local parts.
+*.[zZ][iI][pP]
+*.7[zZ]
+*.[rR][aA][rR]
+*.[tT][aA][rR]
+*.[gG][zZ]
+*.[tT][gG][zZ]
+*.[bB][zZ]2
+*.[xX][zZ]
+*.[zZ][sS][tT]
+*.part[0-9]*
+*.[0-9][0-9][0-9]
+shared/media-archives/**/*.gz.*
+shared/media-archives/**/*.zip.*
