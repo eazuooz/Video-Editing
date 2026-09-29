@@ -1,0 +1,13 @@
+import {makeProject} from '@motion-canvas/core';
+
+import narration from './assets/narration.wav';
+import scene01 from './scenes/scene01?scene';
+import scene02 from './scenes/scene02?scene';
+import scene03 from './scenes/scene03?scene';
+import membershipOutro from './scenes/membership-outro?scene';
+
+export default makeProject({
+  name: 'yamyam-dx12-rendering',
+  audio: narration,
+  scenes: [scene01, scene02, scene03, membershipOutro],
+});

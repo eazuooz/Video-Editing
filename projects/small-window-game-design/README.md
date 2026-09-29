@@ -1,11 +1,11 @@
 # 같은 게임도 화면이 달라지면? | 화면 비율과 시야각의 게임 디자인
 
-**6씬 전체 본편**: 1920×1080/60fps, 220.467초. 게임 149.917초(68%), 자체 2.5D 설명 70.55초(32%). 내레이션·Discovery·절반으로 낮춘 게임 원음 포함. 원본 회원 이미지가 없어 멤버십 엔딩은 미포함이며 최종 청취/원음 권리 검토 전 게시 승인 상태가 아니다.
+**고양이 인트로 v2 + 6씬 전체 본편**: 1920×1080/60fps, 222.467초(약 3분 42초). 인트로 2초 뒤 기존 본편을 그대로 연결한다. 본편은 게임 149.917초(68%), 자체 2.5D 설명 70.55초(32%). 내레이션·연속 Discovery·절반으로 낮춘 게임 원음 포함. 원본 회원 이미지가 없어 멤버십 엔딩은 미포함이며 최종 청취/원음 권리 검토 전 게시 승인 상태가 아니다.
 
 - 최신 결과물 모음: [output 재생 페이지](../../output/small-window-game-design/index.html)
-- 재현 가능한 제작 단계: [본편 빌드 안내](production/full-v2/README.md)
-- 정확한 구간: [plan.json](production/full-v2/plan.json)
-- 오디오/프레임 QA: [qa.json](production/full-v2/qa.json)
+- 최신 제작 단계: [인트로 결합 빌드 안내](production/intro-v3/README.md)
+- 정확한 구간: [전체 타임라인](production/intro-v3/timeline.json)
+- 오디오/프레임 QA: [qa.json](production/intro-v3/qa.json)
 
 - [대본 검토](script/review.ko.md) / 편집 원본: `script/narration.ko.json`
 - [구성](planning/outline.md) / [자료화면 계획](planning/footage-plan.md)

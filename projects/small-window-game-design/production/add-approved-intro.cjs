@@ -23,12 +23,12 @@ if(stage==='build'){
   if(+probe(abs(m.audio.backgroundMusic.file)).format.duration<D)throw Error('Need music crossfade, not a hard loop');
   const args=['-i',abs(m.paths.narration)];plan.scenes.forEach(s=>args.push('-i',path.join(__dirname,`full-v2/game-${s.id}.wav`)));args.push('-i',abs(m.audio.backgroundMusic.file));
   const overlap=plan.scenes.map(s=>{const a=s.start+offset,b=a+s.gameSeconds;return `if(between(t,${a},${b}),min(1,min((t-${a})/0.45,(${b}-t)/0.45)),0)`;}).join('+');
-  const filter=`[0:a]loudnorm=I=-16:TP=-2:LRA=11,aresample=48000,aformat=channel_layouts=stereo,adelay=2000:all=1,apad,atrim=duration=${D},asplit=3[n][d1][d2];`+
-    `[1:a][2:a][3:a][4:a][5:a][6:a]concat=n=6:v=0:a=1,adelay=2000:all=1,apad,atrim=duration=${D}[g];`+
-    `[7:a]atrim=duration=${D},asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,volume='1-0.292054*(${overlap})':eval=frame,afade=t=in:d=0.45,afade=t=out:st=${D-.45}:d=0.45[b];`+
+  const filter=`[0:a]loudnorm=I=-16:TP=-2:LRA=11,aresample=48000,aformat=channel_layouts=stereo,asetpts=N/SR/TB,adelay=2000:all=1,asetpts=N/SR/TB,apad,atrim=duration=${D},asplit=3[n][d1][d2];`+
+    `[1:a][2:a][3:a][4:a][5:a][6:a]concat=n=6:v=0:a=1,adelay=2000:all=1,asetpts=N/SR/TB,apad,atrim=duration=${D}[g];`+
+    `[7:a]atrim=duration=${D},asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,asetpts=N/SR/TB,volume='1-0.292054*(${overlap})':eval=frame,afade=t=in:d=0.45,afade=t=out:st=${D-.45}:d=0.45[b];`+
     `[g][d1]sidechaincompress=threshold=0.08:ratio=2.2:attack=15:release=280,volume=${m.audio.gameAudioGain}[gd];`+
     `[b][d2]sidechaincompress=threshold=0.08:ratio=2.2:attack=15:release=280[bd];`+
-    `[gd][bd]amix=inputs=2:normalize=0,asplit=2[bg][bgo];[n][bg]amix=inputs=2:normalize=0,alimiter=limit=0.80:level=false:latency=true,apad,atrim=duration=${D}[mix]`;
+    `[gd][bd]amix=inputs=2:normalize=0,asplit=2[bg][bgo];[n][bg]amix=inputs=2:normalize=0,alimiter=limit=0.80:level=false:latency=true,asetpts=N/SR/TB,apad,atrim=end_sample=${Math.round(D*48000)}[mix]`;
   write(path.join(work,'mix-filter.txt'),filter);
   console.log('Mix: continuous Discovery, delayed narration/source, source gain 0.5');
   ff([...args,'-filter_complex',filter,'-map','[mix]','-ar','48000','-ac','2','-c:a','pcm_s16le',abs(outputs.editorAudioMix),'-map','[bgo]','-ar','48000','-ac','2','-c:a','pcm_s16le',path.join(work,'background-only.wav')]);
@@ -51,10 +51,16 @@ if(stage==='build'){
   console.log('Build complete');
 }else if(stage==='verify'){
   const qa={seconds:D,frames,introSeconds:2,bodyPreserved:true,gameAudioGain:m.audio.gameAudioGain,bgmContinuous:true,files:{}};
+  qa.editorAudioSeconds=+probe(abs(outputs.editorAudioMix)).format.duration;
+  if(Math.abs(qa.editorAudioSeconds-D)>.001)throw Error('Editor mix duration mismatch');
+  const audioHashes=p=>run('ffmpeg',['-v','error','-i',p,'-map','0:a:0','-c','copy','-f','framehash','-']).split('\n').filter(l=>l&&!l.startsWith('#')).map(l=>l.split(',').at(-1).trim());
+  const masterAudioHashes=audioHashes(abs(outputs.audioMix));
   for(const key of ['videoClean','videoBurnedCaptions']){
     const p=probe(abs(outputs[key])),v=p.streams.find(s=>s.codec_type==='video'),a=p.streams.find(s=>s.codec_type==='audio');
     if(+v.nb_frames!==frames||Math.abs(+v.duration-D)>.04||!a)throw Error('Bad output '+key);
     ff(['-i',abs(outputs[key]),'-f','null','-']);qa.files[key]={frames:+v.nb_frames,seconds:+v.duration,width:v.width,height:v.height,fps:v.avg_frame_rate};
+    if(Math.abs(+a.duration-D)>.05)throw Error('Muxed audio duration mismatch');
+    if(JSON.stringify(masterAudioHashes)!==JSON.stringify(audioHashes(abs(outputs[key]))))throw Error('Audio packets differ');
   }
   const videoHashes=p=>run('ffmpeg',['-v','error','-i',p,'-map','0:v:0','-c','copy','-f','framehash','-']).split('\n').filter(l=>l&&!l.startsWith('#')).map(l=>l.split(',').at(-1).trim());
   const oldHashes=videoHashes(abs(m.paths.videoClean)),newHashes=videoHashes(abs(outputs.videoClean)).slice(120);
