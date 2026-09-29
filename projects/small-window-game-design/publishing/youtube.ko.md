@@ -27,9 +27,7 @@ Forza Horizon 5 footage: © Microsoft Corporation. Created under Microsoft's Gam
 DOOM fan video policy: https://bethesda.net/en-NZ/news/bethesda-video-policy
 
 Music
-'Discovery' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au
-https://www.scottbuckley.com.au/library/discovery/
-License: https://creativecommons.org/licenses/by/4.0/
+Nimbus — Eveningland (YouTube Audio Library)
 
 Concept reference
 https://www.youtube.com/watch?v=DGIJk0Uh8jU

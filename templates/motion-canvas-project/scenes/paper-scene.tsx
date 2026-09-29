@@ -5,12 +5,14 @@ import manifest from '../../../../../projects/{{SLUG}}/project.json';
 
 export function* paperScene(view:View2D,index:number,title:string,subtitle:string,duration:number) {
   view.fill(P.background);
-  const exampleSeconds=manifest.editing.exampleSeconds;
+  // Starter allocation only. Production uses approved per-scene cuts and checks
+  // the 60:40 body total (up to 62:38), excluding intro and membership outro.
+  const exampleSeconds=Math.min(duration,Math.round(duration*manifest.editing.targetGameplayShare*manifest.video.fps)/manifest.video.fps);
   const placeholder=new Node();view.add(placeholder);
   placeholder.add(<>
     <Txt x={-864} y={-477} offset={[-1,0]} text={`${index+1} · 실제 예시 구간`} fill={P.muted} fontFamily={P.font} fontSize={25}/>
     <Rect width={1664} height={936} y={-10} fill={P.panel} stroke={P.line} lineWidth={1}>
-      <Txt text={`허용된 예시 영상 ${exampleSeconds}초를 연결하세요`} fill={P.ink} fontFamily={P.font} fontSize={45}/>
+      <Txt text={`허용된 예시 영상 ${exampleSeconds.toFixed(1)}초를 연결하세요`} fill={P.ink} fontFamily={P.font} fontSize={45}/>
       <Txt y={90} text={'준비 화면입니다. 이 상태로 게시하지 않습니다.'} fill={P.muted} fontFamily={P.font} fontSize={29}/>
     </Rect>
   </>);

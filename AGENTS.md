@@ -16,8 +16,8 @@ Before editing or creating a video, read `docs/VIDEO_WORKFLOW.md`,
 - Default narration captions for new videos: `boxed-white-forest-v1` in `docs/CAPTION_STYLE.md` (approved 2026-09-19): opaque white square-corner box, black text/thin border, hard forest-green offset shadow. Preserve editable text, a clean master and separate KO/EN SRT alongside the Korean captioned render. Check every cue for wrapping and gameplay/UI overlap; do not restyle finished older videos automatically.
 - One independent Motion Canvas scene per script scene, with an actual example followed by an original explanation.
 - This is a game-development channel: use real code/editor/debugger/profiler/playtest footage for illustrative B-roll, including licensed foreign dev tutorials. Avoid generic office/phone/money stock unless specifically requested. Match the visible action to the chapter, prefer distinct sources, and distinguish illustrative footage from evidence of AI pricing or real workplace claims.
-- Default external-example slot: 19.5 seconds, about 3x the old 6.5-second default.
-  Read `project.json.editing`; do not hard-code old values into new scenes/audio/subtitles.
+- New-video screen-time default (2026-09-29): actual gameplay/development footage 60% / original explanation 40% of the body, excluding channel intro and membership outro. Allow up to 62% / 38% for natural pacing; do not force each scene to the same ratio. Favor 2.5D comparisons, arrows and animated emphasis over static text slides. Record targets and measured totals in `project.json.editing` and `rebuild.json`. Preserve completed videos.
+- The old 19.5-second external-example slot is a planning baseline only; the body-wide 60:40 target takes precedence for new projects. Read `project.json.editing` and the actual per-scene timeline; never hard-code old values into scenes/audio/subtitles.
 - Short originals need related additional cuts, not loops or artificial slow-down.
 - Update the mix, scene starts and BOTH Korean/English SRT together after retiming.
 - BGM stays continuous under source sound. Honor separate script, voice and music approvals.
