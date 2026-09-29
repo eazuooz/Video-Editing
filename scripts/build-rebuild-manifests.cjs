@@ -133,7 +133,7 @@ function generate(slug,check=false) {
   if(slug&&!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw Error('Invalid project slug');
   const slugs=fs.readdirSync(path.join(root,'projects')).filter(s=>exists(`projects/${s}/project.json`)).sort();
   if(slug&&!slugs.includes(slug)) throw Error('Unknown project: '+slug);
-  const files=[...new Set([...git(['ls-files','--cached','--others','--exclude-standard','-z']).split('\0').filter(Boolean),...slugs.flatMap(s=>walk(`projects/${s}`)),...slugs.flatMap(s=>walk(`motion-canvas/src/projects/${s}`))])].filter(f=>exists(f));
+  const files=[...new Set([...git(['ls-files','--cached','--others','--exclude-standard','-z']).split('\0').filter(Boolean),...slugs.flatMap(s=>walk(`projects/${s}`)),...slugs.flatMap(s=>walk(`motion-canvas/src/projects/${s}`))])].filter(f=>exists(f)).sort();
   for(const s of slug?[slug]:slugs) {
     const data=build(s,files), target=`projects/${s}/rebuild.json`, text=JSON.stringify(data,null,2)+'\n';
     if(check){if(!exists(target)||read(target)!==text)throw Error('Stale rebuild manifest: '+target);}

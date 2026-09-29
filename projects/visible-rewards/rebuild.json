@@ -3348,33 +3348,19 @@
       "Private voice reference and original membership identity images must be transferred privately; never fabricate substitutes"
     ],
     "productionScripts": [
-      "scripts/build-rebuild-manifests.cjs",
-      "scripts/test-media-policy.cjs",
       "manim/projects/visible-rewards/scene.py",
       "motion-canvas/scripts/render-visible-rewards.cjs",
+      "scripts/build-rebuild-manifests.cjs",
       "scripts/clean-visible-rewards-cache.ps1",
       "scripts/fetch-visible-rewards-media.cjs",
       "scripts/fetch-visible-rewards-v2.cjs",
       "scripts/finalize-visible-rewards.cjs",
       "scripts/prepare-visible-rewards-media.cjs",
       "scripts/prepare-visible-rewards-v2.cjs",
+      "scripts/test-media-policy.cjs",
       "scripts/verify-visible-rewards-delivery.cjs"
     ],
     "scriptRecords": [
-      {
-        "file": "scripts/build-rebuild-manifests.cjs",
-        "sha256": "ea9fb72b986617182374d8e166a5092a6c4ca9c77eba914bf5bf32b01204bb93",
-        "usageHints": [
-          "// Usage: node scripts/build-rebuild-manifests.cjs [slug] [--check]",
-          "      scriptRecords:scripts.map(file=>({file,sha256:hash(read(file)),usageHints:read(file).split('\\n').filter(l=>/Usage:|usage:|process\\.argv|^#.*(?:python|node|powershell)/.test(l)).slice(0,12)})),",
-          "if(require.main===module){try{generate(process.argv.slice(2).find(a=>!a.startsWith('--')),process.argv.includes('--check'));}catch(e){console.error(e);process.exitCode=1;}}"
-        ]
-      },
-      {
-        "file": "scripts/test-media-policy.cjs",
-        "sha256": "283f051e8d151c2b09d9d790c125deb8128a722807ac2a84433783b90910a84c",
-        "usageHints": []
-      },
       {
         "file": "manim/projects/visible-rewards/scene.py",
         "sha256": "5fd04af32011e88ad8376559f8022cf2d1babd3da8a9a430a28a8bd190afa592",
@@ -3386,6 +3372,15 @@
         "usageHints": [
           "const version=process.argv.includes('--v3')?3:process.argv.includes('--v2')?2:1;",
           "  if(process.argv.includes('--qa-only'))return;"
+        ]
+      },
+      {
+        "file": "scripts/build-rebuild-manifests.cjs",
+        "sha256": "0af309439fff00c8273cef3cceb750944f77a26df7b4986b08e0b866386a3de1",
+        "usageHints": [
+          "// Usage: node scripts/build-rebuild-manifests.cjs [slug] [--check]",
+          "      scriptRecords:scripts.map(file=>({file,sha256:hash(read(file)),usageHints:read(file).split('\\n').filter(l=>/Usage:|usage:|process\\.argv|^#.*(?:python|node|powershell)/.test(l)).slice(0,12)})),",
+          "if(require.main===module){try{generate(process.argv.slice(2).find(a=>!a.startsWith('--')),process.argv.includes('--check'));}catch(e){console.error(e);process.exitCode=1;}}"
         ]
       },
       {
@@ -3426,6 +3421,11 @@
           "const rebuild=process.argv.includes('--rebuild');",
           "const sceneArg=process.argv.find(a=>a.startsWith('--scene='))?.split('=')[1];"
         ]
+      },
+      {
+        "file": "scripts/test-media-policy.cjs",
+        "sha256": "283f051e8d151c2b09d9d790c125deb8128a722807ac2a84433783b90910a84c",
+        "usageHints": []
       },
       {
         "file": "scripts/verify-visible-rewards-delivery.cjs",
