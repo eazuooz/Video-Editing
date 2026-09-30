@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..');
+const file=path.join(root,'production/batches/sakurai-planning-game-design/queue.json');
+const q=JSON.parse(fs.readFileSync(file,'utf8'));
+const item=q.items.find(v=>v.slug==='meaningful-quests');
+if(!item)throw Error('Queue item missing');
+item.status='in-progress';item.stage=process.argv[2]||'research-and-game-selection';
+item.startedAt??=new Date().toISOString();item.updatedAt=new Date().toISOString();
+item.paths={project:'projects/meaningful-quests/project.json',script:'projects/meaningful-quests/script/narration.ko.json',sources:'projects/meaningful-quests/sources/game-candidates.json'};
+item.nextAction='Finish fresh footage permission/action review, author original bilingual script, then one resumable approved-voice synthesis.';
+q.updatedAt=item.updatedAt;q.currentSlug=item.slug;
+fs.writeFileSync(file,JSON.stringify(q,null,2)+'\n');
