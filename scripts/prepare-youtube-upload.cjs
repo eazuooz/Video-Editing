@@ -13,6 +13,11 @@ const videoData = fs.readFileSync(path.join(root, upload.video.path));
 const videoHash = crypto.createHash('sha256').update(videoData).digest('hex');
 if (videoHash !== upload.video.sha256 || videoData.length !== upload.video.bytes) throw new Error('Video differs from approved delivery; prepare a new revision record first');
 const defaults = JSON.parse(fs.readFileSync(path.join(root, 'shared/publishing/youtube-defaults.json'), 'utf8'));
+if (defaults.uploadAuthorization.status === 'private-upload-authorized') {
+  if (upload.metadata.privacyStatus !== 'private' || upload.scheduled === true || upload.schedule?.active === true) {
+    throw new Error('Current authorization permits private uploads only; public publication and scheduling belong to the user');
+  }
+}
 const channelDefault = fs.readFileSync(path.join(root, defaults.description.channelDefaultSnapshot), 'utf8');
 const footerKo = channelDefault.split('📚 수업 노트')[0].trim();
 const footerEn = `🎮 Build games with real programming skills.

@@ -1,6 +1,6 @@
 # YouTube Publishing — English
 
-Local draft; uploading held pending user video review.
+Private uploading authorized. Public release and scheduling are reserved to the user.
 
 ## Title
 
