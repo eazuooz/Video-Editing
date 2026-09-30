@@ -13,6 +13,7 @@ from pathlib import Path
 import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
+LOCAL_WHISPER = Path(__file__).resolve().parent / 'models' / 'whisper-large-v3-turbo'
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -24,7 +25,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--model",
-        default="openai/whisper-large-v3-turbo",
+        default=str(LOCAL_WHISPER) if (LOCAL_WHISPER / 'model.safetensors').exists() else "openai/whisper-large-v3-turbo",
         help="Hugging Face Whisper model id",
     )
     parser.add_argument("--language", default="korean")

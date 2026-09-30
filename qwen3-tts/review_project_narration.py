@@ -46,6 +46,8 @@ def main() -> None:
     p.add_argument('--device', choices=['cpu', 'cuda'], default='cuda')
     p.add_argument('--watch', action='store_true')
     p.add_argument('--scenes', default='', help='Only create/refresh these comma-separated scene caches; other valid caches are retained')
+    local_model = ROOT / 'qwen3-tts/models/whisper-large-v3-turbo'
+    p.add_argument('--model', default=str(local_model) if (local_model / 'model.safetensors').exists() else 'openai/whisper-large-v3-turbo')
     args = p.parse_args()
     project = ROOT / 'projects' / args.project
     project.resolve().relative_to((ROOT / 'projects').resolve())
@@ -81,7 +83,7 @@ def main() -> None:
                     torch.set_num_threads(2)
                     device = 'cuda:0' if args.device == 'cuda' else 'cpu'
                     dtype = torch.float16 if args.device == 'cuda' else torch.float32
-                    model_id = 'openai/whisper-large-v3-turbo'
+                    model_id = args.model
                     model = AutoModelForSpeechSeq2Seq.from_pretrained(
                         model_id, dtype=dtype, low_cpu_mem_usage=True,
                         use_safetensors=True, attn_implementation='eager',

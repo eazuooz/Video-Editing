@@ -1,0 +1,45 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>원버튼 플레이테스트</title>
+<style>html,body{margin:0;background:#fff}canvas{display:block;width:1920px;height:1080px}</style>
+<canvas id="game" width="1920" height="1080"></canvas><script>
+// A playable input prototype. Recorded tests send the same keyboard events as a player.
+const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
+const mode=new URLSearchParams(location.search).get('mode')||'mash';
+let time=0,down=false,score=0,holdStart=null,shots=[],lastPress=-100,trial=0;
+const events=[]; const trials=[5,7,9,6,8];
+function press(){if(down)return;down=true;lastPress=time;events.push({time,type:'down'});if(mode==='mash'&&time%8<5)score++;if(mode!=='mash')holdStart=time;}
+function release(){if(!down)return;down=false;events.push({time,type:'up'});if(mode!=='mash'&&holdStart!==null){const charge=Math.min(2.2,time-holdStart);shots.push({time,charge});holdStart=null;}}
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();press()}});
+addEventListener('keyup',e=>{if(e.code==='Space'){e.preventDefault();release()}});
+canvas.addEventListener('pointerdown',press);addEventListener('pointerup',release);
+function text(s,x,y,size=38,color='#202020',align='left'){ctx.fillStyle=color;ctx.font=`600 ${size}px "Malgun Gothic", sans-serif`;ctx.textAlign=align;ctx.fillText(s,x,y)}
+function box(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h)}
+function ball(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+function draw(t){time=t;const nextTrial=Math.floor(t/8);if(nextTrial!==trial){trial=nextTrial;score=0}
+ ctx.clearRect(0,0,1920,1080);box(0,0,1920,1080,'#fff');
+ text('직접 만든 원버튼 게임 · 실제 입력 플레이테스트',96,74,27,'#737373');
+ text(mode==='mash'?'5초 동안 빠르게 눌러 목표까지 이동':'누르고 모으기 → 손을 떼면 발사',96,163,55);
+ const local=t%8; const active=mode==='mash'?local<5:true;
+ box(96,240,1728,535,'#f2f4f7');
+ if(mode==='mash'){
+  text(`시도 ${trial+1}`,144,307,30,'#737373');text(active?`${Math.max(0,5-local).toFixed(1)}초`:'짧게 쉬고 다시 도전',1744,307,35,active?'#2f5faa':'#737373','right');
+  box(175,592,1440,12,'#cbd0d6');box(1450,373,5,219,'#507452');text('목표',1453,353,34,'#507452','center');
+  const x=Math.min(1585,195+score*43);ball(x,545,44,down?'#527cad':'#2f5faa');
+  text(`${score}회 입력`,x,446,38,'#2f5faa','center');
+  text(score>=29?'목표 도착!':active?'같은 버튼, 다른 속도':'기록을 보고 다음 시도 준비',960,728,39,'#202020','center');
+ }else{
+  text('동일한 입력 · 결과를 전달하는 두 화면',144,308,30,'#737373');
+  box(956,325,2,380,'#cbd0d6');text('숫자만 변화',528,375,37,'#737373','center');text('입력 + 움직임 + 결과',1382,375,37,'#2f5faa','center');
+  text(String(shots.length),528,570,110,'#737373','center');box(1110,649,550,10,'#cbd0d6');
+  box(1630,472,5,178,'#507452');text('목표',1632,452,28,'#507452','center');
+  const latest=shots.at(-1);const flight=latest?t-latest.time:100;const range=latest?200+latest.charge*170:0;
+  if(flight<2.2){const p=Math.min(1,flight/1.45);ball(1150+range*p,610-190*Math.sin(p*Math.PI),33,'#2f5faa');if(p===1)text(range>440?'도착!':'조금 더 모아보자',1380,736,33,range>440?'#507452':'#737373','center')}
+  else ball(1150,610,33,'#2f5faa');
+  const charge=down?Math.min(1,(t-holdStart)/2.2):0;box(1110,403,475,20,'#dfeaf5');box(1110,403,475*charge,20,'#2f5faa');
+  text(down?`힘을 모으는 중 ${Math.round(charge*100)}%`:'놓는 순간 발사',1380,691,32,'#2f5faa','center');
+ }
+ box(836,824+(down?15:0),248,88,down?'#234773':'#2f5faa');text(down?'누름':'SPACE',960,884+(down?15:0),36,'#fff','center');
+ text(mode==='mash'?'버튼을 누를 때마다 실제 게임 상태가 바뀝니다':'누른 시간과 놓은 순간으로 비행 거리가 바뀝니다',960,1004,31,'#737373','center');
+}
+window.captureStep=draw;window.inputLog=events;
+let start=performance.now();function animate(now){if(!window.recording)draw((now-start)/1000);requestAnimationFrame(animate)}requestAnimationFrame(animate);
+</script></html>

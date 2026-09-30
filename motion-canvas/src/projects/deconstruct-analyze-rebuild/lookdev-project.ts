@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import intro from '../small-window-game-design/intro-cats-v2/scene?scene';
+import s1 from './lookdev/scene01?scene';
+import s2 from './lookdev/scene02?scene';
+import s3 from './lookdev/scene03?scene';
+import s4 from './lookdev/scene04?scene';
+import s5 from './lookdev/scene05?scene';
+import s6 from './lookdev/scene06?scene';
+import outro from './scenes/membership-outro?scene';
+export default makeProject({name:'analyze-rebuild-lookdev',scenes:[intro,s1,s2,s3,s4,s5,s6,outro]});

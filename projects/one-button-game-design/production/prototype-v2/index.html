@@ -1,0 +1,48 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>원버튼 플레이테스트</title>
+<style>html,body{margin:0;background:#fff}canvas{display:block;width:1920px;height:1080px}</style>
+<canvas id="game" width="1920" height="1080"></canvas><script>
+// A playable input prototype. Recorded tests send the same keyboard events as a player.
+const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
+const mode=new URLSearchParams(location.search).get('mode')||'mash';
+let time=0,down=false,score=0,holdStart=null,shots=[],lastPress=-100,trial=0;
+const events=[]; const trials=[5,7,9,6,8];
+function press(){if(down)return;down=true;lastPress=time;events.push({time,type:'down'});if(mode==='mash'&&time%8<5)score++;if(mode!=='mash')holdStart=time;}
+function release(){if(!down)return;down=false;events.push({time,type:'up'});if(mode!=='mash'&&holdStart!==null){const charge=Math.min(2.2,time-holdStart);shots.push({time,charge});holdStart=null;}}
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();press()}});
+addEventListener('keyup',e=>{if(e.code==='Space'){e.preventDefault();release()}});
+canvas.addEventListener('pointerdown',press);addEventListener('pointerup',release);
+function text(s,x,y,size=38,color='#202020',align='left'){ctx.fillStyle=color;ctx.font=`600 ${size}px "Malgun Gothic", sans-serif`;ctx.textAlign=align;ctx.fillText(s,x,y)}
+function box(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h)}
+function ball(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+function draw(t){time=t;const nextTrial=Math.floor(t/8);if(nextTrial!==trial){trial=nextTrial;score=0}
+ ctx.clearRect(0,0,1920,1080);
+ const sky=ctx.createLinearGradient(0,0,0,1080);sky.addColorStop(0,'#e4eff5');sky.addColorStop(1,'#f7f5e9');ctx.fillStyle=sky;ctx.fillRect(0,0,1920,1080);
+ const polygon=(pts,c)=>{ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=c;ctx.fill()};
+ const block=(x,y,w,h,d,front='#729892')=>{polygon([[x,y],[x+w,y],[x+w+d*.5,y-d*.32],[x+d*.5,y-d*.32]],'#aecac4');polygon([[x,y],[x+w,y],[x+w,y+h],[x,y+h]],front);polygon([[x+w,y],[x+w+d*.5,y-d*.32],[x+w+d*.5,y+h-d*.32],[x+w,y+h]],'#466e69')};
+ const cube=(x,y,c='#2f5faa')=>{ctx.globalAlpha=.26;ball(x+18,y+63,36,'#597876');ctx.globalAlpha=1;block(x-30,y-36,64,78,65,c);ball(x+5,y-6,4,'white');ball(x+22,y-6,4,'white')};
+ // Parallax scenery covers the complete game screen, with no slide frame.
+ for(let i=0;i<10;i++){const x=((i*256-t*13)%2560+2560)%2560-320;block(x,380+i%3*70,130,430,50,'#d3e0dc')}
+ polygon([[0,710],[1920,620],[1920,1080],[0,1080]],'#d7e3d1');
+ for(let i=0;i<7;i++){const x=i*325+40;polygon([[x,670],[x+120,675],[x+70,650]],'#bbcdb5')}
+ const local=t%8,active=mode==='mash'?local<5:true;
+ text(mode==='mash'?'MASH / SPACE':'INPUT + RESULT / SPACE',80,92,31,'#466e69');text('직접 만든 원버튼 플레이테스트',1840,92,29,'#466e69','right');
+ if(mode==='mash'){
+  text(`시도 ${trial+1}`,110,297,32,'#466e69');text(active?`${Math.max(0,5-local).toFixed(1)}초`:'쉬고 다음 시도',1800,297,40,active?'#2f5faa':'#466e69','right');
+  block(110,662,1510,123,148);block(1620,662,170,123,148,'#52704c');
+  const x=Math.min(1600,165+score*47);cube(x,609,down?'#234773':'#2f5faa');text(`${score}회`,x,478,45,'#2f5faa','center');
+  text(score>=31?'목표 도착!':active?'누르는 횟수가 이동 거리를 바꿉니다':'회복하고 다음 시도를 준비',960,380,43,'#202020','center');
+  text('GOAL',1710,580,33,'#52704c','center');
+ }else{
+  text('A · 숫자만 변화',500,340,40,'#466e69','center');text('B · 입력과 결과',1380,340,40,'#2f5faa','center');
+  block(140,680,670,115,140);block(1040,680,620,115,140);
+  text(String(shots.length),500,565,116,'#466e69','center');const latest=shots.at(-1),flight=latest?t-latest.time:100,range=latest?180+latest.charge*160:0;
+  if(flight<2.2){const p=Math.min(1,flight/1.45);cube(1100+range*p,625-185*Math.sin(p*Math.PI));if(p===1)text(range>430?'도착!':'조금 더 모아보자',1380,775,32,range>430?'#52704c':'#737373','center')}
+  else cube(1100,625);
+  block(1590,575,18,106,45,'#52704c');text('목표',1620,510,29,'#52704c','center');
+  const charge=down?Math.min(1,(t-holdStart)/2.2):0;box(1130,399,475,26,'#cadbd3');box(1130,399,475*charge,26,'#2f5faa');text(down?`모으는 중 ${Math.round(charge*100)}%`:'놓는 순간 발사',1370,460,33,'#2f5faa','center');
+ }
+ block(826,841+(down?18:0),248,36,95,down?'#234773':'#2f5faa');text(down?'누름':'SPACE',962,873+(down?18:0),33,'white','center');
+}
+window.captureStep=draw;window.inputLog=events;
+let start=performance.now();function animate(now){if(!window.recording)draw((now-start)/1000);requestAnimationFrame(animate)}requestAnimationFrame(animate);
+</script></html>

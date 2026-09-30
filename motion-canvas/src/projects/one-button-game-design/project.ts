@@ -1,11 +1,12 @@
 import {makeProject} from '@motion-canvas/core';
-import scene01 from './scenes/scene01?scene';
-import scene02 from './scenes/scene02?scene';
-import scene03 from './scenes/scene03?scene';
-import scene04 from './scenes/scene04?scene';
-import scene05 from './scenes/scene05?scene';
-import scene06 from './scenes/scene06?scene';
-import scene07 from './scenes/scene07?scene';
-// Visual draft only: no placeholder audio, no rejected text-only membership outro.
-// Final requires cleared footage, approved voice/music, and original member row assets.
-export default makeProject({name:'one-button-game-design-visual-draft',scenes:[scene01,scene02,scene03,scene04,scene05,scene06,scene07]});
+import audio from './assets/final-mix-v2.m4a';
+import intro from '../small-window-game-design/intro-cats-v2/scene?scene';
+import s01 from './scenes/scene01?scene';
+import s02 from './scenes/scene02?scene';
+import s03 from './scenes/scene03?scene';
+import s04 from './scenes/scene04?scene';
+import s05 from './scenes/scene05?scene';
+import s06 from './scenes/scene06?scene';
+import s07 from './scenes/scene07?scene';
+import outro from './scenes/membership-outro?scene';
+export default makeProject({name:'원버튼 게임 디자인 — 전체 내레이션 v2',audio,scenes:[intro,s01,s02,s03,s04,s05,s06,s07,outro]});

@@ -10,10 +10,11 @@ const ffmpeg = (ffmpegPlugin as any).default ?? ffmpegPlugin;
 export default defineConfig({
   server: {
     fs: {
-      // Serve this lecture's exports without exposing the rest of the filesystem.
+      // Serve production previews and collected deliveries within these folders.
       allow: [
         searchForWorkspaceRoot(process.cwd()),
         fileURLToPath(new URL('../projects/renderformer-explained/production/body-review', import.meta.url)),
+        fileURLToPath(new URL('../output', import.meta.url)),
       ],
     },
   },
