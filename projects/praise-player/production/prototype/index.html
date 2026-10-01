@@ -1,0 +1,70 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>Praise Defense Lab</title>
+<style>html,body{margin:0;background:#eaf2f4;overflow:hidden}canvas{display:block;width:1920px;height:1080px}</style><canvas width="1920" height="1080"></canvas>
+<script>
+'use strict';
+const c=document.querySelector('canvas').getContext('2d'),mode=new URLSearchParams(location.search).get('mode')||'timing';
+const names={timing:['A · 즉시 인정','B · 늦게 인정'],specificity:['A · 같은 문구','B · 행동을 구분'],strength:['A · 매번 큰 축하','B · 성과에 맞는 강도'],honesty:['A · 무조건 완벽','B · 실제 결과 인정'],placement:['A · 진행 공간을 가림','B · 가장자리에 표시']};
+const subtitles={timing:'입력·판정·점수 동일 / 반응 시점만 비교',specificity:'방어와 회피 판정 동일 / 문구만 비교',strength:'같은 성공 횟수 / 연출 강도만 비교',honesty:'같은 공격을 놓침 / 실패를 인정하는 문구 비교',placement:'판정·문구·지속시간 동일 / 위치와 면적만 비교'};
+let previous=0,now=0,keys=new Set();window.inputLog=[];window.outcomeLog=[];window.soundLog=[];
+const spawnTimes=[1,7,13,19,25];
+const states=[0,1].map(i=>({i,y:315,x:280,hp:3,score:0,combo:0,success:0,balls:[],spawned:0,pending:[],messages:[],events:[]}));
+function input(e,down){if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){e.preventDefault();down?keys.add(e.code):keys.delete(e.code);window.inputLog.push({time:now,code:e.code,down});}}
+addEventListener('keydown',e=>{if(!e.repeat)input(e,true)});addEventListener('keyup',e=>input(e,false));
+function label(event,p){
+ if(mode==='honesty')return p.i===0?'완벽해요!':event==='hit'?'피격 · 다시 준비':event==='block'?'방어 성공':'회피 성공';
+ if(mode==='specificity')return p.i===0?'좋아요!':event==='block'?'방어 성공':event==='dodge'?'회피 성공':'피격';
+ if(mode==='strength')return p.i===1&&p.combo===3?'연속 방어 3회!':'방어 성공';
+ return event==='hit'?'피격':'방어 성공';
+}
+function resolve(p,b,kind){
+ b.done=true;const time=now;
+ if(kind==='hit'){p.hp--;p.combo=0;}else{p.score+=10;p.success++;p.combo++;}
+ const event={time,panel:p.i,kind,projectile:b.id,hp:p.hp,score:p.score,combo:p.combo,y:p.y};p.events.push(event);window.outcomeLog.push(event);
+ let delay=mode==='timing'&&p.i===1?2.4:.15;
+ let size=38;if(mode==='strength')size=p.i===0?88:p.combo===3?64:38;
+ if(mode==='placement')size=p.i===0?100:38;
+ const message={text:label(kind,p),kind,size,start:time+delay,end:time+delay+(mode==='placement'?6.5:1.65),eventTime:time,projectile:b.id};
+ p.pending.push(message);window.soundLog.push({time,kind,panel:p.i});
+}
+function step(dt){
+ for(const p of states){
+  p.y=Math.max(190,Math.min(430,p.y+(keys.has('ArrowDown')?150*dt:0)-(keys.has('ArrowUp')?150*dt:0)));
+  p.x=Math.max(240,Math.min(335,p.x+(keys.has('ArrowRight')?75*dt:0)-(keys.has('ArrowLeft')?75*dt:0)));
+  while(p.spawned<spawnTimes.length&&now>=spawnTimes[p.spawned]){const i=p.spawned++;p.balls.push({id:i,x:760,y:315,spawn:spawnTimes[i],done:false});}
+  for(const b of p.balls){if(b.done)continue;b.x=760-140*(now-b.spawn);
+   if(keys.has('Space')&&b.x<=p.x+63&&b.x>=p.x+30&&Math.abs(b.y-p.y)<=58)resolve(p,b,'block');
+   else if(b.x<=p.x+30&&b.x>=p.x-30&&Math.abs(b.y-p.y)<=42)resolve(p,b,'hit');
+   else if(b.x<p.x-34)resolve(p,b,'dodge');
+  }
+  for(const m of p.pending)if(!m.shown&&now>=m.start){m.shown=true;p.messages.push(m);window.outcomeLog.push({time:now,panel:p.i,kind:'feedback',text:m.text,forProjectile:m.projectile,delay:now-m.eventTime,size:m.size});}
+  p.messages=p.messages.filter(m=>now<m.end);
+ }
+}
+function text(s,x,y,size=30,color='#203b45',align='left',weight=600){c.font=`${weight} ${size}px "Malgun Gothic",sans-serif`;c.fillStyle=color;c.textAlign=align;c.textBaseline='middle';c.fillText(s,x,y);}
+function rect(x,y,w,h,color){c.fillStyle=color;c.fillRect(x,y,w,h);}
+function cat(x,y,color){rect(x-25,y-38,50,60,color);c.fillStyle=color;c.beginPath();c.moveTo(x-26,y-34);c.lineTo(x-23,y-66);c.lineTo(x-2,y-37);c.lineTo(x+23,y-66);c.lineTo(x+27,y-32);c.closePath();c.fill();rect(x-16,y-24,7,8,'#fff');rect(x+10,y-24,7,8,'#fff');rect(x-4,y-6,9,5,'#192e38');rect(x-27,y+16,18,14,'#263e48');rect(x+10,y+16,18,14,'#263e48');}
+function draw(){
+ rect(0,0,1920,1080,'#edf4f5');text('직접 만든 방어 테스트 · '+({timing:'반응 시점',specificity:'행동 문구',strength:'칭찬 강도',honesty:'결과의 정직함',placement:'다음 행동의 공간'}[mode]),70,58,44);text(subtitles[mode],72,110,26,'#57717b');text('실제 키보드 입력 · 충돌 로그 / 주관적 재미 평가 아님',1840,114,22,'#57717b','right');
+ for(const p of states){const ox=48+p.i*948,oy=180;rect(ox+10,oy+13,876,599,'#afc3c9');rect(ox,oy,876,599,'#fff');text(names[mode][p.i],ox+30,oy+43,32,p.i?'#286b50':'#295d89');text('체력 '+p.hp+' / 점수 '+p.score+' / 성공 '+p.success,ox+30,oy+93,26);text('공격 '+Math.min(5,p.spawned)+' / 5',ox+825,oy+93,25,'#607981','right');
+  rect(ox+24,oy+142,828,401,'#dcebec');
+  c.strokeStyle='#adc7cd';c.lineWidth=1;for(let yy=180;yy<540;yy+=45){c.beginPath();c.moveTo(ox+24,oy+yy);c.lineTo(ox+852,oy+yy-35);c.stroke();}
+  text('다음 공격이 오는 경로',ox+684,oy+213,21,'#5b7680','center',500);
+  rect(ox+747,oy+297,24,37,'#6a7881');cat(ox+p.x,oy+p.y,p.i?'#4b9172':'#4585b5');
+  if(keys.has('Space')){c.strokeStyle='#edc659';c.lineWidth=10;c.beginPath();c.moveTo(ox+p.x+48,oy+p.y-58);c.lineTo(ox+p.x+48,oy+p.y+58);c.stroke();}
+  for(const b of p.balls){if(b.done)continue;c.fillStyle='#d88c46';c.beginPath();c.arc(ox+b.x,oy+b.y,16,0,Math.PI*2);c.fill();c.strokeStyle='#a8582d';c.lineWidth=3;c.stroke();}
+  for(const m of p.messages){const age=now-m.start,alpha=Math.min(1,age/.08,Math.max(0,(m.end-now)/.2));c.save();c.globalAlpha=alpha;
+   const large=m.size>70,central=mode==='placement'&&p.i===0;
+   const mx=central||mode==='strength'?438:p.x,my=central?320:mode==='placement'?180:p.y-104;
+   c.font=`700 ${m.size}px "Malgun Gothic",sans-serif`;
+   const w=large?804:Math.min(804,Math.max(150,c.measureText(m.text).width+36)),h=large?150:Math.max(58,m.size+20);
+   rect(ox+mx-w/2+6,oy+my-h/2+6,w,h,'#8bac9b');rect(ox+mx-w/2,oy+my-h/2,w,h,m.kind==='hit'?'#f5e2d3':'#fff6c5');text(m.text,ox+mx,oy+my,m.size,m.kind==='hit'?'#95512f':'#274e3f','center',700);c.restore();
+  }
+  const last=p.events.at(-1);text(last?'직전 판정 · '+({block:'방어',dodge:'회피',hit:'피격'}[last.kind]):'스페이스: 방어 / 위·아래: 이동',ox+28,oy+570,23,'#607981');
+ }
+ rect(60,824,1800,60,'#e0ebee');text('입력: '+[...keys].map(x=>x==='Space'?'방어':x).join(' + '),88,854,25);text('정상 속도 '+now.toFixed(2)+'초',1800,854,25,'#4c6a77','right');
+ // Lower area is reserved for editable narration captions.
+}
+window.testState=()=>states.map(p=>({panel:p.i,hp:p.hp,score:p.score,combo:p.combo,success:p.success,x:p.x,y:p.y,events:p.events}));
+window.captureStep=t=>{if(t<previous)throw Error('No time reversal or looping');while(previous+1/60<t-1e-7){previous+=1/60;now=previous;step(1/60);}const dt=t-previous;if(dt>1e-7){now=t;step(dt);previous=t;}else now=t;draw();};
+window.captureStep(0);
+</script></html>

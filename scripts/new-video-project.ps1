@@ -45,7 +45,7 @@ foreach ($target in @($projectTarget, $motionTarget, $manimTarget)) {
 # Batch production must review existing topics and actual channel uploads first.
 $batchQueuePath = Join-Path $repoRoot 'production/batches/sakurai-planning-game-design/queue.json'
 if (Test-Path -LiteralPath $batchQueuePath -PathType Leaf) {
-    $batchQueue = Get-Content -LiteralPath $batchQueuePath -Raw | ConvertFrom-Json
+    $batchQueue = Get-Content -LiteralPath $batchQueuePath -Raw -Encoding utf8 | ConvertFrom-Json
     if ($batchQueue.items | Where-Object { $_.slug -eq $Slug }) {
         $duplicateChecker = Join-Path $repoRoot 'scripts/review-video-duplicates.cjs'
         $duplicateNode = Get-Command node -ErrorAction SilentlyContinue

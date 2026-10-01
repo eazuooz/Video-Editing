@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import intro from '../small-window-game-design/intro-cats-v2/scene?scene';
+import s01 from './scenes/diagram01?scene';
+import s02 from './scenes/diagram02?scene';
+import s03 from './scenes/diagram03?scene';
+import s04 from './scenes/diagram04?scene';
+import s05 from './scenes/diagram05?scene';
+import s06 from './scenes/diagram06?scene';
+import outro from './scenes/membership-outro?scene';
+export default makeProject({name:'praise-player-explanation-reel',scenes:[intro,s01,s02,s03,s04,s05,s06,outro]});
