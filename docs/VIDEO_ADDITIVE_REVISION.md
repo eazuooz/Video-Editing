@@ -4,6 +4,26 @@
 
 이 문서는 완료한 비공개 보강본과 앞으로 항상 적용할 제작 방식을 함께 기록한다. 최신 실행 상태와 완료 증거는 [보강 대기열](../production/batches/private-review-expansion/queue.json), 원래 주제의 중복 검토와 새 제작 순서는 [24편 대기열](../production/batches/sakurai-planning-game-design/queue.json)을 기준으로 한다. 아래 목록은 실제 렌더·검수·수집·비공개 저장·Git 전달을 확인한 시점의 기록이다.
 
+## 기존 제작물 중 실제 게시를 확인한 영상
+
+2026-10-02 현재 Studio 콘텐츠 목록에서 기존 프로젝트와 대응하는 다음 11편의 ID·제목·공개 상태를 직접 확인했다. [실제 목록 기록](references/created-video-inventory-20261002.json)을 함께 보존한다. 아래는 공개된 기존 제작물의 기록이며, 이번 보강 요청만으로 수정하거나 재업로드하지 않는다. 과거 manifest의 단계 이름이 오래되었거나 미디어 경로 구조가 다르더라도 이를 새 미제작 영상으로 판단하지 않는다. 채널 전체 465편을 전부 조사한 목록은 아니다.
+
+| 기존 프로젝트 / 주제 | 실제 게시 영상 | Studio 표시 길이 |
+|---|---|---:|
+| [one-button-game-design](../projects/one-button-game-design/project.json) | [원버튼 게임 디자인: 버튼 하나로 재미를 만드는 4가지 방법](https://youtu.be/DeSXTV41GXs) | 3:55 |
+| [small-window-game-design](../projects/small-window-game-design/project.json) | [화면 비율과 시야각이 게임을 바꾼다](https://youtu.be/84xPzR2ww88) | 3:53 |
+| [renderformer-explained](../projects/renderformer-explained/project.json) | [RenderFormer 논문 완전 해설](https://youtu.be/_Zz5JF5WGj4) | 44:09 |
+| [play-first](../projects/play-first/project.json) | [마리오 오디세이는 왜 3분 만에 재밌을까?](https://youtu.be/IHKv1p_aSJ4) | 3:29 |
+| [game-dev-career](../projects/game-dev-career/project.json) | [게임을 만드는 사람들은 각자 무슨 일을 하고 있을까요?](https://youtu.be/7ZjcujPX_uc) | 6:50 |
+| [visible-rewards](../projects/visible-rewards/project.json) | [왜 조금만 더 하게 될까? 보상이 보이는 게임 디자인](https://youtu.be/5W5f6T8Hho8) | 6:16 |
+| [gpt-astra-showcase](../projects/gpt-astra-showcase/project.json) | [AI로 이런 게임까지? 아스트라 게임·3D 제작 사례 8선](https://youtu.be/zR0Z2nYpDYQ) | 3:59 |
+| [let-them-play](../projects/let-them-play/project.json) | [게임은 어떻게 시작해야 할까? 첫 장면과 튜토리얼 디자인](https://youtu.be/bSPwEfdU_JI) | 8:02 |
+| [ai-era-cs-fundamentals](../projects/ai-era-cs-fundamentals/project.json) | [AI가 코딩해 주는데, 개발자는 뭘 공부해야 할까?](https://youtu.be/OjC6Hhyvybw) | 17:37 |
+| [frame-rate-modern-rendering](../projects/frame-rate-modern-rendering/project.json) | [30·60·120 FPS 차이, 왜 중요할까? 게임 프레임과 DLSS](https://youtu.be/mAO_tit6Qjs) | 7:26 |
+| [jump-physics](../projects/jump-physics/project.json) | [재미있는 점프는 어떻게 만들까? 다양한 게임 점프 물리와 조작감 분석](https://youtu.be/_j3H7lg4p1s) | 6:14 |
+
+`choice-driven-classics`와 DX12의 planning/script-review 프로젝트는 위 게시 완료 목록에 포함하지 않는다. 새 주제를 만들기 전에는 이 기록과 전체 기존 대본, 실제 현재 Studio 업로드를 다시 대조해 내용 중복을 확인한다.
+
 ## 지금까지 완료한 보강본
 
 본편 시간은 고양이 인트로 2초와 회원 엔딩 10초를 제외한다. 기존 PPT 보존 시간과 최종 설명 시간은 다를 수 있다. 새 예시의 정리 도식을 추가한 경우에도 원래 PPT를 줄이지 않았다.
