@@ -84,6 +84,12 @@ def align_characters(text: str, words: list[dict], duration: float):
     indices = np.arange(len(expected))
     char_start = np.maximum.accumulate(np.interp(indices, positions, mapped_start))
     char_end = np.maximum.accumulate(np.interp(indices, positions, mapped_end))
+    # Interpolated unmatched characters (for example Korean 에프티엘 / ASR FTL)
+    # can start just before the preceding matched character ends. Preserve the
+    # recognized endpoint and clamp the following start, so adjacent cues never
+    # overlap. This changes caption boundaries, not speech or scene origins.
+    char_start[1:] = np.maximum(char_start[1:], char_end[:-1])
+    char_end = np.maximum(char_end, char_start)
     return char_start, char_end, coverage
 
 

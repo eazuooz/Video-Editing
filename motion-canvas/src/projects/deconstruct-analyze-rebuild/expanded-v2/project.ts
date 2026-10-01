@@ -1,0 +1,17 @@
+import {makeProject} from '@motion-canvas/core';
+import audio from './assets/final-mix.m4a';
+import intro from '../../small-window-game-design/intro-cats-v2/scene?scene';
+import s0 from './scenes/original-01?scene';
+import s1 from './scenes/addition-01?scene';
+import s2 from './scenes/original-02?scene';
+import s3 from './scenes/addition-02?scene';
+import s4 from './scenes/original-03?scene';
+import s5 from './scenes/addition-03?scene';
+import s6 from './scenes/original-04?scene';
+import s7 from './scenes/addition-04?scene';
+import s8 from './scenes/original-05?scene';
+import s9 from './scenes/addition-05?scene';
+import s10 from './scenes/original-06?scene';
+import s11 from './scenes/addition-06?scene';
+import outro from '../scenes/membership-outro?scene';
+export default makeProject({name:'게임 분석·재조립 — 원본 설명 보존·실제 선택 관찰 확장본',audio,scenes:[intro,s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,outro]});
