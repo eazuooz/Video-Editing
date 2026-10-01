@@ -1,0 +1,52 @@
+# YouTube Publishing — English
+
+## Title
+
+Count Animation Frames | Design Game Feel with Timing
+
+## Description
+
+How does animation timing shape game feel? We observe motion in Mega Man 11 and Monster Hunter Rise, then compare startup, active and recovery intervals in an original playable frame-timing test.
+
+Twelve frames can mean 0.2 or 0.4 seconds depending on the reference rate. We change pose count, collision timing, hitpause and display sampling separately, and verify actual accepted inputs and collisions in the logs. Exact values belong to our prototype; they are not commercial move data or hardware input-latency measurements. Korean narration with manually prepared English subtitles.
+
+Chapters
+00:00 Turn Feel into Timing
+00:31 Frame Count and Reference Rate
+01:02 Startup, Active and Recovery
+01:34 Pose Clock and Collision Clock
+02:06 Which Clock Includes the Pause?
+02:36 Observe First, Then Verify with Logs
+03:07 Membership thanks
+
+#GameDevelopment #GameDesign #Animation #GameFeel
+
+🎮 Build games with real programming skills.
+
+YamYamCoding is a Korean game-programming channel covering DirectX, Unity, Unreal Engine and computer graphics.
+
+━━━━━━━━━━━━━━━━━━
+
+🚀 Premium 1:1 programming coaching
+
+Learn to design and implement real projects with guided feedback.
+DirectX11 / DirectX12 · Unity / Unreal Engine · Computer Graphics & PBR · Shaders / Rendering · Game engines · Graphics papers and implementation
+
+Programming coaching
+https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328
+
+━━━━━━━━━━━━━━━━━━
+
+💬 YamYamCoding community
+
+Questions, code reviews, feedback and course materials.
+
+Discord
+https://discord.gg/wZuqe7fqkR
+
+YouTube channel membership
+https://www.youtube.com/channel/UCOgtkPoyC0VXhCs7Xk3jvjQ/join
+
+━━━━━━━━━━━━━━━━━━
+
+Prepared for private upload. Actual Studio settings and check outcomes are recorded separately in youtube-upload.json.

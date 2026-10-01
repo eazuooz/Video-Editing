@@ -1,0 +1,18 @@
+const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),slug='counting-animation-frames',base=path.dirname(__dirname),read=f=>JSON.parse(fs.readFileSync(f,'utf8')),write=(f,v)=>fs.writeFileSync(f,JSON.stringify(v,null,2)+'\n');
+const m=read(path.join(base,'project.json')),out=path.join(root,m.tts.outputDir),report=read(path.join(out,m.tts.filenameStem+'.asr-review.json')),review=read(path.join(__dirname,'narration-scene-review.json'));
+if(!report.complete||require('./asr-gate.cjs').failures(report).length)throw Error('Actual reviewed current chunk/end gates must pass');
+for(const scene of report.scenes){if(!review.scenes.some(r=>r.scene===scene.scene&&r.audioSha256===scene.audio_sha256&&r.result==='passed-content-and-ending'))throw Error('Missing current-hash reviewed scene '+scene.scene);}
+const alive=pid=>{try{process.kill(pid,0);return true;}catch(e){if(e.code==='ESRCH')return false;throw e;}};
+for(const pid of [52012,61500,43328,48040])if(alive(pid))throw Error('Original verified job still active: '+pid);
+const runnerState=path.join(__dirname,'technical-runner.json');if(fs.existsSync(runnerState)){const old=read(runnerState);if(old.state==='running'&&alive(old.pid))throw Error('Existing render runner still active: '+old.pid);old.state='stopped-before-reviewed-numeric-orthography-resume';write(runnerState,old);}
+const queue=path.join(root,'production/batches/sakurai-planning-game-design/queue.json'),q=read(queue),item=q.items.find(i=>i.slug===slug),now=new Date().toISOString();
+item.activeExecution.tts.state='finished-original-synthesis';item.activeExecution.tts.note='Original six scenes ended and measured package created; rejected02 then replaced once by approved same voice.';
+item.activeExecution.asr.state='finished-timeout-after-five-original-chunks; superseded by complete refreshed CPU ASR in repair job';
+item.activeExecution.repairScene02.state='finished-synthesis-and-complete-ASR; numeric-orthography gate reviewed';
+item.activeExecution.repairScene02.numericException={audioSha256:'1952e3381f9b5a17fd27831ed03bf53df069690b19f3c76987571a75dded5a7f',rawSimilarity:.9052631578947369,actualDifferences:'ten replace-only numerical spellings; full text and ending inspected; no repeat/omission',review:'projects/counting-animation-frames/production/narration-scene-review.json'};
+item.localProgress.narrationScenesAsrReviewed=review.scenes.map(r=>r.scene);item.localProgress.narration='All six current scene hashes reviewed. Repaired02 has no repetition; ten numerical spellings verified. Full assembled ASR and final video QA pending.';item.localProgress.narrationSceneFindings=item.localProgress.narration;
+item.checkpoints.narration=true;item.requiredCorrections=['Inspect complete assembled narration ASR and every final cue/cut before collection/upload','Preserve pending human listening, public rights, original Nimbus, cropped-member and backup status'];item.stage='current-scenes-reviewed-starting-single-final-render';item.updatedAt=now;q.updatedAt=now;write(queue,q);
+const runner=path.join(__dirname,'continue-production.cjs');fs.writeFileSync(runner,fs.readFileSync(runner,'utf8').replace("log:'projects/counting-animation-frames/production/technical-runner.log'","log:runnerLog"));
+const child=spawn(process.execPath,[runner],{cwd:root,windowsHide:true,env:{...process.env,COUNTING_RUNNER_LOG:'projects/counting-animation-frames/production/technical-runner-reviewed.log'},stdio:['ignore','inherit','inherit']});
+console.log('Single reviewed technical runner PID',child.pid);child.on('error',e=>{console.error(e);process.exitCode=1;});child.on('exit',code=>{process.exitCode=code;});

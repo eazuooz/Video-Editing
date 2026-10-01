@@ -42,6 +42,26 @@ foreach ($target in @($projectTarget, $motionTarget, $manimTarget)) {
     }
 }
 
+# Batch production must review existing topics and actual channel uploads first.
+$batchQueuePath = Join-Path $repoRoot 'production/batches/sakurai-planning-game-design/queue.json'
+if (Test-Path -LiteralPath $batchQueuePath -PathType Leaf) {
+    $batchQueue = Get-Content -LiteralPath $batchQueuePath -Raw | ConvertFrom-Json
+    if ($batchQueue.items | Where-Object { $_.slug -eq $Slug }) {
+        $duplicateChecker = Join-Path $repoRoot 'scripts/review-video-duplicates.cjs'
+        $duplicateNode = Get-Command node -ErrorAction SilentlyContinue
+        if (-not $duplicateNode) {
+            $bundledDuplicateNode = Join-Path $env:USERPROFILE '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
+            if (-not (Test-Path -LiteralPath $bundledDuplicateNode -PathType Leaf)) {
+                throw 'Node is required for the mandatory pre-production duplicate review.'
+            }
+            & $bundledDuplicateNode $duplicateChecker $Slug --check
+        } else {
+            & $duplicateNode.Source $duplicateChecker $Slug --check
+        }
+        if ($LASTEXITCODE -ne 0) { throw 'Pre-production duplicate review is missing, stale or unresolved. Do not create this batch project.' }
+    }
+}
+
 if ([string]::IsNullOrWhiteSpace($TitleEn)) {
     $TitleEn = $TitleKo
 }
