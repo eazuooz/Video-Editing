@@ -1,7 +1,7 @@
 // Measured narration -> distinct gameplay cuts -> editable explanations -> final mix.
 const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
-const root=path.resolve(__dirname,'../../..'),slug='meaningful-quests',mc=path.join(root,'motion-canvas/src/projects',slug),work=path.join(__dirname,'final-v1');
-const mf=path.join(root,'projects',slug,'project.json'),read=f=>JSON.parse(fs.readFileSync(f,'utf8')),m=read(mf);
+const root=path.resolve(__dirname,'../../..'),slug='meaningful-quests',mc=path.join(root,'motion-canvas/src/projects',slug),work=path.join(__dirname,process.env.MEANINGFUL_REVISION||'final-v1');
+const mf=path.resolve(root,process.env.MEANINGFUL_MANIFEST||`projects/${slug}/project.json`),read=f=>JSON.parse(fs.readFileSync(f,'utf8')),m=read(mf);
 const write=(f,v)=>{fs.mkdirSync(path.dirname(f),{recursive:true});fs.writeFileSync(f,typeof v==='string'?v:JSON.stringify(v,null,2)+'\n');};
 const rel=f=>path.relative(root,f).replaceAll('\\','/'),abs=f=>path.join(root,f);
 function run(cmd,args){const r=spawnSync(cmd,args,{encoding:'utf8',windowsHide:true,maxBuffer:24e6});if(r.status!==0)throw Error(r.stderr||String(r.error));return r.stdout;}
