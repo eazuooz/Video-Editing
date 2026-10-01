@@ -1,0 +1,16 @@
+// Directly inspected intermediate evidence, not a full narration approval.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),base=path.dirname(__dirname),read=f=>JSON.parse(fs.readFileSync(f,'utf8')),write=(f,v)=>fs.writeFileSync(f,JSON.stringify(v,null,2)+'\n'),hash=f=>crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex'),now=new Date().toISOString();
+const m=read(path.join(base,'project.json')),out=path.join(root,m.tts.outputDir),report=read(path.join(out,m.tts.filenameStem+'.asr-review.json'));
+const notes={
+ '01':'All eight source-matched control/target cues and locked-door distinction, complete ending, no dropped or repeated claim in direct ASR comparison.',
+ '03':'All eight menu/Enter/Space/action-semantics cautions and ending; no omission or repetition in the current direct ASR comparison.',
+ '04':'All eight short-press/hold/cancel/scene-continues statements and complete ending; source prototype real logs match the demonstration.',
+ '05':'All eight received/pending/complete statements, duplicate-request handling, actual failure caution and explicit simulation description are present with complete ending; no omitted or repeated sentence.'
+};
+const scenes=Object.entries(notes).map(([id,notes])=>{const s=report.scenes.find(x=>x.scene===id),digest=hash(path.join(out,'chunks',id+'-scene.wav'));if(!s||s.audio_sha256!==digest||!s.acousticChecks.endingHeuristicPassed||s.similarity!==1)throw Error('Stale/unexpected intermediate ASR '+id);return {scene:id,audioSha256:digest,result:'passed-content-and-ending',notes};});
+write(path.join(__dirname,'narration-progress-review.json'),{reviewedAt:now,status:'partial-only;02-rewording-and06/full-review-pending',scenes,rejectedScene02:{reason:'Repeated color phrase ASR ambiguity in scene and independent4.6s crop; single waiting repair61126 will explicitly reword only02 after existing jobs exit',currentRejectedAudioSha256:hash(path.join(out,'chunks/02-scene.wav'))},humanListening:'pending',finalApproved:false});
+const rf=path.join(__dirname,'repair-scene02.json'),repair=read(rf);repair.sessionId=61126;write(rf,repair);
+const vf=path.join(__dirname,'visual-preparation-review.json'),visual=read(vf);visual.prototype.menuRevision='Actual menu-v2 frame at19.5s directly inspected: transient message and status are separated; all keys/state assertions passed. Originalv1 preserved.';visual.prototype.finalMenuV2Review='passed preparation; final captioned output still pending';write(vf,visual);
+const qf=path.join(root,'production/batches/sakurai-planning-game-design/queue.json'),q=read(qf),item=q.items.find(x=>x.slug==='responsive-game-feedback');item.activeExecution.repair=repair;item.localProgress.narrationScenesAsrReviewed=scenes.map(x=>x.scene);item.localProgress.narration='01/03/04/05 current-hash content/end directly reviewed;02 rejected ASR ambiguity;06/full pending. Single repair61126 waiting for original jobs before02-only rewording/synthesis.';item.localProgress.menuV2Preparation='Actual frame inspected, heading/message overlap resolved';item.updatedAt=q.updatedAt=now;write(qf,q);
+console.log('Only current01/03/04/05 accepted in partial record;02 repair and full review pending.');
