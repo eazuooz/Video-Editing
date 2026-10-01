@@ -1,10 +1,10 @@
 """Frame/audio/subtitle checks and actual output contact sheets for human review."""
 from pathlib import Path
-import json, subprocess, io
+import json, subprocess, io, os
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT=Path(__file__).resolve().parents[3]
-WORK=Path(__file__).parent/'final-v1'
+WORK=Path(__file__).parent/os.environ.get('COUNTING_REVISION','final-v1')
 manifest=json.loads((ROOT/'projects/counting-animation-frames/project.json').read_text(encoding='utf-8'))
 plan=json.loads((WORK/'plan.json').read_text(encoding='utf-8'))
 def run(args): return subprocess.check_output(args,stderr=subprocess.STDOUT).decode('utf-8',errors='replace')
@@ -26,8 +26,11 @@ assert len(set(audio_hashes.values()))==1,audio_hashes
 results['sameCopiedAacAudio']=audio_hashes
 points=[(1.65,'original channel intro')]
 for s in plan['scenes']:
-    points.append((s['start']+min(3,s['gameSeconds']/2),f"{s['id']} gameplay"))
-    points.append((s['start']+s['gameSeconds']+min(3,s['diagramSeconds']/2),f"{s['id']} explanation"))
+    for segment in s.get('segments',[]):
+        points.append((segment['timelineStart']+segment['seconds']*.5,f"{s['id']} {segment['key']}"))
+    if not s.get('segments'):
+        points.append((s['start']+min(3,s['gameSeconds']/2),f"{s['id']} gameplay"))
+        points.append((s['start']+s['gameSeconds']+min(3,s['diagramSeconds']/2),f"{s['id']} explanation"))
 points.append((plan['bodyEnd']+5,'original membership rows + logo'))
 for s in plan['scenes']:
     for cut in s['cuts']:

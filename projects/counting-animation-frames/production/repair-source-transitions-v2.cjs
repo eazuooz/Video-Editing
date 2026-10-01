@@ -1,0 +1,15 @@
+const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),work=path.join(__dirname,'final-v2'),file=path.join(work,'plan.json'),p=JSON.parse(fs.readFileSync(file,'utf8'));
+function ff(args){const r=spawnSync('ffmpeg',['-v','error','-y',...args],{cwd:root,encoding:'utf8',windowsHide:true});if(r.status!==0)throw Error(r.stderr);}
+const enc=['-an','-c:v','libx264','-preset','veryfast','-crf','19','-pix_fmt','yuv420p','-r','60','-video_track_timescale','90000','-movflags','+faststart'];
+function render(c){const label=path.join(root,c.video.replace('.mp4','-label.txt')),sol=c.key==='sol',text=sol?'길티기어 스트라이브 · 동작 관찰 (2020 베타)':c.title+' · 동작 관찰 (기술 수치 측정 아님)';fs.writeFileSync(label,text);const filter=`fps=60,scale=1920:1080,setsar=1,drawtext=fontfile='C\\:/Windows/Fonts/malgun.ttf':textfile='${path.relative(root,label).replaceAll('\\','/')}':x=${sol?1000:500}:y=25:fontsize=${sol?23:27}:fontcolor=white:box=1:boxcolor=black@0.62:boxborderw=9`;ff(['-ss',String(c.sourceIn),'-i',path.join(root,c.file),'-frames:v',String(c.frames),'-vf',filter,...enc,path.join(root,c.video)]);ff(['-f','lavfi','-i','anullsrc=r=48000:cl=stereo','-t',String(c.seconds),'-c:a','pcm_s16le',path.join(root,c.audio)]);}
+const first=p.scenes[2].cuts.find(c=>c.key==='ryu'&&c.timelineStart<70);first.sourceIn=8;first.originalIn=8;p.scenes[2].segments.find(s=>s.video===first.video).source=first;render(first);
+const scene=p.scenes[5],original=scene.cuts[0],seg=scene.segments[0];
+if(!scene.cuts.some(c=>c.key==='sol')){
+ const n=210,sol={...p.scenes[4].cuts[0],frames:n,seconds:n/60,timelineStart:original.timelineStart+(original.frames-n)/60,sourceIn:28,originalIn:28,video:'projects/counting-animation-frames/production/final-v2/segment-06-1b.mp4',audio:'projects/counting-animation-frames/production/final-v2/segment-06-1b.wav'};
+ original.frames-=n;original.seconds=original.frames/60;seg.frames=original.frames;seg.seconds=original.seconds;seg.source=original;
+ scene.cuts.splice(1,0,sol);scene.segments.splice(1,0,{key:'sol',frames:n,seconds:n/60,timelineStart:sol.timelineStart,sceneOffset:sol.timelineStart-scene.start,video:sol.video,kind:'actual-commercial-gameplay',source:sol});render(original);
+}
+for(const s of p.scenes)for(const c of s.cuts)if(c.key==='sol'){render(c);s.segments.find(s=>s.video===c.video).source=c;}
+for(const target of [file,path.join(root,'motion-canvas/src/projects/counting-animation-frames/production-plan.json')])fs.writeFileSync(target,JSON.stringify(p,null,2)+'\n');
+fs.writeFileSync(path.join(work,'source-transition-repair.json'),JSON.stringify({rejected:[{source:'iAs1p3LVdAs',range:[7,7.55],reason:'opening fade inside selected attack'},{source:'seX6oUfwjII',range:[24.4,25.15],reason:'internal guide fade'}],replacement:'Ryu source8.0; ChunLi17.0–22.2167 then new normal-speed Sol28.0–31.5, no overlap/loop',allTimingAndAudioUnchanged:true,hud:'GGST source identity above health bars; caption upper-right below health and beside combo count'},null,2)+'\n');

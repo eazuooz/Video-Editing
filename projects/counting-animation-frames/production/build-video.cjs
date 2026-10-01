@@ -1,6 +1,6 @@
 // Measured narration -> distinct gameplay cuts -> editable explanations -> final mix.
 const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
-const root=path.resolve(__dirname,'../../..'),slug='counting-animation-frames',mc=path.join(root,'motion-canvas/src/projects',slug),work=path.join(__dirname,'final-v1');
+const root=path.resolve(__dirname,'../../..'),slug='counting-animation-frames',mc=path.join(root,'motion-canvas/src/projects',slug),work=path.join(__dirname,process.env.COUNTING_REVISION||'final-v1');
 const mf=path.join(root,'projects',slug,'project.json'),read=f=>JSON.parse(fs.readFileSync(f,'utf8')),m=read(mf);
 const write=(f,v)=>{fs.mkdirSync(path.dirname(f),{recursive:true});fs.writeFileSync(f,typeof v==='string'?v:JSON.stringify(v,null,2)+'\n');};
 const rel=f=>path.relative(root,f).replaceAll('\\','/'),abs=f=>path.join(root,f);

@@ -1,0 +1,15 @@
+// Exact, same-duration replacement after source inspection found a guide fade.
+const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),file=path.join(__dirname,'final-v2/plan.json'),p=JSON.parse(fs.readFileSync(file,'utf8')),s=p.scenes[2],cut=s.cuts.find(c=>c.key==='ryu'&&c.timelineStart>80),seg=s.segments.find(x=>x.timelineStart===cut.timelineStart);
+const own=s.cuts.find(c=>c.key==='interval'),ownSeg=s.segments.find(x=>x.key==='interval'),diagram=s.segments.find(x=>x.key==='diagram');
+// Keep the same diagram frame count and all scene/narration boundaries; move
+// 90 frames from the commercial shot to the continuous original-test capture.
+const delta=90;if(cut.timelineStart<90){own.frames+=delta;own.seconds=own.frames/60;ownSeg.frames=own.frames;ownSeg.seconds=own.seconds;ownSeg.source=own;diagram.timelineStart+=delta/60;diagram.sceneOffset+=delta/60;cut.timelineStart+=delta/60;cut.frames-=delta;cut.seconds=cut.frames/60;seg.timelineStart=cut.timelineStart;seg.sceneOffset+=delta/60;seg.frames=cut.frames;seg.seconds=cut.seconds;p.commercialGameplaySeconds-=delta/60;p.originalPlaytestSeconds+=delta/60;}
+cut.sourceIn=16.25;cut.originalIn=16.25;seg.source=cut;
+function ff(args){const r=spawnSync('ffmpeg',['-v','error','-y',...args],{cwd:root,encoding:'utf8',windowsHide:true});if(r.status!==0)throw Error(r.stderr);}
+const enc=['-an','-c:v','libx264','-preset','veryfast','-crf','19','-pix_fmt','yuv420p','-r','60','-video_track_timescale','90000','-movflags','+faststart'];
+ff(['-ss','16.25','-i',path.join(root,cut.file),'-frames:v',String(cut.frames),'-vf',"fps=60,scale=1920:1080,setsar=1,drawtext=fontfile='C\\:/Windows/Fonts/malgun.ttf':textfile='projects/counting-animation-frames/production/final-v2/segment-03-4-label.txt':x=500:y=25:fontsize=27:fontcolor=white:box=1:boxcolor=black@0.62:boxborderw=9",...enc,path.join(root,cut.video)]);
+ff(['-i',path.join(root,own.file),'-frames:v',String(own.frames),'-vf','fps=60,scale=1920:1080,setsar=1',...enc,path.join(root,own.video)]);
+ff(['-i',path.join(root,own.file),'-vn','-af',`atrim=duration=${own.seconds},asetpts=PTS-STARTPTS,loudnorm=I=-23:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=0.12,afade=t=out:st=${own.seconds-.3}:d=0.3,apad,atrim=duration=${own.seconds}`,'-c:a','pcm_s16le',path.join(root,own.audio)]);
+for(const target of [file,path.join(root,'motion-canvas/src/projects/counting-animation-frames/production-plan.json')])fs.writeFileSync(target,JSON.stringify(p,null,2)+'\n');
+fs.writeFileSync(path.join(__dirname,'final-v2/source-fade-repair.json'),JSON.stringify({source:'iAs1p3LVdAs',rejectedRanges:[[10.3,15.55],[16.5,21.75]],reason:'Raw guide fades to black at13.8s and20.4s; both excluded. Continuous test grows1.5s, diagram shifts1.5s with its original duration.',replacement:[16.25,16.25+cut.seconds],timelineStart:cut.timelineStart,frames:cut.frames,narrationOrCaptionTimingChanged:false,pictureAndSourceAudioWillBeRebuiltTogether:true},null,2)+'\n');

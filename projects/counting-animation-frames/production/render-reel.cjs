@@ -1,7 +1,7 @@
 // Render the local code artifact in its isolated Motion Canvas worker.
 const fs=require('node:fs'),path=require('node:path'),puppeteer=require('../../../motion-canvas/node_modules/puppeteer');
 const root=path.resolve(__dirname,'../../..'),lookdev=process.argv.includes('--lookdev');
-const work=path.join(__dirname,'final-v1');fs.mkdirSync(work,{recursive:true});
+const work=path.join(__dirname,process.env.COUNTING_REVISION||'final-v1');fs.mkdirSync(work,{recursive:true});
 (async()=>{
  const plan=lookdev?null:JSON.parse(fs.readFileSync(path.join(work,'plan.json'),'utf8'));
  const frames=lookdev?3600:plan.introFrames+plan.diagramFrames+600;
