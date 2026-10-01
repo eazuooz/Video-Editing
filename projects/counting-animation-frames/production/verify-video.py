@@ -5,10 +5,48 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT=Path(__file__).resolve().parents[3]
 WORK=Path(__file__).parent/os.environ.get('COUNTING_REVISION','final-v1')
-manifest=json.loads((ROOT/'projects/counting-animation-frames/project.json').read_text(encoding='utf-8'))
+manifest=json.loads((ROOT/os.environ.get('COUNTING_MANIFEST','projects/counting-animation-frames/project.json')).read_text(encoding='utf-8'))
 plan=json.loads((WORK/'plan.json').read_text(encoding='utf-8'))
 def run(args): return subprocess.check_output(args,stderr=subprocess.STDOUT).decode('utf-8',errors='replace')
 results={}
+if plan.get('revision') == 'final-v3':
+    import numpy as np
+    import soundfile as sf
+    import hashlib
+    baseline=WORK.parent/'private-expansion-baseline'
+    original_plan=json.loads((baseline/'production/final-v1/plan.json').read_text(encoding='utf-8'))
+    retention=json.loads((WORK/'original-frame-retention.json').read_text(encoding='utf-8'))
+    assert retention['allOriginalFramesRetained'] and retention['allOriginalBodyFrames']==original_plan['bodyFrames']
+    original_checks=[]
+    composed,rate=sf.read(ROOT/manifest['paths']['narration'],dtype='int16')
+    for i,part in enumerate(plan['audioParts']):
+        piece,piece_rate=sf.read(WORK/f'voice-part-{i+1:02d}.wav',dtype='int16')
+        assert piece_rate==rate==24000
+        a=round(part['bodyStart']*rate)
+        assert np.array_equal(piece,composed[a:a+len(piece)]), 'Composed voice drift'
+        source,source_rate=sf.read(ROOT/part['source'],dtype='int16')
+        assert source_rate==rate
+        begin=round(part['sourceStart']*rate)
+        expected=source[begin:begin+len(piece)]
+        assert np.array_equal(piece[:len(expected)],expected), 'Original/new voice samples changed'
+        assert not np.any(piece[len(expected):]), 'Narration padding contains speech'
+        original_checks.append({'kind':part['kind'],'frames':part['frames'],'sourceSha256':hashlib.sha256((ROOT/part['source']).read_bytes()).hexdigest(),'samplesRetained':len(expected),'exactPcmRetained':True})
+    def frame_hashes(file):
+        output=run(['ffmpeg','-v','error','-i',str(file),'-an','-vf','scale=192:108:flags=area','-f','framehash','-hash','sha256','-'])
+        return [line.split(',')[-1].strip() for line in output.splitlines() if line and not line.startswith('#')]
+    baseline_hashes=frame_hashes(baseline/'clean.mp4')
+    final_hashes=frame_hashes(ROOT/manifest['paths']['videoClean'])
+    original_picture=[]
+    for scene in plan['scenes']:
+        if scene['role']!='preserved-original':continue
+        before=next(s for s in original_plan['scenes'] if s['id']==scene['originalId'])
+        a,b=round(before['start']*60),round(scene['start']*60)
+        assert final_hashes[b:b+scene['frames']]==baseline_hashes[a:a+scene['frames']], 'Original explanation frame lost/changed after concat'
+        original_picture.append({'scene':scene['id'],'frames':scene['frames'],'everyOriginalFrameUnchanged':True})
+    assert final_hashes[:120]==baseline_hashes[:120]
+    assert final_hashes[-600:]==baseline_hashes[-600:]
+    assert abs(plan['gameplaySeconds']*60-plan['bodyFrames']*.6)<=1
+    results['additivePreservation']={'originalBodyFrames':original_plan['bodyFrames'],'originalExplanationFrames':plan['originalExplanationFrames'],'allOriginalNarrationPcmRetained':True,'allOriginalPicturesRetained':True,'originalPictureScenes':original_picture,'voiceParts':original_checks,'introAndOutroOriginalFramesRetained':True,'ratioClassification':plan['classification'],'ratioMaxErrorFrames':abs(plan['gameplaySeconds']*60-plan['bodyFrames']*.6)}
 for key in ['videoClean','videoBurnedCaptions']:
     source=ROOT/manifest['paths'][key]
     meta=json.loads(run(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(source)]))

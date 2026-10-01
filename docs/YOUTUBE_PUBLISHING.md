@@ -7,6 +7,8 @@
 
 이 규칙은 새 영상 업로드에 적용한다. 기존 게시 영상이나 채널 전체 설정을 자동 수정하지 않는다. 재사용 설정은 `shared/publishing/youtube-defaults.json`, 기존 자동 설명 원문은 `shared/publishing/youtube-channel-description.ko.txt`에 보관한다.
 
+2026-10-01 추가 요청: 최근 비공개 검토본은 기존 PPT 내용·시간과 내레이션을 보존하고 실제 예시·한영 해설을 중간에 더해 확장한다. `production/batches/private-review-expansion/queue.json`의 실제 Studio 확인 대상 5편부터 진행한다. 원본 업로드와 영수증을 보존하며, 검수한 확장본만 새 비공개 업로드로 연결한다. 수정본 영수증은 `youtube-upload-v3.json`처럼 별도 파일을 사용하고 `node scripts/prepare-youtube-upload.cjs <slug> --receipt youtube-upload-v3.json`으로 설명을 준비한다. 예전 광고/저작권 검사 결과를 새 파일의 통과 증거로 복사하지 않는다. 현재 예약·게시된 기존 영상은 이 보강 배치에서 임의로 수정하지 않는다.
+
 ## 썸네일
 
 사용자 원본: `references/youtube-thumbnail-20261001.png`.

@@ -90,9 +90,14 @@ def align_characters(text: str, words: list[dict], duration: float):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--project", required=True)
+    parser.add_argument("--manifest", help="Repository-relative alternate manifest for additive narration")
     args = parser.parse_args()
     project = ROOT / "projects" / args.project
-    manifest = json.loads((project / "project.json").read_text(encoding="utf-8"))
+    manifest_file = (ROOT / args.manifest).resolve() if args.manifest else project / "project.json"
+    manifest_file.resolve().relative_to(ROOT.resolve())
+    manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+    if manifest.get("slug") != args.project:
+        raise ValueError("Alternate manifest project mismatch")
     output = (ROOT / manifest["tts"]["outputDir"]).resolve()
     output.relative_to(ROOT)
     stem = manifest["tts"]["filenameStem"]
@@ -101,8 +106,8 @@ def main():
     backup = output / f"{stem}.timing.unaligned.json"
     if not backup.exists():
         backup.write_text(json.dumps(timing, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    ko = json.loads((project / "script/narration.ko.json").read_text(encoding="utf-8"))
-    en = json.loads((project / "script/narration.en.json").read_text(encoding="utf-8"))
+    ko = json.loads((ROOT / manifest["paths"].get("script", str(project / "script/narration.ko.json"))).read_text(encoding="utf-8"))
+    en = json.loads((ROOT / manifest["paths"].get("scriptEn", str(project / "script/narration.en.json"))).read_text(encoding="utf-8"))
     if len(ko["scenes"]) != len(en["scenes"]):
         raise ValueError("Translation scene mismatch")
     captions = {"ko": [], "en": []}

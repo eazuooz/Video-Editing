@@ -1,5 +1,7 @@
 # 기획·게임 디자인 영상 일괄 제작
 
+2026-10-01 최신 우선 작업: [비공개 검토본 보강](../private-review-expansion/README.md). 최근 비공개 5편의 PPT 내용·대사·길이를 보존하면서 중간 실제 게임 장면과 새 한영 대사를 추가해 전체 길이를 늘리는 수정 작업을 새 주제보다 먼저 진행한다. 과거 완성 이력과 원래 업로드는 보존한다. counting-animation-frames의 보강 기준은 업로드된 final-v1이며 로컬 final-v2와 혼동하지 않는다. 아래의 과거 실제 예시 비율에는 도식형 테스트를 포함했던 이력이 있으므로 최신 기준의 준수 증거로 재사용하지 않는다.
+
 원본 재생목록: https://www.youtube.com/playlist?list=PLgKCjZ2WsVLSmJwGC258l2HhWgf-P877B
 
 2026-10-01 최신 사용자 승인: **완성 영상은 저장한 YouTube 규칙을 전부 적용해 비공개로 업로드하며 공개·예약은 사용자가 직접 진행한다.** 이전 업로드 보류 지시는 대체됐다. 기본값은 docs/YOUTUBE_PUBLISHING.md와 shared/publishing/youtube-defaults.json에 보관한다.

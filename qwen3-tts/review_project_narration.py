@@ -43,6 +43,7 @@ def acoustic_evidence(wav: Path, config: dict) -> dict:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument('--project', required=True)
+    p.add_argument('--manifest', help='Repository-relative alternate manifest for a preserved additive revision')
     p.add_argument('--device', choices=['cpu', 'cuda'], default='cuda')
     p.add_argument('--watch', action='store_true')
     p.add_argument('--scenes', default='', help='Only create/refresh these comma-separated scene caches; other valid caches are retained')
@@ -51,7 +52,11 @@ def main() -> None:
     args = p.parse_args()
     project = ROOT / 'projects' / args.project
     project.resolve().relative_to((ROOT / 'projects').resolve())
-    manifest = json.loads((project / 'project.json').read_text(encoding='utf-8'))
+    manifest_file = (ROOT / args.manifest).resolve() if args.manifest else project / 'project.json'
+    manifest_file.resolve().relative_to(ROOT.resolve())
+    manifest = json.loads(manifest_file.read_text(encoding='utf-8'))
+    if manifest.get('slug') != args.project:
+        raise ValueError('Alternate manifest project mismatch')
     script = json.loads((ROOT / manifest['paths']['script']).read_text(encoding='utf-8'))
     selected = {value.strip().zfill(2) for value in args.scenes.split(',') if value.strip()}
     unknown = selected - {scene['id'] for scene in script['scenes']}

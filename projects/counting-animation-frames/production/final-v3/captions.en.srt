@@ -1,0 +1,533 @@
+1
+00:00:02,000 --> 00:00:06,170
+Make the attack a little faster. It is
+a familiar request during development.
+
+2
+00:00:06,500 --> 00:00:10,030
+Should we shorten the preparation, or the pause after impact?
+
+3
+00:00:10,280 --> 00:00:13,890
+Consider a jump in Mega Man 11 or an attack in Monster Hunter Rise.
+
+4
+00:00:14,180 --> 00:00:17,490
+One action contains a beginning, a change, and an ending.
+
+5
+00:00:17,680 --> 00:00:21,310
+We will translate that feeling into a time scale measured in frames.
+
+6
+00:00:21,500 --> 00:00:23,890
+The games illustrate observable motion.
+
+7
+00:00:23,960 --> 00:00:27,310
+We will verify exact numbers in an original frame-timing test.
+
+8
+00:00:27,460 --> 00:00:30,990
+The number of drawings is not necessarily the game’s time scale.
+
+9
+00:00:31,667 --> 00:00:34,647
+Let us bring the same question into a fighting
+game.
+
+10
+00:00:34,847 --> 00:00:40,207
+Ky swings his sword in Guilty Gear, the
+opponent reacts, and Ky returns to a stance.
+
+11
+00:00:40,567 --> 00:00:42,907
+The bright effects attract your attention, but
+watch three moments separately.
+
+12
+00:00:43,207 --> 00:00:45,967
+The start of the action, contact with the
+opponent,
+
+13
+00:00:45,967 --> 00:00:48,047
+and the transition to another action.
+
+14
+00:00:48,307 --> 00:00:53,247
+The sword's swing and the full duration of the
+attack may have different boundaries.
+
+15
+00:00:53,527 --> 00:00:57,847
+Street Fighter's Ken also brings his body back
+after a kick.
+
+16
+00:00:57,847 --> 00:01:02,527
+When someone asks for a faster attack, ask
+which interval felt slow.
+
+17
+00:01:03,007 --> 00:01:05,287
+Shorter preparation changes the opponent's
+reading time;
+
+18
+00:01:05,287 --> 00:01:08,747
+shorter recovery changes the wait before
+another choice.
+
+19
+00:01:09,167 --> 00:01:10,847
+We observed normal-speed movement.
+
+20
+00:01:10,847 --> 00:01:14,147
+Exact numbers require a defined basis, as in
+our original test.
+
+21
+00:01:15,213 --> 00:01:17,423
+Every frame count needs a reference rate.
+
+22
+00:01:17,593 --> 00:01:22,223
+At sixty steps per second, twelve
+frames represent zero point two seconds.
+
+23
+00:01:22,373 --> 00:01:26,323
+At thirty steps per second, the same twelve
+frames represent zero point four seconds.
+
+24
+00:01:26,533 --> 00:01:29,503
+The count stays the same, but the elapsed time doubles.
+
+25
+00:01:29,793 --> 00:01:33,843
+Our test therefore uses a fixed sixty-update-per-second rule.
+
+26
+00:01:33,973 --> 00:01:37,883
+It displays elapsed time alongside a moving marker.
+
+27
+00:01:38,253 --> 00:01:41,658
+Record the frame count and its reference
+rate together in your design notes.
+
+28
+00:01:41,673 --> 00:01:45,463
+Rendering and game-rule updates can run at different rates.
+
+29
+00:01:46,167 --> 00:01:48,727
+Before assigning numbers, practice observing
+different actions with the same basis.
+
+30
+00:01:48,967 --> 00:01:53,047
+Ky creates a projectile in the air, descends,
+and returns to his stance.
+
+31
+00:01:53,287 --> 00:01:57,587
+His pose keeps changing while the glowing
+projectile remains on screen.
+
+32
+00:01:57,947 --> 00:01:59,887
+Using the projectile's disappearance as the
+attack's end
+
+33
+00:01:59,887 --> 00:02:01,887
+may give a different answer from the
+character's recovery.
+
+34
+00:02:02,147 --> 00:02:05,987
+In the next action, watch him slide along the
+ground and then stand up.
+
+35
+00:02:06,227 --> 00:02:08,287
+Projectile travel, character recovery,
+
+36
+00:02:08,287 --> 00:02:11,667
+and one displayed video frame are different
+things to observe.
+
+37
+00:02:11,687 --> 00:02:14,927
+Write the observed beginning and end beside
+the number.
+
+38
+00:02:14,927 --> 00:02:19,367
+A shared update basis lets us compare how long
+we wait for different attacks.
+
+39
+00:02:19,503 --> 00:02:23,487
+This is why we converted twelve frames into
+seconds in the earlier explanation.
+
+40
+00:02:24,423 --> 00:02:26,953
+Now decide which part of an attack you are measuring.
+
+41
+00:02:27,583 --> 00:02:31,073
+Our original test records input acceptance as time zero.
+
+42
+00:02:31,503 --> 00:02:34,053
+The hit area begins after twelve time steps,
+
+43
+00:02:34,283 --> 00:02:37,993
+stays active for three steps, then recovers for fifteen.
+
+44
+00:02:38,243 --> 00:02:40,913
+The total is thirty steps, or zero point five seconds.
+
+45
+00:02:41,163 --> 00:02:43,873
+If the request for speed concerns preparation,
+
+46
+00:02:44,183 --> 00:02:47,113
+we can shorten that phase and keep the others unchanged.
+
+47
+00:02:47,503 --> 00:02:51,148
+Record both boundaries so everyone measures the same interval.
+
+48
+00:02:51,163 --> 00:02:55,493
+These prototype numbers do not
+represent move data from another game.
+
+49
+00:02:56,417 --> 00:02:59,897
+Now watch attacks that rise into the air or
+move toward the opponent.
+
+50
+00:03:00,197 --> 00:03:04,777
+Ky raises his leg, moves forward, attacks, and
+returns to a standing posture.
+
+51
+00:03:04,897 --> 00:03:08,857
+Movement alone does not prove that an attack
+hitbox is active at that moment.
+
+52
+00:03:09,117 --> 00:03:13,677
+An attacker may also keep moving after the
+opponent has been hit.
+
+53
+00:03:13,837 --> 00:03:17,517
+For an upward leap, observe the ascent
+separately from the landing.
+
+54
+00:03:17,577 --> 00:03:20,457
+A player who needs another action may be
+waiting for that ending.
+
+55
+00:03:20,517 --> 00:03:23,957
+In Ken's sequence of kicks, observe the
+connection between actions.
+
+56
+00:03:23,957 --> 00:03:25,937
+Long preparation, long recovery,
+
+57
+00:03:25,937 --> 00:03:29,437
+and a transition into another action are
+separate questions.
+
+58
+00:03:29,657 --> 00:03:33,037
+The earlier diagram compared a separate change
+to preparation time.
+
+59
+00:03:33,790 --> 00:03:36,700
+Does adding drawings make the hit happen sooner?
+
+60
+00:03:37,110 --> 00:03:40,660
+We changed only the poses in the same attack.
+
+61
+00:03:40,910 --> 00:03:44,980
+One version holds fewer poses longer;
+the other changes poses more often.
+
+62
+00:03:45,150 --> 00:03:48,720
+Both hit areas begin at the same twelfth time step.
+
+63
+00:03:49,050 --> 00:03:52,520
+Their visual smoothness differs, but the wait for the hit is equal.
+
+64
+00:03:52,710 --> 00:03:56,600
+We distinguish the animation-pose clock from the hit-area clock.
+
+65
+00:03:56,790 --> 00:04:00,095
+Before adding poses, decide which timing you want to change.
+
+66
+00:04:00,110 --> 00:04:04,360
+The implementation and logs verify that
+poses and collision timing are separate.
+
+67
+00:04:05,150 --> 00:04:10,490
+Guilty Gear's Sol presents strong poses and
+then moves into another pose.
+
+68
+00:04:10,750 --> 00:04:14,610
+Clear silhouettes and abrupt changes in shape
+contribute to the impression of movement.
+
+69
+00:04:14,910 --> 00:04:20,270
+Counting pose changes alone does not tell us
+when an attack was active.
+
+70
+00:04:20,610 --> 00:04:25,650
+Watch how Ky's character, weapon, and
+projectile effects change differently.
+
+71
+00:04:25,950 --> 00:04:29,670
+Light and projectiles may move while the
+character holds a pose.
+
+72
+00:04:29,950 --> 00:04:34,030
+Assuming every visible change belongs to one
+collision clock makes measurement confusing.
+
+73
+00:04:34,030 --> 00:04:37,350
+When refining expression, decide which pose
+should remain readable for longer.
+
+74
+00:04:37,870 --> 00:04:40,810
+Changing the action's preparation time
+requires a separate comparison.
+
+75
+00:04:41,370 --> 00:04:45,470
+That is why our test kept collision onset
+fixed while changing pose counts.
+
+76
+00:04:46,433 --> 00:04:49,923
+Next, examine a brief pause at impact.
+
+77
+00:04:50,113 --> 00:04:54,723
+In our test, only the combat clock
+pauses for four steps after collision.
+
+78
+00:04:54,913 --> 00:04:57,023
+The background time indicator keeps moving.
+
+79
+00:04:57,253 --> 00:04:59,298
+The attack data still spans thirty combat steps,
+
+80
+00:04:59,313 --> 00:05:02,883
+but the actual completion time also includes the pause.
+
+81
+00:05:03,093 --> 00:05:07,923
+When observing a paused action, ask which clock the count refers to.
+
+82
+00:05:08,093 --> 00:05:11,123
+This does not imply that every commercial game uses this method.
+
+83
+00:05:11,353 --> 00:05:15,763
+It illustrates explicitly choosing what
+pauses and what continues in our own game.
+
+84
+00:05:16,433 --> 00:05:20,093
+Focus on contact with the opponent and the
+movement immediately afterward.
+
+85
+00:05:20,413 --> 00:05:24,933
+Ky's sequence shows effects at contact before
+connecting to another attack.
+
+86
+00:05:25,193 --> 00:05:28,033
+Sol's strong hit also has different
+impressions before contact,
+
+87
+00:05:28,033 --> 00:05:30,273
+at impact, and when movement resumes.
+
+88
+00:05:30,413 --> 00:05:33,893
+That brief feeling of impact is a different
+question from the attack's preparation.
+
+89
+00:05:34,113 --> 00:05:38,733
+Distinguish large effects from moments when
+the character stops moving.
+
+90
+00:05:39,093 --> 00:05:41,733
+A moving background or effect does not prove
+that
+
+91
+00:05:41,733 --> 00:05:43,813
+every combat-related clock keeps advancing.
+
+92
+00:05:43,813 --> 00:05:48,353
+Game state and records are needed to establish
+exactly what was paused.
+
+93
+00:05:48,653 --> 00:05:53,113
+Our test paused only the combat clock and left
+background time visible.
+
+94
+00:05:53,453 --> 00:05:57,493
+We turn a question from real gameplay into a
+small experiment with a defined subject.
+
+95
+00:05:58,367 --> 00:06:02,637
+Finally, frames counted in a recording
+are only one kind of evidence.
+
+96
+00:06:02,827 --> 00:06:06,817
+Repeated or missing pictures can obscure the game’s internal timing.
+
+97
+00:06:07,087 --> 00:06:09,812
+Even at different display update rates,
+
+98
+00:06:09,827 --> 00:06:13,637
+the same fixed hit-area clock produces
+the hit at the same elapsed time.
+
+99
+00:06:13,807 --> 00:06:16,637
+First, watch at normal speed and estimate the duration.
+
+100
+00:06:16,827 --> 00:06:21,012
+Then record input acceptance, the first active
+hit, and when another action is allowed.
+
+101
+00:06:21,027 --> 00:06:23,492
+Check the reference rate alongside the measured elapsed time
+
+102
+00:06:23,507 --> 00:06:26,872
+to turn a vague request for speed into a change everyone can review.
+
+103
+00:06:26,887 --> 00:06:29,877
+Find it by feel, then verify it by measurement.
+
+104
+00:06:29,967 --> 00:06:33,267
+Finally, turn the observed attack into a
+design note.
+
+105
+00:06:33,527 --> 00:06:37,147
+For a projectile attack, separate hand
+movement,
+
+106
+00:06:37,147 --> 00:06:39,567
+projectile creation, and the return to a
+stance.
+
+107
+00:06:39,807 --> 00:06:44,127
+Record impact as another event because
+distance also affects it.
+
+108
+00:06:44,287 --> 00:06:47,527
+For a rushing attack, separate the start of
+movement,
+
+109
+00:06:47,527 --> 00:06:49,587
+contact, and readiness for another action.
+
+110
+00:06:49,847 --> 00:06:52,987
+Then choose one interval to change in our own
+game.
+
+111
+00:06:53,267 --> 00:06:55,627
+If you change preparation, keep recovery and
+travel
+
+112
+00:06:55,627 --> 00:06:57,967
+distance fixed and test the same situation
+again.
+
+113
+00:06:57,967 --> 00:07:02,807
+Video checks visible results; logs check the
+timing of internal rules.
+
+114
+00:07:03,027 --> 00:07:05,267
+If the records differ, check whether frames
+were
+
+115
+00:07:05,267 --> 00:07:07,567
+miscounted or different clocks were observed.
+
+116
+00:07:07,827 --> 00:07:12,427
+Keep the feeling, find where it arises, and
+connect it to a change we can explain.

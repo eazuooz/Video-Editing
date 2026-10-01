@@ -30,6 +30,7 @@ FINAL_SRT = OUTPUT_DIR / "jump-physics-qwen3-balanced.srt"
 TIMING_JSON = OUTPUT_DIR / "jump-physics-qwen3-balanced.timing.json"
 LANGUAGE = "Korean"
 RENDER_MODE = "scene"
+INFERENCE_DEVICE = "cuda:0"
 
 
 def load_tts_dependencies() -> None:
@@ -114,7 +115,7 @@ def _repo_path(relative: str) -> Path:
     return resolved
 
 
-def configure_project(project: str) -> None:
+def configure_project(project: str, manifest_override: str | None = None) -> None:
     """Load all project-specific input and output paths from its manifest."""
     global SCRIPT_PATH, REFERENCE, REFERENCE_TEXT_PATH, MODEL_DIR, OUTPUT_DIR, CHUNK_DIR
     global FINAL_WAV, FINAL_SRT, TIMING_JSON, LANGUAGE, RENDER_MODE
@@ -122,7 +123,7 @@ def configure_project(project: str) -> None:
     global EXAMPLE_SECONDS, NARRATION_PLACEMENT
     global DECAY_MS_THRESHOLD, MAX_RENDER_ATTEMPTS, MAX_NEW_TOKENS, FADE_SECONDS
 
-    manifest_path = ROOT / "projects" / project / "project.json"
+    manifest_path = _repo_path(manifest_override) if manifest_override else ROOT / "projects" / project / "project.json"
     if not manifest_path.exists():
         raise FileNotFoundError(f"Project manifest not found: {manifest_path}")
 
@@ -299,7 +300,7 @@ def needs_render(path: Path) -> bool:
 
 
 def render_chunks(items: list[RenderItem], batch_size: int, force_scenes: set[str] | None = None) -> None:
-    if not torch.cuda.is_available():
+    if INFERENCE_DEVICE.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA GPU is required for local Qwen3-TTS inference.")
     if not REFERENCE.exists():
         raise FileNotFoundError(f"Reference audio not found: {REFERENCE}")
@@ -322,9 +323,14 @@ def render_chunks(items: list[RenderItem], batch_size: int, force_scenes: set[st
 
     CHUNK_DIR.mkdir(parents=True, exist_ok=True)
     print(f"Rendering {len(pending)} narration chunks locally (batch size {batch_size}).")
-    model = Qwen3TTSModel.from_pretrained(
-        str(MODEL_DIR), device_map="cuda:0", dtype=torch.bfloat16
-    )
+    # A CPU render uses the same approved model and reference when the user's
+    # GPU is occupied. It must still pass current-audio ASR and ending review.
+    device_options = {"device_map": INFERENCE_DEVICE, "dtype": torch.bfloat16}
+    if INFERENCE_DEVICE == "cpu":
+        torch.set_num_threads(8)
+        device_options.update(dtype=torch.float32, attn_implementation="eager")
+    print(f"Inference device: {INFERENCE_DEVICE}", flush=True)
+    model = Qwen3TTSModel.from_pretrained(str(MODEL_DIR), **device_options)
     # Build the voice identity prompt once, then reuse it for every batch.
     reference_text = (
         REFERENCE_TEXT_PATH.read_text(encoding="utf-8").strip()
@@ -609,6 +615,7 @@ def assemble_scene_outputs(jobs: list[Job]) -> None:
 
 
 def main() -> None:
+    global INFERENCE_DEVICE
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--project",
@@ -616,6 +623,8 @@ def main() -> None:
         help="Project slug under projects/ (default: jump-physics)",
     )
     parser.add_argument("--batch-size", type=int, default=2)
+    parser.add_argument("--manifest", help="Repository-relative alternate manifest for additive revisions; preserves the delivered project's manifest")
+    parser.add_argument("--device", choices=["cuda:0", "cpu"], default="cuda:0", help="Same approved model/reference on GPU (default) or CPU")
     parser.add_argument("--force-scenes", default="", help="Comma-separated scene IDs to regenerate after content review; previous takes are preserved")
     parser.add_argument(
         "--dry-run",
@@ -626,7 +635,8 @@ def main() -> None:
     if args.batch_size < 1:
         raise ValueError("--batch-size must be at least 1")
 
-    configure_project(args.project)
+    INFERENCE_DEVICE = args.device
+    configure_project(args.project, args.manifest)
     print(f"Project: {args.project}")
     print(f"Script:  {SCRIPT_PATH}")
     print(f"Output:  {OUTPUT_DIR}")

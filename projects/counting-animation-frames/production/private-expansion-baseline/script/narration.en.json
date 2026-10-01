@@ -1,0 +1,91 @@
+{
+  "title": "Count Animation Frames | Design Game Feel with Timing",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "Turn Feel into Timing",
+      "lines": [
+        "Make the attack a little faster. It is a familiar request during development.",
+        "Should we shorten the preparation, or the pause after impact?",
+        "Consider a jump in Mega Man 11 or an attack in Monster Hunter Rise.",
+        "One action contains a beginning, a change, and an ending.",
+        "We will translate that feeling into a time scale measured in frames.",
+        "The games illustrate observable motion.",
+        "We will verify exact numbers in an original frame-timing test.",
+        "The number of drawings is not necessarily the game’s time scale."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "A Frame Count Needs a Reference Rate",
+      "lines": [
+        "Every frame count needs a reference rate.",
+        "At sixty steps per second, twelve frames represent zero point two seconds.",
+        "At thirty steps per second, the same twelve frames represent zero point four seconds.",
+        "The count stays the same, but the elapsed time doubles.",
+        "Our test therefore uses a fixed sixty-update-per-second rule.",
+        "It displays elapsed time alongside a moving marker.",
+        "Record the frame count and its reference rate together in your design notes.",
+        "Rendering and game-rule updates can run at different rates."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "Define the Interval You Measure",
+      "lines": [
+        "Now decide which part of an attack you are measuring.",
+        "Our original test records input acceptance as time zero.",
+        "The hit area begins after twelve time steps,",
+        "stays active for three steps, then recovers for fifteen.",
+        "The total is thirty steps, or zero point five seconds.",
+        "If the request for speed concerns preparation,",
+        "we can shorten that phase and keep the others unchanged.",
+        "Record both boundaries so everyone measures the same interval.",
+        "These prototype numbers do not represent move data from another game."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "Pose Clock and Collision Clock",
+      "lines": [
+        "Does adding drawings make the hit happen sooner?",
+        "We changed only the poses in the same attack.",
+        "One version holds fewer poses longer; the other changes poses more often.",
+        "Both hit areas begin at the same twelfth time step.",
+        "Their visual smoothness differs, but the wait for the hit is equal.",
+        "We distinguish the animation-pose clock from the hit-area clock.",
+        "Before adding poses, decide which timing you want to change.",
+        "The implementation and logs verify that poses and collision timing are separate."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "Which Clock Includes the Pause?",
+      "lines": [
+        "Next, examine a brief pause at impact.",
+        "In our test, only the combat clock pauses for four steps after collision.",
+        "The background time indicator keeps moving.",
+        "The attack data still spans thirty combat steps,",
+        "but the actual completion time also includes the pause.",
+        "When observing a paused action, ask which clock the count refers to.",
+        "This does not imply that every commercial game uses this method.",
+        "It illustrates explicitly choosing what pauses and what continues in our own game."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "Observe First, Then Verify with Logs",
+      "lines": [
+        "Finally, frames counted in a recording are only one kind of evidence.",
+        "Repeated or missing pictures can obscure the game’s internal timing.",
+        "Even at different display update rates,",
+        "the same fixed hit-area clock produces the hit at the same elapsed time.",
+        "First, watch at normal speed and estimate the duration.",
+        "Then record input acceptance, the first active hit, and when another action is allowed.",
+        "Check the reference rate alongside the measured elapsed time",
+        "to turn a vague request for speed into a change everyone can review.",
+        "Find it by feel, then verify it by measurement."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,193 @@
+{
+  "title": "Count Animation Frames | Design Game Feel with Timing",
+  "scenes": [
+    {
+      "id": "original-01",
+      "title": "Turn Feel into Timing",
+      "lines": [
+        "Make the attack a little faster. It is a familiar request during development.",
+        "Should we shorten the preparation, or the pause after impact?",
+        "Consider a jump in Mega Man 11 or an attack in Monster Hunter Rise.",
+        "One action contains a beginning, a change, and an ending.",
+        "We will translate that feeling into a time scale measured in frames.",
+        "The games illustrate observable motion.",
+        "We will verify exact numbers in an original frame-timing test.",
+        "The number of drawings is not necessarily the game’s time scale."
+      ],
+      "originalId": "01"
+    },
+    {
+      "id": "addition-01",
+      "title": "Three Moments to Observe in an Attack",
+      "lines": [
+        "Let us bring the same question into a fighting game.",
+        "Ky swings his sword in Guilty Gear, the opponent reacts, and Ky returns to a stance.",
+        "The bright effects attract your attention, but watch three moments separately.",
+        "The start of the action, contact with the opponent, and the transition to another action.",
+        "The sword's swing and the full duration of the attack may have different boundaries.",
+        "Street Fighter's Ken also brings his body back after a kick.",
+        "When someone asks for a faster attack, ask which interval felt slow.",
+        "Shorter preparation changes the opponent's reading time; shorter recovery changes the wait before another choice.",
+        "We observed normal-speed movement. Exact numbers require a defined basis, as in our original test."
+      ],
+      "originalId": "01"
+    },
+    {
+      "id": "original-02",
+      "title": "A Frame Count Needs a Reference Rate",
+      "lines": [
+        "Every frame count needs a reference rate.",
+        "At sixty steps per second, twelve frames represent zero point two seconds.",
+        "At thirty steps per second, the same twelve frames represent zero point four seconds.",
+        "The count stays the same, but the elapsed time doubles.",
+        "Our test therefore uses a fixed sixty-update-per-second rule.",
+        "It displays elapsed time alongside a moving marker.",
+        "Record the frame count and its reference rate together in your design notes.",
+        "Rendering and game-rule updates can run at different rates."
+      ],
+      "originalId": "02"
+    },
+    {
+      "id": "addition-02",
+      "title": "Use a Shared Time Basis",
+      "lines": [
+        "Before assigning numbers, practice observing different actions with the same basis.",
+        "Ky creates a projectile in the air, descends, and returns to his stance.",
+        "His pose keeps changing while the glowing projectile remains on screen.",
+        "Using the projectile's disappearance as the attack's end may give a different answer from the character's recovery.",
+        "In the next action, watch him slide along the ground and then stand up.",
+        "Projectile travel, character recovery, and one displayed video frame are different things to observe.",
+        "Write the observed beginning and end beside the number.",
+        "A shared update basis lets us compare how long we wait for different attacks.",
+        "This is why we converted twelve frames into seconds in the earlier explanation."
+      ],
+      "originalId": "02"
+    },
+    {
+      "id": "original-03",
+      "title": "Define the Interval You Measure",
+      "lines": [
+        "Now decide which part of an attack you are measuring.",
+        "Our original test records input acceptance as time zero.",
+        "The hit area begins after twelve time steps,",
+        "stays active for three steps, then recovers for fifteen.",
+        "The total is thirty steps, or zero point five seconds.",
+        "If the request for speed concerns preparation,",
+        "we can shorten that phase and keep the others unchanged.",
+        "Record both boundaries so everyone measures the same interval.",
+        "These prototype numbers do not represent move data from another game."
+      ],
+      "originalId": "03"
+    },
+    {
+      "id": "addition-03",
+      "title": "Separate Preparation and Recovery",
+      "lines": [
+        "Now watch attacks that rise into the air or move toward the opponent.",
+        "Ky raises his leg, moves forward, attacks, and returns to a standing posture.",
+        "Movement alone does not prove that an attack hitbox is active at that moment.",
+        "An attacker may also keep moving after the opponent has been hit.",
+        "For an upward leap, observe the ascent separately from the landing.",
+        "A player who needs another action may be waiting for that ending.",
+        "In Ken's sequence of kicks, observe the connection between actions.",
+        "Long preparation, long recovery, and a transition into another action are separate questions.",
+        "The earlier diagram compared a separate change to preparation time."
+      ],
+      "originalId": "03"
+    },
+    {
+      "id": "original-04",
+      "title": "Pose Clock and Collision Clock",
+      "lines": [
+        "Does adding drawings make the hit happen sooner?",
+        "We changed only the poses in the same attack.",
+        "One version holds fewer poses longer; the other changes poses more often.",
+        "Both hit areas begin at the same twelfth time step.",
+        "Their visual smoothness differs, but the wait for the hit is equal.",
+        "We distinguish the animation-pose clock from the hit-area clock.",
+        "Before adding poses, decide which timing you want to change.",
+        "The implementation and logs verify that poses and collision timing are separate."
+      ],
+      "originalId": "04"
+    },
+    {
+      "id": "addition-04",
+      "title": "Separate Visual Expression from Action Rules",
+      "lines": [
+        "Guilty Gear's Sol presents strong poses and then moves into another pose.",
+        "Clear silhouettes and abrupt changes in shape contribute to the impression of movement.",
+        "Counting pose changes alone does not tell us when an attack was active.",
+        "Watch how Ky's character, weapon, and projectile effects change differently.",
+        "Light and projectiles may move while the character holds a pose.",
+        "Assuming every visible change belongs to one collision clock makes measurement confusing.",
+        "When refining expression, decide which pose should remain readable for longer.",
+        "Changing the action's preparation time requires a separate comparison.",
+        "That is why our test kept collision onset fixed while changing pose counts."
+      ],
+      "originalId": "04"
+    },
+    {
+      "id": "original-05",
+      "title": "Which Clock Includes the Pause?",
+      "lines": [
+        "Next, examine a brief pause at impact.",
+        "In our test, only the combat clock pauses for four steps after collision.",
+        "The background time indicator keeps moving.",
+        "The attack data still spans thirty combat steps,",
+        "but the actual completion time also includes the pause.",
+        "When observing a paused action, ask which clock the count refers to.",
+        "This does not imply that every commercial game uses this method.",
+        "It illustrates explicitly choosing what pauses and what continues in our own game."
+      ],
+      "originalId": "05"
+    },
+    {
+      "id": "addition-05",
+      "title": "Observe Contact and What Follows",
+      "lines": [
+        "Focus on contact with the opponent and the movement immediately afterward.",
+        "Ky's sequence shows effects at contact before connecting to another attack.",
+        "Sol's strong hit also has different impressions before contact, at impact, and when movement resumes.",
+        "That brief feeling of impact is a different question from the attack's preparation.",
+        "Distinguish large effects from moments when the character stops moving.",
+        "A moving background or effect does not prove that every combat-related clock keeps advancing.",
+        "Game state and records are needed to establish exactly what was paused.",
+        "Our test paused only the combat clock and left background time visible.",
+        "We turn a question from real gameplay into a small experiment with a defined subject."
+      ],
+      "originalId": "05"
+    },
+    {
+      "id": "original-06",
+      "title": "Observe First, Then Verify with Logs",
+      "lines": [
+        "Finally, frames counted in a recording are only one kind of evidence.",
+        "Repeated or missing pictures can obscure the game’s internal timing.",
+        "Even at different display update rates,",
+        "the same fixed hit-area clock produces the hit at the same elapsed time.",
+        "First, watch at normal speed and estimate the duration.",
+        "Then record input acceptance, the first active hit, and when another action is allowed.",
+        "Check the reference rate alongside the measured elapsed time",
+        "to turn a vague request for speed into a change everyone can review.",
+        "Find it by feel, then verify it by measurement."
+      ],
+      "originalId": "06"
+    },
+    {
+      "id": "addition-06",
+      "title": "Turn Observation into a Design Note",
+      "lines": [
+        "Finally, turn the observed attack into a design note.",
+        "For a projectile attack, separate hand movement, projectile creation, and the return to a stance.",
+        "Record impact as another event because distance also affects it.",
+        "For a rushing attack, separate the start of movement, contact, and readiness for another action.",
+        "Then choose one interval to change in our own game.",
+        "If you change preparation, keep recovery and travel distance fixed and test the same situation again.",
+        "Video checks visible results; logs check the timing of internal rules.",
+        "If the records differ, check whether frames were miscounted or different clocks were observed.",
+        "Keep the feeling, find where it arises, and connect it to a change we can explain."
+      ],
+      "originalId": "06"
+    }
+  ]
+}
