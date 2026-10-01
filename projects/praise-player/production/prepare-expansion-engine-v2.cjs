@@ -1,0 +1,8 @@
+const fs=require('node:fs'),path=require('node:path');const root=path.resolve(__dirname,'../../..'),base=path.join(root,'projects/meaningful-quests/production');
+const files=['build-expansion-v2.cjs','render-recap-v2.cjs','review-expanded-sources.py','run-expansion-v2.cjs','run-expansion-render-v2.cjs','verify-expanded-v2.py','caption-expanded-v2.cjs','review-selected-windows-v2.py'];
+for(const file of files){const target=path.join(__dirname,file);if(fs.existsSync(target))throw Error('Preserve adapted engine '+file);let source=fs.readFileSync(path.join(base,file),'utf8').replaceAll('meaningful-quests','praise-player').replaceAll('MEANINGFUL_','PRAISE_').replaceAll("['skyrim','subnautica']","['sports','ringfit']").replaceAll('퀘스트 설계 — 원본 설명 보존·실제 행동 해설 확장본','성공 피드백 — 원본 설명 보존·실제 행동 해설 확장본').replaceAll('original delivery/bridge/shortcut tests','original paired defense tests');
+ if(file==='review-selected-windows-v2.py')source=source.replace("if key.startswith('spirit'):","if True:");
+ fs.writeFileSync(target,source);
+}
+const file=path.join(__dirname,'build-video.cjs');let source=fs.readFileSync(file,'utf8');if(!source.includes("work=path.join(__dirname,'final-v1')"))throw Error('Original editor marker changed');source=source.replace("work=path.join(__dirname,'final-v1')","work=path.join(__dirname,process.env.PRAISE_REVISION||'final-v1')").replace("mf=path.join(root,'projects',slug,'project.json')","mf=path.resolve(root,process.env.PRAISE_MANIFEST||`projects/${slug}/project.json`)");fs.writeFileSync(file,source);
+console.log('Engine adapted without running any completed video. No speech/render created.');

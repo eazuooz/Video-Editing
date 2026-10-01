@@ -1,0 +1,25 @@
+// Promote a current-hash, directly reviewed additive revision. Never replace v1 receipts.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),work=path.join(__dirname,'final-v2'),project=path.resolve(__dirname,'..');
+const read=f=>JSON.parse(fs.readFileSync(f,'utf8')),write=(f,v)=>fs.writeFileSync(f,JSON.stringify(v,null,2)+'\n');
+const hash=f=>crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+const qa=read(path.join(work,'qa.json')),direct=read(path.join(work,'direct-final-review.json')),p=read(path.join(work,'plan.json'));
+if(!direct.allCuesAndCutsReviewed||!direct.fullMixAsrReviewed||!direct.completeBodyAsrReviewed)throw Error('Direct final video and complete speech review required');
+for(const file of ['clean.mp4','captioned.mp4','final-mix.wav','captions.ko.srt','captions.en.srt','plan.json'])if(direct.sha256[file]!==hash(path.join(work,file)))throw Error('Review stale: '+file);
+if(!qa.videoClean.fullDecodePassed||!qa.videoBurnedCaptions.fullDecodePassed||!qa.additivePreservation.allOriginalPicturesRetained||!qa.additivePreservation.allOriginalNarrationPcmRetained)throw Error('Preservation/decode incomplete');
+qa.visualReview=`all ${qa.captionChecks.cues} cues / ${qa.captionChecks.capturedSegments} cue-cut regions and every added cut directly reviewed`;
+qa.fullAsrReview='Actual complete final mix and complete body compared against all48 preserved and54 additional paragraphs; recognition limitations recorded separately';
+qa.directReview='projects/praise-player/production/final-v2/direct-final-review.json';write(path.join(work,'qa.json'),qa);
+const previous=read(path.join(project,'project.json')),m=read(path.join(work,'project-draft.json'));
+m.video.durationSeconds=p.seconds;m.status='rendered-awaiting-user-review';m.warnings=[...new Set([...previous.warnings,'Hi-Fi RUSH 추가 공식 자료와 Nintendo의 새로운 구간에 대한 최종 공개 사용 권리는 pending입니다. 추가 원본 소리는 제외하고 승인 Nimbus를 유지했습니다.'])];m.publishReady=false;
+Object.assign(m.editing,{preservedExplanationSeconds:p.originalExplanationFrames/60,additionalExplanationSeconds:p.additionalExplanationFrames/60,exampleMap:'projects/praise-player/production/final-v2/example-map.json',preserveExplanationTime:true,ratioApprovedAt:'2026-10-01',ratioScope:'body-excluding-channel-intro-and-membership-outro',gameplayShareRange:[.6,.6],ratioPolicy:'60:40 with at most one frame rounding; preserve all original explanation',actualGameplaySeconds:p.gameplaySeconds,actualExplanationSeconds:p.explanationSeconds,actualGameplayShare:p.gameplayShare,bodyDurationSeconds:p.bodySeconds,actualCuts:p.scenes.reduce((n,s)=>n+s.cuts.length,0)});
+m.editing.gameSelection.titles=['Nintendo Switch Sports','Ring Fit Adventure','Hi-Fi RUSH'];
+m.paths.scriptEn='projects/praise-player/production/final-v2/script.en.json';m.paths.footageCuts='projects/praise-player/production/final-v2/plan.json';m.paths.footageManifest=m.paths.footageCuts;
+m.finalRender={revision:'final-v2',width:1920,height:1080,fps:60,bodyFrames:p.bodyFrames,totalFrames:p.totalFrames,durationSeconds:p.seconds,koCaptionStyle:'boxed-white-forest-v1',channelIntroSeconds:2,membershipOutroSeconds:10,commercialGameplaySeconds:p.gameplaySeconds,explanationSeconds:p.explanationSeconds,preservedExplanationSeconds:p.originalExplanationFrames/60,independentBodyScenes:p.scenes.length,qa:'projects/praise-player/production/final-v2/qa.json',knownIssues:m.warnings,publishReady:false,uploadToYouTube:true};
+m.approvals.final='Complete render/decode, original frame/PCM preservation, current-hash added voice ASR, final/body mix ASR and all-cue visual QA passed; human listening pending';
+m.publishing={...previous.publishing,localRevisionNotUploaded:true};
+m.localRevision={revision:'final-v2',status:'rendered-qa-awaiting-collection-and-new-private-upload',originalUpload:{videoId:'nq7NhHi9FSE',revision:'final-v1',receipt:'projects/praise-player/publishing/youtube-upload.json',preserved:true},userRequest:'피피티 내용을 줄이지는 말고 여기에 중간삽입으로 대본을 늘려서 진행해줘',retainedBodyFrames:p.originalBodyFrames,retainedExplanationFrames:p.originalExplanationFrames,newActualFrames:Math.round(p.gameplaySeconds*60)-1140,additionalNarrationScenes:6,qa:m.finalRender.qa,completedAt:new Date().toISOString()};
+write(path.join(project,'project.json'),m);
+const qf=path.join(root,'production/batches/private-review-expansion/queue.json'),q=read(qf),i=q.items.find(x=>x.slug===m.slug);
+i.status='in-progress';i.stage='expanded-render-qa-complete-awaiting-output-collection';i.qa={path:m.finalRender.qa,directReview:qa.directReview,seconds:p.seconds,koEnCues:qa.captionChecks.cues,capturedRegions:qa.captionChecks.capturedSegments,preservedExplanationSeconds:p.originalExplanationFrames/60,actualSeconds:p.gameplaySeconds,explanationSeconds:p.explanationSeconds,humanListening:'pending'};q.updatedAt=new Date().toISOString();write(qf,q);
+console.log(JSON.stringify({status:m.status,seconds:p.seconds,next:'collect then intentional new private upload; original receipt preserved'}));
