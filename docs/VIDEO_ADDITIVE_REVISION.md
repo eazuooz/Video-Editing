@@ -34,12 +34,13 @@
 | 게임 분석·분해·재조립 / final-v2 | 479.033초 | 280.217초 | 186.817초 | 169.450초 | [pY04E8aRvJQ](https://youtu.be/pY04E8aRvJQ) · [업로드 증거](../projects/deconstruct-analyze-rebuild/publishing/youtube-upload-v2.json) |
 | 의미 있는 퀘스트 / final-v2 | 450.050초 | 262.833초 | 175.217초 | 153.250초 | [lX7SXU7tMBc](https://youtu.be/lX7SXU7tMBc) · [업로드 증거](../projects/meaningful-quests/publishing/youtube-upload-v2.json) |
 | 플레이어 칭찬·성공 피드백 / final-v2 | 520.367초 | 305.017초 | 203.350초 | 192.533초 | [gSN8tbGkJ5E](https://youtu.be/gSN8tbGkJ5E) · [업로드 증거](../projects/praise-player/publishing/youtube-upload-v2.json) |
+| 입력 응답·거절·진행 상태 / final-v2 | 526.200초 | 308.517초 | 205.683초 | 191.867초 | [BYk6cLsO9Mc](https://youtu.be/BYk6cLsO9Mc) · [업로드 증거](../projects/responsive-game-feedback/publishing/youtube-upload-v2.json) |
 
-네 편 모두 본편 60:40과 원래 설명/음성 보존을 검수했고, 최신 clean MP4·한글 자막 MP4·KO SRT·EN SRT를 `output/<slug>/`에 수집했다. 각 영상의 제작 커밋과 실제 일반 푸시 증거는 보강 대기열의 `gitDelivery`에 있다. 로컬 확인 진입점은 [output/index.html](../output/index.html)이다.
+다섯 편 모두 본편 60:40과 원래 설명/음성 보존을 검수했고, 최신 clean MP4·한글 자막 MP4·KO SRT·EN SRT를 `output/<slug>/`에 수집했다. 각 영상의 실제 커밋·일반 푸시 여부와 SHA는 보강 대기열의 `gitDelivery`를 확인한다. 로컬 확인 진입점은 [output/index.html](../output/index.html)이다.
 
-입력 응답 `responsive-game-feedback` final-v2는 진행 중이다. 기존 48개 대사와 설명 구간을 보존하고, Oxygen Not Included의 선택·자원 경고·확인·작업 진행·도구 응답을 관찰하는 새 54개 대사를 작성했다. 추가 음성의 02/05 장면을 같은 승인 목소리로 수정 합성했으며, 현재 해시 ASR·확장 렌더·최종 화면 검수와 새 비공개 업로드가 모두 끝나기 전에는 완료로 기록하지 않는다. 기존 비공개 영상 `Lqbqugmpsl8`은 보존한다. 이 문서의 상태표는 완료 증거가 생긴 뒤 갱신한다.
+입력 응답 `responsive-game-feedback` final-v2는 기존 48개 대사와 모든 설명 프레임·PCM을 보존하고, Oxygen Not Included의 선택·자원 경고·확인·작업 진행·도구 응답을 관찰하는 새 54개 대사를 더했다. 21개 새 정상 속도 구간, 한영 140큐와 자막/컷 154구간, 전체 믹스/본편 ASR, 전체 디코딩, 동일 AAC와 −16.02 LUFS/−1.98 dBTP를 확인했다. 실제 Studio에서 새 비공개·예약 없음, 썸네일, 한영 수동 자막, 영어 제목/설명, 00초 과외 카드, 마지막 10초 재생목록/구독, 광고 사용과 검토 알림 해소·소유권 주장 없음을 확인했다. 이 업로드는 clean master와 선택형 한영 수동 자막을 사용하며, 채널 형식의 한글 boxed 자막 MP4도 로컬 4개 납품 파일에 보존한다. 현재 Studio가 별도로 생성하는 자동 자막/더빙은 수동 파일 게시 증거를 대신하지 않는다. 기존 비공개 영상 `Lqbqugmpsl8`은 보존한다.
 
-기존 업로드 ID `piZTx_239R8`, `reng7uTFE7s`, `n-NaCpzAMlE`, `nq7NhHi9FSE`도 보존한다. 비공개 보강본의 공개 여부는 사용자가 결정한다. 사람 청취, 최종 게시 권리, 원래 Nimbus 파일 확인, 잘린 회원 핸들 원본 확인, 외부 미디어 백업은 증거가 없으면 계속 pending이다. 자동 검수 통과나 비공개 저장만으로 이 상태를 완료로 바꾸지 않는다.
+기존 업로드 ID `piZTx_239R8`, `reng7uTFE7s`, `n-NaCpzAMlE`, `nq7NhHi9FSE`, `Lqbqugmpsl8`도 보존한다. 비공개 보강본의 공개 여부는 사용자가 결정한다. 사람 청취, 최종 게시 권리, 원래 Nimbus 파일 확인, 잘린 회원 핸들 원본 확인, 외부 미디어 백업은 증거가 없으면 계속 pending이다. 자동 검수 통과나 비공개 저장만으로 이 상태를 완료로 바꾸지 않는다.
 
 ## 항상 적용할 제작 규칙
 
