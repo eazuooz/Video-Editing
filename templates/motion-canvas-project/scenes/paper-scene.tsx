@@ -6,7 +6,9 @@ import manifest from '../../../../../projects/{{SLUG}}/project.json';
 export function* paperScene(view:View2D,index:number,title:string,subtitle:string,duration:number) {
   view.fill(P.background);
   // Starter allocation only. Production uses approved per-scene cuts and checks
-  // the 60:40 body total (up to 62:38), excluding intro and membership outro.
+  // the 60:40 body total, excluding intro and membership outro. Insert actual
+  // concept-matched actions between explanations; this placeholder and
+  // diagram-like recorded tests never qualify as actual-footage time.
   const exampleSeconds=Math.min(duration,Math.round(duration*manifest.editing.targetGameplayShare*manifest.video.fps)/manifest.video.fps);
   const placeholder=new Node();view.add(placeholder);
   placeholder.add(<>
