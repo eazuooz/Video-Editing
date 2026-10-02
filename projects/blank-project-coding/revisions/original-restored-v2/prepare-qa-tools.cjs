@@ -1,0 +1,15 @@
+const fs=require('fs'),path=require('path');
+const W=__dirname,P=path.resolve(W,'../../production');
+let q=fs.readFileSync(path.join(P,'verify-video.py'),'utf8');
+q=q.replace("ROOT=Path(__file__).resolve().parents[3];WORK=Path(__file__).parent/'final-v1'","WORK=Path(__file__).resolve().parent;ROOT=WORK.parents[3]");
+q=q.replace("(ROOT/'projects/blank-project-coding/project.json')","(WORK/'final.manifest.json')");
+q=q.replace("for s in plan['scenes']:\n    if s['classification']=='explanation':\n        for f in [.08,.5,.92]:points.append((ROOT/manifest['paths']['videoBurnedCaptions'],s['start']+s['seconds']*f,f\"scene{s['id']} 2.5D {f}\"))", "for c in plan['cuts']:\n    if c['classification']=='explanation':\n        for f in [.08,.5,.92]:points.append((ROOT/manifest['paths']['videoBurnedCaptions'],c['timelineStart']+c['seconds']*f,f\"cut{c['id']} scene{c['scene']} {c['key']} {f}\"))");
+fs.writeFileSync(path.join(W,'verify-video.py'),q);
+let a=fs.readFileSync(path.join(P,'verify-mix-alignment.py'),'utf8');
+a=a.replace("ROOT=Path(__file__).resolve().parents[3];BASE=ROOT/'projects/blank-project-coding';WORK=BASE/'production/final-v1'","WORK=Path(__file__).resolve().parent;ROOT=WORK.parents[3]");
+a=a.replace("(BASE/'project.json')","(WORK/'final.manifest.json')").replaceAll('all34SceneStartsVerified','all56SceneStartsVerified').replaceAll('All34','All56');
+fs.writeFileSync(path.join(W,'verify-mix-alignment.py'),a);
+let c=fs.readFileSync(path.join(P,'make-caption-strips.py'),'utf8');
+c=c.replace("WORK=Path(__file__).parent/'final-v1'","WORK=Path(__file__).resolve().parent").replace("Path(__file__).resolve().parents[3]/p['path']","WORK.parents[3]/p['path']");
+fs.writeFileSync(path.join(W,'make-caption-strips.py'),c);
+console.log('Isolated v2 final decoding, every-cue/cut images and current-mix alignment tools prepared.');

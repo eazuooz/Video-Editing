@@ -1,0 +1,16 @@
+// Explicitly requested full-original revision, not a new batch topic.
+const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const root=path.resolve(__dirname,'../../..'),base=path.join(root,'projects/blank-project-coding'),rev=path.join(base,'revisions/original-restored-v2');
+const write=(p,x)=>{fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(x,null,2)+'\n');};
+const original='C:/Users/eazuo/.codex/attachments/ec82e4a7-5bc8-4a6a-8dba-8d414e490faa/붙여넣은 텍스트.txt';
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+fs.mkdirSync(rev,{recursive:true});
+if(fs.existsSync(path.join(rev,'checkpoint.json')))throw Error('Revision exists: resume checkpoint, do not initialize twice');
+fs.copyFileSync(original,path.join(base,'script/original-attachment.ko.txt'));
+const baseline=path.join(rev,'baseline');fs.mkdirSync(baseline,{recursive:true});
+for(const p of ['project.json','script/narration.ko.json','script/narration.en.json','script/narration.review.md','planning/storyboard.json','publishing/youtube-upload.json','production/git-delivery.json','production/final-v1/plan.json','production/final-v1/qa.json']){const dest=path.join(baseline,p);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.copyFileSync(path.join(base,p),dest);}
+const files=['shared/output/motion-canvas/blank-project-coding.mp4','shared/output/motion-canvas/blank-project-coding-subtitled.mp4','motion-canvas/src/projects/blank-project-coding/assets/final-mix.wav','motion-canvas/src/projects/blank-project-coding/assets/final-mix.m4a'];
+const media=[];for(const p of files){const dest=path.join(baseline,'media',path.basename(p));fs.mkdirSync(path.dirname(dest),{recursive:true});fs.copyFileSync(path.join(root,p),dest);media.push({original:p,preserved:path.relative(root,dest).replaceAll('\\','/'),sha256:sha(dest)});}
+write(path.join(rev,'baseline.json'),{preservedAt:new Date().toISOString(),videoId:'kcZL02MXtvI',productionCommit:'c572330aba7c688a7504f4f7a7db88b4a863d183',media});
+write(path.join(rev,'checkpoint.json'),{revision:'original-restored-v2',stage:'restore-exact-original-and-acquire-actual-footage',authorization:'처음준 대본 순서대로 내용 그대로 만들어줘 영상',rules:{retainOriginalOrder:true,retainOriginalWords:true,restoreEmploymentAndSkillRiskChapters:true,noInventedHiringStatistics:true,strongerPacingAndVisualEmphasis:true,actualExternalTetrisFootageRequired:true,linkedListManimRequested:true,syntaxAndExecutionColorsDistinct:true,burnedCaptionBottomCenter:[960,970],privateOnly:true,preserveOldVideoId:'kcZL02MXtvI'},source:{attachment:'projects/blank-project-coding/script/original-attachment.ko.txt',sha256:sha(original),continuation:'projects/blank-project-coding/script/original-continuation-17-24.ko.txt',missing:'Attachment ends mid first sentence of chapter16; clarification requested, chapter19 may supply bridge'},remaining:['original-preservation-audit','fresh-footage-license-and-interval-review','Manim-linked-list-render','full-original-TTS-and-ASR','independent-scenes-and-color-code-emphasis','60-40-final-timeline-and-KO-EN-captions','render-QA-collect-private-upload-Git'],humanListening:'pending'});
+console.log('Original-restoration revision initialized; original captioned video/clean/mix and upload receipt preserved.');

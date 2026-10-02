@@ -1,0 +1,23 @@
+const fs=require('fs'),path=require('path'),{spawnSync}=require('child_process');
+const root=path.resolve(__dirname,'../../../..'),work=__dirname,read=p=>JSON.parse(fs.readFileSync(p,'utf8')),write=(p,v)=>fs.writeFileSync(p,typeof v==='string'?v:JSON.stringify(v,null,2)+'\n'),abs=p=>path.join(root,p),m=read(path.join(work,'final.manifest.json')),plan=read(path.join(work,'plan.json'));
+function run(cmd,args){const r=spawnSync(cmd,args,{encoding:'utf8',windowsHide:true,maxBuffer:8e6});if(r.status!==0)throw Error(r.stderr||String(r.error));return r.stdout;}
+const ff=a=>run('ffmpeg',['-v','error','-y','-threads','2',...a]);
+
+ if(m.audio.backgroundMusic.approvalStatus!=='approved')throw Error('Existing music approval required');
+ const D=plan.seconds,voice=abs(m.paths.narration),normal=path.join(work,'voice-normalized.wav');
+ function scan(file,I=-16,TP=-2){const r=spawnSync('ffmpeg',['-hide_banner','-threads','2','-i',file,'-af',`loudnorm=I=${I}:TP=${TP}:LRA=11:print_format=json`,'-f','null','-'],{encoding:'utf8',windowsHide:true,maxBuffer:3e6});if(r.status!==0)throw Error(r.stderr);return JSON.parse(r.stderr.match(/\{\s*"input_i"[\s\S]*?\}/)[0]);}
+ // Materialize loudnorm's body before adding editorial silence. Combining its
+ // buffered frames with adelay/apad in this FFmpeg build dropped the intro.
+ const measured=scan(voice),bodyNormal=path.join(work,'voice-normalized-body.wav');
+ ff(['-i',voice,'-af',`loudnorm=I=-16:TP=-2:LRA=11:measured_I=${measured.input_i}:measured_TP=${measured.input_tp}:measured_LRA=${measured.input_lra}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true,aresample=48000,aformat=channel_layouts=stereo`,'-c:a','pcm_s16le',bodyNormal]);
+ const bodyDuration=Number(JSON.parse(run('ffprobe',['-v','error','-show_format','-of','json',bodyNormal])).format.duration);if(Math.abs(bodyDuration-plan.bodySeconds)>1/48000)throw Error('Normalization changed body sample duration');
+ ff(['-i',bodyNormal,'-af',`adelay=2000:all=1,apad,atrim=duration=${D}`,'-c:a','pcm_s16le',normal]);
+ const duration=Number(JSON.parse(run('ffprobe',['-v','error','-show_format','-of','json',normal])).format.duration);if(Math.abs(duration-D)>1/48000)throw Error('Final narration padding duration mismatch');
+ const silence=spawnSync('ffmpeg',['-hide_banner','-i',normal,'-af','atrim=end_sample=96000,volumedetect','-f','null','-'],{encoding:'utf8',windowsHide:true});const peak=Number(silence.stderr.match(/max_volume: ([-\d.]+) dB/)[1]);if(peak>-90)throw Error('Intro contains early narration');
+ const vscan=scan(normal),gain=Math.min(-16-Number(vscan.input_i),-2-Number(vscan.input_tp)),first=path.join(work,'voice-loudnorm-pass.wav');fs.copyFileSync(normal,first);ff(['-i',first,'-af',`volume=${gain}dB`,'-c:a','pcm_s16le',normal]);
+ let music=abs(m.audio.backgroundMusic.file);const md=Number(JSON.parse(run('ffprobe',['-v','error','-show_format','-of','json',music])).format.duration);
+ if(md<D){const n=Math.ceil((D-1)/(md-1)),inputs=Array.from({length:n},()=>['-i',music]).flat();let chain='';for(let i=1;i<n;i++)chain+=`${i===1?'[0:a]':'[b'+(i-1)+']'}[${i}:a]acrossfade=d=1:c1=tri:c2=tri[b${i}];`;const f=path.join(work,'nimbus-continuous.wav');ff([...inputs,'-filter_complex',chain.slice(0,-1),'-map',`[b${n-1}]`,'-c:a','pcm_s16le',f]);music=f;}
+ const filter=`[0:a]asplit[n][d];[1:a]atrim=duration=${D},asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=0.45,afade=t=out:st=${D-.45}:d=0.45[b];[b][d]sidechaincompress=threshold=.08:ratio=2.2:attack=15:release=280[bg];[n][bg]amix=inputs=2:normalize=0,alimiter=limit=.80:level=false:latency=true[mix]`;
+ write(path.join(work,'mix-filter.txt'),filter);ff(['-i',normal,'-i',music,'-filter_complex_script',path.join(work,'mix-filter.txt'),'-map','[mix]','-ar','48000','-ac','2','-c:a','pcm_s16le',abs(m.paths.editorAudioMix)]);ff(['-i',abs(m.paths.editorAudioMix),'-c:a','aac','-b:a','192k',abs(m.paths.audioMix)]);
+ const final=scan(abs(m.paths.editorAudioMix),-16,-1.5);if(Math.abs(Number(final.input_i)+16)>.6||Number(final.input_tp)>-1.45)throw Error('Measured final audio requires review '+JSON.stringify(final));
+ write(path.join(work,'mix-settings.json'),{seconds:D,narration:measured,voicePass:vscan,constantVoiceGainDb:gain,finalMeasurement:final,continuousApprovedNimbus:true,sourceAudioMuted:true,reason:'External source audio removed to avoid third-party music; approved continuous narration and Nimbus cover the final membership ending.',humanListening:'pending'});console.log('Measured continuous voice/Nimbus full mix created.');

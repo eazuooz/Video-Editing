@@ -1,29 +1,18 @@
-# 컴공 1·2학년 공부법 — 백지에서 시작하기
+# AI 시대, 신입 개발자가 취업하기 어려운 진짜 이유
 
-2026-10-02 사용자가 `영상제작 진행해줘`로 제작을 요청했다. **22분48.7초의 최종 자막판·무자막판과 KO/EN SRT461개를 렌더·기술 검수·직접 화면 검수 후 수집했다.** 실제 플랫폼 설정 상태는 `publishing/youtube-upload.json`, 제작 상태는 `production/checkpoint.json`으로 확인한다. 과외 링크는 설명란·엔딩·고정댓글, 자막은 항상 하단 중앙이라는 최신 규칙을 적용했다. 비공개 영상은 댓글을 지원하지 않으므로 댓글 원문은 준비하고 실제 등록·고정은 공개 후 처리할 항목으로 남긴다.
+현재 납품본은 `revisions/original-restored-v2/`의 원문 복원 영상이다. 최초 대본0–24장의 취업 어려움 → 코딩 숙련도와 성장 정체 → AI 사용 방식 → 라이브 서비스 개발 → 백지 구현 훈련 순서와 문장을 살렸다. 마지막에 승인된 얌얌코딩 과외 안내를 연결했다.
 
-- 읽는 대본: [narration.review.md](script/narration.review.md)
-- 장면별 낭독 기준: [narration.ko.json](script/narration.ko.json)
-- 화면과 삽입 계획: [outline.md](planning/outline.md), [storyboard.json](planning/storyboard.json)
-- 원문 17~24장 보존/보강: [source-map.json](script/source-map.json)
-- 출처와 새 촬영 후보: [SOURCES.md](sources/SOURCES.md), [game-candidates.json](sources/game-candidates.json)
-- 중복 비교: [검토 기록](../../production/preflight/blank-project-coding.json)
+최종 길이는 **21분31.2167초**,1920×1080/60fps다. 본편은 실제 외부 테트리스·Godot 개발 행동767.5333초와 흰2.5D/Manim 설명511.6833초로60:40이며 오차0.2프레임이다. 고양이 인트로2초와 원본 회원 프로필·이름·배지를 보존한 감사 엔딩10초는 비율에서 제외한다. 값·포인터·새 연결·실행 줄·삭제를 다른 색으로 구분했다.
 
-기존 공부법 영상 `OjC6Hhyvybw`의 빈 파일/테트리스 조언과 일부 겹친다. 이번 편은 Linked List 노드·삽입·삭제·경계 조건, 테트리스 최소 구현 순서·후보 검사·회전·두 줄 삭제의 실제 개발과 디버깅, 조건 변경 재구현과 필요한 힌트 이용을 구체적으로 다루는 후속편이다. 기존 완성 파일·공개/예약 영상·활성 배치와 사용자 작업은 변경하지 않는다.
+한영 자막511개는 동일한 시간을 사용하며, 한글은 모든 장면에서 하단중앙(960,970)에 영구 삽입했다. 컷 경계를 반영한582개 자막 표시 구간,134개 컷의 시작/중간/끝, 설명과 엔딩의 실제 최종 화면을 직접 검수했다. 테트리스 원본의 짧은 밈 삽입10컷은 타이밍을 유지하며 실제 플레이 구간으로 교체했고 전체 테트리스 컷을2fps로 추가 확인했다.
 
-고양이 인트로 → 본편의 실제 개발/플레이테스트 60%와 흰 2.5D 설명 40% → 코칭 안내를 포함한 본편 마무리 → 별도 10초 원본 회원 이미지 엔딩을 따른다. 코칭 안내는 본편 설명 비중에 포함한다. 현재 음성과 컷 실측은 총1368.7초(22분48.7초)다. 본편의 실제 개발814.016667초/설명542.683333초로60:40 오차0.2프레임이며, 인트로2초와 회원엔딩10초는 제외한다. KO/EN 자막461개의 타이밍을 일치시키고 고정 한글 자막은 모두하단중앙(960,970)에 배치했다. 최종 렌더/QA/수집은 checkpoint의 실제 상태를 따른다.
+- 최신 결과: [output/index.html](../../output/index.html)
+- 읽는 대본: [복원 대본](revisions/original-restored-v2/narration.review.txt)
+- 원문 대조: [original-preservation-audit.json](revisions/original-restored-v2/original-preservation-audit.json)
+- 최종 QA: [qa.json](revisions/original-restored-v2/qa.json), [직접 화면 검수](revisions/original-restored-v2/direct-visual-review.json)
+- 제작/재현 방법: [복원본 README](revisions/original-restored-v2/README.md)
+- 현재 비공개 업로드: [별도 v2 영수증](publishing/youtube-upload-original-restored-v2.json), https://youtu.be/bbpKRhlxeCs
 
-대본 수정은 JSON을 기준으로 하고 읽는 MD 및 화면 계획을 함께 맞춘다. 기존 승인 Qwen 목소리와 연속 Nimbus를 같은 제작 방식 요청에 따라 재사용하며, 새 음성의 ASR/발화 검수와 사람 청취 상태는 구분한다. 34개 한국어·영어 대본 장면은 각 독립 Motion Canvas 씬에 대응하며 인트로/10초 회원 엔딩은 별도다. 실제 녹화는 자체 개발 도구가 소스 코드를 MSVC/JavaScript로 실행하는 화면이며, 상용 IDE나 외부 강의 촬영으로 주장하지 않는다. C++ 중단점은 `inspect` 함수에서 실제 프로세스를 기다리게 하는 계측 방식이다. 원본 녹화의 동작·값·시간·해시를 보존하며 최종 컷은 실측 발화와 함께 확정한다.
+최초 첨부16장은 문장 중간에서 잘렸다. 해당 조각을 보존하고 사용자가 후속으로 제공한19장의 같은 테트리스 설명으로 연결했다. 그 외 원문 장의 문장 순서와 내용 보존을 대조했다. 상세 범위는 원문 대조 기록에 표시했다.
 
-후속 명령:
-
-```powershell
-node scripts/review-video-duplicates.cjs blank-project-coding --candidate-file production/preflight/blank-project-coding.candidate.json --check
-node scripts/build-rebuild-manifests.cjs blank-project-coding
-```
-
-중복 검토는 업로드 직전 새 picking-sides 대본까지 읽고 실제 Studio 목록을 확인하여 갱신했다. 기존 배치 대기열에 이 독립 요청을 끼워 넣지 않았다. `output/index.html`에서 최신4파일을 확인할 수 있다.
-
-**비공개 업로드 완료:** https://youtu.be/kcZL02MXtvI — 영상ID `kcZL02MXtvI`를 재사용하며 중복 업로드하지 않는다. KO/EN 수동 자막과 영어 제목·설명, 썸네일, 00:00 과외 카드, 마지막10초의 과외 링크·관련 재생목록·구독 요소를 저장하고 다시 열어 확인했다. 업로드된 시청 페이지의 플레이어 자막이 꺼진 상태에서도 하단 중앙 박스 자막을 확인했다. SD/HD 처리 완료, 수익 창출 사용·자동 미드롤 저장, 자동 검사 완료/발견된 문제 없음이 관찰됐다. 증거는 `publishing/proof/`, 구조화된 기록은 `publishing/youtube-upload.json`에 있다.
-
-비공개 영상의 댓글 미지원은 실제 시청 페이지에서도 확인했다. `publishing/pinned-comment.ko.txt`는 준비됐지만 등록·고정은 사용자가 공개한 뒤 처리해야 한다. 사람의 전체 청취, 승인된 복원 음악의 원래 Audio Library 파일 확인, 외부 미디어 백업은 아직 남아 있다. 공개·예약은 하지 않았다. Git 납품 증거는 `production/git-delivery.json`을 따른다.
+이전 납품본과 비공개 업로드 `kcZL02MXtvI`, 기존 공개 영상 `OjC6Hhyvybw`는 보존한다. 이전 README와 파일은 `revisions/original-restored-v2/baseline/`에 있다. 현재 업로드 완료 여부는 v2 영수증의 실제 상태를 따른다. 비공개 상태를 유지하며 고정댓글은 원고만 준비한다. 전체 사람 청취, 복원 Nimbus의 원본 바이트 확인, 외부 미디어 백업은 별도 대기 항목이다. 영상·음성·BGM은 Git에 포함하지 않는다.
