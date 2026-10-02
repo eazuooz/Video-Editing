@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>관전 영상 · 로컬 설명 화면 검수</title>
+<style>body{font:18px system-ui;margin:40px;background:#fff;color:#202020}button{font:inherit;padding:14px 24px;border:1px solid #52704c;background:#f2f7f2;cursor:pointer}pre{white-space:pre-wrap}progress{width:600px}</style></head>
+<body><h1>관전 영상 · 설명 화면 검수</h1><p>48초 설명 장면 시안입니다. 내레이션과 실제 게임 컷이 포함된 완성 영상은 아닙니다.</p>
+<button id="start">설명 화면 시안 렌더</button> <button id="cancel" disabled>현재 시안 렌더 중단</button>
+<p role="status" id="status">대기 · GPU 음성 합성이 끝난 뒤 시작하세요.</p><progress id="progress" max="1440" value="0"></progress><pre id="report"></pre>
+<script type="module">
+import {Renderer,Vector2} from '@motion-canvas/core';
+let renderer=null;
+const status=document.querySelector('#status'),report=document.querySelector('#report'),progress=document.querySelector('#progress'),start=document.querySelector('#start'),cancel=document.querySelector('#cancel');
+start.addEventListener('click',async()=>{
+ start.disabled=true;cancel.disabled=false;
+ const result={name:'picking-sides-lookdev-v1',kind:'silent-explanation-lookdev-only',startedAt:new Date().toISOString(),frame:0,frames:1440,done:false,errors:[]};
+ try{
+  const {default:project}=await import('/src/projects/picking-sides/lookdev-project.ts?project');
+  project.logger.onLogged.subscribe(e=>{if(e.level==='error'){result.errors.push({message:e.message,remarks:e.remarks});report.textContent=JSON.stringify(result,null,2)}});
+  renderer=new Renderer(project);renderer.onFrameChanged.subscribe(frame=>{result.frame=frame;progress.value=frame;status.textContent=`렌더 중 · ${frame} / 1440 프레임`});
+  renderer.onFinished.subscribe(code=>result.result=code);await document.fonts.ready;
+  await renderer.render({...project.meta.getFullRenderingSettings(),name:result.name,range:[0,(1440-1.25)/30],fps:30,size:new Vector2(1920,1080),resolutionScale:1,exporter:{name:'@motion-canvas/ffmpeg',options:{fastStart:true,includeAudio:false}}});
+  result.done=true;result.finishedAt=new Date().toISOString();status.textContent=result.errors.length?'렌더 오류 · 상세 기록 확인':'시안 렌더 종료 · 파일과 모든 장면의 화면 검수가 필요합니다.';
+ }catch(error){result.errors.push(String(error));status.textContent='시안 렌더 실패';}
+ finally{report.textContent=JSON.stringify(result,null,2);cancel.disabled=true;renderer=null;}
+});
+cancel.addEventListener('click',()=>renderer?.abort());
+</script></body></html>

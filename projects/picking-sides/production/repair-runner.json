@@ -1,0 +1,81 @@
+{
+  "pid": 59480,
+  "startedAt": "2026-10-02T13:32:03.512Z",
+  "status": "tts-asr-ready-for-direct-review",
+  "inputs": [
+    {
+      "path": "projects/picking-sides/project.json",
+      "sha256": "533457b3579e6515ddbb5b80a3f1c6f69ccadb9b852f6bf1a9098ac6de8c7bb1"
+    },
+    {
+      "path": "projects/picking-sides/script/narration.ko.json",
+      "sha256": "67be8126a439b227eb90ce4b8b3fd8f5ac33d0bb8c5e2f1dd636fdb82f122601"
+    },
+    {
+      "path": "projects/picking-sides/script/narration.en.json",
+      "sha256": "68dc63c72427ab532d79a026321dd84de475a933b64de6f4b141a1934d5a5c49"
+    }
+  ],
+  "minimumFreeMiB": 9000,
+  "maximumUtilizationPercent": 35,
+  "stableSamplesRequired": 3,
+  "checkIntervalSeconds": 30,
+  "logs": {
+    "runner": "projects/picking-sides/production/repair-runner.log",
+    "tts": "projects/picking-sides/production/repair-tts.log",
+    "asr": "projects/picking-sides/production/repair-asr.log"
+  },
+  "children": [
+    {
+      "kind": "tts",
+      "pid": 11864,
+      "args": [
+        "qwen3-tts/render_narration.py",
+        "--project",
+        "picking-sides",
+        "--device",
+        "cuda:0",
+        "--force-scenes",
+        "03,09"
+      ],
+      "startedAt": "2026-10-02T13:33:05.387Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T13:36:34.409Z"
+    },
+    {
+      "kind": "asr",
+      "pid": 7440,
+      "args": [
+        "qwen3-tts/review_project_narration.py",
+        "--project",
+        "picking-sides",
+        "--device",
+        "cpu",
+        "--scenes",
+        "03,09"
+      ],
+      "startedAt": "2026-10-02T13:36:34.418Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T13:38:46.658Z"
+    }
+  ],
+  "updatedAt": "2026-10-02T13:38:46.660Z",
+  "gpuObservation": {
+    "at": "2026-10-02T13:33:05.376Z",
+    "totalMiB": 32607,
+    "usedMiB": 3091,
+    "freeMiB": 29516,
+    "utilizationPercent": 3,
+    "otherPythonPids": [
+      30676,
+      9720
+    ],
+    "competingSynthesisPids": [],
+    "action": "Observe only. Never stop unrelated training or other synthesis; start only with stable spare resources."
+  },
+  "stableSamples": 3,
+  "finishedAt": "2026-10-02T13:38:46.660Z",
+  "speechAutomaticallyApproved": false
+}

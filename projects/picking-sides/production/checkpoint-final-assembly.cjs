@@ -1,0 +1,17 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8')),write=(p,v)=>fs.writeFileSync(path.join(root,p),JSON.stringify(v,null,2)+'\n');
+const qp='production/batches/sakurai-planning-game-design/queue.json',q=read(qp),i=q.items.find(x=>x.slug==='picking-sides'),p=read('projects/picking-sides/production/final-v1/plan.json'),now=new Date().toISOString();
+i.stage='final-caption-render-and-native-QA';i.updatedAt=now;i.execution.updatedAt=now;i.execution.activeTasks=[{stage:'fixed-bottom-center-caption-render',toolSessionId:16772,log:'projects/picking-sides/production/logs/final-caption-burn.log'}];
+i.execution.finalSourcePreview2.status='finished-r2-all260-reviewed';
+i.execution.finalSourcePreview3={toolSessionId:13935,pid:55576,status:'finished-r3-current260-reviewed',exitCode:0,review:'projects/picking-sides/production/final-v1/final-source-cut-review.json'};
+i.execution.actualCompile={toolSessionId:13507,pid:52868,status:'finished',exitCode:0,log:'projects/picking-sides/production/logs/final-actual-compile.log',cuts:45};
+i.execution.finalAssembly={toolSessionId:49800,status:'finished',exitCode:0,log:'projects/picking-sides/production/logs/final-assemble.log'};
+i.execution.encodedCutQa={toolSessionId:62098,status:'finished-all135-native-boundary-images-directly-reviewed',exitCode:0,report:'projects/picking-sides/production/final-v1/selected-cuts-review.json'};
+i.execution.captionRender={toolSessionId:16772,status:'running',log:'projects/picking-sides/production/logs/final-caption-burn.log'};
+i.execution.currentTimeline={seconds:p.seconds,actual:p.gameplaySeconds,explanation:p.explanationSeconds,cues:151,captionSegments:183,ratioErrorFrames:p.ratioErrorFrames,sourceTimingApproved:true};
+i.execution.status='single-CPU-caption-render';i.checkpoints.finalRender=false;
+i.execution.nextAction=i.nextAction='Finish caption render, then decode both full MP4s and compare copied AAC; directly review all183 rendered cue/cut images and20 intro/explanation/outro images. Full current mixed12-scene/72-paragraph ASR passed; human listening stays pending. Only after QA collect4 files, upload reviewed captioned MP4 privately with saved rules, then media/rebuild checks and selective commit/general push.';
+q.updatedAt=now;write(qp,q);
+const cutReview=read('projects/picking-sides/production/final-v1/selected-cuts-review.json');cutReview.review='all135-encoded-first-middle-last-images-directly-reviewed';cutReview.reviewedAt=now;cutReview.findings=['45 normal-speed existing-game cuts retain the reviewed action and source labels.','No excluded GetReady, scorecard or authored title mask in current samples.','Separate attempts remain marked as excerpts; no unseen winner inferred.','Foreground/blurred-source-background composition preserves small flight/grip actions above fixed subtitles.'];write('projects/picking-sides/production/final-v1/selected-cuts-review.json',cutReview);
+write('projects/picking-sides/production/existing-game-replan/checkpoint-20261003-final-assembly.json',{at:now,stage:i.stage,execution:i.execution,remaining:i.nextAction,completedPrivateVideos:6,skippedDuplicates:1,queued:16,humanListening:'pending'});
+console.log('Actual finished source/audio/assembly evidence and single active caption render checkpoint recorded.');

@@ -1,0 +1,152 @@
+{
+  "pid": 27528,
+  "startedAt": "2026-10-02T15:00:12.006Z",
+  "status": "tts-asr-ready-for-direct-review",
+  "inputs": [
+    {
+      "path": "projects/picking-sides/project.json",
+      "sha256": "b1cfc0a428ba3314d400ac38bcea6a057e31a2382adfeeace4c97147431f6e91"
+    },
+    {
+      "path": "projects/picking-sides/script/narration.ko.json",
+      "sha256": "d0d8428579e6670f16686ba736871267ee9d88ac3427e2637d7892173b40e710"
+    },
+    {
+      "path": "projects/picking-sides/script/narration.en.json",
+      "sha256": "2a65f1a88ad45c4000d93483158f40db39936eba134138399b1fc24ca0436435"
+    },
+    {
+      "path": "projects/picking-sides/planning/action-map.json",
+      "sha256": "ff8a1ad8692775e22b51884ae1d725158b0fa0503627879faa914866596ee017"
+    },
+    {
+      "path": "projects/picking-sides/production/script-source-review.json",
+      "sha256": "82f900fae323ce7672298db802200565e522f3e65a501968d8f6f61da916da10"
+    },
+    {
+      "path": "projects/picking-sides/production/existing-game-replan/actual-only.manifest.json",
+      "sha256": "fb63dafb39be99ccc064844e3833999e4823b6aa6479a4880e1960274c655b06"
+    },
+    {
+      "path": "projects/picking-sides/production/existing-game-replan/actual-only.ko.json",
+      "sha256": "2701724064ef209b18fa824bfc3126365ce9f6049e9d78a7bc6cac17b96895e6"
+    },
+    {
+      "path": "projects/picking-sides/production/existing-game-replan/bridge02.manifest.json",
+      "sha256": "c88971fb95d3d23f0abd00322a5e419ec0d77a9cd16bc1c2657bb366bf3ce397"
+    },
+    {
+      "path": "projects/picking-sides/production/existing-game-replan/bridge02.ko.json",
+      "sha256": "836cad5dfbb58a216580c5c479cae13d6e443b605bf9a57ffe69f0ad8d3baa3d"
+    }
+  ],
+  "minimumFreeMiB": 9000,
+  "maximumUtilizationPercent": 35,
+  "stableSamplesRequired": 3,
+  "checkIntervalSeconds": 30,
+  "children": [
+    {
+      "kind": "bridge-tts",
+      "pid": 53744,
+      "args": [
+        "qwen3-tts/render_narration.py",
+        "--project",
+        "picking-sides",
+        "--manifest",
+        "projects/picking-sides/production/existing-game-replan/bridge02.manifest.json",
+        "--device",
+        "cuda:0"
+      ],
+      "startedAt": "2026-10-02T15:38:53.829Z",
+      "status": "finished",
+      "log": "projects/picking-sides/production/logs/v2-bridge-tts.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T15:40:04.487Z"
+    },
+    {
+      "kind": "compose02",
+      "pid": 32216,
+      "args": [
+        "projects/picking-sides/production/compose-v2-scene02.py"
+      ],
+      "startedAt": "2026-10-02T15:40:04.501Z",
+      "status": "finished",
+      "log": "projects/picking-sides/production/logs/v2-assembly.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T15:40:04.678Z"
+    },
+    {
+      "kind": "actual-tts",
+      "pid": 56772,
+      "args": [
+        "qwen3-tts/render_narration.py",
+        "--project",
+        "picking-sides",
+        "--manifest",
+        "projects/picking-sides/production/existing-game-replan/actual-only.manifest.json",
+        "--device",
+        "cuda:0"
+      ],
+      "startedAt": "2026-10-02T16:04:38.839Z",
+      "status": "finished",
+      "log": "projects/picking-sides/production/logs/v2-actual-tts.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T16:35:46.150Z"
+    },
+    {
+      "kind": "assemble",
+      "pid": 50280,
+      "args": [
+        "projects/picking-sides/production/assemble-v2-narration.py"
+      ],
+      "startedAt": "2026-10-02T16:35:46.159Z",
+      "status": "finished",
+      "log": "projects/picking-sides/production/logs/v2-assembly.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T16:35:46.837Z"
+    },
+    {
+      "kind": "cpu-asr",
+      "pid": 3784,
+      "args": [
+        "qwen3-tts/review_project_narration.py",
+        "--project",
+        "picking-sides",
+        "--device",
+        "cpu"
+      ],
+      "startedAt": "2026-10-02T16:35:46.847Z",
+      "status": "finished",
+      "log": "projects/picking-sides/production/logs/v2-asr.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T16:37:31.929Z"
+    }
+  ],
+  "logs": {
+    "runner": "projects/picking-sides/production/logs/resource-v2-runner.log",
+    "bridge": "projects/picking-sides/production/logs/v2-bridge-tts.log",
+    "tts": "projects/picking-sides/production/logs/v2-actual-tts.log",
+    "assemble": "projects/picking-sides/production/logs/v2-assembly.log",
+    "asr": "projects/picking-sides/production/logs/v2-asr.log"
+  },
+  "speechAutomaticallyApproved": false,
+  "updatedAt": "2026-10-02T16:37:31.931Z",
+  "gpuObservation": {
+    "at": "2026-10-02T16:04:38.829Z",
+    "totalMiB": 32607,
+    "usedMiB": 5201,
+    "freeMiB": 27406,
+    "utilizationPercent": 8,
+    "competingSynthesisPids": [],
+    "otherPythonPids": [
+      25736,
+      56332,
+      40464,
+      60232
+    ],
+    "action": "Observe only; never stop unrelated synthesis/training."
+  },
+  "stableSamples": 3,
+  "nextSynthesis": "six-actual-game-chapters-only",
+  "finishedAt": "2026-10-02T16:37:31.931Z"
+}

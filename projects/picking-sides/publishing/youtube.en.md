@@ -1,0 +1,22 @@
+# Spectator Game Design: Why Do We Root for Other Players?
+
+Why do we start rooting for one character while watching someone else's game? This video breaks spectator game design into identifying a player, finding a reason to care, and reading risk and results.
+
+We observe real Ultimate Chicken Horse and Gang Beasts gameplay: character shapes and colors, hands, platforms, and changing camera framing. White 2.5D explanations connect these examples to four questions for a spectator screen. Separate excerpts and early builds are identified as separate attempts; we do not infer an unseen match winner or claim a measured improvement in enjoyment.
+
+Chapters
+00:00 Introduction: who are you watching?
+00:55 Separate identity, interest and situation
+01:34 Find the same player by shape and color
+02:35 Do not rely on color alone
+03:14 Choose one player and follow their movement
+04:19 Reasons to root are different from rewards
+05:00 Read risk from platforms, saws and roads
+06:07 Connect the player to the important moment
+06:47 Follow your player as the framing changes
+07:43 Let viewers watch without forcing a choice
+08:21 Distinguish a fall from the match result
+09:19 Four questions for a spectator screen
+10:04 Membership thanks
+
+#GameDesign #GameDevelopment #SpectatorGames

@@ -1,0 +1,74 @@
+{
+  "pid": 60160,
+  "startedAt": "2026-10-02T12:57:16.135Z",
+  "status": "tts-asr-ready-for-direct-review",
+  "inputs": [
+    {
+      "path": "projects/picking-sides/project.json",
+      "sha256": "533457b3579e6515ddbb5b80a3f1c6f69ccadb9b852f6bf1a9098ac6de8c7bb1"
+    },
+    {
+      "path": "projects/picking-sides/script/narration.ko.json",
+      "sha256": "b0da55a6139edbb5fe30c7520d63d6e1a528b1cb1ae685647f81ce94d10081e5"
+    },
+    {
+      "path": "projects/picking-sides/script/narration.en.json",
+      "sha256": "d3d41a475e9bcf8c08fec9c2e69555168c467f7552edcdbdff811b20ff557d71"
+    }
+  ],
+  "minimumFreeMiB": 9000,
+  "maximumUtilizationPercent": 35,
+  "stableSamplesRequired": 3,
+  "checkIntervalSeconds": 30,
+  "logs": {
+    "runner": "projects/picking-sides/production/resource-runner.log",
+    "tts": "projects/picking-sides/production/tts.log",
+    "asr": "projects/picking-sides/production/asr.log"
+  },
+  "children": [
+    {
+      "kind": "tts",
+      "pid": 52440,
+      "args": [
+        "qwen3-tts/render_narration.py",
+        "--project",
+        "picking-sides",
+        "--device",
+        "cuda:0"
+      ],
+      "startedAt": "2026-10-02T12:58:18.531Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T13:17:53.964Z"
+    },
+    {
+      "kind": "asr",
+      "pid": 61332,
+      "args": [
+        "qwen3-tts/review_project_narration.py",
+        "--project",
+        "picking-sides",
+        "--device",
+        "cpu"
+      ],
+      "startedAt": "2026-10-02T13:17:53.972Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T13:27:19.952Z"
+    }
+  ],
+  "updatedAt": "2026-10-02T13:27:19.954Z",
+  "gpuObservation": {
+    "at": "2026-10-02T12:58:18.520Z",
+    "totalMiB": 32607,
+    "usedMiB": 3029,
+    "freeMiB": 29578,
+    "utilizationPercent": 2,
+    "otherPythonPids": [],
+    "competingSynthesisPids": [],
+    "action": "Observe only. Never stop unrelated training or other synthesis; start only with stable spare resources."
+  },
+  "stableSamples": 3,
+  "finishedAt": "2026-10-02T13:27:19.954Z",
+  "speechAutomaticallyApproved": false
+}

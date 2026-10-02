@@ -6,9 +6,9 @@
 
 ## 작업 순서
 
-1. `planning/outline.md`에서 영상의 질문과 결론을 확정합니다.
-2. `script/narration.ko.json`에 장면별 내레이션을 작성합니다.
-3. `sources/SOURCES.md`에 사용할 자료의 출처와 라이선스를 기록합니다.
+1. `planning/outline.md`에서 영상의 질문과 결론을 확정하고 기존 영상과 중복을 검토합니다.
+2. `docs/VIDEO_GAME_FOOTAGE_POLICY.md`에 따라 실제 존재하는 게임의 플레이 자료를 먼저 확보·검토하고, `sources/SOURCES.md`에 출처·사용 조건·구간·보이는 행동을 기록합니다. 자체 게임이나 데모를 제작해 예시를 대체하지 않습니다.
+3. 확인한 실제 장면에 맞춰 `script/narration.ko.json`과 영어 대본에 해설을 작성합니다. 본편 실제 게임 영상 60% / 흰 2.5D 설명 40%를 유지합니다.
 4. 짧은 TTS 샘플의 톤과 속도를 승인받습니다.
 5. 1.7B 장면 단위 TTS, SRT, 타이밍과 전체 받아쓰기 검수를 만듭니다.
 6. 대본과 같은 수의 독립 Motion Canvas 씬을 만들고, 실제 예시와 자체 설명 화면을 페어로 배치합니다.
