@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import intro from '../small-window-game-design/intro-cats-v2/scene?scene';
+import s02 from './scenes/scene02?scene';
+import s04 from './scenes/scene04?scene';
+import s06 from './scenes/scene06?scene';
+import s08 from './scenes/scene08?scene';
+import s10 from './scenes/scene10?scene';
+import s12 from './scenes/scene12?scene';
+import outro from './scenes/membership-outro?scene';
+export default makeProject({name:'game-writing-explanation-reel',scenes:[intro,s02,s04,s06,s08,s10,s12,outro]});

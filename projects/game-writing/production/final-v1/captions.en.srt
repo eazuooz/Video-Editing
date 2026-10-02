@@ -1,0 +1,654 @@
+1
+00:00:02,000 --> 00:00:04,650
+A film presents its scenes in an edited order.
+
+2
+00:00:04,900 --> 00:00:08,150
+In a game, even the first person you speak to can be your choice.
+
+3
+00:00:08,280 --> 00:00:13,610
+The official Divinity: Original Sin 2 footage
+shows several answers during a conversation.
+
+4
+00:00:13,940 --> 00:00:17,950
+Good sentences alone do not define what happens after each choice.
+
+5
+00:00:18,260 --> 00:00:22,530
+In the authoring tool, a question and its action options are edited separately.
+
+6
+00:00:22,720 --> 00:00:28,165
+This shows event construction, rather than
+proving every condition in the finished game.
+
+7
+00:00:28,180 --> 00:00:33,610
+We built a small story game called The Harbor Seal to test the problem.
+
+8
+00:00:33,860 --> 00:00:36,470
+From this point, this screen is our own playable prototype.
+
+9
+00:00:36,700 --> 00:00:40,750
+Going straight to the harbor guard means we
+have neither the item nor the information yet.
+
+10
+00:00:41,080 --> 00:00:43,590
+His first response must start from that state.
+
+11
+00:00:43,760 --> 00:00:46,250
+This time we read the notice first and come back.
+
+12
+00:00:46,360 --> 00:00:50,330
+The place and character are unchanged, but
+the facts the player brings are different.
+
+13
+00:00:50,580 --> 00:00:55,690
+The next line should check what is true now before assuming a scene number.
+
+14
+00:00:55,760 --> 00:00:57,440
+Let us draw that distinction.
+
+15
+00:00:58,167 --> 00:01:00,857
+We first ask about a rule we do not know.
+
+16
+00:01:01,107 --> 00:01:06,237
+When we speak again, the guard continues the
+conversation instead of repeating the first explanation.
+
+17
+00:01:06,367 --> 00:01:09,577
+Compare the first greeting with the response after the explanation.
+
+18
+00:01:09,707 --> 00:01:13,767
+What was said matters more than the number of visits.
+
+19
+00:01:14,483 --> 00:01:18,273
+The first principle is to write order and state separately.
+
+20
+00:01:18,463 --> 00:01:22,913
+Meeting the guard second does not mean the player knows the clue.
+
+21
+00:01:23,103 --> 00:01:26,773
+The script on the left lists scene one and scene two.
+
+22
+00:01:26,823 --> 00:01:32,393
+The one on the right checks whether the clue was
+seen, the item is held, and the companion is present.
+
+23
+00:01:32,563 --> 00:01:35,833
+This does not require a new story for every combination.
+
+24
+00:01:36,023 --> 00:01:39,733
+Write only the conditions needed for this particular line to be true.
+
+25
+00:01:39,843 --> 00:01:43,388
+For example, an uninformed player asks a question. An informed player can
+
+26
+00:01:43,403 --> 00:01:47,508
+answer using the clue. The character can keep the same voice and goal.
+
+27
+00:01:47,523 --> 00:01:51,428
+Keep the condition for entering a scene separate
+from the condition for choosing a line.
+
+28
+00:01:51,443 --> 00:01:55,843
+Combining them can make a small edit change an unexpected branch.
+
+29
+00:01:59,550 --> 00:02:04,160
+In this official Divinity conversation, the
+speaker addresses the protagonist by name.
+
+30
+00:02:04,270 --> 00:02:08,260
+What we can observe is that recognition is expressed in the dialogue.
+
+31
+00:02:08,510 --> 00:02:12,220
+This short clip cannot establish how the recognition condition is implemented.
+
+32
+00:02:12,390 --> 00:02:16,460
+We test who actually receives the information in our own game.
+
+33
+00:02:16,630 --> 00:02:19,495
+The notice explains the rule for proving passage.
+
+34
+00:02:19,510 --> 00:02:24,160
+Reading it does not automatically tell the guard that the player has visited it.
+
+35
+00:02:24,310 --> 00:02:27,035
+We choose the answer that mentions the rule.
+
+36
+00:02:27,050 --> 00:02:30,740
+That action records the information shared with the guard.
+
+37
+00:02:30,970 --> 00:02:35,100
+Talking again now continues the earlier conversation
+instead of asking the introductory question.
+
+38
+00:02:35,430 --> 00:02:39,100
+Reading and sharing were implemented as different events.
+
+39
+00:02:39,310 --> 00:02:42,600
+We also try reading the record before meeting the guard.
+
+40
+00:02:42,850 --> 00:02:47,800
+Whatever the visit order, a character should
+not pretend to know an unshared fact.
+
+41
+00:02:48,010 --> 00:02:54,620
+When a line sounds wrong, trace when that character
+learned the fact before rewriting the sentence.
+
+42
+00:02:55,633 --> 00:02:59,243
+The second principle is to distinguish the owner of information.
+
+43
+00:02:59,433 --> 00:03:04,743
+A world event, a fact seen by the player, and a fact
+shared with another character are separate records.
+
+44
+00:03:04,933 --> 00:03:08,558
+Three separate columns expose mistakes. A locked door is a
+
+45
+00:03:08,573 --> 00:03:12,463
+world state. Reading why it was locked is player knowledge.
+
+46
+00:03:12,673 --> 00:03:16,623
+Only telling the guard makes it shared information.
+
+47
+00:03:16,813 --> 00:03:21,078
+Until then, a line such as I know you read
+the notice would need another explanation.
+
+48
+00:03:21,093 --> 00:03:27,523
+Start with small facts needed by the dialogue: knowing
+a name, hearing a promise, or asking a question before.
+
+49
+00:03:27,753 --> 00:03:30,683
+There is no need to record every irrelevant action.
+
+50
+00:03:30,773 --> 00:03:35,123
+On repeat conversations, retire answered questions
+and keep the replies that still make sense.
+
+51
+00:03:35,233 --> 00:03:38,353
+Smooth writing is built on those conditions.
+
+52
+00:03:42,067 --> 00:03:48,837
+The official Divinity authoring demonstration creates a ring,
+changes its name and description, and puts it into an inventory.
+
+53
+00:03:49,047 --> 00:03:52,657
+This is actual tool work preparing an item for a story.
+
+54
+00:03:52,807 --> 00:03:57,077
+We do not invent a later plot consequence that this footage does not show.
+
+55
+00:03:57,107 --> 00:04:00,597
+In our harbor test, a companion can hold the seal.
+
+56
+00:04:00,667 --> 00:04:05,557
+An item being somewhere in the party is different
+from the protagonist being able to present it now.
+
+57
+00:04:05,767 --> 00:04:08,457
+We pass the seal to the companion and speak with the guard.
+
+58
+00:04:08,627 --> 00:04:12,052
+While the companion is present, an answer lets that companion show it.
+
+59
+00:04:12,067 --> 00:04:15,197
+This time we let the companion rest and return alone.
+
+60
+00:04:15,487 --> 00:04:20,237
+A line claiming the protagonist takes the seal
+from a pocket would contradict its current owner.
+
+61
+00:04:20,507 --> 00:04:26,177
+The test checks the owner again, removes that
+answer, and keeps a way to recover the seal.
+
+62
+00:04:26,607 --> 00:04:29,757
+We continue by meeting the companion and taking it back.
+
+63
+00:04:30,107 --> 00:04:33,752
+When turning prose into game dialogue, remember that held it,
+
+64
+00:04:33,767 --> 00:04:37,057
+handed it over, and came together all require an actual state.
+
+65
+00:04:37,983 --> 00:04:41,773
+This time we call the companion back instead of recovering the seal.
+
+66
+00:04:41,923 --> 00:04:46,873
+The companion still owns it, but the option
+to show it returns when they are present.
+
+67
+00:04:47,023 --> 00:04:51,073
+Compare the replies while the companion is absent and after they return.
+
+68
+00:04:51,263 --> 00:04:54,943
+Ownership and current access require separate checks.
+
+69
+00:04:55,667 --> 00:05:00,517
+The third principle is to distinguish historical facts from current facts.
+
+70
+00:05:00,787 --> 00:05:04,357
+Having acquired the seal earlier does not establish its current owner.
+
+71
+00:05:04,667 --> 00:05:08,957
+In the diagram, the item moves between the protagonist, companion, and storage.
+
+72
+00:05:08,987 --> 00:05:12,557
+Its acquisition remains in history while its owner and location change.
+
+73
+00:05:12,767 --> 00:05:17,192
+Write which fact a line requires. Remembering an earlier discovery needs
+
+74
+00:05:17,207 --> 00:05:21,852
+history. Offering to show the item now needs present ownership and access.
+
+75
+00:05:21,867 --> 00:05:28,077
+If a character can leave, inspect essential
+information and items held only by that character.
+
+76
+00:05:28,367 --> 00:05:31,717
+Provide a fitting alternative source or recovery path.
+
+77
+00:05:32,007 --> 00:05:35,352
+Rather than removing freedom to prevent every exception, check that
+
+78
+00:05:35,367 --> 00:05:39,107
+permitted changes are reflected consistently in later words and actions.
+
+79
+00:05:42,817 --> 00:05:49,607
+An event card in the Divinity authoring demonstration lists distinct
+actions such as attacking a wolf, feeding it, and running away.
+
+80
+00:05:49,757 --> 00:05:53,007
+Different labels do not automatically produce different consequences.
+
+81
+00:05:53,237 --> 00:05:56,907
+The visible editing operation and the design
+of its outcomes must be considered separately.
+
+82
+00:05:57,097 --> 00:06:00,127
+Our own game gives three answers on the road to the harbor:
+
+83
+00:06:00,397 --> 00:06:04,527
+give food, take a detour, or calmly drive the animal away.
+
+84
+00:06:04,677 --> 00:06:09,422
+Giving food uses a ration. Taking the detour takes more time. All three can
+
+85
+00:06:09,437 --> 00:06:13,527
+reach the harbor, while resources and recorded events remain different.
+
+86
+00:06:13,737 --> 00:06:18,327
+We run the feeding route, then start a fresh run for the detour.
+
+87
+00:06:18,497 --> 00:06:22,367
+A later line mentioning the journey changes to match the result.
+
+88
+00:06:22,657 --> 00:06:29,027
+Instead of building three enormous maps, the branches rejoin
+the same scene while carrying traces of their choices.
+
+89
+00:06:29,117 --> 00:06:32,387
+The question is whether the next statement about what
+
+90
+00:06:32,597 --> 00:06:36,177
+this person did agrees with their actual action.
+
+91
+00:06:36,900 --> 00:06:39,070
+Let us try the third option.
+
+92
+00:06:39,180 --> 00:06:45,370
+After we make the animal move aside, the guard
+mentions that action instead of saying we fed it.
+
+93
+00:06:45,580 --> 00:06:49,790
+The same character changes one sentence when the earlier action changes.
+
+94
+00:06:50,020 --> 00:06:52,980
+A shared destination does not have to erase the choice.
+
+95
+00:06:53,700 --> 00:06:59,330
+The fourth principle is to define both common conditions
+and retained differences when branches rejoin.
+
+96
+00:06:59,520 --> 00:07:02,030
+Reaching the harbor is shared.
+
+97
+00:07:02,200 --> 00:07:05,990
+Whether food was used or a detour taken can remain recorded.
+
+98
+00:07:06,160 --> 00:07:10,970
+Even within the same scene, a short response or available answer can differ.
+
+99
+00:07:11,140 --> 00:07:15,590
+A line celebrating a victory requires that victory to have happened.
+
+100
+00:07:15,900 --> 00:07:20,025
+A triumphant sentence after a failed encounter breaks the connection.
+
+101
+00:07:20,040 --> 00:07:23,850
+Winning and reaching the next area may be different facts.
+
+102
+00:07:24,140 --> 00:07:28,250
+If defeat leads to rescue and continued progress, write lines for that route.
+
+103
+00:07:28,900 --> 00:07:31,450
+The goal is not to maximize the branch count.
+
+104
+00:07:31,800 --> 00:07:35,870
+It is to keep the later story from contradicting an action the game allowed.
+
+105
+00:07:39,800 --> 00:07:44,690
+The Divinity authoring tools prepare map locations and event cards separately.
+
+106
+00:07:44,960 --> 00:07:49,870
+Seeing a location and hearing its explanation can be treated as separate facts.
+
+107
+00:07:50,100 --> 00:07:54,250
+In our test, we skip the opening explanation and go straight to the harbor.
+
+108
+00:07:54,500 --> 00:07:58,790
+The immediate action should still be understandable
+without reading the long background.
+
+109
+00:07:59,140 --> 00:08:01,830
+The guard asks for a seal he has not received.
+
+110
+00:08:02,140 --> 00:08:06,785
+The conversation still explains what is needed and where it can be checked.
+
+111
+00:08:06,800 --> 00:08:10,910
+Opening the notice lets the player recover the facts needed at this stage.
+
+112
+00:08:11,300 --> 00:08:14,690
+The game does not force an answer that assumes unfamiliar history.
+
+113
+00:08:15,000 --> 00:08:17,230
+We also run the route that read the explanation.
+
+114
+00:08:17,660 --> 00:08:21,750
+Previously heard material is not repeated;
+a short answer confirms the next action.
+
+115
+00:08:21,980 --> 00:08:25,450
+This is not a license to insert arbitrary exposition.
+
+116
+00:08:25,960 --> 00:08:29,810
+The setting must explain why this place and
+character can provide that information.
+
+117
+00:08:30,080 --> 00:08:36,530
+Recoverable essential facts and optional
+background give each line a clearer purpose.
+
+118
+00:08:37,483 --> 00:08:40,833
+After handing over the seal, we talk to the guard again.
+
+119
+00:08:41,003 --> 00:08:45,793
+The reply now invites us inside instead of demanding the same object.
+
+120
+00:08:46,023 --> 00:08:49,773
+We also check whether the conversation remembers a completed event.
+
+121
+00:08:49,923 --> 00:08:55,003
+Asking again just because the object left
+our hands would undo the story progress.
+
+122
+00:08:55,733 --> 00:09:00,343
+We now distinguish facts required for
+progress from background that adds richness.
+
+123
+00:09:00,553 --> 00:09:03,723
+We classify their role, not just their length.
+
+124
+00:09:03,953 --> 00:09:06,563
+The condition for entering the harbor is essential.
+
+125
+00:09:06,633 --> 00:09:10,603
+An incident from the guard’s childhood may be optional background.
+
+126
+00:09:11,073 --> 00:09:17,663
+If an essential fact exists only in a one-time scene,
+skipping that scene can erase the reason for the next action.
+
+127
+00:09:17,933 --> 00:09:20,223
+Provide a natural way to check it again.
+
+128
+00:09:20,393 --> 00:09:23,838
+There is no need to repeat everything to a player who read it.
+
+129
+00:09:23,853 --> 00:09:28,263
+Offer a brief confirmation to informed players
+and the necessary explanation to others.
+
+130
+00:09:28,453 --> 00:09:32,598
+This concerns missing or reordered story information during play:
+
+131
+00:09:32,613 --> 00:09:37,093
+keeping a valid basis for dialogue throughout the narrative.
+
+132
+00:09:40,800 --> 00:09:44,970
+We now change the dialogue conditions directly in our own story game.
+
+133
+00:09:45,200 --> 00:09:48,810
+Finishing the normal route once can miss important combinations.
+
+134
+00:09:48,940 --> 00:09:53,430
+In the first run, we read the notice, acquire the seal, and meet the guard.
+
+135
+00:09:53,760 --> 00:09:56,910
+Handing over the required item opens the next scene.
+
+136
+00:09:57,140 --> 00:10:00,190
+In the second run, we skip the explanation and meet the guard first.
+
+137
+00:10:00,860 --> 00:10:05,890
+We check that the dialogue does not claim unlearned
+knowledge and that information remains accessible.
+
+138
+00:10:06,060 --> 00:10:09,045
+In the third run, we leave the seal with a resting companion.
+
+139
+00:10:09,060 --> 00:10:14,330
+We compare the unavailable answer with its return after retrieving the item.
+
+140
+00:10:14,540 --> 00:10:17,110
+In the fourth run, we make different road choices.
+
+141
+00:10:17,200 --> 00:10:21,670
+We check that rejoining the harbor does not
+overwrite rations or the journey record.
+
+142
+00:10:21,840 --> 00:10:26,510
+Each run records the action, changed facts, and selected dialogue together.
+
+143
+00:10:26,840 --> 00:10:31,570
+When something fails, the connection can be traced in that record.
+
+144
+00:10:31,700 --> 00:10:34,865
+This test does not judge story enjoyment in place of people.
+
+145
+00:10:34,880 --> 00:10:39,680
+It is a small technical check for
+contradictions between writing and actual play.
+
+146
+00:10:40,400 --> 00:10:44,370
+A game script needs both its sentences and the conditions that make them valid.
+
+147
+00:10:44,700 --> 00:10:48,670
+Record who knows what, who holds what, and which actions occurred.
+
+148
+00:10:48,940 --> 00:10:51,790
+Separate order from state and distinguish who owns information.
+
+149
+00:10:52,140 --> 00:10:54,830
+Do not confuse past acquisition with present possession.
+
+150
+00:10:55,240 --> 00:11:00,630
+Keep traces of actions when branches rejoin, and
+let players recover essential facts they missed.
+
+151
+00:11:01,000 --> 00:11:04,130
+Finally, play through different orders and ownership states.
+
+152
+00:11:04,680 --> 00:11:09,945
+Logs help locate contradictions; human play
+review evaluates understanding and emotion.
+
+153
+00:11:09,960 --> 00:11:14,665
+Add one line beside the dialogue you are writing: what must happen first for
+
+154
+00:11:14,680 --> 00:11:19,070
+this statement to be true? That question connects game writing to actual play.

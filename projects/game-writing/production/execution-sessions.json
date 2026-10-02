@@ -1,11 +1,175 @@
 {
-  "updatedAt": "2026-10-02T08:16:00Z",
-  "baseVoice": {"sessionId":95867,"pid":8104,"status":"finished","state":"projects/game-writing/production/resource-runner.json","log":"projects/game-writing/production/resource-runner.log"},
-  "vite": {"sessionId":13616,"pid":20548,"port":9210,"status":"running-reuse"},
-  "baseCapture": {"sessionId":3943,"pid":44108,"status":"finished"},
-  "observationCapture": {"sessionId":2297,"pid":52660,"status":"finished"},
-  "focusedAsr": {"sessionId":49965,"status":"finished","report":"projects/game-writing/production/focused-asr.json"},
-  "observations": {"sessionId":70049,"status":"running","state":"projects/game-writing/production/observation-runner.json","log":"projects/game-writing/production/observation-runner.log"},
-  "voiceRepair": {"sessionId":93909,"status":"waiting-single-observation-worker","state":"projects/game-writing/production/repair-voice.json","log":"projects/game-writing/production/repair-voice.log"},
-  "duplicatePolicy": "Only resume actually live workers. Never restart finished capture, full TTS or renderer. Preserve all accepted voice chunks."
+  "updatedAt": "2026-10-02T09:46:08.494Z",
+  "baseVoice": {
+    "sessionId": 95867,
+    "pid": 8104,
+    "status": "finished",
+    "state": "projects/game-writing/production/resource-runner.json",
+    "log": "projects/game-writing/production/resource-runner.log"
+  },
+  "vite": {
+    "sessionId": 13616,
+    "pid": 20548,
+    "port": 9210,
+    "status": "running-reuse"
+  },
+  "baseCapture": {
+    "sessionId": 3943,
+    "pid": 44108,
+    "status": "finished"
+  },
+  "observationCapture": {
+    "sessionId": 2297,
+    "pid": 52660,
+    "status": "finished"
+  },
+  "focusedAsr": {
+    "sessionId": 49965,
+    "status": "finished",
+    "report": "projects/game-writing/production/focused-asr.json"
+  },
+  "observations": {
+    "sessionId": 70049,
+    "status": "finished-reviewed-current-hash",
+    "state": "projects/game-writing/production/observation-runner.json",
+    "log": "projects/game-writing/production/observation-runner.log"
+  },
+  "voiceRepair": {
+    "sessionId": 93909,
+    "status": "finished-reviewed-current-hash",
+    "state": "projects/game-writing/production/repair-voice.json",
+    "log": "projects/game-writing/production/repair-voice.log"
+  },
+  "duplicatePolicy": "Only resume actually live workers. Never restart finished capture, full TTS or renderer. Preserve all accepted voice chunks.",
+  "focusedRepairAsr": {
+    "sessionId": 84880,
+    "status": "finished-reviewed",
+    "report": "projects/game-writing/production/focused-asr-repair1.json"
+  },
+  "actualCutCompiler": {
+    "sessionId": 97189,
+    "status": "finished",
+    "exitCode": 0,
+    "proof": "projects/game-writing/production/final-v1/plan.json",
+    "cuts": 47
+  },
+  "finalRender": {
+    "sessionId": 89611,
+    "pid": 40988,
+    "status": "finished",
+    "runner": "projects/game-writing/production/render-reel.cjs",
+    "result": "projects/game-writing/production/final-v1/render-result.json",
+    "exitCode": 0
+  },
+  "finalMix": {
+    "sessionId": 67150,
+    "status": "finished",
+    "exitCode": 0,
+    "proof": "projects/game-writing/production/final-v1/mix-settings.json",
+    "timingProof": "projects/game-writing/production/final-v1/mix-timing-correction.json"
+  },
+  "finishedFailedMix": {
+    "sessionId": 26143,
+    "exitCode": 1,
+    "reason": "ffmpeg rejects leading-dot afade duration; fixed to 0.45 before single retry",
+    "restart": false
+  },
+  "failedTimingAttempts": {
+    "sessions": [
+      75637,
+      75802,
+      35245
+    ],
+    "reason": "First buffered-filter timing shifts, then guard over-read was corrected. Preserved rejected AAC/ASR in attempts/audio-pts-shift. Do not resume those terminated jobs."
+  },
+  "finalCaption": {
+    "sessionId": 26710,
+    "status": "finished",
+    "exitCode": 0,
+    "proof": "projects/game-writing/production/final-v1/caption-layout-qa.json",
+    "correctedAudio": "same new AAC remuxed; images untouched"
+  },
+  "finalLocal": {
+    "sessionId": 84866,
+    "pid": 56660,
+    "state": "projects/game-writing/production/finish-local.json",
+    "log": "projects/game-writing/production/finish-qa.log",
+    "startedAt": "2026-10-02T09:13:26.930Z",
+    "status": "terminated-after-qa-json-parser-error",
+    "stages": [
+      {
+        "kind": "corrected-audio",
+        "startedAt": "2026-10-02T09:13:26.931Z",
+        "status": "finished",
+        "command": [
+          "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "projects/game-writing/production/replace-corrected-audio.cjs"
+        ],
+        "pid": 4396,
+        "exitCode": 0,
+        "finishedAt": "2026-10-02T09:13:27.699Z"
+      },
+      {
+        "kind": "qa",
+        "startedAt": "2026-10-02T09:13:27.700Z",
+        "status": "failed",
+        "command": [
+          "D:\\Github\\Video-Editing\\qwen3-tts\\.venv\\Scripts\\python.exe",
+          "projects/game-writing/production/verify-video.py"
+        ],
+        "pid": 48396,
+        "exitCode": 1,
+        "finishedAt": "2026-10-02T09:15:10.613Z"
+      }
+    ],
+    "stage": "qa",
+    "updatedAt": "2026-10-02T09:15:10.613Z",
+    "error": "qa failed; inspect its saved log",
+    "mustNotResume": true
+  },
+  "finalMixedAsr": {
+    "sessionId": 70507,
+    "pid": 58480,
+    "workerPid": 2128,
+    "status": "finished",
+    "log": "projects/game-writing/production/full-mix-asr.log",
+    "proof": "projects/game-writing/production/final-v1/full-mix-asr.json",
+    "exitCode": 0
+  },
+  "finalTechnicalQa": {
+    "sessionId": 78426,
+    "status": "finished",
+    "exitCode": 0,
+    "proof": "projects/game-writing/production/final-v1/qa.json",
+    "supersededBy": "current bottom-center framing revision requires current-video QA"
+  },
+  "currentLayout": {
+    "sessionId": 54651,
+    "pid": 60896,
+    "status": "finished",
+    "log": "projects/game-writing/production/current-layout.log",
+    "proof": "projects/game-writing/production/final-v1/current-layout-progress.json",
+    "exitCode": 0
+  },
+  "focusedMixedAsr": {
+    "sessionId": 99046,
+    "status": "finished",
+    "log": "projects/game-writing/production/focused-mix-asr.log",
+    "proof": "projects/game-writing/production/final-v1/focused-mix-asr.json",
+    "exitCode": 0
+  },
+  "currentVideoQa": {
+    "sessionId": 55852,
+    "status": "finished",
+    "log": "projects/game-writing/production/final-qa-current-layout.log",
+    "proof": "projects/game-writing/production/final-v1/qa.json",
+    "exitCode": 0
+  },
+  "currentRouteAsr": {
+    "sessionId": 44619,
+    "status": "finished",
+    "log": "projects/game-writing/production/focused-mix-route.log",
+    "proof": "projects/game-writing/production/final-v1/focused-mix-route.json",
+    "exitCode": 0
+  }
 }

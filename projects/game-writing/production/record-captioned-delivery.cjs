@@ -1,0 +1,24 @@
+// Run only after real UI checks of the new captioned upload, never from preparation.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),base='projects/game-writing/';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,''));
+const write=(p,v)=>fs.writeFileSync(path.join(root,p),JSON.stringify(v,null,2)+'\n');
+const r=read(base+'publishing/youtube-upload-captioned.json'),now=new Date().toISOString();
+const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+if(r.videoId!=='AlRRtW5oz88'||r.video.path!=='output/game-writing/game-writing.captioned.mp4'||hash(r.video.path)!==r.video.sha256)throw Error('Captioned upload identity/hash mismatch.');
+if(!process.argv.includes('--actual-ui-reviewed'))throw Error('Must directly observe and record new uploaded frames, saved settings and completed new-file checks.');
+const proofs=['burned-captions-cc-off.png','languages-saved.png','english-metadata.png','card-reopened.png','endscreen-reopened.png','monetization-saved.png','checks-complete.png','private-saved.png'];
+for(const name of proofs)if(!fs.existsSync(path.join(root,base,'publishing/proof-captioned',name)))throw Error('Missing real new-upload proof '+name);
+r.status='uploaded-private';r.completedAt=now;r.settingsReopenedAt=now;r.supersededReason=undefined;
+r.metadata.status='saved-and-reopened-exact-title-description';r.englishMetadata.status='published-and-reopened-exact-title-description';r.subtitles.forEach(s=>s.status='manual-timed-file-published-and-reopened');r.thumbnail.status='uploaded-and-visible-after-private-save';
+r.coachingCard.status='saved-and-reopened';r.endScreen.status='saved-and-reopened-all-three-elements';
+r.monetization={enableAds:true,status:'enabled-saved-and-reopened',midroll:'automatic-enabled',selfCertification:'해당 사항 없음',automaticReviewStatus:'review-alert-cleared-post-save-monetizing',copyrightStatus:'completed-no-issues-found',explicitWizardCompletionObserved:false,newFileOnly:true,resultEvidence:'New upload copyright wizard completed with no issues. After private save, its content row shows 알림 없음 / 설정에 따라 수익을 창출 and monetization remains 사용; no claims found. The completed wizard was not reopened.'};
+r.burnedCaptionVerification={...r.burnedCaptionVerification,required:true,position:[960,970],playerCaptionsOff:true,status:'direct-uploaded-pixel-review-passed',localAllCueReview:base+'production/final-v1/qa.json',proof:base+'publishing/proof-captioned/burned-captions-cc-off.png',additionalProof:base+'publishing/proof-captioned/burned-captions-mid-cc-off.png'};
+r.evidence=fs.readdirSync(path.join(root,base,'publishing/proof-captioned')).filter(n=>n.endsWith('.png')).map(n=>({path:base+'publishing/proof-captioned/'+n,sha256:hash(base+'publishing/proof-captioned/'+n)}));write(base+'publishing/youtube-upload-captioned.json',r);
+const m=read(base+'publishing/metadata-final.json');m.platformApplied=true;m.status='captioned-private-saved-and-reopened';m.videoId=r.videoId;m.verifiedAt=now;m.uploadVariant='captioned';write(base+'publishing/metadata-final.json',m);
+const q=read('production/batches/sakurai-planning-game-design/queue.json'),i=q.items.find(i=>i.slug==='game-writing');i.status='uploaded-private-awaiting-git-delivery';i.stage='captioned-private-settings-verified-git-pending';i.videoId=r.videoId;Object.assign(i.checkpoints,{collected:true,privateUploadSaved:true,publishingSettingsVerified:true,uploaded:true});
+i.originalCleanPrivateUpload={videoId:'M22USoVEEPY',receipt:base+'publishing/youtube-upload.json',preserved:true};
+i.publishing={status:'uploaded-private',videoId:r.videoId,privacyStatus:'private',scheduled:false,receipt:base+'publishing/youtube-upload-captioned.json',completedAt:now,burnedCaptions:'always-visible-bottom-center-verified-with-player-cc-off',automaticChecks:'New captioned upload copyright completed no issues; post-save review alert cleared, monetizing with no claims. Completed wizard not reopened.',publicDecision:'user-only',pinnedComment:'pending-video-publication'};
+i.nextAction='Check rebuild/media, select completed production and necessary rules, commit and normally push. Then review picking-sides content/Studio duplicates.';i.updatedAt=now;i.completedAt=now;
+q.progress={...q.progress,remaining:q.items.filter(i=>i.status==='queued'||i.status==='in-production').length,rendered:q.items.filter(i=>i.checkpoints.render).length,collected:q.items.filter(i=>i.checkpoints.collected).length,uploaded:q.items.filter(i=>i.checkpoints.uploaded).length};q.updatedAt=now;q.lastProgressAt=now;write('production/batches/sakurai-planning-game-design/queue.json',q);
+console.log('Actual captioned private upload and real verification recorded; Git delivery remains pending.');

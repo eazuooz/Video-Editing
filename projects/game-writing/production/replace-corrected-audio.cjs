@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),work=path.join(__dirname,'final-v1'),m=JSON.parse(fs.readFileSync(path.join(root,'projects/game-writing/project.json'),'utf8')),plan=JSON.parse(fs.readFileSync(path.join(work,'plan.json'),'utf8'));
+function run(args){const r=spawnSync('ffmpeg',['-v','error','-y',...args],{encoding:'utf8',windowsHide:true,maxBuffer:2e6});if(r.status!==0)throw Error(r.stderr);}
+const actual=spawnSync('ffprobe',['-v','error','-show_format','-of','json',path.join(root,m.paths.editorAudioMix)],{encoding:'utf8',windowsHide:true});if(Math.abs(Number(JSON.parse(actual.stdout).format.duration)-plan.seconds)>1/48000)throw Error('Corrected full mix duration required');
+const attempts=path.join(work,'attempts/audio-pts-shift');fs.mkdirSync(attempts,{recursive:true});
+for(const key of ['videoClean','videoBurnedCaptions']){
+ const file=path.join(root,m.paths[key]),tmp=path.join(work,key+'-corrected.mp4');run(['-i',file,'-i',path.join(root,m.paths.audioMix),'-map','0:v:0','-map','1:a:0','-c','copy','-t',String(plan.seconds),'-movflags','+faststart',tmp]);
+ const original=path.join(attempts,path.basename(file));if(fs.existsSync(original))throw Error('Preserved failed attempt already exists; do not overwrite evidence');fs.renameSync(file,original);fs.renameSync(tmp,file);
+}
+fs.writeFileSync(path.join(work,'mix-timing-correction.json'),JSON.stringify({fixedAt:new Date().toISOString(),cause:'Buffered loudnorm plus adelay in one filter graph removed 1.990667 seconds; materialized body first, then added exactly 2 seconds intro and 10 seconds outro.',approvedRawVoiceChanged:false,sceneOrCaptionTimingChanged:false,allVideoFramesCopied:true,oldEvidence:'projects/game-writing/production/final-v1/attempts/audio-pts-shift',finalDuration:plan.seconds,fullMixedAsr:'pending'},null,2)+'\n');console.log('Both video frame streams preserved; corrected same AAC copied to both.');

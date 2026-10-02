@@ -1,27 +1,31 @@
 # 게임 시나리오 쓰는 법: 선택과 순서가 바뀌어도 말이 되게
 
-2026-10-02 체크포인트: 독립 한영 12장/72대사, 새 DOS2 공식 자료 검토, 자체 이야기 게임 `항구의 봉인`, 6개 흰 2.5D 설명과 썸네일을 준비했다. **최종 내레이션·렌더·4파일 수집·YouTube 비공개 업로드는 아직 완료하지 않았다.** 0.1초 템플릿 WAV와 48초 설명 전용 lookdev는 완성 영상이 아니다.
+2026-10-02 final-v1: 실제 최종 렌더·전체 기술 검수·4개 파일 수집·YouTube 비공개 저장과 설정 재열람을 완료했다. 영상은 692.966667초(11분33초), 1920×1080/60fps다. 기존 M22USoVEEPY는 clean 영상의 선택형 자막 업로드로 보존하며 기본 채널용 자막 요구를 충족하지 못했다. 사용자 재확인에 따라 검수된 고정 한글 자막판을 **AlRRtW5oz88**로 새 비공개 업로드했다. 플레이어 CC가 꺼진 실제 업로드 화면 두 구간에서도 아래 가운데 흰 박스 자막이 보임을 확인했다. [현재 자막판 영수증](publishing/youtube-upload-captioned.json)이 실제 저장 완료 근거다. 공개·예약은 사용자가 직접 한다. Git 전달은 [배치 대기열](../../production/batches/sakurai-planning-game-design/queue.json)의 실제 SHA·푸시 증거를 확인한다.
 
-제작 전 기존 활성 보강 대본까지 포함한 21개 프로젝트와 실제 Studio 검색/영상 ID를 직접 비교했다. [사전 중복 검토](../../production/batches/sakurai-planning-game-design/preflight/game-writing.json)는 distinct다. [장별 계획](planning/outline.md)에 주장·실제 동작·관찰 지점·설명 연결·출처 인아웃을 기록했다. 참고 대본의 복사/번역이나 원본 영상·음성 재사용은 하지 않았다.
+전체 21개 기존 프로젝트의 실질 대본과 현재 Studio 검색을 대조한 [사전 검토](../../production/batches/sakurai-planning-game-design/preflight/game-writing.json)를 통과했다. DOS2 공식 대화·게임 마스터 자료와 직접 만든 「항구의 봉인」에서 정보의 주인, 물건 소유, 동료의 부재, 분기 합류와 필수 사실 회복을 보여 준다. 출처 영상의 전체 대본·음성을 복사하지 않았으며 화면에 없는 내부 구현은 단정하지 않는다.
 
-## 현재 실행과 재개
+## 설명 사이에 실제 동작을 추가한 최종 타임라인
 
-- 재부팅 전 세션 `67834` / PID `46172`는 합성을 시작하지 못한 채 종료됐다. 재개한 단일 [resource-runner](production/resource-runner.cjs)는 세션 `95867` / PID `8104`다. 실제 현재 상태는 [resource-runner.json](production/resource-runner.json)과 [배치 대기열](../../production/batches/sakurai-planning-game-design/queue.json)을 읽는다. PID는 종료 후 재사용될 수 있으므로 실제 프로세스 명령까지 확인한다.
-- 다른 사용자 학습의 GPU 사용 중에는 기다린다. 해당 작업을 중단하지 않는다. 안정적으로 여유가 생기면 이 runner가 승인 Qwen3-TTS 1.7B로 한 번 합성하고 CPU ASR을 이어 실행한다. 살아 있는 runner/TTS와 중복 실행하지 않는다.
-- 기다리는 동안 `project.json`과 양언어 대본을 수정하면 입력 해시가 바뀌어 runner가 안전하게 실패한다. 수정이 필요하면 실제 종료 상태를 확인하고 명시적으로 새 실행을 시작한다.
-- 합성/ASR 종료는 음성 승인이나 영상 완료가 아니다. 현재 WAV 해시의 72대사를 모두 받아쓰기와 직접 대조하고 반복·누락·발음·임의 인사·끝소리를 검수한다. 실제 거부된 장면만 같은 승인 목소리로 복구한다.
-- 재부팅 뒤 Vite 세션 `13616` / PID `20548` / 포트 `9210`을 복구했다. 살아 있으면 재사용한다. 이전 Vite와 종료된 소스 샘플링·디코딩·UI 검증·lookdev 세션은 다시 기다리지 않는다.
+[최종 계획](production/final-v1/plan.json)은 독립 16장/80문단이다. 기존 여섯 흰 2.5D 설명의 주장과 승인 음성을 보존하고, 설명 사이에 네 개 새 관찰 장과 정상 속도의 실제 선택·결과 컷을 더했다. 본편 680.966667초 중 실제 동작 408.583333초, 설명 272.383333초이며 60:40 오차는 0.2프레임이다. 원본 고양이 인트로 2초와 원본 회원 프로필·이름·배지·로고의 10초 엔딩은 비중에서 제외한다. 47개 실제 컷은 반복·저속·무관한 대기로 늘리지 않았다. 계획의 출처 인아웃·보이는 행동·관찰 지점·설명 연결을 함께 읽는다.
 
-## 준비된 증거와 남은 제작
+공식 자료의 화면 하단 UI를 보존하기 위해 같은 컷의 흐린 전체 화면 배경 위에 선명한 게임 화면을 합성했다. 모든 한글 자막은 아래 가운데(960,970)의 boxed-white-forest-v1이며 최대 두 줄이다. 자체 실제 이야기 게임은 전체 화면이다. 회원 엔딩에는 정확한 제목 `멤버쉽가입 감사드립니다.`과 과외 URL을 원본 회원 정보를 가리지 않게 표시한다.
 
-[source-decode.json](production/source-decode.json)은 두 공식 자료 전체 디코딩의 실제 결과다. [출처 기록](sources/SOURCES.md), [새 게임 후보](sources/game-candidates.json), [native 검토](sources/native-review.json)는 화면에서 보이는 사실과 사용 조건/미완료 공개 권리 판단을 구분한다. 최종 선택 컷의 첫·중간·끝과 전환은 음성 실측 뒤 다시 검수한다.
+## 실제 기술 검수와 수집
 
-[자체 상태 검증](production/playtest-state-proof.json)은 재부팅 뒤 알려진 규칙의 짧은 확인 경로를 보강해 13개 시나리오, 도달 가능한 4,581개 사실/대화 상태와 표시 선택 2,930개의 유효성을 실행했다. [실제 UI 입력](production/playtest-ui-proof.json)은 여섯 경로/58개 입력과 화면 결과를 확인했다. 이전 11개/2,209상태/1,424선택 및 다섯 경로/52입력은 별도 `-pre-reboot.json`에 보존한다. 이는 사람의 재미·감정·이해 검토를 대신하지 않는다. [실제 녹화](production/capture-story-takes.json)에 정상 속도의 새 입력과 각 선택/결과 시각을 기록했으며 [전체 디코딩/샘플](production/story-take-audit.json)은 최종 컷 선택을 위한 증거다.
+[최종 QA](production/final-v1/qa.json)는 두 MP4의 전체 41,578프레임 디코딩, 길이·한영 자막 동일 타이밍·동일 AAC를 확인했다. 현재 영상의 174개 자막/컷 구간과 20개 구성 화면을 직접 검수했고, 선택한 47개 실제 컷의 첫·중간·끝 141화면도 검수했다. 최종 AAC는 −16.04 LUFS, −2.30 dBTP다. [전체 믹스 ASR 직접 대조](production/final-v1/full-mix-asr-review.json)와 집중 재검사에서 모든 80문단의 누락·반복·임의 인사·끝소리를 확인했다. ASR 철자 오인식과 실제 음성 문제를 구분하며 사람 청취를 완료했다고 주장하지 않는다.
 
-[lookdev v3 결과](production/lookdev-render-result-v3.json)와 [시각 검토](production/lookdev-visual-review.json)는 설명 6개/12개 1080p 샘플의 준비 검수다. 분기 합류와 결과 보존, 정보 전달, 물건 소유 토큰, 필수 사실 재확인을 표시한다. 최종 영상 자막 검수는 아직 남아 있다. `timing.ts`의 `ACTUAL_MEDIA_READY=false`와 계획 시간은 실제 음성·미디어가 검증되기 전 유지한다.
+음성 정규화와 2초 인트로 지연을 한 필터에서 처리하던 FFmpeg 버퍼 문제는 두 단계로 분리했다. [타이밍 수정 증거](production/final-v1/mix-timing-correction.json)에 현재 음성 첫 96,000 스테레오 샘플의 정확한 2초 무음과 전체 길이를 기록했다. 승인 기존 음성을 보존했으며 거부된 장면만 같은 목소리로 수정했다. 연속 Nimbus와 원래 승인 화자를 유지했다.
 
-본편은 실제 동작 60% / 설명 40%로 실측한다. 인트로 2초와 원본 회원 엔딩 10초를 제외하고 최대 1프레임 반올림만 허용한다. 도식/숫자 테스트는 설명이며, 실제 게임도 무관한 대기·루프·저속으로 비중을 채우지 않는다. 각 설명 사이의 행동/새 해설을 충분히 담아 참고 영상보다 길어질 수 있다. 같은 승인 목소리와 연속 Nimbus를 유지한다.
+`node scripts/collect-video-output.cjs game-writing`를 실제 실행하여 [수집 기록](production/delivery-output.json)의 해시와 일치하는 clean MP4·한글 자막 MP4·KO SRT·EN SRT를 [output/game-writing](../../output/game-writing/index.html)에 모았다. 양언어 각각 154큐다. [output/index.html](../../output/index.html)이 전체 확인 진입점이다.
 
-음성 검수 뒤 컷별 실제 게임 녹화/공식 자료 → 실측 60:40 타이밍·믹스·KO/EN SRT·챕터·엔딩 동시 확정 → 최종 렌더 → 모든 큐/컷 시각 검수·전체 ASR·디코딩·음량/true peak·두 MP4 동일 오디오 → `node scripts/collect-video-output.cjs game-writing` → 모든 저장 규칙으로 새 비공개 업로드 → rebuild/media 검사·선택 커밋·일반 푸시를 진행한다. 공개와 예약은 사용자가 직접 한다.
+[자체 상태 검증](production/playtest-state-proof.json)은 13개 시나리오·4,581개 도달 상태·2,930개 표시 선택, [실제 UI 검증](production/playtest-ui-proof.json)은 여섯 경로·58개 입력·0오류를 실행했다. 기술적 일관성은 이야기의 재미·감정·이해에 대한 사람 평가를 대신하지 않는다.
 
-`setup-editorial.cjs`, `setup-scenes.cjs`, `record-preparation.cjs`는 초기 생성용이다. 현재 준비물이나 향후 실측 타이밍을 덮어쓰므로 재개할 때 자동 재실행하지 않는다. `finish-preparation.cjs`도 준비 검수 증거용이므로 최종 제작 단계에서는 재실행하지 않는다. 관련 규칙은 [VIDEO_ADDITIVE_REVISION](../../docs/VIDEO_ADDITIVE_REVISION.md), [VIDEO_WORKFLOW](../../docs/VIDEO_WORKFLOW.md), [NARRATION_AUDIO_STANDARD](../../docs/NARRATION_AUDIO_STANDARD.md), [YOUTUBE_PUBLISHING](../../docs/YOUTUBE_PUBLISHING.md)를 따른다. 사람 청취·공개 권리·원래 Nimbus 파일·잘린 회원 핸들·외부 백업은 증거가 없으면 pending을 유지한다.
+## 비공개 저장과 재개
+
+새 썸네일·사실에 맞는 한영 제목/설명·기존 채널 코칭/Discord/회원 링크를 적용했다. 수동 KO/EN SRT와 영어 언어의 별도 제목/설명을 게시 후 다시 열어 확인했다. 00:00 과외 카드는 하나이며 마지막 10초에는 관련 채널 재생목록·자기 채널 구독·클릭 가능한 외부 과외 링크를 저장했다. 세 요소 모두 11:22:58–11:32:58(60fps)이다. 비공개·예약 없음·수익 창출 사용, 새 자막판 저작권 검사 완료/문제 없음과 저장 후 광고 검토 알림 해소·설정에 따라 수익 창출·소유권 주장 없음을 확인했다. 새 자막판의 최종 wizard 완료 화면은 다시 열어 관찰하지 않았으며 실제 저장 후 결과와 구분한다. [고정댓글 파일](publishing/pinned-comment.ko.txt)은 비공개 댓글 제한으로 공개 후 적용 대기다. 플랫폼 자동 더빙은 별도 미검수 상태이며 수동 자막 게시를 대신하지 않는다.
+
+[실행 기록](production/execution-sessions.json)의 합성·복구·ASR·촬영·렌더·현재 레이아웃·현재 QA 세션은 종료됐다. 재부팅 전 또는 종료된 runner를 기다리거나 다시 실행하지 않는다. Vite는 실제 살아 있으면 재사용한다. 초기 setup-editorial/setup-scenes/record-preparation/finish-preparation은 현재 최종 계획을 덮어쓰므로 재개 시 실행하지 않는다.
+
+의도적 재빌드 순서는 승인 해시 음성·출처 복원 → prepare-timeline.py와 build-cuts.cjs → build-final.cjs setup → render-reel.cjs → build-final.cjs mix/assemble → apply-current-layout.cjs → 전체 ASR/verify-video.py와 직접 화면 검수 → complete-local-review.cjs의 실제 검수 인자 → 수집이다. `apply-current-layout.cjs`는 공식 자료의 자막 안전 영역과 과외 URL 엔딩을 최종 적용하므로 기본 Motion Canvas 조립만으로 현재 납품본을 대신하지 않는다. 실행 전 현재 계획의 원본/완성 경로와 실행 상태를 확인한다. 현재 완료본을 자동 재빌드하지 않는다.
+
+전체 인간 청취·최종 공개 권리·원래 Audio Library Nimbus 파일·잘린 회원 핸들 원본·외부 미디어 백업은 계속 pending이다. [새 게임 후보](sources/game-candidates.json), [출처](sources/SOURCES.md), [재사용 제작 방식](../../docs/VIDEO_ADDITIVE_REVISION.md)와 프로젝트 manifest를 함께 보존한다. 다음 주제는 picking-sides이며 새 대본 전에 내용 중복과 현재 Studio 근거를 다시 검토한다.

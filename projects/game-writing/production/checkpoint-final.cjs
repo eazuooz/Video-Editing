@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),qfile=path.join(root,'production/batches/sakurai-planning-game-design/queue.json'),efile=path.join(__dirname,'execution-sessions.json');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),save=(p,v)=>fs.writeFileSync(p,JSON.stringify(v,null,2)+'\n');
+const q=read(qfile),e=read(efile),item=q.items.find(i=>i.slug==='game-writing'),now=new Date().toISOString();
+for(const k of ['observations','voiceRepair'])e[k].status='finished-reviewed-current-hash';
+e.focusedRepairAsr={sessionId:84880,status:'finished-reviewed',report:'projects/game-writing/production/focused-asr-repair1.json'};
+e.actualCutCompiler={sessionId:97189,status:'finished',exitCode:0,proof:'projects/game-writing/production/final-v1/plan.json',cuts:47};
+e.finalRender={sessionId:89611,pid:40988,status:'running',runner:'projects/game-writing/production/render-reel.cjs',result:'projects/game-writing/production/final-v1/render-result.json'};
+e.finalMix={sessionId:75637,pid:56904,status:'running',runner:'projects/game-writing/production/build-final.cjs mix',proof:'projects/game-writing/production/final-v1/mix-settings.json'};
+e.finishedFailedMix={sessionId:26143,exitCode:1,reason:'ffmpeg rejects leading-dot afade duration; fixed to 0.45 before single retry',restart:false};
+e.updatedAt=now;item.status='in-production';item.stage='final-mix-and-single-explanation-render';item.activeExecution={sessions:e};
+Object.assign(item.checkpoints,{script:true,narration:true,footage:true,scenes:true,mix:false,render:false,qa:false,collected:false});
+item.nextAction='Resume live final mix/render sessions; generate source-aware boxed captions, current final mix ASR, every cue/cut and native action QA before collection/private upload/Git delivery.';
+item.finalPlan='projects/game-writing/production/final-v1/plan.json';item.currentVoiceApproval='projects/game-writing/production/voice-approval.json';q.updatedAt=now;save(efile,e);save(qfile,q);console.log(item.stage);

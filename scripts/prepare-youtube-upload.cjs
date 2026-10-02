@@ -17,6 +17,11 @@ const videoData = fs.readFileSync(path.join(root, upload.video.path));
 const videoHash = crypto.createHash('sha256').update(videoData).digest('hex');
 if (videoHash !== upload.video.sha256 || videoData.length !== upload.video.bytes) throw new Error('Video differs from approved delivery; prepare a new revision record first');
 const defaults = JSON.parse(fs.readFileSync(path.join(root, 'shared/publishing/youtube-defaults.json'), 'utf8'));
+if (defaults.uploadVideo?.burnedKoreanCaptionsRequired) {
+  const expected = defaults.uploadVideo.path.replaceAll('<slug>', slug);
+  if (upload.video.path !== expected) throw new Error('Upload the reviewed bottom-center Korean-captioned MP4; the clean master is local preservation only');
+  upload.burnedCaptionVerification ||= {required: true, position: [960, 970], playerCaptionsOff: true, status: 'pending-real-uploaded-frame-review'};
+}
 if (defaults.uploadAuthorization.status === 'private-upload-authorized') {
   if (upload.metadata.privacyStatus !== 'private' || upload.scheduled === true || upload.schedule?.active === true) {
     throw new Error('Current authorization permits private uploads only; public publication and scheduling belong to the user');
@@ -75,6 +80,17 @@ for (const subtitle of upload.subtitles) {
 upload.defaults = 'shared/publishing/youtube-defaults.json';
 upload.coachingCard ||= {url: defaults.coaching.url, title: defaults.coaching.titleKo, teaser: defaults.coaching.teaserKo, startSeconds: 0, status: 'pending', requestedAvailability: defaults.coaching.requestedAvailability, platformConstraint: defaults.coaching.platformConstraint};
 upload.endScreen ||= {startSeconds: upload.video.seconds - 10, endSeconds: upload.video.seconds, elements: defaults.endScreen.elements, status: 'pending'};
+// The 2026-10-02 default is an ending link and a pinned coaching comment.
+// These are preparation records, never evidence that Studio saved them.
+if (defaults.coaching.endingRequired) {
+  upload.coachingEndingLink ||= {url: defaults.coaching.url, title: defaults.coaching.titleKo, type: 'external-link-end-screen', startSeconds: upload.video.seconds - 10, endSeconds: upload.video.seconds, status: 'pending-platform-save', preserveMemberIdentity: true};
+}
+if (defaults.pinnedComment?.required) {
+  const commentFile = path.join(dir, 'pinned-comment.ko.txt');
+  if (!fs.existsSync(commentFile)) fs.writeFileSync(commentFile, '직접 만들어본 코드와 막힌 지점을 바탕으로 공부 방향을 잡고 싶다면 얌얌코딩 프로그래밍 코칭·과외 안내를 확인해보세요.\n\n▶ 프로그래밍 코칭·과외\n' + defaults.coaching.url + '\n');
+  if (!fs.readFileSync(commentFile, 'utf8').includes(defaults.coaching.url)) throw new Error('Pinned coaching comment must contain the canonical tutoring URL');
+  upload.pinnedComment ||= {path: path.relative(root, commentFile).replaceAll('\\', '/'), url: defaults.coaching.url, status: 'pending-video-publication', reason: 'Private YouTube videos do not support comments. Keep private; post and pin only after comments become available.', commentId: null, pinnedVerified: false};
+}
 fs.writeFileSync(file, JSON.stringify(upload, null, 2) + '\n');
 fs.writeFileSync(path.join(dir, descriptionPrefix + '.ko.txt'), upload.metadata.description + '\n');
 fs.writeFileSync(path.join(dir, descriptionPrefix + '.en.txt'), upload.englishMetadata.description + '\n');
