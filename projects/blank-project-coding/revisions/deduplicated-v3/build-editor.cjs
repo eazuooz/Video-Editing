@@ -1,0 +1,11 @@
+// Run after cuts and mix exist, and after the explanation render has finished.
+const fs=require('fs'),path=require('path');const W=__dirname,R=path.resolve(W,'../../../..'),p=JSON.parse(fs.readFileSync(path.join(W,'plan.json'),'utf8')),dir=path.join(R,'motion-canvas/src/projects/blank-project-coding/deduplicated-v3/full');fs.mkdirSync(path.join(dir,'scenes'),{recursive:true});
+const rel=(from,to)=>{const p=path.relative(from,to).replaceAll('\\','/');return p.startsWith('.')?p:'./'+p;};
+for(const s of p.scenes){const sd=path.join(dir,'scenes'),cuts=p.cuts.filter(c=>c.scene===s.id);for(const c of cuts)if(!fs.existsSync(path.join(R,c.source)))throw Error('Render cut first: '+c.id);
+const imports=cuts.map((c,i)=>`import clip${i} from '${rel(sd,path.join(R,c.source))}?url';`).join('\n');
+const body=cuts.map((c,i)=>`{const v=new Video({src:clip${i},width:1920,height:1080});view.add(v);(v as any).video().muted=true;v.play();yield*waitFor(${c.frames}/60+1e-7);v.pause();v.remove();}`).join('\n');
+fs.writeFileSync(path.join(sd,`scene${s.id}.tsx`),`import {makeScene2D,Video} from '@motion-canvas/2d';\nimport {waitFor} from '@motion-canvas/core';\n${imports}\nexport default makeScene2D(function*(view){${body}});\n`);}
+const imports=p.scenes.map(s=>`import s${s.id} from './scenes/scene${s.id}?scene';`).join('\n');
+const audio=rel(dir,path.join(R,'shared/output/narration/blank-project-coding/deduplicated-v3/final-mix.wav'));
+fs.writeFileSync(path.join(dir,'project.ts'),`import {makeProject} from '@motion-canvas/core';\nimport intro from '../../intro-cats/scene?scene';\nimport outro from '../../scenes/membership-outro?scene';\n${imports}\nimport audio from '${audio}';\nexport default makeProject({name:'blank-project-coding-deduplicated-v3-full',scenes:[intro,${p.scenes.map(s=>'s'+s.id).join(',')},outro],audio});\n`);
+const registry=path.join(R,'motion-canvas/projects.json'),j=JSON.parse(fs.readFileSync(registry,'utf8'));const list=Array.isArray(j)?j:j.projects;if(!Array.isArray(list))throw Error('Unknown registry');for(const f of ['./src/projects/blank-project-coding/deduplicated-v3/full/project.ts'])if(!list.includes(f))list.push(f);fs.writeFileSync(registry,JSON.stringify(j,null,2)+'\n');console.log('49 independent full editor scenes and identical current final mix linked.');

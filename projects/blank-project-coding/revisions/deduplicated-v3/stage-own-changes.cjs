@@ -1,0 +1,18 @@
+const fs=require('fs'),path=require('path'),{execFileSync,spawnSync}=require('child_process');
+const R=path.resolve(__dirname,'../../../..');
+const git=args=>execFileSync('git',args,{cwd:R,windowsHide:true,maxBuffer:20e6}).toString('utf8');
+if(git(['diff','--cached','--name-only']).trim())throw Error('Index already contains changes; inspect before staging.');
+const own=['projects/blank-project-coding/revisions/deduplicated-v3','projects/blank-project-coding/publishing/youtube-upload-deduplicated-v3.json','projects/blank-project-coding/production/delivery-output.json','projects/blank-project-coding/project.json','projects/blank-project-coding/rebuild.json','motion-canvas/src/projects/blank-project-coding/deduplicated-v3'];
+git(['add','--',...own]);
+const file='motion-canvas/projects.json',a=JSON.parse(git(['show','HEAD:'+file]));
+const entry='./src/projects/blank-project-coding/deduplicated-v3/full/project.ts';
+if(!a.includes(entry))a.push(entry);
+const body=JSON.stringify(a,null,2)+'\n';
+const h=spawnSync('git',['hash-object','-w','--stdin','--path='+file],{cwd:R,windowsHide:true,input:body,encoding:'utf8'});
+if(h.status!==0)throw Error(h.stderr);
+git(['update-index','--cacheinfo','100644',h.stdout.trim(),file]);
+const staged=git(['diff','--cached','--name-only','-z']).split('\0').filter(Boolean);
+const {isMedia}=require(path.join(R,'scripts/media-policy.cjs'));
+if(staged.some(isMedia))throw Error('Media staged; stop.');
+if(staged.some(x=>x!==file&&!own.some(p=>x===p||x.startsWith(p+'/'))))throw Error('Unrelated files staged; stop.');
+console.log('Staged '+staged.length+' scoped files; registry includes only this revision, concurrent picking-sides entry preserved unstaged.');

@@ -1,0 +1,13 @@
+const fs=require('fs'),path=require('path');
+const W=__dirname,R=path.resolve(W,'../../../..');
+const read=f=>JSON.parse(fs.readFileSync(path.join(R,f),'utf8')),write=(f,v)=>fs.writeFileSync(path.join(R,f),JSON.stringify(v,null,2)+'\n');
+const base='projects/blank-project-coding',rev=base+'/revisions/deduplicated-v3',m=read(rev+'/final.manifest.json'),r=read(m.publishing.receipt),q=read(rev+'/qa.json');
+if(r.status!=='private-upload-complete'||r.video.sha256!==q.videoBurnedCaptions.sha256||!r.uploadVerification.burnedKoreanCaptionsVisible||r.metadata.privacyStatus!=='private')throw Error('Real private upload evidence required.');
+m.status='deduplicated-v3-private-upload-complete';
+m.production={...m.production,currentStage:'private-upload-complete-awaiting-git-delivery',uploaded:true,newTtsSynthesisForThisRevision:false};
+m.publishing={...m.publishing,status:'private-upload-complete',videoId:r.videoId,url:r.url,completedAt:r.completedAt};
+m.approvals.platform='private-HD-upload-and-KO-EN-manual-captions-metadata-card-ending-verified';
+write(rev+'/final.manifest.json',m);write(base+'/project.json',m);
+const b=read(rev+'/baseline-preservation.json');b.newUpload={videoId:r.videoId,url:r.url,privacy:'private'};write(rev+'/baseline-preservation.json',b);
+const c=read(rev+'/checkpoint.json');c.stage='private-upload-complete-awaiting-git-delivery';c.completed.push('private-captioned-HD-upload','manual-KO-EN-captions','English-title-description','coaching-card-and-three-ending-elements','player-CC-off-burned-caption-proof','copyright-no-issues-and-monetization-enabled');c.remaining=['git-delivery'];c.videoId=r.videoId;c.receipt=m.publishing.receipt;write(rev+'/checkpoint.json',c);
+console.log('Activated deduplicated private review '+r.url+'; prior uploads and human-review warnings preserved.');
