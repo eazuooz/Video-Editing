@@ -1,0 +1,10 @@
+const fs=require('fs'),path=require('path'),{execFileSync}=require('child_process');
+const W=__dirname,R=path.resolve(W,'../../../..'),rev='projects/blank-project-coding/revisions/deduplicated-v3';
+const git=args=>execFileSync('git',args,{cwd:R,windowsHide:true}).toString('utf8').trim();
+const sha=git(['rev-parse','HEAD']);if(git(['rev-parse','origin/main'])!==sha)throw Error('Push evidence missing.');
+const read=f=>JSON.parse(fs.readFileSync(path.join(R,f),'utf8')),write=(f,v)=>fs.writeFileSync(path.join(R,f),JSON.stringify(v,null,2)+'\n');
+const d={revision:'deduplicated-v3',commit:sha,subject:git(['log','-1','--format=%s']),branch:'main',remote:'origin',pushedAt:new Date().toISOString(),pushEvidence:'To https://github.com/eazuooz/Video-Editing.git; d81a652..77900d8 main -> main',scope:'Only duplicate-removal production sources, current manifest and QA/private-upload evidence; concurrent work preserved.',mediaPolicy:'No video, narration, music or media archives committed.',validation:rev+'/delivery-checks.json',videoId:'kClLWbhpojg',receipt:'projects/blank-project-coding/publishing/youtube-upload-deduplicated-v3.json'};
+write(rev+'/git-delivery.json',d);
+const c=read(rev+'/checkpoint.json');c.stage='complete-private-review-delivered';c.completed.push('scoped-commit-and-push');c.remaining=[];c.gitDelivery=rev+'/git-delivery.json';write(rev+'/checkpoint.json',c);
+const m=read(rev+'/final.manifest.json');m.production.currentStage='complete-private-review-delivered';m.production.gitDelivery=rev+'/git-delivery.json';write(rev+'/final.manifest.json',m);write('projects/blank-project-coding/project.json',m);
+console.log('Recorded verified push '+sha+'; private-review delivery complete.');
