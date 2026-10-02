@@ -1,5 +1,9 @@
 # 왜 남의 게임도 응원하게 될까?
 
+2026-10-03 완료본의 현재 계획은 `action-map.json`, `../production/final-v1/plan.json`, `../production/final-v1/final-source-cut-review.json`을 따른다. 본편은 기존 Ultimate Chicken Horse/Gang Beasts 실제 플레이45컷 361.733333초와 흰2.5D 설명241.15초이며 자체 게임 컷은0개다. 최종614.883333초, 고정한글/clean MP4와한영SRT를 수집하고 sXd1RrPlGos에 비공개로 전달했다. 원래29개 설명문단과PCM은 보존했다.
+
+**아래는 자체 경주를 포함했던 최초 계획의 역사적 기록이다. 최신 실제 게임 자료 방침으로 대체됐으며 실행하거나 최종 승인 근거로 쓰지 않는다.** Cloudpost 자료와 의존 대사는 최종 영상에서 모두 제외했다. 현재 컷·대사·검수·업로드·Git 증거는 프로젝트 README와 최신 receipt/queue를 우선한다.
+
 ## 독립적인 시청자 질문
 
 조작하지 않고 다른 사람의 경기를 볼 때, 누구를 왜 응원하며 어떤 행동을 따라갈지 어떻게 알게 만들까?
