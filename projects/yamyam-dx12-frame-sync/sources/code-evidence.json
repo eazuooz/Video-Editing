@@ -1,0 +1,150 @@
+{
+  "sourceHead": "845442b7d756e7a991c09799ab58a775803a006a",
+  "reviewType": "source-read-only-not-runtime-verification",
+  "excerpts": {
+    "Editor_Window/main.cpp:71-99": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/main.cpp",
+      "firstLine": 71,
+      "lastLine": 99,
+      "fileSha256": "cbc73270ea3badfa4223b49bb820d04f29fcff5ff6231910365883b7fb5853b8",
+      "excerptSha256": "a13946ea7312c1685a36a2546e69571c8cdad5563ff51050a19b936c343d92f7",
+      "excerpt": "#ifdef WITH_EDITOR\n            // Wait for GPU to finish with the current frame's resources BEFORE\n            // resetting the command allocator or recording any commands.\n            // This must come first in the frame loop.\n            application.WaitForNextFrameResources();\n#endif\n\t\t\t// 애플리케이션 로직\n            application.Run();\n\n#ifdef WITH_EDITOR\n            gui::EditorApplication::Run();\n#else\n            application.CloseCommandList();\n#endif\n            //Excute command list\n\t\t\tapplication.ExcuteCommandList();\n\n#ifdef WITH_EDITOR\n            gui::EditorApplication::UpdatePlatformWindows();\n#endif\n            // 화면에 그려준다.\n            application.Present();\n\n#ifdef WITH_EDITOR\n            application.SignalFrameCompletion();\n#else\n            application.MoveToNextFrame();\n#endif\n            application.EndOfFrame();"
+    },
+    "YamYamEngine_CORE/yaApplication.cpp:138-161": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaApplication.cpp",
+      "firstLine": 138,
+      "lastLine": 161,
+      "fileSha256": "83e3a6c03d86327f041ac142fe5c853860989c6331d9a989e37e06a23ade7b53",
+      "excerptSha256": "a29be001c1e85c74c6a9681d90cedff99afba07cfd19ba5a8249706fb2d62ec1",
+      "excerpt": "\tvoid Application::Render()\n\t{\n        GetDevice()->Resize(mWindow.GetWidth(), mWindow.GetHeight());\n        GetDevice()->ResetCommandAllocator();\n        GetDevice()->ResetCommandList();\n        renderer::BeginFrame();\n        GetDevice()->SetBaseGraphicsRootSignature();\n        GetDevice()->TranstionResourceBarrier(D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);\n        if (mEditorMode)\n            renderer::FrameBuffer->Bind();\n        else\n            GetDevice()->BindFrameBuffer();\n\n        Time::Render();\n        SceneManager::Render();\n        CollisionManager::Render();\n        UIManager::Render();\n\n        if (mEditorMode)\n        {\n            renderer::FrameBuffer->Unbind();\n            GetDevice()->BindFrameBuffer(true, false);\n        }\n\t}"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:597-601": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 597,
+      "lastLine": 601,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "40e273e83559b946f49baae2f56cfb45c52a202fba659716264b986f83624fab",
+      "excerpt": "\tvoid GraphicDevice_DX12::ExcuteCommandList()\n\t{\n\t\tID3D12CommandList* ppCommandLists[] = { mCommandList.Get() };\n\t\tmCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);\n\t}"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:655-663": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 655,
+      "lastLine": 663,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "205f431fd81c79f104588df64c0d6f8f3c8c2ee460f88678028a5430b487f5c2",
+      "excerpt": "\tvoid GraphicDevice_DX12::DrawIndexedInstanced(UINT IndexCountPerInstance,\n\t\tUINT InstanceCount,\n\t\tUINT StartIndexLocation,\n\t\tINT BaseVertexLocation,\n\t\tUINT StartInstanceLocation)\n\t{\n\t\tmCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);\n\t\tmCommandList->DrawIndexedInstanced(IndexCountPerInstance, InstanceCount, StartIndexLocation, BaseVertexLocation, StartInstanceLocation);\n\t}"
+    },
+    "Editor_Window/main.cpp:71-83": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/main.cpp",
+      "firstLine": 71,
+      "lastLine": 83,
+      "fileSha256": "cbc73270ea3badfa4223b49bb820d04f29fcff5ff6231910365883b7fb5853b8",
+      "excerptSha256": "cab8856c64211ae33093a739f3e763770ea61995ea60154224e767cf133b609c",
+      "excerpt": "#ifdef WITH_EDITOR\n            // Wait for GPU to finish with the current frame's resources BEFORE\n            // resetting the command allocator or recording any commands.\n            // This must come first in the frame loop.\n            application.WaitForNextFrameResources();\n#endif\n\t\t\t// 애플리케이션 로직\n            application.Run();\n\n#ifdef WITH_EDITOR\n            gui::EditorApplication::Run();\n#else\n            application.CloseCommandList();"
+    },
+    "YamYamEngine_CORE/yaApplication.cpp:138-143": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaApplication.cpp",
+      "firstLine": 138,
+      "lastLine": 143,
+      "fileSha256": "83e3a6c03d86327f041ac142fe5c853860989c6331d9a989e37e06a23ade7b53",
+      "excerptSha256": "5a068d3e8238cef1d368dae6fb40c55ee6a04c20f376710601350031f956d128",
+      "excerpt": "\tvoid Application::Render()\n\t{\n        GetDevice()->Resize(mWindow.GetWidth(), mWindow.GetHeight());\n        GetDevice()->ResetCommandAllocator();\n        GetDevice()->ResetCommandList();\n        renderer::BeginFrame();"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:609-631": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 609,
+      "lastLine": 631,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "33ce2277fbc8cdf1780ab2086816cae656ddcfa84d0bee7123a162c894fe5203",
+      "excerpt": "\tvoid GraphicDevice_DX12::CloseCommandList()\n\t{\n\t\t//Indicate that the back buffer will now be used to present.\n\t\t\tCD3DX12_RESOURCE_BARRIER resourceBarrierRT\n\t\t\t= CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[mFrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);\n\t\tmCommandList->ResourceBarrier(1, &resourceBarrierRT);\n\n\t\tif (FAILED(mCommandList->Close()))\n\t\t\tassert(NULL, \"mCommandList->Close()\");\n\t}\n\n\tvoid GraphicDevice_DX12::ResetCommandList()\n\t{\n\t\t// Reset the command list to prepare for recording new commands.\n\t\tif (FAILED(mCommandList->Reset(mFrameContext[mFrameIndex].CommandAllocator.Get(), mPipelineState.Get())))\n\t\t\tassert(NULL, \"mCommandList->Reset()\");\n\t}\n\n\tvoid GraphicDevice_DX12::ResetCommandAllocator()\n\t{\n\t\t// Reset the command allocator to prepare for recording new commands.\n\t\tif (FAILED(mFrameContext[mFrameIndex].CommandAllocator->Reset()))\n\t\t\tassert(NULL, \"mCommandAllocator->Reset()\");"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:504-535": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 504,
+      "lastLine": 535,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "89e1de08c3b89c0363db861fac18b7ab50ce29926cf90c2d06262f420b81eede",
+      "excerpt": "\tvoid GraphicDevice_DX12::WaitForGpu()\n\t{\n\t\t// Signal with the next monotonic fence value so the fence goes strictly upward.\n\t\tconst UINT64 fence = mFenceLastSignalValue + 1;\n\n\t\tif (FAILED(mCommandQueue->Signal(mFence.Get(), fence)))\n\t\t\tassert(NULL, \"CommandQueue Signal Failed!\");\n\n\t\tif (FAILED(mFence->SetEventOnCompletion(fence, mFenceEvent)))\n\t\t\tassert(NULL, \"SetEventOnCompletion Failed!\");\n\n\t\tWaitForSingleObjectEx(mFenceEvent, INFINITE, FALSE);\n\n\t\tmFenceLastSignalValue = fence;\n        CollectRetiredResources();\n\t}\n\n\t// 이 프레임 작업 제출 후 Signal만 보내고 즉시 리턴하는 함수입니다.\n\t// GPU가 작업을 끝내는 시점에 대한 신호만 보내고, CPU는 계속해서 다음 프레임 작업을 준비할 수 있습니다.\n\tvoid GraphicDevice_DX12::SignalFrameCompletion()\n\t{\n\t\tUINT64 fenceValue = mFenceLastSignalValue + 1;\n\t\tmCommandQueue->Signal(mFence.Get(), fenceValue);\n\t\tmFenceLastSignalValue = fenceValue;\n\n\t\t// Store fence on the frame context that was ACTUALLY used this frame.\n\t\t// mFrameIndex here is still the index that was used during recording.\n\t\tmFrameContext[mFrameIndex].FenceValue = fenceValue;\n        SealRetiredResources(fenceValue);\n\n\t\t// Advance to next back buffer AFTER storing the fence.\n\t\tmFrameIndex = mSwapChain->GetCurrentBackBufferIndex();"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.h:15-19": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.h",
+      "firstLine": 15,
+      "lastLine": 19,
+      "fileSha256": "97f1b8cd8a0bdb5be9db63da6939c522875ae68e33a7db32b7552573141d5724",
+      "excerptSha256": "6759bc6b791fb07ec975719a275077def74169d61c9c8249a237098b3727431e",
+      "excerpt": "\tstruct FrameContext\n\t{\n\t\tMicrosoft::WRL::ComPtr<ID3D12CommandAllocator> CommandAllocator;\n\t\tUINT64 FenceValue = 0;\n\t};"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:523-566": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 523,
+      "lastLine": 566,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "c3d0ae809f54a96ee6fdd5cc06441a940ba5f232eff41ecd323b84f79727b63d",
+      "excerpt": "\tvoid GraphicDevice_DX12::SignalFrameCompletion()\n\t{\n\t\tUINT64 fenceValue = mFenceLastSignalValue + 1;\n\t\tmCommandQueue->Signal(mFence.Get(), fenceValue);\n\t\tmFenceLastSignalValue = fenceValue;\n\n\t\t// Store fence on the frame context that was ACTUALLY used this frame.\n\t\t// mFrameIndex here is still the index that was used during recording.\n\t\tmFrameContext[mFrameIndex].FenceValue = fenceValue;\n        SealRetiredResources(fenceValue);\n\n\t\t// Advance to next back buffer AFTER storing the fence.\n\t\tmFrameIndex = mSwapChain->GetCurrentBackBufferIndex();\n\t}\n\n\t// Editor 경로 전용. 프레임 시작 직전, CommandAllocator를 Reset하기 전에 반드시 호출한다.\n\t// ① 스왑체인이 새 프레임을 받을 준비가 됐는지\n\t// ② 이 인덱스의 Allocator를 GPU가 다 사용했는지\n\t// 두 조건을 동시에 확인하고, 모두 충족될 때까지 CPU를 블록한다.\n\t// mFrameIndex는 SignalFrameCompletion()에서 이미 다음 프레임 인덱스로 설정돼 있으므로\n\t// 이 함수에서는 절대 변경하지 않는다. (변경 시 Allocator/RenderTarget 인덱스 불일치 발생)\n\tFrameContext* GraphicDevice_DX12::WaitForNextFrameResources()\n\t{\n\t\t// 기본값: 스왑체인 레이턴시 대기 핸들만 준비. fence 슬롯은 아직 nullptr.\n\t\tHANDLE waitableObjects[] = { mFrameLatencyEvent, nullptr };\n\t\tDWORD numWaitableObjects = 1;\n\n\t\t// mFrameIndex 기준으로 이번 프레임에 사용할 Allocator의 컨텍스트를 가져온다.\n\t\t// FenceValue는 이 Allocator가 마지막으로 GPU에 제출됐을 때 기록해둔 fence 값이다.\n\t\tFrameContext* frameCtx = &mFrameContext[mFrameIndex];\n\t\tUINT64 fenceValue = frameCtx->FenceValue;\n\t\tif (fenceValue != 0) // 0 = 이 Allocator는 아직 GPU에 제출된 적 없음 (첫 2프레임)\n\t\t{\n\t\t\tframeCtx->FenceValue = 0; // 확인 완료 표시. 다음에 이 컨텍스트가 돌아왔을 때 중복 대기 방지.\n\t\t\tmFence->SetEventOnCompletion(fenceValue, mFenceEvent); // GPU가 fenceValue에 도달하면 이벤트 신호\n\t\t\twaitableObjects[1] = mFenceEvent; // fence 대기를 두 번째 핸들로 추가\n\t\t\tnumWaitableObjects = 2;\n\t\t}\n\n\t\t// TRUE = 배열의 모든 핸들이 신호될 때까지 대기 (스왑체인 + fence 둘 다 충족해야 반환)\n\t\tWaitForMultipleObjects(numWaitableObjects, waitableObjects, TRUE, INFINITE);\n\n\t\tCollectRetiredResources();\n        return frameCtx;"
+    },
+    "Editor_Window/main.cpp:86-99": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/main.cpp",
+      "firstLine": 86,
+      "lastLine": 99,
+      "fileSha256": "cbc73270ea3badfa4223b49bb820d04f29fcff5ff6231910365883b7fb5853b8",
+      "excerptSha256": "b327dee307d659c7fe77f499231741bc21abe65c17c74e6338fe73a41cfe1490",
+      "excerpt": "\t\t\tapplication.ExcuteCommandList();\n\n#ifdef WITH_EDITOR\n            gui::EditorApplication::UpdatePlatformWindows();\n#endif\n            // 화면에 그려준다.\n            application.Present();\n\n#ifdef WITH_EDITOR\n            application.SignalFrameCompletion();\n#else\n            application.MoveToNextFrame();\n#endif\n            application.EndOfFrame();"
+    },
+    "Editor_Window/guiImguiEditor.cpp:141-174": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/guiImguiEditor.cpp",
+      "firstLine": 141,
+      "lastLine": 174,
+      "fileSha256": "839b4fd33e51cc7ab205a856d0fe283e4102b944d028f840d902d8c74192b646",
+      "excerptSha256": "91449e083da0b63fba4c609794e3b7e6987f51ea1cf60aba3fd5ffad9ca9c687",
+      "excerpt": "\tvoid ImguiEditor::End()\n\t{\n\t\tImGuiIO& io = ImGui::GetIO();\n\t\tio.DisplaySize = ImVec2((float)application.GetWindow().GetWidth()\n\t\t\t, (float)application.GetWindow().GetHeight());\n\n\t\tImGui::Render();\n\n\t\tya::graphics::GraphicDevice_DX12* graphicDevice = ya::graphics::GetDevice();\n\t\tMicrosoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList = graphicDevice->GetCommandList();\n\n        // SceneWindow rendered offscreen last. Restore the main RTV without\n        // clearing it again, and leave depth unbound for the ImGui PSO.\n        graphicDevice->BindFrameBuffer(false, false);\n\n        // Descriptor heap must be set before rendering ImGui\n\t\tMicrosoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap = graphicDevice->GetSrvHeap();\n\t\tcommandList->SetDescriptorHeaps(1, srvHeap.GetAddressOf());\n\t\tImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());\n\n\t\t// Transition RT → PRESENT.\n\t\t// Application::Render() already transitioned PRESENT → RT using mFrameIndex,\n\t\t// so we use the same index here to match.\n\t\tUINT backBufferIdx = graphicDevice->GetFrameIndex();\n\t\tD3D12_RESOURCE_BARRIER barrier = {};\n\t\tbarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;\n\t\tbarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;\n\t\tbarrier.Transition.pResource = graphicDevice->GetRenderTargetResource(backBufferIdx).Get();\n\t\tbarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;\n\t\tbarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;\n\t\tbarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;\n\t\tcommandList->ResourceBarrier(1, &barrier);\n\n\t\tcommandList->Close();"
+    },
+    "Editor_Window/guiImguiEditor.cpp:177-187": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/guiImguiEditor.cpp",
+      "firstLine": 177,
+      "lastLine": 187,
+      "fileSha256": "839b4fd33e51cc7ab205a856d0fe283e4102b944d028f840d902d8c74192b646",
+      "excerptSha256": "cad6a30d5eae02ced6189987bc6f24b2002e19a0dbe20b376217b8c4309837ca",
+      "excerpt": "\tvoid ImguiEditor::UpdatePlatformWindows()\n\t{\n\t\tImGuiIO& io = ImGui::GetIO();\n\t\t// Update and Render additional Platform Windows\n\t\tif (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)\n\t\t{\n\t\t\tImGui::UpdatePlatformWindows();\n\t\t\tImGui::RenderPlatformWindowsDefault();\n\t\t}\n\t}\n"
+    },
+    "Editor_Window/imgui_impl_dx12.cpp:1017-1024": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/imgui_impl_dx12.cpp",
+      "firstLine": 1017,
+      "lastLine": 1024,
+      "fileSha256": "3bad8fe7c88d247dcce1e6b475e40377ca31394ee6f78e588d75e6c30e7bcf08",
+      "excerptSha256": "d6d73cc212f5adc087ce993e2ed575b18c5d897ec800db152712efaf206a503a",
+      "excerpt": "\n    vd->FrameIndex = UINT_MAX;\n\n    // YamYam: use the engine queue so Scene/Game textures are produced before\n    // detached windows sample them, and the engine fence covers every consumer.\n    HRESULT res = S_OK;\n    vd->CommandQueue = bd->pCommandQueue;\n    vd->CommandQueue->AddRef();"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:544-566": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 544,
+      "lastLine": 566,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "81c03c0a235326929ae8291ab16441ca711909321291d5f5a55861b18b82ffdb",
+      "excerpt": "\tFrameContext* GraphicDevice_DX12::WaitForNextFrameResources()\n\t{\n\t\t// 기본값: 스왑체인 레이턴시 대기 핸들만 준비. fence 슬롯은 아직 nullptr.\n\t\tHANDLE waitableObjects[] = { mFrameLatencyEvent, nullptr };\n\t\tDWORD numWaitableObjects = 1;\n\n\t\t// mFrameIndex 기준으로 이번 프레임에 사용할 Allocator의 컨텍스트를 가져온다.\n\t\t// FenceValue는 이 Allocator가 마지막으로 GPU에 제출됐을 때 기록해둔 fence 값이다.\n\t\tFrameContext* frameCtx = &mFrameContext[mFrameIndex];\n\t\tUINT64 fenceValue = frameCtx->FenceValue;\n\t\tif (fenceValue != 0) // 0 = 이 Allocator는 아직 GPU에 제출된 적 없음 (첫 2프레임)\n\t\t{\n\t\t\tframeCtx->FenceValue = 0; // 확인 완료 표시. 다음에 이 컨텍스트가 돌아왔을 때 중복 대기 방지.\n\t\t\tmFence->SetEventOnCompletion(fenceValue, mFenceEvent); // GPU가 fenceValue에 도달하면 이벤트 신호\n\t\t\twaitableObjects[1] = mFenceEvent; // fence 대기를 두 번째 핸들로 추가\n\t\t\tnumWaitableObjects = 2;\n\t\t}\n\n\t\t// TRUE = 배열의 모든 핸들이 신호될 때까지 대기 (스왑체인 + fence 둘 다 충족해야 반환)\n\t\tWaitForMultipleObjects(numWaitableObjects, waitableObjects, TRUE, INFINITE);\n\n\t\tCollectRetiredResources();\n        return frameCtx;"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:504-519": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 504,
+      "lastLine": 519,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "00e038e51e29ef1de0621d8abda72785771f9fff26bc856770d7a6fa3e97c60b",
+      "excerpt": "\tvoid GraphicDevice_DX12::WaitForGpu()\n\t{\n\t\t// Signal with the next monotonic fence value so the fence goes strictly upward.\n\t\tconst UINT64 fence = mFenceLastSignalValue + 1;\n\n\t\tif (FAILED(mCommandQueue->Signal(mFence.Get(), fence)))\n\t\t\tassert(NULL, \"CommandQueue Signal Failed!\");\n\n\t\tif (FAILED(mFence->SetEventOnCompletion(fence, mFenceEvent)))\n\t\t\tassert(NULL, \"SetEventOnCompletion Failed!\");\n\n\t\tWaitForSingleObjectEx(mFenceEvent, INFINITE, FALSE);\n\n\t\tmFenceLastSignalValue = fence;\n        CollectRetiredResources();\n\t}"
+    },
+    "Tests/DX12RenderingSmoke.cpp:284-325": {
+      "path": "D:/Github/YamYam_Engine/Tests/DX12RenderingSmoke.cpp",
+      "firstLine": 284,
+      "lastLine": 325,
+      "fileSha256": "e00ef422031018691a81b1a59445fef350b655457f939597912fc09605d86b7d",
+      "excerptSha256": "3886ee69875275991dacd59914848a4c7c7f61280be3297f18d9adbf555bb5d0",
+      "excerpt": "            // per frame (crosses an upload page), and repeated RT replacement.\n            for (UINT frame = 0; frame < 8; ++frame)\n            {\n                frameSlots.insert(device.GetFrameIndex());\n                BeginFrame();\n                const UINT size = frame % 2 ? 80 : 64;\n                game.RequestResize(size, size);\n                scene.RequestResize(size, size);\n                game.RequestResize(0, 0); // Minimized/collapsed panels must not destroy the last valid target.\n                game.Bind();\n                Require(game.GetSpecification().Width == size, \"Pending RT resize was lost\");\n                Require(game.GetDisplaySRV().ptr != game.GetAttachmentTexture(0)->GetSRV().ptr,\n                    \"Display and original RGBA must have separate SRVs\");\n                std::set<D3D12_GPU_VIRTUAL_ADDRESS> addresses;\n                Texture& left = frame % 2 ? green : red;\n                Texture& right = frame % 2 ? red : green;\n                addresses.insert(Draw(left, -0.5f));\n                addresses.insert(Draw(right, 0.5f));\n                for (UINT draw = 0; draw < 300; ++draw)\n                    Require(addresses.insert(Draw(red, 3.0f)).second, \"Two draws share a constant-buffer address\");\n                game.Unbind();\n                scene.Bind();\n                Require(addresses.insert(Draw(left, -0.5f, 0.5f)).second, \"Two cameras share a constant-buffer address\");\n                scene.Unbind();\n                FrameResult result;\n                result.Game = CopyToReadback(game.GetAttachmentTexture(0));\n                result.Scene = CopyToReadback(scene.GetAttachmentTexture(0));\n                result.Reversed = frame % 2 != 0;\n                results.push_back(std::move(result));\n                SubmitFrame();\n            }\n            device.WaitForGpu();\n            for (const auto& result : results)\n            {\n                const UINT w = result.Game.Width, h = result.Game.Height;\n                const std::array<BYTE, 4> redPixel = {255, 0, 0, 255};\n                const std::array<BYTE, 4> greenPixel = {0, 255, 0, 255};\n                const auto expectedLeft = result.Reversed ? greenPixel : redPixel;\n                const auto expectedRight = result.Reversed ? redPixel : greenPixel;\n                Require(result.Game.Pixel(w/4, h/2) == expectedLeft, \"Game left draw was overwritten or not textured\");\n                Require(result.Game.Pixel(3*w/4, h/2) == expectedRight, \"Game right draw was overwritten or not textured\");\n                Require(result.Scene.Pixel(w/2, h/2) == expectedLeft, \"Scene camera output is incorrect\");"
+    },
+    "Tests/Run-DX12RenderingSmoke.ps1:1-27": {
+      "path": "D:/Github/YamYam_Engine/Tests/Run-DX12RenderingSmoke.ps1",
+      "firstLine": 1,
+      "lastLine": 27,
+      "fileSha256": "9c46b089a5d612e916cece015871998080e9e6602f509f55420dcf69d05f0960",
+      "excerptSha256": "eb8c0862aed839afb27920b2c912d555d87cc6b0a071b0ffaa4cdb70a82c6903",
+      "excerpt": "param(\n    [switch]$Hardware,\n    [switch]$SkipBuild\n)\n\n$ErrorActionPreference = 'Stop'\n$repository = Split-Path -Parent $PSScriptRoot\nPush-Location -LiteralPath $repository\ntry {\n    if (-not $SkipBuild) {\n        $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\\Installer\\vswhere.exe'\n        $msbuild = & $vswhere -latest -products '*' -requires Microsoft.Component.MSBuild -find 'MSBuild\\Current\\Bin\\MSBuild.exe' | Select-Object -First 1\n        if (-not $msbuild) { throw 'Visual Studio C++ build tools were not found.' }\n        & $msbuild YamYam_Engine.sln /m /p:Configuration=Debug /p:Platform=x64 /v:minimal /nologo\n        if ($LASTEXITCODE -ne 0) { throw 'Engine build failed.' }\n        & $msbuild Tests/DX12RenderingSmoke.vcxproj /p:Configuration=Debug /p:Platform=x64 /v:minimal /nologo\n        if ($LASTEXITCODE -ne 0) { throw 'Smoke-test build failed.' }\n    }\n    if ($Hardware) {\n        & .\\x64\\Debug\\DX12RenderingSmoke.exe --hardware\n    } else {\n        & .\\x64\\Debug\\DX12RenderingSmoke.exe\n    }\n    if ($LASTEXITCODE -ne 0) { throw 'DX12 rendering smoke test failed.' }\n} finally {\n    Pop-Location\n}"
+    }
+  }
+}

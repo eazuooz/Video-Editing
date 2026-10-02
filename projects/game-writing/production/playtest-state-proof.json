@@ -1,0 +1,1046 @@
+{
+  "generatedAt": "2026-10-02T07:28:39.686Z",
+  "kind": "technical narrative-state verification, not human enjoyment or comprehension review",
+  "passed": true,
+  "cases": 13,
+  "reachableFactStates": 4581,
+  "displayedOptionsChecked": 2930,
+  "results": [
+    {
+      "name": "reading does not share the rule",
+      "actions": [
+        "start-skip",
+        "read-note",
+        "talk-guard"
+      ],
+      "state": {
+        "started": true,
+        "introRead": false,
+        "noteKnown": true,
+        "sharedRule": false,
+        "sealOwner": null,
+        "companionPresent": true,
+        "route": null,
+        "rations": 1,
+        "minutes": 0,
+        "gateOpen": false,
+        "arrived": false,
+        "dialogue": {
+          "id": "guard.first",
+          "text": "항구에 오신 것을 환영합니다. 무슨 일로 오셨나요?",
+          "choices": [
+            [
+              "share-rule",
+              "게시판의 통행 규칙을 읽었어요."
+            ],
+            [
+              "ask-seal",
+              "증표를 어디서 가져오나요?"
+            ],
+            [
+              "close",
+              "대화를 마친다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "start-skip",
+            "accepted": true,
+            "lineId": "intro.skipped",
+            "changed": {}
+          },
+          {
+            "action": "read-note",
+            "accepted": true,
+            "lineId": "note.rule",
+            "changed": {
+              "noteKnown": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          }
+        ],
+        "lastLineId": "guard.first"
+      }
+    },
+    {
+      "name": "shared rule continues instead of introductory claim",
+      "actions": [
+        "read-note",
+        "talk-guard",
+        "share-rule",
+        "talk-guard"
+      ],
+      "state": {
+        "started": false,
+        "introRead": false,
+        "noteKnown": true,
+        "sharedRule": true,
+        "sealOwner": null,
+        "companionPresent": true,
+        "route": null,
+        "rations": 1,
+        "minutes": 0,
+        "gateOpen": false,
+        "arrived": false,
+        "dialogue": {
+          "id": "guard.rule-shared",
+          "text": "항구에 오신 것을 환영합니다. 통행 규칙은 이미 이야기했지요.",
+          "choices": [
+            [
+              "ask-seal",
+              "증표를 어디서 가져오나요?"
+            ],
+            [
+              "close",
+              "대화를 마친다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "read-note",
+            "accepted": true,
+            "lineId": "note.rule",
+            "changed": {
+              "noteKnown": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          },
+          {
+            "action": "share-rule",
+            "accepted": true,
+            "lineId": "guard.acknowledges",
+            "changed": {
+              "sharedRule": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.rule-shared",
+            "changed": {}
+          }
+        ],
+        "lastLineId": "guard.rule-shared"
+      }
+    },
+    {
+      "name": "unlearned knowledge cannot be reported",
+      "actions": [
+        "start-skip",
+        "share-rule"
+      ],
+      "state": {
+        "started": true,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": null,
+        "companionPresent": true,
+        "route": null,
+        "rations": 1,
+        "minutes": 0,
+        "gateOpen": false,
+        "arrived": false,
+        "dialogue": {
+          "id": "intro.skipped",
+          "text": "항구 마을에 도착했습니다.",
+          "choices": [
+            [
+              "close",
+              "둘러본다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "start-skip",
+            "accepted": true,
+            "lineId": "intro.skipped",
+            "changed": {}
+          },
+          {
+            "action": "share-rule",
+            "accepted": false,
+            "lineId": "intro.skipped"
+          }
+        ],
+        "lastLineId": "intro.skipped"
+      }
+    },
+    {
+      "name": "known introduction offers a short confirmation without inventing a board visit",
+      "actions": [
+        "start-read",
+        "close",
+        "talk-guard"
+      ],
+      "state": {
+        "started": true,
+        "introRead": true,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": null,
+        "companionPresent": true,
+        "route": null,
+        "rations": 1,
+        "minutes": 0,
+        "gateOpen": false,
+        "arrived": false,
+        "dialogue": {
+          "id": "guard.first",
+          "text": "항구에 오신 것을 환영합니다. 무슨 일로 오셨나요?",
+          "choices": [
+            [
+              "confirm-known-rule",
+              "관리인의 증표를 구하러 갈게요."
+            ],
+            [
+              "ask-seal",
+              "증표를 어디서 가져오나요?"
+            ],
+            [
+              "close",
+              "대화를 마친다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "start-read",
+            "accepted": true,
+            "lineId": "intro.read",
+            "changed": {
+              "introRead": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "close",
+            "accepted": true,
+            "lineId": "intro.read",
+            "changed": {}
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          }
+        ],
+        "lastLineId": "guard.first"
+      }
+    },
+    {
+      "name": "skipping introduction cannot confirm an unlearned rule",
+      "actions": [
+        "start-skip",
+        "confirm-known-rule"
+      ],
+      "state": {
+        "started": true,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": null,
+        "companionPresent": true,
+        "route": null,
+        "rations": 1,
+        "minutes": 0,
+        "gateOpen": false,
+        "arrived": false,
+        "dialogue": {
+          "id": "intro.skipped",
+          "text": "항구 마을에 도착했습니다.",
+          "choices": [
+            [
+              "close",
+              "둘러본다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "start-skip",
+            "accepted": true,
+            "lineId": "intro.skipped",
+            "changed": {}
+          },
+          {
+            "action": "confirm-known-rule",
+            "accepted": false,
+            "lineId": "intro.skipped"
+          }
+        ],
+        "lastLineId": "intro.skipped"
+      }
+    },
+    {
+      "name": "present companion may present its own seal",
+      "actions": [
+        "take-seal",
+        "give-companion",
+        "talk-guard",
+        "present-seal"
+      ],
+      "state": {
+        "started": false,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": "guard",
+        "companionPresent": true,
+        "route": null,
+        "rations": 1,
+        "minutes": 0,
+        "gateOpen": true,
+        "arrived": false,
+        "dialogue": {
+          "id": "guard.seal-accepted",
+          "text": "증표를 확인했습니다. 항구 문을 열겠습니다.",
+          "choices": [
+            [
+              "enter-harbor",
+              "항구에 들어간다."
+            ],
+            [
+              "close",
+              "대화를 마친다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "take-seal",
+            "accepted": true,
+            "lineId": "seal.acquired",
+            "changed": {
+              "sealOwner": {
+                "from": null,
+                "to": "player"
+              }
+            }
+          },
+          {
+            "action": "give-companion",
+            "accepted": true,
+            "lineId": "companion.holds",
+            "changed": {
+              "sealOwner": {
+                "from": "player",
+                "to": "companion"
+              }
+            }
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          },
+          {
+            "action": "present-seal",
+            "accepted": true,
+            "lineId": "guard.seal-accepted",
+            "changed": {
+              "sealOwner": {
+                "from": "companion",
+                "to": "guard"
+              },
+              "gateOpen": {
+                "from": false,
+                "to": true
+              }
+            }
+          }
+        ],
+        "lastLineId": "guard.seal-accepted"
+      }
+    },
+    {
+      "name": "absent owner cannot present; recovery restores access",
+      "actions": [
+        "take-seal",
+        "give-companion",
+        "rest-companion",
+        "talk-guard"
+      ],
+      "state": {
+        "started": false,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": "companion",
+        "companionPresent": false,
+        "route": null,
+        "rations": 1,
+        "minutes": 0,
+        "gateOpen": false,
+        "arrived": false,
+        "dialogue": {
+          "id": "guard.first",
+          "text": "항구에 오신 것을 환영합니다. 항구에는 관리인의 증표가 필요합니다.",
+          "choices": [
+            [
+              "ask-rule",
+              "무엇이 필요한가요?"
+            ],
+            [
+              "ask-seal",
+              "증표를 어디서 가져오나요?"
+            ],
+            [
+              "close",
+              "대화를 마친다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "take-seal",
+            "accepted": true,
+            "lineId": "seal.acquired",
+            "changed": {
+              "sealOwner": {
+                "from": null,
+                "to": "player"
+              }
+            }
+          },
+          {
+            "action": "give-companion",
+            "accepted": true,
+            "lineId": "companion.holds",
+            "changed": {
+              "sealOwner": {
+                "from": "player",
+                "to": "companion"
+              }
+            }
+          },
+          {
+            "action": "rest-companion",
+            "accepted": true,
+            "lineId": "companion.rests",
+            "changed": {
+              "companionPresent": {
+                "from": true,
+                "to": false
+              }
+            }
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          }
+        ],
+        "lastLineId": "guard.first"
+      }
+    },
+    {
+      "name": "branch feed rejoins without resetting consequences",
+      "actions": [
+        "road",
+        "feed",
+        "take-seal",
+        "talk-guard",
+        "present-seal",
+        "enter-harbor"
+      ],
+      "state": {
+        "started": false,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": "guard",
+        "companionPresent": true,
+        "route": "feed",
+        "rations": 0,
+        "minutes": 1,
+        "gateOpen": true,
+        "arrived": true,
+        "dialogue": {
+          "id": "harbor.arrived",
+          "text": "항구에 들어왔습니다. 지나온 선택은 기록에 남습니다.",
+          "choices": [
+            [
+              "close",
+              "마을을 돌아본다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "road",
+            "accepted": true,
+            "lineId": "road.choice",
+            "changed": {}
+          },
+          {
+            "action": "feed",
+            "accepted": true,
+            "lineId": "road.fed",
+            "changed": {
+              "route": {
+                "from": null,
+                "to": "feed"
+              },
+              "rations": {
+                "from": 1,
+                "to": 0
+              },
+              "minutes": {
+                "from": 0,
+                "to": 1
+              }
+            }
+          },
+          {
+            "action": "take-seal",
+            "accepted": true,
+            "lineId": "seal.acquired",
+            "changed": {
+              "sealOwner": {
+                "from": null,
+                "to": "player"
+              }
+            }
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          },
+          {
+            "action": "present-seal",
+            "accepted": true,
+            "lineId": "guard.seal-accepted",
+            "changed": {
+              "sealOwner": {
+                "from": "player",
+                "to": "guard"
+              },
+              "gateOpen": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "enter-harbor",
+            "accepted": true,
+            "lineId": "harbor.arrived",
+            "changed": {
+              "arrived": {
+                "from": false,
+                "to": true
+              }
+            }
+          }
+        ],
+        "lastLineId": "harbor.arrived"
+      }
+    },
+    {
+      "name": "branch detour rejoins without resetting consequences",
+      "actions": [
+        "road",
+        "detour",
+        "take-seal",
+        "talk-guard",
+        "present-seal",
+        "enter-harbor"
+      ],
+      "state": {
+        "started": false,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": "guard",
+        "companionPresent": true,
+        "route": "detour",
+        "rations": 1,
+        "minutes": 3,
+        "gateOpen": true,
+        "arrived": true,
+        "dialogue": {
+          "id": "harbor.arrived",
+          "text": "항구에 들어왔습니다. 지나온 선택은 기록에 남습니다.",
+          "choices": [
+            [
+              "close",
+              "마을을 돌아본다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "road",
+            "accepted": true,
+            "lineId": "road.choice",
+            "changed": {}
+          },
+          {
+            "action": "detour",
+            "accepted": true,
+            "lineId": "road.detoured",
+            "changed": {
+              "route": {
+                "from": null,
+                "to": "detour"
+              },
+              "minutes": {
+                "from": 0,
+                "to": 3
+              }
+            }
+          },
+          {
+            "action": "take-seal",
+            "accepted": true,
+            "lineId": "seal.acquired",
+            "changed": {
+              "sealOwner": {
+                "from": null,
+                "to": "player"
+              }
+            }
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          },
+          {
+            "action": "present-seal",
+            "accepted": true,
+            "lineId": "guard.seal-accepted",
+            "changed": {
+              "sealOwner": {
+                "from": "player",
+                "to": "guard"
+              },
+              "gateOpen": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "enter-harbor",
+            "accepted": true,
+            "lineId": "harbor.arrived",
+            "changed": {
+              "arrived": {
+                "from": false,
+                "to": true
+              }
+            }
+          }
+        ],
+        "lastLineId": "harbor.arrived"
+      }
+    },
+    {
+      "name": "branch drive rejoins without resetting consequences",
+      "actions": [
+        "road",
+        "drive",
+        "take-seal",
+        "talk-guard",
+        "present-seal",
+        "enter-harbor"
+      ],
+      "state": {
+        "started": false,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": "guard",
+        "companionPresent": true,
+        "route": "drive",
+        "rations": 1,
+        "minutes": 1,
+        "gateOpen": true,
+        "arrived": true,
+        "dialogue": {
+          "id": "harbor.arrived",
+          "text": "항구에 들어왔습니다. 지나온 선택은 기록에 남습니다.",
+          "choices": [
+            [
+              "close",
+              "마을을 돌아본다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "road",
+            "accepted": true,
+            "lineId": "road.choice",
+            "changed": {}
+          },
+          {
+            "action": "drive",
+            "accepted": true,
+            "lineId": "road.driven",
+            "changed": {
+              "route": {
+                "from": null,
+                "to": "drive"
+              },
+              "minutes": {
+                "from": 0,
+                "to": 1
+              }
+            }
+          },
+          {
+            "action": "take-seal",
+            "accepted": true,
+            "lineId": "seal.acquired",
+            "changed": {
+              "sealOwner": {
+                "from": null,
+                "to": "player"
+              }
+            }
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          },
+          {
+            "action": "present-seal",
+            "accepted": true,
+            "lineId": "guard.seal-accepted",
+            "changed": {
+              "sealOwner": {
+                "from": "player",
+                "to": "guard"
+              },
+              "gateOpen": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "enter-harbor",
+            "accepted": true,
+            "lineId": "harbor.arrived",
+            "changed": {
+              "arrived": {
+                "from": false,
+                "to": true
+              }
+            }
+          }
+        ],
+        "lastLineId": "harbor.arrived"
+      }
+    },
+    {
+      "name": "skip path exposes a recoverable essential fact",
+      "actions": [
+        "start-skip",
+        "talk-guard"
+      ],
+      "state": {
+        "started": true,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": null,
+        "companionPresent": true,
+        "route": null,
+        "rations": 1,
+        "minutes": 0,
+        "gateOpen": false,
+        "arrived": false,
+        "dialogue": {
+          "id": "guard.first",
+          "text": "항구에 오신 것을 환영합니다. 항구에는 관리인의 증표가 필요합니다.",
+          "choices": [
+            [
+              "ask-rule",
+              "무엇이 필요한가요?"
+            ],
+            [
+              "ask-seal",
+              "증표를 어디서 가져오나요?"
+            ],
+            [
+              "close",
+              "대화를 마친다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "start-skip",
+            "accepted": true,
+            "lineId": "intro.skipped",
+            "changed": {}
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          }
+        ],
+        "lastLineId": "guard.first"
+      }
+    },
+    {
+      "name": "expected-order path completes",
+      "actions": [
+        "start-read",
+        "close",
+        "read-note",
+        "close",
+        "take-seal",
+        "close",
+        "road",
+        "feed",
+        "close",
+        "talk-guard",
+        "present-seal",
+        "enter-harbor"
+      ],
+      "state": {
+        "started": true,
+        "introRead": true,
+        "noteKnown": true,
+        "sharedRule": false,
+        "sealOwner": "guard",
+        "companionPresent": true,
+        "route": "feed",
+        "rations": 0,
+        "minutes": 1,
+        "gateOpen": true,
+        "arrived": true,
+        "dialogue": {
+          "id": "harbor.arrived",
+          "text": "항구에 들어왔습니다. 지나온 선택은 기록에 남습니다.",
+          "choices": [
+            [
+              "close",
+              "마을을 돌아본다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "start-read",
+            "accepted": true,
+            "lineId": "intro.read",
+            "changed": {
+              "introRead": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "close",
+            "accepted": true,
+            "lineId": "intro.read",
+            "changed": {}
+          },
+          {
+            "action": "read-note",
+            "accepted": true,
+            "lineId": "note.rule",
+            "changed": {
+              "noteKnown": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "close",
+            "accepted": true,
+            "lineId": "note.rule",
+            "changed": {}
+          },
+          {
+            "action": "take-seal",
+            "accepted": true,
+            "lineId": "seal.acquired",
+            "changed": {
+              "sealOwner": {
+                "from": null,
+                "to": "player"
+              }
+            }
+          },
+          {
+            "action": "close",
+            "accepted": true,
+            "lineId": "seal.acquired",
+            "changed": {}
+          },
+          {
+            "action": "road",
+            "accepted": true,
+            "lineId": "road.choice",
+            "changed": {}
+          },
+          {
+            "action": "feed",
+            "accepted": true,
+            "lineId": "road.fed",
+            "changed": {
+              "route": {
+                "from": null,
+                "to": "feed"
+              },
+              "rations": {
+                "from": 1,
+                "to": 0
+              },
+              "minutes": {
+                "from": 0,
+                "to": 1
+              }
+            }
+          },
+          {
+            "action": "close",
+            "accepted": true,
+            "lineId": "road.fed",
+            "changed": {}
+          },
+          {
+            "action": "talk-guard",
+            "accepted": true,
+            "lineId": "guard.first",
+            "changed": {}
+          },
+          {
+            "action": "present-seal",
+            "accepted": true,
+            "lineId": "guard.seal-accepted",
+            "changed": {
+              "sealOwner": {
+                "from": "player",
+                "to": "guard"
+              },
+              "gateOpen": {
+                "from": false,
+                "to": true
+              }
+            }
+          },
+          {
+            "action": "enter-harbor",
+            "accepted": true,
+            "lineId": "harbor.arrived",
+            "changed": {
+              "arrived": {
+                "from": false,
+                "to": true
+              }
+            }
+          }
+        ],
+        "lastLineId": "harbor.arrived"
+      }
+    },
+    {
+      "name": "cannot replay an encounter to overwrite its past",
+      "actions": [
+        "road",
+        "feed",
+        "detour"
+      ],
+      "state": {
+        "started": false,
+        "introRead": false,
+        "noteKnown": false,
+        "sharedRule": false,
+        "sealOwner": null,
+        "companionPresent": true,
+        "route": "feed",
+        "rations": 0,
+        "minutes": 1,
+        "gateOpen": false,
+        "arrived": false,
+        "dialogue": {
+          "id": "road.fed",
+          "text": "먹이를 받아 든 동물이 비켜났습니다. 식량 하나를 사용했습니다.",
+          "choices": [
+            [
+              "close",
+              "항구로 간다."
+            ]
+          ]
+        },
+        "events": [
+          {
+            "action": "road",
+            "accepted": true,
+            "lineId": "road.choice",
+            "changed": {}
+          },
+          {
+            "action": "feed",
+            "accepted": true,
+            "lineId": "road.fed",
+            "changed": {
+              "route": {
+                "from": null,
+                "to": "feed"
+              },
+              "rations": {
+                "from": 1,
+                "to": 0
+              },
+              "minutes": {
+                "from": 0,
+                "to": 1
+              }
+            }
+          },
+          {
+            "action": "detour",
+            "accepted": false,
+            "lineId": "road.fed"
+          }
+        ],
+        "lastLineId": "road.fed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),queuePath=path.join(root,'production/batches/sakurai-planning-game-design/queue.json');
+const q=JSON.parse(fs.readFileSync(queuePath,'utf8')),i=q.items.find(x=>x.slug==='game-writing');
+if(i.execution?.pid!==46172)throw Error('Original pre-reboot checkpoint helper is obsolete. Read current queue/runtime and preserve the actual new session IDs.');
+if(!['waiting-for-free-gpu','tts-running','cpu-asr-running','tts-asr-ready-for-direct-review'].includes(i.stage))throw Error('This preparation-only checkpoint must not overwrite a later production stage.');
+i.execution.toolSessionId=67834;
+i.preparation.vite={sessionId:26486,pid:54652,port:9210,checkProcessBeforeReuse:true};
+i.preparation.visualDraft={sessionId:80711,state:'finished',exitCode:0,report:'projects/game-writing/production/lookdev-render-result-v3.json',finalVideo:false,nativeVisualReview:'projects/game-writing/production/lookdev-visual-review.json',nativeSamples:12,draftReviewPassed:true,finalCaptionQaPassed:false};
+i.preparation.finishedCpuSessions=[{sessionId:36635,kind:'coarse source sampling',restart:false},{sessionId:72844,kind:'native source inspection sampling',restart:false},{sessionId:56597,kind:'source full decode',exitCode:0,restart:false},{sessionId:36109,kind:'own UI input proof',exitCode:0,restart:false},{sessionId:83748,kind:'first explanation draft',exitCode:0,restart:false},{sessionId:48831,kind:'corrected explanation draft',exitCode:0,restart:false}];
+i.preparation.finishedCpuSessions.push({sessionId:80711,kind:'third corrected explanation draft',exitCode:0,restart:false});
+i.preparation.nextVisualAction='Current-hash narration direct review, then fresh actual-input capture and selected native cuts; all final cue/cut QA still pending.';
+i.preparation.publishingDraft={path:'projects/game-writing/publishing/metadata-draft.json',chapters:'pending-measured-timeline',appliedToPlatform:false};
+i.preparation.captionPlacementPlan='projects/game-writing/planning/caption-placement.json';
+i.updatedAt=new Date().toISOString();q.updatedAt=i.updatedAt;fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
+console.log('Live resource runner session 67834/PID46172 saved; completed CPU sessions must not be restarted.');

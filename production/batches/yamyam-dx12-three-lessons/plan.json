@@ -1,0 +1,831 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-01",
+  "status": "script-review",
+  "sourceRepository": "D:/Github/YamYam_Engine",
+  "sourceHead": "845442b7d756e7a991c09799ab58a775803a006a",
+  "scope": "three full Korean scripts and 2.5D storyboards only",
+  "videos": [
+    {
+      "slug": "yamyam-dx12-frame-sync",
+      "order": 1,
+      "titleEn": "DX12 Frame Synchronization and ImGui Rendering",
+      "pageId": "3400b1ff-a61e-8054-a80b-c1d4b575b515",
+      "takeaway": "재사용할 공간의 이전 GPU 사용이 끝났는지 먼저 확인한다.",
+      "relatedCommits": [
+        "7ac7ef2",
+        "49e04e5",
+        "ce56f16",
+        "845442b"
+      ],
+      "diagrams": "CPU/GPU 시간 축, 두 FrameContext 슬롯, 사용한 슬롯과 다음 백버퍼, 추가 OS 창의 마지막 소비",
+      "scenes": [
+        {
+          "id": "01",
+          "developmentWeight": 1.35,
+          "refs": [
+            [
+              "Editor_Window/main.cpp",
+              71,
+              99
+            ],
+            [
+              "YamYamEngine_CORE/yaApplication.cpp",
+              138,
+              161
+            ]
+          ],
+          "footage": "현재 main.cpp와 Application::Render를 실제 편집기에서 열고 Wait→Reset 위치를 짚는다. 기존 Scene/Game 캡처는 당시 개발 화면으로 3초 이하 참고하고, 깜박임은 재현 확보 전 실제 버그 전후 영상처럼 표시하지 않는다.",
+          "explanation": "흰 바닥 위에 두께가 있는 CPU 작업판과 GPU 작업판을 비스듬히 배치한다. CPU의 제출 도장이 먼저 찍히지만 GPU의 실행 막대는 아직 이동 중이다. '보냄'과 '끝남'의 간격을 카메라가 옆으로 이동하며 보여준다.",
+          "cues": [
+            "1~3행: 실제 코드와 엔진 참고 화면",
+            "4~7행: CPU/GPU 판의 시간 차이를 애니메이션으로 보여준다"
+          ],
+          "label": "제출 ≠ 완료"
+        },
+        {
+          "id": "02",
+          "developmentWeight": 0.9,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              597,
+              601
+            ],
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              655,
+              663
+            ]
+          ],
+          "footage": "DrawIndexedInstanced에서 ExcuteCommandList로 실제 정의 이동. 각 호출이 기록인지 제출인지 한 줄씩 강조한다. 실행 녹화 때는 실제 호출 스택/브레이크포인트만 사용하고 GPU 실행 중이라는 가짜 debugger 값은 만들지 않는다.",
+          "explanation": "명령 카드가 공중의 '기록' 층에서 'Queue 제출' 레일로 내려가고 GPU 실행 기계로 이동한다. 각 단계의 수직 높이를 달리한다. CPU 커서는 다음 카드로 먼저 이동하고 GPU는 앞 카드를 처리해 시간 차이를 보여준다.",
+          "cues": [
+            "1~5행: 실제 함수 추적→명령 카드 이동",
+            "6~9행: 제출 후 GPU 사용이 남는 도식"
+          ],
+          "label": "기록 → 제출 → 실행 완료"
+        },
+        {
+          "id": "03",
+          "developmentWeight": 1,
+          "refs": [
+            [
+              "Editor_Window/main.cpp",
+              71,
+              83
+            ],
+            [
+              "YamYamEngine_CORE/yaApplication.cpp",
+              138,
+              143
+            ],
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              609,
+              631
+            ]
+          ],
+          "footage": "main→Run→Render→ResetCommandAllocator의 정의를 순서대로 탐색하고 CloseCommandList도 별도 탭으로 확인. 수정 전 Reset→Wait 도식은 역사적 설명용으로만 표시한다.",
+          "explanation": "Allocator 명령 공간을 두께가 있는 종이 블록으로 만들고 GPU 독서 바늘이 지나간다. 왼쪽은 독서 중 덮어쓰기 붉은 충돌, 오른쪽은 완료 잠금 해제 후 새 명령 기록. Close는 종이 끝에 기록 종료 탭만 붙이고 완료 체크는 만들지 않는다.",
+          "cues": [
+            "1~4행: 읽는 명령 공간과 잘못된 덮어쓰기",
+            "5~9행: 실제 Wait→Reset 경로와 Close의 별도 의미"
+          ],
+          "label": "Wait 성공 → Allocator Reset"
+        },
+        {
+          "id": "04",
+          "developmentWeight": 0.8,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              504,
+              535
+            ]
+          ],
+          "footage": "Signal 호출과 SetEventOnCompletion을 서로 다른 색으로 추적. mFenceLastSignalValue+1과 완료 조회 위치를 찾는다. 숫자 10/11/12는 설명용 예시이며 실측 로그처럼 합성하지 않는다.",
+          "explanation": "Queue 레일의 작업 뒤에 '10' 완료 표식을 세운다. CPU Signal 순간에는 회색 예약 상태이고 GPU 바늘이 그 지점을 통과해야 파란 완료 상태로 변한다. 다른 높이의 CPU 조회창에 completed=10이 나타난다.",
+          "cues": [
+            "1~6행: 예약 표식과 실제 완료를 단계적으로 비교",
+            "7~10행: 단조 증가 숫자와 이벤트 대기"
+          ],
+          "label": "Signal은 완료 지점 예약"
+        },
+        {
+          "id": "05",
+          "developmentWeight": 0.8,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.h",
+              15,
+              19
+            ],
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              523,
+              566
+            ]
+          ],
+          "footage": "FrameContext 선언과 슬롯 FenceValue 저장/조회 정의를 번갈아 보여준다. 녹화 시 브레이크포인트가 GPU 진행을 바꾸므로 시간 측정 결과로 사용하지 않는다.",
+          "explanation": "프레임 슬롯0/1을 두께가 있는 서랍으로, 백버퍼0/1을 별도의 이미지 판으로 배치한다. 슬롯0 기준10, 슬롯1 기준11, 완료9에서 슬롯0 잠김. 완료10으로 이동하면 슬롯0만 열리고 슬롯1은 잠긴 채다. CPU/GPU 시간 막대가 다른 높이에서 겹친다.",
+          "cues": [
+            "1~5행: 슬롯별 기준과 9→10의 변화",
+            "6~10행: 명령 서랍/이미지 판 차이 및 작업 겹침"
+          ],
+          "label": "지금 재사용할 슬롯의 이전 Fence만 확인"
+        },
+        {
+          "id": "06",
+          "developmentWeight": 1.4,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              523,
+              566
+            ],
+            [
+              "Editor_Window/main.cpp",
+              86,
+              99
+            ]
+          ],
+          "footage": "SignalFrameCompletion의 두 줄을 531→535 순으로 강조하고 WaitForNextFrameResources에는 인덱스 증가가 없음을 실제 코드에서 찾는다.",
+          "explanation": "현재 슬롯0 카드의 뒷면에 Fence10 도장을 찍은 뒤 선택 화살표가 슬롯1로 이동한다. 반례에서는 화살표를 먼저 움직여 Fence10이 엉뚱한 카드에 찍힌다. 양쪽을 나란히 비교하고 틀린 번호 연결만 붉게 강조한다.",
+          "cues": [
+            "1~6행: 현재 슬롯 저장의 올바른 순서/반례",
+            "7~10행: 실제 함수와 다음 인덱스 조회"
+          ],
+          "label": "사용한 슬롯 저장 → 다음 인덱스 조회"
+        },
+        {
+          "id": "07",
+          "developmentWeight": 1.35,
+          "refs": [
+            [
+              "Editor_Window/main.cpp",
+              71,
+              99
+            ],
+            [
+              "Editor_Window/guiImguiEditor.cpp",
+              141,
+              174
+            ]
+          ],
+          "footage": "WITH_EDITOR 양쪽 분기와 ImguiEditor::End의 백버퍼 복원→heap→RenderDrawData→barrier→Close를 정의 이동으로 보여준다. 공유 함수로의 리팩토링은 실제 구현으로 말하지 않는다.",
+          "explanation": "Game-only와 Editor 두 레일을 깊이 방향으로 나눈다. 게임 명령 카드 뒤 Editor 레일에 UI 카드가 더해지고 그 다음 Close 뚜껑을 닫는다. Scene RT 판에서 메인 백버퍼 판으로 출력 화살표를 되돌리는 동작도 표시한다.",
+          "cues": [
+            "1~4행: 두 경로에서 마지막 Close 책임",
+            "5~10행: 실제 백버퍼 복원과 대기 위치 비교"
+          ],
+          "label": "마지막 Draw 기록 뒤 Close"
+        },
+        {
+          "id": "08",
+          "developmentWeight": 1.2,
+          "refs": [
+            [
+              "Editor_Window/main.cpp",
+              86,
+              99
+            ],
+            [
+              "Editor_Window/guiImguiEditor.cpp",
+              177,
+              187
+            ],
+            [
+              "Editor_Window/imgui_impl_dx12.cpp",
+              1017,
+              1024
+            ]
+          ],
+          "footage": "동일 queue를 연결하는 실제 backend 수정과 main의 UpdatePlatformWindows→Present→Signal을 추적. 새 녹화에서는 Game 탭의 도킹→분리→복귀를 촬영하되 성공 상태는 실제 실행 이후 기록한다.",
+          "explanation": "메인 창과 분리 OS 창을 흰 바닥 위에서 서로 다른 z층으로 놓고 두 창에서 동일 텍스처를 읽는 화살표를 같은 Queue 레일로 연결한다. 마지막 소비 카드 뒤에만 최종 Fence 표식을 놓는다. 도킹 탭과 별도 창을 움직임으로 구분한다.",
+          "cues": [
+            "1~4행: 두 창의 리소스 소비와 공유 Queue",
+            "5~9행: 잘못된 조기 Signal vs 모든 소비 뒤 Signal"
+          ],
+          "label": "최종 Fence는 추가 창 소비까지 포함"
+        },
+        {
+          "id": "09",
+          "developmentWeight": 0.9,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              544,
+              566
+            ],
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              504,
+              519
+            ]
+          ],
+          "footage": "waitableObjects 두 원소와 WaitForMultipleObjects의 TRUE를 짚고 WaitForGpu의 Signal 위치를 비교한다. 실제 OS 이벤트 동작을 가짜 애니메이션 로그로 제시하지 않는다.",
+          "explanation": "명령 재사용 문과 표시 진행 문을 깊이가 다른 두 개의 문으로 만든다. Fence 문만 열리면 프레임 시작 카드가 아직 기다리고, 두 조건 모두 열려야 앞으로 간다. 마지막에는 제출된 레일과 아직 기록만 된 카드 더미를 분리해 WaitForGpu의 범위를 표시한다.",
+          "cues": [
+            "1~5행: 서로 다른 두 대기 조건",
+            "6~9행: Present와 Fence, 전체 Queue 대기의 범위"
+          ],
+          "label": "메모리 재사용 조건 + 표시 지연 조건"
+        },
+        {
+          "id": "10",
+          "developmentWeight": 1.3,
+          "refs": [
+            [
+              "Tests/DX12RenderingSmoke.cpp",
+              284,
+              325
+            ],
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              523,
+              566
+            ],
+            [
+              "Tests/Run-DX12RenderingSmoke.ps1",
+              1,
+              27
+            ]
+          ],
+          "footage": "실제 smoke test의 프레임 반복/슬롯 확인 코드와 대기 반환값 미검사 부분을 보여준다. PASS 콘솔은 새 실행 로그를 확보한 경우만 촬영한다. 별도 창 조작은 수동 검수 목록에 둔다.",
+          "explanation": "앞 장의 두 슬롯과 Queue를 하나의 작은 2.5D 구조로 합친다. '완료 확인'→'기록'→'모든 소비 제출'→'사용한 슬롯 저장'이 차례로 켜진다. 마지막 이미지 판이 다음 편의 Game RT로 이동하며 연결한다.",
+          "cues": [
+            "1~5행: 직접 구현할 단계와 추적 값",
+            "6~9행: 테스트 범위/실패 처리/다음 편 연결"
+          ],
+          "label": "재사용 전에 이전 사용 완료 확인"
+        }
+      ]
+    },
+    {
+      "slug": "yamyam-dx12-texture-views",
+      "order": 2,
+      "titleEn": "Building Scene and Game Views with DX12 Textures and Render Targets",
+      "pageId": "3dc0b1ff-a61e-814e-9e8b-d403ca145ebe",
+      "takeaway": "같은 장면을 다른 카메라와 타깃으로 그리고 GPU SRV로 표시한다.",
+      "relatedCommits": [
+        "49e04e5",
+        "ce56f16",
+        "845442b"
+      ],
+      "diagrams": "Texture/RTV/SRV 역할, Upload→Default 경로, 두 카메라 투영, Draw별 256바이트 슬롯, Game/Scene 리사이즈 시점",
+      "scenes": [
+        {
+          "id": "01",
+          "developmentWeight": 1.25,
+          "refs": [
+            [
+              "Editor_Window/guiSceneWindow.cpp",
+              34,
+              49
+            ],
+            [
+              "Editor_Window/guiEditorApplication.cpp",
+              339,
+              351
+            ]
+          ],
+          "footage": "2026-09-15 Scene/Game 기존 캡처를 자료로 확인하고 두 패널의 카메라/타깃 참조 코드를 연다. 새 런타임 촬영은 Scene 카메라만 이동하는 동작을 목표로 한다.",
+          "explanation": "흰 2.5D 장면의 동일 물체 하나를 두 카메라가 바라본다. 파란 시선은 Game 이미지 판으로, 회색 시선은 Scene 이미지 판으로 내려간다. 카메라 이동 때 Scene 판의 구도만 변하는 의미 있는 비교를 한다.",
+          "cues": [
+            "1~4행: 두 패널의 사용 목적",
+            "5~7행: 같은 장면→두 카메라→두 그림"
+          ],
+          "label": "장면 데이터는 하나, 카메라 결과는 둘"
+        },
+        {
+          "id": "02",
+          "developmentWeight": 0.95,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaApplication.cpp",
+              138,
+              161
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderer.cpp",
+              301,
+              309
+            ],
+            [
+              "Editor_Window/guiSceneWindow.cpp",
+              90,
+              99
+            ]
+          ],
+          "footage": "Application::Render의 editorMode 분기, Game FrameBuffer, Scene camera RT 코드를 각각 따라간다. 카메라마다 RT라는 잘못된 표시를 넣지 않는다.",
+          "explanation": "Game/Scene 컬러판과 각각 뒤에 겹친 깊이판을 비스듬히 배치한다. 같은 오브젝트에서 두 경로를 따라 이미지가 만들어진 뒤, 앞쪽 에디터 백버퍼 판으로 두 이미지가 이동해 배치된다. 패널 이동은 이미지 판의 위치만 바꾸는 것으로 표현한다.",
+          "cues": [
+            "1~5행: offscreen 결과를 UI로 배치",
+            "6~9행: 동일 데이터와 현재 뷰 단위 분리"
+          ],
+          "label": "카메라 → 컬러/깊이 RT → ImGui → 백버퍼"
+        },
+        {
+          "id": "03",
+          "developmentWeight": 1.3,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaTexture.cpp",
+              20,
+              49
+            ],
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              742,
+              765
+            ]
+          ],
+          "footage": "Load의 파일 분기→mip0→RGBA8→UploadTexture와 UpdateSubresources를 탐색. 새 자료는 직접 만든 단색/체커 이미지를 로드하는 경로를 사용하고 기존 타사 스프라이트는 권리 확인 전 게시 컷에서 제외한다.",
+          "explanation": "파일 카드→CPU 픽셀 타일→패딩이 있는 Upload 행→Default 텍스처 판을 서로 다른 깊이로 이동시킨다. 한 행 끝에 패딩 블록을 덧붙여 원본 rowPitch와 복사용 행 간격 차이를 시각화한다. COPY_DEST 표지가 읽기 상태 표지로 바뀐다.",
+          "cues": [
+            "1~5행: 파일에서 GPU 텍스처까지 이동",
+            "6~10행: 행 간격/상태 전환/동기식 완료"
+          ],
+          "label": "파일을 읽는 것과 GPU 텍스처 업로드는 다르다"
+        },
+        {
+          "id": "04",
+          "developmentWeight": 0.85,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaTexture.cpp",
+              79,
+              125
+            ],
+            [
+              "YamYamEngine_CORE/yaDescriptorAllocator.h",
+              18,
+              45
+            ]
+          ],
+          "footage": "CreateSRV/CreateRTV/CreateDSV 실제 호출과 CPU/GPU handle 계산을 짚는다. ImGui::Image에 넘기는 값은 다음 실제 패널 코드로 이어서 확인한다.",
+          "explanation": "픽셀 텍스처 판은 하나만 두고 두께가 있는 '쓰기 RTV'와 '읽기 SRV' 표찰을 앞뒤에 연결한다. 깊이판에는 DSV 표찰. 슬롯 서랍의 같은 번호에 CPU 작성 손잡이/GPU 참조 화살표 두 개를 달아 복사본 두 장이 아님을 보여준다.",
+          "cues": [
+            "1~5행: Resource와 여러 view의 역할",
+            "6~9행: heap 슬롯과 두 handle"
+          ],
+          "label": "리소스는 데이터, descriptor는 사용 방법"
+        },
+        {
+          "id": "05",
+          "developmentWeight": 1.35,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              255,
+              271
+            ],
+            [
+              "YamYamEngine_CORE/yaTexture.cpp",
+              136,
+              143
+            ],
+            [
+              "Shaders_SOURCE/SpriteDefaultPS.hlsl",
+              1,
+              17
+            ]
+          ],
+          "footage": "루트 시그니처의 root0/b0와 root1/t0를 실제 줄로 연결하고, Bind와 HLSL Sample을 번갈아 추적한다. stage/slot 인자가 실제로 사용되지 않는 것도 확인한다.",
+          "explanation": "입력 포트가 있는 셰이더 상자를 만들고 root0→b0 행렬, root1→t0 texture, s0 sampler를 서로 다른 높이의 선으로 연결한다. heap 서랍 선택 후 개별 슬롯이 앞으로 나오는 두 동작을 분리한다. UV 점이 체커 판 위를 이동하며 샘플 색이 출력된다.",
+          "cues": [
+            "1~5행: 셰이더 입력과 root/register 구분",
+            "6~10행: 힙/슬롯 선택과 현재 고정 바인딩 범위"
+          ],
+          "label": "힙 선택 + 이번 Draw의 테이블 연결"
+        },
+        {
+          "id": "06",
+          "developmentWeight": 0.85,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaConstantBuffer.cpp",
+              50,
+              67
+            ],
+            [
+              "Shaders_SOURCE/ConstantBuffers.hlsli",
+              1,
+              7
+            ],
+            [
+              "Shaders_SOURCE/SpriteDefaultVS.hlsl",
+              23,
+              28
+            ]
+          ],
+          "footage": "Game과 Scene의 RenderSceneFromCamera 호출을 확인하고 ConstantBuffer::SetData/Bind로 이어간다. 같은 주소 문제는 설명용 반례로 제시하고 소스에서 현재 별도 주소가 할당됨을 보여준다.",
+          "explanation": "하나의 메모리 칸에 Game 행렬을 넣고 Scene 행렬로 덮으면 대기 중인 두 Draw 화살표가 모두 마지막 값으로 연결되는 반례. 오른쪽은 GameA/GameB/SceneA 각 두께 있는 메모리 칸을 따로 만들어 각 화살표가 자기 데이터로 연결된다.",
+          "cues": [
+            "1~5행: 같은 프레임 안 주소 덮어쓰기",
+            "6~10행: per-frame과 per-draw 문제의 차이"
+          ],
+          "label": "주소 바인딩은 데이터의 자동 복사가 아니다"
+        },
+        {
+          "id": "07",
+          "developmentWeight": 1.15,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaConstantBuffer.cpp",
+              32,
+              67
+            ],
+            [
+              "Shaders_SOURCE/ConstantBuffers.hlsli",
+              1,
+              7
+            ],
+            [
+              "Tests/DX12RenderingSmoke.cpp",
+              296,
+              313
+            ]
+          ],
+          "footage": "mStride/mDrawsPerPage/pageIndex/offset 실제 식을 탐색하고 >256 Draw 테스트의 unique address 검사도 보여준다. 실제 debugger 주소는 새 실행에서 확보한 값만 사용한다.",
+          "explanation": "64KiB 페이지를 두께 있는 긴 판으로 만들고 256바이트 칸 안에 192바이트 데이터와 64바이트 간격을 보여준다. 0/256/512 오프셋을 순차 강조한다. 마지막칸255에서 다음판의 draw256으로 카메라가 이동한다. Frame0/1 페이지 판은 깊이 층으로 분리한다.",
+          "cues": [
+            "1~6행: 데이터 크기/stride/페이지 경계",
+            "7~10행: Fence 뒤 BeginFrame과 row_major"
+          ],
+          "label": "192바이트 데이터, 256바이트 시작 간격"
+        },
+        {
+          "id": "08",
+          "developmentWeight": 1.35,
+          "refs": [
+            [
+              "Editor_Window/guiSceneWindow.cpp",
+              90,
+              99
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderTarget.cpp",
+              80,
+              111
+            ],
+            [
+              "YamYamEngine_CORE/yaEditorCamera.cpp",
+              18,
+              21
+            ]
+          ],
+          "footage": "SceneWindow의 RequestResize→Bind→RenderSceneFromCamera→Unbind→Image를 한 줄씩 따라간다. RT Bind의 viewport/scissor와 Unbind의 transition 정의를 연결한다.",
+          "explanation": "Scene 텍스처 판 위에 '쓰기' 도장을 찍고 카메라 이미지가 그려진다. Unbind에서 출력선이 분리된 뒤 별도 barrier 표지가 '읽기'로 바뀐다. 이미지 카드가 에디터의 UI 배치층으로 올라간다. Fence 아이콘은 등장시키지 않아 GPU 내부 transition과 CPU 대기를 혼동하지 않게 한다.",
+          "cues": [
+            "1~5행: Scene 렌더 단계",
+            "6~10행: 출력 해제/상태 전환/실제 소비 시점"
+          ],
+          "label": "그리기 → 읽기 상태 전환 → ImGui::Image"
+        },
+        {
+          "id": "09",
+          "developmentWeight": 1.15,
+          "refs": [
+            [
+              "Editor_Window/guiEditorApplication.cpp",
+              339,
+              351
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderTarget.cpp",
+              80,
+              86
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderTarget.cpp",
+              113,
+              127
+            ],
+            [
+              "YamYamEngine_CORE/yaCamera.cpp",
+              53,
+              83
+            ]
+          ],
+          "footage": "Game RequestResize가 렌더 이후임을 main/Application 흐름과 연결해 보여준다. Scene의 같은프레임 Bind와 비교한다. 런타임 촬영은 넓히기/줄이기/접기와 카메라 aspect 변화를 확인한 뒤만 사용한다.",
+          "explanation": "위 레일에는 Game 렌더→UI 크기 요청→현재 그림 표시→다음 Bind, 아래 레일에는 Scene 크기 요청→현재 Bind→렌더가 놓인다. 판의 종횡비를 바꾸고 원/잘못 늘어난 타원 비교로 projection 갱신 이유를 보여준다. 0×0 요청은 마지막 유효판을 유지한다.",
+          "cues": [
+            "1~6행: Game/Scene resize 적용 시점 비교",
+            "7~10행: 유효 크기와 projection/safe release 연결"
+          ],
+          "label": "크기 요청과 타깃 교체는 다른 시점"
+        },
+        {
+          "id": "10",
+          "developmentWeight": 1.3,
+          "refs": [
+            [
+              "Editor_Window/guiEditorApplication.cpp",
+              339,
+              351
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderTarget.cpp",
+              129,
+              129
+            ],
+            [
+              "Tests/DX12RenderingSmoke.cpp",
+              278,
+              325
+            ]
+          ],
+          "footage": "직접 만든 색 도형으로 Scene 카메라 이동→공유 Transform 수정→패널 리사이즈를 새로 녹화할 계획. ReadPixel=0 구현과 실제 test의 카메라 검사도 보여준다. 동작 확인 전 테스트 통과 캡션을 넣지 않는다.",
+          "explanation": "동일 물체를 사이에 둔 두 카메라와 두 그림판을 돌아가며 보여준다. Scene 카메라 이동은 한 결과만 바꾸고 Transform 이동은 두 결과를 바꾸는 대조. 마지막에는 입력 gate 세 표찰과 다음 편의 opaque/cutout/transparent 세 재질판이 등장한다.",
+          "cues": [
+            "1~6행: 비슷한 기능의 구현/확인 순서",
+            "7~10행: 입력 조건과 미완 기능 및 다음 편"
+          ],
+          "label": "카메라·RT·CB 주소·SRV를 연결해 점검"
+        }
+      ]
+    },
+    {
+      "slug": "yamyam-dx12-pso-composition",
+      "order": 3,
+      "titleEn": "DX12 PSO Rendering Modes and ImGui Image Composition",
+      "pageId": "3dc0b1ff-a61e-8153-b02f-d321cc48e655",
+      "takeaway": "재질별 PSO, 표시용 SRV, 마지막 Fence로 그리기와 표시와 수명을 구분한다.",
+      "relatedCommits": [
+        "49e04e5",
+        "ce56f16",
+        "845442b"
+      ],
+      "diagrams": "Opaque/CutOut/Transparent 비교, per-draw PSO 선택, 카메라별 거리 정렬, 이중 알파 계산, 두 SRV와 deferred retirement",
+      "scenes": [
+        {
+          "id": "01",
+          "developmentWeight": 1.1,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaMaterial.cpp",
+              36,
+              55
+            ],
+            [
+              "YamYamEngine_CORE/yaShader.cpp",
+              132,
+              148
+            ]
+          ],
+          "footage": "Material::BindShader→Shader::Bind 모드 switch를 탐색. 새 예시는 외부 게임 대신 자체 사각형/구멍마스크/반투명판을 촬영할 계획이며 아직 runtime 영상은 없다.",
+          "explanation": "흰 바닥 위에 벽판, 구멍이 있는 울타리판, 반투명 유리판을 두께와 투영 그림자로 놓는다. 카메라가 옆으로 이동하면서 각 판 뒤의 동일 색 도형이 어떻게 보이는지 비교. 장식용 3D 회전 대신 가림 차이에 집중한다.",
+          "cues": [
+            "1~3행: 같은 alpha를 다르게 해석할 필요",
+            "4~6행: 세 편 연결과 이번 편의 약속"
+          ],
+          "label": "그리기 규칙 · 표시 규칙 · 마지막 사용"
+        },
+        {
+          "id": "02",
+          "developmentWeight": 1,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaShader.cpp",
+              65,
+              85
+            ],
+            [
+              "Shaders_SOURCE/SpriteDefaultPS.hlsl",
+              11,
+              17
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderer.cpp",
+              281,
+              292
+            ]
+          ],
+          "footage": "실제 세 모드 상태와 기본 Sprite CutOut 설정을 보여준다. smoke test의 Opaque alpha0/CutOut/Transparent 픽셀 기대값을 코드에서 비교한다. 테스트 결과 화면은 새 실행 전 미확인으로 표시한다.",
+          "explanation": "동일 RGB와 alpha0/0.5 마스크를 가진 카드 3장을 원근 배치한다. Opaque는 구멍 없이 색쓰기, CutOut은 기준 아래 타일이 빠지며 통과 픽셀은 색쓰기, Transparent는 뒤판의 색과 섞임. 알파0.5에서 컷아웃과 반투명의 결과를 카메라 이동 없이 나란히 비교한다.",
+          "cues": [
+            "1~5행: 동일 alpha의 세 결과",
+            "6~9행: 용도와 재질 기본값"
+          ],
+          "label": "버리기와 색 섞기는 다르다"
+        },
+        {
+          "id": "03",
+          "developmentWeight": 1.35,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaMaterial.cpp",
+              36,
+              55
+            ]
+          ],
+          "footage": "git diff ce56f16^ ce56f16 -- yaMaterial.cpp의 제거된 shader state setter와 새 Bind(mMode)를 실제 변경으로 비교한다. 수정 전 영향은 소스 근거의 가능성/도식이며 실측 버그 재현으로 표기하지 않는다.",
+          "explanation": "벽 Material/유리 Material 두 앞판에서 같은 Shader 뒤판으로 선이 이어진다. 왼쪽 반례는 유리 선택이 공통판을 바꿔 양쪽에 퍼진다. 오른쪽은 각 Material에 작은 mode 태그를 보관하고 Draw 시 태그가 PSO 선택기로 들어간다.",
+          "cues": [
+            "1~4행: 이전 공유 상태 변경 문제",
+            "5~9행: Material 의도→Bind→이번 Draw 상태"
+          ],
+          "label": "Material은 모드 보관, Shader는 PSO 선택"
+        },
+        {
+          "id": "04",
+          "developmentWeight": 1.25,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaShader.cpp",
+              26,
+              95
+            ],
+            [
+              "YamYamEngine_CORE/yaShader.cpp",
+              120,
+              124
+            ]
+          ],
+          "footage": "GetPipelineState의 key/find/emplace와 PSO desc의 고정 RTVFormats/SampleDesc를 짚고 SetPipelineState로 이어간다. 캐시 hit로 성능이 몇 배 좋아졌다는 주장은 넣지 않는다.",
+          "explanation": "raster/blend/depth 세 태그가 깊이 있는 캐시 서랍의 키가 된다. hit는 기존 카드가 앞으로 나오고 miss는 새 카드 생성 후 보관한다. 세 기본카드가 먼저 준비되며 타깃형식/샘플수는 현재 고정값 표찰로 표시한다.",
+          "cues": [
+            "1~6행: 생성/캐시/Draw 선택",
+            "7~10행: 현재 키 범위와 별도 바인딩"
+          ],
+          "label": "상태를 덮어쓰지 않고 해당 PSO를 선택"
+        },
+        {
+          "id": "05",
+          "developmentWeight": 1.35,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaShader.cpp",
+              113,
+              117
+            ],
+            [
+              "YamYamEngine_CORE/yaShader.cpp",
+              55,
+              59
+            ],
+            [
+              "Shaders_SOURCE/SpriteDefaultPS.hlsl",
+              11,
+              17
+            ]
+          ],
+          "footage": "YA_ALPHA_TEST compile macro→mCutoutPSBlob 선택→clip 구문을 실제 소스로 연결. 단색 Texture의 alpha test cases를 test 정의에서 보여준다.",
+          "explanation": "동일 소스 카드가 일반/YA_ALPHA_TEST 두 컴파일 카드로 갈라진다. CutOut 선만 검사 게이트를 통과한다. alpha0,0.005,0.01,0.5 타일을 순서대로 넣고 음수 값만 바닥에서 사라진다. Transparent 타일은 검사 없이 색혼합 층으로 이동한다.",
+          "cues": [
+            "1~4행: 모드별 컴파일 변형",
+            "5~10행: clip 경계와 custom shader 지원 조건"
+          ],
+          "label": "clip(alpha − 0.01): 음수만 버린다"
+        },
+        {
+          "id": "06",
+          "developmentWeight": 0.85,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaRenderer.cpp",
+              333,
+              355
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderer.cpp",
+              394,
+              405
+            ],
+            [
+              "YamYamEngine_CORE/yaShader.cpp",
+              78,
+              85
+            ]
+          ],
+          "footage": "RenderSceneFromCamera의 group order/distance sort와 Shader depth state를 실제로 짚는다. 새 엔진 촬영은 두 카메라와 겹친 색판/불투명 가림판의 검증 장면을 계획한다.",
+          "explanation": "Manim 선택 클립: 검정 바닥 앞의 alpha0.5 빨강/파랑 판을 카메라 시선 방향으로 놓고 순서를 뒤집는다. 색 결과 (0.25,0,0.5)와 (0.5,0,0.25)를 비교. 별도 장면에서는 벽 뒤 반투명판도 합성되는 Always 정책을 붉은 주석으로 보여준다. camera 이동으로 거리 순서가 바뀌되 삼각형 교차는 미해결 표찰을 남긴다.",
+          "cues": [
+            "1~6행: 색 합성 순서와 카메라별 정렬",
+            "7~10행: 현재 Always/no-write 정책과 한계"
+          ],
+          "label": "현재 Transparent: 먼 순서 · Always · 깊이 기록 끔"
+        },
+        {
+          "id": "07",
+          "developmentWeight": 0.8,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaShader.cpp",
+              67,
+              76
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderTarget.cpp",
+              56,
+              69
+            ],
+            [
+              "Tests/DX12RenderingSmoke.cpp",
+              436,
+              444
+            ]
+          ],
+          "footage": "RGB blend와 alpha ONE/ZERO를 각각 확인하고 actual ImGui composition test 기대값을 따라간다. 새 비교 영상에서만 RT readback과 display pixel 결과를 실측으로 기록한다.",
+          "explanation": "녹색판→alpha0.5 빨강판 합성 후 RGB(0.5,0.5,0)/A0.5 결과판을 만든다. 결과판이 검정 UI 배경층을 지나 다시 반으로 어두워진다. 표시A1 경로는 같은 RGB를 유지한다. 모든 수치는 선형 단순 혼합의 설명용 정규화 값으로 표시하고 화면 색관리/8bit 반올림 측정과 구분한다.",
+          "cues": [
+            "1~6행: 첫 합성과 원하지 않는 두 번째 합성",
+            "7~9행: 완성된 RT 표시 목적의 A1"
+          ],
+          "label": "완성 RGB를 UI에서 다시 반으로 섞지 않는다"
+        },
+        {
+          "id": "08",
+          "developmentWeight": 1.2,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaRenderTarget.cpp",
+              56,
+              69
+            ],
+            [
+              "Editor_Window/guiSceneWindow.cpp",
+              98,
+              99
+            ],
+            [
+              "Editor_Window/guiEditorApplication.cpp",
+              350,
+              351
+            ]
+          ],
+          "footage": "GetDisplaySRV의 component mapping과 첫 RGBA8 attachment 검사, 두 Image 호출을 연결. 일반 Texture::GetSRV와 표시용 handle의 구분을 source/test에서 확인한다.",
+          "explanation": "하나의 두께 있는 RGBA 원본판에서 두 개의 읽기 창이 앞뒤로 나온다. 일반창은 R/G/B/A, 표시창은 R/G/B/1. 원본 alpha 타일은 끝까지 0.5로 남고 표시창의 네번째 타일만 1로 변한다. 새 픽셀 복사판을 만들지 않는다.",
+          "cues": [
+            "1~5행: 같은 resource의 두 descriptor",
+            "6~9행: 다른 소비 목적과 원본 보존"
+          ],
+          "label": "원본 수정 없이 읽는 alpha만 1"
+        },
+        {
+          "id": "09",
+          "developmentWeight": 1.2,
+          "refs": [
+            [
+              "YamYamEngine_CORE/yaTexture.cpp",
+              9,
+              16
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderTarget.cpp",
+              72,
+              77
+            ],
+            [
+              "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+              712,
+              739
+            ]
+          ],
+          "footage": "Texture/DisplaySRV retirement→UINT64_MAX→Seal→Collect의 실제 정의를 순서대로 추적. resize 시 descriptor count 변화는 새 테스트에서 확보 후만 영상화한다.",
+          "explanation": "슬롯17과 이전 텍스처를 묶은 2.5D 바구니를 폐기 대기층에 둔다. 중간 upload Signal11이 지나도 바구니는 잠긴 채. main+별도창 소비 뒤 Signal12가 붙고 completed12 때만 빈 슬롯 서랍으로 돌아간다. texture와 descriptor 어느 하나만 먼저 반환하는 반례를 짧게 비교한다.",
+          "cues": [
+            "1~5행: resource와 descriptor의 공동 수명",
+            "6~10행: 중간 upload11과 최종 frame12의 구분"
+          ],
+          "label": "마지막 소비를 포함한 Fence 이후 반환"
+        },
+        {
+          "id": "10",
+          "developmentWeight": 1.35,
+          "refs": [
+            [
+              "Tests/DX12RenderingSmoke.cpp",
+              157,
+              181
+            ],
+            [
+              "Tests/DX12RenderingSmoke.cpp",
+              284,
+              325
+            ],
+            [
+              "Tests/DX12RenderingSmoke.cpp",
+              484,
+              488
+            ],
+            [
+              "YamYamEngine_CORE/yaRenderTarget.cpp",
+              129,
+              129
+            ]
+          ],
+          "footage": "픽셀/깊이/정렬/303 Draw/ImGui 테스트 소스를 실제로 탐색. 기존 문서의 2026-09-14/15 검증과 이번 재실행 미실시를 구분한다. 테스트에서 multi-viewport를 끈 구문도 확인해 수동 별도창 검수가 남는 이유를 보여준다.",
+          "explanation": "세 모드판, 표시창, 폐기 바구니가 작은 2.5D 전체 구조로 합쳐진다. each 의도에 맞는 test 기대값 카드가 연결된다. 카메라 좌우 전환과 256→257칸 이동을 한 번씩 보여주고 마지막 구조에서 '그리기/표시/수명' 세 질문만 남긴다.",
+          "cues": [
+            "1~6행: 재현 가능한 구현/검증 예시",
+            "7~11행: 역사적 기록·수동 검수·미완 범위·결론"
+          ],
+          "label": "렌더링 규칙과 테스트 기대값을 함께 정한다"
+        }
+      ]
+    }
+  ]
+}

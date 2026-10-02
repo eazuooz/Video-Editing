@@ -1,0 +1,241 @@
+1
+00:00:00,000 --> 00:00:04,402
+Make the attack a little faster. It is a
+familiar request during development.
+
+2
+00:00:04,402 --> 00:00:07,992
+Should we shorten the preparation, or the
+pause after impact?
+
+3
+00:00:07,992 --> 00:00:11,582
+Consider a jump in Mega Man 11 or an attack in
+Monster Hunter Rise.
+
+4
+00:00:11,582 --> 00:00:14,342
+One action contains a beginning, a change, and
+an ending.
+
+5
+00:00:14,342 --> 00:00:19,222
+We will translate that feeling into a time
+scale measured in frames.
+
+6
+00:00:19,222 --> 00:00:22,482
+The games illustrate observable motion.
+
+7
+00:00:22,482 --> 00:00:25,192
+We will verify exact numbers in an original
+frame-timing test.
+
+8
+00:00:25,192 --> 00:00:28,960
+The number of drawings is not necessarily the
+game’s time scale.
+
+9
+00:00:29,680 --> 00:00:32,053
+Every frame count needs a reference rate.
+
+10
+00:00:32,053 --> 00:00:36,782
+At sixty steps per second, twelve frames
+represent zero point two seconds.
+
+11
+00:00:36,782 --> 00:00:40,682
+At thirty steps per second, the same twelve
+frames represent zero point four seconds.
+
+12
+00:00:40,682 --> 00:00:43,942
+The count stays the same, but the elapsed time
+doubles.
+
+13
+00:00:43,942 --> 00:00:48,232
+Our test therefore uses a fixed
+sixty-update-per-second rule.
+
+14
+00:00:48,232 --> 00:00:52,272
+It displays elapsed time alongside a moving
+marker.
+
+15
+00:00:52,272 --> 00:00:56,272
+Record the frame count and its reference rate
+together in your design notes.
+
+16
+00:00:56,272 --> 00:00:59,920
+Rendering and game-rule updates can run at
+different rates.
+
+17
+00:01:00,640 --> 00:01:03,442
+Now decide which part of an attack you are
+measuring.
+
+18
+00:01:03,442 --> 00:01:07,652
+Our original test records input acceptance as
+time zero.
+
+19
+00:01:07,652 --> 00:01:10,523
+The hit area begins after twelve time steps,
+
+20
+00:01:10,523 --> 00:01:14,282
+stays active for three steps, then recovers
+for fifteen.
+
+21
+00:01:14,282 --> 00:01:16,092
+The total is thirty steps, or zero point five
+seconds.
+
+22
+00:01:16,092 --> 00:01:19,582
+If the request for speed concerns preparation,
+
+23
+00:01:19,582 --> 00:01:23,482
+we can shorten that phase and keep the others
+unchanged.
+
+24
+00:01:23,482 --> 00:01:27,542
+Record both boundaries so everyone measures
+the same interval.
+
+25
+00:01:27,542 --> 00:01:31,920
+These prototype numbers do not represent move
+data from another game.
+
+26
+00:01:32,640 --> 00:01:35,552
+Does adding drawings make the hit happen
+sooner?
+
+27
+00:01:35,552 --> 00:01:39,472
+We changed only the poses in the same attack.
+
+28
+00:01:39,472 --> 00:01:42,082
+One version holds fewer poses longer; the
+other changes poses more often.
+
+29
+00:01:42,082 --> 00:01:46,502
+Both hit areas begin at the same twelfth time
+step.
+
+30
+00:01:46,502 --> 00:01:51,312
+Their visual smoothness differs, but the wait
+for the hit is equal.
+
+31
+00:01:51,312 --> 00:01:55,322
+We distinguish the animation-pose clock from
+the hit-area clock.
+
+32
+00:01:55,322 --> 00:01:59,082
+Before adding poses, decide which timing you
+want to change.
+
+33
+00:01:59,082 --> 00:02:03,280
+The implementation and logs verify that poses
+and collision timing are separate.
+
+34
+00:02:04,000 --> 00:02:07,682
+Next, examine a brief pause at impact.
+
+35
+00:02:07,682 --> 00:02:12,212
+In our test, only the combat clock pauses for
+four steps after collision.
+
+36
+00:02:12,212 --> 00:02:14,822
+The background time indicator keeps moving.
+
+37
+00:02:14,822 --> 00:02:16,122
+The attack data still spans thirty combat
+steps,
+
+38
+00:02:16,122 --> 00:02:20,362
+but the actual completion time also includes
+the pause.
+
+39
+00:02:20,362 --> 00:02:25,382
+When observing a paused action, ask which
+clock the count refers to.
+
+40
+00:02:25,382 --> 00:02:28,582
+This does not imply that every commercial game
+uses this method.
+
+41
+00:02:28,582 --> 00:02:33,280
+It illustrates explicitly choosing what pauses
+and what continues in our own game.
+
+42
+00:02:34,000 --> 00:02:38,192
+Finally, frames counted in a recording are
+only one kind of evidence.
+
+43
+00:02:38,192 --> 00:02:42,702
+Repeated or missing pictures can obscure the
+game’s internal timing.
+
+44
+00:02:42,702 --> 00:02:45,772
+Even at different display update rates,
+
+45
+00:02:45,772 --> 00:02:49,422
+the same fixed hit-area clock produces the hit
+at the same elapsed time.
+
+46
+00:02:49,422 --> 00:02:52,442
+First, watch at normal speed and estimate the
+duration.
+
+47
+00:02:52,442 --> 00:02:56,282
+Then record input acceptance, the first active
+hit, and when another action is allowed.
+
+48
+00:02:56,282 --> 00:02:59,462
+Check the reference rate alongside the
+measured elapsed time
+
+49
+00:02:59,462 --> 00:03:02,752
+to turn a vague request for speed into a
+change everyone can review.
+
+50
+00:03:02,752 --> 00:03:05,600
+Find it by feel, then verify it by
+measurement.

@@ -1,0 +1,33 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const output = path.join(root, 'output', 'youtube-library-refresh');
+const v2Root = path.join(output, 'v2');
+const manifest = JSON.parse(fs.readFileSync(path.join(v2Root, 'prompts.json'), 'utf8'));
+const oldReport = JSON.parse(fs.readFileSync(path.join(output, 'changes.json'), 'utf8'));
+const oldById = new Map(oldReport.changes.map(x => [x.id,x]));
+const metadataPath = path.join(v2Root,'metadata.json');
+const metadataById = new Map((fs.existsSync(metadataPath) ? JSON.parse(fs.readFileSync(metadataPath,'utf8')).items : []).map(x=>[x.id,x]));
+const progressPath = path.join(v2Root, 'apply-progress.json');
+const progress = fs.existsSync(progressPath) ? JSON.parse(fs.readFileSync(progressPath, 'utf8')) : {applied: []};
+const appliedIds = new Set((progress.applied || []).map(x => x.id));
+const reviewStatusPath = path.join(v2Root, 'review-status.json');
+const visualReviewedIds = new Set(fs.existsSync(reviewStatusPath) ? JSON.parse(fs.readFileSync(reviewStatusPath, 'utf8')).visualReviewedIds || [] : []);
+const e = value => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+const completed = manifest.items.filter(x => fs.existsSync(path.join(v2Root,'thumbnails',`${x.id}.jpg`)));
+const pending = manifest.items.filter(x => !fs.existsSync(path.join(v2Root,'thumbnails',`${x.id}.jpg`)));
+const changes = completed.map(x => ({...oldById.get(x.id),...metadataById.get(x.id),headline:x.headline,thumbnailPath:path.join(v2Root,'thumbnails',`${x.id}.jpg`),
+  readyToApply:metadataById.has(x.id)&&visualReviewedIds.has(x.id),generationMode:'built-in image_gen',generationPrompt:fs.existsSync(path.join(v2Root,'raw',`${x.id}.prompt.txt`)) ? fs.readFileSync(path.join(v2Root,'raw',`${x.id}.prompt.txt`),'utf8').trimEnd() : x.prompt,visualScene:x.scene,version:2}));
+fs.writeFileSync(path.join(v2Root,'changes.json'),`${JSON.stringify({version:2,count:changes.length,total:manifest.count,complete:changes.length===manifest.count,changes},null,2)}\n`);
+const cards = changes.map(x => `<article data-search="${e(`${x.originalTitle} ${x.category}`)}"><a href="v2/thumbnails/${x.id}.jpg" target="_blank"><img loading="lazy" src="v2/thumbnails/${x.id}.jpg?v=2" alt="${e(x.headline)}"></a><div><span>${e(x.category)} · ${appliedIds.has(x.id) ? 'YouTube 저장·재확인 완료' : 'YouTube 적용 대기'}</span><h2>${e(x.proposedTitle)}</h2><p>기존 제목: ${e(x.originalTitle)}</p><details><summary>새 설명 본문 · 기존 안내와 링크는 아래에 보존</summary><p>${e(x.descriptionIntro).replaceAll('\n','<br>')}</p></details><details><summary>이전 반복형 초안과 비교</summary><img loading="lazy" src="thumbnails/${x.id}.jpg" alt="이전 초안"></details></div></article>`).join('');
+const pendingCards = pending.map(x => `<li data-search="${e(`${x.originalTitle} ${x.category}`)}">${e(x.category)} · ${e(x.originalTitle)}</li>`).join('');
+const excludedNames = JSON.parse(fs.readFileSync(path.join(output,'scope.json'),'utf8')).excludedPlaylistTitles.join(' / ');
+const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>얌얌코딩 — 제목별 개별 썸네일</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f7f5ef;color:#161923;font-family:'Noto Sans KR','Malgun Gothic',sans-serif}header{padding:25px 30px;background:#fff;border-bottom:3px solid #ffcc45}h1{margin:0 0 8px;font-size:27px}header p{margin:7px 0;line-height:1.6;color:#58606e}.count{font-size:18px;font-weight:800;color:#7d222f}input{margin-top:14px;padding:12px;width:min(480px,100%);border:1px solid #cdd1d7;border-radius:8px}.grid{padding:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:23px}article{background:white;border:1px solid #e0e1e7;border-radius:12px;overflow:hidden}img{width:100%;display:block;aspect-ratio:16/9;object-fit:contain}article>div{padding:17px}span{color:#855921;font-size:13px;font-weight:700}h2{margin:9px 0;font-size:20px}article p{line-height:1.6;font-size:13px;color:#66707c}summary{cursor:pointer;font-size:13px;color:#66707c}details img{margin-top:10px}.waiting{margin:5px 25px 40px;padding:20px;background:#fff;border-radius:12px}.waiting li{font-size:14px;line-height:1.8;padding:5px;border-bottom:1px solid #eee}[hidden]{display:none!important}</style></head><body><header><h1>제목에 맞춘 개별 썸네일</h1><p class="count">새 이미지 ${completed.length} / ${manifest.count}개</p><p>배경·주제 소품·고양이 행동·구도를 영상별로 새로 생성합니다. 재생목록 색상과 고양이 정체성은 시리즈 공통 요소입니다.</p><p>${e(excludedNames)} 제외</p><input id="search" placeholder="영상 제목 또는 재생목록 검색" aria-label="영상 검색"></header><main class="grid">${cards}</main>${pending.length?`<details class="waiting"><summary>개별 재제작 대기 ${pending.length}개</summary><ul>${pendingCards}</ul></details>`:''}<script>document.getElementById('search').addEventListener('input',event=>{const q=event.target.value.toLowerCase();document.querySelectorAll('[data-search]').forEach(x=>x.hidden=!x.dataset.search.toLowerCase().includes(q))})</script></body></html>`;
+const indexPath=path.join(output,'index.html');
+const finalHtml=html.replace(`<p class="count">새 이미지 ${completed.length} / ${manifest.count}개</p>`, `<p class="count">새 이미지 ${completed.length} / ${manifest.count}개 · YouTube 저장·재확인 ${appliedIds.size} / ${manifest.count}개</p>`);
+const archivePath=path.join(output,'index-v1.html');
+if (!fs.existsSync(archivePath) && fs.existsSync(indexPath)) fs.copyFileSync(indexPath,archivePath);
+fs.writeFileSync(indexPath,finalHtml);
+fs.writeFileSync(path.join(v2Root,'index.html'),finalHtml.replaceAll('src="thumbnails/','src="../thumbnails/').replaceAll('src="v2/','src="').replaceAll('href="v2/','href="'));
+console.log(JSON.stringify({completed:completed.length,pending:pending.length,indexPath}));

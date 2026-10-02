@@ -1,0 +1,198 @@
+{
+  "sourceHead": "845442b7d756e7a991c09799ab58a775803a006a",
+  "reviewType": "source-read-only-not-runtime-verification",
+  "excerpts": {
+    "Editor_Window/guiSceneWindow.cpp:34-49": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/guiSceneWindow.cpp",
+      "firstLine": 34,
+      "lastLine": 49,
+      "fileSha256": "5a0596fc17539d81a78d53e26e0d3014a71a84809c15b13073d103223370843f",
+      "excerptSha256": "3932e1c7d9ce7a1be70546bc792933eed624dc9b32206b33e8071c7b53cdd621",
+      "excerpt": "\tvoid SceneWindow::Initialize()\n\t{\n\t\tmEditorCameraObject = new ya::GameObject();\n\t\tmEditorCameraObject->SetName(L\"EditorCamera\");\n\t\t\n\t\tya::Transform* tr = mEditorCameraObject->GetComponent<ya::Transform>();\n\t\ttr->SetPosition(3.0f, 0.0f, -20.0f);\n\t\ttr->SetRotation(0.0f, 0.0f, 0.0f);\n\t\t\n\t\tmEditorCamera = mEditorCameraObject->AddComponent<ya::EditorCamera>();\n\t\tmEditorCamera->SetProjectionType(ya::Camera::eProjectionType::Perspective);\n\t\t\n\t\t// set the render target for the editor camera\n\t\tconst ya::Window::WindowData& windowData = application.GetWindow().GetData();\n\t\tmEditorCamera->CreateRenderTarget(windowData.Width, windowData.Height);\n\t}"
+    },
+    "Editor_Window/guiEditorApplication.cpp:339-351": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/guiEditorApplication.cpp",
+      "firstLine": 339,
+      "lastLine": 351,
+      "fileSha256": "c7b4c18a9672f8691560f4553d89016f619ee67946f850269e4e8614fcca1e58",
+      "excerptSha256": "cbc5f49490f8bae7128cbe2a8960a3fc7f54871346a8e0845ec90a664bbd18f7",
+      "excerpt": "        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));\n        const bool gameVisible = ImGui::Begin(\"Game\");\n        ViewportFocused = ImGui::IsWindowFocused();\n        ViewportHovered = ImGui::IsWindowHovered();\n        ya::Input::SetGameInputEnabled(gameVisible && ViewportFocused && ViewportHovered);\n        const ImVec2 panelSize = ImGui::GetContentRegionAvail();\n        if (gameVisible && panelSize.x >= 1.0f && panelSize.y >= 1.0f)\n        {\n            ViewportSize = Vector2(panelSize.x, panelSize.y);\n            // Game was rendered earlier in this frame: apply the new size on\n            // its next Bind, keeping this frame's displayed texture intact.\n            FrameBuffer->RequestResize(UINT(panelSize.x), UINT(panelSize.y));\n            ImGui::Image(ImTextureID(FrameBuffer->GetDisplaySRV().ptr), panelSize);"
+    },
+    "YamYamEngine_CORE/yaApplication.cpp:138-161": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaApplication.cpp",
+      "firstLine": 138,
+      "lastLine": 161,
+      "fileSha256": "83e3a6c03d86327f041ac142fe5c853860989c6331d9a989e37e06a23ade7b53",
+      "excerptSha256": "a29be001c1e85c74c6a9681d90cedff99afba07cfd19ba5a8249706fb2d62ec1",
+      "excerpt": "\tvoid Application::Render()\n\t{\n        GetDevice()->Resize(mWindow.GetWidth(), mWindow.GetHeight());\n        GetDevice()->ResetCommandAllocator();\n        GetDevice()->ResetCommandList();\n        renderer::BeginFrame();\n        GetDevice()->SetBaseGraphicsRootSignature();\n        GetDevice()->TranstionResourceBarrier(D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);\n        if (mEditorMode)\n            renderer::FrameBuffer->Bind();\n        else\n            GetDevice()->BindFrameBuffer();\n\n        Time::Render();\n        SceneManager::Render();\n        CollisionManager::Render();\n        UIManager::Render();\n\n        if (mEditorMode)\n        {\n            renderer::FrameBuffer->Unbind();\n            GetDevice()->BindFrameBuffer(true, false);\n        }\n\t}"
+    },
+    "YamYamEngine_CORE/yaRenderer.cpp:301-309": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderer.cpp",
+      "firstLine": 301,
+      "lastLine": 309,
+      "fileSha256": "590fa0237fe462a66e5ba4a016830be8ae60b6369c57a7a88bf204257aedea6d",
+      "excerptSha256": "43d21ed76c63d20315abc5c2a1caae5308a9ccfb1c8f365309b6609871c4f446",
+      "excerpt": "\tvoid LoadFrameBuffer()\n\t{\n\t\tRenderTargetSpecification spec;\n\t\tspec.Attachments = { eRenderTragetFormat::RGBA8, eRenderTragetFormat::Depth };\n\t\tspec.Width = application.GetWindow().GetWidth();\n\t\tspec.Height = application.GetWindow().GetHeight();\n\n\t\tFrameBuffer = RenderTarget::Create(spec);\n\t}"
+    },
+    "Editor_Window/guiSceneWindow.cpp:90-99": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/guiSceneWindow.cpp",
+      "firstLine": 90,
+      "lastLine": 99,
+      "fileSha256": "5a0596fc17539d81a78d53e26e0d3014a71a84809c15b13073d103223370843f",
+      "excerptSha256": "74b44dfd4f35d20d08d58504b2917ac289148d032f7a17b6281f824435222e8d",
+      "excerpt": "        auto* frameBuffer = mEditorCamera->GetRenderTarget();\n        frameBuffer->RequestResize(UINT(panelSize.x), UINT(panelSize.y));\n        frameBuffer->Bind();\n        auto* scene = ya::SceneManager::GetActiveScene();\n        ya::renderer::RenderSceneFromCamera(scene, mEditorCamera);\n        ya::renderer::RenderSceneFromCamera(ya::SceneManager::GetDontDestroyOnLoad(), mEditorCamera);\n        frameBuffer->Unbind();\n\n        const auto texture = frameBuffer->GetDisplaySRV();\n        ImGui::Image(ImTextureID(texture.ptr), panelSize);"
+    },
+    "YamYamEngine_CORE/yaTexture.cpp:20-49": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaTexture.cpp",
+      "firstLine": 20,
+      "lastLine": 49,
+      "fileSha256": "6228ebefb4f66f7521ab778f881d56de1b80ff1ce5d065a2969507168565ab68",
+      "excerptSha256": "0f4849002ab0558555b230a24a443dddfa95d1f311c5da2a092b4f1eba87384a",
+      "excerpt": "    HRESULT Texture::Load(const std::wstring& path)\n    {\n        std::wstring ext = std::filesystem::path(path).extension().wstring();\n        std::transform(ext.begin(), ext.end(), ext.begin(), [](wchar_t c) { return wchar_t(std::towlower(c)); });\n        DirectX::ScratchImage source, converted;\n        HRESULT hr;\n        if (ext == L\".dds\")\n            hr = DirectX::LoadFromDDSFile(path.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, source);\n        else if (ext == L\".tga\")\n            hr = DirectX::LoadFromTGAFile(path.c_str(), nullptr, source);\n        else\n            hr = DirectX::LoadFromWICFile(path.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, source);\n        if (FAILED(hr)) return hr;\n        const auto& metadata = source.GetMetadata();\n        if (metadata.dimension != DirectX::TEX_DIMENSION_TEXTURE2D || metadata.arraySize != 1)\n            return E_NOTIMPL;\n        const DirectX::Image* image = source.GetImage(0, 0, 0);\n        if (!image) return E_FAIL;\n        // This initial sprite path uploads mip 0 as RGBA8. Arrays/cubemaps are not supported yet.\n        if (DirectX::IsCompressed(image->format))\n            hr = DirectX::Decompress(*image, DXGI_FORMAT_R8G8B8A8_UNORM, converted);\n        else if (image->format != DXGI_FORMAT_R8G8B8A8_UNORM)\n            hr = DirectX::Convert(*image, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::TEX_FILTER_DEFAULT, 0.0f, converted);\n        if (FAILED(hr)) return hr;\n        if (converted.GetImageCount()) image = converted.GetImage(0, 0, 0);\n        if (!Create(UINT(image->width), UINT(image->height), DXGI_FORMAT_R8G8B8A8_UNORM)) return E_FAIL;\n        D3D12_SUBRESOURCE_DATA data = { image->pixels, LONG_PTR(image->rowPitch), LONG_PTR(image->slicePitch) };\n        GetDevice()->UploadTexture(mTexture.Get(), data, mState, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);\n        mState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;\n        return S_OK;"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:742-765": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 742,
+      "lastLine": 765,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "272f81ecd7aecd9d95d6cc7b6f0475f115fadedd59a92211cda64c8f3053b86d",
+      "excerpt": "    void GraphicDevice_DX12::UploadTexture(ID3D12Resource* texture, const D3D12_SUBRESOURCE_DATA& data,\n        D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)\n    {\n        // Isolated command storage: uploading never resets the active frame's list.\n        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> allocator;\n        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> list;\n        Microsoft::WRL::ComPtr<ID3D12Resource> upload;\n        auto heap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);\n        auto desc = CD3DX12_RESOURCE_DESC::Buffer(GetRequiredIntermediateSize(texture, 0, 1));\n        if (FAILED(mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator))) ||\n            FAILED(mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(&list))) ||\n            FAILED(mDevice->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &desc,\n                D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&upload))))\n            throw std::runtime_error(\"Texture upload allocation failed\");\n        auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(texture, before, D3D12_RESOURCE_STATE_COPY_DEST);\n        if (before != D3D12_RESOURCE_STATE_COPY_DEST) list->ResourceBarrier(1, &barrier);\n        if (!UpdateSubresources(list.Get(), texture, upload.Get(), 0, 0, 1, &data))\n            throw std::runtime_error(\"Texture upload failed\");\n        barrier = CD3DX12_RESOURCE_BARRIER::Transition(texture, D3D12_RESOURCE_STATE_COPY_DEST, after);\n        list->ResourceBarrier(1, &barrier);\n        if (FAILED(list->Close())) throw std::runtime_error(\"Texture upload command list failed\");\n        ID3D12CommandList* lists[] = { list.Get() };\n        mCommandQueue->ExecuteCommandLists(1, lists);\n        WaitForGpu(); // Keep upload/allocator alive until their copy completes."
+    },
+    "YamYamEngine_CORE/yaTexture.cpp:79-125": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaTexture.cpp",
+      "firstLine": 79,
+      "lastLine": 125,
+      "fileSha256": "6228ebefb4f66f7521ab778f881d56de1b80ff1ce5d065a2969507168565ab68",
+      "excerptSha256": "a726a0809dbd83f639392477e9f9cea34406a28d305e6f7fa99b1246d7e7ef38",
+      "excerpt": "    bool Texture::CreateSRV()\n    {\n        if (!mTexture || (mTexture->GetDesc().Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) return false;\n        if (!mSrv) mSrv = GetDevice()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);\n        D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};\n        desc.Format = mFormat;\n        desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;\n        desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;\n        desc.Texture2D.MipLevels = 1;\n        GetDevice()->GetID3D12Device()->CreateShaderResourceView(mTexture.Get(), &desc, mSrv.Cpu);\n        return true;\n    }\n\n    bool Texture::CreateUAV()\n    {\n        if (!mTexture || !(mTexture->GetDesc().Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS)) return false;\n        if (!mUav) mUav = GetDevice()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);\n        D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};\n        desc.Format = mFormat;\n        desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;\n        GetDevice()->GetID3D12Device()->CreateUnorderedAccessView(mTexture.Get(), nullptr, &desc, mUav.Cpu);\n        return true;\n    }\n\n    bool Texture::CreateRTV()\n    {\n        if (!mTexture || !(mTexture->GetDesc().Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)) return false;\n        if (!mRtv) mRtv = GetDevice()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);\n        GetDevice()->GetID3D12Device()->CreateRenderTargetView(mTexture.Get(), nullptr, mRtv.Cpu);\n        return true;\n    }\n\n    bool Texture::CreateDSV()\n    {\n        if (!mTexture || !(mTexture->GetDesc().Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) return false;\n        if (!mDsv) mDsv = GetDevice()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);\n        GetDevice()->GetID3D12Device()->CreateDepthStencilView(mTexture.Get(), nullptr, mDsv.Cpu);\n        return true;\n    }\n\n    bool Texture::CreateGpuView(UINT flags)\n    {\n        if (flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) return CreateDSV();\n        if (!CreateSRV()) return false;\n        if ((flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) && !CreateRTV()) return false;\n        if ((flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS) && !CreateUAV()) return false;\n        return true;"
+    },
+    "YamYamEngine_CORE/yaDescriptorAllocator.h:18-45": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaDescriptorAllocator.h",
+      "firstLine": 18,
+      "lastLine": 45,
+      "fileSha256": "ab1e6e9bbd72bf231071dd45d8fc6c8c2eabea78cb8c4294ca6162128f39f885",
+      "excerptSha256": "a59f82bc835478a372465cdfb7a0dfd8f2c1672ed0052764e26cf5cbbee8578b",
+      "excerpt": "        void Create(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, UINT capacity, bool shaderVisible)\n        {\n            D3D12_DESCRIPTOR_HEAP_DESC desc = {};\n            desc.Type = type;\n            desc.NumDescriptors = capacity;\n            desc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;\n            if (FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(mHeap.ReleaseAndGetAddressOf()))))\n                throw std::runtime_error(\"Failed to create descriptor heap\");\n            mIncrement = device->GetDescriptorHandleIncrementSize(type);\n            mShaderVisible = shaderVisible;\n            mAllocated.assign(capacity, false);\n            mFree.clear();\n            for (UINT i = capacity; i > 0; --i)\n                mFree.push_back(i - 1);\n        }\n\n        DescriptorHandle Allocate()\n        {\n            if (mFree.empty())\n                throw std::runtime_error(\"Descriptor heap exhausted\");\n            const UINT index = mFree.back();\n            mFree.pop_back();\n            mAllocated[index] = true;\n            DescriptorHandle handle;\n            handle.Cpu.ptr = mHeap->GetCPUDescriptorHandleForHeapStart().ptr + SIZE_T(index) * mIncrement;\n            if (mShaderVisible)\n                handle.Gpu.ptr = mHeap->GetGPUDescriptorHandleForHeapStart().ptr + UINT64(index) * mIncrement;\n            return handle;"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:255-271": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 255,
+      "lastLine": 271,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "828042d258348b9c994f28a88355c5f83b268affdf44e34c70c75c2970b20e38",
+      "excerpt": "        CD3DX12_DESCRIPTOR_RANGE textureRange;\n        textureRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);\n        CD3DX12_ROOT_PARAMETER rootParams[2] = {};\n        rootParams[0].InitAsConstantBufferView(0); // b0: per-draw transform\n        rootParams[1].InitAsDescriptorTable(1, &textureRange, D3D12_SHADER_VISIBILITY_PIXEL); // t0\n        CD3DX12_STATIC_SAMPLER_DESC sampler(0, D3D12_FILTER_MIN_MAG_MIP_POINT,\n            D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP);\n\n\t\tCD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};\n\t\trootSignatureDesc.Init(_countof(rootParams), rootParams, 1, &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);\n\n\t\tMicrosoft::WRL::ComPtr<ID3DBlob> signature;\n\t\tMicrosoft::WRL::ComPtr<ID3DBlob> error;\n\t\tif (FAILED(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error)))\n\t\t\tassert(NULL && \"SerializeRootSignature\");\n\n\t\tif (FAILED(mDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&mRootSignature))))"
+    },
+    "YamYamEngine_CORE/yaTexture.cpp:136-143": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaTexture.cpp",
+      "firstLine": 136,
+      "lastLine": 143,
+      "fileSha256": "6228ebefb4f66f7521ab778f881d56de1b80ff1ce5d065a2969507168565ab68",
+      "excerptSha256": "980598b63f20f68fa086d4e6984f731125e96b1e9c2c88ec28f543907ddc2c5f",
+      "excerpt": "    void Texture::Bind(eShaderStage, UINT)\n    {\n        assert(mSrv && mState == D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);\n        auto heap = GetDevice()->GetSrvHeap();\n        auto list = GetDevice()->GetCommandList();\n        list->SetDescriptorHeaps(1, heap.GetAddressOf());\n        list->SetGraphicsRootDescriptorTable(1, mSrv.Gpu);\n    }"
+    },
+    "Shaders_SOURCE/SpriteDefaultPS.hlsl:1-17": {
+      "path": "D:/Github/YamYam_Engine/Shaders_SOURCE/SpriteDefaultPS.hlsl",
+      "firstLine": 1,
+      "lastLine": 17,
+      "fileSha256": "a176454217b130b223bb89742bf1f8ab7e28e25a0dcdfa41caef8ac772057a0e",
+      "excerptSha256": "5c37957750c1be21416c2bab0eadb1a0b567a04cd761259b453a878284c6e319",
+      "excerpt": "Texture2D sprite : register(t0);\nSamplerState spriteSampler : register(s0);\n\nstruct VSOutput\n{\n    float4 pos : SV_Position;\n    float4 color : COLOR;\n    float2 uv : TEXCOORD;\n};\n\nfloat4 main(VSOutput input) : SV_Target\n{\n    float4 color = sprite.Sample(spriteSampler, input.uv) * input.color;\n#if defined(YA_ALPHA_TEST)\n    clip(color.a - 0.01f);\n#endif\n    return color;"
+    },
+    "YamYamEngine_CORE/yaConstantBuffer.cpp:50-67": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaConstantBuffer.cpp",
+      "firstLine": 50,
+      "lastLine": 67,
+      "fileSha256": "3d4769046e00fe56b76c0e3a1573ff46dfdd9c826f6e695aa2f311f140dd3053",
+      "excerptSha256": "f1f1a6e3af65cbce3cd9d8c8b6a427ddc9eed404b7f4ceb0514acf614bde05ce",
+      "excerpt": "    void ConstantBuffer::SetData(const void* data)\n    {\n        if (!data || !mSize) throw std::runtime_error(\"Invalid constant buffer data\");\n        auto& frame = mFrames[GetDevice()->GetFrameIndex()];\n        const size_t pageIndex = frame.NextDraw / mDrawsPerPage;\n        const size_t offset = (frame.NextDraw % mDrawsPerPage) * mStride;\n        if (pageIndex == frame.Pages.size() && !AddPage(frame))\n            throw std::runtime_error(\"Constant buffer upload page allocation failed\");\n        auto& page = frame.Pages[pageIndex];\n        memcpy(page.Mapped + offset, data, mSize);\n        mCurrentAddress = page.Resource->GetGPUVirtualAddress() + offset;\n        ++frame.NextDraw;\n    }\n\n    void ConstantBuffer::Bind(eShaderStage) const\n    {\n        assert(mCurrentAddress != 0);\n        GetDevice()->GetCommandList()->SetGraphicsRootConstantBufferView(UINT(mType), mCurrentAddress);"
+    },
+    "Shaders_SOURCE/ConstantBuffers.hlsli:1-7": {
+      "path": "D:/Github/YamYam_Engine/Shaders_SOURCE/ConstantBuffers.hlsli",
+      "firstLine": 1,
+      "lastLine": 7,
+      "fileSha256": "5bc8e83a2021809a557c89ce971de0a301d59d8934fecc808b385628a30f3806",
+      "excerptSha256": "7107cfe1319c83564bac26eebb85649b2eb6299d172064202228961df64d08fd",
+      "excerpt": "\ncbuffer Transform : register(b0)\n{\n    row_major matrix WorldMatrix;\n    row_major matrix ViewMatrix;\n    row_major matrix ProjectionMatrix;\n}"
+    },
+    "Shaders_SOURCE/SpriteDefaultVS.hlsl:23-28": {
+      "path": "D:/Github/YamYam_Engine/Shaders_SOURCE/SpriteDefaultVS.hlsl",
+      "firstLine": 23,
+      "lastLine": 28,
+      "fileSha256": "3bb5f005179e4f08195c0b0ec25ab44ca8b3672b59982dd2cd2dd5ea66be44b1",
+      "excerptSha256": "897fad1151c58583545acc6a088b528db3dc1d474fe81f1f16f654ef4c476474",
+      "excerpt": "    float4 projPos = mul(viewPos, ProjectionMatrix);\n    \n    output.pos = projPos;\n    output.color = input.color;\n    output.uv = input.uv;\n    "
+    },
+    "YamYamEngine_CORE/yaConstantBuffer.cpp:32-67": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaConstantBuffer.cpp",
+      "firstLine": 32,
+      "lastLine": 67,
+      "fileSha256": "3d4769046e00fe56b76c0e3a1573ff46dfdd9c826f6e695aa2f311f140dd3053",
+      "excerptSha256": "ad8581f7d93bb7a5346439090b76bd78c7a46c4f201b3f995a70989a6126e5e7",
+      "excerpt": "    bool ConstantBuffer::Create(UINT size, const void* data)\n    {\n        if (!size || size > D3D12_REQ_CONSTANT_BUFFER_ELEMENT_COUNT * 16 || mSize) return false;\n        mSize = size;\n        mStride = (size + 255) & ~255u;\n        mDrawsPerPage = 65536u / mStride;\n        for (auto& frame : mFrames)\n            if (!AddPage(frame)) return false;\n        if (data) SetData(data);\n        return true;\n    }\n\n    void ConstantBuffer::BeginFrame()\n    {\n        mFrames[GetDevice()->GetFrameIndex()].NextDraw = 0;\n        mCurrentAddress = 0;\n    }\n\n    void ConstantBuffer::SetData(const void* data)\n    {\n        if (!data || !mSize) throw std::runtime_error(\"Invalid constant buffer data\");\n        auto& frame = mFrames[GetDevice()->GetFrameIndex()];\n        const size_t pageIndex = frame.NextDraw / mDrawsPerPage;\n        const size_t offset = (frame.NextDraw % mDrawsPerPage) * mStride;\n        if (pageIndex == frame.Pages.size() && !AddPage(frame))\n            throw std::runtime_error(\"Constant buffer upload page allocation failed\");\n        auto& page = frame.Pages[pageIndex];\n        memcpy(page.Mapped + offset, data, mSize);\n        mCurrentAddress = page.Resource->GetGPUVirtualAddress() + offset;\n        ++frame.NextDraw;\n    }\n\n    void ConstantBuffer::Bind(eShaderStage) const\n    {\n        assert(mCurrentAddress != 0);\n        GetDevice()->GetCommandList()->SetGraphicsRootConstantBufferView(UINT(mType), mCurrentAddress);"
+    },
+    "Tests/DX12RenderingSmoke.cpp:296-313": {
+      "path": "D:/Github/YamYam_Engine/Tests/DX12RenderingSmoke.cpp",
+      "firstLine": 296,
+      "lastLine": 313,
+      "fileSha256": "e00ef422031018691a81b1a59445fef350b655457f939597912fc09605d86b7d",
+      "excerptSha256": "8875209afb6d7cf3989e8a73cf98850abaa19226d8a9bf190ab3b0bdff667ee9",
+      "excerpt": "                    \"Display and original RGBA must have separate SRVs\");\n                std::set<D3D12_GPU_VIRTUAL_ADDRESS> addresses;\n                Texture& left = frame % 2 ? green : red;\n                Texture& right = frame % 2 ? red : green;\n                addresses.insert(Draw(left, -0.5f));\n                addresses.insert(Draw(right, 0.5f));\n                for (UINT draw = 0; draw < 300; ++draw)\n                    Require(addresses.insert(Draw(red, 3.0f)).second, \"Two draws share a constant-buffer address\");\n                game.Unbind();\n                scene.Bind();\n                Require(addresses.insert(Draw(left, -0.5f, 0.5f)).second, \"Two cameras share a constant-buffer address\");\n                scene.Unbind();\n                FrameResult result;\n                result.Game = CopyToReadback(game.GetAttachmentTexture(0));\n                result.Scene = CopyToReadback(scene.GetAttachmentTexture(0));\n                result.Reversed = frame % 2 != 0;\n                results.push_back(std::move(result));\n                SubmitFrame();"
+    },
+    "YamYamEngine_CORE/yaRenderTarget.cpp:80-111": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderTarget.cpp",
+      "firstLine": 80,
+      "lastLine": 111,
+      "fileSha256": "d5b6d87df395bcdd404199fd573e356f5e62a52141017843fcc425bd5c5a68ca",
+      "excerptSha256": "ff85d82fe4b9420927ddd6bef68a13561b6117e15e42520d21a581ef556b3271",
+      "excerpt": "    void RenderTarget::Bind()\n    {\n        if (mPendingWidth && mPendingHeight)\n        {\n            Resize(mPendingWidth, mPendingHeight);\n            mPendingWidth = mPendingHeight = 0;\n        }\n        assert(!mAttachments.empty() && mAttachments.size() <= D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);\n        auto list = GetDevice()->GetCommandList();\n        D3D12_CPU_DESCRIPTOR_HANDLE rtvs[D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};\n        const float clear[4] = {};\n        for (size_t i = 0; i < mAttachments.size(); ++i)\n        {\n            mAttachments[i]->Transition(D3D12_RESOURCE_STATE_RENDER_TARGET);\n            rtvs[i] = mAttachments[i]->GetRTV();\n            list->ClearRenderTargetView(rtvs[i], clear, 0, nullptr);\n        }\n        D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};\n        if (mDepthAttachment)\n        {\n            dsv = mDepthAttachment->GetDSV();\n            list->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);\n        }\n        list->OMSetRenderTargets(UINT(mAttachments.size()), rtvs, FALSE, mDepthAttachment ? &dsv : nullptr);\n        GetDevice()->BindViewportAndScissor(mSpecification.Width, mSpecification.Height);\n    }\n\n    void RenderTarget::Unbind()\n    {\n        GetDevice()->GetCommandList()->OMSetRenderTargets(0, nullptr, FALSE, nullptr);\n        for (auto* texture : mAttachments) texture->Transition(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);\n    }"
+    },
+    "YamYamEngine_CORE/yaEditorCamera.cpp:18-21": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaEditorCamera.cpp",
+      "firstLine": 18,
+      "lastLine": 21,
+      "fileSha256": "f9b7ad4eaa15568a0ec90d140fb6e1cede6b021bba64ab14f7d3fdf1b3c4756c",
+      "excerptSha256": "39ba31f2e07a80742e79d3b256bcb7ee51f3c1a707914de2c2e7caf110758475",
+      "excerpt": "        // Editor cameras are owned by the Scene panel, not the game scene camera list.\n\t}\n\n\tvoid EditorCamera::Update()"
+    },
+    "YamYamEngine_CORE/yaRenderTarget.cpp:80-86": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderTarget.cpp",
+      "firstLine": 80,
+      "lastLine": 86,
+      "fileSha256": "d5b6d87df395bcdd404199fd573e356f5e62a52141017843fcc425bd5c5a68ca",
+      "excerptSha256": "0cf3e50b3d136bf8e276d0bdb1837a440e673fba4ded404a1b861afb2e135e28",
+      "excerpt": "    void RenderTarget::Bind()\n    {\n        if (mPendingWidth && mPendingHeight)\n        {\n            Resize(mPendingWidth, mPendingHeight);\n            mPendingWidth = mPendingHeight = 0;\n        }"
+    },
+    "YamYamEngine_CORE/yaRenderTarget.cpp:113-127": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderTarget.cpp",
+      "firstLine": 113,
+      "lastLine": 127,
+      "fileSha256": "d5b6d87df395bcdd404199fd573e356f5e62a52141017843fcc425bd5c5a68ca",
+      "excerptSha256": "fb71f1ab519ab5dbab7ed98b7e9983b8d17a9e798d1af1c3e654a33adf215136",
+      "excerpt": "    void RenderTarget::RequestResize(UINT width, UINT height)\n    {\n        if (!width || !height || width > 8192 || height > 8192) return;\n        mPendingWidth = width;\n        mPendingHeight = height;\n    }\n\n    void RenderTarget::Resize(UINT width, UINT height)\n    {\n        if (!width || !height || width > 8192 || height > 8192) return;\n        if (width == mSpecification.Width && height == mSpecification.Height) return;\n        mSpecification.Width = width;\n        mSpecification.Height = height;\n        Invalidate();\n    }"
+    },
+    "YamYamEngine_CORE/yaCamera.cpp:53-83": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaCamera.cpp",
+      "firstLine": 53,
+      "lastLine": 83,
+      "fileSha256": "5bb1da8ff3ba3472ed34f94a7589836609346f57c3738155b3112e212fe86079",
+      "excerptSha256": "dfd02848638b7be7c0e189939d099a2ac738f1c4483fbec9dcc7b17e85906808",
+      "excerpt": "    void Camera::SetViewportSize(UINT width, UINT height)\n    {\n        if (width && height) { mViewportWidth = width; mViewportHeight = height; }\n    }\n\n    void Camera::CreateViewMatrix()\n\t{\n\t\tconst Transform* tr = GetOwner()->GetComponent<Transform>();\n\n\t\tconst Vector3 pos = tr->GetPosition();\n\t\tconst Vector3 up = tr->Up();\n\t\tconst Vector3 forward = tr->Forward();\n\n\t\tmViewMatrix = Matrix::CreateLookToLH(pos, forward, up);\n\n\n\t}\n\n\tvoid Camera::CreateProjectionMatrix(eProjectionType type)\n\t{\n        const float width = float(mViewportWidth);\n        const float height = float(mViewportHeight);\n        mAspectRatio = width / height;\n\n\t\tswitch (type)\n\t\t{\n\t\tcase eProjectionType::Perspective:\n\t\t\tmProjectionMatrix = Matrix::CreatePerspectiveFieldOfViewLH(XM_2PI / 6.0f, mAspectRatio, mNear, mFar);\n\t\t\tbreak;\n\t\tcase eProjectionType::Orthographic:\n\t\t\tmProjectionMatrix = Matrix::CreateOrthographicLH(width / mSize, height / mSize, mNear, mFar);"
+    },
+    "YamYamEngine_CORE/yaRenderTarget.cpp:129-129": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderTarget.cpp",
+      "firstLine": 129,
+      "lastLine": 129,
+      "fileSha256": "d5b6d87df395bcdd404199fd573e356f5e62a52141017843fcc425bd5c5a68ca",
+      "excerptSha256": "7899dc20ab5ee0b2146af10b756cef73de849afce5622b3ca1a9c2bf57f8f584",
+      "excerpt": "    int RenderTarget::ReadPixel(uint32_t, int, int) { return 0; } // Object picking is a separate readback path."
+    },
+    "Tests/DX12RenderingSmoke.cpp:278-325": {
+      "path": "D:/Github/YamYam_Engine/Tests/DX12RenderingSmoke.cpp",
+      "firstLine": 278,
+      "lastLine": 325,
+      "fileSha256": "e00ef422031018691a81b1a59445fef350b655457f939597912fc09605d86b7d",
+      "excerptSha256": "3e61b1741f6da09d0982a20f46020556bf44c9222cc498159576d7d36f5d8195",
+      "excerpt": "            spec.Attachments = { eRenderTragetFormat::RGBA8, eRenderTragetFormat::Depth };\n            RenderTarget game(spec), scene(spec);\n            Require(game.GetAttachmentTexture(0)->GetSRV().ptr != scene.GetAttachmentTexture(0)->GetSRV().ptr,\n                \"Scene and Game share an SRV slot\");\n\n            // Multiple submitted frames, different camera matrices, >256 draws\n            // per frame (crosses an upload page), and repeated RT replacement.\n            for (UINT frame = 0; frame < 8; ++frame)\n            {\n                frameSlots.insert(device.GetFrameIndex());\n                BeginFrame();\n                const UINT size = frame % 2 ? 80 : 64;\n                game.RequestResize(size, size);\n                scene.RequestResize(size, size);\n                game.RequestResize(0, 0); // Minimized/collapsed panels must not destroy the last valid target.\n                game.Bind();\n                Require(game.GetSpecification().Width == size, \"Pending RT resize was lost\");\n                Require(game.GetDisplaySRV().ptr != game.GetAttachmentTexture(0)->GetSRV().ptr,\n                    \"Display and original RGBA must have separate SRVs\");\n                std::set<D3D12_GPU_VIRTUAL_ADDRESS> addresses;\n                Texture& left = frame % 2 ? green : red;\n                Texture& right = frame % 2 ? red : green;\n                addresses.insert(Draw(left, -0.5f));\n                addresses.insert(Draw(right, 0.5f));\n                for (UINT draw = 0; draw < 300; ++draw)\n                    Require(addresses.insert(Draw(red, 3.0f)).second, \"Two draws share a constant-buffer address\");\n                game.Unbind();\n                scene.Bind();\n                Require(addresses.insert(Draw(left, -0.5f, 0.5f)).second, \"Two cameras share a constant-buffer address\");\n                scene.Unbind();\n                FrameResult result;\n                result.Game = CopyToReadback(game.GetAttachmentTexture(0));\n                result.Scene = CopyToReadback(scene.GetAttachmentTexture(0));\n                result.Reversed = frame % 2 != 0;\n                results.push_back(std::move(result));\n                SubmitFrame();\n            }\n            device.WaitForGpu();\n            for (const auto& result : results)\n            {\n                const UINT w = result.Game.Width, h = result.Game.Height;\n                const std::array<BYTE, 4> redPixel = {255, 0, 0, 255};\n                const std::array<BYTE, 4> greenPixel = {0, 255, 0, 255};\n                const auto expectedLeft = result.Reversed ? greenPixel : redPixel;\n                const auto expectedRight = result.Reversed ? redPixel : greenPixel;\n                Require(result.Game.Pixel(w/4, h/2) == expectedLeft, \"Game left draw was overwritten or not textured\");\n                Require(result.Game.Pixel(3*w/4, h/2) == expectedRight, \"Game right draw was overwritten or not textured\");\n                Require(result.Scene.Pixel(w/2, h/2) == expectedLeft, \"Scene camera output is incorrect\");"
+    }
+  }
+}

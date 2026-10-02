@@ -1,0 +1,15 @@
+[0:a]asplit=3[n][d1][d2];
+[1:a]adelay=96000S:all=1,apad,atrim=duration=216.86666666666667[g0];
+[2:a]adelay=336000S:all=1,apad,atrim=duration=216.86666666666667[g1];
+[3:a]adelay=720000S:all=1,apad,atrim=duration=216.86666666666667[g2];
+[4:a]adelay=1681600S:all=1,apad,atrim=duration=216.86666666666667[g3];
+[5:a]adelay=3283200S:all=1,apad,atrim=duration=216.86666666666667[g4];
+[6:a]adelay=4934400S:all=1,apad,atrim=duration=216.86666666666667[g5];
+[7:a]adelay=6643200S:all=1,apad,atrim=duration=216.86666666666667[g6];
+[8:a]adelay=8278400S:all=1,apad,atrim=duration=216.86666666666667[g7];
+[g0][g1][g2][g3][g4][g5][g6][g7]amix=inputs=8:normalize=0[g];
+[9:a]atrim=duration=216.86666666666667,asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,volume='1-0.292054*(if(between(t,15,21.816666666666666),min(1,min((t-15)/0.45,(21.816666666666666-t)/0.45)),0)+if(between(t,35.03333333333333,55.05),min(1,min((t-35.03333333333333)/0.45,(55.05-t)/0.45)),0)+if(between(t,68.4,88.35000000000001),min(1,min((t-68.4)/0.45,(88.35000000000001-t)/0.45)),0)+if(between(t,102.8,124.86666666666666),min(1,min((t-102.8)/0.45,(124.86666666666666-t)/0.45)),0)+if(between(t,138.4,158.83333333333334),min(1,min((t-138.4)/0.45,(158.83333333333334-t)/0.45)),0)+if(between(t,172.46666666666667,193.11666666666667),min(1,min((t-172.46666666666667)/0.45,(193.11666666666667-t)/0.45)),0))':eval=frame,afade=t=in:d=0.45,afade=t=out:st=216.41666666666669:d=0.45[b];
+[g][d1]sidechaincompress=threshold=0.08:ratio=2.2:attack=15:release=280[gd];
+[b][d2]sidechaincompress=threshold=0.08:ratio=2.2:attack=15:release=280[bd];
+[gd][bd]amix=inputs=2:normalize=0,asplit=2[bg][bgo];
+[n][bg]amix=inputs=2:normalize=0,alimiter=limit=0.80:level=false:latency=true[mix]

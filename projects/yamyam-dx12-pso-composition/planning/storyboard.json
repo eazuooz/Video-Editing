@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "slug": "yamyam-dx12-pso-composition",
+  "status": "proposed-not-rendered",
+  "timingIsMeasured": false,
+  "timingMethod": "Planning only: characters including spaces / 8.5 per second, rounded up to 5 seconds. Replace from approved narration and actual footage; never pad, loop, or slow media to match these estimates.",
+  "intro": {
+    "kind": "original-cat-branding",
+    "plannedSeconds": 2,
+    "source": "shared/assets/branding/yamyamcoding-cats-original.png"
+  },
+  "body": {
+    "plannedSeconds": 675,
+    "plannedDevelopmentSeconds": 405,
+    "plannedExplanationSeconds": 270,
+    "targetShare": [
+      0.6,
+      0.4
+    ],
+    "actualDevelopmentSeconds": null,
+    "actualExplanationSeconds": null
+  },
+  "scenes": [
+    {
+      "id": "01",
+      "developmentWeight": 1.1,
+      "footage": "Material::BindShader→Shader::Bind 모드 switch를 탐색. 새 예시는 외부 게임 대신 자체 사각형/구멍마스크/반투명판을 촬영할 계획이며 아직 runtime 영상은 없다.",
+      "explanation": "흰 바닥 위에 벽판, 구멍이 있는 울타리판, 반투명 유리판을 두께와 투영 그림자로 놓는다. 카메라가 옆으로 이동하면서 각 판 뒤의 동일 색 도형이 어떻게 보이는지 비교. 장식용 3D 회전 대신 가림 차이에 집중한다.",
+      "cues": [
+        "1~3행: 같은 alpha를 다르게 해석할 필요",
+        "4~6행: 세 편 연결과 이번 편의 약속"
+      ],
+      "label": "그리기 규칙 · 표시 규칙 · 마지막 사용",
+      "title": "유리와 풀잎을 다르게 그려야 하는 이유",
+      "plannedStartSeconds": 2,
+      "plannedDurationSeconds": 45,
+      "plannedDevelopmentSeconds": 26,
+      "plannedExplanationSeconds": 19,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaMaterial.cpp",
+          "firstLine": 36,
+          "lastLine": 55,
+          "snapshotKey": "YamYamEngine_CORE/yaMaterial.cpp:36-55"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaShader.cpp",
+          "firstLine": 132,
+          "lastLine": 148,
+          "snapshotKey": "YamYamEngine_CORE/yaShader.cpp:132-148"
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "developmentWeight": 1,
+      "footage": "실제 세 모드 상태와 기본 Sprite CutOut 설정을 보여준다. smoke test의 Opaque alpha0/CutOut/Transparent 픽셀 기대값을 코드에서 비교한다. 테스트 결과 화면은 새 실행 전 미확인으로 표시한다.",
+      "explanation": "동일 RGB와 alpha0/0.5 마스크를 가진 카드 3장을 원근 배치한다. Opaque는 구멍 없이 색쓰기, CutOut은 기준 아래 타일이 빠지며 통과 픽셀은 색쓰기, Transparent는 뒤판의 색과 섞임. 알파0.5에서 컷아웃과 반투명의 결과를 카메라 이동 없이 나란히 비교한다.",
+      "cues": [
+        "1~5행: 동일 alpha의 세 결과",
+        "6~9행: 용도와 재질 기본값"
+      ],
+      "label": "버리기와 색 섞기는 다르다",
+      "title": "알파가 있다고 모두 반투명하지는 않다",
+      "plannedStartSeconds": 47,
+      "plannedDurationSeconds": 65,
+      "plannedDevelopmentSeconds": 34,
+      "plannedExplanationSeconds": 31,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaShader.cpp",
+          "firstLine": 65,
+          "lastLine": 85,
+          "snapshotKey": "YamYamEngine_CORE/yaShader.cpp:65-85"
+        },
+        {
+          "file": "Shaders_SOURCE/SpriteDefaultPS.hlsl",
+          "firstLine": 11,
+          "lastLine": 17,
+          "snapshotKey": "Shaders_SOURCE/SpriteDefaultPS.hlsl:11-17"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaRenderer.cpp",
+          "firstLine": 281,
+          "lastLine": 292,
+          "snapshotKey": "YamYamEngine_CORE/yaRenderer.cpp:281-292"
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "developmentWeight": 1.35,
+      "footage": "git diff ce56f16^ ce56f16 -- yaMaterial.cpp의 제거된 shader state setter와 새 Bind(mMode)를 실제 변경으로 비교한다. 수정 전 영향은 소스 근거의 가능성/도식이며 실측 버그 재현으로 표기하지 않는다.",
+      "explanation": "벽 Material/유리 Material 두 앞판에서 같은 Shader 뒤판으로 선이 이어진다. 왼쪽 반례는 유리 선택이 공통판을 바꿔 양쪽에 퍼진다. 오른쪽은 각 Material에 작은 mode 태그를 보관하고 Draw 시 태그가 PSO 선택기로 들어간다.",
+      "cues": [
+        "1~4행: 이전 공유 상태 변경 문제",
+        "5~9행: Material 의도→Bind→이번 Draw 상태"
+      ],
+      "label": "Material은 모드 보관, Shader는 PSO 선택",
+      "title": "공유 Shader와 Material의 역할 나누기",
+      "plannedStartSeconds": 112,
+      "plannedDurationSeconds": 65,
+      "plannedDevelopmentSeconds": 46,
+      "plannedExplanationSeconds": 19,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaMaterial.cpp",
+          "firstLine": 36,
+          "lastLine": 55,
+          "snapshotKey": "YamYamEngine_CORE/yaMaterial.cpp:36-55"
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "developmentWeight": 1.25,
+      "footage": "GetPipelineState의 key/find/emplace와 PSO desc의 고정 RTVFormats/SampleDesc를 짚고 SetPipelineState로 이어간다. 캐시 hit로 성능이 몇 배 좋아졌다는 주장은 넣지 않는다.",
+      "explanation": "raster/blend/depth 세 태그가 깊이 있는 캐시 서랍의 키가 된다. hit는 기존 카드가 앞으로 나오고 miss는 새 카드 생성 후 보관한다. 세 기본카드가 먼저 준비되며 타깃형식/샘플수는 현재 고정값 표찰로 표시한다.",
+      "cues": [
+        "1~6행: 생성/캐시/Draw 선택",
+        "7~10행: 현재 키 범위와 별도 바인딩"
+      ],
+      "label": "상태를 덮어쓰지 않고 해당 PSO를 선택",
+      "title": "PSO를 만들고 선택하고 재사용하기",
+      "plannedStartSeconds": 177,
+      "plannedDurationSeconds": 70,
+      "plannedDevelopmentSeconds": 46,
+      "plannedExplanationSeconds": 24,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaShader.cpp",
+          "firstLine": 26,
+          "lastLine": 95,
+          "snapshotKey": "YamYamEngine_CORE/yaShader.cpp:26-95"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaShader.cpp",
+          "firstLine": 120,
+          "lastLine": 124,
+          "snapshotKey": "YamYamEngine_CORE/yaShader.cpp:120-124"
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "developmentWeight": 1.35,
+      "footage": "YA_ALPHA_TEST compile macro→mCutoutPSBlob 선택→clip 구문을 실제 소스로 연결. 단색 Texture의 alpha test cases를 test 정의에서 보여준다.",
+      "explanation": "동일 소스 카드가 일반/YA_ALPHA_TEST 두 컴파일 카드로 갈라진다. CutOut 선만 검사 게이트를 통과한다. alpha0,0.005,0.01,0.5 타일을 순서대로 넣고 음수 값만 바닥에서 사라진다. Transparent 타일은 검사 없이 색혼합 층으로 이동한다.",
+      "cues": [
+        "1~4행: 모드별 컴파일 변형",
+        "5~10행: clip 경계와 custom shader 지원 조건"
+      ],
+      "label": "clip(alpha − 0.01): 음수만 버린다",
+      "title": "CutOut 전용 셰이더 변형",
+      "plannedStartSeconds": 247,
+      "plannedDurationSeconds": 70,
+      "plannedDevelopmentSeconds": 49,
+      "plannedExplanationSeconds": 21,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaShader.cpp",
+          "firstLine": 113,
+          "lastLine": 117,
+          "snapshotKey": "YamYamEngine_CORE/yaShader.cpp:113-117"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaShader.cpp",
+          "firstLine": 55,
+          "lastLine": 59,
+          "snapshotKey": "YamYamEngine_CORE/yaShader.cpp:55-59"
+        },
+        {
+          "file": "Shaders_SOURCE/SpriteDefaultPS.hlsl",
+          "firstLine": 11,
+          "lastLine": 17,
+          "snapshotKey": "Shaders_SOURCE/SpriteDefaultPS.hlsl:11-17"
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "developmentWeight": 0.85,
+      "footage": "RenderSceneFromCamera의 group order/distance sort와 Shader depth state를 실제로 짚는다. 새 엔진 촬영은 두 카메라와 겹친 색판/불투명 가림판의 검증 장면을 계획한다.",
+      "explanation": "Manim 선택 클립: 검정 바닥 앞의 alpha0.5 빨강/파랑 판을 카메라 시선 방향으로 놓고 순서를 뒤집는다. 색 결과 (0.25,0,0.5)와 (0.5,0,0.25)를 비교. 별도 장면에서는 벽 뒤 반투명판도 합성되는 Always 정책을 붉은 주석으로 보여준다. camera 이동으로 거리 순서가 바뀌되 삼각형 교차는 미해결 표찰을 남긴다.",
+      "cues": [
+        "1~6행: 색 합성 순서와 카메라별 정렬",
+        "7~10행: 현재 Always/no-write 정책과 한계"
+      ],
+      "label": "현재 Transparent: 먼 순서 · Always · 깊이 기록 끔",
+      "title": "그리는 순서가 반투명 색을 바꾸는 이유",
+      "plannedStartSeconds": 317,
+      "plannedDurationSeconds": 70,
+      "plannedDevelopmentSeconds": 31,
+      "plannedExplanationSeconds": 39,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaRenderer.cpp",
+          "firstLine": 333,
+          "lastLine": 355,
+          "snapshotKey": "YamYamEngine_CORE/yaRenderer.cpp:333-355"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaRenderer.cpp",
+          "firstLine": 394,
+          "lastLine": 405,
+          "snapshotKey": "YamYamEngine_CORE/yaRenderer.cpp:394-405"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaShader.cpp",
+          "firstLine": 78,
+          "lastLine": 85,
+          "snapshotKey": "YamYamEngine_CORE/yaShader.cpp:78-85"
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "developmentWeight": 0.8,
+      "footage": "RGB blend와 alpha ONE/ZERO를 각각 확인하고 actual ImGui composition test 기대값을 따라간다. 새 비교 영상에서만 RT readback과 display pixel 결과를 실측으로 기록한다.",
+      "explanation": "녹색판→alpha0.5 빨강판 합성 후 RGB(0.5,0.5,0)/A0.5 결과판을 만든다. 결과판이 검정 UI 배경층을 지나 다시 반으로 어두워진다. 표시A1 경로는 같은 RGB를 유지한다. 모든 수치는 선형 단순 혼합의 설명용 정규화 값으로 표시하고 화면 색관리/8bit 반올림 측정과 구분한다.",
+      "cues": [
+        "1~6행: 첫 합성과 원하지 않는 두 번째 합성",
+        "7~9행: 완성된 RT 표시 목적의 A1"
+      ],
+      "label": "완성 RGB를 UI에서 다시 반으로 섞지 않는다",
+      "title": "완성된 화면에 알파가 두 번 적용되는 문제",
+      "plannedStartSeconds": 387,
+      "plannedDurationSeconds": 70,
+      "plannedDevelopmentSeconds": 29,
+      "plannedExplanationSeconds": 41,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaShader.cpp",
+          "firstLine": 67,
+          "lastLine": 76,
+          "snapshotKey": "YamYamEngine_CORE/yaShader.cpp:67-76"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaRenderTarget.cpp",
+          "firstLine": 56,
+          "lastLine": 69,
+          "snapshotKey": "YamYamEngine_CORE/yaRenderTarget.cpp:56-69"
+        },
+        {
+          "file": "Tests/DX12RenderingSmoke.cpp",
+          "firstLine": 436,
+          "lastLine": 444,
+          "snapshotKey": "Tests/DX12RenderingSmoke.cpp:436-444"
+        }
+      ]
+    },
+    {
+      "id": "08",
+      "developmentWeight": 1.2,
+      "footage": "GetDisplaySRV의 component mapping과 첫 RGBA8 attachment 검사, 두 Image 호출을 연결. 일반 Texture::GetSRV와 표시용 handle의 구분을 source/test에서 확인한다.",
+      "explanation": "하나의 두께 있는 RGBA 원본판에서 두 개의 읽기 창이 앞뒤로 나온다. 일반창은 R/G/B/A, 표시창은 R/G/B/1. 원본 alpha 타일은 끝까지 0.5로 남고 표시창의 네번째 타일만 1로 변한다. 새 픽셀 복사판을 만들지 않는다.",
+      "cues": [
+        "1~5행: 같은 resource의 두 descriptor",
+        "6~9행: 다른 소비 목적과 원본 보존"
+      ],
+      "label": "원본 수정 없이 읽는 alpha만 1",
+      "title": "원본 RGBA와 표시용 SRV 나누기",
+      "plannedStartSeconds": 457,
+      "plannedDurationSeconds": 60,
+      "plannedDevelopmentSeconds": 38,
+      "plannedExplanationSeconds": 22,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaRenderTarget.cpp",
+          "firstLine": 56,
+          "lastLine": 69,
+          "snapshotKey": "YamYamEngine_CORE/yaRenderTarget.cpp:56-69"
+        },
+        {
+          "file": "Editor_Window/guiSceneWindow.cpp",
+          "firstLine": 98,
+          "lastLine": 99,
+          "snapshotKey": "Editor_Window/guiSceneWindow.cpp:98-99"
+        },
+        {
+          "file": "Editor_Window/guiEditorApplication.cpp",
+          "firstLine": 350,
+          "lastLine": 351,
+          "snapshotKey": "Editor_Window/guiEditorApplication.cpp:350-351"
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "developmentWeight": 1.2,
+      "footage": "Texture/DisplaySRV retirement→UINT64_MAX→Seal→Collect의 실제 정의를 순서대로 추적. resize 시 descriptor count 변화는 새 테스트에서 확보 후만 영상화한다.",
+      "explanation": "슬롯17과 이전 텍스처를 묶은 2.5D 바구니를 폐기 대기층에 둔다. 중간 upload Signal11이 지나도 바구니는 잠긴 채. main+별도창 소비 뒤 Signal12가 붙고 completed12 때만 빈 슬롯 서랍으로 돌아간다. texture와 descriptor 어느 하나만 먼저 반환하는 반례를 짧게 비교한다.",
+      "cues": [
+        "1~5행: resource와 descriptor의 공동 수명",
+        "6~10행: 중간 upload11과 최종 frame12의 구분"
+      ],
+      "label": "마지막 소비를 포함한 Fence 이후 반환",
+      "title": "리사이즈한 텍스처의 마지막 사용 기다리기",
+      "plannedStartSeconds": 517,
+      "plannedDurationSeconds": 70,
+      "plannedDevelopmentSeconds": 44,
+      "plannedExplanationSeconds": 26,
+      "codeReferences": [
+        {
+          "file": "YamYamEngine_CORE/yaTexture.cpp",
+          "firstLine": 9,
+          "lastLine": 16,
+          "snapshotKey": "YamYamEngine_CORE/yaTexture.cpp:9-16"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaRenderTarget.cpp",
+          "firstLine": 72,
+          "lastLine": 77,
+          "snapshotKey": "YamYamEngine_CORE/yaRenderTarget.cpp:72-77"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+          "firstLine": 712,
+          "lastLine": 739,
+          "snapshotKey": "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:712-739"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "developmentWeight": 1.35,
+      "footage": "픽셀/깊이/정렬/303 Draw/ImGui 테스트 소스를 실제로 탐색. 기존 문서의 2026-09-14/15 검증과 이번 재실행 미실시를 구분한다. 테스트에서 multi-viewport를 끈 구문도 확인해 수동 별도창 검수가 남는 이유를 보여준다.",
+      "explanation": "세 모드판, 표시창, 폐기 바구니가 작은 2.5D 전체 구조로 합쳐진다. each 의도에 맞는 test 기대값 카드가 연결된다. 카메라 좌우 전환과 256→257칸 이동을 한 번씩 보여주고 마지막 구조에서 '그리기/표시/수명' 세 질문만 남긴다.",
+      "cues": [
+        "1~6행: 재현 가능한 구현/검증 예시",
+        "7~11행: 역사적 기록·수동 검수·미완 범위·결론"
+      ],
+      "label": "렌더링 규칙과 테스트 기대값을 함께 정한다",
+      "title": "화면 비교와 픽셀 검사 함께 사용하기",
+      "plannedStartSeconds": 587,
+      "plannedDurationSeconds": 90,
+      "plannedDevelopmentSeconds": 62,
+      "plannedExplanationSeconds": 28,
+      "codeReferences": [
+        {
+          "file": "Tests/DX12RenderingSmoke.cpp",
+          "firstLine": 157,
+          "lastLine": 181,
+          "snapshotKey": "Tests/DX12RenderingSmoke.cpp:157-181"
+        },
+        {
+          "file": "Tests/DX12RenderingSmoke.cpp",
+          "firstLine": 284,
+          "lastLine": 325,
+          "snapshotKey": "Tests/DX12RenderingSmoke.cpp:284-325"
+        },
+        {
+          "file": "Tests/DX12RenderingSmoke.cpp",
+          "firstLine": 484,
+          "lastLine": 488,
+          "snapshotKey": "Tests/DX12RenderingSmoke.cpp:484-488"
+        },
+        {
+          "file": "YamYamEngine_CORE/yaRenderTarget.cpp",
+          "firstLine": 129,
+          "lastLine": 129,
+          "snapshotKey": "YamYamEngine_CORE/yaRenderTarget.cpp:129-129"
+        }
+      ]
+    }
+  ],
+  "outro": {
+    "kind": "membership-thanks",
+    "plannedSeconds": 10,
+    "title": "멤버쉽가입 감사드립니다.",
+    "narration": false,
+    "subtitles": false,
+    "preserveOriginalProfileNameBadge": true,
+    "sourceVerification": "pending-before-render"
+  }
+}

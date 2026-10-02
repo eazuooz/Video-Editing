@@ -1,0 +1,198 @@
+{
+  "sourceHead": "845442b7d756e7a991c09799ab58a775803a006a",
+  "reviewType": "source-read-only-not-runtime-verification",
+  "excerpts": {
+    "YamYamEngine_CORE/yaMaterial.cpp:36-55": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaMaterial.cpp",
+      "firstLine": 36,
+      "lastLine": 55,
+      "fileSha256": "e2e32f0aec01b1df3e689af0be3ae3e1e4e5679cdfb17bb1c6e5b55393a15f22",
+      "excerptSha256": "5414978141d1c39d6b7df886468c9ba6b64accd24eb48d91a07cea2a7bbcc6aa",
+      "excerpt": "\tvoid Material::BindShader()\n\t{\n\t\tif (mShader)\n\t\t\tmShader->Bind(mMode);\n\t}\n\n\tvoid Material::BindTextures()\n\t{\n\t\tif (mAlbedoTexture)\n\t\t\tmAlbedoTexture->Bind(graphics::eShaderStage::PS, static_cast<UINT>(graphics::eTextureType::Albedo));\n\t}\n\n\tvoid Material::SetRenderingMode(const graphics::eRenderingMode mode)\n\t{\n\t\tif (mode < graphics::eRenderingMode::Opaque || mode >= graphics::eRenderingMode::End)\n\t\t\tthrow std::invalid_argument(\"Invalid material rendering mode\");\n\t\t// A shader can be shared by materials with different rendering modes.\n\t\t// Select its PSO at draw time instead of changing shared shader defaults.\n\t\tmMode = mode;\n\t}"
+    },
+    "YamYamEngine_CORE/yaShader.cpp:132-148": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaShader.cpp",
+      "firstLine": 132,
+      "lastLine": 148,
+      "fileSha256": "4b6c95f405788791af1269a20dd71fef084282c20cb51c3d2b1c22eef43ce5c2",
+      "excerptSha256": "19dd25446fcfc0aaa9901322c3df0a42fc8fa85224b65a429cbf6bd453ae598b",
+      "excerpt": "    void Shader::Bind(eRenderingMode mode)\n    {\n        switch (mode)\n        {\n        case eRenderingMode::Opaque:\n            Bind(mRasterizerState, eBlendState::Opaque, eDepthStencilState::LessEqual);\n            break;\n        case eRenderingMode::CutOut:\n            Bind(mRasterizerState, eBlendState::Cutout, eDepthStencilState::LessEqual);\n            break;\n        case eRenderingMode::Transparent:\n            Bind(mRasterizerState, eBlendState::Transparent, eDepthStencilState::Always);\n            break;\n        default:\n            throw std::invalid_argument(\"Invalid rendering mode\");\n        }\n    }"
+    },
+    "YamYamEngine_CORE/yaShader.cpp:65-85": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaShader.cpp",
+      "firstLine": 65,
+      "lastLine": 85,
+      "fileSha256": "4b6c95f405788791af1269a20dd71fef084282c20cb51c3d2b1c22eef43ce5c2",
+      "excerptSha256": "fdf706333b1ef9d16bd92fec11321db515d0910a721057fe4787932b3f72dcb0",
+      "excerpt": "        desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);\n        auto& target = desc.BlendState.RenderTarget[0];\n        if (blend == eBlendState::Transparent || blend == eBlendState::OneOne)\n        {\n            target.BlendEnable = TRUE;\n            target.SrcBlend = blend == eBlendState::Transparent ? D3D12_BLEND_SRC_ALPHA : D3D12_BLEND_ONE;\n            target.DestBlend = blend == eBlendState::Transparent ? D3D12_BLEND_INV_SRC_ALPHA : D3D12_BLEND_ONE;\n            target.BlendOp = D3D12_BLEND_OP_ADD;\n            // Preserve the DX11 alpha-channel equation as well as its RGB blend.\n            target.SrcBlendAlpha = D3D12_BLEND_ONE;\n            target.DestBlendAlpha = D3D12_BLEND_ZERO;\n            target.BlendOpAlpha = D3D12_BLEND_OP_ADD;\n        }\n        desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);\n        desc.DepthStencilState.DepthEnable = depth != eDepthStencilState::DepthNone;\n        desc.DepthStencilState.DepthWriteMask = depth == eDepthStencilState::LessEqual\n            ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;\n        // Transparent deliberately keeps the old Always/no-write behavior.\n        desc.DepthStencilState.DepthFunc = depth == eDepthStencilState::LessEqual ? D3D12_COMPARISON_FUNC_LESS_EQUAL\n            : depth == eDepthStencilState::Always ? D3D12_COMPARISON_FUNC_ALWAYS : D3D12_COMPARISON_FUNC_NEVER;\n        desc.DepthStencilState.StencilEnable = FALSE;"
+    },
+    "Shaders_SOURCE/SpriteDefaultPS.hlsl:11-17": {
+      "path": "D:/Github/YamYam_Engine/Shaders_SOURCE/SpriteDefaultPS.hlsl",
+      "firstLine": 11,
+      "lastLine": 17,
+      "fileSha256": "a176454217b130b223bb89742bf1f8ab7e28e25a0dcdfa41caef8ac772057a0e",
+      "excerptSha256": "32b3b125a834c74ed71dffa3d95724a02e2801d8ac3712a5a5f03c97be1fe621",
+      "excerpt": "float4 main(VSOutput input) : SV_Target\n{\n    float4 color = sprite.Sample(spriteSampler, input.uv) * input.color;\n#if defined(YA_ALPHA_TEST)\n    clip(color.a - 0.01f);\n#endif\n    return color;"
+    },
+    "YamYamEngine_CORE/yaRenderer.cpp:281-292": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderer.cpp",
+      "firstLine": 281,
+      "lastLine": 292,
+      "fileSha256": "590fa0237fe462a66e5ba4a016830be8ae60b6369c57a7a88bf204257aedea6d",
+      "excerptSha256": "12e05f225d692dba8d8f4c9fb7fcb61118936a8a1f154db2cce3ccafcd409756",
+      "excerpt": "\tvoid LoadMaterials()\n\t{\n\t\tauto triangleMaterial = new Material();\n\t\ttriangleMaterial->SetShader(Resources::Find<Shader>(L\"TriangleShader\"));\n\t\tResources::Insert(L\"TriangleMaterial\", triangleMaterial);\n\n\t\tauto spriteMaterial = new Material();\n\t\tspriteMaterial->SetShader(Resources::Find<Shader>(L\"SpriteDefaultShader\"));\n\t\t// The default sprite previously clipped alpha in every draw. Keep that\n\t\t// behavior explicitly, while other materials can select true Opaque/Transparent.\n\t\tspriteMaterial->SetRenderingMode(eRenderingMode::CutOut);\n\t\tResources::Insert(L\"Sprite-Default-Material\", spriteMaterial);"
+    },
+    "YamYamEngine_CORE/yaShader.cpp:26-95": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaShader.cpp",
+      "firstLine": 26,
+      "lastLine": 95,
+      "fileSha256": "4b6c95f405788791af1269a20dd71fef084282c20cb51c3d2b1c22eef43ce5c2",
+      "excerptSha256": "22084d2c9f37434d13fbafb1263646c668405b3d98d1c7a5c9a8bdc03aaa2538",
+      "excerpt": "    HRESULT Shader::Load(const std::wstring& path)\n    {\n        if (!Create(eShaderStage::VS, path) || !Create(eShaderStage::PS, path)) return E_FAIL;\n        // Prepare the material variants while loading. Custom legacy state\n        // combinations are cached on first bind and never replace an in-flight PSO.\n        if (!GetPipelineState(eRasterizerState::SolidNone, eBlendState::Opaque, eDepthStencilState::LessEqual)\n            || !GetPipelineState(eRasterizerState::SolidNone, eBlendState::Cutout, eDepthStencilState::LessEqual)\n            || !GetPipelineState(eRasterizerState::SolidNone, eBlendState::Transparent, eDepthStencilState::Always))\n            return E_FAIL;\n        return S_OK;\n    }\n\n    ID3D12PipelineState* Shader::GetPipelineState(eRasterizerState rasterizer, eBlendState blend, eDepthStencilState depth)\n    {\n        if (rasterizer < eRasterizerState::SolidBack || rasterizer >= eRasterizerState::End\n            || blend < eBlendState::Opaque || blend >= eBlendState::End\n            || depth < eDepthStencilState::DepthNone || depth >= eDepthStencilState::End)\n            throw std::invalid_argument(\"Invalid graphics pipeline state\");\n        const PipelineKey key(rasterizer, blend, depth);\n        const auto found = mPipelineStates.find(key);\n        if (found != mPipelineStates.end()) return found->second.Get();\n        if (!mVSBlob || !mPSBlob || !mCutoutPSBlob) return nullptr;\n\n        const D3D12_INPUT_ELEMENT_DESC inputElements[] =\n        {\n            { \"POSITION\", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },\n            { \"COLOR\", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },\n            { \"TEXCOORD\", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },\n        };\n        D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};\n        desc.InputLayout = { inputElements, _countof(inputElements) };\n        desc.pRootSignature = GetDevice()->GetRootSignature().Get();\n        desc.VS = CD3DX12_SHADER_BYTECODE(mVSBlob.Get());\n        desc.PS = CD3DX12_SHADER_BYTECODE(blend == eBlendState::Cutout ? mCutoutPSBlob.Get() : mPSBlob.Get());\n        desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);\n        desc.RasterizerState.CullMode = rasterizer == eRasterizerState::SolidBack ? D3D12_CULL_MODE_BACK\n            : rasterizer == eRasterizerState::SolidFront ? D3D12_CULL_MODE_FRONT : D3D12_CULL_MODE_NONE;\n        desc.RasterizerState.FillMode = rasterizer == eRasterizerState::Wireframe ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID;\n\n        desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);\n        auto& target = desc.BlendState.RenderTarget[0];\n        if (blend == eBlendState::Transparent || blend == eBlendState::OneOne)\n        {\n            target.BlendEnable = TRUE;\n            target.SrcBlend = blend == eBlendState::Transparent ? D3D12_BLEND_SRC_ALPHA : D3D12_BLEND_ONE;\n            target.DestBlend = blend == eBlendState::Transparent ? D3D12_BLEND_INV_SRC_ALPHA : D3D12_BLEND_ONE;\n            target.BlendOp = D3D12_BLEND_OP_ADD;\n            // Preserve the DX11 alpha-channel equation as well as its RGB blend.\n            target.SrcBlendAlpha = D3D12_BLEND_ONE;\n            target.DestBlendAlpha = D3D12_BLEND_ZERO;\n            target.BlendOpAlpha = D3D12_BLEND_OP_ADD;\n        }\n        desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);\n        desc.DepthStencilState.DepthEnable = depth != eDepthStencilState::DepthNone;\n        desc.DepthStencilState.DepthWriteMask = depth == eDepthStencilState::LessEqual\n            ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;\n        // Transparent deliberately keeps the old Always/no-write behavior.\n        desc.DepthStencilState.DepthFunc = depth == eDepthStencilState::LessEqual ? D3D12_COMPARISON_FUNC_LESS_EQUAL\n            : depth == eDepthStencilState::Always ? D3D12_COMPARISON_FUNC_ALWAYS : D3D12_COMPARISON_FUNC_NEVER;\n        desc.DepthStencilState.StencilEnable = FALSE;\n        desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;\n        desc.SampleMask = UINT_MAX;\n        desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;\n        desc.NumRenderTargets = 1;\n        desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;\n        desc.SampleDesc.Count = 1;\n        Microsoft::WRL::ComPtr<ID3D12PipelineState> pipeline;\n        if (FAILED(GetDevice()->GetID3D12Device()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pipeline))))\n            return nullptr;\n        return mPipelineStates.emplace(key, std::move(pipeline)).first->second.Get();"
+    },
+    "YamYamEngine_CORE/yaShader.cpp:120-124": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaShader.cpp",
+      "firstLine": 120,
+      "lastLine": 124,
+      "fileSha256": "4b6c95f405788791af1269a20dd71fef084282c20cb51c3d2b1c22eef43ce5c2",
+      "excerptSha256": "780cbb0daf0972e08e3d0c05acb6721d692548c26b787cef1bb3078174a1d202",
+      "excerpt": "    void Shader::Bind(eRasterizerState rasterizer, eBlendState blend, eDepthStencilState depth)\n    {\n        auto* pipeline = GetPipelineState(bWireframe ? eRasterizerState::Wireframe : rasterizer, blend, depth);\n        if (!pipeline) throw std::runtime_error(\"Graphics pipeline creation failed\");\n        GetDevice()->GetCommandList()->SetPipelineState(pipeline);"
+    },
+    "YamYamEngine_CORE/yaShader.cpp:113-117": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaShader.cpp",
+      "firstLine": 113,
+      "lastLine": 117,
+      "fileSha256": "4b6c95f405788791af1269a20dd71fef084282c20cb51c3d2b1c22eef43ce5c2",
+      "excerptSha256": "3f74a64207d2840fc6e434b52a808cf2a7bd379c510a9659d75aefbb7a465c5b",
+      "excerpt": "    bool Shader::CreatePixelShader(const std::wstring& fileName)\n    {\n        const D3D_SHADER_MACRO cutoutDefines[] = { { \"YA_ALPHA_TEST\", \"1\" }, { nullptr, nullptr } };\n        return GetDevice()->CreatePixelShader(fileName, mPSBlob.ReleaseAndGetAddressOf())\n            && GetDevice()->CreatePixelShader(fileName, mCutoutPSBlob.ReleaseAndGetAddressOf(), cutoutDefines);"
+    },
+    "YamYamEngine_CORE/yaShader.cpp:55-59": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaShader.cpp",
+      "firstLine": 55,
+      "lastLine": 59,
+      "fileSha256": "4b6c95f405788791af1269a20dd71fef084282c20cb51c3d2b1c22eef43ce5c2",
+      "excerptSha256": "f4c253675424bc0bfc62992205a520c1bdd1fda557d056438b40a4cea3883786",
+      "excerpt": "        D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};\n        desc.InputLayout = { inputElements, _countof(inputElements) };\n        desc.pRootSignature = GetDevice()->GetRootSignature().Get();\n        desc.VS = CD3DX12_SHADER_BYTECODE(mVSBlob.Get());\n        desc.PS = CD3DX12_SHADER_BYTECODE(blend == eBlendState::Cutout ? mCutoutPSBlob.Get() : mPSBlob.Get());"
+    },
+    "YamYamEngine_CORE/yaRenderer.cpp:333-355": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderer.cpp",
+      "firstLine": 333,
+      "lastLine": 355,
+      "fileSha256": "590fa0237fe462a66e5ba4a016830be8ae60b6369c57a7a88bf204257aedea6d",
+      "excerptSha256": "31b1afa4f7d2b1bfae8172a51bb155be41b42721a4c31d808e480d7ae8229a48",
+      "excerpt": "    void RenderSceneFromCamera(Scene* scene, Camera* camera)\n    {\n        if (!scene || !camera) return;\n        camera->SetViewportSize(GetDevice()->GetViewportWidth(), GetDevice()->GetViewportHeight());\n        camera->LateUpdate();\n\t\tMatrix viewMatrix = camera->GetViewMatrix();\n\t\tMatrix projectionMatrix = camera->GetProjectionMatrix();\n\t\tVector3 cameraPos = camera->GetOwner()->GetComponent<Transform>()->GetPosition();\n\n\t\tstd::vector<GameObject*> opaqueList;\n\t\tstd::vector<GameObject*> cutoutList;\n\t\tstd::vector<GameObject*> transparentList;\n\n\t\tCollectRenderables(scene, opaqueList, cutoutList, transparentList);\n\n\t\tSortByDistance(opaqueList, cameraPos, true);\n\t\tSortByDistance(cutoutList, cameraPos, true);\n\t\tSortByDistance(transparentList, cameraPos, false);\n\n\t\tRenderRenderables(opaqueList, viewMatrix, projectionMatrix);\n\t\tRenderRenderables(cutoutList, viewMatrix, projectionMatrix);\n\t\tRenderRenderables(transparentList, viewMatrix, projectionMatrix);\n\t}"
+    },
+    "YamYamEngine_CORE/yaRenderer.cpp:394-405": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderer.cpp",
+      "firstLine": 394,
+      "lastLine": 405,
+      "fileSha256": "590fa0237fe462a66e5ba4a016830be8ae60b6369c57a7a88bf204257aedea6d",
+      "excerptSha256": "a79b6fbb9e90b95e10e27c874ec857a634093a09ad6bef289c0c83fbcdc92669",
+      "excerpt": "\tvoid SortByDistance(std::vector<GameObject*>& renderList, const Vector3& cameraPos, bool bAscending) \n\t{\n\t\t// opaqueList and cutoutList are sorted in ascending order\n\t\t// trasparentList is sorted in descending order\n\t\tauto comparator = [cameraPos, bAscending](GameObject* a, GameObject* b)\n\t\t\t{\n\t\t\t\tfloat distA = Vector3::Distance(a->GetComponent<Transform>()->GetPosition(), cameraPos);\n\t\t\t\tfloat distB = Vector3::Distance(b->GetComponent<Transform>()->GetPosition(), cameraPos);\n\t\t\t\treturn bAscending ? (distA < distB) : (distA > distB);\n\t\t\t};\n\n\t\tstd::ranges::sort(renderList, comparator);"
+    },
+    "YamYamEngine_CORE/yaShader.cpp:78-85": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaShader.cpp",
+      "firstLine": 78,
+      "lastLine": 85,
+      "fileSha256": "4b6c95f405788791af1269a20dd71fef084282c20cb51c3d2b1c22eef43ce5c2",
+      "excerptSha256": "547b25d0857fb7eebae7cb091e3dc4a319b806e0862fe8668fd89cbc130d9e4e",
+      "excerpt": "        desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);\n        desc.DepthStencilState.DepthEnable = depth != eDepthStencilState::DepthNone;\n        desc.DepthStencilState.DepthWriteMask = depth == eDepthStencilState::LessEqual\n            ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;\n        // Transparent deliberately keeps the old Always/no-write behavior.\n        desc.DepthStencilState.DepthFunc = depth == eDepthStencilState::LessEqual ? D3D12_COMPARISON_FUNC_LESS_EQUAL\n            : depth == eDepthStencilState::Always ? D3D12_COMPARISON_FUNC_ALWAYS : D3D12_COMPARISON_FUNC_NEVER;\n        desc.DepthStencilState.StencilEnable = FALSE;"
+    },
+    "YamYamEngine_CORE/yaShader.cpp:67-76": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaShader.cpp",
+      "firstLine": 67,
+      "lastLine": 76,
+      "fileSha256": "4b6c95f405788791af1269a20dd71fef084282c20cb51c3d2b1c22eef43ce5c2",
+      "excerptSha256": "f2eece7763a93197180b34f858835c8390ed837c6dbb533ca1a220b26f42d131",
+      "excerpt": "        if (blend == eBlendState::Transparent || blend == eBlendState::OneOne)\n        {\n            target.BlendEnable = TRUE;\n            target.SrcBlend = blend == eBlendState::Transparent ? D3D12_BLEND_SRC_ALPHA : D3D12_BLEND_ONE;\n            target.DestBlend = blend == eBlendState::Transparent ? D3D12_BLEND_INV_SRC_ALPHA : D3D12_BLEND_ONE;\n            target.BlendOp = D3D12_BLEND_OP_ADD;\n            // Preserve the DX11 alpha-channel equation as well as its RGB blend.\n            target.SrcBlendAlpha = D3D12_BLEND_ONE;\n            target.DestBlendAlpha = D3D12_BLEND_ZERO;\n            target.BlendOpAlpha = D3D12_BLEND_OP_ADD;"
+    },
+    "YamYamEngine_CORE/yaRenderTarget.cpp:56-69": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderTarget.cpp",
+      "firstLine": 56,
+      "lastLine": 69,
+      "fileSha256": "d5b6d87df395bcdd404199fd573e356f5e62a52141017843fcc425bd5c5a68ca",
+      "excerptSha256": "bf0b53a7d214ae7458eaea555388998a8af0dec4be41c2ff8a2dd85bf8c22a5d",
+      "excerpt": "    D3D12_GPU_DESCRIPTOR_HANDLE RenderTarget::GetDisplaySRV()\n    {\n        if (mDisplaySrv) return mDisplaySrv.Gpu;\n        if (mAttachments.empty() || mAttachments[0]->GetFormat() != DXGI_FORMAT_R8G8B8A8_UNORM)\n            throw std::runtime_error(\"Display SRV requires an RGBA8 color attachment\");\n        mDisplaySrv = GetDevice()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);\n        D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};\n        desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;\n        desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;\n        desc.Shader4ComponentMapping = D3D12_ENCODE_SHADER_4_COMPONENT_MAPPING(0, 1, 2,\n            D3D12_SHADER_COMPONENT_MAPPING_FORCE_VALUE_1);\n        desc.Texture2D.MipLevels = 1;\n        GetDevice()->GetID3D12Device()->CreateShaderResourceView(mAttachments[0]->GetResource(), &desc, mDisplaySrv.Cpu);\n        return mDisplaySrv.Gpu;"
+    },
+    "Tests/DX12RenderingSmoke.cpp:436-444": {
+      "path": "D:/Github/YamYam_Engine/Tests/DX12RenderingSmoke.cpp",
+      "firstLine": 436,
+      "lastLine": 444,
+      "fileSha256": "e00ef422031018691a81b1a59445fef350b655457f939597912fc09605d86b7d",
+      "excerptSha256": "3fc7740a8d37cb26554097f31ce93c7f24f3c0434b00f353dd817f6d646e5637",
+      "excerpt": "                    \"ImGui Scene image did not sample its own SRV\");\n                RequirePixel(blendedPixels, {128, 127, 0, 128}, \"Original render-target alpha was not preserved\");\n                const auto displayed = composition.Pixel(UINT(blendedOrigin.x) + 40, UINT(blendedOrigin.y) + 40);\n                Require(std::abs(int(displayed[0]) - 128) <= 1 && std::abs(int(displayed[1]) - 127) <= 1\n                    && displayed[2] == 0 && displayed[3] == 255,\n                    \"ImGui applied alpha a second time to the already-composited camera image\");\n                const std::array<BYTE, 4> black = {0, 0, 0, 255};\n                Require(composition.Pixel(UINT(blendedOrigin.x) + 4, UINT(blendedOrigin.y) + 4) == black,\n                    \"Camera clear RGB was replaced by the ImGui window background\");"
+    },
+    "Editor_Window/guiSceneWindow.cpp:98-99": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/guiSceneWindow.cpp",
+      "firstLine": 98,
+      "lastLine": 99,
+      "fileSha256": "5a0596fc17539d81a78d53e26e0d3014a71a84809c15b13073d103223370843f",
+      "excerptSha256": "0b5f5e2ab602f07982680739afe74e1e1fec9be36e78833f6d63fd82efddda11",
+      "excerpt": "        const auto texture = frameBuffer->GetDisplaySRV();\n        ImGui::Image(ImTextureID(texture.ptr), panelSize);"
+    },
+    "Editor_Window/guiEditorApplication.cpp:350-351": {
+      "path": "D:/Github/YamYam_Engine/Editor_Window/guiEditorApplication.cpp",
+      "firstLine": 350,
+      "lastLine": 351,
+      "fileSha256": "c7b4c18a9672f8691560f4553d89016f619ee67946f850269e4e8614fcca1e58",
+      "excerptSha256": "dfcfd7eed93b6827c8b2255afa2b6d834629cb36a6578525590923c2adc1fd89",
+      "excerpt": "            FrameBuffer->RequestResize(UINT(panelSize.x), UINT(panelSize.y));\n            ImGui::Image(ImTextureID(FrameBuffer->GetDisplaySRV().ptr), panelSize);"
+    },
+    "YamYamEngine_CORE/yaTexture.cpp:9-16": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaTexture.cpp",
+      "firstLine": 9,
+      "lastLine": 16,
+      "fileSha256": "6228ebefb4f66f7521ab778f881d56de1b80ff1ce5d065a2969507168565ab68",
+      "excerptSha256": "2bb142d062f59ef938e513eb2348a8093763a8154830123444154e9ae888a3e0",
+      "excerpt": "    void Texture::ReleaseGpu()\n    {\n        if (GetDevice())\n            GetDevice()->RetireResource(std::move(mTexture), mSrv, mRtv, mDsv, mUav);\n        else\n            mTexture.Reset();\n        mSrv = {}; mRtv = {}; mDsv = {}; mUav = {};\n    }"
+    },
+    "YamYamEngine_CORE/yaRenderTarget.cpp:72-77": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderTarget.cpp",
+      "firstLine": 72,
+      "lastLine": 77,
+      "fileSha256": "d5b6d87df395bcdd404199fd573e356f5e62a52141017843fcc425bd5c5a68ca",
+      "excerptSha256": "e8cdb6d30af913d926c357d45eb8c10f88c2be10275d83e05a312ac5b4abbae3",
+      "excerpt": "    void RenderTarget::RetireDisplaySRV()\n    {\n        if (!mDisplaySrv) return;\n        Microsoft::WRL::ComPtr<ID3D12Resource> resource = mAttachments[0]->GetResource();\n        GetDevice()->RetireResource(std::move(resource), mDisplaySrv);\n        mDisplaySrv = {};"
+    },
+    "YamYamEngine_CORE/yaGraphicDevice_DX12.cpp:712-739": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaGraphicDevice_DX12.cpp",
+      "firstLine": 712,
+      "lastLine": 739,
+      "fileSha256": "3eb3f56d2bc4a820fdf2c7528695508a50a42df1d5fc9f344f9fe928b7cfdfba",
+      "excerptSha256": "c2a8f86c2698a82cce242b4eea643883456aba736190f72769ebd20494116f3b",
+      "excerpt": "    void GraphicDevice_DX12::RetireResource(Microsoft::WRL::ComPtr<ID3D12Resource> resource,\n        DescriptorHandle srv, DescriptorHandle rtv, DescriptorHandle dsv, DescriptorHandle uav)\n    {\n        if (resource || srv || rtv || dsv || uav)\n            mRetiredResources.push_back({ std::move(resource), srv, rtv, dsv, uav, UINT64_MAX });\n    }\n\n    void GraphicDevice_DX12::SealRetiredResources(UINT64 fenceValue)\n    {\n        // Only a frame-completion signal covers recorded draws and platform windows.\n        // A synchronous texture upload may signal in the middle of frame recording.\n        for (auto& retired : mRetiredResources)\n            if (retired.FenceValue == UINT64_MAX) retired.FenceValue = fenceValue;\n    }\n\n    void GraphicDevice_DX12::CollectRetiredResources()\n    {\n        const UINT64 completed = mFence->GetCompletedValue();\n        auto it = mRetiredResources.begin();\n        while (it != mRetiredResources.end())\n        {\n            if (it->FenceValue == UINT64_MAX || it->FenceValue > completed) { ++it; continue; }\n            mSrvAllocator.Free(it->Srv);\n            mSrvAllocator.Free(it->Uav);\n            mOffscreenRtvAllocator.Free(it->Rtv);\n            mDsvAllocator.Free(it->Dsv);\n            it = mRetiredResources.erase(it);\n        }"
+    },
+    "Tests/DX12RenderingSmoke.cpp:157-181": {
+      "path": "D:/Github/YamYam_Engine/Tests/DX12RenderingSmoke.cpp",
+      "firstLine": 157,
+      "lastLine": 181,
+      "fileSha256": "e00ef422031018691a81b1a59445fef350b655457f939597912fc09605d86b7d",
+      "excerptSha256": "1342d1f3e3d465f152bad092062a454b764efbed3d0d3284aeb14233a6fa9ce3",
+      "excerpt": "    check({ {&opaque, &blue, .8f}, {&opaque, &zeroRed, .2f} }, {255, 0, 0, 0},\n        \"Opaque incorrectly blended or clipped zero-alpha fragments\");\n    check({ {&opaque, &red, .2f}, {&opaque, &green, .8f} }, {255, 0, 0, 255},\n        \"Opaque did not test/write depth\");\n    check({ {&opaque, &red, .5f}, {&opaque, &green, .5f} }, {0, 255, 0, 255},\n        \"Opaque lost the legacy LessEqual depth comparison\");\n    check({ {&opaque, &blue, .8f}, {&cutout, &zeroRed, .2f} }, {0, 0, 255, 255},\n        \"CutOut did not discard zero alpha\");\n    check({ {&opaque, &blue, .8f}, {&cutout, &lowRed, .2f}, {&opaque, &green, .5f} }, {0, 255, 0, 255},\n        \"Discarded CutOut fragments wrote depth\");\n    check({ {&opaque, &blue, .8f}, {&cutout, &edgeRed, .2f} }, {255, 0, 0, 3},\n        \"CutOut rejected alpha above the 0.01 threshold\");\n    check({ {&opaque, &blue, .8f}, {&cutout, &halfRed, .2f}, {&opaque, &green, .5f} }, {255, 0, 0, 128},\n        \"CutOut blended accepted fragments or failed to write depth\");\n    check({ {&opaque, &blue, .2f}, {&transparent, &halfRed, .8f} }, {128, 0, 127, 128},\n        \"Transparent lost alpha blending or the legacy Always depth rule\");\n    check({ {&transparent, &halfRed, .2f}, {&opaque, &green, .5f} }, {0, 255, 0, 255},\n        \"Transparent incorrectly wrote depth\");\n    check({ {&opaque, &blue, .2f}, {&transparent, &lowRed, .8f} }, {2, 0, 253, 2},\n        \"Transparent incorrectly used the CutOut alpha threshold\");\n    // Change mode between draws in the same command list, then switch back.\n    transparent.SetRenderingMode(eRenderingMode::Opaque);\n    check({ {&opaque, &blue, .8f}, {&transparent, &halfRed, .2f} }, {255, 0, 0, 128},\n        \"Runtime material mode change did not select the opaque PSO\");\n    transparent.SetRenderingMode(eRenderingMode::Transparent);"
+    },
+    "Tests/DX12RenderingSmoke.cpp:284-325": {
+      "path": "D:/Github/YamYam_Engine/Tests/DX12RenderingSmoke.cpp",
+      "firstLine": 284,
+      "lastLine": 325,
+      "fileSha256": "e00ef422031018691a81b1a59445fef350b655457f939597912fc09605d86b7d",
+      "excerptSha256": "3886ee69875275991dacd59914848a4c7c7f61280be3297f18d9adbf555bb5d0",
+      "excerpt": "            // per frame (crosses an upload page), and repeated RT replacement.\n            for (UINT frame = 0; frame < 8; ++frame)\n            {\n                frameSlots.insert(device.GetFrameIndex());\n                BeginFrame();\n                const UINT size = frame % 2 ? 80 : 64;\n                game.RequestResize(size, size);\n                scene.RequestResize(size, size);\n                game.RequestResize(0, 0); // Minimized/collapsed panels must not destroy the last valid target.\n                game.Bind();\n                Require(game.GetSpecification().Width == size, \"Pending RT resize was lost\");\n                Require(game.GetDisplaySRV().ptr != game.GetAttachmentTexture(0)->GetSRV().ptr,\n                    \"Display and original RGBA must have separate SRVs\");\n                std::set<D3D12_GPU_VIRTUAL_ADDRESS> addresses;\n                Texture& left = frame % 2 ? green : red;\n                Texture& right = frame % 2 ? red : green;\n                addresses.insert(Draw(left, -0.5f));\n                addresses.insert(Draw(right, 0.5f));\n                for (UINT draw = 0; draw < 300; ++draw)\n                    Require(addresses.insert(Draw(red, 3.0f)).second, \"Two draws share a constant-buffer address\");\n                game.Unbind();\n                scene.Bind();\n                Require(addresses.insert(Draw(left, -0.5f, 0.5f)).second, \"Two cameras share a constant-buffer address\");\n                scene.Unbind();\n                FrameResult result;\n                result.Game = CopyToReadback(game.GetAttachmentTexture(0));\n                result.Scene = CopyToReadback(scene.GetAttachmentTexture(0));\n                result.Reversed = frame % 2 != 0;\n                results.push_back(std::move(result));\n                SubmitFrame();\n            }\n            device.WaitForGpu();\n            for (const auto& result : results)\n            {\n                const UINT w = result.Game.Width, h = result.Game.Height;\n                const std::array<BYTE, 4> redPixel = {255, 0, 0, 255};\n                const std::array<BYTE, 4> greenPixel = {0, 255, 0, 255};\n                const auto expectedLeft = result.Reversed ? greenPixel : redPixel;\n                const auto expectedRight = result.Reversed ? redPixel : greenPixel;\n                Require(result.Game.Pixel(w/4, h/2) == expectedLeft, \"Game left draw was overwritten or not textured\");\n                Require(result.Game.Pixel(3*w/4, h/2) == expectedRight, \"Game right draw was overwritten or not textured\");\n                Require(result.Scene.Pixel(w/2, h/2) == expectedLeft, \"Scene camera output is incorrect\");"
+    },
+    "Tests/DX12RenderingSmoke.cpp:484-488": {
+      "path": "D:/Github/YamYam_Engine/Tests/DX12RenderingSmoke.cpp",
+      "firstLine": 484,
+      "lastLine": 488,
+      "fileSha256": "e00ef422031018691a81b1a59445fef350b655457f939597912fc09605d86b7d",
+      "excerptSha256": "bc7e601045ccf5a23d13a3418a22a58ea66f5835790f6f99067ac494805bd4d5",
+      "excerpt": "        std::cout << \"PASS: \" << (warp ? \"WARP\" : \"hardware\")\n            << \", 8 frames, \" << frameSlots.size() << \" frame slots, 303 draws/frame, two camera outputs, \"\n            << \"texture upload, resize, deferred descriptor reuse, ImGui image composition, \"\n            << \"Opaque/CutOut/Transparent pixels and depth, per-camera sorting, shared-shader mode changes, \"\n            << (messages ? \"zero D3D12 errors\" : \"debug layer unavailable\") << '\\n';"
+    },
+    "YamYamEngine_CORE/yaRenderTarget.cpp:129-129": {
+      "path": "D:/Github/YamYam_Engine/YamYamEngine_CORE/yaRenderTarget.cpp",
+      "firstLine": 129,
+      "lastLine": 129,
+      "fileSha256": "d5b6d87df395bcdd404199fd573e356f5e62a52141017843fcc425bd5c5a68ca",
+      "excerptSha256": "7899dc20ab5ee0b2146af10b756cef73de849afce5622b3ca1a9c2bf57f8f584",
+      "excerpt": "    int RenderTarget::ReadPixel(uint32_t, int, int) { return 0; } // Object picking is a separate readback path."
+    }
+  }
+}

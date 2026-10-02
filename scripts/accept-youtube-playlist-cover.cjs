@@ -1,0 +1,17 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const {spawnSync}=require('node:child_process');
+const base=path.resolve(__dirname,'../output/youtube-library-refresh/v2/playlist-covers');
+const [id,source,promptPath]=process.argv.slice(2);
+const manifest=JSON.parse(fs.readFileSync(path.join(base,'prompts.json'),'utf8'));
+const item=manifest.items.find(x=>x.id===id);
+const scope=JSON.parse(fs.readFileSync(path.resolve(base,'../../scope.json'),'utf8'));
+if(!item||scope.excludedPlaylistIds.includes(id)||!fs.existsSync(source)) throw new Error('Missing or protected cover');
+fs.copyFileSync(source,item.rawPath);
+if(promptPath) fs.copyFileSync(promptPath,item.promptPath); else if(!fs.existsSync(item.promptPath))fs.writeFileSync(item.promptPath,item.prompt);
+const result=spawnSync('C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe',['-hide_banner','-loglevel','error','-y','-i',item.rawPath,'-vf','scale=1280:720:flags=lanczos','-frames:v','1','-q:v','2',item.thumbnailPath],{encoding:'utf8',windowsHide:true});
+if(result.status!==0)throw new Error(result.stderr);
+const bytes=fs.readFileSync(item.thumbnailPath); if(bytes.length>2*1024*1024)throw new Error('File too large');
+const receipt={id,source,mode:'built-in image_gen',rawPath:item.rawPath,thumbnailPath:item.thumbnailPath,promptPath:item.promptPath,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),promptSha256:crypto.createHash('sha256').update(fs.readFileSync(item.promptPath)).digest('hex'),width:1280,height:720,bytes:bytes.length,generatedAt:new Date().toISOString(),status:'generated-awaiting-visual-review'};
+fs.writeFileSync(path.join(base,'raw',id+'.json'),JSON.stringify(receipt,null,2)+'\n');
+const file=path.join(base,'progress.json'),progress=JSON.parse(fs.readFileSync(file,'utf8'));progress.generated[id]=receipt;progress.updatedAt=new Date().toISOString();fs.writeFileSync(file,JSON.stringify(progress,null,2)+'\n');
+console.log(JSON.stringify(receipt));

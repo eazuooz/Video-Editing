@@ -1,0 +1,74 @@
+{
+  "pid": 8104,
+  "startedAt": "2026-10-02T07:21:05.181Z",
+  "status": "tts-asr-ready-for-direct-review",
+  "inputs": [
+    {
+      "path": "projects/game-writing/project.json",
+      "sha256": "69e219b5b9459b035d6bee2e5184ee7356a3a52bff6e565539675e6336025e69"
+    },
+    {
+      "path": "projects/game-writing/script/narration.ko.json",
+      "sha256": "1439a97982ea498eef820842e3fd1843be562f39c1c5bbda19da7b217789fe21"
+    },
+    {
+      "path": "projects/game-writing/script/narration.en.json",
+      "sha256": "bcb7b323648d415841773c0ab894c7646dcd00c0751dc3cd45df71a14eb9b319"
+    }
+  ],
+  "minimumFreeMiB": 9000,
+  "maximumUtilizationPercent": 35,
+  "stableSamplesRequired": 3,
+  "checkIntervalSeconds": 30,
+  "logs": {
+    "runner": "projects/game-writing/production/resource-runner.log",
+    "tts": "projects/game-writing/production/tts.log",
+    "asr": "projects/game-writing/production/asr.log"
+  },
+  "children": [
+    {
+      "kind": "tts",
+      "pid": 32892,
+      "args": [
+        "qwen3-tts/render_narration.py",
+        "--project",
+        "game-writing",
+        "--device",
+        "cuda:0"
+      ],
+      "startedAt": "2026-10-02T07:22:08.032Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T07:51:52.902Z"
+    },
+    {
+      "kind": "asr",
+      "pid": 49328,
+      "args": [
+        "qwen3-tts/review_project_narration.py",
+        "--project",
+        "game-writing",
+        "--device",
+        "cpu"
+      ],
+      "startedAt": "2026-10-02T07:51:52.927Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T08:03:19.404Z"
+    }
+  ],
+  "updatedAt": "2026-10-02T08:03:19.406Z",
+  "gpuObservation": {
+    "at": "2026-10-02T07:22:06.695Z",
+    "totalMiB": 32607,
+    "usedMiB": 4152,
+    "freeMiB": 28455,
+    "utilizationPercent": 5,
+    "otherPythonPids": [],
+    "competingSynthesisPids": [],
+    "action": "Observe only. Never stop unrelated training or other synthesis; start only with stable spare resources."
+  },
+  "stableSamples": 3,
+  "finishedAt": "2026-10-02T08:03:19.406Z",
+  "speechAutomaticallyApproved": false
+}

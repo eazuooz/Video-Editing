@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><title>항구의 봉인 — 자체 제작 이야기 플레이테스트</title>
+<style>
+*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#304c55;color:#fff;font-family:'Malgun Gothic',sans-serif}canvas{width:100vw;height:100vh;display:block}.label{position:fixed;left:34px;top:28px;font-size:17px;letter-spacing:1px;color:#fff8dd;pointer-events:none}.label b{font-size:30px;display:block;letter-spacing:-1px;margin-bottom:7px}.hud{position:fixed;right:34px;top:28px;padding:14px 20px;background:#203737e8;border:1px solid #b7c99f;border-radius:6px;color:#fff8dd;font-size:19px;line-height:1.8}.interaction{position:fixed;top:145px;right:34px;display:grid;gap:10px;width:242px}button{font:inherit;border:1px solid #e3d2a5;border-radius:5px;cursor:pointer;background:#f9f0d9;color:#273936;font-weight:700;padding:12px 16px;text-align:left;box-shadow:0 4px 0 #223c35}button:hover{background:#ffdd74}button:disabled{opacity:.45;cursor:default}.interaction button{font-size:18px}.dialogue{position:fixed;left:calc(50% - 390px);top:70px;width:780px;background:#213a35f5;border:2px solid #ddc887;border-radius:8px;padding:24px 30px;box-shadow:0 10px 25px #0007}.dialogue h2{margin:0 0 14px;color:#ffde88;font-size:22px}.dialogue p{margin:0 0 20px;font-size:24px;line-height:1.7;word-break:keep-all}.choices{display:grid;gap:10px}.choices button{font-size:21px}.title{position:fixed;inset:0;display:grid;place-content:center;background:#172e34c9;backdrop-filter:blur(5px);text-align:center}.title h1{font-size:66px;margin:0;color:#ffdd88;letter-spacing:-3px}.title p{font-size:25px;line-height:1.8;color:#eee3c9}.title button{font-size:24px;text-align:center;margin:8px}.title small{margin-top:30px;color:#bccabb;font-size:17px}.debug{position:fixed;left:24px;bottom:24px;padding:10px;background:#203737e8;font-size:16px;max-width:460px;white-space:pre;display:none}.reset{position:fixed;left:34px;top:125px;padding:8px 12px;background:#203737e8;color:#fff0c5;border-color:#b7c99f;font-size:14px}#tip{position:fixed;left:50%;bottom:205px;transform:translateX(-50%);color:#fff3c3;font-size:18px;text-shadow:0 2px 3px #000;pointer-events:none}
+</style>
+<canvas id="world" width="1920" height="1080"></canvas>
+<div class="label"><b>항구의 봉인</b>자체 제작 · 조건 대사 플레이테스트</div>
+<div class="hud" id="hud"></div><div class="interaction" id="interactions"></div>
+<button class="reset" id="reset">새 경로 실행</button><div id="tip">장소를 누르면 이동합니다 · 오른쪽에서 행동을 선택하세요</div>
+<section class="dialogue" id="dialogue" hidden><h2 id="speaker"></h2><p id="line"></p><div class="choices" id="choices"></div></section>
+<section class="title" id="title"><h1>항구의 봉인</h1><p>어떤 순서로 찾아가든,<br>이야기가 당신의 행동을 기억하도록.</p><button id="start-read">배경을 읽고 시작</button><button id="start-skip">설명을 넘기고 시작</button><small>우리 채널이 직접 만든 테스트 게임 · 실제 입력과 상태 변화</small></section>
+<div class="debug" id="debug"></div>
+<script src="story-state.cjs"></script>
+<script>
+const canvas=document.getElementById('world'),ctx=canvas.getContext('2d');
+let state=HarborStory.create(),actor={x:655,y:725,tx:655,ty:725},animal={x:930,y:611,tx:930,ty:611},clock=0,seed=71;
+const sites={note:[645,495],guard:[1245,478],seal:[380,430],companion:[475,550],road:[925,665],harbor:[1450,350]};
+const $=id=>document.getElementById(id);
+const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+const foliage=Array.from({length:40},()=>({x:70+rnd()*1470,y:330+rnd()*430,s:18+rnd()*20})).filter(p=>Math.hypot(p.x-850,p.y-600)>150&&p.x<1130);
+function polygon(points,fill,stroke){ctx.fillStyle=fill;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}}
+function ellipse(x,y,rx,ry,fill){ctx.fillStyle=fill;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill()}
+function text(s,x,y,size=21,color='#fff3cb'){ctx.font=`bold ${size}px 'Malgun Gothic'`;ctx.textAlign='center';ctx.fillStyle='#18302eb0';ctx.fillText(s,x+1,y+2);ctx.fillStyle=color;ctx.fillText(s,x,y)}
+function tree(x,y,s){ellipse(x,y+10,s*.85,s*.28,'#273f393b');polygon([[x-4,y],[x+5,y],[x+4,y-s*2],[x-4,y-s*2]],'#765d43');ellipse(x,y-s*1.7,s,s*1.15,'#2d594b');ellipse(x-9,y-s*2.1,s*.65,s*.7,'#4b7c58');ellipse(x+10,y-s*2,s*.6,s*.75,'#365f46')}
+function house(x,y,w,h,color){ellipse(x+w*.2,y+15,w*.8,20,'#2b443d36');polygon([[x-w*.5,y-h],[x+w*.5,y-h*.7],[x+w*.5,y],[x-w*.5,y-h*.3]],color,'#725e42');polygon([[x+w*.5,y-h*.7],[x+w*.9,y-h],[x+w*.9,y-h*.3],[x+w*.5,y]],'#ad9671');polygon([[x-w*.7,y-h],[x+w*.1,y-h*1.5],[x+w*.75,y-h*.65],[x-w*.05,y-h*.2]],'#64746b','#354e47');polygon([[x+w*.75,y-h*.65],[x+w*.1,y-h*1.5],[x+w*1.05,y-h*1.1],[x+w*.9,y-h*.3]],'#45605c');polygon([[x-8,y-50],[x+20,y-42],[x+20,y-4],[x-8,y-12]],'#4b5546');ctx.fillStyle='#ffdda2';ctx.fillRect(x-35,y-h*.6,17,23)}
+function person(x,y,color,label,step=0){ellipse(x,y+6,20,8,'#1e363847');polygon([[x-10,y-3],[x-4+step,y-3],[x-6+step,y-24],[x-12,y-24]],'#384b4b');polygon([[x+5,y-2],[x+11-step,y-2],[x+13,y-24],[x+5-step,y-24]],'#384b4b');polygon([[x-17,y-24],[x+17,y-24],[x+12,y-63],[x-12,y-63]],color,'#283d37');ellipse(x,y-72,13,16,'#ebc79a');ellipse(x-1,y-84,14,9,'#493f37');ctx.strokeStyle='#293d38';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x-13,y-57);ctx.lineTo(x-20,y-33);ctx.moveTo(x+13,y-57);ctx.lineTo(x+20,y-33);ctx.stroke();if(label)text(label,x,y-103,19)}
+function frame(t){clock=t*.001;const dx=actor.tx-actor.x,dy=actor.ty-actor.y,dist=Math.hypot(dx,dy);if(dist>2){actor.x+=dx*.045;actor.y+=dy*.045;}animal.x+=(animal.tx-animal.x)*.05;animal.y+=(animal.ty-animal.y)*.05;
+ const sky=ctx.createLinearGradient(0,0,0,1080);sky.addColorStop(0,'#8eaca5');sky.addColorStop(.55,'#a5b7a2');sky.addColorStop(1,'#4b797c');ctx.fillStyle=sky;ctx.fillRect(0,0,1920,1080);
+ for(let i=0;i<20;i++){ctx.strokeStyle='#d2e4d429';ctx.lineWidth=2;ctx.beginPath();const y=240+i*35;ctx.moveTo(1340+Math.sin(clock+i)*15,y);ctx.lineTo(1920,y+Math.sin(clock*.7+i)*6);ctx.stroke();}
+ polygon([[0,420],[470,255],[1120,300],[1580,570],[1075,965],[130,885]],'#a7b187','#677f70');
+ polygon([[150,831],[553,715],[640,485],[777,421],[1097,506],[1330,470],[1430,568],[1035,683],[817,771],[662,890]],'#c5bc95');
+ for(let i=0;i<30;i++){const x=410+(i%10)*84,y=618+Math.floor(i/10)*64;ellipse(x,y,16,5,'#b3aa8938')}
+ polygon([[1300,410],[1710,535],[1690,605],[1280,480]],'#886f50','#5e5e46');for(let i=0;i<14;i++){const x=1310+i*28;ctx.strokeStyle='#ab9470';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,415+(x-1310)*.3);ctx.lineTo(x-18,477+(x-1310)*.3);ctx.stroke();}
+ foliage.filter(p=>p.y<550).forEach(p=>tree(p.x,p.y,p.s));
+ house(385,435,150,145,'#d3c59e');house(865,390,175,140,'#c9b692');
+ polygon([[1165,488],[1190,480],[1190,350],[1165,357]],'#8b8160');polygon([[1330,532],[1355,526],[1355,392],[1330,398]],'#8b8160');
+ if(!state.gateOpen)polygon([[1190,470],[1330,511],[1330,406],[1190,365]],'#6b7761','#485d4e');else text('통행 허가',1270,400,22,'#ffe197');
+ polygon([[625,500],[632,502],[632,434],[625,432]],'#766347');polygon([[600,433],[672,446],[672,393],[600,380]],'#9d8359','#725e42');text('통행 안내',636,420,17);
+ ellipse(animal.x,animal.y+24,28,12,'#493e3160');ellipse(animal.x-1,animal.y,23,18,'#ba8955');ellipse(animal.x-20,animal.y-9,14,14,'#ca9a68');polygon([[animal.x-30,animal.y-20],[animal.x-22,animal.y-33],[animal.x-14,animal.y-19]],'#ad7c4b');
+ if(state.companionPresent)person(477,550,'#796ca0','동료');else {person(343,475,'#796ca0','쉬는 동료');}
+ person(1245,478,'#375f64','문지기');person(835,473,'#a5844e','등대 관리인');
+ const step=dist>3?Math.sin(clock*12)*5:0;person(actor.x,actor.y,'#3c7493','플레이어',step);
+ const holder=state.sealOwner==='player'?[actor.x+25,actor.y-42]:state.sealOwner==='companion'?(state.companionPresent?[502,508]:[368,433]):state.sealOwner==='guard'?[1270,436]:null;
+ if(holder){ellipse(holder[0],holder[1],9,11,'#ffce59');ellipse(holder[0],holder[1],4,6,'#546753');}
+ foliage.filter(p=>p.y>=550).forEach(p=>tree(p.x,p.y,p.s));
+ text('등대 보관함',375,300,23);text('항구 길',951,710,21);text('항구 입구',1464,346,23);
+ ctx.fillStyle='#173e5025';ctx.fillRect(0,900,1920,180);requestAnimationFrame(frame);
+}
+function send(action){state=HarborStory.act(state,action);render();window.harborState=state;}
+function move(site,action){const target=sites[site];actor.tx=target[0]-60;actor.ty=target[1]+70;setTimeout(()=>send(action),700);}
+function choose(action){
+ if(action==='feed'||action==='drive'){animal.tx=action==='feed'?1080:1170;animal.ty=action==='feed'?586:546;setTimeout(()=>send(action),1000);return;}
+ if(action==='detour'){actor.tx=785;actor.ty=810;setTimeout(()=>{actor.tx=1120;actor.ty=735;},850);setTimeout(()=>{actor.tx=1335;actor.ty=600;},1700);setTimeout(()=>send(action),2400);return;}
+ if(action==='enter-harbor'){actor.tx=1450;actor.ty=420;setTimeout(()=>send(action),1000);return;}
+ send(action);
+}
+function render(){
+ $('title').hidden=state.started;$('title').style.display=state.started?'none':'grid';
+ $('hud').innerHTML=`식량 ${state.rations} · 이동 ${state.minutes}분<br>증표: ${{player:'플레이어',companion:'동료',guard:'문지기'}[state.sealOwner]||'아직 없음'}`;
+ const available=[['게시판 읽기','note','read-note'],['문지기와 대화','guard','talk-guard']];
+ if(!state.sealOwner)available.push(['보관함의 증표 받기','seal','take-seal']);
+ if(state.sealOwner==='player'&&state.companionPresent)available.push(['동료에게 증표 맡기기','companion','give-companion']);
+ if(state.companionPresent)available.push(['동료를 쉬게 하기','companion','rest-companion']);else available.push(['동료와 다시 합류','companion','call-companion']);
+ if(state.sealOwner==='companion')available.push(['등대에서 증표 회수','seal','recover-seal']);
+ if(!state.route)available.push(['항구 길로 이동','road','road']);
+ $('interactions').replaceChildren(...available.map(([label,site,a])=>{const b=document.createElement('button');b.textContent=label;b.dataset.action=a;b.onclick=()=>move(site,a);return b;}));
+ $('dialogue').hidden=!state.dialogue;
+ if(state.dialogue){$('speaker').textContent=state.dialogue.id.startsWith('guard.')?'문지기':state.dialogue.id.startsWith('companion.')?'동료':state.dialogue.id.startsWith('note.')?'통행 안내':'항구의 봉인';$('line').textContent=state.dialogue.text;$('choices').replaceChildren(...state.dialogue.choices.map(([a,label])=>{const b=document.createElement('button');b.textContent=label;b.dataset.action=a;b.onclick=()=>choose(a);return b}));}
+ $('debug').textContent=JSON.stringify({note:state.noteKnown,shared:state.sharedRule,owner:state.sealOwner,companion:state.companionPresent,route:state.route,last:state.lastLineId},null,2);
+}
+canvas.onclick=e=>{const rect=canvas.getBoundingClientRect();actor.tx=(e.clientX-rect.left)*1920/rect.width;actor.ty=(e.clientY-rect.top)*1080/rect.height;};
+$('start-read').onclick=()=>send('start-read');$('start-skip').onclick=()=>send('start-skip');$('reset').onclick=()=>{state=HarborStory.create();actor={x:655,y:725,tx:655,ty:725};animal={x:930,y:611,tx:930,ty:611};window.harborState=state;render()};
+window.harborState=state;render();requestAnimationFrame(frame);
+</script></html>

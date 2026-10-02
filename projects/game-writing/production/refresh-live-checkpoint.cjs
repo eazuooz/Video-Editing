@@ -1,0 +1,13 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),file=path.join(root,'production/batches/sakurai-planning-game-design/queue.json');
+const q=JSON.parse(fs.readFileSync(file,'utf8')),item=q.items.find(i=>i.slug==='game-writing');
+const read=p=>JSON.parse(fs.readFileSync(path.join(__dirname,p),'utf8'));
+const run=read('resource-runner.json'),capture=read('capture-story-takes.json'),audit=read('story-take-audit.json');
+q.currentSlug='game-writing';q.updatedAt=new Date().toISOString();item.stage=run.status;
+item.execution={...item.execution,pid:run.pid,sessionId:95867,status:run.status,log:'projects/game-writing/production/resource-runner.log',state:'projects/game-writing/production/resource-runner.json',children:run.children};
+item.preparation=item.preparation||{};
+item.preparation.actualCapture={sessionId:capture.pid===44108?3943:2297,pid:capture.pid,status:capture.status,state:'projects/game-writing/production/capture-story-takes.json',finishedTakes:capture.takes.filter(t=>t.status==='finished').length,latestActions:'Four fresh observation takes, preserving original twelve-scene voice and all explanations.'};
+item.preparation.sourceTakeAudit={sessionId:55707,pid:audit.pid,status:audit.status,report:'projects/game-writing/production/story-take-audit.json',directVisualReview:audit.directVisualReview};
+item.preparation.observationInsertions='projects/game-writing/planning/observation-insertions.json';
+item.nextAction='Directly compare every current-hash base ASR paragraph; preserve all approved base chunks, synthesize only four independent added observations, then measure/cut body60:40 without shortening explanations. Final render/QA/collection/private-upload/Git delivery remain incomplete.';
+fs.writeFileSync(file,JSON.stringify(q,null,2)+'\n');console.log(JSON.stringify({stage:item.stage,capture:item.preparation.actualCapture}));

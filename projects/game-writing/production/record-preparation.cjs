@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..');
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const write=(p,v)=>fs.writeFileSync(path.join(root,p),JSON.stringify(v,null,2)+'\n');
+const base='projects/game-writing',m=read(base+'/project.json'),approved=read('projects/responsive-game-feedback/project.json');
+m.membershipOutro={...approved.membershipOutro,scenePath:'motion-canvas/src/projects/game-writing/scenes/membership-outro.tsx',appliedToFinal:false};
+m.status='prepared-awaiting-approved-narration';m.narrativePrototype={name:'항구의 봉인',entry:base+'/playtest/index.html',stateProof:base+'/production/playtest-state-proof.json',uiProof:base+'/production/playtest-ui-proof.json',classification:'actual playable world actions; diagrams/logs belong explanation'};
+m.editing.exampleInterleaving.planningMap=base+'/planning/outline.md';
+write(base+'/project.json',m);
+const q=read('production/batches/sakurai-planning-game-design/queue.json'),i=q.items.find(x=>x.slug==='game-writing');
+i.stage='prepared-awaiting-single-resource-gated-tts';i.checkpoints.script=true;
+i.checkpoints.footage=false;i.checkpoints.scenes=false;
+i.preparation={bilingualScenes:12,paragraphs:72,independentSceneFiles:12,actualMediaReady:false,sourceDecode:base+'/production/source-decode.json',sourceDecodePassed:read(base+'/production/source-decode.json').passed,scriptDryRunPassed:true,prototypeUi:{cases:5,actions:52,pageErrors:0},visualDraft:{sessionId:48831,report:base+'/production/lookdev-render-result-v2.json',finalVideo:false},vite:{sessionId:26486,port:9210,checkProcessBeforeReuse:true}};
+i.nextAction='Do not claim completion. Reuse CPU lookdev job and inspect explanation frames; run one resource-gated approved TTS pipeline, then direct current-hash ASR review and measured actual capture/60:40 timeline.';
+i.updatedAt=new Date().toISOString();q.updatedAt=i.updatedAt;write('production/batches/sakurai-planning-game-design/queue.json',q);
+console.log('Preparation checkpoint saved; no narration/final render/collection/upload completed.');

@@ -19,17 +19,21 @@ for (const entry of fs.readdirSync(path.join(root, 'projects'), {withFileTypes: 
   if (!fs.existsSync(path.join(root, manifestPath))) continue;
   const manifest = JSON.parse(fs.readFileSync(path.join(root, manifestPath), 'utf8'));
   const record = {slug: entry.name, status: manifest.status, titles: manifest.titles || {}, videoId: manifest.publishing?.videoId || null, sceneTitles: [], sourceIdMatches: [], exactTitleMatch: false};
-  const files = [manifestPath, `${base}/script/narration.ko.json`, `${base}/script/narration.en.json`, `${base}/planning/outline.md`, `${base}/sources/SOURCES.md`, `${base}/README.md`, `${base}/publishing/youtube-upload.json`];
+  // Additive revisions keep the old script and receipt. Review and hash the
+  // active final script/receipt as well, so new chapters cannot evade review.
+  const scriptPaths = new Set([`${base}/script/narration.ko.json`, manifest.paths?.script].filter(Boolean));
+  const receiptPaths = new Set([`${base}/publishing/youtube-upload.json`, manifest.publishing?.receipt].filter(Boolean));
+  const files = [...new Set([manifestPath, ...scriptPaths, `${base}/script/narration.en.json`, manifest.paths?.scriptEn, `${base}/planning/outline.md`, `${base}/sources/SOURCES.md`, `${base}/README.md`, ...receiptPaths].filter(Boolean))];
   for (const relative of files) {
     if (!fs.existsSync(path.join(root, relative))) continue;
     const text = fs.readFileSync(path.join(root, relative), 'utf8');
     inputFiles.push({path: relative, sha256: hash(text)});
-    if (relative.endsWith('youtube-upload.json')) {
+    if (receiptPaths.has(relative)) {
       const receipt = JSON.parse(text); record.videoId ||= receipt.videoId || null;
     }
-    if (relative.endsWith('narration.ko.json')) {
+    if (scriptPaths.has(relative)) {
       const script = JSON.parse(text); record.scriptTitle = script.title;
-      record.sceneTitles = (script.scenes || []).map(scene => scene.title);
+      record.sceneTitles = [...new Set([...record.sceneTitles, ...(script.scenes || []).map(scene => scene.title)])];
     }
     // The batch reference ID, not shared game footage IDs, is compared.
     if (text.includes(candidate.sourceVideoId)) record.sourceIdMatches.push(relative);
@@ -40,7 +44,8 @@ for (const entry of fs.readdirSync(path.join(root, 'projects'), {withFileTypes: 
   if (saved?.sourceVideoId === candidate.sourceVideoId) record.sourceIdMatches.push('batch queue sourceVideoId');
   const candidateTitles = [candidate.sourceTitle, candidate.titleKo, candidate.titleEn].filter(Boolean).map(normalized);
   record.exactTitleMatch = [...Object.values(record.titles), record.scriptTitle].some(title => title && candidateTitles.includes(normalized(title)));
-  record.scriptPath = `${base}/script/narration.ko.json`;
+  record.scriptPath = manifest.paths?.script || `${base}/script/narration.ko.json`;
+  record.scriptPaths = [...scriptPaths];
   projects.push(record);
 }
 const digest = hash(JSON.stringify({candidate: {slug, sourceVideoId: candidate.sourceVideoId, sourceTitle: candidate.sourceTitle}, inputFiles}));
