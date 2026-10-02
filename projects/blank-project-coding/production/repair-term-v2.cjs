@@ -1,0 +1,15 @@
+const fs=require('fs'),path=require('path'),{spawn}=require('child_process');
+const root=path.resolve(__dirname,'../../..'),base=path.join(__dirname,'..'),read=p=>JSON.parse(fs.readFileSync(p,'utf8')),m=read(path.join(base,'project.json'));
+const koFile=path.join(root,m.paths.script),enFile=path.join(root,m.paths.scriptEn),ko=read(koFile),en=read(enFile);
+const old=ko.scenes.find(s=>s.id==='20').lines[1];
+const updated='하지만 읽는 것만 반복하면, 보고 알아보는 능력을 주로 사용하게 됩니다. 보고 알아보는 연습이 충분하더라도, 스스로 코드를 만드는 연습은 따로 필요합니다.';
+ko.scenes.find(s=>s.id==='20').lines[1]=updated;
+en.scenes.find(s=>s.id==='20').lines[1]='But reading alone mainly exercises recognizing something in front of you. Even after enough practice recognizing code, you still need separate practice producing it yourself.';
+fs.writeFileSync(koFile,JSON.stringify(ko,null,2)+'\n');fs.writeFileSync(enFile,JSON.stringify(en,null,2)+'\n');
+const md=path.join(base,'script/narration.review.md');fs.writeFileSync(md,fs.readFileSync(md,'utf8').replace(old,updated));
+m.paths.script='projects/blank-project-coding/production/term-repair-v2.ko.json';m.tts.outputDir='shared/output/narration/blank-project-coding/qwen3-term-repair-v2';m.tts.filenameStem='blank-project-coding-term-repair-v2';
+fs.writeFileSync(path.join(root,m.paths.script),JSON.stringify({...ko,scenes:[ko.scenes.find(s=>s.id==='20')]},null,2)+'\n');fs.writeFileSync(path.join(__dirname,'term-repair-v2.manifest.json'),JSON.stringify(m,null,2)+'\n');
+const state={pid:process.pid,status:'running',reason:'Both Korean and English spellings produced unclear Recognition pronunciation in independent ASR. Speak the same recognition-versus-production distinction in plain Korean; keep the explanatory Recognition label on screen. Preserve original and first candidate audio.',oldParagraph:old,newParagraph:updated,stages:[]};
+const save=()=>fs.writeFileSync(path.join(__dirname,'term-repair-v2.json'),JSON.stringify(state,null,2)+'\n');
+function run(stage,args){return new Promise((resolve,reject)=>{const log=fs.openSync(path.join(__dirname,'term-repair-v2-'+stage+'.log'),'a'),p=spawn(path.join(root,'qwen3-tts/.venv/Scripts/python.exe'),['-X','utf8',...args],{cwd:root,windowsHide:true,stdio:['ignore',log,log]});const r={stage,pid:p.pid,status:'running',startedAt:new Date().toISOString()};state.stages.push(r);save();p.on('exit',c=>{fs.closeSync(log);Object.assign(r,{status:c?'failed':'finished',exitCode:c,finishedAt:new Date().toISOString()});save();c?reject(Error(stage+' exit '+c)):resolve();});});}
+(async()=>{save();await run('voice',['qwen3-tts/render_narration.py','--project','blank-project-coding','--manifest','projects/blank-project-coding/production/term-repair-v2.manifest.json','--device','cuda:0','--batch-size','1']);await run('asr',['qwen3-tts/review_project_narration.py','--project','blank-project-coding','--manifest','projects/blank-project-coding/production/term-repair-v2.manifest.json','--device','cuda']);state.status='finished-awaiting-independent-review';save();})().catch(e=>{state.status='failed';state.error=String(e);save();console.error(e);process.exitCode=1;});

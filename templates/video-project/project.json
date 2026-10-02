@@ -5,7 +5,12 @@
   "delivery": {
     "directory": "output/{{SLUG}}",
     "collector": "node scripts/collect-video-output.cjs {{SLUG}}",
-    "required": ["captioned.mp4", "clean.mp4", "ko.srt", "en.srt"],
+    "required": [
+      "captioned.mp4",
+      "clean.mp4",
+      "ko.srt",
+      "en.srt"
+    ],
     "preserveSources": true
   },
   "membershipOutro": {
@@ -22,7 +27,10 @@
     "exampleSecondsPolicy": "planning-baseline-only; actual scene slots follow measured narration and body-wide footage ratio",
     "targetGameplayShare": 0.6,
     "targetExplanationShare": 0.4,
-    "gameplayShareRange": [0.6, 0.6],
+    "gameplayShareRange": [
+      0.6,
+      0.6
+    ],
     "ratioScope": "body-excluding-channel-intro-and-membership-outro",
     "ratioPolicy": "actual action footage 60% / PPT and explanation 40%; concept-matched examples throughout main chapters; one-frame rounding only",
     "ratioPolicyVersion": "actual-footage-60-explanation-40-v2",
@@ -38,7 +46,14 @@
       "required": true,
       "placement": "throughout main explanation chapters; observe action, explain principle, verify application",
       "planningPath": "projects/{{SLUG}}/planning/outline.md",
-      "requiredEvidence": ["explained claim", "source and in/out", "visible action", "viewer focus", "connection to PPT", "insertion point"],
+      "requiredEvidence": [
+        "explained claim",
+        "source and in/out",
+        "visible action",
+        "viewer focus",
+        "connection to PPT",
+        "insertion point"
+      ],
       "reviewStatus": "pending all-chapter action-to-explanation review"
     },
     "actualGameplaySeconds": null,
@@ -55,7 +70,15 @@
       "preserveApprovedOriginalNarration": true,
       "method": "add concept-matched action footage and new KO/EN commentary between existing explanations; increase runtime",
       "planningFormula": "additionalActualSeconds = max(0, 1.5 * retainedExplanationSeconds - retainedActualSeconds)",
-      "updateTogether": ["narration", "mix", "scene starts", "KO SRT", "EN SRT", "chapters", "membership outro"]
+      "updateTogether": [
+        "narration",
+        "mix",
+        "scene starts",
+        "KO SRT",
+        "EN SRT",
+        "chapters",
+        "membership outro"
+      ]
     },
     "timingStatus": "pending-media-and-narration",
     "narrationPlacement": "continuous-across-example-and-explanation",
@@ -65,7 +88,28 @@
       "scope": "channel-default-for-new-videos",
       "guide": "docs/CAPTION_STYLE.md",
       "approvedAt": "2026-09-19",
-      "approvalEvidence": "응 이렇게 만들어줘 ㄱㄱ; 그리고 이 자막스타일 기억해줘~"
+      "approvalEvidence": "응 이렇게 만들어줘 ㄱㄱ; 그리고 이 자막스타일 기억해줘~",
+      "placement": {
+        "anchor": "bottom-center",
+        "centerPx": [
+          960,
+          970
+        ],
+        "referenceResolution": [
+          1920,
+          1080
+        ],
+        "motionCanvasCenter": [
+          0,
+          430
+        ],
+        "applyTo": "all-narrated-footage-and-explanation-scenes",
+        "doNotRelocateToAvoidOverlap": true,
+        "overlapRemedy": "recompose-footage-or-split-cues",
+        "playerSrtPosition": "viewer-controlled"
+      },
+      "placementApprovedAt": "2026-10-02",
+      "placementApprovalEvidence": "과외에는 링크 걸어주고 영상 마지막에 항상 걸어줘 그리고 또 고정댓글로 달아줘 ... 영상제작 진행해줘 자막은 항상 가운데 아래로 해주고 이규칙은 영상제작 규칙에 추가해서 업데이트해줘"
     },
     "outro": {
       "kind": "membership-thanks",
@@ -148,5 +192,10 @@
     "captionsEn": "shared/output/narration/{{SLUG}}/qwen3-1.7b-balanced-v1/{{SLUG}}-qwen3-1.7b-balanced-v1.en.srt",
     "videoClean": "shared/output/motion-canvas/{{SLUG}}.mp4",
     "videoBurnedCaptions": "shared/output/motion-canvas/{{SLUG}}-subtitled.mp4"
+  },
+  "publishing": {
+    "coachingEndingLinkRequired": true,
+    "pinnedCoachingCommentRequired": true,
+    "defaults": "shared/publishing/youtube-defaults.json"
   }
 }

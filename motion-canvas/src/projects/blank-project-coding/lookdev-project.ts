@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import s02 from './scenes/scene02?scene';
+import s06 from './scenes/scene06?scene';
+import s08 from './scenes/scene08?scene';
+import s15 from './scenes/scene15?scene';
+import s17 from './scenes/scene17?scene';
+import s20 from './scenes/scene20?scene';
+import s24 from './scenes/scene24?scene';
+import s33 from './scenes/scene33?scene';
+export default makeProject({name:'blank-project-coding-lookdev',scenes:[s02,s06,s08,s15,s17,s20,s24,s33]});

@@ -1,0 +1,1844 @@
+1
+00:00:02,000 --> 00:00:04,705
+You followed a Tetris tutorial to the end.
+
+2
+00:00:04,720 --> 00:00:08,130
+Blocks fall, rotate, and disappear when a line fills.
+
+3
+00:00:08,320 --> 00:00:10,870
+You typed the code yourself.
+
+4
+00:00:11,060 --> 00:00:13,305
+But what happens when you close the project and
+
+5
+00:00:13,320 --> 00:00:16,070
+the tutorial, then open a new, empty project?
+
+6
+00:00:16,160 --> 00:00:18,370
+You may get stuck on the first line.
+
+7
+00:00:18,500 --> 00:00:19,825
+Where should I begin?
+
+8
+00:00:19,840 --> 00:00:22,885
+Today we will explore that gap: practicing the
+
+9
+00:00:22,900 --> 00:00:25,525
+move from understanding code when you see it
+
+10
+00:00:25,540 --> 00:00:28,045
+to starting a program yourself from nothing.
+
+11
+00:00:28,060 --> 00:00:30,545
+Even one moving block connects input,
+
+12
+00:00:30,560 --> 00:00:33,410
+position, collision, and state changes.
+
+13
+00:00:33,760 --> 00:00:36,285
+As we build, think about who decided how those
+
+14
+00:00:36,300 --> 00:00:39,450
+actions should happen and in what order.
+
+15
+00:00:40,400 --> 00:00:43,265
+I especially want to emphasize this to first-
+
+16
+00:00:43,280 --> 00:00:45,590
+and second-year computer science students.
+
+17
+00:00:45,740 --> 00:00:48,125
+While learning programming, turn off AI
+
+18
+00:00:48,140 --> 00:00:50,345
+and, when possible, start a program from
+
+19
+00:00:50,360 --> 00:00:53,070
+scratch without looking at the answer code.
+
+20
+00:00:53,400 --> 00:00:56,190
+The important question is what we mean by making it yourself.
+
+21
+00:00:56,400 --> 00:00:59,825
+Did your hands enter decisions made by someone
+
+22
+00:00:59,840 --> 00:01:03,280
+else, or did you decide how to solve the problem?
+
+23
+00:01:07,983 --> 00:01:10,448
+Typing a book example, reproducing an
+
+24
+00:01:10,463 --> 00:01:12,728
+instructor’s function, and reading
+
+25
+00:01:12,743 --> 00:01:14,913
+other people’s code all have a place.
+
+26
+00:01:15,083 --> 00:01:17,873
+When you are new, you may not even know where to begin.
+
+27
+00:01:18,063 --> 00:01:20,008
+Here we read an existing node
+
+28
+00:01:20,023 --> 00:01:22,113
+definition and insertion code.
+
+29
+00:01:22,263 --> 00:01:24,488
+We find the variable that points to the next node,
+
+30
+00:01:24,503 --> 00:01:27,553
+then run the program to check the connections.
+
+31
+00:01:27,743 --> 00:01:30,328
+This is time for learning the concept, and
+
+32
+00:01:30,343 --> 00:01:33,028
+reading good code helps. Understanding this
+
+33
+00:01:33,043 --> 00:01:35,548
+example alone does not yet establish that
+
+34
+00:01:35,563 --> 00:01:37,853
+you can design the same feature yourself.
+
+35
+00:01:37,983 --> 00:01:41,013
+Pause execution and follow the next pointer.
+
+36
+00:01:41,223 --> 00:01:42,848
+Check which actual values
+
+37
+00:01:42,863 --> 00:01:44,513
+those names refer to.
+
+38
+00:01:44,743 --> 00:01:46,828
+After observing the principle, practice
+
+39
+00:01:46,843 --> 00:01:48,703
+retrieving and using it on your own.
+
+40
+00:01:49,433 --> 00:01:52,863
+I am not recommending that you abandon books and tutorials.
+
+41
+00:01:53,173 --> 00:01:55,598
+Learn from them first, then set aside
+
+42
+00:01:55,613 --> 00:01:57,743
+time to close the answer and rebuild.
+
+43
+00:01:58,013 --> 00:01:59,578
+With the answer beside you, the
+
+44
+00:01:59,593 --> 00:02:01,543
+next line is already visible.
+
+45
+00:02:01,693 --> 00:02:04,618
+Starting from scratch requires you to decide which data
+
+46
+00:02:04,633 --> 00:02:07,203
+you need and how to process it before writing that line.
+
+47
+00:02:07,373 --> 00:02:09,983
+You do not need to memorize every language feature from the start.
+
+48
+00:02:10,193 --> 00:02:12,598
+Choose a small feature you have learned and see how far
+
+49
+00:02:12,613 --> 00:02:15,193
+you can think through and implement it without help.
+
+50
+00:02:20,043 --> 00:02:22,688
+Suppose you have studied linked lists: what
+
+51
+00:02:22,703 --> 00:02:25,853
+a node is, how a pointer refers to the next
+
+52
+00:02:26,043 --> 00:02:28,513
+node, and how insertion and deletion work.
+
+53
+00:02:28,663 --> 00:02:31,988
+Now close the example and the tutorial. Temporarily turn
+
+54
+00:02:32,003 --> 00:02:35,568
+off AI completion. Prepare your development environment
+
+55
+00:02:35,583 --> 00:02:38,833
+and open a new project with an empty main function.
+
+56
+00:02:39,023 --> 00:02:41,373
+Try implementing the linked list yourself.
+
+57
+00:02:41,483 --> 00:02:44,588
+You might get stuck at how to declare a node.
+
+58
+00:02:44,603 --> 00:02:45,413
+That is fine.
+
+59
+00:02:45,763 --> 00:02:47,308
+You are finding where your
+
+60
+00:02:47,323 --> 00:02:49,593
+independent implementation stops.
+
+61
+00:02:49,883 --> 00:02:52,228
+Pause searches for the answer and
+
+62
+00:02:52,243 --> 00:02:54,513
+write down the values a node needs.
+
+63
+00:02:55,003 --> 00:02:57,993
+What should head contain before the first node exists?
+
+64
+00:02:58,143 --> 00:03:01,243
+Decide the starting state of the empty list yourself.
+
+65
+00:03:01,967 --> 00:03:03,372
+If you cannot write code
+
+66
+00:03:03,387 --> 00:03:05,337
+yet, describe what you need.
+
+67
+00:03:05,447 --> 00:03:07,557
+A node stores a value.
+
+68
+00:03:07,707 --> 00:03:09,877
+A connection leads to the next node.
+
+69
+00:03:10,007 --> 00:03:12,617
+A head pointer identifies the beginning.
+
+70
+00:03:12,787 --> 00:03:16,112
+Start with a small goal: connect two nodes and print
+
+71
+00:03:16,127 --> 00:03:19,752
+their values from the front. You do not have to finish
+
+72
+00:03:19,767 --> 00:03:22,757
+insertion, deletion, and every edge case at once.
+
+73
+00:03:22,867 --> 00:03:24,912
+That divides the goal into declaring
+
+74
+00:03:24,927 --> 00:03:27,417
+nodes, linking them, and traversing them.
+
+75
+00:03:27,487 --> 00:03:30,272
+When the first line will not come to mind,
+
+76
+00:03:30,287 --> 00:03:32,657
+decide the first thing the program must do.
+
+77
+00:03:37,383 --> 00:03:40,508
+In the editor, we create nodes
+
+78
+00:03:40,523 --> 00:03:43,268
+containing ten and twenty. Typing
+
+79
+00:03:43,283 --> 00:03:46,508
+speed is not the point; deciding
+
+80
+00:03:46,523 --> 00:03:49,473
+what to store and where is.
+
+81
+00:03:49,643 --> 00:03:52,808
+Make the first node point to the second
+
+82
+00:03:52,823 --> 00:03:55,533
+and leave the final next pointer empty.
+
+83
+00:03:55,663 --> 00:03:58,928
+Start at head and follow each connection while printing the values.
+
+84
+00:03:58,943 --> 00:04:02,613
+Look at the actual output: does ten come before twenty?
+
+85
+00:04:02,763 --> 00:04:05,628
+Thinking that the nodes are connected and checking
+
+86
+00:04:05,643 --> 00:04:08,533
+that the code connects them are separate steps.
+
+87
+00:04:08,723 --> 00:04:10,628
+Also check that traversal stops
+
+88
+00:04:10,643 --> 00:04:12,813
+at the final empty connection.
+
+89
+00:04:13,023 --> 00:04:16,588
+Confirm both the two printed values and the
+
+90
+00:04:16,603 --> 00:04:20,103
+stopping condition before adding another feature.
+
+91
+00:04:20,833 --> 00:04:24,023
+Now we want to insert fifteen between ten and twenty.
+
+92
+00:04:24,193 --> 00:04:27,363
+Creating a node alone does not put it into the list.
+
+93
+00:04:27,533 --> 00:04:30,503
+The connections must change too.
+
+94
+00:04:30,673 --> 00:04:32,818
+First set the new node’s next pointer
+
+95
+00:04:32,833 --> 00:04:35,483
+so we do not lose the existing twenty.
+
+96
+00:04:35,693 --> 00:04:38,683
+Then make the preceding node point to the new node.
+
+97
+00:04:38,913 --> 00:04:42,138
+Instead of memorizing the finished code, explain which connection
+
+98
+00:04:42,153 --> 00:04:44,918
+to change first so the remaining nodes stay reachable.
+
+99
+00:04:44,933 --> 00:04:46,913
+Translate that explanation into code.
+
+100
+00:04:51,600 --> 00:04:55,570
+Back in the editor, implement insertion in the order we chose.
+
+101
+00:04:55,800 --> 00:04:58,425
+Run it and check that the values
+
+102
+00:04:58,440 --> 00:05:00,630
+appear as ten, fifteen, twenty.
+
+103
+00:05:00,800 --> 00:05:02,485
+If the output stops at fifteen and twenty
+
+104
+00:05:02,500 --> 00:05:04,970
+disappears, what should you suspect?
+
+105
+00:05:05,120 --> 00:05:08,145
+Check whether you lost the original next connection,
+
+106
+00:05:08,160 --> 00:05:10,810
+rather than only checking that the new node exists.
+
+107
+00:05:11,040 --> 00:05:14,910
+Pause at a breakpoint and inspect the next
+pointers of the preceding and new nodes.
+
+108
+00:05:15,220 --> 00:05:17,585
+Compare what they point to
+
+109
+00:05:17,600 --> 00:05:19,245
+before and after insertion.
+
+110
+00:05:19,260 --> 00:05:23,070
+These changes correspond to the arrows we just saw.
+
+111
+00:05:23,340 --> 00:05:25,165
+Once twenty remains reachable,
+
+112
+00:05:25,180 --> 00:05:27,810
+insert another node.
+
+113
+00:05:28,100 --> 00:05:31,810
+Check that the order survives a different value.
+
+114
+00:05:32,160 --> 00:05:35,120
+Do not finish verification after a single successful output.
+
+115
+00:05:35,850 --> 00:05:38,400
+Delete the middle node.
+
+116
+00:05:38,550 --> 00:05:41,615
+Make its predecessor point to the following
+
+117
+00:05:41,630 --> 00:05:44,580
+node, then release the node you no longer use.
+
+118
+00:05:44,770 --> 00:05:47,840
+Check that you never follow the deleted node again.
+
+119
+00:05:47,990 --> 00:05:50,280
+After middle deletion works, remove the first node.
+
+120
+00:05:50,450 --> 00:05:52,380
+What should head point to?
+
+121
+00:05:52,470 --> 00:05:54,975
+If the only node is deleted, how
+
+122
+00:05:54,990 --> 00:05:57,380
+will you represent an empty list?
+
+123
+00:05:57,630 --> 00:06:00,220
+Call the function on an empty list too.
+
+124
+00:06:00,350 --> 00:06:03,115
+If execution fails or accesses invalid
+
+125
+00:06:03,130 --> 00:06:05,835
+memory, trace the missing condition.
+
+126
+00:06:05,850 --> 00:06:08,695
+Change the inputs to check
+
+127
+00:06:08,710 --> 00:06:10,720
+whether your rules actually work.
+
+128
+00:06:11,050 --> 00:06:13,135
+After freeing a node, do
+
+129
+00:06:13,150 --> 00:06:15,040
+not read its value again.
+
+130
+00:06:15,350 --> 00:06:17,335
+Preserve the connection you need before
+
+131
+00:06:17,350 --> 00:06:19,180
+deletion and traverse only the surviving list.
+
+132
+00:06:19,490 --> 00:06:21,595
+Observe the order of connection
+
+133
+00:06:21,610 --> 00:06:24,040
+changes and cleanup in execution.
+
+134
+00:06:24,900 --> 00:06:27,605
+If declaring a node stops you, revisit how
+
+135
+00:06:27,620 --> 00:06:29,905
+to represent data. If insertion order stops
+
+136
+00:06:29,920 --> 00:06:32,405
+you, revisit connections. For deletion,
+
+137
+00:06:32,420 --> 00:06:35,510
+examine lifetime and boundary conditions.
+
+138
+00:06:35,960 --> 00:06:37,425
+Forgetting some code does not
+
+139
+00:06:37,440 --> 00:06:39,550
+mean all your study was wasted.
+
+140
+00:06:39,740 --> 00:06:42,425
+Independent implementation reveals more precisely
+
+141
+00:06:42,440 --> 00:06:44,970
+what you understand and where you need help.
+
+142
+00:06:45,240 --> 00:06:47,750
+After reviewing the concept, close the material and implement it again.
+
+143
+00:06:47,900 --> 00:06:50,085
+Check whether you can explain why each line is
+
+144
+00:06:50,100 --> 00:06:52,900
+needed, rather than how many lines you memorized.
+
+145
+00:06:57,687 --> 00:06:59,053
+Tetris works the same way.
+
+146
+00:06:59,243 --> 00:07:02,508
+The instructor builds the board and blocks, implements
+
+147
+00:07:02,523 --> 00:07:06,113
+collision and rotation, and adds line clearing.
+
+148
+00:07:06,263 --> 00:07:08,813
+Following along produces a running game.
+
+149
+00:07:08,943 --> 00:07:10,413
+Now try once more.
+
+150
+00:07:10,723 --> 00:07:12,993
+Preserve and close the finished project.
+
+151
+00:07:13,103 --> 00:07:15,593
+Turn off the tutorial and stop looking at its source.
+
+152
+00:07:15,843 --> 00:07:18,213
+Open a new, empty project.
+
+153
+00:07:18,423 --> 00:07:22,308
+The questions change: where should block data live? Should the
+
+154
+00:07:22,323 --> 00:07:26,368
+board be a two-dimensional array? When should collision be
+
+155
+00:07:26,383 --> 00:07:30,213
+checked? This time you must answer, rather than the instructor.
+
+156
+00:07:30,563 --> 00:07:33,193
+Decide the first small version you can run.
+
+157
+00:07:33,403 --> 00:07:35,468
+Before scores and previews,
+
+158
+00:07:35,483 --> 00:07:37,973
+display one block on the board.
+
+159
+00:07:38,123 --> 00:07:40,188
+Start writing the necessary data in the new
+
+160
+00:07:40,203 --> 00:07:42,703
+file and work toward that first execution.
+
+161
+00:07:43,433 --> 00:07:45,638
+You do not have to pour out code for
+
+162
+00:07:45,653 --> 00:07:47,583
+a complete Tetris game immediately.
+
+163
+00:07:47,793 --> 00:07:50,958
+Divide the work into displaying the board and block,
+
+164
+00:07:50,973 --> 00:07:53,463
+movement, collision, rotation, locking, and line clearing.
+
+165
+00:07:53,673 --> 00:07:56,378
+Today, showing one block and moving
+
+166
+00:07:56,393 --> 00:07:58,963
+it one cell right can be enough.
+
+167
+00:07:59,093 --> 00:08:02,323
+Confirm that behavior, then prevent it from crossing the wall.
+
+168
+00:08:02,613 --> 00:08:06,023
+Breaking up work and choosing its order are also programming practice.
+
+169
+00:08:06,073 --> 00:08:09,018
+Before naming functions and classes, decide
+
+170
+00:08:09,033 --> 00:08:11,753
+which small result you can verify now.
+
+171
+00:08:16,450 --> 00:08:20,000
+In the development view, first display an empty board.
+
+172
+00:08:20,210 --> 00:08:22,375
+Keep the block shape separate from its
+
+173
+00:08:22,390 --> 00:08:25,040
+current position and draw a four-cell block.
+
+174
+00:08:25,230 --> 00:08:28,920
+Connect the right-arrow input and move it one cell.
+
+175
+00:08:29,090 --> 00:08:31,675
+Watch not only the block but also how
+
+176
+00:08:31,690 --> 00:08:34,240
+its coordinates change after the input.
+
+177
+00:08:34,430 --> 00:08:36,135
+The displayed block begins to
+
+178
+00:08:36,150 --> 00:08:37,880
+connect with the stored data.
+
+179
+00:08:37,990 --> 00:08:40,895
+Instead of waiting for the instructor’s next line, you
+
+180
+00:08:40,910 --> 00:08:43,720
+decide which value must change to create the behavior.
+
+181
+00:08:43,870 --> 00:08:45,535
+Draw the same shape elsewhere.
+
+182
+00:08:45,550 --> 00:08:48,475
+If shape data and board position are separate, you
+
+183
+00:08:48,490 --> 00:08:51,800
+can change position without rewriting the shape.
+
+184
+00:08:51,990 --> 00:08:53,575
+Check which tasks your
+
+185
+00:08:53,590 --> 00:08:55,490
+representation makes easier.
+
+186
+00:08:56,217 --> 00:08:58,082
+Changing the current position unconditionally on
+
+187
+00:08:58,097 --> 00:08:59,807
+a right-arrow press lets the block cross a wall.
+
+188
+00:09:00,157 --> 00:09:02,787
+Instead, first construct a candidate
+
+189
+00:09:02,937 --> 00:09:05,267
+one cell to the right and check it.
+
+190
+00:09:05,577 --> 00:09:08,142
+Check whether any occupied cell would leave
+
+191
+00:09:08,157 --> 00:09:10,387
+the board or overlap an existing cell.
+
+192
+00:09:10,597 --> 00:09:12,967
+Commit the position only when it is valid.
+
+193
+00:09:13,337 --> 00:09:14,862
+The goal is not to memorize
+
+194
+00:09:14,877 --> 00:09:16,347
+the correct move function.
+
+195
+00:09:16,517 --> 00:09:19,522
+Build the decision sequence yourself: receive input,
+
+196
+00:09:19,537 --> 00:09:22,247
+form a candidate, check it, and apply it if allowed.
+
+197
+00:09:27,067 --> 00:09:30,197
+After writing the movement function, do not test only the middle.
+
+198
+00:09:30,347 --> 00:09:33,437
+Move to the right wall and press right again,
+
+199
+00:09:33,687 --> 00:09:36,517
+then try the same input next to existing blocks.
+
+200
+00:09:36,827 --> 00:09:39,777
+At a blocked position, verify that the coordinates remain unchanged.
+
+201
+00:09:39,947 --> 00:09:42,552
+Even if the picture looks stationary, changed
+
+202
+00:09:42,567 --> 00:09:45,197
+internal values can break the next action.
+
+203
+00:09:45,627 --> 00:09:47,832
+Compare movement in empty space
+
+204
+00:09:47,847 --> 00:09:49,897
+with staying still when blocked.
+
+205
+00:09:50,267 --> 00:09:52,492
+You are checking whether the actual input
+
+206
+00:09:52,507 --> 00:09:54,677
+results match the rule you described.
+
+207
+00:09:55,067 --> 00:09:56,717
+Now move downward.
+
+208
+00:09:56,767 --> 00:10:00,257
+Can the same check work on that candidate position?
+
+209
+00:10:00,387 --> 00:10:03,612
+Try another direction and confirm that it stops above the
+
+210
+00:10:03,627 --> 00:10:06,747
+floor and occupied cells to see how far the rule applies.
+
+211
+00:10:07,467 --> 00:10:09,917
+Rotation raises more questions.
+
+212
+00:10:10,167 --> 00:10:12,737
+How should the shape be represented?
+
+213
+00:10:12,847 --> 00:10:15,317
+How do we calculate the rotated cells?
+
+214
+00:10:15,487 --> 00:10:19,277
+What if the new shape overlaps a wall or another block?
+
+215
+00:10:19,487 --> 00:10:21,872
+For an initial exercise, choose a simple
+
+216
+00:10:21,887 --> 00:10:25,132
+rule: check the rotated candidate and keep
+
+217
+00:10:25,147 --> 00:10:27,437
+the original shape if it cannot be placed.
+
+218
+00:10:27,707 --> 00:10:29,892
+You do not need every adjustment used by
+
+219
+00:10:29,907 --> 00:10:32,097
+commercial Tetris rotation systems immediately.
+
+220
+00:10:32,347 --> 00:10:34,372
+Begin by implementing and explaining
+
+221
+00:10:34,387 --> 00:10:36,507
+your own small rule accurately.
+
+222
+00:10:41,200 --> 00:10:45,190
+Connect the function that constructs and checks a rotation candidate.
+
+223
+00:10:45,440 --> 00:10:48,285
+Rotate once in the middle, then press the
+
+224
+00:10:48,300 --> 00:10:50,890
+same key beside a wall and existing blocks.
+
+225
+00:10:51,100 --> 00:10:53,505
+Check that an invalid rotation is rejected
+
+226
+00:10:53,520 --> 00:10:55,970
+while the original shape and position remain.
+
+227
+00:10:56,180 --> 00:10:58,910
+Only a successful check should change the shape.
+
+228
+00:10:59,220 --> 00:11:02,065
+If a bug appears, inspect the candidate result and commit
+
+229
+00:11:02,080 --> 00:11:05,430
+order before replacing the entire rotation formula.
+
+230
+00:11:05,700 --> 00:11:08,285
+Separate a calculation error from
+
+231
+00:11:08,300 --> 00:11:10,730
+changing state despite a failed check.
+
+232
+00:11:11,200 --> 00:11:13,450
+Try another shape at the same position.
+
+233
+00:11:13,560 --> 00:11:15,245
+Is a rotation rejected when even one
+
+234
+00:11:15,260 --> 00:11:17,290
+of its four cells leaves the board?
+
+235
+00:11:17,680 --> 00:11:20,885
+Checking only the origin can differ
+
+236
+00:11:20,900 --> 00:11:23,730
+from checking every occupied cell.
+
+237
+00:11:24,483 --> 00:11:27,548
+When a block cannot descend, lock it into the board, find
+
+238
+00:11:27,563 --> 00:11:30,953
+full rows, remove them, and move the remaining rows down.
+
+239
+00:11:31,123 --> 00:11:34,213
+One visible action contains that sequence.
+
+240
+00:11:34,403 --> 00:11:36,728
+Instead of filling only one row, prepare
+
+241
+00:11:36,743 --> 00:11:39,453
+a board that completes two adjacent rows.
+
+242
+00:11:39,723 --> 00:11:41,228
+Check that removing one does not
+
+243
+00:11:41,243 --> 00:11:43,413
+cause the next to be skipped.
+
+244
+00:11:43,623 --> 00:11:46,953
+Decide which rows should remain and compare that expectation with the result.
+
+245
+00:11:47,203 --> 00:11:49,728
+Go beyond saying the game ran once:
+
+246
+00:11:49,743 --> 00:11:52,828
+record which conditions you checked.
+
+247
+00:11:52,843 --> 00:11:56,348
+Leave a single block above the rows to be
+
+248
+00:11:56,363 --> 00:11:58,393
+cleared and watch where it moves afterward.
+
+249
+00:11:58,983 --> 00:12:01,868
+Verify that the surviving data reaches the position used by
+
+250
+00:12:01,883 --> 00:12:04,673
+the next turn, not merely that the clearing effect plays.
+
+251
+00:12:05,850 --> 00:12:09,055
+Reading AI output or a book example and
+
+252
+00:12:09,070 --> 00:12:11,780
+understanding how it works is useful.
+
+253
+00:12:12,050 --> 00:12:15,740
+Reading the structures other developers choose matters too.
+
+254
+00:12:15,970 --> 00:12:17,835
+But reading alone mainly exercises
+
+255
+00:12:17,850 --> 00:12:20,140
+recognizing something in front of you.
+
+256
+00:12:20,450 --> 00:12:23,055
+Even after enough practice recognizing code, you
+
+257
+00:12:23,070 --> 00:12:25,400
+still need separate practice producing it yourself.
+
+258
+00:12:25,550 --> 00:12:28,040
+With an empty project, no answer is visible.
+
+259
+00:12:28,590 --> 00:12:32,195
+Alongside recall, you need problem solving: dividing the task and
+
+260
+00:12:32,210 --> 00:12:35,835
+choosing data structures, functions, and implementation order.
+
+261
+00:12:35,850 --> 00:12:38,640
+Reading code can involve deep thought too.
+
+262
+00:12:38,870 --> 00:12:41,895
+The point is to check comprehension and
+
+263
+00:12:41,910 --> 00:12:44,560
+independent design and implementation separately.
+
+264
+00:12:49,583 --> 00:12:51,308
+When rebuilding, try
+
+265
+00:12:51,323 --> 00:12:53,053
+changing one condition.
+
+266
+00:12:53,243 --> 00:12:55,593
+If you implemented insertion at the front
+
+267
+00:12:55,883 --> 00:12:58,253
+of a linked list, try appending to the end.
+
+268
+00:12:58,403 --> 00:13:01,268
+Here we insert the first node into an empty
+
+269
+00:13:01,283 --> 00:13:03,913
+list, then append to a nonempty list.
+
+270
+00:13:04,163 --> 00:13:05,928
+Decide how to handle head and the
+
+271
+00:13:05,943 --> 00:13:07,813
+final connection in each case.
+
+272
+00:13:08,023 --> 00:13:09,728
+Memorizing the old sequence of
+
+273
+00:13:09,743 --> 00:13:11,453
+lines may leave you stuck again.
+
+274
+00:13:11,523 --> 00:13:14,088
+Understanding the connections lets you
+
+275
+00:13:14,103 --> 00:13:16,528
+explain and adapt the required operations.
+
+276
+00:13:16,543 --> 00:13:19,928
+Front insertion changed head to the new node.
+
+277
+00:13:19,943 --> 00:13:22,873
+Which connection changes for tail insertion?
+
+278
+00:13:23,283 --> 00:13:26,108
+Traverse to the final node, attach a new
+
+279
+00:13:26,123 --> 00:13:29,173
+value, and print the whole order again.
+
+280
+00:13:29,983 --> 00:13:33,208
+Suppose you have read a thousand English sentences and
+
+281
+00:13:33,223 --> 00:13:36,708
+can understand them. Close the book and try expressing
+
+282
+00:13:36,723 --> 00:13:39,893
+your own thoughts aloud; suddenly nothing may come out.
+
+283
+00:13:40,023 --> 00:13:42,328
+You need time both to understand what
+
+284
+00:13:42,343 --> 00:13:44,653
+you see and to build sentences yourself.
+
+285
+00:13:44,843 --> 00:13:47,253
+I think programming is similar.
+
+286
+00:13:47,383 --> 00:13:50,328
+Reading linked-list code ten times is different from
+
+287
+00:13:50,343 --> 00:13:53,448
+closing the answer and implementing it yourself.
+
+288
+00:13:53,463 --> 00:13:56,068
+Understanding Tetris code and choosing its
+
+289
+00:13:56,083 --> 00:13:58,028
+structure in an empty project are different too.
+
+290
+00:13:58,043 --> 00:13:59,148
+Look at resources while learning.
+
+291
+00:13:59,163 --> 00:14:01,228
+Read books, watch tutorials,
+
+292
+00:14:01,243 --> 00:14:03,413
+and ask AI to explain concepts.
+
+293
+00:14:03,883 --> 00:14:05,448
+Once you understand enough, close them and
+
+294
+00:14:05,463 --> 00:14:07,213
+spend time making the program yourself.
+
+295
+00:14:12,033 --> 00:14:15,738
+This time, describe the work briefly instead of reading
+
+296
+00:14:15,753 --> 00:14:19,838
+a completed function: find full rows, decide what to
+
+297
+00:14:19,853 --> 00:14:23,463
+remove, and gather the remaining rows at the bottom.
+
+298
+00:14:23,793 --> 00:14:26,858
+Build a small function in that order, then
+
+299
+00:14:26,873 --> 00:14:29,923
+run both a one-row and a two-row case.
+
+300
+00:14:30,193 --> 00:14:33,823
+Pay attention to the input and the expected result together.
+
+301
+00:14:34,133 --> 00:14:37,258
+Focus on whether your chosen processing order produces
+
+302
+00:14:37,273 --> 00:14:40,838
+the result, rather than typing the same code repeatedly.
+
+303
+00:14:40,853 --> 00:14:43,758
+An idea you could explain becomes
+
+304
+00:14:43,773 --> 00:14:45,703
+conditions and iteration in code.
+
+305
+00:14:45,893 --> 00:14:48,378
+Hide the function’s name and explain what
+
+306
+00:14:48,393 --> 00:14:50,923
+input it receives and what result it produces.
+
+307
+00:14:51,213 --> 00:14:54,218
+Check whether you understand the process or merely
+
+308
+00:14:54,233 --> 00:14:57,763
+recognize the name, then try another input.
+
+309
+00:14:58,920 --> 00:15:01,370
+Starting from scratch naturally involves getting stuck.
+
+310
+00:15:01,500 --> 00:15:03,545
+You may forget a node declaration,
+
+311
+00:15:03,560 --> 00:15:05,945
+confuse pointers, or wonder
+
+312
+00:15:05,960 --> 00:15:08,010
+how to check collisions.
+
+313
+00:15:08,300 --> 00:15:10,345
+A problem that an answer solves in ten
+
+314
+00:15:10,360 --> 00:15:12,785
+seconds may take thirty minutes of
+
+315
+00:15:12,800 --> 00:15:15,010
+thought, or a bug may take two hours.
+
+316
+00:15:15,340 --> 00:15:18,110
+I believe that process can contain important practice.
+
+317
+00:15:18,360 --> 00:15:21,325
+Form an expectation, run the program, set a
+
+318
+00:15:21,340 --> 00:15:24,745
+breakpoint, inspect variables, and correct your
+
+319
+00:15:24,760 --> 00:15:27,445
+assumptions. Time spent stuck is not itself the
+
+320
+00:15:27,460 --> 00:15:30,750
+goal; what you checked and changed matters.
+
+321
+00:15:35,683 --> 00:15:38,733
+Reproduce the block crossing the wall.
+
+322
+00:15:38,883 --> 00:15:42,208
+Before changing random code, state the expectation: pressing
+
+323
+00:15:42,223 --> 00:15:45,593
+right at the right wall should leave its position unchanged.
+
+324
+00:15:45,803 --> 00:15:48,828
+Pause movement processing and inspect candidate
+
+325
+00:15:48,843 --> 00:15:51,513
+coordinates, board width, and the collision result.
+
+326
+00:15:51,723 --> 00:15:54,028
+Follow which cells are checked and
+
+327
+00:15:54,043 --> 00:15:56,128
+when the position is committed.
+
+328
+00:15:56,143 --> 00:15:58,213
+A bug can exist without an error message.
+
+329
+00:15:58,343 --> 00:16:00,928
+Running successfully and following
+
+330
+00:16:00,943 --> 00:16:03,088
+the intended rule are different.
+
+331
+00:16:03,103 --> 00:16:06,213
+Find where the expectation first diverges from the result.
+
+332
+00:16:06,563 --> 00:16:09,788
+Do not change several functions at once. Follow the values
+
+333
+00:16:09,803 --> 00:16:12,928
+after this input reaches movement processing. Compare the
+
+334
+00:16:12,943 --> 00:16:15,988
+current position before and after the check to distinguish
+
+335
+00:16:16,003 --> 00:16:18,333
+forming a candidate from already changing the state.
+
+336
+00:16:19,533 --> 00:16:22,098
+If the code changes position before
+
+337
+00:16:22,113 --> 00:16:24,943
+checking collision, suspect the order.
+
+338
+00:16:25,133 --> 00:16:28,803
+Modify it to check the candidate first and commit only on success.
+
+339
+00:16:29,053 --> 00:16:32,103
+Press the same key beside the wall where the problem occurred.
+
+340
+00:16:32,373 --> 00:16:34,458
+Confirm that position remains unchanged, and
+
+341
+00:16:34,473 --> 00:16:36,783
+that movement still works in the empty center.
+
+342
+00:16:36,973 --> 00:16:40,203
+Check that the fix did not block valid movement.
+
+343
+00:16:40,413 --> 00:16:43,558
+Write one sentence explaining the cause: the current
+
+344
+00:16:43,573 --> 00:16:46,758
+coordinate changed despite a failed check. That record
+
+345
+00:16:46,773 --> 00:16:49,683
+gives you a starting point for the next investigation.
+
+346
+00:16:49,913 --> 00:16:51,723
+Test the opposite wall too.
+
+347
+00:16:52,093 --> 00:16:54,678
+Check whether the movement condition holds on both sides,
+
+348
+00:16:54,693 --> 00:16:57,023
+rather than only whether the right-wall symptom disappeared.
+
+349
+00:16:57,393 --> 00:16:59,518
+Record the inputs you
+
+350
+00:16:59,533 --> 00:17:01,943
+retried alongside the fix.
+
+351
+00:17:02,733 --> 00:17:04,698
+Thinking independently does not
+
+352
+00:17:04,713 --> 00:17:06,343
+mean refusing help forever.
+
+353
+00:17:06,553 --> 00:17:09,098
+If you keep circling the same problem, summarize the expected
+
+354
+00:17:09,113 --> 00:17:11,883
+result, actual result, and what you have already checked.
+
+355
+00:17:12,033 --> 00:17:14,318
+Ask a teacher or colleague, or consult the
+
+356
+00:17:14,333 --> 00:17:17,283
+needed documentation and concept explanation.
+
+357
+00:17:17,673 --> 00:17:20,618
+With AI, you can request a hint about the next
+
+358
+00:17:20,633 --> 00:17:23,343
+condition to inspect instead of the entire solution.
+
+359
+00:17:23,473 --> 00:17:26,183
+Once you understand the hint, close it and implement the idea.
+
+360
+00:17:26,393 --> 00:17:28,618
+Explain why the change was needed and try
+
+361
+00:17:28,633 --> 00:17:31,158
+applying it under similar conditions.
+
+362
+00:17:31,173 --> 00:17:33,623
+Keep responsibility for the thinking.
+
+363
+00:17:38,700 --> 00:17:41,485
+If two rows should disappear but only one does,
+
+364
+00:17:41,500 --> 00:17:44,945
+record that input and result before asking
+
+365
+00:17:44,960 --> 00:17:47,930
+for the whole Tetris game to be rewritten.
+
+366
+00:17:48,180 --> 00:17:51,670
+Note how the row being checked changes during iteration.
+
+367
+00:17:51,800 --> 00:17:53,805
+After reviewing the concept, close the material
+
+368
+00:17:53,820 --> 00:17:56,530
+and rewrite the small row-compaction function.
+
+369
+00:17:56,800 --> 00:17:58,785
+Test both adjacent and
+
+370
+00:17:58,800 --> 00:18:00,285
+separated full rows.
+
+371
+00:18:00,300 --> 00:18:02,745
+Even after receiving help, make the
+
+372
+00:18:02,760 --> 00:18:04,245
+decisions, implement, and verify yourself.
+
+373
+00:18:04,260 --> 00:18:07,325
+Go beyond understanding the hint and check
+
+374
+00:18:07,340 --> 00:18:09,570
+whether the principle handles a changed input.
+
+375
+00:18:09,920 --> 00:18:13,045
+Record the missed condition: deleting a row changed
+
+376
+00:18:13,060 --> 00:18:15,905
+what would be checked next. Next time, decide which
+
+377
+00:18:15,920 --> 00:18:18,270
+rows remain and where they move first. Turn the
+
+378
+00:18:18,440 --> 00:18:20,930
+help into questions for your next implementation.
+
+379
+00:18:21,750 --> 00:18:25,695
+That is why I recommend plenty of this practice in your first two years.
+
+380
+00:18:25,710 --> 00:18:29,320
+After studying a data structure, close the answer and implement it.
+
+381
+00:18:29,550 --> 00:18:32,260
+After studying an algorithm, close the explanation and solve it again.
+
+382
+00:18:32,590 --> 00:18:34,675
+After a game programming tutorial, rebuild
+
+383
+00:18:34,690 --> 00:18:37,160
+a small feature in an empty project.
+
+384
+00:18:37,570 --> 00:18:40,180
+Before asking AI for finished code, take
+
+385
+00:18:40,410 --> 00:18:42,940
+time to break up the problem yourself.
+
+386
+00:18:43,270 --> 00:18:46,315
+As basic proficiency develops and projects
+
+387
+00:18:46,330 --> 00:18:49,115
+grow in later years, use AI to improve
+
+388
+00:18:49,130 --> 00:18:52,195
+productivity: repetitive code, library
+
+389
+00:18:52,210 --> 00:18:55,180
+research, test ideas, and refactoring.
+
+390
+00:18:55,750 --> 00:18:58,500
+Your year at university does not automatically determine your skill.
+
+391
+00:18:58,830 --> 00:19:01,255
+Expand tool use based on whether you
+
+392
+00:19:01,270 --> 00:19:03,695
+can choose the structure, verify
+
+393
+00:19:03,710 --> 00:19:05,910
+results, and investigate problems.
+
+394
+00:19:10,600 --> 00:19:13,925
+Once you can explain the basic structure, you can
+
+395
+00:19:13,940 --> 00:19:17,650
+ask AI for repetitive setup code or draft tests.
+
+396
+00:19:17,800 --> 00:19:20,165
+Decide the inputs and expected
+
+397
+00:19:20,180 --> 00:19:22,530
+results yourself first.
+
+398
+00:19:22,900 --> 00:19:25,945
+In the development view, read what the added code changes,
+
+399
+00:19:25,960 --> 00:19:29,870
+then retry an empty board, a wall, and a two-row clear.
+
+400
+00:19:29,980 --> 00:19:32,770
+Receiving a suggestion does not complete verification.
+
+401
+00:19:32,840 --> 00:19:34,825
+AI can then help implement work
+
+402
+00:19:34,840 --> 00:19:36,465
+you have defined more quickly.
+
+403
+00:19:36,480 --> 00:19:39,625
+If a result differs from your expectation, inspect
+
+404
+00:19:39,640 --> 00:19:42,010
+the program’s state and judge it yourself.
+
+405
+00:19:42,500 --> 00:19:45,550
+Passing tests does not replace checking the screen.
+
+406
+00:19:45,780 --> 00:19:48,465
+Use actual inputs to move and rotate, and examine
+
+407
+00:19:48,480 --> 00:19:51,310
+whether the changed function affects other behavior.
+
+408
+00:19:51,760 --> 00:19:54,590
+Decide what to delegate and what to verify.
+
+409
+00:19:55,317 --> 00:19:57,062
+My message is not that
+
+410
+00:19:57,077 --> 00:19:59,027
+you should avoid AI.
+
+411
+00:19:59,277 --> 00:20:01,262
+While learning programming, do not
+
+412
+00:20:01,277 --> 00:20:03,727
+outsource the thinking process itself.
+
+413
+00:20:03,957 --> 00:20:07,502
+At work, we consult documentation, read existing
+
+414
+00:20:07,517 --> 00:20:11,047
+code, search, use AI, and ask colleagues.
+
+415
+00:20:11,237 --> 00:20:14,082
+What matters is retaining the ability to turn a
+
+416
+00:20:14,097 --> 00:20:16,827
+problem into a program while using those tools.
+
+417
+00:20:17,137 --> 00:20:18,962
+Tools can be efficient when the goal
+
+418
+00:20:18,977 --> 00:20:20,922
+is finishing an assignment quickly.
+
+419
+00:20:20,937 --> 00:20:24,022
+When the goal is learning, I hope you will judge
+
+420
+00:20:24,037 --> 00:20:27,477
+more than how fast the final result appeared.
+
+421
+00:20:32,167 --> 00:20:36,257
+Now transfer the exercise to a small brick-breaker game.
+
+422
+00:20:36,427 --> 00:20:39,352
+Display a ball and paddle, move the paddle with input,
+
+423
+00:20:39,367 --> 00:20:42,477
+and decide which values change when the ball touches it.
+
+424
+00:20:42,687 --> 00:20:45,237
+Do not simply paste Tetris code.
+
+425
+00:20:45,367 --> 00:20:47,672
+Identify this game’s state and collision conditions,
+
+426
+00:20:47,687 --> 00:20:50,697
+then implement and run one behavior at a time.
+
+427
+00:20:50,847 --> 00:20:53,197
+Apply a learned principle to a new problem.
+
+428
+00:20:53,367 --> 00:20:54,912
+You may be slow and get stuck at first.
+
+429
+00:20:54,927 --> 00:20:58,672
+With practice, you begin to see what to
+
+430
+00:20:58,687 --> 00:21:02,597
+store and in what order to process it.
+
+431
+00:21:02,767 --> 00:21:04,712
+Test hits at the paddle’s
+
+432
+00:21:04,727 --> 00:21:06,777
+center and edge.
+
+433
+00:21:07,007 --> 00:21:10,257
+Write the expected response and compare it with the actual ball movement.
+
+434
+00:21:10,567 --> 00:21:12,532
+Even in another game, narrowing problems by
+
+435
+00:21:12,547 --> 00:21:15,047
+comparing predictions with execution remains useful.
+
+436
+00:21:15,767 --> 00:21:19,317
+Practicing alone can leave you unsure where
+
+437
+00:21:19,367 --> 00:21:22,657
+to begin or what to change in your code.
+
+438
+00:21:22,887 --> 00:21:25,112
+Questions that organize your thoughts
+
+439
+00:21:25,127 --> 00:21:27,097
+and feedback on your code can help.
+
+440
+00:21:27,387 --> 00:21:30,257
+If you want to develop a habit of designing and implementing programs
+
+441
+00:21:30,487 --> 00:21:34,537
+yourself, explore YamyamCoding programming coaching and tutoring.
+
+442
+00:21:34,787 --> 00:21:37,852
+The information is for learners seeking direction in
+
+443
+00:21:37,867 --> 00:21:40,377
+breaking down and implementing game programming problems.
+
+444
+00:21:40,687 --> 00:21:43,152
+The coaching and tutoring link will be in the description,
+
+445
+00:21:43,167 --> 00:21:45,752
+at the end of the video, and in the pinned comment.
+
+446
+00:21:45,767 --> 00:21:48,552
+Summarize what you are learning, the code
+
+447
+00:21:48,567 --> 00:21:51,197
+you have made, and where you are stuck.
+
+448
+00:21:51,567 --> 00:21:54,477
+Begin with a specific account of the help you need.
+
+449
+00:21:59,417 --> 00:22:01,662
+Choose just one small feature you have learned.
+
+450
+00:22:01,677 --> 00:22:05,082
+Close the book and tutorial, temporarily
+
+451
+00:22:05,097 --> 00:22:08,507
+turn off AI, and open an empty project.
+
+452
+00:22:08,697 --> 00:22:10,987
+Start from nothing yourself.
+
+453
+00:22:11,117 --> 00:22:13,307
+Your first attempt does not have to succeed.
+
+454
+00:22:13,457 --> 00:22:15,942
+Find where you get stuck, learn what
+
+455
+00:22:15,957 --> 00:22:17,987
+you need, and try making it again.
+
+456
+00:22:18,197 --> 00:22:20,782
+After building your ability to decide and
+
+457
+00:22:20,797 --> 00:22:23,742
+implement independently, use AI again as a tool
+
+458
+00:22:23,757 --> 00:22:26,407
+that helps realize your own ideas much faster.
+
+459
+00:22:26,637 --> 00:22:30,202
+Today’s first goal can be small: put a value into an empty
+
+460
+00:22:30,217 --> 00:22:34,282
+list and take it out, or move and stop one object on
+
+461
+00:22:34,297 --> 00:22:37,887
+screen. This time, choose that small beginning yourself.

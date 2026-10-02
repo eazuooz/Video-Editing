@@ -1,0 +1,45 @@
+import {Circle,Img,Line,Node,Rect,Txt,View2D} from '@motion-canvas/2d';
+import {all,createRef,easeInOutCubic,waitFor} from '@motion-canvas/core';
+import {PAPER as P} from '../../../styles/research-paper';
+import plan from '../production-plan.json';
+import cats from '../../../../../shared/assets/branding/yamyamcoding-cats-original.png';
+const C:Record<string,{title:string,sub:string,summary:string,labels:string[],details:string[],kind?:string}>={
+ '02':{title:'컴공 1·2학년, 백지에서 시작해보세요',sub:'배운 것을 스스로 꺼내 쓰는 시간을 따로 만듭니다',summary:'키보드를 누른 사람과 구현을 결정한 사람을 구분해보세요.',labels:['배우기','정답 닫기','직접 만들기'],details:['책 · 강의 · 좋은 코드','AI와 완성 코드는 잠시 닫기','데이터 · 순서 · 확인']},
+ '04':{title:'이해하는 시간과 만들어내는 시간',sub:'두 공부 모두 필요합니다. 각각 확인해보세요.',summary:'다음 줄을 보기 전에, 필요한 데이터와 작업 순서를 정합니다.',labels:['읽고 이해한다','닫고 설계한다'],details:['원리를 배우는 시간','스스로 결정하는 시간'],kind:'compare'},
+ '06':{title:'첫 줄보다, 필요한 것부터',sub:'목표: 노드 두 개를 연결하고 차례로 출력하기',summary:'노드 선언 → 연결 → 순회. 작은 목표부터 시작합니다.',labels:['10','20','nullptr'],details:['head','next','끝'],kind:'linked'},
+ '08':{title:'15를 넣을 때, 20을 잃지 않으려면?',sub:'새 노드를 만드는 일과 기존 연결을 바꾸는 일',summary:'새 노드의 next를 먼저 정하고, 앞 노드를 새 노드에 연결합니다.',labels:['10','15','20'],details:['기존 앞 노드','새 노드','기존 뒤 노드'],kind:'insert'},
+ '11':{title:'막힌 곳이 다음 공부할 자리입니다',sub:'혼자 만들어보면 필요한 질문이 구체적으로 보입니다',summary:'개념을 확인한 뒤 다시 닫고, 그 줄이 필요한 이유를 설명합니다.',labels:['노드 선언','삽입 순서','삭제 조건'],details:['데이터를 어떻게 표현할까?','어떤 연결을 먼저 바꿀까?','수명과 빈 목록은?']},
+ '13':{title:'테트리스 전체를 한 번에 만들지 않기',sub:'지금 실행해서 확인할 수 있는 가장 작은 결과',summary:'오늘의 목표: 보드의 블록 하나를 오른쪽으로 움직이기.',labels:['보드 · 블록','입력 · 충돌','회전 · 고정 · 줄 삭제'],details:['먼저 표시한다','움직이고 멈춘다','확인한 뒤 확장한다'],kind:'stairs'},
+ '15':{title:'현재 위치를 바꾸기 전에 검사하세요',sub:'후보의 모든 칸이 보드 안에 있고, 비어 있는가?',summary:'입력 → 후보 → 검사 → 성공했을 때만 반영',labels:['현재 위치','후보 위치','검사 후 반영'],details:['아직 바꾸지 않음','오른쪽으로 한 칸','실패하면 원래 상태'],kind:'candidate'},
+ '17':{title:'회전도 후보를 만들고 판단합니다',sub:'처음에는 놓을 수 없으면 거절하는 작은 규칙부터',summary:'회전 후보가 벽이나 블록과 겹치면, 원래 모양과 위치를 유지합니다.',labels:['원래 모양','회전 후보','모든 칸 검사'],details:['현재 상태','아직 확정하지 않기','성공: 반영 / 실패: 유지'],kind:'rotation'},
+ '20':{title:'보고 알아보기와, 스스로 만들어내기',sub:'읽기에도 깊은 사고가 필요합니다. 독립 구현도 따로 연습하세요.',summary:'이해했다는 확인과 혼자 설계·구현했다는 확인은 서로 다릅니다.',labels:['Recognition','Recall + Problem Solving'],details:['눈앞의 코드와 구조를 알아보기','떠올리기 · 나누기 · 설계하기'],kind:'compare'},
+ '22':{title:'영어 문장을 읽는 것과 말하는 것',sub:'프로그래밍을 생각해볼 수 있는 비유입니다',summary:'배울 때는 보고, 이해했다면 닫고 직접 만들어보세요.',labels:['문장을 읽는다','생각을 말로 만든다'],details:['보면 뜻을 이해한다','표현과 순서를 내가 고른다'],kind:'compare'},
+ '24':{title:'막히는 시간에, 무엇을 확인했나요?',sub:'오래 걸린 시간 자체보다, 예상과 결과를 좁히는 과정',summary:'예상 → 실행 → 변수 확인 → 생각 수정 → 같은 입력으로 재검사',labels:['예상','실제 결과','원인 찾기'],details:['벽에서 멈춰야 한다','좌표가 바뀌었다','검사와 반영 순서'],kind:'debug'},
+ '27':{title:'도움을 받아도, 생각은 내가 이어갑니다',sub:'전체 정답 대신 다음에 확인할 조건을 질문해보세요',summary:'힌트를 이해했다면 닫고, 구현하고, 달라진 입력에도 적용합니다.',labels:['질문 정리','필요한 힌트','다시 직접 구현'],details:['예상 · 실제 · 확인한 것','다음으로 확인할 조건','선택 · 구현 · 검증']},
+ '29':{title:'학년보다, 스스로 할 수 있는 일을 보세요',sub:'기초를 쌓는 연습과 도구로 생산성을 높이는 경험',summary:'구조를 정하고, 검증하고, 문제를 추적할 수 있는가?',labels:['초기 학습','숙련 쌓기','AI 활용 넓히기'],details:['자료를 닫고 작은 기능 구현','설계 · 실행 · 디버깅','반복 작업 · 테스트 · 조사'],kind:'stairs'},
+ '31':{title:'생각하는 과정까지 외주 주지 마세요',sub:'AI · 문서 · 검색 · 동료의 도움을 쓰면서도',summary:'내 머릿속에도 문제를 프로그램으로 바꾸는 능력이 있어야 합니다.',labels:['문제 나누기','설계 · 구현','결과 판단'],details:['무엇을 만들어야 할까?','어떤 순서로 할까?','예상한 대로 동작할까?']},
+ '33':{title:'혼자 막히는 지점부터 함께 살펴보세요',sub:'얌얌코딩 프로그래밍 코칭 · 과외',summary:'설명란 · 영상 마지막 · 고정댓글의 과외 링크를 확인해주세요.',labels:['만들어본 코드','막힌 지점','필요한 피드백'],details:['지금 구현한 작은 기능','예상과 실제가 다른 곳','다음으로 확인할 질문'],kind:'coaching'}
+};
+const text=(s:string,x:number,y:number,size=32,color:string=P.ink)=> <Txt text={s} x={x} y={y} fontFamily={P.font} fontSize={size} fill={color}/>;
+function card(label:string,detail:string,x:number,y:number,width=455,color:string=P.blue,ref?:any){return <Node ref={ref} x={x} y={y} opacity={0}><Rect x={14} y={18} width={width} height={205} fill={'#dce3ec'} rotation={-1.8}/><Rect width={width} height={205} fill={P.background} stroke={color} lineWidth={3} rotation={-1.8}/><Rect x={-width/2+13} width={6} height={155} fill={color}/><Txt text={label} y={-39} width={width-36} textAlign={'center'} textWrap fontFamily={P.font} fontSize={33} fontWeight={700} fill={P.ink}/><Txt text={detail} y={39} width={width-40} textWrap textAlign={'center'} fontFamily={P.font} fontSize={26} fill={P.muted}/></Node>;}
+function blockGrid(x:number,cells:number[][],color:string,ref?:any){return <Node x={x} y={-30} ref={ref} opacity={0}>{Array.from({length:25},(_,i)=><Rect x={(i%5-2)*55} y={(Math.floor(i/5)-2)*55} size={53} fill={P.panel} stroke={P.line} lineWidth={1}/>)}{cells.map(([cx,cy])=><Rect x={(cx-2)*55} y={(cy-2)*55} size={51} fill={color} shadowColor={'#b7c9da'} shadowOffset={[7,9]} shadowBlur={0}/>)}</Node>;}
+export function* explainScene(view:View2D,id:string){const c=C[id],D=plan.scenes.find(s=>s.id===id)!.seconds;view.fill(P.background);const content=createRef<Node>(),footer=createRef<Node>();
+view.add(<><Txt text={'백지에서 시작하는 프로그래밍 · '+id} x={-854} y={-473} offset={[-1,0]} fontFamily={P.font} fontSize={24} fill={P.muted}/><Txt text={c.title} x={-854} y={-393} offset={[-1,0]} width={1730} fontFamily={P.font} fontSize={50} fontWeight={700} fill={P.ink}/><Txt text={c.sub} x={-854} y={-314} offset={[-1,0]} fontFamily={P.font} fontSize={29} fill={P.muted}/><Node ref={content}/><Node ref={footer} y={278} opacity={0}><Rect x={12} y={13} width={1690} height={92} fill={'#dde7e3'}/><Rect width={1690} height={92} fill={P.background} stroke={P.green} lineWidth={2}/><Txt text={c.summary} width={1590} textWrap textAlign={'center'} fontFamily={P.font} fontSize={31} fontWeight={600} fill={P.ink}/></Node></>);
+const refs=[createRef<Node>(),createRef<Node>(),createRef<Node>()],arrows=[createRef<Line>(),createRef<Line>()];
+if(c.kind==='linked'||c.kind==='insert'){
+ const xs=[-565,0,565];c.labels.forEach((label,i)=>content().add(<Node ref={refs[i]} x={xs[i]} y={i===1&&c.kind==='insert'?-170:-30} opacity={0}><Rect x={16} y={19} width={310} height={170} fill={'#d5e0ed'} skewX={-5}/><Rect width={310} height={170} fill={P.background} stroke={i===1?P.green:P.blue} lineWidth={3}/><Txt text={label} y={-20} fontFamily={P.mono} fontSize={54} fill={P.ink}/><Txt text={c.details[i]} y={46} fontFamily={P.font} fontSize={27} fill={P.muted}/></Node>));
+ content().add(<><Line ref={arrows[0]} points={[[-407,-30],[-160,-30]]} stroke={P.blue} lineWidth={6} endArrow arrowSize={18} end={0}/><Line ref={arrows[1]} points={[[160,-30],[407,-30]]} stroke={P.green} lineWidth={6} endArrow arrowSize={18} end={0}/></>);
+ yield*all(refs[0]().opacity(1,.5),refs[2]().opacity(1,.5));yield*waitFor(D*.18);yield*all(refs[1]().opacity(1,.5),refs[1]().y(-30,.8,easeInOutCubic));yield*waitFor(D*.19);yield*arrows[1]().end(1,.7);yield*waitFor(D*.13);yield*arrows[0]().end(1,.7);yield*footer().opacity(1,.4);yield*waitFor(Math.max(0,D-(.5+.8+.7+.7+.4+D*.5)));return;
+}
+if(c.kind==='candidate'||c.kind==='rotation'){
+ const a=c.kind==='rotation'?[[1,1],[2,1],[3,1],[2,2]]:[[2,1],[3,1],[4,1],[3,2]],b=c.kind==='rotation'?[[2,1],[1,2],[2,2],[2,3]]:[[3,1],[4,1],[5,1],[4,2]];
+ content().add(<>{blockGrid(-510,a,P.blue,refs[0])}{blockGrid(300,b,c.kind==='candidate'?P.red:P.green,refs[1])}<Line ref={arrows[0]} points={[[-300,-30],[70,-30]]} stroke={P.blue} lineWidth={5} endArrow arrowSize={20} end={0}/>{text(c.labels[0],-510,-211,31)}{text(c.labels[1],300,-211,31)}{text(c.kind==='candidate'?'범위 밖 → 반영하지 않음':'가능할 때만 새 모양으로',260,169,29,c.kind==='candidate'?P.red:P.green)}</>);
+ yield*refs[0]().opacity(1,.6);yield*waitFor(D*.2);yield*arrows[0]().end(1,.8);yield*refs[1]().opacity(1,.5);yield*waitFor(D*.23);yield*all(refs[1]().scale(1.05,.7),footer().opacity(1,.5));yield*refs[1]().scale(1,.5);yield*waitFor(Math.max(0,D-(.6+.8+.5+.7+.5+D*.43)));return;
+}
+const compare=c.kind==='compare',xs=compare?[-440,440]:[-590,0,590],ys=c.kind==='stairs'?[70,-10,-90]:compare?[-35,-35]:[-65,5,-65];
+c.labels.forEach((s,i)=>content().add(card(s,c.details[i],xs[i],ys[i],compare?735:455,[P.blue,P.green,'#9c7942'][i],refs[i])));
+if(c.kind==='coaching')content().add(<><Img src={cats} x={769} y={-443} width={82} height={82}/>{text('yamyamcoding.com',0,171,34,P.blue)}</>);
+if(compare)content().add(<Line ref={arrows[0]} points={[[0,-165],[0,150]]} stroke={P.line} lineWidth={2} end={0}/>);
+else content().add(<><Line ref={arrows[0]} points={[[-345,ys[0]],[ -245,ys[1]]]} stroke={P.blue} lineWidth={5} endArrow arrowSize={17} end={0}/><Line ref={arrows[1]} points={[[245,ys[1]],[345,ys[2]]]} stroke={P.green} lineWidth={5} endArrow arrowSize={17} end={0}/></>);
+const count=c.labels.length;yield*all(...refs.slice(0,count).map((r,i)=>all(r().opacity(1,.6+i*.1),r().y(ys[i]-10,.7))));yield*waitFor(D*.16);yield*arrows[0]().end(1,.7);yield*waitFor(D*.17);if(!compare)yield*arrows[1]().end(1,.7);yield*all(refs[count-1]().scale(1.035,.6),footer().opacity(1,.5));yield*waitFor(D*.12);yield*refs[count-1]().scale(1,.5);yield*waitFor(Math.max(0,D-(.6+(count-1)*.1+.7+(compare?0:.7)+.6+.5+D*.45)));
+}

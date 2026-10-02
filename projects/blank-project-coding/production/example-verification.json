@@ -1,0 +1,189 @@
+{
+  "checkedAt": "2026-10-02T10:32:51.338Z",
+  "checks": [
+    "right-wall",
+    "left-wall",
+    "one-row",
+    "two-rows",
+    "separate",
+    "four rotations return original cells",
+    "MSVC actual pointer insertion and process exit"
+  ],
+  "passed": true,
+  "actualCppEvents": [
+    {
+      "at": 0.03509999999403954,
+      "type": "reset",
+      "mode": "cpp"
+    },
+    {
+      "at": 0.03509999999403954,
+      "type": "mode",
+      "mode": "cpp"
+    },
+    {
+      "at": 0.046899999998509884,
+      "type": "open-source",
+      "file": "insert"
+    },
+    {
+      "at": 0.07059999999403954,
+      "type": "source-execute",
+      "mode": "cpp",
+      "code": "struct Node {\n    int value;\n    Node* next;\n};\n#define OWN_NODE\n#include \"trace.hpp\"\n\nint main() {\n    Node* head = new Node{10, new Node{20, nullptr}};\n    inspect(\"before insertion\", head, head);\n    Node* added = new Node{15, head->next};\n    inspect(\"old next preserved\", head, added);\n    head->next = added;\n    inspect(\"inserted 15\", head, added);\n    printList(head);\n    Node* another = new Node{17, added->next};\n    added->next = another;\n    inspect(\"inserted 17\", head, another);\n    printList(head);\n    destroy(head);\n}\n"
+    },
+    {
+      "at": "2026-10-02T10:32:49.008Z",
+      "type": "build",
+      "sequence": 1,
+      "exitCode": 0,
+      "text": "lesson.cpp\r\n"
+    },
+    {
+      "at": "2026-10-02T10:32:49.984Z",
+      "type": "breakpoint",
+      "sequence": 2,
+      "label": "before insertion",
+      "head": "000001E22B28E8B0",
+      "current": "000001E22B28E8B0",
+      "nodes": [
+        {
+          "address": "000001E22B28E8B0",
+          "value": 10,
+          "next": "000001E22B28EB90"
+        },
+        {
+          "address": "000001E22B28EB90",
+          "value": 20,
+          "next": "nullptr"
+        }
+      ],
+      "selected": {
+        "value": 10,
+        "next": "000001E22B28EB90"
+      }
+    },
+    {
+      "at": 1.7643999999985098,
+      "type": "step"
+    },
+    {
+      "at": "2026-10-02T10:32:50.036Z",
+      "type": "breakpoint",
+      "sequence": 3,
+      "label": "old next preserved",
+      "head": "000001E22B28E8B0",
+      "current": "000001E22B28E630",
+      "nodes": [
+        {
+          "address": "000001E22B28E8B0",
+          "value": 10,
+          "next": "000001E22B28EB90"
+        },
+        {
+          "address": "000001E22B28EB90",
+          "value": 20,
+          "next": "nullptr"
+        }
+      ],
+      "selected": {
+        "value": 15,
+        "next": "000001E22B28EB90"
+      }
+    },
+    {
+      "at": 2.0315,
+      "type": "step"
+    },
+    {
+      "at": "2026-10-02T10:32:50.303Z",
+      "type": "breakpoint",
+      "sequence": 4,
+      "label": "inserted 15",
+      "head": "000001E22B28E8B0",
+      "current": "000001E22B28E630",
+      "nodes": [
+        {
+          "address": "000001E22B28E8B0",
+          "value": 10,
+          "next": "000001E22B28E630"
+        },
+        {
+          "address": "000001E22B28E630",
+          "value": 15,
+          "next": "000001E22B28EB90"
+        },
+        {
+          "address": "000001E22B28EB90",
+          "value": 20,
+          "next": "nullptr"
+        }
+      ],
+      "selected": {
+        "value": 15,
+        "next": "000001E22B28EB90"
+      }
+    },
+    {
+      "at": 2.29889999999851,
+      "type": "step"
+    },
+    {
+      "at": "2026-10-02T10:32:50.568Z",
+      "type": "stdout",
+      "sequence": 5,
+      "text": "values: 10 15 20 | end: nullptr"
+    },
+    {
+      "at": "2026-10-02T10:32:50.568Z",
+      "type": "breakpoint",
+      "sequence": 6,
+      "label": "inserted 17",
+      "head": "000001E22B28E8B0",
+      "current": "000001E22B28E570",
+      "nodes": [
+        {
+          "address": "000001E22B28E8B0",
+          "value": 10,
+          "next": "000001E22B28E630"
+        },
+        {
+          "address": "000001E22B28E630",
+          "value": 15,
+          "next": "000001E22B28E570"
+        },
+        {
+          "address": "000001E22B28E570",
+          "value": 17,
+          "next": "000001E22B28EB90"
+        },
+        {
+          "address": "000001E22B28EB90",
+          "value": 20,
+          "next": "nullptr"
+        }
+      ],
+      "selected": {
+        "value": 17,
+        "next": "000001E22B28EB90"
+      }
+    },
+    {
+      "at": 2.56439999999851,
+      "type": "step"
+    },
+    {
+      "at": "2026-10-02T10:32:50.835Z",
+      "type": "stdout",
+      "sequence": 7,
+      "text": "values: 10 15 17 20 | end: nullptr"
+    },
+    {
+      "at": "2026-10-02T10:32:50.836Z",
+      "type": "exit",
+      "sequence": 8,
+      "exitCode": 0
+    }
+  ],
+  "disclosure": "Owned teaching workbench; C++ uses explicit inspect instrumentation, not a claim of running Visual Studio or a commercial debugger."
+}
