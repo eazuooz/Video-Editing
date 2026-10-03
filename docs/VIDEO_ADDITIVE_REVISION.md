@@ -73,3 +73,10 @@
 ## 작업을 이어갈 때 읽을 파일
 
 먼저 이 문서와 [AGENTS.md](../AGENTS.md), [VIDEO_WORKFLOW.md](VIDEO_WORKFLOW.md), [보강 배치 README](../production/batches/private-review-expansion/README.md), 최신 대기열과 프로젝트 manifest를 읽는다. 화면·자막·음성·회원 엔딩·업로드 세부 사항은 각각 기존 전문 지침을 따른다. 이 기록은 대본만 늘리거나 자료를 준비한 상태를 영상 완료로 간주할 근거가 아니다. 실제 완료 증거가 있는 항목은 보존하고, 살아 있는 작업의 체크포인트부터 이어간다.
+
+
+## 실제 게임의 카메라 동작으로 완성한 멀미·선택 설계 영상
+
+2026-10-03 motion-sickness-games final-v1 [게임 멀미와 카메라 설계: 화면 움직임을 선택하게 만들기](https://youtu.be/vFhhQXgdeMs)를 고정 한글 MP4로 비공개 저장하고 전체 설정을 재열람했다. PowerWash Simulator의 FuturLab 개발 시연(2022 WIP)과 The Talos Principle2의 공식 실제 플레이34컷을 여섯 흰2.5D 설명 사이에 넣었으며 자체 게임은0개다.53개 원래 문단/PCM과 여섯 설명 길이를 보존했다. 전체633.083333초/37985프레임, 본편 실제372.65초/설명248.433333초로60:40 오차0프레임이다. 독립12장60문단, 한영166큐와174자막·컷 구간/20구성 화면/102인코딩 컷 경계, 전체현재해시 및 최종믹스ASR, 두 전체디코딩·동일AAC·−16.12LUFS/−2.14dBTP를 검수하고4파일을 수집했다. [현재QA](../projects/motion-sickness-games/production/final-v1/qa.json), [실제 업로드 영수증](../projects/motion-sickness-games/publishing/youtube-upload.json), [Git 증거](../projects/motion-sickness-games/production/final-v1/git-delivery.json)를 따른다.
+
+실제 업로드 CCoff 게임/PPT에서 아래 가운데 한글 자막이 보인다. 새 썸네일·KO/EN 수동SRT·영어 제목/설명·00초 과외 카드·마지막10초 재생목록/자기채널구독/외부과외링크를 저장 후 확인했다. 비공개·예약 없음, 새 파일 저작권 검사 완료/문제 없음, 저장 후 소유권 주장 없음·설정에 따라 수익 창출·초기 광고 검토 알림 해소를 관찰했다. 별도 완료 wizard 미관찰(false), 플랫폼 자동더빙 미검수와 비공개 고정댓글 pending-video-publication을 보존한다. 제작 커밋 89cf65e342b3137265558ef8843bfbe9dd4e4a40의 origin/main 일반 푸시 및 원격SHA 일치를 확인했고 미디어는 커밋하지 않았다. 사람 전체 청취·최종 공개 권리·원래 Nimbus·잘린 회원 핸들·외부 미디어 백업은pending이다. 원래24편은8편전달·1중복제외·15대기며 다음 hierarchical-game-outlines를 검토한다. 기존 영상의 현재 공개/예약을 변경하지 않았다.
