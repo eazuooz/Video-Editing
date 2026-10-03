@@ -1,0 +1,93 @@
+{
+  "pid": 7540,
+  "startedAt": "2026-10-02T20:38:47.171Z",
+  "status": "tts-asr-ready-for-direct-review",
+  "inputs": [
+    {
+      "path": "projects/motion-sickness-games/project.json",
+      "sha256": "030ebdc0e55e69e4ce2585c7217b4dc4d22980c62f17469b223daf9c90593c38"
+    },
+    {
+      "path": "projects/motion-sickness-games/script/narration.ko.json",
+      "sha256": "5d04974c599f86b6ac800083c330c033334b9002a7ae202a2a0cd4fa360d796a"
+    },
+    {
+      "path": "projects/motion-sickness-games/script/narration.en.json",
+      "sha256": "b2c1f9dd07d3a5626aaa679c72ade64eedbd4aa7e28399cf6b951036355c64f4"
+    },
+    {
+      "path": "projects/motion-sickness-games/planning/action-map.json",
+      "sha256": "ee05eeb6f9e701cd70f312bbf50870db1248125a837097141b0bd640bb10bfc9"
+    },
+    {
+      "path": "projects/motion-sickness-games/sources/game-candidates.json",
+      "sha256": "4cd9e020c15f71db0a63318b13bd1e2a0926513ac2c843573e01d20e9a641edd"
+    },
+    {
+      "path": "projects/motion-sickness-games/production/script-source-review.json",
+      "sha256": "9fe37205aada407826b8c05189e07307b42ed2af539da1ef20a54cb2eaa87dad"
+    }
+  ],
+  "minimumFreeMiB": 9000,
+  "maximumUtilizationPercent": 35,
+  "stableSamplesRequired": 3,
+  "checkIntervalSeconds": 30,
+  "children": [
+    {
+      "kind": "tts",
+      "pid": 39360,
+      "args": [
+        "qwen3-tts/render_narration.py",
+        "--project",
+        "motion-sickness-games",
+        "--device",
+        "cuda:0"
+      ],
+      "log": "projects/motion-sickness-games/production/logs/initial-tts.log",
+      "startedAt": "2026-10-02T21:33:56.917Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T22:21:37.493Z"
+    },
+    {
+      "kind": "cpu-asr",
+      "pid": 43444,
+      "args": [
+        "qwen3-tts/review_project_narration.py",
+        "--project",
+        "motion-sickness-games",
+        "--device",
+        "cpu"
+      ],
+      "log": "projects/motion-sickness-games/production/logs/initial-cpu-asr.log",
+      "startedAt": "2026-10-02T22:21:37.503Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-02T22:30:36.465Z"
+    }
+  ],
+  "logs": {
+    "runner": "projects/motion-sickness-games/production/logs/resource-runner.log",
+    "tts": "projects/motion-sickness-games/production/logs/initial-tts.log",
+    "asr": "projects/motion-sickness-games/production/logs/initial-cpu-asr.log"
+  },
+  "speechAutomaticallyApproved": false,
+  "humanListening": "pending",
+  "updatedAt": "2026-10-02T22:30:36.467Z",
+  "gpuObservation": {
+    "at": "2026-10-02T21:33:56.906Z",
+    "totalMiB": 32607,
+    "usedMiB": 6059,
+    "freeMiB": 26548,
+    "utilizationPercent": 3,
+    "competingSynthesisPids": [],
+    "observedPythonPids": [
+      52456,
+      28196,
+      18792
+    ],
+    "action": "Observe only. Never stop unrelated jobs."
+  },
+  "stableSamples": 3,
+  "finishedAt": "2026-10-02T22:30:36.467Z"
+}

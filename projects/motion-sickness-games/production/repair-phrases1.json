@@ -1,0 +1,86 @@
+{
+  "pid": 47052,
+  "startedAt": "2026-10-02T23:05:16.161Z",
+  "status": "candidates-ready-for-direct-review",
+  "inputs": [
+    {
+      "path": "projects/motion-sickness-games/production/repair1/manifest.json",
+      "sha256": "2876c843d7e0ed29a06f8341aaf2bf09f3e808e117383c3e74fd99fae4b440c0"
+    },
+    {
+      "path": "projects/motion-sickness-games/production/repair1/patch.ko.json",
+      "sha256": "55bf2db4746a6500cfa0dba791c689ce24dabbceb6156ee94c36970990af608f"
+    },
+    {
+      "path": "projects/motion-sickness-games/production/repair1/patch.en.json",
+      "sha256": "1088c1ca8ba7b54ba166f64ef1f02fb2aec649b131b99fe8a371728f8f18bce6"
+    },
+    {
+      "path": "projects/motion-sickness-games/script/narration.ko.json",
+      "sha256": "6208ecfc1b20f5d9f0bfac83d1074711721679c11a91ffbaf7975084c4f6665c"
+    },
+    {
+      "path": "projects/motion-sickness-games/script/narration.en.json",
+      "sha256": "6234d0e53531d632d5320f68c4170b207af61b159882cefa5d2f160736390f7d"
+    },
+    {
+      "path": "projects/motion-sickness-games/planning/action-map.json",
+      "sha256": "ee05eeb6f9e701cd70f312bbf50870db1248125a837097141b0bd640bb10bfc9"
+    },
+    {
+      "path": "projects/motion-sickness-games/production/script-source-review.json",
+      "sha256": "ea8ca05e739124e14f0cba440a30d11d18991792b36db365cc0fbf1a9242abf6"
+    }
+  ],
+  "request": "projects/motion-sickness-games/production/repair1/request.json",
+  "children": [
+    {
+      "kind": "candidate-tts",
+      "pid": 42240,
+      "args": [
+        "qwen3-tts/render_narration.py",
+        "--project",
+        "motion-sickness-games",
+        "--manifest",
+        "projects/motion-sickness-games/production/repair1/manifest.json",
+        "--device",
+        "cuda:0"
+      ],
+      "status": "finished",
+      "startedAt": "2026-10-03T00:08:35.192Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-03T00:17:56.464Z"
+    },
+    {
+      "kind": "candidate-cpu-asr",
+      "pid": 47072,
+      "args": [
+        "qwen3-tts/review_project_narration.py",
+        "--project",
+        "motion-sickness-games",
+        "--manifest",
+        "projects/motion-sickness-games/production/repair1/manifest.json",
+        "--device",
+        "cpu"
+      ],
+      "status": "finished",
+      "startedAt": "2026-10-03T00:17:56.474Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-03T00:19:54.750Z"
+    }
+  ],
+  "humanListening": "pending",
+  "automaticallyApproved": false,
+  "candidateLog": "projects/motion-sickness-games/production/logs/phrase-repair1.log",
+  "runnerLog": "projects/motion-sickness-games/production/logs/phrase-repair1-runner.log",
+  "updatedAt": "2026-10-03T00:19:54.755Z",
+  "gpuObservation": {
+    "at": "2026-10-03T00:08:35.181Z",
+    "freeMiB": 26602,
+    "utilization": 2,
+    "competingSynthesisPids": [],
+    "stable": 3
+  },
+  "finishedAt": "2026-10-03T00:19:54.755Z",
+  "candidateDirectory": "shared/output/narration/motion-sickness-games/qwen3-1.7b-balanced-v1-phrase-repair1"
+}

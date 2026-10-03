@@ -1,0 +1,130 @@
+{
+  "recordedAt": "2026-10-02T23:17:07.960Z",
+  "slug": "motion-sickness-games",
+  "initialPipeline": {
+    "toolSessionId": 54795,
+    "pid": 7540,
+    "alive": false,
+    "status": "tts-asr-ready-for-direct-review",
+    "finishedAt": "2026-10-02T22:30:36.467Z",
+    "children": [
+      {
+        "kind": "tts",
+        "pid": 39360,
+        "args": [
+          "qwen3-tts/render_narration.py",
+          "--project",
+          "motion-sickness-games",
+          "--device",
+          "cuda:0"
+        ],
+        "log": "projects/motion-sickness-games/production/logs/initial-tts.log",
+        "startedAt": "2026-10-02T21:33:56.917Z",
+        "status": "finished",
+        "exitCode": 0,
+        "finishedAt": "2026-10-02T22:21:37.493Z"
+      },
+      {
+        "kind": "cpu-asr",
+        "pid": 43444,
+        "args": [
+          "qwen3-tts/review_project_narration.py",
+          "--project",
+          "motion-sickness-games",
+          "--device",
+          "cpu"
+        ],
+        "log": "projects/motion-sickness-games/production/logs/initial-cpu-asr.log",
+        "startedAt": "2026-10-02T22:21:37.503Z",
+        "status": "finished",
+        "exitCode": 0,
+        "finishedAt": "2026-10-02T22:30:36.465Z"
+      }
+    ],
+    "doNotRestart": true
+  },
+  "initialDirectReview": "projects/motion-sickness-games/production/voice-approval-initial.json",
+  "allInitialScenesRead": 12,
+  "allInitialParagraphsRead": 60,
+  "acceptedInitialScenes": [
+    "01",
+    "02",
+    "08",
+    "09",
+    "11",
+    "12"
+  ],
+  "targetedRepair": {
+    "recordedAt": "2026-10-02T23:17:07.960Z",
+    "toolSessionId": 8552,
+    "pid": 47052,
+    "runnerAlive": true,
+    "statusAtObservation": "waiting-for-free-gpu",
+    "state": "projects/motion-sickness-games/production/repair-phrases1.json",
+    "runner": "projects/motion-sickness-games/production/repair-phrases1.cjs",
+    "currentChildren": [],
+    "inputsLocked": true,
+    "doNotDuplicate": true,
+    "automaticallyApproved": false,
+    "humanListening": "pending",
+    "candidateParagraphs": 7,
+    "affectedScenes": [
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "10"
+    ],
+    "request": "projects/motion-sickness-games/production/repair1/request.json",
+    "sourcePCMUnchangedUntilCandidateAcceptance": true,
+    "unchangedScriptParagraphs": 53,
+    "allSixExplanationClaimsPreserved": true
+  },
+  "compose": {
+    "script": "projects/motion-sickness-games/production/compose-repaired-v2.py",
+    "status": "syntax-checked-not-run",
+    "gate": "All seven current-hash candidate ASR paragraphs must be directly accepted first; preserve unaffected v1 PCM in a separate v2, then review full current-hash12-scene ASR including every splice and ending."
+  },
+  "lookdev": {
+    "revision": "v2",
+    "silent": true,
+    "seconds": 48,
+    "frames": 2880,
+    "review": "projects/motion-sickness-games/production/lookdev-v2/inspection.json",
+    "directlyReviewedImages": 18,
+    "compositionPassed": true,
+    "finalNarrationTimingInstalled": false,
+    "finalCaptionReview": false
+  },
+  "vite": {
+    "port": 9214,
+    "pid": 58552,
+    "toolSessionId": 40370,
+    "alive": true,
+    "reuseWhenAlive": true
+  },
+  "observedProcesses": [
+    {
+      "ProcessId": 58552,
+      "ParentProcessId": 48608,
+      "Name": "node.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/vite/bin/vite.js --config vite.motion-sickness-games.config.ts"
+    },
+    {
+      "ProcessId": 47052,
+      "ParentProcessId": 56836,
+      "Name": "node.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" projects/motion-sickness-games/production/repair-phrases1.cjs"
+    }
+  ],
+  "measuredSourceCutsApproved": false,
+  "bodyRatioApproved": false,
+  "finalMix": false,
+  "finalRender": false,
+  "collected": false,
+  "privateUploaded": false,
+  "gitDelivered": false,
+  "humanListening": "pending",
+  "nextAction": "Reuse repair47052/session8552. Directly review seven candidate paragraphs when ready. Do not rerun ended initial54795/39360/43444, contextualASR51332 or silent lookdev43345/10406. No full narration/cut/mix/ratio/private delivery approval yet."
+}

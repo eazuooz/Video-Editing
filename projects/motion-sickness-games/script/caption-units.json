@@ -1,0 +1,998 @@
+[
+  [
+    "01",
+    1,
+    "파워워시 시뮬레이터의 개발 시연입니다.",
+    "This is a PowerWash Simulator development demonstration."
+  ],
+  [
+    "01",
+    1,
+    "물을 뿌리는 도구와, 그 뒤의 놀이터를 따로 보세요.",
+    "Watch the cleaning tool and the playground separately."
+  ],
+  [
+    "01",
+    1,
+    "바닥을 따라 조준할 때 배경도 함께 움직입니다.",
+    "As the aim sweeps across the floor, the background moves too."
+  ],
+  [
+    "01",
+    2,
+    "이번 컷에서는 달라집니다.",
+    "The next shot behaves differently."
+  ],
+  [
+    "01",
+    2,
+    "놀이터의 기둥과 바닥 경계는 비슷한 자리에 남아",
+    "Posts and floor boundaries stay in roughly the same screen"
+  ],
+  [
+    "01",
+    2,
+    "있는데, 노즐과 조준 위치가 화면 안에서 움직입니다.",
+    "positions, while the nozzle and aiming point move within the image."
+  ],
+  [
+    "01",
+    3,
+    "이것은 개발사가 소개한 에임 모드입니다.",
+    "The developer calls this Aim Mode."
+  ],
+  [
+    "01",
+    3,
+    "바라보는 방향과 도구의 조준을 나누면, 작은 목표를",
+    "Separating the viewing direction from tool aiming reduces the"
+  ],
+  [
+    "01",
+    3,
+    "따라갈 때 화면 전체를 계속 돌릴 필요가 줄어듭니다.",
+    "need to turn the whole image while following a small target."
+  ],
+  [
+    "01",
+    4,
+    "도구의 조준과 배경의 이동이 어떻게 연결되는지 보세요.",
+    "Watch how tool aiming connects to background movement."
+  ],
+  [
+    "01",
+    4,
+    "같은 작업에서도 화면 전체를 돌리는 정도가 달라질 수 있습니다.",
+    "The same task can involve different amounts of whole-view rotation."
+  ],
+  [
+    "01",
+    5,
+    "자료는 이천이십이 년 개발 중 버전입니다.",
+    "This footage shows a development version from 2022."
+  ],
+  [
+    "01",
+    5,
+    "현재 설정 전체나 개인의 멀미 반응을 비교한 실험은 아닙니다.",
+    "It is not a comparison of every current setting or individual motion-sickness responses."
+  ],
+  [
+    "01",
+    6,
+    "오늘은 필요한 시점 이동과 조준을 나누고, 그 선택을",
+    "We will separate necessary view movement from aiming, and examine"
+  ],
+  [
+    "01",
+    6,
+    "플레이어에게 돌려주는 카메라 설계를 살펴보겠습니다.",
+    "camera design that gives players control over that relationship."
+  ],
+  [
+    "02",
+    1,
+    "게임의 화면은 이동하고 돌아가지만, 플레이어의 몸은 같은 자리에 있을 수 있습니다.",
+    "The game image can travel and turn while the player remains seated."
+  ],
+  [
+    "02",
+    1,
+    "시각과 몸의 움직임에 관한 신호가 어긋나는 것은 멀미를 설명하는 한 가지 이론입니다.",
+    "Conflict between visual and bodily motion signals is one explanatory theory of motion sickness."
+  ],
+  [
+    "02",
+    2,
+    "그렇다고 카메라가 움직이면 누구나 같은 반응을 보이는 것은 아닙니다.",
+    "People do not all respond in the same way to a moving camera."
+  ],
+  [
+    "02",
+    2,
+    "다른 사람이 괜찮다고 해서 내 불편함이 사라지지도 않습니다.",
+    "Someone else being comfortable does not make your discomfort disappear."
+  ],
+  [
+    "02",
+    3,
+    "여기서 우리가 다룰 것은 치료법이 아니라 개발자의 선택입니다.",
+    "Our focus is a developer choice, not treatment."
+  ],
+  [
+    "02",
+    3,
+    "조작에 필요한 움직임과 연출로 더한 움직임을 구분하면, 어떤 부분을 조절 가능하게 만들지 찾을 수 있습니다.",
+    "Separating movement needed for control from movement added for presentation helps identify what players could adjust."
+  ],
+  [
+    "02",
+    4,
+    "왼쪽은 목표를 향해 시점을 돌리는 동작, 오른쪽은 그 위에 얹는 흔들림이라고 생각해 보세요.",
+    "Think of the left side as turning toward a target, and the right side as extra shake layered on top."
+  ],
+  [
+    "02",
+    4,
+    "둘을 한 값으로 묶지 않는 것이 첫 번째 설계 질문입니다.",
+    "The first design question is whether these should be controlled separately."
+  ],
+  [
+    "03",
+    1,
+    "다시 에임 모드의 실제 시연입니다.",
+    "Return to the Aim Mode demonstration."
+  ],
+  [
+    "03",
+    1,
+    "노즐이 화면 왼쪽과 오른쪽을 향해 움직여도, 뒤쪽",
+    "The nozzle moves toward the left and right of the image,"
+  ],
+  [
+    "03",
+    1,
+    "계단과 나무는 잠시 같은 위치에 남아 있습니다.",
+    "while the stairs and trees remain in place for a time."
+  ],
+  [
+    "03",
+    2,
+    "바닥에서 찾는 조준 위치와, 내가 바라보고",
+    "The aiming position on the floor is"
+  ],
+  [
+    "03",
+    2,
+    "있는 놀이터의 방향이 분리된 것입니다.",
+    "separated from the direction of the view."
+  ],
+  [
+    "03",
+    2,
+    "도구를 움직였다는 사실과 화면 전체가 돌아갔다는 사실은 다릅니다.",
+    "Moving the tool and rotating the whole image are different events."
+  ],
+  [
+    "03",
+    3,
+    "하지만 가장자리까지 움직이면 시야가",
+    "At the edge, the view turns and"
+  ],
+  [
+    "03",
+    3,
+    "돌아가고 회전 놀이기구가 나타납니다.",
+    "the roundabout comes into view."
+  ],
+  [
+    "03",
+    3,
+    "에임 모드라고 해서 카메라가 언제나",
+    "Aim Mode does not mean that the camera"
+  ],
+  [
+    "03",
+    3,
+    "완전히 고정되는 것은 아닙니다.",
+    "is completely fixed at all times."
+  ],
+  [
+    "03",
+    4,
+    "이제 놀이기구를 청소하는 장면을 보세요. 배경의 나무보다",
+    "Now watch the roundabout being cleaned. Follow the surface"
+  ],
+  [
+    "03",
+    4,
+    "물줄기가 닿는 표면을 따라가면, 화면이 덜 돌아가는",
+    "reached by the spray, rather than the distant trees. The"
+  ],
+  [
+    "03",
+    4,
+    "동안에도 작업이 이어지는 것을 볼 수 있습니다.",
+    "task continues during stretches with less view rotation."
+  ],
+  [
+    "03",
+    5,
+    "조준을 독립시켜도 다른 방향을 보는 방법은 남겨야 합니다.",
+    "Separating aim still requires a way to look elsewhere."
+  ],
+  [
+    "03",
+    5,
+    "화면 끝으로 조준하는 일과 주변을 둘러보는",
+    "Designers need to consider how aiming toward an"
+  ],
+  [
+    "03",
+    5,
+    "일이 어떻게 연결되는지 함께 설계해야 하죠.",
+    "edge connects to looking around the environment."
+  ],
+  [
+    "03",
+    6,
+    "이 시연이 보여 주는 것은 작업과 시점의 연결 방식입니다.",
+    "The demonstration shows how a task connects to a viewpoint."
+  ],
+  [
+    "03",
+    6,
+    "이런 옵션이 모두에게 같은 정도로 편안하다는",
+    "It does not show that the option is"
+  ],
+  [
+    "03",
+    6,
+    "결과까지 보여 주는 것은 아닙니다.",
+    "equally comfortable for everyone."
+  ],
+  [
+    "04",
+    1,
+    "카메라 움직임을 전부 없애면 다른 곳을 볼 수 없습니다.",
+    "Removing all camera movement would prevent looking elsewhere."
+  ],
+  [
+    "04",
+    1,
+    "대신 시점을 돌리는 입력, 도구의 조준, 걸을 때의 흔들림을 서로 다른 층으로 나누어 생각할 수 있습니다.",
+    "Instead, consider view-turning input, tool aiming and walking bob as separate layers."
+  ],
+  [
+    "04",
+    2,
+    "걷는 느낌을 주려고 더한 상하 움직임이나 충격을 강조하는 화면",
+    "Vertical bob added to suggest walking and shake added to emphasize"
+  ],
+  [
+    "04",
+    2,
+    "흔들림은, 목표를 바라보는 방향과 같은 역할이 아닙니다.",
+    "impact do not serve the same purpose as facing a target."
+  ],
+  [
+    "04",
+    2,
+    "조절 값도 따로 둘 수 있죠.",
+    "Their adjustment controls can be separate too."
+  ],
+  [
+    "04",
+    3,
+    "접근성 가이드라인도 이런 부가 움직임을 플레이어가 조절할 수 있도록 권합니다.",
+    "Accessibility guidance recommends player control over these additional movements."
+  ],
+  [
+    "04",
+    3,
+    "다만 옵션이 있다는 사실과 개인에게 편안하다는 결과는 따로 확인해야 합니다.",
+    "Having an option and achieving comfort for an individual are separate questions."
+  ],
+  [
+    "04",
+    4,
+    "도식에서는 시점 회전은 남기고 추가 흔들림만 낮춥니다. 실제 구현에서도 역할마다 조절을",
+    "In this diagram, view rotation remains available while extra shake is reduced. In implementation,"
+  ],
+  [
+    "04",
+    4,
+    "나눠야 합니다. 한 스위치가 도구를 겨누는 동작과 이동까지 뜻밖에 바꾸지 않게 하세요.",
+    "separate controls by responsibility so one switch does not unexpectedly change tool aiming or movement."
+  ],
+  [
+    "05",
+    1,
+    "이번에는 놀이터 구조물 주변의 다른 작업입니다.",
+    "This is another part of the playground task."
+  ],
+  [
+    "05",
+    1,
+    "기둥 사이를 지나 옆으로 자리를 옮기면, 가까운",
+    "When the player moves sideways between posts, the positions"
+  ],
+  [
+    "05",
+    1,
+    "기둥과 멀리 있는 나무의 위치가 함께 달라집니다.",
+    "of nearby posts and distant trees change together."
+  ],
+  [
+    "05",
+    2,
+    "청소할 면이 가려져 있다면 보는 위치를 바꿔야 합니다.",
+    "If the surface is hidden, the viewing position may need to change."
+  ],
+  [
+    "05",
+    2,
+    "이런 이동까지 없애는 것과, 그 자리에 선",
+    "Removing that movement and separating aim"
+  ],
+  [
+    "05",
+    2,
+    "뒤 조준을 독립시키는 것은 다른 선택입니다.",
+    "after taking a position are different choices."
+  ],
+  [
+    "05",
+    3,
+    "위쪽 구조물을 씻는 컷에서는 화면이 위를",
+    "In the upper-structure shot, the view tilts"
+  ],
+  [
+    "05",
+    3,
+    "향하고, 물줄기가 높은 표면으로 이동합니다.",
+    "upward and the spray reaches a higher surface."
+  ],
+  [
+    "05",
+    3,
+    "목표가 바닥에서 위쪽으로 바뀌면 바라볼 방향도 바뀔 수 있습니다.",
+    "A target moving from the floor to overhead geometry can require a different viewing direction."
+  ],
+  [
+    "05",
+    4,
+    "이어지는 다른 면에서는 노즐이 기둥과",
+    "On another surface, the nozzle follows"
+  ],
+  [
+    "05",
+    4,
+    "그 옆의 넓은 면을 따라 움직입니다.",
+    "posts and the broad surfaces beside them."
+  ],
+  [
+    "05",
+    4,
+    "먼저 자리를 잡는 구간과, 같은 방향을 바라보며",
+    "Distinguish taking a position from cleaning a"
+  ],
+  [
+    "05",
+    4,
+    "표면을 청소하는 구간을 구분해 보세요.",
+    "surface while facing roughly the same direction."
+  ],
+  [
+    "05",
+    5,
+    "화면이 덜 움직이는 것을 목표로 삼더라도,",
+    "Even if reducing screen movement is a goal,"
+  ],
+  [
+    "05",
+    5,
+    "숨은 표면을 찾을 수 있어야 합니다.",
+    "hidden surfaces must remain discoverable."
+  ],
+  [
+    "05",
+    5,
+    "조준 옵션은 게임에서 해야 하는 일을 없애는 대신 다른",
+    "An aiming option can provide another way to perform"
+  ],
+  [
+    "05",
+    5,
+    "조작 방법을 제공하는 쪽으로 설계할 수 있습니다.",
+    "the task rather than remove the task itself."
+  ],
+  [
+    "05",
+    6,
+    "서로 다른 시점의 컷을 이어서 보고 있습니다.",
+    "These are excerpts from different moments."
+  ],
+  [
+    "05",
+    6,
+    "같은 입력을 반복한 비교 실험은 아니므로, 지금",
+    "They are not a controlled repetition of identical inputs, so begin"
+  ],
+  [
+    "05",
+    6,
+    "보이는 이동과 조준의 관계부터 설명해야 합니다.",
+    "by describing the visible relationship between movement and aim."
+  ],
+  [
+    "06",
+    1,
+    "화면 움직임이라는 메뉴 하나에 모든 것을 넣으면, 값을 바꿨을 때 무엇이 달라지는지 알기 어렵습니다.",
+    "A single menu item called screen movement makes it hard to know what changing it does."
+  ],
+  [
+    "06",
+    1,
+    "시점 감도와 도구 조준, 추가 흔들림을 구분해서 설명할 수 있습니다.",
+    "Explain view sensitivity, tool aiming and extra shake separately."
+  ],
+  [
+    "06",
+    2,
+    "감도는 같은 입력에 시점이 얼마나 돌아가는지에 관한 값입니다.",
+    "Sensitivity concerns how much the view turns for an input."
+  ],
+  [
+    "06",
+    2,
+    "에임 모드는 조준과 시점의 연결 방식에 관한 선택입니다.",
+    "Aim Mode concerns the relationship between aim and view."
+  ],
+  [
+    "06",
+    2,
+    "서로 바꾸어 부를 수는 없습니다.",
+    "Those terms are not interchangeable."
+  ],
+  [
+    "06",
+    3,
+    "지금 도식의 옵션 목록은 설계 제안입니다.",
+    "This option list is a design proposal."
+  ],
+  [
+    "06",
+    3,
+    "앞의 개발 시연에 이 메뉴가 그대로 들어 있다는 뜻은 아닙니다.",
+    "It does not mean the development demonstration contains this exact menu."
+  ],
+  [
+    "06",
+    3,
+    "실제 게임의 메뉴와 우리가 제안하는 화면을 구분해 주세요.",
+    "Distinguish the actual game from our proposed interface."
+  ],
+  [
+    "06",
+    4,
+    "짧은 설명과 되돌리기를 함께 제공하면, 플레이어가 차이를 확인하고 원래 값으로 돌아갈 수 있습니다.",
+    "A short explanation and a reset let players inspect a difference and return to the original value."
+  ],
+  [
+    "06",
+    4,
+    "모든 사람에게 맞는 권장값을 하나 고르기보다, 선택의 의미를 알게 하는 것이 먼저입니다.",
+    "Explaining the choice comes before choosing one recommended setting for everyone."
+  ],
+  [
+    "07",
+    1,
+    "탈로스 프린서플 투의 공식 게임플레이입니다.",
+    "This is official gameplay footage of The Talos Principle 2."
+  ],
+  [
+    "07",
+    1,
+    "발판을 따라 이동한 뒤, 위쪽 장치를",
+    "Watch platform movement, then the view"
+  ],
+  [
+    "07",
+    1,
+    "향해 시야가 돌아가는 모습을 보세요.",
+    "turning toward overhead geometry."
+  ],
+  [
+    "07",
+    2,
+    "다른 컷에서는 벽과 레이저가 기울어집니다.",
+    "In another shot, walls and lasers tilt."
+  ],
+  [
+    "07",
+    2,
+    "퍼즐 공간을 보는 방향이 바뀌는 장면입니다.",
+    "The orientation of the puzzle view changes."
+  ],
+  [
+    "07",
+    3,
+    "공간을 바꾸거나 새로운 방향을 바라보는",
+    "Changing space or looking in a new"
+  ],
+  [
+    "07",
+    3,
+    "동작은 게임의 규칙과 연결되기도 합니다.",
+    "direction can be connected to game rules."
+  ],
+  [
+    "07",
+    3,
+    "서로 다른 컷이므로 연속 플레이로 읽지는 마세요.",
+    "These separate shots are not continuous play."
+  ],
+  [
+    "07",
+    3,
+    "중요한 질문은 바뀐 뒤의 방향을 이해할 수 있느냐입니다.",
+    "The important question is whether the new orientation remains understandable."
+  ],
+  [
+    "07",
+    4,
+    "다시 청소 게임의 다른 표면입니다.",
+    "Return to a different surface in the cleaning game."
+  ],
+  [
+    "07",
+    4,
+    "구조물 아래에서 위를 보았다가 다른 면을 바라볼 때, 가까운",
+    "When looking up beneath the structure and then toward another face,"
+  ],
+  [
+    "07",
+    4,
+    "판자와 기둥은 시점이 돌아간 뒤 바라볼 방향을 찾는 단서입니다.",
+    "nearby planks and posts help identify the viewing direction after a turn."
+  ],
+  [
+    "07",
+    5,
+    "여기서는 목표를 찾기 위해 보는 방향이 바뀝니다.",
+    "Here, the view changes to find a target."
+  ],
+  [
+    "07",
+    5,
+    "앞의 퍼즐과 동일한 장치는 아니지만, 움직인 뒤 어디를",
+    "It is not the same mechanic as the puzzle, but both raise the"
+  ],
+  [
+    "07",
+    5,
+    "보고 있는지 읽을 수 있어야 한다는 질문은 공유합니다.",
+    "question of reading where the view is facing after a change."
+  ],
+  [
+    "07",
+    6,
+    "이 영상만 보고 특정 전환이 편안하다고 판정할 수는 없습니다.",
+    "This footage alone cannot establish that a particular transition is comfortable."
+  ],
+  [
+    "07",
+    6,
+    "볼 방향의 변화와 그 뒤에 남는 단서를 먼저",
+    "Observe the orientation change and the remaining cues before"
+  ],
+  [
+    "07",
+    6,
+    "관찰한 뒤, 전환 방식의 선택을 고민해 보세요.",
+    "considering choices in how the transition is presented."
+  ],
+  [
+    "08",
+    1,
+    "전환을 부드럽게 만들면 움직임을 따라갈 시간이 생길 수 있습니다.",
+    "A gradual transition can allow time to follow the movement."
+  ],
+  [
+    "08",
+    1,
+    "하지만 더 오래 움직이는 화면이 누군가에게는 더 불편할 수도 있습니다.",
+    "A longer-moving image can also be less comfortable for someone else."
+  ],
+  [
+    "08",
+    1,
+    "하나의 방식으로 모두를 대표할 수는 없죠.",
+    "One transition cannot represent everyone."
+  ],
+  [
+    "08",
+    2,
+    "반대로 즉시 바꾸면 이동 과정은 짧아져도 도착한 방향을 놓칠 수 있습니다.",
+    "An immediate change shortens the moving interval but may make the arrival orientation harder to read."
+  ],
+  [
+    "08",
+    2,
+    "움직이는 시간과 바뀐 공간을 이해하는 일은 별개의 문제입니다.",
+    "Motion duration and spatial understanding are separate questions."
+  ],
+  [
+    "08",
+    3,
+    "이 두 경로는 설명용 도식입니다.",
+    "These two paths are explanatory diagrams."
+  ],
+  [
+    "08",
+    3,
+    "앞에서 본 게임에 이런 전환 옵션이 실제로 구현되어 있다고 주장하는 화면은 아닙니다.",
+    "They do not claim that the game footage we just watched implements these transition options."
+  ],
+  [
+    "08",
+    4,
+    "전환을 줄일 선택과 도착 방향을 읽을 단서를 함께 고민하세요.",
+    "Consider both a choice to reduce transition motion and cues for reading the arrival direction."
+  ],
+  [
+    "08",
+    4,
+    "편안함을 확인할 때에도 한 가지 효과만 바꾸고, 플레이어가 즉시 멈추거나 되돌릴 수 있게 해야 합니다.",
+    "When checking comfort, change one effect at a time and allow players to stop or revert immediately."
+  ],
+  [
+    "09",
+    1,
+    "미끄럼틀 주변을 씻는 다른 구간입니다.",
+    "This is another cleaning interval around the slide."
+  ],
+  [
+    "09",
+    1,
+    "화면이 돌아가는 동안에도 물줄기가",
+    "Can you find the surface reached"
+  ],
+  [
+    "09",
+    1,
+    "닿는 면을 찾을 수 있는지 보세요.",
+    "by the spray while the view turns?"
+  ],
+  [
+    "09",
+    1,
+    "바닥, 옆면, 가까운 구조물이 서로 다른 위치에 있습니다.",
+    "The floor, side surface and nearby structure occupy different positions."
+  ],
+  [
+    "09",
+    2,
+    "청소할 곳을 새로 바라보는 순간에는 배경의 선도 이동합니다.",
+    "When a new area comes into view, background lines move too."
+  ],
+  [
+    "09",
+    2,
+    "시점이 멈춘 뒤에는 물줄기와 깨끗해지는",
+    "After the view settles, the relationship between the spray"
+  ],
+  [
+    "09",
+    2,
+    "면의 관계를 다시 읽을 수 있어야 합니다.",
+    "and the surface being cleaned should be readable again."
+  ],
+  [
+    "09",
+    3,
+    "이제 가까운 판자와 기둥을 보겠습니다.",
+    "Now look at the nearby planks and posts."
+  ],
+  [
+    "09",
+    3,
+    "노즐만 크게 보여 주는 것보다, 도구가 어느 면을 향하고",
+    "Understanding the task requires seeing which surface the"
+  ],
+  [
+    "09",
+    3,
+    "있는지 함께 보이는 것이 작업을 이해하는 데 필요합니다.",
+    "tool points at, as well as seeing the nozzle itself."
+  ],
+  [
+    "09",
+    4,
+    "선택형 조준 방식을 바꾼 뒤에도 이 연결이 남아야 합니다.",
+    "That relationship should remain after changing the aiming mode."
+  ],
+  [
+    "09",
+    4,
+    "카메라 움직임을 줄였는데 목표를 가리거나 조준 위치를",
+    "Reducing camera motion while obscuring the target or confusing"
+  ],
+  [
+    "09",
+    4,
+    "헷갈리게 하면, 다른 조작 문제가 생길 수 있습니다.",
+    "the aiming position can introduce another control problem."
+  ],
+  [
+    "09",
+    5,
+    "이 장면들에서 직접 확인하는 것은",
+    "What these shots directly show is the"
+  ],
+  [
+    "09",
+    5,
+    "도구, 표면, 시점의 위치입니다.",
+    "position of tool, surface and view."
+  ],
+  [
+    "09",
+    5,
+    "플레이어의 몸 상태나 불편함을 측정한 자료와 혼동하지 마세요.",
+    "Do not confuse them with measurements of a player’s symptoms or comfort."
+  ],
+  [
+    "09",
+    6,
+    "그래서 검토할 질문도 구체적이어야 합니다.",
+    "Make the review questions specific."
+  ],
+  [
+    "09",
+    6,
+    "덜 움직이는가에 이어, 어디를 씻는지 보이는가, 다른 면으로",
+    "Beyond asking whether the image moves less, ask whether the cleaning target is"
+  ],
+  [
+    "09",
+    6,
+    "옮긴 뒤 다시 조준할 수 있는가를 확인할 수 있습니다.",
+    "visible and whether aiming remains readable after moving to another surface."
+  ],
+  [
+    "10",
+    1,
+    "옵션이 있어도 찾기 어렵다면 필요한 순간에 쓰기 어렵습니다.",
+    "An option is less useful when it is hard to find."
+  ],
+  [
+    "10",
+    1,
+    "처음 설정 화면에서 카메라와 조준에 관한 선택을 알아볼 수",
+    "Make camera and aiming choices recognizable in"
+  ],
+  [
+    "10",
+    1,
+    "있게 하고, 플레이 중에도 다시 접근할 수 있게 하세요.",
+    "initial settings and accessible again during play."
+  ],
+  [
+    "10",
+    2,
+    "설명에는 바뀌는 것과 남는 것을 함께 적을 수 있습니다.",
+    "Explain both what changes and what remains available."
+  ],
+  [
+    "10",
+    2,
+    "예를 들어 도구를 겨누는 동작을 시점 회전과 따로 다루어도, 다른",
+    "For example, treating tool aiming separately from view rotation"
+  ],
+  [
+    "10",
+    2,
+    "방향을 보는 조작은 계속 쓸 수 있다고 알려 주는 식입니다.",
+    "still leaves the ability to look in another direction available."
+  ],
+  [
+    "10",
+    3,
+    "저장과 기본값 복원도 실제로 확인해야 합니다.",
+    "Check saving and restoring defaults in practice."
+  ],
+  [
+    "10",
+    3,
+    "다시 실행하거나 입력 장치를 바꿨을 때 값이 달라지면, 플레이어는 같은 선택을 반복해서 찾아야 합니다.",
+    "If values change after restarting or switching input devices, players may have to find the same choice repeatedly."
+  ],
+  [
+    "10",
+    4,
+    "이런 검수는 카메라 옵션의 동작을 확인합니다.",
+    "These checks verify how the camera options operate."
+  ],
+  [
+    "10",
+    4,
+    "편안함은 사람마다 다르므로 별도의 피드백을 받아야 하며, 불편함을 참게 하는 테스트로 바꾸어서는 안 됩니다.",
+    "Comfort requires separate individual feedback; testing should not become an exercise in enduring discomfort."
+  ],
+  [
+    "11",
+    1,
+    "마지막으로 구조물의 다른 면을 씻는 구간을 보겠습니다.",
+    "Finally, watch another face of the playground structure being cleaned."
+  ],
+  [
+    "11",
+    1,
+    "가까이 서서 표면을 따라가는 동안에는, 노즐과",
+    "While following a nearby surface, first"
+  ],
+  [
+    "11",
+    1,
+    "물줄기가 어디로 향하는지 먼저 찾아보세요.",
+    "identify where the nozzle and spray point."
+  ],
+  [
+    "11",
+    2,
+    "일부를 씻은 뒤 옆으로 돌아가면 기둥과 판자의 배치가 달라집니다.",
+    "Moving around after cleaning part of a surface changes the arrangement of posts and planks."
+  ],
+  [
+    "11",
+    2,
+    "자리를 바꾸는 움직임은 새로운 면을 보여 주고,",
+    "Repositioning reveals another face; aiming"
+  ],
+  [
+    "11",
+    2,
+    "그 뒤의 조준은 그 면에서 작업을 이어갑니다.",
+    "then continues the task on that face."
+  ],
+  [
+    "11",
+    3,
+    "위쪽 가로대를 향하는 컷에서는 카메라도 위를 봅니다.",
+    "In the shot aimed at an overhead crossbar, the camera looks upward too."
+  ],
+  [
+    "11",
+    3,
+    "배경 전체가 움직이는 순간과, 목표 주변에서",
+    "Distinguish moments when the whole background moves"
+  ],
+  [
+    "11",
+    3,
+    "도구가 움직이는 순간을 나누어 읽어 보세요.",
+    "from moments when the tool moves around a target."
+  ],
+  [
+    "11",
+    4,
+    "앞에서 본 에임 모드의 아이디어는 이런 작업에서",
+    "The Aim Mode idea was to separate aiming from"
+  ],
+  [
+    "11",
+    4,
+    "조준과 보는 방향을 분리하는 것이었습니다.",
+    "viewing direction during this kind of task."
+  ],
+  [
+    "11",
+    4,
+    "그것이 모든 이동을 없애거나 모든 사람의",
+    "It does not mean eliminating every"
+  ],
+  [
+    "11",
+    4,
+    "불편함을 없앤다는 뜻은 아닙니다.",
+    "movement or everyone’s discomfort."
+  ],
+  [
+    "11",
+    5,
+    "예시를 검토할 때는 각각의 컷에서",
+    "When reviewing an example, first"
+  ],
+  [
+    "11",
+    5,
+    "무엇이 움직였는지 먼저 적어 보세요.",
+    "record what moves in each shot."
+  ],
+  [
+    "11",
+    5,
+    "필요했던 이동, 조준을 위한 변화, 더해진 연출을",
+    "Distinguishing necessary travel, aiming changes and added"
+  ],
+  [
+    "11",
+    5,
+    "구분해야 어떤 선택을 제공할지 구체화됩니다.",
+    "presentation makes the available choices more concrete."
+  ],
+  [
+    "11",
+    6,
+    "이 자료에서는 청소 동작이 실제로 이어지는 모습을 확인했습니다.",
+    "Here we observed an actual cleaning task continuing across different views."
+  ],
+  [
+    "11",
+    6,
+    "이제 게임을 만드는 입장에서, 같은 목표를 다른 조작",
+    "As a developer, you can now ask whether the same"
+  ],
+  [
+    "11",
+    6,
+    "방식으로도 읽을 수 있는지 질문해 볼 수 있습니다.",
+    "target remains readable with another control method."
+  ],
+  [
+    "12",
+    1,
+    "오늘의 핵심은 카메라를 무조건 멈추라는 말이 아닙니다.",
+    "The point is not to stop the camera unconditionally."
+  ],
+  [
+    "12",
+    1,
+    "게임에 필요한 시점 이동과 도구의 조준, 추가 연출을 나누고 플레이어가 조절할 부분을 찾는 것입니다.",
+    "Separate necessary viewpoint movement, tool aiming and added presentation, then identify what players can control."
+  ],
+  [
+    "12",
+    2,
+    "실제 게임 장면에서는 무엇이 움직였는지, 설명 화면에서는 어떤 역할을 분리할지 살펴봤습니다.",
+    "In actual game shots, we examined what moves; in the diagrams, what responsibilities could be separated."
+  ],
+  [
+    "12",
+    2,
+    "옵션을 바꾼 뒤에도 목표와 현재 방향이 읽히는지 함께 확인하세요.",
+    "Check that the target and current orientation remain readable after changing an option."
+  ],
+  [
+    "12",
+    3,
+    "게임마다 필요한 조작은 다르고 사람마다 반응도 다릅니다.",
+    "Games require different controls, and people respond differently."
+  ],
+  [
+    "12",
+    3,
+    "한 가지 값을 정답으로 약속하기보다, 알아볼 수 있는 선택과",
+    "Instead of promising one correct value, provide understandable"
+  ],
+  [
+    "12",
+    3,
+    "되돌리기, 실제 플레이 피드백을 준비하는 편이 좋습니다.",
+    "choices, a way to revert and feedback from actual play."
+  ],
+  [
+    "12",
+    4,
+    "내 게임에서도 카메라와 조준의 책임을 나누는 것부터 시작해 보세요.",
+    "In your own game, start by separating the responsibilities of the camera and aiming."
+  ],
+  [
+    "12",
+    4,
+    "이런 구현을 함께 배우고 싶다면 설명과 영상 마지막의 프로그래밍 과외 링크를 확인해 주세요.",
+    "To learn this kind of implementation together, see the programming coaching link in the description and ending."
+  ]
+]

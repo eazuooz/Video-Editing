@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-10-03T00:14:44.698Z",
+  "slug": "motion-sickness-games",
+  "previousCheckpoint": "projects/motion-sickness-games/production/checkpoint-20261003-0820.json",
+  "targetedRepair": {
+    "recordedAt": "2026-10-03T00:14:44.698Z",
+    "toolSessionId": 8552,
+    "pid": 47052,
+    "runnerAlive": true,
+    "statusAtObservation": "candidate-tts-running",
+    "state": "projects/motion-sickness-games/production/repair-phrases1.json",
+    "runner": "projects/motion-sickness-games/production/repair-phrases1.cjs",
+    "currentChildren": [
+      {
+        "kind": "candidate-tts",
+        "pid": 42240,
+        "args": [
+          "qwen3-tts/render_narration.py",
+          "--project",
+          "motion-sickness-games",
+          "--manifest",
+          "projects/motion-sickness-games/production/repair1/manifest.json",
+          "--device",
+          "cuda:0"
+        ],
+        "status": "running",
+        "startedAt": "2026-10-03T00:08:35.192Z"
+      }
+    ],
+    "inputsLocked": true,
+    "doNotDuplicate": true,
+    "automaticallyApproved": false,
+    "humanListening": "pending",
+    "candidateParagraphs": 7,
+    "observedCandidates": [
+      {
+        "file": "shared/output/narration/motion-sickness-games/qwen3-1.7b-balanced-v1-phrase-repair1/chunks/03-scene.wav",
+        "sha256": "9334c32a43b9f978eeb1e81b75ed8c2444980d595cf289d9631e0d96cceee220",
+        "contentApproval": false
+      },
+      {
+        "file": "shared/output/narration/motion-sickness-games/qwen3-1.7b-balanced-v1-phrase-repair1/chunks/04a-scene.wav",
+        "sha256": "31f46dc5e0eebf85c815649d897421ed4679346e4e0dd0eab5ceaee228e70c4a",
+        "contentApproval": false
+      },
+      {
+        "file": "shared/output/narration/motion-sickness-games/qwen3-1.7b-balanced-v1-phrase-repair1/chunks/04b-scene.wav",
+        "sha256": "691ac9106f4a901ce2c5489d49d2524388878244b2520edd4e3c4a6e19192193",
+        "contentApproval": false
+      },
+      {
+        "file": "shared/output/narration/motion-sickness-games/qwen3-1.7b-balanced-v1-phrase-repair1/chunks/05-scene.wav",
+        "sha256": "e3d7be0c46a61753284671d567e5c5fdbddf1e1f7472a2e541a2435f3049c677",
+        "contentApproval": false
+      }
+    ],
+    "candidateReview": "pending-single-runner-CPU-ASR",
+    "initialPipelineFinished": true,
+    "initialPipelineDoNotRestart": true
+  },
+  "sourceFit": {
+    "audit": "projects/motion-sickness-games/production/source-fit-followup/initial-audit.json",
+    "directVisualReview": "projects/motion-sickness-games/production/source-fit-followup/direct-review.json",
+    "reviewedImageEntries": 129,
+    "finalTimingApproved": false,
+    "findings": "Original bank totals do not prove paragraph fit. Allocate unused normal-speed PWS actions, reallocate05/07 overlapping post footage, and correct Talos title/snow boundaries. Do not modify frozen inputs while the runner is active."
+  },
+  "composer": {
+    "path": "projects/motion-sickness-games/production/compose-repaired-v2.py",
+    "sha256": "1b429a97bf8b0cc20bc5e2ea28d8e25a5676c03186f9afdb422dd6c11a91d441",
+    "status": "syntax-checked-not-run",
+    "preflight": "Checks all candidate/source hashes, PCM bounds and explanation duration before writing any v2 file.",
+    "gate": "Seven current-hash readbacks accepted first; then separate v2 PCM proof and full12-scene current-hash ASR direct review."
+  },
+  "auxiliaryResearch": {
+    "sourceResearchSession": 43025,
+    "linearEdgeSession": 90652,
+    "status": "finished-exit0",
+    "talosExtraProbe": "finished-exit0-no-stderr",
+    "fastSeekWarningsRecoveredThroughLinearDecode": 2
+  },
+  "vite": {
+    "port": 9214,
+    "pid": 58552,
+    "toolSessionId": 40370,
+    "alive": true,
+    "reuseWhenAlive": true
+  },
+  "observedProcesses": [
+    {
+      "ProcessId": 58552,
+      "ParentProcessId": 48608,
+      "Name": "node.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/vite/bin/vite.js --config vite.motion-sickness-games.config.ts"
+    },
+    {
+      "ProcessId": 47052,
+      "ParentProcessId": 56836,
+      "Name": "node.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" projects/motion-sickness-games/production/repair-phrases1.cjs"
+    },
+    {
+      "ProcessId": 42240,
+      "ParentProcessId": 47052,
+      "Name": "python.exe",
+      "CommandLine": "D:\\Github\\Video-Editing\\qwen3-tts\\.venv\\Scripts\\python.exe -u qwen3-tts/render_narration.py --project motion-sickness-games --manifest projects/motion-sickness-games/production/repair1/manifest.json --device cuda:0"
+    }
+  ],
+  "measuredSourceCutsApproved": false,
+  "bodyRatioApproved": false,
+  "finalMix": false,
+  "finalRender": false,
+  "collected": false,
+  "privateUploaded": false,
+  "gitDelivered": false,
+  "humanListening": "pending",
+  "nextAction": "Reuse repair8552/PID47052 and its current child. When its CPU-ASR finishes, directly review all seven paragraphs and ending/tail evidence. Do not approve best-of-three or endingHeuristic alone. Compose only accepted candidates while preserving unaffected v1 PCM/explanation length, then directly review full current-hash12-scene ASR. Use source-fit-followup/direct-review.json to select exact normal-speed, non-repeated action intervals; Talos title42.1+ and snow52.2+ cannot extend this action example."
+}

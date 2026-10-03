@@ -1,0 +1,136 @@
+{
+  "recordedAt": "2026-10-03T01:08:57.535Z",
+  "localTime": "2026-10-03 10:08:57 KST",
+  "slug": "motion-sickness-games",
+  "previousCheckpoint": "projects/motion-sickness-games/production/checkpoint-20261003-0920.json",
+  "repair1": {
+    "toolSessionId": 8552,
+    "pid": 47052,
+    "status": "finished-exit0-directly-reviewed",
+    "alive": false,
+    "children": [
+      {
+        "kind": "candidate-tts",
+        "pid": 42240,
+        "args": [
+          "qwen3-tts/render_narration.py",
+          "--project",
+          "motion-sickness-games",
+          "--manifest",
+          "projects/motion-sickness-games/production/repair1/manifest.json",
+          "--device",
+          "cuda:0"
+        ],
+        "status": "finished",
+        "startedAt": "2026-10-03T00:08:35.192Z",
+        "exitCode": 0,
+        "finishedAt": "2026-10-03T00:17:56.464Z"
+      },
+      {
+        "kind": "candidate-cpu-asr",
+        "pid": 47072,
+        "args": [
+          "qwen3-tts/review_project_narration.py",
+          "--project",
+          "motion-sickness-games",
+          "--manifest",
+          "projects/motion-sickness-games/production/repair1/manifest.json",
+          "--device",
+          "cpu"
+        ],
+        "status": "finished",
+        "startedAt": "2026-10-03T00:17:56.474Z",
+        "exitCode": 0,
+        "finishedAt": "2026-10-03T00:19:54.750Z"
+      }
+    ],
+    "doNotRestart": true,
+    "contentReview": "projects/motion-sickness-games/production/repair1/direct-review.json",
+    "acceptedCandidateIds": [
+      "03",
+      "04a",
+      "04b",
+      "06",
+      "07",
+      "10"
+    ],
+    "rejectedCandidateIds": [
+      "05"
+    ],
+    "reason": "05 repeatedly recognizes 반자 instead of 판자 in full and two contextual ASRs; ending pass is insufficient.",
+    "quietEnding04a": "Heuristic false retained; independent tail ASR contains complete 있죠. Human listening remains pending."
+  },
+  "repair2": {
+    "recordedAt": "2026-10-03T01:08:57.535Z",
+    "toolSessionId": 27584,
+    "pid": 27808,
+    "runnerAlive": true,
+    "statusAtObservation": "waiting-for-free-gpu",
+    "state": "projects/motion-sickness-games/production/repair-phrases2.json",
+    "runner": "projects/motion-sickness-games/production/repair-phrases2.cjs",
+    "currentChildren": [],
+    "inputsLocked": true,
+    "doNotDuplicate": true,
+    "automaticallyApproved": false,
+    "humanListening": "pending",
+    "request": "projects/motion-sickness-games/production/repair2/request.json",
+    "candidateParagraphs": 1,
+    "voice": "same approved Qwen3-TTS1.7B reference",
+    "gpuObservation": {
+      "at": "2026-10-03T01:08:47.104Z",
+      "freeMiB": 1179,
+      "utilization": 95,
+      "competingSynthesisPids": [],
+      "stable": 0
+    }
+  },
+  "contextAsr": {
+    "toolSessionId": 84712,
+    "pid": 50548,
+    "status": "finished-exit0",
+    "alive": false,
+    "report": "projects/motion-sickness-games/production/repair1/context-review/asr.json"
+  },
+  "composer": {
+    "path": "projects/motion-sickness-games/production/compose-mixed-repaired-v2.py",
+    "sha256": "a0ac8246f217b767fbbe6cce3f6071cfa4157dea91e1e69ec3417d20f38d4c1e",
+    "status": "syntax-checked-not-run",
+    "gate": "Six accepted repair1 candidates plus directly accepted repair2 05 required; all hashes/PCM bounds/explanation minimum checked before writes; then all12 composite ASRs directly reviewed."
+  },
+  "sourceFit": {
+    "report": "projects/motion-sickness-games/production/source-fit-followup/direct-review.json",
+    "researchImagesReviewed": 129,
+    "finalTimingApproved": false
+  },
+  "vite": {
+    "port": 9214,
+    "pid": 58552,
+    "toolSessionId": 40370,
+    "alive": true,
+    "reuseWhenAlive": true
+  },
+  "observedProcesses": [
+    {
+      "ProcessId": 58552,
+      "CreationDate": "/Date(1790981965535)/",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/vite/bin/vite.js --config vite.motion-sickness-games.config.ts"
+    },
+    {
+      "ProcessId": 27808,
+      "CreationDate": "/Date(1790989480625)/",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" projects/motion-sickness-games/production/repair-phrases2.cjs"
+    }
+  ],
+  "completedDelivery": false,
+  "finalVoiceApproval": false,
+  "finalRatioApproval": false,
+  "finalRender": false,
+  "collection": false,
+  "privateUpload": false,
+  "gitDelivery": false,
+  "humanListening": "pending",
+  "publicRights": "pending",
+  "originalNimbus": "pending",
+  "truncatedMemberHandles": "pending",
+  "externalBackup": "pending"
+}
