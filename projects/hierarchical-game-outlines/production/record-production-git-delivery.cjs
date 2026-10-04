@@ -14,6 +14,10 @@ const queuePath = 'production/batches/sakurai-planning-game-design/queue.json';
 const queue = read(queuePath), item = queue.items.find(x=>x.slug==='hierarchical-game-outlines');
 const next = queue.items.find(x=>x.slug==='game-reward-planning');
 const receipt = read(`${base}/publishing/youtube-upload.json`), checkpoint = read(`${base}/production/latest-checkpoint.json`);
+if (item.gitDelivery?.complete) {
+  console.log(JSON.stringify({alreadyDelivered: true, productionCommit: item.gitDelivery.productionCommit, currentSlug: queue.currentSlug, thumbnailBlocksProduction: false}));
+  process.exit(0);
+}
 const delivery = {
   schemaVersion: 1, slug: item.slug, observedAt: now, status: 'production-delivered-thumbnail-followup',
   complete: true, productionCommit: commit, commit, branch: 'main', remote: 'origin/main',
@@ -56,9 +60,13 @@ next.nextAction = 'Review full source concept, all existing inventory, related f
 queue.currentSlug = next.slug;
 queue.progress.rendered = queue.items.filter(x=>x.checkpoints.render).length;
 queue.progress.collected = queue.items.filter(x=>x.checkpoints.collected).length;
-queue.progress.uploaded = queue.items.filter(x=>x.checkpoints.uploaded).length;
+// Older delivered entries use status/receipt rather than the newer checkpoint keys.
+const privatelySaved = queue.items.filter(x=>x.status.startsWith('uploaded-private'));
+queue.progress.uploaded = privatelySaved.length;
+queue.progress.privateSaved = privatelySaved.length;
 queue.progress.fullSettingsDelivered = 8;
-queue.progress.productionDelivered = queue.items.filter(x=>x.checkpoints.gitDelivery).length;
+queue.progress.productionDelivered = privatelySaved.length;
+queue.progress.productionGitDelivered = privatelySaved.length;
 queue.progress.inProgress = queue.items.filter(x=>x.status==='in-progress').length;
 queue.progress.queued = queue.items.filter(x=>x.status==='queued').length;
 queue.progress.remainingProduction = queue.progress.inProgress + queue.progress.queued;
