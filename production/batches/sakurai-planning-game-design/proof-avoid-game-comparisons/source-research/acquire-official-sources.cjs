@@ -42,13 +42,26 @@ fs.mkdirSync(path.join(__dirname, 'logs'), {recursive: true});
 const narrationExists = fs.existsSync(path.join(root,'shared/output/narration',request.slug,'qwen3-1.7b-balanced-v1/chunks/01-scene.wav'));
 const state = {pid: process.pid, startedAt: stamp(), requestFile, requestSha256: hash(path.join(__dirname, requestFile)), status: 'initializing', previousAttempts, children: [], results: [], gpuJobs: 0, narrationCreated: narrationExists, actualCutApproval: false};
 function save(status) {
+  const sessionFile = statePath + '.session.json';
+  if (fs.existsSync(sessionFile)) {
+    const launch = JSON.parse(fs.readFileSync(sessionFile,'utf8'));
+    if (launch.pid === process.pid) state.sessionId = launch.sessionId;
+  }
   state.status = status; state.updatedAt = stamp(); writeJson(statePath, state);
   const q = JSON.parse(fs.readFileSync(queuePath, 'utf8'));
   const i = q.items.find(x => x.slug === request.slug);
   if (!i || i.videoId) throw Error('Queue assignment no longer matches unproduced subject.');
+  if (request.executionRole === 'additional-official-source-after-measurement') {
+    const running = state.children.filter(x => x.status === 'running');
+    i.sourceExpansion = {status, pid:process.pid, sessionId:state.sessionId || null, state:base+'/'+stateFile, request:base+'/'+requestFile, children:state.children, actualCutApproval:false, sourceAudioForFinal:'exclude-all', updatedAt:state.updatedAt};
+    i.execution = {...i.execution, secondaryTasks:running, cpuProductionJobs:(i.execution.primaryCpuProductionJobs || 0)+running.filter(x=>x.kind==='full-decode').length, sourceDownloadJobs:running.filter(x=>x.kind==='download').length};
+    i.updatedAt = state.updatedAt;
+    q.updatedAt = state.updatedAt; writeJson(queuePath, q);
+    return;
+  }
   i.stage = 'existing-game-source-' + status;
   i.execution = {...i.execution, phase: 'official-existing-game-source-research', status, updatedAt: state.updatedAt, pid: process.pid, state: base + '/' + stateFile, runner: base + '/acquire-official-sources.cjs', children: state.children, activeTasks: state.children.filter(x => x.status === 'running'), noTts: !narrationExists, noNewScript: !fs.existsSync(path.join(root,'projects',request.slug,'script/narration.ko.json')), noNewProject: !fs.existsSync(path.join(root,'projects',request.slug))};
-  i.nextAction = 'Review newly decoded official actions before adding corresponding commentary. No narration exists yet; source runtime is not final60:40 measurement.';
+  i.nextAction = narrationExists ? 'Preserve measured narration and explanation duration. Review additional unique official actions before adding their commentary; source runtime is not final60:40 approval.' : 'Review newly decoded official actions before adding corresponding commentary. No narration exists yet; source runtime is not final60:40 measurement.';
   q.updatedAt = state.updatedAt; writeJson(queuePath, q);
 }
 async function run(kind, exe, args, source) {
