@@ -1,5 +1,7 @@
 # 기획·게임 디자인 영상 일괄 제작
 
+2026-10-04 최신 제작Git전달: game-reward-planning의 제작커밋15d5e52c84ff97e2afb0988df117318abf4bafcc을 origin/main에 일반푸시하고 실제로컬/원격일치를 확인했다. 제작·기술QA·4파일수집·가능한 비공개설정/Git전달10편, 전체게시설정8편, 별도썸네일후속2편, 중복제외1편, 다음제작대기13편이다. 다음은 avoid-game-comparisons의 전체내용/현재Studio 사전중복검토다. 썸네일한도로 제작을 멈추지 않는다. 미추적동시수학제작의 rebuild미생성은 전체작업트리검사 실패로 정확히 기록했고, 기본검사함수로 Git전달28프로젝트 전체의rebuild와 본편현재rebuild/미디어/공백검사를 통과했다. 해당동시작업과 섞인공유등록은 건드리지 않았다. 실제증거는 projects/game-reward-planning/production/final-v1/git-delivery.json과 proof-game-reward-planning/git-pre-delivery-checks.json이다.
+
 2026-10-04 22:35KST 현재: game-reward-planning final-v1의444.883333초/26693프레임/1080p60 제작·기술QA·4파일수집과 단일 비공개ID D81WnOMytG4의 가능한 게시설정을 완료했다. 공식8소스67실제컷259.733333초/흰2.5D설명173.15초로 본편60:40오차0.5프레임이며 새 전체안내 도입도 포함한다. 수동KO268/EN109큐·별도영어제목설명·정확한00초카드/마지막10초세요소·광고사용·새파일광고/저작권검사완료 문제없음·저장후 소유권주장없음·비공개/예약없음·SDHD와1080p60CCoff게임40초/PPT70초의 고정한글픽셀을 실제 확인했다. receipt는 projects/game-reward-planning/publishing/youtube-upload.json이다. 별도wizard완료modal은 미관찰false, 사람청취/발음/공개권리/Nimbus/회원핸들/백업/자동더빙/비공개댓글은pending이다. 기존채널 썸네일한도의 준비파일은 비차단후속이며14:50:04.773Z 이후 정상UI로 적용한다. 전체설정완료false를 유지하고 현재선택Git전달을 이어간다. 완료된 음성·렌더·업로드는 반복하지 않는다.
 
 동시 추가된 수학2D18장/3D19장 전체한영대본을 직접 비교해 보상목록 기획과의 질문·주장차이를 기록하고29기존프로젝트 현재distinct검사를 갱신했다. 실제Studio 보상검색은 새비공개D81WnOMytG4와 기존공개5W5f6T8Hho8이다. 기존영상의 현재공개상태를 변경하지 않았다. 아래 시간별 체크포인트는 보존한 이전 이력이며 최신queue/receipt/Git증거를 우선한다.
