@@ -11,7 +11,7 @@ Manim Community 0.20.1/Cairo를 사용한다. 각 설명은 독립 Manim 및 Mot
 승인된 개인 음성과 원본 회원/로고 자산, 기록된 실제 게임 소스를 먼저 복원한다. 영상·오디오·모델·압축 미디어를 Git에 넣지 않는다. 전체 사람 청취, 게임 IP 공개 권리 검토와 잘린 회원 표시명 확인은 별도의 대기 상태로 보존한다. 새 음성은 바이트 동일 재생성이 아니므로 두 SRT와 편집 길이를 함께 다시 검증한다.
 
 ```powershell
-qwen3-tts/.venv/Scripts/python.exe -X utf8 production/batches/game-math-polar-lecture/render-voice.py --project game-math-polar-2d --batch-size 4
+qwen3-tts/.venv/Scripts/python.exe -X utf8 production/batches/game-math-polar-lecture/render-voice.py --project game-math-polar-2d --batch-size 2
 qwen3-tts/.venv/Scripts/python.exe -X utf8 qwen3-tts/review_project_narration.py --project game-math-polar-2d --device cuda
 qwen3-tts/.venv/Scripts/python.exe -X utf8 production/batches/game-math-polar-lecture/align.py game-math-polar-2d
 qwen3-tts/.venv/Scripts/python.exe -X utf8 production/batches/game-math-polar-lecture/build.py game-math-polar-2d plan
@@ -22,6 +22,8 @@ qwen3-tts/.venv/Scripts/python.exe -X utf8 production/batches/game-math-polar-le
 ```
 
 2편은 slug를 `game-math-polar-3d`로 바꾼다. CPU/GPU는 동일 승인 모델과 참조 음성을 쓴다. `--scenes 06 --force-scenes 06 --device cpu`처럼 특정 장면만 재시도하면 이전 테이크를 보존하며 전체 믹스는 만들지 않는다. 끝부분 휴리스틱과 현재 WAV 해시의 ASR 검사를 다시 통과해야 한다.
+
+긴 강의 장면은 배치2부터 시작한다. 이번2편에서 배치4의 긴 후반 장면은 GPU 메모리 사용량이 높아 합성이 크게 느려졌다. 실행 중인 다른 작업의 설정은 변경하지 않는다. CPU로 만든 개별 장면도 같은 승인 모델/참조 음성을 사용하고 현재 WAV 해시의 받아쓰기·끝말·의미 검사를 거친다. `production/narration-devices.json`에 실제 채택한 장면별 장치와 해시를 남긴다. 다른 장치의 중간 파일을 동시에 만들 경우 출력 폴더를 분리하고, 동일 최종 WAV를 두 작업이 덮어쓰지 않게 한다.
 
 `incremental-render.py <slug>`는 검사를 통과한 독립 장면만 먼저 렌더링한다. 마지막 10초는 중간 렌더의 정지 화면 여유분이며 최종 타임라인이 필요한 부분만 사용한다. 실제 게임에는 반복·속도 변경·정지 화면을 사용하지 않는다. 소스/대본/음성 해시가 바뀌면 해당 렌더를 다시 검증한다.
 

@@ -18,7 +18,9 @@ def number(s):
  return str(total+current)
 def normalized(s):
  s=s.lower()
- for x,y in [('코사인','cos'),('사인','sin'),('에이탄 투','atan2'),('에이탄투','atan2'),('에이탄2','atan2'),('하이폿','hypot'),('하이포트','hypot'),('하이팟','hypot'),('마이너스','-'),('루트','sqrt'),('다섯','5'),('셋','3'),('둘','2'),('네 칸','4칸'),('세 칸','3칸')]:s=s.replace(x,y)
+ # Observed read-back spellings of the spoken function names. Preserve the
+ # raw ASR and audio; this only matches the same names for caption timing.
+ for x,y in [('코사인','cos'),('싸인','sin'),('사인','sin'),('에이탄 투','atan2'),('에이탄투','atan2'),('에이탄2','atan2'),('a탄2','atan2'),('하이폿','hypot'),('하이포트','hypot'),('하이포스','hypot'),('하이팟','hypot'),('마이너스','-'),('루트','sqrt'),('다섯','5'),('셋','3'),('둘','2'),('네 칸','4칸'),('세 칸','3칸')]:s=s.replace(x,y)
  s=re.sub(r'(?<![가-힣])알(?=\s|,|$)','r',s)
  s=re.sub(r'(?<![가-힣])([영일이삼사오육칠팔구십백천]+)(?=\s|도|칸|초|으로|에서|부터|만큼|보다|입니다|이면|이고|곱|나누기|와|과|로|$)',lambda m:number(m[1]),s)
  s=s.replace(' 점 ','.')
