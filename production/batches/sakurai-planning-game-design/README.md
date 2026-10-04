@@ -1,5 +1,11 @@
 # 기획·게임 디자인 영상 일괄 제작
 
+2026-10-05 01:12KST 현재: 제작·QA·4파일 수집·비공개 저장/Git 전달10편과 가능한 전체 비공개 게시설정10편을 완료했다. hierarchical-game-outlines/reward의 두 준비 썸네일은 정상 UI로 기존 ID에 저장 후 재열람했다. 썸네일 후속0편, 중복제외1편, avoid-game-comparisons의 실제 행동/컷 경계 검토1편,12queued이며 남은 비중복 제작13편이다. 사람 청취·발음·최종 공개권리·Nimbus·잘린 회원 핸들·외부 백업·자동더빙·비공개 고정댓글은 해당 실제 근거 없이 완료로 바꾸지 않는다.
+
+사용자가 한 편씩 푸시하고 필요한 이미지만 남기라고 재확인했다. 새 래스터 이미지는 기본 local-only이며 필수 파일만 목적·검토 일시·SHA256을 등록해야 Git 검사에 통과한다. 완료10편의 재생성 가능한 QA 이미지350개/146,502,311bytes를 Git tree에서 제외하고 모든 로컬 해시를 보존했다. 필수 원본/썸네일/Studio·권리 증거와 다른 작업은 보존하고 이력을 재작성하지 않았다. 커밋49cefb9b8ba17c58924785cb273190c5ed4dbcd8를 origin/main에 일반 푸시해 실제 원격 일치를 확인했다. 감사/검사/푸시 근거는 image-git-cleanup-20261005.json, image-policy-pre-delivery-checks.json, image-policy-git-verification.json이다.
+
+avoid-game-comparisons는 현재 distinct 검토를 통과했고 공식 Pepper Grinder/Plucky Squire5소스의 전체 decode 및435탐색 프레임/30연락판을 직접 읽었다. 실물 종이광고·옵션 저속·도움 설정·겹친 몽타주를 구분했으며, 정확한 native 출처인아웃/독립 실제 행동 은행은 아직 승인하지 않았다. 새 프로젝트/대본/TTS/씬은 아직 없다. 최신 proof-avoid-game-comparisons/latest-checkpoint.json과 source-research/direct-discovery-review.json부터 이어간다. 종료된 취득/탐색 세션33630/78586을 기다리거나 재실행하지 않는다. 아래 기록은 이전 체크포인트의 역사로 보존한다.
+
 2026-10-04 최신 제작Git전달: game-reward-planning의 제작커밋15d5e52c84ff97e2afb0988df117318abf4bafcc을 origin/main에 일반푸시하고 실제로컬/원격일치를 확인했다. 제작·기술QA·4파일수집·가능한 비공개설정/Git전달10편, 전체게시설정8편, 별도썸네일후속2편, 중복제외1편, 다음제작대기13편이다. 다음은 avoid-game-comparisons의 전체내용/현재Studio 사전중복검토다. 썸네일한도로 제작을 멈추지 않는다. 미추적동시수학제작의 rebuild미생성은 전체작업트리검사 실패로 정확히 기록했고, 기본검사함수로 Git전달28프로젝트 전체의rebuild와 본편현재rebuild/미디어/공백검사를 통과했다. 해당동시작업과 섞인공유등록은 건드리지 않았다. 실제증거는 projects/game-reward-planning/production/final-v1/git-delivery.json과 proof-game-reward-planning/git-pre-delivery-checks.json이다.
 
 2026-10-04 22:35KST 현재: game-reward-planning final-v1의444.883333초/26693프레임/1080p60 제작·기술QA·4파일수집과 단일 비공개ID D81WnOMytG4의 가능한 게시설정을 완료했다. 공식8소스67실제컷259.733333초/흰2.5D설명173.15초로 본편60:40오차0.5프레임이며 새 전체안내 도입도 포함한다. 수동KO268/EN109큐·별도영어제목설명·정확한00초카드/마지막10초세요소·광고사용·새파일광고/저작권검사완료 문제없음·저장후 소유권주장없음·비공개/예약없음·SDHD와1080p60CCoff게임40초/PPT70초의 고정한글픽셀을 실제 확인했다. receipt는 projects/game-reward-planning/publishing/youtube-upload.json이다. 별도wizard완료modal은 미관찰false, 사람청취/발음/공개권리/Nimbus/회원핸들/백업/자동더빙/비공개댓글은pending이다. 기존채널 썸네일한도의 준비파일은 비차단후속이며14:50:04.773Z 이후 정상UI로 적용한다. 전체설정완료false를 유지하고 현재선택Git전달을 이어간다. 완료된 음성·렌더·업로드는 반복하지 않는다.
