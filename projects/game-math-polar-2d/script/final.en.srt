@@ -1,0 +1,802 @@
+1
+00:00:02,000 --> 00:00:07,160
+How can we describe positions when bullets
+travel and weapons change direction in a game?
+
+2
+00:00:07,480 --> 00:00:12,500
+Polar coordinates tell us how far a point is
+from a center, and in which direction.
+
+3
+00:00:12,760 --> 00:00:17,640
+In part one, we will observe gameplay, locate
+points,
+
+4
+00:00:17,640 --> 00:00:19,780
+convert coordinates, and apply the result to
+rotation and aiming.
+
+5
+00:00:19,877 --> 00:00:23,260
+Part two will extend these ideas into three
+dimensions.
+
+6
+00:00:23,900 --> 00:00:27,660
+This is a Brotato combat sequence.
+
+7
+00:00:27,660 --> 00:00:30,740
+Pick one weapon beside the character instead
+of watching the entire battlefield.
+
+8
+00:00:30,960 --> 00:00:33,020
+The weapon stays around the moving character,
+
+9
+00:00:33,020 --> 00:00:36,400
+while its firing direction changes as targets
+change.
+
+10
+00:00:36,660 --> 00:00:40,560
+Separate two questions: where is the character
+in the world,
+
+11
+00:00:40,560 --> 00:00:43,720
+and in which direction is the weapon relative
+to that character?
+
+12
+00:00:43,960 --> 00:00:48,240
+The first is a world position; the second is a
+position measured from a center.
+
+13
+00:00:48,480 --> 00:00:50,880
+We will describe the visible motion using
+coordinates.
+
+14
+00:00:50,880 --> 00:00:55,400
+This does not establish which formulas the
+game's internal code uses.
+
+15
+00:01:02,917 --> 00:01:08,357
+Choose the origin as our center and the
+positive x direction as zero degrees.
+
+16
+00:01:08,677 --> 00:01:11,457
+Positive y points upward in this diagram.
+
+17
+00:01:11,777 --> 00:01:17,457
+Turn counterclockwise first. A clockwise turn
+can be written as a negative angle.
+
+18
+00:01:17,757 --> 00:01:21,437
+Then travel the chosen distance to locate a
+point.
+
+19
+00:01:21,697 --> 00:01:24,237
+We call the distance r and the angle theta.
+
+20
+00:01:24,457 --> 00:01:28,017
+The point four units right and three units up
+is also five units away at
+
+21
+00:01:28,017 --> 00:01:35,137
+about 36.87 degrees. The point stays the same;
+only its address changes.
+
+22
+00:01:35,357 --> 00:01:38,217
+Fixed distance with changing angle produces a
+circle.
+
+23
+00:01:38,517 --> 00:01:42,577
+Fixed angle with nonnegative distance produces
+a ray.
+
+24
+00:01:43,200 --> 00:01:51,680
+A common mistake is mixing angle units. One
+full turn is 360 degrees, or two pi radians.
+
+25
+00:01:51,960 --> 00:01:56,380
+Radians measure arc length relative to the
+circle's radius.
+
+26
+00:01:56,760 --> 00:01:59,680
+An arc as long as the radius spans one radian.
+
+27
+00:02:00,060 --> 00:02:02,580
+Ninety degrees equals pi over two radians.
+
+28
+00:02:02,680 --> 00:02:07,080
+Multiply a degree value by pi and divide by
+180 to convert it.
+
+29
+00:02:07,440 --> 00:02:10,640
+Typical programming math functions take
+radians. Passing 90 directly to sine
+
+30
+00:02:10,731 --> 00:02:18,140
+does not give the sine of 90 degrees. Check
+the API and label units in variable names.
+
+31
+00:02:18,767 --> 00:02:22,387
+Watch the projectiles traveling away from the
+character in this encounter.
+
+32
+00:02:22,547 --> 00:02:26,047
+A projectile moves farther from where it was
+launched.
+
+33
+00:02:26,247 --> 00:02:32,107
+Travel in a fixed direction can be described
+by keeping theta constant and increasing r.
+
+34
+00:02:32,327 --> 00:02:36,527
+To fire in several directions, assign a
+different angle to each projectile.
+
+35
+00:02:36,847 --> 00:02:39,467
+Launch angle and travel distance are separate
+controls.
+
+36
+00:02:39,667 --> 00:02:44,007
+The reference point may be the launch position
+rather than the character's current position.
+
+37
+00:02:44,007 --> 00:02:49,267
+Moving that reference along with the character
+is a separate design decision.
+
+38
+00:02:49,607 --> 00:02:55,227
+Identifying the visible motion helps us decide
+which quantity stays fixed and which changes.
+
+39
+00:03:01,767 --> 00:03:05,827
+A polar point has more than one address.
+
+40
+00:03:05,827 --> 00:03:09,747
+Adding a full turn to radius three and angle
+30 degrees reaches the same point.
+
+41
+00:03:10,187 --> 00:03:13,767
+Thirty and 390 degrees are different numbers
+but the same direction.
+
+42
+00:03:14,107 --> 00:03:16,567
+These equivalent representations are called
+aliases.
+
+43
+00:03:16,827 --> 00:03:19,987
+A negative radius means traveling backward
+along the chosen direction.
+
+44
+00:03:20,307 --> 00:03:24,407
+Radius minus three at 30 degrees equals radius
+three at 210 degrees.
+
+45
+00:03:24,727 --> 00:03:29,287
+Subtracting a full turn from 210 gives minus
+150 degrees,
+
+46
+00:03:29,287 --> 00:03:32,367
+another address for the same point. Negative
+coordinates are not inherently invalid.
+
+47
+00:03:32,747 --> 00:03:35,307
+At radius zero, every angle locates the
+origin.
+
+48
+00:03:35,707 --> 00:03:39,547
+Position at the origin alone cannot tell us
+which way something faces.
+
+49
+00:03:40,450 --> 00:03:44,850
+Choosing a representative address makes
+storage
+
+50
+00:03:45,110 --> 00:03:46,910
+and comparisons easier. This is a canonical
+form.
+
+51
+00:03:47,230 --> 00:03:49,430
+Here we choose a nonnegative radius and an
+angle greater
+
+52
+00:03:49,630 --> 00:03:54,270
+than minus 180 degrees and at most positive
+180 degrees.
+
+53
+00:03:54,590 --> 00:03:58,290
+Make a negative radius positive while adding
+180 degrees to the angle.
+
+54
+00:03:58,570 --> 00:04:01,590
+Then wrap by full turns into the chosen
+interval.
+
+55
+00:04:01,870 --> 00:04:05,170
+Radius minus three at 30 degrees becomes
+radius three at minus 150 degrees.
+
+56
+00:04:05,790 --> 00:04:10,170
+For radius zero, our storage convention sets
+the angle to zero.
+
+57
+00:04:10,450 --> 00:04:16,330
+This reorganizes an address without moving the
+point.
+
+58
+00:04:16,750 --> 00:04:21,790
+Implement the boundary rule that maps minus
+180 to positive 180 as well.
+
+59
+00:04:22,417 --> 00:04:24,917
+Watch the direction between a weapon and a
+nearby enemy again.
+
+60
+00:04:25,257 --> 00:04:29,637
+An enemy to the character's left is still easy
+to represent.
+
+61
+00:04:29,997 --> 00:04:33,997
+That direction can have a positive or a
+negative angle.
+
+62
+00:04:34,257 --> 00:04:37,837
+Different stored numbers can point the same
+way on screen.
+
+63
+00:04:38,117 --> 00:04:42,757
+Comparing angle numbers directly can miss
+equivalent directions.
+
+64
+00:04:42,937 --> 00:04:46,397
+Wrap them into a shared range or compare
+direction vectors.
+
+65
+00:04:46,597 --> 00:04:49,877
+If an enemy and the character occupy the same
+position, their displacement is zero.
+
+66
+00:04:49,877 --> 00:04:52,697
+Position alone cannot determine a new aiming
+direction.
+
+67
+00:04:52,937 --> 00:04:56,277
+A game can choose to keep the previous aim.
+
+68
+00:04:56,457 --> 00:04:59,757
+Coordinate conventions and gameplay behavior
+are separate decisions.
+
+69
+00:05:01,417 --> 00:05:04,657
+Cartesian coordinates may be needed for
+drawing or
+
+70
+00:05:04,657 --> 00:05:08,077
+collision calculations. Start with a right
+triangle.
+
+71
+00:05:08,377 --> 00:05:10,957
+Cosine is horizontal displacement divided by
+the hypotenuse;
+
+72
+00:05:11,337 --> 00:05:16,537
+sine is vertical displacement divided by the
+hypotenuse. The hypotenuse is r.
+
+73
+00:05:16,717 --> 00:05:23,317
+Multiply by r to obtain x equals r cosine
+theta, and y equals r sine theta.
+
+74
+00:05:23,357 --> 00:05:26,901
+At radius ten and angle 30 degrees, x is
+approximately 8.660 and y is five.
+
+75
+00:05:27,037 --> 00:05:31,897
+Convert the angle to radians before calling
+the functions.
+
+76
+00:05:32,117 --> 00:05:35,557
+The formulas also work in other quadrants and
+with negative radii.
+
+77
+00:05:35,777 --> 00:05:39,717
+Think of signed coordinates rather than only
+unsigned triangle lengths.
+
+78
+00:05:40,350 --> 00:05:46,570
+To convert back, obtain distance using the
+Pythagorean theorem.
+
+79
+00:05:46,850 --> 00:05:51,430
+In code, hypot handles very large and very
+small values more robustly.
+
+80
+00:05:52,010 --> 00:05:56,755
+Using arctangent of y divided by x loses
+information. Points four,
+
+81
+00:05:57,030 --> 00:06:01,750
+three and minus four, minus three have the
+same ratio but opposite directions.
+
+82
+00:06:02,070 --> 00:06:05,550
+Atan2 accepts the two coordinates separately
+and identifies the quadrant.
+
+83
+00:06:05,696 --> 00:06:09,570
+In this 2D convention, pass y first and x
+second.
+
+84
+00:06:09,570 --> 00:06:13,610
+The point zero, five gives an upward angle of
+90 degrees.
+
+85
+00:06:13,910 --> 00:06:16,910
+Avoiding explicit division also avoids
+dividing by zero.
+
+86
+00:06:17,150 --> 00:06:20,070
+At the origin, direction is geometrically
+undefined. Set an origin policy
+
+87
+00:06:20,230 --> 00:06:27,050
+independently of the library's returned
+number, and wrap the result if needed.
+
+88
+00:06:27,683 --> 00:06:30,903
+Choose the character and one enemy in the
+encounter.
+
+89
+00:06:31,223 --> 00:06:35,143
+The enemy's world coordinate alone is not the
+angle we need for aiming.
+
+90
+00:06:35,483 --> 00:06:37,443
+Subtract the firing position from the target
+position
+
+91
+00:06:37,443 --> 00:06:41,103
+to express the target relative to the shooter.
+
+92
+00:06:41,423 --> 00:06:45,383
+Apply atan2 to this relative displacement.
+
+93
+00:06:45,703 --> 00:06:49,143
+Moving both points equally to the right leaves
+the difference unchanged.
+
+94
+00:06:49,543 --> 00:06:54,183
+Their absolute screen positions may change
+while their relative direction stays the same.
+
+95
+00:06:54,483 --> 00:06:57,543
+Connect that idea to the weapons facing nearby
+targets.
+
+96
+00:06:57,683 --> 00:07:03,103
+Before using a coordinate in a function,
+identify its origin.
+
+97
+00:07:03,483 --> 00:07:07,583
+If the muzzle differs from the character's
+center, use the actual firing position.
+
+98
+00:07:11,683 --> 00:07:14,003
+If the center is not at the origin, the
+computed x and y are offsets.
+
+99
+00:07:14,323 --> 00:07:19,983
+Add the center's coordinates to get the world
+position.
+
+100
+00:07:20,243 --> 00:07:24,383
+For an orbit, keep radius fixed and
+continuously increase the angle.
+
+101
+00:07:24,683 --> 00:07:28,463
+Add angular speed times elapsed frame time.
+
+102
+00:07:28,623 --> 00:07:35,523
+At 90 degrees per second, a frame lasting one
+second divided by sixty changes the angle
+
+103
+00:07:35,723 --> 00:07:38,703
+by 1.5 degrees. If angles are stored in
+radians, angular speed must use radians too.
+
+104
+00:07:38,703 --> 00:07:44,283
+Adding a fixed angle every frame makes
+rotation speed depend on frame rate.
+
+105
+00:07:44,563 --> 00:07:46,703
+Multiplying by elapsed time prevents that.
+
+106
+00:07:46,823 --> 00:07:53,103
+Moving the center translates the entire orbit.
+Screen coordinates may increase downward,
+
+107
+00:07:53,103 --> 00:07:56,703
+so reconcile their axes with our
+upward-positive mathematical diagram.
+
+108
+00:07:57,333 --> 00:08:01,573
+Watch how the surrounding weapons follow the
+character as it moves.
+
+109
+00:08:01,953 --> 00:08:05,813
+Their world positions combine a center and
+relative offsets.
+
+110
+00:08:06,133 --> 00:08:10,633
+Imagine freezing the center: only each
+weapon's position around the
+
+111
+00:08:10,933 --> 00:08:13,673
+character remains. Moving the center then
+carries that arrangement along.
+
+112
+00:08:13,853 --> 00:08:20,833
+An orbit feature can similarly manage its
+center, radius, and angle separately.
+
+113
+00:08:21,113 --> 00:08:24,993
+We do not need to assume these weapons follow
+perfect circles.
+
+114
+00:08:25,053 --> 00:08:28,713
+Their placement and attack animations may have
+additional rules.
+
+115
+00:08:28,873 --> 00:08:31,473
+Distinguishing the visible action from our
+mathematical
+
+116
+00:08:31,473 --> 00:08:35,833
+model prevents forcing one formula onto every
+behavior.
+
+117
+00:08:39,333 --> 00:08:43,493
+Smooth aiming needs care at the angle
+boundary.
+
+118
+00:08:43,813 --> 00:08:47,593
+Suppose the current angle is 179 degrees and
+the target is minus 179.
+
+119
+00:08:47,833 --> 00:08:50,953
+Direct subtraction gives minus 358 degrees,
+
+120
+00:08:51,173 --> 00:08:54,353
+but the directions are only two degrees apart
+on a circle.
+
+121
+00:08:54,653 --> 00:08:58,598
+Subtract current from target, then wrap the
+difference to a shortest-turn interval.
+
+122
+00:08:58,598 --> 00:09:02,293
+Here the result is positive two degrees.
+
+123
+00:09:02,513 --> 00:09:07,353
+At 90 degrees per second over one sixtieth of
+a second,
+
+124
+00:09:07,353 --> 00:09:10,993
+movement is limited to 1.5 degrees. Advance
+that far toward the target.
+
+125
+00:09:11,493 --> 00:09:14,913
+At exactly 180 degrees, both routes are equal,
+so choose a consistent turn direction.
+
+126
+00:09:15,473 --> 00:09:22,173
+A direct average of two angle numbers can also
+fail across the boundary.
+
+127
+00:09:22,983 --> 00:09:28,243
+Enemies approach from several directions.
+
+128
+00:09:28,583 --> 00:09:31,423
+Follow one weapon and consider how far it
+would need to turn toward a new direction.
+
+129
+00:09:31,623 --> 00:09:33,823
+Treating angles only as points on a number
+line can
+
+130
+00:09:34,003 --> 00:09:37,403
+suggest a long turn when crossing the interval
+boundary.
+
+131
+00:09:37,583 --> 00:09:40,263
+We actually compare directions on a circle.
+
+132
+00:09:40,423 --> 00:09:43,383
+Two directions close to the left can still be
+connected by a small rotation.
+
+133
+00:09:43,583 --> 00:09:47,203
+This is a method for implementing a smooth
+turret,
+
+134
+00:09:47,383 --> 00:09:50,863
+not a measurement of this game's weapon
+rotation speed.
+
+135
+00:09:50,863 --> 00:09:54,983
+Instant aiming and speed-limited following are
+gameplay choices.
+
+136
+00:09:55,283 --> 00:09:58,303
+Polar coordinates provide tools for expressing
+and calculating those choices.
+
+137
+00:09:58,763 --> 00:10:02,583
+Next, we will use distance and direction to
+describe displacement as well as position.
+
+138
+00:10:11,950 --> 00:10:16,510
+A vector can also be represented by length and
+direction. A point is a location
+
+139
+00:10:16,510 --> 00:10:20,510
+relative to an origin; a vector describes the
+same displacement wherever it starts.
+
+140
+00:10:20,810 --> 00:10:25,810
+Add a vector two units right to one two units
+upward.
+
+141
+00:10:25,990 --> 00:10:28,600
+Adding radii and angles separately would give
+radius four at 90 degrees,
+
+142
+00:10:28,770 --> 00:10:34,070
+which is wrong. The actual displacement is two
+right and two up.
+
+143
+00:10:34,410 --> 00:10:37,710
+Convert to Cartesian components and add them
+to obtain two, two.
+
+144
+00:10:37,870 --> 00:10:41,890
+Converting back gives length two square root
+two and direction 45 degrees.
+
+145
+00:10:41,950 --> 00:10:44,310
+Polar form suits rotation and scaling;
+Cartesian form suits vector addition
+
+146
+00:10:44,310 --> 00:10:50,170
+and many collision calculations. Switch
+representations to suit the problem.
+
+147
+00:10:50,800 --> 00:10:54,180
+Finally, separate the character's movement
+from a projectile's movement.
+
+148
+00:10:54,360 --> 00:10:58,140
+Simultaneous motion does not require a shared
+reference point.
+
+149
+00:10:58,620 --> 00:11:01,540
+Character displacement is the difference
+between two positions;
+
+150
+00:11:01,840 --> 00:11:06,400
+projectile travel can be measured from its
+launch point.
+
+151
+00:11:06,760 --> 00:11:10,280
+When adding displacements, use a common set of
+axes and add components.
+
+152
+00:11:10,320 --> 00:11:13,660
+Do not blindly add the two radius and angle
+numbers.
+
+153
+00:11:13,960 --> 00:11:16,360
+Choose a reference point and axes first,
+
+154
+00:11:16,680 --> 00:11:20,060
+then convert to a representation suited to the
+calculation.
+
+155
+00:11:26,917 --> 00:11:30,532
+Finish with two problems. Convert radius minus
+two at 45
+
+156
+00:11:30,817 --> 00:11:37,277
+degrees to our canonical form. Pause and try
+it yourself.
+
+157
+00:11:37,477 --> 00:11:41,257
+Make the radius positive and add 180 to obtain
+225 degrees.
+
+158
+00:11:41,617 --> 00:11:45,277
+Subtract a full turn to get radius two at
+minus 135 degrees.
+
+159
+00:11:45,517 --> 00:11:49,677
+Next convert Cartesian point minus three,
+four.
+
+160
+00:11:49,677 --> 00:11:53,577
+Its radius is five and atan2 gives
+approximately 126.87 degrees.
+
+161
+00:11:53,577 --> 00:11:57,637
+Check the quadrant too: the point lies
+upper-left, not upper-right.
+
+162
+00:11:57,877 --> 00:12:00,637
+A diagram is a useful way to check a numerical
+answer.
+
+163
+00:12:00,877 --> 00:12:06,117
+Remember the flow: locate with distance and
+angle, then convert when needed.
+
+164
+00:12:06,537 --> 00:12:11,617
+Next time we add height and a second angle for
+3D positions and cameras.

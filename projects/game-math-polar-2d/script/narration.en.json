@@ -1,0 +1,201 @@
+{
+  "title": "Game Math Part 2 · Polar Coordinates 1: Distance, Angles and Aiming",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "거리와 각도로 게임의 위치 읽기",
+      "lines": [
+        "How can we describe positions when bullets travel and weapons change direction in a game?",
+        "Polar coordinates tell us how far a point is from a center, and in which direction.",
+        "In part one, we will observe gameplay, locate points, convert coordinates, and apply the result to rotation and aiming.",
+        "Part two will extend these ideas into three dimensions."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "실제 관찰 · 움직이는 캐릭터와 무기",
+      "lines": [
+        "This is a Brotato combat sequence. Pick one weapon beside the character instead of watching the entire battlefield.",
+        "The weapon stays around the moving character, while its firing direction changes as targets change.",
+        "Separate two questions: where is the character in the world, and in which direction is the weapon relative to that character?",
+        "The first is a world position; the second is a position measured from a center.",
+        "We will describe the visible motion using coordinates. This does not establish which formulas the game's internal code uses."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "오른쪽을 보고, 돌고, 이동합니다",
+      "lines": [
+        "Choose the origin as our center and the positive x direction as zero degrees. Positive y points upward in this diagram.",
+        "Turn counterclockwise first. A clockwise turn can be written as a negative angle.",
+        "Then travel the chosen distance to locate a point. We call the distance r and the angle theta.",
+        "The point four units right and three units up is also five units away at about 36.87 degrees. The point stays the same; only its address changes.",
+        "Fixed distance with changing angle produces a circle. Fixed angle with nonnegative distance produces a ray."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "도와 라디안은 같은 각도의 다른 단위",
+      "lines": [
+        "A common mistake is mixing angle units. One full turn is 360 degrees, or two pi radians.",
+        "Radians measure arc length relative to the circle's radius. An arc as long as the radius spans one radian.",
+        "Ninety degrees equals pi over two radians. Multiply a degree value by pi and divide by 180 to convert it.",
+        "Typical programming math functions take radians. Passing 90 directly to sine does not give the sine of 90 degrees. Check the API and label units in variable names."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "실제 관찰 · 방향과 이동 거리 분리하기",
+      "lines": [
+        "Watch the projectiles traveling away from the character in this encounter. A projectile moves farther from where it was launched.",
+        "Travel in a fixed direction can be described by keeping theta constant and increasing r.",
+        "To fire in several directions, assign a different angle to each projectile. Launch angle and travel distance are separate controls.",
+        "The reference point may be the launch position rather than the character's current position. Moving that reference along with the character is a separate design decision.",
+        "Identifying the visible motion helps us decide which quantity stays fixed and which changes."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "좌표는 달라도 같은 점일 수 있습니다",
+      "lines": [
+        "A polar point has more than one address. Adding a full turn to radius three and angle 30 degrees reaches the same point.",
+        "Thirty and 390 degrees are different numbers but the same direction. These equivalent representations are called aliases.",
+        "A negative radius means traveling backward along the chosen direction. Radius minus three at 30 degrees equals radius three at 210 degrees.",
+        "Subtracting a full turn from 210 gives minus 150 degrees, another address for the same point. Negative coordinates are not inherently invalid.",
+        "At radius zero, every angle locates the origin. Position at the origin alone cannot tell us which way something faces."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "저장할 때는 대표 표현을 정합니다",
+      "lines": [
+        "Choosing a representative address makes storage and comparisons easier. This is a canonical form.",
+        "Here we choose a nonnegative radius and an angle greater than minus 180 degrees and at most positive 180 degrees.",
+        "Make a negative radius positive while adding 180 degrees to the angle. Then wrap by full turns into the chosen interval.",
+        "Radius minus three at 30 degrees becomes radius three at minus 150 degrees. For radius zero, our storage convention sets the angle to zero.",
+        "This reorganizes an address without moving the point. Implement the boundary rule that maps minus 180 to positive 180 as well."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "실제 관찰 · 같은 방향의 다른 숫자",
+      "lines": [
+        "Watch the direction between a weapon and a nearby enemy again. An enemy to the character's left is still easy to represent.",
+        "That direction can have a positive or a negative angle. Different stored numbers can point the same way on screen.",
+        "Comparing angle numbers directly can miss equivalent directions. Wrap them into a shared range or compare direction vectors.",
+        "If an enemy and the character occupy the same position, their displacement is zero. Position alone cannot determine a new aiming direction.",
+        "A game can choose to keep the previous aim. Coordinate conventions and gameplay behavior are separate decisions."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "극좌표에서 가로·세로로 바꾸기",
+      "lines": [
+        "Cartesian coordinates may be needed for drawing or collision calculations. Start with a right triangle.",
+        "Cosine is horizontal displacement divided by the hypotenuse; sine is vertical displacement divided by the hypotenuse. The hypotenuse is r.",
+        "Multiply by r to obtain x equals r cosine theta, and y equals r sine theta.",
+        "At radius ten and angle 30 degrees, x is approximately 8.660 and y is five. Convert the angle to radians before calling the functions.",
+        "The formulas also work in other quadrants and with negative radii. Think of signed coordinates rather than only unsigned triangle lengths."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "돌아올 때는 atan2를 사용합니다",
+      "lines": [
+        "To convert back, obtain distance using the Pythagorean theorem. In code, hypot handles very large and very small values more robustly.",
+        "Using arctangent of y divided by x loses information. Points four, three and minus four, minus three have the same ratio but opposite directions.",
+        "Atan2 accepts the two coordinates separately and identifies the quadrant. In this 2D convention, pass y first and x second.",
+        "The point zero, five gives an upward angle of 90 degrees. Avoiding explicit division also avoids dividing by zero.",
+        "At the origin, direction is geometrically undefined. Set an origin policy independently of the library's returned number, and wrap the result if needed."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "실제 관찰 · 조준 전에 위치를 뺍니다",
+      "lines": [
+        "Choose the character and one enemy in the encounter. The enemy's world coordinate alone is not the angle we need for aiming.",
+        "Subtract the firing position from the target position to express the target relative to the shooter.",
+        "Apply atan2 to this relative displacement. Moving both points equally to the right leaves the difference unchanged.",
+        "Their absolute screen positions may change while their relative direction stays the same. Connect that idea to the weapons facing nearby targets.",
+        "Before using a coordinate in a function, identify its origin. If the muzzle differs from the character's center, use the actual firing position."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "회전은 각도를, 이동은 중심을 바꿉니다",
+      "lines": [
+        "If the center is not at the origin, the computed x and y are offsets. Add the center's coordinates to get the world position.",
+        "For an orbit, keep radius fixed and continuously increase the angle. Add angular speed times elapsed frame time.",
+        "At 90 degrees per second, a frame lasting one second divided by sixty changes the angle by 1.5 degrees. If angles are stored in radians, angular speed must use radians too.",
+        "Adding a fixed angle every frame makes rotation speed depend on frame rate. Multiplying by elapsed time prevents that.",
+        "Moving the center translates the entire orbit. Screen coordinates may increase downward, so reconcile their axes with our upward-positive mathematical diagram."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "실제 관찰 · 중심과 주변 물체를 함께 보기",
+      "lines": [
+        "Watch how the surrounding weapons follow the character as it moves. Their world positions combine a center and relative offsets.",
+        "Imagine freezing the center: only each weapon's position around the character remains. Moving the center then carries that arrangement along.",
+        "An orbit feature can similarly manage its center, radius, and angle separately.",
+        "We do not need to assume these weapons follow perfect circles. Their placement and attack animations may have additional rules.",
+        "Distinguishing the visible action from our mathematical model prevents forcing one formula onto every behavior."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "179도에서 -179도까지는 2도입니다",
+      "lines": [
+        "Smooth aiming needs care at the angle boundary. Suppose the current angle is 179 degrees and the target is minus 179.",
+        "Direct subtraction gives minus 358 degrees, but the directions are only two degrees apart on a circle.",
+        "Subtract current from target, then wrap the difference to a shortest-turn interval. Here the result is positive two degrees.",
+        "At 90 degrees per second over one sixtieth of a second, movement is limited to 1.5 degrees. Advance that far toward the target.",
+        "At exactly 180 degrees, both routes are equal, so choose a consistent turn direction. A direct average of two angle numbers can also fail across the boundary."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "실제 관찰 · 가까운 방향으로 바뀌는 공격",
+      "lines": [
+        "Enemies approach from several directions. Follow one weapon and consider how far it would need to turn toward a new direction.",
+        "Treating angles only as points on a number line can suggest a long turn when crossing the interval boundary.",
+        "We actually compare directions on a circle. Two directions close to the left can still be connected by a small rotation.",
+        "This is a method for implementing a smooth turret, not a measurement of this game's weapon rotation speed.",
+        "Instant aiming and speed-limited following are gameplay choices. Polar coordinates provide tools for expressing and calculating those choices.",
+        "Next, we will use distance and direction to describe displacement as well as position."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "극좌표 벡터는 이동량을 표현합니다",
+      "lines": [
+        "A vector can also be represented by length and direction. A point is a location relative to an origin; a vector describes the same displacement wherever it starts.",
+        "Add a vector two units right to one two units upward.",
+        "Adding radii and angles separately would give radius four at 90 degrees, which is wrong. The actual displacement is two right and two up.",
+        "Convert to Cartesian components and add them to obtain two, two. Converting back gives length two square root two and direction 45 degrees.",
+        "Polar form suits rotation and scaling; Cartesian form suits vector addition and many collision calculations. Switch representations to suit the problem."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "실제 관찰 · 이동과 공격을 따로 읽기",
+      "lines": [
+        "Finally, separate the character's movement from a projectile's movement. Simultaneous motion does not require a shared reference point.",
+        "Character displacement is the difference between two positions; projectile travel can be measured from its launch point.",
+        "When adding displacements, use a common set of axes and add components. Do not blindly add the two radius and angle numbers.",
+        "Choose a reference point and axes first, then convert to a representation suited to the calculation."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "직접 풀고, 다음 편으로 연결하기",
+      "lines": [
+        "Finish with two problems. Convert radius minus two at 45 degrees to our canonical form. Pause and try it yourself.",
+        "Make the radius positive and add 180 to obtain 225 degrees. Subtract a full turn to get radius two at minus 135 degrees.",
+        "Next convert Cartesian point minus three, four. Its radius is five and atan2 gives approximately 126.87 degrees.",
+        "Check the quadrant too: the point lies upper-left, not upper-right. A diagram is a useful way to check a numerical answer.",
+        "Remember the flow: locate with distance and angle, then convert when needed. Next time we add height and a second angle for 3D positions and cameras."
+      ]
+    }
+  ]
+}
