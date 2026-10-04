@@ -1,0 +1,1004 @@
+1
+00:00:02,000 --> 00:00:04,880
+In a plane we located a point using distance
+and angle.
+
+2
+00:00:04,979 --> 00:00:09,400
+How can we describe positions and cameras when
+height changes too?
+
+3
+00:00:09,760 --> 00:00:12,620
+Part two introduces cylindrical coordinates
+with
+
+4
+00:00:12,620 --> 00:00:15,420
+height and spherical coordinates with two
+angles.
+
+5
+00:00:15,720 --> 00:00:17,960
+We will observe height and viewpoint in
+gameplay,
+
+6
+00:00:17,960 --> 00:00:21,160
+convert coordinates, and calculate a camera
+position.
+
+7
+00:00:21,500 --> 00:00:24,160
+Finally, we will examine axis conventions and
+
+8
+00:00:24,160 --> 00:00:27,180
+boundaries where a direction is not uniquely
+defined.
+
+9
+00:00:27,817 --> 00:00:30,957
+Watch the bicycle riding and jumping in
+Descenders.
+
+10
+00:00:31,157 --> 00:00:35,577
+Separate its travel over the ground from its
+height above the ground.
+
+11
+00:00:35,797 --> 00:00:39,637
+Two coordinates on a plane cannot distinguish
+jump height.
+
+12
+00:00:39,668 --> 00:00:42,437
+In three dimensions we need another quantity
+for up and down.
+
+13
+00:00:42,817 --> 00:00:46,937
+The bicycle's position also differs from the
+camera's position.
+
+14
+00:00:47,297 --> 00:00:50,277
+The camera follows the moving subject from a
+distance.
+
+15
+00:00:50,537 --> 00:00:53,977
+We will describe these relationships with
+cylindrical and spherical coordinates,
+
+16
+00:00:54,217 --> 00:00:56,897
+without claiming to have inspected the game's
+camera implementation.
+
+17
+00:00:56,897 --> 00:00:59,857
+Before memorizing formulas, distinguish
+horizontal distance,
+
+18
+00:00:59,857 --> 00:01:02,417
+height, and viewing direction.
+
+19
+00:01:02,597 --> 00:01:07,537
+Compare the moments before and after landing.
+Ground travel continues while
+
+20
+00:01:07,777 --> 00:01:10,017
+the bicycle is in the air. Read horizontal
+movement and height separately.
+
+21
+00:01:10,317 --> 00:01:13,297
+A subject remaining near the middle of the
+frame is not necessarily stationary
+
+22
+00:01:13,557 --> 00:01:16,797
+in the world. The subject and camera can move
+together while retaining
+
+23
+00:01:17,217 --> 00:01:19,017
+their relative relationship, so consider their
+positions separately.
+
+24
+00:01:24,533 --> 00:01:30,173
+Start with cylindrical coordinates.
+
+25
+00:01:30,173 --> 00:01:33,513
+Here x and y form the ground plane, and z is
+height. Check the axis labels.
+
+26
+00:01:33,713 --> 00:01:38,173
+Locate the ground projection using r and
+theta,
+
+27
+00:01:38,493 --> 00:01:41,973
+then raise it by the chosen height. We have
+radius, angle, and height.
+
+28
+00:01:42,253 --> 00:01:45,413
+Radius r is horizontal distance, not total
+distance from the origin to the 3D point.
+
+29
+00:01:45,873 --> 00:01:50,493
+Height can change while r stays fixed.
+
+30
+00:01:50,633 --> 00:01:54,513
+Keeping r fixed while varying angle and height
+
+31
+00:01:54,533 --> 00:01:56,913
+traces a cylindrical surface, explaining the
+name.
+
+32
+00:01:57,173 --> 00:02:01,953
+Keeping the angle fixed with nonnegative
+radius traces a vertical half-plane.
+
+33
+00:02:02,513 --> 00:02:06,193
+Allowing negative radius includes the opposite
+half as well.
+
+34
+00:02:07,067 --> 00:02:10,347
+To convert cylindrical coordinates,
+
+35
+00:02:10,787 --> 00:02:15,567
+reuse the cosine and sine formulas from part
+one for the ground projection.
+
+36
+00:02:15,907 --> 00:02:19,432
+Copy the height into the third coordinate.
+Radius five, angle zero,
+
+37
+00:02:19,547 --> 00:02:24,267
+and height three give Cartesian coordinates
+five, zero, three.
+
+38
+00:02:24,867 --> 00:02:27,667
+The full distance from the origin is not five.
+Combining horizontal
+
+39
+00:02:27,967 --> 00:02:33,307
+distance five with height three gives square
+root 34, approximately 5.83.
+
+40
+00:02:33,307 --> 00:02:36,767
+For the inverse, use hypot of x and y for
+horizontal radius and
+
+41
+00:02:36,767 --> 00:02:41,107
+atan2 for the ground direction. Keep the
+height unchanged.
+
+42
+00:02:41,107 --> 00:02:44,467
+At a zero horizontal projection, the angle is
+not determined.
+
+43
+00:02:44,927 --> 00:02:48,267
+A nonzero height does not define a horizontal
+direction.
+
+44
+00:02:48,950 --> 00:02:50,630
+Watch the ramps and jumps. The bicycle
+advances
+
+45
+00:02:50,630 --> 00:02:54,710
+along the track while also moving vertically.
+
+46
+00:02:55,090 --> 00:03:00,070
+We can describe this by separating a
+projection onto a chosen ground
+
+47
+00:03:00,530 --> 00:03:03,310
+plane from height. That is the starting idea
+of cylindrical coordinates.
+
+48
+00:03:03,310 --> 00:03:07,370
+Changing height need not change horizontal
+radius.
+
+49
+00:03:07,790 --> 00:03:10,570
+Moving horizontally can also leave height
+unchanged.
+
+50
+00:03:10,570 --> 00:03:16,930
+The actual terrain is not flat. Our projection
+uses a chosen coordinate plane;
+
+51
+00:03:16,930 --> 00:03:20,730
+world height and clearance above the terrain
+can differ.
+
+52
+00:03:20,990 --> 00:03:23,430
+Identify the height reference as well as the
+value to connect
+
+53
+00:03:23,430 --> 00:03:27,330
+the mathematics accurately with the visible
+action.
+
+54
+00:03:31,583 --> 00:03:35,823
+Now use total distance from the origin and two
+angles: spherical coordinates.
+
+55
+00:03:36,083 --> 00:03:40,663
+First consider one common mathematical
+convention.
+
+56
+00:03:40,943 --> 00:03:45,783
+The z axis points upward. Theta is the
+ground-plane angle from positive x;
+
+57
+00:03:45,923 --> 00:03:50,203
+phi measures downward from positive z.
+
+58
+00:03:50,303 --> 00:03:56,183
+Phi zero means the top, 90 degrees means the
+horizon, and 180 degrees means the bottom.
+
+59
+00:03:56,523 --> 00:03:59,263
+Do not mix this reference with other angle
+definitions.
+
+60
+00:03:59,263 --> 00:04:06,003
+Horizontal radius is r sine phi, and height is
+r cosine phi.
+
+61
+00:04:06,323 --> 00:04:10,623
+Multiply horizontal radius by cosine theta and
+sine theta to get x and y.
+
+62
+00:04:11,183 --> 00:04:13,743
+A fixed total radius places points on a
+sphere.
+
+63
+00:04:14,163 --> 00:04:18,323
+In this mathematical convention, theta is
+atan2 of y and x. Phi can be obtained with
+
+64
+00:04:18,883 --> 00:04:25,203
+atan2 of horizontal radius and z. Origin and
+pole direction policies still apply.
+
+65
+00:04:25,303 --> 00:04:30,483
+An elevation or latitude measured from the
+horizon is 90 degrees minus phi.
+
+66
+00:04:30,943 --> 00:04:33,843
+Total radius is not altitude above a surface;
+
+67
+00:04:34,083 --> 00:04:36,283
+subtract the reference sphere radius to obtain
+that altitude.
+
+68
+00:04:36,917 --> 00:04:41,137
+Games often call the direction angles heading
+and pitch,
+
+69
+00:04:41,517 --> 00:04:44,757
+but engines do not all share the same axes or
+signs.
+
+70
+00:04:44,997 --> 00:04:49,117
+In this book's game convention, x points
+right, y up, and z forward.
+
+71
+00:04:49,117 --> 00:04:54,317
+Zero heading points forward; positive heading
+turns right.
+
+72
+00:04:54,437 --> 00:04:58,297
+Zero pitch is horizontal, and positive pitch
+points downward.
+
+73
+00:04:58,577 --> 00:05:02,677
+Looking upward gives negative pitch. We will
+keep this sign convention visible.
+
+74
+00:05:02,897 --> 00:05:06,537
+The mathematical convention measured from the
+upward axis.
+
+75
+00:05:06,537 --> 00:05:11,157
+Substituting heading and pitch directly into
+that formula can locate a different point.
+
+76
+00:05:11,437 --> 00:05:14,457
+Two angles describe direction, not a complete
+orientation.
+
+77
+00:05:14,857 --> 00:05:20,297
+Sideways roll needs additional information;
+check the convention used by your engine.
+
+78
+00:05:21,050 --> 00:05:24,970
+Watch the bicycle jump and rotate over the
+ramps.
+
+79
+00:05:25,250 --> 00:05:29,790
+Do not confuse the camera's viewing direction
+with the bicycle's entire orientation.
+
+80
+00:05:30,030 --> 00:05:31,810
+Where something points is a direction
+question;
+
+81
+00:05:31,810 --> 00:05:35,810
+how far it leans sideways is another part of
+orientation.
+
+82
+00:05:35,950 --> 00:05:38,810
+Heading and pitch can describe a direction,
+
+83
+00:05:39,050 --> 00:05:43,270
+but not every rotation around that direction.
+
+84
+00:05:43,670 --> 00:05:46,410
+A tilted horizon on screen also does not
+establish
+
+85
+00:05:46,410 --> 00:05:48,610
+that the world's upward axis has changed.
+
+86
+00:05:48,930 --> 00:05:53,550
+For now, focus on position and direction. In
+the 3D diagrams,
+
+87
+00:05:53,550 --> 00:05:56,790
+check the axes first and follow what each
+angle controls.
+
+88
+00:05:57,050 --> 00:05:59,930
+Read the jump’s travel direction separately
+from the bicycle’s tilt.
+
+89
+00:06:00,370 --> 00:06:03,510
+It can continue traveling in one direction
+while its body rotates.
+
+90
+00:06:03,850 --> 00:06:06,710
+One direction vector and a complete
+orientation are different things.
+
+91
+00:06:06,970 --> 00:06:10,770
+Rising and falling on the screen is the result
+of camera projection. Measure world
+
+92
+00:06:11,090 --> 00:06:17,210
+height along the declared upward axis. Screen
+y is not automatically world height.
+
+93
+00:06:23,433 --> 00:06:26,033
+Convert using the book's convention by first
+separating total radius
+
+94
+00:06:26,353 --> 00:06:30,713
+into horizontal length and vertical
+displacement using pitch.
+
+95
+00:06:31,073 --> 00:06:36,933
+Horizontal length is r cosine pitch.
+
+96
+00:06:37,153 --> 00:06:40,293
+The y value is minus r sine pitch because
+positive pitch points downward.
+
+97
+00:06:40,433 --> 00:06:47,713
+Multiply horizontal length by sine heading for
+x, and by cosine heading for forward z.
+
+98
+00:06:47,893 --> 00:06:52,753
+At zero heading and pitch, x and y should
+vanish and only forward z should remain.
+
+99
+00:06:52,781 --> 00:06:55,193
+At 90-degree heading, the point should be to
+the right.
+
+100
+00:06:55,453 --> 00:07:02,173
+Checking reference directions catches swapped
+sine and cosine terms or incorrect signs.
+
+101
+00:07:02,413 --> 00:07:06,273
+Radius uses world units; code angles use
+radians.
+
+102
+00:07:07,083 --> 00:07:14,623
+For the inverse, calculate total radius with
+hypot of x, y, and z.
+
+103
+00:07:14,943 --> 00:07:19,843
+Then find horizontal length from x and z.
+Heading is atan2 of x first and z second;
+
+104
+00:07:19,843 --> 00:07:25,343
+the axes differ from part one's 2D function.
+
+105
+00:07:25,563 --> 00:07:30,383
+Pitch can be computed with atan2 of negative y
+and horizontal length.
+
+106
+00:07:30,643 --> 00:07:33,883
+This handles vertical sign and horizontal
+distance together.
+
+107
+00:07:33,883 --> 00:07:37,683
+At the origin, direction is undefined. At an
+exactly vertical point,
+
+108
+00:07:38,163 --> 00:07:42,443
+zero horizontal length leaves heading
+undefined.
+
+109
+00:07:42,823 --> 00:07:46,023
+For canonical storage, choose zero heading
+there.
+
+110
+00:07:46,663 --> 00:07:51,363
+Whether a live camera keeps its previous
+heading is a separate behavior policy.
+
+111
+00:07:52,167 --> 00:07:57,347
+In this dusk sequence, the camera follows the
+moving bicycle.
+
+112
+00:07:57,587 --> 00:08:01,127
+Camera elevation and separation affect the
+composition.
+
+113
+00:08:01,387 --> 00:08:06,807
+The image alone does not reveal the camera's
+exact world coordinates or heading values.
+
+114
+00:08:07,067 --> 00:08:11,227
+Distinguish the relationships: where the
+subject is,
+
+115
+00:08:11,227 --> 00:08:16,187
+where the camera is relative to it, and what
+the camera looks toward.
+
+116
+00:08:16,254 --> 00:08:18,327
+Subtract world positions and express the
+resulting relative vector
+
+117
+00:08:18,327 --> 00:08:22,147
+using radius and two angles to calculate those
+relationships.
+
+118
+00:08:22,167 --> 00:08:25,087
+Next, we will examine equivalent angle
+
+119
+00:08:25,087 --> 00:08:27,547
+representations and how to choose a canonical
+one.
+
+120
+00:08:27,687 --> 00:08:31,827
+If the subject and camera travel forward
+together, the subject can stay near the same
+
+121
+00:08:32,047 --> 00:08:35,247
+screen position. This is why we distinguish
+screen position from world position.
+
+122
+00:08:35,447 --> 00:08:38,387
+Think of subtracting the subject’s position to
+move the reference center.
+
+123
+00:08:38,627 --> 00:08:41,107
+Split that difference into horizontal length
+and vertical
+
+124
+00:08:41,107 --> 00:08:43,807
+height to connect the observation with the
+inverse formulas.
+
+125
+00:08:49,317 --> 00:08:52,837
+Adding a full turn to heading or pitch returns
+to the same direction.
+
+126
+00:08:53,137 --> 00:08:55,597
+Spherical coordinates also have aliases.
+
+127
+00:08:55,837 --> 00:08:58,137
+For negative radius, make it positive,
+
+128
+00:08:58,237 --> 00:09:02,137
+add 180 degrees to heading, and negate pitch
+to preserve the point.
+
+129
+00:09:02,517 --> 00:09:05,797
+Another alias keeps radius unchanged, adds 180
+to heading,
+
+130
+00:09:05,797 --> 00:09:09,337
+and replaces pitch by 180 degrees minus pitch.
+
+131
+00:09:09,557 --> 00:09:13,837
+Heading 90 and pitch 45 therefore describe the
+same direction as heading minus
+
+132
+00:09:13,837 --> 00:09:19,537
+90 and pitch 135. An unfamiliar representation
+is not necessarily invalid.
+
+133
+00:09:19,757 --> 00:09:22,737
+Convert both representations to Cartesian
+coordinates
+
+134
+00:09:23,017 --> 00:09:27,137
+to check that canonicalization has not moved
+the point.
+
+135
+00:09:27,767 --> 00:09:31,987
+A canonical form can use nonnegative radius, a
+one-turn heading interval,
+
+136
+00:09:31,987 --> 00:09:35,687
+and pitch between minus 90 and positive 90
+degrees.
+
+137
+00:09:35,967 --> 00:09:41,027
+Fold an out-of-range pitch using the alias
+relationship while preserving the point.
+
+138
+00:09:41,327 --> 00:09:44,387
+Reduce very large angles by full turns first.
+
+139
+00:09:44,747 --> 00:09:49,527
+At the exact upward or downward pole, changing
+heading does not change direction.
+
+140
+00:09:49,847 --> 00:09:52,747
+Many headings describe that same vertical
+direction.
+
+141
+00:09:52,987 --> 00:09:57,047
+This is a singularity of direction
+coordinates.
+
+142
+00:09:57,047 --> 00:10:01,247
+Two direction angles do not fully explain
+Euler-orientation gimbal lock.
+
+143
+00:10:01,527 --> 00:10:04,107
+Canonical storage can use zero heading;
+
+144
+00:10:04,107 --> 00:10:09,147
+camera controls can retain previous heading or
+avoid the pole.
+
+145
+00:10:09,427 --> 00:10:14,447
+Snapping nearby points to a pole with a
+tolerance changes their positions slightly.
+
+146
+00:10:15,250 --> 00:10:18,130
+Watch the steep ramps. One position formula
+does not
+
+147
+00:10:18,410 --> 00:10:22,250
+determine the whole behavior of a following
+camera.
+
+148
+00:10:22,510 --> 00:10:25,770
+After calculating a target direction,
+
+149
+00:10:26,130 --> 00:10:29,390
+choices remain: how quickly to follow it and
+what vertical-angle limits to allow.
+
+150
+00:10:29,710 --> 00:10:34,150
+Near a pole, a small position change can
+produce a large change in the heading number.
+
+151
+00:10:34,650 --> 00:10:37,950
+That does not mean the target moved along a
+large arc.
+
+152
+00:10:38,270 --> 00:10:41,210
+Canonicalizing stored numbers and producing
+
+153
+00:10:41,210 --> 00:10:43,690
+smooth camera motion are therefore separate
+tasks.
+
+154
+00:10:43,690 --> 00:10:47,490
+This recording does not establish which limits
+the game uses.
+
+155
+00:10:47,990 --> 00:10:51,530
+We are identifying decisions to examine when
+building our own camera.
+
+156
+00:10:55,967 --> 00:11:01,007
+Calculate an orbit camera around center zero,
+one, zero,
+
+157
+00:11:01,007 --> 00:11:05,767
+with radius five, heading 60 degrees, and
+pitch minus 30 degrees.
+
+158
+00:11:05,811 --> 00:11:12,427
+The book's formula gives offset x 3.750, y
+2.500, and z approximately 2.165.
+
+159
+00:11:12,767 --> 00:11:17,287
+Add the center to obtain camera position
+approximately 3.750,
+
+160
+00:11:17,447 --> 00:11:22,267
+3.500, 2.165. This offset points from the
+center to the camera.
+
+161
+00:11:22,267 --> 00:11:26,807
+To look at the center, subtract the camera
+position from the center instead.
+
+162
+00:11:27,347 --> 00:11:29,947
+Confusing these opposite directions can make
+the camera face away.
+
+163
+00:11:30,527 --> 00:11:34,607
+Use radius and two angles to place the camera,
+then calculate its viewing direction
+
+164
+00:11:34,967 --> 00:11:39,327
+separately. Pitch limits and smooth following
+are additional control rules.
+
+165
+00:11:40,417 --> 00:11:45,597
+Recall the camera's relation to the bicycle:
+behind and above.
+
+166
+00:11:46,597 --> 00:11:49,197
+We are not measuring an exact distance from
+this recording.
+
+167
+00:11:49,517 --> 00:11:54,097
+The camera-placement offset points from the
+subject to the camera.
+
+168
+00:11:54,457 --> 00:11:56,937
+The viewing direction points the opposite way.
+
+169
+00:11:57,237 --> 00:12:00,697
+Subtraction order reverses the vector between
+the same two points. Place the camera
+
+170
+00:12:01,097 --> 00:12:06,357
+using center plus offset, then calculate the
+view direction using center minus camera.
+
+171
+00:12:06,357 --> 00:12:08,837
+When the subject moves, update the center and
+optionally
+
+172
+00:12:08,837 --> 00:12:14,357
+smooth the camera's movement toward its
+desired placement.
+
+173
+00:12:14,757 --> 00:12:18,317
+Spherical coordinates do not complete the
+entire camera system automatically.
+
+174
+00:12:18,557 --> 00:12:21,177
+They make its placement easier to express.
+
+175
+00:12:21,537 --> 00:12:24,617
+As the ride continues, think about the center
+moving through the world.
+
+176
+00:12:25,017 --> 00:12:30,277
+The subject and camera can travel together
+while keeping a similar relative offset.
+
+177
+00:12:30,617 --> 00:12:33,557
+During a jump, also consider whether the
+subject becomes obscured. Calculate the
+
+178
+00:12:33,557 --> 00:12:38,477
+desired arrangement mathematically, then add
+policies for obstacles and tracking speed.
+
+179
+00:12:44,723 --> 00:12:48,250
+A 3D vector can use length and two direction
+angles. For addition,
+
+180
+00:12:48,530 --> 00:12:54,710
+convert to Cartesian components rather than
+adding radii and angles separately.
+
+181
+00:12:54,990 --> 00:12:58,010
+Handle the origin and exact poles explicitly.
+
+182
+00:12:58,290 --> 00:13:03,990
+Decide how to treat tiny remaining horizontal
+components according to the acceptable error.
+
+183
+00:13:04,330 --> 00:13:10,510
+Another pitch formula uses arcsine. Rounding
+can push a ratio slightly beyond one,
+
+184
+00:13:10,810 --> 00:13:13,730
+so clamp its input to the interval from minus
+one to one.
+
+185
+00:13:13,730 --> 00:13:18,230
+The atan2 and hypot approach reduces this
+division issue.
+
+186
+00:13:18,650 --> 00:13:24,110
+But no formula restores precision already lost
+in an enormous floating-point angle.
+
+187
+00:13:24,550 --> 00:13:29,410
+Record axes and units, then test values near
+zero and angle boundaries.
+
+188
+00:13:29,810 --> 00:13:33,570
+Distinguish exact mathematical relationships
+from computer approximations.
+
+189
+00:13:34,517 --> 00:13:39,317
+Separate the bicycle's position, its leaning
+orientation, and the camera viewpoint.
+
+190
+00:13:39,637 --> 00:13:43,717
+One coordinate representation does not
+determine all of them.
+
+191
+00:13:43,957 --> 00:13:49,097
+Polar and spherical forms help calculate
+distance and direction.
+
+192
+00:13:49,097 --> 00:13:53,417
+Collision, orientation, and tracking speed
+need additional rules.
+
+193
+00:13:53,617 --> 00:13:55,197
+Read the visible actions separately and apply
+these coordinates
+
+194
+00:13:55,197 --> 00:13:58,737
+to the relationships involving distance and
+direction.
+
+195
+00:13:58,957 --> 00:14:03,377
+That makes both the usefulness and the scope
+of each formula clear.
+
+196
+00:14:06,750 --> 00:14:11,040
+Check three reference directions in the book's
+convention.
+
+197
+00:14:11,250 --> 00:14:15,750
+Radius two with zero heading and pitch gives
+forward point zero, zero, two.
+
+198
+00:14:16,090 --> 00:14:19,433
+Changing heading to 90 degrees gives rightward
+point two,
+
+199
+00:14:19,650 --> 00:14:23,290
+zero, zero. This checks the sine and cosine
+order.
+
+200
+00:14:23,570 --> 00:14:27,810
+Pitch minus 90 degrees gives upward point
+zero, two, zero.
+
+201
+00:14:28,050 --> 00:14:31,030
+A floating-point calculation may leave tiny
+horizontal components.
+
+202
+00:14:31,210 --> 00:14:34,850
+At that exact vertical direction, changing
+heading reaches the same point.
+
+203
+00:14:34,850 --> 00:14:39,290
+Recall why origin and pole storage and control
+policies must be explicit.
+
+204
+00:14:39,730 --> 00:14:45,290
+Cylindrical form adds height to ground radius
+and angle;
+
+205
+00:14:45,590 --> 00:14:48,470
+spherical form uses total radius and two
+angles. Declare axes and units,
+
+206
+00:14:48,770 --> 00:14:51,110
+then convert and verify before applying them
+to positions or cameras.

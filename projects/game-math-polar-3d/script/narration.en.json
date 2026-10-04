@@ -1,0 +1,222 @@
+{
+  "title": "Game Math Part 2 · Polar Coordinates 2: Cylinders, Spheres and 3D Cameras",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "거리와 두 각도로 3D 위치 표현하기",
+      "lines": [
+        "In a plane we located a point using distance and angle. How can we describe positions and cameras when height changes too?",
+        "Part two introduces cylindrical coordinates with height and spherical coordinates with two angles.",
+        "We will observe height and viewpoint in gameplay, convert coordinates, and calculate a camera position.",
+        "Finally, we will examine axis conventions and boundaries where a direction is not uniquely defined."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "실제 관찰 · 높이와 시점의 변화",
+      "lines": [
+        "Watch the bicycle riding and jumping in Descenders. Separate its travel over the ground from its height above the ground.",
+        "Two coordinates on a plane cannot distinguish jump height. In three dimensions we need another quantity for up and down.",
+        "The bicycle's position also differs from the camera's position. The camera follows the moving subject from a distance.",
+        "We will describe these relationships with cylindrical and spherical coordinates, without claiming to have inspected the game's camera implementation.",
+        "Before memorizing formulas, distinguish horizontal distance, height, and viewing direction.",
+        "Compare the moments before and after landing. Ground travel continues while the bicycle is in the air. Read horizontal movement and height separately.",
+        "A subject remaining near the middle of the frame is not necessarily stationary in the world. The subject and camera can move together while retaining their relative relationship, so consider their positions separately."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "원통좌표는 평면 극좌표에 높이를 더합니다",
+      "lines": [
+        "Start with cylindrical coordinates. Here x and y form the ground plane, and z is height. Check the axis labels.",
+        "Locate the ground projection using r and theta, then raise it by the chosen height. We have radius, angle, and height.",
+        "Radius r is horizontal distance, not total distance from the origin to the 3D point. Height can change while r stays fixed.",
+        "Keeping r fixed while varying angle and height traces a cylindrical surface, explaining the name.",
+        "Keeping the angle fixed with nonnegative radius traces a vertical half-plane. Allowing negative radius includes the opposite half as well."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "원통좌표 변환은 2D 공식을 그대로 씁니다",
+      "lines": [
+        "To convert cylindrical coordinates, reuse the cosine and sine formulas from part one for the ground projection.",
+        "Copy the height into the third coordinate. Radius five, angle zero, and height three give Cartesian coordinates five, zero, three.",
+        "The full distance from the origin is not five. Combining horizontal distance five with height three gives square root 34, approximately 5.83.",
+        "For the inverse, use hypot of x and y for horizontal radius and atan2 for the ground direction. Keep the height unchanged.",
+        "At a zero horizontal projection, the angle is not determined. A nonzero height does not define a horizontal direction."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "실제 관찰 · 수평 이동과 점프를 구분하기",
+      "lines": [
+        "Watch the ramps and jumps. The bicycle advances along the track while also moving vertically.",
+        "We can describe this by separating a projection onto a chosen ground plane from height. That is the starting idea of cylindrical coordinates.",
+        "Changing height need not change horizontal radius. Moving horizontally can also leave height unchanged.",
+        "The actual terrain is not flat. Our projection uses a chosen coordinate plane; world height and clearance above the terrain can differ.",
+        "Identify the height reference as well as the value to connect the mathematics accurately with the visible action."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "구면좌표는 거리와 두 각도를 사용합니다",
+      "lines": [
+        "Now use total distance from the origin and two angles: spherical coordinates. First consider one common mathematical convention.",
+        "The z axis points upward. Theta is the ground-plane angle from positive x; phi measures downward from positive z.",
+        "Phi zero means the top, 90 degrees means the horizon, and 180 degrees means the bottom. Do not mix this reference with other angle definitions.",
+        "Horizontal radius is r sine phi, and height is r cosine phi.",
+        "Multiply horizontal radius by cosine theta and sine theta to get x and y. A fixed total radius places points on a sphere.",
+        "In this mathematical convention, theta is atan2 of y and x. Phi can be obtained with atan2 of horizontal radius and z. Origin and pole direction policies still apply.",
+        "An elevation or latitude measured from the horizon is 90 degrees minus phi. Total radius is not altitude above a surface; subtract the reference sphere radius to obtain that altitude."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "게임 각도는 축의 약속부터 확인합니다",
+      "lines": [
+        "Games often call the direction angles heading and pitch, but engines do not all share the same axes or signs.",
+        "In this book's game convention, x points right, y up, and z forward. Zero heading points forward; positive heading turns right.",
+        "Zero pitch is horizontal, and positive pitch points downward. Looking upward gives negative pitch. We will keep this sign convention visible.",
+        "The mathematical convention measured from the upward axis. Substituting heading and pitch directly into that formula can locate a different point.",
+        "Two angles describe direction, not a complete orientation. Sideways roll needs additional information; check the convention used by your engine."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "실제 관찰 · 화면의 기울기와 방향은 다릅니다",
+      "lines": [
+        "Watch the bicycle jump and rotate over the ramps. Do not confuse the camera's viewing direction with the bicycle's entire orientation.",
+        "Where something points is a direction question; how far it leans sideways is another part of orientation.",
+        "Heading and pitch can describe a direction, but not every rotation around that direction.",
+        "A tilted horizon on screen also does not establish that the world's upward axis has changed.",
+        "For now, focus on position and direction. In the 3D diagrams, check the axes first and follow what each angle controls.",
+        "Read the jump’s travel direction separately from the bicycle’s tilt. It can continue traveling in one direction while its body rotates. One direction vector and a complete orientation are different things.",
+        "Rising and falling on the screen is the result of camera projection. Measure world height along the declared upward axis. Screen y is not automatically world height."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "헤딩·피치에서 x, y, z로 변환하기",
+      "lines": [
+        "Convert using the book's convention by first separating total radius into horizontal length and vertical displacement using pitch.",
+        "Horizontal length is r cosine pitch. The y value is minus r sine pitch because positive pitch points downward.",
+        "Multiply horizontal length by sine heading for x, and by cosine heading for forward z.",
+        "At zero heading and pitch, x and y should vanish and only forward z should remain. At 90-degree heading, the point should be to the right.",
+        "Checking reference directions catches swapped sine and cosine terms or incorrect signs. Radius uses world units; code angles use radians."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "역변환은 수평 길이부터 구합니다",
+      "lines": [
+        "For the inverse, calculate total radius with hypot of x, y, and z.",
+        "Then find horizontal length from x and z. Heading is atan2 of x first and z second; the axes differ from part one's 2D function.",
+        "Pitch can be computed with atan2 of negative y and horizontal length. This handles vertical sign and horizontal distance together.",
+        "At the origin, direction is undefined. At an exactly vertical point, zero horizontal length leaves heading undefined.",
+        "For canonical storage, choose zero heading there. Whether a live camera keeps its previous heading is a separate behavior policy."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "실제 관찰 · 위치를 보고 시점 관계 생각하기",
+      "lines": [
+        "In this dusk sequence, the camera follows the moving bicycle. Camera elevation and separation affect the composition.",
+        "The image alone does not reveal the camera's exact world coordinates or heading values.",
+        "Distinguish the relationships: where the subject is, where the camera is relative to it, and what the camera looks toward.",
+        "Subtract world positions and express the resulting relative vector using radius and two angles to calculate those relationships.",
+        "Next, we will examine equivalent angle representations and how to choose a canonical one.",
+        "If the subject and camera travel forward together, the subject can stay near the same screen position. This is why we distinguish screen position from world position.",
+        "Think of subtracting the subject’s position to move the reference center. Split that difference into horizontal length and vertical height to connect the observation with the inverse formulas."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "구면좌표에도 같은 점의 여러 주소가 있습니다",
+      "lines": [
+        "Adding a full turn to heading or pitch returns to the same direction. Spherical coordinates also have aliases.",
+        "For negative radius, make it positive, add 180 degrees to heading, and negate pitch to preserve the point.",
+        "Another alias keeps radius unchanged, adds 180 to heading, and replaces pitch by 180 degrees minus pitch.",
+        "Heading 90 and pitch 45 therefore describe the same direction as heading minus 90 and pitch 135. An unfamiliar representation is not necessarily invalid.",
+        "Convert both representations to Cartesian coordinates to check that canonicalization has not moved the point."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "극점에서는 헤딩이 정해지지 않습니다",
+      "lines": [
+        "A canonical form can use nonnegative radius, a one-turn heading interval, and pitch between minus 90 and positive 90 degrees.",
+        "Fold an out-of-range pitch using the alias relationship while preserving the point. Reduce very large angles by full turns first.",
+        "At the exact upward or downward pole, changing heading does not change direction. Many headings describe that same vertical direction.",
+        "This is a singularity of direction coordinates. Two direction angles do not fully explain Euler-orientation gimbal lock.",
+        "Canonical storage can use zero heading; camera controls can retain previous heading or avoid the pole. Snapping nearby points to a pole with a tolerance changes their positions slightly."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "실제 관찰 · 위아래 방향과 조작 정책",
+      "lines": [
+        "Watch the steep ramps. One position formula does not determine the whole behavior of a following camera.",
+        "After calculating a target direction, choices remain: how quickly to follow it and what vertical-angle limits to allow.",
+        "Near a pole, a small position change can produce a large change in the heading number. That does not mean the target moved along a large arc.",
+        "Canonicalizing stored numbers and producing smooth camera motion are therefore separate tasks.",
+        "This recording does not establish which limits the game uses. We are identifying decisions to examine when building our own camera."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "카메라 위치와 보는 방향을 구분하세요",
+      "lines": [
+        "Calculate an orbit camera around center zero, one, zero, with radius five, heading 60 degrees, and pitch minus 30 degrees.",
+        "The book's formula gives offset x 3.750, y 2.500, and z approximately 2.165.",
+        "Add the center to obtain camera position approximately 3.750, 3.500, 2.165. This offset points from the center to the camera.",
+        "To look at the center, subtract the camera position from the center instead. Confusing these opposite directions can make the camera face away.",
+        "Use radius and two angles to place the camera, then calculate its viewing direction separately. Pitch limits and smooth following are additional control rules."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "실제 관찰 · 대상에서 카메라로, 카메라에서 대상으로",
+      "lines": [
+        "Recall the camera's relation to the bicycle: behind and above. We are not measuring an exact distance from this recording.",
+        "The camera-placement offset points from the subject to the camera. The viewing direction points the opposite way.",
+        "Subtraction order reverses the vector between the same two points. Place the camera using center plus offset, then calculate the view direction using center minus camera.",
+        "When the subject moves, update the center and optionally smooth the camera's movement toward its desired placement.",
+        "Spherical coordinates do not complete the entire camera system automatically. They make its placement easier to express.",
+        "As the ride continues, think about the center moving through the world. The subject and camera can travel together while keeping a similar relative offset.",
+        "During a jump, also consider whether the subject becomes obscured. Calculate the desired arrangement mathematically, then add policies for obstacles and tracking speed."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "벡터 연산과 작은 수치 오차까지 확인합니다",
+      "lines": [
+        "A 3D vector can use length and two direction angles. For addition, convert to Cartesian components rather than adding radii and angles separately.",
+        "Handle the origin and exact poles explicitly. Decide how to treat tiny remaining horizontal components according to the acceptable error.",
+        "Another pitch formula uses arcsine. Rounding can push a ratio slightly beyond one, so clamp its input to the interval from minus one to one.",
+        "The atan2 and hypot approach reduces this division issue. But no formula restores precision already lost in an enormous floating-point angle.",
+        "Record axes and units, then test values near zero and angle boundaries. Distinguish exact mathematical relationships from computer approximations."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "실제 관찰 · 좌표 하나가 모든 동작은 아닙니다",
+      "lines": [
+        "Separate the bicycle's position, its leaning orientation, and the camera viewpoint. One coordinate representation does not determine all of them.",
+        "Polar and spherical forms help calculate distance and direction. Collision, orientation, and tracking speed need additional rules.",
+        "Read the visible actions separately and apply these coordinates to the relationships involving distance and direction.",
+        "That makes both the usefulness and the scope of each formula clear."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "직접 확인할 세 가지 기준 방향",
+      "lines": [
+        "Check three reference directions in the book's convention. Radius two with zero heading and pitch gives forward point zero, zero, two.",
+        "Changing heading to 90 degrees gives rightward point two, zero, zero. This checks the sine and cosine order.",
+        "Pitch minus 90 degrees gives upward point zero, two, zero. A floating-point calculation may leave tiny horizontal components.",
+        "At that exact vertical direction, changing heading reaches the same point. Recall why origin and pole storage and control policies must be explicit.",
+        "Cylindrical form adds height to ground radius and angle; spherical form uses total radius and two angles. Declare axes and units, then convert and verify before applying them to positions or cameras."
+      ]
+    }
+  ]
+}

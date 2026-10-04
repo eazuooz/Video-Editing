@@ -1,0 +1,1792 @@
+{
+  "schemaVersion": 1,
+  "candidate": {
+    "slug": "game-math-polar-3d",
+    "titleKo": "게임수학 Part 2 · 극좌표계 2편: 원통·구면좌표와 3D 카메라",
+    "titleEn": "Game Math Part 2 · Polar Coordinates 2: Cylinders, Spheres and 3D Cameras",
+    "viewerQuestion": "How do cylindrical and spherical coordinates describe a 3D point, and how do math angles differ from game heading and pitch?",
+    "chapterClaims": [
+      "cylindrical horizontal radius and height",
+      "math spherical azimuth and zenith",
+      "book game heading and downward pitch",
+      "aliases and pole singularities",
+      "robust inverse conversion",
+      "camera offset versus viewing direction",
+      "3D vectors and practice"
+    ],
+    "relationship": "Second half of the user-requested full polar chapter; expands the prior 3-minute preview without recreating it."
+  },
+  "reviewedAt": "2026-10-04T14:51:21.389Z",
+  "inputsDigest": "8f64e08ad75210ea980dd8864a73cde3dff24c304cd9e84add0b6654020ccf8f",
+  "inputFiles": [
+    {
+      "path": "projects/ai-era-cs-fundamentals/project.json",
+      "sha256": "b358c118a53a57ed807dea57ee93508c947c0a574a9704db8121fe4c10971654"
+    },
+    {
+      "path": "projects/ai-era-cs-fundamentals/script/narration.ko.json",
+      "sha256": "5ad2e1e2de8ea28df9ab08151cabf902984546cd764a91e8cf49e420d28659e1"
+    },
+    {
+      "path": "projects/ai-era-cs-fundamentals/script/narration.en.json",
+      "sha256": "10593bd7071ca54f6c7a90fc97ac004494d3af4e604cf2ee6b1f321514bb0d21"
+    },
+    {
+      "path": "projects/ai-era-cs-fundamentals/planning/outline.md",
+      "sha256": "35092b0926cfd38efd93f2c84647bf685ce07b54467ab2b59cc8cb57946262ad"
+    },
+    {
+      "path": "projects/ai-era-cs-fundamentals/sources/SOURCES.md",
+      "sha256": "bb8482647a41d2767c41d93b93a47fe9a7b4800853ef75b8d5098ad0926e43d1"
+    },
+    {
+      "path": "projects/ai-era-cs-fundamentals/README.md",
+      "sha256": "ff6b03b8023979dfd8025650a779ac56e59b59aeddca1da4b41b9fec91613b7b"
+    },
+    {
+      "path": "projects/blank-project-coding/project.json",
+      "sha256": "3773866d39350bf4a0c7202f07ad0227e084aaf0ddb1553c99f0db41fc4c784e"
+    },
+    {
+      "path": "projects/blank-project-coding/script/narration.ko.json",
+      "sha256": "2e899aec7783159e8768855aa00be5eacb6cf1660c9addd9ac216036ab083c2f"
+    },
+    {
+      "path": "projects/blank-project-coding/revisions/deduplicated-v3/narration.ko.json",
+      "sha256": "9ac7a9c851aab28d2f73d89519d142e21a467a88d71d3c80fb0f8f213331ba61"
+    },
+    {
+      "path": "projects/blank-project-coding/script/narration.en.json",
+      "sha256": "df30f133addd13fa7cf90f8d58f74ecf99ab0376f81544d21a08fc42edc246dd"
+    },
+    {
+      "path": "projects/blank-project-coding/revisions/deduplicated-v3/narration.en.json",
+      "sha256": "45f7eda2c348ee4355b330f0ed193a90c4868ea19c7b174b161dc8f2c90f21a8"
+    },
+    {
+      "path": "projects/blank-project-coding/planning/outline.md",
+      "sha256": "6154acc1495a40bdf95fb59582209b70210fd3ff1e4eff11525b8d31a6597585"
+    },
+    {
+      "path": "projects/blank-project-coding/sources/SOURCES.md",
+      "sha256": "2b75bfc18624937d74be36c61d1d22ecd81f68f6894ecbfd5dee0e52af57c3d0"
+    },
+    {
+      "path": "projects/blank-project-coding/README.md",
+      "sha256": "6d910c085141777c366d5e29c357072b21dd9d3365eb8e988c027dd5df1623ad"
+    },
+    {
+      "path": "projects/blank-project-coding/publishing/youtube-upload.json",
+      "sha256": "193daf415375828497445cfd7d115c5ce51fa3c6aa07dff8c6461a26ff9ba536"
+    },
+    {
+      "path": "projects/blank-project-coding/publishing/youtube-upload-deduplicated-v3.json",
+      "sha256": "00cb47c9aefcc5c252bbab42ab74c334697323dc33f6312f571e1ba83641d079"
+    },
+    {
+      "path": "projects/choice-driven-classics/project.json",
+      "sha256": "d2312e2785b75e3dec5413b7dfd68ed8682c188150283c77e4d9ec3feb231c91"
+    },
+    {
+      "path": "projects/choice-driven-classics/script/narration.ko.json",
+      "sha256": "65c2ebc2a2ef0961c489483bdc4a4292b878170cd9ed4d558c91cddec477eefc"
+    },
+    {
+      "path": "projects/choice-driven-classics/script/narration.en.json",
+      "sha256": "53d395b6dbaea4c4d283e0955016a6d7c206531e72b03ab06b7afb71efae80e3"
+    },
+    {
+      "path": "projects/choice-driven-classics/planning/outline.md",
+      "sha256": "46d0ed145300325577c630edee701f4b0d6ebb0845d5a1b731539747ff220954"
+    },
+    {
+      "path": "projects/choice-driven-classics/sources/SOURCES.md",
+      "sha256": "be2998206ffaaaf1bd2c092bbc737a23b5ec5966becdc36917efa2645c855d30"
+    },
+    {
+      "path": "projects/choice-driven-classics/README.md",
+      "sha256": "542d1db8fbf2d687fb9e714e0c32fdb5aeff3ff69e0c3f90dfbf5434d1b09fa1"
+    },
+    {
+      "path": "projects/counting-animation-frames/project.json",
+      "sha256": "0deca27f554ff6424e39aa5058a9d77be98cc8e077c445b923a2a69a9f946ba6"
+    },
+    {
+      "path": "projects/counting-animation-frames/script/narration.ko.json",
+      "sha256": "3a165d42b23dddca8a900850465d9c1078ccd55f1fbd933e8488216cc5044952"
+    },
+    {
+      "path": "projects/counting-animation-frames/production/final-v3/script.ko.json",
+      "sha256": "a9ce860e3f1921a894afc6d21e6d9cfe4309f53e35c6143c6f4b9bdf2f573706"
+    },
+    {
+      "path": "projects/counting-animation-frames/script/narration.en.json",
+      "sha256": "963b54a38a49fd55a1c591e09380b5c3bf4c595e2cfbb203e6eeced8e7f5858a"
+    },
+    {
+      "path": "projects/counting-animation-frames/production/final-v3/script.en.json",
+      "sha256": "f973b1871d33e49294ce92d04080a41aee8d52b5d5e8d39522efa66573545831"
+    },
+    {
+      "path": "projects/counting-animation-frames/planning/outline.md",
+      "sha256": "c56a35e2ac8ce1d9ee227e8a0741032cde91ad44e8ee1095c70bdf13986eb8e1"
+    },
+    {
+      "path": "projects/counting-animation-frames/sources/SOURCES.md",
+      "sha256": "0b1f2b2fa3b31357e13fed6d8894327ef01635a940f4cdb3ecc85f822540854e"
+    },
+    {
+      "path": "projects/counting-animation-frames/README.md",
+      "sha256": "f5cc390cf090d49d55dba33027c67270e079a93468ab55ce95aed2dbfd7e1619"
+    },
+    {
+      "path": "projects/counting-animation-frames/publishing/youtube-upload.json",
+      "sha256": "254a14a5170ef9dc3eb0bda6246115e8c4223e55618b079804a6f26183e97485"
+    },
+    {
+      "path": "projects/counting-animation-frames/publishing/youtube-upload-v3.json",
+      "sha256": "07f750a47b37b0c1642d729d4a24d24ff4813a9dd3abbd06f1edb6a512370a67"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/project.json",
+      "sha256": "1a5fb702fb3236c86a3e07ec6b4f2c6f5862838d64a0bc5e3a15d5b7af3cd72e"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/script/narration.ko.json",
+      "sha256": "ae8decd78fe55a9a1ff05a81d8146fad9a2c6c99b669a61abda964de1f10aa8c"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/production/final-v2/script.ko.json",
+      "sha256": "9710bab2cd1b73cb05636b07cbd5d42519f9f8a359936bf94b7a3c241632a747"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/script/narration.en.json",
+      "sha256": "2c8818bea8a116362cfa430b2a700ee8524cb0d2bcf51907c3a669094ce85216"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/production/final-v2/script.en.json",
+      "sha256": "9368429e0c3b630b4f5cd66525a0795e3df1b0377e5af985dbf42be1e2de4311"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/planning/outline.md",
+      "sha256": "9a18f549298ad91916f6fcbc6b7efee4562e37a157f77e422017428f93d36caa"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/sources/SOURCES.md",
+      "sha256": "e276204c27866d145fc42665c88e83a6e98a6091b8364a84ca30d82a76e05641"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/README.md",
+      "sha256": "93103739fa49bb5c45fe066a96bd253639535c79ef07b7007ba95bafbfa3a4b0"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/publishing/youtube-upload.json",
+      "sha256": "403e9848d33773fe14d0b8c7be07838ccf2219a7751bde3124be354f90d9e112"
+    },
+    {
+      "path": "projects/deconstruct-analyze-rebuild/publishing/youtube-upload-v2.json",
+      "sha256": "c731826d7ed07657991594912753850ffd249b084752e7589a54a6d195adf760"
+    },
+    {
+      "path": "projects/frame-rate-modern-rendering/project.json",
+      "sha256": "022cfd5cac9cdea55216ca78087c7c72226664d6da27fd8536852f378e8172a8"
+    },
+    {
+      "path": "projects/frame-rate-modern-rendering/script/narration.ko.json",
+      "sha256": "6494725340888316055ccc26436c9bc3d13e3f06efbe08eb9e8b9870acfa44e9"
+    },
+    {
+      "path": "projects/frame-rate-modern-rendering/script/narration.en.json",
+      "sha256": "f3c558961e659182a12106d66f619cc495b8e9225fb5d80ca614dfbb5cd98150"
+    },
+    {
+      "path": "projects/frame-rate-modern-rendering/planning/outline.md",
+      "sha256": "ebe9745bbf7d0a5c159865e2f046a795504b4e6896e5a02293f3838eea21e923"
+    },
+    {
+      "path": "projects/frame-rate-modern-rendering/sources/SOURCES.md",
+      "sha256": "d19a70bdb0e4aad91aad86e7578a183b80e558162a7da33530c5c5186e4247d5"
+    },
+    {
+      "path": "projects/frame-rate-modern-rendering/README.md",
+      "sha256": "58dbc99284347fa53db76430a462c05608de7a3c72362f0c7f4010ddfd75ef8c"
+    },
+    {
+      "path": "projects/game-dev-career/project.json",
+      "sha256": "9d1dfa4b0d3d88e500fd7f42ea3ce851b436c0e071aebd3e2fcc517649a42bed"
+    },
+    {
+      "path": "projects/game-dev-career/script/narration.ko.json",
+      "sha256": "74539ea81f064e9ad5a57cb181fa8aa41794c824253a69f15d27c81cf0346267"
+    },
+    {
+      "path": "projects/game-dev-career/script/narration.en.json",
+      "sha256": "b013371c7210de2b867acd9e16c981fcc3849b82c59e095fcc3c6080c4950e8d"
+    },
+    {
+      "path": "projects/game-dev-career/planning/outline.md",
+      "sha256": "5b108d4fc9a49c43b839c1f6561128e32eaa1d76667fbf5bcf7b30220c989d2f"
+    },
+    {
+      "path": "projects/game-dev-career/sources/SOURCES.md",
+      "sha256": "7cb81a422f90564402c46fd12cb03ac415bbc7c870db2441e41c8d8f250080dd"
+    },
+    {
+      "path": "projects/game-dev-career/README.md",
+      "sha256": "5bb1af9862e2c6acf7fadebea08f82fbd35d0eaa5d84e0e3d7907fe903a03e81"
+    },
+    {
+      "path": "projects/game-math-polar-2d/project.json",
+      "sha256": "3dc0abe97fa922d4e044707d2cf29b2ecea77733bead4e75706464d52e918a6e"
+    },
+    {
+      "path": "projects/game-math-polar-2d/script/narration.ko.json",
+      "sha256": "3fd578a0411e7ce46125b84593bc3255f0d9268cedf0ad3c89c9cb17637ccddb"
+    },
+    {
+      "path": "projects/game-math-polar-2d/script/narration.en.json",
+      "sha256": "0b4929d0028d446f363dc23383b7e336e94317eb1042bbf44c8be21a3dfa8dc8"
+    },
+    {
+      "path": "projects/game-math-polar-2d/planning/outline.md",
+      "sha256": "5f28d403024340015ddb84b70656ebc626ef8eb21d746ee3936346df28646c88"
+    },
+    {
+      "path": "projects/game-math-polar-2d/sources/SOURCES.md",
+      "sha256": "880a6a61e15b797d72b98c52c94dc31fc7dfe28766bc81180a9109215c1b418b"
+    },
+    {
+      "path": "projects/game-math-polar-2d/README.md",
+      "sha256": "f9c23d017e61c15b22dbda3b5fa61d23e9366dace800897a33910f42658579d2"
+    },
+    {
+      "path": "projects/game-math-polar-sample/project.json",
+      "sha256": "e80df32b6fcd9b4dff0ad1b48a1001ce1793197fa6b9655d6c4a47452423930b"
+    },
+    {
+      "path": "projects/game-math-polar-sample/script/narration.ko.json",
+      "sha256": "4bec149f1adaad57cb45e59ca198710411acf32dc93207e2f8b985bc320d7f1d"
+    },
+    {
+      "path": "projects/game-math-polar-sample/script/narration.en.json",
+      "sha256": "9cb537cde499b389bfa55bc8c2b88ed2b7a0bc8d4479d93d10ebde610f4df6c4"
+    },
+    {
+      "path": "projects/game-math-polar-sample/planning/outline.md",
+      "sha256": "4203dea801166cc331364b00e8e7142edbf39c12abbd73771e30a269332c8d35"
+    },
+    {
+      "path": "projects/game-math-polar-sample/sources/SOURCES.md",
+      "sha256": "fc13d960d0790aa171f135aabd447c8fd4640ca4dd23ead5de0bbc922b032a39"
+    },
+    {
+      "path": "projects/game-math-polar-sample/README.md",
+      "sha256": "3d0420dbf8f1d6e5ee0037fb968ca8469a7726c3df0f0f8a965f50279cdbbc3a"
+    },
+    {
+      "path": "projects/game-reward-planning/project.json",
+      "sha256": "5d15ed87703c124194e81fa7f220ab77687fda3312025011743f207f2f14b54a"
+    },
+    {
+      "path": "projects/game-reward-planning/script/narration.ko.json",
+      "sha256": "bc21be04fd5596ffd01d7ce43529e1aec87439a2297d1657082729af7dfd9234"
+    },
+    {
+      "path": "projects/game-reward-planning/script/narration.en.json",
+      "sha256": "00b135200306c3ef60828899642686e1a246cf51c9a27b29403ceaf14ead01f0"
+    },
+    {
+      "path": "projects/game-reward-planning/planning/outline.md",
+      "sha256": "f120db78d127571fc1e3e10edc66ee718d519cd2de7664b602355ae51616d7d6"
+    },
+    {
+      "path": "projects/game-reward-planning/sources/SOURCES.md",
+      "sha256": "3eafc66dc4718b4a7673bf585d046048222fcade5a55ee3a39007254191270fd"
+    },
+    {
+      "path": "projects/game-reward-planning/README.md",
+      "sha256": "e929557bafd924a9b0dd543ef110f211b494089cf97e5d72dde941562d126c1e"
+    },
+    {
+      "path": "projects/game-reward-planning/publishing/youtube-upload.json",
+      "sha256": "102aa9dd2ed5c16386e570d271367393979fb25ef80b544233f37c5f0809ff11"
+    },
+    {
+      "path": "projects/game-writing/project.json",
+      "sha256": "04e93d38e5187ad6026e3e4aa335c939e7273da0e9d4a511a38991bbf1b1fe34"
+    },
+    {
+      "path": "projects/game-writing/script/narration.ko.json",
+      "sha256": "c83f0ebab12646458fbf8196cd1a0664089fc92078013416290278a6950507da"
+    },
+    {
+      "path": "projects/game-writing/script/final-v1.ko.json",
+      "sha256": "a15b65e83cb5779751272c04bff045903ce0f6df9ea59b32ffad009ddd4c6671"
+    },
+    {
+      "path": "projects/game-writing/script/narration.en.json",
+      "sha256": "ff284dd1dfc4b21347c44f847e6b8addfaf0a6031ac5b03ba9b3c9669ea30e69"
+    },
+    {
+      "path": "projects/game-writing/script/final-v1.en.json",
+      "sha256": "e9551e09307400edddb6c6f42e6437f34492c0785a09b9713e69ae2eff8be98b"
+    },
+    {
+      "path": "projects/game-writing/planning/outline.md",
+      "sha256": "5c3b22c1b3a052f5ccd70a5d2adb163a03f8046a7d9a105911685c4bb2c240c6"
+    },
+    {
+      "path": "projects/game-writing/sources/SOURCES.md",
+      "sha256": "748c3dfb7fc940574cd545bf64f97cbd269aab3e998163d7cc418437effd6fea"
+    },
+    {
+      "path": "projects/game-writing/README.md",
+      "sha256": "7c171ee305df8ed274f47a23c6fe8dbda34a01e934bb977ed1f482f82fc03913"
+    },
+    {
+      "path": "projects/game-writing/publishing/youtube-upload.json",
+      "sha256": "df0cfc446e462d551de5815359b0ff50ab180bbfc735fda1469bb21bc0d87bfd"
+    },
+    {
+      "path": "projects/game-writing/publishing/youtube-upload-captioned.json",
+      "sha256": "e3b0d8652b3e8b13db83d5a03f2835be9d1ac2bedb235a1ed8744e975a52bf7d"
+    },
+    {
+      "path": "projects/gpt-astra-showcase/project.json",
+      "sha256": "16746583ab88c74747aee34e48cc62f40de76f99d9e2f878654f195879b2b4b8"
+    },
+    {
+      "path": "projects/gpt-astra-showcase/script/narration.ko.json",
+      "sha256": "e824ef620dad1a6cb5919060110e7e229a8205ff11227efb53c29cf742425080"
+    },
+    {
+      "path": "projects/gpt-astra-showcase/script/narration.en.json",
+      "sha256": "a453f6b7a1a2f69a232867e57cda7dfdef1fed269fbbb1dbb4e20bc3646489bf"
+    },
+    {
+      "path": "projects/gpt-astra-showcase/planning/outline.md",
+      "sha256": "a6b1d1a399af3f1428a23ec11eea6fe4bf529d97aabc3663b563707816c31584"
+    },
+    {
+      "path": "projects/gpt-astra-showcase/sources/SOURCES.md",
+      "sha256": "78f07b6af1790850998e14af0e4d9fcad261fa426a210b7d2761b6e130070014"
+    },
+    {
+      "path": "projects/gpt-astra-showcase/README.md",
+      "sha256": "8662faa0ff8bcd467ee059921ebd41ab4b6327fd692e5c82ac4dc297e1748ecf"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/project.json",
+      "sha256": "a9a8355290054fb592786c199c0dbfb47246d3f223f256ce41fcbf04540dbdcb"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/script/narration.ko.json",
+      "sha256": "b129beab99e41dea9af38c2a860137b88539265b8c1cc5d45d6aabdd223f525d"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/script/narration.en.json",
+      "sha256": "3c87d47f3347fde14b2f2cf753242e364cefa7c63aa7168289dd09403a963d18"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/planning/outline.md",
+      "sha256": "a588a71c9dccd4d181a63f109fbbb6fbfc452fb190f100d03c985c1939d68f53"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/sources/SOURCES.md",
+      "sha256": "583b25ddcbbe76d3085aecabb2cd67e4f16c2e4d900d3a420e2a72c619326e5b"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/README.md",
+      "sha256": "de6a5eae6a161764b931c890ac9f41f882fbae1f4a86a2ec8f57f514ce542804"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/publishing/youtube-upload.json",
+      "sha256": "6f645180367b68f1cc65cb13d997026f224fd50f0e25664a64f6100af4e2d307"
+    },
+    {
+      "path": "projects/jump-physics/project.json",
+      "sha256": "c72cc38f7545d4edbd70ef2f61ad74ca48f9a15ff5aa3bbc7d3665c4dc7973d3"
+    },
+    {
+      "path": "projects/jump-physics/script/narration.ko.json",
+      "sha256": "dcd20f1a9a55c38f317edccc8dac1821c885226b670cd15082b86729c66d8637"
+    },
+    {
+      "path": "projects/jump-physics/README.md",
+      "sha256": "33005851b4e1fff9430a55a1ba83685a55a604723a56cd6b41f97111cf875878"
+    },
+    {
+      "path": "projects/let-them-play/project.json",
+      "sha256": "5ba7ef71e87b07335698b9a0927587a5525d87c6258ba7f47f7dcdc3555a23d3"
+    },
+    {
+      "path": "projects/let-them-play/script/narration.ko.json",
+      "sha256": "427e061e2925999c9630f4a3ef01333aa6b18cfd01a7d5b043637e9f4e74522f"
+    },
+    {
+      "path": "projects/let-them-play/script/narration.en.json",
+      "sha256": "e370170827254472eb77954fe8131469055ea5b999bbc60c2631c8150aa7a71e"
+    },
+    {
+      "path": "projects/let-them-play/planning/outline.md",
+      "sha256": "0b24fbf092dda1b194aa4f1f6cd1df71e0a3ed713a4d4d6f9891a2a064c003d7"
+    },
+    {
+      "path": "projects/let-them-play/sources/SOURCES.md",
+      "sha256": "cab49dcb8a41c255eed573c2aa1de2d8ab9920bf8baf3e9e8dea2c53e4fc3ae0"
+    },
+    {
+      "path": "projects/let-them-play/README.md",
+      "sha256": "186e0362c352743f5a6772113e6c48caf819cb7a6032d35655e3ab7cb0b9b199"
+    },
+    {
+      "path": "projects/meaningful-quests/project.json",
+      "sha256": "6b6de1d295c3fc5b34676b512866adc50b3ae24c318f920f1a33a8860a0475db"
+    },
+    {
+      "path": "projects/meaningful-quests/script/narration.ko.json",
+      "sha256": "c92a7f3ddffe08d70b7691241db0f5fdd71f2a589086b1b33c65042163510b6e"
+    },
+    {
+      "path": "projects/meaningful-quests/production/final-v2/script.ko.json",
+      "sha256": "cf6e37c53ae1f37e0a057da5f8e1e216035dff7acfae890940cfbc8edefa86f8"
+    },
+    {
+      "path": "projects/meaningful-quests/script/narration.en.json",
+      "sha256": "fd93e3598ac0abd496346ba25992946dc70008ad46f85d2d963ce44688432cad"
+    },
+    {
+      "path": "projects/meaningful-quests/production/final-v2/script.en.json",
+      "sha256": "e20c849b0fd51a8ce99e8837bfa034905b63bc87e35f35b64ba113eca12b159e"
+    },
+    {
+      "path": "projects/meaningful-quests/planning/outline.md",
+      "sha256": "96524d706820655d8e1389128065a9415ca7325a7efb8e5f4a986131acc004bd"
+    },
+    {
+      "path": "projects/meaningful-quests/sources/SOURCES.md",
+      "sha256": "87897eef47e67b740c3b98bd4a74ab28fafd02adcbbd7811d2bb21fa58085461"
+    },
+    {
+      "path": "projects/meaningful-quests/README.md",
+      "sha256": "7ed13ca3c15a1bd3f278d1911b7d27c139c50ed059370319f60e0e16d9004971"
+    },
+    {
+      "path": "projects/meaningful-quests/publishing/youtube-upload.json",
+      "sha256": "e6e72389f31497c1a9d3a0efd8ebaf55a8aedf717a944c5964c162f2131c49c3"
+    },
+    {
+      "path": "projects/meaningful-quests/publishing/youtube-upload-v2.json",
+      "sha256": "f26576dd1ad6b1ae0b991a6fed5c2ae383cabe84c0f10cd4255645b6c57c9ad1"
+    },
+    {
+      "path": "projects/motion-sickness-games/project.json",
+      "sha256": "c17e2792ac5a60253d764d266814f207560d3a696b2483114e90341e4061d52a"
+    },
+    {
+      "path": "projects/motion-sickness-games/script/narration.ko.json",
+      "sha256": "b6f0dd21d015fb101049efafbab0dd87e9d51d3791f73afe02f805dffd539239"
+    },
+    {
+      "path": "projects/motion-sickness-games/script/narration.en.json",
+      "sha256": "2475f26d10d2270345711a9bdafa3cb7c28406efc0182ca246ba649b3576f81a"
+    },
+    {
+      "path": "projects/motion-sickness-games/planning/outline.md",
+      "sha256": "09c11f7a7cfacedfc0cdc96daeafe7e8e6889708bc3a6d84f5ba8ec55710b240"
+    },
+    {
+      "path": "projects/motion-sickness-games/sources/SOURCES.md",
+      "sha256": "c269327c730364b34f821cb1d2483f2b3036706ce79e62d23c645cf79e05b29b"
+    },
+    {
+      "path": "projects/motion-sickness-games/README.md",
+      "sha256": "57e3928daab281b4b12e86a5d3fb9049cffc3f567a895a4efd1598ee5f7c547b"
+    },
+    {
+      "path": "projects/motion-sickness-games/publishing/youtube-upload.json",
+      "sha256": "445e28190eb678e71eba59997a867101def19d7740c3143bf7662ea0cfc56b75"
+    },
+    {
+      "path": "projects/one-button-game-design/project.json",
+      "sha256": "cb6d528223352f1edff235ab4dc587dadca885bdb882c1d9340bb86754c36378"
+    },
+    {
+      "path": "projects/one-button-game-design/script/narration.ko.json",
+      "sha256": "e4ebed43c9ed92770f68284a36c2906f9be43155aa26b0e77b93a17642b1a4a0"
+    },
+    {
+      "path": "projects/one-button-game-design/script/narration.en.json",
+      "sha256": "6eaf7383dbc8e850587d38c1f7d345468b0d519107b154ea5dbe7b7f5ef0a86f"
+    },
+    {
+      "path": "projects/one-button-game-design/planning/outline.md",
+      "sha256": "99f3e78711bdfa9813e111871a033e60c6c60d0268b1afd96166c5afa474085a"
+    },
+    {
+      "path": "projects/one-button-game-design/sources/SOURCES.md",
+      "sha256": "edd7d6968b575c05b1a01902c1669e1052d31b1a07722c35dae0b0b4dbd5a3e2"
+    },
+    {
+      "path": "projects/one-button-game-design/README.md",
+      "sha256": "0f2d04da1319e361aa231a3e276163742733581ca5dcbb304bf7f6a4a473c781"
+    },
+    {
+      "path": "projects/one-button-game-design/publishing/youtube-upload.json",
+      "sha256": "0dd4916e823fec6a400517ae2df993211200d65e22213b1078a0bb01f3c35826"
+    },
+    {
+      "path": "projects/picking-sides/project.json",
+      "sha256": "d883ad92d24272a8635d2eac3a2b7e12766e6e0d8bb8d747bf85f5bbf171832d"
+    },
+    {
+      "path": "projects/picking-sides/script/narration.ko.json",
+      "sha256": "f4d71ffbd2a3948e2e6c01775070d1169972524a0ea372f96893a5acdaedd7be"
+    },
+    {
+      "path": "projects/picking-sides/script/narration.en.json",
+      "sha256": "a6b3f773e17152ceb09348d9ed21743efb4fc1ce71a418823ca834e6d2db1790"
+    },
+    {
+      "path": "projects/picking-sides/planning/outline.md",
+      "sha256": "abc42c35d639032d27241b6ed94be79f7f9a55392347e156997f41d719d212f6"
+    },
+    {
+      "path": "projects/picking-sides/sources/SOURCES.md",
+      "sha256": "e0bae7be36a1eec5a1690f1bcdeb01be8dea3f7ab49af263686df7c72b2f610f"
+    },
+    {
+      "path": "projects/picking-sides/README.md",
+      "sha256": "a38d281389d98c82cf6eb5793be608805312f756d2347dae37900d45efc8f5e5"
+    },
+    {
+      "path": "projects/picking-sides/publishing/youtube-upload.json",
+      "sha256": "466b50360c4c904559a88813862a4dff6dc94ee27c91ac6516ca836e2ae5078a"
+    },
+    {
+      "path": "projects/play-first/project.json",
+      "sha256": "8d90d38ee5d85e6d131d17db8238a72449f23b06315a3d489266ec737d1dba33"
+    },
+    {
+      "path": "projects/play-first/script/narration.ko.json",
+      "sha256": "e5a5bf471bdca3d2f7ff5987d6b0b293dbcaf1adbb99fde2dadd22b3a8a2b580"
+    },
+    {
+      "path": "projects/play-first/script/narration.en.json",
+      "sha256": "3d15165f3474317b86d827d094ad8a5040ab0d3b65500acf972c2aa5c09e3250"
+    },
+    {
+      "path": "projects/play-first/planning/outline.md",
+      "sha256": "adc3efd27d962f1135f58e8d8df1e6a2eda8f76a7fdd85ce91570c0767a1eb45"
+    },
+    {
+      "path": "projects/play-first/sources/SOURCES.md",
+      "sha256": "228a80772787ee68cb5eb01a9bd2be987b451301534dadd47910dd1c1c1c274a"
+    },
+    {
+      "path": "projects/play-first/README.md",
+      "sha256": "d842eb5c82255f2237a164dda40012ebafd92fa7ada52832f7c1aa9b631a4a30"
+    },
+    {
+      "path": "projects/praise-player/project.json",
+      "sha256": "a4e48298cde954b20304abe6156dc67b8ee82f7c437f3ddbba8748492645c973"
+    },
+    {
+      "path": "projects/praise-player/script/narration.ko.json",
+      "sha256": "d3dfdb6950c8a58a1cb700b9cda8d0175202ba68784fecc9d94aec0de857ea2d"
+    },
+    {
+      "path": "projects/praise-player/production/final-v2/script.ko.json",
+      "sha256": "0dcfc23855d2137f7570c030385e2f188debfc8674e3d4d0e7851a713f87a577"
+    },
+    {
+      "path": "projects/praise-player/script/narration.en.json",
+      "sha256": "85d59f99ce8faea15eb035525a57702325fadc66b97b11eed21eae53c588364d"
+    },
+    {
+      "path": "projects/praise-player/production/final-v2/script.en.json",
+      "sha256": "38cf1d0a19d81aa875f0d61be2ade4ded673a0b3db3a7262888fdc3c897a73b3"
+    },
+    {
+      "path": "projects/praise-player/planning/outline.md",
+      "sha256": "93a123063fa07b8d46e4efb8bab48c6c1f85f3ae043108afd7481aa3cb4b4c87"
+    },
+    {
+      "path": "projects/praise-player/sources/SOURCES.md",
+      "sha256": "95853df61b71d9f4f745da82cf4c9bc257de335e0a3ad7fdb74ef2f4aac9c744"
+    },
+    {
+      "path": "projects/praise-player/README.md",
+      "sha256": "107c30a2811df87992191bc251de8b717261f3fdd390240699d9b1ab763f5873"
+    },
+    {
+      "path": "projects/praise-player/publishing/youtube-upload.json",
+      "sha256": "56ef3954558c2719b8287fbdfe4fd41f0cfe8b3ab3997859e304017bf44fab58"
+    },
+    {
+      "path": "projects/praise-player/publishing/youtube-upload-v2.json",
+      "sha256": "dd051c5c63452d9b98c0d713b28f42dae74af2300967cc9d97c143c55e1244de"
+    },
+    {
+      "path": "projects/renderformer-explained/project.json",
+      "sha256": "cc7c7c1a71822c0c154212fcffbb8911bc1495407d70a4cf1f18df413e81f19a"
+    },
+    {
+      "path": "projects/renderformer-explained/script/narration.ko.json",
+      "sha256": "baf0575d493cf11ad47cbfeefae9766687517ee35739493fb13db5753a12636d"
+    },
+    {
+      "path": "projects/renderformer-explained/sources/SOURCES.md",
+      "sha256": "8520d3b4ff6bc55e0a7fd3707edd48a04f4038552bcf424a3fd81a0408854a1d"
+    },
+    {
+      "path": "projects/renderformer-explained/README.md",
+      "sha256": "5414ac3e4a1d354c77c2721bb47d3eff88b83c9d65b6579c2af239817ee27149"
+    },
+    {
+      "path": "projects/responsive-game-feedback/project.json",
+      "sha256": "45b0e138c4cfc87073a2b5de9b699477cab35449177108e493694727e74d22c1"
+    },
+    {
+      "path": "projects/responsive-game-feedback/script/narration.ko.json",
+      "sha256": "9bb61c59e7d88eea8259f6b787a6b56a04c0b6682b9504cd24728cad79a118cb"
+    },
+    {
+      "path": "projects/responsive-game-feedback/production/final-v2/script.ko.json",
+      "sha256": "d3e64dd68a2756738b738c738d9033f3b759171864ec6a71d3c8068dd416ee3c"
+    },
+    {
+      "path": "projects/responsive-game-feedback/script/narration.en.json",
+      "sha256": "2e7e5b6c1e906a576084f88743ffa41b20529914099a590454e884c3184bb293"
+    },
+    {
+      "path": "projects/responsive-game-feedback/production/final-v2/script.en.json",
+      "sha256": "df5c000cbe528777e357b9d8628f96e87cfdbeb44375be94237d44c0de76ecf0"
+    },
+    {
+      "path": "projects/responsive-game-feedback/planning/outline.md",
+      "sha256": "cdefd84696d5095759c251076790f0f178c0416c902238f027d4d546617bc2f9"
+    },
+    {
+      "path": "projects/responsive-game-feedback/sources/SOURCES.md",
+      "sha256": "e9a402f2281b25881791ef8ed0a6ee83e8f971a10106bae305993eca0fb8b086"
+    },
+    {
+      "path": "projects/responsive-game-feedback/README.md",
+      "sha256": "0d14a288f12132ae85a352ccf315797d9b65ada9ced7326fcb17c7b40a45c902"
+    },
+    {
+      "path": "projects/responsive-game-feedback/publishing/youtube-upload.json",
+      "sha256": "438843ad72d329a220e1edde5e08aa7bbecf0c07bf4f7d67ee1e796587003c91"
+    },
+    {
+      "path": "projects/responsive-game-feedback/publishing/youtube-upload-v2.json",
+      "sha256": "9f5ba016ddb576169ca1e381998e87dc33ff77b407ef7d7072a6380dc507ae7d"
+    },
+    {
+      "path": "projects/small-window-game-design/project.json",
+      "sha256": "0217e73f0b8ec93be3dc07ada6ee3a9c5677f47aa37960cf34785fd1f289f742"
+    },
+    {
+      "path": "projects/small-window-game-design/script/narration.ko.json",
+      "sha256": "e59ca460ddd88034987cc298a8269cf53260d146baef1fa83500d8cc117b3969"
+    },
+    {
+      "path": "projects/small-window-game-design/script/narration.en.json",
+      "sha256": "6c7ebe958f8052ddbac6b2082dc9ff2d83ee97d3b8e8a193ce43c9a665876061"
+    },
+    {
+      "path": "projects/small-window-game-design/planning/outline.md",
+      "sha256": "7cb8ce4dbf3c0ffd3533bb93078472ade38dc24862607e5a96a6e431c133a469"
+    },
+    {
+      "path": "projects/small-window-game-design/sources/SOURCES.md",
+      "sha256": "61c165ec1ccb342c287f7efb87346b3a94faa4691673ab0b4b12d8869562939c"
+    },
+    {
+      "path": "projects/small-window-game-design/README.md",
+      "sha256": "70a1d75e37547771014e055ba3a371c27585de28337cb08454e466e607b7e0ef"
+    },
+    {
+      "path": "projects/visible-rewards/project.json",
+      "sha256": "94281dfe7366f64117012748d7a21ac505a216982b1fad8de65b261d645f9fc0"
+    },
+    {
+      "path": "projects/visible-rewards/script/narration.ko.json",
+      "sha256": "16d79f57c21263a266c6673bb151eba2f4712047932046885899b20ac5969eb7"
+    },
+    {
+      "path": "projects/visible-rewards/script/narration.en.json",
+      "sha256": "1b1795947447c93c1ed11eac4abf6d7892c5988d116fef30fb084b2e9030b3d0"
+    },
+    {
+      "path": "projects/visible-rewards/planning/outline.md",
+      "sha256": "ecda72db0d05de31efd4e327469df69026f69b872afe65663de5908fb13dd372"
+    },
+    {
+      "path": "projects/visible-rewards/sources/SOURCES.md",
+      "sha256": "cf26b1bf3d6c6d85f67b8aed8d6cf6ad041569e62881645e1b3c3a964b3a634e"
+    },
+    {
+      "path": "projects/visible-rewards/README.md",
+      "sha256": "340b23a9e1ff484f3283be7d1a711c90ded179ef3a0c62ea2f505a2ab57bdf00"
+    },
+    {
+      "path": "projects/yamyam-dx12-frame-sync/project.json",
+      "sha256": "ee944e732b7562df6d9a3f552c0515b3eb1d2b4782634f7859aec46581d7451c"
+    },
+    {
+      "path": "projects/yamyam-dx12-frame-sync/script/narration.ko.json",
+      "sha256": "f60cc1ed9222d3644aec125fe53b2df1074aec8000a0adb088702d374fca001e"
+    },
+    {
+      "path": "projects/yamyam-dx12-frame-sync/planning/outline.md",
+      "sha256": "6a1a6c076956722f6b05aa6fcfdaca2592695761b8c556bde16867d50fb3f629"
+    },
+    {
+      "path": "projects/yamyam-dx12-frame-sync/sources/SOURCES.md",
+      "sha256": "472bb34ba677a1e1ff5ac34bd2c54be7842a67172aa711279041b653eacf23e1"
+    },
+    {
+      "path": "projects/yamyam-dx12-frame-sync/README.md",
+      "sha256": "b0d7bbcce4bac308842aac5820512106e9c5ebb5cd3ec95aea71e70a31c85f52"
+    },
+    {
+      "path": "projects/yamyam-dx12-pso-composition/project.json",
+      "sha256": "ffcfbba494bff3801a5c45c33e0ad09928191f79aaed29f366979aba6ff0ffbd"
+    },
+    {
+      "path": "projects/yamyam-dx12-pso-composition/script/narration.ko.json",
+      "sha256": "1b10c63886cc8b0376579ef744289f21000c6e029cc50aefcdfccd5c17053f0f"
+    },
+    {
+      "path": "projects/yamyam-dx12-pso-composition/planning/outline.md",
+      "sha256": "7d4a058a519166df4c014da943cbf750475931d21b6d5048dc17d6d147356fda"
+    },
+    {
+      "path": "projects/yamyam-dx12-pso-composition/sources/SOURCES.md",
+      "sha256": "d2a45a21a6c50fa631e1561e70513671b8c27ecbaa49a9530dd41383ad7154a8"
+    },
+    {
+      "path": "projects/yamyam-dx12-pso-composition/README.md",
+      "sha256": "c2c2621d2dbe97469e50c0fcf46aec79d7e4590a7c9f4d68230205367f93b091"
+    },
+    {
+      "path": "projects/yamyam-dx12-rendering/project.json",
+      "sha256": "15b2a65883e42999eab093bb36dbf8a3d2483a4bf9d4f61e9641d1e59fc7cf91"
+    },
+    {
+      "path": "projects/yamyam-dx12-rendering/script/narration.ko.json",
+      "sha256": "9db18af62b90f10be8b7af4e40dfd08bae0bcff34c14f9cdf74653a8dda999a9"
+    },
+    {
+      "path": "projects/yamyam-dx12-rendering/script/narration.en.json",
+      "sha256": "fb16e4ce1c1c8092f32e4697e25691d2c6fb515992c4252465ba301571da2b19"
+    },
+    {
+      "path": "projects/yamyam-dx12-rendering/planning/outline.md",
+      "sha256": "a5e06d41bc40ad0b3f06f30e98f68a30e206838e79853588a4ca5bd690e29202"
+    },
+    {
+      "path": "projects/yamyam-dx12-rendering/sources/SOURCES.md",
+      "sha256": "bb0f2b89e825975e9b43b0d7f0ad0cf41b8d686eb2aa0486157ca69e0bfadab0"
+    },
+    {
+      "path": "projects/yamyam-dx12-rendering/README.md",
+      "sha256": "4a71863eb5e241e6bd4d780123e5443215b39fc652f8ac67b45891ca5299a389"
+    },
+    {
+      "path": "projects/yamyam-dx12-texture-views/project.json",
+      "sha256": "b06b3665696386baf9535b531a31a22be82b4cb3774ecc6d23c2dde35d970b01"
+    },
+    {
+      "path": "projects/yamyam-dx12-texture-views/script/narration.ko.json",
+      "sha256": "dad09c72053bdd43c89ef365d38cd61d99a03389d21acfbbfbe52e89edc9539f"
+    },
+    {
+      "path": "projects/yamyam-dx12-texture-views/planning/outline.md",
+      "sha256": "976fe203f395bcfe86ed7456115dc1a34a518969b2d306a47f55c1d1026052b0"
+    },
+    {
+      "path": "projects/yamyam-dx12-texture-views/sources/SOURCES.md",
+      "sha256": "5fe96be94038a7a2a7d6546c308e765a866f4ba065f7398fc5df40fbdf37956c"
+    },
+    {
+      "path": "projects/yamyam-dx12-texture-views/README.md",
+      "sha256": "04da867692b04b24e694c4ff0590183f435f4f57b764ff6397504f488e072c43"
+    }
+  ],
+  "existingProjects": [
+    {
+      "slug": "ai-era-cs-fundamentals",
+      "status": "narration-review",
+      "titles": {
+        "ko": "AI 시대, 컴공생은 무엇을 공부해야 할까?",
+        "en": "What Should CS Students Learn in the AI Era?"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "공부하러 앉았는데, 진로부터 다시 고민",
+        "회사에서는 다 알고 있을까?",
+        "고쳐 달랬더니, 다른 데가 고장 났다",
+        "기초가 중요하다는데, 그걸 언제 다 해요?",
+        "포트폴리오는 멋진데, 왜 이 기술을 썼죠?",
+        "시험장에서는 왜 첫 줄부터 안 나올까?",
+        "작은 게임 하나가 생각보다 만만하지 않다",
+        "왜 하필 거길 눌러? 그게 테스트입니다",
+        "월급보다 먼저 나가는 AI 사용료",
+        "거의 다 됐는데, 왜 일이 안 끝날까?",
+        "선배님은 이미 취업하셨잖아요",
+        "내가 끝낸 작은 일은 남습니다"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "AI 시대, 컴공생은 무엇을 공부해야 할까?",
+      "scriptPath": "projects/ai-era-cs-fundamentals/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/ai-era-cs-fundamentals/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "blank-project-coding",
+      "status": "deduplicated-v3-private-upload-complete",
+      "titles": {
+        "ko": "AI 시대, 신입 개발자가 취업하기 어려운 진짜 이유",
+        "en": "Why Junior Developers Struggle to Get Hired in the AI Era"
+      },
+      "videoId": "kClLWbhpojg",
+      "sceneTitles": [
+        "강의를 따라 만들었는데, 혼자서는 왜 막힐까?",
+        "대학교 1·2학년이라면, 백지에서 시작해보세요",
+        "따라 치는 공부도 필요합니다",
+        "읽어서 이해하는 시간과 만들어내는 시간을 나누세요",
+        "Linked List를 공부했다면, 정답을 닫으세요",
+        "첫 줄보다 먼저, 필요한 것부터 정하세요",
+        "노드 두 개를 만들고, 실제로 연결해보기",
+        "중간에 하나 넣으려면, 무엇을 바꿔야 할까?",
+        "삽입한 뒤에는 연결을 직접 확인하세요",
+        "삭제와 경계 조건까지 스스로 결정해보기",
+        "막힌 곳이 다음 공부할 자리입니다",
+        "테트리스 강의가 끝났다면, 새 프로젝트를 여세요",
+        "테트리스 전체를 한 번에 만들지 마세요",
+        "보드와 블록을 만들고, 입력 하나를 연결하기",
+        "움직이기 전에, 후보 위치를 검사하세요",
+        "벽과 쌓인 블록 앞에서 직접 눌러보기",
+        "회전도 하나의 판단 문제입니다",
+        "회전은 됐는데, 벽 옆에서도 될까?",
+        "줄 삭제를 붙이면, 순서의 의미가 보입니다",
+        "코드를 읽는 것과 만들어내는 것은 다릅니다",
+        "외운 코드인지, 원리를 사용할 수 있는지 확인하기",
+        "영어 회화로 생각해보면 쉽습니다",
+        "한 기능을, 내 말에서 내 코드로 옮겨보기",
+        "막히는 것이 공부입니다",
+        "벽을 넘는 버그를 중단점으로 추적하기",
+        "가설 하나를 고치고, 같은 입력으로 다시 확인하기",
+        "필요한 힌트를 받고, 다시 정답을 닫으세요",
+        "질문도 구체적으로 만들고, 답 없이 다시 해보기",
+        "1·2학년과 3·4학년의 AI 사용을 다르게 보는 이유",
+        "구조를 정한 뒤 AI의 도움을 받아보기",
+        "목표는 도구 없이 버티는 개발자가 아닙니다",
+        "다른 작은 게임에서도, 내 순서를 만들어보세요",
+        "혼자 막히는 지점부터, 얌얌코딩 코칭으로 연결하기",
+        "오늘은 빈 프로젝트에서 직접 시작해보세요",
+        "AI 시대, 신입 개발자가 취업하기 어려운 진짜 이유",
+        "정말 AI 때문에 개발자 취업이 어려워진 걸까?",
+        "우리는 정말 코딩을 할 수 있을까?",
+        "코딩은 영어 회화와 비슷합니다",
+        "코딩은 지식이면서 동시에 숙련입니다",
+        "그런데 AI가 이 과정을 건너뛸 수 있게 만들었습니다",
+        "AI를 사용해야만 개발할 수 있는 사람도 회사에서 뽑을 가치가 있지 않을까?",
+        "중요한 것은 AI 없이 코딩하는 능력이 아닙니다",
+        "그런데 여기서 회사 입장에서 냉정한 질문이 하나 생깁니다",
+        "특히 한국 게임업계에서는 이 문제가 더 중요합니다",
+        "게임 하나를 만드는 것과 라이브 게임을 개발하는 것은 다릅니다",
+        "여기서 AI에 완전히 의존하는 개발자의 약점이 나타날 수 있습니다",
+        "그렇다면 회사는 누구를 뽑고 싶을까요?",
+        "그리고 저는 이것이 신입 취업난의 중요한 부분이라고 생각합니다",
+        "대학교 1, 2학년이라면 백지에서 시작해보세요",
+        "공부한 다음에는 정답을 닫으세요",
+        "테트리스도 똑같습니다",
+        "코드를 읽는 것과 코드를 생성하는 것은 다릅니다",
+        "영어 회화로 다시 생각해보면 쉽습니다",
+        "그래서 저는 1, 2학년과 3, 4학년의 AI 사용을 다르게 봅니다",
+        "결과적으로 목표는 이것입니다",
+        "얌얌코딩 프로그래밍 코칭·과외"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "AI 시대, 신입 개발자가 취업하기 어려운 진짜 이유",
+      "scriptPath": "projects/blank-project-coding/revisions/deduplicated-v3/narration.ko.json",
+      "scriptPaths": [
+        "projects/blank-project-coding/script/narration.ko.json",
+        "projects/blank-project-coding/revisions/deduplicated-v3/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "choice-driven-classics",
+      "status": "bgm-review-ready-awaiting-voice-and-result-screen",
+      "titles": {
+        "ko": "내 선택으로 결말이 달라지는 세계 고전 소설",
+        "en": "World Classics, New Endings Through Your Choices"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "도입",
+        "본론",
+        "선택의 결과",
+        "작가 중심의 제작",
+        "작품별 출간",
+        "첫 데모를 향해"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "내 선택으로 결말이 달라지는 세계 고전 소설",
+      "scriptPath": "projects/choice-driven-classics/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/choice-driven-classics/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "counting-animation-frames",
+      "status": "rendered-awaiting-user-review",
+      "titles": {
+        "ko": "게임 애니메이션 프레임 세기 | 격투게임으로 이해하는 손맛 설계",
+        "en": "Count Animation Frames | Understand Game Feel with Fighting Games"
+      },
+      "videoId": "NcnZoofzGNk",
+      "sceneTitles": [
+        "느낌을 시간으로 옮기기",
+        "프레임 수에는 기준 속도가 필요하다",
+        "동작의 어느 구간을 재는가",
+        "그림 시계와 판정 시계",
+        "멈춤은 어느 시계에 더해지는가",
+        "눈으로 찾고 로그로 확인하기",
+        "실제 공격에서 관찰할 세 순간",
+        "동작이 달라도 같은 시간 눈금으로 보기",
+        "준비와 회복을 실제 움직임에서 나눠 보기",
+        "그림의 표현과 행동의 규칙을 구분하기",
+        "타격 순간과 그 뒤를 이어서 관찰하기",
+        "관찰을 설계 메모로 옮기는 순서"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임 애니메이션 프레임 세기 | 손맛을 시간으로 설계하는 법",
+      "scriptPath": "projects/counting-animation-frames/production/final-v3/script.ko.json",
+      "scriptPaths": [
+        "projects/counting-animation-frames/script/narration.ko.json",
+        "projects/counting-animation-frames/production/final-v3/script.ko.json"
+      ]
+    },
+    {
+      "slug": "deconstruct-analyze-rebuild",
+      "status": "rendered-awaiting-user-review",
+      "titles": {
+        "ko": "게임을 베끼지 않고 배우는 법 | 실제 게임으로 분석하는 3단계",
+        "en": "How to Learn from Games Without Copying Them | Observe, Test and Rebuild"
+      },
+      "videoId": "pY04E8aRvJQ",
+      "sceneTitles": [
+        "같이 만들어도 느낌이 다른 이유",
+        "먼저 한 번의 행동을 잘라 보자",
+        "좋아 보이는 이유를 조건으로 적자",
+        "하나를 빼면 무엇이 달라질까",
+        "남길 판단을 골라 새 규칙으로 묶자",
+        "기능 목록보다 플레이 기록을 남기자",
+        "기능이 같은데 판단이 다른 장면",
+        "실제 플레이에서 한 번의 행동을 고르기",
+        "관찰을 확인할 질문으로 바꾸기",
+        "상용 사례와 통제한 테스트를 연결하기",
+        "판단을 남기고 상황을 바꿔 보기",
+        "한 장면을 설계 기록으로 남기기"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임을 베끼지 않고 배우는 법 | 재미를 분석하는 3단계",
+      "scriptPath": "projects/deconstruct-analyze-rebuild/production/final-v2/script.ko.json",
+      "scriptPaths": [
+        "projects/deconstruct-analyze-rebuild/script/narration.ko.json",
+        "projects/deconstruct-analyze-rebuild/production/final-v2/script.ko.json"
+      ]
+    },
+    {
+      "slug": "frame-rate-modern-rendering",
+      "status": "ready-to-publish",
+      "titles": {
+        "ko": "게임의 프레임 레이트는 무엇일까? 30 FPS부터 DLSS까지",
+        "en": "What Is Frame Rate in Games? From 30 FPS to DLSS"
+      },
+      "videoId": "mAO_tit6Qjs",
+      "sceneTitles": [
+        "프레임이란?",
+        "60 FPS의 의미",
+        "프레임과 게임의 시간",
+        "30 FPS와 60 FPS",
+        "프레임 예산",
+        "가변 프레임 레이트",
+        "deltaTime",
+        "120 FPS와 모니터 Hz",
+        "NTSC와 PAL",
+        "PS5 세대의 그래픽 모드",
+        "GPU가 한 프레임에 하는 일",
+        "RTX 50 시리즈와 현대 렌더링",
+        "4K의 픽셀 비용",
+        "DLSS Super Resolution",
+        "Frame Generation",
+        "DLSS 4 Multi Frame Generation",
+        "Rendered FPS와 Displayed FPS",
+        "FPS 숫자 하나만 보면 안 되는 이유",
+        "과거와 현대의 프레임 파이프라인",
+        "최종 정리"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임의 프레임 레이트는 무엇일까? 30 FPS부터 DLSS까지",
+      "scriptPath": "projects/frame-rate-modern-rendering/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/frame-rate-modern-rendering/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "game-dev-career",
+      "status": "production",
+      "titles": {
+        "ko": "게임 개발로 먹고살기 | 기획자·프로그래머·아티스트는 무슨 일을 할까?",
+        "en": "Making a Living Making Games | What Do Designers, Programmers, and Artists Do?"
+      },
+      "videoId": "7ZjcujPX_uc",
+      "sceneTitles": [
+        "게임을 만드는 사람들",
+        "한 장면을 만드는 네 가지 시선",
+        "게임 기획자 — 플레이 경험을 설계하는 사람",
+        "게임 프로그래머 — 규칙을 작동하게 만드는 사람",
+        "2D 아티스트 — 게임의 모습을 먼저 보여주는 사람",
+        "3D 아티스트 — 입체 세계를 게임 안에 세우는 사람",
+        "같은 직군 안에서도 역할은 나뉜다",
+        "게임은 역할 사이의 반복으로 완성된다",
+        "내 역할을 찾는 가장 작은 시작"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임 개발로 먹고살기 | 기획자·프로그래머·아티스트는 무슨 일을 할까?",
+      "scriptPath": "projects/game-dev-career/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/game-dev-career/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "game-math-polar-2d",
+      "status": "full-lecture-production",
+      "titles": {
+        "ko": "게임수학 Part 2 · 극좌표계 1편: 거리와 각도부터 조준까지",
+        "en": "Game Math Part 2 · Polar Coordinates 1: Distance, Angles and Aiming"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "거리와 각도로 게임의 위치 읽기",
+        "실제 관찰 · 움직이는 캐릭터와 무기",
+        "오른쪽을 보고, 돌고, 이동합니다",
+        "도와 라디안은 같은 각도의 다른 단위",
+        "실제 관찰 · 방향과 이동 거리 분리하기",
+        "좌표는 달라도 같은 점일 수 있습니다",
+        "저장할 때는 대표 표현을 정합니다",
+        "실제 관찰 · 같은 방향의 다른 숫자",
+        "극좌표에서 가로·세로로 바꾸기",
+        "돌아올 때는 atan2를 사용합니다",
+        "실제 관찰 · 조준 전에 위치를 뺍니다",
+        "회전은 각도를, 이동은 중심을 바꿉니다",
+        "실제 관찰 · 중심과 주변 물체를 함께 보기",
+        "179도에서 -179도까지는 2도입니다",
+        "실제 관찰 · 가까운 방향으로 바뀌는 공격",
+        "극좌표 벡터는 이동량을 표현합니다",
+        "실제 관찰 · 이동과 공격을 따로 읽기",
+        "직접 풀고, 다음 편으로 연결하기"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임수학 Part 2 · 극좌표계 1편: 거리와 각도부터 조준까지",
+      "scriptPath": "projects/game-math-polar-2d/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/game-math-polar-2d/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "game-math-polar-sample",
+      "status": "sample-ready-for-review",
+      "titles": {
+        "ko": "게임수학 Part 2 · 극좌표계 — 거리와 각도로 위치 표현하기",
+        "en": "Game Math Part 2 · Polar Coordinates: Position by Distance and Angle"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "거리와 각도로 위치를 말해 볼까요?",
+        "실제 사례 · 총알의 위치",
+        "한번 돌고, 앞으로 이동하기",
+        "실제 사례 · 퍼지는 탄막",
+        "거리와 각도를 x, y로 바꾸기",
+        "실제 사례 · 움직이는 중심",
+        "3D로 확장하고 핵심 정리"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임수학 Part 2 · 극좌표계",
+      "scriptPath": "projects/game-math-polar-sample/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/game-math-polar-sample/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "game-reward-planning",
+      "status": "rendered-technically-reviewed-awaiting-private-delivery",
+      "titles": {
+        "ko": "게임 보상 기획: 기능·획득 조건·제작 범위를 먼저 정하는 법",
+        "en": "Planning Game Rewards: Functions, Conditions and Production Scope"
+      },
+      "videoId": "D81WnOMytG4",
+      "sceneTitles": [
+        "많은 보상보다 먼저 정할 것",
+        "실제 행동 · 얼리기와 길 만들기",
+        "기능부터 나누는 보상 목록",
+        "실제 행동 · 재료와 연구와 제작",
+        "획득 조건은 한 줄씩 연결하기",
+        "실제 행동 · 효과가 함께 일어날 때",
+        "강화의 끝과 허용할 조합",
+        "실제 행동 · 목장 안의 여러 역할",
+        "수치 밖의 보상도 목적이 필요하다",
+        "실제 행동 · 배치와 서로 다른 효과",
+        "게임 속 비용과 제작 비용을 나누기",
+        "실제 행동 · 후보를 다시 점검하기",
+        "한 줄을 완성한 뒤 목록을 늘리기"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임 보상 기획: 강화·해금·수집을 처음부터 설계하는 법",
+      "scriptPath": "projects/game-reward-planning/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/game-reward-planning/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "game-writing",
+      "status": "rendered-awaiting-user-review",
+      "titles": {
+        "ko": "게임 시나리오 쓰는 법: 선택과 순서가 바뀌어도 말이 되게",
+        "en": "Writing Game Stories That Survive Player Choice"
+      },
+      "videoId": "AlRRtW5oz88",
+      "sceneTitles": [
+        "이야기를 읽는 순서도 플레이어가 고른다",
+        "장면 순서와 세계 상태를 분리한다",
+        "플레이어가 안다고 인물도 아는 것은 아니다",
+        "정보는 주인공·상대·세계로 나눠 기록한다",
+        "물건과 동료가 바뀌면 대사도 확인한다",
+        "과거에 얻었다와 지금 가지고 있다는 다르다",
+        "선택의 결과를 남기고 다음 장면으로 합류한다",
+        "합류해도 과거 선택을 지우지 않는다",
+        "놓친 장면 없이도 다음 행동을 이해하게 한다",
+        "필수 사실과 배경 설명을 구분한다",
+        "예쁜 문장을 읽는 대신 다른 순서로 실행한다",
+        "조건까지 적어야 플레이 가능한 대본이 된다",
+        "질문한 뒤 다시 말을 걸어 본다",
+        "회수 대신 동료를 다시 부르면",
+        "세 번째 선택의 흔적도 확인한다",
+        "끝낸 사건을 다시 요구하지 않는다"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임 시나리오 쓰는 법: 선택과 순서가 바뀌어도 말이 되게",
+      "scriptPath": "projects/game-writing/script/final-v1.ko.json",
+      "scriptPaths": [
+        "projects/game-writing/script/narration.ko.json",
+        "projects/game-writing/script/final-v1.ko.json"
+      ]
+    },
+    {
+      "slug": "gpt-astra-showcase",
+      "status": "v3-no-middle-slides-review-ready",
+      "titles": {
+        "ko": "GPT 아스트라로 만든 작품 구경하기 | 8가지 사례",
+        "en": "Let's Explore 8 Creations Made with GPT Astra"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "이런 것도 만들었네요",
+        "모닥불 옆 기사의 하루",
+        "하늘을 달리는 기차",
+        "내 방을 꾸미고 낚시까지",
+        "한 사람이 만든 네 가지 작품",
+        "캐릭터를 더 예쁘게 다듬기",
+        "만화 같은 캐릭터 표현",
+        "다른 게임의 그림체도",
+        "차를 타고 돌아다니는 도시",
+        "어떤 작품이 가장 끌리나요?"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "GPT 아스트라로 만든 작품 구경하기 | 8가지 사례",
+      "scriptPath": "projects/gpt-astra-showcase/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/gpt-astra-showcase/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "hierarchical-game-outlines",
+      "status": "rendered-QA-collected-private-saved-thumbnail-followup",
+      "titles": {
+        "ko": "게임 기획서 정리: 계층형 아웃라인으로 생각을 묶는 법",
+        "en": "Organizing Game Design Ideas with Hierarchical Outlines"
+      },
+      "videoId": "lEwpxP_qsDY",
+      "sceneTitles": [
+        "놀이기구와 메모의 크기",
+        "부모 항목은 읽는 질문",
+        "전체 놀이기구와 선로 한 조각",
+        "형제 항목의 크기를 맞추기",
+        "전체를 볼 때와 조각을 볼 때",
+        "접기는 삭제가 아닙니다",
+        "조각과 그 조각의 설명을 함께",
+        "가지 이동 뒤에는 뜻도 확인하기",
+        "포함 관계와 다른 가지의 연결",
+        "모든 관계를 나무 하나에 넣지 않기",
+        "한 조절 뒤에 전체를 다시 읽기",
+        "읽는 사람이 찾을 수 있는 기획서"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임 기획서 정리: 계층형 아웃라인으로 생각을 묶는 법",
+      "scriptPath": "projects/hierarchical-game-outlines/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/hierarchical-game-outlines/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "jump-physics",
+      "status": "complete",
+      "titles": {
+        "ko": "재미있는 점프는 어떻게 만들까? 게임 점프 물리와 조작감 분석",
+        "en": "How Do You Make Jumping Fun? An Analysis of Jump Physics and Game Feel"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "점프는 왜 중요한가",
+        "프레임마다 더해지는 중력",
+        "최고점과 낙하",
+        "가로 이동과 설계 목표",
+        "슈퍼 마리오브라더스",
+        "메트로이드",
+        "마계촌",
+        "스트리트 파이터 II",
+        "스매시브라더스의 점프 스쿼트",
+        "대난투 스매시브라더스 얼티밋",
+        "점프킹",
+        "셀레스트",
+        "록맨 X",
+        "결론"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "점프 물리: 보이지 않는 게임 디자인",
+      "scriptPath": "projects/jump-physics/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/jump-physics/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "let-them-play",
+      "status": "review-ready-editorial-v5-full-video; human-listening-pending",
+      "titles": {
+        "ko": "게임의 첫 화면은 어떻게 설계할까? | 젤다 야숨으로 보는 게임 디자인",
+        "en": "How Should a Game Begin? | Opening Design Through Zelda: Breath of the Wild"
+      },
+      "videoId": "IHKv1p_aSJ4",
+      "sceneTitles": [
+        "첫 화면은 무엇을 약속해야 할까?",
+        "내가 누구고, 어디로 가야 하지?",
+        "카메라는 무엇을 먼저 보게 할까?",
+        "처음에는 무슨 행동을 시킬까?",
+        "눌렀다는 사실보다, 무엇이 달라졌는가",
+        "첫 실패 뒤에는 무엇을 알게 될까?",
+        "설명은 언제 들어와야 할까?",
+        "첫 화면은 다음 장면을 궁금하게 해야 한다"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임의 첫 화면은 어떻게 설계할까? | 젤다 야숨으로 보는 게임 디자인",
+      "scriptPath": "projects/let-them-play/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/let-them-play/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "meaningful-quests",
+      "status": "rendered-awaiting-user-review",
+      "titles": {
+        "ko": "심부름 퀘스트는 왜 지루할까? | 실제 게임으로 보는 퀘스트 디자인",
+        "en": "Why Are Fetch Quests Boring? | Quest Design in Real Games"
+      },
+      "videoId": "lX7SXU7tMBc",
+      "sceneTitles": [
+        "심부름을 행동으로 보기",
+        "가는 길에 선택이 있는가",
+        "완료 뒤 무엇이 바뀌는가",
+        "같은 배달, 다른 세계 상태",
+        "돌아오는 길을 다시 설계하기",
+        "세 질문으로 플레이를 확인하기",
+        "작은 부탁과 탐험을 이어 보기",
+        "등반과 활공 사이의 선택",
+        "얻은 것이 다음 행동에 남는가",
+        "재료를 쓰는 행동과 화면의 변화",
+        "돌아가는 이동을 새로 읽기",
+        "부탁 하나를 세 구간으로 기록하기"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "심부름 퀘스트는 왜 지루할까? | 재미있는 퀘스트 디자인",
+      "scriptPath": "projects/meaningful-quests/production/final-v2/script.ko.json",
+      "scriptPaths": [
+        "projects/meaningful-quests/script/narration.ko.json",
+        "projects/meaningful-quests/production/final-v2/script.ko.json"
+      ]
+    },
+    {
+      "slug": "motion-sickness-games",
+      "status": "uploaded-private-awaiting-user-review",
+      "titles": {
+        "ko": "게임 멀미와 카메라 설계: 화면 움직임을 선택하게 만들기",
+        "en": "Camera Comfort in Games: Giving Players Control over Motion"
+      },
+      "videoId": "vFhhQXgdeMs",
+      "sceneTitles": [
+        "노즐만 돌리면 될까요?",
+        "화면에서 보이는 이동과 몸의 감각",
+        "배경이 멈춰 있어도 조준은 움직인다",
+        "조작과 추가 연출을 따로 조절하기",
+        "위치를 옮기는 일과 표면을 따라가는 일",
+        "한 번에 한 가지를 바꾸는 옵션",
+        "게임 규칙이 시야의 방향을 바꿀 때",
+        "천천히 움직이면 언제나 편할까요?",
+        "작업할 목표가 계속 읽히는가",
+        "선택을 숨기지 않고 되돌릴 수 있게",
+        "같은 작업을 다른 방향에서 읽기",
+        "효과보다 먼저 선택과 역할을 설계하기"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임 멀미와 카메라 설계: 화면 움직임을 선택하게 만들기",
+      "scriptPath": "projects/motion-sickness-games/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/motion-sickness-games/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "one-button-game-design",
+      "status": "rendered-awaiting-review",
+      "titles": {
+        "ko": "원버튼 게임 디자인: 버튼 하나로 재미를 만드는 4가지 방법 | 커비·캐너볼트·지오메트리 대시",
+        "en": "One-Button Game Design: 4 Ways to Make Simple Controls Fun | Kirby, Canabalt & Geometry Dash"
+      },
+      "videoId": "DeSXTV41GXs",
+      "sceneTitles": [
+        "버튼은 하나, 판단은 여러 개",
+        "연타 — 얼마나 빠르게 누를까",
+        "타이밍 — 지금 누르면 맞을까",
+        "반응 — 신호가 나오면 눌러라",
+        "누르기와 떼기 — 무엇을 받아들일까",
+        "입력이 단순할수록, 결과는 선명하게",
+        "버튼보다 먼저, 플레이어의 판단을 설계하자"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "버튼 하나로 얼마나 재미있게 만들 수 있을까? | 원버튼 게임 디자인",
+      "scriptPath": "projects/one-button-game-design/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/one-button-game-design/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "picking-sides",
+      "status": "private-uploaded-awaiting-user-review",
+      "titles": {
+        "ko": "관전과 응원 대상의 게임 디자인: 왜 남의 플레이도 재미있을까?",
+        "en": "Spectator Game Design: Why Do We Root for Other Players?"
+      },
+      "videoId": "sXd1RrPlGos",
+      "sceneTitles": [
+        "누구를 보고 있나요?",
+        "대상·이유·상황은 다른 문제",
+        "겹쳤다가 갈라져도 같은 대상인가",
+        "색 하나에 맡기지 않기",
+        "한 명을 고른 뒤 실제로 따라가기",
+        "응원 이유는 보상과 다르다",
+        "지금 무엇이 위험한가",
+        "대상과 순간을 연결하기",
+        "카메라가 바뀌어도 관심은 이어지는가",
+        "선택을 강요하지 않기",
+        "져도 결과를 이해할 수 있게",
+        "관전 화면을 점검하는 네 질문"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "왜 남의 게임도 응원하게 될까? | 관전과 응원 대상의 게임 디자인",
+      "scriptPath": "projects/picking-sides/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/picking-sides/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "play-first",
+      "status": "final-v3-wholesome; human-listening-pending",
+      "titles": {
+        "ko": "스타트를 눌렀으면 놀게 해 주세요 | 마리오 오디세이로 보는 첫 3분 게임 디자인",
+        "en": "Just Let Them Play | A Game's First 3 Minutes, Through Super Mario Odyssey"
+      },
+      "videoId": "IHKv1p_aSJ4",
+      "sceneTitles": [
+        "스타트를 누르면, 바로 마리오",
+        "모자 하나로 알려 주는 게임",
+        "이야기는 짧게, 한복판에서",
+        "보는 것이 아니라, 되어 보는 것",
+        "튜토리얼도, 제목도 놀이 뒤에"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "스타트를 눌렀으면 놀게 해 주세요 | 마리오 오디세이로 보는 첫 3분 게임 디자인",
+      "scriptPath": "projects/play-first/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/play-first/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "praise-player",
+      "status": "rendered-awaiting-user-review",
+      "titles": {
+        "ko": "게임은 왜 플레이어를 칭찬할까? | 실제 게임으로 보는 성공 피드백 디자인",
+        "en": "Why Games Praise You | Success Feedback in Real Games"
+      },
+      "videoId": "gSN8tbGkJ5E",
+      "sceneTitles": [
+        "점수와 성공 인정은 구분된다",
+        "성공과 가까운 순간에 반응하기",
+        "실제로 해낸 행동을 말하기",
+        "성과에 맞는 칭찬의 강도",
+        "실패를 숨기지 않는 긍정",
+        "다음 행동의 자리를 남기기",
+        "결과와 인정하는 반응 구별하기",
+        "동작 가까이에 반응 붙이기",
+        "어떤 행동을 인정하는가",
+        "작은 성공과 큰 마무리의 강도",
+        "부분의 성공을 정직하게 다루기",
+        "반응과 다음 행동을 함께 보기"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "게임은 왜 플레이어를 칭찬할까? | 성공 피드백 디자인",
+      "scriptPath": "projects/praise-player/production/final-v2/script.ko.json",
+      "scriptPaths": [
+        "projects/praise-player/script/narration.ko.json",
+        "projects/praise-player/production/final-v2/script.ko.json"
+      ]
+    },
+    {
+      "slug": "renderformer-explained",
+      "status": "production",
+      "titles": {
+        "ko": "트랜스포머부터 RenderFormer까지 | 삼각형에서 이미지로",
+        "en": "From Transformers to RenderFormer | From Triangles to Images"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "표지 — 삼각형을 읽고 이미지를 만드는 모델",
+        "목차 — 단어에서 삼각형으로",
+        "Transformer의 출발점",
+        "인코더와 디코더의 역할",
+        "토큰에 번호 붙이기",
+        "학습용 입력과 정답을 한 칸 어긋나게 놓기",
+        "임베딩 — 번호를 계산 가능한 벡터로",
+        "임베딩 행렬의 크기 읽기",
+        "위치 정보가 필요한 이유",
+        "사인과 코사인으로 위치를 표현하기",
+        "임베딩과 위치 인코딩을 더하기",
+        "셀프 어텐션 — 같은 문장 안에서 참고하기",
+        "멀티헤드 어텐션 — 여러 관점으로 참고하기",
+        "Q, K, V를 만드는 세 개의 투영",
+        "이 가중치들은 어떻게 의미를 갖게 될까?",
+        "세 행렬의 역할 다시 확인하기",
+        "Q와 K의 전치 행렬을 곱하기",
+        "점수 행렬의 한 행 읽기",
+        "왜 루트 d로 나눌까?",
+        "소프트맥스 — 점수를 참고 비중으로",
+        "V를 가중합해서 새 표현 만들기",
+        "헤드 하나에서 여러 헤드로",
+        "헤드를 나누어 계산하기",
+        "각 헤드가 만든 결과 확인하기",
+        "이어 붙이고 출력 투영하기",
+        "잔차 연결 — 원래 표현에 변화량 더하기",
+        "LayerNorm의 계산 방향",
+        "FFN의 첫 번째 선형층과 활성화",
+        "FFN의 두 번째 선형층",
+        "어텐션과 FFN의 역할 차이",
+        "인코더 블록 마무리",
+        "디코더의 입력 임베딩과 위치 정보",
+        "디코더의 셀프 어텐션",
+        "디코더에서도 점수 계산과 스케일링",
+        "미래를 가려야 하는 이유",
+        "삼각형 모양의 인과 마스크",
+        "음의 무한대와 소프트맥스",
+        "마스킹된 가중치로 V 모으기",
+        "뒤쪽 위치는 더 긴 문맥을 사용한다",
+        "디코더의 멀티헤드 출력 결합",
+        "디코더의 잔차 연결과 정규화",
+        "크로스 어텐션 — 다른 시퀀스를 참고하기",
+        "디코더의 나머지 블록",
+        "출력 확률과 학습",
+        "단어 대신 삼각형을 넣는다면?",
+        "RenderFormer가 하려는 일",
+        "삼차원에서 이차원으로 번역한다는 관점",
+        "입력부터 출력까지 한 번 연결하기",
+        "시점 독립 단계와 시점 의존 단계",
+        "삼각형 하나를 토큰 하나로",
+        "메시를 구성하는 삼각형과 법선",
+        "재질 임베딩 — 논문과 공개 코드 구분하기",
+        "RMSNorm — 특징의 스케일 정리하기",
+        "법선을 임베딩하기",
+        "삼각형 임베딩의 구성 요소 더하기",
+        "위치 임베딩을 더하는 코드 분기는 별도다",
+        "tri_token은 학습되는 하나의 공유 벡터",
+        "랜덤 초기화에 관한 설명 바로잡기",
+        "학습된 차원의 의미는 분산되어 있다",
+        "BERT의 타입 임베딩과 비교하기",
+        "레지스터 토큰을 시퀀스에 붙이기",
+        "삼각형의 순서보다 실제 위치가 중요하다",
+        "좌표 정규화와 [B,T,9] 텐서",
+        "레지스터 토큰의 위치 기준",
+        "좌표를 여러 주파수로 펼치기",
+        "텐서의 크기를 숫자로 따라가기",
+        "사인·코사인과 상대 위치",
+        "시점 독립 트랜스포머의 셀프 어텐션",
+        "삼각형 토큰의 Q, K, V",
+        "RoPE는 Q와 K에 들어간다",
+        "위치가 반영된 어텐션을 한 번에 읽기",
+        "시점 독립 블록의 잔차 연결",
+        "RenderFormer에서는 RMSNorm을 사용한다",
+        "정보 교환 뒤의 특징 갱신",
+        "GELU 그림과 실제 SwiGLU 구분하기",
+        "시점 독립 단계에서 무엇을 얻었나?",
+        "카메라를 레이 묶음으로 표현하기",
+        "레이 방향을 토큰으로 바꾸기",
+        "시점 의존 단계의 세 가지 계산",
+        "Q는 레이, K와 V는 장면에서",
+        "카메라 쪽 표현에도 잔차 연결",
+        "레이 토큰 사이의 정보 교환",
+        "토큰에서 HDR 이미지로",
+        "DPT의 여러 해상도 특징",
+        "특징 융합과 HDR 출력 복원",
+        "무엇을 보고 학습했을까?",
+        "결과 이미지는 어디를 봐야 할까?",
+        "한계와 마무리 — 학습하는 렌더링 파이프라인"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "트랜스포머부터 RenderFormer까지 | 삼각형에서 이미지로",
+      "scriptPath": "projects/renderformer-explained/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/renderformer-explained/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "responsive-game-feedback",
+      "status": "rendered-awaiting-user-review",
+      "titles": {
+        "ko": "버튼을 눌렀는데 왜 무반응일까? | 실제 게임으로 보는 입력 피드백 디자인",
+        "en": "Why Does a Button Feel Unresponsive? | Input Feedback in Real Games"
+      },
+      "videoId": "BYk6cLsO9Mc",
+      "sceneTitles": [
+        "입력을 받았다는 신호",
+        "거절할 때는 다음 행동의 단서",
+        "메뉴에서는 확인 의도를 알아보기",
+        "컷신은 응답과 확정을 나누기",
+        "처리 중을 완료처럼 말하지 않기",
+        "필요한 곳에만 응답하기",
+        "가리키기·선택·작업을 나누어 보기",
+        "자원 부족 안내와 다음 행동",
+        "선택 상태와 확인의 약속",
+        "선택 뒤에 확정된 변화",
+        "작업 계획과 실제 진행",
+        "도구에 맞는 상태 응답"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "버튼 눌렀는데 무반응? | 게임 입력 피드백 디자인",
+      "scriptPath": "projects/responsive-game-feedback/production/final-v2/script.ko.json",
+      "scriptPaths": [
+        "projects/responsive-game-feedback/script/narration.ko.json",
+        "projects/responsive-game-feedback/production/final-v2/script.ko.json"
+      ]
+    },
+    {
+      "slug": "small-window-game-design",
+      "status": "body-rendered-awaiting-outro-and-publication-review",
+      "titles": {
+        "ko": "같은 게임도 화면이 달라지면? | 화면 비율과 시야각의 게임 디자인",
+        "en": "How Screen Framing Changes a Game | Aspect Ratio and Field of View"
+      },
+      "videoId": "84xPzR2ww88",
+      "sceneTitles": [
+        "우리가 보는 건 세상의 일부",
+        "화면 비율은 창의 모양이다",
+        "많이 보이면 무조건 좋을까",
+        "표적이 작은 것도 설계다",
+        "전체 화면이 전부 플레이 공간은 아니다",
+        "다음 행동이 보이는 화면"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "같은 게임도 화면이 달라지면? | 화면 비율과 시야각의 게임 디자인",
+      "scriptPath": "projects/small-window-game-design/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/small-window-game-design/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "visible-rewards",
+      "status": "rendered-review-awaiting-human-listening",
+      "titles": {
+        "ko": "왜 조금만 더 하게 될까? | 보상이 보이는 게임 디자인",
+        "en": "Why Do We Keep Playing? | Making Rewards Visible"
+      },
+      "videoId": "5W5f6T8Hho8",
+      "sceneTitles": [
+        "끝내려는데, 딱 조금이 남았다",
+        "갖고 싶어야, 보상이다",
+        "현재값과 목표를 함께 보여주기",
+        "얻었으면, 달라져야 한다",
+        "경험치 바가 다음 선택으로 이어질 때",
+        "모든 보상을 화면에 붙일 필요는 없다",
+        "하나 남았다고, 한 번이면 끝일까?",
+        "보상은 다음 플레이를 위한 약속"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "왜 조금만 더 하게 될까? | 보상이 보이는 게임 디자인",
+      "scriptPath": "projects/visible-rewards/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/visible-rewards/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "yamyam-dx12-frame-sync",
+      "status": "script-review",
+      "titles": {
+        "ko": "DX12 프레임 동기화와 ImGui 렌더링",
+        "en": "DX12 Frame Synchronization and ImGui Rendering"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "화면이 가끔 깨지는 이유",
+        "명령의 기록과 제출과 완료",
+        "Allocator를 다시 쓰는 순간",
+        "Fence로 완료 지점을 표시하기",
+        "두 슬롯을 돌려 쓰는 방법",
+        "번호를 저장하고 다음 인덱스로 이동하기",
+        "Game과 Editor의 제출 책임",
+        "별도 창까지 포함한 마지막 Signal",
+        "Fence와 화면 표시 조건 구분하기",
+        "비슷한 기능을 만드는 순서"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "DX12 프레임 동기화와 ImGui 렌더링",
+      "scriptPath": "projects/yamyam-dx12-frame-sync/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/yamyam-dx12-frame-sync/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "yamyam-dx12-pso-composition",
+      "status": "script-review",
+      "titles": {
+        "ko": "DX12 PSO로 렌더링 모드와 ImGui 화면 합성하기",
+        "en": "DX12 PSO Rendering Modes and ImGui Image Composition"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "유리와 풀잎을 다르게 그려야 하는 이유",
+        "알파가 있다고 모두 반투명하지는 않다",
+        "공유 Shader와 Material의 역할 나누기",
+        "PSO를 만들고 선택하고 재사용하기",
+        "CutOut 전용 셰이더 변형",
+        "그리는 순서가 반투명 색을 바꾸는 이유",
+        "완성된 화면에 알파가 두 번 적용되는 문제",
+        "원본 RGBA와 표시용 SRV 나누기",
+        "리사이즈한 텍스처의 마지막 사용 기다리기",
+        "화면 비교와 픽셀 검사 함께 사용하기"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "DX12 PSO로 렌더링 모드와 ImGui 화면 합성하기",
+      "scriptPath": "projects/yamyam-dx12-pso-composition/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/yamyam-dx12-pso-composition/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "yamyam-dx12-rendering",
+      "status": "planning",
+      "titles": {
+        "ko": "화면 하나 제대로 띄우기까지 | 얌얌엔진 DX12 개발기",
+        "en": "Getting the Frame Right | YamYam Engine DX12 Devlog"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "화면 하나 제대로 띄우기까지",
+        "CPU는 보냈지만 GPU는 아직 작업 중",
+        "Scene과 Game은 다른 카메라의 결과",
+        "창 크기를 바꾸는 일도 GPU와 약속이 필요하다",
+        "같은 셰이더, 서로 다른 재질",
+        "불투명, 컷아웃, 반투명",
+        "잘 그린 화면을 왜 다시 흐리게 섞을까",
+        "화면 확인과 자동 검증은 함께"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "화면 하나 제대로 띄우기까지 | 얌얌엔진 DX12 개발기",
+      "scriptPath": "projects/yamyam-dx12-rendering/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/yamyam-dx12-rendering/script/narration.ko.json"
+      ]
+    },
+    {
+      "slug": "yamyam-dx12-texture-views",
+      "status": "script-review",
+      "titles": {
+        "ko": "DX12 Texture와 RenderTarget으로 Scene과 Game 뷰 만들기",
+        "en": "Building Scene and Game Views with DX12 Textures and Render Targets"
+      },
+      "videoId": null,
+      "sceneTitles": [
+        "같은 장면을 다른 카메라로 보기",
+        "완성된 그림을 텍스처에 저장하기",
+        "파일 이미지가 GPU에 도착하기까지",
+        "픽셀 저장소와 읽고 쓰는 방법",
+        "셰이더의 입력 자리 연결하기",
+        "같은 프레임 안에서 데이터가 덮이는 문제",
+        "256바이트 간격으로 Draw 데이터 보관하기",
+        "Scene 결과를 ImGui 이미지로 연결하기",
+        "패널 크기와 카메라 비율 맞추기",
+        "직접 연결하고 확인할 순서"
+      ],
+      "sourceIdMatches": [],
+      "exactTitleMatch": false,
+      "scriptTitle": "DX12 Texture와 RenderTarget으로 Scene과 Game 뷰 만들기",
+      "scriptPath": "projects/yamyam-dx12-texture-views/script/narration.ko.json",
+      "scriptPaths": [
+        "projects/yamyam-dx12-texture-views/script/narration.ko.json"
+      ]
+    }
+  ],
+  "exactMatches": [],
+  "verdict": "distinct",
+  "contentReview": "Full chapter requested as two complementary lectures: this part teaches cylindrical and spherical coordinates, convention-dependent heading/pitch, 3D conversion and camera offsets. The retained three-minute polar sample and new 2D part are references, not duplicate finished 3D lessons. Current expanded scripts reviewed.",
+  "studioEvidence": "2026-10-04 23:48 KST actual authenticated channel Studio title filters Polar and 극좌표 both show 일치하는 동영상이 없습니다; channel UCOgtkPoyC0VXhCs7Xk3jvjQ. No full polar lectures previously uploaded.",
+  "policy": "Do not rely only on source ID, file name or first-six exclusion. Compare the viewer question, chapter claims and examples. Preserve already-created videos per user instruction."
+}
