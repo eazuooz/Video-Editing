@@ -14,8 +14,18 @@ state={'pid':os.getpid(),'startedAt':stamp(),'status':'initializing','sources':[
 def write(p,v):
     tmp=Path(str(p)+'.'+str(os.getpid())+'.tmp');tmp.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');tmp.replace(p)
 def save():
+    session_file=Path(str(STATE)+'.session.json')
+    if session_file.exists():
+        launch=json.loads(session_file.read_text(encoding='utf-8'))
+        if launch.get('pid')==os.getpid(): state['sessionId']=launch.get('sessionId')
     state['updatedAt']=stamp();write(STATE,state)
     q=json.loads((BATCH/'queue.json').read_text(encoding='utf-8'));item=next(i for i in q['items'] if i['slug']=='avoid-game-comparisons')
+    if ACQ.get('executionRole')=='additional-official-source-after-measurement':
+        running=state['status'] in ['initializing','extracting']
+        item['sourceExpansionDiscovery']={'pid':os.getpid(),'sessionId':state.get('sessionId'),'status':state['status'],'state':str(STATE.relative_to(ROOT)).replace('\\','/'),'sources':state['sources'],'cpuJobs':1 if running else 0,'actualCutApproval':False,'sourceAudioUsed':False,'updatedAt':stamp()}
+        item['execution'].update({'secondaryTasks':[{'kind':'source-discovery','pid':os.getpid(),'sessionId':state.get('sessionId')}] if running else [],'cpuProductionJobs':item['execution'].get('primaryCpuProductionJobs',0)+(1 if running else 0),'sourceDownloadJobs':0})
+        item['updatedAt']=stamp();q['updatedAt']=stamp();write(BATCH/'queue.json',q)
+        return
     item['stage']='source-direct-discovery-review';item['execution'].update({'phase':'CPU-official-source-discovery','pid':os.getpid(),'status':state['status'],'state':str(STATE.relative_to(ROOT)).replace('\\','/'),'updatedAt':stamp(),'activeTasks':[s for s in state['sources'] if s.get('status')=='extracting'],'gpuSynthesisJobs':0,'renderJobs':0,'uploads':0,'newNarrationCreated':False,'newSceneCreated':False})
     item['nextAction']='Directly read discovery frames, inspect native action/boundary frames and approve unique source intervals before narration.';q['updatedAt']=stamp();write(BATCH/'queue.json',q)
 font=ImageFont.truetype('C:/Windows/Fonts/arial.ttf',22)

@@ -40,7 +40,7 @@ if (fs.existsSync(statePath)) {
 fs.mkdirSync(media, {recursive: true});
 fs.mkdirSync(path.join(__dirname, 'logs'), {recursive: true});
 const narrationExists = fs.existsSync(path.join(root,'shared/output/narration',request.slug,'qwen3-1.7b-balanced-v1/chunks/01-scene.wav'));
-const state = {pid: process.pid, startedAt: stamp(), requestFile, requestSha256: hash(path.join(__dirname, requestFile)), status: 'initializing', previousAttempts, children: [], results: [], gpuJobs: 0, narrationCreated: narrationExists, actualCutApproval: false};
+const state = {pid: process.pid, startedAt: stamp(), requestFile, requestSha256: hash(path.join(__dirname, requestFile)), executionRole:request.executionRole || 'source-before-narration', status: 'initializing', previousAttempts, children: [], results: [], gpuJobs: 0, narrationCreated: narrationExists, actualCutApproval: false};
 function save(status) {
   const sessionFile = statePath + '.session.json';
   if (fs.existsSync(sessionFile)) {
