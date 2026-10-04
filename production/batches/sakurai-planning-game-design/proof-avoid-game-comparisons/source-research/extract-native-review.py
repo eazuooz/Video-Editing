@@ -52,10 +52,20 @@ def write(p, v):
     tmp.replace(p)
 
 def save():
+    launch_file = Path(str(STATE) + '.session.json')
+    if launch_file.exists():
+        launch = json.loads(launch_file.read_text(encoding='utf-8'))
+        if launch.get('pid') == os.getpid(): state['sessionId'] = launch.get('sessionId')
     state['updatedAt'] = stamp()
     write(STATE, state)
     q = json.loads((BATCH / 'queue.json').read_text(encoding='utf-8'))
     item = next(i for i in q['items'] if i['slug'] == 'avoid-game-comparisons')
+    if REQUEST and REQUEST.get('executionRole') == 'additional-official-source-after-measurement':
+        running = state['status'] in ['initializing', 'extracting']
+        item['sourceExpansionNativeReview'] = {'pid': os.getpid(), 'sessionId': state.get('sessionId'), 'status': state['status'], 'state': relative(STATE), 'sources': state['sources'], 'cpuJobs': 1 if running else 0, 'actualCutApproval': False, 'updatedAt': stamp()}
+        item['execution'].update(secondaryTasks=[{'kind': 'source-discovery', 'phase': 'native-action-boundaries', 'pid': os.getpid(), 'sessionId': state.get('sessionId')}] if running else [], cpuProductionJobs=item['execution'].get('primaryCpuProductionJobs', 0) + (1 if running else 0))
+        item['updatedAt'] = stamp(); q['updatedAt'] = stamp(); write(BATCH / 'queue.json', q)
+        return
     item['stage'] = 'native-action-and-boundary-review'
     item['execution'].update({'phase': 'CPU-native-source-inspection', 'pid': os.getpid(), 'status': state['status'],
                             'state': relative(STATE), 'updatedAt': stamp(), 'activeTasks': [s for s in state['sources'] if s.get('status') == 'extracting'],
@@ -101,14 +111,13 @@ try:
         vs = next(s for s in source['streams'] if s['codec_type'] == 'video')
         a, b = map(int, vs['r_frame_rate'].split('/'))
         fps = a / b
-        if fps not in (30, 60):
-            raise RuntimeError('Inspection requires known integer source-native FPS')
-        fps = int(fps)
+        if (a, b) not in ((30, 1), (60, 1), (60000, 1001)):
+            raise RuntimeError('Inspection requires a verified known source-native frame rate')
         total = int(vs['nb_frames'])
         folder = OUT / vid
         folder.mkdir(exist_ok=True)
         rec = {'videoId': vid, 'source': source['localMediaPath'], 'sourceSha256': source['fileSha256'],
-               'nativeFps': fps, 'nativeFrameCount': total, 'candidateWindowsSeconds': windows, 'status': 'extracting'}
+               'nativeFps': fps, 'nativeFrameRate': vs['r_frame_rate'], 'nativeFrameCount': total, 'candidateWindowsSeconds': windows, 'status': 'extracting'}
         state['sources'].append(rec)
         state['status'] = 'extracting'
         save()
@@ -118,14 +127,19 @@ try:
         pts = [float(v) for v in re.findall(r'Parsed_showinfo[^\n]*?\bn:\s*\d+[^\n]*?pts_time:([\d.]+)', scene_log.read_text(encoding='utf-8', errors='replace'))]
         boundaries = sorted({round(t * fps) for t in pts if any(start - 1 <= t <= end + 1 for start, end in windows)})
         boundaries = sorted(set(boundaries) | {round(t * fps) for w in windows for t in w})
+        if REQUEST and REQUEST.get('manualBoundaryFrames'):
+            boundaries = sorted(set(boundaries) | set(REQUEST['manualBoundaryFrames'].get(vid, [])))
         rec['candidateBoundaryFrames'] = boundaries
-        nums = sorted({n for start, end in windows for n in range(round(start * fps), round(end * fps), fps // 2)})
+        nums = sorted({n for start, end in windows for n in range(round(start * fps), round(end * fps), round(fps / 2))})
         expression = '+'.join(f'eq(n\\,{n})' for n in nums)
         sample_log = folder / 'action-samples.log'
         run(rec, ['-i', str(media), '-an', '-vf', f'select={expression},showinfo,scale=960:540', '-vsync', '0', '-q:v', '3', str(folder / 'action-%04d.jpg')], sample_log)
         frames = sorted(folder.glob('action-*.jpg'))
         actual_pts = [float(v) for v in re.findall(r'Parsed_showinfo[^\n]*?\bn:\s*\d+[^\n]*?pts_time:([\d.]+)', sample_log.read_text(encoding='utf-8', errors='replace'))]
-        if len(frames) != len(nums) or len(actual_pts) != len(nums) or any(abs(t - n / fps) > 0.00001 for t, n in zip(actual_pts, nums)):
+        # showinfo prints PTS to six significant digits. Above100 seconds,
+        # allow its text rounding while retaining exact selected native frames.
+        rec['showinfoPtsTextToleranceSeconds'] = 0.00051
+        if len(frames) != len(nums) or len(actual_pts) != len(nums) or any(abs(t - n / fps) > 0.00051 for t, n in zip(actual_pts, nums)):
             raise RuntimeError('Native action frame/PTS count mismatch')
         rec['actionSamples'] = [{'frame': n, 'pts': t, 'path': relative(p), 'sha256': digest(p)} for p, n, t in zip(frames, nums, actual_pts)]
         rec['actionSheets'] = sheets(frames, [f'{vid} n{n} {t:.3f}s' for n, t in zip(nums, actual_pts)], folder, 'action-sheet')
