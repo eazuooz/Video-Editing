@@ -8,9 +8,9 @@ for(const s of review.relatedFullScriptsRead)if(hash(s.path)!==s.sha256)throw Er
 const changed=report.inputFiles.filter(f=>!fs.existsSync(path.join(root,f.path))||hash(f.path)!==f.sha256);
 const allowed=['projects/game-math-polar-2d/publishing/youtube-upload.json','projects/game-math-polar-3d/project.json','projects/game-math-polar-3d/publishing/youtube-upload.json'];
 const reviewedHashes={
-  'projects/game-math-polar-2d/publishing/youtube-upload.json':'4d2740e581254db0bd9c2c004cc3ea1f8030f92a74822a3019da8bdd6ef55dd3',
+  'projects/game-math-polar-2d/publishing/youtube-upload.json':'978524a1e045d6f4927f53e8cbe3eede5ea5631fb11210b0988ef2e455dda30f',
   'projects/game-math-polar-3d/project.json':'c7c52d53b820e6f533afde77d389482eb692d24a5766fdc209a8f49cb089286c',
-  'projects/game-math-polar-3d/publishing/youtube-upload.json':'c959e51ef8d0ac8e604b44134b9918d1c9644323dd73e37a6a0e2563e554c22e'
+  'projects/game-math-polar-3d/publishing/youtube-upload.json':'49c334d01b657d000ceac497ffecf7fa254a6dd22755e6af77aa80e1d126d7e7'
 };
 if(changed.some(f=>!allowed.includes(f.path)||hash(f.path)!==reviewedHashes[f.path]))throw Error('Another/unread metadata change; directly review it before refreshing.');
 const receipt=JSON.parse(read(allowed[0]));
@@ -21,7 +21,7 @@ if(lecture3d.slug!=='game-math-polar-3d'||!lecture3d.titles.ko.includes('원통�
 if(receipt3d.videoId!=='ZLOewk8JHXA'||!receipt3d.metadata.title.includes('원통·구면좌표'))throw Error('Unexpected3D upload identity.');
 if(changed.length){
   review.historicalInputRefreshes=[...(review.historicalInputRefreshes||[]),review.inputRefresh].filter(Boolean);
-  review.inputRefresh={observedAt:new Date().toISOString(),reason:'Directly reread both entire concurrent polar-coordinate upload receipts and the3D lecture manifest. Latest receipt changes add the two companion links and platform/Git observations, including the3D upload still processing; they do not introduce a new viewer question or substantive chapter. The2D distance/angle/conversion/aiming/vector chapters and3D cylindrical/spherical conversion/camera/boundary chapters remain unrelated to communicating an unbuilt game idea without relying on different familiar-title images. All eight compared full scripts and actual saved Studio evidence are unchanged. Preserve the concurrent project-specific40:60/no-BGM lecture exception; it does not change this batch60:40/Nimbus policy.',changedMetadata:changed.map(f=>({path:f.path,previousSha256:f.sha256,sha256:hash(f.path)})),currentReceiptVideoId:receipt.videoId,current3dReceiptVideoId:receipt3d.videoId,concurrentFilesModified:false};
+  review.inputRefresh={observedAt:new Date().toISOString(),reason:'Directly reread the entire changed concurrent3D polar-coordinate receipt. It now records completed SD/HD processing, manual languages, saved private settings, CC-off pixels, actual checks and a Git delivery. Its full KO/EN description and chapters still cover cylindrical/spherical conversion, axes, boundary cases and a calculated camera, not communicating an unbuilt game idea. The previously read2D receipt,3D manifest, all eight compared full scripts and actual saved Studio evidence are unchanged by hash. Preserve the concurrent project-specific40:60/no-BGM exception and all pending reviews; no concurrent file is changed or committed in this batch.',changedMetadata:changed.map(f=>({path:f.path,previousSha256:f.sha256,sha256:hash(f.path)})),currentReceiptVideoId:receipt.videoId,current3dReceiptVideoId:receipt3d.videoId,concurrentFilesModified:false};
   fs.writeFileSync(path.join(root,reviewPath),JSON.stringify(review,null,2)+'\n');
   const run=cp.spawnSync(process.execPath,['scripts/review-video-duplicates.cjs','avoid-game-comparisons','--decision','distinct','--reason',review.decisionReason,'--studio-evidence',report.studioEvidence],{cwd:root,encoding:'utf8'});
   process.stdout.write(run.stdout||'');process.stderr.write(run.stderr||'');if(run.status!==0)process.exit(run.status||1);
