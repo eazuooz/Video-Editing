@@ -1,5 +1,25 @@
 # 기획·게임 디자인 영상 일괄 제작
 
+2026-10-04 최신 사용자 지시: 썸네일 한도는 비차단 게시 후속 항목으로 분리한다. `hierarchical-game-outlines`의 검수·수집·비공개 저장된 제작물을 커밋/일반 푸시하고 다음 `game-reward-planning`의 사전 중복 검토와 제작을 이어간다. 썸네일은 실제 ID `lEwpxP_qsDY`에 준비 파일을 정상 UI로 나중에 적용한다. 재시도는 `2026-10-04T14:50:04.773Z` 이후이고, 썸네일/전체 설정 완료는 실제 적용 전까지 false다. 기존의 “썸네일까지 끝난 뒤 다음 항목” 체크포인트는 이 최신 지시로 대체한다. 사용자 원문: `이건 왜 멈춘거야? 썸네일 빼고 나머지 진행하고 썸네일 나중에 해도 되잖아`.
+
+2026-10-04 새 제작 규칙: 다음 새 영상부터 고양이 로고2초 뒤에 전체 내용을 안내하는 내레이션 도입부를 추가한다. 핵심 질문·시청 후 얻는 점·실제 사례와 설명 순서를 약20~30초에 자연스럽게 안내하고, 독립한영 대본/씬과 아래 가운데 고정 자막을 만든다. 도입부는 본편60:40에 포함한다. 자세한 기준은 [VIDEO_WORKFLOW.md](../../../docs/VIDEO_WORKFLOW.md)를 따른다. 이미 렌더·비공개 저장된 hierarchical-game-outlines의 남은 썸네일/설정·Git 전달은 그대로 이어가며 이 향후 규칙으로 음성·렌더·업로드를 반복하지 않는다.
+
+2026-10-04 01:39KST 최신 플랫폼 관찰: 기존 비공개 ID lEwpxP_qsDY의 실제 Studio에서 ‘동영상에서 소유권 주장이 발견되지 않았습니다’, 저작권 보호 콘텐츠 없음, ‘설정에 따라 수익을 창출하고 있습니다’를 직접 확인했다. 광고는 저장된 ‘사용’이며 검사·검토 중 알림이 해소됐다. proof/copyright-completed-no-claims-20261003T1630.png, ads-enabled-review-cleared-20261003T1630.png 및 비공개/HD·콘텐츠 행 증거를 receipt에 기록했다. 별도 업로드 wizard 완료 modal은 관찰하지 않아 false를 유지한다. 00:51KST의 자동검사 대기는 historicalAutomaticReviewObservations에 보존했다. 남은 플랫폼 항목은 일일 한도로 미적용인 준비 썸네일이며 2026-10-04T14:50:04.773Z 이후 정상 UI로 재시도한다. 전체 설정 비공개 전달·한 편별 Git은 아직 미완료이고 다음 queued는 시작하지 않는다. 렌더·음성·믹스·자막·출력 파일·업로드를 반복하지 않았으며 모든 제작 worker는 종료 상태, Vite9216/PID8864는 실제 살아 있다. 최신 production/latest-checkpoint.json과 checkpoint-20261003T163947687Z.json을 우선한다. 8전달·1중복제외·outline1진행·14queued와 사람 청취·공개권리 등 pending을 유지한다.
+
+아래00:51KST의 자동검사 대기는 위01:39KST 관찰로 갱신된 이전 이력이다. 준비 썸네일의 일일 한도 대기는 계속 유지한다.
+
+2026-10-04 00:51KST 현재 플랫폼 관찰: 같은 비공개 ID lEwpxP_qsDY의 SD/HD 완료와 실제 플레이어1080p60(1920×1080)을 확인했다. CC가 ‘사용 안함’인 상태에서31.274초 게임과46.274초 흰2.5D 설명의 아래 가운데 한글 자막픽셀을 직접 확인하고 증거를 저장했다. HD60 엔딩의 기존 세 요소는 한 프레임 빨랐으므로 모두9:36:45–9:46:44 inclusive(576.75–586.75초)로만 조정하고 저장후재열람했다. 원본 회원프로필/이름/배지·정확한제목·로고와겹치지않으며, 실제 채널 재생목록 링크로 Planning & Game Design & Tech의 ID PLUU7_j2ihric을 확인했다. 원본MP4/믹스/대본/SRT를 다시 만들거나 업로드하지 않았다. 새 파일 광고는 실제 ‘검사 중’, 소유권 주장은 ‘검토 완료 대기 중...’이며 통과로추정하지 않는다. 준비된 썸네일은 실제 일일한도로 미적용이며2026-10-04T14:50:04.773Z 이후 정상UI로 재시도한다. 전체설정 비공개전달/커밋/일반푸시는 두 플랫폼 대기항목 이후이며8전달·1중복제외·outline1진행·14queued와 사람전체청취/공개권리 등pending을 유지한다. 최신production/latest-checkpoint.json 및checkpoint-20261003T155108000Z.json, publishing/youtube-upload.json을 우선한다.
+
+아래00:22KST의 처리·CCoff·HD엔딩·재생목록ID 대기 기록은 위00:51KST 관찰로 갱신된 이전 이력이다. 썸네일과 실제자동검사는 계속pending이다.
+
+2026-10-04 00:22KST 현재: hierarchical-game-outlines final-v1은586.75초/35205프레임/1080p60이며 공식 Two Point Museum46컷344.85초와 흰2.5D229.9초로 본편60:40오차0프레임이다. 54원본문단PCM/여섯설명 주장과길이를 보존하고12장60문단/접합부/최종믹스전체ASR,317자막·컷/138인코딩경계/20구성화면,두전체디코딩/동일AAC/−16.07LUFS/−2.39dBTP 및299한영큐를 검수해4파일을 수집했다. 한글고정MP4를 단일 새ID lEwpxP_qsDY(https://youtu.be/lEwpxP_qsDY)에 비공개 저장하고 예약없음을 재열람했다. 수동KO/EN SRT와별도영어제목/설명,00초과외카드의정확한URL,회원10초엔딩의재생목록/자기채널구독/외부과외링크,광고사용을 저장후재검증했다. 엔딩은 현재30fps UI9:36:22–9:46:21이므로HD60 완료후 정확한576.75–586.75초와재생목록ID를 추가확인한다. 실제Studio 일일맞춤썸네일한도(최대24시간대기)로 새썸네일은 미적용이다. 실제플레이어 동영상처리중과 소유권주장 검토완료대기를 관찰해SD/HD·자동광고/저작권결과·CCoff게임/PPT픽셀은pending이며 통과로추정하지 않았다. 모든합성/ASR/렌더/QA worker는 종료했고 재시작하지 않는다. 사람전체청취(07 혼합ASR 발치/동일PCM 독립읽기 발췌차이보존)·최종공개권리·원래Nimbus·잘린회원핸들·외부백업도pending이다. 전체설정비공개전달과한편별Git은미완료이며8전달·1중복제외·outline1진행·14queued를유지한다. 최신receipt와production/latest-checkpoint.json의 실제상태부터 이어간다.
+
+아래는 보존한 이전 제작 이력이다. 현재 상태는 위 문단과 최신queue/receipt를 우선한다.
+
+2026-10-04 00:02KST 현재: final-v1 586.75초/35205프레임(1080p60), 공식 Two Point Museum46컷344.85초/흰2.5D229.9초로 실측60:40오차0프레임. 54원본문단PCM과6설명주장/길이를 보존하고 현재v2 전체12장60문단/접합부 및 최종믹스12장과8독립문맥을 직접 비교했다. 07 발췌는 혼합ASR가 발치로 표기하지만 같은현재PCM 독립읽기는 발췌이며 원본음성은 그대로다. 사람 청취는 pending이다. 317자막·컷/138인코딩경계/20구성 화면, 두전체디코딩/동일AAC/−16.07LUFS/−2.39dBTP 및299한영큐 검수를 통과하고4파일을 output에 수집했다. 이전 generic 문자회원엔딩은 거부·보존했고 현재는 원본12행 회원프로필/이름/배지/정확한제목/로고/과외URL의 검수된10초 엔딩이다. 한글고정MP4 단일 새업로드 실제ID lEwpxP_qsDY(https://youtu.be/lEwpxP_qsDY)를 이어간다. Studio 일일 맞춤썸네일 한도(최대24시간 대기)가 실제관찰되어 준비된 새썸네일은 미적용 pending이다. 파일/자막/메타데이터/카드/엔딩/광고저장 전체완료와 Git전달로 기록하지 않는다. 모든 음성/ASR/소스/믹스/렌더/QA worker는 종료했고 재실행하지 않는다. 상세 현재receipt/production/latest-checkpoint와 실제Studio를 우선하며8전달·1중복제외·outline1진행·14queued를 유지한다.
+
+아래는 보존한 이전 이력이며 현재 수치는 위 체크포인트와 최신queue/receipt를 따른다.
+
 2026-10-03 최신 실제 체크포인트: picking-sides final-v1 614.883333초를 검수·4파일 수집하고 https://youtu.be/sXd1RrPlGos 에 고정 한글 MP4로 비공개 전달했다. 새 썸네일·수동 KO/EN 자막·영어 메타데이터·00초 과외 카드·회원 엔딩의 재생목록/구독/과외 링크·광고 사용과 새 파일 검사 문제없음을 저장 후 다시 열어 확인했다. 실제 CCoff 게임/PPT 화면에 자막 픽셀이 보인다. 본편 실제361.733333초/설명241.15초(60:40오차0.2프레임), 45개 기존 게임 컷과151한영큐/183자막·컷 화면을 검수했으며 자체 게임은0개다. 제작 커밋 3f1788c6b18a1eeaa15b078cf7ad0b85b8145fd5을 origin/main에 일반 푸시하고 실제 SHA 일치를 확인했다. 현재7완료·1중복제외·16queued다. 다음 motion-sickness-games는 로컬24프로젝트 후보 스캔만 완료했으며 내용/현재 Studio 사전 검토가 남았다. 아직 새 프로젝트·대본·TTS·씬을 만들지 않는다. 종료된 picking 합성/렌더/업로드는 재실행하지 않는다. 사람 청취·공개 권리·Nimbus 원본·회원 핸들·외부 백업과 비공개 댓글 pending은 보존한다.
 
 아래 체크포인트는 과거 이력이다. 최신queue와현재receipt를 우선한다.
@@ -150,3 +170,28 @@ motion-sickness-games의 고정 한글 MP4를 vFhhQXgdeMs에 한 번 업로드�
 ## 2026-10-03T05:41:29.811Z motion-sickness-games Git 전달 완료
 
 제작 커밋 89cf65e342b3137265558ef8843bfbe9dd4e4a40를 origin/main에 일반 푸시하고 실제HEAD/원격main 일치를 확인했다. media/rebuild/선택diff검사를 통과했고 영상·음성·BGM·압축미디어·원본다운로드info.json은 Git에서 제외했다. 다른 사용자 라이브러리/공유파일 변경과 모든 로컬 원본/검수프레임은 보존했다. 실제633.083333초 비공개 자막판 vFhhQXgdeMs와4파일 전달을 완료했으며8편전달·1중복제외·15queued다. 다음 hierarchical-game-outlines는 전체 내용/현재Studio 중복 사전 검토부터 이어간다.
+
+### Outline preflight handoff (2026-10-03T06:02:10.399Z)
+
+Motion private/Git delivery is complete: production `89cf65e342b3137265558ef8843bfbe9dd4e4a40`, evidence `0eb40b345a80f7c1cb216cbc0e03f890c79bbf53`; latest local and origin/main both match the evidence SHA. The runtime checkpoint preserves the historical50% upload observation separately from the completed receipt. Current progress:8 private deliveries,1 duplicate excluded,15 queued.
+
+`hierarchical-game-outlines` has passed the current distinct gate after the full source concept, four current bilingual scripts, actual Studio searches and two additional full channel transcripts were compared. The source’s outline levels/fold/reorder workflow differs from coding decomposition, scenario state logic, portfolio evidence and grant evaluation. Proof: `proof-hierarchical-game-outlines/content-review.json`. No project, narration, TTS or scenes exist yet. Review fresh existing-game actions, in/out intervals and usage conditions before creating an independent script; rerun the current gate if inputs change.
+
+
+## 2026-10-03T07:52:58.529Z hierarchical-game-outlines source-first checkpoint
+
+8편 비공개/Git 전달과1편 중복 제외를 보존하며 현재outline1편 진행,14편queued다. 최신distinct --check 뒤 새로운Two Point Museum/Against the Storm 공식 자료를 확보해 전체디코딩과1221개 연구/경계 화면을 직접 읽었다. 시간압축/제목/실물진행자/소스음악을 제외하고 현재계획은Museum32컷392초 후보와 독립한영12장60문단이다. 이는 최종60:40/자막 승인 수치가 아니다. 도식은 우리의 문서구성 제안이며 내부개발문서나 게임규칙의 자동이동으로 주장하지 않는다.
+
+단일runner91180/PID11952는 waiting-for-free-gpu, 실제생존true, 자식0개다. 고정입력해시가 모두 일치한다. 다른학습을중단하거나 합성/ASR를중복실행하지 않는다. 원래승인목소리/Nimbus를 재사용한다. 상태/로그와 projects/hierarchical-game-outlines/production/checkpoint-20261003T075258529Z.json를 우선하며 종료된소스다운로드/검수와완료본을다시실행하지 않는다.
+
+12개MC진입점과여섯흰2.5D설명을작성했다. 무음v1의 이동화살표/글자와접기전환겹침을거부·수정한v2는48초/2880프레임/1080p60/오디오0,18구성+6전환화면과전체디코딩/TypeScript검사를통과했다. 종료된88428/PID55724와47808/PID29960을기다리지않는다. Vite9216/PID8864/67127을살아있으면재사용한다. 새썸네일과한영설명/코칭고정댓글은로컬준비일뿐이며최종음성/소스컷/자막/믹스/렌더/수집/비공개전달/Git은미완료다.
+
+## 2026-10-03T11:17:03.283Z outline 최초 음성 직접 검수 / 표적6문단 복구
+
+최초91180/PID11952와 TTS18836·CPU-ASR55372는 종료0이다.12장60문단 및 독립12문맥/끝소리를 직접 대조하고 반복 오독6문단만 한영을 함께 고쳤으며54원문/PCM과 여섯 설명 주장은 보존한다. 현재 단일repair1 세션20620/PID46452의 실제 상태는 waiting-for-free-gpu, 자식0개다. 다른 GPU 작업을 중단하지 않는다. 고정 입력을 바꾸거나 종료된 작업을 재실행하지 않는다.6후보 직접 승인 뒤에만 별도v2를 접합하고12장 전체ASR/접합부/끝소리를 검수한다. 컴파일러는 구문검사만 통과한 준비 코드이며 최종음성/타이밍/자막/믹스/렌더/수집/비공개/Git은 미완료다.8전달·1중복제외·outline1진행·14queued를 유지한다. 최신 projects/hierarchical-game-outlines/production/checkpoint-20261003T111703283Z.json를 따른다.
+
+## 2026-10-03T11:56Z outline v2 음성 기술 승인 / 실제 컷 확정 대기
+
+표적6후보를 현재해시로 직접 승인하고 별도v2에 접합했다.54개 원래 문단/PCM과 여섯 설명 길이를 보존했으며12장60문단 전체ASR 및7독립 문맥/접합부/말미를 직접 대조했다.05말미의0.08초/영시간3단어 ASR는 독립말미2회·보존PCM에 없어 원본 근거를 보존하고 자막 정렬에서만 제외했다. 사람 전체청취는pending이다. 최초/복구/전체ASR/문맥 작업은 종료0이며 다시 실행하거나 기다리지 않는다.
+
+추가129개 소스 추출 화면(이번 고유122시점)을 직접 읽고 HireStaff4629–4631/선로카탈로그3278–3279/다른놀이기구3188–3191을 제외 대상으로 기록했다. 출력시간제한 실패는 자체FFmpeg만 종료해 보존했고 입력시간제한 방식으로 별도 복구완료했다. 새586.75초/실제344.85·설명229.9/한영162큐는 초안 목표이며 최종컷/60:40/고정자막 승인이 아니다. 현재 worker0개, Vite9216/PID8864는11:54Z 생존을 확인했다. latest-checkpoint.json과queue의 source-cut-selection단계를 우선한다. 최종믹스/렌더/QA/수집/비공개/Git은없으며8전달·1중복제외·outline1진행·14queued다.

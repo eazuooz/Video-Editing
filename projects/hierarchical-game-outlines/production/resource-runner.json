@@ -1,0 +1,95 @@
+{
+  "pid": 11952,
+  "startedAt": "2026-10-03T07:26:11.670Z",
+  "status": "tts-asr-ready-for-direct-review",
+  "inputs": [
+    {
+      "path": "projects/hierarchical-game-outlines/project.json",
+      "sha256": "bfe4657b69dde29c64fe6426013d2e2b3ba387f1335ab9e0d6201dffd3d69e40"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/script/narration.ko.json",
+      "sha256": "ca4cb01be4810e6d3020c6d5e435b02e3c235dbf1a2e01643cc8605edecebea2"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/script/narration.en.json",
+      "sha256": "37d394dad0da7dfa6ca2684a911a30d6616bfff3f965e1b1134b7507fd7a169a"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/planning/action-map.json",
+      "sha256": "c9071afe42974f286347eda544323e2772db5f2566d25f432f3fa92ecd3dfd54"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/sources/game-candidates.json",
+      "sha256": "e244f5269e23f419a16677e10cb24a9e8686fa8f037ed750725e593f42b3d42f"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/sources/source-action-bank.json",
+      "sha256": "9b49b30326e14b103ac9ab446dad7982c46e2da254259be4cc6c5bedd1b25929"
+    },
+    {
+      "path": "projects/hierarchical-game-outlines/production/script-source-review.json",
+      "sha256": "d0dd5bd159adf7c58391853fca8513c89de1c71ac2366534d67c96a51bac7e3c"
+    }
+  ],
+  "minimumFreeMiB": 9000,
+  "maximumUtilizationPercent": 35,
+  "stableSamplesRequired": 3,
+  "checkIntervalSeconds": 30,
+  "children": [
+    {
+      "kind": "tts",
+      "pid": 18836,
+      "args": [
+        "qwen3-tts/render_narration.py",
+        "--project",
+        "hierarchical-game-outlines",
+        "--device",
+        "cuda:0"
+      ],
+      "log": "projects/hierarchical-game-outlines/production/logs/initial-tts.log",
+      "startedAt": "2026-10-03T10:06:12.783Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-03T10:25:16.222Z"
+    },
+    {
+      "kind": "cpu-asr",
+      "pid": 55372,
+      "args": [
+        "qwen3-tts/review_project_narration.py",
+        "--project",
+        "hierarchical-game-outlines",
+        "--device",
+        "cpu"
+      ],
+      "log": "projects/hierarchical-game-outlines/production/logs/initial-cpu-asr.log",
+      "startedAt": "2026-10-03T10:25:16.232Z",
+      "status": "finished",
+      "exitCode": 0,
+      "finishedAt": "2026-10-03T10:34:37.083Z"
+    }
+  ],
+  "logs": {
+    "runner": "projects/hierarchical-game-outlines/production/logs/resource-runner.log",
+    "tts": "projects/hierarchical-game-outlines/production/logs/initial-tts.log",
+    "asr": "projects/hierarchical-game-outlines/production/logs/initial-cpu-asr.log"
+  },
+  "speechAutomaticallyApproved": false,
+  "humanListening": "pending",
+  "updatedAt": "2026-10-03T10:34:37.086Z",
+  "gpuObservation": {
+    "at": "2026-10-03T10:06:12.773Z",
+    "totalMiB": 32607,
+    "usedMiB": 1412,
+    "freeMiB": 31195,
+    "utilizationPercent": 3,
+    "competingSynthesisPids": [],
+    "observedPythonPids": [
+      52456
+    ],
+    "action": "Observe only. Never stop unrelated jobs."
+  },
+  "stableSamples": 3,
+  "finishedAt": "2026-10-03T10:34:37.086Z"
+}

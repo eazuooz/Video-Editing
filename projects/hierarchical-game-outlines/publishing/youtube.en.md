@@ -1,0 +1,56 @@
+# Organizing Game Design Ideas with Hierarchical Outlines
+
+How can a game design document organize goals, features and detailed rules so readers can find what they need?
+
+We examine actual ride placement, track adjustments, entrances and decoration in Two Point Museum, then connect those observations to the reading order of a hierarchical outline.
+
+Keep sibling items at comparable levels, fold and expand the relevant branch, and check meaning after moving a group. Distinguish containment from references to other items.
+
+The planning notes and diagrams are our explanatory proposals based on observed actions. They do not reproduce the developer’s internal design documents or equate camera and track controls with an outline editor.
+
+Chapters
+00:00 A ride and the scale of a note
+00:40 A parent defines the reading question
+01:17 The whole attraction and one track section
+02:05 Keep sibling items at a comparable scale
+02:43 Overview and detail serve different questions
+03:41 Folding hides detail without deleting it
+04:17 Keep a section together with its description
+05:21 Check meaning after moving a branch
+06:01 Containment and relationships across branches
+07:11 A tree does not describe every relationship
+07:49 Read the whole after checking one detail
+08:56 A design document readers can navigate
+09:36 Membership thanks
+
+🎮 Game development means building the ability to create, beyond following along.
+
+YamYamCoding is a game-programming channel covering DirectX, Unity, Unreal and computer graphics.
+
+━━━━━━━━━━━━━━━━━━
+
+🚀 Premium 1:1 programming coaching
+
+Learn to design and implement practical development tasks.
+• DirectX11 / DirectX12
+• Unity / Unreal Engine
+• Computer Graphics & PBR
+• Shaders / Rendering
+• Game engine development
+• Graphics research and implementation
+
+👉 Programming coaching
+https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328
+
+━━━━━━━━━━━━━━━━━━
+
+💬 YamYamCoding community
+Questions, code reviews, feedback and learning resources.
+
+Discord
+https://discord.gg/wZuqe7fqkR
+
+YouTube membership
+https://www.youtube.com/channel/UCOgtkPoyC0VXhCs7Xk3jvjQ/join
+
+#GameDevelopment #GameDesign #DesignDocuments

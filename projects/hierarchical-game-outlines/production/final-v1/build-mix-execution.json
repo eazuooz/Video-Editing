@@ -1,0 +1,187 @@
+{
+  "pid": 37260,
+  "stage": "mix",
+  "status": "finished",
+  "updatedAt": "2026-10-03T13:59:01.930Z",
+  "currentCommand": null,
+  "commands": [
+    {
+      "pid": 49232,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-v",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\narration-timed-body.wav",
+        "-af",
+        "loudnorm=I=-16:TP=-2:LRA=11:measured_I=-25.26:measured_TP=-0.58:measured_LRA=11.80:measured_thresh=-36.09:offset=3.06:linear=true,aresample=48000,aformat=channel_layouts=stereo",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\voice-normalized-body.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-01.log"
+    },
+    {
+      "pid": 58416,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\voice-normalized-body.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-02.log"
+    },
+    {
+      "pid": 44672,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-v",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\voice-normalized-body.wav",
+        "-af",
+        "adelay=2000:all=1,apad,atrim=duration=586.75",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\voice-normalized.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-03.log"
+    },
+    {
+      "pid": 46132,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\voice-normalized.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-04.log"
+    },
+    {
+      "pid": 9176,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-v",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\voice-loudnorm-pass.wav",
+        "-af",
+        "volume=1.9899999999999984dB",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\voice-normalized.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-05.log"
+    },
+    {
+      "pid": 61108,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-06.log"
+    },
+    {
+      "pid": 58072,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-v",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+        "-filter_complex",
+        "[0:a][1:a]acrossfade=d=1:c1=tri:c2=tri[b1];[b1][2:a]acrossfade=d=1:c1=tri:c2=tri[b2]",
+        "-map",
+        "[b2]",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\nimbus-continuous.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-07.log"
+    },
+    {
+      "pid": 59348,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-v",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\voice-normalized.wav",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\nimbus-continuous.wav",
+        "-filter_complex_script",
+        "D:\\Github\\Video-Editing\\projects\\hierarchical-game-outlines\\production\\final-v1\\mix-filter.txt",
+        "-map",
+        "[mix]",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\motion-canvas\\src\\projects\\hierarchical-game-outlines\\assets\\final-mix.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-08.log"
+    },
+    {
+      "pid": 56872,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-v",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\motion-canvas\\src\\projects\\hierarchical-game-outlines\\assets\\final-mix.wav",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "192k",
+        "D:\\Github\\Video-Editing\\motion-canvas\\src\\projects\\hierarchical-game-outlines\\assets\\final-mix.m4a"
+      ],
+      "exitCode": 0,
+      "log": "projects/hierarchical-game-outlines/production/final-v1/build-mix-09.log"
+    }
+  ],
+  "exitCode": 0,
+  "finalVideoApproved": false
+}
