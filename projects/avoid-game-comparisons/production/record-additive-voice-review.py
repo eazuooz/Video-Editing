@@ -1,0 +1,31 @@
+"""Record direct full/independent readbacks and the preserved current14 PCM inventory."""
+from pathlib import Path
+from datetime import datetime,timezone
+import copy,hashlib,json
+ROOT=Path(__file__).resolve().parents[3];BASE=Path(__file__).resolve().parent;P=BASE.parent
+def read(p):return json.loads(p.read_text('utf-8'))
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+now=datetime.now(timezone.utc).isoformat();target=BASE/'additive-narration-direct-review.json';assert not target.exists()
+tts=read(BASE/'additive-narration-tts-execution.json');whole=read(BASE/'additive-whole-asr-execution.json');context=read(BASE/'additive-context-asr-execution.json');request=read(BASE/'additive-narration-request.json');prior=read(BASE/'narration-current-index.json')
+assert tts['generationComplete'] and whole['readbackComplete'] and context['readbackComplete'] and all(x['exitCode']==0 for x in [tts,whole,context])
+for x in request['protectedInputs']:assert sha(ROOT/x['path'])==x['sha256'],x['path']
+ko=read(P/'script/narration.ko.json');en=read(P/'script/narration.en.json');rows=[]
+observations={
+ '13':{'scope':'All3 full paragraphs directly compared with paired text and native Mine observations; two independent contexts cover conditions and the joining final paragraph. Left/right, key, unseen input/all-object limits, and application ending are present. No meaningful omitted sentence, repeated paragraph, extra greeting or missing ending was found.','uncertainty':'Full and both independent contexts write 적대 where the approved text says 적되. Keep the actual PCM and recognition evidence; semantic direction-recording instruction remains intact. Human particle/pronunciation approval is pending.'},
+ '14':{'scope':'All3 full paragraphs directly compared with paired text and native Mine observations; independent result/join readback retains red-chest/card, universal-success limitation and listener-restatement question. No meaningful omitted sentence, repeated paragraph, extra greeting or missing ending was found.','uncertainty':'Readbacks write 진입할 때 / 들어온 뒤에 / 뒤에 instead of text 때의 / 뒤의 / 뒤의. These particle/transcription differences do not alter the reviewed entry/combat distinction; exact human pronunciation approval remains pending.'}}
+for m in tts['results']:
+    assert sha(ROOT/m['path'])==m['sha256'];s=next(s for s in ko['scenes'] if s['id']==m['id']);e=next(s for s in en['scenes'] if s['id']==m['id']);assert m['text']==' '.join(s['lines'])
+    a=next(x for x in whole['results'] if x['id']==m['id']);assert a['audioSha256']==m['sha256']
+    rows.append({'id':m['id'],'audioPath':m['path'],'audioSha256':m['sha256'],'seconds':m['seconds'],'paragraphs':[{'paragraph':i+1,'ko':k,'en':e['lines'][i],'pairedMeaningOrderSourceScopeReviewed':True} for i,k in enumerate(s['lines'])],'fullAsrText':a['text'],'observation':observations[m['id']],'fullDirectReview':True,'independentContexts':[{'id':x['id'],'text':x['text'],'audioSha256':x['audioSha256']} for x in context['results'] if x['id'].startswith(m['id'])],'humanWholeListening':'pending','humanPronunciation':'pending'})
+review={'schemaVersion':1,'reviewedAt':now,'status':'six-new-paragraphs-technically-reviewed-with-transcription-uncertainties-preserved','allSixParagraphsTechnicallyReviewed':True,'originalAll12PcmPreserved':True,'allSixExplanationDurationsPreserved':True,'overviewOriginal4Sentences23_44SecondsPreserved':True,'scriptKoSha256':sha(P/'script/narration.ko.json'),'scriptEnSha256':sha(P/'script/narration.en.json'),'wholeAsr':{'path':(BASE/'additive-whole-asr-execution.json').relative_to(ROOT).as_posix(),'sha256':sha(BASE/'additive-whole-asr-execution.json')},'independentAsr':{'path':(BASE/'additive-context-asr-execution.json').relative_to(ROOT).as_posix(),'sha256':sha(BASE/'additive-context-asr-execution.json')},'scenes':rows,'finalMixAsrApproved':False,'humanWholeListening':'pending','humanPronunciation':'pending','finalTimingApproved':False,'finalVideoComplete':False}
+save(target,review)
+by={x['scene']:copy.deepcopy(x) for x in prior['measurements']}
+for x in tts['results']:
+    by[x['id']]={'scene':x['id'],'path':x['path'],'sha256':x['sha256'],'frames':x['samples'],'sampleRate':x['sampleRate'],'seconds':x['seconds'],'text':x['text'],'tailRatio':x['tailRatio'],'tailDecayMs':x['tailDecayMs'],'fullAsrReview':True,'readbackEvidence':target.relative_to(ROOT).as_posix(),'humanListening':'pending'}
+measurements=[by[s['id']] for s in ko['scenes']]
+index={**copy.deepcopy(prior),'createdAt':now,'status':'current14-scene-technical-ASR-reviewed-final-timing-pending','measurements':measurements,'sceneCount':14,'paragraphs':56,'speechSeconds':sum(x['seconds'] for x in measurements),'scriptKoSha256':sha(P/'script/narration.ko.json'),'scriptEnSha256':sha(P/'script/narration.en.json'),'originalCurrent12Index':(BASE/'narration-current-index.json').relative_to(ROOT).as_posix(),'newVoiceReview':target.relative_to(ROOT).as_posix(),'allOriginalCurrent12HashesPreserved':True,'fullCurrentHashAsrApproved':True,'technicalScope':'Current14 scenes/56 independent paired paragraphs: unchanged12 retain hash-specific full/context review;new13/14 whole and3 independent contexts directly compared. Particle uncertainties retained; human exact pronunciation/full listening pending.','visualClassificationPending':True,'historicalOriginal12ActualSpeechSeconds':prior['actualSpeechSeconds'],'historicalOriginal12ExplanationSpeechSeconds':prior['explanationSpeechSeconds'],'plannedNewSceneSpeechSeconds':sum(x['seconds'] for x in tts['results']),'finalTimingApproved':False,'finalBodyRatioApproved':False,'finalVideoComplete':False}
+# Original12 role totals are historical until the added diagram sections and final cuts are classified.
+index.pop('actualSpeechSeconds',None);index.pop('explanationSpeechSeconds',None);index.pop('minimumActualSecondsAt60_40',None)
+save(BASE/'narration-expanded-index.json',index)
+print(json.dumps({'scenes':14,'paragraphs':56,'speechSeconds':index['speechSeconds'],'newSpeechSeconds':index['plannedNewSceneSpeechSeconds'],'all12OriginalCurrentHashesPreserved':True,'technicalAsrReview':True,'humanListening':'pending','finalVideoComplete':False}))
