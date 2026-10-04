@@ -17,3 +17,8 @@
 진행 Git4a92e918306e1599556c04212c33af336e2a9e02와 dff20de2d8138bbfa253fc73b98e40d35229432b의 일반푸시·원격 일치를 확인했다. 믹스·최종 자막·실측60:40·렌더·QA·4파일수집·새 비공개 업로드는 미완료이며11번째 영상 완료가 아니다.
 
 승인Qwen/Nimbus·원본고양이2초/원본회원10초와 아래가운데 자막을 유지한다. source오디오·자체게임0개다. 다운로드·원문·추출이미지·contact sheet·반복QA는 local-only이며 새Git이미지0개다. 완료10편을 다시 만들지 않는다.
+
+
+## 2026-10-05 current15 native cue progress
+
+Current15 independent scenes/60 KOEN paragraphs and475.2601667seconds of current PCM have technical whole/context ASR review; all original14 PCM and six explanation lengths remain unchanged. The new33.68second scene15 alone was synthesized and directly compared. Its particle/initial-consonant uncertainties and human listening/pronunciation remain pending. The current bank-v5 has93 unique planning candidates314.1141167seconds, assigned as105 disjoint candidate cuts. Seven flashes are excluded; WFI music/gap edges and the Mine/Pepper sentence mismatch are corrected. New normal-speed bright-page and option-context desk combat add6.35seconds; desk use must retain Invincibility/One Hit Kill ON context. These are proposals, with meaningful new diagrams, every fixed-caption cue, exact final60:40, mix, render/QA/collection and private save still pending. All source/TTS/ASR/native workers are closed. No new Git image or media is added. This is progress for the11th video, not a completed private delivery.

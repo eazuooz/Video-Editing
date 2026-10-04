@@ -12,9 +12,10 @@ import scene09 from './scenes/scene09?scene';
 import scene10 from './scenes/scene10?scene';
 import scene11 from './scenes/scene11?scene';
 import scene12 from './scenes/scene12?scene';
+import scene15 from './scenes/scene15?scene';
 import scene13 from './scenes/scene13?scene';
 import scene14 from './scenes/scene14?scene';
 import outro from './scenes/membership-outro?scene';
 // Final playback is guarded by measured scene/cut approval. The mix and
 // burned narration captions will be attached only after current-audio QA.
-export default makeProject({name:'avoid-game-comparisons',scenes:[intro,scene01,scene02,scene03,scene04,scene05,scene06,scene07,scene13,scene08,scene09,scene10,scene11,scene14,scene12,outro]});
+export default makeProject({name:'avoid-game-comparisons',scenes:[intro,scene01,scene02,scene03,scene04,scene05,scene06,scene07,scene13,scene08,scene09,scene10,scene11,scene14,scene15,scene12,outro]});

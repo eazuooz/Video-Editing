@@ -86,3 +86,13 @@ Reveal(dkxNejWRGsA)은 이미 검토한 z4utn4Sm6SY와 같은 실제행동/편�
 새13장28.56초·14장26.560042초만 같은 승인Qwen/reference로 CPU 합성했다. 현재14장56문단 총441.580167초이며 원래12개의 현재PCM/여섯설명 길이/도입23.44초는 그대로다. 두 전체음성과 세 독립문맥의 ASR를 전 문장·끝부분과 직접 대조했고 적되/적대와 조사 표기 차이는 사람 발음검토pending으로 보존했다. 원래12해시의 직접검토도 이어 받되 최종믹스 검수로 대신하지 않는다.
 
 13/14의 첫 두 문단은 전체화면 실제게임, 마지막 우리 기획 작성/청자 확인 문단은 독립 흰2.5D도식으로 제안한다. 이 마지막 설명을 실제게임60%에 넣지 않는다. 원래 설명을 줄이지 않으며 화면별 실측프레임과 전체60:40은 다음 컷계획에서 계산한다. 06의 긴 로켓동작/컵,10의4.6초 물위 두컷과11초 해설,14의165.03초 상자·카드 표시를 음성 큐와 먼저 맞춰야 한다. KWD52.5초 이후는 물 장면이 아니라 wipe와level-mockup이므로 물컷을 늘리는 근거로 쓰지 않는다.
+
+
+## 새15 · 실제 동작으로 공간과 대상을 덧붙이기
+
+기존14장 모든 대사/PCM과 여섯 흰설명 길이는 보존한다. 14뒤/12앞에 이미 직접 본 그림면의 밝은/어두운 전투·발판, 가상책상의 이동/물체공격, 페퍼의 용암이동/발사, 광산의 회피/공격을 독립한영4문단과 독립MC15로 추가한다. 새 문장은 native-cue-proposal.json의 네문단 출처인아웃/실제행동/대상에만 근거하고 버튼·승리·보편규칙을 확정하지 않는다. 원래전체안내의 동사·공간·조건/청자확인 약속과 기존12결론을 유지하며 도입23.44초를 재합성하지 않는다. 후보 재배치는 최종화면60:40이 아니며06의컵/조건,10의짧은탈것/접근성맥락,14의빨간상자결과에 새도식시간을 분리한다. 정확한 native경계·현재새15실측·모든고정큐/UI 검수 뒤에만 프레임계획을 확정한다.
+
+
+## 2026-10-04T21:56:47.902408+00:00 native cue/context correction
+
+Preserve all15 current PCM and the original six explanations. The corrected proposal rejects seven subsecond flashes, fixes WFI music/gap native edits and separates Mine combat from the Pepper-device sentence. Two distinct official accessibility-source actions add6.35seconds: bright-page combat at62–65.3833s and desk combat at69.7–72.6667s after Invincibility/One Hit Kill ON. Carry that context into10p4; do not describe default difficulty. These are planning candidates, with final word/cut framing, meaningful white tails, fixed-caption pixels and exact60:40 still pending. Source audio and new Git images remain0.

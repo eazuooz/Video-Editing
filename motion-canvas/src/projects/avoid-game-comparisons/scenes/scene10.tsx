@@ -1,2 +1,2 @@
-import {actualScene} from './actual-scene';
-export default actualScene('10');
+import {mixedAdditiveScene} from './mixed-additive-scene';
+export default mixedAdditiveScene('10');

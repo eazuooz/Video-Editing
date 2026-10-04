@@ -226,3 +226,8 @@ Motion private/Git delivery is complete: production `89cf65e342b3137265558ef8843
 avoid-game-comparisons는 원본 전체 개념, 기존8한영 전체대본과 채널 논란 영상의 전체 연구자막, 실제 Studio13개 비교/4개 기획 결과와4개 현재 별도영어 제목·설명을 직접 대조해 distinct/current --check를 통과했다. 검색0건·제목·ID 차이만으로 판정하지 않았다. 새 기획의 실제 행동과 선택을 듣는 사람에게 전달하는 주제로 한정하며 기존 분석·문서 계층·직군·보상 목록·지원사업 논란을 반복하지 않는다.
 
 새 Pepper Grinder/The Plucky Squire 공식 creator resource와 현재 해당 채널의 퍼블리셔 상업영상 허가를 직접 읽었다. 신규 후보/최근 사용/선정·제외 이유는 proof-avoid-game-comparisons/source-candidates-and-usage-review.json에 있다. 아직 원본 실제행동/인아웃이 승인되지 않았으며 새대본/TTS/씬은 만들지 않았다. 실제 소스 확보·검토 뒤 독립 한영 전체내용 도입을 포함한 계획부터 이어간다.
+
+
+## 2026-10-05 current15 native cue progress
+
+Current15 independent scenes/60 KOEN paragraphs and475.2601667seconds of current PCM have technical whole/context ASR review; all original14 PCM and six explanation lengths remain unchanged. The new33.68second scene15 alone was synthesized and directly compared. Its particle/initial-consonant uncertainties and human listening/pronunciation remain pending. The current bank-v5 has93 unique planning candidates314.1141167seconds, assigned as105 disjoint candidate cuts. Seven flashes are excluded; WFI music/gap edges and the Mine/Pepper sentence mismatch are corrected. New normal-speed bright-page and option-context desk combat add6.35seconds; desk use must retain Invincibility/One Hit Kill ON context. These are proposals, with meaningful new diagrams, every fixed-caption cue, exact final60:40, mix, render/QA/collection and private save still pending. All source/TTS/ASR/native workers are closed. No new Git image or media is added. This is progress for the11th video, not a completed private delivery.
