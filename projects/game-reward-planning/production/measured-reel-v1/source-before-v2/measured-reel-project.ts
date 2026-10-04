@@ -1,0 +1,12 @@
+import {makeProject} from '@motion-canvas/core';
+import intro from '../small-window-game-design/intro-cats-v2/scene?scene';
+import s01 from './scenes/reel01?scene';
+import s03 from './scenes/reel03?scene';
+import s05 from './scenes/reel05?scene';
+import s07 from './scenes/reel07?scene';
+import s09 from './scenes/reel09?scene';
+import s11 from './scenes/reel11?scene';
+import s13 from './scenes/reel13?scene';
+import study from './scenes/potion-state-study?scene';
+import outro from './scenes/membership-outro?scene';
+export default makeProject({name:'game-reward-planning-measured-silent-reel',scenes:[intro,s01,s03,s05,s07,s09,s11,s13,study,outro]});

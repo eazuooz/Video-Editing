@@ -1,0 +1,20 @@
+const fs=require('fs'),path=require('path'),cp=require('child_process');
+const root=path.resolve(__dirname,'../../../..');process.chdir(root);
+const file='production/batches/sakurai-planning-game-design/preflight/game-reward-planning.json';
+const history=path.join(__dirname,'preflight-before-20261004T0854.json');
+if(!fs.existsSync(history))fs.copyFileSync(file,history);
+const prior=JSON.parse(fs.readFileSync(history,'utf8'));
+function run(args){const r=cp.spawnSync(process.execPath,args,{cwd:root,encoding:'utf8'});process.stdout.write(r.stdout);process.stderr.write(r.stderr);if(r.status)throw Error('Review command failed: '+r.status);}
+run(['scripts/review-video-duplicates.cjs','game-reward-planning']);
+const pending=JSON.parse(fs.readFileSync(file,'utf8'));
+const old=new Map(prior.inputFiles.map(x=>[x.path,x.sha256]));
+const current=new Map(pending.inputFiles.map(x=>[x.path,x.sha256]));
+const changed=pending.inputFiles.filter(x=>old.get(x.path)!==x.sha256);
+const removed=prior.inputFiles.filter(x=>!current.has(x.path));
+const reviewed=new Set(['projects/game-math-polar-sample/project.json','projects/game-math-polar-sample/script/narration.ko.json','projects/game-math-polar-sample/script/narration.en.json','projects/game-math-polar-sample/planning/outline.md','projects/game-math-polar-sample/README.md']);
+if(removed.length||changed.some(x=>!reviewed.has(x.path)))throw Error('Unexpected input changes; pending report preserved for direct review.');
+const reason=prior.contentReview+' Additional current-hash review at2026-10-04T08:54Z: directly reread all five changed polar-sample inputs, including every KO/EN sentence, measured outline and its180-second local-sample result. The seven scenes still address distance/angle, Cartesian conversion, degree/radian units, moving centers and cylindrical coordinates. None addresses initial reward catalogues, prerequisites, power limits or production work. The sample-specific40:60 exception is not inherited by this60:40 batch video.';
+run(['scripts/review-video-duplicates.cjs','game-reward-planning','--decision','distinct','--reason',reason,'--studio-evidence',prior.studioEvidence]);
+const actual=JSON.parse(fs.readFileSync(file,'utf8'));
+fs.writeFileSync(path.join(__dirname,'content-review-refresh-20261004T0854.json'),JSON.stringify({schemaVersion:1,reviewedAt:new Date().toISOString(),previousInputsDigest:prior.inputsDigest,currentInputsDigest:actual.inputsDigest,changedInputsDirectlyRead:changed,removed,fullKoEnRead:true,existingProjects:actual.comparisons?.length??27,reason,studioEvidence:prior.studioEvidence},null,2)+'\n');
+run(['scripts/review-video-duplicates.cjs','game-reward-planning','--check']);

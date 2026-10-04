@@ -1,0 +1,91 @@
+{
+  "stage": "captioned",
+  "pid": 39700,
+  "status": "finished",
+  "observedAt": "2026-10-04T12:22:07.283Z",
+  "activeChild": null,
+  "commands": [
+    {
+      "pid": 55232,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\visual-silent-review.mp4",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.m4a",
+        "-map",
+        "0:v:0",
+        "-map",
+        "1:a:0",
+        "-c",
+        "copy",
+        "-movflags",
+        "+faststart",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-captioned-01.log",
+      "exitCode": 0
+    },
+    {
+      "pid": 38104,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4",
+        "-vf",
+        "subtitles=projects/game-reward-planning/production/measured-edit-v3/captions.ko.ass",
+        "-c:v",
+        "libx264",
+        "-threads",
+        "2",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "18",
+        "-pix_fmt",
+        "yuv420p",
+        "-c:a",
+        "copy",
+        "-video_track_timescale",
+        "90000",
+        "-movflags",
+        "+faststart",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.captioned.review.mp4"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-captioned-02.log",
+      "exitCode": 0
+    },
+    {
+      "pid": 38936,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_streams",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-reward-planning/production/final-v1/build-captioned-03.log"
+    },
+    {
+      "pid": 35804,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_streams",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.captioned.review.mp4"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-reward-planning/production/final-v1/build-captioned-04.log"
+    }
+  ],
+  "exitCode": 0,
+  "finalApproved": false
+}

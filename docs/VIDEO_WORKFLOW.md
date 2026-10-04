@@ -324,6 +324,7 @@ node scripts/collect-video-output.cjs <slug>
 
 프로젝트 매니페스트의 경로로만 파일을 고릅니다. 수정 시각이나 파일명 추측으로 버전을 섞지 않습니다.
 네 파일이 모두 준비되고 영상 길이·해상도·오디오 존재·한영 SRT 타임코드 검사가 통과한 뒤 복사하며 SHA-256을 대조합니다.
+독립 영어 번역의 절 길이가 달라 한영 큐 수가 다를 때도 문단별 음성 시작·끝과 내용은 같아야 합니다. 기본 수집 검사는 동일 큐 타이밍을 요구합니다. 예외는 `project.json.paths.captionAlignmentReview`에 현재 두 SRT의 경로·SHA·큐 수, 모든 큐를 한 번씩 순서대로 포함하는 문단 매핑과 실제 문장 보존 대조를 기록하고 승인한 경우뿐입니다. 수집기는 승인 플래그, 현재 해시, 전체 큐 포함 및 문단 경계를 검사합니다. 수집 통과는 고정 자막 픽셀이나 사람 청취 승인을 대신하지 않습니다.
 원본은 이동/삭제하지 않습니다. 이전 납품 폴더는 `projects/<slug>/production/delivery-history/`로 보존하고,
 작업 중간 WAV·PNG·로그는 `output/`에 넣지 않습니다. 수집 기록은 `production/delivery-output.json`에 남깁니다.
 새 프로젝트에도 `delivery` 설정을 포함하며, 결과 안내에는 `output/index.html` 또는 프로젝트 폴더를 링크합니다.

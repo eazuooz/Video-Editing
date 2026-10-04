@@ -1,0 +1,1136 @@
+{
+  "slug": "game-reward-planning",
+  "stage": "final-mix-and-rendered-caption-pixel-review",
+  "updatedAt": "2026-10-04T12:38:04.886Z",
+  "execution": {
+    "observedAt": "2026-10-04T12:38:04.886Z",
+    "workers": [
+      {
+        "kind": "mix",
+        "sessionId": 87065,
+        "state": "projects/game-reward-planning/production/final-v1/build-mix-execution.json",
+        "stage": "mix",
+        "pid": 51468,
+        "status": "failed",
+        "observedAt": "2026-10-04T12:11:50.794Z",
+        "activeChild": null,
+        "commands": [
+          {
+            "pid": 43564,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\measured-edit-v3\\narration-timed.wav",
+              "-af",
+              "loudnorm=I=-16:TP=-2:LRA=11:print_format=json",
+              "-f",
+              "null",
+              "-"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-01.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 32228,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\measured-edit-v3\\narration-timed.wav",
+              "-af",
+              "loudnorm=I=-16:TP=-2:LRA=11:measured_I=-24.57:measured_TP=-1.11:measured_LRA=11.40:measured_thresh=-35.31:offset=2.70:linear=true,aresample=48000,aformat=channel_layouts=stereo",
+              "-c:a",
+              "pcm_s16le",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized-pass.wav"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-02.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 38300,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized-pass.wav"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-03.log"
+          },
+          {
+            "pid": 16968,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized-pass.wav",
+              "-af",
+              "loudnorm=I=-16:TP=-2:LRA=11:print_format=json",
+              "-f",
+              "null",
+              "-"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-04.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 54076,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized-pass.wav",
+              "-af",
+              "volume=1.9600000000000009dB",
+              "-c:a",
+              "pcm_s16le",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized.wav"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-05.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 45984,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized.wav",
+              "-af",
+              "atrim=end_sample=96000,volumedetect",
+              "-f",
+              "null",
+              "-"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-06.log",
+            "exitCode": 0
+          }
+        ],
+        "exitCode": 1,
+        "finalApproved": false,
+        "processAliveObserved": false
+      },
+      {
+        "kind": "intro-resample-recovery",
+        "sessionId": null,
+        "state": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-execution.json",
+        "stage": "mix",
+        "pid": 55816,
+        "status": "failed",
+        "observedAt": "2026-10-04T12:14:20.599Z",
+        "activeChild": null,
+        "commands": [
+          {
+            "pid": 36040,
+            "command": [
+              "D:/Github/Video-Editing/qwen3-tts/.venv/Scripts/python.exe",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\repair-intro-resample-silence.py"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-01.log"
+          },
+          {
+            "pid": 25616,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized.wav",
+              "-af",
+              "atrim=end_sample=96000,volumedetect",
+              "-f",
+              "null",
+              "-"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-02.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 19648,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-03.log"
+          },
+          {
+            "pid": 59360,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+              "-filter_complex",
+              "[0:a][1:a]acrossfade=d=1:c1=tri:c2=tri[b1]",
+              "-map",
+              "[b1]",
+              "-c:a",
+              "pcm_s16le",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\nimbus-continuous.wav"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-04.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 13048,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\nimbus-continuous.wav",
+              "-af",
+              "atrim=duration=444.8833333333333,asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=.45,afade=t=out:st=444.43333333333334:d=.45",
+              "-c:a",
+              "pcm_s16le",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\bgm-before-ducking.wav"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-05.log",
+            "exitCode": 4294967274
+          }
+        ],
+        "exitCode": 1,
+        "finalApproved": false,
+        "processAliveObserved": false
+      },
+      {
+        "kind": "bgm-fade-recovery",
+        "sessionId": 21364,
+        "state": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-execution.json",
+        "stage": "mix",
+        "pid": 60692,
+        "status": "finished",
+        "observedAt": "2026-10-04T12:16:01.278Z",
+        "activeChild": null,
+        "commands": [
+          {
+            "pid": 60664,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized.wav",
+              "-af",
+              "atrim=end_sample=96000,volumedetect",
+              "-f",
+              "null",
+              "-"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-01.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 39748,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-02.log"
+          },
+          {
+            "pid": 3300,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\nimbus-continuous.wav"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-03.log"
+          },
+          {
+            "pid": 52080,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\nimbus-continuous.wav",
+              "-af",
+              "atrim=duration=444.8833333333333,asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=0.45,afade=t=out:st=444.43333333333334:d=0.45",
+              "-c:a",
+              "pcm_s16le",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\bgm-before-ducking.wav"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-04.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 9388,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized.wav",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\bgm-before-ducking.wav",
+              "-filter_complex",
+              "[0:a]asplit[n][d];[1:a][d]sidechaincompress=threshold=.08:ratio=2.2:attack=15:release=280[bg];[n][bg]amix=inputs=2:normalize=0,alimiter=limit=.80:level=false:latency=true[mix]",
+              "-map",
+              "[mix]",
+              "-ar",
+              "48000",
+              "-ac",
+              "2",
+              "-c:a",
+              "pcm_s16le",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.wav"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-05.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 7888,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.wav",
+              "-c:a",
+              "aac",
+              "-b:a",
+              "192k",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.m4a"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-06.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 57292,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.m4a",
+              "-af",
+              "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json",
+              "-f",
+              "null",
+              "-"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-07.log",
+            "exitCode": 0
+          }
+        ],
+        "exitCode": 0,
+        "finalApproved": false,
+        "processAliveObserved": false
+      },
+      {
+        "kind": "visual",
+        "sessionId": 35014,
+        "state": "projects/game-reward-planning/production/final-v1/build-visual-execution.json",
+        "stage": "visual",
+        "pid": 58556,
+        "status": "finished",
+        "observedAt": "2026-10-04T12:17:55.372Z",
+        "activeChild": null,
+        "commands": [
+          {
+            "pid": 61308,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=0:end_frame=120,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\branding.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-01.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 22672,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\branding.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-02.log"
+          },
+          {
+            "pid": 18092,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=120:end_frame=1569,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-01.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-03.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 53660,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-01.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-04.log"
+          },
+          {
+            "pid": 14056,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=1569:end_frame=2812,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-03.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-05.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 51564,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-03.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-06.log"
+          },
+          {
+            "pid": 37920,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=2812:end_frame=4238,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-05.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-07.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 6960,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-05.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-08.log"
+          },
+          {
+            "pid": 49176,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=4238:end_frame=5841,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-07.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-09.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 50968,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-07.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-10.log"
+          },
+          {
+            "pid": 59212,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=5841:end_frame=7300,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-09.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-11.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 30216,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-09.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-12.log"
+          },
+          {
+            "pid": 16136,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=7300:end_frame=8639,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-11.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-13.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 19968,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-11.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-14.log"
+          },
+          {
+            "pid": 8048,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=8639:end_frame=10149,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-13.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-15.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 59820,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\explanation-13.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-16.log"
+          },
+          {
+            "pid": 59704,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=10149:end_frame=10509,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\potion-state-study.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-17.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 9808,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\potion-state-study.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-18.log"
+          },
+          {
+            "pid": 3496,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\shared\\output\\motion-canvas\\game-reward-planning-measured-reel-v2.mp4",
+              "-vf",
+              "trim=start_frame=10509:end_frame=11109,setpts=PTS-STARTPTS",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "19",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "60",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\membership.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-19.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 50336,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\white-segments\\membership.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-20.log"
+          },
+          {
+            "pid": 59052,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-f",
+              "concat",
+              "-safe",
+              "0",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\visual-concat.txt",
+              "-c:v",
+              "copy",
+              "-an",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\visual-silent-review.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-21.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 49432,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\visual-silent-review.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-visual-22.log"
+          }
+        ],
+        "exitCode": 0,
+        "finalApproved": false,
+        "processAliveObserved": false
+      },
+      {
+        "kind": "captioned",
+        "sessionId": 65042,
+        "state": "projects/game-reward-planning/production/final-v1/build-captioned-execution.json",
+        "stage": "captioned",
+        "pid": 39700,
+        "status": "finished",
+        "observedAt": "2026-10-04T12:22:07.283Z",
+        "activeChild": null,
+        "commands": [
+          {
+            "pid": 55232,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\visual-silent-review.mp4",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.m4a",
+              "-map",
+              "0:v:0",
+              "-map",
+              "1:a:0",
+              "-c",
+              "copy",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-captioned-01.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 38104,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4",
+              "-vf",
+              "subtitles=projects/game-reward-planning/production/measured-edit-v3/captions.ko.ass",
+              "-c:v",
+              "libx264",
+              "-threads",
+              "2",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "18",
+              "-pix_fmt",
+              "yuv420p",
+              "-c:a",
+              "copy",
+              "-video_track_timescale",
+              "90000",
+              "-movflags",
+              "+faststart",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.captioned.review.mp4"
+            ],
+            "log": "projects/game-reward-planning/production/final-v1/build-captioned-02.log",
+            "exitCode": 0
+          },
+          {
+            "pid": 38936,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-captioned-03.log"
+          },
+          {
+            "pid": 35804,
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.captioned.review.mp4"
+            ],
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/build-captioned-04.log"
+          }
+        ],
+        "exitCode": 0,
+        "finalApproved": false,
+        "processAliveObserved": false
+      },
+      {
+        "kind": "current-full-mix-ASR",
+        "sessionId": 15182,
+        "state": "projects/game-reward-planning/production/final-v1/mixed-asr-execution.json",
+        "pid": 50584,
+        "startedAt": "2026-10-04T12:16:54.274615+00:00",
+        "status": "finished-awaiting-direct-content-review",
+        "device": "cpu",
+        "threads": 2,
+        "mixSha256": "62d690921bafa59d0719f35522a2256221cee685696651babf9283f516d296e4",
+        "totalScenes": 13,
+        "completed": 20,
+        "automaticApproval": false,
+        "humanListening": "pending",
+        "updatedAt": "2026-10-04T12:33:31.987687+00:00",
+        "totalWindows": 20,
+        "exitCode": 0,
+        "endedAt": "2026-10-04T12:33:31.987687+00:00",
+        "processAliveObserved": false
+      },
+      {
+        "kind": "every-caption-and-boundary-inspection",
+        "sessionId": 32153,
+        "state": "projects/game-reward-planning/production/final-v1/pixel-review-v1/execution.json",
+        "pid": 20360,
+        "status": "finished-awaiting-direct-reading",
+        "startedAt": "2026-10-04T12:23:27.980865+00:00",
+        "imagePoints": 464,
+        "rows": 509,
+        "captionedSha256": "4ab6dda609c53b53f1cde83b4852bfe146ca0b2d0aa0b9725b2d443b8b488b9d",
+        "automaticApproval": false,
+        "updatedAt": "2026-10-04T12:24:13.655342+00:00",
+        "childPid": 57484,
+        "exitCode": 0,
+        "endedAt": "2026-10-04T12:24:13.655342+00:00",
+        "processAliveObserved": false
+      },
+      {
+        "kind": "two-full-decodes-and-identical-AAC",
+        "sessionId": 85304,
+        "state": "projects/game-reward-planning/production/final-v1/technical-execution.json",
+        "pid": 28512,
+        "status": "finished",
+        "startedAt": "2026-10-04T12:36:06.851151+00:00",
+        "commands": [
+          {
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4"
+            ],
+            "pid": 38756,
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/clean-probe.log"
+          },
+          {
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-v",
+              "error",
+              "-threads",
+              "2",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4",
+              "-map",
+              "0:v:0",
+              "-map",
+              "0:a:0",
+              "-f",
+              "null",
+              "-"
+            ],
+            "pid": 36904,
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/clean-full-decode.log"
+          },
+          {
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-v",
+              "error",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.clean.review.mp4",
+              "-map",
+              "0:a:0",
+              "-c:a",
+              "copy",
+              "-f",
+              "adts",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\clean-audio-check.aac"
+            ],
+            "pid": 50300,
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/clean-audio-extract.log"
+          },
+          {
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+              "-v",
+              "error",
+              "-show_streams",
+              "-show_format",
+              "-of",
+              "json",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.captioned.review.mp4"
+            ],
+            "pid": 12096,
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/captioned-probe.log"
+          },
+          {
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-v",
+              "error",
+              "-threads",
+              "2",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.captioned.review.mp4",
+              "-map",
+              "0:v:0",
+              "-map",
+              "0:a:0",
+              "-f",
+              "null",
+              "-"
+            ],
+            "pid": 35364,
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/captioned-full-decode.log"
+          },
+          {
+            "command": [
+              "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+              "-v",
+              "error",
+              "-i",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\game-reward-planning.captioned.review.mp4",
+              "-map",
+              "0:a:0",
+              "-c:a",
+              "copy",
+              "-f",
+              "adts",
+              "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\captioned-audio-check.aac"
+            ],
+            "pid": 57280,
+            "exitCode": 0,
+            "log": "projects/game-reward-planning/production/final-v1/captioned-audio-extract.log"
+          }
+        ],
+        "automaticApproval": false,
+        "updatedAt": "2026-10-04T12:37:27.972435+00:00",
+        "activeChild": null,
+        "exitCode": 0,
+        "endedAt": "2026-10-04T12:37:27.972435+00:00",
+        "processAliveObserved": false
+      },
+      {
+        "kind": "adaptive-current-mixed-ASR",
+        "sessionId": null,
+        "state": "projects/game-reward-planning/production/final-v1/mixed-asr-adaptive-execution.json",
+        "pid": 45952,
+        "startedAt": "2026-10-04T12:38:00.773338+00:00",
+        "status": "running",
+        "device": "cpu",
+        "threads": 2,
+        "mixSha256": "62d690921bafa59d0719f35522a2256221cee685696651babf9283f516d296e4",
+        "totalWindows": 4,
+        "completed": 0,
+        "automaticApproval": false,
+        "humanListening": "pending",
+        "updatedAt": "2026-10-04T12:38:00.816291+00:00",
+        "processAliveObserved": true
+      }
+    ],
+    "actualProcesses": [
+      {
+        "ProcessId": 45952,
+        "Name": "python.exe",
+        "CommandLine": "\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\" projects/game-reward-planning/production/review-current-mix-adaptive.py"
+      }
+    ],
+    "activeTasks": [
+      {
+        "kind": "adaptive-current-mixed-ASR",
+        "pid": 45952,
+        "sessionId": null,
+        "state": "projects/game-reward-planning/production/final-v1/mixed-asr-adaptive-execution.json"
+      }
+    ],
+    "gpuSynthesisJobs": 0,
+    "renderJobs": 0,
+    "uploads": 0,
+    "renderedReview": true,
+    "captionCueCount": 268,
+    "enCueCount": 109
+  },
+  "nextAction": "Directly read all352 rendered caption/cut intersections and154 encoded cut boundaries; compare all13 mixed ASR chapters and independent contexts. Preserve the exact26693-frame edit and all52 current PCM paragraphs. Then final technical QA, collect four files, single private captioned upload and selective Git.",
+  "renderResult": "projects/game-reward-planning/production/final-v1/render-result.json",
+  "measuredEdit": "projects/game-reward-planning/production/measured-edit-v3/plan.json",
+  "mix": "projects/game-reward-planning/production/final-v1/mix-settings.json",
+  "finalVideoComplete": false,
+  "privateUploadComplete": false,
+  "gitDeliveryComplete": false,
+  "hierarchicalThumbnailNonblocking": true,
+  "thumbnailRetryAfter": "2026-10-04T14:50:04.773Z"
+}

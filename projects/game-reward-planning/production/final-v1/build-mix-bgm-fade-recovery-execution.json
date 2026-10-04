@@ -1,0 +1,124 @@
+{
+  "stage": "mix",
+  "pid": 60692,
+  "status": "finished",
+  "observedAt": "2026-10-04T12:16:01.278Z",
+  "activeChild": null,
+  "commands": [
+    {
+      "pid": 60664,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized.wav",
+        "-af",
+        "atrim=end_sample=96000,volumedetect",
+        "-f",
+        "null",
+        "-"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-01.log",
+      "exitCode": 0
+    },
+    {
+      "pid": 39748,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_streams",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-02.log"
+    },
+    {
+      "pid": 3300,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_streams",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\nimbus-continuous.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-03.log"
+    },
+    {
+      "pid": 52080,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\nimbus-continuous.wav",
+        "-af",
+        "atrim=duration=444.8833333333333,asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=0.45,afade=t=out:st=444.43333333333334:d=0.45",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\bgm-before-ducking.wav"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-04.log",
+      "exitCode": 0
+    },
+    {
+      "pid": 9388,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized.wav",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\bgm-before-ducking.wav",
+        "-filter_complex",
+        "[0:a]asplit[n][d];[1:a][d]sidechaincompress=threshold=.08:ratio=2.2:attack=15:release=280[bg];[n][bg]amix=inputs=2:normalize=0,alimiter=limit=.80:level=false:latency=true[mix]",
+        "-map",
+        "[mix]",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.wav"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-05.log",
+      "exitCode": 0
+    },
+    {
+      "pid": 7888,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.wav",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "192k",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.m4a"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-06.log",
+      "exitCode": 0
+    },
+    {
+      "pid": 57292,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\final-mix.m4a",
+        "-af",
+        "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-bgm-fade-recovery-07.log",
+      "exitCode": 0
+    }
+  ],
+  "exitCode": 0,
+  "finalApproved": false
+}

@@ -1,0 +1,30 @@
+const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const root=path.resolve(__dirname,'../../..');
+const wavRoot=path.join(root,'shared/output/narration/game-reward-planning/qwen3-1.7b-balanced-v1');
+const source=path.join(wavRoot,'game-reward-planning-qwen3-1.7b-balanced-v1.asr-review.json');
+const raw=JSON.parse(fs.readFileSync(source,'utf8'));
+const expectedIds=['01','03','05','07','09','11','13'];
+if(raw.sceneCount!==7||raw.complete!==false)throw Error('Expected seven current explanation caches with six action scenes still missing.');
+const result={schemaVersion:1,reviewedAt:new Date().toISOString(),status:'seven-current-explanations-direct-asr-compared',scope:expectedIds,whole13SceneNarrationComplete:false,source:path.relative(root,source).replaceAll('\\','/'),worker:{sessionId:18299,pid:12208,launcherPid:25700,device:'cpu',actualExitCode:0,observedOutput:'Selected scene caches reviewed;7/13 current caches available.'},scenes:[]};
+for(const id of expectedIds){
+ const s=raw.scenes.find(x=>x.scene===id);
+ const wav=path.join(wavRoot,'chunks',id+'-scene.wav');
+ const hash=crypto.createHash('sha256').update(fs.readFileSync(wav)).digest('hex');
+ if(!s||hash!==s.audio_sha256)throw Error('Stale ASR '+id);
+ const cache=JSON.parse(fs.readFileSync(path.join(wavRoot,'asr',id+'.json'),'utf8'));
+ result.scenes.push({...s,fullTextDirectlyCompared:true,paragraphCoverage:'All expected sentences and their order are present; no missing clause, repeated sentence or unrequested greeting identified in the full read-back.',endingDirectReview:'Read-back reaches the scripted final phrase; no additional utterance was identified. Acoustic evidence retained separately and is not approval.',lastWords:cache.words.slice(-5),recognitionDifferences:id==='01'?[{expected:'위저드 위드 어 건의',recognized:'위저드 위드 어거니',assessment:'Korean final consonant linking can produce this orthographic read-back; exact title pronunciation remains pending human listening.'},{expected:'보상 한 줄에',recognized:'보상 한 줄의',assessment:'에/의 recognition distinction retained; intended sentence is intact, exact particle delivery remains pending human listening.'}]:[],humanWholeListening:'pending',pronunciationApproval:'pending',pcmRegenerated:false});
+}
+result.noOmissionsRepeatsOrExtraGreetingsFound=true;
+result.endingHeuristicUsedAsApproval=false;
+result.finalMixReview='pending-not-built';
+fs.writeFileSync(path.join(__dirname,'explanation-asr-direct-review.json'),JSON.stringify(result,null,2)+'\n');
+const measuredPath=path.join(__dirname,'explanation-speech-measurements.json');
+const measured=JSON.parse(fs.readFileSync(measuredPath,'utf8'));
+measured.wholeAsrReview=true;
+measured.wholeAsrReviewScope=expectedIds;
+measured.fullNarrationComplete=false;
+measured.directAsrReview='projects/game-reward-planning/production/explanation-asr-direct-review.json';
+for(const m of measured.measurements)m.fullAsrReview=true;
+measured.updatedAt=result.reviewedAt;
+fs.writeFileSync(measuredPath,JSON.stringify(measured,null,2)+'\n');
+console.log(JSON.stringify({reviewedScenes:7,currentHashes:true,whole13SceneComplete:false,humanListening:'pending'}));

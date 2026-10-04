@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),base='projects/game-reward-planning/',read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const dir=path.join(root,base,'publishing'),file=path.join(dir,'youtube-upload.json');
+if(fs.existsSync(file))throw Error('Preserve existing upload receipt; do not prepare a second upload');
+const d=read(base+'production/delivery-output.json'),q=read(base+'production/final-v1/qa.json'),m=read(base+'publishing/metadata-prepared.json');
+if(!q.technicalApproved||!q.allRenderedCaptionPixelsReviewed)throw Error('Current final QA incomplete');
+const video=d.files.find(x=>x.name.endsWith('.captioned.mp4'));
+const body=lang=>fs.readFileSync(path.join(dir,'description.'+lang+'.txt'),'utf8').split('\n🎮')[0].trim();
+const receipt={slug:'game-reward-planning',status:'prepared-not-uploaded',preparedAt:new Date().toISOString(),video:{...video,path:'output/game-reward-planning/'+video.name,seconds:26693/60,frames:26693},qa:base+'production/final-v1/qa.json',metadata:{title:m.titleKo,description:body('ko'),privacyStatus:'private',category:'Gaming',language:'ko',madeForKids:false},englishMetadata:{title:m.titleEn,description:body('en'),language:'en',status:'pending'},descriptionBody:{ko:body('ko'),en:body('en')},subtitles:['ko','en'].map(lang=>{const f=d.files.find(x=>x.name.endsWith('.'+lang+'.srt'));return{language:lang,path:'output/game-reward-planning/'+f.name,sha256:f.sha256,cues:d.cueCounts[lang],status:'pending'};}),thumbnail:{path:base+'publishing/thumbnail.png',sha256:'72bfafdea9f955e53c10608ebaf7eea987ad400783d6317ae7a90e0ce6f57b0f',savedVerified:false,status:'pending-nonblocking-known-channel-daily-limit',retryAfter:'2026-10-04T14:50:04.773Z'},actualVideoId:null,scheduled:false,fullSettingsVerified:false,privateUploadSaved:false,automaticChecks:{status:'pending-actual-new-upload-observation'},explicitWizardCompletionObserved:false,openReviewItems:q.openReviewItems||q.pendingReviews||['Human complete listening/pronunciation, final public rights, original Nimbus identity, truncated member handles and external backup pending.']};
+fs.writeFileSync(file,JSON.stringify(receipt,null,2)+'\n');
+console.log(JSON.stringify({prepared:true,video:receipt.video.path,seconds:receipt.video.seconds,cues:d.cueCounts,externalUploadPerformed:false}));

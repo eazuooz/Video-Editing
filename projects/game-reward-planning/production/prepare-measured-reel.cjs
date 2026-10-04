@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),base=path.join(root,'motion-canvas/src/projects/game-reward-planning'),work=path.join(__dirname,'measured-edit-v2');
+const plan=JSON.parse(fs.readFileSync(path.join(work,'plan.json'),'utf8'));const voice=JSON.parse(fs.readFileSync(path.join(__dirname,'voice-approval-v2.json'),'utf8'));
+if(!voice.all7ExplanationWholeWavsByteIdentical||!voice.allCurrentScenesTechnicallyReviewed)throw Error('Current seven retained explanations required');
+if(fs.existsSync(path.join(base,'measured-reel-project.ts')))throw Error('Preserve measured reel');
+let cursor=120;const rows=[];for(const s of plan.scenes.filter(s=>+s.id%2)){rows.push({id:s.id,startFrame:cursor,frames:s.frames,seconds:s.seconds,paragraphEnds:s.paragraphEnds,audioSha256:s.audioSha256});cursor+=s.frames;}
+const studyStart=cursor;cursor+=360;const outroStart=cursor;cursor+=600;
+fs.writeFileSync(path.join(base,'measured-reel-plan.json'),JSON.stringify({status:'measured-silent-reel-review-only',scenes:rows,studyStartFrame:studyStart,outroStartFrame:outroStart,totalFrames:cursor,fps:60,finalNarratedVideoApproved:false},null,2)+'\n');
+for(const [index,s] of rows.entries())fs.writeFileSync(path.join(base,'scenes','reel'+s.id+'.tsx'),`import {makeScene2D} from '@motion-canvas/2d';\nimport {rewardConcept} from './reward-concepts';\nimport plan from '../measured-reel-plan.json';\nexport default makeScene2D(function*(view){const s=plan.scenes.find(s=>s.id==='${s.id}')!;yield*rewardConcept(view,${index},s.seconds,s.paragraphEnds);});\n`);
+fs.writeFileSync(path.join(base,'measured-reel-project.ts'),`import {makeProject} from '@motion-canvas/core';\nimport intro from '../small-window-game-design/intro-cats-v2/scene?scene';\n${rows.map(s=>`import s${s.id} from './scenes/reel${s.id}?scene';`).join('\n')}\nimport study from './scenes/potion-state-study?scene';\nimport outro from './scenes/membership-outro?scene';\nexport default makeProject({name:'game-reward-planning-measured-silent-reel',scenes:[intro,${rows.map(s=>'s'+s.id).join(',')},study,outro]});\n`);
+console.log(JSON.stringify({frames:cursor,seconds:cursor/60,sevenExplanations:true,studyFrames:360,originalIntroFrames:120,originalMemberFrames:600,reviewOnly:true}));

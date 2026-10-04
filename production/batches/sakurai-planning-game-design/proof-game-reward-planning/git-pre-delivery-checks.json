@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-10-04T13:45:08Z",
+  "scope": "reviewed game-reward-planning delivery and all28 indexed projects; concurrent untracked math drafts preserved",
+  "npmAvailable": false,
+  "checks": [
+    {
+      "command": "node scripts/build-rebuild-manifests.cjs game-reward-planning",
+      "exitCode": 0,
+      "result": "13 script scenes;13 edit records;211 media references"
+    },
+    {
+      "command": "node scripts/media-policy.cjs",
+      "exitCode": 0,
+      "result": "OK: no tracked video/audio/media archives"
+    },
+    {
+      "command": "node scripts/build-rebuild-manifests.cjs --check",
+      "exitCode": 1,
+      "result": "Stale rebuild manifest: projects/game-math-polar-2d/rebuild.json",
+      "status": "working-tree-wide blocked by another producer's untracked unfinished math draft; not reported as passed"
+    },
+    {
+      "command": "node scripts/build-rebuild-manifests.cjs game-reward-planning --check",
+      "exitCode": 0,
+      "result": "Current13/13/211 rebuild passed"
+    },
+    {
+      "command": "node projects/game-reward-planning/production/check-delivery-rebuilds.cjs",
+      "exitCode": 0,
+      "result": "All28 indexed delivery-scope projects passed using unchanged original build function; excludes only untracked game-math-polar-2d/game-math-polar-3d"
+    },
+    {
+      "command": "node scripts/review-video-duplicates.cjs game-reward-planning --check",
+      "exitCode": 0,
+      "result": "current distinct preflight passed after full new math KO/EN content comparison"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exitCode": 0,
+      "result": "passed after own whitespace-only normalization with local raw originals preserved"
+    }
+  ],
+  "partialSharedIndexing": [
+    "motion-canvas/projects.json",
+    "projects/rebuild-index.json"
+  ],
+  "preservedOtherUserChanges": true,
+  "ignoredLogsRetainedLocally": true,
+  "forbiddenMediaStaged": false,
+  "thumbnailFollowupNonblocking": true,
+  "fullSettingsVerified": false
+}

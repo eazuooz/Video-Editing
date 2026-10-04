@@ -1,0 +1,10 @@
+const fs=require('fs'),path=require('path');
+const file=path.join(__dirname,'request-launch.json');
+if(fs.existsSync(file))throw Error('Preserve existing request and acquisition.');
+const request=JSON.parse(fs.readFileSync(path.join(__dirname,'request-targeted.json'),'utf8'));
+request.createdAt=new Date().toISOString();
+request.purpose='Obtain additional distinct official actions before measured60:40 timing. Independent thirteen-scene bilingual draft exists; TTS and final scenes have not started. Preserve useful explanations and do not repeat footage, slow it down or use animation as actual gameplay.';
+request.permission.publisherResourcePage='https://influencers.devolverdigital.com/wizard-with-a-gun';
+request.sources=[{videoId:'mYYaXW4Q6as',url:'https://www.youtube.com/watch?v=mYYaXW4Q6as',expectedChannels:['DevolverDigital'],game:'Wizard with a Gun',observedVersion:'Official launch trailer; actual expanded watch page KST2023-10-17. Selection awaits direct source review.',status:'candidate-needs-direct-action-review',potentialFit:'Distinct ammunition actions, research/crafting and object placement; actual intervals and visible behavior must be inspected before inclusion.'}];
+request.sourceDiscoveryEvidence='production/batches/sakurai-planning-game-design/proof-game-reward-planning/wizard-launch-official-source.ax.txt';
+fs.writeFileSync(file,JSON.stringify(request,null,2)+'\n');

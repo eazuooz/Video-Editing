@@ -1,0 +1,84 @@
+{
+  "stage": "mix",
+  "pid": 55816,
+  "status": "failed",
+  "observedAt": "2026-10-04T12:14:20.599Z",
+  "activeChild": null,
+  "commands": [
+    {
+      "pid": 36040,
+      "command": [
+        "D:/Github/Video-Editing/qwen3-tts/.venv/Scripts/python.exe",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\repair-intro-resample-silence.py"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-01.log"
+    },
+    {
+      "pid": 25616,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\voice-normalized.wav",
+        "-af",
+        "atrim=end_sample=96000,volumedetect",
+        "-f",
+        "null",
+        "-"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-02.log",
+      "exitCode": 0
+    },
+    {
+      "pid": 19648,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_streams",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-03.log"
+    },
+    {
+      "pid": 59360,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+        "-filter_complex",
+        "[0:a][1:a]acrossfade=d=1:c1=tri:c2=tri[b1]",
+        "-map",
+        "[b1]",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\nimbus-continuous.wav"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-04.log",
+      "exitCode": 0
+    },
+    {
+      "pid": 13048,
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\nimbus-continuous.wav",
+        "-af",
+        "atrim=duration=444.8833333333333,asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=.45,afade=t=out:st=444.43333333333334:d=.45",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\game-reward-planning\\production\\final-v1\\bgm-before-ducking.wav"
+      ],
+      "log": "projects/game-reward-planning/production/final-v1/build-mix-intro-resample-recovery-05.log",
+      "exitCode": 4294967274
+    }
+  ],
+  "exitCode": 1,
+  "finalApproved": false
+}

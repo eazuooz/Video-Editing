@@ -1,0 +1,14 @@
+const fs=require('fs'),path=require('path'),cp=require('child_process'),crypto=require('crypto');
+const root=path.resolve(__dirname,'../../../..');process.chdir(root);
+const file='production/batches/sakurai-planning-game-design/preflight/game-reward-planning.json';
+const pending=JSON.parse(fs.readFileSync(file,'utf8'));
+const prior=JSON.parse(fs.readFileSync('production/batches/sakurai-planning-game-design/proof-game-reward-planning/preflight-before-20261004T0820.json','utf8'));
+const old=new Map(prior.inputFiles.map(x=>[x.path,x.sha256]));
+const changed=pending.inputFiles.filter(x=>old.get(x.path)!==x.sha256);
+if(changed.some(x=>!x.path.startsWith('projects/game-math-polar-sample/')))throw Error('Unexpected changed project; review it directly before proceeding.');
+const reason=prior.contentReview+' Refreshed after input changes on2026-10-04: directly read the new game-math-polar-sample manifest, full KO/EN seven-scene scripts, outline, sources and README. Its question concerns position by distance/angle,3-4-5 conversion and moving centers/cylindrical coordinates; it does not repeat reward categories, prerequisites, power constraints or production budgets.27 existing projects now reviewed. Selected official Cult/Wizard actions support independent reward-catalogue commentary, not a translation of the original lecture.';
+const studio=prior.studioEvidence+' Reopened current Studio 보상 filter at2026-10-04T08:20Z: the single actual match remains public5W5f6T8Hho8; its displayed description still covers desire/current-target/backpack,level-up and crafting visibility. Fresh screenshot/AX: proof-game-reward-planning/studio-reward-refresh-20261004T0820.{png,ax.txt}. No published/scheduled settings changed.';
+const run=cp.spawnSync(process.execPath,['scripts/review-video-duplicates.cjs','game-reward-planning','--decision','distinct','--reason',reason,'--studio-evidence',studio],{cwd:root,encoding:'utf8'});process.stdout.write(run.stdout);process.stderr.write(run.stderr);if(run.status)process.exit(run.status);
+const actual=JSON.parse(fs.readFileSync(file,'utf8'));
+const evidence={schemaVersion:1,reviewedAt:new Date().toISOString(),previousInputsDigest:prior.inputsDigest,currentInputsDigest:actual.inputsDigest,changedInputsDirectlyRead:changed,existingProjects:27,fullKoEnRead:true,reason,studioEvidence:studio,sourceActionReview:'source-research/direct-source-review-v3.json'};
+fs.writeFileSync(path.join(__dirname,'content-review-refresh-20261004T0820.json'),JSON.stringify(evidence,null,2)+'\n');

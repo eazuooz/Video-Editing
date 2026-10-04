@@ -1,0 +1,6 @@
+const fs=require('node:fs'),path=require('node:path');const p=path.join(__dirname,'compile-source-v3.cjs');if(fs.existsSync(p))throw Error('Preserve v3 compiler');let source=fs.readFileSync(path.join(__dirname,'compile-review-source.cjs'),'utf8').replaceAll('measured-edit-v2','measured-edit-v3').replaceAll('source-review-v1','source-review-v2');
+const seed=`const previous=read(path.join(__dirname,'measured-edit-v2/source-review-v1/compiled.json'));const currentCuts=plan.scenes.flatMap(s=>s.segments.filter(c=>c.classification==='actual'));
+state.completed=previous.cuts.filter(c=>!['appearance-01','appearance-03'].includes(c.id)).map(c=>{const next=currentCuts.find(n=>n.id===c.id);if(!next||c.frames!==next.frames||c.sourceInSeconds!==next.sourceInSeconds||c.sourceOutSeconds!==next.sourceOutSeconds)throw Error('Retained clip intervals changed');return {...c,startFrame:next.startFrame,reusedByteIdentical:true,retainedBoundaryReview:'projects/game-reward-planning/production/measured-edit-v2/source-review-v1/encoded-boundaries-v2/direct-review.json'};});
+if(state.completed.length!==65)throw Error('65 unchanged sources required');
+`;
+source=source.replace('if(resume){const old=read(statePath);',seed+'if(resume){const old=read(statePath);');fs.writeFileSync(p,source);console.log('Prepared two-cut compiler with65 hash-verified byte-identical clips.');
