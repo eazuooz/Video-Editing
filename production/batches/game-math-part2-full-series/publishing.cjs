@@ -1,0 +1,24 @@
+// Prepare current delivered hashes and independent metadata; browser UI saves privately.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),slug=process.argv[2];
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
+const queue=read(path.join(__dirname,'queue.json'));if(!queue.items.some(x=>x.slug===slug))throw Error('Unknown batch lecture.');
+const base=path.join(root,'projects',slug),m=read(path.join(base,'project.json')),p=read(path.join(base,'production/timeline.json'));
+if(m.status!=='full-lecture-ready-for-private-review')throw Error('Finish real render and review before upload preparation.');
+const delivery=read(path.join(base,'production/delivery-output.json')),d=read(path.join(__dirname,'lessons',slug+'.json'));
+const dir=path.join(base,'publishing');fs.mkdirSync(dir,{recursive:true});const receipt=path.join(dir,'youtube-upload.json');
+if(fs.existsSync(receipt)&&read(receipt).videoId)throw Error('Existing actual upload: preserve and finish its settings, never upload again.');
+const defaults=read(path.join(root,'shared/publishing/youtube-defaults.json'));
+const stamp=s=>`${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`;
+const enTitles={
+ 'game-math-orientation-matrices':{'01':'Lecture overview','03':'Direction versus orientation','04':'Three attached coordinate axes','06':'Column vectors and transform direction','07':'Calculate a90degree rotation','09':'Inverse rotation and points','10':'Direction cosine matrices','12':'Compose coordinate transforms','13':'Validate a proper rotation','15':'Scale, reflection and a half-turn','16':'Floating-point drift','18':'Stored components and memory','19':'Direction and point code','21':'Why matrix lerp can collapse','22':'Two guided problems','24':'What to remember'},
+ 'game-math-euler-axis-angle':{'01':'Lecture overview','03':'Euler axes and order','04':'Moving body axes','06':'Reverse-order fixed axes','07':'Rotation order counterexample','09':'Equivalent Euler representations','10':'Gimbal lock and aligned axes','12':'Calculate the singular case','13':'Short angular differences','15':'Correct radians wrap code','16':'Limits of separate angle interpolation','18':'Axis-angle representation','19':'Rotation vectors','21':'Equivalent axis-angle endpoints','22':'Finite rotations do not add','24':'Angular velocity and turn history','25':'Two guided problems','26':'What to remember'}};
+const english=enTitles[slug];if(!english)throw Error('Write matching English chapter titles for this lecture.');
+const chapters=lang=>[...(p.scenes.filter(s=>english[s.id]).map(s=>(s.id==='01'?'00:00':stamp(s.start))+' '+(lang==='ko'?s.title:english[s.id]))),stamp(p.seconds-10)+' '+(lang==='ko'?'멤버십 감사와 프로그래밍 과외 안내':'Membership thanks and programming coaching')].join('\n');
+const overview=d.scenes[0];const body={ko:overview.ko.join(' ')+'\n\n실제 게임40%·설명60%, 배경음악 없이 내레이션으로 진행하는 게임수학 Part2 전체 강의입니다.\n\n챕터\n'+chapters('ko'),en:overview.en.join(' ')+'\n\nA full Game Math Part2 lecture with40% actual gameplay and60% explanation, narrated without background music.\n\nChapters\n'+chapters('en')};
+const record=name=>{const f=delivery.files.find(x=>x.name===slug+'.'+name);if(!f)throw Error('Missing delivery '+name);return{path:`output/${slug}/${f.name}`,bytes:f.bytes,sha256:f.sha256};};
+const thumbnail=`projects/${slug}/publish/assets/thumbnail.png`;const tb=fs.readFileSync(path.join(root,thumbnail));
+const upload={slug,status:'prepared-not-uploaded',video:{...record('captioned.mp4'),seconds:p.seconds},metadata:{title:m.titles.ko,description:body.ko,privacyStatus:'private',language:'ko'},englishMetadata:{title:m.titles.en,description:body.en,status:'pending'},descriptionBody:body,subtitles:['ko','en'].map(language=>({...record(language+'.srt'),language,status:'pending',method:'manual-file-upload-with-timing'})),thumbnail:{path:thumbnail,sha256:crypto.createHash('sha256').update(tb).digest('hex'),status:'prepared-not-saved'},videoId:null,scheduled:false,rightsReview:'Uploader free-use recording permission observed; public game-IP review pending',humanListening:'pending',fullPublishingSettingsComplete:false};
+fs.writeFileSync(receipt,JSON.stringify(upload,null,2)+'\n');
+fs.writeFileSync(path.join(dir,'pinned-comment.ko.txt'),`${m.titles.ko}에서 배운 축·좌표계와 계산 순서를 직접 코드로 확인해 보세요. 게임 프로그래밍 학습과 직접 만든 코드에 피드백이 필요하다면 코칭·과외 안내를 확인할 수 있습니다.\n\n▶ 프로그래밍 코칭·과외\n${defaults.coaching.url}\n`);
+console.log('Prepared exact captioned delivery and measured chapters for private Studio upload:',slug);
