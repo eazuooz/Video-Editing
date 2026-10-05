@@ -1,0 +1,90 @@
+import {Line, makeScene2D, Rect, Txt, Video} from '@motion-canvas/2d';
+import {all, createRef, waitFor} from '@motion-canvas/core';
+import {PAPER} from '../../styles/research-paper';
+import plan from './scene-plan.json';
+
+type Segment = {
+  role: 'actual-existing-game'|'explanation';
+  frames: number;
+  mediaUrl?: string;
+  sourceAudioStreams?: number;
+  mediaPixelsReviewed: boolean;
+  diagramPixelsReviewed: boolean;
+};
+type Diagram = {labels: string[]; details: string[]; kind: string};
+type Scene = {id: string; title: string; role: string; durationFrames: number;
+  segments: Segment[]; diagram: Diagram|null};
+
+/** Independent entrypoints use a shared drawing primitive, never a shared editorial script. */
+export function sequelScene(id: string, lookdev = false) {
+  return makeScene2D(function* (view) {
+    const scene = plan.scenes.find(s => s.id === id) as Scene|undefined;
+    if (!scene) throw new Error(`Missing independent scene ${id}`);
+    if (lookdev && scene.role !== 'explanation') {
+      throw new Error('Actual gameplay cannot be replaced by a generated demonstration.');
+    }
+    if (!lookdev && (!plan.finalTimingApproved || !plan.allFinalCaptionPixelsReviewed ||
+        !plan.allSourceSegmentPixelsReviewed || !Number.isInteger(scene.durationFrames) ||
+        scene.durationFrames <= 0 || scene.segments.reduce((n,s)=>n+s.frames,0)!==scene.durationFrames)) {
+      throw new Error('Measured timing, actual segments and all fixed-caption pixels are pending.');
+    }
+    const segments: Segment[] = lookdev ? [{role:'explanation',frames:900,
+      mediaPixelsReviewed:false,diagramPixelsReviewed:false}] : scene.segments;
+    for (const segment of segments) {
+      if (!Number.isInteger(segment.frames) || segment.frames <= 0) throw new Error('Integer frames required.');
+      view.removeChildren();
+      if (segment.role === 'actual-existing-game') {
+        if (!segment.mediaPixelsReviewed || !segment.mediaUrl) throw new Error('Reviewed existing-game segment required.');
+        if (segment.sourceAudioStreams !== 0) throw new Error('Compiled source must have zero audio streams.');
+        const video = createRef<Video>();
+        view.add(<Video ref={video} src={segment.mediaUrl} width={1920} height={1080}/>);
+        video().play();
+        yield* waitFor(segment.frames/60);
+        video().pause();
+        continue;
+      }
+      if (!lookdev && !segment.diagramPixelsReviewed) throw new Error('Diagram pixels pending.');
+      const diagram = scene.diagram;
+      if (!diagram) throw new Error('Independent explanation diagram required.');
+      view.fill(PAPER.background);
+      view.add(<Txt text={`${id} · 속편 기획`} x={-860} y={-466} fontSize={28}
+        fill={PAPER.muted} fontFamily={PAPER.font} textAlign={'left'} offset={[-1,0]}/>);
+      view.add(<Txt text={scene.title} x={-860} y={-399} fontSize={PAPER.titleSize}
+        fill={PAPER.ink} fontFamily={PAPER.font} textAlign={'left'} offset={[-1,0]}/>);
+      view.add(<Txt text={'우리의 설계 제안 · 실제 이용자 조사/개발사 내부 문서 아님'} x={-860} y={-316}
+        fontSize={27} fill={PAPER.muted} fontFamily={PAPER.font} offset={[-1,0]}/>);
+      const cards = diagram.labels.map(()=>createRef<Rect>());
+      const positions = diagram.kind==='two-columns' ? [-470,470] : [-570,0,570];
+      for (let i=0;i<diagram.labels.length;i++) {
+        const x=positions[i];
+        view.add(<Rect ref={cards[i]} x={x} y={-15} width={470} height={270} opacity={0}>
+          <Rect x={12} y={15} width={470} height={270} fill={PAPER.line}/>
+          <Rect width={470} height={270} fill={i===1?PAPER.blueLight:PAPER.panel}
+            stroke={PAPER.line} lineWidth={2}/>
+          <Txt text={diagram.labels[i]} y={-67} width={424} fontSize={36} fill={PAPER.ink}
+            fontFamily={PAPER.font} textWrap={true}/>
+          <Txt text={diagram.details[i]} y={34} width={416} fontSize={29} fill={PAPER.muted}
+            fontFamily={PAPER.font} textWrap={true}/>
+        </Rect>);
+      }
+      for (let i=0;i<cards.length;i++) {
+        yield* all(cards[i]().opacity(1,0.28),cards[i]().y(0,0.28));
+        if(i>0) view.add(<Line points={[[positions[i-1]+240,0],[positions[i]-240,0]]}
+          stroke={PAPER.blue} lineWidth={5} endArrow={true} arrowSize={14}/>);
+        yield* waitFor(0.3);
+      }
+      if(diagram.kind==='branch') {
+        // Two distinct arrows show the proposed decision split, not a recreated game.
+        view.add(<Line points={[[0,155],[180,230],[570,190]]} stroke={PAPER.blue} lineWidth={5} endArrow/>);
+        view.add(<Line points={[[0,155],[180,270],[570,270]]} stroke={PAPER.blue} lineWidth={5} endArrow/>);
+      }
+      if(diagram.kind==='two-lanes') {
+        view.add(<Txt text={'두 확인 질문 → 행동 관찰 → 변경 조건·안내 수정'} y={240} fontSize={32}
+          fill={PAPER.blue} fontFamily={PAPER.font}/>);
+      }
+      view.add(<Txt text={'유지할 활동 / 바꿀 조건 / 확인 과제'} y={315} fontSize={31}
+        fill={PAPER.ink} fontFamily={PAPER.font}/>);
+      yield* waitFor(Math.max(0,segment.frames/60-cards.length*0.58));
+    }
+  });
+}
