@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "slug": "making-game-sequels",
-  "updatedAt": "2026-10-05T13:05:08.747953+00:00",
-  "stage": "current13-guided60-final-mix-CPU-ASR",
+  "updatedAt": "2026-10-05T13:42:07.411083+00:00",
+  "stage": "current13-guided60-review-pair-and-final-QA",
   "scenes": 13,
   "paragraphs": 60,
   "sourceCandidates": 62,
@@ -17,23 +17,36 @@
   "bodyRatioApproved": true,
   "rendered": false,
   "privateUploaded": false,
-  "nextAction": "Directly compare all13 mixed chapters and13 independent complete contexts. Encode current fixed captions and inspect every final cue/cut; technical QA, collection, singleprivate save and per-video Git remain pending.",
+  "nextAction": "Inspect every current encoded caption/cut and compositions; verify exact PTS, both decodes, identical AAC and mix loudness before collection, single private settings and Git.",
   "scriptSourceReview": "projects/making-game-sequels/production/script-source-review.json",
   "execution": {
-    "observedAt": "2026-10-05T13:05:08.747953+00:00",
-    "status": "transcribing-scene-07",
-    "pid": 59264,
-    "sessionId": 97763,
+    "observedAt": "2026-10-05T13:42:07.411083+00:00",
+    "status": "CPU-count-current-review-pair",
+    "pid": 41148,
+    "sessionId": 15295,
     "activeTasks": [
       {
-        "kind": "current-final-mixed-ASR",
-        "pid": 59264,
-        "state": "projects/making-game-sequels/production/final-v1/mixed-asr-execution.json"
+        "kind": "CPU-count-current-review-pair",
+        "pid": 40376,
+        "command": [
+          "C:\\ProgramData\\HP\\LCDDisplayHelper\\bin\\ffprobe.exe",
+          "-v",
+          "error",
+          "-threads",
+          "2",
+          "-count_frames",
+          "-show_streams",
+          "-show_format",
+          "-of",
+          "json",
+          "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\making-game-sequels.clean.review.mp4"
+        ],
+        "log": "projects/making-game-sequels/production/final-v1/review-pair-003.log"
       }
     ],
     "cpuProductionJobs": 1,
     "gpuSynthesisJobs": 0,
-    "renderJobs": 0,
+    "renderJobs": 1,
     "uploads": 0,
     "sourceDownloadJobs": 0,
     "completedWorkers": [
@@ -178,13 +191,13 @@
     "newNarrationCreated": true,
     "newSceneCreated": true,
     "newScriptCreated": true,
-    "phase": "current13-guided60-final-mix-CPU-ASR",
+    "phase": "current13-guided60-review-pair-and-final-QA",
     "alive": true,
-    "state": "projects/making-game-sequels/production/final-v1/mixed-asr-execution.json",
+    "state": "projects/making-game-sequels/production/final-v1/review-pair-execution.json",
     "log": "projects/making-game-sequels/production/guided-observation-asr-v3.log",
     "primaryCpuProductionJobs": 1,
     "secondaryTasks": [],
-    "commandLine": "review-final-mix-v1.py CPU2/GPU0",
+    "commandLine": "render-reviewed-pair-v1.py CPU2/GPU0",
     "historicalTtsLiveObservation": {
       "path": "projects/making-game-sequels/production/narration-live-observation.json",
       "observedAt": "2026-10-05T05:51:07.527545+00:00",
@@ -216,10 +229,11 @@
     },
     "currentFinalMixAsr": {
       "state": "projects/making-game-sequels/production/final-v1/mixed-asr-execution.json",
-      "completed": 7,
+      "completed": 26,
       "total": 26,
       "automaticApproval": false
-    }
+    },
+    "launchEvidence": "projects/making-game-sequels/production/final-v1/review-pair-session.json"
   },
   "narrationMeasurement": {
     "index": "projects/making-game-sequels/production/narration-guided60-index-v3.json",
@@ -1315,7 +1329,7 @@
   "finalPlan": "projects/making-game-sequels/production/final-v1/plan.json",
   "allInputSamplePixelsReviewed": true,
   "allFinalPixelsApproved": false,
-  "finalMixAsrApproved": false,
+  "finalMixAsrApproved": true,
   "currentFinalMediaBuilds": {
     "schemaVersion": 1,
     "observedAt": "2026-10-05T12:43:30.747213+00:00",
@@ -1339,7 +1353,7 @@
     "mixLufs": -16.04,
     "mixTruePeakDbtp": -1.98,
     "allCurrent554_584SecondsPcmPreserved": true,
-    "finalMixedAsrApproved": false,
+    "finalMixedAsrApproved": true,
     "finalEncodedCaptionPixelsReviewed": false,
     "rendered": false,
     "qaApproved": false,
@@ -1372,16 +1386,155 @@
     "evidenceCommit": "28f82c2bde9945b36783594dd316963423eeb503"
   },
   "currentMixedAsrDirectProgress": {
-    "path": "projects/making-game-sequels/production/final-v1/mixed-asr-direct-progress.json",
-    "directlyComparedWindows": 5,
+    "path": "projects/making-game-sequels/production/final-v1/full-mix-asr-review.json",
+    "reviewedWindows": 26,
     "requiredWindows": 26,
-    "allApproved": false,
-    "KnightNameIndependentContext": "pending"
+    "technicallyApproved": true,
+    "recognizerUncertaintyPreserved": true,
+    "humanWholeListening": "pending",
+    "humanPronunciation": "pending"
   },
   "preparedReviewPairProducer": {
     "path": "projects/making-game-sequels/production/render-reviewed-pair-v1.py",
     "syntaxParsed": true,
-    "executed": false,
-    "gate": "Current26 mixed windows require actual direct comparison; no missing-review bypass. Produces a review pair, not QA/private completion."
+    "executed": true,
+    "gate": "Current26 mixed windows require actual direct comparison; no missing-review bypass. Produces a review pair, not QA/private completion.",
+    "exactPresentationPacketClockRequired": true
+  },
+  "mixedAsrHandoffGit": {
+    "progressCommit": "817e38246eb998b37668c78bcb22de908f914b69",
+    "latestVerification": {
+      "schemaVersion": 1,
+      "verifiedAt": "2026-10-05T13:07:15.904Z",
+      "label": "mixed-asr-handoff",
+      "progressCommit": "817e38246eb998b37668c78bcb22de908f914b69",
+      "parent": "c9dfec77c6f3d81d267b9dab31414ebcdb506c20",
+      "commitPaths": [
+        "production/batches/sakurai-planning-game-design/preflight/making-game-sequels.json",
+        "production/batches/sakurai-planning-game-design/proof-making-game-sequels/content-review.json",
+        "production/batches/sakurai-planning-game-design/proof-making-game-sequels/current-publishing-interpolation-rereview-v1.json",
+        "production/batches/sakurai-planning-game-design/proof-making-game-sequels/latest-checkpoint.json",
+        "production/batches/sakurai-planning-game-design/proof-making-game-sequels/measured-media-evidence-git-verification.json",
+        "production/batches/sakurai-planning-game-design/proof-making-game-sequels/mixed-asr-handoff-pre-delivery-checks.json",
+        "production/batches/sakurai-planning-game-design/queue.json",
+        "projects/making-game-sequels/production/final-v1/mixed-asr-direct-progress.json",
+        "projects/making-game-sequels/production/latest-checkpoint.json",
+        "projects/making-game-sequels/production/render-reviewed-pair-v1.py",
+        "projects/making-game-sequels/rebuild.json"
+      ],
+      "snapshots": [
+        {
+          "path": "production/batches/sakurai-planning-game-design/queue.json",
+          "blob": "4699564f194165bc8dc001fe406739e97bbcd073",
+          "capturedSha256": "d5275509bd534094616967c8d40f9f170c13b71d4011d39f7ec8ffa7712f5fde",
+          "capturedAt": "2026-10-05T13:06:56.987Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "production/batches/sakurai-planning-game-design/preflight/making-game-sequels.json",
+          "blob": "2d26588533d066d1a72765fafdd69d5820c4897f",
+          "capturedSha256": "b7e6d81037d2015eac0f4af9979990c62b02c638efa56a9d5364557aa88af5ae",
+          "capturedAt": "2026-10-05T13:06:57.214Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "production/batches/sakurai-planning-game-design/proof-making-game-sequels/content-review.json",
+          "blob": "f4b8f99d74436b725032cf2a177b7328918522e6",
+          "capturedSha256": "2f9d60e599d1515a21fb65e7f10c9376a1162ffe2f048324c0398d022736115a",
+          "capturedAt": "2026-10-05T13:06:57.450Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "production/batches/sakurai-planning-game-design/proof-making-game-sequels/current-publishing-interpolation-rereview-v1.json",
+          "blob": "7237352ff48888e59d7d82afdcbc6710b5598698",
+          "capturedSha256": "02f17979004cde06663cfc162ebdc424c258ff25fd3bb5c053ffb5d396844ef8",
+          "capturedAt": "2026-10-05T13:06:57.672Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "production/batches/sakurai-planning-game-design/proof-making-game-sequels/latest-checkpoint.json",
+          "blob": "7d05464c1a8db73deb25cc1ccdb012495fab6ac0",
+          "capturedSha256": "130fd43b8548405bdd0da31b1dc839da736ae139ab21f8f95283791185e1044c",
+          "capturedAt": "2026-10-05T13:06:57.912Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "production/batches/sakurai-planning-game-design/proof-making-game-sequels/measured-media-evidence-git-verification.json",
+          "blob": "d25b99b160d12b71af17d8a4b30155e0bafc9d44",
+          "capturedSha256": "663ad9d70529c7b9854586e10aa1612644f61b3bd8b07a6a084f0122956f7876",
+          "capturedAt": "2026-10-05T13:06:58.142Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "projects/making-game-sequels/production/latest-checkpoint.json",
+          "blob": "4e0d250c994ac3f1b52dbdff82cc06e706cfe8b6",
+          "capturedSha256": "bb6762ce800da840972d7a90cce221747a71a2f4de2539031cc14951409c5088",
+          "capturedAt": "2026-10-05T13:06:58.332Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "projects/making-game-sequels/production/final-v1/mixed-asr-direct-progress.json",
+          "blob": "6ff01b1b983984065d4991b42826afea05e7ccdd",
+          "capturedSha256": "d2b5ad77787c41108f034e922483845e0da16d873355c39801ba8dd5a732c446",
+          "capturedAt": "2026-10-05T13:06:58.580Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "projects/making-game-sequels/production/render-reviewed-pair-v1.py",
+          "blob": "b52b69e7b3839b7e1aefa495cad656c4eed6e319",
+          "capturedSha256": "4f7f3dad510757c102e4a736c81970ec3489f578321552885d797270d2b13681",
+          "capturedAt": "2026-10-05T13:06:58.772Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "projects/making-game-sequels/rebuild.json",
+          "blob": "2fb743dc4bfd19ad2a3a0856f35a6e7fa1cec81c",
+          "capturedSha256": "9dde382e45fd8890bf3e47f9f1c4df8eb32541b140877dca0f6ee6ec44c9d0c8",
+          "capturedAt": "2026-10-05T13:06:59.003Z",
+          "workingCopyPreserved": true
+        },
+        {
+          "path": "production/batches/sakurai-planning-game-design/proof-making-game-sequels/mixed-asr-handoff-pre-delivery-checks.json",
+          "blob": "ad0f7f9a2e144ec73bd174b15b66cb75117a8a0f",
+          "capturedSha256": "cfc0df690e19becbb9876f806f3d085bc4c660700f8727965fc20333854ae025",
+          "capturedAt": "2026-10-05T13:07:05.993Z",
+          "workingCopyPreserved": true
+        }
+      ],
+      "pushExitCode": 0,
+      "pushOutput": "To https://github.com/eazuooz/Video-Editing.git\n   c9dfec77..817e3824  main -> main",
+      "normalPush": true,
+      "forcePush": false,
+      "localSha": "817e38246eb998b37668c78bcb22de908f914b69",
+      "remoteSha": "817e38246eb998b37668c78bcb22de908f914b69",
+      "remoteMatches": true,
+      "foreignStagedBefore": [],
+      "foreignIndexBefore": "fe42634a0300e2630aac00b8915487b95dccefc7c7375f5428ab4fa9ac859ccb",
+      "foreignIndexAfter": "fe42634a0300e2630aac00b8915487b95dccefc7c7375f5428ab4fa9ac859ccb",
+      "otherUsersFilesIncluded": false,
+      "newRasterCommitted": 0,
+      "mediaCommitted": false,
+      "completedVideoDelivery": false,
+      "completedVideoCount": 11,
+      "remainingNonduplicateProductions": 12,
+      "persistence": "Actual post-push evidence is local until a later explicit evidence commit; no future self-SHA predicted."
+    },
+    "completedVideoDelivery": false,
+    "newImages": 0,
+    "mediaInGit": false
+  },
+  "preparedPublishingText": {
+    "path": "projects/making-game-sequels/publishing/metadata-prepared.json",
+    "chapters": 14,
+    "uploaded": false,
+    "videoId": null,
+    "actualSettingsVerified": false
+  },
+  "currentDistinctReview": {
+    "path": "production/batches/sakurai-planning-game-design/proof-making-game-sequels/current-math-script-rereview-v2.json",
+    "existingProjects": 35,
+    "fullChangedScripts": 4,
+    "distinctPassed": true,
+    "foreignFilesModified": false
   }
 }

@@ -9,7 +9,12 @@ W = BASE / 'final-v1'
 FF = Path('C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe')
 FP = FF.with_name('ffprobe.exe')
 read = lambda p: json.loads(p.read_text(encoding='utf-8-sig'))
-sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+def sha(p):
+    digest = hashlib.sha256()
+    with p.open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
 rel = lambda p: p.relative_to(ROOT).as_posix()
 now = lambda: datetime.now(timezone.utc).isoformat()
 STATE = W / 'review-pair-execution.json'
@@ -110,10 +115,17 @@ try:
         assert len(probe['streams']) == 2 and int(video['nb_read_frames']) == 35583
         assert video['width'] == 1920 and video['height'] == 1080 and video['avg_frame_rate'] == '60/1'
         assert abs(float(probe['format']['duration']) - 593.05) <= .017
+        packet_clock = json.loads(run(FP, ['-v', 'error', '-select_streams', 'v:0', '-show_packets',
+            '-show_entries', 'packet=pts,duration', '-of', 'json', p], 'CPU-exact-presentation-packet-clock'))['packets']
+        assert video['time_base'] == '1/90000' and len(packet_clock) == 35583
+        assert sorted(int(packet['pts']) for packet in packet_clock) == list(range(0, 35583 * 1500, 1500))
+        assert all(int(packet['duration']) == 1500 for packet in packet_clock)
         assert not ff(['-i', p, '-f', 'null', '-'], 'CPU-whole-current-review-decode').strip()
         audio_hash = ff(['-i', p, '-map', '0:a:0', '-c:a', 'copy', '-f', 'hash', '-hash', 'sha256', '-'], 'CPU-current-AAC-payload-hash').strip()
         assert audio_hash.startswith('SHA256=')
-        records.append(dict(path=rel(p), sha256=sha(p), probe=probe, wholeDecodeExitCode=0, aacPayloadHash=audio_hash))
+        records.append(dict(path=rel(p), sha256=sha(p), probe=probe, wholeDecodeExitCode=0,
+            exactPresentationClock=dict(timeBase='1/90000', count=35583, firstPts=0,
+                lastPts=35582 * 1500, step=1500, allPacketPtsExact=True), aacPayloadHash=audio_hash))
     original_audio_hash = ff(['-i', W / 'final-mix.m4a', '-map', '0:a:0', '-c:a', 'copy', '-f', 'hash', '-hash', 'sha256', '-'], 'CPU-source-AAC-payload-hash').strip()
     assert records[0]['aacPayloadHash'] == records[1]['aacPayloadHash'] == original_audio_hash
     write(W / 'review-pair-build.json', dict(createdAt=now(), planSha256=sha(W / 'plan.json'),
