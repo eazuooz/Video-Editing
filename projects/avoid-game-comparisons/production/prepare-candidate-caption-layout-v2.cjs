@@ -1,6 +1,6 @@
 // Measure literal candidate captions and prepare fixed-pixel review samples.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const work=path.join(__dirname,process.argv.includes('--measured-v5')?'measured-edit-v5':process.argv.includes('--measured-v4')?'measured-edit-v4':process.argv.includes('--measured-v3')?'measured-edit-v3':'measured-edit-v2');
+const work=path.join(__dirname,process.argv.includes('--measured-v6')?'measured-edit-v6':process.argv.includes('--measured-v5')?'measured-edit-v5':process.argv.includes('--measured-v4')?'measured-edit-v4':process.argv.includes('--measured-v3')?'measured-edit-v3':'measured-edit-v2');
 const read=n=>JSON.parse(fs.readFileSync(path.join(work,n),'utf8'));
 const plan=read('plan.json'),tracks=read('caption-tracks-v1.json');
 if(fs.existsSync(path.join(work,'caption-layout-v1.json')))throw Error('Preserve existing candidate layout.');

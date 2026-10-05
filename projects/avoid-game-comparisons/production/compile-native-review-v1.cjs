@@ -3,11 +3,12 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {spawn}=require('node:child_process');
 const root=path.resolve(__dirname,'../../..');
-const measuredV5=process.argv.includes('--measured-v5');
+const measuredV6=process.argv.includes('--measured-v6');
+const measuredV5=process.argv.includes('--measured-v5')||measuredV6;
 const measuredV4=process.argv.includes('--measured-v4')||measuredV5;
 const measuredV3=process.argv.includes('--measured-v3')||measuredV4;
 const measuredV2=process.argv.includes('--measured-v2')||measuredV3;
-const work=path.join(__dirname,measuredV5?'measured-edit-v5':measuredV4?'measured-edit-v4':measuredV3?'measured-edit-v3':measuredV2?'measured-edit-v2':'measured-edit-v1'),dest=path.join(work,'native-review-v1');
+const work=path.join(__dirname,measuredV6?'measured-edit-v6':measuredV5?'measured-edit-v5':measuredV4?'measured-edit-v4':measuredV3?'measured-edit-v3':measuredV2?'measured-edit-v2':'measured-edit-v1'),dest=path.join(work,'native-review-v1');
 const planPath=path.join(work,'plan.json');
 const sourceDir=path.join(root,'production/batches/sakurai-planning-game-design/proof-avoid-game-comparisons/research-local/game-sources');
 const queuePath=path.join(root,'production/batches/sakurai-planning-game-design/queue.json');
@@ -75,7 +76,7 @@ async function run(exe,args,id){
  }
  state.sources=verifiedSources;save();
  if(measuredV2){
-  const previousName=measuredV5?'measured-edit-v4':measuredV4?'measured-edit-v3':measuredV3?'measured-edit-v2':'measured-edit-v1';
+  const previousName=measuredV6?'measured-edit-v5':measuredV5?'measured-edit-v4':measuredV4?'measured-edit-v3':measuredV3?'measured-edit-v2':'measured-edit-v1';
   const previous=read(path.join(__dirname,previousName,'native-review-v1/compiled.json'));
   for(const c of cuts){
    const prior=previous.cuts.find(x=>x.id===c.id&&x.sourceVideoId===c.sourceVideoId&&x.sourceStartFrame===c.sourceStartFrame&&x.sourceEndFrameExclusive===c.sourceEndFrameExclusive&&x.frames===c.frames);
@@ -84,9 +85,9 @@ async function run(exe,args,id){
    state.completed.push({...prior,startFrame:c.startFrame,reusedByteIdentical:true,
     originalCompileEvidence:`projects/avoid-game-comparisons/production/${previousName}/native-review-v1/compiled.json`});
   }
-  const retained=measuredV4?106:measuredV3?107:103;
+  const retained=measuredV6?110:measuredV4?106:measuredV3?107:103;
   if(state.completed.length!==retained)throw Error(`Exactly${retained} unchanged source cuts must be retained.`);
-  state.reusedByteIdenticalCuts=retained;state.newSubintervalCuts=measuredV5?5:measuredV4?2:measuredV3?1:5;save();
+  state.reusedByteIdenticalCuts=retained;state.newSubintervalCuts=measuredV6?1:measuredV5?5:measuredV4?2:measuredV3?1:5;save();
  }
  for(const c of cuts){
   const prior=state.completed.find(x=>x.id===c.id);

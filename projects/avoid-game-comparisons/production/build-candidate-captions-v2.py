@@ -11,7 +11,7 @@ from PIL import ImageFont
 
 ROOT = Path(__file__).resolve().parents[3]
 BASE = Path(__file__).resolve().parent
-WORK = BASE / ('measured-edit-v5' if '--measured-v5' in sys.argv else 'measured-edit-v4' if '--measured-v4' in sys.argv else 'measured-edit-v3' if '--measured-v3' in sys.argv else 'measured-edit-v2')
+WORK = BASE / ('measured-edit-v6' if '--measured-v6' in sys.argv else 'measured-edit-v5' if '--measured-v5' in sys.argv else 'measured-edit-v4' if '--measured-v4' in sys.argv else 'measured-edit-v3' if '--measured-v3' in sys.argv else 'measured-edit-v2')
 read = lambda p: json.loads(p.read_text(encoding='utf-8-sig'))
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 plan = read(WORK / 'plan.json')
@@ -159,6 +159,28 @@ for s in plan['scenes']:
                                 'meaningAndTimingApproved': False, 'textSource': 'independent-reviewed-English-script'})
                 cursor = stop
 
+boundary_corrections = []
+if '--measured-v6' in sys.argv:
+    # The recognizer estimated the mug paragraph about1.2frames before its
+    # preserved PCM begins. Keep both language tracks on the actual PCM/visual
+    # boundary; this changes cue timing, never narration or caption position.
+    scene6 = next(s for s in plan['scenes'] if s['id'] == '06')
+    cup = min(c['startFrame'] for c in scene6['segments']
+              if c['classification'] == 'actual-existing-game' and c['paragraph'] == 4) / 60
+    p4 = next(p for p in scene6['speechEvidence'] if p['paragraph'] == 4)
+    pcm_start = source_to_output(scene6, p4['pcmFromSample'] / scene6['sampleRate'])
+    assert abs(cup - pcm_start) < .000001
+    for language, rows in [('ko', ko_rows), ('en', en_rows)]:
+        first = next(r for r in rows if r['scene'] == '06' and r['paragraph'] == 4)
+        before = first['startSeconds']
+        first['startSeconds'] = max(before, cup)
+        assert first['endSeconds'] > first['startSeconds']
+        boundary_corrections.append({'language': language, 'cue': first['index'],
+                                    'oldStartSeconds': before, 'startSeconds': first['startSeconds'],
+                                    'actualPcmAndCupVisualBoundarySeconds': cup,
+                                    'reason': 'Preserved PCM starts with the first actual mug frame; early recognizer anchor removed.',
+                                    'finalPixelApproved': False})
+
 for rows in [ko_rows, en_rows]:
     for a, z in zip(rows, rows[1:]):
         if a['endSeconds'] > z['startSeconds']:
@@ -188,6 +210,7 @@ write_srt(ko_rows, 'ko');write_srt(en_rows, 'en')
     'style': 'boxed-white-forest-v1', 'centerPx': [960, 970], 'koRows': ko_rows, 'enRows': en_rows,
     'paragraphTimingEvidence': reviews, 'all60ParagraphsIncluded': len(reviews) == 60,
     'recognizerAnchorOverlapCandidates': overlap_reviews,
+    'actualPcmBoundaryCorrections': boundary_corrections,
     'everyCurrentScriptCharacterPreserved': True, 'allTimingApproved': False, 'allPixelsApproved': False,
     'humanWholeListening': 'pending', 'humanPronunciationApproval': 'pending',
     'targetedSingleLineContexts': [list(x) for x in sorted(single_line_contexts)],
