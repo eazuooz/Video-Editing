@@ -1,0 +1,181 @@
+"""Full chapter conclusion, authored after fresh car and flight inspection."""
+from pathlib import Path
+import json
+B=Path(__file__).parent;slug='game-math-rotation-interpolation';scenes=[]
+def explain(i,title,mode,rows):
+ scenes.append(dict(id=f'{i:02}',title=title,kind='explanation',mode=mode,ko=[x[0] for x in rows],en=[x[1] for x in rows],beats=[x[2] for x in rows]))
+def actual(i,title,source,segments,rows,focus,claim):
+ scenes.append(dict(id=f'{i:02}',title=title,kind='actual',sourceId=source,sourceSegments=[{'in':a,'maxSeconds':b-a} for a,b in segments],**{'in':segments[0][0]},maxSeconds=sum(b-a for a,b in segments),ko=[x[0] for x in rows],en=[x[1] for x in rows],focus=focus,claim=claim))
+explain(1,'이번 강의에서 배울 것','overview',[
+ ('두 자세 사이를 자연스럽게 돌리려면 어떤 중간 자세를 만들어야 할까요?','How do we construct natural intermediate orientations between two poses?','끝 자세 사이의 회전 경로'),
+ ('이번 시간에는 자동차와 비행 장면을 보고, 쿼터니언 보간의 짧은 경로와 속도를 그림으로 이해합니다.','We will observe driving and flight, then visualize the short path and speed of quaternion interpolation.','실제 움직임 → 보간의 경로와 속도'),
+ ('이어서 오일러 각, 축과 각도, 쿼터니언, 행렬을 같은 규약으로 바꿉니다.','Next, we will convert Euler angles, axis-angle, quaternions and matrices under one convention.','같은 규약으로 네 표현 연결'),
+ ('마지막으로 구십 도의 중간 자세를 직접 계산하고, 변환을 왕복해 같은 회전인지 확인하겠습니다.','Finally, we will calculate the midpoint of a ninety-degree turn and verify a conversion round trip.','중간 자세 계산 → 왕복 검증')])
+actual(2,'차체와 카메라의 회전 경로 관찰','ZFGdubPhasM',[(42,95)],[
+ ('포르자 호라이즌 사에서 자동차가 굽은 길을 달리는 장면입니다. 차체가 향하는 쪽과 뒤따르는 카메라를 따로 보세요.','This is driving on a bend in Forza Horizon4. Read the car facing separately from the following camera.'),
+ ('처음과 끝 방향만 맞아도 중간에 갑자기 돌아가면 움직임이 어색할 수 있습니다.','Matching the first and last directions does not prevent an awkward sudden turn between them.'),
+ ('차체의 앞쪽, 길의 굽음, 배경이 움직이는 흐름을 비교해 봅니다.','Compare the front of the car, the bend and the moving background.'),
+ ('이 화면으로 게임이 어떤 보간 함수를 썼는지는 알 수 없습니다. 자연스러운 중간 자세가 필요한 이유를 관찰합니다.','The footage does not reveal which interpolation function the game uses. It shows why intermediate orientations matter.'),
+ ('다음 그림에서는 위치와 카메라를 고정하고, 회전만 바꾸어 보겠습니다.','Our next diagram will hold position and camera fixed and change only orientation.')],
+ '차체 앞쪽과 길·추적 카메라를 구분','끝 자세를 잇는 중간 자세가 필요하다는 관찰')
+explain(3,'숫자를 섞는 것과 회전을 잇는 것','collapse',[
+ ('항등행렬에서 제트축 백팔십 도 회전으로 가는 중간을 생각해 봅시다.','Consider the midpoint between identity and a180-degree turn about z.','I → Z180°'),
+ ('행렬 원소를 절반씩 섞으면 대각선이 영, 영, 일이 됩니다. 두 축이 사라집니다.','Averaging the entries yields a diagonal of0,0,1. Two axes collapse.','행렬 평균: diag(0,0,1)'),
+ ('쿼터니언도 단위 길이를 유지해야 합니다. 네 성분을 그냥 섞은 값은 보통 단위 길이가 아닙니다.','Quaternions must maintain unit length too. A component blend generally leaves the unit surface.','성분 선형 보간 ≠ 단위 회전'),
+ ('선형 보간한 뒤 정규화하는 방법과, 단위 구면의 호를 따라가는 방법을 나누어 보겠습니다.','We will distinguish a normalized linear blend from following an arc on the unit sphere.','NLERP / SLERP'),
+ ('행렬로는 보간이 불가능하다는 뜻은 아닙니다. 회전 구조를 보존하는 별도 방법이 필요합니다.','Matrices can be interpolated with methods that respect the rotation structure; naive entry blending is the problem.','회전 구조를 보존할 방법 선택')])
+explain(4,'부호부터 골라 짧은 경로 만들기','short-path',[
+ ('앞 편에서 쿼터니언 큐와 마이너스 큐는 같은 자세라고 배웠습니다. 하지만 성분을 잇는 경로는 다를 수 있습니다.','As we learned, q and minus q represent the same orientation, yet a component path between them can differ.','q와 -q: 자세 같음 / 경로 선택 필요'),
+ ('길이가 일인 시작과 끝 쿼터니언의 내적을 구합니다. 내적이 음수이면 끝값 전체의 부호를 바꿉니다.','Take the dot product of unit endpoints. If it is negative, flip every component of the end quaternion.','dot(a,b)<0 → b=-b'),
+ ('같은 끝 자세를 유지하면서 더 가까운 대표값을 고르는 것입니다. 켤레로 바꾸는 것은 아닙니다.','This selects the closer representative of the same endpoint; it is not conjugation.','전체 부호 반전 ≠ 켤레'),
+ ('시작이 큐이고 끝이 마이너스 큐라면, 부호를 맞춘 뒤 같은 값이 됩니다. 중간이 영 쿼터니언으로 무너지지 않습니다.','For endpoints q and minus q, sign alignment makes them identical, avoiding a zero midpoint.','a와 -a → 부호 정렬 후 정지'),
+ ('실제 회전 차이가 정확히 백팔십 도이면 같은 길이의 두 경로가 남습니다. 원하는 방향을 별도 규칙으로 택하세요.','A physical180-degree separation has two equally short paths. Choose a direction with an explicit policy.','정확한 180°: 경로 선택 규칙'),
+ ('앞 편의 회전 차이로도 이해할 수 있습니다. 부호를 맞춘 끝 큐에 시작 큐의 역원을 곱한 것이 델타입니다. 델타의 티 제곱을 시작 자세에 적용하면 같은 짧은 호를 따라갑니다.','We can also use the relative rotation from the previous lesson. After sign alignment, delta is the end quaternion times the inverse of the start. Applying delta to the power t to the start follows the same short arc.','Δ=b a⁻¹ / q(t)=Δᵗ a')])
+actual(5,'가까운 방향과 돌아가는 과정','ZFGdubPhasM',[(95,147)],[
+ ('차가 다음 굽은 길을 통과하는 동안 몸체의 앞쪽을 따라가 보세요.','Track the car facing as it follows the next bend.'),
+ ('한 장의 끝 화면만으로는 짧게 돌았는지, 한 바퀴를 더 돌았는지 구별하기 어렵습니다.','An endpoint image alone does not tell whether the turn was short or included an extra revolution.'),
+ ('입력된 두 자세만 잇는 보간은 그 사이의 경로를 선택합니다. 이전에 몇 바퀴 돌았는지까지 저장하지는 않습니다.','Interpolation between two orientations chooses a path without storing the number of earlier revolutions.'),
+ ('자동차가 길을 따라 움직이는 위치 보간과 몸이 돌아가는 자세 보간도 서로 다른 문제입니다.','Interpolating a position along the road differs from interpolating orientation.'),
+ ('이제 단위 구면의 호가 자세 변화와 어떻게 연결되는지 살펴보겠습니다.','Now we will relate an arc on the unit sphere to the orientation change.')],
+ '주행 위치·몸체 앞쪽·회전 이력을 나누는 관찰','끝점 보간과 이동/회전 이력 구분')
+explain(6,'SLERP는 단위 구면의 호를 따라갑니다','sphere',[
+ ('단위 쿼터니언은 네 성분 제곱의 합이 일인 사차원 구면 위의 점입니다.','Unit quaternions lie on a sphere in four dimensions, with squared components summing to one.','4D 단위 구면 / 그림은 2D 단면'),
+ ('화면의 원은 전체 사차원 구면을 그린 것이 아니라, 두 점을 잇는 호를 이해하기 위한 단면 그림입니다.','This circle illustrates the relevant arc in a two-dimensional section, rather than depicting the full four-dimensional sphere.','단면의 호로 이해'),
+ ('부호를 맞춘 두 점의 내적을 디라고 하겠습니다. 알파는 디의 아크코사인입니다.','Let d be the sign-aligned dot product, and let alpha be its arccosine.','α = acos(clamp(d,0,1))'),
+ ('두 쿼터니언 점 사이의 알파와 실제 물체의 회전각은 다릅니다. 실제 최소 회전각은 알파의 두 배입니다.','The quaternion arc angle differs from the physical turn angle: the minimum physical rotation is twice alpha.','구면 각 α / 실제 회전각 2α'),
+ ('시작과 끝에 사인 비율을 가중치로 곱해 더하면, 호의 티 비율 지점이 나옵니다.','Sine-ratio weights combine the endpoints into the point at fraction t of the arc.','sin((1-t)α)a/sinα + sin(tα)b/sinα'),
+ ('이름은 구면 선형 보간입니다. 성분이 직선으로 변한다는 뜻은 아닙니다.','This is spherical linear interpolation. It does not mean the components change linearly.','SLERP: 호 길이에 대해 선형')])
+explain(7,'작은 각도와 잘못된 입력을 먼저 처리','slerp-code',[
+ ('코드의 입력 티는 영부터 일 사이의 유한한 실수라고 정하겠습니다. 먼저 두 쿼터니언을 검사하고 정규화합니다.','Our code requires finite t between zero and one. Validate and normalize both quaternion endpoints first.','유한 입력 / 0≤t≤1 / norm>ε'),
+ ('영에 가까운 길이나 비정상 숫자는 정규화할 수 없습니다. 오류나 이전의 유효한 자세로 처리하는 정책이 필요합니다.','Near-zero or nonfinite inputs need an error or an explicit fallback to a valid orientation.','잘못된 입력을 clamp로 숨기지 않기'),
+ ('내적이 음수일 때 끝값을 반전한 뒤, 반올림 오차가 아크코사인의 범위를 넘지 않도록 내적을 제한합니다.','Flip the endpoint when the dot is negative, then clamp the dot to protect arccosine from rounding error.','부호 선택 → dot 범위 제한'),
+ ('두 값이 거의 같으면 사인 분모가 작습니다. 이 예제는 디가 영 점 구구구오보다 클 때 정규화 선형 보간으로 바꿉니다.','When d exceeds0.9995, this example uses normalized linear interpolation to avoid a small sine denominator.','d>0.9995 → normalize(lerp(a,b,t))'),
+ ('나머지는 사인 가중치를 쓰고 결과도 정규화합니다. 티가 영과 일일 때 시작과 끝 자세를 확인하세요.','Otherwise, use the sine weights and normalize the result. Check the endpoint orientations at t zero and one.','일반 분기: 사인 가중치 / 결과 단위 길이')])
+actual(8,'주행에서는 중간 상태도 보여야 합니다','ZFGdubPhasM',[(175,210),(287,310)],[
+ ('다른 주행 구간에서도 차체 앞쪽과 배경의 움직임을 나누어 보세요.','In these other driving intervals, separate car facing from background motion.'),
+ ('두 발췌 구간의 편집 컷은 계산한 중간 자세가 아닙니다. 각 구간 안에서 이어지는 실제 움직임을 관찰합니다.','The edit between excerpts is not a computed intermediate pose. Observe continuous motion within each excerpt.'),
+ ('코드에서는 시작과 끝 사이의 티 값을 여러 번 바꾸어 중간 회전을 만듭니다.','Code produces intermediate rotations by changing t between the endpoints.'),
+ ('다음 계산에서는 카메라와 위치를 고정합니다. 구십 도 회전의 사분의 일과 절반이 얼마나 도는지 확인해 봅시다.','Our calculation holds camera and position fixed and checks the quarter and halfway poses of a ninety-degree turn.')],
+ '각 발췌 안의 연속 주행과 차체 방향','실제 관찰에서 고정 카메라 수학 계산으로 연결')
+explain(9,'구십 도 회전의 중간을 직접 계산','slerp-example',[
+ ('시작은 일, 영, 영, 영입니다. 끝은 제트축 구십 도 회전이므로 코사인 사십오 도, 영, 영, 사인 사십오 도입니다.','Start at[1,0,0,0], ending at a z90-degree turn:[cos45degrees,0,0,sin45degrees].','a=[1,0,0,0] / b=[c,0,0,c]'),
+ ('내적은 루트 이 나누기 이입니다. 알파는 사십오 도이고 실제 회전 차이는 구십 도입니다.','The dot is square root two over two: alpha is45degrees, while the physical rotation is90degrees.','d=√2/2 / α=45° / Δθ=90°'),
+ ('티가 사분의 일이면 물체는 이십이 점 오 도, 절반이면 사십오 도 회전합니다.','At t one quarter the object turns22.5degrees; at one half it turns45degrees.','t=.25 →22.5° / t=.5 →45°'),
+ ('사분의 삼에서는 육십칠 점 오 도입니다. 같은 티 간격에 같은 회전각 간격이 나옵니다.','At three quarters the turn is67.5degrees. Equal increments of t yield equal rotation-angle increments.','t=.75 →67.5°'),
+ ('각 티에서 쿼터니언을 행렬로 바꾸어 축을 그린 것입니다. 끝점뿐 아니라 중간 결과도 검증할 수 있습니다.','Each quaternion is converted to a matrix to draw the body axes. We can verify intermediate results as well as endpoints.','R(q(t))로 중간 자세 검증')])
+explain(10,'NLERP도 회전이지만 속도는 다릅니다','speed',[
+ ('엔러프는 부호를 맞춘 뒤 네 성분을 선형 보간하고 정규화합니다. 계산이 간단하고 단위 길이도 유지합니다.','NLERP aligns signs, blends components linearly and normalizes: a simple calculation that preserves unit length.','NLERP = normalize((1-t)a+tb)'),
+ ('하지만 티가 일정한 속도로 늘어도 실제 회전 속도는 보통 일정하지 않습니다.','Linear progression of t generally does not produce constant physical angular speed.','선형 t / NLERP 각속도는 변함'),
+ ('항등에서 백이십 도 회전으로 갈 때, 사분의 일의 엔러프 회전은 약 이십칠 점 팔 도입니다.','Between identity and a120-degree turn, NLERP at one quarter rotates approximately27.8degrees.','I→Z120° / NLERP(.25)≈27.8°'),
+ ('스러프는 같은 지점에서 삼십 도입니다. 둘 다 절반에서는 육십 도지만, 다른 중간 지점의 속도는 다릅니다.','SLERP gives30degrees there. Both give60degrees halfway, but differ at other points along the path.','SLERP(.25)=30° / 둘의 .5=60°'),
+ ('작은 차이는 잘 안 보일 수 있습니다. 요구하는 움직임과 비용을 비교하고, 스러프만 언제나 더 빠르다고 단정하지 마세요.','Small differences may be hard to see. Compare motion requirements and cost without assuming SLERP is always faster.','경로·속도·실제 비용을 비교')])
+actual(11,'속도와 자세를 같은 값으로 읽지 않기','ZFGdubPhasM',[(371,420)],[
+ ('자동차의 주행 속도가 바뀌어도 자세가 돌아가는 속도는 별개의 값입니다.','Driving speed and angular speed are separate quantities.'),
+ ('길을 얼마나 빨리 지나는지와 차체가 얼마만큼 방향을 바꾸는지를 따로 보세요.','Observe distance travelled and change in car facing separately.'),
+ ('화면의 카메라까지 움직이므로 이 영상만으로 정확한 각속도를 측정한 것은 아닙니다.','The camera also moves, so this footage is not a measurement of exact angular velocity.'),
+ ('앞의 고정된 축 계산에서는 같은 시간 간격의 회전각을 비교할 수 있었습니다. 시간 함수를 바꾸면 그 속도도 달라집니다.','Our fixed-axis calculation can compare turn angles over equal time intervals. Changing the time function changes the speed.')],
+ '주행 속도·차체 방향·카메라 추적을 별도로 관찰','보간 매개변수와 실제 각속도 연결')
+explain(12,'일정 속도에는 시간 조건도 필요합니다','time',[
+ ('스러프가 일정 각속도라는 말에는 조건이 있습니다. 시작과 끝이 고정되고 티가 시간에 대해 선형으로 변해야 합니다.','Constant angular speed requires fixed endpoints and t that is linear in time.','고정 a,b / t=elapsed÷duration'),
+ ('처음과 끝을 느리게 하는 이징 함수를 티에 적용하면 같은 호를 따라도 속도는 달라집니다.','An easing function follows the same arc with a varying speed.','t=ease(u) → 각속도 변화'),
+ ('매 프레임 현재 자세에서 목표로 조금씩 보간하는 것은 전체 구간을 한 번 일정하게 보간하는 것과 다릅니다.','Repeatedly interpolating from the current pose toward a target differs from one fixed-endpoint interpolation.','현재→목표 반복 / 고정 구간과 구분'),
+ ('고정 비율을 매 프레임 쓰면 프레임 수에 따라 반응이 달라질 수 있습니다. 시간 차이를 반영한 비율을 설계하세요.','A fixed fraction per frame may yield different responses at different frame rates. Design the fraction using elapsed time.','예: k=1-exp(-λΔt)'),
+ ('움직이는 목표 추적과 긴 애니메이션 곡선은 별도 설계 문제입니다. 한 번의 스러프가 모두 해결하지는 않습니다.','Moving-target tracking and long animation curves require their own design; a single SLERP does not solve everything.','구간의 호 / 전체 시간 경로 구분')])
+explain(13,'연속 부호와 여러 바퀴의 기록','continuity',[
+ ('매 프레임 더블유를 양수로만 바꾸면 백팔십 도 경계에서 성분이 갑자기 뒤집힐 수 있습니다.','Making w positive independently each frame can create a component sign jump at the180-degree boundary.','매 프레임 w≥0 강제: 경계 주의'),
+ ('이전 프레임과 내적이 음수이면 새 쿼터니언의 전체 부호를 바꾸는 방법으로 가까운 대표값을 이어갈 수 있습니다.','Flipping a new quaternion when its dot with the previous one is negative can maintain a nearby representative.','dot(previous,current)<0 → current=-current'),
+ ('이 선택은 성분 연결을 돕지만 여러 바퀴의 회전 수를 복원하지는 않습니다.','That choice helps component continuity, but does not recover the number of revolutions.','연속 대표값 ≠ 회전 이력'),
+ ('애니메이션이 크게 한 바퀴 도는 것이 목적이라면 중간 키와 회전량을 따로 보존해야 합니다.','If an animation intentionally spins a full turn, preserve intermediate keys or accumulated turn information.','큰 회전: 중간 키·누적량 보존'),
+ ('백팔십 도에서 어느 쪽으로 도는지도 게임의 요구로 정합니다. 가장 짧다는 말만으로는 방향이 하나로 정해지지 않습니다.','The desired direction at180degrees is a design policy: shortest alone does not make the choice unique.','180° 동률 경로는 정책으로 선택')])
+actual(14,'몸이 도는 동안 이동은 이어집니다','H66Dl8kRNNQ',[(768,819)],[
+ ('라이더스 리퍼블릭에서 윙슈트로 산을 내려오는 장면입니다. 팔과 몸통이 기울어지는 모습을 보세요.','This is wingsuit flight down a mountain in Riders Republic. Observe the bank of the arms and body.'),
+ ('위치는 계속 이동하지만 앞쪽과 위쪽 방향도 함께 바뀝니다. 한 화면의 방향 화살표만으로 전체 자세를 알 수는 없습니다.','Position continues changing while facing and up directions change too. One facing arrow does not capture the whole orientation.'),
+ ('목적지에 도착한 자세만 저장한다고 공중에서 지난 모든 회전이 남는 것은 아닙니다.','Storing the arrival orientation does not preserve every rotation made along the flight.'),
+ ('카메라가 따라 움직인 영향도 나누어 보세요. 내부 쿼터니언이나 보간 코드를 확인한 영상은 아닙니다.','Separate the following camera motion too. This footage does not expose internal quaternion or interpolation code.'),
+ ('이제 각 작업에 알맞은 회전 표현을 정리하고 서로 바꾸어 보겠습니다.','We will now choose a suitable representation for each task and convert between them.')],
+ '팔·몸통의 뱅크, 연속 이동, 추적 카메라','자세 전체·회전 이력 구분과 표현 선택 연결')
+explain(15,'하나만 고집하지 말고 작업에 맞게 쓰세요','representations',[
+ ('오일러 각은 사람이 각도를 읽고 편집할 때 편합니다. 대신 순서, 중복 표현, 특이 자세를 처리해야 합니다.','Euler angles suit human reading and editing, with order, equivalent encodings and singular poses to handle.','Euler: 입력·편집 / 순서·특이점'),
+ ('쿼터니언은 자세 합성과 보간에 편하지만, 네 성분을 직접 편집하기는 어렵고 단위 길이와 부호를 관리해야 합니다.','Quaternions suit composition and interpolation, but need unit-length and sign management and are hard to edit directly.','Quaternion: 합성·보간 / 단위·부호'),
+ ('행렬은 세 축을 직접 읽고 많은 벡터에 같은 변환을 적용할 때 편합니다. 정규직교와 행렬식 조건을 검사합니다.','Matrices expose the three axes and suit transforming many vectors. Check orthonormality and determinant.','Matrix: 축·벡터 변환 / 유효 회전 검사'),
+ ('삼십이 비트 실수 성분만 세면 오일러는 십이, 쿼터니언은 십육, 삼 바이 삼 행렬은 삼십육 바이트입니다. 정렬과 메타데이터는 별도입니다.','Float32 components alone occupy12bytes for Euler,16for a quaternion and36for a3-by-3matrix, excluding padding and metadata.','float32 성분:12 /16 /36 B'),
+ ('축과 각도는 한 번의 회전을 설명하기 쉽습니다. 압축과 실행 비용은 데이터와 구현을 측정해 고르세요. 다른 표현도 구조를 지킨 보간이 가능합니다.','Axis-angle explains a single turn clearly. Measure compression and runtime in your implementation; other representations also have rotation-aware interpolation methods.','축각: 기하 설명 / 비용은 실제 측정')])
+explain(16,'변환 그래프보다 먼저 정할 약속','contract',[
+ ('변환할 때는 오른손과 열벡터, 로컬에서 월드로 가는 회전이라는 약속을 유지합니다.','All conversions preserve our right-handed column-vector local-to-world convention.','오른손 / 열벡터 / R:로컬→월드'),
+ ('더블유, 엑스, 와이, 제트 순서의 해밀턴 쿼터니언을 씁니다. 삼각함수 입력은 라디안입니다.','Use Hamilton quaternions in wxyz order and radians for trigonometric inputs.','Hamilton / wxyz / radians'),
+ ('오일러는 움직이는 와이, 엑스, 제트축 순서입니다. 행렬은 와이 회전, 엑스 회전, 제트 회전의 곱으로 씁니다.','Euler uses moving axes Y-X-Z, with matrix product Ry times Rx times Rz.','R = Ry(h) Rx(p) Rz(b)'),
+ ('책의 왼손과 행벡터 공식을 그대로 섞으면 부호와 곱셈 순서가 달라질 수 있습니다. 메모리 저장 순서도 수학 규약과 별개입니다.','Mixing the book\'s left-handed row-vector formulas can change signs and order. Memory layout is a separate issue.','책의 규약 / 메모리 순서와 구분'),
+ ('오일러와 쿼터니언은 행렬을 통해 양방향으로 연결할 수 있고, 축각은 반각 공식으로 쿼터니언에 연결됩니다.','Euler and quaternions connect bidirectionally through matrices; axis-angle connects to quaternions through the half-angle formula.','Euler ↔ Matrix ↔ Quaternion ↔ Axis-angle')])
+actual(17,'몸체 기준과 화면 기준을 함께 보기','H66Dl8kRNNQ',[(819,830),(852,882)],[
+ ('비행 장면에서 몸이 옆으로 기울고 돌아가는 순간을 보세요. 화면 위쪽과 몸체 위쪽을 구별합니다.','Watch the body bank and turn during flight. Distinguish screen up from body up.'),
+ ('두 발췌 사이에는 장비가 바뀌는 편집 컷이 있습니다. 그 컷을 같은 회전의 연속이라고 읽지는 마세요.','Equipment changes across an edit between these excerpts; the cut is not one continuous rotation.'),
+ ('각 구간 안에서는 몸에 붙인 축이 어떤 방향을 향하는지, 카메라가 어떻게 따라오는지 관찰합니다.','Within each excerpt, observe the attached body axes and the following camera.'),
+ ('행렬로 바꾸어도 쿼터니언으로 바꾸어도 같은 기준의 같은 자세를 나타내야 합니다. 다음 그림에서 그 관계를 계산합니다.','A matrix and a quaternion should describe the same pose in the same frame. Our next diagram calculates that relationship.')],
+ '구간 안의 실제 롤과 몸체축·카메라 기준; 컷/장비변경 명시','표현을 바꾸어도 같은 기준 자세를 유지')
+explain(18,'오일러 각과 행렬을 왕복하기','euler-matrix',[
+ ('헤딩, 피치, 뱅크를 각각 와이, 엑스, 제트 회전행렬로 만든 뒤 정한 순서로 곱합니다.','Build Y, X and Z matrices from heading, pitch and bank, then multiply in our declared order.','R = Ry(h) Rx(p) Rz(b)'),
+ ('역으로 읽을 때 행과 열 번호를 영부터 셉니다. 피치의 사인은 알의 일 행, 이 열 값의 음수입니다.','For extraction, indices start at zero. Sine of pitch is minus the entry at row1,column2.','sp=-R[1,2]'),
+ ('특이 자세 밖에서는 헤딩에 영 행 이 열과 이 행 이 열의 에이탄 투를 씁니다. 뱅크는 일 행 영 열과 일 행 일 열로 구합니다.','Away from singular poses, heading is atan2 of R02 and R22; bank is atan2 of R10 and R11.','h=atan2(R02,R22) / b=atan2(R10,R11)'),
+ ('이 예제는 피치를 에이탄 투로 구하고, 두 행렬 성분의 하이폿으로 특이 자세를 판별합니다.','This implementation extracts pitch with atan2 and uses the hypotenuse of two matrix entries to detect a singular pose.','cp=hypot(R10,R11) / p=atan2(sp,cp)'),
+ ('피치가 양이나 음의 구십 도일 때는 뱅크를 영으로 정합니다. 헤딩은 마이너스 알 이 행 영 열과 알 영 행 영 열로 구합니다.','At pitch plus or minus90degrees, choose bank zero and heading atan2 of minus R20 and R00.','특이점: p=±π/2 / b=0 / h=atan2(-R20,R00)'),
+ ('돌아온 각도가 처음 숫자와 달라도 같은 행렬이면 같은 자세일 수 있습니다. 왕복 검사는 자세를 비교하세요.','Different returned Euler values can represent the same orientation. Compare the reconstructed matrices in a round trip.','각도 숫자 일치보다 R 일치 검사')])
+explain(19,'쿼터니언에서 행렬의 세 축 만들기','quaternion-matrix',[
+ ('단위 쿼터니언의 네 성분으로 회전행렬 아홉 값을 계산할 수 있습니다. 일반 길이의 입력은 먼저 검사하고 정규화합니다.','Four unit quaternion components produce nine rotation-matrix entries. Validate and normalize a general input first.','유효한 단위 q → R(q)'),
+ ('제트축 구십 도 쿼터니언을 넣으면, 앞 편의 영 마이너스 일 영, 일 영 영, 영 영 일 행렬이 나옵니다.','A z90-degree quaternion yields the familiar rows[0,-1,0],[1,0,0],[0,0,1].','q=[c,0,0,c] → Rz90°'),
+ ('첫 열은 월드에서 본 로컬 엑스축 영, 일, 영입니다. 둘째 열은 마이너스 일, 영, 영입니다.','The first column gives local x in world coordinates:[0,1,0]; the second is[-1,0,0].','열은 로컬 축의 월드 성분'),
+ ('벡터 일, 영, 영을 곱하면 영, 일, 영이 됩니다. 쿼터니언의 양쪽 곱셈으로 돌린 결과와 같습니다.','Multiplying[1,0,0]gives[0,1,0], matching the two-sided quaternion rotation.','R(q)v = vector(q[0,v]q⁻¹)'),
+ ('화면의 부호가 다르면 전치부터 하지 말고 축, 회전 방향, 입력과 출력 공간을 확인하세요. 전체 공식은 재현 코드에도 남깁니다.','If signs differ, check axes, rotation direction and input/output spaces first. The full formula is also preserved in the reproducible code.','공식·기준축·작은 벡터로 검증')])
+actual(20,'다른 숫자로도 같은 차체 자세','ZFGdubPhasM',[(420,440),(553,585)],[
+ ('다시 차체와 길의 기울기를 보세요. 화면에 보이는 같은 자세를 행렬이나 쿼터니언으로 기록할 수 있습니다.','Observe car and road bank again. A matrix or a quaternion can describe the same visible pose.'),
+ ('표현을 바꾼다고 위치나 속도가 자동으로 바뀌는 것은 아닙니다. 입력 기준과 출력 기준도 유지해야 합니다.','Changing representation does not automatically change position or speed, and must preserve the input/output frames.'),
+ ('이 주행 영상에서 실제 저장값을 읽은 것은 아닙니다. 다음 계산의 세 축이 같은 자세를 나타내는지 확인할 준비입니다.','We have not read stored values from the game. The footage prepares us to check equivalent axes in our calculation.'),
+ ('특히 반 바퀴 근처에서도 변환이 무너지지 않는지 보겠습니다.','We will check that conversion remains valid near a half-turn.')],
+ '차체 자세와 위치/속도/프레임을 따로 관찰','표현 변환이 실제 자세를 보존해야 함')
+explain(21,'백팔십 도에서도 행렬을 쿼터니언으로','matrix-quaternion',[
+ ('먼저 입력 행렬이 정규직교이고 행렬식이 플러스 일인지 검사합니다. 스케일이나 반사를 회전으로 읽으면 안 됩니다.','First require an orthonormal matrix with determinant plus one. Do not interpret scale or reflection as a rotation.','RᵀR≈I / det(R)≈+1'),
+ ('대각선 합은 트레이스입니다. 트레이스가 양수이면 더블유 성분을 크게 잡는 분기를 쓰기 좋습니다.','The trace is the diagonal sum. A positive trace suits the branch that calculates a large w component.','trace>0 → w 분기'),
+ ('하지만 백팔십 도 회전의 더블유는 영입니다. 더블유로 나누는 공식 하나만 쓰면 문제가 생깁니다.','At a180-degree rotation w is zero, so using only a formula that divides by w is unsafe.','180°에서 w=0 / 무조건 나누기 금지'),
+ ('나머지는 가장 큰 대각 성분에 맞춰 엑스, 와이, 제트 분기를 고릅니다. 영에 가까운 성분으로 나누는 일을 피합니다.','Otherwise choose the x,y or z branch associated with the largest diagonal entry, avoiding division by a small component.','최대 대각에 따른 x / y / z 분기'),
+ ('제트축 백팔십 도에서는 제트 분기가 영, 영, 영, 일을 만듭니다. 전체 부호를 바꾼 값도 같은 자세입니다.','For a z180-degree turn the z branch yields[0,0,0,1]; the opposite sign represents the same pose.','Rz180° → [0,0,0,1]'),
+ ('결과를 정규화한 뒤 다시 행렬로 만들어 입력과 비교하세요. 잘못된 행렬을 정규화만으로 수리했다고 생각하면 안 됩니다.','Normalize the result, rebuild its matrix and compare with the input. Quaternion normalization is not an arbitrary repair of an invalid matrix.','q→R 재구성 / 입력 회전 검증')])
+explain(22,'오일러 각과 쿼터니언 연결하기','euler-quaternion',[
+ ('오일러에서 쿼터니언으로 갈 때도 축별 회전을 만듭니다. 와이의 헤딩, 엑스의 피치, 제트의 뱅크를 반각 공식으로 바꿉니다.','Convert heading about Y, pitch about X and bank about Z into individual half-angle quaternions.','qy(h), qx(p), qz(b)'),
+ ('우리 규약에서는 와이 쿼터니언, 엑스 쿼터니언, 제트 쿼터니언 순으로 곱합니다. 행렬 곱 순서와 대응합니다.','Under our convention, multiply qy times qx times qz, matching the matrix product.','q = qy(h) qx(p) qz(b)'),
+ ('돌아올 때는 단위 쿼터니언을 행렬로 만든 뒤, 앞의 오일러 추출을 쓰면 됩니다. 행렬 성분을 대입한 직접 공식도 같습니다.','For the reverse, build the unit-quaternion matrix and use our Euler extraction. Substituting its entries yields equivalent direct formulas.','q→R→Euler / 직접 대입도 동등'),
+ ('특이 자세에서는 뱅크를 영으로 정하고 피치는 부호에 맞는 파이 이분의 일로 고정합니다. 원문의 피치 식은 경계 처리를 보완해야 합니다.','At a singular pose, choose bank zero and set pitch to the signed pi over two. The source formula needs this boundary correction.','p=copysign(π/2,sp) / b=0'),
+ ('클램프는 작은 반올림 오차를 막는 도구입니다. 단위가 아닌 입력이나 잘못된 규약을 숨기는 도구로 쓰지 마세요.','Clamping protects against small rounding errors, rather than hiding non-unit inputs or mismatched conventions.','단위 입력 먼저 / 특이점 규칙 검증')])
+actual(23,'관찰한 축과 계산한 축을 연결하기','ZFGdubPhasM',[(340,365),(522,547),(585,600)],[
+ ('세 주행 발췌에서 차체가 향하는 앞쪽과 기울기를 함께 보세요. 구간 사이의 편집 컷은 회전 보간이 아닙니다.','Read facing and bank in these three driving excerpts. Edits between them are not rotation interpolation.'),
+ ('기준축 세 개를 몸에 붙이면 자세를 비교하기 쉬워집니다. 화면의 카메라 기준과도 구분합니다.','Imagining three attached body axes helps compare poses separately from the camera frame.'),
+ ('행렬과 쿼터니언 변환은 그 축의 관계를 보존해야 합니다. 속도나 충돌까지 자동으로 설명하는 것은 아닙니다.','Matrix/quaternion conversion must preserve the axes relationship, without automatically explaining speed or collision.'),
+ ('이제 축과 각도로 되돌아가고, 중간 자세와 왕복 변환을 직접 확인해 봅시다.','We will return to axis-angle and check a midpoint and a conversion round trip.')],
+ '차체의 앞/위·카메라/편집 컷·속도/충돌 구분','같은 기준축을 보존하는 변환과 검증 연결')
+explain(24,'축각으로 돌아갈 때의 영도와 반 바퀴','axis-angle',[
+ ('단위 축과 각도에서 쿼터니언으로 가는 식은 앞 편의 반각 공식입니다. 스칼라는 코사인, 벡터는 축에 반각의 사인을 곱합니다.','Axis-angle to quaternion uses the half-angle formula: cosine for the scalar, unit axis times sine for the vector.','q=[cos(θ/2), n sin(θ/2)]'),
+ ('짧은 대표 각도로 돌아오려면 먼저 단위 길이를 확인하고 더블유가 음수일 때 전체 부호를 바꿉니다.','For a short representative angle, validate unit length and flip all components if w is negative.','대표 부호 선택 / θ∈[0,π]'),
+ ('각도는 제한한 더블유의 아크코사인 두 배입니다. 벡터 부분의 길이가 충분하면 그것을 나누어 축을 얻습니다.','The angle is twice arccosine of clamped w. When the vector part is long enough, normalize it to get the axis.','θ=2acos(w) / n=v÷||v||'),
+ ('영도에서는 축이 정해지지 않습니다. 이 코드에서는 엑스축을 대표로 쓰지만 물리적으로 유일한 축은 아닙니다.','At zero rotation the axis is undefined. Our code selects x by convention, rather than claiming a unique physical axis.','θ=0: 축은 임의 / 코드 대표 +x'),
+ ('백팔십 도에서는 축과 반대 축이 같은 끝 자세를 만듭니다. 경로의 방향과 회전 이력은 별도로 관리하세요.','At180degrees, opposite axes give the same endpoint orientation. Manage path direction and accumulated turns separately.','θ=π: ±n 같은 끝 자세')])
+explain(25,'중간 자세와 왕복 변환을 직접 확인','practice',[
+ ('첫 문제입니다. 항등에서 제트축 구십 도까지 스러프의 절반 자세는 몇 도일까요?','First exercise: what is the halfway SLERP pose from identity to z90degrees?','문제1: SLERP(I,Z90°,.5)'),
+ ('답은 사십오 도입니다. 쿼터니언에는 반각 이십이 점 오 도의 코사인과 사인이 들어갑니다.','The answer is45degrees, stored using cosine and sine of the22.5-degree half-angle.','qmid=[cos22.5°,0,0,sin22.5°]'),
+ ('행렬로 바꾸어 일, 영, 영을 돌리면 루트 이 나누기 이, 루트 이 나누기 이, 영입니다. 단위 길이도 확인해 보세요.','Convert to a matrix and rotate[1,0,0]. The result is[sqrt2/2,sqrt2/2,0]; check its unit length.','R(qmid)(1,0,0)=(c,c,0)'),
+ ('둘째 문제입니다. 제트축 백팔십 도 행렬을 쿼터니언으로 바꾸고 다시 행렬로 돌아오세요.','Second exercise: convert a z180-degree matrix to a quaternion and back.','문제2: Rz180°→q→R'),
+ ('제트 분기에서 영, 영, 영, 일을 얻습니다. 다시 만든 행렬은 대각선 마이너스 일, 마이너스 일, 일입니다.','The z branch gives[0,0,0,1]. The reconstructed matrix has diagonal[-1,-1,1].','q=[0,0,0,1] / diag(-1,-1,1)'),
+ ('원래 쿼터니언과 부호가 달라도 두 회전행렬이 같으면 통과할 수 있습니다. 원소 오차와 변환된 기준축을 함께 비교하세요.','An opposite quaternion sign can still pass when the matrices agree. Compare entry errors and transformed basis axes.','부호·각도 숫자보다 같은 회전 검사')])
+explain(26,'회전은 약속과 검증까지가 한 묶음','summary',[
+ ('오늘은 부호를 고른 뒤 단위 길이를 지키고, 짧은 호를 따라 회전을 보간했습니다.','We aligned signs, preserved unit length and interpolated rotations along a short arc.','단위·부호 → SLERP / NLERP'),
+ ('일정 속도에는 고정된 두 자세와 선형 시간 조건도 필요했습니다. 큰 회전의 이력은 따로 남겨야 합니다.','Constant speed also needed fixed endpoints and linear time; accumulated large turns require separate records.','경로·시간·회전 이력 구분'),
+ ('네 표현을 바꿀 때 축과 곱셈 규약을 유지하고, 영도와 백팔십 도, 오일러의 특이 자세를 처리했습니다.','Conversions preserve axes and multiplication conventions and handle zero,180degrees and Euler singularities.','같은 규약 / 경계 분기 / 왕복 검사'),
+ ('게임 프로그래밍에서는 표현 이름을 외우는 데서 끝내지 말고, 작은 벡터를 돌리고 되돌려 직접 확인하세요.','Go beyond memorizing representation names: rotate a small vector and reverse the transformation to verify it.','작은 기준축으로 직접 계산'),
+ ('이것으로 삼차원 회전 장을 마칩니다. 다음 장에서는 물체의 위치와 자세를 함께 바꾸는 변환으로 이어가겠습니다.','This completes the3Drotation chapter. Next we will combine orientation and position in rigid-body transformations.','다음 장: 위치와 자세의 변환')])
+assert len(scenes)==26 and sum(s['kind']=='actual' for s in scenes)==8
+data={'slug':slug,'chapter':8,'part':4,'totalParts':4,'renderModule':'interpolation','sourceDependencies':['production/batches/game-math-part2-full-series/rotation-conversions.py'],'sourceSections':['8.5.12','8.5.13','8.5.15','8.6','8.7.1–8.7.6','8.8'],
+ 'contract':{'handedness':'right-handed, y-up, x×y=z','vectorConvention':'column vectors; R maps local to world','quaternion':'Hamilton wxyz; unit rotation endpoints','eulerOrder':'intrinsic moving Y-X-Z; R=Ry(h)Rx(p)Rz(b)','angleUnit':'radians in code, degrees explicitly labelled in demonstrations','interpolation':'finite t in[0,1]; shortest representative signs; physical180 tie requires a policy','time':'constant SLERP angular speed only for fixed endpoints and linear t','matrixInput':'finite proper rotation: orthonormal and determinant+1; do not hide scale/reflection','boundaries':'zero axis undefined;180 axis-sign ambiguity; Euler singular branch with bank0; stable matrix dominant-component quaternion extraction'},
+ 'coverage':{'8.5.12':'SLERP arc and delta-power interpretation, sign alignment, small-angle normalized-linear fallback, inputs and worked intermediate poses','8.5.13/8.5.15/8.6':'benefits/limits/normalization/signs, editor versus storage versus vector-transform jobs, component-only memory, performance/quantization require actual measurement; other rotation-aware interpolation exists','8.7.1/8.7.2':'Euler-to-matrix product and reverse atan2/hypot singular branch; compare equivalent rotation rather than raw angles','8.7.3/8.7.4':'unit quaternion matrix and reverse trace/dominant diagonal branches including180; complete verified reference code','8.7.5/8.7.6':'Euler axis-quaternion composition and reverse via matrix, equivalent direct substitution; fix source copysign boundary','axis-angle':'unit half-angle conversion, canonical short representative, zero and180 ambiguity','8.8':'original two guided calculations, midpoint vector and stable180 matrix round trip; whole series preserves core chapter concepts, not every textbook exercise verbatim','sourceCorrections':'Book LH/row versus lecture RH/column; smooth interpolation not exclusive to quaternions; shortest sign choice explicit; small-angle LERP must normalize; source gimbal pitch multiplication replaced by signed boundary; raw performance claims not guaranteed'},
+ 'gameCandidates':{'chosen':[{'game':'Forza Horizon4','sourceId':'ZFGdubPhasM','reason':'Fresh game title and un-reused recording; inspected car facing/bank, bends and pursuit camera fit interpolation/conversion observations.'},{'game':'Riders Republic','sourceId':'H66Dl8kRNNQ','reason':'Different recording from quaternion operations; inspected wingsuit/rocket flight adds strong body-roll and full-turn observations.'}],
+ 'rejected':[{'game':'Rocket League','sourceId':'e__O7rWG7ew','reason':'Uploader explicitly requires public channel credit; conflicts with requested description without public source credits, so not used.'},{'game':'Riders Republic','sourceId':'4Odvp_TIeQU','reason':'Used for quaternion operations; chose fresh recording and flight rather than repeating its ski/bike intervals.'}],
+ 'rights':'Explicit uploader recording permission checked before dependent narration. No named CC license or game-IP/claim guarantee; public game-IP review pending.',
+ 'inspection':'Three Forza coarse plus eight fine and four Riders coarse plus three fine sheets directly reviewed before this script; menus/results/rewinds/crashes/landing excluded. Real-time, no loops, no source audio.'},'scenes':scenes}
+(B/'lessons'/f'{slug}.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+print('Authored',slug,len(scenes),'scenes',sum(len(p) for s in scenes for p in s['ko']),'Korean characters')

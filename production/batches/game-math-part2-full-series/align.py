@@ -18,6 +18,13 @@ def number(s):
  return str(total+current)
 def normalized(s):
  s=s.lower()
+ # Spoken quaternion component/algebra names versus the same Latin labels.
+ # Keep signs and multiplication order intact; raw ASR is reviewed separately.
+ s=s.replace('더블유','w')
+ for spoken,latin in [('아이','i'),('제이','j'),('케이','k')]:
+  s=re.sub(r'(?<![가-힣])'+spoken+r'(?=\s|[,.;:]|는|를|지만|와|과|의|곱|$)',latin,s)
+ s=re.sub(r'(?<![가-힣])세(?=\s*(?:개|성분))','3',s)
+ s=re.sub(r'(?<![가-힣])네(?=\s*(?:성분|숫자|회전))','4',s)
  # Observed read-back spellings of the spoken function names. Preserve the
  # raw ASR and audio; this only matches the same names for caption timing.
  for x,y in [('코사인','cos'),('싸인','sin'),('사인','sin'),('에이탄 투','atan2'),('에이탄투','atan2'),('에이탄2','atan2'),('a탄2','atan2'),('하이폿','hypot'),('하이포트','hypot'),('하이포스','hypot'),('하이팟','hypot'),('마이너스','-'),('루트','sqrt'),('다섯','5'),('셋','3'),('둘','2'),('네 칸','4칸'),('세 칸','3칸'),('엑스','x'),('와이','y'),('제트','z'),('에이','a')]:s=s.replace(x,y)

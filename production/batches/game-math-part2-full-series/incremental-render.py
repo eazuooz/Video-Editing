@@ -39,6 +39,8 @@ while True:
  for slot in ready:
   sid=slot['id'];fingerprint={'voiceSha256':slot['voiceSha256'],'lessonSha256':sha(source),'dataSha256':sha(datafile),'stubSha256':sha(stub)}
   if source.name!='lesson.py':fingerprint['helperSha256']=sha(source.parent/'lesson.py')
+  if data.get('sourceDependencies'):
+   fingerprint['dependencySha256']={p:sha(ROOT/p) for p in data['sourceDependencies']}
   target=work/f'manim/videos/scene/1080p60/Scene{sid}.mp4'
   if target.exists() and all(records.get(sid,{}).get(k)==v for k,v in fingerprint.items()):continue
   print('Rendering validated scene',sid,slot['voiceSeconds'],'seconds voice',flush=True)
