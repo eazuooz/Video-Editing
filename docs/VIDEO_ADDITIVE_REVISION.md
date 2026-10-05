@@ -84,3 +84,10 @@
 2026-10-03 motion-sickness-games final-v1 [게임 멀미와 카메라 설계: 화면 움직임을 선택하게 만들기](https://youtu.be/vFhhQXgdeMs)를 고정 한글 MP4로 비공개 저장하고 전체 설정을 재열람했다. PowerWash Simulator의 FuturLab 개발 시연(2022 WIP)과 The Talos Principle2의 공식 실제 플레이34컷을 여섯 흰2.5D 설명 사이에 넣었으며 자체 게임은0개다.53개 원래 문단/PCM과 여섯 설명 길이를 보존했다. 전체633.083333초/37985프레임, 본편 실제372.65초/설명248.433333초로60:40 오차0프레임이다. 독립12장60문단, 한영166큐와174자막·컷 구간/20구성 화면/102인코딩 컷 경계, 전체현재해시 및 최종믹스ASR, 두 전체디코딩·동일AAC·−16.12LUFS/−2.14dBTP를 검수하고4파일을 수집했다. [현재QA](../projects/motion-sickness-games/production/final-v1/qa.json), [실제 업로드 영수증](../projects/motion-sickness-games/publishing/youtube-upload.json), [Git 증거](../projects/motion-sickness-games/production/final-v1/git-delivery.json)를 따른다.
 
 실제 업로드 CCoff 게임/PPT에서 아래 가운데 한글 자막이 보인다. 새 썸네일·KO/EN 수동SRT·영어 제목/설명·00초 과외 카드·마지막10초 재생목록/자기채널구독/외부과외링크를 저장 후 확인했다. 비공개·예약 없음, 새 파일 저작권 검사 완료/문제 없음, 저장 후 소유권 주장 없음·설정에 따라 수익 창출·초기 광고 검토 알림 해소를 관찰했다. 별도 완료 wizard 미관찰(false), 플랫폼 자동더빙 미검수와 비공개 고정댓글 pending-video-publication을 보존한다. 제작 커밋 89cf65e342b3137265558ef8843bfbe9dd4e4a40의 origin/main 일반 푸시 및 원격SHA 일치를 확인했고 미디어는 커밋하지 않았다. 사람 전체 청취·최종 공개 권리·원래 Nimbus·잘린 회원 핸들·외부 미디어 백업은pending이다. 원래24편은8편전달·1중복제외·15대기며 다음 hierarchical-game-outlines를 검토한다. 기존 영상의 현재 공개/예약을 변경하지 않았다.
+
+
+## 2026-10-05 실제 행동으로 게임 기획을 전달하기
+
+avoid-game-comparisons [게임 기획 설명법: 작품명 대신 목표·행동·조건을 전달하기](https://youtu.be/bCyRB3ksiGo)를 단일 고정한글 MP4로 비공개 저장하고 전체 설정을 재열람했다. 독립15장60한영문단,23.44초 전체안내 도입과 현재475.2601667초 PCM/원래여섯설명을 보존했다. 공식 Pepper Grinder/The Plucky Squire8소스111고유컷이며 자체게임/원본음성/루프/저속은0개다. 최종535초32100프레임/1080p60, 본편 실제18828프레임·설명12552프레임으로60:40오차0이다. KO199/EN160큐,532고유합성화면/현재전체음성·최종믹스 ASR, 두전체decode오류0/동일AAC/−16.05LUFS/−2.38dBTP와4파일 수집을 확인했다. 잘못된 최초 clock 시도는 별도 역사증거로 보존했다.
+
+새썸네일·KOEN수동 게시됨·영어메타데이터·실측챕터/채널링크·00초과외카드·525–535초 엔딩3요소·비공개/예약없음·광고사용/소유권주장없음/보호콘텐츠없음을 저장 후 확인했다. 실제1080p60 CCoff30초게임/70초흰설명에서 고정자막픽셀이 보이며 원본12행회원/배지/이름/정확제목/로고가 보존된다. optional CC player전파와별도wizard완료modal은 독립확인하지 않았다. 현재QA/receipt를 우선하며 사람전체청취·발음·공개권리/Nimbus/잘린핸들/백업/자동더빙/비공개고정댓글은pending이다. 제작 0e62de3a04348cfe979ebed972c4e0cee0e57b49의 일반푸시와원격SHA일치를 실제확인했다. 필수썸네일/최소게시증거6이미지 외 새QA/소스이미지·미디어 추가는0이다.
