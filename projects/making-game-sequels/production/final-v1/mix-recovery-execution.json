@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "pid": 59368,
+  "sessionId": 71224,
+  "startedAt": "2026-10-05T12:23:59.677189+00:00",
+  "status": "closed-final-Nimbus-mix-built-awaiting-full-ASR",
+  "cpuThreads": 2,
+  "gpuJobs": 0,
+  "newTts": 0,
+  "commands": [
+    {
+      "command": [
+        "C:\\ProgramData\\HP\\LCDDisplayHelper\\bin\\ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\nimbus-continuous.wav",
+        "-af",
+        "atrim=duration=593.05,asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-3:LRA=11,aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=0.45,afade=t=out:st=592.5999999999999:d=0.45",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\bgm-before-ducking.wav"
+      ],
+      "pid": 23756,
+      "exitCode": 0,
+      "log": "projects/making-game-sequels/production/final-v1/mix-recovery-01.log"
+    },
+    {
+      "command": [
+        "C:\\ProgramData\\HP\\LCDDisplayHelper\\bin\\ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\voice-normalized.wav",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\bgm-before-ducking.wav",
+        "-filter_complex",
+        "[0:a]asplit[n][d];[1:a][d]sidechaincompress=threshold=.08:ratio=2.2:attack=15:release=280[bg];[n][bg]amix=inputs=2:normalize=0,alimiter=limit=.80:level=false:latency=true[mix]",
+        "-map",
+        "[mix]",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-c:a",
+        "pcm_s16le",
+        "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\final-mix.wav"
+      ],
+      "pid": 4296,
+      "exitCode": 0,
+      "log": "projects/making-game-sequels/production/final-v1/mix-recovery-02.log"
+    },
+    {
+      "command": [
+        "C:\\ProgramData\\HP\\LCDDisplayHelper\\bin\\ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\final-mix.wav",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "192k",
+        "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\final-mix.m4a"
+      ],
+      "pid": 59356,
+      "exitCode": 0,
+      "log": "projects/making-game-sequels/production/final-v1/mix-recovery-03.log"
+    },
+    {
+      "command": [
+        "C:\\ProgramData\\HP\\LCDDisplayHelper\\bin\\ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\making-game-sequels\\production\\final-v1\\final-mix.m4a",
+        "-af",
+        "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "pid": 60736,
+      "exitCode": 0,
+      "log": "projects/making-game-sequels/production/final-v1/mix-recovery-04.log"
+    }
+  ],
+  "activeTasks": [],
+  "finalMixAsrApproved": false,
+  "humanWholeListening": "pending",
+  "sourceAudioStreams": 0,
+  "historicalFailure": "Duration parser rejected .45 before background audio was written. Completed timeline, normalization and continuousNimbus are reused.",
+  "previousExecutionSha256": "b501b573c4087b2d509d7335a5d90d0e07461686a0b95186bc5477e5f4750291",
+  "observedAt": "2026-10-05T12:25:28.392189+00:00",
+  "reusedMedia": [
+    {
+      "path": "projects/making-game-sequels/production/final-v1/narration-timed.wav",
+      "sha256": "a8e93cfa43c697be355d61251eda816041acfaadd70f1722238cdd064daf6190"
+    },
+    {
+      "path": "projects/making-game-sequels/production/final-v1/voice-normalized.wav",
+      "sha256": "7883cbccc8ade9de226b64aff3e6d133680d65741cfc36872bb5844dcdf872a5"
+    },
+    {
+      "path": "projects/making-game-sequels/production/final-v1/nimbus-continuous.wav",
+      "sha256": "7f3cbdd59f41f4e0e850b46f5b31743204d65c176046b842c4a5be483bfc1817"
+    }
+  ],
+  "endedAt": "2026-10-05T12:25:28.392189+00:00",
+  "exitCode": 0
+}

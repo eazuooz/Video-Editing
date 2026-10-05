@@ -1,0 +1,30 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>측정 설명 화면 검수</title>
+<style>body{margin:0;background:#e7e9ed;font:15px sans-serif}nav{display:flex;gap:5px;flex-wrap:wrap;padding:8px}button{padding:7px}pre{margin:8px;white-space:pre-wrap}canvas{display:block;margin:auto;width:min(100vw,1152px);height:auto}</style>
+<nav><button id="render">측정 설명 릴 렌더</button><button id="abort">현재 릴 중단</button></nav><nav id="seeks"></nav><pre id="status" role="status">측정 구성 준비 중</pre><main id="canvas"></main>
+<script type="module">
+import {Player,Stage,Renderer,Vector2} from '@motion-canvas/core';
+import project from './timed-white-reel-project-v4.ts?project';
+import plan from './timed-white-reel-plan-v4.json';
+const status=document.querySelector('#status');const size=new Vector2(1920,1080);
+const stage=new Stage();stage.configure({size,resolutionScale:1});document.querySelector('#canvas').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size,resolutionScale:1},{paused:true,muted:true,loop:false});
+let rows=[],busy=false,renderer=null;
+project.logger.onLogged.subscribe(entry=>{if(entry.level==='error')status.textContent+='\nERROR '+JSON.stringify(entry)});
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);if(!busy)status.textContent=JSON.stringify({status:'timed-silent-preview',frame:player.playback.frame,currentScene:player.playback.currentScene.name,rows},null,2)});
+player.onRecalculated.subscribe(()=>{
+ rows=player.playback.onScenesRecalculated.current.map(s=>({name:s.name,firstFrame:s.firstFrame,lastFrame:s.lastFrame,duration:s.lastFrame-s.firstFrame}));
+ const nav=document.querySelector('#seeks');nav.replaceChildren();
+ plan.rows.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.id;b.onclick=()=>player.requestSeek(rows[i].firstFrame+Math.min(s.frames-1,Math.floor(s.frames*.75)));nav.append(b)});
+ status.textContent=JSON.stringify({status:'recalculated',rows,expectedFrames:plan.totalFrames,finalVideoApproved:false},null,2);
+});
+document.querySelector('#render').onclick=async()=>{
+ if(busy)return;busy=true;document.querySelector('#render').disabled=true;
+ try{
+  await document.fonts.ready;renderer=new Renderer(project);
+  renderer.onFrameChanged.subscribe(f=>status.textContent=JSON.stringify({status:'rendering-timed-silent-white',frame:f,totalFrames:plan.totalFrames,rows,finalVideoApproved:false}));
+  await renderer.render({...project.meta.getFullRenderingSettings(),name:'making-game-sequels-timed-white-v4',range:[0,(plan.totalFrames-1.25)/60],fps:60,size,resolutionScale:1,
+   exporter:{name:'@motion-canvas/ffmpeg',options:{fastStart:true,includeAudio:false}}});
+  status.textContent=JSON.stringify({status:'render-returned-verify-file',expectedFrames:plan.totalFrames,rows,finalVideoApproved:false},null,2);
+ }catch(e){status.textContent=JSON.stringify({status:'render-failed',error:String(e)})}finally{busy=false;document.querySelector('#render').disabled=false}
+};document.querySelector('#abort').onclick=()=>renderer?.abort();
+</script></html>
