@@ -1,0 +1,23 @@
+// Current changed manifest was read in full before refreshing the duplicate gate.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
+const root=path.resolve(__dirname,'../../../..'),proof=path.relative(root,__dirname).replaceAll('\\','/');
+const rp='production/batches/sakurai-planning-game-design/preflight/making-game-sequels.json';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const save=(p,d)=>fs.writeFileSync(path.join(root,p),JSON.stringify(d,null,2)+'\n');
+const old=read(rp),changed=old.inputFiles.filter(x=>!fs.existsSync(path.join(root,x.path))||hash(x.path)!==x.sha256);
+const expected='projects/game-math-orientation-matrices/project.json';
+if(changed.length!==1||changed[0].path!==expected)throw Error('Read unexpected changed inputs first: '+JSON.stringify(changed));
+const added=fs.readdirSync(path.join(root,'projects')).filter(s=>s!=='making-game-sequels'&&fs.existsSync(path.join(root,'projects',s,'project.json'))&&!old.existingProjects.some(x=>x.slug===s));
+if(JSON.stringify(added)!==JSON.stringify(['game-math-quaternion-operations']))throw Error('Read newly added projects first: '+added);
+const manifest=read(expected),conclusion='The entire concurrent orientation manifest still describes right-handed column-vector local/world axes, matrix columns, transpose inverse and numerical rotation checks in chapter8 sections8.1–8.2.5. Its new measured902.4166667-second timing,53425 body frames and Manim/narration paths do not introduce a sequel retained-identity/new-player-decision lesson. Its explicitly scoped40:60/noBGM lecture exception is preserved separately and does not alter this batch60:40/Nimbus. The already reviewed full24-scene KO/EN scripts are unchanged.';
+const newBase='projects/game-math-quaternion-operations/',newFiles=['project.json','script/narration.ko.json','script/narration.en.json','planning/outline.md','sources/SOURCES.md','README.md'].map(x=>newBase+x);
+const newConclusion='The new quaternion project was read in full:26 chapters152KO/EN paragraphs cover four components, half-angle, q/-q, norm, conjugate/general inverse, Hamilton multiplication, world/body delta, shortest endpoint separation, fractional powers, two-sided vector rotation and code/exercises. Ski/bike motion illustrates a mathematical representation and explicitly does not establish internal game code. This mathematical viewer question and every chapter claim differ from what a sequel retains versus changes for new player decisions. Shared body-turning observations are incidental; no sequel production reuse or sequel design lesson is taught. Its40:60/noBGM lecture authorization stays scoped to that other project.';
+const newScripts=['ko','en'].map(lang=>read(newBase+'script/narration.'+lang+'.json'));
+const d={schemaVersion:1,reviewedAt:new Date().toISOString(),previousInputDigest:old.inputsDigest,changedInputs:changed.map(x=>({...x,currentSha256:hash(x.path),fullContentDirectlyRead:true,title:manifest.titles,coveredSections:manifest.lecture.coveredSections,viewerQuestion:manifest.editing.openingOverview.question})),conclusion,newProjectReview:{slug:added[0],files:newFiles.map(p=>({path:p,sha256:hash(p),fullContentDirectlyRead:true})),scriptCounts:newScripts.map(s=>({sceneCount:s.scenes.length,paragraphCount:s.scenes.reduce((n,x)=>n+x.lines.length,0)})),conclusion:newConclusion},otherUsersFilesModified:false,newImages:0,actualStudioEvidenceRetained:old.studioEvidence};
+save(proof+'/guided-wall-current-input-change-review-v4.json',d);
+const content=read(proof+'/content-review.json');content.updatedAt=d.reviewedAt;content.changedInputsDirectlyReviewed.push({review:proof+'/guided-wall-current-input-change-review-v4.json',files:[expected,...newFiles],conclusion:conclusion+' '+newConclusion});save(proof+'/content-review.json',content);
+for(const args of [ ['scripts/review-video-duplicates.cjs','making-game-sequels','--decision','distinct','--reason',old.contentReview+' Full changed concurrent orientation manifest reread: '+proof+'/guided-wall-current-input-change-review-v4.json','--studio-evidence',old.studioEvidence],['scripts/review-video-duplicates.cjs','making-game-sequels','--check'] ]){
+ const r=cp.spawnSync(process.execPath,args,{cwd:root,encoding:'utf8',windowsHide:true});if(r.status!==0)throw Error(r.stdout+r.stderr);console.log(r.stdout.trim());
+}
+const current=read(rp);d.currentInputDigest=current.inputsDigest;d.currentProjectCount=current.existingProjects.length;d.currentDistinctCheckPassed=true;save(proof+'/guided-wall-current-input-change-review-v4.json',d);
