@@ -3,7 +3,7 @@ import {all,createRef,easeInOutCubic,usePlayback} from '@motion-canvas/core';
 import {PAPER as P} from '../../../styles/research-paper';
 const content:Record<string,[string,string,string,string]>={
   '06-2':['같은 이동이라는 말에 숨은 차이','곡선을 따라 이동','얼음길에서 이동','공간과 동사를 함께 적습니다.'],
-  '06-4':['보인 진입과 확인하지 못한 조건','인쇄면으로 진입','시간 · 연료 조건?','짧은 시연에서 확인한 범위만 설명합니다.'],
+  '06-4':['컵의 인쇄면에서 보인 움직임','내려감 · 닿는 공간','올라감 · 이동 방향','상승과 하강을 나눠 적습니다.'],
   '10-2':['서로 다른 컷을 연속 추격으로 묶지 않기','평평한 물 위','파도 위로 떠오름','컷 사이의 인과관계는 따로 확인합니다.'],
   '10-4':['도움 기능 시연의 문맥을 보존','무적 · 한방처치 ON','기본 난이도?','이 설정을 게임 전체의 기본 규칙으로 옮기지 않습니다.'],
   '12-2':['보인 장치와 아직 확인하지 못한 조건','장치에 들어감','비용 · 승리 조건?','보인 행동과 미확인 조건을 구별합니다.'],
@@ -23,7 +23,8 @@ export function* cueDiagram(view:View2D,id:string,duration:number){
   view.add(<>
     <Txt text={c[0]} x={-850} y={-385} offset={[-1,0]} fontFamily={P.font} fontSize={44} fontWeight={700} fill={P.ink}/>
     <Node ref={cards} y={25} opacity={0}>{card(-435,c[1],P.blue)}{card(435,c[2],P.green)}
-      <Line points={[[-55,0],[55,0]]} stroke={P.blue} lineWidth={4} endArrow arrowSize={16}/>
+      <Line points={[[-55,0],[55,0]]} stroke={P.blue} lineWidth={4} startArrow endArrow arrowSize={16}/>
+      <Txt text={'비교'} y={-44} fontFamily={P.font} fontSize={25} fill={P.muted}/>
     </Node>
     <Txt text={c[3]} y={225} fontFamily={P.font} fontSize={30} fill={P.muted}/>
   </>);

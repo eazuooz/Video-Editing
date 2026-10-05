@@ -11,6 +11,7 @@ export default defineConfig({
   },
   plugins:[ffmpeg(),motionCanvas({project:[
     './src/projects/avoid-game-comparisons/lookdev-project.ts',
+    './src/projects/avoid-game-comparisons/cue-lookdev-project.ts',
     './src/projects/avoid-game-comparisons/project.ts',
   ],output:'../shared/output/motion-canvas'})],
 });

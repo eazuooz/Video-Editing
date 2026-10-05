@@ -1,0 +1,22 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>추가 도식 구성 검수</title>
+<style>body{margin:0;background:#e7e9ed;font:15px sans-serif}nav{display:flex;gap:6px;padding:8px}button{padding:7px}#status{margin:0 8px 6px}canvas{display:block;margin:auto;width:min(100vw,1152px);height:auto}</style>
+<nav id="controls"></nav><p id="status" role="status">무음 구성 준비 중</p><main id="canvas"></main>
+<script type="module">
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+import project from './cue-lookdev-project.ts?project';
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1});
+document.querySelector('#canvas').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{paused:true,muted:true,loop:false});
+player.onRender.subscribe(async()=>{
+  await stage.render(player.playback.currentScene,player.playback.previousScene);
+  document.querySelector('#status').textContent=`무음 구성 검토 · ${player.playback.currentScene.name} · frame ${player.playback.frame} · 최종 음성/자막/비율은 미승인`;
+});
+player.onRecalculated.subscribe(()=>{
+  const nav=document.querySelector('#controls');nav.replaceChildren();
+  for(const scene of player.playback.onScenesRecalculated.current){
+    const button=document.createElement('button');button.textContent=scene.name;
+    button.onclick=()=>player.requestSeek(scene.firstFrame+90);
+    nav.append(button);
+  }
+});
+</script></html>
