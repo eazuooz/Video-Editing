@@ -1,0 +1,34 @@
+// Metadata-only progress delivery. Preserve the shared checkout and every unrelated index entry.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),batch='production/batches/sakurai-planning-game-design/',proof=batch+'proof-making-game-sequels/';
+const pathsFile=process.argv[2],label=process.argv[3]||'source-review-progress';
+if(!pathsFile||!/^[-a-z0-9]+$/.test(label))throw Error('Explicit paths and a safe label required');
+const checksFile=proof+label+'-pre-delivery-checks.json',recordFile=proof+label+'-git-verification.json';
+const selected=JSON.parse(fs.readFileSync(path.join(root,pathsFile),'utf8'));
+if(new Set(selected).size!==selected.length||!selected.includes(checksFile))throw Error('Unique explicit paths/check record required');
+const digest=b=>crypto.createHash('sha256').update(b).digest('hex'),stamp=()=>new Date().toISOString();
+function git(args,env=process.env,input){const r=cp.spawnSync('git',args,{cwd:root,env,input,encoding:input instanceof Buffer?undefined:'utf8',windowsHide:true,maxBuffer:128e6});if(r.status!==0)throw Error('git '+args.join(' ')+'\n'+r.stdout+r.stderr);return String(r.stdout);}
+if(git(['symbolic-ref','--short','HEAD']).trim()!=='main')throw Error('Inspect unexpected current branch before delivery');
+const parent=git(['rev-parse','HEAD']).trim(),index=path.join(root,'.git','sequel-progress-'+Date.now()+'.index'),env={...process.env,GIT_INDEX_FILE:index},commands=[],snapshots=[];
+const staged=git(['diff','--cached','--name-only','-z']).split('\0').filter(Boolean);
+if(staged.some(p=>selected.includes(p)))throw Error('A selected path is already staged by another task; preserve it');
+const foreignHash=()=>digest(Buffer.from(git(['ls-files','--stage','-z']).split('\0').filter(Boolean).filter(s=>!selected.includes(s.slice(s.indexOf('\t')+1))).join('\0'))),foreignBefore=foreignHash();
+function stage(p){
+ if(/\.(?:png|jpe?g|webp|gif|bmp|tiff?|mp4|webm|wav|m4a|mp3|zip|7z|info\.json)$/i.test(p)||/research-local|\.raw-original$|\.meta$/.test(p))throw Error('Local-only file in metadata selection '+p);
+ const bytes=fs.readFileSync(path.join(root,p));if(p.endsWith('.json'))JSON.parse(bytes.toString('utf8'));
+ const blob=git(['hash-object','-w','--path='+p,'--stdin'],env,bytes).trim();git(['update-index','--add','--cacheinfo','100644,'+blob+','+p],env);snapshots.push({path:p,blob,capturedSha256:digest(bytes),capturedAt:stamp(),workingCopyPreserved:true});
+}
+function node(args){const r=cp.spawnSync(process.execPath,args,{cwd:root,env,encoding:'utf8',windowsHide:true,maxBuffer:16e6});commands.push({command:'node '+args.join(' '),exitCode:r.status,output:(r.stdout+r.stderr).trim()});if(r.status!==0)throw Error('Check failed '+args.join(' ')+'\n'+r.stdout+r.stderr);}
+try{
+ git(['read-tree',parent],env);for(const p of selected.filter(p=>p!==checksFile))stage(p);
+ node(['scripts/media-policy.cjs']);node(['scripts/review-video-duplicates.cjs','making-game-sequels','--check']);node(['scripts/build-rebuild-manifests.cjs','avoid-game-comparisons','--check']);
+ for(const f of ['acquire-official-sources.cjs','acquire-official-sections.cjs'])node(['--check',proof+'source-research/'+f]);git(['diff','--cached','--check',parent],env);
+ fs.writeFileSync(path.join(root,checksFile),JSON.stringify({schemaVersion:1,checkedAt:stamp(),parent,commands,explicitPaths:selected,snapshots,temporaryIndexFromActualHead:true,foreignStagedBefore:staged,foreignIndexBefore:foreignBefore,newImages:0,mediaAdded:0,npm:'Unavailable; exact Node hooks used.',whitespacePassed:true,scope:'Current sequel duplicate review and source research only. No new sequel project/script/TTS/scenes/render/private video. Prior completed avoid rebuild checked without rerendering.',globalWorkingTreeRebuildPassed:false,globalLimitation:'Historical global working-tree failure from other unfinished projects remains accurate; no whole-working-tree pass claimed.',completedVideoCount:11,remainingNonduplicateProductions:12},null,2)+'\n');stage(checksFile);
+ const changed=git(['diff','--cached','--name-only','-z',parent],env).split('\0').filter(Boolean);if(!changed.length||changed.some(p=>!selected.includes(p)))throw Error('Unexpected final paths');if(git(['diff','--cached','--diff-filter=D','--name-only',parent],env).trim())throw Error('No deletion in source-progress scope');git(['diff','--cached','--check',parent],env);
+ const tree=git(['write-tree'],env).trim();if(git(['rev-parse','HEAD']).trim()!==parent)throw Error('Concurrent HEAD changed; inspect before rebuilding selection');
+ const commit=git(['commit-tree',tree,'-p',parent],env,'Review sequel concept and fresh official series gameplay source progress\n').trim(),committed=git(['diff-tree','--no-commit-id','--name-only','-r',commit]).trim().split('\n').filter(Boolean).sort();
+ if(JSON.stringify(committed)!==JSON.stringify([...changed].sort()))throw Error('Final paths differ');for(const s of snapshots.filter(s=>changed.includes(s.path)))if(git(['rev-parse',commit+':'+s.path]).trim()!==s.blob)throw Error('Final blob differs '+s.path);
+ git(['update-ref','HEAD',commit,parent]);for(const p of changed)git(['restore','--staged','--source='+commit,'--',p]);const foreignAfter=foreignHash();if(foreignAfter!==foreignBefore)throw Error('Foreign index differs; do not discard');
+ const push=cp.spawnSync('git',['push','origin','main'],{cwd:root,encoding:'utf8',windowsHide:true,maxBuffer:16e6}),local=git(['rev-parse','HEAD']).trim(),remote=git(['ls-remote','origin','refs/heads/main']).trim().split(/\s+/)[0];
+ const record={schemaVersion:1,verifiedAt:stamp(),label,progressCommit:commit,parent,commitPaths:committed,snapshots:snapshots.filter(s=>changed.includes(s.path)),pushExitCode:push.status,pushOutput:(push.stdout+push.stderr).trim(),normalPush:true,forcePush:false,localSha:local,remoteSha:remote,remoteMatches:local===remote,foreignStagedBefore:staged,foreignIndexBefore:foreignBefore,foreignIndexAfter:foreignAfter,otherUsersFilesIncluded:false,newRasterCommitted:0,mediaCommitted:false,completedVideoDelivery:false,completedVideoCount:11,remainingNonduplicateProductions:12,persistence:'Actual post-push evidence is local until a later explicit evidence commit; no future self-SHA predicted.'};fs.writeFileSync(path.join(root,recordFile),JSON.stringify(record,null,2)+'\n');if(push.status!==0||local!==remote)throw Error('Normal push/remote match incomplete; actual outcome retained');console.log(JSON.stringify({commit,parent,paths:changed.length,newImages:0,media:0,pushExitCode:push.status,localSha:local,remoteSha:remote}));
+}finally{if(fs.existsSync(index))fs.unlinkSync(index);}
