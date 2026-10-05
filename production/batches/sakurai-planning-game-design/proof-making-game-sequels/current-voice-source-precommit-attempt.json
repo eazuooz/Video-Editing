@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sessionId": 48044,
+  "exitCode": 1,
+  "phase": "precommit-hook-checks-before-commit-tree-or-push",
+  "actualHeadAfterAttempt": "1877914ef096b6395d82393206005f31ea211218",
+  "commitCreated": false,
+  "pushAttempted": false,
+  "failedCommand": "node scripts/build-rebuild-manifests.cjs making-game-sequels --check",
+  "actualFailure": "Stale rebuild manifest: projects/making-game-sequels/rebuild.json",
+  "cause": "The explicit-path preparation CJS was created after the project manifest refresh and became a producer-script inventory input. The stale manifest was correctly rejected.",
+  "recovery": "Refresh the current project rebuild after the final producer paths are present, then rerun checks with a fresh temporary index from actual HEAD. Preserve the shared index and all other users' changes.",
+  "globalWorkingTreeRebuildPassed": false,
+  "newImages": 0,
+  "mediaCommitted": 0,
+  "secondPrecommitAttempt": {
+    "sessionId": 71399,
+    "exitCode": 1,
+    "failedCommand": "git diff --cached --check 1877914ef096b6395d82393206005f31ea211218",
+    "actualFailure": "render-additive-narration.py: new blank line at EOF",
+    "commitCreated": false,
+    "pushAttempted": false,
+    "recovery": "Normalize only this own wrapper EOF, refresh project producer hashes, rerun hooks and staged whitespace with a fresh isolated index."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "observedAt": "2026-10-05T05:51:07.527545+00:00",
+  "pid": 47256,
+  "sessionId": 81176,
+  "alive": true,
+  "commandLine": "\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\" -u projects/making-game-sequels/production/render-reviewed-narration.py",
+  "stateStatus": "synthesizing-reviewed-narration",
+  "generatedScenes": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05"
+  ],
+  "generationCompleted": false,
+  "externalProcesses": [
+    {
+      "ProcessId": 39612,
+      "ParentProcessId": 4296,
+      "Name": "pythonw.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\OneDrive\\문서\\ChatGPT\\YamYamStudio\\.venv\\Scripts\\pythonw.exe\"  \"C:\\Users\\eazuo\\OneDrive\\문서\\ChatGPT\\YamYamStudio\\app.py\""
+    },
+    {
+      "ProcessId": 20544,
+      "ParentProcessId": 39612,
+      "Name": "pythonw.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\pythonw.exe\" \"C:\\Users\\eazuo\\OneDrive\\문서\\ChatGPT\\YamYamStudio\\app.py\""
+    },
+    {
+      "ProcessId": 51560,
+      "ParentProcessId": 24816,
+      "Name": "python.exe",
+      "CommandLine": "C:\\Users\\eazuo\\envs\\rf2\\Scripts\\python.exe lora_experiment/v2/train_v2.py --target subsurface_approx --scope vivd --scenes cbox-bunny,cbox,horse-and-heart,init-template,veach-mis,crystals,tree,compose-scene,room,constant-width,cbox-lucy,cbox-teapot,shader-ball --eval_scenes fox-in-the-wild,renderformer-logo,composite-heldout --out_root lora_experiment/output_v2sw_vivd"
+    },
+    {
+      "ProcessId": 53864,
+      "ParentProcessId": 51560,
+      "Name": "python.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe\" lora_experiment/v2/train_v2.py --target subsurface_approx --scope vivd --scenes cbox-bunny,cbox,horse-and-heart,init-template,veach-mis,crystals,tree,compose-scene,room,constant-width,cbox-lucy,cbox-teapot,shader-ball --eval_scenes fox-in-the-wild,renderformer-logo,composite-heldout --out_root lora_experiment/output_v2sw_vivd"
+    },
+    {
+      "ProcessId": 26524,
+      "ParentProcessId": 24480,
+      "Name": "pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n@'\nimport json,sys,subprocess\nfrom datetime import datetime,timezone\nfrom pathlib import Path\nsys.stdout.reconfigure(encoding='utf-8')\nroot=Path.cwd(); base=root/'projects/making-game-sequels/production'\nread=lambda p:json.loads(p.read_text(encoding='utf-8'))\nstate=read(base/'narration-tts-execution.json')\nps='Get-CimInstance Win32_Process | Where-Object { $_.ProcessId -eq '+str(state['pid'])+' -or $_.CommandLine -like \\\"*train_v2.py*\\\" -or $_.Name -eq \\\"pythonw.exe\\\" } | Select-Object ProcessId,ParentProcessId,Name,CommandLine | ConvertTo-Json -Depth 3 -Compress'\nr=subprocess.run(['pwsh','-NoProfile','-Command',ps],capture_output=True,text=True,encoding='utf-8',check=True)\nprocesses=json.loads(r.stdout) if r.stdout.strip() else []\nif isinstance(processes,dict):processes=[processes]\nworker=next((p for p in processes if p['ProcessId']==state['pid'] and 'projects/making-game-sequels/production/render-reviewed-narration.py' in (p.get('CommandLine') or '')),None)\nnow=datetime.now(timezone.utc).isoformat()\nobservation={'observedAt':now,'pid':state['pid'],'sessionId':state.get('sessionId'),'alive':worker is not None,'commandLine':worker.get('CommandLine') if worker else None,'stateStatus':state['status'],'generatedScenes':state['renderedScenes'],'generationCompleted':state['generationCompleted'],'externalProcesses':[{k:p.get(k) for k in ['ProcessId','ParentProcessId','Name','CommandLine']} for p in processes if p is not worker],'externalProcessesUnmodified':True,'newWorkerStarted':False,'wholeAsrApproved':False}\nif not worker and not state['generationCompleted']:raise RuntimeError('Inspect stopped incomplete TTS; do not blindly restart')\ndef save(p,v):\n t=p.with_name(p.name+'.heartbeat.writing');t.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\\n',encoding='utf-8');t.replace(p)\nsave(base/'narration-live-observation.json',observation)\nqp=root/'production/batches/sakurai-planning-game-design/queue.json';q=read(qp);item=next(x for x in q['items'] if x['slug']=='making-game-sequels');item['execution']['liveObservation']={'path':'projects/making-game-sequels/production/narration-live-observation.json','observedAt':now,'alive':worker is not None,'pid':state['pid'],'sessionId':state.get('sessionId'),'generatedScenes':state['renderedScenes'],'generationCompleted':state['generationCompleted']};item['updatedAt']=now;save(qp,q)\nfor p in [base/'latest-checkpoint.json',root/'production/batches/sakurai-planning-game-design/proof-making-game-sequels/latest-checkpoint.json']:\n d=read(p);d['execution']['liveObservation']=item['execution']['liveObservation'];d['updatedAt']=now;save(p,d)\nprint(json.dumps({'workerAlive':worker is not None,'status':state['status'],'generatedScenes':state['renderedScenes'],'generationCompleted':state['generationCompleted'],'newWorkers':0,'externalProcessesPreserved':len(processes)-int(worker is not None),'requiresUserAction':False},ensure_ascii=False))\n'@ | & 'D:/Github/Video-Editing/qwen3-tts/.venv/Scripts/python.exe' -\""
+    },
+    {
+      "ProcessId": 3252,
+      "ParentProcessId": 29336,
+      "Name": "pwsh.exe",
+      "CommandLine": "pwsh -NoProfile -Command \"Get-CimInstance Win32_Process | Where-Object { $_.ProcessId -eq 47256 -or $_.CommandLine -like \\\"*train_v2.py*\\\" -or $_.Name -eq \\\"pythonw.exe\\\" } | Select-Object ProcessId,ParentProcessId,Name,CommandLine | ConvertTo-Json -Depth 3 -Compress\""
+    }
+  ],
+  "externalProcessesUnmodified": true,
+  "newWorkerStarted": false,
+  "wholeAsrApproved": false
+}

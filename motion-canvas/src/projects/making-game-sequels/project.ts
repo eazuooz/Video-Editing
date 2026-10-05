@@ -11,5 +11,6 @@ import scene09 from './scenes/scene09?scene';
 import scene10 from './scenes/scene10?scene';
 import scene11 from './scenes/scene11?scene';
 import scene12 from './scenes/scene12?scene';
+import scene13 from './scenes/scene13?scene';
 // Final factory requires measured plan and all cut/caption approval; no silent draft is final.
-export default makeProject({scenes:[scene01,scene02,scene03,scene04,scene05,scene06,scene07,scene08,scene09,scene10,scene11,scene12]});
+export default makeProject({scenes:[scene01,scene02,scene03,scene04,scene05,scene06,scene13,scene07,scene08,scene09,scene10,scene11,scene12]});

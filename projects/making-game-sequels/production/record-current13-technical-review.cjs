@@ -1,0 +1,24 @@
+const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const root=process.cwd(),p='projects/making-game-sequels/',b=p+'production/';
+const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
+const sha=f=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
+const save=(f,v)=>fs.writeFileSync(path.join(root,f),JSON.stringify(v,null,2)+'\n');
+const index=read(b+'narration-expanded13-index.json'),whole=read(b+'additive-whole-asr-execution.json'),contexts=read(b+'additive-context-asr-execution.json'),review=read(b+'additive-narration-direct-review.json');
+if(whole.exitCode!==0||contexts.exitCode!==0||contexts.results.length!==3||!review.allFourWholeParagraphsTechnicallyCompared)throw Error('New direct readbacks incomplete');
+for(const m of index.measurements)if(sha(m.path)!==m.sha256)throw Error('Current PCM changed');
+for(const r of contexts.results)if(sha(r.audioPath)!==r.audioSha256)throw Error('Context PCM changed');
+const now=new Date().toISOString();
+review.independentContextsReviewed=true;review.reviewedAt=now;
+review.independentContexts=contexts.results.map(r=>({id:r.id,audioSha256:r.audioSha256,fromSeconds:r.actualFromSeconds,toSeconds:r.actualToSeconds,expectedKo:r.expectedKo,actualKo:r.text,directMeaningOrderAndEndingCompared:true,semanticOmissionObserved:false,paragraphRepetitionObserved:false,unrequestedGreetingObserved:false,note:r.id.includes('particle')?'Independent complete paragraph also returns 작품 안에 별도 구간, while script says 작품 안의 별도 구간. Same-second-game/separate-interval meaning remains present; particle/phonetic approval is pending human listening.':'Every complete clause in the two neighbouring paragraphs is present; quiet joins did not yield an observed omission/repetition.'}));
+review.allFourParagraphsTechnicalReadbackApproved=true;review.humanPronunciation='pending';review.humanWholeListening='pending';save(b+'additive-narration-direct-review.json',review);
+index.scope='All current13 scenes/52 independent paragraphs technically compared against whole-current-hash and ambiguous complete-sentence readbacks; human listening/pronunciation and final mix pending.';index.fullCurrentHashAsrApproved=true;index.allCurrent13NarrationApproved=true;index.newIndependentContextReview=true;index.technicalApprovalOnly=true;index.updatedAt=now;save(b+'narration-expanded13-index.json',index);
+const plan=read(p+'planning/chapter-plan.json'),map=read(p+'sources/action-map.json'),manifest=read(p+'project.json'),source=read(b+'script-source-review.json');
+if(!map.chapters.some(c=>c.id==='13')){map.historical12ChapterRollup=map.chapters;map.chapters=plan.chapters.map(c=>({...c}));}
+map.uniqueCandidateCount=map.clips.length;map.status='Current13 text/PCM technically reviewed; 61 unique native source proposals367.7s; final word/cut framing and captions pending';save(p+'sources/action-map.json',map);
+for(const c of plan.chapters)c.measuredNarrationSeconds=index.measurements.find(m=>m.scene===c.id).seconds;
+plan.updatedAt=now;plan.currentTechnicalVoiceReview=b+'narration-expanded13-index.json';save(p+'planning/chapter-plan.json',plan);
+manifest.status='current13-voice-technically-reviewed-native-word-and-caption-alignment-pending';manifest.editing.currentVoiceReview=b+'narration-expanded13-index.json';manifest.editing.additiveExample.ttsApproved=true;manifest.editing.additiveExample.technicalVoiceApprovalOnly=true;manifest.editing.additiveExample.measuredSeconds=47.68;manifest.editing.measuredSpeechSeconds=index.speechSeconds;save(p+'project.json',manifest);
+source.historicalPreVoiceFlags=source.historicalPreVoiceFlags||{ttsStarted:source.ttsStarted,independentMotionCanvasScenesCreated:source.independentMotionCanvasScenesCreated,voiceAsrReview:source.voiceAsrReview};
+source.ttsStarted=true;source.independentMotionCanvasScenesCreated=true;source.voiceAsrReview='All current13 PCM/52 paragraphs technically compared; original12 preserved, only new13 generated. Whole and independent same-hash contexts read; human listening/pronunciation and final mix pending.';source.voiceReview=b+'narration-expanded13-index.json';source.status='current13-independent-bilingual-text-source-and-technical-voice-reviewed-final-cues-pending';source.reviewedAt=now;for(const input of source.inputs)input.sha256=sha(input.path);save(b+'script-source-review.json',source);
+const adoption=read(b+'additive-plan-adoption.json');adoption.additional13TtsApproved=true;adoption.technicalReadbackOnly=true;adoption.humanWholeListening='pending';adoption.current13TechnicalVoiceReview=b+'narration-expanded13-index.json';save(b+'additive-plan-adoption.json',adoption);
+console.log(JSON.stringify({scenes:13,paragraphs:52,seconds:index.speechSeconds,whiteSeconds:index.explanationSpeechSeconds,actualNarrationSeconds:index.actualSpeechSeconds,currentTechnicalASR:true,humanListening:'pending',finalTiming:false,images:0}));
