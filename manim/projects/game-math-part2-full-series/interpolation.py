@@ -50,8 +50,8 @@ class InterpolationScene(ThreeDScene):
    self.fixed(txt('a',25,BLUE).next_to(Dot(a),RIGHT),txt('b',25,GREEN).move_to(b+[.25,.2,0]),txt('4D 구면의 2D 단면 개념도',20,MUTED).move_to([-3.6,-2.2,0]))
    dot=Dot(a,color=GOLD,radius=.1);self.fixed(dot)
   elif mode=='slerp-code':
-   lines=['a,b = checked_unit(a), checked_unit(b)','d = dot(a,b); if d < 0: b,d = -b,-d','d = clamp(d,0,1)','if d > .9995: return unit(lerp(a,b,t))','alpha = acos(d)','return unit((sin((1-t)*alpha)*a','             + sin(t*alpha)*b) / sin(alpha))']
-   special=VGroup(*[Text(v,font='Consolas',font_size=22,color=INK,t2c={'return':GREEN,'unit':BLUE,'clamp':GOLD,'if':RED}) for v in lines]).arrange(DOWN,aligned_edge=LEFT,buff=.17);fit(special,11.9);special.move_to([0,-.3,0]);self.fixed(special)
+   lines=['t = checked_t(t,0,1)','a,b = checked_unit(a), checked_unit(b)','d = dot(a,b)','if d < 0: b,d = -b,-d','d = clamp(d,0,1)','if d > .9995: return unit(lerp(a,b,t))','alpha = acos(d)','return unit((sin((1-t)*alpha)*a','             + sin(t*alpha)*b) / sin(alpha))']
+   special=VGroup(*[Text(v,font='Consolas',font_size=20,color=INK,t2c={'return':GREEN,'unit':BLUE,'clamp':GOLD,'if':RED}) for v in lines]).arrange(DOWN,aligned_edge=LEFT,buff=.11);fit(special,11.9);special.move_to([0,-.45,0]);self.fixed(special)
   elif mode in ['time','continuity']:
    labels=['고정 시작 a','선형 시간 t','고정 끝 b'] if mode=='time' else ['이전 q','dot 부호 검사','현재 q 또는 -q']
    special=VGroup(*[card(v,width=3.6,size=28) for v in labels]).arrange(RIGHT,buff=.48).move_to([0,.1,0]);self.fixed(special)
@@ -62,7 +62,7 @@ class InterpolationScene(ThreeDScene):
    special=VGroup(*[card(v,width=2.85,size=29) for v in ['Euler','Matrix','Quaternion','Axis-angle']]).arrange(RIGHT,buff=.32).move_to([0,-.1,0]);self.fixed(special)
    self.fixed(VGroup(*[DoubleArrow(special[j].get_right(),special[j+1].get_left(),buff=.03,color=MUTED,stroke_width=2) for j in range(3)]))
   elif mode=='summary':
-   special=VGroup(*[card(v,width=11,size=28,color=GREEN) for v in ['단위·부호와 경로 / 시간 조건','같은 규약으로 네 표현 변환','영도·반 바퀴·특이점 / 왕복 검증']]).arrange(DOWN,buff=.28).move_to([0,-.4,0]);self.fixed(special)
+   special=VGroup(*[card(v,width=11,size=28,color=GREEN) for v in ['단위·부호와 경로 / 시간 조건','같은 규약으로 네 표현 변환','영도·반 바퀴·특이점 / 왕복 검증']]).arrange(DOWN,buff=.28).move_to([0,-.65,0]);self.fixed(special)
   def equation(v):
    nonlocal formula
    formula=self.replace_fixed(formula,fit(txt(v,27,GOLD),6 if not flat or mode=='sphere' else 11.8).move_to([3.1 if not flat or mode=='sphere' else 0,-.65,0]))
@@ -93,9 +93,10 @@ class InterpolationScene(ThreeDScene):
      target=np.array([-3.6,-.15,0])+1.72*np.array([np.cos(PI/8),np.sin(PI/8),0.]);self.play(dot.animate.move_to(target),run_time=.9)
      formula=self.replace_fixed(formula,VGroup(fit(txt('k₀=sin((1-t)α)/sinα',25,GOLD),5.8),fit(txt('k₁=sin(tα)/sinα',25,GREEN),5.8),txt('q(t)=k₀a+k₁b',27,BLUE)).arrange(DOWN,buff=.22).move_to([3.1,-.45,0]))
    elif mode=='slerp-code':
-    groups={0:[0],1:[0],2:[1,2],3:[3],4:[4,5,6]}
+    groups={0:[0,1],1:[1],2:[2,3,4],3:[5],4:[6,7,8]}
     self.play(*[Indicate(special[j],color=GOLD) for j in groups[i]],run_time=.6)
-    if i==1:display('checked_unit: 유한·비영 입력 검증',RED)
+    if i==1:
+     note=self.replace_fixed(note,txt('checked_unit: 유한·비영 입력 검증',23,RED).move_to([0,-2.55,0]))
    elif mode=='slerp-example':
     q0=np.array([1.,0,0,0]);q1=conv.axis_quaternion([0,0,1],PI/2)
     if i==1:equation('α=45° / Δθ=90°')

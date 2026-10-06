@@ -60,9 +60,12 @@ class LectureScene(ThreeDScene):
  slug='';sid=''
  def fixed(self,*m):self.add_fixed_in_frame_mobjects(*m)
  def replace_fixed(self,old,new):
+  # Math labels share one slot. Finish removing the old label before showing
+  # the new one so no intermediate frame contains unreadable superimposed text.
+  if old:
+   self.play(FadeOut(old),run_time=.15);self.remove(old)
   self.fixed(new)
-  if old:self.play(FadeOut(old),FadeIn(new,shift=.07*UP),run_time=.35);self.remove(old)
-  else:self.play(FadeIn(new,shift=.07*UP),run_time=.35)
+  self.play(FadeIn(new,shift=.07*UP),run_time=.20 if old else .35)
   return new
  def construct(self):
   self.camera.background_color=WHITE

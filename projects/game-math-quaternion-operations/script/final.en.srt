@@ -1,0 +1,1082 @@
+1
+00:00:02,000 --> 00:00:05,580
+How can four numbers record an airborne
+rotation in a game?
+
+2
+00:00:05,760 --> 00:00:08,580
+We will observe ski and bike orientations,
+
+3
+00:00:09,020 --> 00:00:12,540
+then visualize the four quaternion components
+and their half-angle.
+
+4
+00:00:12,940 --> 00:00:15,320
+We will undo and compose rotations,
+
+5
+00:00:15,700 --> 00:00:17,380
+and compute the difference between two
+orientations.
+
+6
+00:00:18,080 --> 00:00:20,460
+Finally, we will check sign and normalization
+
+7
+00:00:20,700 --> 00:00:23,500
+pitfalls and rotate a vector in a worked
+exercise.
+
+8
+00:00:24,700 --> 00:00:33,396
+This is skiing in Riders Republic. Watch the
+tilt of the body and skis.
+
+9
+00:00:33,676 --> 00:00:38,776
+Read forward movement separately from changes
+in body orientation.
+
+10
+00:00:41,252 --> 00:00:45,372
+In the air, the travel path continues while
+facing and bank also change.
+
+11
+00:00:47,808 --> 00:00:53,088
+Remaining near screen center does not imply an
+unchanged orientation; the camera follows too.
+
+12
+00:00:55,784 --> 00:00:59,544
+We are learning a representation that can
+describe the visible motion,
+
+13
+00:00:59,624 --> 00:01:04,480
+without claiming to have inspected the game
+code.
+
+14
+00:01:04,480 --> 00:01:08,120
+Our next diagram will hold position fixed and
+
+15
+00:01:08,120 --> 00:01:10,080
+rotate the three body axes to isolate
+orientation.
+
+16
+00:01:10,700 --> 00:01:14,740
+A quaternion contains one scalar and a
+three-component vector.
+
+17
+00:01:14,960 --> 00:01:19,580
+We write components in w,x,y,z order.
+
+18
+00:01:19,800 --> 00:01:23,360
+A unit rotation quaternion has squared
+components summing to one,
+
+19
+00:01:23,580 --> 00:01:26,120
+leaving three continuous degrees of freedom.
+
+20
+00:01:26,400 --> 00:01:32,960
+Four numbers are not four rotation angles, and
+x,y,z are not Euler angles.
+
+21
+00:01:33,040 --> 00:01:38,580
+The algebra uses i,j,k, whose squares each
+equal minus one.
+
+22
+00:01:38,580 --> 00:01:44,620
+The product ij is k, whereas ji is minus k: an
+early hint that order matters.
+
+23
+00:01:44,980 --> 00:01:51,360
+A library may store x,y,z,w instead. Check the
+named components and memory order.
+
+24
+00:01:52,183 --> 00:01:58,903
+Recall a unit axis and the angle of rotation
+about it.
+
+25
+00:01:59,303 --> 00:02:02,963
+The scalar is cos of the half-angle,
+
+26
+00:02:03,183 --> 00:02:05,943
+and the vector is the unit axis times sin of
+the half-angle.
+
+27
+00:02:06,223 --> 00:02:11,843
+At zero angle, cos is one and sin is zero,
+giving the identity [1,0,0,0].
+
+28
+00:02:12,203 --> 00:02:19,103
+A 90-degree z rotation uses a 45-degree
+half-angle, so w and z are both sqrt(2)/2.
+
+29
+00:02:19,323 --> 00:02:21,803
+The half-angle does not mean half the physical
+rotation.
+
+30
+00:02:21,803 --> 00:02:26,263
+Multiplication on both sides produces the full
+angle.
+
+31
+00:02:26,503 --> 00:02:28,903
+We retain right-handed column-vector
+conventions,
+
+32
+00:02:29,083 --> 00:02:32,483
+and use radians in trigonometric calculations.
+
+33
+00:02:33,117 --> 00:02:37,317
+Compare body facing when the skis leave the
+ground and when they land.
+
+34
+00:02:39,945 --> 00:02:45,205
+Imagine three small body axes; all of them
+rotate together in the air.
+
+35
+00:02:47,973 --> 00:02:53,393
+One direction alone cannot describe both body
+facing and ski bank.
+
+36
+00:02:53,406 --> 00:03:02,141
+A quaternion is one way to store the full
+orientation, not position or velocity.
+
+37
+00:03:04,889 --> 00:03:08,529
+We are not measuring exact axes and angles
+from the screen.
+
+38
+00:03:08,709 --> 00:03:14,097
+We will define those explicitly in the next
+calculation.
+
+39
+00:03:14,097 --> 00:03:16,797
+Watch orientation separately from travel
+direction around
+
+40
+00:03:16,797 --> 00:03:19,277
+landing to connect the representation to
+visible motion.
+
+41
+00:03:20,117 --> 00:03:26,117
+Multiply the z90 quaternion by itself,
+applying the same rotation twice.
+
+42
+00:03:26,297 --> 00:03:32,417
+The new scalar is the product of scalars minus
+the vector dot product, which is zero here.
+
+43
+00:03:32,465 --> 00:03:35,197
+The two cross scalar-vector terms sum to a z
+component of one;
+
+44
+00:03:35,197 --> 00:03:37,957
+the other components remain zero.
+
+45
+00:03:38,157 --> 00:03:42,917
+The result [0,0,0,1] represents z180.
+
+46
+00:03:43,177 --> 00:03:46,037
+After two more such rotations, the result is
+[-1,0,0,0],
+
+47
+00:03:46,037 --> 00:03:49,697
+with the body back at its initial orientation.
+
+48
+00:03:49,697 --> 00:03:53,257
+The scalar changed from one to minus one, yet
+the orientation matches.
+
+49
+00:03:53,617 --> 00:03:56,257
+Let us examine this double representation.
+
+50
+00:03:56,967 --> 00:04:03,047
+The unit quaternions q and -q produce the same
+rotation matrix and endpoint orientation.
+
+51
+00:04:03,207 --> 00:04:05,787
+All four components change sign. This differs
+from conjugation,
+
+52
+00:04:06,067 --> 00:04:09,187
+which changes only the vector signs.
+
+53
+00:04:09,427 --> 00:04:13,787
+In vector rotation, the signs on both sides
+cancel.
+
+54
+00:04:14,047 --> 00:04:18,427
+Component equality alone is therefore
+insufficient to test orientation equality.
+
+55
+00:04:18,887 --> 00:04:21,927
+Equivalent endpoints do not make every
+interpolation
+
+56
+00:04:22,207 --> 00:04:25,587
+path between signed representatives
+equivalent.
+
+57
+00:04:25,587 --> 00:04:28,447
+Endpoint orientation does not retain
+revolution count;
+
+58
+00:04:28,787 --> 00:04:31,187
+store the path and accumulated rotation
+separately.
+
+59
+00:04:32,050 --> 00:04:36,310
+Follow the body forward direction and ski line
+through the airborne rotation.
+
+60
+00:04:41,641 --> 00:04:46,861
+A single frame cannot reveal the full movement
+that preceded it.
+
+61
+00:04:52,311 --> 00:04:55,891
+Time reveals the process; endpoint orientation
+
+62
+00:04:56,131 --> 00:04:58,171
+and movement history are different
+information.
+
+63
+00:05:03,502 --> 00:05:08,522
+Connect this distinction to the two signed
+quaternions representing one orientation.
+
+64
+00:05:08,722 --> 00:05:23,483
+One quaternion does not automatically retain
+the number of visible revolutions.
+
+65
+00:05:23,483 --> 00:05:25,503
+If a trick needs accumulated rotation,
+
+66
+00:05:25,503 --> 00:05:29,403
+track input or rotation history separately
+from orientation.
+
+67
+00:05:30,283 --> 00:05:36,983
+The multiplication identity is [1,0,0,0];
+multiplying q by it leaves q unchanged.
+
+68
+00:05:37,903 --> 00:05:44,823
+[-1,0,0,0] is also the identity rotation, but
+is not the algebraic multiplication identity.
+
+69
+00:05:45,303 --> 00:05:50,383
+It changes q to -q: different components
+representing the same orientation.
+
+70
+00:05:50,863 --> 00:05:58,863
+An all-zero quaternion is not no rotation; it
+is a zero-norm invalid rotation input.
+
+71
+00:05:58,863 --> 00:06:03,283
+Initialize with the library identity
+constructor
+
+72
+00:06:03,283 --> 00:06:06,243
+or correctly ordered unit components.
+
+73
+00:06:06,703 --> 00:06:12,343
+Distinguish equality as numbers from equality
+as rotations before reasoning about signs.
+
+74
+00:06:12,967 --> 00:06:15,787
+The norm is the square root of the sum of all
+four
+
+75
+00:06:16,007 --> 00:06:18,307
+squared components, not just the vector norm.
+
+76
+00:06:18,507 --> 00:06:21,127
+Typical orientation storage and
+
+77
+00:06:21,127 --> 00:06:22,947
+quaternion-to-matrix routines expect unit
+inputs.
+
+78
+00:06:23,287 --> 00:06:28,587
+For small floating-point drift, divide all
+four components by the norm.
+
+79
+00:06:28,767 --> 00:06:32,347
+Guard near-zero and nonfinite norms before
+division;
+
+80
+00:06:32,563 --> 00:06:35,767
+do not disguise arbitrary invalid data as a
+valid rotation.
+
+81
+00:06:36,067 --> 00:06:41,187
+A nonzero nonunit quaternion can also rotate
+with its correct
+
+82
+00:06:41,467 --> 00:06:44,127
+general inverse because scale cancels, unlike
+unit-assuming code.
+
+83
+00:06:44,627 --> 00:06:48,327
+Normalization restores the scale convention.
+
+84
+00:06:48,327 --> 00:06:51,747
+It neither scales the rotation angle directly
+nor fixes wrong axes or multiplication order.
+
+85
+00:06:52,367 --> 00:06:55,407
+We will move from skiing to a flight segment.
+
+86
+00:06:55,687 --> 00:06:58,027
+Watch movement speed separately from body
+orientation.
+
+87
+00:07:00,579 --> 00:07:06,419
+Faster motion does not mean a longer
+quaternion; a unit rotation retains norm one.
+
+88
+00:07:06,779 --> 00:07:12,251
+Speed and acceleration describe change,
+
+89
+00:07:12,411 --> 00:07:14,011
+whereas orientation describes the current
+state.
+
+90
+00:07:14,351 --> 00:07:18,943
+The following camera moves as the wings bank.
+
+91
+00:07:19,543 --> 00:07:22,903
+Apparent image size cannot reveal quaternion
+norm.
+
+92
+00:07:25,615 --> 00:07:32,455
+Check unit length in code or data; this
+footage is not a measurement of those values.
+
+93
+00:07:35,247 --> 00:07:40,267
+After observing motion, we will calculate how
+to undo a stored rotation in the next diagram.
+
+94
+00:07:41,637 --> 00:07:46,047
+Conjugation keeps the scalar and negates the
+three vector components.
+
+95
+00:07:46,447 --> 00:07:52,367
+For a unit rotation quaternion, the conjugate
+is the inverse and undoes the rotation.
+
+96
+00:07:52,627 --> 00:07:57,007
+Conjugating z90 preserves w and negates z,
+
+97
+00:07:57,367 --> 00:07:59,567
+giving z minus90.
+
+98
+00:07:59,727 --> 00:08:03,367
+Their product returns [1,0,0,0].
+
+99
+00:08:03,457 --> 00:08:10,347
+Negating all four components instead gives the
+same orientation, not generally the inverse.
+
+100
+00:08:10,347 --> 00:08:14,567
+Special cases such as half-turns have matching
+inverse orientations,
+
+101
+00:08:14,567 --> 00:08:17,787
+but conjugation and full negation remain
+different operations.
+
+102
+00:08:18,450 --> 00:08:24,310
+The general inverse is the conjugate divided
+by the squared norm, not the norm itself.
+
+103
+00:08:24,570 --> 00:08:28,650
+For [2,0,0,0], the norm is two and its square
+is four.
+
+104
+00:08:28,910 --> 00:08:34,110
+Dividing the conjugate by four gives
+[0.5,0,0,0].
+
+105
+00:08:34,410 --> 00:08:36,230
+Their product is the identity. Dividing by two
+would
+
+106
+00:08:36,350 --> 00:08:39,550
+leave scalar two in the product and fail the
+inverse test.
+
+107
+00:08:39,690 --> 00:08:43,730
+For unit inputs the squared norm is one,
+recovering the conjugate rule.
+
+108
+00:08:44,030 --> 00:08:46,630
+The inverse requires a nonzero quaternion;
+
+109
+00:08:46,642 --> 00:08:50,430
+reject zero and nonfinite inputs and inspect
+their origin.
+
+110
+00:08:51,133 --> 00:08:55,793
+Watch the snow bike bank and then adjust its
+orientation again.
+
+111
+00:08:58,265 --> 00:09:04,737
+Leaning one way and returning helps us
+visualize an opposing rotation.
+
+112
+00:09:05,077 --> 00:09:10,897
+The camera moves, so screen left and right do
+not determine exact axes or angles.
+
+113
+00:09:13,289 --> 00:09:17,249
+An inverse swaps the input and output of a
+stored rotation;
+
+114
+00:09:17,529 --> 00:09:20,989
+it differs from riding backward or negating
+velocity.
+
+115
+00:09:23,381 --> 00:09:25,561
+Separating bank from travel shows why undoing
+orientation
+
+116
+00:09:25,561 --> 00:09:29,881
+and undoing position are different questions.
+
+117
+00:09:29,901 --> 00:09:37,453
+Next we will diagram multiplication order and
+reference frames.
+
+118
+00:09:38,133 --> 00:09:42,913
+Consider the Hamilton product written in
+scalar-vector form.
+
+119
+00:09:43,233 --> 00:09:47,753
+Its scalar is the scalar product minus the
+vector dot product.
+
+120
+00:09:48,093 --> 00:09:55,113
+Its vector sums the two scalar-vector products
+and the vector cross product.
+
+121
+00:09:55,433 --> 00:10:02,033
+Reversing the cross product changes its sign,
+exposing the usual noncommutativity.
+
+122
+00:10:02,253 --> 00:10:05,253
+Products are associative, so parentheses can
+
+123
+00:10:05,253 --> 00:10:08,393
+move without permitting arbitrary order
+changes.
+
+124
+00:10:08,733 --> 00:10:11,513
+Some rotations, such as those about one axis,
+
+125
+00:10:11,973 --> 00:10:15,573
+do commute. Check the actual operation and
+convention.
+
+126
+00:10:16,417 --> 00:10:22,717
+We use the Hamilton convention in which a
+vector rotates as q times v times inverse q.
+
+127
+00:10:23,057 --> 00:10:29,277
+Applying fixed x90 followed by fixed y90 puts
+the y quaternion on the left.
+
+128
+00:10:29,497 --> 00:10:35,957
+The initial z direction becomes minus y after
+x90 and remains there under y90.
+
+129
+00:10:36,097 --> 00:10:43,157
+In reverse order it becomes x after y90 and
+remains x under x90, so the results differ.
+
+130
+00:10:43,157 --> 00:10:46,857
+A world-frame delta premultiplies the current
+orientation;
+
+131
+00:10:47,117 --> 00:10:49,377
+a body-frame delta postmultiplies it.
+
+132
+00:10:49,857 --> 00:10:53,337
+Check whether a library uses the same product
+convention,
+
+133
+00:10:53,717 --> 00:10:57,257
+using small axis-rotation probes.
+
+134
+00:10:58,253 --> 00:11:02,970
+We will observe snowboard jumps and then bike
+bank.
+
+135
+00:11:07,158 --> 00:11:09,058
+Changing the body forward direction also
+changes
+
+136
+00:11:09,058 --> 00:11:12,998
+the direction of later body-relative motion.
+
+137
+00:11:17,106 --> 00:11:23,466
+Follow temporal order; an endpoint frame does
+not reconstruct every intermediate operation.
+
+138
+00:11:23,746 --> 00:11:30,594
+Distinguishing fixed world axes from moving
+body axes
+
+139
+00:11:30,594 --> 00:11:33,314
+is the starting point for choosing
+multiplication side.
+
+140
+00:11:37,342 --> 00:11:41,482
+Following-camera pixels do not reveal the
+exact internal rotation order.
+
+141
+00:11:41,482 --> 00:11:44,342
+Keep our defined diagram separate from
+observation.
+
+142
+00:11:48,810 --> 00:11:54,530
+Watch body facing together with the board or
+wheels to practice reading full orientation.
+
+143
+00:11:55,150 --> 00:12:01,170
+Let a be the current and b the target
+local-to-world orientation.
+
+144
+00:12:01,470 --> 00:12:08,210
+A world delta must satisfy delta times a
+equals b, so it is b times inverse a.
+
+145
+00:12:08,490 --> 00:12:14,970
+A body delta postmultiplies a, giving inverse
+a times b. Changing frames changes the order.
+
+146
+00:12:15,090 --> 00:12:20,370
+From z30 to z90, the same-axis difference is
+z60.
+
+147
+00:12:20,570 --> 00:12:23,650
+With mixed axes, component subtraction is
+insufficient.
+
+148
+00:12:23,678 --> 00:12:26,890
+Use inverse and product, and name the
+reference frame.
+
+149
+00:12:27,170 --> 00:12:31,350
+Apply the computed delta back to the current
+
+150
+00:12:31,730 --> 00:12:34,170
+orientation and verify that it reaches the
+target.
+
+151
+00:12:34,967 --> 00:12:41,707
+The dot product sums products of all four
+quaternion components.
+
+152
+00:12:42,047 --> 00:12:47,367
+For the smallest physical relative rotation,
+take the absolute dot product.
+
+153
+00:12:47,747 --> 00:12:53,287
+Twice its arccos gives an angle from zero to
+180 degrees.
+
+154
+00:12:53,567 --> 00:13:00,527
+Equivalent q and -q have dot minus one, whose
+absolute value gives zero rotation distance.
+
+155
+00:13:00,527 --> 00:13:06,967
+Validate unit inputs and clamp tiny numerical
+overshoot to [0,1] before arccos.
+
+156
+00:13:07,327 --> 00:13:14,427
+This measures minimal endpoint separation, not
+accumulated trick rotation or path direction.
+
+157
+00:13:15,050 --> 00:13:25,150
+Watch the board and bike adjust orientation
+toward landing after a jump.
+
+158
+00:13:25,390 --> 00:13:28,890
+The required change depends on the target
+orientation you choose.
+
+159
+00:13:34,870 --> 00:13:46,750
+Orientation difference is separate from the
+remaining positional distance.
+
+160
+00:13:46,970 --> 00:13:51,330
+Similar-looking screen poses still require
+rotation data for exact angle computation.
+
+161
+00:13:57,410 --> 00:14:02,550
+Minimal angle describes nearest endpoint
+separation,
+
+162
+00:14:02,930 --> 00:14:04,970
+not the full length of the actual motion.
+
+163
+00:14:04,970 --> 00:14:15,210
+During a jump, follow both body facing and the
+wheel plane.
+
+164
+00:14:15,730 --> 00:14:18,870
+Distinguish landing position from landing
+orientation.
+
+165
+00:14:25,350 --> 00:14:28,970
+Separate excerpts are not endpoints of the
+same jump. Observe each actual
+
+166
+00:14:29,450 --> 00:14:33,810
+motion to frame the question about current and
+target orientations.
+
+167
+00:14:40,230 --> 00:14:43,210
+An inverse or relative rotation that matches a
+pose does not rewind position or collisions.
+
+168
+00:14:43,450 --> 00:14:49,730
+Motion path and rotational endpoint are
+separate records.
+
+169
+00:14:49,770 --> 00:14:58,970
+Imagine comparing stored current and target
+orientations;
+
+170
+00:14:59,330 --> 00:15:02,350
+next we will apply a chosen fraction of a
+rotation.
+
+171
+00:15:03,250 --> 00:15:05,950
+Given a chosen axis-angle representative,
+
+172
+00:15:06,290 --> 00:15:10,470
+scale its angle while retaining its axis to
+form a fractional rotation.
+
+173
+00:15:10,750 --> 00:15:17,530
+Half of z90 is z45; this is not multiplication
+of all four components by 0.5.
+
+174
+00:15:17,790 --> 00:15:21,310
+A chosen logarithm stores the axis times
+half-angle as a pure quaternion,
+
+175
+00:15:21,670 --> 00:15:24,470
+and the exponential reconstructs a unit
+quaternion.
+
+176
+00:15:24,670 --> 00:15:26,870
+Distinguish radians and the half-angle: the
+previous rotation
+
+177
+00:15:27,010 --> 00:15:31,950
+vector used the full angle, whereas this
+logarithm uses half.
+
+178
+00:15:31,950 --> 00:15:35,810
+The power path depends on the selected sign
+and angle branch;
+
+179
+00:15:36,310 --> 00:15:40,250
+fractional powers of q and -q can differ.
+
+180
+00:15:40,730 --> 00:15:44,950
+For a shortest path, choose the representative
+and boundary rules first,
+
+181
+00:15:45,230 --> 00:15:48,530
+explicitly handling identity and half-turn
+ambiguity.
+
+182
+00:15:49,300 --> 00:15:54,980
+In the complex plane, multiplication by
+cos(angle)+i sin(angle) rotates a 2D vector.
+
+183
+00:15:55,111 --> 00:15:59,820
+In 3D, one-sided multiplication of a
+pure-vector quaternion
+
+184
+00:15:59,820 --> 00:16:03,040
+generally creates a scalar and is not a vector
+rotation.
+
+185
+00:16:03,420 --> 00:16:07,880
+For v=(1,0,1), left multiplication by
+
+186
+00:16:07,880 --> 00:16:10,660
+z90 alone creates scalar minus sqrt(2)/2.
+
+187
+00:16:10,980 --> 00:16:16,320
+Including the inverse on the right restores
+scalar zero and gives vector (0,1,1).
+
+188
+00:16:16,320 --> 00:16:21,160
+The axis-parallel z component remains, while x
+rotates into y.
+
+189
+00:16:21,540 --> 00:16:25,000
+Both-sided multiplication combines two
+half-angles into the physical angle;
+
+190
+00:16:25,380 --> 00:16:28,980
+a worked vector makes the structure tangible.
+
+191
+00:16:29,770 --> 00:16:34,090
+Finally, observe the bike rotate in the air
+and land.
+
+192
+00:16:37,394 --> 00:16:40,014
+Facing and the wheel line change together;
+
+193
+00:16:40,314 --> 00:16:43,314
+the camera is another reference that projects
+them onto the screen.
+
+194
+00:16:46,578 --> 00:16:51,558
+Separate making motion visible from computing
+orientation in world space.
+
+195
+00:16:54,622 --> 00:17:00,742
+With a stored quaternion, rotate direction
+vectors to obtain forward or up.
+
+196
+00:17:00,982 --> 00:17:06,826
+Pixels do not reveal the game storage format,
+
+197
+00:17:07,286 --> 00:17:10,866
+but we can verify our defined mathematical
+example directly.
+
+198
+00:17:10,866 --> 00:17:19,130
+Now recheck component order and unit norm and
+solve the same calculation as an exercise.
+
+199
+00:17:19,750 --> 00:17:24,830
+Four float32 components occupy sixteen bytes
+of component data,
+
+200
+00:17:24,930 --> 00:17:27,490
+excluding alignment and metadata.
+
+201
+00:17:27,517 --> 00:17:32,030
+One more number than Euler angles can make
+composition and interpolation convenient,
+
+202
+00:17:32,290 --> 00:17:34,970
+without guaranteeing superior speed for every
+use.
+
+203
+00:17:35,110 --> 00:17:37,730
+Euler angles may suit human editing,
+
+204
+00:17:37,890 --> 00:17:40,930
+while precomputed matrices may suit rotating
+many directions.
+
+205
+00:17:41,150 --> 00:17:44,850
+Check storage order, Hamilton product,
+handedness,
+
+206
+00:17:44,970 --> 00:17:48,690
+and the local-to-world convention together.
+
+207
+00:17:48,690 --> 00:17:50,730
+Maintain normalization and invalid-input
+guards,
+
+208
+00:17:50,730 --> 00:17:53,190
+and distinguish component equality from
+orientation equality.
+
+209
+00:17:53,314 --> 00:17:56,470
+A quaternion represents rotation; it does not
+automatically solve collision,
+
+210
+00:17:56,470 --> 00:17:59,330
+translation, or accumulated rotation history.
+
+211
+00:18:00,117 --> 00:18:05,477
+First problem: rotate a vector ninety degrees
+about z. Its x is one,
+
+212
+00:18:05,477 --> 00:18:11,337
+y is zero and z is one. What is the result?
+Pause and check the axes and signs.
+
+213
+00:18:11,717 --> 00:18:19,377
+Use [sqrt(2)/2,0,0,sqrt(2)/2] and the
+two-sided product on the pure vector.
+
+214
+00:18:19,597 --> 00:18:25,477
+The result is (0,1,1); x rotates into y and z
+remains. Length sqrt(2) is preserved.
+
+215
+00:18:25,857 --> 00:18:31,677
+Exercise two: should we negate all four
+components to restore the original vector?
+
+216
+00:18:32,397 --> 00:18:39,917
+No: use the unit conjugate, negating only the
+vector components. It restores (1,0,1).
+
+217
+00:18:40,437 --> 00:18:43,737
+Finally, decide whether an orientation
+difference
+
+218
+00:18:44,097 --> 00:18:48,457
+is a world delta on the left or a body delta
+on the right.
+
+219
+00:18:49,083 --> 00:18:52,283
+A quaternion has four components formed from a
+unit axis and half-angle,
+
+220
+00:18:52,283 --> 00:18:55,403
+with three rotational degrees of freedom under
+its unit constraint.
+
+221
+00:18:55,610 --> 00:19:00,943
+q and -q represent one orientation;
+conjugation serves a different role,
+
+222
+00:19:01,343 --> 00:19:03,863
+and the general inverse divides by squared
+norm.
+
+223
+00:19:03,983 --> 00:19:07,463
+Record product order and reference frames for
+composition and differences,
+
+224
+00:19:07,463 --> 00:19:10,223
+then verify by applying the result.
+
+225
+00:19:10,443 --> 00:19:13,343
+Next we will interpolate orientations smoothly
+and safely convert among quaternion,
+
+226
+00:19:13,343 --> 00:19:17,463
+matrix, Euler, and other representations.

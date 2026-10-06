@@ -99,16 +99,17 @@ explain(15,'하나만 고집하지 말고 작업에 맞게 쓰세요','represent
  ('쿼터니언은 자세 합성과 보간에 편하지만, 네 성분을 직접 편집하기는 어렵고 단위 길이와 부호를 관리해야 합니다.','Quaternions suit composition and interpolation, but need unit-length and sign management and are hard to edit directly.','Quaternion: 합성·보간 / 단위·부호'),
  ('행렬은 세 축을 직접 읽고 많은 벡터에 같은 변환을 적용할 때 편합니다. 정규직교와 행렬식 조건을 검사합니다.','Matrices expose the three axes and suit transforming many vectors. Check orthonormality and determinant.','Matrix: 축·벡터 변환 / 유효 회전 검사'),
  ('삼십이 비트 실수 성분만 세면 오일러는 십이, 쿼터니언은 십육, 삼 바이 삼 행렬은 삼십육 바이트입니다. 정렬과 메타데이터는 별도입니다.','Float32 components alone occupy12bytes for Euler,16for a quaternion and36for a3-by-3matrix, excluding padding and metadata.','float32 성분:12 /16 /36 B'),
- ('축과 각도는 한 번의 회전을 설명하기 쉽습니다. 압축과 실행 비용은 데이터와 구현을 측정해 고르세요. 다른 표현도 구조를 지킨 보간이 가능합니다.','Axis-angle explains a single turn clearly. Measure compression and runtime in your implementation; other representations also have rotation-aware interpolation methods.','축각: 기하 설명 / 비용은 실제 측정')])
+ ('축과 각도는 한 번의 회전을 설명하기 쉽습니다. 압축과 실행 비용은 데이터와 구현을 측정해 고르세요. 다른 표현도 구조를 지킨 보간이 가능합니다.','Axis-angle explains a single turn clearly. Measure compression and runtime in your implementation; other representations also have rotation-aware interpolation methods.','축각: 기하 설명 / 비용은 실제 측정'),
+ ('저장이나 전송에서는 성분을 압축할 수도 있습니다. 단위 길이로 빠진 성분을 복원하는 방법은 부호 규칙과 양자화 오차를 검사해야 합니다. 열여섯 바이트가 항상 최소 크기라는 뜻은 아닙니다.','Storage or transmission may compress components. Reconstructing an omitted component from unit length requires sign rules and quantization-error checks. Sixteen bytes is not a universal minimum.','성분 압축: 부호·양자화 오차 검증')])
 explain(16,'변환 그래프보다 먼저 정할 약속','contract',[
  ('변환할 때는 오른손과 열벡터, 로컬에서 월드로 가는 회전이라는 약속을 유지합니다.','All conversions preserve our right-handed column-vector local-to-world convention.','오른손 / 열벡터 / R:로컬→월드'),
  ('더블유, 엑스, 와이, 제트 순서의 해밀턴 쿼터니언을 씁니다. 삼각함수 입력은 라디안입니다.','Use Hamilton quaternions in wxyz order and radians for trigonometric inputs.','Hamilton / wxyz / radians'),
  ('오일러는 움직이는 와이, 엑스, 제트축 순서입니다. 행렬은 와이 회전, 엑스 회전, 제트 회전의 곱으로 씁니다.','Euler uses moving axes Y-X-Z, with matrix product Ry times Rx times Rz.','R = Ry(h) Rx(p) Rz(b)'),
  ('책의 왼손과 행벡터 공식을 그대로 섞으면 부호와 곱셈 순서가 달라질 수 있습니다. 메모리 저장 순서도 수학 규약과 별개입니다.','Mixing the book\'s left-handed row-vector formulas can change signs and order. Memory layout is a separate issue.','책의 규약 / 메모리 순서와 구분'),
  ('오일러와 쿼터니언은 행렬을 통해 양방향으로 연결할 수 있고, 축각은 반각 공식으로 쿼터니언에 연결됩니다.','Euler and quaternions connect bidirectionally through matrices; axis-angle connects to quaternions through the half-angle formula.','Euler ↔ Matrix ↔ Quaternion ↔ Axis-angle')])
-actual(17,'몸체 기준과 화면 기준을 함께 보기','H66Dl8kRNNQ',[(819,830),(852,882)],[
+actual(17,'몸체 기준과 화면 기준을 함께 보기','H66Dl8kRNNQ',[(732,755),(819,830),(852,882)],[
  ('비행 장면에서 몸이 옆으로 기울고 돌아가는 순간을 보세요. 화면 위쪽과 몸체 위쪽을 구별합니다.','Watch the body bank and turn during flight. Distinguish screen up from body up.'),
- ('두 발췌 사이에는 장비가 바뀌는 편집 컷이 있습니다. 그 컷을 같은 회전의 연속이라고 읽지는 마세요.','Equipment changes across an edit between these excerpts; the cut is not one continuous rotation.'),
+ ('발췌 구간 사이에는 장비가 바뀌는 편집 컷이 있습니다. 그 컷을 같은 회전의 연속이라고 읽지는 마세요.','Equipment changes across edits between these excerpts; those cuts are not one continuous rotation.'),
  ('각 구간 안에서는 몸에 붙인 축이 어떤 방향을 향하는지, 카메라가 어떻게 따라오는지 관찰합니다.','Within each excerpt, observe the attached body axes and the following camera.'),
  ('행렬로 바꾸어도 쿼터니언으로 바꾸어도 같은 기준의 같은 자세를 나타내야 합니다. 다음 그림에서 그 관계를 계산합니다.','A matrix and a quaternion should describe the same pose in the same frame. Our next diagram calculates that relationship.')],
  '구간 안의 실제 롤과 몸체축·카메라 기준; 컷/장비변경 명시','표현을 바꾸어도 같은 기준 자세를 유지')

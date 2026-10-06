@@ -1,0 +1,701 @@
+{
+  "status": "passed-agent-script-and-ASR-difference-review",
+  "humanListening": "pending",
+  "scenes": [
+    {
+      "scene": "01",
+      "wavSha256": "855463c5f990689d4adb908374b7831d230e321557e5bc59bc05a701ed905a43",
+      "rawAsrSha256": "70c5aa7e7216c601ddb0739a9ddc186cc8d62f8fb81db50b6f28ee6913b141dd",
+      "matchingCharacterCoverage": 0.9854,
+      "recognized": " 게임 속 공중회전은 내 숫자로 어떻게 기록할 수 있을까요? 이번 시간에는 스키와 자전거의 자세를 관찰하고 쿼터니언의 내 성분과 반각의 의미를 그림으로 이해합니다 역회전과 곱셈으로 회전을 되돌리고 합친 뒤 두 자세 사이의 차이도 계산합니다 마지막으로 부호와 정규화의 함정을 확인하고 직접 한 벡터를 돌리는 문제를 풀어보겠습니다",
+      "normalizedDifferences": [
+        {
+          "expected": "4",
+          "recognized": "내"
+        },
+        {
+          "expected": "4",
+          "recognized": "내"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Independent overview preserves question, four-component/half-angle explanation, inverse/composition/difference then vector practice. 네/내 ASR homophone retained for human listening."
+    },
+    {
+      "scene": "02",
+      "wavSha256": "cd81394323fb2445319e9b0a757d2773c959b28e88c8dc27e6c845677f477d6c",
+      "rawAsrSha256": "3fa1efcfc2ed0cac61ecd4915da2f6119e535d280cd87c5ceabee41053520ab6",
+      "matchingCharacterCoverage": 0.99537,
+      "recognized": " 라이더스 리퍼블릭에서 스키를 타고 내려가는 장면입니다. 몸과 스키가 기울어지는 모습을 보세요. 앞으로 가는 위치 변화와 몸이 어느 쪽을 향하는 자세 변화를 따로 읽어봅니다. 공중에서는 진행 경로가 이어지는 동안 몸의 방향과 기울기도 바뀝니다. 화면 가운데에 있다고 자세가 같은 것은 아닙니다. 카메라 역시 대상을 따라 움직입니다. 이 강의는 보이는 움직임을 설명할 회전 표현을 배우는 시간입니다. 게임의 내부 코드를 확인한 자료는 아닙니다. 다음 그림에서는 위치를 고정한 채 몸에 붙은 새 축만 돌려 자세 변화부터 살펴보겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "세",
+          "recognized": "새"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Ski/body bank, movement versus orientation, following camera and absence of internal-code claim are all preserved. 세/새 ASR spelling only."
+    },
+    {
+      "scene": "03",
+      "wavSha256": "a6a7269df5c4b9fd223de9f2461a307c1e1cca40a21a1c08ecdf607df9a0626a",
+      "rawAsrSha256": "cea662ff4501eb0493c78d5aa4053b80e158b29b45e8193a4d537c82e0850fe5",
+      "matchingCharacterCoverage": 0.99048,
+      "recognized": " 쿼터니언은 스칼라 성분 하나와 벡터 성분 3개로 씁니다. 이 강의에서는 W, X, Y, Z 순서입니다. 회전에 쓰는 단위 쿼터니언은 4성분 제곱의 합이 1입니다. 자유롭게 고를 수 있는 값은 3개입니다. 따라서 4 숫자를 4회전 각도라고 읽으면 안됩니다. X, Y, Z도 오일러 각이 아닙니다. 수로서의 쿼터니언은 I, J, K를 쓰며 각각의 제곱은 마이너스 1입니다. i 곱하기 j는 k지만 j 곱하기 i는 마이너스 k입니다 순서가 중요하다는 첫 단서입니다 라이브러리는 성분을 x, y, z, w 순서로 저장할 수도 있습니다 이름과 메모리 순서를 확인하세요",
+      "normalizedDifferences": [
+        {
+          "expected": "케이",
+          "recognized": "k"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full raw values and order verified: scalar1/vector3, wxyz, sum squares1/DOF3, not four angles, i²=j²=k²=-1, ij=k and ji=-k; optional xyzw storage. Latin read-back labels normalized only for timing."
+    },
+    {
+      "scene": "04",
+      "wavSha256": "d9e4927b31bafa3f30b24d0cfb7b37346fac7a31b3c25daf40f18db7a8f95801",
+      "rawAsrSha256": "87e17c93afd68f34f042c91ee361e10d478f1a4f76c5fdfaf548ecc8aece6efe",
+      "matchingCharacterCoverage": 0.98785,
+      "recognized": " 앞편의 축과 각도를 떠올려 보세요. 길이가 1인 축 벡터와 그 축 주위로 돌릴 각도가 있습니다. 단위 쿼터니언의 스칼라는 각도의 절반에 대한 코사인입니다. 벡터 부분은 단위 축의 반각의 사인을 곱합니다. 각도가 0이면 코사인은 1, 사인은 0입니다. 그래서 1, 0, 0, 0이 회전 없는 자세가 됩니다. Z축으로 90도를 돌리면 반각은 45도입니다. 스칼라와 Z 성분이 모두 루트 2 나누기 2가 됩니다. 반각은 회전을 절반만 한다는 뜻이 아닙니다. 벡터를 실제로 돌리는 식에서 양쪽 곱셈으로 전체 각도가 만들어집니다. 오른손 규칙과 열 벡터 약속을 유지합니다. 계산에 넣는 삼각함수의 각도 단위는 라디안입니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "이",
+          "recognized": "2"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Unit axis and half-angle, identity[1,0,0,0], Z90 stores45, w=z=sqrt2/2, two-sided physical rotation and RH column/radian contract retained."
+    },
+    {
+      "scene": "05",
+      "wavSha256": "b7d33cf3fdcd5c865eb5ebd6536bb8354c7fc202b681d6741d1f794be1996b40",
+      "rawAsrSha256": "836a8eee06f8a1b4a988bba71482b059792b8e569b9a9a972b8f8903247b7dd3",
+      "matchingCharacterCoverage": 0.97297,
+      "recognized": " 스키가 지면을 벗어나는 순간과 착지하는 순간의 몸 방향을 비교해보세요. 몸에 작은 세 축을 붙였다고 상상하면 공중에서 축 전체가 같이 돌아갑니다. 몸이 위를 향하는지와 스키가 어느 쪽으로 기울었는지는 한 방향만으로 설명하기 어렵습니다. 커턴이어는 그 전체 자세를 저장하는 한 방법입니다. 위치나 이동 속도까지 담는 네 숫자는 아닙니다. 화면으로 정확한 회전축과 각도를 측정했다고 생각하지는 마세요. 다음 그림에서 정한 축과 각도로 직접 계산합니다. 착지 전후의 자세와 이동 방향을 따로 보면서 회전 표현이 무엇을 기록하는지 연결해보세요",
+      "normalizedDifferences": [
+        {
+          "expected": "쿼터니언은",
+          "recognized": "커턴이어는"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Actual takeoff/landing orientation observation with attached axes and positions separate. No exact measured axis/game implementation claim. 쿼터니언은/커턴이어는 is an ASR pronunciation spelling difference; human listening pending."
+    },
+    {
+      "scene": "06",
+      "wavSha256": "4dd02fd22de19fbace325375d11b9505a3034e323660a656c81746c14fa6bd08",
+      "rawAsrSha256": "391df552e1db02fbe671119fe06fbc49c7ac7450428ef0dc0bbdc1d1cc875e14",
+      "matchingCharacterCoverage": 0.98953,
+      "recognized": " Z축 90도 쿼터니언을 두 번 곱해 보겠습니다. 같은 회전을 두 번 적용하는 계산입니다. 두 스칼라를 곱한 값에서 두 벡터의 내적을 빼면 세 스칼라가 됩니다. 여기서는 0입니다. 세 벡터의 Z성분은 두 반각 성분의 곱을 더해 1이 됩니다. 나머지는 0입니다. 결과는 0, 0, 0, 1입니다. Z축 180도 회전을 나타내죠. 두 번 더 곱하면 마이너스 1, 0, 0, 0이 됩니다. 물체의 최종 자세는 처음과 같습니다. 숫자는 1에서 마이너스 1로 바뀌었는데 자세는 같습니다. 이제 이 두 겹 표현의 의미를 살펴보겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "새",
+          "recognized": "세"
+        },
+        {
+          "expected": "새",
+          "recognized": "세"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Hamilton Z90 squared gives[0,0,0,1], fourth gives[-1,0,0,0], scalar dot subtraction and vector Z contribution retained. 새/세 ASR spelling only."
+    },
+    {
+      "scene": "07",
+      "wavSha256": "a380f08d48ca6cec4447a0f9114c3674a93cd39bde792dd2a9cafecebea6ab5d",
+      "rawAsrSha256": "768a98fb7c23db9783cb576a2e12a81e2595f6a4690449ddb67306eb2fe00bbd",
+      "matchingCharacterCoverage": 0.9697,
+      "recognized": " 단위 쿼터니언 Q와 마이너스 Q는 같은 회전 행렬과 같은 끝 자세를 나타냅니다. 네 성분을 모두 뒤집는 것이 핵심입니다. 벡터 성분만 뒤집는 켤레와는 구분해야 합니다. 벡터를 돌리는 식에서는 양쪽 부호가 함께 바뀌어서 서로 상쇄됩니다. 따라서 자세가 같은지 확인할 때 성분이 완전히 같은지만 검사하면 안됩니다. 반대로 Q와 마이너스 Q가 같은 자세라는 사실은 그 사이를 어떤 경로로 보관해도 같다는 뜻은 아닙니다. 끝 자세만으로는 몇 바퀴 돌았는지 알 수 없습니다 회전 경로와 누적량은 따로 저장해야 합니다",
+      "normalizedDifferences": [
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "q/-q same matrix/endpoint, all components flip versus conjugate, two-sided cancellation, compare pose not identical components, path/turn history separate. Latin q and 보간/보관 raw differences explicit."
+    },
+    {
+      "scene": "08",
+      "wavSha256": "00d0564f4654b7390836fbf2442904b8e79ef72c1c1799d8b4556bfc723c51e1",
+      "rawAsrSha256": "8cd780ce8c3359c2e852bf95fdb1f187e4eae0381c58d97d0c3895b10dba0ed8",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 스키가 공중에서 돌아가는 동안 몸의 앞쪽과 스키의 선을 따라가 보세요. 어느 한 프레임의 자세만 보면 그 전에 어떤 동작을 거쳤는지 모두 알 수는 없습니다. 이 장면처럼 시간의 흐름을 함께 보면 회전 과정이 보입니다. 끝 자세와 과정은 다른 정보입니다. 쿼터니언의 부호 두 개가 같은 자세를 나타낸다는 설명도 이 구분과 연결됩니다. 화면에 보이는 회전 횟수를 쿼터니언 한 개가 그대로 기억한다고 생각하지 마세요. 트릭의 회전량을 기록해야 한다면 자세 외에 입력이나 누적 회전 기록을 따로 관리해야 합니다.",
+      "normalizedDifferences": [],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Actual ski flight demonstrates endpoint versus time history; sign double-cover does not store trick turns, separate accumulated records needed. Exact read-back."
+    },
+    {
+      "scene": "09",
+      "wavSha256": "0ab1913c7df8ef785dd19742c380bf6cf457d60d5a44ad96dd0d317d30c29c69",
+      "rawAsrSha256": "19707d3635ee5b1c3fed07ab5389f3a10bd808bb6b6b4ee33712f4f843303318",
+      "matchingCharacterCoverage": 0.97653,
+      "recognized": " 쿼터니언 곱셈의 항등원은 1, 0, 0, 0입니다. Q에 곱해도 Q가 그대로 남습니다. 마이너스 1, 0, 0, 0으로 용도 회전으로는 아무것도 바꾸지 않지만 수의 곱셈 항등원은 아닙니다. 이 값을 Q에 곱하면 마이너스 Q가 됩니다. 다른 숫자지만 같은 자세가 되죠. 코드에서 0, 0, 0, 0으로 초기화하면 회전 없는 쿼터니언이 아닙니다. 길이가 0인 잘못된 회전 입력입니다. 처음 자세를 저장할 때는 라이브러리의 항등 회전 생성 기능이나 올바른 성분 순서의 단위 값을 사용하세요. 수로서 같은지 회전으로서 같은지 질문을 먼저 나누면 부호에 대한 혼동을 줄일 수 있습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "",
+          "recognized": "으로용"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Multiplicative identity[1,0,0,0], negative identity yields -q but same pose, invalid all-zero initialization and library/order requirement retained. Minor raw wording around 영도 plus Latin q preserved for human listening."
+    },
+    {
+      "scene": "10",
+      "wavSha256": "9afa9e29c873dd3869fabc5e922de54a1c826ce335c640189745cd9501c935a8",
+      "rawAsrSha256": "d894850cd0f2d77e6f6ccf77771f00f2db52e49b150d4d067fb067ccd6fb9a6c",
+      "matchingCharacterCoverage": 0.96813,
+      "recognized": " 길이는 4성분 제곱의 합의 루트를 씌워 구합니다 벡터 3성분만 재는 길이가 아닙니다 일반적인 회전 저장과 행렬 변환 함수는 길이 1인 쿼터니언을 입력으로 기대합니다 작은 부동소 수점 오차로 길이가 벗어났다면 4성분 모두를 그 길이로 나눠 정규화합니다 0에 가깝거나 유한하지 않은 길이는 나누기 전에 검사해야 합니다 이미의 잘못된 입력을 정상 회전으로 꾸미지 마세요 0이 아닌 비단위 쿼터니언도 정확한 일반 여권을 쓰는 회전식에서는 크기가 상쇄됩니다 단위 입력을 가정한 코드와는 구분합니다. 정교화는 크기 약속을 맞춥니다. 회전 각도를 단순히 줄이거나 잘못된 축과 곱셈 순서를 고치지는 않습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        },
+        {
+          "expected": "임의",
+          "recognized": "이미"
+        },
+        {
+          "expected": "역원",
+          "recognized": "여권"
+        },
+        {
+          "expected": "규",
+          "recognized": "교"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Four-component norm, unit expectation, normalize all four, guard nonfinite/near-zero, exact general inverse cancels nonunit scale, normalization cannot fix angle/axes/order. 역원/여권 and 정규화/정교화 raw ASR pronunciation differences remain explicit."
+    },
+    {
+      "scene": "11",
+      "wavSha256": "fc11017b86dc20346d1eb3a6bdbbc9da44e3da10ed695fe31c2de01e934f605f",
+      "rawAsrSha256": "b86251c6699151ab56be780e9f8f976db99a4fc10812498eb5eda493a4fc9e57",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 이제 스키 뒤에 다른 비행 장면도 연결해 보겠습니다 움직임의 속도와 몸의 자세를 따로 보세요 빨리 움직인다고 쿼터니언의 길이를 크게 만드는 것은 아닙니다 단위 회전 값의 길이는 계속 1입니다 속도와 가속도는 이동이나 회전 변화율에 관한 정보이고 자세는 현재 상태입니다 날개가 기울어지는 동안 카메라도 따라갑니다 화면의 크기 변화만으로 자세 값의 길이를 판단할 수는 없습니다 실제 값의 단위 길이 여부는 코드나 데이터에서 검사해야 합니다 이 영상은 그 값을 측정한 자료가 아닙니다 움직임을 관찰한 뒤 다음 그림에서는 저장한 회전을 어떻게 되돌리는지 계산하겠습니다",
+      "normalizedDifferences": [],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Actual ski/rocket flight: speed/acceleration versus current orientation, unit length remains1, camera-size change not quaternion magnitude and no measured internal data claim. Exact read-back."
+    },
+    {
+      "scene": "12",
+      "wavSha256": "9007cf06a0cba56febb2822c1b5cbdf964b1025d38fe02ecefce5706255c7094",
+      "rawAsrSha256": "d55dcd4979bb20c57fbd1290681d94341baa5d2b8fb71471b46d21168f2c0dfd",
+      "matchingCharacterCoverage": 0.97101,
+      "recognized": " 스킬레는 스칼라를 그대로 두고 벡터 3성분의 부호를 바꾸는 연산입니다. 길이가 1인 회전 쿼터니언에서는 켤레가 곧 역원입니다. 반대 회전을 적용해 되돌릴 수 있습니다. Z축 90도 값의 켤레는 W가 그대로이고 Z성분만 음수가 됩니다. Z축 마이너스 90도 회전입니다. 원래 값과 켤레를 곱하면 1, 0, 0, 0으로 돌아옵니다. Q의 4성분을 모두 바꾼 마이너스 Q는 같은 자세였죠. 켤레와 마이너스 Q를 혼동하면 역회전이 틀어집니다. 반 바퀴처럼 역회전과 같은 끝 자세가 되는 특별한 경우도 있지만 일반적으로 켤레와 전체 보호 반전은 다릅니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "켤",
+          "recognized": "스킬"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "부",
+          "recognized": "보"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Conjugate keeps scalar/flips vector3, only unit rotations have conjugate=inverse, Z90 conjugate givesZ-90 and product identity, all-component q sign flip gives same pose versus inverse,180 endpoint exception retained. Initial 스킬레 and 보호/부호 ASR differences remain explicit for human listening."
+    },
+    {
+      "scene": "13",
+      "wavSha256": "86c45b47d36b17c4c4f1f9e9ae8cfbb94d4599f7efc9e35c0f429de3c8da9524",
+      "rawAsrSha256": "aee8749b6005fd57b65a38b1f3bde28680005e6bc2de9338fb247766c0cc0aae",
+      "matchingCharacterCoverage": 0.97015,
+      "recognized": " 길이가 1이 아니라면 역원은 켤레를 길이의 제곱으로 나눕니다. 길이 자체로 나누는 식이 아닙니다. 예를 들어 2, 0, 0, 0의 길이는 2이고 길이 제곱은 4입니다. 켤레도 2, 0, 0, 0이므로 4로 나누면 역원은 0.5, 0, 0, 0입니다. 둘을 곱하면 스칼라가 1이 됩니다. 길이 2로 나눠버리면 스칼라가 2가 되어 역원이 아닙니다. 단위값에서는 길이 제곱이 1이어서 앞에 켤레 공식과 같아집니다. 이 역원은 0이 아닌 쿼터니언에만 정의됩니다. 0이나 유한하지 않은 입력은 오류로 처리하고 출처를 확인하세요.",
+      "normalizedDifferences": [
+        {
+          "expected": "영",
+          "recognized": "0"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        },
+        {
+          "expected": "이",
+          "recognized": "2"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "General inverse divides conjugate by norm SQUARED. Full(2,0,0,0),norm2,norm-squared4,inverse(.5,0,0,0),product1 versus wrong norm-only product2,unit special case and nonzero finite guards retained. Numeric spelling differences do not change values."
+    },
+    {
+      "scene": "14",
+      "wavSha256": "d753fe986480d37792a6c5954d77e4903d2eac9afd5de276858dda811eb20713",
+      "rawAsrSha256": "ac11fccaef4acedb9491a6a30f468469aa8824e4f6517be3977a4a29d0fbe009",
+      "matchingCharacterCoverage": 0.99142,
+      "recognized": " 눈길을 달리는 자전거가 기울어지는 방향과 다시 자세를 잡는 방향을 보세요. 왼쪽으로 기울었다가 돌아오는 변화는 반대 방향 회전을 떠올리는데 도움이 됩니다. 하지만 카메라가 움직임으로 화면의 좌우만 보고 정확한 축이나 각도를 정할 수는 없습니다. 역회전은 저장한 회전의 입력과 출력을 바꾸는 수학 연산입니다. 경로를 역주행하거나 속도를 음수로 만드는 것과 구분하세요. 기울기와 이동 경로를 나누어 관찰하면 회전을 되돌리는 것과 위치를 되돌리는 것이 다른 문제임을 볼 수 있습니다. 다음에서는 두 회전을 곱할 때 생기는 순서와 기준 공간을 그림으로 확인하겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "이므",
+          "recognized": "임으"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Actual bicycle bank and recovery separated from opposite travel/negative speed. Moving camera cannot reveal exact axis/angle, reverse mathematical input/output and next order/frame discussion retained. 카메라가 움직임으로/움직이므로 phonetic spelling difference explicit."
+    },
+    {
+      "scene": "15",
+      "wavSha256": "00a763ece05cd0669045c3eff34f64d909e16dade30fc5e541a17a8c86835854",
+      "rawAsrSha256": "5d104c5ceb20a2d1da68409038f3cd3af3b00973f522fa8f1b18da148e3b816e",
+      "matchingCharacterCoverage": 0.99078,
+      "recognized": " 스칼라와 벡터를 묶어 두 쿼터니언을 곱하는 해밀턴 곱을 보겠습니다. 새 스칼라는 두 스칼라의 곱에서 두 벡터의 내적을 뺀 값입니다. 새 벡터는 첫 스칼라 곱하기 둘째 벡터, 둘째 스칼라 곱하기 첫 벡터, 두 벡터의 외적을 더한 값입니다. 외적은 벡터 순서를 바꾸면 두호가 달라집니다. 쿼터니언 곱셈이 일반적으로 교환되지 않는 이유가 보입니다. 곱셈을 3번 할 때 괄호 위치는 바꿀 수 있습니다. 결합 법칙과 교환 법칙은 다른 조건입니다 같은 축의 회전처럼 서로 교환되는 경우도 있습니다 항상 다르다고 외우지 말고 실제 연산과 규약을 확인하세요",
+      "normalizedDifferences": [
+        {
+          "expected": "부",
+          "recognized": "두"
+        },
+        {
+          "expected": "세",
+          "recognized": "3"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Hamilton scalar subtracts dot product; vector contains both weighted vectors plus ordered cross product; cross sign changes, general noncommutation versus associativity, commuting same-axis exception retained. 두호/부호 ASR spelling note explicit."
+    },
+    {
+      "scene": "16",
+      "wavSha256": "1c760d79b320e51b5ebaf28c7ea01f31a579f13f48736bb34b444174fe7222d1",
+      "rawAsrSha256": "e7c35a7630e7f5db169c49616b4c75c0b7a0e57ae429f85e4f951b4e1f6ebf74",
+      "matchingCharacterCoverage": 0.98701,
+      "recognized": " 이 강의는 벡터를 q 벡터 역 q 순서로 돌리는 해밀턴 곱 규약을 씁니다. 고정 x축 90도를 먼저 고정 y축 90도를 나중에 적용하면 y 회전 값이 왼쪽에 옵니다. 처음 z 방향은 x 회전 뒤 마이너스 y를 향합니다. 이어서 y 회전에도 그 방향은 그대로입니다. 반대 순서에서는 z 방향이 먼저 x를 향합니다. x축 회전은 이 방향을 바꾸지 않습니다. 두 결과가 다르죠. 현재 자세에 월드 기준 델타 회전을 추가하면 왼쪽에 곱합니다 몸체 기준 델타는 오른쪽에 곱합니다 다른 라이브러리의 곱셈 함수가 같은 규약을 쓰는지 확인하세요 작은 축 회전으로 직접 확인하면 순서 혼동을 줄일 수 있습니다",
+      "normalizedDifferences": [
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "해",
+          "recognized": "에"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Hamilton q*v*q inverse convention, fixed X90 thenY90 sends +Z to-Y and keeps-Y, reverse gives+X and stays+X; Y quaternion on left, world delta left/body delta right and library check all preserved. Latin q and 회전해도/회전에도 raw differences explicit."
+    },
+    {
+      "scene": "17",
+      "wavSha256": "d02baa0cc566cb50380e05f67730ffed6dc835704e0ac9fb09990dce542eb00b",
+      "rawAsrSha256": "1956e8103ce9c8e928efcf6b1631a56b160715baeb7472e8de08edb4d4735c22",
+      "matchingCharacterCoverage": 0.99142,
+      "recognized": " 아스노보드가 뛰고 방향을 바꾸는 장면과 자전거의 기울기를 이어서 보겠습니다. 몸을 틀어 앞쪽 방향이 바뀌면 그 몸을 기준으로 하는 다음 움직임도 다른 방향을 갖습니다. 어떤 변화가 먼저인지 시간 순서를 따라가 보세요. 끝 프레임만으로 중간 순서를 모두 보관할 수는 없습니다. 월드의 고정축과 몸체의 움직이는 축을 구분하는 것이 곱셈 좌우를 정하는 출발점입니다. 카메라가 따라가는 화면만으로 내부의 정확한 회전 순서를 알 수는 없습니다. 다음 그림의 정의와 실제 관찰을 구분합니다. 몸의 앞쪽과 스키나 바퀴의 선을 함께 보면 하나의 방향보다 전체 자세를 읽는 연습이 됩니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "",
+          "recognized": "아"
+        },
+        {
+          "expected": "복원",
+          "recognized": "보관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Actual snowboard and bicycle orientation, time order cannot be recovered from endpoint alone, fixed world/body frames and no proprietary implementation inference all retained. Initial 아 syllable and 복원/보관 ASR spelling differences remain for human listening."
+    },
+    {
+      "scene": "18",
+      "wavSha256": "569c73b39e9f946f1aba993b4ed2419356e3a7d9db4c3603c21fe445c986e99b",
+      "rawAsrSha256": "e49636354b3ccb5172f672e2256693f6e9cb262611cba9793752bc9a4e546b4f",
+      "matchingCharacterCoverage": 0.94958,
+      "recognized": " 자세를 A, 목표 자세를 B라고 하겠습니다. 둘 모두 로컬에서 월드로 가는 회전을 저장합니다. 월드 기준 델타를 현재 값의 왼쪽에 곱해서 목표가 되어야 합니다. 그래서 델타는 B 곱하기 A여권입니다. 몸체 기준 델타를 오른쪽에 곱한다면 A여권 곱하기 B입니다. 기준을 바꾸면 순서도 바뀝니다. 예를 들어 Z축 30도에서 Z축 90도로 가는 차이는 같은 축의 60도입니다. 다른 축이 섞이면 성분을 뺄셈에서 구하지 않습니다. 현례와 곱셈을 사용하고 어느 공간의 차이인지 적습니다 계산한 델타를 현재 자세히 다시 적용해 목표가 되는지 검사하세요 입력과 출력의 연결이 검증 기준입니다",
+      "normalizedDifferences": [
+        {
+          "expected": "현재",
+          "recognized": ""
+        },
+        {
+          "expected": "비",
+          "recognized": "b"
+        },
+        {
+          "expected": "역원",
+          "recognized": "여권"
+        },
+        {
+          "expected": "역원",
+          "recognized": "여권"
+        },
+        {
+          "expected": "비",
+          "recognized": "b"
+        },
+        {
+          "expected": "해",
+          "recognized": "에"
+        },
+        {
+          "expected": "켤레",
+          "recognized": "현례"
+        },
+        {
+          "expected": "에",
+          "recognized": "히"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Current local-to-world A and B, world delta B*A^-1 on left versus body A^-1*B on right, Z30 to Z90 difference60, no component subtraction and reapply-to-target verification retained. Initial 현재 omitted but current posture defined in following line; inverse/conjugate homophonic ASR spellings explicit for human listening."
+    },
+    {
+      "scene": "19",
+      "wavSha256": "c3bbcbffba63f28dd94551b87d2633cf29e557fca6ff8cea37d75ec273691186",
+      "rawAsrSha256": "22e1962bd0fe4313f3dd4f857002f5750a1030a3ca10ad7cbf8ba1e2f587932b",
+      "matchingCharacterCoverage": 0.93213,
+      "recognized": " 두 단위 코터니언의 내적은 4성분의 곱을 모두 더합니다. 벡터 3성분만 쓰는 내적이 아닙니다. 부호를 고려해 가장 작은 상대 회전 각도를 구할 때는 내적의 절대값을 씁니다. 절대값의 역호사인을 취한 뒤 2배하면 0부터 180도 사이에 최소 회전 각도가 됩니다. 같은 자세인 Q와 마이너스 Q는 내적이 마이너스 1이지만 절대값은 1이라 최소 각도는 0입니다. 단위 길이를 확인하고 작은 계산 오차가 범위를 벗어나면 역호사인 전에 0과 1 사이로 제한합니다. 이 각도는 끝 자세 사이의 최소 거리입니다. 트릭이 지나간 회전량이나 회전방향의 기록을 대신하지 않습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "쿼",
+          "recognized": "코"
+        },
+        {
+          "expected": "댓",
+          "recognized": "대"
+        },
+        {
+          "expected": "댓",
+          "recognized": "대"
+        },
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "co",
+          "recognized": "호"
+        },
+        {
+          "expected": "",
+          "recognized": "in"
+        },
+        {
+          "expected": "두",
+          "recognized": "2"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "댓",
+          "recognized": "대"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "co",
+          "recognized": "호"
+        },
+        {
+          "expected": "",
+          "recognized": "in"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Current six separately restored original paragraphs now include the previously missing quaternion noun; four-component dot versus vector3, abs(dot), doubled inverse-cosine minimum0..180, q/-q dot-1 gives0, unit/roundoff clamp[0,1], endpoint distance not turn history all retained. Independent no-prompt single-line ASR verifies 코터니언 term; 쿼/코, 역코사인/역호사인 and Korean/Latin/numeral spellings remain explicitly flagged for human listening. No term deletion was normalized away."
+    },
+    {
+      "scene": "20",
+      "wavSha256": "fb6761478f1aa3479ec0de677f59f7363063c5bfeeb90b80a50d91bbcc478133",
+      "rawAsrSha256": "249fc793610db90d751dd78d6cf19b41b6979646afd3483f7582398813eb0817",
+      "matchingCharacterCoverage": 0.99747,
+      "recognized": " 보드와 자전거가 점프한 뒤 착지를 향해 자세를 바꾸는 모습을 보세요. 어느 자세를 목표로 정하느냐에 따라 필요한 변화도 달라집니다. 현재와 목표 자세의 차이는 회전을 비교하는 문제입니다. 목표까지 남은 위치거리는 다른 계산입니다. 화면에서 두 자세가 비슷해 보여도 정확한 각도는 회전 데이터로 계산해야 합니다. 최소 각도는 현재에서 목표로 가장 가까이 가는 끝 자세 차이만 알려줍니다. 실제 동작의 길이 전체는 아닙니다. 점프하는 순간에는 몸체가 향하는 쪽과 바퀴가 놓인 면을 함께 따라가 보세요 착지할 위치와 착지할 자세를 나누어 생각하는 연습입니다 서로 다른 발췌 구간을 같은 점프의 처음과 끝으로 연결하지 않습니다 각 구간 안에 움직임을 보고 현재 자세와 목표 자세를 비교할 질문을 찾습니다 끝 자세를 맞추는 역회전이나 상대 회전을 구했다고 지나온 위치와 충돌까지 되돌아가지는 않습니다 움직임의 경로와 회전의 끝 상태는 별도 기록입니다 회전값을 저장한 뒤 목표를 비교하는 상황을 떠올리고 다음에서는 각도를 일부만 적용하는 방법을 살펴보겠습니다",
+      "normalizedDifferences": [
+        {
+          "expected": "의",
+          "recognized": "에"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "All nine CURRENT expanded paragraphs retained: attached forward and wheel plane, location versus target orientation, minimum endpoint angle versus path, separate excerpts not one jump, inverse does not rewind position/collision/history. Current expanded recording, not obsolete baseline."
+    },
+    {
+      "scene": "21",
+      "wavSha256": "dc08c7b7dcd5ad6237045b2996a0eaf2f8597a61f07f9e671a4baf14536fdd49",
+      "rawAsrSha256": "cf6e96d88ef3b94208e1105fbb76e039da7fc00e70835a6d6528128d5143f2d3",
+      "matchingCharacterCoverage": 0.98491,
+      "recognized": " 선택한 축과 각도로 쿼터니언을 만들었다면 같은 축을 두고 각도의 배율을 곱해 일부 회전을 만들 수 있습니다. Z축 90도의 절반은 Z축 45도입니다. 내 성분 전체를 0.5로 곱하는 계산은 아닙니다. 로그를 쓰면 순수 벡터 부분에 축 곱하기 반각을 기록하고 지수로 다시 단위 쿼터니언을 만들 수 있습니다. 이때 라디안과 반각을 구분하세요. 앞편의 회전 벡터는 전체 각도이고 여기 로그의 크기는 그 절반입니다. 거듭제곱의 경로는 선택한 부호와 각도의 가지에 의존합니다 같은 끝 자세라도 Q와 마이너스 Q의 분수 거듭제곱은 다를 수 있습니다 가장 짧은 경로를 원한다면 대표 부호와 경계 규칙을 먼저 정하세요 항등 회전이나 반바퀴의 모호함도 명시적으로 처리합니다",
+      "normalizedDifferences": [
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "4",
+          "recognized": "내"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Axis-angle scaling Z90 half Z45, not four-component scaling; quaternion log magnitude half rotation-vector angle in radians, exponential and sign/path branch choice, identity/half-turn boundaries retained. 내/네 and Latin Q homophonic spelling flags."
+    },
+    {
+      "scene": "22",
+      "wavSha256": "5d6a9c7383128f065c7e02f024169ecfbdaae4be27ae0f613af9985db99ca8ce",
+      "rawAsrSha256": "9a22e0e1bec0834538021d09b357d981e106c4a1d144b2526da11185cc2e330a",
+      "matchingCharacterCoverage": 0.96735,
+      "recognized": " 복소평면에서는 각도의 코사인과 i 곱하기 사인을 곱해 2차원 벡터를 돌릴 수 있습니다. 3차원에서 벡터를 스칼라 0인 순수 커터니언으로 넣고 한쪽에서만 곱하면 일반적으로 스칼라가 생겨 벡터 회전이 아닙니다. 예를 들어 1, 0, 1 벡터의 Z축 90도 값을 왼쪽에서만 곱하면 스칼라가 마이너스 루트 2 나누기 2가 됩니다. 오른쪽에 역원을 함께 곱하면 스칼라는 0으로 돌아오고 벡터는 0, 1, 1이 됩니다. 회전축에 평행한 Z성분은 남고 X성분이 Y방향으로 돌아간 결과입니다 양쪽에 곱하는 구조에서 방각 2개가 실제 각도를 만듭니다 먼저 한방향 벡터로 계산해보면 공식을 외우기보다 의미가 보입니다",
+      "normalizedDifferences": [
+        {
+          "expected": "이",
+          "recognized": "2"
+        },
+        {
+          "expected": "삼",
+          "recognized": "3"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        },
+        {
+          "expected": "쿼",
+          "recognized": "커"
+        },
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "이",
+          "recognized": "2"
+        },
+        {
+          "expected": "반",
+          "recognized": "방"
+        },
+        {
+          "expected": "두",
+          "recognized": "2"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Complex rotation versus 3D scalar-zero embedding, one-sided (1,0,1) Z90 scalar -sqrt2/2, two-sided inverse yields (0,1,1), parallel Z unchanged and two half-angles retained. 커/쿼, 방/반 ASR pronunciation differences explicit."
+    },
+    {
+      "scene": "23",
+      "wavSha256": "8d697c2de62794384021f6158a548628b4fcfe64ab07c80699212db866b8052e",
+      "rawAsrSha256": "6a6bcb4bd544ca56008b9e7408e076c7ad769f617c4e104f3102b29c7ad80c48",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 자, 자전거가 공중에서 돌고 착지하는 모습을 마지막으로 관찰해 보겠습니다. 몸체의 앞쪽과 바퀴의 선이 같이 바뀝니다. 카메라는 그 움직임을 화면으로 보여주는 다른 기준입니다. 화면에서 잘 보이게 만드는 문제와 실제 월드에서 자세를 계산하는 문제를 구분하세요. 쿼터니언으로 자세를 저장했다면 필요한 방향 벡터를 돌려 앞쪽이나 위쪽을 구할 수 있습니다. 게임 화면에서 어떤 저장 구조를 썼는지는 알 수 없지만 우리가 만든 수학 예제에서는 계산을 직접 검증할 수 있습니다. 이제 성분 순서와 단위 길이를 다시 확인하고 같은 계산을 연습 문제로 풀어보겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "",
+          "recognized": "자"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Bicycle body and wheel orientation versus camera, rotate required basis vectors, no proprietary storage inference, conventions/unit length and practice transition all retained. Extra initial 자 retained in raw."
+    },
+    {
+      "scene": "24",
+      "wavSha256": "ec3f4155cfc16cf4e421761d674dedac940785297c46499fff841a142542afa0",
+      "rawAsrSha256": "096e62c754beafd006961f04eda66a06a289cc85b88775ec5dcd01f15c775090",
+      "matchingCharacterCoverage": 0.96484,
+      "recognized": " 쿼터니언 내 성분을 32비트 실수로 저장하면 성분 데이터는 16바이트입니다. 정렬이나 부가 정보는 제외한 수치입니다. 색각보다 숫자는 하나 많지만 순서가 있는 회전 합성과 보관에 편리합니다. 모든 용도에서 무조건 빠르다는 뜻은 아닙니다. 사람이 각도를 편집할 때는 오일러 가기 편할 수 있고 방향을 여러 개 바꿀 때는 행렬을 미리 만들 수도 있습니다. X, Y, Z, W 저장 순서와 해밀턴 곡, 축 손잡이, 로컬에서 월드로 가는 약속을 함께 확인합니다. 정규화와 입력 오류 검사를 유지하고 값이 같은지와 자세가 같은지를 구분하세요 커터니어는 회전의 표현입니다 충돌이나 위치 이동, 누적 회전 이력까지 자동으로 해결하는 기능은 아닙니다",
+      "normalizedDifferences": [
+        {
+          "expected": "4",
+          "recognized": "내"
+        },
+        {
+          "expected": "세",
+          "recognized": "색"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "각이",
+          "recognized": "가기"
+        },
+        {
+          "expected": "곱",
+          "recognized": "곡"
+        },
+        {
+          "expected": "쿼",
+          "recognized": "커"
+        },
+        {
+          "expected": "언은",
+          "recognized": "어는"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Four float32 components16B excluding alignment/metadata, not universal performance claim; human Euler editing versus matrix batch vectors, xyzw storage, Hamilton product/handedness/local-to-world distinction, normalized guards versus path/history limits retained. Homophonic 내/네, 각이/가기, 곱/곡 and quaternion spelling flags."
+    },
+    {
+      "scene": "25",
+      "wavSha256": "035dbfb445ea4866a4d703ac5f57b42176e4d59f751ac08da952250cffbdf2e0",
+      "rawAsrSha256": "2ec8872d6eda04c1deb64bf942c9b205a7b9c2a68b1ebbf814d1b9a6d3fd0fd4",
+      "matchingCharacterCoverage": 0.97628,
+      "recognized": " 첫 문제입니다. Z축 90도로 벡터를 돌립니다. X는 1, Y는 0, Z는 1인 벡터입니다. 어떤 값이 될까요? 잠깐 멈추고 축과 부호를 확인하세요. 쿼터니언은 루트 2 나누기 2, 0, 0, 루트 2 나누기 2입니다. 순수 벡터를 양쪽 곱셈에 넣습니다. X가 Y로 가고 Z는 남음으로 답은 0, 1, 1입니다. 길이 루트 2는 보존됩니다. 둘째 문제입니다. 이 결과를 원래의 벡터로 되돌리려면 내 성분을 모두 뒤집어야 할까요? 아니면 아닙니다. 단위값의 켤레, 즉 벡터 부분만 뒤집은 여권을 씁니다. 결과는 다시 1, 0, 1입니다. 마지막으로 현재 자세와 목표 자세의 차이를 구할 때는 월드 델타가 왼쪽에 오는지 몸체 델타가 오른쪽에 오는지 먼저 정해보세요.",
+      "normalizedDifferences": [
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "",
+          "recognized": "음"
+        },
+        {
+          "expected": "므",
+          "recognized": ""
+        },
+        {
+          "expected": "이",
+          "recognized": "2"
+        },
+        {
+          "expected": "",
+          "recognized": "의"
+        },
+        {
+          "expected": "4",
+          "recognized": "내"
+        },
+        {
+          "expected": "",
+          "recognized": "아니면"
+        },
+        {
+          "expected": "역원",
+          "recognized": "여권"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "CURRENT clarified axis-labelled vector x1,y0,z1 retains Z90 exercise; quaternion(sqrt2/2,0,0,sqrt2/2), two-sided rotation yields(0,1,1), normsqrt2, conjugate-only vector sign reversal for unit inverse returns(1,0,1), framed world/body deltas and multiplication side all correct. Original numeric ambiguity1,0,2 is absent. 내/네, 역원/여권 and extra 아니면 ASR filler flagged for human listening; no numerical/sign discrepancy normalized away."
+    },
+    {
+      "scene": "26",
+      "wavSha256": "99b7ec0cc673b7f71e86704fb462344f334a806c374bc8025e295a03dd0c222f",
+      "rawAsrSha256": "7bed1aeda630aaf1d8b5eb2dbcfad2b73f8853e83710007c2a2ced176e947601",
+      "matchingCharacterCoverage": 0.97561,
+      "recognized": " 쿼터니언은 단위축과 반각에서 만드는 네 숫자이며 단위 조건 아래 회전의 자유도는 3개입니다. Q와 마이너스 Q는 같은 자세지만 켤레는 역회전을 구하는 다른 연산입니다. 일반 역원은 길이의 제곱으로 나눕니다. 회전 합성과 차이는 곱셈의 순서와 기준 공간을 적고 계산한 결과를 다시 적용해 확인하세요. 다음 편에서는 두 자세 사이를 부드럽게 보관하고 행렬과 오일러각 등 다른 표현으로 안전하게 변환하겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Unit-axis half-angle four numbers and three constrained degrees, q/-q same posture versus conjugate/inverse norm-squared, ordered framed composition/reapply, next interpolation/conversions retained. 보간/보관 ASR flag."
+    }
+  ],
+  "reviewedAt": "2026-10-06T06:47:18.538934+00:00",
+  "pendingScenes": [],
+  "method": "Every current full unnormalized raw read-back was directly compared with its complete KO script, source claims and independently verified numbers/signs/frames. Ambiguous omitted nouns and values were repaired without weakening coverage or ending checks. Remaining ASR spelling/filler differences are explicit, and no human listening approval is implied."
+}

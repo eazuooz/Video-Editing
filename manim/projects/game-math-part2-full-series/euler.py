@@ -34,7 +34,7 @@ class EulerScene(ThreeDScene):
   wide=flat and mode!='wrap'
   paired=mode in ['extrinsic','order','aliases','gimbal-values','axis-aliases','nonadd']
   origin=screen_point(-3.35,-.2);origins=[screen_point(-4.8,-.25),screen_point(-1.7,-.25)]
-  obj=None;objects=[];active=None;note=None;special=None;circle=None;needle=None;glrings=None
+  obj=None;objects=[];paired_labels=[];active=None;note=None;special=None;circle=None;needle=None;glrings=None
   if not flat:
    if paired:
     matrices=[np.eye(3),np.eye(3)]
@@ -44,7 +44,8 @@ class EulerScene(ThreeDScene):
      world=VGroup(*[DashedLine(O-1.35*P[:,i],O+1.5*P[:,i],color=RULE,stroke_width=1.2) for i in range(3)])
      x=basis(R,O,scale=1.4);self.add(world,x);objects.append(x)
     labels={'extrinsic':['몸체 Y → X → Z','고정 Z → X → Y'],'order':['고정 X → Y','고정 Y → X'],'aliases':['(0°,135°,0°)','(180°,45°,180°)'],'gimbal-values':['(30°,90°,10°)','(20°,90°,0°)'],'axis-aliases':['+90° · n','+270° · -n'],'nonadd':['X90° 후 Y90°','벡터를 더한 한 회전']}[mode]
-    for x,label in zip([-4.8,-1.7],labels):self.fixed(fit(txt(label,22,GREEN if x< -3 else BLUE),3.05).move_to([x,-1.95,0]))
+    for x,label in zip([-4.8,-1.7],labels):
+     label_obj=fit(txt(label,22,GREEN if x< -3 else BLUE),3.05).move_to([x,-1.95,0]);self.fixed(label_obj);paired_labels.append(label_obj)
    else:
     obj=basis(np.eye(3),origin);self.add(VGroup(*[DashedLine(origin-2.05*P[:,i],origin+2.2*P[:,i],color=RULE,stroke_width=1.4) for i in range(3)]),obj)
     self.fixed(VGroup(txt('x',23,RED),txt('y',23,GREEN),txt('z 앞',23,BLUE)).arrange(RIGHT,buff=.7).move_to([-3.35,-2.25,0]))
@@ -78,6 +79,21 @@ class EulerScene(ThreeDScene):
   for i,beat in enumerate(s['beats']):
    ts=slot['lineStarts'][min(i,len(slot['lineStarts'])-1)]
    if ts>self.renderer.time+1/60:self.wait(ts-self.renderer.time,frozen_frame=True)
+   if mode=='gimbal-values' and i==3:
+    # These are two separate singular-case examples. Remove the complete
+    # positive case before showing any negative-case label or geometry.
+    previous=[active,note,*paired_labels,*objects]
+    self.play(*[FadeOut(x) for x in previous],run_time=.15)
+    self.remove(*previous)
+    negative=[euler(30*DEGREES,-PI/2,10*DEGREES),euler(40*DEGREES,-PI/2,0)]
+    objects=[basis(R,O,scale=1.4) for R,O in zip(negative,origins)]
+    self.add(*objects)
+    paired_labels=[fit(txt(label,22,GREEN if j==0 else BLUE),3.05).move_to([x,-1.95,0]) for j,(x,label) in enumerate(zip([-4.8,-1.7],['(30°,-90°,10°)','(40°,-90°,0°)']))]
+    note=fit(txt('R(30°,-90°,10°) = R(40°,-90°,0°)',26,GREEN),6).move_to([3.12,-2.35,0])
+    active=card(beat,width=6,size=27,color=BLUE).move_to([3.12,1.65,0])
+    self.fixed(*paired_labels,note,active)
+    self.play(*[FadeIn(x) for x in [*objects,*paired_labels,note,active]],run_time=.20)
+    continue
    active=self.replace_fixed(active,card(beat,width=12 if wide else 6,size=27,color=GREEN if i==len(s['beats'])-1 else BLUE).move_to([0 if wide else 3.12,1.65,0]))
    if mode=='overview':self.play(Indicate(special[min(i,3)],color=GREEN),run_time=.6)
    elif mode=='euler':
@@ -116,7 +132,6 @@ class EulerScene(ThreeDScene):
     if i==5:display('오일러 매개화의 문제 / 물체는 회전 가능')
    elif mode=='gimbal-values':
     if i==2:self.play(*[Indicate(x[1],color=GOLD) for x in objects],run_time=.8);display('R(30°,90°,10°) = R(20°,90°,0°)')
-    if i==3:display('p = -90°이면 h + b')
    elif mode=='wrap':
     if i in [1,2]:
      a=Arc(radius=1.9 if i==1 else 1.78,start_angle=-170*DEGREES,angle=(340 if i==1 else -20)*DEGREES,color=RED if i==1 else GREEN,stroke_width=6).shift(circle.get_center());self.fixed(a);self.play(Create(a),run_time=1.35 if i==1 else .8)

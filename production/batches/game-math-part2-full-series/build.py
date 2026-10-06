@@ -6,7 +6,7 @@ from pathlib import Path
 import sys,importlib.util,json,math,shutil
 import numpy as np
 import soundfile as sf
-from observations import place_observation_pauses,mapped_time
+from observations import place_observation_pauses,mapped_time,observation_capacity_seconds
 ROOT=Path(__file__).resolve().parents[3]
 slug=sys.argv[1];stage=sys.argv[2]
 spec=importlib.util.spec_from_file_location('caption_tools',ROOT/'projects/game-math-polar-sample/production/build.py');b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
@@ -16,16 +16,21 @@ DATAFILE=Path(__file__).parent/'lessons'/f'{slug}.json'
 D=b.read(DATAFILE)
 def plan():
  m=b.read(b.MF);out=ROOT/m['tts']['outputDir'];tim=b.read(out/(m['tts']['filenameStem']+'.timing.json'));assert tim.get('alignment')
- raw={};minimum={};groups={k:[s['id'] for s in D['scenes'] if s['kind']==k] for k in ['actual','explanation']}
+ raw={};minimum={};actual_upper={};groups={k:[s['id'] for s in D['scenes'] if s['kind']==k] for k in ['actual','explanation']}
  for s in D['scenes']:
   f=out/'chunks'/f'{s["id"]}-scene.wav';a,sr=sf.read(f,dtype='float32');assert sr==24000 and a.ndim==1
   raw[s['id']]=(a,sr,f);minimum[s['id']]=math.ceil((len(a)/sr+.6)*FPS)
+  if s['kind']=='actual':
+   entries=[e for e in tim['entries'] if e['scene_id']==s['id']];origin=entries[0]['start'];cues=[{'start':e['start']-origin,'end':e['end']-origin} for e in entries]
+   actual_upper[s['id']]=min(math.floor(s['maxSeconds']*FPS),math.floor(observation_capacity_seconds(a,sr,cues)*FPS))
+   assert minimum[s['id']]<=actual_upper[s['id']],f"Scene{s['id']}: secure more reviewed footage for its full narration"
  body=math.ceil(max(sum(minimum[i] for i in groups['actual'])/.4,sum(minimum[i] for i in groups['explanation'])/.6)/5)*5
  frames=minimum.copy()
+ assert sum(actual_upper.values())>=round(body*.4),f"Actual footage with safe observed sentence seams supports{sum(actual_upper.values())/FPS:.2f}s; target{body*.4/FPS:.2f}s. Add concept-matched narration or reviewed sources rather than lengthening quiet gaps."
  for kind,share in [('actual',.4),('explanation',.6)]:
   ids=groups[kind];target=round(body*share)
   while sum(frames[i] for i in ids)<target:
-   eligible=[i for i in ids if kind!='actual' or frames[i]<math.floor(next(s['maxSeconds'] for s in D['scenes'] if s['id']==i)*FPS)]
+   eligible=[i for i in ids if kind!='actual' or frames[i]<actual_upper[i]]
    assert eligible,'Secure more reviewed footage rather than looping or slowing a clip'
    key=min(eligible,key=lambda i:frames[i]/minimum[i]);frames[key]+=1
  scenes=[];start=2;voice=np.zeros(round((body/FPS+12)*24000),dtype='float32')

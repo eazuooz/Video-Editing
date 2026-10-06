@@ -7,11 +7,8 @@ Never freeze, repeat or slow gameplay. Long slots require more narration instead
 import math,hashlib
 import numpy as np
 
-def place_observation_pauses(audio,sr,cues,slot_seconds):
- duration=len(audio)/sr;extra=max(0.,slot_seconds-duration-.6)
- if extra<.35:return audio,[],{'status':'not-needed','rawSamplesPreserved':True}
+def quiet_sentence_seams(audio,sr,cues):
  count=len(cues)-1
- if count<=0 or extra>count*6.0:raise ValueError('Observation gaps would be too long; add inspected narrated examples instead.')
  candidates=[];rms=float(np.sqrt(np.mean(audio**2)));window=round(.080*sr)
  for i in range(count):
   intended=(cues[i]['end']+cues[i+1]['start'])/2
@@ -30,6 +27,15 @@ def place_observation_pauses(audio,sr,cues,slot_seconds):
   neighborhood=audio[at-round(.004*sr):at+round(.004*sr)]
   at=at-round(.004*sr)+int(np.argmin(np.abs(neighborhood)))
   if at>0 and (not candidates or at>candidates[-1]['rawSample']):candidates.append({'afterLine':i+1,'rawSample':at,'rawAt':at/sr,'seamRms':energy})
+ return candidates
+
+def observation_capacity_seconds(audio,sr,cues):
+ return len(audio)/sr+.6+6*len(quiet_sentence_seams(audio,sr,cues))
+
+def place_observation_pauses(audio,sr,cues,slot_seconds):
+ duration=len(audio)/sr;extra=max(0.,slot_seconds-duration-.6)
+ if extra<.35:return audio,[],{'status':'not-needed','rawSamplesPreserved':True}
+ candidates=quiet_sentence_seams(audio,sr,cues)
  if len(candidates)<math.ceil(extra/6):raise ValueError('Insufficient quiet sentence seams; inspect audio or add narration, never cut a spoken word.')
  silence_samples=round(extra*sr);pieces=[];kept=[];last=0;remaining=silence_samples
  for j,p in enumerate(candidates):
