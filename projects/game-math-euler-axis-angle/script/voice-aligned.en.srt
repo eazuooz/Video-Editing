@@ -1,0 +1,1224 @@
+1
+00:00:00,000 --> 00:00:05,180
+Why do the same angles produce different
+orientations when their order changes?
+
+2
+00:00:05,440 --> 00:00:10,680
+We will observe flight and distinguish the
+three Euler rotations and their moving axes.
+
+3
+00:00:11,040 --> 00:00:16,280
+Then we will change the order and examine
+gimbal lock and angle interpolation.
+
+4
+00:00:16,640 --> 00:00:19,200
+Finally, we will describe a rotation with one
+axis and angle,
+
+5
+00:00:19,200 --> 00:00:22,780
+and solve two problems about rotation vectors
+and their limits.
+
+6
+00:00:23,250 --> 00:00:26,190
+The body passes between obstacles in
+Superflight.
+
+7
+00:00:26,410 --> 00:00:28,270
+Start by watching where its torso points.
+
+8
+00:00:28,570 --> 00:00:34,070
+Distinguish turning sideways from pointing
+upward or downward.
+
+9
+00:00:34,310 --> 00:00:36,690
+The line joining the arms also tilts.
+
+10
+00:00:36,950 --> 00:00:40,350
+Connect this to twisting around the body
+forward direction.
+
+11
+00:00:40,610 --> 00:00:44,830
+We can organize these changes using heading,
+pitch, and bank.
+
+12
+00:00:45,070 --> 00:00:50,130
+Screen left or up alone cannot determine angle
+signs because the camera also moves.
+
+13
+00:00:50,350 --> 00:00:52,430
+We will define the axes and rotation rules in
+our own
+
+14
+00:00:52,430 --> 00:00:55,910
+diagram without guessing the game
+implementation.
+
+15
+00:00:56,420 --> 00:00:58,980
+Euler angles represent orientation with three
+numbers,
+
+16
+00:00:59,340 --> 00:01:02,540
+together with a defined axis convention and
+order.
+
+17
+00:01:03,020 --> 00:01:06,940
+We retain the right-hand rule, column vectors,
+
+18
+00:01:06,940 --> 00:01:09,360
+and a local-to-world rotation matrix from the
+previous lecture.
+
+19
+00:01:09,720 --> 00:01:14,660
+Heading uses y, pitch uses the moving x axis,
+and bank uses the moving z axis.
+
+20
+00:01:15,020 --> 00:01:18,480
+This is the Y-X-Z order with three different
+axes.
+
+21
+00:01:18,760 --> 00:01:20,960
+Arbitrary axis choices are not all equivalent.
+
+22
+00:01:21,240 --> 00:01:23,500
+The book uses a left-handed frame and row
+vectors;
+
+23
+00:01:23,540 --> 00:01:27,720
+converting its formulas requires checking axes
+and signs as well as transposition.
+
+24
+00:01:28,060 --> 00:01:30,920
+Positive rotation follows the curled fingers
+when
+
+25
+00:01:30,920 --> 00:01:33,520
+the right thumb points along the positive
+axis.
+
+26
+00:01:34,370 --> 00:01:40,070
+Initially the body and world axes are aligned.
+Apply heading around y first.
+
+27
+00:01:40,290 --> 00:01:47,210
+The attached x axis moves with the body. Apply
+pitch around this new x axis.
+
+28
+00:01:47,430 --> 00:01:52,610
+Apply bank around the body z axis after the
+first two rotations: its forward axis.
+
+29
+00:01:52,830 --> 00:01:56,310
+Rotations that follow the body axes are called
+intrinsic rotations.
+
+30
+00:01:56,430 --> 00:02:00,630
+With our signs, positive pitch sends forward z
+toward negative y.
+
+31
+00:02:01,030 --> 00:02:02,990
+The name alone does not specify the sign.
+
+32
+00:02:02,990 --> 00:02:05,190
+Think of heading and pitch as setting the
+forward direction,
+
+33
+00:02:05,490 --> 00:02:08,630
+and bank as twisting around that direction.
+
+34
+00:02:09,320 --> 00:02:15,600
+Watch the body turn and tilt again. Its arms
+and torso help us imagine attached directions.
+
+35
+00:02:15,860 --> 00:02:20,880
+Attached axes rotate with the body. Screen
+down is not always body down.
+
+36
+00:02:21,200 --> 00:02:23,080
+Rotations measured against the structures and
+rotations
+
+37
+00:02:23,100 --> 00:02:26,180
+measured against attached axes use different
+references.
+
+38
+00:02:26,580 --> 00:02:30,080
+The following camera also changes the tilt
+visible on screen.
+
+39
+00:02:30,360 --> 00:02:33,480
+A variable named pitch therefore does not
+specify enough by itself.
+
+40
+00:02:33,800 --> 00:02:37,120
+Imagine a short arrow along the torso.
+Considering the direction perpendicular
+
+41
+00:02:37,245 --> 00:02:43,040
+to the arm line as well helps reveal the twist
+that a forward direction alone misses.
+
+42
+00:02:43,460 --> 00:02:46,540
+Do not read separate excerpts as one
+continuous rotation. Observe how attached
+
+43
+00:02:46,880 --> 00:02:52,060
+axes change within each excerpt before
+comparing them with a fixed world frame.
+
+44
+00:02:52,520 --> 00:02:54,580
+Writing down the frame and axis makes it
+easier
+
+45
+00:02:54,580 --> 00:02:58,180
+to check which axis the next rotation uses.
+
+46
+00:02:58,810 --> 00:03:03,230
+Another route to the same orientation uses
+axes fixed in the world.
+
+47
+00:03:03,230 --> 00:03:06,310
+These are extrinsic rotations.
+
+48
+00:03:06,590 --> 00:03:11,870
+Intrinsic heading-pitch-bank is equivalent to
+
+49
+00:03:11,870 --> 00:03:14,350
+extrinsic bank-pitch-heading in reverse order.
+
+50
+00:03:14,570 --> 00:03:17,630
+For column vectors, the product is the y
+rotation,
+
+51
+00:03:17,630 --> 00:03:20,430
+x rotation, and z rotation written from left
+to right.
+
+52
+00:03:20,610 --> 00:03:26,350
+Matrices act on the vector from the right, so
+the fixed z rotation acts first.
+
+53
+00:03:26,350 --> 00:03:30,470
+The names yaw, pitch, and roll are also
+common,
+
+54
+00:03:30,470 --> 00:03:33,610
+but check whether yaw uses fixed vertical or a
+body axis.
+
+55
+00:03:34,130 --> 00:03:40,590
+Intrinsic Y-X-Z and extrinsic Z-X-Y are two
+descriptions of the same final matrix here.
+
+56
+00:03:41,340 --> 00:03:44,000
+Start with forward vector zero, zero, one,
+
+57
+00:03:44,000 --> 00:03:48,180
+and use ninety-degree rotations about fixed x
+and y.
+
+58
+00:03:48,480 --> 00:03:52,100
+Apply the x rotation first. Forward points
+along negative y.
+
+59
+00:03:52,400 --> 00:03:55,620
+The following y rotation leaves a vector on
+the y axis unchanged,
+
+60
+00:03:55,820 --> 00:03:58,220
+giving zero, minus one, zero.
+
+61
+00:03:58,560 --> 00:04:03,120
+Now apply the y rotation first. Forward points
+along positive x.
+
+62
+00:04:03,320 --> 00:04:08,400
+The following x rotation leaves that direction
+unchanged, giving one, zero, zero.
+
+63
+00:04:08,540 --> 00:04:10,900
+The angles are identical but the results
+differ.
+
+64
+00:04:10,948 --> 00:04:13,660
+Three-dimensional rotations generally do not
+commute.
+
+65
+00:04:14,350 --> 00:04:18,530
+Watch the arms tilt after the body turns
+between structures.
+
+66
+00:04:18,830 --> 00:04:23,590
+When forward changes, the axis of a forward
+twist points in a different world direction.
+
+67
+00:04:23,890 --> 00:04:25,770
+Distinguish rotating around an original fixed
+axis
+
+68
+00:04:25,770 --> 00:04:29,230
+from rotating around an already moved body
+axis.
+
+69
+00:04:29,510 --> 00:04:32,890
+Order and axis reference therefore matter even
+for identical rotation amounts.
+
+70
+00:04:33,150 --> 00:04:36,170
+We are not measuring exact angles from these
+pixels;
+
+71
+00:04:36,370 --> 00:04:39,470
+observe that attached directions keep
+changing.
+
+72
+00:04:39,470 --> 00:04:41,590
+Next we will see why three intuitive angles
+can
+
+73
+00:04:41,590 --> 00:04:44,690
+describe the same orientation in several ways.
+
+74
+00:04:45,200 --> 00:04:50,560
+Euler angles are easy for people to read and
+edit, and require only three real components.
+
+75
+00:04:50,820 --> 00:04:54,220
+Heading zero and three hundred sixty degrees
+describe the
+
+76
+00:04:54,520 --> 00:04:57,780
+same orientation: an extra full turn preserves
+the endpoint.
+
+77
+00:04:58,200 --> 00:05:01,260
+For our order, heading zero, pitch one hundred
+thirty-five,
+
+78
+00:05:01,260 --> 00:05:03,940
+and bank zero have an alternative
+representation.
+
+79
+00:05:04,300 --> 00:05:08,880
+Heading one hundred eighty, pitch forty-five,
+
+80
+00:05:08,896 --> 00:05:10,900
+and bank one hundred eighty give exactly the
+same orientation.
+
+81
+00:05:11,060 --> 00:05:14,860
+A common canonical range is minus one hundred
+eighty exclusive to plus one hundred
+
+82
+00:05:14,940 --> 00:05:17,900
+eighty inclusive for heading and bank, and
+minus ninety to ninety for pitch.
+
+83
+00:05:18,260 --> 00:05:23,740
+At pitch plus or minus ninety, we need an
+additional rule such as setting bank to zero.
+
+84
+00:05:24,210 --> 00:05:29,190
+Tilt around body x until pitch reaches
+positive ninety degrees.
+
+85
+00:05:29,550 --> 00:05:32,770
+The final body z axis used for bank lies on
+the same
+
+86
+00:05:32,770 --> 00:05:36,070
+line as the initial world y axis used for
+heading.
+
+87
+00:05:36,290 --> 00:05:39,610
+At positive ninety under our signs,
+
+88
+00:05:39,790 --> 00:05:42,250
+the positive directions are opposite along
+that line.
+
+89
+00:05:42,510 --> 00:05:47,410
+Two controls that previously changed distinct
+axes now affect the same rotational direction.
+
+90
+00:05:47,590 --> 00:05:50,890
+The Euler parameter changes lose one
+independent
+
+91
+00:05:50,890 --> 00:05:54,410
+instantaneous rotation direction. This is
+gimbal lock.
+
+92
+00:05:54,590 --> 00:05:58,090
+The object does not physically lose its
+ability to rotate;
+
+93
+00:05:58,290 --> 00:06:01,170
+this coordinate parameterization becomes
+singular.
+
+94
+00:06:01,700 --> 00:06:06,040
+Observe steep tilts and changes in where the
+body points during flight.
+
+95
+00:06:06,280 --> 00:06:10,740
+An object appearing vertical on screen is not
+enough to diagnose gimbal lock.
+
+96
+00:06:11,200 --> 00:06:12,680
+The camera affects that appearance,
+
+97
+00:06:12,680 --> 00:06:17,040
+and the pixels do not reveal the game rotation
+representation.
+
+98
+00:06:17,200 --> 00:06:22,600
+This example illustrates the need for natural
+control through large orientation changes.
+
+99
+00:06:22,900 --> 00:06:25,360
+Gimbal lock must be checked using the
+
+100
+00:06:25,360 --> 00:06:28,480
+overlapping-axis condition for a defined Euler
+order.
+
+101
+00:06:28,480 --> 00:06:30,500
+Connect the question raised by real motion to
+its
+
+102
+00:06:30,500 --> 00:06:34,560
+mathematical model while keeping their
+evidence distinct.
+
+103
+00:06:35,030 --> 00:06:42,530
+For our Y-X-Z order at positive ninety pitch,
+the orientation depends on heading minus bank.
+
+104
+00:06:42,830 --> 00:06:47,570
+Try heading thirty, pitch ninety, and bank ten
+degrees. Their difference is twenty.
+
+105
+00:06:47,710 --> 00:06:51,270
+Heading twenty, pitch ninety,
+
+106
+00:06:51,550 --> 00:06:53,790
+and bank zero give the same matrix. The two
+body frames coincide.
+
+107
+00:06:53,930 --> 00:06:58,310
+At negative ninety pitch, our convention
+instead combines heading plus bank.
+
+108
+00:06:58,550 --> 00:07:00,310
+All orientations remain representable,
+
+109
+00:07:00,650 --> 00:07:03,930
+but nearby orientation changes can cause large
+jumps in individual angles.
+
+110
+00:07:03,930 --> 00:07:06,970
+Choosing bank zero at the singular pose
+selects a representation
+
+111
+00:07:06,970 --> 00:07:10,370
+without removing boundary discontinuities or
+interpolation problems.
+
+112
+00:07:10,840 --> 00:07:14,900
+Suppose heading changes from minus one hundred
+seventy to plus one hundred seventy degrees.
+
+113
+00:07:15,240 --> 00:07:20,880
+Subtracting start from end gives positive
+three hundred forty, almost a full turn.
+
+114
+00:07:21,100 --> 00:07:24,100
+On the circle the directions are only twenty
+degrees apart.
+
+115
+00:07:24,440 --> 00:07:26,380
+Negative twenty is the short route.
+
+116
+00:07:26,620 --> 00:07:30,180
+wrapPi removes full turns from the difference.
+
+117
+00:07:30,540 --> 00:07:33,480
+We choose the interval greater than minus pi
+and at most pi.
+
+118
+00:07:33,760 --> 00:07:36,720
+Multiply that wrapped difference by the
+interpolation fraction
+
+119
+00:07:37,040 --> 00:07:39,520
+and add it to the start angle for the short
+route on this one axis.
+
+120
+00:07:39,520 --> 00:07:42,920
+Exactly one hundred eighty degrees apart,
+
+121
+00:07:43,340 --> 00:07:45,740
+both routes are equally long. Apply a
+consistent endpoint rule.
+
+122
+00:07:46,490 --> 00:07:53,010
+Watch the body change direction near
+obstacles. A correct endpoint is not enough.
+
+123
+00:07:53,270 --> 00:07:58,350
+Viewers and players also notice the route
+taken to reach that endpoint.
+
+124
+00:07:58,590 --> 00:08:03,570
+An unnecessary near-full turn between nearby
+directions would feel awkward.
+
+125
+00:08:03,830 --> 00:08:08,350
+Wrapping the angular difference helps avoid
+that long route on one axis.
+
+126
+00:08:08,550 --> 00:08:11,630
+This does not claim the game uses that
+function;
+
+127
+00:08:11,890 --> 00:08:14,830
+it illustrates why natural control matters.
+
+128
+00:08:14,846 --> 00:08:18,650
+Interpolating three angles separately still
+has additional problems.
+
+129
+00:08:19,010 --> 00:08:20,610
+We will examine them after the code.
+
+130
+00:08:21,340 --> 00:08:26,800
+Assume finite real-valued radians and define
+pi and two pi as constants.
+
+131
+00:08:27,100 --> 00:08:30,760
+Use the standard remainder function to remove
+complete turns.
+
+132
+00:08:31,000 --> 00:08:37,120
+Map a result of minus pi to plus pi by adding
+a full turn, matching our endpoint convention.
+
+133
+00:08:37,320 --> 00:08:41,460
+The supplied original code has its range-test
+inequality reversed.
+
+134
+00:08:41,700 --> 00:08:44,740
+Check the corrected behavior instead of
+copying it unchanged.
+
+135
+00:08:44,960 --> 00:08:49,780
+For interpolation, wrap end minus start,
+rather than wrapping only the endpoint.
+
+136
+00:08:49,780 --> 00:08:54,920
+Do not pass degree values directly to this
+function. Record both input and output units.
+
+137
+00:08:55,390 --> 00:08:59,190
+Even after wrapping differences, linear
+interpolation of three
+
+138
+00:08:59,190 --> 00:09:03,130
+separate angles is not always the shortest
+three-dimensional rotation.
+
+139
+00:09:03,430 --> 00:09:08,770
+Near ninety pitch, heading and bank affect
+nearly the same axis.
+
+140
+00:09:09,030 --> 00:09:14,150
+Constant rates of change in each number need
+not produce constant physical angular speed.
+
+141
+00:09:14,530 --> 00:09:17,070
+Alternative Euler representations of the same
+endpoints
+
+142
+00:09:17,070 --> 00:09:19,370
+can also produce different intermediate
+routes.
+
+143
+00:09:19,370 --> 00:09:22,830
+Euler angles are convenient for editing,
+
+144
+00:09:22,830 --> 00:09:26,010
+but rotation interpolation calls for
+considering other representations.
+
+145
+00:09:26,210 --> 00:09:29,930
+The next lectures introduce quaternions and
+interpolation.
+
+146
+00:09:30,190 --> 00:09:33,130
+Quaternions still require unit-length and sign
+conventions.
+
+147
+00:09:33,600 --> 00:09:36,940
+Watch the body change direction and pass
+beside structures.
+
+148
+00:09:37,120 --> 00:09:39,900
+Two endpoint images cannot reveal the
+
+149
+00:09:39,900 --> 00:09:42,300
+direction or total amount of turning in
+between.
+
+150
+00:09:42,660 --> 00:09:44,900
+Storing an endpoint orientation and
+controlling
+
+151
+00:09:44,900 --> 00:09:48,840
+its motion path are related but different
+tasks.
+
+152
+00:09:49,300 --> 00:09:53,740
+Natural camera or character rotation also
+requires designing intermediate orientations.
+
+153
+00:09:54,040 --> 00:09:57,900
+Another representation selects one axis and
+rotates around it once.
+
+154
+00:09:58,140 --> 00:10:03,020
+Let us choose that axis freely and describe
+the rotation in a simpler way.
+
+155
+00:10:03,490 --> 00:10:06,550
+Euler rotation theorem says a change between
+two three-dimensional
+
+156
+00:10:06,550 --> 00:10:10,050
+orientations can be expressed as rotation
+about one suitable axis.
+
+157
+00:10:10,410 --> 00:10:16,990
+Store a unit axis n and angle theta. This is
+the axis-angle representation.
+
+158
+00:10:17,270 --> 00:10:23,230
+For example, axis zero, one, zero and ninety
+degrees send positive z toward positive x.
+
+159
+00:10:23,270 --> 00:10:28,830
+The entire attached frame rotates around that
+axis, not just its forward vector.
+
+160
+00:10:29,150 --> 00:10:31,890
+The axis has three components with a
+unit-length constraint.
+
+161
+00:10:31,890 --> 00:10:35,750
+Four stored components do not mean four
+degrees of freedom.
+
+162
+00:10:36,110 --> 00:10:40,690
+For a selected axis, halving the angle halves
+the rotation amount.
+
+163
+00:10:40,770 --> 00:10:43,390
+This is different from combining two arbitrary
+rotations.
+
+164
+00:10:43,860 --> 00:10:49,980
+Multiply the axis by the angle to obtain e
+equals theta n, a rotation vector.
+
+165
+00:10:50,220 --> 00:10:52,880
+The book calls this an exponential-map
+representation. In formal mathematics,
+
+166
+00:10:53,040 --> 00:10:57,740
+the exponential map is the operation sending
+this vector to a rotation.
+
+167
+00:10:58,000 --> 00:11:02,580
+Using radians, axis zero, one,
+
+168
+00:11:02,580 --> 00:11:05,960
+zero and angle pi over two give vector zero,
+pi over two, zero.
+
+169
+00:11:06,160 --> 00:11:11,700
+Its length gives a nonnegative angle; for
+nonzero length, normalization gives the axis.
+
+170
+00:11:11,700 --> 00:11:16,760
+The zero vector represents identity. Do not
+divide by zero to recover an axis there.
+
+171
+00:11:17,300 --> 00:11:20,680
+Negating both axis and angle gives the same
+vector,
+
+172
+00:11:21,140 --> 00:11:24,540
+but does not eliminate every alternative
+representation of the final orientation.
+
+173
+00:11:25,190 --> 00:11:27,870
+The body moves between structures again.
+
+174
+00:11:28,050 --> 00:11:31,170
+Distinguish travel distance from the amount of
+turning.
+
+175
+00:11:31,430 --> 00:11:36,350
+A rotation vector is not an arrow tracing the
+object translation through space.
+
+176
+00:11:36,550 --> 00:11:37,910
+Its direction specifies the rotation axis,
+
+177
+00:11:37,910 --> 00:11:40,730
+and its length specifies the angle in the
+chosen units.
+
+178
+00:11:41,070 --> 00:11:43,610
+A moving camera prevents exact reconstruction
+
+179
+00:11:43,610 --> 00:11:46,290
+of that vector from apparent screen tilt
+alone.
+
+180
+00:11:46,610 --> 00:11:50,410
+Keep position vectors, forward direction
+vectors,
+
+181
+00:11:50,410 --> 00:11:52,830
+and rotation vectors conceptually distinct.
+
+182
+00:11:52,830 --> 00:11:57,870
+Imagine the body center as a point and its
+facing as an arrow. As the point moves,
+
+183
+00:11:58,030 --> 00:12:03,510
+the arm line also tilts, so you can follow
+translation and orientation separately.
+
+184
+00:12:03,650 --> 00:12:07,510
+A cut does not show uninterrupted rotation at
+one location.
+
+185
+00:12:07,650 --> 00:12:11,410
+A rotation vector describes a rotation from
+the starting to the final orientation;
+
+186
+00:12:11,410 --> 00:12:14,150
+it is different from a record of distance
+traveled.
+
+187
+00:12:14,310 --> 00:12:18,930
+The next diagram compares different rotation
+vectors that yield the same final orientation.
+
+188
+00:12:19,400 --> 00:12:22,020
+Positive ninety degrees and negative two
+hundred
+
+189
+00:12:22,680 --> 00:12:24,860
+seventy degrees around one axis have the same
+endpoint.
+
+190
+00:12:25,020 --> 00:12:28,120
+With nonnegative angle lengths, a
+ninety-degree vector along an axis and a
+
+191
+00:12:28,120 --> 00:12:31,860
+two-hundred-seventy-degree vector along its
+opposite axis yield the same orientation.
+
+192
+00:12:32,100 --> 00:12:35,200
+Both lengths are below a full turn,
+
+193
+00:12:35,440 --> 00:12:39,080
+so that bound alone does not make the
+representation unique.
+
+194
+00:12:39,300 --> 00:12:41,920
+A common choice limits the angle to zero
+through one hundred
+
+195
+00:12:41,920 --> 00:12:45,540
+eighty and adds an axis-sign rule at one
+hundred eighty.
+
+196
+00:12:45,880 --> 00:12:48,600
+At one hundred eighty, opposite axes still
+yield the same rotation.
+
+197
+00:12:48,600 --> 00:12:51,180
+Boundary duplication and discontinuity remain.
+
+198
+00:12:51,300 --> 00:12:55,380
+At identity the angle is zero and every axis
+gives the same result.
+
+199
+00:12:55,740 --> 00:12:59,200
+The zero rotation vector avoids choosing an
+arbitrary axis.
+
+200
+00:12:59,930 --> 00:13:04,570
+The name rotation vector may tempt us to add
+components.
+
+201
+00:13:04,950 --> 00:13:07,150
+That generally fails for finite rotations.
+
+202
+00:13:07,330 --> 00:13:10,330
+An x ninety-degree rotation followed by y
+ninety degrees
+
+203
+00:13:10,330 --> 00:13:13,770
+differs from one rotation using their summed
+vectors.
+
+204
+00:13:14,090 --> 00:13:16,270
+Vector addition commutes, whereas the
+rotations
+
+205
+00:13:16,530 --> 00:13:19,810
+we observed change the result when reordered.
+
+206
+00:13:20,070 --> 00:13:23,130
+These operations therefore cannot generally be
+equal.
+
+207
+00:13:23,310 --> 00:13:27,490
+Compose using rotation matrices or the
+quaternion product introduced later.
+
+208
+00:13:27,490 --> 00:13:30,330
+For very small angles, addition may provide an
+approximation,
+
+209
+00:13:30,330 --> 00:13:33,950
+but it is not an exact finite-angle formula.
+
+210
+00:13:34,150 --> 00:13:38,230
+A vector describing rotation amount and a
+vector describing instantaneous
+
+211
+00:13:38,570 --> 00:13:41,590
+rotational rate serve different purposes. We
+will distinguish angular velocity next.
+
+212
+00:13:42,060 --> 00:13:46,340
+Watch the body keep changing direction and
+tilt one last time.
+
+213
+00:13:46,660 --> 00:13:49,840
+Even complex motion can be considered as
+orientations
+
+214
+00:13:49,840 --> 00:13:52,020
+at each instant and changes between them.
+
+215
+00:13:52,300 --> 00:13:54,920
+Simultaneous-looking changes in heading and
+tilt do
+
+216
+00:13:54,980 --> 00:13:58,920
+not reveal whether the implementation adds
+angles.
+
+217
+00:13:59,120 --> 00:14:01,800
+Our mathematical model must define axis
+references
+
+218
+00:14:01,800 --> 00:14:03,620
+and composition order before checking the
+result.
+
+219
+00:14:03,900 --> 00:14:10,200
+Distinguish component addition, a small-angle
+approximation, and exact rotation composition.
+
+220
+00:14:10,200 --> 00:14:12,920
+Now we will separate rotation amount from
+rotation
+
+221
+00:14:12,920 --> 00:14:15,340
+per second and check the lesson with two
+problems.
+
+222
+00:14:15,870 --> 00:14:18,750
+An angular velocity vector points along an
+instantaneous rotation axis,
+
+223
+00:14:18,750 --> 00:14:22,050
+and its magnitude is a rate such as radians
+per second.
+
+224
+00:14:22,310 --> 00:14:25,770
+Seven hundred twenty and one thousand eighty
+degrees
+
+225
+00:14:25,770 --> 00:14:28,970
+per second are two and three turns: different
+motions.
+
+226
+00:14:29,370 --> 00:14:33,370
+After one second, however, both endpoint
+orientations match the start.
+
+227
+00:14:33,670 --> 00:14:36,650
+Endpoint orientation cannot distinguish their
+histories.
+
+228
+00:14:37,290 --> 00:14:39,650
+Track accumulated angle or time-varying
+angular
+
+229
+00:14:39,650 --> 00:14:42,570
+velocity separately when multiple turns
+matter.
+
+230
+00:14:42,570 --> 00:14:46,370
+Instantaneous angular velocities must use a
+common frame before addition.
+
+231
+00:14:46,750 --> 00:14:49,730
+Do not directly add body-frame and world-frame
+components.
+
+232
+00:14:50,270 --> 00:14:55,050
+These unit and frame distinctions return in
+circular motion and rigid-body dynamics.
+
+233
+00:14:55,510 --> 00:14:58,930
+Keep orientation, rotation amount, and
+rotation rate separate.
+
+234
+00:14:59,600 --> 00:15:02,340
+First problem: from heading one hundred
+seventy to minus
+
+235
+00:15:02,340 --> 00:15:06,120
+one hundred seventy degrees, what is the short
+difference?
+
+236
+00:15:06,340 --> 00:15:09,020
+Direct subtraction gives minus three hundred
+forty.
+
+237
+00:15:09,020 --> 00:15:11,300
+Add a full turn to obtain positive twenty.
+
+238
+00:15:11,500 --> 00:15:14,580
+At halfway we pass one hundred eighty degrees.
+
+239
+00:15:14,780 --> 00:15:16,880
+Apply the chosen endpoint convention
+consistently.
+
+240
+00:15:17,100 --> 00:15:20,520
+Second problem: for rotation vector zero, pi
+over two,
+
+241
+00:15:20,520 --> 00:15:24,000
+zero in radians, what are the axis and angle?
+
+242
+00:15:24,280 --> 00:15:28,420
+The length is pi over two, or ninety degrees,
+and the axis is zero,
+
+243
+00:15:28,420 --> 00:15:31,680
+one, zero. Our right-hand rule sends forward z
+toward positive x.
+
+244
+00:15:32,160 --> 00:15:36,300
+To additionally compose an x ninety-degree
+rotation,
+
+245
+00:15:36,740 --> 00:15:39,260
+do not simply add vector components: decide
+the application order first.
+
+246
+00:15:40,050 --> 00:15:42,550
+Euler angles are three convenient numbers for
+people,
+
+247
+00:15:42,930 --> 00:15:45,750
+but their meaning requires defined axes and
+order.
+
+248
+00:15:45,990 --> 00:15:49,190
+Gimbal lock aligns two axes in a chosen
+parameterization;
+
+249
+00:15:49,470 --> 00:15:51,970
+it does not remove the object ability to
+rotate.
+
+250
+00:15:52,170 --> 00:15:56,050
+Axis-angle and rotation vectors describe
+rotation about one axis. Check units,
+
+251
+00:15:56,250 --> 00:16:00,150
+zero vectors, alternative representations, and
+composition limits.
+
+252
+00:16:00,690 --> 00:16:04,630
+Next we will represent rotations with four
+quaternion components
+
+253
+00:16:04,930 --> 00:16:07,950
+and calculate products and inverses with
+actual numbers.

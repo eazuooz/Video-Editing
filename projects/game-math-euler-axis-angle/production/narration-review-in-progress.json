@@ -1,0 +1,498 @@
+{
+  "status": "passed-agent-script-and-ASR-difference-review",
+  "humanListening": "pending",
+  "reviewedAt": "2026-10-05T13:56:57.212438+00:00",
+  "scenes": [
+    {
+      "scene": "01",
+      "wavSha256": "69ebf4fd5aca745aa283f09369b85e25c1dcbf93c450a230f92bee69457c9da8",
+      "rawAsrSha256": "41a1827f1c45faf8024fa143c66e7b8b197e2dc66ba84cd310f61bc1a7ed0a64",
+      "matchingCharacterCoverage": 0.98496,
+      "recognized": " 같은 각도를 넣었는데 회전 순서를 바꾸면 왜 다른 자세가 나올까요? 이번 시간에는 비행 장면을 보며 오일러 각의 새 회전과 움직이는 축을 구분합니다. 직접 순서를 바꾸고 짐벌락과 각도 보관이 어려워지는 이유를 확인합니다. 마지막으로 하나의 축과 각도로 회전을 표현하고 회전벡터의 계산과 주의점을 두 문제로 정리하겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "세",
+          "recognized": "새"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Overview question, order and outcome preserved; 세/새 and 보간/보관 ASR spellings remain explicit for human listening."
+    },
+    {
+      "scene": "02",
+      "wavSha256": "9ea19a719ce86ef480f27d9af1e3282126c18ff78959bc795b27a0e6f19d923c",
+      "rawAsrSha256": "cf4224cd2d883a8c8a786f95e9e40b31ca7d132b09517919bbee6bab02137c85",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 슈퍼플라이트에서 몸이 장애물 사이를 지나갑니다. 몸통이 향하는 쪽부터 보세요. 진행방향이 옆으로 바뀌는 모습과 앞쪽이 위아래를 향하는 모습을 나눠봅니다. 팔을 이은 선이 기울어지는 것도 보입니다. 몸의 앞쪽을 중심으로 비트는 변화와 연결해 생각하세요. 이런 변화를 헤딩, 피치, 뱅크라는 세각도로 정리할 수 있습니다. 화면의 왼쪽이나 위쪽만 보고 각도 부호를 판단하면 카메라 움직임과 섞입니다. 이 게임의 내부 구현을 추측하지 않고 다음 그림에서 축과 회전 규칙을 직접 정하겠습니다.",
+      "normalizedDifferences": [],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Visible action and camera/axis limits preserved; no proprietary Euler implementation claim."
+    },
+    {
+      "scene": "03",
+      "wavSha256": "a32f0b03eb4e658966ba85ee02b6fa50c802e3bd6acd5628b7f155fc2d8b54a4",
+      "rawAsrSha256": "7357c4fd4c4dc35c77e95d3abe34866e013ff0de9217d57e72ac6c0bad9dc85d",
+      "matchingCharacterCoverage": 0.99078,
+      "recognized": " 오일러 각은 숫자 3개로 자세를 표현합니다 중요한 것은 각도와 함께 축과 순서도 정한다는 점입니다 이 강의에서는 앞편과 같은 오른손 규칙, 열벡터, 로컬에서 월드로 가는 회전 행렬을 씁니다 헤딩은 Y축, 피치는 움직이는 X축, 뱅크는 움직이는 Z축으로 정합니다 서로 다른 세 축을 쓰는 Y, X, Z 순서입니다 모든 의미의 축 선택이 같은 것은 아닙니다 책은 왼손 좌표계와 행벡터를 쓰므로 식을 옮길 때 전치만 하지 말고 축과 부호까지 확인해야 합니다. 양의 회전은 오른손 엄지가 양의 축을 가리킬 때 손가락이 감기는 방향으로 판단하겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "세",
+          "recognized": "3"
+        },
+        {
+          "expected": "임",
+          "recognized": ""
+        },
+        {
+          "expected": "",
+          "recognized": "미"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "RH, column vectors, Y-X-Z body order and book LH row distinction preserved. 임의/의미 ASR spelling requires human listening; all axes and signs intact."
+    },
+    {
+      "scene": "04",
+      "wavSha256": "b6665d82babf53a7a374c5c89d459880861f48c93e0894fd003ede1ae96c930d",
+      "rawAsrSha256": "04201ccce78875dbc2c543eac9591e069a60b005de21e04a89fc512f6b8d8e05",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 자, 처음에는 몸체 축과 월드축이 나란합니다. 먼저 Y축을 중심으로 헤딩을 적용합니다. 몸이 돌아가면 몸에 붙은 X축도 같이 돌아갑니다. 피치는 이 바뀐 X축을 중심으로 적용합니다. 마지막 뱅크는 두 회전을 거친 몸의 Z축, 즉 앞쪽 축을 중심으로 적용합니다. 이처럼 몸체 축을 따라가는 회전을 내재적 회전이라고 부릅니다. 우리 규약에서는 양의 피치가 앞쪽 Z를 음의 Y쪽으로 보냅니다. 위로 든다는 이름만 믿으면 안됩니다. 헤딩과 피치로 앞쪽 방향을 정하고 뱅크로 그 앞쪽 주위의 비틀림을 정한다고 생각해 보세요",
+      "normalizedDifferences": [
+        {
+          "expected": "",
+          "recognized": "자"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Fresh selected retake now restores initially aligned body/world axes; intrinsic moving-axis order and positive pitch sending +z to -y correct. Extra 자 only."
+    },
+    {
+      "scene": "05",
+      "wavSha256": "e3b0c703ceedb92f73eca4a041759a672b73d5ffc3d426c73f3e01fa275b5a11",
+      "rawAsrSha256": "4c3b08e1f850a39fcaab3fde677a75ab4a8969eec8357194e344d1efcf2991cd",
+      "matchingCharacterCoverage": 0.98788,
+      "recognized": " 몸이 옆으로 돌고 기울어지는 모습을 다시 보세요 팔과 몸통을 따라가면 몸에 붙은 방향을 생각할 수 있습니다 몸에 붙은 축은 회전할 때 같이 돌아갑니다 화면 아래쪽이 항상 몸의 아래쪽은 아닙니다 주변 구조물을 기준으로 본 회전과 몸에 붙은 축을 기준으로 본 회전은 기준이 다릅니다 따라오는 카메라 때문에 화면에서 보이는 기울기도 함께 달라집니다 그래서 코드의 피치라는 이름 하나만 적으면 충분하지 않습니다 몸통이 향하는 쪽을 따라 짧은 화살표를 하나 상상해보세요 8선과 직각인 쪽도 함께 잡으면 앞쪽 방향만 볼 때 놓치던 몸의 비틀림을 확인할 수 있습니다 서로 다른 발체 구간을 한 번의 연속 회전으로 읽지는 마세요 각 구간 안에서 몸체 축이 어떻게 달라지는지 관찰한 뒤 고정된 월드축과 비교하겠습니다 어느 좌표계에 어느 축인지 적어두면 다음 회전이 어디를 중심으로 적용되는지 확인하기 쉬워집니다",
+      "normalizedDifferences": [
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "팔",
+          "recognized": "8"
+        },
+        {
+          "expected": "췌",
+          "recognized": "체"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Current expanded eight paragraphs preserve all six original observations plus attached forward/arm-plane comparison and separate-excerpt warning. Frame/axis/camera distinctions retained. 팔선/8선 is homophonic ASR, 발췌/발체 and particles explicit for human listening."
+    },
+    {
+      "scene": "06",
+      "wavSha256": "347e3c7cdd1d716b660ea19a2ad0efea519324e462556a2f6bcbd7ec9fdb08cc",
+      "rawAsrSha256": "920abc2e834738cfc230702cc29ecc389671f1288239a97ebe16d21927257d79",
+      "matchingCharacterCoverage": 0.9726,
+      "recognized": " 자세에 도착하는 또 다른 방법은 월드에 고정된 축만 사용하는 것입니다. 외제적 회전이라고 부릅니다. 몸체축에서 헤딩, 피치, 뱅크 순서로 돌린 결과는 고정축에서 뱅크, 피치, 헤딩 순서로 돌린 결과와 같습니다. 열 벡터의 행렬은 Y회전, X회전, Z회전을 왼쪽부터 곱한 형태입니다. 벡터의 행렬을 적용할 때는 오른쪽부터 계산하므로 고정축 Z회전이 먼저 작용합니다. 요, 피치, 롤이라는 이름도 쓰지만 요가 고정된 수직축인지 몸체축인지 문맥을 확인해야 합니다 내제적 y, x, z와 외제적 z, x, y는 여기서 같은 최종 행렬을 만드는 두 설명입니다",
+      "normalizedDifferences": [
+        {
+          "expected": "같은",
+          "recognized": ""
+        },
+        {
+          "expected": "재",
+          "recognized": "제"
+        },
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "재",
+          "recognized": "제"
+        },
+        {
+          "expected": "재",
+          "recognized": "제"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Intrinsic Y-X-Z equals extrinsic fixed Z-X-Y; reverse-order action correct. Initial 같은 omitted but exact same endpoint statement repeated later; 내재/외재 ASR spelling noted."
+    },
+    {
+      "scene": "07",
+      "wavSha256": "e446cc54ed1e1bd7132f61116c040600233139407ffbc0b317e887180548df3c",
+      "rawAsrSha256": "eee2983edf8257c50cbede8647eb1d5f1c00fd06bf7c4e45c1c5cf63c63c3bc7",
+      "matchingCharacterCoverage": 0.99438,
+      "recognized": " 앞쪽 벡터를 0, 0, 1로 두고 고정 x축과 고정 y축으로 각각 90도 회전해 보겠습니다. x 회전을 먼저 하면 앞쪽이 음의 y 방향이 됩니다. 그 다음 y축으로 돌려도 y 방향의 벡터는 그대로입니다. 결과는 0, 마이너스 1, 0입니다. 이번에는 y 회전을 먼저 합니다. 앞쪽 벡터가 양의 x 방향으로 갑니다. 그 다음 x축으로 돌리면 x 방향은 그대로입니다. 결과는 1, 0, 0입니다. 같은 두 각도를 썼지만 결과가 다릅니다. 3차원 회전은 보통 순서를 바꿀 수 없습니다",
+      "normalizedDifferences": [
+        {
+          "expected": "삼",
+          "recognized": "3"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Initial(0,0,1), X then Y =>(0,-1,0); Y then X =>(1,0,0). All numeric signs correct."
+    },
+    {
+      "scene": "08",
+      "wavSha256": "08ce19640c5013f31bb5785e13c6f36611ccccbd0c717fc2975e3994df7cced0",
+      "rawAsrSha256": "e58ee2aefc7c36a821d0e8cf317abdd42f7a94fdc2a310fbc0adfb428d0d3593",
+      "matchingCharacterCoverage": 0.99005,
+      "recognized": " 몸이 구조물 사이를 돌아 들어간 뒤 팔이 기울어지는 장면을 보세요. 앞쪽이 달라지면 그 앞쪽 주위로 비트는 축도 월드에서 다른 방향을 가리킵니다. 처음에 고정축으로 돌리는 것과 돌아간 몸의 축으로 돌리는 것을 나눠 생각해야 합니다. 그래서 같은 회전량이라도 적용 순서와 축 기준이 중요합니다. 이 화면에서 정확한 각도를 측정하는 것은 아닙니다. 몸에 붙은 방향이 계속 달라진다는 점을 관찰하는 것입니다. 이제 숫자 3개가 직관적이면서도 한 자세를 여러 숫자로 나타낼 수 있는 이유를 보겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "세",
+          "recognized": "3"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Moving forward/twist axis, rotation order and unmeasured-angle limitation intact."
+    },
+    {
+      "scene": "09",
+      "wavSha256": "8a3c56854bc88716be2c16ab0a57fcde4d9f43e70adfe71aeb1c8577ecdb9dcb",
+      "rawAsrSha256": "01279cf15b2c1f8ecdaf179879f2599d0bf6bd565708c98a497b873a7a49f1de",
+      "matchingCharacterCoverage": 0.96364,
+      "recognized": " 오일러 각은 사람이 읽고 편집하기 쉽습니다. 3개의 실수만 저장하는 것도 장점입니다. 하지만 헤딩 0도와 360도는 같은 자세입니다. 같은 회전축에 한 바퀴를 더해도 끝 자세는 같습니다. 우리 순서에서는 헤딩 0, 피치 135, 뱅크 0도 다른 3각으로 바꿀 수 있습니다. 헤딩 180, 피치 45, 뱅크 180은 바로 같은 자세입니다. 3값을 각각 비교하면 놓칩니다. 보통 헤딩과 뱅크는 마이너스 180보다 크고 180 이하로 피치는 마이너스 90부터 90까지 정리합니다. 피치가 양이나 음의 90도인 특수한 경우에는 뱅크를 0으로 정하는 추가 규칙이 필요합니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "세",
+          "recognized": "3"
+        },
+        {
+          "expected": "세",
+          "recognized": "3"
+        },
+        {
+          "expected": "백팔십",
+          "recognized": "180"
+        },
+        {
+          "expected": "세",
+          "recognized": "3"
+        },
+        {
+          "expected": "구십",
+          "recognized": "90"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Euler alias(0,135,0)==(180,45,180) and canonical h/b(-180,180],p[-90,90] correct; both singular pitches noted."
+    },
+    {
+      "scene": "10",
+      "wavSha256": "1737c2a678e49f5cbb545d5a99a57adeda9938f920ee188486733181414d47cf",
+      "rawAsrSha256": "f0bdf116940b3e31cc19285760d819cb5a4d15e88d1bc6359f5c3c7a6f7a8532",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 자 이제 피치가 양의 90도가 될 때까지 몸체 X축으로 기울여 보겠습니다. 마지막 뱅크에 쓰는 몸체 Z축이 첫 헤딩에 쓰는 월드 Y축과 같은 직선 위에 놓입니다. 우리 양의 90도에서는 두 축의 양의 방향이 반대입니다. 같은 축선을 다른 방향으로 가리킵니다. 헤딩과 뱅크를 따로 바꾸던 두 손잡이가 같은 회전 방향에 영향을 주게 됩니다. 이 순간 오일러 매개 변수의 변화가 만드는 독립적인 회전 방향이 하나 줄어듭니다. 이것이 짐벌락입니다. 물체가 실제로 회전할 능력을 잃었다는 뜻은 아닙니다. 자세를 조절하는 이 좌표 표현이 특이해진 것입니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "",
+          "recognized": "자"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Positive90 pitch aligns last body z opposite first world y; parameter rank loss distinguished from physical ability. Extra 자 only."
+    },
+    {
+      "scene": "11",
+      "wavSha256": "89ca47484fca0bb935c59992f824500e88eb0408e0ca4a654bb41ecbc07d262c",
+      "rawAsrSha256": "4008ff60d2700de9a56fcfdaf2d0dbc99877042854fbb0eb8a1702a95ec7c243",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 몸이 급하게 기울고 앞쪽이 위아래를 향하는 비행을 관찰해보세요. 화면에서 세로로 보인다는 이유만으로 짐벌락이라고 말할 수는 없습니다. 카메라 각도도 영향을 주고 게임이 어떤 회전 표현을 쓰는지도 이 화면만으로 알 수 없습니다. 이 사례는 급격히 자세가 달라질 때도 제어가 자연스러워야 한다는 요구를 보여줍니다. 짐벌락은 다음 계산처럼 정해둔 오일러 순서에서 축이 겹치는 조건을 검사해야 합니다. 실제 움직임에서 생긴 질문과 그 질문을 설명하는 수학 모델을 연결하되 증거를 섞지 마세요.",
+      "normalizedDifferences": [],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Rapid visible posture changes do not prove proprietary gimbal lock. Mathematical axis condition distinguished from observational footage."
+    },
+    {
+      "scene": "12",
+      "wavSha256": "a18cec7735d4ee5cd88cc6403869637308501e6aa68e9fa9c7e5b4a3c24a1161",
+      "rawAsrSha256": "80011a7ea080445efc92afadf49ebdb655402c4f0212e55d8dff3b059fbf7630",
+      "matchingCharacterCoverage": 0.99533,
+      "recognized": " 우리 Y, X, Z 순서에서 피치가 양의 90도이면 자세는 헤딩에서 뱅크를 뺀 값에 달려있습니다. 헤딩 30, 피치 90, 뱅크 10도를 넣어봅시다. 차이는 20도입니다. 헤딩 20, 피치 90, 뱅크 0도 같은 행렬을 만듭니다. 그림의 두 몸체 축이 정확히 겹칩니다. 피치가 음의 90도일 때는 우리 규약에서 헤딩과 뱅크의 합으로 정리됩니다. 이처럼 모든 자세는 표현할 수 있지만 주변 자세 변화가 개별 각도에서는 크게 튈 수 있습니다. 특수한 자세에서 뱅크를 0으로 정해한 표현을 택해도 경계의 불연속과 보관 문제까지 사라지지는 않습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "At+90 dependence h-b, (30,90,10)==(20,90,0); at-90 dependence h+b. All numbers/signs correct; 보간/보관 ASR spelling noted."
+    },
+    {
+      "scene": "13",
+      "wavSha256": "be0b7d03fb4ed8a74dc277c4edddfa151fc4911e0ede0fe02e2a2fb31f4aa432",
+      "rawAsrSha256": "09ce9139132a7f60c93cf54494ac13a55126abd7784395c5705b8ef6534ebc82",
+      "matchingCharacterCoverage": 0.99526,
+      "recognized": " 헤딩 마이너스 170도에서 플러스 170도로 바꾼다고 합시다. 끝값에서 시작값을 그대로 빼면 플러스 340도입니다. 거의 한 바퀴를 돌아갑니다. 원 위에서 두 방향은 사실 20도만 떨어져 있습니다. 음의 20도로 가면 짧은 길입니다. 각도 차이를 한 바퀴 단위로 감싸는 함수가 랩파이입니다. 우리는 마이너스 파이 초과 파이 이하를 택합니다. 감싼 차이에 보관 비율을 곱하고 시작 각도에 더하면 이 한 축에서는 짧은 방향으로 이동합니다. 정확히 180도 떨어진 두 방향은 두 길의 길이가 같습니다 같은 끝점 규칙으로 한 방향을 정해야 합니다",
+      "normalizedDifferences": [
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "All values retained: -170 to +170, raw +340, shortest -20, (-pi,pi], physical180 tie. 보간/보관 is a raw ASR spelling difference; human listening pending."
+    },
+    {
+      "scene": "14",
+      "wavSha256": "1beffbfa69147c6ead6339d29162af7783ba440d4a239653eae5c7b1c5fa19ba",
+      "rawAsrSha256": "f6351918fb1dcbfe3e373f2bc066940795710a7077c0f7144c3f484c7989455d",
+      "matchingCharacterCoverage": 0.97674,
+      "recognized": " 장애물 가까이에서 몸이 방향을 바꾼 장면을 보세요. 끝 방향만 맞는 것으로는 충분하지 않습니다. 그 방향까지 어떤 경로로 돌아가는지도 시청자와 플레이어가 느끼게 됩니다. 가까운 두 방향을 이동하려는데 불필요하게 한 바퀴 가까이 돌아가면 어색하겠죠. 앞에 각도 감싸기는 한 축의 이런 긴 경로를 줄이는데 도움이 됩니다. 하지만 이 게임이 그 함수를 사용한다는 뜻은 아닙니다. 자연스러운 제어가 필요한 이유를 관찰하는 사례입니다. 3차원에서 세각을 따로 보관할 때는 또 다른 문제가 남습니다 코드 다음에 그 차이를 보겠습니다",
+      "normalizedDifferences": [
+        {
+          "expected": "꾸는",
+          "recognized": "꾼"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "삼",
+          "recognized": "3"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Visible direction-change path and endpoints; no game implementation assertion; one-axis wrapping does not solve 3D interpolation. Small raw spelling differences preserve meaning."
+    },
+    {
+      "scene": "15",
+      "wavSha256": "1a3c8d4a52358c2577a7913f2eece26dba0a37266ece943042c21c4adc65d42a",
+      "rawAsrSha256": "ddbfdeb9820cf98a0868f7fe63bf3a1b8c3f3a0c4501d457d4d9d701c2144978",
+      "matchingCharacterCoverage": 0.9899,
+      "recognized": " 입력은 유한한 실수 라디안이라고 가정합니다. 파이와 이 파이를 상수로 둡니다. 표준 라이브러리의 리메인더로 한 바퀴의 배수를 제거합니다. 결과가 마이너스 파이이면 한 바퀴를 더해 플러스 파이로 옮깁니다. 선택한 끝점 규칙을 지킵니다. 제공된 원문 코드의 범위, 검사 부등호는 반대로 적혀 있습니다. 그대로 복사하지 말고 정정된 동작을 확인하세요. 보관할 때는 끝값 자체가 아니라 끝에서 시작을 뺀 차이를 감삽니다. 도 단위 숫자를 이 함수에 바로 넣으면 안 됩니다. 입력과 출력 단위를 함께 기록하세요.",
+      "normalizedDifferences": [
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "쌉",
+          "recognized": "삽"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Finite radian input, remainder removes full turns, -pi becomes +pi, source inequality correction, wrap the difference and do not pass degrees. 보간/보관 and 감쌉/감삽 spellings retained for listening."
+    },
+    {
+      "scene": "16",
+      "wavSha256": "e7537f151391944061de596d32a909e54327ba5ef08ae8b65d74f9aa87c655d3",
+      "rawAsrSha256": "421d5b02eb37029604dc68fd1d3b9c48444053516a4ad3f716ecb16e55bdace7",
+      "matchingCharacterCoverage": 0.98268,
+      "recognized": " 각도 차이를 잘 감싸도 세각을 따로 직선 보관한 경로가 항상 3차원에서 가장 짧은 회전은 아닙니다. 중간에 피치가 90도 근처로 가면 헤딩과 뱅크가 비슷한 축에 영향을 줍니다. 각 숫자가 일정한 속도로 바뀌어도 몸의 실제 회전 속도는 일정하지 않을 수 있습니다. 같은 시작과 끝 자세를 다른 오일러 표현으로 넣으면 중간 경로도 달라질 수 있습니다. 사람이 각도를 편집하는 화면에는 오일러 각이 편하지만 회전보관에서는 다른 표현을 함께 검토해야 합니다. 다음 편에서 쿼터니언을 배우고 그 다음 편에서 보관을 계산합니다. 쿼터니언도 단위 길이와 부호 규칙을 지켜야 합니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "삼",
+          "recognized": "3"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Separate Euler lerp is not always shortest or constant angular speed; pitch near90 and equivalent endpoint encodings can change paths. All claims and limits retained; 보간/보관 ASR spelling only."
+    },
+    {
+      "scene": "17",
+      "wavSha256": "7c2e9e028be6e5a5033ca1962fb4377692daad517ac48a0b16572741d500d3ee",
+      "rawAsrSha256": "62e9c40be7f11922fa55403069a0719445fcb458d6e59488e81bc2b0dcc2f060",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 몸이 방향을 바꾸고 구조물 곁을 지나가는 과정을 보세요. 처음과 마지막 화면 두 장만으로는 중간에 어느 쪽으로 얼마나 돌았는지 알기 어렵습니다. 회전 표현으로 끝 자세를 저장하는 일과 움직임의 경로를 제어하는 일은 서로 연결되지만 다릅니다. 자연스러운 카메라나 캐릭터 회전을 만들려면 중간 자세도 함께 설계해야 합니다. 세 축으로 나누는 대신 한 축을 골라 한 번에 도는 표현도 있습니다. 이번에는 축 자체를 자유롭게 골라 같은 회전을 더 간단하게 설명해보겠습니다.",
+      "normalizedDifferences": [],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Actual continuous body/camera observation distinguishes storing endpoints from designing intermediate paths. All paragraphs retained exactly in read-back."
+    },
+    {
+      "scene": "18",
+      "wavSha256": "f84b8589163594e2fa85c068f6da188b40c0e521e5263010e625d264f48d5fe8",
+      "rawAsrSha256": "0498e8410aeae60f50776f10c1c7924dc20feb8be5985b2238717075f498bec3",
+      "matchingCharacterCoverage": 0.97143,
+      "recognized": " 오일러의 회전 정리에 따르면 두 3차원 자세 사이의 변화는 적절한 한 축 주위의 회전으로 나타낼 수 있습니다. 축은 길이가 1인 단위벡터 n으로 회전량은 각도 세타로 기록합니다. 이것이 축 각 표현입니다. 예를 들어 축을 0, 1, 0으로 두고 90도 돌리면 양의 z 방향이 양의 x로 갑니다. 앞쪽 방향만 움직이는 것이 아니라 몸에 붙은 세 축 전체가 그 축을 중심으로 같이 돌아갑니다. 단위축은 세 성분을 쓰지만 길이 제약이 있습니다. 각도까지 4성분을 저장해도 자유도가 4개인 것은 아닙니다. 정해둔 한 축에서 회전량을 절반으로 만들려면 각도를 절반으로 하면 됩니다. 이미의 두 회전을 더하는 문제와는 다릅니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "삼",
+          "recognized": "3"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "엔",
+          "recognized": "n"
+        },
+        {
+          "expected": "네",
+          "recognized": "4"
+        },
+        {
+          "expected": "임의",
+          "recognized": "이미"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Euler rotation theorem, unit axis/angle, Y90 maps +Z to +X, all three axes rotate, four stored components versus three freedoms and fixed-axis halving all preserved. Latin n/digit read-back and 임의/이미 remain pronunciation notes."
+    },
+    {
+      "scene": "19",
+      "wavSha256": "da2f17846bbd2444a1c2aeae94ae8c5e8ebea23420ddd336b5381b5fc7960987",
+      "rawAsrSha256": "3d3982967093be8e5f8d3545c71791025a06af3fd6088240b354bc7f03ded451",
+      "matchingCharacterCoverage": 0.98729,
+      "recognized": " 축 벡터의 각도를 곱한 벡터 2, 즉 세타 n을 만들 수 있습니다. 회전벡터라고 부릅니다. 책에서는 이 표현을 지수사상이라고 부릅니다. 엄밀한 수학에서 지수사상은 이 벡터를 회전으로 보내는 연산의 이름입니다. 라디안을 쓰고 축이 0, 1, 0이며 각도가 파이의 절반이면 회전벡터는 0, 파이의 절반, 0입니다. 벡터의 길이에서 0 이상의 각도를 얻고 길이가 0보다 크면 정규화해서 축을 얻습니다. 0벡터는 회전이 없는 항등 자세입니다 이때 0으로 나누어 축을 만들면 안 됩니다 축과 각도의 부호를 동시에 바꿔도 같은 벡터가 됩니다 다만 최종 자세의 다른 중복까지 모두 없어지지는 않습니다",
+      "normalizedDifferences": [
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "엔",
+          "recognized": "n"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Rotation vector theta*n, book exponential-map naming versus strict map operation, radian example(0,pi/2,0), nonnegative magnitude, normalization only nonzero, identity zero and axis/angle sign aliases retained."
+    },
+    {
+      "scene": "20",
+      "wavSha256": "3b476cf07f14708ec3f29212ec7cea07a7838241f7cd956a8c29a547399f5028",
+      "rawAsrSha256": "0c554fcde3139af7db73cddf8a449a59e971a9ed124cf7818e14a1c3b3cdb4f4",
+      "matchingCharacterCoverage": 0.98521,
+      "recognized": " 이번에도 몸이 구조물 사이를 이동합니다. 화면에서 이동한 거리와 몸이 돌아간 양을 나눠보세요. 회전벡터는 공간에서 물체가 이동한 경로를 가리키는 화살표가 아닙니다. 그 방향은 회전축이고 길이는 선택한 단위의 회전각입니다. 카메라가 함께 움직임으로 화면의 기울기만으로 그 벡터를 정확하게 복원할 수는 없습니다. 실제 움직임을 이해할 때 위치, 벡터, 앞쪽 방향 벡터, 회전벡터의 뜻을 구분하는 것이 중요합니다. 관찰할 때는 몸의 중심을 점으로 몸통이 향하는 쪽을 화살표로 생각해보세요. 점이 이동하는 동안 팔선의 기울기도 바뀜으로 이동과 자세 변화를 따로 따라갈 수 있습니다. 발체 구간이 바뀌면 같은 자리에서 계속 돌고 있다고 가정하지 마세요. 회전벡터는 시작 자세에서 끝 자세로 가는 회전을 표현하며 그 사이 움직인 거리의 기록과는 다릅니다. 다음 그림에서는 같은 최종 자세를 만드는 서로 다른 회전벡터를 비교하겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "이므",
+          "recognized": "임으"
+        },
+        {
+          "expected": "뀌므",
+          "recognized": "뀜으"
+        },
+        {
+          "expected": "췌",
+          "recognized": "체"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Current expanded eight paragraphs preserve all original vector meanings plus center point/facing arrow/bank observation and separate excerpts versus translational history. Rotation-vector direction=axis and magnitude=angle retained. 움직이므로/움직임으로,바뀌므로/바뀜으로 and 발췌 spelling notes explicit."
+    },
+    {
+      "scene": "21",
+      "wavSha256": "830e936cde563f3efcfe18439cb8f6f6f8d20605efcf6bd758bb52934a595735",
+      "rawAsrSha256": "3b4e0f78d18bbc757a281efff426c1670ba38e3dbea607141a34cb35b94d398d",
+      "matchingCharacterCoverage": 0.99587,
+      "recognized": " 한 축 주위로 플러스 90도 돌린 결과와 마이너스 270도 돌린 결과는 같습니다. 각도를 길이로 표현하면 같은 축의 90도 벡터와 반대 축의 270도 벡터가 같은 끝 자세를 만듭니다. 두 벡터의 길이는 모두 360도보다 작습니다. 따라서 길이가 한 바퀴 미만이라는 조건만으로 유일하지 않습니다. 보통 회전각을 0부터 180도까지로 정하고 180도에서 축 부호를 고르는 별도 규칙을 둡니다. 180도에서는 축을 뒤집어도 같은 회전입니다. 이 경계에 중복과 불연속이 남습니다. 항등 자세에서는 각도가 0이므로 축이 무엇이든 결과가 같습니다. 회전벡터 0으로 다루면 축을 억지로 고를 필요가 없습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "영",
+          "recognized": "0"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full +90/-270 same endpoint, opposite-axis270 alias, both magnitudes under360 not unique, canonical0..180 with tie-axis rule and identity-zero handling preserved."
+    },
+    {
+      "scene": "22",
+      "wavSha256": "608f82e16b09132392b6f7a7e29888b177f67697bb603c4ce97c23371cccc51c",
+      "rawAsrSha256": "4e37e1526f6e20a4a613a8d1e37088c0746ee04750d8f06a89462115299d6cf6",
+      "matchingCharacterCoverage": 0.9959,
+      "recognized": " 회전벡터라는 이름 때문에 두 회전을 성분별로 더하고 싶을 수 있습니다. 유한한 회전에서는 보통 틀립니다. x축 90도 회전 뒤 y축 90도 회전은 두 회전벡터를 더해 한 번 도는 것과 다릅니다. 벡터더셈은 순서를 바꿔도 같습니다. 하지만 앞에서 본 회전은 순서를 바꾸면 자세가 달라집니다. 따라서 두 연산이 일반적으로 같을 수 없습니다. 합성은 회전 행렬이나 뒤에서 배울 쿼터니언 곱으로 계산합니다. 각도가 아주 작으면 합이 근사값이 될 수 있지만 유한한 각도에서 정확한 공식이라고 쓰면 안됩니다. 회전량 벡터와 순간적인 회전변화율 벡터는 용도가 다릅니다. 다음 장면 뒤에 각속도와도 구분하겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "덧",
+          "recognized": "더"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Finite rotation-vector addition fails noncommuting X90 thenY90, addition commutes, matrix/quaternion composition, small-angle approximation and amount/rate distinction preserved."
+    },
+    {
+      "scene": "23",
+      "wavSha256": "4a0b3be738c58d44f7e758d6f0273f1cc42b35cc62b8dcc2283b191bf9ef9bad",
+      "rawAsrSha256": "7c3f171b0eb3dd50439ac9b8fbfeac6698ec6ca266aedefe4311e3b1353e020f",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 몸이 계속 방향을 바꾸고 기울어지는 비행을 마지막으로 보겠습니다. 복잡한 움직임도 각 순간의 자세와 그 사이의 변화로 나눠 생각할 수 있습니다. 헤딩과 기울기가 동시에 바뀌는 듯 보여도 화면만 보고 내부에서 각도를 더한다고 결론 내릴 수는 없습니다. 수학 모델에서는 축 기준과 합성 순서를 정하고 결과를 확인해야 합니다. 회전벡터의 성분을 더하는 간단한 방법이 맞는지 작은 각도 근사인지 정확한 합성인지 구분하세요. 이제 회전량과 초당 회전량을 구분하고 배운 내용을 두 문제로 확인하겠습니다.",
+      "normalizedDifferences": [],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Actual flight changes/body camera observations, no internal angle-addition claim, exact versus small-angle composition and next rate/practice transition all paragraphs preserved."
+    },
+    {
+      "scene": "24",
+      "wavSha256": "04ba6d5b810af531409a0335af44e95670e9e27f154c3736dbeeb5cb1d1d4899",
+      "rawAsrSha256": "f14c24ff4b2d7390066292abc5817d84076ec642dc7ea4edf25b1c252d230848",
+      "matchingCharacterCoverage": 0.992,
+      "recognized": " 각속도 벡터의 방향은 순간적인 회전축이고 길이는 초당 라디안 같은 회전 변화율입니다. 초당 720도와 초당 1080도는 각각 두 바퀴와 세 바퀴입니다. 서로 다른 움직임입니다. 하지만 1초 뒤에 최종 자세만 보면 둘 다 시작 자세로 돌아옵니다. 끝 자세만으로 회전 이력을 구별할 수 없습니다. 여러 바퀴의 동작이 필요하면 누적 각도나 시간에 따른 각속도를 별도로 기록해야 합니다. 순간적인 각속도를 더할 때에도 같은 좌표계로 표현해야 합니다 몸체 기준과 월드 기준 벡터를 바로 더하면 안됩니다 이 단위와 좌표계 구분은 뒤에 원운동과 강체 역학에서 다시 이어집니다 지금은 자세, 회전량, 회전속도를 나눠 기억하세요",
+      "normalizedDifferences": [
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Instantaneous angular-velocity axis and radians/second,720 degrees versus1080 degrees(two versus three turns),same one-second endpoint, separate accumulated history, common coordinate frame and later dynamics connection all retained. 의/에 ASR spelling differences explicit."
+    },
+    {
+      "scene": "25",
+      "wavSha256": "7618571bcad6d74857d948fbe96cc41a1a92941d1805b57b9f53cb33065da27c",
+      "rawAsrSha256": "a51c1673da61d423f447a26ec9e38bbb8d969c2dfd126ca21743d99e73fd3f7d",
+      "matchingCharacterCoverage": 1.0,
+      "recognized": " 첫 문제입니다. 시작 헤딩이 170도, 끝 헤딩이 마이너스 170도일 때 짧은 차이는 얼마일까요? 그대로 빼면 마이너스 340도입니다. 한 바퀴를 더하면 플러스 20도가 됩니다. 따라서 중간 비율이 절반이면 180도를 거칩니다. 끝점 규칙까지 일관되게 적용하세요. 두 번째입니다. 회전벡터가 0, 파이의 절반, 0이고 단위가 라디안일 때 축과 각도는 무엇일까요? 길이는 파이의 절반, 즉 90도이고 축은 0, 1, 0입니다. 우리 오른손 규칙에서 앞쪽 Z는 양의 X로 갑니다 여기에 X축 90도 회전을 더 합성하려면 벡터 성분을 그냥 더하지 말고 어느 회전을 먼저 적용하는지부터 정해야 합니다",
+      "normalizedDifferences": [],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Both guided exercises preserved:170 to-170 shortest difference+20, midpoint180, rotation vector(0,pi/2,0) gives+Y axis90 and +Z to+X, further X90 composition requires order rather than vector addition. Exact read-back."
+    },
+    {
+      "scene": "26",
+      "wavSha256": "a33f3123059211cffde6d7f2aec57c89c8657add9afb97bfd342c09b27f42e2b",
+      "rawAsrSha256": "48d832a5e77e01ecefee1333d62150f9fed827ea951bdc4bc4562a1745448b66",
+      "matchingCharacterCoverage": 0.9881,
+      "recognized": " 오일러 각은 사람이 다루기 쉬운 세 숫자지만 축과 순서가 빠지면 뜻이 정해지지 않습니다. 짐벌락은 정해진 매개화에서 두 축이 겹치는 현상이며 물체의 회전 능력이 사라지는 것은 아닙니다. 축, 각과 회전벡터는 한 축 주위의 회전을 표현합니다. 단위와 영벡터, 중복표현, 합성의 한계를 함께 확인하세요. 다음 시간에는 쿼터니언이 어떻게 같은 회전을 네 성분으로 표현하는지 곱과 역회전을 실제 숫자로 계산해 보겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "0",
+          "recognized": "영"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Three Euler numbers require axes/order. Gimbal lock is the parameterization singularity, not loss of physical rotation. Axis-angle/vector units,zero/aliases/composition limits and next quaternion calculation preview all retained. 영-vector numeral spelling only."
+    }
+  ],
+  "pendingScenes": [],
+  "method": "Each full current unnormalized scene read-back was directly reviewed against script, numbers/signs, source coverage and independently verified mathematical examples. Retake04 restored its omitted axis claim. ASR spelling differences remain explicit; no human full-listening approval is implied."
+}

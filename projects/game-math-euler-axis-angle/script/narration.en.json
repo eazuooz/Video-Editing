@@ -1,0 +1,317 @@
+{
+  "title": "Game Math Part 2 · 3D Rotation 2: Euler Angles and Axis–Angle",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "이번 강의에서 배울 것",
+      "lines": [
+        "Why do the same angles produce different orientations when their order changes?",
+        "We will observe flight and distinguish the three Euler rotations and their moving axes.",
+        "Then we will change the order and examine gimbal lock and angle interpolation.",
+        "Finally, we will describe a rotation with one axis and angle, and solve two problems about rotation vectors and their limits."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "비행 자세를 세 가지 변화로 보기",
+      "lines": [
+        "The body passes between obstacles in Superflight. Start by watching where its torso points.",
+        "Distinguish turning sideways from pointing upward or downward.",
+        "The line joining the arms also tilts. Connect this to twisting around the body forward direction.",
+        "We can organize these changes using heading, pitch, and bank.",
+        "Screen left or up alone cannot determine angle signs because the camera also moves.",
+        "We will define the axes and rotation rules in our own diagram without guessing the game implementation."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "오일러 각은 순서가 있는 세 회전",
+      "lines": [
+        "Euler angles represent orientation with three numbers, together with a defined axis convention and order.",
+        "We retain the right-hand rule, column vectors, and a local-to-world rotation matrix from the previous lecture.",
+        "Heading uses y, pitch uses the moving x axis, and bank uses the moving z axis.",
+        "This is the Y-X-Z order with three different axes. Arbitrary axis choices are not all equivalent.",
+        "The book uses a left-handed frame and row vectors; converting its formulas requires checking axes and signs as well as transposition.",
+        "Positive rotation follows the curled fingers when the right thumb points along the positive axis."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "몸에 붙은 축도 함께 돌아간다",
+      "lines": [
+        "Initially the body and world axes are aligned. Apply heading around y first.",
+        "The attached x axis moves with the body. Apply pitch around this new x axis.",
+        "Apply bank around the body z axis after the first two rotations: its forward axis.",
+        "Rotations that follow the body axes are called intrinsic rotations.",
+        "With our signs, positive pitch sends forward z toward negative y. The name alone does not specify the sign.",
+        "Think of heading and pitch as setting the forward direction, and bank as twisting around that direction."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "몸체 축과 화면 축은 다릅니다",
+      "lines": [
+        "Watch the body turn and tilt again. Its arms and torso help us imagine attached directions.",
+        "Attached axes rotate with the body. Screen down is not always body down.",
+        "Rotations measured against the structures and rotations measured against attached axes use different references.",
+        "The following camera also changes the tilt visible on screen.",
+        "A variable named pitch therefore does not specify enough by itself.",
+        "Imagine a short arrow along the torso. Considering the direction perpendicular to the arm line as well helps reveal the twist that a forward direction alone misses.",
+        "Do not read separate excerpts as one continuous rotation. Observe how attached axes change within each excerpt before comparing them with a fixed world frame.",
+        "Writing down the frame and axis makes it easier to check which axis the next rotation uses."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "고정축에서는 순서를 뒤집는다",
+      "lines": [
+        "Another route to the same orientation uses axes fixed in the world. These are extrinsic rotations.",
+        "Intrinsic heading-pitch-bank is equivalent to extrinsic bank-pitch-heading in reverse order.",
+        "For column vectors, the product is the y rotation, x rotation, and z rotation written from left to right.",
+        "Matrices act on the vector from the right, so the fixed z rotation acts first.",
+        "The names yaw, pitch, and roll are also common, but check whether yaw uses fixed vertical or a body axis.",
+        "Intrinsic Y-X-Z and extrinsic Z-X-Y are two descriptions of the same final matrix here."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "90도 두 번도 순서에 따라 다르다",
+      "lines": [
+        "Start with forward vector zero, zero, one, and use ninety-degree rotations about fixed x and y.",
+        "Apply the x rotation first. Forward points along negative y.",
+        "The following y rotation leaves a vector on the y axis unchanged, giving zero, minus one, zero.",
+        "Now apply the y rotation first. Forward points along positive x.",
+        "The following x rotation leaves that direction unchanged, giving one, zero, zero.",
+        "The angles are identical but the results differ. Three-dimensional rotations generally do not commute."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "방향이 바뀐 뒤 기울기를 보세요",
+      "lines": [
+        "Watch the arms tilt after the body turns between structures.",
+        "When forward changes, the axis of a forward twist points in a different world direction.",
+        "Distinguish rotating around an original fixed axis from rotating around an already moved body axis.",
+        "Order and axis reference therefore matter even for identical rotation amounts.",
+        "We are not measuring exact angles from these pixels; observe that attached directions keep changing.",
+        "Next we will see why three intuitive angles can describe the same orientation in several ways."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "같은 자세를 여러 각도로 표현한다",
+      "lines": [
+        "Euler angles are easy for people to read and edit, and require only three real components.",
+        "Heading zero and three hundred sixty degrees describe the same orientation: an extra full turn preserves the endpoint.",
+        "For our order, heading zero, pitch one hundred thirty-five, and bank zero have an alternative representation.",
+        "Heading one hundred eighty, pitch forty-five, and bank one hundred eighty give exactly the same orientation.",
+        "A common canonical range is minus one hundred eighty exclusive to plus one hundred eighty inclusive for heading and bank, and minus ninety to ninety for pitch.",
+        "At pitch plus or minus ninety, we need an additional rule such as setting bank to zero."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "짐벌락: 두 회전축이 겹치는 순간",
+      "lines": [
+        "Tilt around body x until pitch reaches positive ninety degrees.",
+        "The final body z axis used for bank lies on the same line as the initial world y axis used for heading.",
+        "At positive ninety under our signs, the positive directions are opposite along that line.",
+        "Two controls that previously changed distinct axes now affect the same rotational direction.",
+        "The Euler parameter changes lose one independent instantaneous rotation direction. This is gimbal lock.",
+        "The object does not physically lose its ability to rotate; this coordinate parameterization becomes singular."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "화면에서 세운 자세와 짐벌락은 다릅니다",
+      "lines": [
+        "Observe steep tilts and changes in where the body points during flight.",
+        "An object appearing vertical on screen is not enough to diagnose gimbal lock.",
+        "The camera affects that appearance, and the pixels do not reveal the game rotation representation.",
+        "This example illustrates the need for natural control through large orientation changes.",
+        "Gimbal lock must be checked using the overlapping-axis condition for a defined Euler order.",
+        "Connect the question raised by real motion to its mathematical model while keeping their evidence distinct."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "90도에서는 헤딩과 뱅크가 합쳐진다",
+      "lines": [
+        "For our Y-X-Z order at positive ninety pitch, the orientation depends on heading minus bank.",
+        "Try heading thirty, pitch ninety, and bank ten degrees. Their difference is twenty.",
+        "Heading twenty, pitch ninety, and bank zero give the same matrix. The two body frames coincide.",
+        "At negative ninety pitch, our convention instead combines heading plus bank.",
+        "All orientations remain representable, but nearby orientation changes can cause large jumps in individual angles.",
+        "Choosing bank zero at the singular pose selects a representation without removing boundary discontinuities or interpolation problems."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "각도 보간은 짧은 차이를 골라야 한다",
+      "lines": [
+        "Suppose heading changes from minus one hundred seventy to plus one hundred seventy degrees.",
+        "Subtracting start from end gives positive three hundred forty, almost a full turn.",
+        "On the circle the directions are only twenty degrees apart. Negative twenty is the short route.",
+        "wrapPi removes full turns from the difference. We choose the interval greater than minus pi and at most pi.",
+        "Multiply that wrapped difference by the interpolation fraction and add it to the start angle for the short route on this one axis.",
+        "Exactly one hundred eighty degrees apart, both routes are equally long. Apply a consistent endpoint rule."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "자연스러운 회전 경로가 필요합니다",
+      "lines": [
+        "Watch the body change direction near obstacles. A correct endpoint is not enough.",
+        "Viewers and players also notice the route taken to reach that endpoint.",
+        "An unnecessary near-full turn between nearby directions would feel awkward.",
+        "Wrapping the angular difference helps avoid that long route on one axis.",
+        "This does not claim the game uses that function; it illustrates why natural control matters.",
+        "Interpolating three angles separately still has additional problems. We will examine them after the code."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "라디안과 끝점까지 정한 wrap 코드",
+      "lines": [
+        "Assume finite real-valued radians and define pi and two pi as constants.",
+        "Use the standard remainder function to remove complete turns.",
+        "Map a result of minus pi to plus pi by adding a full turn, matching our endpoint convention.",
+        "The supplied original code has its range-test inequality reversed. Check the corrected behavior instead of copying it unchanged.",
+        "For interpolation, wrap end minus start, rather than wrapping only the endpoint.",
+        "Do not pass degree values directly to this function. Record both input and output units."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "세 각을 따로 보간하면 남는 문제",
+      "lines": [
+        "Even after wrapping differences, linear interpolation of three separate angles is not always the shortest three-dimensional rotation.",
+        "Near ninety pitch, heading and bank affect nearly the same axis.",
+        "Constant rates of change in each number need not produce constant physical angular speed.",
+        "Alternative Euler representations of the same endpoints can also produce different intermediate routes.",
+        "Euler angles are convenient for editing, but rotation interpolation calls for considering other representations.",
+        "The next lectures introduce quaternions and interpolation. Quaternions still require unit-length and sign conventions."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "끝 자세와 이동 과정은 따로 봅니다",
+      "lines": [
+        "Watch the body change direction and pass beside structures.",
+        "Two endpoint images cannot reveal the direction or total amount of turning in between.",
+        "Storing an endpoint orientation and controlling its motion path are related but different tasks.",
+        "Natural camera or character rotation also requires designing intermediate orientations.",
+        "Another representation selects one axis and rotates around it once.",
+        "Let us choose that axis freely and describe the rotation in a simpler way."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "축 하나와 각도 하나로 표현",
+      "lines": [
+        "Euler rotation theorem says a change between two three-dimensional orientations can be expressed as rotation about one suitable axis.",
+        "Store a unit axis n and angle theta. This is the axis-angle representation.",
+        "For example, axis zero, one, zero and ninety degrees send positive z toward positive x.",
+        "The entire attached frame rotates around that axis, not just its forward vector.",
+        "The axis has three components with a unit-length constraint. Four stored components do not mean four degrees of freedom.",
+        "For a selected axis, halving the angle halves the rotation amount. This is different from combining two arbitrary rotations."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "회전벡터의 길이가 각도",
+      "lines": [
+        "Multiply the axis by the angle to obtain e equals theta n, a rotation vector.",
+        "The book calls this an exponential-map representation. In formal mathematics, the exponential map is the operation sending this vector to a rotation.",
+        "Using radians, axis zero, one, zero and angle pi over two give vector zero, pi over two, zero.",
+        "Its length gives a nonnegative angle; for nonzero length, normalization gives the axis.",
+        "The zero vector represents identity. Do not divide by zero to recover an axis there.",
+        "Negating both axis and angle gives the same vector, but does not eliminate every alternative representation of the final orientation."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "움직인 거리와 돌린 양을 구분하세요",
+      "lines": [
+        "The body moves between structures again. Distinguish travel distance from the amount of turning.",
+        "A rotation vector is not an arrow tracing the object translation through space.",
+        "Its direction specifies the rotation axis, and its length specifies the angle in the chosen units.",
+        "A moving camera prevents exact reconstruction of that vector from apparent screen tilt alone.",
+        "Keep position vectors, forward direction vectors, and rotation vectors conceptually distinct.",
+        "Imagine the body center as a point and its facing as an arrow. As the point moves, the arm line also tilts, so you can follow translation and orientation separately.",
+        "A cut does not show uninterrupted rotation at one location. A rotation vector describes a rotation from the starting to the final orientation; it is different from a record of distance traveled.",
+        "The next diagram compares different rotation vectors that yield the same final orientation."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "한 바퀴 미만이어도 표현은 중복된다",
+      "lines": [
+        "Positive ninety degrees and negative two hundred seventy degrees around one axis have the same endpoint.",
+        "With nonnegative angle lengths, a ninety-degree vector along an axis and a two-hundred-seventy-degree vector along its opposite axis yield the same orientation.",
+        "Both lengths are below a full turn, so that bound alone does not make the representation unique.",
+        "A common choice limits the angle to zero through one hundred eighty and adds an axis-sign rule at one hundred eighty.",
+        "At one hundred eighty, opposite axes still yield the same rotation. Boundary duplication and discontinuity remain.",
+        "At identity the angle is zero and every axis gives the same result. The zero rotation vector avoids choosing an arbitrary axis."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "회전벡터는 보통 더할 수 없다",
+      "lines": [
+        "The name rotation vector may tempt us to add components. That generally fails for finite rotations.",
+        "An x ninety-degree rotation followed by y ninety degrees differs from one rotation using their summed vectors.",
+        "Vector addition commutes, whereas the rotations we observed change the result when reordered.",
+        "These operations therefore cannot generally be equal. Compose using rotation matrices or the quaternion product introduced later.",
+        "For very small angles, addition may provide an approximation, but it is not an exact finite-angle formula.",
+        "A vector describing rotation amount and a vector describing instantaneous rotational rate serve different purposes. We will distinguish angular velocity next."
+      ]
+    },
+    {
+      "id": "23",
+      "title": "세 축의 변화가 섞인 실제 움직임",
+      "lines": [
+        "Watch the body keep changing direction and tilt one last time.",
+        "Even complex motion can be considered as orientations at each instant and changes between them.",
+        "Simultaneous-looking changes in heading and tilt do not reveal whether the implementation adds angles.",
+        "Our mathematical model must define axis references and composition order before checking the result.",
+        "Distinguish component addition, a small-angle approximation, and exact rotation composition.",
+        "Now we will separate rotation amount from rotation per second and check the lesson with two problems."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "각속도와 여러 바퀴의 회전 기록",
+      "lines": [
+        "An angular velocity vector points along an instantaneous rotation axis, and its magnitude is a rate such as radians per second.",
+        "Seven hundred twenty and one thousand eighty degrees per second are two and three turns: different motions.",
+        "After one second, however, both endpoint orientations match the start. Endpoint orientation cannot distinguish their histories.",
+        "Track accumulated angle or time-varying angular velocity separately when multiple turns matter.",
+        "Instantaneous angular velocities must use a common frame before addition. Do not directly add body-frame and world-frame components.",
+        "These unit and frame distinctions return in circular motion and rigid-body dynamics. Keep orientation, rotation amount, and rotation rate separate."
+      ]
+    },
+    {
+      "id": "25",
+      "title": "직접 풀어 보는 두 문제",
+      "lines": [
+        "First problem: from heading one hundred seventy to minus one hundred seventy degrees, what is the short difference?",
+        "Direct subtraction gives minus three hundred forty. Add a full turn to obtain positive twenty.",
+        "At halfway we pass one hundred eighty degrees. Apply the chosen endpoint convention consistently.",
+        "Second problem: for rotation vector zero, pi over two, zero in radians, what are the axis and angle?",
+        "The length is pi over two, or ninety degrees, and the axis is zero, one, zero. Our right-hand rule sends forward z toward positive x.",
+        "To additionally compose an x ninety-degree rotation, do not simply add vector components: decide the application order first."
+      ]
+    },
+    {
+      "id": "26",
+      "title": "축·순서·단위를 함께 기억하세요",
+      "lines": [
+        "Euler angles are three convenient numbers for people, but their meaning requires defined axes and order.",
+        "Gimbal lock aligns two axes in a chosen parameterization; it does not remove the object ability to rotate.",
+        "Axis-angle and rotation vectors describe rotation about one axis. Check units, zero vectors, alternative representations, and composition limits.",
+        "Next we will represent rotations with four quaternion components and calculate products and inverses with actual numbers."
+      ]
+    }
+  ]
+}
