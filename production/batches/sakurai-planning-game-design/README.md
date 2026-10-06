@@ -282,3 +282,5 @@ Continuous approvedNimbus mix has been built and measured at−16.04LUFS/−1.98
 실제일일썸네일한도는 비차단후속으로 보존하고 thumbnailSaved/fullSettingsVerified=false다. 사용자재개후에만 정상UI재시도한다. 사람전체청취/발음·공개권리/Nimbus·잘린회원핸들·외부백업·자동더빙·optionalCC전파·비공개고정댓글은pending이다. 썸네일1/최소게시증거4만exactpath/SHA256로Git허용하며 새QA/소스이미지·미디어는0이다.
 
 사용자의 ‘논문 실험 먼저 진행해야 해서 이것까지만 완료되면 일단 정지해줘~’에 따라 현재편 선택Git전달 후 제작을 정지한다. 자동화24는 실제PAUSED며 다음10queued를 시작하지 않는다. 현재13제작/수집/비공개·12전체게시설정/1썸네일후속이며 Git은 실제후속검증기록을 기준으로 완료한다. 논문실험·GPU_TTS_HOLD·외부작업/staging을 보존한다.
+
+실제 제작 전달 cb751d5197e9e4bba7efdb5e9bb3078638bb9f06을 origin/main에 일반 푸시하고 local/remote SHA 일치를 확인했다. 명시618경로·최종blob/외부index항목동일·필수이미지5/새QA이미지0/미디어0이며13편 제작Git·비공개전달/12전체게시설정/1썸네일후속·10queued 정지다. 자동화24는PAUSED, 현재검수서버2개는정확명령줄과생성시각을 대조 후 종료했고 논문실험/GPU보류/외부작업을 보존했다. 증거 커밋의 미래 자체SHA는 기록하지 않는다.

@@ -50,7 +50,9 @@ def captured(parent,p):
         work_text=work.decode('utf-8-sig').replace('\r\n','\n')
         assert work_text.startswith(base_text),'Shared document contains another edit: '+p
         suffix=work_text[len(base_text):]
-        assert '## 2026-10-07 familiar-game-rules' in suffix
+        delivered=read(ROOT/'projects/familiar-game-rules/publishing/youtube-upload.json').get('gitDelivery',{}).get('productionCommit')
+        assert ('## 2026-10-07 familiar-game-rules' in suffix or
+                (delivered and suffix.lstrip().startswith('실제 제작 전달 '+delivered) and '자동화24는PAUSED' in suffix))
         return base.rstrip(b'\r\n')+suffix.encode('utf-8')
     return (ROOT/p).read_bytes()
 
