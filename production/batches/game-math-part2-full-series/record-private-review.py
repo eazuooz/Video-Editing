@@ -59,7 +59,21 @@ assert video_id in details and f'{slug}.captioned.mp4' in details and 'text 비�
 assert 'button (disabled) 저장' in details
 checks = proof('studio-checks-complete.ax.txt')
 compact = re.sub(r'\s+', '', checks)
-assert '저작권검사완료발견된문제없음광고적합성검사완료발견된문제없음' in compact, 'Actual automatic checks not both complete'
+legacy_completed_checks = '저작권검사완료발견된문제없음광고적합성검사완료발견된문제없음' in compact
+if not legacy_completed_checks:
+    # The current Studio content list combines checks under "Notices". Accept
+    # that actual completed state only with fresh, video-specific copyright
+    # and active monetization pages. Never synthesize an old wizard snapshot.
+    assert video_id in checks and u['metadata']['title'] in checks
+    assert 'text 알림 없음' in checks and '검토중' not in compact
+    copyright_state = proof('studio-copyright-no-claims.ax.txt')
+    assert video_id in copyright_state
+    assert '동영상에서 소유권 주장이 발견되지 않았습니다' in copyright_state
+    assert '동영상에서 저작권 보호 콘텐츠가 발견되지 않았습니다.' in copyright_state
+    assert '수익에 영향을 미치지 않음' in copyright_state
+    completed_monet = proof('studio-monetization-saved.ax.txt')
+    assert video_id in completed_monet and 'text 사용' in completed_monet
+    assert '검사 중' not in completed_monet and 'button (disabled) 저장' in completed_monet
 watch = proof('uploaded-cc-off.ax.txt')
 assert video_id in watch and u['metadata']['title'] in watch
 assert any('checkbox' in line and '자막' in line and 'Value: 0' in line for line in watch.splitlines())
