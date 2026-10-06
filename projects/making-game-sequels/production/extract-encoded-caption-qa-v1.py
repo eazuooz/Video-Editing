@@ -6,7 +6,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[3]
 BASE = Path(__file__).resolve().parent
-W = BASE / 'final-v1'
+work_index = sys.argv.index('--work-directory') if '--work-directory' in sys.argv else None
+W = BASE / (sys.argv[work_index + 1] if work_index is not None else 'final-v1')
+assert W.parent == BASE and W.name in ('final-v1', 'final-v2')
 DEST = W / 'encoded-caption-qa-local-v1'
 FF = 'C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe'
 read = lambda p: json.loads(p.read_text(encoding='utf-8-sig'))
