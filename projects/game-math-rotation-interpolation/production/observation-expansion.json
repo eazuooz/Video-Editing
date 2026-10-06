@@ -1,0 +1,249 @@
+{
+  "reviewedAt": "2026-10-05T13:53:28.431478+00:00",
+  "lessonDataBeforeSha256": "e37907230032b5abc11d28db26b66797e05d8ff4d7257f3037d6aa3755187f9a",
+  "lessonDataAfterSha256": "43a0ab95cc7df2f80e959551735bc7539ba93248aacafc59f246d37deb514655",
+  "preserveExplanationNarration": true,
+  "preserveAllOriginalActualNarration": true,
+  "changes": [
+    {
+      "scene": "02",
+      "classification": "actual-existing-game",
+      "originalParagraphsPreserved": {
+        "ko": [
+          "포르자 호라이즌 사에서 자동차가 굽은 길을 달리는 장면입니다. 차체가 향하는 쪽과 뒤따르는 카메라를 따로 보세요.",
+          "처음과 끝 방향만 맞아도 중간에 갑자기 돌아가면 움직임이 어색할 수 있습니다.",
+          "차체의 앞쪽, 길의 굽음, 배경이 움직이는 흐름을 비교해 봅니다.",
+          "이 화면으로 게임이 어떤 보간 함수를 썼는지는 알 수 없습니다. 자연스러운 중간 자세가 필요한 이유를 관찰합니다.",
+          "다음 그림에서는 위치와 카메라를 고정하고, 회전만 바꾸어 보겠습니다."
+        ],
+        "en": [
+          "This is driving on a bend in Forza Horizon4. Read the car facing separately from the following camera.",
+          "Matching the first and last directions does not prevent an awkward sudden turn between them.",
+          "Compare the front of the car, the bend and the moving background.",
+          "The footage does not reveal which interpolation function the game uses. It shows why intermediate orientations matter.",
+          "Our next diagram will hold position and camera fixed and change only orientation."
+        ]
+      },
+      "insertedParagraphs": {
+        "ko": [
+          "차가 가까워지거나 작아지는 모습은 카메라와 거리의 영향도 받습니다. 앞쪽이 돌아가는 변화부터 따로 따라가면, 위치와 회전을 섞어 읽는 실수를 줄일 수 있습니다."
+        ],
+        "en": [
+          "Changes in apparent car size also involve camera and distance. Following its facing separately helps avoid mixing translation with rotation."
+        ]
+      },
+      "reason": "Retain full explanations and add concept-matched observation narration to meet measured40:60 without long silent gaps."
+    },
+    {
+      "scene": "05",
+      "classification": "actual-existing-game",
+      "originalParagraphsPreserved": {
+        "ko": [
+          "차가 다음 굽은 길을 통과하는 동안 몸체의 앞쪽을 따라가 보세요.",
+          "한 장의 끝 화면만으로는 짧게 돌았는지, 한 바퀴를 더 돌았는지 구별하기 어렵습니다.",
+          "입력된 두 자세만 잇는 보간은 그 사이의 경로를 선택합니다. 이전에 몇 바퀴 돌았는지까지 저장하지는 않습니다.",
+          "자동차가 길을 따라 움직이는 위치 보간과 몸이 돌아가는 자세 보간도 서로 다른 문제입니다.",
+          "이제 단위 구면의 호가 자세 변화와 어떻게 연결되는지 살펴보겠습니다."
+        ],
+        "en": [
+          "Track the car facing as it follows the next bend.",
+          "An endpoint image alone does not tell whether the turn was short or included an extra revolution.",
+          "Interpolation between two orientations chooses a path without storing the number of earlier revolutions.",
+          "Interpolating a position along the road differs from interpolating orientation.",
+          "Now we will relate an arc on the unit sphere to the orientation change."
+        ]
+      },
+      "insertedParagraphs": {
+        "ko": [
+          "앞쪽 방향이 비슷해진 두 순간을 골라도, 그 사이 얼마나 돌아왔는지는 움직임을 계속 봐야 알 수 있습니다. 끝 자세와 시간에 따른 회전 이력을 나눠 기억하세요."
+        ],
+        "en": [
+          "Even when two moments have similar facing, the intervening turn requires observing the motion. Distinguish endpoint orientation from rotation history over time."
+        ]
+      },
+      "reason": "Retain full explanations and add concept-matched observation narration to meet measured40:60 without long silent gaps."
+    },
+    {
+      "scene": "08",
+      "classification": "actual-existing-game",
+      "originalParagraphsPreserved": {
+        "ko": [
+          "다른 주행 구간에서도 차체 앞쪽과 배경의 움직임을 나누어 보세요.",
+          "두 발췌 구간의 편집 컷은 계산한 중간 자세가 아닙니다. 각 구간 안에서 이어지는 실제 움직임을 관찰합니다.",
+          "코드에서는 시작과 끝 사이의 티 값을 여러 번 바꾸어 중간 회전을 만듭니다.",
+          "다음 계산에서는 카메라와 위치를 고정합니다. 구십 도 회전의 사분의 일과 절반이 얼마나 도는지 확인해 봅시다."
+        ],
+        "en": [
+          "In these other driving intervals, separate car facing from background motion.",
+          "The edit between excerpts is not a computed intermediate pose. Observe continuous motion within each excerpt.",
+          "Code produces intermediate rotations by changing t between the endpoints.",
+          "Our calculation holds camera and position fixed and checks the quarter and halfway poses of a ninety-degree turn."
+        ]
+      },
+      "insertedParagraphs": {
+        "ko": [
+          "같은 차체에서도 앞쪽을 나타내는 선과 위쪽을 나타내는 선을 함께 생각해 보세요. 한 방향만 보면 몸체의 비틀림을 놓칠 수 있습니다.",
+          "편집 컷 앞뒤의 위치와 카메라는 달라질 수 있습니다. 이어지는 구간 안의 자세 변화를 관찰한 뒤, 고정된 조건의 다음 계산과 연결합니다."
+        ],
+        "en": [
+          "Imagine both a forward line and an up line on the car. A single direction can miss its twist.",
+          "A cut can change location and camera. Observe continuous pose changes within each excerpt before connecting them to the next fixed-condition calculation."
+        ]
+      },
+      "reason": "Retain full explanations and add concept-matched observation narration to meet measured40:60 without long silent gaps."
+    },
+    {
+      "scene": "11",
+      "classification": "actual-existing-game",
+      "originalParagraphsPreserved": {
+        "ko": [
+          "자동차의 주행 속도가 바뀌어도 자세가 돌아가는 속도는 별개의 값입니다.",
+          "길을 얼마나 빨리 지나는지와 차체가 얼마만큼 방향을 바꾸는지를 따로 보세요.",
+          "화면의 카메라까지 움직이므로 이 영상만으로 정확한 각속도를 측정한 것은 아닙니다.",
+          "앞의 고정된 축 계산에서는 같은 시간 간격의 회전각을 비교할 수 있었습니다. 시간 함수를 바꾸면 그 속도도 달라집니다."
+        ],
+        "en": [
+          "Driving speed and angular speed are separate quantities.",
+          "Observe distance travelled and change in car facing separately.",
+          "The camera also moves, so this footage is not a measurement of exact angular velocity.",
+          "Our fixed-axis calculation can compare turn angles over equal time intervals. Changing the time function changes the speed."
+        ]
+      },
+      "insertedParagraphs": {
+        "ko": [
+          "속도계의 숫자는 차가 이동하는 속도이며, 회전의 각속도를 그대로 표시한 값은 아닙니다. 서로 다른 단위와 측정 대상을 구분하세요.",
+          "카메라가 크게 돌았다고 차체도 같은 각도로 돌았다고 읽지는 마세요. 차체와 길의 관계를 먼저 관찰해야 자세 변화를 따로 볼 수 있습니다."
+        ],
+        "en": [
+          "The speedometer reports travel speed, not the angular velocity of orientation. Keep units and measured quantities distinct.",
+          "A large camera turn does not imply the same car rotation. Observe car and road together to separate pose changes."
+        ]
+      },
+      "reason": "Retain full explanations and add concept-matched observation narration to meet measured40:60 without long silent gaps."
+    },
+    {
+      "scene": "14",
+      "classification": "actual-existing-game",
+      "originalParagraphsPreserved": {
+        "ko": [
+          "라이더스 리퍼블릭에서 윙슈트로 산을 내려오는 장면입니다. 팔과 몸통이 기울어지는 모습을 보세요.",
+          "위치는 계속 이동하지만 앞쪽과 위쪽 방향도 함께 바뀝니다. 한 화면의 방향 화살표만으로 전체 자세를 알 수는 없습니다.",
+          "목적지에 도착한 자세만 저장한다고 공중에서 지난 모든 회전이 남는 것은 아닙니다.",
+          "카메라가 따라 움직인 영향도 나누어 보세요. 내부 쿼터니언이나 보간 코드를 확인한 영상은 아닙니다.",
+          "이제 각 작업에 알맞은 회전 표현을 정리하고 서로 바꾸어 보겠습니다."
+        ],
+        "en": [
+          "This is wingsuit flight down a mountain in Riders Republic. Observe the bank of the arms and body.",
+          "Position continues changing while facing and up directions change too. One facing arrow does not capture the whole orientation.",
+          "Storing the arrival orientation does not preserve every rotation made along the flight.",
+          "Separate the following camera motion too. This footage does not expose internal quaternion or interpolation code.",
+          "We will now choose a suitable representation for each task and convert between them."
+        ]
+      },
+      "insertedParagraphs": {
+        "ko": [
+          "장비가 달라진 발췌에서도 몸통이 향하는 쪽과 몸이 기울어지는 쪽을 나눠 봅니다. 몸에 붙은 앞쪽과 위쪽은 자세를 읽는 기준입니다.",
+          "발췌 사이의 컷과 되감기 화면을 연속 동작으로 연결하지 않습니다. 선택한 각 구간 안에서 실제 몸의 움직임을 보고, 같은 기준의 세 축을 생각해 보세요."
+        ],
+        "en": [
+          "With different equipment too, distinguish torso facing from body bank. Attached forward and up directions provide a frame for reading orientation.",
+          "Do not connect cuts or rewind screens into continuous motion. We selected actual action within separate excerpts; imagine the three attached axes in each."
+        ]
+      },
+      "reason": "Retain full explanations and add concept-matched observation narration to meet measured40:60 without long silent gaps."
+    },
+    {
+      "scene": "17",
+      "classification": "actual-existing-game",
+      "originalParagraphsPreserved": {
+        "ko": [
+          "비행 장면에서 몸이 옆으로 기울고 돌아가는 순간을 보세요. 화면 위쪽과 몸체 위쪽을 구별합니다.",
+          "발췌 구간 사이에는 장비가 바뀌는 편집 컷이 있습니다. 그 컷을 같은 회전의 연속이라고 읽지는 마세요.",
+          "각 구간 안에서는 몸에 붙인 축이 어떤 방향을 향하는지, 카메라가 어떻게 따라오는지 관찰합니다.",
+          "행렬로 바꾸어도 쿼터니언으로 바꾸어도 같은 기준의 같은 자세를 나타내야 합니다. 다음 그림에서 그 관계를 계산합니다."
+        ],
+        "en": [
+          "Watch the body bank and turn during flight. Distinguish screen up from body up.",
+          "Equipment changes across edits between these excerpts; those cuts are not one continuous rotation.",
+          "Within each excerpt, observe the attached body axes and the following camera.",
+          "A matrix and a quaternion should describe the same pose in the same frame. Our next diagram calculates that relationship."
+        ]
+      },
+      "insertedParagraphs": {
+        "ko": [
+          "몸에 붙은 축을 다른 형식으로 기록해도 물체가 갑자기 돌아서는 안 됩니다. 표현의 변환과 실제로 새 회전을 적용하는 연산을 구분하세요.",
+          "같은 자세인지 비교할 때는 각 숫자가 똑같은지만 검사하지 않습니다. 그 값으로 만든 세 축이 같은 기준 공간에서 일치하는지를 확인합니다."
+        ],
+        "en": [
+          "Changing how attached axes are represented must not rotate the object. Distinguish converting a representation from applying a new rotation.",
+          "Equivalent pose does not require identical components. Compare the three resulting axes in the same coordinate frame."
+        ]
+      },
+      "reason": "Retain full explanations and add concept-matched observation narration to meet measured40:60 without long silent gaps."
+    },
+    {
+      "scene": "20",
+      "classification": "actual-existing-game",
+      "originalParagraphsPreserved": {
+        "ko": [
+          "다시 차체와 길의 기울기를 보세요. 화면에 보이는 같은 자세를 행렬이나 쿼터니언으로 기록할 수 있습니다.",
+          "표현을 바꾼다고 위치나 속도가 자동으로 바뀌는 것은 아닙니다. 입력 기준과 출력 기준도 유지해야 합니다.",
+          "이 주행 영상에서 실제 저장값을 읽은 것은 아닙니다. 다음 계산의 세 축이 같은 자세를 나타내는지 확인할 준비입니다.",
+          "특히 반 바퀴 근처에서도 변환이 무너지지 않는지 보겠습니다."
+        ],
+        "en": [
+          "Observe car and road bank again. A matrix or a quaternion can describe the same visible pose.",
+          "Changing representation does not automatically change position or speed, and must preserve the input/output frames.",
+          "We have not read stored values from the game. The footage prepares us to check equivalent axes in our calculation.",
+          "We will check that conversion remains valid near a half-turn."
+        ]
+      },
+      "insertedParagraphs": {
+        "ko": [
+          "몸체의 앞쪽만 일치하고 위쪽이 다르면 같은 전체 자세가 아닐 수 있습니다. 차체의 기울기까지 함께 따라가며 앞쪽과 위쪽을 비교해 보세요.",
+          "수학에서는 저장된 회전으로 기준축을 변환해 비교할 수 있습니다. 화면만 보고 숨은 숫자를 추측하는 대신, 다음의 독립된 계산에서 이를 확인하겠습니다."
+        ],
+        "en": [
+          "Matching forward directions alone can still leave different up directions. Follow the bank as well as facing.",
+          "Mathematically we can transform basis axes using stored rotations. Instead of inferring hidden values from pixels, we verify them in the next independent calculation."
+        ]
+      },
+      "reason": "Retain full explanations and add concept-matched observation narration to meet measured40:60 without long silent gaps."
+    },
+    {
+      "scene": "23",
+      "classification": "actual-existing-game",
+      "originalParagraphsPreserved": {
+        "ko": [
+          "세 주행 발췌에서 차체가 향하는 앞쪽과 기울기를 함께 보세요. 구간 사이의 편집 컷은 회전 보간이 아닙니다.",
+          "기준축 세 개를 몸에 붙이면 자세를 비교하기 쉬워집니다. 화면의 카메라 기준과도 구분합니다.",
+          "행렬과 쿼터니언 변환은 그 축의 관계를 보존해야 합니다. 속도나 충돌까지 자동으로 설명하는 것은 아닙니다.",
+          "이제 축과 각도로 되돌아가고, 중간 자세와 왕복 변환을 직접 확인해 봅시다."
+        ],
+        "en": [
+          "Read facing and bank in these three driving excerpts. Edits between them are not rotation interpolation.",
+          "Imagining three attached body axes helps compare poses separately from the camera frame.",
+          "Matrix/quaternion conversion must preserve the axes relationship, without automatically explaining speed or collision.",
+          "We will return to axis-angle and check a midpoint and a conversion round trip."
+        ]
+      },
+      "insertedParagraphs": {
+        "ko": [
+          "앞쪽과 위쪽을 같은 순서로 정하면 세 번째 축도 정해집니다. 오른손 규칙과 축의 방향을 일관되게 쓰는 것이 변환 비교의 출발점입니다.",
+          "장면의 조작 결과를 특정 변환 공식의 성공 증거로 읽지는 마세요. 실제 관찰은 질문을 보여 주고, 공식의 값과 경계는 따로 계산해서 검증합니다."
+        ],
+        "en": [
+          "With forward and up defined consistently, the third axis is determined too. Consistent handedness and axis directions are the starting point for conversion checks.",
+          "Visible gameplay does not prove a particular conversion implementation. It supplies the question; independent calculations verify values and boundaries."
+        ]
+      },
+      "reason": "Retain full explanations and add concept-matched observation narration to meet measured40:60 without long silent gaps."
+    }
+  ],
+  "newVoiceReview": "passed-current-agent-raw-meaning-and-number-review",
+  "humanListening": "pending",
+  "reviewedSourceCapacitySeconds": 492,
+  "lessonDataSha256": "cc417a37c03de322194a1f14f94d91e3ff4e5afcdba7ed225a93f78e3c7908b7",
+  "spokenValueClarification": "No formula/beat/result changed; same values spoken with named axes, decimals and matrix rows. New audio/readback/final pixels pending.",
+  "currentVoiceReview": "passed-current-agent-raw-meaning-and-number-review"
+}

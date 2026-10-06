@@ -96,7 +96,7 @@ class InterpolationScene(ThreeDScene):
     groups={0:[0,1],1:[1],2:[2,3,4],3:[5],4:[6,7,8]}
     self.play(*[Indicate(special[j],color=GOLD) for j in groups[i]],run_time=.6)
     if i==1:
-     note=self.replace_fixed(note,txt('checked_unit: 유한·비영 입력 검증',23,RED).move_to([0,-2.55,0]))
+     note=self.replace_fixed(note,txt('checked_unit: 유한·비영 입력 검증',23,RED).move_to([0,-2.25,0]))
    elif mode=='slerp-example':
     q0=np.array([1.,0,0,0]);q1=conv.axis_quaternion([0,0,1],PI/2)
     if i==1:equation('α=45° / Δθ=90°')

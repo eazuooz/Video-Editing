@@ -1,0 +1,1195 @@
+1
+00:00:02,000 --> 00:00:06,140
+How do we construct natural intermediate
+orientations between two poses?
+
+2
+00:00:06,540 --> 00:00:08,880
+We will observe driving and flight,
+
+3
+00:00:08,880 --> 00:00:12,800
+then visualize the short path and speed of
+quaternion interpolation.
+
+4
+00:00:13,040 --> 00:00:16,560
+Next, we will convert Euler angles,
+axis-angle,
+
+5
+00:00:16,560 --> 00:00:18,680
+quaternions and matrices under one convention.
+
+6
+00:00:19,020 --> 00:00:22,000
+Finally, we will calculate the midpoint of a
+
+7
+00:00:22,000 --> 00:00:25,100
+ninety-degree turn and verify a conversion
+round trip.
+
+8
+00:00:25,750 --> 00:00:29,230
+This is driving on a bend in Forza Horizon4.
+
+9
+00:00:29,550 --> 00:00:32,470
+Read the car facing separately from the
+following camera.
+
+10
+00:00:35,798 --> 00:00:38,398
+Matching the first and last directions does
+not
+
+11
+00:00:38,398 --> 00:00:40,498
+prevent an awkward sudden turn between them.
+
+12
+00:00:43,666 --> 00:00:47,746
+Compare the front of the car, the bend and the
+moving background.
+
+13
+00:00:51,014 --> 00:00:54,414
+The footage does not reveal which
+interpolation function the game uses.
+
+14
+00:00:54,834 --> 00:00:57,554
+It shows why intermediate orientations matter.
+
+15
+00:01:00,842 --> 00:01:04,902
+Changes in apparent car size also involve
+camera and distance.
+
+16
+00:01:04,982 --> 00:01:10,862
+Following its facing separately helps avoid
+mixing translation with rotation.
+
+17
+00:01:13,990 --> 00:01:18,110
+Our next diagram will hold position and camera
+fixed and change only orientation.
+
+18
+00:01:18,970 --> 00:01:23,610
+Consider the midpoint between identity and
+a180-degree turn about z.
+
+19
+00:01:23,950 --> 00:01:29,350
+Averaging the entries yields a diagonal
+of0,0,1. Two axes collapse.
+
+20
+00:01:29,570 --> 00:01:32,050
+Quaternions must maintain unit length too.
+
+21
+00:01:32,157 --> 00:01:35,730
+A component blend generally leaves the unit
+surface.
+
+22
+00:01:35,970 --> 00:01:41,530
+We will distinguish a normalized linear blend
+from following an arc on the unit sphere.
+
+23
+00:01:41,810 --> 00:01:44,410
+Matrices can be interpolated with methods that
+respect the rotation structure;
+
+24
+00:01:44,450 --> 00:01:47,370
+naive entry blending is the problem.
+
+25
+00:01:48,017 --> 00:01:52,417
+As we learned, q and minus q represent the
+same orientation,
+
+26
+00:01:52,737 --> 00:01:55,097
+yet a component path between them can differ.
+
+27
+00:01:55,437 --> 00:01:58,777
+Take the dot product of unit endpoints. If it
+is negative,
+
+28
+00:01:59,057 --> 00:02:01,977
+flip every component of the end quaternion.
+
+29
+00:02:02,257 --> 00:02:07,797
+This selects the closer representative of the
+same endpoint; it is not conjugation.
+
+30
+00:02:08,057 --> 00:02:12,177
+For endpoints q and minus q,
+
+31
+00:02:12,497 --> 00:02:15,057
+sign alignment makes them identical, avoiding
+a zero midpoint.
+
+32
+00:02:15,057 --> 00:02:20,077
+A physical180-degree separation has two
+equally short paths.
+
+33
+00:02:20,397 --> 00:02:22,757
+Choose a direction with an explicit policy.
+
+34
+00:02:22,957 --> 00:02:25,237
+We can also use the relative rotation from the
+previous lesson.
+
+35
+00:02:25,557 --> 00:02:29,237
+After sign alignment, delta is the end
+quaternion times the inverse of the start.
+
+36
+00:02:29,537 --> 00:02:33,437
+Applying delta to the power t to the start
+follows the same short arc.
+
+37
+00:02:34,067 --> 00:02:38,827
+Track the car facing as it follows the next
+bend.
+
+38
+00:02:41,679 --> 00:02:44,359
+An endpoint image alone does not tell whether
+the
+
+39
+00:02:44,359 --> 00:02:49,651
+turn was short or included an extra
+revolution.
+
+40
+00:02:49,911 --> 00:02:53,851
+Interpolation between two orientations chooses
+a path
+
+41
+00:02:54,211 --> 00:02:57,371
+without storing the number of earlier
+revolutions.
+
+42
+00:03:00,183 --> 00:03:08,195
+Interpolating a position along the road
+differs from interpolating orientation.
+
+43
+00:03:08,195 --> 00:03:14,715
+Even when two moments have similar facing, the
+intervening turn requires observing
+
+44
+00:03:15,175 --> 00:03:18,035
+the motion. Distinguish endpoint orientation
+from rotation history over time.
+
+45
+00:03:21,147 --> 00:03:25,027
+Now we will relate an arc on the unit sphere
+to the orientation change.
+
+46
+00:03:26,067 --> 00:03:29,227
+Unit quaternions lie on a sphere in four
+dimensions,
+
+47
+00:03:29,232 --> 00:03:31,407
+with squared components summing to one.
+
+48
+00:03:31,627 --> 00:03:34,507
+This circle illustrates the relevant arc in a
+two-dimensional section,
+
+49
+00:03:34,787 --> 00:03:37,867
+rather than depicting the full
+four-dimensional sphere.
+
+50
+00:03:38,037 --> 00:03:43,547
+Let d be the sign-aligned dot product, and let
+alpha be its arccosine.
+
+51
+00:03:43,727 --> 00:03:48,327
+The quaternion arc angle differs from the
+physical turn
+
+52
+00:03:48,587 --> 00:03:51,407
+angle: the minimum physical rotation is twice
+alpha.
+
+53
+00:03:51,407 --> 00:03:56,447
+Sine-ratio weights combine the endpoints into
+the point at fraction t of the arc.
+
+54
+00:03:56,887 --> 00:04:01,447
+This is spherical linear interpolation. It
+does not mean the components change linearly.
+
+55
+00:04:02,083 --> 00:04:06,403
+Our code requires finite t between zero and
+one.
+
+56
+00:04:06,943 --> 00:04:09,543
+Validate and normalize both quaternion
+endpoints first.
+
+57
+00:04:09,693 --> 00:04:17,203
+Near-zero or nonfinite inputs need an error or
+an explicit fallback to a valid orientation.
+
+58
+00:04:17,443 --> 00:04:19,743
+Flip the endpoint when the dot is negative,
+
+59
+00:04:19,743 --> 00:04:24,043
+then clamp the dot to protect arccosine from
+rounding error.
+
+60
+00:04:24,183 --> 00:04:26,623
+When d exceeds0.9995, this example uses
+normalized
+
+61
+00:04:26,883 --> 00:04:31,123
+linear interpolation to avoid a small sine
+denominator.
+
+62
+00:04:31,123 --> 00:04:33,943
+Otherwise, use the sine weights and normalize
+the result.
+
+63
+00:04:34,403 --> 00:04:37,143
+Check the endpoint orientations at t zero and
+one.
+
+64
+00:04:37,900 --> 00:04:42,200
+In these other driving intervals, separate car
+facing from background motion.
+
+65
+00:04:45,100 --> 00:04:48,980
+The edit between excerpts is not a computed
+intermediate pose.
+
+66
+00:04:49,180 --> 00:04:52,540
+Observe continuous motion within each excerpt.
+
+67
+00:04:54,980 --> 00:05:02,540
+Code produces intermediate rotations by
+changing t between the endpoints.
+
+68
+00:05:02,740 --> 00:05:07,960
+Imagine both a forward line and an up line on
+the car.
+
+69
+00:05:08,160 --> 00:05:14,120
+A single direction can miss its twist.
+
+70
+00:05:14,120 --> 00:05:18,040
+A cut can change location and camera. Observe
+continuous pose changes within
+
+71
+00:05:18,500 --> 00:05:23,700
+each excerpt before connecting them to the
+next fixed-condition calculation.
+
+72
+00:05:26,600 --> 00:05:31,860
+The next calculation holds camera and position
+fixed. For a ninety-degree turn,
+
+73
+00:05:31,860 --> 00:05:35,160
+examine t equal to zero point two five and
+zero point five.
+
+74
+00:05:35,900 --> 00:05:38,660
+Start at[1,0,0,0], ending at a z90-degree
+
+75
+00:05:38,880 --> 00:05:44,580
+turn:[cos45degrees,0,0,sin45degrees].
+
+76
+00:05:44,880 --> 00:05:47,260
+The dot is square root two over two: alpha
+is45degrees,
+
+77
+00:05:47,380 --> 00:05:51,260
+while the physical rotation is90degrees.
+
+78
+00:05:51,335 --> 00:05:55,040
+At t equal to zero point two five,
+
+79
+00:05:55,540 --> 00:05:57,960
+the object rotates twenty-two point five
+degrees, the first of four equal steps.
+
+80
+00:05:58,160 --> 00:06:01,540
+At the halfway value t equal to zero point
+five, it rotates forty-five degrees.
+
+81
+00:06:01,602 --> 00:06:05,760
+At the third step, t equal to zero point seven
+five, it is sixty-seven point five degrees.
+
+82
+00:06:05,900 --> 00:06:08,980
+Equal t intervals give equal rotation-angle
+intervals.
+
+83
+00:06:09,360 --> 00:06:13,100
+Each quaternion is converted to a matrix to
+draw the body axes.
+
+84
+00:06:13,320 --> 00:06:16,280
+We can verify intermediate results as well as
+endpoints.
+
+85
+00:06:17,040 --> 00:06:20,540
+NLERP aligns signs, blends components linearly
+and
+
+86
+00:06:20,680 --> 00:06:23,000
+normalizes: a simple calculation that
+preserves unit length.
+
+87
+00:06:23,320 --> 00:06:27,620
+Linear progression of t generally does not
+produce constant physical angular speed.
+
+88
+00:06:27,800 --> 00:06:29,780
+Between identity and a120-degree turn,
+
+89
+00:06:29,793 --> 00:06:33,200
+NLERP at one quarter rotates
+approximately27.8degrees.
+
+90
+00:06:33,235 --> 00:06:35,740
+SLERP gives30degrees there. Both give60degrees
+halfway,
+
+91
+00:06:35,940 --> 00:06:39,920
+but differ at other points along the path.
+
+92
+00:06:40,160 --> 00:06:44,280
+Small differences may be hard to see.
+
+93
+00:06:44,425 --> 00:06:47,200
+Compare motion requirements and cost without
+assuming SLERP is always faster.
+
+94
+00:06:47,833 --> 00:06:52,833
+Driving speed and angular speed are separate
+quantities.
+
+95
+00:06:54,617 --> 00:06:59,617
+Observe distance travelled and change in car
+facing separately.
+
+96
+00:07:01,421 --> 00:07:06,541
+The camera also moves, so this footage is not
+a measurement of exact angular velocity.
+
+97
+00:07:06,841 --> 00:07:10,885
+The speedometer reports travel speed, not the
+angular velocity of orientation.
+
+98
+00:07:10,885 --> 00:07:18,549
+Keep units and measured quantities distinct.
+
+99
+00:07:18,869 --> 00:07:22,789
+A large camera turn does not imply the same
+car rotation.
+
+100
+00:07:22,789 --> 00:07:28,653
+Observe car and road together to separate pose
+changes.
+
+101
+00:07:28,893 --> 00:07:33,453
+Our fixed-axis calculation can compare turn
+angles over equal time intervals.
+
+102
+00:07:33,733 --> 00:07:36,213
+Changing the time function changes the speed.
+
+103
+00:07:36,945 --> 00:07:44,013
+Constant angular speed requires fixed
+endpoints and t that is linear in time.
+
+104
+00:07:44,293 --> 00:07:50,013
+An easing function follows the same arc with a
+varying speed.
+
+105
+00:07:50,145 --> 00:07:53,153
+Repeatedly interpolating from the current pose
+toward a
+
+106
+00:07:53,153 --> 00:07:56,933
+target differs from one fixed-endpoint
+interpolation.
+
+107
+00:07:57,233 --> 00:08:01,253
+A fixed fraction per frame may yield different
+responses at different frame rates.
+
+108
+00:08:01,613 --> 00:08:03,933
+Design the fraction using elapsed time.
+
+109
+00:08:03,933 --> 00:08:08,273
+Moving-target tracking and long animation
+curves require their own design;
+
+110
+00:08:08,713 --> 00:08:10,953
+a single SLERP does not solve everything.
+
+111
+00:08:12,107 --> 00:08:14,687
+Making w positive independently each frame can
+create
+
+112
+00:08:14,687 --> 00:08:17,287
+a component sign jump at the180-degree
+boundary.
+
+113
+00:08:17,527 --> 00:08:20,847
+Flipping a new quaternion when its dot with
+the previous
+
+114
+00:08:20,847 --> 00:08:24,067
+one is negative can maintain a nearby
+representative.
+
+115
+00:08:24,407 --> 00:08:29,047
+That choice helps component continuity, but
+does not recover the number of revolutions.
+
+116
+00:08:29,327 --> 00:08:32,007
+If an animation intentionally spins a full
+turn,
+
+117
+00:08:32,007 --> 00:08:34,687
+preserve intermediate keys or accumulated turn
+information.
+
+118
+00:08:34,907 --> 00:08:38,267
+The desired direction at180degrees is a design
+
+119
+00:08:38,367 --> 00:08:41,747
+policy: shortest alone does not make the
+choice unique.
+
+120
+00:08:42,367 --> 00:08:46,267
+This is wingsuit flight down a mountain in
+Riders Republic.
+
+121
+00:08:46,407 --> 00:08:51,820
+Observe the bank of the arms and body.
+
+122
+00:08:52,000 --> 00:08:56,420
+Position continues changing while facing and
+up directions change too.
+
+123
+00:08:56,680 --> 00:09:03,833
+One facing arrow does not capture the whole
+orientation.
+
+124
+00:09:04,133 --> 00:09:12,207
+Storing the arrival orientation does not
+preserve every rotation made along the flight.
+
+125
+00:09:12,547 --> 00:09:15,207
+Separate the following camera motion too.
+
+126
+00:09:15,407 --> 00:09:19,107
+This footage does not expose internal
+quaternion or interpolation code.
+
+127
+00:09:19,107 --> 00:09:27,320
+With different equipment too, distinguish
+torso facing from body bank.
+
+128
+00:09:27,500 --> 00:09:31,020
+Attached forward and up directions provide a
+frame for reading orientation.
+
+129
+00:09:31,260 --> 00:09:38,633
+Do not connect cuts or rewind screens into
+continuous motion. We selected actual
+
+130
+00:09:38,833 --> 00:09:47,087
+action within separate excerpts; imagine the
+three attached axes in each.
+
+131
+00:09:47,427 --> 00:09:51,747
+We will now choose a suitable representation
+for each task and convert between them.
+
+132
+00:09:52,367 --> 00:09:55,667
+Euler angles suit human reading and editing,
+with order,
+
+133
+00:09:55,847 --> 00:09:59,367
+equivalent encodings and singular poses to
+handle.
+
+134
+00:09:59,607 --> 00:10:01,907
+Quaternions suit composition and
+interpolation,
+
+135
+00:10:01,982 --> 00:10:06,127
+but need unit-length and sign management and
+are hard to edit directly.
+
+136
+00:10:06,387 --> 00:10:10,887
+Matrices expose the three axes and suit
+transforming many vectors.
+
+137
+00:10:11,147 --> 00:10:13,507
+Check orthonormality and determinant.
+
+138
+00:10:13,767 --> 00:10:18,487
+Float32 components alone occupy12bytes for
+Euler,16for a
+
+139
+00:10:18,487 --> 00:10:23,487
+quaternion and36for a3-by-3matrix, excluding
+padding and metadata.
+
+140
+00:10:23,987 --> 00:10:26,827
+Axis-angle explains a single turn clearly.
+Measure compression and runtime in your
+
+141
+00:10:27,147 --> 00:10:33,387
+implementation; other representations also
+have rotation-aware interpolation methods.
+
+142
+00:10:33,707 --> 00:10:36,347
+Storage or transmission may compress
+components.
+
+143
+00:10:36,907 --> 00:10:41,687
+Reconstructing an omitted component from unit
+length requires sign rules
+
+144
+00:10:41,792 --> 00:10:44,927
+and quantization-error checks. Sixteen bytes
+is not a universal minimum.
+
+145
+00:10:45,850 --> 00:10:51,450
+All conversions preserve our right-handed
+column-vector local-to-world convention.
+
+146
+00:10:51,750 --> 00:10:58,690
+Use Hamilton quaternions in wxyz order and
+radians for trigonometric inputs.
+
+147
+00:10:58,890 --> 00:11:07,470
+Euler uses moving axes Y-X-Z, with matrix
+product Ry times Rx times Rz.
+
+148
+00:11:07,630 --> 00:11:12,910
+Mixing the book's left-handed row-vector
+formulas can change signs and order.
+
+149
+00:11:13,190 --> 00:11:15,830
+Memory layout is a separate issue.
+
+150
+00:11:15,850 --> 00:11:19,930
+Euler and quaternions connect bidirectionally
+through matrices;
+
+151
+00:11:19,930 --> 00:11:23,270
+axis-angle connects to quaternions through the
+half-angle formula.
+
+152
+00:11:23,900 --> 00:11:33,088
+Watch the body bank and turn during flight.
+Distinguish screen up from body up.
+
+153
+00:11:33,368 --> 00:11:36,908
+Equipment changes across edits between these
+excerpts;
+
+154
+00:11:37,188 --> 00:11:43,096
+those cuts are not one continuous rotation.
+
+155
+00:11:43,316 --> 00:11:49,836
+Within each excerpt, observe the attached body
+axes and the following camera.
+
+156
+00:11:53,564 --> 00:11:58,044
+Changing how attached axes are represented
+must not rotate the object.
+
+157
+00:11:58,664 --> 00:12:05,612
+Distinguish converting a representation from
+applying a new rotation.
+
+158
+00:12:05,612 --> 00:12:10,132
+Equivalent pose does not require identical
+components.
+
+159
+00:12:10,492 --> 00:12:14,732
+Compare the three resulting axes in the same
+coordinate frame.
+
+160
+00:12:18,400 --> 00:12:23,240
+A matrix and a quaternion should describe the
+same pose in the same frame.
+
+161
+00:12:23,560 --> 00:12:25,680
+Our next diagram calculates that relationship.
+
+162
+00:12:26,300 --> 00:12:33,520
+Build Y, X and Z matrices from heading, pitch
+and bank, then multiply in our declared order.
+
+163
+00:12:33,820 --> 00:12:41,120
+For extraction, indices start at zero. Sine of
+pitch is minus the entry at row1,column2.
+
+164
+00:12:41,360 --> 00:12:46,260
+Away from singular poses, heading is atan2 of
+R02 and R22;
+
+165
+00:12:46,560 --> 00:12:49,620
+bank is atan2 of R10 and R11.
+
+166
+00:12:49,760 --> 00:12:51,640
+This implementation extracts pitch with atan2
+and uses the
+
+167
+00:12:51,640 --> 00:12:55,060
+hypotenuse of two matrix entries to detect a
+singular pose.
+
+168
+00:12:55,060 --> 00:12:58,600
+At pitch plus or minus90degrees,
+
+169
+00:12:59,140 --> 00:13:02,520
+choose bank zero and heading atan2 of minus
+R20 and R00.
+
+170
+00:13:03,080 --> 00:13:06,960
+Different returned Euler values can represent
+the same orientation.
+
+171
+00:13:07,400 --> 00:13:09,260
+Compare the reconstructed matrices in a round
+trip.
+
+172
+00:13:10,117 --> 00:13:15,977
+With a quaternion at unit length, its four
+components give the nine
+
+173
+00:13:16,297 --> 00:13:19,337
+rotation-matrix entries. Check and normalize a
+general-length input first.
+
+174
+00:13:19,737 --> 00:13:24,177
+Insert a quaternion for a ninety-degree z
+turn.
+
+175
+00:13:24,717 --> 00:13:28,697
+The first matrix row is zero, minus one, zero;
+the second is one, zero,
+
+176
+00:13:28,937 --> 00:13:32,817
+zero; the third is zero, zero, one. This
+matches the earlier matrix.
+
+177
+00:13:33,057 --> 00:13:41,057
+The first column gives local x in world
+coordinates:[0,1,0]; the second is[-1,0,0].
+
+178
+00:13:41,537 --> 00:13:49,117
+Multiplying[1,0,0]gives[0,1,0], matching the
+two-sided quaternion rotation.
+
+179
+00:13:49,617 --> 00:13:53,797
+If signs differ, check axes, rotation
+direction and input/output spaces first.
+
+180
+00:13:53,797 --> 00:13:58,037
+The full formula is also preserved in the
+reproducible code.
+
+181
+00:13:58,733 --> 00:14:03,453
+Look at the car again. Follow the body facing
+and road inclination.
+
+182
+00:14:03,713 --> 00:14:08,133
+We can record the same visible orientation as
+a matrix or a quaternion.
+
+183
+00:14:09,133 --> 00:14:12,813
+Changing representation does not automatically
+change position or speed,
+
+184
+00:14:13,093 --> 00:14:15,633
+and must preserve the input/output frames.
+
+185
+00:14:16,593 --> 00:14:20,673
+We have not read stored values from the game.
+
+186
+00:14:20,873 --> 00:14:24,693
+The footage prepares us to check equivalent
+axes in our calculation.
+
+187
+00:14:25,813 --> 00:14:30,753
+Matching forward directions alone can still
+leave different up directions.
+
+188
+00:14:30,753 --> 00:14:34,473
+Follow the bank as well as facing.
+
+189
+00:14:35,493 --> 00:14:39,413
+Mathematically we can transform basis axes
+using stored rotations. Instead of
+
+190
+00:14:39,633 --> 00:14:44,933
+inferring hidden values from pixels, we verify
+them in the next independent calculation.
+
+191
+00:14:46,013 --> 00:14:50,113
+We will check that conversion remains valid
+near a half-turn.
+
+192
+00:14:50,733 --> 00:14:55,153
+First require an orthonormal matrix with
+determinant plus one.
+
+193
+00:14:55,493 --> 00:14:58,093
+Do not interpret scale or reflection as a
+rotation.
+
+194
+00:14:58,253 --> 00:15:00,453
+The trace is the diagonal sum.
+
+195
+00:15:00,553 --> 00:15:04,573
+A positive trace suits the branch that
+calculates a large w component.
+
+196
+00:15:04,813 --> 00:15:10,873
+At a180-degree rotation w is zero, so using
+only a formula that divides by w is unsafe.
+
+197
+00:15:11,093 --> 00:15:14,373
+Otherwise choose the x,y or z branch
+associated with the largest diagonal entry,
+
+198
+00:15:14,373 --> 00:15:18,613
+avoiding division by a small component.
+
+199
+00:15:18,613 --> 00:15:22,553
+For a z180-degree turn the z branch
+yields[0,0,0,1];
+
+200
+00:15:22,553 --> 00:15:25,753
+the opposite sign represents the same pose.
+
+201
+00:15:26,313 --> 00:15:29,593
+Normalize the result, rebuild its matrix and
+compare with the input.
+
+202
+00:15:29,853 --> 00:15:32,933
+Quaternion normalization is not an arbitrary
+repair of an invalid matrix.
+
+203
+00:15:33,666 --> 00:15:37,506
+Convert heading about Y, pitch about X and
+bank
+
+204
+00:15:37,606 --> 00:15:42,046
+about Z into individual half-angle
+quaternions.
+
+205
+00:15:42,266 --> 00:15:49,286
+Under our convention, multiply qy times qx
+times qz, matching the matrix product.
+
+206
+00:15:49,526 --> 00:15:51,926
+For the reverse, build the unit-quaternion
+matrix and use our Euler extraction.
+
+207
+00:15:52,106 --> 00:15:57,346
+Substituting its entries yields equivalent
+direct formulas.
+
+208
+00:15:57,546 --> 00:16:02,646
+At a singular pose, choose bank zero and set
+pitch to the signed pi over two.
+
+209
+00:16:02,646 --> 00:16:05,446
+The source formula needs this boundary
+correction.
+
+210
+00:16:05,646 --> 00:16:08,446
+Clamping protects against small rounding
+errors,
+
+211
+00:16:08,546 --> 00:16:11,966
+rather than hiding non-unit inputs or
+mismatched conventions.
+
+212
+00:16:12,725 --> 00:16:16,760
+Read facing and bank in these three driving
+excerpts.
+
+213
+00:16:17,000 --> 00:16:19,640
+Edits between them are not rotation
+interpolation.
+
+214
+00:16:23,192 --> 00:16:26,272
+Imagining three attached body axes helps
+
+215
+00:16:26,532 --> 00:16:28,672
+compare poses separately from the camera
+frame.
+
+216
+00:16:31,864 --> 00:16:35,444
+Matrix/quaternion conversion must preserve the
+axes relationship,
+
+217
+00:16:35,824 --> 00:16:41,916
+without automatically explaining speed or
+collision.
+
+218
+00:16:42,016 --> 00:16:45,556
+With forward and up defined consistently, the
+third axis is determined too.
+
+219
+00:16:45,556 --> 00:16:50,136
+Consistent handedness and axis directions are
+the starting point for conversion checks.
+
+220
+00:16:50,136 --> 00:16:57,348
+Visible gameplay does not prove a particular
+conversion implementation.
+
+221
+00:16:57,608 --> 00:17:02,308
+It supplies the question; independent
+calculations verify values and boundaries.
+
+222
+00:17:05,920 --> 00:17:10,680
+We will return to axis-angle and check a
+midpoint and a conversion round trip.
+
+223
+00:17:11,300 --> 00:17:16,260
+Axis-angle to quaternion uses the half-angle
+formula: cosine for the scalar,
+
+224
+00:17:16,360 --> 00:17:19,720
+unit axis times sine for the vector.
+
+225
+00:17:19,980 --> 00:17:22,600
+For a short representative angle,
+
+226
+00:17:22,600 --> 00:17:25,880
+validate unit length and flip all components
+if w is negative.
+
+227
+00:17:26,120 --> 00:17:28,820
+The angle is twice arccosine of clamped w.
+
+228
+00:17:29,040 --> 00:17:32,420
+When the vector part is long enough, normalize
+it to get the axis.
+
+229
+00:17:32,660 --> 00:17:34,640
+At zero rotation the axis is undefined. Our
+code selects x by convention,
+
+230
+00:17:34,840 --> 00:17:39,100
+rather than claiming a unique physical axis.
+
+231
+00:17:39,100 --> 00:17:42,860
+At180degrees, opposite axes give the same
+endpoint orientation.
+
+232
+00:17:43,360 --> 00:17:45,900
+Manage path direction and accumulated turns
+separately.
+
+233
+00:17:46,700 --> 00:17:52,160
+First exercise: what is the halfway SLERP pose
+from identity to z90degrees?
+
+234
+00:17:52,260 --> 00:17:58,340
+The answer is45degrees, stored using cosine
+and sine of the22.5-degree half-angle.
+
+235
+00:17:58,500 --> 00:18:02,540
+Convert to a matrix and rotate[1,0,0].
+
+236
+00:18:02,540 --> 00:18:06,120
+The result is[sqrt2/2,sqrt2/2,0]; check its
+unit length.
+
+237
+00:18:06,120 --> 00:18:12,300
+Second exercise: convert a z180-degree matrix
+to a quaternion and back.
+
+238
+00:18:12,540 --> 00:18:19,620
+The z branch gives[0,0,0,1]. The reconstructed
+matrix has diagonal[-1,-1,1].
+
+239
+00:18:19,920 --> 00:18:24,240
+An opposite quaternion sign can still pass
+when the matrices agree.
+
+240
+00:18:24,440 --> 00:18:27,160
+Compare entry errors and transformed basis
+axes.
+
+241
+00:18:27,783 --> 00:18:32,523
+We aligned signs, preserved unit length and
+interpolated rotations along a short arc.
+
+242
+00:18:32,783 --> 00:18:37,043
+Constant speed also needed fixed endpoints and
+linear time;
+
+243
+00:18:37,283 --> 00:18:39,543
+accumulated large turns require separate
+records.
+
+244
+00:18:39,547 --> 00:18:42,423
+Conversions preserve axes and multiplication
+conventions
+
+245
+00:18:42,423 --> 00:18:46,143
+and handle zero,180degrees and Euler
+singularities.
+
+246
+00:18:46,343 --> 00:18:49,223
+Go beyond memorizing representation names:
+rotate a
+
+247
+00:18:49,223 --> 00:18:52,403
+small vector and reverse the transformation to
+verify it.
+
+248
+00:18:52,803 --> 00:18:54,823
+This completes the3Drotation chapter.
+
+249
+00:18:54,823 --> 00:18:59,063
+Next we will combine orientation and position
+in rigid-body transformations.

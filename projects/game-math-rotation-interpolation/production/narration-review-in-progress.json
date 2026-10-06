@@ -1,0 +1,784 @@
+{
+  "project": "game-math-rotation-interpolation",
+  "status": "passed-agent-script-and-ASR-difference-review",
+  "humanListening": "pending",
+  "scenes": [
+    {
+      "scene": "01",
+      "wavSha256": "c1c13f01acf55f2bab735925f5541c564586f572325b266c042347c5e8e5e2b9",
+      "rawAsrSha256": "5153060f7fcb8c7256b9f2e2fd8135bd2243883d5c1819a810e762ae7edfc61d",
+      "matchingCharacterCoverage": 0.9854,
+      "recognized": " 자세 사이를 자연스럽게 돌리려면 어떤 중간 자세를 만들어야 할까요? 이번 시간에는 자동차와 비행 장면을 보고 쿼터니언 보관의 짧은 경로와 속도를 그림으로 이해합니다. 이어서 오일러각, 축과각도 쿼터니언, 행렬을 같은 규약으로 바꿉니다. 마지막으로 90도의 중간 자세를 직접 계산하고 변환을 왕복해 같은 회전인지 확인하겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "두",
+          "recognized": ""
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full overview: intermediate orientation, actual car/flight observation, short-path quaternion interpolation/speed, same-convention four-way conversions, Z90 midpoint and posture roundtrip retained. Initial 두 omitted; 보간/보관 spelling explicit."
+    },
+    {
+      "scene": "02",
+      "wavSha256": "d23bd6aa09601a5b9f433221134a3127e3ebbc9b4ca75403a92ca480d049e18f",
+      "rawAsrSha256": "9d9eb0b00deae4977f1fd8311c6eeb76331fcf137047d13a62abef0f224cbb6a",
+      "matchingCharacterCoverage": 0.99592,
+      "recognized": " 포르자 호라이즌 4에서 자동차가 굽은 길을 달리는 장면입니다 차체가 향하는 쪽과 뒤따르는 카메라를 따로 보세요 처음과 끝 방향만 맞아도 중간에 갑자기 돌아가면 움직임이 어색할 수 있습니다 차체의 앞쪽 길의 굽음, 배경이 움직이는 흐름을 비교해 봅니다 이 화면으로 게임이 어떤 보관 함수를 썼는지는 알 수 없습니다 자연스러운 중간 자세가 필요한 이유를 관찰합니다 차가 가까워지거나 작아지는 모습은 카메라와 거리의 영향도 받습니다 앞쪽이 돌아가는 변화부터 따로 따라가면 위치와 회전을 섞어 읽는 실수를 줄일 수 있습니다. 다음 그림에서는 위치와 카메라를 고정하고 회전만 바꾸어 보겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six current expanded paragraphs: Forza4 car forward versus follow camera, intermediate discontinuity, path/background and no inferred implementation; size/distance/translation separate from rotation, fixed-location diagram follows. 보간/보관 ASR flag."
+    },
+    {
+      "scene": "03",
+      "wavSha256": "7255cdd08bd83317e38a254970e56ddc0c4190172e6bd57e7731fa613731fc22",
+      "rawAsrSha256": "d912f7184a536007648e18fa2c3319e58eae8a446f97f0b1bbeefc6e48b49a2d",
+      "matchingCharacterCoverage": 0.95266,
+      "recognized": " 상등 행렬에서 Z축 180도 회전으로 가는 중간을 생각해봅시다. 행렬 원소를 절반씩 섞으면 대각선이 0, 0, 1이 됩니다. 두 축이 사라집니다. 쿼터니언도 단위 길이를 유지해야 합니다. 내 성분을 그냥 섞은 값은 보통 단위 길이가 아닙니다. 선형 보관한 뒤 정기화하는 방법과 단위 구면에 홀을 따라가는 방법을 나누어 보겠습니다. 행렬로는 보관이 불가능하다는 뜻은 아닙니다. 회전 구조를 보존하는 별도 방법이 필요합니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "항",
+          "recognized": "상"
+        },
+        {
+          "expected": "4",
+          "recognized": "내"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "규",
+          "recognized": "기"
+        },
+        {
+          "expected": "의호를",
+          "recognized": "에홀을"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "I to Rz180 naive halfway diagonal(0,0,1) collapses two axes, four-component unit quaternion preservation, normalize linear versus sphere arc, other structure-preserving matrix methods possible. Homophonic 항/상, 네/내, 규/기, 호/홀 explicit."
+    },
+    {
+      "scene": "04",
+      "wavSha256": "0e1abf65332c507543d0ffaf7bc17cdf71f40080eca54e510710715d917211ef",
+      "rawAsrSha256": "9c7a4b2b8b53a87a2133eaca5b63a4927553658583e94910463775db7ffba1b6",
+      "matchingCharacterCoverage": 0.96715,
+      "recognized": " 앞편에서 쿼터니언 Q와 마이너스 Q는 같은 자세라고 배웠습니다. 하지만 성분을 잇는 경로는 다를 수 있습니다. 길이가 1인 시작과 끝 쿼터니언의 내적을 구합니다. 내적이 음수이면 끝값 전체의 부호를 바꿉니다. 같은 끝 자세를 유지하면서 더 가까운 대표값을 고르는 것입니다. 켤레로 바꾸는 것은 아닙니다. 시작이 Q이고 끝이 마이너스 Q라면 부호를 맞춘 뒤 같은 값이 됩니다. 중간이 0쿼터니언으로 무너지지 않습니다. 실제 회전 차이가 정확히 180도이면 같은 길이의 두 경로가 남습니다. 원하는 방향을 별도 규칙으로 택하세요. 앞편의 회전 차이로도 이해할 수 있습니다. 부호를 맞춘 끝 Q의 시작 Q의 역원을 곱한 것이 델타입니다. 델타의 t제곱을 시작 자세에 적용하면 같은 짧은 호를 따라갑니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "큐에",
+          "recognized": "q의"
+        },
+        {
+          "expected": "큐",
+          "recognized": "q"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "q/-q same endpoint; unit dot<0 flips ALL end components, not conjugate, q to -q avoids zero midpoint, exact180 equal-route policy; delta=b*a^-1 and delta^t applied to start retained. Latin Q/t spelling explicit."
+    },
+    {
+      "scene": "05",
+      "wavSha256": "50e352da37e9c76f1209cc5a7bdde847375f9a561b7cb837c7cb1bcec7cfac23",
+      "rawAsrSha256": "77af99c1d526b59617e1f6e24c626aa59b63adc502ddee6261a00f80a3a16ff7",
+      "matchingCharacterCoverage": 0.98291,
+      "recognized": " 차가 다음 굽은 길을 통과하는 동안 몸체의 앞쪽을 따라가 보세요. 한 장의 끝 화면만으로는 짧게 돌았는지 한 바퀴를 더 돌았는지 구별하기 어렵습니다. 입력된 두 자세만 있는 보관은 그 사이의 경로를 선택합니다. 이전에 몇 바퀴 돌았는지까지 저장하지는 않습니다. 자동차가 길을 따라 움직이는 위치 보관과 몸이 돌아가는 자세 보관도 서로 다른 문제입니다. 앞쪽 방향이 비슷해진 두 순간을 골라도 그 사이 얼마나 돌아왔는지는 움직임을 계속 봐야 알 수 있습니다 끝 자세와 시간에 따른 회전 이력을 나눠 기억하세요 이제 단위 구면의 호가 자세 변화와 어떻게 연결되는지 살펴보겠습니다",
+      "normalizedDifferences": [
+        {
+          "expected": "잇",
+          "recognized": "있"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Current six paragraphs: car endpoints versus complete turn history, interpolation does not retain winding, position versus orientation, observe path continuously, sphere-arc transition retained. 보간/보관 ASR flags."
+    },
+    {
+      "scene": "06",
+      "wavSha256": "87bc29c78d005a0fc63a6897f45f0c1826cd085b839f4fc7a561465030d6778e",
+      "rawAsrSha256": "a87c32447bf77bcf976c6ed0a7dfed0c606aab36ee1b1e1a41cd5320d5bc8c40",
+      "matchingCharacterCoverage": 0.94059,
+      "recognized": " 단위 쿼터니언은 4성분 제곱의 합이 1인 4차원 구면 위의 점입니다. 화면의 원은 전체 4차원 구면을 그린 것이 아니라 두 점을 잇는 호를 이해하기 위한 단면 그림입니다. 두 호를 맞춘 두 점의 내적을 D라고 하겠습니다. 알파는 D의 아크코사인입니다. 두 쿼터니언 점 사이의 알파와 실제 물체의 회전각은 다릅니다. 실제 최소 회전각은 알파의 2배입니다. 시작과 끝에 쌓인 비율을 가중치로 곱해 더하면 호이티 비율 지점이 나옵니다. 이름은 구면선형 보관입니다. 성분이 직선으로 변한다는 뜻은 아닙니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "사",
+          "recognized": "4"
+        },
+        {
+          "expected": "사",
+          "recognized": "4"
+        },
+        {
+          "expected": "부",
+          "recognized": "두"
+        },
+        {
+          "expected": "디",
+          "recognized": "d"
+        },
+        {
+          "expected": "디",
+          "recognized": "d"
+        },
+        {
+          "expected": "두",
+          "recognized": "2"
+        },
+        {
+          "expected": "sin",
+          "recognized": "쌓인"
+        },
+        {
+          "expected": "의",
+          "recognized": "이"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Current six full separately synthesized paragraphs restore unit quaternion noun, squared4-component sum1 on4D sphere, 2D section not full4D sphere, sign-matched dot d and acos(d), quaternion arc alpha versus actual2alpha, sine-weighted arc position and SLERP not straight component path. 부호/두호, 사인/쌓인, 보간/보관 and digit/Latin spellings remain explicit for human listening; no conceptual noun omission normalized away."
+    },
+    {
+      "scene": "07",
+      "wavSha256": "a6e9b917b2ddc41ebf4cdf6ed5eb005cc71a9ce06ed94bcee4d617696f384bb7",
+      "rawAsrSha256": "1d8e4410fdc9a849744e37bb30bbc1f39e107324ac62a60fe3ec6b5ab6f0b904",
+      "matchingCharacterCoverage": 0.95023,
+      "recognized": " 코드의 입력 T는 0부터 1 사이에 유한한 실수라고 정하겠습니다. 먼저 두 쿼터니언을 검사하고 정교화합니다. 0에 가까운 길이나 비정상 숫자는 정교화할 수 없습니다. 오류나 이전에 유효한 자세로 처리하는 정책이 필요합니다. 내적이 음수일 때 끝값을 반전한 뒤 반올림 오차가 아크코사인의 범위를 넘지 않도록 내적을 제한합니다. 두 값이 거의 같으면 사인 분모가 작습니다. 이 예제는 D가 0.9995보다 클 때 정교화 선형 보관으로 바꿉니다. 나머지는 싸인 가중치를 쓰고 결과도 정교합니다 티가 0과 1일 때 시작과 끝 자세를 확인하세요",
+      "normalizedDifferences": [
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "규",
+          "recognized": "교"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        },
+        {
+          "expected": "규",
+          "recognized": "교"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "디",
+          "recognized": "d"
+        },
+        {
+          "expected": "규",
+          "recognized": "교"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "규화",
+          "recognized": "교"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Finite t in [0,1], nonzero finite normalized inputs/error policy, all-sign flip dot<0 and clamp, near threshold0.9995 switches normalized linear, otherwise sine weights and output normalization, endpoint checks all retained. 정규화/정교화 and Latin labels explicit."
+    },
+    {
+      "scene": "08",
+      "wavSha256": "f75f4359acd1e0cb10d3a70be3ea6917a0cb230427fa1856b43a87cb0c592f27",
+      "rawAsrSha256": "d20b87d27a85478e65a2f3cb567399abceb538f676fd8c7afa05b71945ba6f24",
+      "matchingCharacterCoverage": 0.98444,
+      "recognized": " 다른 주행 구간에서도 차체 앞쪽과 배경의 움직임을 나누어 보세요. 두 발체 구간의 편집 컷은 계산한 중간 자세가 아닙니다. 각 구간 안에서 이어지는 실제 움직임을 관찰합니다. 코드에서는 시작과 끝 사이의 T값을 여러 번 바꾸어 중간 회전을 만듭니다. 같은 차체에서도 앞쪽을 나타내는 선과 위쪽을 나타내는 선을 함께 생각해 보세요. 한 방향만 보면 몸체의 비틀림을 놓칠 수 있습니다. 편집 컷 앞뒤의 위치와 카메라는 달라질 수 있습니다 이어지는 구간 안에 자세 변화를 관찰한 뒤 고정된 조건의 다음 계산과 연결합니다 다음 계산에서는 카메라와 위치를 고정합니다 90도 회전에서 T가 0.25 그리고 0.5일 때 얼마나 도는지 확인해 봅시다",
+      "normalizedDifferences": [
+        {
+          "expected": "췌",
+          "recognized": "체"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "CURRENT six complete paragraphs retain separate real driving excerpts, cuts not calculated intermediate poses, forward/up together for twist, camera/position versus posture, code varies interpolation t, and the fixed Z90 next calculation explicitly uses t0.25 and0.5. Raw ASR recognizes both decimal values correctly. 발췌/발체, 의/에 and Latin T spellings remain flagged for human listening; no wrong fraction normalized away."
+    },
+    {
+      "scene": "09",
+      "wavSha256": "7f23398a9bd8ed14262112b99cbb3c277e8de46183ba46799433de6c05b1522d",
+      "rawAsrSha256": "ff29689d5c626ca839606cc534ccefb8e51753f7e19076c9693452caa4510068",
+      "matchingCharacterCoverage": 0.96135,
+      "recognized": " 시작은 1, 0, 0, 0입니다. 끝은 Z축 90도 회전이므로 코사인 45도, 0, 0, 사인 45도입니다. 내적은 루트 2 나누기 2입니다. 알파는 45도이고 실제 회전 차이는 90도입니다. T가 0.25이면 물체는 22.5도 회전합니다. 전체를 4칸으로 나눈 첫 지점입니다. 절반인 T0.5에서는 45도 회전합니다. T가 0.75인 셋째 지점에서는 67.5도입니다. 같은 T 간격에 같은 회전각 간격이 나옵니다. 각 T에서 쿼터니언을 행렬로 바꾸어 축을 그린 것입니다. 끝점뿐 아니라 중간 결과도 검증할 수 있습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "점칠오",
+          "recognized": "75"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "CURRENT complete five paragraphs: identity(1,0,0,0), Z90 endpoint(cos45,0,0,sin45), dot sqrt2/2, quaternion arc45 versus actual90, t0.25->22.5, t0.5->45, t0.75->67.5, equal t intervals equal rotation-angle intervals for fixed endpoints, and matrix basis validation at every t. Raw ASR explicitly recognizes all decimal t values and angles correctly. Latin T and digit normalization differences remain flagged for human listening; no inverted fractions or missing values normalized away."
+    },
+    {
+      "scene": "10",
+      "wavSha256": "65fab9ad51a04db31b07ff57185b75945ae5a012b933b6f35d0ace1a01b04a05",
+      "rawAsrSha256": "dd32baa0e484eece479b28b1faa6fe62613da89ac9fe7069c8dd435c67242870",
+      "matchingCharacterCoverage": 0.94924,
+      "recognized": " 엘러프는 부호를 맞춘 뒤 내 성분을 선형보관하고 정교화합니다. 계산이 간단하고 단위 길이도 유지합니다. 하지만 T가 일정한 속도로 늘어도 실제 회전 속도는 보통 일정하지 않습니다. 항등에서 120도 회전으로 갈 때 4분의 1의 엘러프 회전은 약 27.8도입니다. 슬러프는 같은 지점에서 30도입니다. 둘 다 절반에서는 60도지만 다른 중간 지점의 속도는 다릅니다. 작은 차이는 잘 안 보일 수 있습니다. 요구하는 움직임과 비용을 비교하고 슬러프만 언제나 더 빠르다고 단정하지 마세요.",
+      "normalizedDifferences": [
+        {
+          "expected": "엔",
+          "recognized": "엘"
+        },
+        {
+          "expected": "4",
+          "recognized": "내"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "규",
+          "recognized": "교"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "사",
+          "recognized": "4"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "엔",
+          "recognized": "엘"
+        },
+        {
+          "expected": "스",
+          "recognized": "슬"
+        },
+        {
+          "expected": "스",
+          "recognized": "슬"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "NLERP sign match and normalization, generally nonconstant angular speed under linear t; I to120 at quarter~27.8 versus SLERP30, halfwayboth60, cost/quality measured rather than universal speed claim retained. NLERP/SLERP phonetic spelling flags."
+    },
+    {
+      "scene": "11",
+      "wavSha256": "851d2a8cc52a3cdd1171b15bfbb3c1b046e98206c3897c6124dd335355ea3bbe",
+      "rawAsrSha256": "1e5dd25fe6e8742714a47439fc650f70644b08bd29365b7a04ff0ba7671860d5",
+      "matchingCharacterCoverage": 0.98419,
+      "recognized": " 자동차의 주행 속도가 바뀌어도 자세가 돌아가는 속도는 별개의 값입니다. 길을 얼마나 빨리 지나는지와 차체가 얼마만큼 방향을 바꾸는지를 따로 보세요. 화면에 카메라까지 움직임으로 이 영상만으로 정확한 각속도를 측정한 것은 아닙니다. 속도계의 숫자는 차가 이동하는 속도이며 회전의 각속도를 그대로 표시한 값은 아닙니다. 서로 다른 단위와 측정 대상을 구분하세요. 카메라가 크게 돌았다고 차체도 같은 각도로 돌았다고 읽지는 마세요. 차체와 길의 관계를 먼저 관찰해야 자세 변화를 따로 볼 수 있습니다. 앞에 고정된 축 계산에서는 같은 시간 간격의 회전각을 비교할 수 있었습니다. 시간 함수를 바꾸면 그 속도도 달라집니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "이므",
+          "recognized": "임으"
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "All current expanded paragraphs: translation speed versus angular speed, moving camera prevents exact measurement, speedometer not angular velocity, compare car with road, fixed-axis equal-time example and time function conditions retained."
+    },
+    {
+      "scene": "12",
+      "wavSha256": "d527acd4506ef6426187e32bb5a6da627381fa17343842850f23857faccb8cc8",
+      "rawAsrSha256": "75a145bcedf047e1c80017af5a4a35d81e9241332dadb8d189f9286482db380e",
+      "matchingCharacterCoverage": 0.95833,
+      "recognized": " 마스러프가 일정 각속도라는 말에는 조건이 있습니다. 시작과 끝이 고정되고 t가 시간에 대해 선형으로 변해야 합니다. 처음과 끝을 느리게 하는 이징함수를 t에 적용하면 같은 홀을 따라도 속도는 달라집니다. 맵 프레임 현재 자세에서 목표로 조금씩 보관하는 것은 전체 구간을 한 번 일정하게 보관하는 것과 다릅니다. 고정 비율을 맵 프레임 쓰면 프레임 수에 따라 반응이 달라질 수 있습니다. 시간 차이를 반영한 비율을 설계하세요. 움직이는 목표 추적과 긴 애니메이션 곡선은 별도 설계 문제입니다 한 번의 슬러프가 모두 해결하지는 않습니다",
+      "normalizedDifferences": [
+        {
+          "expected": "",
+          "recognized": "마"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "티",
+          "recognized": "t"
+        },
+        {
+          "expected": "호를",
+          "recognized": "홀을"
+        },
+        {
+          "expected": "매",
+          "recognized": "맵"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "매",
+          "recognized": "맵"
+        },
+        {
+          "expected": "스",
+          "recognized": "슬"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Fixed endpoints and t linear in time required for constant angular speed; easing changes speed, per-frame current-target interpolation differs from one fixed interval, frame-count dependence and delta-time policy, moving targets/long curves separate. Extra initial syllable/매/맵/호/홀 flags."
+    },
+    {
+      "scene": "13",
+      "wavSha256": "dfa0a51b6a9d686933a2e757b0907aac75bb7042c45959042e3267041929a31c",
+      "rawAsrSha256": "77a5cfb550b1587ee1895fa6d27b4f105fed32aba0635a3815ee9b974e9a1742",
+      "matchingCharacterCoverage": 0.98477,
+      "recognized": " 맷 프레임 W를 양수로만 바꾸면 180도 경계에서 성분이 갑자기 뒤집힐 수 있습니다. 이전 프레임과 내적의 음수이면 새 쿼터니언의 전체 보호를 바꾸는 방법으로 가까운 대표값을 이어갈 수 있습니다. 이 선택은 성분 연결을 돕지만 여러 바퀴의 회전수를 복원하지는 않습니다. 애니메이션이 크게 한 바퀴 도는 것이 목적이라면 중간 키와 회전량을 따로 보존해야 합니다. 180도에서 어느 쪽으로 도는지도 게임의 요구로 정합니다. 가장 짧다는 말만으로는 방향이 하나로 정해지지 않습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "매",
+          "recognized": "맷"
+        },
+        {
+          "expected": "이",
+          "recognized": "의"
+        },
+        {
+          "expected": "부",
+          "recognized": "보"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Forcing w positive causes component jumps near180; previous-frame dot<0 full sign flip for continuity, cannot restore winding, retain intermediate keys/turn amount and exact180 route policy retained. 부호/보호 ASR spelling flag."
+    },
+    {
+      "scene": "14",
+      "wavSha256": "ada82d1d439294da529b723dfca00138f65d4e87848a74e838b55231810f53b6",
+      "rawAsrSha256": "28836fd3e3acb6cc1ed9d46eecf48d10b85d2c6058a0b235b638ce4c42a89694",
+      "matchingCharacterCoverage": 0.99344,
+      "recognized": " 라이더스 리퍼블릭에서 윙슈트로 산을 내려오는 장면입니다. 팔과 몸통이 기울어지는 모습을 보세요. 위치는 계속 이동하지만 앞쪽과 위쪽 방향도 함께 바뀝니다. 한 화면의 방향 화살표만으로 전체 자세를 알 수는 없습니다. 목적지에 도착한 자세만 저장한다고 공중에서 지난 모든 회전이 남는 것은 아닙니다. 카메라가 따라 움직인 영향도 나누어 보세요. 내부 쿼터니언이나 보관 코드를 확인한 영상은 아닙니다. 장비가 달라진 발췌에서도 몸통이 향하는 쪽과 몸이 기울어지는 쪽을 나눠봅니다. 몸에 붙은 앞쪽과 위쪽은 자세를 읽는 기준입니다. 발췌 사이의 컷과 대감기 화면을 연속 동작으로 연결하지 않습니다. 선택한 각 구간 안에서 실제 몸의 움직임을 보고 같은 기준의 세 축을 생각해보세요. 이제 각 작업에 알맞은 회전 표현을 정리하고 서로 바꾸어 보겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "되",
+          "recognized": "대"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "All seven CURRENT wing/ski-expanded observations retained: body forward/up/camera, endpoints not winding, no implementation inference, different gear excerpts and cuts/rewind not one continuous motion, basis/conversion transition. 되/대 ASR spelling flag."
+    },
+    {
+      "scene": "15",
+      "wavSha256": "703f036b000836e331b132cf54737d8417831677207cf7f49a8a9313bd626801",
+      "rawAsrSha256": "f9413d365ec2530bb52e9a459927b531b355450fbfc5c751ebde7b548bc8a6c7",
+      "matchingCharacterCoverage": 0.96875,
+      "recognized": " 오일러 각은 사람이 각도를 잃고 편집할 때 편합니다. 대신 순서, 중복 표현, 특이 자세를 처리해야 합니다. 쿼터니언은 자세 합성과 보관에 편하지만 내 성분을 직접 편집하기는 어렵고 단위 길이와 부호를 관리해야 합니다. 행렬은 세 축을 직접 읽고 많은 벡터에 같은 변환을 적용할 때 편합니다. 정규 직계와 행렬식 조건을 검사합니다. 32 비트 실수, 성분만 세면 오일러는 12, 쿼터니언은 16, 3x3 행렬은 36 바이트입니다. 정렬과 메타데이터는 별도입니다 축과 각도는 한 번의 회전을 설명하기 쉽습니다 압축과 실행 비용은 데이터와 구현을 측정해 고르세요 다른 표현도 구조를 지킨 보관이 가능합니다 저장이나 전송에서는 성분을 압축할 수도 있습니다 단위 길이로 빠진 성분을 복원하는 방법은 부호 규칙과 양자화 오차를 검사해야 합니다 16바이트가 항상 최소 크기라는 뜻은 아닙니다",
+      "normalizedDifferences": [
+        {
+          "expected": "읽",
+          "recognized": "잃"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "4",
+          "recognized": "내"
+        },
+        {
+          "expected": "교",
+          "recognized": "계"
+        },
+        {
+          "expected": "바이",
+          "recognized": "x"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "열여섯",
+          "recognized": "16"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Euler editing/order/aliases/singularity, quaternion synthesis/interpolation/unit/sign, orthonormal det guards for matrices, float32 12/16/36B excluding metadata, axis-angle explanation, measured costs, compression with sign and quantization guards;16B not minimum retained."
+    },
+    {
+      "scene": "16",
+      "wavSha256": "b4c4845784a419f00747986e674f744882f6534c4d5b0bed8fd9c8e540a92b5d",
+      "rawAsrSha256": "22dc6e832f85120f3581ae75a43fa84a7d244a6b28d50871543c4806b8763f41",
+      "matchingCharacterCoverage": 0.97449,
+      "recognized": " 변환할 때는 오른손과 열벡터, 로컬에서 월드로 가는 회전이라는 약속을 유지합니다. W, X, Y, Z 순서에 해밀턴, 쿼턴 연을 씁니다. 삼각함수 입력은 라디안입니다. 오일러는 움직이는 Y, X, Z축 순서입니다. 행렬은 Y회전, X회전, Z회전의 곱으로 씁니다. 책의 왼손과 행벡터 공식을 그대로 섞으면 부호와 곱셈 순서가 달라질 수 있습니다. 메모리 저장 순서도 수학기약과 별개입니다. 오일러와 쿼터니언은 행렬을 통해 양방향으로 연결할 수 있고 축각은 반각 공식으로 쿼터니언에 연결됩니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "터니언",
+          "recognized": "턴연"
+        },
+        {
+          "expected": "규",
+          "recognized": "기"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "RH column vectors local-to-world, Hamilton wxyz radians, intrinsic Y-X-Z with RyRxRz, do not mix book LH-row formulas or memory order, matrix-mediated conversions and half-angle axis connection retained."
+    },
+    {
+      "scene": "17",
+      "wavSha256": "3ae0421640804fe3efe42e64b473d5081c576f845330fbdec5b5c5d0ea197d89",
+      "rawAsrSha256": "271708a7f6371346acff2e3b224dd6d1ae93d0d08c56e589d4a0fe74a6986355",
+      "matchingCharacterCoverage": 0.99642,
+      "recognized": " 비행 장면에서 몸이 옆으로 기울고 돌아가는 순간을 보세요. 화면 위쪽과 몸체 위쪽을 구별합니다. 발체 구간 사이에는 장비가 바뀌는 편집 컷이 있습니다. 그 컷을 같은 회전의 연속이라고 읽지는 마세요. 각 구간 안에서는 몸에 붙인 축이 어떤 방향을 향하는지, 카메라가 어떻게 따라오는지 관찰합니다. 몸에 붙은 축을 다른 형식으로 기록해도 물체가 갑자기 돌아서는 안 됩니다. 표현의 변환과 실제로 새 회전을 적용하는 연산을 구분하세요. 같은 자세인지 비교할 때는 각 숫자가 똑같은지만 검사하지 않습니다. 그 값으로 만든 세축이 같은 기준 공간에서 일치하는지를 확인합니다. 행렬로 바꾸어도 쿼터니언으로 바꾸어도 같은 기준의 같은 자세를 나타내야 합니다. 다음 그림에서 그 관계를 계산합니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "췌",
+          "recognized": "체"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six current expanded observations: camera-up versus body-up, different gear cuts, attached-frame axes, changing representation not applying rotation, same posture via transformed three basis axes rather than identical numbers retained."
+    },
+    {
+      "scene": "18",
+      "wavSha256": "3aa9e4db9d174cfa3c4ec6787d82af657fdf7a54a7f0b6ab41d825d0dadcc681",
+      "rawAsrSha256": "14cb594b4ff25dcfc65d9c48fc5d4794a10286bbf89c98b7e9e86ee0db9477c3",
+      "matchingCharacterCoverage": 0.98326,
+      "recognized": " 헤딩, 피치, 뱅크를 각각 y, x, z 회전 행렬로 만든 뒤 정한 순서로 곱합니다. 역으로 읽을 때 행과 열 번호를 0부터 셉니다. 피치의 싸인은 아래 1행, 2열 값의 음수입니다. 특이 자세 밖에서는 헤딩의 0행, 2열과 2행, 2열의 a탄2를 씁니다. 뱅크는 1행 0열과 1행 1열로 구합니다. 이 예제는 피치를 a탄2로 구하고 두 행렬 성분의 하이포스로 특이 자세를 판별합니다. 피치가 양이나 음의 90도일 때는 뱅크를 0으로 정합니다 헤딩은 마이너스 R 2행 0열과 R 0행 0열로 구합니다 돌아온 각도가 처음 숫자와 달라도 같은 행렬이면 같은 자세일 수 있습니다 왕복검사는 자세를 비교하세요",
+      "normalizedDifferences": [
+        {
+          "expected": "r의",
+          "recognized": "아래"
+        },
+        {
+          "expected": "에",
+          "recognized": "의"
+        },
+        {
+          "expected": "으",
+          "recognized": ""
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Zero-based indices: sp=-R12, non-singular h atan2(R02,R22), b atan2(R10,R11), atan2 pitch/hypot singular guard; pitch signed90 bank0 and h atan2(-R20,R00), compare roundtrip posture. 알의/아래 ASR spelling explicit."
+    },
+    {
+      "scene": "19",
+      "wavSha256": "253efb39fb29eef6bdc44a7c82f613d53e4bbe50953cf1ef17341e4ea8f41816",
+      "rawAsrSha256": "ca4409e93332ebebe847626a904e7c1c117adf97f621caadd0a58309aff5bb24",
+      "matchingCharacterCoverage": 0.97768,
+      "recognized": " 쿼터니언을 단위 길이로 맞추면 네 성분에서 회전 행렬 9값을 계산할 수 있습니다. 일반 길이의 입력은 먼저 검사하고 정교화합니다. Z축 90도 쿼터니언을 넣습니다. 행렬의 첫 행은 0, 마이너스 1, 0입니다. 둘째 행은 1, 0, 0입니다. 셋째 행은 0, 0, 1입니다. 앞편의 행렬과 같습니다. 첫 열은 월드에서 본 로컬 X축 0, 1, 0입니다. 둘째 열은 마이너스 1, 0, 0입니다 벡터 1, 0, 0을 곱하면 0, 1, 0이 됩니다 쿼터니언의 양쪽 곱셈으로 돌린 결과와 같습니다 화면의 부호가 다르면 전치부터 하지 말고 축, 회전 방향, 입력과 출력 공간을 확인하세요 전체 공식은 재현 코드에도 남깁니다",
+      "normalizedDifferences": [
+        {
+          "expected": "아홉",
+          "recognized": "9"
+        },
+        {
+          "expected": "규",
+          "recognized": "교"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "CURRENT five complete clarified paragraphs retain unit-quaternion/nonunit input inspection and normalization, all nine Z90 matrix entries in explicit rows(0,-1,0)/(1,0,0)/(0,0,1), column local X(0,1,0) and Y(-1,0,0), vector(1,0,0)->(0,1,0), equivalent two-sided quaternion result, frame/handedness/IO before transpose, and reproducible full formula. Raw ASR includes every matrix value and sign; previous omission is absent. 정규화/정교화 and digit spelling differences remain explicitly flagged for human listening; no mathematical error normalized away."
+    },
+    {
+      "scene": "20",
+      "wavSha256": "7de06f4370a7a255a0f646000d8d62cc2aff54efabc101ce34fb5723b13940b8",
+      "rawAsrSha256": "f58ca95d7f65d24fb62b43fd24cb8da8d3a859c52e558bc8000a498713e98ea4",
+      "matchingCharacterCoverage": 0.97595,
+      "recognized": " 다시 자동차를 보세요. 차체가 향하는 쪽과 도로의 기울기를 따라갑니다. 화면에 보이는 같은 자세를 행렬이나 쿼턴 이연으로 기록할 수 있습니다. 표현을 바꾼다고 위치나 속도가 자동으로 바뀌는 것은 아닙니다. 입력 기준과 출력 기준도 유지해야 합니다. 이 주행 영상에서 실제 저장값을 읽은 것은 아닙니다. 다음 계산에 새축이 같은 자세를 나타내는지 확인할 준비입니다. 몸체의 앞쪽만 일치하고 위쪽이 다르면 같은 전체 자세가 아닐 수 있습니다. 차체 기울기까지 함께 따라가며 앞쪽과 위쪽을 비교해 보세요. 수학에서는 저장된 회전으로 기준축을 변환해 비교할 수 있습니다. 화면만 보고 숨은 숫자를 추측하는 대신 다음에 독립된 계산에서 이를 확인하겠습니다. 특히 반 바퀴 근처에서도 변환이 무너지지 않는지 보겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "터니언",
+          "recognized": "턴이연"
+        },
+        {
+          "expected": "의세",
+          "recognized": "에새"
+        },
+        {
+          "expected": "의",
+          "recognized": ""
+        },
+        {
+          "expected": "의",
+          "recognized": "에"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "CURRENT six complete paragraphs now retain car body direction and road incline, same posture represented by matrix/quaternion, representation change does not change position/speed or IO frames, real game storage not inferred, three basis axes/forward-up including body bank required for whole posture, independent transformed-axis verification instead of guessing hidden values, and half-turn robustness. Raw ASR recognizes all six paragraphs; quaternion phonetic spelling and Korean particles remain explicitly flagged for human listening. The previous body-bank omission is absent; no conceptual or numeric discrepancy normalized away."
+    },
+    {
+      "scene": "21",
+      "wavSha256": "83de032e8e1219711aa73b9f64a80b0070e375bd01166a7fcb098278092908be",
+      "rawAsrSha256": "f8c7240c173647b13baccf0a421785837addb2719474bbca981be70b978a9a63",
+      "matchingCharacterCoverage": 0.97189,
+      "recognized": " 먼저 입력 행렬이 정규직교이고 행렬식이 플러스 1인지 검사합니다. 스케일이나 반사를 회전으로 읽으면 안됩니다. 대각선 합은 트레이스입니다. 트레이스가 양수이면 W 성분을 크게 잡는 분기를 쓰기 좋습니다. 하지만 180도 회전의 W는 0입니다. W로 나누는 공식 하나만 쓰면 문제가 생깁니다. 나머지는 가장 큰 대각성분에 맞춰 X, Y, Z 분기를 고릅니다. 0에 가까운 성분으로 나누는 이를 피합니다. Z축 180도에서는 Z분기가 0, 0, 0, 1을 만듭니다 전체 부호를 바꾼 값도 같은 자세입니다 결과를 정교화한 뒤 다시 행렬로 만들어 입력과 비교하세요 잘못된 행렬을 정교화만으로 수리했다고 생각하면 안됩니다",
+      "normalizedDifferences": [
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        },
+        {
+          "expected": "일을",
+          "recognized": "이를"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "규",
+          "recognized": "교"
+        },
+        {
+          "expected": "규",
+          "recognized": "교"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Proper orthonormal det+1 matrix guards reject scale/reflection; trace-positive w branch, half-turn w0 not division-only; largest-diagonal xyz branches and Z180(0,0,0,1), normalize and compare rebuilt matrix, normalization cannot repair invalid matrix retained."
+    },
+    {
+      "scene": "22",
+      "wavSha256": "c5e195eb239474a9f2d22871fba4d831ca5b7e7c20bc16fe9ca8f41965038761",
+      "rawAsrSha256": "374bc603a20017f7947fb2975413217e5f829581189098746bb692cedb958f8f",
+      "matchingCharacterCoverage": 0.99145,
+      "recognized": " 오일러에서 쿼터니언으로 갈 때도 축별 회전을 만듭니다. Y의 헤딩, X의 피치, Z의 뱅크를 반각 공식으로 바꿉니다. 우리 규약에서는 Y 쿼터니언, X 쿼터니언, Z 쿼터니언 순으로 곱합니다. 행렬 곱 순서와 대응합니다. 돌아올 때는 단위 쿼터니언을 행렬로 만든 뒤 앞에 오일러 추출을 쓰면 됩니다. 행렬 성분을 대입한 직접 공식도 같습니다. 특이 자세에서는 뱅크를 0으로 정하고 피치는 부호에 맞는 파이 2분의 1로 고정합니다. 원문의 피치식은 경계 처리를 보완해야 합니다. 클램프는 작은 반올림 오차를 막는 도구입니다. 단위가 아닌 입력이나 잘못된 규약을 숨기는 도구로 쓰지 마세요.",
+      "normalizedDifferences": [
+        {
+          "expected": "의",
+          "recognized": "에"
+        },
+        {
+          "expected": "이",
+          "recognized": "2"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Euler Yheading/Xpitch/Zbank half-angle qy*qx*qz mirrors matrix order; q to matrix to Euler/direct equivalent; singularbank0 signedpi/2 pitch and corrected boundary, clamp only roundoff not invalid input/convention retained."
+    },
+    {
+      "scene": "23",
+      "wavSha256": "d3784acc6ca6a8e3a96a6cc5340e593095025a8f84930e09400290b7470c5258",
+      "rawAsrSha256": "d45f03fc938c2cdf072ea1ab66d5b09efc116717e5edcd5058129f50d7d3a778",
+      "matchingCharacterCoverage": 0.98496,
+      "recognized": " 자세주행 발췌에서 차체가 향하는 앞쪽과 기울기를 함께 보세요. 구간 사이의 편집 컷은 회전보관이 아닙니다. 기준축 3개를 몸에 붙이면 자세를 비교하기 쉬워집니다. 화면의 카메라 기준과도 구분합니다. 행렬과 쿼터니언 변화는 그 축의 관계를 보존해야 합니다. 속도나 충돌까지 자동으로 설명하는 것은 아닙니다. 앞쪽과 위쪽을 같은 순서로 정하면 세 번째 축도 정해집니다. 오른손 규칙과 축의 방향을 일관되게 쓰는 것이 변환 비교의 출발점입니다. 장면의 조작 결과를 특정 변환 공식의 성공 증거로 잊지는 마세요. 실제 관찰은 질문을 보여주고 공식의 값과 경계는 따로 계산해서 검증합니다. 이제 축과 각도로 되돌아가고 중간 자세와 왕복 변환을 직접 확인해 봅시다.",
+      "normalizedDifferences": [
+        {
+          "expected": "",
+          "recognized": "자"
+        },
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "환은",
+          "recognized": "화는"
+        },
+        {
+          "expected": "읽",
+          "recognized": "잊"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Three current car excerpts/bank plus basis comparisons, cuts not interpolated rotation, consistent handedness/forward-up determines third axis, actual actions pose question rather than prove proprietary formula, direct independent calculations and next practice retained."
+    },
+    {
+      "scene": "24",
+      "wavSha256": "96d244308d71e147e83e5d631dab537abb0ffa1b18371b7d92904e812d571766",
+      "rawAsrSha256": "a8095531ee5e5805308a78976d1b94d57b1fb36eb5708658bb22d672724d1986",
+      "matchingCharacterCoverage": 0.96313,
+      "recognized": " 단위축과 각도에서 커턴 이연으로 가는 식은 앞편의 방각 공식입니다. 스칼라는 코사인, 벡터는 축의 방각의 사인을 곱합니다. 짧은 대표 각도로 돌아오려면 먼저 단위 길이를 확인하고 W가 음수일 때 전체 부호를 바꿉니다. 각도는 제한한 W의 아크코사인 2배입니다. 벡터 부분의 길이가 충분하면 그것을 나누어 축을 얻습니다. 0도에서는 축이 정해지지 않습니다. 이 코드에서는 X축을 대표로 쓰지만 물리적으로 유일한 축은 아닙니다. 180도에서는 축과 반대축이 같은 끝 자세를 만듭니다 경로의 방향과 회전 이력은 별도로 관리하세요",
+      "normalizedDifferences": [
+        {
+          "expected": "쿼터니언",
+          "recognized": "커턴이연"
+        },
+        {
+          "expected": "반",
+          "recognized": "방"
+        },
+        {
+          "expected": "에반",
+          "recognized": "의방"
+        },
+        {
+          "expected": "두",
+          "recognized": "2"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Unit-axis half-angle cos scalar/n*sin vector, normalize before canonical w>=0 sign, theta2acos(clampedw), normalize vectorpart axis, zero-axis arbitrary+X and180 opposite axes same endpoint versus path/history retained."
+    },
+    {
+      "scene": "25",
+      "wavSha256": "88c5f0adc59dd7c76b41bca4cde631124bc7eb4342be602cbd6cb7718a94c7cf",
+      "rawAsrSha256": "d8a8d677ffb526718cef328b2a4437f43a252b439ae20900982307adfcd17500",
+      "matchingCharacterCoverage": 0.97333,
+      "recognized": " 첫 문제입니다. 항등에서 Z축 90도까지 슬러프의 절반 자세는 몇 도일까요? 답은 45도입니다. 쿼터니언에는 반각 22.5도의 코사인과 싸인이 들어갑니다. 행렬로 바꾸어 1, 0, 0을 돌리면 루트 2 나누기 2, 루트 2 나누기 2, 0입니다. 단위 길이도 확인해보세요. 둘째 문제입니다. Z축 180도 행렬을 쿼터니언으로 바꾸고 다시 행렬로 돌아오세요. Z분기에서 0, 0, 0, 1을 얻습니다. 다시 만든 행렬은 대각선 마이너스 1, 마이너스 1, 1입니다. 원래 쿼턴형과 부호가 달라도 두 회전 행렬이 같으면 통과할 수 있습니다. 원소 오차와 변환된 기준축을 함께 비교하세요.",
+      "normalizedDifferences": [
+        {
+          "expected": "스",
+          "recognized": "슬"
+        },
+        {
+          "expected": "영",
+          "recognized": "0"
+        },
+        {
+          "expected": "일",
+          "recognized": "1"
+        },
+        {
+          "expected": "터니언",
+          "recognized": "턴형"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Z90 SLERP halfway45 with quaternionhalfangle22.5, rotated(1,0,0)=(sqrt2/2,sqrt2/2,0), Z180 largest-z branch(0,0,0,1), rebuilt diag(-1,-1,1), q sign may differ and compare elementerror/basis retained."
+    },
+    {
+      "scene": "26",
+      "wavSha256": "2bbac482490355e32600a7e7721671c309608d37d65d1db27fbbfe6f9fac79c5",
+      "rawAsrSha256": "763d5bc00e36712cdcaa7a238870f2281bca34164760591b0a4af424263bd420",
+      "matchingCharacterCoverage": 0.98515,
+      "recognized": " 오늘은 부호를 고른 뒤 단위 길이를 지키고 짧은 호를 따라 회전을 보관했습니다. 일정 속도에는 고정된 두 자세와 선형 시간 조건도 필요했습니다. 큰 회전의 이력은 따로 남겨야 합니다. 내 표현을 바꿀 때 축과 곱셈 규약을 유지하고 0도와 180도, 오일러의 특이 자세를 처리했습니다. 게임 프로그래밍에서는 표현 이름을 외우는 데서 끝내지 말고 작은 벡터를 돌리고 되돌려 직접 확인하세요. 이것으로 3차원 회전장을 마칩니다. 다음 장에서는 물체의 위치와 자세를 함께 바꾸는 변환으로 이어가겠습니다.",
+      "normalizedDifferences": [
+        {
+          "expected": "간",
+          "recognized": "관"
+        },
+        {
+          "expected": "네",
+          "recognized": "내"
+        },
+        {
+          "expected": "삼",
+          "recognized": "3"
+        }
+      ],
+      "agentMeaningNumberReview": "passed",
+      "notes": "Sign/unit/short arc, fixed endpoints and linear time for constant speed, separate winding history, consistent four-way conversions with0/180/Euler singular guards, rotate/reverse small vectors, chapter complete and transformation next retained."
+    }
+  ],
+  "reviewedAt": "2026-10-06T07:27:23.815790+00:00",
+  "pendingScenes": [],
+  "method": "Every current full unnormalized raw read-back was directly compared with its complete KO script, source claims and independently verified numbers/signs/frames. Ambiguous omitted nouns and values were repaired without weakening coverage or ending checks. Remaining ASR spelling/filler differences are explicit, and no human listening approval is implied."
+}
