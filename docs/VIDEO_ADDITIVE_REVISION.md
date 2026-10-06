@@ -99,3 +99,5 @@ making-game-sequels [게임 속편 기획: 익숙한 재미를 남기고 새 선
 최종믹스26전체·독립문맥, KO308/EN173큐,744고유 최종프레임의124보드를 직접 대조했다. 두 UI충돌은 하단자막을 옮기지 않고 두 컷의 원본crop만 고친 final-v2로 해결했으며 나머지92입력과 타이밍·PCM을 보존했다. 두 전체decode오류0,90000timebase/35583PTS,동일AAC,−16.04LUFS/−1.98dBTP 및4파일 수집을 확인했다. 이전 final-v1 실패·수정 이력은 그대로 남긴다.
 
 새썸네일·수동 KOEN 게시됨·영어제목/설명·실측14챕터/정확채널링크·00초과외카드와 마지막10초의 재생목록/자기구독/외부과외링크를 저장 후 확인했다. 실제30초게임/80초흰설명에서 CCoff 고정자막이 보이며 당시 플레이어 화질은720p60이었다. 원본12행 회원/프로필/배지/정확제목/로고와 안내가 엔딩3요소에 가려지지 않았다. Studio의30fps 입력9:43:02–9:53:01과583067ms 시작을 관찰했으며 끝의 별도 내부timestamp를 추정하지 않는다. 현재 소유권 주장·보호콘텐츠 없음, 광고 사용/미드롤 체크, 초기 검사 알림 해소를 확인했다. 별도 wizard완료modal·광고수치점수·optionalCC전파·자동더빙은 관찰하지 않았다. 사람 전체청취/발음·최종 공개 권리/Nimbus/잘린핸들/백업·비공개고정댓글은pending이다. 현재 QA와 실제 receipt를 우선하며 Git 전달은 별도 실제 푸시증거만 완료 근거로 삼는다. 필요한 썸네일/최소게시증거5이미지만 exactpath/SHA256로 검토했으며 QA이미지·미디어는Git에 추가하지 않는다.
+
+속편 제작 전달 793cbeebf2b5dad224edc3d606a50c267b80fa82의 origin/main 일반 푸시와 실제 원격SHA 일치를 확인했다. production/batches/sakurai-planning-game-design/proof-making-game-sequels/final-private-delivery-git-verification.json의78명시경로/최종blob/다른사용자index동일 및 실제 staged-blob media gate를 통과했다. 12편 전달·중복제외1편·남은11편이며 다음 familiar-game-rules의 사전 내용 검토를 이어간다.

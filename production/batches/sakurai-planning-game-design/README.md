@@ -270,3 +270,5 @@ Continuous approvedNimbus mix has been built and measured at−16.04LUFS/−1.98
 단일 비공개·예약없음, 실제 새썸네일/한영수동 게시됨/영어 메타데이터/설명챕터·정확링크/00초카드/회원10초3요소/광고사용·미드롤/소유권주장없음과 초기검사알림해소를 저장 후 재열람했다. 실제720p60 CCoff 게임30초·흰설명80초에서 고정자막이 보인다. Studio30fps 엔딩9:43:02–9:53:01과 원본12회원·배지·이름·제목·로고의 비가림을 검토했다. fullSettingsVerified=true는 실제 게시설정의 범위이며 사람전체청취·발음·공개권리·원래Nimbus·잘린회원핸들·백업·자동더빙·optionalCC전파·비공개고정댓글은pending이다. 명시적인 wizard완료modal은미관찰false다. 최신 QA/receipt/queue를 우선하고 실제 일반푸시·원격SHA 대조 전 productionGitDelivered를 올리지 않는다.
 
 필수 썸네일1/최소 실제게시증거4이미지만 exactpath/SHA256로 승인했다. 새QA이미지/원본게임/음성/MP4 추가는0이다. 다음 familiar-game-rules는36기존프로젝트 초기 inventory와 원본 전체JA 연구내용을 읽었지만 전체 관련대본·실제 Studio 대조 전 distinct가 아니다. 대본/TTS/씬은 아직 만들지 않았다.
+
+실제 제작 전달 793cbeebf2b5dad224edc3d606a50c267b80fa82을 origin/main에 일반 푸시하고 local/remote SHA 일치를 확인했다. 다른 사용자 index 동일/미디어0/필수이미지5/새QA이미지0이며12편 전달·중복제외1편·남은11편(다음1검토+10queued)이다. 새 evidence 커밋의 미래 자체SHA는 기록하지 않는다.
