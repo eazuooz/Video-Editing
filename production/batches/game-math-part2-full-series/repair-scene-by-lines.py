@@ -10,6 +10,10 @@ import soundfile as sf
 
 ROOT = Path(__file__).resolve().parents[3]
 slug, sid = sys.argv[1:3]
+from production_control import require_current_authorization
+require_current_authorization(slug, 'narration repair')
+device = sys.argv[sys.argv.index('--device')+1] if '--device' in sys.argv else 'cpu'
+assert device in ['cpu','cuda:0']
 sid = sid.zfill(2)
 read = lambda p: json.loads(p.read_text(encoding='utf8'))
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
@@ -37,7 +41,7 @@ alternate['tts'].update(renderMode='line', lineGapSeconds=.28,
 write(work/'manifest.json', alternate)
 command = [sys.executable, '-X', 'utf8', str(Path(__file__).parent/'render-voice.py'),
     '--project', slug, '--manifest', (work/'manifest.json').relative_to(ROOT).as_posix(),
-    '--batch-size', '1', '--device', 'cpu']
+    '--batch-size', '1', '--device', device]
 subprocess.run(command, cwd=ROOT, check=True)
 sys.path.insert(0, str(ROOT/'qwen3-tts'))
 import render_narration as r
@@ -76,7 +80,7 @@ shutil.copy2(target,previous)
 sf.write(target,np.concatenate(pieces),24000)
 if '--defer-assembly' not in sys.argv:r.assemble_outputs(r.load_jobs())
 write(work/'provenance.json',{'scene':sid,'method':'Complete independently synthesized script lines; no narration text removed',
-    'model':manifest['tts']['model'],'reference':manifest['tts']['reference'],
+    'model':manifest['tts']['model'],'reference':manifest['tts']['reference'],'device':device,
     'previous':previous.relative_to(ROOT).as_posix(),'lines':line_records,
     'lineGapSeconds':.28,'currentWave':target.relative_to(ROOT).as_posix(),'sha256':sha(target),
     'rawAsrAndMeaningReview':'pending','combinedAssemblyDeferred':'--defer-assembly' in sys.argv})

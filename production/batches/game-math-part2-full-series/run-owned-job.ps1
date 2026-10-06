@@ -15,7 +15,8 @@ if ($Stage -eq 'voice') {
     $mathArgs = @('-X','utf8',"$PSScriptRoot\render-voice.py",'--project',$Project,'--batch-size','1','--device',$Device)
     if ($ForceScenes) { $mathArgs += @('--force-scenes',$ForceScenes) }
 } elseif ($Stage -eq 'review') {
-    $mathArgs = @('-X','utf8',"$PSScriptRoot\review-voice.py",'--project',$Project,'--watch','--device','cpu')
+    $mathReviewDevice = if ($Device -eq 'cuda:0') { 'cuda' } else { 'cpu' }
+    $mathArgs = @('-X','utf8',"$PSScriptRoot\review-voice.py",'--project',$Project,'--watch','--device',$mathReviewDevice)
 } else {
     $mathArgs = @('-X','utf8',"$PSScriptRoot\incremental-render.py",$Project)
 }

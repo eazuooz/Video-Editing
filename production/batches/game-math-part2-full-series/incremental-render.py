@@ -8,6 +8,8 @@ from pathlib import Path
 import sys,json,hashlib,os,subprocess,time,math
 import soundfile as sf
 ROOT=Path(__file__).resolve().parents[3];slug=sys.argv[1]
+from production_control import require_current_authorization
+require_current_authorization(slug,'incremental scene rendering')
 sys.path.insert(0,str(ROOT/'qwen3-tts'))
 from review_project_narration import acoustic_evidence
 sys.argv=['align',slug]

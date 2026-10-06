@@ -3,7 +3,10 @@
 The shared CPU renderer selects eight threads; preserve its inference settings.
 """
 from pathlib import Path
-import sys,torch
+import sys
+from production_control import require_current_authorization
+if '--project' in sys.argv:require_current_authorization(sys.argv[sys.argv.index('--project')+1],'narration synthesis')
+import torch
 ROOT=Path(__file__).resolve().parents[3];sys.path.insert(0,str(ROOT/'qwen3-tts'))
 torch.set_num_threads(2)
 from qwen_tts import Qwen3TTSModel
@@ -22,6 +25,10 @@ def generate_with_local_stream(self,*args,**kwargs):
  stream=torch.cuda.Stream(device=self.device,priority=-1);stream.wait_stream(current)
  with torch.cuda.stream(stream):result=original_generate(self,*args,**kwargs)
  stream.synchronize();current.wait_stream(stream)
+ # Completed audio is on CPU. Release unused allocator blocks between
+ # independent scenes so long lectures do not retain avoidable GPU reserve.
+ # This changes neither synthesis settings nor the approved voice prompt.
+ torch.cuda.empty_cache()
  return result
 Qwen3TTSModel.generate_voice_clone=generate_with_local_stream
 import render_narration

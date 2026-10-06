@@ -30,7 +30,14 @@ def normalized(s):
  for x,y in [('코사인','cos'),('싸인','sin'),('사인','sin'),('에이탄 투','atan2'),('에이탄투','atan2'),('에이탄2','atan2'),('a탄2','atan2'),('하이폿','hypot'),('하이포트','hypot'),('하이포스','hypot'),('하이팟','hypot'),('마이너스','-'),('루트','sqrt'),('다섯','5'),('셋','3'),('둘','2'),('네 칸','4칸'),('세 칸','3칸'),('엑스','x'),('와이','y'),('제트','z'),('에이','a')]:s=s.replace(x,y)
  s=re.sub(r'(?<![가-힣])알(?=\s|[,.;:]|은|을|의|에|이|와|과|$)','r',s)
  s=re.sub(r'(?<![가-힣])비(?=\s|[,.;:]|를|로|$)','b',s)
- s=re.sub(r'(?<![가-힣])([영일이삼사오육칠팔구십백천]+)(?=\s|[,.;:]|도|칸|초|으로|에서|부터|만큼|보다|입니다|이면|이고|곱|나누기|와|과|로|$)',lambda m:number(m[1]),s)
+ # Geometry read-back writes t/s and metres as Latin labels, and attaches
+ # Korean particles to otherwise identical numerals. This is timing-only;
+ # a wrong numeral (e.g.1 versus2) still remains a mismatch for raw review.
+ s=re.sub(r'알파벳\s+오','알파벳 o',s)
+ for spoken,latin in [('티','t'),('에스','s')]:
+  s=re.sub(r'(?<![가-힣])'+spoken+r'(?=\s|[,.;:]|가|를|에|는|의|곱|값|$)',latin,s)
+ s=s.replace('미터','m')
+ s=re.sub(r'(?<![가-힣])([영일이삼사오육칠팔구십백천]+)(?=\s|[,.;:]|도|칸|초|으로|에서|부터|만큼|보다|입니다|이면|이라고|이고|인|을|를|의|이므로|곱|나누기|와|과|로|$)',lambda m:number(m[1]),s)
  # Decimal point only between numerals. A sentence such as "점 변환" is
  # a geometric point, including when it follows the previous joined line.
  s=re.sub(r'(?<=\d)\s+점\s+(?=\d)', '.', s)

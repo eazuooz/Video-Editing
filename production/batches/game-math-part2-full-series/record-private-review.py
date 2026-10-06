@@ -13,17 +13,32 @@ specs = {
     'game-math-rotation-interpolation': ('mGBYkpSC9Mw', '18:59:45', '19:09:45', 249),
 }
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('slug', choices=specs)
+parser.add_argument('slug')
+parser.add_argument('--video-id', help='Actual new Studio video ID; required for lectures without a preserved legacy receipt specification.')
 parser.add_argument('--uploaded-pixels-reviewed', action='store_true', required=True)
 parser.add_argument('--member-layout-reviewed', action='store_true', required=True)
 parser.add_argument('--playback-seconds', type=int, required=True)
 args = parser.parse_args()
 slug = args.slug
-video_id, start_tc, end_tc, cue_count = specs[slug]
 read = lambda p: json.loads(p.read_text(encoding='utf-8-sig'))
 write = lambda p, v: p.write_text(json.dumps(v, ensure_ascii=False, indent=2) + '\n', encoding='utf8')
 pub = root / f'projects/{slug}/publishing/youtube-upload.json'
 u = read(pub)
+if slug in specs:
+    video_id, start_tc, end_tc, cue_count = specs[slug]
+    if args.video_id: assert args.video_id == video_id
+else:
+    assert args.video_id and re.fullmatch(r'[A-Za-z0-9_-]{11}',args.video_id)
+    queue=read(Path(__file__).with_name('queue.json'))
+    assert any(x['slug']==slug for x in queue['items'])
+    video_id=args.video_id
+    timeline=read(root/f'projects/{slug}/production/timeline.json')
+    assert timeline['fps']==60 and timeline['outroSeconds']==10
+    def timecode(frames):
+        minutes,remaining=divmod(frames,3600);seconds,frame=divmod(remaining,60)
+        return f'{minutes:02}:{seconds:02}:{frame:02}'
+    start_tc=timecode(timeline['frames']-600);end_tc=timecode(timeline['frames'])
+    cue_count=len(timeline['koCaptions'])
 qa = root / f'shared/output/{slug}/qa'
 assert u['videoId'] == video_id and u['metadata']['privacyStatus'] == 'private'
 assert 0 < args.playback_seconds < u['video']['seconds'] - 10

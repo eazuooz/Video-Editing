@@ -9,6 +9,8 @@ import soundfile as sf
 from observations import place_observation_pauses,mapped_time,observation_capacity_seconds
 ROOT=Path(__file__).resolve().parents[3]
 slug=sys.argv[1];stage=sys.argv[2]
+from production_control import require_current_authorization
+require_current_authorization(slug,stage)
 spec=importlib.util.spec_from_file_location('caption_tools',ROOT/'projects/game-math-polar-sample/production/build.py');b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
 b.BASE=ROOT/'projects'/slug;b.WORK=ROOT/'shared/output'/slug;b.MC=ROOT/'motion-canvas/src/projects'/slug;b.MF=b.BASE/'project.json';b.WORK.mkdir(parents=True,exist_ok=True)
 BASE=b.BASE;WORK=b.WORK;MC=b.MC;FPS=60
