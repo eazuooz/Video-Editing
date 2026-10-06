@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "status": "passed-planning-numerics-only",
-  "createdAtUtc": "2026-10-06T08:21:47.444349+00:00",
+  "createdAtUtc": "2026-10-06T08:55:12.332326+00:00",
   "sourcePath": "tmp/game-math-part2-sources/3e10b1ffa61e81c0878ce2c8a397fd23.txt",
   "sourceSha256": "453efb002cd52721ec70d1f6653c7bb60c0db6dd71ca7efbc8705d73052ffca1",
-  "scriptSha256": "3d92d8386670916a87c93898a05f85f2aa60335dd53d91749d324f1bb7b5409d",
+  "scriptSha256": "c7aef819880fcb395f880ea80a07e3a04738ddcc29ba8457ccd893f46848a99f",
   "checks": [
     {
       "name": "translated-conic-linear-terms",
@@ -61,6 +61,112 @@
           2.5
         ],
         "parameterMeaning": "normalized segment fraction unless explicitly reparameterized"
+      }
+    },
+    {
+      "name": "fraction-versus-distance-intro-example",
+      "passed": true,
+      "evidence": {
+        "origin": [
+          2.0,
+          1.0
+        ],
+        "delta": [
+          6.0,
+          3.0
+        ],
+        "tHalf": [
+          5,
+          2.5
+        ],
+        "tOne": [
+          8,
+          4
+        ],
+        "segmentLength": 6.708203932499369,
+        "unitDirection": [
+          0.8944271909999159,
+          0.4472135954999579
+        ],
+        "distanceToMidpoint": 3.3541019662496847,
+        "fractionHasNoImplicitTimeOrLengthUnit": true
+      }
+    },
+    {
+      "name": "sphere-proxy-membership-and-radius-scaling",
+      "passed": true,
+      "evidence": {
+        "center": [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "radius": 2.0,
+        "squaredDistances": [
+          0.0,
+          4.0,
+          9.0
+        ],
+        "boundaryRadiusSquared": 4,
+        "doubleRadiusSurfaceFactor": 4,
+        "doubleRadiusVolumeFactor": 8,
+        "dataIsExplicitMathematicalExampleNotMeasuredGameplay": true
+      }
+    },
+    {
+      "name": "broadphase-aabb-false-positive",
+      "passed": true,
+      "evidence": {
+        "firstVertices": [
+          [
+            -2.050609665440988,
+            -2.1920310216782974
+          ],
+          [
+            -2.1920310216782974,
+            -2.050609665440988
+          ],
+          [
+            2.1920310216782974,
+            2.050609665440988
+          ],
+          [
+            2.050609665440988,
+            2.1920310216782974
+          ]
+        ],
+        "secondVertices": [
+          [
+            -2.7577164466275357,
+            -1.48492424049175
+          ],
+          [
+            -2.899137802864845,
+            -1.3435028842544408
+          ],
+          [
+            1.48492424049175,
+            2.7577164466275357
+          ],
+          [
+            1.3435028842544408,
+            2.899137802864845
+          ]
+        ],
+        "aabbOverlapMin": [
+          -2.1920310216782974,
+          -1.48492424049175
+        ],
+        "aabbOverlapMax": [
+          1.48492424049175,
+          2.1920310216782974
+        ],
+        "separatingNormal": [
+          -0.7071067811865476,
+          0.7071067811865476
+        ],
+        "normalGap": 0.8000000000000003,
+        "shapesTouch": false
       }
     },
     {
@@ -351,6 +457,110 @@
         "absoluteFanAreaSum": 16.0,
         "validPartition": false,
         "convexSevenVertexFanTriangleCount": 5
+      }
+    },
+    {
+      "name": "concave-ear-sequence-specific-example",
+      "passed": true,
+      "evidence": {
+        "vertices": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            4.0,
+            0.0
+          ],
+          [
+            4.0,
+            1.0
+          ],
+          [
+            1.0,
+            1.0
+          ],
+          [
+            1.0,
+            4.0
+          ],
+          [
+            0.0,
+            4.0
+          ]
+        ],
+        "earChecks": [
+          {
+            "ear": 1,
+            "triangle": [
+              0,
+              1,
+              2
+            ],
+            "otherRemainingVertices": [
+              3,
+              4,
+              5
+            ],
+            "containsOtherVertex": false
+          },
+          {
+            "ear": 2,
+            "triangle": [
+              0,
+              2,
+              3
+            ],
+            "otherRemainingVertices": [
+              4,
+              5
+            ],
+            "containsOtherVertex": false
+          },
+          {
+            "ear": 3,
+            "triangle": [
+              0,
+              3,
+              4
+            ],
+            "otherRemainingVertices": [
+              5
+            ],
+            "containsOtherVertex": false
+          }
+        ],
+        "triangles": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            5
+          ]
+        ],
+        "positiveTriangleAreas": [
+          2.0,
+          1.5,
+          1.5,
+          2.0
+        ],
+        "totalArea": 7.0,
+        "independentNonBoundaryCoverageSamples": 2021,
+        "scope": "Specific validated simple L-shaped polygon, not a general hole-handling implementation or a proof of arbitrary fans"
       }
     }
   ],

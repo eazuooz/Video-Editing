@@ -30,6 +30,29 @@ close(o+delta,[-2,8]);close(m,-5/7);close(intercept,46/7)
 close(42/7,6)
 save('ray-exercises',{'exercise1':{'slope':float(m),'intercept':float(intercept),'endpoint':(o+delta).tolist()},'exercise2':{'equation':'4x+7y=42','slope':-4/7,'intercept':6},'tHalfExample':[5,2.5],'parameterMeaning':'normalized segment fraction unless explicitly reparameterized'})
 
+# Separately label the introductory fraction example, not the exercise endpoint.
+exampleOrigin=np.array([2.,1.]);exampleDelta=np.array([6.,3.]);length=np.linalg.norm(exampleDelta)
+close(exampleOrigin+.5*exampleDelta,[5,2.5]);close(exampleOrigin+exampleDelta,[8,4])
+unit=exampleDelta/length;close(np.linalg.norm(unit),1)
+close(exampleOrigin+.5*length*unit,[5,2.5])
+save('fraction-versus-distance-intro-example',{'origin':exampleOrigin.tolist(),'delta':exampleDelta.tolist(),'tHalf':[5,2.5],'tOne':[8,4],'segmentLength':float(length),'unitDirection':unit.tolist(),'distanceToMidpoint':float(length/2),'fractionHasNoImplicitTimeOrLengthUnit':True})
+
+# Exact proxy data for the planned sphere explanation; never inferred from a game.
+sphereCenter=np.array([1.,2.,3.]);radius=2.
+distances=[float((p-sphereCenter)@(p-sphereCenter)) for p in [sphereCenter,np.array([3.,2.,3.]),np.array([4.,2.,3.])]]
+close(distances,[0,4,9])
+close((4*math.pi*(2*radius)**2)/(4*math.pi*radius**2),4)
+close(((4/3)*math.pi*(2*radius)**3)/((4/3)*math.pi*radius**3),8)
+save('sphere-proxy-membership-and-radius-scaling',{'center':sphereCenter.tolist(),'radius':radius,'squaredDistances':distances,'boundaryRadiusSquared':4,'doubleRadiusSurfaceFactor':4,'doubleRadiusVolumeFactor':8,'dataIsExplicitMathematicalExampleNotMeasuredGameplay':True})
+
+# Two separated slender boxes can nevertheless overlap in world AABB space.
+u=np.array([math.sqrt(.5),math.sqrt(.5)]);n=np.array([-math.sqrt(.5),math.sqrt(.5)])
+first=np.array([a*u+b*n for a,b in itertools.product([-3.,3.],[-.1,.1])]);second=first+n
+lo=np.maximum(first.min(0),second.min(0));hi=np.minimum(first.max(0),second.max(0))
+assert np.all(lo<hi)
+assert (first@n).max()<(second@n).min()
+save('broadphase-aabb-false-positive',{'firstVertices':first.tolist(),'secondVertices':second.tolist(),'aabbOverlapMin':lo.tolist(),'aabbOverlapMax':hi.tolist(),'separatingNormal':n.tolist(),'normalGap':float((second@n).min()-(first@n).max()),'shapesTouch':False})
+
 # Compare tight bounds of points to enclosure of the source's entire box.
 points=np.array([[7,11,-5],[2,3,8],[-3,3,1],[-5,-7,0],[6,3,4]],dtype=float)
 low,high=points.min(0),points.max(0);close(low,[-5,-7,-5]);close(high,[7,11,8])
@@ -81,6 +104,35 @@ def cross2(a,b): return a[0]*b[1]-a[1]*b[0]
 fan=[float(cross2(ordered[i]-ordered[0],ordered[i+1]-ordered[0])/2) for i in range(1,len(ordered)-1)]
 close(sum(fan),polygonArea);assert sum(abs(a) for a in fan)>polygonArea
 save('concave-fan-counterexample',{'vertices':polygon.tolist(),'anchorVertex':[4,1],'polygonArea':float(polygonArea),'signedFanAreas':fan,'absoluteFanAreaSum':sum(abs(a) for a in fan),'validPartition':False,'convexSevenVertexFanTriangleCount':5})
+
+# Verify this particular ear-removal sequence independently of any renderer.
+remaining=list(range(len(polygon)));triangles=[];earEvidence=[]
+def inTriangle(p,a,b,c,strict=False):
+    values=[cross2(b-a,p-a),cross2(c-b,p-b),cross2(a-c,p-c)]
+    return min(values)>1e-10 if strict else min(values)>=-1e-10
+for ear in [1,2,3]:
+    index=remaining.index(ear);previous=remaining[index-1];following=remaining[(index+1)%len(remaining)]
+    a,b,c=polygon[[previous,ear,following]]
+    assert cross2(b-a,c-a)>0
+    others=[v for v in remaining if v not in [previous,ear,following]]
+    assert not any(inTriangle(polygon[v],a,b,c) for v in others)
+    triangle=[previous,ear,following];triangles.append(triangle)
+    earEvidence.append({'ear':ear,'triangle':triangle,'otherRemainingVertices':others,'containsOtherVertex':False})
+    remaining.remove(ear)
+triangles.append(remaining)
+areas=[float(cross2(polygon[t[1]]-polygon[t[0]],polygon[t[2]]-polygon[t[0]])/2) for t in triangles]
+assert len(triangles)==len(polygon)-2 and min(areas)>0;close(sum(areas),polygonArea)
+samples=0
+for x in np.linspace(.031,3.973,47):
+    for y in np.linspace(.043,3.967,43):
+        p=np.array([x,y]);expected=x<1 or y<1
+        signs=[inTriangle(p,*polygon[t],strict=True) for t in triangles]
+        # Omit samples on shared internal edges; the remaining points test coverage.
+        boundary=any(any(abs(cross2(polygon[t[(j+1)%3]]-polygon[t[j]],p-polygon[t[j]]))<1e-10 for j in range(3)) for t in triangles)
+        if boundary:continue
+        assert sum(signs)==int(expected),(p,signs)
+        samples+=1
+save('concave-ear-sequence-specific-example',{'vertices':polygon.tolist(),'earChecks':earEvidence,'triangles':triangles,'positiveTriangleAreas':areas,'totalArea':sum(areas),'independentNonBoundaryCoverageSamples':samples,'scope':'Specific validated simple L-shaped polygon, not a general hole-handling implementation or a proof of arbitrary fans'})
 
 record={'schemaVersion':1,'status':'passed-planning-numerics-only','createdAtUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'sourcePath':source.relative_to(r).as_posix(),'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'scriptSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'checks':results,'notFinalProductionQA':True,'newNarrationOrMediaCreated':False}
 out.write_text(json.dumps(record,ensure_ascii=False,indent=2)+'\n',encoding='utf8')

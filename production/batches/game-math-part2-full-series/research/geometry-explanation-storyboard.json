@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "chapter": 9,
+  "status": "explanation-planning-only",
+  "sourceAudit": "production/batches/game-math-part2-full-series/research/geometry-source-readiness.json",
+  "numericAudit": "production/batches/game-math-part2-full-series/research/geometry-source-numeric-audit.json",
+  "footageSelectionComplete": false,
+  "projectCreated": false,
+  "narrationWritten": false,
+  "ttsStarted": false,
+  "renderStarted": false,
+  "common": {
+    "visualStyle": "Original white2.5D comparisons, forest-green emphasis, separate independent scene for each explanation and gameplay observation.",
+    "renderer": "Existing Manim Community0.20.1 Cairo; preserve the installed series runtime.",
+    "coordinateConvention": "Right-handed column vectors, drawing y-up. Label origin, axes and units before calculating. Changing a source row-vector formula requires an explicit transpose/convention audit.",
+    "captionSafeArea": "Fixed bottom-center boxed-white-forest captions at1920x1080 center(960,970). Keep worked code footers and active equation lines above the tallest two-line caption box.",
+    "overview": "After the original2second cat intro, independently write KO/EN20–30second narration explaining the question, what viewers can calculate, and the actual order of the secured examples.",
+    "outro": "Original10second membership photo/name/badge rows, cat logo and canonical coaching URL.",
+    "bodyRatio": "Measured actual existing-game footage40% / explanation60%, excluding branding and membership; no loops, artificial slow motion, background music or source audio.",
+    "duration": "Aim for focused15–20minute parts. Measure actual narration before deciding whether more splitting is needed; do not cut essential calculations to meet a guessed runtime.",
+    "developmentFootage": "A rendered code illustration is explanation time. No invented game or playable test may fill actual-game time."
+  },
+  "parts": [
+    {
+      "slug": "game-math-lines-bounds",
+      "sections": ["9.1", "9.2", "9.3", "9.4"],
+      "centralQuestion": "형태를 계산 가능한 데이터로 바꾸고, 직선·구·상자로 점과 공간을 어떻게 검사할까?",
+      "proposedExplanationScenes": [
+        {"id": "forms", "claim": "The same shape has direct data, a parametric construction and an implicit test.", "visual": "Three equal-sized panels: circle center/radius; moving p(theta)=c+r(cos theta,sin theta); a candidate point changing the sign of ||p-c||²-r². Keep the shape itself consistent across all three.", "guard": "An implicit zero set describes the boundary. Interior tests require an inequality and a stated sign."},
+        {"id": "translated-conic", "claim": "A moved circle needs linear terms in a general quadratic equation.", "worked": "Center(2,3),radius1: (x-2)²+(y-3)²=1 expands to x²+y²-4x-6y+12=0.", "visual": "Slide the circle off the origin, then expand the squares one line at a time. Color the newly introduced x/y terms."},
+        {"id": "parameter-domain", "claim": "A parameter domain determines whether a formula describes a line, ray or segment.", "worked": "p(t)=(2,1)+t(6,3); t=.5 gives(5,2.5), t=1 gives(8,4).", "visual": "Compare t in all real numbers, t>=0 and0<=t<=1 using the same origin/delta arrows.", "guard": "Explain the source's finite directed-ray convention separately from the usual infinite ray. A fraction t is not automatically seconds or metres."},
+        {"id": "distance-parameter", "claim": "Unit direction makes a distance parameter meaningful.", "worked": "u=(6,3)/sqrt45, p(s)=origin+s*u. Travel length along the segment is sqrt45.", "visual": "Separate the normalized direction arrow from a ruler labelled in metres; do not use the fraction label on the ruler.", "guard": "Zero delta has no unique direction; validate finite coordinates before normalization."},
+        {"id": "line-equations", "claim": "Slope/intercept fails for vertical lines; a normal equation still works.", "worked": "Exercise origin(5,3),delta(-7,5): endpoint(-2,8), slope-5/7, intercept46/7. Compare x=1 as a vertical line.", "visual": "Animate two endpoints, rise/run, then n dot p=d; show n perpendicular to the line.", "guard": "Only a unit normal makes the residual a signed distance."},
+        {"id": "perpendicular-bisector", "claim": "The normal of an equal-distance bisector points from one endpoint to the other.", "worked": "q=(0,0),r=(2,0), n=(2,0), midpoint(1,0), d=2; the bisector is x=1.", "visual": "Show equal radius segments to an off-axis point(1,2). Compare the incorrect y=0 line through the original points.", "guard": "Do not rotate the normal again; coincident q/r do not define a unique bisector."},
+        {"id": "sphere-membership", "claim": "A sphere boundary and a solid ball have different tests.", "worked": "c=(1,2,3),r=2: point(3,2,3) is on the boundary; c is inside; point(4,2,3) is outside.", "visual": "Use a translucent3D sphere with three labelled points; compare squared distances0,4,9 to r²=4.", "guard": "Radius must be finite and nonnegative. Use tolerances with units and scale when testing floating-point equality."},
+        {"id": "sphere-measures", "claim": "Radius changes circumference, surface area and volume at different rates.", "worked": "Diameter2r; circle circumference2*pi*r and disk area*pi*r²; sphere surface4*pi*r² and volume4*pi*r³/3.", "visual": "Use separate2D disk and3D sphere panels. Doubling radius highlights factors2,4,8; label length, area and volume units.", "guard": "A nonuniformly scaled sphere generally becomes an ellipsoid."},
+        {"id": "aabb-components", "claim": "An AABB is the intersection of three independent coordinate intervals.", "worked": "min(-5,-7,-5),max(7,11,8); center(1,2,1.5), half-extents(6,9,6.5), size(12,18,13).", "visual": "Reveal x,y,z slabs before the final box. Keep min/max comparisons in matching axis colors."},
+        {"id": "aabb-construction-code", "claim": "Construct bounds by comparing each point's coordinates against the matching axis.", "visual": "Distinct syntax/semantic code colors, current point highlighted in the3D plot, active min/max line highlighted in code.", "guard": "Define an empty-box state; initialize from the first valid point or infinities; reject nonfinite inputs. Compare y against min.y/max.y and z against min.z/max.z."},
+        {"id": "bounds-not-collision", "claim": "Overlapping enclosing boxes identify a possible pair, not necessarily touching shapes.", "visual": "Two slender diagonal shapes have overlapping AABBs while remaining separated. Compare sphere, fixed-axis box and oriented box with the same shapes.", "guard": "Broadphase needs a later exact/narrowphase decision; visible gameplay does not reveal the actual collider type."},
+        {"id": "rotated-minmax-failure", "claim": "Transforming just two opposite corners can miss the new extrema.", "worked": "Rotate a non-square rectangle45degrees. Track all four2D corners first, then extend to eight3D corners.", "visual": "The old min/max pair maps inside the new enclosure; highlight the missed corners in red. Preserve the series' column-vector convention."},
+        {"id": "fast-affine-aabb", "claim": "The center/half-extents method matches an eight-corner enclosure for an affine transform.", "worked": "c'=A*c+t; e'=abs(A)*e; min'=c'-e', max'=c'+e'.", "visual": "One row of A shows how signed coordinate contributions become extent magnitudes. Compare the resulting box with transformed corners.", "guard": "This encloses the transformed input box, not generally the tight bounds of the original mesh. Perspective transforms require a different analysis."},
+        {"id": "source-points-worked", "claim": "Bounds of transformed actual points can be tighter than bounds of the transformed whole box.", "worked": "Use the original five points(7,11,-5),(2,3,8),(-3,3,1),(-5,-7,0),(6,3,4). Display audited45degree point bounds beside audited box bounds.", "visual": "Give the five points solid markers and the eight box corners hollow markers. Build the two enclosures independently.", "guard": "Separate exact sqrt(.5) from the original rounded .707 coefficient. Retrieve the audited numeric values without silently rounding intermediate calculations."}
+      ],
+      "proposedGameplayConnections": [
+        {"claimIds": ["forms", "parameter-domain", "distance-parameter", "line-equations"], "visibleActionRequired": "A visible beam/aim line changes with the source or viewing direction and meets an obstruction.", "viewerFocus": "Where the visible path begins, its direction, and the first visible surface it meets.", "sourceInterval": null},
+        {"claimIds": ["sphere-membership", "sphere-measures"], "visibleActionRequired": "An existing game's clearly rounded object moves in relation to another object or surface.", "viewerFocus": "The observed approximate shape is the motivation for a stated mathematical proxy; never assert a hidden sphere collider.", "sourceInterval": null},
+        {"claimIds": ["aabb-components", "bounds-not-collision", "rotated-minmax-failure", "fast-affine-aabb"], "visibleActionRequired": "A visible box-like or elongated game object moves or rotates near an opening or obstacle.", "viewerFocus": "Its silhouette spans different world-axis ranges as its orientation changes.", "sourceInterval": null}
+      ],
+      "guidedExercise": "Compute the ray endpoint and line equation, build bounds of the five source points, then distinguish transformed-box bounds from transformed-point bounds."
+    },
+    {
+      "slug": "game-math-planes-barycentric",
+      "sections": ["9.5", "9.6.1–9.6.4"],
+      "centralQuestion": "점이 평면의 어느 쪽에 있는지 계산하고, 삼각형 안의 위치와 속성을 어떻게 보간할까?",
+      "proposedExplanationScenes": [
+        {"id": "affine-plane", "visual": "Compare a plane through the origin with the translated plane y=2.", "claim": "A general plane is an affine set; it need not be a linear subspace through the origin."},
+        {"id": "plane-distance", "worked": "n=(0,2,0),d=4,p=(4,5,-3): residual6, distance3, closest point(4,2,-3).", "visual": "A perpendicular ruler is distinct from the raw equation residual.", "guard": "Normalize n and d together; zero normal is invalid. Distance is (n dot p-d)/||n||."},
+        {"id": "plane-from-points", "visual": "Build two edge vectors from one triangle vertex and reveal their right-handed cross product.", "guard": "Point order reverses the normal. Collinear/near-collinear points need validation before dividing by the normal magnitude."},
+        {"id": "ordered-polygon-normal", "visual": "Add ordered Newell edge contributions around a polygon, then compare shuffled inputs.", "guard": "This is an ordered polygon method, not a general unordered-point least-squares fit."},
+        {"id": "triangle-length-and-area", "worked": "Triangle(0,0),(4,0),(0,3): sides3,4,5; perimeter12; semiperimeter6; area6 by base-height, Heron and cross-product magnitude.", "visual": "Use one triangle across three equal-sized area-method panels.", "guard": "Unsigned3D area and signed2D area behave differently under winding reversal."},
+        {"id": "affine-triangle-weights", "worked": "p=lambda1*v1+lambda2*v2+lambda3*v3 with sum(lambda)=1; after choosing v3 as origin, the independent axes are v1-v3 and v2-v3.", "visual": "Vertex, edge midpoint, center and outside points move across the same triangle.", "guard": "Nonnegative weights describe points inside/on a nondegenerate triangle. Negative weights are meaningful outside values."},
+        {"id": "worked-barycentrics", "worked": "Vertices(0,0,0),(6,0,0),(0,4,0), weights(.2,.3,.5) produce(1.8,2,0). Outside weights(-.2,.7,.5) produce(4.2,2,0).", "visual": "Show colored per-vertex contributions before adding the final point; separate weight values from spatial units."},
+        {"id": "signed-area-weights", "visual": "Compare interior signed subareas with an exterior example whose subarea becomes negative.", "guard": "Unsigned subareas alone lose the outside signs. The denominator must be nonzero and well-conditioned enough for the required tolerance."},
+        {"id": "projection-and-coplanarity", "worked": "Query(1.8,2,7) has the same XY projection as the inside example but lies7units off the plane.", "visual": "Use linked3D and2D views; the projected point stays fixed while z increases.", "guard": "Dropping the largest-normal-component axis helps solve projected coordinates; it does not prove that the original query is on the plane."},
+        {"id": "attribute-interpolation", "visual": "Use the same three weights to mix three vertex colors or another explicitly defined scalar attribute.", "guard": "Attribute interpolation is a mathematical explanation. Do not classify this animated triangle as actual-game footage or silently substitute screen-space affine weights for perspective-correct rasterization."}
+      ],
+      "proposedGameplayConnections": [
+        {"claimIds": ["affine-plane", "plane-distance", "plane-from-points"], "visibleActionRequired": "A character/object moves above and below, or approaches, a clearly visible reference surface.", "viewerFocus": "The visible side of the surface and perpendicular separation, rather than an unobserved infinite in-game plane.", "sourceInterval": null},
+        {"claimIds": ["triangle-length-and-area", "affine-triangle-weights", "attribute-interpolation"], "visibleActionRequired": "Actual interaction with a game surface or a visibly triangular region.", "viewerFocus": "A location relative to three explicitly chosen reference points; no assertion about the game's hidden mesh indices or shading implementation.", "sourceInterval": null}
+      ],
+      "guidedExercise": "Normalize the plane correctly, compute signed distance, reconstruct a point from three weights, and reject the off-plane query even though its projection matches."
+    },
+    {
+      "slug": "game-math-polygons-triangulation",
+      "sections": ["9.6.5", "9.7", "9.8 selected guided exercises"],
+      "centralQuestion": "삼각형의 서로 다른 중심을 구분하고, 다각형을 유효한 삼각형들로 어떻게 나눌까?",
+      "proposedExplanationScenes": [
+        {"id": "three-centers", "worked": "Triangle(0,0),(4,0),(0,3): centroid(4/3,1), incenter(1,1), circumcenter(2,1.5).", "visual": "Reveal medians, angle bisectors and perpendicular bisectors independently before comparing the three centers.", "guard": "A uniform triangular lamina has the centroid at the vertex average. A game's arbitrary mass distribution need not."},
+        {"id": "incenter-and-radius", "worked": "Weight each vertex by the opposite side length(5,3,4); perimeter12, area6; r=2A/perimeter=1.", "visual": "Draw the inscribed circle and three perpendicular equal-distance segments.", "guard": "Do not omit the factor2 when using the full perimeter."},
+        {"id": "circumcenter-limits", "worked": "Right triangle circumradius2.5. Obtuse triangle(0,0),(4,0),(1,1) has circumcenter(2,-1), outside the triangle.", "visual": "Vary the angle through acute/right/obtuse; show equal vertex distances, not equal edge distances."},
+        {"id": "contour-topology", "visual": "Compare a simple ordered contour, a contour with a hole and a self-intersecting contour.", "guard": "Finite coordinates, repeated vertices, zero-length edges, collinearity, planarity and self-intersections are separate checks. State library-specific simple/complex terminology."},
+        {"id": "convexity", "visual": "A segment between two interior points remains inside a convex polygon; a concave notch provides a counterexample.", "guard": "Same-sign turn tests assume a valid simple ordered contour. Convexity alone does not prove planarity or simplicity."},
+        {"id": "convex-fan", "worked": "A valid convex polygon with7vertices produces7-2=5 fan triangles.", "visual": "Reveal one diagonal and triangle at a time, preserving contour winding and shared vertices."},
+        {"id": "concave-fan-failure", "worked": "L-shaped contour(0,0),(4,0),(4,1),(1,1),(1,4),(0,4), fan anchor(4,1).", "visual": "Show the outside fan triangle. Compare the audited signed area sum with the larger sum of absolute triangle areas.", "guard": "Signed area cancellation can equal the polygon area even when the fan is not a valid partition."},
+        {"id": "ear-clipping-and-quality", "visual": "On the audited simple L-shaped contour, remove ears1,2,3 and keep the final triangle. Reveal four nonoverlapping triangles with areas2,1.5,1.5,2, totaling7.", "numericAuditCheck": "concave-ear-sequence-specific-example", "guard": "The independent audit checks convex ears, other-vertex exclusion and2021 nonboundary coverage samples for this example. It does not validate a general triangulation implementation or hole handling. A quality heuristic or arbitrary fan does not solve every contour."}
+      ],
+      "proposedGameplayConnections": [
+        {"claimIds": ["three-centers", "incenter-and-radius", "circumcenter-limits"], "visibleActionRequired": "An actual triangular game structure or chosen three-point reference arrangement.", "viewerFocus": "Each center answers a different geometric question; the visual structure is not evidence of a hidden physical center of mass.", "sourceInterval": null},
+        {"claimIds": ["contour-topology", "convexity", "convex-fan", "concave-fan-failure"], "visibleActionRequired": "A visible convex/concave boundary or placement path in an existing game.", "viewerFocus": "A notch, diagonal or crossing that can be directly seen, without asserting unobserved triangulation/collision decomposition.", "sourceInterval": null}
+      ],
+      "guidedExercise": "Calculate the three centers of the3-4-5 triangle, count a seven-vertex convex fan, then explain why the concave fan fails."
+    }
+  ]
+}
