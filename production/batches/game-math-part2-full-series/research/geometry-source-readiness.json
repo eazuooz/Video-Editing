@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "chapter": 9,
+  "status": "source-audit-complete-production-not-started",
+  "reviewedAt": "2026-10-06",
+  "source": {
+    "url": "https://app.notion.com/p/3e10b1ffa61e81c0878ce2c8a397fd23",
+    "localPath": "tmp/game-math-part2-sources/3e10b1ffa61e81c0878ce2c8a397fd23.txt",
+    "sha256": "453efb002cd52721ec70d1f6653c7bb60c0db6dd71ca7efbc8705d73052ffca1",
+    "sourceAsOf": "2026-09-20T09:49:15.151Z",
+    "completeLocalSourceRead": true,
+    "liveNotionRead": false
+  },
+  "scopeCorrection": {
+    "reason": "The actual source has9.6.5 special points and no9.6.6. Separate barycentric calculations from triangle centers without duplicating or dropping either.",
+    "game-math-lines-bounds": [
+      "9.1",
+      "9.2",
+      "9.3",
+      "9.4"
+    ],
+    "game-math-planes-barycentric": [
+      "9.5",
+      "9.6.1–9.6.4"
+    ],
+    "game-math-polygons-triangulation": [
+      "9.6.5",
+      "9.7",
+      "9.8 selected guided exercises"
+    ]
+  },
+  "coverage": [
+    {
+      "slug": "game-math-lines-bounds",
+      "explanationOrder": [
+        "Implicit membership/surface tests, parametric coordinates and direct shape data; parameters are not automatically time or distance",
+        "Full conic polynomial including linear terms; circle and sphere degrees of freedom",
+        "Classical infinite ray versus this book's finite directed segment; explicit parameter domains",
+        "p(t)=origin+t*delta, endpoint conversions, unit direction and distance parameter; zero-length and zero-normal guards",
+        "2D slope/intercept and vertical lines, n dot p=d with normalized coefficients, correct perpendicular bisector",
+        "Sphere surface versus solid, squared-distance membership, diameter/circumference/area/surface/volume",
+        "AABB min/max, center and half-extents; componentwise construction with empty input and finite data checks",
+        "Bounding sphere, local OBB and world AABB tradeoffs; broadphase overlap is only a candidate",
+        "Column-vector affine AABB transform: all8 corners versus c'=A*c+t and e'=abs(A)*e; not just transformed min/max",
+        "Guided ray equation and actual-point AABB versus transformed-box AABB comparison"
+      ],
+      "footageRequirements": [
+        "New existing-game targeting/laser/line-of-sight action showing origin, direction and obstruction without claiming hidden raycast implementation",
+        "Existing-game spherical and elongated/rotating objects illustrating enclosure; do not claim visible silhouettes expose actual collider data"
+      ]
+    },
+    {
+      "slug": "game-math-planes-barycentric",
+      "explanationOrder": [
+        "A general plane is an affine set and need not pass through the origin",
+        "n dot p=d, front/back and signed distance divided by normal length; normalization must also scale d",
+        "Noncollinear points, cross-product order under the series right-handed convention; near-degenerate scale-aware handling",
+        "Ordered polygon Newell normal and mean offset; distinguish unordered orthogonal least-squares point fitting",
+        "Triangle edge indices, opposite side lengths, sine/cosine laws and perimeter",
+        "Base-height, Heron and cross-product area; signed2D area and unsigned3D area have different sign behavior",
+        "Barycentric affine weights, sum1, nonnegative inside tests, edge/vertex/outside examples and attribute interpolation",
+        "Signed subtriangle areas and largest-normal-component projection for3D; check coplanarity separately",
+        "Nonzero area does not guarantee well-conditioned arithmetic; invalid input and tolerance choices",
+        "Worked weights(0.2,0.3,0.5) for vertices(0,0),(6,0),(0,4) give(1.8,2); explicit off-plane rejection"
+      ],
+      "footageRequirements": [
+        "Existing-game visible surface/ground crossing and changing height; narration observes above/below a reference surface rather than inventing an infinite in-game plane",
+        "Actual mesh/surface interaction in an existing game; any code/editor material requires the topic's explicit development scope and separate classification",
+        "Attribute-color triangle diagrams remain explanation time, never actual-game footage"
+      ]
+    },
+    {
+      "slug": "game-math-polygons-triangulation",
+      "explanationOrder": [
+        "Uniform triangular lamina centroid, incenter and circumcenter have different definitions; general game mass distribution need not equal a vertex average",
+        "3-4-5 triangle centroid(4/3,1), incenter(1,1), circumcenter(2,1.5); inradius2A/perimeter=1 and circumradius2.5",
+        "Obtuse-triangle circumcenter outside and right-triangle circumcenter on the hypotenuse",
+        "Ordered planar contours, holes and self-intersections; library-specific simple/complex terminology and overlapping seam limits",
+        "Convex segment test and oriented turns; same-sign turns assume a valid simple contour",
+        "Repeated vertices, zero-length edges, collinearity, nonplanarity and self-intersections are independent validation problems",
+        "Convex polygon fan contains n-2 triangles; a concave counterexample exposes an outside fan triangle",
+        "Source's diagonal quality heuristic and skinny-triangle limits; no claim that an arbitrary fan solves every concave polygon",
+        "Concave example may use a separately verified ear-clipping explanation with simple input and hole-handling limits",
+        "Guided seven-vertex fan and triangle-center calculation; preserve core sections without pretending to narrate every original exercise verbatim"
+      ],
+      "footageRequirements": [
+        "New existing-game triangular/convex/concave environment or placement action with a specific visible viewer focus",
+        "Surface shape alone does not prove the game's triangulation, mesh indices, collision decomposition or mass distribution"
+      ]
+    }
+  ],
+  "correctionsAndLimits": [
+    {
+      "section": "9.1",
+      "correction": "General translated conic: Ax²+Bxy+Cy²+Dx+Ey+F=0. A shifted circle needs linear terms."
+    },
+    {
+      "section": "9.2.1",
+      "correction": "For delta(6,3), t=.5 is half the segment, not .5 seconds/metres. With unit direction, a distance parameter has spatial units."
+    },
+    {
+      "section": "9.2.3",
+      "correction": "Perpendicular bisector n=r-q,d=n dot(q+r)/2. The original rotated normal describes the line through the two points."
+    },
+    {
+      "section": "9.4.2",
+      "correction": "Compare y with min.y/max.y and z with min.z/max.z. Initialize the actual point count; reject nonfinite inputs and define empty-box state."
+    },
+    {
+      "section": "9.4.4",
+      "correction": "Original uses row vectors. Adapt once to the existing series' column vectors; abs(A)*half-extents describes the affine image's exact box enclosure, not necessarily the tight AABB of the original mesh."
+    },
+    {
+      "section": "9.5",
+      "correction": "General planes are affine, not necessarily linear subspaces. Signed distances require division by norm(n) unless n is unit; normalize n and d together."
+    },
+    {
+      "section": "9.5.3",
+      "correction": "Newell's ordered polygon normal is not a general least-squares fit to an unordered point cloud. Check polygon order, enough points and nonzero area before normalization."
+    },
+    {
+      "section": "9.6.2",
+      "correction": "Area by cross-product magnitude is nonnegative; signed2D formula changes with winding. Compare absolute values consistently."
+    },
+    {
+      "section": "9.6.3",
+      "correction": "With origin v3, independent basis axes are v1-v3 and v2-v3. Dimension n-1 needs affine independence."
+    },
+    {
+      "section": "9.6.4",
+      "correction": "Four equations with three unknowns can be consistent; an on-plane point admits barycentrics. Projection alone does not verify coplanarity, and unsigned subtriangle areas lose outside signs."
+    },
+    {
+      "section": "9.6.5",
+      "correction": "Inradius r=2A/perimeter=A/semiperimeter. Circumcenter may lie outside an obtuse triangle."
+    },
+    {
+      "section": "9.7",
+      "correction": "Remove C++ trailing argument comma. Convexity checks do not replace finite/planar/simple-contour validation, and hole-bridging seams require suitable algorithms."
+    }
+  ],
+  "productionGates": {
+    "currentFullInventoryAndStudioDuplicateReview": "pending-before-project-creation",
+    "freshGameSourceAndRecentUseReview": "pending",
+    "actualSourcePixelsAndRights": "pending-before-footage-narration",
+    "narrationWritten": false,
+    "ttsStarted": false,
+    "renderStarted": false,
+    "uploaded": false
+  },
+  "policy": {
+    "actualGameplayShare": 0.4,
+    "explanationShare": 0.6,
+    "backgroundMusic": false,
+    "sourceAudio": false,
+    "renderer": "Manim Community0.20.1 Cairo",
+    "privacy": "private",
+    "existingCompletedFilesPreserved": true
+  },
+  "currentInventoryReview": {
+    "existingProjects": 37,
+    "inventoryReport": "production/preflight/game-math-lines-bounds.json",
+    "exactMatches": [],
+    "currentStudioMathTitleRows": 18,
+    "geometryTitleMatches": 0,
+    "studioProofs": [
+      {
+        "path": "shared/output/game-math-part2-full-series/preflight/studio-geometry-title-review.ax.txt",
+        "sha256": "d468eedd3851d3846de821a8145c714f5d740f04e4ee6006cdeca06e0ec2f24c"
+      },
+      {
+        "path": "shared/output/game-math-part2-full-series/preflight/studio-math-before-geometry.ax.txt",
+        "sha256": "d7d7edec2f7b39c5994558e82dead430ae10b1c8d86ec078df5d4fafd35760b7"
+      }
+    ],
+    "scope": "Full current local inventory gathered and actual native18 mathematics-title rows compared. Final per-candidate content decision and creation-time digest pass remain pending.",
+    "overlapsRead": [
+      "Existing polar3d coordinates and camera positions; not sphere implicit membership or bounding-box enclosures",
+      "RenderFormer review51–52: mesh normals/material input tokens; not barycentric computation or primitive geometry lecture",
+      "DX12 PSO review: object sorting/transparency/depth policies; not plane equation and triangle coordinate calculations"
+    ]
+  },
+  "numericAudit": "production/batches/game-math-part2-full-series/research/geometry-source-numeric-audit.json"
+}
