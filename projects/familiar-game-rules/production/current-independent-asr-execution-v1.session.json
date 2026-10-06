@@ -1,0 +1,43 @@
+{
+  "pid": 17412,
+  "sessionId": 66281,
+  "observedAt": "2026-10-06T08:09:34.3423953Z",
+  "alive": false,
+  "exitObserved": true,
+  "commandLine": [
+    "projects/familiar-game-rules/production/review-independent-contexts-v1.py",
+    "--resource",
+    "production/batches/sakurai-planning-game-design/proof-familiar-game-rules/resource-observation-v9.json"
+  ],
+  "processes": [
+    {
+      "ProcessId": 53284,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-06T17:09:01.290935+09:00",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$processes=@(Get-CimInstance Win32_Process|Where-Object Name -Match 'python|ffmpeg|node'|Select-Object ProcessId,ParentProcessId,Name,CreationDate,CommandLine); $own=@($processes|Where-Object { $_.CommandLine -match 'familiar-game-rules' -and $_.CommandLine -match 'review-current-narration|review-independent-contexts|additional-official|extract-cut|render_narration' }); $r=[ordered]@{observedAt=[DateTime]::UtcNow.ToString('o');cpuLoadPercent=[double](Get-CimInstance Win32_Processor|Measure-Object LoadPercentage -Average).Average;gpuRaw=(& nvidia-smi --query-gpu=index,utilization.gpu,memory.used,memory.total --format=csv,noheader);processes=$processes;ownHeavyJobs=$own.Count}; $r|ConvertTo-Json -Depth 5|Set-Content -Encoding utf8 -LiteralPath 'production/batches/sakurai-planning-game-design/proof-familiar-game-rules/resource-observation-v9.json'; $r|Select-Object observedAt,cpuLoadPercent,gpuRaw,ownHeavyJobs|ConvertTo-Json; & 'D:\\Github\\Video-Editing\\qwen3-tts\\.venv\\Scripts\\python.exe' -X utf8 projects/familiar-game-rules/production/review-independent-contexts-v1.py --resource production/batches/sakurai-planning-game-design/proof-familiar-game-rules/resource-observation-v9.json *> 'projects/familiar-game-rules/production/current-independent-asr-v1.log'\""
+    },
+    {
+      "ProcessId": 60348,
+      "ParentProcessId": 53284,
+      "CreationDate": "2026-10-06T17:09:03.183255+09:00",
+      "CommandLine": "\"D:\\Github\\Video-Editing\\qwen3-tts\\.venv\\Scripts\\python.exe\" -X utf8 projects/familiar-game-rules/production/review-independent-contexts-v1.py --resource production/batches/sakurai-planning-game-design/proof-familiar-game-rules/resource-observation-v9.json"
+    },
+    {
+      "ProcessId": 17412,
+      "ParentProcessId": 60348,
+      "CreationDate": "2026-10-06T17:09:03.194587+09:00",
+      "CommandLine": "\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\" -X utf8 projects/familiar-game-rules/production/review-independent-contexts-v1.py --resource production/batches/sakurai-planning-game-design/proof-familiar-game-rules/resource-observation-v9.json"
+    },
+    {
+      "ProcessId": 49332,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-06T17:09:33.607272+09:00",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$r=Get-Content -Raw -LiteralPath 'production/batches/sakurai-planning-game-design/proof-familiar-game-rules/resource-observation-v9.json'|ConvertFrom-Json; $r|Select-Object observedAt,cpuLoadPercent,gpuRaw,ownHeavyJobs|ConvertTo-Json; $s=Get-Content -Raw -LiteralPath 'projects/familiar-game-rules/production/current-independent-asr-execution-v1.json'|ConvertFrom-Json; $s|Select-Object pid,status,completed,totalContexts,startedAt|ConvertTo-Json; $p=@(Get-CimInstance Win32_Process|Where-Object { $_.CommandLine -match 'python.exe.*review-independent-contexts-v1.py' }|Select-Object ProcessId,ParentProcessId,CreationDate,CommandLine); $p|ConvertTo-Json; $session=[ordered]@{pid=$s.pid;sessionId=66281;observedAt=[DateTime]::UtcNow.ToString('o');alive=(@($p|Where-Object ProcessId -eq $s.pid).Count -eq 1);exitObserved=$false;commandLine=$s.commandLine;processes=$p;cpuThreads=2;gpuJobs=0}; $session|ConvertTo-Json -Depth 6|Set-Content -Encoding utf8 -LiteralPath 'projects/familiar-game-rules/production/current-independent-asr-execution-v1.session.json'\""
+    }
+  ],
+  "cpuThreads": 2,
+  "gpuJobs": 0,
+  "exitCode": 0,
+  "exitObservedAt": "2026-10-06T08:16:06.278118+00:00",
+  "observedBy": "Actual exec session66281 returned exit0; matched actualPython17412/proxy60348 absent in CIM"
+}

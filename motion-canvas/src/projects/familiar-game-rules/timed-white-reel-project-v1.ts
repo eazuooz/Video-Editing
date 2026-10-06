@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import whitev1_00 from './scenes/whitev1_00?scene';
+import whitev1_01 from './scenes/whitev1_01?scene';
+import whitev1_02 from './scenes/whitev1_02?scene';
+import whitev1_03 from './scenes/whitev1_03?scene';
+import whitev1_04 from './scenes/whitev1_04?scene';
+import whitev1_05 from './scenes/whitev1_05?scene';
+import whitev1_06 from './scenes/whitev1_06?scene';
+import whitev1_07 from './scenes/whitev1_07?scene';
+export default makeProject({name:'familiar-game-rules-timed-white-v1',scenes:[whitev1_00,whitev1_01,whitev1_02,whitev1_03,whitev1_04,whitev1_05,whitev1_06,whitev1_07]});

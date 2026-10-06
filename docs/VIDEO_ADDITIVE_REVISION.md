@@ -101,3 +101,13 @@ making-game-sequels [게임 속편 기획: 익숙한 재미를 남기고 새 선
 새썸네일·수동 KOEN 게시됨·영어제목/설명·실측14챕터/정확채널링크·00초과외카드와 마지막10초의 재생목록/자기구독/외부과외링크를 저장 후 확인했다. 실제30초게임/80초흰설명에서 CCoff 고정자막이 보이며 당시 플레이어 화질은720p60이었다. 원본12행 회원/프로필/배지/정확제목/로고와 안내가 엔딩3요소에 가려지지 않았다. Studio의30fps 입력9:43:02–9:53:01과583067ms 시작을 관찰했으며 끝의 별도 내부timestamp를 추정하지 않는다. 현재 소유권 주장·보호콘텐츠 없음, 광고 사용/미드롤 체크, 초기 검사 알림 해소를 확인했다. 별도 wizard완료modal·광고수치점수·optionalCC전파·자동더빙은 관찰하지 않았다. 사람 전체청취/발음·최종 공개 권리/Nimbus/잘린핸들/백업·비공개고정댓글은pending이다. 현재 QA와 실제 receipt를 우선하며 Git 전달은 별도 실제 푸시증거만 완료 근거로 삼는다. 필요한 썸네일/최소게시증거5이미지만 exactpath/SHA256로 검토했으며 QA이미지·미디어는Git에 추가하지 않는다.
 
 속편 제작 전달 793cbeebf2b5dad224edc3d606a50c267b80fa82의 origin/main 일반 푸시와 실제 원격SHA 일치를 확인했다. production/batches/sakurai-planning-game-design/proof-making-game-sequels/final-private-delivery-git-verification.json의78명시경로/최종blob/다른사용자index동일 및 실제 staged-blob media gate를 통과했다. 12편 전달·중복제외1편·남은11편이며 다음 familiar-game-rules의 사전 내용 검토를 이어간다.
+
+## 2026-10-07 familiar-game-rules 비공개 검토본 및 현재 편 이후 정지
+
+[NLEHMC0XMtg](https://youtu.be/NLEHMC0XMtg)는 단일 고정한글 MP4로 비공개 저장했다. 19장/70한영문단·373.6800833초 PCM과24.32초 전체안내를 보존했다. 공식 Anger Foot/Gunbrella/My Friend Pedro의85고유컷/8흰설명으로 본편13710실제·9140설명프레임은 정확60:40이다. 전체23570프레임392.833333초1080p60이며 최종38혼합문맥·KO253/EN118큐·1502프레임251보드직접검수·두decode0·90000PTS·동일AAC·−16.04LUFS/−2.45dBTP·4파일수집을 완료했다. 최신 QA/receipt를 우선한다.
+
+비공개/예약없음·수동KOEN·영어제목설명·12실측챕터와정확채널링크·00초카드·회원마지막10초의재생목록/자기구독/외부링크·광고사용/자체평가/저작권 및 광고검사문제없음·소유권주장없음을 저장 후 확인했다. 실제720p60 게임38.392273초·흰설명77.474133초 CCoff 픽셀에 고정한글자막이 보인다. 원본12회원/프로필/배지/이름/제목/로고를 보존하며 별도wizard완료modal은미관찰이다.
+
+실제일일썸네일한도는 비차단후속으로 보존하고 thumbnailSaved/fullSettingsVerified=false다. 사용자재개후에만 정상UI재시도한다. 사람전체청취/발음·공개권리/Nimbus·잘린회원핸들·외부백업·자동더빙·optionalCC전파·비공개고정댓글은pending이다. 썸네일1/최소게시증거4만exactpath/SHA256로Git허용하며 새QA/소스이미지·미디어는0이다.
+
+사용자의 ‘논문 실험 먼저 진행해야 해서 이것까지만 완료되면 일단 정지해줘~’에 따라 현재편 선택Git전달 후 제작을 정지한다. 자동화24는 실제PAUSED며 다음10queued를 시작하지 않는다. 현재13제작/수집/비공개·12전체게시설정/1썸네일후속이며 Git은 실제후속검증기록을 기준으로 완료한다. 논문실험·GPU_TTS_HOLD·외부작업/staging을 보존한다.
