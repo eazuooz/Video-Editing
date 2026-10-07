@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import depthexplanation_01 from './scenes/depthexplanation_01?scene';
+import depthexplanation_03 from './scenes/depthexplanation_03?scene';
+import depthpotion_state_study from './scenes/depthpotion_state_study?scene';
+import depthexplanation_05 from './scenes/depthexplanation_05?scene';
+import depthexplanation_07 from './scenes/depthexplanation_07?scene';
+import depthexplanation_09 from './scenes/depthexplanation_09?scene';
+import depthexplanation_11 from './scenes/depthexplanation_11?scene';
+import depthexplanation_13 from './scenes/depthexplanation_13?scene';
+export default makeProject({name:'game-reward-planning-depth-v1',scenes:[depthexplanation_01,depthexplanation_03,depthpotion_state_study,depthexplanation_05,depthexplanation_07,depthexplanation_09,depthexplanation_11,depthexplanation_13]});
