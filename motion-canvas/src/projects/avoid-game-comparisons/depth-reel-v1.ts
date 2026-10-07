@@ -1,0 +1,16 @@
+import {makeProject} from '@motion-canvas/core';
+import depth01_original_white_explanation from './scenes/depth01_original_white_explanation?scene';
+import depth03_original_white_explanation from './scenes/depth03_original_white_explanation?scene';
+import depth05_original_white_explanation from './scenes/depth05_original_white_explanation?scene';
+import depth06_2_white_comparison from './scenes/depth06_2_white_comparison?scene';
+import depth06_4_white_comparison from './scenes/depth06_4_white_comparison?scene';
+import depth07_original_white_explanation from './scenes/depth07_original_white_explanation?scene';
+import depth13_3_white_comparison from './scenes/depth13_3_white_comparison?scene';
+import depth09_original_white_explanation from './scenes/depth09_original_white_explanation?scene';
+import depth10_2_white_comparison from './scenes/depth10_2_white_comparison?scene';
+import depth10_4_white_comparison from './scenes/depth10_4_white_comparison?scene';
+import depth11_original_white_explanation from './scenes/depth11_original_white_explanation?scene';
+import depth14_0_white_comparison from './scenes/depth14_0_white_comparison?scene';
+import depth15_3_white_comparison from './scenes/depth15_3_white_comparison?scene';
+import depth12_2_white_comparison from './scenes/depth12_2_white_comparison?scene';
+export default makeProject({name:'avoid-game-comparisons-depth-v1',scenes:[depth01_original_white_explanation,depth03_original_white_explanation,depth05_original_white_explanation,depth06_2_white_comparison,depth06_4_white_comparison,depth07_original_white_explanation,depth13_3_white_comparison,depth09_original_white_explanation,depth10_2_white_comparison,depth10_4_white_comparison,depth11_original_white_explanation,depth14_0_white_comparison,depth15_3_white_comparison,depth12_2_white_comparison]});
