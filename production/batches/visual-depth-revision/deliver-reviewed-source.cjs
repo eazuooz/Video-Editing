@@ -57,7 +57,11 @@ for(let i=0;i<ownChanged.length;i+=15)git(['restore','--staged','--source='+comm
 for(const file of special){const blob=git(['hash-object','-w','--stdin'],process.env,mergeOwn(file,initialSpecial[file]));git(['update-index','--add','--cacheinfo','100644',blob,file]);}
 const foreignEntries=text=>text.split('\0').filter(Boolean).filter(line=>!allowed.has(line.split('\t')[1])).join('\0');
 if(foreignEntries(git(['ls-files','--stage','-z']))!==foreignEntries(sharedEntriesBefore))throw Error('Unrelated shared index entries differ');
-git(['push','origin',commit+':refs/heads/main']);
+const proofPath=path.join(root,batch,`git-delivery-${slug}.json`);
+Object.assign(proof,{commit,pushed:false,unrelatedIndexEntriesPreserved:true,ownIndexPathsSynchronized:true});
+fs.writeFileSync(proofPath,JSON.stringify(proof,null,2)+'\n');
+try{git(['push','origin',commit+':refs/heads/main']);}
+catch(error){proof.pushFailure={at:new Date().toISOString(),message:error.message};fs.writeFileSync(proofPath,JSON.stringify(proof,null,2)+'\n');throw error;}
 const local=git(['rev-parse','HEAD']),remote=git(['ls-remote','origin','refs/heads/main']).split(/\s/)[0];
 if(local!==commit||remote!==commit)throw Error('Delivery commit exists but exact current local/remote equality needs renewed verification');
 for(const row of rows)if(git(['rev-parse',remote+':'+row.path])!==git(['rev-parse',':'+row.path],env))throw Error('Remote blob mismatch: '+row.path);
