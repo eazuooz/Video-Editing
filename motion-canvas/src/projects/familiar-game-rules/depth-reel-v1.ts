@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import depth01 from './scenes/depth01?scene';
+import depth03 from './scenes/depth03?scene';
+import depth05 from './scenes/depth05?scene';
+import depth14 from './scenes/depth14?scene';
+import depth07 from './scenes/depth07?scene';
+import depth17 from './scenes/depth17?scene';
+import depth09 from './scenes/depth09?scene';
+import depth11 from './scenes/depth11?scene';
+export default makeProject({name:'familiar-game-rules-depth-v1',scenes:[depth01,depth03,depth05,depth14,depth07,depth17,depth09,depth11]});
