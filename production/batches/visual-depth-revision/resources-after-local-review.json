@@ -1,0 +1,187 @@
+{
+  "checkedAt": "2026-10-07T04:13:32.480418+00:00",
+  "method": "read-only psutil command lines plus creation times; inaccessible command lines left untouched",
+  "ownedVisualDepthProcesses": [
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "-NoProfile",
+        "-Command",
+        "try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n@'\nimport psutil,datetime,json,subprocess\nfrom pathlib import Path\nown=[]; foreign=[]; unreadable=[]\nfor p in psutil.process_iter(['pid','name','cmdline','create_time']):\n try:\n  d=p.info; cmd=d.get('cmdline')\n  if not cmd:\n   if any(x in (d.get('name') or '').lower() for x in ['python','ffmpeg','node']): unreadable.append({'pid':d['pid'],'name':d['name']})\n   continue\n  s=' '.join(cmd).lower().replace('\\\\','/')\n  if 'production/batches/visual-depth-revision/' in s or ('render-depth-cpu.cjs' in s): own.append(d)\n  elif 'renderformer' in s or 'yamyamstudio/app.py' in s: foreign.append(d)\n except (psutil.NoSuchProcess,psutil.AccessDenied): pass\ntry:\n gpu=subprocess.run(['nvidia-smi','--query-gpu=utilization.gpu,memory.used,memory.total','--format=csv,noheader'],capture_output=True,text=True,creationflags=0x08000000); gpuobs={'exitCode':gpu.returncode,'output':gpu.stdout.strip(),'error':gpu.stderr.strip()}\nexcept Exception as e: gpuobs={'error':str(e)}\nrecord={'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'method':'read-only psutil command lines plus creation times; inaccessible command lines left untouched','ownedVisualDepthProcesses':own,'foreignPreserved':foreign,'inaccessibleProcessesPreserved':unreadable,'gpu':gpuobs,'processesTerminated':0,'newTtsStarted':0,'newTopicsStarted':0,'holdChanged':False}\npath=Path('production/batches/visual-depth-revision/resources-after-local-review.json'); assert not path.exists(); path.write_text(json.dumps(record,ensure_ascii=False,indent=2)+'\\n','utf-8')\nprint(json.dumps({'owned':own,'foreignPids':[p['pid'] for p in foreign],'inaccessibleCount':len(unreadable),'gpu':gpuobs,'record':path.as_posix()},ensure_ascii=False))\n'@ | & 'C:/Users/eazuo/miniconda3/envs/renderformer/python.exe' -X utf8 -"
+      ],
+      "name": "pwsh.exe",
+      "create_time": 1791346408.7028255,
+      "pid": 43128
+    }
+  ],
+  "foreignPreserved": [
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\pythonw.exe",
+        "C:\\Users\\eazuo\\OneDrive\\문서\\ChatGPT\\YamYamStudio\\app.py"
+      ],
+      "name": "pythonw.exe",
+      "create_time": 1790925971.4570172,
+      "pid": 20544
+    },
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "--eval",
+        "// Windows may deny ancestor metadata even when the configured folder is readable.\nconst fs = require(\"node:fs\");\nconst pathApi = require(\"node:path\");\nconst { fileURLToPath } = require(\"node:url\");\n\nconst originalRealpathSync = fs.realpathSync;\nconst key = (path) =>\n  pathApi.toNamespacedPath(pathApi.resolve(path)).toLowerCase();\nconst roots = new Set(\n  [\n    pathApi.dirname(process.argv[1]),\n    ...(process.env.NODE_REPL_NODE_MODULE_DIRS ?? \"\")\n      .split(pathApi.delimiter)\n      .map((entry) => entry.trim()),\n    ...(process.env.NODE_REPL_TRUSTED_CODE_PATHS ?? \"\")\n      .split(pathApi.delimiter)\n      .filter(pathApi.isAbsolute),\n  ]\n    .filter(Boolean)\n    .map(key),\n);\n\nfs.realpathSync = function realpathSync(path, options) {\n  try {\n    // Preserve Node's canonical paths (including short names and links) when possible.\n    return originalRealpathSync.native(path, options);\n  } catch (error) {\n    if (error.code !== \"EPERM\" && error.code !== \"EACCES\") {\n      throw error;\n    }\n    if (path instanceof URL) {\n      path = fileURLToPath(path);\n    }\n    if (Buffer.isBuffer(path)) {\n      path = path.toString();\n    }\n\n    const filename = pathApi.resolve(path);\n    // Only accept paths below a configured root. A junction or symlink could\n    // point outside that root, so it must not receive the lexical fallback.\n    for (let current = filename; ; current = pathApi.dirname(current)) {\n      if (fs.lstatSync(current).isSymbolicLink()) {\n        throw error;\n      }\n      if (roots.has(key(current))) {\n        const encoding =\n          typeof options === \"string\" ? options : options?.encoding;\n        const buffer = Buffer.from(filename);\n        return encoding === \"buffer\"\n          ? buffer\n          : buffer.toString(encoding ?? \"utf8\");\n      }\n      if (pathApi.dirname(current) === current) {\n        throw error;\n      }\n    }\n  }\n};\nfs.realpathSync.native = fs.realpathSync;\n\n// --eval leaves the script at argv[1]. Use Node's ordinary main-module loader\n// so argv, require.main, and relative imports keep their normal meaning.\nrequire(\"node:module\").runMain();\n",
+        "C:\\Users\\eazuo\\AppData\\Local\\Temp\\.tmp4lwtNN\\trusted-worker.js",
+        "C:\\Users\\eazuo\\renderformer"
+      ],
+      "name": "node.exe",
+      "create_time": 1791309486.7671473,
+      "pid": 24816
+    },
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "--eval",
+        "// Windows may deny ancestor metadata even when the configured folder is readable.\nconst fs = require(\"node:fs\");\nconst pathApi = require(\"node:path\");\nconst { fileURLToPath } = require(\"node:url\");\n\nconst originalRealpathSync = fs.realpathSync;\nconst key = (path) =>\n  pathApi.toNamespacedPath(pathApi.resolve(path)).toLowerCase();\nconst roots = new Set(\n  [\n    pathApi.dirname(process.argv[1]),\n    ...(process.env.NODE_REPL_NODE_MODULE_DIRS ?? \"\")\n      .split(pathApi.delimiter)\n      .map((entry) => entry.trim()),\n    ...(process.env.NODE_REPL_TRUSTED_CODE_PATHS ?? \"\")\n      .split(pathApi.delimiter)\n      .filter(pathApi.isAbsolute),\n  ]\n    .filter(Boolean)\n    .map(key),\n);\n\nfs.realpathSync = function realpathSync(path, options) {\n  try {\n    // Preserve Node's canonical paths (including short names and links) when possible.\n    return originalRealpathSync.native(path, options);\n  } catch (error) {\n    if (error.code !== \"EPERM\" && error.code !== \"EACCES\") {\n      throw error;\n    }\n    if (path instanceof URL) {\n      path = fileURLToPath(path);\n    }\n    if (Buffer.isBuffer(path)) {\n      path = path.toString();\n    }\n\n    const filename = pathApi.resolve(path);\n    // Only accept paths below a configured root. A junction or symlink could\n    // point outside that root, so it must not receive the lexical fallback.\n    for (let current = filename; ; current = pathApi.dirname(current)) {\n      if (fs.lstatSync(current).isSymbolicLink()) {\n        throw error;\n      }\n      if (roots.has(key(current))) {\n        const encoding =\n          typeof options === \"string\" ? options : options?.encoding;\n        const buffer = Buffer.from(filename);\n        return encoding === \"buffer\"\n          ? buffer\n          : buffer.toString(encoding ?? \"utf8\");\n      }\n      if (pathApi.dirname(current) === current) {\n        throw error;\n      }\n    }\n  }\n};\nfs.realpathSync.native = fs.realpathSync;\n\n// --eval leaves the script at argv[1]. Use Node's ordinary main-module loader\n// so argv, require.main, and relative imports keep their normal meaning.\nrequire(\"node:module\").runMain();\n",
+        "--experimental-vm-modules",
+        "C:\\Users\\eazuo\\AppData\\Local\\Temp\\.tmp4lwtNN\\kernel.js",
+        "--session-id",
+        "3bbd95c8754f4d06a9b4fe7369574da7",
+        "--working-dir",
+        "C:\\Users\\eazuo\\renderformer"
+      ],
+      "name": "node.exe",
+      "create_time": 1791309486.7623012,
+      "pid": 27784
+    },
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+        "-X",
+        "utf8",
+        "-"
+      ],
+      "name": "python.exe",
+      "create_time": 1791346408.9396813,
+      "pid": 36616
+    },
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe",
+        "-X",
+        "utf8",
+        "C:/Users/eazuo/renderformer/lora_experiment/analysis/placement127/gpu_queue.py"
+      ],
+      "name": "python.exe",
+      "create_time": 1791335574.5967977,
+      "pid": 36820
+    },
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\OneDrive\\문서\\ChatGPT\\YamYamStudio\\.venv\\Scripts\\pythonw.exe",
+        "C:\\Users\\eazuo\\OneDrive\\문서\\ChatGPT\\YamYamStudio\\app.py"
+      ],
+      "name": "pythonw.exe",
+      "create_time": 1790925971.4373214,
+      "pid": 39612
+    },
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe",
+        "C:\\Users\\eazuo\\renderformer\\lora_experiment\\phase1_train_all_modes.py",
+        "--scene",
+        "cbox-bunny,cbox,horse-and-heart,init-template,veach-mis,crystals,tree,compose-scene,cbox-lucy,cbox-teapot,shader-ball",
+        "--steps",
+        "2000",
+        "--resolution",
+        "256",
+        "--save_every",
+        "500",
+        "--only",
+        "palette",
+        "--seed",
+        "43",
+        "--rank",
+        "8",
+        "--output_root",
+        "output_place127_p001_s43",
+        "--no_vi_attn",
+        "--vn_encoder",
+        "--texture_encoder",
+        "--tri_token"
+      ],
+      "name": "python.exe",
+      "create_time": 1791346340.666124,
+      "pid": 49980
+    },
+    {
+      "cmdline": [
+        "c:/Users/eazuo/anaconda3/envs/renderformer/python.exe",
+        "C:\\Users\\eazuo\\renderformer\\lora_experiment\\train_multiview.py",
+        "--h5_file",
+        "C:\\Users\\eazuo\\renderformer\\tmp\\cbox-bunny\\cbox-bunny.h5,C:\\Users\\eazuo\\renderformer\\tmp\\cbox\\cbox.h5,C:\\Users\\eazuo\\renderformer\\tmp\\horse-and-heart\\horse-and-heart.h5,C:\\Users\\eazuo\\renderformer\\tmp\\init-template\\init-template.h5,C:\\Users\\eazuo\\renderformer\\tmp\\veach-mis\\veach-mis.h5,C:\\Users\\eazuo\\renderformer\\tmp\\crystals\\crystals.h5,C:\\Users\\eazuo\\renderformer\\tmp\\tree\\tree.h5,C:\\Users\\eazuo\\renderformer\\tmp\\compose-scene\\compose-scene.h5,C:\\Users\\eazuo\\renderformer\\tmp\\cbox-lucy\\cbox-lucy.h5,C:\\Users\\eazuo\\renderformer\\tmp\\cbox-teapot\\cbox-teapot.h5,C:\\Users\\eazuo\\renderformer\\tmp\\shader-ball\\shader-ball.h5",
+        "--data_dir",
+        "C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\cbox-bunny,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\cbox,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\horse-and-heart,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\init-template,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\veach-mis,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\crystals,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\tree,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\compose-scene,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\cbox-lucy,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\cbox-teapot,C:\\Users\\eazuo\\renderformer\\lora_experiment\\data\\pbr_dataset\\shader-ball",
+        "--target_dir",
+        "C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\cbox-bunny,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\cbox,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\horse-and-heart,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\init-template,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\veach-mis,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\crystals,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\tree,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\compose-scene,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\cbox-lucy,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\cbox-teapot,C:\\Users\\eazuo\\renderformer\\mitsuba_gt\\renders\\palette\\shader-ball",
+        "--output_dir",
+        "output_place127_p001_s43/palette",
+        "--steps",
+        "2000",
+        "--rank",
+        "8",
+        "--lr",
+        "0.0001",
+        "--resolution",
+        "256",
+        "--save_every",
+        "500",
+        "--vn_encoder",
+        "--texture_encoder",
+        "--tri_token",
+        "--no_vi_attn",
+        "--seed",
+        "43"
+      ],
+      "name": "python.exe",
+      "create_time": 1791346340.7419517,
+      "pid": 53880
+    },
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "--eval",
+        "// Windows may deny ancestor metadata even when the configured folder is readable.\nconst fs = require(\"node:fs\");\nconst pathApi = require(\"node:path\");\nconst { fileURLToPath } = require(\"node:url\");\n\nconst originalRealpathSync = fs.realpathSync;\nconst key = (path) =>\n  pathApi.toNamespacedPath(pathApi.resolve(path)).toLowerCase();\nconst roots = new Set(\n  [\n    pathApi.dirname(process.argv[1]),\n    ...(process.env.NODE_REPL_NODE_MODULE_DIRS ?? \"\")\n      .split(pathApi.delimiter)\n      .map((entry) => entry.trim()),\n    ...(process.env.NODE_REPL_TRUSTED_CODE_PATHS ?? \"\")\n      .split(pathApi.delimiter)\n      .filter(pathApi.isAbsolute),\n  ]\n    .filter(Boolean)\n    .map(key),\n);\n\nfs.realpathSync = function realpathSync(path, options) {\n  try {\n    // Preserve Node's canonical paths (including short names and links) when possible.\n    return originalRealpathSync.native(path, options);\n  } catch (error) {\n    if (error.code !== \"EPERM\" && error.code !== \"EACCES\") {\n      throw error;\n    }\n    if (path instanceof URL) {\n      path = fileURLToPath(path);\n    }\n    if (Buffer.isBuffer(path)) {\n      path = path.toString();\n    }\n\n    const filename = pathApi.resolve(path);\n    // Only accept paths below a configured root. A junction or symlink could\n    // point outside that root, so it must not receive the lexical fallback.\n    for (let current = filename; ; current = pathApi.dirname(current)) {\n      if (fs.lstatSync(current).isSymbolicLink()) {\n        throw error;\n      }\n      if (roots.has(key(current))) {\n        const encoding =\n          typeof options === \"string\" ? options : options?.encoding;\n        const buffer = Buffer.from(filename);\n        return encoding === \"buffer\"\n          ? buffer\n          : buffer.toString(encoding ?? \"utf8\");\n      }\n      if (pathApi.dirname(current) === current) {\n        throw error;\n      }\n    }\n  }\n};\nfs.realpathSync.native = fs.realpathSync;\n\n// --eval leaves the script at argv[1]. Use Node's ordinary main-module loader\n// so argv, require.main, and relative imports keep their normal meaning.\nrequire(\"node:module\").runMain();\n",
+        "C:\\Users\\eazuo\\AppData\\Local\\Temp\\.tmpAvG9jz\\trusted-worker.js",
+        "C:\\Users\\eazuo\\renderformer"
+      ],
+      "name": "node.exe",
+      "create_time": 1791343455.2845376,
+      "pid": 60444
+    },
+    {
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "--eval",
+        "// Windows may deny ancestor metadata even when the configured folder is readable.\nconst fs = require(\"node:fs\");\nconst pathApi = require(\"node:path\");\nconst { fileURLToPath } = require(\"node:url\");\n\nconst originalRealpathSync = fs.realpathSync;\nconst key = (path) =>\n  pathApi.toNamespacedPath(pathApi.resolve(path)).toLowerCase();\nconst roots = new Set(\n  [\n    pathApi.dirname(process.argv[1]),\n    ...(process.env.NODE_REPL_NODE_MODULE_DIRS ?? \"\")\n      .split(pathApi.delimiter)\n      .map((entry) => entry.trim()),\n    ...(process.env.NODE_REPL_TRUSTED_CODE_PATHS ?? \"\")\n      .split(pathApi.delimiter)\n      .filter(pathApi.isAbsolute),\n  ]\n    .filter(Boolean)\n    .map(key),\n);\n\nfs.realpathSync = function realpathSync(path, options) {\n  try {\n    // Preserve Node's canonical paths (including short names and links) when possible.\n    return originalRealpathSync.native(path, options);\n  } catch (error) {\n    if (error.code !== \"EPERM\" && error.code !== \"EACCES\") {\n      throw error;\n    }\n    if (path instanceof URL) {\n      path = fileURLToPath(path);\n    }\n    if (Buffer.isBuffer(path)) {\n      path = path.toString();\n    }\n\n    const filename = pathApi.resolve(path);\n    // Only accept paths below a configured root. A junction or symlink could\n    // point outside that root, so it must not receive the lexical fallback.\n    for (let current = filename; ; current = pathApi.dirname(current)) {\n      if (fs.lstatSync(current).isSymbolicLink()) {\n        throw error;\n      }\n      if (roots.has(key(current))) {\n        const encoding =\n          typeof options === \"string\" ? options : options?.encoding;\n        const buffer = Buffer.from(filename);\n        return encoding === \"buffer\"\n          ? buffer\n          : buffer.toString(encoding ?? \"utf8\");\n      }\n      if (pathApi.dirname(current) === current) {\n        throw error;\n      }\n    }\n  }\n};\nfs.realpathSync.native = fs.realpathSync;\n\n// --eval leaves the script at argv[1]. Use Node's ordinary main-module loader\n// so argv, require.main, and relative imports keep their normal meaning.\nrequire(\"node:module\").runMain();\n",
+        "--experimental-vm-modules",
+        "C:\\Users\\eazuo\\AppData\\Local\\Temp\\.tmpAvG9jz\\kernel.js",
+        "--session-id",
+        "51056f59def74aa49c84f1288cec4011",
+        "--working-dir",
+        "C:\\Users\\eazuo\\renderformer"
+      ],
+      "name": "node.exe",
+      "create_time": 1791343455.278504,
+      "pid": 60648
+    }
+  ],
+  "inaccessibleProcessesPreserved": [],
+  "gpu": {
+    "exitCode": 0,
+    "output": "94 %, 25055 MiB, 32607 MiB",
+    "error": ""
+  },
+  "processesTerminated": 0,
+  "newTtsStarted": 0,
+  "newTopicsStarted": 0,
+  "holdChanged": false
+}
