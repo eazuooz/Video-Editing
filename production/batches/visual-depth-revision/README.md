@@ -1,6 +1,6 @@
 # 2.5D 설명 화면·자연스러운 채널 썸네일 수정
 
-2026-10-07 사용자 요청에 따라 `picking-sides`부터 `familiar-game-rules`까지 일곱 편만 수정한다. 정확한 범위와 기존 YouTube ID는 `queue.json`을 따른다. 기존 업로드와 공개·예약 상태를 보존하고, 새 검수본은 새 비공개 영상으로 전달한다. 이번 범위 뒤 새 주제/TTS는 착수하지 않는다. 자동화24와 GPU TTS hold는 계속 PAUSED/active다.
+2026-10-07 사용자 요청에 따라 `picking-sides`부터 `familiar-game-rules`까지 일곱 편만 수정한다. 정확한 범위와 기존 YouTube ID는 `queue.json`을 따른다. 범위 밖 기존 업로드와 공개·예약 상태를 보존하고, 새 검수본은 새 비공개 영상으로 전달한다. 정확한 기존 일곱 업로드만 사용자 최종 영구 삭제 확인 뒤 삭제했다. 이번 범위 뒤 새 주제/TTS는 착수하지 않는다. 자동화24와 GPU TTS hold는 계속 PAUSED/active다.
 
 ## 제작 방식
 
@@ -36,7 +36,19 @@
 
 일곱 `publishing/thumbnail-depth-v1.png`를 저장 후 원본 해상도로 직접 읽었다. 얌얌코딩·노란 상단 띠·흰 바탕·큰 검정/빨강 한글·원래 고양이의 자연스러운 주제 삽화를 사용한다. 영상 캡처 액자는 없다. 각 JSON은 실제 SHA/크기/검토와 실제 업로드 상태를 기록한다. 아직 전송·저장 검증 전인 항목만 uploaded=false다. 모두 2MiB 미만이며 기본 local-only다. QA/contactsheet/렌더 시퀀스는 Git에 추가하지 않는다.
 
-과거 첫 비공개 업로드의 `fileChooser.setFiles`가 브라우저 보안 정책에서 사용자 권한 거부로 차단됐다. 당시 파일은 전송되지 않았고 새 ID는 없었다. 실패 기록 `private-reupload-block.json`과 두 후속 실패는 보존한다. 이후 사용자 업로드 허용 지시를 받고 정상 CUA 파일 선택에서 실제 전송이 시작됐다. 현재 첫 수정본 `xtUVcAHtQzg`는 비공개·HD·새 썸네일·한영 수동 자막·영어 메타데이터·시작 카드·회원 엔딩 3요소·CC off 게임/입체 설명 픽셀을 저장 후 검수했다. 소유권 주장 없음과 현재 수익 창출 상태도 직접 읽었다. 현재 첫 다섯 수정본 `xtUVcAHtQzg`, `c18rkesgBSw`, `jBRt3xatdPk`, `Njz_o1YJh8Q`, `cQE7_ygx_XM`는 새 썸네일·한영 수동 자막·영어 메타데이터·00초 과외 카드·회원 엔딩 3요소·HD·CC off 게임/입체 설명 픽셀·소유권 주장 없음과 수익 창출을 저장 후 직접 검수했다. 일곱 편 모두 실제 비공개 저장·가능한 설정·HD·CC off 픽셀과 일반 push/원격 SHA 일치까지 확인했다. 마지막 전달 실제 SHA는 `d58a5dd6b529c4446cbfe06429cbd91e0ab936be`이며 `git-delivery-familiar-game-rules.json`의 모든 원격 blob·외부 index 보존 검증을 통과했다. 여섯 번째 속편 수정본은 `2-IyuwcP_vQ`다. 마지막 조작 설계 수정본 `WpCmlV8KyOc`도 비공개·HD·썸네일·한영 수동 자막·영어 정보·과외 카드·회원 엔딩·CC off 게임/입체 픽셀을 저장 후 검수했다. 마지막 자동 검사는 실제 목록에 `검토 중...`로 표시되어 별도 publishing follow-up으로 보존한다. 업로드·HD·가능한 설정 검증과 자동 검사 완료는 구별한다. 각 편의 Git 전달 결과는 `git-delivery-<slug>.json`의 실제 commit/remote SHA를 따른다. 최신 receipt와 queue가 과거 차단 기록보다 우선한다.
+과거 `fileChooser.setFiles` 권한 차단은 당시 전송 실패 이력으로 보존한다. 이후 사용자가 업로드를 허용했고 현재 일곱 새 비공개 ID의 실제 저장·HD·새 썸네일·한영 수동 자막·영어 정보·00초 과외 카드·회원 엔딩 3요소·CC off 게임/입체 설명 픽셀·현재 알림 없음과 수익 창출을 직접 검수했다. 마지막 자동 검사도 실제 `알림 —`로 완료되어 이전 `검토 중...` follow-up을 해결했다. 모든 제작 Git의 일반 push/실제 원격 SHA·blob 일치를 확인했고, 현재 제작 전달 SHA는 `d58a5dd6b529c4446cbfe06429cbd91e0ab936be`다. 후속 일곱 전달 요약 Git `d28cd4401de08e1fc45b5f5c1c6df5e05c812250`도 실제 원격 일치를 확인했다. 각 최신 증거와 queue가 과거 차단·검사 진행 기록보다 우선한다.
+
+사용자의 최종 확인 `기존 7편 영구 삭제` 후 정확한 옛 일곱 ID만 선택해 영구 삭제했다. 실제 선택 7개/새 수정본 선택 0/범위 밖 선택 0을 대조했고, 처리 완료 후 옛 7개 행 제거·채널 목록 486→479·새 7개 비공개 행 유지를 직접 확인했다. `old-seven-deletion-execution.json`과 `old-seven-deletion-complete.ax.txt`가 근거다. 로컬 원본·새 업로드는 보존했으며 다른 업로드는 조작하지 않았다.
+
+| 영상 | 현재 비공개 수정본 | 기존 업로드 삭제 |
+|---|---|---|
+| picking-sides | [ xtUVcAHtQzg ](https://youtu.be/xtUVcAHtQzg) | sXd1RrPlGos · 실제 삭제 확인 |
+| motion-sickness-games | [ c18rkesgBSw ](https://youtu.be/c18rkesgBSw) | vFhhQXgdeMs · 실제 삭제 확인 |
+| hierarchical-game-outlines | [ jBRt3xatdPk ](https://youtu.be/jBRt3xatdPk) | lEwpxP_qsDY · 실제 삭제 확인 |
+| game-reward-planning | [ Njz_o1YJh8Q ](https://youtu.be/Njz_o1YJh8Q) | D81WnOMytG4 · 실제 삭제 확인 |
+| avoid-game-comparisons | [ cQE7_ygx_XM ](https://youtu.be/cQE7_ygx_XM) | bCyRB3ksiGo · 실제 삭제 확인 |
+| making-game-sequels | [ 2-IyuwcP_vQ ](https://youtu.be/2-IyuwcP_vQ) | DWsAfi-fUKw · 실제 삭제 확인 |
+| familiar-game-rules | [ WpCmlV8KyOc ](https://youtu.be/WpCmlV8KyOc) | NLEHMC0XMtg · 실제 삭제 확인 |
 
 과거 세션의 `.git` 읽기 전용 제한은 당시 Git 미전달 근거로 보존한다. 현재 세션에서 승인된 전달만 실제 HEAD 기반 임시 index와 명시적 파일 목록으로 검증한다. `deliver-reviewed-source.cjs`는 현재 비공개 저장/픽셀 검수와 필수 썸네일 등록을 요구하며, 실제 staged blob·media-policy·해당 slug rebuild·whitespace를 확인한 뒤 HEAD를 비교하고 일반 push한다. 다른 작업의 index 항목과 공유 파일 편집은 보존한다. QA 이미지는 로컬에 두며, 실제 commit/remote SHA 없이 Git 완료를 기록하지 않는다. 사람 전체 청취·발음, 최종 공개 권리, 원래 Nimbus, 잘린 회원 핸들, 외부 백업과 비공개 고정 댓글은 기존 pending을 유지한다.
 
