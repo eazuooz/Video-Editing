@@ -3,11 +3,14 @@
 No renderer imports. A pending spoken correction blocks the final pass.
 """
 from pathlib import Path
-import json, math, hashlib, datetime, sys
+import argparse, json, math, hashlib, datetime, sys
 
 B = Path(__file__).parent
 R = B.parents[2]
-L = B / 'lessons/game-math-camera-projection.json'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--episode', choices=['game-math-camera-projection', 'game-math-projection-depth'], default='game-math-camera-projection')
+args = parser.parse_args()
+L = B / f'lessons/{args.episode}.json'
 draft = json.loads(L.read_text(encoding='utf8'))
 episode_draft = draft
 episode_path = L
@@ -17,8 +20,9 @@ if chapter_blueprint:
     draft = json.loads(L.read_text(encoding='utf8'))
     original = {s['id']: s for s in draft['scenes']}
     for scene in episode_draft['scenes']:
-        if scene['id'] not in ['01','24']:
-            assert scene['ko'] == original[scene['id']]['ko'] and scene['en'] == original[scene['id']]['en'], 'Current first-episode math lines differ from preserved chapter blueprint'
+        source_id = scene.get('preparedSourceScene') if args.episode == 'game-math-projection-depth' else (scene['id'] if scene['id'] not in ['01','24'] else None)
+        if source_id:
+            assert scene['ko'] == original[source_id]['ko'] and scene['en'] == original[source_id]['en'], 'Current episode math lines differ from preserved chapter blueprint'
 scenes = {s['id']: s for s in draft['scenes']}
 checks, failures = [], []
 
@@ -142,8 +146,8 @@ record=dict(status='passed' if not failures else 'blocked-pending-script-correct
  humanListening='pending',audioCorrectionReview='pending-current-replacement-raw-review',
  chapterBlueprint=chapter_blueprint,currentEpisodeLesson=episode_path.relative_to(R).as_posix(),
  currentEpisodeLessonSha256=hashlib.sha256(episode_path.read_bytes()).hexdigest(),
- episodeScope='All75 independent calculations verify the complete preserved chapter; current first-episode source paragraphs match exactly. Current episode audio,overview,closure and final pixels are separate delivery gates.')
-target=B/'preflight/camera-projection-math.json'
+ episodeScope='All75 independent calculations verify the complete preserved chapter; current episode source paragraphs match exactly. Current episode audio,overview,closure and final pixels are separate delivery gates.')
+target=B/('preflight/projection-depth-math.json' if args.episode == 'game-math-projection-depth' else 'preflight/camera-projection-math.json')
 target.write_text(json.dumps(record,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 print(record['status'],len(checks),'independent numerical checks;',len(failures),'pending issues')
 if failures:print('\n'.join(failures));sys.exit(2)

@@ -1,0 +1,15 @@
+import {makeProject} from '@motion-canvas/core';
+import audio from './assets/final-mix.wav';
+import intro from './scenes/brand-intro?scene';
+import s01 from './scenes/scene01?scene';
+import s02 from './scenes/scene02?scene';
+import s03 from './scenes/scene03?scene';
+import s04 from './scenes/scene04?scene';
+import s05 from './scenes/scene05?scene';
+import s06 from './scenes/scene06?scene';
+import s07 from './scenes/scene07?scene';
+import s08 from './scenes/scene08?scene';
+import s09 from './scenes/scene09?scene';
+import s10 from './scenes/scene10?scene';
+import outro from './scenes/membership-outro?scene';
+export default makeProject({name:'game-math-projection-depth',audio,scenes:[intro,s01,s02,s03,s04,s05,s06,s07,s08,s09,s10,outro]});

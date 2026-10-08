@@ -1,0 +1,605 @@
+1
+00:00:02,000 --> 00:00:03,360
+Once a screen position is known,
+
+2
+00:00:03,360 --> 00:00:07,060
+why does stored depth differ from distance,
+and why do we still need w?
+
+3
+00:00:07,420 --> 00:00:09,640
+First, compare forward distance with stored
+depth,
+
+4
+00:00:09,640 --> 00:00:13,480
+then observe overlapping buildings in an
+actual game.
+
+5
+00:00:13,840 --> 00:00:15,780
+Then use slanted roof patterns to explain
+
+6
+00:00:15,780 --> 00:00:19,420
+perspective-correct interpolation of texture
+values.
+
+7
+00:00:19,820 --> 00:00:22,100
+Finally, solve three viewport exercises and
+organize
+
+8
+00:00:22,100 --> 00:00:25,620
+how to locate the first incorrect coordinate
+stage.
+
+9
+00:00:26,383 --> 00:00:30,223
+Retain depth after mappingx andy to pixels;
+
+10
+00:00:30,463 --> 00:00:34,103
+it helps determine the front surface where
+triangles overlap.
+
+11
+00:00:34,483 --> 00:00:39,103
+Our perspective depth is1.1 minus1.1/z,
+
+12
+00:00:39,403 --> 00:00:41,743
+so it is not linear in forward distance.
+
+13
+00:00:41,863 --> 00:00:45,223
+Atz2 depth is0.55; atz4 it is0.825.
+
+14
+00:00:45,254 --> 00:00:49,623
+Equal distance increments do not produce equal
+stored-depth increments.
+
+15
+00:00:49,703 --> 00:00:55,943
+Atz6 depth is about0.9167, not0.5 even though6
+is midway between1 and11.
+
+16
+00:00:55,943 --> 00:00:59,543
+Orthographic depth uses(z−1)/10;z6 maps
+
+17
+00:00:59,943 --> 00:01:02,943
+to0.5 and varies linearly with distance.
+
+18
+00:01:03,183 --> 00:01:07,243
+Precision depends on the projection mapping
+and storage format together;
+
+19
+00:01:07,356 --> 00:01:11,643
+floating-point storage alone does not
+guarantee equal distance precision.
+
+20
+00:01:12,103 --> 00:01:16,483
+The source’sw-buffering is historical
+distance-related storage;
+
+21
+00:01:16,843 --> 00:01:21,063
+constant orthographicw1 cannot distinguish
+depths by itself.
+
+22
+00:01:21,717 --> 00:01:24,757
+Watch the front platform and taller rear
+buildings as new
+
+23
+00:01:24,997 --> 00:01:28,717
+small structures add walls in front of the
+long railing.
+
+24
+00:01:31,411 --> 00:01:35,191
+Surfaces at similar screen positions may cover
+one another;
+
+25
+00:01:35,491 --> 00:01:39,611
+screenx andy alone cannot determine that
+relationship.
+
+26
+00:01:42,345 --> 00:01:44,745
+Elevated views expose interior platforms,
+
+27
+00:01:44,745 --> 00:01:50,905
+while lower views overlap roofs and walls;
+notice which surface comes first.
+
+28
+00:01:53,740 --> 00:01:58,340
+Computed depth is the output of a chosen
+mapping,
+
+29
+00:01:58,340 --> 00:02:02,500
+not a distance label;0.825 is not0.825 world
+units.
+
+30
+00:02:05,234 --> 00:02:09,074
+State which direction represents nearer and
+farther surfaces. In this example the
+
+31
+00:02:09,374 --> 00:02:14,274
+stored depth at the near plane is zero, and
+the stored depth at the far plane is one.
+
+32
+00:02:14,454 --> 00:02:21,088
+We have not established the game’s depth
+representation;
+
+33
+00:02:21,408 --> 00:02:24,668
+this footage motivates the need for occlusion
+handling.
+
+34
+00:02:27,302 --> 00:02:32,402
+Compare depth values produced by the same
+camera and projection;
+
+35
+00:02:32,402 --> 00:02:35,682
+values from different views are not directly
+comparable.
+
+36
+00:02:38,477 --> 00:02:42,137
+Retaining intermediate coordinates lets you
+check world
+
+37
+00:02:42,137 --> 00:02:45,857
+placement,view boundaries and depth comparison
+in turn.
+
+38
+00:02:46,717 --> 00:02:50,037
+The role ofw continues into
+perspective-correct interpolation
+
+39
+00:02:50,277 --> 00:02:54,957
+of texture coordinates and other vertex
+attributes.
+
+40
+00:02:55,297 --> 00:02:59,957
+For a separate edge example,
+
+41
+00:02:59,957 --> 00:03:04,717
+endpoints havew1 and4 and texture coordinateu0
+and1.
+
+42
+00:03:04,977 --> 00:03:09,357
+A direct screen-space average gives0.5,
+
+43
+00:03:09,557 --> 00:03:13,857
+but a projected midpoint is not the geometric
+midpoint of the3D edge.
+
+44
+00:03:13,917 --> 00:03:22,017
+Interpolateu/w and1/w separately, then divide
+the interpolated results.
+
+45
+00:03:22,437 --> 00:03:28,657
+Add0 and0.25 and divide by2 to get0.125. This
+numerator equals1/8.
+
+46
+00:03:28,657 --> 00:03:36,477
+For the denominator, add1 and0.25 and divide
+by2. The result is0.625,which equals5/8.
+
+47
+00:03:36,757 --> 00:03:40,097
+The correctu is0.2, rather than0.5,
+
+48
+00:03:40,097 --> 00:03:45,257
+explaining how a texture remains attached
+under perspective.
+
+49
+00:03:45,637 --> 00:03:50,797
+For triangles, use three screen-space weights
+with the same principle;
+
+50
+00:03:51,077 --> 00:03:55,537
+hardware commonly handles this unless another
+interpolation mode is requested.
+
+51
+00:03:56,283 --> 00:04:00,663
+Using a plane atz1 is convenient; moving the
+virtual plane
+
+52
+00:04:00,983 --> 00:04:05,903
+to2 can preserve the final image if the view
+is kept unchanged.
+
+53
+00:04:06,163 --> 00:04:09,143
+Ray intersections double,
+
+54
+00:04:09,503 --> 00:04:13,783
+but so do the rectangle’s width and height on
+that plane.
+
+55
+00:04:14,083 --> 00:04:16,543
+The point’s fraction of the rectangle stays
+unchanged,
+
+56
+00:04:16,643 --> 00:04:19,743
+yielding the same final pixel position.
+
+57
+00:04:19,963 --> 00:04:25,123
+A physical camera with a fixed sensor and
+changing focal length
+
+58
+00:04:25,123 --> 00:04:28,463
+has different conditions, as the preceding
+lesson illustrated.
+
+59
+00:04:28,843 --> 00:04:32,643
+Multiplying all four clip components by the
+same positive factor
+
+60
+00:04:33,463 --> 00:04:37,523
+preserves their divided position; doubling
+also doublesw to8.
+
+61
+00:04:37,983 --> 00:04:42,083
+Still verify the pre-divisionw value and
+supported hardware conditions;
+
+62
+00:04:42,503 --> 00:04:46,743
+equal images do not imply every internal
+operation is identical.
+
+63
+00:04:47,533 --> 00:04:51,293
+Choose a roof pattern and nearby window;
+
+64
+00:04:55,500 --> 00:05:02,507
+the pattern remains on the building surface as
+the view changes.
+
+65
+00:05:02,827 --> 00:05:09,307
+Screen spacing alone cannot determine matching
+surface fractions across a tilted face.
+
+66
+00:05:13,413 --> 00:05:18,233
+Our edge calculation explained why a screen
+midpoint needsu0.2;
+
+67
+00:05:18,533 --> 00:05:29,227
+that number was not measured from this game.
+
+68
+00:05:29,407 --> 00:05:33,347
+We do not infer the shader that creates this
+roof pattern;
+
+69
+00:05:37,593 --> 00:05:40,733
+it motivates the required connection between
+surface and image.
+
+70
+00:05:40,733 --> 00:05:50,260
+The texture lesson continues this connection
+by assigningUV coordinates to surfaces.
+
+71
+00:05:51,200 --> 00:05:55,780
+In a conventional graphics path, the vertex
+shader outputs clip coordinates,
+
+72
+00:05:56,060 --> 00:05:59,640
+rather than pre-divided NDC or screen pixels.
+
+73
+00:05:59,920 --> 00:06:05,340
+The pipeline then clips triangles,divides and
+maps to the viewport;
+
+74
+00:06:05,700 --> 00:06:10,040
+our manual calculation explains those
+automatic stages.
+
+75
+00:06:10,300 --> 00:06:16,560
+CPU calculations can place name labels or test
+visibility;
+
+76
+00:06:16,640 --> 00:06:19,720
+retainw and the clipping conditions there too.
+
+77
+00:06:19,720 --> 00:06:23,380
+One point inside the view does not prove an
+entire object visible;
+
+78
+00:06:23,760 --> 00:06:28,160
+bounds,occlusion andLOD selection serve
+different purposes.
+
+79
+00:06:28,600 --> 00:06:31,860
+Lighting must combine geometry and lights in
+the same space; world or view space
+
+80
+00:06:32,220 --> 00:06:37,900
+can be chosen, but values from different
+spaces cannot be directly subtracted.
+
+81
+00:06:38,280 --> 00:06:41,860
+A light can have a camera-like viewing space,
+
+82
+00:06:42,320 --> 00:06:45,540
+useful for shadow maps and projectedgobo
+images.
+
+83
+00:06:45,620 --> 00:06:50,540
+A surface can carry tangent,bitangent and
+normal axes;
+
+84
+00:06:50,940 --> 00:06:55,860
+their construction returns in theUV and
+normal-mapping lessons.
+
+85
+00:06:56,683 --> 00:07:00,243
+For practice, keep the local point and model
+translation but move the camera to(3,1,1),
+
+86
+00:07:00,243 --> 00:07:05,943
+with rotation and projection unchanged.
+
+87
+00:07:06,025 --> 00:07:10,923
+Subtracting the new camera gives view(1,1,4),
+
+88
+00:07:10,923 --> 00:07:14,663
+changing only the horizontal component.
+
+89
+00:07:14,863 --> 00:07:22,923
+Clip becomes(1,16/9,3.3,4); dividedx is0.25
+whiley and depth stay unchanged.
+
+90
+00:07:22,923 --> 00:07:27,003
+The same viewport yields(600,175);
+
+91
+00:07:27,523 --> 00:07:31,683
+moving the camera right moves this fixed point
+left in the image.
+
+92
+00:07:32,223 --> 00:07:35,743
+For another exercise, change only the viewport
+origin to(0,0);
+
+93
+00:07:36,603 --> 00:07:40,943
+the original point’s NDC stays fixed and
+screen position becomes(600,125).
+
+94
+00:07:41,343 --> 00:07:45,943
+Using the full1920-by1080 viewport instead
+places the original point at(1440,300);
+
+95
+00:07:45,943 --> 00:07:49,443
+distinguish it from the offset small-window
+result.
+
+96
+00:07:49,723 --> 00:07:53,883
+Mark only the changed input and find the first
+differing stage
+
+97
+00:07:53,883 --> 00:07:57,743
+among local,world,view,clip and screen to
+narrow down errors.
+
+98
+00:07:58,650 --> 00:08:02,650
+Look at the arch between buildings and the
+front terrace;
+
+99
+00:08:02,890 --> 00:08:06,910
+keep finding the same landmark through wider
+and rotating views.
+
+100
+00:08:09,037 --> 00:08:12,877
+When it disappears, first check foreground
+occlusion and avoid
+
+101
+00:08:13,137 --> 00:08:18,643
+confusing a similar arch elsewhere with the
+original point.
+
+102
+00:08:18,883 --> 00:08:23,803
+Adding blocks changes terrace height and
+structure;
+
+103
+00:08:24,183 --> 00:08:27,003
+distinguish those moments from camera-only
+movement.
+
+104
+00:08:27,003 --> 00:08:32,590
+Railings and small trees near a high terrace
+
+105
+00:08:32,790 --> 00:08:35,570
+help identify which surface is being viewed.
+
+106
+00:08:37,777 --> 00:08:43,617
+In a real development project, name an
+object-attached point and
+
+107
+00:08:43,937 --> 00:08:46,717
+log its local coordinates,then world and view
+values in order.
+
+108
+00:08:49,003 --> 00:08:51,723
+Log all four clip components before division;
+
+109
+00:08:52,183 --> 00:08:56,663
+omittingw obscures the connection between
+clipping and the projected result.
+
+110
+00:08:58,730 --> 00:09:02,610
+Record viewport origin and size when they
+change;
+
+111
+00:09:02,630 --> 00:09:06,910
+mapping a split window with full-screen
+dimensions misplaces the marker.
+
+112
+00:09:08,957 --> 00:09:12,777
+These game pixels do not reveal the
+intermediate numbers;
+
+113
+00:09:13,117 --> 00:09:16,797
+practice with actual values accessible in your
+own project.
+
+114
+00:09:18,883 --> 00:09:24,763
+Depth and surface patterns show that the chain
+also supports
+
+115
+00:09:25,023 --> 00:09:27,703
+occlusion and interpolation, beyond moving a
+single point.
+
+116
+00:09:27,943 --> 00:09:34,290
+When the result is wrong, inspect the first
+incorrect transform;
+
+117
+00:09:34,450 --> 00:09:37,690
+carry that method into the upcoming mesh and
+texture exercises.
+
+118
+00:09:38,650 --> 00:09:44,850
+Our point moved through
+local(1,0,0),world(4,2,5)
+
+119
+00:09:44,850 --> 00:09:49,930
+andview(2,1,4): the same point expressed in
+different frames.
+
+120
+00:09:50,310 --> 00:09:53,750
+The projection prepared zoom and depth withw4;
+
+121
+00:09:54,170 --> 00:09:57,450
+clipping preceded division into normalized
+coordinates.
+
+122
+00:09:58,030 --> 00:10:02,810
+The800-by450 viewport at(100,50) placed the
+point at(700,175);
+
+123
+00:10:02,810 --> 00:10:06,150
+viewport placement is part of the calculation.
+
+124
+00:10:06,190 --> 00:10:11,970
+Depth is not metric distance,
+
+125
+00:10:12,250 --> 00:10:14,550
+and interpolation still usesw information
+after coordinate division.
+
+126
+00:10:14,850 --> 00:10:19,250
+Next we connect vertices into meshes and
+attachUV coordinates;
+
+127
+00:10:19,610 --> 00:10:22,790
+today’s transforms move those surfaces onto
+the screen.

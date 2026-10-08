@@ -5,7 +5,7 @@ param(
     [string]$ForceScenes = '',
     [string]$Scenes = '',
     [string]$ReplacementBaseline = '',
-    [ValidateSet('','projection-episode-split-v1','projection-viewport-pair-v1')][string]$VoiceWorkflow = ''
+    [ValidateSet('','projection-episode-split-v1','projection-viewport-pair-v1','projection-depth-v1')][string]$VoiceWorkflow = ''
 )
 $ErrorActionPreference = 'Stop'
 $mathRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -25,6 +25,10 @@ if ($Stage -eq 'voice') {
     if ($VoiceWorkflow -eq 'projection-viewport-pair-v1') {
         if ($Project -ne 'game-math-camera-projection') { throw 'Viewport pair repair is scoped to its current project.' }
         $mathArgs = @('-X','utf8',"$PSScriptRoot\repair-scene-by-lines.py",$Project,'15','--device',$Device,'--defer-assembly')
+    }
+    if ($VoiceWorkflow -eq 'projection-depth-v1') {
+        if ($Project -ne 'game-math-projection-depth') { throw 'Depth narration workflow is scoped to its current project.' }
+        $mathArgs = @('-X','utf8',"$PSScriptRoot\render-projection-depth-voice.py",'--project',$Project,'--device',$Device)
     }
     if ($Device -eq 'cuda:0') {
         # Another authorized video may already own the same GPU handoff.
@@ -71,6 +75,7 @@ if ($Stage -eq 'voice') {
 } elseif ($Stage -eq 'review') {
     # Keep read-back on CPU so research regains the GPU immediately after TTS.
     $mathReviewDevice = 'cpu'
+    $Device = $mathReviewDevice
     $mathArgs = @('-X','utf8',"$PSScriptRoot\review-voice.py",'--project',$Project,'--watch','--device',$mathReviewDevice)
     if ($Scenes) { $mathArgs += @('--scenes',$Scenes) }
     if ($ReplacementBaseline) {

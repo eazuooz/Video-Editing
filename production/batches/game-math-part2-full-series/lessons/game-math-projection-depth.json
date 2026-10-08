@@ -3,10 +3,11 @@
   "chapter": 10,
   "part": 4,
   "totalParts": 8,
-  "renderModule": "camera_projection",
+  "renderModule": "projection_depth",
   "sourceDependencies": [
     "manim/projects/game-math-part2-full-series/lesson.py",
-    "manim/projects/game-math-part2-full-series/camera_frustum.py"
+    "manim/projects/game-math-part2-full-series/camera_frustum.py",
+    "manim/projects/game-math-part2-full-series/camera_projection.py"
   ],
   "sourceSections": [
     "10.3.3",
@@ -21,7 +22,7 @@
     "interpolation": "Separate original view edge endpoints(0,0,1),(4,0,4),w1/4,u0/1;screenweight.5givesu.2viau/wand1/w;geometrict.2projectstoscreen.5.",
     "exercises": "Explicit separate camera(3,1,1)→screen(600,175);originalpointviewportorigin0,0,size800,450→(600,125);originalfull1920×1080→(1440,300). Never mix those with main(700,175).",
     "historical": "w-buffering and Wii matrix restrictions are historical context,not modern requirements; positivehomogeneousscale leaves NDC unchanged but check clip/hardware/attribute conventions; float not equal metric precision.",
-    "gameEvidence": "Official prerelease2010 Portal2 gameplay and unused unique Townscaper source intervals; actual visible actions only,no matrices/depth/UV/portal internals inferred. Source audio and BGM excluded; visible source credit retained.",
+    "gameEvidence": "Unused unique Townscaper source intervals; actual visible overlap, roof-pattern and terrace actions only. No proprietary matrices, depth or UV implementation inferred. Source audio and BGM excluded; visible source credit retained.",
     "episodeScope": "Depth and perspective-correct attributes after the first complete pixel-position lecture,with all original scaling,pipeline,viewport practice and debugging explanations preserved."
   },
   "coverage": {
@@ -61,24 +62,24 @@
       "mode": "overview",
       "ko": [
         "화면의 위치를 구했는데, 왜 깊이는 실제 거리와 다르고 더블유는 아직 필요할까요?",
-        "먼저 실제 게임의 겹치는 건물을 살펴보고, 저장된 깊이가 거리와 어떻게 달라지는지 계산하겠습니다.",
+        "먼저 거리와 저장된 깊이를 비교한 뒤, 실제 게임의 겹치는 건물에서 앞뒤를 구분해 보겠습니다.",
         "이어서 기울어진 지붕 무늬를 예로, 텍스처 값을 원근에 맞춰 이어 주는 보간을 설명합니다.",
         "마지막에는 출력 창을 바꾼 세 문제를 풀고, 어느 좌표 단계부터 오류를 찾아야 하는지 정리하겠습니다."
       ],
       "en": [
         "Once a screen position is known, why does stored depth differ from distance, and why do we still need w?",
-        "First, observe overlapping game buildings and calculate how stored depth changes with distance.",
+        "First, compare forward distance with stored depth, then observe overlapping buildings in an actual game.",
         "Then use slanted roof patterns to explain perspective-correct interpolation of texture values.",
         "Finally, solve three viewport exercises and organize how to locate the first incorrect coordinate stage."
       ],
       "beats": [
         "화면 위치 다음: 깊이와 w",
-        "실제 겹침 → 저장 깊이",
+        "거리·저장 깊이 비교 → 실제 겹침",
         "표면 무늬 → 원근 보간",
         "세 연습 문제 → 단계별 검사"
       ],
       "formulas": [
-        "screen position / depth / attributes",
+        "화면 위치 / 깊이 / 속성",
         "d = 1.1 − 1.1/z",
         "u = interp(u/w) / interp(1/w)",
         "입력 하나 변경 / 첫 오류 추적"
@@ -174,7 +175,7 @@
         "별도의 변 예제를 보겠습니다. 화면 왼쪽 끝의 더블유는 일, 오른쪽 끝의 더블유는 사입니다. 텍스처 값은 각각 영과 일입니다.",
         "화면의 정확한 중간에서 값을 단순 평균하면 영 점 오입니다. 하지만 원근 투영한 화면의 중간이 원래 변의 길이 중간은 아닙니다.",
         "각 끝에서 텍스처 값을 더블유로 나눈 것과, 일 나누기 더블유를 따로 보간한 다음 두 결과를 나눕니다.",
-        "분자의 평균에 들어갈 값은 영과 영 점 이오입니다. 평균은 영 점 일이오입니다. 하나를 여덟으로 나눈 값입니다. 분모에서는 일과 영 점 이오의 평균을 구합니다. 영 점 육이오이고, 다섯을 여덟으로 나눈 값입니다.",
+        "영과 영 점 이오를 더해 둘로 나누면, 영 점 일이오입니다. 이것이 분자의 값이며, 하나를 여덟으로 나눈 값입니다. 분모는 일과 영 점 이오를 더해 둘로 나눕니다. 영 점 육이오이고, 다섯을 여덟으로 나눈 값입니다.",
         "따라서 올바른 텍스처 값은 영 점 이입니다. 영 점 오로 칠한 결과와 비교하면 무늬가 원근에 맞게 붙는 이유를 이해할 수 있습니다.",
         "실제 삼각형에서는 화면의 세 보간 가중치를 사용해 같은 원리를 적용합니다. 보간 방식의 예외를 요청하지 않았다면 보통 하드웨어가 이 과정을 처리합니다."
       ],
@@ -183,7 +184,7 @@
         "For a separate edge example, endpoints havew1 and4 and texture coordinateu0 and1.",
         "A direct screen-space average gives0.5, but a projected midpoint is not the geometric midpoint of the3D edge.",
         "Interpolateu/w and1/w separately, then divide the interpolated results.",
-        "The numerator averages zero and zero point two five, giving zero point one two five, which is one divided by eight. The denominator averages one and zero point two five, giving zero point six two five, which is five divided by eight.",
+        "Add0 and0.25 and divide by2 to get0.125. This numerator equals1/8. For the denominator, add1 and0.25 and divide by2. The result is0.625,which equals5/8.",
         "The correctu is0.2, rather than0.5, explaining how a texture remains attached under perspective.",
         "For triangles, use three screen-space weights with the same principle; hardware commonly handles this unless another interpolation mode is requested."
       ],
@@ -254,11 +255,16 @@
       "sourceSegments": [
         {
           "in": 1269,
-          "maxSeconds": 53
+          "maxSeconds": 53,
+          "startsAtLine": 0
+        },
+        {
+          "in": 1340,
+          "maxSeconds": 14
         }
       ],
       "in": 1269,
-      "maxSeconds": 53,
+      "maxSeconds": 67,
       "ko": [
         "가까이 보이는 지붕의 반복 무늬와 옆의 창문을 골라 보세요. 시점이 바뀌어도 무늬는 건물 표면과 함께 보입니다.",
         "화면에서 보이는 무늬의 간격만 그대로 따라가면, 기울어진 면의 서로 다른 지점에 같은 비율을 붙이기 어렵습니다.",
@@ -445,6 +451,245 @@
     "status": "Selected exact actual intervals directly reviewed before dependent narration; source end guards and previous episode nonoverlap pass. Final narration-duration/source-subject and encoded-caption review remain pending.",
     "sourceRecords": [
       {
+        "id": "FRfnXAIbA-M",
+        "game": "Townscaper",
+        "uploader": "Handheld belt gameplay archive / @handheldbelt-gameplay",
+        "url": "https://www.youtube.com/watch?v=FRfnXAIbA-M",
+        "file": "shared/output/game-math-part2-full-series/sources/FRfnXAIbA-M.mp4",
+        "sha256": "6122504201ca81dd2350e6723fcb33858cbbe70739ca5548a5a2478c31802d78",
+        "bytes": 607509391,
+        "seconds": 1715.246,
+        "fps": "60000/1001",
+        "reviewedBeforeNarration": true,
+        "reviewedAtUtc": "2026-10-08T10:04:22.387531+00:00",
+        "recordingPermissionObserved": "Recorder title/expanded description explicitly offers free-use gameplay. Shoutout appreciated, not required. No named Creative Commons license observed.",
+        "licenseLabel": "uploader free-to-use recording permission",
+        "metadataProof": "shared/output/game-math-part2-full-series/camera-projection-preflight/townscaper-recording-permission.ax.txt",
+        "sourceAudioUsed": false,
+        "priorUse": "Fresh exact recordings/titles checked before narration against repository sources/recent use; this series preflight is the first intended use, with separate unique intervals for each camera episode.",
+        "visibleAction": "Actual town construction with camera orbit, changes of viewpoint and native zoom. No projection matrix inferred from pixels.",
+        "inspection": "Townscaper fine contact sheets and source boundary/full-resolution guards directly reviewed; actual construction, orbit, zoom and visible surfaces recorded in camera-projection-footage-review.json. No source captions or facecam in selected windows. No projection matrix inferred; final encoded cues remain to review.",
+        "inspectionRecord": "production/batches/game-math-part2-full-series/preflight/camera-projection-footage-review.json",
+        "inspectionSheets": [
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-01-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-01-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-02-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-02-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-03-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-03-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-04-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-04-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-05-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-06-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-06-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-fine/window-06-3.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-01-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-01-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-02-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-02-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-03-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-03-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-04-1.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-04-2.jpg",
+          "shared/output/game-math-part2-full-series/inspection/camera-town-extra-fine/window-04-3.jpg"
+        ],
+        "approvedSegments": [
+          {
+            "in": 175,
+            "out": 246
+          },
+          {
+            "in": 274,
+            "out": 359
+          },
+          {
+            "in": 399,
+            "out": 469
+          },
+          {
+            "in": 505,
+            "out": 576
+          },
+          {
+            "in": 626,
+            "out": 710
+          },
+          {
+            "in": 759,
+            "out": 843
+          },
+          {
+            "in": 895,
+            "out": 978
+          },
+          {
+            "in": 1097,
+            "out": 1139
+          },
+          {
+            "in": 1184,
+            "out": 1306
+          },
+          {
+            "in": 1429,
+            "out": 1559
+          },
+          {
+            "in": 359,
+            "out": 379
+          },
+          {
+            "in": 576,
+            "out": 606
+          },
+          {
+            "in": 710,
+            "out": 730
+          },
+          {
+            "in": 1306,
+            "out": 1322
+          }
+        ],
+        "publicGameIpReview": "pending",
+        "additionalInspectionRecords": [
+          "production/batches/game-math-part2-full-series/preflight/camera-projection-source-extensions.json"
+        ]
+      }
+    ],
+    "chosen": [
+      {
+        "game": "Townscaper",
+        "sourceId": "FRfnXAIbA-M",
+        "reason": "Complementary inspected new source intervals show actual3D construction,rotating views,terraces and roof surfaces. Prior camera episode used different exact segments; use game as observation, not evidence of its projection/depth implementation."
+      }
+    ],
+    "rejected": [
+      {
+        "game": "Superliminal",
+        "reason": "Perspective mechanics fit, but no directly verified source recording/publisher permission in this research."
+      },
+      {
+        "game": "Portal 2 – Royalty Free Game Clips /6YlL0bP5dMw",
+        "reason": "Prior candidate has unresolved like/subscribe reuse request; no silent subscription or downloading this source."
+      },
+      {
+        "game": "A Short Hike /wQkKK9KyE8o",
+        "reason": "Recently used game title in meaningful-quests; new official Portal2 source provides better current coordinate-chain fit."
+      },
+      {
+        "game": "Portal2 illustrated source intro and branding ending",
+        "reason": "Exclude0–16 and99.5+; illustration/marketing are not actual footage."
+      }
+    ],
+    "primaryPolicies": [
+      {
+        "url": "https://store.steampowered.com/video_policy",
+        "checkedAtUtc": "2026-10-08T14:04:40.204961+00:00",
+        "permittedScope": "Instructional videos and YouTube-partner monetization; no pay access,resale,game-asset redistribution. This official recording avoids third-party recorder authorization ambiguity."
+      },
+      {
+        "url": "https://www.thinkwithportals.com/media_04.php",
+        "checkedAtUtc": "2026-10-08T14:04:40.204961+00:00",
+        "observed": "Official media lists Thermal Discouragement Beam and embeds the exact Valve YouTube upload."
+      }
+    ],
+    "currentProjectCount": 44,
+    "previousEpisode": "c96qTnlHBVU",
+    "nonoverlapWithActualPreviousMeasuredCuts": true,
+    "sourceWindows": [
+      {
+        "scene": "03",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 1184,
+        "out": 1269
+      },
+      {
+        "scene": "06",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 1269,
+        "out": 1322
+      },
+      {
+        "scene": "09",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 1459,
+        "out": 1559
+      }
+    ],
+    "actualCapacitySeconds": 238,
+    "directReviewedTownSheets": "12 selected existing fine sheets re-read this current turn; construction/orbit/rooftops and all selected boundaries directly checked.",
+    "boundaryProof": "shared/output/game-math-part2-full-series/inspection/projection-final-source-guards/guards.json",
+    "humanPublicRightsReview": "pending",
+    "noBgm": true,
+    "sourceAudio": false,
+    "additionalSourceReview": "production/batches/game-math-part2-full-series/preflight/camera-projection-source-extensions.json",
+    "finalMeasuredRatio": "pending corrected narration and source-seam capacity; max source windows are not final selected durations",
+    "chapterSourceWindows": [
+      {
+        "scene": "02",
+        "sourceId": "yFRbGppLaUI",
+        "in": 16,
+        "out": 40
+      },
+      {
+        "scene": "05",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 274,
+        "out": 379
+      },
+      {
+        "scene": "08",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 505,
+        "out": 606
+      },
+      {
+        "scene": "11",
+        "sourceId": "yFRbGppLaUI",
+        "in": 40,
+        "out": 99.5
+      },
+      {
+        "scene": "14",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 626,
+        "out": 730
+      },
+      {
+        "scene": "17",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 1184,
+        "out": 1269
+      },
+      {
+        "scene": "20",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 1269,
+        "out": 1322
+      },
+      {
+        "scene": "23",
+        "sourceId": "FRfnXAIbA-M",
+        "in": 1459,
+        "out": 1559
+      }
+    ],
+    "scope": "Authored following episode only; inspected source windows are preparation, not selected final cuts or a production/private-delivery claim.",
+    "chapterChosen": [
+      {
+        "game": "Portal 2",
+        "sourceId": "yFRbGppLaUI",
+        "reason": "Fresh title,official publisher-owned first-person footage; visible fixed chamber landmarks and moving cube distinguish object placement from camera-relative coordinates."
+      },
+      {
+        "game": "Townscaper",
+        "sourceId": "FRfnXAIbA-M",
+        "reason": "Complementary inspected new source intervals show actual3D construction,rotating views,terraces and roof surfaces. Prior camera episode used different exact segments; use game as observation, not evidence of its projection/depth implementation."
+      }
+    ],
+    "chapterSourceRecords": [
+      {
         "id": "yFRbGppLaUI",
         "game": "Portal 2",
         "uploader": "Valve / @Valve",
@@ -593,134 +838,18 @@
           "production/batches/game-math-part2-full-series/preflight/camera-projection-source-extensions.json"
         ]
       }
-    ],
-    "chosen": [
-      {
-        "game": "Portal 2",
-        "sourceId": "yFRbGppLaUI",
-        "reason": "Fresh title,official publisher-owned first-person footage; visible fixed chamber landmarks and moving cube distinguish object placement from camera-relative coordinates."
-      },
-      {
-        "game": "Townscaper",
-        "sourceId": "FRfnXAIbA-M",
-        "reason": "Complementary inspected new source intervals show actual3D construction,rotating views,terraces and roof surfaces. Prior camera episode used different exact segments; use game as observation, not evidence of its projection/depth implementation."
-      }
-    ],
-    "rejected": [
-      {
-        "game": "Superliminal",
-        "reason": "Perspective mechanics fit, but no directly verified source recording/publisher permission in this research."
-      },
-      {
-        "game": "Portal 2 – Royalty Free Game Clips /6YlL0bP5dMw",
-        "reason": "Prior candidate has unresolved like/subscribe reuse request; no silent subscription or downloading this source."
-      },
-      {
-        "game": "A Short Hike /wQkKK9KyE8o",
-        "reason": "Recently used game title in meaningful-quests; new official Portal2 source provides better current coordinate-chain fit."
-      },
-      {
-        "game": "Portal2 illustrated source intro and branding ending",
-        "reason": "Exclude0–16 and99.5+; illustration/marketing are not actual footage."
-      }
-    ],
-    "primaryPolicies": [
-      {
-        "url": "https://store.steampowered.com/video_policy",
-        "checkedAtUtc": "2026-10-08T14:04:40.204961+00:00",
-        "permittedScope": "Instructional videos and YouTube-partner monetization; no pay access,resale,game-asset redistribution. This official recording avoids third-party recorder authorization ambiguity."
-      },
-      {
-        "url": "https://www.thinkwithportals.com/media_04.php",
-        "checkedAtUtc": "2026-10-08T14:04:40.204961+00:00",
-        "observed": "Official media lists Thermal Discouragement Beam and embeds the exact Valve YouTube upload."
-      }
-    ],
-    "currentProjectCount": 44,
-    "previousEpisode": "CbX6KQ-_zsc",
-    "nonoverlapWithActualPreviousMeasuredCuts": true,
-    "sourceWindows": [
-      {
-        "scene": "03",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 1184,
-        "out": 1269
-      },
-      {
-        "scene": "06",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 1269,
-        "out": 1322
-      },
-      {
-        "scene": "09",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 1459,
-        "out": 1559
-      }
-    ],
-    "actualCapacitySeconds": 238,
-    "directReviewedTownSheets": "12 selected existing fine sheets re-read this current turn; construction/orbit/rooftops and all selected boundaries directly checked.",
-    "boundaryProof": "shared/output/game-math-part2-full-series/inspection/projection-final-source-guards/guards.json",
-    "humanPublicRightsReview": "pending",
-    "noBgm": true,
-    "sourceAudio": false,
-    "additionalSourceReview": "production/batches/game-math-part2-full-series/preflight/camera-projection-source-extensions.json",
-    "finalMeasuredRatio": "pending corrected narration and source-seam capacity; max source windows are not final selected durations",
-    "chapterSourceWindows": [
-      {
-        "scene": "02",
-        "sourceId": "yFRbGppLaUI",
-        "in": 16,
-        "out": 40
-      },
-      {
-        "scene": "05",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 274,
-        "out": 379
-      },
-      {
-        "scene": "08",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 505,
-        "out": 606
-      },
-      {
-        "scene": "11",
-        "sourceId": "yFRbGppLaUI",
-        "in": 40,
-        "out": 99.5
-      },
-      {
-        "scene": "14",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 626,
-        "out": 730
-      },
-      {
-        "scene": "17",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 1184,
-        "out": 1269
-      },
-      {
-        "scene": "20",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 1269,
-        "out": 1322
-      },
-      {
-        "scene": "23",
-        "sourceId": "FRfnXAIbA-M",
-        "in": 1459,
-        "out": 1559
-      }
-    ],
-    "scope": "Authored following episode only; inspected source windows are preparation, not selected final cuts or a production/private-delivery claim."
+    ]
   },
   "episodeSubtitle": "렌더링4편 · 깊이와 원근 보간",
   "preparedNarration": {
+    "10": {
+      "scene": "24",
+      "wav": "shared/output/narration/game-math-camera-projection/qwen3-1.7b-balanced-v1/chunks/24-scene.wav",
+      "baselineWave": "shared/output/game-math-camera-projection/before-conceptual-episode-refinement/24-scene.wav",
+      "wavSha256": "d166846f30ba11a1525302f4a1f8d2227e5982042805dc31feea935611f83c49",
+      "rawAsrCurrent": true,
+      "requiresNewWave": false
+    },
     "02": {
       "scene": "16",
       "wav": "shared/output/narration/game-math-camera-projection/qwen3-1.7b-balanced-v1/chunks/16-scene.wav",
@@ -784,18 +913,10 @@
       "wavSha256": "673523a5cf11030f3f98ed0da1a9983347be44b3a02e3ff04e7c77027246f18a",
       "rawAsrCurrent": true,
       "requiresNewWave": false
-    },
-    "10": {
-      "scene": "24",
-      "wav": "shared/output/narration/game-math-camera-projection/qwen3-1.7b-balanced-v1/chunks/24-scene.wav",
-      "baselineWave": "shared/output/game-math-camera-projection/before-conceptual-episode-refinement/24-scene.wav",
-      "wavSha256": "d166846f30ba11a1525302f4a1f8d2227e5982042805dc31feea935611f83c49",
-      "rawAsrCurrent": true,
-      "requiresNewWave": false
     }
   },
   "episodeRefinement": {
-    "chapterBlueprint": "production/batches/game-math-part2-full-series/chapter-sources/camera-projection-full.json",
+    "chapterBlueprint": "production/batches/game-math-part2-full-series/chapter-sources/projection-depth-clarified.json",
     "predecessorSlug": "game-math-camera-projection",
     "sourceMapping": {
       "16": "02",
@@ -811,6 +932,8 @@
     "allOriginalParagraphsRetained": true,
     "overviewRequiresNewApprovedVoice": true,
     "numericDivisionClarificationScene": "04",
-    "serialPrivateGitGateRequired": true
+    "serialPrivateGitGateRequired": true,
+    "overviewVisualScope": "Independent depth-distribution, projected texture edge and coordinate-diagnosis overview, matching this episode narration; preceding delivered renderer preserved.",
+    "sourceChapterPreserved": "production/batches/game-math-part2-full-series/chapter-sources/camera-projection-full.json"
   }
 }
