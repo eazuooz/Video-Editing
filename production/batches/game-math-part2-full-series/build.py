@@ -145,7 +145,12 @@ def assemble(reuse=False):
     source_url=urlparse(source_records.get(source_id,{}).get('url',''))
     if source_url.netloc and source_url.netloc not in ('youtube.com','www.youtube.com','youtu.be'):
      source_line=source_url.netloc.removeprefix('www.')+source_url.path
-    vf="scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,drawtext=fontfile='C\\:/Windows/Fonts/malgun.ttf':text='"+credit_line+"':fontsize=18:fontcolor=white:box=1:boxcolor=black@0.65:x=30:y=808,drawtext=fontfile='C\\:/Windows/Fonts/malgun.ttf':text='"+source_line+"':fontsize=18:fontcolor=white:box=1:boxcolor=black@0.65:x=30:y=834"
+    framing=c.get('sourceFraming') or {}
+    if framing:
+     assert framing.get('approvedRepresentative') and framing.get('applyToSelectedSourceScenesOnly'), 'Inspect and approve source-only framing before encoding'
+     source_filter=framing['filter']
+    else:source_filter='scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1'
+    vf=source_filter+",fps=60,drawtext=fontfile='C\\:/Windows/Fonts/malgun.ttf':text='"+credit_line+"':fontsize=18:fontcolor=white:box=1:boxcolor=black@0.65:x=30:y=808,drawtext=fontfile='C\\:/Windows/Fonts/malgun.ttf':text='"+source_line+"':fontsize=18:fontcolor=white:box=1:boxcolor=black@0.65:x=30:y=834"
     segments=c['segments'];pieces=[]
     for j,seg in enumerate(segments):
      piece=target if len(segments)==1 else clipdir/f'{sid}-source-{j+1}.mp4'

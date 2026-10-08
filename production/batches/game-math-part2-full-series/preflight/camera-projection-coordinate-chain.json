@@ -1,0 +1,360 @@
+{
+  "status": "passed independent CPU planning only; next production waits for camera-frustum reviewed private upload and Git delivery",
+  "reviewedAtUtc": "2026-10-08T11:54:52.831579+00:00",
+  "source": {
+    "path": "tmp/game-math-part2-sources/3e10b1ffa61e81ee8401fdf1f001527c.txt",
+    "sha256": "97554880a90911e035b218924c2f0d24a1030b3f977201c37af020bdabb686e0",
+    "full10Point3DirectlyRead": true
+  },
+  "mainPointConvention": "LH row vectors,+z view-forward,[0,1] depth,top-left output; local(1,0,0),model translate(3,2,5),identity camera orientation at(2,1,1),viewport(100,50,800,450)",
+  "mainPointChain": {
+    "local": [
+      1.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "world": [
+      4.0,
+      2.0,
+      5.0,
+      1.0
+    ],
+    "view": [
+      2.0,
+      1.0,
+      4.0,
+      1.0
+    ],
+    "clip": [
+      2.0,
+      1.7777777777777777,
+      3.3000000000000003,
+      4.0
+    ],
+    "ndc": [
+      0.5,
+      0.4444444444444444,
+      0.8250000000000001
+    ],
+    "screen": [
+      700,
+      175
+    ]
+  },
+  "checks": [
+    {
+      "claim": "Main local→world point",
+      "calculated": [
+        4.0,
+        2.0,
+        5.0,
+        1.0
+      ],
+      "expected": [
+        4,
+        2,
+        5,
+        1
+      ]
+    },
+    {
+      "claim": "Main world→view point",
+      "calculated": [
+        2.0,
+        1.0,
+        4.0,
+        1.0
+      ],
+      "expected": [
+        2,
+        1,
+        4,
+        1
+      ]
+    },
+    {
+      "claim": "Main view→clip point",
+      "calculated": [
+        2.0,
+        1.7777777777777777,
+        3.3000000000000003,
+        4.0
+      ],
+      "expected": [
+        2.0,
+        1.7777777777777777,
+        3.3,
+        4.0
+      ]
+    },
+    {
+      "claim": "Main clip→NDC point",
+      "calculated": [
+        0.5,
+        0.4444444444444444,
+        0.8250000000000001
+      ],
+      "expected": [
+        0.5,
+        0.4444444444444444,
+        0.825
+      ]
+    },
+    {
+      "claim": "Main NDC→viewport point: left100/top50/800x450",
+      "calculated": [
+        700.0,
+        175.0
+      ],
+      "expected": [
+        700,
+        175
+      ]
+    },
+    {
+      "claim": "Main combined row matrix matches separate transforms",
+      "calculated": [
+        2.0,
+        1.7777777777777777,
+        3.3000000000000003,
+        4.0
+      ],
+      "expected": [
+        2.0,
+        1.7777777777777777,
+        3.3000000000000003,
+        4.0
+      ]
+    },
+    {
+      "claim": "Same world point after camera yaw90°",
+      "calculated": [
+        -4.0,
+        1.0,
+        2.0,
+        1.0
+      ],
+      "expected": [
+        -4,
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "claim": "Rotated camera makes point outside left clip plane",
+      "calculated": true,
+      "expected": true
+    },
+    {
+      "claim": "Inverse camera maps its own position to origin",
+      "calculated": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "expected": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "claim": "Direction has w0 and ignores translation",
+      "calculated": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "claim": "Perspective depth at z=1",
+      "calculated": 0.0,
+      "expected": 0
+    },
+    {
+      "claim": "Perspective depth at z=2",
+      "calculated": 0.55,
+      "expected": 0.55
+    },
+    {
+      "claim": "Perspective depth at z=4",
+      "calculated": 0.8250000000000001,
+      "expected": 0.825
+    },
+    {
+      "claim": "Perspective depth at z=6",
+      "calculated": 0.9166666666666666,
+      "expected": 0.9166666666666666
+    },
+    {
+      "claim": "Perspective depth at z=11",
+      "calculated": 1.0000000000000002,
+      "expected": 1
+    },
+    {
+      "claim": "Same main point in[-1,1] depth",
+      "calculated": [
+        0.5,
+        0.4444444444444444,
+        0.6499999999999999
+      ],
+      "expected": [
+        0.5,
+        0.4444444444444444,
+        0.65
+      ]
+    },
+    {
+      "claim": "Convert[-1,1] depth to[0,1]",
+      "calculated": 0.825,
+      "expected": 0.825
+    },
+    {
+      "claim": "Explicit RH-column/-z convention",
+      "calculated": [
+        2.0,
+        1.7777777777777777,
+        2.5999999999999996,
+        4.0
+      ],
+      "expected": [
+        2.0,
+        1.7777777777777777,
+        2.5999999999999996,
+        4.0
+      ]
+    },
+    {
+      "claim": "Orthographic main clip",
+      "calculated": [
+        0.5,
+        0.4444444444444444,
+        0.30000000000000004,
+        1.0
+      ],
+      "expected": [
+        0.5,
+        0.4444444444444444,
+        0.3,
+        1.0
+      ]
+    },
+    {
+      "claim": "Orthographic linear midpoint depth",
+      "calculated": 0.5000000000000001,
+      "expected": 0.5
+    },
+    {
+      "claim": "Positive homogeneous scaling leaves NDC",
+      "calculated": [
+        0.5,
+        0.4444444444444444,
+        0.8250000000000001
+      ],
+      "expected": [
+        0.5,
+        0.4444444444444444,
+        0.8250000000000001
+      ]
+    },
+    {
+      "claim": "Near-plane intersection parameter",
+      "calculated": 0.6666666666666666,
+      "expected": 0.6666666666666666
+    },
+    {
+      "claim": "Clipped near point has zclip0 and w1",
+      "calculated": [
+        5.551115123125783e-17,
+        1.0
+      ],
+      "expected": [
+        0,
+        1
+      ]
+    },
+    {
+      "claim": "Clip before divide agrees with view-space interpolation",
+      "calculated": [
+        -0.33333333333333337,
+        -0.4148148148148147,
+        5.551115123125783e-17,
+        1.0
+      ],
+      "expected": [
+        -0.33333333333333337,
+        -0.4148148148148147,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "claim": "Near-plane intersection parameter",
+      "calculated": 0.6666666666666666,
+      "expected": 0.6666666666666666
+    },
+    {
+      "claim": "Clipped near point has zclip0 and w1",
+      "calculated": [
+        5.551115123125783e-17,
+        1.0
+      ],
+      "expected": [
+        0,
+        1
+      ]
+    },
+    {
+      "claim": "Clip before divide agrees with view-space interpolation",
+      "calculated": [
+        0.33333333333333337,
+        -0.4148148148148147,
+        5.551115123125783e-17,
+        1.0
+      ],
+      "expected": [
+        0.33333333333333337,
+        -0.4148148148148147,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "claim": "Screen-edge midpoint attribute is perspective-correct0.2",
+      "calculated": 0.2,
+      "expected": 0.2
+    },
+    {
+      "claim": "Edge geometric ratio at t0.2 gives screen midpoint",
+      "calculated": 0.5,
+      "expected": 0.5
+    },
+    {
+      "claim": "Linear screen UV0.5 differs from correct0.2",
+      "calculated": true,
+      "expected": true
+    }
+  ],
+  "checkCount": 30,
+  "priorResearchClarification": "Earlier preflight had distinct view(-y),clip(+y) and viewport(.25y) exercises. The proposed main teaching chain now uses one consistently identified point throughout; separate axis/viewport challenges must be labeled explicitly.",
+  "sourceCaveats": [
+    "Preserve row/column,forward-axis,clip-depth and screen-origin conventions independently; API name alone is insufficient.",
+    "Near-zero positive z gives small w and large1/w, not largew.",
+    "Homogeneous clipping precedes divide; outside vertex does not discard the entire crossing triangle.",
+    "Image normalized depth is not metric forward distance; ordinary float formats do not imply uniform distance precision.",
+    "w-buffering is historical context; orthographic w1 carries no useful depth by itself.",
+    "Light-space and surface tangent-space motivations retained, detailed mapping deferred to their proper chapters."
+  ],
+  "gameFootage": "Future source windows require fresh recent-use/subject checks before narration; no final game selection or rights approval inferred."
+}

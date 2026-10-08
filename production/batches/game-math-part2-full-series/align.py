@@ -47,6 +47,35 @@ def normalized(s):
  s=re.sub(r'(?<=\d)\s+점\s+(?=\d)', '.', s)
  return original(s)
 a.normalized=normalized
+original_partition=a.partition_fixed
+def partition_preserving_normalized_tokens(text,width,count):
+ chunks=original_partition(text,width,count)
+ whole=normalized(text)
+ if ''.join(normalized(c) for c in chunks)==whole:return chunks
+ # A decimal phrase such as "오십삼 점 일 삼" must not be cut before 점:
+ # it otherwise becomes a geometric-point noun when matched in isolation.
+ # Retain every original word and the same bilingual cue count/width gates.
+ from functools import lru_cache
+ words=text.split();target=sum(a.weight(w) for w in words)/count
+ prefix=[normalized(' '.join(words[:i])) for i in range(len(words)+1)]
+ @lru_cache(None)
+ def solve(start,remaining):
+  if not remaining:return (0.,()) if start==len(words) else (float('inf'),())
+  best=(float('inf'),())
+  for end in range(start+1,len(words)-remaining+2):
+   segment=' '.join(words[start:end]);token=normalized(segment)
+   if len(a.wrapped_lines(segment,width))>2:break
+   if not whole.startswith(prefix[start]+token) or prefix[end]!=prefix[start]+token:continue
+   future,rest=solve(end,remaining-1)
+   cost=(a.weight(segment)-target)**2+future
+   if segment.endswith(('.', '?', '!', ',', ';')):cost-=target**2*.35
+   if cost<best[0]:best=(cost,(segment,*rest))
+  return best
+ score,chunks=solve(0,count)
+ if not __import__('math').isfinite(score):raise ValueError('Cannot preserve spoken token boundaries within bilingual caption width')
+ assert ' '.join(chunks)==' '.join(words) and ''.join(normalized(c) for c in chunks)==whole
+ return list(chunks)
+a.partition_fixed=partition_preserving_normalized_tokens
 if __name__=='__main__':
  # Selected-scene GPU retakes intentionally defer full assembly. Refresh the
  # current scene origins on CPU before aligning either language; no model load.

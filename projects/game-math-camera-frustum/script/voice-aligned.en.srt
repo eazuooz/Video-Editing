@@ -1,0 +1,1134 @@
+1
+00:00:00,000 --> 00:00:04,760
+Why do moving a camera and changing its zoom
+give different views of the same world?
+
+2
+00:00:05,120 --> 00:00:08,220
+First, real split-screen gameplay will help
+separate cameras from output windows,
+
+3
+00:00:08,220 --> 00:00:10,040
+followed by a pixel-aspect calculation.
+
+4
+00:00:10,420 --> 00:00:12,800
+Then we connect field of view with zoom
+numerically
+
+5
+00:00:12,800 --> 00:00:15,480
+and compare that with moving the camera
+forward.
+
+6
+00:00:15,840 --> 00:00:18,640
+Finally, orthographic projection and a
+split-screen
+
+7
+00:00:18,640 --> 00:00:22,060
+exercise will show which parameters to change.
+
+8
+00:00:22,530 --> 00:00:26,830
+Split Fiction divides the two players at a
+central boundary.
+
+9
+00:00:27,070 --> 00:00:29,950
+Follow each character in its own view.
+
+10
+00:00:30,270 --> 00:00:34,630
+Different directions produce different
+backgrounds and occlusion;
+
+11
+00:00:34,850 --> 00:00:37,950
+these are more than identical pieces of one
+picture.
+
+12
+00:00:38,230 --> 00:00:44,010
+The camera determines the view; the output
+window determines where that result goes.
+
+13
+00:00:44,170 --> 00:00:46,710
+We will calculate with our own defined diagram
+
+14
+00:00:47,150 --> 00:00:50,110
+rather than infer this game’s internal
+settings.
+
+15
+00:00:50,580 --> 00:00:52,780
+A render target stores rendering results,
+
+16
+00:00:53,100 --> 00:00:56,560
+either in a display buffer or a texture used
+by another calculation.
+
+17
+00:00:56,760 --> 00:00:59,800
+Our output rectangle uses a top-left origin
+with pixel
+
+18
+00:01:00,080 --> 00:01:03,840
+coordinates increasing rightward and downward.
+
+19
+00:01:04,160 --> 00:01:06,900
+Store the rectangle’s position and width and
+height separately.
+
+20
+00:01:07,200 --> 00:01:10,520
+Split a1920-by1080 image vertically.
+
+21
+00:01:10,540 --> 00:01:14,700
+The left window begins at(0,0) with size960
+by1080;
+
+22
+00:01:14,920 --> 00:01:18,160
+the right begins at(960,0) with the same size.
+
+23
+00:01:18,160 --> 00:01:21,180
+The left window’s last integer column is959;
+
+24
+00:01:21,460 --> 00:01:24,480
+position plus width gives the next boundary
+at960.
+
+25
+00:01:24,740 --> 00:01:26,980
+One camera result may appear in two windows,
+
+26
+00:01:26,980 --> 00:01:32,080
+or different camera results may occupy them.
+Storage and viewing are separate choices.
+
+27
+00:01:32,260 --> 00:01:35,980
+Shadow maps and in-world monitors can store
+results in textures.
+
+28
+00:01:36,220 --> 00:01:39,360
+Implementation and the full pixel
+transformation come in the next lecture.
+
+29
+00:01:39,830 --> 00:01:47,130
+A1920-by1080 image has aspect16:9; an
+individual pixel is not16:9.
+
+30
+00:01:47,390 --> 00:01:49,470
+If display and resolution both have
+aspect16:9,
+
+31
+00:01:49,470 --> 00:01:54,370
+a physical pixel has equal width and
+height:1:1.
+
+32
+00:01:54,430 --> 00:01:58,190
+Multiply physical display width-to-height by
+resolution height-to-width;
+
+33
+00:01:58,450 --> 00:02:00,150
+all aspect ratios here use width divided by
+height.
+
+34
+00:02:00,390 --> 00:02:06,210
+A4:3 pixel array stretched across a16:9
+physical area gives physical pixel aspect4/3.
+
+35
+00:02:06,330 --> 00:02:09,150
+A circle drawn assuming square pixels becomes
+horizontally stretched.
+
+36
+00:02:09,150 --> 00:02:12,910
+Fixing that with camera rotation or object
+scale breaks other relationships.
+
+37
+00:02:13,150 --> 00:02:16,730
+Moving or splitting a window does not change
+physical pixel aspect,
+
+38
+00:02:17,130 --> 00:02:18,650
+although the rectangle’s aspect changes.
+
+39
+00:02:19,050 --> 00:02:22,050
+Off-screen bitmaps commonly assume square
+pixels;
+
+40
+00:02:22,250 --> 00:02:25,650
+an anamorphic plan must record the later
+display stretch.
+
+41
+00:02:25,990 --> 00:02:30,390
+The source’s1153-by720 is not
+exactly16:10;1152-by720 is.
+
+42
+00:02:30,730 --> 00:02:34,350
+Verify ratios rather than memorize resolution
+lists.
+
+43
+00:02:35,100 --> 00:02:38,680
+Townscaper moves from a small waterside
+building to a closer view.
+
+44
+00:02:38,680 --> 00:02:44,720
+Choose a roof corner and window as landmarks.
+
+45
+00:02:44,920 --> 00:02:49,160
+Orbiting reveals sides and stairs.
+
+46
+00:02:49,600 --> 00:02:53,620
+A changed appearance does not mean physical
+pixel aspect changed.
+
+47
+00:02:53,860 --> 00:02:57,800
+Adding blocks changes the building itself.
+
+48
+00:02:58,280 --> 00:03:02,760
+Distinguish construction from changes of
+viewpoint.
+
+49
+00:03:02,760 --> 00:03:08,000
+Tracking the same roof shows parts coming
+forward or being hidden;
+
+50
+00:03:08,460 --> 00:03:11,780
+camera position and direction change how the
+scene reads.
+
+51
+00:03:12,220 --> 00:03:16,000
+These pixels alone do not establish the game’s
+
+52
+00:03:16,440 --> 00:03:19,520
+projection matrix or numeric zoom method.
+
+53
+00:03:20,020 --> 00:03:26,440
+Our original diagram can hold position,
+
+54
+00:03:26,740 --> 00:03:29,420
+field of view and output rectangle fixed and
+change one at a time.
+
+55
+00:03:29,720 --> 00:03:32,180
+Keep the overlap of the building faces in mind
+as we
+
+56
+00:03:32,500 --> 00:03:36,240
+construct the camera’s potential viewing
+volume.
+
+57
+00:03:37,050 --> 00:03:40,470
+The screen is flat, but a perspective camera’s
+
+58
+00:03:40,710 --> 00:03:43,570
+potential view is a volume. Begin with four
+corner rays.
+
+59
+00:03:43,870 --> 00:03:49,190
+Cut the pyramid by near and far planes to
+obtain the view frustum.
+
+60
+00:03:49,510 --> 00:03:55,630
+A point inside is only potentially visible: an
+opaque object may still occlude it.
+
+61
+00:03:55,690 --> 00:03:59,110
+Moving translates the volume,
+
+62
+00:03:59,330 --> 00:04:01,530
+rotating changes its orientation and changing
+FOV changes its opening.
+
+63
+00:04:01,630 --> 00:04:03,610
+Moving the output rectangle rightward is
+different:
+
+64
+00:04:03,690 --> 00:04:06,010
+the same view may simply be placed elsewhere.
+
+65
+00:04:06,010 --> 00:04:08,810
+We will classify inside and outside with the
+six boundary planes,
+
+66
+00:04:09,170 --> 00:04:10,950
+beyond the outline of a pyramid.
+
+67
+00:04:11,786 --> 00:04:15,240
+A frustum has left,right,top,bottom,near and
+far boundaries;
+
+68
+00:04:15,240 --> 00:04:19,320
+each boundary is an infinite plane.
+
+69
+00:04:19,359 --> 00:04:25,760
+Choose the inner half-space of each plane and
+retain their intersection.
+
+70
+00:04:26,040 --> 00:04:30,120
+Our example faces positive z with near1 and
+far11;
+
+71
+00:04:30,120 --> 00:04:33,760
+these are defined values, not measurements of
+the game.
+
+72
+00:04:34,160 --> 00:04:36,720
+Points at z0.5,z6 and z12 are before
+
+73
+00:04:36,720 --> 00:04:40,320
+near,between the distance planes and beyond
+far.
+
+74
+00:04:40,320 --> 00:04:46,780
+Being at z6 is insufficient if x extends
+beyond a side boundary at that depth.
+
+75
+00:04:47,060 --> 00:04:50,080
+A triangle crossing a boundary may retain a
+portion.
+
+76
+00:04:50,260 --> 00:04:53,140
+One outside vertex does not justify deleting
+the whole primitive.
+
+77
+00:04:53,460 --> 00:04:57,100
+Near and far also affect depth precision;
+
+78
+00:04:57,680 --> 00:05:00,740
+the actual depth format and projection
+convention matter.
+
+79
+00:05:01,220 --> 00:05:04,100
+The next lecture calculates depth and division
+order;
+
+80
+00:05:04,480 --> 00:05:07,180
+retain both distance boundaries and four
+screen-side boundaries.
+
+81
+00:05:07,710 --> 00:05:12,450
+Floors are added while a low view reveals the
+building’s side.
+
+82
+00:05:12,690 --> 00:05:16,170
+Observe empty screen space and the roof
+boundary.
+
+83
+00:05:16,510 --> 00:05:20,450
+An elevated view reveals roofs and terraces;
+
+84
+00:05:20,770 --> 00:05:25,590
+entering the view and becoming unoccluded are
+different events.
+
+85
+00:05:25,670 --> 00:05:30,270
+Walls overlapping frontally separate in an
+oblique view;
+
+86
+00:05:30,530 --> 00:05:34,610
+the same spatial relationship gives a
+different arrangement.
+
+87
+00:05:34,950 --> 00:05:37,510
+Later framing becomes wider and closer again.
+
+88
+00:05:37,710 --> 00:05:41,410
+Record apparent size separately from which
+faces are visible.
+
+89
+00:05:41,670 --> 00:05:45,670
+Leaving the image does not prove that the
+building vanished;
+
+90
+00:05:45,870 --> 00:05:49,370
+consider the viewing volume.
+
+91
+00:05:49,610 --> 00:05:54,270
+The recording does not reveal numeric near or
+far planes.
+
+92
+00:05:54,410 --> 00:05:57,450
+Keep observed pixels separate from defined
+math examples.
+
+93
+00:05:57,670 --> 00:06:01,470
+Our next diagram holds camera position fixed
+while changing FOV,
+
+94
+00:06:01,810 --> 00:06:05,610
+isolating it from movement.
+
+95
+00:06:06,320 --> 00:06:11,200
+In a top view, connect the camera to the left
+and right boundaries;
+
+96
+00:06:11,380 --> 00:06:14,200
+their whole angle is horizontal FOV.
+
+97
+00:06:14,460 --> 00:06:16,580
+The angle from the center to either edge is
+half the
+
+98
+00:06:16,840 --> 00:06:20,280
+FOV:45 degrees for a90-degree horizontal view.
+
+99
+00:06:20,520 --> 00:06:26,600
+At depth3, the half-width is3 times tan45
+degrees, or3.
+
+100
+00:06:26,720 --> 00:06:32,320
+The horizontal span at that depth runs from−3
+to3, width6; at depth6 it becomes12.
+
+101
+00:06:32,680 --> 00:06:36,060
+A smaller FOV captures less at the same depth;
+
+102
+00:06:36,320 --> 00:06:39,420
+the same object occupies a larger fraction of
+the image.
+
+103
+00:06:39,700 --> 00:06:42,000
+Horizontal and vertical FOV are distinct; an
+aspect ratio links them,
+
+104
+00:06:42,160 --> 00:06:46,300
+but equal numeric angles are a separate
+choice.
+
+105
+00:06:46,890 --> 00:06:53,010
+The source defines zoom relative to90-degree
+FOV as one divided by tan of the half-angle.
+
+106
+00:06:53,390 --> 00:06:58,750
+For90 degrees, tan45 is1, giving zoom1 as our
+reference.
+
+107
+00:06:58,970 --> 00:07:01,710
+Zoom2 requires half-angle tangent0.5;
+
+108
+00:07:01,930 --> 00:07:06,670
+FOV is twice arctan of one half.
+
+109
+00:07:07,130 --> 00:07:14,090
+The result is about53.13 degrees, not45: FOV
+and zoom are not linearly proportional.
+
+110
+00:07:14,090 --> 00:07:17,010
+With camera and objects fixed,
+
+111
+00:07:17,570 --> 00:07:19,710
+central image sizes double because the
+captured range narrows.
+
+112
+00:07:20,410 --> 00:07:23,470
+Check whether tangent functions accept
+radians;
+
+113
+00:07:23,750 --> 00:07:26,470
+passing degree values directly changes the
+result.
+
+114
+00:07:27,250 --> 00:07:29,390
+This zoom is a projection parameter;
+
+115
+00:07:30,050 --> 00:07:33,070
+orthographic zoom has a different meaning and
+units.
+
+116
+00:07:33,540 --> 00:07:37,000
+The players cross the candy town from
+different positions.
+
+117
+00:07:37,120 --> 00:07:41,120
+Compare character size with the surrounding
+paths in view.
+
+118
+00:07:41,400 --> 00:07:45,700
+A larger character does not prove a different
+FOV:
+
+119
+00:07:46,000 --> 00:07:50,500
+distance,direction and scene arrangement may
+also differ.
+
+120
+00:07:50,800 --> 00:07:53,220
+The gameplay supplies an observation question;
+
+121
+00:07:53,680 --> 00:07:58,480
+controlled examples isolate position and
+angle.
+
+122
+00:07:59,270 --> 00:08:03,750
+For square pixels in a16:9 window,
+
+123
+00:08:03,750 --> 00:08:07,130
+horizontal zoom1 requires vertical zoom16/9 to
+preserve shape.
+
+124
+00:08:07,450 --> 00:08:12,890
+Horizontal FOV is90 degrees;
+
+125
+00:08:12,890 --> 00:08:17,110
+vertical FOV is twice arctan(9/16), about58.72
+degrees.
+
+126
+00:08:17,310 --> 00:08:19,970
+A wider window captures a larger horizontal
+angle;
+
+127
+00:08:20,230 --> 00:08:23,770
+using90 degrees on both axes can stretch a
+circle horizontally.
+
+128
+00:08:23,890 --> 00:08:27,370
+Vertical-to-horizontal zoom equals the
+window’s physical aspect;
+
+129
+00:08:27,370 --> 00:08:30,830
+nonsquare pixels need more than pixel counts.
+
+130
+00:08:31,250 --> 00:08:33,870
+Include any physical display stretch in
+addition to1920-by1080 counts;
+
+131
+00:08:34,270 --> 00:08:36,310
+this connects the pixel-aspect calculation.
+
+132
+00:08:36,630 --> 00:08:39,350
+If an engine exposes one FOV parameter,
+
+133
+00:08:39,650 --> 00:08:42,470
+check whether it is horizontal or vertical and
+how aspect derives the other.
+
+134
+00:08:42,690 --> 00:08:46,550
+Resizing may preserve horizontal or vertical
+FOV;
+
+135
+00:08:46,870 --> 00:08:48,770
+verify what becomes visible or disappears.
+
+136
+00:08:49,400 --> 00:08:55,140
+Track one roof while the waterside structure
+grows,
+
+137
+00:08:55,360 --> 00:08:58,100
+separating newly constructed faces.
+
+138
+00:08:58,440 --> 00:09:02,220
+Wider framing changes to a closer view: the
+roof
+
+139
+00:09:02,560 --> 00:09:06,280
+grows while less surrounding water fits in the
+image.
+
+140
+00:09:06,560 --> 00:09:10,280
+Compare roofs at other depths as
+
+141
+00:09:10,280 --> 00:09:15,120
+well as the foreground target.
+
+142
+00:09:15,180 --> 00:09:18,040
+We will not label this game’s input as zoom or
+movement;
+
+143
+00:09:18,040 --> 00:09:22,500
+a defined two-depth example will calculate the
+distinction.
+
+144
+00:09:22,970 --> 00:09:26,510
+Place equal-sized panels at forward depths4
+and8;
+
+145
+00:09:26,630 --> 00:09:30,470
+perspective size is proportional to object
+size and inversely proportional to depth.
+
+146
+00:09:30,750 --> 00:09:34,490
+Doubling zoom without moving the camera
+doubles both
+
+147
+00:09:34,870 --> 00:09:36,450
+panels while preserving their relative
+image-size ratio.
+
+148
+00:09:36,650 --> 00:09:43,410
+Move the camera forward2 at fixed zoom: depths
+change4→2 and8→6.
+
+149
+00:09:43,570 --> 00:09:47,690
+The near panel grows by4/2=2; the far grows
+by8/6=4/3,
+
+150
+00:09:47,690 --> 00:09:50,650
+changing their relative image sizes.
+
+151
+00:09:50,650 --> 00:09:53,810
+Both methods can double the front panel, but
+the rear differs;
+
+152
+00:09:54,490 --> 00:09:56,630
+camera movement and lens zoom are different.
+
+153
+00:09:57,030 --> 00:10:02,950
+The denominator is forward-axis z, not the
+Euclidean distance to an off-axis point.
+
+154
+00:10:03,350 --> 00:10:09,330
+Use landmarks at multiple depths; one target
+can hide changes in their relationship.
+
+155
+00:10:10,140 --> 00:10:15,640
+Physical-camera FOV depends on sensor size as
+well as focal length; consider sensor width.
+
+156
+00:10:15,860 --> 00:10:22,100
+Horizontal FOV is twice arctan of sensor width
+divided
+
+157
+00:10:22,100 --> 00:10:26,260
+by twice focal length, using consistent units.
+
+158
+00:10:27,000 --> 00:10:34,380
+A36mm-wide sensor with18mm focal length gives
+ratio1 and horizontal FOV90 degrees.
+
+159
+00:10:34,580 --> 00:10:43,360
+Keeping the sensor and using36mm focal length
+gives ratio0.5 and FOV about53.13 degrees.
+
+160
+00:10:43,360 --> 00:10:49,020
+An18mm sensor width at18mm focal length gives
+the same FOV;
+
+161
+00:10:49,520 --> 00:10:51,520
+one number alone is insufficient.
+
+162
+00:10:51,520 --> 00:10:56,060
+Distinguish an arbitrary mathematical
+projection-plane
+
+163
+00:10:56,460 --> 00:10:59,500
+distance from the physical lens focal length.
+
+164
+00:10:59,900 --> 00:11:04,120
+Check sensor,focal length and fit policy in
+physical-camera settings.
+
+165
+00:11:04,520 --> 00:11:08,260
+These calculations address FOV, not depth of
+field or lens distortion.
+
+166
+00:11:08,750 --> 00:11:12,750
+Use a large wall and rear roof as landmarks,
+
+167
+00:11:13,010 --> 00:11:17,570
+separating newly added geometry from
+orbit-revealed faces.
+
+168
+00:11:17,870 --> 00:11:21,470
+Close framing emphasizes the wall;
+
+169
+00:11:21,550 --> 00:11:25,430
+wide framing includes water and other
+structures.
+
+170
+00:11:25,690 --> 00:11:27,910
+Changing orientation affects visible area
+beyond a
+
+171
+00:11:27,910 --> 00:11:34,070
+simple enlargement factor; record viewpoint
+conditions.
+
+172
+00:11:34,410 --> 00:11:37,370
+The next interval adds blocks around an upper
+terrace;
+
+173
+00:11:37,370 --> 00:11:43,070
+distinguish existing railings from new walls.
+
+174
+00:11:43,650 --> 00:11:46,710
+Wider framing returns to a close view;
+
+175
+00:11:46,810 --> 00:11:51,210
+track front and rear landmarks together.
+
+176
+00:11:51,510 --> 00:11:55,130
+We do not infer game camera calls;
+
+177
+00:11:55,390 --> 00:12:00,950
+our factors2 and4/3 belong to the defined
+diagram, not this recording.
+
+178
+00:12:01,190 --> 00:12:07,470
+Gameplay motivates a readable result; the
+mathematical example isolates
+
+179
+00:12:07,870 --> 00:12:10,690
+its changed variables. Connect them while
+respecting the evidence.
+
+180
+00:12:11,250 --> 00:12:14,710
+If distance-based shrinking is unwanted,
+
+181
+00:12:15,130 --> 00:12:18,930
+maps and modeling drawings can use another
+projection.
+
+182
+00:12:19,520 --> 00:12:24,740
+Perspective rays meet at the camera;
+orthographic projection lines are parallel.
+
+183
+00:12:24,740 --> 00:12:28,080
+Equal panels at depths2 and10 shrink
+differently in
+
+184
+00:12:28,080 --> 00:12:32,000
+perspective but have equal orthographic image
+sizes.
+
+185
+00:12:32,000 --> 00:12:34,180
+Orthographic projection does not preserve all
+shape: rotating a panel
+
+186
+00:12:34,180 --> 00:12:38,520
+reduces its projected width and collapses
+viewing-direction information.
+
+187
+00:12:38,520 --> 00:12:42,300
+Moving along the viewing direction leaves
+surviving image sizes unchanged;
+
+188
+00:12:42,300 --> 00:12:46,160
+clipping and occlusion still require checks.
+
+189
+00:12:46,160 --> 00:12:51,360
+Its viewing volume is a box, described by
+width and height rather than an opening angle.
+
+190
+00:12:51,580 --> 00:12:53,860
+A constant scale is useful for maps and
+drawings. This proof uses our diagram;
+
+191
+00:12:54,060 --> 00:12:58,380
+Townscaper’s actual projection remains
+unverified.
+
+192
+00:12:58,850 --> 00:13:03,450
+Use an orthographic box8 by4.5 with
+
+193
+00:13:03,710 --> 00:13:07,110
+aspect16:9 and a1920-by1080 output.
+
+194
+00:13:07,370 --> 00:13:09,590
+Mapping width8 to1920 pixels gives240 pixels
+per world unit;
+
+195
+00:13:09,850 --> 00:13:15,150
+check the same scale vertically.
+
+196
+00:13:15,350 --> 00:13:19,830
+Halve both dimensions to4 by2.25 for480 pixels
+per unit,
+
+197
+00:13:19,930 --> 00:13:22,190
+doubling image size without moving forward.
+
+198
+00:13:22,410 --> 00:13:28,010
+The source’s orthographic zoom is2 divided by
+size:0.25 for width8 and0.5 for width4.
+
+199
+00:13:28,010 --> 00:13:30,690
+Perspective zoom comes from an angle ratio;
+
+200
+00:13:30,690 --> 00:13:36,170
+orthographic zoom corresponds to inverse world
+length.
+
+201
+00:13:36,390 --> 00:13:39,310
+Changing only width creates unequal scales and
+turns a circle into an ellipse;
+
+202
+00:13:39,570 --> 00:13:41,430
+preserve physical output aspect.
+
+203
+00:13:41,710 --> 00:13:44,710
+Orthographic rendering still uses near,far and
+depth comparison;
+
+204
+00:13:44,890 --> 00:13:47,290
+absence of shrinking does not remove depth.
+
+205
+00:13:47,940 --> 00:13:53,040
+More construction and viewpoint changes reveal
+terrace walls and roofs.
+
+206
+00:13:53,340 --> 00:13:56,620
+Separate frontal and overhead views.
+
+207
+00:13:56,880 --> 00:14:01,060
+Reading a different face requires another
+direction;
+
+208
+00:14:01,440 --> 00:14:05,840
+enlargement alone cannot reveal every hidden
+roof or wall.
+
+209
+00:14:05,920 --> 00:14:09,360
+The orthographic diagram demonstrated a
+constant scale as an option,
+
+210
+00:14:09,720 --> 00:14:15,480
+not an inferred property of the game.
+
+211
+00:14:15,480 --> 00:14:21,120
+Choose viewing direction,perspective and range
+before dividing the output;
+
+212
+00:14:21,520 --> 00:14:24,740
+our next problem returns to two player
+windows.
+
+213
+00:14:25,430 --> 00:14:29,650
+Start with square pixels,1920
+
+214
+00:14:29,650 --> 00:14:34,070
+by1080,horizontal FOV90,zoomX1 and zoomY16/9.
+
+215
+00:14:34,270 --> 00:14:39,690
+Each vertical half is960 by1080 with aspect8:9
+rather than16:9.
+
+216
+00:14:39,890 --> 00:14:45,930
+Preserve vertical FOV and zoomY; their zoom
+ratio must become8/9.
+
+217
+00:14:46,190 --> 00:14:49,730
+This gives zoomX2 and horizontal FOV
+about53.13 degrees,
+
+218
+00:14:49,730 --> 00:14:52,390
+narrowing the visible sides.
+
+219
+00:14:52,630 --> 00:14:55,270
+Preserving horizontal FOV instead is another
+choice;
+
+220
+00:14:55,430 --> 00:14:58,850
+declare the preserved axis before validating
+shape and range.
+
+221
+00:14:59,130 --> 00:15:04,230
+For the orthographic exercise,8 by4.5 gives240
+
+222
+00:15:04,450 --> 00:15:07,130
+pixels per unit;4 by2.25 doubles it in the
+same output.
+
+223
+00:15:07,470 --> 00:15:10,490
+Neither exercise moved the camera forward;
+
+224
+00:15:10,490 --> 00:15:13,570
+name output-aspect and projection changes
+separately in code.
+
+225
+00:15:14,040 --> 00:15:21,380
+The final example changes from a close roof
+and frontal view to wider,elevated framing.
+
+226
+00:15:21,720 --> 00:15:26,320
+Later blocks change the building itself.
+
+227
+00:15:26,320 --> 00:15:29,720
+New faces differ from existing faces revealed
+by another view.
+
+228
+00:15:30,000 --> 00:15:33,580
+Write what to observe,from which
+direction,over
+
+229
+00:15:33,580 --> 00:15:37,060
+what range and in which output window.
+
+230
+00:15:37,460 --> 00:15:40,680
+Change one condition and compare the same
+landmarks
+
+231
+00:15:40,680 --> 00:15:45,960
+to check both readability and the camera
+calculation.
+
+232
+00:15:46,490 --> 00:15:50,570
+We separated what a camera sees from where the
+result goes:
+
+233
+00:15:50,570 --> 00:15:54,450
+position,direction,projection range and output
+rectangle are related but distinct.
+
+234
+00:15:54,670 --> 00:16:01,590
+Square pixels can form a16:9 image; the two
+zoom axes must match physical window aspect.
+
+235
+00:16:01,850 --> 00:16:06,210
+Zoom2 changed90 degrees to about53.13;
+
+236
+00:16:06,370 --> 00:16:09,210
+moving forward instead changes objects at
+different depths by different factors.
+
+237
+00:16:09,450 --> 00:16:12,030
+Orthographic projection uses box size instead
+of FOV;
+
+238
+00:16:12,310 --> 00:16:16,110
+occlusion,clipping and axis scales still
+matter.
+
+239
+00:16:16,490 --> 00:16:21,090
+Record window size and the preserved FOV
+axis,compare multiple
+
+240
+00:16:21,670 --> 00:16:24,630
+depths and avoid inferring game internals from
+pixels.
+
+241
+00:16:25,050 --> 00:16:29,670
+Next we follow one point from local space
+through clip space to a
+
+242
+00:16:29,990 --> 00:16:31,430
+screen pixel,using these camera and output
+choices as inputs.

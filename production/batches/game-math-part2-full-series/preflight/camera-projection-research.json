@@ -1,0 +1,297 @@
+{
+  "slug": "game-math-camera-projection",
+  "status": "Complete10.2 viewing episode measured18:07.5, final pixels/private/Git pending;10.3 CPU mathematical preflight only, next sequential authoring waits for10.2 delivery.",
+  "viewerQuestion": "같은3D점이 카메라·시야각·투영·출력 창을 거쳐 어느 픽셀로 옮겨지는지 어떻게 직접 계산할까요?",
+  "sources": [
+    {
+      "id": "3e10b1ffa61e81488be9e1e3c7b06544",
+      "url": "https://app.notion.com/p/3e10b1ffa61e81488be9e1e3c7b06544?pvs=204",
+      "lastEditedAt": "2026-09-20T09:48:17.142Z",
+      "fullSnapshot": "tmp/game-math-part2-sources/3e10b1ffa61e81488be9e1e3c7b06544.txt",
+      "sha256": "148927872876a010534e25b0ce8988bade052ce8d86f25b466e7ce581722db9e",
+      "liveSourceUnchanged": true
+    },
+    {
+      "id": "3e10b1ffa61e81ee8401fdf1f001527c",
+      "url": "https://app.notion.com/p/3e10b1ffa61e81ee8401fdf1f001527c?pvs=204",
+      "lastEditedAt": "2026-09-20T09:52:12.717Z",
+      "fullSnapshot": "tmp/game-math-part2-sources/3e10b1ffa61e81ee8401fdf1f001527c.txt",
+      "sha256": "97554880a90911e035b218924c2f0d24a1030b3f977201c37af020bdabb686e0",
+      "liveSourceUnchanged": true
+    }
+  ],
+  "coveragePlan": {
+    "10.2.1": "Output window/viewport versus rendering target; split-screen and independent cameras.",
+    "10.2.2": "Physical pixel aspect versus image aspect; square-pixel1920x1080 is1:1 pixels and16:9 image.",
+    "10.2.3": "Perspective six-plane frustum and near/far clipping; no infinite-camera pinhole singularity claim.",
+    "10.2.4": "Horizontal/vertical FOV, reciprocal-tangent zoom, aspect coupling; zoom differs from camera translation. Real focal length and sensor size jointly determine FOV; arbitrary diagram projection-plane scaling is a separate construction.",
+    "10.2.5": "Orthographic box, size/zoom and depth-independent apparent size inside clip range.",
+    "10.3.1": "Model/world/view transformations, camera inverse and explicit vector convention.",
+    "10.3.2–10.3.4": "Clip coordinates, perspective w=z versus orthographic w=1, near/far matrices, homogeneous clipping before divide, explicit alternate convention conversion.",
+    "10.3.5": "NDC, viewport mapping/y flip, transformed nonlinear depth versus metric camera z, w role in perspective-correct interpolation.",
+    "10.3.6": "Full coordinate-space chain; light-space and surface tangent-space motivation with detailed treatment reserved for their later chapters."
+  },
+  "correctionsAndConventions": [
+    "Choose LH row vectors/+z camera forward/[0,1] clip depth/top-left viewport for original worked examples; convert RH column/-z/[-1,1] explicitly. API name alone does not force all conventions.",
+    "Correct height/width mismatch and1153→1152 example; do not confuse resolution ratio with physical pixel aspect.",
+    "Near-zero positive z makes1/w large when w=z; it does not make w large.",
+    "n=1 f=11 z=6 gives11/12 depth, not.5; viewport depth range differs from camera clipping distances.",
+    "Legacy w-buffer/float discussion is historical; ordinary float depth is not automatically uniformly precise. Current reversed-Z behavior depends on chosen depth convention/format.",
+    "Positive homogeneous matrix scaling does not change NDC; do not identify a projection solely from exact final row values across arbitrary equivalent matrices."
+  ],
+  "primaryReferences": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-rasterizer-stage-getting-started",
+      "supports": "Clip/divide/viewport stages and viewport mapping",
+      "read": true
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/direct3d9/viewports-and-clipping",
+      "supports": "Viewport and clipping definitions; legacyAPI label preserved",
+      "read": true
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/dxtecharts/the-direct3d-transformation-pipeline",
+      "supports": "Transformation conventions and matrices; legacy context preserved",
+      "read": true
+    },
+    {
+      "url": "https://docs.unity3d.com/Manual/PhysicalCameras-introduction.html",
+      "supports": "Focal length/sensor size and FOV relationship; currentUnity6.6 page read",
+      "read": true
+    },
+    {
+      "url": "https://developer.nvidia.com/content/depth-precision-visualized",
+      "supports": "Depth affine in1/z; format/convention-specific reversed-Z precision, finite-roundoff caveat",
+      "read": true
+    }
+  ],
+  "independentProposedExamples": [
+    {
+      "name": "Horizontal90deg square-pixel image16:9 verticalFOV",
+      "actual": 58.71550708558254,
+      "expected": 58.71550708558255,
+      "passed": true
+    },
+    {
+      "name": "Zoom2 horizontal FOV",
+      "actual": 53.13010235415598,
+      "expected": 53.13010235415598,
+      "passed": true
+    },
+    {
+      "name": "Square pixel versus image aspect",
+      "actual": [
+        1.0,
+        1.7777777777777777
+      ],
+      "expected": [
+        1.0,
+        1.7777777777777777
+      ],
+      "passed": true
+    },
+    {
+      "name": "One model-world-view point",
+      "actual": [
+        2.0,
+        -1.0,
+        4.0,
+        1.0
+      ],
+      "expected": [
+        2,
+        -1,
+        4,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "name": "Nonlinear [0,1] perspective depth z=1",
+      "actual": 0.0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "name": "Nonlinear [0,1] perspective depth z=11",
+      "actual": 1.0000000000000002,
+      "expected": 1,
+      "passed": true
+    },
+    {
+      "name": "Nonlinear [0,1] perspective depth z=6",
+      "actual": 0.9166666666666666,
+      "expected": 0.9166666666666666,
+      "passed": true
+    },
+    {
+      "name": "Complete perspective clip",
+      "actual": [
+        2.0,
+        1.7777777777777777,
+        3.3000000000000003,
+        4.0
+      ],
+      "expected": [
+        2.0,
+        1.7777777777777777,
+        3.3,
+        4.0
+      ],
+      "passed": true
+    },
+    {
+      "name": "Divide preserves normalized coordinate under positive homogeneous scaling",
+      "actual": [
+        0.5,
+        0.4444444444444444,
+        0.8250000000000001
+      ],
+      "expected": [
+        0.5,
+        0.4444444444444444,
+        0.8250000000000001
+      ],
+      "passed": true
+    },
+    {
+      "name": "Viewport left100 top50 width800 height450 at NDC(.5,.25)",
+      "actual": [
+        700.0,
+        218.75
+      ],
+      "expected": [
+        700.0,
+        218.75
+      ],
+      "passed": true
+    },
+    {
+      "name": "Viewport center at zero NDC",
+      "actual": [
+        500.0,
+        275.0
+      ],
+      "expected": [
+        500,
+        275
+      ],
+      "passed": true
+    },
+    {
+      "name": "Dolly forward2 depth4/8 unequal magnification",
+      "actual": [
+        2.0,
+        1.3333333333333333
+      ],
+      "expected": [
+        2.0,
+        1.3333333333333333
+      ],
+      "passed": true
+    },
+    {
+      "name": "Projection zoom2 has equal magnification",
+      "actual": [
+        2,
+        2
+      ],
+      "expected": [
+        2,
+        2
+      ],
+      "passed": true
+    },
+    {
+      "name": "Orthographic XY independent of depth",
+      "actual": [
+        0.5,
+        0.4444444444444444
+      ],
+      "expected": [
+        0.5,
+        0.4444444444444444
+      ],
+      "passed": true
+    },
+    {
+      "name": "Orthographic transformed w",
+      "actual": [
+        1.0,
+        1.0
+      ],
+      "expected": [
+        1,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "name": "Explicit LH-row versus RH-column conversion",
+      "actual": [
+        2.0,
+        1.7777777777777777,
+        2.5999999999999996,
+        4.0
+      ],
+      "expected": [
+        2.0,
+        1.7777777777777777,
+        2.5999999999999996,
+        4.0
+      ],
+      "passed": true
+    }
+  ],
+  "duplicateResearch": {
+    "studioEvidence": "shared/output/game-math-part2-full-series/rendering-light-preflight/studio-camera-current.ax.txt",
+    "actualMatches": [
+      {
+        "videoId": "ZLOewk8JHXA",
+        "title": "게임수학 Part 2 · 극좌표계 2편: 원통·구면좌표와 3D 카메라",
+        "overlap": "Orbit-camera position from polar coordinates; preserve user-scheduled original, no projective matrices or full viewport calculation.",
+        "status": "scheduled-preserve"
+      },
+      {
+        "videoId": "c18rkesgBSw",
+        "title": "게임 멀미와 카메라 설계: 화면 움직임을 선택하게 만들기",
+        "overlap": "Camera comfort and player settings; independent current projection/coordinate question.",
+        "status": "private-preserve"
+      },
+      {
+        "videoId": "qfkL1VjnYo8",
+        "title": "다중 카메라와 투명 오브젝트 렌더링 | 자체엔진 그래픽스",
+        "fullCaptionTranscript": "shared/output/game-math-part2-full-series/rendering-light-preflight/existing-multiple-camera-transcript.txt",
+        "transcriptSha256": "0f215d15b8ca4b15421d16971bdf53723cee4dcb46dd3d491cdd8123c75ed749",
+        "fullTranscriptDirectlyRead": true,
+        "overlap": "Camera iteration/matrix bindings, transparency ordering and library/debugging workflow; no FOV, clipping matrix derivation or model-point-to-pixel exercise. Preserve historical engine-specific transparency caveat."
+      },
+      {
+        "videoId": "tmL7WV17r5g",
+        "title": "카메라 타겟팅 | 게임 오브젝트를 따라가는 화면 LV17",
+        "transcript": "Native expanded page offered no transcript; do not claim full speech review. Referenced original note and exact linked implementation inspected.",
+        "sourceNote": "https://app.notion.com/p/7d0fa4fcd7c14dd989e770b16b5dc96d",
+        "implementation": "https://github.com/eazuooz/YamYam_Engine/commit/0a4c207fb2576e704599a7f5b3b1ec76b319833e",
+        "overlap": "Target position or own camera position minus half-resolution2D offset; independent of forthcoming3D homogeneous projection calculation."
+      }
+    ],
+    "localScriptsDirectlyRead": [
+      "projects/yamyam-dx12-rendering/script/narration.ko.json",
+      "projects/yamyam-dx12-texture-views/script/narration.ko.json"
+    ],
+    "finalCurrentInventoryDecision": "10.2 distinct before project creation and current preupload refresh passed; full likely-overlap comparison in camera-projection-duplicate-content-review.json.10.3 requires a fresh inventory/Studio check before its creation."
+  },
+  "episodeBoundaryPlan": "Measure full useful narration. If combined10.2+10.3 exceeds about20minutes, split at the complete camera/FOV versus coordinate-chain boundary. Each episode gets independent viewer question, overview, worked problems, original branding and membership, KO/EN captions and exact40:60; do not pad a shorter episode.",
+  "footageSelection": "pending fresh-game/recent-use/permission/full-pixel review before observation narration",
+  "reviewedAtUtc": "2026-10-08T13:02:35.293499+00:00",
+  "checkpointHistory": [
+    {
+      "previousStatus": "CPU research only; no project, narration, final duplicate decision or upload created. Rendering-light private delivery/Git must finish first.",
+      "previousReviewedAtUtc": "2026-10-08T07:58:58.501346+00:00"
+    }
+  ],
+  "approvedEpisodeBoundary": "production/batches/game-math-part2-full-series/preflight/camera-episode-boundary-split.json",
+  "currentCoherentCoordinateChain": "production/batches/game-math-part2-full-series/preflight/camera-projection-coordinate-chain.json",
+  "independentProposedExamplesScope": "Earlier independent standalone exercises retained as research history; they are not one continuous point. Use currentCoherentCoordinateChain for the new single-point throughline."
+}

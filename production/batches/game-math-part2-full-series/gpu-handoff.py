@@ -87,7 +87,7 @@ def request(args):
         raise
 
 
-def wait_boundary(state):
+def wait_boundary(state, gpu_idle_timeout=600):
     q = Path(state['queueDir'])
     last = None
     while alive(state['queueOwner']):
@@ -114,6 +114,7 @@ def wait_boundary(state):
         evidence = None
     update(state, state='research_boundary_saved', boundaryStatus=status, completedJobEvidence=evidence)
     stable_since = None
+    idle_deadline = time.monotonic() + gpu_idle_timeout
     while True:
         raw = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.free,utilization.gpu',
                                       '--format=csv,noheader,nounits'], text=True,
@@ -124,6 +125,12 @@ def wait_boundary(state):
         if stable_since and time.monotonic() - stable_since >= 20:
             update(state, state='gpu_granted_to_tts', gpuBeforeTts=dict(freeMiB=free, utilization=util))
             return
+        if time.monotonic() >= idle_deadline:
+            update(state, state='tts_not_started_gpu_wait_expired', ttsStarted=False,
+                   gpuWaitTimeoutSeconds=gpu_idle_timeout,
+                   lastGpuObservation=dict(freeMiB=free, utilization=util),
+                   reason='Stable idle GPU was not available; restore research rather than hold its queue indefinitely.')
+            raise TimeoutError('GPU idle wait expired before TTS started; original research queue will be restored.')
         time.sleep(10)
 
 
@@ -167,8 +174,11 @@ def main():
     ap.add_argument('--queue-dir')
     ap.add_argument('--evidence', default='TTS 전 현재 GPU 학습 실행 완료 후 중단하고 TTS 종료 후 원래 작업 재개')
     ap.add_argument('--adopt-token')
+    ap.add_argument('--gpu-idle-timeout', type=int, default=600)
     ap.add_argument('command', nargs=argparse.REMAINDER)
     args = ap.parse_args()
+    if args.gpu_idle_timeout < 30:
+        ap.error('GPU idle timeout must allow the complete20s stability window.')
     command = args.command[1:] if args.command[:1] == ['--'] else args.command
     if not command:
         ap.error('Provide the exact TTS command after --.')
@@ -193,9 +203,12 @@ def main():
     code = 1
     child = None
     try:
-        wait_boundary(state)
-        update(state, state='tts_running')
-        child = subprocess.Popen(command, cwd=ROOT, creationflags=subprocess.CREATE_NO_WINDOW)
+        wait_boundary(state, args.gpu_idle_timeout)
+        tts_log = HISTORY / (state['token'] + '-tts.log')
+        update(state, state='tts_running', ttsLog=str(tts_log))
+        with tts_log.open('x', encoding='utf-8') as log:
+            child = subprocess.Popen(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
+                                     creationflags=subprocess.CREATE_NO_WINDOW)
         update(state, ttsOwner=snapshot(psutil.Process(child.pid)))
         code = child.wait()
         update(state, state='tts_finished', ttsExitCode=code)

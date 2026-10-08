@@ -31,8 +31,17 @@ const image=read('shared/git-essential-images.json').entries.find(x=>x.path===th
 if(!image||image.purpose!=='delivery-thumbnail'||image.sha256!==sha(fs.readFileSync(path.join(root,thumb))))throw Error('Review and register the exact essential thumbnail first');
 files.push(thumb);
 const queuePath='production/batches/game-math-part2-full-series/queue.json';
-const special=['motion-canvas/projects.json','projects/rebuild-index.json','shared/git-essential-images.json','.gitignore',
- 'AGENTS.md','docs/NARRATION_AUDIO_STANDARD.md','qwen3-tts/render_narration.py'];
+const special=['motion-canvas/projects.json','projects/rebuild-index.json','shared/git-essential-images.json','.gitignore'];
+// An explicit delivery can preserve already-delivered scheduler instructions
+// byte-for-byte while another task is adding its own reaffirmations/hold hook.
+// This changes Git selection only; no scheduler files or running jobs are edited.
+if(process.argv.includes('--preserve-delivered-scheduler')){
+ if(!explicit)throw Error('Preserving shared scheduler requires an explicit own-source path list');
+ for(const [file,marker] of [['AGENTS.md','- GPU handoff for narration, user-directed 2026-10-08:'],['docs/NARRATION_AUDIO_STANDARD.md','2026-10-08 사용자 지시: 영상 제작을 재개하며, GPU TTS 전에는 실행 중인 GPU 작업을'],['qwen3-tts/render_narration.py','    schedule_gpu_handoff(args.project, args.device, args.dry_run)']]){
+  if(!git(['show',parent+':'+file]).includes(marker))throw Error('Required approved scheduler not already delivered: '+file);
+  if(files.includes(file))throw Error('Shared scheduler must be excluded from the explicit own-source path list');
+ }
+}else special.push('AGENTS.md','docs/NARRATION_AUDIO_STANDARD.md','qwen3-tts/render_narration.py');
 const footagePath='production/batches/game-math-part2-full-series/footage-index.json';
 if(explicit)special.push(queuePath,footagePath);
 function mergeOwn(f,text){
@@ -42,7 +51,7 @@ function mergeOwn(f,text){
   return JSON.stringify(value,null,2)+'\n';
  }
  if(f===queuePath){
-  const value=JSON.parse(text),current=read(queuePath),own=current.items.find(x=>x.slug===slug),index=value.items.findIndex(x=>x.slug===slug);
+  const current=read(queuePath),value=require('./merge-camera-episode-refinement.cjs')(JSON.parse(text),current,slug),own=current.items.find(x=>x.slug===slug),index=value.items.findIndex(x=>x.slug===slug);
   if(!own||index<0)throw Error('Missing existing lecture queue entry');
   value.items[index]=own;
   if(current.policy?.splitPolicy)value.policy.splitPolicy=current.policy.splitPolicy;
