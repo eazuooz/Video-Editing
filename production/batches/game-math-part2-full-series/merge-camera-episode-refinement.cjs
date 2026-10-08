@@ -1,5 +1,6 @@
 // Apply only the approved10.2/10.3 split while retaining other live queue records.
 module.exports=function mergeCameraEpisodeRefinement(value,current,slug){
+ value=require('./merge-projection-depth-refinement.cjs')(value,current,slug);
  if(value.items.some(x=>x.slug===slug))return value;
  if(slug!=='game-math-camera-frustum')throw Error('Missing existing lecture queue entry');
  const history=current.episodeRefinementHistory?.find(x=>x.original?.slug==='game-math-camera-projection'&&x.original.order===9&&x.original.part===2&&x.original.totalParts===6);

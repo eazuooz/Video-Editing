@@ -33,6 +33,22 @@ while True:
         if error.errno not in [13,36]:raise
         print('Another owned repair is writing this scene; wait for its checkpoint.',flush=True);time.sleep(30)
 write = lambda p, v: p.write_text(json.dumps(v, ensure_ascii=False, indent=2)+'\n', encoding='utf8')
+# Passing line caches are valid only for their recorded complete text. Preserve
+# an old take before changing that text; other reviewed lines stay byte-identical.
+text_replacements=[]
+prior_file=work/'provenance.json'
+if prior_file.exists():
+    prior=read(prior_file)
+    for record in prior['lines']:
+        index=record['line'];source=ROOT/record['source']
+        if record['text']==scene['lines'][index-1] or not source.exists():continue
+        assert source.resolve().is_relative_to(work.resolve()) and sha(source)==record['sha256']
+        stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+        preserved=source.with_name(source.stem+'-previous-text-'+stamp+'.wav')
+        source.rename(preserved)
+        text_replacements.append({**record,'preserved':preserved.relative_to(ROOT).as_posix(),'newText':scene['lines'][index-1]})
+    if text_replacements:
+        shutil.copy2(prior_file,work/('provenance-before-text-change-'+stamp+'.json'))
 write(work/'script.ko.json', {**script, 'scenes': [scene]})
 alternate = json.loads(json.dumps(manifest))
 alternate['paths']['script'] = (work/'script.ko.json').relative_to(ROOT).as_posix()
@@ -84,4 +100,6 @@ write(work/'provenance.json',{'scene':sid,'method':'Complete independently synth
     'previous':previous.relative_to(ROOT).as_posix(),'lines':line_records,
     'lineGapSeconds':.28,'currentWave':target.relative_to(ROOT).as_posix(),'sha256':sha(target),
     'rawAsrAndMeaningReview':'pending','combinedAssemblyDeferred':'--defer-assembly' in sys.argv})
+if text_replacements:
+    provenance=read(work/'provenance.json');provenance['textReplacements']=text_replacements;write(work/'provenance.json',provenance)
 print('Full scene restored; current ASR and meaning review still required.',flush=True)

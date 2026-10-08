@@ -1,0 +1,910 @@
+1
+00:00:02,000 --> 00:00:06,440
+How does one corner of a game building end up
+at a specific screen position?
+
+2
+00:00:06,740 --> 00:00:09,100
+First we follow landmarks in real games and
+calculate one
+
+3
+00:00:09,100 --> 00:00:13,300
+point from object coordinates to camera
+coordinates.
+
+4
+00:00:13,640 --> 00:00:14,840
+Next we clip the viewing volume, divide,
+
+5
+00:00:14,840 --> 00:00:18,560
+and map through an output rectangle to obtain
+the screen coordinates.
+
+6
+00:00:18,940 --> 00:00:21,860
+Finally, include the origin and size of a
+smaller viewport and
+
+7
+00:00:21,860 --> 00:00:25,740
+complete the calculation of where that same
+point appears on screen.
+
+8
+00:00:26,367 --> 00:00:32,207
+This is official Portal2 gameplay. Follow both
+the moving viewpoint and the central pillar.
+
+9
+00:00:36,527 --> 00:00:38,807
+The pillar changes screen position without
+moving,
+
+10
+00:00:38,967 --> 00:00:40,847
+while a device behind it becomes hidden.
+
+11
+00:00:45,087 --> 00:00:47,667
+To calculate that difference,
+
+12
+00:00:47,667 --> 00:00:49,747
+express the same point in world coordinates
+and camera coordinates.
+
+13
+00:00:50,367 --> 00:00:53,407
+Matching matrix names do not guarantee
+matching formulas.
+
+14
+00:00:53,687 --> 00:00:57,667
+Today we use left-handed view coordinates with
+forward plusz.
+
+15
+00:00:57,827 --> 00:01:01,807
+Vectors are rows with matrices multiplied on
+the right;
+
+16
+00:01:02,147 --> 00:01:04,847
+distinguish this from the earlier rotation
+lesson’s column convention.
+
+17
+00:01:05,207 --> 00:01:07,267
+Clip depth runs from0 tow;
+
+18
+00:01:07,267 --> 00:01:11,727
+after division depth runs from0 to1. Keep the
+stages distinct.
+
+19
+00:01:11,947 --> 00:01:18,367
+The screen origin is top-left andy increases
+downward, opposite the camera’s upwardy.
+
+20
+00:01:18,367 --> 00:01:22,567
+Record space,vector convention,depth range and
+screen origin separately;
+
+21
+00:01:22,887 --> 00:01:26,427
+an API name alone cannot settle them all.
+
+22
+00:01:26,827 --> 00:01:29,987
+Recall the earlier matrix derivations as
+needed;
+
+23
+00:01:30,347 --> 00:01:33,647
+this lesson connects every intermediate value
+of one point to its final result.
+
+24
+00:01:34,567 --> 00:01:39,047
+Choose a corner of a small box at local
+
+25
+00:01:39,047 --> 00:01:42,967
+coordinates(1,0,0); its position hasw1.
+
+26
+00:01:43,427 --> 00:01:50,707
+Translate the box by(3,2,5), with no rotation
+or scale in this first example.
+
+27
+00:01:51,007 --> 00:01:54,347
+Adding the translation gives world
+coordinates(4,2,5);
+
+28
+00:01:54,627 --> 00:01:59,087
+the local coordinates remain valid in their
+own frame.
+
+29
+00:01:59,327 --> 00:02:02,447
+For our row vectors, translation occupies the
+last row,
+
+30
+00:02:02,447 --> 00:02:05,647
+rather than the last column of a column-vector
+matrix.
+
+31
+00:02:06,027 --> 00:02:09,867
+A direction hasw0, so transforming
+direction(1,0,0)
+
+32
+00:02:09,867 --> 00:02:15,147
+by the same translation does not add(3,2,5).
+
+33
+00:02:15,467 --> 00:02:21,287
+Normals are directions, but nonuniform scaling
+requires a
+
+34
+00:02:21,747 --> 00:02:24,247
+separate normal transformation, covered in the
+lighting lesson.
+
+35
+00:02:25,417 --> 00:02:29,397
+Choose a front roof corner in Townscaper.
+
+36
+00:02:33,487 --> 00:02:41,057
+New blocks grow from a platform and change the
+structure.
+
+37
+00:02:41,437 --> 00:02:46,857
+Distinguish newly created corners from the
+original landmark;
+
+38
+00:02:51,128 --> 00:02:54,188
+comparing different points cannot verify one
+coordinate transformation.
+
+39
+00:02:54,448 --> 00:03:02,258
+Orbiting reveals the long roof’s sides and
+interior opening,
+
+40
+00:03:06,288 --> 00:03:09,408
+while the original corner keeps changing
+screen position.
+
+41
+00:03:09,457 --> 00:03:16,718
+Connect these visible changes to separate
+world
+
+42
+00:03:16,718 --> 00:03:19,278
+placement and camera-relative coordinates.
+
+43
+00:03:19,460 --> 00:03:27,229
+To record a world position, identify a point
+in the object’s frame and
+
+44
+00:03:27,229 --> 00:03:30,009
+store the resulting world-space position after
+its model transform.
+
+45
+00:03:34,239 --> 00:03:38,619
+Orbiting a camera does not require rewriting
+every building’s world coordinates;
+
+46
+00:03:42,769 --> 00:03:45,049
+a later step changes the viewing frame.
+
+47
+00:03:49,319 --> 00:03:52,559
+These pixels do not reveal the game’s
+matrices.
+
+48
+00:03:52,579 --> 00:04:02,430
+Our local point and translation are separately
+defined teaching values.
+
+49
+00:04:06,360 --> 00:04:10,680
+Separating construction changes from viewpoint
+changes is
+
+50
+00:04:10,680 --> 00:04:13,220
+the first habit for inspecting intermediate
+coordinates.
+
+51
+00:04:13,900 --> 00:04:21,360
+Place the camera at(2,1,1), aligned with the
+world’s right,up and forward axes.
+
+52
+00:04:21,740 --> 00:04:26,320
+Subtracting the camera position from world
+point(4,2,5)
+
+53
+00:04:26,320 --> 00:04:31,280
+gives view point(2,1,4): right2,up1,forward4.
+
+54
+00:04:31,580 --> 00:04:35,060
+A rotated camera also requires expressing the
+
+55
+00:04:35,400 --> 00:04:40,140
+displacement along its right,up and forward
+axes.
+
+56
+00:04:40,140 --> 00:04:44,380
+The view matrix is the inverse camera-to-world
+transform;
+
+57
+00:04:44,580 --> 00:04:48,140
+check that it maps the camera’s own position
+to the origin.
+
+58
+00:04:48,480 --> 00:04:51,760
+An orthonormal rotation can be inverted by
+transposing;
+
+59
+00:04:52,160 --> 00:04:56,320
+this does not extend blindly to arbitrary
+scale or shear.
+
+60
+00:04:56,700 --> 00:05:01,560
+For our rows, multiply the point by model,view
+and projection in that order;
+
+61
+00:05:01,940 --> 00:05:04,740
+column-vector notation reverses the written
+product.
+
+62
+00:05:05,383 --> 00:05:08,523
+Our view point is(2,1,4). The simplest
+perspective
+
+63
+00:05:08,723 --> 00:05:14,283
+preparation copies itsz4 into the fourth
+componentw.
+
+64
+00:05:14,563 --> 00:05:16,663
+No division by4 has occurred yet;
+
+65
+00:05:16,983 --> 00:05:20,103
+this step only prepares a four-component clip
+representation.
+
+66
+00:05:20,383 --> 00:05:25,463
+Dividing this simplified result
+gives(0.5,0.25,1),
+
+67
+00:05:25,783 --> 00:05:29,963
+but this is not a complete near-to-far depth
+mapping.
+
+68
+00:05:29,963 --> 00:05:33,283
+The complete matrix also prepares both zoom
+axes
+
+69
+00:05:33,283 --> 00:05:37,743
+and near-to-far depth; we fill those terms
+next.
+
+70
+00:05:38,263 --> 00:05:40,263
+Orthographic projection keepsw1,
+
+71
+00:05:40,603 --> 00:05:45,503
+so the same division stage does not introduce
+distance-based shrinking.
+
+72
+00:05:45,883 --> 00:05:50,563
+The common representation also supports
+asymmetric views and tiled rendering;
+
+73
+00:05:50,983 --> 00:05:53,903
+left and right bounds need not be symmetric.
+
+74
+00:05:54,003 --> 00:06:00,103
+Homogeneous division connects different
+projections through one convention;
+
+75
+00:06:00,423 --> 00:06:03,063
+it does not replace the separately retained
+world coordinates.
+
+76
+00:06:04,000 --> 00:06:08,060
+Track the tall tower’s roof corner and lower
+terrace
+
+77
+00:06:08,240 --> 00:06:11,360
+as orbiting changes which faces are visible.
+
+78
+00:06:17,779 --> 00:06:21,339
+Screen movement alone cannot tell whether the
+
+79
+00:06:21,339 --> 00:06:24,319
+point moved in the world or the camera frame
+changed.
+
+80
+00:06:24,679 --> 00:06:34,299
+New blocks also change the structure;
+
+81
+00:06:34,439 --> 00:06:39,039
+persistent windows or railings help compare
+the surrounding moments.
+
+82
+00:06:45,158 --> 00:06:49,858
+Wide and close framing change a corner’s image
+extent;
+
+83
+00:06:49,858 --> 00:06:54,038
+calculations should retain view coordinates
+and projection parameters separately.
+
+84
+00:07:00,185 --> 00:07:04,638
+Multiplying a3D value by a matrix does not
+immediately produce the final pixel;
+
+85
+00:07:04,918 --> 00:07:08,398
+clipping,division and viewport mapping remain.
+
+86
+00:07:14,597 --> 00:07:19,517
+A tower near the top of the image cannot use
+worldy directly as screeny;
+
+87
+00:07:19,877 --> 00:07:22,437
+camera up and screen down also differ.
+
+88
+00:07:28,677 --> 00:07:31,237
+We observe visible changes in the game and
+continue
+
+89
+00:07:31,637 --> 00:07:34,437
+the numeric proof in our separately defined
+example.
+
+90
+00:07:35,317 --> 00:07:39,337
+Use the previous lesson’s horizontal90-degree
+view:
+
+91
+00:07:39,717 --> 00:07:45,797
+zoomX1 and zoomY16/9 for a square-pixel16:9
+viewport.
+
+92
+00:07:46,137 --> 00:07:49,337
+With near1 andfar11, map normalized
+
+93
+00:07:49,517 --> 00:07:55,397
+depth to0–1 using clipz equalAz plusB.
+
+94
+00:07:55,677 --> 00:08:00,937
+Requiring depth0 atz1 and1
+
+95
+00:08:00,937 --> 00:08:05,817
+atz11 givesA1.1 andB minus1.1.
+
+96
+00:08:06,257 --> 00:08:12,817
+For viewz4, clipz is3.3 andw stores the
+originalz4.
+
+97
+00:08:13,017 --> 00:08:16,617
+The complete clip coordinate is(2,16/9,3.3,4),
+
+98
+00:08:16,877 --> 00:08:21,557
+from the two zoom terms and the depth mapping.
+
+99
+00:08:21,797 --> 00:08:27,677
+The third row contains1.1 and1;
+
+100
+00:08:27,677 --> 00:08:31,117
+the last contains minus1.1 and0. The final
+column copiesz intow.
+
+101
+00:08:31,850 --> 00:08:36,530
+Before division, clipx andy lie between minusw
+andw,
+
+102
+00:08:36,750 --> 00:08:39,950
+while depth lies between0 andw.
+
+103
+00:08:40,150 --> 00:08:46,830
+Our point hasw4; x2 andy16/9 both lie between
+minus4 and4.
+
+104
+00:08:47,090 --> 00:08:52,610
+Depth3.3 is between0 and4, so the point
+satisfies all three pairs of bounds.
+
+105
+00:08:52,850 --> 00:08:58,030
+A point with clip x five and w four crosses
+the right boundary and lies outside the view.
+
+106
+00:08:58,270 --> 00:09:01,650
+We can test that boundary before calculating
+its final pixel position.
+
+107
+00:09:01,850 --> 00:09:05,210
+Clipping limits the viewing region; occlusion
+behind another object
+
+108
+00:09:05,470 --> 00:09:09,670
+is determined through a separate process such
+as depth testing.
+
+109
+00:09:09,930 --> 00:09:15,770
+Dividing first can lose crucial sign and
+singularity handling;
+
+110
+00:09:16,050 --> 00:09:19,090
+triangles must be clipped in homogeneous clip
+space before division.
+
+111
+00:09:19,900 --> 00:09:24,580
+Carrying the cube changes its location in the
+chamber;
+
+112
+00:09:24,840 --> 00:09:27,160
+compare it with the fixed pillars.
+
+113
+00:09:29,224 --> 00:09:34,164
+The player sets down the cube from another
+view and connects the laser;
+
+114
+00:09:34,524 --> 00:09:37,884
+world placement and image position are
+different information.
+
+115
+00:09:38,164 --> 00:09:45,148
+Compare the large close cube with wider
+chamber views;
+
+116
+00:09:45,288 --> 00:09:48,408
+image proportions alone do not reveal its
+exact viewz.
+
+117
+00:09:50,552 --> 00:09:56,112
+The portal view is another viewing problem;
+
+118
+00:09:56,112 --> 00:10:01,276
+we use visible cube and pillar landmarks
+without inferring portal rendering internals.
+
+119
+00:10:01,536 --> 00:10:04,856
+Laser activation changes the route and exit
+indicators;
+
+120
+00:10:05,156 --> 00:10:10,960
+distinguish game-state changes from
+camera-coordinate changes.
+
+121
+00:10:11,320 --> 00:10:14,080
+Real gameplay mixes changes; a one-point
+calculation
+
+122
+00:10:14,280 --> 00:10:18,780
+isolates world placement,camera and projection
+one at a time.
+
+123
+00:10:19,400 --> 00:10:23,740
+Consider a separate triangle with its near
+plane at one.
+
+124
+00:10:23,940 --> 00:10:28,840
+Vertex A has view depth zero point five zero,
+while the other two vertices have depth two.
+
+125
+00:10:29,100 --> 00:10:31,840
+Discarding the whole triangle would remove its
+visible portion;
+
+126
+00:10:31,840 --> 00:10:37,680
+compute the two edge intersections instead.
+
+127
+00:10:38,040 --> 00:10:42,980
+Travel along an edge from depth two toward
+zero point five zero. The near-plane
+
+128
+00:10:43,140 --> 00:10:45,860
+intersection at depth one occurs two-thirds of
+the way along that directed edge.
+
+129
+00:10:46,340 --> 00:10:48,700
+Interpolate the other coordinates at the same
+parameter;
+
+130
+00:10:48,700 --> 00:10:53,200
+our intersections havex minusone-third and
+plusone-third.
+
+131
+00:10:53,460 --> 00:10:57,240
+The two inside vertices and two intersections
+form a quadrilateral,
+
+132
+00:10:57,780 --> 00:11:00,780
+which can be triangulated for drawing.
+
+133
+00:11:01,100 --> 00:11:03,900
+At each new intersection, clipz0 andw1 match
+the near boundary;
+
+134
+00:11:04,280 --> 00:11:07,480
+divide only after completing clipping.
+
+135
+00:11:07,760 --> 00:11:12,280
+Correct the source’s wording: a small
+positivez makesw small,
+
+136
+00:11:12,640 --> 00:11:17,260
+while1/w and divided results can grow large.
+
+137
+00:11:17,260 --> 00:11:23,320
+A near plane limits that unstable region, but
+an overly large value cuts
+
+138
+00:11:23,720 --> 00:11:26,820
+nearby walls and floors; choose it with range
+and precision in mind.
+
+139
+00:11:27,450 --> 00:11:31,090
+Normalized depth may instead use minus1 to1,
+
+140
+00:11:31,270 --> 00:11:34,990
+requiring clipz between minusw andw.
+
+141
+00:11:35,370 --> 00:11:41,290
+Keep near one and far eleven. The multiplier
+for view z is one point two zero.
+
+142
+00:11:41,550 --> 00:11:45,030
+Subtract two point two zero from that result,
+then divide by w.
+
+143
+00:11:45,190 --> 00:11:48,010
+Atz4 this gives clipz2.6 and depth0.65,
+
+144
+00:11:48,010 --> 00:11:53,370
+rather than0.825 from the previous convention.
+
+145
+00:11:53,630 --> 00:11:59,530
+Adding one to zero point six five gives one
+point six five. Dividing by two gives
+
+146
+00:11:59,910 --> 00:12:03,190
+zero point eight two five. The two depth
+conventions describe the same position.
+
+147
+00:12:03,650 --> 00:12:07,790
+For right-handed negativez-forward camera
+coordinates and column vectors,
+
+148
+00:12:07,950 --> 00:12:10,830
+transpose and account for the changed inputz
+sign.
+
+149
+00:12:11,250 --> 00:12:17,790
+A column matrix with last row(0,0,−1,0) makesw
+equal−z;
+
+150
+00:12:18,210 --> 00:12:21,730
+our depth4 is written as viewz−4 in that
+camera convention.
+
+151
+00:12:22,450 --> 00:12:29,630
+Orthographic depth keeps w at one and changes
+linearly. For zero to one, subtract one
+
+152
+00:12:29,630 --> 00:12:36,610
+from view z and divide by ten. For minus one
+to one, double that result and subtract one.
+
+153
+00:12:37,010 --> 00:12:39,670
+Compare the four conventions rather than just
+formula names;
+
+154
+00:12:39,930 --> 00:12:45,790
+historical hardware restrictions do not define
+all modern graphics systems.
+
+155
+00:12:46,416 --> 00:12:50,416
+New construction changes the front terrace and
+long roof;
+
+156
+00:12:50,756 --> 00:12:59,636
+watch the interior opening and rear tower
+together.
+
+157
+00:12:59,876 --> 00:13:03,216
+Orbiting hides part of the tower behind a
+front roof;
+
+158
+00:13:03,536 --> 00:13:06,536
+that differs from leaving the screen boundary.
+
+159
+00:13:12,776 --> 00:13:16,636
+An elevated view reveals previously hidden
+platforms;
+
+160
+00:13:16,956 --> 00:13:20,376
+treating all invisibility as one problem makes
+debugging difficult.
+
+161
+00:13:26,716 --> 00:13:28,956
+First ask whether a point is within the view,
+
+162
+00:13:29,356 --> 00:13:32,396
+then consider its relation to foreground
+objects.
+
+163
+00:13:32,396 --> 00:13:43,456
+We have not identified a near-plane hole here;
+
+164
+00:13:43,956 --> 00:13:47,116
+the observed changes are construction and
+viewpoint-dependent occlusion.
+
+165
+00:13:53,516 --> 00:13:58,196
+The image does not establish the game’s near
+distance or depth format;
+
+166
+00:13:58,616 --> 00:14:07,696
+our defined triangle supplies the numeric
+clipping proof.
+
+167
+00:14:07,936 --> 00:14:11,736
+Keep the same landmark through closer or wider
+views;
+
+168
+00:14:12,136 --> 00:14:14,996
+switching to another roof changes the object
+of comparison.
+
+169
+00:14:21,376 --> 00:14:24,656
+Next we map surviving points to screen
+coordinates,
+
+170
+00:14:24,656 --> 00:14:28,396
+still distinguishing camera axes from pixel
+axes.
+
+171
+00:14:29,016 --> 00:14:33,856
+Return to our point in clip space: horizontal
+two, vertical sixteen ninths,
+
+172
+00:14:33,856 --> 00:14:40,136
+depth three point three, and fourth component
+four. Divide all four components by four.
+
+173
+00:14:40,176 --> 00:14:49,016
+NDC is(0.5,4/9,0.825); these are not yet pixel
+coordinates.
+
+174
+00:14:49,356 --> 00:14:53,596
+Use a viewport starting at(100,50),
+
+175
+00:14:53,596 --> 00:14:58,996
+width800 and height450: a rectangle offset
+within the full image.
+
+176
+00:14:59,016 --> 00:15:02,496
+For horizontal position, add one to the
+normalized value,
+
+177
+00:15:02,776 --> 00:15:07,436
+divide by two, multiply by the width, and add
+the window origin.
+
+178
+00:15:07,776 --> 00:15:10,576
+Zero point five maps to three-quarters of the
+window width.
+
+179
+00:15:10,816 --> 00:15:16,376
+The result isx700, two hundred pixels right of
+the viewport’s center500.
+
+180
+00:15:16,656 --> 00:15:22,736
+For vertical position, subtract four ninths
+from one to reverse the upward-positive
+
+181
+00:15:22,996 --> 00:15:26,476
+direction. Multiply by half of height four
+hundred fifty, then add fifty.
+
+182
+00:15:26,736 --> 00:15:30,356
+The vertical position is one hundred
+seventy-five. The same point therefore has
+
+183
+00:15:30,356 --> 00:15:33,556
+horizontal position seven hundred and vertical
+position one hundred seventy-five.
+
+184
+00:15:33,896 --> 00:15:41,576
+This is a continuous screen position;
+pixel-center and coverage rules
+
+185
+00:15:41,856 --> 00:15:45,496
+belong to rasterization. Do not blindly round
+the vertex to an integer.
+
+186
+00:15:46,150 --> 00:15:48,930
+We expressed the same point in local, world,
+and camera frames,
+
+187
+00:15:49,250 --> 00:15:51,330
+then used the projection matrix to produce
+clip coordinates.
+
+188
+00:15:51,730 --> 00:15:55,170
+After clipping, division by w, and viewport
+mapping,
+
+189
+00:15:55,610 --> 00:15:58,550
+our point appears at horizontal seven hundred
+and vertical one hundred seventy-five.
+
+190
+00:15:59,370 --> 00:16:02,370
+Next, examine how stored depth differs from
+distance
+
+191
+00:16:02,670 --> 00:16:05,670
+and why texture interpolation still needs w.

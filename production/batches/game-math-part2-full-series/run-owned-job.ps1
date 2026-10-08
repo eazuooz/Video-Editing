@@ -4,7 +4,8 @@ param(
     [ValidateSet('cpu','cuda:0')][string]$Device = 'cuda:0',
     [string]$ForceScenes = '',
     [string]$Scenes = '',
-    [string]$ReplacementBaseline = ''
+    [string]$ReplacementBaseline = '',
+    [ValidateSet('','projection-episode-split-v1','projection-viewport-pair-v1')][string]$VoiceWorkflow = ''
 )
 $ErrorActionPreference = 'Stop'
 $mathRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -17,6 +18,14 @@ if ($Stage -eq 'voice') {
     $mathArgs = @('-X','utf8',"$PSScriptRoot\render-voice.py",'--project',$Project,'--batch-size','1','--device',$Device)
     if ($ForceScenes) { $mathArgs += @('--force-scenes',$ForceScenes) }
     if ($Scenes) { $mathArgs += @('--scenes',$Scenes) }
+    if ($VoiceWorkflow -eq 'projection-episode-split-v1') {
+        if ($Project -ne 'game-math-camera-projection') { throw 'Projection episode workflow is scoped to its current project.' }
+        $mathArgs = @('-X','utf8',"$PSScriptRoot\render-projection-episode-voice.py",'--project',$Project,'--device',$Device)
+    }
+    if ($VoiceWorkflow -eq 'projection-viewport-pair-v1') {
+        if ($Project -ne 'game-math-camera-projection') { throw 'Viewport pair repair is scoped to its current project.' }
+        $mathArgs = @('-X','utf8',"$PSScriptRoot\repair-scene-by-lines.py",$Project,'15','--device',$Device,'--defer-assembly')
+    }
     if ($Device -eq 'cuda:0') {
         # Another authorized video may already own the same GPU handoff.
         # Finish that batch and its research resume before requesting ours.
