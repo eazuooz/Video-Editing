@@ -1,0 +1,36 @@
+# Player customization — independently authored outline
+
+The current content/Studio duplicate gate passed on 2026-10-08 before drafting. The original 3:28 lecture is concept research; its voice, video, examples and complete text are not reproduced. Preserve its five useful design questions: visible effects, meaningful strengths/weaknesses, manageable selection, quick trials and appealing appearance. The full research transcript was reread; automatic-caption errors are not copied as claims.
+
+The viewer's question is: how can choosing equipment and appearance become enjoyable play rather than a chore? The answer develops through predicting a visible result, choosing for a situation, trying and returning, and expressing a preferred identity. The finish returns to this question and gives a small design audit rather than a Warframe build recommendation.
+
+## Opening promise
+
+After the original two-second cat intro, a separate narrated Motion Canvas overview introduces the question, benefit and actual order in four natural sentences. Target 20–30 seconds, measured after the approved TTS; do not pad or shorten useful narration to enforce a guessed duration. Matching independent Korean/English opening is in the narration JSON. The opening promises Gauss/Jade ability observations, selection and trial flow, and appearance preview. The first detailed example begins with the path and enemy reaction in the Gauss demonstration.
+
+Warframe Schedule C-1 requires a prominent ownership/non-endorsement notice at the beginning. Include the exact recorded notice on the overview scene in a readable, separately laid out area above the fixed bottom caption. This is not a public source-credit block. Required-notice pixels, timing and readability remain unapproved until rendered. The overview counts as explanation; the original cat two seconds and membership ten seconds alone are excluded from the body ratio.
+
+## Independent chapters and interleaving
+
+| Scene | Argument | Observed material / focus | Spatial explanation |
+| --- | --- | --- | --- |
+| 01 overview | Choosing is a playable process with predictable results and room for expression. | Independent opening; original sources only later. | Three physically separated raised stages. A token travels from prediction through trial to a character/display pedestal; camera yaw reveals top/side faces and depth. |
+| 02 visible effects | Numbers need an understandable action consequence. | Original Gauss2019 dash path and Thermal Sunder area effect. Exclude NPC close-ups/poses/flash. | Projected floor with actors at different depths. A direction path sweeps past targets; a ground ring grows. Occlusion and moving target responses explain reach. |
+| 03 readable outcome | Follow the action, affected location and visible response. | Jade2024WIP cast, marked enemies; brief changed effects only. No relation to an unobserved mod configuration. | Cast marker rises from a pedestal, ring spreads on a projected floor, affected tokens lift/change; labels appear only with the relevant narrated observation. |
+| 04 strengths and weaknesses | A situation-dependent difference gives a reason to choose. | Gauss path vs area action and Yareli2021 rotating-ring traversal, as different ability demonstrations. | Two separate projected arenas, one with clustered targets and one with separated targets. Same independent hypothetical tool markers are moved between situations; no copied game balance values. |
+| 05 manageable choice | Help a player find and compare an option, not read every item repeatedly. | Devstream180 configuration tabs/cards and starter/navigation views are explanation time, never actual-play quota. | A three-dimensional tray groups distinctly shaped tokens. Search path narrows, two tokens rise beside each other for comparison; the unchosen options remain visible at another depth. |
+| 06 quick trial | Make a selection testable and a return easy. | Jade approach to downed ally, distance reduction, changing revive progress, ally recovery; Yareli2024 live action trial is a different character. Do not claim the earlier config caused it. | Three raised platforms joined by a curved return route. A token leaves the choice tray, tries a target/support task and returns to a retained slot; the return is short and preserves the prior option. |
+| 07 appearance | Preview and confirmation should support expression without claiming a power increase. | Default/starter color/appearance preview and confirmation from2024UI; uncertain MagGraxx/community artwork excluded. Menus belong to explanation time. | Independently drawn neutral character on a pedestal. Colored physical shells at different depths move around it, occlude correctly, then settle; a distinct confirmation marker arrives afterward. |
+| 08 conclusion | Audit result, situation, choice, trial/return and expression together. | Brief unused ability actions may illustrate the recap; no repeated source interval. | Return to the opening's three stages. All five tests rise as small physical markers, connect and settle around the character; final coaching prompt keeps the original membership ending separate. |
+
+Each narration scene will have its own editable Motion Canvas scene. White spatial explanations need projected front/top/side faces, meaningful occlusion, height and narration-timed action. A flat card with a shadow is insufficient. Code and plans are not animated pixel approval.
+
+## Timing and evidence gates
+
+All four acquired video-only official sources decoded with exit0 and their full sampled boards were directly read. Local crop/continuous research supplements these observations. The source bank lists tentative unique active intervals and rejected shots. Exact source PTS boundaries, continuous cut review, source/no-logo crop review and final caption pixels remain pending. Do not treat a sampled timestamp or browser stop time as a final frame boundary.
+
+Preserve every useful narrated explanation. Measure the approved voice before assigning the final timeline; obtain further relevant unique action if necessary. Target body-wide actual existing-game action60% / explanation40%, at most one frame rounding. UI, static statistics, waiting, title cards, beauty shots, NPC cinematic close-ups, repeated segments and source dialogue collisions do not fill actual time. No loops, slowdown, agent-made game or unrelated idle.
+
+All Korean narration captions remain boxed-white-forest-v1 at960,970 / Motion Canvas0,430. Rearrange/crop the source or split a cue if the native UI conflicts; never move the caption. BGM is the approved continuous Nimbus with source audio excluded. Use the approved Qwen3-TTS1.7B/reference only when actual GPU resources permit; foreign training currently occupies the GPU.
+
+Full current voice and final mixed ASR/independent contexts, every cue/cut and animated depth pixel, two whole decodes, exact PTS/timebase/length, loudness/TP and identical AAC are required before collection. The four current deliverables, a single reviewed captioned private upload with available full settings, and selective normal Git push follow. Human listening/pronunciation, public rights, Nimbus ownership, truncated member handles, external backup, dubbing and private pinned comment remain honestly pending.

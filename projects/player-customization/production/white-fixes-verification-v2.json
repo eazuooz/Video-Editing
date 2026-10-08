@@ -1,0 +1,676 @@
+{
+  "schemaVersion": 1,
+  "slug": "player-customization",
+  "pid": 58308,
+  "commandLine": [
+    "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "projects/player-customization/production/verify-white-fixes-v2.py",
+    "--resource",
+    "shared/output/player-customization/research/resources-before-white-fixes-verification-v2.json"
+  ],
+  "startedAt": "2026-10-07T23:46:18.854499+00:00",
+  "status": "two-white-fixes-exact24-samples-await-direct-review",
+  "sessionId": 54389,
+  "resourceEvidence": "shared/output/player-customization/research/resources-before-white-fixes-verification-v2.json",
+  "cpuThreads": 2,
+  "gpu": 0,
+  "singleJob": true,
+  "operations": [
+    {
+      "name": "probe-actual-fix-render",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_entries",
+        "stream=codec_type,width,height,r_frame_rate,time_base,duration,nb_frames",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\white-fixes-v2\\player-customization-white-fixes-v2.mp4"
+      ],
+      "startedAt": "2026-10-07T23:46:18.909456+00:00",
+      "pid": 48424,
+      "exitCode": 0,
+      "finishedAt": "2026-10-07T23:46:19.038320+00:00"
+    },
+    {
+      "name": "trim-one-terminal-display-frame",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\white-fixes-v2\\player-customization-white-fixes-v2.mp4",
+        "-map",
+        "0:v:0",
+        "-an",
+        "-vf",
+        "trim=end_frame=3001,setpts=N/(60*TB)",
+        "-frames:v",
+        "3001",
+        "-c:v",
+        "libx264",
+        "-threads",
+        "2",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "18",
+        "-pix_fmt",
+        "yuv420p",
+        "-r",
+        "60",
+        "-video_track_timescale",
+        "90000",
+        "-movflags",
+        "+faststart",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\white-fixes-v2\\player-customization-white-fixes-v2.exact.mp4"
+      ],
+      "startedAt": "2026-10-07T23:46:19.100263+00:00",
+      "pid": 5552,
+      "exitCode": 0,
+      "finishedAt": "2026-10-07T23:46:25.817403+00:00"
+    },
+    {
+      "name": "probe-exact-fixes",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_entries",
+        "stream=codec_type,width,height,r_frame_rate,time_base,duration,nb_frames",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\white-fixes-v2\\player-customization-white-fixes-v2.exact.mp4"
+      ],
+      "startedAt": "2026-10-07T23:46:25.874523+00:00",
+      "pid": 12396,
+      "exitCode": 0,
+      "finishedAt": "2026-10-07T23:46:25.999623+00:00"
+    },
+    {
+      "name": "probe-all-fix-pts",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-select_streams",
+        "v:0",
+        "-show_frames",
+        "-show_entries",
+        "frame=best_effort_timestamp",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\white-fixes-v2\\player-customization-white-fixes-v2.exact.mp4"
+      ],
+      "startedAt": "2026-10-07T23:46:26.058140+00:00",
+      "pid": 13260,
+      "exitCode": 0,
+      "finishedAt": "2026-10-07T23:46:27.648264+00:00"
+    },
+    {
+      "name": "whole-exact-fix-decode",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\white-fixes-v2\\player-customization-white-fixes-v2.exact.mp4",
+        "-an",
+        "-f",
+        "null",
+        "-"
+      ],
+      "startedAt": "2026-10-07T23:46:27.708282+00:00",
+      "pid": 55416,
+      "exitCode": 0,
+      "finishedAt": "2026-10-07T23:46:29.236546+00:00"
+    },
+    {
+      "name": "extract24-fix-motion-samples",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\white-fixes-v2\\player-customization-white-fixes-v2.exact.mp4",
+        "-vf",
+        "select='eq(n,45)+eq(n,126)+eq(n,207)+eq(n,326)+eq(n,455)+eq(n,585)+eq(n,741)+eq(n,890)+eq(n,1039)+eq(n,1159)+eq(n,1224)+eq(n,1289)+eq(n,1403)+eq(n,1541)+eq(n,1680)+eq(n,1829)+eq(n,1955)+eq(n,2081)+eq(n,2220)+eq(n,2340)+eq(n,2460)+eq(n,2613)+eq(n,2765)+eq(n,2916)'",
+        "-fps_mode",
+        "vfr",
+        "-an",
+        "-threads",
+        "2",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\white-fixes-v2\\motion-qa-native\\frame-%03d.png"
+      ],
+      "startedAt": "2026-10-07T23:46:29.297548+00:00",
+      "pid": 29912,
+      "exitCode": 0,
+      "finishedAt": "2026-10-07T23:46:30.911932+00:00"
+    }
+  ],
+  "exitCode": 0,
+  "fixPixelsApproved": true,
+  "allFinalPixelsReviewed": false,
+  "finalVideoComplete": false,
+  "updatedAt": "2026-10-07T23:46:31.619911+00:00",
+  "rawRender": {
+    "path": "shared/output/player-customization/white-fixes-v2/player-customization-white-fixes-v2.mp4",
+    "sha256": "330cdd423e34045f8b290995e6f3dd799594784d5efc69973ea80d31abf63b4a",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "60/1",
+          "time_base": "1/90000",
+          "duration": "50.033333",
+          "nb_frames": "3002"
+        }
+      ]
+    },
+    "actualGuiReturnedToRenderObserved": true,
+    "encoder59552AbsentObserved": true,
+    "encoderExitCodeObserved": false
+  },
+  "endpointAdjustment": {
+    "rawFrames": 3002,
+    "currentFrames": 3001,
+    "displayOrderTrim": true,
+    "audioTrimmed": false,
+    "allOriginalPcmPreserved": true
+  },
+  "finishedAt": "2026-10-07T23:46:31.612911+00:00",
+  "currentWhite": {
+    "path": "shared/output/player-customization/white-fixes-v2/player-customization-white-fixes-v2.exact.mp4",
+    "sha256": "1c7c4a6a229e7355a41268dc1e2c2b79bbd17004d7e386325ab85f1dd6ad8cf5",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "60/1",
+          "time_base": "1/90000",
+          "duration": "50.016667",
+          "nb_frames": "3001"
+        }
+      ]
+    },
+    "frames": 3001,
+    "firstPts": 0,
+    "lastPts": 4500000,
+    "allPtsContiguous1500": true,
+    "wholeDecodeExitCode": 0
+  },
+  "preservedOtherSixWhite": {
+    "path": "shared/output/player-customization/white-current-voice-v1/player-customization-current-voice-white-v1.exact.mp4",
+    "sha256": "0930df7b0307d042cbf6c7b4b7b04ea993d00e71f855835cab91d0c1e0071990",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "60/1",
+          "time_base": "1/90000",
+          "duration": "223.983333",
+          "nb_frames": "13439"
+        }
+      ]
+    },
+    "wholeDecodeExitCode": 0,
+    "allPtsCount": 13439,
+    "firstPts": 0,
+    "lastPts": 20157000,
+    "contiguousTicks1500": true
+  },
+  "samplePlan": [
+    {
+      "scene": "01-overview",
+      "paragraph": 1,
+      "phase": 0.18,
+      "frame": 45,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-001.png",
+      "sha256": "d7c8ea9e280b75522da85e18d20b41a586acec0fbf4908fdaf3cedf675024375"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 1,
+      "phase": 0.5,
+      "frame": 126,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-002.png",
+      "sha256": "d46039e7d3f033d1458ec428e236136af63df77d91774f2beeed55b1e2e978c8"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 1,
+      "phase": 0.82,
+      "frame": 207,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-003.png",
+      "sha256": "4a0a5fa8edf534ad1c95c25184c1c725e7820fac5dd9c8f23929a967bc29f366"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 2,
+      "phase": 0.18,
+      "frame": 326,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-004.png",
+      "sha256": "d6e16b7e6de24c71392a0c67537d6119de7033860a7974f1ef3ad8a0b993849c"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 455,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-005.png",
+      "sha256": "d8e35ce97c64ab00a5c0dfccf7507a02773f1b442b4657b98ee4d1750965edde"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 2,
+      "phase": 0.82,
+      "frame": 585,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-006.png",
+      "sha256": "3624ed8da11ba521e013b2a388822f0d00a003c1e509193f3ead3191286fb471"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 3,
+      "phase": 0.18,
+      "frame": 741,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-007.png",
+      "sha256": "a2e036d0ee7919e757a7b678f59405b5891c5f98626c867e6dfcebe29d9515ca"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 890,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-008.png",
+      "sha256": "1954e6d4d014938b96f156bb23c2784b7835c9d3b8978e344c437a0047f05e87"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 3,
+      "phase": 0.82,
+      "frame": 1039,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-009.png",
+      "sha256": "4d59530a9c70d3d0a395e4be137aee49765fdd638c03cf55acbaf32aa6909dbe"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 4,
+      "phase": 0.18,
+      "frame": 1159,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-010.png",
+      "sha256": "4d59530a9c70d3d0a395e4be137aee49765fdd638c03cf55acbaf32aa6909dbe"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 1224,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-011.png",
+      "sha256": "4d59530a9c70d3d0a395e4be137aee49765fdd638c03cf55acbaf32aa6909dbe"
+    },
+    {
+      "scene": "01-overview",
+      "paragraph": 4,
+      "phase": 0.82,
+      "frame": 1289,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-012.png",
+      "sha256": "4d59530a9c70d3d0a395e4be137aee49765fdd638c03cf55acbaf32aa6909dbe"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 1,
+      "phase": 0.18,
+      "frame": 1403,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-013.png",
+      "sha256": "df149366b44958ba17fd1ca55fe1ea6bf820a51b100a311d6e5722b4e4e08487"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 1,
+      "phase": 0.5,
+      "frame": 1541,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-014.png",
+      "sha256": "f7557d2b2a28358407b17bb969b843039558c1a59a39d4deb2a038fced3a306d"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 1,
+      "phase": 0.82,
+      "frame": 1680,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-015.png",
+      "sha256": "d23d77f271e1135ffc0cf560b39e5adcf101214b7bcdb0b1398ba24b03084108"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 2,
+      "phase": 0.18,
+      "frame": 1829,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-016.png",
+      "sha256": "466c4c5c2fac63af78e8c11081ad88aa21077f969757c04487e424ac03d0ea86"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 1955,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-017.png",
+      "sha256": "c8c262a16b2b530ae0a1d0d4807f593f7bd59c44bc099ad35d7287206cec8282"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 2,
+      "phase": 0.82,
+      "frame": 2081,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-018.png",
+      "sha256": "6797c02e11ce2c013446c44ff78307eb667bcebbaa04e8c9fddc67674d711bfc"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 3,
+      "phase": 0.18,
+      "frame": 2220,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-019.png",
+      "sha256": "976939e3abc8da1dd27a08cff76b438a9d233328891695703780cff79055d850"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 2340,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-020.png",
+      "sha256": "184f53f38b43aa271ad385b22768a7beb2f0eaa77c538b7ce0361f6590591c0f"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 3,
+      "phase": 0.82,
+      "frame": 2460,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-021.png",
+      "sha256": "184f53f38b43aa271ad385b22768a7beb2f0eaa77c538b7ce0361f6590591c0f"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 4,
+      "phase": 0.18,
+      "frame": 2613,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-022.png",
+      "sha256": "d1613ae56227d0d7177dfdf7766c02f3a7397997dc7d89e58aae6eefb5716996"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 2765,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-023.png",
+      "sha256": "33918669a60589a178286660618341036dccf41c8f3ffffdc9b23248b5231668"
+    },
+    {
+      "scene": "05-manageable-choice",
+      "paragraph": 4,
+      "phase": 0.82,
+      "frame": 2916,
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-024.png",
+      "sha256": "43936c02a5c9546ff886ff8fee2d611cdfef3cb9abd48d3ab2c34d372717f65d"
+    }
+  ],
+  "boards": [
+    {
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-boards/board-01.png",
+      "sha256": "be4d77a610b7054cf5d3ad2c22876bfcf5f009e34c58a78a41e2479d30414e35",
+      "entries": [
+        {
+          "scene": "01-overview",
+          "paragraph": 1,
+          "phase": 0.18,
+          "frame": 45,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-001.png",
+          "sha256": "d7c8ea9e280b75522da85e18d20b41a586acec0fbf4908fdaf3cedf675024375"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 1,
+          "phase": 0.5,
+          "frame": 126,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-002.png",
+          "sha256": "d46039e7d3f033d1458ec428e236136af63df77d91774f2beeed55b1e2e978c8"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 1,
+          "phase": 0.82,
+          "frame": 207,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-003.png",
+          "sha256": "4a0a5fa8edf534ad1c95c25184c1c725e7820fac5dd9c8f23929a967bc29f366"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 2,
+          "phase": 0.18,
+          "frame": 326,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-004.png",
+          "sha256": "d6e16b7e6de24c71392a0c67537d6119de7033860a7974f1ef3ad8a0b993849c"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-boards/board-02.png",
+      "sha256": "d5fc89dda16f120919e38e47319d18831abbc9e142556be46a8b2bcf0fc6dd71",
+      "entries": [
+        {
+          "scene": "01-overview",
+          "paragraph": 2,
+          "phase": 0.5,
+          "frame": 455,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-005.png",
+          "sha256": "d8e35ce97c64ab00a5c0dfccf7507a02773f1b442b4657b98ee4d1750965edde"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 2,
+          "phase": 0.82,
+          "frame": 585,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-006.png",
+          "sha256": "3624ed8da11ba521e013b2a388822f0d00a003c1e509193f3ead3191286fb471"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 3,
+          "phase": 0.18,
+          "frame": 741,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-007.png",
+          "sha256": "a2e036d0ee7919e757a7b678f59405b5891c5f98626c867e6dfcebe29d9515ca"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 3,
+          "phase": 0.5,
+          "frame": 890,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-008.png",
+          "sha256": "1954e6d4d014938b96f156bb23c2784b7835c9d3b8978e344c437a0047f05e87"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-boards/board-03.png",
+      "sha256": "531209e4570ad5db71fe736ebadf87f0a23515c22ce316c442af81e3860b5aef",
+      "entries": [
+        {
+          "scene": "01-overview",
+          "paragraph": 3,
+          "phase": 0.82,
+          "frame": 1039,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-009.png",
+          "sha256": "4d59530a9c70d3d0a395e4be137aee49765fdd638c03cf55acbaf32aa6909dbe"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 4,
+          "phase": 0.18,
+          "frame": 1159,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-010.png",
+          "sha256": "4d59530a9c70d3d0a395e4be137aee49765fdd638c03cf55acbaf32aa6909dbe"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 4,
+          "phase": 0.5,
+          "frame": 1224,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-011.png",
+          "sha256": "4d59530a9c70d3d0a395e4be137aee49765fdd638c03cf55acbaf32aa6909dbe"
+        },
+        {
+          "scene": "01-overview",
+          "paragraph": 4,
+          "phase": 0.82,
+          "frame": 1289,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-012.png",
+          "sha256": "4d59530a9c70d3d0a395e4be137aee49765fdd638c03cf55acbaf32aa6909dbe"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-boards/board-04.png",
+      "sha256": "5bd4a4b0ab80a8a0db377deef3413f2773d62a5bbebedf5c6c8bf75ab180b4c2",
+      "entries": [
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 1,
+          "phase": 0.18,
+          "frame": 1403,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-013.png",
+          "sha256": "df149366b44958ba17fd1ca55fe1ea6bf820a51b100a311d6e5722b4e4e08487"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 1,
+          "phase": 0.5,
+          "frame": 1541,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-014.png",
+          "sha256": "f7557d2b2a28358407b17bb969b843039558c1a59a39d4deb2a038fced3a306d"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 1,
+          "phase": 0.82,
+          "frame": 1680,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-015.png",
+          "sha256": "d23d77f271e1135ffc0cf560b39e5adcf101214b7bcdb0b1398ba24b03084108"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 2,
+          "phase": 0.18,
+          "frame": 1829,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-016.png",
+          "sha256": "466c4c5c2fac63af78e8c11081ad88aa21077f969757c04487e424ac03d0ea86"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-boards/board-05.png",
+      "sha256": "d1f7b72b237299f21bdf045c5496808c44596d6560d423463816205aeb6247b2",
+      "entries": [
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 2,
+          "phase": 0.5,
+          "frame": 1955,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-017.png",
+          "sha256": "c8c262a16b2b530ae0a1d0d4807f593f7bd59c44bc099ad35d7287206cec8282"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 2,
+          "phase": 0.82,
+          "frame": 2081,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-018.png",
+          "sha256": "6797c02e11ce2c013446c44ff78307eb667bcebbaa04e8c9fddc67674d711bfc"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 3,
+          "phase": 0.18,
+          "frame": 2220,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-019.png",
+          "sha256": "976939e3abc8da1dd27a08cff76b438a9d233328891695703780cff79055d850"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 3,
+          "phase": 0.5,
+          "frame": 2340,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-020.png",
+          "sha256": "184f53f38b43aa271ad385b22768a7beb2f0eaa77c538b7ce0361f6590591c0f"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/white-fixes-v2/motion-qa-boards/board-06.png",
+      "sha256": "9354a92ee0e2456d237711375a6267e87447e86a734c4da57901526e080e3018",
+      "entries": [
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 3,
+          "phase": 0.82,
+          "frame": 2460,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-021.png",
+          "sha256": "184f53f38b43aa271ad385b22768a7beb2f0eaa77c538b7ce0361f6590591c0f"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 4,
+          "phase": 0.18,
+          "frame": 2613,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-022.png",
+          "sha256": "d1613ae56227d0d7177dfdf7766c02f3a7397997dc7d89e58aae6eefb5716996"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 4,
+          "phase": 0.5,
+          "frame": 2765,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-023.png",
+          "sha256": "33918669a60589a178286660618341036dccf41c8f3ffffdc9b23248b5231668"
+        },
+        {
+          "scene": "05-manageable-choice",
+          "paragraph": 4,
+          "phase": 0.82,
+          "frame": 2916,
+          "path": "shared/output/player-customization/white-fixes-v2/motion-qa-native/frame-024.png",
+          "sha256": "43936c02a5c9546ff886ff8fee2d611cdfef3cb9abd48d3ab2c34d372717f65d"
+        }
+      ]
+    }
+  ],
+  "allOriginalPcmPreserved": true,
+  "actualAnimatedSamplesDirectlyRead": true,
+  "directReview": "projects/player-customization/production/white-fixes-motion-direct-review-v2.json",
+  "actualSessionExitCodeObserved": 0,
+  "actualCimPidAbsent": true
+}

@@ -1,0 +1,2485 @@
+{
+  "schemaVersion": 1,
+  "slug": "player-customization",
+  "pid": 44804,
+  "commandLine": [
+    "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "projects/player-customization/production/verify-observation-guide-white-v1.py",
+    "--resource",
+    "shared/output/player-customization/research/resources-before-guide-white-verification-v1.json"
+  ],
+  "sessionId": 64687,
+  "startedAt": "2026-10-08T01:35:59.534428+00:00",
+  "status": "eight-guide-white-source-verified-awaiting-direct-motion-review",
+  "cpuThreads": 2,
+  "gpu": 0,
+  "singleJob": true,
+  "resourceEvidence": "shared/output/player-customization/research/resources-before-guide-white-verification-v1.json",
+  "measuredTimingPath": "motion-canvas/src/projects/player-customization/observation-guide-timing-measured-v1.json",
+  "measuredTimingSha256": "6905831689639b75306782099e220d0836a4cc55915c0b4eca6c52300f2e7d77",
+  "operations": [
+    {
+      "name": "probe-actual-guide-render",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_entries",
+        "stream=codec_type,width,height,r_frame_rate,time_base,duration,nb_frames",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\observation-guides-white-v1\\player-customization-observation-guides-v1.mp4"
+      ],
+      "startedAt": "2026-10-08T01:35:59.597059+00:00",
+      "pid": 56548,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T01:35:59.725681+00:00"
+    },
+    {
+      "name": "trim-one-terminal-guide-display-frame",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\observation-guides-white-v1\\player-customization-observation-guides-v1.mp4",
+        "-map",
+        "0:v:0",
+        "-an",
+        "-vf",
+        "trim=end_frame=21882,setpts=N/(60*TB)",
+        "-frames:v",
+        "21882",
+        "-c:v",
+        "libx264",
+        "-threads",
+        "2",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "18",
+        "-pix_fmt",
+        "yuv420p",
+        "-r",
+        "60",
+        "-video_track_timescale",
+        "90000",
+        "-movflags",
+        "+faststart",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\observation-guides-white-v1\\player-customization-observation-guides-v1.exact.mp4"
+      ],
+      "startedAt": "2026-10-08T01:35:59.790897+00:00",
+      "pid": 39588,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T01:36:48.074222+00:00"
+    },
+    {
+      "name": "probe-exact-guide-white",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_entries",
+        "stream=codec_type,width,height,r_frame_rate,time_base,duration,nb_frames",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\observation-guides-white-v1\\player-customization-observation-guides-v1.exact.mp4"
+      ],
+      "startedAt": "2026-10-08T01:36:48.134734+00:00",
+      "pid": 52868,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T01:36:48.265166+00:00"
+    },
+    {
+      "name": "probe-all-guide-white-pts",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-select_streams",
+        "v:0",
+        "-show_frames",
+        "-show_entries",
+        "frame=best_effort_timestamp",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\observation-guides-white-v1\\player-customization-observation-guides-v1.exact.mp4"
+      ],
+      "startedAt": "2026-10-08T01:36:48.323848+00:00",
+      "pid": 32248,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T01:36:59.366267+00:00"
+    },
+    {
+      "name": "whole-exact-guide-white-decode",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\observation-guides-white-v1\\player-customization-observation-guides-v1.exact.mp4",
+        "-an",
+        "-f",
+        "null",
+        "-"
+      ],
+      "startedAt": "2026-10-08T01:36:59.431790+00:00",
+      "pid": 27420,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T01:37:09.846549+00:00"
+    },
+    {
+      "name": "extract128-guide-motion-samples",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\observation-guides-white-v1\\player-customization-observation-guides-v1.exact.mp4",
+        "-vf",
+        "select='eq(n,5)+eq(n,81)+eq(n,154)+eq(n,646)+eq(n,659)+eq(n,736)+eq(n,808)+eq(n,1314)+eq(n,1328)+eq(n,1404)+eq(n,1477)+eq(n,1910)+eq(n,1923)+eq(n,2000)+eq(n,2073)+eq(n,2607)+eq(n,2621)+eq(n,2697)+eq(n,2770)+eq(n,3308)+eq(n,3322)+eq(n,3398)+eq(n,3471)+eq(n,3968)+eq(n,3982)+eq(n,4058)+eq(n,4131)+eq(n,4570)+eq(n,4584)+eq(n,4660)+eq(n,4733)+eq(n,5180)+eq(n,5194)+eq(n,5270)+eq(n,5343)+eq(n,5863)+eq(n,5876)+eq(n,5953)+eq(n,6025)+eq(n,6520)+eq(n,6534)+eq(n,6610)+eq(n,6683)+eq(n,7226)+eq(n,7240)+eq(n,7316)+eq(n,7389)+eq(n,7897)+eq(n,7911)+eq(n,7987)+eq(n,8060)+eq(n,8620)+eq(n,8634)+eq(n,8710)+eq(n,8783)+eq(n,9299)+eq(n,9313)+eq(n,9389)+eq(n,9462)+eq(n,9995)+eq(n,10009)+eq(n,10085)+eq(n,10158)+eq(n,10605)+eq(n,10619)+eq(n,10695)+eq(n,10768)+eq(n,11284)+eq(n,11297)+eq(n,11374)+eq(n,11446)+eq(n,11997)+eq(n,12010)+eq(n,12087)+eq(n,12159)+eq(n,12662)+eq(n,12676)+eq(n,12752)+eq(n,12825)+eq(n,13361)+eq(n,13375)+eq(n,13451)+eq(n,13524)+eq(n,14071)+eq(n,14085)+eq(n,14161)+eq(n,14234)+eq(n,14838)+eq(n,14851)+eq(n,14928)+eq(n,15000)+eq(n,15558)+eq(n,15571)+eq(n,15648)+eq(n,15720)+eq(n,16237)+eq(n,16251)+eq(n,16327)+eq(n,16400)+eq(n,16895)+eq(n,16909)+eq(n,16985)+eq(n,17058)+eq(n,17663)+eq(n,17677)+eq(n,17753)+eq(n,17826)+eq(n,18436)+eq(n,18450)+eq(n,18526)+eq(n,18599)+eq(n,19137)+eq(n,19151)+eq(n,19227)+eq(n,19300)+eq(n,19829)+eq(n,19843)+eq(n,19919)+eq(n,19992)+eq(n,20520)+eq(n,20534)+eq(n,20610)+eq(n,20683)+eq(n,21206)+eq(n,21219)+eq(n,21296)+eq(n,21368)+eq(n,21873)'",
+        "-fps_mode",
+        "vfr",
+        "-an",
+        "-threads",
+        "2",
+        "D:\\Github\\Video-Editing\\shared\\output\\player-customization\\observation-guides-white-v1\\motion-qa-native\\frame-%03d.png"
+      ],
+      "startedAt": "2026-10-08T01:37:09.906599+00:00",
+      "pid": 19880,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T01:37:21.002782+00:00"
+    }
+  ],
+  "exitCode": 0,
+  "sourceWhiteAnimatedPixelsApproved": false,
+  "allFinalPixelsReviewed": false,
+  "narrationApproved": false,
+  "finalVideoComplete": false,
+  "updatedAt": "2026-10-08T01:37:24.318809+00:00",
+  "rawRender": {
+    "path": "shared/output/player-customization/observation-guides-white-v1/player-customization-observation-guides-v1.mp4",
+    "sha256": "e56609caac5352b9bc5839941e97a20cb6247851be76586338d12050853603b6",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "60/1",
+          "time_base": "1/90000",
+          "duration": "364.716667",
+          "nb_frames": "21883"
+        }
+      ]
+    },
+    "guiReturnedObserved": true,
+    "encoderAbsentObserved": true,
+    "encoderExitCodeObserved": false
+  },
+  "processIdentity": {
+    "ProcessId": 44804,
+    "ParentProcessId": 51484,
+    "CreationDate": "2026-10-08T10:35:59.450034+09:00",
+    "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe\" -X utf8 projects/player-customization/production/verify-observation-guide-white-v1.py --resource shared/output/player-customization/research/resources-before-guide-white-verification-v1.json"
+  },
+  "endpointAdjustment": {
+    "extraFrames": 1,
+    "videoReencoded": true,
+    "decodedDisplayOrder": true,
+    "audioChanged": false
+  },
+  "finishedAt": "2026-10-08T01:37:24.313804+00:00",
+  "currentWhite": {
+    "path": "shared/output/player-customization/observation-guides-white-v1/player-customization-observation-guides-v1.exact.mp4",
+    "sha256": "6bac5ccfd526a4581e3d1b3bc7985ce5deaa5fe4b041d19161069d0eba67702e",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "60/1",
+          "time_base": "1/90000",
+          "duration": "364.700000",
+          "nb_frames": "21882"
+        }
+      ]
+    },
+    "frames": 21882,
+    "firstPts": 0,
+    "lastPts": 32821500,
+    "allPtsContiguous1500": true,
+    "wholeDecodeExitCode": 0
+  },
+  "originalEightWhiteInputSetPreserved": {
+    "path": "projects/player-customization/production/current-reviewed-original-white-inputs-v2.json",
+    "sha256": "51c90d17781615a59166272b793bd122d89bfbf15bf471c88e82f7df05f97567"
+  },
+  "samplePlan": [
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 1,
+      "phase": "onset",
+      "frame": 5,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-001.png",
+      "sha256": "032bd5df5d4224e1732216bc9a382882ad217ab7f729585ff16a6bdf53b66c1e"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 1,
+      "phase": "moving",
+      "frame": 81,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-002.png",
+      "sha256": "b5153f6d53131921ea01e0751dc3c2b1dd31a97b1b068ffe688d6fa697628620"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 1,
+      "phase": "arrival",
+      "frame": 154,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-003.png",
+      "sha256": "25f7e130a4636f768e7213cab082d9332f45890ed71ed1b9b9e5b7f53c35e26d"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 1,
+      "phase": "late",
+      "frame": 646,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-004.png",
+      "sha256": "bd0b5d0f56e267074614a6cb46496c1a6a7bed31c9cac5b1ea3f557535df22ec"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 2,
+      "phase": "onset",
+      "frame": 659,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-005.png",
+      "sha256": "bd0b5d0f56e267074614a6cb46496c1a6a7bed31c9cac5b1ea3f557535df22ec"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 2,
+      "phase": "moving",
+      "frame": 736,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-006.png",
+      "sha256": "a73c37fc0d0d13d762542b51ad03c183ae89c539f01f855c98e06c3f4b01955a"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 2,
+      "phase": "arrival",
+      "frame": 808,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-007.png",
+      "sha256": "d24a32efa970e7a81fc9a3ff5f506c8e4a81649b2a7efa985f5c60e136418c53"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 2,
+      "phase": "late",
+      "frame": 1314,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-008.png",
+      "sha256": "a6fb8a2ea0e0ead96d7a085f552c2df48b454002089fe4a75afde217109dcf80"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 3,
+      "phase": "onset",
+      "frame": 1328,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-009.png",
+      "sha256": "307cf08479f058e753255573c749a4479a5aaca5a3a1c00499db63c51cd85f94"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 3,
+      "phase": "moving",
+      "frame": 1404,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-010.png",
+      "sha256": "e85281be75f57c8e8fe53574348bc24f62f07eb3178701cfab0bec9dc35ee245"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 3,
+      "phase": "arrival",
+      "frame": 1477,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-011.png",
+      "sha256": "f0d83b545d925474d00be1bc22ba229e0bab210878356ef3e6e490f25ca09dbd"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 3,
+      "phase": "late",
+      "frame": 1910,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-012.png",
+      "sha256": "f86cb6f797a22a50017783e34eb78ea69b1fdb4809a21b9db07dee4202be30bf"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 4,
+      "phase": "onset",
+      "frame": 1923,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-013.png",
+      "sha256": "bc82ff6c60eb90f34508daae0a1612246945698b2c96c83e1d4e84cdb140a038"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 4,
+      "phase": "moving",
+      "frame": 2000,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-014.png",
+      "sha256": "8e363659d0010df0fea953837608bf5f8df0371f37e27a3007312e2c113aff32"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 4,
+      "phase": "arrival",
+      "frame": 2073,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-015.png",
+      "sha256": "08b41033b4a3a3e1cbac22e871aca0cb8106f0ab5b3c80895abf7fc3d97c568c"
+    },
+    {
+      "scene": "09-path-and-projectile-guide",
+      "paragraph": 4,
+      "phase": "late",
+      "frame": 2607,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-016.png",
+      "sha256": "115f53ef1283e203646a9cfdcd32a3825d23c26096b6fc19574985825b1e6b4f"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 1,
+      "phase": "onset",
+      "frame": 2621,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-017.png",
+      "sha256": "7fae7757f2ea0285f34ae350b3907dc934606d575afb28339fcaacee937f8fad"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 1,
+      "phase": "moving",
+      "frame": 2697,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-018.png",
+      "sha256": "4ae8d124b93365cf76aa034c9cb5dd21e190c01de2f5c2b372341196d1ad9d56"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 1,
+      "phase": "arrival",
+      "frame": 2770,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-019.png",
+      "sha256": "29b5f21bb1615e4fc5160d68757e8b0d40427c7573fb4532844f94f941dfe2cf"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 1,
+      "phase": "late",
+      "frame": 3308,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-020.png",
+      "sha256": "9366395b0c75cfe41976a1529dd5309489f3badabf47a3f596cf73d54e32d1f3"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 2,
+      "phase": "onset",
+      "frame": 3322,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-021.png",
+      "sha256": "a75bc9a685b10da53fc132a75f106c302d8dc63c300810bc02a5aaefee405fa8"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 2,
+      "phase": "moving",
+      "frame": 3398,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-022.png",
+      "sha256": "fcf670673cd2b0dd4fb892f22518ea9a40a45d1373f4759dec4182f91322189f"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 2,
+      "phase": "arrival",
+      "frame": 3471,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-023.png",
+      "sha256": "2e6e8971d86b343fed2ef488f59772723a6392c0f6b12355ee13733c0406351d"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 2,
+      "phase": "late",
+      "frame": 3968,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-024.png",
+      "sha256": "e76140b2b63197485b4a786b0d3613f21005cb0285cea5da696bd27c8f25b108"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 3,
+      "phase": "onset",
+      "frame": 3982,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-025.png",
+      "sha256": "d85a11fb132ef71755919d14fc4ff150f4c0532dcfef59ed89e098667295a604"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 3,
+      "phase": "moving",
+      "frame": 4058,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-026.png",
+      "sha256": "258206c4f8fbf9818047263452deb6124d50cb6db6b4caaa5034bb35998694d5"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 3,
+      "phase": "arrival",
+      "frame": 4131,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-027.png",
+      "sha256": "48b214096fd412c817f89e7692abc86100f42dbc109365f6ededfb3d0737aaf2"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 3,
+      "phase": "late",
+      "frame": 4570,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-028.png",
+      "sha256": "cb1352d0bfe428e8c4a26e82e6ed22b1df6ee05b020f52f96f617ab10bed8355"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 4,
+      "phase": "onset",
+      "frame": 4584,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-029.png",
+      "sha256": "3e0be0f44997eb61c7ddb7923558b33e6b7480a0a16dc89d04c405558b7a57aa"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 4,
+      "phase": "moving",
+      "frame": 4660,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-030.png",
+      "sha256": "b24c0109f68c9fd1350a0d3a3f4952f96dd713121e70148ef92930e94779fa7d"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 4,
+      "phase": "arrival",
+      "frame": 4733,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-031.png",
+      "sha256": "f562e6eeaaade1aeb0fc81f3a9e9cbbef0e1b8d87ed5c8f07c35511f093c4ad8"
+    },
+    {
+      "scene": "10-origin-effect-target-guide",
+      "paragraph": 4,
+      "phase": "late",
+      "frame": 5180,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-032.png",
+      "sha256": "220c56b5266962ab1ecbd2c13eb613f9a4aafd54c9c1cba54218b2258ff2321e"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 1,
+      "phase": "onset",
+      "frame": 5194,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-033.png",
+      "sha256": "204c9cce18b048d04aa4d2f7246167540c9b3613f619ac46c20fc3e22aa5f517"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 1,
+      "phase": "moving",
+      "frame": 5270,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-034.png",
+      "sha256": "2c6d29d939738cb50afb2bcdd42cb309a5803ae36510270debb2a60f60f593c4"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 1,
+      "phase": "arrival",
+      "frame": 5343,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-035.png",
+      "sha256": "04c7a625f807e0a56d357dc5e5590260609f0d406fafe4b35849ef919376e7b6"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 1,
+      "phase": "late",
+      "frame": 5863,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-036.png",
+      "sha256": "8a934cbbdfd14f437f41843985e8e02932e0bcab93bc4fc808dd371ef4939d53"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 2,
+      "phase": "onset",
+      "frame": 5876,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-037.png",
+      "sha256": "8baa70e23d6fcf3041b4e2bbe21bdafaad2ee48dfb43c4e0950aebccce23d980"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 2,
+      "phase": "moving",
+      "frame": 5953,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-038.png",
+      "sha256": "3fbed2d1579b056d160d348ac37d7fd405b10a539c9c8e39145220891d84ebfa"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 2,
+      "phase": "arrival",
+      "frame": 6025,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-039.png",
+      "sha256": "93bcce5ac45535e3ac0c1c6453b24aabcb24664ed89b207ad68b049ab3153e84"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 2,
+      "phase": "late",
+      "frame": 6520,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-040.png",
+      "sha256": "583dd2e1028c2842a9da687484854e21bda1a379c21394f18f4ec1ae778fb82e"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 3,
+      "phase": "onset",
+      "frame": 6534,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-041.png",
+      "sha256": "02f50e0e28473287e0c9a4b15fb562a59c9f7d7e70170b928dec458bacb36683"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 3,
+      "phase": "moving",
+      "frame": 6610,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-042.png",
+      "sha256": "d2e065f6b5f28bf98a9e3c3f5a9e389dbc4eeb1e408438be1f7e6c1c83854982"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 3,
+      "phase": "arrival",
+      "frame": 6683,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-043.png",
+      "sha256": "16c45d2fd4d7f4ee3a866550b4a1fb244c27725bc73a94a09561328620dedd54"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 3,
+      "phase": "late",
+      "frame": 7226,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-044.png",
+      "sha256": "355cdc0443c88d3c73e721554720fe945bd04fe73723d6057d578a55ffd95b91"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 4,
+      "phase": "onset",
+      "frame": 7240,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-045.png",
+      "sha256": "f294fcd6f44dcc091be6f7cc84deb0856a6c3546ba589fa04b0ccf17d9e999a9"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 4,
+      "phase": "moving",
+      "frame": 7316,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-046.png",
+      "sha256": "7ed961b8aa6798e60d2e3091e1f6e5112857b5d7875203b106b22e63b0d74324"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 4,
+      "phase": "arrival",
+      "frame": 7389,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-047.png",
+      "sha256": "766f7035b6a0f53c097f1e262e7ba219d3150f1b84bb03bcf790d6eab35fde72"
+    },
+    {
+      "scene": "11-jade-ground-and-height-guide",
+      "paragraph": 4,
+      "phase": "late",
+      "frame": 7897,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-048.png",
+      "sha256": "cfdbb8ea8297163dd0ca747357bb0306ace9e1de5716c42e78dad17d986cfa96"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 1,
+      "phase": "onset",
+      "frame": 7911,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-049.png",
+      "sha256": "460ea1faa79dcb19e826865fca8d66c05c7a9a0f010541bf19883a84749e0e66"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 1,
+      "phase": "moving",
+      "frame": 7987,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-050.png",
+      "sha256": "071a547901cadfcdc761882ecfef6aca42c0edd056c78885da7855b2cf29534c"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 1,
+      "phase": "arrival",
+      "frame": 8060,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-051.png",
+      "sha256": "c3fd6fa08106515a95cfac1bdecfc73446a8b9d2ad862424eef8b101de76b6a3"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 1,
+      "phase": "late",
+      "frame": 8620,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-052.png",
+      "sha256": "bebf5017ee879871a69fbbc48f596d901c5cc9f186e1dcfc3c5c0be7860d4bde"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 2,
+      "phase": "onset",
+      "frame": 8634,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-053.png",
+      "sha256": "fade74d05070d032cd0e80510b9b4f0a0535c4403711d0ff8458a383c63079d7"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 2,
+      "phase": "moving",
+      "frame": 8710,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-054.png",
+      "sha256": "793da1e84d100666b9c70da51f5b7d336b9ab876d1c5ef4f174da87c8b818966"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 2,
+      "phase": "arrival",
+      "frame": 8783,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-055.png",
+      "sha256": "4eea64777114ff1801b82f64b065e7b0dd17cf9b1da334bf603b128edb7d833e"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 2,
+      "phase": "late",
+      "frame": 9299,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-056.png",
+      "sha256": "d5a432bb4f2707eb127830c0fdd02566fd9b19dad6628499e5c86f6512f61995"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 3,
+      "phase": "onset",
+      "frame": 9313,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-057.png",
+      "sha256": "174b230e484450113662ed34e6149cb92fb0a2ddd5b5cc236ba89370335a5f2e"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 3,
+      "phase": "moving",
+      "frame": 9389,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-058.png",
+      "sha256": "433d580acb626d8d2c019e3223d62a6e31683f5595461b46b5f0186cbb1bbd23"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 3,
+      "phase": "arrival",
+      "frame": 9462,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-059.png",
+      "sha256": "a419c15dbd3e3fdd3a83cef3f51b79d4d72eefab9a04e753ee186311ed56692c"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 3,
+      "phase": "late",
+      "frame": 9995,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-060.png",
+      "sha256": "0d41c898bf810f7c846c4c466914514de4c38742eef7b454038c5beee7bd4b87"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 4,
+      "phase": "onset",
+      "frame": 10009,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-061.png",
+      "sha256": "263d3d5475fbd667619e2fbeb83f96b119d60bfb5e6e5dd151c42995e3d6fa07"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 4,
+      "phase": "moving",
+      "frame": 10085,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-062.png",
+      "sha256": "57138c19291e81ca7ca9380e23759fd82a0cd1cbdf3c89b2d45aa56b8a417431"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 4,
+      "phase": "arrival",
+      "frame": 10158,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-063.png",
+      "sha256": "abe5b8647199f46c15545c9f5b81675dabc7db1d4358cee945ac112283d3e3b2"
+    },
+    {
+      "scene": "12-nearby-space-guide",
+      "paragraph": 4,
+      "phase": "late",
+      "frame": 10605,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-064.png",
+      "sha256": "a24f78f3f56f23221de28fda79008e36758c3894cd67c36e2179bf44cf0660cd"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 1,
+      "phase": "onset",
+      "frame": 10619,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-065.png",
+      "sha256": "ff2c7796b6585e20cdb0d4524fa4496b0896f0e589bdd0ba77ac0e38f4b63c37"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 1,
+      "phase": "moving",
+      "frame": 10695,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-066.png",
+      "sha256": "5f757da64da3ac9491c535789e35ab8fe351a5f4addb4c7f95ca30b8426062f0"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 1,
+      "phase": "arrival",
+      "frame": 10768,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-067.png",
+      "sha256": "ad78fb22413332a473cbefe33cf22a2a0f7144c473fd6133ac8610f644c489ae"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 1,
+      "phase": "late",
+      "frame": 11284,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-068.png",
+      "sha256": "f7984a4652eeb54d73fd0e6426a84d485af04ce1447d5e8aa0f27328c510b1cf"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 2,
+      "phase": "onset",
+      "frame": 11297,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-069.png",
+      "sha256": "b67080a6a1adfa27956821bc2a53c7bed82010773437fd364dfb0024608d0204"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 2,
+      "phase": "moving",
+      "frame": 11374,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-070.png",
+      "sha256": "0d1cb8083a292a6d910a95161d62b29b8beb39dda59a52b2a08e49b9a09ef644"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 2,
+      "phase": "arrival",
+      "frame": 11446,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-071.png",
+      "sha256": "21388c437321fc64336076c47084062e9180a0965d5681155c7398c38b057f2f"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 2,
+      "phase": "late",
+      "frame": 11997,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-072.png",
+      "sha256": "07e98417522ba793feea0f9652c81282d0e759f671f5350f1b3f925fca4af16a"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 3,
+      "phase": "onset",
+      "frame": 12010,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-073.png",
+      "sha256": "12705b41e92815fbce340a29c8fbd2ab0a97b63f8e9e30b16258509beb5cae22"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 3,
+      "phase": "moving",
+      "frame": 12087,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-074.png",
+      "sha256": "134893f41a571e28c359df08e47453c4bc6437eda52251af86a3a9a2c27842c7"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 3,
+      "phase": "arrival",
+      "frame": 12159,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-075.png",
+      "sha256": "7f464073b3c7bfbb7e65842f371ac35f9193336d36f78d02685dc18a836799e0"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 3,
+      "phase": "late",
+      "frame": 12662,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-076.png",
+      "sha256": "c423a8f131e71721bff99288ee1162ce36e92efda6d780516d00f6bf6738b541"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 4,
+      "phase": "onset",
+      "frame": 12676,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-077.png",
+      "sha256": "425b02db6d9aa7e30601dbc6f638d0a5f44250829ddd5049c1d3ae3560e8de84"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 4,
+      "phase": "moving",
+      "frame": 12752,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-078.png",
+      "sha256": "97c8253d79aac0559a17a124dbb85a3812054b9cd98c842a66ad2e086f895188"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 4,
+      "phase": "arrival",
+      "frame": 12825,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-079.png",
+      "sha256": "10fb2eb38ce5e560c34ef1de7a381f4f63ff5f6337cc13e615e501b927f620f0"
+    },
+    {
+      "scene": "13-doorway-comparison-guide",
+      "paragraph": 4,
+      "phase": "late",
+      "frame": 13361,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-080.png",
+      "sha256": "b21bb548c016b7c9305074966c60df321ce19e3589dd92b0d6b4dce86e78dd70"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 1,
+      "phase": "onset",
+      "frame": 13375,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-081.png",
+      "sha256": "36e475e5507ff04e69b76ea441c9a1c9487e3602c95d9185080a67d0c3f73a4c"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 1,
+      "phase": "moving",
+      "frame": 13451,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-082.png",
+      "sha256": "baa3f1ac00990ab3b11751c862dac39483079bccbd50e83c2718a7ad2d778a82"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 1,
+      "phase": "arrival",
+      "frame": 13524,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-083.png",
+      "sha256": "62592eb850fc638cda475e34076ecf642972d6d4b559ae9e6d6c5f7db503fc7f"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 1,
+      "phase": "late",
+      "frame": 14071,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-084.png",
+      "sha256": "a9b34d0e02e183796e810cb2505d59ec122c7782c790b6511d88af99d9a92397"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 2,
+      "phase": "onset",
+      "frame": 14085,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-085.png",
+      "sha256": "38a3ea95aa2fc73a0ff3bca0c3f0b6464ed311edfa6d1e605297d2806e6ffb92"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 2,
+      "phase": "moving",
+      "frame": 14161,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-086.png",
+      "sha256": "b2886b082b20949fcb5f1af2c247fc28a94ba056236dedd65c8fb6076196190f"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 2,
+      "phase": "arrival",
+      "frame": 14234,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-087.png",
+      "sha256": "11ae6c7acd192778d6e67aab0b8b5d45145097a4546d4e080907e9c7d5929057"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 2,
+      "phase": "late",
+      "frame": 14838,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-088.png",
+      "sha256": "94ca0adc65c78a297b09f909e27bc71953686c9d368d422ee8cc25da3a40c393"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 3,
+      "phase": "onset",
+      "frame": 14851,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-089.png",
+      "sha256": "32b23d0580118d2fbe770479fa4e9a678a583c9b1542d95b02ebe575b1dd2c46"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 3,
+      "phase": "moving",
+      "frame": 14928,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-090.png",
+      "sha256": "001d2a71f0cbbe3355a6562fec8269999920c847fc65fb7e3bb6317d89879c8a"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 3,
+      "phase": "arrival",
+      "frame": 15000,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-091.png",
+      "sha256": "9b82fa9cf098710394716d50930fc05bbc1979b3b59354523ab9ed75c4f8d5c2"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 3,
+      "phase": "late",
+      "frame": 15558,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-092.png",
+      "sha256": "f69330ec19099ab015fb8e2c012b79b7e0d07c19d48d49b6822b1b5084bb660c"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 4,
+      "phase": "onset",
+      "frame": 15571,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-093.png",
+      "sha256": "228dff413bca928df22862308bed76ae107097b0692e05d00c6c72fe9ea7cb6c"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 4,
+      "phase": "moving",
+      "frame": 15648,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-094.png",
+      "sha256": "1d76ac8fb59cd50cc07a976adac0884dab65a26b1afe069232bdf7afa436f386"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 4,
+      "phase": "arrival",
+      "frame": 15720,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-095.png",
+      "sha256": "e897fa947d7f59f40fe513c397ec304023a193f2a6a90cac7c35676dac7095fb"
+    },
+    {
+      "scene": "14-purpose-before-options-guide",
+      "paragraph": 4,
+      "phase": "late",
+      "frame": 16237,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-096.png",
+      "sha256": "06c6c2ab85a73cb1e8759d60185f158d1e965866c3cbd1478604148bf770abb3"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 1,
+      "phase": "onset",
+      "frame": 16251,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-097.png",
+      "sha256": "0da0477c470ee2056e53dab828171fdee85593c46d9cdfb49bf23da40891864d"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 1,
+      "phase": "moving",
+      "frame": 16327,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-098.png",
+      "sha256": "87422c406a3df06f704bb2e93b8cfd3850317446fe3fe04c209bde1e5dc42b86"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 1,
+      "phase": "arrival",
+      "frame": 16400,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-099.png",
+      "sha256": "3ee8cf779b22ef4cbede3e380bf0cacffb93b074f930e7a4303f672b80f42a41"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 1,
+      "phase": "late",
+      "frame": 16895,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-100.png",
+      "sha256": "78f007bf6e91e13ab0f4a0be4d4cb63f5084c3d10bb4ac2195ec7f66c0cc634a"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 2,
+      "phase": "onset",
+      "frame": 16909,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-101.png",
+      "sha256": "5bea7e277be9598f637d1e84b03921fb6219988fa581d88eac2c8ee4d38f3d14"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 2,
+      "phase": "moving",
+      "frame": 16985,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-102.png",
+      "sha256": "0cf9f930491f1f5343c1dc9d368b2a6e98985f272acce397a0eb320044652518"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 2,
+      "phase": "arrival",
+      "frame": 17058,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-103.png",
+      "sha256": "2ecbe2e6bef616a65e915c339de4deb728cdc8b772893651caf8cb6529309069"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 2,
+      "phase": "late",
+      "frame": 17663,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-104.png",
+      "sha256": "fa65711d602af8ab86745c9b542e1361236e6d42f08e211cee422fbc00ed7cac"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 3,
+      "phase": "onset",
+      "frame": 17677,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-105.png",
+      "sha256": "cf320d2e8272dd9e584bdc3c35e62f481321b00e630a56a473decee350cb8b71"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 3,
+      "phase": "moving",
+      "frame": 17753,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-106.png",
+      "sha256": "ab5be5b0c95ed608bb53fc00af6a13df1a784fa31cfe80a119d85632cbbce510"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 3,
+      "phase": "arrival",
+      "frame": 17826,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-107.png",
+      "sha256": "75734274a8daa59394b4b29c704510843bef55ab2fbbc0e8f09f7cdf9dc4e2ec"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 3,
+      "phase": "late",
+      "frame": 18436,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-108.png",
+      "sha256": "b957a525af5a93a2054299ef9d08f291f1067f8e325f81ba80991e183ea1d095"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 4,
+      "phase": "onset",
+      "frame": 18450,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-109.png",
+      "sha256": "1e307792978158566ac975d414c2bdc62bd77e502133a203ee2bbde85afe2089"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 4,
+      "phase": "moving",
+      "frame": 18526,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-110.png",
+      "sha256": "3085a60e4a766860c440bc5eb8fae77cc07699912ecb297e955aa4ba11233e79"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 4,
+      "phase": "arrival",
+      "frame": 18599,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-111.png",
+      "sha256": "fd6776cbab8fa2ded44ca9e062f5b96298186f4ec05e1bab6983f29d6441c553"
+    },
+    {
+      "scene": "15-task-and-result-guide",
+      "paragraph": 4,
+      "phase": "late",
+      "frame": 19137,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-112.png",
+      "sha256": "c5216a1c5c5c686fce391c43932d61682cd4e815ac06cbc2aa0531944431f37c"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 1,
+      "phase": "onset",
+      "frame": 19151,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-113.png",
+      "sha256": "d611ac5808a9032916db106ebdc54cdcc80d4ee401b55738e210c5b0f38fa403"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 1,
+      "phase": "moving",
+      "frame": 19227,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-114.png",
+      "sha256": "f18c7d1165d8da1084ec1a3abf51f180a57ad66132bf2af942b5cc5679f6c5b2"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 1,
+      "phase": "arrival",
+      "frame": 19300,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-115.png",
+      "sha256": "cb3ad9d588cdcbdbd89331b4171a6d80c2674e6ab85f0f061925e2eb70f2095e"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 1,
+      "phase": "late",
+      "frame": 19829,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-116.png",
+      "sha256": "be8ccbbd9d9f2cab2b8e9b9e69f7ffd326f48cf1a6ab74a525a1022d88e407b5"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 2,
+      "phase": "onset",
+      "frame": 19843,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-117.png",
+      "sha256": "0df8238cf36241433a64e4fda24fd51e7128723420fa7338322a2c9e526014f5"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 2,
+      "phase": "moving",
+      "frame": 19919,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-118.png",
+      "sha256": "e82f1e4f3ad8c468e70ce35f1883f8b70bf0a51090d1be3a0f8d6f4a22c55dba"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 2,
+      "phase": "arrival",
+      "frame": 19992,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-119.png",
+      "sha256": "3761a8ece64bf02b6637488b57cdf687edfbb2808c8c5cfcea0cd305dab61ca7"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 2,
+      "phase": "late",
+      "frame": 20520,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-120.png",
+      "sha256": "de99b2228eda36c38f079fc83c1170f67de37fd33b7b5b901d2dabed64102505"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 3,
+      "phase": "onset",
+      "frame": 20534,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-121.png",
+      "sha256": "05908c43645f77850b45dc978f51e064dfd75df65e40053238979f885a7a5861"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 3,
+      "phase": "moving",
+      "frame": 20610,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-122.png",
+      "sha256": "277724cc912242e383259c6c39c976b9ef211e7d8567b6c791764db5c2ca24c7"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 3,
+      "phase": "arrival",
+      "frame": 20683,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-123.png",
+      "sha256": "77bba559d13cb4eb0b4e91b67d08227fd437a56f922c336f4cb01a65293daa64"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 3,
+      "phase": "late",
+      "frame": 21206,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-124.png",
+      "sha256": "ea8e199b74ec5906436e7c5b48cda2df565fab59daf14c681ab88372febd282c"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 4,
+      "phase": "onset",
+      "frame": 21219,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-125.png",
+      "sha256": "265e7969876a669eeab066590516d1af0ee0e9711eecef1891a18f6fad721eca"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 4,
+      "phase": "moving",
+      "frame": 21296,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-126.png",
+      "sha256": "4be222f1146d349048cfe7f3e6abd54f5abe4e8f6f1b023f0df3c0b13196500d"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 4,
+      "phase": "arrival",
+      "frame": 21368,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-127.png",
+      "sha256": "0f1cd405fd6ebdefe82bee39580d230c3f08c63c291d975cb5d97f1d32cb8586"
+    },
+    {
+      "scene": "16-action-versus-expression-guide",
+      "paragraph": 4,
+      "phase": "late",
+      "frame": 21873,
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-128.png",
+      "sha256": "ce497c496c2c8edfc2bfd4dfb81d855c78d1a7648b1e6d01bb72b43c3392485c"
+    }
+  ],
+  "boards": [
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-01.png",
+      "sha256": "c57af5a4ab1fce434f979820a2849ec25cec39841f63e6092e10d0394598be22",
+      "entries": [
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 1,
+          "phase": "onset",
+          "frame": 5,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-001.png",
+          "sha256": "032bd5df5d4224e1732216bc9a382882ad217ab7f729585ff16a6bdf53b66c1e"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 1,
+          "phase": "moving",
+          "frame": 81,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-002.png",
+          "sha256": "b5153f6d53131921ea01e0751dc3c2b1dd31a97b1b068ffe688d6fa697628620"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 1,
+          "phase": "arrival",
+          "frame": 154,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-003.png",
+          "sha256": "25f7e130a4636f768e7213cab082d9332f45890ed71ed1b9b9e5b7f53c35e26d"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 1,
+          "phase": "late",
+          "frame": 646,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-004.png",
+          "sha256": "bd0b5d0f56e267074614a6cb46496c1a6a7bed31c9cac5b1ea3f557535df22ec"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-02.png",
+      "sha256": "77ff2b8d8627060a45a13a556e4da7e3523fb320fd47901dce94d20273feb5db",
+      "entries": [
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 2,
+          "phase": "onset",
+          "frame": 659,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-005.png",
+          "sha256": "bd0b5d0f56e267074614a6cb46496c1a6a7bed31c9cac5b1ea3f557535df22ec"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 2,
+          "phase": "moving",
+          "frame": 736,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-006.png",
+          "sha256": "a73c37fc0d0d13d762542b51ad03c183ae89c539f01f855c98e06c3f4b01955a"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 2,
+          "phase": "arrival",
+          "frame": 808,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-007.png",
+          "sha256": "d24a32efa970e7a81fc9a3ff5f506c8e4a81649b2a7efa985f5c60e136418c53"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 2,
+          "phase": "late",
+          "frame": 1314,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-008.png",
+          "sha256": "a6fb8a2ea0e0ead96d7a085f552c2df48b454002089fe4a75afde217109dcf80"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-03.png",
+      "sha256": "14b5a8fe1e582f51cc4ebf74a0a70390cbb6f413c2357248aa6a95dade6dc4eb",
+      "entries": [
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 3,
+          "phase": "onset",
+          "frame": 1328,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-009.png",
+          "sha256": "307cf08479f058e753255573c749a4479a5aaca5a3a1c00499db63c51cd85f94"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 3,
+          "phase": "moving",
+          "frame": 1404,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-010.png",
+          "sha256": "e85281be75f57c8e8fe53574348bc24f62f07eb3178701cfab0bec9dc35ee245"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 3,
+          "phase": "arrival",
+          "frame": 1477,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-011.png",
+          "sha256": "f0d83b545d925474d00be1bc22ba229e0bab210878356ef3e6e490f25ca09dbd"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 3,
+          "phase": "late",
+          "frame": 1910,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-012.png",
+          "sha256": "f86cb6f797a22a50017783e34eb78ea69b1fdb4809a21b9db07dee4202be30bf"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-04.png",
+      "sha256": "19d54e00c78ec708e0e720c57c782d0383ce6eaf509d9c1a386d9ddcc8803612",
+      "entries": [
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 4,
+          "phase": "onset",
+          "frame": 1923,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-013.png",
+          "sha256": "bc82ff6c60eb90f34508daae0a1612246945698b2c96c83e1d4e84cdb140a038"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 4,
+          "phase": "moving",
+          "frame": 2000,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-014.png",
+          "sha256": "8e363659d0010df0fea953837608bf5f8df0371f37e27a3007312e2c113aff32"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 4,
+          "phase": "arrival",
+          "frame": 2073,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-015.png",
+          "sha256": "08b41033b4a3a3e1cbac22e871aca0cb8106f0ab5b3c80895abf7fc3d97c568c"
+        },
+        {
+          "scene": "09-path-and-projectile-guide",
+          "paragraph": 4,
+          "phase": "late",
+          "frame": 2607,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-016.png",
+          "sha256": "115f53ef1283e203646a9cfdcd32a3825d23c26096b6fc19574985825b1e6b4f"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-05.png",
+      "sha256": "8269447df4d93195a5fa8ddabec8d415d9c5dceaa901d5af12ad3fbc164d82a8",
+      "entries": [
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 1,
+          "phase": "onset",
+          "frame": 2621,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-017.png",
+          "sha256": "7fae7757f2ea0285f34ae350b3907dc934606d575afb28339fcaacee937f8fad"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 1,
+          "phase": "moving",
+          "frame": 2697,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-018.png",
+          "sha256": "4ae8d124b93365cf76aa034c9cb5dd21e190c01de2f5c2b372341196d1ad9d56"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 1,
+          "phase": "arrival",
+          "frame": 2770,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-019.png",
+          "sha256": "29b5f21bb1615e4fc5160d68757e8b0d40427c7573fb4532844f94f941dfe2cf"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 1,
+          "phase": "late",
+          "frame": 3308,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-020.png",
+          "sha256": "9366395b0c75cfe41976a1529dd5309489f3badabf47a3f596cf73d54e32d1f3"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-06.png",
+      "sha256": "854865d939a65df42d2ab6ecc0247c5749ea91e70dc0d1621f6e238aa60c3383",
+      "entries": [
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 2,
+          "phase": "onset",
+          "frame": 3322,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-021.png",
+          "sha256": "a75bc9a685b10da53fc132a75f106c302d8dc63c300810bc02a5aaefee405fa8"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 2,
+          "phase": "moving",
+          "frame": 3398,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-022.png",
+          "sha256": "fcf670673cd2b0dd4fb892f22518ea9a40a45d1373f4759dec4182f91322189f"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 2,
+          "phase": "arrival",
+          "frame": 3471,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-023.png",
+          "sha256": "2e6e8971d86b343fed2ef488f59772723a6392c0f6b12355ee13733c0406351d"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 2,
+          "phase": "late",
+          "frame": 3968,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-024.png",
+          "sha256": "e76140b2b63197485b4a786b0d3613f21005cb0285cea5da696bd27c8f25b108"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-07.png",
+      "sha256": "0e20159e1d8b56d07fc07f3b436c22bb9e8159495698bd0939b246f50ce97b4a",
+      "entries": [
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 3,
+          "phase": "onset",
+          "frame": 3982,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-025.png",
+          "sha256": "d85a11fb132ef71755919d14fc4ff150f4c0532dcfef59ed89e098667295a604"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 3,
+          "phase": "moving",
+          "frame": 4058,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-026.png",
+          "sha256": "258206c4f8fbf9818047263452deb6124d50cb6db6b4caaa5034bb35998694d5"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 3,
+          "phase": "arrival",
+          "frame": 4131,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-027.png",
+          "sha256": "48b214096fd412c817f89e7692abc86100f42dbc109365f6ededfb3d0737aaf2"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 3,
+          "phase": "late",
+          "frame": 4570,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-028.png",
+          "sha256": "cb1352d0bfe428e8c4a26e82e6ed22b1df6ee05b020f52f96f617ab10bed8355"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-08.png",
+      "sha256": "df9c3c0d79c12e6cd3262492c9010b1c482fcd6a4aeebac007b67b8a64e2bce0",
+      "entries": [
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 4,
+          "phase": "onset",
+          "frame": 4584,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-029.png",
+          "sha256": "3e0be0f44997eb61c7ddb7923558b33e6b7480a0a16dc89d04c405558b7a57aa"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 4,
+          "phase": "moving",
+          "frame": 4660,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-030.png",
+          "sha256": "b24c0109f68c9fd1350a0d3a3f4952f96dd713121e70148ef92930e94779fa7d"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 4,
+          "phase": "arrival",
+          "frame": 4733,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-031.png",
+          "sha256": "f562e6eeaaade1aeb0fc81f3a9e9cbbef0e1b8d87ed5c8f07c35511f093c4ad8"
+        },
+        {
+          "scene": "10-origin-effect-target-guide",
+          "paragraph": 4,
+          "phase": "late",
+          "frame": 5180,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-032.png",
+          "sha256": "220c56b5266962ab1ecbd2c13eb613f9a4aafd54c9c1cba54218b2258ff2321e"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-09.png",
+      "sha256": "4a9713306cee3ec2ccc5826e1266a5282f98927c71c59912bc4fb49755177ab0",
+      "entries": [
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 1,
+          "phase": "onset",
+          "frame": 5194,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-033.png",
+          "sha256": "204c9cce18b048d04aa4d2f7246167540c9b3613f619ac46c20fc3e22aa5f517"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 1,
+          "phase": "moving",
+          "frame": 5270,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-034.png",
+          "sha256": "2c6d29d939738cb50afb2bcdd42cb309a5803ae36510270debb2a60f60f593c4"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 1,
+          "phase": "arrival",
+          "frame": 5343,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-035.png",
+          "sha256": "04c7a625f807e0a56d357dc5e5590260609f0d406fafe4b35849ef919376e7b6"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 1,
+          "phase": "late",
+          "frame": 5863,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-036.png",
+          "sha256": "8a934cbbdfd14f437f41843985e8e02932e0bcab93bc4fc808dd371ef4939d53"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-10.png",
+      "sha256": "b88908944da09071333ee11eb69391be879a6437c5b698d43a8cebf02cbb3c63",
+      "entries": [
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 2,
+          "phase": "onset",
+          "frame": 5876,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-037.png",
+          "sha256": "8baa70e23d6fcf3041b4e2bbe21bdafaad2ee48dfb43c4e0950aebccce23d980"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 2,
+          "phase": "moving",
+          "frame": 5953,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-038.png",
+          "sha256": "3fbed2d1579b056d160d348ac37d7fd405b10a539c9c8e39145220891d84ebfa"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 2,
+          "phase": "arrival",
+          "frame": 6025,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-039.png",
+          "sha256": "93bcce5ac45535e3ac0c1c6453b24aabcb24664ed89b207ad68b049ab3153e84"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 2,
+          "phase": "late",
+          "frame": 6520,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-040.png",
+          "sha256": "583dd2e1028c2842a9da687484854e21bda1a379c21394f18f4ec1ae778fb82e"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-11.png",
+      "sha256": "41bdc507355d1ee31cd5b2e750fb109ec8a9e5e8852dc8576f9c0daaff0984a0",
+      "entries": [
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 3,
+          "phase": "onset",
+          "frame": 6534,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-041.png",
+          "sha256": "02f50e0e28473287e0c9a4b15fb562a59c9f7d7e70170b928dec458bacb36683"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 3,
+          "phase": "moving",
+          "frame": 6610,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-042.png",
+          "sha256": "d2e065f6b5f28bf98a9e3c3f5a9e389dbc4eeb1e408438be1f7e6c1c83854982"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 3,
+          "phase": "arrival",
+          "frame": 6683,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-043.png",
+          "sha256": "16c45d2fd4d7f4ee3a866550b4a1fb244c27725bc73a94a09561328620dedd54"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 3,
+          "phase": "late",
+          "frame": 7226,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-044.png",
+          "sha256": "355cdc0443c88d3c73e721554720fe945bd04fe73723d6057d578a55ffd95b91"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-12.png",
+      "sha256": "7a978400fd2011c9e034114f5112441f2e36a311a00e9ae820cbd8fdbafecd48",
+      "entries": [
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 4,
+          "phase": "onset",
+          "frame": 7240,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-045.png",
+          "sha256": "f294fcd6f44dcc091be6f7cc84deb0856a6c3546ba589fa04b0ccf17d9e999a9"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 4,
+          "phase": "moving",
+          "frame": 7316,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-046.png",
+          "sha256": "7ed961b8aa6798e60d2e3091e1f6e5112857b5d7875203b106b22e63b0d74324"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 4,
+          "phase": "arrival",
+          "frame": 7389,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-047.png",
+          "sha256": "766f7035b6a0f53c097f1e262e7ba219d3150f1b84bb03bcf790d6eab35fde72"
+        },
+        {
+          "scene": "11-jade-ground-and-height-guide",
+          "paragraph": 4,
+          "phase": "late",
+          "frame": 7897,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-048.png",
+          "sha256": "cfdbb8ea8297163dd0ca747357bb0306ace9e1de5716c42e78dad17d986cfa96"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-13.png",
+      "sha256": "b9cbf7af4cdd8a5a0fe1c4e64b2dc1c42d20f9fcae0ea3fddfdd36c80876dea4",
+      "entries": [
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 1,
+          "phase": "onset",
+          "frame": 7911,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-049.png",
+          "sha256": "460ea1faa79dcb19e826865fca8d66c05c7a9a0f010541bf19883a84749e0e66"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 1,
+          "phase": "moving",
+          "frame": 7987,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-050.png",
+          "sha256": "071a547901cadfcdc761882ecfef6aca42c0edd056c78885da7855b2cf29534c"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 1,
+          "phase": "arrival",
+          "frame": 8060,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-051.png",
+          "sha256": "c3fd6fa08106515a95cfac1bdecfc73446a8b9d2ad862424eef8b101de76b6a3"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 1,
+          "phase": "late",
+          "frame": 8620,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-052.png",
+          "sha256": "bebf5017ee879871a69fbbc48f596d901c5cc9f186e1dcfc3c5c0be7860d4bde"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-14.png",
+      "sha256": "8001d7abe110cd195e622e8eb45a2506f3a7dba7300554864f55bb0e87439618",
+      "entries": [
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 2,
+          "phase": "onset",
+          "frame": 8634,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-053.png",
+          "sha256": "fade74d05070d032cd0e80510b9b4f0a0535c4403711d0ff8458a383c63079d7"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 2,
+          "phase": "moving",
+          "frame": 8710,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-054.png",
+          "sha256": "793da1e84d100666b9c70da51f5b7d336b9ab876d1c5ef4f174da87c8b818966"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 2,
+          "phase": "arrival",
+          "frame": 8783,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-055.png",
+          "sha256": "4eea64777114ff1801b82f64b065e7b0dd17cf9b1da334bf603b128edb7d833e"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 2,
+          "phase": "late",
+          "frame": 9299,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-056.png",
+          "sha256": "d5a432bb4f2707eb127830c0fdd02566fd9b19dad6628499e5c86f6512f61995"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-15.png",
+      "sha256": "d40e388a200a2547f0054f5cdb8daf7ca2f883b13460825e337c31ae5b84538b",
+      "entries": [
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 3,
+          "phase": "onset",
+          "frame": 9313,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-057.png",
+          "sha256": "174b230e484450113662ed34e6149cb92fb0a2ddd5b5cc236ba89370335a5f2e"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 3,
+          "phase": "moving",
+          "frame": 9389,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-058.png",
+          "sha256": "433d580acb626d8d2c019e3223d62a6e31683f5595461b46b5f0186cbb1bbd23"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 3,
+          "phase": "arrival",
+          "frame": 9462,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-059.png",
+          "sha256": "a419c15dbd3e3fdd3a83cef3f51b79d4d72eefab9a04e753ee186311ed56692c"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 3,
+          "phase": "late",
+          "frame": 9995,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-060.png",
+          "sha256": "0d41c898bf810f7c846c4c466914514de4c38742eef7b454038c5beee7bd4b87"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-16.png",
+      "sha256": "d57d5289037320682f8c0fd662a6e2093ee0918982beea629f69255ae26953eb",
+      "entries": [
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 4,
+          "phase": "onset",
+          "frame": 10009,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-061.png",
+          "sha256": "263d3d5475fbd667619e2fbeb83f96b119d60bfb5e6e5dd151c42995e3d6fa07"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 4,
+          "phase": "moving",
+          "frame": 10085,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-062.png",
+          "sha256": "57138c19291e81ca7ca9380e23759fd82a0cd1cbdf3c89b2d45aa56b8a417431"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 4,
+          "phase": "arrival",
+          "frame": 10158,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-063.png",
+          "sha256": "abe5b8647199f46c15545c9f5b81675dabc7db1d4358cee945ac112283d3e3b2"
+        },
+        {
+          "scene": "12-nearby-space-guide",
+          "paragraph": 4,
+          "phase": "late",
+          "frame": 10605,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-064.png",
+          "sha256": "a24f78f3f56f23221de28fda79008e36758c3894cd67c36e2179bf44cf0660cd"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-17.png",
+      "sha256": "3f8bca28ad69029b90b06c8d5d20a5af0740365b523ce55e8ebcac91773f101e",
+      "entries": [
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 1,
+          "phase": "onset",
+          "frame": 10619,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-065.png",
+          "sha256": "ff2c7796b6585e20cdb0d4524fa4496b0896f0e589bdd0ba77ac0e38f4b63c37"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 1,
+          "phase": "moving",
+          "frame": 10695,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-066.png",
+          "sha256": "5f757da64da3ac9491c535789e35ab8fe351a5f4addb4c7f95ca30b8426062f0"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 1,
+          "phase": "arrival",
+          "frame": 10768,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-067.png",
+          "sha256": "ad78fb22413332a473cbefe33cf22a2a0f7144c473fd6133ac8610f644c489ae"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 1,
+          "phase": "late",
+          "frame": 11284,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-068.png",
+          "sha256": "f7984a4652eeb54d73fd0e6426a84d485af04ce1447d5e8aa0f27328c510b1cf"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-18.png",
+      "sha256": "f3c9cfe259feabfdb655d7452c5d0c2e76eb3912033372d8b7d848bd34ae417a",
+      "entries": [
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 2,
+          "phase": "onset",
+          "frame": 11297,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-069.png",
+          "sha256": "b67080a6a1adfa27956821bc2a53c7bed82010773437fd364dfb0024608d0204"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 2,
+          "phase": "moving",
+          "frame": 11374,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-070.png",
+          "sha256": "0d1cb8083a292a6d910a95161d62b29b8beb39dda59a52b2a08e49b9a09ef644"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 2,
+          "phase": "arrival",
+          "frame": 11446,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-071.png",
+          "sha256": "21388c437321fc64336076c47084062e9180a0965d5681155c7398c38b057f2f"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 2,
+          "phase": "late",
+          "frame": 11997,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-072.png",
+          "sha256": "07e98417522ba793feea0f9652c81282d0e759f671f5350f1b3f925fca4af16a"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-19.png",
+      "sha256": "f34b41f6655dcb5962e57cc4f7b1945993d4d212cfb020f33c5a769644b3b923",
+      "entries": [
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 3,
+          "phase": "onset",
+          "frame": 12010,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-073.png",
+          "sha256": "12705b41e92815fbce340a29c8fbd2ab0a97b63f8e9e30b16258509beb5cae22"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 3,
+          "phase": "moving",
+          "frame": 12087,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-074.png",
+          "sha256": "134893f41a571e28c359df08e47453c4bc6437eda52251af86a3a9a2c27842c7"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 3,
+          "phase": "arrival",
+          "frame": 12159,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-075.png",
+          "sha256": "7f464073b3c7bfbb7e65842f371ac35f9193336d36f78d02685dc18a836799e0"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 3,
+          "phase": "late",
+          "frame": 12662,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-076.png",
+          "sha256": "c423a8f131e71721bff99288ee1162ce36e92efda6d780516d00f6bf6738b541"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-20.png",
+      "sha256": "a4e427a8ff9a625ce1d48d2e360bb62b142efb4d626e440c91cb2afa3e3f712a",
+      "entries": [
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 4,
+          "phase": "onset",
+          "frame": 12676,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-077.png",
+          "sha256": "425b02db6d9aa7e30601dbc6f638d0a5f44250829ddd5049c1d3ae3560e8de84"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 4,
+          "phase": "moving",
+          "frame": 12752,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-078.png",
+          "sha256": "97c8253d79aac0559a17a124dbb85a3812054b9cd98c842a66ad2e086f895188"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 4,
+          "phase": "arrival",
+          "frame": 12825,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-079.png",
+          "sha256": "10fb2eb38ce5e560c34ef1de7a381f4f63ff5f6337cc13e615e501b927f620f0"
+        },
+        {
+          "scene": "13-doorway-comparison-guide",
+          "paragraph": 4,
+          "phase": "late",
+          "frame": 13361,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-080.png",
+          "sha256": "b21bb548c016b7c9305074966c60df321ce19e3589dd92b0d6b4dce86e78dd70"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-21.png",
+      "sha256": "eae3ed2d0216e0ba1d25ad9f3744764d200e0e453adb5c14c23d99472ee70fc9",
+      "entries": [
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 1,
+          "phase": "onset",
+          "frame": 13375,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-081.png",
+          "sha256": "36e475e5507ff04e69b76ea441c9a1c9487e3602c95d9185080a67d0c3f73a4c"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 1,
+          "phase": "moving",
+          "frame": 13451,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-082.png",
+          "sha256": "baa3f1ac00990ab3b11751c862dac39483079bccbd50e83c2718a7ad2d778a82"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 1,
+          "phase": "arrival",
+          "frame": 13524,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-083.png",
+          "sha256": "62592eb850fc638cda475e34076ecf642972d6d4b559ae9e6d6c5f7db503fc7f"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 1,
+          "phase": "late",
+          "frame": 14071,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-084.png",
+          "sha256": "a9b34d0e02e183796e810cb2505d59ec122c7782c790b6511d88af99d9a92397"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-22.png",
+      "sha256": "60d0541542299bf1d33bd9976591c7e67cc99ffa66d147ca43c483f715a74a3b",
+      "entries": [
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 2,
+          "phase": "onset",
+          "frame": 14085,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-085.png",
+          "sha256": "38a3ea95aa2fc73a0ff3bca0c3f0b6464ed311edfa6d1e605297d2806e6ffb92"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 2,
+          "phase": "moving",
+          "frame": 14161,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-086.png",
+          "sha256": "b2886b082b20949fcb5f1af2c247fc28a94ba056236dedd65c8fb6076196190f"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 2,
+          "phase": "arrival",
+          "frame": 14234,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-087.png",
+          "sha256": "11ae6c7acd192778d6e67aab0b8b5d45145097a4546d4e080907e9c7d5929057"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 2,
+          "phase": "late",
+          "frame": 14838,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-088.png",
+          "sha256": "94ca0adc65c78a297b09f909e27bc71953686c9d368d422ee8cc25da3a40c393"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-23.png",
+      "sha256": "b66eb72081ccea7420bae21b291af434a86c420fb3f201af34ddba2b2f317ae3",
+      "entries": [
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 3,
+          "phase": "onset",
+          "frame": 14851,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-089.png",
+          "sha256": "32b23d0580118d2fbe770479fa4e9a678a583c9b1542d95b02ebe575b1dd2c46"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 3,
+          "phase": "moving",
+          "frame": 14928,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-090.png",
+          "sha256": "001d2a71f0cbbe3355a6562fec8269999920c847fc65fb7e3bb6317d89879c8a"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 3,
+          "phase": "arrival",
+          "frame": 15000,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-091.png",
+          "sha256": "9b82fa9cf098710394716d50930fc05bbc1979b3b59354523ab9ed75c4f8d5c2"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 3,
+          "phase": "late",
+          "frame": 15558,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-092.png",
+          "sha256": "f69330ec19099ab015fb8e2c012b79b7e0d07c19d48d49b6822b1b5084bb660c"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-24.png",
+      "sha256": "d354e423ff0e546c353f67afe1d2648b411a89ca203e1821576311e5aa288ae1",
+      "entries": [
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 4,
+          "phase": "onset",
+          "frame": 15571,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-093.png",
+          "sha256": "228dff413bca928df22862308bed76ae107097b0692e05d00c6c72fe9ea7cb6c"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 4,
+          "phase": "moving",
+          "frame": 15648,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-094.png",
+          "sha256": "1d76ac8fb59cd50cc07a976adac0884dab65a26b1afe069232bdf7afa436f386"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 4,
+          "phase": "arrival",
+          "frame": 15720,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-095.png",
+          "sha256": "e897fa947d7f59f40fe513c397ec304023a193f2a6a90cac7c35676dac7095fb"
+        },
+        {
+          "scene": "14-purpose-before-options-guide",
+          "paragraph": 4,
+          "phase": "late",
+          "frame": 16237,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-096.png",
+          "sha256": "06c6c2ab85a73cb1e8759d60185f158d1e965866c3cbd1478604148bf770abb3"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-25.png",
+      "sha256": "ad5338f2bf7db73b88a0bfe4a4380dff4ed6b5b98b873b4831889fa490392f73",
+      "entries": [
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 1,
+          "phase": "onset",
+          "frame": 16251,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-097.png",
+          "sha256": "0da0477c470ee2056e53dab828171fdee85593c46d9cdfb49bf23da40891864d"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 1,
+          "phase": "moving",
+          "frame": 16327,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-098.png",
+          "sha256": "87422c406a3df06f704bb2e93b8cfd3850317446fe3fe04c209bde1e5dc42b86"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 1,
+          "phase": "arrival",
+          "frame": 16400,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-099.png",
+          "sha256": "3ee8cf779b22ef4cbede3e380bf0cacffb93b074f930e7a4303f672b80f42a41"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 1,
+          "phase": "late",
+          "frame": 16895,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-100.png",
+          "sha256": "78f007bf6e91e13ab0f4a0be4d4cb63f5084c3d10bb4ac2195ec7f66c0cc634a"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-26.png",
+      "sha256": "460b04e787ae8e08afd602dca2e6149580a739642ac5b355db105da6ae0b9e41",
+      "entries": [
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 2,
+          "phase": "onset",
+          "frame": 16909,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-101.png",
+          "sha256": "5bea7e277be9598f637d1e84b03921fb6219988fa581d88eac2c8ee4d38f3d14"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 2,
+          "phase": "moving",
+          "frame": 16985,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-102.png",
+          "sha256": "0cf9f930491f1f5343c1dc9d368b2a6e98985f272acce397a0eb320044652518"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 2,
+          "phase": "arrival",
+          "frame": 17058,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-103.png",
+          "sha256": "2ecbe2e6bef616a65e915c339de4deb728cdc8b772893651caf8cb6529309069"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 2,
+          "phase": "late",
+          "frame": 17663,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-104.png",
+          "sha256": "fa65711d602af8ab86745c9b542e1361236e6d42f08e211cee422fbc00ed7cac"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-27.png",
+      "sha256": "269bfe5b5b4d5bf9bfc46802f2eccf318828db0b48c107957b5326d46a3c370c",
+      "entries": [
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 3,
+          "phase": "onset",
+          "frame": 17677,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-105.png",
+          "sha256": "cf320d2e8272dd9e584bdc3c35e62f481321b00e630a56a473decee350cb8b71"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 3,
+          "phase": "moving",
+          "frame": 17753,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-106.png",
+          "sha256": "ab5be5b0c95ed608bb53fc00af6a13df1a784fa31cfe80a119d85632cbbce510"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 3,
+          "phase": "arrival",
+          "frame": 17826,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-107.png",
+          "sha256": "75734274a8daa59394b4b29c704510843bef55ab2fbbc0e8f09f7cdf9dc4e2ec"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 3,
+          "phase": "late",
+          "frame": 18436,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-108.png",
+          "sha256": "b957a525af5a93a2054299ef9d08f291f1067f8e325f81ba80991e183ea1d095"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-28.png",
+      "sha256": "ebba2ba132eeabe61fb8111e6c2c7f3b1c93b930927742ac0d9731b53c5400e8",
+      "entries": [
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 4,
+          "phase": "onset",
+          "frame": 18450,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-109.png",
+          "sha256": "1e307792978158566ac975d414c2bdc62bd77e502133a203ee2bbde85afe2089"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 4,
+          "phase": "moving",
+          "frame": 18526,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-110.png",
+          "sha256": "3085a60e4a766860c440bc5eb8fae77cc07699912ecb297e955aa4ba11233e79"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 4,
+          "phase": "arrival",
+          "frame": 18599,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-111.png",
+          "sha256": "fd6776cbab8fa2ded44ca9e062f5b96298186f4ec05e1bab6983f29d6441c553"
+        },
+        {
+          "scene": "15-task-and-result-guide",
+          "paragraph": 4,
+          "phase": "late",
+          "frame": 19137,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-112.png",
+          "sha256": "c5216a1c5c5c686fce391c43932d61682cd4e815ac06cbc2aa0531944431f37c"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-29.png",
+      "sha256": "ac6b98e4288fd9a6af7c8c5d5a91c68105316e1562c5446827919a62e7aec38a",
+      "entries": [
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 1,
+          "phase": "onset",
+          "frame": 19151,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-113.png",
+          "sha256": "d611ac5808a9032916db106ebdc54cdcc80d4ee401b55738e210c5b0f38fa403"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 1,
+          "phase": "moving",
+          "frame": 19227,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-114.png",
+          "sha256": "f18c7d1165d8da1084ec1a3abf51f180a57ad66132bf2af942b5cc5679f6c5b2"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 1,
+          "phase": "arrival",
+          "frame": 19300,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-115.png",
+          "sha256": "cb3ad9d588cdcbdbd89331b4171a6d80c2674e6ab85f0f061925e2eb70f2095e"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 1,
+          "phase": "late",
+          "frame": 19829,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-116.png",
+          "sha256": "be8ccbbd9d9f2cab2b8e9b9e69f7ffd326f48cf1a6ab74a525a1022d88e407b5"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-30.png",
+      "sha256": "8c861bbeb64a91be6fa7b2ead1d286a49d9699934126987f3be75acd5273a444",
+      "entries": [
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 2,
+          "phase": "onset",
+          "frame": 19843,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-117.png",
+          "sha256": "0df8238cf36241433a64e4fda24fd51e7128723420fa7338322a2c9e526014f5"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 2,
+          "phase": "moving",
+          "frame": 19919,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-118.png",
+          "sha256": "e82f1e4f3ad8c468e70ce35f1883f8b70bf0a51090d1be3a0f8d6f4a22c55dba"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 2,
+          "phase": "arrival",
+          "frame": 19992,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-119.png",
+          "sha256": "3761a8ece64bf02b6637488b57cdf687edfbb2808c8c5cfcea0cd305dab61ca7"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 2,
+          "phase": "late",
+          "frame": 20520,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-120.png",
+          "sha256": "de99b2228eda36c38f079fc83c1170f67de37fd33b7b5b901d2dabed64102505"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-31.png",
+      "sha256": "701ee643a2352b1654ea996dc590db606271bffc5efa170439224a4eb04d2a4b",
+      "entries": [
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 3,
+          "phase": "onset",
+          "frame": 20534,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-121.png",
+          "sha256": "05908c43645f77850b45dc978f51e064dfd75df65e40053238979f885a7a5861"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 3,
+          "phase": "moving",
+          "frame": 20610,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-122.png",
+          "sha256": "277724cc912242e383259c6c39c976b9ef211e7d8567b6c791764db5c2ca24c7"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 3,
+          "phase": "arrival",
+          "frame": 20683,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-123.png",
+          "sha256": "77bba559d13cb4eb0b4e91b67d08227fd437a56f922c336f4cb01a65293daa64"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 3,
+          "phase": "late",
+          "frame": 21206,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-124.png",
+          "sha256": "ea8e199b74ec5906436e7c5b48cda2df565fab59daf14c681ab88372febd282c"
+        }
+      ]
+    },
+    {
+      "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-boards/board-32.png",
+      "sha256": "72b3a8d26a2d28756c1c1ddd2fc2129a40cbb989b0713d6fa23bb34915ac34c7",
+      "entries": [
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 4,
+          "phase": "onset",
+          "frame": 21219,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-125.png",
+          "sha256": "265e7969876a669eeab066590516d1af0ee0e9711eecef1891a18f6fad721eca"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 4,
+          "phase": "moving",
+          "frame": 21296,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-126.png",
+          "sha256": "4be222f1146d349048cfe7f3e6abd54f5abe4e8f6f1b023f0df3c0b13196500d"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 4,
+          "phase": "arrival",
+          "frame": 21368,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-127.png",
+          "sha256": "0f1cd405fd6ebdefe82bee39580d230c3f08c63c291d975cb5d97f1d32cb8586"
+        },
+        {
+          "scene": "16-action-versus-expression-guide",
+          "paragraph": 4,
+          "phase": "late",
+          "frame": 21873,
+          "path": "shared/output/player-customization/observation-guides-white-v1/motion-qa-native/frame-128.png",
+          "sha256": "ce497c496c2c8edfc2bfd4dfb81d855c78d1a7648b1e6d01bb72b43c3392485c"
+        }
+      ]
+    }
+  ],
+  "allOriginalVoicePcmPreserved": true,
+  "newGitImages": 0,
+  "actualExitObserved": true,
+  "actualExitCode": 0,
+  "exitObservedAt": "2026-10-08T01:37:56.004434+00:00",
+  "cimIdentityAbsentObserved": true
+}

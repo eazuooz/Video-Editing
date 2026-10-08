@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import current1 from './current-voice-scenes-v1/01-overview?scene';
+import current2 from './current-voice-scenes-v1/02-visible-effects?scene';
+import current3 from './current-voice-scenes-v1/03-readable-outcome?scene';
+import current4 from './current-voice-scenes-v1/04-situations?scene';
+import current5 from './current-voice-scenes-v1/05-manageable-choice?scene';
+import current6 from './current-voice-scenes-v1/06-quick-trial?scene';
+import current7 from './current-voice-scenes-v1/07-expression?scene';
+import current8 from './current-voice-scenes-v1/08-conclusion?scene';
+export default makeProject({name:'player-customization-current-voice-white-v1',scenes:[current1,current2,current3,current4,current5,current6,current7,current8]});

@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import overview from './scenes/01-overview?scene';
+import effects from './scenes/02-visible-effects?scene';
+import outcome from './scenes/03-readable-outcome?scene';
+import situations from './scenes/04-situations?scene';
+import choices from './scenes/05-manageable-choice?scene';
+import trial from './scenes/06-quick-trial?scene';
+import expression from './scenes/07-expression?scene';
+import conclusion from './scenes/08-conclusion?scene';
+export default makeProject({scenes:[overview,effects,outcome,situations,choices,trial,expression,conclusion]});

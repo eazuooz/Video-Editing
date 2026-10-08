@@ -1,0 +1,22 @@
+import {makeProject} from '@motion-canvas/core';
+import finalMix from '../../../../projects/player-customization/production/final-v1/final-mix.m4a';
+import chapter0 from './final-review-scenes-v1/00-branding?scene';
+import chapter1 from './final-review-scenes-v1/01-overview?scene';
+import chapter2 from './final-review-scenes-v1/02-visible-effects?scene';
+import chapter3 from './final-review-scenes-v1/09-path-and-projectile-guide?scene';
+import chapter4 from './final-review-scenes-v1/10-origin-effect-target-guide?scene';
+import chapter5 from './final-review-scenes-v1/03-readable-outcome?scene';
+import chapter6 from './final-review-scenes-v1/11-jade-ground-and-height-guide?scene';
+import chapter7 from './final-review-scenes-v1/04-situations?scene';
+import chapter8 from './final-review-scenes-v1/12-nearby-space-guide?scene';
+import chapter9 from './final-review-scenes-v1/13-doorway-comparison-guide?scene';
+import chapter10 from './final-review-scenes-v1/05-manageable-choice?scene';
+import chapter11 from './final-review-scenes-v1/14-purpose-before-options-guide?scene';
+import chapter12 from './final-review-scenes-v1/06-quick-trial?scene';
+import chapter13 from './final-review-scenes-v1/15-task-and-result-guide?scene';
+import chapter14 from './final-review-scenes-v1/16-action-versus-expression-guide?scene';
+import chapter15 from './final-review-scenes-v1/07-expression?scene';
+import chapter16 from './final-review-scenes-v1/08-conclusion?scene';
+import chapter17 from './final-review-scenes-v1/99-membership?scene';
+export default makeProject({name:'player-customization-final-review-v1',
+  scenes:[chapter0,chapter1,chapter2,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8,chapter9,chapter10,chapter11,chapter12,chapter13,chapter14,chapter15,chapter16,chapter17],audio:finalMix});

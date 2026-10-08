@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import path from './observation-guide-scenes-v1/09-path-and-projectile-guide?scene';
+import origin from './observation-guide-scenes-v1/10-origin-effect-target-guide?scene';
+import height from './observation-guide-scenes-v1/11-jade-ground-and-height-guide?scene';
+import nearby from './observation-guide-scenes-v1/12-nearby-space-guide?scene';
+import doorway from './observation-guide-scenes-v1/13-doorway-comparison-guide?scene';
+import purpose from './observation-guide-scenes-v1/14-purpose-before-options-guide?scene';
+import task from './observation-guide-scenes-v1/15-task-and-result-guide?scene';
+import expression from './observation-guide-scenes-v1/16-action-versus-expression-guide?scene';
+export default makeProject({name:'player-customization-observation-guides-v1',scenes:[path,origin,height,nearby,doorway,purpose,task,expression]});
