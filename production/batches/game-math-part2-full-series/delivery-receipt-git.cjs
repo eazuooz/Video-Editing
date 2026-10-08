@@ -15,6 +15,7 @@ const proofDir=`projects/${slug}/publishing/qa`;
 const files=[`projects/${slug}/project.json`,`projects/${slug}/rebuild.json`,`projects/${slug}/publishing/youtube-upload.json`,`projects/${slug}/publish/assets/thumbnail-generation.json`,
  `projects/${slug}/publishing/qa/evidence-normalization.json`,
  'production/batches/game-math-part2-full-series/record-private-review.py','production/batches/game-math-part2-full-series/delivery-receipt-git.cjs',
+ 'production/batches/game-math-part2-full-series/README.md',
  ...fs.readdirSync(path.join(root,proofDir)).filter(f=>f.endsWith('.ax.txt')).map(f=>proofDir+'/'+f)];
 const parent=git(['rev-parse','HEAD']),temp=fs.mkdtempSync(path.join(root,'.git','math-private-receipt-')),env={...process.env,GIT_INDEX_FILE:path.join(temp,'index')};
 const mergeItem=text=>{const q=JSON.parse(text);const index=q.items.findIndex(x=>x.slug===slug);if(index<0)throw Error('Missing existing completed queue entry');q.items[index]=item;return JSON.stringify(q,null,2)+'\n';};

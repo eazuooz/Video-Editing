@@ -39,6 +39,10 @@ else:
         return f'{minutes:02}:{seconds:02}:{frame:02}'
     start_tc=timecode(timeline['frames']-600);end_tc=timecode(timeline['frames'])
     cue_count=len(timeline['koCaptions'])
+    # Studio can display the inclusive last visible frame rather than the
+    # exclusive MP4 boundary. Accept that exact adjacent frame only; keep the
+    # ten-second source range and each element's actual platform range distinct.
+    last_visible_tc=timecode(timeline['frames']-1)
 qa = root / f'shared/output/{slug}/qa'
 assert u['videoId'] == video_id and u['metadata']['privacyStatus'] == 'private'
 assert 0 < args.playback_seconds < u['video']['seconds'] - 10
@@ -78,13 +82,18 @@ watch = proof('uploaded-cc-off.ax.txt')
 assert video_id in watch and u['metadata']['title'] in watch
 assert any('checkbox' in line and '자막' in line and 'Value: 0' in line for line in watch.splitlines())
 assert (qa / 'uploaded-cc-off.png').is_file() and (qa / 'studio-end-screen-saved.png').is_file()
+platform_end_tcs=[]
 for kind, label in [('subscribe', '구독 요소'), ('playlist', '재생목록 요소'), ('link', '링크 요소')]:
     text = dialog_only(proof(f'studio-end-{kind}.ax.txt'), '최종 화면')
-    assert label in text and start_tc in text and end_tc in text
+    assert label in text and start_tc in text
+    accepted_end=end_tc if end_tc in text else (last_visible_tc if slug not in specs and last_visible_tc in text else None)
+    assert accepted_end, 'Native end time must equal the MP4 boundary or its inclusive last visible frame'
+    platform_end_tcs.append(accepted_end)
     assert 'button (disabled) 저장' in text
     assert '게임 수학(Game Math) PART 2' in text
     if kind == 'link':
         assert coach in text and '프로그래밍 과외' in text
+assert len(set(platform_end_tcs))==1, 'All three elements must use the same actual end frame'
 card = dialog_only(proof('studio-coaching-card-saved.ax.txt'), '카드')
 assert '티저 시작 시간: 0분 0초 0프레임' in card and 'button (disabled) 저장' in card
 assert card.count('Value: 프로그래밍 과외') >= 3
@@ -105,6 +114,7 @@ assert 'text 사용' in monet and '미드롤 광고 게재, Value: 1' in monet a
 assert u['thumbnail']['status'] == 'saved-and-reopened-preview-verified'
 
 now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+u['url']=f'https://youtu.be/{video_id}'
 proofs = []
 for p in sorted(qa.iterdir()):
     if p.is_file() and (p.name.startswith('studio-') or p.name.startswith('uploaded-cc-off')):
@@ -123,6 +133,8 @@ u['englishMetadata']['language'] = english_language
 u['coachingCard']['status'] = 'saved-and-reopened-exact-URL-and00:00:00-verified'
 u['endScreen'].update(status='saved-and-reopened-verified', startTimecode=start_tc,
     endTimecode=end_tc, timecodeFps=60, memberIdentitiesUnobscured=True,
+    platformEndTimecode=platform_end_tcs[0],
+    platformEndBoundary='exclusive-source-boundary' if platform_end_tcs[0]==end_tc else 'inclusive-last-visible-source-frame',
     privateWatchPageSuppressesEndScreen=True, playlistId='PLWKwcHKTXy5Soue4YKXa-dsXMV71BVGRk')
 u['coachingEndingLink']['status'] = 'saved-and-reopened-verified'
 u['monetization'].update(automaticAdSuitability='automatic-check-complete-no-issues-observed',
