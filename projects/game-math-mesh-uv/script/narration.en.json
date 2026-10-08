@@ -1,0 +1,198 @@
+{
+  "title": "Game Math Part 2 · Rendering 5: Building Meshes and Normals",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "정점과 법선으로 표면을 저장하기",
+      "lines": [
+        "What vertex information represents3D shape and lighting directions?",
+        "Inspect game roofs and rocks, then calculate indexed connections and memory size.",
+        "Compare face and vertex normals and follow the complete neighboring-face accumulation algorithm.",
+        "Finally handle sharp edges and triangulation bias and verify the answers on an explicitly defined mesh."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "지붕 패널의 선이 전부 삼각형일까요?",
+      "lines": [
+        "Traverse a roof in Sunset Overdrive. Separate its sloped outline from repeated lines across the surface.",
+        "Moving sideways reveals roof and wall faces. It is easy to confuse the surface shape with its pattern.",
+        "The next roof has panels and vents. Distinguish shape that changes the outline from lines inside a face.",
+        "Rendered pixels cannot prove that each line is a geometric edge: geometry and textures can both create lines.",
+        "We therefore define our own small mesh to explain storage, without guessing this game hidden vertex count."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "부피를 만드는 방법과 표면을 저장하는 방법",
+      "lines": [
+        "Shapes have multiple representations. CSG combines solids using union, intersection and difference.",
+        "Subtracting a cylinder from a box makes an opening in our solid diagram; it does not identify a game implementation.",
+        "Metaballs and implicit functions offer other volume descriptions; representation and display-surface storage serve different purposes.",
+        "Triangle meshes connect planar surface pieces; they may represent open cloth or leaves rather than closed solids.",
+        "Editing polygons can have varying vertex counts. Rendering triangulates them with the valid methods developed earlier.",
+        "We now focus on shared vertices rather than one triangle, translating vertex, edge and face relationships into data."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "네 정점과 두 삼각형의 메모리를 계산하기",
+      "lines": [
+        "Split a quad into triangles012 and023 using four vertices numbered0 through3.",
+        "A triangle array stores three records per face, duplicating vertices0 and2 with their attributes.",
+        "Indexed storage separates vertex records from integers, with three indices referencing the data for each triangle.",
+        "Assume32-byte vertices and2-byte indices. The triangle array uses6 times32, or192 bytes.",
+        "Indexed storage uses4 times32 plus6 times2:128 plus12 equals140 bytes.",
+        "The source separate local example shares one vertex among six faces:32 plus12 equals44 bytes, unlike the whole quad140.",
+        "Total savings depend on attributes, sharing and index format; records may include normals, UVs, colors and skinning data."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "같은 좌표와 같은 정점은 다릅니다",
+      "lines": [
+        "An identical index shares a record; equal positions with different normals or UVs require separate records.",
+        "Declare the winding convention. The source clockwise choice must agree with the renderer front-face configuration.",
+        "Cyclic012 to120 preserves orientation; swapping two indices to021 reverses it.",
+        "The triangles share edge0–2, but a plain index list does not explicitly store neighboring face references.",
+        "Editors can store explicit edges and adjacent-face references, as in winged-edge structures.",
+        "Boundary edges may have one face and nonmanifold edges more than two, so exactly-two adjacency is not universal.",
+        "Triangles can be batched by compatible attributes or materials; editor structures need not match GPU delivery structures."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "벽의 격자를 정점 연결선으로 읽어도 될까요?",
+      "lines": [
+        "Explore the green room in Big Walk, separating the black grid on a nearby panel from curved walls and rocks.",
+        "Moving views show panel boundaries and internal lines, separating visible shape from surface detail.",
+        "Circular openings and cylindrical bases appear behind them, placing straight patterns and curved outlines together.",
+        "Black lines do not prove triangle-index edges; they could be patterns, separate surfaces or another representation.",
+        "Our explicit index list proves the0–2 connection; these rendered game pixels do not expose such a list.",
+        "Separate shape data from shading directions. The next diagram keeps geometry fixed while changing normals.",
+        "Observe the panel faces and outline during the camera movement, motivating face and vertex normals."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "각진 바위와 매끄러운 밝기는 같은 정보일까요?",
+      "lines": [
+        "Move among rocks and cacti in Megabonk. Separate angular rock outlines from brightness inside their faces.",
+        "The moving view retains planar rock faces and angular edges; an angular appearance does not expose their normal treatment.",
+        "Pass a large rock, then cacti and lower rocks; differently oriented surfaces can receive the same directional light differently.",
+        "Materials and shadows also affect brightness. Our next diagram changes only normal direction rather than inferring its numerical values from pixels.",
+        "The final interval shows pillars and angular roof forms. Treat geometry positions and lighting directions as separate inputs.",
+        "Can shading look smoother without moving vertices? Compare face and vertex normals on our original hexagonal prism."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "면의 법선과 정점의 법선",
+      "lines": [
+        "A face normal is perpendicular to its plane: cross two edges, choose the declared orientation and normalize.",
+        "Several planes meet at a vertex, so a sharp corner has no unique geometric surface normal.",
+        "For a smooth surface approximated by triangles, vertex normals approximate its directions for shading.",
+        "A hexagonal prism can have smoother shading with radial vertex normals while its positions and connections remain unchanged.",
+        "Dotting unit normal and unit light direction gives a cosine; renormalization prevents vector length contaminating that angle.",
+        "Front-face configuration differs from shading normals; distinguish winding/culling issues from lighting-direction issues."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "밝기를 보간할까, 법선을 보간할까?",
+      "lines": [
+        "Flat shading evaluates a face direction, allowing brightness discontinuities across neighboring faces.",
+        "Gouraud shading evaluates lighting at vertices and interpolates the resulting values rather than normals.",
+        "Per-pixel shading interpolates vertex normals, renormalizes them and evaluates lighting at covered samples.",
+        "A half blend of right and up gives(.5,.5), whose length is about.707 rather than one.",
+        "Normalizing produces components about.707; do this before using the interpolated direction in lighting.",
+        "The source Phong shading name refers to normal interpolation, distinct from the Phong specular reflection model.",
+        "Smooth brightness does not change a hexagonal silhouette; normals alone do not move the surface or reshape holes."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "평평한 갑판과 굽은 난간의 경계",
+      "lines": [
+        "Characters move on Big Walk red deck; observe the broad floor, curved rail and tilted control panels.",
+        "Smooth shading directions and geometric boundaries differ; distinguish intended smooth surfaces from hard joins.",
+        "Now accumulate all neighboring face directions and split sharing at the required boundaries."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "둥근 구멍과 평평한 벽을 함께 보기",
+      "lines": [
+        "Walk between yellow structures in Big Walk, observing broad flat walls and circular opening boundaries.",
+        "Changing views reveal brightness and shadows; variation within a face differs from the opening outline.",
+        "A character passing through reveals thickness and passage space, distinct from smooth shading directions.",
+        "We cannot infer vertex counts or normal generation here; the question is why fixed coarse geometry can shade more smoothly.",
+        "Normals provide the answer. We next show the complete accumulation of neighboring face directions.",
+        "Flat walls and smooth curves need different directions; unconditional averaging can incorrectly shade sharp corners.",
+        "Revisit wall and opening boundaries and consider which directions should blend and which should remain separate."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "이웃 면의 법선을 끝까지 합산하기",
+      "lines": [
+        "Generate simple averaged normals for a mesh without them, starting every vertex accumulator at zero.",
+        "Cross each triangle edges; reject or report nearly-zero degenerate faces before normalization.",
+        "Normalize a valid face normal and add it to each of the three indexed vertex accumulators.",
+        "One right, up and front direction sum to(1,1,1); dividing by square root three gives components about.577.",
+        "After processing every face, normalize each nonzero sum; dividing by face count first preserves the final direction.",
+        "Isolated vertices and canceling directions can produce zero sums; use explicit split, authored-normal or error policies.",
+        "This basic algorithm gives each face one vote; sharp boundaries and triangulation bias need separate treatment."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "모서리에서 정점을 복제하는 이유",
+      "lines": [
+        "Three cube faces meet at a corner; sharing one shading normal blends their directions and brightness boundaries.",
+        "The cube geometry stays fixed but can shade like a rounded object; intentional hard edges must not blend directions.",
+        "Duplicate records at equal positions: a cube with eight locations can use six faces times four, or24 records.",
+        "Store the top normal in top-face records and side normals in side records, updating indices accordingly.",
+        "UV seams can require equal positions pointing to different image locations, also requiring separate records.",
+        "Opposing normals on two-sided leaves cancel to zero; split the sides or define two-sided orientation treatment explicitly.",
+        "Duplicating records need not open a physical gap; it separates attributes and logical references while tools can preserve geometric adjacency."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "삼각형 수가 많으면 그 방향이 이길까요?",
+      "lines": [
+        "Suppose two top triangles and two side faces meet at a vertex; equal face votes give the top direction two votes.",
+        "Axis-aligned votes sum to(1,2,1), normalized to approximately(.408,.816,.408), biased upward.",
+        "Changing a quad diagonal changes which vertices touch two triangles, potentially altering averages without changing the surface.",
+        "Angle weighting uses the corner angle: splitting a quad corner ninety degrees preserves its total ninety.",
+        "Accumulate angle times direction and normalize; other policies such as area weighting approximate different intended surfaces.",
+        "Weighting does not fix intentionally sharp cubes; first separate hard edges, then average only intended smooth regions."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "평평한 면과 둥근 경계의 역할을 나누기",
+      "lines": [
+        "Move to another opening in the yellow structure, observing broad planes and curved boundaries up close.",
+        "Viewing a character through the opening produces a clear silhouette boundary that smooth shading cannot remove.",
+        "Distinguish gradual surface directions from sharp joins without measuring this model vertex-record count.",
+        "Our cube example split directions at equal positions, whereas intended smooth interiors blend neighboring directions.",
+        "The choice aligns shading with shape, rather than universally minimizing records or averaging every join.",
+        "Now imagine stretching a shape horizontally: normal directions must change, but applying the position transform directly can fail.",
+        "Next we verify perpendicularity with explicitly defined tangent and normal values, without reverse-engineering brightness from pixels."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "정점 공유와 법선 만들기를 검산하기",
+      "lines": [
+        "Four32-byte vertices and six2-byte indices total140 bytes; distinguish whole-mesh storage from a local shared-record calculation.",
+        "One index shares an entire record; equal positions with different normals or UVs require distinct records.",
+        "The basic algorithm initializes, computes valid face normals, accumulates at three vertices and normalizes last, with explicit zero/degenerate handling.",
+        "Split cube hard edges and choose a weighting policy on smooth regions; averaging directions does not round silhouettes.",
+        "Next we transform normals while preserving perpendicularity and calculate UV coordinates that map image patterns."
+      ]
+    }
+  ]
+}

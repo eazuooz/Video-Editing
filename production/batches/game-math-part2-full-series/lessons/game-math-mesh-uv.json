@@ -1,0 +1,611 @@
+{
+  "slug": "game-math-mesh-uv",
+  "chapter": 10,
+  "part": 5,
+  "totalParts": 9,
+  "renderModule": "mesh_uv",
+  "sourceDependencies": [
+    "manim/projects/game-math-part2-full-series/lesson.py",
+    "manim/projects/game-math-part2-full-series/rendering_light.py"
+  ],
+  "sourceSections": [
+    "10.4",
+    "10.4.1",
+    "10.4.2-normal-construction"
+  ],
+  "scenes": [
+    {
+      "title": "정점과 법선으로 표면을 저장하기",
+      "kind": "explanation",
+      "mode": "mesh-overview",
+      "ko": [
+        "삼차원 물체의 형태와 빛 방향을 저장하려면 정점에 어떤 정보를 넣어야 할까요?",
+        "먼저 게임의 지붕과 바위를 보고, 삼각형을 인덱스로 연결하는 방법과 메모리 크기를 계산합니다.",
+        "이어서 면 법선과 정점 법선을 비교하고, 이웃 면의 방향을 합산하는 알고리즘을 끝까지 따라갑니다.",
+        "마지막에는 날카로운 모서리와 삼각분할의 편향을 처리하고, 직접 정한 작은 메시로 답을 확인하겠습니다."
+      ],
+      "en": [
+        "What vertex information represents3D shape and lighting directions?",
+        "Inspect game roofs and rocks, then calculate indexed connections and memory size.",
+        "Compare face and vertex normals and follow the complete neighboring-face accumulation algorithm.",
+        "Finally handle sharp edges and triangulation bias and verify the answers on an explicitly defined mesh."
+      ],
+      "beats": [
+        "정점 데이터: 형태 / 방향",
+        "실제 표면 → 인덱스·메모리",
+        "면·정점 법선 → 누적 알고리즘",
+        "모서리·편향 → 직접 검산"
+      ],
+      "id": "01"
+    },
+    {
+      "id": "02",
+      "title": "지붕 패널의 선이 전부 삼각형일까요?",
+      "kind": "actual",
+      "sourceId": "fN4iMYUyODc",
+      "sourceSegments": [
+        {
+          "in": 60,
+          "maxSeconds": 21,
+          "startsAtLine": 0
+        },
+        {
+          "in": 110,
+          "maxSeconds": 24.8,
+          "startsAtLine": 2
+        }
+      ],
+      "in": 60,
+      "maxSeconds": 45.8,
+      "ko": [
+        "선셋 오버드라이브에서 지붕 위를 이동하는 장면입니다. 경사진 지붕의 바깥 윤곽과 표면의 길게 반복되는 선을 따로 보세요.",
+        "옆으로 이동하면 지붕과 벽의 다른 면이 드러납니다. 모양을 정하는 표면과 그 위의 무늬를 같은 정보라고 생각하기 쉽습니다.",
+        "다음 지붕에서도 패널과 환기구가 보입니다. 외곽을 바꾸는 형태와 면 안에 보이는 선을 구분해 보세요.",
+        "이 선 하나마다 실제 모서리가 있는지는 완성 화면만으로 알 수 없습니다. 기하 구조와 텍스처가 모두 비슷한 선을 만들 수 있습니다.",
+        "그래서 먼저 우리가 직접 정의한 작은 메시로 저장 방식을 보겠습니다. 게임의 숨은 정점 개수를 추측하는 예제가 아닙니다."
+      ],
+      "en": [
+        "Traverse a roof in Sunset Overdrive. Separate its sloped outline from repeated lines across the surface.",
+        "Moving sideways reveals roof and wall faces. It is easy to confuse the surface shape with its pattern.",
+        "The next roof has panels and vents. Distinguish shape that changes the outline from lines inside a face.",
+        "Rendered pixels cannot prove that each line is a geometric edge: geometry and textures can both create lines.",
+        "We therefore define our own small mesh to explain storage, without guessing this game hidden vertex count."
+      ],
+      "focus": "움직이는 카메라에서 경사 지붕·환기구·표면 패널 선과 외곽을 구별",
+      "claim": "완성 화면의 무늬와 실제 메시 모서리는 구분해야 한다"
+    },
+    {
+      "id": "03",
+      "title": "부피를 만드는 방법과 표면을 저장하는 방법",
+      "kind": "explanation",
+      "mode": "representation",
+      "ko": [
+        "물체를 기술하는 방법은 하나가 아닙니다. 구성적 입체 기하는 기본 도형의 합집합, 교집합과 차집합으로 모양을 만듭니다.",
+        "상자에서 원기둥을 빼면 구멍이 생기는 예를 생각해 보세요. 이것은 우리 도식의 부피 연산이며 게임 화면의 구현을 확인한 것은 아닙니다.",
+        "메타볼처럼 부피나 암시적 함수를 사용하는 방법도 있습니다. 이런 표현과, 화면에 그릴 표면을 저장하는 표현은 목적이 다릅니다.",
+        "삼각형 메시는 표면을 작은 평면 조각으로 연결합니다. 반드시 닫힌 물체일 필요는 없고, 열린 천이나 잎 같은 표면도 가능합니다.",
+        "편집 도구의 다각형은 정점 수가 다양할 수 있습니다. 렌더링용으로 삼각형을 나누되, 이전 장에서 배운 유효한 삼각분할을 사용합니다.",
+        "이제 관심은 삼각형 하나의 성질보다 여러 삼각형이 어떤 정점을 공유하는지입니다. 정점, 모서리와 면의 관계를 데이터로 옮깁니다."
+      ],
+      "en": [
+        "Shapes have multiple representations. CSG combines solids using union, intersection and difference.",
+        "Subtracting a cylinder from a box makes an opening in our solid diagram; it does not identify a game implementation.",
+        "Metaballs and implicit functions offer other volume descriptions; representation and display-surface storage serve different purposes.",
+        "Triangle meshes connect planar surface pieces; they may represent open cloth or leaves rather than closed solids.",
+        "Editing polygons can have varying vertex counts. Rendering triangulates them with the valid methods developed earlier.",
+        "We now focus on shared vertices rather than one triangle, translating vertex, edge and face relationships into data."
+      ],
+      "beats": [
+        "CSG: 합집합 / 교집합 / 차집합",
+        "상자 − 원기둥 → 구멍 / 원래 도식",
+        "부피·암시적 함수 ↔ 표시할 표면",
+        "삼각형: 평면 표면 조각 / 열린 메시 가능",
+        "편집용 다각형 → 유효한 삼각분할",
+        "정점 / 모서리 / 면 → 연결 정보"
+      ]
+    },
+    {
+      "id": "04",
+      "title": "네 정점과 두 삼각형의 메모리를 계산하기",
+      "kind": "explanation",
+      "mode": "indexed",
+      "ko": [
+        "사각형을 두 삼각형으로 나눕니다. 정점은 영, 일, 이, 삼 네 개이고 삼각형 목록은 영 일 이, 영 이 삼으로 정합니다.",
+        "단순 배열은 삼각형마다 정점 데이터 세 개를 저장합니다. 여기서는 같은 위치와 속성을 가진 영번과 이번 정보를 두 번 저장합니다.",
+        "인덱스 방식은 정점 목록과 정수 목록을 나눕니다. 삼각형은 실제 데이터를 복사하는 대신 그 목록의 번호 세 개를 가리킵니다.",
+        "정점 하나가 삼십이 바이트이고 인덱스가 이 바이트라고 약속합니다. 단순 배열은 육 곱하기 삼십이, 백구십이 바이트입니다.",
+        "인덱스 방식은 사 곱하기 삼십이와 육 곱하기 이를 더합니다. 백이십팔 더하기 십이, 모두 백사십 바이트입니다.",
+        "한 정점을 여섯 번 쓰는 국소 예도 보겠습니다. 정점 데이터는 삼십이 바이트입니다. 인덱스는 여섯 개에 이 바이트씩, 합이 십이 바이트입니다. 둘을 더한 사십사 바이트는 사각형 전체 백사십과 계산 범위가 다릅니다.",
+        "총량은 정점 크기와 공유 정도, 인덱스 형식에 따라 달라집니다. 위치뿐 아니라 법선, 유브이, 색과 스키닝 정보도 같은 정점 레코드에 포함될 수 있습니다."
+      ],
+      "en": [
+        "Split a quad into triangles012 and023 using four vertices numbered0 through3.",
+        "A triangle array stores three records per face, duplicating vertices0 and2 with their attributes.",
+        "Indexed storage separates vertex records from integers, with three indices referencing the data for each triangle.",
+        "Assume32-byte vertices and2-byte indices. The triangle array uses6 times32, or192 bytes.",
+        "Indexed storage uses4 times32 plus6 times2:128 plus12 equals140 bytes.",
+        "The source separate local example shares one vertex among six faces:32 plus12 equals44 bytes, unlike the whole quad140.",
+        "Total savings depend on attributes, sharing and index format; records may include normals, UVs, colors and skinning data."
+      ],
+      "beats": [
+        "V: 0,1,2,3 / T: (0,1,2),(0,2,3)",
+        "단순 배열: 정점 레코드 6개",
+        "정점 목록 + 인덱스 6개",
+        "가정: V 32B / index 2B → 192B",
+        "4×32 + 6×2 = 128+12 = 140B",
+        "정점 하나 6회: 192→44B / 전체 quad: 192→140B",
+        "총량: 정점 속성·공유·인덱스 형식에 의존"
+      ]
+    },
+    {
+      "id": "05",
+      "title": "같은 좌표와 같은 정점은 다릅니다",
+      "kind": "explanation",
+      "mode": "topology",
+      "ko": [
+        "인덱스가 같으면 같은 정점 데이터를 사용합니다. 위치만 같은 두 레코드는 법선이나 유브이가 다르면 별도 정점이어야 합니다.",
+        "앞면을 정하는 정점 순서는 먼저 약속합니다. 원문의 시계 방향 규약도 하나의 선택이며 실제 렌더러의 앞면 설정과 함께 맞춰야 합니다.",
+        "영 일 이를 일 이 영으로 순환하면 같은 방향입니다. 영 이 일처럼 두 번호를 바꾸면 방향이 반대가 됩니다.",
+        "두 삼각형은 영번과 이번 사이 모서리를 공유합니다. 하지만 인덱스 목록에 이웃 면 번호가 바로 저장되어 있는 것은 아닙니다.",
+        "이웃을 자주 찾는 편집 도구는 모서리와 연결 면의 참조를 따로 저장할 수 있습니다. 윙드 에지 같은 구조가 그 예입니다.",
+        "열린 모서리는 한 면만 연결되고 비다양체 모서리는 둘보다 많을 수도 있습니다. 모든 모서리에 이웃 면이 정확히 둘이라고 가정하면 안 됩니다.",
+        "같은 속성이나 재질로 묶은 삼각형은 렌더링 배치로 보낼 수 있습니다. 편집 자료구조와 GPU 전달 형식을 꼭 같은 클래스로 만들 필요는 없습니다."
+      ],
+      "en": [
+        "An identical index shares a record; equal positions with different normals or UVs require separate records.",
+        "Declare the winding convention. The source clockwise choice must agree with the renderer front-face configuration.",
+        "Cyclic012 to120 preserves orientation; swapping two indices to021 reverses it.",
+        "The triangles share edge0–2, but a plain index list does not explicitly store neighboring face references.",
+        "Editors can store explicit edges and adjacent-face references, as in winged-edge structures.",
+        "Boundary edges may have one face and nonmanifold edges more than two, so exactly-two adjacency is not universal.",
+        "Triangles can be batched by compatible attributes or materials; editor structures need not match GPU delivery structures."
+      ],
+      "beats": [
+        "같은 위치 ≠ 같은 전체 정점 레코드",
+        "앞면 규약: winding + 렌더러 설정",
+        "012 → 120: 유지 / 012 → 021: 반전",
+        "공유 edge(0,2) / 인접 면은 암묵적",
+        "편집·순회: 명시적 인접 참조",
+        "경계: 1면 / 비다양체: 2면 초과 가능",
+        "편집 구조 ↔ 렌더링 전달 형식"
+      ]
+    },
+    {
+      "id": "06",
+      "title": "벽의 격자를 정점 연결선으로 읽어도 될까요?",
+      "kind": "actual",
+      "sourceId": "wzQLP0Z3zII",
+      "sourceSegments": [
+        {
+          "in": 200,
+          "maxSeconds": 70
+        }
+      ],
+      "in": 200,
+      "maxSeconds": 70,
+      "ko": [
+        "빅 워크의 녹색 방을 돌아보겠습니다. 가까운 판 위의 검은 격자와, 그 뒤의 둥근 벽과 바위를 나누어 보세요.",
+        "시점이 움직이면 판의 바깥 테두리와 면 안의 선이 함께 보입니다. 테두리는 보이는 형태를 구분하고, 격자는 면의 세부 모습으로 읽힙니다.",
+        "뒤쪽에는 원형 구멍과 원통 모양 받침도 있습니다. 직선 격자와 둥근 윤곽이 같은 장면 안에 나타납니다.",
+        "그러나 검은 선이 모두 삼각형 인덱스의 모서리라는 증거는 아닙니다. 무늬, 별도 표면이나 다른 표현일 수도 있습니다.",
+        "앞에서 만든 인덱스 목록이라면 영번과 이번의 연결을 직접 확인할 수 있습니다. 완성 게임 화면에는 그 목록이 공개되어 있지 않습니다.",
+        "형태를 저장하는 데이터와 빛 계산에 필요한 방향도 나누어야 합니다. 다음 도식에서는 표면은 그대로 두고 법선만 바꾸어 비교합니다.",
+        "카메라가 돌아갈 때 보이는 판의 면과 윤곽을 다시 확인해 보세요. 이 관찰을 바탕으로 면 법선과 정점 법선의 역할을 연결하겠습니다."
+      ],
+      "en": [
+        "Explore the green room in Big Walk, separating the black grid on a nearby panel from curved walls and rocks.",
+        "Moving views show panel boundaries and internal lines, separating visible shape from surface detail.",
+        "Circular openings and cylindrical bases appear behind them, placing straight patterns and curved outlines together.",
+        "Black lines do not prove triangle-index edges; they could be patterns, separate surfaces or another representation.",
+        "Our explicit index list proves the0–2 connection; these rendered game pixels do not expose such a list.",
+        "Separate shape data from shading directions. The next diagram keeps geometry fixed while changing normals.",
+        "Observe the panel faces and outline during the camera movement, motivating face and vertex normals."
+      ],
+      "focus": "실제 방 이동에서 검은 격자 판·둥근 벽·원형 구멍의 표면과 윤곽",
+      "claim": "화면 격자는 숨은 토폴로지 증거가 아니며 기하와 셰이딩 방향은 별도"
+    },
+    {
+      "title": "각진 바위와 매끄러운 밝기는 같은 정보일까요?",
+      "kind": "actual",
+      "sourceId": "kc8aMSmWSgw",
+      "sourceSegments": [
+        {
+          "in": 22,
+          "maxSeconds": 25
+        },
+        {
+          "in": 90,
+          "maxSeconds": 19
+        },
+        {
+          "in": 132,
+          "maxSeconds": 19
+        },
+        {
+          "in": 156,
+          "maxSeconds": 17.5
+        }
+      ],
+      "in": 22,
+      "maxSeconds": 80.5,
+      "ko": [
+        "메가봉크의 사막에서 바위와 선인장 사이를 움직입니다. 바위의 꺾인 바깥 윤곽과 면 안의 밝기를 따로 관찰해 보세요.",
+        "카메라가 따라 움직여도 큰 바위의 평평한 면과 꺾이는 가장자리는 남습니다. 화면에 각진 모양이 보인다고 모든 면의 법선 처리까지 알 수는 없습니다.",
+        "이어지는 구간에서는 큰 바위 옆을 지나고, 다시 선인장과 낮은 바위 사이를 이동합니다. 같은 방향의 빛이라도 표면이 향하는 방향은 다를 수 있습니다.",
+        "밝기 차이는 재질과 그림자에도 영향을 받습니다. 그래서 화면의 색만으로 법선 수치를 맞히는 대신, 다음 도식에서 방향 하나만 바꾸어 비교합니다.",
+        "마지막에는 기둥과 꺾인 지붕 같은 큰 형태가 보입니다. 바깥 모양을 만드는 위치와 조명에 사용하는 방향을 서로 다른 입력으로 생각하세요.",
+        "정점의 위치를 움직이지 않고도 밝기를 매끄럽게 할 수 있을까요? 우리가 만든 육각기둥에 면 법선과 정점 법선을 넣어서 확인하겠습니다."
+      ],
+      "en": [
+        "Move among rocks and cacti in Megabonk. Separate angular rock outlines from brightness inside their faces.",
+        "The moving view retains planar rock faces and angular edges; an angular appearance does not expose their normal treatment.",
+        "Pass a large rock, then cacti and lower rocks; differently oriented surfaces can receive the same directional light differently.",
+        "Materials and shadows also affect brightness. Our next diagram changes only normal direction rather than inferring its numerical values from pixels.",
+        "The final interval shows pillars and angular roof forms. Treat geometry positions and lighting directions as separate inputs.",
+        "Can shading look smoother without moving vertices? Compare face and vertex normals on our original hexagonal prism."
+      ],
+      "focus": "실제 사막 이동 중 바위의 평평한 면·각진 실루엣·선인장·기둥",
+      "claim": "위치와 셰이딩 방향의 역할을 구분하며 내부 알고리즘은 화면에서 추정하지 않는다",
+      "id": "07"
+    },
+    {
+      "id": "08",
+      "title": "면의 법선과 정점의 법선",
+      "kind": "explanation",
+      "mode": "normal-kinds",
+      "ko": [
+        "면 법선은 그 평면에 수직인 방향입니다. 두 모서리의 외적으로 구하고, 앞면 약속에 맞는 방향을 선택한 뒤 단위 길이로 만듭니다.",
+        "정점에서는 여러 평면이 만납니다. 날카로운 모서리에 수학적으로 하나뿐인 면 법선이 있다고 말할 수는 없습니다.",
+        "매끄러운 곡면을 삼각형으로 근사할 때는 그 곡면의 방향을 정점에 저장합니다. 이를 셰이딩 법선으로 사용합니다.",
+        "육각기둥 옆면은 평평해도 정점 법선을 바깥으로 조금씩 돌리면 밝기가 부드럽게 바뀔 수 있습니다. 위치와 연결은 그대로입니다.",
+        "빛 계산에서 단위 법선과 단위 빛 방향을 내적하면 각도의 코사인을 얻습니다. 길이가 달라지면 방향 외에 크기까지 섞이므로 다시 정규화합니다.",
+        "앞면 설정과 셰이딩 법선도 같은 정보는 아닙니다. 화면에서 면이 사라졌다면 인덱스 방향과 제거 설정을, 빛이 이상하면 법선과 조명을 구분해 점검합니다."
+      ],
+      "en": [
+        "A face normal is perpendicular to its plane: cross two edges, choose the declared orientation and normalize.",
+        "Several planes meet at a vertex, so a sharp corner has no unique geometric surface normal.",
+        "For a smooth surface approximated by triangles, vertex normals approximate its directions for shading.",
+        "A hexagonal prism can have smoother shading with radial vertex normals while its positions and connections remain unchanged.",
+        "Dotting unit normal and unit light direction gives a cosine; renormalization prevents vector length contaminating that angle.",
+        "Front-face configuration differs from shading normals; distinguish winding/culling issues from lighting-direction issues."
+      ],
+      "beats": [
+        "face: normalize((v1−v0)×(v2−v0))",
+        "모서리: 여러 면 / 유일한 기하 법선 없음",
+        "vertex normal: 매끄러운 표면 방향의 근사",
+        "같은 육각기둥 / 면 방향 ↔ 정점 방향",
+        "|n|=|l|=1 → n·l = cosθ",
+        "면 제거: winding / 밝기: 법선·조명"
+      ]
+    },
+    {
+      "id": "09",
+      "title": "밝기를 보간할까, 법선을 보간할까?",
+      "kind": "explanation",
+      "mode": "interpolation",
+      "ko": [
+        "평면 셰이딩은 한 면의 방향으로 조명을 계산합니다. 이웃 면 방향이 다르면 경계에서 밝기 차이가 나타납니다.",
+        "구로 셰이딩은 정점마다 조명 결과를 구한 다음 그 결과를 면 안으로 보간합니다. 법선 자체를 보간하는 방식과 다릅니다.",
+        "픽셀별 셰이딩은 정점 법선을 보간하고 다시 정규화한 뒤, 면 안쪽 표본마다 조명 식을 계산합니다.",
+        "오른쪽 방향과 위쪽 방향을 절반씩 섞으면 영 점 오, 영 점 오가 됩니다. 길이는 약 영 점 칠공칠이므로 단위벡터가 아닙니다.",
+        "다시 정규화하면 두 성분이 약 영 점 칠공칠입니다. 보간한 방향을 밝기에 넣기 전에 이 단계를 거칩니다.",
+        "노션의 퐁 셰이딩이라는 이름은 이 법선 보간 방식을 가리킵니다. 정반사에 쓰는 퐁 반사 모델과 구별해야 합니다.",
+        "밝기가 매끄러워져도 육각형 실루엣은 여전히 육각형입니다. 법선만으로 실제 표면 위치나 구멍의 모양이 바뀌지는 않습니다."
+      ],
+      "en": [
+        "Flat shading evaluates a face direction, allowing brightness discontinuities across neighboring faces.",
+        "Gouraud shading evaluates lighting at vertices and interpolates the resulting values rather than normals.",
+        "Per-pixel shading interpolates vertex normals, renormalizes them and evaluates lighting at covered samples.",
+        "A half blend of right and up gives(.5,.5), whose length is about.707 rather than one.",
+        "Normalizing produces components about.707; do this before using the interpolated direction in lighting.",
+        "The source Phong shading name refers to normal interpolation, distinct from the Phong specular reflection model.",
+        "Smooth brightness does not change a hexagonal silhouette; normals alone do not move the surface or reshape holes."
+      ],
+      "beats": [
+        "flat: 면 법선으로 계산",
+        "Gouraud: 정점 조명 결과 → 보간",
+        "per-pixel: 법선 보간 → normalize → 조명",
+        "(1,0),(0,1) → (.5,.5) / length≈.707",
+        "normalize(.5,.5) ≈ (.707,.707)",
+        "Phong shading ≠ Phong 반사 모델",
+        "부드러운 셰이딩 ≠ 실루엣 변경"
+      ]
+    },
+    {
+      "title": "평평한 갑판과 굽은 난간의 경계",
+      "kind": "actual",
+      "sourceId": "wzQLP0Z3zII",
+      "sourceSegments": [
+        {
+          "in": 810,
+          "maxSeconds": 24
+        }
+      ],
+      "in": 810,
+      "maxSeconds": 24,
+      "ko": [
+        "빅 워크의 붉은 갑판에서 캐릭터가 움직입니다. 넓은 바닥과 굽은 난간, 기울어진 조작판의 경계를 보세요.",
+        "밝기를 부드럽게 만드는 방향과 실제 형태의 경계는 다른 역할입니다. 곡면으로 이을 곳과 날카롭게 나눌 곳을 구분해야 합니다.",
+        "이제 정점에 연결된 면을 모두 모아 법선을 만들고, 필요한 경계에서 공유를 끊어 보겠습니다."
+      ],
+      "en": [
+        "Characters move on Big Walk red deck; observe the broad floor, curved rail and tilted control panels.",
+        "Smooth shading directions and geometric boundaries differ; distinguish intended smooth surfaces from hard joins.",
+        "Now accumulate all neighboring face directions and split sharing at the required boundaries."
+      ],
+      "focus": "밝은 붉은 갑판의 실제 캐릭터 이동과 바닥·난간·조작판",
+      "claim": "관찰한 형태를 단서로 법선 공유와 분리의 목적을 연결",
+      "id": "10"
+    },
+    {
+      "id": "11",
+      "title": "둥근 구멍과 평평한 벽을 함께 보기",
+      "kind": "actual",
+      "sourceId": "wzQLP0Z3zII",
+      "sourceSegments": [
+        {
+          "in": 580,
+          "maxSeconds": 60
+        }
+      ],
+      "in": 580,
+      "maxSeconds": 60,
+      "ko": [
+        "이번에는 빅 워크의 노란 구조물 사이를 걸어갑니다. 넓고 평평한 벽과 둥근 구멍의 가장자리를 동시에 보세요.",
+        "시점이 옮겨지면서 벽의 밝기와 그림자가 바뀌어 보입니다. 면 안의 밝기 변화와 실제 구멍의 윤곽은 서로 다른 단서입니다.",
+        "다른 캐릭터가 구멍을 통과하면 벽의 두께와 통로가 드러납니다. 표면의 방향을 부드럽게 계산해도 이 통로의 공간은 실제 형태로 남습니다.",
+        "이 장면만 보고 정점 수나 법선 생성 알고리즘을 알 수는 없습니다. 지금의 질문은 같은 거친 형태라도 왜 밝기가 더 매끄러울 수 있느냐입니다.",
+        "그 답은 법선에 있습니다. 다음 계산에서는 정점에 연결된 면을 모두 모아 평균 방향을 만드는 과정을 처음부터 끝까지 보여줍니다.",
+        "평평한 벽에서는 방향을 일정하게, 부드러운 곡면에서는 방향을 연속적으로 만들고 싶습니다. 하지만 두 면을 무조건 평균하면 모서리가 잘못 보일 수 있습니다.",
+        "벽과 구멍의 경계를 다시 보면서, 어떤 곳을 이어서 매끄럽게 만들고 어떤 곳을 분리할지 생각해 보세요."
+      ],
+      "en": [
+        "Walk between yellow structures in Big Walk, observing broad flat walls and circular opening boundaries.",
+        "Changing views reveal brightness and shadows; variation within a face differs from the opening outline.",
+        "A character passing through reveals thickness and passage space, distinct from smooth shading directions.",
+        "We cannot infer vertex counts or normal generation here; the question is why fixed coarse geometry can shade more smoothly.",
+        "Normals provide the answer. We next show the complete accumulation of neighboring face directions.",
+        "Flat walls and smooth curves need different directions; unconditional averaging can incorrectly shade sharp corners.",
+        "Revisit wall and opening boundaries and consider which directions should blend and which should remain separate."
+      ],
+      "focus": "실제 걷기·구멍 통과로 평평한 면 밝기와 둥근 윤곽·두께를 함께 관찰",
+      "claim": "셰이딩 방향 근사와 실루엣·실제 표면은 구분한다"
+    },
+    {
+      "id": "12",
+      "title": "이웃 면의 법선을 끝까지 합산하기",
+      "kind": "explanation",
+      "mode": "accumulation",
+      "ko": [
+        "법선이 없는 메시에서 단순한 평균 방향을 만들어 보겠습니다. 먼저 모든 정점의 누적 벡터를 영으로 초기화합니다.",
+        "각 삼각형의 두 모서리로 외적을 구합니다. 길이가 거의 영인 퇴화 삼각형은 정규화하지 말고 제외하거나 오류로 기록합니다.",
+        "유효한 면 법선을 단위 길이로 만들고, 그 삼각형의 세 인덱스가 가리키는 정점 누적값에 각각 더합니다.",
+        "예제 정점에 오른쪽, 위쪽과 앞쪽 방향이 한 번씩 연결되면 합은 일, 일, 일입니다. 길이 루트 삼으로 나누면 각 성분은 약 영 점 오칠칠입니다.",
+        "모든 면을 처리한 뒤에 정점마다 합을 정규화합니다. 면 개수로 먼저 나누어도 영이 아닌 벡터의 최종 방향은 같습니다.",
+        "하지만 고립 정점이나 반대 방향의 합은 영이 될 수 있습니다. 이 경우는 자동 정규화하지 말고 분리, 사용자 법선이나 오류 정책을 선택합니다.",
+        "이 기본 알고리즘은 면마다 한 표를 줍니다. 날카로운 경계와 삼각분할의 편향은 다음 두 단계에서 따로 해결하겠습니다."
+      ],
+      "en": [
+        "Generate simple averaged normals for a mesh without them, starting every vertex accumulator at zero.",
+        "Cross each triangle edges; reject or report nearly-zero degenerate faces before normalization.",
+        "Normalize a valid face normal and add it to each of the three indexed vertex accumulators.",
+        "One right, up and front direction sum to(1,1,1); dividing by square root three gives components about.577.",
+        "After processing every face, normalize each nonzero sum; dividing by face count first preserves the final direction.",
+        "Isolated vertices and canceling directions can produce zero sums; use explicit split, authored-normal or error policies.",
+        "This basic algorithm gives each face one vote; sharp boundaries and triangulation bias need separate treatment."
+      ],
+      "beats": [
+        "1. 모든 vertex sum = (0,0,0)",
+        "2. face cross / zero 검사",
+        "3. normalize face → 3개 정점에 더하기",
+        "sum=(1,1,1) / normalize≈(.577,.577,.577)",
+        "4. 모든 면 완료 → normalize sum",
+        "sum=0: 분리 / 지정 / 오류 정책",
+        "기본: 면마다 1표 / 한계 별도 처리"
+      ]
+    },
+    {
+      "id": "13",
+      "title": "모서리에서 정점을 복제하는 이유",
+      "kind": "explanation",
+      "mode": "hard-edges",
+      "ko": [
+        "상자 꼭짓점 하나에 세 면이 만납니다. 모든 면이 같은 정점 법선을 공유하면 서로 다른 방향이 섞여 밝기 경계가 부드러워집니다.",
+        "상자 모양은 그대로인데 둥근 물체처럼 보이는 문제가 생깁니다. 의도한 날카로운 모서리라면 면 사이 법선을 섞지 않아야 합니다.",
+        "그래서 같은 위치의 정점을 면마다 복제합니다. 여덟 위치의 상자를 여섯 면에 네 정점씩, 스물네 레코드로 표현할 수 있습니다.",
+        "위쪽 면의 레코드에는 위를 향한 법선을 저장합니다. 옆면의 레코드에는 옆을 향한 법선을 저장합니다. 인덱스도 각 면의 레코드를 가리키게 바꿉니다.",
+        "유브이 이음매에서도 위치는 같지만 이미지의 다른 부분을 가리켜야 할 수 있습니다. 그때도 전체 정점 데이터를 분리합니다.",
+        "양면 잎처럼 반대 법선을 같은 정점에 더하면 합이 영입니다. 앞뒤를 분리하거나 양면 처리와 방향 규칙을 따로 정해야 합니다.",
+        "정점 복제는 틈을 벌리는 작업이 아닙니다. 좌표가 같아도 속성과 논리적 연결을 나누는 것이며, 편집 도구의 연결 정보는 따로 보존할 수 있습니다."
+      ],
+      "en": [
+        "Three cube faces meet at a corner; sharing one shading normal blends their directions and brightness boundaries.",
+        "The cube geometry stays fixed but can shade like a rounded object; intentional hard edges must not blend directions.",
+        "Duplicate records at equal positions: a cube with eight locations can use six faces times four, or24 records.",
+        "Store the top normal in top-face records and side normals in side records, updating indices accordingly.",
+        "UV seams can require equal positions pointing to different image locations, also requiring separate records.",
+        "Opposing normals on two-sided leaves cancel to zero; split the sides or define two-sided orientation treatment explicitly.",
+        "Duplicating records need not open a physical gap; it separates attributes and logical references while tools can preserve geometric adjacency."
+      ],
+      "beats": [
+        "상자 8개 위치 / 공유 법선은 혼합",
+        "날카로운 edge: 법선 혼합 금지",
+        "같은 위치 / face별 4개 → 6×4=24",
+        "위 n=(0,1,0) / 옆 n=(1,0,0)",
+        "UV seam: 위치 같아도 UV가 다름",
+        "n + (−n)=0 / 양면 처리 별도",
+        "좌표 보존 / 속성·논리 연결 분리"
+      ]
+    },
+    {
+      "id": "14",
+      "title": "삼각형 수가 많으면 그 방향이 이길까요?",
+      "kind": "explanation",
+      "mode": "weighting",
+      "ko": [
+        "윗면의 삼각형 두 개와 옆면 두 개가 한 정점에 연결된다고 합시다. 단위 법선을 한 번씩 더하면 윗면 방향에 두 표가 갑니다.",
+        "좌표축 방향으로 쓰면 합은 일, 이, 일입니다. 정규화하면 약 영 점 사공팔, 영 점 팔일육, 영 점 사공팔로 위쪽에 치우칩니다.",
+        "같은 사각형의 대각선만 바꾸어도 어떤 꼭짓점이 두 삼각형에 연결되는지가 달라집니다. 원래 표면 모양은 같아도 평균이 바뀔 수 있습니다.",
+        "한 방법은 그 정점의 내각을 가중치로 쓰는 것입니다. 사각형 꼭짓점의 구십 도를 둘로 나누어도 합은 구십 도입니다.",
+        "이렇게 각 면 방향에 내각을 곱해 합산한 뒤 정규화합니다. 면적 가중치처럼 다른 정책도 있으니 무엇을 근사하려는지 먼저 정합니다.",
+        "상자처럼 원래 날카로워야 하는 경우는 가중치만으로 해결하지 않습니다. 먼저 면을 분리하고, 매끄럽게 이을 부분에만 적절한 평균을 사용합니다."
+      ],
+      "en": [
+        "Suppose two top triangles and two side faces meet at a vertex; equal face votes give the top direction two votes.",
+        "Axis-aligned votes sum to(1,2,1), normalized to approximately(.408,.816,.408), biased upward.",
+        "Changing a quad diagonal changes which vertices touch two triangles, potentially altering averages without changing the surface.",
+        "Angle weighting uses the corner angle: splitting a quad corner ninety degrees preserves its total ninety.",
+        "Accumulate angle times direction and normalize; other policies such as area weighting approximate different intended surfaces.",
+        "Weighting does not fix intentionally sharp cubes; first separate hard edges, then average only intended smooth regions."
+      ],
+      "beats": [
+        "윗면 2표 / 두 옆면 각각 1표",
+        "(1,2,1)/√6 ≈ (.408,.816,.408)",
+        "대각선 변경 → 면 개수 편향 변경",
+        "angle weighting: α1+α2=90°",
+        "sum αf nf → normalize / 정책 선언",
+        "hard edge 분리 → smooth 영역 평균"
+      ]
+    },
+    {
+      "id": "15",
+      "title": "평평한 면과 둥근 경계의 역할을 나누기",
+      "kind": "actual",
+      "sourceId": "wzQLP0Z3zII",
+      "sourceSegments": [
+        {
+          "in": 640,
+          "maxSeconds": 68
+        }
+      ],
+      "in": 640,
+      "maxSeconds": 68,
+      "ko": [
+        "노란 구조물의 다른 구멍으로 이동합니다. 카메라가 벽에 가까워지면서 넓은 평면과 둥근 가장자리의 방향 차이가 잘 보입니다.",
+        "구멍으로 캐릭터를 바라보면 바깥 윤곽이 화면에서 분명한 경계가 됩니다. 면 안의 밝기를 부드럽게 만든다고 그 경계까지 사라지지는 않습니다.",
+        "표면이 여러 방향으로 이어지는 곳과 날카롭게 꺾이는 곳을 나누어 생각하세요. 실제 모델의 레코드 수는 여기서 측정하지 않습니다.",
+        "앞의 상자 계산에서는 같은 위치라도 위쪽과 옆쪽 방향을 따로 저장했습니다. 반대로 매끄러운 곡면의 내부에서는 이웃 방향을 연결했습니다.",
+        "이 선택은 빛의 변화와 형태가 어울리게 만드는 일입니다. 무조건 정점을 적게 저장하거나 무조건 평균하는 것이 목표는 아닙니다.",
+        "이제 같은 물체를 가로로 늘렸다고 생각해 보겠습니다. 정점 위치가 바뀌면 법선도 옮겨야 하지만 같은 계산을 그대로 쓰면 틀릴 수 있습니다.",
+        "다음 예제에서는 접선과 법선의 내적을 직접 계산합니다. 벽 화면의 밝기를 역산하는 대신, 우리가 정한 수치로 수직 조건을 검증하겠습니다."
+      ],
+      "en": [
+        "Move to another opening in the yellow structure, observing broad planes and curved boundaries up close.",
+        "Viewing a character through the opening produces a clear silhouette boundary that smooth shading cannot remove.",
+        "Distinguish gradual surface directions from sharp joins without measuring this model vertex-record count.",
+        "Our cube example split directions at equal positions, whereas intended smooth interiors blend neighboring directions.",
+        "The choice aligns shading with shape, rather than universally minimizing records or averaging every join.",
+        "Now imagine stretching a shape horizontally: normal directions must change, but applying the position transform directly can fail.",
+        "Next we verify perpendicularity with explicitly defined tangent and normal values, without reverse-engineering brightness from pixels."
+      ],
+      "focus": "실제 구멍 사이 이동에서 노란 평면·곡선 윤곽·방향 변화",
+      "claim": "법선 공유 정책은 의도한 표면에 맞춰 선택하고 변환 뒤 수직 조건을 검증한다"
+    },
+    {
+      "title": "정점 공유와 법선 만들기를 검산하기",
+      "kind": "explanation",
+      "mode": "mesh-practice",
+      "ko": [
+        "정점 네 개가 각각 삼십이 바이트이고 인덱스 여섯 개가 각각 이 바이트면 모두 백사십 바이트입니다. 전체 메시와 한 정점을 공유하는 국소 계산은 구분합니다.",
+        "같은 인덱스는 같은 전체 레코드를 가리킵니다. 위치가 같아도 법선이나 유브이가 다르면 레코드를 나누어야 합니다.",
+        "기본 법선 알고리즘은 초기화, 유효한 면 법선 계산, 세 정점에 누적, 마지막 정규화 순서입니다. 영벡터와 퇴화 면은 별도로 처리합니다.",
+        "상자 모서리는 법선을 분리하고, 매끄러운 표면에서는 가중치 정책을 정합니다. 방향의 평균만으로 실루엣이 둥글어지는 것은 아닙니다.",
+        "다음 편에서는 물체를 확대했을 때 법선을 수직으로 유지하는 변환과, 이미지 무늬를 연결하는 유브이 좌표를 계산하겠습니다."
+      ],
+      "en": [
+        "Four32-byte vertices and six2-byte indices total140 bytes; distinguish whole-mesh storage from a local shared-record calculation.",
+        "One index shares an entire record; equal positions with different normals or UVs require distinct records.",
+        "The basic algorithm initializes, computes valid face normals, accumulates at three vertices and normalizes last, with explicit zero/degenerate handling.",
+        "Split cube hard edges and choose a weighting policy on smooth regions; averaging directions does not round silhouettes.",
+        "Next we transform normals while preserving perpendicularity and calculate UV coordinates that map image patterns."
+      ],
+      "beats": [
+        "전체 quad: 4×32+6×2=140B",
+        "같은 위치 ≠ 같은 속성 레코드",
+        "zero → face → accumulate → normalize",
+        "hard edge 분리 / smooth 가중치",
+        "다음: 법선 변환 / UV 대응"
+      ],
+      "id": "16"
+    }
+  ],
+  "contract": {
+    "memory": "Whole quad:6×32=192 versus4×32+6×2=140; source local one-vertex-six-use example32+6×2=44 is independently retained, not confused with total mesh memory.",
+    "mesh": "Clockwise source convention declared as a selectable front-face contract; diagrams use consistent explicitly chosen winding. Same positions can require distinct normals/UVs. Adjacency is implicit, not O(1) in plain indices.",
+    "normal": "Face cross from ordered edges; unit-face equal-weight accumulation then nonzero normalization. Degenerate/isolated/opposing cases explicit, hard seams detached before averaging. Angle-weighting avoids arbitrary quad diagonal votes; no claim of universal optimal normals.",
+    "matrix": "Column vectors and nonsingular linear M: normalize(M^-T n). Positive scale examplet(1,-1),n(1,1),Mdiag2/1; naive dot3 remains wrong after normalization; correct(.5,1)dot0. Singular and reflection conventions explicit.",
+    "uv": "Explicit top-left v-down illustration; normalized UV independent of texture resolution. Interpolate unmodified UV using applicable perspective correction before repeat floor/clamp/mirror lookup; filtering separate.",
+    "gameEvidence": "Actual existing-game real-time shots illustrate visible surface/outline/pattern; never assert proprietary topology, vertex counts, normals, UVs, address modes or CSG from rendered pixels."
+  },
+  "coverage": {
+    "10.4": [
+      "02",
+      "03",
+      "05"
+    ],
+    "10.4.1": [
+      "04",
+      "05",
+      "06",
+      "13"
+    ],
+    "10.4.2": [
+      "08",
+      "09",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15"
+    ]
+  },
+  "gameCandidates": {
+    "reviewedAt": "2026-10-09",
+    "selected": [
+      {
+        "game": "Sunset Overdrive",
+        "sourceId": "fN4iMYUyODc",
+        "reason": "Fresh title and recording after recent-use searches; directly reviewed roof planes, vents, curved facade and repeated surface patterns, with recorder free-use statement."
+      },
+      {
+        "game": "Big Walk",
+        "sourceId": "wzQLP0Z3zII",
+        "reason": "Prior rendering-light source; all newly reviewed green/yellow/red intervals exclude previously delivered footage."
+      },
+      {
+        "game": "Megabonk",
+        "sourceId": "kc8aMSmWSgw",
+        "reason": "Fresh game/recording;3coarse and9fine sheets directly inspected, menus omitted, faceted silhouette/planes/marked walls support the exact narrated questions."
+      }
+    ],
+    "rejected": [
+      {
+        "game": "Half-Life: Alyx official gameplay",
+        "reason": "Official source and publisher policy checked; all coarse sheets inspected, dark combat and rapidly changing subjects unsuitable for sustained surface instruction."
+      },
+      {
+        "game": "Superflight / Subnautica 2",
+        "reason": "Already used in recent lessons; do not automatically recycle those titles or clips."
+      },
+      {
+        "game": "Sunset combat, explosions, highway and long skyline",
+        "reason": "Exclude effects-obscured or unrelated intervals from actual-footage quota."
+      },
+      {
+        "game": "Big Walk dialogue-heavy red deck/long night intervals",
+        "reason": "Exclude chat-focused/static and poorly readable surfaces. Previously used rendering-light intervals remain reserved."
+      }
+    ],
+    "historyReview": "Full project/source search plus rendering-light actual timeline checked; all new Big Walk cuts exclude its9 prior intervals. Native Studio UV query found legacyDirectX sampler tutorial and its full transcript was reviewed. Current source and fine pixels precede this narration."
+  },
+  "timingReview": {
+    "status": "awaiting measured narration",
+    "maximumPlannedSourceSeconds": 338
+  },
+  "episodeRefinement": {
+    "atUtc": "2026-10-08T20:43:29.534513+00:00",
+    "fullDraft": "shared/output/game-math-mesh-uv/before-conceptual-episode-refinement",
+    "boundary": "Complete normal accumulation/detach/weighting before normal-transform/UV lesson; no algorithm cut, all useful full-draft paragraphs retained except split-specific overviews/conclusions.",
+    "timing": "Planning estimate only; refine after measured speech. No padding to20minutes."
+  }
+}

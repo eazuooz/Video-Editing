@@ -5,7 +5,7 @@ param(
     [string]$ForceScenes = '',
     [string]$Scenes = '',
     [string]$ReplacementBaseline = '',
-    [ValidateSet('','projection-episode-split-v1','projection-viewport-pair-v1','projection-depth-v1')][string]$VoiceWorkflow = ''
+    [ValidateSet('','projection-episode-split-v1','projection-viewport-pair-v1','projection-depth-v1','mesh-uv-precision-v1')][string]$VoiceWorkflow = ''
 )
 $ErrorActionPreference = 'Stop'
 $mathRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -29,6 +29,11 @@ if ($Stage -eq 'voice') {
     if ($VoiceWorkflow -eq 'projection-depth-v1') {
         if ($Project -ne 'game-math-projection-depth') { throw 'Depth narration workflow is scoped to its current project.' }
         $mathArgs = @('-X','utf8',"$PSScriptRoot\render-projection-depth-voice.py",'--project',$Project,'--device',$Device)
+    }
+    if ($VoiceWorkflow -eq 'mesh-uv-precision-v1') {
+        if ($Project -ne 'game-math-mesh-uv') { throw 'Mesh precision repair is scoped to its current project.' }
+        $mathArgs = @('-X','utf8',"$PSScriptRoot\render-mesh-uv-precision-retakes.py",'--device',$Device)
+        if ($Scenes) { $mathArgs += @('--scenes',$Scenes) }
     }
     if ($Device -eq 'cuda:0') {
         # Another authorized video may already own the same GPU handoff.

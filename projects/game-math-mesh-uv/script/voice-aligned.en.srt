@@ -1,0 +1,896 @@
+1
+00:00:00,147 --> 00:00:05,220
+What vertex information represents3D shape and
+lighting directions?
+
+2
+00:00:05,520 --> 00:00:11,120
+Inspect game roofs and rocks, then calculate
+indexed connections and memory size.
+
+3
+00:00:11,400 --> 00:00:14,040
+Compare face and vertex normals and follow the
+
+4
+00:00:14,460 --> 00:00:18,200
+complete neighboring-face accumulation
+algorithm.
+
+5
+00:00:18,400 --> 00:00:21,620
+Finally handle sharp edges and triangulation
+bias
+
+6
+00:00:21,840 --> 00:00:24,460
+and verify the answers on an explicitly
+defined mesh.
+
+7
+00:00:25,050 --> 00:00:28,370
+Traverse a roof in Sunset Overdrive.
+
+8
+00:00:28,570 --> 00:00:32,650
+Separate its sloped outline from repeated
+lines across the surface.
+
+9
+00:00:33,070 --> 00:00:36,110
+Moving sideways reveals roof and wall faces.
+
+10
+00:00:36,370 --> 00:00:40,510
+It is easy to confuse the surface shape with
+its pattern.
+
+11
+00:00:40,850 --> 00:00:43,570
+The next roof has panels and vents.
+
+12
+00:00:43,930 --> 00:00:47,290
+Distinguish shape that changes the outline
+from lines inside a face.
+
+13
+00:00:47,550 --> 00:00:51,850
+Rendered pixels cannot prove that each line is
+a geometric
+
+14
+00:00:51,850 --> 00:00:55,090
+edge: geometry and textures can both create
+lines.
+
+15
+00:00:55,490 --> 00:00:59,350
+We therefore define our own small mesh to
+explain storage,
+
+16
+00:00:59,870 --> 00:01:02,510
+without guessing this game hidden vertex
+count.
+
+17
+00:01:03,060 --> 00:01:05,980
+Shapes have multiple representations.
+
+18
+00:01:06,140 --> 00:01:11,960
+CSG combines solids using union, intersection
+and difference.
+
+19
+00:01:12,200 --> 00:01:15,760
+Subtracting a cylinder from a box makes an
+opening in our solid diagram;
+
+20
+00:01:16,140 --> 00:01:20,560
+it does not identify a game implementation.
+
+21
+00:01:20,800 --> 00:01:24,420
+Metaballs and implicit functions offer other
+volume descriptions;
+
+22
+00:01:24,660 --> 00:01:29,040
+representation and display-surface storage
+serve different purposes.
+
+23
+00:01:29,380 --> 00:01:33,040
+Triangle meshes connect planar surface pieces;
+
+24
+00:01:33,060 --> 00:01:37,880
+they may represent open cloth or leaves rather
+than closed solids.
+
+25
+00:01:38,080 --> 00:01:41,080
+Editing polygons can have varying vertex
+counts.
+
+26
+00:01:41,360 --> 00:01:46,280
+Rendering triangulates them with the valid
+methods developed earlier.
+
+27
+00:01:46,580 --> 00:01:51,080
+We now focus on shared vertices rather than
+one triangle,
+
+28
+00:01:51,240 --> 00:01:54,260
+translating vertex, edge and face
+relationships into data.
+
+29
+00:01:54,790 --> 00:01:59,210
+Split a quad into triangles012 and023
+
+30
+00:01:59,210 --> 00:02:04,230
+using four vertices numbered0 through3.
+
+31
+00:02:04,482 --> 00:02:08,890
+A triangle array stores three records per
+face,
+
+32
+00:02:09,210 --> 00:02:13,710
+duplicating vertices0 and2 with their
+attributes.
+
+33
+00:02:14,070 --> 00:02:17,570
+Indexed storage separates vertex records from
+integers,
+
+34
+00:02:17,810 --> 00:02:22,330
+with three indices referencing the data for
+each triangle.
+
+35
+00:02:22,370 --> 00:02:26,850
+Assume32-byte vertices and2-byte indices.
+
+36
+00:02:27,150 --> 00:02:30,810
+The triangle array uses6 times32, or192 bytes.
+
+37
+00:02:31,530 --> 00:02:35,590
+Indexed storage uses4 times32 plus6
+
+38
+00:02:35,830 --> 00:02:39,090
+times2:128 plus12 equals140 bytes.
+
+39
+00:02:39,350 --> 00:02:46,402
+The source separate local example shares one
+vertex among six
+
+40
+00:02:46,402 --> 00:02:53,310
+faces:32 plus12 equals44 bytes, unlike the
+whole quad140.
+
+41
+00:02:53,770 --> 00:02:59,910
+Total savings depend on attributes, sharing
+and index format;
+
+42
+00:02:59,910 --> 00:03:04,010
+records may include normals, UVs, colors and
+skinning data.
+
+43
+00:03:04,680 --> 00:03:08,220
+An identical index shares a record;
+
+44
+00:03:08,400 --> 00:03:12,860
+equal positions with different normals or UVs
+require separate records.
+
+45
+00:03:13,180 --> 00:03:16,020
+Declare the winding convention. The source
+clockwise choice
+
+46
+00:03:16,340 --> 00:03:21,880
+must agree with the renderer front-face
+configuration.
+
+47
+00:03:22,160 --> 00:03:28,400
+Cyclic012 to120 preserves orientation;
+swapping two indices to021 reverses it.
+
+48
+00:03:28,940 --> 00:03:31,720
+The triangles share edge0–2, but a plain index
+list does
+
+49
+00:03:31,720 --> 00:03:36,000
+not explicitly store neighboring face
+references.
+
+50
+00:03:36,340 --> 00:03:41,180
+Editors can store explicit edges and
+adjacent-face references,
+
+51
+00:03:41,340 --> 00:03:43,200
+as in winged-edge structures.
+
+52
+00:03:43,500 --> 00:03:48,240
+Boundary edges may have one face and
+nonmanifold edges more than two,
+
+53
+00:03:48,540 --> 00:03:51,660
+so exactly-two adjacency is not universal.
+
+54
+00:03:51,980 --> 00:03:55,960
+Triangles can be batched by compatible
+attributes or materials;
+
+55
+00:03:56,220 --> 00:04:00,600
+editor structures need not match GPU delivery
+structures.
+
+56
+00:04:01,210 --> 00:04:06,150
+Explore the green room in Big Walk,
+
+57
+00:04:06,150 --> 00:04:09,070
+separating the black grid on a nearby panel
+from curved walls and rocks.
+
+58
+00:04:09,330 --> 00:04:13,210
+Moving views show panel boundaries and
+internal lines,
+
+59
+00:04:13,510 --> 00:04:17,570
+separating visible shape from surface detail.
+
+60
+00:04:17,890 --> 00:04:21,330
+Circular openings and cylindrical bases appear
+behind them,
+
+61
+00:04:21,570 --> 00:04:24,830
+placing straight patterns and curved outlines
+together.
+
+62
+00:04:25,090 --> 00:04:28,610
+Black lines do not prove triangle-index edges;
+
+63
+00:04:28,610 --> 00:04:31,850
+they could be patterns, separate surfaces or
+another representation.
+
+64
+00:04:32,130 --> 00:04:36,690
+Our explicit index list proves the0–2
+connection;
+
+65
+00:04:37,010 --> 00:04:40,070
+these rendered game pixels do not expose such
+a list.
+
+66
+00:04:40,250 --> 00:04:44,290
+Separate shape data from shading directions.
+
+67
+00:04:44,730 --> 00:04:48,250
+The next diagram keeps geometry fixed while
+changing normals.
+
+68
+00:04:48,430 --> 00:04:51,930
+Observe the panel faces and outline during the
+camera movement,
+
+69
+00:04:52,150 --> 00:04:56,230
+motivating face and vertex normals.
+
+70
+00:04:56,860 --> 00:05:00,280
+Move among rocks and cacti in Megabonk.
+
+71
+00:05:00,540 --> 00:05:04,560
+Separate angular rock outlines from brightness
+inside their faces.
+
+72
+00:05:04,840 --> 00:05:09,720
+The moving view retains planar rock faces and
+angular edges;
+
+73
+00:05:10,080 --> 00:05:14,260
+an angular appearance does not expose their
+normal treatment.
+
+74
+00:05:14,580 --> 00:05:19,480
+Pass a large rock, then cacti and lower rocks;
+
+75
+00:05:19,700 --> 00:05:23,120
+differently oriented surfaces can receive the
+same directional light differently.
+
+76
+00:05:23,440 --> 00:05:26,300
+Materials and shadows also affect brightness.
+Our next diagram changes only
+
+77
+00:05:26,300 --> 00:05:32,160
+normal direction rather than inferring its
+numerical values from pixels.
+
+78
+00:05:32,420 --> 00:05:35,600
+The final interval shows pillars and angular
+roof forms.
+
+79
+00:05:35,820 --> 00:05:40,220
+Treat geometry positions and lighting
+directions as separate inputs.
+
+80
+00:05:40,360 --> 00:05:43,820
+Can shading look smoother without moving
+vertices?
+
+81
+00:05:43,980 --> 00:05:48,360
+Compare face and vertex normals on our
+original hexagonal prism.
+
+82
+00:05:48,830 --> 00:05:53,870
+A face normal is perpendicular to its plane:
+cross two edges,
+
+83
+00:05:53,870 --> 00:05:57,910
+choose the declared orientation and normalize.
+
+84
+00:05:58,150 --> 00:06:05,130
+Several planes meet at a vertex, so a sharp
+corner has no unique geometric surface normal.
+
+85
+00:06:05,430 --> 00:06:09,770
+For a smooth surface approximated by
+triangles,
+
+86
+00:06:10,070 --> 00:06:11,910
+vertex normals approximate its directions for
+shading.
+
+87
+00:06:12,090 --> 00:06:16,050
+A hexagonal prism can have smoother shading
+with radial vertex
+
+88
+00:06:16,050 --> 00:06:20,110
+normals while its positions and connections
+remain unchanged.
+
+89
+00:06:20,110 --> 00:06:24,910
+Dotting unit normal and unit light direction
+gives a cosine;
+
+90
+00:06:25,250 --> 00:06:28,870
+renormalization prevents vector length
+contaminating that angle.
+
+91
+00:06:29,150 --> 00:06:32,090
+Front-face configuration differs from shading
+normals;
+
+92
+00:06:32,250 --> 00:06:38,490
+distinguish winding/culling issues from
+lighting-direction issues.
+
+93
+00:06:38,960 --> 00:06:42,180
+Flat shading evaluates a face direction,
+
+94
+00:06:42,540 --> 00:06:45,800
+allowing brightness discontinuities across
+neighboring faces.
+
+95
+00:06:46,020 --> 00:06:50,880
+Gouraud shading evaluates lighting at vertices
+and
+
+96
+00:06:51,080 --> 00:06:53,340
+interpolates the resulting values rather than
+normals.
+
+97
+00:06:53,580 --> 00:06:56,780
+Per-pixel shading interpolates vertex normals,
+
+98
+00:06:56,780 --> 00:06:59,620
+renormalizes them and evaluates lighting at
+covered samples.
+
+99
+00:06:59,820 --> 00:07:04,620
+A half blend of right and up gives(.5,.5),
+
+100
+00:07:04,920 --> 00:07:07,980
+whose length is about.707 rather than one.
+
+101
+00:07:07,980 --> 00:07:11,020
+Normalizing produces components about.707;
+
+102
+00:07:11,380 --> 00:07:14,160
+do this before using the interpolated
+direction in lighting.
+
+103
+00:07:14,680 --> 00:07:18,240
+The source Phong shading name refers to normal
+interpolation,
+
+104
+00:07:18,740 --> 00:07:21,440
+distinct from the Phong specular reflection
+model.
+
+105
+00:07:21,820 --> 00:07:25,160
+Smooth brightness does not change a hexagonal
+silhouette;
+
+106
+00:07:25,480 --> 00:07:29,340
+normals alone do not move the surface or
+reshape holes.
+
+107
+00:07:30,130 --> 00:07:33,290
+Characters move on Big Walk red deck; observe
+the broad floor,
+
+108
+00:07:33,670 --> 00:07:37,610
+curved rail and tilted control panels.
+
+109
+00:07:38,110 --> 00:07:42,190
+Smooth shading directions and geometric
+boundaries differ;
+
+110
+00:07:42,690 --> 00:07:45,930
+distinguish intended smooth surfaces from hard
+joins.
+
+111
+00:07:46,310 --> 00:07:51,450
+Now accumulate all neighboring face directions
+and split sharing at the required boundaries.
+
+112
+00:07:52,340 --> 00:07:55,660
+Walk between yellow structures in Big Walk,
+
+113
+00:07:55,860 --> 00:07:59,740
+observing broad flat walls and circular
+opening boundaries.
+
+114
+00:08:00,000 --> 00:08:03,140
+Changing views reveal brightness and shadows;
+
+115
+00:08:03,660 --> 00:08:07,980
+variation within a face differs from the
+opening outline.
+
+116
+00:08:08,300 --> 00:08:12,080
+A character passing through reveals thickness
+and passage space,
+
+117
+00:08:12,400 --> 00:08:16,940
+distinct from smooth shading directions.
+
+118
+00:08:17,300 --> 00:08:21,320
+We cannot infer vertex counts or normal
+generation here;
+
+119
+00:08:21,320 --> 00:08:26,060
+the question is why fixed coarse geometry can
+shade more smoothly.
+
+120
+00:08:26,460 --> 00:08:30,400
+Normals provide the answer. We next show the
+complete
+
+121
+00:08:30,400 --> 00:08:34,280
+accumulation of neighboring face directions.
+
+122
+00:08:34,480 --> 00:08:40,000
+Flat walls and smooth curves need different
+directions;
+
+123
+00:08:40,420 --> 00:08:43,660
+unconditional averaging can incorrectly shade
+sharp corners.
+
+124
+00:08:44,020 --> 00:08:45,640
+Revisit wall and opening boundaries and
+consider which
+
+125
+00:08:45,640 --> 00:08:49,800
+directions should blend and which should
+remain separate.
+
+126
+00:08:50,310 --> 00:08:53,950
+Generate simple averaged normals for a mesh
+without them,
+
+127
+00:08:54,210 --> 00:08:57,810
+starting every vertex accumulator at zero.
+
+128
+00:08:58,090 --> 00:09:00,590
+Cross each triangle edges; reject or report
+
+129
+00:09:00,850 --> 00:09:05,830
+nearly-zero degenerate faces before
+normalization.
+
+130
+00:09:06,170 --> 00:09:12,890
+Normalize a valid face normal and add it to
+each of the three indexed vertex accumulators.
+
+131
+00:09:13,150 --> 00:09:18,810
+One right, up and front direction sum
+to(1,1,1);
+
+132
+00:09:18,810 --> 00:09:23,390
+dividing by square root three gives components
+about.577.
+
+133
+00:09:23,830 --> 00:09:26,450
+After processing every face, normalize each
+nonzero sum;
+
+134
+00:09:27,050 --> 00:09:30,550
+dividing by face count first preserves the
+final direction.
+
+135
+00:09:31,210 --> 00:09:34,190
+Isolated vertices and canceling directions can
+produce zero sums;
+
+136
+00:09:34,590 --> 00:09:39,650
+use explicit split, authored-normal or error
+policies.
+
+137
+00:09:39,930 --> 00:09:42,310
+This basic algorithm gives each face one vote;
+
+138
+00:09:42,750 --> 00:09:46,950
+sharp boundaries and triangulation bias need
+separate treatment.
+
+139
+00:09:47,800 --> 00:09:50,240
+Three cube faces meet at a corner;
+
+140
+00:09:50,460 --> 00:09:56,100
+sharing one shading normal blends their
+directions and brightness boundaries.
+
+141
+00:09:56,440 --> 00:10:00,380
+The cube geometry stays fixed but can shade
+like a rounded object;
+
+142
+00:10:00,660 --> 00:10:04,860
+intentional hard edges must not blend
+directions.
+
+143
+00:10:04,860 --> 00:10:07,640
+Duplicate records at equal positions: a cube
+with eight
+
+144
+00:10:07,661 --> 00:10:13,080
+locations can use six faces times four, or24
+records.
+
+145
+00:10:13,400 --> 00:10:17,040
+Store the top normal in top-face records and
+side normals in side records,
+
+146
+00:10:17,040 --> 00:10:23,680
+updating indices accordingly.
+
+147
+00:10:23,761 --> 00:10:29,020
+UV seams can require equal positions pointing
+to different image locations,
+
+148
+00:10:29,440 --> 00:10:32,020
+also requiring separate records.
+
+149
+00:10:32,440 --> 00:10:36,660
+Opposing normals on two-sided leaves cancel to
+zero;
+
+150
+00:10:37,020 --> 00:10:40,940
+split the sides or define two-sided
+orientation treatment explicitly.
+
+151
+00:10:41,420 --> 00:10:47,660
+Duplicating records need not open a physical
+gap;
+
+152
+00:10:47,660 --> 00:10:50,740
+it separates attributes and logical references
+while tools can preserve geometric adjacency.
+
+153
+00:10:51,210 --> 00:10:56,190
+Suppose two top triangles and two side faces
+meet at a vertex;
+
+154
+00:10:56,470 --> 00:11:00,230
+equal face votes give the top direction two
+votes.
+
+155
+00:11:00,390 --> 00:11:05,550
+Axis-aligned votes sum to(1,2,1),
+
+156
+00:11:05,610 --> 00:11:09,010
+normalized to approximately(.408,.816,.408),
+biased upward.
+
+157
+00:11:09,310 --> 00:11:14,630
+Changing a quad diagonal changes which
+vertices touch two triangles,
+
+158
+00:11:14,870 --> 00:11:17,490
+potentially altering averages without changing
+the surface.
+
+159
+00:11:17,750 --> 00:11:20,790
+Angle weighting uses the corner angle:
+splitting a
+
+160
+00:11:20,790 --> 00:11:24,630
+quad corner ninety degrees preserves its total
+ninety.
+
+161
+00:11:25,010 --> 00:11:28,290
+Accumulate angle times direction and
+normalize;
+
+162
+00:11:28,670 --> 00:11:33,090
+other policies such as area weighting
+approximate different intended surfaces.
+
+163
+00:11:33,390 --> 00:11:37,310
+Weighting does not fix intentionally sharp
+cubes;
+
+164
+00:11:37,590 --> 00:11:41,790
+first separate hard edges, then average only
+intended smooth regions.
+
+165
+00:11:42,380 --> 00:11:44,800
+Move to another opening in the yellow
+structure,
+
+166
+00:11:45,060 --> 00:11:50,660
+observing broad planes and curved boundaries
+up close.
+
+167
+00:11:50,980 --> 00:11:55,540
+Viewing a character through the opening
+produces a clear
+
+168
+00:11:55,700 --> 00:12:00,120
+silhouette boundary that smooth shading cannot
+remove.
+
+169
+00:12:00,460 --> 00:12:05,000
+Distinguish gradual surface directions from
+sharp
+
+170
+00:12:05,200 --> 00:12:08,300
+joins without measuring this model
+vertex-record count.
+
+171
+00:12:08,300 --> 00:12:13,480
+Our cube example split directions at equal
+positions,
+
+172
+00:12:13,680 --> 00:12:17,460
+whereas intended smooth interiors blend
+neighboring directions.
+
+173
+00:12:17,620 --> 00:12:20,680
+The choice aligns shading with shape,
+
+174
+00:12:21,120 --> 00:12:25,040
+rather than universally minimizing records or
+averaging every join.
+
+175
+00:12:25,380 --> 00:12:28,040
+Now imagine stretching a shape horizontally:
+normal directions must change,
+
+176
+00:12:28,340 --> 00:12:33,140
+but applying the position transform directly
+can fail.
+
+177
+00:12:33,380 --> 00:12:37,160
+Next we verify perpendicularity with
+explicitly defined tangent and normal values,
+
+178
+00:12:37,160 --> 00:12:42,280
+without reverse-engineering brightness from
+pixels.
+
+179
+00:12:42,750 --> 00:12:49,910
+Four32-byte vertices and six2-byte indices
+total140 bytes;
+
+180
+00:12:50,050 --> 00:12:53,330
+distinguish whole-mesh storage from a local
+shared-record calculation.
+
+181
+00:12:53,530 --> 00:12:56,490
+One index shares an entire record;
+
+182
+00:12:56,650 --> 00:13:00,250
+equal positions with different normals or UVs
+require distinct records.
+
+183
+00:13:00,490 --> 00:13:05,610
+The basic algorithm initializes, computes
+valid face normals,
+
+184
+00:13:05,610 --> 00:13:09,890
+accumulates at three vertices and normalizes
+last, with explicit zero/degenerate handling.
+
+185
+00:13:09,890 --> 00:13:15,150
+Split cube hard edges and choose a weighting
+policy on smooth regions;
+
+186
+00:13:15,450 --> 00:13:18,530
+averaging directions does not round
+silhouettes.
+
+187
+00:13:18,770 --> 00:13:22,930
+Next we transform normals while preserving
+perpendicularity
+
+188
+00:13:22,930 --> 00:13:26,390
+and calculate UV coordinates that map image
+patterns.
