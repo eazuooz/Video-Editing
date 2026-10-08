@@ -38,34 +38,34 @@ A(2,'발판의 표면을 기준으로 보기',S,[(297,342)],[
 E(3,'평면의 방향과 위치를 나누기','affine-plane',[
  '평면은 법선 벡터와 위치를 나타내는 숫자로 표현합니다. 법선은 평면을 따라가는 방향이 아니라 수직인 방향입니다.',
  '평면 위의 점과 법선을 내적하면 일정한 값이 나옵니다. 그 값을 알파벳 디라고 쓰겠습니다.',
- '법선이 영, 일, 영이고 디가 이라면 와이가 이인 모든 점이 평면 위에 있습니다.',
+ '법선의 세 성분은 영, 일, 영입니다. 상수 디의 값은 이입니다. 이때 와이가 이인 모든 점이 평면 위에 있습니다.',
  '와이가 영인 평면은 원점을 지나지만, 와이가 이인 평면은 원점을 지나지 않습니다. 일반 평면은 원점을 지나는 선형 부분공간일 필요가 없습니다.',
  '평면 위의 두 점을 빼면 평면을 따라가는 벡터가 됩니다. 그 차이와 법선의 내적은 영입니다.',
  '법선의 방향을 뒤집으면 앞과 뒤가 바뀝니다. 식을 그대로 유지하려면 디의 부호도 함께 뒤집어야 합니다.'
 ],[
  'Describe a plane with a normal and a location coefficient. The normal points perpendicular to the surface.',
  'Every point on the plane has the same dot product with its normal. Call that coefficient d.',
- 'Normal zero, one, zero and d two describe all points with y equal to two.',
+ 'The normal has components zero, one, zero. Constant d equals two. Every point with y equal to two lies on this plane.',
  'The y zero plane contains the origin; the y two plane does not. A general plane is an affine set, not necessarily a linear subspace.',
  'Subtracting two plane points gives a direction along the plane. Its dot product with the normal is zero.',
  'Reversing the normal swaps front and back. Reverse d as well to preserve the same plane.'
 ],['평면 법선 n: 표면에 수직','n·p=d / 위치 계수 d','n=(0,1,0), d=2 → y=2','원점을 지나는 평면 / 이동한 아핀 평면','n·(p-q)=0','(n,d) → (-n,-d): 같은 평면·반대 앞면'])
 E(4,'식의 값과 실제 거리를 구분하기','plane-distance',[
  '점에서 평면 식의 값을 구하려면 법선과 점을 내적하고 디를 뺍니다. 양수는 법선 쪽, 음수는 반대쪽입니다.',
- '법선이 영, 이, 영이고 디가 사인 평면도 와이가 이인 평면입니다. 법선 길이는 이입니다.',
+ '법선의 세 성분은 영, 이, 영입니다. 상수 디의 값은 사입니다. 이 평면에서도 와이가 이이고, 법선 길이는 이입니다.',
  '점이 사, 오, 마이너스 삼이면 내적은 십입니다. 사를 빼면 육이지만 실제 거리는 육이 아닙니다.',
  '법선의 길이 이로 나누면 부호 있는 거리는 삼입니다. 단위 법선일 때만 식의 값 자체가 거리가 됩니다.',
  '같은 평면을 단위 법선으로 바꾸려면 법선과 디를 둘 다 이로 나눕니다. 법선만 줄이면 평면 위치가 바뀝니다.',
  '법선 길이가 영인 입력은 평면 방향을 정하지 못합니다. 나누기 전에 유효성을 확인하세요.'
 ],[
  'Evaluate the normal dot point minus d. A positive value lies on the normal side; a negative value lies on the opposite side.',
- 'Normal zero, two, zero with d four also defines y two. The normal length is two.',
+ 'The normal has components zero, two, zero. Constant d equals four. This is still the y-equals-two plane, and the normal length is two.',
  'At point four, five, minus three, the dot product is ten. Subtracting four gives six, but six is not the distance.',
  'Divide by normal length two to get signed distance three. Only a unit normal makes the raw residual a distance.',
  'Normalize both the normal and d by two. Normalizing only the normal changes the plane location.',
  'A zero-length normal cannot define a plane direction. Validate before division.'
 ],['F(p)=n·p-d / 부호로 앞·뒤 판정','n=(0,2,0), d=4 → y=2','p=(4,5,-3): F=10-4=6','signedDistance=F/‖n‖=3','n̂=n/‖n‖, d̂=d/‖n‖','n=0: 유효한 평면 방향 없음'])
-A(5,'지형의 높이와 기준선',N,[(96,122),(404,423)],[
+A(5,'지형의 높이와 기준선',N,[(96,126),(404,423),(515,521)],[
  '노이타에서는 캐릭터가 층층이 놓인 지형 사이로 움직입니다. 물의 수평선과 나무 바닥을 기준으로 보세요.',
  '캐릭터가 같은 기준선보다 위에 있는지 아래에 있는지는 높이 차이의 부호로 구분할 수 있습니다.',
  '화면이 따라 움직여도 기준을 함께 보면 상대적인 위치를 찾을 수 있습니다. 화면 맨 아래를 고정된 월드 바닥으로 생각하면 안 됩니다.',
@@ -86,14 +86,14 @@ E(6,'평면 위의 가장 가까운 점','plane-projection',[
  '단위 법선이라면 원래 점에서 부호 있는 거리 곱하기 단위 법선을 빼면 됩니다.',
  '정규화하지 않은 법선을 그대로 쓰려면 식의 값을 법선 길이의 제곱으로 나누고, 그 결과를 법선에 곱해 뺍니다.',
  '평면 뒤쪽에 있는 점에서는 거리가 음수라서 법선 방향으로 올라갑니다. 앞뒤 모두 같은 식을 씁니다.',
- '이 투영은 무한 평면의 가장 가까운 점입니다. 삼각형이나 발판의 끝을 넘어가면 유한 표면의 가장 가까운 점은 다시 검사해야 합니다.'
+ '이 투영은 무한 평면의 가장 가까운 점입니다. 삼각형이나 발판의 끝을 넘어가면, 가장자리가 있는 표면의 최근접점은 별도로 검사해야 합니다.'
 ],[
  'Point four, five, minus three has signed distance three from the y two plane.',
  'Move three units opposite its normal. The closest plane point is four, two, minus three.',
  'With a unit normal, subtract signed distance times that normal from the query.',
  'With an unnormalized normal, multiply it by the residual divided by its squared length, then subtract.',
  'Behind the plane, negative signed distance moves the point toward the normal. One formula handles both sides.',
- 'This is the closest point on an infinite plane. A finite triangle or platform needs additional edge tests.'
+ 'This projection finds the nearest point on an infinite plane. Beyond a triangle or platform edge, the nearest point on that bounded surface needs a separate test.'
 ],['p=(4,5,-3), y=2: 거리 +3','p₀=(4,2,-3)','p₀=p-signedDistance·n̂','p₀=p-[(n·p-d)/(n·n)]n','뒤쪽의 음수 거리도 같은 식','무한 평면 투영 / 유한 표면 경계는 별도'])
 E(7,'세 점으로 법선 만들기','plane-three-points',[
  '한 직선 위에 있지 않은 세 점은 하나의 평면을 정합니다. 한 꼭짓점에서 다른 두 꼭짓점으로 향하는 변 벡터를 만듭니다.',
@@ -110,7 +110,7 @@ E(7,'세 점으로 법선 만들기','plane-three-points',[
  'Dot any one vertex with the normal to obtain d. All three z coordinates are zero here, so d is zero.',
  'Collinear points yield a zero cross product. Nearly collinear inputs may also be poorly conditioned; check before normalization.'
 ],['세 점 → 같은 시작점의 두 변 e₁,e₂','e₁=(6,0,0), e₂=(0,4,0)','e₁×e₂=(0,0,24) / n̂=(0,0,1)','오른손 규칙 / 순서 반전 → 법선 반전','d=n·v₁ / 이 예제: z=0','공선·거의 공선 검사 → 정규화'])
-A(8,'눈에 보이는 삼각형 표식을 관찰하기',U,[(1320,1366)],[
+A(8,'눈에 보이는 삼각형 표식을 관찰하기',U,[(1320,1374)],[
  '바위의 밝은 삼각형 표식과 그쪽으로 연결되는 그래플을 보세요. 세 꼭짓점과 그 안의 위치를 나눠 생각할 수 있습니다.',
  '카메라가 움직이면 삼각형이 기울고 화면에서 납작해 보입니다. 원래 표면의 형태와 화면 투영은 구분해야 합니다.',
  '세 점의 순서를 정해 둘레를 따라가면 앞면 방향을 정의할 수 있습니다. 순서를 뒤집으면 법선도 반대로 정해집니다.',
@@ -174,14 +174,14 @@ E(12,'같은 넓이를 세 방법으로 구하기','triangle-area',[
  '꼭짓점이 영, 영과 사, 영과 영, 삼인 삼각형입니다. 밑변 사에 높이 삼을 곱하고 이로 나누면 넓이는 육입니다.',
  '세 변 삼, 사, 오를 알면 헤론 공식을 쓸 수 있습니다. 둘레의 절반 육에서 각 변을 뺀 값을 곱합니다.',
  '루트 안은 육 곱하기 삼 곱하기 이 곱하기 일, 즉 삼십육입니다. 제곱근은 육입니다.',
- '두 변 벡터의 외적 길이는 평행사변형 넓이입니다. 절반을 취하면 삼각형 넓이가 되고, 이 예제에서는 십이를 이로 나눕니다.',
+ '두 변 벡터의 외적 길이는 평행사변형 넓이입니다. 절반을 취하면 삼각형 넓이가 됩니다. 이 예제의 평행사변형 넓이는 십이입니다. 이를 이로 나누면 삼각형 넓이 육을 얻습니다.',
  '이차원에서는 외적에 해당하는 행렬식에 부호가 있습니다. 꼭짓점 순서를 뒤집으면 부호가 바뀌지만 넓이의 크기는 같습니다.',
  '삼차원에서 외적의 길이를 쓰면 방향의 부호는 사라집니다. 넓이와 앞면 방향을 같은 숫자라고 생각하지 마세요.'
 ],[
  'Use vertices zero, zero; four, zero; and zero, three. Base four times height three divided by two gives area six.',
  'With side lengths three, four and five, Heron formula uses semiperimeter six and its differences from each edge.',
  'The radicand is six times three times two times one, or thirty-six. Its square root is six.',
- 'Edge cross-product magnitude gives parallelogram area; half gives triangle area. Here divide twelve by two.',
+ 'The cross-product length is the parallelogram area. Half gives the triangle area. Here the parallelogram area is twelve, and dividing by two gives a triangle area of six.',
  'In2D, the corresponding determinant has a sign. Reversing winding changes the sign but not area magnitude.',
  'Taking a3D cross-product magnitude discards direction. Distinguish area from front-face orientation.'
 ],['A=bh/2=4×3/2=6','Heron: A=√[s(s-a)(s-b)(s-c)]','√(6×3×2×1)=√36=6','A=‖e₁×e₂‖/2=12/2=6','2D signedArea=det(e₁,e₂)/2','3D 넓이: 외적 길이 / 방향은 법선'])
@@ -203,14 +203,14 @@ E(13,'세 숫자로 삼각형 위치 표현하기','barycentric-basis',[
 A(14,'삼각형의 기준을 함께 옮기기',U,[(1519,1577)],[
  '다른 바위로 연결되며 표식의 화면 위치가 바뀝니다. 연결 표식과 그 주변에서 세 기준점을 골라 보세요.',
  '표면과 카메라가 움직여도, 같은 세 꼭짓점으로 정의한 상대 가중치는 위치를 설명할 기준이 될 수 있습니다.',
- '꼭짓점 하나를 향해 다가가면 그 꼭짓점의 가중치는 일을 향합니다. 변 위의 위치는 반대편 꼭짓점의 가중치가 영입니다.',
+ '꼭짓점 하나에 가까워질수록, 그 꼭짓점의 가중치는 숫자 일에 가까워집니다. 변 위의 위치는 반대편 꼭짓점의 가중치가 영입니다.',
  '다만 화면에서 가깝게 보이는 정도와 삼차원 공간에서의 가중치는 같다고 단정할 수 없습니다. 원근 투영이 모양을 바꾸기 때문입니다.',
  '지금 보이는 그래플 연결점의 실제 좌표를 추출한 것은 아닙니다. 표식은 다음 수치 예제가 무엇을 계산하는지 보여주는 기준입니다.',
  '이제 세 좌표에 가중치를 곱해 직접 더해 보고, 음수가 들어갔을 때 왜 삼각형 밖으로 나가는지 확인하겠습니다.'
 ],[
  'Connecting to another rock changes the marking screen position. Choose three reference points around the attachment marking.',
  'Weights relative to the same three vertices provide a location reference even as a surface or camera moves.',
- 'Approaching a vertex makes its weight approach one. A point on its opposite edge has zero weight for it.',
+ 'Approaching a vertex makes its weight approach the number one. A point on its opposite edge has zero weight for it.',
  'Screen proximity is not automatically the3D barycentric relationship because perspective changes the projection.',
  'We have not extracted the real attachment coordinates. Visible markings motivate the explicitly defined numerical example.',
  'Now we will multiply vertices by weights and see how a negative weight places a point outside.'
@@ -221,14 +221,14 @@ E(15,'안쪽과 바깥쪽을 직접 계산하기','barycentric-worked',[
  '결과는 일 점 팔, 이, 영입니다. 세 가중치가 영 이상이므로 삼각형 내부입니다.',
  '이번에는 마이너스 영 점 이, 영 점 칠, 영 점 오를 넣겠습니다. 합은 여전히 일이지만 첫 가중치가 음수입니다.',
  '엑스는 사 점 이, 와이는 이이고 제트는 영입니다. 첫 꼭짓점 반대편 변을 넘어 바깥으로 나갑니다.',
- '좌표의 단위는 공간의 길이이고, 가중치는 비율입니다. 음수 가중치를 무조건 잘못된 계산으로 버리면 바깥 위치 정보를 잃습니다.'
+ '좌표의 단위는 공간의 길이이고, 가중치는 비율입니다. 음수 가중치를 무조건 잘못된 계산으로 버리면, 바깥 위치를 설명하는 정보를 버리게 됩니다.'
 ],[
  'Define3D vertices zero, zero, zero; six, zero, zero; and zero, four, zero. All lie in the z zero plane.',
  'Weights point two, point three and point five sum to one. Compute x as six times point three and y as four times point five.',
  'The result is one point eight, two, zero. All weights are nonnegative, so it lies inside.',
  'Now use minus point two, point seven and point five. Their sum is still one, but the first weight is negative.',
  'The result four point two, two, zero lies beyond the edge opposite the first vertex.',
- 'Position has length units; weights are dimensionless ratios. Rejecting every negative weight loses valid outside-location information.'
+ 'Position has length units; weights are dimensionless ratios. Rejecting every negative weight discards information describing valid outside positions.'
 ],['v₁=(0,0,0), v₂=(6,0,0), v₃=(0,4,0)','λ=(.2,.3,.5), 합=1','p=(1.8,2,0): 내부','λ=(-.2,.7,.5), 합=1','p=(4.2,2,0): v₁ 반대편 바깥','좌표: 길이 / 가중치: 비율'])
 E(16,'넓이 비율에서 가중치 구하기','barycentric-areas',[
  '반대로 점의 위치를 알고 가중치를 구할 수도 있습니다. 점과 두 꼭짓점이 만드는 부분 삼각형 넓이를 전체 넓이로 나눕니다.',
@@ -321,14 +321,14 @@ A(21,'표면의 위치와 색을 함께 보기',S,[(678,740)],[
  'Our final problems validate plane distance and triangle weights together: locate the point, then calculate its attributes.'
 ],'색이 다른 실제 지붕·벽·표면과 이동하는 카메라','표면 위치→속성 질문의 연결; 게임 내부 셰이더 방식은 추정하지 않음')
 E(22,'거리·평면·가중치를 함께 확인하기','planes-practice',[
- '첫 문제입니다. 법선 영, 이, 영과 디 사인 평면에서 점 사, 오, 마이너스 삼까지의 거리는 얼마일까요?',
+ '첫 문제입니다. 법선의 세 성분은 영, 이, 영이고, 상수 디의 값은 사입니다. 이 평면에서 점 사, 오, 마이너스 삼까지의 거리는 얼마일까요?',
  '식의 값은 육이지만 법선 길이 이로 나누어 거리는 삼입니다. 가장 가까운 평면 점은 사, 이, 마이너스 삼입니다.',
  '둘째는 제트가 영인 삼각형입니다. 가중치 영 점 이, 영 점 삼, 영 점 오가 만드는 점은 일 점 팔, 이, 영입니다.',
  '엑스와 와이는 같고 제트가 칠인 점은 투영 위치만 같습니다. 평면 밖이므로 표면 내부라는 판정을 하면 안 됩니다.',
  '계산 순서는 유효한 입력, 평면까지의 거리, 삼각형의 가중치, 원하는 속성입니다. 단계마다 단위와 허용 오차도 확인하세요.',
  '오늘은 평면의 방향과 위치, 거리와 투영, 삼각형 넓이와 무게중심 좌표를 연결했습니다. 다음 편에서는 서로 다른 중심과 다각형 분할을 설명하겠습니다.'
 ],[
- 'First: find the distance from four, five, minus three to the plane with normal zero, two, zero and d four.',
+ 'First problem: the normal has components zero, two, zero, and constant d equals four. What is the distance from this plane to point four, five, minus three?',
  'Residual six divided by normal length two gives distance three. The closest plane point is four, two, minus three.',
  'Second: on our z zero triangle, weights point two, point three and point five construct one point eight, two, zero.',
  'Changing only z to seven preserves the projection but leaves the plane. It must not pass a triangle-surface membership test.',

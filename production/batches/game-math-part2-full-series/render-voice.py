@@ -8,6 +8,11 @@ from production_control import require_current_authorization
 if '--project' in sys.argv:require_current_authorization(sys.argv[sys.argv.index('--project')+1],'narration synthesis')
 import torch
 ROOT=Path(__file__).resolve().parents[3];sys.path.insert(0,str(ROOT/'qwen3-tts'))
+from gpu_handoff_guard import check_gpu_handoff
+if '--project' in sys.argv:
+ project=sys.argv[sys.argv.index('--project')+1]
+ device=sys.argv[sys.argv.index('--device')+1] if '--device' in sys.argv else 'cuda:0'
+ check_gpu_handoff(project,device,'--dry-run' in sys.argv)
 torch.set_num_threads(2)
 from qwen_tts import Qwen3TTSModel
 original=Qwen3TTSModel.from_pretrained.__func__

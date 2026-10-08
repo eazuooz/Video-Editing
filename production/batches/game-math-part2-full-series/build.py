@@ -96,6 +96,7 @@ def render():
   current=(r.get('voiceSha256')==s['voiceSha256'] and r.get('lessonSha256')==b.sha(ROOT/m['paths']['sharedManimLesson']) and r.get('dataSha256')==b.sha(DATAFILE))
   source=ROOT/m['paths']['sharedManimLesson']
   if source.name!='lesson.py':current=current and r.get('helperSha256')==b.sha(source.parent/'lesson.py')
+  if D.get('sourceDependencies'):current=current and r.get('dependencySha256')=={p:b.sha(ROOT/p) for p in D['sourceDependencies']}
   if target.exists() and current:
    stream=next(v for v in b.probe(target)['streams'] if v['codec_type']=='video')
    if int(stream['nb_frames'])>=s['frames']-1:print('Reusing current validated',s['manimClass'],flush=True);continue

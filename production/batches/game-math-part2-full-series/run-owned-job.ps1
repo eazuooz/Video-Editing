@@ -1,7 +1,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$Project,
     [Parameter(Mandatory=$true)][ValidateSet('voice','review','render')][string]$Stage,
-    [ValidateSet('cpu','cuda:0')][string]$Device = 'cpu',
+    [ValidateSet('cpu','cuda:0')][string]$Device = 'cuda:0',
     [string]$ForceScenes = ''
 )
 $ErrorActionPreference = 'Stop'
@@ -14,8 +14,22 @@ Set-Location -LiteralPath $mathRoot
 if ($Stage -eq 'voice') {
     $mathArgs = @('-X','utf8',"$PSScriptRoot\render-voice.py",'--project',$Project,'--batch-size','1','--device',$Device)
     if ($ForceScenes) { $mathArgs += @('--force-scenes',$ForceScenes) }
+    if ($Device -eq 'cuda:0') {
+        # Finish the active research run before taking GPU ownership, then
+        # restore its original queue even when narration fails.
+        $mathQueueDir = 'C:/Users/eazuo/renderformer/tmp/placement_focus_20261008'
+        $mathQueueOwner = $null
+        if (Test-Path -LiteralPath "$mathQueueDir/status.json") {
+            $mathQueueStatus = Get-Content -LiteralPath "$mathQueueDir/status.json" -Raw | ConvertFrom-Json
+            if ($mathQueueStatus.owner_pid) { $mathQueueOwner = Get-Process -Id $mathQueueStatus.owner_pid -ErrorAction SilentlyContinue }
+        }
+        if ($mathQueueOwner) {
+            $mathArgs = @('-X','utf8',"$PSScriptRoot/gpu-handoff.py",'--project',$Project,'--queue-dir',$mathQueueDir,'--',$mathPython) + $mathArgs
+        }
+    }
 } elseif ($Stage -eq 'review') {
-    $mathReviewDevice = if ($Device -eq 'cuda:0') { 'cuda' } else { 'cpu' }
+    # Keep read-back on CPU so research regains the GPU immediately after TTS.
+    $mathReviewDevice = 'cpu'
     $mathArgs = @('-X','utf8',"$PSScriptRoot\review-voice.py",'--project',$Project,'--watch','--device',$mathReviewDevice)
 } else {
     $mathArgs = @('-X','utf8',"$PSScriptRoot\incremental-render.py",$Project)

@@ -1,0 +1,267 @@
+{
+  "title": "Game Math Part 2 · Geometry 2: Planes and Barycentric Coordinates",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "바닥까지의 거리와 삼각형 안의 위치",
+      "lines": [
+        "How do we calculate a point distance from a floor and its location within a triangle?",
+        "We will observe game platforms and terrain, then calculate plane normals and signed distances.",
+        "Next we will build a triangle from three points and work out its area and barycentric coordinates.",
+        "Finally we will reject an off-plane query and use the same coordinates to interpolate color."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "발판의 표면을 기준으로 보기",
+      "lines": [
+        "We travel along paths and bridges on a Serious Sam2 shoreline. Watch the floor and bridge top surfaces.",
+        "A reference lets us distinguish floating above that surface from approaching it.",
+        "Mathematics can simplify that reference to a plane. A real platform has thickness and edges; a plane extends infinitely.",
+        "Distance to the surface and remaining within the platform footprint are separate tests.",
+        "Camera motion changes its screen appearance. Calculations must use points and normals defined in one coordinate frame.",
+        "This footage motivates a reference surface; it does not reveal the game internal collision representation."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "평면의 방향과 위치를 나누기",
+      "lines": [
+        "Describe a plane with a normal and a location coefficient. The normal points perpendicular to the surface.",
+        "Every point on the plane has the same dot product with its normal. Call that coefficient d.",
+        "The normal has components zero, one, zero. Constant d equals two. Every point with y equal to two lies on this plane.",
+        "The y zero plane contains the origin; the y two plane does not. A general plane is an affine set, not necessarily a linear subspace.",
+        "Subtracting two plane points gives a direction along the plane. Its dot product with the normal is zero.",
+        "Reversing the normal swaps front and back. Reverse d as well to preserve the same plane."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "식의 값과 실제 거리를 구분하기",
+      "lines": [
+        "Evaluate the normal dot point minus d. A positive value lies on the normal side; a negative value lies on the opposite side.",
+        "The normal has components zero, two, zero. Constant d equals four. This is still the y-equals-two plane, and the normal length is two.",
+        "At point four, five, minus three, the dot product is ten. Subtracting four gives six, but six is not the distance.",
+        "Divide by normal length two to get signed distance three. Only a unit normal makes the raw residual a distance.",
+        "Normalize both the normal and d by two. Normalizing only the normal changes the plane location.",
+        "A zero-length normal cannot define a plane direction. Validate before division."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "지형의 높이와 기준선",
+      "lines": [
+        "In Noita, the character moves through layered terrain. Use the waterline and wooden floor as visible references.",
+        "The sign of a height difference distinguishes positions above or below the same reference.",
+        "Following camera motion does not prevent relative comparison. The screen bottom is not a fixed world floor.",
+        "For a horizontal reference, subtract its height from y. A tilted surface instead needs distance along its normal.",
+        "Replacing layered floors with one infinite plane loses holes and edges. Surface distance and boundary checks are separate.",
+        "Our next diagram calculates the closest point on an explicitly defined plane; it does not claim to reproduce the pixel terrain implementation."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "평면 위의 가장 가까운 점",
+      "lines": [
+        "Point four, five, minus three has signed distance three from the y two plane.",
+        "Move three units opposite its normal. The closest plane point is four, two, minus three.",
+        "With a unit normal, subtract signed distance times that normal from the query.",
+        "With an unnormalized normal, multiply it by the residual divided by its squared length, then subtract.",
+        "Behind the plane, negative signed distance moves the point toward the normal. One formula handles both sides.",
+        "This projection finds the nearest point on an infinite plane. Beyond a triangle or platform edge, the nearest point on that bounded surface needs a separate test."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "세 점으로 법선 만들기",
+      "lines": [
+        "Three noncollinear points determine a plane. Form two edge vectors from the same vertex.",
+        "Edges six, zero, zero and zero, four, zero have cross product zero, zero, twenty-four.",
+        "Using our right-handed first-edge cross second-edge convention gives unit normal zero, zero, one.",
+        "Swapping the edge order reverses the normal. Define winding and front-face conventions together.",
+        "Dot any one vertex with the normal to obtain d. All three z coordinates are zero here, so d is zero.",
+        "Collinear points yield a zero cross product. Nearly collinear inputs may also be poorly conditioned; check before normalization."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "눈에 보이는 삼각형 표식을 관찰하기",
+      "lines": [
+        "Watch a bright triangular rock marking and the grapple attached nearby. Separate its three vertices from locations within it.",
+        "Camera motion tilts and compresses its screen appearance. Distinguish a surface shape from its projection.",
+        "Ordering three points around the boundary defines a front-face direction. Reversing that order reverses the chosen normal.",
+        "A triangular marking does not reveal the entire rock mesh. We connect visible features to an explicitly defined mathematical example.",
+        "Observe which reference vertex lies closest to the attachment. We will express relative locations using three weights.",
+        "First we will handle more than three ordered vertices, then calculate triangle lengths and area."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "여러 꼭짓점에는 순서가 필요합니다",
+      "lines": [
+        "Choosing any three polygon vertices can be unstable when they are nearly collinear or lie at a concave corner.",
+        "Newell method accumulates contributions from adjacent vertices in boundary order, including the closing edge.",
+        "Its z component sums each neighboring x difference times their y sum. Cycle the coordinates for the other components.",
+        "Reversing boundary order reverses the normal. Arbitrarily shuffled points are not valid ordered input.",
+        "Once the normal is chosen, average its dot products with vertices to obtain d, equivalently dot the mean point with the normal.",
+        "The source calls this best fit, but it is not generally the least-squares plane of an unordered point cloud. Validate point count and degeneracy separately."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "변의 길이와 각을 연결하기",
+      "lines": [
+        "Give each edge the same index as its opposite vertex. Adding the three edge lengths gives the perimeter.",
+        "A three-four-five right triangle has perimeter twelve and semiperimeter six.",
+        "Edge length divided by the sine of its opposite angle is the same at all three vertices: the sine law.",
+        "Given two edges and their included angle, the cosine law finds the remaining edge using squared lengths.",
+        "Here three squared plus four squared equals five squared. The right angle makes the cosine term zero.",
+        "Do not mix degrees and radians. Validate positive lengths and triangle feasibility after solving."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "세 기준점 사이에서 위치 찾기",
+      "lines": [
+        "Observe platform ends and rock corners in Noita. We can choose three visible locations as reference points.",
+        "Movement from one reference toward another changes which point the character is nearer.",
+        "Cartesian coordinates describe the location; three weights describe it relative to a triangle that moves with its references.",
+        "Track all three references when the camera moves. Do not combine pixels from incompatible screen frames.",
+        "Choosing three points does not make the entire ground a triangle; gaps may lie between them.",
+        "Our next example defines its own triangle, calculates area, and expresses inside and outside positions with three numbers."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "같은 넓이를 세 방법으로 구하기",
+      "lines": [
+        "Use vertices zero, zero; four, zero; and zero, three. Base four times height three divided by two gives area six.",
+        "With side lengths three, four and five, Heron formula uses semiperimeter six and its differences from each edge.",
+        "The radicand is six times three times two times one, or thirty-six. Its square root is six.",
+        "The cross-product length is the parallelogram area. Half gives the triangle area. Here the parallelogram area is twelve, and dividing by two gives a triangle area of six.",
+        "In2D, the corresponding determinant has a sign. Reversing winding changes the sign but not area magnitude.",
+        "Taking a3D cross-product magnitude discards direction. Distinguish area from front-face orientation."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "세 숫자로 삼각형 위치 표현하기",
+      "lines": [
+        "Barycentric coordinates give weights for three vertices. Their sum must be one.",
+        "Multiply each vertex by its weight and add. The first vertex has coordinates one, zero, zero.",
+        "The midpoint of the first two vertices is one half, one half, zero. Equal one-third weights give the vertex average.",
+        "Although written as three numbers, only two are independent because their sum is fixed. A triangle surface is two-dimensional.",
+        "Using the third vertex as origin gives axes first-minus-third and second-minus-third. They need not be orthogonal or unit length.",
+        "On a nondegenerate triangle plane, nonnegative weights describe its interior and boundary. Negative weights meaningfully describe outside points."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "삼각형의 기준을 함께 옮기기",
+      "lines": [
+        "Connecting to another rock changes the marking screen position. Choose three reference points around the attachment marking.",
+        "Weights relative to the same three vertices provide a location reference even as a surface or camera moves.",
+        "Approaching a vertex makes its weight approach the number one. A point on its opposite edge has zero weight for it.",
+        "Screen proximity is not automatically the3D barycentric relationship because perspective changes the projection.",
+        "We have not extracted the real attachment coordinates. Visible markings motivate the explicitly defined numerical example.",
+        "Now we will multiply vertices by weights and see how a negative weight places a point outside."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "안쪽과 바깥쪽을 직접 계산하기",
+      "lines": [
+        "Define3D vertices zero, zero, zero; six, zero, zero; and zero, four, zero. All lie in the z zero plane.",
+        "Weights point two, point three and point five sum to one. Compute x as six times point three and y as four times point five.",
+        "The result is one point eight, two, zero. All weights are nonnegative, so it lies inside.",
+        "Now use minus point two, point seven and point five. Their sum is still one, but the first weight is negative.",
+        "The result four point two, two, zero lies beyond the edge opposite the first vertex.",
+        "Position has length units; weights are dimensionless ratios. Rejecting every negative weight discards information describing valid outside positions."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "넓이 비율에서 가중치 구하기",
+      "lines": [
+        "Given a position, obtain each weight from a signed subtriangle area divided by the whole signed area.",
+        "For the inside example, the subareas are twenty, thirty and fifty percent of the total.",
+        "Keep consistent vertex order and signed areas. Absolute areas discard the negative weight of an outside point.",
+        "Crossing the edge opposite the first vertex reverses that subarea sign and makes its weight negative.",
+        "Reversing all winding reverses numerator and denominator together, preserving weights. Be consistent.",
+        "A zero whole area cannot be divided by. Very thin triangles may amplify small coordinate errors."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "높이가 다른 표면을 한 그림으로 보면",
+      "lines": [
+        "The character moves among ledges at different heights. Distinguish visual overlap from occupying the same surface.",
+        "This2D footage exposes two position components; in3D, different depths may project to the same screen location.",
+        "An apparently inside projected location alone does not prove that a3D query lies on a triangle surface.",
+        "Separate distance-to-plane validation from within-plane barycentric tests.",
+        "Passing a platform edge can also leave its finite footprint while keeping the same reference height. Remember negative outside weights.",
+        "Our diagram will compare two points with identical projection and different depths."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "투영은 평면 위 검사까지 해주지 않습니다",
+      "lines": [
+        "Our inside point was one point eight, two, zero. Keep x and y but change z to seven.",
+        "Both points have the same XY projection, but the new point is seven units off the triangle plane.",
+        "For a projected solve, dropping the axis with largest absolute normal component helps choose a well-conditioned projection.",
+        "The discarded coordinate still matters. Check plane distance separately before testing projected weights.",
+        "Plane proximity tolerance has spatial units and scale; barycentric tolerance uses dimensionless ratios.",
+        "Also validate finite inputs, normal length and the area denominator. An inside test is not complete input validation."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "가까운 모서리 세 개를 함께 추적하기",
+      "lines": [
+        "We move among narrow ledges and slanted terrain in Noita. Track three nearby corners together.",
+        "A thin reference triangle can turn a small position change into a large weight change.",
+        "Producing three numbers does not guarantee numerical stability for nearly zero area. Inspect the input shape as well.",
+        "Changing reference vertices changes the position represented by the same weights. Coordinates and their triangle form one description.",
+        "Real boundaries contain notches and gaps; filling a mathematical triangle between references does not reproduce the terrain.",
+        "Today concerns one plane and triangle. The next lecture partitions more complex boundaries into triangles."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "같은 가중치로 색도 보간하기",
+      "lines": [
+        "Barycentric coordinates combine attributes as well as positions. Assign different values to the three vertices.",
+        "Give the vertices red, green and blue in an explicitly linear color example.",
+        "Weights point two, point three and point five produce those same three color components.",
+        "An edge midpoint averages its endpoints; a vertex reproduces its own attribute.",
+        "The same construction interpolates defined heights or texture coordinates. Direction attributes that require normalization need a further check.",
+        "This is affine interpolation on a triangle surface. Perspective-correct interpolation in screen space belongs to the rendering chapter."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "표면의 위치와 색을 함께 보기",
+      "lines": [
+        "Observe differently colored roofs and walls in Serious Sam2. Appearance varies with surface location.",
+        "Finding a surface position and then finding its attributes are two connected graphics questions.",
+        "If values are stored per triangle vertex, our weights construct intermediate values. This is the mathematical model we explicitly defined.",
+        "The real image may involve textures, lighting and effects. Footage alone does not confirm vertex-color interpolation.",
+        "Preserve surface references as the camera moves. Do not mix screen coordinates with object-surface coordinates.",
+        "Our final problems validate plane distance and triangle weights together: locate the point, then calculate its attributes."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "거리·평면·가중치를 함께 확인하기",
+      "lines": [
+        "First problem: the normal has components zero, two, zero, and constant d equals four. What is the distance from this plane to point four, five, minus three?",
+        "Residual six divided by normal length two gives distance three. The closest plane point is four, two, minus three.",
+        "Second: on our z zero triangle, weights point two, point three and point five construct one point eight, two, zero.",
+        "Changing only z to seven preserves the projection but leaves the plane. It must not pass a triangle-surface membership test.",
+        "Check valid inputs, plane distance, triangle weights and desired attributes in that order, with appropriate units and tolerances.",
+        "We connected plane orientation and location, distance and projection, triangle area and barycentric coordinates. Next we will compare centers and partition polygons."
+      ]
+    }
+  ]
+}

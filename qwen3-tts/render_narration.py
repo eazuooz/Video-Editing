@@ -632,6 +632,8 @@ def main() -> None:
         help="Validate the manifest and script without loading the TTS model",
     )
     args = parser.parse_args()
+    from gpu_handoff_guard import schedule_gpu_handoff
+    schedule_gpu_handoff(args.project, args.device, args.dry_run)
     if args.batch_size < 1:
         raise ValueError("--batch-size must be at least 1")
 

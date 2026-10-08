@@ -44,6 +44,16 @@ def normalized(s):
  return original(s)
 a.normalized=normalized
 if __name__=='__main__':
+ # Selected-scene GPU retakes intentionally defer full assembly. Refresh the
+ # current scene origins on CPU before aligning either language; no model load.
+ lease=ROOT/'shared/output/GPU_HANDOFF.json'
+ if lease.exists():
+  state=json.loads(lease.read_text(encoding='utf-8-sig'))
+  if state.get('project')==slug and state.get('state')=='tts_running':raise RuntimeError('Finish the current TTS batch before assembling its checkpoints')
+ import numpy as np
+ import soundfile as sf
+ import render_narration as r
+ r.np=np;r.sf=sf;r.configure_project(slug);r.assemble_outputs(r.load_jobs())
  sys.argv=[sys.argv[0],'--project',slug];a.main()
  m=json.loads((ROOT/f'projects/{slug}/project.json').read_text(encoding='utf8'))
  for lang in ['ko','en']:shutil.copy2(ROOT/m['paths']['captions'+lang.title()],ROOT/f'projects/{slug}/script/voice-aligned.{lang}.srt')

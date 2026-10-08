@@ -8,6 +8,11 @@ from pathlib import Path
 import sys,json,hashlib,os,subprocess,time,math
 import soundfile as sf
 ROOT=Path(__file__).resolve().parents[3];slug=sys.argv[1]
+replacement_baseline=None
+if '--await-replacements' in sys.argv:
+ index=sys.argv.index('--await-replacements');replacement_baseline=(ROOT/sys.argv[index+1]).resolve()
+ if not replacement_baseline.is_relative_to(ROOT/'shared/output'/slug):raise ValueError('Replacement baseline must belong to this project')
+replacement_hashes={p.name.split('-')[0]:hashlib.sha256(p.read_bytes()).hexdigest() for p in replacement_baseline.glob('*-scene.wav')} if replacement_baseline else {}
 from production_control import require_current_authorization
 require_current_authorization(slug,'incremental scene rendering')
 sys.path.insert(0,str(ROOT/'qwen3-tts'))
@@ -28,6 +33,7 @@ while True:
   sid=scene['id'];wav=out/'chunks'/f'{sid}-scene.wav';asrfile=out/'asr'/f'{sid}.json'
   if not wav.exists() or not asrfile.exists():continue
   asr=read(asrfile);digest=sha(wav)
+  if replacement_hashes.get(sid)==digest:continue
   if digest!=asr['audio_sha256'] or not acoustic_evidence(wav,m['tts'])['endingHeuristicPassed']:continue
   audio,sr=sf.read(wav);duration=len(audio)/sr
   try:starts,ends,coverage=a.a.align_characters(' '.join(scene['ko']),asr['words'],duration)

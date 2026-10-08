@@ -20,13 +20,41 @@ function walk(dir){return fs.readdirSync(path.join(root,dir),{withFileTypes:true
  const f=dir+'/'+e.name;return e.isDirectory()?walk(f):(sourceExtensions.has(path.extname(f))?[f]:[]);
 });}
 const files=[...bases.flatMap(walk),`production/preflight/${slug}.json`];
+files.push('qwen3-tts/gpu_handoff_guard.py');
 const thumb=`projects/${slug}/publish/assets/thumbnail.png`,entry=`./src/projects/${slug}/project.ts`,exception='!'+thumb;
 const image=read('shared/git-essential-images.json').entries.find(x=>x.path===thumb);
 if(!image||image.purpose!=='delivery-thumbnail'||image.sha256!==sha(fs.readFileSync(path.join(root,thumb))))throw Error('Review and register the exact essential thumbnail first');
 files.push(thumb);
-const special=['motion-canvas/projects.json','projects/rebuild-index.json','shared/git-essential-images.json','.gitignore'];
+const special=['motion-canvas/projects.json','projects/rebuild-index.json','shared/git-essential-images.json','.gitignore',
+ 'AGENTS.md','docs/NARRATION_AUDIO_STANDARD.md','qwen3-tts/render_narration.py'];
 function mergeOwn(f,text){
  if(f==='.gitignore')return text.split(/\r?\n/).includes(exception)?text:text.trimEnd()+'\n'+exception+'\n';
+ if(f==='AGENTS.md'){
+  const rule=fs.readFileSync(path.join(root,f),'utf8').split(/\r?\n/).find(s=>s.startsWith('- GPU handoff for narration, user-directed 2026-10-08:'));
+  if(!rule)throw Error('Missing reviewed GPU handoff rule');
+  if(text.includes(rule))return text;
+  if(text.includes('- GPU handoff for narration, user-directed 2026-10-08:'))throw Error('Conflicting GPU handoff rule; preserve and review it');
+  const anchor='# Video production defaults';if(!text.startsWith(anchor))throw Error('Unexpected AGENTS structure');
+  return anchor+'\n\n'+rule+'\n'+text.slice(anchor.length);
+ }
+ if(f==='docs/NARRATION_AUDIO_STANDARD.md'){
+  const working=fs.readFileSync(path.join(root,f),'utf8').replace(/\r\n/g,'\n');
+  const first='2026-10-08 사용자 지시: 영상 제작을 재개하며, GPU TTS 전에는 실행 중인 GPU 작업을';
+  const start=working.indexOf(first),end=working.indexOf('\n- 모델:',start);
+  if(start<0||end<start)throw Error('Missing reviewed narration handoff paragraph');
+  const paragraph=working.slice(start,end).trimEnd();
+  if(text.replace(/\r\n/g,'\n').includes(paragraph))return text;
+  if(text.includes(first))throw Error('Conflicting narration handoff paragraph');
+  const anchor='## 기본 TTS 설정';if(!text.includes(anchor))throw Error('Unexpected audio standard structure');
+  return text.replace(anchor,anchor+'\n\n'+paragraph);
+ }
+ if(f==='qwen3-tts/render_narration.py'){
+  const hook='    from gpu_handoff_guard import schedule_gpu_handoff\n    schedule_gpu_handoff(args.project, args.device, args.dry_run)\n';
+  if(text.replace(/\r\n/g,'\n').includes(hook))return text;
+  if(text.includes('schedule_gpu_handoff'))throw Error('Conflicting shared GPU scheduling hook');
+  const anchor='    if args.batch_size < 1:';if(!text.includes(anchor))throw Error('Unexpected narration parser structure');
+  return text.replace(anchor,hook+anchor);
+ }
  const value=JSON.parse(text);
  if(f===special[0]){if(!value.includes(entry))value.push(entry);}
  else if(f===special[1]){if(!value.projects.some(x=>x.slug===slug))value.projects.push({slug,manifest:`projects/${slug}/rebuild.json`});}
