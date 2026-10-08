@@ -1,0 +1,250 @@
+{
+  "status": "passed-agent-script-and-ASR-difference-review",
+  "humanListening": "pending",
+  "scenes": [
+    {
+      "scene": "01",
+      "wavSha256": "9126c5e49c16a7fce88054c119a5fa6e180b3f3b2a2f7a1d9471100ae5d935ff",
+      "rawAsrSha256": "2f20d708e73c55907e326e047028da9477ce413e908bd3550090cc3d61c4dda2",
+      "expected": "삼각형의 중심은 하나일까요? 안으로 움푹 들어간 지형은 어떻게 삼각형으로 나눌까요? 먼저 실제 게임의 타일과 지형을 보며, 무게중심과 내심, 외심이 답하는 질문을 구분합니다. 이어서 다각형의 경계와 볼록성을 확인하고, 한 점에서 부채꼴로 나누는 방법의 한계를 보겠습니다. 마지막에는 오목한 예제를 귀 잘라내기로 분할하고, 빠진 영역과 가느다란 삼각형을 검사하겠습니다.",
+      "recognized": " 삼각형의 중심은 하나일까요? 안으로 움푹 들어간 지형은 어떻게 삼각형으로 나눌까요? 먼저 실제 게임의 타일과 지형을 보며 무게중심과 내심, 외심이 답하는 질문을 구분합니다. 이어서 다각형의 경계와 볼록성을 확인하고 한 점에서 부채꼴로 나누는 방법의 한계를 보겠습니다. 마지막에는 오목한 예제를 귀 잘라내기로 분할하고 빠진 영역과 가느다란 삼각형을 검사하겠습니다.",
+      "matchingCharacterCoverage": 1.0,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full overview question and all three teaching steps directly read against current raw ASR; exact text, no lost content."
+    },
+    {
+      "scene": "02",
+      "wavSha256": "fe104ae4e5808c4e7e7c2815ad06aff4e6abfabdc88e1a867f09c420e14b6d07",
+      "rawAsrSha256": "c05699168e6f260be427c691f17ecde8c5139b59d6ab90158d20276b98b8b565",
+      "expected": "도르프로만틱에서 육각형 타일을 돌려 빈자리에 놓습니다. 타일의 가운데와 바깥쪽 변을 함께 보세요. 가운데에 표시를 놓는 일과, 안쪽에 원을 넣는 일은 서로 다른 질문입니다. 타일을 둘러싸는 원의 중심을 찾는 질문도 있습니다. 모양에 따라 세 질문의 답이 달라집니다. 정육각형처럼 대칭이 좋은 모양에서는 중심들이 겹쳐 보입니다. 일반 삼각형에서도 같다고 생각하면 안 됩니다. 타일이 연결되면 전체 땅의 윤곽도 바뀝니다. 타일 하나의 중심과 연결된 영역의 중심을 구분하세요. 이제 변의 길이가 삼, 사, 오인 삼각형으로 비교합니다. 게임이 그 중심 계산을 쓴다고 추정하지 않고, 우리가 정의한 예제를 풉니다.",
+      "recognized": " 도르프로만틱에서 육각형 타일을 돌려 빈자리에 놓습니다 타일의 가운데와 바깥쪽 편을 함께 보세요 가운데에 표시를 놓는 일과 안쪽에 원을 넣는 일은 서로 다른 질문입니다 타일을 둘러싸는 원의 중심을 찾는 질문도 있습니다 모양에 따라 세 질문의 답이 달라집니다 정육각형처럼 대칭이 좋은 모양에서는 중심들이 겹쳐 보입니다 일반 삼각형에서도 같다고 생각하면 안 됩니다 타일이 연결되면 전체 땅의 윤곽도 바뀝니다 타일 하나의 중심과 연결된 영역의 중심을 구분하세요 이제 변의 길이가 3, 4, 5인 삼각형으로 비교합니다 게임이 그 중심 계산을 쓴다고 추정하지 않고 우리가 정의한 예제를 풉니다",
+      "matchingCharacterCoverage": 0.9958847736625515,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly compared. Dorfromantik name, hex symmetry, different centers and own3/4/5 example preserved. 변→편 is ASR spelling only; no algorithm claim about game internals."
+    },
+    {
+      "scene": "03",
+      "wavSha256": "a1af2a007bbadd17d92b37e9e91ac432a10b3bb8f8f1591ab8814129f41c61ef",
+      "rawAsrSha256": "990e370cdf369a5a8ad99d7a79ca05be4278eafa43ae946f8a91eb7d497e3ce2",
+      "expected": "삼각형에서 무게중심은 세 꼭짓점 좌표의 평균입니다. 세 중선이 만나는 점이기도 합니다. 내심은 세 변까지의 거리가 같은 점입니다. 그 점을 중심으로 안에 닿는 원을 그릴 수 있습니다. 외심은 세 꼭짓점까지의 거리가 같은 점입니다. 그 점을 중심으로 꼭짓점을 지나는 원을 그립니다. 좌표 평균, 변까지의 거리, 꼭짓점까지의 거리입니다. 무엇이 같아야 하는지 먼저 정하세요. 세 꼭짓점이 영, 영과 사, 영과 영, 삼인 직각삼각형을 같은 그림에서 비교하겠습니다. 이 예제에서는 세 중심이 서로 다릅니다. 모두 중심이라고 부르지만 역할을 바꾸어 쓸 수는 없습니다.",
+      "recognized": " 삼각형에서 무게중심은 색꼭지점 좌표의 평균입니다. 세중선이 만나는 점이기도 합니다. 내심은 세변까지의 거리가 같은 점입니다. 그 점을 중심으로 안에 닿는 원을 그릴 수 있습니다. 외심은 색꼭지점까지의 거리가 같은 점입니다. 그 점을 중심으로 꼭지점을 지나는 원을 그립니다. 좌표 평균, 변까지의 거리, 꼭지점까지의 거리입니다. 무엇이 같아야 하는지 먼저 정하세요. 색꼭지점이 0, 0과 4, 0과 0, 3인 직각삼각형을 같은 그림에서 비교하겠습니다. 이 예제에서는 세 중심이 서로 다릅니다. 모두 중심이라고 부르지만 역할을 바꾸어 쓸 수는 없습니다.",
+      "matchingCharacterCoverage": 0.9638009049773756,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All three center definitions and right-triangle vertices(0,0),(4,0),(0,3) correct. 세/색 and 꼭짓점/꼭지점 spelling differences; all clauses retained."
+    },
+    {
+      "scene": "04",
+      "wavSha256": "6d1065b8f7398c1e559d809419de75100dfbcd3317d0f5e8af79857154987a03",
+      "rawAsrSha256": "1c8b7effce8f552f40a825bde373d23d8259a87048015257c0db8a6750c54b26",
+      "expected": "무게중심은 세 꼭짓점을 더해서 삼으로 나눕니다. 지금은 사 나누기 삼, 일입니다. 첫 꼭짓점에서 반대편 변의 중점으로 중선을 그리면, 무게중심은 꼭짓점 쪽에서 삼분의 이 지점입니다. 나머지 두 중선도 같은 점을 지납니다. 가중치는 세 꼭짓점에 각각 삼분의 일입니다. 밀도가 일정한 삼각형 판의 질량 중심도 이 점입니다. 밀도가 달라지면 같은 결론을 그대로 쓸 수 없습니다. 여러 삼각형으로 나눈 다각형에서는 각 삼각형의 넓이로 가중 평균을 내야 합니다. 꼭짓점만 평균하면 일반적으로 틀립니다. 세 점이 일직선이면 좌표 평균은 계산되지만, 넓이 있는 삼각형 판은 아닙니다. 계산 결과와 입력의 유효성을 구분하세요.",
+      "recognized": " 무게중심은 색 꼭지점을 더해서 3으로 나눕니다. 지금은 4 나누기 3, 1입니다. 첫 꼭지점에서 반대편 변의 중점으로 중선을 그리면 무게중심은 꼭지점 쪽에서 3분의 2 지점입니다. 나머지 두 중선도 같은 점을 지납니다. 가중치는 색 꼭지점의 각각 3분의 1입니다. 밀도가 일정한 삼각형 판의 질량 중심도 2점입니다. 밀도가 달라지면 같은 결론을 그대로 쓸 수 없습니다. 여러 삼각형으로 나눈 다각형에서는 각 삼각형의 넓이로 가중 평균을 내야 합니다. 꼭지점만 평균하면 일반적으로 틀립니다. 세 점이 일직선이면 좌표 평균은 계산되지만 넓이 있는 삼각형 판은 아닙니다. 계산 결과와 입력의 유효성을 구분하세요.",
+      "matchingCharacterCoverage": 0.959349593495935,
+      "agentMeaningNumberReview": "passed",
+      "notes": "G=(4/3,1),2/3 median ratio,1/3 equal weights, constant density caveat, polygon area weighting and collinear invalidity all preserved. 이 점→2점 normalizes same pronunciation, not a changed value."
+    },
+    {
+      "scene": "05",
+      "wavSha256": "a038b29c01c486101eaceedb300f664cd3198a81a169b413be4eb1312dc0c598",
+      "rawAsrSha256": "2c4e857909002240e685753b8bb8306beaf792f52711724d4e2db95c3bab55c0",
+      "expected": "시리어스 샘 투에서 길과 다리 사이를 이동합니다. 발밑의 표면과 옆으로 벗어나는 가장자리를 보세요. 발판의 어느 곳에 표시를 놓을지와, 가장자리에서 여유 거리를 확보할지는 다른 문제입니다. 삼각형 발판이라면 세 꼭짓점의 평균을 가운데 표시의 한 기준으로 쓸 수 있습니다. 하지만 평균점에서 모든 변까지의 거리가 같지는 않습니다. 원형 여유 공간을 생각할 때는 변까지의 거리가 필요합니다. 실제 길은 복잡한 모양일 수 있습니다. 화면의 발판을 마음대로 삼각형 하나로 바꾸어 경계를 없애지 마세요. 다음 예제의 내심은 세 변까지 같은 거리를 만듭니다. 현실 게임의 이동 판정 대신, 그 조건을 직접 숫자로 확인하겠습니다.",
+      "recognized": " 시리어스 샘2에서 길과 다리 사이를 이동합니다. 발밑의 표면과 옆으로 벗어나는 가장자리를 보세요. 발판에 어느 곳에 표시를 놓을지와 가장자리에서 여유거리를 확보할지는 다른 문제입니다. 삼각형 발판이라면 색꼭지점의 평균을 가운데 표시의 한 기준으로 쓸 수 있습니다. 하지만 평균점에서 모든 변까지의 거리가 같지는 않습니다. 원형 여유공간을 생각할 때는 변까지의 거리가 필요합니다. 실제 길은 복잡한 모양일 수 있습니다 화면의 발판을 마음대로 삼각형 하나로 바꾸어 경계를 없애지 마세요 다음 예제의 내심은 세변까지 같은 거리를 만듭니다 현실 게임의 이동 판정 대신 그 조건을 직접 숫자로 확인하겠습니다",
+      "matchingCharacterCoverage": 0.984,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Visible bridge edge observation and difference between vertex average and equal edge clearance retained; explicit distinction from real game movement calculation preserved."
+    },
+    {
+      "scene": "06",
+      "wavSha256": "d47713a66336e14411b6ceb5069416c3362e6add71011f3b65a00035bb5a6c11",
+      "rawAsrSha256": "4390d9952b593f716c69b30ff3fd184529563c34a36ed0ca6875d99a2aa08f79",
+      "expected": "내심은 각을 반으로 나누는 선들이 만나는 점입니다. 각 꼭짓점에는 반대편 변의 길이를 가중치로 줍니다. 지금 첫 꼭짓점의 반대편은 오, 둘째의 반대편은 삼, 셋째의 반대편은 사입니다. 둘레는 십이입니다. 가중 합을 십이로 나누면 내심은 일, 일입니다. 엑스축과 와이축까지의 거리가 각각 일입니다. 빗변의 식은 삼 엑스 더하기 사 와이 빼기 십이는 영입니다. 내심을 넣고 법선 길이 오로 나누면 거리도 일입니다. 내접원 반지름은 넓이의 두 배를 둘레로 나눕니다. 넓이 육, 둘레 십이이므로 반지름은 일입니다. 반둘레를 쓰면 넓이 나누기 반둘레입니다. 둘레와 반둘레를 혼동하면 반지름이 절반으로 잘못 나옵니다.",
+      "recognized": " 내심은 각을 반으로 나누는 선들이 만나는 점입니다. 각 꼭지점에는 반대편 변의 길이를 가중치로 줍니다. 지금 첫 꼭지점의 반대편은 5, 둘째의 반대편은 3, 셋째의 반대편은 4입니다. 둘레는 12입니다. 가중합을 12로 나누면 내심은 1, 1입니다. x축과 y축까지의 거리가 각각 1입니다. 빗변의 식은 3x 더하기 4, y 빼기 12는 0입니다. 내심을 넣고 법선 길이 5로 나누면 거리도 1입니다. 내접원 반지름은 넓이의 2배를 둘레로 나눕니다. 넓이 6, 둘레 12이므로 반지름은 1입니다. 반둘레를 쓰면 넓이 나누기 반둘레입니다. 둘레와 반둘레를 혼동하면 반지름이 절반으로 잘못 나옵니다.",
+      "matchingCharacterCoverage": 0.9789915966386554,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Opposite sides5,3,4; perimeter12; I=(1,1); line3x+4y−12=0; normal length5; area6; r=2A/P=A/s=1 and half-perimeter warning all correct in full raw text."
+    },
+    {
+      "scene": "07",
+      "wavSha256": "16f26fb1af58afc29649041d61069aa7b03a5a366d8f0a0af4226db59c1629e6",
+      "rawAsrSha256": "e2a3dc1e862a0a9374fd090485523f9d6aab9811ccf8c9d402bfe57147466fad",
+      "expected": "외심은 두 변의 수직이등분선이 만나는 점으로 구할 수 있습니다. 세 꼭짓점까지의 거리가 같습니다. 가로 변의 중점은 이, 영이고 세로 변의 중점은 영, 일 점 오입니다. 수직이등분선의 교점은 이, 일 점 오입니다. 그 점에서 원점까지의 거리는 이 점 오입니다. 나머지 두 꼭짓점까지도 같으므로 외접원 반지름입니다. 직각삼각형의 외심은 빗변의 중점입니다. 예각삼각형에서는 안에 있고, 둔각삼각형에서는 밖에 있을 수 있습니다. 영, 영과 사, 영과 일, 일인 둔각 예제의 외심은 이, 마이너스 일입니다. 바깥에 있어도 외심 조건을 만족합니다. 세 점이 일직선이면 유일한 유한 외접원을 정할 수 없습니다. 거의 일직선인 입력도 계산을 불안정하게 만듭니다.",
+      "recognized": " 외심은 두 변의 수직이등분선이 만나는 점으로 구할 수 있습니다. 새 꼭지점까지의 거리가 같습니다. 가로변의 중점은 2, 0이고 세로변의 중점은 0, 1.5입니다. 수직이등분선의 교점은 2, 1.5입니다. 그 점에서 원점까지의 거리는 2.5입니다. 나머지 두 꼭지점까지도 같으므로 외접원 반지름입니다. 직각삼각형의 외심은 빗변의 중점입니다. 예각 삼각형에서는 안에 있고 둔각 삼각형에서는 밖에 있을 수 있습니다 0, 0과 4, 0과 1, 1인 둔각 예제의 외심은 2, 마이너스 1입니다 바깥에 있어도 외심 조건을 만족합니다 세 점이 일직선이면 유일한 유한 외접원을 정할 수 없습니다 거의 일직선인 입력도 계산을 불안정하게 만듭니다",
+      "matchingCharacterCoverage": 0.9879518072289156,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Midpoints(2,0),(0,1.5); O=(2,1.5),R=2.5; right/acute/obtuse classification; obtuse(0,0),(4,0),(1,1) O=(2,−1), collinear and near-collinear caveats preserved. Minor 세/새 spelling only."
+    },
+    {
+      "scene": "08",
+      "wavSha256": "a3e3597ff99d213b0e770718ac91e32efb9cabb1a49e625bd5bca925a40afde1",
+      "rawAsrSha256": "d66a7aa40bd2bca4687d751cbf40fec60fdfa1d816d0e7796be74097b90a9d61",
+      "expected": "노이타의 굴곡진 지형 사이를 움직입니다. 앞으로 튀어나온 부분과 안으로 들어간 홈을 보세요. 윤곽을 점으로 기록한다면, 경계를 따라 순서대로 이어야 합니다. 점 목록만 같고 연결 순서가 다르면 다른 모양이 됩니다. 움푹 들어간 구간을 가로질러 직선으로 연결하면 통로와 빈 공간이 메워질 수 있습니다. 중간에 같은 점을 반복하거나 너무 짧은 변을 만들면 방향과 넓이 계산도 불안정해질 수 있습니다. 이 게임의 픽셀 지형을 삼각형 메시라고 단정하지 않습니다. 보이는 윤곽으로 올바른 입력이 왜 필요한지 관찰합니다. 다음 그림은 점 여섯 개로 정의한 단순한 오목 다각형입니다. 경계 순서와 빠진 영역을 눈으로 확인하겠습니다.",
+      "recognized": " 노이타의 굴곡진 지형 사이를 움직입니다. 앞으로 튀어나온 부분과 안으로 들어간 홈을 보세요. 윤곽을 점으로 기록한다면 경계를 따라 순서대로 이어야 합니다. 점 목록만 갖고 연결 순서가 다르면 다른 모양이 됩니다. 움푹 들어간 구간을 가로질러 직선으로 연결하면 통로와 빈 공간이 메워질 수 있습니다. 중간에 같은 점을 반복하거나 너무 짧은 변을 만들면 방향과 넓이 계산도 불안정해질 수 있습니다. 이 게임의 픽셀 지형을 삼각형 메쉬라고 단정하지 않습니다. 보이는 윤곽으로 올바른 입력이 왜 필요한지 관찰합니다 다음 그림은 점 6개로 정의한 단순한 오목 다각형입니다 경계 순서와 빠진 영역을 눈으로 확인하겠습니다",
+      "matchingCharacterCoverage": 0.9840637450199203,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six complete paragraphs directly read: boundary order, concavity, excluded void, short/duplicate edges, no assertion about Noita internal mesh, six-vertex mathematical next example. 같고/갖고 and 메시/메쉬 spelling differences leave the observation intact."
+    },
+    {
+      "scene": "09",
+      "wavSha256": "505686a0b5b2c20281dbfbf4112665f0067df276801aa7e5da1b1031672dce41",
+      "rawAsrSha256": "c0ce09114e821d4f7f8195d219cef601e918c99c806a2c44931ac2fe3a7e39fd",
+      "expected": "다각형은 마지막 점에서 첫 점으로 돌아오는 닫힌 경계입니다. 꼭짓점은 경계를 따라 순서대로 저장합니다. 지금은 영, 영에서 시작해 사, 영과 사, 일, 일, 일, 일, 사, 영, 사로 돌아오는 엘자입니다. 오른쪽 위의 빈 영역은 다각형에 포함되지 않습니다. 오목한 꼭짓점은 일, 일입니다. 먼저 유한한 좌표와 중복점, 길이가 영인 변, 넓이가 영인 입력을 검사합니다. 삼차원 점이라면 같은 평면에 있는지도 확인하고, 인접하지 않은 변이 서로 가로지르는지 검사해야 합니다. 오늘 분할은 구멍과 자기 교차가 없는 단순 다각형을 대상으로 합니다. 구멍이 있는 입력은 별도의 경계와 알고리즘이 필요합니다.",
+      "recognized": " 다각형은 마지막 점에서 첫 점으로 돌아오는 닫힌 경계입니다. 꼭지점은 경계를 따라 순서대로 저장합니다. 지금은 0, 0에서 시작해 4, 0과 4, 1, 1, 1, 1, 4, 0, 4로 돌아오는 엘자입니다. 오른쪽 위에 빈 영역은 다각형에 포함되지 않습니다. 오목한 꼭지점은 1, 1입니다. 먼저 유한한 좌표와 중복점, 길이가 0인 변, 넓이가 0인 입력을 검사합니다. 3차원 점이라면 같은 평면에 있는지도 확인하고 인접하지 않은 변이 서로 가로지르는지 검사해야 합니다 오늘 분할은 구멍과 자기교차가 없는 단순 다각형을 대상으로 합니다 구멍이 있는 입력은 별도의 경계와 알고리즘이 필요합니다",
+      "matchingCharacterCoverage": 0.9827586206896551,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Complete current raw read against all six paragraphs: ordered(0,0),(4,0),(4,1),(1,1),(1,4),(0,4), excluded upper-right notch and reflex(1,1); finite/duplicate/zero edge/zero area/coplanar/self-crossing checks; scope no holes and no self-intersections preserved."
+    },
+    {
+      "scene": "10",
+      "wavSha256": "2ab5d8f09d96d7b4b03285470820cc7e5794e061a779a58abc156f59e4e02a8c",
+      "rawAsrSha256": "7a91f8b54feb997efbd84ec72fc93ccbcf220ae338d34787ddfed632069df023",
+      "expected": "볼록한 영역은 안의 두 점을 골라 연결한 선분이 모두 안에 남습니다. 직관적으로 움푹 파인 곳이 없습니다. 정육각형과 삼각형은 볼록합니다. 그 안의 두 점을 연결해도 바깥으로 빠져나가지 않습니다. 엘자에서는 왼쪽 위와 오른쪽 아래의 점을 연결하면 일부가 오른쪽 위 빈 영역을 통과합니다. 그 두 점은 안에 있어도 선분 전체는 안에 있지 않습니다. 따라서 엘자는 오목한 다각형입니다. 단순한 평면 경계에서는 같은 순서로 돌며 방향 전환이 한쪽으로 일관적인지도 볼 수 있습니다. 한쪽 회전 판정을 자기 교차 경계에 무조건 적용하면 안 됩니다. 먼저 입력의 순서와 교차 여부를 검증하세요.",
+      "recognized": " 볼록한 영역은 안에 두 점을 골라 연결한 선분이 모두 안에 남습니다. 직관적으로 움푹 파인 곳이 없습니다. 정육각형과 삼각형은 볼록합니다. 그 안에 두 점을 연결해도 바깥으로 빠져나가지 않습니다. 엘자에서는 왼쪽 위와 오른쪽 아래의 점을 연결하면 일부가 오른쪽 위 빈 영역을 통과합니다. 그 두 점은 안에 있어도 선분 전체는 안에 있지 않습니다. 따라서 엘자는 오목한 다각형입니다. 단순한 평면 경계에서는 같은 순서로 돌며 방향 전환이 한쪽으로 일관적인지도 볼 수 있습니다. 한쪽 회전 판정을 자기교차 경계에 무조건 적용하면 안됩니다. 먼저 입력의 순서와 교차 여부를 검증하세요.",
+      "matchingCharacterCoverage": 0.9914529914529915,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full raw read: all-inside segment definition, hex/triangle convex examples, two interior L points with segment crossing excluded notch, consistent turn test only after simple input validation. Minor 안의/안에 spelling, no missing argument."
+    },
+    {
+      "scene": "11",
+      "wavSha256": "e9319f35b1658a2ebf8d7ea03706e55f8927195c9f2be9c5e5a1dec6efd19134",
+      "rawAsrSha256": "55d36a73c06a50b1b1758202f77a331d5f5c357ffbde359784033072a8d99bd4",
+      "expected": "도르프로만틱의 육각형 타일이 추가되며 땅의 경계가 바뀝니다. 새 타일 하나와 전체 연결 영역을 나누어 보세요. 타일 하나는 볼록하지만 여러 개를 합친 윤곽에는 안쪽 홈이 생길 수 있습니다. 같은 바깥 경계 안에 있다고 생각한 두 위치를 연결해도, 선분이 빈 타일 자리 위를 통과할 수 있습니다. 볼록한 조각들의 합집합이 언제나 볼록한 것은 아닙니다. 전체 윤곽을 별도로 검사해야 합니다. 구멍이 있는 영역이라면 바깥 윤곽만 기록해도 충분하지 않습니다. 제외할 내부 경계가 필요합니다. 다음 계산에서는 모양 전체가 볼록한지 살피는 방법과, 각도의 합만으로 구분할 수 없는 이유를 보겠습니다.",
+      "recognized": " 도르프로만틱의 육각형 타일이 추가되며 땅의 경계가 바뀝니다. 새 타일 하나와 전체 연결 영역을 나누어 보세요. 타일 하나는 볼록하지만 여러 개를 합친 윤곽에는 안쪽 홈이 생길 수 있습니다. 같은 바깥 경계 안에 있다고 생각한 두 위치를 연결해도 선분이 빈 타일 자리 위를 통과할 수 있습니다. 볼록한 조각들의 합집합이 언제나 볼록한 것은 아닙니다. 전체 윤곽을 별도로 검사해야 합니다. 구멍이 있는 영역이라면 바깥 윤곽만 기록해도 충분하지 않습니다. 제외할 내부 경계가 필요합니다. 다음 계산에서는 모양 전체가 볼록한지 살피는 방법과 각도의 한만으로 구분할 수 없는 이유를 보겠습니다.",
+      "matchingCharacterCoverage": 0.9957805907172996,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full raw read: single convex hex versus potentially concave tile union, missing tile space, nonconvex union, hole boundary and angle sum caveat. Final 합→한 is an ASR consonant spelling; this scene introduces the next actual calculation and does not assert a numerical formula."
+    },
+    {
+      "scene": "12",
+      "wavSha256": "167bddf201c8c4d713a1cd2571f9dba1d4f5c4eb91b48d3882365420e297ccd1",
+      "rawAsrSha256": "25457b394e987d9ecfced436d63f35bac91c930875e8bccf60edb3ac515df155",
+      "expected": "연속된 세 꼭짓점에서 두 변의 이차원 외적 부호를 봅니다. 경계를 시계 반대 방향으로 정했다면, 볼록한 곳은 왼쪽으로 돕니다. 엘자의 오목한 꼭짓점에서는 반대로 돕니다. 이 예제는 왼쪽 회전과 오른쪽 회전이 섞여 있습니다. 일직선인 세 점은 외적이 영입니다. 엄격한 볼록성인지, 일직선 점을 허용하는지 규칙을 정해야 합니다. 단순한 다각형의 내각 합은 꼭짓점의 개수에서 두 개를 뺀 뒤, 백팔십 도를 곱합니다. 볼록과 오목 모두 같습니다. 여섯 꼭짓점이면 칠백이십 도입니다. 각도 합이 맞는다는 이유만으로 볼록하다고 판정할 수 없습니다. 역코사인으로 각도를 구할 때는 영인 변을 거르고 입력을 마이너스 일과 일 사이로 제한합니다. 작은 끼인각만으로 오목한 내각을 구별하지 마세요.",
+      "recognized": " 연속된 세 꼭지점에서 두 변의 2차원 외적 부호를 봅니다. 경계를 시계의 반대 방향으로 정했다면 볼록한 곳은 왼쪽으로 돕니다. 엘자의 오목한 꼭지점에서는 반대로 돕니다. 이 예제는 왼쪽 회전과 오른쪽 회전이 섞여 있습니다. 일직선인 세 점은 외적이 0입니다. 엄격한 볼록성인지 일직선점을 허용하는지 규칙을 정해야 합니다. 단순한 다각형의 내각합은 꼭지점의 개수에서 두 개를 뺀 뒤 180도를 곱합니다. 볼록과 오목 모두 같습니다. 여섯 꼭지점이면 720도입니다. 각도 합이 맞는다는 이유만으로 볼록하다고 판정할 수 없습니다. 여코사인으로 각도를 구할 때는 0인 변을 거르고 입력을 마이너스 1과 1 사이로 제한합니다. 작은 끼인각만으로 오목한 내각을 구별하지 마세요.",
+      "matchingCharacterCoverage": 0.9776951672862454,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full final replacement raw directly compared. Counterclockwise clearly 시계 반대 방향, convex left turn/reflex reverse, collinear cross0, explicit subtract TWO vertices before multiplying180, six vertices720, sum does not prove convex, zero-edge filtering and clamp−1..1 preserved. Earlier1-subtraction ambiguity removed; minor 꼭짓점/꼭지점 and 역/여 spellings only."
+    },
+    {
+      "scene": "13",
+      "wavSha256": "c61c9b3e4f58bb5bcfa3c06338ea2f96bde7c392011f86e07c13c41b3595d7bc",
+      "rawAsrSha256": "c5b1d2007051044c1689c56664cba4a6149679abb561e26c6b1f640e8665237e",
+      "expected": "볼록한 다각형에서는 첫 꼭짓점에서 나머지 꼭짓점으로 대각선을 그을 수 있습니다. 첫 삼각형은 영, 일, 이이고 다음은 영, 이, 삼입니다. 같은 첫 꼭짓점을 공유하며 앞으로 진행합니다. 꼭짓점이 여섯 개면 삼각형은 네 개입니다. 일반적으로 꼭짓점의 개수에서 두 개를 뺀 개수입니다. 볼록하기 때문에 대각선과 삼각형이 바깥으로 빠져나가지 않습니다. 바로 이 조건이 단순한 방법을 안전하게 만듭니다. 각 삼각형은 같은 경계 방향으로 저장하고, 원래 꼭짓점의 인덱스로 위치와 속성을 참조할 수 있습니다. 삼각형 개수가 맞는 것만으로 올바른 분할이 되지는 않습니다. 영역을 겹치거나 빠짐없이 덮는지도 확인하세요.",
+      "recognized": " 볼록한 다각형에서는 첫 꼭지점에서 나머지 꼭지점으로 대각선을 그을 수 있습니다 첫 삼각형은 0, 1, 2이고 다음은 0, 2, 3입니다 같은 첫 꼭지점을 공유하며 앞으로 진행합니다 꼭지점이 6개면 삼각형은 4개입니다 일반적으로 꼭지점의 개수에서 2개를 뺀 개수입니다 볼록하기 때문에 대각선과 삼각형이 바깥으로 빠져나가지 않습니다 바로 이 조건이 단순한 방법을 안전하게 만듭니다 각 삼각형은 같은 경계 방향으로 저장하고 원래 꼭지점의 인덱스로 위치와 속성을 참조할 수 있습니다. 삼각형 개수가 맞는 것만으로 올바른 분할이 되지는 않습니다. 영역을 겹치거나 빠짐없이 덮는지도 확인하세요.",
+      "matchingCharacterCoverage": 0.9591836734693877,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full final replacement raw directly compared: fan triangles0/1/2 then0/2/3, six vertices produce four triangles, explicit subtract TWO vertices in general count, convexity reason, same orientation/indices/attributes and no-gap/no-overlap review preserved. Numerals and algorithm scope correct."
+    },
+    {
+      "scene": "14",
+      "wavSha256": "eb1f99b2c7bb20abb16d2286d62f936d5919a7dadb36c830526417a90e881a26",
+      "rawAsrSha256": "bb339cb4ad4391cfe9fba88be5115463be983a93a4ad44686fe1ad40195e0b64",
+      "expected": "노이타에서 캐릭터가 파인 통로와 지형의 끝을 지납니다. 바깥으로 열린 빈 공간을 보세요. 경계의 한 점에서 모든 다른 점으로 직선을 잇는다면, 일부 선은 빈 공간을 가로지를 수 있습니다. 그 선을 삼각형 변으로 사용하면 원래 없던 땅을 채웠다고 계산할 수 있습니다. 반대로 어떤 부분은 여러 삼각형이 겹칠 수도 있습니다. 총 개수만 맞추어서는 이 문제를 발견하지 못합니다. 실제 게임이 그런 오류를 낸다는 뜻이 아닙니다. 보이는 통로를 통해 잘못된 분할의 결과를 상상해 보는 것입니다. 이제 같은 엘자에서 시작점을 바꾸어, 부채꼴이 실패하는 경우를 직접 그려 보겠습니다.",
+      "recognized": " 노이타에서 캐릭터가 파인 통로와 지형의 끝을 지납니다. 바깥으로 열린 빈 공간을 보세요. 경계의 한 점에서 모든 다른 점으로 직선을 잇는다면 일부 선은 빈 공간을 가로지를 수 있습니다. 그 선을 삼각형 변으로 사용하면 원래 없던 땅을 채웠다고 계산할 수 있습니다. 반대로 어떤 부분은 여러 삼각형이 겹칠 수도 있습니다. 총 개수만 맞춰서는 이 문제를 발견하지 못합니다. 실제 게임이 그런 오류를 낸다는 뜻이 아닙니다. 보이는 통로를 통해 잘못된 분할의 결과를 상상해보는 것입니다. 이제 같은 엘자에서 시작점을 바꾸어 부채꼴이 실패하는 경우를 직접 그려보겠습니다.",
+      "matchingCharacterCoverage": 0.9912280701754386,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full raw read: open passage, bad arbitrary diagonals filling void, overlap, triangle count insufficiency, explicit illustrative-only game observation and upcoming same-L fan counterexample preserved. No numbers omitted."
+    },
+    {
+      "scene": "15",
+      "wavSha256": "7863386c03d54c0aebdb144153f487b137e15858733a73ee85de06e79594e8ce",
+      "rawAsrSha256": "34c6762451be2948e7c366d409df44ff752339542667f5e765b048e74264b5dc",
+      "expected": "엘자의 한 꼭짓점을 부채꼴의 기준으로 고릅니다. 이 점의 엑스 좌표는 사이고, 와이 좌표는 숫자 일입니다. 경계 순서를 따라 네 개의 삼각형을 만듭니다. 기준점에서 일, 사와 영, 사 쪽으로 이어지는 삼각형의 일부는 빈 영역으로 나갑니다. 경계 방향에 따른 넓이를 더하면 칠이 나올 수 있습니다. 잘못 덮은 부분이 부호로 상쇄되기 때문입니다. 원래 엘자의 넓이도 칠이지만, 같은 합이 올바른 영역을 보장하지는 않습니다. 반대로 영, 영을 기준으로 하면 이 특정 엘자에서는 유효한 부채꼴이 됩니다. 오목한 모양이 모두 같은 결과를 내는 것은 아닙니다. 중요한 것은 입력 조건을 확인한 알고리즘입니다. 임의의 시작점으로 오목 다각형을 안전하게 나눌 수 있다고 일반화하지 마세요.",
+      "recognized": " L자의 한 꼭지점을 부채꼴의 기준으로 고릅니다. 이 점의 X좌표는 4이고 Y좌표는 숫자 1입니다. 경계 순서를 따라 4개의 삼각형을 만듭니다. 기준점에서 1, 4와 0, 4쪽으로 이어지는 삼각형의 일부는 빈 영역으로 나갑니다. 경계 방향에 따른 넓이를 더하면 7이 나올 수 있습니다. 잘못 덮은 부분이 부호로 상쇄되기 때문입니다. 원래 L자의 넓이도 7이지만 같은 합이 올바른 영역을 보장하지는 않습니다. 반대로 0, 0을 기준으로 하면 이 특정 L자에서는 유효한 부채꼴이 됩니다 오목한 모양이 모두 같은 결과를 내는 것은 아닙니다 중요한 것은 입력 조건을 확인한 알고리즘입니다 이미의 시작점으로 오목 다각형을 안전하게 나눌 수 있다고 일반화하지 마세요",
+      "matchingCharacterCoverage": 0.9699248120300752,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full final replacement raw directly compared: explicit X coordinate4 and Y coordinate NUMBER1, four triangles, outside void near(1,4),(0,4), signed cancellation sum7, same-L area7, valid special anchor(0,0) versus no arbitrary-concave-fan generalization. Earlier(4,2) ambiguity removed; only 임의/이미 spelling remains."
+    },
+    {
+      "scene": "16",
+      "wavSha256": "3275d162ad48b9eb644ec248009e7c2f392f257ff81d3ea921b78db9069b9a80",
+      "rawAsrSha256": "894836e13ccfaebf7e03294cd51c102e1f0df5e93e633956ef429cf866c4b83d",
+      "expected": "귀는 경계의 연속된 세 꼭짓점으로 만드는, 안쪽에 놓인 삼각형입니다. 가운데 꼭짓점이 볼록한 후보여야 합니다. 단순 경계에서 대각선이 내부에 있어야 하고, 다른 남은 꼭짓점이 그 삼각형 안이나 허용하지 않은 경계 위에 없어야 합니다. 엘자에서 영, 영과 사, 영과 사, 일인 삼각형을 첫 귀로 고릅니다. 넓이는 이입니다. 그 삼각형을 결과에 저장하고 가운데 꼭짓점인 사, 영을 남은 경계에서 제거합니다. 새 경계는 영, 영에서 사, 일로 바로 이어집니다. 제거한 삼각형과 남은 영역이 원래 엘자를 함께 덮습니다. 꼭짓점을 제거했다고 원래 데이터의 인덱스를 덮어쓰지 마세요. 남은 연결 관계와 출력 삼각형을 따로 유지합니다.",
+      "recognized": " 귀는 경계에 연속된 새 꼭지점으로 만드는 안쪽에 놓인 삼각형입니다. 가운데 꼭지점이 볼록한 후보여야 합니다. 단순 경계에서 대각선이 내부에 있어야 하고 다른 남은 꼭지점이 그 삼각형 안이나 허용하지 않은 경계 위에 없어야 합니다. L자에서 0, 0과 4, 0과 4, 1인 삼각형을 첫 귀로 고릅니다. 넓이는 2입니다. 그 삼각형을 결과에 저장하고 가운데 꼭지점인 4, 0을 남은 경계에서 제거합니다. 새 경계는 0, 0에서 4, 1로 바로 이어집니다. 제거한 삼각형과 남은 영역이 원래 L자를 함께 덮습니다. 꼭지점을 제거했다고 원래 데이터의 인덱스를 덮어 쓰지 마세요. 남은 연결 관계와 출력 삼각형을 따로 유지합니다.",
+      "matchingCharacterCoverage": 0.963265306122449,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six complete paragraphs directly compared. Valid convex middle vertex, internal diagonal and no remaining vertex containment, first ear(0,0),(4,0),(4,1) area2, remove(4,0), new edge(0,0)→(4,1), preserve original indices and output triangles all correct. 세/새, 꼭짓점/꼭지점 spelling only."
+    },
+    {
+      "scene": "17",
+      "wavSha256": "ecf0954da5c8b03d19fb8178388331ff0f7379b41441773e1959f9aabe15c17b",
+      "rawAsrSha256": "42bdd5ece01a80d4b5b784e0fd6a7ad364a5e359e27903b316b6b4779aca6112",
+      "expected": "노이타의 얼음 지형과 좁은 통로를 따라 움직입니다. 어디가 지형이고 어디가 지나갈 빈 공간인지 구분하세요. 분할 결과를 볼 때도 같은 질문이 필요합니다. 원래 지형에 있던 영역은 남고, 빈 통로는 채워지지 않아야 합니다. 삼각형을 하나씩 추가할 때마다 주변 경계를 다시 보아야 합니다. 처음의 이웃 관계가 끝까지 같지는 않습니다. 형태가 복잡해져도 지켜야 할 것은 겹침 없는 덮기와 같은 바깥 윤곽입니다. 여기서는 게임의 실제 이동을 관찰할 뿐, 픽셀 데이터를 직접 삼각형으로 바꾸었다고 말하지 않습니다. 다음 그림에서는 남은 귀를 차례로 제거하고 네 삼각형이 넓이 칠의 엘자를 정확하게 덮는지 확인합니다.",
+      "recognized": " 노이타의 얼음 지형과 좁은 통로를 따라 움직입니다. 어디가 지형이고 어디가 지나갈 빈 공간인지 구분하세요. 분할 결과를 볼 때도 같은 질문이 필요합니다. 원래 지형에 있던 영역은 남고 빈 통로는 채워지지 않아야 합니다. 삼각형을 하나씩 추가할 때마다 주변 경계를 다시 보아야 합니다. 처음에 이웃 관계가 끝까지 같지는 않습니다. 형태가 복잡해져도 지켜야 할 것은 겹침 없는 덮기와 같은 바깥 윤곽입니다. 여기서는 게임의 실제 이동을 관찰할 뿐 픽셀 데이터를 직접 삼각형으로 바꾸었다고 말하지 않습니다 다음 그림에서는 남은 귀를 차례로 제거하고 내 삼각형이 넓이 7의 L자를 정확하게 덮는지 확인합니다",
+      "matchingCharacterCoverage": 0.9877551020408163,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six full paragraphs directly compared: preserve original land and empty passage, neighbors update, nonoverlap coverage and boundary preservation, observation-only game scope, four triangles with total area7. 네/내 is same spoken syllable, not a changed numeric value; exact next demonstration states all four triangles."
+    },
+    {
+      "scene": "18",
+      "wavSha256": "31943e8b87f0e93ff1287c9a384a41f1affc9dfda76332a677633520c7f4ce03",
+      "rawAsrSha256": "c3b002f30e1542750c22774540686d842e2d2b6095ca52337b63330b64250d49",
+      "expected": "첫 귀를 뗀 뒤 다음 귀는 영, 이, 삼입니다. 그 넓이는 일 점 오입니다. 이 꼭짓점을 제거하면 영, 삼, 사가 다음 귀가 됩니다. 넓이는 다시 일 점 오입니다. 마지막에는 영, 사, 오 삼각형이 남고 넓이는 이입니다. 네 넓이를 더하면 칠입니다. 각 삼각형의 내부가 겹치지 않고 빈 영역을 채우지 않으며, 원래 경계를 덮는 것도 확인합니다. 귀를 찾지 못하면 유효하지 않은 입력이나 퇴화, 허용 오차 문제를 의심해야 합니다. 무한 반복하거나 임의의 삼각형을 출력하지 마세요. 구멍 있는 다각형을 연결하는 기법은 추가 규칙이 필요합니다. 오늘의 단순 예제가 모든 구멍과 교차 입력까지 해결했다고 확장하지 않습니다.",
+      "recognized": " 첫 귀를 뗀 뒤 다음 귀는 0, 2, 3입니다. 그 넓이는 1.5입니다. 이 꼭지점을 제거하면 0, 3, 4가 다음 귀가 됩니다. 넓이는 다시 1.5입니다. 마지막에는 0, 4, 5 삼각형이 남고 넓이는 2입니다. 내 넓이를 더하면 7입니다. 각 삼각형의 내부가 겹치지 않고 빈 영역을 채우지 않으며 원래 경계를 덮는 것도 확인합니다. 귀를 찾지 못하면 유효하지 않은 입력이나 퇴화, 허용 오차 문제를 의심해야 합니다. 무한 반복하거나 이미의 삼각형을 출력하지 마세요. 구멍 있는 다각형을 연결하는 기법은 추가 규칙이 필요합니다. 오늘의 단순 예제가 모든 구멍과 교차 입력까지 해결했다고 확장하지 않습니다.",
+      "matchingCharacterCoverage": 0.9786324786324786,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full raw text directly compared: remaining ears indices0/2/3 and0/3/4 each area1.5, final0/4/5 area2, all four areas sum7, no gaps/overlaps/filled notch, no-ear error handling and no universal hole/self-intersection claim. 임의/이미 spelling difference; all numbers and guards retained."
+    },
+    {
+      "scene": "19",
+      "wavSha256": "3d1af31937273f7874202f1630e1a2e62e2f5525d0b51dd266a955aca7c3eb6d",
+      "rawAsrSha256": "2d07415672fe1c73068de5ab012bd5ddaf25c498e2203948dc40a5b7d8d42ef6",
+      "expected": "노이타에서 넓은 공간과 좁은 틈을 지납니다. 실제 윤곽에는 서로 가까운 점과 긴 경계가 함께 나타납니다. 그런 모양을 삼각형으로 표현하면 아주 가느다란 조각이 생길 수 있습니다. 가느다란 삼각형은 꼭 틀린 삼각형은 아닙니다. 하지만 작은 넓이에 비해 긴 변을 가져 계산이 민감해질 수 있습니다. 좌표 단위와 해상도가 다른 입력에 같은 숫자의 허용 오차를 그대로 적용하는 것도 조심해야 합니다. 모양을 단순하게 만들기 위해 점을 지우면 통로의 폭이나 경계가 달라질 수 있습니다. 필요한 정보부터 보존하세요. 다음 비교는 유효한 분할과 품질 좋은 분할을 구분합니다. 원래 영역을 지키는 것이 먼저이고 모양 개선은 그다음입니다.",
+      "recognized": " 노이타에서 넓은 공간과 좁은 틈을 지납니다. 실제 윤곽에는 서로 가까운 점과 긴 경계가 함께 나타납니다. 그런 모양을 삼각형으로 표현하면 아주 가느다란 조각이 생길 수 있습니다. 가느다란 삼각형은 꼭 틀린 삼각형은 아닙니다. 하지만 작은 넓이에 비해 긴 변을 가져 계산이 민감해질 수 있습니다. 좌표 단위와 해상도가 다른 입력에 같은 숫자의 허용 오차를 그대로 적용하는 것도 조심해야 합니다. 모양을 단순하게 만들기 위해 점을 지우면 통로의 폭이나 경계가 달라질 수 있습니다 필요한 정보부터 보존하세요 다음 비교는 유효한 분할과 품질 좋은 분할을 구분합니다 원래 영역을 지키는 것이 먼저이고 모양 개선은 그 다음입니다",
+      "matchingCharacterCoverage": 1.0,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six complete paragraphs directly compared; thin valid triangles versus sensitive calculation, input units/resolution tolerance, preserve passage and boundary when simplifying, validity before quality. Exact complete raw text apart from punctuation."
+    },
+    {
+      "scene": "20",
+      "wavSha256": "1d4576a61be423e1ab6e038c88a3e6cc1c3fd336ea59299f243ed442c3076f5c",
+      "rawAsrSha256": "8171ce5049fe318274b8ae59c0dec489d179aacc97b145ffe88d8a6cae4fa79a",
+      "expected": "넓이가 거의 영인 삼각형과 넓이가 충분한 삼각형을 나란히 보겠습니다. 작은 각도를 가진 조각은 계산에 민감합니다. 귀가 여러 개라면 작은 각도가 더 큰 후보를 선호하는 등 품질 기준을 둘 수 있습니다. 하지만 좋은 각도만 보고 경계 밖의 삼각형을 고르면 안 됩니다. 귀의 유효성 조건이 먼저입니다. 같은 네 삼각형 개수라도 내부 대각선을 어떻게 선택하느냐에 따라 모양이 달라집니다. 분할 후에는 방향과 인덱스, 넓이, 영역 덮기, 필요한 속성 연결을 다시 확인합니다. 오차 기준은 길이와 넓이를 구분하고 입력 크기에 맞추세요. 삼각형을 더 좋게 만들겠다고 원래 경계와 구멍을 지워서는 안 됩니다.",
+      "recognized": " 넓이가 거의 0인 삼각형과 넓이가 충분한 삼각형을 나란히 보겠습니다. 작은 각도를 가진 조각은 계산에 민감합니다. 귀가 여러 개라면 작은 각도가 더 큰 후보를 선호하는 등 품질 기준을 둘 수 있습니다. 하지만 좋은 각도만 보고 경계밖에 삼각형을 고르면 안 됩니다. 귀의 유효성 조건이 먼저입니다. 같은 4삼각형 개수라도 내부 대각선을 어떻게 선택하느냐에 따라 모양이 달라집니다. 분할 후에는 방향과 인덱스, 넓이, 영역 덮기, 필요한 속성 연결을 다시 확인합니다. 5차 기준은 길이와 넓이를 구분하고 입력 크기에 맞추세요. 삼각형을 더 좋게 만들겠다고 원래 경계와 구멍을 지워서는 안됩니다.",
+      "matchingCharacterCoverage": 0.9873417721518988,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six full paragraphs compared: near-zero area sensitivity, prefer larger minimum angle among already valid ears, no choosing outside boundary, four triangles do not fix quality, output orientation/indices/coverage/attributes, length versus area tolerance and preserve boundary/holes. 오차→5차 has identical Korean pronunciation and is a lexical ASR spelling, not a fifth-order numeric rule."
+    },
+    {
+      "scene": "21",
+      "wavSha256": "130d05129d22d08d3c2595418ccb8d443cd5002e290ab12dbcb27f88da0b5edb",
+      "rawAsrSha256": "bf5208f3049ea620a69a331366dcaf7026bfba4ebc9780fdef5fc3dee37f0e8c",
+      "expected": "도르프로만틱의 연결된 타일을 보세요. 타일 하나와 전체 땅의 윤곽은 다릅니다. 먼저 중심의 목적을 정하고, 경계 순서와 볼록성, 홈과 구멍을 확인합니다. 조건에 맞게 분할한 다음, 빈 공간과 원래 영역이 보존되었는지 검사하세요. 마지막 문제에서는 세 중심과 엘자의 네 삼각형을 직접 확인하겠습니다.",
+      "recognized": " 도르프로만틱에 연결된 타일을 보세요. 타일 하나와 전체 땅의 윤곽은 다릅니다. 먼저 중심의 목적을 정하고 경계순서와 볼록성 홈과 구멍을 확인합니다. 조건에 맞게 분할한 다음 빈 공간과 원래의 영역이 보존되었는지 검사하세요. 마지막 문제에서는 새 중심과 엘자의 네 삼각형을 직접 확인하겠습니다.",
+      "matchingCharacterCoverage": 0.9833333333333333,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All four full paragraphs compared: Dorfromantik connected contour, purposes of centers, boundary/convexity/notches/holes, preserve empty region after partition, three centers and four L triangles in final exercises. Minor 의/에 and 세/새 spelling only."
+    },
+    {
+      "scene": "22",
+      "wavSha256": "a053bfc9a281dd3402b80b9b3cd537d0443c359880c1bac8bbefbe4a146d2e7a",
+      "rawAsrSha256": "3d7a9594d2259223e18f9513d84861633af5bb1afe45108679c2f2cda5b90ecb",
+      "expected": "첫 문제입니다. 영, 영과 사, 영과 영, 삼인 삼각형의 무게중심, 내심, 외심을 구분해 보세요. 무게중심은 사 나누기 삼, 일입니다. 내심은 일, 일이고 외심은 이, 일 점 오입니다. 내접원 반지름은 일, 외접원 반지름은 이 점 오입니다. 같은 중심이나 같은 반지름이 아닙니다. 둘째는 여섯 꼭짓점의 엘자입니다. 유효한 삼각형은 네 개입니다. 첫째와 마지막 삼각형의 넓이는 각각 숫자 이입니다. 둘째와 셋째의 넓이는 각각 일 점 오입니다. 네 넓이를 더하면 칠입니다. 같은 넓이 합만 확인하지 말고 겹침과 빈 영역, 경계도 검사하세요. 처음 조건부터 결과까지 한 흐름으로 확인합니다. 기하 장에서는 표현과 경계, 평면과 좌표, 중심과 분할을 연결했습니다. 다음 렌더링 장에서는 이 삼차원 정보를 화면의 픽셀로 만드는 과정을 설명하겠습니다.",
+      "recognized": " 첫 문제입니다. 0, 0과 4, 0과 0. 3인 삼각형의 무게중심, 내심, 외심을 구분해 보세요. 무게중심은 4 나누기 3, 1입니다. 내심은 1, 1이고 외심은 2, 1.5입니다. 내접원 반지름은 1, 외접원 반지름은 2.5입니다. 같은 중심이나 같은 반지름이 아닙니다. 둘째는 6 꼭지점의 L자입니다. 유효한 삼각형은 4개입니다. 첫째와 마지막 삼각형의 넓이는 각각 숫자 2입니다 둘째와 셋째의 넓이는 각각 1.5입니다 네 넓이를 더하면 7입니다 같은 넓이 한만 확인하지 말고 겹침과 빈 영역, 경계도 검사하세요 처음 조건부터 결과까지 한 흐름으로 확인합니다 기아장에서는 표현과 경계, 평면과 좌표, 중심과 분할을 연결했습니다 다음 렌더링장에서는 이 3차원 정보를 화면에 픽셀로 만드는 과정을 설명하겠습니다",
+      "matchingCharacterCoverage": 0.9681978798586572,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Full final replacement raw directly compared: triangle(0,0),(4,0),(0,3), G=(4/3,1),I=(1,1),O=(2,1.5),r=1,R=2.5, six L vertices/four triangles, first and LAST areas explicitly NUMBER2 with middle1.5 each and sum7. Earlier last-area1 ambiguity removed. Coverage/boundary checks, complete geometry summary and rendering next chapter retained. Minor 네/내,합/함,기하/기아 spelling differences do not alter numbers or content."
+    }
+  ],
+  "pendingScenes": [],
+  "checkpointAt": "2026-10-08T04:53:44.961707+00:00",
+  "requiredSpokenClarifications": [
+    {
+      "scene": "12",
+      "reason": "Current full raw ASR says1 subtracted where script intends2; counterclockwise phrase also misrecognized. Require explicit 두 개 and 시계 반대 방향 retake before final approval.",
+      "status": "resolved-current-full-raw-number-review-and-ending-passed",
+      "resolutionSceneSha256": "167bddf201c8c4d713a1cd2571f9dba1d4f5c4eb91b48d3882365420e297ccd1"
+    },
+    {
+      "scene": "13",
+      "reason": "Current numeric examples are correct, but replace ambiguous 이를 뺀 with 두 개를 뺀 for consistent clear general triangle-count rule.",
+      "status": "resolved-current-full-raw-number-review-and-ending-passed",
+      "resolutionSceneSha256": "c61c9b3e4f58bb5bcfa3c06338ea2f96bde7c392011f86e07c13c41b3595d7bc"
+    },
+    {
+      "scene": "15",
+      "reason": "Full raw ASR says anchor(4,2) rather than intended(4,1). Require separate explicit x/y statements and four-triangle count before final approval.",
+      "status": "resolved-current-full-raw-number-review-and-ending-passed",
+      "resolutionSceneSha256": "7863386c03d54c0aebdb144153f487b137e15858733a73ee85de06e79594e8ce"
+    }
+  ],
+  "reviewedAt": "2026-10-08T04:53:45.416102+00:00",
+  "method": "Every current full unnormalized raw read-back was directly compared with its complete KO script, source claims and independently verified numbers/signs/frames. Ambiguous omitted nouns and values were repaired without weakening coverage or ending checks. Remaining ASR spelling/filler differences are explicit, and no human listening approval is implied."
+}

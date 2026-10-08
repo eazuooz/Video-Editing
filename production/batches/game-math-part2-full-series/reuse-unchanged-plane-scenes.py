@@ -11,8 +11,10 @@ from production_control import require_current_authorization
 ROOT = Path(__file__).resolve().parents[3]
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument('--baseline', required=True)
+ap.add_argument('--project', default='game-math-planes-barycentric')
 args = ap.parse_args()
-slug = 'game-math-planes-barycentric'
+slug = args.project
+assert (ROOT / 'projects' / slug).resolve().is_relative_to((ROOT / 'projects').resolve())
 require_current_authorization(slug, 'unchanged scene cache verification')
 
 def read(p):

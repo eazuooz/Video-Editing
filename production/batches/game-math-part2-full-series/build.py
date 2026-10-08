@@ -4,6 +4,7 @@ Reuse the reviewed caption geometry/decode QA from the sample without editing it
 """
 from pathlib import Path
 import sys,importlib.util,json,math,shutil
+from urllib.parse import urlparse
 import numpy as np
 import soundfile as sf
 from observations import place_observation_pauses,mapped_time,observation_capacity_seconds
@@ -106,6 +107,7 @@ def render():
  print('Rendered',len(classes),'independent explanation scenes',flush=True)
 def assemble(reuse=False):
  m=b.read(b.MF);p=b.read(BASE/'production/timeline.json');vdir=WORK/'manim/videos/scene/1080p60';clipdir=WORK/'clips';clipdir.mkdir(exist_ok=True);assets=MC/'assets';assets.mkdir(exist_ok=True);clips=[]
+ source_records=b.read(BASE/'sources/gameplay-cuts.json').get('sources',{})
  for sid,cls,count in [('intro','BrandIntro',120),*[(s['id'],s['manimClass'],s['frames']) for s in p['scenes']],('outro','MemberOutro',600)]:
   target=clipdir/(sid+'.mp4')
   if not reuse:
@@ -117,6 +119,9 @@ def assemble(reuse=False):
     source_id=c['sourceId']
     credit_line=credit+' | '+c['licenseLabel']+' | excerpt, muted'
     source_line='youtu.be/'+source_id
+    source_url=urlparse(source_records.get(source_id,{}).get('url',''))
+    if source_url.netloc and source_url.netloc not in ('youtube.com','www.youtube.com','youtu.be'):
+     source_line=source_url.netloc.removeprefix('www.')+source_url.path
     vf="scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,drawtext=fontfile='C\\:/Windows/Fonts/malgun.ttf':text='"+credit_line+"':fontsize=18:fontcolor=white:box=1:boxcolor=black@0.65:x=30:y=808,drawtext=fontfile='C\\:/Windows/Fonts/malgun.ttf':text='"+source_line+"':fontsize=18:fontcolor=white:box=1:boxcolor=black@0.65:x=30:y=834"
     segments=c['segments'];pieces=[]
     for j,seg in enumerate(segments):

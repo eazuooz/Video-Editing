@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory=$true)][string]$Project,
     [Parameter(Mandatory=$true)][ValidateSet('voice','review','render')][string]$Stage,
     [ValidateSet('cpu','cuda:0')][string]$Device = 'cuda:0',
-    [string]$ForceScenes = ''
+    [string]$ForceScenes = '',
+    [string]$ReplacementBaseline = ''
 )
 $ErrorActionPreference = 'Stop'
 $mathRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -31,8 +32,13 @@ if ($Stage -eq 'voice') {
     # Keep read-back on CPU so research regains the GPU immediately after TTS.
     $mathReviewDevice = 'cpu'
     $mathArgs = @('-X','utf8',"$PSScriptRoot\review-voice.py",'--project',$Project,'--watch','--device',$mathReviewDevice)
+    if ($ReplacementBaseline) {
+        if (-not $ForceScenes) { throw 'Replacement read-back requires the explicit selected scene list.' }
+        $mathArgs = @('-X','utf8',"$PSScriptRoot\review-replacements.py",'--project',$Project,'--baseline',$ReplacementBaseline,'--scenes',$ForceScenes)
+    }
 } else {
     $mathArgs = @('-X','utf8',"$PSScriptRoot\incremental-render.py",$Project)
+    if ($ReplacementBaseline) { $mathArgs += @('--await-replacements',$ReplacementBaseline) }
 }
 # Windows PowerShell treats harmless native stderr warnings as ErrorRecords.
 # Let Python's actual exit code decide success; retain all warnings in the log.
