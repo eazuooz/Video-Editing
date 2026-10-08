@@ -97,7 +97,7 @@ assert len(set(platform_end_tcs))==1, 'All three elements must use the same actu
 card = dialog_only(proof('studio-coaching-card-saved.ax.txt'), '카드')
 assert '티저 시작 시간: 0분 0초 0프레임' in card and 'button (disabled) 저장' in card
 assert card.count('Value: 프로그래밍 과외') >= 3
-assert coach in proof('studio-coaching-card-url-saved.ax.txt')
+assert re.search(r'Value: '+re.escape(coach)+r', ID: url-input(?:\r?\n|$)', proof('studio-coaching-card-url-saved.ax.txt')), 'Saved coaching URL must be exact, without input-method suffixes'
 english = proof('studio-english-metadata-saved.ax.txt')
 assert u['englishMetadata']['title'] in english and u['englishMetadata']['description'] in english
 assert '수동 자막' in english and '게시됨' in english

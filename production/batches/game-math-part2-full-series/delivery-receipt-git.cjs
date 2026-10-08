@@ -12,7 +12,7 @@ if(receipt.metadata.privacyStatus!=='private'||manifest.publishReady)throw Error
 for(const f of read(`projects/${slug}/production/delivery-output.json`).files){const data=fs.readFileSync(path.join(root,'output',slug,f.name));if(crypto.createHash('sha256').update(data).digest('hex')!==f.sha256)throw Error('Collected file changed');}
 if(fs.existsSync(path.join(root,'.git/index.lock')))throw Error('Concurrent Git transaction; retry later');
 const proofDir=`projects/${slug}/publishing/qa`;
-const files=[`projects/${slug}/project.json`,`projects/${slug}/rebuild.json`,`projects/${slug}/publishing/youtube-upload.json`,`projects/${slug}/publish/assets/thumbnail-generation.json`,
+const files=[`projects/${slug}/README.md`,`projects/${slug}/project.json`,`projects/${slug}/rebuild.json`,`projects/${slug}/publishing/youtube-upload.json`,`projects/${slug}/publish/assets/thumbnail-generation.json`,
  `projects/${slug}/publishing/qa/evidence-normalization.json`,
  'production/batches/game-math-part2-full-series/record-private-review.py','production/batches/game-math-part2-full-series/delivery-receipt-git.cjs',
  'production/batches/game-math-part2-full-series/README.md',
