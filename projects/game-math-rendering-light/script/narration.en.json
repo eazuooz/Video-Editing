@@ -1,0 +1,260 @@
+{
+  "title": "Game Math Part 2 · Rendering 1: Pixels from Light, Materials and View Direction",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "화면의 한 점은 어떻게 색을 얻을까요?",
+      "lines": [
+        "Which surface appears at a screen location, and why does it have that color and brightness?",
+        "We begin with occlusion in real games and distinguish methods for selecting visible surfaces.",
+        "Then we calculate light quantities and units and examine how material and view direction affect reflection.",
+        "Finally we connect them with the rendering equation and solve a simple brightness problem."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "바위 뒤의 캐릭터가 사라지는 이유",
+      "lines": [
+        "Follow a character among rocks and trees in Big Walk. Observe where the character overlaps foreground rock.",
+        "Moving the camera makes the body disappear behind rock and reappear. Several surfaces compete for a screen location.",
+        "For opaque surfaces, the first surface along that camera direction is visible; the hidden object still exists.",
+        "Selecting that surface and determining its illumination are separate questions.",
+        "Adding light does not automatically make an opaque foreground rock transparent. First select the surface to evaluate.",
+        "Our independent diagram compares two basic approaches without inferring this game implementation."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "픽셀에서 출발할까, 삼각형에서 출발할까?",
+      "lines": [
+        "Rendering outputs colors at image samples. A framebuffer stores them, possibly followed by display postprocessing.",
+        "Ray-based visibility constructs a camera ray for a screen sample and finds the nearest valid scene intersection.",
+        "An intersection supplies position, normal and material for shading toward the camera; a miss uses the background.",
+        "Rasterization starts with projected triangles, determines sample coverage and compares depths.",
+        "The outer traversal differs: screen samples or scene primitives. Both address visibility and shading.",
+        "A pixel need not use exactly one ray. Multiple samples help reconstruction, and rays alone do not guarantee accurate illumination."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "깊이 8과 3을 순서대로 비교하기",
+      "lines": [
+        "Red and blue triangles cover one sample. In our toy convention smaller is nearer, with depths eight and three.",
+        "Initialize depth to infinity. Red eight passes first; blue three then replaces its color and depth.",
+        "Reverse the order: blue three is stored first, and the farther red eight is rejected.",
+        "Both orders produce blue at depth three under the defined opaque depth rules.",
+        "These are explanatory values. Actual depth buffers usually store transformed projected depth rather than metric distance.",
+        "Reversed depth uses the opposite order. Initialize and compare consistently, and define equal-depth behavior separately."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "구멍으로 보이는 것과 투명하게 보이는 것",
+      "lines": [
+        "Observe characters through circular openings in the yellow structure, distinguishing wall and opening.",
+        "No wall surface blocks the opening. This differs from making one opaque wall color faint.",
+        "Next, examine the transparent tank near the player hands: its surface and the red interior are both visible.",
+        "Transparency requires more than selecting one front surface: transmitted background light and sometimes refraction matter.",
+        "These visible differences motivate the explanation but do not identify the game transparency technique."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "포워드와 디퍼드는 계산을 묶는 순서입니다",
+      "lines": [
+        "Forward shading evaluates material and illumination while processing primitives. Optimization can change actual depth-test and shading order.",
+        "Deferred shading first stores visible-surface information in a G-buffer: depth or position, normal and material.",
+        "A later pass reads that information and evaluates light contributions, separating triangle-surface processing from lighting calculation.",
+        "Many lights can benefit from reusing surface information, at the cost of buffer memory, bandwidth and transparency handling.",
+        "Modern tiled or clustered forward methods need not redraw every triangle for each light. Neither organization always wins.",
+        "This reorganizes computation rather than changing visibility or reflection laws; complex transmission and scattering within space, such as fog, require additional handling."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "재질은 색 하나보다 더 많은 질문에 답합니다",
+      "lines": [
+        "A red surface can change highlights as light and camera positions change; one color cannot describe all directions.",
+        "A BRDF describes directional reflection at one surface location.",
+        "It depends on location, incident and outgoing directions and wavelength or a chosen color representation.",
+        "We define the incident-direction vector from the surface toward the source, opposite actual light travel.",
+        "The outgoing vector points toward the viewer and the normal points outward; these conventions determine cosine signs.",
+        "Distinguish broad reflection from a narrow directional lobe that a changing view can intersect or miss."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "밝은 벽과 어두운 벽을 함께 관찰하기",
+      "lines": [
+        "In the Subnautica2 base, compare a white wall and dark storage surfaces as the camera turns.",
+        "Approaching the bright base from dark water changes the view. Both material response and illumination affect pixels.",
+        "The bright patterns change along walls and ceiling; green construction previews are visible game tool overlays.",
+        "Finished pixels alone do not uniquely identify a BRDF or light value.",
+        "Our independent example explicitly defines conditions to distinguish a reflection distribution from energy conservation."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "반사 분포가 1보다 크면 틀린 걸까요?",
+      "lines": [
+        "A BRDF is not a scalar reflection probability between zero and one; its directional density has inverse-solid-angle units.",
+        "A narrow lobe can exceed one locally without creating energy.",
+        "Energy conservation tests the cosine-weighted integral over outgoing directions: passive reflection cannot exceed incident energy.",
+        "The distribution must be nonnegative; reciprocal ordinary materials have the same response after exchanging directions.",
+        "Emission is a separate contribution. More complex phenomena such as fluorescence require broader models.",
+        "Historical unnormalized Blinn–Phong formulas can violate conservation; a familiar highlight model is not the whole physical law."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "반사·투과·표면하 산란의 범위",
+      "lines": [
+        "Reflection returns light to the same side of the surface; a BRDF describes that case.",
+        "A BTDF describes transmission. A BSDF combines reflection and transmission at the same location.",
+        "Subsurface scattering can move light between different entry and exit positions; a BSSRDF distinguishes both locations.",
+        "Adding directions and adding a second position are different extensions; do not conflate repeated source abbreviations.",
+        "Fog and underwater scattering require volume scattering, absorption and directional distributions beyond surface reflection.",
+        "Our calculations concern an opaque surface with reflection and emission, rather than all underwater effects in one surface equation."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "밝은 색과 빛의 스펙트럼을 구분하기",
+      "lines": [
+        "Move from bright outdoors into a red structure in Big Walk, observing red surfaces and shaded regions.",
+        "The next shot shows blue instruments and green terrain. Display RGB values are coordinates for represented color.",
+        "Physical light need not contain exactly three wavelengths; different spectra can appear alike.",
+        "Pixels reflect materials, lighting, camera and display transforms. A darker pixel alone does not prove a changed material.",
+        "Separate physical light and perceived color before calculating energy quantities."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "줄·와트·제곱미터당 와트",
+      "lines": [
+        "Radiant energy is measured in joules. Four joules delivered over two seconds give an average power of two watts.",
+        "Radiant flux is total energy flow per time; one watt equals one joule per second.",
+        "If those two watts arrive uniformly across two square metres, average irradiance is one watt per square metre.",
+        "Irradiance measures arrival per area and exitance measures departure per area; total and density differ in units.",
+        "Radiometry measures physical energy; photometry weights wavelengths by human visual sensitivity.",
+        "Distinguish watts from lumens and irradiance from lux. Photometric quantities are not subjective brightness or display gamma."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "면적과 방향을 모두 구별해야 합니다",
+      "lines": [
+        "Equal irradiance can arrive from many directions or one narrow beam. Highlights require directional quantities.",
+        "A solid angle corresponds to the projected area of a region on a unit sphere around the observation point.",
+        "Its unit is the steradian: four pi for a sphere and two pi for a hemisphere.",
+        "Radiance is flux per projected area per solid angle, in watts per square metre per steradian.",
+        "Projected area is measured perpendicular to the ray direction and changes with surface orientation.",
+        "Irradiance and radiance cannot simply substitute for one another; directional integration needs cosine and solid-angle factors."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "손전등이 비스듬한 바위를 비출 때",
+      "lines": [
+        "Move with a handheld lamp beneath and beside rock, observing illuminated patches and dark neighboring faces.",
+        "A curved rock has different local surface orientations relative to incoming light.",
+        "Distance, visibility, material and water effects also matter. This recording is not a controlled angle-only experiment.",
+        "Our next diagram fixes illumination and changes only a plate orientation to isolate projected-area effects.",
+        "We compare explicitly defined zero and sixty degrees rather than inferring radiometric numbers from the game."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "판을 60도 기울이면 왜 절반일까요?",
+      "lines": [
+        "For fixed directional illumination, a plate normal aligned with the source direction has angle zero and cosine one.",
+        "At sixty degrees, cosine is one half and the same actual area has half the projected area.",
+        "Its directional irradiance contribution halves under these defined conditions, independently of changing material response.",
+        "The dot product equals cosine only for unit normal and unit direction vectors.",
+        "Our source-facing incident vector gives positive front-side cosine; a light-travel vector requires the opposite sign.",
+        "One-sided opaque direct lighting clamps back-side contributions to zero; two-sided transmission needs another model."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "나가는 빛은 방출과 반사의 합입니다",
+      "lines": [
+        "At one surface location, outgoing radiance equals emitted radiance plus reflected radiance.",
+        "Emissive surfaces have an emission term; ordinary nonemissive surfaces use zero for that term.",
+        "Integrate incident radiance times BRDF times cosine over the incident hemisphere.",
+        "Hold the outgoing direction fixed while summing incident directions; the BRDF connects both.",
+        "BRDF inverse-steradian units cancel the solid-angle integration, leaving radiance units.",
+        "Location and wavelength specify the point and spectral quantity; camera and color transforms later produce display pixels."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "천장 조명을 설치하면 벽도 밝아집니다",
+      "lines": [
+        "Approach a bright base through green water, separating visible surfaces from arriving light.",
+        "A light emitting and a wall receiving and reflecting light play different roles.",
+        "Next the player installs a ceiling light; observe the construction preview becoming an installed fixture.",
+        "Broadly brighter walls and ceiling after placement connect those roles, rather than proving that every wall became emissive.",
+        "We do not identify the game indirect-lighting implementation. The diagram explains light transport relationships and cost."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "한 표면의 출사광은 다른 표면의 입사광입니다",
+      "lines": [
+        "Direct lighting arrives from a light; indirect lighting arrives after another surface interaction.",
+        "One surface outgoing radiance becomes another surface incident radiance along an unoccluded path.",
+        "Thus evaluating one point can require evaluating other points: the equation couples the scene.",
+        "More bounces increase work; visibility, shadows, reflection and paths all matter.",
+        "Real-time budgets motivate precomputation, limited paths, screen-space estimates and hybrid methods.",
+        "Ray tracing also has finite samples, path limits and model error. Examine computed and omitted effects rather than technique names."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "밝은 바닥의 그늘도 계산 대상입니다",
+      "lines": [
+        "Walk among rocks and trees, comparing lit ground with shadow while camera motion changes the view.",
+        "Shadow can mean one light direction is blocked, without making all incident directions zero.",
+        "Surrounding surfaces and sky can contribute; one directional value is not the whole illumination.",
+        "Focus on summing directional contributions without identifying this game shadow or indirect-lighting method.",
+        "Our final example explains why doubling sample count should not double expected brightness."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "표본 수를 늘려도 밝기를 두 배로 만들지 않기",
+      "lines": [
+        "Numerical integration samples directions with weights for their represented solid angle.",
+        "Simply adding more unweighted samples makes brightness scale with count rather than estimating the same integral.",
+        "Uniform hemisphere sampling has density one over two pi. Divide each contribution by its density and average over samples.",
+        "Doubling normalized samples preserves expected brightness while potentially changing noise.",
+        "Ideal point lights require separate total-flux and sampling treatment beyond an ordinary finite-area function.",
+        "Multiply and sum light in linear color values, not directly in gamma-encoded display values."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "보이는 표면과 밝기를 나누어 관찰하기",
+      "lines": [
+        "Walk beside the perforated structure, then observe differently colored characters overlapping. Identify the foreground surface.",
+        "Compare bright and dark faces separately from their front-to-back ordering.",
+        "Neither surface color nor orientation alone determines pixels: connect arriving light with directional reflection.",
+        "Review three steps: select the surface, keep quantities consistent, then integrate directional reflection.",
+        "Our last defined diffuse example calculates outgoing radiance from reflectance and received irradiance."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "반사율0.6과 입사10을 직접 계산하기",
+      "lines": [
+        "First: with smaller-is-nearer toy depths red eight and blue three, either processing order leaves blue.",
+        "Next define a nonemissive ideal Lambertian surface with reflectance zero point six and irradiance ten watts per square metre.",
+        "Its BRDF is reflectance divided by pi; outgoing radiance is zero point six times ten divided by pi, approximately one point nine one.",
+        "Radiance units are watts per square metre per steradian. Exitance is six watts per square metre, a different quantity.",
+        "These are explicitly defined reflectance and illumination conditions, not values measured from game display pixels.",
+        "Select a surface, distinguish quantities, connect light with material and view. Next we connect camera and projection coordinates to map3D points to the screen."
+      ]
+    }
+  ]
+}

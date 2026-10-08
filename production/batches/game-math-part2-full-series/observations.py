@@ -49,3 +49,61 @@ def place_observation_pauses(audio,sr,cues,slot_seconds):
 
 def mapped_time(raw_time,pauses):
  return raw_time+sum(p['seconds'] for p in pauses if p['rawAt']<=raw_time)
+
+def source_group_limits(audio,sr,cues,segments,fps=60,sentence_cues=None):
+ """Bound each narrated subject by its own inspected real-time footage."""
+ groups=[]
+ for seg in segments:
+  if 'startsAtLine' in seg:
+   line=int(seg['startsAtLine']);assert 0<=line<len(cues)
+   assert not groups or line>groups[-1]['startsAtLine']
+   groups.append({'startsAtLine':line,'sourceCapacitySeconds':0.,'segments':[]})
+  assert groups and groups[0]['startsAtLine']==0
+  groups[-1]['sourceCapacitySeconds']+=seg['maxSeconds'];groups[-1]['segments'].append(seg)
+ duration=len(audio)/sr;seams=quiet_sentence_seams(audio,sr,sentence_cues or cues)
+ for i,g in enumerate(groups):
+  g['rawStart']=0. if i==0 else cues[g['startsAtLine']]['start']
+  g['rawEnd']=cues[groups[i+1]['startsAtLine']]['start'] if i+1<len(groups) else duration
+  g['seams']=[p for p in seams if g['rawStart']<=p['rawAt']<g['rawEnd']]
+  g['rawSeconds']=g['rawEnd']-g['rawStart'];g['tailSeconds']=.6 if i+1==len(groups) else 0.
+  g['minimumSeconds']=g['rawSeconds']+g['tailSeconds']
+  # Leave one frame for independently rounded narrative/source boundaries.
+  g['extraCapacitySeconds']=max(0.,min(6*len(g['seams']),g['sourceCapacitySeconds']-g['minimumSeconds']-1/fps))
+  assert g['minimumSeconds']<=g['sourceCapacitySeconds'],f"Narrated source group at line{g['startsAtLine']} exceeds its inspected footage"
+ return groups
+
+def source_group_capacity_seconds(audio,sr,cues,segments,sentence_cues=None):
+ groups=source_group_limits(audio,sr,cues,segments,sentence_cues=sentence_cues)
+ # The placer allocates integer samples per group. Reserve one sample so a
+ # frame-rounded target cannot exceed those floored budgets by float roundoff.
+ budget=sum(math.floor(g['extraCapacitySeconds']*sr) for g in groups)
+ return (len(audio)+round(.6*sr)+max(0,budget-1))/sr
+
+def place_source_group_pauses(audio,sr,cues,slot_seconds,segments,sentence_cues=None):
+ """Keep each camera cut at its narrated subject transition, without padding shots."""
+ groups=source_group_limits(audio,sr,cues,segments,sentence_cues=sentence_cues);remaining=round(max(0.,slot_seconds-len(audio)/sr-.6)*sr)
+ for g in groups:g['budgetSamples']=math.floor(g['extraCapacitySeconds']*sr);g['silenceSamples']=0
+ assert remaining<=sum(g['budgetSamples'] for g in groups),'Secure more footage for the narrated subject rather than spilling onto another subject'
+ while remaining:
+  eligible=[g for g in groups if g['budgetSamples']>g['silenceSamples']]
+  weight=sum(g['rawSeconds'] for g in eligible);before=remaining
+  for g in eligible:
+   count=min(g['budgetSamples']-g['silenceSamples'],remaining,max(1,round(before*g['rawSeconds']/weight)))
+   g['silenceSamples']+=count;remaining-=count
+  assert remaining<before
+ pauses=[]
+ for g in groups:
+  pending=g['silenceSamples']
+  for j,p in enumerate(g['seams']):
+   count=round(pending/(len(g['seams'])-j));pending-=count
+   if count:
+    assert count/sr<=6;pauses.append({**p,'silenceSamples':count,'seconds':count/sr,'sourceGroupStartsAtLine':g['startsAtLine']})
+ pauses.sort(key=lambda p:p['rawSample']);pieces=[];kept=[];last=0
+ for p in pauses:
+  segment=audio[last:p['rawSample']];pieces.extend([segment,np.zeros(p['silenceSamples'],dtype=audio.dtype)]);kept.append(segment);last=p['rawSample']
+ pieces.append(audio[last:]);kept.append(audio[last:]);placed=np.concatenate(pieces)
+ assert np.array_equal(np.concatenate(kept),audio)
+ boundaries=[0]+[round(mapped_time(g['rawStart'],pauses)*60) for g in groups[1:]]+[round(slot_seconds*60)]
+ for i,g in enumerate(groups):g['frames']=boundaries[i+1]-boundaries[i];assert g['frames']<=math.floor(g['sourceCapacitySeconds']*60)
+ evidence={'status':'narrated-subject-groups-at-observed-quiet-seams','quietWindowMilliseconds':80,'rawSamplesPreserved':True,'rawSampleSha256':hashlib.sha256(audio.tobytes()).hexdigest(),'restoredSampleSha256':hashlib.sha256(np.concatenate(kept).tobytes()).hexdigest(),'observationSeconds':sum(p['seconds'] for p in pauses),'maximumPauseSeconds':max([p['seconds'] for p in pauses] or [0]),'trailingSeconds':slot_seconds-len(placed)/sr,'sourceSpeed':1,'gameplayFreezeOrLoop':False,'groups':[{k:v for k,v in g.items() if k not in ['seams','segments','budgetSamples']} for g in groups]}
+ return placed,pauses,evidence,groups

@@ -3,11 +3,11 @@
 Reuse the reviewed caption geometry/decode QA from the sample without editing it.
 """
 from pathlib import Path
-import sys,importlib.util,json,math,shutil
+import sys,importlib.util,json,math,shutil,re
 from urllib.parse import urlparse
 import numpy as np
 import soundfile as sf
-from observations import place_observation_pauses,mapped_time,observation_capacity_seconds
+from observations import place_observation_pauses,mapped_time,observation_capacity_seconds,source_group_capacity_seconds,place_source_group_pauses
 ROOT=Path(__file__).resolve().parents[3]
 slug=sys.argv[1];stage=sys.argv[2]
 from production_control import require_current_authorization
@@ -19,13 +19,26 @@ DATAFILE=Path(__file__).parent/'lessons'/f'{slug}.json'
 D=b.read(DATAFILE)
 def plan():
  m=b.read(b.MF);out=ROOT/m['tts']['outputDir'];tim=b.read(out/(m['tts']['filenameStem']+'.timing.json'));assert tim.get('alignment')
- raw={};minimum={};actual_upper={};groups={k:[s['id'] for s in D['scenes'] if s['kind']==k] for k in ['actual','explanation']}
+ raw={};minimum={};actual_upper={};sentence_cues={};groups={k:[s['id'] for s in D['scenes'] if s['kind']==k] for k in ['actual','explanation']}
  for s in D['scenes']:
   f=out/'chunks'/f'{s["id"]}-scene.wav';a,sr=sf.read(f,dtype='float32');assert sr==24000 and a.ndim==1
   raw[s['id']]=(a,sr,f);minimum[s['id']]=math.ceil((len(a)/sr+.6)*FPS)
   if s['kind']=='actual':
    entries=[e for e in tim['entries'] if e['scene_id']==s['id']];origin=entries[0]['start'];cues=[{'start':e['start']-origin,'end':e['end']-origin} for e in entries]
-   actual_upper[s['id']]=min(math.floor(s['maxSeconds']*FPS),math.floor(observation_capacity_seconds(a,sr,cues)*FPS))
+   segments=s.get('sourceSegments',[])
+   if any('startsAtLine' in v for v in segments):
+    import align as sentence_alignment
+    asr=b.read(out/f'asr/{s["id"]}.json');assert asr['audio_sha256']==b.sha(f)
+    starts,ends,_=sentence_alignment.a.align_characters(' '.join(s['ko']),asr['words'],len(a)/sr)
+    offset=0;sentences=[]
+    for line in s['ko']:
+     for text in re.split(r'(?<=[.!?])\s+',line):
+      count=len(sentence_alignment.normalized(text))
+      sentences.append({'start':float(starts[offset]),'end':float(ends[offset+count-1]),'text':text});offset+=count
+    sentence_cues[s['id']]=sentences
+    capacity=source_group_capacity_seconds(a,sr,cues,segments,sentences)
+   else:capacity=observation_capacity_seconds(a,sr,cues)
+   actual_upper[s['id']]=min(math.floor(s['maxSeconds']*FPS),math.floor(capacity*FPS))
    assert minimum[s['id']]<=actual_upper[s['id']],f"Scene{s['id']}: secure more reviewed footage for its full narration"
  body=math.ceil(max(sum(minimum[i] for i in groups['actual'])/.4,sum(minimum[i] for i in groups['explanation'])/.6)/5)*5
  frames=minimum.copy()
@@ -53,7 +66,17 @@ def plan():
    assert remaining==0,'Acquire additional reviewed footage rather than freezing actual footage'
    cut['segments']=segments
   if s['kind']=='actual':
-   placed,pauses,evidence=place_observation_pauses(a,sr,cues,slot['seconds'])
+   if any('startsAtLine' in v for v in source_segments):
+    placed,pauses,evidence,source_groups=place_source_group_pauses(a,sr,cues,slot['seconds'],source_segments,sentence_cues[s['id']])
+    segments=[]
+    for group in source_groups:
+     remaining=group['frames']
+     for seg in group['segments']:
+      count=min(remaining,math.floor(seg['maxSeconds']*FPS));remaining-=count
+      if count:segments.append({**seg,'frames':count,'seconds':count/FPS,'sourceGroupStartsAtLine':group['startsAtLine']})
+     assert remaining==0,'Narrated subject needs more inspected footage'
+    cut['segments']=segments
+   else:placed,pauses,evidence=place_observation_pauses(a,sr,cues,slot['seconds'])
    slot['observationPauses']=pauses;slot['observationReview']=evidence;slot['narrationWindowSeconds']=len(placed)/sr
    slot['cues']=[{**c,'start':mapped_time(c['start'],pauses),'end':mapped_time(c['end'],pauses)} for c in cues]
    slot['lineStarts']=[mapped_time(t,pauses) for t in slot['lineStarts']]

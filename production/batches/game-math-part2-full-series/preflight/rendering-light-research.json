@@ -1,0 +1,331 @@
+{
+  "slug": "game-math-rendering-light",
+  "status": "Current19:02.3333 full lecture passed full decode, exact40:60,234 captions and all82 narrated explanation beats; private platform settings pending.",
+  "source": {
+    "notion": "https://app.notion.com/p/3e10b1ffa61e8178a765cd20647ce893",
+    "localSnapshot": "tmp/game-math-part2-sources/3e10b1ffa61e8178a765cd20647ce893.txt",
+    "snapshotSha256": "1f6f2ef5ae09d757fa878361fba5b057135293629d681fd2ee9bca928ca01598",
+    "section": "10.1, including 10.1.1–10.1.4",
+    "liveNotionRecheck": true,
+    "liveNotionEvidence": {
+      "id": "3e10b1ffa61e8178a765cd20647ce893",
+      "title": "10.1 렌더링의 원리·BRDF·색과 빛·렌더링 방정식 (Rendering)",
+      "url": "https://app.notion.com/p/3e10b1ffa61e8178a765cd20647ce893?pvs=204",
+      "lastEditedAt": "2026-09-20T09:48:39.516Z",
+      "checkedAtUtc": "2026-10-08T06:50:05.631849+00:00",
+      "liveFetchProof": "tmp/game-math-part2-sources/current-20261008-3e10b1ffa61e8178a765cd20647ce893.txt",
+      "snapshotSha256": "1f6f2ef5ae09d757fa878361fba5b057135293629d681fd2ee9bca928ca01598",
+      "liveTextSha256": "21a0383847894da808c746bd7b802028d5e4546d32fd182972dd7a4d6e1668b7",
+      "sameNormalizedText": true,
+      "diff": []
+    }
+  },
+  "viewerQuestion": "화면의 한 점에 어떤 표면이 보이며, 그 표면의 색과 밝기는 빛·재질·시선으로 어떻게 계산할까요?",
+  "coveragePlan": [
+    {
+      "section": "10.1.1",
+      "claims": [
+        "visibility versus lighting; opaque first surface",
+        "ray outer pixel loop versus raster outer primitive loop",
+        "depth testing independent of opaque submission order",
+        "forward and deferred organization, G-buffer",
+        "transparent surfaces need multiple contributions; depth buffer is not generally metric distance"
+      ]
+    },
+    {
+      "section": "10.1.2",
+      "claims": [
+        "position, incoming/outgoing directions and wavelength",
+        "BRDF distribution, nonnegative response, energy conservation and reciprocity",
+        "diffuse versus narrow directional highlights",
+        "BRDF is not a probability bounded by one",
+        "BRDF/BTDF/BSDF and BSSRDF distinctions; volumetric scattering separate",
+        "historical Blinn–Phong approximation versus physically normalized reflection"
+      ]
+    },
+    {
+      "section": "10.1.3",
+      "claims": [
+        "RGB represents color response, not literally three spectral wavelengths",
+        "radiometry versus human-response-weighted photometry",
+        "energy J, flux W, irradiance/exitance W/m²",
+        "solid angle sr and radiance W/(m² sr)",
+        "projected area and cosine; directional versus area totals"
+      ]
+    },
+    {
+      "section": "10.1.4",
+      "claims": [
+        "outgoing radiance equals emission plus hemisphere integral",
+        "incoming-direction vector convention fixed away from surface",
+        "neighbor outgoing becomes incoming; direct and indirect illumination",
+        "weighted directional sum versus Monte Carlo normalization",
+        "finite sampling, noise and real-time approximation; ray tracing does not guarantee accurate light"
+      ]
+    }
+  ],
+  "originalWorkedExamples": [
+    "Opaque toy depths 8 and 3: nearest valid sample wins in either submission order; toy depths are not an actual depth-buffer encoding.",
+    "Cosine at 0° is 1 and at 60° is 0.5; identical incident directional field projected onto two surface orientations.",
+    "4 J across 2 seconds is 2 W; uniform arrival over 2 m² gives average irradiance 1 W/m².",
+    "Lambertian reflectance rho=0.6 and irradiance E=10 W/m² produce outgoing radiance 6/pi W/(m² sr), approximately 1.91.",
+    "Doubling sample count in a normalized estimator does not double expected brightness; contributions require weights or division by sampling density."
+  ],
+  "technicalVerification": [
+    {
+      "url": "https://pbr-book.org/4ed/Radiometry,_Spectra,_and_Color/Surface_Reflection",
+      "read": "2026-10-08",
+      "use": "BRDF can exceed one; integrated energy restriction; direction convention; BSDF and BSSRDF distinctions"
+    },
+    {
+      "url": "https://pbr-book.org/4ed/Radiometry,_Spectra,_and_Color/Radiometry",
+      "read": "2026-10-08",
+      "use": "radiometric units, projected area, solid angle and photometric weighting; preserve mathematical superscripts lost by text extraction"
+    },
+    {
+      "url": "https://www.pbr-book.org/4ed/Reflection_Models/Diffuse_Reflection",
+      "read": "2026-10-08",
+      "use": "original Lambertian calculation with f=rho/pi and normalization"
+    }
+  ],
+  "freshGameReview": {
+    "searchScope": "projects and production/batches source JSON, cuts, recent-game history and source reviews",
+    "searchTerms": [
+      "wzQLP0Z3zII",
+      "dYyWmhVuc3w",
+      "Subnautica 2",
+      "Big Walk"
+    ],
+    "existingMatches": [],
+    "recordingPermissionObserved": [
+      {
+        "id": "dYyWmhVuc3w",
+        "game": "Subnautica 2",
+        "nativeEvidence": "shared/output/game-math-part2-full-series/rendering-light-preflight/subnautica2-permission.ax.txt"
+      },
+      {
+        "id": "wzQLP0Z3zII",
+        "game": "Big Walk",
+        "nativeEvidence": "shared/output/game-math-part2-full-series/rendering-light-preflight/big-walk-permission.ax.txt"
+      }
+    ],
+    "gameIpPublicRights": "pending separate review; uploader recording reuse wording is not a guarantee against platform claims",
+    "sourceAudioUsed": false,
+    "subnauticaInspection": {
+      "generatedProof": "shared/output/game-math-part2-full-series/inspection/rendering-light-subnautica-fine/generated-samples.json",
+      "agentDirectlyViewedSheets": 13,
+      "sampleIntervalSeconds": 3,
+      "candidateIntervals": [
+        {
+          "in": 63,
+          "out": 108,
+          "focus": "moving through purple/green coral and rock; compare visible color and occlusion",
+          "boundaryReview": "pending fine boundaries"
+        },
+        {
+          "in": 240,
+          "out": 270,
+          "focus": "handlamp patch moves across rock orientations; illuminated versus dark surfaces",
+          "boundaryReview": "pending fine boundaries"
+        },
+        {
+          "in": 350,
+          "out": 374,
+          "focus": "illuminated rock/blue crystal and handheld tool",
+          "boundaryReview": "pending fine boundaries"
+        },
+        {
+          "in": 407,
+          "out": 421,
+          "focus": "approach bright white base against darker water",
+          "boundaryReview": "pending fine boundaries"
+        },
+        {
+          "in": 579,
+          "out": 620,
+          "focus": "green water, purple coral, orange vent, bright base; no literal wavelength claim",
+          "boundaryReview": "pending fine boundaries"
+        },
+        {
+          "in": 637,
+          "out": 652,
+          "focus": "camera turns across white wall and dark storage cabinet; highlight changes",
+          "boundaryReview": "pending fine boundaries"
+        },
+        {
+          "in": 738,
+          "out": 755,
+          "focus": "camera moves along lit panels and ceiling strips; building ghost overlay explicitly visible",
+          "boundaryReview": "pending fine boundaries"
+        },
+        {
+          "in": 764,
+          "out": 778,
+          "focus": "actual player places a ceiling light; broad room illumination changes visibly",
+          "boundaryReview": "pending fine boundaries"
+        }
+      ],
+      "rejectedIntervals": [
+        {
+          "in": 186,
+          "out": 191,
+          "reason": "fabricator inventory menu dominates"
+        },
+        {
+          "in": 197,
+          "out": 208,
+          "reason": "fabricator menu dominates"
+        },
+        {
+          "in": 422,
+          "out": 433,
+          "reason": "inventory menu dominates"
+        },
+        {
+          "in": 626,
+          "out": 636,
+          "reason": "storage menu dominates"
+        },
+        {
+          "in": 653,
+          "out": 658,
+          "reason": "fabricator menu dominates"
+        },
+        {
+          "in": 664,
+          "out": 666,
+          "reason": "battery storage menu dominates"
+        },
+        {
+          "in": 672,
+          "out": 675,
+          "reason": "inventory menu dominates"
+        },
+        {
+          "in": 735,
+          "out": 738,
+          "reason": "build-selection menu"
+        },
+        {
+          "in": 756,
+          "out": 758,
+          "reason": "build-selection menu"
+        },
+        {
+          "in": 762,
+          "out": 764,
+          "reason": "build-selection menu"
+        }
+      ],
+      "limitations": "Many long cave intervals are too dark for beginner-facing comparison. Do not fill footage quota with them or infer engine internals from finished pixels.",
+      "approvedSegments": [
+        {
+          "in": 638,
+          "out": 650
+        },
+        {
+          "in": 407,
+          "out": 421
+        },
+        {
+          "in": 739,
+          "out": 753
+        },
+        {
+          "in": 240,
+          "out": 270
+        },
+        {
+          "in": 350,
+          "out": 374
+        },
+        {
+          "in": 579,
+          "out": 620
+        },
+        {
+          "in": 764.5,
+          "out": 778
+        }
+      ],
+      "boundaryStatus": "Directly reviewed all3 guard sheets; corrected menu boundaries before writing dependent narration"
+    },
+    "bigWalkInspection": {
+      "status": "download completed; all4 coarse,8 fine and3 boundary sheets directly viewed",
+      "generatedProof": "shared/output/game-math-part2-full-series/inspection/rendering-light-big-walk-fine/generated-samples.json",
+      "rejectedIntervals": "All coarse sheets, 8 fine sheets and all three boundary sheets directly viewed. Use only approved nonrepeating real-time intervals. Reject1498–1533 and1600–1614 floating chat,1668–1696 chat,1883 menu,1910–1921 scope, late1983 chat and1130–1320 unrelated dusk conversation; 550–565 nearly static.",
+      "approvedSegments": [
+        {
+          "in": 716,
+          "out": 773
+        },
+        {
+          "in": 510,
+          "out": 545
+        },
+        {
+          "in": 1553,
+          "out": 1578
+        },
+        {
+          "in": 773,
+          "out": 799
+        },
+        {
+          "in": 1848,
+          "out": 1877
+        },
+        {
+          "in": 1933,
+          "out": 1978
+        },
+        {
+          "in": 1615,
+          "out": 1642
+        },
+        {
+          "in": 1700,
+          "out": 1727
+        }
+      ]
+    },
+    "reviewedBeforeNarrationAtUtc": "2026-10-08T06:15:20.609143+00:00"
+  },
+  "productionPolicy": {
+    "actualFootageShare": 0.4,
+    "explanationShare": 0.6,
+    "backgroundMusic": false,
+    "sourceAudio": false,
+    "narrator": "unchanged approved personal Qwen3 1.7B voice",
+    "duration": "refine after measured narration; split only at complete conceptual boundaries if necessary"
+  },
+  "duplicateReview": "must compare current channel upload evidence, source concepts, likely overlap scripts and final candidate before preparing project",
+  "finalLayoutCorrection": {
+    "allExplanationScenes": [
+      "01",
+      "03",
+      "04",
+      "06",
+      "07",
+      "09",
+      "10",
+      "12",
+      "13",
+      "15",
+      "16",
+      "18",
+      "20",
+      "22"
+    ],
+    "baseline": "shared/output/game-math-rendering-light/visual-layout-v1/preservation.json",
+    "currentSourceSha256": "1e0157d97217652a36a62fe203dbee8aedfab2cb0383d5352c2127134d267a54",
+    "firstRenderNotUploaded": true,
+    "finalPixels": {
+      "status": "passed-agent-direct-review",
+      "review": "projects/game-math-rendering-light/production/pixel-review.json",
+      "videoSha256": "4d876689cf50da289dd355df93bbdb281024e999f5b3bdc6a883b7539060b110",
+      "reviewedAtUtc": "2026-10-08T08:50:33.458722+00:00"
+    },
+    "cpuOnly": true
+  }
+}

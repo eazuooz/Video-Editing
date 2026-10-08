@@ -1,0 +1,1104 @@
+1
+00:00:02,000 --> 00:00:04,060
+Which surface appears at a screen location,
+
+2
+00:00:04,060 --> 00:00:07,420
+and why does it have that color and
+brightness?
+
+3
+00:00:07,880 --> 00:00:10,200
+We begin with occlusion in real games and
+distinguish
+
+4
+00:00:10,200 --> 00:00:13,320
+methods for selecting visible surfaces.
+
+5
+00:00:13,580 --> 00:00:16,020
+Then we calculate light quantities and units
+and examine
+
+6
+00:00:16,020 --> 00:00:19,960
+how material and view direction affect
+reflection.
+
+7
+00:00:20,380 --> 00:00:23,340
+Finally we connect them with the rendering
+
+8
+00:00:23,340 --> 00:00:26,540
+equation and solve a simple brightness
+problem.
+
+9
+00:00:27,183 --> 00:00:31,763
+Follow a character among rocks and trees in
+Big Walk.
+
+10
+00:00:32,003 --> 00:00:36,253
+Observe where the character overlaps
+foreground rock.
+
+11
+00:00:37,843 --> 00:00:42,183
+Moving the camera makes the body disappear
+behind rock and reappear.
+
+12
+00:00:42,503 --> 00:00:47,032
+Several surfaces compete for a screen
+location.
+
+13
+00:00:48,782 --> 00:00:53,742
+For opaque surfaces, the first surface along
+that camera
+
+14
+00:00:55,431 --> 00:00:57,731
+direction is visible; the hidden object still
+exists.
+
+15
+00:00:57,731 --> 00:01:04,881
+Selecting that surface and determining its
+illumination are separate questions.
+
+16
+00:01:06,751 --> 00:01:12,400
+Adding light does not automatically make an
+opaque foreground rock transparent.
+
+17
+00:01:12,800 --> 00:01:15,600
+First select the surface to evaluate.
+
+18
+00:01:17,170 --> 00:01:19,270
+Our independent diagram compares two basic
+approaches
+
+19
+00:01:19,270 --> 00:01:23,530
+without inferring this game implementation.
+
+20
+00:01:24,150 --> 00:01:27,270
+Rendering outputs colors at image samples. A
+framebuffer stores them,
+
+21
+00:01:27,530 --> 00:01:32,290
+possibly followed by display postprocessing.
+
+22
+00:01:32,550 --> 00:01:35,990
+Ray-based visibility constructs a camera ray
+for a screen
+
+23
+00:01:36,310 --> 00:01:40,490
+sample and finds the nearest valid scene
+intersection.
+
+24
+00:01:40,810 --> 00:01:45,290
+An intersection supplies position,
+
+25
+00:01:45,450 --> 00:01:48,130
+normal and material for shading toward the
+camera; a miss uses the background.
+
+26
+00:01:48,143 --> 00:01:50,710
+Rasterization starts with projected triangles,
+
+27
+00:01:50,750 --> 00:01:55,150
+determines sample coverage and compares
+depths.
+
+28
+00:01:55,490 --> 00:01:59,490
+The outer traversal differs: screen samples or
+scene primitives.
+
+29
+00:01:59,830 --> 00:02:02,630
+Both address visibility and shading.
+
+30
+00:02:02,810 --> 00:02:08,210
+A pixel need not use exactly one ray. Multiple
+samples help reconstruction,
+
+31
+00:02:08,430 --> 00:02:11,730
+and rays alone do not guarantee accurate
+illumination.
+
+32
+00:02:12,350 --> 00:02:16,430
+Red and blue triangles cover one sample.
+
+33
+00:02:16,950 --> 00:02:21,790
+In our toy convention smaller is nearer, with
+depths eight and three.
+
+34
+00:02:22,130 --> 00:02:26,530
+Initialize depth to infinity. Red eight passes
+first;
+
+35
+00:02:27,190 --> 00:02:31,270
+blue three then replaces its color and depth.
+
+36
+00:02:31,650 --> 00:02:38,370
+Reverse the order: blue three is stored first,
+and the farther red eight is rejected.
+
+37
+00:02:38,770 --> 00:02:42,130
+Both orders produce blue at depth three
+
+38
+00:02:42,350 --> 00:02:47,530
+under the defined opaque depth rules.
+
+39
+00:02:48,130 --> 00:02:53,390
+These are explanatory values. Actual depth
+buffers usually
+
+40
+00:02:53,390 --> 00:02:56,110
+store transformed projected depth rather than
+metric distance.
+
+41
+00:02:56,470 --> 00:02:59,170
+Reversed depth uses the opposite order.
+Initialize and compare consistently,
+
+42
+00:02:59,630 --> 00:03:04,890
+and define equal-depth behavior separately.
+
+43
+00:03:05,517 --> 00:03:08,737
+Observe characters through circular openings
+in the yellow structure,
+
+44
+00:03:09,037 --> 00:03:16,713
+distinguishing wall and opening.
+
+45
+00:03:21,848 --> 00:03:25,688
+No wall surface blocks the opening.
+
+46
+00:03:30,844 --> 00:03:34,144
+This differs from making one opaque wall color
+faint.
+
+47
+00:03:39,300 --> 00:03:42,580
+Next, examine the transparent tank near the
+player
+
+48
+00:03:44,353 --> 00:03:47,273
+hands: its surface and the red interior are
+both visible.
+
+49
+00:03:48,945 --> 00:03:52,345
+Transparency requires more than selecting one
+front surface:
+
+50
+00:03:54,138 --> 00:03:58,138
+transmitted background light and sometimes
+refraction matter.
+
+51
+00:03:58,138 --> 00:04:02,531
+These visible differences motivate the
+explanation
+
+52
+00:04:04,423 --> 00:04:08,663
+but do not identify the game transparency
+technique.
+
+53
+00:04:09,603 --> 00:04:14,583
+Forward shading evaluates material and
+illumination while processing primitives.
+
+54
+00:04:14,883 --> 00:04:19,543
+Optimization can change actual depth-test and
+shading order.
+
+55
+00:04:19,607 --> 00:04:22,983
+Deferred shading first stores visible-surface
+information
+
+56
+00:04:23,043 --> 00:04:27,443
+in a G-buffer: depth or position, normal and
+material.
+
+57
+00:04:27,963 --> 00:04:32,063
+A later pass reads that information and
+evaluates light contributions,
+
+58
+00:04:32,503 --> 00:04:36,723
+separating triangle-surface processing from
+lighting calculation.
+
+59
+00:04:36,723 --> 00:04:40,783
+Many lights can benefit from reusing surface
+information,
+
+60
+00:04:41,183 --> 00:04:45,903
+at the cost of buffer memory, bandwidth and
+transparency handling.
+
+61
+00:04:46,343 --> 00:04:50,683
+Modern tiled or clustered forward methods need
+not redraw every
+
+62
+00:04:50,883 --> 00:04:56,023
+triangle for each light. Neither organization
+always wins.
+
+63
+00:04:56,303 --> 00:04:58,103
+This reorganizes computation rather than
+changing visibility or reflection laws;
+
+64
+00:04:58,403 --> 00:05:01,243
+complex transmission and scattering within
+space,
+
+65
+00:05:01,423 --> 00:05:06,343
+such as fog, require additional handling.
+
+66
+00:05:07,017 --> 00:05:11,857
+A red surface can change highlights as light
+and camera positions change;
+
+67
+00:05:12,177 --> 00:05:15,997
+one color cannot describe all directions.
+
+68
+00:05:16,217 --> 00:05:23,037
+A BRDF describes directional reflection at one
+surface location.
+
+69
+00:05:23,437 --> 00:05:29,597
+It depends on location, incident and outgoing
+directions
+
+70
+00:05:29,997 --> 00:05:33,557
+and wavelength or a chosen color
+representation.
+
+71
+00:05:33,557 --> 00:05:38,117
+We define the incident-direction vector from
+the
+
+72
+00:05:38,717 --> 00:05:42,457
+surface toward the source, opposite actual
+light travel.
+
+73
+00:05:42,917 --> 00:05:47,697
+The outgoing vector points toward the viewer
+and the normal points outward;
+
+74
+00:05:48,297 --> 00:05:51,197
+these conventions determine cosine signs.
+
+75
+00:05:51,577 --> 00:05:55,237
+Distinguish broad reflection from a narrow
+directional
+
+76
+00:05:55,577 --> 00:05:59,397
+lobe that a changing view can intersect or
+miss.
+
+77
+00:06:00,183 --> 00:06:09,895
+In the Subnautica2 base, compare a white wall
+and dark storage surfaces as the camera turns.
+
+78
+00:06:12,167 --> 00:06:16,307
+Approaching the bright base from dark water
+changes the view.
+
+79
+00:06:20,360 --> 00:06:24,000
+Both material response and illumination affect
+pixels.
+
+80
+00:06:28,133 --> 00:06:32,833
+The bright patterns change along walls and
+ceiling;
+
+81
+00:06:33,033 --> 00:06:38,164
+green construction previews are visible game
+tool overlays.
+
+82
+00:06:38,404 --> 00:06:44,876
+Finished pixels alone do not uniquely identify
+a BRDF or light value.
+
+83
+00:06:44,896 --> 00:06:49,267
+Our independent example explicitly defines
+conditions to
+
+84
+00:06:49,267 --> 00:06:52,247
+distinguish a reflection distribution from
+energy conservation.
+
+85
+00:06:52,867 --> 00:06:56,927
+A BRDF is not a scalar reflection probability
+between zero and one;
+
+86
+00:06:57,127 --> 00:07:00,547
+its directional density has
+inverse-solid-angle units.
+
+87
+00:07:00,827 --> 00:07:05,127
+A narrow lobe can exceed one
+
+88
+00:07:05,407 --> 00:07:08,487
+locally without creating energy.
+
+89
+00:07:08,847 --> 00:07:14,567
+Energy conservation tests the cosine-weighted
+integral over outgoing
+
+90
+00:07:14,867 --> 00:07:18,507
+directions: passive reflection cannot exceed
+incident energy.
+
+91
+00:07:18,667 --> 00:07:20,487
+The distribution must be nonnegative;
+
+92
+00:07:20,487 --> 00:07:25,847
+reciprocal ordinary materials have the same
+response after exchanging directions.
+
+93
+00:07:26,007 --> 00:07:30,287
+Emission is a separate contribution.
+
+94
+00:07:30,467 --> 00:07:34,607
+More complex phenomena such as fluorescence
+require broader models.
+
+95
+00:07:34,747 --> 00:07:38,687
+Historical unnormalized Blinn–Phong formulas
+can violate conservation;
+
+96
+00:07:38,807 --> 00:07:42,147
+a familiar highlight model is not the whole
+physical law.
+
+97
+00:07:42,833 --> 00:07:49,333
+Reflection returns light to the same side of
+the surface; a BRDF describes that case.
+
+98
+00:07:49,613 --> 00:07:53,093
+A BTDF describes transmission.
+
+99
+00:07:53,333 --> 00:07:58,413
+A BSDF combines reflection and transmission at
+the same location.
+
+100
+00:07:59,093 --> 00:08:03,553
+Subsurface scattering can move light between
+different entry and exit positions;
+
+101
+00:08:03,773 --> 00:08:07,653
+a BSSRDF distinguishes both locations.
+
+102
+00:08:07,833 --> 00:08:12,773
+Adding directions and adding a second position
+are different extensions;
+
+103
+00:08:12,833 --> 00:08:16,373
+do not conflate repeated source abbreviations.
+
+104
+00:08:16,713 --> 00:08:19,333
+Fog and underwater scattering require volume
+scattering,
+
+105
+00:08:19,753 --> 00:08:23,673
+absorption and directional distributions
+beyond surface reflection.
+
+106
+00:08:23,973 --> 00:08:28,313
+Our calculations concern an opaque surface
+with reflection and emission,
+
+107
+00:08:28,633 --> 00:08:32,493
+rather than all underwater effects in one
+surface equation.
+
+108
+00:08:33,117 --> 00:08:37,617
+Move from bright outdoors into a red structure
+in Big Walk,
+
+109
+00:08:40,731 --> 00:08:43,551
+observing red surfaces and shaded regions.
+
+110
+00:08:46,765 --> 00:08:50,045
+The next shot shows blue instruments and green
+terrain.
+
+111
+00:08:53,930 --> 00:08:57,730
+Display RGB values are coordinates for
+represented color.
+
+112
+00:09:01,575 --> 00:09:05,235
+Physical light need not contain exactly three
+wavelengths;
+
+113
+00:09:09,101 --> 00:09:12,101
+different spectra can appear alike.
+
+114
+00:09:15,986 --> 00:09:19,646
+Pixels reflect materials, lighting, camera and
+display transforms.
+
+115
+00:09:19,706 --> 00:09:27,411
+A darker pixel alone does not prove a changed
+material.
+
+116
+00:09:27,611 --> 00:09:36,397
+Separate physical light and perceived color
+before calculating energy quantities.
+
+117
+00:09:37,017 --> 00:09:40,337
+Radiant energy is measured in joules.
+
+118
+00:09:40,477 --> 00:09:44,477
+Four joules delivered over two seconds give an
+average power of two watts.
+
+119
+00:09:44,897 --> 00:09:51,137
+Radiant flux is total energy flow per time;
+one watt equals one joule per second.
+
+120
+00:09:51,437 --> 00:09:54,117
+If those two watts arrive uniformly across two
+square metres,
+
+121
+00:09:54,117 --> 00:09:57,337
+average irradiance is one watt per square
+metre.
+
+122
+00:09:57,677 --> 00:10:02,397
+Irradiance measures arrival per area and
+exitance measures departure per area;
+
+123
+00:10:02,617 --> 00:10:05,937
+total and density differ in units.
+
+124
+00:10:05,937 --> 00:10:08,577
+Radiometry measures physical energy;
+
+125
+00:10:08,577 --> 00:10:13,077
+photometry weights wavelengths by human visual
+sensitivity.
+
+126
+00:10:13,357 --> 00:10:17,157
+Distinguish watts from lumens and irradiance
+from lux.
+
+127
+00:10:17,157 --> 00:10:22,357
+Photometric quantities are not subjective
+brightness or display gamma.
+
+128
+00:10:22,983 --> 00:10:29,243
+Equal irradiance can arrive from many
+directions or one narrow beam.
+
+129
+00:10:29,583 --> 00:10:32,283
+Highlights require directional quantities.
+
+130
+00:10:32,523 --> 00:10:34,903
+A solid angle corresponds to the projected
+area of a
+
+131
+00:10:35,183 --> 00:10:40,263
+region on a unit sphere around the observation
+point.
+
+132
+00:10:40,443 --> 00:10:44,223
+Its unit is the steradian: four pi for
+
+133
+00:10:44,223 --> 00:10:48,743
+a sphere and two pi for a hemisphere.
+
+134
+00:10:49,043 --> 00:10:52,403
+Radiance is flux per projected area per solid
+angle,
+
+135
+00:10:52,403 --> 00:10:55,683
+in watts per square metre per steradian.
+
+136
+00:10:56,043 --> 00:10:59,663
+Projected area is measured perpendicular to
+the ray
+
+137
+00:11:00,163 --> 00:11:03,503
+direction and changes with surface
+orientation.
+
+138
+00:11:04,043 --> 00:11:07,723
+Irradiance and radiance cannot simply
+substitute for one another;
+
+139
+00:11:08,343 --> 00:11:11,263
+directional integration needs cosine and
+solid-angle factors.
+
+140
+00:11:12,233 --> 00:11:17,614
+Move with a handheld lamp beneath and beside
+rock,
+
+141
+00:11:17,894 --> 00:11:20,774
+observing illuminated patches and dark
+neighboring faces.
+
+142
+00:11:22,875 --> 00:11:33,857
+A curved rock has different local surface
+orientations relative to incoming light.
+
+143
+00:11:34,057 --> 00:11:38,637
+Distance, visibility, material and water
+effects also matter.
+
+144
+00:11:40,697 --> 00:11:43,937
+This recording is not a controlled angle-only
+experiment.
+
+145
+00:11:46,258 --> 00:11:52,679
+Our next diagram fixes illumination and
+changes only a
+
+146
+00:11:52,679 --> 00:11:56,359
+plate orientation to isolate projected-area
+effects.
+
+147
+00:11:58,620 --> 00:12:01,720
+We compare explicitly defined zero and sixty
+degrees
+
+148
+00:12:01,720 --> 00:12:05,560
+rather than inferring radiometric numbers from
+the game.
+
+149
+00:12:06,200 --> 00:12:09,780
+For fixed directional illumination,
+
+150
+00:12:10,080 --> 00:12:15,000
+a plate normal aligned with the source
+direction has angle zero and cosine one.
+
+151
+00:12:15,360 --> 00:12:21,200
+At sixty degrees, cosine is one half and the
+
+152
+00:12:21,540 --> 00:12:24,360
+same actual area has half the projected area.
+
+153
+00:12:24,700 --> 00:12:30,180
+Its directional irradiance contribution halves
+under these defined conditions,
+
+154
+00:12:30,540 --> 00:12:34,000
+independently of changing material response.
+
+155
+00:12:34,000 --> 00:12:39,220
+The dot product equals cosine only for
+
+156
+00:12:39,620 --> 00:12:42,860
+unit normal and unit direction vectors.
+
+157
+00:12:43,200 --> 00:12:47,380
+Our source-facing incident vector gives
+positive front-side cosine;
+
+158
+00:12:47,740 --> 00:12:50,880
+a light-travel vector requires the opposite
+sign.
+
+159
+00:12:51,280 --> 00:12:55,560
+One-sided opaque direct lighting clamps
+back-side contributions to zero;
+
+160
+00:12:55,840 --> 00:12:58,380
+two-sided transmission needs another model.
+
+161
+00:12:59,200 --> 00:13:03,500
+At one surface location, outgoing radiance
+
+162
+00:13:03,840 --> 00:13:07,400
+equals emitted radiance plus reflected
+radiance.
+
+163
+00:13:07,680 --> 00:13:10,340
+Emissive surfaces have an emission term;
+
+164
+00:13:10,780 --> 00:13:14,100
+ordinary nonemissive surfaces use zero for
+that term.
+
+165
+00:13:14,380 --> 00:13:18,206
+Integrate incident radiance times BRDF
+
+166
+00:13:18,206 --> 00:13:22,220
+times cosine over the incident hemisphere.
+
+167
+00:13:22,320 --> 00:13:26,140
+Hold the outgoing direction fixed while
+summing
+
+168
+00:13:26,340 --> 00:13:28,200
+incident directions; the BRDF connects both.
+
+169
+00:13:28,200 --> 00:13:31,280
+BRDF inverse-steradian units cancel the
+
+170
+00:13:31,280 --> 00:13:36,160
+solid-angle integration, leaving radiance
+units.
+
+171
+00:13:36,540 --> 00:13:41,060
+Location and wavelength specify the point and
+spectral quantity;
+
+172
+00:13:41,520 --> 00:13:45,060
+camera and color transforms later produce
+display pixels.
+
+173
+00:13:45,883 --> 00:13:49,143
+Approach a bright base through green water,
+
+174
+00:13:49,383 --> 00:13:55,959
+separating visible surfaces from arriving
+light.
+
+175
+00:13:58,474 --> 00:14:04,094
+A light emitting and a wall receiving and
+reflecting light play different roles.
+
+176
+00:14:06,850 --> 00:14:10,390
+Next the player installs a ceiling light;
+
+177
+00:14:10,806 --> 00:14:14,066
+observe the construction preview becoming an
+installed fixture.
+
+178
+00:14:14,542 --> 00:14:19,342
+Broadly brighter walls and ceiling after
+placement connect those roles,
+
+179
+00:14:19,622 --> 00:14:22,933
+rather than proving that every wall became
+emissive.
+
+180
+00:14:22,933 --> 00:14:26,973
+We do not identify the game indirect-lighting
+implementation.
+
+181
+00:14:28,287 --> 00:14:31,427
+The diagram explains light transport
+relationships and cost.
+
+182
+00:14:32,167 --> 00:14:35,107
+Direct lighting arrives from a light;
+
+183
+00:14:35,387 --> 00:14:38,887
+indirect lighting arrives after another
+surface interaction.
+
+184
+00:14:39,127 --> 00:14:41,587
+One surface outgoing radiance becomes another
+
+185
+00:14:41,667 --> 00:14:44,747
+surface incident radiance along an unoccluded
+path.
+
+186
+00:14:45,087 --> 00:14:48,987
+Thus evaluating one point can require
+evaluating
+
+187
+00:14:49,207 --> 00:14:52,187
+other points: the equation couples the scene.
+
+188
+00:14:52,447 --> 00:14:59,767
+More bounces increase work; visibility,
+shadows, reflection and paths all matter.
+
+189
+00:14:59,767 --> 00:15:04,207
+Real-time budgets motivate precomputation,
+
+190
+00:15:04,207 --> 00:15:08,567
+limited paths, screen-space estimates and
+hybrid methods.
+
+191
+00:15:08,907 --> 00:15:12,907
+Ray tracing also has finite samples, path
+limits and model error.
+
+192
+00:15:13,347 --> 00:15:16,287
+Examine computed and omitted effects rather
+than technique names.
+
+193
+00:15:17,183 --> 00:15:20,963
+Walk among rocks and trees, comparing lit
+ground
+
+194
+00:15:23,851 --> 00:15:28,111
+with shadow while camera motion changes the
+view.
+
+195
+00:15:30,959 --> 00:15:34,139
+Shadow can mean one light direction is
+blocked,
+
+196
+00:15:37,047 --> 00:15:40,267
+without making all incident directions zero.
+
+197
+00:15:43,154 --> 00:15:45,634
+Surrounding surfaces and sky can contribute;
+
+198
+00:15:45,874 --> 00:15:51,582
+one directional value is not the whole
+illumination.
+
+199
+00:15:51,822 --> 00:15:54,982
+Focus on summing directional contributions
+without
+
+200
+00:15:55,402 --> 00:15:58,282
+identifying this game shadow or
+indirect-lighting method.
+
+201
+00:15:58,282 --> 00:16:06,450
+Our final example explains why doubling sample
+count should not double expected brightness.
+
+202
+00:16:07,150 --> 00:16:10,850
+Numerical integration samples directions
+
+203
+00:16:11,210 --> 00:16:14,750
+with weights for their represented solid
+angle.
+
+204
+00:16:15,110 --> 00:16:19,750
+Simply adding more unweighted samples makes
+brightness
+
+205
+00:16:20,030 --> 00:16:22,150
+scale with count rather than estimating the
+same integral.
+
+206
+00:16:22,470 --> 00:16:26,750
+Uniform hemisphere sampling has density one
+over two pi.
+
+207
+00:16:26,910 --> 00:16:31,410
+Divide each contribution by its density and
+average over samples.
+
+208
+00:16:31,630 --> 00:16:37,590
+Doubling normalized samples preserves expected
+brightness while potentially changing noise.
+
+209
+00:16:37,930 --> 00:16:41,090
+Ideal point lights require separate total-flux
+and sampling
+
+210
+00:16:41,610 --> 00:16:46,510
+treatment beyond an ordinary finite-area
+function.
+
+211
+00:16:46,850 --> 00:16:50,610
+Multiply and sum light in linear color values,
+
+212
+00:16:50,890 --> 00:16:54,890
+not directly in gamma-encoded display values.
+
+213
+00:16:55,517 --> 00:16:59,717
+Walk beside the perforated structure,
+
+214
+00:16:59,717 --> 00:17:09,025
+then observe differently colored characters
+overlapping. Identify the foreground surface.
+
+215
+00:17:15,133 --> 00:17:20,697
+Compare bright and dark faces separately
+
+216
+00:17:20,937 --> 00:17:25,117
+from their front-to-back ordering.
+
+217
+00:17:25,317 --> 00:17:32,741
+Neither surface color nor orientation alone
+determines
+
+218
+00:17:32,961 --> 00:17:41,049
+pixels: connect arriving light with
+directional reflection.
+
+219
+00:17:41,049 --> 00:17:44,589
+Review three steps: select the surface, keep
+quantities consistent,
+
+220
+00:17:44,589 --> 00:17:50,113
+then integrate directional reflection.
+
+221
+00:17:50,333 --> 00:17:55,257
+Our last defined diffuse example calculates
+outgoing
+
+222
+00:17:55,517 --> 00:17:59,497
+radiance from reflectance and received
+irradiance.
+
+223
+00:18:00,117 --> 00:18:03,877
+First: with smaller-is-nearer toy depths red
+eight and blue three,
+
+224
+00:18:03,877 --> 00:18:08,757
+either processing order leaves blue.
+
+225
+00:18:09,117 --> 00:18:13,437
+Next define a nonemissive ideal Lambertian
+surface with
+
+226
+00:18:13,657 --> 00:18:18,237
+reflectance zero point six and irradiance ten
+watts per square metre.
+
+227
+00:18:18,597 --> 00:18:21,057
+Its BRDF is reflectance divided by pi;
+outgoing radiance is zero
+
+228
+00:18:21,217 --> 00:18:26,297
+point six times ten divided by pi,
+approximately one point nine one.
+
+229
+00:18:26,517 --> 00:18:29,697
+Radiance units are watts per square metre per
+steradian.
+
+230
+00:18:29,697 --> 00:18:34,657
+Exitance is six watts per square metre, a
+different quantity.
+
+231
+00:18:35,057 --> 00:18:38,137
+These are explicitly defined reflectance and
+illumination conditions,
+
+232
+00:18:38,317 --> 00:18:42,057
+not values measured from game display pixels.
+
+233
+00:18:42,337 --> 00:18:46,677
+Select a surface, distinguish quantities,
+connect light with material and view.
+
+234
+00:18:47,037 --> 00:18:51,697
+Next we connect camera and projection
+coordinates to map3D points to the screen.

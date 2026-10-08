@@ -18,6 +18,10 @@ def number(s):
  return str(total+current)
 def normalized(s):
  s=s.lower()
+ # Current raw read-back writes these fully spoken acronyms as the exact
+ # matching Latin letters. Timing normalization only; keep the raw transcript
+ # and distinguish reflection, transmission, same-position and two-position models.
+ for spoken,latin in [('비에스에스알디에프','bssrdf'),('비알디에프','brdf'),('비티디에프','btdf'),('비에스디에프','bsdf')]:s=s.replace(spoken,latin)
  # Spoken quaternion component/algebra names versus the same Latin labels.
  # Keep signs and multiplication order intact; raw ASR is reviewed separately.
  s=s.replace('더블유','w')

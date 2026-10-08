@@ -5,13 +5,16 @@ from PIL import Image,ImageDraw,ImageFont
 root=Path(__file__).resolve().parents[3]
 p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--windows',required=True);p.add_argument('--tag',required=True);p.add_argument('--interval',type=float,default=3);a=p.parse_args()
 source=root/a.source;windows=json.loads((root/a.windows).read_text(encoding='utf-8'));work=root/'shared/output/game-math-part2-full-series/inspection'/a.tag;work.mkdir(parents=True,exist_ok=True)
+probe=json.loads(subprocess.run(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(source)],check=True,capture_output=True,text=True).stdout)
+stream=next(s for s in probe['streams'] if s['codec_type']=='video');duration=float(stream.get('duration',probe['format']['duration']))
+assert all(0<=w['in']<w['out']<=duration for w in windows),'Inspection windows must fit the measured local video, not rounded platform metadata.'
 font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',18);records=[]
 for wi,w in enumerate(windows,1):
  start,end=w['in'],w['out'];ts=[];t=start
  while t<end-.1:ts.append(round(t,3));t+=a.interval
  ts.append(end-.1);frames=[]
  for t in ts:
-  f=work/f'{wi:02}-{t:g}.jpg';subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss',str(t),'-i',str(source),'-frames:v','1','-vf','scale=384:216',str(f)],check=True);frames.append((t,f))
+  f=work/f'{wi:02}-{t:g}.jpg';subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss',str(t),'-i',str(source),'-frames:v','1','-vf','scale=384:216',str(f)],check=True);assert f.is_file(),f'No decoded frame at{t}s';frames.append((t,f))
  for offset in range(0,len(frames),20):
   group=frames[offset:offset+20];sheet=Image.new('RGB',(1536,245*((len(group)+3)//4)),'white');draw=ImageDraw.Draw(sheet)
   for j,(t,f) in enumerate(group):

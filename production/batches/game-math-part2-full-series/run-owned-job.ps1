@@ -3,6 +3,7 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('voice','review','render')][string]$Stage,
     [ValidateSet('cpu','cuda:0')][string]$Device = 'cuda:0',
     [string]$ForceScenes = '',
+    [string]$Scenes = '',
     [string]$ReplacementBaseline = ''
 )
 $ErrorActionPreference = 'Stop'
@@ -15,7 +16,37 @@ Set-Location -LiteralPath $mathRoot
 if ($Stage -eq 'voice') {
     $mathArgs = @('-X','utf8',"$PSScriptRoot\render-voice.py",'--project',$Project,'--batch-size','1','--device',$Device)
     if ($ForceScenes) { $mathArgs += @('--force-scenes',$ForceScenes) }
+    if ($Scenes) { $mathArgs += @('--scenes',$Scenes) }
     if ($Device -eq 'cuda:0') {
+        # Another authorized video may already own the same GPU handoff.
+        # Finish that batch and its research resume before requesting ours.
+        # Preserve foreign leases/STOP files, including an abandoned lease.
+        $mathLease = Join-Path $mathRoot 'shared/output/GPU_HANDOFF.json'
+        $mathWaitToken = ''
+        while (Test-Path -LiteralPath $mathLease) {
+            try { $mathActiveLease = Get-Content -LiteralPath $mathLease -Raw | ConvertFrom-Json }
+            catch { Start-Sleep -Seconds 2; continue }
+            $mathActiveCoordinator = $null
+            if ($mathActiveLease.coordinator.pid) {
+                $mathActiveCoordinator = Get-Process -Id $mathActiveLease.coordinator.pid -ErrorAction SilentlyContinue
+            }
+            if (-not $mathActiveCoordinator) {
+                if ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds() - $mathActiveLease.requestedAt -lt 20) {
+                    Start-Sleep -Seconds 2; continue
+                }
+                throw 'A preserved GPU handoff has no live coordinator. Inspect its actual owner; never remove or bypass the lease.'
+            }
+            $mathCoordinatorCreated = ($mathActiveCoordinator.StartTime.ToUniversalTime() - [DateTime]::new(1970,1,1,0,0,0,[DateTimeKind]::Utc)).TotalSeconds
+            if ([Math]::Abs($mathCoordinatorCreated - $mathActiveLease.coordinator.createTime) -gt 0.01) {
+                throw 'GPU handoff PID belongs to a different process identity. Preserve the lease and inspect ownership.'
+            }
+            if ($mathWaitToken -ne $mathActiveLease.token) {
+                $mathWaitToken = $mathActiveLease.token
+                @{project=$Project;status='waiting-for-existing-video-tts-and-research-resume';existingProject=$mathActiveLease.project;existingToken=$mathActiveLease.token;requestedAt=[DateTime]::UtcNow.ToString('o')} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $mathWork 'gpu-wait.json') -Encoding UTF8
+                Write-Output "Waiting for existing GPU TTS batch: $($mathActiveLease.project)"
+            }
+            Start-Sleep -Seconds 10
+        }
         # Finish the active research run before taking GPU ownership, then
         # restore its original queue even when narration fails.
         $mathQueueDir = 'C:/Users/eazuo/renderformer/tmp/placement_focus_20261008'
@@ -32,6 +63,7 @@ if ($Stage -eq 'voice') {
     # Keep read-back on CPU so research regains the GPU immediately after TTS.
     $mathReviewDevice = 'cpu'
     $mathArgs = @('-X','utf8',"$PSScriptRoot\review-voice.py",'--project',$Project,'--watch','--device',$mathReviewDevice)
+    if ($Scenes) { $mathArgs += @('--scenes',$Scenes) }
     if ($ReplacementBaseline) {
         if (-not $ForceScenes) { throw 'Replacement read-back requires the explicit selected scene list.' }
         $mathArgs = @('-X','utf8',"$PSScriptRoot\review-replacements.py",'--project',$Project,'--baseline',$ReplacementBaseline,'--scenes',$ForceScenes)

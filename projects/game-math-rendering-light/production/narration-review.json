@@ -1,0 +1,230 @@
+{
+  "status": "passed-agent-script-and-ASR-difference-review",
+  "humanListening": "pending",
+  "scenes": [
+    {
+      "scene": "01",
+      "wavSha256": "a445571ad82d53f403bf7c5d3a5d31824875c0f51b2b3d6b2e8f3a2607b8c2c8",
+      "rawAsrSha256": "b1ad711d55bed56094ab55860a7a83c6489acc89544127fe46256a9880039895",
+      "expected": "화면의 한 점에 어떤 표면이 보이고, 그 표면은 왜 그 색과 밝기로 보일까요? 먼저 실제 게임에서 가려지는 물체를 보고, 보이는 표면을 고르는 방법부터 구분합니다. 이어서 빛의 양과 단위를 손으로 계산하고, 재질과 시선이 반사를 어떻게 바꾸는지 설명하겠습니다. 마지막에는 이 요소를 렌더링 방정식으로 연결하고, 간단한 밝기 계산을 직접 풀어 보겠습니다.",
+      "recognized": " 화면의 한 점에 어떤 표면이 보이고 그 표면은 왜 그 색과 밝기로 보일까요? 먼저 실제 게임에서 가려지는 물체를 보고 보이는 표면을 고르는 방법부터 구분합니다. 이어서 빛의 양과 단위를 손으로 계산하고 재질과 시선이 반사를 어떻게 바꾸는지 설명하겠습니다. 마지막에는 이 요소를 렌더링 방정식으로 연결하고 간단한 밝기 계산을 직접 풀어보겠습니다.",
+      "matchingCharacterCoverage": 1.0,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All four overview sentences directly read; viewer question, visibility, radiometric calculation, reflection and final exercise intact."
+    },
+    {
+      "scene": "02",
+      "wavSha256": "6ae1d6379097cfa6ab226fcd15ab6ccecf28b06b92360f407b886dc9a49fbe83",
+      "rawAsrSha256": "94eaaf5d1e3e4574e5bdcdfbf0880b3554fb2e79f6e402046513393485e6e1e4",
+      "expected": "빅 워크에서 다른 캐릭터를 따라 바위와 나무 사이를 걸어갑니다. 캐릭터와 앞쪽 바위가 겹치는 부분을 보세요. 카메라가 움직이면 보이던 몸이 바위 뒤로 가려졌다가 다시 나타납니다. 화면의 같은 위치를 여러 표면이 차지하려고 합니다. 불투명한 표면이라면 카메라에서 그 방향으로 가장 먼저 만나는 표면이 보입니다. 뒤의 물체가 없어졌다는 뜻은 아닙니다. 가까운 표면을 고르는 문제와, 선택한 표면을 밝게 만드는 문제는 구분할 수 있습니다. 빛을 더 켜도 앞의 불투명한 바위가 자동으로 투명해지는 것은 아닙니다. 먼저 어떤 표면을 계산할지 알아야 합니다. 이 게임의 내부 코드를 추측하지 않고, 같은 가림을 만드는 두 가지 기본 접근을 원래 도식으로 비교하겠습니다.",
+      "recognized": " 빅워크에서 다른 캐릭터를 따라 바위와 나무 사이를 걸어갑니다. 캐릭터와 앞쪽 바위가 겹치는 부분을 보세요. 카메라가 움직이면 보이던 몸이 바위 뒤로 가려졌다가 다시 나타납니다. 화면에 같은 위치를 여러 표면이 차지하려고 합니다. 불투명한 표면이라면 카메라에서 그 방향으로 가장 먼저 만나는 표면이 보입니다. 뒤에 물체가 없어졌다는 뜻은 아닙니다. 가까운 표면을 고르는 문제와 선택한 표면을 밝게 만드는 문제는 구분할 수 있습니다. 빛을 더 켜도 앞에 불투명한 바위가 자동으로 투명해지는 것은 아닙니다. 먼저 어떤 표면을 계산할지 알아야 합니다. 이 게임의 내부 코드를 추측하지 않고 같은 가림을 만드는 두 가지 기본 접근을 원래 도식으로 비교하겠습니다.",
+      "matchingCharacterCoverage": 0.9887640449438202,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read; actual rock occlusion, opaque nearest surface, separate visibility/shading and no inferred proprietary implementation intact. 의→에 is a phonetic spelling difference; no changed number/claim."
+    },
+    {
+      "scene": "03",
+      "wavSha256": "0b88d5faf358d573a613ac8906b63757daa49411fc2a4a5c60d50ceaaf24bbbb",
+      "rawAsrSha256": "12260e80e485ae2b35592f67f0abe9d94ef7a9d5d3cf456879ef312770b2882f",
+      "expected": "렌더링의 출력은 픽셀마다 색을 가진 영상입니다. 프레임 버퍼에는 이 결과를 저장하고, 표시 전에 후처리를 더할 수도 있습니다. 광선 방식은 화면의 표본에서 카메라 광선을 만듭니다. 장면과 교차 검사한 뒤, 가장 가까운 유효 교점을 찾습니다. 교점이 있으면 위치, 법선, 재질로 카메라 쪽 빛을 계산합니다. 아무것도 만나지 않으면 배경을 사용합니다. 래스터 방식은 삼각형에서 출발합니다. 화면에 투영한 삼각형이 어떤 표본을 덮는지 찾고, 깊이를 비교합니다. 바깥 순서가 화면 표본인지, 장면의 삼각형인지가 다른 것입니다. 둘 다 가시성과 셰이딩이라는 질문을 해결합니다. 픽셀마다 반드시 광선 한 개만 쓰는 것은 아닙니다. 여러 표본으로 경계 등을 계산할 수 있고, 광선을 쓴다는 사실만으로 빛이 정확해지지도 않습니다.",
+      "recognized": " 렌더링의 출력은 픽셀마다 색을 가진 영상입니다. 프레임 버퍼에는 이 결과를 저장하고 표시 전에 후처리를 더할 수도 있습니다. 광선 방식은 화면의 표본에서 카메라 광선을 만듭니다. 장면과 교차 검사한 뒤 가장 가까운 유효 교점을 찾습니다. 교점이 있으면 위치, 법선, 재질로 카메라 쪽 빛을 계산합니다. 아무것도 만나지 않으면 배경을 사용합니다. 레스터 방식은 삼각형에서 출발합니다. 화면에 투영한 삼각형이 어떤 표본을 덮는지 찾고 깊이를 비교합니다. 바깥 순서가 화면 표본인지 장면의 삼각형인지가 다른 것입니다. 둘 다 가시성과 쉐이딩이라는 질문을 해결합니다. 픽셀마다 반드시 광선 한 개만 쓰는 것은 아닙니다. 여러 표본으로 경계 등을 계산할 수 있고 광선을 쓴다는 사실만으로 빛이 정확해지지도 않습니다.",
+      "matchingCharacterCoverage": 0.9930313588850174,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read. Ray sample outer loop versus raster triangle outer loop, nearest valid hit/background, visibility and shading, multiple samples and no guaranteed physically accurate light retained. 래스터/레스터 and 셰이딩/쉐이딩 phonetic spellings only."
+    },
+    {
+      "scene": "04",
+      "wavSha256": "b903a02737784d93e221502c14b55348cd74eaf11f5b4964b8b6a658ccfd36ea",
+      "rawAsrSha256": "5e58ea32165a92ca273163620a91fe5ceaa17c393eeed4602ed0bd00ad0bbd6c",
+      "expected": "같은 표본을 빨간 삼각형과 파란 삼각형이 덮는 예제입니다. 가까울수록 값이 작다고 약속하고, 깊이를 각각 팔과 삼으로 둡니다. 처음 깊이는 무한대로 둡니다. 빨간 삼각형 팔을 먼저 넣으면 통과합니다. 다음 파란 삼각형 삼이 더 가까워 색과 깊이를 교체합니다. 순서를 바꾸면 파란 삼각형 삼이 먼저 기록됩니다. 뒤에 온 빨간 삼각형 팔은 더 멀기 때문에 버립니다. 두 순서 모두 결과는 파란색과 깊이 삼입니다. 불투명한 표면과 유효한 비교 규칙에서 순서가 달라도 최근접 표면을 고릅니다. 이 숫자는 원리를 위한 예제입니다. 실제 깊이 버퍼는 보통 거리를 그대로 저장하지 않고, 투영 뒤에 변환된 깊이를 저장합니다. 멀수록 작게 저장하는 반전 깊이도 있습니다. 초기 값과 비교 방향을 함께 정해야 하며, 깊이가 같을 때의 규칙도 별도로 필요합니다.",
+      "recognized": " 같은 표본을 빨간 삼각형과 파란 삼각형이 덮는 예제입니다. 가까울수록 값이 작다고 약속하고 깊이를 각각 8과 3으로 둡니다. 처음 깊이는 무한대로 둡니다. 빨간 삼각형 8을 먼저 넣으면 통과합니다. 다음 파란 삼각형 3이 더 가까워 색과 깊이를 교체합니다. 순서를 바꾸면 파란 삼각형 3이 먼저 기록됩니다. 뒤에 온 빨간 삼각형 8은 더 멀기 때문에 버립니다. 두 순서 모두 결과는 파란색과 깊이 3입니다. 불투명한 표면과 유효한 비교 규칙에서 순서가 달라도 최근적 표면을 고릅니다. 이 숫자는 원리를 위한 예제입니다. 실제 깊이 버퍼는 보통 거리를 그대로 저장하지 않고 투영 뒤에 변환된 깊이를 저장합니다. 멀수록 작게 저장하는 반전 깊이도 있습니다. 초기 값과 비교 방향을 함께 정해야 하며 깊이가 같을 때의 규칙도 별도로 필요합니다.",
+      "matchingCharacterCoverage": 0.9932203389830508,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read; red8/blue3 tested in both orders, infinity initialization, minimum3, toy-depth distinction, reversed-depth comparator/initialization and tie policy correct. 팔→8 same numeral; 최근접→최근적 spelling difference, nearest-surface definition still explicit."
+    },
+    {
+      "scene": "05",
+      "wavSha256": "71c0a94e28dbd768ef35fed737cd15a413e1aee69d4f644d4636ba3a21de6497",
+      "rawAsrSha256": "5862722e4dd22852404b20e3ba5ae2329e2895316d864d61f0c67fda371f39d5",
+      "expected": "노란 구조물의 둥근 구멍으로 다른 캐릭터가 보입니다. 구멍 앞의 벽과 구멍 안의 배경을 구분해 보세요. 구멍에는 막는 벽 표면이 없기 때문에 뒤의 표면을 볼 수 있습니다. 불투명한 벽 한 장의 색을 흐리게 만든 경우와 다릅니다. 다음 장면에서는 손으로 투명한 상자 가까이를 살펴봅니다. 상자의 표면과 안쪽 빨간 모양이 함께 보입니다. 투명한 물체는 앞 표면 하나만 고르고 끝낼 수 없습니다. 뒤에서 오는 빛과 투과, 경우에 따라 굴절까지 함께 생각해야 합니다. 화면에 보이는 이 차이가 설명의 출발점입니다. 게임이 어떤 투명 렌더링 기법을 썼는지는 이 화면만으로 확정하지 않습니다.",
+      "recognized": " 노란 구조물의 둥근 구멍으로 다른 캐릭터가 보입니다. 구멍 앞의 벽과 구멍 안의 배경을 구분해 보세요. 구멍에는 막는 벽 표면이 없기 때문에 뒤에 표면을 볼 수 있습니다. 불투명한 벽 한 장의 색을 흐리게 만든 경우와 다릅니다. 다음 장면에서는 손으로 투명한 상자 가까이를 살펴봅니다. 상자의 표면과 안쪽 빨간 모양이 함께 보입니다. 투명한 물체는 앞 표면 하나만 고르고 끝낼 수 없습니다. 뒤에서 오는 빛과 투과 경우에 따라 굴절까지 함께 생각해야 합니다. 화면에 보이는 이 차이가 설명의 출발점입니다. 게임이 어떤 투명 렌더링 기법을 썼는지는 이 화면만으로 확정하지 않습니다.",
+      "matchingCharacterCoverage": 0.9956709956709957,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All five paragraphs directly read; actual hole versus transparent container, transmitted/background contributions and no asserted game-engine implementation retained. 뒤의→뒤에 phonetic spelling only."
+    },
+    {
+      "scene": "06",
+      "wavSha256": "611f26a9e7dc4f538eb271aa17c37c6f682baaddab26b02cd82cc8a197846046",
+      "rawAsrSha256": "32467100d3b7217cbc06036081d008881f964fd2234a3a4b74681656f03faf82",
+      "expected": "포워드 방식은 삼각형을 처리하며 필요한 재질과 조명을 계산해서 색을 기록합니다. 깊이 검사와 셰이딩의 실제 실행 순서는 최적화에 따라 달라질 수 있습니다. 디퍼드 방식은 먼저 보이는 표면 정보를 저장합니다. 위치나 깊이, 법선, 재질 정보를 모은 지 버퍼를 생각하세요. 다음 패스에서 이 정보를 읽고 여러 광원의 기여를 계산합니다. 삼각형 표면을 처리하는 단계와 조명을 계산하는 단계를 나눈 것입니다. 광원이 많을 때 표면 정보를 다시 처리하는 비용을 줄일 수 있습니다. 대신 여러 버퍼의 메모리와 대역폭, 투명 물체 처리 같은 비용이 있습니다. 포워드의 광원마다 항상 모든 삼각형을 다시 그려야 하는 것은 아닙니다. 현대의 타일이나 클러스터 방식도 있으므로 어느 하나가 언제나 빠르다고 단정하지 마세요. 이는 계산을 나누는 구조입니다. 가시성이나 반사의 물리 법칙을 바꾼 것이 아니며, 복잡한 투과와 안개처럼 공간 안에서 일어나는 산란에는 별도 처리가 필요합니다.",
+      "recognized": " Forward 방식은 삼각형을 처리하며 필요한 재질과 조명을 계산해서 색을 기록합니다. 깊이 검사와 쉐이딩의 실제 실행 순서는 최적화에 따라 달라질 수 있습니다. Differed 방식은 먼저 보이는 표면 정보를 저장합니다. 위치나 깊이, 법선, 재질 정보를 모은지 버퍼를 생각하세요. 다음 패스에서 이 정보를 읽고 여러 광원의 기여를 계산합니다. 삼각형 표면을 처리하는 단계와 조명을 계산하는 단계를 나눈 것입니다. 광원이 많을 때 표면 정보를 다시 처리하는 비용을 줄일 수 있습니다. 대신 여러 버퍼의 메모리와 대역포, 투명 물체 처리 같은 비용이 있습니다. 포워드의 광원마다 항상 모든 삼각형을 다시 그려야 하는 것은 아닙니다. 현대의 타일이나 클러스터 방식도 있으므로 어느 하나가 언제나 빠르다고 단정하지 마세요. 이는 계산을 나누는 구조입니다. 가시성이나 반사의 물리법칙을 바꾼 것이 아니며 복잡한 투과와 안개처럼 공간 안에서 일어나는 산란에는 별도 처리가 필요합니다.",
+      "matchingCharacterCoverage": 0.9771428571428571,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Fresh selected57.12s take directly read in full. Forward/shading order caveat, G-buffer position/depth/normals/material, triangle-surface versus lighting stages, memory/bandwidth/transparency costs, modern tiled/clustered comparison and explicit fog scattering scope all retained. Forward/Differed Latin read-back and 지/G are phonetic identifiers; 대역포/대역폭 is a spelling difference. No omitted geometry/volume term and no weakened quality gate."
+    },
+    {
+      "scene": "07",
+      "wavSha256": "248965a274199ccba7d73e265c7dbabbd5e1f565e5268495d06abe89e2c94c87",
+      "rawAsrSha256": "b771802f61dd34c1451a1c030e9660512fbdddc5c295c51d25c0404fb4bf4bbb",
+      "expected": "같은 빨간 표면도 손전등과 카메라 위치에 따라 반짝임이 달라집니다. 색 숫자 하나만으로 모든 방향의 반사를 설명할 수 없습니다. 비알디에프는 한 표면 위치에서, 어느 방향에서 들어온 빛이 어느 방향으로 반사되는지 설명하는 분포입니다. 입력에는 표면 위치, 들어오는 방향, 나가는 방향과 파장 또는 색 표현이 들어갑니다. 위치가 달라지면 같은 물체의 재질도 달라질 수 있습니다. 여기서는 들어오는 방향 벡터를 표면에서 광원 쪽으로 향하게 정하겠습니다. 빛이 실제로 진행하는 화살표와는 반대라는 점을 기억하세요. 나가는 방향은 표면에서 관찰자 쪽입니다. 법선은 표면 바깥쪽을 향합니다. 이 약속은 뒤의 코사인 부호까지 결정합니다. 넓게 퍼지는 반사와 좁은 방향에 몰리는 반사를 구별하세요. 관찰 방향을 바꾸면 좁은 반사 봉우리를 만나거나 놓칠 수 있습니다.",
+      "recognized": " 같은 빨간 표면도 손전등과 카메라 위치에 따라 반짝임이 달라집니다. 색 숫자 하나만으로 모든 방향의 반사를 설명할 수 없습니다. BRDF는 한 표면 위치에서 어느 방향에서 들어온 빛이 어느 방향으로 반사되는지 설명하는 분포입니다. 입력에는 표면 위치, 들어오는 방향, 나가는 방향과 파장 또는 색 표현이 들어갑니다. 위치가 달라지면 같은 물체의 재질도 달라질 수 있습니다. 여기서는 들어오는 방향 벡터를 표면에서 광원 쪽으로 향하게 정하겠습니다 빛이 실제로 진행하는 화살표와는 반대라는 점을 기억하세요 나가는 방향은 표면에서 관찰자 쪽입니다 법선은 표면 바깥쪽을 향합니다 이 약속은 뒤에 코사인 부호까지 결정합니다 넓게 퍼지는 반사와 좁은 방향에 몰리는 반사를 구별하세요 관찰 방향을 바꾸면 좁은 반사 봉우리를 만나거나 놓칠 수 있습니다",
+      "matchingCharacterCoverage": 0.9967320261437909,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read. BRDF, surface-to-source wi opposite actual travel, surface-to-view wo, outward n and narrow/broad reflection preserved. Exact spoken acronym timing normalization; raw ASR retained."
+    },
+    {
+      "scene": "08",
+      "wavSha256": "6242c71e2cdecadfeb8c3dba1389091ddaf379737d23d67ae6a98dc41403110b",
+      "rawAsrSha256": "7bb22943ffb2e4d64a847dd7ee5f851fec36f3bb694f12391995d9f2dcecbcd3",
+      "expected": "서브노티카 투의 기지에서 카메라가 흰 벽과 어두운 수납장 쪽으로 돌아갑니다. 같은 화면 안의 표면을 비교해 보세요. 바깥의 어두운 물에서 기지로 들어오면 밝은 벽이 눈에 들어옵니다. 재질 색과 조명 조건이 함께 결과를 만듭니다. 천장과 벽을 따라 시선을 움직일 때 밝은 부분의 모양도 달라집니다. 건설용 초록 미리 보기 표시는 게임 화면의 도구 표시입니다. 완성된 픽셀만 보고 반사 함수나 광원 값을 역으로 확정할 수는 없습니다. 다음 원래 예제에서는 조건을 직접 정해서, 반사 분포와 에너지 보존을 구분하겠습니다.",
+      "recognized": " 서브노티카2의 기지에서 카메라가 흰 벽과 어두운 수납장 쪽으로 돌아갑니다. 같은 화면 안의 표면을 비교해 보세요. 바깥의 어두운 물에서 기지로 들어오면 밝은 벽이 눈에 들어옵니다. 재질 색과 조명 조건이 함께 결과를 만듭니다. 천장과 벽을 따라 시선을 움직일 때 밝은 부분의 모양도 달라집니다. 건설용 초록 미리 보기 표시는 게임 화면의 도구 표시입니다. 완성된 픽셀만 보고 반사함수나 광원 값을 역으로 확정할 수는 없습니다. 다음 원래 예제에서는 조건을 직접 정해서 반사 분포와 에너지 보존을 구분하겠습니다.",
+      "matchingCharacterCoverage": 0.9951690821256038,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All five paragraphs directly read. White wall/storage contrast, base entry, visible green tool ghost and no reverse inference of BRDF/light values preserved. 투/2 is the same game numeral."
+    },
+    {
+      "scene": "09",
+      "wavSha256": "ade18857594160904763244477912180cb07d114b0e9a0f42858185c6135d641",
+      "rawAsrSha256": "d83cd19a4ab3a5aef69490b206ee217fa9b889d6525d264bb6369561d71e31ad",
+      "expected": "비알디에프 값은 영에서 일 사이의 단순한 반사 확률이 아닙니다. 방향에 대한 분포이므로 단위는 입체각의 역수입니다. 빛을 좁은 방향에 모으면 그 방향의 분포 값이 일보다 클 수도 있습니다. 값 하나가 크다고 에너지를 새로 만든 것은 아닙니다. 에너지 보존은 반사되는 모든 방향의 기여를 코사인과 입체각으로 가중해 합한 뒤 검사합니다. 수동 표면은 받은 에너지보다 더 많이 반사하지 않습니다. 반사 분포는 음수가 아니어야 합니다. 일반적인 상반성을 만족하는 재질에서는 두 방향을 바꾸어도 같은 반사 응답을 얻습니다. 자체 발광은 반사에서 공짜로 에너지를 늘린 것이 아니라 별도의 방출 항입니다. 형광 같은 더 복잡한 현상도 지금의 단순 모델 범위와 구분합니다. 오래된 정규화 없는 블린 퐁 식은 이런 보존 조건을 어길 수 있습니다. 익숙한 반짝임 모델을 물리 법칙 전체로 생각하지 마세요.",
+      "recognized": " BRDF 값은 0에서 1 사이의 단순한 반사 확률이 아닙니다. 방향에 대한 분포임으로 단위는 입체각의 역수입니다. 빛을 좁은 방향에 모으면 그 방향의 분포값이 1보다 클 수도 있습니다. 값 하나가 크다고 에너지를 새로 만든 것은 아닙니다. 에너지 보조는 반사되는 모든 방향의 기여를 코사인과 입체각으로 가중에 합한 뒤 검사합니다. 수동 표면은 받은 에너지보다 더 많이 반사하지 않습니다. 반사 분포는 음수가 아니어야 합니다. 일반적인 상반성을 만족하는 재질에서는 두 방향을 바꾸어도 같은 반사 응답을 얻습니다. 자체 발광은 반사에서 공짜로 에너지를 늘린 것이 아니라 별도의 방출항입니다. 형광 같은 더 복잡한 현상도 지금의 단순 모델 범위와 구분합니다. 오래된 정규화 없는 불림풍식은 이런 보존 조건을 어길 수 있습니다. 익숙한 반짝인 모델을 물리법칙 전체로 생각하지 마세요.",
+      "matchingCharacterCoverage": 0.9715189873417721,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read. BRDF density not probability, inverse-steradian units, integral passive-energy restriction, nonnegative reciprocal ordinary models and unnormalized Blinn-Phong caveat intact. 보존/보조 and 블린퐁/불림풍 are phonetic read-back differences; sentence explicitly limits reflected energy to received energy."
+    },
+    {
+      "scene": "10",
+      "wavSha256": "12c835e69a66421b972fcecd65a59e3491d8ccbb2acbad518ba2bc974cf3eac6",
+      "rawAsrSha256": "8ec1d5b3bee9451a7764e8a9641d853faa927de3bb560403c3de4284df89694c",
+      "expected": "반사는 표면의 같은 쪽으로 빛이 돌아오는 경우입니다. 반사만 다루는 비알디에프에서 시작했습니다. 반대편으로 투과되는 빛을 다루는 함수는 비티디에프입니다. 같은 위치에서 반사와 투과를 함께 묶으면 보통 비에스디에프라고 부릅니다. 피부나 우유처럼 안으로 들어간 빛이 다른 위치로 나오는 경우도 있습니다. 입사 위치와 출사 위치를 따로 두는 비에스에스알디에프로 구분합니다. 그래서 방향만 추가하는 일반화와, 위치까지 두 개로 늘리는 일반화는 다릅니다. 원문의 중복된 약자를 그대로 한 개념으로 외우지 마세요. 안개나 물속 산란은 표면만의 반사가 아닙니다. 공간 속 산란과 흡수, 방향 분포를 별도로 다루어야 합니다. 이 강의의 뒤 계산은 불투명한 표면의 반사와 방출로 범위를 정합니다. 물속 게임 장면을 곧바로 그 단순 표면식 하나로 전부 설명하지 않겠습니다.",
+      "recognized": " 반사는 표면에 같은 쪽으로 빛이 돌아오는 경우입니다. 반사만 다루는 BRDF에서 시작했습니다. 반대편으로 투과되는 빛을 다루는 함수는 BTDF입니다. 같은 위치에서 반사와 투과를 함께 묶으면 보통 BSDF라고 부릅니다. 피부나 우유처럼 안으로 들어간 빛이 다른 위치로 나오는 경우도 있습니다. 입사 위치와 출사 위치를 따로 두는 BSSRDF로 구분합니다. 그래서 방향만 추가하는 일반화와 위치까지 두 개로 늘리는 일반화는 다릅니다. 원문에 중복된 약자를 그대로 한 개념으로 외우지 마세요. 안개나 물속 산란은 표면만의 반사가 아닙니다. 공간 속 산란과 흡수, 방향 분포를 별도로 다루어야 합니다. 이 강의의 뒤 계산은 불투명한 표면의 반사와 방출로 범위를 정합니다. 물속 게임 장면을 곧바로 그 단순 표면식 하나로 전부 설명하지 않겠습니다.",
+      "matchingCharacterCoverage": 0.993421052631579,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read. BRDF reflection, BTDF transmission, same-position BSDF, two-position BSSRDF and separate volume scattering scope remain distinct. Fully spoken acronym matching changes only timing normalization, never ASR or meaning."
+    },
+    {
+      "scene": "11",
+      "wavSha256": "180942925db0de419489013de959d38d07522411bcc4bf05b381f686ab5d694f",
+      "rawAsrSha256": "2e307e7ac5e19f95e72b8e5d070f793b8b0c432ebce7c17b5f0d6a8f72105dbe",
+      "expected": "빅 워크의 밝은 바깥에서 빨간 구조물 안쪽으로 움직입니다. 빨간 표면과 그늘의 어두운 부분을 함께 보세요. 이어지는 장면에는 파란 장치와 녹색 지형이 있습니다. 화면의 빨강, 초록, 파랑은 우리가 표시한 색의 좌표입니다. 실제 빛이 언제나 세 가지 파장만으로 이루어졌다는 뜻은 아닙니다. 서로 다른 스펙트럼이 같은 색처럼 보일 수도 있습니다. 게임의 색은 재질과 조명, 카메라와 표시 변환의 결과입니다. 화면이 어두워졌다는 이유만으로 재질이 바뀌었다고 단정하지 마세요. 빛 에너지와 사람이 보는 색을 구분한 뒤, 에너지의 양부터 숫자로 계산하겠습니다.",
+      "recognized": " 빅 워크의 밝은 바깥에서 빨간 구조물 안쪽으로 움직입니다 빨간 표면과 그늘의 어두운 부분을 함께 보세요 이어지는 장면에는 파란 장치와 녹색 지형이 있습니다 화면의 빨강, 초록, 파랑은 우리가 표시한 색의 좌표입니다 실제 빛이 언제나 세 가지 파장만으로 이루어졌다는 뜻은 아닙니다 서로 다른 스펙트럼이 같은 색처럼 보일 수도 있습니다 게임의 색은 재질과 조명, 카메라와 표시 변환의 결과입니다 화면이 어두워졌다는 이유만으로 재질이 바뀌었다고 단정하지 마세요. 빛 에너지와 사람이 보는 색을 구분한 뒤 에너지의 양부터 숫자로 계산하겠습니다.",
+      "matchingCharacterCoverage": 1.0,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All five paragraphs directly read. RGB does not mean three literal wavelengths; spectral mixtures, camera/display processing and no game-pixel radiometric inference intact."
+    },
+    {
+      "scene": "12",
+      "wavSha256": "b00f7eb0fabd53e4a31a7a70d044fb50cc33aa92f2ee07320b3c0d52d6e67e0b",
+      "rawAsrSha256": "ba36268b1dd9d3ac3886b909bbedafb63399895b49846c15982f2510d48b888d",
+      "expected": "빛의 에너지 총량은 줄로 나타냅니다. 사 줄이 이 초 동안 전달됐다면, 평균 일률은 이 와트입니다. 복사속은 빛 에너지가 시간당 흐르는 총량입니다. 일 와트는 일 초에 일 줄이 흐르는 양입니다. 그 이 와트가 이 제곱미터에 균일하게 도착한다면, 평균 복사조도는 제곱미터당 일 와트입니다. 들어오는 면적당 양은 복사조도이고, 떠나는 면적당 양은 복사출사도입니다. 총량과 밀도는 같은 숫자처럼 보여도 단위가 다릅니다. 복사 측정은 물리 에너지를 다룹니다. 측광은 파장마다 사람 눈의 민감도로 가중해 광속이나 조도로 표현합니다. 와트와 루멘, 제곱미터당 와트와 럭스를 구분하세요. 측광량을 사람의 주관적인 밝기 느낌이나 화면의 감마 값과 동일하게 보지 않습니다.",
+      "recognized": " 빛의 에너지 총량은 줄로 나타냅니다. 4줄이 2초 동안 전달됐다면 평균 일률은 2와트입니다. 복사속은 빛, 에너지가 시간당 흐르는 총량입니다. 1와트는 1초에 1줄이 흐르는 양입니다. 그 2와트가 2제곱미터에 균일하게 도착한다면 평균 복사조도는 제곱미터당 1와트입니다. 들어오는 면적당 양은 복사조도이고 떠나는 면적당 양은 복사출사도입니다. 총량과 밀도는 같은 숫자처럼 보여도 단위가 다릅니다. 복사 측정은 물리 에너지를 다룹니다. 측광은 파장마다 사람 눈의 민감도로 가중해 광속이나 조도로 표현합니다. 와트와 룸엔, 제곱미터당 와트와 럭스를 구분하세요. 측광량을 사람의 주관적인 밝기 느낌이나 화면의 감마값과 동일하게 보지 않습니다.",
+      "matchingCharacterCoverage": 0.9923954372623575,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read.4J/2s=2W,1W=1J/s,2W/2m2=1W/m2, radiance versus irradiance, spectral photometric weighting and no subjective-brightness equivalence correct. 루멘/룸엔 phonetic."
+    },
+    {
+      "scene": "13",
+      "wavSha256": "c6834b971f3c0f30694d34a3daef20bf0bcbb5bc045e53e306ed29ac5e26cf92",
+      "rawAsrSha256": "953f99ab0c8f719d68cae2b796d4b4ff8a379d4676daac7bf9846a0768e62279",
+      "expected": "같은 면적당 총량을 받아도, 사방에서 들어오는 빛과 좁은 한 방향에서 들어오는 빛은 다릅니다. 반짝임을 계산하려면 방향별 양이 필요합니다. 평면의 각도는 원의 호와 연결됩니다. 입체각은 관찰점에서 바라본 영역을 단위 구에 투영한 면적으로 생각할 수 있습니다. 입체각의 단위는 스테라디안입니다. 구 전체는 사 파이, 반구는 이 파이 스테라디안입니다. 화면의 평면 각도와 혼동하지 마세요. 복사휘도는 투영 면적당, 입체각당 복사속입니다. 단위는 와트를 제곱미터와 스테라디안으로 나눈 것입니다. 여기서 투영 면적은 광선 방향에 수직으로 바라본 면적입니다. 표면 자체의 넓이와 같은 경우도 있지만 기울면 달라집니다. 그러므로 복사조도와 복사휘도를 바로 같은 값으로 대입할 수 없습니다. 방향별 기여를 합할 때 입체각과 코사인이 필요합니다.",
+      "recognized": " 같은 면적당 총량을 받아도 사방에서 들어오는 빛과 좁은 한 방향에서 들어오는 빛은 다릅니다. 반짝임을 계산하려면 방향별 양이 필요합니다. 평면의 각도는 원의 호와 연결됩니다. 입체각은 관찰점에서 바라본 영역을 단위구의 투영한 면적으로 생각할 수 있습니다. 입체각의 단위는 스테라디안입니다. 구 전체는 4파이, 반구는 2파이 스테라디안입니다. 화면의 평면 각도와 혼동하지 마세요. 복사휘도는 투영 면적당, 입체각당 복사속입니다. 단위는 와트를 제곱미터와 스테라디안으로 나눈 것입니다 여기서 투영 면적은 광선 방향의 수직으로 바라본 면적입니다 표면 자체의 넓이와 같은 경우도 있지만 기울면 달라집니다 그러므로 복사조도와 복사휘도를 바로 같은 값으로 대입할 수 없습니다 방향별 기여를 합할 때 입체각과 코사인이 필요합니다",
+      "matchingCharacterCoverage": 0.9933333333333333,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read.4pi sphere,2pi hemisphere, solid-angle element, projected surface area and radiance W/(m2 sr) intact."
+    },
+    {
+      "scene": "14",
+      "wavSha256": "a19b84cd1175319645850c0141a6a5ff876f6033f6c347894de1fd7590001c2c",
+      "rawAsrSha256": "6c5b6b499e391b1d85fc2ffeba6dc7b94630bbb8c573a61d0e4d35bb21d57f88",
+      "expected": "손전등을 든 채 바위 아래와 옆으로 움직입니다. 밝은 빛이 닿는 부분과 주변의 어두운 면을 보세요. 굴곡진 바위는 위치마다 표면 방향이 다릅니다. 같은 빛이 오는 방향에서도 법선과 이루는 각이 달라집니다. 밝기가 달라지는 데에는 거리, 가림, 재질과 물속 효과도 있습니다. 이 영상은 각도 하나만 바꾸는 통제 실험은 아닙니다. 그래서 다음 도식에서는 빛의 조건을 고정하고 판의 방향만 바꾸겠습니다. 빛이 비스듬하면 넓은 면에 퍼지는 관계를 분리합니다. 관찰한 바위의 밝기에서 특정 수치를 읽어내지 않고, 우리가 정한 영 도와 육십 도를 직접 비교하겠습니다.",
+      "recognized": " 손전등을 든 채 바위 아래와 옆으로 움직입니다. 밝은 빛이 닿는 부분과 주변의 어두운 면을 보세요. 굴곡진 바위는 위치마다 표면 방향이 다릅니다. 같은 빛이 오는 방향에서도 법성과 이루는 각이 달라집니다. 밝기가 달라지는 데에는 거리, 가림, 재질과 물속 효과도 있습니다. 이 영상은 각도 하나만 바꾸는 통제 실험은 아닙니다. 그래서 다음 도식에서는 빛의 조건을 고정하고 판의 방향만 바꾸겠습니다. 빛이 비스듬하면 넓은 면에 퍼지는 관계를 분리합니다. 관찰한 바위의 밝기에서 특정 수치를 읽어내지 않고 우리가 정한 0도와 60도를 직접 비교하겠습니다.",
+      "matchingCharacterCoverage": 0.9955156950672646,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All five paragraphs directly read. Actual camera/light/surface changes are observations, not calibrated cosine or inverse engine measurements. Toy0/60 degrees are independent controlled conditions. 법선/법성 phonetic."
+    },
+    {
+      "scene": "15",
+      "wavSha256": "d07d42e99641f2f2572735451d291c95afe5625a557e6a5a096c2065639caa5b",
+      "rawAsrSha256": "bd7cf5c5e207b20979f1cfc1b9deec0efe0690c971b2888bded41f312b37f705",
+      "expected": "한 방향에서 오는 같은 빛을 받는 판입니다. 법선과 광원 쪽 방향이 같으면 각도는 영이고, 코사인은 일입니다. 판을 기울여 두 방향 사이의 각도를 육십 도로 만들면 코사인은 영 점 오입니다. 같은 실제 면적의 투영 면적이 절반입니다. 같은 방향별 빛 조건에서, 판의 면적당 도착 기여도 절반이 됩니다. 재질의 반사 법칙을 바꾸지 않아도 생기는 기하 효과입니다. 벡터를 단위 길이로 만들면 법선과 광원 쪽 방향의 내적이 이 코사인입니다. 단위 길이를 잊으면 방향뿐 아니라 길이까지 곱해집니다. 우리 약속에서는 표면에서 광원 쪽을 향하므로 앞면의 내적이 양수입니다. 빛의 진행 방향을 쓰는 식에는 반대 부호가 필요합니다. 불투명한 한쪽 면의 직접 조명에서는 뒤쪽 방향을 영으로 제한합니다. 양면 표면과 투과는 별도의 모델입니다.",
+      "recognized": " 한 방향에서 오는 같은 빛을 받는 판입니다. 법성과 광원 쪽 방향이 같으면 각도는 0이고 코사인은 1입니다. 판을 기울여 두 방향 사이에 각도를 60도로 만들면 코사인은 0.5입니다. 같은 실제 면적의 투영 면적이 절반입니다. 같은 방향별 빛 조건에서 판의 면적당 도착 기여도 절반이 됩니다. 재질이 반사 법칙을 바꾸지 않아도 생기는 기하 효과입니다. 벡터를 단위 길이로 만들면 법성과 광원쪽 방향의 내적이 2코사인입니다. 단위 길이를 잊으면 방향뿐 아니라 길이까지 곱해집니다. 우리 약속에서는 표면에서 광원쪽을 향함으로 앞면의 내적이 양수입니다. 빛의 진행 방향을 쓰는 시계는 반대 부호가 필요합니다. 불투명한 한쪽 면에 직접 조명해서는 뒤쪽 방향을 0으로 제한합니다. 양면 표면과 투과하는 별도의 모델입니다.",
+      "matchingCharacterCoverage": 0.9584775086505191,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read. Unit-vector n dot wi,0/60-degree cosines1/.5, grazing limit and front-side sign convention correct. The demonstrative 이 코사인 is transcribed2 코사인; it is not an extra factor of two. Unnormalized transcript reviewed against formula and complete sentence."
+    },
+    {
+      "scene": "16",
+      "wavSha256": "e2dcb6bca4c1f8200e66cbb997715a47012a3c14342122c56ed075f33c0b6044",
+      "rawAsrSha256": "c81a676fd4cbbaafe58f2028b9282f41a1acf60fee6f313d54b2511785b2f768",
+      "expected": "이제 한 표면 위치에서 눈 쪽으로 나가는 복사휘도를 계산합니다. 렌더링 방정식은 자체 방출과 반사 기여의 합입니다. 발광하는 표면은 자체 방출 항을 가집니다. 일반적인 비발광 표면에서는 그 항을 영으로 둡니다. 반사 항은 표면 위 반구의 각 방향에서 들어오는 복사휘도에 반사 분포와 코사인을 곱한 뒤, 입체각 전체에 대해 더합니다. 눈 쪽 방향은 고정하고 들어오는 방향을 바꾸며 합하는 것입니다. 비알디에프가 이 둘을 연결합니다. 복사휘도에 스테라디안의 역수인 반사 분포를 곱하고, 스테라디안인 미소 입체각으로 적분합니다. 최종 단위는 다시 복사휘도입니다. 공식의 위치와 파장 인자는 이 계산이 한 점과 한 색 표현에 대한 것임을 뜻합니다. 표시할 픽셀 색에는 카메라와 색 변환 등의 단계도 이어집니다.",
+      "recognized": " 이제 한 표면 위치에서 눈 쪽으로 나가는 복사위도를 계산합니다. 렌더링 방정식은 자체 방출과 반사 기여의 합입니다. 발광하는 표면은 자체 방출항을 가집니다. 일반적인 비발광 표면에서는 그 항을 0으로 둡니다. 반사항은 표면 위 반구의 각 방향에서 들어오는 복사위도의 반사 분포와 코사인을 곱한 뒤 입체각 전체에 대해 더합니다. 눈 쪽 방향은 고정하고 들어오는 방향을 바꾸며 합하는 것입니다. BRDF가 이 둘을 연결합니다. 복사위도에 스테라디안의 역수인 반사분포를 곱하고 스테라디안인 미소 입체각으로 적분합니다 최종 단위는 다시 복사위도입니다 공식의 위치와 파장인자는 이 계산이 한 점과 한 색 표현에 대한 것임을 뜻합니다 표시할 픽셀 세계는 카메라와 색 변환 등의 단계도 이어집니다",
+      "matchingCharacterCoverage": 0.9752650176678446,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read. Lo=Le+hemisphere integral Li fr cosine, nonemission zero, fixed wo and changing wi, inverse-steradian cancellation, location/wavelength and later display transform intact. 복사휘도/복사위도 phonetic."
+    },
+    {
+      "scene": "17",
+      "wavSha256": "82acbad5153879cdf04485b89e863837e73e7d7afd89957c2753c2f009a9908f",
+      "rawAsrSha256": "45a858975a99824be5edf82110864885c0101b9504fbfafc62a769222cffb058",
+      "expected": "녹색 물속에서 밝은 기지 쪽으로 움직입니다. 보이는 표면과 그 표면을 향해 오는 빛을 나누어 생각하세요. 조명 자체가 빛을 내는 것과, 주변 벽이 빛을 받아 반사하는 것은 서로 다른 역할입니다. 이어지는 장면에서는 플레이어가 천장에 조명을 설치합니다. 미리 보기 모양이 설치된 조명으로 바뀌는 부분을 보세요. 설치 뒤 천장과 벽이 넓게 밝아진 모습은 두 역할을 연결하는 관찰입니다. 벽이 모두 발광 재질로 바뀌었다는 뜻은 아닙니다. 게임이 간접 조명을 어떤 방식으로 구현했는지는 단정하지 않습니다. 다음에는 빛의 이동 관계와 계산 비용을 도식으로 설명합니다.",
+      "recognized": " 녹색 물 속에서 밝은 기지 쪽으로 움직입니다. 보이는 표면과 그 표면을 향해 오는 빛을 나누어 생각하세요. 조명 자체가 빛을 내는 것과 주변 벽이 빛을 받아 반사하는 것은 서로 다른 역할입니다. 이어지는 장면에서는 플레이어가 천장에 조명을 설치합니다. 미리 보기 모양이 설치된 조명으로 바뀌는 부분을 보세요. 설치 뒤 천장과 벽이 넓게 밝아진 모습은 두 역할을 연결하는 관찰입니다. 벽이 모두 발광 재질로 바뀌었다는 뜻은 아닙니다. 게임이 간접 조명을 어떤 방식으로 구현했는지는 단정하지 않습니다 다음에는 빛의 이동관계와 계산비용을 도식으로 설명합니다",
+      "matchingCharacterCoverage": 1.0,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Fresh current SHA raw read-back directly compared after sample-exact paragraph reorder0,2,1,3,4. All original emission/reflection, actual ceiling placement, brighter wall and no inferred indirect-light algorithm claims intact. Every original sample retained and natural last paragraph unchanged."
+    },
+    {
+      "scene": "18",
+      "wavSha256": "130475328f71be6cca1d6a9c92c17e468494a0c140a427d0e24d5b17cf6f845e",
+      "rawAsrSha256": "70617369617bd139692dc3fe6e17bacd2f66997d9857451b9d6374b264714ff7",
+      "expected": "광원에서 바로 오는 빛은 직접 조명입니다. 벽이나 바닥을 거쳐서 오는 빛은 간접 조명으로 구분합니다. 첫 표면에서 나온 빛이 다른 표면에 도착하면, 첫 표면의 출사광이 둘째 표면의 입사광이 됩니다. 그러면 한 점의 입사광을 구하려고 다른 점의 출사광도 알아야 합니다. 렌더링 방정식은 장면의 점들을 서로 연결합니다. 여러 번 반사되는 길이 늘어나면 계산량이 커집니다. 가림과 그림자, 반사, 빛이 닿는 경로를 함께 고려해야 합니다. 실시간 게임은 유한한 예산 안에서 이를 근사합니다. 사전 계산, 제한된 경로, 화면 공간 계산이나 다른 혼합 방법을 선택할 수 있습니다. 광선 추적도 표본 수와 경로 길이, 재질 모델에 따라 오차가 있습니다. 기법 이름보다 무엇을 계산하고 무엇을 생략했는지 보세요.",
+      "recognized": " 광원에서 바로 오는 빛은 직접 조명입니다. 벽이나 바닥을 거쳐서 오는 빛은 간접 조명으로 구분합니다. 첫 표면에서 나온 빛이 다른 표면에 도착하면 첫 표면에 출사광이 둘째 표면에 입사광이 됩니다. 그러면 한 점의 입사광을 구하려고 다른 점의 출사광도 알아야 합니다. 렌더링 방정식은 장면의 점들을 서로 연결합니다. 여러 번 반사되는 길이 늘어나면 계산량이 커집니다. 가림과 그림자, 반사, 빛이 닿는 경로를 함께 고려해야 합니다. 실시간 게임은 유한한 예산 안에서 이를 근사합니다 사전 계산, 제한된 경로, 화면 공간 계산이나 다른 혼합 방법을 선택할 수 있습니다 광선 추적도 표본 수와 경로 길이, 재질 모델에 따라 오차가 있습니다 기법 이름보다 무엇을 계산하고 무엇을 생략했는지 보세요",
+      "matchingCharacterCoverage": 0.9927536231884058,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read. Direct versus indirect light, surface outgoing becoming next incident, scene coupling, multi-bounce cost, finite real-time approximations and ray-tracing error retained."
+    },
+    {
+      "scene": "19",
+      "wavSha256": "8bbaf2571ff117e3fa3319cb974e85319350270bce0afc7960fe23d139021047",
+      "rawAsrSha256": "9a8821a838b2e580f0813a5eba8507455c58de091a0d043187e5700f9a87cf35",
+      "expected": "바위와 나무 사이를 걸으며 밝은 땅과 그늘을 비교합니다. 카메라가 움직여도 표면과 그림자의 관계가 계속 바뀌어 보입니다. 그늘은 특정 광원 방향이 가려졌다는 뜻일 수 있습니다. 모든 방향에서 오는 빛이 반드시 영이라는 뜻은 아닙니다. 주변 표면과 하늘에서 오는 기여까지 생각하면, 한 방향의 밝기 하나로 전체를 끝낼 수 없습니다. 이 게임의 그림자나 간접 조명 구현을 특정하지 않고, 방향별 기여를 합한다는 질문에 집중하겠습니다. 마지막 계산에서는 방향 표본을 두 배로 늘려도 밝기를 두 배로 만들지 않는 이유를 확인합니다.",
+      "recognized": " 바위와 나무 사이를 걸으며 밝은 땅과 그늘을 비교합니다. 카메라가 움직여도 표면과 그림자의 관계가 계속 바뀌어 보입니다. 그늘은 특정 광원 방향이 가려졌다는 뜻일 수 있습니다. 모든 방향에서 오는 빛이 반드시 0이라는 뜻은 아닙니다. 주변 표면과 하늘에서 오는 기어까지 생각하면 한 방향의 밝기 하나로 전체를 끝낼 수 없습니다. 이 게임의 그림자나 간접 조명 구현을 특정하지 않고 방향별 기어를 합한다는 질문에 집중하겠습니다. 마지막 계산에서는 방향 표본을 2배로 늘려도 밝기를 2배로 만들지 않는 이유를 확인합니다.",
+      "matchingCharacterCoverage": 0.9764150943396226,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All five paragraphs directly read. Shadow does not imply no indirect incident light, sum directional contributions, normalized doubling of sample count and no pixel-based proprietary algorithm inference retained."
+    },
+    {
+      "scene": "20",
+      "wavSha256": "9c9a491cbd3e92ae2be4706484f080a54debac00861f0a7a70da2a0a7acf91d8",
+      "rawAsrSha256": "c67713672721295dda43be0e099928f45a95628893575f3ef3249086eab2eeaf",
+      "expected": "적분을 컴퓨터로 계산할 때는 여러 방향에서 표본을 얻습니다. 각 표본에 방향이 대표하는 입체각의 가중치가 필요합니다. 모든 방향에서 값이 같아도, 표본 값만 계속 더하면 표본 수에 따라 밝기가 커집니다. 이것은 같은 적분을 계산한 것이 아닙니다. 반구에 균일하게 방향을 뽑았다면 확률 밀도는 이 파이의 역수입니다. 몬테카를로 추정에서는 각 기여를 그 밀도로 나누고, 표본 수로 평균합니다. 표본이 두 배가 되어도 정규화된 추정의 기대 밝기는 같습니다. 대신 오차나 잡음이 달라질 수 있습니다. 지금 다루는 표면 위 반구는 일반 함수 모델입니다. 면적이 영인 점광원 같은 이상화는 별도의 총량과 표본 규칙으로 다루어야 합니다. 색 채널로 빛을 곱하고 더할 때도 선형인 빛의 값에서 계산합니다. 화면 표시용 감마 값에 바로 같은 식을 적용하면 다른 결과가 됩니다.",
+      "recognized": " 적분을 컴퓨터로 계산할 때는 여러 방향에서 표본을 얻습니다. 각 표본의 방향이 대표하는 입체각의 가중치가 필요합니다. 모든 방향에서 값이 같아도 표본값만 계속 더하면 표본수에 따라 밝기가 커집니다. 이것은 같은 적분을 계산한 것이 아닙니다. 반구의 균일하게 방향을 뽑았다면 확률 밀도는 2파이의 역수입니다. 몬테카를로 추정에서는 각 기여를 그 밀도로 나누고 표본수로 평균합니다. 표본이 2배가 되어도 정규화된 추정의 기대밝기는 같습니다. 대신 오차나 잡음이 달라질 수 있습니다. 지금 다루는 표면 위 반구는 일반 함수 모델입니다. 면적이 0인 점광원 같은 이상화는 별도의 총량과 표본 규칙으로 다루어야 합니다. 색채널로 빛을 곱하고 더할 때도 선형인 빛의 값에서 계산합니다. 화면 표시용 감마 값에 바로 같은 식을 적용하면 다른 결과가 됩니다.",
+      "matchingCharacterCoverage": 0.9901315789473685,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All six paragraphs directly read. Directional sum includes solid-angle weights; sampled estimator divides by density and count, uniform hemisphere p=1/(2pi), linear-light versus display gamma intact. No claim that twice the samples doubles expectation."
+    },
+    {
+      "scene": "21",
+      "wavSha256": "7ee91a199d266d5e1839c00af2c2c85d110daf7b1f87d72a522bf7158168d968",
+      "rawAsrSha256": "c02c3c4e2ed2897b51b4b469cd92b0039b093f7a752517760d1ef6dcae0aa182",
+      "expected": "구멍이 있는 구조물 옆을 걷다가, 색이 다른 캐릭터가 앞뒤로 겹치는 장면으로 이어집니다. 어느 표면이 앞에 있는지 보세요. 같은 화면에서 밝은 면과 어두운 면도 비교합니다. 앞뒤 순서를 고르는 계산과 그 면의 밝기를 계산하는 것은 별개입니다. 빨강이나 초록의 색만으로도, 면의 방향만으로도 결과는 정해지지 않습니다. 들어오는 빛과 눈 쪽으로 나가는 반사를 연결합니다. 실제 게임에서 출발해, 표면을 고르고, 단위를 구분하고, 방향별 반사를 합하는 세 단계를 돌아보세요. 마지막은 조건을 정한 확산면입니다. 반사율과 도착한 빛으로 눈 방향의 출사량을 계산하겠습니다.",
+      "recognized": " 구멍이 있는 구조물 옆을 껐다가 색이 다른 캐릭터가 앞뒤로 겹치는 장면으로 이어집니다. 어느 표면이 앞에 있는지 보세요. 같은 화면에서 밝은 면과 어두운 면도 비교합니다. 앞뒤 순서를 고르는 계산과 그 면의 밝기를 계산하는 것은 별개입니다. 빨강이나 초록의 색만으로도 면의 방향만으로도 결과는 정해지지 않습니다. 들어오는 빛과 눈 쪽으로 나가는 반사를 연결합니다. 실제 게임에서 출발해 표면을 고르고 단위를 구분하고 방향별 반사를 합하는 3단계를 돌아보세요. 마지막은 조건을 정한 확산면입니다. 반사율과 도착한 빛으로 눈 방향의 출사량을 계산하겠습니다.",
+      "matchingCharacterCoverage": 0.9912663755458515,
+      "agentMeaningNumberReview": "passed",
+      "notes": "All five paragraphs directly read. Separate foreground visibility from surface brightness, light/material/view relation, three-step recap and controlled Lambertian exercise intact. 걷다가/껐다가 phonetic only; actual walking source retained."
+    },
+    {
+      "scene": "22",
+      "wavSha256": "2ab142a4150430f51e0403f5a873466ed423fd8fe0116b785597fc39ef533c47",
+      "rawAsrSha256": "f06e442b27a19dc6292325564105afc89a219d9644fe1b2c047876c8a8c13c64",
+      "expected": "첫 문제입니다. 깊이 팔의 빨강과 깊이 삼의 파랑이라면, 작은 값이 가까운 이 예제에서는 어느 것을 먼저 처리해도 파랑이 남습니다. 둘째 문제는 빛을 스스로 내지 않는 이상적인 람버트 확산면입니다. 반사율은 영 점 육, 도착하는 복사조도는 제곱미터당 십 와트로 정합니다. 반사 분포는 반사율을 파이로 나눕니다. 출사 복사휘도는 영 점 육에 십을 곱하고 파이로 나눈 값, 약 일 점 구 일입니다. 단위는 와트를 제곱미터와 스테라디안으로 나눈 것입니다. 복사출사도는 제곱미터당 육 와트이므로, 두 값을 같은 양으로 다루면 안 됩니다. 이것은 반사율과 입사광을 직접 정한 계산입니다. 게임 화면의 밝은 픽셀에서 이 수치를 바로 측정한 것은 아닙니다. 보이는 표면을 고르고, 단위를 구분하고, 빛과 재질과 시선을 연결했습니다. 다음 강의에서는 카메라와 투영의 좌표를 연결해 삼차원 점을 화면으로 옮기겠습니다.",
+      "recognized": " 첫 문제입니다. 깊이 8의 빨강과 깊이 3의 파랑이라면 작은 값이 가까운 이 예제에서는 어느 것을 먼저 처리해도 파랑이 남습니다. 둘째 문제는 빛을 스스로 내지 않는 이상적인 람버트 확산면입니다. 반사율은 0.6 도착하는 복사조도는 제곱미터당 10와트로 정합니다. 반사분포는 반사율을 파이로 나눕니다. 출사 복사위도는 0.6에 10을 곱하고 파이로 나눈 값 약 1.9일입니다. 단위는 와트를 제곱미터와 스테라디안으로 나눈 것입니다. 복사 출사도는 제곱미터당 6와트임으로 두 값을 같은 양으로 다루면 안됩니다. 이것은 반사율과 입사광을 직접 정한 계산입니다. 게임 화면에 밝은 픽셀에서 이 수치를 바로 측정한 것은 아닙니다. 보이는 표면을 고르고 단위를 구분하고 빛과 재질과 시선을 연결했습니다. 다음 강의에서는 카메라와 투영의 좌표를 연결해 3차원점을 화면으로 옮기겠습니다.",
+      "matchingCharacterCoverage": 0.9779874213836478,
+      "agentMeaningNumberReview": "passed",
+      "notes": "Fresh current final-take SHA raw read-back directly compared in full. Depth8/3 blue in either order, nonemissive Lambertian rho0.6/E10, fr=rho/pi, Lo=6/pi about1.91 W/(m2 sr), exitance6 W/m2, game-pixel caveat and camera/projection next chapter intact. Spoken 구 일 is read back9일 and timing-normalized as the same1.91; 휘도/위도 spelling only, quantity and unit definitions explicit."
+    }
+  ],
+  "pendingScenes": [],
+  "reviewedAtUtc": "2026-10-08T07:45:05.115499+00:00",
+  "reviewedAt": "2026-10-08T07:45:05.313473+00:00",
+  "method": "Every current full unnormalized raw read-back was directly compared with its complete KO script, source claims and independently verified numbers/signs/frames. Ambiguous omitted nouns and values were repaired without weakening coverage or ending checks. Remaining ASR spelling/filler differences are explicit, and no human listening approval is implied."
+}

@@ -19,15 +19,36 @@ function walk(dir){return fs.readdirSync(path.join(root,dir),{withFileTypes:true
  if(e.isSymbolicLink()||/^(assets|__pycache__|delivery-history|delivery-stage-.*|media.*)$/.test(e.name))return dir===`projects/${slug}/publish`&&e.name==='assets'?walk(dir+'/assets'):[];
  const f=dir+'/'+e.name;return e.isDirectory()?walk(f):(sourceExtensions.has(path.extname(f))?[f]:[]);
 });}
-const files=[...bases.flatMap(walk),`production/preflight/${slug}.json`];
-files.push('qwen3-tts/gpu_handoff_guard.py');
+const pathsIndex=process.argv.indexOf('--paths-file');
+const explicit=pathsIndex<0?null:read(process.argv[pathsIndex+1]);
+if(explicit&&(!Array.isArray(explicit)||explicit.some(f=>typeof f!=='string'||f.includes('..')||path.isAbsolute(f))))throw Error('Invalid explicit repository-relative source path list');
+const files=explicit?[...explicit]:[...bases.flatMap(walk),`production/preflight/${slug}.json`];
+// A shared scheduler can have unrelated concurrent changes. New deliveries
+// use an exact reviewed path list; legacy default behavior remains available.
+if(!explicit)files.push('qwen3-tts/gpu_handoff_guard.py');
 const thumb=`projects/${slug}/publish/assets/thumbnail.png`,entry=`./src/projects/${slug}/project.ts`,exception='!'+thumb;
 const image=read('shared/git-essential-images.json').entries.find(x=>x.path===thumb);
 if(!image||image.purpose!=='delivery-thumbnail'||image.sha256!==sha(fs.readFileSync(path.join(root,thumb))))throw Error('Review and register the exact essential thumbnail first');
 files.push(thumb);
+const queuePath='production/batches/game-math-part2-full-series/queue.json';
 const special=['motion-canvas/projects.json','projects/rebuild-index.json','shared/git-essential-images.json','.gitignore',
  'AGENTS.md','docs/NARRATION_AUDIO_STANDARD.md','qwen3-tts/render_narration.py'];
+const footagePath='production/batches/game-math-part2-full-series/footage-index.json';
+if(explicit)special.push(queuePath,footagePath);
 function mergeOwn(f,text){
+ if(f===footagePath){
+  const value=JSON.parse(text),current=read(footagePath),sources=Object.keys(read(`projects/${slug}/sources/gameplay-cuts.json`).sources);
+  for(const id of sources){if(!current[id])throw Error('Missing own reviewed source');value[id]=current[id];}
+  return JSON.stringify(value,null,2)+'\n';
+ }
+ if(f===queuePath){
+  const value=JSON.parse(text),current=read(queuePath),own=current.items.find(x=>x.slug===slug),index=value.items.findIndex(x=>x.slug===slug);
+  if(!own||index<0)throw Error('Missing existing lecture queue entry');
+  value.items[index]=own;
+  if(current.policy?.splitPolicy)value.policy.splitPolicy=current.policy.splitPolicy;
+  if(current.executionControl?.currentVideo===slug){value.executionControl=current.executionControl;value.checkpointAt=current.checkpointAt;}
+  return JSON.stringify(value,null,2)+'\n';
+ }
  if(f==='.gitignore')return text.split(/\r?\n/).includes(exception)?text:text.trimEnd()+'\n'+exception+'\n';
  if(f==='AGENTS.md'){
   const rule=fs.readFileSync(path.join(root,f),'utf8').split(/\r?\n/).find(s=>s.startsWith('- GPU handoff for narration, user-directed 2026-10-08:'));
@@ -63,7 +84,7 @@ function mergeOwn(f,text){
 }
 const temporary=fs.mkdtempSync(path.join(root,'.git','game-math-series-delivery-'));
 const env={...process.env,GIT_INDEX_FILE:path.join(temporary,'index')};
-git(['read-tree',parent],env);git(['add','--',...files],env);
+git(['read-tree',parent],env);git(['add','--',...files.filter(f=>!special.includes(f))],env);
 for(const f of special){const value=mergeOwn(f,git(['show',parent+':'+f]));const blob=git(['hash-object','-w','--stdin'],env,value);git(['update-index','--add','--cacheinfo','100644',blob,f],env);}
 const changes=git(['diff','--cached','--name-status','-z',parent],env).split('\0').filter(Boolean),rows=[];
 for(let i=0;i<changes.length;i+=2)rows.push({status:changes[i],path:changes[i+1]});
