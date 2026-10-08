@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'../../..'),slug='player-customization',base=`
 const planPath=`${base}/production/git-delivery-paths-v1.json`,proofPath=`${base}/publishing/private-delivery-git-verification-v1.json`;
 const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8').replace(/^\uFEFF/,''));
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
-const run=(cmd,args,env=process.env,input)=>{const r=cp.spawnSync(cmd,args,{cwd:root,env,input,encoding:'utf8',windowsHide:true,maxBuffer:256e6});if(r.status!==0)throw Error(cmd+' '+args.join(' ')+'\n'+r.stdout+'\n'+r.stderr);return r.stdout.trimEnd();};
+const run=(cmd,args,env=process.env,input)=>{const start=Date.now();while(true){const r=cp.spawnSync(cmd,args,{cwd:root,env,input,encoding:'utf8',windowsHide:true,maxBuffer:256e6});if(r.status===0)return r.stdout.trimEnd();if(cmd==='git'&&/index\.lock.*File exists|Unable to create .*index\.lock/s.test(r.stderr)&&Date.now()-start<60000){Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,500);continue;}throw Error(cmd+' '+args.join(' ')+'\n'+r.stdout+'\n'+r.stderr);}};
 const git=(args,env,input)=>run('git',args,env,input);
 const walk=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(e=>e.isSymbolicLink()||/^(?:__pycache__|node_modules|\.venv|archive|delivery-history)$/.test(e.name)?[]:e.isDirectory()?walk(dir+'/'+e.name):[dir+'/'+e.name]);
 const ownRoots=[base,`motion-canvas/src/projects/${slug}`,`production/batches/sakurai-planning-game-design/proof-${slug}`];
@@ -57,13 +57,16 @@ git(['diff','--cached','--check',parent],env);
 console.log(run(process.execPath,['scripts/media-policy.cjs'],env));console.log(run(process.execPath,['scripts/build-rebuild-manifests.cjs',slug,'--check'],env));
 if(git(['rev-parse','HEAD'])!==parent||git(['ls-files','--stage','-z'])!==indexBefore)throw Error('Concurrent HEAD/index changed; retain files and start from the actual new HEAD');
 const proof={schemaVersion:1,slug,parent,temporaryIndex:env.GIT_INDEX_FILE,selectedPaths:files,stagedPaths:rows,ownedSharedBlobs:expectedSpecial,allFinalStagedBlobsVerified:true,mediaCheck:true,scopedRebuildCheck:true,whitespaceCheck:true,externalIndexUnchangedBeforeCommit:true,essentialRasterPaths:plan.essentialImages,recordedAt:new Date().toISOString(),pushed:false};
+fs.writeFileSync(path.join(dir,'external-index-before.txt'),indexBefore);
+fs.writeFileSync(path.join(dir,'owned-shared-index-before.json'),JSON.stringify(initialSpecial,null,2)+'\n');
 if(process.argv.includes('--stage-only')){fs.writeFileSync(path.join(dir,'verified-stage.json'),JSON.stringify(proof,null,2)+'\n');console.log(JSON.stringify({stageOnly:true,paths:rows.length,index:env.GIT_INDEX_FILE}));process.exit(0);}
 const tree=git(['write-tree'],env),commit=git(['commit-tree',tree,'-p',parent],env,'Deliver reviewed player customization and private upload\n');git(['update-ref','HEAD',commit,parent]);
+Object.assign(proof,{commit,indexSynchronizationPending:true});fs.writeFileSync(path.join(root,proofPath),JSON.stringify(proof,null,2)+'\n');
 const ownChanged=rows.filter(r=>!special.includes(r.path)).map(r=>r.path);for(let i=0;i<ownChanged.length;i+=15)git(['restore','--staged','--source='+commit,'--',...ownChanged.slice(i,i+15)]);
 for(const f of special){const blob=git(['hash-object','-w','--stdin'],process.env,mergeOwn(f,initialSpecial[f]));git(['update-index','--add','--cacheinfo','100644',blob,f]);}
 const foreignEntries=t=>t.split('\0').filter(Boolean).filter(line=>!allowed.has(line.split('\t')[1])).join('\0');
 if(foreignEntries(git(['ls-files','--stage','-z']))!==foreignEntries(indexBefore))throw Error('Unrelated index entries changed');
-Object.assign(proof,{commit,unrelatedIndexEntriesPreserved:true,ownIndexPathsSynchronized:true});fs.writeFileSync(path.join(root,proofPath),JSON.stringify(proof,null,2)+'\n');
+Object.assign(proof,{commit,indexSynchronizationPending:false,unrelatedIndexEntriesPreserved:true,ownIndexPathsSynchronized:true});fs.writeFileSync(path.join(root,proofPath),JSON.stringify(proof,null,2)+'\n');
 try{git(['push','origin',commit+':refs/heads/main']);}catch(e){proof.pushFailure={at:new Date().toISOString(),message:e.message};fs.writeFileSync(path.join(root,proofPath),JSON.stringify(proof,null,2)+'\n');throw e;}
 const local=git(['rev-parse','HEAD']),remote=git(['ls-remote','origin','refs/heads/main']).split(/\s/)[0];if(local!==commit||remote!==commit)throw Error('Verify actual newer HEAD/remote before final delivery claim');
 for(const r of rows)if(git(['rev-parse',remote+':'+r.path])!==git(['rev-parse',':'+r.path],env))throw Error('Final remote blob differs '+r.path);
