@@ -18,6 +18,8 @@ parser.add_argument('--video-id', help='Actual new Studio video ID; required for
 parser.add_argument('--uploaded-pixels-reviewed', action='store_true', required=True)
 parser.add_argument('--member-layout-reviewed', action='store_true', required=True)
 parser.add_argument('--playback-seconds', type=int, required=True)
+parser.add_argument('--record-saved-settings-check-pending', action='store_true',
+                    help='Record actually saved native settings while automatic ad review is still pending; never marks full delivery complete.')
 args = parser.parse_args()
 slug = args.slug
 read = lambda p: json.loads(p.read_text(encoding='utf-8-sig'))
@@ -61,10 +63,18 @@ def dialog_only(text, name):
 details = proof('studio-private-details.ax.txt')
 assert video_id in details and f'{slug}.captioned.mp4' in details and 'text 비공개' in details
 assert 'button (disabled) 저장' in details
-checks = proof('studio-checks-complete.ax.txt')
+check_pending = args.record_saved_settings_check_pending
+checks = details if check_pending else proof('studio-checks-complete.ax.txt')
 compact = re.sub(r'\s+', '', checks)
 legacy_completed_checks = '저작권검사완료발견된문제없음광고적합성검사완료발견된문제없음' in compact
-if not legacy_completed_checks:
+if check_pending:
+    assert '검토 중...' in details, 'Pending state must be directly observed in this video details'
+    pending_monet = proof('studio-monetization-enabled-check-pending.ax.txt')
+    assert video_id in pending_monet and 'text 검사 중' in pending_monet
+    assert 'radio button 사용, Value: 1' in pending_monet and 'button (disabled) 저장' in pending_monet
+    copyright_state = proof('studio-copyright-no-claims.ax.txt')
+    assert video_id in copyright_state and '동영상에서 소유권 주장이 발견되지 않았습니다' in copyright_state
+elif not legacy_completed_checks:
     # The current Studio content list combines checks under "Notices". Accept
     # that actual completed state only with fresh, video-specific copyright
     # and active monetization pages. Never synthesize an old wizard snapshot.
@@ -109,7 +119,7 @@ if slug not in specs:
     assert 'heading 한국어, Value: 1' in korean
     assert '수동 자막' in korean and 'text 수동' in korean and 'text 게시됨' in korean
     assert 'button (disabled) 업데이트' in korean
-monet = proof('studio-monetization-saved.ax.txt')
+monet = proof('studio-monetization-enabled-check-pending.ax.txt' if check_pending else 'studio-monetization-saved.ax.txt')
 assert 'text 사용' in monet and '미드롤 광고 게재, Value: 1' in monet and 'button (disabled) 저장' in monet
 assert u['thumbnail']['status'] == 'saved-and-reopened-preview-verified'
 
@@ -119,8 +129,8 @@ proofs = []
 for p in sorted(qa.iterdir()):
     if p.is_file() and (p.name.startswith('studio-') or p.name.startswith('uploaded-cc-off')):
         proofs.append({'path': p.relative_to(root).as_posix(), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()})
-u.update(status='private-upload-saved-and-settings-verified', privateVisibilitySaveVerified=True,
-         uploadTransferComplete=True, fullPublishingSettingsComplete=True, fullSettingsVerified=True,
+u.update(status='private-upload-saved-automatic-ad-review-pending' if check_pending else 'private-upload-saved-and-settings-verified', privateVisibilitySaveVerified=True,
+         uploadTransferComplete=True, fullPublishingSettingsComplete=not check_pending, fullSettingsVerified=not check_pending,
          verifiedAtUtc=now)
 u['burnedCaptionVerification'].update(status='passed-direct-uploaded-pixel-review',
     playerCaptionsOff=True, actualPlaybackSeconds=args.playback_seconds,
@@ -130,6 +140,7 @@ for track in u['subtitles']:
     track.update(cueCount=cue_count, platformLanguage='ko' if track['language']=='ko' else english_language,
                  status='manual-published-and-reopened-verified')
 u['englishMetadata']['language'] = english_language
+u['englishMetadata']['status'] = 'saved-and-reopened-title-description-and-manual-subtitles-verified'
 u['coachingCard']['status'] = 'saved-and-reopened-exact-URL-and00:00:00-verified'
 u['endScreen'].update(status='saved-and-reopened-verified', startTimecode=start_tc,
     endTimecode=end_tc, timecodeFps=60, memberIdentitiesUnobscured=True,
@@ -137,9 +148,10 @@ u['endScreen'].update(status='saved-and-reopened-verified', startTimecode=start_
     platformEndBoundary='exclusive-source-boundary' if platform_end_tcs[0]==end_tc else 'inclusive-last-visible-source-frame',
     privateWatchPageSuppressesEndScreen=True, playlistId='PLWKwcHKTXy5Soue4YKXa-dsXMV71BVGRk')
 u['coachingEndingLink']['status'] = 'saved-and-reopened-verified'
-u['monetization'].update(automaticAdSuitability='automatic-check-complete-no-issues-observed',
+u['monetization'].update(status='enabled-saved-and-reopened-verified',
+    automaticAdSuitability='automatic-check-in-progress' if check_pending else 'automatic-check-complete-no-issues-observed',
     copyrightChecks='automatic-check-complete-no-issues-observed',
-    checkEvidence=f'shared/output/{slug}/qa/studio-checks-complete.ax.txt')
+    checkEvidence=f'shared/output/{slug}/qa/'+('studio-monetization-enabled-check-pending.ax.txt' if check_pending else 'studio-checks-complete.ax.txt'))
 u['platformEvidence'] = {'verifiedAtUtc': now, 'proofs': proofs, 'actualFileName': f'{slug}.captioned.mp4'}
 u['platformProcessing'] = {
     'watchPagePlaybackVerified': True,
@@ -148,21 +160,22 @@ u['platformProcessing'] = {
 }
 u['pending'] = ['Human full listening', 'Public game-IP review', 'Truncated member handles',
                 'Coaching comment post/pin after comments become available']
+if check_pending: u['pending'].insert(0, 'Platform automatic ad-suitability review is still in progress')
 assert u['pinnedComment']['commentId'] is None and u['pinnedComment']['pinnedVerified'] is False
 write(pub, u)
 
 manifest_path = root / f'projects/{slug}/project.json'
 manifest = read(manifest_path)
-manifest['publishing'].update(privateUploadComplete=True, fullPublishingSettingsComplete=True,
+manifest['publishing'].update(privateUploadComplete=True, fullPublishingSettingsComplete=not check_pending,
     videoId=video_id, url=u['url'], receipt=pub.relative_to(root).as_posix(), verifiedAtUtc=now)
 manifest['publishReady'] = False
 write(manifest_path, manifest)
 queue_path = Path(__file__).with_name('queue.json')
 queue = read(queue_path)
 item = next(x for x in queue['items'] if x['slug']==slug)
-item.update(status='private-upload-saved', privateUploadComplete=True,
-    fullPublishingSettingsComplete=True, videoId=video_id, url=u['url'], checkpointAt=now,
-    checkpoint='Actual private captioned upload pixels, both manual SRTs, exact English metadata, thumbnail, Part2 playlist, coaching card, three60fps membership end elements, ads and automatic checks verified. Human listening, public game-IP/member review and private comment/pin remain pending.')
+item.update(status='private-upload-saved-automatic-ad-review-pending' if check_pending else 'private-upload-saved', privateUploadComplete=True,
+    fullPublishingSettingsComplete=not check_pending, videoId=video_id, url=u['url'], checkpointAt=now,
+    checkpoint='Actual private captioned upload pixels, both manual SRTs, exact English metadata, thumbnail, Part2 playlist, coaching card, three60fps membership end elements and ads enabled verified. '+('Platform automatic ad-suitability review remains pending; full publishing completion is false. ' if check_pending else 'Automatic checks verified complete. ')+'Human listening, public game-IP/member review and private comment/pin remain pending.')
 write(queue_path, queue)
 print(json.dumps({'slug':slug, 'videoId':video_id, 'privateUploadComplete':True,
-    'fullPublishingSettingsComplete':True, 'publicPublishingAuthorized':False, 'proofs':len(proofs)}))
+    'fullPublishingSettingsComplete':not check_pending, 'publicPublishingAuthorized':False, 'proofs':len(proofs)}))

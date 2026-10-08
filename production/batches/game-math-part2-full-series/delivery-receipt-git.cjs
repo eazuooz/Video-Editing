@@ -1,13 +1,21 @@
 // Deliver a completed private-upload receipt without staging the next lecture.
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),crypto=require('node:crypto');
-const root=path.resolve(__dirname,'../../..'),slug=process.argv[2];
+const root=path.resolve(__dirname,'../../..'),slug=process.argv[2],allowPendingAdReview=process.argv.includes('--automatic-ad-review-pending');
 const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8').replace(/^\uFEFF/,''));
 const run=(cmd,args,env=process.env,input)=>{const r=cp.spawnSync(cmd,args,{cwd:root,env,input,encoding:'utf8',windowsHide:true,maxBuffer:64e6});if(r.status!==0)throw Error(r.stderr+'\n'+r.stdout);return r.stdout.trimEnd();};
 const git=(args,env,input)=>run('git',args,env,input);
 const queueFile='production/batches/game-math-part2-full-series/queue.json',queue=read(queueFile),item=queue.items.find(x=>x.slug===slug);
 if(!item)throw Error('Unknown lecture');
 const receipt=read(`projects/${slug}/publishing/youtube-upload.json`),manifest=read(`projects/${slug}/project.json`),qa=read(`projects/${slug}/production/qa.json`);
-if(!receipt.privateVisibilitySaveVerified||!receipt.fullPublishingSettingsComplete||!manifest.publishing.privateUploadComplete||!qa.fullDecodePassed||qa.directVisualReview?.status!=='passed')throw Error('Finish the actual reviewed private delivery first');
+const pendingAdOnly=allowPendingAdReview&&receipt.status==='private-upload-saved-automatic-ad-review-pending'&&receipt.fullPublishingSettingsComplete===false&&receipt.fullSettingsVerified===false&&receipt.monetization?.status==='enabled-saved-and-reopened-verified'&&receipt.monetization?.automaticAdSuitability==='automatic-check-in-progress'&&receipt.monetization?.copyrightChecks==='automatic-check-complete-no-issues-observed';
+if(allowPendingAdReview&&!pendingAdOnly)throw Error('The pending receipt option is scoped to the actually observed automatic ad review');
+if(!receipt.privateVisibilitySaveVerified||(!receipt.fullPublishingSettingsComplete&&!pendingAdOnly)||!manifest.publishing.privateUploadComplete||!qa.fullDecodePassed||qa.directVisualReview?.status!=='passed')throw Error('Finish the actual reviewed private delivery first');
+if(pendingAdOnly){
+ const evidence=read(`projects/${slug}/publishing/platform-followup.json`);
+ if(evidence.videoId!==receipt.videoId||evidence.status!=='pending-platform-automatic-ad-review'||evidence.fullPublishingSettingsComplete!==false)throw Error('Preserve a video-specific automatic-review follow-up');
+ for(const value of [receipt.englishMetadata,receipt.thumbnail,receipt.coachingCard,receipt.endScreen,...receipt.subtitles])if(!/verified/.test(value.status))throw Error('An agent-controlled publishing setting remains incomplete');
+ if(receipt.burnedCaptionVerification?.status!=='passed-direct-uploaded-pixel-review')throw Error('Uploaded pixels have not been checked');
+}
 if(receipt.metadata.privacyStatus!=='private'||manifest.publishReady)throw Error('Private review state required');
 for(const f of read(`projects/${slug}/production/delivery-output.json`).files){const data=fs.readFileSync(path.join(root,'output',slug,f.name));if(crypto.createHash('sha256').update(data).digest('hex')!==f.sha256)throw Error('Collected file changed');}
 if(fs.existsSync(path.join(root,'.git/index.lock')))throw Error('Concurrent Git transaction; retry later');
@@ -16,6 +24,7 @@ const files=[`projects/${slug}/README.md`,`projects/${slug}/project.json`,`proje
  `projects/${slug}/publishing/qa/evidence-normalization.json`,
  'production/batches/game-math-part2-full-series/record-private-review.py','production/batches/game-math-part2-full-series/delivery-receipt-git.cjs',
  'production/batches/game-math-part2-full-series/README.md',
+ ...(pendingAdOnly?[`projects/${slug}/publishing/platform-followup.json`]:[]),
  ...fs.readdirSync(path.join(root,proofDir)).filter(f=>f.endsWith('.ax.txt')).map(f=>proofDir+'/'+f)];
 const parent=git(['rev-parse','HEAD']),temp=fs.mkdtempSync(path.join(root,'.git','math-private-receipt-')),env={...process.env,GIT_INDEX_FILE:path.join(temp,'index')};
 const mergeItem=text=>{const q=JSON.parse(text);const index=q.items.findIndex(x=>x.slug===slug);if(index<0)throw Error('Missing existing completed queue entry');q.items[index]=item;return JSON.stringify(q,null,2)+'\n';};
@@ -31,6 +40,6 @@ const own=changed.filter(f=>f!==queueFile);if(own.length)git(['restore','--stage
 const staged=git(['hash-object','-w','--stdin'],process.env,mergeItem(git(['show',':'+queueFile])));git(['update-index','--cacheinfo','100644',staged,queueFile]);
 git(['push','origin',commit+':refs/heads/main']);const remote=git(['ls-remote','origin','refs/heads/main']).split(/\s/)[0];git(['merge-base','--is-ancestor',commit,remote]);
 for(const f of files)git(['cat-file','-e',remote+':'+f]);
-const proof={slug,commit,remoteCommit:remote,pushed:true,privateSettingsVerified:true,sourceOnly:true,isolatedIndex:true,files:changed.length,preservedOtherWork:true,recordedAt:new Date().toISOString()};
+const proof={slug,commit,remoteCommit:remote,pushed:true,privateSettingsVerified:!pendingAdOnly,agentControlledPrivateSettingsVerified:true,automaticAdReviewPending:pendingAdOnly,fullPublishingSettingsComplete:!pendingAdOnly,sourceOnly:true,isolatedIndex:true,files:changed.length,preservedOtherWork:true,recordedAt:new Date().toISOString()};
 fs.writeFileSync(path.join(root,'tmp',slug+'-private-receipt-git.json'),JSON.stringify(proof,null,2)+'\n');
 const current=read(queueFile),target=current.items.find(x=>x.slug===slug);target.gitPrivateReceiptEvidence=proof;fs.writeFileSync(path.join(root,queueFile),JSON.stringify(current,null,2)+'\n');console.log(JSON.stringify(proof));
