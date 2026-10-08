@@ -92,6 +92,14 @@ assert coach in proof('studio-coaching-card-url-saved.ax.txt')
 english = proof('studio-english-metadata-saved.ax.txt')
 assert u['englishMetadata']['title'] in english and u['englishMetadata']['description'] in english
 assert '수동 자막' in english and '게시됨' in english
+english_heading = re.search(r'heading (영어(?:\(미국\))?), Value: 1', english)
+assert english_heading, 'Missing actual saved English language heading'
+english_language = 'en-US' if english_heading.group(1) == '영어(미국)' else 'en'
+if slug not in specs:
+    korean = dialog_only(proof('studio-korean-subtitles-saved.ax.txt'), '한국어 세부정보')
+    assert 'heading 한국어, Value: 1' in korean
+    assert '수동 자막' in korean and 'text 수동' in korean and 'text 게시됨' in korean
+    assert 'button (disabled) 업데이트' in korean
 monet = proof('studio-monetization-saved.ax.txt')
 assert 'text 사용' in monet and '미드롤 광고 게재, Value: 1' in monet and 'button (disabled) 저장' in monet
 assert u['thumbnail']['status'] == 'saved-and-reopened-preview-verified'
@@ -109,8 +117,9 @@ u['burnedCaptionVerification'].update(status='passed-direct-uploaded-pixel-revie
     proof=f'shared/output/{slug}/qa/uploaded-cc-off.png',
     captionControl='Native watch-page caption checkbox Value0; actual burned KO text directly inspected')
 for track in u['subtitles']:
-    track.update(cueCount=cue_count, platformLanguage='ko' if track['language']=='ko' else 'en-US')
-u['englishMetadata']['language'] = 'en-US'
+    track.update(cueCount=cue_count, platformLanguage='ko' if track['language']=='ko' else english_language,
+                 status='manual-published-and-reopened-verified')
+u['englishMetadata']['language'] = english_language
 u['coachingCard']['status'] = 'saved-and-reopened-exact-URL-and00:00:00-verified'
 u['endScreen'].update(status='saved-and-reopened-verified', startTimecode=start_tc,
     endTimecode=end_tc, timecodeFps=60, memberIdentitiesUnobscured=True,
