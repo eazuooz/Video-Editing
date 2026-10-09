@@ -1,0 +1,3349 @@
+{
+  "fps": 60,
+  "frames": 44760,
+  "seconds": 746.0,
+  "bodyFrames": 44040,
+  "bodySeconds": 734.0,
+  "actualFrames": 17616,
+  "explanationFrames": 26424,
+  "actualShare": 0.4,
+  "explanationShare": 0.6,
+  "introSeconds": 2,
+  "outroSeconds": 10,
+  "scenes": [
+    {
+      "id": "01",
+      "title": "확대된 표면의 법선과 무늬를 연결하기",
+      "start": 2,
+      "frames": 1439,
+      "seconds": 23.983333333333334,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/01-scene.wav",
+      "voiceSeconds": 23.36,
+      "voiceSha256": "16bae5765a819575cb8ff30d26c44563c2e778fdc5115f88ba98204080bed02d",
+      "rawOrigin": 0.0,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 4.9,
+          "text": "물체를 가로로 늘렸을 때 빛 방향과 무늬가 어색해진다면 무엇을 확인해야 할까요?",
+          "line": null
+        },
+        {
+          "start": 5.08,
+          "end": 11.14,
+          "text": "먼저 접선과 법선의 수직 조건을 계산하고, 역전치가 필요한 이유를 작은 수치 예제로 확인합니다.",
+          "line": null
+        },
+        {
+          "start": 11.48,
+          "end": 17.26,
+          "text": "그다음 게임의 벽과 지붕 무늬를 보며 유브이 좌표의 대응과 확대, 회전, 반전을 설명합니다.",
+          "line": null
+        },
+        {
+          "start": 17.64,
+          "end": 23.34,
+          "text": "마지막에는 반복과 클램프를 비교하고, 정점에서 반복을 먼저 처리하면 왜 틀리는지 검산하겠습니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        5.08,
+        11.48,
+        17.64
+      ],
+      "classification": "explanation",
+      "manimClass": "Scene01"
+    },
+    {
+      "id": "02",
+      "title": "법선은 접선과 수직이어야 합니다",
+      "start": 25.983333333333334,
+      "frames": 3719,
+      "seconds": 61.983333333333334,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/02-scene.wav",
+      "voiceSeconds": 61.36004166666667,
+      "voiceSha256": "3b42776a5b60ff3048671d774f981a29a579ba68a7d08345c17c9efde94e3750",
+      "rawOrigin": 23.81,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 8.739999999999998,
+          "text": "법선 변환에서 지켜야 할 조건은 접선과 수직이라는 것입니다. 열벡터 규약으로 원래 접선을 티, 법선을 엔이라고 쓰겠습니다.",
+          "line": null
+        },
+        {
+          "start": 9.02,
+          "end": 16.539999999999996,
+          "text": "위치와 접선에 적용하는 가역 선형 행렬을 엠이라고 합시다. 평행이동은 접선이나 방향 벡터에 더하지 않습니다.",
+          "line": null
+        },
+        {
+          "start": 16.819999999999997,
+          "end": 23.780000000000005,
+          "text": "법선에는 엠의 역전치를 적용합니다. 역행렬을 구한 뒤 전치해도, 전치한 뒤 역행렬을 구해도 같습니다.",
+          "line": null
+        },
+        {
+          "start": 24.179999999999996,
+          "end": 33.31999999999999,
+          "text": "새 법선과 새 접선을 내적하면 가운데 역행렬과 원래 행렬이 상쇄됩니다. 결과는 원래 내적 영이므로 수직 관계가 유지됩니다.",
+          "line": null
+        },
+        {
+          "start": 33.67999999999999,
+          "end": 42.34,
+          "text": "회전 같은 정규직교 행렬은 역전치가 원래 행렬과 같습니다. 양의 균일 확대도 방향만 보면 같지만 마지막 단위 길이는 맞춥니다.",
+          "line": null
+        },
+        {
+          "start": 42.66,
+          "end": 52.519999999999996,
+          "text": "비균일 확대나 기울임에서는 역전치 후 정규화합니다. 어떤 축을 영으로 만드는 특이 행렬은 역행렬이 없으므로 이 공식을 그대로 쓸 수 없습니다.",
+          "line": null
+        },
+        {
+          "start": 52.68000000000001,
+          "end": 61.34,
+          "text": "반사처럼 방향을 뒤집는 변환은 앞면 규약과도 함께 확인합니다. 여기서는 음의 확대가 없는 예제로 수직 조건에 집중하겠습니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        9.02,
+        16.819999999999997,
+        24.179999999999996,
+        33.67999999999999,
+        42.66,
+        52.68000000000001
+      ],
+      "classification": "explanation",
+      "manimClass": "Scene02"
+    },
+    {
+      "id": "03",
+      "title": "가로 두 배 확대를 직접 검산하기",
+      "start": 87.96666666666667,
+      "frames": 3862,
+      "seconds": 64.36666666666666,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/03-scene.wav",
+      "voiceSeconds": 63.760041666666666,
+      "voiceSha256": "cbb54de59a875693edafe1181718433e8e1cd5262f52058c619f85100686c66f",
+      "rawOrigin": 85.62004166666667,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 9.260000000000005,
+          "text": "접선을 일, 마이너스 일로, 법선을 일, 일로 정합니다. 내적은 일 빼기 일, 영입니다. 먼저 수직이라는 조건을 확인했습니다.",
+          "line": null
+        },
+        {
+          "start": 9.659999999999997,
+          "end": 17.5,
+          "text": "가로만 두 배 늘리는 행렬을 적용하면 새 접선은 이, 마이너스 일입니다. 물체 표면의 기울기가 달라집니다.",
+          "line": null
+        },
+        {
+          "start": 17.760000000000005,
+          "end": 24.980000000000004,
+          "text": "법선에도 같은 행렬을 쓰면 이, 일이 됩니다. 새 접선과 내적은 사 빼기 일, 삼이므로 수직이 아닙니다.",
+          "line": null
+        },
+        {
+          "start": 25.28,
+          "end": 33.7,
+          "text": "이 잘못된 벡터를 루트 오로 나누어 정규화해도 내적은 삼 나누기 루트 오입니다. 길이만 고쳐서 방향 오류를 없앨 수는 없습니다.",
+          "line": null
+        },
+        {
+          "start": 34.11999999999999,
+          "end": 45.17999999999999,
+          "text": "역전치의 가로 성분은 일 나누기 이, 즉 영 점 오입니다. 새 법선의 두 성분은 영 점 오와 일입니다. 새 접선과 내적은 일 빼기 일, 영입니다.",
+          "line": null
+        },
+        {
+          "start": 45.540000000000006,
+          "end": 54.39999999999999,
+          "text": "마지막으로 단위 길이를 만들면 약 영 점 사사칠, 영 점 팔구사입니다. 순서는 수직인 방향을 먼저 만든 뒤 길이를 맞추는 것입니다.",
+          "line": null
+        },
+        {
+          "start": 54.4825,
+          "end": 63.58,
+          "text": "이차원 단면의 계산이지만 삼차원에서도 같은 수직 조건을 사용합니다. 조명 코드에서는 위치 변환의 선형 부분과 법선 행렬을 분리해 기록하세요.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        9.659999999999997,
+        17.760000000000005,
+        25.28,
+        34.11999999999999,
+        45.540000000000006,
+        54.4825
+      ],
+      "classification": "explanation",
+      "manimClass": "Scene03"
+    },
+    {
+      "id": "04",
+      "title": "각진 바위와 벽 무늬의 대응 보기",
+      "start": 152.33333333333331,
+      "frames": 4045,
+      "seconds": 67.41666666666667,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/04-scene.wav",
+      "voiceSeconds": 51.12,
+      "voiceSha256": "409df0bd27c0fbab212bddaa7464622538509b6f8993f8520962e9e6943fc9a1",
+      "rawOrigin": 149.83008333333333,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 7.400000000000006,
+          "text": "메가봉크에서 바위와 건물 사이를 움직입니다. 꺾인 바위의 면과 뒤쪽 벽에 있는 무늬를 구분해서 보세요.",
+          "line": null
+        },
+        {
+          "start": 10.899333333333324,
+          "end": 20.119333333333323,
+          "text": "카메라가 돌아도 바위의 바깥 윤곽은 남습니다. 면 안의 밝기와 벽의 표시는 각각 조명 방향과 표면 속성이라는 질문을 만듭니다.",
+          "line": null
+        },
+        {
+          "start": 23.59866666666666,
+          "end": 30.698666666666682,
+          "text": "다음 이동에서는 낮은 바위와 사막 지면을 지나고, 마지막에는 건물의 앞면과 옆면이 번갈아 나타납니다.",
+          "line": null
+        },
+        {
+          "start": 34.198,
+          "end": 43.17799999999999,
+          "text": "창문과 줄 모양의 표시가 면 위에 놓여 있지만, 실제 유브이나 텍스처 파일을 읽은 것은 아닙니다. 보이는 형태와 무늬의 관계를 관찰합니다.",
+          "line": null
+        },
+        {
+          "start": 46.897333333333336,
+          "end": 54.097333333333324,
+          "text": "앞의 수치 예제는 접선과 법선을 수직으로 만들었습니다. 이제 무늬를 위한 이미지 좌표를 별도로 연결하겠습니다.",
+          "line": null
+        },
+        {
+          "start": 58.13666666666666,
+          "end": 66.61666666666669,
+          "text": "형태와 법선을 올바르게 저장해도 잘못된 이미지 부분을 조회하면 무늬는 틀릴 수 있습니다. 세 종류의 데이터를 나누어 확인해야 합니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        10.899333333333324,
+        23.59866666666666,
+        34.198,
+        46.897333333333336,
+        58.13666666666666
+      ],
+      "classification": "actual",
+      "manimClass": null,
+      "cut": {
+        "scene": "04",
+        "in": 379,
+        "maxSeconds": 70,
+        "duration": 67.41666666666667,
+        "sourceId": "kc8aMSmWSgw",
+        "sourceFile": "shared/output/game-math-part2-full-series/sources/kc8aMSmWSgw.mp4",
+        "sourceSegments": [
+          {
+            "in": 379,
+            "maxSeconds": 31
+          },
+          {
+            "in": 534,
+            "maxSeconds": 11
+          },
+          {
+            "in": 610,
+            "maxSeconds": 28
+          }
+        ],
+        "credit": "Megabonk - NCR Gameplay",
+        "licenseLabel": "uploader free-to-use recording statement",
+        "focus": "실제 사막 이동·시점 변화로 각진 바위·건물 앞뒤·벽 표시 관찰",
+        "claim": "법선 방향과 이미지 대응을 별도 입력으로 다룬다",
+        "action": "Actual player/camera movement past faceted rock,pillars,cacti and marked walls. Talk only about visible plane/edge/pattern; never infer vertex count or normal algorithm.",
+        "connection": "Concept-matched observation connected to adjacent independent explanation; no proprietary implementation claim",
+        "inspection": [
+          "production/batches/game-math-part2-full-series/preflight/mesh-uv-megabonk-fine-review.json"
+        ],
+        "segments": [
+          {
+            "in": 379,
+            "maxSeconds": 31,
+            "frames": 1860,
+            "seconds": 31.0
+          },
+          {
+            "in": 534,
+            "maxSeconds": 11,
+            "frames": 660,
+            "seconds": 11.0
+          },
+          {
+            "in": 610,
+            "maxSeconds": 28,
+            "frames": 1525,
+            "seconds": 25.416666666666668
+          }
+        ]
+      },
+      "observationPauses": [
+        {
+          "afterLine": 1,
+          "rawSample": 178824,
+          "rawAt": 7.451,
+          "seamRms": 5.3776861022925004e-05,
+          "silenceSamples": 75344,
+          "seconds": 3.1393333333333335
+        },
+        {
+          "afterLine": 2,
+          "rawSample": 411507,
+          "rawAt": 17.146125,
+          "seamRms": 2.2728681869921274e-05,
+          "silenceSamples": 75344,
+          "seconds": 3.1393333333333335
+        },
+        {
+          "afterLine": 3,
+          "rawSample": 587544,
+          "rawAt": 24.481,
+          "seamRms": 3.362564166309312e-05,
+          "silenceSamples": 75344,
+          "seconds": 3.1393333333333335
+        },
+        {
+          "afterLine": 4,
+          "rawSample": 815785,
+          "rawAt": 33.99104166666667,
+          "seamRms": 5.486183727043681e-05,
+          "silenceSamples": 75344,
+          "seconds": 3.1393333333333335
+        },
+        {
+          "afterLine": 5,
+          "rawSample": 1006225,
+          "rawAt": 41.92604166666667,
+          "seamRms": 3.584597652661614e-05,
+          "silenceSamples": 75344,
+          "seconds": 3.1393333333333335
+        }
+      ],
+      "observationReview": {
+        "status": "distributed-at-observed-quiet-sentence-seams",
+        "quietWindowMilliseconds": 80,
+        "rawSamplesPreserved": true,
+        "rawSampleSha256": "05b5511938313c4f7a57be15b026471596d988632828f64fb40bc2922b9b1151",
+        "restoredSampleSha256": "05b5511938313c4f7a57be15b026471596d988632828f64fb40bc2922b9b1151",
+        "observationSeconds": 15.696666666666667,
+        "maximumPauseSeconds": 3.1393333333333335,
+        "trailingSeconds": 0.6000000000000085,
+        "sourceSpeed": 1,
+        "gameplayFreezeOrLoop": false
+      },
+      "narrationWindowSeconds": 66.81666666666666,
+      "cuts": [
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/kc8aMSmWSgw.mp4",
+          "sourceIn": 379,
+          "sourceOut": 410.0,
+          "outputStart": 152.33333333333331,
+          "durationSeconds": 31.0,
+          "frames": 1860,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/kc8aMSmWSgw.mp4",
+          "sourceIn": 534,
+          "sourceOut": 545.0,
+          "outputStart": 183.33333333333331,
+          "durationSeconds": 11.0,
+          "frames": 660,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/kc8aMSmWSgw.mp4",
+          "sourceIn": 610,
+          "sourceOut": 635.4166666666666,
+          "outputStart": 194.33333333333331,
+          "durationSeconds": 25.416666666666668,
+          "frames": 1525,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "title": "벽돌 무늬와 창문 격자는 어디에서 올까요?",
+      "start": 219.75,
+      "frames": 2760,
+      "seconds": 46.0,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/05-scene.wav",
+      "voiceSeconds": 44.0,
+      "voiceSha256": "84174a45455220699f61d29f887305a28bb2983bdda38bd93f751d6881417969",
+      "rawOrigin": 201.40008333333333,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 7.860000000000014,
+          "text": "선셋 오버드라이브의 다른 지붕과 벽을 보겠습니다. 사각 창문이 반복되는 면과 경사 지붕이 한 화면에 나타납니다.",
+          "line": null
+        },
+        {
+          "start": 8.470000000000004,
+          "end": 16.970000000000006,
+          "text": "먼저 큰 형태의 윤곽을 보고 그다음 표면 안의 반복 무늬를 보세요. 같은 면 안에 많은 세부가 있어도 그만큼 정점이 있다고 말할 수는 없습니다.",
+          "line": null
+        },
+        {
+          "start": 17.67999999999999,
+          "end": 26.23999999999999,
+          "text": "다음 가까운 벽에서는 벽돌처럼 반복되는 무늬와 격자가 보입니다. 이 세부를 이미지의 위치와 표면의 위치를 연결하는 문제로 생각해 봅시다.",
+          "line": null
+        },
+        {
+          "start": 26.79000000000001,
+          "end": 35.749999999999986,
+          "text": "게임의 실제 텍스처 파일이나 주소 모드를 확인한 것은 아닙니다. 지금 화면은 왜 기하와 별도로 무늬 좌표가 필요한지 보여주는 출발점입니다.",
+          "line": null
+        },
+        {
+          "start": 36.339999999999996,
+          "end": 45.37999999999999,
+          "text": "우리 도식에서는 네 정점의 작은 판에 직접 만든 색과 숫자 무늬를 붙입니다. 같은 판을 유지하면서 어떤 이미지 부분을 사용할지 바꾸어 보겠습니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        8.470000000000004,
+        17.67999999999999,
+        26.79000000000001,
+        36.339999999999996
+      ],
+      "classification": "actual",
+      "manimClass": null,
+      "cut": {
+        "scene": "05",
+        "in": 135,
+        "maxSeconds": 46,
+        "duration": 46.0,
+        "sourceId": "fN4iMYUyODc",
+        "sourceFile": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+        "sourceSegments": [
+          {
+            "in": 135,
+            "maxSeconds": 30
+          },
+          {
+            "in": 195,
+            "maxSeconds": 16
+          }
+        ],
+        "credit": "Sunset Overdrive - NCR Gameplay",
+        "licenseLabel": "uploader free-to-use recording statement",
+        "focus": "지붕 이동·벽 접근에서 반복 창문·벽돌형 무늬와 큰 실루엣",
+        "claim": "표면의 형태와 이미지 좌표의 대응은 별도 데이터이며 게임 내부 방식은 단정하지 않는다",
+        "action": "Actual full-screen real-time roof/wall traversal,visible vents,facades,window/brick/roof patterns and silhouette changes. No proprietary implementation inference.",
+        "connection": "Concept-matched observation connected to adjacent independent explanation; no proprietary implementation claim",
+        "inspection": [
+          "production/batches/game-math-part2-full-series/preflight/mesh-uv-sunset-fine-review.json",
+          "projects/game-math-normal-transform-uv/production/footage-capacity-extension.json"
+        ],
+        "segments": [
+          {
+            "in": 135,
+            "maxSeconds": 30,
+            "frames": 1800,
+            "seconds": 30.0
+          },
+          {
+            "in": 195,
+            "maxSeconds": 16,
+            "frames": 960,
+            "seconds": 16.0
+          }
+        ]
+      },
+      "observationPauses": [
+        {
+          "afterLine": 1,
+          "rawSample": 189984,
+          "rawAt": 7.916,
+          "seamRms": 0.0007078927592374384,
+          "silenceSamples": 8400,
+          "seconds": 0.35
+        },
+        {
+          "afterLine": 2,
+          "rawSample": 400586,
+          "rawAt": 16.691083333333335,
+          "seamRms": 0.00022498199541587383,
+          "silenceSamples": 8400,
+          "seconds": 0.35
+        },
+        {
+          "afterLine": 3,
+          "rawSample": 616946,
+          "rawAt": 25.706083333333332,
+          "seamRms": 0.00012535600399132818,
+          "silenceSamples": 8400,
+          "seconds": 0.35
+        },
+        {
+          "afterLine": 4,
+          "rawSample": 838381,
+          "rawAt": 34.932541666666665,
+          "seamRms": 0.00040277434163726866,
+          "silenceSamples": 8400,
+          "seconds": 0.35
+        }
+      ],
+      "observationReview": {
+        "status": "distributed-at-observed-quiet-sentence-seams",
+        "quietWindowMilliseconds": 80,
+        "rawSamplesPreserved": true,
+        "rawSampleSha256": "e31d0fcfe6508c5466107107c36a5a7fa94755e75370761fe95f37648fe7e9a0",
+        "restoredSampleSha256": "e31d0fcfe6508c5466107107c36a5a7fa94755e75370761fe95f37648fe7e9a0",
+        "observationSeconds": 1.4,
+        "maximumPauseSeconds": 0.35,
+        "trailingSeconds": 0.6000000000000014,
+        "sourceSpeed": 1,
+        "gameplayFreezeOrLoop": false
+      },
+      "narrationWindowSeconds": 45.4,
+      "cuts": [
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 135,
+          "sourceOut": 165.0,
+          "outputStart": 219.75,
+          "durationSeconds": 30.0,
+          "frames": 1800,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 195,
+          "sourceOut": 211.0,
+          "outputStart": 249.75,
+          "durationSeconds": 16.0,
+          "frames": 960,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "title": "픽셀과 텍셀, 위치와 UV",
+      "start": 265.75,
+      "frames": 3776,
+      "seconds": 62.93333333333333,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/06-scene.wav",
+      "voiceSeconds": 62.32,
+      "voiceSha256": "95fff420a85923f63461ed9fd98507a26a5c4f011dcccc0567ce94d835dfce71",
+      "rawOrigin": 245.85008333333332,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 8.699999999999989,
+          "text": "텍스처는 표면의 색이나 다른 속성을 담는 이미지입니다. 그 이미지의 한 칸을 텍셀이라고 부르고, 최종 화면의 픽셀과 구분합니다.",
+          "line": null
+        },
+        {
+          "start": 9.0,
+          "end": 16.600000000000023,
+          "text": "화면에 크게 보이면 한 텍셀이 여러 픽셀에 영향을 줄 수 있습니다. 멀리 보이면 여러 텍셀이 한 화면 표본에 기여할 수도 있습니다.",
+          "line": null
+        },
+        {
+          "start": 16.670000000000016,
+          "end": 25.939999999999998,
+          "text": "유는 이미지 가로, 브이는 세로 좌표 이름입니다. 여기서는 왼쪽 위를 영 영, 오른쪽 아래를 일 일로 정하고 브이를 아래쪽으로 증가시킵니다.",
+          "line": null
+        },
+        {
+          "start": 26.180000000000007,
+          "end": 35.079999999999984,
+          "text": "이 원점은 예제의 명시적 약속입니다. 파일의 행 순서와 도구, 변환에 따라 달라질 수 있으므로 API 이름만으로 뒤집힘을 결정하지 않습니다.",
+          "line": null
+        },
+        {
+          "start": 35.620000000000005,
+          "end": 43.89999999999998,
+          "text": "이미지가 팔 곱하기 팔이든 더 크든 전체 영역은 영에서 일로 표현할 수 있습니다. 이 정규화 좌표는 정점의 삼차원 위치와 독립적입니다.",
+          "line": null
+        },
+        {
+          "start": 44.18000000000001,
+          "end": 53.25999999999999,
+          "text": "평면, 원통이나 구면 매핑은 이 대응을 만드는 방법입니다. 편집 도구로 지정하거나 절차적으로 계산해 정점에 유브이를 저장할 수 있습니다.",
+          "line": null
+        },
+        {
+          "start": 53.639999999999986,
+          "end": 62.28000000000003,
+          "text": "면 안에서는 정점의 유브이를 보간해 조회 위치를 얻습니다. 앞 강의의 원근 보정은 유지하고, 이번에는 어떤 좌표를 보간할지에 집중합니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        9.0,
+        16.670000000000016,
+        26.180000000000007,
+        35.620000000000005,
+        44.18000000000001,
+        53.639999999999986
+      ],
+      "classification": "explanation",
+      "manimClass": "Scene06"
+    },
+    {
+      "id": "07",
+      "title": "같은 판에 전체·확대·회전 무늬 붙이기",
+      "start": 328.68333333333334,
+      "frames": 3180,
+      "seconds": 53.0,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/07-scene.wav",
+      "voiceSeconds": 52.4,
+      "voiceSha256": "b59a457c09bed9c1866143cae977cdd5964b941f16bc236676b8de9ce09ede40",
+      "rawOrigin": 308.6200833333333,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 7.5,
+          "text": "천에 핀을 꽂는다고 생각해 보세요. 판의 네 정점에 이미지의 어느 위치를 연결할지 정하면 내부에서는 그 대응을 이어 갑니다.",
+          "line": null
+        },
+        {
+          "start": 7.5919999999999845,
+          "end": 15.620000000000005,
+          "text": "네 모서리에 영 영, 일 영, 일 일, 영 일을 차례로 주면 이미지 전체가 판을 덮습니다. 판의 위치 데이터는 바꾸지 않습니다.",
+          "line": null
+        },
+        {
+          "start": 15.742500000000007,
+          "end": 21.399999999999977,
+          "text": "유와 브이를 영 점 이오에서 영 점 칠오 사이로 줄이면 가운데 절반 영역을 같은 판에 늘려 붙입니다.",
+          "line": null
+        },
+        {
+          "start": 21.40749999999997,
+          "end": 28.920000000000016,
+          "text": "유브이 핀을 한 모서리씩 순환하면 무늬 방향이 회전합니다. 삼차원 판을 회전한 것이 아니라 이미지와 정점의 연결을 바꾼 것입니다.",
+          "line": null
+        },
+        {
+          "start": 28.952499999999986,
+          "end": 36.5,
+          "text": "유를 일 빼기 유로 바꾸면 좌우가 뒤집힙니다. 이 변환도 표면 위치와 면의 앞뒤 순서는 그대로 두고 무늬 좌표만 바꿉니다.",
+          "line": null
+        },
+        {
+          "start": 36.75999999999999,
+          "end": 44.39999999999998,
+          "text": "사각형만 가능한 것은 아닙니다. 여러 삼각형의 각 정점에 다른 유브이를 주면 같은 메시에서도 무늬의 늘어남과 배치를 바꿀 수 있습니다.",
+          "line": null
+        },
+        {
+          "start": 44.56,
+          "end": 52.379999999999995,
+          "text": "늘어나는 천의 비유는 대응을 돕는 설명입니다. 실제 텍스처가 물리적인 천처럼 움직이거나 모든 면적을 그대로 보존한다는 뜻은 아닙니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        7.5919999999999845,
+        15.742500000000007,
+        21.40749999999997,
+        28.952499999999986,
+        36.75999999999999,
+        44.56
+      ],
+      "classification": "explanation",
+      "manimClass": "Scene07"
+    },
+    {
+      "id": "08",
+      "title": "무늬는 면을 따라가고 윤곽은 남습니다",
+      "start": 381.68333333333334,
+      "frames": 3180,
+      "seconds": 53.0,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/08-scene.wav",
+      "voiceSeconds": 51.84,
+      "voiceSha256": "484e1254cb5c576c6d8cffb7e17c0e9bfe68961d3bd44abdec30b8bea2158bd1",
+      "rawOrigin": 361.47008333333326,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 7.560000000000002,
+          "text": "붉은 벽면 가까이를 이동하는 장면입니다. 곡선으로 이어지는 큰 형태 안에 글자와 표면 무늬가 놓여 있습니다.",
+          "line": null
+        },
+        {
+          "start": 8.011999999999977,
+          "end": 16.21200000000002,
+          "text": "카메라가 바뀌면 벽의 무늬가 화면에서 기울어지고 크기도 달라 보입니다. 이미지 좌표와 최종 화면 좌표가 같지 않다는 점을 떠올려 보세요.",
+          "line": null
+        },
+        {
+          "start": 16.68399999999998,
+          "end": 25.144000000000016,
+          "text": "다음 경사 지붕에는 길게 반복되는 줄과 유리창이 보입니다. 마지막 컨테이너에서는 윗면과 옆면의 패널 방향이 다르게 보입니다.",
+          "line": null
+        },
+        {
+          "start": 25.61599999999997,
+          "end": 34.527999999999984,
+          "text": "이 세 장면의 실제 유브이를 읽은 것은 아닙니다. 보이는 무늬와 표면의 대응을 질문으로 삼아, 직접 정한 유브이 예제를 연결합니다.",
+          "line": null
+        },
+        {
+          "start": 34.808000000000014,
+          "end": 43.327999999999996,
+          "text": "앞 도식처럼 같은 판에 전체 이미지나 일부 이미지를 붙일 수 있습니다. 그다음은 유브이가 영에서 일 범위를 벗어났을 때의 규칙입니다.",
+          "line": null
+        },
+        {
+          "start": 43.64799999999999,
+          "end": 52.30000000000001,
+          "text": "무늬가 반복돼 보인다는 이유만으로 반복 주소 모드라고 단정하지 않습니다. 별도 기하나 이미지 안의 반복으로도 비슷한 결과를 만들 수 있습니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        8.011999999999977,
+        16.68399999999998,
+        25.61599999999997,
+        34.808000000000014,
+        43.64799999999999
+      ],
+      "classification": "actual",
+      "manimClass": null,
+      "cut": {
+        "scene": "08",
+        "in": 720,
+        "maxSeconds": 53,
+        "duration": 53.0,
+        "sourceId": "fN4iMYUyODc",
+        "sourceFile": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+        "sourceSegments": [
+          {
+            "in": 720,
+            "maxSeconds": 16.683333333333337
+          },
+          {
+            "in": 588,
+            "maxSeconds": 4.083333333333334
+          },
+          {
+            "in": 400,
+            "maxSeconds": 8.000000000000002
+          },
+          {
+            "in": 592.0833333333334,
+            "maxSeconds": 10.916666666666668
+          },
+          {
+            "in": 736.6833333333333,
+            "maxSeconds": 13.316666666666668
+          }
+        ],
+        "credit": "Sunset Overdrive - NCR Gameplay",
+        "licenseLabel": "uploader free-to-use recording statement",
+        "focus": "실제 곡선 외벽→경사 줄무늬 지붕→컨테이너의 윗면·옆면 패턴",
+        "claim": "무늬와 표면 대응을 관찰하되 UV·주소 모드 구현은 화면에서 추정하지 않는다",
+        "action": "Actual full-screen real-time roof/wall traversal,visible vents,facades,window/brick/roof patterns and silhouette changes. No proprietary implementation inference.",
+        "connection": "Concept-matched observation connected to adjacent independent explanation; no proprietary implementation claim",
+        "inspection": [
+          "production/batches/game-math-part2-full-series/preflight/mesh-uv-sunset-fine-review.json"
+        ],
+        "segments": [
+          {
+            "in": 720,
+            "maxSeconds": 16.683333333333337,
+            "frames": 1001,
+            "seconds": 16.683333333333334
+          },
+          {
+            "in": 588,
+            "maxSeconds": 4.083333333333334,
+            "frames": 245,
+            "seconds": 4.083333333333333
+          },
+          {
+            "in": 400,
+            "maxSeconds": 8.000000000000002,
+            "frames": 480,
+            "seconds": 8.0
+          },
+          {
+            "in": 592.0833333333334,
+            "maxSeconds": 10.916666666666668,
+            "frames": 655,
+            "seconds": 10.916666666666666
+          },
+          {
+            "in": 736.6833333333333,
+            "maxSeconds": 13.316666666666668,
+            "frames": 799,
+            "seconds": 13.316666666666666
+          }
+        ]
+      },
+      "observationPauses": [
+        {
+          "afterLine": 1,
+          "rawSample": 188003,
+          "rawAt": 7.833458333333334,
+          "seamRms": 0.0005721410270780325,
+          "silenceSamples": 2688,
+          "seconds": 0.112
+        },
+        {
+          "afterLine": 2,
+          "rawSample": 394365,
+          "rawAt": 16.431875,
+          "seamRms": 0.000458240247098729,
+          "silenceSamples": 2688,
+          "seconds": 0.112
+        },
+        {
+          "afterLine": 3,
+          "rawSample": 606290,
+          "rawAt": 25.262083333333333,
+          "seamRms": 0.0005719239125028253,
+          "silenceSamples": 2688,
+          "seconds": 0.112
+        },
+        {
+          "afterLine": 4,
+          "rawSample": 817138,
+          "rawAt": 34.04741666666666,
+          "seamRms": 0.0010745833860710263,
+          "silenceSamples": 2688,
+          "seconds": 0.112
+        },
+        {
+          "afterLine": 5,
+          "rawSample": 1036815,
+          "rawAt": 43.200625,
+          "seamRms": 0.0005698426393792033,
+          "silenceSamples": 2688,
+          "seconds": 0.112
+        }
+      ],
+      "observationReview": {
+        "status": "distributed-at-observed-quiet-sentence-seams",
+        "quietWindowMilliseconds": 80,
+        "rawSamplesPreserved": true,
+        "rawSampleSha256": "195246ff49b0c4082c04f413ef2f0fa3ff4f050529348bc70d4a476c698b8d3a",
+        "restoredSampleSha256": "195246ff49b0c4082c04f413ef2f0fa3ff4f050529348bc70d4a476c698b8d3a",
+        "observationSeconds": 0.56,
+        "maximumPauseSeconds": 0.112,
+        "trailingSeconds": 0.6000000000000014,
+        "sourceSpeed": 1,
+        "gameplayFreezeOrLoop": false
+      },
+      "narrationWindowSeconds": 52.4,
+      "cuts": [
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 720,
+          "sourceOut": 736.6833333333333,
+          "outputStart": 381.68333333333334,
+          "durationSeconds": 16.683333333333334,
+          "frames": 1001,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 588,
+          "sourceOut": 592.0833333333334,
+          "outputStart": 398.3666666666667,
+          "durationSeconds": 4.083333333333333,
+          "frames": 245,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 400,
+          "sourceOut": 408.0,
+          "outputStart": 402.45,
+          "durationSeconds": 8.0,
+          "frames": 480,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 592.0833333333334,
+          "sourceOut": 603.0,
+          "outputStart": 410.45,
+          "durationSeconds": 10.916666666666666,
+          "frames": 655,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 736.6833333333333,
+          "sourceOut": 750.0,
+          "outputStart": 421.3666666666667,
+          "durationSeconds": 13.316666666666666,
+          "frames": 799,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "title": "면 안의 반복 무늬를 따라 관찰하기",
+      "start": 434.68333333333334,
+      "frames": 4571,
+      "seconds": 76.18333333333334,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/09-scene.wav",
+      "voiceSeconds": 57.84,
+      "voiceSha256": "3b5b219899519c1ae8330e2ddfb32c8afbc4d36fd317e4fc954297a664e74d30",
+      "rawOrigin": 413.7600833333333,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 6.920000000000016,
+          "text": "빅 워크의 녹색 방에서 캐릭터들이 움직입니다. 뒤쪽 판의 검은 격자와 벽 위의 둥근 표시를 찾아보세요.",
+          "line": null
+        },
+        {
+          "start": 10.077208333333338,
+          "end": 17.777208333333327,
+          "text": "시점이 돌아가면서 같은 판의 선이 기울어 보입니다. 화면에서 차지하는 위치와 면 위에 놓인 무늬 위치는 다른 좌표입니다.",
+          "line": null
+        },
+        {
+          "start": 21.054416666666654,
+          "end": 29.114416666666656,
+          "text": "캐릭터가 가까워지고 옆으로 이동해도 뒤쪽 무늬는 표면의 같은 부분에 이어집니다. 면을 따라 무늬를 조회하는 대응을 떠올려 보세요.",
+          "line": null
+        },
+        {
+          "start": 32.27166666666665,
+          "end": 40.47166666666669,
+          "text": "벽에는 같은 모양이 여러 번 나타나지만 이것만으로 반복 주소 모드라고 결론내릴 수 없습니다. 이미지 안에 반복 무늬가 들어 있을 수도 있습니다.",
+          "line": null
+        },
+        {
+          "start": 43.70887499999999,
+          "end": 52.46887499999998,
+          "text": "또한 검은 격자는 실제 삼각형의 연결선이라고 확인되지 않았습니다. 무늬의 반복과 기하의 연결을 구분하는 것이 오늘의 관찰입니다.",
+          "line": null
+        },
+        {
+          "start": 55.726124999999996,
+          "end": 64.54612499999999,
+          "text": "다음 도식에서는 같은 작은 이미지를 사용하고 유브이 범위와 주소 규칙을 우리가 직접 정합니다. 어떤 결과가 왜 나오는지 계산으로 확인할 수 있습니다.",
+          "line": null
+        },
+        {
+          "start": 67.80333333333334,
+          "end": 75.56333333333333,
+          "text": "면 안의 위치를 먼저 보간한 다음 이미지에 접근한다는 순서를 기억하세요. 정점의 좌표를 미리 접어 버리는 오류도 함께 비교하겠습니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        10.077208333333338,
+        21.054416666666654,
+        32.27166666666665,
+        43.70887499999999,
+        55.726124999999996,
+        67.80333333333334
+      ],
+      "classification": "actual",
+      "manimClass": null,
+      "cut": {
+        "scene": "09",
+        "in": 270,
+        "maxSeconds": 78,
+        "duration": 76.18333333333334,
+        "sourceId": "wzQLP0Z3zII",
+        "sourceFile": "shared/output/game-math-part2-full-series/sources/wzQLP0Z3zII.mp4",
+        "sourceSegments": [
+          {
+            "in": 270,
+            "maxSeconds": 78
+          }
+        ],
+        "credit": "Big Walk - NCR Gameplay",
+        "licenseLabel": "uploader free-to-use recording permission",
+        "focus": "실제 캐릭터·카메라 움직임에서 격자 판과 벽의 반복된 원형 표시",
+        "claim": "표면·화면 좌표를 구분하고 겉보기 반복과 실제 주소 모드를 분리한다",
+        "action": "Actual player walking among opaque rocks, perforated panels, colored characters and shadows; actual handling of a transparent tank. Finished pixels illustrate questions, not proprietary engine implementation.",
+        "connection": "Concept-matched observation connected to adjacent independent explanation; no proprietary implementation claim",
+        "inspection": "All coarse sheets, 8 fine sheets and all three boundary sheets directly viewed. Use only approved nonrepeating real-time intervals. Reject1498–1533 and1600–1614 floating chat,1668–1696 chat,1883 menu,1910–1921 scope, late1983 chat and1130–1320 unrelated dusk conversation; 550–565 nearly static.",
+        "segments": [
+          {
+            "in": 270,
+            "maxSeconds": 78,
+            "frames": 4571,
+            "seconds": 76.18333333333334
+          }
+        ]
+      },
+      "observationPauses": [
+        {
+          "afterLine": 1,
+          "rawSample": 170681,
+          "rawAt": 7.1117083333333335,
+          "seamRms": 0.0005578699638135731,
+          "silenceSamples": 70973,
+          "seconds": 2.9572083333333334
+        },
+        {
+          "afterLine": 2,
+          "rawSample": 356072,
+          "rawAt": 14.836333333333334,
+          "seamRms": 7.54243228584528e-05,
+          "silenceSamples": 70973,
+          "seconds": 2.9572083333333334
+        },
+        {
+          "afterLine": 3,
+          "rawSample": 561533,
+          "rawAt": 23.39720833333333,
+          "seamRms": 0.0002700031327549368,
+          "silenceSamples": 70974,
+          "seconds": 2.95725
+        },
+        {
+          "afterLine": 4,
+          "rawSample": 764907,
+          "rawAt": 31.871125,
+          "seamRms": 0.0002567917399574071,
+          "silenceSamples": 70973,
+          "seconds": 2.9572083333333334
+        },
+        {
+          "afterLine": 5,
+          "rawSample": 982235,
+          "rawAt": 40.926458333333336,
+          "seamRms": 0.00016812099784146994,
+          "silenceSamples": 70974,
+          "seconds": 2.95725
+        },
+        {
+          "afterLine": 6,
+          "rawSample": 1201117,
+          "rawAt": 50.04654166666667,
+          "seamRms": 6.518185546156019e-05,
+          "silenceSamples": 70973,
+          "seconds": 2.9572083333333334
+        }
+      ],
+      "observationReview": {
+        "status": "distributed-at-observed-quiet-sentence-seams",
+        "quietWindowMilliseconds": 80,
+        "rawSamplesPreserved": true,
+        "rawSampleSha256": "a40ff361e4229e72f4636da5d0c6e4dad04ede910808c5a0ee49df33b4e94d26",
+        "restoredSampleSha256": "a40ff361e4229e72f4636da5d0c6e4dad04ede910808c5a0ee49df33b4e94d26",
+        "observationSeconds": 17.743333333333332,
+        "maximumPauseSeconds": 2.95725,
+        "trailingSeconds": 0.6000000000000085,
+        "sourceSpeed": 1,
+        "gameplayFreezeOrLoop": false
+      },
+      "narrationWindowSeconds": 75.58333333333333,
+      "cuts": [
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/wzQLP0Z3zII.mp4",
+          "sourceIn": 270,
+          "sourceOut": 346.18333333333334,
+          "outputStart": 434.68333333333334,
+          "durationSeconds": 76.18333333333334,
+          "frames": 4571,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "title": "범위 밖의 UV를 조회하는 규칙",
+      "start": 510.8666666666667,
+      "frames": 3372,
+      "seconds": 56.2,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/10-scene.wav",
+      "voiceSeconds": 55.6,
+      "voiceSha256": "adf96747c53a5a9f456746ad3d33e15ba66343e561f764eea0b30416ec081ce0",
+      "rawOrigin": 472.05008333333325,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 7.980000000000018,
+          "text": "유브이는 영에서 일 바깥 값도 가질 수 있습니다. 같은 정점과 같은 유브이에 반복이나 클램프 규칙을 다르게 적용해 보겠습니다.",
+          "line": null
+        },
+        {
+          "start": 8.339999999999975,
+          "end": 15.740000000000009,
+          "text": "반복은 정수 타일을 넘으면 같은 이미지를 다시 사용합니다. 음수에서도 일관되게 하려면 유에서 유의 바닥값을 뺍니다.",
+          "line": null
+        },
+        {
+          "start": 16.100000000000023,
+          "end": 24.45999999999998,
+          "text": "일 점 이오는 바닥값 일이므로 영 점 이오가 됩니다. 마이너스 영 점 칠오의 바닥값은 마이너스 일이므로 역시 영 점 이오입니다.",
+          "line": null
+        },
+        {
+          "start": 24.71999999999997,
+          "end": 32.24000000000001,
+          "text": "영 쪽으로 정수를 잘라내면 음수에서 결과가 다릅니다. 반복 구현에 사용할 함수가 바닥값인지 절삭인지 구분해야 합니다.",
+          "line": null
+        },
+        {
+          "start": 32.660000000000025,
+          "end": 39.60000000000002,
+          "text": "클램프는 영보다 작으면 영, 일보다 크면 일로 제한합니다. 바깥에는 이미지 가장자리의 값이 이어집니다.",
+          "line": null
+        },
+        {
+          "start": 39.89999999999998,
+          "end": 46.23999999999995,
+          "text": "미러 반복은 타일마다 방향을 번갈아 뒤집습니다. 유와 브이는 서로 다른 주소 모드를 사용할 수도 있습니다.",
+          "line": null
+        },
+        {
+          "start": 46.61999999999995,
+          "end": 55.579999999999984,
+          "text": "이것은 주소 선택 규칙입니다. 이웃 텍셀을 어떻게 섞는 필터링과는 별도입니다. 경계의 실제 필터 결과는 필터와 규약까지 함께 정의해야 합니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        8.339999999999975,
+        16.100000000000023,
+        24.71999999999997,
+        32.660000000000025,
+        39.89999999999998,
+        46.61999999999995
+      ],
+      "classification": "explanation",
+      "manimClass": "Scene10"
+    },
+    {
+      "id": "11",
+      "title": "정점에서 먼저 반복하면 정보가 사라집니다",
+      "start": 567.0666666666667,
+      "frames": 3370,
+      "seconds": 56.166666666666664,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/11-scene.wav",
+      "voiceSeconds": 55.56004166666666,
+      "voiceSha256": "a36f0dba0a6471c40257d7d52d1f0b7b1ed23a803984427ae21514b871bcfef3",
+      "rawOrigin": 528.1000833333333,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 11.120000000000005,
+          "text": "한 변의 유를 영에서 숫자 이까지 주면 면을 따라 이미지가 두 번 반복되어야 합니다. 두 끝에 저장하는 유 좌표는 영과 숫자 이입니다. 이 두 값을 그대로 저장합니다.",
+          "line": null
+        },
+        {
+          "start": 11.480000000000018,
+          "end": 18.100000000000023,
+          "text": "면을 따라 사분의 일 지점에서 보간한 유는 영 점 오입니다. 사분의 삼 지점에서는 일 점 오입니다.",
+          "line": null
+        },
+        {
+          "start": 18.58000000000004,
+          "end": 26.519999999999982,
+          "text": "각 위치에서 조회할 때 반복을 적용하면 두 지점 모두 영 점 오를 읽습니다. 다른 타일의 같은 상대 위치에 해당합니다.",
+          "line": null
+        },
+        {
+          "start": 26.519999999999982,
+          "end": 35.77999999999997,
+          "text": "반대로 정점에서 영과 숫자 이에 반복을 먼저 적용하면 두 좌표 모두 영이 됩니다. 그 영을 보간하면 면 안의 모든 유도 영이 됩니다.",
+          "line": null
+        },
+        {
+          "start": 36.27999999999997,
+          "end": 45.25999999999999,
+          "text": "영부터 숫자 이까지의 범위가 사라져 두 번 반복할 정보도 사라졌습니다. 먼저 보간하고 마지막 텍스처 조회에서 주소 모드를 적용해야 합니다.",
+          "line": null
+        },
+        {
+          "start": 45.65999999999997,
+          "end": 55.460000000000036,
+          "text": "원근 장면에서는 앞에서 배운 원근 보정 유브이 보간을 이 앞단에 사용합니다. 원근 보정과 반복 순서는 서로 다른 문제이므로 둘 다 지킵니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        11.480000000000018,
+        18.58000000000004,
+        26.519999999999982,
+        36.27999999999997,
+        45.65999999999997
+      ],
+      "classification": "explanation",
+      "manimClass": "Scene11"
+    },
+    {
+      "id": "12",
+      "title": "윤곽·방향·무늬를 나누어 다시 관찰하기",
+      "start": 623.2333333333333,
+      "frames": 3060,
+      "seconds": 51.0,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/12-scene.wav",
+      "voiceSeconds": 49.60004166666667,
+      "voiceSha256": "3e677667c573e5041842d13a77baadd2af3ba666da16438582b23a72c2535b31",
+      "rawOrigin": 584.1101249999999,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 7.340000000000032,
+          "text": "마지막으로 선셋 오버드라이브의 계단과 건물 사이를 이동합니다. 가까운 면과 멀리 보이는 면의 경계부터 찾아보세요.",
+          "line": null
+        },
+        {
+          "start": 7.740000000000041,
+          "end": 14.260000000000023,
+          "text": "옥상과 건물 옆면이 나타나면 형태를 이루는 면, 그 면의 빛과 표면 무늬를 세 질문으로 나누어 봅니다.",
+          "line": null
+        },
+        {
+          "start": 14.879999999999946,
+          "end": 23.920000000000023,
+          "text": "다음 짧은 벽 장면에서는 창문이 반복되고, 뒤의 지붕에서는 사각 패널이 이어집니다. 반복 개수만으로 정점 개수나 주소 모드를 알 수는 없습니다.",
+          "line": null
+        },
+        {
+          "start": 24.040000000000028,
+          "end": 33.32000000000003,
+          "text": "우리 계산에서는 인덱스로 정점 레코드를 연결했고 법선으로 수직 방향을, 유브이로 이미지 대응을 저장했습니다. 이 역할은 서로 바꿔 쓸 수 없습니다.",
+          "line": null
+        },
+        {
+          "start": 33.56000000000004,
+          "end": 42.080000000000055,
+          "text": "여러분이 모델을 확인할 때도 먼저 실루엣, 다음 법선 경계, 마지막 무늬의 배치를 따로 검사해 보세요. 이상한 결과의 원인을 좁히기 쉬워집니다.",
+          "line": null
+        },
+        {
+          "start": 42.459958333333304,
+          "end": 50.37995833333338,
+          "text": "이제 직접 정한 작은 메시 문제로 답을 확인하겠습니다. 게임의 내부 수치를 맞히는 문제가 아니라 저장과 계산의 순서를 검산하는 연습입니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        7.740000000000041,
+        14.879999999999946,
+        24.040000000000028,
+        33.56000000000004,
+        42.459958333333304
+      ],
+      "classification": "actual",
+      "manimClass": null,
+      "cut": {
+        "scene": "12",
+        "in": 615,
+        "maxSeconds": 51,
+        "duration": 51.0,
+        "sourceId": "fN4iMYUyODc",
+        "sourceFile": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+        "sourceSegments": [
+          {
+            "in": 615,
+            "maxSeconds": 35
+          },
+          {
+            "in": 566,
+            "maxSeconds": 4
+          },
+          {
+            "in": 374,
+            "maxSeconds": 12
+          }
+        ],
+        "credit": "Sunset Overdrive - NCR Gameplay",
+        "licenseLabel": "uploader free-to-use recording statement",
+        "focus": "실제 계단·옥상 이동→반복 창문 벽→지붕 패널의 형태와 표면",
+        "claim": "정점·법선·UV의 역할을 구분한 모델 검수 질문으로 정리",
+        "action": "Actual full-screen real-time roof/wall traversal,visible vents,facades,window/brick/roof patterns and silhouette changes. No proprietary implementation inference.",
+        "connection": "Concept-matched observation connected to adjacent independent explanation; no proprietary implementation claim",
+        "inspection": [
+          "production/batches/game-math-part2-full-series/preflight/mesh-uv-sunset-fine-review.json"
+        ],
+        "segments": [
+          {
+            "in": 615,
+            "maxSeconds": 35,
+            "frames": 2100,
+            "seconds": 35.0
+          },
+          {
+            "in": 566,
+            "maxSeconds": 4,
+            "frames": 240,
+            "seconds": 4.0
+          },
+          {
+            "in": 374,
+            "maxSeconds": 12,
+            "frames": 720,
+            "seconds": 12.0
+          }
+        ]
+      },
+      "observationPauses": [
+        {
+          "afterLine": 1,
+          "rawSample": 181704,
+          "rawAt": 7.571,
+          "seamRms": 0.0005144361057318747,
+          "silenceSamples": 3840,
+          "seconds": 0.16
+        },
+        {
+          "afterLine": 2,
+          "rawSample": 340587,
+          "rawAt": 14.191125,
+          "seamRms": 0.00012842939759138972,
+          "silenceSamples": 3840,
+          "seconds": 0.16
+        },
+        {
+          "afterLine": 3,
+          "rawSample": 570039,
+          "rawAt": 23.751625,
+          "seamRms": 5.487509770318866e-05,
+          "silenceSamples": 3840,
+          "seconds": 0.16
+        },
+        {
+          "afterLine": 4,
+          "rawSample": 793978,
+          "rawAt": 33.08241666666667,
+          "seamRms": 0.0004997176001779735,
+          "silenceSamples": 3840,
+          "seconds": 0.16
+        },
+        {
+          "afterLine": 5,
+          "rawSample": 999403,
+          "rawAt": 41.64179166666667,
+          "seamRms": 0.0001065409742295742,
+          "silenceSamples": 3839,
+          "seconds": 0.15995833333333334
+        }
+      ],
+      "observationReview": {
+        "status": "distributed-at-observed-quiet-sentence-seams",
+        "quietWindowMilliseconds": 80,
+        "rawSamplesPreserved": true,
+        "rawSampleSha256": "8ba55626f0d039d59e64755228af449f874551e5c5771a6f9a67273ee72da307",
+        "restoredSampleSha256": "8ba55626f0d039d59e64755228af449f874551e5c5771a6f9a67273ee72da307",
+        "observationSeconds": 0.7999583333333333,
+        "maximumPauseSeconds": 0.16,
+        "trailingSeconds": 0.6000000000000014,
+        "sourceSpeed": 1,
+        "gameplayFreezeOrLoop": false
+      },
+      "narrationWindowSeconds": 50.4,
+      "cuts": [
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 615,
+          "sourceOut": 650.0,
+          "outputStart": 623.2333333333333,
+          "durationSeconds": 35.0,
+          "frames": 2100,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 566,
+          "sourceOut": 570.0,
+          "outputStart": 658.2333333333333,
+          "durationSeconds": 4.0,
+          "frames": 240,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        },
+        {
+          "source": "shared/output/game-math-part2-full-series/sources/fN4iMYUyODc.mp4",
+          "sourceIn": 374,
+          "sourceOut": 386.0,
+          "outputStart": 662.2333333333333,
+          "durationSeconds": 12.0,
+          "frames": 720,
+          "classification": "actual-existing-game",
+          "sourceAudioUsed": false
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "title": "세 가지 질문으로 계산을 검산하기",
+      "start": 674.2333333333333,
+      "frames": 3706,
+      "seconds": 61.766666666666666,
+      "voice": "shared/output/narration/game-math-normal-transform-uv/qwen3-1.7b-balanced-v1/chunks/13-scene.wav",
+      "voiceSeconds": 61.16,
+      "voiceSha256": "2efc46ab7dc1c2d8278ad406f1afc9cd290ca523f02698769ec66e79dd7c62e1",
+      "rawOrigin": 634.1601666666667,
+      "cues": [
+        {
+          "start": 0.0,
+          "end": 10.759999999999991,
+          "text": "첫 문제입니다. 삼십이 바이트 정점 네 개와 이 바이트 인덱스 여섯 개라면 모두 백사십 바이트입니다. 정점 개수와 인덱스 개수를 섞지 않았는지 확인하세요.",
+          "line": null
+        },
+        {
+          "start": 11.220000000000027,
+          "end": 19.67999999999995,
+          "text": "두 번째는 상자 모서리입니다. 같은 위치의 위쪽과 옆쪽 법선을 분리하려면 정점 레코드를 복제하고 해당 면의 인덱스를 바꿉니다.",
+          "line": null
+        },
+        {
+          "start": 20.120000000000005,
+          "end": 31.25999999999999,
+          "text": "접선의 두 성분은 이와 마이너스 일입니다. 법선의 두 성분은 영 점 오와 일입니다. 둘을 내적하면 영입니다. 비균일 확대 뒤에는 이 수직 조건과 단위 길이를 모두 검사합니다.",
+          "line": null
+        },
+        {
+          "start": 31.58000000000004,
+          "end": 39.74000000000001,
+          "text": "세 번째는 영에서 이까지의 유브이입니다. 먼저 보간하고 조회할 때 반복하며, 음수 좌표에서는 바닥값을 사용합니다.",
+          "line": null
+        },
+        {
+          "start": 40.01999999999998,
+          "end": 49.5,
+          "text": "형태를 연결하는 인덱스, 빛 방향을 근사하는 법선, 무늬를 연결하는 유브이를 구분했습니다. 위치가 같아도 모든 속성을 공유해야 하는 것은 아닙니다.",
+          "line": null
+        },
+        {
+          "start": 49.93999999999994,
+          "end": 61.139999999999986,
+          "text": "다음 강의에서는 이 법선을 실제 조명 식에 넣고 광원과 재질의 영향을 계산하겠습니다. 오늘 만든 방향과 표면 정보가 그 계산의 입력이 됩니다.",
+          "line": null
+        }
+      ],
+      "lineStarts": [
+        0.0,
+        11.220000000000027,
+        20.120000000000005,
+        31.58000000000004,
+        40.01999999999998,
+        49.93999999999994
+      ],
+      "classification": "explanation",
+      "manimClass": "Scene13"
+    }
+  ],
+  "backgroundMusic": false,
+  "koCaptions": [
+    {
+      "start": 2.0,
+      "end": 4.74,
+      "text": "물체를 가로로 늘렸을 때 빛 방향과 무늬가",
+      "scene": "01"
+    },
+    {
+      "start": 4.74,
+      "end": 6.9,
+      "text": "어색해진다면 무엇을 확인해야 할까요?",
+      "scene": "01"
+    },
+    {
+      "start": 7.08,
+      "end": 9.8,
+      "text": "먼저 접선과 법선의 수직 조건을 계산하고,",
+      "scene": "01"
+    },
+    {
+      "start": 9.8,
+      "end": 13.14,
+      "text": "역전치가 필요한 이유를 작은 수치 예제로 확인합니다.",
+      "scene": "01"
+    },
+    {
+      "start": 13.48,
+      "end": 17.54,
+      "text": "그다음 게임의 벽과 지붕 무늬를 보며 유브이 좌표의 대응과\n확대,",
+      "scene": "01"
+    },
+    {
+      "start": 17.54,
+      "end": 19.26,
+      "text": "회전, 반전을 설명합니다.",
+      "scene": "01"
+    },
+    {
+      "start": 19.64,
+      "end": 21.52,
+      "text": "마지막에는 반복과 클램프를 비교하고,",
+      "scene": "01"
+    },
+    {
+      "start": 21.52,
+      "end": 25.34,
+      "text": "정점에서 반복을 먼저 처리하면 왜 틀리는지 검산하겠습니다.",
+      "scene": "01"
+    },
+    {
+      "start": 25.983333333333334,
+      "end": 30.303333333333335,
+      "text": "법선 변환에서 지켜야 할 조건은 접선과 수직이라는\n것입니다.",
+      "scene": "02"
+    },
+    {
+      "start": 30.443333333333335,
+      "end": 34.72333333333333,
+      "text": "열벡터 규약으로 원래 접선을 티, 법선을 엔이라고\n쓰겠습니다.",
+      "scene": "02"
+    },
+    {
+      "start": 35.00333333333333,
+      "end": 38.86333333333333,
+      "text": "위치와 접선에 적용하는 가역 선형 행렬을 엠이라고 합시다.",
+      "scene": "02"
+    },
+    {
+      "start": 39.16333333333334,
+      "end": 42.52333333333334,
+      "text": "평행이동은 접선이나 방향 벡터에 더하지 않습니다.",
+      "scene": "02"
+    },
+    {
+      "start": 42.80333333333334,
+      "end": 45.50333333333333,
+      "text": "법선에는 엠의 역전치를 적용합니다.",
+      "scene": "02"
+    },
+    {
+      "start": 45.66333333333334,
+      "end": 49.763333333333335,
+      "text": "역행렬을 구한 뒤 전치해도, 전치한 뒤 역행렬을 구해도\n같습니다.",
+      "scene": "02"
+    },
+    {
+      "start": 50.16333333333334,
+      "end": 55.86333333333333,
+      "text": "새 법선과 새 접선을 내적하면 가운데 역행렬과 원래 행렬이\n상쇄됩니다.",
+      "scene": "02"
+    },
+    {
+      "start": 55.983333333333334,
+      "end": 59.30333333333334,
+      "text": "결과는 원래 내적 영이므로 수직 관계가 유지됩니다.",
+      "scene": "02"
+    },
+    {
+      "start": 59.66333333333334,
+      "end": 63.70333333333333,
+      "text": "회전 같은 정규직교 행렬은 역전치가 원래 행렬과 같습니다.",
+      "scene": "02"
+    },
+    {
+      "start": 63.903333333333336,
+      "end": 68.32333333333334,
+      "text": "양의 균일 확대도 방향만 보면 같지만 마지막 단위 길이는\n맞춥니다.",
+      "scene": "02"
+    },
+    {
+      "start": 68.64333333333333,
+      "end": 73.02333333333333,
+      "text": "비균일 확대나 기울임에서는 역전치 후 정규화합니다.",
+      "scene": "02"
+    },
+    {
+      "start": 73.32333333333334,
+      "end": 78.50333333333333,
+      "text": "어떤 축을 영으로 만드는 특이 행렬은 역행렬이 없으므로 이\n공식을 그대로 쓸 수 없습니다.",
+      "scene": "02"
+    },
+    {
+      "start": 78.66333333333333,
+      "end": 82.92333333333333,
+      "text": "반사처럼 방향을 뒤집는 변환은 앞면 규약과도 함께\n확인합니다.",
+      "scene": "02"
+    },
+    {
+      "start": 82.92333333333333,
+      "end": 87.32333333333334,
+      "text": "여기서는 음의 확대가 없는 예제로 수직 조건에\n집중하겠습니다.",
+      "scene": "02"
+    },
+    {
+      "start": 87.96662500000001,
+      "end": 92.10662500000001,
+      "text": "접선을 일, 마이너스 일로, 법선을 일, 일로 정합니다.",
+      "scene": "03"
+    },
+    {
+      "start": 92.366625,
+      "end": 97.226625,
+      "text": "내적은 일 빼기 일, 영입니다. 먼저 수직이라는 조건을\n확인했습니다.",
+      "scene": "03"
+    },
+    {
+      "start": 97.626625,
+      "end": 105.46662500000001,
+      "text": "가로만 두 배 늘리는 행렬을 적용하면 새 접선은 이,\n마이너스 일입니다. 물체 표면의 기울기가 달라집니다.",
+      "scene": "03"
+    },
+    {
+      "start": 105.726625,
+      "end": 112.946625,
+      "text": "법선에도 같은 행렬을 쓰면 이, 일이 됩니다. 새 접선과\n내적은 사 빼기 일, 삼이므로 수직이 아닙니다.",
+      "scene": "03"
+    },
+    {
+      "start": 113.24662500000001,
+      "end": 118.486625,
+      "text": "이 잘못된 벡터를 루트 오로 나누어 정규화해도 내적은 삼\n나누기 루트 오입니다.",
+      "scene": "03"
+    },
+    {
+      "start": 118.726625,
+      "end": 121.666625,
+      "text": "길이만 고쳐서 방향 오류를 없앨 수는 없습니다.",
+      "scene": "03"
+    },
+    {
+      "start": 122.086625,
+      "end": 126.38662500000001,
+      "text": "역전치의 가로 성분은 일 나누기 이, 즉 영 점 오입니다.",
+      "scene": "03"
+    },
+    {
+      "start": 126.626625,
+      "end": 133.14662500000003,
+      "text": "새 법선의 두 성분은 영 점 오와 일입니다. 새 접선과\n내적은 일 빼기 일, 영입니다.",
+      "scene": "03"
+    },
+    {
+      "start": 133.50662499999999,
+      "end": 138.58662500000003,
+      "text": "마지막으로 단위 길이를 만들면 약 영 점 사사칠, 영 점\n팔구사입니다.",
+      "scene": "03"
+    },
+    {
+      "start": 138.82662499999998,
+      "end": 142.366625,
+      "text": "순서는 수직인 방향을 먼저 만든 뒤 길이를 맞추는\n것입니다.",
+      "scene": "03"
+    },
+    {
+      "start": 142.44962500000003,
+      "end": 146.866625,
+      "text": "이차원 단면의 계산이지만 삼차원에서도 같은 수직 조건을\n사용합니다.",
+      "scene": "03"
+    },
+    {
+      "start": 147.20662500000003,
+      "end": 151.546625,
+      "text": "조명 코드에서는 위치 변환의 선형 부분과 법선 행렬을\n분리해 기록하세요.",
+      "scene": "03"
+    },
+    {
+      "start": 152.33325,
+      "end": 155.57324999999997,
+      "text": "메가봉크에서 바위와 건물 사이를 움직입니다.",
+      "scene": "04"
+    },
+    {
+      "start": 155.93325,
+      "end": 159.73324999999997,
+      "text": "꺾인 바위의 면과 뒤쪽 벽에 있는 무늬를 구분해서 보세요.",
+      "scene": "04"
+    },
+    {
+      "start": 163.2325833333333,
+      "end": 166.5525833333333,
+      "text": "카메라가 돌아도 바위의 바깥 윤곽은 남습니다.",
+      "scene": "04"
+    },
+    {
+      "start": 166.8725833333333,
+      "end": 172.4525833333333,
+      "text": "면 안의 밝기와 벽의 표시는 각각 조명 방향과 표면\n속성이라는 질문을 만듭니다.",
+      "scene": "04"
+    },
+    {
+      "start": 175.93191666666667,
+      "end": 178.97191666666663,
+      "text": "다음 이동에서는 낮은 바위와 사막 지면을 지나고,",
+      "scene": "04"
+    },
+    {
+      "start": 179.31191666666666,
+      "end": 183.03191666666663,
+      "text": "마지막에는 건물의 앞면과 옆면이 번갈아 나타납니다.",
+      "scene": "04"
+    },
+    {
+      "start": 186.53125,
+      "end": 189.23125,
+      "text": "창문과 줄 모양의 표시가 면 위에 놓여 있지만,",
+      "scene": "04"
+    },
+    {
+      "start": 189.29125,
+      "end": 195.51125,
+      "text": "실제 유브이나 텍스처 파일을 읽은 것은 아닙니다. 보이는\n형태와 무늬의 관계를 관찰합니다.",
+      "scene": "04"
+    },
+    {
+      "start": 199.2305833333333,
+      "end": 202.5705833333333,
+      "text": "앞의 수치 예제는 접선과 법선을 수직으로 만들었습니다.",
+      "scene": "04"
+    },
+    {
+      "start": 203.17058333333333,
+      "end": 206.43058333333332,
+      "text": "이제 무늬를 위한 이미지 좌표를 별도로 연결하겠습니다.",
+      "scene": "04"
+    },
+    {
+      "start": 210.46991666666665,
+      "end": 215.94991666666664,
+      "text": "형태와 법선을 올바르게 저장해도 잘못된 이미지 부분을\n조회하면 무늬는 틀릴 수 있습니다.",
+      "scene": "04"
+    },
+    {
+      "start": 216.78991666666667,
+      "end": 218.94991666666664,
+      "text": "세 종류의 데이터를 나누어 확인해야 합니다.",
+      "scene": "04"
+    },
+    {
+      "start": 219.74991666666668,
+      "end": 223.10991666666666,
+      "text": "선셋 오버드라이브의 다른 지붕과 벽을 보겠습니다.",
+      "scene": "05"
+    },
+    {
+      "start": 223.38991666666666,
+      "end": 227.60991666666666,
+      "text": "사각 창문이 반복되는 면과 경사 지붕이 한 화면에\n나타납니다.",
+      "scene": "05"
+    },
+    {
+      "start": 228.21991666666668,
+      "end": 232.09991666666667,
+      "text": "먼저 큰 형태의 윤곽을 보고 그다음 표면 안의 반복 무늬를\n보세요.",
+      "scene": "05"
+    },
+    {
+      "start": 232.35991666666666,
+      "end": 236.71991666666668,
+      "text": "같은 면 안에 많은 세부가 있어도 그만큼 정점이 있다고\n말할 수는 없습니다.",
+      "scene": "05"
+    },
+    {
+      "start": 237.42991666666666,
+      "end": 241.26991666666666,
+      "text": "다음 가까운 벽에서는 벽돌처럼 반복되는 무늬와 격자가\n보입니다.",
+      "scene": "05"
+    },
+    {
+      "start": 241.48991666666666,
+      "end": 245.98991666666666,
+      "text": "이 세부를 이미지의 위치와 표면의 위치를 연결하는 문제로\n생각해 봅시다.",
+      "scene": "05"
+    },
+    {
+      "start": 246.53991666666667,
+      "end": 250.59991666666667,
+      "text": "게임의 실제 텍스처 파일이나 주소 모드를 확인한 것은\n아닙니다.",
+      "scene": "05"
+    },
+    {
+      "start": 250.7999166666667,
+      "end": 255.49991666666665,
+      "text": "지금 화면은 왜 기하와 별도로 무늬 좌표가 필요한지\n보여주는 출발점입니다.",
+      "scene": "05"
+    },
+    {
+      "start": 256.0899166666667,
+      "end": 261.00991666666664,
+      "text": "우리 도식에서는 네 정점의 작은 판에 직접 만든 색과 숫자\n무늬를 붙입니다.",
+      "scene": "05"
+    },
+    {
+      "start": 261.2099166666667,
+      "end": 265.12991666666665,
+      "text": "같은 판을 유지하면서 어떤 이미지 부분을 사용할지 바꾸어\n보겠습니다.",
+      "scene": "05"
+    },
+    {
+      "start": 265.74991666666665,
+      "end": 269.24991666666665,
+      "text": "텍스처는 표면의 색이나 다른 속성을 담는 이미지입니다.",
+      "scene": "06"
+    },
+    {
+      "start": 269.60991666666666,
+      "end": 274.4499166666667,
+      "text": "그 이미지의 한 칸을 텍셀이라고 부르고, 최종 화면의\n픽셀과 구분합니다.",
+      "scene": "06"
+    },
+    {
+      "start": 274.74991666666665,
+      "end": 278.5299166666667,
+      "text": "화면에 크게 보이면 한 텍셀이 여러 픽셀에 영향을 줄 수\n있습니다.",
+      "scene": "06"
+    },
+    {
+      "start": 278.9099166666667,
+      "end": 282.3499166666667,
+      "text": "멀리 보이면 여러 텍셀이 한 화면 표본에 기여할 수도\n있습니다.",
+      "scene": "06"
+    },
+    {
+      "start": 282.41991666666667,
+      "end": 287.9499166666667,
+      "text": "유는 이미지 가로, 브이는 세로 좌표 이름입니다. 여기서는\n왼쪽 위를 영 영,",
+      "scene": "06"
+    },
+    {
+      "start": 287.9499166666667,
+      "end": 291.6899166666667,
+      "text": "오른쪽 아래를 일 일로 정하고 브이를 아래쪽으로\n증가시킵니다.",
+      "scene": "06"
+    },
+    {
+      "start": 291.92991666666666,
+      "end": 296.3099166666667,
+      "text": "이 원점은 예제의 명시적 약속입니다. 파일의 행 순서와\n도구,",
+      "scene": "06"
+    },
+    {
+      "start": 296.3099166666667,
+      "end": 300.8299166666667,
+      "text": "변환에 따라 달라질 수 있으므로 API 이름만으로 뒤집힘을\n결정하지 않습니다.",
+      "scene": "06"
+    },
+    {
+      "start": 301.3699166666667,
+      "end": 305.98991666666666,
+      "text": "이미지가 팔 곱하기 팔이든 더 크든 전체 영역은 영에서\n일로 표현할 수 있습니다.",
+      "scene": "06"
+    },
+    {
+      "start": 306.42991666666666,
+      "end": 309.6499166666667,
+      "text": "이 정규화 좌표는 정점의 삼차원 위치와 독립적입니다.",
+      "scene": "06"
+    },
+    {
+      "start": 309.92991666666666,
+      "end": 313.8899166666667,
+      "text": "평면, 원통이나 구면 매핑은 이 대응을 만드는 방법입니다.",
+      "scene": "06"
+    },
+    {
+      "start": 314.4499166666667,
+      "end": 319.0099166666667,
+      "text": "편집 도구로 지정하거나 절차적으로 계산해 정점에 유브이를\n저장할 수 있습니다.",
+      "scene": "06"
+    },
+    {
+      "start": 319.3899166666667,
+      "end": 322.54991666666666,
+      "text": "면 안에서는 정점의 유브이를 보간해 조회 위치를 얻습니다.",
+      "scene": "06"
+    },
+    {
+      "start": 322.60991666666666,
+      "end": 328.0299166666667,
+      "text": "앞 강의의 원근 보정은 유지하고, 이번에는 어떤 좌표를\n보간할지에 집중합니다.",
+      "scene": "06"
+    },
+    {
+      "start": 328.68325000000004,
+      "end": 332.62325000000004,
+      "text": "천에 핀을 꽂는다고 생각해 보세요. 판의 네 정점에\n이미지의",
+      "scene": "07"
+    },
+    {
+      "start": 332.62325000000004,
+      "end": 336.18325000000004,
+      "text": "어느 위치를 연결할지 정하면 내부에서는 그 대응을 이어\n갑니다.",
+      "scene": "07"
+    },
+    {
+      "start": 336.27525,
+      "end": 342.10325000000006,
+      "text": "네 모서리에 영 영, 일 영, 일 일, 영 일을 차례로\n주면 이미지 전체가 판을 덮습니다.",
+      "scene": "07"
+    },
+    {
+      "start": 342.28325000000007,
+      "end": 344.30325000000005,
+      "text": "판의 위치 데이터는 바꾸지 않습니다.",
+      "scene": "07"
+    },
+    {
+      "start": 344.42625000000004,
+      "end": 347.28325000000007,
+      "text": "유와 브이를 영 점 이오에서 영 점 칠오 사이로 줄이면",
+      "scene": "07"
+    },
+    {
+      "start": 347.28325000000007,
+      "end": 350.08325,
+      "text": "가운데 절반 영역을 같은 판에 늘려 붙입니다.",
+      "scene": "07"
+    },
+    {
+      "start": 350.09125000000006,
+      "end": 353.42325000000005,
+      "text": "유브이 핀을 한 모서리씩 순환하면 무늬 방향이 회전합니다.",
+      "scene": "07"
+    },
+    {
+      "start": 353.45625,
+      "end": 357.60325000000006,
+      "text": "삼차원 판을 회전한 것이 아니라 이미지와 정점의 연결을\n바꾼 것입니다.",
+      "scene": "07"
+    },
+    {
+      "start": 357.63625,
+      "end": 360.42325000000005,
+      "text": "유를 일 빼기 유로 바꾸면 좌우가 뒤집힙니다.",
+      "scene": "07"
+    },
+    {
+      "start": 360.66325000000006,
+      "end": 365.18325000000004,
+      "text": "이 변환도 표면 위치와 면의 앞뒤 순서는 그대로 두고 무늬\n좌표만 바꿉니다.",
+      "scene": "07"
+    },
+    {
+      "start": 365.44325000000003,
+      "end": 369.64325,
+      "text": "사각형만 가능한 것은 아닙니다. 여러 삼각형의 각 정점에\n다른 유브이를",
+      "scene": "07"
+    },
+    {
+      "start": 369.64325,
+      "end": 373.08325,
+      "text": "주면 같은 메시에서도 무늬의 늘어남과 배치를 바꿀 수\n있습니다.",
+      "scene": "07"
+    },
+    {
+      "start": 373.24325000000005,
+      "end": 375.70325,
+      "text": "늘어나는 천의 비유는 대응을 돕는 설명입니다.",
+      "scene": "07"
+    },
+    {
+      "start": 375.84325,
+      "end": 381.06325000000004,
+      "text": "실제 텍스처가 물리적인 천처럼 움직이거나 모든 면적을\n그대로 보존한다는 뜻은 아닙니다.",
+      "scene": "07"
+    },
+    {
+      "start": 381.6832500000001,
+      "end": 389.24325000000005,
+      "text": "붉은 벽면 가까이를 이동하는 장면입니다. 곡선으로 이어지는\n큰 형태 안에 글자와 표면 무늬가 놓여 있습니다.",
+      "scene": "08"
+    },
+    {
+      "start": 389.6952500000001,
+      "end": 393.6952500000001,
+      "text": "카메라가 바뀌면 벽의 무늬가 화면에서 기울어지고 크기도\n달라 보입니다.",
+      "scene": "08"
+    },
+    {
+      "start": 393.9552500000001,
+      "end": 397.8952500000001,
+      "text": "이미지 좌표와 최종 화면 좌표가 같지 않다는 점을 떠올려\n보세요.",
+      "scene": "08"
+    },
+    {
+      "start": 398.36725000000007,
+      "end": 402.00725000000006,
+      "text": "다음 경사 지붕에는 길게 반복되는 줄과 유리창이 보입니다.",
+      "scene": "08"
+    },
+    {
+      "start": 402.44725000000005,
+      "end": 406.82725000000005,
+      "text": "마지막 컨테이너에서는 윗면과 옆면의 패널 방향이 다르게\n보입니다.",
+      "scene": "08"
+    },
+    {
+      "start": 407.2992500000001,
+      "end": 410.5592500000001,
+      "text": "이 세 장면의 실제 유브이를 읽은 것은 아닙니다.",
+      "scene": "08"
+    },
+    {
+      "start": 410.5592500000001,
+      "end": 416.21125000000006,
+      "text": "보이는 무늬와 표면의 대응을 질문으로 삼아, 직접 정한\n유브이 예제를 연결합니다.",
+      "scene": "08"
+    },
+    {
+      "start": 416.49125000000004,
+      "end": 420.69125,
+      "text": "앞 도식처럼 같은 판에 전체 이미지나 일부 이미지를 붙일\n수 있습니다.",
+      "scene": "08"
+    },
+    {
+      "start": 421.05125000000004,
+      "end": 425.0112500000001,
+      "text": "그다음은 유브이가 영에서 일 범위를 벗어났을 때의\n규칙입니다.",
+      "scene": "08"
+    },
+    {
+      "start": 425.33125000000007,
+      "end": 429.86325000000005,
+      "text": "무늬가 반복돼 보인다는 이유만으로 반복 주소 모드라고\n단정하지 않습니다.",
+      "scene": "08"
+    },
+    {
+      "start": 430.0632500000001,
+      "end": 433.98325000000006,
+      "text": "별도 기하나 이미지 안의 반복으로도 비슷한 결과를 만들 수\n있습니다.",
+      "scene": "08"
+    },
+    {
+      "start": 435.03325000000007,
+      "end": 437.66325000000006,
+      "text": "빅 워크의 녹색 방에서 캐릭터들이 움직입니다.",
+      "scene": "09"
+    },
+    {
+      "start": 437.88325000000003,
+      "end": 441.60325000000006,
+      "text": "뒤쪽 판의 검은 격자와 벽 위의 둥근 표시를 찾아보세요.",
+      "scene": "09"
+    },
+    {
+      "start": 444.76045833333336,
+      "end": 447.70045833333336,
+      "text": "시점이 돌아가면서 같은 판의 선이 기울어 보입니다.",
+      "scene": "09"
+    },
+    {
+      "start": 447.9204583333334,
+      "end": 452.46045833333335,
+      "text": "화면에서 차지하는 위치와 면 위에 놓인 무늬 위치는 다른\n좌표입니다.",
+      "scene": "09"
+    },
+    {
+      "start": 455.7376666666667,
+      "end": 460.8576666666667,
+      "text": "캐릭터가 가까워지고 옆으로 이동해도 뒤쪽 무늬는 표면의\n같은 부분에 이어집니다.",
+      "scene": "09"
+    },
+    {
+      "start": 461.1176666666667,
+      "end": 463.7976666666667,
+      "text": "면을 따라 무늬를 조회하는 대응을 떠올려 보세요.",
+      "scene": "09"
+    },
+    {
+      "start": 466.95491666666675,
+      "end": 472.4149166666667,
+      "text": "벽에는 같은 모양이 여러 번 나타나지만 이것만으로 반복\n주소 모드라고 결론내릴 수 없습니다.",
+      "scene": "09"
+    },
+    {
+      "start": 472.4149166666667,
+      "end": 475.15491666666674,
+      "text": "이미지 안에 반복 무늬가 들어 있을 수도 있습니다.",
+      "scene": "09"
+    },
+    {
+      "start": 478.392125,
+      "end": 483.012125,
+      "text": "또한 검은 격자는 실제 삼각형의 연결선이라고 확인되지\n않았습니다.",
+      "scene": "09"
+    },
+    {
+      "start": 483.31212500000004,
+      "end": 487.152125,
+      "text": "무늬의 반복과 기하의 연결을 구분하는 것이 오늘의\n관찰입니다.",
+      "scene": "09"
+    },
+    {
+      "start": 490.40937500000007,
+      "end": 495.729375,
+      "text": "다음 도식에서는 같은 작은 이미지를 사용하고 유브이 범위와\n주소 규칙을 우리가 직접 정합니다.",
+      "scene": "09"
+    },
+    {
+      "start": 496.109375,
+      "end": 499.229375,
+      "text": "어떤 결과가 왜 나오는지 계산으로 확인할 수 있습니다.",
+      "scene": "09"
+    },
+    {
+      "start": 502.4865833333334,
+      "end": 506.7265833333334,
+      "text": "면 안의 위치를 먼저 보간한 다음 이미지에 접근한다는\n순서를 기억하세요.",
+      "scene": "09"
+    },
+    {
+      "start": 506.9865833333334,
+      "end": 510.2465833333334,
+      "text": "정점의 좌표를 미리 접어 버리는 오류도 함께\n비교하겠습니다.",
+      "scene": "09"
+    },
+    {
+      "start": 511.27958333333345,
+      "end": 513.8865833333334,
+      "text": "유브이는 영에서 일 바깥 값도 가질 수 있습니다.",
+      "scene": "10"
+    },
+    {
+      "start": 514.1065833333334,
+      "end": 518.8465833333335,
+      "text": "같은 정점과 같은 유브이에 반복이나 클램프 규칙을 다르게\n적용해 보겠습니다.",
+      "scene": "10"
+    },
+    {
+      "start": 519.2065833333334,
+      "end": 522.7865833333335,
+      "text": "반복은 정수 타일을 넘으면 같은 이미지를 다시 사용합니다.",
+      "scene": "10"
+    },
+    {
+      "start": 522.8665833333334,
+      "end": 526.6065833333334,
+      "text": "음수에서도 일관되게 하려면 유에서 유의 바닥값을 뺍니다.",
+      "scene": "10"
+    },
+    {
+      "start": 526.9665833333333,
+      "end": 530.0265833333334,
+      "text": "일 점 이오는 바닥값 일이므로 영 점 이오가 됩니다.",
+      "scene": "10"
+    },
+    {
+      "start": 530.9465833333334,
+      "end": 535.3265833333335,
+      "text": "마이너스 영 점 칠오의 바닥값은 마이너스 일이므로 역시 영\n점 이오입니다.",
+      "scene": "10"
+    },
+    {
+      "start": 535.5865833333335,
+      "end": 538.6065833333334,
+      "text": "영 쪽으로 정수를 잘라내면 음수에서 결과가 다릅니다.",
+      "scene": "10"
+    },
+    {
+      "start": 538.6065833333334,
+      "end": 543.1065833333334,
+      "text": "반복 구현에 사용할 함수가 바닥값인지 절삭인지 구분해야\n합니다.",
+      "scene": "10"
+    },
+    {
+      "start": 543.5265833333334,
+      "end": 550.4665833333333,
+      "text": "클램프는 영보다 작으면 영, 일보다 크면 일로 제한합니다.\n바깥에는 이미지 가장자리의 값이 이어집니다.",
+      "scene": "10"
+    },
+    {
+      "start": 550.7665833333334,
+      "end": 557.1065833333334,
+      "text": "미러 반복은 타일마다 방향을 번갈아 뒤집습니다. 유와\n브이는 서로 다른 주소 모드를 사용할 수도 있습니다.",
+      "scene": "10"
+    },
+    {
+      "start": 557.4865833333333,
+      "end": 562.7865833333335,
+      "text": "이것은 주소 선택 규칙입니다. 이웃 텍셀을 어떻게 섞는\n필터링과는 별도입니다.",
+      "scene": "10"
+    },
+    {
+      "start": 562.9865833333333,
+      "end": 566.4465833333334,
+      "text": "경계의 실제 필터 결과는 필터와 규약까지 함께 정의해야\n합니다.",
+      "scene": "10"
+    },
+    {
+      "start": 567.0665833333335,
+      "end": 572.5065833333334,
+      "text": "한 변의 유를 영에서 숫자 이까지 주면 면을 따라 이미지가\n두 번 반복되어야 합니다.",
+      "scene": "11"
+    },
+    {
+      "start": 572.7865833333335,
+      "end": 578.1865833333335,
+      "text": "두 끝에 저장하는 유 좌표는 영과 숫자 이입니다. 이 두\n값을 그대로 저장합니다.",
+      "scene": "11"
+    },
+    {
+      "start": 578.5465833333335,
+      "end": 585.1665833333335,
+      "text": "면을 따라 사분의 일 지점에서 보간한 유는 영 점\n오입니다. 사분의 삼 지점에서는 일 점 오입니다.",
+      "scene": "11"
+    },
+    {
+      "start": 585.6465833333334,
+      "end": 590.5265833333334,
+      "text": "각 위치에서 조회할 때 반복을 적용하면 두 지점 모두 영\n점 오를 읽습니다.",
+      "scene": "11"
+    },
+    {
+      "start": 590.8665833333334,
+      "end": 593.5865833333335,
+      "text": "다른 타일의 같은 상대 위치에 해당합니다.",
+      "scene": "11"
+    },
+    {
+      "start": 593.5865833333335,
+      "end": 599.0665833333335,
+      "text": "반대로 정점에서 영과 숫자 이에 반복을 먼저 적용하면 두\n좌표 모두 영이 됩니다.",
+      "scene": "11"
+    },
+    {
+      "start": 599.5865833333335,
+      "end": 602.8465833333335,
+      "text": "그 영을 보간하면 면 안의 모든 유도 영이 됩니다.",
+      "scene": "11"
+    },
+    {
+      "start": 603.3465833333335,
+      "end": 608.1065833333334,
+      "text": "영부터 숫자 이까지의 범위가 사라져 두 번 반복할 정보도\n사라졌습니다.",
+      "scene": "11"
+    },
+    {
+      "start": 608.4865833333334,
+      "end": 612.3265833333335,
+      "text": "먼저 보간하고 마지막 텍스처 조회에서 주소 모드를 적용해야\n합니다.",
+      "scene": "11"
+    },
+    {
+      "start": 612.7265833333335,
+      "end": 618.3065833333335,
+      "text": "원근 장면에서는 앞에서 배운 원근 보정 유브이 보간을 이\n앞단에 사용합니다.",
+      "scene": "11"
+    },
+    {
+      "start": 618.6465833333334,
+      "end": 622.5265833333334,
+      "text": "원근 보정과 반복 순서는 서로 다른 문제이므로 둘 다\n지킵니다.",
+      "scene": "11"
+    },
+    {
+      "start": 623.2332083333334,
+      "end": 627.1732083333334,
+      "text": "마지막으로 선셋 오버드라이브의 계단과 건물 사이를\n이동합니다.",
+      "scene": "12"
+    },
+    {
+      "start": 627.4532083333335,
+      "end": 630.5732083333335,
+      "text": "가까운 면과 멀리 보이는 면의 경계부터 찾아보세요.",
+      "scene": "12"
+    },
+    {
+      "start": 630.9732083333334,
+      "end": 633.8532083333334,
+      "text": "옥상과 건물 옆면이 나타나면 형태를 이루는 면,",
+      "scene": "12"
+    },
+    {
+      "start": 634.1932083333334,
+      "end": 637.4932083333334,
+      "text": "그 면의 빛과 표면 무늬를 세 질문으로 나누어 봅니다.",
+      "scene": "12"
+    },
+    {
+      "start": 638.1132083333334,
+      "end": 643.5732083333335,
+      "text": "다음 짧은 벽 장면에서는 창문이 반복되고, 뒤의 지붕에서는\n사각 패널이 이어집니다.",
+      "scene": "12"
+    },
+    {
+      "start": 643.8532083333334,
+      "end": 647.1532083333335,
+      "text": "반복 개수만으로 정점 개수나 주소 모드를 알 수는\n없습니다.",
+      "scene": "12"
+    },
+    {
+      "start": 647.2732083333335,
+      "end": 651.8732083333334,
+      "text": "우리 계산에서는 인덱스로 정점 레코드를 연결했고 법선으로\n수직 방향을,",
+      "scene": "12"
+    },
+    {
+      "start": 651.8732083333334,
+      "end": 656.5532083333335,
+      "text": "유브이로 이미지 대응을 저장했습니다. 이 역할은 서로 바꿔\n쓸 수 없습니다.",
+      "scene": "12"
+    },
+    {
+      "start": 656.7932083333335,
+      "end": 660.4132083333334,
+      "text": "여러분이 모델을 확인할 때도 먼저 실루엣, 다음 법선\n경계,",
+      "scene": "12"
+    },
+    {
+      "start": 660.5332083333334,
+      "end": 665.3132083333334,
+      "text": "마지막 무늬의 배치를 따로 검사해 보세요. 이상한 결과의\n원인을 좁히기 쉬워집니다.",
+      "scene": "12"
+    },
+    {
+      "start": 665.6931666666667,
+      "end": 668.6731666666667,
+      "text": "이제 직접 정한 작은 메시 문제로 답을 확인하겠습니다.",
+      "scene": "12"
+    },
+    {
+      "start": 668.9531666666667,
+      "end": 673.6131666666668,
+      "text": "게임의 내부 수치를 맞히는 문제가 아니라 저장과 계산의\n순서를 검산하는 연습입니다.",
+      "scene": "12"
+    },
+    {
+      "start": 674.2331666666666,
+      "end": 681.7331666666666,
+      "text": "첫 문제입니다. 삼십이 바이트 정점 네 개와 이 바이트\n인덱스 여섯 개라면 모두 백사십 바이트입니다.",
+      "scene": "13"
+    },
+    {
+      "start": 681.9131666666667,
+      "end": 684.9931666666666,
+      "text": "정점 개수와 인덱스 개수를 섞지 않았는지 확인하세요.",
+      "scene": "13"
+    },
+    {
+      "start": 685.4531666666667,
+      "end": 689.8731666666666,
+      "text": "두 번째는 상자 모서리입니다. 같은 위치의 위쪽과 옆쪽\n법선을",
+      "scene": "13"
+    },
+    {
+      "start": 689.8731666666666,
+      "end": 693.9131666666667,
+      "text": "분리하려면 정점 레코드를 복제하고 해당 면의 인덱스를\n바꿉니다.",
+      "scene": "13"
+    },
+    {
+      "start": 694.3531666666667,
+      "end": 699.5931666666667,
+      "text": "접선의 두 성분은 이와 마이너스 일입니다. 법선의 두\n성분은 영 점 오와 일입니다.",
+      "scene": "13"
+    },
+    {
+      "start": 699.6931666666667,
+      "end": 705.4931666666666,
+      "text": "둘을 내적하면 영입니다. 비균일 확대 뒤에는 이 수직\n조건과 단위 길이를 모두 검사합니다.",
+      "scene": "13"
+    },
+    {
+      "start": 705.8131666666667,
+      "end": 708.4531666666667,
+      "text": "세 번째는 영에서 이까지의 유브이입니다.",
+      "scene": "13"
+    },
+    {
+      "start": 708.7731666666667,
+      "end": 713.9731666666667,
+      "text": "먼저 보간하고 조회할 때 반복하며, 음수 좌표에서는\n바닥값을 사용합니다.",
+      "scene": "13"
+    },
+    {
+      "start": 714.2531666666666,
+      "end": 720.3931666666667,
+      "text": "형태를 연결하는 인덱스, 빛 방향을 근사하는 법선, 무늬를\n연결하는 유브이를 구분했습니다.",
+      "scene": "13"
+    },
+    {
+      "start": 720.5931666666667,
+      "end": 723.7331666666666,
+      "text": "위치가 같아도 모든 속성을 공유해야 하는 것은 아닙니다.",
+      "scene": "13"
+    },
+    {
+      "start": 724.1731666666667,
+      "end": 731.0331666666667,
+      "text": "다음 강의에서는 이 법선을 실제 조명 식에 넣고 광원과\n재질의 영향을 계산하겠습니다.",
+      "scene": "13"
+    },
+    {
+      "start": 731.0731666666667,
+      "end": 735.3731666666666,
+      "text": "오늘 만든 방향과 표면 정보가 그 계산의 입력이 됩니다.",
+      "scene": "13"
+    }
+  ],
+  "enCaptions": [
+    {
+      "start": 2.0,
+      "end": 4.74,
+      "text": "What should you check when lighting directions",
+      "scene": "01"
+    },
+    {
+      "start": 4.74,
+      "end": 6.9,
+      "text": "or patterns look wrong after stretching a\nshape?",
+      "scene": "01"
+    },
+    {
+      "start": 7.08,
+      "end": 9.8,
+      "text": "First verify normal-tangent perpendicularity\nand",
+      "scene": "01"
+    },
+    {
+      "start": 9.8,
+      "end": 13.14,
+      "text": "the inverse-transpose rule in a numerical\nexample.",
+      "scene": "01"
+    },
+    {
+      "start": 13.48,
+      "end": 17.54,
+      "text": "Then inspect game wall and roof patterns and\nexplain UV correspondence,",
+      "scene": "01"
+    },
+    {
+      "start": 17.54,
+      "end": 19.26,
+      "text": "crop, rotation and flipping.",
+      "scene": "01"
+    },
+    {
+      "start": 19.64,
+      "end": 21.52,
+      "text": "Finally compare repeat and clamp and\ndemonstrate",
+      "scene": "01"
+    },
+    {
+      "start": 21.52,
+      "end": 25.34,
+      "text": "why wrapping vertices before interpolation\nfails.",
+      "scene": "01"
+    },
+    {
+      "start": 25.983333333333334,
+      "end": 30.303333333333335,
+      "text": "Normals must remain perpendicular to tangents.",
+      "scene": "02"
+    },
+    {
+      "start": 30.443333333333335,
+      "end": 34.72333333333333,
+      "text": "Use column vectors t and n with n transpose t\nequal zero.",
+      "scene": "02"
+    },
+    {
+      "start": 35.00333333333333,
+      "end": 38.86333333333333,
+      "text": "Let M be the invertible linear transform of\npositions and tangents;",
+      "scene": "02"
+    },
+    {
+      "start": 39.16333333333334,
+      "end": 42.52333333333334,
+      "text": "do not add translation to directions.",
+      "scene": "02"
+    },
+    {
+      "start": 42.80333333333334,
+      "end": 45.50333333333333,
+      "text": "Transform normals with the inverse transpose M\ninverse transpose;",
+      "scene": "02"
+    },
+    {
+      "start": 45.66333333333334,
+      "end": 49.763333333333335,
+      "text": "inverse and transpose commute in this\nexpression.",
+      "scene": "02"
+    },
+    {
+      "start": 50.16333333333334,
+      "end": 55.86333333333333,
+      "text": "The transformed dot product cancels M inverse\nM and equals the",
+      "scene": "02"
+    },
+    {
+      "start": 55.983333333333334,
+      "end": 59.30333333333334,
+      "text": "original zero dot product, preserving\nperpendicularity.",
+      "scene": "02"
+    },
+    {
+      "start": 59.66333333333334,
+      "end": 63.70333333333333,
+      "text": "For orthogonal rotations the inverse transpose\nequals M;",
+      "scene": "02"
+    },
+    {
+      "start": 63.903333333333336,
+      "end": 68.32333333333334,
+      "text": "positive uniform scale preserves the\nnormalized direction.",
+      "scene": "02"
+    },
+    {
+      "start": 68.64333333333333,
+      "end": 73.02333333333333,
+      "text": "Nonuniform scale and shear require inverse\ntranspose then normalization;",
+      "scene": "02"
+    },
+    {
+      "start": 73.32333333333334,
+      "end": 78.50333333333333,
+      "text": "singular zero-axis transforms have no inverse.",
+      "scene": "02"
+    },
+    {
+      "start": 78.66333333333333,
+      "end": 82.92333333333333,
+      "text": "Orientation-reversing transforms also require\nconsistent front-face handling;",
+      "scene": "02"
+    },
+    {
+      "start": 82.92333333333333,
+      "end": 87.32333333333334,
+      "text": "our worked example uses positive scales.",
+      "scene": "02"
+    },
+    {
+      "start": 87.96662500000001,
+      "end": 92.10662500000001,
+      "text": "Choose tangent(1,−1) and normal(1,1):",
+      "scene": "03"
+    },
+    {
+      "start": 92.366625,
+      "end": 97.226625,
+      "text": "their dot product1−1 is zero.",
+      "scene": "03"
+    },
+    {
+      "start": 97.626625,
+      "end": 105.46662500000001,
+      "text": "Scaling x by two produces tangent(2,−1),\nchanging the surface slope.",
+      "scene": "03"
+    },
+    {
+      "start": 105.726625,
+      "end": 112.946625,
+      "text": "Applying M to the normal gives(2,1), whose dot\nwith the new tangent is4−1=3 rather than zero.",
+      "scene": "03"
+    },
+    {
+      "start": 113.24662500000001,
+      "end": 118.486625,
+      "text": "Normalizing the wrong vector by square root\nfive leaves dot3",
+      "scene": "03"
+    },
+    {
+      "start": 118.726625,
+      "end": 121.666625,
+      "text": "divided by square root five, so its direction\nremains wrong.",
+      "scene": "03"
+    },
+    {
+      "start": 122.086625,
+      "end": 126.38662500000001,
+      "text": "The inverse transpose scales x by one half,",
+      "scene": "03"
+    },
+    {
+      "start": 126.626625,
+      "end": 133.14662500000003,
+      "text": "giving(.5,1) with transformed dot1−1=0.",
+      "scene": "03"
+    },
+    {
+      "start": 133.50662499999999,
+      "end": 138.58662500000003,
+      "text": "Final normalization gives\napproximately(.447,.894):",
+      "scene": "03"
+    },
+    {
+      "start": 138.82662499999998,
+      "end": 142.366625,
+      "text": "first correct the perpendicular direction,\nthen normalize.",
+      "scene": "03"
+    },
+    {
+      "start": 142.44962500000003,
+      "end": 146.866625,
+      "text": "The same perpendicularity condition extends\nto3D;",
+      "scene": "03"
+    },
+    {
+      "start": 147.20662500000003,
+      "end": 151.546625,
+      "text": "distinguish the linear position transform from\nthe normal matrix in lighting code.",
+      "scene": "03"
+    },
+    {
+      "start": 152.33325,
+      "end": 155.57324999999997,
+      "text": "Move among Megabonk rocks and buildings,",
+      "scene": "04"
+    },
+    {
+      "start": 155.93325,
+      "end": 159.73324999999997,
+      "text": "separating faceted rock surfaces from wall\nmarkings.",
+      "scene": "04"
+    },
+    {
+      "start": 163.2325833333333,
+      "end": 166.5525833333333,
+      "text": "View changes preserve angular outlines, while\nface brightness and",
+      "scene": "04"
+    },
+    {
+      "start": 166.8725833333333,
+      "end": 172.4525833333333,
+      "text": "wall markings motivate lighting and\nsurface-property questions.",
+      "scene": "04"
+    },
+    {
+      "start": 175.93191666666667,
+      "end": 178.97191666666663,
+      "text": "The next passage crosses low rocks and sand;",
+      "scene": "04"
+    },
+    {
+      "start": 179.31191666666666,
+      "end": 183.03191666666663,
+      "text": "the final section alternately reveals building\nfront and side faces.",
+      "scene": "04"
+    },
+    {
+      "start": 186.53125,
+      "end": 189.23125,
+      "text": "Windows and strip-like marks appear on faces;",
+      "scene": "04"
+    },
+    {
+      "start": 189.29125,
+      "end": 195.51125,
+      "text": "we observe their relationship without reading\ngame UVs or texture files.",
+      "scene": "04"
+    },
+    {
+      "start": 199.2305833333333,
+      "end": 202.5705833333333,
+      "text": "Our numerical example preserved normal-tangent\nperpendicularity;",
+      "scene": "04"
+    },
+    {
+      "start": 203.17058333333333,
+      "end": 206.43058333333332,
+      "text": "next connect separate image coordinates for\npatterns.",
+      "scene": "04"
+    },
+    {
+      "start": 210.46991666666665,
+      "end": 215.94991666666664,
+      "text": "Correct geometry and normals cannot fix lookup\nof the wrong image region;",
+      "scene": "04"
+    },
+    {
+      "start": 216.78991666666667,
+      "end": 218.94991666666664,
+      "text": "verify these data roles separately.",
+      "scene": "04"
+    },
+    {
+      "start": 219.74991666666668,
+      "end": 223.10991666666666,
+      "text": "Inspect another Sunset Overdrive roof and\nwall,",
+      "scene": "05"
+    },
+    {
+      "start": 223.38991666666666,
+      "end": 227.60991666666666,
+      "text": "where repeated rectangular windows meet a\nsloped roof.",
+      "scene": "05"
+    },
+    {
+      "start": 228.21991666666668,
+      "end": 232.09991666666667,
+      "text": "Observe the large outline first, then internal\npatterns;",
+      "scene": "05"
+    },
+    {
+      "start": 232.35991666666666,
+      "end": 236.71991666666668,
+      "text": "abundant detail does not imply one vertex per\ndetail.",
+      "scene": "05"
+    },
+    {
+      "start": 237.42991666666666,
+      "end": 241.26991666666666,
+      "text": "The closer wall shows brick-like patterns and\ngrids,",
+      "scene": "05"
+    },
+    {
+      "start": 241.48991666666666,
+      "end": 245.98991666666666,
+      "text": "motivating correspondence between image\nlocations and surface locations.",
+      "scene": "05"
+    },
+    {
+      "start": 246.53991666666667,
+      "end": 250.59991666666667,
+      "text": "We have not inspected game texture files or\naddress modes;",
+      "scene": "05"
+    },
+    {
+      "start": 250.7999166666667,
+      "end": 255.49991666666665,
+      "text": "the visible patterns motivate separate pattern\ncoordinates.",
+      "scene": "05"
+    },
+    {
+      "start": 256.0899166666667,
+      "end": 261.00991666666664,
+      "text": "Our diagram applies an original labeled\ntexture to a four-vertex",
+      "scene": "05"
+    },
+    {
+      "start": 261.2099166666667,
+      "end": 265.12991666666665,
+      "text": "plate and changes its image mapping while\nkeeping the plate fixed.",
+      "scene": "05"
+    },
+    {
+      "start": 265.74991666666665,
+      "end": 269.24991666666665,
+      "text": "A texture stores surface color or other\nattributes;",
+      "scene": "06"
+    },
+    {
+      "start": 269.60991666666666,
+      "end": 274.4499166666667,
+      "text": "its texels differ from pixels in the final\nimage.",
+      "scene": "06"
+    },
+    {
+      "start": 274.74991666666665,
+      "end": 278.5299166666667,
+      "text": "One texel may affect multiple screen pixels\nwhen magnified,",
+      "scene": "06"
+    },
+    {
+      "start": 278.9099166666667,
+      "end": 282.3499166666667,
+      "text": "while multiple texels may contribute to a\nsmaller screen footprint.",
+      "scene": "06"
+    },
+    {
+      "start": 282.41991666666667,
+      "end": 287.9499166666667,
+      "text": "Here u runs right and v down,",
+      "scene": "06"
+    },
+    {
+      "start": 287.9499166666667,
+      "end": 291.6899166666667,
+      "text": "with top-left(0,0) and bottom-right(1,1).",
+      "scene": "06"
+    },
+    {
+      "start": 291.92991666666666,
+      "end": 296.3099166666667,
+      "text": "This is an explicit example convention; file\nrow order,",
+      "scene": "06"
+    },
+    {
+      "start": 296.3099166666667,
+      "end": 300.8299166666667,
+      "text": "tools and transforms matter, so API names\nalone do not decide orientation.",
+      "scene": "06"
+    },
+    {
+      "start": 301.3699166666667,
+      "end": 305.98991666666666,
+      "text": "Normalized0-to1 coordinates cover an image\nregardless of",
+      "scene": "06"
+    },
+    {
+      "start": 306.42991666666666,
+      "end": 309.6499166666667,
+      "text": "whether it is8 by8 or larger, independently\nof3D positions.",
+      "scene": "06"
+    },
+    {
+      "start": 309.92991666666666,
+      "end": 313.8899166666667,
+      "text": "Planar, cylindrical and spherical mapping\nconstruct the correspondence,",
+      "scene": "06"
+    },
+    {
+      "start": 314.4499166666667,
+      "end": 319.0099166666667,
+      "text": "authored in tools or computed procedurally at\nvertices.",
+      "scene": "06"
+    },
+    {
+      "start": 319.3899166666667,
+      "end": 322.54991666666666,
+      "text": "Interpolate vertex UVs inside faces, retaining\nthe earlier",
+      "scene": "06"
+    },
+    {
+      "start": 322.60991666666666,
+      "end": 328.0299166666667,
+      "text": "perspective-correct treatment while focusing\non the data being interpolated.",
+      "scene": "06"
+    },
+    {
+      "start": 328.68325000000004,
+      "end": 332.62325000000004,
+      "text": "Imagine pinning cloth to four plate vertices;",
+      "scene": "07"
+    },
+    {
+      "start": 332.62325000000004,
+      "end": 336.18325000000004,
+      "text": "their selected image locations define the\ninterior correspondence.",
+      "scene": "07"
+    },
+    {
+      "start": 336.27525,
+      "end": 342.10325000000006,
+      "text": "Assign(0,0),(1,0),(1,1),(0,1) in order to\ncover the",
+      "scene": "07"
+    },
+    {
+      "start": 342.28325000000007,
+      "end": 344.30325000000005,
+      "text": "plate with the entire image without moving\nvertices.",
+      "scene": "07"
+    },
+    {
+      "start": 344.42625000000004,
+      "end": 347.28325000000007,
+      "text": "Restrict both coordinates to.25 through.75,",
+      "scene": "07"
+    },
+    {
+      "start": 347.28325000000007,
+      "end": 350.08325,
+      "text": "stretching the central half-width and\nhalf-height over the plate.",
+      "scene": "07"
+    },
+    {
+      "start": 350.09125000000006,
+      "end": 353.42325000000005,
+      "text": "Cycling the UV corners rotates the pattern",
+      "scene": "07"
+    },
+    {
+      "start": 353.45625,
+      "end": 357.60325000000006,
+      "text": "correspondence rather than rotating the3D\nplate.",
+      "scene": "07"
+    },
+    {
+      "start": 357.63625,
+      "end": 360.42325000000005,
+      "text": "Using1−u flips the image horizontally while",
+      "scene": "07"
+    },
+    {
+      "start": 360.66325000000006,
+      "end": 365.18325000000004,
+      "text": "preserving geometry positions and face\nwinding.",
+      "scene": "07"
+    },
+    {
+      "start": 365.44325000000003,
+      "end": 369.64325,
+      "text": "UVs also apply to multi-triangle meshes,",
+      "scene": "07"
+    },
+    {
+      "start": 369.64325,
+      "end": 373.08325,
+      "text": "changing placement and stretching without\nchanging their geometry.",
+      "scene": "07"
+    },
+    {
+      "start": 373.24325000000005,
+      "end": 375.70325,
+      "text": "The cloth analogy explains correspondence,",
+      "scene": "07"
+    },
+    {
+      "start": 375.84325,
+      "end": 381.06325000000004,
+      "text": "not physical cloth simulation or guaranteed\narea preservation.",
+      "scene": "07"
+    },
+    {
+      "start": 381.6832500000001,
+      "end": 389.24325000000005,
+      "text": "Move near a red facade where markings sit\nwithin a larger curved form.",
+      "scene": "08"
+    },
+    {
+      "start": 389.6952500000001,
+      "end": 393.6952500000001,
+      "text": "View changes alter the apparent pattern\norientation and size,",
+      "scene": "08"
+    },
+    {
+      "start": 393.9552500000001,
+      "end": 397.8952500000001,
+      "text": "reminding us that texture and screen\ncoordinates differ.",
+      "scene": "08"
+    },
+    {
+      "start": 398.36725000000007,
+      "end": 402.00725000000006,
+      "text": "The next roof shows repeated strips and glass\npanes;",
+      "scene": "08"
+    },
+    {
+      "start": 402.44725000000005,
+      "end": 406.82725000000005,
+      "text": "the container then reveals differently\noriented top and side panels.",
+      "scene": "08"
+    },
+    {
+      "start": 407.2992500000001,
+      "end": 410.5592500000001,
+      "text": "We do not read these game UVs; the observed\npattern-surface",
+      "scene": "08"
+    },
+    {
+      "start": 410.5592500000001,
+      "end": 416.21125000000006,
+      "text": "relationships motivate our explicitly authored\nexamples.",
+      "scene": "08"
+    },
+    {
+      "start": 416.49125000000004,
+      "end": 420.69125,
+      "text": "As with our plate, a surface can map a whole\nimage or a portion;",
+      "scene": "08"
+    },
+    {
+      "start": 421.05125000000004,
+      "end": 425.0112500000001,
+      "text": "next consider coordinates outside0 through1.",
+      "scene": "08"
+    },
+    {
+      "start": 425.33125000000007,
+      "end": 429.86325000000005,
+      "text": "Repeated appearance alone does not prove\nrepeat addressing:",
+      "scene": "08"
+    },
+    {
+      "start": 430.0632500000001,
+      "end": 433.98325000000006,
+      "text": "separate geometry or repeated content in an\nimage can look similar.",
+      "scene": "08"
+    },
+    {
+      "start": 435.03325000000007,
+      "end": 437.66325000000006,
+      "text": "Characters move in Big Walk green room;",
+      "scene": "09"
+    },
+    {
+      "start": 437.88325000000003,
+      "end": 441.60325000000006,
+      "text": "locate the black grid panel and circular wall\nmarkings.",
+      "scene": "09"
+    },
+    {
+      "start": 444.76045833333336,
+      "end": 447.70045833333336,
+      "text": "Turning views changes the grid apparent angle;",
+      "scene": "09"
+    },
+    {
+      "start": 447.9204583333334,
+      "end": 452.46045833333335,
+      "text": "screen locations differ from pattern locations\non a surface.",
+      "scene": "09"
+    },
+    {
+      "start": 455.7376666666667,
+      "end": 460.8576666666667,
+      "text": "As characters approach and move sideways,",
+      "scene": "09"
+    },
+    {
+      "start": 461.1176666666667,
+      "end": 463.7976666666667,
+      "text": "markings remain associated with their surface\nregions, motivating texture correspondence.",
+      "scene": "09"
+    },
+    {
+      "start": 466.95491666666675,
+      "end": 472.4149166666667,
+      "text": "Repeated shapes do not prove repeat\naddressing;",
+      "scene": "09"
+    },
+    {
+      "start": 472.4149166666667,
+      "end": 475.15491666666674,
+      "text": "the repetitions could be contained within the\nimage itself.",
+      "scene": "09"
+    },
+    {
+      "start": 478.392125,
+      "end": 483.012125,
+      "text": "The black grid has not been verified as\ntriangle topology;",
+      "scene": "09"
+    },
+    {
+      "start": 483.31212500000004,
+      "end": 487.152125,
+      "text": "distinguish repeated markings from geometric\nconnections.",
+      "scene": "09"
+    },
+    {
+      "start": 490.40937500000007,
+      "end": 495.729375,
+      "text": "Our next diagram uses one original image with\nexplicitly chosen UV spans and addressing,",
+      "scene": "09"
+    },
+    {
+      "start": 496.109375,
+      "end": 499.229375,
+      "text": "letting us verify the resulting patterns.",
+      "scene": "09"
+    },
+    {
+      "start": 502.4865833333334,
+      "end": 506.7265833333334,
+      "text": "Remember to interpolate within the face before\ntexture lookup;",
+      "scene": "09"
+    },
+    {
+      "start": 506.9865833333334,
+      "end": 510.2465833333334,
+      "text": "we also compare the failure of folding vertex\ncoordinates too early.",
+      "scene": "09"
+    },
+    {
+      "start": 511.27958333333345,
+      "end": 513.8865833333334,
+      "text": "UVs can exceed0 through1. Keep vertices and\nUVs",
+      "scene": "10"
+    },
+    {
+      "start": 514.1065833333334,
+      "end": 518.8465833333335,
+      "text": "identical while comparing repeat and clamp\naddressing.",
+      "scene": "10"
+    },
+    {
+      "start": 519.2065833333334,
+      "end": 522.7865833333335,
+      "text": "Repeat reuses the image across integer tiles;",
+      "scene": "10"
+    },
+    {
+      "start": 522.8665833333334,
+      "end": 526.6065833333334,
+      "text": "use u minus floor u consistently for negative\ncoordinates.",
+      "scene": "10"
+    },
+    {
+      "start": 526.9665833333333,
+      "end": 530.0265833333334,
+      "text": "For1.25 floor is1, giving.25;",
+      "scene": "10"
+    },
+    {
+      "start": 530.9465833333334,
+      "end": 535.3265833333335,
+      "text": "for−.75 floor is−1, also giving.25.",
+      "scene": "10"
+    },
+    {
+      "start": 535.5865833333335,
+      "end": 538.6065833333334,
+      "text": "Truncating toward zero differs for negative\ninputs;",
+      "scene": "10"
+    },
+    {
+      "start": 538.6065833333334,
+      "end": 543.1065833333334,
+      "text": "distinguish floor from truncation when\nimplementing repeat.",
+      "scene": "10"
+    },
+    {
+      "start": 543.5265833333334,
+      "end": 550.4665833333333,
+      "text": "Clamp limits below-zero to0 and above-one to1,\nextending edge values outward.",
+      "scene": "10"
+    },
+    {
+      "start": 550.7665833333334,
+      "end": 557.1065833333334,
+      "text": "Mirrored repeat alternates tile orientation,\nand u and v may use separate address modes.",
+      "scene": "10"
+    },
+    {
+      "start": 557.4865833333333,
+      "end": 562.7865833333335,
+      "text": "Addressing selects coordinates independently\nof filtering, which combines texels;",
+      "scene": "10"
+    },
+    {
+      "start": 562.9865833333333,
+      "end": 566.4465833333334,
+      "text": "exact edge behavior also depends on those\nsampling conventions.",
+      "scene": "10"
+    },
+    {
+      "start": 567.0665833333335,
+      "end": 572.5065833333334,
+      "text": "A0-to2 u edge should display two repeats;",
+      "scene": "11"
+    },
+    {
+      "start": 572.7865833333335,
+      "end": 578.1865833333335,
+      "text": "store the unmodified endpoint coordinates0\nand2.",
+      "scene": "11"
+    },
+    {
+      "start": 578.5465833333335,
+      "end": 585.1665833333335,
+      "text": "Interpolation gives.5 at one quarter and1.5 at\nthree quarters along the edge.",
+      "scene": "11"
+    },
+    {
+      "start": 585.6465833333334,
+      "end": 590.5265833333334,
+      "text": "Applying repeat at lookup maps both positions\nto.5,",
+      "scene": "11"
+    },
+    {
+      "start": 590.8665833333334,
+      "end": 593.5865833333335,
+      "text": "the same relative location in different tiles.",
+      "scene": "11"
+    },
+    {
+      "start": 593.5865833333335,
+      "end": 599.0665833333335,
+      "text": "Wrapping endpoints0 and2 first turns both into\nzero,",
+      "scene": "11"
+    },
+    {
+      "start": 599.5865833333335,
+      "end": 602.8465833333335,
+      "text": "so interpolation loses the entire0-to2\nvariation.",
+      "scene": "11"
+    },
+    {
+      "start": 603.3465833333335,
+      "end": 608.1065833333334,
+      "text": "The two-repeat span is lost;",
+      "scene": "11"
+    },
+    {
+      "start": 608.4865833333334,
+      "end": 612.3265833333335,
+      "text": "interpolate first and apply addressing only at\ntexture lookup.",
+      "scene": "11"
+    },
+    {
+      "start": 612.7265833333335,
+      "end": 618.3065833333335,
+      "text": "Use the preceding perspective-correct UV\ninterpolation before this step;",
+      "scene": "11"
+    },
+    {
+      "start": 618.6465833333334,
+      "end": 622.5265833333334,
+      "text": "perspective correction and repeat order are\nseparate requirements.",
+      "scene": "11"
+    },
+    {
+      "start": 623.2332083333334,
+      "end": 627.1732083333334,
+      "text": "Move among stairs and buildings in Sunset\nOverdrive,",
+      "scene": "12"
+    },
+    {
+      "start": 627.4532083333335,
+      "end": 630.5732083333335,
+      "text": "first identifying near and distant surface\nboundaries.",
+      "scene": "12"
+    },
+    {
+      "start": 630.9732083333334,
+      "end": 633.8532083333334,
+      "text": "As roofs and building sides appear, separate\nthree questions: geometry,",
+      "scene": "12"
+    },
+    {
+      "start": 634.1932083333334,
+      "end": 637.4932083333334,
+      "text": "lighting direction and surface pattern.",
+      "scene": "12"
+    },
+    {
+      "start": 638.1132083333334,
+      "end": 643.5732083333335,
+      "text": "The following wall has repeated windows and\nthe roof repeated panels,",
+      "scene": "12"
+    },
+    {
+      "start": 643.8532083333334,
+      "end": 647.1532083333335,
+      "text": "which do not reveal vertex counts or address\nmodes.",
+      "scene": "12"
+    },
+    {
+      "start": 647.2732083333335,
+      "end": 651.8732083333334,
+      "text": "Our calculations used indices for vertex\nrecords,",
+      "scene": "12"
+    },
+    {
+      "start": 651.8732083333334,
+      "end": 656.5532083333335,
+      "text": "normals for perpendicular directions and UVs\nfor image correspondence; their roles differ.",
+      "scene": "12"
+    },
+    {
+      "start": 656.7932083333335,
+      "end": 660.4132083333334,
+      "text": "When checking a model, inspect silhouettes,",
+      "scene": "12"
+    },
+    {
+      "start": 660.5332083333334,
+      "end": 665.3132083333334,
+      "text": "normal boundaries and pattern placement\nseparately to narrow the source of an error.",
+      "scene": "12"
+    },
+    {
+      "start": 665.6931666666667,
+      "end": 668.6731666666667,
+      "text": "Finish with explicitly defined mesh exercises\nthat verify storage",
+      "scene": "12"
+    },
+    {
+      "start": 668.9531666666667,
+      "end": 673.6131666666668,
+      "text": "and calculation order rather than guessing\ngame internals.",
+      "scene": "12"
+    },
+    {
+      "start": 674.2331666666666,
+      "end": 681.7331666666666,
+      "text": "First exercise: four32-byte vertices and\nsix2-byte indices total140 bytes;",
+      "scene": "13"
+    },
+    {
+      "start": 681.9131666666667,
+      "end": 684.9931666666666,
+      "text": "distinguish record count from index count.",
+      "scene": "13"
+    },
+    {
+      "start": 685.4531666666667,
+      "end": 689.8731666666666,
+      "text": "Second, split a cube corner shading direction\nby duplicating",
+      "scene": "13"
+    },
+    {
+      "start": 689.8731666666666,
+      "end": 693.9131666666667,
+      "text": "records and updating the corresponding face\nindices.",
+      "scene": "13"
+    },
+    {
+      "start": 694.3531666666667,
+      "end": 699.5931666666667,
+      "text": "The transformed tangent(2,−1) and normal(.5,1)\nhave zero dot product;",
+      "scene": "13"
+    },
+    {
+      "start": 699.6931666666667,
+      "end": 705.4931666666666,
+      "text": "verify perpendicularity and unit length after\nnonuniform scale.",
+      "scene": "13"
+    },
+    {
+      "start": 705.8131666666667,
+      "end": 708.4531666666667,
+      "text": "Third, preserve0-to2 UVs for interpolation,",
+      "scene": "13"
+    },
+    {
+      "start": 708.7731666666667,
+      "end": 713.9731666666667,
+      "text": "repeat at lookup and use floor for negative\ncoordinates.",
+      "scene": "13"
+    },
+    {
+      "start": 714.2531666666666,
+      "end": 720.3931666666667,
+      "text": "We separated topology indices, shading normals\nand UV correspondence;",
+      "scene": "13"
+    },
+    {
+      "start": 720.5931666666667,
+      "end": 723.7331666666666,
+      "text": "equal positions need not share all attributes.",
+      "scene": "13"
+    },
+    {
+      "start": 724.1731666666667,
+      "end": 731.0331666666667,
+      "text": "Next we evaluate lighting with these normals\nand examine lights and materials;",
+      "scene": "13"
+    },
+    {
+      "start": 731.0731666666667,
+      "end": 735.3731666666666,
+      "text": "today surface data supplies those inputs.",
+      "scene": "13"
+    }
+  ]
+}

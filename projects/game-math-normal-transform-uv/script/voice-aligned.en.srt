@@ -1,0 +1,740 @@
+1
+00:00:00,000 --> 00:00:02,740
+What should you check when lighting directions
+
+2
+00:00:02,740 --> 00:00:04,900
+or patterns look wrong after stretching a
+shape?
+
+3
+00:00:05,080 --> 00:00:07,800
+First verify normal-tangent perpendicularity
+and
+
+4
+00:00:07,800 --> 00:00:11,140
+the inverse-transpose rule in a numerical
+example.
+
+5
+00:00:11,480 --> 00:00:15,540
+Then inspect game wall and roof patterns and
+explain UV correspondence,
+
+6
+00:00:15,540 --> 00:00:17,260
+crop, rotation and flipping.
+
+7
+00:00:17,640 --> 00:00:19,520
+Finally compare repeat and clamp and
+demonstrate
+
+8
+00:00:19,520 --> 00:00:23,340
+why wrapping vertices before interpolation
+fails.
+
+9
+00:00:23,810 --> 00:00:28,130
+Normals must remain perpendicular to tangents.
+
+10
+00:00:28,270 --> 00:00:32,550
+Use column vectors t and n with n transpose t
+equal zero.
+
+11
+00:00:32,830 --> 00:00:36,690
+Let M be the invertible linear transform of
+positions and tangents;
+
+12
+00:00:36,990 --> 00:00:40,350
+do not add translation to directions.
+
+13
+00:00:40,630 --> 00:00:43,330
+Transform normals with the inverse transpose M
+inverse transpose;
+
+14
+00:00:43,490 --> 00:00:47,590
+inverse and transpose commute in this
+expression.
+
+15
+00:00:47,990 --> 00:00:53,690
+The transformed dot product cancels M inverse
+M and equals the
+
+16
+00:00:53,810 --> 00:00:57,130
+original zero dot product, preserving
+perpendicularity.
+
+17
+00:00:57,490 --> 00:01:01,530
+For orthogonal rotations the inverse transpose
+equals M;
+
+18
+00:01:01,730 --> 00:01:06,150
+positive uniform scale preserves the
+normalized direction.
+
+19
+00:01:06,470 --> 00:01:10,850
+Nonuniform scale and shear require inverse
+transpose then normalization;
+
+20
+00:01:11,150 --> 00:01:16,330
+singular zero-axis transforms have no inverse.
+
+21
+00:01:16,490 --> 00:01:20,750
+Orientation-reversing transforms also require
+consistent front-face handling;
+
+22
+00:01:20,750 --> 00:01:25,150
+our worked example uses positive scales.
+
+23
+00:01:25,620 --> 00:01:29,760
+Choose tangent(1,−1) and normal(1,1):
+
+24
+00:01:30,020 --> 00:01:34,880
+their dot product1−1 is zero.
+
+25
+00:01:35,280 --> 00:01:43,120
+Scaling x by two produces tangent(2,−1),
+changing the surface slope.
+
+26
+00:01:43,380 --> 00:01:50,600
+Applying M to the normal gives(2,1), whose dot
+with the new tangent is4−1=3 rather than zero.
+
+27
+00:01:50,900 --> 00:01:56,140
+Normalizing the wrong vector by square root
+five leaves dot3
+
+28
+00:01:56,380 --> 00:01:59,320
+divided by square root five, so its direction
+remains wrong.
+
+29
+00:01:59,740 --> 00:02:04,040
+The inverse transpose scales x by one half,
+
+30
+00:02:04,280 --> 00:02:10,800
+giving(.5,1) with transformed dot1−1=0.
+
+31
+00:02:11,160 --> 00:02:16,240
+Final normalization gives
+approximately(.447,.894):
+
+32
+00:02:16,480 --> 00:02:20,020
+first correct the perpendicular direction,
+then normalize.
+
+33
+00:02:20,103 --> 00:02:24,520
+The same perpendicularity condition extends
+to3D;
+
+34
+00:02:24,860 --> 00:02:29,200
+distinguish the linear position transform from
+the normal matrix in lighting code.
+
+35
+00:02:29,830 --> 00:02:33,070
+Move among Megabonk rocks and buildings,
+
+36
+00:02:33,430 --> 00:02:37,230
+separating faceted rock surfaces from wall
+markings.
+
+37
+00:02:37,590 --> 00:02:40,910
+View changes preserve angular outlines, while
+face brightness and
+
+38
+00:02:41,230 --> 00:02:46,810
+wall markings motivate lighting and
+surface-property questions.
+
+39
+00:02:47,150 --> 00:02:50,190
+The next passage crosses low rocks and sand;
+
+40
+00:02:50,530 --> 00:02:54,250
+the final section alternately reveals building
+front and side faces.
+
+41
+00:02:54,610 --> 00:02:57,310
+Windows and strip-like marks appear on faces;
+
+42
+00:02:57,370 --> 00:03:03,590
+we observe their relationship without reading
+game UVs or texture files.
+
+43
+00:03:04,170 --> 00:03:07,510
+Our numerical example preserved normal-tangent
+perpendicularity;
+
+44
+00:03:08,110 --> 00:03:11,370
+next connect separate image coordinates for
+patterns.
+
+45
+00:03:12,270 --> 00:03:17,750
+Correct geometry and normals cannot fix lookup
+of the wrong image region;
+
+46
+00:03:18,590 --> 00:03:20,750
+verify these data roles separately.
+
+47
+00:03:21,400 --> 00:03:24,760
+Inspect another Sunset Overdrive roof and
+wall,
+
+48
+00:03:25,040 --> 00:03:29,260
+where repeated rectangular windows meet a
+sloped roof.
+
+49
+00:03:29,520 --> 00:03:33,400
+Observe the large outline first, then internal
+patterns;
+
+50
+00:03:33,660 --> 00:03:38,020
+abundant detail does not imply one vertex per
+detail.
+
+51
+00:03:38,380 --> 00:03:42,220
+The closer wall shows brick-like patterns and
+grids,
+
+52
+00:03:42,440 --> 00:03:46,940
+motivating correspondence between image
+locations and surface locations.
+
+53
+00:03:47,140 --> 00:03:51,200
+We have not inspected game texture files or
+address modes;
+
+54
+00:03:51,400 --> 00:03:56,100
+the visible patterns motivate separate pattern
+coordinates.
+
+55
+00:03:56,340 --> 00:04:01,260
+Our diagram applies an original labeled
+texture to a four-vertex
+
+56
+00:04:01,460 --> 00:04:05,380
+plate and changes its image mapping while
+keeping the plate fixed.
+
+57
+00:04:05,850 --> 00:04:09,350
+A texture stores surface color or other
+attributes;
+
+58
+00:04:09,710 --> 00:04:14,550
+its texels differ from pixels in the final
+image.
+
+59
+00:04:14,850 --> 00:04:18,630
+One texel may affect multiple screen pixels
+when magnified,
+
+60
+00:04:19,010 --> 00:04:22,450
+while multiple texels may contribute to a
+smaller screen footprint.
+
+61
+00:04:22,520 --> 00:04:28,050
+Here u runs right and v down,
+
+62
+00:04:28,050 --> 00:04:31,790
+with top-left(0,0) and bottom-right(1,1).
+
+63
+00:04:32,030 --> 00:04:36,410
+This is an explicit example convention; file
+row order,
+
+64
+00:04:36,410 --> 00:04:40,930
+tools and transforms matter, so API names
+alone do not decide orientation.
+
+65
+00:04:41,470 --> 00:04:46,090
+Normalized0-to1 coordinates cover an image
+regardless of
+
+66
+00:04:46,530 --> 00:04:49,750
+whether it is8 by8 or larger, independently
+of3D positions.
+
+67
+00:04:50,030 --> 00:04:53,990
+Planar, cylindrical and spherical mapping
+construct the correspondence,
+
+68
+00:04:54,550 --> 00:04:59,110
+authored in tools or computed procedurally at
+vertices.
+
+69
+00:04:59,490 --> 00:05:02,650
+Interpolate vertex UVs inside faces, retaining
+the earlier
+
+70
+00:05:02,710 --> 00:05:08,130
+perspective-correct treatment while focusing
+on the data being interpolated.
+
+71
+00:05:08,620 --> 00:05:12,560
+Imagine pinning cloth to four plate vertices;
+
+72
+00:05:12,560 --> 00:05:16,120
+their selected image locations define the
+interior correspondence.
+
+73
+00:05:16,212 --> 00:05:22,040
+Assign(0,0),(1,0),(1,1),(0,1) in order to
+cover the
+
+74
+00:05:22,220 --> 00:05:24,240
+plate with the entire image without moving
+vertices.
+
+75
+00:05:24,363 --> 00:05:27,220
+Restrict both coordinates to.25 through.75,
+
+76
+00:05:27,220 --> 00:05:30,020
+stretching the central half-width and
+half-height over the plate.
+
+77
+00:05:30,028 --> 00:05:33,360
+Cycling the UV corners rotates the pattern
+
+78
+00:05:33,393 --> 00:05:37,540
+correspondence rather than rotating the3D
+plate.
+
+79
+00:05:37,573 --> 00:05:40,360
+Using1−u flips the image horizontally while
+
+80
+00:05:40,600 --> 00:05:45,120
+preserving geometry positions and face
+winding.
+
+81
+00:05:45,380 --> 00:05:49,580
+UVs also apply to multi-triangle meshes,
+
+82
+00:05:49,580 --> 00:05:53,020
+changing placement and stretching without
+changing their geometry.
+
+83
+00:05:53,180 --> 00:05:55,640
+The cloth analogy explains correspondence,
+
+84
+00:05:55,780 --> 00:06:01,000
+not physical cloth simulation or guaranteed
+area preservation.
+
+85
+00:06:01,470 --> 00:06:09,030
+Move near a red facade where markings sit
+within a larger curved form.
+
+86
+00:06:09,370 --> 00:06:13,370
+View changes alter the apparent pattern
+orientation and size,
+
+87
+00:06:13,630 --> 00:06:17,570
+reminding us that texture and screen
+coordinates differ.
+
+88
+00:06:17,930 --> 00:06:21,570
+The next roof shows repeated strips and glass
+panes;
+
+89
+00:06:22,010 --> 00:06:26,390
+the container then reveals differently
+oriented top and side panels.
+
+90
+00:06:26,750 --> 00:06:30,010
+We do not read these game UVs; the observed
+pattern-surface
+
+91
+00:06:30,010 --> 00:06:35,550
+relationships motivate our explicitly authored
+examples.
+
+92
+00:06:35,830 --> 00:06:40,030
+As with our plate, a surface can map a whole
+image or a portion;
+
+93
+00:06:40,390 --> 00:06:44,350
+next consider coordinates outside0 through1.
+
+94
+00:06:44,670 --> 00:06:49,090
+Repeated appearance alone does not prove
+repeat addressing:
+
+95
+00:06:49,290 --> 00:06:53,210
+separate geometry or repeated content in an
+image can look similar.
+
+96
+00:06:54,110 --> 00:06:56,740
+Characters move in Big Walk green room;
+
+97
+00:06:56,960 --> 00:07:00,680
+locate the black grid panel and circular wall
+markings.
+
+98
+00:07:00,880 --> 00:07:03,820
+Turning views changes the grid apparent angle;
+
+99
+00:07:04,040 --> 00:07:08,580
+screen locations differ from pattern locations
+on a surface.
+
+100
+00:07:08,900 --> 00:07:14,020
+As characters approach and move sideways,
+
+101
+00:07:14,280 --> 00:07:16,960
+markings remain associated with their surface
+regions, motivating texture correspondence.
+
+102
+00:07:17,160 --> 00:07:22,620
+Repeated shapes do not prove repeat
+addressing;
+
+103
+00:07:22,620 --> 00:07:25,360
+the repetitions could be contained within the
+image itself.
+
+104
+00:07:25,640 --> 00:07:30,260
+The black grid has not been verified as
+triangle topology;
+
+105
+00:07:30,560 --> 00:07:34,400
+distinguish repeated markings from geometric
+connections.
+
+106
+00:07:34,700 --> 00:07:40,020
+Our next diagram uses one original image with
+explicitly chosen UV spans and addressing,
+
+107
+00:07:40,400 --> 00:07:43,520
+letting us verify the resulting patterns.
+
+108
+00:07:43,820 --> 00:07:48,060
+Remember to interpolate within the face before
+texture lookup;
+
+109
+00:07:48,320 --> 00:07:51,580
+we also compare the failure of folding vertex
+coordinates too early.
+
+110
+00:07:52,463 --> 00:07:55,070
+UVs can exceed0 through1. Keep vertices and
+UVs
+
+111
+00:07:55,290 --> 00:08:00,030
+identical while comparing repeat and clamp
+addressing.
+
+112
+00:08:00,390 --> 00:08:03,970
+Repeat reuses the image across integer tiles;
+
+113
+00:08:04,050 --> 00:08:07,790
+use u minus floor u consistently for negative
+coordinates.
+
+114
+00:08:08,150 --> 00:08:11,210
+For1.25 floor is1, giving.25;
+
+115
+00:08:12,130 --> 00:08:16,510
+for−.75 floor is−1, also giving.25.
+
+116
+00:08:16,770 --> 00:08:19,790
+Truncating toward zero differs for negative
+inputs;
+
+117
+00:08:19,790 --> 00:08:24,290
+distinguish floor from truncation when
+implementing repeat.
+
+118
+00:08:24,710 --> 00:08:31,650
+Clamp limits below-zero to0 and above-one to1,
+extending edge values outward.
+
+119
+00:08:31,950 --> 00:08:38,290
+Mirrored repeat alternates tile orientation,
+and u and v may use separate address modes.
+
+120
+00:08:38,670 --> 00:08:43,970
+Addressing selects coordinates independently
+of filtering, which combines texels;
+
+121
+00:08:44,170 --> 00:08:47,630
+exact edge behavior also depends on those
+sampling conventions.
+
+122
+00:08:48,100 --> 00:08:53,540
+A0-to2 u edge should display two repeats;
+
+123
+00:08:53,820 --> 00:08:59,220
+store the unmodified endpoint coordinates0
+and2.
+
+124
+00:08:59,580 --> 00:09:06,200
+Interpolation gives.5 at one quarter and1.5 at
+three quarters along the edge.
+
+125
+00:09:06,680 --> 00:09:11,560
+Applying repeat at lookup maps both positions
+to.5,
+
+126
+00:09:11,900 --> 00:09:14,620
+the same relative location in different tiles.
+
+127
+00:09:14,620 --> 00:09:20,100
+Wrapping endpoints0 and2 first turns both into
+zero,
+
+128
+00:09:20,620 --> 00:09:23,880
+so interpolation loses the entire0-to2
+variation.
+
+129
+00:09:24,380 --> 00:09:29,140
+The two-repeat span is lost;
+
+130
+00:09:29,520 --> 00:09:33,360
+interpolate first and apply addressing only at
+texture lookup.
+
+131
+00:09:33,760 --> 00:09:39,340
+Use the preceding perspective-correct UV
+interpolation before this step;
+
+132
+00:09:39,680 --> 00:09:43,560
+perspective correction and repeat order are
+separate requirements.
+
+133
+00:09:44,110 --> 00:09:48,050
+Move among stairs and buildings in Sunset
+Overdrive,
+
+134
+00:09:48,330 --> 00:09:51,450
+first identifying near and distant surface
+boundaries.
+
+135
+00:09:51,690 --> 00:09:54,570
+As roofs and building sides appear, separate
+three questions: geometry,
+
+136
+00:09:54,910 --> 00:09:58,210
+lighting direction and surface pattern.
+
+137
+00:09:58,670 --> 00:10:04,130
+The following wall has repeated windows and
+the roof repeated panels,
+
+138
+00:10:04,410 --> 00:10:07,710
+which do not reveal vertex counts or address
+modes.
+
+139
+00:10:07,830 --> 00:10:12,270
+Our calculations used indices for vertex
+records,
+
+140
+00:10:12,270 --> 00:10:16,950
+normals for perpendicular directions and UVs
+for image correspondence; their roles differ.
+
+141
+00:10:17,190 --> 00:10:20,650
+When checking a model, inspect silhouettes,
+
+142
+00:10:20,770 --> 00:10:25,550
+normal boundaries and pattern placement
+separately to narrow the source of an error.
+
+143
+00:10:25,770 --> 00:10:28,750
+Finish with explicitly defined mesh exercises
+that verify storage
+
+144
+00:10:29,030 --> 00:10:33,690
+and calculation order rather than guessing
+game internals.
+
+145
+00:10:34,160 --> 00:10:41,660
+First exercise: four32-byte vertices and
+six2-byte indices total140 bytes;
+
+146
+00:10:41,840 --> 00:10:44,920
+distinguish record count from index count.
+
+147
+00:10:45,380 --> 00:10:49,800
+Second, split a cube corner shading direction
+by duplicating
+
+148
+00:10:49,800 --> 00:10:53,840
+records and updating the corresponding face
+indices.
+
+149
+00:10:54,280 --> 00:10:59,520
+The transformed tangent(2,−1) and normal(.5,1)
+have zero dot product;
+
+150
+00:10:59,620 --> 00:11:05,420
+verify perpendicularity and unit length after
+nonuniform scale.
+
+151
+00:11:05,740 --> 00:11:08,380
+Third, preserve0-to2 UVs for interpolation,
+
+152
+00:11:08,700 --> 00:11:13,900
+repeat at lookup and use floor for negative
+coordinates.
+
+153
+00:11:14,180 --> 00:11:20,320
+We separated topology indices, shading normals
+and UV correspondence;
+
+154
+00:11:20,520 --> 00:11:23,660
+equal positions need not share all attributes.
+
+155
+00:11:24,100 --> 00:11:30,960
+Next we evaluate lighting with these normals
+and examine lights and materials;
+
+156
+00:11:31,000 --> 00:11:35,300
+today surface data supplies those inputs.

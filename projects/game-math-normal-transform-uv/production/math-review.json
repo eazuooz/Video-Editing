@@ -1,0 +1,25 @@
+{
+  "status": "passed-independent-numerical-and-final-pixel-review",
+  "sourceSections": [
+    "10.4.2-normal-transform",
+    "10.5"
+  ],
+  "contract": {
+    "memory": "Whole quad:6×32=192 versus4×32+6×2=140; source local one-vertex-six-use example32+6×2=44 is independently retained, not confused with total mesh memory.",
+    "mesh": "Clockwise source convention declared as a selectable front-face contract; diagrams use consistent explicitly chosen winding. Same positions can require distinct normals/UVs. Adjacency is implicit, not O(1) in plain indices.",
+    "normal": "Face cross from ordered edges; unit-face equal-weight accumulation then nonzero normalization. Degenerate/isolated/opposing cases explicit, hard seams detached before averaging. Angle-weighting avoids arbitrary quad diagonal votes; no claim of universal optimal normals.",
+    "matrix": "Column vectors and nonsingular linear M: normalize(M^-T n). Positive scale examplet(1,-1),n(1,1),Mdiag2/1; naive dot3 remains wrong after normalization; correct(.5,1)dot0. Singular and reflection conventions explicit.",
+    "uv": "Explicit top-left v-down illustration; normalized UV independent of texture resolution. Interpolate unmodified UV using applicable perspective correction before repeat floor/clamp/mirror lookup; filtering separate.",
+    "gameEvidence": "Actual existing-game real-time shots illustrate visible surface/outline/pattern; never assert proprietary topology, vertex counts, normals, UVs, address modes or CSG from rendered pixels."
+  },
+  "verification": "projects/game-math-normal-transform-uv/production/math-verification.json",
+  "scriptSha256": "9f5739fbd27ebe3497a6dc9b5023247c1f24062e8817b92c5c674f66bd64433c",
+  "sourcePreservation": "production/batches/game-math-part2-full-series/preflight/mesh-uv-episode-refinement.json",
+  "passed": 11,
+  "finalRenderedPixels": {
+    "status": "passed-agent-direct-review",
+    "review": "projects/game-math-normal-transform-uv/production/pixel-review.json",
+    "videoSha256": "3bf6c508b6a134d41c17530a49d3e663dcb9f8916a6a69b5f316443a9f231d28",
+    "reviewedAtUtc": "2026-10-09T01:20:09.460241+00:00"
+  }
+}

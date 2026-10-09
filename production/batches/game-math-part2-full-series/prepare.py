@@ -24,6 +24,12 @@ ed=m['editing'];ed.update(timingStatus='awaiting-measured-speech',explanationSty
 ed['ratioException']['scope']='All remaining Game Math PART2 chapters8–13, explicitly requested in the same approved lecture format on2026-10-05'
 ed['exampleInterleaving']['reviewStatus']='planned-from-inspected-intervals-before-narration'
 ed['openingOverview'].update(question=c['viewerQuestion'],outcome='Understand and calculate the viewer question using the covered source sections',orderedSteps=data['scenes'][0]['beats'][1:],reviewedBeforeTts=True,narrationSeconds=None)
+if data.get('explanationStyleId')=='research-black-v1':
+ policy=json.loads((ROOT/'shared/publishing/explanation-style-policy.json').read_text(encoding='utf-8-sig'))
+ assert policy['styleId']=='research-black-v1' and slug not in [x['slug'] for x in policy['existingProjectsAtRequest']]
+ m['visualStyle']='research-black-v1'
+ ed['explanationStyle']='Independent Manim Community projected2.5D/3D, black background, bright semantic text and explicit spatial faces'
+ ed['explanationStylePolicy']={'path':'shared/publishing/explanation-style-policy.json','approvedDate':policy['approvedDate'],'palette':policy['palette'],'preserveAlreadyStarted':True,'theme':'motion-canvas/src/styles/research-dark.ts'}
 m['tts']['maxNewTokens']=1536
 m['paths'].update(productionData=f'production/batches/game-math-part2-full-series/lessons/{slug}.json',productionBuilder=f'projects/{slug}/production/build.py',sharedLectureBuilder='production/batches/game-math-part2-full-series/build.py',sharedManimLesson=f'manim/projects/game-math-part2-full-series/{data.get("renderModule","lesson")}.py')
 m['lecture']={'chapter':data['chapter'],'part':data['part'],'totalParts':data['totalParts'],'baseline':'game-math-polar-2d and game-math-polar-3d','sourceNotion':c['sourceNotion'],'coveredSections':data['sourceSections'],'contract':data.get('contract',{}),'verbatimReproduction':False,'backgroundMusic':False}

@@ -1,0 +1,376 @@
+{
+  "status": "independent-numerical-source-preservation-and-interval-checks-passed",
+  "atUtc": "2026-10-08T22:44:30.349755+00:00",
+  "checks": [
+    {
+      "name": "whole-quad-versus-local-record-memory",
+      "passed": true,
+      "evidence": {
+        "array": 192,
+        "indexedQuad": 140,
+        "sixUseLocalRecord": 44,
+        "vertexBytes": 32,
+        "indexBytes": 2
+      }
+    },
+    {
+      "name": "two-triangles-shared-diagonal-and-open-boundary",
+      "passed": true,
+      "evidence": {
+        "triangles": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "sharedEdge": [
+          0,
+          2
+        ],
+        "boundaryEdges": 4
+      }
+    },
+    {
+      "name": "cyclic-winding-preserves-and-swap-reverses",
+      "passed": true,
+      "evidence": {
+        "cross": [
+          0,
+          0,
+          2
+        ],
+        "coordinateContract": "Pure independent3D coordinates; front-face setting explicitly declared in narration."
+      }
+    },
+    {
+      "name": "interpolated-direction-requires-renormalization",
+      "passed": true,
+      "evidence": {
+        "blended": [
+          0.5,
+          0.5
+        ],
+        "length": 0.7071067811865476,
+        "unit": [
+          0.7071067811865475,
+          0.7071067811865475
+        ]
+      }
+    },
+    {
+      "name": "three-unit-face-sum-and-detached-cube",
+      "passed": true,
+      "evidence": {
+        "sum": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "unit": [
+          0.5773502691896258,
+          0.5773502691896258,
+          0.5773502691896258
+        ],
+        "cubeLocations": 8,
+        "detachedRecords": 24
+      }
+    },
+    {
+      "name": "opposing-normals-and-degenerate-face-zero",
+      "passed": true,
+      "evidence": {
+        "normalizationAllowed": false,
+        "required": "Separate explicit policy before normalization."
+      }
+    },
+    {
+      "name": "triangle-count-bias-versus-angle-sum",
+      "passed": true,
+      "evidence": {
+        "equalVoteSum": [
+          1.0,
+          2.0,
+          1.0
+        ],
+        "unit": [
+          0.4082482904638631,
+          0.8164965809277261,
+          0.4082482904638631
+        ],
+        "preservedQuadCornerDegrees": 90
+      }
+    },
+    {
+      "name": "inverse-transpose-keeps-transformed-perpendicularity",
+      "passed": true,
+      "evidence": {
+        "tangent": [
+          2.0,
+          -1.0
+        ],
+        "naive": [
+          2.0,
+          1.0
+        ],
+        "naiveDot": 3,
+        "normalizedNaiveDot": 1.3416407864998738,
+        "correct": [
+          0.5,
+          1.0
+        ],
+        "unit": [
+          0.4472135954999579,
+          0.8944271909999159
+        ],
+        "correctDot": 0
+      }
+    },
+    {
+      "name": "shear-rotation-and-singular-boundary",
+      "passed": true,
+      "evidence": {
+        "shearDot": 0,
+        "rotationInverseTransposeEqualsOriginal": true,
+        "singularHasInverse": false
+      }
+    },
+    {
+      "name": "negative-repeat-and-clamp",
+      "passed": true,
+      "evidence": {
+        "repeated": [
+          0.25,
+          0.25
+        ],
+        "clamped": [
+          0,
+          1
+        ],
+        "floorNegative": -1,
+        "truncatedNegative": 0
+      }
+    },
+    {
+      "name": "interpolation-before-lookup-retains-two-tiles",
+      "passed": true,
+      "evidence": {
+        "correctInterior": [
+          0.5,
+          1.5
+        ],
+        "correctLookups": [
+          0.5,
+          0.5
+        ],
+        "earlyWrappedEndpoints": [
+          0,
+          0
+        ],
+        "wrongInterpolatedInterior": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "full-original-draft-retained-across-conceptual-boundary",
+      "passed": true,
+      "evidence": {
+        "koAndEnOriginalBodyAndConclusionPreserved": true,
+        "explicitPreservedNumericClarifications": [
+          {
+            "scene": "04",
+            "language": "ko",
+            "lineIndex": 5,
+            "before": "노션의 다른 계산은 정점 하나를 여섯 면이 공유하는 국소 예입니다. 데이터 삼십이와 인덱스 십이를 합해 사십사 바이트이며, 사각형 전체의 백사십과 범위가 다릅니다.",
+            "after": "한 정점을 여섯 번 쓰는 국소 예도 보겠습니다. 정점 데이터는 삼십이 바이트입니다. 인덱스는 여섯 개에 이 바이트씩, 합이 십이 바이트입니다. 둘을 더한 사십사 바이트는 사각형 전체 백사십과 계산 범위가 다릅니다.",
+            "meaningReview": "passed-independent-32-plus-6-times-2-equals44-versus-whole-quad140",
+            "removedUsefulClaim": false,
+            "valuesPreserved": [
+              32,
+              6,
+              2,
+              12,
+              44,
+              140
+            ]
+          },
+          {
+            "scene": "13",
+            "language": "ko",
+            "lineIndex": 3,
+            "before": "위쪽 레코드에는 위쪽 법선을, 옆쪽 레코드에는 옆쪽 법선을 저장합니다. 인덱스도 해당 레코드를 가리키게 바꿉니다.",
+            "after": "위쪽 면의 레코드에는 위를 향한 법선을 저장합니다. 옆면의 레코드에는 옆을 향한 법선을 저장합니다. 인덱스도 각 면의 레코드를 가리키게 바꿉니다.",
+            "meaningReview": "passed-distinct-top-normal-and-side-normal-records-and-matching-indices",
+            "removedUsefulClaim": false,
+            "valuesPreserved": []
+          }
+        ],
+        "overview": "New independent overview for each episode.",
+        "boundary": "Complete normal construction and edge/weighting algorithm before inverse-transpose andUV."
+      }
+    },
+    {
+      "name": "real-footage-unique-and-old-bigwalk-intervals-preserved",
+      "passed": true,
+      "evidence": {
+        "selectedIntervals": {
+          "fN4iMYUyODc": [
+            [
+              60,
+              81,
+              "game-math-mesh-uv",
+              "02"
+            ],
+            [
+              110,
+              134.8,
+              "game-math-mesh-uv",
+              "02"
+            ],
+            [
+              135,
+              165,
+              "game-math-normal-transform-uv",
+              "05"
+            ],
+            [
+              195,
+              209,
+              "game-math-normal-transform-uv",
+              "05"
+            ],
+            [
+              720,
+              750,
+              "game-math-normal-transform-uv",
+              "08"
+            ],
+            [
+              588,
+              603,
+              "game-math-normal-transform-uv",
+              "08"
+            ],
+            [
+              400,
+              408,
+              "game-math-normal-transform-uv",
+              "08"
+            ],
+            [
+              615,
+              650,
+              "game-math-normal-transform-uv",
+              "12"
+            ],
+            [
+              566,
+              570,
+              "game-math-normal-transform-uv",
+              "12"
+            ],
+            [
+              374,
+              386,
+              "game-math-normal-transform-uv",
+              "12"
+            ]
+          ],
+          "wzQLP0Z3zII": [
+            [
+              200,
+              270,
+              "game-math-mesh-uv",
+              "06"
+            ],
+            [
+              810,
+              834,
+              "game-math-mesh-uv",
+              "10"
+            ],
+            [
+              580,
+              640,
+              "game-math-mesh-uv",
+              "11"
+            ],
+            [
+              640,
+              708,
+              "game-math-mesh-uv",
+              "15"
+            ],
+            [
+              270,
+              348,
+              "game-math-normal-transform-uv",
+              "09"
+            ]
+          ],
+          "kc8aMSmWSgw": [
+            [
+              22,
+              47,
+              "game-math-mesh-uv",
+              "07"
+            ],
+            [
+              90,
+              109,
+              "game-math-mesh-uv",
+              "07"
+            ],
+            [
+              132,
+              151,
+              "game-math-mesh-uv",
+              "07"
+            ],
+            [
+              156,
+              173.5,
+              "game-math-mesh-uv",
+              "07"
+            ],
+            [
+              379,
+              410,
+              "game-math-normal-transform-uv",
+              "04"
+            ],
+            [
+              534,
+              545,
+              "game-math-normal-transform-uv",
+              "04"
+            ],
+            [
+              610,
+              638,
+              "game-math-normal-transform-uv",
+              "04"
+            ]
+          ]
+        },
+        "speed": 1,
+        "sourceAudio": false,
+        "repeats": false
+      }
+    }
+  ],
+  "passed": 13,
+  "lessonFingerprints": {
+    "game-math-mesh-uv": "63e98765685a1e1f7beb2af898837d761a64b0fac2793eb731b4dfc2e3fa874c",
+    "game-math-normal-transform-uv": "25d54e8ab0ecfff26e067e5b1dea5079bd39cf7283773f839b109c8776385549"
+  },
+  "rendererSha256": "71fbfaee01469b3222ba99f32272607269f2c2cd1b2159f8ba30084ec1aac9cb",
+  "limits": "Rendered spatial/text correctness,measured narration alignment,full listening and public rights remain separate pending checks."
+}
