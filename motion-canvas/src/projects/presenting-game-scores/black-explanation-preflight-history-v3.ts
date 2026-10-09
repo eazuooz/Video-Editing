@@ -1,0 +1,12 @@
+import {makeProject} from '@motion-canvas/core';
+import scene01 from './scenes/01-overview?scene';
+import scene02 from './scenes/02-score-and-lines?scene';
+import scene03 from './scenes/03-same-count?scene';
+import scene04 from './scenes/04-evaluation-weights?scene';
+import scene05 from './scenes/05-events-and-total?scene';
+import scene06 from './scenes/06-relative-gap?scene';
+import scene07 from './scenes/07-name-and-unit?scene';
+import scene08 from './scenes/08-scoring-feedback?scene';
+import scene09 from './scenes/09-feedback-hierarchy?scene';
+import scene10 from './scenes/10-audit-and-close?scene';
+export default makeProject({name:'presenting-game-scores-event-label-preview-v3',scenes:[scene05]});

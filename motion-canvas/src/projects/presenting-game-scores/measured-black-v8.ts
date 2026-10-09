@@ -1,0 +1,14 @@
+import {makeProject} from '@motion-canvas/core';
+import s00 from './measured-black-scenes-v8/black-01-overview?scene';
+import s01 from './measured-black-scenes-v8/black-02-separate-metrics?scene';
+import s02 from './measured-black-scenes-v8/black-03-equal-counts?scene';
+import s03 from './measured-black-scenes-v8/black-04-event-evaluation?scene';
+import s04 from './measured-black-scenes-v8/black-05-event-and-record?scene';
+import s05 from './measured-black-scenes-v8/black-06-observed-2920?scene';
+import s06 from './measured-black-scenes-v8/black-06-observed-141?scene';
+import s07 from './measured-black-scenes-v8/black-07-names-units?scene';
+import s08 from './measured-black-scenes-v8/black-08-read-inputs?scene';
+import s09 from './measured-black-scenes-v8/black-08-contribution-result?scene';
+import s10 from './measured-black-scenes-v8/black-09-stable-and-transient?scene';
+import s11 from './measured-black-scenes-v8/black-10-three-audit-gates?scene';
+export default makeProject({name:'presenting-game-scores-measured-black-v8',scenes:[s00,s01,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11]});

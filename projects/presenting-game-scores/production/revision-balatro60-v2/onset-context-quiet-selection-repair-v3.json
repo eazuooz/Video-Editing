@@ -1,0 +1,35 @@
+{
+  "observedAt": "2026-10-09T16:59:54.446407+00:00",
+  "firstExecutionExitCode": 1,
+  "oldProgramSha256": "e353708079a40da084ea2d867cd74719a90d1caa9b56367c9c83b4d32cac0e33",
+  "oldProgramUtf8": "\"\"\"Record direct whole2 review and five complete, padded current-PCM contexts.\"\"\"\nfrom pathlib import Path\nfrom datetime import datetime,timezone\nimport hashlib,json,wave\nimport numpy as np\nROOT=Path(__file__).resolve().parents[3];B=Path(__file__).parent/'revision-balatro60-v2'\nread=lambda p:json.loads(p.read_text('utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();rel=lambda p:p.relative_to(ROOT).as_posix()\ndef fresh(p,j):\n assert not p.exists();p.write_text(json.dumps(j,ensure_ascii=False,indent=2)+'\\n','utf-8')\ns=read(B/'voice-whole-asr-execution-v3.json');assert s['exitCode']==0 and s['actualExitObserved']\nj=read(B/'voice-whole-asr-v3/asr.json');assert j['complete'] and len(j['results'])==2\nreq=read(B/'narration-tts-request-v3.json');script=read(ROOT/read(ROOT/req['manifestOverride'])['paths']['script'])\nbyid={x['id']:x for x in script['scenes']}\npoints={'r01-overview':[4.24,12.5],'r10-audit-and-close-p2':[5.44]}\nmetrics=[];inputs=[];bounds={}\nfor r in j['results']:\n assert sha(ROOT/r['sourcePath'])==r['sourceSha256'] and r['expectedWasRecognizerPrompt'] is False\n with wave.open(str(ROOT/r['sourcePath']),'rb') as w:\n  assert (w.getframerate(),w.getsampwidth(),w.getnchannels(),w.getnframes())==(24000,2,1,r['samples'])\n  pcm=np.frombuffer(w.readframes(w.getnframes()),dtype='<i2')\n mids=[]\n for t in points[r['id']]:\n  n=round(t*24000);v=pcm[n-120:n+120].astype(float)\n  metric=dict(id=r['id'],sourceSha256=r['sourceSha256'],sample=n,seconds=t,rms=float(np.sqrt(np.mean(v*v))),peak=int(np.max(np.abs(v))),windowSamples=240,completeSentenceEndingRead=True,nextSentenceOnsetRead=True,noRemovedSamples=True)\n  metrics.append(metric);assert metric['rms']<100 and metric['peak']<350,metric;mids.append(n)\n boundaries=[0]+mids+[r['samples']];bounds[r['id']]=boundaries\n lines=byid[r['id']]['lines'] if r['id']=='r01-overview' else [byid[r['id']]['lines'][0].split('. ',1)[0]+'.',byid[r['id']]['lines'][0].split('. ',1)[1]]\n assert len(lines)==len(boundaries)-1\n for i,(a,b,text) in enumerate(zip(boundaries,boundaries[1:],lines),1):\n  inputs.append(dict(id=r['id']+'-complete-sentence-'+str(i),sourcePath=r['sourcePath'],sourceSha256=r['sourceSha256'],startSample=a,endSample=b,samples=b-a,zeroPaddingSamplesEachSide=9600,expectedKo=text,boundaryMethod='Complete expected/recognized sentence and actual 10ms PCM quiet bin directly compared; no spoken samples removed'))\n r['directReview']=True;r['allCompleteClausesAndEndingsPresent']=True\n r['finding']='All overview question/order/outcome clauses exactly present; new card-scoring wording removes the old 기어가 alternative.' if r['id']=='r01-overview' else '앞서 본 테트리스 onset present without former 스 onset. All two sentences/endings present. 카드의/카드에 is preserved as a particle pronunciation/recognizer alternative for human review, not a changed substantive claim.'\nreviewp=B/'voice-whole-direct-review-v3.json'\nfresh(reviewp,dict(schemaVersion=3,reviewedAt=datetime.now(timezone.utc).isoformat(),allWholeTextsDirectlyCompared=True,allCurrentWordsAndEndingsDirectlyRead=True,results=j['results'],quietBoundaries=metrics,currentCompleteVoiceApproved=False,contentReadyForIndependentContexts=True,humanListening='pending',humanPronunciation='pending',finalMixedAsrApproved=False))\nfresh(B/'voice-repair-boundaries-v3.json',dict(boundaries=bounds,metrics=metrics,allSourceSamplesPreserved=True,overviewMeasuredSeconds=21.36,finalTimingApproved=False))\nfresh(B/'voice-contexts-asr-plan-v3.json',dict(schemaVersion=3,preparedAt=datetime.now(timezone.utc).isoformat(),wholeDirectReview=rel(reviewp),wholeDirectReviewSha256=sha(reviewp),boundariesDirectlyComparedWithCurrentWordsAndPcm=True,inputs=inputs,automaticApproval=False,modelsStarted=0))\nprint(json.dumps(dict(wholeTextsDirectlyCompared=2,completeContextsPrepared=len(inputs),quietBoundaries=metrics,contextAsrStarted=False),ensure_ascii=False))\n",
+  "reason": "12.50s quiet-bin threshold failed before any review/plan/PCM output; full raw/ASR preserved.",
+  "modelsLoaded": 0,
+  "newAudioCreated": 0,
+  "selectedOverviewSeconds": [
+    4.24,
+    12.62
+  ],
+  "selectedAuditSeconds": [
+    5.36
+  ],
+  "actualMetrics": [
+    {
+      "seconds": 12.62,
+      "rms": 22.332,
+      "peak": 81
+    },
+    {
+      "seconds": 5.36,
+      "rms": 55.434,
+      "peak": 149
+    }
+  ],
+  "wholeRecognizedSentenceRanges": {
+    "overviewPreviousEnd": 12.32,
+    "overviewNextStart": 12.7,
+    "auditPreviousEnd": 5.28,
+    "auditNextStart": 5.6
+  },
+  "noSpokenSamplesRemoved": true
+}

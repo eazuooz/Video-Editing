@@ -1,0 +1,13 @@
+const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const root=path.resolve(__dirname,'../../..'),raw=path.join(root,'shared/assets/presenting-game-scores/raw');
+const old=path.join(raw,'balatro-native-action-playback-v3.html'),next=path.join(raw,'balatro-native-action-playback-v4.html');
+if(fs.existsSync(next))throw Error('Reuse existing v4 helper');
+const text=fs.readFileSync(old,'utf8');
+const before=".credit{position:absolute;right:32px;top:24px;background:#000b;padding:8px 12px;font:28px sans-serif;color:#fff}";
+const after=".credit{position:absolute;right:32px;top:24px;max-width:340px;background:#000b;padding:8px 12px;font:24px/30px sans-serif;color:#fff;text-align:right;white-space:normal}";
+if(text.split(before).length!==2)throw Error('Exact v3 credit rule required');
+fs.writeFileSync(next,text.replace(before,after));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const proof={schemaVersion:1,preparedAt:new Date().toISOString(),observedProblem:'The wide v3 preparation credit overlapped the upper-right part of Ancient Joker in diamond-full-house endpoint1010.134941. Source, caption, source intervals and video bytes unchanged.',preservedV3:{path:old,sha256:sha(old)},candidateV4:{path:next,sha256:sha(next)},url:'http://127.0.0.1:9250/balatro-native-action-playback-v4.html',creditRightPx:32,creditTopPx:24,creditMaxTextWidthPx:340,creditFontPx:24,sourceBytesChanged:false,captionsMoved:false,allCandidatePixelsApproved:false,finalCreditLicenseDisplayApproved:false,sourceAdopted:false,attributionExceptionUserAnswer:'pending'};
+fs.writeFileSync(path.join(__dirname,'revision-balatro60-v2/native-preview-credit-repair-v4.json'),JSON.stringify(proof,null,2)+'\n');
+console.log(JSON.stringify({url:proof.url,sourceBytesChanged:false,captionsMoved:false,finalApproved:false}));

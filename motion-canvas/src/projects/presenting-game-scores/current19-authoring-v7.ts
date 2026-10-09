@@ -1,0 +1,22 @@
+import {makeProject} from '@motion-canvas/core';
+import scene00 from './measured-scenes-v7/01-overview?scene';
+import scene01 from './measured-scenes-v7/02-score-and-lines?scene';
+import scene02 from './measured-scenes-v7/11-observe-separate-updates?scene';
+import scene03 from './measured-scenes-v7/03-same-count?scene';
+import scene04 from './measured-scenes-v7/12-observe-equal-quantity?scene';
+import scene05 from './measured-scenes-v7/04-evaluation-weights?scene';
+import scene06 from './measured-scenes-v7/13-observe-action-label?scene';
+import scene07 from './measured-scenes-v7/05-events-and-total?scene';
+import scene08 from './measured-scenes-v7/14-observe-notice-and-record?scene';
+import scene09 from './measured-scenes-v7/06-relative-gap?scene';
+import scene10 from './measured-scenes-v7/15-observe-equal-lines-gap?scene';
+import scene11 from './measured-scenes-v7/16-observe-later-point-lead?scene';
+import scene12 from './measured-scenes-v7/07-name-and-unit?scene';
+import scene13 from './measured-scenes-v7/24-observe-named-fields-clear-start?scene';
+import scene14 from './measured-scenes-v7/08-scoring-feedback?scene';
+import scene15 from './measured-scenes-v7/09-feedback-hierarchy?scene';
+import scene16 from './measured-scenes-v7/18-observe-stable-reading?scene';
+import scene17 from './measured-scenes-v7/10-audit-and-close?scene';
+import scene18 from './measured-scenes-v7/19-observe-reading-audit?scene';
+// Authoring preview only, never the final actual60:explanation40 compositor.
+export default makeProject({name:'presenting-game-scores-current19-authoring-v7',scenes:[scene00,scene01,scene02,scene03,scene04,scene05,scene06,scene07,scene08,scene09,scene10,scene11,scene12,scene13,scene14,scene15,scene16,scene17,scene18]});

@@ -1,0 +1,12 @@
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'../../..'),base=path.join(__dirname,'revision-balatro60-v2');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
+const save=(p,j)=>{const t=p+'.'+process.pid+'.writing';fs.writeFileSync(t,JSON.stringify(j,null,2)+'\n');fs.renameSync(t,p);};
+const s=read(path.join(base,'native-actions-preflight-execution-v3.json'));
+if(s.exitCode!==0||s.sampleCount!==201||s.boardCount!==34)throw Error('Exact completed state required');
+const now=new Date().toISOString();
+const job={status:'native-extraction-exit0-direct-review-pending',actualPid:s.actualPid,createTime:s.createTime,command:s.command,cwd:s.cwd,sessionId:'31163',cpuThreads:2,gpu:0,execution:'projects/presenting-game-scores/production/revision-balatro60-v2/native-actions-preflight-execution-v3.json',resource:'projects/presenting-game-scores/production/revision-balatro60-v2/resources-before-native-actions-preflight-v3.json',actualOuterExitObserved:0,exitCode:0,workerExpectedRunning:false,researchProcessChanges:0,processIdentityMustBeCheckedBeforeReuse:true};
+save(path.join(base,'native-actions-preflight-session-v3.json'),{recordedAt:now,...job,failedV2ActualOuterExitObserved:1,failedV2Images:0,completedCoarseExtractionsRepeated:0});
+const cpPath=path.join(__dirname,'latest-checkpoint.json'),cp=read(cpPath);cp.recordedAt=now;cp.ownedJob=job;cp.revisionNativeActionPreflight=job.execution;cp.nextAction='Directly read all201 native-PTS samples/34 boards, distinguish action boundaries from candidate windows and review source playback/caption framing. Credit-description exception still pending; no adoption or dependent TTS.';save(cpPath,cp);
+const qp=path.join(root,'production/batches/sakurai-planning-game-design/queue.json'),q=read(qp),item=q.items.find(x=>x.slug==='presenting-game-scores');item.ownedJob=job;item.revisionNativeActionPreflight=job.execution;item.nextAction=cp.nextAction;q.updatedAt=now;q.lastProgressAt=now;save(qp,q);
+console.log(JSON.stringify({actualOuterExitObserved:0,samples:201,boards:34,adopted:false}));

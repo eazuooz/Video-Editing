@@ -1,0 +1,12 @@
+const fs=require('fs'),path=require('path'),cp=require('child_process');
+const root=path.resolve(__dirname,'../../..'),dir=path.join(__dirname,'revision-balatro60-v2');
+const report=path.join(root,'production/batches/sakurai-planning-game-design/preflight/presenting-game-scores.json');
+const history=path.join(dir,'duplicate-history-before-approved-credit-v3.json');
+if(fs.existsSync(history))throw Error('Read the existing v3 inventory instead of overwriting history.');
+const old=JSON.parse(fs.readFileSync(report,'utf8'));fs.copyFileSync(report,history,fs.constants.COPYFILE_EXCL);
+cp.execFileSync(process.execPath,['scripts/review-video-duplicates.cjs','presenting-game-scores'],{cwd:root,stdio:'inherit'});
+const current=JSON.parse(fs.readFileSync(report,'utf8')),prev=new Map(old.inputFiles.map(x=>[x.path,x.sha256]));
+const changed=current.inputFiles.filter(x=>prev.get(x.path)!==x.sha256).map(x=>({...x,previousSha256:prev.get(x.path)||null,change:prev.has(x.path)?'changed':'new'}));
+const removed=old.inputFiles.filter(x=>!current.inputFiles.some(y=>y.path===x.path));
+fs.writeFileSync(path.join(dir,'duplicate-changed-inputs-v3.json'),JSON.stringify({recordedAt:new Date().toISOString(),oldDigest:old.inputsDigest,currentDigest:current.inputsDigest,projects:current.existingProjects.length,totalInputs:current.inputFiles.length,changed,removed,contentDirectReviewApproved:false,studioDirectReviewApproved:false},null,2)+'\n');
+console.log(JSON.stringify({projects:current.existingProjects.length,inputs:current.inputFiles.length,changed:changed.map(x=>x.path),removed:removed.map(x=>x.path),digest:current.inputsDigest}));
