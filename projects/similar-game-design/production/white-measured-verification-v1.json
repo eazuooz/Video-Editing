@@ -1,0 +1,3105 @@
+{
+  "schemaVersion": 1,
+  "slug": "similar-game-design",
+  "startedAt": "2026-10-08T20:06:51.849543+00:00",
+  "status": "closed-measured-white-motion-directly-reviewed",
+  "pid": 47032,
+  "createTime": 1791490011.7195861,
+  "commandLine": [
+    "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+    "projects/similar-game-design/production/verify-white-measured-v1.py",
+    "--resource",
+    "projects/similar-game-design/production/resources-before-white-measured-verification-v1.json"
+  ],
+  "sessionId": 14031,
+  "cpuThreads": 2,
+  "gpuJobs": 0,
+  "singleJob": true,
+  "resourceEvidence": "projects/similar-game-design/production/resources-before-white-measured-verification-v1.json",
+  "operations": [
+    {
+      "name": "probe-raw-white",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-show_entries",
+        "stream=codec_type,codec_name,width,height,r_frame_rate,time_base,duration,nb_frames",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\similar-game-design\\white-measured-v1\\authoring-project-v1.mp4"
+      ],
+      "startedAt": "2026-10-08T20:06:51.916744+00:00",
+      "pid": 67592,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T20:06:52.070906+00:00"
+    },
+    {
+      "name": "trim-terminal-display-frame",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\similar-game-design\\white-measured-v1\\authoring-project-v1.mp4",
+        "-map",
+        "0:v:0",
+        "-an",
+        "-vf",
+        "trim=end_frame=14551,setpts=N/(60*TB)",
+        "-frames:v",
+        "14551",
+        "-c:v",
+        "libx264",
+        "-threads",
+        "2",
+        "-filter_threads",
+        "1",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "18",
+        "-pix_fmt",
+        "yuv420p",
+        "-r",
+        "60",
+        "-video_track_timescale",
+        "90000",
+        "-movflags",
+        "+faststart",
+        "D:\\Github\\Video-Editing\\shared\\output\\similar-game-design\\white-measured-v1\\white-measured-v1.exact.mp4"
+      ],
+      "startedAt": "2026-10-08T20:06:52.147465+00:00",
+      "pid": 38152,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T20:07:31.002710+00:00"
+    },
+    {
+      "name": "probe-exact-white",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-show_entries",
+        "stream=codec_type,codec_name,width,height,r_frame_rate,time_base,duration,nb_frames",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\similar-game-design\\white-measured-v1\\white-measured-v1.exact.mp4"
+      ],
+      "startedAt": "2026-10-08T20:07:31.081260+00:00",
+      "pid": 39416,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T20:07:31.235147+00:00"
+    },
+    {
+      "name": "probe-all-white-pts",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-select_streams",
+        "v:0",
+        "-show_frames",
+        "-show_entries",
+        "frame=best_effort_timestamp",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\output\\similar-game-design\\white-measured-v1\\white-measured-v1.exact.mp4"
+      ],
+      "startedAt": "2026-10-08T20:07:31.308684+00:00",
+      "pid": 66296,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T20:07:40.413832+00:00"
+    },
+    {
+      "name": "decode-entire-exact-white",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\similar-game-design\\white-measured-v1\\white-measured-v1.exact.mp4",
+        "-an",
+        "-f",
+        "null",
+        "-"
+      ],
+      "startedAt": "2026-10-08T20:07:40.490894+00:00",
+      "pid": 10380,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T20:07:49.290309+00:00"
+    },
+    {
+      "name": "extract-all-measured-white-paragraph-motion",
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\output\\similar-game-design\\white-measured-v1\\white-measured-v1.exact.mp4",
+        "-vf",
+        "select='eq(n,0)+eq(n,37)+eq(n,154)+eq(n,270)+eq(n,380)+eq(n,554)+eq(n,727)+eq(n,864)+eq(n,1058)+eq(n,1253)+eq(n,1315)+eq(n,1316)+eq(n,1378)+eq(n,1574)+eq(n,1769)+eq(n,1921)+eq(n,2107)+eq(n,2293)+eq(n,2353)+eq(n,2354)+eq(n,2416)+eq(n,2613)+eq(n,2809)+eq(n,2953)+eq(n,3137)+eq(n,3322)+eq(n,3380)+eq(n,3381)+eq(n,3443)+eq(n,3637)+eq(n,3831)+eq(n,3915)+eq(n,3916)+eq(n,3979)+eq(n,4180)+eq(n,4380)+eq(n,4524)+eq(n,4732)+eq(n,4940)+eq(n,5010)+eq(n,5011)+eq(n,5040)+eq(n,5131)+eq(n,5223)+eq(n,5257)+eq(n,5258)+eq(n,5286)+eq(n,5374)+eq(n,5463)+eq(n,5490)+eq(n,5491)+eq(n,5566)+eq(n,5804)+eq(n,6042)+eq(n,6201)+eq(n,6427)+eq(n,6653)+eq(n,6726)+eq(n,6727)+eq(n,6792)+eq(n,6998)+eq(n,7204)+eq(n,7348)+eq(n,7541)+eq(n,7734)+eq(n,7796)+eq(n,7797)+eq(n,7864)+eq(n,8043)+eq(n,8222)+eq(n,8279)+eq(n,8280)+eq(n,8304)+eq(n,8380)+eq(n,8455)+eq(n,8495)+eq(n,8496)+eq(n,8527)+eq(n,8626)+eq(n,8725)+eq(n,8779)+eq(n,8780)+eq(n,8836)+eq(n,9015)+eq(n,9194)+eq(n,9344)+eq(n,9539)+eq(n,9734)+eq(n,9819)+eq(n,9820)+eq(n,9840)+eq(n,9904)+eq(n,9967)+eq(n,9987)+eq(n,9988)+eq(n,10052)+eq(n,10253)+eq(n,10455)+eq(n,10591)+eq(n,10772)+eq(n,10953)+eq(n,11012)+eq(n,11013)+eq(n,11096)+eq(n,11304)+eq(n,11511)+eq(n,11578)+eq(n,11579)+eq(n,11652)+eq(n,11881)+eq(n,12111)+eq(n,12190)+eq(n,12191)+eq(n,12267)+eq(n,12458)+eq(n,12650)+eq(n,12730)+eq(n,12731)+eq(n,12797)+eq(n,12997)+eq(n,13197)+eq(n,13342)+eq(n,13558)+eq(n,13773)+eq(n,13932)+eq(n,14183)+eq(n,14434)+eq(n,14550)'",
+        "-fps_mode",
+        "vfr",
+        "-an",
+        "-threads",
+        "2",
+        "D:\\Github\\Video-Editing\\shared\\output\\similar-game-design\\white-measured-v1\\motion-qa-native\\frame-%03d.png"
+      ],
+      "startedAt": "2026-10-08T20:07:49.372821+00:00",
+      "pid": 22392,
+      "exitCode": 0,
+      "finishedAt": "2026-10-08T20:07:57.917650+00:00"
+    }
+  ],
+  "exitCode": 0,
+  "plan": {
+    "path": "projects/similar-game-design/production/measured-allocation-v2/plan.json",
+    "sha256": "59e20605c7a78bf9fad8236010527490f4152d2b479fa7e83f34f3d53922d812"
+  },
+  "timing": {
+    "path": "motion-canvas/src/projects/similar-game-design/measured-timing-v1.json",
+    "sha256": "462e6d2abcd7fa5f62506956d89ad0a94e70341b3057c12036271383a02fbf9e"
+  },
+  "captionCandidate": {
+    "path": "projects/similar-game-design/production/caption-candidate-v2/captions.json",
+    "sha256": "70c392c52e6858b9e7f52edabb60343d0a6d36bd699fa5de4a79606dbf18d981"
+  },
+  "guiCompletionObserved": true,
+  "encoderExitCodeObserved": false,
+  "finalTimingApproved": false,
+  "allAnimatedMeasuredPixelsReviewed": true,
+  "allFinalPixelsReviewed": false,
+  "finalMixedAsrApproved": false,
+  "render": false,
+  "qa": false,
+  "collected": false,
+  "uploaded": false,
+  "updatedAt": "2026-10-08T20:08:00.416398+00:00",
+  "rawRender": {
+    "path": "shared/output/similar-game-design/white-measured-v1/authoring-project-v1.mp4",
+    "sha256": "1be7ddd70eabacd667dded97e2bbfb39286f7d8d9d0541b33246bfdc8dbfe8fd",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "60/1",
+          "time_base": "1/90000",
+          "duration": "242.533333",
+          "nb_frames": "14552"
+        }
+      ]
+    },
+    "guiCompleted": true,
+    "encoderAbsentObserved": true,
+    "actualEncoderExitCodeObserved": false
+  },
+  "terminalAdjustment": {
+    "rawFrames": 14552,
+    "expectedFrames": 14551,
+    "removedDisplayFrames": [
+      14551
+    ],
+    "reason": "Actual MC export includes its terminal endpoint frame. Preserve raw render and every PCM sample; trim only the extra final visual display frame.",
+    "streamCopyAvoided": "Prior verified producer encountered missing middle B-frame with packet-order trimming; use display-order trim and exact re-encode."
+  },
+  "currentWhite": {
+    "path": "shared/output/similar-game-design/white-measured-v1/white-measured-v1.exact.mp4",
+    "sha256": "a268f28fe625693b14caf3d273c9eb2ff87856165d7758ccfa673ae7f05e2033",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "60/1",
+          "time_base": "1/90000",
+          "duration": "242.516667",
+          "nb_frames": "14551"
+        }
+      ]
+    },
+    "wholeDecodeExitCode": 0,
+    "allPtsCount": 14551,
+    "firstPts": 0,
+    "lastPts": 21825000,
+    "contiguousTicks1500": true
+  },
+  "finishedAt": "2026-10-08T20:08:00.416398+00:00",
+  "frames": 14551,
+  "whiteParts": 19,
+  "samplePlan": [
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 0
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 1315
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.12,
+      "frame": 37
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.5,
+      "frame": 154
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.88,
+      "frame": 270
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.12,
+      "frame": 380
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 554
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.88,
+      "frame": 727
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 864
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 1058
+    },
+    {
+      "scene": "01-overview",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 1253
+    },
+    {
+      "scene": "02-familiar-action",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 1316
+    },
+    {
+      "scene": "02-familiar-action",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 2353
+    },
+    {
+      "scene": "02-familiar-action",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 1378
+    },
+    {
+      "scene": "02-familiar-action",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 1574
+    },
+    {
+      "scene": "02-familiar-action",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 1769
+    },
+    {
+      "scene": "02-familiar-action",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 1921
+    },
+    {
+      "scene": "02-familiar-action",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 2107
+    },
+    {
+      "scene": "02-familiar-action",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 2293
+    },
+    {
+      "scene": "03-patterns-not-ranking",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 2354
+    },
+    {
+      "scene": "03-patterns-not-ranking",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 3380
+    },
+    {
+      "scene": "03-patterns-not-ranking",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 2416
+    },
+    {
+      "scene": "03-patterns-not-ranking",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 2613
+    },
+    {
+      "scene": "03-patterns-not-ranking",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 2809
+    },
+    {
+      "scene": "03-patterns-not-ranking",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 2953
+    },
+    {
+      "scene": "03-patterns-not-ranking",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 3137
+    },
+    {
+      "scene": "03-patterns-not-ranking",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 3322
+    },
+    {
+      "scene": "04-mining-route",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 3381
+    },
+    {
+      "scene": "04-mining-route",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 3915
+    },
+    {
+      "scene": "04-mining-route",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 3443
+    },
+    {
+      "scene": "04-mining-route",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 3637
+    },
+    {
+      "scene": "04-mining-route",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 3831
+    },
+    {
+      "scene": "05-route-under-pressure",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 3916
+    },
+    {
+      "scene": "05-route-under-pressure",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 5010
+    },
+    {
+      "scene": "05-route-under-pressure",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 3979
+    },
+    {
+      "scene": "05-route-under-pressure",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 4180
+    },
+    {
+      "scene": "05-route-under-pressure",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 4380
+    },
+    {
+      "scene": "05-route-under-pressure",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 4524
+    },
+    {
+      "scene": "05-route-under-pressure",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 4732
+    },
+    {
+      "scene": "05-route-under-pressure",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 4940
+    },
+    {
+      "scene": "16-effects-and-position",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 5011
+    },
+    {
+      "scene": "16-effects-and-position",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 5257
+    },
+    {
+      "scene": "16-effects-and-position",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.12,
+      "frame": 5040
+    },
+    {
+      "scene": "16-effects-and-position",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 5131
+    },
+    {
+      "scene": "16-effects-and-position",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.88,
+      "frame": 5223
+    },
+    {
+      "scene": "15-corridor-to-open",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 5258
+    },
+    {
+      "scene": "15-corridor-to-open",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 5490
+    },
+    {
+      "scene": "15-corridor-to-open",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.12,
+      "frame": 5286
+    },
+    {
+      "scene": "15-corridor-to-open",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 5374
+    },
+    {
+      "scene": "15-corridor-to-open",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.88,
+      "frame": 5463
+    },
+    {
+      "scene": "07-purpose-combination",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 5491
+    },
+    {
+      "scene": "07-purpose-combination",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 6726
+    },
+    {
+      "scene": "07-purpose-combination",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 5566
+    },
+    {
+      "scene": "07-purpose-combination",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 5804
+    },
+    {
+      "scene": "07-purpose-combination",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 6042
+    },
+    {
+      "scene": "07-purpose-combination",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 6201
+    },
+    {
+      "scene": "07-purpose-combination",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 6427
+    },
+    {
+      "scene": "07-purpose-combination",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 6653
+    },
+    {
+      "scene": "08-world-and-route",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 6727
+    },
+    {
+      "scene": "08-world-and-route",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 7796
+    },
+    {
+      "scene": "08-world-and-route",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 6792
+    },
+    {
+      "scene": "08-world-and-route",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 6998
+    },
+    {
+      "scene": "08-world-and-route",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 7204
+    },
+    {
+      "scene": "08-world-and-route",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 7348
+    },
+    {
+      "scene": "08-world-and-route",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 7541
+    },
+    {
+      "scene": "08-world-and-route",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 7734
+    },
+    {
+      "scene": "09-combination-in-motion",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 7797
+    },
+    {
+      "scene": "09-combination-in-motion",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 8279
+    },
+    {
+      "scene": "09-combination-in-motion",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 7864
+    },
+    {
+      "scene": "09-combination-in-motion",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 8043
+    },
+    {
+      "scene": "09-combination-in-motion",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 8222
+    },
+    {
+      "scene": "19-visible-destination",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 8280
+    },
+    {
+      "scene": "19-visible-destination",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 8495
+    },
+    {
+      "scene": "19-visible-destination",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.12,
+      "frame": 8304
+    },
+    {
+      "scene": "19-visible-destination",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 8380
+    },
+    {
+      "scene": "19-visible-destination",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.88,
+      "frame": 8455
+    },
+    {
+      "scene": "24-destination-and-danger",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 8496
+    },
+    {
+      "scene": "24-destination-and-danger",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 8779
+    },
+    {
+      "scene": "24-destination-and-danger",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.12,
+      "frame": 8527
+    },
+    {
+      "scene": "24-destination-and-danger",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 8626
+    },
+    {
+      "scene": "24-destination-and-danger",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.88,
+      "frame": 8725
+    },
+    {
+      "scene": "10-playing-together",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 8780
+    },
+    {
+      "scene": "10-playing-together",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 9819
+    },
+    {
+      "scene": "10-playing-together",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 8836
+    },
+    {
+      "scene": "10-playing-together",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 9015
+    },
+    {
+      "scene": "10-playing-together",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 9194
+    },
+    {
+      "scene": "10-playing-together",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 9344
+    },
+    {
+      "scene": "10-playing-together",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 9539
+    },
+    {
+      "scene": "10-playing-together",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 9734
+    },
+    {
+      "scene": "21-read-before-ranking",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 9820
+    },
+    {
+      "scene": "21-read-before-ranking",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 9987
+    },
+    {
+      "scene": "21-read-before-ranking",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.12,
+      "frame": 9840
+    },
+    {
+      "scene": "21-read-before-ranking",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 9904
+    },
+    {
+      "scene": "21-read-before-ranking",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.88,
+      "frame": 9967
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 9988
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 11012
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.12,
+      "frame": 10052
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.5,
+      "frame": 10253
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.88,
+      "frame": 10455
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.12,
+      "frame": 10591
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 10772
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.88,
+      "frame": 10953
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 2,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 11013
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 2,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 11578
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 2,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 11096
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 2,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 11304
+    },
+    {
+      "scene": "11-several-appeals",
+      "part": 2,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 11511
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 11579
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 12190
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.12,
+      "frame": 11652
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.5,
+      "frame": 11881
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 1,
+      "paragraph": 1,
+      "phase": 0.88,
+      "frame": 12111
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 2,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 12191
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 2,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 12730
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 2,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 12267
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 2,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 12458
+    },
+    {
+      "scene": "12-check-your-reason",
+      "part": 2,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 12650
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-start",
+      "frame": 12731
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": null,
+      "phase": "part-end",
+      "frame": 14550
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.12,
+      "frame": 12797
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.5,
+      "frame": 12997
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 2,
+      "phase": 0.88,
+      "frame": 13197
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.12,
+      "frame": 13342
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.5,
+      "frame": 13558
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 3,
+      "phase": 0.88,
+      "frame": 13773
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.12,
+      "frame": 13932
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.5,
+      "frame": 14183
+    },
+    {
+      "scene": "13-conclusion",
+      "part": 1,
+      "paragraph": 4,
+      "phase": 0.88,
+      "frame": 14434
+    }
+  ],
+  "uniqueSampleFrames": 128,
+  "boards": [
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-01.jpg",
+      "sha256": "058699be4e193157954d859933d79abfb782a8505d8bda5eff08fc0efb350154",
+      "entries": [
+        {
+          "frame": 0,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-001.png",
+          "sha256": "f6693e852f260c86e70efdb73d54c5abec271c8211f9bc737799a5972309968d",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 0
+            }
+          ]
+        },
+        {
+          "frame": 37,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-002.png",
+          "sha256": "9f44ec33b756b697473ce4b0dba1e47cf6944b6823b1505cfe63e9ec31361473",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.12,
+              "frame": 37
+            }
+          ]
+        },
+        {
+          "frame": 154,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-003.png",
+          "sha256": "e27e4052d908550d6a5618ab0f20421114eb0ba3d49db097169da645d162a333",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.5,
+              "frame": 154
+            }
+          ]
+        },
+        {
+          "frame": 270,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-004.png",
+          "sha256": "57a358b4b3ebde1968f04bc6d661db5961e3696c542d8e58adb2b3481b3b157b",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.88,
+              "frame": 270
+            }
+          ]
+        },
+        {
+          "frame": 380,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-005.png",
+          "sha256": "d78fd1c0e49fd6e09f0f5c89d97506104b2dfabb9248a941064265b3ab1ed939",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.12,
+              "frame": 380
+            }
+          ]
+        },
+        {
+          "frame": 554,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-006.png",
+          "sha256": "7a4612c6bde6809d04ce29f6d53cd6d723ae7e46194f68c7f875c48bc166a963",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.5,
+              "frame": 554
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-02.jpg",
+      "sha256": "13a4aa5ef83f4853c0b447f7b44cafc444391ed5851f06434ea3ee68bd3dcb51",
+      "entries": [
+        {
+          "frame": 727,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-007.png",
+          "sha256": "7a4612c6bde6809d04ce29f6d53cd6d723ae7e46194f68c7f875c48bc166a963",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.88,
+              "frame": 727
+            }
+          ]
+        },
+        {
+          "frame": 864,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-008.png",
+          "sha256": "8358fb4a21d0f4f4e7abea6ac5302fcd67f78ad5199a276eb900f66f8120d058",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 864
+            }
+          ]
+        },
+        {
+          "frame": 1058,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-009.png",
+          "sha256": "212c60358c859120ab932706f57eb3166b26f9d3adc2e54913eacc41c526075e",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 1058
+            }
+          ]
+        },
+        {
+          "frame": 1253,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-010.png",
+          "sha256": "1ded11c37b0f75e1b3cd507616d9fd4de6c956a962f038087da36ad811ac44ab",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 1253
+            }
+          ]
+        },
+        {
+          "frame": 1315,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-011.png",
+          "sha256": "ccf4d9c4d680298b9f1e04d7dd27042c95e312ba22344355e2fe1a2a3b637caf",
+          "observations": [
+            {
+              "scene": "01-overview",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 1315
+            }
+          ]
+        },
+        {
+          "frame": 1316,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-012.png",
+          "sha256": "4a09d4287f049764b07eb048254ce45965f7164b4af0949b3d17f4e2e19383c6",
+          "observations": [
+            {
+              "scene": "02-familiar-action",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 1316
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-03.jpg",
+      "sha256": "29f49b9810c340a3dea41741716ce919943e38d635e68e4edd5fd6fcd33a3c42",
+      "entries": [
+        {
+          "frame": 1378,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-013.png",
+          "sha256": "7b4d101272b876c089fa4ba0fa1f6d624322e54d682111e270c4b3af315f70b9",
+          "observations": [
+            {
+              "scene": "02-familiar-action",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 1378
+            }
+          ]
+        },
+        {
+          "frame": 1574,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-014.png",
+          "sha256": "1e4fbc99c424bcd2975f93eb56e1a51e1ce51ec81022b65a3d2c69e56a418e6f",
+          "observations": [
+            {
+              "scene": "02-familiar-action",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 1574
+            }
+          ]
+        },
+        {
+          "frame": 1769,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-015.png",
+          "sha256": "2ef1b5913febad55ee48fc1ab10969ed111a6efda012f7f0b2cf87e5e3dd0594",
+          "observations": [
+            {
+              "scene": "02-familiar-action",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 1769
+            }
+          ]
+        },
+        {
+          "frame": 1921,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-016.png",
+          "sha256": "d87cf1ead40f9670a6ecb600721b3709e0e1c27c39d3721cc86f0bea74acf85f",
+          "observations": [
+            {
+              "scene": "02-familiar-action",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 1921
+            }
+          ]
+        },
+        {
+          "frame": 2107,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-017.png",
+          "sha256": "bc2e1ca644df85a543a97aea71e16064c14916ae9f135574609c9c5c6970d708",
+          "observations": [
+            {
+              "scene": "02-familiar-action",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 2107
+            }
+          ]
+        },
+        {
+          "frame": 2293,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-018.png",
+          "sha256": "bc2e1ca644df85a543a97aea71e16064c14916ae9f135574609c9c5c6970d708",
+          "observations": [
+            {
+              "scene": "02-familiar-action",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 2293
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-04.jpg",
+      "sha256": "eb580d934b13a7fb22688e7cb3a61d1d573ae6be9a6f361365702a29320056cf",
+      "entries": [
+        {
+          "frame": 2353,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-019.png",
+          "sha256": "8badbbd24b828978e7fd75f66285218e2ef2e7d532a737ef68cea7f7ae6d927a",
+          "observations": [
+            {
+              "scene": "02-familiar-action",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 2353
+            }
+          ]
+        },
+        {
+          "frame": 2354,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-020.png",
+          "sha256": "75a6cc832b319d04bc76ac58ccbef9a2d472bf9d0e7791e71809a5665ad17f1c",
+          "observations": [
+            {
+              "scene": "03-patterns-not-ranking",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 2354
+            }
+          ]
+        },
+        {
+          "frame": 2416,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-021.png",
+          "sha256": "da71f11fb76a8e7c1e180bfb9e7e4d94acc0dc9f0cbb9d5844ecbeceb712da20",
+          "observations": [
+            {
+              "scene": "03-patterns-not-ranking",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 2416
+            }
+          ]
+        },
+        {
+          "frame": 2613,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-022.png",
+          "sha256": "de8be5bb6126a3148364064230cbcf55abc87b08e220586888dd50d274b78f92",
+          "observations": [
+            {
+              "scene": "03-patterns-not-ranking",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 2613
+            }
+          ]
+        },
+        {
+          "frame": 2809,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-023.png",
+          "sha256": "5d1d829f7adfa99f16e0e4190efc9172182e3273178cee21fb5165685d29da97",
+          "observations": [
+            {
+              "scene": "03-patterns-not-ranking",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 2809
+            }
+          ]
+        },
+        {
+          "frame": 2953,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-024.png",
+          "sha256": "018a12c426d030ec3a2fda976468743991c5dff4e878ef8dba2c78371f739fd6",
+          "observations": [
+            {
+              "scene": "03-patterns-not-ranking",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 2953
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-05.jpg",
+      "sha256": "4f42c97f332be2e8f4c8775aefcf2f7a1869c1bda4b2b78c3e0109517fd1989b",
+      "entries": [
+        {
+          "frame": 3137,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-025.png",
+          "sha256": "9085427be6f60f3d51331edc828c7b56f20381b31a37334b935bc6dafdf558f7",
+          "observations": [
+            {
+              "scene": "03-patterns-not-ranking",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 3137
+            }
+          ]
+        },
+        {
+          "frame": 3322,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-026.png",
+          "sha256": "7a718b57070f7b13b383627ecca520862f5f98d01e96fb4199a40a0dd1f9a24a",
+          "observations": [
+            {
+              "scene": "03-patterns-not-ranking",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 3322
+            }
+          ]
+        },
+        {
+          "frame": 3380,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-027.png",
+          "sha256": "afbe8892afa1e9e74e5d00f02e32756eb6e2e91d8dba029878d003c210a75a10",
+          "observations": [
+            {
+              "scene": "03-patterns-not-ranking",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 3380
+            }
+          ]
+        },
+        {
+          "frame": 3381,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-028.png",
+          "sha256": "a86b826ae5b6f508c1a64f847d5fc3512f490432dcf9a97348eb1b56de8a74d4",
+          "observations": [
+            {
+              "scene": "04-mining-route",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 3381
+            }
+          ]
+        },
+        {
+          "frame": 3443,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-029.png",
+          "sha256": "2212bf9ef5ebbd48e31dc25c7dd5c70334fb7589620393b41d494671ed8db8b3",
+          "observations": [
+            {
+              "scene": "04-mining-route",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 3443
+            }
+          ]
+        },
+        {
+          "frame": 3637,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-030.png",
+          "sha256": "63479d9b58485cc5a596778b419087d62f04a2b2cd5d398615b1d35c2c57be98",
+          "observations": [
+            {
+              "scene": "04-mining-route",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 3637
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-06.jpg",
+      "sha256": "c39fa6d567fe44a454c4509695d27bc95ddf4a3e52dfea1835b51397838bcb63",
+      "entries": [
+        {
+          "frame": 3831,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-031.png",
+          "sha256": "164d173d6c0aaf52cea16dea7d8339c5253c7162a22e05a09f850575c3a3b7d0",
+          "observations": [
+            {
+              "scene": "04-mining-route",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 3831
+            }
+          ]
+        },
+        {
+          "frame": 3915,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-032.png",
+          "sha256": "91788d42e6184600d6381d107e08df96be78ce6bd8f3298054f253612a7fafa6",
+          "observations": [
+            {
+              "scene": "04-mining-route",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 3915
+            }
+          ]
+        },
+        {
+          "frame": 3916,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-033.png",
+          "sha256": "bb243313fbc95fec4e2a900a7d13c53f520ec074001d20f7b58f6bf5d308243b",
+          "observations": [
+            {
+              "scene": "05-route-under-pressure",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 3916
+            }
+          ]
+        },
+        {
+          "frame": 3979,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-034.png",
+          "sha256": "26abbff36816f784f53cc306aab02a7657534158ce2422858d7f65b7ca795e47",
+          "observations": [
+            {
+              "scene": "05-route-under-pressure",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 3979
+            }
+          ]
+        },
+        {
+          "frame": 4180,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-035.png",
+          "sha256": "8a80959c2d6b1d291fcdf984035f25044ec608ac3fb6ce1d77b327e26d932162",
+          "observations": [
+            {
+              "scene": "05-route-under-pressure",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 4180
+            }
+          ]
+        },
+        {
+          "frame": 4380,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-036.png",
+          "sha256": "b7ae84b3a875e92b6871cf6e7abcd716f09aab0a43489c2ec9b44edf9551c405",
+          "observations": [
+            {
+              "scene": "05-route-under-pressure",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 4380
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-07.jpg",
+      "sha256": "ff1744b39506f776bbdf569a9bd33862eaa5d93b4529c91fba02fe850e72b139",
+      "entries": [
+        {
+          "frame": 4524,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-037.png",
+          "sha256": "bb4afcc6db2d9d00eba8e4aba1dd6f2aabc67d9fe88d50072eb554f3099a753c",
+          "observations": [
+            {
+              "scene": "05-route-under-pressure",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 4524
+            }
+          ]
+        },
+        {
+          "frame": 4732,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-038.png",
+          "sha256": "ad036386d0715c0f0cb913f65a4de9cb63cf5902e6d54a25eb472c5459b54757",
+          "observations": [
+            {
+              "scene": "05-route-under-pressure",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 4732
+            }
+          ]
+        },
+        {
+          "frame": 4940,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-039.png",
+          "sha256": "289f245ad7dbcebc393b6036f673c139a7bc03706d1914fcb0682d40cfd9e885",
+          "observations": [
+            {
+              "scene": "05-route-under-pressure",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 4940
+            }
+          ]
+        },
+        {
+          "frame": 5010,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-040.png",
+          "sha256": "d39f04cf07a7cdd31c4d73556f8a4e412dd0ba6e0d20edde3491683e296ca7f6",
+          "observations": [
+            {
+              "scene": "05-route-under-pressure",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 5010
+            }
+          ]
+        },
+        {
+          "frame": 5011,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-041.png",
+          "sha256": "1db91703f7d9295d8758bab443e20de487737cc74354a871eb9093bc1b6bd522",
+          "observations": [
+            {
+              "scene": "16-effects-and-position",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 5011
+            }
+          ]
+        },
+        {
+          "frame": 5040,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-042.png",
+          "sha256": "4fbaa383d8c99f24005f22cff89ebc8d48dad9ed12d68ff5b9b73253a4531da8",
+          "observations": [
+            {
+              "scene": "16-effects-and-position",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.12,
+              "frame": 5040
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-08.jpg",
+      "sha256": "56805d29d9a629432ca198620b297bf9ff608884d418eb1b68b2c6d7e4ae41ba",
+      "entries": [
+        {
+          "frame": 5131,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-043.png",
+          "sha256": "9dfc2a2ef130334a9beb7370cb9f5f20199aa8e3d5ad78c5d5a644137d10d0c5",
+          "observations": [
+            {
+              "scene": "16-effects-and-position",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.5,
+              "frame": 5131
+            }
+          ]
+        },
+        {
+          "frame": 5223,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-044.png",
+          "sha256": "423bbafc2d8dddfe724732558b6f0ccab1b5a499725cce89e270d33604a1e434",
+          "observations": [
+            {
+              "scene": "16-effects-and-position",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.88,
+              "frame": 5223
+            }
+          ]
+        },
+        {
+          "frame": 5257,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-045.png",
+          "sha256": "8d276373b4cf9118b0895e5e9eb4954460c49a930f90af3fc9e5e907935acd00",
+          "observations": [
+            {
+              "scene": "16-effects-and-position",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 5257
+            }
+          ]
+        },
+        {
+          "frame": 5258,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-046.png",
+          "sha256": "e4f21ca133e1883ee427d71f98ab674d34b709dfa8a0239d37e8a2d1adc34adb",
+          "observations": [
+            {
+              "scene": "15-corridor-to-open",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 5258
+            }
+          ]
+        },
+        {
+          "frame": 5286,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-047.png",
+          "sha256": "8d2f61d5bdfd9647bde2571508a25e6c4c43a2859ba4d7a3c1497c3a007ffc21",
+          "observations": [
+            {
+              "scene": "15-corridor-to-open",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.12,
+              "frame": 5286
+            }
+          ]
+        },
+        {
+          "frame": 5374,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-048.png",
+          "sha256": "a9311559217725ff670510651135e77a0ba53cc2ea736dbfb1010cffad3271b5",
+          "observations": [
+            {
+              "scene": "15-corridor-to-open",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.5,
+              "frame": 5374
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-09.jpg",
+      "sha256": "226e76a8f7c37b7f3c270935b0b48f882f6ef799e888d0d37fa48b727e0e1fdb",
+      "entries": [
+        {
+          "frame": 5463,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-049.png",
+          "sha256": "2e1ed6bfd2dbe02f66b1e1c3e57a87ce4e0e78125e9dba54dc7dbf84cb03c5ce",
+          "observations": [
+            {
+              "scene": "15-corridor-to-open",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.88,
+              "frame": 5463
+            }
+          ]
+        },
+        {
+          "frame": 5490,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-050.png",
+          "sha256": "e4221ee6067c31a8a4174dc73a17a075b7ced435745ca2eb4dc2de4dba09538b",
+          "observations": [
+            {
+              "scene": "15-corridor-to-open",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 5490
+            }
+          ]
+        },
+        {
+          "frame": 5491,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-051.png",
+          "sha256": "6ceb1cfe9ba448c9012c8506da48769232a60289288757242adce8417543f05c",
+          "observations": [
+            {
+              "scene": "07-purpose-combination",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 5491
+            }
+          ]
+        },
+        {
+          "frame": 5566,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-052.png",
+          "sha256": "20d038d38373b7803972cbefdb4818af02bdf1cf1f40c07be830936a699b75cd",
+          "observations": [
+            {
+              "scene": "07-purpose-combination",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 5566
+            }
+          ]
+        },
+        {
+          "frame": 5804,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-053.png",
+          "sha256": "2793fe20777f0266dafb7282022589cef0ac664a1aed23fe3c96c8641817a50c",
+          "observations": [
+            {
+              "scene": "07-purpose-combination",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 5804
+            }
+          ]
+        },
+        {
+          "frame": 6042,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-054.png",
+          "sha256": "40f66797164344f2681be648679f8405401da4b3569b94906a46c4aa88ea9287",
+          "observations": [
+            {
+              "scene": "07-purpose-combination",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 6042
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-10.jpg",
+      "sha256": "3fc170e784eae0c332b105325bfac1ddb610a2200a0fd4aa5d69534ee39044d5",
+      "entries": [
+        {
+          "frame": 6201,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-055.png",
+          "sha256": "11c4689d744c932f1c3ba33600b40549dfb98774b4d6222cfe36b30fe45a4eb9",
+          "observations": [
+            {
+              "scene": "07-purpose-combination",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 6201
+            }
+          ]
+        },
+        {
+          "frame": 6427,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-056.png",
+          "sha256": "b65ed6e4892f55ef279b0d09a94a7d4ef0745b922b3c4f6677450a478ce051a5",
+          "observations": [
+            {
+              "scene": "07-purpose-combination",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 6427
+            }
+          ]
+        },
+        {
+          "frame": 6653,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-057.png",
+          "sha256": "dd13cd9ea85c77805ed53f6f56943c230f4ef111125b0ca55bd79767d201c3f3",
+          "observations": [
+            {
+              "scene": "07-purpose-combination",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 6653
+            }
+          ]
+        },
+        {
+          "frame": 6726,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-058.png",
+          "sha256": "dd13cd9ea85c77805ed53f6f56943c230f4ef111125b0ca55bd79767d201c3f3",
+          "observations": [
+            {
+              "scene": "07-purpose-combination",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 6726
+            }
+          ]
+        },
+        {
+          "frame": 6727,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-059.png",
+          "sha256": "d6fb3be1e5481401f862479bfe8c4b8ebda13974093575001031f81edca06336",
+          "observations": [
+            {
+              "scene": "08-world-and-route",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 6727
+            }
+          ]
+        },
+        {
+          "frame": 6792,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-060.png",
+          "sha256": "3946fd419ac06b39556ceeaf64b392b77721d55121706bdcd118d987d0ec111d",
+          "observations": [
+            {
+              "scene": "08-world-and-route",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 6792
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-11.jpg",
+      "sha256": "19524b62daf59c2f935bada9fa4cd775c69b1399f2098570d9ac8e361a9a7403",
+      "entries": [
+        {
+          "frame": 6998,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-061.png",
+          "sha256": "fa051f163cdeed7bd85b95f3b49dc52733a3d2bed735469c723966cd1bbf41d5",
+          "observations": [
+            {
+              "scene": "08-world-and-route",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 6998
+            }
+          ]
+        },
+        {
+          "frame": 7204,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-062.png",
+          "sha256": "096636b2860a81bc439bba70ce889a98ab0053ee04fb73cc6b3924430dc98847",
+          "observations": [
+            {
+              "scene": "08-world-and-route",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 7204
+            }
+          ]
+        },
+        {
+          "frame": 7348,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-063.png",
+          "sha256": "3f9b8ce45ea0e631c4793fe0aa445e24234f5fb83bb9cd9a480eaf56d3b30daa",
+          "observations": [
+            {
+              "scene": "08-world-and-route",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 7348
+            }
+          ]
+        },
+        {
+          "frame": 7541,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-064.png",
+          "sha256": "3bef9895891960b8068cfbb97b592af14942b52377ef66e607de8830980efc30",
+          "observations": [
+            {
+              "scene": "08-world-and-route",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 7541
+            }
+          ]
+        },
+        {
+          "frame": 7734,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-065.png",
+          "sha256": "0936f8799187f25bb839d84f9500694f741d42a4d76611b26d1a17b8252c4be1",
+          "observations": [
+            {
+              "scene": "08-world-and-route",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 7734
+            }
+          ]
+        },
+        {
+          "frame": 7796,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-066.png",
+          "sha256": "b26d4eae751198703809675a08b0abd49fc4c042b0fd51f425577e02af580668",
+          "observations": [
+            {
+              "scene": "08-world-and-route",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 7796
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-12.jpg",
+      "sha256": "9ca1296dfe38736f5ac09d04eb922e8a0cc180e2b70104035d8b2993de7c3df9",
+      "entries": [
+        {
+          "frame": 7797,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-067.png",
+          "sha256": "f96ad6f1b3062f90508bfc30db6ce57b59cfdac4400784cab6708a1162e23bef",
+          "observations": [
+            {
+              "scene": "09-combination-in-motion",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 7797
+            }
+          ]
+        },
+        {
+          "frame": 7864,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-068.png",
+          "sha256": "bfb426b9d53547f0f95f105a1759b0d8f51cad9884ffdee7bf04a0eedad45139",
+          "observations": [
+            {
+              "scene": "09-combination-in-motion",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 7864
+            }
+          ]
+        },
+        {
+          "frame": 8043,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-069.png",
+          "sha256": "36b193cda5045ae93654b579a2ea6335bebc7edf6af3966e9d268ca0c5823650",
+          "observations": [
+            {
+              "scene": "09-combination-in-motion",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 8043
+            }
+          ]
+        },
+        {
+          "frame": 8222,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-070.png",
+          "sha256": "eb38dea83582b6ae41476e47423b98d21744f56f0cb355ceab75d03275064c74",
+          "observations": [
+            {
+              "scene": "09-combination-in-motion",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 8222
+            }
+          ]
+        },
+        {
+          "frame": 8279,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-071.png",
+          "sha256": "ef146447413f28cf1e93ae3da52f93aa3f95592b29f4073a5d87d3fc20ec0969",
+          "observations": [
+            {
+              "scene": "09-combination-in-motion",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 8279
+            }
+          ]
+        },
+        {
+          "frame": 8280,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-072.png",
+          "sha256": "c34f93a5bfa8e5a3b6984a790d48194647073126c081416fd87b0150911b0005",
+          "observations": [
+            {
+              "scene": "19-visible-destination",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 8280
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-13.jpg",
+      "sha256": "9a650a61e0a4dc22ea493e092b79c6ecd6e16fc0107f8813775b37dbf7c1169c",
+      "entries": [
+        {
+          "frame": 8304,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-073.png",
+          "sha256": "1285d25bb18985fa46c8d7a68dce1ff576eeaf635fdec448d05d2d3e2525fbea",
+          "observations": [
+            {
+              "scene": "19-visible-destination",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.12,
+              "frame": 8304
+            }
+          ]
+        },
+        {
+          "frame": 8380,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-074.png",
+          "sha256": "688205f9445a2ce75ac6adace06ef062cc8202eabab56adb2f8d412d60081b97",
+          "observations": [
+            {
+              "scene": "19-visible-destination",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.5,
+              "frame": 8380
+            }
+          ]
+        },
+        {
+          "frame": 8455,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-075.png",
+          "sha256": "74b3ea4f41a2c7c72415276d28547ed5c5498ab9247246bcd12f096de90991a4",
+          "observations": [
+            {
+              "scene": "19-visible-destination",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.88,
+              "frame": 8455
+            }
+          ]
+        },
+        {
+          "frame": 8495,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-076.png",
+          "sha256": "5bc9df16d98eed4f5e0dde6ffa7656df295b85e4bcc3e54b188f3377bf22868b",
+          "observations": [
+            {
+              "scene": "19-visible-destination",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 8495
+            }
+          ]
+        },
+        {
+          "frame": 8496,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-077.png",
+          "sha256": "5aa214b0acaedec81270b95cf38ff08c37bced38782afaee271074685a251544",
+          "observations": [
+            {
+              "scene": "24-destination-and-danger",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 8496
+            }
+          ]
+        },
+        {
+          "frame": 8527,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-078.png",
+          "sha256": "1b1b078ff8c35706b354571d4695a6e85d47e4ef8b3bc064cb799ca4831ab65a",
+          "observations": [
+            {
+              "scene": "24-destination-and-danger",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.12,
+              "frame": 8527
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-14.jpg",
+      "sha256": "835574cbd26e14961cb73369668ae42d93d5365e931aa73a07c26c222af412ca",
+      "entries": [
+        {
+          "frame": 8626,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-079.png",
+          "sha256": "6931fcb1e9015cc7abc3013b2d5acf11af3d957e95083053da4e9444001580c1",
+          "observations": [
+            {
+              "scene": "24-destination-and-danger",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.5,
+              "frame": 8626
+            }
+          ]
+        },
+        {
+          "frame": 8725,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-080.png",
+          "sha256": "2da1ec357fb1684a88f88441680fb136388417789c1c9d10c16591fe94428a07",
+          "observations": [
+            {
+              "scene": "24-destination-and-danger",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.88,
+              "frame": 8725
+            }
+          ]
+        },
+        {
+          "frame": 8779,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-081.png",
+          "sha256": "c7345813cccc0dc252dd1e536b7e1a0a8347abcb124e1da8a84d039b1e71b83e",
+          "observations": [
+            {
+              "scene": "24-destination-and-danger",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 8779
+            }
+          ]
+        },
+        {
+          "frame": 8780,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-082.png",
+          "sha256": "cfbb6922fd0729dce08caa5df96a704fdc1fc45f171aa2eb6c3025bf804cfe2c",
+          "observations": [
+            {
+              "scene": "10-playing-together",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 8780
+            }
+          ]
+        },
+        {
+          "frame": 8836,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-083.png",
+          "sha256": "b9a5364872836edd21a29ce6fc502a56451a0907b2248349d41789e6798eaa10",
+          "observations": [
+            {
+              "scene": "10-playing-together",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 8836
+            }
+          ]
+        },
+        {
+          "frame": 9015,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-084.png",
+          "sha256": "2ffdd458b1dbd397d8bbdac0a44dfc3f18f1b98eabefe9a73d9ffeb98381ccd1",
+          "observations": [
+            {
+              "scene": "10-playing-together",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 9015
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-15.jpg",
+      "sha256": "b536efed744d86d990aed223e9bc80393f2f5fa98815b793a7846fd25c7863b1",
+      "entries": [
+        {
+          "frame": 9194,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-085.png",
+          "sha256": "bc2e87831b302438fb30e30d7158cd65d8d24647f83fa3214e4867d63056c9a2",
+          "observations": [
+            {
+              "scene": "10-playing-together",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 9194
+            }
+          ]
+        },
+        {
+          "frame": 9344,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-086.png",
+          "sha256": "2bf6bd7e931cad1a25000c52a92a9e6767aa5c0af17881ba176ca3d9190a5bb4",
+          "observations": [
+            {
+              "scene": "10-playing-together",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 9344
+            }
+          ]
+        },
+        {
+          "frame": 9539,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-087.png",
+          "sha256": "3d9c08cd7be69e931975ce8af78a3cc0eed104e89af14697445a10e29f1337ce",
+          "observations": [
+            {
+              "scene": "10-playing-together",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 9539
+            }
+          ]
+        },
+        {
+          "frame": 9734,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-088.png",
+          "sha256": "f499944127cae08208136deec0b1c290356e51c5ecb01f076d4b324d19138540",
+          "observations": [
+            {
+              "scene": "10-playing-together",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 9734
+            }
+          ]
+        },
+        {
+          "frame": 9819,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-089.png",
+          "sha256": "510dea4806a3c574169767f428dbfa68b801c78e284c63323343d3369fbfe9b2",
+          "observations": [
+            {
+              "scene": "10-playing-together",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 9819
+            }
+          ]
+        },
+        {
+          "frame": 9820,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-090.png",
+          "sha256": "b1abebe631b01e4074686631a82b8cce900d6843b4a41026aa01acb99e10a824",
+          "observations": [
+            {
+              "scene": "21-read-before-ranking",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 9820
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-16.jpg",
+      "sha256": "12c7955eeb27113b62b70aa840752cd4cf4ae1e4e0281907e9cac082b2198e7e",
+      "entries": [
+        {
+          "frame": 9840,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-091.png",
+          "sha256": "1c8a9a79cce1aae531213e64683c4e57c1e7fee7e8577c7597700a6b99b6bbe7",
+          "observations": [
+            {
+              "scene": "21-read-before-ranking",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.12,
+              "frame": 9840
+            }
+          ]
+        },
+        {
+          "frame": 9904,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-092.png",
+          "sha256": "f2dbbea950aea8b84ee0b630cedb06d35f71930a59c54733c6755017f9111b95",
+          "observations": [
+            {
+              "scene": "21-read-before-ranking",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.5,
+              "frame": 9904
+            }
+          ]
+        },
+        {
+          "frame": 9967,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-093.png",
+          "sha256": "c05728fc63076931bb1cb0cb8bbac7c1ccbb13ed28ae009bdde9908601fc9620",
+          "observations": [
+            {
+              "scene": "21-read-before-ranking",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.88,
+              "frame": 9967
+            }
+          ]
+        },
+        {
+          "frame": 9987,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-094.png",
+          "sha256": "47bb9390b7fc139049b93b64769afae601f2f7b6a679d557b977c17e144804f1",
+          "observations": [
+            {
+              "scene": "21-read-before-ranking",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 9987
+            }
+          ]
+        },
+        {
+          "frame": 9988,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-095.png",
+          "sha256": "f9a6b9d2ca32f7f20a803faad949dcba3d288321668a6d9998172d2d1d4d5bf1",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 9988
+            }
+          ]
+        },
+        {
+          "frame": 10052,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-096.png",
+          "sha256": "9b000696726e0bcefcb8b7098201009d6626bc3f3c484c562df931d0c4457ce4",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.12,
+              "frame": 10052
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-17.jpg",
+      "sha256": "0cde5ef353a70e9e0ea01d2dda9ed32e7bbc4284a7f3645756ccf1493bc00dd2",
+      "entries": [
+        {
+          "frame": 10253,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-097.png",
+          "sha256": "63b1d4df32634d72704d00351a65d79ddf22fd6518de89160dbdc94ec4a47a0b",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.5,
+              "frame": 10253
+            }
+          ]
+        },
+        {
+          "frame": 10455,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-098.png",
+          "sha256": "db64dff7a13be2b764eccabe1afc0c17bdff680729b7479b50d5b796fb6a36bb",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.88,
+              "frame": 10455
+            }
+          ]
+        },
+        {
+          "frame": 10591,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-099.png",
+          "sha256": "5ce39ec4d1ba8952b73db948611834d4cc983f2d883dcb48191ca06225b7374e",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.12,
+              "frame": 10591
+            }
+          ]
+        },
+        {
+          "frame": 10772,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-100.png",
+          "sha256": "cb258e5c378fe5eff7178992da0b1c5acca68a6014f6413e324a6f131e144308",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.5,
+              "frame": 10772
+            }
+          ]
+        },
+        {
+          "frame": 10953,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-101.png",
+          "sha256": "cb258e5c378fe5eff7178992da0b1c5acca68a6014f6413e324a6f131e144308",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.88,
+              "frame": 10953
+            }
+          ]
+        },
+        {
+          "frame": 11012,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-102.png",
+          "sha256": "5771e2c15166205f0a87b66e057f0c2d4d4c4ca1c0e94e0c2a9345fad18e0fa2",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 11012
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-18.jpg",
+      "sha256": "3e87cfdbb4db8bea4643840a42d0539cf6ddb8deca5f42c6105d952ddcb82719",
+      "entries": [
+        {
+          "frame": 11013,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-103.png",
+          "sha256": "ec78a0c51680aa10cb5136015be1c03d49d63a85dfba9c11ea8371f34a1e80db",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 2,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 11013
+            }
+          ]
+        },
+        {
+          "frame": 11096,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-104.png",
+          "sha256": "4b4ed0437ab00d0a51e795f6c9f72248f69682cd6a9323dcc66afbe8c41e25de",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 2,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 11096
+            }
+          ]
+        },
+        {
+          "frame": 11304,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-105.png",
+          "sha256": "9c7edc1132286210599db0d2d2b037a31030cb26eaa4b0657113439521b0f209",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 2,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 11304
+            }
+          ]
+        },
+        {
+          "frame": 11511,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-106.png",
+          "sha256": "2110adde43fb003aa30b929e9d991aaeeb13f42f1283a0b57df81fd2df515b32",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 2,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 11511
+            }
+          ]
+        },
+        {
+          "frame": 11578,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-107.png",
+          "sha256": "9deba94ea5b839a858dd959240f0027a1c47b0ffeb57a5f2883dc1e07bca239a",
+          "observations": [
+            {
+              "scene": "11-several-appeals",
+              "part": 2,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 11578
+            }
+          ]
+        },
+        {
+          "frame": 11579,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-108.png",
+          "sha256": "d1bd9aa2687b0c3b180188c3c3b378f4b744221b3045247c33956ec68d8abb46",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 11579
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-19.jpg",
+      "sha256": "8cd1848f1c1d837991f6ef041d2629a121fac85f69e52d1af0ed13713b84515f",
+      "entries": [
+        {
+          "frame": 11652,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-109.png",
+          "sha256": "29f5e1e8030c458913decb67fb43bc71c8ca38c16b9c978bb3162416dd1b6714",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.12,
+              "frame": 11652
+            }
+          ]
+        },
+        {
+          "frame": 11881,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-110.png",
+          "sha256": "bddcc5f8dba883a869d605d5b29db41ac98b108d166b8325419589b781fbdacf",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.5,
+              "frame": 11881
+            }
+          ]
+        },
+        {
+          "frame": 12111,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-111.png",
+          "sha256": "a19ace8a08bf99616655f5039aee480c08208903c9e6eea6ed2934e85ac8c8b7",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 1,
+              "paragraph": 1,
+              "phase": 0.88,
+              "frame": 12111
+            }
+          ]
+        },
+        {
+          "frame": 12190,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-112.png",
+          "sha256": "8d24cccfe6fa9ed504db29bfbcf4bf3922ff298b5cb52776e8e2cf983d016ba3",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 12190
+            }
+          ]
+        },
+        {
+          "frame": 12191,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-113.png",
+          "sha256": "ba42f1038e36063199d11f961efb738f2f7052d75e1ae7aa3164255040e637ea",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 2,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 12191
+            }
+          ]
+        },
+        {
+          "frame": 12267,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-114.png",
+          "sha256": "dc8a014da3f466e39af3ab6b4e5d1be99dfbd6c8792926065c4ab548052a8c73",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 2,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 12267
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-20.jpg",
+      "sha256": "4b541feca1c597005612574b949f47193888ef2bc96ff10ce031366db146ee5b",
+      "entries": [
+        {
+          "frame": 12458,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-115.png",
+          "sha256": "914dfdb4fa48fbbb9c104ae3cf305e3c69d5ece9adb9e1108f16fbfeeaa8f744",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 2,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 12458
+            }
+          ]
+        },
+        {
+          "frame": 12650,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-116.png",
+          "sha256": "460ddcad9cd0058521e0087e037a8245f93e637582916db1d5f6734f2d77c7d6",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 2,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 12650
+            }
+          ]
+        },
+        {
+          "frame": 12730,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-117.png",
+          "sha256": "2736b251aeeab77b1001204b10ed5800575c99021002fc01c964c385fa1dc48f",
+          "observations": [
+            {
+              "scene": "12-check-your-reason",
+              "part": 2,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 12730
+            }
+          ]
+        },
+        {
+          "frame": 12731,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-118.png",
+          "sha256": "700cf7f9e9cd9c7592823db676a09afd1ab545e15d5b48fae99346d1b9728896",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-start",
+              "frame": 12731
+            }
+          ]
+        },
+        {
+          "frame": 12797,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-119.png",
+          "sha256": "7a25485f49481fe1beaa11f62bb719502538f65b65d7c7c72e93f5242d278544",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.12,
+              "frame": 12797
+            }
+          ]
+        },
+        {
+          "frame": 12997,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-120.png",
+          "sha256": "30e33934b2589bd816a72ea8e3cf2cafe5e7647fa4628f287ccfed37324abed4",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.5,
+              "frame": 12997
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-21.jpg",
+      "sha256": "96b7bcff8912049c70e03b45d9597a021b8b52012f37673238b32d3b87d12b51",
+      "entries": [
+        {
+          "frame": 13197,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-121.png",
+          "sha256": "abb475ea68c319a076cbcc15d186e03314ec182988a3234856fe1fcae0215b6b",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 2,
+              "phase": 0.88,
+              "frame": 13197
+            }
+          ]
+        },
+        {
+          "frame": 13342,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-122.png",
+          "sha256": "f2728266e8b8cc9e9be9a0ea42b6fd345f91effd981b935902efdb6fa4e9a6f9",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.12,
+              "frame": 13342
+            }
+          ]
+        },
+        {
+          "frame": 13558,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-123.png",
+          "sha256": "4301baa5d8aa692719f867fe061c5bda9df6ef8a33e69f3e2e1baa6aef8de666",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.5,
+              "frame": 13558
+            }
+          ]
+        },
+        {
+          "frame": 13773,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-124.png",
+          "sha256": "4301baa5d8aa692719f867fe061c5bda9df6ef8a33e69f3e2e1baa6aef8de666",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 3,
+              "phase": 0.88,
+              "frame": 13773
+            }
+          ]
+        },
+        {
+          "frame": 13932,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-125.png",
+          "sha256": "9762286b28f6b0a39b643735494f3cb11c766642a70922bd77096f57f4c9f083",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.12,
+              "frame": 13932
+            }
+          ]
+        },
+        {
+          "frame": 14183,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-126.png",
+          "sha256": "7d076831b19b94d110a921910d6c14f5b27e28a767e1ad6235c702c0bd846415",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.5,
+              "frame": 14183
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    },
+    {
+      "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-boards/board-22.jpg",
+      "sha256": "72aedc12350be75aa2766e16bf1e357355aa3bfcb84c79d9f3d15213c6317495",
+      "entries": [
+        {
+          "frame": 14434,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-127.png",
+          "sha256": "475f135994d0c644239c4056311969127e90f976b5afc061f77821c20cea7140",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": 4,
+              "phase": 0.88,
+              "frame": 14434
+            }
+          ]
+        },
+        {
+          "frame": 14550,
+          "path": "shared/output/similar-game-design/white-measured-v1/motion-qa-native/frame-128.png",
+          "sha256": "99484f00b6749d906049aead3f99378825fa957c99f5cb3dbf694493d88d7032",
+          "observations": [
+            {
+              "scene": "13-conclusion",
+              "part": 1,
+              "paragraph": null,
+              "phase": "part-end",
+              "frame": 14550
+            }
+          ]
+        }
+      ],
+      "directlyRead": true
+    }
+  ],
+  "allOriginalPcmPreserved": true,
+  "actualExitObserved": true,
+  "actualExitObservedAt": "2026-10-08T20:14:31.486648+00:00",
+  "directReview": "projects/similar-game-design/production/white-motion-caption-text-direct-review-v1.json"
+}

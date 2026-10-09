@@ -1,0 +1,12 @@
+const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const root=path.resolve(__dirname,'../../..'),base=path.relative(root,__dirname).replaceAll('\\','/');
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,'')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const write=(p,v)=>fs.writeFileSync(path.join(root,p),JSON.stringify(v,null,2)+'\n');
+const assert=(c,m)=>{if(!c)throw Error(m);};
+const statePath=base+'/white-measured-render-v1.json',s=read(statePath),processPath=base+'/white-measured-actual-process-v1.json',p=read(processPath);
+assert(s.status==='actual-ui-preflight-approved-render-not-started'&&p.ProcessId===32840&&p.ParentProcessId===24136,'Wrong initial render owner');
+assert(p.CommandLine.includes('-threads 2 -filter_threads 1')&&p.CommandLine.includes('white-measured-v1\\authoring-project-v1.mp4'),'Command mismatch');
+const now=new Date().toISOString();s.status='single-CPU2-white-measured-render-running';s.renderStarted=true;s.startedAt=p.CreationDate;s.owner={...p,sessionType:'existing-Motion-Canvas-UI',browserTabId:'118',serverPid:24136,cpuThreads:2,gpuJobs:0};s.processObservation={path:processPath,sha256:sha(processPath)};s.updatedAt=now;write(statePath,s);
+const checkpointPath=base+'/latest-checkpoint.json',cp=read(checkpointPath);cp.priorOwnedJob=cp.ownedJob;cp.ownedJob={...s.owner,state:statePath,workerExpectedRunning:true,exitCode:null,actualExitObserved:false};cp.stage='current24-measured73-white-single-render-running';cp.nextAction='Read all current caption candidates while the single white render progresses; after actual completion, probe/decode/split and directly read all paragraph motion pixels.';cp.updatedAt=now;write(checkpointPath,cp);
+const queuePath='production/batches/sakurai-planning-game-design/queue.json',oldSha=sha(queuePath),q=read(queuePath),item=q.items.find(x=>x.slug==='similar-game-design');assert(item&&item.videoId===null,'Wrong queue');item.currentExecution=cp.ownedJob;item.stage=cp.stage;item.nextAction=cp.nextAction;item.updatedAt=now;assert(sha(queuePath)===oldSha,'Concurrent queue change');write(queuePath,q);
+console.log(JSON.stringify({state:statePath,pid:p.ProcessId,created:p.CreationDate,singleCpuThreads:2,finalApproval:false}));

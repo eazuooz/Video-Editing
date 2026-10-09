@@ -1,6 +1,6 @@
 import {Node,Rect,Txt,View2D} from '@motion-canvas/2d';
 import {waitFor} from '@motion-canvas/core';
-import {PAPER as P} from '../../../styles/research-paper';
+import {DARK as P} from '../../../styles/research-dark';
 import manifest from '../../../../../projects/{{SLUG}}/project.json';
 
 export function* paperScene(view:View2D,index:number,title:string,subtitle:string,duration:number) {
@@ -21,10 +21,10 @@ export function* paperScene(view:View2D,index:number,title:string,subtitle:strin
   yield* waitFor(Math.min(duration,exampleSeconds));placeholder.remove();
   view.add(<>
     <Txt text={`${index+1} · {{TITLE_EN}}`} x={-864} y={-477} offset={[-1,0]} fontFamily={P.font} fontSize={25} fill={P.muted}/>
-    <Txt text={title} x={-864} y={-405} offset={[-1,0]} fontFamily={P.font} fontSize={52} fontWeight={600} fill={P.ink}/>
+    <Txt text={title} x={-864} y={-405} offset={[-1,0]} fontFamily={P.font} fontSize={52} fontWeight={600} fill={P.title}/>
     <Txt text={subtitle} x={-864} y={-325} offset={[-1,0]} fontFamily={P.font} fontSize={30} fill={P.muted}/>
     <Txt text={'이곳에 한 가지 핵심 도식·비교를 제작합니다.'} fontFamily={P.font} fontSize={38} fill={P.ink}/>
-    <Rect y={425} width={1728} height={86} fill={P.panel} stroke={P.ink} lineWidth={1.5}>
+    <Rect y={290} width={1728} height={86} fill={P.panel} stroke={P.line} lineWidth={1.5}>
       <Txt text={'시청자가 기억할 결론 한 문장'} fontFamily={P.font} fontSize={30} fill={P.ink}/>
     </Rect>
   </>);
