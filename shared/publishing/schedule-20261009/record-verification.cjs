@@ -1,0 +1,66 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const root = path.resolve(__dirname, '../../..');
+const read = p => JSON.parse(fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
+const sha = p => crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const write = (p, value) => fs.writeFileSync(p, JSON.stringify(value, null, 2) + '\n', {flag: 'wx'});
+const plan = read(path.join(__dirname, 'plan.json'));
+const execution = read(path.join(__dirname, 'execution.json'));
+const before = read(path.join(__dirname, 'studio-before-rows.json'));
+const after = read(path.join(__dirname, 'studio-after-reloaded-rows.json'));
+if (execution.items.length !== 23 || new Set(execution.items.map(x => x.videoId)).size !== 23) throw Error('Expected 23 unique actual schedules');
+const proofDir = path.join(__dirname, 'verified-modals');
+fs.mkdirSync(proofDir, {recursive: true});
+const items = execution.items.map(item => {
+  const prepared = plan.items.find(x => x.videoId === item.videoId);
+  const row = after.rows.find(x => x.videoId === item.videoId);
+  const label = item.date.split('-').map(Number).join('. ') + '.';
+  if (!prepared || prepared.date !== item.actualDate || item.actualTime !== '09:00' || item.actualTimezoneOffset !== '+09:00' || !item.actualSavedAndReopened) throw Error('Actual schedule mismatch: ' + item.videoId);
+  if (!row || row.title !== item.title || !row.text.split('\n').includes('예약됨') || !row.text.includes(label)) throw Error('Reloaded Studio row mismatch: ' + item.videoId);
+  const raw = fs.readFileSync(path.join(root, item.evidence), 'utf8');
+  const dom = raw.includes('- dialog "동영상 공개 설정 선택"');
+  if (!raw.includes(label) || !raw.includes('오전 9:00') || !raw.includes('현지 시간대(GMT+0900)')) throw Error('Missing actual UI evidence: ' + item.videoId);
+  let modal;
+  if (dom) {
+    modal = raw.slice(raw.lastIndexOf('- dialog "동영상 공개 설정 선택"'));
+    if (!modal.includes('radio "비공개에서 공개로" [checked]') || !modal.includes('button "예약" [disabled]')) throw Error('Unsealed dialog: ' + item.videoId);
+  } else {
+    const m = raw.match(/^\s*\d+ container Description: 동영상 공개 설정 선택, ID: dialog$/m);
+    if (!m || !raw.includes('button (disabled) 예약')) throw Error('Unsealed AX dialog: ' + item.videoId);
+    modal = raw.slice(m.index).split('The focused UI element')[0].trim() + '\n';
+  }
+  const minimalProof = `shared/publishing/schedule-20261009/verified-modals/${item.videoId}.${dom ? 'dom' : 'ax'}.txt`;
+  fs.writeFileSync(path.join(root, minimalProof), modal, {flag: 'wx'});
+  const day = Math.round((Date.parse(item.date + 'T00:00:00Z') - Date.parse(plan.anchor.date + 'T00:00:00Z')) / 86400000);
+  if ((day % 2 === 0 ? 'game-design' : 'game-lecture') !== item.category) throw Error('Alternating category mismatch');
+  const old = before.page1Rows.find(x => x.videoId === item.videoId);
+  if (old?.visibility === '예약됨' && old.date !== label) throw Error('User-created date changed');
+  return {...item, publishAt: item.plannedPublishAt, evidence: minimalProof, evidenceSha256: sha(path.join(root, minimalProof)), fullLocalEvidence: item.evidence, fullLocalEvidenceSha256: sha(path.join(root, item.evidence)), currentReceiptSha256: sha(path.join(root, item.receipt)), actualTableReloadVerified: true};
+}).sort((a, b) => a.date.localeCompare(b.date));
+const preservedPublished = before.page1Rows.filter(x => x.visibility === '공개').map(old => {
+  const row = after.rows.find(x => x.videoId === old.videoId);
+  if (!row || row.title !== old.title || !row.text.split('\n').includes('공개') || !row.text.includes(old.date)) throw Error('Existing published row changed: ' + old.videoId);
+  return {videoId: old.videoId, title: old.title, date: old.date, actualVisibilityStillPublic: true};
+});
+const baseline = after.rows.find(x => x.videoId === 'oDYJlcv2Dqk');
+if (!baseline?.text.split('\n').includes('비공개')) throw Error('Score baseline must remain private');
+const now = new Date().toISOString();
+const result = {schemaVersion: 1, verifiedAt: now, status: '23-completed-uploads-actually-scheduled-and-reopened', userEvidence: plan.userEvidence, channelId: 'UCOgtkPoyC0VXhCs7Xk3jvjQ', timezone: 'Asia/Seoul', publicationTime: '09:00', anchor: plan.anchor, actualScheduledCount: items.length, gameDesignCount: items.filter(x => x.category === 'game-design').length, gameLectureCount: items.filter(x => x.category === 'game-lecture').length, existingScheduleDatesPreserved: 7, newlyScheduledPrivateUploads: 16, changedExistingTimes: 3, beforeTimeUnknownForNewSchedules: true, allDatesTimesTimezonesReopened: true, allRowsReverifiedAfterReload: true, items, futureTargetSlots: plan.futureTargetSlots, futureTargetSlotsAreActualPlatformSchedules: false, oldScoreBaseline: {videoId: 'oDYJlcv2Dqk', actualVisibility: 'private', reason: 'User-requested Balatro60:Tetris40 revision pending; only finished revised ID may be scheduled'}, publishedRowsPreserved: preservedPublished, localFullTableProof: 'shared/publishing/schedule-20261009/studio-after-reloaded.dom.txt', localFullTableSha256: sha(path.join(__dirname, 'studio-after-reloaded.dom.txt')), localScreenshot: 'shared/publishing/schedule-20261009/final-studio-schedule.png', localScreenshotSha256: sha(path.join(__dirname, 'final-studio-schedule.png')), mediaRegenerated: 0, newUploads: 0, deletedVideos: 0, researchProcessChanges: 0, rasterGitAdditions: 0, schedulingIsNotHumanListeningOrRightsApproval: true};
+write(path.join(__dirname, 'result.json'), result);
+const ledger = {schemaVersion: 1, updatedAt: now, authorization: 'user-authorized-scheduling-of-completed-game-design-and-game-lecture-videos', userEvidence: plan.userEvidence, time: '09:00', timezone: 'Asia/Seoul', cadence: 'daily-alternating-categories', anchor: plan.anchor, onlyScheduleReviewedCompletedActualUploads: true, saveAndReopenDateTimeTimezoneRequired: true, preserveCurrentUserSchedulesAndCategoryOrder: true, preserveAlreadyPublishedAndUnrelatedVideos: true, currentStudioMustBeReadBeforeEveryFutureAssignment: true, targetMissedPolicy: 'choose-next-future-empty-date-of-same-category; do-not-publish-unreviewed-work-or-double-book', actualSchedules: items.map(({slug, videoId, title, category, categoryOrder, actualDate, actualTime, actualTimezoneOffset, publishAt, verifiedAt, evidence, evidenceSha256}) => ({slug, videoId, title, category, categoryOrder, date: actualDate, time: actualTime, timezoneOffset: actualTimezoneOffset, publishAt, verifiedAt, evidence, evidenceSha256, status: 'actual-saved-reopened'})), pendingTargets: plan.futureTargetSlots, excludedBaseline: result.oldScoreBaseline, sourceVerification: 'shared/publishing/schedule-20261009/result.json', humanListeningAndRightsRemainSeparatelyRecorded: true};
+write(path.join(root, 'shared/publishing/daily-alternating-schedule.json'), ledger);
+const defaultsPath = path.join(root, 'shared/publishing/youtube-defaults.json');
+const defaultsBytes = fs.readFileSync(defaultsPath);
+const defaults = read(defaultsPath);
+if (defaults.scheduling.time !== '20:00' || defaults.uploadAuthorization.status !== 'private-upload-authorized') throw Error('Defaults changed concurrently; reread before updating');
+fs.writeFileSync(path.join(__dirname, 'youtube-defaults-before.json'), defaultsBytes, {flag: 'wx'});
+defaults.schedulingHistory = [...(defaults.schedulingHistory || []), {supersededAt: now, scheduling: defaults.scheduling, uploadAuthorization: defaults.uploadAuthorization}];
+defaults.scheduling = {cadence: {uploadsPerDay: 1, alternatingCategories: ['game-design', 'game-lecture'], categoryIntervalDays: 2, anchor: plan.anchor}, time: '09:00', timezone: 'Asia/Seoul', basis: 'User-directed daily alternation; preserve actual existing Studio date anchors and category order', onlyScheduleCompletedAuthorizedVideos: true, notAnAutomaticRecurringUploadJob: true, userEvidence: plan.userEvidence, automationEnabled: true, automationId: '24', publicationOwner: 'codex-with-explicit-user-scheduling-authorization', ledger: 'shared/publishing/daily-alternating-schedule.json', requireActualStudioSaveAndReopen: true, pendingTargetsAreNotPlatformReservations: true};
+defaults.uploadAuthorization = {status: 'reviewed-upload-and-daily-alternating-schedule-authorized', userEvidence: plan.userEvidence, scope: 'Privately upload and verify completed game-design/game-lecture videos, then schedule them at 09:00 Asia/Seoul on alternating days. Preserve already-published/unrelated videos and user date anchors; unfinished work is not scheduled.', updatedAt: now, initialUploadPrivacy: 'private', schedulingDoesNotApproveIncompleteHumanListeningOrRights: true};
+if (!fs.readFileSync(defaultsPath).equals(defaultsBytes)) throw Error('Defaults changed during verification');
+fs.writeFileSync(defaultsPath, JSON.stringify(defaults, null, 2) + '\n');
+const table = items.map(x => `| ${x.date.slice(5)} | ${x.category === 'game-design' ? '게임 디자인' : '게임 강의'} | [${x.title}](https://www.youtube.com/watch?v=${x.videoId}) | 09:00 | 저장·재열람 확인 |`).join('\n');
+const pendingTable = plan.futureTargetSlots.map(x => `| ${x.date.slice(5)} | ${x.slug} | 제작 완료 후 예약 |`).join('\n');
+fs.writeFileSync(path.join(__dirname, 'calendar.md'), `# 게임 디자인·게임 강의 공개 일정\n\n2026-10-09 실제 Studio 저장·재열람 기준, 한국 시간(Asia/Seoul). 완성된 23편의 예약을 확인했습니다. 기존 예약 7편의 날짜를 보존하고 오전 9시로 통일했으며, 비공개 완성본 16편을 추가 예약했습니다.\n\n| 날짜 | 분류 | 영상 | 시간 | 실제 상태 |\n|---|---|---|---|---|\n${table}\n\n## 다음 제작 목표\n\n아래 날짜는 아직 플랫폼 예약이 아닙니다. 완성본 검수와 업로드가 끝나면 해당 게임 디자인 차례에 저장합니다. 게임 점수 영상은 발라트로60:테트리스40 수정본만 대상으로 합니다.\n\n| 목표 날짜 | 영상 | 상태 |\n|---|---|---|\n${pendingTable}\n\n목표일이 지나면 같은 분류의 다음 미래 빈 날짜에 배정합니다. 사람 청취·발음·권리 검수 등 미완료 기록은 별도로 유지합니다.\n`, {flag: 'wx'});
+console.log(JSON.stringify({actualSchedules: items.length, design: result.gameDesignCount, lecture: result.gameLectureCount, preservedUserDates: 7, newSchedules: 16, existingTimeChanges: 3, pendingTargets: plan.futureTargetSlots.length, publishedRowsPreserved: preservedPublished.length, imagesGitAdded: 0}));

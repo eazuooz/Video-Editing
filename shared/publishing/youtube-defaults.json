@@ -111,32 +111,38 @@
   },
   "scheduling": {
     "cadence": {
-      "uploadsPerWeek": 3,
-      "weekdays": [
-        "TU",
-        "TH",
-        "SU"
+      "uploadsPerDay": 1,
+      "alternatingCategories": [
+        "game-design",
+        "game-lecture"
       ],
-      "intervalDays": [
-        2,
-        3,
-        2
-      ]
+      "categoryIntervalDays": 2,
+      "anchor": {
+        "date": "2026-10-10",
+        "category": "game-design",
+        "basis": "Actual user-created Studio schedule; existing Oct10/11/12/13/15/17/19 dates preserved"
+      }
     },
-    "time": "20:00",
+    "time": "09:00",
     "timezone": "Asia/Seoul",
-    "basis": "user requested three uploads per week; channel audience activity evenings 2026-09-02 through 2026-09-29, Tuesday strongest hours 22/20, Thursday 21/22, Sunday 19/18; fixed 20:00 KST and 2–3-day spacing",
+    "basis": "User-directed daily alternation; preserve actual existing Studio date anchors and category order",
     "onlyScheduleCompletedAuthorizedVideos": true,
     "notAnAutomaticRecurringUploadJob": true,
-    "userEvidence": "주3회로 해줘",
-    "automationEnabled": false,
-    "publicationOwner": "user"
+    "userEvidence": "그리고 영상 업로드 예약 걸어줘 게임 디자인 하루 -> 게임 강의 하루 이렇게 순차적으로 업로드 되야해 내가 대충 예약 걸어뒀는데 만들어진 영상도 예약 기한 맞춰서 걸어줘 시간은 오전 9시로 통일해줘",
+    "automationEnabled": true,
+    "automationId": "24",
+    "publicationOwner": "codex-with-explicit-user-scheduling-authorization",
+    "ledger": "shared/publishing/daily-alternating-schedule.json",
+    "requireActualStudioSaveAndReopen": true,
+    "pendingTargetsAreNotPlatformReservations": true
   },
   "uploadAuthorization": {
-    "status": "private-upload-authorized",
-    "userEvidence": "흠 퀄리티 너무 괜찮은데? 업로드까지도 전부 같이 진행시켜줘 비공개로만 해두고 공개는 내가 할게",
-    "scope": "Produce and privately upload every completed batch video with thumbnail, KO/EN manual SRT, localized metadata, card, end screen and monetization checks. No public publication or schedule; user publishes manually.",
-    "updatedAt": "2026-10-01T04:12:08.359556+09:00"
+    "status": "reviewed-upload-and-daily-alternating-schedule-authorized",
+    "userEvidence": "그리고 영상 업로드 예약 걸어줘 게임 디자인 하루 -> 게임 강의 하루 이렇게 순차적으로 업로드 되야해 내가 대충 예약 걸어뒀는데 만들어진 영상도 예약 기한 맞춰서 걸어줘 시간은 오전 9시로 통일해줘",
+    "scope": "Privately upload and verify completed game-design/game-lecture videos, then schedule them at 09:00 Asia/Seoul on alternating days. Preserve already-published/unrelated videos and user date anchors; unfinished work is not scheduled.",
+    "updatedAt": "2026-10-09T14:11:24.945Z",
+    "initialUploadPrivacy": "private",
+    "schedulingDoesNotApproveIncompleteHumanListeningOrRights": true
   },
   "pinnedComment": {
     "required": true,
@@ -155,5 +161,39 @@
     "burnedKoreanCaptionsRequired": true,
     "userEvidence": "자막 가운데 밑에 항상 고정해서 뺴먹지말고 넣어줘 영상규칙에 추가",
     "path": "output/<slug>/<slug>.captioned.mp4"
-  }
+  },
+  "schedulingHistory": [
+    {
+      "supersededAt": "2026-10-09T14:11:24.945Z",
+      "scheduling": {
+        "cadence": {
+          "uploadsPerWeek": 3,
+          "weekdays": [
+            "TU",
+            "TH",
+            "SU"
+          ],
+          "intervalDays": [
+            2,
+            3,
+            2
+          ]
+        },
+        "time": "20:00",
+        "timezone": "Asia/Seoul",
+        "basis": "user requested three uploads per week; channel audience activity evenings 2026-09-02 through 2026-09-29, Tuesday strongest hours 22/20, Thursday 21/22, Sunday 19/18; fixed 20:00 KST and 2–3-day spacing",
+        "onlyScheduleCompletedAuthorizedVideos": true,
+        "notAnAutomaticRecurringUploadJob": true,
+        "userEvidence": "주3회로 해줘",
+        "automationEnabled": false,
+        "publicationOwner": "user"
+      },
+      "uploadAuthorization": {
+        "status": "private-upload-authorized",
+        "userEvidence": "흠 퀄리티 너무 괜찮은데? 업로드까지도 전부 같이 진행시켜줘 비공개로만 해두고 공개는 내가 할게",
+        "scope": "Produce and privately upload every completed batch video with thumbnail, KO/EN manual SRT, localized metadata, card, end screen and monetization checks. No public publication or schedule; user publishes manually.",
+        "updatedAt": "2026-10-01T04:12:08.359556+09:00"
+      }
+    }
+  ]
 }
