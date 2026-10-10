@@ -1,0 +1,17 @@
+const fs=require('node:fs'),crypto=require('node:crypto');
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const prod='projects/game-lighting-history-03/production',p=prod+'/native-repair-c-pixel-execution-v18.json',x=JSON.parse(fs.readFileSync(p));
+if(x.status!=='complete'||x.exitCode!==0||x.boards.length!==7||x.images.length!==38)throw Error('Incomplete extraction');
+const notes=[
+ 'UE5 Preview2 actual restoration-settings interaction under cues110/111; NVIDIA DLSS Quality, Performance50% and UltraPerformance33.3% are shown. The2022 evidence label remains visible; these are settings examples, not DLSS5 or an internally measured benchmark.',
+ 'The official interaction returns toward Quality and Built-in/TAA100 under cue112. Source settings, functional viewport and fixed captions remain distinct and readable.',
+ 'End of restoration-settings sequence transitions to actual UE Blueprint work. Source2022 label distinguishes this from the future DLSS5 narration in the conclusion.',
+ 'EventBeginPlay/CreateBPWidget/AddViewport/InputMode and restoration-related context-menu choices remain above the fixed caption box under cues354/355/356. No claim that these2022 nodes implement DLSS5.',
+ 'Blueprint screen-percentage context-menu sequence ends without black/loading frames. Repaired Wolf cut begins with outdoor branches beside the aiming weapon: cue130 now matches the requested visible object rather than the earlier interior barrels.',
+ 'Exact f34187/f34275 show branches left of and beyond the scope. Camera/aim changes under cue131; retained source green rectangles and2xZOOM distinguish the vendor enlargement. OFF/ON Quality/RTX2060/1080p/Uber labels remain above fixed captions.',
+ 'Final two frames retain the magnified outdoor aiming comparison and cue131. Vendor FPS and2xZOOM are visible as source-supplied values, not our measurements.'
+];
+const records=x.boards.map((b,i)=>{if(sha(b.path)!==b.sha256)throw Error('Changed board');const images=b.imageIndices.map(n=>x.images[n-1]);for(const q of images)if(sha(q.path)!==q.sha256)throw Error('Changed image');return{boardIndex:i+1,path:b.path,sha256:b.sha256,directlyRead:true,imageIndices:b.imageIndices,images,observation:notes[i]};});
+const dest=prod+'/native-repair-c-direct-review-v18.json';if(fs.existsSync(dest))throw Error('Preserve review');
+fs.writeFileSync(dest,JSON.stringify({recordedAt:new Date().toISOString(),execution:{path:p,sha256:sha(p)},boardsDirectlyRead:7,imagesDirectlyRead:38,allChangedSampleBoardsRead:true,sourceLabelCaptionClearanceApproved:true,changedSampleSemanticApproval:true,resolvedHistoricalMismatch:{record:prod+'/native-repair-ab-direct-review-v18.json',input:'06-dlss-thin-lines-repair-02',cue:130,replacement:'06-dlss-thin-lines-repair-02b',directFrames:[34100,34187,34275],historyPreserved:true},records,unchangedPcm:true,unchangedBodyRatio:true,captionAssSha256:x.originalCaptionAssSha256,fullAnimatedPlaybackReviewed:false,allFinalPixelsReviewed:false,qaApproved:false,collected:false,uploaded:false,newGitImages:0},null,2)+'\n');
+const cp='production/research/game-lighting-history/checkpoint.json',c=JSON.parse(fs.readFileSync(cp));c.episode03NativeCDirectReview={path:dest,sha256:sha(dest),boards:7,images:38,changedSampleSemanticApproval:true,allFinalPixelsReviewed:false};c.updatedAt=new Date().toISOString();fs.writeFileSync(cp,JSON.stringify(c,null,2)+'\n');console.log(JSON.stringify({boards:7,images:38,resolvedCue:130,finalApproval:false}));

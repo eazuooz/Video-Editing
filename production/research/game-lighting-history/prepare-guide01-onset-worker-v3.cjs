@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path');const root=path.resolve(__dirname,'../../..'),prod='projects/game-lighting-history-03/production';
+let code=fs.readFileSync(path.join(root,prod+'/render-native-guide-repairs-v2.py'),'utf8');
+const replace=(a,b)=>{if(!code.includes(a))throw Error('Missing exact template '+a);code=code.replace(a,b);};
+replace('import argparse,hashlib,json,os,subprocess,sys,time,traceback','import argparse,hashlib,json,os,subprocess,sys,time,traceback\nfrom types import SimpleNamespace');
+replace("REQUEST=BASE/'native-guide-repairs-tts-request-v2.json';STATE=BASE/'native-guide-repairs-tts-execution-v2.json'","REQUEST=BASE/'native-guide01-onset-tts-request-v3.json';STATE=BASE/'native-guide01-onset-tts-execution-v3.json'");
+replace("assert request['expectedSentenceChunks']==13 and len(request['scenes'])==2","assert request['expectedSentenceChunks']==1 and len(request['scenes'])==1");
+replace("assert len(items)==13 and rn.RENDER_MODE=='line'","assert len(items)==1 and rn.RENDER_MODE=='line'");
+replace("totalSentenceChunks=13","totalSentenceChunks=1");replace("total=13)","total=1)");replace("total=13)","total=1)");
+replace("assert len(state['results'])==13","assert len(state['results'])==1");
+replace("selected=[x for x in jobs if x.scene_id==s['id']]","selected=[x for x in jobs if x.scene_id==s['id']]+[SimpleNamespace(path=ROOT/x['path'],text=x['text']) for x in s['retainedSentences']]\n            assert len(selected)==6");
+code=code.replaceAll('13 repair sentence chunks and2 joined candidates generated.','One replacement sentence plus five retained PCM chunks joined.').replaceAll('Exact2-guide/13sentence input','Exact single opener plus five preserved sentences').replaceAll('selective-two-guide-repairs-generated','selective-single-opener-generated').replaceAll('synthesizing-selective-sentence','synthesizing-single-unapproved-opener');
+replace("cp.get('episode03GuideRepairSessionId')","cp.get('episode03GuideOnsetV3SessionId')");replace("cp['episode03GuideRepairExecution']","cp['episode03GuideOnsetV3Execution']");replace("cp['episode03GuideRepairExecution']","cp['episode03GuideOnsetV3Execution']");
+replace("cp['next']='Observe selective2-guide13sentence TTS and exact research restoration. Directly compare13sentence windows and2whole joined guides, then rebuild measured ratio, native cuts, scenes, mix and both captions. No final render from invalidated v13/v14.'","cp['next']='Observe single-opener TTS and exact research restoration. Compare replacement sentence and complete joined guide before updating final measured timing.'");
+const out=path.join(root,prod+'/render-native-guide01-onset-v3.py');if(fs.existsSync(out))throw Error('Preserve prepared worker');fs.writeFileSync(out,code);console.log('Single-opener worker prepared; not run.');

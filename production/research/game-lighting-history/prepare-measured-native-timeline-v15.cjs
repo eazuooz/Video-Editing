@@ -1,0 +1,31 @@
+// Rebuild from actual repaired PCM. No audio approval or final pixels inferred.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),project='projects/game-lighting-history-03',prod=project+'/production';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const cutPath=prod+'/original-paragraph-cut-plan-v12.json',oldPath=prod+'/native-guides-tts-execution-v1.json',repairPath=prod+'/native-guide-repairs-tts-execution-v2.json',onsetPath=prod+'/native-guide01-onset-tts-execution-v3.json';
+const out=prod+'/measured-native-timeline-candidate-v15.json';if(fs.existsSync(path.join(root,out)))throw Error('Preserve measured candidate');
+const cuts=read(cutPath),old=read(oldPath),repair=read(repairPath),onset=read(onsetPath),request=read(prod+'/native-guides-tts-request-v1.json'),repairRequest=read(prod+'/native-guide-repairs-tts-request-v2.json'),onsetRequest=read(prod+'/native-guide01-onset-tts-request-v3.json');
+for(const x of [old,repair,onset])if(x.exitCode!==0||!x.generationComplete)throw Error('Actual PCM generation required');
+const overrides=new Map([...repair.joinedGuides,...onset.joinedGuides].map(x=>[x.id,x]));
+const scripts=new Map([...repairRequest.scenes,...onsetRequest.scenes].map(x=>[x.id,x]));
+const pcm=new Map(old.results.map(x=>[x.id,overrides.get(x.id)||x]));
+const bodyFrames=cuts.paragraphs.reduce((n,x)=>n+x.frames,0)+[...pcm.values()].reduce((n,x)=>n+Math.ceil(x.samples/400),0);
+const base=cuts.paragraphs.filter(x=>x.retainedExplanation).reduce((n,x)=>n+x.frames,0),full34=cuts.paragraphs.find(x=>x.index===34),p81=cuts.paragraphs.find(x=>x.index===81);
+const tailFrames=Math.round(bodyFrames*.4)-base-full34.frames;
+if(tailFrames<=0||tailFrames>=p81.frames)throw Error('Review changed measured roles explicitly');
+const splitSamples=(p81.frames-tailFrames)*400,tailFrom=(p81.sourceSampleRange[0]+splitSamples)/24000,tailTo=p81.sourceSampleRange[1]/24000;
+if(p81.motionSeconds[0]<tailFrom||p81.motionSeconds[1]>tailTo)throw Error('Preserve entire cache/update projected motion');
+const guides=new Map(request.scenes.map(x=>[x.after,x]));let frame=120;const slots=[];
+const add=x=>{x.fromFrame=frame;x.toFrame=frame+x.frames;slots.push(x);frame=x.toFrame;};
+for(const p of cuts.paragraphs){
+ const common={kind:'original-paragraph',originalIndex:p.index,scene:p.scene,chapterIndex:p.chapterIndex,paragraphIndex:p.paragraphIndex,text:p.text,originalExplanationPreserved:p.retainedExplanation,sourceModel:p.sourceModel,posePair:p.posePair,motionSeconds:p.motionSeconds,sourceSelected:false,pixelsReviewed:false,audioJoinApproved:false};
+ if(p.index===81){
+  add({...common,id:'original-81-action',role:'actual',frames:p.frames-tailFrames,sourceSampleRange:[p.sourceSampleRange[0],p.sourceSampleRange[0]+splitSamples],paddingSamples:0,screenRole:'Interior observation while the first sentence distinguishes dynamic lighting from exhaustive per-frame paths.'});
+  add({...common,id:'original-81-explanation',role:'explanation',frames:tailFrames,sourceSampleRange:[p.sourceSampleRange[0]+splitSamples,p.sourceSampleRange[1]],paddingSamples:p.paddingSamples,additionalWholeExplanation:false,additionalNarrationTimedMotion:true,screenRole:'Complete tracing/storage/update model transition during the second concluding sentence; first sentence remains audible across the visual cut.'});
+ }else add({...common,id:'original-'+String(p.index).padStart(2,'0'),role:p.retainedExplanation||p.index===34?'explanation':'actual',frames:p.frames,sourceSampleRange:p.sourceSampleRange,paddingSamples:p.paddingSamples,additionalWholeExplanation:p.index===34});
+ const g=guides.get(p.index);if(g){const audio=pcm.get(g.id),s=scripts.get(g.id)||g;if(sha(audio.path)!==audio.sha256)throw Error('Changed PCM '+g.id);const frames=Math.ceil(audio.samples/400);add({kind:'native-guide',id:g.id,afterOriginal:p.index,scene:p.scene,chapterIndex:p.chapterIndex,role:'actual',frames,pcm:{path:audio.path,sha256:audio.sha256,samples:audio.samples,sampleRate:audio.sampleRate},paddingSamples:frames*400-audio.samples,text:s.text,en:s.en,sourceSelected:false,pixelsReviewed:false,audioJoinApproved:false});}
+}
+const actualFrames=slots.filter(x=>x.role==='actual').reduce((n,x)=>n+x.frames,0),explanationFrames=slots.filter(x=>x.role==='explanation').reduce((n,x)=>n+x.frames,0);
+if(frame-120!==bodyFrames||Math.abs(actualFrames-bodyFrames*.6)>1)throw Error('Measured ratio failed');
+const record={schemaVersion:1,preparedAt:new Date().toISOString(),status:'repaired-PCM-timeline-candidate-not-adopted',inputHashes:[cutPath,oldPath,repairPath,onsetPath].map(p=>({path:p,sha256:sha(p)})),introFrames:120,outroFrames:600,fps:60,sampleRate:24000,samplesPerFrame:400,slots,totals:{bodyFrames,actualFrames,explanationFrames,finalFrames:frame+600},bodySeconds:bodyFrames/60,finalSeconds:(frame+600)/60,ratioFrameError:actualFrames-bodyFrames*.6,originalParagraphs:84,guideParagraphs:20,retainedOriginalWholeExplanations:45,additionalWholeExplanation:[34],additionalCompleteMotionExplanation:{originalIndex:81,frames:tailFrames,sourceSeconds:[tailFrom,tailTo],motionSeconds:p81.motionSeconds},allOriginalPcmSamplesPreserved:true,sourceRate:1,loops:0,unrelatedIdleSeconds:0,original84Regenerated:false,voiceApproved:false,finalTimingApproved:false,bodyRatioApproved:false,finalMixedAsrApproved:false,allFinalPixelsReviewed:false,rendered:false,collected:false,uploaded:false,rationale:'Retain all45 complete original explanations. Show the full disocclusion/history rejection diagram in paragraph34 and the full cache-update transition during the ending of81, whose initial sentence remains over a matched interior source. Preserve all original PCM once and every model transition; no shortening of an approved explanation, narration rate change or artificial silent quota. Measured new guide lengths determine the final role totals; final source/caption/mixed review remains separate.'};
+fs.writeFileSync(path.join(root,out),JSON.stringify(record,null,2)+'\n');console.log(JSON.stringify({out,totals:record.totals,tailFrames,fullCacheMotionPreserved:true,adopted:false}));

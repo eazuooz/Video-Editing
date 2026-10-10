@@ -1,0 +1,148 @@
+{
+  "title": "Episode3 native observation guides",
+  "language": "en",
+  "independentlyWritten": true,
+  "sourcePlan": "projects/game-lighting-history-03/production/native-integration-plan-v11.json",
+  "scenes": [
+    {
+      "id": "01-mesh-distance-field",
+      "title": "guide-mesh-distance-field",
+      "lines": [
+        "This gray view is the engine demonstration with Mesh DistanceFields enabled. Unlike the original material-color view, rocks and walls appear rounder and simpler. As the camera moves, examine the representation of narrow gaps and broad walls together. In the earlier diagram, the ray advanced using distance to the surface rather than reading triangle colors. This view represents scene geometry. It is separate from Nanite cluster colors and cached lighting in the Surface Cache, so these different visualizations must not be conflated."
+      ]
+    },
+    {
+      "id": "02-global-distance-field",
+      "title": "guide-global-distance-field",
+      "lines": [
+        "The view now switches to Global DistanceField. Follow the same rocks with the camera and compare this coarse representation with the earlier per-mesh fields. Similar colors do not make the storage units identical."
+      ]
+    },
+    {
+      "id": "03-ray-shadow",
+      "title": "guide-ray-shadow",
+      "lines": [
+        "In this engine example, a point light beside a blue box is adjusted while we examine the shadow direction and edge. First locate the light and object, then watch where the shadow changes. The visible result and the acceleration structure we drew earlier are different layers of information. This capture alone does not measure the cost of updating that structure."
+      ]
+    },
+    {
+      "id": "04-nvrtx-result",
+      "title": "guide-nvrtx-result",
+      "lines": [
+        "Now examine the glass, metal and hanging lights in the attic. Reflection, shadow and indirect-light controls are separate. As the camera moves, first watch which surfaces of the same object become visible. Having several effects in one image does not mean they use the same samples or the same filter."
+      ]
+    },
+    {
+      "id": "05-dlss-helmet",
+      "title": "guide-dlss-helmet",
+      "lines": [
+        "In the Deliver Us The Moon comparison, watch the helmet rim, glove and lines on the rear wall together. Check the displayed quality mode and scene before comparing the results. Looking only at large clear surfaces can miss small boundaries. We also retain the condition that the source has already enlarged these views, rather than generalizing to every resolution."
+      ]
+    },
+    {
+      "id": "06-dlss-thin-lines",
+      "title": "guide-dlss-thin-lines",
+      "lines": [
+        "In the Wolfenstein comparison, examine the thin indoor light strings and the branches behind the aiming view separately. Watch how their boundaries continue while the camera moves through each interval. Sharpness in one image and stability across frames are different questions. The displayed numbers belong to the vendor capture conditions, not performance measurements made by us."
+      ]
+    },
+    {
+      "id": "07-dlss-engine-modes",
+      "title": "guide-dlss-engine-modes",
+      "lines": [
+        "The menus in this engine demonstration show DLSS quality modes, DLAA and NIS separately. Even when examining the same reflective sphere and edges, first read which option changed. Reconstruction from lower resolution, stabilizing edges at native resolution and spatial upscaling are distinct. Similar names do not establish identical input resolution or use of past frames."
+      ]
+    },
+    {
+      "id": "08-ddgi-light-change",
+      "title": "guide-ddgi-light-change",
+      "lines": [
+        "Sunlight and shadows move in the two boxes. The next edit changes the indirect-light method from None to Plugin, and color returns to the previously dark walls. Observe the action and result without treating this demonstration as a measurement of update latency."
+      ]
+    },
+    {
+      "id": "09-ddgi-volume",
+      "title": "guide-ddgi-volume",
+      "lines": [
+        "This example moves and resizes the box for the indirect-light volume. First look at the room and walls within it, then inspect where the spatial points appear when probes are visualized. This placement differs from a grid attached to camera pixels. Enlarging the volume alone does not automatically solve visibility behind walls or detail on small objects."
+      ]
+    },
+    {
+      "id": "10-ddgi-spacing",
+      "title": "guide-ddgi-spacing",
+      "lines": [
+        "With probes shown as spheres, we can inspect their spacing and the wall colors together. Separate the choice to place more points from the choice of when to recompute each value. The spheres are debug representations for inspecting stored illumination, not new physical lights inserted into the room. Connect them to the interpolation diagram while considering room size and occlusion."
+      ]
+    },
+    {
+      "id": "11-ddgi-city",
+      "title": "guide-ddgi-city",
+      "lines": [
+        "In this city example, inspect the probes between buildings. The grid count shown in the source is specific to this demonstration, rather than a default for every game."
+      ]
+    },
+    {
+      "id": "12-rtxdi-boulevard",
+      "title": "guide-rtxdi-boulevard",
+      "lines": [
+        "In NVIDIA’s 2021 demonstration, examine the windows, signs and lighting around cars on the boulevard. As the camera and cars move, watch which lights appear on nearby surfaces. We can see the many-light result, but the process of replacing a candidate inside a small reservoir is not displayed. After inspecting the result, we calculate the selection probabilities for weights one and three in an independent diagram."
+      ]
+    },
+    {
+      "id": "13-nanite-occlusion",
+      "title": "guide-nanite-occlusion",
+      "lines": [
+        "Now move close to the statues and inspect the moments when foreground geometry hides the building behind it. Distinguish objects within the camera frustum from surfaces actually visible in the final image. Even when the source counters change, this capture does not isolate the cost of a particular culling stage. It connects the candidate-removal diagram to actual changes in visibility."
+      ]
+    },
+    {
+      "id": "14-nanite-cave-visibility",
+      "title": "guide-nanite-cave-visibility",
+      "lines": [
+        "Inside the cave, nearby rocks hide parts of the exit and building. Moving the camera reveals these surfaces in turn. Connect this motion to the earlier distinction between candidates within the image and surfaces currently visible. Passing through the exit also changes the building’s screen size and occlusion. These observations illustrate the visibility problem, while not isolating the execution time of an individual culling stage. The internal calculation can be followed separately in the depth-pyramid diagram."
+      ]
+    },
+    {
+      "id": "15-nanite-ornament-surface",
+      "title": "guide-nanite-ornament-surface",
+      "lines": [
+        "On this ornamented wall, distinguish the shapes of small ridges from the surface colors. Moving closer and sideways changes the occlusion between narrow gaps and projecting parts. Saying only that the texture became sharper does not explain these geometric relationships. Emerging into the bright exterior then brings distant statues and buildings into one image. Both nearby detail and a broad scene must be handled, but mesh selection, material evaluation and lighting use separate budgets."
+      ]
+    },
+    {
+      "id": "16-nanite-debug-modes",
+      "title": "guide-nanite-debug-modes",
+      "lines": [
+        "The Nanite demonstration first displays triangles and then switches to clusters. Distinguish the boundaries of dense individual triangles from those of larger colored groups. The two modes present the same geometry at different organizational units. Returning to the final material view also confirms that the debug colors were not the actual surface colors. Observe the detail revealed by camera movement and the source counters, without turning those counters into memory or frame-time measurements made by us."
+      ]
+    },
+    {
+      "id": "17-nanite-distance",
+      "title": "guide-nanite-distance",
+      "lines": [
+        "Look closely at the sculpted face, then view the whole building from farther away. Detail in the same world occupies different image sizes at different camera distances. In the following diagram, we hold other conditions fixed and double only the distance. Several conditions can change together in the actual camera demonstration, so separate that observation from the independent projected-error calculation."
+      ]
+    },
+    {
+      "id": "18-nanite-bicycle",
+      "title": "guide-nanite-bicycle",
+      "lines": [
+        "In the bicycle closeup, inspect the thin tubing, wheel spokes and floor behind them together. Watch how much screen area the small geometry occupies and where other objects hide it. Displaying complex geometry, texture sharpness and reflected-light quality involve different conditions. Even when source counters appear, one number cannot explain every cost."
+      ]
+    },
+    {
+      "id": "19-lumen-light-edit",
+      "title": "guide-lumen-light-edit",
+      "lines": [
+        "Now select a directional light in the engine and examine the changes on walls and rocks. First identify the lighting edit, then separate directly illuminated surfaces from surrounding shaded ones. Intervals in which the presenter also moves the camera need to be distinguished. We do not calculate an exact update time or brightness ratio by simply joining different views."
+      ]
+    },
+    {
+      "id": "20-lumen-interior-toggle",
+      "title": "guide-lumen-interior-toggle",
+      "lines": [
+        "The next example is an interior with windows. Identify the edit to Lumen Global Illumination, then inspect the region near the bright windows separately from the wall behind the sofa and the ceiling. A bright window does not establish sufficient indirect illumination throughout the room. Identify the darkening transition and the bright state, then treat the following camera movement as a separate observation. The source is not an exposure-locked measurement experiment. It still provides a starting point for distinguishing directly illuminated regions from the other room surfaces. Connect the storage and update structure explained earlier to this actual interior result."
+      ]
+    }
+  ]
+}

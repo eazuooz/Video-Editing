@@ -1,0 +1,151 @@
+{
+  "researchPack": "production/research/game-lighting-history/research-pack.json",
+  "chapters": [
+    {
+      "id": "12",
+      "era": "2015 발표 / 2017 Horizon 출시",
+      "seconds": 180,
+      "title": "안개와 구름: 매질을 프레임 안에서 적분하기",
+      "problem": "안개는 표면이 없고 구름 내부의 밀도와 가림이 복잡하다.",
+      "explain": "흡수는 빛을 잃게 하고 산란은 다른 방향으로 보내거나 시선 안으로 들여온다. 광선이 물질 안에서 이동한 거리에 따라 남는 비율을 설명한 뒤, 구간을 나누어 앞에서 뒤로 누적한다. 안개 색을 화면에 덮는 방식과 광원·밀도·가시성을 적분하는 방식을 구별한다. 카메라 광선 위에서 밀도를 샘플링하고 광원 방향의 투과율을 구해 산란광을 누적한다. 균질 구간의 알파와 앞 구간의 남은 투과율을 연결한다. Frostbite의 공간 구획과 Horizon의 절차적 구름을 별개 구현 사례로 비교한다. 높이 안개, 볼륨 안개/구름, 행성 대기 산란은 공간의 밀도와 계산 범위가 다르다. Sky Atmosphere의 LUT도 광수송 계산을 저장해서 재사용하는 방법으로 짧게 연결한다.",
+      "formula": "σt=σa+σs; T(d)=exp(-σt d), 균질 매질 가정. 예: σt=0.5/m, d=2m이면 T=e^-1≈0.368. αi=1-exp(-σt,i Δs); C+=Ti αi ci; Ti+1=Ti(1-αi). ci는 해당 구간의 정규화된 산란/발광 기여로 정의한 교육용 이산식.",
+      "visual25d": "투명 상자 안 여러 밀도층과 경로 길이 표시. 각 층 앞뒤 광량을 막대로 비교하고 옆 광원의 산란이 카메라 방향으로 들어오는 화살표 추가. 구름 부피를 절단해 밀도 단면을 보이고, 카메라 광선과 태양 방향 그림자 광선을 서로 다른 색으로 누적. 적분 스텝을 줄일 때 띠와 시간 흔들림 비교.",
+      "demoNeed": "Guerrilla cloud density/lighting/time-of-day 과정, Frostbite volumetric light animation",
+      "limits": "2015 발표의 약 2ms 수치를 모든 하드웨어 성능으로 일반화하지 않는다. 원문 후반 알고리즘 및 원본 시연 검토 추가 필요. 1988 등 연구 기점은 원리의 배경으로만 언급하고 의료 체적/무관한 연구 시연으로 확장하지 않는다.",
+      "sources": [
+        "frostbite2015",
+        "horizon2015",
+        "pbrt-volume",
+        "pbrt-transfer",
+        "ue-atmosphere"
+      ]
+    },
+    {
+      "id": "12a",
+      "era": "2010년대 중반~후반 / 2015 Kite·후속 엔진 기능",
+      "seconds": 70,
+      "title": "화면 밖 정보: 거리장·복셀·SSGI의 서로 다른 범위",
+      "problem": "화면에 안 보이는 벽을 계산에 넣으려면 무엇을 더 저장해야 할까?",
+      "explain": "SSAO/GTAO는 화면 깊이, DFAO는 월드 공간 거리장, SVOGI는 복셀 표현을 활용하는 차이를 비교한다. SSGI는 화면의 색과 깊이로 간접 조명을 근사하는 별도 항목으로 소개한다. AO가 가림을 나타내는 것과 GI가 색을 운반하는 것을 분리한다.",
+      "formula": "AO는 주변 방향의 가림을 요약; GI는 입사광과 반사까지 필요. 저장 단위: depth pixel / signed distance / voxel radiance. 같은 격자 모양이어도 물리량은 다르다.",
+      "visual25d": "동일한 두꺼운 벽을 깊이 화면·거리장 단면·복셀 셀로 차례로 표현. 벽 뒤 물체를 카메라 밖으로 보내 알고 있는 정보가 달라지는 이유를 강조한다.",
+      "demoNeed": "Epic Kite/Fortnite 거리장 설명, CryEngine SVOGI, UE SSGI on/off 실제 엔진 시연 후보. GTAO는 개발사 연구 사례로 표시하며 제목만으로 특정 게임 적용을 단정하지 않는다.",
+      "limits": "GTAO의 Ground Truth는 가정 아래 기준 해와의 비교이며 숨겨진 장면을 모두 아는 의미가 아니다. 거리장/복셀의 해상도·갱신 비용·빛샘을 설명한다.",
+      "sources": [
+        "ue-dfao",
+        "cry-svogi",
+        "gtao",
+        "ue-post"
+      ]
+    },
+    {
+      "id": "13",
+      "era": "2018",
+      "seconds": 160,
+      "title": "하드웨어 레이 트레이싱: 상자로 묶어 건너뛰기",
+      "problem": "각 레이를 모든 삼각형과 비교하면 너무 비싸다.",
+      "explain": "BVH의 큰 상자부터 검사해 지나가지 않는 하위 물체를 제외하고 필요한 삼각형만 교차 검사한다. 정적인 구조의 구축과 움직이는 장면의 갱신 비용을 구별한다. 실제 게임은 래스터 화면 위에 일부 레이 효과를 혼합하는 방식으로 설명한다. 추가: leaf까지 내려가는 BVH traversal과 BLAS/TLAS의 역할, 이동/변형에 따른 update 비용을 실제 엔진 시연과 연결한다.",
+      "formula": "ray p(t)=o+t d; AABB slab intersection: 공통 t 구간이 비어 있으면 하위 노드 건너뜀",
+      "visual25d": "실제 크기와 깊이가 있는 중첩 상자, 한 레이가 통과한 노드만 펼쳐지는 애니메이션. 삼각형 비교 횟수는 교육용 장면의 수치임을 표시.",
+      "demoNeed": "Battlefield V DXR 반사와 공식 BVH/개발 디버그 시연; 2018 출시 당시 기능 구별",
+      "limits": "RT core가 모든 렌더링·재질·장면 갱신을 자동 해결하지 않는다.",
+      "sources": [
+        "rtx2018",
+        "pbrt-path"
+      ],
+      "previousPlanningSeconds": 100
+    },
+    {
+      "id": "14",
+      "era": "2018~2020",
+      "seconds": 200,
+      "title": "적은 표본과 DLSS 2: 무엇을 이전 프레임에서 가져올까?",
+      "problem": "해상도와 레이 수를 낮추면 비용은 줄지만 정보가 부족해진다.",
+      "explain": "몬테카를로 추정의 표본 수와 노이즈 관계를 먼저 보여준다. 이후 DLSS 1의 초기 접근과 DLSS 2의 현재 저해상도 영상·모션 벡터·이전 고해상도 출력 활용을 연결한다. 지터로 얻은 표본과 재투영을 보여주고, 새로 드러난 픽셀에는 신뢰할 과거가 없음을 설명한다. 추가: motion vector가 가리키는 이전 픽셀, 새로 드러난 표면(disocclusion), history rejection을 순서대로 비교한다.",
+      "formula": "Î=(1/N)Σ f(xi)/p(xi); 독립 표본·유한 분산 가정에서 표준오차 ∝1/√N. DLSS 그림은 입력/출력 관계를 나타내는 교육용 도식.",
+      "visual25d": "같은 표면의 t-1, t 프레임을 깊이가 있는 두 평면으로 놓고 모션 화살표로 대응. 가림이 풀린 부분은 과거 표본을 억지로 복사하지 않고 미지 영역으로 표시.",
+      "demoNeed": "NVIDIA DLSS 2 공식 Control 비교, 얇은 구조·움직임·가림 해제 구간",
+      "limits": "DLSS가 엔진이 시뮬레이션하지 않은 모든 3D 정보를 정확히 되찾는다고 말하지 않는다. 기존 FPS 강의와 겹치는 부분은 중복 검토 후 축약.",
+      "sources": [
+        "pbrt-path",
+        "dlss2",
+        "rtx2018"
+      ],
+      "previousPlanningSeconds": 160
+    },
+    {
+      "id": "15",
+      "era": "2019~2020",
+      "seconds": 210,
+      "title": "DDGI와 ReSTIR: 계산한 표본을 잘 재사용하기",
+      "problem": "직접광 후보가 많고 간접광을 매 픽셀에서 새로 계산하기 어렵다.",
+      "explain": "DDGI는 공간 프로브를 레이로 갱신해 간접광을 질의한다. ReSTIR은 가중 후보를 적은 저장 공간의 reservoir로 모으고 주변/과거 표본을 재사용한다. 조명 후보를 잘 고르는 작업과 결과 영상의 노이즈 제거를 구분한다. 추가: DDGI probe의 irradiance/거리 정보와 갱신 한계, ReSTIR candidate/reservoir/spatial/temporal reuse 및 visibility 재검증을 독립 단계로 풀어 준다.",
+      "formula": "가중 reservoir 개념: 누적 가중치 W←W+w, 새 후보 선택 확률 w/W. 최종 조명 estimator의 정규화·재가중은 논문 검토 후 별도 제시.",
+      "visual25d": "3D 프로브 격자에서 가려진 표본의 기여를 줄이는 장면. 별도 장면에서 여러 광원 후보가 작은 reservoir로 들어오되 밝은 하나만 항상 고르는 오해를 피함.",
+      "demoNeed": "저자 DDGI 움직이는 조명 비교, ReSTIR many-light process visualization",
+      "limits": "2020 원 논문은 직접광이다. ReSTIR GI/PT 후속을 원 논문 기능으로 섞지 않는다.",
+      "sources": [
+        "ddgi2019",
+        "restir2020"
+      ],
+      "previousPlanningSeconds": 120
+    },
+    {
+      "id": "16a",
+      "era": "2019~2020 DX12 기능 / 이후 엔진의 기하·메모리 처리",
+      "seconds": 180,
+      "title": "빛 계산 밖의 병목: 컬링·메시 셰이더·VRS·가상 텍스처",
+      "problem": "그림자나 GI를 최적화해도 삼각형·재질 조회·메모리 비용이 남는다.",
+      "explain": "안 보이는 물체를 제거하는 컬링, 메시 묶음을 처리하는 메시 셰이더, 픽셀 셰이딩 빈도를 조절하는 VRS, 필요한 텍스처 페이지를 가져오는 가상 텍스처를 역할별로 연결한다. Sampler Feedback은 어떤 텍스처 정보가 필요했는지 수집하는 데 쓰이며 빛 계산식 자체는 아니다. 추가: frustum/occlusion과 Early-Z/HZB를 구분한다. HZB의 보수적 깊이 비교와 한 프레임 지연, mesh/VRS/virtual texture의 서로 다른 비용 대상을 설명한다.",
+      "formula": "LOD/컬링 → 기하 작업량; VRS → shading rate; VT/feedback → residency. 출력 해상도, 셰이딩 빈도, 메모리 상주량은 별도 축.",
+      "visual25d": "카메라 밖 물체를 지운 뒤 메시 묶음·픽셀 블록·텍스처 페이지를 다른 깊이의 층으로 배치한다. 모든 기능을 켜는 목록 대신 줄이는 작업량을 하나씩 강조한다.",
+      "demoNeed": "Microsoft Mesh Shader/LOD 공식 샘플, Unreal 컬링·가상 텍스처 디버그 시연. 샘플은 게임엔진 관련 기술 데모로 표기.",
+      "limits": "메시 셰이더=Nanite, VRS=DLSS, 가상 텍스처=Virtual Shadow Maps라는 등치 금지. API 지원/버전과 실제 적용을 확인한다.",
+      "sources": [
+        "dx-mesh",
+        "dx-vrs",
+        "dx-feedback",
+        "ue-culling",
+        "ue-vt"
+      ],
+      "previousPlanningSeconds": 60
+    },
+    {
+      "id": "16",
+      "era": "2020 공개 / 2021 기술 발표 / 2022 UE5 출시",
+      "seconds": 120,
+      "title": "나나이트: 보이는 크기에 맞는 기하를 골라 그리기",
+      "problem": "거대한 원본 메시 전체를 같은 세밀함으로 그릴 필요는 없다.",
+      "explain": "메시를 클러스터로 나누고 병합·단순화·재분할로 LOD 계층을 구성한다. 화면 투영 오차와 가림으로 필요한 부분을 고르고 데이터를 스트리밍한다. 이웃 클러스터가 독립적으로 단순화될 때 생기는 균열 때문에 그룹과 경계 일치가 필요함을 설명한다.",
+      "formula": "교육용 투영 근사 ePixels≈fPixels·eWorld/z. 실제 Nanite 선택 규칙 전체를 이 식 하나로 대체하지 않음.",
+      "visual25d": "돌의 앞·옆·윗면을 가진 실제 투영 메시와 클러스터 색상. 카메라 이동에 맞춰 선택 계층을 바꾸고, 균열 실패→경계 보존→그룹 재분할을 단계 비교.",
+      "demoNeed": "직접 본 UE5 2020 약 2:20 triangles on 장면; 최종 고해상도 원본 구간 확보 필요",
+      "limits": "무한 삼각형을 공짜로 그리는 기술이 아니다. 조명 시스템이 아니며 루멘과 역할이 다름. 2021 구조는 단순 트리가 아닌 DAG가 핵심.",
+      "sources": [
+        "ue5-2020",
+        "nanite2021",
+        "nanite-current",
+        "ue5-release"
+      ]
+    },
+    {
+      "id": "17",
+      "era": "2020 공개 → 2022",
+      "seconds": 210,
+      "title": "루멘: 바뀌는 간접광과 반사를 추적·저장하기",
+      "problem": "불을 끄거나 벽을 움직이면 간접광도 갱신되어야 한다.",
+      "explain": "화면에서 얻는 정보와 장면 표현에 대한 추적을 연결하고, Surface Cache에 저장된 표면 조명을 재사용하는 흐름을 보여준다. 방 안의 붉은 벽에서 번지는 색과 문을 열 때 들어오는 빛을 관찰한다. Nanite는 장면 캡처를 도울 수 있지만 Lumen의 정의 자체가 아니다. 추가: screen trace 실패 → software/hardware trace → surface/radiance cache → 최종 간접광의 역할을 engine debug view에서 대조한다.",
+      "formula": "trace → hit representation → cached surface lighting → final gather/radiance cache; 구현 모드/버전 표시",
+      "visual25d": "절단된 방, 화면 평면, 표면 카드, 공간 캐시를 깊이별로 펼침. 빛이 바뀌면 영향을 받는 카드부터 갱신되는 모습을 단계로 표시.",
+      "demoNeed": "UE5 2020 2:50 Lumen OFF와 2:55 ON 직접 픽셀 확인; Epic 2022 커튼 클립 4.5초 확보",
+      "limits": "캐시 지연·얇은 벽 빛샘·화면 밖 정보의 제한을 설명한다. 2022 기본 모드 설명과 최신 문서 버전을 혼용하지 않는다.",
+      "sources": [
+        "lumen2022",
+        "lumen-current",
+        "ue5-2020"
+      ],
+      "previousPlanningSeconds": 120
+    }
+  ],
+  "finalFootageRightsApproved": false
+}

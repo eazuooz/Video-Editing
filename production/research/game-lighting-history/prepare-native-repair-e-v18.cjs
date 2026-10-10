@@ -1,0 +1,16 @@
+const fs=require('node:fs'),crypto=require('node:crypto');
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const prod='projects/game-lighting-history-03/production',baseline=prod+'/review-input-plan-v15.json';
+if(sha(baseline)!=='0681e970c71de503a7de24b8172fee209b0c2df2bd70a233859942cdecd14579')throw Error('Baseline changed');
+const old=JSON.parse(fs.readFileSync(baseline)),cuts=[];
+function cut(id,sourceFrom,crop,label){const base=old.inputs.find(c=>c.id===id);if(!base)throw Error('Missing input');const c={...base,id:id+'-repair-e',sourceFromSeconds:sourceFrom,sourceToSeconds:sourceFrom+base.frames/60,crop,sourceEvidenceLabel:label,replacesInputIds:[id],output:`production/research/game-lighting-history/local/native-repair-e-v18/${id}-repair-e.mp4`,sourceMotionApproved:false,finalCaptionPixelsApproved:false,allPixelsReviewed:false};delete c.verification;cuts.push(c);}
+cut('03-ray-shadow-02',176,[0,180,1600,900],'공식 UE5 시연 · 전구와 그림자 · 2022');
+cut('original-43-01',57.55,[160,0,1600,900],'공식 RTXDI 시연 · 다수 광원의 도시 · 2021');
+cut('12-rtxdi-boulevard-01',18+53/60,[160,0,1600,900],'공식 RTXDI 시연 · 화면 관찰 · 저장소 값 실측 아님');
+cut('original-49-01',45,[160,0,1600,900],'공식 RTXDI 시연 · 서로 다른 도시 이동 구간');
+for(const c of cuts)if(sha(c.media)!==c.sourceSha256)throw Error('Source changed');
+const replaced=new Set(cuts.flatMap(c=>c.replacesInputIds)),merged=old.inputs.filter(c=>!replaced.has(c.id)).concat(cuts);
+for(const source of new Set(cuts.map(c=>c.source))){const a=merged.filter(c=>c.source===source).sort((a,b)=>a.sourceFromSeconds-b.sourceFromSeconds);for(let i=1;i<a.length;i++)if(a[i].sourceFromSeconds<a[i-1].sourceToSeconds-1e-7)throw Error('Repeated source '+a[i].id);}
+const dest=prod+'/native-repair-e-plan-v18.json';if(fs.existsSync(dest))throw Error('Preserve plan');
+fs.writeFileSync(dest,JSON.stringify({preparedAt:new Date().toISOString(),baseline:{path:baseline,sha256:sha(baseline)},cuts,cpuThreads:2,gpuJobs:0,rateChanges:0,loops:0,sourceAudio:false,fixedCaptionPosition:[960,970],unchangedPcm:true,unchangedBodyRatio:true,unchangedChapters:true,sourceOverlapCount:0,observations:[{input:'03-ray-shadow-02',direct:'CUA sampled176 and179 with crop0,180,1600,900: bulb, cube and wall shadow stay above fixed captions. Previous1x176–182 playback reached182.103. Preserve exact source and duration; encoded whole motion review remains pending.'},{input:'original-43-01',direct:'CUA1x57.55–73.433333 wide crop160,0,1600,900 reached73.481153. Active night city camera, cars, signs and many lights replace the old promotional title portion. Footer banner excluded. Observed imagery does not measure reservoir contents or speed.'},{input:'12-rtxdi-boulevard-01',direct:'Retain the already inspected native18.883333–43.133333 range; widen banner-excluding crop. New encoded captions and complete motion remain pending.'},{input:'original-49-01',direct:'Retain unique45–57.55 native city range. New banner-excluding crop and encoded captions require direct review.'}],sourceMotionApproved:false,allFinalPixelsReviewed:false,fullAnimatedPlaybackReviewed:false,collected:false,uploaded:false,newGitImages:0},null,2)+'\n');
+console.log(JSON.stringify({cuts:cuts.length,frames:cuts.reduce((n,c)=>n+c.frames,0),finalApproval:false}));

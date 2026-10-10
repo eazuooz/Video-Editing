@@ -1,0 +1,102 @@
+{
+  "reviewedAt": "2026-10-10T04:59:01.006Z",
+  "status": "caption-only-recovery-authorized",
+  "inputDiagnostic": {
+    "path": "projects/game-lighting-history-03/production/caption-frame-property-diagnostic-v15.json",
+    "sha256": "e64738cac435f61768fba1fb326334c787eaa5e83bf42bf6f0dc33662530cd40"
+  },
+  "boundaryTestState": {
+    "path": "projects/game-lighting-history-03/production/caption-filter-boundary-test-execution-v17.json",
+    "sha256": "8a0cb62c2c79a9ca6ba8a49eb91012ed63cc3623dbfe8c1da6de30ebbc2c761f",
+    "status": "failed",
+    "error": "AssertionError('Old failure not reproduced; do not assume cause')"
+  },
+  "shortSeekTest": {
+    "path": "projects/game-lighting-history-03/production/caption-filter-boundary-test-execution-v16.json",
+    "sha256": "e7e3d1f5af54502474b360553867e8d2265a02240d9b0123078c949d83dc46c7",
+    "failureNotReproduced": true,
+    "corrected600Frames": true
+  },
+  "evidence": [
+    {
+      "label": "old-reset",
+      "video": {
+        "path": "production/research/game-lighting-history/local/caption-filter-boundary-test-v17/old-reset.mp4",
+        "sha256": "bdf68c1941218b98023e601237d119eb4cffb2670664d479f5a561fb739e42cd"
+      },
+      "log": {
+        "path": "production/research/game-lighting-history/local/caption-filter-boundary-test-v17/old-reset.log",
+        "sha256": "049233d64677b832165fa894d477d8867922c41c47d7e27a304c430c80c63e54"
+      },
+      "directFullLogRead": true,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "60/1",
+            "time_base": "1/90000",
+            "duration": "82.000000",
+            "nb_read_frames": "4920"
+          }
+        ]
+      },
+      "observedFrames": 4920,
+      "continuousExpectedPts": true
+    },
+    {
+      "label": "fixed-preserve-pts",
+      "video": {
+        "path": "production/research/game-lighting-history/local/caption-filter-boundary-test-v17/fixed-preserve-pts.mp4",
+        "sha256": "339833001719e62da2b6218c5392cfaf6c2b5d764632847b55ca256397e809f8"
+      },
+      "log": {
+        "path": "production/research/game-lighting-history/local/caption-filter-boundary-test-v17/fixed-preserve-pts.log",
+        "sha256": "f37bae4b2a251fed1f067bc2fd14b285c06faca5d9f5e00d99c8ae47609819e1"
+      },
+      "directFullLogRead": true,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "60/1",
+            "time_base": "1/90000",
+            "duration": "82.000000",
+            "nb_read_frames": "4920"
+          }
+        ]
+      },
+      "observedFrames": 4920,
+      "continuousExpectedPts": true
+    }
+  ],
+  "observedOriginalDropFrames": 4583,
+  "correctedDropFrames": 0,
+  "diagnosis": "At decoded frame4585 (76.416667s), input colour metadata changes from unknown tobt709/tv. The original filter reconfigures, resets N used by setpts, and logs4583 dropped frames. In a time-limited test, ffmpeg consumes later input to fill output82s; equal output counts alone do not prove original content alignment.",
+  "testAssertionLimitation": "The v17 harness failed because it incorrectly expected the old82s output frame count to differ. Its preserved log reproduces the reset and4583 drops. Corrected82s output has4920 decoded frames, exact1500PTS spacing and no drops/reinitialization; recorded separately without relabeling the failed harness.",
+  "correctedFilter": "-reinit_filter0; preserve existing absolute input PTS; setsar=1,ass; fps_mode=passthrough; enc_time_base=1/90000; decoder/filter/encoder CPU2; GPU0",
+  "preserved": [
+    "original narration",
+    "current mixed WAV/AAC",
+    "clean mux",
+    "native and Motion Canvas inputs",
+    "failed captioned encode",
+    "both short tests"
+  ],
+  "finalPairRecoveryAllowed": true,
+  "fullCorrectedFramesVerified": false,
+  "allFinalPixelsReviewed": false,
+  "qaApproved": false,
+  "collected": false,
+  "uploaded": false,
+  "newGitMedia": 0,
+  "newGitImages": 0,
+  "officialReference": "https://ffmpeg.org/ffmpeg.html#Main-options",
+  "humanWholeListening": "pending",
+  "humanPronunciation": "pending"
+}

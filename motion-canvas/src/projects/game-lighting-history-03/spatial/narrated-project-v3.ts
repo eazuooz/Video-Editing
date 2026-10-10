@@ -1,0 +1,16 @@
+import {makeProject} from '@motion-canvas/core';
+import p0 from './narrated-overview-v3?scene';
+import p1 from './narrated-12a-v3?scene';
+import p2 from './narrated-13a-v3?scene';
+import p3 from './narrated-13b-v3?scene';
+import p4 from './narrated-14a-v3?scene';
+import p5 from './narrated-14b-v3?scene';
+import p6 from './narrated-15a-v3?scene';
+import p7 from './narrated-15b-v3?scene';
+import p8 from './narrated-16aa-v3?scene';
+import p9 from './narrated-16ab-v3?scene';
+import p10 from './narrated-16a-v3?scene';
+import p11 from './narrated-17a-v3?scene';
+import p12 from './narrated-17b-v3?scene';
+import p13 from './narrated-conclusion-v3?scene';
+export default makeProject({scenes:[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13],audio:'/@fs/D:/Github/Video-Editing/shared/output/narration/game-lighting-history-03/qwen3-1.7b-balanced-v1/game-lighting-history-03-qwen3-1.7b-balanced-v1.wav'});

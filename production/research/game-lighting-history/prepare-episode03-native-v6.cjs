@@ -1,0 +1,13 @@
+const fs=require('node:fs'),path=require('node:path');
+const target=path.join(__dirname,'acquire-episode03-native-v6.cjs');
+let code=fs.readFileSync(path.join(__dirname,'acquire-episode03-native-v5.cjs'),'utf8');
+code=code.replaceAll('episode03-native-v5','episode03-native-v6');
+const sources=[{id:'TMorJX3Nj6U',slug:'nanite-editor-motion-2021',primary:'https://www.unrealengine.com/blog/understanding-nanite---unreal-engine-5-s-new-virtualized-geometry-system?lang=en-au',chapter:'16aa/16a actual UE5 Early Access editor visualization; source window4740-5619, offset/keyframe boundary pending direct verification',sourceWindow:{start:4740,end:5619,chapter:'Presentation in Motion',requestedSeconds:879}}];
+code=code.replace(/const sources=\[[\s\S]*?\];/,`const sources=${JSON.stringify(sources,null,2)};`);
+code=code.replace("'--no-playlist','--no-overwrites'","'--ffmpeg-location','C:/ProgramData/HP/LCDDisplayHelper/bin','--download-sections','*'+s.sourceWindow.start+'-'+s.sourceWindow.end,'--downloader-args','ffmpeg_i:-threads 2','--downloader-args','ffmpeg_o:-threads 2','--no-playlist','--no-overwrites'");
+code=code.replaceAll('height<=1080','height<=1080');
+code=code.replace('sampleSpacingSeconds:5','sampleSpacingSeconds:15').replace('Number(probe.format.duration)/5','Number(probe.format.duration)/15').replace('fps=1/5','fps=1/15');
+code=code.replace('wholeDecodeExit:0','wholeDownloadedWindowDecodeExit:0,wholeOriginal9406SecondsDecoded:false,sourceStartOffsetVerified:false,requestedSourceWindow:s.sourceWindow');
+code=code.replace('Directly read every board, review selected transitions and source rights/recent use','Verify requested source window/keyframe offset, directly read every board, review selected transitions and source rights/recent use');
+fs.writeFileSync(target,code);
+console.log(JSON.stringify({prepared:target,sources,mediaStarted:false}));

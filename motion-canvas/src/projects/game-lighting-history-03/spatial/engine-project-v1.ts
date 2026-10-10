@@ -1,0 +1,16 @@
+import {makeProject} from '@motion-canvas/core';
+import p0 from './engine-nanite-proof0?scene';
+import p1 from './engine-nanite-proof1?scene';
+import p2 from './engine-nanite-proof2?scene';
+import p3 from './engine-nanite-proof3?scene';
+import p4 from './engine-nanite-proof4?scene';
+import p5 from './engine-nanite-proof5?scene';
+import p6 from './engine-nanite-proof6?scene';
+import p7 from './engine-lumen-proof0?scene';
+import p8 from './engine-lumen-proof1?scene';
+import p9 from './engine-lumen-proof2?scene';
+import p10 from './engine-lumen-proof3?scene';
+import p11 from './engine-lumen-proof4?scene';
+import p12 from './engine-lumen-proof5?scene';
+import p13 from './engine-lumen-proof6?scene';
+export default makeProject({scenes:[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13]});

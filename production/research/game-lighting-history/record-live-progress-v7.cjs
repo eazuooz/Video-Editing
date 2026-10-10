@@ -1,0 +1,27 @@
+// Preserve v6 history while reconciling completed diagnostics, current proof and actual TTS lease.
+require('./record-live-progress-v6.cjs');
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),read=p=>JSON.parse(fs.readFileSync(path.resolve(root,p),'utf8').replace(/^\uFEFF/,'')),cpPath='production/research/game-lighting-history/checkpoint.json',cp=read(cpPath),now=new Date().toISOString();
+const leasePath='shared/output/gpu-handoff/a86fde7e-5dd9-410f-8d37-9c569cedb1cb.json',lease=read(leasePath),repairPath='projects/game-lighting-history-04/production/voice-repair-execution-v1.json',repair=fs.existsSync(path.join(root,repairPath))?read(repairPath):null;
+const diagnosticPath='projects/game-lighting-history-04/production/voice-diagnostics-direct-review-v1.json';
+cp.episode04VoiceDirectProgress.completedIndependentDiagnosticReview=diagnosticPath;
+cp.episode04VoiceDirectProgress.pendingIndependentDiagnostics=[];
+cp.episode04VoiceDirectProgress.requiredRepairChapters=['18t','22r'];
+cp.shortVoiceDiagnostics.status=read(cp.shortVoiceDiagnostics.executionRecord).status;
+cp.shortVoiceDiagnostics.completedWindows=5;cp.shortVoiceDiagnostics.directReview=diagnosticPath;cp.shortVoiceDiagnostics.approved=false;
+cp.episode03SpatialProofs.foundation.currentCompositeReview='projects/game-lighting-history-03/production/foundation-current-model-review-v4.json';
+cp.episode03SpatialProofs.foundation.remainingScopedDefects=[];cp.episode03SpatialProofs.foundation.correctionPixelApproval=true;
+cp.episode03SpatialProofs.foundation.modelMotionProofReviewed=true;
+cp.episode03SpatialProofs.foundation.narrationTimingApproved=false;cp.episode03SpatialProofs.foundation.fullEpisodeApproved=false;
+const rehearsalPath='production/research/game-lighting-history/local/episode03-spatial-rehearsal-v3/plan.json',plan=read(rehearsalPath),render=read('production/research/game-lighting-history/local/current-render-execution-v1.json');
+cp.fullEpisode03SpatialRehearsal={plan:rehearsalPath,chapters:14,paragraphs:84,cues:257,currentPcmByteIdentical:true,duration:plan.duration,plannedFrames:plan.frames,render:render.command?.includes('narrated-project-v3.mp4')?render:null,allEncodedPixelsReviewed:false,allCaptionBoundaryPixelsReviewed:false,finalMix:false,finalVideoApproved:false};
+if(render.command?.includes('narrated-project-v3.mp4')){cp.currentSpatialRender.kind='all14-chapters-narrated-black2.5D-rehearsal-v3';for(const jobs of[cp.ownedJobsRunning,cp.ownedRunningJobs,cp.ownedActiveWork])for(const j of jobs)if(j.sessionId===61260)j.kind=cp.currentSpatialRender.kind;}
+const actual=cp.currentResources.processes.filter(p=>/render-episode04-voice-repair-v1|gpu-handoff.py/.test(p.CommandLine)&&p.CommandLine.includes('game-lighting-history-04'));
+const liveLease=actual.some(p=>p.ProcessId===lease.coordinator.pid);
+cp.episode04ScopedVoiceRepair={plan:'projects/game-lighting-history-04/production/voice-repair-plan-v1.json',scope:'Original15 paragraphs from18t and22r in6continuous2–3paragraph groups; other12chunks and original whole narration preserved.',sessionId:76645,lease:leasePath,leaseState:lease.state,coordinator:lease.coordinator,actualProcessIdentities:actual,originalResearchQueue:lease.queueOwner,completedTrainingJob:lease.completedJobEvidence||null,researchResumed:lease.state==='research_resume_verified',executionRecord:repairPath,execution:repair,status:repair?.status||lease.state,currentNarrationApproved:false,mainManifestChanged:false,finalMixedAsrApproved:false};
+if(liveLease){const job={kind:'two-chapter-six-group-scoped-TTS-repair',sessionId:76645,lease:leasePath,command:lease.ttsCommand,coordinatorIdentity:lease.coordinator,actualProcessIdentities:actual,status:repair?.status||lease.state,cpuThreads:2,gpuJobs:lease.state==='tts_running'?1:0,currentNarrationApproved:false,observedAt:cp.currentResources.observedAt};cp.ownedJobsRunning.push(job);cp.ownedRunningJobs=cp.ownedJobsRunning;cp.ownedActiveWork=cp.ownedJobsRunning;}
+cp.currentDuplicateReview={record:'production/research/game-lighting-history/current-duplicate-rereview-v6.json',episodes:['03','04'],currentPreflightRecords:['production/preflight/game-lighting-history-03.json','production/preflight/game-lighting-history-04.json'].map(p=>({path:p,checkedAt:read(p).checkedAt||null})),reason:'Actual current preflight records take precedence over this checkpoint summary; no approximate/future check timestamp claimed.',studioChangesPerformed:false};
+cp.updatedAt=now;cp.stage='episode03-full-spatial-rehearsal-and-episode04-scoped-voice-repair';
+cp.next='Finish the single14-chapter03narrated rehearsal and directly review all257cue centers plus84motion samples/boundaries. Complete6scoped04TTS groups after sealedresearch boundary, restore exactresearchqueue, independently ASR/directreview each new group and two rebuilt completechapter contexts. Preserve12unaffected originalPCM chunks and every originalKOEN paragraph; no main04audio switch before current verification. Final footage motion/rights/concept allocation, measured60:40, finalNimbusmixASR/pairQA/collection/private/schedule/Git are still pending.';
+fs.writeFileSync(path.join(root,cpPath),JSON.stringify(cp,null,2)+'\n');
+console.log(JSON.stringify({checkpoint:cpPath,render:cp.fullEpisode03SpatialRehearsal.render?.status,lease:lease.state,voiceRepair:repair?.status||'not-yet-initialized',newImagesStaged:0,finalVideoProduced:false}));

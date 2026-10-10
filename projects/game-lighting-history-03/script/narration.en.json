@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "status": "reviewed-independent-explanation-input-for-tts",
+  "episode": 3,
+  "seriesPlan": "production/research/game-lighting-history/series-plan.json",
+  "durationMeasured": false,
+  "targetMinutes": 20,
+  "footageDependentLinesFinalApproved": false,
+  "scope": "Complete independent educational narration. Any new shot-specific observation must await native pixel/source review. No final footage quota or rights approval.",
+  "title": "Finding Light Beyond the Screen: BVH, ReSTIR, Nanite and Lumen",
+  "scenes": [
+    {
+      "id": "overview",
+      "title": "화면 밖의 장면을 갱신하기",
+      "lines": [
+        "What extra information lets a reflection find an object outside the screen? We compare scene representations and ray acceleration, follow spatial and temporal reuse of limited samples, then separate Nanite's geometry selection from Lumen's lighting updates. We begin with three representations of the same wall."
+      ]
+    },
+    {
+      "id": "12a",
+      "title": "깊이와 거리장과 복셀",
+      "lines": [
+        "Screen-space reflections read visible color and depth. Off-screen information requires another representation. Camera depth, world-space distance and voxel lighting may all appear as grids but store different data.",
+        "A depth image summarizes the front surface at each pixel. Its contents change with the camera. Repeated reads cannot fully recover hidden surfaces that were never stored.",
+        "A distance field stores distance from spatial points to a nearby surface, possibly with a sign distinguishing inside and outside. Our wall diagram shows distance layers rather than camera pixels.",
+        "Voxels partition volume. They may store occupancy, material or directional lighting. The term voxel alone does not specify a reflection or illumination algorithm.",
+        "Ambient occlusion summarizes visibility, whereas global illumination includes transported light and color. Darkening a corner does not fully compute color bleeding.",
+        "Distance-field AO can query world-space data. Screen-space GI uses color and depth but retains screen limitations. Moving a hidden object off-screen tests that information boundary.",
+        "Coarse distance fields or voxels can lose thin walls or merge nearby surfaces. Coverage, detail and update cost must be balanced.",
+        "Rays can query scene triangles beyond the screen, but that does not make the work cheap. We first need a way to skip unrelated geometry."
+      ]
+    },
+    {
+      "id": "13a",
+      "title": "BVH의 상자를 따라가기",
+      "lines": [
+        "A ray is an origin plus a direction multiplied by a parameter. Before testing every triangle, we can test boxes enclosing groups of triangles.",
+        "A BVH organizes bounding volumes hierarchically. Missing a parent box allows its descendants to be skipped. We distinguish visited and rejected branches in the diagram.",
+        "An axis-aligned box can be tested using ray intervals between the two bounds of each axis. Without a common interval across all axes, the ray misses the box.",
+        "Our example uses intervals of two to six, three to five, and four to seven. Their overlap is four to five. Replacing one interval with eight to nine removes the overlap and rejects the branch.",
+        "A box hit does not guarantee a geometry hit. Bounds conservatively retain candidates; leaf geometry still needs intersection testing.",
+        "Closest-hit and visibility queries have different goals. One needs the nearest valid surface, while another can terminate after finding an appropriate blocker. Their costs need not match.",
+        "Poor bounds can group unrelated objects and leave excessive candidate work. Building a better hierarchy also costs time. Traversal quality and construction cost are linked.",
+        "Hardware ray tracing in 2018 accelerated portions of intersection work. It did not make traversal, material evaluation and scene updates universally free."
+      ]
+    },
+    {
+      "id": "13b",
+      "title": "움직이는 장면과 하이브리드",
+      "lines": [
+        "A mesh can appear in multiple scene instances. Geometry-level and scene-instance acceleration structures separate those responsibilities, commonly called BLAS and TLAS.",
+        "Moving an instance differs from deforming its triangles. The required structure updates change, and update versus rebuild conditions depend on the engine and API.",
+        "A cheap update does not always preserve optimal traversal. Deformation can reduce bound quality, trading lower update cost for more expensive future queries.",
+        "Hybrid rendering combines a rasterized base with selected ray-traced effects such as shadows or reflections. Different tasks can use different methods within one frame.",
+        "Battlefield V's initial DXR reflections illustrate that hybrid approach. They are distinct from later full path-tracing modes, and game release dates should be separated from feature updates.",
+        "Access to off-screen lights does not remove noise from sparse rough-reflection samples. The next question is how to produce a stable estimate with limited work."
+      ]
+    },
+    {
+      "id": "14a",
+      "title": "표본과 노이즈의 계산",
+      "lines": [
+        "When many directions or paths contribute, samples can estimate their combined effect. The estimator must account for selection probability, not simply average arbitrary chosen values.",
+        "Two equally weighted teaching values, two and eight, average to five. Sampling eight more often without compensation biases the estimate upward. Better selection still requires appropriate weights.",
+        "Monte Carlo estimators divide contributions by sampling density. Rare, large contributions can have large weights. Distribution design therefore matters alongside sample count.",
+        "Under independent sampling and finite variance, standard error scales inversely with the square root of sample count. Halving it requires roughly four times as many samples. Correlated or filtered samples need separate analysis.",
+        "Accumulation can add information in a static scene. In motion, the same pixel coordinate can belong to another surface. Image coordinates and surface correspondence are different.",
+        "Two separated frame planes help visualize correspondence. Object motion and camera motion determine which previous location might provide usable history."
+      ]
+    },
+    {
+      "id": "14b",
+      "title": "DLSS 2와 재투영",
+      "lines": [
+        "DLSS 2, introduced in 2020, combines a lower-resolution current image, motion information and temporal feedback to produce a higher-resolution output. Its approach differs from the earliest DLSS implementations.",
+        "Reconstruction consumes engine-rendered information. It is not the same stage as casting additional rays. Savings from lower internal resolution must be considered together with reconstruction cost.",
+        "Halving both image dimensions gives one quarter as many pixels. That does not imply one quarter of total game cost, since simulation, geometry, memory and reconstruction may scale differently.",
+        "Motion vectors help locate previous correspondence. Their direction, units and jitter convention must agree. A single global image shift cannot represent independently moving objects.",
+        "Newly revealed surfaces may lack history and require greater reliance on current information. Depth or surface changes help reject invalid correspondence; more accumulation is not automatically better.",
+        "Thin moving lines, small lettering and disocclusion boundaries are useful tests. Still sharpness and temporal stability remain separate observations.",
+        "We keep the discussion at renderer inputs, outputs and failure conditions rather than neural architecture. Missing information is not guaranteed to be recovered correctly in every case."
+      ]
+    },
+    {
+      "id": "15a",
+      "title": "DDGI가 프로브를 갱신하는 법",
+      "lines": [
+        "DDGI updates spatial probes with rays and lets surfaces query the resulting irradiance field. This can avoid independently tracing long indirect-light paths for every pixel.",
+        "Probes are world-space locations rather than camera pixels. Their directional ray results can update with lighting and serve multiple surfaces as the camera moves.",
+        "Unconditionally blending nearby probes can leak light across walls. Distance and visibility information are needed to constrain the query.",
+        "Our diagram contrasts distance-only blending with occlusion-aware weighting across a wall. The example explains the query, without claiming a universal implementation formula.",
+        "Wider probe spacing smooths small features. Denser probes cost storage and updates, while partial updates add convergence-time considerations.",
+        "Dynamic updates do not imply instantaneous perfect results. Moving lights and wall boundaries help separate latency, leakage and computational cost."
+      ]
+    },
+    {
+      "id": "15b",
+      "title": "ReSTIR의 후보와 저장소",
+      "lines": [
+        "ReSTIR's 2020 paper addressed dynamic direct lighting by reusing candidates over space and time. Later GI and path-tracing variants are distinct developments.",
+        "A reservoir keeps a selected candidate and summary information rather than all candidates. Its weighted selection is probabilistic, not an instruction to always keep the brightest light.",
+        "In our example, weights one and three give a cumulative weight of four. The second candidate replaces the first with probability three quarters, leaving the first with probability one quarter.",
+        "This illustrates weighted selection only. A final lighting estimator also accounts for proposal distributions and represented samples. The replacement probability alone is not the complete estimator.",
+        "Neighboring and historical candidates broaden the search. Their usefulness can change with surface position, orientation and visibility, so reuse requires appropriate reevaluation.",
+        "Closing a door can occlude a previously useful light. Rechecking current visibility explains why reusing a candidate differs from copying an old brightness value.",
+        "ReSTIR concerns sample selection and reuse; denoising concerns stabilizing evaluated results. They can work together without being interchangeable."
+      ]
+    },
+    {
+      "id": "16aa",
+      "title": "빛 계산 밖의 가시성",
+      "lines": [
+        "Efficient lighting does not eliminate geometry and visibility work. Frustum culling rejects objects outside the view, while occlusion culling targets hidden objects within it.",
+        "Being inside the view volume does not guarantee visibility. A wall can hide an in-frustum object. The two tests address different conditions.",
+        "Early depth testing can avoid shading occluded samples when pipeline conditions permit. Depth writes or shader side effects can change those conditions; not every hidden fragment is automatically free.",
+        "A hierarchical depth buffer summarizes regions for conservative occlusion tests. Its reduction and comparison rules must match the depth convention, including reversed depth where used.",
+        "Previous-frame depth can become stale when doors open or the camera moves quickly. Conservative handling prevents newly visible objects from being discarded.",
+        "These culling methods resemble BVH rejection in spirit but act at different pipeline stages. Identify which query they accelerate and which data they pass onward."
+      ]
+    },
+    {
+      "id": "16ab",
+      "title": "메시와 픽셀과 텍스처의 다른 예산",
+      "lines": [
+        "Mesh shaders provide a pipeline for generating and processing grouped geometry. That role is separate from indirect illumination and can support geometry-work reduction.",
+        "Variable Rate Shading changes how frequently shading is evaluated in selected regions. Shading frequency and output pixel count are separate dimensions.",
+        "A two-by-two teaching block can share one shading evaluation. Platform support and pipeline behavior still matter, and this is not a promise of fourfold performance.",
+        "Virtual texturing manages residency of needed pages rather than keeping every texture region resident. It concerns data availability, not learned generation of texture content.",
+        "Sampler feedback can report texture demand. Knowing the demand does not make data immediately available; streaming latency and residency remain relevant.",
+        "Geometry groups, shading rate and texture pages target different resources. Nanite, VRS and DLSS should not be collapsed into one resolution technology."
+      ]
+    },
+    {
+      "id": "16a",
+      "title": "나나이트의 클러스터와 계층",
+      "lines": [
+        "Nanite's 2020 reveal introduced a workflow for selecting and supplying needed detail from dense geometry. We distinguish the 2021 technical description from later engine features. It does not make unlimited triangles free.",
+        "Geometry is partitioned into clusters, grouped, simplified and repartitioned into multiple representations. This supports finer-grained selection than a few whole-object LODs.",
+        "The need for fine geometry depends on projected error. The same world-space deviation appears smaller at greater distance, changing the required representation.",
+        "Our illustrative projection estimate is focal length times world-space error divided by distance. Doubling distance halves the estimate. This is not the complete Nanite selection rule.",
+        "Independently simplified neighbors can form cracks. Group boundaries and repartitioning maintain consistency. Triangle reduction alone does not solve hierarchy construction.",
+        "Selecting clusters and making their data resident are different jobs. Rapid camera motion exposes both visibility and streaming behavior; triangle visualization alone does not measure memory cost.",
+        "Nanite is a geometry system, not a lighting solution. We now connect it to Lumen, which updates indirect illumination and reflections over the scene."
+      ]
+    },
+    {
+      "id": "17a",
+      "title": "루멘의 추적과 표면 캐시",
+      "lines": [
+        "Lumen combines tracing methods with cached lighting. We separate finding a hit, storing surface information and querying the final illumination.",
+        "Screen tracing uses detailed visible surfaces. Misses or unsuitable screen-space paths can fall back to scene tracing, preserving screen-space benefits without relying on them exclusively.",
+        "Software and hardware tracing can use different scene representations. Distance-field and triangle-based modes require explicit version and setting labels.",
+        "The Surface Cache provides reusable surface information at ray hits. Cards relate to capturing meshes from multiple views; they are not simply replacements for the original walls.",
+        "Our cutaway separates walls, capture cards and lighting caches in depth. Hit detection and cached-light lookup receive distinct arrows.",
+        "The reviewed initial UE5 reveal includes Lumen off/on views showing changed indirect lighting in the cave. Those pixels demonstrate an effect, not every internal pass or a universal performance result.",
+        "Nanite can accelerate mesh captures used by lighting caches. That connection does not make it the definition of Lumen; geometry supply supports a separate lighting task."
+      ]
+    },
+    {
+      "id": "17b",
+      "title": "변화가 캐시에 들어오는 시간",
+      "lines": [
+        "A light change can affect direct lighting and cached indirect lighting at different rates. Partial updates require budgets and priorities, making cache age a quality consideration.",
+        "Newly exposed surfaces or major lighting changes reduce history reliability. Stability and responsiveness can conflict, so trails, noise and convergence speed must be examined together.",
+        "Cache coverage can fail on complex surfaces or interiors. Debug views help identify missing coverage before changing mesh organization or representation; brightness controls alone cannot supply absent data.",
+        "Thin walls and small bright objects challenge representation resolution and sampling budgets. A technology name alone does not establish that leakage or instability is solved.",
+        "Separate fixed-camera lighting changes from fixed-lighting camera movement. This distinguishes screen-trace changes from scene updates, while exposure and post-processing remain controlled.",
+        "Dynamic illumination does not imply complete transport solved anew every frame. Lumen combines tracing, storage and distributed updates as an engine system."
+      ]
+    },
+    {
+      "id": "conclusion",
+      "title": "줄이는 작업과 남기는 오차",
+      "lines": [
+        "We separated scene representations, ray acceleration, sample reuse, geometry selection and lighting caches. BVHs reduce intersection candidates, while probes and reservoirs manage different forms of reused information.",
+        "Nanite selects needed geometry; Lumen traces and updates illumination. Sharing an engine does not make their responsibilities identical. Evaluate information coverage, work budget and update latency together.",
+        "Next we connect shadow pages, path tracing, reconstruction and post-processing. We distinguish rendered frames from generated display frames and follow renderer inputs and outputs through DLSS 5."
+      ]
+    }
+  ]
+}

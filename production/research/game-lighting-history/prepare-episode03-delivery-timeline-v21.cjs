@@ -1,0 +1,10 @@
+// Metadata adapter only. Preserve the sealed QA and the original input-plan history.
+const fs=require('node:fs'),crypto=require('node:crypto');
+const slug='game-lighting-history-03',base='projects/'+slug+'/';
+const input=base+'production/current-input-plan-v20.json',qa=base+'production/final-technical-qa-v21.json';
+const digest=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+if(digest(qa)!=='0a667c3de49b0247f4ee194206a00de1df1da8a0742d4e27a2bd53bd08595045')throw Error('Sealed technical proof changed');
+const p=JSON.parse(fs.readFileSync(input)),scenes=p.inputs.map(x=>({...x,startFrame:x.fromFrame,endFrame:x.toFrame,outputTimebase:'frames at60fps; fromFrame/toFrame are final-output positions, never source offsets'}));
+if(scenes.length!==166||scenes[0].startFrame!==0||scenes.at(-1).endFrame!==93084||scenes.some((s,i)=>s.endFrame-s.startFrame!==s.frames||(i&&scenes[i-1].endFrame!==s.startFrame)))throw Error('Current input boundaries inconsistent');
+const target=base+'production/delivery-timeline-v21.json';fs.writeFileSync(target,JSON.stringify({schemaVersion:1,status:'sealed-review-pair-delivery-timeline',derivedAt:new Date().toISOString(),fps:60,finalFrames:93084,finalSeconds:1551.4,actualFrames:55418,explanationFrames:36946,bodyFrames:92364,brandingFrames:120,membershipFrames:600,ratioErrorFrames:-0.4,references:[{path:input,sha256:digest(input),historicalInputApprovalFieldsPreserved:true},{path:qa,sha256:digest(qa),currentEncodedTechnicalApproval:true}],scenes,rateChanges:0,loops:0,sourceAudio:0,mediaRegenerated:false,humanListeningApproved:false,publicRightsApproved:false},null,2)+'\n');
+const manifestPath=base+'project.json',manifest=JSON.parse(fs.readFileSync(manifestPath));manifest.paths.timeline=target;manifest.paths.renderReport=qa;manifest.paths.scriptEn=base+'script/narration.en.json';fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');console.log(JSON.stringify({scenes:scenes.length,finalFrames:93084,target,mediaRegenerated:false}));

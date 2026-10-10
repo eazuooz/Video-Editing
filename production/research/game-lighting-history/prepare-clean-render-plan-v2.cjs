@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),base='projects/game-lighting-history-03/production',render='production/research/game-lighting-history/local/episode03-chapter-render-v4/renders';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const prep=read(base+'/retained-clean-scene-preparation-v2.json'),data=read('motion-canvas/src/projects/game-lighting-history-03/spatial/retained-clean-data-v2.json');
+const currentVoice=read(base+'/native-guide01-onset-asr-direct-review-v3.json');if(!currentVoice.allCurrentGuideContentApproved)throw Error('Current voice content review required');
+const projectFiles=prep.files.filter(x=>/-project\.ts$/.test(x.path));
+const chapters=projectFiles.map(x=>{const name=path.basename(x.path,'.ts'),scene=name.replace('retained-clean-','').replace('-v2-project',''),i=data.clips.find(z=>z.scene===scene).chapterIndex,frames=data.clips.filter(z=>z.chapterIndex===i).reduce((n,z)=>n+z.frames,0);return{scene,name,frames,output:render+'/'+name+'.mp4',execution:render+'/'+name+'.execution.json'};});
+const inputs=[...prep.files,{path:base+'/measured-native-timeline-candidate-v15.json',sha256:sha(base+'/measured-native-timeline-candidate-v15.json')}];
+const out=base+'/retained-clean-render-plan-v2.json';if(fs.existsSync(path.join(root,out)))throw Error('Preserve plan');
+fs.writeFileSync(path.join(root,out),JSON.stringify({schemaVersion:1,preparedAt:new Date().toISOString(),inputs,chapters,frames:36946,cpuThreads:2,gpuJobs:0,noAudio:true,noCaptions:true,currentVoiceContentReviewed:true,allFinalPixelsReviewed:false,finalMixedAsrApproved:false,renderComplete:false,scope:'Retained45 whole explanations, full paragraph34 and complete paragraph81 cache transition tail. Original84 PCM is unchanged.'},null,2)+'\n');
+console.log(JSON.stringify({chapters:chapters.length,frames:36946,plan:out}));

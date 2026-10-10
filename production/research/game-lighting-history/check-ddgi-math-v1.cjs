@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../../..'),ts=require(path.join(root,'motion-canvas/node_modules/typescript'));
+const file='motion-canvas/src/projects/game-lighting-history-03/spatial/ddgi-math-v1.ts',source=fs.readFileSync(path.join(root,file),'utf8');
+const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const m={exports:{}};new Function('module','exports',code)(m,m.exports);
+const {wallBlocks,weightedIrradiance,temporalIrradiance,responseAfterUpdates}=m.exports,results=[];
+function check(label,fn){fn();results.push({label,passed:true});}
+check('Naive equally weighted irradiances2and10 yield6; visibility exclusion yields2',()=>{assert.equal(weightedIrradiance([2,10],[1,1]),6);assert.equal(weightedIrradiance([2,10],[1,0]),2);});
+check('Normalizing weights preserves constant irradiance and scale invariance',()=>{assert.equal(weightedIrradiance([7,7],[.3,.8]),7);assert.equal(weightedIrradiance([2,10],[3,1]),weightedIrradiance([2,10],[6,2]));});
+check('No contributing probes yields no estimate rather than artificial zero',()=>assert.equal(weightedIrradiance([2,10],[0,0]),null));
+check('Wall occludes the far probe and permits the same-side probe',()=>{assert.equal(wallBlocks([-70,-45,20],[180,-45,85]),true);assert.equal(wallBlocks([-70,-45,20],[-180,-45,85]),false);});
+check('Finite wall excludes segments above, outside depth, parallel or beyond an endpoint',()=>{assert.equal(wallBlocks([-70,-45,180],[180,-45,200]),false);assert.equal(wallBlocks([-70,200,20],[180,200,85]),false);assert.equal(wallBlocks([-70,-45,20],[-70,-45,85]),false);assert.equal(wallBlocks([-70,-45,20],[-10,-45,85]),false);});
+check('Blend endpoints and invalid weights behave explicitly',()=>{assert.equal(temporalIrradiance(2,10,1),2);assert.equal(temporalIrradiance(2,10,0),10);assert.equal(temporalIrradiance(2,10,.9),2.8);assert.throws(()=>temporalIrradiance(2,10,-.1));assert.throws(()=>temporalIrradiance(2,10,1.1));});
+check('24updates equal the recurrence and retain a finite lag',()=>{let v=2;for(let i=0;i<24;i++)v=temporalIrradiance(v,10,.9);assert.ok(Math.abs(v-responseAfterUpdates(2,10,.9,24))<1e-12);assert.ok(v<10&&v>9.3);assert.equal(responseAfterUpdates(2,10,.9,0),2);});
+const record={checkedAt:new Date().toISOString(),source:{path:file,sha256:crypto.createHash('sha256').update(source).digest('hex')},cases:results,scope:'Educational two-probe normalized irradiance and binary wall visibility example. It does not implement the full eight-probe DDGI distance-moment/normal/bias/trilinear estimator. Blend0.9 is an illustrative parameter, not a measured game performance or default.',primarySources:['https://research.nvidia.com/index.php/publication/2019-05_dynamic-diffuse-global-illumination-ray-traced-irradiance-fields','https://jcgt.org/published/0008/02/01/paper-lowres.pdf'],computedMathPassed:true,actualAnimatedPixelsReviewed:false,finalNarrationTimingApproved:false};
+const out='projects/game-lighting-history-03/production/ddgi-math-check-v1.json';fs.writeFileSync(path.join(root,out),JSON.stringify(record,null,2)+'\n');console.log(JSON.stringify({record:out,passed:results.length,animatedPixelsReviewed:false}));

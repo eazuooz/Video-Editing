@@ -1,0 +1,13 @@
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'../../..');
+const file=path.join(root,'projects/game-lighting-history-03/production/review-mixed-asr-direct-progress-v15.json');
+const doc=JSON.parse(fs.readFileSync(file,'utf8'));
+const row=doc.records.find(r=>r.label==='whole-17b');
+if(!row || !row.pendingIndependentWindows.includes('guide-19-lumen-directional')) throw Error('Expected old descriptive references only; do not rerun');
+row.pendingLabelCorrection={at:new Date().toISOString(),prior:row.pendingIndependentWindows,reason:'Directly read all54 current request labels. Replace two descriptive guide names with exact current request identities and include the complete zero-gap join. Raw ASR and direct content findings preserved.'};
+row.pendingIndependentWindows=['context-17b','guide-19-lumen-light-edit','guide-20-lumen-interior-toggle','join-80-81'];
+const request=JSON.parse(fs.readFileSync(path.join(root,'projects/game-lighting-history-03/production/review-mixed-asr-request-v15.json'),'utf8'));
+const valid=new Set(request.windows.map(w=>w.label));
+for(const r of doc.records) for(const label of r.pendingIndependentWindows || []) if(!valid.has(label)) throw Error('Unmatched '+label);
+fs.writeFileSync(file,JSON.stringify(doc,null,2)+'\n');
+console.log(JSON.stringify({records:doc.records.length,allPendingRequestLabelsValid:true,rawAsrChanged:false,mixedApproved:false}));

@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+require('./record-live-progress-v16.cjs');
+const root=path.resolve(__dirname,'../../..'),base='production/research/game-lighting-history',p3='projects/game-lighting-history-03/production';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,''));
+const proof=p=>({path:p,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')});
+const c=read(base+'/checkpoint.json'),r=read(p3+'/rehearsal-layout-spatial-proof-direct-review-v1.json');
+if(!c.fullEpisode03SpatialRehearsal.chapterRecovery.allPixelsReviewed||!r.modelMotionProofReviewed||r.modelLayoutCorrectionRequired)throw Error('Actual complete rehearsal and corrected9poses required');
+c.episode03RehearsalLayoutCorrection={finding:proof(p3+'/rehearsal-layout-findings-v1.json'),plan:proof(p3+'/rehearsal-layout-spatial-proof-plan-v1.json'),extraction:proof(p3+'/rehearsal-layout-spatial-proof-extraction-v1.json'),directReview:proof(p3+'/rehearsal-layout-spatial-proof-direct-review-v1.json'),paragraphs:3,poses:9,modelMotionProofReviewed:true,finalRuntimeAdopted:false,finalVideoApproved:false};
+c.updatedAt=new Date().toISOString();c.stage='03-all-rehearsal-pixels-and-scoped-layout-corrections-reviewed-native-selection';
+c.next='03 all234boards/1399encodedframes directly read; two temporal diagrams corrected6poses and three layout findings corrected9poses. Integrate these and integer caption runtime into final native60:40 plan. Review exact native action intervals for all4 chapters, preserve current narration and meaningful explanations.04 all87paragraphs passed scoped silent model proof; final narration/native integration, Nimbus/final-mixASR/pairQA/output/private/scheduling/selectiveGit still pending. Research GPU restored and running; no completed media repeated.';
+fs.writeFileSync(path.join(root,base+'/checkpoint.json'),JSON.stringify(c,null,2)+'\n');
+console.log(JSON.stringify({stage:c.stage,episode03AllRehearsalPixels:true,layoutCorrectedPoses:9,finalVideo:false}));

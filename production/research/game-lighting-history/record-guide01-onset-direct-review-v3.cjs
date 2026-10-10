@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),base='projects/game-lighting-history-03/production';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const write=(p,x)=>fs.writeFileSync(path.join(root,p),JSON.stringify(x,null,2)+'\n');
+const ep=base+'/native-guide01-onset-asr-execution-v3.json',e=read(ep),tp=base+'/native-guide01-onset-tts-execution-v3.json',t=read(tp);
+if(e.exitCode!==0||e.results.length!==3||t.exitCode!==0)throw Error('Observed3 completed windows required');
+const records=e.results.map(x=>{if(sha(x.path)!==x.sha256)throw Error('Changed recognized text');const r=read(x.path);if(sha(r.input.path)!==r.input.sha256)throw Error('Changed PCM');return{...x,mode:r.mode,input:r.input,expectedKo:r.expectedKo,expectedEn:r.expectedEn,actualFullText:r.text,fullExpectedAndActualDirectlyRead:true,wordEndingsAndTimestampsDirectlyCompared:true,contentApproved:true,
+ finding:r.mode==='sentence'?'Exact complete opening statement from 화면이 through 때문입니다; no previous omitted 지금 wording remains in the current script.':'All six statements in order, complete scene-geometry/material/camera/distance/Nanite/Surface Cache distinctions and ending. 메쉬/메시 spelling, 재질이/재질의, 앞에/앞의 and 자료임으로/자료이므로 remain human pronunciation review. Independent context has a0.20s timestamp overlap at25.82–26.02 and no final punctuation; the whole decode and preserved independent sentence PCM retain the ending. No audio repetition inferred from overlapping recognizer timestamps.'};});
+const p=base+'/native-guide01-onset-asr-direct-review-v3.json';if(fs.existsSync(path.join(root,p)))throw Error('Preserve direct review');
+const old=base+'/native-guides-asr-direct-progress-v1.json',repair=base+'/native-guide-repairs-asr-direct-review-v2.json';
+const stamp=new Date().toISOString();
+write(p,{schemaVersion:1,reviewedAt:stamp,sessionId:97250,actualToolSessionExitCode:0,actualToolSessionExitObserved:true,execution:{path:ep,sha256:sha(ep)},records,directlyReadWindows:3,guide01ContentApproved:true,retainedGuide20ContentApproval:{path:repair,sha256:sha(repair)},retainedOther18ContentReview:{path:old,sha256:sha(old)},allCurrentGuideContentApproved:true,original84Repeated:false,other19Repeated:false,heuristicIsApproval:false,finalMixedAsrApproved:false,humanListening:'pending',humanPronunciation:'pending'});
+const sp=base+'/native-guide01-onset-asr-session-v3.json',s=read(sp);Object.assign(s,{finishedObservedAt:stamp,exitCode:0,actualToolSessionExit0Observed:true,completedWindows:3,stage:'3-directly-compared-current-opener-content-pass'});write(sp,s);
+const cp=read('production/research/game-lighting-history/checkpoint.json');Object.assign(cp,{updatedAt:stamp,stage:'current20-guide-content-reviewed-measured-timeline-preparation',ownedActiveWork:null,ownedJobsRunning:[],episode03CurrentGuideAsr:{path:p,sha256:sha(p),currentGuide01ContentApproved:true,allCurrentGuideContentApproved:true,finalMixedAsrApproved:false,humanListening:'pending',humanPronunciation:'pending'}});write('production/research/game-lighting-history/checkpoint.json',cp);
+console.log(JSON.stringify({windows:3,openerContentApproved:true,all20ContentApproved:true,finalMixed:false}));

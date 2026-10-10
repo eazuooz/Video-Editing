@@ -1,0 +1,13 @@
+import {makeProject} from '@motion-canvas/core';
+import p0 from './foundation-fix-00-v2?scene';
+import p1 from './foundation-fix-01-v2?scene';
+import p2 from './foundation-fix-02-v2?scene';
+import p3 from './foundation-fix-03-v2?scene';
+import p4 from './foundation-fix-04-v2?scene';
+import p5 from './foundation-fix-05-v2?scene';
+import p6 from './foundation-fix-06-v2?scene';
+import p7 from './foundation-fix-07-v2?scene';
+import p8 from './foundation-fix-08-v2?scene';
+import p9 from './foundation-fix-09-v2?scene';
+import p10 from './foundation-fix-10-v2?scene';
+export default makeProject({scenes:[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10]});

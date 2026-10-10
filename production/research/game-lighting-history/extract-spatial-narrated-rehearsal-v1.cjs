@@ -1,0 +1,25 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),{spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),rel='production/research/game-lighting-history/local/spatial-narrated-rehearsal-v1',dir=path.join(root,rel),qa=path.join(dir,'qa');
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const plan=read(`${rel}/plan.json`),execution=read('production/research/game-lighting-history/local/current-render-execution-v1.json');
+if(execution.status!=='complete'||execution.exitCode!==0)throw Error('Rehearsal exporter has not actually completed');
+if(fs.existsSync(path.join(qa,'extraction.json')))throw Error('Existing QA extraction preserved');
+const ffmpeg=path.join(root,'motion-canvas/node_modules/@ffmpeg-installer/win32-x64/ffmpeg.exe'),ffprobe='C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe';
+function run(exe,args){const r=spawnSync(exe,args,{encoding:'utf8',windowsHide:true,maxBuffer:32*1024*1024});if(r.status!==0)throw Error(r.stderr);return{command:[exe,...args],exitCode:r.status,stdout:r.stdout,stderr:r.stderr};}
+const source=path.join(root,'production/research/game-lighting-history/local/black-proof-v3/narrated-project-v1.mp4'),video=path.join(dir,'three-chapters.captioned.mp4');
+if(fs.existsSync(video))throw Error('Existing rehearsal preserved');fs.copyFileSync(source,video);fs.mkdirSync(qa,{recursive:true});
+const probeRun=run(ffprobe,['-v','error','-count_frames','-show_entries','stream=codec_type,codec_name,width,height,r_frame_rate,time_base,duration,nb_frames,nb_read_frames,sample_rate,channels','-show_entries','format=duration','-of','json',video]),probe=JSON.parse(probeRun.stdout);
+const v=probe.streams.find(s=>s.codec_type==='video'),a=probe.streams.find(s=>s.codec_type==='audio');
+if(v.width!==1920||v.height!==1080||v.r_frame_rate!=='60/1'||v.time_base!=='1/90000'||!a)throw Error('Unexpected rehearsal format or missing audio');
+const decode=run(ffmpeg,['-hide_banner','-v','error','-threads','2','-i',video,'-f','null','NUL']);
+const snapshot=[];for(const name of['bvh-model-v1.tsx','ddgi-model-v1.tsx','restir-model-v1.tsx','narrated-runtime-v1.tsx','narrated-data-v1.json','narrated-project-v1.ts']){
+ const p=path.join(root,'motion-canvas/src/projects/game-lighting-history-03/spatial',name),dest=path.join(dir,`rendered-${name}`);fs.copyFileSync(p,dest);snapshot.push({source:path.relative(root,p).replaceAll('\\','/'),path:path.relative(root,dest).replaceAll('\\','/'),sha256:sha(dest)});
+}
+const frameMap=new Map();function add(seconds,reason){const frame=Math.min(Number(v.nb_read_frames)-1,Math.max(0,Math.round(seconds*60)));const f=frameMap.get(frame)||{frame,reasons:[]};f.reasons.push(reason);frameMap.set(frame,f);}
+for(const c of plan.chapters){for(const cue of c.cues)add(c.timelineFrom+(cue.from+cue.to)/2,`${c.scene}:cue${cue.id}:center`);for(const p of c.paragraphs)for(const[k,t]of Object.entries({before:Math.max(p.from,p.move[0]-.15),middle:(p.move[0]+p.move[1])/2,after:Math.min(p.to-.05,p.move[1]+.15)}))add(c.timelineFrom+t,`${c.scene}:paragraph${p.index+1}:${k}`);}
+const frames=[...frameMap.values()].sort((a,b)=>a.frame-b.frame);
+const extraction=run(ffmpeg,['-hide_banner','-v','error','-threads','2','-i',video,'-vf',`select='${frames.map(f=>`eq(n,${f.frame})`).join('+')}'`,'-vsync','0','-threads','2',path.join(qa,'frame-%03d.png')]);
+frames.forEach((f,i)=>{f.path=`${rel}/qa/frame-${String(i+1).padStart(3,'0')}.png`;f.sha256=sha(path.join(root,f.path));});
+const boards=[];for(let i=0;i<Math.ceil(frames.length/6);i++){const n=Math.min(6,frames.length-i*6),out=path.join(qa,`board-${String(i+1).padStart(2,'0')}.png`);run(ffmpeg,['-hide_banner','-v','error','-threads','2','-start_number',String(i*6+1),'-i',path.join(qa,'frame-%03d.png'),'-vf',`scale=960:540,tile=2x3:nb_frames=${n}`,'-frames:v','1','-threads','2',out]);boards.push({path:path.relative(root,out).replaceAll('\\','/'),sha256:sha(out),directlyViewed:false,frameIndices:[i*6+1,i*6+n]});}
+const record={createdAt:new Date().toISOString(),scope:'All61 original-KO cue centers plus before/middle/after motion poses for21 paragraphs; caption boundary pixels and full episodes remain unapproved.',video:{path:`${rel}/three-chapters.captioned.mp4`,sha256:sha(video),probe},exporter:execution,sourceSnapshot:snapshot,plannedFrames:plan.frames,observedFrames:Number(v.nb_read_frames),endpointDifference:Number(v.nb_read_frames)-plan.frames,wholeDecode:decode,probeCommand:probeRun.command,extractionCommand:extraction.command,frames,boards,allCueCentersReviewed:false,allCaptionBoundaryPixelsReviewed:false,fullEpisodeApproved:false,finalMix:false,localOnly:true};
+fs.writeFileSync(path.join(qa,'extraction.json'),JSON.stringify(record,null,2)+'\n');console.log(JSON.stringify({record:`${rel}/qa/extraction.json`,frames:frames.length,boards:boards.length,observedFrames:record.observedFrames,wholeDecode:decode.exitCode,audio:a}));

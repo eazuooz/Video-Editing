@@ -1,0 +1,22 @@
+// One independent scene per browser render; preserve failed aggregate and all PCM.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),rel='production/research/game-lighting-history/local/episode03-chapter-render-v4',dst='motion-canvas/src/projects/game-lighting-history-03/spatial',read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,'')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const oldPath='production/research/game-lighting-history/local/episode03-spatial-rehearsal-v3/plan.json',old=read(oldPath);
+if(fs.existsSync(path.join(root,rel,'plan.json')))throw Error('Existing chapter render plan preserved');
+for(const input of old.inputs)if(sha(input.path)!==input.sha256)throw Error('Frozen rehearsal source changed:'+input.path);
+const chapters=old.chapters.map((c,i)=>{
+ const fromFrame=Math.round(c.timelineFrom*60),toFrame=Math.round((old.chapters[i+1]?.timelineFrom??old.duration)*60),frames=toFrame-fromFrame,name='chapter-'+c.scene+'-v4';
+ fs.writeFileSync(path.join(root,dst,name+'.ts'),`import {makeProject} from '@motion-canvas/core';\nimport scene from './narrated-${c.scene}-v3?scene';\nexport default makeProject({scenes:[scene]});\n`);
+ // Renderer exports first and last frames inclusively. N-1 endpoint yields exactly N frames.
+ fs.writeFileSync(path.join(root,dst,name+'.meta'),JSON.stringify({version:0,shared:{background:null,range:[0,(frames-1)/60],size:{x:1920,y:1080},audioOffset:0},preview:{fps:30,resolutionScale:1},rendering:{fps:60,resolutionScale:1,colorSpace:'srgb',exporter:{name:'@motion-canvas/ffmpeg',options:{fastStart:true,includeAudio:false}}}},null,2)+'\n');
+ return{scene:c.scene,name,project:dst+'/'+name+'.ts',fromFrame,toFrame,frames,duration:frames/60,renderRange:[0,(frames-1)/60],output:rel+'/renders/'+name+'.mp4',execution:rel+'/renders/'+name+'.execution.json',verified:false};
+});
+if(chapters.reduce((n,c)=>n+c.frames,0)!==old.frames)throw Error('Chapter integer frames do not partition body');
+const plan={createdAt:new Date().toISOString(),scope:'Unapproved narrated rehearsal, same14 chapters/84paragraphs/257cues/models/PCM as v3. Isolated chapter renders with inclusive endpoint correction; stitch silent chapters and mux unchanged PCM once. Not final episode or gameplay allocation.',priorPlan:{path:oldPath,sha256:sha(oldPath)},failedAggregate:'production/research/game-lighting-history/local/episode03-spatial-rehearsal-v3/browser-crash-v1.json',audio:old.audio,chapters,frames:old.frames,duration:old.duration,inputs:[...old.inputs,{path:dst+'/narrated-runtime-v3.tsx',sha256:sha(dst+'/narrated-runtime-v3.tsx')},{path:dst+'/narrated-data-v3.json',sha256:sha(dst+'/narrated-data-v3.json')}],allPixelsReviewed:false,finalVideoApproved:false,localOnly:true};
+fs.mkdirSync(path.join(root,rel,'renders'),{recursive:true});fs.writeFileSync(path.join(root,rel,'plan.json'),JSON.stringify(plan,null,2)+'\n');
+const oldConfig=fs.readFileSync(path.join(root,'motion-canvas/vite.game-lighting-history.black-lookdev-v2.config.ts'),'utf8');
+const projects=[...chapters.map(c=>'./src/projects/game-lighting-history-03/spatial/'+c.name+'.ts'),'./src/projects/game-lighting-history-04/spatial/vsm-project-v1.ts'];
+let config=oldConfig.replace("Symbol.for('game-lighting-history-black-v2-cpu-export-options')","Symbol.for('game-lighting-history-chapter-v4-cpu-export-options')").replace(/project:\[[\s\S]*?\],\n output:/,'project:'+JSON.stringify(projects)+',\n output:').replace("../production/research/game-lighting-history/local/black-proof-v3","../production/research/game-lighting-history/local/episode03-chapter-render-v4/renders");
+config=config.replace("const write=()=>fs.writeFileSync(record,JSON.stringify(observed,null,2)+'\\n');",`const chapterRecord=fileURLToPath(new URL('../production/research/game-lighting-history/local/episode03-chapter-render-v4/renders/'+(this as any).command._outputs[0].target.split(/[\\\\/]/).pop().replace(/\\.mp4$/,'.execution.json'),import.meta.url));\n const write=()=>{fs.writeFileSync(record,JSON.stringify(observed,null,2)+'\\n');fs.writeFileSync(chapterRecord,JSON.stringify(observed,null,2)+'\\n');};`);
+fs.writeFileSync(path.join(root,'motion-canvas/vite.game-lighting-history.chapter-v4.config.ts'),config);
+console.log(JSON.stringify({plan:rel+'/plan.json',chapters:chapters.length,frames:plan.frames,existingInputsPreserved:true,final:false}));

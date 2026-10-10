@@ -1,0 +1,24 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),{spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),b='production/research/game-lighting-history';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const x=read(b+'/local/duplicate-input-change-snapshot-v12.json');
+const expected=['projects/character-parameters/project.json','projects/character-parameters/README.md','projects/character-parameters/publishing/youtube-upload-v1.json'];
+if(x.removed.length||x.changes.length!==3||expected.some(p=>!x.changes.some(f=>f.path===p)))throw Error('Unexpected changed content');
+for(const f of x.currentInputs)if(sha(f.path)!==f.sha256)throw Error('Input changed after full direct read: '+f.path);
+const prior=b+'/current-duplicate-rereview-v10.json',record=read(prior),out=b+'/current-duplicate-rereview-v11.json';
+if(fs.existsSync(path.join(root,out)))throw Error('Preserve existing review');
+const comparison=record.comparison+' The subsequent full character-parameters manifest, README and new actual publishing receipt were directly reread. The independent37+37 KO/EN paragraphs remain unchanged from their prior full read. Its current question is how shared moves, unique rules, strength, weakness and conditional effects produce character identity, distinct from historical rendering algorithms. CUA reopened actual nic5Sp6dylQ: title 능력치는 어떻게 캐릭터의 개성을 만들까?, full description/chapter list, character-parameters.captioned.mp4 and scheduled state directly read. Foreign records report389.95s, completed pair/encoded QA/private settings and Oct30 09:00 schedule; these foreign completion claims are not new approval by this task. No foreign settings or files changed.';
+record.reviewedAt=new Date().toISOString();record.priorRecord={path:prior,sha256:sha(prior)};record.inventory=x.currentInputs;record.changes=x.changes;record.removed=x.removed;
+record.incrementalFullReread=x.changes.map(f=>({...f,fullBodyDirectlyRead:true,observation:'Current entire body reread; active character-design scripts unchanged. Actual receipt ID directly reopened in Studio; character-rules claims and examples differ from rendering history.'}));
+record.studio.observedAt=record.reviewedAt;record.studio.results=26;record.studio.method='CUA tab16 current26 rendering title links/IDs/privacy/date directly reread; tab21 actual nic5Sp6dylQ title, full description, chapters, source filename and scheduled state directly read. Stale checkbox labels ignored.';
+record.studio.newKnownMatch={videoId:'nic5Sp6dylQ',title:'능력치는 어떻게 캐릭터의 개성을 만들까?',visibilityObserved:'scheduled',filename:'character-parameters.captioned.mp4',descriptionDirectlyRead:true,settingsChanged:false};
+record.studio.currentFinalHistoryUploadObserved=false;record.studio.settingsChanged=false;record.comparison=comparison;record.foreignFilesModified=false;
+fs.writeFileSync(path.join(root,out),JSON.stringify(record,null,2)+'\n');
+for(const args of [['scripts/review-video-duplicates.cjs','game-lighting-history-03','--candidate-file',b+'/candidate-03.json','--decision','distinct','--reason',comparison+' Evidence:'+out,'--studio-evidence','CUA current26 rendering results and actual known character title/description/ID. '+out],['scripts/review-video-duplicates.cjs','game-lighting-history-03','--candidate-file',b+'/candidate-03.json','--check']]){const r=spawnSync(process.execPath,args,{cwd:root,encoding:'utf8',windowsHide:true});console.log(r.stdout);if(r.status!==0)throw Error(r.stderr);}
+const cpPath=b+'/checkpoint.json',cp=read(cpPath),diagnostic='projects/game-lighting-history-03/production/native-guide01-padded-onset-execution-v1.json',d=read(diagnostic);
+if(d.exitCode!==0||d.results.length!==4)throw Error('Actual completed targeted diagnostics required');
+cp.updatedAt=record.reviewedAt;cp.stage='selective-two-guide-repair-prepared-current-distinct-v11';cp.ownedJobsRunning=[];
+cp.currentDuplicateReview={path:out,sha256:sha(out),currentInputs:x.currentInputs.length,changedFilesFullyRead:3,studioResults:26,actualCharacterVideoId:'nic5Sp6dylQ',checkPassed:true};
+cp.episode03GuideTargetedDiagnostics={path:diagnostic,sha256:sha(diagnostic),sessionId:99415,exitCode:0,actualSessionExit0Observed:true,windows:4,fullTextsDirectlyRead:true,approved:false,reason:'01 onset remains unresolved;20 early/middle recognizes unrelated text. Two unapproved candidates conservatively repaired; no recognized greeting asserted as actual spoken greeting.'};
+cp.next='Selective2-guide13sentence TTS after live resources and cooperative research boundary, preserving original84 and other18 guides. Then current repair ASR, measured role/native allocation, clean scenes/mix/both captions and final pixel QA. All4 deliveries pending.';
+fs.writeFileSync(path.join(root,cpPath),JSON.stringify(cp,null,2)+'\n');

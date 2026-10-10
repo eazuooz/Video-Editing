@@ -1,0 +1,112 @@
+[
+  {
+    "scene": "overview",
+    "paragraph": 1,
+    "model": "navigationModel",
+    "mode": 0,
+    "title": "표현·가속·재사용의 전체 순서",
+    "ko": "화면에 없는 물체까지 반사하려면 무엇을 더 알아야 할까요? 이번에는 장면을 표현하는 거리장과 레이 가속 구조를 먼저 보고, 부족한 표본을 시간과 공간에서 재사용하는 과정을 따라갑니다. 마지막에는 나나이트가 기하를 고르는 일과 루멘이 빛을 갱신하는 일을 분리해 보겠습니다. 먼저 같은 벽을 저장하는 세 가지 방법부터 비교합니다.",
+    "en": "What extra information lets a reflection find an object outside the screen? We compare scene representations and ray acceleration, follow spatial and temporal reuse of limited samples, then separate Nanite's geometry selection from Lumen's lighting updates. We begin with three representations of the same wall.",
+    "plannedFrom": 0
+  },
+  {
+    "scene": "12a",
+    "paragraph": 4,
+    "model": "representationModel",
+    "mode": 3,
+    "title": "복셀에 저장하는 서로 다른 값",
+    "ko": "복셀은 공간의 작은 부피를 단위로 삼습니다. 그 안에 기하 점유를 저장할 수도 있고, 방향별 빛이나 재질을 더 저장할 수도 있습니다. 복셀이라는 단어만으로 그 셀이 반사나 간접광을 어떻게 계산하는지 알 수는 없습니다.",
+    "en": "Voxels partition volume. They may store occupancy, material or directional lighting. The term voxel alone does not specify a reflection or illumination algorithm.",
+    "plannedFrom": 12
+  },
+  {
+    "scene": "13b",
+    "paragraph": 1,
+    "model": "dynamicRayModel",
+    "mode": 0,
+    "title": "BLAS와 TLAS의 다른 역할",
+    "ko": "장면에서는 같은 메시가 여러 위치에 놓일 수 있습니다. 메시 내부의 기하 구조와, 장면에서 그 메시가 배치된 구조를 나눌 수 있습니다. 블라스와 틀라스라는 이름은 이런 두 수준의 가속 구조를 구분할 때 사용합니다.",
+    "en": "A mesh can appear in multiple scene instances. Geometry-level and scene-instance acceleration structures separate those responsibilities, commonly called BLAS and TLAS.",
+    "plannedFrom": 27
+  },
+  {
+    "scene": "14a",
+    "paragraph": 4,
+    "model": "samplingModel",
+    "mode": 3,
+    "title": "표본 수와 표준오차",
+    "ko": "독립 표본이고 분산이 유한하다는 조건에서 표준오차는 표본 수의 제곱근에 반비례합니다. 오차를 절반으로 줄이려면 대략 네 배 표본이 필요합니다. 모든 시간 필터나 상관된 표본에 이 관계를 그대로 적용해서는 안 됩니다.",
+    "en": "Under independent sampling and finite variance, standard error scales inversely with the square root of sample count. Halving it requires roughly four times as many samples. Correlated or filtered samples need separate analysis.",
+    "plannedFrom": 54
+  },
+  {
+    "scene": "14b",
+    "paragraph": 1,
+    "model": "temporalModel",
+    "mode": 0,
+    "title": "DLSS 2의 현재·이전 입력",
+    "ko": "이천이십 년의 디엘에스에스 이는 현재의 낮은 해상도 영상과 모션 정보와 과거 출력을 연결해 높은 해상도 출력을 만드는 사례입니다. 초기 디엘에스에스와 입력과 활용 방식이 달라졌다는 점을 연대기에서 구분하겠습니다.",
+    "en": "DLSS 2, introduced in 2020, combines a lower-resolution current image, motion information and temporal feedback to produce a higher-resolution output. Its approach differs from the earliest DLSS implementations.",
+    "plannedFrom": 63
+  },
+  {
+    "scene": "14b",
+    "paragraph": 2,
+    "model": "temporalModel",
+    "mode": 1,
+    "title": "렌더링·재구성·표시",
+    "ko": "복원은 엔진이 그린 현재 영상을 입력으로 받습니다. 레이를 더 많이 쏘는 알고리즘과 같은 단계는 아닙니다. 내부 해상도를 낮춰 줄인 작업과, 출력을 복원하는 데 새로 드는 작업을 함께 봐야 합니다.",
+    "en": "Reconstruction consumes engine-rendered information. It is not the same stage as casting additional rays. Savings from lower internal resolution must be considered together with reconstruction cost.",
+    "plannedFrom": 66
+  },
+  {
+    "scene": "14b",
+    "paragraph": 3,
+    "model": "temporalModel",
+    "mode": 2,
+    "title": "픽셀 수와 전체 비용",
+    "ko": "독립 예에서 가로와 세로 해상도를 각각 절반으로 줄이면 픽셀 수는 사분의 일이 됩니다. 하지만 게임의 전체 비용이 사분의 일이 된다고 말할 수는 없습니다. 시뮬레이션과 기하와 메모리와 복원 작업은 같은 비율로 줄지 않을 수 있습니다.",
+    "en": "Halving both image dimensions gives one quarter as many pixels. That does not imply one quarter of total game cost, since simulation, geometry, memory and reconstruction may scale differently.",
+    "plannedFrom": 69
+  },
+  {
+    "scene": "14b",
+    "paragraph": 7,
+    "model": "temporalModel",
+    "mode": 6,
+    "title": "입력·결과·실패 조건",
+    "ko": "이번에는 제품 내부 신경망의 구조 강의로 확장하지 않습니다. 엔진이 제공하는 입력과 결과와 실패 조건에 집중하겠습니다. 실제 정보가 없는 영역을 모든 경우에 정확히 되찾는다고 설명하지도 않겠습니다.",
+    "en": "We keep the discussion at renderer inputs, outputs and failure conditions rather than neural architecture. Missing information is not guaranteed to be recovered correctly in every case.",
+    "plannedFrom": 81
+  },
+  {
+    "scene": "conclusion",
+    "paragraph": 1,
+    "model": "navigationModel",
+    "mode": 1,
+    "title": "질의·저장·선택의 다른 정보",
+    "ko": "이번 편에서는 화면 밖 정보를 얻는 표현과 레이 가속, 표본 선택과 재사용, 기하 선택과 조명 캐시를 나눴습니다. 비브이에이치는 교차 후보를 줄이고, 프로브와 리저버는 계산할 표본과 저장할 결과를 다르게 다룹니다.",
+    "en": "We separated scene representations, ray acceleration, sample reuse, geometry selection and lighting caches. BVHs reduce intersection candidates, while probes and reservoirs manage different forms of reused information.",
+    "plannedFrom": 84
+  },
+  {
+    "scene": "conclusion",
+    "paragraph": 2,
+    "model": "navigationModel",
+    "mode": 2,
+    "title": "기하 공급과 조명 갱신",
+    "ko": "나나이트는 필요한 기하를 골랐고 루멘은 장면의 빛을 추적하고 갱신했습니다. 같은 최신 엔진에 함께 들어 있어도 해결하는 질문은 다릅니다. 품질을 읽을 때는 정보의 범위와 계산 예산과 갱신 지연을 함께 확인하세요.",
+    "en": "Nanite selects needed geometry; Lumen traces and updates illumination. Sharing an engine does not make their responsibilities identical. Evaluate information coverage, work budget and update latency together.",
+    "plannedFrom": 87
+  },
+  {
+    "scene": "conclusion",
+    "paragraph": 3,
+    "model": "navigationModel",
+    "mode": 3,
+    "title": "다음 편의 그림자·경로·최종 복원",
+    "ko": "다음 편에서는 이 결과를 그림자 페이지와 패스 트레이싱과 복원과 후처리에 연결하겠습니다. 렌더된 프레임과 생성된 표시 프레임을 분리하고, 디엘에스에스 파이브까지 한 프레임의 입력과 출력으로 정리합니다.",
+    "en": "Next we connect shadow pages, path tracing, reconstruction and post-processing. We distinguish rendered frames from generated display frames and follow renderer inputs and outputs through DLSS 5.",
+    "plannedFrom": 90
+  }
+]

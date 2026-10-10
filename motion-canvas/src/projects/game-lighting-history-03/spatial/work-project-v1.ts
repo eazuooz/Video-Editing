@@ -1,0 +1,14 @@
+import {makeProject} from '@motion-canvas/core';
+import p0 from './work-proof0?scene';
+import p1 from './work-proof1?scene';
+import p2 from './work-proof2?scene';
+import p3 from './work-proof3?scene';
+import p4 from './work-proof4?scene';
+import p5 from './work-proof5?scene';
+import p6 from './work-proof6?scene';
+import p7 from './work-proof7?scene';
+import p8 from './work-proof8?scene';
+import p9 from './work-proof9?scene';
+import p10 from './work-proof10?scene';
+import p11 from './work-proof11?scene';
+export default makeProject({scenes:[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11]});

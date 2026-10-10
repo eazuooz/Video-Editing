@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-10T01:40:16.134Z",
+  "scope": "Two unresolved, unapproved guide candidates only; original84 and other18 guides preserved",
+  "diagnostic": {
+    "path": "projects/game-lighting-history-03/production/native-guide01-padded-onset-execution-v1.json",
+    "sha256": "707ca637faf81b825e3dfe9b8df7a2dbb421e1502fc9d75aa70dc3a7120709d8"
+  },
+  "directReadDiagnosticTexts": [
+    {
+      "label": "guide01-first-two-complete-sentences",
+      "actualFullText": " 보는 회색 화면은 Mesh Distance Fields를 켠 엔진 시연입니다 원래 재질의 색을 칠한 화면과 달리 바위와 벽이 더 둥글고 단순한 형태로 보입니다"
+    },
+    {
+      "label": "guide01-full-guide",
+      "actualFullText": " 보는 회색 화면은 메시 디스턴스 필즈를 켠 엔진 시연입니다. 원래 재질의 색을 칠한 화면과 달리 바위와 벽이 더 둥글고 단순한 형태로 보입니다. 카메라를 움직이며 작은 틈과 큰 벽면이 어떻게 표현되는지 함께 보세요. 앞에 도식에서 레인은 삼각형의 색을 읽는 대신 표면까지의 거리를 단서로 전진했습니다. 이 표시가 담는 것은 장면의 기아 표현입니다. 나나이트의 클러스터 색이나 서피스 캐시에 저장한 조명과는 다른 자료임으로 같은 색상 화면으로 묶지 않겠습니다"
+    },
+    {
+      "label": "guide20-first-12-seconds",
+      "actualFullText": " 다음은 블루프린트를 다음은 다음 재생하는 다음 열은"
+    },
+    {
+      "label": "guide20-middle-12-seconds",
+      "actualFullText": " 다음 영상에서 만나요."
+    }
+  ],
+  "findings": [
+    "Guide01 missing 지금 remains after silence-padded first-two-sentence and complete-guide decodes; no recognizer-only approval.",
+    "Guide20 first12seconds remains unrelated 블루프린트/재생 text; middle12seconds yields unrelated greeting with sparse timestamps. Two full decodes and targeted windows are insufficient for approval. Regenerate conservatively; do not claim that the recognized greeting proves an actual spoken greeting.",
+    "At native Lumen668.5/670s, the original presenter overlay covers the left portion of the lower LightingFeatures menu, and the presenter-free viewport crop omits that lower menu. The revised guide describes the directly observed bright/dark interior and camera movement without claiming to read the exact hidden LumenGI menu item."
+  ],
+  "revisedScenes": [
+    {
+      "id": "01-mesh-distance-field",
+      "ko": "지금 보는 회색 화면은 메시 디스턴스 필즈를 켠 엔진 시연입니다. 원래 재질의 색을 칠한 화면과 달리, 바위와 벽이 더 둥글고 단순한 형태로 보입니다. 카메라를 움직이며 작은 틈과 큰 벽면이 어떻게 표현되는지 함께 보세요. 앞의 도식에서 레이는 삼각형의 색을 읽는 대신 표면까지의 거리를 단서로 전진했습니다. 이 표시가 담는 것은 장면의 기하 표현입니다. 나나이트의 클러스터 색이나 서피스 캐시에 저장한 조명과는 다른 자료이므로 같은 색상 화면으로 묶지 않겠습니다.",
+      "en": "This gray view is the engine demonstration with Mesh DistanceFields enabled. Unlike the original material-color view, rocks and walls appear rounder and simpler. As the camera moves, examine the representation of narrow gaps and broad walls together. In the earlier diagram, the ray advanced using distance to the surface rather than reading triangle colors. This view represents scene geometry. It is separate from Nanite cluster colors and cached lighting in the Surface Cache, so these different visualizations must not be conflated.",
+      "lines": [
+        "지금 보는 회색 화면은 메시 디스턴스 필즈를 켠 엔진 시연입니다.",
+        "원래 재질의 색을 칠한 화면과 달리, 바위와 벽이 더 둥글고 단순한 형태로 보입니다.",
+        "카메라를 움직이며 작은 틈과 큰 벽면이 어떻게 표현되는지 함께 보세요.",
+        "앞의 도식에서 레이는 삼각형의 색을 읽는 대신 표면까지의 거리를 단서로 전진했습니다.",
+        "이 표시가 담는 것은 장면의 기하 표현입니다.",
+        "나나이트의 클러스터 색이나 서피스 캐시에 저장한 조명과는 다른 자료이므로 같은 색상 화면으로 묶지 않겠습니다."
+      ],
+      "enLines": [
+        "This gray view is the engine demonstration with Mesh DistanceFields enabled.",
+        "Unlike the original material-color view, rocks and walls appear rounder and simpler.",
+        "As the camera moves, examine the representation of narrow gaps and broad walls together.",
+        "In the earlier diagram, the ray advanced using distance to the surface rather than reading triangle colors.",
+        "This view represents scene geometry.",
+        "It is separate from Nanite cluster colors and cached lighting in the Surface Cache, so these different visualizations must not be conflated."
+      ]
+    },
+    {
+      "id": "20-lumen-interior-toggle",
+      "ko": "다음은 창문이 있는 실내 예제입니다. 밝은 창문 가까운 곳과 소파 뒤쪽의 벽, 그리고 천장을 나누어 보겠습니다. 창문이 밝다고 해서 방 전체에 간접광이 충분히 들어왔다는 뜻은 아닙니다. 화면이 어두워지는 전환과 다시 밝아진 상태를 확인하고, 이어지는 카메라 이동은 별도의 관찰로 읽으세요. 이 원본은 노출을 고정한 계측 실험이 아닙니다. 그래도 직접 빛을 받는 영역과 방의 나머지 표면을 구별해 보는 출발점이 됩니다. 앞에서 계산한 저장과 갱신의 구조를 실제 실내 결과에 연결해 보겠습니다.",
+      "en": "The next example is an interior with windows. Inspect the region near the bright windows separately from the wall behind the sofa and the ceiling. A bright window does not establish sufficient indirect illumination throughout the room. Identify the darkening transition and the bright state, then treat the following camera movement as a separate observation. The source is not an exposure-locked measurement experiment. It still provides a starting point for distinguishing directly illuminated regions from the other room surfaces. Connect the storage and update structure explained earlier to this actual interior result.",
+      "lines": [
+        "다음은 창문이 있는 실내 예제입니다.",
+        "밝은 창문 가까운 곳과 소파 뒤쪽의 벽, 그리고 천장을 나누어 보겠습니다.",
+        "창문이 밝다고 해서 방 전체에 간접광이 충분히 들어왔다는 뜻은 아닙니다.",
+        "화면이 어두워지는 전환과 다시 밝아진 상태를 확인하고, 이어지는 카메라 이동은 별도의 관찰로 읽으세요.",
+        "이 원본은 노출을 고정한 계측 실험이 아닙니다.",
+        "그래도 직접 빛을 받는 영역과 방의 나머지 표면을 구별해 보는 출발점이 됩니다.",
+        "앞에서 계산한 저장과 갱신의 구조를 실제 실내 결과에 연결해 보겠습니다."
+      ],
+      "enLines": [
+        "The next example is an interior with windows.",
+        "Inspect the region near the bright windows separately from the wall behind the sofa and the ceiling.",
+        "A bright window does not establish sufficient indirect illumination throughout the room.",
+        "Identify the darkening transition and the bright state, then treat the following camera movement as a separate observation.",
+        "The source is not an exposure-locked measurement experiment.",
+        "It still provides a starting point for distinguishing directly illuminated regions from the other room surfaces.",
+        "Connect the storage and update structure explained earlier to this actual interior result."
+      ]
+    }
+  ],
+  "fullKoEnDirectlyReviewed": true,
+  "completeSentenceCount": 13,
+  "approvedForMeasurementOnly": true,
+  "audioApproved": false,
+  "humanListening": "pending",
+  "humanPronunciation": "pending",
+  "sourceMotionFullApproval": false,
+  "invalidatedCandidates": [
+    "measured-native-timeline-candidate-v13.json",
+    "native-range-allocation-candidate-v14.json",
+    "retained-clean-scene-preparation-v1.json"
+  ],
+  "reason": "Repaired PCM durations must replace only these2 guide candidates and retime final mix, roles, scenes, both SRTs and chapters together."
+}

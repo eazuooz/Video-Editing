@@ -1,0 +1,71 @@
+{
+  "createdAt": "2026-10-09T16:13:36.776Z",
+  "scope": "14 paragraph models:7 Nanite,7 Lumen. Original explanation-only models.3s per proof,42s planned; not narration timings, actual engine implementation or gameplay quota.",
+  "style": "research-black-v1",
+  "modelInputs": [
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-03/spatial/nanite-model-v1.tsx",
+      "sha256": "6accfb918bc3b0acf0e44983f55da951bb14ab178ae8aacd90518479e1db2cde"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-03/spatial/lumen-model-v1.tsx",
+      "sha256": "b0d502ed5c7ba2d674368c3502dc6d605caef1048392a10bdb1948e208c9dddd"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-03/spatial/engine-proof-runtime-v1.tsx",
+      "sha256": "864780f81ddab33b9224261da13c0a4780810690cca6330c1c285d358b556fb5"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/nanite-virtualized-geometry-in-unreal-engine",
+      "versionObserved": "UE5.8,2026-10-10",
+      "sectionsDirectlyRead": [
+        "How does Nanite work?",
+        "Differences",
+        "practical limits"
+      ],
+      "use": "Hierarchical triangle clusters, camera-dependent detail and on-demand streaming. Original uniform mesh is illustrative, not the complete Nanite hierarchy."
+    },
+    {
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-technical-details-in-unreal-engine",
+      "versionObserved": "UE5.8,2026-10-10",
+      "sectionsDirectlyRead": [
+        "Surface Cache",
+        "Screen Tracing",
+        "Lumen Ray Tracing",
+        "Large Worlds",
+        "Troubleshooting"
+      ],
+      "use": "Separate tracing, cached surface lighting and lookup. Explain capture cards as representations; distinguish distance fields and triangles and the role of Nanite."
+    },
+    {
+      "url": "https://advances.realtimerendering.com/s2021/Karis_Nanite_SIGGRAPH_Advances_2021_final.pdf",
+      "retrieval": "Primary indexed build-step extract previously read; full PDF open failed HTTP400/size. Not a claim of full-paper reading.",
+      "use": "Cluster/group/simplify/repartition sequence only; version-specific details need the original paper before further claims."
+    }
+  ],
+  "mathChecks": [
+    {
+      "description": "Independent pinhole projected error f*e/d",
+      "fPixels": 1000,
+      "worldErrorMetres": 0.01,
+      "nearDistanceMetres": 2,
+      "farDistanceMetres": 4,
+      "nearErrorPixels": 5,
+      "farErrorPixels": 2.5,
+      "halfAtDoubleDistance": true,
+      "fullNaniteSelectionRule": false
+    },
+    {
+      "description": "Independent4x8 grid with two triangles per cell",
+      "fineTriangles": 64,
+      "coarseTriangles": 16,
+      "actualNaniteClusterStatistics": false
+    }
+  ],
+  "renderStarted": false,
+  "actualPixelsReviewed": false,
+  "fullEpisodeApproved": false,
+  "actualFootageQuotaSeconds": 0
+}

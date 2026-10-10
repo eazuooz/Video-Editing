@@ -1,0 +1,20 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),at=new Date().toISOString();
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const write=(p,v)=>fs.writeFileSync(path.join(root,p),JSON.stringify(v,null,2)+'\n');
+const receiptPath='projects/game-lighting-history-03/publishing/youtube-upload-v21.json';
+const r=read(receiptPath);if(r.actualVideoId!=='lIDe30dqC28'||r.uploadVariant!=='captioned')throw Error('Wrong existing upload');
+const base='projects/game-lighting-history-03/publishing/local/proof-v21/';
+const proof=['english-saved.png','english-saved.ax.txt','korean-saved.png','korean-saved.ax.txt'].map(n=>{const p=base+n;return {path:p,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex'),localOnlyUntilEssentialImageReview:true};});
+for(const lang of ['ko','en']){const s=r.subtitles.find(x=>x.language===lang);s.published=true;s.savedAndReopened=true;s.observedAt=at;s.evidence=base+(lang==='ko'?'korean':'english')+'-saved.ax.txt';}
+r.localizedEnglish={title:r.titleEn,description:r.descriptionEn,savedAndReopened:true,published:true,observedAt:at,evidence:base+'english-saved.ax.txt'};
+r.uploadProgressObserved={at,percent:66,remainingText:'15분 남음',state:'uploading-not-complete'};
+r.proof=[...(r.proof||[]).filter(x=>!proof.some(p=>p.path===x.path)),...proof];
+r.currentUi.englishSettingsTab.url='https://studio.youtube.com/video/lIDe30dqC28/translations';
+r.uploaded=false;r.privateSaved=false;r.fullSettingsVerified=false;r.checksPassed=false;
+write(receiptPath,r);
+const p='production/research/game-lighting-history/checkpoint.json',c=read(p);
+c.updatedAt=at;c.episode03CurrentUpload={...c.episode03CurrentUpload,progress:r.uploadProgressObserved,koManualSaved:true,enManualSavedAndReopened:true,englishMetadataSavedAndReopened:true,englishPending:false,next:'Keep the original upload tab21 open; await actual transfer, SD and checks, then reopen settings and inspect CC-off encoded pixels before completion/Git/scheduling.'};
+const native='production/research/game-lighting-history/local/episode04-native-v1/execution.json',n=read(native);
+c.episode04NativeAcquisition={execution:native,sessionId:72310,parentPid:n.parentPid,command:n.command,cwd:n.cwd,cpuThreads:2,gpuJobs:0,observedAt:at,completedSources:n.completed.length,failures:n.failures,next:'Direct native board/motion, section offset, rights and recent-use review; no final-use approval from acquisition alone.'};
+write(p,c);console.log(JSON.stringify({id:r.actualVideoId,languagesSavedAndReopened:['ko','en'],englishMetadataSavedAndReopened:true,uploadComplete:false,percent:66,nativeCompleted:n.completed.length}));

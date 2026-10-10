@@ -1,0 +1,51 @@
+{
+  "reviewedAt": "2026-10-09T16:43:33.426Z",
+  "scope": "Primary-source support for original explanation models in scenes16aa and16ab. No new narration, footage rights approval or final pixel approval.",
+  "sources": [
+    {
+      "url": "https://developer.nvidia.com/gpugems/gpugems/part-v-performance-and-practicalities/chapter-29-efficient-occlusion-culling",
+      "readScope": "29.1.1 early-z and bounding-volume occlusion query explanation",
+      "use": "Distinguish fragment depth rejection from object-level conservative occlusion. A query bounding box is not an occluder to write into the depth buffer."
+    },
+    {
+      "url": "https://developer.nvidia.com/gpugems/gpugems2/part-v-image-oriented-computing/chapter-42-conservative-rasterization",
+      "readScope": "42.4 conservative depth, returned lines151–166",
+      "use": "Explicit depth extrema and conservative approximations. Collision-testing example is not treated as the Hi-Z algorithm."
+    },
+    {
+      "url": "https://www.intel.com/content/www/us/en/developer/videos/software-occlusion-culling-code-sample.html",
+      "readScope": "Full returned transcript lines19–27",
+      "use": "Frustum and occlusion distinction, conservative AABB queries and keeping partially visible objects. CPU sample performance is not generalized."
+    },
+    {
+      "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/masked-software-occlusion-culling.html",
+      "readScope": "Full52-line returned article",
+      "use": "CPU-specific masked method and separation of rasterization/query. Linked paper PDF fetch failed; no full-paper read claimed."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/direct3d12/vrs",
+      "readScope": "Returned lines0–394, coarse shading, tiers, full coverage/depth, interpolation and derivative caveats",
+      "use": "Separate shading frequency from output pixel count. A2×2 evaluation diagram is independent and not a fourfold measured speedup."
+    },
+    {
+      "url": "https://microsoft.github.io/DirectX-Specs/d3d/MeshShader.html",
+      "readScope": "Introduction61–96 and culling example935–998",
+      "use": "Mesh/amplification geometry workgroups and primitive outputs, not indirect-light computation."
+    },
+    {
+      "url": "https://microsoft.github.io/DirectX-Specs/d3d/SamplerFeedback.html",
+      "readScope": "Returned introduction/streaming sections0–141,183–188,303–313,385–431",
+      "use": "Feedback reports desired texture regions/mips. Requested pages and resident data are different states; streaming need not use feedback."
+    }
+  ],
+  "independentMathExample": {
+    "scope": "Original4×4 depth grid and2×2 reduction, not reconstruction of a named engine implementation.",
+    "standardDepth": "Near0/far1: max reduction over every covered sample; reject only when conservative nearest candidate depth exceeds the farthest occluder throughout the covered footprint.",
+    "reverseDepth": "Near1/far0: min reduction and comparison direction reverse together.",
+    "coverage": "Clear/uncovered samples carry far depth, preventing false rejection; conservative bounds/footprint coverage/precision remain required.",
+    "temporal": "Earlier depth alone does not establish current occlusion after camera or occluder motion. The original animation illustrates this risk without claiming one universal engine fix."
+  },
+  "newFootageApproved": false,
+  "modelPixelsReviewed": false,
+  "finalVideoApproved": false
+}

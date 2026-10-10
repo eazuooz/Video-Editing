@@ -1,0 +1,21 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../../..');
+const ts=require(path.join(root,'motion-canvas/node_modules/typescript'));
+const file='motion-canvas/src/projects/game-lighting-history-03/spatial/bvh-math-v1.ts';
+const source=fs.readFileSync(path.join(root,file),'utf8');
+const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const m={exports:{}};new Function('module','exports',code)(m,m.exports);
+const {slabIntervals,commonInterval,rayPoint,triangleHit}=m.exports;
+const results=[];
+function check(label,fn){fn();results.push({label,passed:true});}
+const box=(o,d,lo,hi,min=0,max=Infinity)=>commonInterval(slabIntervals(o,d,lo,hi),min,max);
+check('Worked overlap [2,6],[3,5],[4,7] gives [4,5]',()=>assert.deepEqual(box([0,0,0],[1,1,1],[2,3,4],[6,5,7]),{enter:4,exit:5,hit:true}));
+check('Depth [8,9] rejects before triangle work',()=>assert.deepEqual(box([0,0,0],[1,1,1],[2,3,8],[6,5,9]),{enter:8,exit:5,hit:false}));
+check('Negative direction preserves entry ordering',()=>assert.deepEqual(box([10,10,10],[-1,-1,-1],[2,3,4],[6,5,7]),{enter:5,exit:6,hit:true}));
+check('Parallel axis inside permits traversal, outside rejects',()=>{assert.equal(box([4,4,0],[0,0,1],[2,3,4],[6,5,7]).hit,true);assert.equal(box([8,4,0],[0,0,1],[2,3,4],[6,5,7]).hit,false);});
+check('Finite ray segment and box behind origin reject',()=>{assert.equal(box([0,0,0],[1,1,1],[2,3,4],[6,5,7],0,3).hit,false);assert.equal(box([10,10,10],[1,1,1],[2,3,4],[6,5,7]).hit,false);});
+check('Parameter scales with direction while geometric point agrees',()=>{assert.deepEqual(box([0,0,0],[2,2,2],[2,3,4],[6,5,7]),{enter:2,exit:2.5,hit:true});assert.deepEqual(rayPoint([0,0,0],[2,2,2],2),[4,4,4]);});
+check('Conservative box hit includes a triangle hit and a triangle miss',()=>{assert.equal(triangleHit([0,0,0],[1,1,1],[2.2,4.5,4.2],[5.8,4.5,4.2],[4,4.5,6.8]).t,4.5);assert.equal(triangleHit([0,0,0],[1,1,1],[2.2,4,6],[5.8,4,6],[4,4,6.8]),null);});
+const record={checkedAt:new Date().toISOString(),source:{path:file,sha256:crypto.createHash('sha256').update(source).digest('hex')},cases:results,computedMathPassed:true,actualAnimatedPixelsReviewed:false,finalNarrationTimingApproved:false};
+const out='projects/game-lighting-history-03/production/bvh-math-check-v1.json';fs.writeFileSync(path.join(root,out),JSON.stringify(record,null,2)+'\n');
+console.log(JSON.stringify({record:out,passed:results.length,animatedPixelsReviewed:false}));

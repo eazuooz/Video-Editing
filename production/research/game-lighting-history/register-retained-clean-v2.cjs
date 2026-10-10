@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..');
+const prep=JSON.parse(fs.readFileSync(path.join(root,'projects/game-lighting-history-03/production/retained-clean-scene-preparation-v2.json'),'utf8'));
+const projects=prep.files.filter(x=>/-project\.ts$/.test(x.path)).map(x=>'./'+x.path.slice('motion-canvas/'.length));
+if(projects.length!==14)throw Error('Exact14 owned projects required');
+const p=path.join(root,'motion-canvas/vite.game-lighting-history.chapter-v4.config.ts');
+let cfg=fs.readFileSync(p,'utf8');
+if(cfg.includes(projects[0]))throw Error('Already registered');
+cfg=cfg.replace('project:[','project:['+projects.map(x=>JSON.stringify(x)).join(',')+',');
+fs.writeFileSync(p,cfg);
+fs.writeFileSync(path.join(root,'motion-canvas/tsconfig.game-lighting-history-clean-v2.json'),JSON.stringify({extends:'./tsconfig.json',include:['src/env.d.ts',...projects.map(x=>x.slice(2))]},null,2)+'\n');
+console.log(JSON.stringify({registered:projects.length,foreignProjectsPreserved:true,rendered:false}));

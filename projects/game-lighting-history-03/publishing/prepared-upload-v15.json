@@ -1,0 +1,202 @@
+{
+  "preparedAt": "2026-10-10T05:02:28.895Z",
+  "status": "prepared-only-awaiting-final-QA-and-collection",
+  "slug": "game-lighting-history-03",
+  "titleKo": "레이 트레이싱·루멘은 화면 밖의 빛을 어떻게 찾을까? | BVH·ReSTIR·나나이트",
+  "titleEn": "Ray Tracing to Lumen: BVH, ReSTIR and Nanite Beyond the Screen",
+  "descriptionKo": "게임 렌더링 역사3편. 화면에 보이지 않는 물체까지 반사하려면 어떤 정보를 더 저장해야 할까요?\n\n같은 벽의 깊이·거리장·복셀 표현을 비교하고, 작은 수치로 BVH의 구간 검사를 따라갑니다. 이어서 표본의 노이즈, 재투영, DDGI 프로브와 ReSTIR의 후보 재사용을 구분합니다. 마지막에는 가시성·기하·픽셀·텍스처의 서로 다른 예산을 정리하고, 나나이트의 기하 선택과 루멘의 빛 갱신을 실제 게임·엔진 시연과 공간 도식으로 연결합니다.\n\n도식의 수치는 원리를 설명하기 위한 예시입니다. 실제 화면에 없는 내부 값이나 개발사의 성능을 추정하지 않습니다.\n\n00:00 화면 밖의 장면을 갱신하기\n00:22 깊이와 거리장과 복셀\n02:44 BVH의 상자를 따라가기\n04:29 움직이는 장면과 하이브리드\n06:07 표본과 노이즈의 계산\n07:50 DLSS 2와 재투영\n10:23 DDGI가 프로브를 갱신하는 법\n12:40 ReSTIR의 후보와 저장소\n14:34 빛 계산 밖의 가시성\n16:40 메시와 픽셀과 텍스처의 다른 예산\n18:28 나나이트의 클러스터와 계층\n21:09 루멘의 추적과 표면 캐시\n22:42 변화가 캐시에 들어오는 시간\n24:57 줄이는 작업과 남기는 오차\n\n🎮 게임 개발은 '따라 치기'가 아니라 직접 만드는 실력입니다.\n\n얌얌코딩은 DirectX, Unity, Unreal, Computer Graphics를 기반으로\n실무에서 통하는 개발 역량을 기르는 게임 프로그래밍 채널입니다.\n\n━━━━━━━━━━━━━━━━━━\n\n🚀 프리미엄 1:1 코칭\n\n실무 과제 중심으로 직접 설계하고 구현하는 개발 습관을 만들어드립니다.\n\n• DirectX11 / DirectX12\n• Unity / Unreal Engine\n• Computer Graphics & PBR\n• Shader / Rendering\n• 게임 엔진 개발\n• 최신 Graphics 논문 리뷰 및 구현\n\n👉 프리미엄 코칭\nhttps://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328\n\n━━━━━━━━━━━━━━━━━━\n\n💬 얌얌코딩 커뮤니티\n\n질문, 코드 리뷰, 피드백, 수업 자료를 함께 공유합니다.\n\nDiscord\nhttps://discord.gg/wZuqe7fqkR\n\nYouTube 멤버십\nhttps://www.youtube.com/channel/UCOgtkPoyC0VXhCs7Xk3jvjQ/join",
+  "descriptionEn": "Game-rendering history, episode3. What extra information is needed to reflect an object beyond the screen?\n\nWe compare depth, distance fields and voxels for the same wall, then follow BVH interval tests with small numerical examples. We separate sample noise, reprojection, DDGI probe updates and ReSTIR candidate reuse. Finally, we distinguish visibility, geometry, pixel and texture budgets, connecting Nanite geometry selection and Lumen lighting updates to game/engine demonstrations and spatial diagrams.\n\nDiagram values are illustrative. Unseen engine internals and vendor performance are not inferred from a shot.\n\n00:00 Updating a scene beyond the screen\n00:22 Depth, distance fields and voxels\n02:44 Traversing BVH boxes\n04:29 Moving scenes and hybrid rendering\n06:07 Samples, variance and noise\n07:50 DLSS2 and reprojection\n10:23 Updating DDGI probes\n12:40 ReSTIR candidates and reservoirs\n14:34 Visibility outside light transport\n16:40 Mesh, pixel and texture budgets\n18:28 Nanite clusters and hierarchy\n21:09 Lumen tracing and surface cache\n22:42 When changes reach the cache\n24:57 Work saved and error retained\n\n🎮 YamyamCoding: game programming with DirectX, Unity, Unreal Engine and computer graphics.\n\nProgramming coaching\nhttps://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328\n\nDiscord community\nhttps://discord.gg/wZuqe7fqkR\n\nChannel membership\nhttps://www.youtube.com/channel/UCOgtkPoyC0VXhCs7Xk3jvjQ/join",
+  "chapters": [
+    {
+      "scene": "overview",
+      "actualStartFrame": 120,
+      "actualStartSeconds": 2,
+      "descriptionStartSeconds": 0,
+      "titleKo": "화면 밖의 장면을 갱신하기",
+      "titleEn": "Updating a scene beyond the screen"
+    },
+    {
+      "scene": "12a",
+      "actualStartFrame": 1365,
+      "actualStartSeconds": 22.75,
+      "descriptionStartSeconds": 22,
+      "titleKo": "깊이와 거리장과 복셀",
+      "titleEn": "Depth, distance fields and voxels"
+    },
+    {
+      "scene": "13a",
+      "actualStartFrame": 9896,
+      "actualStartSeconds": 164.93333333333334,
+      "descriptionStartSeconds": 164,
+      "titleKo": "BVH의 상자를 따라가기",
+      "titleEn": "Traversing BVH boxes"
+    },
+    {
+      "scene": "13b",
+      "actualStartFrame": 16144,
+      "actualStartSeconds": 269.06666666666666,
+      "descriptionStartSeconds": 269,
+      "titleKo": "움직이는 장면과 하이브리드",
+      "titleEn": "Moving scenes and hybrid rendering"
+    },
+    {
+      "scene": "14a",
+      "actualStartFrame": 22045,
+      "actualStartSeconds": 367.4166666666667,
+      "descriptionStartSeconds": 367,
+      "titleKo": "표본과 노이즈의 계산",
+      "titleEn": "Samples, variance and noise"
+    },
+    {
+      "scene": "14b",
+      "actualStartFrame": 28205,
+      "actualStartSeconds": 470.0833333333333,
+      "descriptionStartSeconds": 470,
+      "titleKo": "DLSS 2와 재투영",
+      "titleEn": "DLSS2 and reprojection"
+    },
+    {
+      "scene": "15a",
+      "actualStartFrame": 37435,
+      "actualStartSeconds": 623.9166666666666,
+      "descriptionStartSeconds": 623,
+      "titleKo": "DDGI가 프로브를 갱신하는 법",
+      "titleEn": "Updating DDGI probes"
+    },
+    {
+      "scene": "15b",
+      "actualStartFrame": 45646,
+      "actualStartSeconds": 760.7666666666667,
+      "descriptionStartSeconds": 760,
+      "titleKo": "ReSTIR의 후보와 저장소",
+      "titleEn": "ReSTIR candidates and reservoirs"
+    },
+    {
+      "scene": "16aa",
+      "actualStartFrame": 52485,
+      "actualStartSeconds": 874.75,
+      "descriptionStartSeconds": 874,
+      "titleKo": "빛 계산 밖의 가시성",
+      "titleEn": "Visibility outside light transport"
+    },
+    {
+      "scene": "16ab",
+      "actualStartFrame": 60050,
+      "actualStartSeconds": 1000.8333333333334,
+      "descriptionStartSeconds": 1000,
+      "titleKo": "메시와 픽셀과 텍스처의 다른 예산",
+      "titleEn": "Mesh, pixel and texture budgets"
+    },
+    {
+      "scene": "16a",
+      "actualStartFrame": 66528,
+      "actualStartSeconds": 1108.8,
+      "descriptionStartSeconds": 1108,
+      "titleKo": "나나이트의 클러스터와 계층",
+      "titleEn": "Nanite clusters and hierarchy"
+    },
+    {
+      "scene": "17a",
+      "actualStartFrame": 76196,
+      "actualStartSeconds": 1269.9333333333334,
+      "descriptionStartSeconds": 1269,
+      "titleKo": "루멘의 추적과 표면 캐시",
+      "titleEn": "Lumen tracing and surface cache"
+    },
+    {
+      "scene": "17b",
+      "actualStartFrame": 81733,
+      "actualStartSeconds": 1362.2166666666667,
+      "descriptionStartSeconds": 1362,
+      "titleKo": "변화가 캐시에 들어오는 시간",
+      "titleEn": "When changes reach the cache"
+    },
+    {
+      "scene": "conclusion",
+      "actualStartFrame": 89849,
+      "actualStartSeconds": 1497.4833333333333,
+      "descriptionStartSeconds": 1497,
+      "titleKo": "줄이는 작업과 남기는 오차",
+      "titleEn": "Work saved and error retained"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "projects/game-lighting-history-03/production/measured-native-timeline-candidate-v15.json",
+      "sha256": "58cb00e404de1a9127cf756a6fb5c1d7074f247be1a676798069a6c935a6c35b"
+    },
+    {
+      "path": "projects/game-lighting-history-03/script/narration.ko.json",
+      "sha256": "b8744bf9bf86a322bf49ef8dacfb5ca5ce02fa1b9623782dd9d5221b66d81548"
+    },
+    {
+      "path": "projects/game-lighting-history-03/script/narration.en.json",
+      "sha256": "f90dd5126829be8c5683b558585941ee9ffe80d61701cf9bdd2ff0b19f2bce91"
+    },
+    {
+      "path": "shared/publishing/youtube-defaults.json",
+      "sha256": "85c659a3e32184ea7d6cf768e7724dad23cd4ff68e9be8075cf3db980a8c2d5f"
+    }
+  ],
+  "thumbnail": {
+    "path": "projects/game-lighting-history-03/publishing/local/thumbnail-v1.png",
+    "sha256": "d31df9ca87841454d0ed083e86594b68ea71d2dd7987db45ee1499040884d152",
+    "review": "projects/game-lighting-history-03/publishing/thumbnail-review-v1.json",
+    "saved": false
+  },
+  "uploadVariant": "captioned",
+  "uploadPath": "output/game-lighting-history-03/game-lighting-history-03.captioned.mp4",
+  "cleanUploadAllowed": false,
+  "subtitles": [
+    {
+      "language": "ko",
+      "path": "output/game-lighting-history-03/game-lighting-history-03.ko.srt",
+      "method": "manual-file-upload-with-timing",
+      "published": false
+    },
+    {
+      "language": "en",
+      "path": "output/game-lighting-history-03/game-lighting-history-03.en.srt",
+      "method": "manual-file-upload-with-timing",
+      "published": false
+    }
+  ],
+  "coaching": {
+    "url": "https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328",
+    "cardStartSeconds": 0,
+    "cardSaved": false,
+    "endingLinkSaved": false,
+    "pinnedCommentPrepared": true,
+    "commentStatus": "pending-video-publication",
+    "commentId": null
+  },
+  "endScreen": {
+    "startSeconds": 1541.4,
+    "endSeconds": 1551.4,
+    "durationSeconds": 10,
+    "playlistId": null,
+    "ownSubscribeSaved": false,
+    "externalCoachingLinkSaved": false,
+    "memberIdentitiesPreserved": true,
+    "verified": false
+  },
+  "scheduling": {
+    "category": "game-lecture",
+    "time": "09:00",
+    "timezone": "Asia/Seoul",
+    "requireFreshStudioAndCalendar": true,
+    "targetDate": null,
+    "saved": false
+  },
+  "actualVideoId": null,
+  "privateSaved": false,
+  "checksPassed": false,
+  "fullSettingsVerified": false,
+  "uploaded": false,
+  "allFinalPixelsReviewed": false,
+  "qaApproved": false,
+  "collected": false,
+  "humanWholeListening": "pending",
+  "humanPronunciation": "pending",
+  "rightsApproved": false
+}
