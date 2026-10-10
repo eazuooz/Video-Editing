@@ -1,0 +1,14 @@
+import {makeProject} from '@motion-canvas/core';
+import s0 from './scenes-measured-v3/01-overview?scene';
+import s1 from './scenes-measured-v3/02-common-baseline?scene';
+import s2 from './scenes-measured-v3/03-rule-not-scale?scene';
+import s3 from './scenes-measured-v3/04-information-rule?scene';
+import s4 from './scenes-measured-v3/05-useful-strength?scene';
+import s5 from './scenes-measured-v3/06-role-and-limitation?scene';
+import s6 from './scenes-measured-v3/07-state-not-base?scene';
+import s7 from './scenes-measured-v3/08-resources-and-actions?scene';
+import s8 from './scenes-measured-v3/09-condition-and-time?scene';
+import s9 from './scenes-measured-v3/10-balance-preserves-role?scene';
+import s10 from './scenes-measured-v3/11-cost-and-summary?scene';
+import s11 from './scenes-measured-v3/12-conclusion?scene';
+export default makeProject({name:'character-parameters-black-measured-v3',scenes:[s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11]});

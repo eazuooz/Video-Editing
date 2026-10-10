@@ -1,0 +1,1827 @@
+{
+  "schemaVersion": 1,
+  "slug": "character-parameters",
+  "status": "coarse-extracted-awaiting-direct-review",
+  "startedAt": "2026-10-09T20:36:55.796603+00:00",
+  "pid": 46436,
+  "processCreateTime": 1791578215.55963,
+  "commandLine": [
+    "production/batches/sakurai-planning-game-design/proof-character-parameters/acquire-review-dungeons-v1.py",
+    "--recovery-v2"
+  ],
+  "workingDirectory": "D:\\Github\\Video-Editing",
+  "sessionId": null,
+  "cpuThreads": 2,
+  "gpuJobs": 0,
+  "children": [
+    {
+      "pid": 71480,
+      "processCreateTime": 1791578215.7980657,
+      "commandLine": [
+        "D:\\Github\\Video-Editing\\qwen3-tts\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "yt_dlp",
+        "--no-playlist",
+        "--no-overwrites",
+        "--write-info-json",
+        "--http-chunk-size",
+        "1M",
+        "--retries",
+        "2",
+        "--fragment-retries",
+        "2",
+        "--socket-timeout",
+        "30",
+        "--js-runtimes",
+        "node:C:/Users/eazuo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "--merge-output-format",
+        "mp4",
+        "--ffmpeg-location",
+        "C:\\ProgramData\\HP\\LCDDisplayHelper\\bin",
+        "-f",
+        "bv*[height<=1080][vcodec^=avc]+ba[ext=m4a]/b[height<=1080][ext=mp4]/bv*[height<=1080]+ba",
+        "-o",
+        "a8nwpiCqyTQ.%(ext)s",
+        "https://www.youtube.com/watch?v=a8nwpiCqyTQ"
+      ],
+      "workingDirectory": "D:\\Github\\Video-Editing\\shared\\assets\\character-parameters\\raw",
+      "label": "official-download",
+      "status": "exited",
+      "log": "shared/output/character-parameters/preflight/dungeons-coarse-v2/official-download.log",
+      "startedAt": "2026-10-09T20:36:55.804987+00:00",
+      "exitCode": 0,
+      "endedAt": "2026-10-09T20:37:28.082468+00:00"
+    },
+    {
+      "pid": 26652,
+      "processCreateTime": 1791578248.1105213,
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-show_streams",
+        "-show_format",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\assets\\character-parameters\\raw\\a8nwpiCqyTQ.mp4"
+      ],
+      "workingDirectory": "D:\\Github\\Video-Editing",
+      "label": "probe",
+      "status": "exited",
+      "log": "shared/output/character-parameters/preflight/dungeons-coarse-v2/probe.log",
+      "startedAt": "2026-10-09T20:37:28.116468+00:00",
+      "exitCode": 0,
+      "endedAt": "2026-10-09T20:37:28.189041+00:00"
+    },
+    {
+      "pid": 31288,
+      "processCreateTime": 1791578248.1922724,
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffprobe.exe",
+        "-v",
+        "error",
+        "-select_streams",
+        "v:0",
+        "-show_frames",
+        "-show_entries",
+        "frame=best_effort_timestamp,best_effort_timestamp_time,pkt_duration",
+        "-of",
+        "json",
+        "D:\\Github\\Video-Editing\\shared\\assets\\character-parameters\\raw\\a8nwpiCqyTQ.mp4"
+      ],
+      "workingDirectory": "D:\\Github\\Video-Editing",
+      "label": "frame-pts",
+      "status": "exited",
+      "log": "shared/output/character-parameters/preflight/dungeons-coarse-v2/frame-pts.log",
+      "startedAt": "2026-10-09T20:37:28.197046+00:00",
+      "exitCode": 0,
+      "endedAt": "2026-10-09T20:37:37.808690+00:00"
+    },
+    {
+      "pid": 28332,
+      "processCreateTime": 1791578257.815833,
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-filter_threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\character-parameters\\raw\\a8nwpiCqyTQ.mp4",
+        "-map",
+        "0:v:0",
+        "-an",
+        "-f",
+        "null",
+        "-"
+      ],
+      "workingDirectory": "D:\\Github\\Video-Editing",
+      "label": "whole-decode",
+      "status": "exited",
+      "log": "shared/output/character-parameters/preflight/dungeons-coarse-v2/whole-decode.log",
+      "startedAt": "2026-10-09T20:37:37.819689+00:00",
+      "exitCode": 0,
+      "endedAt": "2026-10-09T20:37:43.467582+00:00"
+    },
+    {
+      "pid": 27032,
+      "processCreateTime": 1791578263.4706662,
+      "commandLine": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-nostdin",
+        "-v",
+        "error",
+        "-threads",
+        "2",
+        "-filter_threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\character-parameters\\raw\\a8nwpiCqyTQ.mp4",
+        "-vf",
+        "select='eq(pts,0)+eq(pts,7680)+eq(pts,15360)+eq(pts,23040)+eq(pts,30720)+eq(pts,38400)+eq(pts,46080)+eq(pts,53760)+eq(pts,61440)+eq(pts,69120)+eq(pts,76800)+eq(pts,84480)+eq(pts,92160)+eq(pts,99840)+eq(pts,107520)+eq(pts,115200)+eq(pts,122880)+eq(pts,130560)+eq(pts,138240)+eq(pts,145920)+eq(pts,153600)+eq(pts,161280)+eq(pts,168960)+eq(pts,176640)+eq(pts,184320)+eq(pts,192000)+eq(pts,199680)+eq(pts,207360)+eq(pts,215040)+eq(pts,222720)+eq(pts,230400)+eq(pts,238080)+eq(pts,245760)+eq(pts,253440)+eq(pts,261120)+eq(pts,268800)+eq(pts,276480)+eq(pts,284160)+eq(pts,291840)+eq(pts,299520)+eq(pts,307200)+eq(pts,314880)+eq(pts,322560)+eq(pts,330240)+eq(pts,337920)+eq(pts,345600)+eq(pts,353280)+eq(pts,360960)+eq(pts,368640)+eq(pts,376320)+eq(pts,384000)+eq(pts,391680)+eq(pts,399360)+eq(pts,407040)+eq(pts,414720)+eq(pts,422400)+eq(pts,430080)+eq(pts,437760)+eq(pts,445440)+eq(pts,453120)+eq(pts,460800)+eq(pts,468480)+eq(pts,476160)+eq(pts,483840)+eq(pts,491520)+eq(pts,499200)+eq(pts,506880)+eq(pts,514560)+eq(pts,522240)+eq(pts,529920)+eq(pts,537600)+eq(pts,545280)+eq(pts,552960)+eq(pts,560640)+eq(pts,568320)+eq(pts,576000)+eq(pts,583680)+eq(pts,591360)+eq(pts,599040)+eq(pts,606720)+eq(pts,614400)+eq(pts,622080)+eq(pts,629760)+eq(pts,637440)+eq(pts,645120)+eq(pts,652800)+eq(pts,660480)+eq(pts,668160)+eq(pts,675840)+eq(pts,683520)+eq(pts,691200)+eq(pts,698880)+eq(pts,706560)+eq(pts,714240)+eq(pts,721920)+eq(pts,729600)+eq(pts,737280)+eq(pts,744960)+eq(pts,752640)+eq(pts,760320)+eq(pts,768000)+eq(pts,775680)+eq(pts,783360)+eq(pts,791040)+eq(pts,798720)+eq(pts,806400)+eq(pts,814080)+eq(pts,821760)+eq(pts,829440)+eq(pts,837120)+eq(pts,844800)+eq(pts,852480)+eq(pts,860160)+eq(pts,867840)+eq(pts,875520)+eq(pts,883200)+eq(pts,890880)+eq(pts,898560)+eq(pts,906240)+eq(pts,913920)+eq(pts,921600)+eq(pts,929280)+eq(pts,936960)+eq(pts,944640)+eq(pts,952320)+eq(pts,960000)+eq(pts,967680)+eq(pts,975360)+eq(pts,983040)+eq(pts,990720)+eq(pts,998400)+eq(pts,1006080)+eq(pts,1013760)+eq(pts,1021440)+eq(pts,1029120)+eq(pts,1036800)+eq(pts,1044480)+eq(pts,1052160)+eq(pts,1059840)+eq(pts,1067520)+eq(pts,1075200)+eq(pts,1082880)+eq(pts,1090560)+eq(pts,1098240)+eq(pts,1105920)+eq(pts,1113600)+eq(pts,1121280)+eq(pts,1128960)+eq(pts,1136640)+eq(pts,1144320)+eq(pts,1152000)+eq(pts,1159680)+eq(pts,1167360)+eq(pts,1175040)+eq(pts,1182720)+eq(pts,1190400)+eq(pts,1198080)+eq(pts,1205760)+eq(pts,1213440)+eq(pts,1221120)+eq(pts,1228800)+eq(pts,1236480)+eq(pts,1244160)+eq(pts,1251840)+eq(pts,1259520)+eq(pts,1267200)+eq(pts,1274880)+eq(pts,1282560)+eq(pts,1290240)+eq(pts,1297920)+eq(pts,1305600)+eq(pts,1313280)+eq(pts,1320960)+eq(pts,1328640)+eq(pts,1336320)+eq(pts,1344000)+eq(pts,1351680)+eq(pts,1359360)+eq(pts,1367040)+eq(pts,1374720)+eq(pts,1382400)+eq(pts,1390080)+eq(pts,1397760)+eq(pts,1405440)+eq(pts,1413120)+eq(pts,1420800)+eq(pts,1428480)+eq(pts,1436160)+eq(pts,1443840)+eq(pts,1451520)+eq(pts,1459200)+eq(pts,1466880)+eq(pts,1470720)'",
+        "-fps_mode",
+        "passthrough",
+        "-an",
+        "-threads",
+        "2",
+        "D:\\Github\\Video-Editing\\shared\\output\\character-parameters\\preflight\\dungeons-coarse-v2\\sample-%04d.png"
+      ],
+      "workingDirectory": "D:\\Github\\Video-Editing",
+      "label": "coarse-extract",
+      "status": "exited",
+      "log": "shared/output/character-parameters/preflight/dungeons-coarse-v2/coarse-extract.log",
+      "startedAt": "2026-10-09T20:37:43.475587+00:00",
+      "exitCode": 0,
+      "endedAt": "2026-10-09T20:37:49.148439+00:00"
+    }
+  ],
+  "sourceUrl": "https://www.youtube.com/watch?v=a8nwpiCqyTQ",
+  "sourceVideoId": "a8nwpiCqyTQ",
+  "officialHomeUrl": "https://dungeonsofaether.com/",
+  "observedOfficialEmbed": "https://www.youtube.com/embed/a8nwpiCqyTQ",
+  "observedPublisher": "Aether Studios @RivalsofAetherOfficial",
+  "sourceAudioUse": false,
+  "sourceAdoptionApproved": false,
+  "directPixelReviewApproved": false,
+  "newScriptTtsOrRender": false,
+  "externalResearchChanges": 0,
+  "recovery": {
+    "priorExecution": "production/batches/sakurai-planning-game-design/proof-character-parameters/dungeons-source-execution-v1.json",
+    "priorOuterExitCode": 1,
+    "failureObserved": "HTTP403 while transferring unchunked VP9 source; no completed media obtained.",
+    "changedMethod": "Use existing bundled Node JS runtime, avc/m4a selection and1MiB chunks from established acquisition workflow.",
+    "priorPartialFilesPreserved": true,
+    "repeatedCompletedAcquisition": false
+  },
+  "updatedAt": "2026-10-09T20:37:53.674676+00:00",
+  "source": {
+    "localPath": "shared/assets/character-parameters/raw/a8nwpiCqyTQ.mp4",
+    "sha256": "feabe38f74fc0cd93d7ff415f5453b7d6e7194520dfa9daf958a5f512a4edf7e",
+    "bytes": 42938392,
+    "metadataLocalPath": "shared/assets/character-parameters/raw/a8nwpiCqyTQ.info.json",
+    "metadataSha256": "fb7259a6e74301c0735accdc1209ac1881dd9786fd8b3707da630b524625a929",
+    "title": "Dungeons of Aether Switch Launch Trailer",
+    "channel": "Aether Studios",
+    "channelId": "UCjJe1z4OSKKav9MLVEvXWfA",
+    "metadataUploadDate": "20230401",
+    "observedYouTubeLocalDate": "2023-04-01",
+    "adopted": false
+  },
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "r_frame_rate": "60/1",
+    "time_base": "1/15360",
+    "duration": "95.766667",
+    "nb_frames": "5746"
+  },
+  "decodedFrames": 5746,
+  "wholeDecodeExitCode": 0,
+  "nativePtsMonotonic": true,
+  "samples": [
+    {
+      "nativeFrame": 0,
+      "pts": 0,
+      "timeSeconds": 0.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0001.png",
+      "sha256": "56cca10e5f368d68fa7cae6f948878033e4eac4d03b479ac89fcb62e57650e08"
+    },
+    {
+      "nativeFrame": 30,
+      "pts": 7680,
+      "timeSeconds": 0.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0002.png",
+      "sha256": "f4f244387bba2e1f5cf13db24c468e15199c1aa80d26953612f8da07e486d0fd"
+    },
+    {
+      "nativeFrame": 60,
+      "pts": 15360,
+      "timeSeconds": 1.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0003.png",
+      "sha256": "5749b80c929f963853f8a356b4a0cf6d24a162f9fffc1b8459b2f087adc11354"
+    },
+    {
+      "nativeFrame": 90,
+      "pts": 23040,
+      "timeSeconds": 1.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0004.png",
+      "sha256": "08f3662654dda51c757018d8a41907f8af0a0923cf2c9043806cb621a1e8acf7"
+    },
+    {
+      "nativeFrame": 120,
+      "pts": 30720,
+      "timeSeconds": 2.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0005.png",
+      "sha256": "a47feae8d19ea383b56d51d188cbf93b9cdbe0001d7cb915a802fc37f9711760"
+    },
+    {
+      "nativeFrame": 150,
+      "pts": 38400,
+      "timeSeconds": 2.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0006.png",
+      "sha256": "94d39072ce695520dcebb3a54eb5014b7af763e03e089d0880a315aab2561623"
+    },
+    {
+      "nativeFrame": 180,
+      "pts": 46080,
+      "timeSeconds": 3.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0007.png",
+      "sha256": "2e000b88dbcfba0c5edc6b0eaf21f63df6d19f70527f56ac940e72898bbe63cd"
+    },
+    {
+      "nativeFrame": 210,
+      "pts": 53760,
+      "timeSeconds": 3.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0008.png",
+      "sha256": "fc9ccc62960711d1365bd665276276e145e45d38022bd3e062a09905744bf1f6"
+    },
+    {
+      "nativeFrame": 240,
+      "pts": 61440,
+      "timeSeconds": 4.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0009.png",
+      "sha256": "0f2f9291482d28b4b716ed3fe32f7392fb3089044b3cb9521056458bd9133082"
+    },
+    {
+      "nativeFrame": 270,
+      "pts": 69120,
+      "timeSeconds": 4.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0010.png",
+      "sha256": "27c5037a469f0925cdc9199c046828f0362f55103b9d3dd6453978a9363129d3"
+    },
+    {
+      "nativeFrame": 300,
+      "pts": 76800,
+      "timeSeconds": 5.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0011.png",
+      "sha256": "e970ad86b3e480392ea7d7cdc6062f3e46ce9acb27e3358057c9e3a1eba15a64"
+    },
+    {
+      "nativeFrame": 330,
+      "pts": 84480,
+      "timeSeconds": 5.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0012.png",
+      "sha256": "fb72c72ad9686921782f5fc75d0c429c554d04fc463eeacb5569f35adb08e64f"
+    },
+    {
+      "nativeFrame": 360,
+      "pts": 92160,
+      "timeSeconds": 6.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0013.png",
+      "sha256": "0732a7e95ac6e98ee783c60f858279131b15529b9c2558ac65d6d734b06ab9ff"
+    },
+    {
+      "nativeFrame": 390,
+      "pts": 99840,
+      "timeSeconds": 6.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0014.png",
+      "sha256": "65eccfe80ba88dfcfaf1c436c7b12628df138437f85917335ced8f60b2151cfc"
+    },
+    {
+      "nativeFrame": 420,
+      "pts": 107520,
+      "timeSeconds": 7.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0015.png",
+      "sha256": "2b3fc133c068977aac599b09e900bf9670d846f7f6447e738c9a181284fbcffa"
+    },
+    {
+      "nativeFrame": 450,
+      "pts": 115200,
+      "timeSeconds": 7.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0016.png",
+      "sha256": "3940165d0924b6e0fb9cb0bc0aaac0f038311b8f8dcb9f4c2ab61358891adaaa"
+    },
+    {
+      "nativeFrame": 480,
+      "pts": 122880,
+      "timeSeconds": 8.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0017.png",
+      "sha256": "0761585a7b5f18b4f789269d657125a29d97d8461901f0c21016eae950972e98"
+    },
+    {
+      "nativeFrame": 510,
+      "pts": 130560,
+      "timeSeconds": 8.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0018.png",
+      "sha256": "76a476a776974d6911f31ad52fc89b476393d9dc0c8dde67488da9cb326fa1e2"
+    },
+    {
+      "nativeFrame": 540,
+      "pts": 138240,
+      "timeSeconds": 9.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0019.png",
+      "sha256": "c687aea6fac2837aabe03746e6bf46e2c3a2be3fdd8aaaba78ceab6836134431"
+    },
+    {
+      "nativeFrame": 570,
+      "pts": 145920,
+      "timeSeconds": 9.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0020.png",
+      "sha256": "0474db617ce50913c911a6f80ba1e361898160e39f80aebbf00ee7d64383982b"
+    },
+    {
+      "nativeFrame": 600,
+      "pts": 153600,
+      "timeSeconds": 10.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0021.png",
+      "sha256": "47e941ced2abc606df678cfd60f06caeac79f9039e8689acf75dde0667518628"
+    },
+    {
+      "nativeFrame": 630,
+      "pts": 161280,
+      "timeSeconds": 10.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0022.png",
+      "sha256": "0ae8680c4a3ce34bcef8ab522b9cb3c79fa79104744b25395563299459b48ebe"
+    },
+    {
+      "nativeFrame": 660,
+      "pts": 168960,
+      "timeSeconds": 11.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0023.png",
+      "sha256": "7d3b97deb775af37e5792bcc49efc7eb5a50d763dccc42a430978c74312275a9"
+    },
+    {
+      "nativeFrame": 690,
+      "pts": 176640,
+      "timeSeconds": 11.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0024.png",
+      "sha256": "8ac53f41a332f59c5e80735fe167d489b07c8533b8531d60f554efc0f19261e8"
+    },
+    {
+      "nativeFrame": 720,
+      "pts": 184320,
+      "timeSeconds": 12.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0025.png",
+      "sha256": "772035377b8512108eaf43f416ee38487dcbcaa7941f6bbd8b5ce699437f3bda"
+    },
+    {
+      "nativeFrame": 750,
+      "pts": 192000,
+      "timeSeconds": 12.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0026.png",
+      "sha256": "42ea59c694ea7f63e4c669ec780e3491ef9cfaaed9f0084767a11841c4361aad"
+    },
+    {
+      "nativeFrame": 780,
+      "pts": 199680,
+      "timeSeconds": 13.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0027.png",
+      "sha256": "3c5166bdd80e0d95695f96eea1cdc1eea633be8edb236a5fb2bf446de0445ca8"
+    },
+    {
+      "nativeFrame": 810,
+      "pts": 207360,
+      "timeSeconds": 13.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0028.png",
+      "sha256": "6885e7cc1ba68518caa83d221bd51b1c36afe817cc20c2273aec89f5ebec04e1"
+    },
+    {
+      "nativeFrame": 840,
+      "pts": 215040,
+      "timeSeconds": 14.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0029.png",
+      "sha256": "2e9e713b18f5d64d30705abe72837b86c68a2313b5ad5fda07a8f6a69844c6a9"
+    },
+    {
+      "nativeFrame": 870,
+      "pts": 222720,
+      "timeSeconds": 14.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0030.png",
+      "sha256": "c85c00bde624e52d397130784b711a90635145e842ea80c072fcf45b65bdab48"
+    },
+    {
+      "nativeFrame": 900,
+      "pts": 230400,
+      "timeSeconds": 15.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0031.png",
+      "sha256": "161d9f64732062b3f4e739e4f4b28726066ef6c755ab9bb99ef8c014077750ca"
+    },
+    {
+      "nativeFrame": 930,
+      "pts": 238080,
+      "timeSeconds": 15.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0032.png",
+      "sha256": "9129340bad0fa39c5e9555c531e15eb8a1cc5889f950c47a6867a6ccf89ba49e"
+    },
+    {
+      "nativeFrame": 960,
+      "pts": 245760,
+      "timeSeconds": 16.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0033.png",
+      "sha256": "067f847602ff9a83daca0c8fdcd666b93cb573f99ee0542c417d652edfdf7d52"
+    },
+    {
+      "nativeFrame": 990,
+      "pts": 253440,
+      "timeSeconds": 16.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0034.png",
+      "sha256": "357b3d2f14d6cdc8b72e947feaa77ed1031850fbf857e6a9563d0b94df07d435"
+    },
+    {
+      "nativeFrame": 1020,
+      "pts": 261120,
+      "timeSeconds": 17.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0035.png",
+      "sha256": "6a75c49ce375012383346f9d45ffdd878448d8c3f55402395346ecab9c9e5416"
+    },
+    {
+      "nativeFrame": 1050,
+      "pts": 268800,
+      "timeSeconds": 17.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0036.png",
+      "sha256": "6dedd2b46b1a007f2a7f2bdf3f7a4219f2c658d364e706f7a6769d30ce67c23b"
+    },
+    {
+      "nativeFrame": 1080,
+      "pts": 276480,
+      "timeSeconds": 18.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0037.png",
+      "sha256": "f5b07435e03b819b26e7531f20e78816f1da4b5541e6c69bd7bcf93b96243599"
+    },
+    {
+      "nativeFrame": 1110,
+      "pts": 284160,
+      "timeSeconds": 18.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0038.png",
+      "sha256": "1f438939f6b1b20d82eb51e15e71d488567810fe5a3ff9ca0946eb8a786f2b20"
+    },
+    {
+      "nativeFrame": 1140,
+      "pts": 291840,
+      "timeSeconds": 19.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0039.png",
+      "sha256": "f9818f6016272e3c123602f01aa8301b688a4b568e9b651e54791cd92639c4f1"
+    },
+    {
+      "nativeFrame": 1170,
+      "pts": 299520,
+      "timeSeconds": 19.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0040.png",
+      "sha256": "caf9c70672ed0cb32c3c611609cc430e389a1ee74a79469d26d53518c4f0ddd7"
+    },
+    {
+      "nativeFrame": 1200,
+      "pts": 307200,
+      "timeSeconds": 20.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0041.png",
+      "sha256": "a80c0bbe0dcc76148aec25020f747c3179e3795bceab888f0e01c4477537d7e2"
+    },
+    {
+      "nativeFrame": 1230,
+      "pts": 314880,
+      "timeSeconds": 20.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0042.png",
+      "sha256": "8a955067ba02b0f05deb7614404dad50dd9b12e453e8fe4b3d946c8c83e85218"
+    },
+    {
+      "nativeFrame": 1260,
+      "pts": 322560,
+      "timeSeconds": 21.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0043.png",
+      "sha256": "71345e9d7c3e57353bbe08025dc96cf587a3c9e6961f79719cde3c508686e858"
+    },
+    {
+      "nativeFrame": 1290,
+      "pts": 330240,
+      "timeSeconds": 21.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0044.png",
+      "sha256": "702fe0a2573a1e07d9686730d4a11a97ada27c01dd08ff0c6d1943db6b033727"
+    },
+    {
+      "nativeFrame": 1320,
+      "pts": 337920,
+      "timeSeconds": 22.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0045.png",
+      "sha256": "7a9a0bb8f09075e1ab7f8787f5e6b365fce6a93b77b3dd9a89ce2cf8cf3360ea"
+    },
+    {
+      "nativeFrame": 1350,
+      "pts": 345600,
+      "timeSeconds": 22.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0046.png",
+      "sha256": "aed20097c3020a3800a55bae88109a2721dca7d4acfdc3ec6ca59edc7617b8a8"
+    },
+    {
+      "nativeFrame": 1380,
+      "pts": 353280,
+      "timeSeconds": 23.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0047.png",
+      "sha256": "4734de2693a0205542ecc2f012776c3515cfdb26710df588ff9b3191bb9b2756"
+    },
+    {
+      "nativeFrame": 1410,
+      "pts": 360960,
+      "timeSeconds": 23.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0048.png",
+      "sha256": "97065fcd0c90be3710885477b8187323cb5da411d286d7b93e50c210f3640db4"
+    },
+    {
+      "nativeFrame": 1440,
+      "pts": 368640,
+      "timeSeconds": 24.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0049.png",
+      "sha256": "05b2dcd18d8fdca351363eb8d5718062f1280787dfb165fc6928b46974f91bf8"
+    },
+    {
+      "nativeFrame": 1470,
+      "pts": 376320,
+      "timeSeconds": 24.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0050.png",
+      "sha256": "78208a20ae19d0620b37a0f7247c20a1b3f3002dc23972995dbf6c207ab8135d"
+    },
+    {
+      "nativeFrame": 1500,
+      "pts": 384000,
+      "timeSeconds": 25.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0051.png",
+      "sha256": "4b1fe01042549e68098a2b453c059f63694d258fb7c2d9c35395123ab105207d"
+    },
+    {
+      "nativeFrame": 1530,
+      "pts": 391680,
+      "timeSeconds": 25.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0052.png",
+      "sha256": "6955e4c3357256d17b937a7a7b7559890754373987e8781dcd3f3fdf6db70ce1"
+    },
+    {
+      "nativeFrame": 1560,
+      "pts": 399360,
+      "timeSeconds": 26.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0053.png",
+      "sha256": "ce18126de0c6b84a32ea7179d1432cf6c97d6571c765f300fe3e559caf07c720"
+    },
+    {
+      "nativeFrame": 1590,
+      "pts": 407040,
+      "timeSeconds": 26.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0054.png",
+      "sha256": "215440d4cec87a1c6cc8177d304c8d2846235d3faceb2f626dfb6581ffc91a18"
+    },
+    {
+      "nativeFrame": 1620,
+      "pts": 414720,
+      "timeSeconds": 27.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0055.png",
+      "sha256": "e1bed2c48cc419ec60111b58f9968ea2fa7ce210695237b549de130ef112a2c4"
+    },
+    {
+      "nativeFrame": 1650,
+      "pts": 422400,
+      "timeSeconds": 27.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0056.png",
+      "sha256": "0c2a041339ebe79205cbfee635f57622661ec7c445ebb824e44da1acaad7543b"
+    },
+    {
+      "nativeFrame": 1680,
+      "pts": 430080,
+      "timeSeconds": 28.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0057.png",
+      "sha256": "d83cd4eaeb5dede24f01a8e65aa5225d337c390bc4b81b6a40a8a2ca3ac5ee67"
+    },
+    {
+      "nativeFrame": 1710,
+      "pts": 437760,
+      "timeSeconds": 28.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0058.png",
+      "sha256": "52c102a76246639f939ae8dd12c9c8c0e544c046c43ba357318469e25fe75e7c"
+    },
+    {
+      "nativeFrame": 1740,
+      "pts": 445440,
+      "timeSeconds": 29.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0059.png",
+      "sha256": "c2fd5511e2304ae68d9bd545de00fbfc7ff9ae482788b5511af6652140fbad9a"
+    },
+    {
+      "nativeFrame": 1770,
+      "pts": 453120,
+      "timeSeconds": 29.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0060.png",
+      "sha256": "0805bbafc0b6dcc902644516729c1aa4a5551292b53ac19f2a01fc944eb40d4e"
+    },
+    {
+      "nativeFrame": 1800,
+      "pts": 460800,
+      "timeSeconds": 30.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0061.png",
+      "sha256": "abf8c41e5d23da4445701a921e3e0afff9745f89daf1c8024d8569ece89fa155"
+    },
+    {
+      "nativeFrame": 1830,
+      "pts": 468480,
+      "timeSeconds": 30.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0062.png",
+      "sha256": "5c40e8ec5ca2f9909a048f1f5c07eb7394c6a45e0c7a58fc04c4b51e95bb2e74"
+    },
+    {
+      "nativeFrame": 1860,
+      "pts": 476160,
+      "timeSeconds": 31.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0063.png",
+      "sha256": "0c025e0674fa088e15a5898e434afa5d3c9dc4fcbc647c4d272fa4411d672e0e"
+    },
+    {
+      "nativeFrame": 1890,
+      "pts": 483840,
+      "timeSeconds": 31.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0064.png",
+      "sha256": "f2fac813e75fe4f09c0bdc428c97720208d1948df01709700980d32adc83c06f"
+    },
+    {
+      "nativeFrame": 1920,
+      "pts": 491520,
+      "timeSeconds": 32.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0065.png",
+      "sha256": "533197796ab67368d49e254bb0beed4f0f327330d69ea58bfe722ae3cfc77f6d"
+    },
+    {
+      "nativeFrame": 1950,
+      "pts": 499200,
+      "timeSeconds": 32.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0066.png",
+      "sha256": "8e4ddfb0f97162b36ffac10082a5d3905371ea23f5d82859a2892d7e60cc5492"
+    },
+    {
+      "nativeFrame": 1980,
+      "pts": 506880,
+      "timeSeconds": 33.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0067.png",
+      "sha256": "d932458f9e7b29563c3764f454d7b3a2c8aaef11fe926503fe67df69399b57f5"
+    },
+    {
+      "nativeFrame": 2010,
+      "pts": 514560,
+      "timeSeconds": 33.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0068.png",
+      "sha256": "1e749e8ed93a4b95cb8bf2f572f57a66ed3538248e347c874fa040282f89b630"
+    },
+    {
+      "nativeFrame": 2040,
+      "pts": 522240,
+      "timeSeconds": 34.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0069.png",
+      "sha256": "18d3d581a59c3a8886787d61f6106de85bd93bfd038abbea724028b6886c7112"
+    },
+    {
+      "nativeFrame": 2070,
+      "pts": 529920,
+      "timeSeconds": 34.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0070.png",
+      "sha256": "4565a0a3e24d1f783ea03952ceb0865c1dba93bb2225d40101980a4bb50af590"
+    },
+    {
+      "nativeFrame": 2100,
+      "pts": 537600,
+      "timeSeconds": 35.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0071.png",
+      "sha256": "2016d21615701d4d5f51ec99421dbf3677b303c94f54b5098476fe57963c3702"
+    },
+    {
+      "nativeFrame": 2130,
+      "pts": 545280,
+      "timeSeconds": 35.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0072.png",
+      "sha256": "43e52df16d2f1bb14a4f3405b2824c1176b18b99e31c6d608c2e1922869d87b3"
+    },
+    {
+      "nativeFrame": 2160,
+      "pts": 552960,
+      "timeSeconds": 36.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0073.png",
+      "sha256": "aad68b22fad1e45f9f79a36df799b29cbdb1471d2c203d793a933b22eff9ae6b"
+    },
+    {
+      "nativeFrame": 2190,
+      "pts": 560640,
+      "timeSeconds": 36.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0074.png",
+      "sha256": "af97c99927a52883929bb97cf5a54662588e37d454f968d679781e1652eb49d3"
+    },
+    {
+      "nativeFrame": 2220,
+      "pts": 568320,
+      "timeSeconds": 37.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0075.png",
+      "sha256": "e6eff1369970e87a27c75a757d2ce49e9e8450b98dc78cad49f8eea9a6564eef"
+    },
+    {
+      "nativeFrame": 2250,
+      "pts": 576000,
+      "timeSeconds": 37.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0076.png",
+      "sha256": "7086f62f910fe715d61ff64191327d143dfbbdcb6331291cbf4c95a69d4fde91"
+    },
+    {
+      "nativeFrame": 2280,
+      "pts": 583680,
+      "timeSeconds": 38.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0077.png",
+      "sha256": "0377b2a43fd25eaeb9981822ab7b1f474fffff7c6cc64ee1603f7916bde96295"
+    },
+    {
+      "nativeFrame": 2310,
+      "pts": 591360,
+      "timeSeconds": 38.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0078.png",
+      "sha256": "f64dba6a6a5914cf57c7109eccf13f82f2197a8469715cb7dccd939d11752216"
+    },
+    {
+      "nativeFrame": 2340,
+      "pts": 599040,
+      "timeSeconds": 39.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0079.png",
+      "sha256": "79b7243f64745b56fdeb4992c89dc67cabcb23cb5b0c648f522ad5984db63d3c"
+    },
+    {
+      "nativeFrame": 2370,
+      "pts": 606720,
+      "timeSeconds": 39.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0080.png",
+      "sha256": "4da9fc7a6dd0c017fd1a10f023967174a2fd2202eba9f7938e4ffd4f14644e19"
+    },
+    {
+      "nativeFrame": 2400,
+      "pts": 614400,
+      "timeSeconds": 40.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0081.png",
+      "sha256": "033b80e872adbdfa06a3c03f2953d13b1f970921773f3e763e717f4d7866ae68"
+    },
+    {
+      "nativeFrame": 2430,
+      "pts": 622080,
+      "timeSeconds": 40.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0082.png",
+      "sha256": "b34074439572c66d5081703fdd948a40ad0b0fbe74d22704859b2f2821f4da2c"
+    },
+    {
+      "nativeFrame": 2460,
+      "pts": 629760,
+      "timeSeconds": 41.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0083.png",
+      "sha256": "f9ce2914396d72d969c44707636b15efae524efba7a8157461697949b54e46ae"
+    },
+    {
+      "nativeFrame": 2490,
+      "pts": 637440,
+      "timeSeconds": 41.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0084.png",
+      "sha256": "00a05fa58b91f096be35e62df2218d4411376610b0fbb0238bf7374930a3999e"
+    },
+    {
+      "nativeFrame": 2520,
+      "pts": 645120,
+      "timeSeconds": 42.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0085.png",
+      "sha256": "17071860dcd09c2f7d1d4364948f12bb361c496e412bb69e4c0edfbf00c6c002"
+    },
+    {
+      "nativeFrame": 2550,
+      "pts": 652800,
+      "timeSeconds": 42.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0086.png",
+      "sha256": "0012d3c6ead79d0651dab7647098169ea6ad9473f6ab0954f454f34b20b9d457"
+    },
+    {
+      "nativeFrame": 2580,
+      "pts": 660480,
+      "timeSeconds": 43.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0087.png",
+      "sha256": "7112c44294b70df4edf11e742de0a2510cf72db04dbf92621f3430ef9e605590"
+    },
+    {
+      "nativeFrame": 2610,
+      "pts": 668160,
+      "timeSeconds": 43.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0088.png",
+      "sha256": "97e3b9dd9e5bec1ff81be94afba9925526844d378ebf9df44746bcbb83aa4faf"
+    },
+    {
+      "nativeFrame": 2640,
+      "pts": 675840,
+      "timeSeconds": 44.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0089.png",
+      "sha256": "4b068da4dd55a7ab4e8b71569037600e8c6d55618d52b1627957ceec54145c9e"
+    },
+    {
+      "nativeFrame": 2670,
+      "pts": 683520,
+      "timeSeconds": 44.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0090.png",
+      "sha256": "170cb663784bed45ebde80828c09d7020c34638ddf139ac177a4c30032ceb4d3"
+    },
+    {
+      "nativeFrame": 2700,
+      "pts": 691200,
+      "timeSeconds": 45.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0091.png",
+      "sha256": "eb55f9443dfdceb604533b469bfed42129c29ae423e1a87f93df8d986f932654"
+    },
+    {
+      "nativeFrame": 2730,
+      "pts": 698880,
+      "timeSeconds": 45.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0092.png",
+      "sha256": "2a515d24187779104d5f5ac868bcdd38ebdda5b0e12a9a0419b534423e4815ec"
+    },
+    {
+      "nativeFrame": 2760,
+      "pts": 706560,
+      "timeSeconds": 46.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0093.png",
+      "sha256": "af185e65164eac6d5bd822776dc845725012e6c9ef7a3a1d4cfbb4014013fb08"
+    },
+    {
+      "nativeFrame": 2790,
+      "pts": 714240,
+      "timeSeconds": 46.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0094.png",
+      "sha256": "fcc64f3f82230f5b322f975f37acb49259ff602463ef56d36b2dc644e915b8b4"
+    },
+    {
+      "nativeFrame": 2820,
+      "pts": 721920,
+      "timeSeconds": 47.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0095.png",
+      "sha256": "1aee2fe981cbde05157857b429a9492141fe622c1bf47dbedc9dfc01e6d2447b"
+    },
+    {
+      "nativeFrame": 2850,
+      "pts": 729600,
+      "timeSeconds": 47.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0096.png",
+      "sha256": "077212c4e6832c4c51dd264fd47ba80d9da6d6568190a61b5bd0bc07e813371d"
+    },
+    {
+      "nativeFrame": 2880,
+      "pts": 737280,
+      "timeSeconds": 48.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0097.png",
+      "sha256": "39c1a7eec50ea6fbbe047f194ca3d5d4081323e1f259708b5bd4dd18bf5df72b"
+    },
+    {
+      "nativeFrame": 2910,
+      "pts": 744960,
+      "timeSeconds": 48.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0098.png",
+      "sha256": "0a16553dce0f3dab5d528673d03bbe2b49bbbb0f9655f32fbdcbfe179972a00a"
+    },
+    {
+      "nativeFrame": 2940,
+      "pts": 752640,
+      "timeSeconds": 49.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0099.png",
+      "sha256": "1781ad220a57d07169a993bb4e76681ed39214da2f8c7e4c05f6976448fee068"
+    },
+    {
+      "nativeFrame": 2970,
+      "pts": 760320,
+      "timeSeconds": 49.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0100.png",
+      "sha256": "6624376c5f06a8fa3349f2f383dd2b3f8cd6aebfe52c41d0a590029ce76b5b95"
+    },
+    {
+      "nativeFrame": 3000,
+      "pts": 768000,
+      "timeSeconds": 50.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0101.png",
+      "sha256": "f328402a56bc2dfd3e422e6a3004a3da3c2e272a0edd1abeda1bf8f1242a1a67"
+    },
+    {
+      "nativeFrame": 3030,
+      "pts": 775680,
+      "timeSeconds": 50.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0102.png",
+      "sha256": "aa2b9b83c87cfc85b0949718754546f3207f187b1b6ea874c5c328a771b3d98d"
+    },
+    {
+      "nativeFrame": 3060,
+      "pts": 783360,
+      "timeSeconds": 51.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0103.png",
+      "sha256": "66a13156d61092e6551bb89691dfee5c9390e771032e96053f7f5ac8d8e1dbfa"
+    },
+    {
+      "nativeFrame": 3090,
+      "pts": 791040,
+      "timeSeconds": 51.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0104.png",
+      "sha256": "c8e047df58e81c4d14938c3fb19576b44b8bd4ac8e22e8b19317b8ab3bc00558"
+    },
+    {
+      "nativeFrame": 3120,
+      "pts": 798720,
+      "timeSeconds": 52.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0105.png",
+      "sha256": "a2f4a14557acb788b9733722608f84df643396b96655b35fca44a05e320af4b3"
+    },
+    {
+      "nativeFrame": 3150,
+      "pts": 806400,
+      "timeSeconds": 52.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0106.png",
+      "sha256": "dccda6ea85a32b7fbdc17089ba4e0f28a1f85100be04939de874bc5f45f7bd15"
+    },
+    {
+      "nativeFrame": 3180,
+      "pts": 814080,
+      "timeSeconds": 53.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0107.png",
+      "sha256": "409a9449a7070e96183d403931b58836ca8a507e892b255e8ca9cc81e7b6b2c2"
+    },
+    {
+      "nativeFrame": 3210,
+      "pts": 821760,
+      "timeSeconds": 53.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0108.png",
+      "sha256": "395d6a1e52b69ffa5d1b091126fd43dde6a2dfaab9c11b4ba5041b9eb59b431b"
+    },
+    {
+      "nativeFrame": 3240,
+      "pts": 829440,
+      "timeSeconds": 54.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0109.png",
+      "sha256": "1408fb26d7b86ee210fe6a020bef5a9bb33189c7d6625044496e78037fe75ad2"
+    },
+    {
+      "nativeFrame": 3270,
+      "pts": 837120,
+      "timeSeconds": 54.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0110.png",
+      "sha256": "66e8900da11ffe4d5ebe3780c9281cd247aa2047571465dc50868805b471d773"
+    },
+    {
+      "nativeFrame": 3300,
+      "pts": 844800,
+      "timeSeconds": 55.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0111.png",
+      "sha256": "91da230260bea7884153398b225fdcd1d45f255c9807777ff47586c5facd683c"
+    },
+    {
+      "nativeFrame": 3330,
+      "pts": 852480,
+      "timeSeconds": 55.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0112.png",
+      "sha256": "ed3a2d1e579669f106f8b1593ae74a7816b7b1397d81294dbaa644b134ae44f4"
+    },
+    {
+      "nativeFrame": 3360,
+      "pts": 860160,
+      "timeSeconds": 56.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0113.png",
+      "sha256": "0d0ef30f21271caac20332b397f92ca00e6db8ec7b8552bf11354d26325536e1"
+    },
+    {
+      "nativeFrame": 3390,
+      "pts": 867840,
+      "timeSeconds": 56.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0114.png",
+      "sha256": "ef4c1e206fd3e2f3fe42da95331e14286142fb665281defbe30ae473a85dea53"
+    },
+    {
+      "nativeFrame": 3420,
+      "pts": 875520,
+      "timeSeconds": 57.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0115.png",
+      "sha256": "6fe15c4821d18255821f34b6d998c46db360a698a81ab7380a55366d12b4d0ed"
+    },
+    {
+      "nativeFrame": 3450,
+      "pts": 883200,
+      "timeSeconds": 57.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0116.png",
+      "sha256": "a602b69af9585e9a08e8871d02dccada4b7a1768440902e5479e1029c0261585"
+    },
+    {
+      "nativeFrame": 3480,
+      "pts": 890880,
+      "timeSeconds": 58.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0117.png",
+      "sha256": "671f13492e61a1faea8512d1aed65315113c2b1e04b038b84f82b33f90fffd98"
+    },
+    {
+      "nativeFrame": 3510,
+      "pts": 898560,
+      "timeSeconds": 58.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0118.png",
+      "sha256": "209536e69db1421786723ad12eba910b7828c5ac69a635efee65b8a16daa3b6d"
+    },
+    {
+      "nativeFrame": 3540,
+      "pts": 906240,
+      "timeSeconds": 59.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0119.png",
+      "sha256": "5c7ad33ddf952f09a175db4db889d3c7720c032f55bea50beb57569f521bcd23"
+    },
+    {
+      "nativeFrame": 3570,
+      "pts": 913920,
+      "timeSeconds": 59.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0120.png",
+      "sha256": "97c37b64860147836ba4654bfedf1567acd6fa1b90ce7ac6177ca099592100e8"
+    },
+    {
+      "nativeFrame": 3600,
+      "pts": 921600,
+      "timeSeconds": 60.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0121.png",
+      "sha256": "0db875b7fb16daf5c66e855031fbeada7cc6872cf1e84721f3bfc0e8f8c8ad9b"
+    },
+    {
+      "nativeFrame": 3630,
+      "pts": 929280,
+      "timeSeconds": 60.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0122.png",
+      "sha256": "4c70ee01822002e4cf24251edf30ccc0915d1c31803cfdde836698cf4a6b1432"
+    },
+    {
+      "nativeFrame": 3660,
+      "pts": 936960,
+      "timeSeconds": 61.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0123.png",
+      "sha256": "00d948323120232bfad56ea6e666a8e63bb928096cb4cabf2f1433637336905a"
+    },
+    {
+      "nativeFrame": 3690,
+      "pts": 944640,
+      "timeSeconds": 61.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0124.png",
+      "sha256": "a36942dc698f39106b91140e2e6da9f909a6ed5ae003b9372cdfa508adf403e1"
+    },
+    {
+      "nativeFrame": 3720,
+      "pts": 952320,
+      "timeSeconds": 62.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0125.png",
+      "sha256": "fd4bb43c0b2fd6b59c4f2467a292bcb42a35c3157d117e4fccc21e75c939a4a3"
+    },
+    {
+      "nativeFrame": 3750,
+      "pts": 960000,
+      "timeSeconds": 62.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0126.png",
+      "sha256": "8401f16af51ad3984a36dcff38f0ec739da5500a54c07451d6921344a6c84626"
+    },
+    {
+      "nativeFrame": 3780,
+      "pts": 967680,
+      "timeSeconds": 63.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0127.png",
+      "sha256": "479344c43cac3abd7f5d25af1a02db35429d6f0ce59a185a81bb7aff010b0915"
+    },
+    {
+      "nativeFrame": 3810,
+      "pts": 975360,
+      "timeSeconds": 63.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0128.png",
+      "sha256": "2babf5d091b4f9377deddb8355fbf42e76bcc448412c8a7eb79736681242b2bc"
+    },
+    {
+      "nativeFrame": 3840,
+      "pts": 983040,
+      "timeSeconds": 64.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0129.png",
+      "sha256": "0d9fde296477f393b6e600d3d69dc3cfbf7ff207ce4dde193c4a036a3fc3b779"
+    },
+    {
+      "nativeFrame": 3870,
+      "pts": 990720,
+      "timeSeconds": 64.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0130.png",
+      "sha256": "d34459041f45a794a5fcf575c90eabca36e79d48ba1f9dcddb646c62bae99054"
+    },
+    {
+      "nativeFrame": 3900,
+      "pts": 998400,
+      "timeSeconds": 65.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0131.png",
+      "sha256": "45883fc0a071723d3e5c7cb73aa057f29187036274220f7c63bd73824fc62ee5"
+    },
+    {
+      "nativeFrame": 3930,
+      "pts": 1006080,
+      "timeSeconds": 65.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0132.png",
+      "sha256": "3dd6ad0db8145114fcfb0b321c63e9cda3c7c016ae3e62dec386c9f3d372b457"
+    },
+    {
+      "nativeFrame": 3960,
+      "pts": 1013760,
+      "timeSeconds": 66.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0133.png",
+      "sha256": "cfaa8000b603705e92acac55aa9549f43cf40fb5b4d1d387dd52c05f0efb7683"
+    },
+    {
+      "nativeFrame": 3990,
+      "pts": 1021440,
+      "timeSeconds": 66.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0134.png",
+      "sha256": "f26de38bd6152925e9bff458676af8e5976b259c57a328dff0d2add8fe1bcfb8"
+    },
+    {
+      "nativeFrame": 4020,
+      "pts": 1029120,
+      "timeSeconds": 67.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0135.png",
+      "sha256": "2e44003b90f77939161ccc7f4eb3e5dbbf783af98ac1dcfd67c04e711f80cfa0"
+    },
+    {
+      "nativeFrame": 4050,
+      "pts": 1036800,
+      "timeSeconds": 67.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0136.png",
+      "sha256": "86a20b51e52e464c39644cfc0ceada9cb04812c34dbcc3ecb711c8b422519454"
+    },
+    {
+      "nativeFrame": 4080,
+      "pts": 1044480,
+      "timeSeconds": 68.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0137.png",
+      "sha256": "36b8b13924733be599b30fcc126a2dcd1de5d7f5a6c920c7a7ad10b4b3c89b30"
+    },
+    {
+      "nativeFrame": 4110,
+      "pts": 1052160,
+      "timeSeconds": 68.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0138.png",
+      "sha256": "cd602841400a0fb01b5c584fe204eb0e5e19136049be41914d025fe44b0b1fb8"
+    },
+    {
+      "nativeFrame": 4140,
+      "pts": 1059840,
+      "timeSeconds": 69.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0139.png",
+      "sha256": "72a6f2253376068b498a7712eb87c76776350c7f432ede4da0f06061ee0c2f8e"
+    },
+    {
+      "nativeFrame": 4170,
+      "pts": 1067520,
+      "timeSeconds": 69.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0140.png",
+      "sha256": "133057ef9610c102b819da0949adf076e03948412931e7994c03e9dfe6deda1f"
+    },
+    {
+      "nativeFrame": 4200,
+      "pts": 1075200,
+      "timeSeconds": 70.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0141.png",
+      "sha256": "db995c559ef332caabc588a67fb00a2c47f1e3fa1c1fc9bc409044eb9ac2d0a1"
+    },
+    {
+      "nativeFrame": 4230,
+      "pts": 1082880,
+      "timeSeconds": 70.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0142.png",
+      "sha256": "4458404d91c67b7b36bd09ed256901be7ec0f79a25fef0d7edc2a307cfec950f"
+    },
+    {
+      "nativeFrame": 4260,
+      "pts": 1090560,
+      "timeSeconds": 71.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0143.png",
+      "sha256": "5a8c0411ebe1d585ccc4689ecae4092f5420aca17a67fab18bcd094b7a0f80a9"
+    },
+    {
+      "nativeFrame": 4290,
+      "pts": 1098240,
+      "timeSeconds": 71.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0144.png",
+      "sha256": "3daebc134719e59d4d6d845931dd8af312f8e10f15710a939159ad796cfabfc2"
+    },
+    {
+      "nativeFrame": 4320,
+      "pts": 1105920,
+      "timeSeconds": 72.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0145.png",
+      "sha256": "d0313fbaa5d9a5125815c8f7d8cf68fa6e1c24fda7339b6848d528bd55f644bc"
+    },
+    {
+      "nativeFrame": 4350,
+      "pts": 1113600,
+      "timeSeconds": 72.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0146.png",
+      "sha256": "148bf08b3d6201eaaeddf148fed711dfb333146f668a61bebff58719e0c57627"
+    },
+    {
+      "nativeFrame": 4380,
+      "pts": 1121280,
+      "timeSeconds": 73.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0147.png",
+      "sha256": "462f17a15bbaf223b23682e6dcfd54893035af207a75e160f833d0b5ce2c210b"
+    },
+    {
+      "nativeFrame": 4410,
+      "pts": 1128960,
+      "timeSeconds": 73.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0148.png",
+      "sha256": "96b16d3bda10b967cdc8e0a1a8648811e1802334bcfcbe952484c1f1be436567"
+    },
+    {
+      "nativeFrame": 4440,
+      "pts": 1136640,
+      "timeSeconds": 74.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0149.png",
+      "sha256": "b390353a10deb912441c59fc2ca4dc62d4d3cbff7b88c32dfa1434b61f21dded"
+    },
+    {
+      "nativeFrame": 4470,
+      "pts": 1144320,
+      "timeSeconds": 74.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0150.png",
+      "sha256": "f4432259b8a7a1abc3af37eed7e47236fedd5d8ef0ab47f4b3d84923b68f53e1"
+    },
+    {
+      "nativeFrame": 4500,
+      "pts": 1152000,
+      "timeSeconds": 75.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0151.png",
+      "sha256": "a0f95529d9967e05f31b19fb6ffb311d81b91a277d8218284068ccf855b7479f"
+    },
+    {
+      "nativeFrame": 4530,
+      "pts": 1159680,
+      "timeSeconds": 75.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0152.png",
+      "sha256": "910759818682cb36a69ef53a48351c126a838b9430a880d343b2dc91810f96cc"
+    },
+    {
+      "nativeFrame": 4560,
+      "pts": 1167360,
+      "timeSeconds": 76.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0153.png",
+      "sha256": "8c37594bab00334d5353f40ec487e2624b3e60f5d3d67713c12d90bcf81e8967"
+    },
+    {
+      "nativeFrame": 4590,
+      "pts": 1175040,
+      "timeSeconds": 76.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0154.png",
+      "sha256": "035a056ff18699ab7a3bc4d92a661cd5edf0a0292f3a1614d38167c03a7f2491"
+    },
+    {
+      "nativeFrame": 4620,
+      "pts": 1182720,
+      "timeSeconds": 77.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0155.png",
+      "sha256": "3438e3163590f76d092dbe17a3e726448c00c5731f2ac9cd1774cba0ecc4529b"
+    },
+    {
+      "nativeFrame": 4650,
+      "pts": 1190400,
+      "timeSeconds": 77.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0156.png",
+      "sha256": "6a5c8e03b71a1a428120c3219c3475bc964339fa5c21ae54dfe3b3fe287d5466"
+    },
+    {
+      "nativeFrame": 4680,
+      "pts": 1198080,
+      "timeSeconds": 78.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0157.png",
+      "sha256": "8f47c804b1a20d82bf39b70d492a5cd02eaf1116809aac60d5c9a469e47a470d"
+    },
+    {
+      "nativeFrame": 4710,
+      "pts": 1205760,
+      "timeSeconds": 78.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0158.png",
+      "sha256": "95240453ca8f53f3cbc293fee71a4286a3b45362917adf8fdfa7aaf0ddeebe46"
+    },
+    {
+      "nativeFrame": 4740,
+      "pts": 1213440,
+      "timeSeconds": 79.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0159.png",
+      "sha256": "3502f75ad1b22524f3226ecbaff430008c8fd6a1843642f8919cb20fadf6972d"
+    },
+    {
+      "nativeFrame": 4770,
+      "pts": 1221120,
+      "timeSeconds": 79.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0160.png",
+      "sha256": "ad555c9af0d2482714f5459afb6712428452fc6d6b1c48878bca0cb71a598c9d"
+    },
+    {
+      "nativeFrame": 4800,
+      "pts": 1228800,
+      "timeSeconds": 80.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0161.png",
+      "sha256": "6ee4bdb609abaeac8885350a5f3b39423a851227d5f4594a0a3e6008b0637b0b"
+    },
+    {
+      "nativeFrame": 4830,
+      "pts": 1236480,
+      "timeSeconds": 80.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0162.png",
+      "sha256": "b0222ceea5faf9bffe0d84351ba118385611be2825176e4d6c22a1df7fcff569"
+    },
+    {
+      "nativeFrame": 4860,
+      "pts": 1244160,
+      "timeSeconds": 81.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0163.png",
+      "sha256": "cdeb2bfceeb7feca3542d176528721dbc4145587d2e595425c2a3a3be95d4662"
+    },
+    {
+      "nativeFrame": 4890,
+      "pts": 1251840,
+      "timeSeconds": 81.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0164.png",
+      "sha256": "2fa932627ab5b2d32787a4adb574cca3dcc48499bcdc9b11935dc54c0d5b1fb9"
+    },
+    {
+      "nativeFrame": 4920,
+      "pts": 1259520,
+      "timeSeconds": 82.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0165.png",
+      "sha256": "47362c7fea19997fb3bfe579a609261f96e279005291740c628d9f537665dde7"
+    },
+    {
+      "nativeFrame": 4950,
+      "pts": 1267200,
+      "timeSeconds": 82.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0166.png",
+      "sha256": "bc07dcae2a512e7875afe3bc68e0b5010090c03153d3143ceb47862b5e898fe8"
+    },
+    {
+      "nativeFrame": 4980,
+      "pts": 1274880,
+      "timeSeconds": 83.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0167.png",
+      "sha256": "bd9c507c4fa91a1f78de29fa2878423258dedc76cb7b034a5d078bd2f0abd286"
+    },
+    {
+      "nativeFrame": 5010,
+      "pts": 1282560,
+      "timeSeconds": 83.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0168.png",
+      "sha256": "abe7ebb55c205eafea6a76f2557925f873f2cec79f24373503dad729023d7d05"
+    },
+    {
+      "nativeFrame": 5040,
+      "pts": 1290240,
+      "timeSeconds": 84.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0169.png",
+      "sha256": "59d70a52818ccdc73442e327cc61966ce6be6f074848788b167068fa3ab3d706"
+    },
+    {
+      "nativeFrame": 5070,
+      "pts": 1297920,
+      "timeSeconds": 84.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0170.png",
+      "sha256": "b1bb3d4e13bc1a6a45bcef246bd4618afded0a5e1efbfdadaa7457c561345e37"
+    },
+    {
+      "nativeFrame": 5100,
+      "pts": 1305600,
+      "timeSeconds": 85.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0171.png",
+      "sha256": "f004fac4ca82b04a9e2b4a29d72590e2bcd5ab84234b2c5730bc9a9ae6d9a60e"
+    },
+    {
+      "nativeFrame": 5130,
+      "pts": 1313280,
+      "timeSeconds": 85.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0172.png",
+      "sha256": "2c9921e6b5174e907fce103f3bfb1b64c40bcc69d5945cde0d95354b3b9cc771"
+    },
+    {
+      "nativeFrame": 5160,
+      "pts": 1320960,
+      "timeSeconds": 86.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0173.png",
+      "sha256": "cd6f4a08e57bcdcd90bf983d31800395e884d7cc81244c00df0839653cf68e93"
+    },
+    {
+      "nativeFrame": 5190,
+      "pts": 1328640,
+      "timeSeconds": 86.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0174.png",
+      "sha256": "a0d8d2070fbd523b69da8f667507aba4cf7c40ce4ba11f319c27aec5190f8ab4"
+    },
+    {
+      "nativeFrame": 5220,
+      "pts": 1336320,
+      "timeSeconds": 87.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0175.png",
+      "sha256": "539ba6b8b1ff4558ecfb1f8bc69454c3e8fbfff389ce2877040af4f70f5f0dc6"
+    },
+    {
+      "nativeFrame": 5250,
+      "pts": 1344000,
+      "timeSeconds": 87.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0176.png",
+      "sha256": "8bc311c1846e0e08fd7fb1c371e7f25b8fc5843b6fa805ad6b20d4c094a54b53"
+    },
+    {
+      "nativeFrame": 5280,
+      "pts": 1351680,
+      "timeSeconds": 88.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0177.png",
+      "sha256": "fc3ae6ea4df02948f8b2784a58ab36652d5f4d8a99cf409fb0716d8204c2bd0e"
+    },
+    {
+      "nativeFrame": 5310,
+      "pts": 1359360,
+      "timeSeconds": 88.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0178.png",
+      "sha256": "345cc8ed2042e41d29c84651099fe150f44b3a54ff631a0c97f799a4359ba02d"
+    },
+    {
+      "nativeFrame": 5340,
+      "pts": 1367040,
+      "timeSeconds": 89.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0179.png",
+      "sha256": "390f973e1c4fd10f448b3356c613215cd0306ad46b338070dfdcd27a5e5bed15"
+    },
+    {
+      "nativeFrame": 5370,
+      "pts": 1374720,
+      "timeSeconds": 89.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0180.png",
+      "sha256": "d7f3fd860ab345ea21d50b2b50522a753a3d99d2bf57e884382e512b5b6b573e"
+    },
+    {
+      "nativeFrame": 5400,
+      "pts": 1382400,
+      "timeSeconds": 90.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0181.png",
+      "sha256": "20b3a1459e25bb7604f81afa6524fbc2e094448d8d3341d2498a842c6be87f2b"
+    },
+    {
+      "nativeFrame": 5430,
+      "pts": 1390080,
+      "timeSeconds": 90.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0182.png",
+      "sha256": "7073bd6d241d73d5e780ef653a7677df5a41a200a350af237bd8422263b84ac4"
+    },
+    {
+      "nativeFrame": 5460,
+      "pts": 1397760,
+      "timeSeconds": 91.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0183.png",
+      "sha256": "de314fda56e21f1211f67ccb55de1b40e2666fb02fd2fbef6feeccb43385166f"
+    },
+    {
+      "nativeFrame": 5490,
+      "pts": 1405440,
+      "timeSeconds": 91.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0184.png",
+      "sha256": "1f0be0a537661c67c2371975d0d56d9ec6ebf32f8fa60f9dace561e606465ccd"
+    },
+    {
+      "nativeFrame": 5520,
+      "pts": 1413120,
+      "timeSeconds": 92.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0185.png",
+      "sha256": "279167018ff29498cab3f9369ba336341eea9fd859b2c58f98e58867d2d1ae78"
+    },
+    {
+      "nativeFrame": 5550,
+      "pts": 1420800,
+      "timeSeconds": 92.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0186.png",
+      "sha256": "c7dce0463625cae270b4d24e5a585768607643f28e7616cfcbe58fd4191dffdc"
+    },
+    {
+      "nativeFrame": 5580,
+      "pts": 1428480,
+      "timeSeconds": 93.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0187.png",
+      "sha256": "c8d5ec21571bc1fcd9801c9e113d59458084b9c55c8d5213d37f6e323bc64fdb"
+    },
+    {
+      "nativeFrame": 5610,
+      "pts": 1436160,
+      "timeSeconds": 93.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0188.png",
+      "sha256": "34c7a94f2d358e90cb98068ae79502d5b8946ecc4f0e867f448026c89667d9fa"
+    },
+    {
+      "nativeFrame": 5640,
+      "pts": 1443840,
+      "timeSeconds": 94.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0189.png",
+      "sha256": "8609e6f893158e48d8a334cc69a6a8b9c5942d26de1a29092d3aa32d2d5ebf41"
+    },
+    {
+      "nativeFrame": 5670,
+      "pts": 1451520,
+      "timeSeconds": 94.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0190.png",
+      "sha256": "e7ec88b47f80911c9600d3b5827557a5ba84c58f0a14c02c1d9fca9445fc1139"
+    },
+    {
+      "nativeFrame": 5700,
+      "pts": 1459200,
+      "timeSeconds": 95.0,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0191.png",
+      "sha256": "b88c6edeffe978cb10c7eea54370b2c321ae97f0275cc6aa5b0a8cb80798b2fc"
+    },
+    {
+      "nativeFrame": 5730,
+      "pts": 1466880,
+      "timeSeconds": 95.5,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0192.png",
+      "sha256": "4ec29b96ab30068485f7e2492e75ff8c57f5e3c30ee85838ac839b6d9a1de1c7"
+    },
+    {
+      "nativeFrame": 5745,
+      "pts": 1470720,
+      "timeSeconds": 95.75,
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/sample-0193.png",
+      "sha256": "d35f2dee4d92536b0556079ebc8fd7e4ef102bfddde408b6ed26b1bb97606168"
+    }
+  ],
+  "boards": [
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-001.jpg",
+      "sha256": "9bcf8aa417b1784274ea089130d605c17c1762d23b16af2d798aa829f8c86367",
+      "sampleRange": [
+        0,
+        6
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-002.jpg",
+      "sha256": "2470677d8cc0e5a74db35b86ba50ada307146ac1e8d4f55bf52a7c78db7b5d09",
+      "sampleRange": [
+        6,
+        12
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-003.jpg",
+      "sha256": "c18b1c63bf97aebfb609f2425c6da45444f82fc9d379ab3ecc66981e32f06ca9",
+      "sampleRange": [
+        12,
+        18
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-004.jpg",
+      "sha256": "5869e17067eeb310d9481409dfadffb8e878073ab8812ccb1619c21929317a75",
+      "sampleRange": [
+        18,
+        24
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-005.jpg",
+      "sha256": "8be82a0fd3bcf88dbec169c26cf316848c3fed65e202da84d272cf41c7dce218",
+      "sampleRange": [
+        24,
+        30
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-006.jpg",
+      "sha256": "a4a5d2fb19d76f62272efc0a466849cf434ed87138f626801dbd9d955e347ce1",
+      "sampleRange": [
+        30,
+        36
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-007.jpg",
+      "sha256": "2770d3bc24c8a9bebfe22a8e525565f190fc49acf5f3ae94ea6c42692cb7d7ff",
+      "sampleRange": [
+        36,
+        42
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-008.jpg",
+      "sha256": "2467fc0d2d0b3df270aec7ce7712be5d3579f8b80d1282a3b239fa2fee5dd8ca",
+      "sampleRange": [
+        42,
+        48
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-009.jpg",
+      "sha256": "89692d4e71f6872464db168154f8a3306df1fcad7b1707bc62df7a82fb08b7a6",
+      "sampleRange": [
+        48,
+        54
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-010.jpg",
+      "sha256": "37afe1f1b7a0178ec0f3006f46c698602bc70ac5b665abd77ec1d48c826e028f",
+      "sampleRange": [
+        54,
+        60
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-011.jpg",
+      "sha256": "b7d0cce5e69b7afe610708660519d8ecba0ef4bc09bb076ba4e2dacf24b10e63",
+      "sampleRange": [
+        60,
+        66
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-012.jpg",
+      "sha256": "f218e1111bd2d87ad93badd7371910bbadefb8ff20dfa7f204c20037e955c501",
+      "sampleRange": [
+        66,
+        72
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-013.jpg",
+      "sha256": "0922f1c134287c8faa82bf41132f8d8e36bfe6bb86c9442505d548ec7567bb9a",
+      "sampleRange": [
+        72,
+        78
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-014.jpg",
+      "sha256": "5c98c76a9ef90b494a5d871c416399c46b5d4d702514cb5768ad2dbd877f63ce",
+      "sampleRange": [
+        78,
+        84
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-015.jpg",
+      "sha256": "f0d53ba0d5f0a32b0c7320751185f3618f9d8a689e84149ad87c2e2fe420d139",
+      "sampleRange": [
+        84,
+        90
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-016.jpg",
+      "sha256": "b7a59675d229db187bf8e0045c81c90653eb38fe64db9b678a8e65119ff1e5c8",
+      "sampleRange": [
+        90,
+        96
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-017.jpg",
+      "sha256": "296dfe169ef66482bf58a2624ba65f69bcec8eaf72bde1032cef980d4f411a93",
+      "sampleRange": [
+        96,
+        102
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-018.jpg",
+      "sha256": "8849f06eec1f7b815bbc8e8afa84cc3deab03ab4256ab1e0afc5eb6b82e983cd",
+      "sampleRange": [
+        102,
+        108
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-019.jpg",
+      "sha256": "b8e4be74054ce059f6846711e1b76afa8de841b42168a033337d5b8c9b66ac1e",
+      "sampleRange": [
+        108,
+        114
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-020.jpg",
+      "sha256": "dbe71ade941af36384b91009acc5577144a51b19460f1a76a587cd7a052ef4d5",
+      "sampleRange": [
+        114,
+        120
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-021.jpg",
+      "sha256": "67bf01775fba47faef20f108c194b7eb282a2ce5dac2978815768a053cd7c23d",
+      "sampleRange": [
+        120,
+        126
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-022.jpg",
+      "sha256": "98679847f643ad7b7c709ba2c4c925768e741b531f5dd0fc23c057077a8038be",
+      "sampleRange": [
+        126,
+        132
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-023.jpg",
+      "sha256": "fc4dd95a045e930a3dca0887e98a977fdef1b67f4c543f637be81381dcbc1fe3",
+      "sampleRange": [
+        132,
+        138
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-024.jpg",
+      "sha256": "19773e599d5d7012a071c0fac9e76547b64e12f2cbb4aed2c300d811a2e6cfb7",
+      "sampleRange": [
+        138,
+        144
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-025.jpg",
+      "sha256": "64a8ce463045ded2a261c5a0291760234326bfd0c03b822388245f94f3115af7",
+      "sampleRange": [
+        144,
+        150
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-026.jpg",
+      "sha256": "76eff5222f3ab375e5e3f038578c6cc7405d54de248b2745136f739d9eb23732",
+      "sampleRange": [
+        150,
+        156
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-027.jpg",
+      "sha256": "f70fac1fea1c174e76ec5b48809f2da833f0f676420e8537fa7e48b1de191b0d",
+      "sampleRange": [
+        156,
+        162
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-028.jpg",
+      "sha256": "fc5e9c13d0614a4996705e87d7a804cd8bdd2d9ee26891567cfe5ca53130dab1",
+      "sampleRange": [
+        162,
+        168
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-029.jpg",
+      "sha256": "4d413c0842b7bfb5a42557bf78384d5d78362df98988731d409eace903eaf32b",
+      "sampleRange": [
+        168,
+        174
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-030.jpg",
+      "sha256": "3489b78b954edccb293cba64fe81c564011806b1b91cb58613a49f86e434ec91",
+      "sampleRange": [
+        174,
+        180
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-031.jpg",
+      "sha256": "c24b78497fe6e324a690c83ef594a29c77ecc254f41e76d30b9f90e0d79b8ed4",
+      "sampleRange": [
+        180,
+        186
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-032.jpg",
+      "sha256": "7d30b22ab2849547a4abb0e82e897d416addbab7a29f92bd14eabeeae76f77ca",
+      "sampleRange": [
+        186,
+        192
+      ]
+    },
+    {
+      "path": "shared/output/character-parameters/preflight/dungeons-coarse-v2/board-033.jpg",
+      "sha256": "7ce56f2960ab1f24be2d0336e9089d91a1eda39a8679bf9af1b1a19ebb5e926a",
+      "sampleRange": [
+        192,
+        193
+      ]
+    }
+  ],
+  "totalSamples": 193,
+  "totalBoards": 33
+}

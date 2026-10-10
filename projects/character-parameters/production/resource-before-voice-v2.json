@@ -1,0 +1,71 @@
+{
+  "observedAt": "2026-10-10T06:58:19.0979939+09:00",
+  "processes": [
+    {
+      "ProcessId": 54288,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-09T10:34:25.906545+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$taskPreview = Get-CimInstance Win32_Process -Filter 'ProcessId = 2664'; if ($taskPreview.CommandLine -ne '\\\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\\\" -X utf8 -m http.server 9250 --bind 127.0.0.1 --directory D:/Github/Video-Editing/shared/assets/presenting-game-scores/raw' -or $taskPreview.CreationDate.ToString('o') -ne '2026-10-09T10:29:12.9484320+09:00') { throw 'Owned preview process identity changed; refusing stop' }; Stop-Process -Id $taskPreview.ProcessId; & C:/Users/eazuo/miniconda3/envs/renderformer/python.exe -X utf8 production/batches/sakurai-planning-game-design/proof-presenting-game-scores/serve-native-review-v1.py\""
+    },
+    {
+      "ProcessId": 27140,
+      "ParentProcessId": 54288,
+      "CreationDate": "2026-10-09T10:34:26.837781+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\" -X utf8 production/batches/sakurai-planning-game-design/proof-presenting-game-scores/serve-native-review-v1.py"
+    },
+    {
+      "ProcessId": 67968,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-09T13:15:48.354913+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n& 'C:/Users/eazuo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe' node_modules/vite/bin/vite.js --config vite.presenting-game-scores.black-preflight-v1.config.ts\""
+    },
+    {
+      "ProcessId": 63080,
+      "ParentProcessId": 67968,
+      "CreationDate": "2026-10-09T13:15:48.578178+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/vite/bin/vite.js --config vite.presenting-game-scores.black-preflight-v1.config.ts"
+    },
+    {
+      "ProcessId": 68672,
+      "ParentProcessId": 65388,
+      "CreationDate": "2026-10-10T04:00:39.530321+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe",
+      "CommandLine": "C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe -u C:/Users/eazuo/renderformer/lora_experiment/analysis/placement_focus/resume_with_preview.py --identity C:/Users/eazuo/renderformer/tmp/placement_focus_20261008/preview_identity_20261009.json"
+    },
+    {
+      "ProcessId": 51784,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-10T06:58:18.782229+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$taskStamp=(Get-Date).ToString('o'); $taskProcesses=Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'placement_focus|train_multiview|gpu-handoff.py|render-voice-v1.py|serve-native-review-v1.py|vite.presenting' } | Select-Object ProcessId,ParentProcessId,CreationDate,ExecutablePath,CommandLine; $taskRecord=[ordered]@{observedAt=$taskStamp;processes=$taskProcesses;gpu=(& nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits);researchStatus=(Get-Content -LiteralPath C:/Users/eazuo/renderformer/tmp/placement_focus_20261008/status.json -Raw | ConvertFrom-Json);currentLease=$(if(Test-Path -LiteralPath shared/output/GPU_HANDOFF.json){Get-Content -LiteralPath shared/output/GPU_HANDOFF.json -Raw | ConvertFrom-Json}else{$null});processOrControlChanges=0}; $taskRecord | ConvertTo-Json -Depth 18 | Set-Content -LiteralPath projects/character-parameters/production/resource-before-voice-v2.json -Encoding utf8; $taskRecord | ConvertTo-Json -Depth 18\""
+    }
+  ],
+  "gpu": "NVIDIA GeForce RTX 5090, 4158, 28030, 11",
+  "researchStatus": {
+    "status": "waiting_for_resources",
+    "time": "2026-10-10T06:58:17+09:00",
+    "owner_pid": 68672,
+    "job": "train_wireframe_p124_43",
+    "completed": 637,
+    "total": 1088,
+    "gate": {
+      "busy": [],
+      "GPU_PAUSE": false,
+      "free_mib": 28029,
+      "utilization": 9,
+      "disk_free_gib": 1274.4,
+      "reviewed_cpu_preview_exceptions": [
+        {
+          "pid": 27140,
+          "reason": "reviewed_static_HTTP_preview"
+        }
+      ]
+    }
+  },
+  "currentLease": null,
+  "processOrControlChanges": 0
+}
