@@ -1,0 +1,765 @@
+{
+  "slug": "game-math-plane-distances-v2",
+  "chapter": 9,
+  "part": 2,
+  "totalParts": 3,
+  "renderModule": "geometry_planes",
+  "sourceDependencies": [
+    "manim/projects/game-math-part2-full-series/geometry.py"
+  ],
+  "sourceSections": [
+    "9.5",
+    "9.6.1–9.6.4"
+  ],
+  "contract": {
+    "handedness": "right",
+    "vector": "column",
+    "plane": "n·p=d; normalize n and d together; nonzero finite normal. Plane residual is distance only for a unit normal.",
+    "normal": "Right-handed e1×e2 with both edges at one vertex. Winding and front-face convention explicitly stated.",
+    "newell": "Ordered closed polygon method; not generic unordered point-cloud least squares. Mean d after normal selection.",
+    "barycentric": "Sum1; nonnegative inside a nondegenerate triangle; signed subareas; independent coplanarity check; largest-normal-component projection.",
+    "attributes": "Defined linear RGB/affine surface interpolation, not assumed proprietary implementation; perspective-correct screen interpolation deferred to chapter10."
+  },
+  "coverage": {
+    "9.5": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "22"
+    ],
+    "9.6.1": [
+      "10"
+    ],
+    "9.6.2": [
+      "12"
+    ],
+    "9.6.3": [
+      "11",
+      "13",
+      "14",
+      "15",
+      "19",
+      "20",
+      "21"
+    ],
+    "9.6.4": [
+      "16",
+      "17",
+      "18",
+      "22"
+    ]
+  },
+  "scenes": [
+    {
+      "id": "PF01",
+      "before": "01",
+      "kind": "explanation",
+      "title": "상자로 고른 후보에서 실제 표면으로",
+      "mode": "lecture-overview",
+      "ko": [
+        "앞 편에서는 연결선과 대상의 경계 상자를 만들었습니다. 상자가 겹쳐 검사할 후보를 골라도, 그 점이 표면에 닿았는지는 아직 모릅니다.",
+        "이번 챕터는 두 편입니다. 먼저 표면의 방향을 정하고 거리와 가장 가까운 점을 구합니다. 다음 편에서는 그 점이 삼각형 안에 있는지 확인하고, 그 위치의 색까지 계산하겠습니다."
+      ],
+      "en": [
+        "The previous chapter built connections and target bounds. Overlapping bounds select a candidate, but do not yet tell us whether a point reaches the surface.",
+        "This chapter has two episodes. First, define the surface orientation, distance and closest point. Next, test whether the point lies within a triangle and calculate its color."
+      ],
+      "beats": [
+        "경계 겹침 → 검사할 후보",
+        "① 표면의 방향·거리·최근접점",
+        "② 삼각형 안의 주소·속성"
+      ],
+      "visual": "Retain the preceding projected target, connection and box. Reveal its finite surface and one query point; separate the two upcoming questions on this same object."
+    },
+    {
+      "id": "01",
+      "title": "바닥까지의 거리와 삼각형 안의 위치",
+      "kind": "explanation",
+      "mode": "overview",
+      "ko": [
+        "점이 바닥에서 얼마나 떨어져 있는지, 삼각형 안에서는 어디에 있는지 어떻게 계산할까요?",
+        "먼저 실제 게임의 발판과 지형을 관찰하고, 평면의 법선과 부호 있는 거리를 구합니다.",
+        "이어서 세 점으로 삼각형을 만들고, 넓이와 무게중심 좌표를 숫자로 계산하겠습니다.",
+        "마지막에는 평면 밖의 점을 잘못 포함하는 오류를 확인하고, 같은 좌표로 색을 보간합니다."
+      ],
+      "en": [
+        "How do we calculate a point distance from a floor and its location within a triangle?",
+        "We will observe game platforms and terrain, then calculate plane normals and signed distances.",
+        "Next we will build a triangle from three points and work out its area and barycentric coordinates.",
+        "Finally we will reject an off-plane query and use the same coordinates to interpolate color."
+      ],
+      "beats": [
+        "높이와 삼각형 안의 위치를 계산하기",
+        "발판 관찰 → 평면·법선·거리",
+        "세 점 → 넓이 → 무게중심 좌표",
+        "평면 밖 판정 → 속성 보간"
+      ]
+    },
+    {
+      "id": "02",
+      "title": "발판의 표면을 기준으로 보기",
+      "kind": "actual",
+      "sourceId": "4s7nMfXt8uQ",
+      "sourceSegments": [
+        {
+          "in": 297,
+          "maxSeconds": 45
+        }
+      ],
+      "in": 297,
+      "maxSeconds": 45,
+      "ko": [
+        "시리어스 샘 투의 해안에서 길과 다리를 따라 이동합니다. 발밑의 바닥과 다리의 윗면을 보세요.",
+        "캐릭터가 표면 위로 떠 있는지, 그 표면에 가까워지는지 구분할 기준이 필요합니다.",
+        "그 기준을 수학에서는 평면으로 단순하게 만들 수 있습니다. 실제 발판에는 두께와 끝이 있지만 평면은 무한히 이어집니다.",
+        "따라서 표면까지의 거리와 발판 위의 허용 범위는 다른 검사입니다. 거리만 맞아도 옆으로 벗어나 있을 수 있습니다.",
+        "카메라가 돌아가면 윗면의 화면 모양도 바뀝니다. 계산은 같은 좌표계에서 정의한 점과 법선을 사용해야 합니다.",
+        "이 장면은 기준 표면을 찾는 연습입니다. 게임 내부에서 무한 평면 충돌을 쓰는지는 화면만으로 알 수 없습니다."
+      ],
+      "en": [
+        "We travel along paths and bridges on a Serious Sam2 shoreline. Watch the floor and bridge top surfaces.",
+        "A reference lets us distinguish floating above that surface from approaching it.",
+        "Mathematics can simplify that reference to a plane. A real platform has thickness and edges; a plane extends infinitely.",
+        "Distance to the surface and remaining within the platform footprint are separate tests.",
+        "Camera motion changes its screen appearance. Calculations must use points and normals defined in one coordinate frame.",
+        "This footage motivates a reference surface; it does not reveal the game internal collision representation."
+      ],
+      "focus": "해안 바닥·다리 윗면·이동; 무한 평면과 유한 다리 구분",
+      "claim": "평면 거리와 표면 내 범위가 다른 질문임을 실제 표면 관찰에 연결"
+    },
+    {
+      "id": "PB01",
+      "before": "03",
+      "kind": "explanation",
+      "title": "바닥을 따라가는 화살표와 수직 화살표",
+      "mode": "normal-dot-prerequisite",
+      "ko": [
+        "바닥 위를 따라가는 방향과 바닥에서 곧장 떨어지는 방향은 다릅니다. 평면은 끝없이 이어지는 평평한 면이고, 법선은 그 면에 수직인 화살표입니다. 법선 자체가 바닥의 높이는 아닙니다.",
+        "바닥 높이를 이로 정합니다. 위쪽 법선은 영, 일, 영입니다. 내적은 같은 자리의 숫자를 곱한 뒤 더합니다. 이 법선과 점의 내적에는 와이 좌표만 남습니다. 결과가 바닥 높이 이와 같으면 점은 이 평면 위에 있습니다."
+      ],
+      "en": [
+        "A direction along the floor differs from one pointing straight away from it. A plane is a flat surface extending indefinitely; its normal is perpendicular to the surface. The normal itself is not the floor height.",
+        "Set the floor height to2 and choose the upward normal(0,1,0). A dot product multiplies matching components and adds them. Here only y remains. Matching the floor height2 places the point on this plane."
+      ],
+      "beats": [
+        "따라가는 방향 ≠ 수직 방향 n",
+        "바닥 y=2 / n=(0,1,0)",
+        "n·p=0x+1y+0z=y → d=2"
+      ],
+      "visual": "Preserve the same floor and point. Animate an in-plane arrow, then a perpendicular normal. Show all three component products before their sum; attach d=2 to floor location, not normal length."
+    },
+    {
+      "id": "PG01",
+      "title": "바닥에서 떨어졌다가 표면으로 돌아옵니다",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "sourceId": "portal2-steam-5791",
+      "intervals": [
+        [
+          14,
+          49
+        ],
+        [
+          16,
+          35.8
+        ]
+      ],
+      "sourceSegments": [
+        {
+          "sourceId": "portal2-steam-5791",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5791.mp4",
+          "sourceSha256": "8d721ac2209150fb0bfa18b490a7152cd058395a1be9187b3ad73ab0e06c3fd2",
+          "in": 14,
+          "maxSeconds": 29
+        },
+        {
+          "sourceId": "portal2-steam-5788",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5788.mp4",
+          "sourceSha256": "9dada4e861b3bcad29e512edf9a7407e4b42e1330f019998885d4104d2d5e1f7",
+          "in": 16,
+          "maxSeconds": 19
+        }
+      ],
+      "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5791.mp4",
+      "maximumSeconds": 54.8,
+      "ko": [
+        "포털 투의 공개 데모입니다. 파란 바닥에서 튀어 오른 뒤 다시 표면으로 돌아옵니다. 빨간 선은 보이는 바닥의 경계, 푸른 점은 움직임을 볼 기준입니다. 화면의 높이를 실제 거리로 재는 것은 아닙니다.",
+        "다른 장치로 넘어갑니다. 큐브가 발사판에서 떠나고 버튼 쪽으로 이동하는 시작과 결과를 보세요. 표면을 따라가는 움직임과 표면에서 떨어지는 움직임은 다릅니다. 그래서 방금의 법선 방향으로 거리를 따로 구합니다."
+      ],
+      "en": [
+        "In this Portal 2 preview, bounce from the blue floor and return to a surface. Red follows a visible floor boundary and blue marks the observed moving reference. Screen height is not measured world distance.",
+        "Here is another device. Watch the cube leave a faith plate and move toward the button. Travel along a surface differs from travel away from it, which is why we use the normal for distance."
+      ],
+      "sourceGroupStartsAtLines": [
+        0,
+        1
+      ],
+      "selection": {
+        "visibleBeforeActionAfter": "14–43 blue floor/wall contact →bounce/travel →platform contact;16–35 independent cube launch →button-side result",
+        "chosenReason": "Sustained visible contact/departure/result outperforms promotional montage, dark shop scenes or a two-second combat bridge.",
+        "camera": "Keep each native action at1x. Announce the source/view changes in narration; reset landmarks at actual cuts.",
+        "occlusion": "Hide anchors when gel, cube or weapon covers the observed surface; perpendicular world arrow belongs to explanation, not inferred camera direction.",
+        "UI": "Portal reticle/weapon and retained preview framing. Label above bottom-center captions, away from reticle and active indicators.",
+        "nativeAndDenseComparison": true,
+        "finalAnnotatedPixels": "pending",
+        "priorUseOverlap": []
+      },
+      "annotation": {
+        "red": "visible surface edge/connection",
+        "blue": "visible query point or comparison target",
+        "teal": "projected surface patch/reference axes",
+        "reveal": "narration order; per-source-group reset",
+        "tracking": "editable observed object/camera landmarks; hide during occlusion/cuts; never extrapolate unobserved corners",
+        "classification": "full-screen action-led existing gameplay; diagram-led/frozen portions separately explanation",
+        "worldMeasurement": false,
+        "engineInternalsAsserted": false,
+        "movingPixelApproval": false
+      },
+      "segmentSourceIds": [
+        "portal2-steam-5791",
+        "portal2-steam-5788"
+      ]
+    },
+    {
+      "id": "03",
+      "title": "평면의 방향과 위치를 나누기",
+      "kind": "explanation",
+      "mode": "affine-plane",
+      "ko": [
+        "평면은 법선 벡터와 위치를 나타내는 숫자로 표현합니다. 법선은 평면을 따라가는 방향이 아니라 수직인 방향입니다.",
+        "평면 위의 점과 법선을 내적하면 일정한 값이 나옵니다. 그 값을 알파벳 디라고 쓰겠습니다.",
+        "법선의 세 성분은 영, 일, 영입니다. 상수 디의 값은 이입니다. 이때 와이가 이인 모든 점이 평면 위에 있습니다.",
+        "와이가 영인 평면은 원점을 지나지만, 와이가 이인 평면은 원점을 지나지 않습니다. 일반 평면은 원점을 지나는 선형 부분공간일 필요가 없습니다.",
+        "평면 위의 두 점을 빼면 평면을 따라가는 벡터가 됩니다. 그 차이와 법선의 내적은 영입니다.",
+        "법선의 방향을 뒤집으면 앞과 뒤가 바뀝니다. 식을 그대로 유지하려면 디의 부호도 함께 뒤집어야 합니다."
+      ],
+      "en": [
+        "Describe a plane with a normal and a location coefficient. The normal points perpendicular to the surface.",
+        "Every point on the plane has the same dot product with its normal. Call that coefficient d.",
+        "The normal has components zero, one, zero. Constant d equals two. Every point with y equal to two lies on this plane.",
+        "The y zero plane contains the origin; the y two plane does not. A general plane is an affine set, not necessarily a linear subspace.",
+        "Subtracting two plane points gives a direction along the plane. Its dot product with the normal is zero.",
+        "Reversing the normal swaps front and back. Reverse d as well to preserve the same plane."
+      ],
+      "beats": [
+        "평면 법선 n: 표면에 수직",
+        "n·p=d / 위치 계수 d",
+        "n=(0,1,0), d=2 → y=2",
+        "원점을 지나는 평면 / 이동한 아핀 평면",
+        "n·(p-q)=0",
+        "(n,d) → (-n,-d): 같은 평면·반대 앞면"
+      ]
+    },
+    {
+      "id": "PB02",
+      "before": "04",
+      "kind": "explanation",
+      "title": "같은 바닥인데 대입값은 왜 두 배일까요?",
+      "mode": "plane-scale-distance-prerequisite",
+      "ko": [
+        "방금 바닥은 와이가 이인 곳입니다. 점의 와이가 오라면 바닥까지 차이는 삼이죠. 그런데 방정식의 양쪽을 두 배로 쓰면, 이 와이는 사라는 식도 똑같은 바닥을 뜻합니다.",
+        "여기에 오를 넣으면 차이는 육입니다. 바닥이나 점이 움직인 것이 아니라 식의 눈금이 두 배가 된 것입니다. 실제 수직 거리를 얻으려면 이 배율을 되돌려야 합니다. 일반적인 방향에서는 그 배율이 법선의 길이입니다."
+      ],
+      "en": [
+        "The floor is still y equals two. A point at y five is three units away. Multiplying both sides by two gives two y equals four, which describes the same floor.",
+        "Substituting five now gives a residual of six. Neither the floor nor the point moved; the equation scale doubled. Undo that scale to obtain perpendicular distance. For a general orientation, the scale is the normal length."
+      ],
+      "beats": [
+        "y=2 ↔ 2y=4: 같은 평면",
+        "p의 y=5 / 잔차3 ↔ 6",
+        "법선 길이로 나누기 → 실제 거리3"
+      ],
+      "visual": "Keep floor and point stationary. Transform both sides of the equation together, show the residual ruler doubling while the physical gap stays fixed, then divide by normal length."
+    },
+    {
+      "id": "04",
+      "title": "식의 값과 실제 거리를 구분하기",
+      "kind": "explanation",
+      "mode": "plane-distance",
+      "ko": [
+        "점에서 평면 식의 값을 구하려면 법선과 점을 내적하고 디를 뺍니다. 양수는 법선 쪽, 음수는 반대쪽입니다.",
+        "법선의 세 성분은 영, 이, 영입니다. 상수 디의 값은 사입니다. 이 평면에서도 와이가 이이고, 법선 길이는 이입니다.",
+        "점이 사, 오, 마이너스 삼이면 내적은 십입니다. 사를 빼면 육이지만 실제 거리는 육이 아닙니다.",
+        "법선의 길이 이로 나누면 부호 있는 거리는 삼입니다. 단위 법선일 때만 식의 값 자체가 거리가 됩니다.",
+        "같은 평면을 단위 법선으로 바꾸려면 법선과 디를 둘 다 이로 나눕니다. 법선만 줄이면 평면 위치가 바뀝니다.",
+        "법선 길이가 영인 입력은 평면 방향을 정하지 못합니다. 나누기 전에 유효성을 확인하세요."
+      ],
+      "en": [
+        "Evaluate the normal dot point minus d. A positive value lies on the normal side; a negative value lies on the opposite side.",
+        "The normal has components zero, two, zero. Constant d equals four. This is still the y-equals-two plane, and the normal length is two.",
+        "At point four, five, minus three, the dot product is ten. Subtracting four gives six, but six is not the distance.",
+        "Divide by normal length two to get signed distance three. Only a unit normal makes the raw residual a distance.",
+        "Normalize both the normal and d by two. Normalizing only the normal changes the plane location.",
+        "A zero-length normal cannot define a plane direction. Validate before division."
+      ],
+      "beats": [
+        "F(p)=n·p-d / 부호로 앞·뒤 판정",
+        "n=(0,2,0), d=4 → y=2",
+        "p=(4,5,-3): F=10-4=6",
+        "signedDistance=F/‖n‖=3",
+        "n̂=n/‖n‖, d̂=d/‖n‖",
+        "n=0: 유효한 평면 방향 없음"
+      ]
+    },
+    {
+      "id": "PG02",
+      "title": "발판의 위치와 경사를 따로 봅니다",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "sourceId": "portal2-steam-5795",
+      "intervals": [
+        [
+          14,
+          26
+        ],
+        [
+          26,
+          43.5
+        ],
+        [
+          48,
+          61
+        ]
+      ],
+      "sourceSegments": [
+        {
+          "sourceId": "portal2-steam-5795",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5795.mp4",
+          "sourceSha256": "5ed89e15528650019fbb73d21faacd62fa5dbd45f96819f2e7aec1ae48a3328d",
+          "in": 14,
+          "maxSeconds": 12
+        },
+        {
+          "sourceId": "portal2-steam-5795",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5795.mp4",
+          "sourceSha256": "5ed89e15528650019fbb73d21faacd62fa5dbd45f96819f2e7aec1ae48a3328d",
+          "in": 26,
+          "maxSeconds": 17.5
+        },
+        {
+          "sourceId": "portal2-steam-5795",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5795.mp4",
+          "sourceSha256": "5ed89e15528650019fbb73d21faacd62fa5dbd45f96819f2e7aec1ae48a3328d",
+          "in": 48,
+          "maxSeconds": 13
+        }
+      ],
+      "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5795.mp4",
+      "maximumSeconds": 42.5,
+      "ko": [
+        "이번에는 주황색 바닥입니다. 같은 표면을 따라 빨라지는 이동을 보세요. 색이 바뀌었다고 방금 계산한 법선이나 거리를 그대로 알 수 있는 것은 아닙니다.",
+        "다음 구간에서는 버튼을 누른 뒤 경사진 발판에 젤이 내려옵니다. 수평 바닥과 기울어진 발판은 방향이 다릅니다. 빨간 선은 눈에 보이는 발판 가장자리만 따라갑니다.",
+        "이어서 틈을 건너 반대편에 도착합니다. 도착할 표면의 위치와 방향을 함께 알아야 합니다. 다음 설명에서는 같은 점을 수직으로 옮겨 가장 가까운 표면 위치를 구하겠습니다."
+      ],
+      "en": [
+        "Now watch travel along the orange floor. Its color does not reveal the normal or distance from our previous calculation.",
+        "In the next excerpt, a button changes the setup and gel reaches a tilted ramp. A horizontal floor and tilted platform have different orientations. Red follows only the visible platform edge.",
+        "Next, cross the gap and reach the other side. Both position and orientation matter. The next explanation moves the same point perpendicularly to find its closest plane location."
+      ],
+      "sourceGroupStartsAtLines": [
+        0,
+        1,
+        2
+      ],
+      "selection": {
+        "visibleBeforeActionAfter": "14–26 painted floor and travel;26–43.5 button →gel/ramp change;48–61 run →gap crossing →opposite-side arrival",
+        "chosenReason": "Keep complete observed operations;reject43.5–48 foreground gel occlusion and66–76 a funnel unrelated to this distance/normal question.",
+        "camera": "Keep each native action at1x. Announce the source/view changes in narration; reset landmarks at actual cuts.",
+        "occlusion": "Hide during gel blobs, weapon occlusion and actual cuts. Do not call projected edge angles world slope measurements.",
+        "UI": "Portal reticle/weapon and retained preview framing. Label above bottom-center captions, away from reticle and active indicators.",
+        "nativeAndDenseComparison": true,
+        "finalAnnotatedPixels": "pending",
+        "priorUseOverlap": []
+      },
+      "annotation": {
+        "red": "visible surface edge/connection",
+        "blue": "visible query point or comparison target",
+        "teal": "projected surface patch/reference axes",
+        "reveal": "narration order; per-source-group reset",
+        "tracking": "editable observed object/camera landmarks; hide during occlusion/cuts; never extrapolate unobserved corners",
+        "classification": "full-screen action-led existing gameplay; diagram-led/frozen portions separately explanation",
+        "worldMeasurement": false,
+        "engineInternalsAsserted": false,
+        "movingPixelApproval": false
+      },
+      "segmentSourceIds": [
+        "portal2-steam-5795",
+        "portal2-steam-5795",
+        "portal2-steam-5795"
+      ]
+    },
+    {
+      "id": "05",
+      "title": "지형의 높이와 기준선",
+      "kind": "actual",
+      "sourceId": "igcymdI4XYM",
+      "sourceSegments": [
+        {
+          "in": 96,
+          "maxSeconds": 30
+        },
+        {
+          "in": 404,
+          "maxSeconds": 19
+        },
+        {
+          "in": 515,
+          "maxSeconds": 6
+        }
+      ],
+      "in": 96,
+      "maxSeconds": 55,
+      "ko": [
+        "노이타에서는 캐릭터가 층층이 놓인 지형 사이로 움직입니다. 물의 수평선과 나무 바닥을 기준으로 보세요.",
+        "캐릭터가 같은 기준선보다 위에 있는지 아래에 있는지는 높이 차이의 부호로 구분할 수 있습니다.",
+        "화면이 따라 움직여도 기준을 함께 보면 상대적인 위치를 찾을 수 있습니다. 화면 맨 아래를 고정된 월드 바닥으로 생각하면 안 됩니다.",
+        "단순한 수평면 예제에서는 와이 좌표에서 기준 높이를 빼면 됩니다. 기울어진 표면에서는 수직 높이 대신 법선 방향 거리를 써야 합니다.",
+        "여러 층의 바닥을 하나의 무한 평면으로 바꾸면 구멍과 가장자리 정보가 사라집니다. 표면 위치와 경계는 따로 확인해야 합니다.",
+        "다음 그림에서는 직접 정의한 평면으로 가장 가까운 점까지 구합니다. 게임의 픽셀 지형이 그 식으로 구현됐다는 뜻은 아닙니다."
+      ],
+      "en": [
+        "In Noita, the character moves through layered terrain. Use the waterline and wooden floor as visible references.",
+        "The sign of a height difference distinguishes positions above or below the same reference.",
+        "Following camera motion does not prevent relative comparison. The screen bottom is not a fixed world floor.",
+        "For a horizontal reference, subtract its height from y. A tilted surface instead needs distance along its normal.",
+        "Replacing layered floors with one infinite plane loses holes and edges. Surface distance and boundary checks are separate.",
+        "Our next diagram calculates the closest point on an explicitly defined plane; it does not claim to reproduce the pixel terrain implementation."
+      ],
+      "focus": "물 수평선·나무 바닥·캐릭터 높이와 카메라 추적",
+      "claim": "부호 있는 거리의 기준과 유한 지형 경계의 차이"
+    },
+    {
+      "id": "PB03",
+      "before": "06",
+      "kind": "explanation",
+      "title": "거리에서 실제로 이동할 점으로",
+      "mode": "closest-point-purpose",
+      "ko": [
+        "이제 점과 표면 사이의 거리를 알았습니다. 다음 질문은 그 점을 어디로 옮기면 가장 가까운 표면 위치에 도착하느냐입니다.",
+        "바닥에 비스듬히 내려가면 옆으로 간 만큼 길이가 늘어납니다. 수직으로 내려가는 길이가 가장 짧습니다. 같은 바닥의 높이는 이입니다. 엑스와 제트는 유지하고 와이를 숫자 이로 바꿉니다. 기울어진 면에서는 단위 법선이 이 역할을 합니다."
+      ],
+      "en": [
+        "We now know the point-to-plane distance. The next question is where to move the point to reach the nearest surface location.",
+        "A slanted route adds sideways travel; the perpendicular route is shortest. The same floor has height2. Keep x and z and change y to2. A unit normal does this for a tilted plane."
+      ],
+      "beats": [
+        "거리 → 가장 가까운 위치?",
+        "비스듬한 길 vs 수직인 짧은 길",
+        "(4,5,-3) → (4,2,-3)"
+      ],
+      "visual": "Keep the exact earlier point (4,5,-3), plane y=2 and normal. Compare a diagonal path with the normal path, then animate only the y component from5 to2."
+    },
+    {
+      "id": "06",
+      "title": "평면 위의 가장 가까운 점",
+      "kind": "explanation",
+      "mode": "plane-projection",
+      "ko": [
+        "아까 점 사, 오, 마이너스 삼에서 와이가 이인 평면까지의 부호 있는 거리는 삼이었습니다.",
+        "가장 가까운 점으로 가려면 법선 방향으로 삼만큼 내려갑니다. 결과는 사, 이, 마이너스 삼입니다.",
+        "단위 법선이라면 원래 점에서 부호 있는 거리 곱하기 단위 법선을 빼면 됩니다.",
+        "정규화하지 않은 법선을 그대로 쓰려면 식의 값을 법선 길이의 제곱으로 나누고, 그 결과를 법선에 곱해 뺍니다.",
+        "평면 뒤쪽에 있는 점에서는 거리가 음수라서 법선 방향으로 올라갑니다. 앞뒤 모두 같은 식을 씁니다.",
+        "이 투영은 무한 평면의 가장 가까운 점입니다. 삼각형이나 발판의 끝을 넘어가면, 가장자리가 있는 표면의 최근접점은 별도로 검사해야 합니다."
+      ],
+      "en": [
+        "Point four, five, minus three has signed distance three from the y two plane.",
+        "Move three units opposite its normal. The closest plane point is four, two, minus three.",
+        "With a unit normal, subtract signed distance times that normal from the query.",
+        "With an unnormalized normal, multiply it by the residual divided by its squared length, then subtract.",
+        "Behind the plane, negative signed distance moves the point toward the normal. One formula handles both sides.",
+        "This projection finds the nearest point on an infinite plane. Beyond a triangle or platform edge, the nearest point on that bounded surface needs a separate test."
+      ],
+      "beats": [
+        "p=(4,5,-3), y=2: 거리 +3",
+        "p₀=(4,2,-3)",
+        "p₀=p-signedDistance·n̂",
+        "p₀=p-[(n·p-d)/(n·n)]n",
+        "뒤쪽의 음수 거리도 같은 식",
+        "무한 평면 투영 / 유한 표면 경계는 별도"
+      ]
+    },
+    {
+      "id": "PB04",
+      "before": "07",
+      "kind": "explanation",
+      "title": "표면을 보았으니 법선도 직접 만들 수 있을까요?",
+      "mode": "cross-product-prerequisite",
+      "ko": [
+        "지금까지는 법선을 미리 골랐습니다. 실제로 세 꼭짓점을 받았다면 그 숫자에서 면 방향을 만들어야겠죠. 한 꼭짓점에서 출발하는 두 변을 사용하겠습니다. 이번 그림은 엑스와 와이로 펼친 면이고, 수직 방향은 제트입니다.",
+        "가로 육, 세로 사인 두 변으로 직사각형을 만들면 넓이는 이십사입니다. 외적은 두 변에 동시에 수직인 방향을 만들며, 그 길이는 이 평행사변형의 넓이입니다. 삼각형은 그 절반인 십이입니다. 방향을 정하는 순서와 넓이의 크기는 구분해서 보세요."
+      ],
+      "en": [
+        "So far we chose the normal in advance. Given three vertices, we need to construct an orientation from their coordinates. Use two edges starting at one vertex. This diagram lies in x and y, with z perpendicular to it.",
+        "Edges six and four make a rectangle of area twenty-four. Their cross product points perpendicular to both edges; its magnitude is parallelogram area. The triangle has half that area, twelve. Distinguish orientation order from area magnitude."
+      ],
+      "beats": [
+        "받은 꼭짓점 → 공통 출발점의 두 변",
+        "xy면 / 수직 방향 z",
+        "6×4=24 / 삼각형12",
+        "e₁×e₂=(0,0,24) → 단위 법선(0,0,1)"
+      ],
+      "visual": "Explicitly change the view and reference plane from the earlier y=2 floor to the original xy triangle. Build the6×4 parallelogram with projected faces and occlusion; reveal the perpendicular red normal, then split the area in half."
+    },
+    {
+      "id": "07",
+      "title": "세 점으로 법선 만들기",
+      "kind": "explanation",
+      "mode": "plane-three-points",
+      "ko": [
+        "한 직선 위에 있지 않은 세 점은 하나의 평면을 정합니다. 한 꼭짓점에서 다른 두 꼭짓점으로 향하는 변 벡터를 만듭니다.",
+        "첫 변이 육, 영, 영이고 둘째 변이 영, 사, 영이면 외적은 영, 영, 이십사입니다.",
+        "이 강의는 오른손 좌표계에서 첫 변 외적 둘째 변을 씁니다. 단위 법선은 영, 영, 일입니다.",
+        "두 변의 순서를 바꾸면 외적과 법선이 반대로 향합니다. 점 순서와 앞면 규칙을 함께 정하세요.",
+        "점 하나와 법선을 내적하면 디를 구할 수 있습니다. 지금은 세 점의 제트가 모두 영이므로 디도 영입니다.",
+        "세 점이 한 직선에 있으면 외적이 영입니다. 거의 한 직선에 있는 경우도 오차가 커질 수 있으므로 정규화 전에 검사해야 합니다."
+      ],
+      "en": [
+        "Three noncollinear points determine a plane. Form two edge vectors from the same vertex.",
+        "Edges six, zero, zero and zero, four, zero have cross product zero, zero, twenty-four.",
+        "Using our right-handed first-edge cross second-edge convention gives unit normal zero, zero, one.",
+        "Swapping the edge order reverses the normal. Define winding and front-face conventions together.",
+        "Dot any one vertex with the normal to obtain d. All three z coordinates are zero here, so d is zero.",
+        "Collinear points yield a zero cross product. Nearly collinear inputs may also be poorly conditioned; check before normalization."
+      ],
+      "beats": [
+        "세 점 → 같은 시작점의 두 변 e₁,e₂",
+        "e₁=(6,0,0), e₂=(0,4,0)",
+        "e₁×e₂=(0,0,24) / n̂=(0,0,1)",
+        "오른손 규칙 / 순서 반전 → 법선 반전",
+        "d=n·v₁ / 이 예제: z=0",
+        "공선·거의 공선 검사 → 정규화"
+      ]
+    },
+    {
+      "id": "08",
+      "title": "눈에 보이는 삼각형 표식을 관찰하기",
+      "kind": "actual",
+      "sourceId": "SSekdYTL4Ck",
+      "sourceSegments": [
+        {
+          "in": 1320,
+          "maxSeconds": 54
+        }
+      ],
+      "in": 1320,
+      "maxSeconds": 54,
+      "ko": [
+        "바위의 밝은 삼각형 표식과 그쪽으로 연결되는 그래플을 보세요. 세 꼭짓점과 그 안의 위치를 나눠 생각할 수 있습니다.",
+        "카메라가 움직이면 삼각형이 기울고 화면에서 납작해 보입니다. 원래 표면의 형태와 화면 투영은 구분해야 합니다.",
+        "세 점의 순서를 정해 둘레를 따라가면 앞면 방향을 정의할 수 있습니다. 순서를 뒤집으면 법선도 반대로 정해집니다.",
+        "삼각형 표식이 보인다고 바위 전체의 실제 메시 구성을 알 수 있는 것은 아닙니다. 지금은 눈에 보이는 표식을 수학 예제와 연결합니다.",
+        "그래플의 연결 위치가 표식의 어느 꼭짓점에 가까운지 관찰해 보세요. 세 기준점 사이의 위치를 숫자로 표현하는 방법이 뒤에 나옵니다.",
+        "먼저 점이 더 많은 표면의 법선을 정리하고, 삼각형의 길이와 넓이부터 계산하겠습니다."
+      ],
+      "en": [
+        "Watch a bright triangular rock marking and the grapple attached nearby. Separate its three vertices from locations within it.",
+        "Camera motion tilts and compresses its screen appearance. Distinguish a surface shape from its projection.",
+        "Ordering three points around the boundary defines a front-face direction. Reversing that order reverses the chosen normal.",
+        "A triangular marking does not reveal the entire rock mesh. We connect visible features to an explicitly defined mathematical example.",
+        "Observe which reference vertex lies closest to the attachment. We will express relative locations using three weights.",
+        "First we will handle more than three ordered vertices, then calculate triangle lengths and area."
+      ],
+      "focus": "실제 바위 삼각형 표식·연결점·카메라에 따른 화면 투영",
+      "claim": "삼각형 꼭짓점과 위치의 관찰; 숨은 메시 인덱스 추정 금지"
+    },
+    {
+      "id": "PG03",
+      "title": "방향이 바뀌어도 경계 순서를 따라갑니다",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "sourceId": "portal2-steam-80739",
+      "intervals": [
+        [
+          18,
+          31.6
+        ],
+        [
+          66,
+          86
+        ]
+      ],
+      "sourceSegments": [
+        {
+          "sourceId": "portal2-steam-80739",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-80739.mp4",
+          "sourceSha256": "2472629b17ed7430d9f71a10450ec0e6fba43b6977b05e4758ac0dce6de5076d",
+          "in": 18,
+          "maxSeconds": 12.5
+        },
+        {
+          "sourceId": "portal2-steam-5786",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5786.mp4",
+          "sourceSha256": "3150275022859aeb2a308e9c03e7a84d7c3bd52d50796afda1baefede26ebc04",
+          "in": 66,
+          "maxSeconds": 20
+        }
+      ],
+      "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-80739.mp4",
+      "maximumSeconds": 33.6,
+      "ko": [
+        "짧은 여러 장면으로 방향이 다른 패널을 비교합니다. 한 물체의 연속 동작은 아닙니다. 들어 올리거나 기울이면 보이는 가장자리도 달라집니다. 가려진 변은 그리지 않습니다.",
+        "다른 구간에서는 로봇을 집어 장치에 연결하자 벽이 열립니다. 평면 위치만으로는 열린 통로의 끝을 알 수 없습니다. 다음에는 경계의 꼭짓점을 둘레 순서대로 모아 면 방향을 구합니다."
+      ],
+      "en": [
+        "Compare differently oriented panels in several short shots, not one continuous object motion. Lifting or tilting changes the visible edges. Hidden edges are not drawn.",
+        "In another excerpt, connect the robot to the device and the wall opens. A plane alone does not define the opening boundary. Next, accumulate boundary vertices in their perimeter order to find orientation."
+      ],
+      "sourceGroupStartsAtLines": [
+        0,
+        1
+      ],
+      "selection": {
+        "visibleBeforeActionAfter": "18–30.5 multiple explicitly announced lift/tilt/steps shots;66–86 robot pickup →plug-in →wall opening",
+        "chosenReason": "Panels are chosen only as visibly changing surface comparisons with explicit camera resets. Wheatley86–104 rejected after fine review: rails, darkness, robot/gun and fades obscure a reliable three-corner patch.",
+        "camera": "Keep each native action at1x. Announce the source/view changes in narration; reset landmarks at actual cuts.",
+        "occlusion": "Reset every panel cut;hide dark overhead/occluded patches. The66–86 device action gives finite opening purpose, not evidence of Newell implementation.",
+        "UI": "Portal reticle/weapon and retained preview framing. Label above bottom-center captions, away from reticle and active indicators.",
+        "nativeAndDenseComparison": true,
+        "finalAnnotatedPixels": "pending",
+        "priorUseOverlap": []
+      },
+      "annotation": {
+        "red": "visible surface edge/connection",
+        "blue": "visible query point or comparison target",
+        "teal": "projected surface patch/reference axes",
+        "reveal": "narration order; per-source-group reset",
+        "tracking": "editable observed object/camera landmarks; hide during occlusion/cuts; never extrapolate unobserved corners",
+        "classification": "full-screen action-led existing gameplay; diagram-led/frozen portions separately explanation",
+        "worldMeasurement": false,
+        "engineInternalsAsserted": false,
+        "movingPixelApproval": false
+      },
+      "segmentSourceIds": [
+        "portal2-steam-80739",
+        "portal2-steam-5786"
+      ]
+    },
+    {
+      "id": "PC09",
+      "before": "09",
+      "kind": "explanation",
+      "title": "세 점에서 여러 꼭짓점의 표면으로",
+      "mode": "ordered-polygon-purpose",
+      "ko": [
+        "세 점으로 삼각형의 면 방향을 구했습니다. 그런데 더 큰 표면을 둘러싼 꼭짓점이 여러 개라면, 우연히 고른 세 점이 거의 한 줄에 있을 수도 있습니다.",
+        "그래서 다음 방법은 경계를 따라 이웃한 점들의 기여를 모읍니다. 마지막 점 다음에는 첫 점으로 돌아와야 합니다. 뉴웰은 이 정렬된 경계를 다루는 방법의 이름입니다. 아무 순서로나 섞인 점들을 넣는다는 뜻은 아닙니다."
+      ],
+      "en": [
+        "Three points gave a triangle orientation. For a larger boundary with many vertices, an arbitrary selection of three might be almost collinear.",
+        "The next method accumulates contributions from neighboring boundary points, returning from the last to the first. Newell names this ordered-boundary method; it is not a method for randomly shuffled points."
+      ],
+      "beats": [
+        "삼각형 하나 → 여러 꼭짓점의 경계",
+        "한 줄에 가까운 세 점은 불안정",
+        "둘레 순서·닫힌 마지막 연결 → 기여 누적"
+      ],
+      "visual": "Extend the same triangle boundary into a planar polygon. First highlight an almost-collinear subset; then walk the complete ordered boundary, retaining numbered vertices and the closing edge."
+    },
+    {
+      "id": "09",
+      "title": "여러 꼭짓점에는 순서가 필요합니다",
+      "kind": "explanation",
+      "mode": "newell-ordered",
+      "ko": [
+        "다각형의 꼭짓점이 여러 개라면 아무 세 점만 고르는 방법은 불안정할 수 있습니다. 그 세 점이 거의 한 직선에 있거나 오목한 부분일 수 있기 때문입니다.",
+        "뉴웰 방식은 둘레 순서대로 이웃한 점의 기여를 누적합니다. 마지막 점 다음에는 첫 점을 연결합니다.",
+        "제트 성분에서는 이웃한 두 점의 엑스 차이와 와이 합을 곱해 더합니다. 다른 성분도 좌표를 순환해서 계산합니다.",
+        "둘레 순서를 뒤집으면 법선 방향이 뒤집힙니다. 임의로 섞인 점들을 그대로 넣는 방식이 아닙니다.",
+        "법선을 정한 뒤 디는 각 점과 법선의 내적을 평균해서 구할 수 있습니다. 이것은 평균점과 법선의 내적과 같습니다.",
+        "원문은 가장 잘 맞는 평면이라고 부르지만, 순서 없는 점군의 최소제곱 평면과 일반적으로 같지는 않습니다. 점의 수와 퇴화 여부도 별도로 확인하세요."
+      ],
+      "en": [
+        "Choosing any three polygon vertices can be unstable when they are nearly collinear or lie at a concave corner.",
+        "Newell method accumulates contributions from adjacent vertices in boundary order, including the closing edge.",
+        "Its z component sums each neighboring x difference times their y sum. Cycle the coordinates for the other components.",
+        "Reversing boundary order reverses the normal. Arbitrarily shuffled points are not valid ordered input.",
+        "Once the normal is chosen, average its dot products with vertices to obtain d, equivalently dot the mean point with the normal.",
+        "The source calls this best fit, but it is not generally the least-squares plane of an unordered point cloud. Validate point count and degeneracy separately."
+      ],
+      "beats": [
+        "임의 세 점: 공선·오목 부분에 주의",
+        "둘레 순서 + 마지막→첫 점의 닫힌 변",
+        "n_z=Σ(xᵢ-xᵢ₊₁)(yᵢ+yᵢ₊₁)",
+        "순서 반전 → 법선 반전 / 점 섞기 금지",
+        "d=평균(n·vᵢ)=n·평균(vᵢ)",
+        "Newell: 순서 있는 다각형 / 일반 점군 최소제곱 아님"
+      ]
+    },
+    {
+      "id": "PF02",
+      "after": "09",
+      "kind": "explanation",
+      "title": "표면까지 왔지만 끝을 넘었을 수 있습니다",
+      "mode": "episode-conclusion",
+      "ko": [
+        "이번 편에서는 표면 방향을 정하고, 점에서 그 표면까지의 거리와 가장 가까운 점을 구했습니다. 식의 값과 거리를 구분하고, 꼭짓점 순서도 확인했습니다.",
+        "하지만 평면은 끝이 없습니다. 최근접점이 실제 발판 끝을 넘어가도 같은 평면 위일 수 있습니다. 다음 편에서는 이 점을 그대로 가져와 유한한 삼각형 안의 위치를 세 숫자로 나타내겠습니다."
+      ],
+      "en": [
+        "This episode defined surface orientation, point-to-plane distance and the closest plane point. We separated residual from distance and checked vertex order.",
+        "A plane has no edge. A projected point can lie on the plane beyond the actual platform. Next, carry that point into a finite triangle and describe its location with three numbers."
+      ],
+      "beats": [
+        "면 방향 → 거리 → 최근접점",
+        "평면 위여도 발판 밖일 수 있음",
+        "다음: 유한한 삼각형의 주소"
+      ],
+      "visual": "Retain plane, finite triangular platform and projected point. Move the point past a visible platform edge while keeping plane distance zero. Finish on this unresolved finite-boundary question before the original member ending."
+    }
+  ],
+  "gameCandidates": {
+    "reviewedAt": "2026-10-06",
+    "selected": [
+      {
+        "game": "Noita",
+        "sourceId": "igcymdI4XYM",
+        "reason": "Different recording from prior use; layered terrain, ledges and reference water heights directly illustrate side, footprint and reference-point questions."
+      },
+      {
+        "game": "A Story About My Uncle",
+        "sourceId": "SSekdYTL4Ck",
+        "reason": "Fresh nonoverlapping intervals from chapter9 first source: wooden surfaces, cyan triangle markings and relative attachment positions."
+      },
+      {
+        "game": "Serious Sam2",
+        "sourceId": "4s7nMfXt8uQ",
+        "reason": "Fresh night interval with colored surfaces for position-to-attribute observation; shader implementation not inferred."
+      }
+    ],
+    "rejected": [
+      {
+        "game": "Slime Rancher2",
+        "reason": "Observed notice/promotion conditions do not match publishing defaults."
+      },
+      {
+        "game": "Portal2 Royalty Free Gameplay",
+        "reason": "Uploader engagement condition unresolved; no engagement performed."
+      }
+    ],
+    "historyReview": "Full source history reviewed. Noita title has prior use but this NCR recording is new. All chosen intervals are directly reviewed and do not overlap the first geometry lecture. Source audio excluded."
+  },
+  "title": "게임수학 Part 2 · 평면과 삼각형 ① 표면까지의 거리",
+  "revisionOf": "game-math-planes-barycentric",
+  "episode": 1,
+  "causalSpine": [
+    "앞 편의 연결선과 경계 상자로 후보를 구함",
+    "후보가 표면에서 얼마나 떨어졌는가?",
+    "법선으로 방향을 정하고 대입값을 거리로 바꿈",
+    "표면 위의 최근접점과 면 방향을 얻음",
+    "무한 평면만으로 발판의 끝은 알 수 없음",
+    "유한한 삼각형의 면적과 세 기준점을 사용",
+    "점 생성의 가중합에서 주어진 점의 주소 구하기로 전환",
+    "평면 위와 삼각형 안을 각각 검사",
+    "찾은 주소로 색 등 표면 속성 계산",
+    "더 큰 경계를 여러 유효한 삼각형으로 나누는 다음 문제"
+  ],
+  "viewerQuestion": "경계 검사로 고른 점이 실제 표면에서 얼마나 떨어져 있고, 가장 가까운 위치는 어디일까?",
+  "baselineOriginalScenesUnchanged": true,
+  "baselineSource": "production/batches/game-math-part2-teaching-revision/baselines/game-math-planes-barycentric"
+}

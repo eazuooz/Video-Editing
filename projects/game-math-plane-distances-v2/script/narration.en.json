@@ -1,0 +1,192 @@
+{
+  "title": "Game Math Part 2 · Planes and Triangles 1: Distance to a Surface",
+  "scenes": [
+    {
+      "id": "PF01",
+      "title": "상자로 고른 후보에서 실제 표면으로",
+      "lines": [
+        "The previous chapter built connections and target bounds. Overlapping bounds select a candidate, but do not yet tell us whether a point reaches the surface.",
+        "This chapter has two episodes. First, define the surface orientation, distance and closest point. Next, test whether the point lies within a triangle and calculate its color."
+      ]
+    },
+    {
+      "id": "01",
+      "title": "바닥까지의 거리와 삼각형 안의 위치",
+      "lines": [
+        "How do we calculate a point distance from a floor and its location within a triangle?",
+        "We will observe game platforms and terrain, then calculate plane normals and signed distances.",
+        "Next we will build a triangle from three points and work out its area and barycentric coordinates.",
+        "Finally we will reject an off-plane query and use the same coordinates to interpolate color."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "발판의 표면을 기준으로 보기",
+      "lines": [
+        "We travel along paths and bridges on a Serious Sam2 shoreline. Watch the floor and bridge top surfaces.",
+        "A reference lets us distinguish floating above that surface from approaching it.",
+        "Mathematics can simplify that reference to a plane. A real platform has thickness and edges; a plane extends infinitely.",
+        "Distance to the surface and remaining within the platform footprint are separate tests.",
+        "Camera motion changes its screen appearance. Calculations must use points and normals defined in one coordinate frame.",
+        "This footage motivates a reference surface; it does not reveal the game internal collision representation."
+      ]
+    },
+    {
+      "id": "PB01",
+      "title": "바닥을 따라가는 화살표와 수직 화살표",
+      "lines": [
+        "A direction along the floor differs from one pointing straight away from it. A plane is a flat surface extending indefinitely; its normal is perpendicular to the surface. The normal itself is not the floor height.",
+        "Set the floor height to2 and choose the upward normal(0,1,0). A dot product multiplies matching components and adds them. Here only y remains. Matching the floor height2 places the point on this plane."
+      ]
+    },
+    {
+      "id": "PG01",
+      "title": "바닥에서 떨어졌다가 표면으로 돌아옵니다",
+      "lines": [
+        "In this Portal 2 preview, bounce from the blue floor and return to a surface. Red follows a visible floor boundary and blue marks the observed moving reference. Screen height is not measured world distance.",
+        "Here is another device. Watch the cube leave a faith plate and move toward the button. Travel along a surface differs from travel away from it, which is why we use the normal for distance."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "평면의 방향과 위치를 나누기",
+      "lines": [
+        "Describe a plane with a normal and a location coefficient. The normal points perpendicular to the surface.",
+        "Every point on the plane has the same dot product with its normal. Call that coefficient d.",
+        "The normal has components zero, one, zero. Constant d equals two. Every point with y equal to two lies on this plane.",
+        "The y zero plane contains the origin; the y two plane does not. A general plane is an affine set, not necessarily a linear subspace.",
+        "Subtracting two plane points gives a direction along the plane. Its dot product with the normal is zero.",
+        "Reversing the normal swaps front and back. Reverse d as well to preserve the same plane."
+      ]
+    },
+    {
+      "id": "PB02",
+      "title": "같은 바닥인데 대입값은 왜 두 배일까요?",
+      "lines": [
+        "The floor is still y equals two. A point at y five is three units away. Multiplying both sides by two gives two y equals four, which describes the same floor.",
+        "Substituting five now gives a residual of six. Neither the floor nor the point moved; the equation scale doubled. Undo that scale to obtain perpendicular distance. For a general orientation, the scale is the normal length."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "식의 값과 실제 거리를 구분하기",
+      "lines": [
+        "Evaluate the normal dot point minus d. A positive value lies on the normal side; a negative value lies on the opposite side.",
+        "The normal has components zero, two, zero. Constant d equals four. This is still the y-equals-two plane, and the normal length is two.",
+        "At point four, five, minus three, the dot product is ten. Subtracting four gives six, but six is not the distance.",
+        "Divide by normal length two to get signed distance three. Only a unit normal makes the raw residual a distance.",
+        "Normalize both the normal and d by two. Normalizing only the normal changes the plane location.",
+        "A zero-length normal cannot define a plane direction. Validate before division."
+      ]
+    },
+    {
+      "id": "PG02",
+      "title": "발판의 위치와 경사를 따로 봅니다",
+      "lines": [
+        "Now watch travel along the orange floor. Its color does not reveal the normal or distance from our previous calculation.",
+        "In the next excerpt, a button changes the setup and gel reaches a tilted ramp. A horizontal floor and tilted platform have different orientations. Red follows only the visible platform edge.",
+        "Next, cross the gap and reach the other side. Both position and orientation matter. The next explanation moves the same point perpendicularly to find its closest plane location."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "지형의 높이와 기준선",
+      "lines": [
+        "In Noita, the character moves through layered terrain. Use the waterline and wooden floor as visible references.",
+        "The sign of a height difference distinguishes positions above or below the same reference.",
+        "Following camera motion does not prevent relative comparison. The screen bottom is not a fixed world floor.",
+        "For a horizontal reference, subtract its height from y. A tilted surface instead needs distance along its normal.",
+        "Replacing layered floors with one infinite plane loses holes and edges. Surface distance and boundary checks are separate.",
+        "Our next diagram calculates the closest point on an explicitly defined plane; it does not claim to reproduce the pixel terrain implementation."
+      ]
+    },
+    {
+      "id": "PB03",
+      "title": "거리에서 실제로 이동할 점으로",
+      "lines": [
+        "We now know the point-to-plane distance. The next question is where to move the point to reach the nearest surface location.",
+        "A slanted route adds sideways travel; the perpendicular route is shortest. The same floor has height2. Keep x and z and change y to2. A unit normal does this for a tilted plane."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "평면 위의 가장 가까운 점",
+      "lines": [
+        "Point four, five, minus three has signed distance three from the y two plane.",
+        "Move three units opposite its normal. The closest plane point is four, two, minus three.",
+        "With a unit normal, subtract signed distance times that normal from the query.",
+        "With an unnormalized normal, multiply it by the residual divided by its squared length, then subtract.",
+        "Behind the plane, negative signed distance moves the point toward the normal. One formula handles both sides.",
+        "This projection finds the nearest point on an infinite plane. Beyond a triangle or platform edge, the nearest point on that bounded surface needs a separate test."
+      ]
+    },
+    {
+      "id": "PB04",
+      "title": "표면을 보았으니 법선도 직접 만들 수 있을까요?",
+      "lines": [
+        "So far we chose the normal in advance. Given three vertices, we need to construct an orientation from their coordinates. Use two edges starting at one vertex. This diagram lies in x and y, with z perpendicular to it.",
+        "Edges six and four make a rectangle of area twenty-four. Their cross product points perpendicular to both edges; its magnitude is parallelogram area. The triangle has half that area, twelve. Distinguish orientation order from area magnitude."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "세 점으로 법선 만들기",
+      "lines": [
+        "Three noncollinear points determine a plane. Form two edge vectors from the same vertex.",
+        "Edges six, zero, zero and zero, four, zero have cross product zero, zero, twenty-four.",
+        "Using our right-handed first-edge cross second-edge convention gives unit normal zero, zero, one.",
+        "Swapping the edge order reverses the normal. Define winding and front-face conventions together.",
+        "Dot any one vertex with the normal to obtain d. All three z coordinates are zero here, so d is zero.",
+        "Collinear points yield a zero cross product. Nearly collinear inputs may also be poorly conditioned; check before normalization."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "눈에 보이는 삼각형 표식을 관찰하기",
+      "lines": [
+        "Watch a bright triangular rock marking and the grapple attached nearby. Separate its three vertices from locations within it.",
+        "Camera motion tilts and compresses its screen appearance. Distinguish a surface shape from its projection.",
+        "Ordering three points around the boundary defines a front-face direction. Reversing that order reverses the chosen normal.",
+        "A triangular marking does not reveal the entire rock mesh. We connect visible features to an explicitly defined mathematical example.",
+        "Observe which reference vertex lies closest to the attachment. We will express relative locations using three weights.",
+        "First we will handle more than three ordered vertices, then calculate triangle lengths and area."
+      ]
+    },
+    {
+      "id": "PG03",
+      "title": "방향이 바뀌어도 경계 순서를 따라갑니다",
+      "lines": [
+        "Compare differently oriented panels in several short shots, not one continuous object motion. Lifting or tilting changes the visible edges. Hidden edges are not drawn.",
+        "In another excerpt, connect the robot to the device and the wall opens. A plane alone does not define the opening boundary. Next, accumulate boundary vertices in their perimeter order to find orientation."
+      ]
+    },
+    {
+      "id": "PC09",
+      "title": "세 점에서 여러 꼭짓점의 표면으로",
+      "lines": [
+        "Three points gave a triangle orientation. For a larger boundary with many vertices, an arbitrary selection of three might be almost collinear.",
+        "The next method accumulates contributions from neighboring boundary points, returning from the last to the first. Newell names this ordered-boundary method; it is not a method for randomly shuffled points."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "여러 꼭짓점에는 순서가 필요합니다",
+      "lines": [
+        "Choosing any three polygon vertices can be unstable when they are nearly collinear or lie at a concave corner.",
+        "Newell method accumulates contributions from adjacent vertices in boundary order, including the closing edge.",
+        "Its z component sums each neighboring x difference times their y sum. Cycle the coordinates for the other components.",
+        "Reversing boundary order reverses the normal. Arbitrarily shuffled points are not valid ordered input.",
+        "Once the normal is chosen, average its dot products with vertices to obtain d, equivalently dot the mean point with the normal.",
+        "The source calls this best fit, but it is not generally the least-squares plane of an unordered point cloud. Validate point count and degeneracy separately."
+      ]
+    },
+    {
+      "id": "PF02",
+      "title": "표면까지 왔지만 끝을 넘었을 수 있습니다",
+      "lines": [
+        "This episode defined surface orientation, point-to-plane distance and the closest plane point. We separated residual from distance and checked vertex order.",
+        "A plane has no edge. A projected point can lie on the plane beyond the actual platform. Next, carry that point into a finite triangle and describe its location with three numbers."
+      ]
+    }
+  ]
+}
