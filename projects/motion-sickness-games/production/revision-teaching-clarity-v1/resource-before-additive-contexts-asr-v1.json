@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-10-10T16:45:37.6813118+00:00",
+  "cpuLoadPercent": 37.0,
+  "freePhysicalMemoryKiB": 24999796,
+  "ownHeavyCpuJobs": 1,
+  "processes": [
+    {
+      "ProcessId": 48376,
+      "CreationDate": "2026-10-11T01:36:59.684095+09:00",
+      "CommandLine": "C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe -u C:/Users/eazuo/renderformer/lora_experiment/analysis/placement_focus/resume_with_preview.py --identity C:/Users/eazuo/renderformer/tmp/placement_focus_20261008/preview_identity_20261009.json"
+    },
+    {
+      "ProcessId": 65148,
+      "CreationDate": "2026-10-11T01:45:36.519406+09:00",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$taskWorkers = @(Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'review-motion-additive-voice|render-motion-opening-overlay|resume_with_preview.py' }); $taskHeavy = @($taskWorkers | Where-Object { $_.CommandLine -match 'review-motion-additive-voice|render-motion-opening-overlay' }); $taskRes = [ordered]@{ observedAt=[DateTimeOffset]::UtcNow.ToString('o'); cpuLoadPercent=[double](Get-CimInstance Win32_Processor | Measure-Object LoadPercentage -Average).Average; freePhysicalMemoryKiB=(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory; ownHeavyCpuJobs=$taskHeavy.Count; processes=@($taskWorkers | Select-Object ProcessId,CreationDate,CommandLine); gpu=(& nvidia-smi --query-gpu=memory.used,memory.free,utilization.gpu --format=csv,noheader); foreignProcessChanges=0 }; $taskRes | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath 'projects/motion-sickness-games/production/revision-teaching-clarity-v1/resource-before-additive-contexts-asr-v1.json' -Encoding utf8; $taskRes | ConvertTo-Json -Depth 8\""
+    }
+  ],
+  "gpu": "15776 MiB, 16412 MiB, 96 %",
+  "foreignProcessChanges": 0
+}

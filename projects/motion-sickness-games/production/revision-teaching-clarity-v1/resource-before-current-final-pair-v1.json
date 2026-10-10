@@ -1,0 +1,68 @@
+{
+  "observedAt": "2026-10-10T20:15:31.5592497Z",
+  "cpuLoadPercent": 80.0,
+  "freePhysicalMemoryKiB": 26468116,
+  "ownHeavyCpuJobs": 1,
+  "processes": [
+    {
+      "ProcessId": 54288,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-09T10:34:25.906545+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$taskPreview = Get-CimInstance Win32_Process -Filter 'ProcessId = 2664'; if ($taskPreview.CommandLine -ne '\\\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\\\" -X utf8 -m http.server 9250 --bind 127.0.0.1 --directory D:/Github/Video-Editing/shared/assets/presenting-game-scores/raw' -or $taskPreview.CreationDate.ToString('o') -ne '2026-10-09T10:29:12.9484320+09:00') { throw 'Owned preview process identity changed; refusing stop' }; Stop-Process -Id $taskPreview.ProcessId; & C:/Users/eazuo/miniconda3/envs/renderformer/python.exe -X utf8 production/batches/sakurai-planning-game-design/proof-presenting-game-scores/serve-native-review-v1.py\""
+    },
+    {
+      "ProcessId": 27140,
+      "ParentProcessId": 54288,
+      "CreationDate": "2026-10-09T10:34:26.837781+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\" -X utf8 production/batches/sakurai-planning-game-design/proof-presenting-game-scores/serve-native-review-v1.py"
+    },
+    {
+      "ProcessId": 39516,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-10T07:04:36.670388+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$taskAvailable = Get-NetTCPConnection -LocalPort 9252 -State Listen -ErrorAction SilentlyContinue; if($taskAvailable){throw 'Port9252 already has a listener; inspect and reuse it'}; $taskRecord=[ordered]@{observedAt=(Get-Date).ToString('o');processes=(Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'python|node|ffmpeg' -and $_.CommandLine -match 'placement_focus|train_multiview|render-voice|gpu-handoff|character-parameters|vite.presenting' } | Select-Object ProcessId,ParentProcessId,CreationDate,ExecutablePath,CommandLine);gpu=(& nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits);researchStatus=(Get-Content -LiteralPath C:/Users/eazuo/renderformer/tmp/placement_focus_20261008/status.json -Raw | ConvertFrom-Json);cpuLoadPercent=(Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average;memory=(Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,TotalVisibleMemorySize);ownTtsExecutionV2Exists=(Test-Path -LiteralPath projects/character-parameters/production/narration-tts-execution-v2.json);foreignProcessChanges=0;ownNewMedia=0}; $taskRecord | ConvertTo-Json -Depth 16 | Set-Content -LiteralPath projects/character-parameters/production/resource-before-structural-preview-v1.json -Encoding utf8; $taskRecord | Select-Object observedAt,gpu,cpuLoadPercent,memory,ownTtsExecutionV2Exists | ConvertTo-Json -Depth 5; & C:/Users/eazuo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe node_modules/vite/bin/vite.js --config vite.character-parameters.black-preflight-v1.config.ts\""
+    },
+    {
+      "ProcessId": 45508,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-11T05:02:54.436778+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\nC:/Users/eazuo/anaconda3/envs/renderformer/python.exe -u -X utf8 production/batches/game-math-part2-full-series/gpu-handoff.py --project game-math-planes-teaching-additions-v2 --queue-dir C:/Users/eazuo/renderformer/tmp/placement_focus_20261008 --gpu-idle-timeout 600 -- D:/Github/Video-Editing/qwen3-tts/.venv/Scripts/python.exe -X utf8 production/batches/game-math-part2-teaching-revision/render-planes-narration.py --project game-math-planes-teaching-additions-v2 --device cuda:0 --batch-size 1\""
+    },
+    {
+      "ProcessId": 56180,
+      "ParentProcessId": 45508,
+      "CreationDate": "2026-10-11T05:02:54.649347+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe\" -u -X utf8 production/batches/game-math-part2-full-series/gpu-handoff.py --project game-math-planes-teaching-additions-v2 --queue-dir C:/Users/eazuo/renderformer/tmp/placement_focus_20261008 --gpu-idle-timeout 600 -- D:/Github/Video-Editing/qwen3-tts/.venv/Scripts/python.exe -X utf8 production/batches/game-math-part2-teaching-revision/render-planes-narration.py --project game-math-planes-teaching-additions-v2 --device cuda:0 --batch-size 1"
+    },
+    {
+      "ProcessId": 26160,
+      "ParentProcessId": 21868,
+      "CreationDate": "2026-10-11T05:03:25.016126+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\" -X utf8 production/batches/game-math-part2-teaching-revision/render-planes-narration.py --project game-math-planes-teaching-additions-v2 --device cuda:0 --batch-size 1"
+    },
+    {
+      "ProcessId": 76624,
+      "ParentProcessId": 50804,
+      "CreationDate": "2026-10-11T05:03:25.231687+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe\" -X utf8 D:\\Github\\Video-Editing\\production\\batches\\game-math-part2-full-series\\render-voice.py --project game-math-planes-teaching-additions-v2 --device cuda:0 --batch-size 1"
+    },
+    {
+      "ProcessId": 73076,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-11T05:15:28.428524+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$proc=Get-CimInstance Win32_Process | Where-Object {$_.CommandLine -and ($_.CommandLine -match 'renderformer|render-motion-|build-motion-current-mix|review-motion.*(voice|mix)|assemble-motion|extract-motion-current|serve-native-review-v1|vite.motion-sickness')} | Select-Object ProcessId,ParentProcessId,CreationDate,ExecutablePath,CommandLine; $os=Get-CimInstance Win32_OperatingSystem; $cpu=Get-CimInstance Win32_Processor; $gpu=@(& nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits); $own=@($proc|Where-Object {$_.CommandLine -match '(render-motion-|build-motion-current-mix|review-motion.*(voice|mix)|assemble-motion|extract-motion-current)'}); $o=[pscustomobject]@{observedAt=(Get-Date).ToUniversalTime().ToString('o');cpuLoadPercent=($cpu|Measure-Object -Property LoadPercentage -Average).Average;freePhysicalMemoryKiB=[long]$os.FreePhysicalMemory;ownHeavyCpuJobs=$own.Count;processes=@($proc);gpu=$gpu;researchManipulations=0}; $p='projects/motion-sickness-games/production/revision-teaching-clarity-v1/resource-before-current-final-pair-v1.json'; if(Test-Path $p){throw 'Reuse inspected resource; do not overwrite.'}; [IO.File]::WriteAllText((Join-Path (Get-Location) $p),($o|ConvertTo-Json -Depth 6),[Text.UTF8Encoding]::new($false)); $o|Select-Object observedAt,cpuLoadPercent,freePhysicalMemoryKiB,ownHeavyCpuJobs,gpu; $proc|Select-Object ProcessId,CreationDate,@{n='Command';e={$_.CommandLine.Substring(0,[Math]::Min(230,$_.CommandLine.Length))}}|ConvertTo-Json -Depth 4\""
+    }
+  ],
+  "gpu": [
+    "NVIDIA GeForce RTX 5090, 12014, 20174, 17"
+  ],
+  "researchManipulations": 0
+}
