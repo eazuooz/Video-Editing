@@ -1,0 +1,1006 @@
+{
+  "slug": "game-math-interpolation-paths-v2",
+  "chapter": 8,
+  "part": 4,
+  "totalParts": 4,
+  "renderModule": "interpolation",
+  "sourceDependencies": [
+    "production/batches/game-math-part2-full-series/rotation-conversions.py"
+  ],
+  "sourceSections": [
+    "8.5.12",
+    "8.5.13",
+    "8.5.15",
+    "8.6",
+    "8.7.1–8.7.6",
+    "8.8"
+  ],
+  "contract": {
+    "handedness": "right-handed, y-up, x×y=z",
+    "vectorConvention": "column vectors; R maps local to world",
+    "quaternion": "Hamilton wxyz; unit rotation endpoints",
+    "eulerOrder": "intrinsic moving Y-X-Z; R=Ry(h)Rx(p)Rz(b)",
+    "angleUnit": "radians in code, degrees explicitly labelled in demonstrations",
+    "interpolation": "finite t in[0,1]; shortest representative signs; physical180 tie requires a policy",
+    "time": "constant SLERP angular speed only for fixed endpoints and linear t",
+    "matrixInput": "finite proper rotation: orthonormal and determinant+1; do not hide scale/reflection",
+    "boundaries": "zero axis undefined;180 axis-sign ambiguity; Euler singular branch with bank0; stable matrix dominant-component quaternion extraction"
+  },
+  "coverage": {
+    "8.5.12": "SLERP arc and delta-power interpretation, sign alignment, small-angle normalized-linear fallback, inputs and worked intermediate poses",
+    "8.5.13/8.5.15/8.6": "benefits/limits/normalization/signs, editor versus storage versus vector-transform jobs, component-only memory, performance/quantization require actual measurement; other rotation-aware interpolation exists",
+    "8.7.1/8.7.2": "Euler-to-matrix product and reverse atan2/hypot singular branch; compare equivalent rotation rather than raw angles",
+    "8.7.3/8.7.4": "unit quaternion matrix and reverse trace/dominant diagonal branches including180; complete verified reference code",
+    "8.7.5/8.7.6": "Euler axis-quaternion composition and reverse via matrix, equivalent direct substitution; fix source copysign boundary",
+    "axis-angle": "unit half-angle conversion, canonical short representative, zero and180 ambiguity",
+    "8.8": "original two guided calculations, midpoint vector and stable180 matrix round trip; whole series preserves core chapter concepts, not every textbook exercise verbatim",
+    "sourceCorrections": "Book LH/row versus lecture RH/column; smooth interpolation not exclusive to quaternions; shortest sign choice explicit; small-angle LERP must normalize; source gimbal pitch multiplication replaced by signed boundary; raw performance claims not guaranteed"
+  },
+  "gameCandidates": {
+    "chosen": [
+      {
+        "game": "Forza Horizon4",
+        "sourceId": "ZFGdubPhasM",
+        "reason": "Fresh game title and un-reused recording; inspected car facing/bank, bends and pursuit camera fit interpolation/conversion observations."
+      },
+      {
+        "game": "Riders Republic",
+        "sourceId": "H66Dl8kRNNQ",
+        "reason": "Different recording from quaternion operations; inspected wingsuit/rocket flight adds strong body-roll and full-turn observations."
+      }
+    ],
+    "rejected": [
+      {
+        "game": "Rocket League",
+        "sourceId": "e__O7rWG7ew",
+        "reason": "Uploader explicitly requires public channel credit; conflicts with requested description without public source credits, so not used."
+      },
+      {
+        "game": "Riders Republic",
+        "sourceId": "4Odvp_TIeQU",
+        "reason": "Used for quaternion operations; chose fresh recording and flight rather than repeating its ski/bike intervals."
+      }
+    ],
+    "rights": "Explicit uploader recording permission checked before dependent narration. No named CC license or game-IP/claim guarantee; public game-IP review pending.",
+    "inspection": "Three Forza coarse plus eight fine and four Riders coarse plus three fine sheets directly reviewed before this script; menus/results/rewinds/crashes/landing excluded. Real-time, no loops, no source audio."
+  },
+  "scenes": [
+    {
+      "id": "IF01",
+      "before": "01",
+      "kind": "explanation",
+      "title": "앞 편의 회전값에서 중간 자세로",
+      "mode": "episode-overview",
+      "ko": [
+        "앞 편에서는 시작에서 목표까지의 회전 차이를 구했습니다. 이번에는 그 회전의 중간 자세를 하나씩 만들겠습니다."
+      ],
+      "en": [
+        "The previous episode found the rotation difference from the starting to the target orientation. We now construct intermediate orientations along that rotation."
+      ],
+      "beats": [
+        "시작·목표·회전 차이 → 중간 자세",
+        "오늘: 경로 → 속도 → 표현 선택"
+      ],
+      "visual": "Carry the same oriented projected object and z axis; retain original whole overview immediately afterward."
+    },
+    {
+      "id": "01",
+      "title": "이번 강의에서 배울 것",
+      "kind": "explanation",
+      "mode": "overview",
+      "ko": [
+        "두 자세 사이를 자연스럽게 돌리려면 어떤 중간 자세를 만들어야 할까요?",
+        "이번 시간에는 자동차와 비행 장면을 보고, 쿼터니언 보간의 짧은 경로와 속도를 그림으로 이해합니다.",
+        "이어서 오일러 각, 축과 각도, 쿼터니언, 행렬을 같은 규약으로 바꿉니다.",
+        "마지막으로 구십 도의 중간 자세를 직접 계산하고, 변환을 왕복해 같은 회전인지 확인하겠습니다."
+      ],
+      "en": [
+        "How do we construct natural intermediate orientations between two poses?",
+        "We will observe driving and flight, then visualize the short path and speed of quaternion interpolation.",
+        "Next, we will convert Euler angles, axis-angle, quaternions and matrices under one convention.",
+        "Finally, we will calculate the midpoint of a ninety-degree turn and verify a conversion round trip."
+      ],
+      "beats": [
+        "끝 자세 사이의 회전 경로",
+        "실제 움직임 → 보간의 경로와 속도",
+        "같은 규약으로 네 표현 연결",
+        "중간 자세 계산 → 왕복 검증"
+      ]
+    },
+    {
+      "id": "02",
+      "title": "차체와 카메라의 회전 경로 관찰",
+      "kind": "actual",
+      "sourceId": "ZFGdubPhasM",
+      "sourceSegments": [
+        {
+          "in": 42,
+          "maxSeconds": 53
+        }
+      ],
+      "in": 42,
+      "maxSeconds": 53,
+      "ko": [
+        "포르자 호라이즌 사에서 자동차가 굽은 길을 달리는 장면입니다. 차체가 향하는 쪽과 뒤따르는 카메라를 따로 보세요.",
+        "처음과 끝 방향만 맞아도 중간에 갑자기 돌아가면 움직임이 어색할 수 있습니다.",
+        "차체의 앞쪽, 길의 굽음, 배경이 움직이는 흐름을 비교해 봅니다.",
+        "이 화면으로 게임이 어떤 보간 함수를 썼는지는 알 수 없습니다. 자연스러운 중간 자세가 필요한 이유를 관찰합니다.",
+        "차가 가까워지거나 작아지는 모습은 카메라와 거리의 영향도 받습니다. 앞쪽이 돌아가는 변화부터 따로 따라가면, 위치와 회전을 섞어 읽는 실수를 줄일 수 있습니다.",
+        "다음 그림에서는 위치와 카메라를 고정하고, 회전만 바꾸어 보겠습니다."
+      ],
+      "en": [
+        "This is driving on a bend in Forza Horizon4. Read the car facing separately from the following camera.",
+        "Matching the first and last directions does not prevent an awkward sudden turn between them.",
+        "Compare the front of the car, the bend and the moving background.",
+        "The footage does not reveal which interpolation function the game uses. It shows why intermediate orientations matter.",
+        "Changes in apparent car size also involve camera and distance. Following its facing separately helps avoid mixing translation with rotation.",
+        "Our next diagram will hold position and camera fixed and change only orientation."
+      ],
+      "focus": "차체 앞쪽과 길·추적 카메라를 구분",
+      "claim": "끝 자세를 잇는 중간 자세가 필요하다는 관찰"
+    },
+    {
+      "id": "IB03",
+      "before": "03",
+      "kind": "explanation",
+      "title": "두 끝점만으로는 중간 화면이 비어 있습니다",
+      "mode": "causal-bridge",
+      "ko": [
+        "차체가 방향을 바꾸는 모습을 보았으니, 시작과 끝의 네 숫자를 섞어 중간 자세를 만들면 될까요?"
+      ],
+      "en": [
+        "After observing the body changing direction, can we make intermediate poses by mixing the four numbers at the start and end?"
+      ],
+      "beats": [
+        "두 끝 자세 → 중간 화면은?",
+        "네 숫자 직접 섞기부터 검사"
+      ],
+      "visual": "One object shows two endpoint poses; reveal the missing intermediate pose, then the component interpolation being tested."
+    },
+    {
+      "id": "03",
+      "title": "숫자를 섞는 것과 회전을 잇는 것",
+      "kind": "explanation",
+      "mode": "collapse",
+      "ko": [
+        "항등행렬에서 제트축 백팔십 도 회전으로 가는 중간을 생각해 봅시다.",
+        "행렬 원소를 절반씩 섞으면 대각선이 영, 영, 일이 됩니다. 두 축이 사라집니다.",
+        "쿼터니언도 단위 길이를 유지해야 합니다. 네 성분을 그냥 섞은 값은 보통 단위 길이가 아닙니다.",
+        "선형 보간한 뒤 정규화하는 방법과, 단위 구면의 호를 따라가는 방법을 나누어 보겠습니다.",
+        "행렬로는 보간이 불가능하다는 뜻은 아닙니다. 회전 구조를 보존하는 별도 방법이 필요합니다."
+      ],
+      "en": [
+        "Consider the midpoint between identity and a180-degree turn about z.",
+        "Averaging the entries yields a diagonal of0,0,1. Two axes collapse.",
+        "Quaternions must maintain unit length too. A component blend generally leaves the unit surface.",
+        "We will distinguish a normalized linear blend from following an arc on the unit sphere.",
+        "Matrices can be interpolated with methods that respect the rotation structure; naive entry blending is the problem."
+      ],
+      "beats": [
+        "I → Z180°",
+        "행렬 평균: diag(0,0,1)",
+        "성분 선형 보간 ≠ 단위 회전",
+        "NLERP / SLERP",
+        "회전 구조를 보존할 방법 선택"
+      ]
+    },
+    {
+      "id": "04",
+      "title": "부호부터 골라 짧은 경로 만들기",
+      "kind": "explanation",
+      "mode": "short-path",
+      "ko": [
+        "앞 편에서 쿼터니언 큐와 마이너스 큐는 같은 자세라고 배웠습니다. 하지만 성분을 잇는 경로는 다를 수 있습니다.",
+        "길이가 일인 시작과 끝 쿼터니언의 내적을 구합니다. 내적이 음수이면 끝값 전체의 부호를 바꿉니다.",
+        "같은 끝 자세를 유지하면서 더 가까운 대표값을 고르는 것입니다. 켤레로 바꾸는 것은 아닙니다.",
+        "시작이 큐이고 끝이 마이너스 큐라면, 부호를 맞춘 뒤 같은 값이 됩니다. 중간이 영 쿼터니언으로 무너지지 않습니다.",
+        "실제 회전 차이가 정확히 백팔십 도이면 같은 길이의 두 경로가 남습니다. 원하는 방향을 별도 규칙으로 택하세요.",
+        "앞 편의 회전 차이로도 이해할 수 있습니다. 부호를 맞춘 끝 큐에 시작 큐의 역원을 곱한 것이 델타입니다. 델타의 티 제곱을 시작 자세에 적용하면 같은 짧은 호를 따라갑니다."
+      ],
+      "en": [
+        "As we learned, q and minus q represent the same orientation, yet a component path between them can differ.",
+        "Take the dot product of unit endpoints. If it is negative, flip every component of the end quaternion.",
+        "This selects the closer representative of the same endpoint; it is not conjugation.",
+        "For endpoints q and minus q, sign alignment makes them identical, avoiding a zero midpoint.",
+        "A physical180-degree separation has two equally short paths. Choose a direction with an explicit policy.",
+        "We can also use the relative rotation from the previous lesson. After sign alignment, delta is the end quaternion times the inverse of the start. Applying delta to the power t to the start follows the same short arc."
+      ],
+      "beats": [
+        "q와 -q: 자세 같음 / 경로 선택 필요",
+        "dot(a,b)<0 → b=-b",
+        "전체 부호 반전 ≠ 켤레",
+        "a와 -a → 부호 정렬 후 정지",
+        "정확한 180°: 경로 선택 규칙",
+        "Δ=b a⁻¹ / q(t)=Δᵗ a"
+      ]
+    },
+    {
+      "id": "IP01",
+      "after": "04",
+      "kind": "explanation",
+      "title": "티는 회전 차이 중 얼마나 적용할지입니다",
+      "mode": "power-fraction",
+      "retainedResult": "Δ=b a⁻¹, q(t)=Δᵗ a",
+      "nextQuestion": "티 제곱이라는 표현에서 무엇이 지수인가?",
+      "ko": [
+        "방금 델타의 티 제곱이라고 읽은 식은, 델타를 티라는 지수로 거듭제곱한다는 뜻입니다. 티 자체를 제곱하는 식은 아닙니다.",
+        "앞 편처럼 델타가 제트축 구십 도이고 티가 영 점 오라면, 회전 차이의 절반인 사십오 도를 시작 자세에 적용합니다.",
+        "이제 중간값이 단위 길이를 지키며 호 위에 놓이도록, 그 비율을 계산해 보겠습니다."
+      ],
+      "en": [
+        "In delta to the power t, t is the exponent on delta; the expression does not square t.",
+        "With a z ninety-degree delta and t equal to one half, apply half the difference, forty-five degrees, to the starting orientation.",
+        "We will now calculate weights that keep the intermediate orientation on the unit arc."
+      ],
+      "beats": [
+        "Δᵗ: 지수는 t / t²가 아님",
+        "Δ=Rz(90°), t=.5 → Rz(45°)",
+        "분량 t → 단위 호 위의 중간 자세"
+      ],
+      "visual": "Carry the same z axis and oriented object from original04; animate90-degree difference, then45-degree applied portion. Preserve axis/color conventions."
+    },
+    {
+      "id": "IG01",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "절반 자세는 움직임 중간에 있습니다",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          54,
+          74
+        ]
+      ],
+      "maximumSeconds": 20,
+      "ko": [
+        "스케이트 삼에서 자세가 이어지는 모습을 보겠습니다. 빨간 선은 몸체 방향입니다.",
+        "파란 선은 보이는 보드의 긴 방향입니다. 출발, 공중, 착지를 따로 따라가세요.",
+        "그 사이를 만들 비율이 티입니다. 앞의 사십오 도는 계산 예시이며 이 장면의 측정 각도가 아닙니다."
+      ],
+      "en": [
+        "Observe connected poses in Skate 3. Red follows the body direction.",
+        "Blue follows the visible board length. Follow takeoff, the airborne pose and landing separately.",
+        "The fraction for constructing intermediate poses is t. The previous forty-five degrees was a worked example, not an angle measured here."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            54,
+            74
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG01.mp4",
+          "duration": 20.02,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "54 upright/pushing →61–64 airborne body turn/land →68–72 board flip and upright73",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "The complete body/board actions are separated in silhouette; no menu or ragdoll interrupts the result.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "05",
+      "title": "가까운 방향과 돌아가는 과정",
+      "kind": "actual",
+      "sourceId": "ZFGdubPhasM",
+      "sourceSegments": [
+        {
+          "in": 95,
+          "maxSeconds": 52
+        }
+      ],
+      "in": 95,
+      "maxSeconds": 52,
+      "ko": [
+        "차가 다음 굽은 길을 통과하는 동안 몸체의 앞쪽을 따라가 보세요.",
+        "한 장의 끝 화면만으로는 짧게 돌았는지, 한 바퀴를 더 돌았는지 구별하기 어렵습니다.",
+        "입력된 두 자세만 잇는 보간은 그 사이의 경로를 선택합니다. 이전에 몇 바퀴 돌았는지까지 저장하지는 않습니다.",
+        "자동차가 길을 따라 움직이는 위치 보간과 몸이 돌아가는 자세 보간도 서로 다른 문제입니다.",
+        "앞쪽 방향이 비슷해진 두 순간을 골라도, 그 사이 얼마나 돌아왔는지는 움직임을 계속 봐야 알 수 있습니다. 끝 자세와 시간에 따른 회전 이력을 나눠 기억하세요.",
+        "이제 단위 구면의 호가 자세 변화와 어떻게 연결되는지 살펴보겠습니다."
+      ],
+      "en": [
+        "Track the car facing as it follows the next bend.",
+        "An endpoint image alone does not tell whether the turn was short or included an extra revolution.",
+        "Interpolation between two orientations chooses a path without storing the number of earlier revolutions.",
+        "Interpolating a position along the road differs from interpolating orientation.",
+        "Even when two moments have similar facing, the intervening turn requires observing the motion. Distinguish endpoint orientation from rotation history over time.",
+        "Now we will relate an arc on the unit sphere to the orientation change."
+      ],
+      "focus": "주행 위치·몸체 앞쪽·회전 이력을 나누는 관찰",
+      "claim": "끝점 보간과 이동/회전 이력 구분"
+    },
+    {
+      "id": "IP02",
+      "before": "06",
+      "kind": "explanation",
+      "title": "내적과 아크코사인이 호의 각도를 찾는 이유",
+      "mode": "dot-angle-prerequisite",
+      "retainedResult": "Sign-aligned unit endpoints",
+      "nextQuestion": "내적 숫자 하나에서 호의 각도를 어떻게 얻을까?",
+      "ko": [
+        "호를 따라 움직이려면 먼저 두 점 사이의 각도가 필요합니다. 익숙한 평면의 단위원에서 시작해 보죠.",
+        "오른쪽 단위벡터는 일, 영입니다. 삼십 도 방향은 루트 삼 나누기 이, 이분의 일입니다. 같은 자리끼리 곱해 더하는 내적은 루트 삼 나누기 이가 됩니다.",
+        "이 값은 코사인 삼십 도입니다. 아크코사인은 반대로 이 코사인값을 받아 각도 삼십 도를 돌려줍니다.",
+        "쿼터니언에서는 네 자리끼리 곱해 더하고, 두 단위 점을 잇는 단면의 각도 알파를 찾습니다. 그 알파와 물체의 실제 회전각은 구분해야 합니다."
+      ],
+      "en": [
+        "Following an arc requires the angle between its endpoints. Begin with the familiar unit circle in a plane.",
+        "The rightward unit vector is one, zero. A thirty-degree vector is square root three over two, one half. Multiplying corresponding entries and adding gives square root three over two.",
+        "That number is cosine of thirty degrees. Arccosine performs the reverse lookup and returns thirty degrees.",
+        "For quaternions, the dot sums four component products and gives the angle alpha in the section joining the two unit points. Alpha must be distinguished from the object's physical rotation."
+      ],
+      "beats": [
+        "(1,0)·(√3/2,1/2)=√3/2",
+        "cos30°=√3/2 → acos(√3/2)=30°",
+        "네 성분 내적 d → 단면 각 α",
+        "α ≠ 물체 회전각 / 다음 그림에서2α 확인"
+      ],
+      "visual": "Animate the2D example with a shared origin, unit circle and colored arc; then replace the component table with four entries. Label the circle as a section, never the whole4D sphere."
+    },
+    {
+      "id": "06",
+      "title": "SLERP는 단위 구면의 호를 따라갑니다",
+      "kind": "explanation",
+      "mode": "sphere",
+      "ko": [
+        "단위 쿼터니언은 네 성분 제곱의 합이 일인 사차원 구면 위의 점입니다.",
+        "화면의 원은 전체 사차원 구면을 그린 것이 아니라, 두 점을 잇는 호를 이해하기 위한 단면 그림입니다.",
+        "부호를 맞춘 두 점의 내적을 디라고 하겠습니다. 알파는 디의 아크코사인입니다.",
+        "두 쿼터니언 점 사이의 알파와 실제 물체의 회전각은 다릅니다. 실제 최소 회전각은 알파의 두 배입니다.",
+        "시작과 끝에 사인 비율을 가중치로 곱해 더하면, 호의 티 비율 지점이 나옵니다.",
+        "이름은 구면 선형 보간입니다. 성분이 직선으로 변한다는 뜻은 아닙니다."
+      ],
+      "en": [
+        "Unit quaternions lie on a sphere in four dimensions, with squared components summing to one.",
+        "This circle illustrates the relevant arc in a two-dimensional section, rather than depicting the full four-dimensional sphere.",
+        "Let d be the sign-aligned dot product, and let alpha be its arccosine.",
+        "The quaternion arc angle differs from the physical turn angle: the minimum physical rotation is twice alpha.",
+        "Sine-ratio weights combine the endpoints into the point at fraction t of the arc.",
+        "This is spherical linear interpolation. It does not mean the components change linearly."
+      ],
+      "beats": [
+        "4D 단위 구면 / 그림은 2D 단면",
+        "단면의 호로 이해",
+        "α = acos(clamp(d,0,1))",
+        "구면 각 α / 실제 회전각 2α",
+        "sin((1-t)α)a/sinα + sin(tα)b/sinα",
+        "SLERP: 호 길이에 대해 선형"
+      ]
+    },
+    {
+      "id": "IG10",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "움직이는 몸체와 단위 방향의 길이",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          89,
+          107.5
+        ]
+      ],
+      "maximumSeconds": 18.5,
+      "ko": [
+        "빨간 선은 몸체, 파란 선은 보드 방향입니다.",
+        "공중에서 몸과 보드가 바뀌고 다시 착지합니다.",
+        "계산의 단위 길이는 저장한 방향값의 조건입니다.",
+        "게임 속 이동 거리나 화면에서 보이는 선 길이를 일로 만든다는 뜻은 아닙니다."
+      ],
+      "en": [
+        "Red follows the body; blue follows the board direction.",
+        "Their directions change in the air before another landing.",
+        "Unit length in the calculation is a condition on the stored direction values.",
+        "It does not set the game travel distance or the displayed line length to one."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            89,
+            107.5
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG10.mp4",
+          "duration": 18.5185,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "89 crouch →90–96 flips/landings →100–104 airborne board/body changes →upright107",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Close red-ground silhouettes reveal the two moving directions and clarify norm versus physical/screen length.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "IB07",
+      "before": "07",
+      "kind": "explanation",
+      "title": "맞는 식에도 입력 검사가 필요한 이유",
+      "mode": "causal-bridge",
+      "ko": [
+        "단위 호를 얻었지만 두 끝점이 겹치면 분모도 작아집니다. 같은 자세에 가까울 때를 먼저 처리하겠습니다."
+      ],
+      "en": [
+        "We found the unit arc, but its denominator becomes small as the endpoints coincide. Handle nearly identical orientations first."
+      ],
+      "beats": [
+        "단위 호의 식 → 거의 같은 끝점?",
+        "길이·나눗셈·각도 입력 검사"
+      ],
+      "visual": "Retain the unit arc and bring the two endpoint dots closer; highlight the denominator and input norm before original07."
+    },
+    {
+      "id": "07",
+      "title": "작은 각도와 잘못된 입력을 먼저 처리",
+      "kind": "explanation",
+      "mode": "slerp-code",
+      "ko": [
+        "코드의 입력 티는 영부터 일 사이의 유한한 실수라고 정하겠습니다. 먼저 두 쿼터니언을 검사하고 정규화합니다.",
+        "영에 가까운 길이나 비정상 숫자는 정규화할 수 없습니다. 오류나 이전의 유효한 자세로 처리하는 정책이 필요합니다.",
+        "내적이 음수일 때 끝값을 반전한 뒤, 반올림 오차가 아크코사인의 범위를 넘지 않도록 내적을 제한합니다.",
+        "두 값이 거의 같으면 사인 분모가 작습니다. 이 예제는 디가 영 점 구구구오보다 클 때 정규화 선형 보간으로 바꿉니다.",
+        "나머지는 사인 가중치를 쓰고 결과도 정규화합니다. 티가 영과 일일 때 시작과 끝 자세를 확인하세요."
+      ],
+      "en": [
+        "Our code requires finite t between zero and one. Validate and normalize both quaternion endpoints first.",
+        "Near-zero or nonfinite inputs need an error or an explicit fallback to a valid orientation.",
+        "Flip the endpoint when the dot is negative, then clamp the dot to protect arccosine from rounding error.",
+        "When d exceeds0.9995, this example uses normalized linear interpolation to avoid a small sine denominator.",
+        "Otherwise, use the sine weights and normalize the result. Check the endpoint orientations at t zero and one."
+      ],
+      "beats": [
+        "유한 입력 / 0≤t≤1 / norm>ε",
+        "잘못된 입력을 clamp로 숨기지 않기",
+        "부호 선택 → dot 범위 제한",
+        "d>0.9995 → normalize(lerp(a,b,t))",
+        "일반 분기: 사인 가중치 / 결과 단위 길이"
+      ]
+    },
+    {
+      "id": "08",
+      "title": "주행에서는 중간 상태도 보여야 합니다",
+      "kind": "actual",
+      "sourceId": "ZFGdubPhasM",
+      "sourceSegments": [
+        {
+          "in": 175,
+          "maxSeconds": 35
+        },
+        {
+          "in": 287,
+          "maxSeconds": 23
+        }
+      ],
+      "in": 175,
+      "maxSeconds": 58,
+      "ko": [
+        "다른 주행 구간에서도 차체 앞쪽과 배경의 움직임을 나누어 보세요.",
+        "두 발췌 구간의 편집 컷은 계산한 중간 자세가 아닙니다. 각 구간 안에서 이어지는 실제 움직임을 관찰합니다.",
+        "코드에서는 시작과 끝 사이의 티 값을 여러 번 바꾸어 중간 회전을 만듭니다.",
+        "같은 차체에서도 앞쪽을 나타내는 선과 위쪽을 나타내는 선을 함께 생각해 보세요. 한 방향만 보면 몸체의 비틀림을 놓칠 수 있습니다.",
+        "편집 컷 앞뒤의 위치와 카메라는 달라질 수 있습니다. 이어지는 구간 안의 자세 변화를 관찰한 뒤, 고정된 조건의 다음 계산과 연결합니다.",
+        "다음 계산에서는 카메라와 위치를 고정합니다. 구십 도 회전에서 티가 영 점 이오, 그리고 영 점 오일 때 얼마나 도는지 확인해 봅시다."
+      ],
+      "en": [
+        "In these other driving intervals, separate car facing from background motion.",
+        "The edit between excerpts is not a computed intermediate pose. Observe continuous motion within each excerpt.",
+        "Code produces intermediate rotations by changing t between the endpoints.",
+        "Imagine both a forward line and an up line on the car. A single direction can miss its twist.",
+        "A cut can change location and camera. Observe continuous pose changes within each excerpt before connecting them to the next fixed-condition calculation.",
+        "The next calculation holds camera and position fixed. For a ninety-degree turn, examine t equal to zero point two five and zero point five."
+      ],
+      "focus": "각 발췌 안의 연속 주행과 차체 방향",
+      "claim": "실제 관찰에서 고정 카메라 수학 계산으로 연결"
+    },
+    {
+      "id": "IB09",
+      "before": "09",
+      "kind": "explanation",
+      "title": "관찰한 중간 자세를 작은 계산으로",
+      "mode": "causal-bridge",
+      "ko": [
+        "카메라가 움직인 관찰을 검산할 수 있도록, 이번에는 카메라와 제트축을 고정하고 구십 도의 중간 자세를 계산합니다."
+      ],
+      "en": [
+        "To verify the observation made with a moving camera, fix the camera and z axis and compute the intermediate poses of a ninety-degree turn."
+      ],
+      "beats": [
+        "움직이는 관찰 → 고정한 수치 예제",
+        "90°의 .25 / .5 / .75"
+      ],
+      "visual": "Carry the observed body direction into the explicitly illustrative object, lock the camera, retain z axis and reveal t=.25,.5,.75."
+    },
+    {
+      "id": "09",
+      "title": "구십 도 회전의 중간을 직접 계산",
+      "kind": "explanation",
+      "mode": "slerp-example",
+      "ko": [
+        "시작은 일, 영, 영, 영입니다. 끝은 제트축 구십 도 회전이므로 코사인 사십오 도, 영, 영, 사인 사십오 도입니다.",
+        "내적은 루트 이 나누기 이입니다. 알파는 사십오 도이고 실제 회전 차이는 구십 도입니다.",
+        "티가 영 점 이오이면 물체는 이십이 점 오 도 회전합니다. 전체를 네 칸으로 나눈 첫 지점입니다. 절반인 티 영 점 오에서는 사십오 도 회전합니다.",
+        "티가 영 점 칠오인 셋째 지점에서는 육십칠 점 오 도입니다. 같은 티 간격에 같은 회전각 간격이 나옵니다.",
+        "각 티에서 쿼터니언을 행렬로 바꾸어 축을 그린 것입니다. 끝점뿐 아니라 중간 결과도 검증할 수 있습니다."
+      ],
+      "en": [
+        "Start at[1,0,0,0], ending at a z90-degree turn:[cos45degrees,0,0,sin45degrees].",
+        "The dot is square root two over two: alpha is45degrees, while the physical rotation is90degrees.",
+        "At t equal to zero point two five, the object rotates twenty-two point five degrees, the first of four equal steps. At the halfway value t equal to zero point five, it rotates forty-five degrees.",
+        "At the third step, t equal to zero point seven five, it is sixty-seven point five degrees. Equal t intervals give equal rotation-angle intervals.",
+        "Each quaternion is converted to a matrix to draw the body axes. We can verify intermediate results as well as endpoints."
+      ],
+      "beats": [
+        "a=[1,0,0,0] / b=[c,0,0,c]",
+        "d=√2/2 / α=45° / Δθ=90°",
+        "t=.25 →22.5° / t=.5 →45°",
+        "t=.75 →67.5°",
+        "R(q(t))로 중간 자세 검증"
+      ]
+    },
+    {
+      "id": "10",
+      "title": "NLERP도 회전이지만 속도는 다릅니다",
+      "kind": "explanation",
+      "mode": "speed",
+      "ko": [
+        "엔러프는 부호를 맞춘 뒤 네 성분을 선형 보간하고 정규화합니다. 계산이 간단하고 단위 길이도 유지합니다.",
+        "하지만 티가 일정한 속도로 늘어도 실제 회전 속도는 보통 일정하지 않습니다.",
+        "항등에서 백이십 도 회전으로 갈 때, 사분의 일의 엔러프 회전은 약 이십칠 점 팔 도입니다.",
+        "스러프는 같은 지점에서 삼십 도입니다. 둘 다 절반에서는 육십 도지만, 다른 중간 지점의 속도는 다릅니다.",
+        "작은 차이는 잘 안 보일 수 있습니다. 요구하는 움직임과 비용을 비교하고, 스러프만 언제나 더 빠르다고 단정하지 마세요."
+      ],
+      "en": [
+        "NLERP aligns signs, blends components linearly and normalizes: a simple calculation that preserves unit length.",
+        "Linear progression of t generally does not produce constant physical angular speed.",
+        "Between identity and a120-degree turn, NLERP at one quarter rotates approximately27.8degrees.",
+        "SLERP gives30degrees there. Both give60degrees halfway, but differ at other points along the path.",
+        "Small differences may be hard to see. Compare motion requirements and cost without assuming SLERP is always faster."
+      ],
+      "beats": [
+        "NLERP = normalize((1-t)a+tb)",
+        "선형 t / NLERP 각속도는 변함",
+        "I→Z120° / NLERP(.25)≈27.8°",
+        "SLERP(.25)=30° / 둘의 .5=60°",
+        "경로·속도·실제 비용을 비교"
+      ]
+    },
+    {
+      "id": "IG02",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "방향의 변화와 지나가는 속도 나누기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          116,
+          140
+        ]
+      ],
+      "maximumSeconds": 24,
+      "ko": [
+        "이번에는 빨간 몸체 선과 파란 보드 선이 바뀌는 순서를 보세요.",
+        "움직인 거리와 중간 자세의 비율은 서로 다른 값입니다. 같은 장면에서도 카메라가 따라 움직입니다.",
+        "화면에서 빨라 보인다고 일정한 각속도라고 단정할 수는 없습니다. 다음 계산에서는 시간 조건을 따로 고정합니다."
+      ],
+      "en": [
+        "Watch the order in which the red body line and blue board line change.",
+        "Travel distance and the fraction between orientations are different values. The camera also follows the action.",
+        "Fast-looking screen motion does not establish constant angular speed. We will state the timing conditions separately in the calculation."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            109.5,
+            140
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG02.mp4",
+          "duration": 30.5305,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "109.5 pushing →117–120 jump/turn →127–131 flip →upright travel139",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Compared with the reset-heavy392–442 cut, the same visible rider proceeds through readable actions and outcomes.",
+        "finalAnnotationReview": "pending",
+        "finalRangeReason": "Move the measured23.6-second excerpt within the already fully played109.5–140 interval: the former end133.1 began another jump. Start116 and finish139.6 so viewers see the117–120 and127–131 actions and upright result139.",
+        "finalVisibleBeforeActionAfter": "116 approach →117–120 body/board jump and landing →127–131 second turn and landing →upright139",
+        "finalNativeMovingAnnotationApproval": false
+      }
+    },
+    {
+      "id": "11",
+      "title": "속도와 자세를 같은 값으로 읽지 않기",
+      "kind": "actual",
+      "sourceId": "ZFGdubPhasM",
+      "sourceSegments": [
+        {
+          "in": 371,
+          "maxSeconds": 49
+        }
+      ],
+      "in": 371,
+      "maxSeconds": 49,
+      "ko": [
+        "자동차의 주행 속도가 바뀌어도 자세가 돌아가는 속도는 별개의 값입니다.",
+        "길을 얼마나 빨리 지나는지와 차체가 얼마만큼 방향을 바꾸는지를 따로 보세요.",
+        "화면의 카메라까지 움직이므로 이 영상만으로 정확한 각속도를 측정한 것은 아닙니다.",
+        "속도계의 숫자는 차가 이동하는 속도이며, 회전의 각속도를 그대로 표시한 값은 아닙니다. 서로 다른 단위와 측정 대상을 구분하세요.",
+        "카메라가 크게 돌았다고 차체도 같은 각도로 돌았다고 읽지는 마세요. 차체와 길의 관계를 먼저 관찰해야 자세 변화를 따로 볼 수 있습니다.",
+        "앞의 고정된 축 계산에서는 같은 시간 간격의 회전각을 비교할 수 있었습니다. 시간 함수를 바꾸면 그 속도도 달라집니다."
+      ],
+      "en": [
+        "Driving speed and angular speed are separate quantities.",
+        "Observe distance travelled and change in car facing separately.",
+        "The camera also moves, so this footage is not a measurement of exact angular velocity.",
+        "The speedometer reports travel speed, not the angular velocity of orientation. Keep units and measured quantities distinct.",
+        "A large camera turn does not imply the same car rotation. Observe car and road together to separate pose changes.",
+        "Our fixed-axis calculation can compare turn angles over equal time intervals. Changing the time function changes the speed."
+      ],
+      "focus": "주행 속도·차체 방향·카메라 추적을 별도로 관찰",
+      "claim": "보간 매개변수와 실제 각속도 연결"
+    },
+    {
+      "id": "IB12",
+      "before": "12",
+      "kind": "explanation",
+      "title": "자세의 비율과 실제 시간을 연결하기",
+      "mode": "causal-bridge",
+      "ko": [
+        "중간 자세의 계산을 실제 재생에 쓰려면, 티를 시간에 따라 얼마나 늘릴지도 정해야 합니다."
+      ],
+      "en": [
+        "Using intermediate orientations in playback also requires deciding how t increases over time."
+      ],
+      "beats": [
+        "중간 자세 → 시간은 별도 입력",
+        "같은 시간의 Δt → 각속도 조건"
+      ],
+      "visual": "Keep the rotation arc; add a time ruler with equal ticks and synchronize it to t before original12."
+    },
+    {
+      "id": "12",
+      "title": "일정 속도에는 시간 조건도 필요합니다",
+      "kind": "explanation",
+      "mode": "time",
+      "ko": [
+        "스러프가 일정 각속도라는 말에는 조건이 있습니다. 시작과 끝이 고정되고 티가 시간에 대해 선형으로 변해야 합니다.",
+        "처음과 끝을 느리게 하는 이징 함수를 티에 적용하면 같은 호를 따라도 속도는 달라집니다.",
+        "매 프레임 현재 자세에서 목표로 조금씩 보간하는 것은 전체 구간을 한 번 일정하게 보간하는 것과 다릅니다.",
+        "고정 비율을 매 프레임 쓰면 프레임 수에 따라 반응이 달라질 수 있습니다. 시간 차이를 반영한 비율을 설계하세요.",
+        "움직이는 목표 추적과 긴 애니메이션 곡선은 별도 설계 문제입니다. 한 번의 스러프가 모두 해결하지는 않습니다."
+      ],
+      "en": [
+        "Constant angular speed requires fixed endpoints and t that is linear in time.",
+        "An easing function follows the same arc with a varying speed.",
+        "Repeatedly interpolating from the current pose toward a target differs from one fixed-endpoint interpolation.",
+        "A fixed fraction per frame may yield different responses at different frame rates. Design the fraction using elapsed time.",
+        "Moving-target tracking and long animation curves require their own design; a single SLERP does not solve everything."
+      ],
+      "beats": [
+        "고정 a,b / t=elapsed÷duration",
+        "t=ease(u) → 각속도 변화",
+        "현재→목표 반복 / 고정 구간과 구분",
+        "예: k=1-exp(-λΔt)",
+        "구간의 호 / 전체 시간 경로 구분"
+      ]
+    },
+    {
+      "id": "IP07",
+      "after": "12",
+      "episode": "game-math-interpolation-paths-v2",
+      "title": "같은 호도 시간에 따라 다르게 움직입니다",
+      "kind": "explanation",
+      "ko": [
+        "방금 시간 조건을 설명했으니 같은 회전을 작은 수로 비교해 보죠. 여기서는 카메라와 제트축을 고정하고, 영 도에서 구십 도까지 일 초 동안 돌리는 계산 예시입니다.",
+        "절반인 영 점 오 초가 지났을 때, 경과 시간을 전체 시간으로 나누면 티는 영 점 오입니다. 선형 시간에서는 구십 도의 절반인 사십오 도가 됩니다.",
+        "이번에는 경과 시간의 비율을 제곱해서 티로 쓰겠습니다. 영 점 오의 제곱은 영 점 이오이고, 같은 순간의 회전은 구십 도의 사분의 일인 이십이 점 오 도입니다.",
+        "일 초가 끝나면 두 방법 모두 티가 일이 되어 구십 도에 도착합니다. 시작과 끝과 지나가는 호는 같지만, 중간에 언제 어디까지 갔는지는 달라졌죠. 그래서 경로를 고르는 일과 시간에 맞춰 움직이는 일은 따로 정합니다."
+      ],
+      "en": [
+        "After the time conditions, compare the same rotation with small numbers. This defined example fixes the camera and z axis and turns from zero to ninety degrees over one second.",
+        "At half a second, elapsed time divided by duration gives t equal to one half. With linear time, half of ninety degrees is forty-five degrees.",
+        "Now use the square of the elapsed-time fraction as t. One half squared is one quarter, so the same instant gives one quarter of ninety degrees: twenty-two point five degrees.",
+        "At one second both reach t equal to one and ninety degrees. The endpoints and arc stay the same, but progress at intermediate times differs. Choosing the path and mapping time to progress are separate decisions."
+      ],
+      "beats": [
+        "고정 카메라·z축 / 0°→90° / 전체1초",
+        "0.5초: t=.5 → 45°",
+        "0.5초: t=.5²=.25 → 22.5°",
+        "1초: 둘 다90° / 같은 경로·다른 시간 진행"
+      ],
+      "retainedResult": "Fixed endpoints and the short rotation arc from original12",
+      "nextQuestion": "Which time mapping determines the visible orientation at a particular second?"
+    },
+    {
+      "id": "IB13",
+      "before": "13",
+      "kind": "explanation",
+      "title": "한 바퀴의 기록이 끝 자세에 남을까요",
+      "mode": "causal-bridge",
+      "ko": [
+        "시간에 맞춰 움직였더라도, 한 바퀴 더 돈 기록이 끝 자세에 남는지는 또 확인해야 합니다."
+      ],
+      "en": [
+        "Even after choosing a timing rule, we must check whether the final orientation retains the record of an extra complete turn."
+      ],
+      "beats": [
+        "경로·시간 → 추가 한 바퀴의 기록?",
+        "끝 자세 / 누적 이력"
+      ],
+      "visual": "Same object finishes an additional complete turn; keep final direction fixed while the history counter differs. Do not claim a quaternion records the trajectory."
+    },
+    {
+      "id": "13",
+      "title": "연속 부호와 여러 바퀴의 기록",
+      "kind": "explanation",
+      "mode": "continuity",
+      "ko": [
+        "매 프레임 더블유를 양수로만 바꾸면 백팔십 도 경계에서 성분이 갑자기 뒤집힐 수 있습니다.",
+        "이전 프레임과 내적이 음수이면 새 쿼터니언의 전체 부호를 바꾸는 방법으로 가까운 대표값을 이어갈 수 있습니다.",
+        "이 선택은 성분 연결을 돕지만 여러 바퀴의 회전 수를 복원하지는 않습니다.",
+        "애니메이션이 크게 한 바퀴 도는 것이 목적이라면 중간 키와 회전량을 따로 보존해야 합니다.",
+        "백팔십 도에서 어느 쪽으로 도는지도 게임의 요구로 정합니다. 가장 짧다는 말만으로는 방향이 하나로 정해지지 않습니다."
+      ],
+      "en": [
+        "Making w positive independently each frame can create a component sign jump at the180-degree boundary.",
+        "Flipping a new quaternion when its dot with the previous one is negative can maintain a nearby representative.",
+        "That choice helps component continuity, but does not recover the number of revolutions.",
+        "If an animation intentionally spins a full turn, preserve intermediate keys or accumulated turn information.",
+        "The desired direction at180degrees is a design policy: shortest alone does not make the choice unique."
+      ],
+      "beats": [
+        "매 프레임 w≥0 강제: 경계 주의",
+        "dot(previous,current)<0 → current=-current",
+        "연속 대표값 ≠ 회전 이력",
+        "큰 회전: 중간 키·누적량 보존",
+        "180° 동률 경로는 정책으로 선택"
+      ]
+    },
+    {
+      "id": "IG07",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "지나온 회전의 기록과 현재 자세 나누기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          144,
+          152.6
+        ],
+        [
+          197.8,
+          207.8
+        ]
+      ],
+      "maximumSeconds": 18.6,
+      "ko": [
+        "빨간 몸체 방향이 바뀌고 다시 섭니다.",
+        "현재 자세와 지나온 회전 과정은 다른 정보입니다.",
+        "이어서 다른 발췌입니다. 파란 보드 방향도 따로 따라가세요.",
+        "끝 자세 하나를 넘겨도 몇 바퀴 돌았는지까지 기록되지는 않습니다."
+      ],
+      "en": [
+        "The red body direction changes and becomes upright again.",
+        "The current pose and the rotation history are different information.",
+        "This is a different excerpt. Follow the blue board direction separately as well.",
+        "Passing the final orientation does not also store how many turns occurred."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            144,
+            152.6
+          ],
+          [
+            193,
+            208.5
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG07.mp4",
+          "duration": 24.1241,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "144 crouch →145 flip/146 land →149 grind/152 upright; independent193–208.5 hops/flips/landings",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Two clean action extracts retain before/result without the ragdoll188–190. The discontinuity is stated rather than claimed as one rotation history.",
+        "finalAnnotationReview": "pending",
+        "finalRangeReason": "Direct final pixels rejected the198.5–208.5 cut: a new jump starts at208.0 and the cut ends airborne. Fine0.5-second source review shows202.5–203.5 flip,204.0 first landing,205.0–206.5 second flip,207.0–207.8 upright roll before the next jump. Shift the same native10-second window to197.8–207.8 inside the already fully played193–208.5 candidate. Keep voice, duration, separate-cut warning and speed unchanged.",
+        "finalVisibleBeforeActionAfter": "197.8 upright approach →202.5–203.5 board flip →204.0 landing →205.0–206.5 second flip →207.0–207.8 upright rolling result; stop before208.0 new jump",
+        "finalNativeMovingAnnotationApproval": false,
+        "rejectedFinalCut": {
+          "interval": [
+            198.5,
+            208.5
+          ],
+          "reason": "Final moving pixels end during a new backflip, not a completed action. Previous claimed upright208.5 was incorrect.",
+          "captionedSha256": "011e69dc599b4e6309cf9fb2ca2800e74c67b7b1beb62c257d0da259fd8193e4",
+          "fineSourceReview": "shared/output/game-math-part2-teaching-revision/interpolation/landing-review"
+        }
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "14",
+      "title": "윙슈트와 스키의 몸체 기준",
+      "kind": "actual",
+      "sourceId": "H66Dl8kRNNQ",
+      "sourceSegments": [
+        {
+          "in": 768,
+          "maxSeconds": 51
+        },
+        {
+          "in": 567,
+          "maxSeconds": 23
+        },
+        {
+          "in": 600,
+          "maxSeconds": 13
+        },
+        {
+          "in": 621,
+          "maxSeconds": 12
+        }
+      ],
+      "in": 768,
+      "maxSeconds": 99,
+      "ko": [
+        "라이더스 리퍼블릭에서 윙슈트로 산을 내려오는 장면입니다. 팔과 몸통이 기울어지는 모습을 보세요.",
+        "위치는 계속 이동하지만 앞쪽과 위쪽 방향도 함께 바뀝니다. 한 화면의 방향 화살표만으로 전체 자세를 알 수는 없습니다.",
+        "목적지에 도착한 자세만 저장한다고 공중에서 지난 모든 회전이 남는 것은 아닙니다.",
+        "카메라가 따라 움직인 영향도 나누어 보세요. 내부 쿼터니언이나 보간 코드를 확인한 영상은 아닙니다.",
+        "장비가 달라진 발췌에서도 몸통이 향하는 쪽과 몸이 기울어지는 쪽을 나눠 봅니다. 몸에 붙은 앞쪽과 위쪽은 자세를 읽는 기준입니다.",
+        "발췌 사이의 컷과 되감기 화면을 연속 동작으로 연결하지 않습니다. 선택한 각 구간 안에서 실제 몸의 움직임을 보고, 같은 기준의 세 축을 생각해 보세요.",
+        "이제 각 작업에 알맞은 회전 표현을 정리하고 서로 바꾸어 보겠습니다."
+      ],
+      "en": [
+        "This is wingsuit flight down a mountain in Riders Republic. Observe the bank of the arms and body.",
+        "Position continues changing while facing and up directions change too. One facing arrow does not capture the whole orientation.",
+        "Storing the arrival orientation does not preserve every rotation made along the flight.",
+        "Separate the following camera motion too. This footage does not expose internal quaternion or interpolation code.",
+        "With different equipment too, distinguish torso facing from body bank. Attached forward and up directions provide a frame for reading orientation.",
+        "Do not connect cuts or rewind screens into continuous motion. We selected actual action within separate excerpts; imagine the three attached axes in each.",
+        "We will now choose a suitable representation for each task and convert between them."
+      ],
+      "focus": "Wing/ski torso facing and bank; gear changes and edits are distinct excerpts, not a continuous turn.",
+      "claim": "자세 전체·회전 이력 구분과 표현 선택 연결"
+    },
+    {
+      "id": "IP03",
+      "before": "15",
+      "kind": "explanation",
+      "title": "중간 자세를 다음 작업에 넘기려면",
+      "mode": "representation-handoff",
+      "retainedResult": "Interpolation with explicit sign, time and turn-history policy",
+      "nextQuestion": "같은 자세를 왜 네 가지 표현으로 바꿀까?",
+      "ko": [
+        "이제 한 순간의 중간 자세를 얻었습니다. 그런데 사람이 각도를 수정할 때와, 그 자세로 수많은 꼭짓점을 움직일 때는 필요한 형태가 다릅니다.",
+        "같은 몸체 축을 유지한 채, 편집용 각도와 보간용 쿼터니언, 벡터에 적용할 행렬 사이에 자세를 전달하겠습니다."
+      ],
+      "en": [
+        "We now have an intermediate orientation at one instant. Editing its angles and applying it to many vertices call for different representations.",
+        "Keep the same body axes while passing that orientation between editable angles, interpolation quaternions and matrices that transform vectors."
+      ],
+      "beats": [
+        "같은 자세·같은 몸체 축",
+        "각도 편집 → 보간·저장 → 많은 벡터에 적용"
+      ],
+      "visual": "One projected3D object stays fixed while named data encodings appear beside it; highlight each task before its representation. Avoid separate unrelated cards."
+    },
+    {
+      "id": "15",
+      "title": "하나만 고집하지 말고 작업에 맞게 쓰세요",
+      "kind": "explanation",
+      "mode": "representations",
+      "ko": [
+        "오일러 각은 사람이 각도를 읽고 편집할 때 편합니다. 대신 순서, 중복 표현, 특이 자세를 처리해야 합니다.",
+        "쿼터니언은 자세 합성과 보간에 편하지만, 네 성분을 직접 편집하기는 어렵고 단위 길이와 부호를 관리해야 합니다.",
+        "행렬은 세 축을 직접 읽고 많은 벡터에 같은 변환을 적용할 때 편합니다. 정규직교와 행렬식 조건을 검사합니다.",
+        "삼십이 비트 실수 성분만 세면 오일러는 십이, 쿼터니언은 십육, 삼 바이 삼 행렬은 삼십육 바이트입니다. 정렬과 메타데이터는 별도입니다.",
+        "축과 각도는 한 번의 회전을 설명하기 쉽습니다. 압축과 실행 비용은 데이터와 구현을 측정해 고르세요. 다른 표현도 구조를 지킨 보간이 가능합니다.",
+        "저장이나 전송에서는 성분을 압축할 수도 있습니다. 단위 길이로 빠진 성분을 복원하는 방법은 부호 규칙과 양자화 오차를 검사해야 합니다. 열여섯 바이트가 항상 최소 크기라는 뜻은 아닙니다."
+      ],
+      "en": [
+        "Euler angles suit human reading and editing, with order, equivalent encodings and singular poses to handle.",
+        "Quaternions suit composition and interpolation, but need unit-length and sign management and are hard to edit directly.",
+        "Matrices expose the three axes and suit transforming many vectors. Check orthonormality and determinant.",
+        "Float32 components alone occupy12bytes for Euler,16for a quaternion and36for a3-by-3matrix, excluding padding and metadata.",
+        "Axis-angle explains a single turn clearly. Measure compression and runtime in your implementation; other representations also have rotation-aware interpolation methods.",
+        "Storage or transmission may compress components. Reconstructing an omitted component from unit length requires sign rules and quantization-error checks. Sixteen bytes is not a universal minimum."
+      ],
+      "beats": [
+        "Euler: 입력·편집 / 순서·특이점",
+        "Quaternion: 합성·보간 / 단위·부호",
+        "Matrix: 축·벡터 변환 / 유효 회전 검사",
+        "float32 성분:12 /16 /36 B",
+        "축각: 기하 설명 / 비용은 실제 측정",
+        "성분 압축: 부호·양자화 오차 검증"
+      ]
+    },
+    {
+      "id": "IF02",
+      "after": "15",
+      "kind": "explanation",
+      "title": "보간한 자세를 다음 계산에 넘기기",
+      "mode": "first-conclusion",
+      "ko": [
+        "두 자세 사이에서는 경로와 단위 길이를 지키고, 티가 실제 시간과 어떻게 연결되는지도 정했습니다. 추가 회전 이력은 따로 기록해야 했죠.",
+        "이제 얻은 한 순간의 자세를 다음 작업에 넘깁니다. 다음 편에서는 같은 물체와 축을 유지하면서 각도, 쿼터니언, 행렬을 서로 바꾸고 같은 회전인지 검산하겠습니다."
+      ],
+      "en": [
+        "Between two orientations, we chose a path, kept unit length and specified how t follows physical time. Extra turn history needed separate storage.",
+        "We now pass one intermediate orientation to the next task. The next episode retains the same object and axes while converting angles, quaternions and matrices and verifying the same rotation."
+      ],
+      "beats": [
+        "경로·단위 길이·시간·이력 정리",
+        "같은 자세 → 다음 편의 표현 변환"
+      ],
+      "visual": "Retain the final intermediate object and task-based representations from15; compare the same basis vector under each representation as the next question."
+    }
+  ],
+  "title": "게임수학 Part 2 · 회전 보간 ① 두 자세 사이의 경로와 속도",
+  "revisionOf": "game-math-rotation-interpolation",
+  "episode": 1,
+  "causalSpine": "시작과 끝 자세 사이를 어떤 경로와 속도로 움직일까?",
+  "baselineOriginalScenesUnchanged": true,
+  "baselineSource": "production/batches/game-math-part2-teaching-revision/baselines/game-math-rotation-interpolation"
+}

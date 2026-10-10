@@ -1,0 +1,755 @@
+{
+  "revisionOf": "game-math-rotation-interpolation",
+  "scenes": [
+    {
+      "id": "IG01",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "절반 자세는 움직임 중간에 있습니다",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          54,
+          74
+        ]
+      ],
+      "maximumSeconds": 20,
+      "ko": [
+        "스케이트 삼에서 자세가 이어지는 모습을 보겠습니다. 빨간 선은 몸체 방향입니다.",
+        "파란 선은 보이는 보드의 긴 방향입니다. 출발, 공중, 착지를 따로 따라가세요.",
+        "그 사이를 만들 비율이 티입니다. 앞의 사십오 도는 계산 예시이며 이 장면의 측정 각도가 아닙니다."
+      ],
+      "en": [
+        "Observe connected poses in Skate 3. Red follows the body direction.",
+        "Blue follows the visible board length. Follow takeoff, the airborne pose and landing separately.",
+        "The fraction for constructing intermediate poses is t. The previous forty-five degrees was a worked example, not an angle measured here."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            54,
+            74
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG01.mp4",
+          "duration": 20.02,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "54 upright/pushing →61–64 airborne body turn/land →68–72 board flip and upright73",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "The complete body/board actions are separated in silhouette; no menu or ragdoll interrupts the result.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "IG02",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "방향의 변화와 지나가는 속도 나누기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          116,
+          140
+        ]
+      ],
+      "maximumSeconds": 24,
+      "ko": [
+        "이번에는 빨간 몸체 선과 파란 보드 선이 바뀌는 순서를 보세요.",
+        "움직인 거리와 중간 자세의 비율은 서로 다른 값입니다. 같은 장면에서도 카메라가 따라 움직입니다.",
+        "화면에서 빨라 보인다고 일정한 각속도라고 단정할 수는 없습니다. 다음 계산에서는 시간 조건을 따로 고정합니다."
+      ],
+      "en": [
+        "Watch the order in which the red body line and blue board line change.",
+        "Travel distance and the fraction between orientations are different values. The camera also follows the action.",
+        "Fast-looking screen motion does not establish constant angular speed. We will state the timing conditions separately in the calculation."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            109.5,
+            140
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG02.mp4",
+          "duration": 30.5305,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "109.5 pushing →117–120 jump/turn →127–131 flip →upright travel139",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Compared with the reset-heavy392–442 cut, the same visible rider proceeds through readable actions and outcomes.",
+        "finalAnnotationReview": "pending",
+        "finalRangeReason": "Move the measured23.6-second excerpt within the already fully played109.5–140 interval: the former end133.1 began another jump. Start116 and finish139.6 so viewers see the117–120 and127–131 actions and upright result139.",
+        "finalVisibleBeforeActionAfter": "116 approach →117–120 body/board jump and landing →127–131 second turn and landing →upright139",
+        "finalNativeMovingAnnotationApproval": false
+      }
+    },
+    {
+      "id": "IG03",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "보이는 방향에서 각도 읽기로 이어가기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          210,
+          247
+        ]
+      ],
+      "maximumSeconds": 37,
+      "ko": [
+        "같은 몸체가 기울었다가 서는 과정을 보겠습니다. 빨간 선은 몸체, 파란 선은 보드입니다.",
+        "방향을 숫자로 바꾸려면 기준축을 먼저 정해야 합니다. 화면의 선은 카메라로 투영된 관찰값입니다.",
+        "다음 삼각형은 축을 고정한 계산 예시입니다. 그 가로와 세로에서 길이와 방향각을 읽겠습니다."
+      ],
+      "en": [
+        "Observe the same body lean and become upright. Red follows the body; blue follows the board.",
+        "Turning a direction into numbers first requires axes. These screen lines are projected observations through the camera.",
+        "The next triangle is a worked example with fixed axes. Read its length and direction angle from its horizontal and vertical components."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            210,
+            247
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG03.mp4",
+          "duration": 37.003633,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "210 pushing red bowl →216–234 airborne rotations and landings →240–242 road jump/land →upright247",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "The body remains identifiable against red ground, allowing observation to lead into the fixed-axis hypot/atan2 example.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "IG04",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "몸체와 보드에는 다른 방향이 붙어 있습니다",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          157.3,
+          174.3
+        ]
+      ],
+      "maximumSeconds": 17.0,
+      "ko": [
+        "빨간 선은 몸체 방향입니다. 파란 선은 보드의 긴 방향입니다.",
+        "몸과 보드의 방향이 따로 바뀌었다가 다시 이어집니다.",
+        "각 대상을 구분해야 같은 방향 벡터로 계산 결과를 비교할 수 있습니다."
+      ],
+      "en": [
+        "Red follows the body. Blue follows the visible board length.",
+        "Their directions change separately and then reconnect.",
+        "Distinguish the objects before comparing calculated results for the same direction vector."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            157.3,
+            174.3
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG04.mp4",
+          "duration": 17.017,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "157.3 walking/boarding →159–172 flips and grind →upright173–174",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "A short close silhouette provides a clear object distinction without the later ragdoll188–190.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "IG05",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "같은 자세를 바꿔 적는 것과 실제로 돌리는 것",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          459,
+          470.8
+        ],
+        [
+          482.7,
+          496
+        ]
+      ],
+      "maximumSeconds": 25.100000000000023,
+      "ko": [
+        "몸체의 빨간 방향을 보세요. 카메라가 따라와도 지금 몸체의 자세는 하나입니다.",
+        "행렬을 쿼터니언으로 바꿔 적는다고 몸체가 추가로 도는 것은 아닙니다.",
+        "이어서 다른 발췌입니다. 파란 보드 방향이 변하고 다시 착지합니다.",
+        "자세가 실제로 바뀌는 동작과, 같은 자세를 다른 숫자로 옮기는 계산을 나누겠습니다."
+      ],
+      "en": [
+        "Follow the red body direction. Even with a following camera, the body has one orientation at each instant.",
+        "Converting a matrix to a quaternion does not add another physical rotation.",
+        "This is a different excerpt. The blue board direction changes before another landing.",
+        "Separate an action that changes the pose from a conversion that writes the same pose in different numbers."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            459,
+            470.8
+          ],
+          [
+            482.7,
+            496
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG05.mp4",
+          "duration": 25.1251,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "459–470.8 road body banking → next independent482.7–496 board jump/flip/land",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Cuts exclude the obscured quarterpipe471–475, ragdoll476–478 and loading479–481. Separate excerpts are explicitly narrated.",
+        "finalAnnotationReview": "pending"
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "IG06",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "끝 자세와 검산의 목적 연결하기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          569,
+          598
+        ]
+      ],
+      "maximumSeconds": 29,
+      "ko": [
+        "마지막으로 몸체와 보드가 움직이는 방향을 함께 따라가겠습니다.",
+        "빨간 몸체 선과 파란 보드 선은 다른 대상입니다. 같은 대상의 입력 방향과 결과를 비교해야 합니다.",
+        "앞의 작은 수 예제는 카메라와 축을 고정해 그 비교를 검산한 것입니다.",
+        "이 게임의 내부 회전값을 얻은 것은 아닙니다. 다음에는 움직인 점을 선과 경계로 정의하겠습니다."
+      ],
+      "en": [
+        "Finally follow the body and board directions together through the action.",
+        "The red body line and blue board line represent different objects. Compare the input and output direction of the same object.",
+        "The worked numerical example fixed the camera and axes to verify that comparison.",
+        "We have not extracted the game internal rotation values. Next define moving points as lines and bounds."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            569,
+            598
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG06.mp4",
+          "duration": 29.029,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "569 boarding →573–582 banking →585–594 jumps/flips/landings →595–598 upright travel",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "The continuous rider survives each readable action; excludes earlier resets539–543 and562–568.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "IG07",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "지나온 회전의 기록과 현재 자세 나누기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          144,
+          152.6
+        ],
+        [
+          197.8,
+          207.8
+        ]
+      ],
+      "maximumSeconds": 18.6,
+      "ko": [
+        "빨간 몸체 방향이 바뀌고 다시 섭니다.",
+        "현재 자세와 지나온 회전 과정은 다른 정보입니다.",
+        "이어서 다른 발췌입니다. 파란 보드 방향도 따로 따라가세요.",
+        "끝 자세 하나를 넘겨도 몇 바퀴 돌았는지까지 기록되지는 않습니다."
+      ],
+      "en": [
+        "The red body direction changes and becomes upright again.",
+        "The current pose and the rotation history are different information.",
+        "This is a different excerpt. Follow the blue board direction separately as well.",
+        "Passing the final orientation does not also store how many turns occurred."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            144,
+            152.6
+          ],
+          [
+            193,
+            208.5
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG07.mp4",
+          "duration": 24.1241,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "144 crouch →145 flip/146 land →149 grind/152 upright; independent193–208.5 hops/flips/landings",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Two clean action extracts retain before/result without the ragdoll188–190. The discontinuity is stated rather than claimed as one rotation history.",
+        "finalAnnotationReview": "pending",
+        "finalRangeReason": "Direct final pixels rejected the198.5–208.5 cut: a new jump starts at208.0 and the cut ends airborne. Fine0.5-second source review shows202.5–203.5 flip,204.0 first landing,205.0–206.5 second flip,207.0–207.8 upright roll before the next jump. Shift the same native10-second window to197.8–207.8 inside the already fully played193–208.5 candidate. Keep voice, duration, separate-cut warning and speed unchanged.",
+        "finalVisibleBeforeActionAfter": "197.8 upright approach →202.5–203.5 board flip →204.0 landing →205.0–206.5 second flip →207.0–207.8 upright rolling result; stop before208.0 new jump",
+        "finalNativeMovingAnnotationApproval": false,
+        "rejectedFinalCut": {
+          "interval": [
+            198.5,
+            208.5
+          ],
+          "reason": "Final moving pixels end during a new backflip, not a completed action. Previous claimed upright208.5 was incorrect.",
+          "captionedSha256": "011e69dc599b4e6309cf9fb2ca2800e74c67b7b1beb62c257d0da259fd8193e4",
+          "fineSourceReview": "shared/output/game-math-part2-teaching-revision/interpolation/landing-review"
+        }
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "IG08",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "카메라의 그림과 몸체의 자세 구분하기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          344.5,
+          356
+        ],
+        [
+          525,
+          537.7
+        ]
+      ],
+      "maximumSeconds": 24.200000000000045,
+      "ko": [
+        "몸체의 빨간 선을 따라가세요. 카메라도 함께 따라 움직입니다.",
+        "화면에 보이는 기울기는 몸체의 세 차원 각도와 같지 않습니다.",
+        "다른 발췌에서도 같은 대상을 계속 보겠습니다.",
+        "각도를 다시 찾는 검산에는 카메라 관찰과 별도로 정한 축과 회전값이 필요합니다."
+      ],
+      "en": [
+        "Follow the red body line while the camera also moves with it.",
+        "The tilt projected on screen is not the body three-dimensional angle.",
+        "Continue observing the same object in a different excerpt.",
+        "Verifying recovered angles requires declared axes and rotation data in addition to the camera observation."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            344.5,
+            356
+          ],
+          [
+            525,
+            537.7
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG08.mp4",
+          "duration": 24.2242,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "344.5 board/jump →346–355 crouched road banking; independent525 boarding →526–536 banking",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Trims the earlier332–356 candidate loading341–342 and excludes537.7+ collision/reset; keeps follow-camera projection comparison.",
+        "finalAnnotationReview": "pending"
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "IG09",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "정보가 부족하면 각도를 추측하지 않습니다",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          442,
+          449.5
+        ],
+        [
+          543.5,
+          555.8
+        ]
+      ],
+      "maximumSeconds": 19.799999999999955,
+      "ko": [
+        "몸체의 빨간 방향은 보이지만, 그 선만으로 회전축 전체가 정해지지는 않습니다.",
+        "이어서 다른 발췌의 파란 보드 방향입니다.",
+        "가려진 정보는 추측하지 않겠습니다.",
+        "계산에서는 앞에서 정한 입력과 예외 규칙으로 같은 자세인지 검사합니다."
+      ],
+      "en": [
+        "The red body direction is visible, but that line alone does not determine the complete rotation axis.",
+        "This is the blue board direction in a different excerpt.",
+        "We will not guess information that is hidden.",
+        "The calculation uses the declared inputs and exceptional-case rules to verify the same orientation."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            442,
+            449.5
+          ],
+          [
+            543.5,
+            555.8
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG09.mp4",
+          "duration": 19.8198,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "442–449.5 road lean before quarterpipe collision; independent543.5–555.8 boarding/flip/land/road bank",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Rejects collision450–452, static453, loading454–455 and542. End555.8 precedes the close quarterpipe occlusion556.",
+        "finalAnnotationReview": "pending"
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "IG10",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "움직이는 몸체와 단위 방향의 길이",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          89,
+          107.5
+        ]
+      ],
+      "maximumSeconds": 18.5,
+      "ko": [
+        "빨간 선은 몸체, 파란 선은 보드 방향입니다.",
+        "공중에서 몸과 보드가 바뀌고 다시 착지합니다.",
+        "계산의 단위 길이는 저장한 방향값의 조건입니다.",
+        "게임 속 이동 거리나 화면에서 보이는 선 길이를 일로 만든다는 뜻은 아닙니다."
+      ],
+      "en": [
+        "Red follows the body; blue follows the board direction.",
+        "Their directions change in the air before another landing.",
+        "Unit length in the calculation is a condition on the stored direction values.",
+        "It does not set the game travel distance or the displayed line length to one."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            89,
+            107.5
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG10.mp4",
+          "duration": 18.5185,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "89 crouch →90–96 flips/landings →100–104 airborne board/body changes →upright107",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Close red-ground silhouettes reveal the two moving directions and clarify norm versus physical/screen length.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "IG11",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "한 자세를 여러 작업에 넘겨 쓰기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          4,
+          34.8
+        ]
+      ],
+      "maximumSeconds": 30.799999999999997,
+      "ko": [
+        "몸체를 나타내는 빨간 선과 보드의 파란 선을 비교해 보세요.",
+        "물체가 움직여도 한 순간의 자세는 한 번 정해집니다.",
+        "그 자세를 편집할 각도, 보간할 쿼터니언, 벡터에 적용할 행렬로 옮길 수 있습니다.",
+        "바꿔 적은 숫자가 같은 방향을 만드는지 다음 왕복 계산에서 확인하겠습니다."
+      ],
+      "en": [
+        "Compare the red body line and blue board line.",
+        "The moving object has one orientation at a particular instant.",
+        "That pose can be expressed as angles for editing, a quaternion for interpolation or a matrix for applying it to vectors.",
+        "The next round trip checks whether the converted numbers produce the same direction."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            4,
+            34.8
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG11.mp4",
+          "duration": 30.8308,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "4 boarding →8–14 airborne turns/landing →16–22 jump/land →24–34 push/turn/upright",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "The long continuous red-bowl sequence supplies readable body and board changes without menus; end34.8 precedes the next airborne pose. Temporary hidden board anchors must be hidden rather than guessed.",
+        "finalAnnotationReview": "pending"
+      }
+    }
+  ],
+  "review": {
+    "allSelectedNativePlaybackCompared": true,
+    "denseActionPixelsCompared": true,
+    "playbackProofs": [
+      {
+        "path": "shared/output/game-math-part2-teaching-revision/interpolation-candidates/native-clean-cut-playback.json",
+        "sha256": "2af2026662371d455802a8cc202a724ca40e6c95a8552c12f472414a4add8ea2",
+        "observedAt": "2026-10-10T11:25:22.873Z"
+      },
+      {
+        "path": "shared/output/game-math-part2-teaching-revision/interpolation-candidates/native-reserve-cut-playback.json",
+        "sha256": "f3f1d4153fb3c528f1a2cc5ed5d7c38f699e2610f854af5e35d8c3813746b54f",
+        "observedAt": "2026-10-10T11:36:00.680Z"
+      }
+    ],
+    "classification": "Action-led full-screen moving gameplay with brief narrated tracked direction annotations; diagrams/frozen analysis remain explanation and are not counted twice",
+    "priorUse": "No previous Skate title found in scoped recent production manifests/source records. Selected native intervals are nonoverlapping with one another and with baseline Forza/Riders sources; this is not a claim of exhaustive channel history.",
+    "rejected": [
+      {
+        "source": "Skate3",
+        "interval": [
+          332,
+          356
+        ],
+        "reason": "Original broad candidate includes loading341–342. Use344.5–356 only."
+      },
+      {
+        "source": "Skate3",
+        "interval": [
+          442,
+          459
+        ],
+        "reason": "Collision450–452, static453/loading454–455. Keep442–449.5."
+      },
+      {
+        "source": "Skate3",
+        "interval": [
+          542,
+          557
+        ],
+        "reason": "542 loading and556 close-camera occlusion. Keep543.5–555.8."
+      },
+      {
+        "source": "Skate3",
+        "interval": [
+          392,
+          442
+        ],
+        "reason": "Resets, ragdoll and loading repeatedly break before/action/result."
+      },
+      {
+        "source": "RidersRepublic",
+        "interval": [
+          440,
+          510
+        ],
+        "reason": "Results/menu/intro dominate; unavailable as teaching action quota."
+      },
+      {
+        "source": "RidersRepublic",
+        "interval": [
+          244,
+          292
+        ],
+        "reason": "Results first, then occluded crowd and already-used baseline tail."
+      },
+      {
+        "source": "ForzaHorizon4",
+        "interval": [
+          42,
+          55
+        ],
+        "reason": "Already used within retained baseline42–95; not a new footage insertion."
+      }
+    ],
+    "rights": "Uploader recording reuse statement verified in existing source record; game-IP/human review pending",
+    "narration": "authored only after the above actual comparisons",
+    "annotationsAndFinalRender": "pending"
+  }
+}

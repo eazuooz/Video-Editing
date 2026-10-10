@@ -1,0 +1,1000 @@
+1
+00:00:02,000 --> 00:00:05,380
+The previous episode found the rotation
+difference from the starting to the target
+
+2
+00:00:05,660 --> 00:00:08,700
+orientation. We now construct intermediate
+orientations along that rotation.
+
+3
+00:00:09,350 --> 00:00:13,490
+How do we construct natural intermediate
+orientations between two poses?
+
+4
+00:00:13,890 --> 00:00:16,230
+We will observe driving and flight,
+
+5
+00:00:16,230 --> 00:00:20,150
+then visualize the short path and speed of
+quaternion interpolation.
+
+6
+00:00:20,390 --> 00:00:23,910
+Next, we will convert Euler angles,
+axis-angle,
+
+7
+00:00:23,910 --> 00:00:26,030
+quaternions and matrices under one convention.
+
+8
+00:00:26,370 --> 00:00:29,350
+Finally, we will calculate the midpoint of a
+
+9
+00:00:29,350 --> 00:00:32,450
+ninety-degree turn and verify a conversion
+round trip.
+
+10
+00:00:33,100 --> 00:00:36,580
+This is driving on a bend in Forza Horizon4.
+
+11
+00:00:36,900 --> 00:00:39,820
+Read the car facing separately from the
+following camera.
+
+12
+00:00:43,148 --> 00:00:45,748
+Matching the first and last directions does
+not
+
+13
+00:00:45,748 --> 00:00:47,848
+prevent an awkward sudden turn between them.
+
+14
+00:00:51,016 --> 00:00:55,096
+Compare the front of the car, the bend and the
+moving background.
+
+15
+00:00:58,364 --> 00:01:01,764
+The footage does not reveal which
+interpolation function the game uses.
+
+16
+00:01:02,184 --> 00:01:04,904
+It shows why intermediate orientations matter.
+
+17
+00:01:08,192 --> 00:01:12,252
+Changes in apparent car size also involve
+camera and distance.
+
+18
+00:01:12,332 --> 00:01:18,212
+Following its facing separately helps avoid
+mixing translation with rotation.
+
+19
+00:01:21,340 --> 00:01:25,460
+Our next diagram will hold position and camera
+fixed and change only orientation.
+
+20
+00:01:26,200 --> 00:01:28,140
+After observing the body changing direction,
+
+21
+00:01:28,500 --> 00:01:31,860
+can we make intermediate poses by mixing the
+four numbers at the start and end?
+
+22
+00:01:32,770 --> 00:01:37,410
+Consider the midpoint between identity and
+a180-degree turn about z.
+
+23
+00:01:37,750 --> 00:01:43,150
+Averaging the entries yields a diagonal
+of0,0,1. Two axes collapse.
+
+24
+00:01:43,370 --> 00:01:45,850
+Quaternions must maintain unit length too.
+
+25
+00:01:45,957 --> 00:01:49,530
+A component blend generally leaves the unit
+surface.
+
+26
+00:01:49,770 --> 00:01:55,330
+We will distinguish a normalized linear blend
+from following an arc on the unit sphere.
+
+27
+00:01:55,610 --> 00:01:58,210
+Matrices can be interpolated with methods that
+respect the rotation structure;
+
+28
+00:01:58,250 --> 00:02:01,170
+naive entry blending is the problem.
+
+29
+00:02:01,817 --> 00:02:06,217
+As we learned, q and minus q represent the
+same orientation,
+
+30
+00:02:06,537 --> 00:02:08,897
+yet a component path between them can differ.
+
+31
+00:02:09,237 --> 00:02:12,577
+Take the dot product of unit endpoints. If it
+is negative,
+
+32
+00:02:12,857 --> 00:02:15,777
+flip every component of the end quaternion.
+
+33
+00:02:16,057 --> 00:02:21,597
+This selects the closer representative of the
+same endpoint; it is not conjugation.
+
+34
+00:02:21,857 --> 00:02:25,977
+For endpoints q and minus q,
+
+35
+00:02:26,297 --> 00:02:28,857
+sign alignment makes them identical, avoiding
+a zero midpoint.
+
+36
+00:02:28,857 --> 00:02:33,877
+A physical180-degree separation has two
+equally short paths.
+
+37
+00:02:34,197 --> 00:02:36,557
+Choose a direction with an explicit policy.
+
+38
+00:02:36,757 --> 00:02:39,037
+We can also use the relative rotation from the
+previous lesson.
+
+39
+00:02:39,357 --> 00:02:43,037
+After sign alignment, delta is the end
+quaternion times the inverse of the start.
+
+40
+00:02:43,337 --> 00:02:47,237
+Applying delta to the power t to the start
+follows the same short arc.
+
+41
+00:02:47,867 --> 00:02:50,567
+In delta to the power t, t is the exponent on
+delta;
+
+42
+00:02:50,567 --> 00:02:56,147
+the expression does not square t.
+
+43
+00:02:56,507 --> 00:02:59,987
+With a z ninety-degree delta and t equal to
+one half,
+
+44
+00:02:59,987 --> 00:03:03,767
+apply half the difference, forty-five degrees,
+to the starting orientation.
+
+45
+00:03:03,967 --> 00:03:09,527
+We will now calculate weights that keep the
+intermediate orientation on the unit arc.
+
+46
+00:03:10,150 --> 00:03:15,414
+Observe connected poses in Skate 3. Red
+follows the body direction.
+
+47
+00:03:16,058 --> 00:03:18,878
+Blue follows the visible board length. Follow
+takeoff,
+
+48
+00:03:19,362 --> 00:03:21,622
+the airborne pose and landing separately.
+
+49
+00:03:22,226 --> 00:03:24,426
+The fraction for constructing intermediate
+poses is t.
+
+50
+00:03:24,850 --> 00:03:29,530
+The previous forty-five degrees was a worked
+example, not an angle measured here.
+
+51
+00:03:30,150 --> 00:03:34,910
+Track the car facing as it follows the next
+bend.
+
+52
+00:03:37,762 --> 00:03:40,442
+An endpoint image alone does not tell whether
+the
+
+53
+00:03:40,442 --> 00:03:45,734
+turn was short or included an extra
+revolution.
+
+54
+00:03:45,994 --> 00:03:49,934
+Interpolation between two orientations chooses
+a path
+
+55
+00:03:50,294 --> 00:03:53,454
+without storing the number of earlier
+revolutions.
+
+56
+00:03:56,266 --> 00:04:04,278
+Interpolating a position along the road
+differs from interpolating orientation.
+
+57
+00:04:04,278 --> 00:04:10,798
+Even when two moments have similar facing, the
+intervening turn requires observing
+
+58
+00:04:11,258 --> 00:04:14,118
+the motion. Distinguish endpoint orientation
+from rotation history over time.
+
+59
+00:04:17,230 --> 00:04:21,110
+Now we will relate an arc on the unit sphere
+to the orientation change.
+
+60
+00:04:22,150 --> 00:04:26,070
+Following an arc requires the angle between
+its endpoints.
+
+61
+00:04:26,330 --> 00:04:28,670
+Begin with the familiar unit circle in a
+plane.
+
+62
+00:04:28,910 --> 00:04:31,230
+The rightward unit vector is one, zero.
+
+63
+00:04:31,430 --> 00:04:34,750
+A thirty-degree vector is square root three
+over two, one half.
+
+64
+00:04:35,350 --> 00:04:39,330
+Multiplying corresponding entries and adding
+gives square root three over two.
+
+65
+00:04:39,430 --> 00:04:41,910
+That number is cosine of thirty degrees.
+
+66
+00:04:42,010 --> 00:04:47,030
+Arccosine performs the reverse lookup and
+returns thirty degrees.
+
+67
+00:04:47,030 --> 00:04:49,750
+For quaternions, the dot sums four component
+products and
+
+68
+00:04:49,750 --> 00:04:52,710
+gives the angle alpha in the section joining
+the two unit points.
+
+69
+00:04:53,130 --> 00:04:56,210
+Alpha must be distinguished from the object's
+physical rotation.
+
+70
+00:04:56,967 --> 00:05:00,127
+Unit quaternions lie on a sphere in four
+dimensions,
+
+71
+00:05:00,132 --> 00:05:02,307
+with squared components summing to one.
+
+72
+00:05:02,527 --> 00:05:05,407
+This circle illustrates the relevant arc in a
+two-dimensional section,
+
+73
+00:05:05,687 --> 00:05:08,767
+rather than depicting the full
+four-dimensional sphere.
+
+74
+00:05:08,937 --> 00:05:14,447
+Let d be the sign-aligned dot product, and let
+alpha be its arccosine.
+
+75
+00:05:14,627 --> 00:05:19,227
+The quaternion arc angle differs from the
+physical turn
+
+76
+00:05:19,487 --> 00:05:22,307
+angle: the minimum physical rotation is twice
+alpha.
+
+77
+00:05:22,307 --> 00:05:27,347
+Sine-ratio weights combine the endpoints into
+the point at fraction t of the arc.
+
+78
+00:05:27,787 --> 00:05:32,347
+This is spherical linear interpolation. It
+does not mean the components change linearly.
+
+79
+00:05:32,983 --> 00:05:36,543
+Red follows the body; blue follows the board
+direction.
+
+80
+00:05:37,443 --> 00:05:40,803
+Their directions change in the air before
+another landing.
+
+81
+00:05:41,883 --> 00:05:45,123
+Unit length in the calculation is a condition
+on the stored direction values.
+
+82
+00:05:46,143 --> 00:05:50,863
+It does not set the game travel distance or
+the displayed line length to one.
+
+83
+00:05:51,483 --> 00:05:55,083
+We found the unit arc, but its denominator
+becomes small as the endpoints coincide.
+
+84
+00:05:55,423 --> 00:05:57,943
+Handle nearly identical orientations first.
+
+85
+00:05:58,567 --> 00:06:02,887
+Our code requires finite t between zero and
+one.
+
+86
+00:06:03,427 --> 00:06:06,027
+Validate and normalize both quaternion
+endpoints first.
+
+87
+00:06:06,177 --> 00:06:13,687
+Near-zero or nonfinite inputs need an error or
+an explicit fallback to a valid orientation.
+
+88
+00:06:13,927 --> 00:06:16,227
+Flip the endpoint when the dot is negative,
+
+89
+00:06:16,227 --> 00:06:20,527
+then clamp the dot to protect arccosine from
+rounding error.
+
+90
+00:06:20,667 --> 00:06:23,107
+When d exceeds0.9995, this example uses
+normalized
+
+91
+00:06:23,367 --> 00:06:27,607
+linear interpolation to avoid a small sine
+denominator.
+
+92
+00:06:27,607 --> 00:06:30,427
+Otherwise, use the sine weights and normalize
+the result.
+
+93
+00:06:30,887 --> 00:06:33,627
+Check the endpoint orientations at t zero and
+one.
+
+94
+00:06:34,383 --> 00:06:38,683
+In these other driving intervals, separate car
+facing from background motion.
+
+95
+00:06:41,583 --> 00:06:45,463
+The edit between excerpts is not a computed
+intermediate pose.
+
+96
+00:06:45,663 --> 00:06:49,023
+Observe continuous motion within each excerpt.
+
+97
+00:06:51,463 --> 00:06:59,023
+Code produces intermediate rotations by
+changing t between the endpoints.
+
+98
+00:06:59,223 --> 00:07:04,443
+Imagine both a forward line and an up line on
+the car.
+
+99
+00:07:04,643 --> 00:07:10,603
+A single direction can miss its twist.
+
+100
+00:07:10,603 --> 00:07:14,523
+A cut can change location and camera. Observe
+continuous pose changes within
+
+101
+00:07:14,983 --> 00:07:20,183
+each excerpt before connecting them to the
+next fixed-condition calculation.
+
+102
+00:07:23,083 --> 00:07:28,343
+The next calculation holds camera and position
+fixed. For a ninety-degree turn,
+
+103
+00:07:28,343 --> 00:07:31,643
+examine t equal to zero point two five and
+zero point five.
+
+104
+00:07:32,383 --> 00:07:34,723
+To verify the observation made with a moving
+camera,
+
+105
+00:07:35,063 --> 00:07:39,883
+fix the camera and z axis and compute the
+intermediate poses of a ninety-degree turn.
+
+106
+00:07:40,517 --> 00:07:43,277
+Start at[1,0,0,0], ending at a z90-degree
+
+107
+00:07:43,497 --> 00:07:49,197
+turn:[cos45degrees,0,0,sin45degrees].
+
+108
+00:07:49,497 --> 00:07:51,877
+The dot is square root two over two: alpha
+is45degrees,
+
+109
+00:07:51,997 --> 00:07:55,877
+while the physical rotation is90degrees.
+
+110
+00:07:55,952 --> 00:07:59,657
+At t equal to zero point two five,
+
+111
+00:08:00,157 --> 00:08:02,577
+the object rotates twenty-two point five
+degrees, the first of four equal steps.
+
+112
+00:08:02,777 --> 00:08:06,157
+At the halfway value t equal to zero point
+five, it rotates forty-five degrees.
+
+113
+00:08:06,219 --> 00:08:10,377
+At the third step, t equal to zero point seven
+five, it is sixty-seven point five degrees.
+
+114
+00:08:10,517 --> 00:08:13,597
+Equal t intervals give equal rotation-angle
+intervals.
+
+115
+00:08:13,977 --> 00:08:17,717
+Each quaternion is converted to a matrix to
+draw the body axes.
+
+116
+00:08:17,937 --> 00:08:20,897
+We can verify intermediate results as well as
+endpoints.
+
+117
+00:08:21,657 --> 00:08:25,157
+NLERP aligns signs, blends components linearly
+and
+
+118
+00:08:25,297 --> 00:08:27,617
+normalizes: a simple calculation that
+preserves unit length.
+
+119
+00:08:27,937 --> 00:08:32,237
+Linear progression of t generally does not
+produce constant physical angular speed.
+
+120
+00:08:32,417 --> 00:08:34,397
+Between identity and a120-degree turn,
+
+121
+00:08:34,410 --> 00:08:37,817
+NLERP at one quarter rotates
+approximately27.8degrees.
+
+122
+00:08:37,852 --> 00:08:40,357
+SLERP gives30degrees there. Both give60degrees
+halfway,
+
+123
+00:08:40,557 --> 00:08:44,537
+but differ at other points along the path.
+
+124
+00:08:44,777 --> 00:08:48,897
+Small differences may be hard to see.
+
+125
+00:08:49,042 --> 00:08:51,817
+Compare motion requirements and cost without
+assuming SLERP is always faster.
+
+126
+00:08:52,450 --> 00:08:57,030
+Watch the order in which the red body line and
+blue board line change.
+
+127
+00:08:58,220 --> 00:09:01,980
+Travel distance and the fraction between
+orientations are different values.
+
+128
+00:09:03,170 --> 00:09:05,910
+The camera also follows the action.
+
+129
+00:09:07,020 --> 00:09:11,460
+Fast-looking screen motion does not establish
+constant angular speed.
+
+130
+00:09:12,670 --> 00:09:15,430
+We will state the timing conditions separately
+in the calculation.
+
+131
+00:09:16,050 --> 00:09:21,050
+Driving speed and angular speed are separate
+quantities.
+
+132
+00:09:22,834 --> 00:09:27,834
+Observe distance travelled and change in car
+facing separately.
+
+133
+00:09:29,638 --> 00:09:34,758
+The camera also moves, so this footage is not
+a measurement of exact angular velocity.
+
+134
+00:09:35,058 --> 00:09:39,102
+The speedometer reports travel speed, not the
+angular velocity of orientation.
+
+135
+00:09:39,102 --> 00:09:46,766
+Keep units and measured quantities distinct.
+
+136
+00:09:47,086 --> 00:09:51,006
+A large camera turn does not imply the same
+car rotation.
+
+137
+00:09:51,006 --> 00:09:56,870
+Observe car and road together to separate pose
+changes.
+
+138
+00:09:57,110 --> 00:10:01,670
+Our fixed-axis calculation can compare turn
+angles over equal time intervals.
+
+139
+00:10:01,950 --> 00:10:04,430
+Changing the time function changes the speed.
+
+140
+00:10:05,050 --> 00:10:06,870
+Using intermediate orientations in playback
+
+141
+00:10:06,870 --> 00:10:10,310
+also requires deciding how t increases over
+time.
+
+142
+00:10:11,045 --> 00:10:18,113
+Constant angular speed requires fixed
+endpoints and t that is linear in time.
+
+143
+00:10:18,393 --> 00:10:24,113
+An easing function follows the same arc with a
+varying speed.
+
+144
+00:10:24,245 --> 00:10:27,253
+Repeatedly interpolating from the current pose
+toward a
+
+145
+00:10:27,253 --> 00:10:31,033
+target differs from one fixed-endpoint
+interpolation.
+
+146
+00:10:31,333 --> 00:10:35,353
+A fixed fraction per frame may yield different
+responses at different frame rates.
+
+147
+00:10:35,713 --> 00:10:38,033
+Design the fraction using elapsed time.
+
+148
+00:10:38,033 --> 00:10:42,373
+Moving-target tracking and long animation
+curves require their own design;
+
+149
+00:10:42,813 --> 00:10:45,053
+a single SLERP does not solve everything.
+
+150
+00:10:45,867 --> 00:10:49,787
+After the time conditions, compare the same
+rotation with small numbers. This defined
+
+151
+00:10:50,067 --> 00:10:55,787
+example fixes the camera and z axis and turns
+from zero to ninety degrees over one second.
+
+152
+00:10:56,107 --> 00:11:02,207
+At half a second, elapsed time divided by
+duration gives t equal to one half.
+
+153
+00:11:02,467 --> 00:11:06,107
+With linear time, half of ninety degrees is
+forty-five degrees.
+
+154
+00:11:06,327 --> 00:11:09,507
+Now use the square of the elapsed-time
+fraction as t.
+
+155
+00:11:09,507 --> 00:11:11,747
+One half squared is one quarter, so the same
+instant gives one
+
+156
+00:11:11,747 --> 00:11:16,147
+quarter of ninety degrees: twenty-two point
+five degrees.
+
+157
+00:11:16,507 --> 00:11:20,747
+At one second both reach t equal to one and
+ninety degrees.
+
+158
+00:11:21,047 --> 00:11:26,047
+The endpoints and arc stay the same, but
+progress at intermediate times differs.
+
+159
+00:11:26,327 --> 00:11:30,607
+Choosing the path and mapping time to progress
+are separate decisions.
+
+160
+00:11:31,233 --> 00:11:32,873
+Even after choosing a timing rule, we must
+check whether the
+
+161
+00:11:32,873 --> 00:11:37,053
+final orientation retains the record of an
+extra complete turn.
+
+162
+00:11:38,023 --> 00:11:40,603
+Making w positive independently each frame can
+create
+
+163
+00:11:40,603 --> 00:11:43,203
+a component sign jump at the180-degree
+boundary.
+
+164
+00:11:43,443 --> 00:11:46,763
+Flipping a new quaternion when its dot with
+the previous
+
+165
+00:11:46,763 --> 00:11:49,983
+one is negative can maintain a nearby
+representative.
+
+166
+00:11:50,323 --> 00:11:54,963
+That choice helps component continuity, but
+does not recover the number of revolutions.
+
+167
+00:11:55,243 --> 00:11:57,923
+If an animation intentionally spins a full
+turn,
+
+168
+00:11:57,923 --> 00:12:00,603
+preserve intermediate keys or accumulated turn
+information.
+
+169
+00:12:00,823 --> 00:12:04,183
+The desired direction at180degrees is a design
+
+170
+00:12:04,283 --> 00:12:07,663
+policy: shortest alone does not make the
+choice unique.
+
+171
+00:12:08,283 --> 00:12:11,043
+The red body direction changes and becomes
+upright again.
+
+172
+00:12:12,038 --> 00:12:15,238
+The current pose and the rotation history are
+different information.
+
+173
+00:12:16,333 --> 00:12:20,695
+This is a different excerpt. Follow the blue
+board direction separately as well.
+
+174
+00:12:21,497 --> 00:12:25,697
+Passing the final orientation does not also
+store how many turns occurred.
+
+175
+00:12:26,317 --> 00:12:30,217
+This is wingsuit flight down a mountain in
+Riders Republic.
+
+176
+00:12:30,357 --> 00:12:35,770
+Observe the bank of the arms and body.
+
+177
+00:12:35,950 --> 00:12:40,370
+Position continues changing while facing and
+up directions change too.
+
+178
+00:12:40,630 --> 00:12:47,783
+One facing arrow does not capture the whole
+orientation.
+
+179
+00:12:48,083 --> 00:12:56,157
+Storing the arrival orientation does not
+preserve every rotation made along the flight.
+
+180
+00:12:56,497 --> 00:12:59,157
+Separate the following camera motion too.
+
+181
+00:12:59,357 --> 00:13:03,057
+This footage does not expose internal
+quaternion or interpolation code.
+
+182
+00:13:03,057 --> 00:13:11,270
+With different equipment too, distinguish
+torso facing from body bank.
+
+183
+00:13:11,450 --> 00:13:14,970
+Attached forward and up directions provide a
+frame for reading orientation.
+
+184
+00:13:15,210 --> 00:13:22,583
+Do not connect cuts or rewind screens into
+continuous motion. We selected actual
+
+185
+00:13:22,783 --> 00:13:31,037
+action within separate excerpts; imagine the
+three attached axes in each.
+
+186
+00:13:31,377 --> 00:13:35,697
+We will now choose a suitable representation
+for each task and convert between them.
+
+187
+00:13:36,317 --> 00:13:41,217
+We now have an intermediate orientation at one
+instant.
+
+188
+00:13:41,217 --> 00:13:45,437
+Editing its angles and applying it to many
+vertices call for different representations.
+
+189
+00:13:45,897 --> 00:13:50,097
+Keep the same body axes while passing that
+orientation between editable angles,
+
+190
+00:13:50,097 --> 00:13:52,977
+interpolation quaternions and matrices that
+transform vectors.
+
+191
+00:13:53,600 --> 00:13:56,900
+Euler angles suit human reading and editing,
+with order,
+
+192
+00:13:57,080 --> 00:14:00,600
+equivalent encodings and singular poses to
+handle.
+
+193
+00:14:00,840 --> 00:14:03,140
+Quaternions suit composition and
+interpolation,
+
+194
+00:14:03,215 --> 00:14:07,360
+but need unit-length and sign management and
+are hard to edit directly.
+
+195
+00:14:07,620 --> 00:14:12,120
+Matrices expose the three axes and suit
+transforming many vectors.
+
+196
+00:14:12,380 --> 00:14:14,740
+Check orthonormality and determinant.
+
+197
+00:14:15,000 --> 00:14:19,720
+Float32 components alone occupy12bytes for
+Euler,16for a
+
+198
+00:14:19,720 --> 00:14:24,720
+quaternion and36for a3-by-3matrix, excluding
+padding and metadata.
+
+199
+00:14:25,220 --> 00:14:28,060
+Axis-angle explains a single turn clearly.
+Measure compression and runtime in your
+
+200
+00:14:28,380 --> 00:14:34,620
+implementation; other representations also
+have rotation-aware interpolation methods.
+
+201
+00:14:34,940 --> 00:14:37,580
+Storage or transmission may compress
+components.
+
+202
+00:14:38,140 --> 00:14:42,920
+Reconstructing an omitted component from unit
+length requires sign rules
+
+203
+00:14:43,025 --> 00:14:46,160
+and quantization-error checks. Sixteen bytes
+is not a universal minimum.
+
+204
+00:14:47,083 --> 00:14:49,703
+Between two orientations, we chose a path,
+kept unit length and specified
+
+205
+00:14:49,703 --> 00:14:55,683
+how t follows physical time. Extra turn
+history needed separate storage.
+
+206
+00:14:56,003 --> 00:14:59,123
+We now pass one intermediate orientation to
+the next task.
+
+207
+00:14:59,403 --> 00:15:03,623
+The next episode retains the same object and
+axes while converting angles,
+
+208
+00:15:03,623 --> 00:15:06,703
+quaternions and matrices and verifying the
+same rotation.

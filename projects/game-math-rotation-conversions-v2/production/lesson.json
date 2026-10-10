@@ -1,0 +1,1014 @@
+{
+  "slug": "game-math-rotation-conversions-v2",
+  "chapter": 8,
+  "part": 4,
+  "totalParts": 4,
+  "renderModule": "interpolation",
+  "sourceDependencies": [
+    "production/batches/game-math-part2-full-series/rotation-conversions.py"
+  ],
+  "sourceSections": [
+    "8.5.12",
+    "8.5.13",
+    "8.5.15",
+    "8.6",
+    "8.7.1–8.7.6",
+    "8.8"
+  ],
+  "contract": {
+    "handedness": "right-handed, y-up, x×y=z",
+    "vectorConvention": "column vectors; R maps local to world",
+    "quaternion": "Hamilton wxyz; unit rotation endpoints",
+    "eulerOrder": "intrinsic moving Y-X-Z; R=Ry(h)Rx(p)Rz(b)",
+    "angleUnit": "radians in code, degrees explicitly labelled in demonstrations",
+    "interpolation": "finite t in[0,1]; shortest representative signs; physical180 tie requires a policy",
+    "time": "constant SLERP angular speed only for fixed endpoints and linear t",
+    "matrixInput": "finite proper rotation: orthonormal and determinant+1; do not hide scale/reflection",
+    "boundaries": "zero axis undefined;180 axis-sign ambiguity; Euler singular branch with bank0; stable matrix dominant-component quaternion extraction"
+  },
+  "coverage": {
+    "8.5.12": "SLERP arc and delta-power interpretation, sign alignment, small-angle normalized-linear fallback, inputs and worked intermediate poses",
+    "8.5.13/8.5.15/8.6": "benefits/limits/normalization/signs, editor versus storage versus vector-transform jobs, component-only memory, performance/quantization require actual measurement; other rotation-aware interpolation exists",
+    "8.7.1/8.7.2": "Euler-to-matrix product and reverse atan2/hypot singular branch; compare equivalent rotation rather than raw angles",
+    "8.7.3/8.7.4": "unit quaternion matrix and reverse trace/dominant diagonal branches including180; complete verified reference code",
+    "8.7.5/8.7.6": "Euler axis-quaternion composition and reverse via matrix, equivalent direct substitution; fix source copysign boundary",
+    "axis-angle": "unit half-angle conversion, canonical short representative, zero and180 ambiguity",
+    "8.8": "original two guided calculations, midpoint vector and stable180 matrix round trip; whole series preserves core chapter concepts, not every textbook exercise verbatim",
+    "sourceCorrections": "Book LH/row versus lecture RH/column; smooth interpolation not exclusive to quaternions; shortest sign choice explicit; small-angle LERP must normalize; source gimbal pitch multiplication replaced by signed boundary; raw performance claims not guaranteed"
+  },
+  "gameCandidates": {
+    "chosen": [
+      {
+        "game": "Forza Horizon4",
+        "sourceId": "ZFGdubPhasM",
+        "reason": "Fresh game title and un-reused recording; inspected car facing/bank, bends and pursuit camera fit interpolation/conversion observations."
+      },
+      {
+        "game": "Riders Republic",
+        "sourceId": "H66Dl8kRNNQ",
+        "reason": "Different recording from quaternion operations; inspected wingsuit/rocket flight adds strong body-roll and full-turn observations."
+      }
+    ],
+    "rejected": [
+      {
+        "game": "Rocket League",
+        "sourceId": "e__O7rWG7ew",
+        "reason": "Uploader explicitly requires public channel credit; conflicts with requested description without public source credits, so not used."
+      },
+      {
+        "game": "Riders Republic",
+        "sourceId": "4Odvp_TIeQU",
+        "reason": "Used for quaternion operations; chose fresh recording and flight rather than repeating its ski/bike intervals."
+      }
+    ],
+    "rights": "Explicit uploader recording permission checked before dependent narration. No named CC license or game-IP/claim guarantee; public game-IP review pending.",
+    "inspection": "Three Forza coarse plus eight fine and four Riders coarse plus three fine sheets directly reviewed before this script; menus/results/rewinds/crashes/landing excluded. Real-time, no loops, no source audio."
+  },
+  "scenes": [
+    {
+      "id": "IF03",
+      "before": "16",
+      "kind": "explanation",
+      "title": "다른 숫자가 같은 자세인지 확인하기",
+      "mode": "second-overview",
+      "ko": [
+        "앞 편에서는 중간 자세를 구하고 작업에 맞는 표현을 골랐습니다. 이번에는 같은 자세를 각도와 쿼터니언, 행렬 사이로 옮깁니다.",
+        "먼저 축과 곱셈 순서를 정하고, 작은 방향 벡터의 결과와 왕복 변환으로 같은 회전인지 확인하겠습니다."
+      ],
+      "en": [
+        "The first episode found intermediate orientations and chose representations for different tasks. We now convert the same pose between angles, quaternions and matrices.",
+        "First declare axes and multiplication order, then use a small direction vector and round trips to verify that the rotation remains the same."
+      ],
+      "beats": [
+        "같은 자세·같은 축을 이어서 사용",
+        "규약 → 변환 → 기준벡터·왕복 검산"
+      ],
+      "visual": "Independent overview scene; reuse the object, semantic axes and final pose from15, preview the actual conversion order16–26."
+    },
+    {
+      "id": "16",
+      "title": "변환 그래프보다 먼저 정할 약속",
+      "kind": "explanation",
+      "mode": "contract",
+      "ko": [
+        "변환할 때는 오른손과 열벡터, 로컬에서 월드로 가는 회전이라는 약속을 유지합니다.",
+        "더블유, 엑스, 와이, 제트 순서의 해밀턴 쿼터니언을 씁니다. 삼각함수 입력은 라디안입니다.",
+        "오일러는 움직이는 와이, 엑스, 제트축 순서입니다. 행렬은 와이 회전, 엑스 회전, 제트 회전의 곱으로 씁니다.",
+        "책의 왼손과 행벡터 공식을 그대로 섞으면 부호와 곱셈 순서가 달라질 수 있습니다. 메모리 저장 순서도 수학 규약과 별개입니다.",
+        "오일러와 쿼터니언은 행렬을 통해 양방향으로 연결할 수 있고, 축각은 반각 공식으로 쿼터니언에 연결됩니다."
+      ],
+      "en": [
+        "All conversions preserve our right-handed column-vector local-to-world convention.",
+        "Use Hamilton quaternions in wxyz order and radians for trigonometric inputs.",
+        "Euler uses moving axes Y-X-Z, with matrix product Ry times Rx times Rz.",
+        "Mixing the book's left-handed row-vector formulas can change signs and order. Memory layout is a separate issue.",
+        "Euler and quaternions connect bidirectionally through matrices; axis-angle connects to quaternions through the half-angle formula."
+      ],
+      "beats": [
+        "오른손 / 열벡터 / R:로컬→월드",
+        "Hamilton / wxyz / radians",
+        "R = Ry(h) Rx(p) Rz(b)",
+        "책의 규약 / 메모리 순서와 구분",
+        "Euler ↔ Matrix ↔ Quaternion ↔ Axis-angle"
+      ]
+    },
+    {
+      "id": "17",
+      "title": "몸체 기준과 화면 기준을 함께 보기",
+      "kind": "actual",
+      "sourceId": "H66Dl8kRNNQ",
+      "sourceSegments": [
+        {
+          "in": 732,
+          "maxSeconds": 23
+        },
+        {
+          "in": 819,
+          "maxSeconds": 11
+        },
+        {
+          "in": 852,
+          "maxSeconds": 30
+        }
+      ],
+      "in": 732,
+      "maxSeconds": 64,
+      "ko": [
+        "비행 장면에서 몸이 옆으로 기울고 돌아가는 순간을 보세요. 화면 위쪽과 몸체 위쪽을 구별합니다.",
+        "발췌 구간 사이에는 장비가 바뀌는 편집 컷이 있습니다. 그 컷을 같은 회전의 연속이라고 읽지는 마세요.",
+        "각 구간 안에서는 몸에 붙인 축이 어떤 방향을 향하는지, 카메라가 어떻게 따라오는지 관찰합니다.",
+        "몸에 붙은 축을 다른 형식으로 기록해도 물체가 갑자기 돌아서는 안 됩니다. 표현의 변환과 실제로 새 회전을 적용하는 연산을 구분하세요.",
+        "같은 자세인지 비교할 때는 각 숫자가 똑같은지만 검사하지 않습니다. 그 값으로 만든 세 축이 같은 기준 공간에서 일치하는지를 확인합니다.",
+        "행렬로 바꾸어도 쿼터니언으로 바꾸어도 같은 기준의 같은 자세를 나타내야 합니다. 다음 그림에서 그 관계를 계산합니다."
+      ],
+      "en": [
+        "Watch the body bank and turn during flight. Distinguish screen up from body up.",
+        "Equipment changes across edits between these excerpts; those cuts are not one continuous rotation.",
+        "Within each excerpt, observe the attached body axes and the following camera.",
+        "Changing how attached axes are represented must not rotate the object. Distinguish converting a representation from applying a new rotation.",
+        "Equivalent pose does not require identical components. Compare the three resulting axes in the same coordinate frame.",
+        "A matrix and a quaternion should describe the same pose in the same frame. Our next diagram calculates that relationship."
+      ],
+      "focus": "구간 안의 실제 롤과 몸체축·카메라 기준; 컷/장비변경 명시",
+      "claim": "표현을 바꾸어도 같은 기준 자세를 유지"
+    },
+    {
+      "id": "IG03",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "보이는 방향에서 각도 읽기로 이어가기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          210,
+          247
+        ]
+      ],
+      "maximumSeconds": 37,
+      "ko": [
+        "같은 몸체가 기울었다가 서는 과정을 보겠습니다. 빨간 선은 몸체, 파란 선은 보드입니다.",
+        "방향을 숫자로 바꾸려면 기준축을 먼저 정해야 합니다. 화면의 선은 카메라로 투영된 관찰값입니다.",
+        "다음 삼각형은 축을 고정한 계산 예시입니다. 그 가로와 세로에서 길이와 방향각을 읽겠습니다."
+      ],
+      "en": [
+        "Observe the same body lean and become upright. Red follows the body; blue follows the board.",
+        "Turning a direction into numbers first requires axes. These screen lines are projected observations through the camera.",
+        "The next triangle is a worked example with fixed axes. Read its length and direction angle from its horizontal and vertical components."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            210,
+            247
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG03.mp4",
+          "duration": 37.003633,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "210 pushing red bowl →216–234 airborne rotations and landings →240–242 road jump/land →upright247",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "The body remains identifiable against red ground, allowing observation to lead into the fixed-axis hypot/atan2 example.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "IP04",
+      "before": "18",
+      "kind": "explanation",
+      "title": "에이탄 투와 하이폿을 작은 수로 읽기",
+      "mode": "atan2-hypot-prerequisite",
+      "retainedResult": "Declared Euler order and matrix convention",
+      "nextQuestion": "행렬에 적힌 방향에서 각도를 어떻게 되찾을까?",
+      "ko": [
+        "행렬에서 각도를 되찾기 전에 두 함수의 역할을 볼까요? 하이폿은 직각삼각형의 빗변 길이입니다. 가로 길이는 삼이고 세로 길이는 사입니다. 삼의 제곱인 구와 사의 제곱인 십육을 더하면 이십오입니다. 그 제곱근은 오입니다.",
+        "에이탄 투는 세로와 가로를 함께 받아 방향각을 찾습니다. 세로 일, 가로 일이면 사십오 도입니다. 각 값의 부호도 읽어서 어느 사분면인지 구분합니다.",
+        "이 두 도구로 방향을 읽되, 두 방향 정보가 겹치는 특이 자세에서는 원래 각도를 하나로 되찾을 수 없으므로 별도 약속이 필요합니다."
+      ],
+      "en": [
+        "Before extracting angles from a matrix, consider two functions. Hypot gives a right triangle’s hypotenuse. The horizontal length is three and the vertical length is four. Three squared is nine; four squared is sixteen. Their sum is twenty-five, whose square root is five.",
+        "Atan2 takes vertical and horizontal values together to recover a direction angle. One and one give forty-five degrees, while their signs identify the quadrant.",
+        "These tools read directions, but singular orientations merge information. Recovering one unique original angle set then requires a separate convention."
+      ],
+      "beats": [
+        "hypot(3,4)=√(3²+4²)=5",
+        "atan2(1,1)=45° / 부호로 사분면 구분",
+        "방향 정보가 겹침 → 특이 자세의 별도 약속"
+      ],
+      "visual": "Build a3-4-5 triangle, then a(1,1) arrow and its45-degree arc in narration order; carry the angle back to the same projected body axes from16."
+    },
+    {
+      "id": "18",
+      "title": "오일러 각과 행렬을 왕복하기",
+      "kind": "explanation",
+      "mode": "euler-matrix",
+      "ko": [
+        "헤딩, 피치, 뱅크를 각각 와이, 엑스, 제트 회전행렬로 만든 뒤 정한 순서로 곱합니다.",
+        "역으로 읽을 때 행과 열 번호를 영부터 셉니다. 피치의 사인은 알의 일 행, 이 열 값의 음수입니다.",
+        "특이 자세 밖에서는 헤딩에 영 행 이 열과 이 행 이 열의 에이탄 투를 씁니다. 뱅크는 일 행 영 열과 일 행 일 열로 구합니다.",
+        "이 예제는 피치를 에이탄 투로 구하고, 두 행렬 성분의 하이폿으로 특이 자세를 판별합니다.",
+        "피치가 양이나 음의 구십 도일 때는 뱅크를 영으로 정합니다. 헤딩은 마이너스 알 이 행 영 열과 알 영 행 영 열로 구합니다.",
+        "돌아온 각도가 처음 숫자와 달라도 같은 행렬이면 같은 자세일 수 있습니다. 왕복 검사는 자세를 비교하세요."
+      ],
+      "en": [
+        "Build Y, X and Z matrices from heading, pitch and bank, then multiply in our declared order.",
+        "For extraction, indices start at zero. Sine of pitch is minus the entry at row1,column2.",
+        "Away from singular poses, heading is atan2 of R02 and R22; bank is atan2 of R10 and R11.",
+        "This implementation extracts pitch with atan2 and uses the hypotenuse of two matrix entries to detect a singular pose.",
+        "At pitch plus or minus90degrees, choose bank zero and heading atan2 of minus R20 and R00.",
+        "Different returned Euler values can represent the same orientation. Compare the reconstructed matrices in a round trip."
+      ],
+      "beats": [
+        "R = Ry(h) Rx(p) Rz(b)",
+        "sp=-R[1,2]",
+        "h=atan2(R02,R22) / b=atan2(R10,R11)",
+        "cp=hypot(R10,R11) / p=atan2(sp,cp)",
+        "특이점: p=±π/2 / b=0 / h=atan2(-R20,R00)",
+        "각도 숫자 일치보다 R 일치 검사"
+      ]
+    },
+    {
+      "id": "IB19",
+      "before": "19",
+      "kind": "explanation",
+      "title": "같은 세 축을 쿼터니언에서 읽기",
+      "mode": "causal-bridge",
+      "ko": [
+        "각도에서 만든 세 축을 이제 쿼터니언에서도 만들고, 같은 방향 벡터가 나오는지 비교하겠습니다."
+      ],
+      "en": [
+        "Now build the three axes from the quaternion as well as the angles, and compare the resulting direction vector."
+      ],
+      "beats": [
+        "각도↔행렬 → q에서 같은 세 축",
+        "같은 기준벡터 결과 비교"
+      ],
+      "visual": "Retain the matrix and object axes from18, replace only the input encoding with q and follow one colored basis vector."
+    },
+    {
+      "id": "19",
+      "title": "쿼터니언에서 행렬의 세 축 만들기",
+      "kind": "explanation",
+      "mode": "quaternion-matrix",
+      "ko": [
+        "쿼터니언을 단위 길이로 맞추면 네 성분에서 회전행렬 아홉 값을 계산할 수 있습니다. 일반 길이의 입력은 먼저 검사하고 정규화합니다.",
+        "제트축 구십 도 쿼터니언을 넣습니다. 행렬의 첫 행은 영, 마이너스 일, 영입니다. 둘째 행은 일, 영, 영입니다. 셋째 행은 영, 영, 일입니다. 앞 편의 행렬과 같습니다.",
+        "첫 열은 월드에서 본 로컬 엑스축 영, 일, 영입니다. 둘째 열은 마이너스 일, 영, 영입니다.",
+        "벡터 일, 영, 영을 곱하면 영, 일, 영이 됩니다. 쿼터니언의 양쪽 곱셈으로 돌린 결과와 같습니다.",
+        "화면의 부호가 다르면 전치부터 하지 말고 축, 회전 방향, 입력과 출력 공간을 확인하세요. 전체 공식은 재현 코드에도 남깁니다."
+      ],
+      "en": [
+        "With a quaternion at unit length, its four components give the nine rotation-matrix entries. Check and normalize a general-length input first.",
+        "Insert a quaternion for a ninety-degree z turn. The first matrix row is zero, minus one, zero; the second is one, zero, zero; the third is zero, zero, one. This matches the earlier matrix.",
+        "The first column gives local x in world coordinates:[0,1,0]; the second is[-1,0,0].",
+        "Multiplying[1,0,0]gives[0,1,0], matching the two-sided quaternion rotation.",
+        "If signs differ, check axes, rotation direction and input/output spaces first. The full formula is also preserved in the reproducible code."
+      ],
+      "beats": [
+        "유효한 단위 q → R(q)",
+        "q=[c,0,0,c] → Rz90°",
+        "열은 로컬 축의 월드 성분",
+        "R(q)v = vector(q[0,v]q⁻¹)",
+        "공식·기준축·작은 벡터로 검증"
+      ]
+    },
+    {
+      "id": "IG04",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "몸체와 보드에는 다른 방향이 붙어 있습니다",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          157.3,
+          174.3
+        ]
+      ],
+      "maximumSeconds": 17.0,
+      "ko": [
+        "빨간 선은 몸체 방향입니다. 파란 선은 보드의 긴 방향입니다.",
+        "몸과 보드의 방향이 따로 바뀌었다가 다시 이어집니다.",
+        "각 대상을 구분해야 같은 방향 벡터로 계산 결과를 비교할 수 있습니다."
+      ],
+      "en": [
+        "Red follows the body. Blue follows the visible board length.",
+        "Their directions change separately and then reconnect.",
+        "Distinguish the objects before comparing calculated results for the same direction vector."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            157.3,
+            174.3
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG04.mp4",
+          "duration": 17.017,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "157.3 walking/boarding →159–172 flips and grind →upright173–174",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "A short close silhouette provides a clear object distinction without the later ragdoll188–190.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "20",
+      "title": "다른 숫자로도 같은 차체 자세",
+      "kind": "actual",
+      "sourceId": "ZFGdubPhasM",
+      "sourceSegments": [
+        {
+          "in": 420,
+          "maxSeconds": 20
+        },
+        {
+          "in": 553,
+          "maxSeconds": 32
+        }
+      ],
+      "in": 420,
+      "maxSeconds": 52,
+      "ko": [
+        "다시 자동차를 보세요. 차체가 향하는 쪽과 도로의 기울기를 따라갑니다. 화면에 보이는 같은 자세를 행렬이나 쿼터니언으로 기록할 수 있습니다.",
+        "표현을 바꾼다고 위치나 속도가 자동으로 바뀌는 것은 아닙니다. 입력 기준과 출력 기준도 유지해야 합니다.",
+        "이 주행 영상에서 실제 저장값을 읽은 것은 아닙니다. 다음 계산의 세 축이 같은 자세를 나타내는지 확인할 준비입니다.",
+        "몸체의 앞쪽만 일치하고 위쪽이 다르면 같은 전체 자세가 아닐 수 있습니다. 차체의 기울기까지 함께 따라가며 앞쪽과 위쪽을 비교해 보세요.",
+        "수학에서는 저장된 회전으로 기준축을 변환해 비교할 수 있습니다. 화면만 보고 숨은 숫자를 추측하는 대신, 다음의 독립된 계산에서 이를 확인하겠습니다.",
+        "특히 반 바퀴 근처에서도 변환이 무너지지 않는지 보겠습니다."
+      ],
+      "en": [
+        "Look at the car again. Follow the body facing and road inclination. We can record the same visible orientation as a matrix or a quaternion.",
+        "Changing representation does not automatically change position or speed, and must preserve the input/output frames.",
+        "We have not read stored values from the game. The footage prepares us to check equivalent axes in our calculation.",
+        "Matching forward directions alone can still leave different up directions. Follow the bank as well as facing.",
+        "Mathematically we can transform basis axes using stored rotations. Instead of inferring hidden values from pixels, we verify them in the next independent calculation.",
+        "We will check that conversion remains valid near a half-turn."
+      ],
+      "focus": "차체 자세와 위치/속도/프레임을 따로 관찰",
+      "claim": "표현 변환이 실제 자세를 보존해야 함"
+    },
+    {
+      "id": "IG11",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "한 자세를 여러 작업에 넘겨 쓰기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          4,
+          34.8
+        ]
+      ],
+      "maximumSeconds": 30.799999999999997,
+      "ko": [
+        "몸체를 나타내는 빨간 선과 보드의 파란 선을 비교해 보세요.",
+        "물체가 움직여도 한 순간의 자세는 한 번 정해집니다.",
+        "그 자세를 편집할 각도, 보간할 쿼터니언, 벡터에 적용할 행렬로 옮길 수 있습니다.",
+        "바꿔 적은 숫자가 같은 방향을 만드는지 다음 왕복 계산에서 확인하겠습니다."
+      ],
+      "en": [
+        "Compare the red body line and blue board line.",
+        "The moving object has one orientation at a particular instant.",
+        "That pose can be expressed as angles for editing, a quaternion for interpolation or a matrix for applying it to vectors.",
+        "The next round trip checks whether the converted numbers produce the same direction."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            4,
+            34.8
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG11.mp4",
+          "duration": 30.8308,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "4 boarding →8–14 airborne turns/landing →16–22 jump/land →24–34 push/turn/upright",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "The long continuous red-bowl sequence supplies readable body and board changes without menus; end34.8 precedes the next airborne pose. Temporary hidden board anchors must be hidden rather than guessed.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "IP05",
+      "before": "21",
+      "kind": "explanation",
+      "title": "행렬에서 회전값을 읽을 때 나눗셈을 지키기",
+      "mode": "trace-prerequisite",
+      "retainedResult": "q→R preserves the same basis-vector result",
+      "nextQuestion": "R→q는 왜 분기를 여러 개 둘까?",
+      "ko": [
+        "쿼터니언을 행렬로 바꿨으니 반대 방향도 확인하겠습니다. 트레이스라는 새 이름은 왼쪽 위부터 오른쪽 아래까지 대각선 세 수를 더한 값입니다.",
+        "제트축 백팔십 도 행렬에서는 마이너스 일, 마이너스 일, 일을 더해 마이너스 일이 됩니다. 이때 쿼터니언의 더블유는 영이므로, 더블유로 나누는 방법을 계속 쓸 수 없습니다.",
+        "그래서 다음 계산은 충분히 큰 성분을 골라 나누고, 다시 같은 행렬로 돌아오는지 확인합니다."
+      ],
+      "en": [
+        "After converting a quaternion to a matrix, check the reverse path. Trace is simply the sum of the three entries on the main diagonal.",
+        "For a z one-hundred-eighty-degree matrix, minus one plus minus one plus one gives minus one. The quaternion's w is zero, so a method that divides by w cannot be used throughout.",
+        "The next calculation chooses a sufficiently large component to divide by, then checks that it rebuilds the same matrix."
+      ],
+      "beats": [
+        "trace(R)=R00+R11+R22",
+        "Rz180°: (−1)+(−1)+1=−1 / w=0",
+        "큰 성분 선택 → q→R 왕복 검증"
+      ],
+      "visual": "Highlight the diagonal of the existing matrix, sum each entry sequentially, then retain the z axis while showing the division-by-zero branch."
+    },
+    {
+      "id": "21",
+      "title": "백팔십 도에서도 행렬을 쿼터니언으로",
+      "kind": "explanation",
+      "mode": "matrix-quaternion",
+      "ko": [
+        "먼저 입력 행렬이 정규직교이고 행렬식이 플러스 일인지 검사합니다. 스케일이나 반사를 회전으로 읽으면 안 됩니다.",
+        "대각선 합은 트레이스입니다. 트레이스가 양수이면 더블유 성분을 크게 잡는 분기를 쓰기 좋습니다.",
+        "하지만 백팔십 도 회전의 더블유는 영입니다. 더블유로 나누는 공식 하나만 쓰면 문제가 생깁니다.",
+        "나머지는 가장 큰 대각 성분에 맞춰 엑스, 와이, 제트 분기를 고릅니다. 영에 가까운 성분으로 나누는 일을 피합니다.",
+        "제트축 백팔십 도에서는 제트 분기가 영, 영, 영, 일을 만듭니다. 전체 부호를 바꾼 값도 같은 자세입니다.",
+        "결과를 정규화한 뒤 다시 행렬로 만들어 입력과 비교하세요. 잘못된 행렬을 정규화만으로 수리했다고 생각하면 안 됩니다."
+      ],
+      "en": [
+        "First require an orthonormal matrix with determinant plus one. Do not interpret scale or reflection as a rotation.",
+        "The trace is the diagonal sum. A positive trace suits the branch that calculates a large w component.",
+        "At a180-degree rotation w is zero, so using only a formula that divides by w is unsafe.",
+        "Otherwise choose the x,y or z branch associated with the largest diagonal entry, avoiding division by a small component.",
+        "For a z180-degree turn the z branch yields[0,0,0,1]; the opposite sign represents the same pose.",
+        "Normalize the result, rebuild its matrix and compare with the input. Quaternion normalization is not an arbitrary repair of an invalid matrix."
+      ],
+      "beats": [
+        "RᵀR≈I / det(R)≈+1",
+        "trace>0 → w 분기",
+        "180°에서 w=0 / 무조건 나누기 금지",
+        "최대 대각에 따른 x / y / z 분기",
+        "Rz180° → [0,0,0,1]",
+        "q→R 재구성 / 입력 회전 검증"
+      ]
+    },
+    {
+      "id": "IG05",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "같은 자세를 바꿔 적는 것과 실제로 돌리는 것",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          459,
+          470.8
+        ],
+        [
+          482.7,
+          496
+        ]
+      ],
+      "maximumSeconds": 25.100000000000023,
+      "ko": [
+        "몸체의 빨간 방향을 보세요. 카메라가 따라와도 지금 몸체의 자세는 하나입니다.",
+        "행렬을 쿼터니언으로 바꿔 적는다고 몸체가 추가로 도는 것은 아닙니다.",
+        "이어서 다른 발췌입니다. 파란 보드 방향이 변하고 다시 착지합니다.",
+        "자세가 실제로 바뀌는 동작과, 같은 자세를 다른 숫자로 옮기는 계산을 나누겠습니다."
+      ],
+      "en": [
+        "Follow the red body direction. Even with a following camera, the body has one orientation at each instant.",
+        "Converting a matrix to a quaternion does not add another physical rotation.",
+        "This is a different excerpt. The blue board direction changes before another landing.",
+        "Separate an action that changes the pose from a conversion that writes the same pose in different numbers."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            459,
+            470.8
+          ],
+          [
+            482.7,
+            496
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG05.mp4",
+          "duration": 25.1251,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "459–470.8 road body banking → next independent482.7–496 board jump/flip/land",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Cuts exclude the obscured quarterpipe471–475, ragdoll476–478 and loading479–481. Separate excerpts are explicitly narrated.",
+        "finalAnnotationReview": "pending"
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "22",
+      "title": "오일러 각과 쿼터니언 연결하기",
+      "kind": "explanation",
+      "mode": "euler-quaternion",
+      "ko": [
+        "오일러에서 쿼터니언으로 갈 때도 축별 회전을 만듭니다. 와이의 헤딩, 엑스의 피치, 제트의 뱅크를 반각 공식으로 바꿉니다.",
+        "우리 규약에서는 와이 쿼터니언, 엑스 쿼터니언, 제트 쿼터니언 순으로 곱합니다. 행렬 곱 순서와 대응합니다.",
+        "돌아올 때는 단위 쿼터니언을 행렬로 만든 뒤, 앞의 오일러 추출을 쓰면 됩니다. 행렬 성분을 대입한 직접 공식도 같습니다.",
+        "특이 자세에서는 뱅크를 영으로 정하고 피치는 부호에 맞는 파이 이분의 일로 고정합니다. 원문의 피치 식은 경계 처리를 보완해야 합니다.",
+        "클램프는 작은 반올림 오차를 막는 도구입니다. 단위가 아닌 입력이나 잘못된 규약을 숨기는 도구로 쓰지 마세요."
+      ],
+      "en": [
+        "Convert heading about Y, pitch about X and bank about Z into individual half-angle quaternions.",
+        "Under our convention, multiply qy times qx times qz, matching the matrix product.",
+        "For the reverse, build the unit-quaternion matrix and use our Euler extraction. Substituting its entries yields equivalent direct formulas.",
+        "At a singular pose, choose bank zero and set pitch to the signed pi over two. The source formula needs this boundary correction.",
+        "Clamping protects against small rounding errors, rather than hiding non-unit inputs or mismatched conventions."
+      ],
+      "beats": [
+        "qy(h), qx(p), qz(b)",
+        "q = qy(h) qx(p) qz(b)",
+        "q→R→Euler / 직접 대입도 동등",
+        "p=copysign(π/2,sp) / b=0",
+        "단위 입력 먼저 / 특이점 규칙 검증"
+      ]
+    },
+    {
+      "id": "IG08",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "카메라의 그림과 몸체의 자세 구분하기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          344.5,
+          356
+        ],
+        [
+          525,
+          537.7
+        ]
+      ],
+      "maximumSeconds": 24.200000000000045,
+      "ko": [
+        "몸체의 빨간 선을 따라가세요. 카메라도 함께 따라 움직입니다.",
+        "화면에 보이는 기울기는 몸체의 세 차원 각도와 같지 않습니다.",
+        "다른 발췌에서도 같은 대상을 계속 보겠습니다.",
+        "각도를 다시 찾는 검산에는 카메라 관찰과 별도로 정한 축과 회전값이 필요합니다."
+      ],
+      "en": [
+        "Follow the red body line while the camera also moves with it.",
+        "The tilt projected on screen is not the body three-dimensional angle.",
+        "Continue observing the same object in a different excerpt.",
+        "Verifying recovered angles requires declared axes and rotation data in addition to the camera observation."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            344.5,
+            356
+          ],
+          [
+            525,
+            537.7
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG08.mp4",
+          "duration": 24.2242,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "344.5 board/jump →346–355 crouched road banking; independent525 boarding →526–536 banking",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Trims the earlier332–356 candidate loading341–342 and excludes537.7+ collision/reset; keeps follow-camera projection comparison.",
+        "finalAnnotationReview": "pending"
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "23",
+      "title": "관찰한 축과 계산한 축을 연결하기",
+      "kind": "actual",
+      "sourceId": "ZFGdubPhasM",
+      "sourceSegments": [
+        {
+          "in": 340,
+          "maxSeconds": 25
+        },
+        {
+          "in": 522,
+          "maxSeconds": 25
+        },
+        {
+          "in": 585,
+          "maxSeconds": 15
+        }
+      ],
+      "in": 340,
+      "maxSeconds": 65,
+      "ko": [
+        "세 주행 발췌에서 차체가 향하는 앞쪽과 기울기를 함께 보세요. 구간 사이의 편집 컷은 회전 보간이 아닙니다.",
+        "기준축 세 개를 몸에 붙이면 자세를 비교하기 쉬워집니다. 화면의 카메라 기준과도 구분합니다.",
+        "행렬과 쿼터니언 변환은 그 축의 관계를 보존해야 합니다. 속도나 충돌까지 자동으로 설명하는 것은 아닙니다.",
+        "앞쪽과 위쪽을 같은 순서로 정하면 세 번째 축도 정해집니다. 오른손 규칙과 축의 방향을 일관되게 쓰는 것이 변환 비교의 출발점입니다.",
+        "장면의 조작 결과를 특정 변환 공식의 성공 증거로 읽지는 마세요. 실제 관찰은 질문을 보여 주고, 공식의 값과 경계는 따로 계산해서 검증합니다.",
+        "이제 축과 각도로 되돌아가고, 중간 자세와 왕복 변환을 직접 확인해 봅시다."
+      ],
+      "en": [
+        "Read facing and bank in these three driving excerpts. Edits between them are not rotation interpolation.",
+        "Imagining three attached body axes helps compare poses separately from the camera frame.",
+        "Matrix/quaternion conversion must preserve the axes relationship, without automatically explaining speed or collision.",
+        "With forward and up defined consistently, the third axis is determined too. Consistent handedness and axis directions are the starting point for conversion checks.",
+        "Visible gameplay does not prove a particular conversion implementation. It supplies the question; independent calculations verify values and boundaries.",
+        "We will return to axis-angle and check a midpoint and a conversion round trip."
+      ],
+      "focus": "차체의 앞/위·카메라/편집 컷·속도/충돌 구분",
+      "claim": "같은 기준축을 보존하는 변환과 검증 연결"
+    },
+    {
+      "id": "IB24",
+      "before": "24",
+      "kind": "explanation",
+      "title": "축과 각도를 되찾을 때의 빈 정보",
+      "mode": "causal-bridge",
+      "ko": [
+        "같은 자세를 옮겼으니, 축과 각도로 돌아갈 때 영도와 반 바퀴에 남는 정보도 확인하겠습니다."
+      ],
+      "en": [
+        "Having converted the same pose, check what information remains at zero and half a turn when returning to axis and angle."
+      ],
+      "beats": [
+        "같은 자세 → 축각으로 복원",
+        "0° / 180°에서 남는 정보"
+      ],
+      "visual": "Same axis-angle object, zero-angle arc collapses and the180-degree case follows; do not invent a unique axis for zero rotation."
+    },
+    {
+      "id": "24",
+      "title": "축각으로 돌아갈 때의 영도와 반 바퀴",
+      "kind": "explanation",
+      "mode": "axis-angle",
+      "ko": [
+        "단위 축과 각도에서 쿼터니언으로 가는 식은 앞 편의 반각 공식입니다. 스칼라는 코사인, 벡터는 축에 반각의 사인을 곱합니다.",
+        "짧은 대표 각도로 돌아오려면 먼저 단위 길이를 확인하고 더블유가 음수일 때 전체 부호를 바꿉니다.",
+        "각도는 제한한 더블유의 아크코사인 두 배입니다. 벡터 부분의 길이가 충분하면 그것을 나누어 축을 얻습니다.",
+        "영도에서는 축이 정해지지 않습니다. 이 코드에서는 엑스축을 대표로 쓰지만 물리적으로 유일한 축은 아닙니다.",
+        "백팔십 도에서는 축과 반대 축이 같은 끝 자세를 만듭니다. 경로의 방향과 회전 이력은 별도로 관리하세요."
+      ],
+      "en": [
+        "Axis-angle to quaternion uses the half-angle formula: cosine for the scalar, unit axis times sine for the vector.",
+        "For a short representative angle, validate unit length and flip all components if w is negative.",
+        "The angle is twice arccosine of clamped w. When the vector part is long enough, normalize it to get the axis.",
+        "At zero rotation the axis is undefined. Our code selects x by convention, rather than claiming a unique physical axis.",
+        "At180degrees, opposite axes give the same endpoint orientation. Manage path direction and accumulated turns separately."
+      ],
+      "beats": [
+        "q=[cos(θ/2), n sin(θ/2)]",
+        "대표 부호 선택 / θ∈[0,π]",
+        "θ=2acos(w) / n=v÷||v||",
+        "θ=0: 축은 임의 / 코드 대표 +x",
+        "θ=π: ±n 같은 끝 자세"
+      ]
+    },
+    {
+      "id": "IG09",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "정보가 부족하면 각도를 추측하지 않습니다",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          442,
+          449.5
+        ],
+        [
+          543.5,
+          555.8
+        ]
+      ],
+      "maximumSeconds": 19.799999999999955,
+      "ko": [
+        "몸체의 빨간 방향은 보이지만, 그 선만으로 회전축 전체가 정해지지는 않습니다.",
+        "이어서 다른 발췌의 파란 보드 방향입니다.",
+        "가려진 정보는 추측하지 않겠습니다.",
+        "계산에서는 앞에서 정한 입력과 예외 규칙으로 같은 자세인지 검사합니다."
+      ],
+      "en": [
+        "The red body direction is visible, but that line alone does not determine the complete rotation axis.",
+        "This is the blue board direction in a different excerpt.",
+        "We will not guess information that is hidden.",
+        "The calculation uses the declared inputs and exceptional-case rules to verify the same orientation."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            442,
+            449.5
+          ],
+          [
+            543.5,
+            555.8
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG09.mp4",
+          "duration": 19.8198,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "442–449.5 road lean before quarterpipe collision; independent543.5–555.8 boarding/flip/land/road bank",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "Rejects collision450–452, static453, loading454–455 and542. End555.8 precedes the close quarterpipe occlusion556.",
+        "finalAnnotationReview": "pending"
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "IB25",
+      "before": "25",
+      "kind": "explanation",
+      "title": "변환한 숫자는 같은 방향을 만들까요",
+      "mode": "causal-bridge",
+      "ko": [
+        "예외 자세까지 처리한 식에 구십 도의 중간 자세를 넣어, 같은 방향 벡터가 나오는지 검산하겠습니다."
+      ],
+      "en": [
+        "Insert the midpoint of a ninety-degree rotation into the formulas, including their exceptional cases, and verify the same direction vector."
+      ],
+      "beats": [
+        "예외 조건 → 작은 수로 종합 검산",
+        "같은 방향 벡터 / 왕복 결과"
+      ],
+      "visual": "Retain one object and input vector through original25, preview45-degree result without swapping to an unrelated illustration."
+    },
+    {
+      "id": "25",
+      "title": "중간 자세와 왕복 변환을 직접 확인",
+      "kind": "explanation",
+      "mode": "practice",
+      "ko": [
+        "첫 문제입니다. 항등에서 제트축 구십 도까지 스러프의 절반 자세는 몇 도일까요?",
+        "답은 사십오 도입니다. 쿼터니언에는 반각 이십이 점 오 도의 코사인과 사인이 들어갑니다.",
+        "행렬로 바꾸어 일, 영, 영을 돌리면 루트 이 나누기 이, 루트 이 나누기 이, 영입니다. 단위 길이도 확인해 보세요.",
+        "둘째 문제입니다. 제트축 백팔십 도 행렬을 쿼터니언으로 바꾸고 다시 행렬로 돌아오세요.",
+        "제트 분기에서 영, 영, 영, 일을 얻습니다. 다시 만든 행렬은 대각선 마이너스 일, 마이너스 일, 일입니다.",
+        "원래 쿼터니언과 부호가 달라도 두 회전행렬이 같으면 통과할 수 있습니다. 원소 오차와 변환된 기준축을 함께 비교하세요."
+      ],
+      "en": [
+        "First exercise: what is the halfway SLERP pose from identity to z90degrees?",
+        "The answer is45degrees, stored using cosine and sine of the22.5-degree half-angle.",
+        "Convert to a matrix and rotate[1,0,0]. The result is[sqrt2/2,sqrt2/2,0]; check its unit length.",
+        "Second exercise: convert a z180-degree matrix to a quaternion and back.",
+        "The z branch gives[0,0,0,1]. The reconstructed matrix has diagonal[-1,-1,1].",
+        "An opposite quaternion sign can still pass when the matrices agree. Compare entry errors and transformed basis axes."
+      ],
+      "beats": [
+        "문제1: SLERP(I,Z90°,.5)",
+        "qmid=[cos22.5°,0,0,sin22.5°]",
+        "R(qmid)(1,0,0)=(c,c,0)",
+        "문제2: Rz180°→q→R",
+        "q=[0,0,0,1] / diag(-1,-1,1)",
+        "부호·각도 숫자보다 같은 회전 검사"
+      ]
+    },
+    {
+      "id": "IP08",
+      "after": "25",
+      "episode": "game-math-rotation-conversions-v2",
+      "title": "같은 방향인지 벡터를 돌렸다가 되돌려 봅니다",
+      "kind": "explanation",
+      "ko": [
+        "방금 검산한 사십오 도 자세를 이번에는 작은 벡터로 확인하겠습니다. 앞에서 정한 오른손 제트축과 열벡터 약속을 그대로 씁니다. 입력은 오른쪽으로 한 칸 향하는 일, 영, 영입니다.",
+        "이 자세를 쿼터니언으로 적을 때는 반각인 이십이 점 오 도의 코사인과 사인을 사용합니다. 하지만 실제 물체가 도는 각도는 사십오 도입니다. 저장할 숫자와 물체의 각도를 구분하세요.",
+        "같은 자세의 행렬로 입력 벡터를 돌려 보죠. 첫 번째 성분은 루트 이 나누기 이입니다. 두 번째 성분도 루트 이 나누기 이입니다. 세 번째 성분은 영입니다. 오른쪽과 위쪽 성분이 같아졌지만 길이는 여전히 일입니다.",
+        "이제 반대 회전인 마이너스 사십오 도를 적용하면 처음의 일, 영, 영으로 돌아옵니다. 표현을 바꿔도 같은 방향을 만들고, 역회전이 되돌리는지 확인한 것입니다. 게임 화면의 각도를 재서 얻은 숫자가 아니라, 약속한 입력으로 계산한 결과입니다."
+      ],
+      "en": [
+        "Check the same forty-five-degree orientation with a small vector. Keep the right-handed z axis and column-vector convention. The input points one unit right: one, zero, zero.",
+        "Its quaternion uses the cosine and sine of the half angle, twenty-two point five degrees. The physical orientation still turns forty-five degrees. Stored components and the physical angle have different roles.",
+        "Apply the matrix for the same orientation to the vector. Its first component is square root of two over two. The second is also square root of two over two. The third is zero. The rightward and upward components match, and the length remains one.",
+        "Applying the inverse rotation, minus forty-five degrees, returns one, zero, zero. Equivalent representations give the same direction and the inverse undoes the operation. These are defined calculation results, not angles measured from game footage."
+      ],
+      "beats": [
+        "같은 RH·열벡터 / 입력(1,0,0)",
+        "q=(cos22.5°,0,0,sin22.5°) / 물체45°",
+        "Rz(45°)v=(√2/2,√2/2,0) / 길이1",
+        "Rz(-45°)Rv=v / 같은 자세·역회전 검산"
+      ],
+      "retainedResult": "The same fixed z ninety-degree endpoint and forty-five-degree midpoint from original25",
+      "nextQuestion": "Do equivalent encodings act identically on a vector, and does the inverse undo them?"
+    },
+    {
+      "id": "IG06",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "title": "끝 자세와 검산의 목적 연결하기",
+      "sourceId": "TPkvx2W8CV8",
+      "intervals": [
+        [
+          569,
+          598
+        ]
+      ],
+      "maximumSeconds": 29,
+      "ko": [
+        "마지막으로 몸체와 보드가 움직이는 방향을 함께 따라가겠습니다.",
+        "빨간 몸체 선과 파란 보드 선은 다른 대상입니다. 같은 대상의 입력 방향과 결과를 비교해야 합니다.",
+        "앞의 작은 수 예제는 카메라와 축을 고정해 그 비교를 검산한 것입니다.",
+        "이 게임의 내부 회전값을 얻은 것은 아닙니다. 다음에는 움직인 점을 선과 경계로 정의하겠습니다."
+      ],
+      "en": [
+        "Finally follow the body and board directions together through the action.",
+        "The red body line and blue board line represent different objects. Compare the input and output direction of the same object.",
+        "The worked numerical example fixed the camera and axes to verify that comparison.",
+        "We have not extracted the game internal rotation values. Next define moving points as lines and bounds."
+      ],
+      "annotation": {
+        "red": "visible body direction, anchored to torso",
+        "blue": "visible board length direction, not world axis",
+        "teal": "explicitly projected screen reference when useful; never implied world axis",
+        "illustrativeVsMeasured": "No game-world angle/quaternion/SLERP or engine internal measurements asserted. Fixed-axis numerical examples are explanation scenes.",
+        "reveal": "narration order with current-hash cues",
+        "tracking": "native29.97 times; hide board/body anchors during occlusion; independent cut reset",
+        "captionClearance": "fixed bottom960,970; gameplay HUD cleared by shot layout/labels above band",
+        "movingPixelApproval": false
+      },
+      "selection": {
+        "sourceIntervals": [
+          [
+            569,
+            598
+          ]
+        ],
+        "nativePlayback": {
+          "src": "IG06.mp4",
+          "duration": 29.029,
+          "ended": true,
+          "rate": 1
+        },
+        "visibleBeforeActionAfter": "569 boarding →573–582 banking →585–594 jumps/flips/landings →595–598 upright travel",
+        "camera": "following camera changes projection; preserve full-screen moving footage",
+        "occlusion": "body/board can overlap in airborne poses; hide unobservable anchors instead of guessing",
+        "UI": "score bottom-left, radar top-right; semantic lines remain over object and notes away from these and fixed captions",
+        "chosenReason": "The continuous rider survives each readable action; excludes earlier resets539–543 and562–568.",
+        "finalAnnotationReview": "pending"
+      }
+    },
+    {
+      "id": "26",
+      "title": "회전은 약속과 검증까지가 한 묶음",
+      "kind": "explanation",
+      "mode": "summary",
+      "ko": [
+        "오늘은 부호를 고른 뒤 단위 길이를 지키고, 짧은 호를 따라 회전을 보간했습니다.",
+        "일정 속도에는 고정된 두 자세와 선형 시간 조건도 필요했습니다. 큰 회전의 이력은 따로 남겨야 합니다.",
+        "네 표현을 바꿀 때 축과 곱셈 규약을 유지하고, 영도와 백팔십 도, 오일러의 특이 자세를 처리했습니다.",
+        "게임 프로그래밍에서는 표현 이름을 외우는 데서 끝내지 말고, 작은 벡터를 돌리고 되돌려 직접 확인하세요.",
+        "이것으로 삼차원 회전 장을 마칩니다. 다음 장에서는 물체의 위치와 자세를 함께 바꾸는 변환으로 이어가겠습니다."
+      ],
+      "en": [
+        "We aligned signs, preserved unit length and interpolated rotations along a short arc.",
+        "Constant speed also needed fixed endpoints and linear time; accumulated large turns require separate records.",
+        "Conversions preserve axes and multiplication conventions and handle zero,180degrees and Euler singularities.",
+        "Go beyond memorizing representation names: rotate a small vector and reverse the transformation to verify it.",
+        "This completes the3Drotation chapter. Next we will combine orientation and position in rigid-body transformations."
+      ],
+      "beats": [
+        "단위·부호 → SLERP / NLERP",
+        "경로·시간·회전 이력 구분",
+        "같은 규약 / 경계 분기 / 왕복 검사",
+        "작은 기준축으로 직접 계산",
+        "다음 장: 위치와 자세의 변환"
+      ]
+    },
+    {
+      "id": "IP06",
+      "after": "26",
+      "kind": "explanation",
+      "title": "회전한 물체를 선과 경계로 다루는 다음 단계",
+      "mode": "next-geometry-bridge",
+      "retainedResult": "Original ending announces transformations of position and orientation",
+      "nextQuestion": "변환한 물체와 게임 공간을 어떻게 계산 대상으로 만들까?",
+      "ko": [
+        "방금 예고한 위치와 자세의 변환을 게임 공간에서 쓰려면, 무엇을 움직이고 어디까지 닿는지부터 정의해야 합니다.",
+        "다음 강의에서는 점 두 개로 줄과 광선을 만들고, 구와 상자 경계로 범위를 검사합니다. 그 뒤 회전과 이동으로 이 선과 경계가 어떻게 바뀌는지 연결하겠습니다."
+      ],
+      "en": [
+        "To use the position and orientation transformations just announced in game space, first define what moves and how far it reaches.",
+        "The next lesson builds lines and rays from points and tests ranges with spheres and boxes. We will then connect rotation and translation to changes in those shapes and bounds."
+      ],
+      "beats": [
+        "위치·자세 변환의 대상은?",
+        "점 → 줄·광선 → 구·상자 경계",
+        "회전·이동 후에도 올바른 범위 검사"
+      ],
+      "visual": "Keep the transformed object and one colored basis vector; reveal two points, their line, then a projected bounding box. Match the next lines/bounds opening."
+    }
+  ],
+  "title": "게임수학 Part 2 · 회전 보간 ② 같은 자세를 다른 표현으로 옮기기",
+  "revisionOf": "game-math-rotation-interpolation",
+  "episode": 2,
+  "causalSpine": "같은 자세를 각도·쿼터니언·행렬로 옮겨도 같은 회전일까?",
+  "baselineOriginalScenesUnchanged": true,
+  "baselineSource": "production/batches/game-math-part2-teaching-revision/baselines/game-math-rotation-interpolation"
+}

@@ -1,0 +1,3 @@
+export const NARRATION_FPS=60;
+export const TOTAL_FRAMES=50465;
+export const TOTAL_DURATION=841.0833333333334;

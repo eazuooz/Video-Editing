@@ -1,0 +1,60 @@
+{
+  "revisionOf": "game-math-rotation-interpolation",
+  "status": "script-draft; added gameplay must be compared before dependent narration and TTS",
+  "preservation": "All26 original scenes, KO/EN lines, examples, formulas and order remain exact; insert these scenes at the declared positions.",
+  "viewerQuestion": "두 자세를 알았을 때, 그 사이를 어떤 경로와 속도로 움직이고 같은 자세를 다른 표현으로 전달할까?",
+  "causalSpine": ["앞 편에서 시작·끝 자세와 회전 차이를 구함", "두 자세만 있으면 중간 화면이 비어 있음", "짧은 경로를 고르고 단위 길이를 유지함", "같은 시간마다 같은 각도로 움직이는지 검산", "보간한 자세를 편집·저장·벡터 적용에 맞는 표현으로 전달", "표현 변환은 작은 기준벡터와 왕복으로 검증", "움직이는 점을 얻은 뒤에는 선·경계·충돌을 정의해야 함"],
+  "policy": {"actualShare": 0.4, "explanationShare": 0.6, "bgm": false, "sourceAudio": false, "palette": "preserved-research-paper-white-v1", "captionStyle": "boxed-white-forest-v1", "episodeDuration": "refine after measured narration; conceptual boundaries only"},
+  "additions": [
+    {
+      "id": "IP01", "after": "04", "kind": "explanation", "title": "티는 회전 차이 중 얼마나 적용할지입니다", "mode": "power-fraction",
+      "retainedResult": "Δ=b a⁻¹, q(t)=Δᵗ a", "nextQuestion": "티 제곱이라는 표현에서 무엇이 지수인가?",
+      "ko": ["방금 델타의 티 제곱이라고 읽은 식은, 델타를 티라는 지수로 거듭제곱한다는 뜻입니다. 티 자체를 제곱하는 식은 아닙니다.", "앞 편처럼 델타가 제트축 구십 도이고 티가 영 점 오라면, 회전 차이의 절반인 사십오 도를 시작 자세에 적용합니다.", "이제 중간값이 단위 길이를 지키며 호 위에 놓이도록, 그 비율을 계산해 보겠습니다."],
+      "en": ["In delta to the power t, t is the exponent on delta; the expression does not square t.", "With a z ninety-degree delta and t equal to one half, apply half the difference, forty-five degrees, to the starting orientation.", "We will now calculate weights that keep the intermediate orientation on the unit arc."],
+      "beats": ["Δᵗ: 지수는 t / t²가 아님", "Δ=Rz(90°), t=.5 → Rz(45°)", "분량 t → 단위 호 위의 중간 자세"],
+      "visual": "Carry the same z axis and oriented object from original04; animate90-degree difference, then45-degree applied portion. Preserve axis/color conventions."
+    },
+    {
+      "id": "IP02", "before": "06", "kind": "explanation", "title": "내적과 아크코사인이 호의 각도를 찾는 이유", "mode": "dot-angle-prerequisite",
+      "retainedResult": "Sign-aligned unit endpoints", "nextQuestion": "내적 숫자 하나에서 호의 각도를 어떻게 얻을까?",
+      "ko": ["호를 따라 움직이려면 먼저 두 점 사이의 각도가 필요합니다. 익숙한 평면의 단위원에서 시작해 보죠.", "오른쪽 단위벡터는 일, 영입니다. 삼십 도 방향은 루트 삼 나누기 이, 이분의 일입니다. 같은 자리끼리 곱해 더하는 내적은 루트 삼 나누기 이가 됩니다.", "이 값은 코사인 삼십 도입니다. 아크코사인은 반대로 이 코사인값을 받아 각도 삼십 도를 돌려줍니다.", "쿼터니언에서는 네 자리끼리 곱해 더하고, 두 단위 점을 잇는 단면의 각도 알파를 찾습니다. 그 알파와 물체의 실제 회전각은 구분해야 합니다."],
+      "en": ["Following an arc requires the angle between its endpoints. Begin with the familiar unit circle in a plane.", "The rightward unit vector is one, zero. A thirty-degree vector is square root three over two, one half. Multiplying corresponding entries and adding gives square root three over two.", "That number is cosine of thirty degrees. Arccosine performs the reverse lookup and returns thirty degrees.", "For quaternions, the dot sums four component products and gives the angle alpha in the section joining the two unit points. Alpha must be distinguished from the object's physical rotation."],
+      "beats": ["(1,0)·(√3/2,1/2)=√3/2", "cos30°=√3/2 → acos(√3/2)=30°", "네 성분 내적 d → 단면 각 α", "α ≠ 물체 회전각 / 다음 그림에서2α 확인"],
+      "visual": "Animate the2D example with a shared origin, unit circle and colored arc; then replace the component table with four entries. Label the circle as a section, never the whole4D sphere."
+    },
+    {
+      "id": "IP03", "before": "15", "kind": "explanation", "title": "중간 자세를 다음 작업에 넘기려면", "mode": "representation-handoff",
+      "retainedResult": "Interpolation with explicit sign, time and turn-history policy", "nextQuestion": "같은 자세를 왜 네 가지 표현으로 바꿀까?",
+      "ko": ["이제 한 순간의 중간 자세를 얻었습니다. 그런데 사람이 각도를 수정할 때와, 그 자세로 수많은 꼭짓점을 움직일 때는 필요한 형태가 다릅니다.", "같은 몸체 축을 유지한 채, 편집용 각도와 보간용 쿼터니언, 벡터에 적용할 행렬 사이에 자세를 전달하겠습니다."],
+      "en": ["We now have an intermediate orientation at one instant. Editing its angles and applying it to many vertices call for different representations.", "Keep the same body axes while passing that orientation between editable angles, interpolation quaternions and matrices that transform vectors."],
+      "beats": ["같은 자세·같은 몸체 축", "각도 편집 → 보간·저장 → 많은 벡터에 적용"],
+      "visual": "One projected3D object stays fixed while named data encodings appear beside it; highlight each task before its representation. Avoid separate unrelated cards."
+    },
+    {
+      "id": "IP04", "before": "18", "kind": "explanation", "title": "에이탄 투와 하이폿을 작은 수로 읽기", "mode": "atan2-hypot-prerequisite",
+      "retainedResult": "Declared Euler order and matrix convention", "nextQuestion": "행렬에 적힌 방향에서 각도를 어떻게 되찾을까?",
+      "ko": ["행렬에서 각도를 되찾기 전에 두 함수의 역할을 볼까요? 하이폿은 직각삼각형의 빗변 길이입니다. 가로 삼, 세로 사이면 제곱합의 제곱근인 오입니다.", "에이탄 투는 세로와 가로를 함께 받아 방향각을 찾습니다. 세로 일, 가로 일이면 사십오 도입니다. 각 값의 부호도 읽어서 어느 사분면인지 구분합니다.", "이 두 도구로 방향을 읽되, 두 방향 정보가 겹치는 특이 자세에서는 원래 각도를 하나로 되찾을 수 없으므로 별도 약속이 필요합니다."],
+      "en": ["Before extracting angles from a matrix, consider two functions. Hypot returns a right triangle's hypotenuse: horizontal three and vertical four give the square root of their squared sum, five.", "Atan2 takes vertical and horizontal values together to recover a direction angle. One and one give forty-five degrees, while their signs identify the quadrant.", "These tools read directions, but singular orientations merge information. Recovering one unique original angle set then requires a separate convention."],
+      "beats": ["hypot(3,4)=√(3²+4²)=5", "atan2(1,1)=45° / 부호로 사분면 구분", "방향 정보가 겹침 → 특이 자세의 별도 약속"],
+      "visual": "Build a3-4-5 triangle, then a(1,1) arrow and its45-degree arc in narration order; carry the angle back to the same projected body axes from16."
+    },
+    {
+      "id": "IP05", "before": "21", "kind": "explanation", "title": "행렬에서 회전값을 읽을 때 나눗셈을 지키기", "mode": "trace-prerequisite",
+      "retainedResult": "q→R preserves the same basis-vector result", "nextQuestion": "R→q는 왜 분기를 여러 개 둘까?",
+      "ko": ["쿼터니언을 행렬로 바꿨으니 반대 방향도 확인하겠습니다. 트레이스라는 새 이름은 왼쪽 위부터 오른쪽 아래까지 대각선 세 수를 더한 값입니다.", "제트축 백팔십 도 행렬에서는 마이너스 일, 마이너스 일, 일을 더해 마이너스 일이 됩니다. 이때 쿼터니언의 더블유는 영이므로, 더블유로 나누는 방법을 계속 쓸 수 없습니다.", "그래서 다음 계산은 충분히 큰 성분을 골라 나누고, 다시 같은 행렬로 돌아오는지 확인합니다."],
+      "en": ["After converting a quaternion to a matrix, check the reverse path. Trace is simply the sum of the three entries on the main diagonal.", "For a z one-hundred-eighty-degree matrix, minus one plus minus one plus one gives minus one. The quaternion's w is zero, so a method that divides by w cannot be used throughout.", "The next calculation chooses a sufficiently large component to divide by, then checks that it rebuilds the same matrix."],
+      "beats": ["trace(R)=R00+R11+R22", "Rz180°: (−1)+(−1)+1=−1 / w=0", "큰 성분 선택 → q→R 왕복 검증"],
+      "visual": "Highlight the diagonal of the existing matrix, sum each entry sequentially, then retain the z axis while showing the division-by-zero branch."
+    },
+    {
+      "id": "IP06", "after": "26", "kind": "explanation", "title": "회전한 물체를 선과 경계로 다루는 다음 단계", "mode": "next-geometry-bridge",
+      "retainedResult": "Original ending announces transformations of position and orientation", "nextQuestion": "변환한 물체와 게임 공간을 어떻게 계산 대상으로 만들까?",
+      "ko": ["방금 예고한 위치와 자세의 변환을 게임 공간에서 쓰려면, 무엇을 움직이고 어디까지 닿는지부터 정의해야 합니다.", "다음 강의에서는 점 두 개로 줄과 광선을 만들고, 구와 상자 경계로 범위를 검사합니다. 그 뒤 회전과 이동으로 이 선과 경계가 어떻게 바뀌는지 연결하겠습니다."],
+      "en": ["To use the position and orientation transformations just announced in game space, first define what moves and how far it reaches.", "The next lesson builds lines and rays from points and tests ranges with spheres and boxes. We will then connect rotation and translation to changes in those shapes and bounds."],
+      "beats": ["위치·자세 변환의 대상은?", "점 → 줄·광선 → 구·상자 경계", "회전·이동 후에도 올바른 범위 검사"],
+      "visual": "Keep the transformed object and one colored basis vector; reveal two points, their line, then a projected bounding box. Match the next lines/bounds opening."
+    }
+  ],
+  "gameplayReview": {"baselineClipsPreserved": true, "newCandidates": ["TPkvx2W8CV8 Skate3", "CAR existing Forza reference42–55", "R2 new Riders244–292"], "selectionStatus": "pending continuous comparison", "internalEngineClaims": false, "newNarrationDependentOnSelection": true},
+  "review": {"originalPreservation": "to verify after assembling revision", "mathPrerequisites": "draft checked; final numerical renderer tests pending", "causalFlow": "targeted insertion plan; full combined narration and motion pending", "tts": "not started", "render": "not started", "upload": "not uploaded"}
+}
