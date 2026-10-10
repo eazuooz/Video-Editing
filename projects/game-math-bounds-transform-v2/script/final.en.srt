@@ -1,0 +1,1046 @@
+1
+00:00:02,000 --> 00:00:05,240
+A connection line alone cannot decide whether
+it reaches an object.
+
+2
+00:00:05,520 --> 00:00:09,320
+Represent the target occupied range with
+spheres and boxes.
+
+3
+00:00:09,760 --> 00:00:17,320
+First, use distance to test a sphere. Next,
+build a box from point minima and maxima
+
+4
+00:00:17,640 --> 00:00:21,540
+and compare overlap. Finally, rotate the same
+box and calculate its changed bounds.
+
+5
+00:00:22,167 --> 00:00:24,607
+In Serious Sam2, round objects approach and
+bright explosions appear.
+
+6
+00:00:24,607 --> 00:00:29,247
+First find the rounded outlines.
+
+7
+00:00:29,755 --> 00:00:33,615
+A center and radius offer a simple calculation
+
+8
+00:00:33,855 --> 00:00:37,283
+model: the same distance in every direction.
+
+9
+00:00:37,603 --> 00:00:42,783
+A rounded visual effect is not proof of a
+spherical surface or damage region.
+
+10
+00:00:43,103 --> 00:00:45,903
+Radius belongs to explicitly defined
+calculation data.
+
+11
+00:00:46,451 --> 00:00:49,671
+A target closer than the radius is inside;
+equal distance is on the boundary.
+
+12
+00:00:49,671 --> 00:00:53,591
+Our diagram will distinguish three cases.
+
+13
+00:00:54,499 --> 00:00:59,099
+Growing screen size as an object approaches is
+different from changing its actual radius.
+
+14
+00:00:59,439 --> 00:01:02,239
+Perspective pixels do not establish world
+size.
+
+15
+00:01:02,787 --> 00:01:05,727
+A sphere is an initial approximation for a
+complex rounded object.
+
+16
+00:01:06,087 --> 00:01:09,307
+Specify what must be enclosed and the
+acceptable approximation error.
+
+17
+00:01:10,167 --> 00:01:12,267
+We have changed to a new shot of the blue
+enemy.
+
+18
+00:01:13,007 --> 00:01:16,367
+Compare its round head and long limbs using
+the red outlines.
+
+19
+00:01:16,867 --> 00:01:22,847
+The teal round range is an illustrative screen
+comparison,
+
+20
+00:01:23,247 --> 00:01:27,547
+not the game collision sphere. Next, define a
+center and radius to test a sphere.
+
+21
+00:01:28,167 --> 00:01:30,947
+Move the circle distance test into space.
+
+22
+00:01:31,147 --> 00:01:35,367
+A spatial point uses three coordinates, x, y
+and z.
+
+23
+00:01:35,727 --> 00:01:40,527
+An offset of two along one axis and zero along
+the others has
+
+24
+00:01:40,747 --> 00:01:43,147
+squared distance four. It lies on a sphere of
+radius two.
+
+25
+00:01:43,507 --> 00:01:46,607
+The next point is three units from the center.
+Squaring three gives nine.
+
+26
+00:01:46,707 --> 00:01:51,227
+It is greater than four, the square of radius
+two, so the point is outside. Squaring
+
+27
+00:01:51,387 --> 00:01:55,827
+and adding all three component differences
+performs the same test in any direction.
+
+28
+00:01:56,680 --> 00:01:59,630
+A sphere has three center components and a
+radius.
+
+29
+00:01:59,890 --> 00:02:02,990
+Compute squared length of point minus center.
+
+30
+00:02:03,350 --> 00:02:09,530
+Take center one, two, three and radius two.
+Squared radius is four.
+
+31
+00:02:09,910 --> 00:02:15,290
+At the center, squared distance is zero:
+inside because it is smaller than four.
+
+32
+00:02:15,630 --> 00:02:20,590
+At three, two, three, the x displacement is
+two.
+
+33
+00:02:20,890 --> 00:02:22,730
+Squared distance four puts the point on the
+surface.
+
+34
+00:02:22,730 --> 00:02:26,610
+At four, two, three, squared distance is nine:
+outside.
+
+35
+00:02:27,050 --> 00:02:31,430
+No square root is needed for this comparison.
+
+36
+00:02:31,810 --> 00:02:37,490
+Equality defines the surface; less than or
+equal defines the solid.
+
+37
+00:02:37,870 --> 00:02:42,810
+Validate finite coordinates, a nonnegative
+radius and a tolerance with defined units.
+
+38
+00:02:43,900 --> 00:02:49,380
+Doubling radius doubles diameter, but area and
+volume grow differently.
+
+39
+00:02:49,640 --> 00:02:55,020
+Diameter is two r and circumference is two pi
+r. Both have length units.
+
+40
+00:02:55,180 --> 00:02:56,960
+Circle area is pi r squared; sphere surface
+area is four pi r squared.
+
+41
+00:02:57,180 --> 00:03:01,620
+Both use squared length units.
+
+42
+00:03:01,820 --> 00:03:04,440
+Sphere volume is four thirds pi r cubed.
+
+43
+00:03:04,540 --> 00:03:08,240
+Cubic units make volume grow eightfold when
+radius doubles.
+
+44
+00:03:08,500 --> 00:03:11,060
+Surface area grows fourfold. Calling length,
+
+45
+00:03:11,060 --> 00:03:15,200
+area and volume simply size can cause
+incorrect comparisons.
+
+46
+00:03:15,480 --> 00:03:20,220
+When changing a game radius, distinguish what
+remains constant. Effects, tests and particle
+
+47
+00:03:20,220 --> 00:03:26,160
+counts are design choices; these formulas
+alone do not determine game performance.
+
+48
+00:03:26,833 --> 00:03:29,933
+We tested sphere distance and size changes.
+
+49
+00:03:30,173 --> 00:03:35,193
+A large sphere around a long bridge also
+includes substantial empty space beside it.
+
+50
+00:03:35,493 --> 00:03:40,933
+Record the object extent separately along each
+axis to reduce that space.
+
+51
+00:03:41,233 --> 00:03:44,773
+Look for these three ranges in the next bodies
+and bridge.
+
+52
+00:03:45,400 --> 00:03:49,200
+Small and large enemies move through the
+village.
+
+53
+00:03:49,200 --> 00:03:53,020
+Imagine checking every head, arm and torso
+detail.
+
+54
+00:03:53,320 --> 00:03:57,656
+Detailed comparisons across poses involve many
+data points.
+
+55
+00:03:57,856 --> 00:04:01,372
+Simple bounding shapes can first filter
+candidates.
+
+56
+00:04:01,672 --> 00:04:05,452
+Think of a sphere around a round head or a box
+around a tall body.
+
+57
+00:04:05,812 --> 00:04:10,132
+These are our illustrative proxies, not
+verified game colliders.
+
+58
+00:04:10,172 --> 00:04:14,648
+Distinguish a box following object orientation
+from a box parallel to world axes.
+
+59
+00:04:14,648 --> 00:04:17,748
+They can enclose different amounts of empty
+space.
+
+60
+00:04:18,464 --> 00:04:21,504
+Turning or extending arms changes what must be
+enclosed.
+
+61
+00:04:21,984 --> 00:04:26,064
+A bound built for one static pose may not
+contain every animation pose.
+
+62
+00:04:26,820 --> 00:04:29,540
+Our diagram will simplify the shape to a point
+set and
+
+63
+00:04:29,960 --> 00:04:32,560
+independently find minimum and maximum along
+three axes.
+
+64
+00:04:33,747 --> 00:04:37,820
+An axis-aligned bounding box, or AABB,
+
+65
+00:04:37,820 --> 00:04:40,900
+encloses points with six faces parallel to x,
+y and z.
+
+66
+00:04:41,180 --> 00:04:45,100
+Store each axis minimum and maximum.
+
+67
+00:04:45,580 --> 00:04:49,100
+The three minima need not belong to one actual
+input point.
+
+68
+00:04:49,420 --> 00:04:51,420
+Center is the average of minimum and maximum.
+
+69
+00:04:51,474 --> 00:04:56,400
+Half-extents are half their difference;
+distinguish them from full size.
+
+70
+00:04:56,580 --> 00:04:59,560
+For membership, compare x with its x interval,
+
+71
+00:04:59,560 --> 00:05:03,340
+y with its y interval and z with its z
+interval.
+
+72
+00:05:03,400 --> 00:05:06,020
+All three tests must pass. A copy error
+comparing y against
+
+73
+00:05:06,780 --> 00:05:11,920
+x bounds can compile while giving incorrect
+results.
+
+74
+00:05:12,020 --> 00:05:14,980
+An oriented bounding box, or OBB, follows
+object orientation.
+
+75
+00:05:15,360 --> 00:05:20,180
+Extra orientation data can reduce empty space
+around a slender shape.
+
+76
+00:05:20,817 --> 00:05:26,737
+Before comparing three coordinates, place two,
+four and seven on one axis.
+
+77
+00:05:27,197 --> 00:05:31,617
+Minimum is two and maximum seven. Their
+average is center four point five,
+
+78
+00:05:31,617 --> 00:05:34,757
+the full extent five, and half-extent two
+point five.
+
+79
+00:05:35,037 --> 00:05:39,457
+Repeat this comparison independently for x, y
+and z. Each minimum can come
+
+80
+00:05:39,677 --> 00:05:45,437
+from a different point. Use this principle to
+read the original five points.
+
+81
+00:05:46,067 --> 00:05:50,507
+Use the book five points and compare one
+coordinate axis at a time.
+
+82
+00:05:50,827 --> 00:05:53,307
+Initialize both extrema from the first point.
+
+83
+00:05:53,547 --> 00:05:58,467
+For each next point, update each component
+minimum or maximum.
+
+84
+00:05:58,467 --> 00:06:02,527
+Follow the highlighted code and matching table
+colors.
+
+85
+00:06:02,647 --> 00:06:08,907
+The final minimum is minus five, minus seven,
+minus five; maximum is seven, eleven, eight.
+
+86
+00:06:09,227 --> 00:06:13,887
+Center is one, two, one point five. Full size
+is twelve,
+
+87
+00:06:13,887 --> 00:06:18,567
+eighteen, thirteen; half-extents are six,
+nine, six point five.
+
+88
+00:06:18,727 --> 00:06:24,287
+Initializing at zero can wrongly include the
+origin when every point lies on one side.
+
+89
+00:06:24,627 --> 00:06:27,767
+Use a first valid point or an explicit
+empty-box state.
+
+90
+00:06:27,927 --> 00:06:31,487
+Handle empty input, infinity and NaN first.
+
+91
+00:06:31,787 --> 00:06:35,607
+Match the iteration bounds to the actual array
+length.
+
+92
+00:06:36,283 --> 00:06:42,223
+Axis-wise minima and maxima let us test two
+ranges. Begin with one axis.
+
+93
+00:06:42,363 --> 00:06:45,703
+For intervals one to four and three to six,
+the overlap begins at the larger minimum,
+
+94
+00:06:45,703 --> 00:06:52,583
+three, and ends at the smaller maximum, four.
+The remaining interval is three to four.
+
+95
+00:06:52,983 --> 00:06:57,343
+For one to two and three to five, the proposed
+beginning three exceeds the end two, so
+
+96
+00:06:57,583 --> 00:07:03,683
+there is no overlap. All x, y and z tests must
+pass for two axis-aligned boxes to overlap.
+
+97
+00:07:03,683 --> 00:07:07,043
+This test includes touching boundaries.
+
+98
+00:07:07,343 --> 00:07:12,223
+The next game and counterexample separately
+examine whether the actual bodies touch.
+
+99
+00:07:12,850 --> 00:07:19,632
+This is a new official Portal 2 preview.
+Placing portals and pressing
+
+100
+00:07:19,872 --> 00:07:22,635
+a button moves the cube. Red follows its
+outline when visible.
+
+101
+00:07:23,377 --> 00:07:28,218
+Picking up, moving and placing it changes its
+visible orientation and screen extent.
+
+102
+00:07:28,840 --> 00:07:32,900
+Blue illustrates an enclosure of the observed
+outline at that moment.
+
+103
+00:07:33,422 --> 00:07:39,425
+The box also includes empty corner regions. A
+beam contact or changed
+
+104
+00:07:39,745 --> 00:07:43,845
+indicator does not establish this blue box as
+the engine collision method.
+
+105
+00:07:43,845 --> 00:07:47,268
+We have observed the origin, movement and
+placed result. Next,
+
+106
+00:07:48,030 --> 00:07:52,370
+distinguish enclosing-box overlap from actual
+body contact.
+
+107
+00:07:53,350 --> 00:07:57,610
+Large and small enemies with extended arms
+move across the scene.
+
+108
+00:07:57,830 --> 00:08:01,010
+Imagine enclosing each body with a simple box.
+
+109
+00:08:02,306 --> 00:08:06,266
+Box corners contain space outside the body.
+
+110
+00:08:06,506 --> 00:08:09,506
+The boxes can overlap while the actual bodies
+remain apart.
+
+111
+00:08:10,842 --> 00:08:15,702
+World-axis boxes around slender or tilted
+shapes can contain
+
+112
+00:08:15,982 --> 00:08:18,742
+substantial empty space. Focus on outline
+versus enclosure.
+
+113
+00:08:20,238 --> 00:08:25,058
+The earlier2D box-overlap lecture supplies a
+fast candidate test.
+
+114
+00:08:25,058 --> 00:08:27,438
+Remember the limit of its result.
+
+115
+00:08:28,874 --> 00:08:31,594
+After filtering, use a test accurate enough
+for the game rule and cost.
+
+116
+00:08:31,934 --> 00:08:36,834
+Choose proxies deliberately.
+
+117
+00:08:38,450 --> 00:08:41,250
+Our next diagram gives two separated slender
+rectangles whose bounding boxes overlap,
+
+118
+00:08:41,630 --> 00:08:46,270
+distinguishing candidates from actual shape
+contact.
+
+119
+00:08:47,350 --> 00:08:50,610
+Tilt two slender rectangles in the same
+direction.
+
+120
+00:08:50,850 --> 00:08:53,450
+A visible gap separates their actual shapes.
+
+121
+00:08:53,770 --> 00:08:56,630
+Their axis-aligned boxes combine independent x
+and y ranges,
+
+122
+00:08:56,630 --> 00:08:59,850
+producing overlapping enclosures.
+
+123
+00:09:00,010 --> 00:09:03,710
+Box overlap means a candidate for further
+testing,
+
+124
+00:09:03,990 --> 00:09:06,350
+not confirmed contact of detailed shapes.
+
+125
+00:09:06,590 --> 00:09:11,130
+Nonoverlapping valid bounds rule out overlap
+of contained shapes.
+
+126
+00:09:11,130 --> 00:09:15,390
+This requires each bound to contain the entire
+current shape.
+
+127
+00:09:15,390 --> 00:09:20,390
+Spheres retain their shape under rotation;
+oriented boxes may fit slender shapes better.
+
+128
+00:09:20,810 --> 00:09:24,770
+A tighter bound is not automatically cheaper
+overall.
+
+129
+00:09:25,250 --> 00:09:29,330
+Compare update cost, candidate count and
+subsequent test cost.
+
+130
+00:09:29,650 --> 00:09:34,010
+This counterexample explains the role of
+bounds rather than an entire collision engine.
+
+131
+00:09:34,767 --> 00:09:38,787
+The counterexample showed overlapping boxes
+with separated bodies.
+
+132
+00:09:39,127 --> 00:09:42,047
+A useful bound must still enclose the entire
+object.
+
+133
+00:09:42,447 --> 00:09:46,687
+Does keeping old minima and maxima after
+rotation preserve that condition?
+
+134
+00:09:46,967 --> 00:09:51,587
+Rotate the same rectangle and see which corner
+becomes leftmost.
+
+135
+00:09:52,216 --> 00:09:56,016
+How do we rebuild bounds after rotating a box?
+
+136
+00:09:56,236 --> 00:10:00,176
+First try transforming only its minimum and
+maximum.
+
+137
+00:10:00,656 --> 00:10:05,016
+Rotate a square with x and y from minus one to
+one by forty-five degrees.
+
+138
+00:10:05,316 --> 00:10:08,776
+The two diagonal endpoints move to a vertical
+line at x zero.
+
+139
+00:10:08,916 --> 00:10:12,416
+Using only those points falsely gives zero
+width.
+
+140
+00:10:12,576 --> 00:10:16,076
+The other corners extend to plus and minus
+square root two.
+
+141
+00:10:16,396 --> 00:10:19,856
+Rotation changes which corner supplies each
+extremum.
+
+142
+00:10:19,856 --> 00:10:23,076
+An old minimum does not necessarily remain a
+minimum.
+
+143
+00:10:23,160 --> 00:10:29,576
+For a3D box, transform all eight corners and
+recompute each coordinate minimum and maximum.
+
+144
+00:10:29,916 --> 00:10:32,416
+This encloses the transformed input box.
+
+145
+00:10:32,736 --> 00:10:38,196
+It can differ from bounds constructed by
+transforming only the original object points.
+
+146
+00:10:38,817 --> 00:10:44,140
+This brief game shot uses a different
+viewpoint. The same large body turns from
+
+147
+00:10:44,683 --> 00:10:47,463
+a back view to its front. Watch red contours
+and the blue screen extent change.
+
+148
+00:10:48,266 --> 00:10:53,675
+Back in gameplay, both pose and camera can
+change.
+
+149
+00:10:54,035 --> 00:10:57,475
+Screen extents alone cannot recover world
+rotation values.
+
+150
+00:10:58,183 --> 00:11:02,043
+In the later excerpt, a nearby blue body moves
+in another direction.
+
+151
+00:11:02,123 --> 00:11:06,407
+Hide obscured contours and follow only the
+visible parts.
+
+152
+00:11:07,367 --> 00:11:12,587
+The earlier forty-five degrees was a
+fixed-axis calculation,
+
+153
+00:11:12,947 --> 00:11:15,647
+not a measurement here. Next, separate this
+from structures viewed by a changing camera.
+
+154
+00:11:16,550 --> 00:11:19,090
+We walk through wooden posts and rails,
+
+155
+00:11:19,330 --> 00:11:23,430
+comparing screen extents of the same
+structures from different sides.
+
+156
+00:11:23,710 --> 00:11:29,825
+An oblique view shortens a long edge and
+reveals another face.
+
+157
+00:11:30,265 --> 00:11:36,340
+These screen changes come from camera
+projection.
+
+158
+00:11:36,520 --> 00:11:41,540
+World bounds use fixed coordinate axes rather
+than screen pixels. Changing
+
+159
+00:11:41,760 --> 00:11:46,420
+only the camera does not automatically change
+a stationary object world bounds.
+
+160
+00:11:49,476 --> 00:11:54,556
+Rotating the object itself in the world can
+change which
+
+161
+00:11:54,576 --> 00:11:57,796
+corner supplies minimum x, as in our square
+experiment.
+
+162
+00:12:00,771 --> 00:12:04,671
+Separate an object-attached box from
+world-axis bounds.
+
+163
+00:12:05,191 --> 00:12:09,431
+First identify whether the camera or the
+object is moving.
+
+164
+00:12:12,426 --> 00:12:16,426
+Our next formula handles affine rotation,
+scale and translation,
+
+165
+00:12:16,426 --> 00:12:18,866
+without combining them with perspective
+projection.
+
+166
+00:12:19,567 --> 00:12:21,407
+Rotation changed which point was minimal.
+
+167
+00:12:21,587 --> 00:12:26,667
+Before the faster formula, separate center and
+extent on one axis.
+
+168
+00:12:27,087 --> 00:12:31,087
+The center is five and the half size is two.
+The interval runs from three to seven.
+
+169
+00:12:31,267 --> 00:12:36,027
+Multiply every position by the number negative
+two. Finally add the number one.
+
+170
+00:12:36,227 --> 00:12:42,247
+The center becomes minus nine. The ends become
+minus five and minus thirteen, reversing their
+
+171
+00:12:42,247 --> 00:12:47,927
+order, while the half-extent is four. The new
+interval is minus thirteen to minus five.
+
+172
+00:12:47,927 --> 00:12:51,307
+A sign changes direction, but extent stays
+nonnegative.
+
+173
+00:12:51,767 --> 00:12:54,587
+The next matrix calculation therefore uses the
+original affine
+
+174
+00:12:54,587 --> 00:12:57,547
+transform for the center and entrywise
+absolute values for half-extents.
+
+175
+00:12:58,300 --> 00:13:01,620
+With column vectors, an affine transformation
+is A times a point plus translation.
+
+176
+00:13:01,620 --> 00:13:05,800
+Transform the center with that expression.
+
+177
+00:13:06,000 --> 00:13:10,960
+Half-extents require a different rule. Signed
+offsets around the center can combine,
+
+178
+00:13:11,153 --> 00:13:14,880
+so maximum spread sums absolute contributions.
+
+179
+00:13:14,959 --> 00:13:20,000
+New half-extents are componentwise absolute A
+times original half-extents.
+
+180
+00:13:20,260 --> 00:13:23,180
+This absolute value is not a determinant or
+vector norm.
+
+181
+00:13:23,380 --> 00:13:28,220
+Rotating half-extents two, one around z by
+forty-five degrees
+
+182
+00:13:28,280 --> 00:13:32,040
+gives both new x and y half-extents three over
+square root two.
+
+183
+00:13:32,320 --> 00:13:36,560
+New minimum is transformed center minus new
+half-extents,
+
+184
+00:13:36,617 --> 00:13:40,280
+and maximum is their sum. This matches
+transforming all eight box corners.
+
+185
+00:13:40,640 --> 00:13:45,480
+The formula applies to an affine image of the
+input box. Do not apply it unchanged
+
+186
+00:13:45,940 --> 00:13:49,160
+to perspective division or claim the tightest
+bounds of every contained object.
+
+187
+00:13:49,783 --> 00:13:52,663
+In a different excerpt, pass a stationary
+house. Red follows its visible wall and posts;
+
+188
+00:13:52,663 --> 00:13:59,206
+compare them with the blue screen extent and
+included empty space.
+
+189
+00:14:00,029 --> 00:14:05,338
+The view changes to the wider village. Camera
+motion changes the screen
+
+190
+00:14:05,338 --> 00:14:09,298
+extent without establishing a changed world
+bound for the stationary house.
+
+191
+00:14:10,407 --> 00:14:16,822
+Observe another close house view. Empty space
+included in a calculation box differs
+
+192
+00:14:17,757 --> 00:14:21,457
+from actual wall points. That motivates
+defining what the next bound must enclose.
+
+193
+00:14:22,316 --> 00:14:26,336
+A long bridge and large enemies share the
+scene.
+
+194
+00:14:26,336 --> 00:14:30,256
+Imagine separate bounds following the bridge
+and enclosing moving bodies.
+
+195
+00:14:31,512 --> 00:14:37,012
+Building a box first and then transforming it
+also transforms the box empty space.
+
+196
+00:14:38,328 --> 00:14:41,908
+Transforming actual object points first and
+rebuilding bounds can
+
+197
+00:14:41,908 --> 00:14:48,384
+exclude different empty regions. The methods
+have different inputs.
+
+198
+00:14:48,384 --> 00:14:52,624
+Define whether you enclose a stationary
+bridge,
+
+199
+00:14:52,624 --> 00:14:57,164
+one body pose or all poses before choosing a
+method.
+
+200
+00:14:58,420 --> 00:15:00,840
+An undersized bound can miss real geometry; an
+oversized bound increases
+
+201
+00:15:00,840 --> 00:15:06,840
+subsequent candidates. Compare accuracy and
+calculation cost.
+
+202
+00:15:06,840 --> 00:15:13,156
+We will finish by comparing both constructions
+using the same coordinates,
+
+203
+00:15:13,156 --> 00:15:17,696
+connecting endpoints, point bounds and
+transformed-box bounds.
+
+204
+00:15:18,316 --> 00:15:22,896
+First problem: origin five, three and
+displacement minus seven,
+
+205
+00:15:22,896 --> 00:15:25,116
+five. What is the endpoint at t one?
+
+206
+00:15:25,336 --> 00:15:28,816
+Adding gives minus two, eight.
+
+207
+00:15:28,816 --> 00:15:33,596
+Slope is minus five over seven and intercept
+is forty-six over seven.
+
+208
+00:15:33,896 --> 00:15:39,616
+For the second problem, rotate the five points
+around z by forty-five degrees and build
+
+209
+00:15:39,616 --> 00:15:43,696
+their bounds directly. The x range is minus
+six to three, each divided by square root two.
+
+210
+00:15:43,696 --> 00:15:47,856
+The y range is minus twelve to eighteen,
+divided by square root two;
+
+211
+00:15:47,856 --> 00:15:53,276
+z remains minus five to eight. Transforming
+the original box produces a wider enclosure.
+
+212
+00:15:53,496 --> 00:15:57,396
+Empty space explains why point-set bounds can
+differ from transformed-box bounds.
+
+213
+00:15:57,816 --> 00:16:01,656
+Check the input before interpreting the
+result.
+
+214
+00:16:01,956 --> 00:16:04,876
+We connected shape representations, parameter
+domains and units,
+
+215
+00:16:04,876 --> 00:16:07,996
+sphere tests, and box construction and
+transformation.
+
+216
+00:16:08,536 --> 00:16:12,256
+Next we will calculate plane distances and
+positions within triangles.
