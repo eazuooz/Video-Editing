@@ -1,0 +1,507 @@
+{
+  "status": "played-source-matched-narration-draft",
+  "scope": "additions only; original26 scenes, formulas, narration and order retained",
+  "classification": "action-led annotated existing-game footage; actual40/explanation60 lecture exception",
+  "audio": {
+    "backgroundMusic": false,
+    "sourceAudio": false
+  },
+  "geometryNotice": "Tracked lines describe visible screen landmarks. Screen reference lines and projected angles are not measured world axes, world angles or evidence of this game's internal quaternion implementation.",
+  "scenes": [
+    {
+      "id": "GA01",
+      "episode": 1,
+      "after": "03",
+      "title": "숫자 세 개가 담는 방향을 날개로 관찰하기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          24,
+          56
+        ]
+      ],
+      "maximumSeconds": 32,
+      "ko": [
+        "세 성분이 축의 방향을 담는다는 설명을 실제 장면과 연결해 보죠. 자전거에서 비행 장비로 바뀌는 이 구간은 넓은 날개 덕분에 기울기를 읽기 쉽습니다.",
+        "양쪽 날개 끝을 잇는 빨간 선을 따라가 보세요. 청록색 선은 화면의 가로 기준입니다. 두 선 사이의 변화가 화면에서 보이는 기울기입니다.",
+        "카메라도 움직이므로 이 각도를 월드 회전값으로 쓰지는 않습니다. 이제 카메라와 독립된 축을 정하고, 그 축과 각도에서 네 숫자를 만드는 방법을 보겠습니다."
+      ],
+      "en": [
+        "Let us connect the three axis components to a visible orientation. This bicycle-to-flight excerpt has broad wings that make a tilt easier to read.",
+        "Follow the red line between the two visible wing tips. The teal line is a screen-horizontal reference. Their changing relationship shows a projected tilt.",
+        "The camera also moves, so this is not a measured world rotation. We now choose a camera-independent axis and construct four components from that axis and an angle."
+      ],
+      "observationGapAfterLine": {
+        "0": 2
+      },
+      "annotation": {
+        "interval": [
+          34,
+          42
+        ],
+        "landmarks": "left/right visible wing tips",
+        "red": "observed tip-to-tip line",
+        "teal": "screen horizontal reference",
+        "orange": "midpoint of observed tips, not center of mass",
+        "yellow": "projected screen-angle arc",
+        "revealDuringLine": 1
+      }
+    },
+    {
+      "id": "GA02",
+      "episode": 1,
+      "after": "N05",
+      "title": "속도 숫자와 자세값의 길이를 나누기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          80,
+          130
+        ]
+      ],
+      "maximumSeconds": 50,
+      "ko": [
+        "방금 정규화한 값의 길이는 일이었습니다. 이번에는 화면 오른쪽 속도 표시와, 캐릭터에 붙여 읽는 방향선을 서로 나누어 보겠습니다.",
+        "자전거 주행에서 비행으로 바뀌면 속도 숫자도 크게 달라집니다. 빨간 날개 선은 자세를, 이동하는 캐릭터와 길은 위치 변화를 보여 줍니다.",
+        "같은 자세라도 더 빠르게 갈 수 있고, 속도가 비슷해도 기울기는 바뀔 수 있습니다. 숫자가 커졌다는 사실만으로 자세 저장값의 길이가 커졌다고 생각하면 안 됩니다.",
+        "후반에는 비행 장비에서 자전거로 다시 바뀝니다. 카메라 거리와 물체 크기까지 달라지지만, 우리가 정의한 단위 회전값의 길이 조건은 그대로입니다.",
+        "이 게임의 내부 값을 측정한 것은 아닙니다. 앞에서 검산한 수학의 조건을 실제로 보이는 속도, 위치, 자세와 구별하는 연습입니다. 다음 주행 장면에서도 이 세 가지를 나누어 보세요."
+      ],
+      "en": [
+        "The normalized quaternion has norm one. Compare the speed display on the right with a direction line attached to the visible character.",
+        "Changing from bicycle travel to flight substantially changes the displayed speed. A red wing line shows orientation, while the character and route show changing position.",
+        "The same orientation can move faster, and similar speeds can accompany different tilts. A larger speed number does not imply a larger orientation quaternion norm.",
+        "Near the end, flight equipment changes back to a bicycle. Camera distance and apparent object size also change, while our defined unit-rotation condition remains the same.",
+        "We have not measured this game's internal values. We are separating the verified mathematical condition from visible speed, position and orientation. Keep that separation in the following example."
+      ],
+      "annotation": {
+        "landmarks": "clear wing tips during flight only; no false continuation through gear swap",
+        "red": "visible wing direction",
+        "teal": "observed movement segment, not a world velocity vector",
+        "revealDuringLine": 1
+      }
+    },
+    {
+      "id": "GA03",
+      "episode": 1,
+      "after": "12",
+      "title": "역회전은 주행 경로의 되감기가 아니다",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          130,
+          166
+        ]
+      ],
+      "maximumSeconds": 36,
+      "ko": [
+        "단위 회전의 켤레가 역원이라는 계산을 확인했습니다. 자전거가 기울었다가 방향을 조정하는 동안, 빨간 몸체 선과 이동 위치를 따로 따라가 보죠.",
+        "기울기가 작아져도 자전거는 계속 앞쪽으로 갑니다. 자세 변화와 위치 변화는 서로 다른 입력과 결과를 갖습니다.",
+        "역원을 곱하면 정의한 회전을 상쇄합니다. 실제 주행의 시간, 충돌, 이동 거리까지 취소하는 것은 아닙니다.",
+        "다만 앞 계산은 길이가 일인 값이었죠. 길이가 이인 숫자 묶음에도 켤레만 쓰면 될까요? 다음 계산에서 그 조건을 직접 확인하겠습니다."
+      ],
+      "en": [
+        "We verified that the conjugate of a unit rotation is its inverse. Track the red torso line separately from the bicycle's position as it banks and corrects its direction.",
+        "Even when the tilt becomes smaller, the bicycle continues forward. Orientation and position changes have different inputs and outputs.",
+        "Multiplying by an inverse cancels the defined rotation. It does not cancel elapsed time, collisions or traveled distance.",
+        "Our previous value had norm one. Would the conjugate alone also invert a component tuple with norm two? The next calculation checks that condition."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip in clear subinterval",
+        "red": "torso direction",
+        "teal": "screen reference, not world up",
+        "revealDuringLine": 0
+      }
+    },
+    {
+      "id": "GA04",
+      "episode": 1,
+      "after": "08",
+      "title": "변화가 없다는 연산도 입력과 결과로 읽기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          308,
+          350
+        ]
+      ],
+      "maximumSeconds": 42,
+      "ko": [
+        "끝 자세만으로 지나온 동작을 전부 알 수 없다는 점을 확인했습니다. 설원 주행에서는 이동하는 경로와 몸에 붙은 방향을 더 쉽게 나누어 볼 수 있습니다.",
+        "빨간 선은 몸체를 따라가고, 파란 선은 보이는 스키의 길이 방향을 따라갑니다. 커브와 경사면에서 두 선이 함께 어떻게 바뀌는지 보세요.",
+        "여기서 이동 속도나 카메라 변화까지 없는 상태를 항등 회전이라고 부르지는 않습니다. 항등 회전은 입력 방향에 적용해도 그 방향을 그대로 돌려주는 연산입니다.",
+        "잠시 몸체 선 하나를 입력이라고 생각해 보세요. 아무 추가 회전도 주지 않으면 그 선이 그대로 결과가 되어야 합니다.",
+        "그 결과를 보장하는 네 숫자는 무엇일까요? 다음 그림에서는 움직이는 배경을 빼고 같은 입력과 출력으로 검산하겠습니다."
+      ],
+      "en": [
+        "An ending orientation cannot recover every preceding action. Snow travel makes it easier to separate the traveled route from directions attached to the body.",
+        "A red line follows the torso and a blue line follows the visible skis. Observe how both change on bends and sloping terrain.",
+        "Identity rotation does not mean that speed, position and camera motion all stop. It is an operation that returns the input direction unchanged.",
+        "Treat one body direction as the input. Applying no extra rotation should return that same direction as the result.",
+        "Which four components guarantee this result? The next diagram removes the moving background and verifies the same input and output."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip and ski endpoints when clearly visible",
+        "red": "torso direction",
+        "blue": "visible ski direction",
+        "revealDuringLine": 1
+      }
+    },
+    {
+      "id": "GA05",
+      "episode": 1,
+      "after": "07",
+      "title": "같은 끝 자세와 지나온 회전 과정을 구분하기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          350,
+          405
+        ]
+      ],
+      "maximumSeconds": 55,
+      "ko": [
+        "큐와 마이너스 큐가 같은 자세를 나타낸다는 계산은 끝 상태에 관한 말입니다. 점프부터 착지까지 움직이는 장면으로 그 말의 범위를 확인해 보죠.",
+        "처음에는 경사면을 따라가다가 공중에서 몸을 틀고, 다시 눈 위로 내려옵니다. 빨간 몸체 선과 파란 스키 선을 순서대로 따라가 보세요.",
+        "중간에 어떤 방향을 지났는지 알려면 움직이는 과정을 보거나 시간별 기록을 남겨야 합니다. 마지막 자세 하나에 그 과정이 모두 들어 있지는 않습니다.",
+        "마지막 방향이 비슷하다는 이유로 같은 동작이라고 판단하지도 않습니다. 반대로 저장값의 부호만 다르다는 이유로 반대 자세라고 판단하지 않습니다.",
+        "카메라가 따라 움직여 화면의 가로 기준도 달라 보일 수 있습니다. 이 선들은 관찰을 돕는 투영선이며, 누적 회전 각도를 측정한 값은 아닙니다.",
+        "이제 숫자의 부호, 눈에 보이는 끝 자세, 시간에 따른 동작을 세 가지로 나누었습니다. 이어지는 장면에서는 자세 저장이 어느 정보까지 담는지 다시 확인하겠습니다."
+      ],
+      "en": [
+        "The equality of orientations represented by q and minus q concerns the ending state. Follow a moving jump and landing to see the limits of that statement.",
+        "The rider follows a slope, changes posture in the air and returns to the snow. Follow the red torso line and the blue ski line in that order.",
+        "Recovering the intermediate directions requires watching the motion or retaining a time record. One ending orientation does not contain the entire process.",
+        "Similar ending directions do not establish identical actions. Conversely, opposite signs of a stored quaternion do not establish opposite orientations.",
+        "A following camera also changes the projected reference. These lines support observation; they do not measure accumulated world rotation.",
+        "We have separated component signs, visible ending orientation and motion through time. The following example checks which information an orientation value can store."
+      ],
+      "annotation": {
+        "landmarks": "clear torso and ski endpoints; hide for occlusion",
+        "red": "torso direction",
+        "blue": "ski direction",
+        "revealDuringLine": 1
+      }
+    },
+    {
+      "id": "GA06",
+      "episode": 1,
+      "after": "N09",
+      "title": "평면의 회전에서 삼차원 축으로",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          10,
+          24
+        ]
+      ],
+      "maximumSeconds": 14,
+      "ko": [
+        "평면에서는 각도 하나로 돌렸습니다. 자전거가 공중에서 기울 때는 어느 축을 중심으로 도는지도 필요하죠.",
+        "보이는 몸체 선을 따라가며, 왜 삼차원 축을 추가하는지 연결해 보세요."
+      ],
+      "en": [
+        "A planar turn used one angle. An airborne bicycle also needs a selected rotation axis.",
+        "Follow the visible body direction to see why a three-dimensional axis is added."
+      ],
+      "annotation": {
+        "landmarks": "torso in unobstructed airborne portion",
+        "red": "torso direction",
+        "revealDuringLine": 0
+      }
+    },
+    {
+      "id": "GA07",
+      "episode": 1,
+      "after": "N04",
+      "title": "반각은 화면에서 절반만 도는 뜻이 아니다",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          56,
+          80
+        ]
+      ],
+      "maximumSeconds": 24,
+      "ko": [
+        "축과 반각에서 저장값을 만들었습니다. 이제 자전거의 몸체 선과 바퀴 방향을 함께 보세요. 우리는 실제로 바뀐 전체 자세를 표현하려고 합니다.",
+        "반각이라는 이름 때문에 화면에서 목표의 절반만 돌아야 한다고 생각하면 안 됩니다. 반각은 저장값을 만드는 식에 들어가고, 벡터에 적용할 때는 양쪽 곱 전체를 씁니다.",
+        "이 구분을 유지한 채, 이어지는 장면에서 몸체에 붙은 방향을 더 관찰하겠습니다."
+      ],
+      "en": [
+        "We constructed a stored rotation from an axis and half-angle. Follow the bicycle's torso and wheel directions together; our goal is to represent the complete orientation change.",
+        "Half-angle does not mean that the visible object turns only halfway to the target. It enters the stored-value formula, and vector application uses the complete two-sided multiplication.",
+        "Keep that distinction while observing the body-attached directions in the following excerpt."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip, wheel hubs when clear",
+        "red": "torso direction",
+        "blue": "wheel-hub line",
+        "revealDuringLine": 0
+      }
+    },
+    {
+      "id": "GA08",
+      "episode": 1,
+      "after": "11",
+      "title": "기울기를 상쇄할 때 남는 이동",
+      "sourceId": "4Odvp_TIeQU",
+      "intervals": [
+        [
+          460,
+          467
+        ],
+        [
+          474,
+          497
+        ]
+      ],
+      "maximumSeconds": 30,
+      "ko": [
+        "속도와 자세를 나누어 봤습니다. 이번에는 별도의 자전거 구간과 비행 구간을 비교합니다. 되감기 화면은 제외했으며, 같은 연속 동작이라고 연결하지 않습니다.",
+        "비행 중 빨간 날개 선의 기울기가 바뀌는 동안 오른쪽 속도 표시와 이동도 계속 바뀝니다. 한 방향을 상쇄하는 값이 전체 움직임을 되돌리는 값은 아니죠.",
+        "그럼 회전 자체를 되돌리는 숫자는 어떻게 만들까요? 방금 확인한 단위 길이 조건을 사용해, 벡터 부분의 부호를 바꾸는 켤레부터 계산하겠습니다."
+      ],
+      "en": [
+        "We separated speed from orientation. Compare separate bicycle and flight excerpts here. The backtracking interface is excluded, and these cuts are not presented as one continuous action.",
+        "During flight the red wing line changes while speed and position keep changing. A value that cancels an orientation operation does not reverse the entire motion.",
+        "How do we construct the value that undoes rotation itself? Using the verified unit-norm condition, we next calculate a conjugate by reversing the vector-part signs."
+      ],
+      "annotation": {
+        "landmarks": "flight wing tips only in second excerpt",
+        "red": "visible wing direction",
+        "teal": "screen horizontal reference",
+        "revealDuringLine": 1
+      }
+    },
+    {
+      "id": "GA09",
+      "episode": 1,
+      "after": "05",
+      "title": "한 번의 변화에서 두 번의 연산으로",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          630,
+          651
+        ]
+      ],
+      "maximumSeconds": 21,
+      "ko": [
+        "몸체에 붙은 방향은 움직임과 함께 바뀝니다. 자전거가 경사와 점프를 지나는 동안 빨간 몸체 선과 파란 바퀴 선을 같이 따라가 보세요.",
+        "이제 관찰에서 계산으로 돌아가, 우리가 정한 같은 축 구십 도 회전을 두 번 적용하겠습니다. 실제 게임의 내부 연산 순서를 추정하는 대신 입력, 첫 결과, 둘째 결과를 직접 비교합니다."
+      ],
+      "en": [
+        "Body-attached directions move with the object. Follow the red torso line and blue wheel line as the bicycle passes slopes and jumps.",
+        "We now return to calculation and apply our defined ninety-degree turn about the same axis twice. Rather than infer game internals, we directly compare the input, first result and second result."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip and wheel hubs in unobstructed section",
+        "red": "torso direction",
+        "blue": "wheel-hub line",
+        "revealDuringLine": 0
+      }
+    },
+    {
+      "id": "GB01",
+      "episode": 2,
+      "after": "16",
+      "title": "고정 축과 몸체 축을 분리해 관찰하기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          166,
+          196
+        ]
+      ],
+      "maximumSeconds": 30,
+      "ko": [
+        "같은 두 회전도 순서를 바꾸면 결과가 달랐습니다. 이번 주행에서는 몸체에 붙여 읽는 빨간 선과 화면의 청록색 기준선을 분리해 보죠.",
+        "몸이 기울면 몸체 선도 함께 바뀝니다. 다음 변화를 그 몸의 기준으로 줄지, 고정된 월드 기준으로 줄지 먼저 정해야 합니다.",
+        "청록색 화면선은 월드 축을 측정한 것이 아닙니다. 카메라가 움직이는 관찰과 앞 그림의 고정 축 계산을 구별하는 표시입니다.",
+        "몸체 기준이 움직인다는 사실을 확인했으니, 이어지는 보드와 자전거 장면에서는 중간 동작의 순서도 함께 따라가 보겠습니다."
+      ],
+      "en": [
+        "Reversing the same two defined turns changed the result. Separate a red body-attached direction from a teal screen reference during this ride.",
+        "The body direction changes with the tilt. We must specify whether the next operation uses that body frame or a fixed world frame.",
+        "The teal screen line is not a measured world axis. It distinguishes the moving camera observation from the fixed-axis calculation in the diagram.",
+        "Having observed a moving body reference, follow intermediate action order in the next snowboard and bicycle excerpts."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip",
+        "red": "body direction",
+        "teal": "screen reference",
+        "revealDuringLine": 0
+      }
+    },
+    {
+      "id": "GB02",
+      "episode": 2,
+      "after": "17",
+      "title": "현재 자세에서 목표 자세를 묻기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          407,
+          438
+        ]
+      ],
+      "maximumSeconds": 31,
+      "ko": [
+        "중간 동작과 기준 공간을 구분했습니다. 이제 커브를 따라가는 자전거를 보면서, 현재 자세와 우리가 원하는 목표 자세를 별도로 떠올려 보겠습니다.",
+        "빨간 몸체 선이 바뀌는 것은 자세 변화이고, 길을 따라 앞으로 가는 것은 위치 변화입니다. 착지할 위치와 착지할 방향도 서로 다른 목표죠.",
+        "화면만으로 정확한 목표 회전값을 읽을 수는 없습니다. 다음 계산은 현재를 에이, 목표를 비라고 정의하고, 어떤 추가 회전을 곱해야 비가 되는지 묻습니다."
+      ],
+      "en": [
+        "We distinguished action order and reference frames. Observe the bicycle following a bend while considering its current orientation and a separately chosen target orientation.",
+        "The changing red torso line describes orientation; advancing along the route describes position. Landing location and landing direction are different targets.",
+        "The image does not supply exact target quaternion data. The next calculation defines current orientation a and target b, then asks which extra rotation produces b."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip in clear forest section",
+        "red": "body direction",
+        "teal": "screen reference",
+        "revealDuringLine": 1
+      }
+    },
+    {
+      "id": "GB03",
+      "episode": 2,
+      "after": "19",
+      "title": "최소 자세 차이와 동작 전체의 길이",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          558,
+          594
+        ],
+        [
+          603,
+          620
+        ]
+      ],
+      "maximumSeconds": 53,
+      "ko": [
+        "내적으로 구한 최소 각도는 두 끝 자세 사이의 차이였습니다. 점프와 커브가 이어지는 이 구간에서, 그 값이 말해 주는 범위를 확인하겠습니다.",
+        "빨간 몸체 선과 파란 바퀴 선을 따라가 보세요. 점프하는 동안 자세가 바뀌고, 착지 뒤에도 주행은 이어집니다.",
+        "어떤 순간을 현재로, 어떤 순간을 목표로 고르느냐에 따라 비교할 두 자세가 달라집니다. 목표의 위치 거리는 이 자세 차이와 별개입니다.",
+        "중간에 다른 플레이어가 몸체를 가리는 구간은 건너뛰었습니다. 두 발췌를 연결해 하나의 점프 전후라고 주장하지 않고, 각각 보이는 움직임을 비교합니다.",
+        "가장 작은 자세 차이를 구해도 실제로 지나온 회전의 순서와 양이 모두 복원되지는 않습니다. 그래서 트릭 기록과 끝 자세 저장은 다른 자료가 필요합니다.",
+        "이제 이어지는 장면에서 목표 자세를 더 관찰한 뒤, 정한 회전의 일부만 적용하려면 어떤 숫자를 바꿔야 하는지 계산하겠습니다."
+      ],
+      "en": [
+        "The minimum angle from the quaternion dot product measures the difference between two ending orientations. Observe successive jumps and bends to see the scope of that value.",
+        "Follow the red torso line and blue wheel line. Orientation changes in the jump, and travel continues after landing.",
+        "Selecting different current and target instants changes the two orientations being compared. Distance to a target position is a separate quantity.",
+        "We omitted an interval where another player occludes the body. The two excerpts are not asserted to be the before and after of one jump; compare the visible motion within each cut.",
+        "A minimum orientation difference does not reconstruct the order or total amount of preceding rotation. A trick history and an ending orientation need different records.",
+        "After further observing target orientation in the following excerpt, we will calculate which quantity changes when applying only part of a selected rotation."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip and clear wheel hubs; cape is not a rigid body axis",
+        "red": "torso direction",
+        "blue": "wheel-hub line",
+        "revealDuringLine": 1
+      }
+    },
+    {
+      "id": "GB04",
+      "episode": 2,
+      "after": "20",
+      "title": "절반 회전은 네 숫자의 절반이 아니다",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          651,
+          700
+        ]
+      ],
+      "maximumSeconds": 49,
+      "ko": [
+        "목표 자세를 정했으니 그쪽으로 일부만 돌리는 상황을 생각해 보죠. 먼저 자전거가 점프한 뒤 자세를 바꾸고 다시 길을 따라가는 실제 움직임을 관찰합니다.",
+        "빨간 몸체 선과 파란 바퀴 선을 따라가면, 위치가 계속 바뀌는 가운데 자세도 따로 바뀐다는 점이 보입니다.",
+        "이 영상에서 정확히 절반의 각도로 돌았다고 측정한 것은 아닙니다. 이제 계산할 질문은 우리가 정의한 구십 도 회전에서 사십오 도를 어떻게 만들 것인가입니다.",
+        "네 성분을 모두 절반으로 줄이면 단위 길이부터 깨집니다. 앞 편에서 정규화의 의미를 확인했으니, 숫자 묶음의 크기와 실제 회전 각도를 구분할 수 있죠.",
+        "다음에서는 축은 유지하고 각도에 배율을 적용합니다. 로그와 지수라는 낯선 기호도 무엇을 기록하고 복원하는지부터 연결해 설명하겠습니다."
+      ],
+      "en": [
+        "With a target orientation chosen, consider applying only part of the turn. First observe the bicycle changing posture during a jump and continuing along the route.",
+        "Following the red torso and blue wheel lines separates orientation changes from the continuing position changes.",
+        "We have not measured an exact half-angle turn in this footage. Our next defined calculation asks how to obtain forty-five degrees from a ninety-degree rotation.",
+        "Halving all four components first breaks the unit-norm condition. The earlier normalization example separates numerical magnitude from physical rotation angle.",
+        "We retain the axis and apply a multiplier to the angle. We will introduce logarithm and exponential notation by explaining what they record and reconstruct."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip and visible wheel hubs",
+        "red": "torso direction",
+        "blue": "wheel-hub line",
+        "revealDuringLine": 1
+      }
+    },
+    {
+      "id": "GB05",
+      "episode": 2,
+      "after": "22",
+      "title": "계산한 벡터를 물체에 붙여 읽기",
+      "sourceId": "4Odvp_TIeQU",
+      "intervals": [
+        [
+          506,
+          522
+        ]
+      ],
+      "maximumSeconds": 16,
+      "ko": [
+        "벡터 하나의 회전 결과를 검산했습니다. 자전거의 빨간 몸체 선과 파란 바퀴 선처럼 서로 다른 방향을 함께 읽어 보세요.",
+        "카메라가 움직이는 화면과 월드의 자세 계산을 구분하며, 다음 장면으로 연결하겠습니다."
+      ],
+      "en": [
+        "We verified a rotated vector. Read different bicycle directions together, such as the red torso line and blue wheel line.",
+        "Distinguish the moving-camera image from world-orientation calculation as we continue into the next excerpt."
+      ],
+      "annotation": {
+        "landmarks": "visible torso and rear-wheel rim; do not invent an occluded front hub",
+        "red": "observed torso direction",
+        "blue": "visible projected wheel contour segment, not a calibrated forward axis",
+        "revealDuringLine": 0,
+        "selection": "T506–522 supersedes R501–516 to avoid the original game-dialogue caption at503–505"
+      }
+    },
+    {
+      "id": "GB06",
+      "episode": 2,
+      "after": "14",
+      "title": "반대 기울기에서 두 회전의 합성으로",
+      "sourceId": "4Odvp_TIeQU",
+      "intervals": [
+        [
+          616,
+          642
+        ]
+      ],
+      "maximumSeconds": 26,
+      "ko": [
+        "역회전은 적용한 회전을 상쇄하는 값이었습니다. 다른 주행 발췌에서 빨간 몸체 선과 파란 바퀴 윤곽을 함께 보겠습니다.",
+        "커브에서는 몸이 기울면서 향하는 쪽도 바뀝니다. 이제 우리가 정한 두 회전을 하나의 자세값으로 이어 붙이려면, 네 성분끼리 단순히 더해도 될까요?",
+        "다음 계산에는 같은 방향인지 비교하는 내적과, 두 방향에 수직인 벡터를 만드는 외적이 들어갑니다. 먼저 작은 숫자로 두 도구를 확인한 뒤 해밀턴 곱을 읽겠습니다."
+      ],
+      "en": [
+        "An inverse cancels an applied rotation. In this separate riding excerpt, follow the red torso direction and blue visible wheel contour together.",
+        "A bend changes both the tilt and the facing direction. To compose our two defined rotations into one orientation, can we simply add the four components?",
+        "The upcoming calculation uses a dot product to compare directions and a cross product to produce a perpendicular vector. We first verify these tools with small numbers, then read the Hamilton product."
+      ],
+      "annotation": {
+        "landmarks": "visible torso and fat rear-wheel contour; clear selected portion after initially occluding wheel jump",
+        "red": "projected torso direction",
+        "blue": "visible wheel contour",
+        "revealDuringLine": 0
+      }
+    }
+  ],
+  "review": {
+    "allRawCandidateIntervalsPlayed": true,
+    "narrationNotYetSynthesized": true,
+    "fineCutTrackingAndFinalCaptionQaComplete": false,
+    "rightsAndHumanListeningComplete": false
+  }
+}

@@ -1,0 +1,28 @@
+"""Prepare new receipts from these exact deliveries, never inherit old IDs/proof."""
+from pathlib import Path
+import json,sys,hashlib,subprocess
+ROOT=Path(__file__).resolve().parents[3];slug=sys.argv[1];P=ROOT/'projects'/slug
+m=json.loads((P/'project.json').read_text(encoding='utf8'));t=json.loads((P/'production/timeline.json').read_text(encoding='utf8'))
+part=m['lecture']['episode'];D=P/'publishing';D.mkdir(exist_ok=True)
+ko=('회전을 저장할 네 숫자는 왜 필요할까요? 허수의 뜻과 평면 회전부터 출발해, 몸체의 방향을 나타내는 쿼터니언으로 이어갑니다. 같은 회전을 유지하면서 반각, 두 부호, 정규화와 역회전까지 차근차근 확인합니다. 두 편 중 첫 편으로, 다음 편에서는 순서가 있는 회전 합성과 벡터 회전을 계산합니다.' if part==1 else '네 숫자로 회전을 기록하고 되돌릴 수 있다면, 두 회전을 어떤 순서로 합쳐야 할까요? 몸체 기준과 월드 기준을 구별한 뒤, 목표 자세까지의 회전 차이와 짧은 경로를 계산합니다. 게임 화면의 관찰선은 월드축 측정값과 구분합니다. 마지막에는 같은 벡터를 돌리고 되돌리며 양쪽 곱셈이 필요한 이유를 확인합니다. 쿼터니언 두 편 중 두 번째 강의입니다.')
+en=('Why do we need four numbers to store a rotation? We begin with imaginary numbers and planar rotation, then connect them to a quaternion describing body orientation. Keeping the same defined rotation, we examine half angles, two signs, normalization and reversal. This is the first of two lectures; the next computes ordered composition and vector rotation.' if part==1 else 'Once we can store and reverse a rotation, how should we compose two rotations? We separate body and world references, compute the rotation difference to a target and examine the short path. Observation lines on gameplay are distinct from measured world axes. Finally, we rotate and reverse the same vector to understand why multiplication is required on both sides. This is the second of two quaternion lectures.')
+linksKo='\n\n📚 게임수학 PART2 수업 자료\n얌얌위키 · 게임수학 PART2\nhttps://www.yamyamcoding.com/1ea0b1ff-a61e-803f-bd54-cac4f028f6b3\n\n얌얌코딩 홈페이지\nhttps://www.yamyamcoding.com/\n\n얌얌위키 전체 수업 노트\nhttps://www.yamyamcoding.com/0d2adf45-5d1a-43be-a37c-61c94b1ae2c8'
+linksEn='\n\n📚 Game Math PART2 course materials\nYamYamWiki · Game Math PART2\nhttps://www.yamyamcoding.com/1ea0b1ff-a61e-803f-bd54-cac4f028f6b3\n\nYamYamCoding website\nhttps://www.yamyamcoding.com/\n\nYamYamWiki course notes\nhttps://www.yamyamcoding.com/0d2adf45-5d1a-43be-a37c-61c94b1ae2c8'
+ids=(['F01','N01','N02','N09','03','04','N04','06','07','10','N05','12','13'] if part==1 else ['F03','14','N06','16','18','19','N07','21','N08','22','24','25','26'])
+titlesEn={'F01':'Overview: storing and reversing a rotation','N01':'What is an imaginary number?','N02':'Complex multiplication as planar rotation','N09':'From a plane to a 3D rotation axis','03':'Four components are not four angles','04':'Axis-angle and half angles','N04':'A worked half-angle example','06':'Compose two quarter-turns','07':'Two signs, one orientation','10':'Length and conditions for normalization','N05':'Length, direction and normalization','12':'Conjugate reverses a unit rotation','13':'General inverse and squared norm','F03':'Overview: composition and vector rotation','14':'Opposite rotations and the reversal process','N06':'What dot and cross products each tell us','16':'Application order and multiplication sides','18':'Relative rotation between two orientations','19':'Minimum angle from the dot product','N07':'A fraction of the same rotation','21':'Powers and path choices','22':'Why vector rotation uses both sides','N08':'One-sided and two-sided products on the same vector','24':'Code conventions and checks','25':'Rotate and reverse the worked vector','26':'What to remember'}
+def stamp(seconds):
+ n=int(seconds);return f'{n//3600}:{n//60%60:02}:{n%60:02}' if n>=3600 else f'{n//60:02}:{n%60:02}'
+chapters=[]
+for ident in ids:
+ s=next(x for x in t['scenes'] if x['id']==ident);chapters.append({'startSeconds':0 if ident in ['F01','F03'] else s['start'],'ko':s['title'],'en':titlesEn[ident]})
+chapters.append({'startSeconds':t['seconds']-10,'ko':'멤버십 감사와 프로그래밍 과외 안내','en':'Membership thanks and programming coaching'})
+assert all(b['startSeconds']-a['startSeconds']>=10 for a,b in zip(chapters,chapters[1:]))
+ko+=linksKo+'\n\n실제 게임40%·설명60%, 배경음악 없이 진행하는 강의입니다.\n\n챕터\n'+'\n'.join(stamp(c['startSeconds'])+' '+c['ko'] for c in chapters)
+en+=linksEn+'\n\n40% actual gameplay and60% explanation, narrated without background music.\n\nChapters\n'+'\n'.join(stamp(c['startSeconds'])+' '+c['en'] for c in chapters)
+def file_record(path):
+ f=ROOT/path;return {'path':path,'bytes':f.stat().st_size,'sha256':hashlib.sha256(f.read_bytes()).hexdigest()}
+video=file_record(f'output/{slug}/{slug}.captioned.mp4');video['seconds']=t['seconds']
+subtitles=[{**file_record(f'output/{slug}/{slug}.{lang}.srt'),'language':lang,'status':'pending-platform-upload','cueCount':len(t['koCaptions'])} for lang in ['ko','en']]
+record={'slug':slug,'status':'prepared-exact-local-delivery; actual Studio upload pending','video':video,'metadata':{'title':m['titles']['ko'],'description':ko,'privacyStatus':'private','language':'ko'},'englishMetadata':{'title':m['titles']['en'],'description':en,'language':'en-US','status':'pending'},'descriptionBody':{'ko':ko,'en':en},'subtitles':subtitles,'thumbnail':{**file_record(f'projects/{slug}/publishing/thumbnail-v2.png'),'status':'prepared-reviewed; platform pending'},'videoId':None,'scheduled':False,'fullPublishingSettingsComplete':False,'humanListening':'pending','rightsReview':'Recording reuse statements retained; game-IP/human review pending','baselinePreserved':'03OXtik2nes','chapters':chapters}
+(D/'youtube-upload.json').write_text(json.dumps(record,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+subprocess.run(['node',str(ROOT/'scripts/prepare-youtube-upload.cjs'),slug],cwd=ROOT,check=True,creationflags=subprocess.CREATE_NO_WINDOW)

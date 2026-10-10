@@ -1,0 +1,279 @@
+{
+  "project": "game-math-quaternion-teaching-additions-v3",
+  "language": "en",
+  "status": "additive-authorized-revision",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "허수는 왜 등장할까?",
+      "lines": [
+        "To understand this approach to rotation through multiplication, we first extend the number system. The square of a real number is nonnegative, so no real number squares to minus one.",
+        "We define a new rule in which i squared is minus one. The number i defined this way is called the imaginary unit.",
+        "This rule does not make an imaginary number a hidden object inside the game. It provides a useful numerical tool for direction calculations.",
+        "To see why it helps with rotation, we will represent these numbers as point coordinates."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "아이를 곱하면 왜 90도 돌아갈까?",
+      "lines": [
+        "A complex number a+bi represents a point (a,b) in a plane. Its horizontal coordinate is the real part and its vertical coordinate is the coefficient of i.",
+        "The point with x coordinate two and y coordinate one is 2+i. Multiplying by i gives 2i+i squared, which equals minus one plus 2i.",
+        "The new x coordinate is minus one and the new y coordinate is two. The arrow turns ninety degrees counterclockwise while retaining length square root of five.",
+        "Multiplying a point (a,b) by i changes it to (-b,a), allowing multiplication to represent a planar turn.",
+        "In three dimensions, we also need an axis that defines the rotation plane. We will extend this direction calculation to a quaternion using that axis."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "정규화는 방향을 고치는 일이 아니다",
+      "lines": [
+        "Normalization means changing the norm to one. For [3,0,0,4], the norm is the square root of three squared plus four squared, which is five.",
+        "Divide all four components by five. The scalar becomes 0.6, both x and y remain zero, and z becomes 0.8. The squared norm is 0.36 plus 0.64, which equals one.",
+        "The numerical magnitude changes while the axis and component ratios remain. This does not correct a wrongly selected axis or multiplication order.",
+        "Likewise, faster character motion does not require a larger orientation quaternion norm. We will observe speed and orientation separately in the game."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "같은 벡터로 한쪽 곱과 양쪽 곱을 비교",
+      "lines": [
+        "The initial complex example used one multiplication in a plane. To verify the earlier half-angle explanation, we return to the ninety-degree z-axis example. The input vector has x component one, y zero and z one.",
+        "To put a vector into the quaternion expression, prepend scalar zero. Define the letter C as square root of two divided by two. The rotation has scalar C, x and y zero, and z C.",
+        "The left multiplication alone produces scalar minus C and three vector components equal to C. Its nonzero scalar shows that this is not yet a three-dimensional direction vector.",
+        "Also multiply by the inverse on the right. That inverse has scalar C, x and y zero, and z minus C. The complete result has scalar zero, x zero, y one and z one.",
+        "Removing scalar zero leaves vector (0,1,1). The z component parallel to the rotation axis remains one while the original x component turns into y. The complete two-sided calculation verifies what the half-angle operation does."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "연결 해설 05",
+      "lines": [
+        "We have defined a 90-degree turn about z. Returning to the game, we can watch body directions change together; the angle projected by a moving camera is not our defined world angle."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "연결 해설 06",
+      "lines": [
+        "We saw the whole orientation change. What happens if we apply the same 90-degree turn again? We will calculate a fixed-axis example rather than measure a particular game maneuver."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "연결 해설 08",
+      "lines": [
+        "Different component signs represented the same final orientation. Can that orientation reveal the preceding motion? Let us follow one interval through time."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "연결 해설 12",
+      "lines": [
+        "Orientation and speed were separate quantities. Let us now undo a stored rotation; the unit-length condition we maintained makes this calculation simpler."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "연결 해설 17",
+      "lines": [
+        "The order of fixed-axis rotations changed the result. In the game, watch how turning the body also changes its attached directions; this motivates separating world and body frames."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "연결 해설 23",
+      "lines": [
+        "Our calculation turned x toward y while preserving the component parallel to the axis. We will now observe body directions separately from the camera frame that projects them on screen."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "연결 해설 26",
+      "lines": [
+        "We completed a rotation and its inverse. Using that result, let us return to our opening question: what do the four numbers store, and which operations do they support?"
+      ]
+    },
+    {
+      "id": "12",
+      "title": "두 편의 지도와 첫 편의 질문",
+      "lines": [
+        "This quaternion lecture has two episodes. After outlining the complete journey, this first episode explains how to construct a stored rotation and undo it."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "구십 도에서 다른 각도로 넓히기",
+      "lines": [
+        "We verified that multiplying by i produces a ninety-degree turn. How can we represent other angles?",
+        "Recall the unit circle from high-school trigonometry. A unit arrow turned by theta has horizontal component cos(theta) and vertical component sin(theta).",
+        "Multiplication by cos(theta)+i sin(theta) therefore rotates the plane by theta. At ninety degrees the cosine is zero and the sine is one, giving i.",
+        "This planar calculation uses the full physical angle theta. When the three-dimensional quaternion later uses a half-angle, we will compare the different operation applied to the vector."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "첫 편의 결과가 다음 편의 질문으로",
+      "lines": [
+        "We have connected the four components to a computational representation of axis and angle, rather than four spatial directions.",
+        "Starting from a complex planar turn, we constructed a quaternion with a unit axis and half-angle, checked its norm, and verified that an inverse cancels the applied operation.",
+        "A game orientation rarely stops after one turn. The next episode explains why the order of two turns matters and calculates the extra rotation from a current orientation to a target."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "두 번째 편의 질문과 앞 편의 결과",
+      "lines": [
+        "The first episode constructed a rotation and used its inverse to undo an operation. This episode composes turns and calculates how to reach a target direction.",
+        "After observing a bicycle's orientation, we reverse the order of the same two turns and compare their results. We then find the rotation from a current orientation to a target and verify it on an actual direction vector.",
+        "We begin with a counteracting tilt, distinguishing an orientation reversal from reversing the traveled path."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "숫자 세 개가 담는 방향을 날개로 관찰하기",
+      "lines": [
+        "Let us connect the three axis components to a visible orientation. This bicycle-to-flight excerpt has broad wings that make a tilt easier to read.",
+        "Follow the red line between the two visible wing tips. The teal line is a screen-horizontal reference. Their changing relationship shows a projected tilt.",
+        "The camera also moves, so this is not a measured world rotation. We now choose a camera-independent axis and construct four components from that axis and an angle."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "속도 숫자와 자세값의 길이를 나누기",
+      "lines": [
+        "The normalized quaternion has norm one. Compare the speed display on the right with a direction line attached to the visible character.",
+        "Changing from bicycle travel to flight substantially changes the displayed speed. A red wing line shows orientation, while the character and route show changing position.",
+        "The same orientation can move faster, and similar speeds can accompany different tilts. A larger speed number does not imply a larger orientation quaternion norm.",
+        "Near the end, flight equipment changes back to a bicycle. Camera distance and apparent object size also change, while our defined unit-rotation condition remains the same.",
+        "We have not measured this game's internal values. We are separating the verified mathematical condition from visible speed, position and orientation. Keep that separation in the following example."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "역회전은 주행 경로의 되감기가 아니다",
+      "lines": [
+        "We verified that the conjugate of a unit rotation is its inverse. Track the red torso line separately from the bicycle's position as it banks and corrects its direction.",
+        "Even when the tilt becomes smaller, the bicycle continues forward. Orientation and position changes have different inputs and outputs.",
+        "Multiplying by an inverse cancels the defined rotation. It does not cancel elapsed time, collisions or traveled distance.",
+        "Our previous value had norm one. Would the conjugate alone also invert a component tuple with norm two? The next calculation checks that condition."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "변화가 없다는 연산도 입력과 결과로 읽기",
+      "lines": [
+        "An ending orientation cannot recover every preceding action. Snow travel makes it easier to separate the traveled route from directions attached to the body.",
+        "A red line follows the torso and a blue line follows the visible skis. Observe how both change on bends and sloping terrain.",
+        "Identity rotation does not mean that speed, position and camera motion all stop. It is an operation that returns the input direction unchanged.",
+        "Treat one body direction as the input. Applying no extra rotation should return that same direction as the result.",
+        "Which four components guarantee this result? The next diagram removes the moving background and verifies the same input and output."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "같은 끝 자세와 지나온 회전 과정을 구분하기",
+      "lines": [
+        "The equality of orientations represented by q and minus q concerns the ending state. Follow a moving jump and landing to see the limits of that statement.",
+        "The rider follows a slope, changes posture in the air and returns to the snow. Follow the red torso line and the blue ski line in that order.",
+        "Recovering the intermediate directions requires watching the motion or retaining a time record. One ending orientation does not contain the entire process.",
+        "Similar ending directions do not establish identical actions. Conversely, opposite signs of a stored quaternion do not establish opposite orientations.",
+        "A following camera also changes the projected reference. These lines support observation; they do not measure accumulated world rotation.",
+        "We have separated component signs, visible ending orientation and motion through time. The following example checks which information an orientation value can store."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "평면의 회전에서 삼차원 축으로",
+      "lines": [
+        "A planar turn used one angle. An airborne bicycle also needs a selected rotation axis.",
+        "Follow the visible body direction to see why a three-dimensional axis is added."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "반각은 화면에서 절반만 도는 뜻이 아니다",
+      "lines": [
+        "We constructed a stored rotation from an axis and half-angle. Follow the bicycle's torso and wheel directions together; our goal is to represent the complete orientation change.",
+        "Half-angle does not mean that the visible object turns only halfway to the target. It enters the stored-value formula, and vector application uses the complete two-sided multiplication.",
+        "Keep that distinction while observing the body-attached directions in the following excerpt."
+      ]
+    },
+    {
+      "id": "23",
+      "title": "기울기를 상쇄할 때 남는 이동",
+      "lines": [
+        "We separated speed from orientation. Compare separate bicycle and flight excerpts here. The backtracking interface is excluded, and these cuts are not presented as one continuous action.",
+        "During flight the red wing line changes while speed and position keep changing. A value that cancels an orientation operation does not reverse the entire motion.",
+        "How do we construct the value that undoes rotation itself? Using the verified unit-norm condition, we next calculate a conjugate by reversing the vector-part signs."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "한 번의 변화에서 두 번의 연산으로",
+      "lines": [
+        "Body-attached directions move with the object. Follow the red torso line and blue wheel line as the bicycle passes slopes and jumps.",
+        "We now return to calculation and apply our defined ninety-degree turn about the same axis twice. Rather than infer game internals, we directly compare the input, first result and second result."
+      ]
+    },
+    {
+      "id": "25",
+      "title": "고정 축과 몸체 축을 분리해 관찰하기",
+      "lines": [
+        "Reversing the same two defined turns changed the result. Separate a red body-attached direction from a teal screen reference during this ride.",
+        "The body direction changes with the tilt. We must specify whether the next operation uses that body frame or a fixed world frame.",
+        "The teal screen line is not a measured world axis. It distinguishes the moving camera observation from the fixed-axis calculation in the diagram.",
+        "Having observed a moving body reference, follow intermediate action order in the next snowboard and bicycle excerpts."
+      ]
+    },
+    {
+      "id": "26",
+      "title": "현재 자세에서 목표 자세를 묻기",
+      "lines": [
+        "We distinguished action order and reference frames. Observe the bicycle following a bend while considering its current orientation and a separately chosen target orientation.",
+        "The changing red torso line describes orientation; advancing along the route describes position. Landing location and landing direction are different targets.",
+        "The image does not supply exact target quaternion data. The next calculation defines current orientation a and target b, then asks which extra rotation produces b."
+      ]
+    },
+    {
+      "id": "27",
+      "title": "최소 자세 차이와 동작 전체의 길이",
+      "lines": [
+        "The minimum angle from the quaternion dot product measures the difference between two ending orientations. Observe successive jumps and bends to see the scope of that value.",
+        "Follow the red torso line and blue wheel line. Orientation changes in the jump, and travel continues after landing.",
+        "Selecting different current and target instants changes the two orientations being compared. Distance to a target position is a separate quantity.",
+        "We omitted an interval where another player occludes the body. The two excerpts are not asserted to be the before and after of one jump; compare the visible motion within each cut.",
+        "A minimum orientation difference does not reconstruct the order or total amount of preceding rotation. A trick history and an ending orientation need different records.",
+        "After further observing target orientation in the following excerpt, we will calculate which quantity changes when applying only part of a selected rotation."
+      ]
+    },
+    {
+      "id": "28",
+      "title": "절반 회전은 네 숫자의 절반이 아니다",
+      "lines": [
+        "With a target orientation chosen, consider applying only part of the turn. First observe the bicycle changing posture during a jump and continuing along the route.",
+        "Following the red torso and blue wheel lines separates orientation changes from the continuing position changes.",
+        "We have not measured an exact half-angle turn in this footage. Our next defined calculation asks how to obtain forty-five degrees from a ninety-degree rotation.",
+        "Halving all four components first breaks the unit-norm condition. The earlier normalization example separates numerical magnitude from physical rotation angle.",
+        "We retain the axis and apply a multiplier to the angle. We will introduce logarithm and exponential notation by explaining what they record and reconstruct."
+      ]
+    },
+    {
+      "id": "29",
+      "title": "계산한 벡터를 물체에 붙여 읽기",
+      "lines": [
+        "We verified a rotated vector. Read different bicycle directions together, such as the red torso line and blue wheel line.",
+        "Distinguish the moving-camera image from world-orientation calculation as we continue into the next excerpt."
+      ]
+    },
+    {
+      "id": "30",
+      "title": "반대 기울기에서 두 회전의 합성으로",
+      "lines": [
+        "An inverse cancels an applied rotation. In this separate riding excerpt, follow the red torso direction and blue visible wheel contour together.",
+        "A bend changes both the tilt and the facing direction. To compose our two defined rotations into one orientation, can we simply add the four components?",
+        "The upcoming calculation uses a dot product to compare directions and a cross product to produce a perpendicular vector. We first verify these tools with small numbers, then read the Hamilton product."
+      ]
+    }
+  ]
+}

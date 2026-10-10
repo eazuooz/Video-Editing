@@ -1,0 +1,316 @@
+{
+  "title": "Game Math Part 2 · 3D Rotation 3: Understanding and Computing Quaternions",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "이번 강의에서 배울 것",
+      "lines": [
+        "How can four numbers record an airborne rotation in a game?",
+        "We will observe ski and bike orientations, then visualize the four quaternion components and their half-angle.",
+        "We will undo and compose rotations, and compute the difference between two orientations.",
+        "Finally, we will check sign and normalization pitfalls and rotate a vector in a worked exercise."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "스키의 이동과 자세를 나누어 보기",
+      "lines": [
+        "This is skiing in Riders Republic. Watch the tilt of the body and skis.",
+        "Read forward movement separately from changes in body orientation.",
+        "In the air, the travel path continues while facing and bank also change.",
+        "Remaining near screen center does not imply an unchanged orientation; the camera follows too.",
+        "We are learning a representation that can describe the visible motion, without claiming to have inspected the game code.",
+        "Our next diagram will hold position fixed and rotate the three body axes to isolate orientation."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "네 성분은 네 회전 각도가 아니다",
+      "lines": [
+        "A quaternion contains one scalar and a three-component vector. We write components in w,x,y,z order.",
+        "A unit rotation quaternion has squared components summing to one, leaving three continuous degrees of freedom.",
+        "Four numbers are not four rotation angles, and x,y,z are not Euler angles.",
+        "The algebra uses i,j,k, whose squares each equal minus one.",
+        "The product ij is k, whereas ji is minus k: an early hint that order matters.",
+        "A library may store x,y,z,w instead. Check the named components and memory order."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "축·각에서 반각으로 연결하기",
+      "lines": [
+        "Recall a unit axis and the angle of rotation about it.",
+        "The scalar is cos of the half-angle, and the vector is the unit axis times sin of the half-angle.",
+        "At zero angle, cos is one and sin is zero, giving the identity [1,0,0,0].",
+        "A 90-degree z rotation uses a 45-degree half-angle, so w and z are both sqrt(2)/2.",
+        "The half-angle does not mean half the physical rotation. Multiplication on both sides produces the full angle.",
+        "We retain right-handed column-vector conventions, and use radians in trigonometric calculations."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "몸에 붙인 축과 공중 회전",
+      "lines": [
+        "Compare body facing when the skis leave the ground and when they land.",
+        "Imagine three small body axes; all of them rotate together in the air.",
+        "One direction alone cannot describe both body facing and ski bank.",
+        "A quaternion is one way to store the full orientation, not position or velocity.",
+        "We are not measuring exact axes and angles from the screen. We will define those explicitly in the next calculation.",
+        "Watch orientation separately from travel direction around landing to connect the representation to visible motion."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "구십 도 회전을 두 번 합치면",
+      "lines": [
+        "Multiply the z90 quaternion by itself, applying the same rotation twice.",
+        "The new scalar is the product of scalars minus the vector dot product, which is zero here.",
+        "The two cross scalar-vector terms sum to a z component of one; the other components remain zero.",
+        "The result [0,0,0,1] represents z180.",
+        "After two more such rotations, the result is [-1,0,0,0], with the body back at its initial orientation.",
+        "The scalar changed from one to minus one, yet the orientation matches. Let us examine this double representation."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "q와 -q는 같은 자세",
+      "lines": [
+        "The unit quaternions q and -q produce the same rotation matrix and endpoint orientation.",
+        "All four components change sign. This differs from conjugation, which changes only the vector signs.",
+        "In vector rotation, the signs on both sides cancel.",
+        "Component equality alone is therefore insufficient to test orientation equality.",
+        "Equivalent endpoints do not make every interpolation path between signed representatives equivalent.",
+        "Endpoint orientation does not retain revolution count; store the path and accumulated rotation separately."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "같은 자세로 돌아와도 움직임은 남는다",
+      "lines": [
+        "Follow the body forward direction and ski line through the airborne rotation.",
+        "A single frame cannot reveal the full movement that preceded it.",
+        "Time reveals the process; endpoint orientation and movement history are different information.",
+        "Connect this distinction to the two signed quaternions representing one orientation.",
+        "One quaternion does not automatically retain the number of visible revolutions.",
+        "If a trick needs accumulated rotation, track input or rotation history separately from orientation."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "항등원과 부호를 구분하기",
+      "lines": [
+        "The multiplication identity is [1,0,0,0]; multiplying q by it leaves q unchanged.",
+        "[-1,0,0,0] is also the identity rotation, but is not the algebraic multiplication identity.",
+        "It changes q to -q: different components representing the same orientation.",
+        "An all-zero quaternion is not no rotation; it is a zero-norm invalid rotation input.",
+        "Initialize with the library identity constructor or correctly ordered unit components.",
+        "Distinguish equality as numbers from equality as rotations before reasoning about signs."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "길이와 정규화의 조건",
+      "lines": [
+        "The norm is the square root of the sum of all four squared components, not just the vector norm.",
+        "Typical orientation storage and quaternion-to-matrix routines expect unit inputs.",
+        "For small floating-point drift, divide all four components by the norm.",
+        "Guard near-zero and nonfinite norms before division; do not disguise arbitrary invalid data as a valid rotation.",
+        "A nonzero nonunit quaternion can also rotate with its correct general inverse because scale cancels, unlike unit-assuming code.",
+        "Normalization restores the scale convention. It neither scales the rotation angle directly nor fixes wrong axes or multiplication order."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "속도 변화와 자세 저장값",
+      "lines": [
+        "We will move from skiing to a flight segment. Watch movement speed separately from body orientation.",
+        "Faster motion does not mean a longer quaternion; a unit rotation retains norm one.",
+        "Speed and acceleration describe change, whereas orientation describes the current state.",
+        "The following camera moves as the wings bank. Apparent image size cannot reveal quaternion norm.",
+        "Check unit length in code or data; this footage is not a measurement of those values.",
+        "After observing motion, we will calculate how to undo a stored rotation in the next diagram."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "켤레로 단위 회전을 되돌리기",
+      "lines": [
+        "Conjugation keeps the scalar and negates the three vector components.",
+        "For a unit rotation quaternion, the conjugate is the inverse and undoes the rotation.",
+        "Conjugating z90 preserves w and negates z, giving z minus90.",
+        "Their product returns [1,0,0,0].",
+        "Negating all four components instead gives the same orientation, not generally the inverse.",
+        "Special cases such as half-turns have matching inverse orientations, but conjugation and full negation remain different operations."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "일반 역원은 길이의 제곱으로 나눈다",
+      "lines": [
+        "The general inverse is the conjugate divided by the squared norm, not the norm itself.",
+        "For [2,0,0,0], the norm is two and its square is four.",
+        "Dividing the conjugate by four gives [0.5,0,0,0].",
+        "Their product is the identity. Dividing by two would leave scalar two in the product and fail the inverse test.",
+        "For unit inputs the squared norm is one, recovering the conjugate rule.",
+        "The inverse requires a nonzero quaternion; reject zero and nonfinite inputs and inspect their origin."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "반대 회전과 되돌리는 과정",
+      "lines": [
+        "Watch the snow bike bank and then adjust its orientation again.",
+        "Leaning one way and returning helps us visualize an opposing rotation.",
+        "The camera moves, so screen left and right do not determine exact axes or angles.",
+        "An inverse swaps the input and output of a stored rotation; it differs from riding backward or negating velocity.",
+        "Separating bank from travel shows why undoing orientation and undoing position are different questions.",
+        "Next we will diagram multiplication order and reference frames."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "내적과 외적으로 곱셈 읽기",
+      "lines": [
+        "Consider the Hamilton product written in scalar-vector form.",
+        "Its scalar is the scalar product minus the vector dot product.",
+        "Its vector sums the two scalar-vector products and the vector cross product.",
+        "Reversing the cross product changes its sign, exposing the usual noncommutativity.",
+        "Products are associative, so parentheses can move without permitting arbitrary order changes.",
+        "Some rotations, such as those about one axis, do commute. Check the actual operation and convention."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "적용 순서와 곱셈의 좌우",
+      "lines": [
+        "We use the Hamilton convention in which a vector rotates as q times v times inverse q.",
+        "Applying fixed x90 followed by fixed y90 puts the y quaternion on the left.",
+        "The initial z direction becomes minus y after x90 and remains there under y90.",
+        "In reverse order it becomes x after y90 and remains x under x90, so the results differ.",
+        "A world-frame delta premultiplies the current orientation; a body-frame delta postmultiplies it.",
+        "Check whether a library uses the same product convention, using small axis-rotation probes."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "동작 순서와 기준을 관찰하기",
+      "lines": [
+        "We will observe snowboard jumps and then bike bank.",
+        "Changing the body forward direction also changes the direction of later body-relative motion.",
+        "Follow temporal order; an endpoint frame does not reconstruct every intermediate operation.",
+        "Distinguishing fixed world axes from moving body axes is the starting point for choosing multiplication side.",
+        "Following-camera pixels do not reveal the exact internal rotation order. Keep our defined diagram separate from observation.",
+        "Watch body facing together with the board or wheels to practice reading full orientation."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "두 자세 사이의 회전 차이",
+      "lines": [
+        "Let a be the current and b the target local-to-world orientation.",
+        "A world delta must satisfy delta times a equals b, so it is b times inverse a.",
+        "A body delta postmultiplies a, giving inverse a times b. Changing frames changes the order.",
+        "From z30 to z90, the same-axis difference is z60.",
+        "With mixed axes, component subtraction is insufficient. Use inverse and product, and name the reference frame.",
+        "Apply the computed delta back to the current orientation and verify that it reaches the target."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "내적으로 최소 회전 각도 구하기",
+      "lines": [
+        "The dot product sums products of all four quaternion components.",
+        "For the smallest physical relative rotation, take the absolute dot product.",
+        "Twice its arccos gives an angle from zero to 180 degrees.",
+        "Equivalent q and -q have dot minus one, whose absolute value gives zero rotation distance.",
+        "Validate unit inputs and clamp tiny numerical overshoot to [0,1] before arccos.",
+        "This measures minimal endpoint separation, not accumulated trick rotation or path direction."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "목표 자세와 가까운 자세",
+      "lines": [
+        "Watch the board and bike adjust orientation toward landing after a jump.",
+        "The required change depends on the target orientation you choose.",
+        "Orientation difference is separate from the remaining positional distance.",
+        "Similar-looking screen poses still require rotation data for exact angle computation.",
+        "Minimal angle describes nearest endpoint separation, not the full length of the actual motion.",
+        "During a jump, follow both body facing and the wheel plane. Distinguish landing position from landing orientation.",
+        "Separate excerpts are not endpoints of the same jump. Observe each actual motion to frame the question about current and target orientations.",
+        "An inverse or relative rotation that matches a pose does not rewind position or collisions. Motion path and rotational endpoint are separate records.",
+        "Imagine comparing stored current and target orientations; next we will apply a chosen fraction of a rotation."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "회전의 일부를 적용하는 거듭제곱",
+      "lines": [
+        "Given a chosen axis-angle representative, scale its angle while retaining its axis to form a fractional rotation.",
+        "Half of z90 is z45; this is not multiplication of all four components by 0.5.",
+        "A chosen logarithm stores the axis times half-angle as a pure quaternion, and the exponential reconstructs a unit quaternion.",
+        "Distinguish radians and the half-angle: the previous rotation vector used the full angle, whereas this logarithm uses half.",
+        "The power path depends on the selected sign and angle branch; fractional powers of q and -q can differ.",
+        "For a shortest path, choose the representative and boundary rules first, explicitly handling identity and half-turn ambiguity."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "벡터는 왜 양쪽에서 곱할까?",
+      "lines": [
+        "In the complex plane, multiplication by cos(angle)+i sin(angle) rotates a 2D vector.",
+        "In 3D, one-sided multiplication of a pure-vector quaternion generally creates a scalar and is not a vector rotation.",
+        "For v=(1,0,1), left multiplication by z90 alone creates scalar minus sqrt(2)/2.",
+        "Including the inverse on the right restores scalar zero and gives vector (0,1,1).",
+        "The axis-parallel z component remains, while x rotates into y.",
+        "Both-sided multiplication combines two half-angles into the physical angle; a worked vector makes the structure tangible."
+      ]
+    },
+    {
+      "id": "23",
+      "title": "카메라와 몸체가 함께 움직일 때",
+      "lines": [
+        "Finally, observe the bike rotate in the air and land.",
+        "Facing and the wheel line change together; the camera is another reference that projects them onto the screen.",
+        "Separate making motion visible from computing orientation in world space.",
+        "With a stored quaternion, rotate direction vectors to obtain forward or up.",
+        "Pixels do not reveal the game storage format, but we can verify our defined mathematical example directly.",
+        "Now recheck component order and unit norm and solve the same calculation as an exercise."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "코드에서 확인할 약속",
+      "lines": [
+        "Four float32 components occupy sixteen bytes of component data, excluding alignment and metadata.",
+        "One more number than Euler angles can make composition and interpolation convenient, without guaranteeing superior speed for every use.",
+        "Euler angles may suit human editing, while precomputed matrices may suit rotating many directions.",
+        "Check storage order, Hamilton product, handedness, and the local-to-world convention together.",
+        "Maintain normalization and invalid-input guards, and distinguish component equality from orientation equality.",
+        "A quaternion represents rotation; it does not automatically solve collision, translation, or accumulated rotation history."
+      ]
+    },
+    {
+      "id": "25",
+      "title": "직접 돌리고 되돌려 보기",
+      "lines": [
+        "First problem: rotate a vector ninety degrees about z. Its x is one, y is zero and z is one. What is the result? Pause and check the axes and signs.",
+        "Use [sqrt(2)/2,0,0,sqrt(2)/2] and the two-sided product on the pure vector.",
+        "The result is (0,1,1); x rotates into y and z remains. Length sqrt(2) is preserved.",
+        "Exercise two: should we negate all four components to restore the original vector?",
+        "No: use the unit conjugate, negating only the vector components. It restores (1,0,1).",
+        "Finally, decide whether an orientation difference is a world delta on the left or a body delta on the right."
+      ]
+    },
+    {
+      "id": "26",
+      "title": "네 숫자에서 회전 연산까지",
+      "lines": [
+        "A quaternion has four components formed from a unit axis and half-angle, with three rotational degrees of freedom under its unit constraint.",
+        "q and -q represent one orientation; conjugation serves a different role, and the general inverse divides by squared norm.",
+        "Record product order and reference frames for composition and differences, then verify by applying the result.",
+        "Next we will interpolate orientations smoothly and safely convert among quaternion, matrix, Euler, and other representations."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "scope":"only new supplemental narration; all26 original lecture scenes and155 original Korean lines remain unchanged",
+  "reason":"Raw read-back confused short spoken coordinate lists. State component names explicitly and define C before using it. Preserve the original mathematical input, operations and results.",
+  "overrides":[
+    {
+      "id":"N01",
+      "ko":[
+        "회전을 곱셈으로 다루는 이번 방법을 이해하려면, 먼저 숫자의 계산 규칙을 조금 넓혀 보겠습니다. 보통 실수는 제곱하면 영 이상이라, 제곱해서 마이너스 일이 되는 실수는 없습니다.",
+        "그래서 아이의 제곱이 마이너스 일이 되도록 새로운 계산 규칙을 정의합니다. 이렇게 정한 아이를 허수의 단위라고 부릅니다.",
+        "계산 규칙을 만든다고 허수가 게임 안에 숨은 물체가 되는 것은 아닙니다. 방향을 계산하기 좋은 숫자 도구로 쓰는 것이죠.",
+        "왜 이런 규칙이 회전에 도움이 되는지, 숫자를 점의 좌표로 바꿔서 보겠습니다."
+      ],
+      "en":[
+        "To understand this approach to rotation through multiplication, we first extend the number system. The square of a real number is nonnegative, so no real number squares to minus one.",
+        "We define a new rule in which i squared is minus one. The number i defined this way is called the imaginary unit.",
+        "This rule does not make an imaginary number a hidden object inside the game. It provides a useful numerical tool for direction calculations.",
+        "To see why it helps with rotation, we will represent these numbers as point coordinates."
+      ]
+    },
+    {
+      "id":"N02",
+      "ko":[
+        "에이 더하기 비 아이라는 복소수는 평면의 점 에이, 비로 그릴 수 있습니다. 가로 좌표는 실수 부분, 세로 좌표는 아이의 계수입니다.",
+        "엑스 좌표가 이, 와이 좌표가 일인 점은 이 더하기 아이입니다. 여기에 아이를 곱하면 이 아이 더하기 아이 제곱, 즉 마이너스 일 더하기 이 아이가 됩니다.",
+        "새 엑스 좌표는 마이너스 일이고 새 와이 좌표는 이입니다. 화살표가 반시계로 구십 도 돌아갔고 길이는 루트 오로 같습니다.",
+        "좌표 에이, 비에 아이를 곱하는 규칙은 마이너스 비, 에이입니다. 그래서 평면 회전을 곱셈으로 표현할 수 있습니다.",
+        "삼차원에서는 평면을 정해 주는 회전 축도 필요합니다. 이 방향 계산을 축 하나와 연결해 쿼터니언으로 확장하겠습니다."
+      ],
+      "en":[
+        "A complex number a+bi represents a point (a,b) in a plane. Its horizontal coordinate is the real part and its vertical coordinate is the coefficient of i.",
+        "The point with x coordinate two and y coordinate one is 2+i. Multiplying by i gives 2i+i squared, which equals minus one plus 2i.",
+        "The new x coordinate is minus one and the new y coordinate is two. The arrow turns ninety degrees counterclockwise while retaining length square root of five.",
+        "Multiplying a point (a,b) by i changes it to (-b,a), allowing multiplication to represent a planar turn.",
+        "In three dimensions, we also need an axis that defines the rotation plane. We will extend this direction calculation to a quaternion using that axis."
+      ]
+    },
+    {
+      "id":"N05",
+      "ko":[
+        "정규화라는 말은 길이를 일로 맞춘다는 뜻입니다. 예를 들어 세, 영, 영, 사의 길이는 세 제곱 더하기 사 제곱의 루트, 즉 오입니다.",
+        "네 성분을 모두 오로 나눕니다. 스칼라 성분은 영 점 육, 엑스와 와이는 각각 영, 제트 성분은 영 점 팔입니다. 길이 제곱은 영 점 삼육 더하기 영 점 육사라서 일이죠.",
+        "바뀐 것은 숫자 묶음의 크기입니다. 축과 성분 사이의 비율은 그대로라서, 잘못 고른 회전 축이나 곱셈 순서까지 고쳐 주지는 않습니다.",
+        "이와 마찬가지로 캐릭터가 빨리 움직인다고 자세 저장값의 길이를 키우지는 않습니다. 실제 장면에서 속도와 자세를 나누어 보겠습니다."
+      ],
+      "en":[
+        "Normalization means changing the norm to one. For [3,0,0,4], the norm is the square root of three squared plus four squared, which is five.",
+        "Divide all four components by five. The scalar becomes 0.6, both x and y remain zero, and z becomes 0.8. The squared norm is 0.36 plus 0.64, which equals one.",
+        "The numerical magnitude changes while the axis and component ratios remain. This does not correct a wrongly selected axis or multiplication order.",
+        "Likewise, faster character motion does not require a larger orientation quaternion norm. We will observe speed and orientation separately in the game."
+      ]
+    },
+    {
+      "id":"N08",
+      "ko":[
+        "처음의 복소수 예제는 평면 안에서 한 번 곱해 회전했습니다. 앞의 반각 설명을 검산하려고 제트축 구십 도 예제로 돌아갑니다. 입력 벡터의 엑스 성분은 일, 와이는 영, 제트는 일입니다.",
+        "벡터를 쿼터니언 식에 넣을 때 맨 앞에 스칼라 영을 붙입니다. 알파벳 씨를 루트 이 나누기 이라고 정의하죠. 회전값의 스칼라와 제트 성분은 씨이고, 엑스와 와이 성분은 영입니다.",
+        "먼저 왼쪽 곱만 계산하면 스칼라는 마이너스 씨, 나머지 세 성분은 각각 씨입니다. 스칼라가 영이 아니므로 삼차원 방향 벡터가 그대로 나온 것이 아닙니다.",
+        "오른쪽에 역원도 곱합니다. 역원의 스칼라는 씨, 엑스와 와이는 영, 제트는 마이너스 씨입니다. 전체 결과의 스칼라는 영, 엑스는 영, 와이는 일, 제트는 일입니다.",
+        "스칼라 영을 제외하면 결과 벡터는 영, 일, 일입니다. 축에 평행한 제트 성분 일은 남고 엑스 성분 일이 와이로 돌았습니다. 양쪽 곱 전체를 계산해야 반각이 실제로 무엇을 하는지 확인할 수 있습니다."
+      ],
+      "en":[
+        "The initial complex example used one multiplication in a plane. To verify the earlier half-angle explanation, we return to the ninety-degree z-axis example. The input vector has x component one, y zero and z one.",
+        "To put a vector into the quaternion expression, prepend scalar zero. Define the letter C as square root of two divided by two. The rotation has scalar C, x and y zero, and z C.",
+        "The left multiplication alone produces scalar minus C and three vector components equal to C. Its nonzero scalar shows that this is not yet a three-dimensional direction vector.",
+        "Also multiply by the inverse on the right. That inverse has scalar C, x and y zero, and z minus C. The complete result has scalar zero, x zero, y one and z one.",
+        "Removing scalar zero leaves vector (0,1,1). The z component parallel to the rotation axis remains one while the original x component turns into y. The complete two-sided calculation verifies what the half-angle operation does."
+      ]
+    }
+  ],
+  "retakeExistingTtsScenes":["01","02","05","08","12","13","15","19","24","30","33"],
+  "approvedOriginalAudioOverwritten":false,
+  "newRetakeAudioGenerated":false,
+  "finalHumanListeningApproval":false
+}

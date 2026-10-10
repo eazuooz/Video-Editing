@@ -1,0 +1,265 @@
+{
+  "project": "game-math-quaternion-teaching-additions-v2",
+  "language": "en",
+  "status": "additive-narration-for-authorized-revision",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "허수는 왜 등장할까?",
+      "lines": [
+        "To record rotation numerically, we first extend multiplication. Squaring an ordinary real number never gives minus one.",
+        "We therefore define a new unit i with the rule i squared equals minus one. It is called the imaginary unit.",
+        "This does not make i a hidden object inside the game; it is a numerical tool useful for calculating directions.",
+        "To see why this rule helps rotation, we will represent numbers as points in a plane."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "아이를 곱하면 왜 90도 돌아갈까?",
+      "lines": [
+        "A complex number a plus bi can represent the point (a,b): the real part is horizontal and the coefficient of i is vertical.",
+        "Multiply 2+i by i. The result is 2i+i squared, or -1+2i.",
+        "The new point is (-1,2). Its direction turned 90 degrees counterclockwise, while its length remains sqrt(5).",
+        "Multiplication by i maps (a,b) to (-b,a), allowing multiplication to represent a planar rotation.",
+        "In three dimensions, we also need an axis specifying the plane of rotation. We will connect this directional calculation to a quaternion."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "네 숫자는 세 축과 어떤 관계일까?",
+      "lines": [
+        "A scalar means one number. Here a vector is a three-number group describing a direction, and a component is an individual number in that group.",
+        "The symbols i,j,k belong to the three-dimensional rotation algebra. We do not need to draw a fourth physical direction to store four numbers.",
+        "For a z-axis rotation, x and y are zero while w and z carry angle information. These are not four independent rotation angles.",
+        "Which values produce 90 degrees? We will construct them using a unit axis and familiar trigonometry."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "반각으로 저장해도 회전은 90도",
+      "lines": [
+        "A planar rotation used sine and cosine of the full angle, but our quaternion uses 45 degrees for a 90-degree turn. This needs an explanation.",
+        "The difference is how we later apply it: the rotation value multiplies the vector on the left, and its inverse multiplies it on the right.",
+        "The complete two-sided operation produces the 90-degree z rotation. A one-sided intermediate is not a physical 45-degree orientation of the object.",
+        "For now, distinguish the stored half-angle from the physical turn; we will later calculate both products on the same vector to verify the connection."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "정규화는 방향을 고치는 일이 아니다",
+      "lines": [
+        "Normalization means adjusting the length to one. The length of [3,0,0,4] is sqrt(9+16), or five.",
+        "Dividing every component by five gives [0.6,0,0,0.8]. Its squared length is 0.36+0.64=1.",
+        "Only the magnitude changed; the axis and component proportions did not. Normalization cannot repair a wrong axis or multiplication order.",
+        "Likewise, a faster-moving character does not need a longer orientation value. We will observe speed and orientation separately."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "내적과 외적은 각각 무엇을 묻는가?",
+      "lines": [
+        "The composition formula uses dot and cross products. First distinguish two questions: alignment and the direction determined by their ordered pair.",
+        "A dot product multiplies corresponding components and adds them. The dot of (1,0,0) and (0,1,0) is zero, meaning the directions are perpendicular.",
+        "A cross product returns a vector perpendicular to both. With our right-handed convention, x cross y is +z, while y cross x is -z.",
+        "That order dependence remains in rotation composition. We will read the scalar and vector parts of the Hamilton product separately."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "회전의 절반과 숫자 크기의 절반",
+      "lines": [
+        "We want to apply 45 degrees rather than all 90 degrees. Halving a turn is different from halving all four stored components.",
+        "Two 45-degree rotations about the same axis compose to 90 degrees. Our fractional rotation must satisfy that relationship.",
+        "A quaternion logarithm converts a chosen axis and half-angle into a convenient vector; its exponential converts that vector back to a unit quaternion. Start with these inverse roles rather than their names.",
+        "For z90, the log vector is the z axis times pi/4. Halving it gives a stored half-angle of 22.5 degrees and a physical turn of 45 degrees.",
+        "Different chosen axis-angle branches can share a final orientation yet have different intermediate paths. We must choose the path before taking fractional powers."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "같은 벡터로 한쪽 곱과 양쪽 곱을 비교",
+      "lines": [
+        "Our first complex example rotated within a plane using one multiplication. Now rotate (1,0,1) by the same defined z90 turn.",
+        "To insert the vector into quaternion algebra, prepend a zero scalar. The rotation is [c,0,0,c], with c=sqrt(2)/2.",
+        "Left multiplication alone produces [-c,c,c,c]. Its scalar is nonzero, so it is not the desired pure three-dimensional vector.",
+        "Multiplying on the right by the inverse [c,0,0,-c] produces [0,0,1,1]. Removing the zero scalar gives the vector (0,1,1).",
+        "The z component parallel to the axis stayed one, while x turned into y. Checking the complete result explains the two-sided multiplication and the half-angle."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "연결 해설 02",
+      "lines": [
+        "Our goal is to record the body's orientation at one instant. Let us first distinguish where the rider is from how the body is turned."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "연결 해설 03",
+      "lines": [
+        "In a plane, two numbers and multiplication could turn a direction. Extending that idea to three dimensions requires choosing an axis; let us examine the numbers we need."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "연결 해설 04",
+      "lines": [
+        "We have separated the roles of the four components. Now we need to construct them from the axis and angle introduced in the preceding lesson."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "연결 해설 05",
+      "lines": [
+        "We have defined a 90-degree turn about z. Returning to the game, we can watch body directions change together; the angle projected by a moving camera is not our defined world angle."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "연결 해설 06",
+      "lines": [
+        "We saw the whole orientation change. What happens if we apply the same 90-degree turn again? We will calculate a fixed-axis example rather than measure a particular game maneuver."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "연결 해설 07",
+      "lines": [
+        "Four turns restored the orientation but changed the signs of its stored components. We must explain that difference to compare orientations correctly."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "연결 해설 08",
+      "lines": [
+        "Different component signs represented the same final orientation. Can that orientation reveal the preceding motion? Let us follow one interval through time."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "연결 해설 09",
+      "lines": [
+        "Final orientation and rotation history are different information. We now need a value that adds no rotation, and will check why initializing every component to zero fails."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "연결 해설 10",
+      "lines": [
+        "The identity value had length one. Other stored rotations use that same convention, so we need to detect drift caused by repeated calculations."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "연결 해설 11",
+      "lines": [
+        "We have checked normalization. To avoid thinking that faster movement needs a longer quaternion, we will observe speed and orientation separately."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "연결 해설 12",
+      "lines": [
+        "Orientation and speed were separate quantities. Let us now undo a stored rotation; the unit-length condition we maintained makes this calculation simpler."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "연결 해설 13",
+      "lines": [
+        "Conjugation undid a unit quaternion. Does the same formula work when its length is not one? A small numerical example will check whether their product is the identity."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "연결 해설 14",
+      "lines": [
+        "We verified that an inverse cancels the original operation. In the game, we will observe a counteracting tilt while separating orientation reversal from reversing the traveled path."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "연결 해설 15",
+      "lines": [
+        "Having undone one rotation, we can now compose two. As multiplication combined planar turns, three-dimensional composition uses a product containing dot and cross products."
+      ]
+    },
+    {
+      "id": "23",
+      "title": "연결 해설 16",
+      "lines": [
+        "Reversing a cross product changed its result. We will now reverse the order of two axis rotations from the same initial direction and inspect the resulting orientations."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "연결 해설 17",
+      "lines": [
+        "The order of fixed-axis rotations changed the result. In the game, watch how turning the body also changes its attached directions; this motivates separating world and body frames."
+      ]
+    },
+    {
+      "id": "25",
+      "title": "연결 해설 18",
+      "lines": [
+        "We have distinguished body and world frames. Now we can ask which extra rotation reaches a target orientation, and verify the answer by applying that delta."
+      ]
+    },
+    {
+      "id": "26",
+      "title": "연결 해설 19",
+      "lines": [
+        "We computed the required rotation difference. To determine how large it is, we will compare all four components and calculate the smallest angle between the final orientations."
+      ]
+    },
+    {
+      "id": "27",
+      "title": "연결 해설 20",
+      "lines": [
+        "The minimum angle measured a difference between orientations. A landing illustrates why distance to the target position and difference from the target orientation are separate questions."
+      ]
+    },
+    {
+      "id": "28",
+      "title": "연결 해설 21",
+      "lines": [
+        "We found the rotation to a target, but applying it all in one frame would produce an abrupt turn. We will first learn to apply a fraction of a fixed-axis rotation."
+      ]
+    },
+    {
+      "id": "29",
+      "title": "연결 해설 22",
+      "lines": [
+        "We can now construct a fractional rotation. To use it, we must apply it to a direction vector; let us check whether the single multiplication used in a plane still works in three dimensions."
+      ]
+    },
+    {
+      "id": "30",
+      "title": "연결 해설 23",
+      "lines": [
+        "Our calculation turned x toward y while preserving the component parallel to the axis. We will now observe body directions separately from the camera frame that projects them on screen."
+      ]
+    },
+    {
+      "id": "31",
+      "title": "연결 해설 24",
+      "lines": [
+        "We have connected stored components to a resulting direction. Reproducing that result in code requires matching the library's component order and coordinate conventions."
+      ]
+    },
+    {
+      "id": "32",
+      "title": "연결 해설 25",
+      "lines": [
+        "With the code conventions established, let us calculate the same input and result ourselves. Rotating and undoing it will verify that the formula restores the original vector."
+      ]
+    },
+    {
+      "id": "33",
+      "title": "연결 해설 26",
+      "lines": [
+        "We completed a rotation and its inverse. Using that result, let us return to our opening question: what do the four numbers store, and which operations do they support?"
+      ]
+    }
+  ]
+}
