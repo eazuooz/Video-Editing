@@ -1,0 +1,17 @@
+from pathlib import Path
+import json,hashlib
+ROOT=Path(__file__).resolve().parents[3];B=Path(__file__).parent
+old=ROOT/'shared/output/narration/game-math-lines-narration-retakes-v3/qwen3-1.7b-balanced-v1'
+new=ROOT/'shared/output/narration/game-math-lines-opening-retake-v4/qwen3-1.7b-balanced-v1'
+provenance=json.loads((B/'lines-line-provenance-v4.json').read_text(encoding='utf8'));assert provenance['unchangedEndingGatesPassed']
+(new/'asr').mkdir(exist_ok=True);copied=[];pending=[]
+for row in provenance['records']:
+ ident=row['scene'];a=old/'chunks'/f'{ident}-scene.wav';z=new/'chunks'/f'{ident}-scene.wav';cache=old/'asr'/f'{ident}.json'
+ current=hashlib.sha256(z.read_bytes()).hexdigest();assert current==row['currentSceneSha256']
+ if a.exists() and cache.exists() and hashlib.sha256(a.read_bytes()).hexdigest()==current:
+  raw=json.loads(cache.read_text(encoding='utf8'))
+  if raw['audio_sha256']==current:(new/'asr'/f'{ident}.json').write_bytes(cache.read_bytes());copied.append({'scene':ident,'sha256':current});continue
+ pending.append(ident)
+assert len(copied)==19 and pending==['11']
+(B/'lines-v4-asr-byte-reuse.json').write_text(json.dumps({'copied':copied,'currentHashRecognitionRequired':pending,'humanListeningComplete':False},indent=2)+'\n',encoding='utf8')
+print(json.dumps({'byteIdenticalCachesReused':len(copied),'recognitionRequired':pending}))

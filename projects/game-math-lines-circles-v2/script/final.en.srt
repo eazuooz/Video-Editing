@@ -1,0 +1,729 @@
+1
+00:00:02,000 --> 00:00:04,360
+The previous lesson found an object
+orientation.
+
+2
+00:00:04,560 --> 00:00:07,900
+We now calculate a connection from that object
+to another location.
+
+3
+00:00:08,240 --> 00:00:13,420
+This chapter has two episodes. First, choose
+circle and line representations to generate
+
+4
+00:00:13,660 --> 00:00:18,660
+and test points. Next, enclose the target size
+and rebuild its bounds after rotation.
+
+5
+00:00:19,300 --> 00:00:24,200
+What numbers let a program describe a
+targeting line or an object size?
+
+6
+00:00:24,540 --> 00:00:28,160
+We will find origins and directions in
+grappling footage,
+
+7
+00:00:28,160 --> 00:00:30,720
+then distinguish lines, segments and rays.
+
+8
+00:00:31,020 --> 00:00:33,040
+Next we will represent round objects with
+spheres
+
+9
+00:00:33,040 --> 00:00:36,260
+and calculate a box enclosing a set of points.
+
+10
+00:00:36,600 --> 00:00:39,820
+Finally we will rotate a box, expose a common
+error,
+
+11
+00:00:39,820 --> 00:00:42,400
+and derive a safe transformation formula.
+
+12
+00:00:44,816 --> 00:00:46,450
+We travel among rocks in A Story About My
+Uncle.
+
+13
+00:00:46,670 --> 00:00:48,890
+Watch the bright connection extending from the
+hand.
+
+14
+00:00:50,266 --> 00:00:55,506
+When it appears, distinguish its origin near
+the hand from its attachment on a rock.
+
+15
+00:00:56,862 --> 00:01:00,162
+Aiming at another rock changes the connection
+direction.
+
+16
+00:01:00,482 --> 00:01:03,662
+One starting point alone does not determine a
+line.
+
+17
+00:01:04,938 --> 00:01:08,378
+Its screen length depends on the camera and
+perspective;
+
+18
+00:01:08,458 --> 00:01:11,358
+pixels are not automatically world distance.
+
+19
+00:01:12,654 --> 00:01:15,974
+Remember how the endpoints relate as we move.
+
+20
+00:01:15,974 --> 00:01:19,394
+Our diagram will calculate that relation in
+explicitly chosen coordinates.
+
+21
+00:01:20,930 --> 00:01:22,890
+The visible grapple motivates the mathematics;
+
+22
+00:01:23,370 --> 00:01:27,350
+it does not reveal this game ray tests or
+physics implementation.
+
+23
+00:01:28,050 --> 00:01:32,190
+With the grapple's endpoints identified, we
+need a numerical line. Before choosing
+
+24
+00:01:32,370 --> 00:01:38,010
+its formula, use the familiar circle from
+earlier lessons to separate three tasks.
+
+25
+00:01:38,210 --> 00:01:44,470
+Do we store the shape, generate a point on it,
+or test a supplied point? After distinguishing
+
+26
+00:01:44,710 --> 00:01:48,870
+these tasks for the circle, we will apply the
+same questions to the connection line.
+
+27
+00:01:49,583 --> 00:01:53,043
+We can describe the same circle differently
+depending on the calculation.
+
+28
+00:01:53,263 --> 00:01:57,143
+Storing its center and radius gives direct
+shape data.
+
+29
+00:01:57,403 --> 00:02:01,223
+A parametric representation constructs a point
+by adding
+
+30
+00:02:01,223 --> 00:02:05,063
+radius times cosine and sine of an angle to
+the center.
+
+31
+00:02:05,243 --> 00:02:08,443
+An implicit representation compares squared
+distance
+
+32
+00:02:08,443 --> 00:02:11,783
+from a candidate point to the center with
+squared radius.
+
+33
+00:02:11,843 --> 00:02:15,523
+Equality means the boundary; a smaller squared
+distance means the interior.
+
+34
+00:02:15,703 --> 00:02:18,523
+Watch the classification change as the point
+moves.
+
+35
+00:02:18,523 --> 00:02:23,023
+Parametric equations conveniently construct
+points;
+
+36
+00:02:23,183 --> 00:02:25,423
+implicit equations conveniently test them.
+Neither is always better.
+
+37
+00:02:25,623 --> 00:02:28,563
+An angle parameter does not automatically
+represent time.
+
+38
+00:02:28,723 --> 00:02:32,443
+Define whether a parameter means angle, time
+or distance.
+
+39
+00:02:33,083 --> 00:02:37,863
+For a circle at the origin, x squared plus y
+squared equals radius squared.
+
+40
+00:02:38,143 --> 00:02:40,403
+Translating its center changes the equation.
+
+41
+00:02:40,623 --> 00:02:46,703
+Take center two, three and radius one.
+
+42
+00:02:47,103 --> 00:02:50,563
+Subtract two from x and three from y before
+squaring.
+
+43
+00:02:50,763 --> 00:02:56,863
+Expansion gives x squared plus y squared minus
+four x minus six y plus twelve equal to zero.
+
+44
+00:02:57,143 --> 00:02:59,583
+A general conic therefore includes linear and
+
+45
+00:02:59,583 --> 00:03:02,523
+constant terms as well as squared and cross
+terms.
+
+46
+00:03:02,523 --> 00:03:05,723
+A circle needs two center components and one
+radius.
+
+47
+00:03:06,063 --> 00:03:08,623
+A sphere needs three center components and one
+radius.
+
+48
+00:03:08,863 --> 00:03:12,343
+Different radii along the axes describe an
+ellipse or ellipsoid.
+
+49
+00:03:12,623 --> 00:03:16,023
+Nonuniformly stretching a sphere generally
+changes it into an ellipsoid.
+
+50
+00:03:16,650 --> 00:03:19,390
+For the circle, center and radius store the
+shape,
+
+51
+00:03:19,390 --> 00:03:22,890
+angle generates a point, and distance tests
+inside or outside.
+
+52
+00:03:23,210 --> 00:03:27,330
+Replace the circle with two connection points
+and apply the same three questions to a line.
+
+53
+00:03:28,300 --> 00:03:34,953
+This is an official Portal 2 preview
+demonstration. Red follows the beam
+
+54
+00:03:35,213 --> 00:03:38,666
+from its origin to the cube. Moving the cube
+changes the outgoing direction.
+
+55
+00:03:39,679 --> 00:03:45,711
+Here is a different excerpt. A beam aimed at
+the receiver changes its indicator
+
+56
+00:03:46,702 --> 00:03:49,622
+and opens the route. Connect the origin,
+direction change and visible result.
+
+57
+00:03:50,653 --> 00:03:57,580
+These are projected screen observations; the
+engine method and world
+
+58
+00:03:58,987 --> 00:04:02,167
+distances are unverified. Next, identify both
+endpoints of a grapple as well.
+
+59
+00:04:02,967 --> 00:04:06,127
+We connect to another rock and travel through
+the air.
+
+60
+00:04:06,347 --> 00:04:11,429
+Find both endpoints whenever the beam appears.
+
+61
+00:04:11,769 --> 00:04:13,637
+Subtracting origin from attachment gives a
+
+62
+00:04:13,637 --> 00:04:16,309
+displacement vector containing direction and
+length.
+
+63
+00:04:18,791 --> 00:04:23,451
+Even when two rocks lie in the same direction,
+their displacement lengths differ.
+
+64
+00:04:25,833 --> 00:04:28,333
+For direction alone, divide displacement by
+its length.
+
+65
+00:04:28,493 --> 00:04:31,993
+Store a unit direction and distance
+separately.
+
+66
+00:04:34,255 --> 00:04:39,695
+The hand-to-rock connection and the character
+actual path are different questions.
+
+67
+00:04:39,895 --> 00:04:43,535
+Forces and trajectories belong to later
+dynamics lessons.
+
+68
+00:04:45,997 --> 00:04:48,717
+Focus here on geometric descriptions between
+positions.
+
+69
+00:04:48,753 --> 00:04:54,197
+A fractional parameter and a distance
+parameter have different meanings.
+
+70
+00:04:54,817 --> 00:04:56,637
+This is a different excerpt from the earlier
+grapple.
+
+71
+00:04:57,565 --> 00:05:01,665
+When the hand connects to a rock, red joins
+the two observed endpoints.
+
+72
+00:05:02,753 --> 00:05:06,293
+Selecting the next rock changes the endpoint
+and direction.
+
+73
+00:05:06,533 --> 00:05:11,241
+Do not treat the blue effect and the body
+travel path as the same straight line.
+
+74
+00:05:12,430 --> 00:05:17,030
+The segment joining origin and attachment is
+our defined calculation connection.
+
+75
+00:05:17,310 --> 00:05:20,778
+The body travels through space while the
+camera follows it.
+
+76
+00:05:21,886 --> 00:05:27,990
+We now move to the later excerpt. Observe
+release and arrival near the rock.
+
+77
+00:05:27,990 --> 00:05:32,813
+Generating intermediate connection points
+requires the next parameter formula.
+
+78
+00:05:33,433 --> 00:05:37,673
+Call the origin the letter o and displacement
+delta.
+
+79
+00:05:37,993 --> 00:05:41,173
+Position is the origin plus t times delta.
+
+80
+00:05:41,513 --> 00:05:44,613
+Zero gives the origin and one gives the
+endpoint.
+
+81
+00:05:44,873 --> 00:05:47,953
+Restricting t to zero through one defines the
+segment.
+
+82
+00:05:48,253 --> 00:05:52,133
+Allowing every real t produces an infinite
+line.
+
+83
+00:05:52,453 --> 00:05:54,453
+Negative t extends in the opposite direction.
+
+84
+00:05:54,633 --> 00:05:57,573
+A mathematical ray usually restricts t to
+
+85
+00:05:57,653 --> 00:05:59,513
+nonnegative values and extends infinitely
+forward.
+
+86
+00:05:59,853 --> 00:06:03,093
+The book also calls a finite directed segment
+a ray. Engine ray queries
+
+87
+00:06:03,093 --> 00:06:08,013
+may have a maximum distance, so inspect the
+actual allowed domain.
+
+88
+00:06:08,153 --> 00:06:12,613
+Record the origin, direction and parameter
+range together,
+
+89
+00:06:12,793 --> 00:06:15,433
+rather than relying on a name.
+
+90
+00:06:16,117 --> 00:06:21,357
+Let the origin be two, one and displacement
+six, three. Where is the midpoint?
+
+91
+00:06:22,097 --> 00:06:27,737
+At t equal to one half, add three, one point
+five. The point is five, two point five.
+
+92
+00:06:28,057 --> 00:06:34,417
+This one half is a fraction of the segment,
+not half a second or half a meter.
+
+93
+00:06:34,717 --> 00:06:36,977
+The displacement length is square root of
+forty-five.
+
+94
+00:06:37,137 --> 00:06:40,717
+Divide displacement by that length to obtain a
+unit direction.
+
+95
+00:06:41,337 --> 00:06:45,977
+Multiplying that unit direction by s makes s a
+distance.
+
+96
+00:06:46,117 --> 00:06:49,617
+The same midpoint uses s equal to half of
+square root forty-five.
+
+97
+00:06:49,937 --> 00:06:54,217
+Identical endpoints give zero displacement.
+Check before normalization
+
+98
+00:06:54,217 --> 00:06:57,057
+and define whether to treat the degenerate
+input as a point or reject it.
+
+99
+00:06:57,683 --> 00:07:02,823
+Our origin is two, one and endpoint eight,
+four. Displacement six,
+
+100
+00:07:02,823 --> 00:07:07,903
+three has length square root forty-five.
+Define the coordinate unit as meters.
+
+101
+00:07:08,263 --> 00:07:12,343
+Multiplying by t one half adds three meters
+and one point five meters,
+
+102
+00:07:12,343 --> 00:07:17,063
+reaching five meters, two point five meters.
+The parameter t has no meter unit.
+
+103
+00:07:17,403 --> 00:07:21,003
+Divide the same displacement by square root
+forty-five for a unit direction.
+
+104
+00:07:21,223 --> 00:07:26,283
+Multiply it by distance square root forty-five
+over two to reach the identical midpoint.
+
+105
+00:07:26,283 --> 00:07:28,983
+Fraction and distance give the same point.
+Next,
+
+106
+00:07:29,563 --> 00:07:33,663
+check whether slope can represent every line
+direction.
+
+107
+00:07:34,500 --> 00:07:39,626
+In another connection, identify the two red
+endpoints afresh.
+
+108
+00:07:39,826 --> 00:07:43,306
+A new rock requires a new origin and
+displacement.
+
+109
+00:07:44,328 --> 00:07:48,688
+The calculation rule remains: t zero is the
+origin and t one the attachment.
+
+110
+00:07:49,491 --> 00:07:53,451
+Screen travel speed is not itself t or a
+distance in meters.
+
+111
+00:07:54,414 --> 00:07:57,874
+In the following excerpt, observe connection,
+
+112
+00:07:58,749 --> 00:08:01,309
+travel and landing in order. Hide the line
+when the hand or rock is obscured.
+
+113
+00:08:02,283 --> 00:08:08,758
+Our earlier numbers were a fixed-coordinate
+example, not measurements from this game.
+
+114
+00:08:08,758 --> 00:08:11,973
+Next, find a representation that also handles
+vertical lines.
+
+115
+00:08:12,733 --> 00:08:15,553
+We aim at rocks above and below us.
+
+116
+00:08:15,913 --> 00:08:19,133
+The beam looks vertical in some views and
+diagonal in others.
+
+117
+00:08:21,713 --> 00:08:23,693
+Both are ordinary lines, yet a slope-only
+
+118
+00:08:24,153 --> 00:08:27,673
+representation has a problem at vertical
+lines.
+
+119
+00:08:27,993 --> 00:08:35,313
+When the x change is zero, we cannot divide
+the y change by it.
+
+120
+00:08:37,973 --> 00:08:42,333
+Our diagram will use a normal and offset
+instead.
+
+121
+00:08:42,673 --> 00:08:45,273
+A normal is perpendicular to the line
+direction.
+
+122
+00:08:48,133 --> 00:08:50,793
+Screen vertical comes from the camera. For
+calculation,
+
+123
+00:08:50,853 --> 00:08:55,933
+first choose the coordinate frame defining x
+and y.
+
+124
+00:08:58,373 --> 00:09:01,813
+We will also find points equidistant from two
+sites.
+
+125
+00:09:02,273 --> 00:09:06,113
+Their connecting line and perpendicular
+bisector are different lines.
+
+126
+00:09:06,733 --> 00:09:11,293
+The slope division failed for a vertical line.
+In a separate task from joining the two sites,
+
+127
+00:09:11,293 --> 00:09:15,453
+find points equally distant from zero, zero
+and two, zero.
+
+128
+00:09:15,773 --> 00:09:19,813
+Equal distance is the question that produces a
+perpendicular bisector.
+
+129
+00:09:20,433 --> 00:09:25,893
+For a point x, y, the squared distances are x
+squared plus y squared,
+
+130
+00:09:25,893 --> 00:09:29,513
+and x minus two squared plus y squared.
+
+131
+00:09:29,813 --> 00:09:34,153
+Equate and expand them. Common terms cancel,
+leaving four x equals four,
+
+132
+00:09:34,153 --> 00:09:38,433
+so x equals one. Draw this vertical line
+between the two points.
+
+133
+00:09:38,913 --> 00:09:42,213
+The next formula calls the perpendicular
+direction a normal.
+
+134
+00:09:42,453 --> 00:09:46,553
+A dot multiplies matching entries and adds
+them: two,
+
+135
+00:09:46,553 --> 00:09:51,073
+zero dotted with x, y gives two x. This
+expresses the same vertical line.
+
+136
+00:09:51,700 --> 00:09:55,860
+The familiar slope-intercept equation needs a
+different form,
+
+137
+00:09:56,140 --> 00:09:59,820
+x equal to a constant, for a vertical line.
+
+138
+00:10:00,020 --> 00:10:02,900
+Using normal n dotted with a point equal to
+offset d
+
+139
+00:10:02,900 --> 00:10:06,460
+represents vertical and horizontal lines in
+one form.
+
+140
+00:10:06,700 --> 00:10:11,640
+The normal is perpendicular to the line. A
+zero normal does not define a valid line.
+
+141
+00:10:11,960 --> 00:10:15,640
+For points equidistant from zero, zero and
+two, zero,
+
+142
+00:10:15,900 --> 00:10:21,180
+use displacement two, zero as normal and
+midpoint one, zero on the bisector.
+
+143
+00:10:21,180 --> 00:10:27,120
+The equation is two x equals two, or x equals
+one. This vertical line bisects the two sites.
+
+144
+00:10:27,300 --> 00:10:33,160
+When normalizing n, divide d by the same
+length. Scaling only n moves the line;
+
+145
+00:10:33,440 --> 00:10:37,600
+the residual is directly a signed distance
+only for a unit normal.
+
+146
+00:10:38,233 --> 00:10:41,933
+Choose a circle or line representation for the
+task,
+
+147
+00:10:42,073 --> 00:10:45,533
+and compare a segment fraction with a ray
+distance at the same point.
+
+148
+00:10:45,913 --> 00:10:51,213
+We can now construct the connection. Contact
+also needs the target size.
+
+149
+00:10:51,493 --> 00:10:54,193
+The next episode encloses that object in
+spheres and boxes
+
+150
+00:10:54,193 --> 00:10:57,293
+and calculates how its bounds change under
+rotation.

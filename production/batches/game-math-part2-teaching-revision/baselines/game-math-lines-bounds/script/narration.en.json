@@ -1,0 +1,267 @@
+{
+  "title": "Game Math Part 2 · Geometry 1: Lines, Spheres and Bounding Boxes",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "형태를 계산으로 바꾸는 첫걸음",
+      "lines": [
+        "What numbers let a program describe a targeting line or an object size?",
+        "We will find origins and directions in grappling footage, then distinguish lines, segments and rays.",
+        "Next we will represent round objects with spheres and calculate a box enclosing a set of points.",
+        "Finally we will rotate a box, expose a common error, and derive a safe transformation formula."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "그래플에서 출발점과 연결점을 찾기",
+      "lines": [
+        "We travel among rocks in A Story About My Uncle. Watch the bright connection extending from the hand.",
+        "When it appears, distinguish its origin near the hand from its attachment on a rock.",
+        "Aiming at another rock changes the connection direction. One starting point alone does not determine a line.",
+        "Its screen length depends on the camera and perspective; pixels are not automatically world distance.",
+        "Remember how the endpoints relate as we move. Our diagram will calculate that relation in explicitly chosen coordinates.",
+        "The visible grapple motivates the mathematics; it does not reveal this game ray tests or physics implementation."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "같은 원을 설명하는 세 가지 방법",
+      "lines": [
+        "We can describe the same circle differently depending on the calculation. Storing its center and radius gives direct shape data.",
+        "A parametric representation constructs a point by adding radius times cosine and sine of an angle to the center.",
+        "An implicit representation compares squared distance from a candidate point to the center with squared radius.",
+        "Equality means the boundary; a smaller squared distance means the interior. Watch the classification change as the point moves.",
+        "Parametric equations conveniently construct points; implicit equations conveniently test them. Neither is always better.",
+        "An angle parameter does not automatically represent time. Define whether a parameter means angle, time or distance."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "중심을 옮기면 일차항도 필요합니다",
+      "lines": [
+        "For a circle at the origin, x squared plus y squared equals radius squared. Translating its center changes the equation.",
+        "Take center two, three and radius one. Subtract two from x and three from y before squaring.",
+        "Expansion gives x squared plus y squared minus four x minus six y plus twelve equal to zero.",
+        "A general conic therefore includes linear and constant terms as well as squared and cross terms.",
+        "A circle needs two center components and one radius. A sphere needs three center components and one radius.",
+        "Different radii along the axes describe an ellipse or ellipsoid. Nonuniformly stretching a sphere generally changes it into an ellipsoid."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "연결 방향과 이동 거리 구분하기",
+      "lines": [
+        "We connect to another rock and travel through the air. Find both endpoints whenever the beam appears.",
+        "Subtracting origin from attachment gives a displacement vector containing direction and length.",
+        "Even when two rocks lie in the same direction, their displacement lengths differ.",
+        "For direction alone, divide displacement by its length. Store a unit direction and distance separately.",
+        "The hand-to-rock connection and the character actual path are different questions. Forces and trajectories belong to later dynamics lessons.",
+        "Focus here on geometric descriptions between positions. A fractional parameter and a distance parameter have different meanings."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "직선·선분·레이는 범위가 다릅니다",
+      "lines": [
+        "Call the origin the letter o and displacement delta. Position is the origin plus t times delta.",
+        "Zero gives the origin and one gives the endpoint. Restricting t to zero through one defines the segment.",
+        "Allowing every real t produces an infinite line. Negative t extends in the opposite direction.",
+        "A mathematical ray usually restricts t to nonnegative values and extends infinitely forward.",
+        "The book also calls a finite directed segment a ray. Engine ray queries may have a maximum distance, so inspect the actual allowed domain.",
+        "Record the origin, direction and parameter range together, rather than relying on a name."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "비율과 거리의 단위 확인하기",
+      "lines": [
+        "Let the origin be two, one and displacement six, three. Where is the midpoint?",
+        "At t equal to one half, add three, one point five. The point is five, two point five.",
+        "This one half is a fraction of the segment, not half a second or half a meter.",
+        "The displacement length is square root of forty-five. Divide displacement by that length to obtain a unit direction.",
+        "Multiplying that unit direction by s makes s a distance. The same midpoint uses s equal to half of square root forty-five.",
+        "Identical endpoints give zero displacement. Check before normalization and define whether to treat the degenerate input as a point or reject it."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "화면에서 수직인 선도 표현할 수 있을까요?",
+      "lines": [
+        "We aim at rocks above and below us. The beam looks vertical in some views and diagonal in others.",
+        "Both are ordinary lines, yet a slope-only representation has a problem at vertical lines.",
+        "When the x change is zero, we cannot divide the y change by it.",
+        "Our diagram will use a normal and offset instead. A normal is perpendicular to the line direction.",
+        "Screen vertical comes from the camera. For calculation, first choose the coordinate frame defining x and y.",
+        "We will also find points equidistant from two sites. Their connecting line and perpendicular bisector are different lines."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "법선 표현과 수직이등분선",
+      "lines": [
+        "The familiar slope-intercept equation needs a different form, x equal to a constant, for a vertical line.",
+        "Using normal n dotted with a point equal to offset d represents vertical and horizontal lines in one form.",
+        "The normal is perpendicular to the line. A zero normal does not define a valid line.",
+        "For points equidistant from zero, zero and two, zero, use displacement two, zero as normal and midpoint one, zero on the bisector.",
+        "The equation is two x equals two, or x equals one. This vertical line bisects the two sites.",
+        "When normalizing n, divide d by the same length. Scaling only n moves the line; the residual is directly a signed distance only for a unit normal."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "둥근 모습과 실제 판정 범위",
+      "lines": [
+        "In Serious Sam2, round objects approach and bright explosions appear. First find the rounded outlines.",
+        "A center and radius offer a simple calculation model: the same distance in every direction.",
+        "A rounded visual effect is not proof of a spherical surface or damage region. Radius belongs to explicitly defined calculation data.",
+        "A target closer than the radius is inside; equal distance is on the boundary. Our diagram will distinguish three cases.",
+        "Growing screen size as an object approaches is different from changing its actual radius. Perspective pixels do not establish world size.",
+        "A sphere is an initial approximation for a complex rounded object. Specify what must be enclosed and the acceptable approximation error."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "구의 표면과 내부를 구분하기",
+      "lines": [
+        "A sphere has three center components and a radius. Compute squared length of point minus center.",
+        "Take center one, two, three and radius two. Squared radius is four.",
+        "At the center, squared distance is zero: inside because it is smaller than four.",
+        "At three, two, three, the x displacement is two. Squared distance four puts the point on the surface.",
+        "At four, two, three, squared distance is nine: outside. No square root is needed for this comparison.",
+        "Equality defines the surface; less than or equal defines the solid. Validate finite coordinates, a nonnegative radius and a tolerance with defined units."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "반지름 두 배가 크기 두 배일까요?",
+      "lines": [
+        "Doubling radius doubles diameter, but area and volume grow differently.",
+        "Diameter is two r and circumference is two pi r. Both have length units.",
+        "Circle area is pi r squared; sphere surface area is four pi r squared. Both use squared length units.",
+        "Sphere volume is four thirds pi r cubed. Cubic units make volume grow eightfold when radius doubles.",
+        "Surface area grows fourfold. Calling length, area and volume simply size can cause incorrect comparisons.",
+        "When changing a game radius, distinguish what remains constant. Effects, tests and particle counts are design choices; these formulas alone do not determine game performance."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "복잡한 몸을 간단한 형태로 감싸기",
+      "lines": [
+        "Small and large enemies move through the village. Imagine checking every head, arm and torso detail.",
+        "Detailed comparisons across poses involve many data points. Simple bounding shapes can first filter candidates.",
+        "Think of a sphere around a round head or a box around a tall body. These are our illustrative proxies, not verified game colliders.",
+        "Distinguish a box following object orientation from a box parallel to world axes. They can enclose different amounts of empty space.",
+        "Turning or extending arms changes what must be enclosed. A bound built for one static pose may not contain every animation pose.",
+        "Our diagram will simplify the shape to a point set and independently find minimum and maximum along three axes."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "축에 나란한 상자의 데이터",
+      "lines": [
+        "An axis-aligned bounding box, or AABB, encloses points with six faces parallel to x, y and z.",
+        "Store each axis minimum and maximum. The three minima need not belong to one actual input point.",
+        "Center is the average of minimum and maximum. Half-extents are half their difference; distinguish them from full size.",
+        "For membership, compare x with its x interval, y with its y interval and z with its z interval.",
+        "All three tests must pass. A copy error comparing y against x bounds can compile while giving incorrect results.",
+        "An oriented bounding box, or OBB, follows object orientation. Extra orientation data can reduce empty space around a slender shape."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "다섯 점으로 상자 만들기",
+      "lines": [
+        "Use the book five points and compare one coordinate axis at a time. Initialize both extrema from the first point.",
+        "For each next point, update each component minimum or maximum. Follow the highlighted code and matching table colors.",
+        "The final minimum is minus five, minus seven, minus five; maximum is seven, eleven, eight.",
+        "Center is one, two, one point five. Full size is twelve, eighteen, thirteen; half-extents are six, nine, six point five.",
+        "Initializing at zero can wrongly include the origin when every point lies on one side. Use a first valid point or an explicit empty-box state.",
+        "Handle empty input, infinity and NaN first. Match the iteration bounds to the actual array length."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "경계가 겹쳐도 몸이 닿았다는 뜻은 아닙니다",
+      "lines": [
+        "Large and small enemies with extended arms move across the scene. Imagine enclosing each body with a simple box.",
+        "Box corners contain space outside the body. The boxes can overlap while the actual bodies remain apart.",
+        "World-axis boxes around slender or tilted shapes can contain substantial empty space. Focus on outline versus enclosure.",
+        "The earlier2D box-overlap lecture supplies a fast candidate test. Remember the limit of its result.",
+        "After filtering, use a test accurate enough for the game rule and cost. Choose proxies deliberately.",
+        "Our next diagram gives two separated slender rectangles whose bounding boxes overlap, distinguishing candidates from actual shape contact."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "후보 판정과 정밀 판정",
+      "lines": [
+        "Tilt two slender rectangles in the same direction. A visible gap separates their actual shapes.",
+        "Their axis-aligned boxes combine independent x and y ranges, producing overlapping enclosures.",
+        "Box overlap means a candidate for further testing, not confirmed contact of detailed shapes.",
+        "Nonoverlapping valid bounds rule out overlap of contained shapes. This requires each bound to contain the entire current shape.",
+        "Spheres retain their shape under rotation; oriented boxes may fit slender shapes better. A tighter bound is not automatically cheaper overall.",
+        "Compare update cost, candidate count and subsequent test cost. This counterexample explains the role of bounds rather than an entire collision engine."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "최소·최대 두 점만 돌리면 틀립니다",
+      "lines": [
+        "How do we rebuild bounds after rotating a box? First try transforming only its minimum and maximum.",
+        "Rotate a square with x and y from minus one to one by forty-five degrees. The two diagonal endpoints move to a vertical line at x zero.",
+        "Using only those points falsely gives zero width. The other corners extend to plus and minus square root two.",
+        "Rotation changes which corner supplies each extremum. An old minimum does not necessarily remain a minimum.",
+        "For a3D box, transform all eight corners and recompute each coordinate minimum and maximum.",
+        "This encloses the transformed input box. It can differ from bounds constructed by transforming only the original object points."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "시점 변화와 물체 경계의 기준축",
+      "lines": [
+        "We walk through wooden posts and rails, comparing screen extents of the same structures from different sides.",
+        "An oblique view shortens a long edge and reveals another face. These screen changes come from camera projection.",
+        "World bounds use fixed coordinate axes rather than screen pixels. Changing only the camera does not automatically change a stationary object world bounds.",
+        "Rotating the object itself in the world can change which corner supplies minimum x, as in our square experiment.",
+        "Separate an object-attached box from world-axis bounds. First identify whether the camera or the object is moving.",
+        "Our next formula handles affine rotation, scale and translation, without combining them with perspective projection."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "중심과 반크기로 빠르게 변환하기",
+      "lines": [
+        "With column vectors, an affine transformation is A times a point plus translation. Transform the center with that expression.",
+        "Half-extents require a different rule. Signed offsets around the center can combine, so maximum spread sums absolute contributions.",
+        "New half-extents are componentwise absolute A times original half-extents. This absolute value is not a determinant or vector norm.",
+        "Rotating half-extents two, one around z by forty-five degrees gives both new x and y half-extents three over square root two.",
+        "New minimum is transformed center minus new half-extents, and maximum is their sum. This matches transforming all eight box corners.",
+        "The formula applies to an affine image of the input box. Do not apply it unchanged to perspective division or claim the tightest bounds of every contained object."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "무엇을 감싸는지 먼저 정하세요",
+      "lines": [
+        "A long bridge and large enemies share the scene. Imagine separate bounds following the bridge and enclosing moving bodies.",
+        "Building a box first and then transforming it also transforms the box empty space.",
+        "Transforming actual object points first and rebuilding bounds can exclude different empty regions. The methods have different inputs.",
+        "Define whether you enclose a stationary bridge, one body pose or all poses before choosing a method.",
+        "An undersized bound can miss real geometry; an oversized bound increases subsequent candidates. Compare accuracy and calculation cost.",
+        "We will finish by comparing both constructions using the same coordinates, connecting endpoints, point bounds and transformed-box bounds."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "두 문제로 계산을 이어 보기",
+      "lines": [
+        "First problem: origin five, three and displacement minus seven, five. What is the endpoint at t one?",
+        "Adding gives minus two, eight. Slope is minus five over seven and intercept is forty-six over seven.",
+        "For the second problem, rotate the five points around z by forty-five degrees and build their bounds directly. The x range is minus six to three, each divided by square root two.",
+        "The y range is minus twelve to eighteen, divided by square root two; z remains minus five to eight. Transforming the original box produces a wider enclosure.",
+        "Empty space explains why point-set bounds can differ from transformed-box bounds. Check the input before interpreting the result.",
+        "We connected shape representations, parameter domains and units, sphere tests, and box construction and transformation. Next we will calculate plane distances and positions within triangles."
+      ]
+    }
+  ]
+}

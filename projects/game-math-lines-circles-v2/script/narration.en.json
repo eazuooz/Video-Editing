@@ -1,0 +1,191 @@
+{
+  "title": "Game Math Part 2 · Lines and Bounds 1: Calculate a Connection from Two Points",
+  "scenes": [
+    {
+      "id": "LF01",
+      "title": "자세를 구한 물체에 연결선과 범위를 붙입니다",
+      "lines": [
+        "The previous lesson found an object orientation. We now calculate a connection from that object to another location.",
+        "This chapter has two episodes. First, choose circle and line representations to generate and test points. Next, enclose the target size and rebuild its bounds after rotation."
+      ]
+    },
+    {
+      "id": "01",
+      "title": "형태를 계산으로 바꾸는 첫걸음",
+      "lines": [
+        "What numbers let a program describe a targeting line or an object size?",
+        "We will find origins and directions in grappling footage, then distinguish lines, segments and rays.",
+        "Next we will represent round objects with spheres and calculate a box enclosing a set of points.",
+        "Finally we will rotate a box, expose a common error, and derive a safe transformation formula."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "그래플에서 출발점과 연결점을 찾기",
+      "lines": [
+        "We travel among rocks in A Story About My Uncle. Watch the bright connection extending from the hand.",
+        "When it appears, distinguish its origin near the hand from its attachment on a rock.",
+        "Aiming at another rock changes the connection direction. One starting point alone does not determine a line.",
+        "Its screen length depends on the camera and perspective; pixels are not automatically world distance.",
+        "Remember how the endpoints relate as we move. Our diagram will calculate that relation in explicitly chosen coordinates.",
+        "The visible grapple motivates the mathematics; it does not reveal this game ray tests or physics implementation."
+      ]
+    },
+    {
+      "id": "LB01",
+      "title": "연결선을 계산하려는데 왜 원부터 볼까요?",
+      "lines": [
+        "With the grapple's endpoints identified, we need a numerical line. Before choosing its formula, use the familiar circle from earlier lessons to separate three tasks.",
+        "Do we store the shape, generate a point on it, or test a supplied point? After distinguishing these tasks for the circle, we will apply the same questions to the connection line."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "같은 원을 설명하는 세 가지 방법",
+      "lines": [
+        "We can describe the same circle differently depending on the calculation. Storing its center and radius gives direct shape data.",
+        "A parametric representation constructs a point by adding radius times cosine and sine of an angle to the center.",
+        "An implicit representation compares squared distance from a candidate point to the center with squared radius.",
+        "Equality means the boundary; a smaller squared distance means the interior. Watch the classification change as the point moves.",
+        "Parametric equations conveniently construct points; implicit equations conveniently test them. Neither is always better.",
+        "An angle parameter does not automatically represent time. Define whether a parameter means angle, time or distance."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "중심을 옮기면 일차항도 필요합니다",
+      "lines": [
+        "For a circle at the origin, x squared plus y squared equals radius squared. Translating its center changes the equation.",
+        "Take center two, three and radius one. Subtract two from x and three from y before squaring.",
+        "Expansion gives x squared plus y squared minus four x minus six y plus twelve equal to zero.",
+        "A general conic therefore includes linear and constant terms as well as squared and cross terms.",
+        "A circle needs two center components and one radius. A sphere needs three center components and one radius.",
+        "Different radii along the axes describe an ellipse or ellipsoid. Nonuniformly stretching a sphere generally changes it into an ellipsoid."
+      ]
+    },
+    {
+      "id": "LC04",
+      "title": "옮긴 원에서 두 점을 잇는 선으로",
+      "lines": [
+        "For the circle, center and radius store the shape, angle generates a point, and distance tests inside or outside. Replace the circle with two connection points and apply the same three questions to a line."
+      ]
+    },
+    {
+      "id": "LG01",
+      "title": "직선 빛줄기를 꺾었더니 길이 열립니다",
+      "lines": [
+        "This is an official Portal 2 preview demonstration. Red follows the beam from its origin to the cube. Moving the cube changes the outgoing direction.",
+        "Here is a different excerpt. A beam aimed at the receiver changes its indicator and opens the route. Connect the origin, direction change and visible result.",
+        "These are projected screen observations; the engine method and world distances are unverified. Next, identify both endpoints of a grapple as well."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "연결 방향과 이동 거리 구분하기",
+      "lines": [
+        "We connect to another rock and travel through the air. Find both endpoints whenever the beam appears.",
+        "Subtracting origin from attachment gives a displacement vector containing direction and length.",
+        "Even when two rocks lie in the same direction, their displacement lengths differ.",
+        "For direction alone, divide displacement by its length. Store a unit direction and distance separately.",
+        "The hand-to-rock connection and the character actual path are different questions. Forces and trajectories belong to later dynamics lessons.",
+        "Focus here on geometric descriptions between positions. A fractional parameter and a distance parameter have different meanings."
+      ]
+    },
+    {
+      "id": "LG02",
+      "title": "연결선과 실제 이동 경로를 구분합니다",
+      "lines": [
+        "This is a different excerpt from the earlier grapple. When the hand connects to a rock, red joins the two observed endpoints.",
+        "Selecting the next rock changes the endpoint and direction. Do not treat the blue effect and the body travel path as the same straight line.",
+        "The segment joining origin and attachment is our defined calculation connection. The body travels through space while the camera follows it.",
+        "We now move to the later excerpt. Observe release and arrival near the rock. Generating intermediate connection points requires the next parameter formula."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "직선·선분·레이는 범위가 다릅니다",
+      "lines": [
+        "Call the origin the letter o and displacement delta. Position is the origin plus t times delta.",
+        "Zero gives the origin and one gives the endpoint. Restricting t to zero through one defines the segment.",
+        "Allowing every real t produces an infinite line. Negative t extends in the opposite direction.",
+        "A mathematical ray usually restricts t to nonnegative values and extends infinitely forward.",
+        "The book also calls a finite directed segment a ray. Engine ray queries may have a maximum distance, so inspect the actual allowed domain.",
+        "Record the origin, direction and parameter range together, rather than relying on a name."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "비율과 거리의 단위 확인하기",
+      "lines": [
+        "Let the origin be two, one and displacement six, three. Where is the midpoint?",
+        "At t equal to one half, add three, one point five. The point is five, two point five.",
+        "This one half is a fraction of the segment, not half a second or half a meter.",
+        "The displacement length is square root of forty-five. Divide displacement by that length to obtain a unit direction.",
+        "Multiplying that unit direction by s makes s a distance. The same midpoint uses s equal to half of square root forty-five.",
+        "Identical endpoints give zero displacement. Check before normalization and define whether to treat the degenerate input as a point or reject it."
+      ]
+    },
+    {
+      "id": "LP01",
+      "title": "비율과 미터를 같은 지점에서 비교합니다",
+      "lines": [
+        "Our origin is two, one and endpoint eight, four. Displacement six, three has length square root forty-five. Define the coordinate unit as meters.",
+        "Multiplying by t one half adds three meters and one point five meters, reaching five meters, two point five meters. The parameter t has no meter unit.",
+        "Divide the same displacement by square root forty-five for a unit direction. Multiply it by distance square root forty-five over two to reach the identical midpoint.",
+        "Fraction and distance give the same point. Next, check whether slope can represent every line direction."
+      ]
+    },
+    {
+      "id": "LG03",
+      "title": "같은 비율 계산을 새로운 두 점에 적용합니다",
+      "lines": [
+        "In another connection, identify the two red endpoints afresh. A new rock requires a new origin and displacement.",
+        "The calculation rule remains: t zero is the origin and t one the attachment. Screen travel speed is not itself t or a distance in meters.",
+        "In the following excerpt, observe connection, travel and landing in order. Hide the line when the hand or rock is obscured.",
+        "Our earlier numbers were a fixed-coordinate example, not measurements from this game. Next, find a representation that also handles vertical lines."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "화면에서 수직인 선도 표현할 수 있을까요?",
+      "lines": [
+        "We aim at rocks above and below us. The beam looks vertical in some views and diagonal in others.",
+        "Both are ordinary lines, yet a slope-only representation has a problem at vertical lines.",
+        "When the x change is zero, we cannot divide the y change by it.",
+        "Our diagram will use a normal and offset instead. A normal is perpendicular to the line direction.",
+        "Screen vertical comes from the camera. For calculation, first choose the coordinate frame defining x and y.",
+        "We will also find points equidistant from two sites. Their connecting line and perpendicular bisector are different lines."
+      ]
+    },
+    {
+      "id": "LB02",
+      "title": "같은 거리를 식으로 옮기면 세로선이 나옵니다",
+      "lines": [
+        "The slope division failed for a vertical line. In a separate task from joining the two sites, find points equally distant from zero, zero and two, zero. Equal distance is the question that produces a perpendicular bisector.",
+        "For a point x, y, the squared distances are x squared plus y squared, and x minus two squared plus y squared.",
+        "Equate and expand them. Common terms cancel, leaving four x equals four, so x equals one. Draw this vertical line between the two points.",
+        "The next formula calls the perpendicular direction a normal. A dot multiplies matching entries and adds them: two, zero dotted with x, y gives two x. This expresses the same vertical line."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "법선 표현과 수직이등분선",
+      "lines": [
+        "The familiar slope-intercept equation needs a different form, x equal to a constant, for a vertical line.",
+        "Using normal n dotted with a point equal to offset d represents vertical and horizontal lines in one form.",
+        "The normal is perpendicular to the line. A zero normal does not define a valid line.",
+        "For points equidistant from zero, zero and two, zero, use displacement two, zero as normal and midpoint one, zero on the bisector.",
+        "The equation is two x equals two, or x equals one. This vertical line bisects the two sites.",
+        "When normalizing n, divide d by the same length. Scaling only n moves the line; the residual is directly a signed distance only for a unit normal."
+      ]
+    },
+    {
+      "id": "LF02",
+      "title": "연결선을 만들었으니 대상의 범위가 남았습니다",
+      "lines": [
+        "Choose a circle or line representation for the task, and compare a segment fraction with a ray distance at the same point.",
+        "We can now construct the connection. Contact also needs the target size. The next episode encloses that object in spheres and boxes and calculates how its bounds change under rotation."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "revisionOf": "game-math-lines-bounds",
+  "status": "CPU script draft; new gameplay comparison, narration, measured timing and delivery pending",
+  "preservation": "Keep all22 supplied scene dictionaries, KO/EN explanations, examples, formulas and original order. Insert only at these positions.",
+  "viewerQuestion": "회전하고 이동하는 게임 물체에서 연결선과 판정 범위를 어떤 숫자로 만들고 검사할까?",
+  "causalSpine": ["앞 강의에서 물체의 자세를 구함", "그 물체가 어디에서 어디로 연결되는지 정의", "저장·점 생성·점 검사에 맞는 표현을 선택", "선의 매개변수 범위와 거리 단위를 구별", "선에 닿을 대상의 크기를 구와 상자로 감쌈", "경계 겹침으로 후보를 좁히고 실제 모양과 구별", "회전 뒤 최소·최대가 바뀌므로 경계를 다시 계산", "평면의 거리와 삼각형 안 위치로 정밀 검사를 이어감"],
+  "policy": {"actualShare": 0.4, "explanationShare": 0.6, "bgm": false, "sourceAudio": false, "palette": "preserved-research-paper-white-v1", "captionStyle": "boxed-white-forest-v1"},
+  "additions": [
+    {
+      "id": "LB01", "before": "03", "kind": "explanation", "title": "연결선을 계산하려는데 왜 원부터 볼까요?", "mode": "representation-purpose",
+      "retainedResult": "The grapple has a starting point and connection point", "nextQuestion": "표현은 무슨 계산을 하느냐에 따라 어떻게 달라질까?",
+      "ko": ["그래플의 연결점을 찾았으니 이제 선을 숫자로 다뤄야 합니다. 바로 식을 고르기 전에, 앞 강의에서 익숙해진 원으로 세 가지 질문을 나누어 보죠.", "형태를 저장할 것인지, 그 위의 점을 만들 것인지, 주어진 점이 그 안에 있는지 검사할 것인지입니다. 원에서 이 차이를 확인한 뒤 같은 질문을 연결선에 적용하겠습니다."],
+      "en": ["With the grapple's endpoints identified, we need a numerical line. Before choosing its formula, use the familiar circle from earlier lessons to separate three tasks.", "Do we store the shape, generate a point on it, or test a supplied point? After distinguishing these tasks for the circle, we will apply the same questions to the connection line."],
+      "beats": ["연결점 확인 → 어떤 계산이 필요한가?", "형태 저장 / 점 만들기 / 점 검사", "익숙한 원으로 비교 → 연결선에 적용"],
+      "visual": "Retain the grapple's two colored points and line on the left. Build the familiar circle beside it, revealing storage, generated point and tested point in narration order. Return focus to the same line."
+    },
+    {
+      "id": "LB02", "before": "09", "kind": "explanation", "title": "같은 거리를 식으로 옮기면 세로선이 나옵니다", "mode": "perpendicular-bisector-prerequisite",
+      "retainedResult": "The slope form cannot represent a vertical line", "nextQuestion": "가로·세로선을 한 식으로 다루는 법선은 왜 필요할까?",
+      "ko": ["수직선에서 기울기 나눗셈이 막혔죠. 이번에는 영, 영과 이, 영에서 같은 거리인 점을 찾겠습니다.", "점의 좌표를 엑스, 와이라고 하면 두 거리의 제곱은 엑스 제곱 더하기 와이 제곱, 그리고 엑스 빼기 이의 제곱 더하기 와이 제곱입니다.", "둘을 같게 놓고 펼치면 공통항이 없어지고 사 엑스가 사, 즉 엑스가 일이 남습니다. 이 세로선을 두 점 사이에 그려 보세요.", "다음 식에서 법선은 선에 직각인 방향입니다. 내적은 같은 자리의 수를 곱해 더하므로, 이, 영과 엑스, 와이의 내적은 이 엑스입니다. 이 방식으로 방금의 세로선을 표현합니다."],
+      "en": ["The slope division failed for a vertical line. Find points equally distant from zero, zero and two, zero.", "For a point x, y, the squared distances are x squared plus y squared, and x minus two squared plus y squared.", "Equate and expand them. Common terms cancel, leaving four x equals four, so x equals one. Draw this vertical line between the two points.", "The next formula calls the perpendicular direction a normal. A dot multiplies matching entries and adds them: two, zero dotted with x, y gives two x. This expresses the same vertical line."],
+      "beats": ["A=(0,0), B=(2,0), P=(x,y)", "x²+y²=(x−2)²+y²", "4x=4 → x=1", "직각 방향 n=(2,0) / n·P=2x=2"],
+      "visual": "Use one coordinate plane and the same A/B/P throughout. Reveal equal distances, expand and cancel the equation, then preserve x=1 while adding the perpendicular normal. No unrelated new example."
+    },
+    {
+      "id": "LB03", "before": "10", "kind": "explanation", "title": "연결선에서 대상의 크기로 질문을 이어갑니다", "mode": "line-to-target-extent",
+      "retainedResult": "The connection line and its valid parameter range are defined", "nextQuestion": "선이 대상에 닿는 범위를 어떻게 표현할까?",
+      "ko": ["지금까지 연결선의 출발점과 방향을 정했습니다. 하지만 선이 대상을 맞혔는지 알려면, 대상이 차지하는 범위도 필요합니다.", "화면의 윤곽을 전부 검사하기 전에 둥근 범위로 감싸 보겠습니다. 다음 게임에서는 보이는 몸과 계산용 범위를 구분해서 보세요."],
+      "en": ["We have defined the connection line's origin and direction. To test whether it reaches a target, we also need the target's occupied range.", "Before testing every outline detail, enclose it in a round bound. In the next game excerpt, distinguish the visible body from the illustrative calculation bound."],
+      "beats": ["선의 위치·범위는 구함", "대상의 크기도 있어야 맞힘을 검사", "보이는 몸 ≠ 예시 판정 범위"],
+      "visual": "Carry the same line toward a projected object; reveal a circle/sphere around the object. Label the bound as a defined teaching illustration, never a measured game hitbox."
+    },
+    {
+      "id": "LB04", "before": "16", "kind": "explanation", "title": "상자 겹침을 한 축의 구간부터 계산합니다", "mode": "interval-overlap-prerequisite",
+      "retainedResult": "The five-point AABB has axis-wise minimum and maximum values", "nextQuestion": "그 범위 둘이 겹치는지 어떤 숫자를 비교할까?",
+      "ko": ["축별 최소와 최대를 구했으니, 두 범위가 겹치는지 검사할 수 있습니다. 먼저 한 축만 보죠.", "첫 구간이 일부터 사, 둘째가 삼부터 육이면, 겹치는 시작은 더 큰 최소인 삼이고 끝은 더 작은 최대인 사입니다. 삼부터 사가 남습니다.", "일부터 이와 삼부터 오라면 시작 삼이 끝 이보다 커서 겹치지 않습니다. 이 검사를 엑스, 와이, 제트축 모두에서 통과해야 두 축 정렬 상자가 겹칩니다.", "여기서는 경계가 맞닿는 경우도 겹침으로 셉니다. 그래도 실제 몸이 닿았다는 뜻인지는 다음 게임과 반례에서 따로 확인하겠습니다."],
+      "en": ["Axis-wise minima and maxima let us test two ranges. Begin with one axis.", "For intervals one to four and three to six, the overlap begins at the larger minimum, three, and ends at the smaller maximum, four. The remaining interval is three to four.", "For one to two and three to five, the proposed beginning three exceeds the end two, so there is no overlap. All x, y and z tests must pass for two axis-aligned boxes to overlap.", "This test includes touching boundaries. The next game and counterexample separately examine whether the actual bodies touch."],
+      "beats": ["[1,4]∩[3,6]=[3,4]", "max(최소값) ≤ min(최대값)", "[1,2]∩[3,5]=∅ / 3>2", "세 축 모두 통과 → 경계 후보 / 실제 몸은 별도"],
+      "visual": "Animate two colored number-line intervals and reveal their common segment. Carry those same intervals into the x axis of two genuinely projected boxes, then show y/z tests without claiming a game-world measurement."
+    },
+    {
+      "id": "LB05", "before": "20", "kind": "explanation", "title": "반크기는 왜 절댓값으로 바꿀까요?", "mode": "signed-affine-extent-prerequisite",
+      "retainedResult": "Rotating only old minimum and maximum points gives a wrong bound", "nextQuestion": "모든 꼭짓점을 돌리지 않고 중심과 퍼짐을 구할 수 있을까?",
+      "ko": ["회전하면 최소점이 바뀌었죠. 더 빠른 식으로 넘어가기 전에 한 축에서 중심과 퍼짐을 나누겠습니다.", "중심 오, 반크기 이이면 구간은 삼부터 칠입니다. 모든 점에 마이너스 이를 곱하고 일을 더해 보죠.", "중심은 마이너스 구가 됩니다. 양 끝은 마이너스 오와 마이너스 십삼으로 순서가 뒤집히지만, 중심에서의 퍼짐은 사입니다. 새 구간은 마이너스 십삼부터 마이너스 오입니다.", "방향은 부호가 바꿔도 크기는 음수가 되지 않습니다. 그래서 다음 행렬 계산은 중심에는 원래 변환을, 반크기에는 성분별 절댓값을 사용합니다."],
+      "en": ["Rotation changed which point was minimal. Before the faster formula, separate center and extent on one axis.", "Center five and half-extent two give the interval three to seven. Multiply every point by minus two and add one.", "The center becomes minus nine. The ends become minus five and minus thirteen, reversing their order, while the half-extent is four. The new interval is minus thirteen to minus five.", "A sign changes direction, but extent stays nonnegative. The next matrix calculation therefore uses the original affine transform for the center and entrywise absolute values for half-extents."],
+      "beats": ["c=5, e=2 → [3,7]", "x′=−2x+1 / c′=−9", "끝점: −5,−13 → [−13,−5]", "e′=|−2|·2=4 → 행렬의 각 기여도 절댓값"],
+      "visual": "One number line retains the center and both endpoints. Animate reflection, scaling and translation, sort the transformed ends, then show the same center/extent roles on the projected box from the original chapter."
+    }
+  ],
+  "gameplayReview": {"baselineClipsPreserved": true, "newCandidates": "Compare concept-matched actual grapple and occupied-range footage before dependent narration. No chosen source yet.", "internalEngineClaims": false, "newNarrationDependentOnSelection": true},
+  "review": {"originalPreservation": "verify exact dictionaries after assembly", "math": "small-number derivations checked in draft; final numerical and renderer validation before TTS", "flow": "full combined narration/motion pending", "tts": "not started", "render": "not started", "upload": "not uploaded"}
+}
