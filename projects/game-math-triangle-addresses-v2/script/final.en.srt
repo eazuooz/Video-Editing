@@ -1,0 +1,919 @@
+1
+00:00:02,000 --> 00:00:05,760
+The previous episode found plane distance and
+the closest point. We now resolve
+
+2
+00:00:06,080 --> 00:00:11,000
+the remaining problem: a point on the plane
+may still lie outside the platform.
+
+3
+00:00:11,420 --> 00:00:16,620
+First calculate triangle lengths and area,
+then locate a point by proportions
+
+4
+00:00:16,820 --> 00:00:19,160
+of its three vertices. Distinguish off-plane
+from outside-triangle points,
+
+5
+00:00:19,160 --> 00:00:22,340
+and use the same proportions to calculate
+color.
+
+6
+00:00:22,983 --> 00:00:27,463
+Give each edge the same index as its opposite
+vertex.
+
+7
+00:00:27,703 --> 00:00:29,763
+Adding the three edge lengths gives the
+perimeter.
+
+8
+00:00:29,963 --> 00:00:35,323
+A three-four-five right triangle has perimeter
+twelve and semiperimeter six.
+
+9
+00:00:35,583 --> 00:00:38,923
+Edge length divided by the sine of its
+opposite
+
+10
+00:00:38,923 --> 00:00:42,303
+angle is the same at all three vertices: the
+sine law.
+
+11
+00:00:42,563 --> 00:00:46,763
+Given two edges and their included angle,
+
+12
+00:00:46,983 --> 00:00:49,363
+the cosine law finds the remaining edge using
+squared lengths.
+
+13
+00:00:49,563 --> 00:00:52,463
+Here three squared plus four squared equals
+five squared.
+
+14
+00:00:52,463 --> 00:00:55,043
+The right angle makes the cosine term zero.
+
+15
+00:00:55,423 --> 00:00:58,083
+Do not mix degrees and radians.
+
+16
+00:00:58,283 --> 00:01:02,423
+Validate positive lengths and triangle
+feasibility after solving.
+
+17
+00:01:03,350 --> 00:01:06,790
+Observe platform ends and rock corners in
+Noita.
+
+18
+00:01:07,050 --> 00:01:09,930
+We can choose three visible locations as
+reference points.
+
+19
+00:01:11,182 --> 00:01:15,702
+Movement from one reference toward another
+changes which point the character is nearer.
+
+20
+00:01:16,954 --> 00:01:18,854
+Cartesian coordinates describe the location;
+
+21
+00:01:19,037 --> 00:01:22,854
+three weights describe it relative to a
+triangle that moves with its references.
+
+22
+00:01:24,126 --> 00:01:27,126
+Track all three references when the camera
+moves.
+
+23
+00:01:27,386 --> 00:01:31,366
+Do not combine pixels from incompatible screen
+frames.
+
+24
+00:01:31,366 --> 00:01:37,318
+Choosing three points does not make the entire
+
+25
+00:01:37,818 --> 00:01:39,538
+ground a triangle; gaps may lie between them.
+
+26
+00:01:40,990 --> 00:01:44,610
+Our next example defines its own triangle,
+calculates area,
+
+27
+00:01:44,610 --> 00:01:47,310
+and expresses inside and outside positions
+with three numbers.
+
+28
+00:01:48,350 --> 00:01:50,210
+We know the side lengths. Area will let us
+describe
+
+29
+00:01:50,410 --> 00:01:54,910
+a point in proportions of the three vertices.
+
+30
+00:01:55,490 --> 00:02:01,670
+The normal example used six and four. Compare
+the three area formulas on a
+
+31
+00:02:01,670 --> 00:02:06,370
+separate four-by-three triangle; return to six
+and four for the weights.
+
+32
+00:02:07,000 --> 00:02:13,466
+A turret near a floor portal is drawn into the
+device. Red marks the visible floor boundary.
+
+33
+00:02:13,651 --> 00:02:17,911
+Knowing plane orientation differs from knowing
+the finite passage region.
+
+34
+00:02:18,337 --> 00:02:23,417
+In the next corridor, moving floor and wall
+portals changes the panels' path.
+
+35
+00:02:23,652 --> 00:02:26,532
+Hide geometry while debris obscures the edges;
+
+36
+00:02:26,672 --> 00:02:30,568
+distinguish corners and interior positions
+when the surface returns.
+
+37
+00:02:31,383 --> 00:02:38,197
+In co-op, portals lead to a finite platform.
+Now use area to locate an interior point.
+
+38
+00:02:38,817 --> 00:02:43,617
+Use vertices zero, zero; four, zero; and zero,
+three.
+
+39
+00:02:43,797 --> 00:02:47,417
+Base four times height three divided by two
+gives area six.
+
+40
+00:02:47,617 --> 00:02:51,617
+With side lengths three, four and five,
+
+41
+00:02:51,837 --> 00:02:55,317
+Heron formula uses semiperimeter six and its
+differences from each edge.
+
+42
+00:02:55,617 --> 00:02:58,277
+The radicand is six times three times two
+times one,
+
+43
+00:02:58,277 --> 00:03:00,997
+or thirty-six. Its square root is six.
+
+44
+00:03:01,317 --> 00:03:07,077
+The cross-product length is the parallelogram
+area. Half gives the triangle area.
+
+45
+00:03:07,077 --> 00:03:12,917
+Here the parallelogram area is twelve, and
+dividing by two gives a triangle area of six.
+
+46
+00:03:13,023 --> 00:03:16,137
+In2D, the corresponding determinant has a
+sign.
+
+47
+00:03:16,517 --> 00:03:20,237
+Reversing winding changes the sign but not
+area magnitude.
+
+48
+00:03:20,353 --> 00:03:23,677
+Taking a3D cross-product magnitude discards
+direction.
+
+49
+00:03:23,937 --> 00:03:26,957
+Distinguish area from front-face orientation.
+
+50
+00:03:27,583 --> 00:03:33,643
+The earlier midpoint mixed two positions
+equally.
+
+51
+00:03:33,863 --> 00:03:37,263
+Extend that idea to three vertices, returning
+to the original six-by-four triangle.
+
+52
+00:03:37,483 --> 00:03:43,683
+Twenty, thirty and fifty percent total one
+hundred percent.
+
+53
+00:03:43,963 --> 00:03:48,403
+Multiply each position by its proportion and
+add.
+
+54
+00:03:48,663 --> 00:03:51,523
+These are barycentric coordinates; the name
+does not require real masses.
+
+55
+00:03:52,150 --> 00:03:58,110
+Barycentric coordinates give weights for three
+vertices. Their sum must be one.
+
+56
+00:03:58,310 --> 00:04:01,650
+Multiply each vertex by its weight and add.
+
+57
+00:04:01,890 --> 00:04:04,430
+The first vertex has coordinates one, zero,
+zero.
+
+58
+00:04:04,670 --> 00:04:08,690
+The midpoint of the first two vertices is one
+half, one half,
+
+59
+00:04:08,850 --> 00:04:11,970
+zero. Equal one-third weights give the vertex
+average.
+
+60
+00:04:12,150 --> 00:04:15,930
+Although written as three numbers, only two
+are independent because their sum is fixed.
+
+61
+00:04:16,310 --> 00:04:18,510
+A triangle surface is two-dimensional.
+
+62
+00:04:18,510 --> 00:04:23,090
+Using the third vertex as origin gives axes
+first-minus-third and second-minus-third.
+
+63
+00:04:23,470 --> 00:04:25,910
+They need not be orthogonal or unit length.
+
+64
+00:04:26,250 --> 00:04:30,690
+On a nondegenerate triangle plane, nonnegative
+weights describe its interior and boundary.
+
+65
+00:04:31,030 --> 00:04:34,310
+Negative weights meaningfully describe outside
+points.
+
+66
+00:04:35,083 --> 00:04:38,323
+Connecting to another rock changes the marking
+screen position.
+
+67
+00:04:38,403 --> 00:04:41,703
+Choose three reference points around the
+attachment marking.
+
+68
+00:04:43,668 --> 00:04:47,328
+Weights relative to the same three vertices
+provide a
+
+69
+00:04:47,328 --> 00:04:50,548
+location reference even as a surface or camera
+moves.
+
+70
+00:04:50,748 --> 00:04:57,693
+Approaching a vertex makes its weight approach
+the number one.
+
+71
+00:04:58,253 --> 00:05:01,673
+A point on its opposite edge has zero weight
+for it.
+
+72
+00:05:03,837 --> 00:05:09,297
+Screen proximity is not automatically the3D
+barycentric
+
+73
+00:05:09,297 --> 00:05:11,797
+relationship because perspective changes the
+projection.
+
+74
+00:05:14,342 --> 00:05:18,262
+We have not extracted the real attachment
+coordinates.
+
+75
+00:05:18,562 --> 00:05:22,442
+Visible markings motivate the explicitly
+defined numerical example.
+
+76
+00:05:24,807 --> 00:05:27,347
+Now we will multiply vertices by weights and
+see
+
+77
+00:05:27,607 --> 00:05:31,947
+how a negative weight places a point outside.
+
+78
+00:05:32,754 --> 00:05:36,987
+Define3D vertices zero, zero, zero; six, zero,
+
+79
+00:05:36,987 --> 00:05:40,787
+zero; and zero, four, zero. All lie in the z
+zero plane.
+
+80
+00:05:41,027 --> 00:05:44,727
+Weights point two, point three and point five
+sum to one.
+
+81
+00:05:44,967 --> 00:05:48,967
+Compute x as six times point three and y as
+four times point five.
+
+82
+00:05:49,207 --> 00:05:54,707
+The result is one point eight, two, zero. All
+weights are nonnegative, so it lies inside.
+
+83
+00:05:54,947 --> 00:05:58,887
+Now use minus point two, point seven and point
+five.
+
+84
+00:05:59,307 --> 00:06:02,047
+Their sum is still one, but the first weight
+is negative.
+
+85
+00:06:02,047 --> 00:06:08,847
+The result four point two, two, zero lies
+beyond the edge opposite the first vertex.
+
+86
+00:06:09,007 --> 00:06:12,547
+Position has length units; weights are
+dimensionless ratios. Rejecting every
+
+87
+00:06:12,707 --> 00:06:18,267
+negative weight discards information
+describing valid outside positions.
+
+88
+00:06:18,933 --> 00:06:22,193
+Weights constructed one point eight, two,
+zero.
+
+89
+00:06:22,473 --> 00:06:27,513
+Recover the weights from that same point and
+triangle.
+
+90
+00:06:27,933 --> 00:06:33,933
+The six-by-four triangle has area twelve.
+Joining the point to the vertices gives
+
+91
+00:06:33,933 --> 00:06:38,693
+subareas two point four, three point six and
+six. Divide by twelve to recover point two,
+
+92
+00:06:38,833 --> 00:06:42,473
+point three and point five. Keep signed areas
+to handle outside points.
+
+93
+00:06:43,100 --> 00:06:46,420
+Given a position, obtain each weight from a
+signed
+
+94
+00:06:46,620 --> 00:06:50,960
+subtriangle area divided by the whole signed
+area.
+
+95
+00:06:51,220 --> 00:06:58,980
+For the inside example, the subareas are
+twenty, thirty and fifty percent of the total.
+
+96
+00:06:59,360 --> 00:07:03,520
+Keep consistent vertex order and signed areas.
+
+97
+00:07:03,940 --> 00:07:06,320
+Absolute areas discard the negative weight of
+an outside point.
+
+98
+00:07:06,620 --> 00:07:09,720
+Crossing the edge opposite the first vertex
+reverses
+
+99
+00:07:09,720 --> 00:07:12,460
+that subarea sign and makes its weight
+negative.
+
+100
+00:07:12,460 --> 00:07:16,520
+Reversing all winding reverses numerator and
+denominator together,
+
+101
+00:07:16,520 --> 00:07:19,620
+preserving weights. Be consistent.
+
+102
+00:07:19,880 --> 00:07:22,340
+A zero whole area cannot be divided by.
+
+103
+00:07:22,520 --> 00:07:27,020
+Very thin triangles may amplify small
+coordinate errors.
+
+104
+00:07:27,783 --> 00:07:33,003
+The character moves among ledges at different
+heights.
+
+105
+00:07:33,203 --> 00:07:37,319
+Distinguish visual overlap from occupying the
+same surface.
+
+106
+00:07:37,475 --> 00:07:40,639
+This2D footage exposes two position
+components; in3D,
+
+107
+00:07:40,686 --> 00:07:44,739
+different depths may project to the same
+screen location.
+
+108
+00:07:46,335 --> 00:07:48,995
+An apparently inside projected location alone
+does
+
+109
+00:07:48,995 --> 00:07:51,475
+not prove that a3D query lies on a triangle
+surface.
+
+110
+00:07:52,991 --> 00:07:58,671
+Separate distance-to-plane validation from
+within-plane barycentric tests.
+
+111
+00:07:58,671 --> 00:08:04,767
+Passing a platform edge can also leave its
+finite footprint while
+
+112
+00:08:05,227 --> 00:08:07,927
+keeping the same reference height. Remember
+negative outside weights.
+
+113
+00:08:09,563 --> 00:08:15,163
+Our diagram will compare two points with
+identical projection and different depths.
+
+114
+00:08:15,783 --> 00:08:18,683
+We found a triangle address. Viewed straight
+on,
+
+115
+00:08:18,683 --> 00:08:21,943
+a point away from the plane can appear at the
+same position.
+
+116
+00:08:22,203 --> 00:08:27,243
+The triangle lies at z zero. One point eight,
+two, zero and one point eight, two,
+
+117
+00:08:27,243 --> 00:08:33,083
+seven share x and y, but the second is seven
+units off-plane. Test projected address and
+
+118
+00:08:33,083 --> 00:08:39,323
+coplanarity separately. The shadow analogy
+explains position overlap, not lighting.
+
+119
+00:08:39,950 --> 00:08:47,150
+Our inside point was one point eight, two,
+zero. Keep x and y but change z to seven.
+
+120
+00:08:47,390 --> 00:08:50,430
+Both points have the same XY projection,
+
+121
+00:08:50,730 --> 00:08:54,490
+but the new point is seven units off the
+triangle plane.
+
+122
+00:08:54,750 --> 00:08:58,630
+For a projected solve, dropping the axis with
+largest absolute
+
+123
+00:08:58,630 --> 00:09:02,130
+normal component helps choose a
+well-conditioned projection.
+
+124
+00:09:02,370 --> 00:09:05,130
+The discarded coordinate still matters.
+
+125
+00:09:05,370 --> 00:09:09,930
+Check plane distance separately before testing
+projected weights.
+
+126
+00:09:09,950 --> 00:09:14,950
+Plane proximity tolerance has spatial units
+and scale;
+
+127
+00:09:15,310 --> 00:09:18,390
+barycentric tolerance uses dimensionless
+ratios.
+
+128
+00:09:18,690 --> 00:09:22,770
+Also validate finite inputs, normal length and
+the area denominator.
+
+129
+00:09:22,990 --> 00:09:26,210
+An inside test is not complete input
+validation.
+
+130
+00:09:27,090 --> 00:09:29,770
+The turret rises from the floor toward the
+device.
+
+131
+00:09:30,048 --> 00:09:35,248
+Apparent overlap with the surface below does
+not mean it occupies that same plane point.
+
+132
+00:09:35,527 --> 00:09:37,747
+Different colors distinguish the objects.
+
+133
+00:09:38,085 --> 00:09:43,831
+In the next bright room, a floor portal
+precedes the robot rising.
+
+134
+00:09:44,157 --> 00:09:48,457
+A triangle traced on visible tile corners is
+an illustrative projected shape,
+
+135
+00:09:48,764 --> 00:09:54,930
+not the actual game mesh. Test coplanarity and
+triangle inclusion separately.
+
+136
+00:09:55,550 --> 00:09:59,290
+We move among narrow ledges and slanted
+terrain in Noita.
+
+137
+00:09:59,530 --> 00:10:02,310
+Track three nearby corners together.
+
+138
+00:10:03,554 --> 00:10:08,734
+A thin reference triangle can turn a small
+position change into a large weight change.
+
+139
+00:10:08,994 --> 00:10:14,678
+Producing three numbers does not guarantee
+numerical
+
+140
+00:10:14,938 --> 00:10:17,338
+stability for nearly zero area. Inspect the
+input shape as well.
+
+141
+00:10:18,462 --> 00:10:23,382
+Changing reference vertices changes the
+position represented by the same weights.
+
+142
+00:10:23,662 --> 00:10:25,842
+Coordinates and their triangle form one
+description.
+
+143
+00:10:25,842 --> 00:10:30,826
+Real boundaries contain notches and gaps;
+
+144
+00:10:31,186 --> 00:10:35,386
+filling a mathematical triangle between
+references does not reproduce the terrain.
+
+145
+00:10:36,430 --> 00:10:39,670
+Today concerns one plane and triangle.
+
+146
+00:10:39,850 --> 00:10:43,930
+The next lecture partitions more complex
+boundaries into triangles.
+
+147
+00:10:44,550 --> 00:10:50,090
+After checking coplanarity and triangle
+inclusion, determine the value at that
+
+148
+00:10:50,510 --> 00:10:54,390
+location. Reuse the address we just found
+rather than construct new coordinates.
+
+149
+00:10:54,632 --> 00:10:59,270
+Store red, green and blue values at the
+vertices instead of positions.
+
+150
+00:10:59,690 --> 00:11:06,690
+Multiply by the same weights and add to obtain
+an intermediate color. This is a simple
+
+151
+00:11:07,090 --> 00:11:11,290
+linear color example, not a claim about every
+displayed color or a game's implementation.
+
+152
+00:11:12,233 --> 00:11:15,113
+Barycentric coordinates combine attributes as
+well as positions.
+
+153
+00:11:15,201 --> 00:11:19,593
+Assign different values to the three vertices.
+
+154
+00:11:19,833 --> 00:11:26,013
+Give the vertices red, green and blue in an
+explicitly linear color example.
+
+155
+00:11:26,293 --> 00:11:33,153
+Weights point two, point three and point five
+produce those same three color components.
+
+156
+00:11:33,673 --> 00:11:40,253
+An edge midpoint averages its endpoints; a
+vertex reproduces its own attribute.
+
+157
+00:11:40,253 --> 00:11:46,073
+The same construction interpolates defined
+heights or texture coordinates.
+
+158
+00:11:46,753 --> 00:11:49,733
+Direction attributes that require
+normalization need a further check.
+
+159
+00:11:50,073 --> 00:11:52,493
+This is affine interpolation on a triangle
+surface.
+
+160
+00:11:53,033 --> 00:11:57,733
+Perspective-correct interpolation in screen
+space belongs to the rendering chapter.
+
+161
+00:11:58,367 --> 00:12:01,727
+Contact the blue-coated platform and move on.
+
+162
+00:12:01,987 --> 00:12:07,824
+Separate the question of surface location from
+the value stored at that location.
+
+163
+00:12:08,442 --> 00:12:11,182
+Another excerpt shows a cube, followed by
+airborne travel.
+
+164
+00:12:11,656 --> 00:12:14,936
+To read color, first identify the point on the
+surface.
+
+165
+00:12:15,470 --> 00:12:17,890
+Contact with the blue wall leads to a bounce.
+
+166
+00:12:18,150 --> 00:12:20,897
+The gel effect is not evidence of color
+interpolation.
+
+167
+00:12:21,717 --> 00:12:25,217
+Observe differently colored roofs and walls in
+Serious Sam2.
+
+168
+00:12:25,537 --> 00:12:30,077
+Appearance varies with surface location.
+
+169
+00:12:32,196 --> 00:12:35,096
+Finding a surface position and then finding
+its
+
+170
+00:12:35,096 --> 00:12:37,956
+attributes are two connected graphics
+questions.
+
+171
+00:12:40,095 --> 00:12:44,955
+If values are stored per triangle vertex, our
+weights construct intermediate values.
+
+172
+00:12:45,235 --> 00:12:47,335
+This is the mathematical model we explicitly
+defined.
+
+173
+00:12:49,335 --> 00:12:53,855
+The real image may involve textures, lighting
+and effects.
+
+174
+00:12:53,855 --> 00:12:59,734
+Footage alone does not confirm vertex-color
+interpolation.
+
+175
+00:13:00,134 --> 00:13:03,574
+Preserve surface references as the camera
+moves.
+
+176
+00:13:04,094 --> 00:13:07,454
+Do not mix screen coordinates with
+object-surface coordinates.
+
+177
+00:13:09,713 --> 00:13:13,853
+Our final problems validate plane distance and
+triangle weights
+
+178
+00:13:14,233 --> 00:13:17,693
+together: locate the point, then calculate its
+attributes.
+
+179
+00:13:18,433 --> 00:13:23,973
+First problem: the normal has components zero,
+two, zero, and constant d equals four.
+
+180
+00:13:24,153 --> 00:13:27,773
+What is the distance from this plane to point
+four, five, minus three?
+
+181
+00:13:28,033 --> 00:13:32,293
+Residual six divided by normal length two
+gives distance three.
+
+182
+00:13:32,393 --> 00:13:35,653
+The closest plane point is four, two, minus
+three.
+
+183
+00:13:35,913 --> 00:13:39,793
+Second: on our z zero triangle, weights point
+two,
+
+184
+00:13:39,793 --> 00:13:43,813
+point three and point five construct one point
+eight, two, zero.
+
+185
+00:13:44,213 --> 00:13:47,933
+Changing only z to seven preserves the
+projection but leaves the plane.
+
+186
+00:13:47,933 --> 00:13:51,393
+It must not pass a triangle-surface membership
+test.
+
+187
+00:13:51,813 --> 00:13:56,213
+Check valid inputs, plane distance, triangle
+weights and desired attributes in that order,
+
+188
+00:13:56,213 --> 00:14:00,293
+with appropriate units and tolerances.
+
+189
+00:14:00,593 --> 00:14:06,573
+We connected plane orientation and location,
+distance and projection, triangle area
+
+190
+00:14:06,973 --> 00:14:10,873
+and barycentric coordinates. Next we will
+compare centers and partition polygons.

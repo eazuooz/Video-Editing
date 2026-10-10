@@ -1,0 +1,898 @@
+{
+  "slug": "game-math-triangle-addresses-v2",
+  "chapter": 9,
+  "part": 2,
+  "totalParts": 3,
+  "renderModule": "geometry_planes",
+  "sourceDependencies": [
+    "manim/projects/game-math-part2-full-series/geometry.py"
+  ],
+  "sourceSections": [
+    "9.5",
+    "9.6.1–9.6.4"
+  ],
+  "contract": {
+    "handedness": "right",
+    "vector": "column",
+    "plane": "n·p=d; normalize n and d together; nonzero finite normal. Plane residual is distance only for a unit normal.",
+    "normal": "Right-handed e1×e2 with both edges at one vertex. Winding and front-face convention explicitly stated.",
+    "newell": "Ordered closed polygon method; not generic unordered point-cloud least squares. Mean d after normal selection.",
+    "barycentric": "Sum1; nonnegative inside a nondegenerate triangle; signed subareas; independent coplanarity check; largest-normal-component projection.",
+    "attributes": "Defined linear RGB/affine surface interpolation, not assumed proprietary implementation; perspective-correct screen interpolation deferred to chapter10."
+  },
+  "coverage": {
+    "9.5": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "22"
+    ],
+    "9.6.1": [
+      "10"
+    ],
+    "9.6.2": [
+      "12"
+    ],
+    "9.6.3": [
+      "11",
+      "13",
+      "14",
+      "15",
+      "19",
+      "20",
+      "21"
+    ],
+    "9.6.4": [
+      "16",
+      "17",
+      "18",
+      "22"
+    ]
+  },
+  "scenes": [
+    {
+      "id": "PF03",
+      "before": "10",
+      "kind": "explanation",
+      "title": "평면 위에서 삼각형 안의 주소 찾기",
+      "mode": "lecture-overview",
+      "ko": [
+        "앞 편에서 표면까지의 거리와 가장 가까운 점을 구했습니다. 이번에는 같은 평면 위라도 발판 밖일 수 있다는 남은 문제를 해결하겠습니다.",
+        "먼저 삼각형의 길이와 넓이를 구하고, 세 꼭짓점의 비율로 점의 위치를 나타냅니다. 이어서 평면 밖과 삼각형 밖을 구분하고, 확인한 위치의 색도 같은 비율로 계산하겠습니다."
+      ],
+      "en": [
+        "The previous episode found plane distance and the closest point. We now resolve the remaining problem: a point on the plane may still lie outside the platform.",
+        "First calculate triangle lengths and area, then locate a point by proportions of its three vertices. Distinguish off-plane from outside-triangle points, and use the same proportions to calculate color."
+      ],
+      "beats": [
+        "평면 위 ≠ 삼각형 안",
+        "① 길이·넓이 ② 꼭짓점 비율",
+        "③ 두 검사 → 같은 비율로 속성"
+      ],
+      "visual": "Begin with the exact preceding plane and finite platform; reveal three vertex labels and the retained query point. Preview the actual area, address and attribute steps in their order."
+    },
+    {
+      "id": "10",
+      "title": "변의 길이와 각을 연결하기",
+      "kind": "explanation",
+      "mode": "triangle-laws",
+      "ko": [
+        "삼각형의 각 꼭짓점 반대편 변을 같은 번호로 부르겠습니다. 세 변의 길이를 더하면 둘레입니다.",
+        "변의 길이가 삼, 사, 오인 직각삼각형의 둘레는 십이이고, 그 절반은 육입니다.",
+        "한 각과 마주 보는 변의 길이를 사인값으로 나눈 비율은 세 꼭짓점에서 같습니다. 이것이 사인 법칙입니다.",
+        "두 변과 그 사이의 각을 알면 코사인 법칙으로 나머지 변을 구합니다. 길이의 제곱을 다룬다는 점을 기억하세요.",
+        "지금은 삼 제곱 더하기 사 제곱이 오 제곱입니다. 두 변 사이가 직각이라 코사인 항은 영입니다.",
+        "각도 함수의 라디안과 도 단위를 섞지 마세요. 각이나 변을 구한 뒤에도 양의 길이와 삼각형 성립 조건을 확인해야 합니다."
+      ],
+      "en": [
+        "Give each edge the same index as its opposite vertex. Adding the three edge lengths gives the perimeter.",
+        "A three-four-five right triangle has perimeter twelve and semiperimeter six.",
+        "Edge length divided by the sine of its opposite angle is the same at all three vertices: the sine law.",
+        "Given two edges and their included angle, the cosine law finds the remaining edge using squared lengths.",
+        "Here three squared plus four squared equals five squared. The right angle makes the cosine term zero.",
+        "Do not mix degrees and radians. Validate positive lengths and triangle feasibility after solving."
+      ],
+      "beats": [
+        "vᵢ 반대편 변의 길이 aᵢ / 둘레 P",
+        "3·4·5: P=12, s=P/2=6",
+        "a₁/sinθ₁=a₂/sinθ₂=a₃/sinθ₃",
+        "a₁²=a₂²+a₃²-2a₂a₃cosθ₁",
+        "3²+4²=5² / cos90°=0",
+        "각도 단위 / 길이>0 / 삼각부등식"
+      ]
+    },
+    {
+      "id": "11",
+      "title": "세 기준점 사이에서 위치 찾기",
+      "kind": "actual",
+      "sourceId": "igcymdI4XYM",
+      "sourceSegments": [
+        {
+          "in": 423,
+          "maxSeconds": 19
+        },
+        {
+          "in": 446,
+          "maxSeconds": 26
+        }
+      ],
+      "in": 423,
+      "maxSeconds": 45,
+      "ko": [
+        "노이타의 나무 발판 끝과 바위의 모서리를 보세요. 가까이 보이는 세 위치를 기준점으로 선택할 수 있습니다.",
+        "캐릭터가 한 기준점에서 다른 기준점 쪽으로 이동하면, 어느 점에 가까운지가 바뀝니다.",
+        "엑스와 와이 좌표로 설명할 수도 있지만, 세 기준점의 가중치를 쓰면 삼각형과 함께 움직이는 설명이 가능합니다.",
+        "카메라가 이동할 때는 세 기준점도 같이 추적해야 합니다. 서로 다른 화면에서 읽은 픽셀 좌표를 섞으면 위치 관계가 틀어집니다.",
+        "또한 기준점을 골랐다는 사실만으로 실제 바닥 전체가 하나의 삼각형이 되지는 않습니다. 사이에 빈 공간이 있을 수도 있습니다.",
+        "다음 예제는 우리가 직접 정한 삼각형입니다. 넓이를 먼저 구하고, 그 안과 밖의 위치를 세 숫자로 나타내겠습니다."
+      ],
+      "en": [
+        "Observe platform ends and rock corners in Noita. We can choose three visible locations as reference points.",
+        "Movement from one reference toward another changes which point the character is nearer.",
+        "Cartesian coordinates describe the location; three weights describe it relative to a triangle that moves with its references.",
+        "Track all three references when the camera moves. Do not combine pixels from incompatible screen frames.",
+        "Choosing three points does not make the entire ground a triangle; gaps may lie between them.",
+        "Our next example defines its own triangle, calculates area, and expresses inside and outside positions with three numbers."
+      ],
+      "focus": "발판 끝·바위 모서리 세 기준과 상대 위치; 빈 공간도 확인",
+      "claim": "직접 정의한 삼각형 좌표의 동기; 실제 지형을 삼각형으로 단정하지 않음"
+    },
+    {
+      "id": "PB05",
+      "before": "12",
+      "kind": "explanation",
+      "title": "넓이는 왜 점의 위치를 구하는 데 필요할까요?",
+      "mode": "area-example-continuity",
+      "ko": [
+        "삼각형의 변 길이를 알았습니다. 이제 점이 세 꼭짓점과 연결되는 비율을 구하려고 넓이를 계산합니다.",
+        "앞의 법선 예제는 가로 육, 세로 사이었습니다. 지금은 세 넓이 공식을 비교하기 쉬운 가로 사, 세로 삼의 별도 삼각형을 씁니다. 가중치 예제에서는 육과 사로 돌아옵니다."
+      ],
+      "en": [
+        "We know the side lengths. Area will let us describe a point in proportions of the three vertices.",
+        "The normal example used six and four. Compare the three area formulas on a separate four-by-three triangle; return to six and four for the weights."
+      ],
+      "beats": [
+        "넓이 → 부분이 차지하는 비율",
+        "법선 예6×4 / 넓이 공식 예4×3",
+        "다음 가중치 예는6×4로 복귀"
+      ],
+      "visual": "Place both explicitly labeled triangles on the same plane; preserve6×4 on the left and activate the4×3 example without morphing one unnoticed. Preview subdivision ratios and retain the labels for the later return."
+    },
+    {
+      "id": "PG04",
+      "title": "면 위여도 통로 안인지 따로 확인합니다",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "sourceId": "portal2-steam-5790",
+      "intervals": [
+        [
+          19.5,
+          35.5
+        ],
+        [
+          36.5,
+          55.5
+        ],
+        [
+          33.5,
+          40.95
+        ]
+      ],
+      "sourceSegments": [
+        {
+          "sourceId": "portal2-steam-5790",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5790.mp4",
+          "sourceSha256": "5ec9196a6bc7e91c087d0f23046e8a8b3925bf3d53ad5dcce98d6ef9e874bd87",
+          "in": 19.5,
+          "maxSeconds": 16.0
+        },
+        {
+          "sourceId": "portal2-steam-5790",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5790.mp4",
+          "sourceSha256": "5ec9196a6bc7e91c087d0f23046e8a8b3925bf3d53ad5dcce98d6ef9e874bd87",
+          "in": 36.5,
+          "maxSeconds": 19.0
+        },
+        {
+          "sourceId": "portal2-steam-5926",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5926.mp4",
+          "sourceSha256": "16f8124ba626e901f9810fb3e42b1c3050ad50c6277546aeae4e6283def92318",
+          "in": 34,
+          "maxSeconds": 7
+        }
+      ],
+      "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5790.mp4",
+      "maximumSeconds": 42.45,
+      "ko": [
+        "바닥의 포털 가까이 있는 터릿이 장치에 빨려 올라갑니다. 빨간 선은 보이는 바닥 경계입니다. 면의 방향을 아는 것과 어느 범위가 실제 통로인지 아는 것은 다릅니다.",
+        "다음 복도에서는 바닥과 벽의 포털을 옮기자 패널의 이동 경로가 바뀝니다. 파편이 경계를 가리는 동안은 도형을 숨기겠습니다. 다시 보이는 표면에서 꼭짓점과 안쪽 위치를 구분해 보세요.",
+        "협동 플레이에서는 포털을 거쳐 끝이 있는 발판에 도착합니다. 이제 넓이로 안쪽 위치를 구합니다."
+      ],
+      "en": [
+        "A turret near a floor portal is drawn into the device. Red marks the visible floor boundary. Knowing plane orientation differs from knowing the finite passage region.",
+        "In the next corridor, moving floor and wall portals changes the panels' path. Hide geometry while debris obscures the edges; distinguish corners and interior positions when the surface returns.",
+        "In co-op, portals lead to a finite platform. Now use area to locate an interior point."
+      ],
+      "sourceGroupStartsAtLines": [
+        0,
+        1,
+        2
+      ],
+      "selection": {
+        "visibleBeforeActionAfter": "19.5–35.5 turret placement →vacuum lift;36.5–55.5 portals/panels →debris →return;34–41 independent launch →platform landing",
+        "chosenReason": "Bright, sustained floor/wall actions expose finite regions more clearly than dark/railed Wheatley86–104 or vegetation montages.",
+        "camera": "Keep each native action at1x. Announce the source/view changes in narration; reset landmarks at actual cuts.",
+        "occlusion": "Hide debris42–48, weapon and rapid pans;Coop7s is a short outcome comparison, not a long derivation. No real engine triangles inferred.",
+        "UI": "Portal reticle/weapon and retained preview framing. Label above bottom-center captions, away from reticle and active indicators.",
+        "nativeAndDenseComparison": true,
+        "finalAnnotatedPixels": "pending",
+        "priorUseOverlap": []
+      },
+      "annotation": {
+        "red": "visible surface edge/connection",
+        "blue": "visible query point or comparison target",
+        "teal": "projected surface patch/reference axes",
+        "reveal": "narration order; per-source-group reset",
+        "tracking": "editable observed object/camera landmarks; hide during occlusion/cuts; never extrapolate unobserved corners",
+        "classification": "full-screen action-led existing gameplay; diagram-led/frozen portions separately explanation",
+        "worldMeasurement": false,
+        "engineInternalsAsserted": false,
+        "movingPixelApproval": false
+      },
+      "segmentSourceIds": [
+        "portal2-steam-5790",
+        "portal2-steam-5790",
+        "portal2-steam-5926"
+      ]
+    },
+    {
+      "id": "12",
+      "title": "같은 넓이를 세 방법으로 구하기",
+      "kind": "explanation",
+      "mode": "triangle-area",
+      "ko": [
+        "꼭짓점이 영, 영과 사, 영과 영, 삼인 삼각형입니다. 밑변 사에 높이 삼을 곱하고 이로 나누면 넓이는 육입니다.",
+        "세 변 삼, 사, 오를 알면 헤론 공식을 쓸 수 있습니다. 둘레의 절반 육에서 각 변을 뺀 값을 곱합니다.",
+        "루트 안은 육 곱하기 삼 곱하기 이 곱하기 일, 즉 삼십육입니다. 제곱근은 육입니다.",
+        "두 변 벡터의 외적 길이는 평행사변형 넓이입니다. 절반을 취하면 삼각형 넓이가 됩니다. 이 예제의 평행사변형 넓이는 십이입니다. 이를 이로 나누면 삼각형 넓이 육을 얻습니다.",
+        "이차원에서는 외적에 해당하는 행렬식에 부호가 있습니다. 꼭짓점 순서를 뒤집으면 부호가 바뀌지만 넓이의 크기는 같습니다.",
+        "삼차원에서 외적의 길이를 쓰면 방향의 부호는 사라집니다. 넓이와 앞면 방향을 같은 숫자라고 생각하지 마세요."
+      ],
+      "en": [
+        "Use vertices zero, zero; four, zero; and zero, three. Base four times height three divided by two gives area six.",
+        "With side lengths three, four and five, Heron formula uses semiperimeter six and its differences from each edge.",
+        "The radicand is six times three times two times one, or thirty-six. Its square root is six.",
+        "The cross-product length is the parallelogram area. Half gives the triangle area. Here the parallelogram area is twelve, and dividing by two gives a triangle area of six.",
+        "In2D, the corresponding determinant has a sign. Reversing winding changes the sign but not area magnitude.",
+        "Taking a3D cross-product magnitude discards direction. Distinguish area from front-face orientation."
+      ],
+      "beats": [
+        "A=bh/2=4×3/2=6",
+        "Heron: A=√[s(s-a)(s-b)(s-c)]",
+        "√(6×3×2×1)=√36=6",
+        "A=‖e₁×e₂‖/2=12/2=6",
+        "2D signedArea=det(e₁,e₂)/2",
+        "3D 넓이: 외적 길이 / 방향은 법선"
+      ]
+    },
+    {
+      "id": "PB06",
+      "before": "13",
+      "kind": "explanation",
+      "title": "두 점의 보간에서 세 꼭짓점의 비율로",
+      "mode": "weighted-average-prerequisite",
+      "ko": [
+        "앞 강의의 중간점은 두 위치를 반씩 섞었습니다. 삼각형은 이를 세 꼭짓점으로 늘립니다. 좌표 예제는 처음의 가로 육, 세로 사로 돌아옵니다.",
+        "첫 꼭짓점 이십 퍼센트, 둘째 삼십 퍼센트, 셋째 오십 퍼센트면 합은 백 퍼센트입니다. 각 위치에 비율을 곱해 더합니다. 이 비율이 무게중심 좌표입니다. 이름과 달리 실제 질량을 반드시 재는 것은 아닙니다."
+      ],
+      "en": [
+        "The earlier midpoint mixed two positions equally. Extend that idea to three vertices, returning to the original six-by-four triangle.",
+        "Twenty, thirty and fifty percent total one hundred percent. Multiply each position by its proportion and add. These are barycentric coordinates; the name does not require real masses."
+      ],
+      "beats": [
+        "두 점의 보간 → 세 점의 가중합",
+        "6×4 삼각형 / .2+.3+.5=1",
+        "p=.2A+.3B+.5C / 비율에는 길이 단위 없음"
+      ],
+      "visual": "Keep the6×4 vertices (0,0,0),(6,0,0),(0,4,0) and semantic colors. Begin with a two-vertex midpoint, add the third contribution, show the sum-to-one check, then build the weighted vector sum."
+    },
+    {
+      "id": "13",
+      "title": "세 숫자로 삼각형 위치 표현하기",
+      "kind": "explanation",
+      "mode": "barycentric-basis",
+      "ko": [
+        "무게중심 좌표는 세 꼭짓점의 가중치를 나타냅니다. 세 가중치의 합은 일이어야 합니다.",
+        "각 꼭짓점에 가중치를 곱해서 더하면 위치가 나옵니다. 첫 꼭짓점 자체는 일, 영, 영입니다.",
+        "첫째와 둘째 꼭짓점의 중간은 영 점 오, 영 점 오, 영입니다. 세 값이 모두 삼분의 일이면 꼭짓점 평균 위치입니다.",
+        "세 숫자를 쓰지만 합이 일이라 독립적으로 고를 수 있는 값은 두 개입니다. 삼각형의 표면이 이차원이기 때문입니다.",
+        "셋째 꼭짓점을 기준으로 쓰면 다른 두 꼭짓점에서 셋째를 뺀 변이 두 축이 됩니다. 이 축이 직각이거나 단위 길이일 필요는 없습니다.",
+        "퇴화하지 않은 삼각형의 평면 위에서 가중치가 모두 영 이상이면 내부나 경계입니다. 음수 가중치도 의미가 있으며, 그때는 삼각형 밖의 점입니다."
+      ],
+      "en": [
+        "Barycentric coordinates give weights for three vertices. Their sum must be one.",
+        "Multiply each vertex by its weight and add. The first vertex has coordinates one, zero, zero.",
+        "The midpoint of the first two vertices is one half, one half, zero. Equal one-third weights give the vertex average.",
+        "Although written as three numbers, only two are independent because their sum is fixed. A triangle surface is two-dimensional.",
+        "Using the third vertex as origin gives axes first-minus-third and second-minus-third. They need not be orthogonal or unit length.",
+        "On a nondegenerate triangle plane, nonnegative weights describe its interior and boundary. Negative weights meaningfully describe outside points."
+      ],
+      "beats": [
+        "λ₁+λ₂+λ₃=1",
+        "p=λ₁v₁+λ₂v₂+λ₃v₃",
+        "꼭짓점 / 변의 중간 / 꼭짓점 평균",
+        "세 숫자·독립 값 두 개",
+        "p=v₃+λ₁(v₁-v₃)+λ₂(v₂-v₃)",
+        "모두 λ≥0: 내부·경계 / 음수: 바깥"
+      ]
+    },
+    {
+      "id": "14",
+      "title": "삼각형의 기준을 함께 옮기기",
+      "kind": "actual",
+      "sourceId": "SSekdYTL4Ck",
+      "sourceSegments": [
+        {
+          "in": 1519,
+          "maxSeconds": 58
+        }
+      ],
+      "in": 1519,
+      "maxSeconds": 58,
+      "ko": [
+        "다른 바위로 연결되며 표식의 화면 위치가 바뀝니다. 연결 표식과 그 주변에서 세 기준점을 골라 보세요.",
+        "표면과 카메라가 움직여도, 같은 세 꼭짓점으로 정의한 상대 가중치는 위치를 설명할 기준이 될 수 있습니다.",
+        "꼭짓점 하나에 가까워질수록, 그 꼭짓점의 가중치는 숫자 일에 가까워집니다. 변 위의 위치는 반대편 꼭짓점의 가중치가 영입니다.",
+        "다만 화면에서 가깝게 보이는 정도와 삼차원 공간에서의 가중치는 같다고 단정할 수 없습니다. 원근 투영이 모양을 바꾸기 때문입니다.",
+        "지금 보이는 그래플 연결점의 실제 좌표를 추출한 것은 아닙니다. 표식은 다음 수치 예제가 무엇을 계산하는지 보여주는 기준입니다.",
+        "이제 세 좌표에 가중치를 곱해 직접 더해 보고, 음수가 들어갔을 때 왜 삼각형 밖으로 나가는지 확인하겠습니다."
+      ],
+      "en": [
+        "Connecting to another rock changes the marking screen position. Choose three reference points around the attachment marking.",
+        "Weights relative to the same three vertices provide a location reference even as a surface or camera moves.",
+        "Approaching a vertex makes its weight approach the number one. A point on its opposite edge has zero weight for it.",
+        "Screen proximity is not automatically the3D barycentric relationship because perspective changes the projection.",
+        "We have not extracted the real attachment coordinates. Visible markings motivate the explicitly defined numerical example.",
+        "Now we will multiply vertices by weights and see how a negative weight places a point outside."
+      ],
+      "focus": "표식·연결 위치의 상대 관계와 원근 변화",
+      "claim": "무게중심 좌표의 기준점 의존성과 화면 원근의 차이"
+    },
+    {
+      "id": "15",
+      "title": "안쪽과 바깥쪽을 직접 계산하기",
+      "kind": "explanation",
+      "mode": "barycentric-worked",
+      "ko": [
+        "삼차원 꼭짓점을 영, 영, 영과 육, 영, 영과 영, 사, 영으로 정하겠습니다. 모두 제트가 영인 같은 평면에 있습니다.",
+        "가중치 영 점 이, 영 점 삼, 영 점 오는 합이 일입니다. 엑스는 육 곱하기 영 점 삼, 와이는 사 곱하기 영 점 오입니다.",
+        "결과는 일 점 팔, 이, 영입니다. 세 가중치가 영 이상이므로 삼각형 내부입니다.",
+        "이번에는 마이너스 영 점 이, 영 점 칠, 영 점 오를 넣겠습니다. 합은 여전히 일이지만 첫 가중치가 음수입니다.",
+        "엑스는 사 점 이, 와이는 이이고 제트는 영입니다. 첫 꼭짓점 반대편 변을 넘어 바깥으로 나갑니다.",
+        "좌표의 단위는 공간의 길이이고, 가중치는 비율입니다. 음수 가중치를 무조건 잘못된 계산으로 버리면, 바깥 위치를 설명하는 정보를 버리게 됩니다."
+      ],
+      "en": [
+        "Define3D vertices zero, zero, zero; six, zero, zero; and zero, four, zero. All lie in the z zero plane.",
+        "Weights point two, point three and point five sum to one. Compute x as six times point three and y as four times point five.",
+        "The result is one point eight, two, zero. All weights are nonnegative, so it lies inside.",
+        "Now use minus point two, point seven and point five. Their sum is still one, but the first weight is negative.",
+        "The result four point two, two, zero lies beyond the edge opposite the first vertex.",
+        "Position has length units; weights are dimensionless ratios. Rejecting every negative weight discards information describing valid outside positions."
+      ],
+      "beats": [
+        "v₁=(0,0,0), v₂=(6,0,0), v₃=(0,4,0)",
+        "λ=(.2,.3,.5), 합=1",
+        "p=(1.8,2,0): 내부",
+        "λ=(-.2,.7,.5), 합=1",
+        "p=(4.2,2,0): v₁ 반대편 바깥",
+        "좌표: 길이 / 가중치: 비율"
+      ]
+    },
+    {
+      "id": "PB07",
+      "before": "16",
+      "kind": "explanation",
+      "title": "만든 점에서 거꾸로 주소를 읽기",
+      "mode": "area-ratio-inverse-purpose",
+      "ko": [
+        "비율을 넣어 일 점 팔, 이, 영을 만들었습니다. 이번에는 그 점에서 비율을 거꾸로 구합니다. 삼각형과 점은 그대로입니다.",
+        "가로 육, 세로 사인 전체 넓이는 십이입니다. 점을 꼭짓점들과 이으면 부분 넓이는 이 점 사, 삼 점 육, 육입니다. 십이로 나누면 영 점 이, 영 점 삼, 영 점 오입니다. 밖의 점도 다루려면 다음 계산의 넓이 부호를 유지해야 합니다."
+      ],
+      "en": [
+        "Weights constructed one point eight, two, zero. Recover the weights from that same point and triangle.",
+        "The six-by-four triangle has area twelve. Joining the point to the vertices gives subareas two point four, three point six and six. Divide by twelve to recover point two, point three and point five. Keep signed areas to handle outside points."
+      ],
+      "beats": [
+        "비율 → 점 / 이제 점 → 비율",
+        "전체 넓이12 / 부분2.4,3.6,6",
+        "부분÷전체=.2,.3,.5 / 밖에서는 부호 유지"
+      ],
+      "visual": "Retain the exact point and6×4 triangle from original15. Join the point to vertices, reveal each opposite-vertex subarea, divide by12, and compare recovered weights with the original input; do not use the4×3 area6 example here."
+    },
+    {
+      "id": "16",
+      "title": "넓이 비율에서 가중치 구하기",
+      "kind": "explanation",
+      "mode": "barycentric-areas",
+      "ko": [
+        "반대로 점의 위치를 알고 가중치를 구할 수도 있습니다. 점과 두 꼭짓점이 만드는 부분 삼각형 넓이를 전체 넓이로 나눕니다.",
+        "가중치 영 점 이, 영 점 삼, 영 점 오인 내부 점에서는 세 부분의 넓이가 전체의 이십, 삼십, 오십 퍼센트입니다.",
+        "중요한 것은 같은 꼭짓점 순서로 구한 부호 있는 넓이를 쓰는 것입니다. 절댓값만 쓰면 바깥쪽의 음수를 잃습니다.",
+        "점이 첫 꼭짓점 반대편으로 넘어가면 그 부분의 부호가 뒤집히며 첫 가중치가 음수가 됩니다.",
+        "전체 삼각형의 부호를 뒤집어도 분자와 분모가 함께 뒤집혀 같은 가중치가 나옵니다. 순서를 일관되게 쓰세요.",
+        "전체 넓이가 영이면 나눌 수 없습니다. 너무 가느다란 삼각형도 작은 좌표 오차를 큰 가중치 오차로 키울 수 있습니다."
+      ],
+      "en": [
+        "Given a position, obtain each weight from a signed subtriangle area divided by the whole signed area.",
+        "For the inside example, the subareas are twenty, thirty and fifty percent of the total.",
+        "Keep consistent vertex order and signed areas. Absolute areas discard the negative weight of an outside point.",
+        "Crossing the edge opposite the first vertex reverses that subarea sign and makes its weight negative.",
+        "Reversing all winding reverses numerator and denominator together, preserving weights. Be consistent.",
+        "A zero whole area cannot be divided by. Very thin triangles may amplify small coordinate errors."
+      ],
+      "beats": [
+        "λᵢ=signedArea(부분)/signedArea(전체)",
+        "내부: .2 / .3 / .5",
+        "부호 보존: 절댓값만 사용하면 바깥 정보 손실",
+        "반대편 변 넘어가기 → 해당 λ<0",
+        "일관된 순서: 분자·분모 부호 함께 반전",
+        "퇴화·가느다란 삼각형: 분모·오차 검사"
+      ]
+    },
+    {
+      "id": "17",
+      "title": "높이가 다른 표면을 한 그림으로 보면",
+      "kind": "actual",
+      "sourceId": "igcymdI4XYM",
+      "sourceSegments": [
+        {
+          "in": 472,
+          "maxSeconds": 15
+        },
+        {
+          "in": 525,
+          "maxSeconds": 33
+        }
+      ],
+      "in": 472,
+      "maxSeconds": 48,
+      "ko": [
+        "캐릭터가 다른 높이의 발판을 오가고, 멀리 있는 발판도 같은 화면에 들어옵니다. 보이는 겹침과 실제 같은 표면은 구분하세요.",
+        "이차원 게임 화면에서는 위치가 두 성분으로 보이지만, 삼차원 게임이라면 깊이가 다른 점이 화면에서 겹칠 수도 있습니다.",
+        "삼각형 안처럼 보이는 투영 위치만으로 삼차원 표면 위에 있다고 판단하면 오류가 납니다.",
+        "평면까지의 거리 검사와 그 평면 안에서의 가중치 검사를 따로 하면 이 두 질문을 나눌 수 있습니다.",
+        "또한 물체가 발판의 경계를 지나가면 같은 평면 높이더라도 발판 밖입니다. 넓이 비율의 음수 가중치를 기억하세요.",
+        "다음 그림에서는 투영 위치는 똑같고 깊이만 다른 두 점을 나란히 놓아 이 오류를 확인합니다."
+      ],
+      "en": [
+        "The character moves among ledges at different heights. Distinguish visual overlap from occupying the same surface.",
+        "This2D footage exposes two position components; in3D, different depths may project to the same screen location.",
+        "An apparently inside projected location alone does not prove that a3D query lies on a triangle surface.",
+        "Separate distance-to-plane validation from within-plane barycentric tests.",
+        "Passing a platform edge can also leave its finite footprint while keeping the same reference height. Remember negative outside weights.",
+        "Our diagram will compare two points with identical projection and different depths."
+      ],
+      "focus": "다른 높이 발판·공중 이동·유한 끝; 깊이 오류는 별도3D그림에서 검증",
+      "claim": "실제2D관찰의 제한을 밝히고 공면성·경계 판정을 분리"
+    },
+    {
+      "id": "PB08",
+      "before": "18",
+      "kind": "explanation",
+      "title": "그림자의 주소와 물체의 주소는 다릅니다",
+      "mode": "coplanarity-prerequisite",
+      "ko": [
+        "삼각형 주소를 구했습니다. 하지만 정면에서 보면 면 위로 떨어진 점도 같은 위치에 보일 수 있습니다.",
+        "삼각형은 제트가 영인 면입니다. 일 점 팔, 이, 영과 일 점 팔, 이, 칠은 엑스와 와이가 같아도 둘째 점은 면에서 칠만큼 떨어져 있습니다. 투영 위치와 원래 점이 면 위인지 따로 검사해야 합니다. 그림자 비유는 위치 겹침만 설명하며 실제 조명 계산은 아닙니다."
+      ],
+      "en": [
+        "We found a triangle address. Viewed straight on, a point away from the plane can appear at the same position.",
+        "The triangle lies at z zero. One point eight, two, zero and one point eight, two, seven share x and y, but the second is seven units off-plane. Test projected address and coplanarity separately. The shadow analogy explains position overlap, not lighting."
+      ],
+      "beats": [
+        "같은xy / z=0과z=7",
+        "투영 위치 같음 ≠ 원래 점이 면 위",
+        "먼저 평면 거리 → 다음 가중치 검사"
+      ],
+      "visual": "Preserve the same triangle and point. Add a point displaced only along z, animate the orthogonal projection, then orbit to reveal the seven-unit gap before the original error example."
+    },
+    {
+      "id": "18",
+      "title": "투영은 평면 위 검사까지 해주지 않습니다",
+      "kind": "explanation",
+      "mode": "barycentric-coplanarity",
+      "ko": [
+        "아까 내부 점은 일 점 팔, 이, 영입니다. 이번에는 엑스와 와이는 그대로 두고 제트만 칠로 바꿉니다.",
+        "엑스 와이 평면으로 보면 두 점은 같은 위치입니다. 하지만 제트가 칠인 점은 삼각형 평면에서 칠만큼 떨어져 있습니다.",
+        "투영해서 가중치를 계산할 때는 법선의 절댓값이 가장 큰 성분의 좌표를 버리면 안정적인 면을 고르기 쉽습니다.",
+        "그렇다고 버린 좌표가 중요하지 않은 것은 아닙니다. 먼저 평면까지의 거리를 검사하고, 투영한 좌표로 내부 여부를 검사하세요.",
+        "평면과 충분히 가깝다고 볼 허용 오차는 공간의 단위와 크기에 맞춰 정합니다. 무게중심 가중치의 오차는 별도의 비율 단위입니다.",
+        "입력 좌표가 유한한지, 법선과 넓이 분모가 유효한지도 확인합니다. 내부 판정 하나가 모든 입력 검증을 대신하지 않습니다."
+      ],
+      "en": [
+        "Our inside point was one point eight, two, zero. Keep x and y but change z to seven.",
+        "Both points have the same XY projection, but the new point is seven units off the triangle plane.",
+        "For a projected solve, dropping the axis with largest absolute normal component helps choose a well-conditioned projection.",
+        "The discarded coordinate still matters. Check plane distance separately before testing projected weights.",
+        "Plane proximity tolerance has spatial units and scale; barycentric tolerance uses dimensionless ratios.",
+        "Also validate finite inputs, normal length and the area denominator. An inside test is not complete input validation."
+      ],
+      "beats": [
+        "p=(1.8,2,0) / q=(1.8,2,7)",
+        "XY 투영 같음 / 평면 거리 0 대 7",
+        "|nᵢ| 최대 축을 버리고 투영 계산",
+        "공면성 검사 + 삼각형 내부 검사",
+        "거리 오차: 길이 / λ 오차: 비율",
+        "finite / normal / denominator 검증"
+      ]
+    },
+    {
+      "id": "PG06",
+      "title": "떠 있는 물체와 바닥의 투영 위치를 구분합니다",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "sourceId": "portal2-steam-5790",
+      "intervals": [
+        [
+          55.5,
+          70
+        ],
+        [
+          72.3,
+          81
+        ],
+        [
+          82.2,
+          91.5
+        ]
+      ],
+      "sourceSegments": [
+        {
+          "sourceId": "portal2-steam-5790",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5790.mp4",
+          "sourceSha256": "5ec9196a6bc7e91c087d0f23046e8a8b3925bf3d53ad5dcce98d6ef9e874bd87",
+          "in": 55.5,
+          "maxSeconds": 14.5
+        },
+        {
+          "sourceId": "portal2-steam-5790",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5790.mp4",
+          "sourceSha256": "5ec9196a6bc7e91c087d0f23046e8a8b3925bf3d53ad5dcce98d6ef9e874bd87",
+          "in": 74,
+          "maxSeconds": 17
+        }
+      ],
+      "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5790.mp4",
+      "maximumSeconds": 32.5,
+      "ko": [
+        "터릿이 바닥에서 떠서 장치로 이동합니다. 물체와 아래 표면이 화면에서 겹쳐 보여도 표면 위의 같은 점이라는 뜻은 아닙니다. 두 대상을 다른 색으로 구분하겠습니다.",
+        "밝은 방의 다음 구간입니다. 바닥 타일에 포털을 만든 뒤 로봇이 위로 올라갑니다. 타일의 보이는 모서리로 그린 삼각형은 설명용 투영 도형입니다. 실제 게임 메시라고 부르지 않습니다. 이 차이를 확인한 뒤 면 위와 삼각형 안을 따로 검사합니다."
+      ],
+      "en": [
+        "The turret rises from the floor toward the device. Apparent overlap with the surface below does not mean it occupies that same plane point. Different colors distinguish the objects.",
+        "In the next bright room, a floor portal precedes the robot rising. A triangle traced on visible tile corners is an illustrative projected shape, not the actual game mesh. Test coplanarity and triangle inclusion separately."
+      ],
+      "sourceGroupStartsAtLines": [
+        0,
+        1,
+        null
+      ],
+      "selection": {
+        "visibleBeforeActionAfter": "55.5–70 turret above floor →vacuum;74–81.5 pan/aim →floor portal;82–85 barrier/debris;85.5–91 clear floor patch →robot rising",
+        "chosenReason": "Fine0.5s samples confirm a readable bright floor patch and explicit off-surface object, unlike rejected86–104 Wheatley dark rails.",
+        "camera": "Keep each native action at1x. Announce the source/view changes in narration; reset landmarks at actual cuts.",
+        "occlusion": "Hide75–78 rightward pans,78.5–80 turn/weapon overlap and84–85 debris as appropriate;only verified visible corners at75–77/80–83/85.5–87;reset at source-group boundary.",
+        "UI": "Portal reticle/weapon and retained preview framing. Label above bottom-center captions, away from reticle and active indicators.",
+        "nativeAndDenseComparison": true,
+        "finalAnnotatedPixels": "pending",
+        "priorUseOverlap": []
+      },
+      "annotation": {
+        "red": "visible surface edge/connection",
+        "blue": "visible query point or comparison target",
+        "teal": "projected surface patch/reference axes",
+        "reveal": "narration order; per-source-group reset",
+        "tracking": "editable observed object/camera landmarks; hide during occlusion/cuts; never extrapolate unobserved corners",
+        "classification": "full-screen action-led existing gameplay; diagram-led/frozen portions separately explanation",
+        "worldMeasurement": false,
+        "engineInternalsAsserted": false,
+        "movingPixelApproval": false
+      },
+      "segmentSourceIds": [
+        "portal2-steam-5790",
+        "portal2-steam-5790",
+        "portal2-steam-5790"
+      ]
+    },
+    {
+      "id": "19",
+      "title": "가까운 모서리 세 개를 함께 추적하기",
+      "kind": "actual",
+      "sourceId": "igcymdI4XYM",
+      "sourceSegments": [
+        {
+          "in": 787,
+          "maxSeconds": 34
+        },
+        {
+          "in": 825,
+          "maxSeconds": 15
+        }
+      ],
+      "in": 787,
+      "maxSeconds": 49,
+      "ko": [
+        "노이타에서 좁은 발판과 기울어진 지형 사이로 이동합니다. 가까운 세 모서리를 골라 같이 추적해 보세요.",
+        "세 점을 연결한 삼각형이 가늘어지면, 작은 이동도 가중치의 큰 변화로 나타날 수 있습니다.",
+        "넓이가 거의 영인 기준을 쓰면 세 숫자가 계산돼도 안정적이라는 보장은 없습니다. 수치와 입력 모양을 함께 봐야 합니다.",
+        "지형이 바뀌거나 기준점이 다른 곳으로 바뀌면 같은 가중치도 다른 위치를 뜻합니다. 위치와 기준 삼각형은 한 쌍입니다.",
+        "실제 화면의 경계에는 오목한 부분과 빈 공간이 있습니다. 세 기준점 사이를 채운 수학 삼각형이 지형 전체를 대신하지 않습니다.",
+        "오늘의 계산은 한 평면과 한 삼각형에 관한 것입니다. 더 복잡한 경계를 여러 삼각형으로 나누는 문제는 다음 편에서 다룹니다."
+      ],
+      "en": [
+        "We move among narrow ledges and slanted terrain in Noita. Track three nearby corners together.",
+        "A thin reference triangle can turn a small position change into a large weight change.",
+        "Producing three numbers does not guarantee numerical stability for nearly zero area. Inspect the input shape as well.",
+        "Changing reference vertices changes the position represented by the same weights. Coordinates and their triangle form one description.",
+        "Real boundaries contain notches and gaps; filling a mathematical triangle between references does not reproduce the terrain.",
+        "Today concerns one plane and triangle. The next lecture partitions more complex boundaries into triangles."
+      ],
+      "focus": "좁은 발판·모서리·오목 빈 공간의 실제 관찰",
+      "claim": "삼각형 기준의 퇴화와 다음 다각형 분할 주제로 연결"
+    },
+    {
+      "id": "PB09",
+      "before": "20",
+      "kind": "explanation",
+      "title": "위치를 찾았으니 그 자리의 값도 구합니다",
+      "mode": "address-to-attribute-purpose",
+      "ko": [
+        "평면 위이고 삼각형 안인지 확인했으니, 이제 그 자리에 어떤 값을 놓을지 정할 수 있습니다. 새 좌표를 만드는 것이 아니라 방금 구한 같은 주소를 다시 사용합니다.",
+        "세 꼭짓점에 위치 대신 빨강, 초록, 파랑의 숫자를 저장해 보겠습니다. 같은 비율로 곱해 더하면 중간의 색을 얻습니다. 여기서는 빛의 세기를 선형으로 더하는 단순한 색 예제입니다. 모든 화면의 색이나 게임 내부 구현이 이 예제와 같다는 뜻은 아닙니다."
+      ],
+      "en": [
+        "After checking coplanarity and triangle inclusion, determine the value at that location. Reuse the address we just found rather than construct new coordinates.",
+        "Store red, green and blue values at the vertices instead of positions. Multiply by the same weights and add to obtain an intermediate color. This is a simple linear color example, not a claim about every displayed color or a game's implementation."
+      ],
+      "beats": [
+        "평면 거리 → 삼각형 주소 확인",
+        "같은(.2,.3,.5)로 위치 대신 값 보간",
+        "정의한 선형 RGB 예제 / 엔진 구현 추정 아님"
+      ],
+      "visual": "Keep the same vertices, point and weights. Replace the position-value table with explicitly linear RGB values while preserving all geometry and weights, then reveal the color at that same point."
+    },
+    {
+      "id": "20",
+      "title": "같은 가중치로 색도 보간하기",
+      "kind": "explanation",
+      "mode": "barycentric-attributes",
+      "ko": [
+        "무게중심 좌표는 위치만 만들지 않습니다. 세 꼭짓점에 다른 값을 주면 같은 가중치로 그 값도 섞을 수 있습니다.",
+        "첫 꼭짓점에 빨강, 둘째에 초록, 셋째에 파랑을 주겠습니다. 단순한 선형 색 예제입니다.",
+        "가중치 영 점 이, 영 점 삼, 영 점 오를 쓰면 색 세 성분도 영 점 이, 영 점 삼, 영 점 오가 됩니다.",
+        "변의 중간에서는 두 꼭짓점의 값을 반씩 섞고, 꼭짓점에서는 그 꼭짓점의 값이 그대로 나옵니다.",
+        "높이, 텍스처 좌표처럼 꼭짓점마다 정의한 다른 속성도 같은 방식으로 보간할 수 있습니다. 정규화가 필요한 방향은 보간 뒤 다시 확인합니다.",
+        "지금은 삼각형 표면의 아핀 보간입니다. 원근 투영된 화면의 가중치를 그대로 쓰는 문제는 뒤의 렌더링에서 따로 다룹니다."
+      ],
+      "en": [
+        "Barycentric coordinates combine attributes as well as positions. Assign different values to the three vertices.",
+        "Give the vertices red, green and blue in an explicitly linear color example.",
+        "Weights point two, point three and point five produce those same three color components.",
+        "An edge midpoint averages its endpoints; a vertex reproduces its own attribute.",
+        "The same construction interpolates defined heights or texture coordinates. Direction attributes that require normalization need a further check.",
+        "This is affine interpolation on a triangle surface. Perspective-correct interpolation in screen space belongs to the rendering chapter."
+      ],
+      "beats": [
+        "속성 a(p)=Σλᵢaᵢ",
+        "예제: 선형 RGB의 빨강·초록·파랑",
+        "λ=(.2,.3,.5) → RGB=(.2,.3,.5)",
+        "꼭짓점 그대로 / 변 중간 평균",
+        "높이·UV·방향 / 필요한 후처리 확인",
+        "표면 아핀 보간 / 원근 보정은 렌더링에서"
+      ]
+    },
+    {
+      "id": "PG07",
+      "title": "같은 위치의 표면 값을 따로 생각합니다",
+      "kind": "actual",
+      "sourceType": "actual-footage",
+      "sourceId": "portal2-steam-5791",
+      "intervals": [
+        [
+          49,
+          60
+        ],
+        [
+          62.75,
+          74.5
+        ],
+        [
+          78,
+          84.5
+        ]
+      ],
+      "sourceSegments": [
+        {
+          "sourceId": "portal2-steam-5791",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5791.mp4",
+          "sourceSha256": "8d721ac2209150fb0bfa18b490a7152cd058395a1be9187b3ad73ab0e06c3fd2",
+          "in": 43,
+          "maxSeconds": 17
+        },
+        {
+          "sourceId": "portal2-steam-5795",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5795.mp4",
+          "sourceSha256": "5ed89e15528650019fbb73d21faacd62fa5dbd45f96819f2e7aec1ae48a3328d",
+          "in": 61,
+          "maxSeconds": 5
+        },
+        {
+          "sourceId": "portal2-steam-5795",
+          "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5795.mp4",
+          "sourceSha256": "5ed89e15528650019fbb73d21faacd62fa5dbd45f96819f2e7aec1ae48a3328d",
+          "in": 78,
+          "maxSeconds": 6.5
+        }
+      ],
+      "sourceFile": "shared/output/game-math-part2-full-series/sources/portal2-steam-5791.mp4",
+      "maximumSeconds": 29.25,
+      "ko": [
+        "파란 젤이 있는 발판에 닿았다가 다음 위치로 이동합니다. 표면 위치를 찾는 질문과 그 표면에 어떤 값이 저장됐는지를 묻는 질문을 구분해 보세요.",
+        "다른 구간의 큐브와 이어지는 공중 이동입니다. 색을 읽으려면 먼저 표면의 어느 점인지 정해야 합니다.",
+        "파란 벽 접촉 뒤 튀어 오릅니다. 젤의 효과가 색 보간의 증거는 아닙니다."
+      ],
+      "en": [
+        "Contact the blue-coated platform and move on. Separate the question of surface location from the value stored at that location.",
+        "Another excerpt shows a cube, followed by airborne travel. To read color, first identify the point on the surface.",
+        "Contact with the blue wall leads to a bounce. The gel effect is not evidence of color interpolation."
+      ],
+      "sourceGroupStartsAtLines": [
+        0,
+        1,
+        2
+      ],
+      "selection": {
+        "visibleBeforeActionAfter": "43–60 blue-platform contact/departure/arrival;62.75–74.5 cube followed by separately announced airborne funnel travel;78–84.5 blue wall contact and bounce",
+        "chosenReason": "Re-reviewed all three .5s continuation sheets and full native source: cube is visible62.75–64.3, then airborne player motion is explicitly announced. This interval remains rejected for PG02 floor/normal teaching; it is relevant here to the point-versus-property question. No engine color algorithm inferred.",
+        "camera": "Keep each native action at1x. Announce the source/view changes in narration; reset landmarks at actual cuts.",
+        "occlusion": "Hide fast-turn/cube-occluded regions;surface patch/color labels explain only visible behavior;never infer barycentric implementation from gel color.",
+        "UI": "Portal reticle/weapon and retained preview framing. Label above bottom-center captions, away from reticle and active indicators.",
+        "nativeAndDenseComparison": true,
+        "finalAnnotatedPixels": "pending",
+        "priorUseOverlap": []
+      },
+      "annotation": {
+        "red": "visible surface edge/connection",
+        "blue": "visible query point or comparison target",
+        "teal": "projected surface patch/reference axes",
+        "reveal": "narration order; per-source-group reset",
+        "tracking": "editable observed object/camera landmarks; hide during occlusion/cuts; never extrapolate unobserved corners",
+        "classification": "full-screen action-led existing gameplay; diagram-led/frozen portions separately explanation",
+        "worldMeasurement": false,
+        "engineInternalsAsserted": false,
+        "movingPixelApproval": false
+      },
+      "segmentSourceIds": [
+        "portal2-steam-5791",
+        "portal2-steam-5795",
+        "portal2-steam-5795"
+      ]
+    },
+    {
+      "id": "21",
+      "title": "표면의 위치와 색을 함께 보기",
+      "kind": "actual",
+      "sourceId": "4s7nMfXt8uQ",
+      "sourceSegments": [
+        {
+          "in": 678,
+          "maxSeconds": 62
+        }
+      ],
+      "in": 678,
+      "maxSeconds": 62,
+      "ko": [
+        "시리어스 샘 투의 색이 다른 지붕과 벽을 보세요. 같은 물체 표면에서도 위치에 따라 눈에 들어오는 색과 밝기가 다릅니다.",
+        "표면 위의 위치를 구한 뒤 그 위치의 속성을 구한다는 두 단계가 그래픽스의 중요한 질문입니다.",
+        "삼각형의 꼭짓점마다 값을 저장했다면 아까의 가중치로 중간 값을 만들 수 있습니다. 이것은 우리가 정의한 수학적 예제입니다.",
+        "실제 화면의 색은 텍스처와 조명, 효과 등 여러 요인의 결과일 수 있습니다. 이 영상만으로 꼭짓점 색 보간을 쓴다고 확인한 것은 아닙니다.",
+        "카메라가 움직여도 같은 표면의 기준 위치를 유지해야 합니다. 화면 좌표와 물체 표면 좌표를 섞지 않는 것이 중요합니다.",
+        "마지막 문제에서는 평면의 거리와 삼각형 가중치를 함께 검증합니다. 어디에 있는지를 먼저 확인하고, 그 위치의 속성을 계산하세요."
+      ],
+      "en": [
+        "Observe differently colored roofs and walls in Serious Sam2. Appearance varies with surface location.",
+        "Finding a surface position and then finding its attributes are two connected graphics questions.",
+        "If values are stored per triangle vertex, our weights construct intermediate values. This is the mathematical model we explicitly defined.",
+        "The real image may involve textures, lighting and effects. Footage alone does not confirm vertex-color interpolation.",
+        "Preserve surface references as the camera moves. Do not mix screen coordinates with object-surface coordinates.",
+        "Our final problems validate plane distance and triangle weights together: locate the point, then calculate its attributes."
+      ],
+      "focus": "색이 다른 실제 지붕·벽·표면과 이동하는 카메라",
+      "claim": "표면 위치→속성 질문의 연결; 게임 내부 셰이더 방식은 추정하지 않음"
+    },
+    {
+      "id": "22",
+      "title": "거리·평면·가중치를 함께 확인하기",
+      "kind": "explanation",
+      "mode": "planes-practice",
+      "ko": [
+        "첫 문제입니다. 법선의 세 성분은 영, 이, 영이고, 상수 디의 값은 사입니다. 이 평면에서 점 사, 오, 마이너스 삼까지의 거리는 얼마일까요?",
+        "식의 값은 육이지만 법선 길이 이로 나누어 거리는 삼입니다. 가장 가까운 평면 점은 사, 이, 마이너스 삼입니다.",
+        "둘째는 제트가 영인 삼각형입니다. 가중치 영 점 이, 영 점 삼, 영 점 오가 만드는 점은 일 점 팔, 이, 영입니다.",
+        "엑스와 와이는 같고 제트가 칠인 점은 투영 위치만 같습니다. 평면 밖이므로 표면 내부라는 판정을 하면 안 됩니다.",
+        "계산 순서는 유효한 입력, 평면까지의 거리, 삼각형의 가중치, 원하는 속성입니다. 단계마다 단위와 허용 오차도 확인하세요.",
+        "오늘은 평면의 방향과 위치, 거리와 투영, 삼각형 넓이와 무게중심 좌표를 연결했습니다. 다음 편에서는 서로 다른 중심과 다각형 분할을 설명하겠습니다."
+      ],
+      "en": [
+        "First problem: the normal has components zero, two, zero, and constant d equals four. What is the distance from this plane to point four, five, minus three?",
+        "Residual six divided by normal length two gives distance three. The closest plane point is four, two, minus three.",
+        "Second: on our z zero triangle, weights point two, point three and point five construct one point eight, two, zero.",
+        "Changing only z to seven preserves the projection but leaves the plane. It must not pass a triangle-surface membership test.",
+        "Check valid inputs, plane distance, triangle weights and desired attributes in that order, with appropriate units and tolerances.",
+        "We connected plane orientation and location, distance and projection, triangle area and barycentric coordinates. Next we will compare centers and partition polygons."
+      ],
+      "beats": [
+        "n=(0,2,0), d=4, p=(4,5,-3): 거리?",
+        "거리=3 / 투영=(4,2,-3)",
+        "λ=(.2,.3,.5) → p=(1.8,2,0)",
+        "q=(1.8,2,7): 투영 같음·평면 밖",
+        "유효 입력 → 공면성 → 가중치 → 속성",
+        "다음: 세 중심의 차이와 다각형 분할"
+      ]
+    }
+  ],
+  "gameCandidates": {
+    "reviewedAt": "2026-10-06",
+    "selected": [
+      {
+        "game": "Noita",
+        "sourceId": "igcymdI4XYM",
+        "reason": "Different recording from prior use; layered terrain, ledges and reference water heights directly illustrate side, footprint and reference-point questions."
+      },
+      {
+        "game": "A Story About My Uncle",
+        "sourceId": "SSekdYTL4Ck",
+        "reason": "Fresh nonoverlapping intervals from chapter9 first source: wooden surfaces, cyan triangle markings and relative attachment positions."
+      },
+      {
+        "game": "Serious Sam2",
+        "sourceId": "4s7nMfXt8uQ",
+        "reason": "Fresh night interval with colored surfaces for position-to-attribute observation; shader implementation not inferred."
+      }
+    ],
+    "rejected": [
+      {
+        "game": "Slime Rancher2",
+        "reason": "Observed notice/promotion conditions do not match publishing defaults."
+      },
+      {
+        "game": "Portal2 Royalty Free Gameplay",
+        "reason": "Uploader engagement condition unresolved; no engagement performed."
+      }
+    ],
+    "historyReview": "Full source history reviewed. Noita title has prior use but this NCR recording is new. All chosen intervals are directly reviewed and do not overlap the first geometry lecture. Source audio excluded."
+  },
+  "title": "게임수학 Part 2 · 평면과 삼각형 ② 삼각형 안의 주소",
+  "revisionOf": "game-math-planes-barycentric",
+  "episode": 2,
+  "causalSpine": [
+    "앞 편의 연결선과 경계 상자로 후보를 구함",
+    "후보가 표면에서 얼마나 떨어졌는가?",
+    "법선으로 방향을 정하고 대입값을 거리로 바꿈",
+    "표면 위의 최근접점과 면 방향을 얻음",
+    "무한 평면만으로 발판의 끝은 알 수 없음",
+    "유한한 삼각형의 면적과 세 기준점을 사용",
+    "점 생성의 가중합에서 주어진 점의 주소 구하기로 전환",
+    "평면 위와 삼각형 안을 각각 검사",
+    "찾은 주소로 색 등 표면 속성 계산",
+    "더 큰 경계를 여러 유효한 삼각형으로 나누는 다음 문제"
+  ],
+  "viewerQuestion": "평면 위의 점이 발판의 삼각형 안에 있는지 확인하고, 그 위치의 색은 어떻게 구할까?",
+  "baselineOriginalScenesUnchanged": true,
+  "baselineSource": "production/batches/game-math-part2-teaching-revision/baselines/game-math-planes-barycentric"
+}
