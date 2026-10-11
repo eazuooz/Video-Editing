@@ -17,7 +17,19 @@ const tracked = execFileSync('git', ['ls-files','--cached','--others','--exclude
 const files = [...new Set([...tracked, ...slugs.flatMap(slug => walk('projects/'+slug)),
   ...slugs.flatMap(slug => walk('motion-canvas/src/projects/'+slug))])]
   .filter(file => fs.existsSync(path.join(root,file))).sort();
-for (const slug of ['game-math-polygon-centers-v2','game-math-polygon-partition-v2']) {
+const owned = new Set([
+  'game-math-polygon-centers-v2','game-math-polygon-partition-v2','game-math-polygons-triangulation',
+  'game-math-quaternion-foundations-v2','game-math-quaternion-calculations-v2',
+  'game-math-interpolation-paths-v2','game-math-rotation-conversions-v2',
+  'game-math-lines-circles-v2','game-math-bounds-transform-v2',
+  'game-math-plane-distances-v2','game-math-triangle-addresses-v2',
+  'game-math-rendering-light','game-math-camera-frustum','game-math-camera-projection',
+  'game-math-projection-depth','game-math-mesh-uv','game-math-normal-transform-uv',
+]);
+const targets = process.argv.length > 2 ? process.argv.slice(2) :
+  ['game-math-polygon-centers-v2','game-math-polygon-partition-v2'];
+for (const slug of targets) {
+  if (!owned.has(slug)) throw Error('Not an owned delivery: '+slug);
   fs.writeFileSync(path.join(root,'projects',slug,'rebuild.json'),
     JSON.stringify(build(slug,files),null,2)+'\n');
   console.log('Updated owned rebuild manifest: '+slug);

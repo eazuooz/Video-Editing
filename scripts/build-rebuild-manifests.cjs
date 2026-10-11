@@ -85,7 +85,11 @@ function build(slug, files) {
   const literalFiles=[`motion-canvas/src/projects/${slug}/timing.ts`,...(slug==='frame-rate-modern-rendering'?['motion-canvas/src/projects/frame-rate-modern-rendering/scenes/broll.tsx']:[]),...(slug==='jump-physics'?['motion-canvas/src/narration.ts','motion-canvas/src/broll.ts']:[])];
   const literalRecords=literalFiles.map(literalSettings).filter(Boolean);
   const timing=literalRecords.find(d=>d.data.SCENE_STARTS)?.data;
-  const explicitScenes=selected.find(d=>d.data.scenes?.some(r=>Number.isFinite(r.start)||Number.isFinite(r.startFrame)))?.data.scenes;
+  // Source-cut records can also have starts. Prefer the explicitly declared
+  // production timeline so reconstruction retains explanation scenes as well.
+  const hasSceneStarts=d=>d.data.scenes?.some(r=>Number.isFinite(r.start)||Number.isFinite(r.startFrame));
+  const declaredTimeline=selected.find(d=>d.file===project.paths?.timeline&&hasSceneStarts(d));
+  const explicitScenes=(declaredTimeline||selected.find(hasSceneStarts))?.data.scenes;
   const sceneLayout=explicitScenes||(timing?timing.SCENE_STARTS.map((start,i)=>({id:String(i+1).padStart(2,'0'),startSeconds:start,durationSeconds:timing.SCENE_DURATIONS?.[i]??null,title:timing.SCENE_TITLES?.[i]??null})):literalRecords.find(d=>d.data.SEGMENTS)?.data.SEGMENTS||[]);
   const clipRecords=selected.flatMap(d=>{
     const items=d.data.clips||d.data.scenes||[];
