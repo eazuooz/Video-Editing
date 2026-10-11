@@ -1,0 +1,794 @@
+1
+00:00:02,000 --> 00:00:06,840
+The previous lecture described a triangle
+position by vertex weights. Where should
+
+2
+00:00:07,160 --> 00:00:13,100
+we place a reference marker? The answer
+changes with what we want to make equal.
+
+3
+00:00:13,750 --> 00:00:18,570
+Does a triangle have just one center, and how
+can we partition terrain with an inward notch?
+
+4
+00:00:18,870 --> 00:00:21,190
+We will observe real game tiles and terrain,
+
+5
+00:00:21,190 --> 00:00:24,830
+then distinguish the questions answered by
+centroid, incenter and circumcenter.
+
+6
+00:00:25,230 --> 00:00:27,890
+Next we will validate polygon boundaries and
+convexity,
+
+7
+00:00:27,890 --> 00:00:31,230
+and examine the limits of a triangle fan.
+
+8
+00:00:31,650 --> 00:00:34,850
+Finally we will partition a concave example by
+ear
+
+9
+00:00:34,850 --> 00:00:38,370
+clipping and check coverage and thin
+triangles.
+
+10
+00:00:39,017 --> 00:00:42,717
+The complete polygon chapter is split into two
+episodes. This one ends after choosing centers
+
+11
+00:00:42,857 --> 00:00:49,237
+and validating boundaries. The following
+episode continues with triangle partitioning.
+
+12
+00:00:49,867 --> 00:00:53,467
+In Dorfromantik, hexagonal tiles rotate and
+enter empty positions.
+
+13
+00:00:53,827 --> 00:00:56,287
+Observe each tile center and outer edges
+together.
+
+14
+00:00:58,231 --> 00:01:02,751
+Placing a central marker and fitting an
+interior circle ask different questions.
+
+15
+00:01:04,675 --> 00:01:07,535
+The center of a circle through the corners
+answers another question.
+
+16
+00:01:07,955 --> 00:01:10,235
+Shape can change all three answers.
+
+17
+00:01:12,079 --> 00:01:15,499
+Symmetric regular hexagons make centers appear
+coincident;
+
+18
+00:01:15,879 --> 00:01:18,619
+an arbitrary triangle need not do so.
+
+19
+00:01:20,583 --> 00:01:23,403
+Connected tiles change the entire land
+outline.
+
+20
+00:01:23,463 --> 00:01:26,883
+Distinguish one tile from the combined region.
+
+21
+00:01:28,827 --> 00:01:32,147
+We will compare a three-four-five triangle in
+our own defined example,
+
+22
+00:01:32,687 --> 00:01:36,647
+without inferring the game implementation.
+
+23
+00:01:37,367 --> 00:01:43,107
+Mix three points with equal weights. A weight
+of one third per point gives their
+
+24
+00:01:43,287 --> 00:01:46,827
+coordinate average and connects to the balance
+point of a uniform paper triangle.
+
+25
+00:01:47,147 --> 00:01:52,067
+Equal distances to every side or every vertex
+were not imposed.
+
+26
+00:01:52,700 --> 00:01:58,360
+The centroid is the average of three triangle
+vertices and the intersection of the medians.
+
+27
+00:01:58,640 --> 00:02:00,880
+The incenter is equally distant from the three
+
+28
+00:02:01,260 --> 00:02:04,040
+sides and centers a circle tangent inside
+them.
+
+29
+00:02:04,360 --> 00:02:06,860
+The circumcenter is equally distant from the
+
+30
+00:02:07,120 --> 00:02:09,700
+three vertices and centers a circle through
+them.
+
+31
+00:02:10,000 --> 00:02:13,640
+Coordinate average, distance to sides,
+
+32
+00:02:14,120 --> 00:02:16,120
+and distance to vertices: decide what should
+be equal first.
+
+33
+00:02:16,261 --> 00:02:19,840
+Compare the right triangle with vertices
+zero-zero,
+
+34
+00:02:19,840 --> 00:02:22,680
+four-zero and zero-three on the same diagram.
+
+35
+00:02:22,700 --> 00:02:25,300
+The three centers differ here.
+
+36
+00:02:25,300 --> 00:02:28,700
+Their shared name does not make their roles
+interchangeable.
+
+37
+00:02:29,400 --> 00:02:35,020
+Add the three vertices and divide by three.
+Our centroid is four thirds, one.
+
+38
+00:02:35,260 --> 00:02:38,580
+A median joins a vertex to the opposite
+midpoint;
+
+39
+00:02:39,080 --> 00:02:42,160
+the centroid lies two thirds along it from the
+vertex.
+
+40
+00:02:42,600 --> 00:02:48,180
+The other medians meet the same point. Each
+vertex has barycentric weight one third.
+
+41
+00:02:48,460 --> 00:02:52,320
+It is also the mass center of a uniform
+triangular lamina.
+
+42
+00:02:52,380 --> 00:02:55,660
+Nonuniform density requires a different
+calculation.
+
+43
+00:02:55,660 --> 00:03:01,020
+For a polygon partition, weight triangle
+centroids by area.
+
+44
+00:03:01,240 --> 00:03:04,120
+Averaging polygon vertices generally gives the
+wrong area centroid.
+
+45
+00:03:04,300 --> 00:03:06,860
+Collinear vertices still have a coordinate
+average but no
+
+46
+00:03:06,860 --> 00:03:12,180
+nonzero-area triangular lamina. Validate the
+input separately.
+
+47
+00:03:12,800 --> 00:03:16,460
+In Tiny Glade, place a building and change its
+size and position. Blue marks an
+
+48
+00:03:16,700 --> 00:03:25,091
+observed reference; choosing one reference
+does not replace its complete outline.
+
+49
+00:03:26,767 --> 00:03:30,187
+In a separate shot, rotate a building and
+change its height.
+
+50
+00:03:31,608 --> 00:03:34,648
+Its outline changes even with a similar center
+marker.
+
+51
+00:03:36,050 --> 00:03:39,630
+This is an observed screen reference, not a
+claim about internal game calculations.
+
+52
+00:03:40,250 --> 00:03:43,590
+In Serious Sam2, observe the walkable surface
+
+53
+00:03:43,950 --> 00:03:47,230
+and edges while moving between paths and
+bridges.
+
+54
+00:03:48,946 --> 00:03:55,126
+A marker location and clearance from
+boundaries are different geometric problems.
+
+55
+00:03:57,142 --> 00:04:04,038
+For a defined triangular platform, the vertex
+average can be one marker reference.
+
+56
+00:04:04,318 --> 00:04:13,454
+It does not have equal distances to all sides.
+Circular clearance needs side distances.
+
+57
+00:04:13,454 --> 00:04:15,894
+Actual paths can have complex outlines.
+
+58
+00:04:16,334 --> 00:04:20,454
+Replacing them with one triangle loses
+boundaries.
+
+59
+00:04:22,250 --> 00:04:25,050
+Our next incenter example verifies equal side
+distances
+
+60
+00:04:25,990 --> 00:04:30,290
+numerically rather than claiming the game
+collision method.
+
+61
+00:04:31,250 --> 00:04:34,590
+Drop perpendiculars from an interior point to
+two sides. On the angle bisector,
+
+62
+00:04:34,850 --> 00:04:39,870
+the two right triangles are congruent, giving
+equal perpendicular distances.
+
+63
+00:04:40,470 --> 00:04:43,610
+Join a point equally distant from all three
+sides to the vertices. The three small
+
+64
+00:04:43,890 --> 00:04:48,950
+triangles share the same radius as height.
+Their areas, and hence the barycentric area
+
+65
+00:04:48,950 --> 00:04:52,410
+weights from the previous lecture, are
+proportional to their opposite side lengths.
+
+66
+00:04:53,333 --> 00:04:56,413
+Angle bisectors meet at the incenter.
+
+67
+00:04:56,653 --> 00:05:00,333
+Weight each vertex by the length of its
+opposite side.
+
+68
+00:05:00,673 --> 00:05:07,693
+The opposite lengths are five, three and four,
+with perimeter twelve.
+
+69
+00:05:07,973 --> 00:05:10,493
+Divide the weighted sum by twelve to obtain
+one-one,
+
+70
+00:05:10,813 --> 00:05:13,353
+at distance one from both coordinate axes.
+
+71
+00:05:13,733 --> 00:05:17,353
+The hypotenuse is three x plus four y minus
+twelve equals zero.
+
+72
+00:05:17,553 --> 00:05:20,793
+At the incenter, its absolute residual divided
+by five is also one.
+
+73
+00:05:20,793 --> 00:05:24,013
+The inradius is twice area divided by
+perimeter:
+
+74
+00:05:24,233 --> 00:05:27,313
+twice six divided by twelve equals one.
+
+75
+00:05:27,493 --> 00:05:29,773
+Equivalently divide area by semiperimeter.
+
+76
+00:05:30,793 --> 00:05:34,333
+Confusing perimeter with semiperimeter
+produces half the correct radius.
+
+77
+00:05:35,150 --> 00:05:38,150
+We have solved equal distances to sides. Now
+require equal distances to vertices.
+
+78
+00:05:38,390 --> 00:05:44,230
+A perpendicular line through the midpoint of
+two points consists of
+
+79
+00:05:44,650 --> 00:05:49,690
+positions equally distant from them. This is
+the perpendicular bisector.
+
+80
+00:05:50,317 --> 00:05:54,517
+Intersect perpendicular bisectors of two sides
+
+81
+00:05:54,647 --> 00:05:57,057
+to find a center equally distant from the
+vertices.
+
+82
+00:05:57,277 --> 00:06:00,937
+Midpoints two-zero and zero-one point five
+give
+
+83
+00:06:00,937 --> 00:06:05,537
+intersecting bisectors at two-one point five.
+
+84
+00:06:05,877 --> 00:06:08,697
+Its distance from the origin is two point
+five,
+
+85
+00:06:08,897 --> 00:06:12,857
+equal to the other vertex distances: the
+circumradius.
+
+86
+00:06:13,077 --> 00:06:15,877
+A right triangle places the center at the
+hypotenuse midpoint;
+
+87
+00:06:15,877 --> 00:06:20,597
+an acute triangle places it inside and an
+obtuse triangle outside.
+
+88
+00:06:21,037 --> 00:06:25,277
+The obtuse triangle zero-zero, four-zero,
+one-one has circumcenter two-minus one,
+
+89
+00:06:25,897 --> 00:06:28,797
+outside but still satisfying the condition.
+
+90
+00:06:29,337 --> 00:06:32,757
+Collinear points do not determine a unique
+finite circumcircle;
+
+91
+00:06:33,337 --> 00:06:36,437
+nearly collinear inputs are numerically
+unstable.
+
+92
+00:06:37,250 --> 00:06:44,540
+A wall stroke creates an open arch. Red
+follows the observed wall boundary.
+
+93
+00:06:45,930 --> 00:06:50,050
+In a separate shot, erase and redraw a wall,
+then run a path through it. Watch both the
+
+94
+00:06:51,618 --> 00:06:57,947
+remaining wall and empty opening: the full
+boundary conveys more than one center point.
+
+95
+00:06:58,567 --> 00:07:01,767
+In Noita, observe protrusions and inward
+
+96
+00:07:02,027 --> 00:07:04,767
+notches while moving through irregular
+terrain.
+
+97
+00:07:08,149 --> 00:07:11,889
+A polygon records vertices in boundary order.
+
+98
+00:07:12,229 --> 00:07:15,489
+Reordering the same points changes the shape.
+
+99
+00:07:15,769 --> 00:07:24,252
+A shortcut across an inward boundary can
+incorrectly fill a passage or empty region.
+
+100
+00:07:27,935 --> 00:07:33,715
+Repeated points and tiny edges can destabilize
+direction and area calculations.
+
+101
+00:07:33,775 --> 00:07:40,657
+We use visible contours to motivate valid
+input,
+
+102
+00:07:40,657 --> 00:07:43,917
+without asserting a triangle mesh
+implementation for pixel terrain.
+
+103
+00:07:47,700 --> 00:07:51,340
+Our next diagram defines a simple six-vertex
+concave
+
+104
+00:07:51,840 --> 00:07:54,300
+polygon and checks its ordered boundary and
+missing region.
+
+105
+00:07:55,200 --> 00:07:58,420
+A single center cannot describe the land
+shape. Connect boundary points
+
+106
+00:07:58,700 --> 00:08:04,100
+in order and close the path to distinguish
+retained area from empty space.
+
+107
+00:08:04,400 --> 00:08:07,980
+We now move from choosing a center to
+preserving a boundary.
+
+108
+00:08:08,600 --> 00:08:12,560
+A polygon boundary closes from its last vertex
+to its first;
+
+109
+00:08:12,840 --> 00:08:15,600
+store vertices in boundary order.
+
+110
+00:08:15,780 --> 00:08:22,920
+Our L runs through zero-zero, four-zero,
+four-one, one-one, one-four, zero-four.
+
+111
+00:08:23,160 --> 00:08:28,440
+The upper-right missing region is outside;
+one-one is the concave vertex.
+
+112
+00:08:28,760 --> 00:08:34,540
+Check finite coordinates, duplicate points,
+zero-length edges and zero-area input first.
+
+113
+00:08:34,580 --> 00:08:40,620
+For3D vertices, check coplanarity and
+intersections of nonadjacent edges as well.
+
+114
+00:08:41,120 --> 00:08:44,740
+We partition a simple polygon without holes or
+self-intersections.
+
+115
+00:08:45,180 --> 00:08:48,260
+Holes require additional contours and a
+suitable algorithm.
+
+116
+00:08:49,050 --> 00:08:53,690
+A convex region contains the entire segment
+between
+
+117
+00:08:54,030 --> 00:08:56,370
+every two of its points; it has no inward
+notch.
+
+118
+00:08:56,610 --> 00:08:58,870
+A regular hexagon and a triangle are convex:
+
+119
+00:08:59,150 --> 00:09:02,450
+interior point pairs stay inside when
+connected.
+
+120
+00:09:02,570 --> 00:09:04,970
+In our L, a segment from upper-left to
+lower-right
+
+121
+00:09:04,970 --> 00:09:08,490
+crosses the missing upper-right region.
+
+122
+00:09:08,850 --> 00:09:14,570
+Its endpoints are inside but part of the
+segment is outside, proving concavity.
+
+123
+00:09:14,570 --> 00:09:21,010
+For a valid simple planar boundary, consistent
+turn orientation provides another check.
+
+124
+00:09:21,210 --> 00:09:25,130
+Do not apply a turn test blindly to a
+self-intersecting contour.
+
+125
+00:09:25,370 --> 00:09:27,910
+Validate order and intersections first.
+
+126
+00:09:28,533 --> 00:09:31,553
+Tiny Glade changes terrain height.
+
+127
+00:09:32,265 --> 00:09:36,345
+Different heights cannot automatically be
+treated as one planar boundary.
+
+128
+00:09:37,217 --> 00:09:43,426
+In a separate Noita cave, pass through a
+narrow opening and move
+
+129
+00:09:43,426 --> 00:09:49,194
+toward the right ledge. Red follows visible
+land versus empty space.
+
+130
+00:09:49,394 --> 00:09:54,463
+Bridging a notch could create land outside the
+original shape.
+
+131
+00:09:55,983 --> 00:10:00,183
+Adding Dorfromantik hexagons changes the land
+boundary.
+
+132
+00:10:00,483 --> 00:10:03,823
+Distinguish one tile from the entire connected
+region.
+
+133
+00:10:06,819 --> 00:10:11,279
+An individual tile is convex while its union
+can contain inward notches.
+
+134
+00:10:14,215 --> 00:10:20,675
+Connecting two land positions can cross an
+empty tile location.
+
+135
+00:10:20,855 --> 00:10:29,531
+A union of convex pieces is not necessarily
+convex; test its complete boundary separately.
+
+136
+00:10:29,711 --> 00:10:38,807
+An area with holes needs inner exclusion
+contours in addition to the outer boundary.
+
+137
+00:10:41,663 --> 00:10:48,363
+We will examine whole-shape convexity and why
+an angle sum alone cannot distinguish it.
+
+138
+00:10:48,983 --> 00:10:53,363
+A Dorfromantik tile and a Tiny Glade building
+need placement references.
+
+139
+00:10:53,763 --> 00:10:56,483
+A Serious Sam screen marker helps locate a
+target,
+
+140
+00:10:56,663 --> 00:11:00,723
+while a Noita terrain boundary separates open
+space from solid land.
+
+141
+00:11:01,243 --> 00:11:04,603
+Across these different purposes, one point and
+a complete outline carry
+
+142
+00:11:05,043 --> 00:11:07,903
+different information. Equal center points do
+not make two shapes identical.
+
+143
+00:11:08,223 --> 00:11:12,403
+Choose coordinate averaging or equal distances
+to sides before calculating.
+
+144
+00:11:12,843 --> 00:11:15,883
+These observations do not identify the games’
+internal implementation.
+
+145
+00:11:16,583 --> 00:11:22,371
+In another Noita interval, the character
+passes the right ledge.
+
+146
+00:11:23,499 --> 00:11:25,019
+A point may mark the character, but the red
+terrain outline
+
+147
+00:11:25,019 --> 00:11:29,119
+and the empty gap beside it remain separate
+information.
+
+148
+00:11:30,567 --> 00:11:34,067
+A separate shot descends and returns upward.
+Bridging across the
+
+149
+00:11:38,013 --> 00:11:43,913
+ledge’s notch could incorrectly fill space
+that was originally open.
+
+150
+00:11:44,533 --> 00:11:50,653
+The segment crossing empty space showed that
+the L is concave. Turning along its boundary
+
+151
+00:11:50,772 --> 00:11:54,973
+checks the same property numerically. At its
+notch, travel three left and then three
+
+152
+00:11:55,173 --> 00:11:59,553
+up: the2D cross product is minus nine, the
+opposite turn from the other vertices.
+
+153
+00:12:00,183 --> 00:12:04,463
+Inspect the2D cross sign of consecutive edges.
+
+154
+00:12:04,863 --> 00:12:09,683
+With counterclockwise winding, convex vertices
+turn left.
+
+155
+00:12:09,903 --> 00:12:16,043
+The L notch turns right, mixing turn signs in
+this valid simple example.
+
+156
+00:12:16,263 --> 00:12:19,943
+Collinear triples have zero cross product.
+
+157
+00:12:19,943 --> 00:12:23,103
+Define strict convexity or a policy allowing
+collinear points.
+
+158
+00:12:23,503 --> 00:12:27,403
+Every simple polygon has interior-angle sum n
+minus
+
+159
+00:12:27,403 --> 00:12:31,003
+two times180 degrees, whether convex or
+concave.
+
+160
+00:12:31,263 --> 00:12:37,143
+Six vertices give720 degrees. A correct angle
+sum alone does not prove convexity.
+
+161
+00:12:37,420 --> 00:12:43,663
+For acos, reject zero edges and clamp its
+input to minus one through one.
+
+162
+00:12:43,863 --> 00:12:46,563
+The smaller unsigned angle does not identify a
+reflex interior angle.
+
+163
+00:12:47,183 --> 00:12:53,243
+We chose centers by their purpose and found
+the notch in an ordered boundary.
+
+164
+00:12:53,483 --> 00:12:58,063
+A boundary defines the outside, but does not
+yet partition the interior.
+
+165
+00:12:58,343 --> 00:13:02,123
+The next episode divides this L while
+preserving its empty region.

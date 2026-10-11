@@ -1,0 +1,265 @@
+{
+  "title": "Game Math Part 2 · Geometry 3: Triangle Centers and Polygon Triangulation",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "어떤 중심을 쓰고, 어떻게 나눌까요?",
+      "lines": [
+        "Does a triangle have just one center, and how can we partition terrain with an inward notch?",
+        "We will observe real game tiles and terrain, then distinguish the questions answered by centroid, incenter and circumcenter.",
+        "Next we will validate polygon boundaries and convexity, and examine the limits of a triangle fan.",
+        "Finally we will partition a concave example by ear clipping and check coverage and thin triangles."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "타일을 놓을 때 필요한 기준",
+      "lines": [
+        "In Dorfromantik, hexagonal tiles rotate and enter empty positions. Observe each tile center and outer edges together.",
+        "Placing a central marker and fitting an interior circle ask different questions.",
+        "The center of a circle through the corners answers another question. Shape can change all three answers.",
+        "Symmetric regular hexagons make centers appear coincident; an arbitrary triangle need not do so.",
+        "Connected tiles change the entire land outline. Distinguish one tile from the combined region.",
+        "We will compare a three-four-five triangle in our own defined example, without inferring the game implementation."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "세 중심이 답하는 세 질문",
+      "lines": [
+        "The centroid is the average of three triangle vertices and the intersection of the medians.",
+        "The incenter is equally distant from the three sides and centers a circle tangent inside them.",
+        "The circumcenter is equally distant from the three vertices and centers a circle through them.",
+        "Coordinate average, distance to sides, and distance to vertices: decide what should be equal first.",
+        "Compare the right triangle with vertices zero-zero, four-zero and zero-three on the same diagram.",
+        "The three centers differ here. Their shared name does not make their roles interchangeable."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "무게중심은 무엇의 평균일까요?",
+      "lines": [
+        "Add the three vertices and divide by three. Our centroid is four thirds, one.",
+        "A median joins a vertex to the opposite midpoint; the centroid lies two thirds along it from the vertex.",
+        "The other medians meet the same point. Each vertex has barycentric weight one third.",
+        "It is also the mass center of a uniform triangular lamina. Nonuniform density requires a different calculation.",
+        "For a polygon partition, weight triangle centroids by area. Averaging polygon vertices generally gives the wrong area centroid.",
+        "Collinear vertices still have a coordinate average but no nonzero-area triangular lamina. Validate the input separately."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "가운데 표시와 안전한 여유 공간",
+      "lines": [
+        "In Serious Sam2, observe the walkable surface and edges while moving between paths and bridges.",
+        "A marker location and clearance from boundaries are different geometric problems.",
+        "For a defined triangular platform, the vertex average can be one marker reference.",
+        "It does not have equal distances to all sides. Circular clearance needs side distances.",
+        "Actual paths can have complex outlines. Replacing them with one triangle loses boundaries.",
+        "Our next incenter example verifies equal side distances numerically rather than claiming the game collision method."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "내심과 내접원의 반지름",
+      "lines": [
+        "Angle bisectors meet at the incenter. Weight each vertex by the length of its opposite side.",
+        "The opposite lengths are five, three and four, with perimeter twelve.",
+        "Divide the weighted sum by twelve to obtain one-one, at distance one from both coordinate axes.",
+        "The hypotenuse is three x plus four y minus twelve equals zero. At the incenter, its absolute residual divided by five is also one.",
+        "The inradius is twice area divided by perimeter: twice six divided by twelve equals one.",
+        "Equivalently divide area by semiperimeter. Confusing perimeter with semiperimeter produces half the correct radius."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "외심은 삼각형 밖에 있을 수도 있습니다",
+      "lines": [
+        "Intersect perpendicular bisectors of two sides to find a center equally distant from the vertices.",
+        "Midpoints two-zero and zero-one point five give intersecting bisectors at two-one point five.",
+        "Its distance from the origin is two point five, equal to the other vertex distances: the circumradius.",
+        "A right triangle places the center at the hypotenuse midpoint; an acute triangle places it inside and an obtuse triangle outside.",
+        "The obtuse triangle zero-zero, four-zero, one-one has circumcenter two-minus one, outside but still satisfying the condition.",
+        "Collinear points do not determine a unique finite circumcircle; nearly collinear inputs are numerically unstable."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "지형 윤곽은 점의 순서가 중요합니다",
+      "lines": [
+        "In Noita, observe protrusions and inward notches while moving through irregular terrain.",
+        "A polygon records vertices in boundary order. Reordering the same points changes the shape.",
+        "A shortcut across an inward boundary can incorrectly fill a passage or empty region.",
+        "Repeated points and tiny edges can destabilize direction and area calculations.",
+        "We use visible contours to motivate valid input, without asserting a triangle mesh implementation for pixel terrain.",
+        "Our next diagram defines a simple six-vertex concave polygon and checks its ordered boundary and missing region."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "분할 전에 경계부터 검증하기",
+      "lines": [
+        "A polygon boundary closes from its last vertex to its first; store vertices in boundary order.",
+        "Our L runs through zero-zero, four-zero, four-one, one-one, one-four, zero-four.",
+        "The upper-right missing region is outside; one-one is the concave vertex.",
+        "Check finite coordinates, duplicate points, zero-length edges and zero-area input first.",
+        "For3D vertices, check coplanarity and intersections of nonadjacent edges as well.",
+        "We partition a simple polygon without holes or self-intersections. Holes require additional contours and a suitable algorithm."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "볼록성은 선분으로 생각하세요",
+      "lines": [
+        "A convex region contains the entire segment between every two of its points; it has no inward notch.",
+        "A regular hexagon and a triangle are convex: interior point pairs stay inside when connected.",
+        "In our L, a segment from upper-left to lower-right crosses the missing upper-right region.",
+        "Its endpoints are inside but part of the segment is outside, proving concavity.",
+        "For a valid simple planar boundary, consistent turn orientation provides another check.",
+        "Do not apply a turn test blindly to a self-intersecting contour. Validate order and intersections first."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "타일 하나와 연결된 땅은 다릅니다",
+      "lines": [
+        "Adding Dorfromantik hexagons changes the land boundary. Distinguish one tile from the entire connected region.",
+        "An individual tile is convex while its union can contain inward notches.",
+        "Connecting two land positions can cross an empty tile location.",
+        "A union of convex pieces is not necessarily convex; test its complete boundary separately.",
+        "An area with holes needs inner exclusion contours in addition to the outer boundary.",
+        "We will examine whole-shape convexity and why an angle sum alone cannot distinguish it."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "회전 부호와 각도의 합",
+      "lines": [
+        "Inspect the2D cross sign of consecutive edges. With counterclockwise winding, convex vertices turn left.",
+        "The L notch turns right, mixing turn signs in this valid simple example.",
+        "Collinear triples have zero cross product. Define strict convexity or a policy allowing collinear points.",
+        "Every simple polygon has interior-angle sum n minus two times180 degrees, whether convex or concave.",
+        "Six vertices give720 degrees. A correct angle sum alone does not prove convexity.",
+        "For acos, reject zero edges and clamp its input to minus one through one. The smaller unsigned angle does not identify a reflex interior angle."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "볼록한 다각형은 부채꼴로 나누기",
+      "lines": [
+        "For a convex polygon, diagonals from the first vertex can connect to the remaining vertices.",
+        "Emit triangles zero-one-two, then zero-two-three, advancing while sharing the first vertex.",
+        "Six vertices produce four triangles, generally n minus two.",
+        "Convexity keeps the diagonals and triangles inside. This condition makes the simple fan safe.",
+        "Keep consistent winding and reference original vertex indices for positions and attributes.",
+        "The correct triangle count alone does not prove a valid partition; verify coverage without overlap or gaps."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "안쪽 홈을 가로지르면 생기는 문제",
+      "lines": [
+        "Observe the open notches and terrain edges as the Noita character traverses them.",
+        "Segments from one boundary vertex to every other vertex may cross empty space.",
+        "Using such segments as triangle edges can fill land that did not exist.",
+        "Other triangles may overlap. Triangle count alone misses both errors.",
+        "This illustrates a faulty geometric construction, not an observed bug in the game.",
+        "We will change the fan anchor on our L to draw a concrete failure."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "오목한 예제에서 부채꼴의 실패",
+      "lines": [
+        "Choose four-one as the L fan anchor and emit four triangles in boundary order.",
+        "Some triangles toward one-four and zero-four extend into the missing region.",
+        "Signed triangle areas can still sum to seven because erroneous contributions cancel.",
+        "The L area is also seven, but matching totals do not guarantee matching coverage.",
+        "Anchoring at zero-zero happens to give a valid fan for this particular L. Concave shapes and anchor choices differ.",
+        "Use an algorithm with validated input conditions; an arbitrary fan anchor is not safe for general concave polygons."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "귀 잘라내기의 첫 단계",
+      "lines": [
+        "An ear is an interior triangle formed by three consecutive boundary vertices, with a convex middle candidate.",
+        "Its diagonal must lie inside and other remaining vertices must not occupy its interior or disallowed boundary.",
+        "Our first L ear is zero-zero, four-zero, four-one, of area two.",
+        "Store that triangle and remove its middle vertex four-zero from the remaining contour.",
+        "The new edge runs from zero-zero to four-one; the removed ear and remainder together cover the original L.",
+        "Preserve original vertex indices while updating contour links and output triangles separately."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "빠진 통로 없이 영역을 보존하기",
+      "lines": [
+        "Observe ice terrain and narrow empty passages during real Noita movement.",
+        "A partition should preserve land while leaving empty passages unfilled.",
+        "Recheck neighbors after every added triangle; the original adjacency does not remain unchanged.",
+        "Complexity does not change the requirements: nonoverlapping coverage and the same outer contour.",
+        "We observe actual motion without claiming to convert the pixel terrain into a mesh.",
+        "Our next diagram removes the remaining ears and verifies four triangles covering the L of area seven."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "남은 귀를 제거하고 결과 검사하기",
+      "lines": [
+        "After the first ear, triangle zero-two-three has area one point five.",
+        "Remove vertex two; zero-three-four becomes the next ear, again of area one point five.",
+        "The final triangle zero-four-five has area two; the four areas sum to seven.",
+        "Also verify nonoverlapping interiors, unfilled empty space, and coverage of the original boundary.",
+        "Failure to find an ear can indicate invalid input, degeneracy or tolerance trouble. Do not loop forever or emit arbitrary triangles.",
+        "Bridging holes needs additional rules; our simple example does not establish a solution for all holes or intersections."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "좁은 곳과 가느다란 조각",
+      "lines": [
+        "Noita traversal alternates wide areas and narrow gaps, where close points coexist with long boundaries.",
+        "A triangle representation of such outlines can produce very thin elements.",
+        "A thin triangle is not automatically invalid, but long edges with small area can increase numerical sensitivity.",
+        "A fixed tolerance does not fit every coordinate scale or resolution.",
+        "Removing vertices for simplification can change passage width and boundaries; preserve required information.",
+        "We will distinguish a valid partition from a higher-quality one. Preserve the region before improving element shapes."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "유효성 검사 뒤에 품질 개선하기",
+      "lines": [
+        "Compare a nearly zero-area thin triangle with a well-shaped one; small angles can amplify sensitivity.",
+        "Among valid ears, quality heuristics may prefer a larger minimum angle.",
+        "A favorable angle does not justify a triangle outside the boundary. Ear validity comes first.",
+        "The same triangle count can have different shapes depending on diagonal choices.",
+        "Recheck winding, indices, area, coverage and required attribute connectivity after partitioning.",
+        "Use scale-aware length and area tolerances without deleting required boundaries or holes to improve appearance."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "타일과 발판으로 다시 질문하기",
+      "lines": [
+        "Observe connected Dorfromantik tiles: one tile and the whole land have different outlines.",
+        "Define the center purpose, then check boundary order, convexity, notches and holes.",
+        "Partition under suitable conditions and verify that empty space and the original region are preserved.",
+        "Our final practice checks the three centers and four L triangles."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "세 중심과 네 삼각형을 직접 확인하기",
+      "lines": [
+        "First, distinguish centroid, incenter and circumcenter for zero-zero, four-zero, zero-three.",
+        "The centroid is four thirds-one, incenter one-one, circumcenter two-one point five.",
+        "The inradius is one and circumradius two point five; neither their centers nor their radii coincide.",
+        "Second, the six-vertex L has four valid triangles with areas two, one point five, one point five and two, totaling seven.",
+        "Also check overlap, empty regions and boundaries. Validate the complete path from input conditions to output.",
+        "Geometry connected representations, bounds, planes, coordinates, centers and partitions. Rendering next converts this3D information into screen pixels."
+      ]
+    }
+  ]
+}

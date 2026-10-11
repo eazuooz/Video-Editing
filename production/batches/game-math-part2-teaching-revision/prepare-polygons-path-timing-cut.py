@@ -1,0 +1,9 @@
+"""A brief extra view of the same factory before its path edit, no speed changes."""
+from pathlib import Path
+import json,hashlib,subprocess
+ROOT=Path(__file__).resolve().parents[3];B=Path(__file__).parent;O=ROOT/'shared/output/game-math-part2-teaching-revision/polygons-track-seeds'
+scene=next(s for s in json.loads((B/'polygons-game-insertions.json').read_text(encoding='utf8'))['scenes'] if s['id']=='QG07');source=ROOT/scene['sourceSegments'][1]['sourceFile']
+assert hashlib.sha256(source.read_bytes()).hexdigest()==scene['sourceSegments'][1]['sourceSha256']
+subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss','27.9','-i',str(source),'-vf','scale=1920:1080,setsar=1,fps=60','-frames:v','264','-an','-c:v','libx264','-threads','2','-crf','19','-preset','fast','-movflags','+faststart',str(O/'shapez-path-timing.mp4')],check=True,creationflags=subprocess.CREATE_NO_WINDOW)
+(O/'path-timing.html').write_text('''<!doctype html><meta charset="utf-8"><title>Shapez path timing cut</title><style>body{background:#111;color:white}video{width:100%;max-width:1280px}</style><h1>Native source27.9–32.3s · no camera cut at32.366s</h1><button id="p">Play full1x cut</button><video src="shapez-path-timing.mp4" id="v" controls preload="auto"></video><pre id="s">Ready</pre><script>let v=document.getElementById('v'),s=document.getElementById('s');document.getElementById('p').onclick=()=>{v.currentTime=0;v.playbackRate=1;v.play()};function report(){s.textContent=JSON.stringify({sourceInterval:[27.9,32.3],seconds:4.4,ended:v.ended,current:v.currentTime,duration:v.duration,rate:v.playbackRate,played:Array.from({length:v.played.length},(_,i)=>[v.played.start(i),v.played.end(i)])})}v.addEventListener('ended',report);v.addEventListener('timeupdate',report)</script>''',encoding='utf8')
+print('Prepared4.4s native excerpt; playback review required before source-map update.')
