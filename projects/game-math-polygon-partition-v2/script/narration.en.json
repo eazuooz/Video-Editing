@@ -1,0 +1,228 @@
+{
+  "title": "Game Math Part 2 · Polygons2: Partition Without Filling Empty Space",
+  "scenes": [
+    {
+      "id": "QF03",
+      "title": "땅은 남기고 빈 공간은 채우지 않는 분할",
+      "lines": [
+        "The previous episode separated center purposes and boundary order, then found the L-shaped notch. We now partition that land into triangles with disjoint interiors.",
+        "Start with a simple convex method and see why it can fail at a notch. Remove ears one by one, then verify the original area and narrow openings remain."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "볼록한 다각형은 부채꼴로 나누기",
+      "lines": [
+        "For a convex polygon, diagonals from the first vertex can connect to the remaining vertices.",
+        "Emit triangles zero-one-two, then zero-two-three, advancing while sharing the first vertex.",
+        "Six vertices produce four triangles, generally n minus two.",
+        "Convexity keeps the diagonals and triangles inside. This condition makes the simple fan safe.",
+        "Keep consistent winding and reference original vertex indices for positions and attributes.",
+        "The correct triangle count alone does not prove a valid partition; verify coverage without overlap or gaps."
+      ]
+    },
+    {
+      "id": "QG04",
+      "title": "호수와 동굴의 빈 부분을 남깁니다",
+      "lines": [
+        "Drawing a lake changes the remaining land boundary. The water-side notch is excluded from the land.",
+        "In a separate Noita shot, descend through empty space beside a stepped outline. Watch red edges and yellow empty space. This familiar source now asks about partition coverage rather than the preceding lecture’s distance."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "안쪽 홈을 가로지르면 생기는 문제",
+      "lines": [
+        "Observe the open notches and terrain edges as the Noita character traverses them.",
+        "Segments from one boundary vertex to every other vertex may cross empty space.",
+        "Using such segments as triangle edges can fill land that did not exist.",
+        "Other triangles may overlap. Triangle count alone misses both errors.",
+        "This illustrates a faulty geometric construction, not an observed bug in the game.",
+        "We will change the fan anchor on our L to draw a concrete failure."
+      ]
+    },
+    {
+      "id": "QB06",
+      "title": "넓이 합은 덮은 모양을 알려주지 않습니다",
+      "lines": [
+        "A fan can cover the notch despite giving the expected number of triangles. A signed area sum is like a ledger total: matching totals do not reveal where each amount went. Similarly, an equal area sum does not establish coverage at each location."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "오목한 예제에서 부채꼴의 실패",
+      "lines": [
+        "Choose four-one as the L fan anchor and emit four triangles in boundary order.",
+        "Some triangles toward one-four and zero-four extend into the missing region.",
+        "Signed triangle areas can still sum to seven because erroneous contributions cancel.",
+        "The L area is also seven, but matching totals do not guarantee matching coverage.",
+        "Anchoring at zero-zero happens to give a valid fan for this particular L. Concave shapes and anchor choices differ.",
+        "Use an algorithm with validated input conditions; an arbitrary fan anchor is not safe for general concave polygons."
+      ]
+    },
+    {
+      "id": "QB07",
+      "title": "빼도 되는 작은 조각을 먼저 찾습니다",
+      "lines": [
+        "Connecting everything at once can cover empty space. Instead, form one small piece from three neighboring points. A convex corner is not enough if the piece crosses another boundary or contains a remaining vertex. Save it as an ear only when it lies inside and has no obstructing vertex."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "귀 잘라내기의 첫 단계",
+      "lines": [
+        "An ear is an interior triangle formed by three consecutive boundary vertices, with a convex middle candidate.",
+        "Its diagonal must lie inside and other remaining vertices must not occupy its interior or disallowed boundary.",
+        "Our first L ear is zero-zero, four-zero, four-one, of area two.",
+        "Store that triangle and remove its middle vertex four-zero from the remaining contour.",
+        "The new edge runs from zero-zero to four-one; the removed ear and remainder together cover the original L.",
+        "Preserve original vertex indices while updating contour links and output triangles separately."
+      ]
+    },
+    {
+      "id": "QG05",
+      "title": "조각을 떼어도 통로의 모양은 남습니다",
+      "lines": [
+        "Descend and return upward between platforms in this Noita interval. Red follows visible boundaries. Compare the movement with the requirement that removing an ear preserves the original empty passage."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "빠진 통로 없이 영역을 보존하기",
+      "lines": [
+        "Observe ice terrain and narrow empty passages during real Noita movement.",
+        "A partition should preserve land while leaving empty passages unfilled.",
+        "Recheck neighbors after every added triangle; the original adjacency does not remain unchanged.",
+        "Complexity does not change the requirements: nonoverlapping coverage and the same outer contour.",
+        "We observe actual motion without claiming to convert the pixel terrain into a mesh.",
+        "Our next diagram removes the remaining ears and verifies four triangles covering the L of area seven."
+      ]
+    },
+    {
+      "id": "QB08",
+      "title": "사라진 것은 점의 번호가 아니라 연결입니다",
+      "lines": [
+        "Original vertex IDs remain after saving the first ear. In the remaining boundary, vertex zero now connects to vertex two. Update adjacency after each removal to find the next valid ear."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "남은 귀를 제거하고 결과 검사하기",
+      "lines": [
+        "After the first ear, triangle zero-two-three has area one point five.",
+        "Remove vertex two; zero-three-four becomes the next ear, again of area one point five.",
+        "The final triangle zero-four-five has area two; the four areas sum to seven.",
+        "Also verify nonoverlapping interiors, unfilled empty space, and coverage of the original boundary.",
+        "Failure to find an ear can indicate invalid input, degeneracy or tolerance trouble. Do not loop forever or emit arbitrary triangles.",
+        "Bridging holes needs additional rules; our simple example does not establish a solution for all holes or intersections."
+      ]
+    },
+    {
+      "id": "QB12",
+      "title": "셰이프즈 투를 처음 보는 분께",
+      "lines": [
+        "Shapez2 is a factory game about processing and delivering target shapes. Belts move the shapes. Compare the shape entering a machine with the pieces leaving it."
+      ]
+    },
+    {
+      "id": "QB14",
+      "title": "통로의 경계에서 경로의 순서로",
+      "lines": [
+        "The next factory shot compares a boundary with a path. A belt is a transport route, not a polygon outline. Both depend on point order, but connectivity alone does not prove that a region is correct."
+      ]
+    },
+    {
+      "id": "QG06",
+      "title": "잘라 낸 조각이 무엇을 남기는지 확인합니다",
+      "lines": [
+        "Shapez2 cuts a disk and sends out two pieces.",
+        "A separate shot also cuts a square. Watch where the pieces emerge. This is not evidence of a triangulation implementation."
+      ]
+    },
+    {
+      "id": "QB13",
+      "title": "잘랐다는 사실보다 남긴 영역을 검사합니다",
+      "lines": [
+        "Shapez2 processing produces target pieces; some operations discard unwanted material. Triangle partitioning instead requires all pieces together to retain the complete original region.",
+        "Filling a Tiny Glade doorway or a Noita passage changes space that should remain empty. Apply the same check to Dorfromantik land. The shapes and pieces in this diagram are defined teaching examples."
+      ]
+    },
+    {
+      "id": "QG09",
+      "title": "타일을 더하거나 되돌리면 경계도 바뀝니다",
+      "lines": [
+        "Dorfromantik joins hexagonal tiles into land. Placing a tile in an empty slot changes the outline. Inspect an individual tile separately from the combined land.",
+        "A separate shot undoes a placed tile. The boundary changes again."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "좁은 곳과 가느다란 조각",
+      "lines": [
+        "Noita traversal alternates wide areas and narrow gaps, where close points coexist with long boundaries.",
+        "A triangle representation of such outlines can produce very thin elements.",
+        "A thin triangle is not automatically invalid, but long edges with small area can increase numerical sensitivity.",
+        "A fixed tolerance does not fit every coordinate scale or resolution.",
+        "Removing vertices for simplification can change passage width and boundaries; preserve required information.",
+        "We will distinguish a valid partition from a higher-quality one. Preserve the region before improving element shapes."
+      ]
+    },
+    {
+      "id": "QB09",
+      "title": "길이 눈금이 두 배면 넓이는 네 배입니다",
+      "lines": [
+        "Improve triangle shape only after validating coverage. Doubling coordinate scale doubles both base and height, so area quadruples. Length and area tolerances must therefore use different units and scales.",
+        "A thin triangle has a small altitude, making the same position error relatively larger. Compare valid candidates rather than erasing the passage."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "유효성 검사 뒤에 품질 개선하기",
+      "lines": [
+        "Compare a nearly zero-area thin triangle with a well-shaped one; small angles can amplify sensitivity.",
+        "Among valid ears, quality heuristics may prefer a larger minimum angle.",
+        "A favorable angle does not justify a triangle outside the boundary. Ear validity comes first.",
+        "The same triangle count can have different shapes depending on diagonal choices.",
+        "Recheck winding, indices, area, coverage and required attribute connectivity after partitioning.",
+        "Use scale-aware length and area tolerances without deleting required boundaries or holes to improve appearance."
+      ]
+    },
+    {
+      "id": "QG07",
+      "title": "좁은 통로를 지우지 않고 경계를 따라갑니다",
+      "lines": [
+        "Climb a narrow Noita corridor, then descend to a wider area. Long edges meet nearby corners. Once the area banner passes, look at the same passage again. Simplification must not erase this opening.",
+        "A separate factory shot: follow the bent path in order."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "타일과 발판으로 다시 질문하기",
+      "lines": [
+        "Observe connected Dorfromantik tiles: one tile and the whole land have different outlines.",
+        "Define the center purpose, then check boundary order, convexity, notches and holes.",
+        "Partition under suitable conditions and verify that empty space and the original region are preserved.",
+        "Our final practice checks the three centers and four L triangles."
+      ]
+    },
+    {
+      "id": "QB10",
+      "title": "중심부터 분할까지 같은 질문으로 돌아갑니다",
+      "lines": [
+        "Different triangle areas also mean different weights for a uniformly dense plate center. Pieces of area two and one point five contribute in those proportions. Return to the final problems remembering that valid partition lets us calculate positions and surface values correctly."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "세 중심과 네 삼각형을 직접 확인하기",
+      "lines": [
+        "First, distinguish centroid, incenter and circumcenter for zero-zero, four-zero, zero-three.",
+        "The centroid is four thirds-one, incenter one-one, circumcenter two-one point five.",
+        "The inradius is one and circumradius two point five; neither their centers nor their radii coincide.",
+        "Second, the six-vertex L has four valid triangles with areas two, one point five, one point five and two, totaling seven.",
+        "Also check overlap, empty regions and boundaries. Validate the complete path from input conditions to output.",
+        "Geometry connected representations, bounds, planes, coordinates, centers and partitions. Rendering next converts this3D information into screen pixels."
+      ]
+    }
+  ]
+}

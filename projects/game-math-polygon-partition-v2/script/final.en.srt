@@ -1,0 +1,678 @@
+1
+00:00:02,000 --> 00:00:07,520
+The previous episode separated center purposes
+and boundary order, then found the
+
+2
+00:00:07,900 --> 00:00:11,300
+L-shaped notch. We now partition that land
+into triangles with disjoint interiors.
+
+3
+00:00:11,640 --> 00:00:17,520
+Start with a simple convex method and see why
+it can fail at a notch.
+
+4
+00:00:17,900 --> 00:00:22,260
+Remove ears one by one, then verify the
+original area and narrow openings remain.
+
+5
+00:00:22,883 --> 00:00:27,863
+For a convex polygon, diagonals from the first
+vertex can connect to the remaining vertices.
+
+6
+00:00:28,303 --> 00:00:32,103
+Emit triangles zero-one-two, then
+zero-two-three,
+
+7
+00:00:32,443 --> 00:00:35,043
+advancing while sharing the first vertex.
+
+8
+00:00:35,383 --> 00:00:41,043
+Six vertices produce four triangles, generally
+n minus two.
+
+9
+00:00:41,243 --> 00:00:44,863
+Convexity keeps the diagonals and triangles
+inside.
+
+10
+00:00:45,063 --> 00:00:47,643
+This condition makes the simple fan safe.
+
+11
+00:00:47,843 --> 00:00:54,323
+Keep consistent winding and reference original
+vertex indices for positions and attributes.
+
+12
+00:00:54,463 --> 00:00:57,803
+The correct triangle count alone does not
+prove a valid partition;
+
+13
+00:00:57,943 --> 00:01:00,683
+verify coverage without overlap or gaps.
+
+14
+00:01:01,333 --> 00:01:04,573
+Drawing a lake changes the remaining land
+boundary.
+
+15
+00:01:04,573 --> 00:01:09,137
+The water-side notch is excluded from the
+land.
+
+16
+00:01:11,100 --> 00:01:15,660
+In a separate Noita shot, descend through
+empty space beside a stepped outline.
+
+17
+00:01:18,452 --> 00:01:24,483
+Watch red edges and yellow empty space. This
+familiar source now asks
+
+18
+00:01:24,483 --> 00:01:28,143
+about partition coverage rather than the
+preceding lecture’s distance.
+
+19
+00:01:29,083 --> 00:01:35,543
+Observe the open notches and terrain edges as
+the Noita character traverses them.
+
+20
+00:01:35,643 --> 00:01:42,439
+Segments from one boundary vertex to every
+other vertex may cross empty space.
+
+21
+00:01:42,579 --> 00:01:48,615
+Using such segments as triangle edges can fill
+land that did not exist.
+
+22
+00:01:48,875 --> 00:01:57,307
+Other triangles may overlap. Triangle count
+alone misses both errors.
+
+23
+00:01:57,547 --> 00:02:03,767
+This illustrates a faulty geometric
+construction, not an observed bug in the game.
+
+24
+00:02:03,767 --> 00:02:10,423
+We will change the fan anchor on our L to draw
+a concrete failure.
+
+25
+00:02:11,083 --> 00:02:15,143
+A fan can cover the notch despite giving the
+expected number of triangles. A signed
+
+26
+00:02:15,523 --> 00:02:19,323
+area sum is like a ledger total: matching
+totals do not reveal where each amount went.
+
+27
+00:02:19,723 --> 00:02:25,783
+Similarly, an equal area sum does not
+establish coverage at each location.
+
+28
+00:02:26,727 --> 00:02:31,720
+Choose four-one as the L fan anchor and
+
+29
+00:02:31,720 --> 00:02:37,000
+emit four triangles in boundary order.
+
+30
+00:02:37,220 --> 00:02:43,360
+Some triangles toward one-four and zero-four
+extend into the missing region.
+
+31
+00:02:43,600 --> 00:02:49,460
+Signed triangle areas can still sum to seven
+because erroneous contributions cancel.
+
+32
+00:02:49,820 --> 00:02:54,780
+The L area is also seven, but matching totals
+do not guarantee matching coverage.
+
+33
+00:02:54,780 --> 00:03:00,260
+Anchoring at zero-zero happens to give a valid
+fan for this particular L.
+
+34
+00:03:00,780 --> 00:03:03,620
+Concave shapes and anchor choices differ.
+
+35
+00:03:04,000 --> 00:03:06,840
+Use an algorithm with validated input
+conditions;
+
+36
+00:03:06,985 --> 00:03:11,660
+an arbitrary fan anchor is not safe for
+general concave polygons.
+
+37
+00:03:12,467 --> 00:03:15,907
+Connecting everything at once can cover empty
+space. Instead,
+
+38
+00:03:16,307 --> 00:03:19,627
+form one small piece from three neighboring
+points. A convex corner is not
+
+39
+00:03:20,027 --> 00:03:24,727
+enough if the piece crosses another boundary
+or contains a remaining vertex.
+
+40
+00:03:25,227 --> 00:03:28,447
+Save it as an ear only when it lies inside and
+has no obstructing vertex.
+
+41
+00:03:29,317 --> 00:03:32,437
+An ear is an interior triangle formed by three
+consecutive boundary vertices,
+
+42
+00:03:32,437 --> 00:03:37,677
+with a convex middle candidate.
+
+43
+00:03:37,957 --> 00:03:40,697
+Its diagonal must lie inside and other
+remaining vertices
+
+44
+00:03:41,037 --> 00:03:45,557
+must not occupy its interior or disallowed
+boundary.
+
+45
+00:03:45,682 --> 00:03:52,777
+Our first L ear is zero-zero, four-zero,
+four-one, of area two.
+
+46
+00:03:53,037 --> 00:03:58,597
+Store that triangle and remove its middle
+vertex four-zero from the remaining contour.
+
+47
+00:03:58,597 --> 00:04:02,297
+The new edge runs from zero-zero to four-one;
+
+48
+00:04:02,657 --> 00:04:06,197
+the removed ear and remainder together cover
+the original L.
+
+49
+00:04:06,517 --> 00:04:10,037
+Preserve original vertex indices while
+updating
+
+50
+00:04:10,217 --> 00:04:13,377
+contour links and output triangles separately.
+
+51
+00:04:14,000 --> 00:04:18,000
+Descend and return upward between platforms in
+this Noita interval.
+
+52
+00:04:19,363 --> 00:04:24,127
+Red follows visible boundaries. Compare the
+movement with the
+
+53
+00:04:24,127 --> 00:04:27,187
+requirement that removing an ear preserves the
+original empty passage.
+
+54
+00:04:27,967 --> 00:04:34,847
+Observe ice terrain and narrow empty passages
+during real Noita movement.
+
+55
+00:04:35,067 --> 00:04:44,927
+A partition should preserve land while leaving
+empty passages unfilled.
+
+56
+00:04:48,607 --> 00:04:52,227
+Recheck neighbors after every added triangle;
+
+57
+00:04:53,007 --> 00:04:55,687
+the original adjacency does not remain
+unchanged.
+
+58
+00:04:59,187 --> 00:05:01,647
+Complexity does not change the requirements:
+
+59
+00:05:01,647 --> 00:05:07,247
+nonoverlapping coverage and the same outer
+contour.
+
+60
+00:05:07,247 --> 00:05:13,447
+We observe actual motion without claiming to
+convert the pixel terrain into a mesh.
+
+61
+00:05:17,047 --> 00:05:20,347
+Our next diagram removes the remaining ears
+and
+
+62
+00:05:20,347 --> 00:05:23,167
+verifies four triangles covering the L of area
+seven.
+
+63
+00:05:23,967 --> 00:05:27,567
+Original vertex IDs remain after saving the
+first ear.
+
+64
+00:05:27,807 --> 00:05:30,707
+In the remaining boundary, vertex zero now
+connects to vertex two.
+
+65
+00:05:30,907 --> 00:05:35,707
+Update adjacency after each removal to find
+the next valid ear.
+
+66
+00:05:36,333 --> 00:05:41,793
+After the first ear, triangle zero-two-three
+has area one point five.
+
+67
+00:05:41,913 --> 00:05:48,093
+Remove vertex two; zero-three-four becomes the
+next ear, again of area one point five.
+
+68
+00:05:48,353 --> 00:05:54,333
+The final triangle zero-four-five has area
+two; the four areas sum to seven.
+
+69
+00:05:54,533 --> 00:05:57,893
+Also verify nonoverlapping interiors,
+
+70
+00:05:57,893 --> 00:06:00,253
+unfilled empty space, and coverage of the
+original boundary.
+
+71
+00:06:00,513 --> 00:06:05,453
+Failure to find an ear can indicate invalid
+input,
+
+72
+00:06:05,453 --> 00:06:08,973
+degeneracy or tolerance trouble. Do not loop
+forever or emit arbitrary triangles.
+
+73
+00:06:09,293 --> 00:06:12,513
+Bridging holes needs additional rules;
+
+74
+00:06:12,813 --> 00:06:17,513
+our simple example does not establish a
+solution for all holes or intersections.
+
+75
+00:06:18,150 --> 00:06:22,610
+Shapez2 is a factory game about processing and
+delivering target shapes.
+
+76
+00:06:22,610 --> 00:06:27,810
+Belts move the shapes. Compare the shape
+entering a machine with the pieces leaving it.
+
+77
+00:06:28,433 --> 00:06:32,393
+The next factory shot compares a boundary with
+a path.
+
+78
+00:06:32,593 --> 00:06:36,233
+A belt is a transport route, not a polygon
+outline. Both depend on point order,
+
+79
+00:06:36,453 --> 00:06:40,973
+but connectivity alone does not prove that a
+region is correct.
+
+80
+00:06:41,730 --> 00:06:44,903
+Shapez2 cuts a disk and sends out two pieces.
+
+81
+00:06:45,567 --> 00:06:47,867
+A separate shot also cuts a square. Watch
+where the pieces emerge.
+
+82
+00:06:48,328 --> 00:06:52,230
+This is not evidence of a triangulation
+implementation.
+
+83
+00:06:52,850 --> 00:06:56,370
+Shapez2 processing produces target pieces;
+
+84
+00:06:56,670 --> 00:06:59,110
+some operations discard unwanted material.
+Triangle partitioning instead
+
+85
+00:06:59,310 --> 00:07:04,310
+requires all pieces together to retain the
+complete original region.
+
+86
+00:07:04,530 --> 00:07:07,230
+Filling a Tiny Glade doorway or a Noita
+passage changes space that
+
+87
+00:07:07,230 --> 00:07:11,130
+should remain empty. Apply the same check to
+Dorfromantik land.
+
+88
+00:07:11,310 --> 00:07:16,950
+The shapes and pieces in this diagram are
+defined teaching examples.
+
+89
+00:07:17,583 --> 00:07:20,943
+Dorfromantik joins hexagonal tiles into land.
+Placing a tile in an empty slot
+
+90
+00:07:21,183 --> 00:07:29,452
+changes the outline. Inspect an individual
+tile separately from the combined land.
+
+91
+00:07:31,017 --> 00:07:37,380
+A separate shot undoes a placed tile. The
+boundary changes again.
+
+92
+00:07:38,000 --> 00:07:41,160
+Noita traversal alternates wide areas and
+narrow gaps,
+
+93
+00:07:41,420 --> 00:07:45,720
+where close points coexist with long
+boundaries.
+
+94
+00:07:49,368 --> 00:07:53,428
+A triangle representation of such outlines can
+produce very thin elements.
+
+95
+00:07:57,036 --> 00:07:59,956
+A thin triangle is not automatically invalid,
+
+96
+00:08:00,336 --> 00:08:04,736
+but long edges with small area can increase
+numerical sensitivity.
+
+97
+00:08:08,364 --> 00:08:14,244
+A fixed tolerance does not fit every
+coordinate scale or resolution.
+
+98
+00:08:14,244 --> 00:08:21,032
+Removing vertices for simplification can
+change passage width and boundaries;
+
+99
+00:08:21,032 --> 00:08:24,392
+preserve required information.
+
+100
+00:08:24,692 --> 00:08:31,320
+We will distinguish a valid partition from a
+higher-quality one.
+
+101
+00:08:31,760 --> 00:08:35,220
+Preserve the region before improving element
+shapes.
+
+102
+00:08:36,000 --> 00:08:39,860
+Improve triangle shape only after validating
+coverage.
+
+103
+00:08:40,100 --> 00:08:45,940
+Doubling coordinate scale doubles both base
+and height, so area quadruples.
+
+104
+00:08:46,200 --> 00:08:49,740
+Length and area tolerances must therefore use
+different units and scales.
+
+105
+00:08:49,760 --> 00:08:54,860
+A thin triangle has a small altitude, making
+the same position error relatively larger.
+
+106
+00:08:54,960 --> 00:08:58,820
+Compare valid candidates rather than erasing
+the passage.
+
+107
+00:08:59,450 --> 00:09:03,950
+Compare a nearly zero-area thin triangle with
+a well-shaped one;
+
+108
+00:09:04,250 --> 00:09:07,030
+small angles can amplify sensitivity.
+
+109
+00:09:07,130 --> 00:09:11,750
+Among valid ears, quality heuristics may
+prefer a larger minimum angle.
+
+110
+00:09:12,030 --> 00:09:15,650
+A favorable angle does not justify a triangle
+
+111
+00:09:15,970 --> 00:09:17,890
+outside the boundary. Ear validity comes
+first.
+
+112
+00:09:18,030 --> 00:09:23,450
+The same triangle count can have different
+shapes depending on diagonal choices.
+
+113
+00:09:23,590 --> 00:09:27,390
+Recheck winding, indices, area,
+
+114
+00:09:27,390 --> 00:09:29,430
+coverage and required attribute connectivity
+after partitioning.
+
+115
+00:09:29,567 --> 00:09:33,470
+Use scale-aware length and area tolerances
+without deleting
+
+116
+00:09:33,650 --> 00:09:38,070
+required boundaries or holes to improve
+appearance.
+
+117
+00:09:38,700 --> 00:09:42,520
+Climb a narrow Noita corridor, then descend to
+a wider area.
+
+118
+00:09:44,162 --> 00:09:50,683
+Long edges meet nearby corners. Once the area
+banner passes,
+
+119
+00:09:52,525 --> 00:09:56,185
+look at the same passage again. Simplification
+must not erase this opening.
+
+120
+00:09:57,967 --> 00:10:01,490
+A separate factory shot: follow the bent path
+in order.
+
+121
+00:10:02,350 --> 00:10:07,870
+Observe connected Dorfromantik tiles: one tile
+and the whole land have different outlines.
+
+122
+00:10:09,203 --> 00:10:14,223
+Define the center purpose, then check boundary
+order, convexity, notches and holes.
+
+123
+00:10:14,423 --> 00:10:17,017
+Partition under suitable conditions and verify
+that
+
+124
+00:10:17,017 --> 00:10:20,237
+empty space and the original region are
+preserved.
+
+125
+00:10:21,610 --> 00:10:26,230
+Our final practice checks the three centers
+and four L triangles.
+
+126
+00:10:26,850 --> 00:10:32,270
+Different triangle areas also mean different
+weights for a uniformly dense plate center.
+
+127
+00:10:32,610 --> 00:10:36,810
+Pieces of area two and one point five
+contribute in those proportions.
+
+128
+00:10:37,090 --> 00:10:40,610
+Return to the final problems remembering that
+valid partition
+
+129
+00:10:40,610 --> 00:10:43,470
+lets us calculate positions and surface values
+correctly.
+
+130
+00:10:44,100 --> 00:10:47,340
+First, distinguish centroid,
+
+131
+00:10:47,340 --> 00:10:50,900
+incenter and circumcenter for zero-zero,
+four-zero, zero-three.
+
+132
+00:10:51,120 --> 00:10:57,660
+The centroid is four thirds-one, incenter
+one-one, circumcenter two-one point five.
+
+133
+00:10:57,820 --> 00:11:01,360
+The inradius is one and circumradius two point
+five;
+
+134
+00:11:01,360 --> 00:11:03,680
+neither their centers nor their radii
+coincide.
+
+135
+00:11:03,840 --> 00:11:10,240
+Second, the six-vertex L has four valid
+triangles with areas two,
+
+136
+00:11:10,240 --> 00:11:16,580
+one point five, one point five and two,
+totaling seven.
+
+137
+00:11:17,040 --> 00:11:21,400
+Also check overlap, empty regions and
+boundaries.
+
+138
+00:11:21,840 --> 00:11:24,380
+Validate the complete path from input
+conditions to output.
+
+139
+00:11:24,980 --> 00:11:29,200
+Geometry connected representations, bounds,
+planes, coordinates, centers and partitions.
+
+140
+00:11:29,820 --> 00:11:34,900
+Rendering next converts this3D information
+into screen pixels.
