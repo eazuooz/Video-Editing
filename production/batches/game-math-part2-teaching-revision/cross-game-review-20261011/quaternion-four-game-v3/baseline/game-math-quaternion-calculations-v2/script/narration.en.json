@@ -1,0 +1,361 @@
+{
+  "title": "Game Mathematics Part 2: Quaternions 2 — Composition, Target Orientation and Vector Rotation",
+  "scenes": [
+    {
+      "id": "F03",
+      "title": "두 번째 편의 질문과 앞 편의 결과",
+      "lines": [
+        "The first episode constructed a rotation and used its inverse to undo an operation. This episode composes turns and calculates how to reach a target direction.",
+        "After observing a bicycle's orientation, we reverse the order of the same two turns and compare their results. We then find the rotation from a current orientation to a target and verify it on an actual direction vector.",
+        "We begin with a counteracting tilt, distinguishing an orientation reversal from reversing the traveled path."
+      ]
+    },
+    {
+      "id": "B14",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We verified that an inverse cancels the original operation. In the game, we will observe a counteracting tilt while separating orientation reversal from reversing the traveled path."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "반대 회전과 되돌리는 과정",
+      "lines": [
+        "Watch the snow bike bank and then adjust its orientation again.",
+        "Leaning one way and returning helps us visualize an opposing rotation.",
+        "The camera moves, so screen left and right do not determine exact axes or angles.",
+        "An inverse swaps the input and output of a stored rotation; it differs from riding backward or negating velocity.",
+        "Separating bank from travel shows why undoing orientation and undoing position are different questions.",
+        "Next we will diagram multiplication order and reference frames."
+      ]
+    },
+    {
+      "id": "GB06",
+      "title": "반대 기울기에서 두 회전의 합성으로",
+      "lines": [
+        "An inverse cancelled the rotation. Observe the red torso and blue wheel lines in this separate excerpt.",
+        "Tilt and facing change together. Can we add components to compose our two defined rotations?",
+        "We first verify dot and cross products with small numbers, then read the Hamilton product."
+      ]
+    },
+    {
+      "id": "B15",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Having undone one rotation, we can now compose two. As multiplication combined planar turns, three-dimensional composition uses a product containing dot and cross products."
+      ]
+    },
+    {
+      "id": "N06",
+      "title": "내적과 외적은 각각 무엇을 묻는가?",
+      "lines": [
+        "The composition formula uses dot and cross products. First distinguish two questions: alignment and the direction determined by their ordered pair.",
+        "A dot product multiplies corresponding components and adds them. The dot of (1,0,0) and (0,1,0) is zero, meaning the directions are perpendicular.",
+        "A cross product returns a vector perpendicular to both. With our right-handed convention, x cross y is +z, while y cross x is -z.",
+        "That order dependence remains in rotation composition. We will read the scalar and vector parts of the Hamilton product separately."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "내적과 외적으로 곱셈 읽기",
+      "lines": [
+        "Consider the Hamilton product written in scalar-vector form.",
+        "Its scalar is the scalar product minus the vector dot product.",
+        "Its vector sums the two scalar-vector products and the vector cross product.",
+        "Reversing the cross product changes its sign, exposing the usual noncommutativity.",
+        "Products are associative, so parentheses can move without permitting arbitrary order changes.",
+        "Some rotations, such as those about one axis, do commute. Check the actual operation and convention."
+      ]
+    },
+    {
+      "id": "B16",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Reversing a cross product changed its result. We will now reverse the order of two axis rotations from the same initial direction and inspect the resulting orientations."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "적용 순서와 곱셈의 좌우",
+      "lines": [
+        "We use the Hamilton convention in which a vector rotates as q times v times inverse q.",
+        "Applying fixed x90 followed by fixed y90 puts the y quaternion on the left.",
+        "The initial z direction becomes minus y after x90 and remains there under y90.",
+        "In reverse order it becomes x after y90 and remains x under x90, so the results differ.",
+        "A world-frame delta premultiplies the current orientation; a body-frame delta postmultiplies it.",
+        "Check whether a library uses the same product convention, using small axis-rotation probes."
+      ]
+    },
+    {
+      "id": "GB01",
+      "title": "고정 축과 몸체 축을 분리해 관찰하기",
+      "lines": [
+        "Rotation order changed the result. Compare the red body direction with the teal screen reference.",
+        "A body direction differs from a fixed reference. The screen line is not a measured world axis.",
+        "Our calculation multiplied world-relative increments on the left and body-relative ones on the right.",
+        "How much further rotation takes the current orientation to a target?"
+      ]
+    },
+    {
+      "id": "B17",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "The order of fixed-axis rotations changed the result. In the game, watch how turning the body also changes its attached directions; this motivates separating world and body frames."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "동작 순서와 기준을 관찰하기",
+      "lines": [
+        "We will observe snowboard jumps and then bike bank.",
+        "Changing the body forward direction also changes the direction of later body-relative motion.",
+        "Follow temporal order; an endpoint frame does not reconstruct every intermediate operation.",
+        "Distinguishing fixed world axes from moving body axes is the starting point for choosing multiplication side.",
+        "Following-camera pixels do not reveal the exact internal rotation order. Keep our defined diagram separate from observation.",
+        "Watch body facing together with the board or wheels to practice reading full orientation."
+      ]
+    },
+    {
+      "id": "GB02",
+      "title": "현재 자세에서 목표 자세를 묻기",
+      "lines": [
+        "The multiplication side selected a reference. Separate the red torso direction from the changing position.",
+        "The game's internal target is unknown, so our next diagram defines its own current and target orientations.",
+        "Call the current orientation a and the target b. Which additional rotation takes a to b?"
+      ]
+    },
+    {
+      "id": "B18",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We have distinguished body and world frames. Now we can ask which extra rotation reaches a target orientation, and verify the answer by applying that delta."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "두 자세 사이의 회전 차이",
+      "lines": [
+        "Let a be the current and b the target local-to-world orientation.",
+        "A world delta must satisfy delta times a equals b, so it is b times inverse a.",
+        "A body delta postmultiplies a, giving inverse a times b. Changing frames changes the order.",
+        "From z30 to z90, the same-axis difference is z60.",
+        "With mixed axes, component subtraction is insufficient. Use inverse and product, and name the reference frame.",
+        "Apply the computed delta back to the current orientation and verify that it reaches the target."
+      ]
+    },
+    {
+      "id": "B19",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We computed the required rotation difference. To determine how large it is, we will compare all four components and calculate the smallest angle between the final orientations."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "내적으로 최소 회전 각도 구하기",
+      "lines": [
+        "The dot product sums products of all four quaternion components.",
+        "For the smallest physical relative rotation, take the absolute dot product.",
+        "Twice its arccos gives an angle from zero to 180 degrees.",
+        "Equivalent q and -q have dot minus one, whose absolute value gives zero rotation distance.",
+        "Validate unit inputs and clamp tiny numerical overshoot to [0,1] before arccos.",
+        "This measures minimal endpoint separation, not accumulated trick rotation or path direction."
+      ]
+    },
+    {
+      "id": "GB03",
+      "title": "최소 자세 차이와 동작 전체의 길이",
+      "lines": [
+        "The minimum angle described the difference between two defined endpoint poses. Track the body and wheel directions.",
+        "A changing bank does not make one endpoint store every intermediate action.",
+        "Even a similar ending direction requires a time record to recover the intervening turn.",
+        "We switch to a separate excerpt; it is not the before and after of one instant.",
+        "How do we construct an intermediate direction? Next, we calculate half of a rotation."
+      ]
+    },
+    {
+      "id": "B20",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "The minimum angle measured a difference between orientations. A landing illustrates why distance to the target position and difference from the target orientation are separate questions."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "목표 자세와 가까운 자세",
+      "lines": [
+        "Watch the board and bike adjust orientation toward landing after a jump.",
+        "The required change depends on the target orientation you choose.",
+        "Orientation difference is separate from the remaining positional distance.",
+        "Similar-looking screen poses still require rotation data for exact angle computation.",
+        "Minimal angle describes nearest endpoint separation, not the full length of the actual motion.",
+        "During a jump, follow both body facing and the wheel plane. Distinguish landing position from landing orientation.",
+        "Separate excerpts are not endpoints of the same jump. Observe each actual motion to frame the question about current and target orientations.",
+        "An inverse or relative rotation that matches a pose does not rewind position or collisions. Motion path and rotational endpoint are separate records.",
+        "Imagine comparing stored current and target orientations; next we will apply a chosen fraction of a rotation."
+      ]
+    },
+    {
+      "id": "GB04",
+      "title": "절반 회전은 네 숫자의 절반이 아니다",
+      "lines": [
+        "Powers led to dividing a rotation amount. Follow the red torso line through the visible direction change.",
+        "This is a different excerpt. Read orientation separately from the traveled route.",
+        "Halving an angle does not mean multiplying all four components by0.5.",
+        "Half of ninety degrees is forty-five. We verify the distinction with logarithms and exponentials."
+      ]
+    },
+    {
+      "id": "B21",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We found the rotation to a target, but applying it all in one frame would produce an abrupt turn. We will first learn to apply a fraction of a fixed-axis rotation."
+      ]
+    },
+    {
+      "id": "N07",
+      "title": "회전의 절반과 숫자 크기의 절반",
+      "lines": [
+        "We want to apply 45 degrees rather than all 90 degrees. Halving a turn is different from halving all four stored components.",
+        "Two 45-degree rotations about the same axis compose to 90 degrees. Our fractional rotation must satisfy that relationship.",
+        "A quaternion logarithm converts a chosen axis and half-angle into a convenient vector; its exponential converts that vector back to a unit quaternion. Start with these inverse roles rather than their names.",
+        "For z90, the log vector is the z axis times pi/4. Halving it gives a stored half-angle of 22.5 degrees and a physical turn of 45 degrees.",
+        "Different chosen axis-angle branches can share a final orientation yet have different intermediate paths. We must choose the path before taking fractional powers."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "회전의 일부를 적용하는 거듭제곱",
+      "lines": [
+        "Given a chosen axis-angle representative, scale its angle while retaining its axis to form a fractional rotation.",
+        "Half of z90 is z45; this is not multiplication of all four components by 0.5.",
+        "A chosen logarithm stores the axis times half-angle as a pure quaternion, and the exponential reconstructs a unit quaternion.",
+        "Distinguish radians and the half-angle: the previous rotation vector used the full angle, whereas this logarithm uses half.",
+        "The power path depends on the selected sign and angle branch; fractional powers of q and -q can differ.",
+        "For a shortest path, choose the representative and boundary rules first, explicitly handling identity and half-turn ambiguity."
+      ]
+    },
+    {
+      "id": "B22",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We can now construct a fractional rotation. To use it, we must apply it to a direction vector; let us check whether the single multiplication used in a plane still works in three dimensions."
+      ]
+    },
+    {
+      "id": "N08",
+      "title": "같은 벡터로 한쪽 곱과 양쪽 곱을 비교",
+      "lines": [
+        "The initial complex example used one multiplication in a plane. To verify the earlier half-angle explanation, we return to the ninety-degree z-axis example. The input vector has x component one, y zero and z one.",
+        "To put a vector into the quaternion expression, prepend scalar zero. Define the letter C as square root of two divided by two. The rotation has scalar C, x and y zero, and z C.",
+        "The left multiplication alone produces scalar minus C and three vector components equal to C. Its nonzero scalar shows that this is not yet a three-dimensional direction vector.",
+        "Also multiply by the inverse on the right. That inverse has scalar C, x and y zero, and z minus C. The complete result has scalar zero, x zero, y one and z one.",
+        "Removing scalar zero leaves vector (0,1,1). The z component parallel to the rotation axis remains one while the original x component turns into y. The complete two-sided calculation verifies what the half-angle operation does."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "벡터는 왜 양쪽에서 곱할까?",
+      "lines": [
+        "In the complex plane, multiplication by cos(angle)+i sin(angle) rotates a 2D vector.",
+        "In 3D, one-sided multiplication of a pure-vector quaternion generally creates a scalar and is not a vector rotation.",
+        "For v=(1,0,1), left multiplication by z90 alone creates scalar minus sqrt(2)/2.",
+        "Including the inverse on the right restores scalar zero and gives vector (0,1,1).",
+        "The axis-parallel z component remains, while x rotates into y.",
+        "Both-sided multiplication combines two half-angles into the physical angle; a worked vector makes the structure tangible."
+      ]
+    },
+    {
+      "id": "GB05",
+      "title": "계산한 벡터를 물체에 붙여 읽기",
+      "lines": [
+        "We verified the vector rotation. Read the red torso and blue wheel lines together.",
+        "Distinguish the camera image from world-orientation calculation. We continue with another riding excerpt."
+      ]
+    },
+    {
+      "id": "B23",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Our calculation turned x toward y while preserving the component parallel to the axis.",
+        "We now observe the visible body direction.",
+        "We separate it from the camera frame that projects that direction on screen."
+      ]
+    },
+    {
+      "id": "23",
+      "title": "카메라와 몸체가 함께 움직일 때",
+      "lines": [
+        "Finally, observe the bike rotate in the air and land.",
+        "Facing and the wheel line change together; the camera is another reference that projects them onto the screen.",
+        "Separate making motion visible from computing orientation in world space.",
+        "With a stored quaternion, rotate direction vectors to obtain forward or up.",
+        "Pixels do not reveal the game storage format, but we can verify our defined mathematical example directly.",
+        "Now recheck component order and unit norm and solve the same calculation as an exercise."
+      ]
+    },
+    {
+      "id": "B24",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We have connected stored components to a resulting direction. Reproducing that result in code requires matching the library's component order and coordinate conventions."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "코드에서 확인할 약속",
+      "lines": [
+        "Four float32 components occupy sixteen bytes of component data, excluding alignment and metadata.",
+        "One more number than Euler angles can make composition and interpolation convenient, without guaranteeing superior speed for every use.",
+        "Euler angles may suit human editing, while precomputed matrices may suit rotating many directions.",
+        "Check storage order, Hamilton product, handedness, and the local-to-world convention together.",
+        "Maintain normalization and invalid-input guards, and distinguish component equality from orientation equality.",
+        "A quaternion represents rotation; it does not automatically solve collision, translation, or accumulated rotation history."
+      ]
+    },
+    {
+      "id": "B25",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "With the code conventions established, let us calculate the same input and result ourselves. Rotating and undoing it will verify that the formula restores the original vector."
+      ]
+    },
+    {
+      "id": "25",
+      "title": "직접 돌리고 되돌려 보기",
+      "lines": [
+        "First problem: rotate a vector ninety degrees about z. Its x is one, y is zero and z is one. What is the result? Pause and check the axes and signs.",
+        "Use [sqrt(2)/2,0,0,sqrt(2)/2] and the two-sided product on the pure vector.",
+        "The result is (0,1,1); x rotates into y and z remains. Length sqrt(2) is preserved.",
+        "Exercise two: should we negate all four components to restore the original vector?",
+        "No: use the unit conjugate, negating only the vector components. It restores (1,0,1).",
+        "Finally, decide whether an orientation difference is a world delta on the left or a body delta on the right."
+      ]
+    },
+    {
+      "id": "GB07",
+      "title": "벡터의 결과에서 중간 자세의 질문으로",
+      "lines": [
+        "We rotated the vector. The equipment changes to flight.",
+        "Observe the red wing line. How do we construct an intermediate orientation?"
+      ]
+    },
+    {
+      "id": "B26",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We completed a rotation and its inverse. Using that result, let us return to our opening question: what do the four numbers store, and which operations do they support?"
+      ]
+    },
+    {
+      "id": "26",
+      "title": "네 숫자에서 회전 연산까지",
+      "lines": [
+        "A quaternion has four components formed from a unit axis and half-angle, with three rotational degrees of freedom under its unit constraint.",
+        "q and -q represent one orientation; conjugation serves a different role, and the general inverse divides by squared norm.",
+        "Record product order and reference frames for composition and differences, then verify by applying the result.",
+        "Next we will interpolate orientations smoothly and safely convert among quaternion, matrix, Euler, and other representations."
+      ]
+    }
+  ]
+}

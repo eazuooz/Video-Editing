@@ -1,0 +1,1248 @@
+{
+  "chapter": 8,
+  "part": 3,
+  "totalParts": 4,
+  "renderModule": "quaternion",
+  "sourceSections": [
+    "8.5.1–8.5.11",
+    "8.5.14"
+  ],
+  "contract": {
+    "handedness": "right-handed",
+    "vectors": "column",
+    "frame": "local-to-world",
+    "componentOrder": "wxyz",
+    "product": "Hamilton",
+    "vectorRotation": "q [0,v] q^-1",
+    "worldDelta": "delta q",
+    "bodyDelta": "q delta",
+    "angles": "radians in formulas"
+  },
+  "coverage": {
+    "8.5.1–8.5.3": [
+      "components and i/j/k algebra",
+      "unit constraint",
+      "axis-angle and half-angle",
+      "identity and double-cover"
+    ],
+    "8.5.4–8.5.6": [
+      "negation versus conjugation",
+      "norm and guarded normalization",
+      "general inverse uses norm squared; source omission corrected"
+    ],
+    "8.5.7–8.5.10": [
+      "Hamilton product and associativity/noncommutativity",
+      "application order and reference frames",
+      "relative rotation",
+      "four-component dot and minimum physical angle"
+    ],
+    "8.5.11": [
+      "chosen-branch power/log/exp; half-angle versus full rotation vector",
+      "scalar scaling is not angle scaling"
+    ],
+    "8.5.14": [
+      "complex analogy and scalar leakage from one-sided product",
+      "correct two-sided vector rotation and actual full angle"
+    ]
+  },
+  "gameCandidates": [
+    {
+      "game": "Riders Republic",
+      "decision": "selected",
+      "sourceId": "4Odvp_TIeQU",
+      "reason": "Fresh existing-game title and recording; ski/board/bike airborne rotation and body bank match the chapter. Explicit recording permission and all approved intervals inspected before narration. Public game-IP review pending."
+    },
+    {
+      "game": "Superflight",
+      "decision": "rejected-for-this-lecture",
+      "reason": "Used in preceding two connected lectures; choose a fresh title with equally visible 3D rotation."
+    },
+    {
+      "game": "Ace Combat 7",
+      "decision": "rejected",
+      "reason": "Candidate permission requires public description channel credit, conflicting with user description preference."
+    },
+    {
+      "game": "Distance",
+      "decision": "rejected",
+      "reason": "Candidate had no explicit reuse permission."
+    },
+    {
+      "game": "Trailmakers",
+      "decision": "not-selected",
+      "reason": "Official overview does not by itself provide inspected concept-matched reusable footage."
+    }
+  ],
+  "scenes": [
+    {
+      "id": "F01",
+      "kind": "explanation",
+      "before": "01",
+      "title": "두 편의 지도와 첫 편의 질문",
+      "mode": "episode-overview",
+      "ko": [
+        "이번 쿼터니언 강의는 두 편입니다. 먼저 전체 흐름을 안내하고, 오늘은 회전 저장값을 만들고 되돌리는 원리까지 살펴보겠습니다."
+      ],
+      "en": [
+        "This quaternion lecture has two episodes. After outlining the complete journey, this first episode explains how to construct a stored rotation and undo it."
+      ],
+      "visual": "same input direction and projected object, then highlighted first-episode construction/inverse path; original overview follows intact",
+      "beats": [
+        "두 편의 전체 지도 / 오늘: 회전값 만들기·되돌리기"
+      ]
+    },
+    {
+      "id": "01",
+      "kind": "explanation",
+      "title": "이번 강의에서 배울 것",
+      "mode": "overview",
+      "ko": [
+        "게임 속 공중 회전은 네 숫자로 어떻게 기록할 수 있을까요?",
+        "이번 시간에는 스키와 자전거의 자세를 관찰하고, 쿼터니언의 네 성분과 반각의 의미를 그림으로 이해합니다.",
+        "역회전과 곱셈으로 회전을 되돌리고 합친 뒤, 두 자세 사이의 차이도 계산합니다.",
+        "마지막으로 부호와 정규화의 함정을 확인하고, 직접 한 벡터를 돌리는 문제를 풀어 보겠습니다."
+      ],
+      "en": [
+        "How can four numbers record an airborne rotation in a game?",
+        "We will observe ski and bike orientations, then visualize the four quaternion components and their half-angle.",
+        "We will undo and compose rotations, and compute the difference between two orientations.",
+        "Finally, we will check sign and normalization pitfalls and rotate a vector in a worked exercise."
+      ],
+      "beats": [
+        "자세를 네 숫자로?",
+        "실제 회전 관찰 → 네 성분과 반각",
+        "역회전 → 곱셈 → 두 자세의 차이",
+        "부호·정규화 → 벡터 회전 실습"
+      ]
+    },
+    {
+      "id": "B02",
+      "before": "02",
+      "kind": "explanation",
+      "ko": [
+        "우리의 목표는 점프를 흉내 내는 것이 아니라, 한 순간의 몸 방향을 숫자로 기록하는 것입니다. 먼저 화면에서 위치와 자세가 어떻게 다른지 찾아보죠."
+      ],
+      "en": [
+        "Our goal is to record the body's orientation at one instant. Let us first distinguish where the rider is from how the body is turned."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "02",
+      "kind": "actual",
+      "title": "스키의 이동과 자세를 나누어 보기",
+      "ko": [
+        "라이더스 리퍼블릭에서 스키를 타고 내려가는 장면입니다. 몸과 스키가 기울어지는 모습을 보세요.",
+        "앞으로 가는 위치 변화와, 몸이 어느 쪽을 향하는 자세 변화를 따로 읽어 봅니다.",
+        "공중에서는 진행 경로가 이어지는 동안 몸의 방향과 기울기도 바뀝니다.",
+        "화면 가운데에 있다고 자세가 같은 것은 아닙니다. 카메라 역시 대상을 따라 움직입니다.",
+        "이 강의는 보이는 움직임을 설명할 회전 표현을 배우는 시간입니다. 게임의 내부 코드를 확인한 자료는 아닙니다.",
+        "다음 그림에서는 위치를 고정한 채 몸에 붙은 세 축만 돌려, 자세 변화부터 살펴보겠습니다."
+      ],
+      "en": [
+        "This is skiing in Riders Republic. Watch the tilt of the body and skis.",
+        "Read forward movement separately from changes in body orientation.",
+        "In the air, the travel path continues while facing and bank also change.",
+        "Remaining near screen center does not imply an unchanged orientation; the camera follows too.",
+        "We are learning a representation that can describe the visible motion, without claiming to have inspected the game code.",
+        "Our next diagram will hold position fixed and rotate the three body axes to isolate orientation."
+      ],
+      "sourceId": "4Odvp_TIeQU",
+      "sourceSegments": [
+        {
+          "in": 3,
+          "maxSeconds": 46
+        }
+      ],
+      "in": 3,
+      "maxSeconds": 46,
+      "focus": "몸·스키의 기울기와 위치 이동; 따라가는 카메라와 구분",
+      "claim": "위치와 자세를 나누는 관찰, 구현 추정 아님"
+    },
+    {
+      "after": "02",
+      "id": "N01",
+      "title": "허수는 왜 등장할까?",
+      "mode": "imaginary",
+      "ko": [
+        "회전을 곱셈으로 다루는 이번 방법을 이해하려면, 먼저 숫자의 계산 규칙을 조금 넓혀 보겠습니다. 보통 실수는 제곱하면 영 이상이라, 제곱해서 마이너스 일이 되는 실수는 없습니다.",
+        "그래서 아이의 제곱이 마이너스 일이 되도록 새로운 계산 규칙을 정의합니다. 이렇게 정한 아이를 허수의 단위라고 부릅니다.",
+        "계산 규칙을 만든다고 허수가 게임 안에 숨은 물체가 되는 것은 아닙니다. 방향을 계산하기 좋은 숫자 도구로 쓰는 것이죠.",
+        "왜 이런 규칙이 회전에 도움이 되는지, 숫자를 점의 좌표로 바꿔서 보겠습니다."
+      ],
+      "en": [
+        "To understand this approach to rotation through multiplication, we first extend the number system. The square of a real number is nonnegative, so no real number squares to minus one.",
+        "We define a new rule in which i squared is minus one. The number i defined this way is called the imaginary unit.",
+        "This rule does not make an imaginary number a hidden object inside the game. It provides a useful numerical tool for direction calculations.",
+        "To see why it helps with rotation, we will represent these numbers as point coordinates."
+      ],
+      "beats": [
+        "실수의 제곱 ≥ 0",
+        "새 규칙: i² = -1",
+        "방향을 계산하는 숫자 도구",
+        "숫자 → 좌표 → 회전"
+      ],
+      "kind": "explanation"
+    },
+    {
+      "after": "N01",
+      "id": "N02",
+      "title": "아이를 곱하면 왜 90도 돌아갈까?",
+      "mode": "complex-turn",
+      "ko": [
+        "에이 더하기 비 아이라는 복소수는 평면의 점 에이, 비로 그릴 수 있습니다. 가로 좌표는 실수 부분, 세로 좌표는 아이의 계수입니다.",
+        "엑스 좌표가 이, 와이 좌표가 일인 점은 이 더하기 아이입니다. 여기에 아이를 곱하면 이 아이 더하기 아이 제곱, 즉 마이너스 일 더하기 이 아이가 됩니다.",
+        "새 엑스 좌표는 마이너스 일이고 새 와이 좌표는 이입니다. 화살표가 반시계로 구십 도 돌아갔고 길이는 루트 오로 같습니다.",
+        "좌표 에이, 비에 아이를 곱하는 규칙은 마이너스 비, 에이입니다. 그래서 평면 회전을 곱셈으로 표현할 수 있습니다.",
+        "삼차원에서는 평면을 정해 주는 회전 축도 필요합니다. 이 방향 계산을 축 하나와 연결해 쿼터니언으로 확장하겠습니다."
+      ],
+      "en": [
+        "A complex number a+bi represents a point (a,b) in a plane. Its horizontal coordinate is the real part and its vertical coordinate is the coefficient of i.",
+        "The point with x coordinate two and y coordinate one is 2+i. Multiplying by i gives 2i+i squared, which equals minus one plus 2i.",
+        "The new x coordinate is minus one and the new y coordinate is two. The arrow turns ninety degrees counterclockwise while retaining length square root of five.",
+        "Multiplying a point (a,b) by i changes it to (-b,a), allowing multiplication to represent a planar turn.",
+        "In three dimensions, we also need an axis that defines the rotation plane. We will extend this direction calculation to a quaternion using that axis."
+      ],
+      "beats": [
+        "a+bi ↔ (a,b)",
+        "(2+i)i = -1+2i",
+        "(2,1) → (-1,2) / 길이 √5",
+        "(a,b) → (-b,a)",
+        "3D에서는 회전 축이 필요"
+      ],
+      "kind": "explanation"
+    },
+    {
+      "id": "N09",
+      "kind": "explanation",
+      "after": "N02",
+      "title": "구십 도에서 다른 각도로 넓히기",
+      "mode": "complex-trigonometry",
+      "ko": [
+        "아이를 곱하면 구십 도가 된다는 것은 확인했습니다. 구십 도 말고 다른 각도는 어떻게 나타낼까요?",
+        "고등학교의 단위원을 떠올려 보죠. 길이 일인 화살표가 세타만큼 돌아가면 가로 성분은 코사인 세타, 세로 성분은 사인 세타입니다.",
+        "그래서 복소수 코사인 세타 더하기 아이 사인 세타를 곱하면 평면에서 그 각도만큼 회전합니다. 세타가 구십 도면 코사인은 영, 사인은 일이라서 아이와 같아집니다.",
+        "이 평면 계산에서는 실제 각도 세타를 그대로 넣었습니다. 잠시 뒤 삼차원 쿼터니언에서 반각이 나오면, 벡터에 적용하는 연산이 어떻게 달라졌는지 비교하겠습니다."
+      ],
+      "en": [
+        "We verified that multiplying by i produces a ninety-degree turn. How can we represent other angles?",
+        "Recall the unit circle from high-school trigonometry. A unit arrow turned by theta has horizontal component cos(theta) and vertical component sin(theta).",
+        "Multiplication by cos(theta)+i sin(theta) therefore rotates the plane by theta. At ninety degrees the cosine is zero and the sine is one, giving i.",
+        "This planar calculation uses the full physical angle theta. When the three-dimensional quaternion later uses a half-angle, we will compare the different operation applied to the vector."
+      ],
+      "visual": "equal-unit complex plane; unit vector and narrated angle arc; θ=90°→(0,1)→i; compare full-angle planar multiplication with later two-sided quaternion operation",
+      "beats": [
+        "i는90° / 다른 각도는?",
+        "단위원의 가로 cos θ / 세로 sin θ",
+        "90°: (0,1) → i",
+        "평면의 전체 각도 / 뒤의 양쪽 곱과 비교"
+      ]
+    },
+    {
+      "id": "GA06",
+      "episode": 1,
+      "after": "N09",
+      "title": "평면의 회전에서 삼차원 축으로",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          302,
+          317
+        ]
+      ],
+      "maximumSeconds": 15,
+      "ko": [
+        "평면의 각도를 배웠죠.",
+        "빨간 몸체 선을 보세요.",
+        "삼차원은 축도 필요합니다.",
+        "축의 세 성분으로 이어가죠."
+      ],
+      "en": [
+        "We learned about a planar angle.",
+        "Observe the red torso line.",
+        "Three dimensions require an axis too.",
+        "We now connect it to the three axis components."
+      ],
+      "annotation": {
+        "landmarks": "torso in unobstructed airborne portion",
+        "red": "torso direction",
+        "revealDuringLine": 0
+      },
+      "kind": "actual",
+      "maxSeconds": 15,
+      "selectionReason": "Use clear302–317, excluding the crash at300. Visible skier becomes a bicycle around312; hide geometry during equipment change. The next body/wheel example begins317."
+    },
+    {
+      "id": "B03",
+      "before": "03",
+      "kind": "explanation",
+      "ko": [
+        "평면에서는 숫자 두 개와 곱셈으로 방향을 돌릴 수 있었죠. 이제 축을 선택해야 하는 삼차원으로 확장하면, 어떤 숫자 묶음이 필요한지 보겠습니다."
+      ],
+      "en": [
+        "In a plane, two numbers and multiplication could turn a direction. Extending that idea to three dimensions requires choosing an axis; let us examine the numbers we need."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "before": "03",
+      "id": "N03",
+      "title": "네 숫자는 세 축과 어떤 관계일까?",
+      "mode": "axis-components",
+      "ko": [
+        "처음 듣는 스칼라는 숫자 하나라는 뜻이고, 벡터는 여기서 방향을 나타내는 세 숫자 묶음입니다. 성분은 그 묶음 안의 각 숫자입니다.",
+        "아이, 제이, 케이는 삼차원 회전 계산의 세 기호입니다. 네 숫자를 그리기 위해 공간에 네 번째 방향을 추가할 필요는 없습니다.",
+        "축이 제트 방향이라면 엑스와 와이 성분은 영이고, 더블유와 제트 성분에 각도 정보가 들어갑니다. 네 숫자가 네 개의 회전 각도는 아닌 이유죠.",
+        "그럼 정확히 어떤 숫자를 넣어야 구십 도가 될까요? 이미 아는 단위 축과 삼각함수로 만들어 보겠습니다."
+      ],
+      "en": [
+        "A scalar means one number. Here a vector is a three-number group describing a direction, and a component is an individual number in that group.",
+        "The symbols i,j,k belong to the three-dimensional rotation algebra. We do not need to draw a fourth physical direction to store four numbers.",
+        "For a z-axis rotation, x and y are zero while w and z carry angle information. These are not four independent rotation angles.",
+        "Which values produce 90 degrees? We will construct them using a unit axis and familiar trigonometry."
+      ],
+      "beats": [
+        "스칼라: 숫자 하나 / 성분: 묶음의 숫자",
+        "i,j,k: 계산 기호 / 네 번째 공간 축 아님",
+        "z축: q=[w,0,0,z]",
+        "단위 축 + 삼각함수로 만들기"
+      ],
+      "kind": "explanation"
+    },
+    {
+      "id": "03",
+      "kind": "explanation",
+      "title": "네 성분은 네 회전 각도가 아니다",
+      "mode": "components",
+      "ko": [
+        "쿼터니언은 스칼라 성분 하나와 벡터 성분 세 개로 씁니다. 이 강의에서는 더블유, 엑스, 와이, 제트 순서입니다.",
+        "회전에 쓰는 단위 쿼터니언은 네 성분 제곱의 합이 일입니다. 자유롭게 고를 수 있는 값은 세 개입니다.",
+        "따라서 네 숫자를 네 회전 각도라고 읽으면 안 됩니다. 엑스, 와이, 제트도 오일러 각이 아닙니다.",
+        "수로서의 쿼터니언은 아이, 제이, 케이를 쓰며, 각각의 제곱은 마이너스 일입니다.",
+        "아이 곱하기 제이는 케이지만, 제이 곱하기 아이는 마이너스 케이입니다. 순서가 중요하다는 첫 단서입니다.",
+        "라이브러리는 성분을 엑스, 와이, 제트, 더블유 순서로 저장할 수도 있습니다. 이름과 메모리 순서를 확인하세요."
+      ],
+      "en": [
+        "A quaternion contains one scalar and a three-component vector. We write components in w,x,y,z order.",
+        "A unit rotation quaternion has squared components summing to one, leaving three continuous degrees of freedom.",
+        "Four numbers are not four rotation angles, and x,y,z are not Euler angles.",
+        "The algebra uses i,j,k, whose squares each equal minus one.",
+        "The product ij is k, whereas ji is minus k: an early hint that order matters.",
+        "A library may store x,y,z,w instead. Check the named components and memory order."
+      ],
+      "beats": [
+        "q = [w, x, y, z] = [s, v]",
+        "w²+x²+y²+z² = 1 / 자유도 3",
+        "벡터 성분 ≠ Euler 각",
+        "i² = j² = k² = -1",
+        "ij = k / ji = -k",
+        "라이브러리의 wxyz / xyzw 확인"
+      ]
+    },
+    {
+      "id": "GA01",
+      "episode": 1,
+      "after": "03",
+      "title": "숫자 세 개가 담는 방향을 날개로 관찰하기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          24,
+          56
+        ]
+      ],
+      "maximumSeconds": 32,
+      "ko": [
+        "세 성분이 담는 방향을 날개로 읽어 보겠습니다. 자전거에서 비행 장비로 바뀌는 구간입니다.",
+        "빨간 선은 양쪽 날개 끝을 잇습니다. 청록색 화면 가로선과 비교해 기울기를 보세요.",
+        "카메라도 움직이므로 이 각도는 월드 회전각이 아닙니다.",
+        "그럼 카메라와 독립된 축과 각도로 네 숫자를 어떻게 만들까요?"
+      ],
+      "en": [
+        "Read the direction represented by three components through the wings. This excerpt changes from bicycle travel to flight.",
+        "The red line joins the visible wing tips. Compare it with the teal screen-horizontal reference.",
+        "The camera also moves, so this projected angle is not a world rotation angle.",
+        "How do we construct four components from an axis and angle independent of the camera?"
+      ],
+      "observationGapAfterLine": {
+        "0": 2
+      },
+      "annotation": {
+        "interval": [
+          34,
+          42
+        ],
+        "landmarks": "left/right visible wing tips",
+        "red": "observed tip-to-tip line",
+        "teal": "screen horizontal reference",
+        "orange": "midpoint of observed tips, not center of mass",
+        "yellow": "projected screen-angle arc",
+        "revealDuringLine": 1
+      },
+      "kind": "actual",
+      "maxSeconds": 32
+    },
+    {
+      "id": "B04",
+      "before": "04",
+      "kind": "explanation",
+      "ko": [
+        "네 숫자의 역할을 구분했으니, 이제 원하는 회전에서 그 숫자를 만드는 방법이 필요합니다. 앞 편에서 쓴 축 하나와 각도 하나를 입력으로 가져오겠습니다."
+      ],
+      "en": [
+        "We have separated the roles of the four components. Now we need to construct them from the axis and angle introduced in the preceding lesson."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "04",
+      "kind": "explanation",
+      "title": "축·각에서 반각으로 연결하기",
+      "mode": "half-angle",
+      "ko": [
+        "앞 편의 축과 각도를 떠올려 보세요. 길이가 일인 축 벡터와, 그 축 주위로 돌릴 각도가 있습니다.",
+        "단위 쿼터니언의 스칼라는 각도의 절반에 대한 코사인입니다. 벡터 부분은 단위 축에 반각의 사인을 곱합니다.",
+        "각도가 영이면 코사인은 일, 사인은 영입니다. 그래서 일, 영, 영, 영이 회전 없는 자세가 됩니다.",
+        "제트축으로 구십 도를 돌리면 반각은 사십오 도입니다. 스칼라와 제트 성분이 모두 루트 이 나누기 이가 됩니다.",
+        "반각은 회전을 절반만 한다는 뜻이 아닙니다. 벡터를 실제로 돌리는 식에서 양쪽 곱셈으로 전체 각도가 만들어집니다.",
+        "오른손 규칙과 열벡터 약속을 유지합니다. 계산에 넣는 삼각함수의 각도 단위는 라디안입니다."
+      ],
+      "en": [
+        "Recall a unit axis and the angle of rotation about it.",
+        "The scalar is cos of the half-angle, and the vector is the unit axis times sin of the half-angle.",
+        "At zero angle, cos is one and sin is zero, giving the identity [1,0,0,0].",
+        "A 90-degree z rotation uses a 45-degree half-angle, so w and z are both sqrt(2)/2.",
+        "The half-angle does not mean half the physical rotation. Multiplication on both sides produces the full angle.",
+        "We retain right-handed column-vector conventions, and use radians in trigonometric calculations."
+      ],
+      "beats": [
+        "단위 축 n / 회전 각 θ",
+        "q = [cos(θ/2), n sin(θ/2)]",
+        "θ=0 → [1,0,0,0]",
+        "Z90° → [√2/2,0,0,√2/2]",
+        "반각 / 실제 회전은 전체 각",
+        "오른손·열벡터 / 삼각함수는 rad"
+      ]
+    },
+    {
+      "after": "04",
+      "id": "N04",
+      "title": "반각으로 저장해도 회전은 90도",
+      "mode": "half-angle-bridge",
+      "ko": [
+        "복소수에서는 코사인 구십 도와 사인 구십 도를 썼는데, 지금은 사십오 도를 넣었습니다. 반각이 갑자기 나온 것처럼 보일 수 있죠.",
+        "차이는 나중에 벡터에 적용하는 방법입니다. 쿼터니언은 벡터의 왼쪽에 회전값, 오른쪽에 역원을 함께 곱합니다.",
+        "이 양쪽 연산 전체가 제트축 구십 도 회전을 만듭니다. 중간의 한쪽 곱만 따로 실제 물체의 사십오 도 자세라고 해석하면 안 됩니다.",
+        "지금은 저장값과 실제 회전량을 구분하고, 뒤에서 같은 벡터에 양쪽 곱을 끝까지 계산해 반각의 이유를 다시 확인하겠습니다."
+      ],
+      "en": [
+        "A planar rotation used sine and cosine of the full angle, but our quaternion uses 45 degrees for a 90-degree turn. This needs an explanation.",
+        "The difference is how we later apply it: the rotation value multiplies the vector on the left, and its inverse multiplies it on the right.",
+        "The complete two-sided operation produces the 90-degree z rotation. A one-sided intermediate is not a physical 45-degree orientation of the object.",
+        "For now, distinguish the stored half-angle from the physical turn; we will later calculate both products on the same vector to verify the connection."
+      ],
+      "beats": [
+        "저장 θ/2=45° / 실제 θ=90°",
+        "벡터 적용: q[0,v]q⁻¹",
+        "중간 한쪽 곱 ≠ 실제 중간 자세",
+        "뒤의 같은 벡터로 검산"
+      ],
+      "kind": "explanation"
+    },
+    {
+      "id": "GA07",
+      "episode": 1,
+      "after": "N04",
+      "title": "반각은 화면에서 절반만 도는 뜻이 아니다",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          56,
+          80
+        ]
+      ],
+      "maximumSeconds": 24,
+      "ko": [
+        "반각은 저장식의 각도였죠. 빨간 몸체와 파란 바퀴 선을 보세요.",
+        "양쪽 곱 전체는 구십 도를 만듭니다. 물체를 절반만 돌리는 뜻은 아닙니다.",
+        "네 숫자와 실제 자세를 연결하죠."
+      ],
+      "en": [
+        "The half-angle belonged to the storage formula. Observe the red torso and blue wheel lines.",
+        "The complete two-sided operation produces ninety degrees; it does not rotate the object by half.",
+        "We now connect the four components to the visible orientation."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip, wheel hubs when clear",
+        "red": "torso direction",
+        "blue": "wheel-hub line",
+        "revealDuringLine": 0
+      },
+      "kind": "actual",
+      "maxSeconds": 24
+    },
+    {
+      "id": "B05",
+      "before": "05",
+      "kind": "explanation",
+      "ko": [
+        "제트축 구십 도라는 계산 약속을 만들었습니다. 게임으로 돌아가면 몸에 붙인 방향이 함께 바뀌는지 볼 수 있습니다. 다만 움직이는 카메라의 화면 각도는 방금 정한 월드 각도와 같지 않습니다."
+      ],
+      "en": [
+        "We have defined a 90-degree turn about z. Returning to the game, we can watch body directions change together; the angle projected by a moving camera is not our defined world angle."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "05",
+      "kind": "actual",
+      "title": "몸에 붙인 축과 공중 회전",
+      "ko": [
+        "스키가 지면을 벗어나는 순간과 착지하는 순간의 몸 방향을 비교해 보세요.",
+        "몸에 작은 세 축을 붙였다고 상상하면, 공중에서 축 전체가 같이 돌아갑니다.",
+        "몸이 위를 향하는지와 스키가 어느 쪽으로 기울었는지는 한 방향만으로 설명하기 어렵습니다.",
+        "쿼터니언은 그 전체 자세를 저장하는 한 방법입니다. 위치나 이동 속도까지 담는 네 숫자는 아닙니다.",
+        "화면으로 정확한 회전 축과 각도를 측정했다고 생각하지는 마세요. 다음 그림에서 정한 축과 각도로 직접 계산합니다.",
+        "착지 전후의 자세와 이동 방향을 따로 보면서, 회전 표현이 무엇을 기록하는지 연결해 보세요."
+      ],
+      "en": [
+        "Compare body facing when the skis leave the ground and when they land.",
+        "Imagine three small body axes; all of them rotate together in the air.",
+        "One direction alone cannot describe both body facing and ski bank.",
+        "A quaternion is one way to store the full orientation, not position or velocity.",
+        "We are not measuring exact axes and angles from the screen. We will define those explicitly in the next calculation.",
+        "Watch orientation separately from travel direction around landing to connect the representation to visible motion."
+      ],
+      "sourceId": "4Odvp_TIeQU",
+      "sourceSegments": [
+        {
+          "in": 51,
+          "maxSeconds": 47
+        }
+      ],
+      "in": 51,
+      "maxSeconds": 47,
+      "focus": "몸에 붙인 세 축의 상상과 공중 자세 변화",
+      "claim": "전체 자세 표현이 위치·속도와 별개"
+    },
+    {
+      "id": "GA09",
+      "episode": 1,
+      "after": "05",
+      "title": "한 번의 변화에서 두 번의 연산으로",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          630,
+          651
+        ]
+      ],
+      "maximumSeconds": 21,
+      "ko": [
+        "축과 각도로 회전값을 만들었죠. 빨간 몸체 선과 파란 바퀴 선을 보세요.",
+        "같은 축의 회전을 두 번 적용하면 어떨까요?",
+        "이제 구십 도 두 번을 하나의 곱으로 잇겠습니다."
+      ],
+      "en": [
+        "An axis and angle gave us a rotation value. Observe the red torso and blue wheel lines.",
+        "What happens when we apply that rotation twice about one axis?",
+        "We now compose two ninety-degree turns into one product."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip and wheel hubs in unobstructed section",
+        "red": "torso direction",
+        "blue": "wheel-hub line",
+        "revealDuringLine": 0
+      },
+      "kind": "actual",
+      "maxSeconds": 21
+    },
+    {
+      "id": "B06",
+      "before": "06",
+      "kind": "explanation",
+      "ko": [
+        "몸 전체의 자세가 바뀐다는 것을 봤죠. 같은 축의 구십 도 회전을 한 번 더 적용하면 어떻게 될까요? 게임의 특정 동작을 측정하는 대신, 축을 고정한 수학 예제로 계산해 보겠습니다."
+      ],
+      "en": [
+        "We saw the whole orientation change. What happens if we apply the same 90-degree turn again? We will calculate a fixed-axis example rather than measure a particular game maneuver."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "06",
+      "kind": "explanation",
+      "title": "구십 도 회전을 두 번 합치면",
+      "mode": "double-angle",
+      "ko": [
+        "제트축 구십 도 쿼터니언을 두 번 곱해 보겠습니다. 같은 회전을 두 번 적용하는 계산입니다.",
+        "두 스칼라를 곱한 값에서 두 벡터의 내적을 빼면 새 스칼라가 됩니다. 여기서는 영입니다.",
+        "새 벡터의 제트 성분은 두 반각 성분의 곱을 더해 일이 됩니다. 나머지는 영입니다.",
+        "결과는 영, 영, 영, 일입니다. 제트축 백팔십 도 회전을 나타내죠.",
+        "두 번 더 곱하면 마이너스 일, 영, 영, 영이 됩니다. 물체의 최종 자세는 처음과 같습니다.",
+        "숫자는 일에서 마이너스 일로 바뀌었는데 자세는 같습니다. 이제 이 두 겹 표현의 의미를 살펴보겠습니다."
+      ],
+      "en": [
+        "Multiply the z90 quaternion by itself, applying the same rotation twice.",
+        "The new scalar is the product of scalars minus the vector dot product, which is zero here.",
+        "The two cross scalar-vector terms sum to a z component of one; the other components remain zero.",
+        "The result [0,0,0,1] represents z180.",
+        "After two more such rotations, the result is [-1,0,0,0], with the body back at its initial orientation.",
+        "The scalar changed from one to minus one, yet the orientation matches. Let us examine this double representation."
+      ],
+      "beats": [
+        "qz(90°) × qz(90°)",
+        "scalar = 1/2 - 1/2 = 0",
+        "vector z = 1/2 + 1/2 = 1",
+        "[0,0,0,1] = Z180°",
+        "Z360° → [-1,0,0,0]",
+        "숫자는 달라도 끝 자세는 같음"
+      ]
+    },
+    {
+      "id": "B07",
+      "before": "07",
+      "kind": "explanation",
+      "ko": [
+        "네 번 돌렸더니 자세는 처음으로 돌아왔지만 저장한 숫자의 부호는 바뀌었습니다. 이 불일치를 설명해야 같은 자세를 잘못 다르다고 판단하지 않겠죠."
+      ],
+      "en": [
+        "Four turns restored the orientation but changed the signs of its stored components. We must explain that difference to compare orientations correctly."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "07",
+      "kind": "explanation",
+      "title": "q와 -q는 같은 자세",
+      "mode": "double-cover",
+      "ko": [
+        "단위 쿼터니언 큐와 마이너스 큐는 같은 회전 행렬과 같은 끝 자세를 나타냅니다.",
+        "네 성분을 모두 뒤집는 것이 핵심입니다. 벡터 성분만 뒤집는 켤레와는 구분해야 합니다.",
+        "벡터를 돌리는 식에서는 양쪽 부호가 함께 바뀌어서 서로 상쇄됩니다.",
+        "따라서 자세가 같은지 확인할 때 성분이 완전히 같은지만 검사하면 안 됩니다.",
+        "반대로 큐와 마이너스 큐가 같은 자세라는 사실은, 그 사이를 어떤 경로로 보간해도 같다는 뜻은 아닙니다.",
+        "끝 자세만으로는 몇 바퀴 돌았는지 알 수 없습니다. 회전 경로와 누적량은 따로 저장해야 합니다."
+      ],
+      "en": [
+        "The unit quaternions q and -q produce the same rotation matrix and endpoint orientation.",
+        "All four components change sign. This differs from conjugation, which changes only the vector signs.",
+        "In vector rotation, the signs on both sides cancel.",
+        "Component equality alone is therefore insufficient to test orientation equality.",
+        "Equivalent endpoints do not make every interpolation path between signed representatives equivalent.",
+        "Endpoint orientation does not retain revolution count; store the path and accumulated rotation separately."
+      ],
+      "beats": [
+        "R(q) = R(-q)",
+        "전체 부호 반전 ≠ 켤레",
+        "(-q) v (-q)⁻¹ = q v q⁻¹",
+        "성분 비교 대신 회전 비교",
+        "같은 끝 자세 / 보간 경로는 별도",
+        "자세 상태 ≠ 누적 회전 이력"
+      ]
+    },
+    {
+      "id": "GA05",
+      "episode": 1,
+      "after": "07",
+      "title": "같은 끝 자세와 지나온 회전 과정을 구분하기",
+      "sourceId": "4Odvp_TIeQU",
+      "intervals": [
+        [
+          147,
+          159
+        ],
+        [
+          169.25,
+          179.1
+        ],
+        [
+          181.8,
+          187
+        ],
+        [
+          372,
+          394
+        ]
+      ],
+      "maximumSeconds": 49.05,
+      "ko": [
+        "큐와 마이너스 큐가 같다는 말은 끝 자세에 관한 것이었습니다. 점프와 착지를 계속 보세요.",
+        "빨간 몸체 선과 파란 스키 선은 시간에 따른 방향 기록입니다.",
+        "한 장의 끝 화면만으로 중간에 얼마나 돌았는지는 알 수 없습니다.",
+        "계산에서는 전체 부호만 바꿉니다. 반대 회전이나 경로 되감기는 아닙니다.",
+        "그럼 아무 추가 회전도 주지 않을 때의 값은 무엇일까요? 다음 설명에서 같은 입력을 확인하겠습니다."
+      ],
+      "en": [
+        "The equality of q and minus q concerned the ending orientation. Continue observing the jump and landing.",
+        "The red torso line and blue ski line record visible directions over time.",
+        "One endpoint image cannot recover the intervening turn.",
+        "Our calculation flips all components; it does not reverse rotation or rewind a route.",
+        "Which value applies no extra rotation? We verify the same input in the following explanation."
+      ],
+      "annotation": {
+        "landmarks": "clear torso and ski endpoints; hide for occlusion",
+        "red": "torso direction",
+        "blue": "ski direction",
+        "revealDuringLine": 1
+      },
+      "kind": "actual",
+      "maxSeconds": 49.05,
+      "segmentSourceIds": [
+        "4Odvp_TIeQU",
+        "4Odvp_TIeQU",
+        "4Odvp_TIeQU",
+        "_dw9jjRpanA"
+      ],
+      "sourceGroupStartsAtLines": [
+        0,
+        1,
+        null,
+        3
+      ],
+      "selectionReason": "AG51.75s played natively to ended=true in the review player. The unused gaps147–159 and169.25–187 show jumps, orientation change and landing; the separate372–394 ski excerpt shows a clear jump/landing and downhill state. Reject broad I350–405 due crash/get-up gray screens354–370 and395–401. Make the source switches explicit; never imply one cut is the before/after of another. Fine-frame correction: source contact page3 shows get-up179.1–180.1; exclude it and label the discontinuous excerpt. Both remaining portions in this narrated group are independent visible actions."
+    },
+    {
+      "id": "B08",
+      "before": "08",
+      "kind": "explanation",
+      "ko": [
+        "같은 끝 자세에 서로 다른 숫자가 붙을 수 있었습니다.",
+        "그렇다면 끝 자세만으로 지나온 회전 과정도 알 수 있을까요?",
+        "이번에는 한 구간의 시간 흐름을 따라가 보죠."
+      ],
+      "en": [
+        "Different component signs represented the same final orientation.",
+        "Can that orientation reveal the preceding motion?",
+        "Let us follow one interval through time."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "08",
+      "kind": "actual",
+      "title": "같은 자세로 돌아와도 움직임은 남는다",
+      "ko": [
+        "스키가 공중에서 돌아가는 동안 몸의 앞쪽과 스키의 선을 따라가 보세요.",
+        "어느 한 프레임의 자세만 보면, 그 전에 어떤 동작을 거쳤는지 모두 알 수는 없습니다.",
+        "이 장면처럼 시간의 흐름을 함께 보면 회전 과정이 보입니다. 끝 자세와 과정은 다른 정보입니다.",
+        "쿼터니언의 부호 두 개가 같은 자세를 나타낸다는 설명도 이 구분과 연결됩니다.",
+        "화면에 보이는 회전 횟수를 쿼터니언 한 개가 그대로 기억한다고 생각하지 마세요.",
+        "트릭의 회전량을 기록해야 한다면, 자세 외에 입력이나 누적 회전 기록을 따로 관리해야 합니다."
+      ],
+      "en": [
+        "Follow the body forward direction and ski line through the airborne rotation.",
+        "A single frame cannot reveal the full movement that preceded it.",
+        "Time reveals the process; endpoint orientation and movement history are different information.",
+        "Connect this distinction to the two signed quaternions representing one orientation.",
+        "One quaternion does not automatically retain the number of visible revolutions.",
+        "If a trick needs accumulated rotation, track input or rotation history separately from orientation."
+      ],
+      "sourceId": "4Odvp_TIeQU",
+      "sourceSegments": [
+        {
+          "in": 99,
+          "maxSeconds": 48
+        },
+        {
+          "in": 159,
+          "maxSeconds": 18
+        }
+      ],
+      "in": 99,
+      "maxSeconds": 66,
+      "focus": "연속적인 공중 회전 과정과 특정 프레임 자세를 구분",
+      "claim": "끝 자세 표현과 회전 이력을 나누어 기록"
+    },
+    {
+      "id": "GA04",
+      "episode": 1,
+      "after": "08",
+      "title": "변화가 없다는 연산도 입력과 결과로 읽기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          317,
+          350
+        ]
+      ],
+      "maximumSeconds": 33,
+      "ko": [
+        "끝 자세는 지난 동작 전부를 저장하지 않았죠.",
+        "이번에는 설원에서 몸체와 바퀴를 보세요.",
+        "빨간 선은 몸체 방향입니다.",
+        "파란 선은 보이는 바퀴 방향입니다.",
+        "경사와 커브에서 두 방향이 함께 바뀝니다.",
+        "항등 회전은 게임 화면 전체가 멈춘다는 뜻이 아닙니다.",
+        "입력 방향에 추가 회전을 주지 않는 연산입니다.",
+        "몸체 선을 입력으로 생각해 보죠.",
+        "그대로 돌려주려면 어떤 네 숫자가 필요할까요?"
+      ],
+      "en": [
+        "An endpoint pose did not store every earlier action.",
+        "Observe the torso and wheels during snow travel.",
+        "The red line shows the torso direction.",
+        "The blue line shows a visible wheel direction.",
+        "Both directions change through slopes and bends.",
+        "Identity rotation does not mean that the whole game image stops.",
+        "It applies no extra rotation to an input direction.",
+        "Treat the torso direction as the input.",
+        "Which four components return it unchanged?"
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip and ski endpoints when clearly visible",
+        "red": "torso direction",
+        "blue": "visible ski direction",
+        "revealDuringLine": 1
+      },
+      "kind": "actual",
+      "maxSeconds": 33,
+      "selectionReason": "Bicycle wheels, not skis, are visible317–350. New-only V6 narration identifies torso and visible wheel directions; preserve all baseline material and V4/V5 takes."
+    },
+    {
+      "id": "B09",
+      "before": "09",
+      "kind": "explanation",
+      "ko": [
+        "끝 자세와 회전 이력은 다른 정보였습니다. 이제 아무 회전도 더하지 않는 저장값을 정해야 합니다. 숫자를 모두 영으로 채우는 초기화가 왜 맞지 않는지 여기서 확인하죠."
+      ],
+      "en": [
+        "Final orientation and rotation history are different information. We now need a value that adds no rotation, and will check why initializing every component to zero fails."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "09",
+      "kind": "explanation",
+      "title": "항등원과 부호를 구분하기",
+      "mode": "identity",
+      "ko": [
+        "쿼터니언 곱셈의 항등원은 일, 영, 영, 영입니다. 큐에 곱해도 큐가 그대로 남습니다.",
+        "마이너스 일, 영, 영, 영도 회전으로는 아무것도 바꾸지 않지만, 수의 곱셈 항등원은 아닙니다.",
+        "이 값을 큐에 곱하면 마이너스 큐가 됩니다. 다른 숫자지만 같은 자세가 되죠.",
+        "코드에서 영, 영, 영, 영으로 초기화하면 회전 없는 쿼터니언이 아닙니다. 길이가 영인 잘못된 회전 입력입니다.",
+        "처음 자세를 저장할 때는 라이브러리의 항등 회전 생성 기능이나, 올바른 성분 순서의 단위 값을 사용하세요.",
+        "수로서 같은지, 회전으로서 같은지 질문을 먼저 나누면 부호에 대한 혼동을 줄일 수 있습니다."
+      ],
+      "en": [
+        "The multiplication identity is [1,0,0,0]; multiplying q by it leaves q unchanged.",
+        "[-1,0,0,0] is also the identity rotation, but is not the algebraic multiplication identity.",
+        "It changes q to -q: different components representing the same orientation.",
+        "An all-zero quaternion is not no rotation; it is a zero-norm invalid rotation input.",
+        "Initialize with the library identity constructor or correctly ordered unit components.",
+        "Distinguish equality as numbers from equality as rotations before reasoning about signs."
+      ],
+      "beats": [
+        "1q = [1,0,0,0]",
+        "[-1,0,0,0]: 항등 회전 / 대수 항등원 아님",
+        "(-1q)q = -q",
+        "[0,0,0,0] ≠ 회전 없음",
+        "identity() / 성분 순서 확인",
+        "수의 동일성 / 회전의 동일성"
+      ]
+    },
+    {
+      "id": "B10",
+      "before": "10",
+      "kind": "explanation",
+      "ko": [
+        "회전 없는 값은 길이가 일이었습니다. 다른 회전도 같은 길이 약속을 쓰므로, 반복 계산의 오차가 이 약속을 깨뜨렸는지 확인하는 방법이 필요합니다."
+      ],
+      "en": [
+        "The identity value had length one. Other stored rotations use that same convention, so we need to detect drift caused by repeated calculations."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "10",
+      "kind": "explanation",
+      "title": "길이와 정규화의 조건",
+      "mode": "normalize",
+      "ko": [
+        "길이는 네 성분 제곱의 합에 루트를 씌워 구합니다. 벡터 세 성분만 재는 길이가 아닙니다.",
+        "일반적인 회전 저장과 행렬 변환 함수는 길이 일인 쿼터니언을 입력으로 기대합니다.",
+        "작은 부동소수점 오차로 길이가 벗어났다면 네 성분 모두를 그 길이로 나눠 정규화합니다.",
+        "영에 가깝거나 유한하지 않은 길이는 나누기 전에 검사해야 합니다. 임의의 잘못된 입력을 정상 회전으로 꾸미지 마세요.",
+        "영이 아닌 비단위 쿼터니언도 정확한 일반 역원을 쓰는 회전식에서는 크기가 상쇄됩니다. 단위 입력을 가정한 코드와는 구분합니다.",
+        "정규화는 크기 약속을 맞춥니다. 회전 각도를 단순히 줄이거나, 잘못된 축과 곱셈 순서를 고치지는 않습니다."
+      ],
+      "en": [
+        "The norm is the square root of the sum of all four squared components, not just the vector norm.",
+        "Typical orientation storage and quaternion-to-matrix routines expect unit inputs.",
+        "For small floating-point drift, divide all four components by the norm.",
+        "Guard near-zero and nonfinite norms before division; do not disguise arbitrary invalid data as a valid rotation.",
+        "A nonzero nonunit quaternion can also rotate with its correct general inverse because scale cancels, unlike unit-assuming code.",
+        "Normalization restores the scale convention. It neither scales the rotation angle directly nor fixes wrong axes or multiplication order."
+      ],
+      "beats": [
+        "||q|| = √(w²+x²+y²+z²)",
+        "일반 회전 API: 단위 q 가정",
+        "q ← q / ||q||",
+        "영·NaN·무한대 입력 먼저 검사",
+        "비단위 q + 일반 역원: 크기 상쇄",
+        "정규화 ≠ 각도 배율 / 순서 수정"
+      ]
+    },
+    {
+      "after": "10",
+      "id": "N05",
+      "title": "정규화는 방향을 고치는 일이 아니다",
+      "mode": "normalization-example",
+      "ko": [
+        "정규화라는 말은 길이를 일로 맞춘다는 뜻입니다. 예를 들어 세, 영, 영, 사의 길이는 세 제곱 더하기 사 제곱의 루트, 즉 오입니다.",
+        "네 성분을 모두 오로 나눕니다. 스칼라 성분은 영 점 육, 엑스와 와이는 각각 영, 제트 성분은 영 점 팔입니다. 길이 제곱은 영 점 삼육 더하기 영 점 육사라서 일이죠.",
+        "바뀐 것은 숫자 묶음의 크기입니다. 축과 성분 사이의 비율은 그대로라서, 잘못 고른 회전 축이나 곱셈 순서까지 고쳐 주지는 않습니다.",
+        "이와 마찬가지로 캐릭터가 빨리 움직인다고 자세 저장값의 길이를 키우지는 않습니다. 실제 장면에서 속도와 자세를 나누어 보겠습니다."
+      ],
+      "en": [
+        "Normalization means changing the norm to one. For [3,0,0,4], the norm is the square root of three squared plus four squared, which is five.",
+        "Divide all four components by five. The scalar becomes 0.6, both x and y remain zero, and z becomes 0.8. The squared norm is 0.36 plus 0.64, which equals one.",
+        "The numerical magnitude changes while the axis and component ratios remain. This does not correct a wrongly selected axis or multiplication order.",
+        "Likewise, faster character motion does not require a larger orientation quaternion norm. We will observe speed and orientation separately in the game."
+      ],
+      "beats": [
+        "||[3,0,0,4]|| = 5",
+        "÷5 → [0.6,0,0,0.8] / 길이 1",
+        "축·성분 비율·순서 오류는 남음",
+        "이동 속도와 자세 값은 별개"
+      ],
+      "kind": "explanation"
+    },
+    {
+      "id": "GA02",
+      "episode": 1,
+      "after": "N05",
+      "title": "속도 숫자와 자세값의 길이를 나누기",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          80,
+          91
+        ],
+        [
+          94,
+          108
+        ],
+        [
+          124,
+          134
+        ]
+      ],
+      "maximumSeconds": 35,
+      "ko": [
+        "회전값의 길이는 일이었습니다. 오른쪽 속도와 몸체 방향을 나누어 보세요.",
+        "다른 비행 발췌입니다. 빨간 날개 선은 자세를, 이동 위치는 경로를 보여 줍니다.",
+        "속도 숫자가 커져도 단위 회전값의 길이는 커지지 않습니다.",
+        "이어서 자전거로 바뀝니다. 크기와 속도가 달라도 단위 길이 조건은 같습니다."
+      ],
+      "en": [
+        "The rotation quaternion had norm one. Separate the displayed speed from the visible body direction.",
+        "This is a separate flight excerpt. The red wing line shows orientation; the moving position shows a route.",
+        "A larger speed display does not imply a larger unit-rotation norm.",
+        "Next, the equipment changes to a bicycle. Apparent size and speed differ, while the unit-length condition remains the same."
+      ],
+      "annotation": {
+        "landmarks": "clear wing tips during flight only; no false continuation through gear swap",
+        "red": "visible wing direction",
+        "teal": "observed movement segment, not a world velocity vector",
+        "revealDuringLine": 1
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        1,
+        3
+      ],
+      "selectionReason": "Clean flight94–108 is inside normally played W91–108/F80–121. Broad flight108–122 is rejected after exact source pages show a gray auto-backtrack/crash at116.5–118.5. Retain explicitly narrated separate bike/flight/bike groups.",
+      "kind": "actual",
+      "maxSeconds": 35
+    },
+    {
+      "id": "B11",
+      "before": "11",
+      "kind": "explanation",
+      "ko": [
+        "길이를 맞추는 계산은 확인했습니다. 이번에는 빠른 움직임을 보면 저장값의 길이도 커져야 한다고 오해하지 않도록, 이동 속도와 자세를 따로 관찰하겠습니다."
+      ],
+      "en": [
+        "We have checked normalization. To avoid thinking that faster movement needs a longer quaternion, we will observe speed and orientation separately."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "11",
+      "kind": "actual",
+      "title": "속도 변화와 자세 저장값",
+      "ko": [
+        "이제 스키 뒤에 다른 비행 장면도 연결해 보겠습니다. 움직임의 속도와 몸의 자세를 따로 보세요.",
+        "빨리 움직인다고 쿼터니언의 길이를 크게 만드는 것은 아닙니다. 단위 회전 값의 길이는 계속 일입니다.",
+        "속도와 가속도는 이동이나 회전 변화율에 관한 정보이고, 자세는 현재 상태입니다.",
+        "날개가 기울어지는 동안 카메라도 따라갑니다. 화면의 크기 변화만으로 자세 값의 길이를 판단할 수는 없습니다.",
+        "실제 값의 단위 길이 여부는 코드나 데이터에서 검사해야 합니다. 이 영상은 그 값을 측정한 자료가 아닙니다.",
+        "움직임을 관찰한 뒤, 다음 그림에서는 저장한 회전을 어떻게 되돌리는지 계산하겠습니다."
+      ],
+      "en": [
+        "We will move from skiing to a flight segment. Watch movement speed separately from body orientation.",
+        "Faster motion does not mean a longer quaternion; a unit rotation retains norm one.",
+        "Speed and acceleration describe change, whereas orientation describes the current state.",
+        "The following camera moves as the wings bank. Apparent image size cannot reveal quaternion norm.",
+        "Check unit length in code or data; this footage is not a measurement of those values.",
+        "After observing motion, we will calculate how to undo a stored rotation in the next diagram."
+      ],
+      "sourceId": "4Odvp_TIeQU",
+      "sourceSegments": [
+        {
+          "in": 195,
+          "maxSeconds": 24
+        },
+        {
+          "in": 552,
+          "maxSeconds": 25
+        }
+      ],
+      "in": 195,
+      "maxSeconds": 49,
+      "focus": "스키와 로켓 윙슈트의 자세·속도·카메라를 구분",
+      "claim": "단위 회전 저장값은 운동 속도 자체가 아님"
+    },
+    {
+      "id": "GA08",
+      "episode": 1,
+      "after": "11",
+      "title": "기울기를 상쇄할 때 남는 이동",
+      "sourceId": "4Odvp_TIeQU",
+      "intervals": [
+        [
+          460,
+          468.23333333333335
+        ],
+        [
+          471.2,
+          473.5
+        ],
+        [
+          475,
+          487
+        ],
+        [
+          490,
+          492.25
+        ]
+      ],
+      "maximumSeconds": 24.78333333333336,
+      "ko": [
+        "주행과 비행은 별도 발췌입니다. 속도와 자세를 나누어 보죠.",
+        "비행에서 빨간 날개 선이 기울어도 오른쪽 속도는 따로 읽습니다.",
+        "단위 회전을 되돌리려면 어떤 성분을 바꿀까요? 이제 켤레로 계산하겠습니다."
+      ],
+      "en": [
+        "Riding and flight are separate excerpts. Read speed and orientation separately.",
+        "During flight, read the red wing tilt separately from the speed display.",
+        "Which components change to undo our unit rotation? We now calculate with the conjugate."
+      ],
+      "annotation": {
+        "landmarks": "flight wing tips only in second excerpt",
+        "red": "visible wing direction",
+        "teal": "screen horizontal reference",
+        "revealDuringLine": 1
+      },
+      "sourceGroupStartsAtLines": [
+        0,
+        1,
+        null,
+        null
+      ],
+      "kind": "actual",
+      "maxSeconds": 24.78333333333336,
+      "selectionReason": "Exact native frames of baseline source4Odvp_TIeQU show clear first flight through468.23 and last flight through492.2; CHECKPOINT MISSED appears at492.4 and ghosting at492.8, so end the last excerpt at492.25. Also exclude473.5–475 and487–490 recovery. Preserve1487frames, original voice and explicit separate-excerpt labels. New moving playback remains pending."
+    },
+    {
+      "id": "B12",
+      "before": "12",
+      "kind": "explanation",
+      "ko": [
+        "자세의 저장값과 속도는 다른 것이었죠. 이제 저장한 회전을 적용했다가 원래 자세로 돌아오는 일을 해 봅시다. 방금 유지한 단위 길이 덕분에 되돌리는 계산이 간단해집니다."
+      ],
+      "en": [
+        "Orientation and speed were separate quantities. Let us now undo a stored rotation; the unit-length condition we maintained makes this calculation simpler."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "12",
+      "kind": "explanation",
+      "title": "켤레로 단위 회전을 되돌리기",
+      "mode": "conjugate",
+      "ko": [
+        "켤레는 스칼라를 그대로 두고, 벡터 세 성분의 부호를 바꾸는 연산입니다.",
+        "길이가 일인 회전 쿼터니언에서는 켤레가 곧 역원입니다. 반대 회전을 적용해 되돌릴 수 있습니다.",
+        "제트축 구십 도 값의 켤레는 더블유가 그대로이고 제트 성분만 음수가 됩니다. 제트축 마이너스 구십 도 회전입니다.",
+        "원래 값과 켤레를 곱하면 일, 영, 영, 영으로 돌아옵니다.",
+        "큐의 네 성분을 모두 바꾼 마이너스 큐는 같은 자세였죠. 켤레와 마이너스 큐를 혼동하면 역회전이 틀어집니다.",
+        "반 바퀴처럼 역회전과 같은 끝 자세가 되는 특별한 경우도 있지만, 일반적으로 켤레와 전체 부호 반전은 다릅니다."
+      ],
+      "en": [
+        "Conjugation keeps the scalar and negates the three vector components.",
+        "For a unit rotation quaternion, the conjugate is the inverse and undoes the rotation.",
+        "Conjugating z90 preserves w and negates z, giving z minus90.",
+        "Their product returns [1,0,0,0].",
+        "Negating all four components instead gives the same orientation, not generally the inverse.",
+        "Special cases such as half-turns have matching inverse orientations, but conjugation and full negation remain different operations."
+      ],
+      "beats": [
+        "q* = [w,-x,-y,-z]",
+        "단위 q: q⁻¹ = q*",
+        "Z90°의 켤레 → Z-90°",
+        "q q* = [1,0,0,0]",
+        "q* ≠ -q 일반적으로",
+        "특수한 끝 자세 일치와 연산 구분"
+      ]
+    },
+    {
+      "id": "GA03",
+      "episode": 1,
+      "after": "12",
+      "title": "역회전은 주행 경로의 되감기가 아니다",
+      "sourceId": "_dw9jjRpanA",
+      "intervals": [
+        [
+          130,
+          166
+        ]
+      ],
+      "maximumSeconds": 36,
+      "ko": [
+        "단위 회전은 켤레로 되돌렸습니다. 몸체의 빨간 선과 이동 위치를 나누어 보죠.",
+        "기울기가 줄어도 자전거는 앞으로 갑니다. 회전과 이동은 다른 변화입니다.",
+        "역원은 정한 회전을 상쇄합니다. 지난 시간이나 이동 거리를 되감지는 않습니다.",
+        "길이가 일이 아닌 값도 켤레만으로 되돌릴까요? 다음 숫자로 검산하겠습니다."
+      ],
+      "en": [
+        "We inverted a unit rotation with its conjugate. Separate the red torso line from the traveled position.",
+        "Even as the bank becomes smaller, the bicycle continues forward. Rotation and translation are different changes.",
+        "An inverse cancels the defined rotation. It does not rewind elapsed time or distance.",
+        "Would conjugation alone invert a tuple whose norm is not one? We verify that condition next."
+      ],
+      "annotation": {
+        "landmarks": "helmet/hip in clear subinterval",
+        "red": "torso direction",
+        "teal": "screen reference, not world up",
+        "revealDuringLine": 0
+      },
+      "kind": "actual",
+      "maxSeconds": 36
+    },
+    {
+      "id": "B13",
+      "before": "13",
+      "kind": "explanation",
+      "ko": [
+        "단위 값은 켤레로 되돌릴 수 있었습니다. 그런데 길이가 일이 아닌 값에도 같은 식을 쓰면 정말 원래 값으로 돌아올까요? 곱해서 일이 되는지 작은 숫자로 확인하죠."
+      ],
+      "en": [
+        "Conjugation undid a unit quaternion. Does the same formula work when its length is not one? A small numerical example will check whether their product is the identity."
+      ],
+      "requiredVisibleConnection": "carry previous state/result into next problem; render with the corresponding actual geometry, not generic text cards",
+      "title": "다음 계산으로 연결하기"
+    },
+    {
+      "id": "13",
+      "kind": "explanation",
+      "title": "일반 역원은 길이의 제곱으로 나눈다",
+      "mode": "general-inverse",
+      "ko": [
+        "길이가 일이 아니라면 역원은 켤레를 길이의 제곱으로 나눕니다. 길이 자체로 나누는 식이 아닙니다.",
+        "예를 들어 이, 영, 영, 영의 길이는 이이고, 길이 제곱은 사입니다.",
+        "켤레도 이, 영, 영, 영이므로 사로 나누면 역원은 영 점 오, 영, 영, 영입니다.",
+        "둘을 곱하면 스칼라가 일이 됩니다. 길이 이로 나눠 버리면 스칼라가 이가 되어 역원이 아닙니다.",
+        "단위 값에서는 길이 제곱이 일이어서 앞의 켤레 공식과 같아집니다.",
+        "이 역원은 영이 아닌 쿼터니언에만 정의됩니다. 영이나 유한하지 않은 입력은 오류로 처리하고 출처를 확인하세요."
+      ],
+      "en": [
+        "The general inverse is the conjugate divided by the squared norm, not the norm itself.",
+        "For [2,0,0,0], the norm is two and its square is four.",
+        "Dividing the conjugate by four gives [0.5,0,0,0].",
+        "Their product is the identity. Dividing by two would leave scalar two in the product and fail the inverse test.",
+        "For unit inputs the squared norm is one, recovering the conjugate rule.",
+        "The inverse requires a nonzero quaternion; reject zero and nonfinite inputs and inspect their origin."
+      ],
+      "beats": [
+        "q⁻¹ = q* / ||q||²",
+        "q=[2,0,0,0] / ||q||²=4",
+        "q⁻¹=[0.5,0,0,0]",
+        "2 × 0.5 = 1 / 2 × 1 = 2",
+        "단위 q이면 q⁻¹ = q*",
+        "영·비유한 입력: 오류 처리"
+      ]
+    },
+    {
+      "id": "GA10",
+      "episode": 1,
+      "after": "13",
+      "title": "되돌리기에서 두 회전의 합성으로",
+      "sourceId": "4Odvp_TIeQU",
+      "intervals": [
+        [
+          522,
+          542
+        ]
+      ],
+      "maximumSeconds": 20,
+      "ko": [
+        "역원은 회전만 상쇄했죠. 빨간 몸체 선과 이동을 따로 보세요.",
+        "그럼 두 회전을 잇는 계산은요? 다음 편에서 곱으로 확인합니다."
+      ],
+      "en": [
+        "An inverse cancelled rotation. Read the red torso line separately from traveled position.",
+        "How do we connect two rotations? The next episode verifies their product."
+      ],
+      "annotation": {
+        "landmarks": "visible upper back and waist; projected body direction",
+        "revealDuringLine": 0
+      },
+      "kind": "actual",
+      "maxSeconds": 20,
+      "selectionReason": "Extend the continuous rider closing three seconds into the natively played X539–552; end before equipment changes. GB07 begins542 to avoid repetition."
+    },
+    {
+      "id": "F02",
+      "kind": "explanation",
+      "after": "13",
+      "title": "첫 편의 결과가 다음 편의 질문으로",
+      "mode": "first-conclusion",
+      "ko": [
+        "이제 네 숫자가 공간의 네 방향이 아니라 축과 각도를 저장하는 계산 도구라는 것을 연결했습니다.",
+        "평면의 복소수 회전에서 출발해, 단위 축과 반각으로 값을 만들고 길이를 확인했습니다. 역원은 적용한 회전을 상쇄하는 값이라는 것도 검산했습니다.",
+        "그런데 게임의 자세는 한 번만 돌고 끝나지 않죠. 다음 편에서는 회전을 두 번 이어 붙이면 왜 순서가 중요해지는지, 현재 자세에서 목표 자세까지 어떤 회전을 더해야 하는지 계산하겠습니다."
+      ],
+      "en": [
+        "We have connected the four components to a computational representation of axis and angle, rather than four spatial directions.",
+        "Starting from a complex planar turn, we constructed a quaternion with a unit axis and half-angle, checked its norm, and verified that an inverse cancels the applied operation.",
+        "A game orientation rarely stops after one turn. The next episode explains why the order of two turns matters and calculates the extra rotation from a current orientation to a target."
+      ],
+      "visual": "retain final inverse result; q×q^-1=identity then the same object receives first of two turns, second turn becomes next-episode question",
+      "beats": [
+        "네 숫자 → 축과 각도의 저장값",
+        "길이를 확인하고 역원으로 검산",
+        "다음 질문: 두 회전의 순서 / 현재 → 목표"
+      ]
+    }
+  ],
+  "slug": "game-math-quaternion-foundations-v2",
+  "title": "게임수학 Part2 · 쿼터니언 ① 허수에서 회전과 역원까지",
+  "revisionOf": "game-math-quaternion-operations",
+  "episode": 1,
+  "causalSpine": "네 숫자는 왜 회전을 나타내고 어떻게 되돌릴까?",
+  "baselineSource": "production/batches/game-math-part2-teaching-revision/baselines/game-math-quaternion-operations",
+  "baselineOriginalScenesUnchanged": true
+}
