@@ -32,6 +32,11 @@ for ep in progress['episodes']:
   assert proof['videoId']==ep['videoId'] and proof['uploadInputSha256']==ep['captionedSha256']
   assert proof['burnedKoreanCaptionsDirectlyVisible'] and proof['gameplayAnnotationsDirectlyVisible']
   ep.update(actualUploadedCaptionPixelsVerified=True,uploadedPixelReview=pixel.relative_to(ROOT).as_posix())
+ delivery=ROOT/'shared/output/quaternion-git-delivery-v3'/f'{name}-delivery.json'
+ if delivery.exists():
+  delivered=read(delivery)
+  if delivered.get('pushed') and delivered.get('remoteSha')==delivered.get('commit'):
+   ep.update(gitDelivered=True,gitCommit=delivered['commit'])
  m['editing']['exampleInterleaving']['reviewStatus']='Current-hash narrated moving additions and original retained clips directly reviewed; all fixed-caption cues passed.'
  m['editing']['timingStatus']='Measured current narration and retained PCM; exact body actual40/explanation60; final 1080p60 decode and whole native playback passed.'
  m['approvals']['rights']='Both languages saved and reopened with the explicitly authorized Besiege mandatory links; source/game-IP human review remains pending.'
