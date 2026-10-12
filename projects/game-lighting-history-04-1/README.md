@@ -1,9 +1,11 @@
 # Game rendering history 04-1
 
-Actual private upload: https://youtu.be/YOsG939kaBw
+Actual private video: https://youtu.be/YOsG939kaBw
 
-Current89148frames /1485.8seconds. Reviewed94bodyinputs,335KO/409EN cues,77 preserved narration paragraphs; exact60:40 body ratio(.2frame rounding). Final345 pair,347pixel/motion/audio QA and349four-file collection supersede historical candidates.
+Reviewed delivery: 1,485.8 seconds, 89,148 frames at 1080p60. The body retains 53,057 actual-footage and 35,371 explanation frames (60:40, 0.2-frame rounding), 77 full narration paragraphs, 335 Korean and 409 English cues. Current pair345 and QA347 supersede historical candidates. Two complete decodes passed; PTS are continuous and both masters carry identical AAC.
 
-Black projected2.5D explanations and four distinct games: Horizon Forbidden West, The Outer Worlds2, Cyberpunk2077 and Fortnite; original branding and12-row10-second member ending retained. Actual1080p uploaded game/PPT captions verified withCCoff; manualKO/EN and English metadata posted and reopened, illustrated thumbnail/card/three end elements verified.
+Black projected 2.5D explanations connect Horizon Forbidden West, The Outer Worlds2, Cyberpunk2077 and Fortnite. The original branding and 12-row, 10-second member ending remain. Uploaded1080p game/PPT captions were directly inspected with CC off. Illustrated thumbnail, manual KO/EN subtitles, English metadata, coaching card and three end-screen elements were saved and reopened. Automatic ad checking completed with monetization enabled; no copyright claims were observed.
 
-Automatic ad suitability completed; no copyright claims observed. Whole human listening/pronunciation, final public rights, original Nimbus file, truncated original handles, backup, playerCC propagation, dubbing and private-comment posting remain pending. Private and unscheduled to preserve series order. Git delivery pending. Entire series unfinished.
+Reviewed metadata/code, the necessary thumbnail and one minimal publishing screenshot were normally pushed at `8ec97e0ff7be728a2cc84fe460a955bf84edd90e`; the actual remote SHA matched. External Git index bytes/entries stayed unchanged. Raw source media, audio, extracted frames and repeated QA screenshots remain local. The shared global rebuild-index write was locked; the own rebuilt manifest and exact scoped `node scripts/build-rebuild-manifests.cjs game-lighting-history-04-1 --check` passed.
+
+Private and unscheduled while earlier series episodes remain unfinished. Whole human listening/pronunciation, final public rights, original Nimbus verification, truncated original member handles, external backup, optional playerCC propagation, dubbing and private-comment posting remain pending. This record does not complete or publicly approve the whole series.

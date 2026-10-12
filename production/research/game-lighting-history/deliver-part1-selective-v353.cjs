@@ -5,7 +5,7 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 function git(args,env=process.env,input){const r=cp.spawnSync('git',args,{env,input,encoding:Buffer.isBuffer(input)?undefined:'utf8',windowsHide:true,maxBuffer:128e6});if(r.status!==0)throw Error('git '+args.join(' ')+'\n'+r.stdout+r.stderr);return String(r.stdout)}
 const evidenceOnly=process.argv.includes('--evidence-only');
 const previous=evidenceOnly?JSON.parse(fs.readFileSync(R+'part1-selective-git-verification-v353.json')):null;
-const plan=evidenceOnly?{paths:[R+'part1-selective-git-verification-v353.json',R+'part1-private-observations-v350.json',Q+'project.json',Q+'publishing/youtube-upload.json',Q+'rebuild.json',Q+'README.md'],essentialImages:[]}:JSON.parse(fs.readFileSync(R+'part1-selective-paths-v352.json'));
+const plan=evidenceOnly?{paths:[R+'part1-selective-git-verification-v353.json',R+'part1-private-observations-v350.json',R+'record-part1-git-delivery-v354.py',R+'refresh-part1-scoped-rebuild-v354.cjs',Q+'project.json',Q+'publishing/youtube-upload.json',Q+'rebuild.json',Q+'README.md'],essentialImages:[]}:JSON.parse(fs.readFileSync(R+'part1-selective-paths-v352.json'));
 const receipt=JSON.parse(fs.readFileSync(Q+'publishing/youtube-upload.json'));
 if(!receipt.privateSaved||!receipt.fullSettingsVerified||!receipt.checksPassed||receipt.actualVideoId!=='YOsG939kaBw')throw Error('Actual verified same-ID private delivery required');
 const selected=[...new Set([...plan.paths,R+'deliver-part1-selective-v353.cjs',...(evidenceOnly?[]:[R+'part1-selective-paths-v352.json',registry])])].sort();
@@ -13,7 +13,9 @@ if(git(['symbolic-ref','--short','HEAD']).trim()!=='main')throw Error('Unexpecte
 const parent=git(['rev-parse','HEAD']).trim(),externalIndex=git(['rev-parse','--git-path','index']).trim(),indexBefore=sha(fs.readFileSync(externalIndex)),entriesBefore=sha(Buffer.from(git(['ls-files','--stage','-z'])));
 const staged=git(['diff','--cached','--name-only','-z']).split('\0').filter(Boolean),overlap=staged.filter(p=>selected.includes(p)&&p!==registry);
 if(evidenceOnly){if(!previous.remoteMatches||previous.commit!==parent||previous.externalIndexAfter!==indexBefore||previous.externalEntriesAfter!==entriesBefore)throw Error('Previous actual delivery/index changed; inspect before persistence');}
-if(overlap.length)throw Error('Preserve staged selected paths: '+overlap.join(', '));
+// Identical preserved index can show our newly committed files as deleted after
+// HEAD advances. In evidence mode the byte/entry guards above resolve that case.
+if(!evidenceOnly&&overlap.length)throw Error('Preserve staged selected paths: '+overlap.join(', '));
 const idx=path.resolve('.git','lighting-part1-v353-'+Date.now()+'.index'),env={...process.env,GIT_INDEX_FILE:idx};
 const snapshots=[],checks=[];
 try{
