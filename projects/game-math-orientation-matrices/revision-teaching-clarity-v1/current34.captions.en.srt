@@ -1,0 +1,1143 @@
+1
+00:00:02,000 --> 00:00:05,480
+Why can an object tilt while facing the same
+direction?
+
+2
+00:00:05,920 --> 00:00:09,900
+We will observe flight in a game and
+distinguish direction from orientation.
+
+3
+00:00:09,992 --> 00:00:12,180
+Then we will build a rotation matrix from
+three axes and
+
+4
+00:00:12,180 --> 00:00:15,440
+convert local coordinates into world
+coordinates.
+
+5
+00:00:15,780 --> 00:00:18,280
+Finally, we will check inverse transforms and
+invalid rotations,
+
+6
+00:00:18,280 --> 00:00:22,140
+then solve two problems to verify the signs
+and calculation order.
+
+7
+00:00:22,767 --> 00:00:28,767
+After comparing the orientations of a flying character and a bicycle, we will apply the same frame-based reasoning to an assembled aircraft and component placement.
+
+8
+00:00:28,767 --> 00:00:31,907
+Superflight is a game about flying between obstacles.
+
+9
+00:00:31,947 --> 00:00:33,917
+For now, watch the character rather than the score.
+
+10
+00:00:34,207 --> 00:00:37,477
+We will separately observe where the marked torso point moves on screen
+
+11
+00:00:37,477 --> 00:00:40,197
+and how the body tilts.
+
+12
+00:00:40,307 --> 00:00:45,957
+The red displacement line shows an observed screen change, not an internal game coordinate.
+
+13
+00:00:54,083 --> 00:00:57,183
+The character flies between structures in
+Superflight.
+
+14
+00:01:00,759 --> 00:01:03,659
+Watch the body's location separately from the
+direction it faces.
+
+15
+00:01:07,295 --> 00:01:11,355
+Its position changes, and its body also tilts
+as it passes obstacles.
+
+16
+00:01:14,871 --> 00:01:18,791
+Facing direction alone cannot tell us how far
+the arms are tilted.
+
+17
+00:01:22,227 --> 00:01:26,247
+One forward arrow carries less information
+than the body's full orientation.
+
+18
+00:01:29,843 --> 00:01:32,163
+Let us translate that difference into a simple
+set of axes.
+
+19
+00:01:33,083 --> 00:01:36,403
+A direction vector is an arrow pointing
+somewhere.
+
+20
+00:01:36,583 --> 00:01:39,843
+Twisting around its length does not change its
+direction.
+
+21
+00:01:40,163 --> 00:01:43,143
+Twist an object with wings around that same
+axis and the wings tilt.
+
+22
+00:01:43,143 --> 00:01:46,283
+Its orientation has changed.
+
+23
+00:01:46,603 --> 00:01:51,263
+Two orientations can therefore share a forward
+direction but have different up directions.
+
+24
+00:01:51,543 --> 00:01:54,723
+A 3D unit direction can usually be
+parameterized by two angles,
+
+25
+00:01:54,723 --> 00:01:57,323
+while orientation has three rotational degrees
+of freedom.
+
+26
+00:01:57,523 --> 00:01:59,103
+Orientation describes a state;
+
+27
+00:01:59,423 --> 00:02:02,883
+angular displacement describes a change
+between orientations.
+
+28
+00:02:03,083 --> 00:02:07,063
+Both require a reference orientation and a
+coordinate frame.
+
+29
+00:02:07,683 --> 00:02:10,463
+We can also see the distinction between direction and orientation on a bicycle.
+
+30
+00:02:10,703 --> 00:02:14,213
+Descenders is a cycling game about riding mountain trails and making jumps.
+
+31
+00:02:14,423 --> 00:02:18,453
+First separate the changing position on a winding trail from the bicycle leaning.
+
+32
+00:02:18,708 --> 00:02:23,758
+In the next jump, the wheels turn upside down and then face downward again before landing.
+
+33
+00:02:29,078 --> 00:02:34,888
+Travel direction alone cannot describe that inversion, so we need to record both the front and the top of the bicycle.
+
+34
+00:02:34,950 --> 00:02:39,850
+Attach three small axes to the object. These
+form its local coordinate frame.
+
+35
+00:02:39,950 --> 00:02:43,350
+Red is x, green is y, and blue is z.
+
+36
+00:02:43,510 --> 00:02:47,450
+These arrows follow the right-hand rule: x
+cross y equals z.
+
+37
+00:02:47,570 --> 00:02:50,830
+The three axes are mutually perpendicular unit
+vectors.
+
+38
+00:02:51,050 --> 00:02:53,290
+When the object rotates, its axes rotate with
+it,
+
+39
+00:02:53,510 --> 00:02:56,770
+but their coordinates in its own frame remain
+unchanged.
+
+40
+00:02:56,970 --> 00:03:01,850
+To describe orientation, record where those
+local axes point in world coordinates.
+
+41
+00:03:01,850 --> 00:03:04,970
+Axis names and body-facing directions are
+conventions.
+
+42
+00:03:05,350 --> 00:03:07,290
+Check your project's conventions first.
+
+43
+00:03:08,200 --> 00:03:12,500
+Look at the flying character and the
+surrounding structures again.
+
+44
+00:03:17,112 --> 00:03:21,272
+It is easy to confuse the top of the screen
+with the character's local up direction.
+
+45
+00:03:25,884 --> 00:03:29,884
+When the body tilts, the screen's up direction
+still belongs to the camera's separate frame.
+
+46
+00:03:34,436 --> 00:03:39,256
+Compare structural edges, the torso, and the
+arms to distinguish those references.
+
+47
+00:03:43,868 --> 00:03:51,900
+Our calculation describes the relationship
+between the object's axes and the world frame.
+
+48
+00:03:52,200 --> 00:03:56,580
+The recording alone does not establish the
+game's internal rotation implementation.
+
+49
+00:03:57,200 --> 00:04:00,640
+Imagine one set of rulers attached to the body and another fixed in a room.
+
+50
+00:04:00,805 --> 00:04:04,655
+The same arrow receives different numbers depending on which rulers we use.
+
+51
+00:04:04,970 --> 00:04:09,820
+A rotation matrix records where the three body rulers point when read in the room frame.
+
+52
+00:04:09,850 --> 00:04:12,090
+We place vectors vertically and multiply by
+the
+
+53
+00:04:12,090 --> 00:04:15,330
+matrix on the left: the column-vector
+convention.
+
+54
+00:04:15,530 --> 00:04:20,230
+Our matrix R converts a local vector into a
+world vector.
+
+55
+00:04:20,550 --> 00:04:22,910
+Its first, second, and third columns contain
+the local x,
+
+56
+00:04:22,910 --> 00:04:26,310
+y, and z axes measured in world coordinates.
+
+57
+00:04:26,370 --> 00:04:29,370
+The book uses a left-handed frame and row
+vectors,
+
+58
+00:04:29,490 --> 00:04:32,030
+so we must also check its axes and rotation
+signs.
+
+59
+00:04:32,250 --> 00:04:36,970
+Matrices for the same transform under these
+two conventions are transposes of each other.
+
+60
+00:04:36,970 --> 00:04:41,730
+Before trying a transpose to fix a picture,
+write down the input and output frames.
+
+61
+00:04:42,383 --> 00:04:45,923
+Rotate by positive ninety degrees around z,
+
+62
+00:04:46,243 --> 00:04:50,863
+using the right-hand rule: thumb along
+positive z and fingers following the rotation.
+
+63
+00:04:51,103 --> 00:04:56,483
+Local x becomes world y, so the first column
+is zero, one, zero.
+
+64
+00:04:56,703 --> 00:05:02,843
+Local y becomes negative world x, so the
+second column is minus one, zero, zero.
+
+65
+00:05:03,123 --> 00:05:06,903
+Local z remains unchanged, so the third column
+is zero, zero, one.
+
+66
+00:05:07,083 --> 00:05:09,303
+Multiplying the local vector two, one,
+
+67
+00:05:09,303 --> 00:05:12,363
+zero combines twice the x-axis column with
+once the y-axis column.
+
+68
+00:05:12,383 --> 00:05:15,963
+The world result is minus one, two, zero.
+
+69
+00:05:16,103 --> 00:05:18,523
+Matrix multiplication is a weighted sum of the
+transformed axes.
+
+70
+00:05:19,150 --> 00:05:23,275
+Now we will use an assembled aircraft in Trailmakers to see what the axes mean.
+
+71
+00:05:23,275 --> 00:05:26,705
+In this game, you build vehicles from parts and drive or fly them.
+
+72
+00:05:26,705 --> 00:05:31,375
+After takeoff the wings tilt; from the next viewpoint they return to nearly level.
+
+73
+00:05:31,520 --> 00:05:35,865
+The red line marks the front of the aircraft, and the blue line connects the two sides of its wings.
+
+74
+00:05:35,865 --> 00:05:40,275
+Reading both lines helps us distinguish inclination that the forward direction alone misses.
+
+75
+00:05:46,188 --> 00:05:50,612
+The camera also moves, so the lines drawn on the screen are observation guides.
+
+76
+00:05:50,772 --> 00:05:53,808
+The ninety-degree calculation shown earlier is a separately defined mathematical example.
+
+77
+00:05:53,817 --> 00:05:57,037
+Watch the character turn as it flies beside
+the structures.
+
+78
+00:06:01,857 --> 00:06:05,157
+The body's local forward direction rotates
+with the body.
+
+79
+00:06:09,838 --> 00:06:11,998
+A direction defined in the world frame remains
+a
+
+80
+00:06:11,998 --> 00:06:14,038
+reference even when the object's orientation
+changes.
+
+81
+00:06:18,839 --> 00:06:23,879
+Moving along the object's forward direction
+differs from moving along a fixed world axis.
+
+82
+00:06:28,619 --> 00:06:32,759
+A local-to-world matrix connects those two
+kinds of commands.
+
+83
+00:06:37,500 --> 00:06:41,080
+For now, focus on the coordinate frame rather
+than speed or collision.
+
+84
+00:06:41,700 --> 00:06:45,080
+Previously, we converted body-frame numbers into an external frame.
+
+85
+00:06:45,235 --> 00:06:49,965
+Now we read how much of an external arrow lies along each body axis.
+
+86
+00:06:50,110 --> 00:06:52,060
+A dot product reads that component.
+
+87
+00:06:52,230 --> 00:06:55,780
+Transposition exchanges rows and columns for this calculation.
+
+88
+00:06:55,783 --> 00:07:01,603
+Now express a world vector in the object's
+frame. We must undo the transform we defined.
+
+89
+00:07:01,803 --> 00:07:03,263
+With orthonormal local axes,
+
+90
+00:07:03,263 --> 00:07:06,823
+the dot product with each axis gives the
+corresponding local component.
+
+91
+00:07:06,930 --> 00:07:10,203
+Multiplication by the transpose performs those
+three dot products at once.
+
+92
+00:07:10,483 --> 00:07:15,163
+Multiply world vector minus one, two, zero on
+the left by the transpose
+
+93
+00:07:15,163 --> 00:07:18,663
+of the rotation matrix to recover local vector
+two, one, zero.
+
+94
+00:07:18,923 --> 00:07:21,043
+For a pure rotation the transpose is the
+inverse.
+
+95
+00:07:21,243 --> 00:07:25,023
+This shortcut does not apply unchanged to
+arbitrary scaled or sheared matrices.
+
+96
+00:07:25,023 --> 00:07:27,103
+Points also include translation. To transform
+a point back,
+
+97
+00:07:27,283 --> 00:07:30,803
+first subtract the object's world-space
+origin.
+
+98
+00:07:31,433 --> 00:07:34,513
+A rotation matrix is also called a
+direction-cosine matrix.
+
+99
+00:07:34,773 --> 00:07:37,153
+This is not a new kind of matrix.
+
+100
+00:07:37,393 --> 00:07:40,033
+It is a table of dot products between axes
+from two frames,
+
+101
+00:07:40,033 --> 00:07:41,953
+all expressed in one common frame.
+
+102
+00:07:42,333 --> 00:07:46,113
+For unit vectors, the dot product is the
+cosine of their angle: one for parallel,
+
+103
+00:07:46,353 --> 00:07:50,633
+zero for perpendicular, and minus one for
+opposite.
+
+104
+00:07:50,693 --> 00:07:53,513
+Under our column-vector convention,
+
+105
+00:07:53,513 --> 00:07:57,153
+row and column indices correspond to world
+components and local axes.
+
+106
+00:07:57,153 --> 00:08:01,813
+Reading the first column therefore gives the
+three world components of local x.
+
+107
+00:08:02,513 --> 00:08:06,313
+Do not dot coordinate numbers measured in
+different frames.
+
+108
+00:08:06,733 --> 00:08:08,613
+Express both axes in a common frame first.
+
+109
+00:08:09,367 --> 00:08:15,367
+Once we can record the orientation of a flying object, we can reason in the same way about a component we are about to place.
+
+110
+00:08:15,642 --> 00:08:19,992
+In Space Engineers, parts are assembled to build spacecraft.
+
+111
+00:08:20,082 --> 00:08:23,972
+The translucent component inside the green box is a preview that has not yet been placed.
+
+112
+00:08:24,117 --> 00:08:26,767
+Compare the shot of the small component turning upright and sideways
+
+113
+00:08:26,767 --> 00:08:30,787
+with the shot of a solid component placed in the chosen orientation.
+
+114
+00:08:30,817 --> 00:08:34,087
+A change of size selection is separate from rotation.
+
+115
+00:08:34,207 --> 00:08:37,357
+Here we choose a placement orientation rather than fly an aircraft,
+
+116
+00:08:37,357 --> 00:08:41,047
+but the shared principle is to record the object axes in one reference frame.
+
+117
+00:08:41,050 --> 00:08:44,930
+The character moves while the camera shows its
+flight.
+
+118
+00:08:48,374 --> 00:08:52,574
+Observe the torso's tilt separately from the
+angle of background edges on the screen.
+
+119
+00:08:55,998 --> 00:08:59,778
+The object's world orientation is different
+from its orientation relative to the camera.
+
+120
+00:09:03,202 --> 00:09:07,282
+A different viewpoint changes the screen
+appearance of the same object.
+
+121
+00:09:10,726 --> 00:09:18,770
+To connect multiple frames, we need to know
+which frame each transform starts and ends in.
+
+122
+00:09:18,990 --> 00:09:21,310
+Let us connect those relationships through
+matrix multiplication.
+
+123
+00:09:22,050 --> 00:09:26,350
+Let B transform a child object's local
+coordinates into its parent's frame.
+
+124
+00:09:26,650 --> 00:09:29,410
+Let A transform the parent's frame into world
+coordinates.
+
+125
+00:09:29,710 --> 00:09:35,670
+Applying B first and then A to a column vector
+is equivalent to the product A B.
+
+126
+00:09:35,950 --> 00:09:37,990
+The rightmost transform acts first.
+
+127
+00:09:38,270 --> 00:09:41,890
+Labeling input and output frames makes the
+order easier to check.
+
+128
+00:09:42,110 --> 00:09:45,570
+A part attached to an aircraft goes from the
+part
+
+129
+00:09:45,570 --> 00:09:47,750
+frame to the aircraft frame, then into the
+world.
+
+130
+00:09:47,950 --> 00:09:50,490
+Changing rotation order does not generally
+preserve the result.
+
+131
+00:09:50,490 --> 00:09:53,650
+Next time we will compare two ninety-degree
+rotations directly.
+
+132
+00:09:54,733 --> 00:09:57,713
+Not every numerical set of axes is a rotation matrix.
+
+133
+00:09:57,973 --> 00:10:01,383
+If the rulers stretch or become oblique, the object becomes distorted.
+
+134
+00:10:01,533 --> 00:10:06,203
+We therefore check axis lengths, right angles and handedness.
+
+135
+00:10:06,383 --> 00:10:09,353
+The next equations summarize those checks.
+
+136
+00:10:09,617 --> 00:10:13,477
+Nine numbers do not automatically make a
+rotation matrix.
+
+137
+00:10:13,777 --> 00:10:17,157
+First check that its three columns have unit
+length and are
+
+138
+00:10:17,437 --> 00:10:19,217
+mutually perpendicular: the orthonormality
+condition.
+
+139
+00:10:19,337 --> 00:10:23,137
+In matrix form, R transpose times R must equal
+the identity.
+
+140
+00:10:23,377 --> 00:10:25,977
+A reflection also passes this condition.
+
+141
+00:10:26,277 --> 00:10:29,477
+A proper 3D rotation must additionally have
+determinant positive one.
+
+142
+00:10:29,697 --> 00:10:33,857
+Check orthonormality and determinant positive
+one together.
+
+143
+00:10:34,057 --> 00:10:38,637
+With floating-point data, use a tolerance
+instead of exact equality.
+
+144
+00:10:38,637 --> 00:10:41,397
+Choose that tolerance for the data and the
+intended use.
+
+145
+00:10:42,150 --> 00:10:46,270
+The character appears larger or smaller as its
+distance from the camera changes.
+
+146
+00:10:50,949 --> 00:10:55,049
+That visual change alone does not prove its
+rotation matrix contains scaling.
+
+147
+00:10:59,807 --> 00:11:07,566
+Perspective and camera distance also affect
+screen size.
+
+148
+00:11:07,766 --> 00:11:11,866
+Separate the body's 3D axes from its projected
+appearance.
+
+149
+00:11:16,565 --> 00:11:20,985
+The rotation matrix we are testing preserves
+lengths and angles of 3D vectors.
+
+150
+00:11:25,563 --> 00:11:28,963
+It does not require pixel lengths in
+screenshots to remain constant.
+
+151
+00:11:29,583 --> 00:11:34,143
+Set the x diagonal component to two and the y
+and z components to one each.
+
+152
+00:11:34,503 --> 00:11:37,463
+Only the x direction doubles, so length is not
+preserved.
+
+153
+00:11:37,763 --> 00:11:40,543
+Now change the x component to minus one and
+keep y and z at one.
+
+154
+00:11:40,543 --> 00:11:44,883
+This produces a reflection across a plane.
+
+155
+00:11:45,123 --> 00:11:49,723
+A reflection preserves lengths and
+perpendicularity but reverses handedness.
+
+156
+00:11:49,983 --> 00:11:54,303
+Its determinant is minus one, so it must fail
+the proper-rotation test.
+
+157
+00:11:54,523 --> 00:11:58,543
+Flipping two axes is different: set x and y to
+minus one and z to one.
+
+158
+00:11:58,543 --> 00:12:01,743
+This is a half-turn around z.
+
+159
+00:12:01,863 --> 00:12:03,803
+Do not judge from a single negative entry.
+
+160
+00:12:03,803 --> 00:12:06,523
+Check orthonormality and the determinant
+together.
+
+161
+00:12:07,150 --> 00:12:12,990
+Subtracting the part parallel to the first ruler leaves only the perpendicular part of a slightly skewed second ruler.
+
+162
+00:12:13,240 --> 00:12:15,470
+We then restore its length to one.
+
+163
+00:12:15,710 --> 00:12:18,160
+That is the idea behind the next correction.
+
+164
+00:12:18,300 --> 00:12:22,510
+A vanished ruler or initially parallel input needs separate handling.
+
+165
+00:12:22,517 --> 00:12:24,737
+Repeatedly multiplying small rotations each
+frame
+
+166
+00:12:24,737 --> 00:12:27,317
+can accumulate floating-point rounding error.
+
+167
+00:12:27,577 --> 00:12:31,057
+Axes that were initially valid may drift
+slightly in
+
+168
+00:12:31,057 --> 00:12:33,657
+length or perpendicularity. This is called
+matrix creep.
+
+169
+00:12:33,737 --> 00:12:38,437
+In code, measure orthonormality error and
+repair the axes when needed.
+
+170
+00:12:38,657 --> 00:12:41,457
+One method normalizes the first axis,
+
+171
+00:12:41,457 --> 00:12:44,277
+removes its component from the second axis,
+then normalizes the second.
+
+172
+00:12:44,557 --> 00:12:49,057
+Constructing the third axis with their cross
+product preserves right-handedness.
+
+173
+00:12:49,057 --> 00:12:53,017
+Degenerate input, such as nearly parallel
+axes, needs separate handling.
+
+174
+00:12:53,197 --> 00:12:56,457
+This correction handles small numerical drift.
+
+175
+00:12:56,717 --> 00:13:00,897
+It does not automatically fix intentional
+scale or incorrect data semantics.
+
+176
+00:13:01,597 --> 00:13:08,417
+The character continues to move smoothly on
+screen.
+
+177
+00:13:08,697 --> 00:13:14,477
+Visual smoothness and mathematically valid
+internal data are separate questions.
+
+178
+00:13:18,857 --> 00:13:22,277
+During development, axis lengths and dot
+products can be inspected numerically.
+
+179
+00:13:26,517 --> 00:13:30,057
+We can monitor whether orientation updates
+increase the error.
+
+180
+00:13:34,357 --> 00:13:36,797
+This is an example of what developers can
+check,
+
+181
+00:13:37,077 --> 00:13:39,777
+not a claim that this game has an error.
+
+182
+00:13:44,177 --> 00:13:47,817
+Next, we will connect this to storage costs
+and a clear code interface.
+
+183
+00:13:48,664 --> 00:13:51,537
+Matrices directly support coordinate
+transforms and composition,
+
+184
+00:13:51,537 --> 00:13:54,577
+and their axes are easy to inspect.
+
+185
+00:13:54,857 --> 00:13:56,757
+However, a three-by-three matrix stores nine
+numbers for
+
+186
+00:13:56,757 --> 00:13:59,937
+an orientation with three rotational degrees
+of freedom.
+
+187
+00:14:00,297 --> 00:14:03,777
+Counting only 32-bit floating-point
+components,
+
+188
+00:14:03,777 --> 00:14:06,097
+a matrix takes 36 bytes and three Euler angles
+take 12.
+
+189
+00:14:06,138 --> 00:14:09,757
+A four-component quaternion takes 16 bytes but
+has a unit-length constraint.
+
+190
+00:14:09,819 --> 00:14:12,217
+It does not represent four independent
+rotation axes.
+
+191
+00:14:12,437 --> 00:14:17,937
+These figures count components only. Structure
+alignment and metadata may add storage.
+
+192
+00:14:17,937 --> 00:14:20,857
+Editing, storing many poses, and transforming
+vectors have different requirements,
+
+193
+00:14:20,857 --> 00:14:24,817
+so multiple representations are often used
+together.
+
+194
+00:14:25,450 --> 00:14:29,990
+Give the functions distinct names:
+localToWorld and worldToLocal.
+
+195
+00:14:30,330 --> 00:14:32,510
+The forward direction multiplies by R;
+
+196
+00:14:32,510 --> 00:14:35,810
+the reverse uses its transpose for a pure
+rotation.
+
+197
+00:14:36,130 --> 00:14:40,850
+The names make the required input and returned
+output frames clear.
+
+198
+00:14:41,230 --> 00:14:44,770
+Points need translation added or subtracted.
+
+199
+00:14:45,030 --> 00:14:47,650
+Direction vectors do not receive that
+translation.
+
+200
+00:14:47,870 --> 00:14:50,350
+Mathematical vector convention is separate
+from memory layout.
+
+201
+00:14:50,470 --> 00:14:54,470
+Row-major storage does not by itself imply
+row-vector multiplication.
+
+202
+00:14:54,470 --> 00:14:57,610
+Check the library's multiplication and
+data-transfer conventions,
+
+203
+00:14:57,610 --> 00:15:00,290
+then verify a small example with basis
+vectors.
+
+204
+00:15:01,100 --> 00:15:05,020
+Now think about left and right relative to the
+flying body.
+
+205
+00:15:06,296 --> 00:15:10,896
+Screen-left can differ from the body's local
+left.
+
+206
+00:15:12,252 --> 00:15:16,552
+Some games use camera-relative input while
+others use object-relative input.
+
+207
+00:15:17,868 --> 00:15:22,268
+This is why direction variables should
+identify the frame their values belong to.
+
+208
+00:15:23,684 --> 00:15:26,564
+The recording does not establish the precise
+input mapping.
+
+209
+00:15:26,844 --> 00:15:30,184
+We are connecting visible orientation changes
+to coordinate-frame concepts.
+
+210
+00:15:30,404 --> 00:15:35,480
+Next, we will examine what happens when we
+blend matrix entries independently.
+
+211
+00:15:36,100 --> 00:15:41,510
+Knowing a starting and target orientation does not automatically give a valid intermediate orientation.
+
+212
+00:15:41,510 --> 00:15:47,400
+Averaging the numbers of two matrices can destroy the axis lengths we checked earlier.
+
+213
+00:15:47,690 --> 00:15:50,360
+We will use that same length check to see the problem.
+
+214
+00:15:50,383 --> 00:15:51,823
+Suppose the starting pose is the identity and
+the
+
+215
+00:15:51,823 --> 00:15:55,383
+ending pose is a 180-degree rotation around z.
+
+216
+00:15:55,703 --> 00:15:59,723
+The ending matrix has diagonal minus one,
+minus one, one.
+
+217
+00:15:59,943 --> 00:16:04,543
+Averaging corresponding entries halfway gives
+diagonal zero, zero, one.
+
+218
+00:16:04,743 --> 00:16:10,843
+This middle matrix collapses the x and y
+directions to zero. It is not a rotation.
+
+219
+00:16:11,083 --> 00:16:13,803
+Linear interpolation of matrix entries does
+not
+
+220
+00:16:13,803 --> 00:16:16,443
+automatically produce a valid rotation path.
+
+221
+00:16:16,443 --> 00:16:18,723
+We will return to this problem in the
+quaternion
+
+222
+00:16:18,723 --> 00:16:21,003
+and rotation-interpolation lectures.
+
+223
+00:16:21,633 --> 00:16:26,153
+First problem: what happens when the
+ninety-degree
+
+224
+00:16:26,153 --> 00:16:28,353
+z-rotation matrix acts on local vector one,
+zero, zero?
+
+225
+00:16:28,473 --> 00:16:32,833
+Select the first column. The world result is
+zero, one, zero.
+
+226
+00:16:32,913 --> 00:16:38,513
+Second problem: a world point is four, five,
+zero, the object's origin is three,
+
+227
+00:16:38,513 --> 00:16:42,113
+three, zero, and its orientation is the same
+ninety-degree rotation.
+
+228
+00:16:42,353 --> 00:16:45,753
+Subtract the origin first to get world
+displacement one, two, zero.
+
+229
+00:16:46,113 --> 00:16:50,753
+Then multiply by the transpose to obtain local
+coordinates two, minus one, zero.
+
+230
+00:16:50,753 --> 00:16:54,293
+Check the result by rotating it forward and
+adding the object's position,
+
+231
+00:16:54,293 --> 00:16:56,173
+returning to four, five, zero.
+
+232
+00:16:56,800 --> 00:16:59,740
+It is the same game, but we now have more
+specific things to observe.
+
+233
+00:17:04,686 --> 00:17:08,826
+Distinguish the body's position, its forward
+direction, and the tilt of its arms.
+
+234
+00:17:13,712 --> 00:17:21,878
+Also consider the difference between the
+camera's screen frame and the object's frame.
+
+235
+00:17:22,118 --> 00:17:24,258
+A rotation matrix records orientation through
+
+236
+00:17:24,258 --> 00:17:26,758
+three axes and transforms vectors between
+frames.
+
+237
+00:17:31,784 --> 00:17:34,904
+We have not measured exact coordinate values
+from the recording,
+
+238
+00:17:35,144 --> 00:17:37,364
+but we now know what to represent.
+
+239
+00:17:37,484 --> 00:17:46,030
+Next time we will study Euler angles and the
+order of rotations.
+
+240
+00:17:46,650 --> 00:17:52,010
+Remember three things: a single direction does
+not determine a complete orientation.
+
+241
+00:17:52,090 --> 00:17:56,570
+Expressing three local axes in the same world
+frame gives a rotation matrix.
+
+242
+00:17:56,930 --> 00:17:59,510
+Always check input and output frames,
+
+243
+00:17:59,510 --> 00:18:01,670
+the vector-multiplication convention, and the
+validity conditions.
+
+244
+00:18:01,910 --> 00:18:07,930
+Next time we will study rotation order, gimbal
+lock, and axis-angle representation.
