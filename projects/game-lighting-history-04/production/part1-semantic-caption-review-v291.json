@@ -1,0 +1,2119 @@
+{
+  "reviewedAt": "2026-10-12T01:41:40.946422+00:00",
+  "planSha256": "20c094b4837a762a943bb50e8c64f4fd54d3a94c441d7f4164ad85bafac41dc9",
+  "layoutSha256": "0c8dbd5228110dd42df605a63fab5f49144da7efba7cecf92b8943bf37541b5c",
+  "paragraphs": [
+    {
+      "id": "part1-overview",
+      "ko": "화면을 더 선명하게 만들려면 어디에 계산과 메모리를 써야 할까요? 이번 편은 그림자 페이지, 시간적 업스케일링, 모바일 렌더링을 차례로 연결합니다. 실제 엔진 시연과 작은 수치 예시를 보며, 먼저 필요한 그림자만 저장하는 방법부터 살펴보죠.",
+      "en": "Where should we spend computation and memory to make a sharper image? We will connect shadow pages, temporal upscaling and mobile rendering, in that order. Engine demonstrations and small numerical examples will help us follow the tradeoffs, starting with storing only the shadows that are needed.",
+      "literalTextPairSha256": "f703a5bb836cfbfab34a01b0d165beb64e18a05ef2acca09042c0ecb050e27f1",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 120,
+      "toFrame": 1050,
+      "start": 2.0,
+      "end": 17.5,
+      "koCues": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "enCues": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-overview-1",
+      "ko": "게임의 그림자와 반사가 자연스러워져도, 마지막 화면이 모두 새로 계산한 정답은 아닙니다. 이번 편에서는 가상 그림자 맵과 최신 가시성 처리에서 출발해 패스 트레이싱, 레이 재구성, 디엘에스에스의 역할을 연결합니다. 끝에서는 프레임을 실제로 검사할 때 어떤 자원을 확인해야 하는지도 정리합니다. 먼저 그림자에 필요한 메모리를 어디에 배정하는지 보죠.",
+      "en": "Even when shadows and reflections look convincing, the final image does not consist entirely of freshly computed answers. This episode connects virtual shadow maps and modern visibility processing to path tracing, ray reconstruction, and the different roles of DLSS. We finish with a practical framework for inspecting the resources of a rendered frame. First, where should shadow memory be allocated?",
+      "literalTextPairSha256": "1247b3f8709c20d68509756910b576699851b1d36cf9e487db54d1f9301f5abd",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 1052,
+      "toFrame": 2412,
+      "start": 17.533,
+      "end": 40.2,
+      "koCues": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "enCues": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "01-guide-overview-cases",
+      "ko": "언리얼의 그림자 시연에서 저장할 영역을 보고, 사이버펑크의 비교에서 계산과 복원을 나누겠습니다. 마지막에는 편집기의 노출과 렌더독의 색 입력을 따라가죠. 이 세 사례를 연결하면 화면의 변화가 어느 단계에서 생겼는지 질문할 수 있습니다.",
+      "en": "We will examine shadow storage in an Unreal demonstration, then separate rendering from reconstruction in a Cyberpunk comparison. Finally, we will follow exposure controls and a RenderDoc color input. Linking these three examples gives us a way to ask which stage caused an image to change.",
+      "literalTextPairSha256": "2394ab80d79883e0d5fa0056a1ab0886e2522b6be24ee3eb031dd4a4f0f3a16b",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 2420,
+      "toFrame": 3346,
+      "start": 40.333,
+      "end": 55.767,
+      "koCues": [
+        11,
+        12,
+        13
+      ],
+      "enCues": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18v-1",
+      "ko": "앞선 편의 그림자 맵은 광원의 시점에서 가장 가까운 깊이를 저장했습니다. 카메라가 보는 표면을 광원 공간으로 옮기고, 저장한 깊이와 비교해 가려짐을 판단했죠. 이 기본 질문은 가상 그림자 맵에서도 유지됩니다.",
+      "en": "Earlier, a shadow map stored the closest depth from a light's viewpoint. A visible surface was transformed into light space and compared against that stored depth to test occlusion. Virtual shadow maps retain this fundamental question.",
+      "literalTextPairSha256": "4fb79a93bb4fd10261c101dfef823e499746dd4fa1f48709e550175ce47bd57a",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 3390,
+      "toFrame": 4284,
+      "start": 56.5,
+      "end": 71.4,
+      "koCues": [
+        14,
+        15,
+        16
+      ],
+      "enCues": [
+        18,
+        19,
+        20,
+        21
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18v-2",
+      "ko": "문제는 넓은 공간 전체에 높은 해상도를 배정할 때입니다. 화면에 아주 작게 보이거나 아예 보이지 않는 부분까지 세밀하게 저장하면 메모리와 그리는 비용을 낭비합니다. 카메라 바로 앞의 작은 그림자에는 오히려 더 촘촘한 표본이 필요합니다.",
+      "en": "Allocating high resolution across an entire large region is expensive. Detailed storage for areas that are tiny on screen or completely invisible wastes memory and rendering work. Meanwhile, a small shadow close to the camera may need much denser sampling.",
+      "literalTextPairSha256": "e1745821470f4c00b30baeb53d6aa8d8350d68dc3f2ca764b3f43eb9f6440e79",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 4307,
+      "toFrame": 5118,
+      "start": 71.783,
+      "end": 85.3,
+      "koCues": [
+        17,
+        18,
+        19
+      ],
+      "enCues": [
+        22,
+        23,
+        24,
+        25
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "02-pre-vsm-address",
+      "ko": "페이지는 큰 지도를 나눈 작은 칸입니다. 가상 주소는 그 칸의 이름이고, 물리 메모리는 실제 내용을 놓는 자리입니다. 이름만 있다고 내용이 모두 메모리에 들어 있는 것은 아닙니다. 이 차이를 열여섯 칸과 다섯 자리로 보겠습니다.",
+      "en": "A page is a small piece of the larger map. Its virtual address identifies that piece, while physical memory holds its contents. Having an address does not mean every piece is resident. Our sixteen-piece map and five occupied slots illustrate this distinction.",
+      "literalTextPairSha256": "91ab90663b4997427ad5b905e93502747865b37a130ca7e1b0da4b611723e20e",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 5126,
+      "toFrame": 5969,
+      "start": 85.433,
+      "end": 99.483,
+      "koCues": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "enCues": [
+        26,
+        27,
+        28,
+        29
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18v-3",
+      "ko": "언리얼 엔진의 가상 그림자 맵은 큰 가상 주소 공간을 작은 페이지로 나눕니다. 실제 화면에 필요한 페이지를 찾아 물리 메모리에 배정하고, 그 부분의 깊이를 그립니다. 주소 공간의 크기와 실제로 배정된 메모리 크기를 구별해야 합니다.",
+      "en": "Unreal Engine's virtual shadow maps divide a large virtual address space into small pages. Pages needed by the current view receive physical memory and are rendered. The size of the virtual address space must be distinguished from the memory actually allocated.",
+      "literalTextPairSha256": "c1819d232409b4e3f151eefaf1571d650b5cb66701b8bad7e78dda74dc11f865",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 5984,
+      "toFrame": 6845,
+      "start": 99.733,
+      "end": 114.083,
+      "koCues": [
+        24,
+        25,
+        26
+      ],
+      "enCues": [
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18v-4",
+      "ko": "설명을 위한 격자를 생각해 보죠. 가상의 그림자 영역을 열여섯 칸으로 나누었지만, 지금 보이는 표면이 참조하는 칸은 다섯 개뿐입니다. 다섯 칸에 메모리를 배정하는 그림은 원리를 나타낸 예시이며, 특정 게임의 실제 페이지 수를 측정한 결과는 아닙니다.",
+      "en": "Consider an explanatory grid. A virtual shadow region contains sixteen cells, but surfaces in the current view reference only five. Allocating memory to those five illustrates the principle; these numbers are not measurements from a particular game.",
+      "literalTextPairSha256": "73280f9d21fc1e4b3faf9557afbc5a775a406055967f6684d538cb1490743d80",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 6863,
+      "toFrame": 7763,
+      "start": 114.383,
+      "end": 129.383,
+      "koCues": [
+        27,
+        28,
+        29,
+        30
+      ],
+      "enCues": [
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "03-guide-vsm-regions",
+      "ko": "실제 시연의 색으로 나뉜 그림자 영역을 보세요. 원래 장면과 이런 디버그 표시를 오가면, 물체의 색과 그림자 자료의 표시를 구별할 수 있습니다. 색칠된 영역 자체가 추가 조명은 아닙니다. 앞의 열여섯 칸은 설명용 숫자였고, 여기서는 엔진이 표시하는 영역을 관찰합니다.",
+      "en": "Look at the colored shadow regions in the recorded demonstration. Switching between the scene and this debug view separates surface color from a visualization of shadow data. The colored regions are not additional lights. Our sixteen cells were illustrative; here we observe the regions displayed by the engine.",
+      "literalTextPairSha256": "23a64c25dde7380d3d41121cfb95d6816e99ff6dae613bcb15f9aa460b322167",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 7771,
+      "toFrame": 8855,
+      "start": 129.517,
+      "end": 147.583,
+      "koCues": [
+        31,
+        32,
+        33,
+        34
+      ],
+      "enCues": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "shadow-address-view",
+      "ko": "이제 실제 편집기입니다. 여러 색으로 나뉜 그림자 시각화와 일반 화면을 구별하세요. 색 구역은 그림자 자료를 살펴보는 표시입니다. 벽에 새 색의 조명을 단 장면은 아니죠.",
+      "en": "In the editor, distinguish the colored shadow visualization from the ordinary view. The colored regions inspect shadow data; they are not new colored lights on the wall.",
+      "literalTextPairSha256": "6d031bb82a48d85093f282824460c7bb72a5ff558d5e55010be39ce6ae33decc",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 8860,
+      "toFrame": 9515,
+      "start": 147.667,
+      "end": 158.583,
+      "koCues": [
+        35,
+        36,
+        37,
+        38
+      ],
+      "enCues": [
+        46,
+        47,
+        48,
+        49
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18v-5",
+      "ko": "카메라가 움직여 새로운 부분을 보면 다른 페이지가 필요해집니다. 광원과 물체가 그대로라면 이미 계산한 페이지를 캐시에 남겨 재사용할 수 있습니다. 광원이 움직이거나 그림자를 만드는 물체가 바뀌면 관련 페이지를 다시 계산해야 합니다.",
+      "en": "Camera movement reveals different regions and changes which pages are needed. If the light and objects remain unchanged, previously rendered pages can be cached. Moving a light or changing a shadow-casting object requires affected pages to be updated.",
+      "literalTextPairSha256": "31df79472323376a737dce25b760a6355c9b5379ffcfe93ea3cb71b105ff421f",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 9525,
+      "toFrame": 10336,
+      "start": 158.75,
+      "end": 172.267,
+      "koCues": [
+        39,
+        40,
+        41
+      ],
+      "enCues": [
+        50,
+        51,
+        52,
+        53
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "04-guide-vsm-motion",
+      "ko": "이번에는 카메라가 위로 이동하는 구간을 보죠. 관람차와 그 그림자를 함께 따라가면, 같은 공간이 다른 시점에서 어떻게 보이는지 확인할 수 있습니다. 카메라 이동, 물체 이동, 광원 이동은 서로 다른 조건입니다. 어떤 조건을 바꿨는지 기록해야 다시 그린 자료와 재사용한 자료를 비교할 수 있습니다.",
+      "en": "Now follow the camera as it moves upward. Tracking the Ferris wheel and its shadow shows the same space from a different viewpoint. Moving the camera, an object and a light are different conditions. Recording which one changed is necessary before comparing newly rendered data with reused data.",
+      "literalTextPairSha256": "b3fc40b3638e8404d64691efa3eacff97386f8a3bc69a608287fada79278addd",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 10347,
+      "toFrame": 11478,
+      "start": 172.45,
+      "end": 191.3,
+      "koCues": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "enCues": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "shadow-wheel-surface",
+      "ko": "대관람차 주변으로 카메라가 이동합니다. 먼저 대관람차 구조물과 그 아래 그림자를 따로 잡아 보세요. 관찰 방향이 달라지면 필요한 그림자 영역도 달라질 수 있습니다. 그림자가 부드러워 보인다는 인상과, 어떤 영역을 새로 계산했는지는 별도의 질문입니다. 지금 화면에서는 물체와 카메라의 움직임을 연결해서 보는 것이 먼저입니다. 여기서 기준을 바퀴에 둔 이유는 세 가지 움직임을 구분하기 위해서입니다. 물체가 움직였는지, 시점이 움직였는지, 빛의 조건이 바뀌었는지를 차례로 묻습니다. 같은 화면 변화라도 이 셋은 필요한 그림자 자료를 다르게 바꿀 수 있습니다.",
+      "en": "As the camera moves around the Ferris wheel, identify its structure and its shadow separately. A changed view can require different shadow regions. Apparent softness and which regions were recomputed are different questions. First connect the visible object with the camera movement. Keep the wheel as a reference while separating object movement, viewpoint movement and changed lighting conditions. Similar image changes can alter the required shadow data in different ways.",
+      "literalTextPairSha256": "243129753aebdec5ac787c86ca3a06cb5f3c272007a0fcc9734d411e67fb4bac",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 11480,
+      "toFrame": 13668,
+      "start": 191.333,
+      "end": 227.8,
+      "koCues": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ],
+      "enCues": [
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "shadow-wheel-change",
+      "ko": "이번에는 화면에 새로 들어오는 면을 따라가세요. 이전 화면에 있었다는 이유만으로 모든 그림자 자료를 계속 재사용할 수는 없습니다. 물체나 빛이 바뀌면 그 자료가 나타내던 조건도 바뀌기 때문이죠. 페이지 캐시는 큰 지도를 잘게 나누어 필요한 부분을 다루는 방법입니다. 실제로 다시 그렸는지 판단하려면 이런 움직임과 함께 엔진의 무효화 시각화도 확인해야 합니다. 화면 밖으로 나갔다는 이유와 내용이 낡았다는 이유도 구분해야 합니다. 보이지 않는 영역을 당장 쓰지 않는 선택과, 잘못된 과거 값을 버리는 선택은 서로 다른 일입니다. 도식의 주소 칸을 찾는 화살표와 갱신하는 화살표가 다른 역할을 맡았던 이유죠.",
+      "en": "Follow surfaces entering the view. Previous presence does not guarantee valid reusable shadow data when objects or lights change. A page cache divides a large map so the required regions can be handled separately. Establishing actual redraws also requires the engine’s invalidation visualization. Also distinguish no longer needed from no longer valid: skipping an unseen region differs from discarding stale contents. The diagram’s address lookup and update arrows therefore have different roles.",
+      "literalTextPairSha256": "ebda4017eba4ee5470010d933f960bfbda8ecfca9324f524786958173dc7a926",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 13669,
+      "toFrame": 15986,
+      "start": 227.817,
+      "end": 266.433,
+      "koCues": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "enCues": [
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18v-6",
+      "ko": "부드러운 그림자를 만들 때에는 하나의 깊이 비교로 끝나지 않습니다. 여러 표본으로 가려진 범위를 어림하고 광원의 크기에 따른 반그림자를 구성합니다. 언리얼의 에스엠알티는 그림자 맵의 깊이를 이용한 추적이며, 장면의 모든 실제 삼각형을 레이로 검사하는 방식과 구별해야 합니다.",
+      "en": "Soft shadows require more than a single depth comparison. Multiple samples estimate occlusion and the penumbra associated with light size. Unreal's SMRT traces against shadow-map depth; it must be distinguished from tracing every ray against the scene's actual triangles.",
+      "literalTextPairSha256": "f125aa853e5212fadfb7bf8d91428cf8a902825ee41641f997af27959f46be3b",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 15997,
+      "toFrame": 16964,
+      "start": 266.617,
+      "end": 282.733,
+      "koCues": [
+        62,
+        63,
+        64,
+        65
+      ],
+      "enCues": [
+        81,
+        82,
+        83,
+        84
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18v-7",
+      "ko": "따라서 캐시가 잘 맞는 정적인 장면과 계속 변하는 장면의 비용은 다를 수 있습니다. 비교 시에는 그림자 해상도만 보지 말고 새로 그린 페이지와 재사용한 페이지, 무효화된 영역을 함께 확인해야 합니다. 이 기술은 간접광 전체를 해결하는 기능이 아닙니다.",
+      "en": "Static scenes with effective caching can cost differently from constantly changing scenes. A useful comparison examines newly rendered pages, reused pages, and invalidated regions alongside resolution. This technique does not solve global indirect illumination.",
+      "literalTextPairSha256": "ead1819d1af1d02fe797f4d0ea407131987cdf5cc37959fd37aaad57292853a8",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 16979,
+      "toFrame": 17862,
+      "start": 282.983,
+      "end": 297.7,
+      "koCues": [
+        66,
+        67,
+        68,
+        69
+      ],
+      "enCues": [
+        85,
+        86,
+        87,
+        88,
+        89
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "shadow-resource-cache",
+      "ko": "자원 보기 창으로 옮겨 갑니다. 이름에 그림자와 물리 페이지 풀이 함께 적힌 자료를 찾아보세요. 가상 주소는 어느 영역인지 알려 주고, 물리 풀은 실제 저장 공간을 맡습니다. 앞의 도식에서 그린 주소 칸과 저장 칸을 이 두 역할에 연결할 수 있죠. 카메라를 움직이는 장면과 자원 이름을 읽는 장면을 함께 보되, 이름 하나로 이번 프레임의 재사용률까지 알았다고 말하지는 않겠습니다. 자료를 찾는 창, 자료가 쓰이는 장면, 자료를 갱신하는 조건을 연결하면 기능 이름보다 구체적인 설명이 됩니다. 다른 엔진을 볼 때에도 이 순서로 질문해 보세요.",
+      "en": "In the resource viewer, locate the shadow physical-page pool. Virtual addresses identify regions, while the physical pool supplies storage. Connect those roles with the address and storage cells in the diagram. A resource name alone does not reveal this frame’s reuse rate. Connect the resource view, the consuming scene and the update conditions. This investigation method transfers to another engine even when its implementation differs.",
+      "literalTextPairSha256": "5c23d43f654713ef1dde4653300f57f82e039fc6a0b94e1dbc15efc4765563ec",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 17882,
+      "toFrame": 19964,
+      "start": 298.033,
+      "end": 332.733,
+      "koCues": [
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77
+      ],
+      "enCues": [
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "texture-streaming-input",
+      "ko": "같은 메모리 문제를 표면 무늬에서도 보겠습니다. 먼저 텍스처 설정의 가상 스트리밍 항목을 바꾸고, 이어서 머티리얼 그래프로 들어갑니다. 무늬를 저장하는 자산과 그 무늬를 읽는 셰이더 입력이 연결되어 있죠. 그림자 페이지에는 빛에서 본 깊이가 들어갔지만, 이번 타일에는 표면 자료가 들어갑니다. 둘 다 필요한 부분을 다룬다는 생각은 공유해도, 저장한 정보와 읽는 작업은 다릅니다.",
+      "en": "The same memory question appears in surface textures. A virtual-streaming setting is followed by the material graph, connecting the texture asset with its shader input. Shadow pages stored light-view depth; these tiles store surface data. They share selective residency, but hold different information and serve different readers.",
+      "literalTextPairSha256": "8a3b26210672e6fb1d4f641cd9837ac0f924735e52c09e29759a43daff622311",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 19975,
+      "toFrame": 21462,
+      "start": 332.917,
+      "end": 357.7,
+      "koCues": [
+        78,
+        79,
+        80,
+        81,
+        82
+      ],
+      "enCues": [
+        99,
+        100,
+        101,
+        102,
+        103,
+        104
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "texture-stack-uv",
+      "ko": "그래프에서는 같은 좌표를 쓰는 입력들을 보세요. 입력을 복제하고 연결을 바꾸자 표시된 가상 텍스처 스택 수가 달라집니다. 스택은 함께 묶을 수 있는 읽기 작업과 연결된 개념입니다. 좌표를 공유하면 같은 주소 계산을 묶을 여지가 생기지만, 연결이 달라지면 묶음도 달라질 수 있죠. 여기의 스택 숫자를 전체 프레임의 시간이나 모든 텍스처 읽기 횟수로 바꾸어 읽지는 않습니다.",
+      "en": "Follow inputs sharing coordinates as nodes are duplicated and reconnected. The displayed virtual-texture stack count changes. Sharing coordinates can allow address work to be grouped, while different connections can alter that grouping. A stack count is not total frame time or the number of all texture reads.",
+      "literalTextPairSha256": "a0e00ed442f404b2ddddfd0f2a03b6446b85b44914d66822a14a29cc685c736a",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 21518,
+      "toFrame": 23038,
+      "start": 358.633,
+      "end": 383.967,
+      "koCues": [
+        83,
+        84,
+        85,
+        86,
+        87
+      ],
+      "enCues": [
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "texture-dependent-conversion",
+      "ko": "변환 창에서는 제목의 방향부터 읽습니다. 여기서는 가상 텍스처를 일반 텍스처로 바꾸는 창입니다. 아래에는 영향을 받는 텍스처와 머티리얼이 함께 나옵니다. 자산 하나의 표시만 바꾸는 일이 아니라, 그 자산을 읽는 입력도 맞아야 한다는 점을 보세요.",
+      "en": "Read the conversion direction first: this window converts virtual textures to ordinary textures. Its affected textures and materials show that the readers must match the changed asset as well.",
+      "literalTextPairSha256": "8de10a691e38693545c8cf2b4b8e8d688aaf2cf6cdd4ee5a09c88fd5b988d3cd",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 23085,
+      "toFrame": 24047,
+      "start": 384.75,
+      "end": 400.783,
+      "koCues": [
+        88,
+        89,
+        90,
+        91
+      ],
+      "enCues": [
+        112,
+        113,
+        114,
+        115
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "texture-project-tile-settings",
+      "ko": "프로젝트 설정에서 가상 텍스처 항목을 찾습니다. 타일 크기와 경계 설정을 별도로 읽어 보세요. 타일을 크게 잡으면 한 번에 가져오는 영역이 커지고, 경계는 이웃을 걸쳐 필터링할 때 필요한 자료와 연결됩니다. 경계를 넓히는 선택에는 저장 공간의 비용도 있습니다. 설정을 바꾸기 전에 어떤 표면과 필터 조건을 위해 쓰는지부터 정하는 이유입니다.",
+      "en": "Locate virtual-texture settings and distinguish tile size from border size. Larger tiles fetch larger regions; borders provide neighboring data for filtering and also consume storage. Select them with the surface and filtering requirements in mind.",
+      "literalTextPairSha256": "413b6e908993331903266088c5143c5ff381b17f3aac9a620399ac3b9ea8fc82",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 24055,
+      "toFrame": 25465,
+      "start": 400.917,
+      "end": 424.417,
+      "koCues": [
+        92,
+        93,
+        94,
+        95,
+        96
+      ],
+      "enCues": [
+        116,
+        117,
+        118,
+        119,
+        120
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "runtime-texture-producer",
+      "ko": "화면은 런타임 가상 텍스처 자산입니다. 먼저 변위 자료를 저장하는 항목을 보세요. 실행 중에 필요한 표면 결과를 만들어 캐시에 두는 방식이죠. 처음 자료를 만드는 비용과, 나중에 저장한 자료를 읽는 비용을 나누어 생각하겠습니다.",
+      "en": "This runtime virtual-texture asset specifies displacement data. Runtime-generated surface results can be cached. Separate the initial production cost from later reads of the stored data.",
+      "literalTextPairSha256": "07f1f3c96188fd646d76c0780ec774fef8c62dc0ce223837c84c54278c45202c",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 25512,
+      "toFrame": 26377,
+      "start": 425.2,
+      "end": 439.617,
+      "koCues": [
+        97,
+        98,
+        99,
+        100
+      ],
+      "enCues": [
+        121,
+        122,
+        123,
+        124
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "runtime-texture-consumer",
+      "ko": "다음 자산은 색 자료입니다. 저장할 정보 형식과 타일 관련 값이 함께 보이죠. 같은 가상 텍스처라도 무엇을 담는지가 다르면 읽는 표면의 역할도 달라집니다. 앞의 그림자 페이지는 깊이를 비교할 자료였고, 이번에는 표면 표현에 쓸 자료입니다. 타일을 크게 고르는 선택과 색 형식을 고르는 선택을 구분하세요. 크기가 같다는 사실만으로 두 자료의 의미나 만드는 비용이 같아지지는 않습니다.",
+      "en": "The next asset stores color information, alongside tile settings. Different contents serve different readers: shadow pages supplied depth comparisons, while this asset supplies surface data. Choosing tile size and choosing content format are separate decisions; equal dimensions do not imply equal meaning or production cost.",
+      "literalTextPairSha256": "d619f63ad40e20aa2f86b715bfe57b6ac9bd4bce83a4035bee976673ac828c9f",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 26405,
+      "toFrame": 27877,
+      "start": 440.083,
+      "end": 464.617,
+      "koCues": [
+        101,
+        102,
+        103,
+        104,
+        105,
+        106
+      ],
+      "enCues": [
+        125,
+        126,
+        127,
+        128,
+        129
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "runtime-texture-size",
+      "ko": "이번 자산 창에서는 가상 텍스처 크기와 타일 관련 항목이 보입니다. 주소로 표현할 수 있는 큰 영역과 실제로 남겨 둘 자료의 크기를 구분하세요. 큰 주소 범위를 준비했다고 모든 텍셀이 한꺼번에 메모리에 올라온다는 뜻은 아닙니다. 필요한 타일을 찾는 자료에도 공간이 들기 때문에, 주소와 내용을 각각 예산으로 잡아야 합니다.",
+      "en": "The asset exposes virtual dimensions and tile settings. Distinguish the addressable extent from the resident contents. A large address range does not mean every texel is simultaneously resident. Addressing data also needs storage, so budget addresses and contents separately.",
+      "literalTextPairSha256": "09eab94da4e16c49526eaa118f6c767dc0986cc4bd5740a8213ebef023dc97eb",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 27924,
+      "toFrame": 29219,
+      "start": 465.4,
+      "end": 486.983,
+      "koCues": [
+        107,
+        108,
+        109,
+        110
+      ],
+      "enCues": [
+        130,
+        131,
+        132,
+        133,
+        134,
+        135
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "ordinary-streaming-budget",
+      "ko": "다음 통계는 일반 텍스처 스트리밍입니다. 화면의 스트리밍 이름과 풀 크기 콘솔 항목을 먼저 읽어 보세요. 앞의 가상 텍스처 물리 풀과 한 숫자로 합치면 어떤 자료가 부족한지 놓치게 됩니다. 예산을 확인할 때에는 수치보다 먼저 그 수치가 어느 저장 공간을 뜻하는지 적어 두겠습니다.",
+      "en": "These are ordinary texture-streaming statistics. Read the Streaming label and pool-size control before interpreting the numbers. Combining them with the virtual-texture physical pool would hide which storage is constrained. Identify the resource represented by a value first.",
+      "literalTextPairSha256": "cc5fa5dae6da07a26fc950a7f925e81d375593927d9cc1086673f493699f2962",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 29221,
+      "toFrame": 30362,
+      "start": 487.017,
+      "end": 506.033,
+      "koCues": [
+        111,
+        112,
+        113,
+        114
+      ],
+      "enCues": [
+        136,
+        137,
+        138,
+        139,
+        140,
+        141
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "virtual-pool-policy",
+      "ko": "이제 가상 텍스처 풀 설정으로 돌아옵니다. 기본 크기와 고정 풀, 편집기에서 자동으로 늘리는 항목을 구분하세요. 편집하는 동안 맞는 크기를 찾는 과정과, 배포할 설정을 저장하는 과정은 다릅니다. 자동으로 늘었다는 경험만 기억하면 다시 실행했을 때 같은 조건이 재현되지 않을 수 있죠. 자료 종류와 풀 설정을 함께 기록해야 비교가 이어집니다.",
+      "en": "Return to virtual-texture pool settings: default capacity, fixed pools and editor auto-growth have different roles. Discovering capacity while editing differs from saving a deployment configuration. Record both the resource type and its pool policy to reproduce the comparison.",
+      "literalTextPairSha256": "3810655c1191799cf09b0d571202c5eca0abc3c28c9cd3f2123c5508a29ee210",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 30409,
+      "toFrame": 31668,
+      "start": 506.817,
+      "end": 527.8,
+      "koCues": [
+        115,
+        116,
+        117,
+        118,
+        119
+      ],
+      "enCues": [
+        142,
+        143,
+        144,
+        145,
+        146,
+        147
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "texture-scene-return",
+      "ko": "설정을 본 뒤 실제 장면으로 돌아옵니다. 바닥과 벽을 가로지르는 카메라, 선택한 표면의 경계를 보세요. 무늬가 선명하다는 결과만으로 캐시 상태를 모두 알 수는 없습니다. 장면을 이동하며 새로 보이는 표면을 구별하고, 필요한 경우 그때의 스트리밍 통계를 함께 남기는 것이 다음 실험의 기준입니다.",
+      "en": "Return to the scene and follow the camera across floors and walls. Sharp-looking textures alone do not reveal the cache state. Identify newly exposed surfaces during movement and record the relevant streaming statistics when a measurement is required.",
+      "literalTextPairSha256": "1d1dc557c644cdbe9e9721fccccd1df2cd6d7e3abc8a58af1b2b403aa3605e2f",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 31677,
+      "toFrame": 32861,
+      "start": 527.95,
+      "end": 547.683,
+      "koCues": [
+        120,
+        121,
+        122,
+        123,
+        124
+      ],
+      "enCues": [
+        148,
+        149,
+        150,
+        151
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18t-1",
+      "ko": "높은 해상도에서 조명과 재질을 전부 계산하는 비용을 줄이는 방법도 있습니다. 낮은 내부 해상도로 렌더링한 뒤, 현재 프레임과 이전 프레임의 정보를 이용해 더 높은 해상도의 화면을 복원하는 시간적 업스케일링입니다.",
+      "en": "Another strategy reduces the cost of evaluating lighting and materials at high resolution. Temporal upscaling renders at a lower internal resolution, then reconstructs a higher-resolution image using information from the current and previous frames.",
+      "literalTextPairSha256": "1ce327359940f4e43eeb696341e48275e8c9bc9f731ce44ae167bd6d0865bdd4",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 32907,
+      "toFrame": 33706,
+      "start": 548.45,
+      "end": 561.767,
+      "koCues": [
+        125,
+        126,
+        127
+      ],
+      "enCues": [
+        152,
+        153,
+        154,
+        155
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18t-2",
+      "ko": "언리얼 엔진의 티에스알과 디엘에스에스의 슈퍼 레졸루션은 이 역할에서 비교할 수 있습니다. 구현과 요구 조건은 다르지만, 입력 해상도와 출력 해상도를 구별해야 한다는 점은 같습니다. 화면이 선명하다는 이유만으로 모든 픽셀의 조명을 출력 해상도에서 계산했다고 말할 수는 없습니다.",
+      "en": "Unreal's TSR and DLSS Super Resolution can be compared in this role. Their implementations and requirements differ, but both require separating input resolution from output resolution. A sharp image does not imply that lighting was evaluated independently at every output pixel.",
+      "literalTextPairSha256": "c571fe88b21bbde539d0a8ba47550256109665d393d4cca01db73c3d0bb021e3",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 33733,
+      "toFrame": 34756,
+      "start": 562.217,
+      "end": 579.267,
+      "koCues": [
+        128,
+        129,
+        130
+      ],
+      "enCues": [
+        156,
+        157,
+        158,
+        159,
+        160
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "05-pre-upscaling-grid",
+      "ko": "이번 숫자는 해상도만 비교하는 예시입니다. 가로 여덟 칸과 세로 네 칸이면 서른두 픽셀입니다. 두 길이를 절반으로 줄인 네 칸과 두 칸은 여덟 픽셀입니다. 출력은 다시 서른두 픽셀이어도, 새 내부 화면은 여덟 픽셀에서 시작합니다.",
+      "en": "Consider only the grid dimensions here. Eight columns and four rows give thirty-two pixels. Halving both dimensions gives four by two, or eight pixels. The output can return to thirty-two pixels even though the new internal image began with eight.",
+      "literalTextPairSha256": "d1fd2c94c4e2d534eb0bbb3996bc032f6c003953a97413e6e76e4ee523b1a475",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 34765,
+      "toFrame": 35671,
+      "start": 579.417,
+      "end": 594.517,
+      "koCues": [
+        131,
+        132,
+        133,
+        134
+      ],
+      "enCues": [
+        161,
+        162,
+        163,
+        164,
+        165
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18t-3",
+      "ko": "가로와 세로를 각각 절반으로 줄이면 내부 픽셀 수는 사분의 일이 됩니다. 그렇다고 프레임 시간도 반드시 사분의 일이 되는 것은 아닙니다. 기하 처리, 그림자, 업스케일링 자체와 다른 고정 비용이 그대로 남을 수 있기 때문입니다.",
+      "en": "Halving both width and height reduces internal pixel count to one quarter. Frame time does not necessarily become one quarter, because geometry processing, shadows, reconstruction itself, and other fixed costs can remain.",
+      "literalTextPairSha256": "c52f274071a6c3e733e272acc37069303297e45a65ed9f5f15ed55c389ae2021",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 35682,
+      "toFrame": 36513,
+      "start": 594.7,
+      "end": 608.55,
+      "koCues": [
+        135,
+        136,
+        137
+      ],
+      "enCues": [
+        166,
+        167,
+        168
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18t-4",
+      "ko": "속도 벡터는 이전 표본이 현재 어디로 이동했는지 알려줍니다. 카메라의 투영과 지터 규칙, 물체 움직임이 서로 일치해야 합니다. 잘못된 벡터는 이전의 다른 표면을 끌어와 잔상이나 흐림을 만들 수 있습니다.",
+      "en": "Motion vectors describe where previous samples moved. Camera projection, jitter conventions, and object motion must agree. Incorrect vectors can retrieve history from a different surface, producing ghosting or blur.",
+      "literalTextPairSha256": "a8bff1a5fa2a48de8d5dcf1e11e12289829cb7567b5979e8d072e79c0bc5a45a",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 36525,
+      "toFrame": 37300,
+      "start": 608.75,
+      "end": 621.667,
+      "koCues": [
+        138,
+        139,
+        140
+      ],
+      "enCues": [
+        169,
+        170,
+        171,
+        172
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18t-5",
+      "ko": "물체 뒤에서 새로 드러난 부분에는 이전 프레임의 올바른 정보가 없을 수 있습니다. 투명 효과와 입자, 얇은 구조, 화면의 인터페이스도 별도로 고려해야 합니다. 복원은 사용할 정보의 품질과 유효성에 의존합니다.",
+      "en": "Newly exposed regions may have no valid history. Transparency, particles, thin structures, and interface graphics also require consideration. Reconstruction depends on the quality and validity of the available information.",
+      "literalTextPairSha256": "2a16d1cd344d816c6e8f1a72b7549d2ae5929600e6f21cf3d265eb5aa572de9f",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 37320,
+      "toFrame": 38112,
+      "start": 622.0,
+      "end": 635.2,
+      "koCues": [
+        141,
+        142,
+        143
+      ],
+      "enCues": [
+        173,
+        174,
+        175,
+        176
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "06-guide-tsr-reveal",
+      "ko": "짧은 카메라 이동에서 앞쪽 건물 뒤의 창문이 새로 드러나는 곳을 보세요. 이 창문은 이전 화면에서 가려져 있었습니다. 이전 색을 무조건 가져오면 앞 건물의 값을 끌어올 수 있겠죠. 그래서 움직임을 따라가는 것뿐 아니라, 가져올 과거 정보가 같은 표면인지도 판단해야 합니다.",
+      "en": "During this short camera move, watch windows become visible behind the nearer building. Those windows were hidden in the previous image. Blindly reusing history could bring back the foreground building instead. Following motion is therefore not enough: the history must also refer to the same surface.",
+      "literalTextPairSha256": "73f7eda3f3fbab555d8cbe744a21502338c98ac2136629c64c17257c261ca5ec",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 38122,
+      "toFrame": 39192,
+      "start": 635.367,
+      "end": 653.2,
+      "koCues": [
+        144,
+        145,
+        146,
+        147
+      ],
+      "enCues": [
+        177,
+        178,
+        179,
+        180,
+        181,
+        182
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "tsr-silhouette-history",
+      "ko": "이제 움직이는 마네킹을 보겠습니다. 내부에서 적은 픽셀을 그린 결과와, 시간 자료를 이용해 보여 줄 화면을 만드는 과정을 연결하는 사례입니다. 먼저 인물의 몸통과 배경 사이 경계를 따라가세요. 경계가 움직이면 이전 프레임에서 같은 자리에 있던 자료가 지금은 다른 표면일 수 있습니다. 과거 자료를 많이 모으는 것만큼, 어느 자료를 계속 믿을지 정하는 일이 필요하죠. 작은 해상도에서 시작한다는 조건과 최종 출력 해상도를 따로 읽겠습니다. 인물이 지나간 뒤 배경이 다시 나타나는 부분이 좋은 관찰 지점입니다. 그 자리의 오래된 인물 색을 계속 섞으면 배경의 경계를 흐릴 수 있습니다. 과거의 표면과 현재의 표면이 같은지를 먼저 따져야 하는 이유입니다.",
+      "en": "Follow the moving mannequin’s silhouette against the background. Starting with fewer internal pixels makes valid temporal information valuable, but a previous pixel can represent a different surface after motion. Reuse therefore requires deciding which history remains trustworthy. Read internal resolution separately from output resolution. Newly revealed background behind the figure is a useful observation region. Continuing to mix the old figure’s color can blur its boundary; check whether history and the current pixel represent the same surface.",
+      "literalTextPairSha256": "4a01fcdf9014a48d7a6168760baaf81d6a5e7321d70f14a15b326819d8755e1b",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 39207,
+      "toFrame": 41645,
+      "start": 653.45,
+      "end": 694.083,
+      "koCues": [
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156
+      ],
+      "enCues": [
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "tsr-rotation-vectors",
+      "ko": "회전하는 날개에서는 얇은 경계를 잡아 보세요. 빠르게 위치가 바뀌는 경계와 새로 드러나는 배경은 과거 자료를 그대로 가져오기 어려운 곳입니다. 움직임 벡터는 대응 위치를 찾는 단서지만, 가려졌다가 나온 배경의 정답을 저절로 만들어 주지는 않습니다. 앞의 마네킹은 큰 윤곽을 보여 주었고, 이번 날개는 얇고 빠른 윤곽을 보여 줍니다. 같은 시간 복원 원리도 이 두 조건을 따로 처리해야 합니다. 한 방향으로 천천히 가는 넓은 면과 회전하는 얇은 날개는 대응의 난도가 다릅니다. 그래서 결과를 볼 때에는 전체 화면의 인상만 기억하지 말고, 끝점과 새로 드러난 배경을 각각 따라가겠습니다.",
+      "en": "Thin rotating blades expose rapidly changing edges and newly uncovered background. Motion vectors help locate corresponding samples but do not supply the correct newly revealed background by themselves. Compare the mannequin’s broad silhouette with these thin fast edges: both use temporal reconstruction under different history-validity conditions. A broad slowly translating surface and a thin rotating blade present different correspondence challenges. Follow the tip and newly revealed background separately instead of relying only on an overall impression.",
+      "literalTextPairSha256": "69b21e9910be0bf47f067fde82107f039ae57f323caaf5bd66ecb8cf9b96faef",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 41655,
+      "toFrame": 43871,
+      "start": 694.25,
+      "end": 731.183,
+      "koCues": [
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163
+      ],
+      "enCues": [
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "horizon-comparison-before",
+      "ko": "같은 질문을 실제 게임 네 종으로 옮겨 보죠. 먼저 호라이즌에서는 복원 방식 표시와 움직이는 가방의 자수를 함께 봅니다. 같은 물체의 경계를 따라가야 비교가 됩니다.",
+      "en": "Transfer the question to four games. In Horizon, read the reconstruction-method labels and follow the embroidery on the moving bag, keeping the same object as the reference.",
+      "literalTextPairSha256": "d876f66ab8474d609708e022ae00a9e485b6cbde765e0e0990241d59967e2ab7",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 43873,
+      "toFrame": 44549,
+      "start": 731.217,
+      "end": 742.483,
+      "koCues": [
+        164,
+        165,
+        166
+      ],
+      "enCues": [
+        204,
+        205,
+        206
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "horizon-detail-motion",
+      "ko": "알로이의 가방 자수가 움직입니다. 두 복원 표시를 읽고 같은 무늬의 경계를 보세요.",
+      "en": "Follow the moving embroidery on Aloy’s bag and compare its edges under the two labelled reconstruction methods.",
+      "literalTextPairSha256": "c2869d5c6fb69fe08b8a580d1e19055a10f2f20a8a44bef76d43032fb02f5f90",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 44574,
+      "toFrame": 44890,
+      "start": 742.9,
+      "end": 748.167,
+      "koCues": [
+        167,
+        168
+      ],
+      "enCues": [
+        207,
+        208
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "outer-comparison-before",
+      "ko": "복원 품질과 표시 빈도는 다릅니다. 아우터 월드에서는 프레임 생성 배수 표시를 확인합니다.",
+      "en": "Reconstruction quality and display frequency are different. In The Outer Worlds, we inspect the frame-generation multiplier.",
+      "literalTextPairSha256": "7c709154bb39a8f8e8e5e50c3a9b9f20be4296f77aa979d057dda5af0e17aa24",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 44915,
+      "toFrame": 45247,
+      "start": 748.5833333333334,
+      "end": 754.1166666666667,
+      "koCues": [
+        169,
+        170
+      ],
+      "enCues": [
+        209,
+        210
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "outer-displayed-frames",
+      "ko": "카메라와 장면이 바뀌면서 생성 배수 표시도 바뀝니다. 표시된 프레임 수는 원본 시연의 값입니다. 더 자주 보이는 화면과 게임 상태를 더 자주 계산하는 일을 구분하세요. 앞의 가방 비교는 표면 세부의 복원이었고, 이번 비교는 표시 빈도의 역할입니다.",
+      "en": "The source changes scenes and its generation multiplier. Its FPS is the source demonstration’s value. Distinguish more frequent displayed images from more frequent game-state updates. The bag comparison reconstructed detail; this example examines display frequency.",
+      "literalTextPairSha256": "483183cf5163eaebf3ca98e906d93d92b13ea17cd0eaec8ccab7cb4820286b9f",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 45328,
+      "toFrame": 46306,
+      "start": 755.467,
+      "end": 771.767,
+      "koCues": [
+        171,
+        172,
+        173,
+        174
+      ],
+      "enCues": [
+        211,
+        212,
+        213,
+        214,
+        215,
+        216
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "cyber-comparison-before",
+      "ko": "이번에는 사이버펑크의 빛 복원입니다. 표시된 조건을 읽고, 움직이는 장면의 반사와 간접광을 따로 살펴보겠습니다.",
+      "en": "Next inspect light reconstruction in Cyberpunk. Read the conditions and identify reflection and indirect-light regions in the moving scene.",
+      "literalTextPairSha256": "4f29d299df564cef653f2dda11ba1859bc1e0c87e439f4c36da6b0f65d9de7f3",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 46308,
+      "toFrame": 46740,
+      "start": 771.8,
+      "end": 779.0,
+      "koCues": [
+        175,
+        176
+      ],
+      "enCues": [
+        217,
+        218,
+        219
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "cyber-light-reconstruction",
+      "ko": "원본은 디엘에스에스 삼 점 오를 소개하는 게임 장면입니다. 인물과 카메라가 움직일 때 표면의 빛과 반사를 보세요. 여기에는 여러 처리 단계가 함께 적용됩니다. 한 기능만 바꾼 고정 카메라 실험으로 단정하지 않고, 적은 빛 샘플을 화면으로 복원한다는 역할을 비교하겠습니다. 앞의 자수와는 입력 자료가 다릅니다.",
+      "en": "This DLSS3.5 game demonstration combines several processing stages. Follow surface light and reflections during motion. It is not an isolated single-feature fixed-camera experiment. Compare the role of reconstructing sparse lighting information with the different inputs used for embroidery detail.",
+      "literalTextPairSha256": "41ca5eca98e1d68a600956e13a1d1d63973610b40b2f315eb229f472a382ac17",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 46745,
+      "toFrame": 47963,
+      "start": 779.083,
+      "end": 799.383,
+      "koCues": [
+        177,
+        178,
+        179,
+        180,
+        181
+      ],
+      "enCues": [
+        220,
+        221,
+        222,
+        223,
+        224
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "cyber-surface-observation",
+      "ko": "사이버펑크에서는 바닥의 젖은 반사와 실제 간판을 구별해서 보세요. 시점이 바뀌면 같은 불빛도 바닥에서 다른 위치에 보입니다. 켜짐과 꺼짐 비교에서는 물체가 사라진 것인지, 표면의 빛만 달라진 것인지부터 확인합니다. 이어지는 복원 비교에서는 간판의 글자와 우산 가장자리를 따라가세요. 한 장의 선명함뿐 아니라, 이동 중에 세부가 얼마나 안정적으로 이어지는지가 관찰 대상입니다.",
+      "en": "In Cyberpunk, distinguish the reflections on wet pavement from the signs themselves. The same light appears at different places on the pavement as the viewpoint changes. In the on/off comparison, first check whether an object disappears or only its lighting changes. In the following reconstruction comparison, follow the lettering and umbrella edges. Observe both still-image clarity and the stability of detail during movement.",
+      "literalTextPairSha256": "35d5c4afb4238d07e18e3095a2008316732383f72778ce82a8562df4d382d358",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 47974,
+      "toFrame": 49480,
+      "start": 799.567,
+      "end": 824.667,
+      "koCues": [
+        182,
+        183,
+        184,
+        185,
+        186
+      ],
+      "enCues": [
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18t-6",
+      "ko": "이천이십이 년 디엘에스에스 삼에서 도입된 프레임 생성은 다른 역할입니다. 실제로 렌더링한 프레임 사이에 표시용 프레임을 추가합니다. 표시 프레임 수가 증가한 것과 게임의 시뮬레이션이나 입력 처리 횟수가 같은 비율로 증가한 것은 같지 않습니다.",
+      "en": "Introduced with DLSS 3 in 2022, frame generation has a different role: it inserts display frames between rendered frames. An increase in displayed frame count is not equivalent to the same proportional increase in simulation or input-processing frequency.",
+      "literalTextPairSha256": "5d58b61257cb71add06cf114c5c803c249ad2ea1b37f7034bf0702a6ef20d8af",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 49492,
+      "toFrame": 50376,
+      "start": 824.867,
+      "end": 839.6,
+      "koCues": [
+        187,
+        188,
+        189,
+        190
+      ],
+      "enCues": [
+        235,
+        236,
+        237,
+        238
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18t-7",
+      "ko": "그래서 비교 표에는 내부 해상도, 실제 렌더링 프레임, 표시 프레임, 지연 시간을 따로 적는 것이 좋습니다. 화면의 숫자 하나만으로 반응성과 영상 품질을 함께 판단하면 서로 다른 효과를 섞게 됩니다.",
+      "en": "A useful comparison separates internal resolution, rendered frame rate, displayed frame rate, and latency. A single on-screen number can conflate responsiveness with visual quality.",
+      "literalTextPairSha256": "e449a719ba3d3009b4a29aa73a3f198a2725f76f856f0c7fb1c69265e079e6ab",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 50394,
+      "toFrame": 51144,
+      "start": 839.9,
+      "end": 852.4,
+      "koCues": [
+        191,
+        192
+      ],
+      "enCues": [
+        239,
+        240,
+        241
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18a-1",
+      "ko": "디퍼드 렌더링에서는 위치를 복원할 깊이와 법선, 재질 속성 등을 지 버퍼에 저장했습니다. 비지빌리티 버퍼는 다른 저장 선택을 합니다. 지금 보이는 표본이 어떤 삼각형이나 인스턴스에 속하는지 나타내는 식별 정보를 먼저 저장합니다.",
+      "en": "Deferred rendering stores depth for position reconstruction, normals, and material attributes in a G-buffer. A visibility buffer makes a different storage choice: it first records identification information for the triangle or instance visible at each sample.",
+      "literalTextPairSha256": "0a65e1f170faa5cb52f83c687f79acb3d9f0881bd1a6091e070ca278944b5cd8",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 51189,
+      "toFrame": 52183,
+      "start": 853.15,
+      "end": 869.717,
+      "koCues": [
+        193,
+        194,
+        195
+      ],
+      "enCues": [
+        242,
+        243,
+        244,
+        245,
+        246
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18a-2",
+      "ko": "나중 단계는 이 식별 정보를 이용해 원래 기하 데이터에 접근합니다. 삼각형의 꼭짓점 속성과 화면의 표본 위치를 연결하고, 필요한 재질 속성과 텍스처 좌표를 구합니다. 신원을 저장한 것이지 조명 결과를 저장한 것은 아닙니다.",
+      "en": "A later stage uses those identifiers to access geometry. Vertex attributes are connected to the screen sample, and the required material attributes and texture coordinates are reconstructed. The buffer stores identity, not the finished lighting result.",
+      "literalTextPairSha256": "4a786e201c3e98abcac3bcdd5e9655980b5ec7fb0828f662cf2fe7d5f4ab8a29",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 52205,
+      "toFrame": 53075,
+      "start": 870.083,
+      "end": 884.583,
+      "koCues": [
+        196,
+        197,
+        198
+      ],
+      "enCues": [
+        247,
+        248,
+        249,
+        250
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18a-3",
+      "ko": "설명용 예시에서 화면의 한 표본이 삼각형 번호 칠을 가리킨다고 해보죠. 그 번호로 세 꼭짓점을 찾고, 표본에 대응하는 보간 가중치로 텍스처 좌표를 계산합니다. 실제 구현에서는 투영에 맞는 보간과 미분을 정확히 처리해야 합니다.",
+      "en": "Suppose an illustrative screen sample identifies triangle seven. Its three vertices are retrieved, and interpolation weights produce the sample's texture coordinates. A real implementation must correctly handle perspective interpolation and derivatives.",
+      "literalTextPairSha256": "a7497206e050040230c379e8fcaf9b3de7213917ff994755155d37a9738e889e",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 53098,
+      "toFrame": 53950,
+      "start": 884.967,
+      "end": 899.167,
+      "koCues": [
+        199,
+        200,
+        201
+      ],
+      "enCues": [
+        251,
+        252,
+        253,
+        254,
+        255
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "geometry-road-mask",
+      "ko": "지오메트리 시각화로 돌아옵니다. 굽은 길과 표지판이 있는 장면에서 도로의 표시를 따라가세요. 초록색 영역은 현재 선택한 시각화의 자료입니다. 일반 장면에서 보던 무늬와 디버그 색을 구별하면, 어느 자료를 검사하는지 먼저 묻는 습관을 이어갈 수 있습니다.",
+      "en": "Return to geometry diagnostics and follow the curved road and sign. Green regions belong to the selected visualization. Distinguish debug colors from ordinary material appearance and identify the inspected data first.",
+      "literalTextPairSha256": "91984157f985b157253379b0d29e713d3c5af016e4176f8e9e4919083004e0c0",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 53967,
+      "toFrame": 55003,
+      "start": 899.45,
+      "end": 916.717,
+      "koCues": [
+        202,
+        203,
+        204,
+        205
+      ],
+      "enCues": [
+        256,
+        257,
+        258,
+        259
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "geometry-barrier-views",
+      "ko": "이번에는 같은 장면을 선과 삼각형 표시, 일반 표현으로 바꿉니다. 겉으로 보이는 면이 어떤 작은 요소로 나뉘었는지와, 그 면에 어떤 재질이 입혀졌는지를 각각 볼 수 있죠. 시각화를 바꾼다고 같은 숫자 하나를 다른 색으로 칠한 것은 아닙니다. 읽는 자료가 바뀌므로 범례도 다시 확인해야 합니다. 앞의 그림자 페이지와 텍스처 타일 역시, 작은 칸이라는 모양만 같고 칸 안의 의미는 달랐습니다. 비교의 기준은 장면 속 같은 벽과 장애물입니다. 카메라가 움직여도 그 위치를 따라가면 표시가 바뀐 것인지 대상이 바뀐 것인지 나눌 수 있습니다. 새 색의 의미를 읽기 전에 같은 대상을 찾는 순서를 지키겠습니다.",
+      "en": "The scene switches among wireframe, triangle diagnostics and ordinary shading. Geometry subdivision and material appearance answer different questions, so read each mode’s legend again. A shared small-cell appearance does not make geometry elements, shadow pages and texture tiles the same data. Keep the same wall and barrier as references across camera movement. First identify the same object, then interpret the new diagnostic; distinguish a changed visualization from a changed target.",
+      "literalTextPairSha256": "72ccc86753b78ef34838d8e36465cfb7e02d86b358456789775aad4d837a0e14",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 55004,
+      "toFrame": 57350,
+      "start": 916.733,
+      "end": 955.833,
+      "koCues": [
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213
+      ],
+      "enCues": [
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "07-pre-visibility-interpolation",
+      "ko": "먼저 원근의 영향을 같게 놓은 작은 예를 계산하죠. 삼각형의 세 텍스처 좌표는 영 영, 일 영, 영 일입니다. 가중치가 절반, 사분의 일, 사분의 일이면 결과는 영 점 이오, 영 점 이오입니다. 세 가중치의 합은 일입니다. 원근 조건이 달라지면 보정도 필요합니다.",
+      "en": "Start with an example whose vertices have equal perspective denominators. Their texture coordinates are zero-zero, one-zero and zero-one. Weights of one-half, one-quarter and one-quarter produce one-quarter, one-quarter. The weights sum to one. Different perspective denominators require perspective correction.",
+      "literalTextPairSha256": "8c873861ad570a32f5add36abfa227fc2a2224f6758483b8a50ed4d010cb3af9",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 57352,
+      "toFrame": 58391,
+      "start": 955.867,
+      "end": 973.183,
+      "koCues": [
+        214,
+        215,
+        216,
+        217,
+        218
+      ],
+      "enCues": [
+        269,
+        270,
+        271,
+        272,
+        273,
+        274
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "geometry-courtyard-data",
+      "ko": "사람이 움직이는 마당에서도 진단 표시와 일반 화면이 번갈아 나옵니다. 표시가 달라져도 인물과 벽의 위치를 기준으로 유지하세요. 표면을 찾는 자료와 그 표면의 색을 계산할 자료를 나눠 읽기 위한 비교입니다. 앞에서 배운 가시성 버퍼는 어떤 면이 보이는지의 식별 자료를 남기는 생각이었죠. 다만 이 진단 색 하나만으로 이 장면의 모든 버퍼 구조를 알아냈다고 말할 수는 없습니다. 사람 뒤로 드러나는 벽도 함께 보세요. 어느 표면이 앞에 있는지 결정하는 과정과, 드러난 표면의 무늬와 빛을 계산하는 과정은 구분됩니다. 이 둘을 따로 이해해야 뒤에서 읽어 올 자료가 무엇인지 설명할 수 있습니다.",
+      "en": "In the moving courtyard, keep people and walls as spatial references while diagnostics alternate with ordinary shading. Separate locating a surface from shading it. The visibility-buffer idea retains visible-surface identifiers, but a diagnostic color alone does not verify every buffer in this scene. Watch the wall revealed behind a person. Resolving which surface is in front differs from calculating the revealed surface’s texture and light. Separating those tasks identifies the data required later.",
+      "literalTextPairSha256": "7181ee5c7c6e9f12bc8717994d4b4f74042303fe3bc6f8a1d8d216e613da4360",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 58403,
+      "toFrame": 60654,
+      "start": 973.383,
+      "end": 1010.9,
+      "koCues": [
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        226
+      ],
+      "enCues": [
+        275,
+        276,
+        277,
+        278,
+        279,
+        280,
+        281,
+        282,
+        283
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18a-4",
+      "ko": "텍스처의 밉 수준을 고르는 미분은 특히 중요합니다. 단순히 좌표를 복원했다고 끝나는 문제가 아닙니다. 옆 표본이 다른 삼각형을 가리키는 경계에서 미분을 잘못 구하면 텍스처가 불안정해질 수 있습니다.",
+      "en": "Derivatives used for texture mip selection deserve particular attention. Reconstructing coordinates alone is insufficient. At a boundary where adjacent samples identify different triangles, incorrect derivatives can destabilize texture sampling.",
+      "literalTextPairSha256": "ca877716ea2f2adc95db2c7573e2c094718d2ebb24df05795ce39ca4ca6cef90",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 60664,
+      "toFrame": 61379,
+      "start": 1011.067,
+      "end": 1022.983,
+      "koCues": [
+        227,
+        228,
+        229
+      ],
+      "enCues": [
+        284,
+        285,
+        286,
+        287
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18a-5",
+      "ko": "넓은 재질 속성을 매번 쓰고 읽는 비용을 줄일 가능성이 있지만, 대신 원래 데이터 접근과 속성 복원 비용이 생깁니다. 자료 배치, 재질 분기, 캐시와 압축, 멀티샘플링 요구에 따라 실제 이득이 달라집니다.",
+      "en": "This approach can reduce bandwidth spent writing and reading broad material attributes, but introduces geometry access and reconstruction work. Results depend on data layout, material branching, caches, compression, and multisampling requirements.",
+      "literalTextPairSha256": "0345df2b76e2e038d62552ac3d48063c76120d9664a84ac6c43520e91a9625fd",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 61416,
+      "toFrame": 62193,
+      "start": 1023.6,
+      "end": 1036.55,
+      "koCues": [
+        230,
+        231,
+        232
+      ],
+      "enCues": [
+        288,
+        289,
+        290,
+        291
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18a-6",
+      "ko": "마이크로소프트의 공식 게임 개발 샘플은 이런 파이프라인을 직접 살펴볼 수 있는 자료입니다. 샘플이 제공된 시점을 기술의 최초 발명 시점이나 모든 게임의 채택 시점으로 해석하지는 않겠습니다. 여기서 비교할 것은 저장한 데이터와 뒤 단계의 책임입니다.",
+      "en": "Microsoft's official game-development sample provides a concrete pipeline to study. Its publication date should not be interpreted as the technique's invention date or universal adoption date. The comparison concerns stored data and the responsibilities of later stages.",
+      "literalTextPairSha256": "141cfc973c884bd48e4ceb3d797c660dc3213c7d49f978a05418fdb03270b768",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 62208,
+      "toFrame": 63064,
+      "start": 1036.8,
+      "end": 1051.067,
+      "koCues": [
+        233,
+        234,
+        235
+      ],
+      "enCues": [
+        292,
+        293,
+        294,
+        295,
+        296
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "geometry-programmable-material",
+      "ko": "이제 프로그래머블 표시로 바뀝니다. 메뉴 선택 뒤 나무와 바닥의 표시가 달라지는 순서를 보세요. 복잡한 표면의 역할을 분리해서 검사하는 방법입니다. 면의 위치를 아는 것과 그 면의 표현에 필요한 작업을 아는 것은 다르죠. 같은 지오메트리를 보여도 머티리얼의 입력과 분기는 비용에 영향을 줄 수 있습니다. 따라서 작은 지오메트리 식별 자료를 쓴다는 설명을, 뒤의 모든 셰이딩 비용이 사라졌다는 뜻으로 받아들이면 안 됩니다. 여기서는 메뉴의 선택, 화면의 표시, 표면의 위치를 차례로 읽습니다. 선택한 항목을 놓치면 보라색이나 빨간색을 원래 재질의 색으로 오해할 수 있죠. 같은 표면을 어떤 자료의 관점으로 보고 있는지가 이번 장의 질문입니다.",
+      "en": "Follow selection of the programmable diagnostic and the changing tree and ground colors. Knowing a surface location differs from knowing its shading work. Material inputs and branches can still affect cost. Compact geometry identifiers do not remove all subsequent shading work. Read the menu selection, diagnostic appearance and surface location in that order. Otherwise red or purple can be mistaken for the original material color. Ask which data perspective is being applied to the same surface.",
+      "literalTextPairSha256": "eb8ae4fc05eece6dc5a05f576b8ce995e7580587cabf2587e46b2a0e37a4a60c",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 63065,
+      "toFrame": 65593,
+      "start": 1051.083,
+      "end": 1093.217,
+      "koCues": [
+        236,
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245
+      ],
+      "enCues": [
+        297,
+        298,
+        299,
+        300,
+        301,
+        302,
+        303,
+        304,
+        305
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "geometry-car-material",
+      "ko": "자동차 표면의 표현이 바뀝니다. 같은 차체와 바퀴를 기준으로, 모양과 재질 표현을 따로 읽어 보세요.",
+      "en": "The car’s surface appearance changes. Keep the body and wheel as references while separating shape from material appearance.",
+      "literalTextPairSha256": "dec93bba3aaec43423a7920f4b42e6db0f016a8fc22e9a5f089509ff75d20647",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 65640,
+      "toFrame": 66022,
+      "start": 1094.0,
+      "end": 1100.367,
+      "koCues": [
+        246,
+        247
+      ],
+      "enCues": [
+        306,
+        307,
+        308
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18m-1",
+      "ko": "이제 타일 기반 하드웨어와 디퍼드 방식을 다시 연결해 보죠. 타일 기반 하드웨어는 화면의 작은 영역을 처리하면서 일부 데이터를 가까운 내부 메모리에 유지할 수 있습니다. 디퍼드는 재질 정보와 조명 계산을 어떤 순서로 나누는지에 관한 선택입니다.",
+      "en": "Now connect tiled hardware with deferred rendering. Tiled hardware can retain some data in nearby internal memory while processing a small screen region. Deferred rendering concerns how material information and lighting evaluation are ordered.",
+      "literalTextPairSha256": "637f31f967c8801dba835ebc27781aff0286715c3c9ebd6af07ac2915cc1174b",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 66115,
+      "toFrame": 67103,
+      "start": 1101.917,
+      "end": 1118.383,
+      "koCues": [
+        248,
+        249,
+        250,
+        251
+      ],
+      "enCues": [
+        309,
+        310,
+        311,
+        312,
+        313
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18m-2",
+      "ko": "둘은 같은 용어가 아닙니다. 타일 기반 하드웨어에서 포워드 방식을 사용할 수도 있고 디퍼드 방식을 사용할 수도 있습니다. 포워드 플러스의 화면별 조명 목록도 하드웨어의 타일 저장 구조와 자동으로 동일해지는 것은 아닙니다.",
+      "en": "These terms are not interchangeable. Tiled hardware can run forward or deferred pipelines. A Forward+ screen-space light list is also not automatically the same structure as the hardware's tile storage.",
+      "literalTextPairSha256": "d6c123bf563332da18eddf8d757af20964fd7e72ba74c0c30f4286e6ed7f6a1e",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 67120,
+      "toFrame": 67891,
+      "start": 1118.667,
+      "end": 1131.517,
+      "koCues": [
+        252,
+        253,
+        254
+      ],
+      "enCues": [
+        314,
+        315,
+        316,
+        317
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "mobile-texture-group",
+      "ko": "모바일 편집기에서는 텍스처 그룹부터 고릅니다. 같은 돌 무늬라도 어느 용도로 묶는지에 따라 사용할 크기 정책을 따로 정할 수 있죠. 화면 오른쪽의 그룹 선택과 왼쪽의 실제 무늬를 연결해서 보세요. 그룹 이름을 고른 장면이며, 기기의 속도를 측정한 결과는 아닙니다.",
+      "en": "The mobile editor selects a texture group. Grouping the stone texture by usage permits a corresponding size policy. Connect the selected group with the texture preview; this is policy selection rather than a device-speed measurement.",
+      "literalTextPairSha256": "2640decd12ef8dfb35bc6044cf649725a58b3757ba224bea2d88377e0495306a",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 67902,
+      "toFrame": 68963,
+      "start": 1131.7,
+      "end": 1149.383,
+      "koCues": [
+        255,
+        256,
+        257,
+        258
+      ],
+      "enCues": [
+        318,
+        319,
+        320,
+        321
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "mobile-device-policy",
+      "ko": "다음에는 기기 프로파일 목록입니다. 안드로이드 항목과 그 안의 설정을 보세요. 플랫폼 이름 하나로 모든 기기의 메모리와 화면 조건이 같아지지는 않습니다. 프로파일은 조건에 맞춰 어떤 설정을 적용할지 정하는 연결점입니다. 같은 무늬를 그려도 어떤 크기를 고르고 어떤 기능을 켤지 달라질 수 있죠. 비교할 때에는 선택한 프로파일 이름을 먼저 남기겠습니다.",
+      "en": "The device-profile list connects Android conditions with settings. A platform name does not make every device’s memory and display identical. Record the selected profile before comparing policies for texture size or enabled features.",
+      "literalTextPairSha256": "f3e3978444c5b0cb96dff2ac7dac272bcd2f7abf0db5c656fec3688dff032e9b",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 68973,
+      "toFrame": 70345,
+      "start": 1149.55,
+      "end": 1172.417,
+      "koCues": [
+        259,
+        260,
+        261,
+        262,
+        263,
+        264
+      ],
+      "enCues": [
+        322,
+        323,
+        324,
+        325,
+        326
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "mobile-lod-settings",
+      "ko": "프로파일 안에서 텍스처 상세도 항목을 조절합니다. 큰 원본 무늬가 있어도 이번 기기에 어느 수준까지 가져올지는 따로 정할 수 있죠. 여기의 최대 크기와 상세도 설정은 그 선택을 기록하는 입력입니다. 작은 자료를 쓰면 저장 공간과 전송량을 줄일 여지가 있지만, 가까이 보이는 표면 세부도 함께 확인해야 합니다. 설정값과 결과 화면을 둘 다 남기는 이유입니다.",
+      "en": "Texture-detail controls decide how much of a large source texture to use on this device. Maximum-size and LOD fields record that choice. Smaller data can reduce storage and transfer requirements, but inspect nearby surface detail as well as the chosen settings.",
+      "literalTextPairSha256": "7b5bd4c9b286f7e25d74d8fdbb9a0c7660f0f57e50295e4e19cdca4f3922ef5e",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 70351,
+      "toFrame": 71746,
+      "start": 1172.517,
+      "end": 1195.767,
+      "koCues": [
+        265,
+        266,
+        267,
+        268,
+        269
+      ],
+      "enCues": [
+        327,
+        328,
+        329,
+        330,
+        331
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "mobile-console-policy",
+      "ko": "이어지는 콘솔 변수 목록도 프로파일에 붙는 설정입니다. 같은 값이라도 무엇을 조절하는 이름인지 알아야 해석할 수 있죠. 텍스처 크기, 그림자 처리, 화면 복원처럼 다른 단계의 예산을 한 숫자로 묶지 마세요. 지금은 어느 기기에 어느 설정을 적용할지 확인하는 시연입니다. 실제 이득은 그 기기에서 장면과 해상도 조건을 고정해 따로 측정해야 합니다.",
+      "en": "Console variables attach further policies to the profile. Interpret each value through the control it names. Texture size, shadows and image reconstruction receive different budgets. This demonstration selects device settings; benefits require a separate measurement under defined scene and resolution conditions.",
+      "literalTextPairSha256": "4271027ac58026f1c4f44a55f5b1172867c2144d9b220b12e44df5e2aea1e677",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 71748,
+      "toFrame": 73088,
+      "start": 1195.8,
+      "end": 1218.133,
+      "koCues": [
+        270,
+        271,
+        272,
+        273,
+        274
+      ],
+      "enCues": [
+        332,
+        333,
+        334,
+        335,
+        336,
+        337
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "mobile-compiler-availability",
+      "ko": "셰이더 통계 화면에서는 먼저 경고를 보겠습니다. 일부 대상 플랫폼에 필요한 오프라인 컴파일러가 준비되지 않았다는 표시입니다. 비어 있는 항목을 가벼운 셰이더라는 점수로 읽으면 안 됩니다. 자료가 나온 항목과 나오지 않은 항목을 구분하고, 도구와 대상 플랫폼을 확인한 뒤 비교해야 합니다. 측정의 빈칸도 기록에 남기는 것이 정확한 검수입니다.",
+      "en": "The shader statistics view warns that one target platform requires an offline compiler. Separate available entries from unavailable ones; an empty entry is not evidence of a cheap shader. Verify the tool and target platform, and record missing measurements honestly.",
+      "literalTextPairSha256": "341852bfcd025cef9520a216142c1b031a51ea85e7afd286e34658775ffcea6c",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 73113,
+      "toFrame": 74411,
+      "start": 1218.55,
+      "end": 1240.183,
+      "koCues": [
+        275,
+        276,
+        277,
+        278,
+        279
+      ],
+      "enCues": [
+        338,
+        339,
+        340,
+        341,
+        342,
+        343
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "08-pre-mobile-local-memory",
+      "ko": "계산 순서는 포워드와 디퍼드가 나누는 질문입니다. 데이터가 가까운 타일 메모리에 머무는지는 다른 질문입니다. 같은 타일 안에서 재질 정보를 만든 뒤 조명 단계가 곧바로 읽을 수 있다면, 밖으로 내보냈다가 다시 가져오는 왕복을 줄일 수 있습니다.",
+      "en": "Forward versus deferred describes how work is organized. Keeping data in nearby tile memory is a different choice. If a lighting stage can immediately consume material data inside the same tile, it may avoid an external-memory round trip.",
+      "literalTextPairSha256": "14d3fc6bb340288ad065c2736cedc8d5a1c9299831b520b4eafcf01f57116905",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 74413,
+      "toFrame": 75415,
+      "start": 1240.217,
+      "end": 1256.917,
+      "koCues": [
+        280,
+        281,
+        282,
+        283
+      ],
+      "enCues": [
+        344,
+        345,
+        346,
+        347
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18m-3",
+      "ko": "언리얼의 모바일 디퍼드는 지원하는 플랫폼과 렌더링 경로에서 지 버퍼를 타일 메모리에 유지하는 구성을 활용할 수 있습니다. 중간 데이터를 외부 메모리로 내보냈다가 다시 읽는 비용을 줄이는 것이 핵심 연결입니다.",
+      "en": "On supported platforms and rendering paths, Unreal's mobile deferred renderer can use tile memory for the G-buffer. The relevant connection is reducing the cost of writing intermediate data to external memory and reading it back.",
+      "literalTextPairSha256": "598913e334160a583e49f4e5ad1e6a637eb31dcab5a0a89df4ed5af0c343ca18",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 75417,
+      "toFrame": 76194,
+      "start": 1256.95,
+      "end": 1269.9,
+      "koCues": [
+        284,
+        285,
+        286
+      ],
+      "enCues": [
+        348,
+        349,
+        350,
+        351
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "09-guide-mobile-limits",
+      "ko": "여기서는 이천십사 년의 모바일 엔진 데모를 참고합니다. 카메라가 움직일 때 표면과 조명이 어떻게 보이는지 살펴보죠. 다만 완성된 화면만으로 내부 타일 메모리의 왕복 횟수는 읽을 수 없습니다. 그 부분은 방금 본 자료 흐름과 해당 플랫폼의 조건을 따로 확인해야 합니다.",
+      "en": "This is a mobile engine demonstration from twenty-fourteen. Follow the surfaces and lighting as the camera moves. Its final image does not reveal how many transfers occurred in internal tile memory. That requires the data-flow explanation and separate checks of the platform conditions.",
+      "literalTextPairSha256": "7d3627b23db77920ac0fb4373e53bdbfb0556aa7beeb1191b042fc47fc0ab80b",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 76195,
+      "toFrame": 77253,
+      "start": 1269.917,
+      "end": 1287.55,
+      "koCues": [
+        287,
+        288,
+        289,
+        290
+      ],
+      "enCues": [
+        352,
+        353,
+        354,
+        355,
+        356,
+        357
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "fortnite-comparison-before",
+      "ko": "앞의 세 게임은 복원과 표시를 비교했습니다. 포트나이트에서는 실제 모바일 테스트 장면과 성능 자료를 연결해 보겠습니다.",
+      "en": "The preceding games compared reconstruction and display. Fortnite now connects a mobile test scene with performance diagnostics.",
+      "literalTextPairSha256": "85bf6c449856f2ee11c841d9b4f11e57d725d21824a209e31f87d3c30eba7771",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 77260,
+      "toFrame": 77753,
+      "start": 1287.667,
+      "end": 1295.883,
+      "koCues": [
+        291,
+        292
+      ],
+      "enCues": [
+        358,
+        359
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "fortnite-mobile-test",
+      "ko": "포트나이트의 모바일 테스트 맵입니다. 캐릭터와 카메라가 바위를 지나갑니다. 돌 표면의 고품질과 저품질 표시를 먼저 읽고, 왼쪽 그래프와 표면을 따로 보세요. 서로 다른 재질 조건을 확인하는 자료입니다. 기기 예산을 논의하려면 어떤 장면에서 어떤 자료를 읽었는지 함께 남겨야 합니다.",
+      "en": "In Fortnite’s mobile test map, the character and camera move past rocks. Read the high- and low-quality surface labels, then separate the left diagnostic graph from the surfaces. Record both the material conditions and the diagnostic being inspected.",
+      "literalTextPairSha256": "e96475513dfba000901a12be8cde33464533b24ebb3d5cc5db6a5f4bd8f7027f",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 77755,
+      "toFrame": 78848,
+      "start": 1295.917,
+      "end": 1314.133,
+      "koCues": [
+        293,
+        294,
+        295,
+        296,
+        297
+      ],
+      "enCues": [
+        360,
+        361,
+        362,
+        363
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "fortnite-normal-material",
+      "ko": "벽의 테스트 항목으로 옮겨 갑니다. 카메라가 가까워질 때 표면과 원본 통계를 함께 보세요. 같은 게임에서도 재질 조건은 달라집니다. 앞의 복원 사례들과 마찬가지로 비교 대상과 입력 조건을 먼저 구별하는 원칙이 적용됩니다.",
+      "en": "Move to the wall’s test surface. Inspect the surface and source diagnostics as the camera approaches. Material conditions vary even within one game. As in the reconstruction examples, identify the object and input conditions before interpreting the comparison.",
+      "literalTextPairSha256": "6d93dd60e6ecf629f5c1c68353d6e5d626e8ec679b8853b9967d843b7f6b00eb",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 78895,
+      "toFrame": 79777,
+      "start": 1314.917,
+      "end": 1329.617,
+      "koCues": [
+        298,
+        299,
+        300,
+        301,
+        302
+      ],
+      "enCues": [
+        364,
+        365,
+        366,
+        367,
+        368
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "rivalry-mobile-history",
+      "ko": "시간을 이천십사년으로 돌려 모바일 엔진 기술 시연을 보겠습니다. 갑옷을 입은 인물과 빛이 움직이는 장면입니다. 게임 네 종의 사례 수에는 더하지 않지만, 당시 모바일에서 어떤 표현을 보여 주려 했는지 확인할 수 있죠. 밝은 금속면과 어두운 배경을 같은 기준으로 따라가세요. 이 영상의 연도와 시연이라는 조건을 남겨 두고, 뒤에 나온 모바일 디퍼드 방식의 구현 증거로 바꿔 읽지 않겠습니다. 모바일 화면의 목표와 그 목표를 실현하는 방식의 역사를 구별하는 사례입니다. 인물이 움직일 때에는 밝은 금속면의 위치도 바뀝니다. 반짝임을 본 뒤에는 다음 질문이 필요합니다. 지금 비교하는 것은 표면의 표현일까요, 화면을 만드는 시간일까요? 앞의 포트나이트에는 통계 자료가 함께 있었지만, 이 기술 시연의 장면에는 같은 측정 조건이 없습니다. 그래서 두 영상을 같은 기기의 성능 순위로 붙이지 않고, 표현의 목표와 관찰 방법을 비교하는 데 쓰겠습니다.",
+      "en": "Return to2014 for a mobile engine technology demonstration. Follow the armored figure, bright metal and dark background. It adds historical context, not a fifth game. Retain its year and demonstration status rather than treating it as proof of a later mobile-deferred implementation. Separate a display goal from the implementation history. The bright metal regions move with the figure. After observing the highlight, ask whether the comparison concerns appearance or rendering time. Fortnite supplied diagnostics, while this scene supplies no matching measurement conditions. Compare goals and observation methods rather than ranking device performance.",
+      "literalTextPairSha256": "f2e14351dac5d44bc0879b839ab607e9ee24bc3ea4080c4d7543e699ee93bfad",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 79779,
+      "toFrame": 82985,
+      "start": 1329.65,
+      "end": 1383.083,
+      "koCues": [
+        303,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        312,
+        313
+      ],
+      "enCues": [
+        369,
+        370,
+        371,
+        372,
+        373,
+        374,
+        375,
+        376,
+        377,
+        378,
+        379,
+        380,
+        381
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "rivalry-surface-observation",
+      "ko": "모바일 시연에서는 문을 지나 나오는 인물의 가슴과 바닥을 함께 보세요. 인물이 움직여도 갑옷의 형태는 이어지지만, 표면과 바닥의 밝은 무늬는 시점에 따라 달라집니다. 물체의 모양을 나타내는 자료와 그 위에 빛을 계산한 결과를 구별하는 연습입니다. 앞에서 살펴본 화면 자료를 실제 움직임에 연결해 보세요.",
+      "en": "In the mobile demonstration, watch both the chest of the figure coming through the doorway and the floor. The armour retains its shape as the figure moves, while bright patterns on its surface and the floor change with the viewpoint. Practise separating data that describes an object’s shape from the lighting result on that shape. Connect the screen data discussed earlier to this actual movement.",
+      "literalTextPairSha256": "dbba4d96eb1d02a0e4a6e8bae3c2d62692a55c50000875730ac85e9867637fd5",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 82995,
+      "toFrame": 84251,
+      "start": 1383.25,
+      "end": 1404.183,
+      "koCues": [
+        314,
+        315,
+        316,
+        317
+      ],
+      "enCues": [
+        382,
+        383,
+        384,
+        385,
+        386,
+        387,
+        388
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "four-game-transfer-conclusion",
+      "ko": "네 게임에서 본 것은 하나의 화질 점수가 아닙니다. 표면 세부를 복원하고, 화면을 더 자주 표시하고, 빛 자료를 복원하고, 기기의 예산을 확인하는 서로 다른 질문이었죠. 어떤 자료를 만들고 저장하며 다시 읽는지 묻는 방법은 네 경우에 모두 적용됩니다.",
+      "en": "The four games did not supply one universal quality score. They examined detail reconstruction, display frequency, lighting reconstruction and a device budget. The transferable question is which data is produced, stored and reused.",
+      "literalTextPairSha256": "f8ba20cfce49ae3e92e6729fa56da5321513b21847cc637f34a5e530eabd7021",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 84253,
+      "toFrame": 85196,
+      "start": 1404.217,
+      "end": 1419.933,
+      "koCues": [
+        318,
+        319,
+        320
+      ],
+      "enCues": [
+        389,
+        390,
+        391,
+        392
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18m-4",
+      "ko": "하지만 그래픽 에이피아이와 기기, 메모리 크기, 패스 구조에 따라 조건이 달라집니다. 모든 모바일 디퍼드 구현이 중간 데이터를 전혀 외부에 쓰지 않는다고 일반화하면 안 됩니다. 패스가 분리되거나 저장이 필요하면 대역폭을 사용합니다.",
+      "en": "Conditions depend on the graphics API, device, available memory, and pass structure. It would be incorrect to claim that every mobile deferred implementation avoids all external intermediate writes. Separated passes or required stores can still consume bandwidth.",
+      "literalTextPairSha256": "82c1ad367765f14e8f4cf0a87deb44e8becf1033e19520722dbc46b2d9e9efbb",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 85237,
+      "toFrame": 86077,
+      "start": 1420.617,
+      "end": 1434.617,
+      "koCues": [
+        321,
+        322,
+        323
+      ],
+      "enCues": [
+        393,
+        394,
+        395,
+        396,
+        397
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18m-5",
+      "ko": "투명 표면은 별도 포워드 경로로 처리하는 조합이 가능합니다. 하나의 지 버퍼 표본에 가장 앞의 불투명 표면만 저장하면, 그 뒤에 겹친 여러 투명 층을 같은 정보로 설명할 수 없기 때문입니다.",
+      "en": "Transparent surfaces can be handled through a separate forward path. A G-buffer sample that records the frontmost opaque surface does not contain enough information to describe multiple transparent layers behind it.",
+      "literalTextPairSha256": "35bb2fc9594055d217203cc6d524567114740e75ecacfb3fdc98f4be7a25551a",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 86091,
+      "toFrame": 86763,
+      "start": 1434.85,
+      "end": 1446.05,
+      "koCues": [
+        324,
+        325,
+        326
+      ],
+      "enCues": [
+        398,
+        399,
+        400
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "original-18m-6",
+      "ko": "결국 포워드와 디퍼드를 승자와 패자로 나누기보다, 재질과 조명 수, 투명 효과, 대역폭과 기기 특성으로 판단해야 합니다. 한 엔진 안에서도 서로 다른 경로가 공존할 수 있습니다.",
+      "en": "Forward and deferred should be evaluated against materials, light counts, transparency, bandwidth, and device characteristics. Multiple paths can coexist within one engine.",
+      "literalTextPairSha256": "9b53794752e06bc752896db6d57b88116aa0566a06ccc6c1f2ea75d552b593e0",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 86781,
+      "toFrame": 87462,
+      "start": 1446.35,
+      "end": 1457.7,
+      "koCues": [
+        327,
+        328,
+        329
+      ],
+      "enCues": [
+        401,
+        402,
+        403
+      ],
+      "directlyReadBothFullTexts": true
+    },
+    {
+      "id": "part1-conclusion",
+      "ko": "필요한 그림자만 저장하고, 유효한 이전 표본을 재사용하며, 기기에 맞게 중간 데이터를 다루었습니다. 핵심은 계산을 없애는 것이 아니라 필요한 정보와 남는 비용을 구별하는 것입니다. 다음 편은 그 예산 안에서 빛의 경로와 광원 표본을 고르는 문제로 이어집니다.",
+      "en": "We stored the shadows we needed, reused valid earlier samples and adapted intermediate data to the device. The key is to distinguish the information required from the costs that remain. The next part uses that budget to examine the selection of light paths and light samples.",
+      "literalTextPairSha256": "9e0e43ab01c18cfc9533a1ab281289076e6dc387e5872a5fe8e444ac1841bd3c",
+      "bothCompleteParagraphsDirectlyRead": true,
+      "claimsExamplesConditionsAndConclusionAligned": true,
+      "fromFrame": 87463,
+      "toFrame": 88547,
+      "start": 1457.717,
+      "end": 1475.783,
+      "koCues": [
+        330,
+        331,
+        332,
+        333,
+        334,
+        335
+      ],
+      "enCues": [
+        404,
+        405,
+        406,
+        407,
+        408,
+        409
+      ],
+      "directlyReadBothFullTexts": true
+    }
+  ],
+  "approved": true,
+  "status": "approved-semantic-paragraph-alignment",
+  "manualSemanticReview": true,
+  "allParagraphTextsRetained": true,
+  "captions": [
+    {
+      "language": "ko",
+      "path": "production/research/game-lighting-history/local/part1-captions-v288/game-lighting-history-04-1.ko.srt",
+      "sha256": "556f8a5e17391a527d60eec7975fc047619ca26b5481d3d33f364a505d337db4",
+      "cueCount": 335,
+      "all77ParagraphTextsPreserved": true,
+      "englishTimingsMeasured": null
+    },
+    {
+      "language": "en",
+      "path": "production/research/game-lighting-history/local/part1-captions-v288/game-lighting-history-04-1.en.srt",
+      "sha256": "e47bbeb53b3e0dee68882a31f32f03379d8d4f3572a6e02a7f0f5bb5b03368c3",
+      "cueCount": 409,
+      "all77ParagraphTextsPreserved": true,
+      "englishTimingsMeasured": false
+    }
+  ],
+  "scope": "Directly reread all77 complete independent KO/EN paragraphs in chronological order. This approves semantic correspondence, not final burned pixels or spoken pronunciation.",
+  "numericChecks": [
+    "16 illustrative shadow cells and5 resident cells are not game measurements.",
+    "8x4=32;4x2=8;one-quarter internal pixels does not imply one-quarter frame time.",
+    "UV0,0 /1,0 /0,1 and weights0.5,0.25,0.25 produce0.25,0.25 under equal perspective denominators."
+  ],
+  "conditionChecks": [
+    "Virtual shadow depth, virtual surface-texture data and ordinary texture pools are distinct.",
+    "Horizon detail reconstruction, Outer displayed frames, Cyberpunk lighting reconstruction and Fortnite diagnostics answer different questions.",
+    "Cyberpunk source combines processing stages; FPS is not an isolated ray-reconstruction gain.",
+    "2014 Rivalry is an engine demonstration, not a fifth game or proof of a later mobile-deferred implementation.",
+    "Unavailable compiler statistics are missing measurements, not a low shader cost."
+  ],
+  "koCueCount": 335,
+  "enCueCount": 409,
+  "allOriginalAndAddedParagraphsPreserved": true,
+  "englishAudioPresent": false,
+  "englishTimingsMeasured": false,
+  "englishTimingMethod": "Independent English captions use the corresponding measured Korean paragraph intervals; no English audio timing is claimed.",
+  "allEncodedPixelsReviewed": false,
+  "finalMixedAsrApproved": false,
+  "qaApproved": false,
+  "uploaded": false,
+  "humanWholeListening": "pending",
+  "humanPronunciation": "pending",
+  "newGitImages": 0,
+  "retained76ParagraphReview": {
+    "path": "projects/game-lighting-history-04/production/part1-semantic-caption-review-v262.json",
+    "sha256": "d08c490e906fc39060939a49987f76acf2db5d9220cae9e2b35969a7527aa06f",
+    "exactParagraphObjects": 76
+  },
+  "changedGuideReview": {
+    "path": "projects/game-lighting-history-04/production/part1-selected-guide-direct-review-v287.json",
+    "sha256": "b9a5be9813bb2ad3d2218e71c9a26d76a68f90c5d6538edee02781d14c35bc46",
+    "fullKoEnDirectlyRead": true,
+    "scope": "Reconstruction quality versus display frequency; inspect the original Outer Worlds multiplier, no claim of faster game-state calculation"
+  }
+}

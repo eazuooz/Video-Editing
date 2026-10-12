@@ -1,0 +1,547 @@
+{
+  "language": "en",
+  "logicalEpisode": 4,
+  "physicalPart": 1,
+  "sourcePlan": "projects/game-lighting-history-04/production/part1-final-input-plan-v309.json",
+  "scenes": [
+    {
+      "id": "part1-overview",
+      "narration": "Where should we spend computation and memory to make a sharper image? We will connect shadow pages, temporal upscaling and mobile rendering, in that order. Engine demonstrations and small numerical examples will help us follow the tradeoffs, starting with storing only the shadows that are needed.",
+      "startFrame": 120,
+      "endFrame": 1050,
+      "kind": "physical-framing"
+    },
+    {
+      "id": "original-overview-1",
+      "narration": "Even when shadows and reflections look convincing, the final image does not consist entirely of freshly computed answers. This episode connects virtual shadow maps and modern visibility processing to path tracing, ray reconstruction, and the different roles of DLSS. We finish with a practical framework for inspecting the resources of a rendered frame. First, where should shadow memory be allocated?",
+      "startFrame": 1052,
+      "endFrame": 2412,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "01-guide-overview-cases",
+      "narration": "We will examine shadow storage in an Unreal demonstration, then separate rendering from reconstruction in a Cyberpunk comparison. Finally, we will follow exposure controls and a RenderDoc color input. Linking these three examples gives us a way to ask which stage caused an image to change.",
+      "startFrame": 2420,
+      "endFrame": 3346,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18v-1",
+      "narration": "Earlier, a shadow map stored the closest depth from a light's viewpoint. A visible surface was transformed into light space and compared against that stored depth to test occlusion. Virtual shadow maps retain this fundamental question.",
+      "startFrame": 3390,
+      "endFrame": 4284,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18v-2",
+      "narration": "Allocating high resolution across an entire large region is expensive. Detailed storage for areas that are tiny on screen or completely invisible wastes memory and rendering work. Meanwhile, a small shadow close to the camera may need much denser sampling.",
+      "startFrame": 4307,
+      "endFrame": 5118,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "02-pre-vsm-address",
+      "narration": "A page is a small piece of the larger map. Its virtual address identifies that piece, while physical memory holds its contents. Having an address does not mean every piece is resident. Our sixteen-piece map and five occupied slots illustrate this distinction.",
+      "startFrame": 5126,
+      "endFrame": 5969,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18v-3",
+      "narration": "Unreal Engine's virtual shadow maps divide a large virtual address space into small pages. Pages needed by the current view receive physical memory and are rendered. The size of the virtual address space must be distinguished from the memory actually allocated.",
+      "startFrame": 5984,
+      "endFrame": 6845,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18v-4",
+      "narration": "Consider an explanatory grid. A virtual shadow region contains sixteen cells, but surfaces in the current view reference only five. Allocating memory to those five illustrates the principle; these numbers are not measurements from a particular game.",
+      "startFrame": 6863,
+      "endFrame": 7763,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "03-guide-vsm-regions",
+      "narration": "Look at the colored shadow regions in the recorded demonstration. Switching between the scene and this debug view separates surface color from a visualization of shadow data. The colored regions are not additional lights. Our sixteen cells were illustrative; here we observe the regions displayed by the engine.",
+      "startFrame": 7771,
+      "endFrame": 8855,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "shadow-address-view",
+      "narration": "In the editor, distinguish the colored shadow visualization from the ordinary view. The colored regions inspect shadow data; they are not new colored lights on the wall.",
+      "startFrame": 8860,
+      "endFrame": 9515,
+      "kind": "new-guided"
+    },
+    {
+      "id": "original-18v-5",
+      "narration": "Camera movement reveals different regions and changes which pages are needed. If the light and objects remain unchanged, previously rendered pages can be cached. Moving a light or changing a shadow-casting object requires affected pages to be updated.",
+      "startFrame": 9525,
+      "endFrame": 10336,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "04-guide-vsm-motion",
+      "narration": "Now follow the camera as it moves upward. Tracking the Ferris wheel and its shadow shows the same space from a different viewpoint. Moving the camera, an object and a light are different conditions. Recording which one changed is necessary before comparing newly rendered data with reused data.",
+      "startFrame": 10347,
+      "endFrame": 11478,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "shadow-wheel-surface",
+      "narration": "As the camera moves around the Ferris wheel, identify its structure and its shadow separately. A changed view can require different shadow regions. Apparent softness and which regions were recomputed are different questions. First connect the visible object with the camera movement. Keep the wheel as a reference while separating object movement, viewpoint movement and changed lighting conditions. Similar image changes can alter the required shadow data in different ways.",
+      "startFrame": 11480,
+      "endFrame": 13668,
+      "kind": "new-guided"
+    },
+    {
+      "id": "shadow-wheel-change",
+      "narration": "Follow surfaces entering the view. Previous presence does not guarantee valid reusable shadow data when objects or lights change. A page cache divides a large map so the required regions can be handled separately. Establishing actual redraws also requires the engine’s invalidation visualization. Also distinguish no longer needed from no longer valid: skipping an unseen region differs from discarding stale contents. The diagram’s address lookup and update arrows therefore have different roles.",
+      "startFrame": 13669,
+      "endFrame": 15986,
+      "kind": "new-guided"
+    },
+    {
+      "id": "original-18v-6",
+      "narration": "Soft shadows require more than a single depth comparison. Multiple samples estimate occlusion and the penumbra associated with light size. Unreal's SMRT traces against shadow-map depth; it must be distinguished from tracing every ray against the scene's actual triangles.",
+      "startFrame": 15997,
+      "endFrame": 16964,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18v-7",
+      "narration": "Static scenes with effective caching can cost differently from constantly changing scenes. A useful comparison examines newly rendered pages, reused pages, and invalidated regions alongside resolution. This technique does not solve global indirect illumination.",
+      "startFrame": 16979,
+      "endFrame": 17862,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "shadow-resource-cache",
+      "narration": "In the resource viewer, locate the shadow physical-page pool. Virtual addresses identify regions, while the physical pool supplies storage. Connect those roles with the address and storage cells in the diagram. A resource name alone does not reveal this frame’s reuse rate. Connect the resource view, the consuming scene and the update conditions. This investigation method transfers to another engine even when its implementation differs.",
+      "startFrame": 17882,
+      "endFrame": 19964,
+      "kind": "new-guided"
+    },
+    {
+      "id": "texture-streaming-input",
+      "narration": "The same memory question appears in surface textures. A virtual-streaming setting is followed by the material graph, connecting the texture asset with its shader input. Shadow pages stored light-view depth; these tiles store surface data. They share selective residency, but hold different information and serve different readers.",
+      "startFrame": 19975,
+      "endFrame": 21462,
+      "kind": "new-guided"
+    },
+    {
+      "id": "texture-stack-uv",
+      "narration": "Follow inputs sharing coordinates as nodes are duplicated and reconnected. The displayed virtual-texture stack count changes. Sharing coordinates can allow address work to be grouped, while different connections can alter that grouping. A stack count is not total frame time or the number of all texture reads.",
+      "startFrame": 21518,
+      "endFrame": 23038,
+      "kind": "new-guided"
+    },
+    {
+      "id": "texture-dependent-conversion",
+      "narration": "Read the conversion direction in the menu: ordinary textures are being converted to virtual textures. Next, the dialog lists affected textures and materials. The asset and the shader inputs that read it must agree.",
+      "startFrame": 23085,
+      "endFrame": 23999,
+      "kind": "new-guided"
+    },
+    {
+      "id": "texture-project-tile-settings",
+      "narration": "Locate virtual-texture settings and distinguish tile size from border size. Larger tiles fetch larger regions; borders provide neighboring data for filtering and also consume storage. Select them with the surface and filtering requirements in mind.",
+      "startFrame": 24055,
+      "endFrame": 25465,
+      "kind": "new-guided"
+    },
+    {
+      "id": "runtime-texture-producer",
+      "narration": "This runtime virtual-texture asset specifies displacement data. Runtime-generated surface results can be cached. Separate the initial production cost from later reads of the stored data.",
+      "startFrame": 25512,
+      "endFrame": 26377,
+      "kind": "new-guided"
+    },
+    {
+      "id": "runtime-texture-consumer",
+      "narration": "The next asset stores color information, alongside tile settings. Different contents serve different readers: shadow pages supplied depth comparisons, while this asset supplies surface data. Choosing tile size and choosing content format are separate decisions; equal dimensions do not imply equal meaning or production cost.",
+      "startFrame": 26405,
+      "endFrame": 27877,
+      "kind": "new-guided"
+    },
+    {
+      "id": "runtime-texture-size",
+      "narration": "The asset exposes virtual dimensions and tile settings. Distinguish the addressable extent from the resident contents. A large address range does not mean every texel is simultaneously resident. Addressing data also needs storage, so budget addresses and contents separately.",
+      "startFrame": 27924,
+      "endFrame": 29219,
+      "kind": "new-guided"
+    },
+    {
+      "id": "ordinary-streaming-budget",
+      "narration": "These are ordinary texture-streaming statistics. Read the Streaming label and pool-size control before interpreting the numbers. Combining them with the virtual-texture physical pool would hide which storage is constrained. Identify the resource represented by a value first.",
+      "startFrame": 29221,
+      "endFrame": 30362,
+      "kind": "new-guided"
+    },
+    {
+      "id": "virtual-pool-policy",
+      "narration": "Return to virtual-texture pool settings: default capacity, fixed pools and editor auto-growth have different roles. Discovering capacity while editing differs from saving a deployment configuration. Record both the resource type and its pool policy to reproduce the comparison.",
+      "startFrame": 30409,
+      "endFrame": 31668,
+      "kind": "new-guided"
+    },
+    {
+      "id": "texture-scene-return",
+      "narration": "Return to the scene and follow the camera across floors and walls. Sharp-looking textures alone do not reveal the cache state. Identify newly exposed surfaces during movement and record the relevant streaming statistics when a measurement is required.",
+      "startFrame": 31677,
+      "endFrame": 32861,
+      "kind": "new-guided"
+    },
+    {
+      "id": "original-18t-1",
+      "narration": "Another strategy reduces the cost of evaluating lighting and materials at high resolution. Temporal upscaling renders at a lower internal resolution, then reconstructs a higher-resolution image using information from the current and previous frames.",
+      "startFrame": 32907,
+      "endFrame": 33706,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18t-2",
+      "narration": "Unreal's TSR and DLSS Super Resolution can be compared in this role. Their implementations and requirements differ, but both require separating input resolution from output resolution. A sharp image does not imply that lighting was evaluated independently at every output pixel.",
+      "startFrame": 33733,
+      "endFrame": 34756,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "05-pre-upscaling-grid",
+      "narration": "Consider only the grid dimensions here. Eight columns and four rows give thirty-two pixels. Halving both dimensions gives four by two, or eight pixels. The output can return to thirty-two pixels even though the new internal image began with eight.",
+      "startFrame": 34765,
+      "endFrame": 35671,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18t-3",
+      "narration": "Halving both width and height reduces internal pixel count to one quarter. Frame time does not necessarily become one quarter, because geometry processing, shadows, reconstruction itself, and other fixed costs can remain.",
+      "startFrame": 35682,
+      "endFrame": 36513,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18t-4",
+      "narration": "Motion vectors describe where previous samples moved. Camera projection, jitter conventions, and object motion must agree. Incorrect vectors can retrieve history from a different surface, producing ghosting or blur.",
+      "startFrame": 36525,
+      "endFrame": 37300,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18t-5",
+      "narration": "Newly exposed regions may have no valid history. Transparency, particles, thin structures, and interface graphics also require consideration. Reconstruction depends on the quality and validity of the available information.",
+      "startFrame": 37320,
+      "endFrame": 38112,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "06-guide-tsr-reveal",
+      "narration": "During this short camera move, watch windows become visible behind the nearer building. Those windows were hidden in the previous image. Blindly reusing history could bring back the foreground building instead. Following motion is therefore not enough: the history must also refer to the same surface.",
+      "startFrame": 38122,
+      "endFrame": 39192,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "tsr-silhouette-history",
+      "narration": "Follow the moving mannequin’s silhouette against the background. Starting with fewer internal pixels makes valid temporal information valuable, but a previous pixel can represent a different surface after motion. Reuse therefore requires deciding which history remains trustworthy. Read internal resolution separately from output resolution. Newly revealed background behind the figure is a useful observation region. Continuing to mix the old figure’s color can blur its boundary; check whether history and the current pixel represent the same surface.",
+      "startFrame": 39207,
+      "endFrame": 41645,
+      "kind": "new-guided"
+    },
+    {
+      "id": "tsr-rotation-vectors",
+      "narration": "Thin rotating blades expose rapidly changing edges and newly uncovered background. Motion vectors help locate corresponding samples but do not supply the correct newly revealed background by themselves. Compare the mannequin’s broad silhouette with these thin fast edges: both use temporal reconstruction under different history-validity conditions. A broad slowly translating surface and a thin rotating blade present different correspondence challenges. Follow the tip and newly revealed background separately instead of relying only on an overall impression.",
+      "startFrame": 41655,
+      "endFrame": 43871,
+      "kind": "new-guided"
+    },
+    {
+      "id": "horizon-comparison-before",
+      "narration": "Transfer the question to four games. In Horizon, read the reconstruction-method labels and follow the embroidery on the moving bag, keeping the same object as the reference.",
+      "startFrame": 43873,
+      "endFrame": 44549,
+      "kind": "new-guided"
+    },
+    {
+      "id": "horizon-detail-motion",
+      "narration": "Follow the moving embroidery on Aloy’s bag and compare its edges under the two labelled reconstruction methods.",
+      "startFrame": 44574,
+      "endFrame": 44890,
+      "kind": "new-guided"
+    },
+    {
+      "id": "outer-comparison-before",
+      "narration": "Reconstruction quality and display frequency are different. In The Outer Worlds, we inspect the frame-generation multiplier.",
+      "startFrame": 44915,
+      "endFrame": 45247,
+      "kind": "new-guided"
+    },
+    {
+      "id": "outer-displayed-frames",
+      "narration": "The source changes scenes and its generation multiplier. Its FPS is the source demonstration’s value. Distinguish more frequent displayed images from more frequent game-state updates. The bag comparison reconstructed detail; this example examines display frequency.",
+      "startFrame": 45328,
+      "endFrame": 46306,
+      "kind": "new-guided"
+    },
+    {
+      "id": "cyber-comparison-before",
+      "narration": "Next inspect light reconstruction in Cyberpunk. Read the conditions and identify reflection and indirect-light regions in the moving scene.",
+      "startFrame": 46308,
+      "endFrame": 46740,
+      "kind": "new-guided"
+    },
+    {
+      "id": "cyber-light-reconstruction",
+      "narration": "This DLSS3.5 game demonstration combines several processing stages. Follow surface light and reflections during motion. It is not an isolated single-feature fixed-camera experiment. Compare the role of reconstructing sparse lighting information with the different inputs used for embroidery detail.",
+      "startFrame": 46745,
+      "endFrame": 47963,
+      "kind": "new-guided"
+    },
+    {
+      "id": "cyber-surface-observation",
+      "narration": "In Cyberpunk, distinguish the reflections on wet pavement from the signs themselves. The same light appears at different places on the pavement as the viewpoint changes. In the on/off comparison, first check whether an object disappears or only its lighting changes. In the following reconstruction comparison, follow the lettering and umbrella edges. Observe both still-image clarity and the stability of detail during movement.",
+      "startFrame": 47974,
+      "endFrame": 49480,
+      "kind": "new-guided"
+    },
+    {
+      "id": "original-18t-6",
+      "narration": "Introduced with DLSS 3 in 2022, frame generation has a different role: it inserts display frames between rendered frames. An increase in displayed frame count is not equivalent to the same proportional increase in simulation or input-processing frequency.",
+      "startFrame": 49492,
+      "endFrame": 50376,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18t-7",
+      "narration": "A useful comparison separates internal resolution, rendered frame rate, displayed frame rate, and latency. A single on-screen number can conflate responsiveness with visual quality.",
+      "startFrame": 50394,
+      "endFrame": 51144,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18a-1",
+      "narration": "Deferred rendering stores depth for position reconstruction, normals, and material attributes in a G-buffer. A visibility buffer makes a different storage choice: it first records identification information for the triangle or instance visible at each sample.",
+      "startFrame": 51189,
+      "endFrame": 52183,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18a-2",
+      "narration": "A later stage uses those identifiers to access geometry. Vertex attributes are connected to the screen sample, and the required material attributes and texture coordinates are reconstructed. The buffer stores identity, not the finished lighting result.",
+      "startFrame": 52205,
+      "endFrame": 53075,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18a-3",
+      "narration": "Suppose an illustrative screen sample identifies triangle seven. Its three vertices are retrieved, and interpolation weights produce the sample's texture coordinates. A real implementation must correctly handle perspective interpolation and derivatives.",
+      "startFrame": 53098,
+      "endFrame": 53950,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "geometry-road-mask",
+      "narration": "Return to geometry diagnostics and follow the curved road and sign. Green regions belong to the selected visualization. Distinguish debug colors from ordinary material appearance and identify the inspected data first.",
+      "startFrame": 53967,
+      "endFrame": 55003,
+      "kind": "new-guided"
+    },
+    {
+      "id": "geometry-barrier-views",
+      "narration": "The scene switches among wireframe, triangle diagnostics and ordinary shading. Geometry subdivision and material appearance answer different questions, so read each mode’s legend again. A shared small-cell appearance does not make geometry elements, shadow pages and texture tiles the same data. Keep the same wall and barrier as references across camera movement. First identify the same object, then interpret the new diagnostic; distinguish a changed visualization from a changed target.",
+      "startFrame": 55004,
+      "endFrame": 57350,
+      "kind": "new-guided"
+    },
+    {
+      "id": "07-pre-visibility-interpolation",
+      "narration": "Start with an example whose vertices have equal perspective denominators. Their texture coordinates are zero-zero, one-zero and zero-one. Weights of one-half, one-quarter and one-quarter produce one-quarter, one-quarter. The weights sum to one. Different perspective denominators require perspective correction.",
+      "startFrame": 57352,
+      "endFrame": 58391,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "geometry-courtyard-data",
+      "narration": "In the moving courtyard, keep people and walls as spatial references while diagnostics alternate with ordinary shading. Separate locating a surface from shading it. The visibility-buffer idea retains visible-surface identifiers, but a diagnostic color alone does not verify every buffer in this scene. Watch the wall revealed behind a person. Resolving which surface is in front differs from calculating the revealed surface’s texture and light. Separating those tasks identifies the data required later.",
+      "startFrame": 58403,
+      "endFrame": 60654,
+      "kind": "new-guided"
+    },
+    {
+      "id": "original-18a-4",
+      "narration": "Derivatives used for texture mip selection deserve particular attention. Reconstructing coordinates alone is insufficient. At a boundary where adjacent samples identify different triangles, incorrect derivatives can destabilize texture sampling.",
+      "startFrame": 60664,
+      "endFrame": 61379,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18a-5",
+      "narration": "This approach can reduce bandwidth spent writing and reading broad material attributes, but introduces geometry access and reconstruction work. Results depend on data layout, material branching, caches, compression, and multisampling requirements.",
+      "startFrame": 61416,
+      "endFrame": 62193,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18a-6",
+      "narration": "Microsoft's official game-development sample provides a concrete pipeline to study. Its publication date should not be interpreted as the technique's invention date or universal adoption date. The comparison concerns stored data and the responsibilities of later stages.",
+      "startFrame": 62208,
+      "endFrame": 63064,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "geometry-programmable-material",
+      "narration": "Follow selection of the programmable diagnostic and the changing tree and ground colors. Knowing a surface location differs from knowing its shading work. Material inputs and branches can still affect cost. Compact geometry identifiers do not remove all subsequent shading work. Read the menu selection, diagnostic appearance and surface location in that order. Otherwise red or purple can be mistaken for the original material color. Ask which data perspective is being applied to the same surface.",
+      "startFrame": 63065,
+      "endFrame": 65593,
+      "kind": "new-guided"
+    },
+    {
+      "id": "geometry-car-material",
+      "narration": "The car’s surface appearance changes. Keep the body and wheel as references while separating shape from material appearance.",
+      "startFrame": 65640,
+      "endFrame": 66022,
+      "kind": "new-guided"
+    },
+    {
+      "id": "original-18m-1",
+      "narration": "Now connect tiled hardware with deferred rendering. Tiled hardware can retain some data in nearby internal memory while processing a small screen region. Deferred rendering concerns how material information and lighting evaluation are ordered.",
+      "startFrame": 66115,
+      "endFrame": 67103,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18m-2",
+      "narration": "These terms are not interchangeable. Tiled hardware can run forward or deferred pipelines. A Forward+ screen-space light list is also not automatically the same structure as the hardware's tile storage.",
+      "startFrame": 67120,
+      "endFrame": 67891,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "mobile-texture-group",
+      "narration": "The mobile editor selects a texture group. Grouping the stone texture by usage permits a corresponding size policy. Connect the selected group with the texture preview; this is policy selection rather than a device-speed measurement.",
+      "startFrame": 67902,
+      "endFrame": 68963,
+      "kind": "new-guided"
+    },
+    {
+      "id": "mobile-device-policy",
+      "narration": "The device-profile list connects Android conditions with settings. A platform name does not make every device’s memory and display identical. Record the selected profile before comparing policies for texture size or enabled features.",
+      "startFrame": 68973,
+      "endFrame": 70345,
+      "kind": "new-guided"
+    },
+    {
+      "id": "mobile-lod-settings",
+      "narration": "Texture-detail controls decide how much of a large source texture to use on this device. Maximum-size and LOD fields record that choice. Smaller data can reduce storage and transfer requirements, but inspect nearby surface detail as well as the chosen settings.",
+      "startFrame": 70351,
+      "endFrame": 71746,
+      "kind": "new-guided"
+    },
+    {
+      "id": "mobile-console-policy",
+      "narration": "Console variables attach further policies to the profile. Interpret each value through the control it names. Texture size, shadows and image reconstruction receive different budgets. This demonstration selects device settings; benefits require a separate measurement under defined scene and resolution conditions.",
+      "startFrame": 71748,
+      "endFrame": 73088,
+      "kind": "new-guided"
+    },
+    {
+      "id": "mobile-compiler-availability",
+      "narration": "The shader statistics view warns that one target platform requires an offline compiler. Separate available entries from unavailable ones; an empty entry is not evidence of a cheap shader. Verify the tool and target platform, and record missing measurements honestly.",
+      "startFrame": 73113,
+      "endFrame": 74411,
+      "kind": "new-guided"
+    },
+    {
+      "id": "08-pre-mobile-local-memory",
+      "narration": "Forward versus deferred describes how work is organized. Keeping data in nearby tile memory is a different choice. If a lighting stage can immediately consume material data inside the same tile, it may avoid an external-memory round trip.",
+      "startFrame": 74413,
+      "endFrame": 75415,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18m-3",
+      "narration": "On supported platforms and rendering paths, Unreal's mobile deferred renderer can use tile memory for the G-buffer. The relevant connection is reducing the cost of writing intermediate data to external memory and reading it back.",
+      "startFrame": 75417,
+      "endFrame": 76194,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "09-guide-mobile-limits",
+      "narration": "This is a mobile engine demonstration from twenty-fourteen. Follow the surfaces and lighting as the camera moves. Its final image does not reveal how many transfers occurred in internal tile memory. That requires the data-flow explanation and separate checks of the platform conditions.",
+      "startFrame": 76195,
+      "endFrame": 77253,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "fortnite-comparison-before",
+      "narration": "The preceding games compared reconstruction and display. Fortnite now connects a mobile test scene with performance diagnostics.",
+      "startFrame": 77260,
+      "endFrame": 77753,
+      "kind": "new-guided"
+    },
+    {
+      "id": "fortnite-mobile-test",
+      "narration": "In Fortnite’s mobile test map, the character and camera move past rocks. Read the high- and low-quality surface labels, then separate the left diagnostic graph from the surfaces. Record both the material conditions and the diagnostic being inspected.",
+      "startFrame": 77755,
+      "endFrame": 78848,
+      "kind": "new-guided"
+    },
+    {
+      "id": "fortnite-normal-material",
+      "narration": "Move to the wall’s test surface. Inspect the surface and source diagnostics as the camera approaches. Material conditions vary even within one game. As in the reconstruction examples, identify the object and input conditions before interpreting the comparison.",
+      "startFrame": 78895,
+      "endFrame": 79777,
+      "kind": "new-guided"
+    },
+    {
+      "id": "rivalry-mobile-history",
+      "narration": "Return to2014 for a mobile engine technology demonstration. Follow the armored figure, bright metal and dark background. It adds historical context, not a fifth game. Retain its year and demonstration status rather than treating it as proof of a later mobile-deferred implementation. Separate a display goal from the implementation history. The bright metal regions move with the figure. After observing the highlight, ask whether the comparison concerns appearance or rendering time. Fortnite supplied diagnostics, while this scene supplies no matching measurement conditions. Compare goals and observation methods rather than ranking device performance.",
+      "startFrame": 79779,
+      "endFrame": 82985,
+      "kind": "new-guided"
+    },
+    {
+      "id": "rivalry-surface-observation",
+      "narration": "In the mobile demonstration, watch both the chest of the figure coming through the doorway and the floor. The armour retains its shape as the figure moves, while bright patterns on its surface and the floor change with the viewpoint. Practise separating data that describes an object’s shape from the lighting result on that shape. Connect the screen data discussed earlier to this actual movement.",
+      "startFrame": 82995,
+      "endFrame": 84251,
+      "kind": "new-guided"
+    },
+    {
+      "id": "four-game-transfer-conclusion",
+      "narration": "The four games did not supply one universal quality score. They examined detail reconstruction, display frequency, lighting reconstruction and a device budget. The transferable question is which data is produced, stored and reused.",
+      "startFrame": 84253,
+      "endFrame": 85196,
+      "kind": "new-guided"
+    },
+    {
+      "id": "original-18m-4",
+      "narration": "Conditions depend on the graphics API, device, available memory, and pass structure. It would be incorrect to claim that every mobile deferred implementation avoids all external intermediate writes. Separated passes or required stores can still consume bandwidth.",
+      "startFrame": 85237,
+      "endFrame": 86077,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18m-5",
+      "narration": "Transparent surfaces can be handled through a separate forward path. A G-buffer sample that records the frontmost opaque surface does not contain enough information to describe multiple transparent layers behind it.",
+      "startFrame": 86091,
+      "endFrame": 86763,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "original-18m-6",
+      "narration": "Forward and deferred should be evaluated against materials, light counts, transparency, bandwidth, and device characteristics. Multiple paths can coexist within one engine.",
+      "startFrame": 86781,
+      "endFrame": 87462,
+      "kind": "preserved-original"
+    },
+    {
+      "id": "part1-conclusion",
+      "narration": "We stored the shadows we needed, reused valid earlier samples and adapted intermediate data to the device. The key is to distinguish the information required from the costs that remain. The next part uses that budget to examine the selection of light paths and light samples.",
+      "startFrame": 87463,
+      "endFrame": 88547,
+      "kind": "physical-framing"
+    }
+  ]
+}
