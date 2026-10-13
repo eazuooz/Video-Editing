@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><title>Encoded explanation motion review</title>
+<style>body{background:#111;color:white;margin:0;font:16px sans-serif}header{padding:8px}#grid{display:grid;grid-template-columns:1fr 1fr}figure{margin:0}video{width:100%;display:block}figcaption{height:22px}button{margin:0 8px}#log{white-space:pre-wrap}</style>
+<header><button id="prev">이전 묶음</button><button id="play">동시 재생</button><button id="next">다음 묶음</button><span id="status"></span></header><div id="grid"></div><pre id="log"></pre>
+<script type="module">
+const [grid,status,play,next,prev,log]=['grid','status','play','next','prev','log'].map(id=>document.getElementById(id));
+const base='../local/threejs-revision-v1/';const three=await(await fetch(base+'three/execution.json')).json(),math=await(await fetch(base+'manim/execution.json')).json();const assets=[...three.completed,...math.completed];let group=0;const completed=new Set();
+function load(){grid.replaceChildren();for(const a of assets.slice(group*4,group*4+4)){const f=document.createElement('figure'),c=document.createElement('figcaption'),v=document.createElement('video');c.textContent=a.key;v.src='/@fs/D:/Github/Video-Editing/'+a.path;v.muted=true;v.controls=true;v.preload='auto';v.onended=()=>{completed.add(a.key);log.textContent='Played to end: '+[...completed].join(', ')};f.append(c,v);grid.append(f)}status.textContent=`${group+1} / ${Math.ceil(assets.length/4)}`}
+play.onclick=()=>Promise.all([...grid.querySelectorAll('video')].map(v=>v.play()));next.onclick=()=>{group=Math.min(Math.ceil(assets.length/4)-1,group+1);load()};prev.onclick=()=>{group=Math.max(0,group-1);load()};load();
+</script>
