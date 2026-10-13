@@ -1,0 +1,126 @@
+{
+  "updatedAt": "2026-10-08T04:11:26.842Z",
+  "original": {
+    "koSha256": "d3683c1e367137a683f430b271a23af824462c4291a09a8f93fe4698581d5328",
+    "enSha256": "1ea8c3acd9a03e1dbfcbda58226d30c0a8227f43a179c5bb541dee23e64fa2eb",
+    "localArchive": "projects/game-lighting-history-01/production/local/script-draft-v1"
+  },
+  "current": {
+    "koSha256": "08e7ca2b85fe3df0ac633318a163fbf0e6402714f2ea2d59bf007f3c102d017f",
+    "enSha256": "ec28cda63030b54dc4cd86b3312316927f3ee0b3044ad50f4fd5018bf9579b76",
+    "scenes": 13,
+    "paragraphPairs": 101
+  },
+  "changes": [
+    {
+      "id": "07",
+      "kind": "replace",
+      "paragraph": 4,
+      "previousKo": "확보한 개발 시연에서는 고해상도 바위 모델과 방향을 색으로 담은 텍스처, 그 결과를 적용한 평면을 차례로 볼 수 있습니다. 도식은 이 입력과 표면 방향의 연결을 따로 설명합니다.",
+      "previousEn": "The acquired development demonstration shows a detailed rock model, a direction-encoded texture, and a plane using the result. Our diagram separately explains the relationship between the texture and surface orientation."
+    },
+    {
+      "id": "08",
+      "kind": "insert",
+      "afterPreviousParagraph": 4,
+      "ko": "하프라이프 투의 개발 자료에서는 세밀한 바위 모델에서 방향 정보를 텍스처로 옮긴 뒤, 그 텍스처를 평면에 적용하는 과정을 볼 수 있습니다. 내부의 요철은 빛에 반응하지만 바깥 윤곽은 여전히 평면입니다. 법선맵과 실제 기하를 구별하는 지점이죠.",
+      "en": "The Half-Life 2 development recording transfers orientation detail from a rock model into a texture and applies it to a plane. Shading can suggest internal bumps while the outer silhouette remains flat. This separates normal-map detail from actual geometry."
+    },
+    {
+      "id": "02",
+      "kind": "insert",
+      "afterPreviousParagraph": 3,
+      "ko": "계산을 한 번 해보죠. 위를 향하는 단위 법선과 똑바로 위에서 오는 빛 방향의 내적은 일입니다. 빛 방향이 육십 도 기울면 내적은 영 점 오가 됩니다. 이 단순 확산 모델에서는 다른 조건이 같을 때 방향에 따른 항이 절반이 되는 것입니다.",
+      "en": "For a worked example, the dot product of an upward unit normal and an upward light direction is one. At sixty degrees it is one half. In this simple diffuse model, with other factors unchanged, the angular term is halved."
+    },
+    {
+      "id": "02",
+      "kind": "insert",
+      "afterPreviousParagraph": 4,
+      "ko": "법선과 빛 방향을 단위 벡터로 만드는 이유도 여기에 있습니다. 벡터 길이가 섞이면 방향만 비교하려던 내적에 다른 크기가 들어갑니다. 또한 광원까지 막힌 경로라면 방향이 아무리 잘 맞아도 그 광원의 직접광은 차단해야 합니다.",
+      "en": "Normalizing both vectors keeps their lengths from changing a comparison intended to measure orientation. Visibility is a separate factor: even a perfectly aligned surface receives no direct contribution from that light if the path is blocked."
+    },
+    {
+      "id": "03",
+      "kind": "replace",
+      "paragraph": 4,
+      "previousKo": "그래서 도식에서 벽을 돌릴 때에는, 실제 코드가 구별하는 방향과 우리가 설명하려고 그린 중간 방향을 나누어 표시합니다. 모든 회전 각도에 같은 식이 적용된다고 말하면 안 됩니다.",
+      "previousEn": "Our diagram distinguishes the orientations handled by the code from intermediate rotations used for illustration. The discrete rule is not a formula for every angle."
+    },
+    {
+      "id": "04",
+      "kind": "replace",
+      "paragraph": 4,
+      "previousKo": "이 도식은 원리를 설명하는 단순화입니다. 실제 퀘이크의 모든 감쇠 함수와 저장 형식을 그대로 복제한 장면은 아니죠. 게임마다 선택한 수치와 보정이 다릅니다.",
+      "previousEn": "This is a simplified conceptual demonstration, not a replica of every Quake attenuation function or storage format. Engines use their own scales and adjustments."
+    },
+    {
+      "id": "04",
+      "kind": "insert",
+      "afterPreviousParagraph": 7,
+      "ko": "베이크 결과를 두 층으로 생각하면 수정 비용도 이해할 수 있습니다. 벽의 색을 바꾸는 수정과 광원의 위치를 바꾸는 수정은 같은 작업이 아닙니다. 후자는 어떤 표본에 빛이 닿는지를 바꾸므로, 이전에 저장한 가림과 간접광이 새 장면에 맞는지 다시 확인해야 합니다.",
+      "en": "Thinking in separate layers explains update cost. Changing a wall texture and moving a light are different edits. The latter changes which samples receive illumination, so stored visibility and indirect lighting must be checked against the new scene."
+    },
+    {
+      "id": "04f",
+      "kind": "insert",
+      "afterPreviousParagraph": 3,
+      "ko": "가로 비율을 영 점 이오, 세로 비율을 영 점 오로 놓아 보죠. 왼쪽 위와 아래의 가중치는 각각 영 점 삼칠오이고, 오른쪽은 각각 영 점 일이오입니다. 네 가중치의 합은 일이고, 가까운 왼쪽 값이 결과에 더 많이 들어갑니다.",
+      "en": "Take a horizontal fraction of one quarter and a vertical fraction of one half. The top-left and bottom-left weights are each three eighths; the right-hand weights are each one eighth. They sum to one, and the nearer left values contribute more."
+    },
+    {
+      "id": "07",
+      "kind": "insert",
+      "afterPreviousParagraph": 6,
+      "ko": "스텐실 판정은 볼륨의 옆면을 검게 칠하는 과정과 다릅니다. 화면 표본에서 출발한 검사 경로가 볼륨의 앞면과 뒷면을 어떻게 통과하는지 세어, 그 점이 그늘의 안인지 밖인지 판단합니다. 카메라가 볼륨 안으로 들어가는 경우에는 세는 방향과 뚜껑 처리도 중요해집니다.",
+      "en": "The stencil test is not simply painting the volume sides black. It counts how the test path crosses front and back faces to determine whether a sample is inside the shadowed region. Camera-inside cases also require careful counting direction and cap handling."
+    },
+    {
+      "id": "08",
+      "kind": "insert",
+      "afterPreviousParagraph": 3,
+      "ko": "세 방향에서 읽은 색이 서로 다르다고 해보죠. 법선이 첫 방향을 더 향하면 첫 라이트맵의 가중치가 커지고, 법선을 돌리면 다른 방향의 기여가 커집니다. 저장한 색은 그대로여도 읽는 비중이 달라져 표면의 작은 굴곡이 드러나는 것입니다.",
+      "en": "Suppose the three stored directional colors differ. A normal facing the first basis increases that lightmap’s contribution; rotating the normal shifts the weights toward the other directions. Stored colors stay fixed while their contributions change, revealing small surface detail."
+    },
+    {
+      "id": "09",
+      "kind": "insert",
+      "afterPreviousParagraph": 2,
+      "ko": "수치를 넣어 보면 명확합니다. 같은 광원 좌표에서 저장한 깊이가 영 점 삼삼이고 검사할 점의 깊이가 영 점 팔이라면, 처음 만난 표면보다 뒤에 있습니다. 반대로 가림 물체를 옮겨 저장한 깊이가 영 점 구가 되면, 영 점 팔인 점은 그 앞에 있으므로 이 검사에서는 가려지지 않습니다.",
+      "en": "For a numerical example, stored depth of 0.33 and receiver depth of 0.80 place the receiver behind the first surface. If moving the blocker changes stored depth to 0.90, the receiver at 0.80 lies in front and is unoccluded by this test."
+    },
+    {
+      "id": "09",
+      "kind": "insert",
+      "afterPreviousParagraph": 7,
+      "ko": "주변 네 번의 검사에서 두 번만 빛을 받는다고 나오면, 피시에프의 평균은 영 점 오입니다. 부드러운 중간 밝기를 만들지만, 이것이 실제 면광원의 모든 경로를 정확히 계산했다는 뜻은 아닙니다. 필터가 넓어질수록 추가 표본과 다른 부작용도 함께 고려해야 합니다.",
+      "en": "If two of four neighboring tests report visibility, their PCF average is one half. This produces an intermediate visibility value, but does not exactly integrate every path from an area light. Wider filters require more samples and introduce further tradeoffs."
+    },
+    {
+      "id": "09b",
+      "kind": "insert",
+      "afterPreviousParagraph": 2,
+      "ko": "한 픽셀의 재질을 평가한 뒤 두 광원의 기여가 영 점 이오와 영 점 삼오라고 해보죠. 포워드에서는 표면을 그리는 과정에서 둘을 더해 영 점 육을 만듭니다. 디퍼드에서는 표면 정보를 먼저 기록한 뒤, 조명 단계에서 같은 두 기여를 더합니다. 결과의 목표가 같아도 중간 데이터와 작업 순서는 달라집니다.",
+      "en": "Suppose two lights contribute 0.25 and 0.35 to a shaded pixel. Forward shading adds them while processing the surface, producing 0.60. Deferred shading stores surface data first and accumulates the same contributions later. The target result can match while intermediate data and ordering differ."
+    },
+    {
+      "id": "09b",
+      "kind": "insert",
+      "afterPreviousParagraph": 6,
+      "ko": "불투명한 벽 앞에 유리 두 장이 있다고 해보죠. 가장 앞의 표면 정보 하나만 저장한 버퍼에는 뒤의 유리와 벽의 재질이 모두 들어 있지 않습니다. 여러 겹을 합성하려면 추가 정보나 별도 패스가 필요합니다. 그래서 실제 엔진은 장면 전체를 한 가지 경로만으로 그린다고 생각하면 놓치는 부분이 생깁니다.",
+      "en": "Place two glass layers in front of an opaque wall. A buffer storing only the nearest surface does not contain every layer’s material. Compositing them needs additional information or passes. A real engine can therefore combine rendering paths within one frame."
+    },
+    {
+      "id": "10",
+      "kind": "insert",
+      "afterPreviousParagraph": 4,
+      "ko": "깊이 버퍼에는 현재 보이는 앞쪽 표면만 남는다고 생각해 보세요. 앞의 얇은 막대 뒤에 먼 벽이 있어도, 한 방향의 깊이만으로 막대의 두께를 알 수 없습니다. 표본 범위를 너무 넓히면 서로 멀리 떨어진 표면을 이웃처럼 연결해, 물체 둘레에 어두운 테두리가 생길 수 있습니다.",
+      "en": "The depth buffer primarily describes visible front surfaces. A thin rod in front of a distant wall does not reveal its thickness through a single depth value. An excessive sample range can associate unrelated surfaces and produce a dark halo around the object."
+    }
+  ],
+  "implementationReferences": "Existing primary code/versioned documentation in research-pack.json; additional examples are educational calculations, not measurements of game performance.",
+  "normalMapFootageCorrection": "The rock-model/normal-texture/plane sequence belongs to Half-Life 2 and is moved from chapter07 to08; DOOM3 demonstration is identified as pre-release.",
+  "finalScriptReviewed": false,
+  "ttsStarted": false,
+  "timingMeasured": false
+}

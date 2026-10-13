@@ -1,0 +1,24 @@
+import {Circle,Line,Txt,makeScene2D} from '@motion-canvas/2d';
+import {all,createSignal,linear,waitFor} from '@motion-canvas/core';
+import {PAPER as P} from '../../../styles/research-paper';
+import {depthSpace,heading,V3} from '../../../shared/depth-diagrams';
+import {caption,note} from './common';
+export default makeScene2D(function*(view){
+ view.fill(P.background);const yaw=createSignal(25),phase=createSignal(0),reveal=createSignal(0),angle=createSignal(20);
+ const w=depthSpace(yaw,[-310,160],1.2);
+ view.add(heading('02 · 1편','보이는 표면과, 밝아지는 표면','가시성 판정 → 선택한 표면의 방향·재질·빛 평가','게임 렌더링의 역사'));
+ const back:V3[]=[[-100,40,25],[140,40,25],[10,40,225]],front:V3[]=[[-135,-50,25],[105,-50,25],[-15,-50,225]];
+ view.add(w.polygon(()=>back,'#e5a77a'));view.add(w.polygon(()=>front,'#7791b5'));
+ view.add(w.path(()=>[[-15,-50,95],[-15,-220,95]],P.green,reveal));
+ const ray=w.path(()=>[[-15+170*Math.sin(angle()*Math.PI/180),-50-170*Math.cos(angle()*Math.PI/180),95],[-15,-50,95]],P.yellow,reveal);view.add(ray);
+ view.add(<Circle position={()=>w.point(-15+170*Math.sin(angle()*Math.PI/180),-50-170*Math.cos(angle()*Math.PI/180),95)} size={35} fill={P.yellow} opacity={reveal}/>);
+ view.add(w.label('카메라에 앞선 표면 선택',0,180,0,26));
+ const screen=depthSpace(()=>27,[510,145],1.1);view.add(screen.box(0,0,0,210,200,16,'#e5eaf1'));
+ for(let i=0;i<25;i++)view.add(screen.box(-80+i%5*40,-80+Math.floor(i/5)*40,16,35,35,5,i===12?'#7791b5':'#eef2f4'));
+ view.add(<Line points={[[-20,80],[300,100]]} stroke={P.blue} endArrow lineWidth={6} end={reveal}/>);
+ view.add(<Txt x={455} y={-110} text={'선택한 화면 표본'} fontFamily={P.font} fontSize={31} fill={P.ink}/>);
+ view.add(<Txt x={470} y={263} text={()=>`단순 확산 방향 항: max(0, n · l) = ${Math.cos(angle()*Math.PI/180).toFixed(2)}`} fontFamily={P.mono} fontSize={25} fill={P.ink} opacity={reveal}/>);
+ view.add(note(()=>['삼각형 투영·깊이 테스트는 보이는 표면을 고르는 단계','법선 n은 표면 방향, l은 광원 방향을 나타낸다','빛 방향이 비스듬할수록 같은 표면의 방향 항이 작아진다','가시성·셰이딩·광원 가림은 연결되지만 서로 다른 계산'][phase()]));
+ const cues=['먼저 화면에서 어떤 표면이 보이는지\n깊이로 앞뒤를 판별합니다.','보이는 표면을 골랐다고\n조명의 밝기까지 계산된 것은 아닙니다.','법선과 광원 방향의 내적은\n표면이 받는 직접광의 방향 항입니다.','레이로 표면이나 광원의 가림을 찾는 일은\n래스터화와 조합해서 사용할 수 있습니다.'];view.add(caption(()=>cues[phase()]));
+ yield*reveal(1,5,linear);yield*waitFor(1);phase(1);yield*waitFor(6);phase(2);yield*angle(65,5,linear);yield*waitFor(1);phase(3);yield*yaw(34,4,linear);yield*waitFor(2);
+});

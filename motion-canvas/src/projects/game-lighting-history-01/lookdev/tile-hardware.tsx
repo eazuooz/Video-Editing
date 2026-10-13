@@ -1,0 +1,27 @@
+import {Line,Txt,makeScene2D} from '@motion-canvas/2d';
+import {all,createSignal,linear,waitFor} from '@motion-canvas/core';
+import {PAPER as P} from '../../../styles/research-paper';
+import {depthSpace,heading,V3} from '../../../shared/depth-diagrams';
+import {caption,note} from './common';
+export default makeScene2D(function*(view){
+ view.fill(P.background);const yaw=createSignal(24),phase=createSignal(0),transfer=createSignal(0),hidden=createSignal(1),out=createSignal(0);
+ const w=depthSpace(yaw,[0,40],1.06);
+ view.add(heading('04t · 병행 계보','삼각형을 나누는 타일과, 광원을 나누는 타일','하드웨어 tile visibility ≠ software light culling','게임 렌더링의 역사'));
+ view.add(w.box(-430,0,0,290,280,14,'#e5eaf1'));
+ for(let i=0;i<16;i++)view.add(w.box(-535+i%4*70,-105+Math.floor(i/4)*70,14,66,66,4,i===6?'#f3df9b':'#e9eff2'));
+ const tri=w.polygon(()=>[[-530,-50,22],[-320,-50,22],[-430,95,22]],'#7791b5');view.add(tri);
+ view.add(w.label('삼각형을 겹치는 타일에 분류',-430,195,0,26));
+ view.add(w.box(0,0,0,270,250,30,'#aebac4'));
+ view.add(w.box(0,0,30,190,175,20,'#f3df9b'));
+ view.add(w.label('칩 내부 작업 집합',0,180,0,29));
+ const back=w.box(0,0,60,135,115,15,'#e5a77a');back.opacity(hidden);view.add(back);
+ view.add(w.box(0,0,100,135,115,15,'#7791b5'));
+ view.add(w.path(()=>[[-260,0,65],[-150,0,85]],P.blue,transfer));
+ view.add(w.path(()=>[[150,0,85],[290,0,65]],P.green,out));
+ view.add(w.box(430,0,0,270,250,15,'#d3e5d9'));
+ const result=w.box(430,0,15,130,115,12,'#7791b5');result.opacity(out);view.add(result);
+ view.add(w.label('완성된 타일 결과',430,180,0,29));
+ view.add(note(()=>['이 목록에는 영향을 주는 삼각형이 들어간다','작은 작업 집합을 가까운 메모리에서 처리한다','불투명 가림 판정 후 숨은 표면 셰이딩을 생략하는 TBDR 원리','다음 편의 tiled lighting 목록에는 삼각형 대신 광원이 들어간다'][phase()]));
+ const cues=['타일 베이스드 GPU는 화면을 나누고\n겹치는 삼각형을 각 타일에 분류합니다.','칩 안에서 작은 작업 집합을 처리해\n외부 메모리 왕복을 줄일 수 있습니다.','티비디알은 가시성을 먼저 판별해\n가려진 불투명 표면의 셰이딩을 줄입니다.','광원 목록을 만드는 타일드 라이팅과는\n목록의 내용과 계산 목적이 다릅니다.'];view.add(caption(()=>cues[phase()]));
+ yield*transfer(1,5,linear);yield*waitFor(1);phase(1);yield*waitFor(6);phase(2);yield*hidden(0,3,linear);yield*out(1,2,linear);yield*waitFor(1);phase(3);yield*yaw(33,4,linear);yield*waitFor(2);
+});

@@ -1,0 +1,1518 @@
+{
+  "updatedAt": "2026-10-08T05:21:20.241Z",
+  "all108KoEnParagraphsDirectlyRead": true,
+  "rows": [
+    {
+      "id": "01",
+      "title": "이번 편의 질문: 저장한 빛과 계산하는 빛",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "게임 속 조명이 움직일 때, 벽에 남는 밝기와 따라 움직이는 그림자는 어떻게 다를까요?",
+          "en": "When a light moves in a game, why can brightness remain on a wall while a shadow follows the change?"
+        },
+        {
+          "number": 2,
+          "ko": "이번 편에서는 둠의 구역 밝기에서 출발해 퀘이크의 라이트맵, 실시간 그림자, 포워드와 디퍼드의 계산 순서를 연결합니다.",
+          "en": "We will connect DOOM’s sector brightness to Quake’s lightmaps, real-time shadows, and the ordering of forward and deferred shading."
+        },
+        {
+          "number": 3,
+          "ko": "보고 나면 무엇을 미리 저장하고 무엇을 매 프레임 다시 계산하는지, 그리고 화면의 한계가 어디에서 생기는지 구별할 수 있습니다. 먼저 표면 하나가 밝아지는 과정부터 보죠.",
+          "en": "You will be able to distinguish stored data from per-frame work and identify where an image’s limitations come from. Let us begin with a single surface."
+        }
+      ],
+      "primarySources": [],
+      "explanationRole": "서로 가리는 바닥·두 벽·유리·광원을 투영된 공간으로 배치. 같은 카메라를 유지하고 관찰 대상을 순차 강조한다. 실제 MC 씬은 아직 미제작.",
+      "actualCandidates": [],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Original equations/algorithms/overview are explanation time; no unrelated action quota inserted."
+    },
+    {
+      "id": "02",
+      "title": "밝기 계산과 가시성은 서로 다른 일",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "화면의 한 픽셀을 만들려면 먼저 카메라에서 어떤 표면이 보이는지 알아야 합니다. 그다음 그 표면이 카메라 방향으로 얼마만큼의 빛을 보내는지 계산합니다.",
+          "en": "Making a pixel starts with identifying the visible surface. The next task is estimating how much light that surface sends toward the camera."
+        },
+        {
+          "number": 2,
+          "ko": "래스터화는 삼각형을 화면으로 투영하고, 삼각형이 덮는 표본을 찾습니다. 앞뒤가 겹칠 때에는 깊이 테스트로 보이는 쪽을 선택합니다.",
+          "en": "Rasterization projects triangles onto the screen and finds the covered samples. A depth test selects the visible surface when triangles overlap."
+        },
+        {
+          "number": 3,
+          "ko": "이것만으로 조명이 계산되는 것은 아닙니다. 표면의 위치와 법선, 재질, 광원 정보가 있어야 색을 구할 수 있죠. 법선은 표면이 어느 방향을 향하는지 알려주는 화살표입니다.",
+          "en": "Visibility alone does not calculate lighting. Position, surface normal, material, and light data are needed to determine color. The normal describes a surface’s orientation."
+        },
+        {
+          "number": 4,
+          "ko": "계산을 한 번 해보죠. 위를 향하는 단위 법선과 똑바로 위에서 오는 빛 방향의 내적은 일입니다. 빛 방향이 육십 도 기울면 내적은 영 점 오가 됩니다. 이 단순 확산 모델에서는 다른 조건이 같을 때 방향에 따른 항이 절반이 되는 것입니다.",
+          "en": "For a worked example, the dot product of an upward unit normal and an upward light direction is one. At sixty degrees it is one half. In this simple diffuse model, with other factors unchanged, the angular term is halved."
+        },
+        {
+          "number": 5,
+          "ko": "법선과 빛 방향을 단위 벡터로 만드는 이유도 여기에 있습니다. 벡터 길이가 섞이면 방향만 비교하려던 내적에 다른 크기가 들어갑니다. 또한 광원까지 막힌 경로라면 방향이 아무리 잘 맞아도 그 광원의 직접광은 차단해야 합니다.",
+          "en": "Normalizing both vectors keeps their lengths from changing a comparison intended to measure orientation. Visibility is a separate factor: even a perfectly aligned surface receives no direct contribution from that light if the path is blocked."
+        },
+        {
+          "number": 6,
+          "ko": "렌더링 방정식에서는 스스로 내는 빛과 다른 방향에서 들어와 반사되는 빛을 더합니다. 재질의 반사 규칙과 입사 방향의 코사인도 이 합에 들어갑니다.",
+          "en": "The rendering equation adds emitted light to reflected incoming light. Material response and the cosine of the incident angle contribute to that sum."
+        },
+        {
+          "number": 7,
+          "ko": "이번에는 적분 전체를 유도하기보다, 이 계산을 게임이 어떻게 나누어 처리했는지 따라가겠습니다. 어느 방향의 빛을 무시하고 어떤 값을 저장하는지가 화면을 바꿉니다.",
+          "en": "Rather than deriving the entire integral, we will follow how games divide this work. The directions they omit and the values they store affect the resulting image."
+        },
+        {
+          "number": 8,
+          "ko": "레이를 쏘는 일도 한 가지가 아닙니다. 카메라에서 표면을 찾거나, 표면에서 광원까지 가려지는지 확인하거나, 반사된 방향의 다른 표면을 찾을 수 있습니다.",
+          "en": "Rays can perform different tasks: finding a visible surface, testing visibility to a light, or finding a surface along a reflection direction."
+        },
+        {
+          "number": 9,
+          "ko": "따라서 화면을 래스터화한다고 레이를 전혀 쓰지 않는 것은 아닙니다. 게임 전에 레이로 빛을 계산해 저장하고, 실행할 때에는 그 값을 읽는 조합도 가능합니다.",
+          "en": "A rasterized image can still use ray-based calculations. Rays may compute lighting before gameplay, while the running game reads the stored result."
+        },
+        {
+          "number": 10,
+          "ko": "이제 첫 번째 선택을 보죠. 복잡한 빛의 이동을 계산하는 대신, 공간마다 밝기를 정해 놓으면 어떨까요?",
+          "en": "Our first choice replaces complex light transport with a brightness value assigned to each part of the world."
+        }
+      ],
+      "primarySources": [
+        "whitted1980",
+        "kajiya1986",
+        "pbrt-path",
+        "ms-visibility"
+      ],
+      "explanationRole": "표면 패치 위 반구, 법선과 입사/출사 화살표. 빛을 반대 방향으로 추적해도 에너지 이동 자체를 거꾸로 만드는 것은 아님을 표시. 투영된 삼각형 앞뒤 면과 화면 격자를 실제 깊이로 분리하고 가려진 조각을 제거한 뒤 빛 계산 층으로 이동한다.",
+      "actualCandidates": [
+        {
+          "id": "epic-material-baking-2017",
+          "url": "https://www.youtube.com/watch?v=WaM_owaUpbE",
+          "sha256": "bbc1cf65bc5f2fe7bcccad87450698d79547ff4c8a78a38913031b55a257e616",
+          "intervals": [
+            {
+              "start": 1620,
+              "end": 1695,
+              "group": "material-preview-and-graph",
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 1700,
+              "end": 1780,
+              "group": "book-flatten-camera",
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 1910,
+              "end": 1925,
+              "group": "buffer-export-command",
+              "completeIntervalApproved": false
+            }
+          ],
+          "focus": "Separate geometry, surface data and shaded color; follow real engine preview/mesh/camera operations. Buffer export is not a lightmap bake or a Forward/Deferred benchmark.",
+          "connection": "Normal-map silhouette distinction and the data stored before lighting. Book material flattening does not demonstrate RNM or Quake baking internals.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-material-baking-review-v1/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "03",
+      "title": "1993: 둠의 밝기 숫자와 색상표",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "1993년 둠의 기본 조명은 구역에 붙인 밝기 값에서 시작합니다. 맵의 구역이 어느 정도 밝아야 하는지 제작자가 정하고, 렌더러는 그 값으로 색상표를 고릅니다.",
+          "en": "DOOM’s basic 1993 lighting starts with a sector brightness value. The map assigns brightness to a sector, and the renderer uses it to choose a color table."
+        },
+        {
+          "number": 2,
+          "ko": "실제 코드에는 구역 밝기를 비트 이동으로 바꾸어 조명 인덱스를 만들고, 추가 밝기를 더하는 단계가 있습니다. 이후 벽 방향에 따른 보정과 범위 제한이 이어집니다.",
+          "en": "The source uses a bit shift of sector brightness to derive a light-table index, with extra lighting added. It then applies wall-orientation adjustments and clamps the index."
+        },
+        {
+          "number": 3,
+          "ko": "수평으로 놓인 벽과 수직으로 놓인 벽에는 서로 다른 보정을 줍니다. 연속적인 광원 각도를 계산한 결과가 아니라, 축 방향에 따라 한 단계 차이를 주는 규칙입니다.",
+          "en": "Horizontal and vertical walls receive different adjustments. This is an axis-based rule, rather than a continuous calculation of the angle to a light."
+        },
+        {
+          "number": 4,
+          "ko": "서로 직각인 두 벽은 같은 구역에 있어도 서로 다른 밝기로 보일 수 있습니다. 여기서는 구역을 바꾸지 않았는데 벽 방향만으로 색상표 선택이 달라지는 것입니다. 곡면의 각도를 계속 재는 조명과는 다른, 간단한 방향 구별입니다.",
+          "en": "Two perpendicular walls can appear at different brightness in the same sector. The sector has not changed; the wall orientation changes the color-table selection. This is a simple orientation distinction rather than continuous lighting over a curved surface."
+        },
+        {
+          "number": 5,
+          "ko": "거리도 별도 단계에서 화면의 투영 크기와 연결된 색상표 선택에 영향을 줍니다. 구역 밝기 하나만 읽고 끝난다고 단순화하면 이 부분을 놓치게 됩니다.",
+          "en": "Distance-related behavior also enters through scale-dependent color-table selection. Reducing the process to a single sector lookup would omit that stage."
+        },
+        {
+          "number": 6,
+          "ko": "그렇다고 물체와 조명 사이의 가림을 매번 계산하는 방식은 아닙니다. 이 구조만으로 작은 광원의 빛 자국이나 물체가 만드는 정확한 그림자가 자동으로 생기지는 않죠.",
+          "en": "This is not a per-light visibility test between an object and a lamp. The scheme alone does not automatically produce a local light footprint or a precise object shadow."
+        },
+        {
+          "number": 7,
+          "ko": "자료 화면에는 이천이십사년 재발매판임을 표시합니다. 같은 둠 맵이어도 현대 소스포트에 추가한 조명을 1993년 구현의 증거로 쓰면 역사가 달라집니다. 당시의 구역 밝기와 벽 방향 규칙은 공개된 원본 코드와 도식에서 따로 확인하겠습니다.",
+          "en": "The footage is labeled as the 2024 rerelease. Later lighting added by a modern source port is not evidence of the 1993 implementation, even on the same DOOM map. We inspect the original sector-brightness and wall-orientation rules separately in released source and our diagram."
+        }
+      ],
+      "primarySources": [
+        "doom-code"
+      ],
+      "explanationRole": "두께 있는 바닥 구역 세 개를 다른 높이의 밝기 막대와 연결; 벽을 회전하며 방향 보정 표시.",
+      "actualCandidates": [
+        {
+          "id": "steam-doom-2024",
+          "url": "https://store.steampowered.com/app/2280/DOOM__DOOM_II/",
+          "sha256": "e4ffb0992a4a9530cd8ce80e04cbc39c7bcb19e418c2156506baa201ba0493d0",
+          "intervals": [],
+          "focus": "Candidate illustrative game action clearly labeled2024 rerelease; original1993 algorithm is established by original source code separately.",
+          "connection": "Candidate illustrative game action clearly labeled2024 rerelease; original1993 algorithm is established by original source code separately.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/steam-doom-launch-review/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "04",
+      "title": "1996–1997: 계산을 게임 앞으로 옮긴 라이트맵",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "퀘이크에서는 표면마다 더 세밀한 빛을 저장합니다. 벽의 그림 자체를 담은 텍스처와, 그 벽에 들어오는 조명 정보를 담은 라이트맵을 구별해 보죠.",
+          "en": "Quake stores more detailed lighting on surfaces. We distinguish the texture containing the wall’s appearance from the lightmap containing lighting on that wall."
+        },
+        {
+          "number": 2,
+          "ko": "표면을 작은 표본으로 나누고, 각 표본에서 광원까지 가려지는지 확인합니다. 방향과 거리, 광원 세기를 반영한 결과를 게임 전에 계산해 둡니다.",
+          "en": "Surface samples test visibility to lights. Orientation, distance, and light strength contribute to values calculated before gameplay."
+        },
+        {
+          "number": 3,
+          "ko": "도식에서는 표본을 하나씩 채우고, 계산 결과를 별도 텍스처로 옮깁니다. 상자 뒤의 표본이 어두워지는 이유는 그 방향의 광원이 가려졌기 때문입니다.",
+          "en": "Our diagram fills samples in sequence and transfers the results to a texture. Samples behind the box are darker because the light is blocked."
+        },
+        {
+          "number": 4,
+          "ko": "예를 들어 벽 무늬는 촘촘한데 조명 표본은 굵을 수 있습니다. 색 무늬의 해상도를 높여도 조명의 거친 경계가 그대로 남는 이유입니다. 거꾸로 조명 표본만 늘리면 빛의 경계는 섬세해져도 벽 무늬 자체가 새로 생기지는 않습니다.",
+          "en": "A wall texture may contain fine detail while its lightmap uses coarse samples. Raising texture resolution alone does not refine the lighting boundary. Raising lightmap resolution improves stored lighting detail without inventing detail in the wall texture."
+        },
+        {
+          "number": 5,
+          "ko": "이 차이는 나중의 엔진 시연에서도 관찰할 수 있습니다. 이천십칠년 언리얼의 비교 방에는 라이트맵 해상도가 백이십팔, 이백오십육, 오백십이, 천이십사로 표시되어 있습니다. 벽의 무늬와 빛의 경계를 구별해서 보세요. 서로 다른 비교 방을 방문하는 화면이므로, 한 물체의 설정만 켰다 끈 실험으로 읽지는 않겠습니다.",
+          "en": "A later engine demonstration makes the distinction observable. The 2017 Unreal comparison rooms are labeled with lightmap resolutions of 128, 256, 512, and 1,024. Separate texture detail from lighting boundaries. The camera visits different authored rooms; this is not a single-object on/off experiment."
+        },
+        {
+          "number": 6,
+          "ko": "실행 중에는 저장한 조명과 표면 텍스처를 조합합니다. 서로 다른 좌표로 읽을 수도 있으므로, 벽의 세밀한 무늬와 조명의 격자 크기를 같다고 생각할 필요는 없습니다.",
+          "en": "At runtime, the renderer combines stored lighting with the surface texture. Their coordinates and resolutions can differ; texture detail and lightmap detail need not match."
+        },
+        {
+          "number": 7,
+          "ko": "1997년 퀘이크 투의 도구에서는 표면 패치에 모인 반사광을 최종 라이트맵 표본에 더합니다. 빛이 한 번 반사되어 직접 조명이 닿지 않는 곳에도 기여하도록 베이크하는 것입니다.",
+          "en": "Quake II’s 1997 tools add reflected-light patch contributions to the final lightmap samples, allowing baked indirect light to contribute beyond directly lit areas."
+        },
+        {
+          "number": 8,
+          "ko": "이것을 뒤에서 다룰 포톤 매핑과 같은 알고리즘이라고 부르지는 않습니다. 간접광을 저장한다는 목적이 같아도, 값을 구하는 과정은 다를 수 있습니다.",
+          "en": "This should not be labeled photon mapping. Algorithms can share the goal of storing indirect light while calculating it through different processes."
+        },
+        {
+          "number": 9,
+          "ko": "베이크 결과를 두 층으로 생각하면 수정 비용도 이해할 수 있습니다. 벽의 색을 바꾸는 수정과 광원의 위치를 바꾸는 수정은 같은 작업이 아닙니다. 후자는 어떤 표본에 빛이 닿는지를 바꾸므로, 이전에 저장한 가림과 간접광이 새 장면에 맞는지 다시 확인해야 합니다.",
+          "en": "Thinking in separate layers explains update cost. Changing a wall texture and moving a light are different edits. The latter changes which samples receive illumination, so stored visibility and indirect lighting must be checked against the new scene."
+        },
+        {
+          "number": 10,
+          "ko": "광원을 옮기면 문제가 드러납니다. 저장한 값은 이전 상태의 계산 결과이므로 새로운 가림과 방향을 반영하려면 다시 계산하거나 다른 동적 조명 방법을 더해야 합니다.",
+          "en": "Moving a light exposes the limitation: stored values describe the old configuration. New visibility and orientation require recalculation or an additional dynamic-lighting method."
+        },
+        {
+          "number": 11,
+          "ko": "움직이는 캐릭터는 벽의 같은 위치에 붙어 있지 않죠. 퀘이크의 조명 조회에는 아래로 공간을 검색해 표면의 조명 표본을 읽는 경로가 있습니다. 정적 벽의 저장 값과 이동 물체의 조회 방법은 구별해야 합니다.",
+          "en": "A moving character is not attached to one wall location. Quake includes a downward query that samples surface lighting. Static surface storage and a moving object’s lighting query are separate concerns."
+        }
+      ],
+      "primarySources": [
+        "quake-code",
+        "qrad"
+      ],
+      "explanationRole": "벽 표면의 격자가 펼쳐져 별도 라이트맵 평면으로 저장되고 다시 벽에 투영됨. 직접광을 가린 상자 뒤의 간접광을 색 화살표로 비교.",
+      "actualCandidates": [
+        {
+          "id": "steam-quake-enhanced-2021",
+          "url": "https://store.steampowered.com/app/2310/",
+          "sha256": "510cfb79b1b6cb58f1beea705eff8c12002e70ed6ff5d79b66bdc2bd3272fa24",
+          "intervals": [
+            {
+              "start": 23,
+              "end": 27,
+              "seconds": 4,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 31,
+              "end": 35,
+              "seconds": 4,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 39,
+              "end": 43,
+              "seconds": 4,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 46,
+              "end": 50,
+              "seconds": 4,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 55,
+              "end": 63,
+              "seconds": 8,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 71,
+              "end": 90,
+              "seconds": 19,
+              "completeIntervalApproved": false
+            }
+          ],
+          "focus": "Surface/texture appearance in explicitly labeled2021 enhanced Quake. Original1996 lightmap and entity lookup are established by original code, not these modern output pixels.",
+          "connection": "Surface/texture appearance in explicitly labeled2021 enhanced Quake. Original1996 lightmap and entity lookup are established by original code, not these modern output pixels.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/steam-quake-launch-2021-review-v1/extraction.json"
+        },
+        {
+          "id": "epic-lighting-techniques-2017",
+          "url": "https://www.youtube.com/watch?v=jCsrWzt9F28",
+          "sha256": "9758467122551d523f8a9691b4db59a573e36afa6783d3df6db022a045566d48",
+          "intervals": [
+            {
+              "start": 238,
+              "end": 260,
+              "seconds": 22,
+              "completeIntervalApproved": false,
+              "group": "cache-grid"
+            },
+            {
+              "start": 435,
+              "end": 470,
+              "seconds": 35,
+              "completeIntervalApproved": false,
+              "group": "cache-interpolation"
+            },
+            {
+              "start": 522,
+              "end": 550,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "cache-move"
+            },
+            {
+              "start": 600,
+              "end": 628,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "cache-height"
+            },
+            {
+              "start": 646,
+              "end": 670,
+              "seconds": 24,
+              "completeIntervalApproved": false,
+              "group": "cache-height"
+            },
+            {
+              "start": 704,
+              "end": 732,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "capsule-shadow"
+            },
+            {
+              "start": 739,
+              "end": 751,
+              "seconds": 12,
+              "completeIntervalApproved": false,
+              "group": "capsule-shadow"
+            },
+            {
+              "start": 1140,
+              "end": 1157,
+              "seconds": 17,
+              "completeIntervalApproved": false,
+              "group": "bake-room"
+            },
+            {
+              "start": 1194,
+              "end": 1210,
+              "seconds": 16,
+              "completeIntervalApproved": false,
+              "group": "bake-room"
+            },
+            {
+              "start": 1913,
+              "end": 1960,
+              "seconds": 47,
+              "completeIntervalApproved": false,
+              "group": "far-shadows"
+            },
+            {
+              "start": 2024,
+              "end": 2058,
+              "seconds": 34,
+              "completeIntervalApproved": false,
+              "group": "csm-distance"
+            },
+            {
+              "start": 2100,
+              "end": 2135,
+              "seconds": 35,
+              "completeIntervalApproved": false,
+              "group": "csm-settings"
+            },
+            {
+              "start": 2174,
+              "end": 2238,
+              "seconds": 64,
+              "completeIntervalApproved": false,
+              "group": "csm-settings"
+            },
+            {
+              "start": 2970,
+              "end": 2990,
+              "seconds": 20,
+              "completeIntervalApproved": false,
+              "group": "lightmap-128"
+            },
+            {
+              "start": 3000,
+              "end": 3045,
+              "seconds": 45,
+              "completeIntervalApproved": false,
+              "group": "lightmap-1024"
+            },
+            {
+              "start": 3104,
+              "end": 3116,
+              "seconds": 12,
+              "completeIntervalApproved": false,
+              "group": "lighting-edit"
+            },
+            {
+              "start": 3176,
+              "end": 3196,
+              "seconds": 20,
+              "completeIntervalApproved": false,
+              "group": "lighting-edit"
+            }
+          ],
+          "focus": "Genuine engine operation candidate: baked light/samples, moving receiver, room seams and shadow distance/settings. Later engine example is explicitly labeled2017, not originalQuake/HL2 internals.",
+          "connection": "Genuine engine operation candidate: baked light/samples, moving receiver, room seams and shadow distance/settings. Later engine example is explicitly labeled2017, not originalQuake/HL2 internals.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-lighting-techniques-review/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "04f",
+      "title": "라이트맵도 텍스처: 작은 픽셀이 넓은 면을 덮을 때",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "텍스처를 읽는다고 문제가 끝나지는 않습니다. 먼 바닥에서는 화면의 픽셀 하나가 텍스처의 많은 칸을 덮습니다. 그중 한 칸만 고르면 카메라 이동에 따라 무늬가 불안정해질 수 있습니다.",
+          "en": "Texture lookup creates another problem. A distant screen pixel can cover many texels; sampling only one can make the pattern unstable as the camera moves."
+        },
+        {
+          "number": 2,
+          "ko": "밉맵은 같은 텍스처를 점점 작게 만들어 둔 계층입니다. 픽셀이 덮는 영역에 맞는 크기를 읽어, 너무 촘촘한 무늬를 매번 날카롭게 다시 선택하지 않게 합니다.",
+          "en": "Mipmaps store progressively smaller versions of a texture. Selecting an appropriate level avoids repeatedly resolving details finer than the pixel’s footprint."
+        },
+        {
+          "number": 3,
+          "ko": "바이리니어 필터는 한 레벨에서 주변 네 텍셀을 가중 평균합니다. 도식에서는 읽는 위치가 네 칸 사이를 움직일수록 각 칸의 비중이 달라지는 모습을 보죠.",
+          "en": "Bilinear filtering weights four neighboring texels within one level. Our diagram changes their weights as the sample moves between them."
+        },
+        {
+          "number": 4,
+          "ko": "가로 비율을 영 점 이오, 세로 비율을 영 점 오로 놓아 보죠. 왼쪽 위와 아래의 가중치는 각각 영 점 삼칠오이고, 오른쪽은 각각 영 점 일이오입니다. 네 가중치의 합은 일이고, 가까운 왼쪽 값이 결과에 더 많이 들어갑니다.",
+          "en": "Take a horizontal fraction of one quarter and a vertical fraction of one half. The top-left and bottom-left weights are each three eighths; the right-hand weights are each one eighth. They sum to one, and the nearer left values contribute more."
+        },
+        {
+          "number": 5,
+          "ko": "트라이리니어는 여기에 인접한 두 밉 레벨 사이의 보간도 더합니다. 레벨을 갑자기 바꾸는 대신 섞는 것이지, 세 개의 공간 축을 따라 빛을 계산한다는 뜻은 아닙니다.",
+          "en": "Trilinear filtering also blends between two adjacent mip levels. It smooths level transitions; it does not describe lighting along three spatial axes."
+        },
+        {
+          "number": 6,
+          "ko": "비스듬히 바라본 바닥에서는 픽셀의 발자국이 길쭉해집니다. 애니소트로픽 필터링은 이 방향성을 반영해 넓이가 같은 정사각형만 쓰는 근사의 한계를 줄입니다.",
+          "en": "At an oblique viewing angle, a pixel’s footprint becomes elongated. Anisotropic filtering accounts for this directional shape instead of using only a roughly square footprint."
+        },
+        {
+          "number": 7,
+          "ko": "필터링은 원본에 없는 무늬를 새로 만드는 기술은 아닙니다. 저장된 정보를 화면 표본에 맞게 안정적으로 읽는 기술이며, 선택한 품질에 따라 추가 비용도 있습니다.",
+          "en": "Filtering does not invent missing texture detail. It reads existing data more appropriately for screen samples, with costs that depend on the chosen quality."
+        }
+      ],
+      "primarySources": [
+        "ms-filter",
+        "ue-textures"
+      ],
+      "explanationRole": "원근 바닥에 픽셀 발자국 사각형을 투영한다. 여러 텍셀의 윗면이 앞뒤로 가리고, 카메라 각도를 바꾸면 발자국이 길어진다. 세 mip 판을 깊이 방향으로 쌓아 선택·보간을 움직임으로 비교한다.",
+      "actualCandidates": [],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Original equations/algorithms/overview are explanation time; no unrelated action quota inserted."
+    },
+    {
+      "id": "04t",
+      "title": "1990년대의 다른 갈래: 타일 베이스드 GPU",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "빛을 어떻게 구할지와 별개로, 화면을 어느 순서로 처리할지도 중요합니다. 타일 베이스드 렌더링은 화면을 작은 조각으로 나누어 삼각형들을 해당 조각에 분류합니다.",
+          "en": "Independent of the lighting model, processing order matters. Tile-based rendering divides the screen into smaller regions and assigns triangles to them."
+        },
+        {
+          "number": 2,
+          "ko": "1990년대 파워브이알 계보는 이런 하드웨어 접근의 사례입니다. 지금의 프로그래머블 셰이더 구조 전체를 당시 하드웨어에 그대로 옮겨 설명하지는 않겠습니다.",
+          "en": "The 1990s PowerVR lineage illustrates this hardware approach. We will not project the complete structure of a modern programmable renderer onto those earlier devices."
+        },
+        {
+          "number": 3,
+          "ko": "선택한 타일의 작업 집합을 칩 안의 가까운 메모리에서 처리하면, 큰 외부 버퍼를 오가는 읽기와 쓰기를 줄일 수 있습니다. 작은 타일을 완성하고 결과를 내보내는 흐름입니다.",
+          "en": "Keeping a tile’s working data close to the chip can reduce traffic to larger external buffers. The tile is processed locally before its result is written out."
+        },
+        {
+          "number": 4,
+          "ko": "파워브이알의 티비디알에서 디퍼드는 가시성을 판정한 뒤 필요한 표면을 셰이딩하는 구조를 가리킵니다. 뒤에서 볼 재질 정보를 저장하는 디퍼드 셰이딩과 같은 용어로 묶으면 혼동하기 쉽습니다.",
+          "en": "In PowerVR’s TBDR terminology, deferred describes resolving visibility before shading the required surfaces. This differs from the G-buffer-based deferred shading we will discuss later."
+        },
+        {
+          "number": 5,
+          "ko": "여기서 목록의 항목은 삼각형입니다. 다음 편의 타일드 라이팅에서는 같은 화면 타일에 영향을 주는 광원을 분류합니다. 격자의 모양이 같아도 담는 정보와 목적이 다릅니다.",
+          "en": "The list here contains primitives. Tiled lighting instead lists lights affecting a screen region. Similar-looking grids can contain different data for different purposes."
+        },
+        {
+          "number": 6,
+          "ko": "가려진 불투명 표면을 건너뛰는 이점이 있어도 투명체와 버림 연산, 기하 중간 데이터에는 별도 비용이 있습니다. 다른 GPU도 얼리 제트와 캐시로 낭비를 줄이므로 단순한 승패 비교는 어렵습니다.",
+          "en": "Skipping hidden opaque shading can help, but transparency, discard operations, and intermediate geometry still have costs. Other GPUs also reduce work through early depth tests and caches."
+        }
+      ],
+      "primarySources": [
+        "powervr-history",
+        "powervr-tbdr",
+        "powervr-tile-stages",
+        "powervr-hsr",
+        "arm-tbr2014"
+      ],
+      "explanationRole": "원근이 있는 화면 판을 작은 타일로 분해하고, 선택한 타일을 GPU 칩 안의 두꺼운 메모리 블록으로 당긴다. 세 물체의 앞뒤 겹침을 보인 다음 가려진 불투명 표면의 색 계산을 끈다. 완성한 색만 외부 프레임버퍼로 이동한다.",
+      "actualCandidates": [],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Original equations/algorithms/overview are explanation time; no unrelated action quota inserted."
+    },
+    {
+      "id": "07",
+      "title": "2004: 둠 쓰리의 법선 반응과 섀도 볼륨",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "2004년 둠 쓰리의 중요한 선택은 움직이는 조명과 물체에 맞춰 직접광과 그림자를 계산하는 것입니다. 미리 베이크한 간접광을 읽는 것과는 다른 갱신 과제죠.",
+          "en": "DOOM 3’s 2004 approach calculates direct-light and shadow responses to moving lights and objects. This is a different update task from reading baked indirect lighting."
+        },
+        {
+          "number": 2,
+          "ko": "표면 법선과 광원 방향이 잘 맞으면 더 많은 직접광을 받는 단순 확산 모델을 떠올려 보세요. 실제 게임의 모든 재질이 이 식 하나로 끝난다는 뜻은 아닙니다.",
+          "en": "A simple diffuse model receives more direct light when its normal faces the light. That example does not describe every material or effect in the game."
+        },
+        {
+          "number": 3,
+          "ko": "법선맵은 작은 표면 방향을 텍스처에 담습니다. 바위처럼 보이는 밝기 변화가 생겨도, 원래 평면의 바깥 윤곽까지 자동으로 바위 모양으로 바뀌지는 않습니다.",
+          "en": "A normal map stores small-scale surface orientation in a texture. It can produce rock-like shading without automatically changing a flat surface’s outer silhouette."
+        },
+        {
+          "number": 4,
+          "ko": "둠 쓰리의 공식 게임 화면에서는 어두운 산업 시설 안으로 이동하며 인물과 구조물의 조명 반응을 볼 수 있습니다. 그 장면의 분위기를 먼저 관찰하고, 그림자를 구성하는 내부 계산은 공개 코드와 도식에서 확인하겠습니다. 게임 화면만으로 스텐실 연산의 모든 단계를 알 수 있는 것은 아닙니다.",
+          "en": "Official DOOM 3 game footage moves through dark industrial spaces and shows illuminated characters and structures. We first observe that appearance, then examine shadow construction through released source and our diagram. Game pixels alone do not reveal every stencil operation."
+        },
+        {
+          "number": 5,
+          "ko": "섀도 볼륨은 광원에서 본 물체의 경계를 찾아 그 뒤로 그늘의 공간을 구성합니다. 실제 공개 코드에는 경계에서 앞쪽 점과 투영한 점을 연결해 옆면을 더하는 단계가 있습니다.",
+          "en": "A shadow volume constructs the region behind an object from boundaries seen by the light. The released source includes a step that connects original and projected boundary points to form side faces."
+        },
+        {
+          "number": 6,
+          "ko": "그 공간과 화면 표본의 관계를 스텐실 버퍼로 판별해 해당 광원의 기여를 막습니다. 그림자를 검은 사진으로 붙이는 대신, 빛을 받지 못하는 공간을 검사하는 접근입니다.",
+          "en": "Stencil-buffer tests relate that volume to screen samples and suppress the corresponding light contribution. The method tests a shadowed region rather than simply placing a dark image on the floor."
+        },
+        {
+          "number": 7,
+          "ko": "스텐실 판정은 볼륨의 옆면을 검게 칠하는 과정과 다릅니다. 화면 표본에서 출발한 검사 경로가 볼륨의 앞면과 뒷면을 어떻게 통과하는지 세어, 그 점이 그늘의 안인지 밖인지 판단합니다. 카메라가 볼륨 안으로 들어가는 경우에는 세는 방향과 뚜껑 처리도 중요해집니다.",
+          "en": "The stencil test is not simply painting the volume sides black. It counts how the test path crosses front and back faces to determine whether a sample is inside the shadowed region. Camera-inside cases also require careful counting direction and cap handling."
+        },
+        {
+          "number": 8,
+          "ko": "점광원 가정의 경계는 날카롭고, 볼륨이 화면을 크게 덮으면 처리 비용도 커집니다. 실시간 직접광을 얻었다고 반사와 색 번짐 같은 간접광까지 모두 해결한 것은 아닙니다.",
+          "en": "A point-light assumption produces sharp boundaries, and large screen coverage can increase cost. Real-time direct lighting does not by itself solve indirect reflections or color bleeding."
+        }
+      ],
+      "primarySources": [
+        "pbrt-path",
+        "doom3-stencil",
+        "doom3-tech-article"
+      ],
+      "explanationRole": "광원 이동에 맞춰 상자 실루엣에서 이어지는 투영 프리즘이 바닥을 덮고, 카메라 광선의 경계 통과 횟수를 보조 표시.",
+      "actualCandidates": [
+        {
+          "id": "steam-doom3-original",
+          "url": "https://store.steampowered.com/app/9050/",
+          "sha256": "17fef1bc71d996bdfd00d650ff7f861be48e8cadf872d771a77d7395dbfad684",
+          "intervals": [
+            {
+              "start": 40,
+              "end": 58,
+              "seconds": 18,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 64,
+              "end": 70,
+              "seconds": 6,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 92,
+              "end": 101,
+              "seconds": 9,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 106,
+              "end": 110,
+              "seconds": 4,
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 114,
+              "end": 139,
+              "seconds": 25,
+              "completeIntervalApproved": false
+            }
+          ],
+          "focus": "2004 released-game appearance with dynamic direct illumination; stencil silhouette construction is separately established by id source code.",
+          "connection": "2004 released-game appearance with dynamic direct illumination; stencil silhouette construction is separately established by id source code.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/steam-doom3-original-review-v1/extraction.json"
+        },
+        {
+          "id": "epic-material-baking-2017",
+          "url": "https://www.youtube.com/watch?v=WaM_owaUpbE",
+          "sha256": "bbc1cf65bc5f2fe7bcccad87450698d79547ff4c8a78a38913031b55a257e616",
+          "intervals": [
+            {
+              "start": 1620,
+              "end": 1695,
+              "group": "material-preview-and-graph",
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 1700,
+              "end": 1780,
+              "group": "book-flatten-camera",
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 1910,
+              "end": 1925,
+              "group": "buffer-export-command",
+              "completeIntervalApproved": false
+            }
+          ],
+          "focus": "Separate geometry, surface data and shaded color; follow real engine preview/mesh/camera operations. Buffer export is not a lightmap bake or a Forward/Deferred benchmark.",
+          "connection": "Normal-map silhouette distinction and the data stored before lighting. Book material flattening does not demonstrate RNM or Quake baking internals.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-material-baking-review-v1/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "08",
+      "title": "2004: 하프라이프 투의 방향별 베이크와 이동 물체",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "같은 2004년 하프라이프 투는 베이크한 조명을 더 풍부하게 읽는 방향을 보여줍니다. 법선맵이 바꾸는 방향에 반응하려면 밝기 하나보다 더 많은 정보가 필요합니다.",
+          "en": "Half-Life 2 illustrates another 2004 choice: richer use of baked lighting. Responding to normal-map orientation requires more information than one brightness value."
+        },
+        {
+          "number": 2,
+          "ko": "밸브의 당시 자료는 세 방향의 기저별 라이트맵을 법선과 결합하는 예를 제시합니다. 도식의 세 화살표는 세 개의 새 조명이라기보다 저장한 방향 성분을 읽는 기준입니다.",
+          "en": "Valve’s contemporary presentation combines three basis-direction lightmaps with a surface normal. Our three arrows represent stored directional components, rather than three newly added lamps."
+        },
+        {
+          "number": 3,
+          "ko": "화면의 코드 예에서는 법선과 각 기저의 내적을 제한한 가중치에 해당 라이트맵 색을 곱하고 더합니다. 이 버전의 예를 다른 버전의 제곱 가중치 식과 섞지 않겠습니다.",
+          "en": "The shown code weights each lightmap color by a saturated dot product with its basis direction, then sums the results. We keep this version separate from variants that use squared weights."
+        },
+        {
+          "number": 4,
+          "ko": "세 방향에서 읽은 색이 서로 다르다고 해보죠. 법선이 첫 방향을 더 향하면 첫 라이트맵의 가중치가 커지고, 법선을 돌리면 다른 방향의 기여가 커집니다. 저장한 색은 그대로여도 읽는 비중이 달라져 표면의 작은 굴곡이 드러나는 것입니다.",
+          "en": "Suppose the three stored directional colors differ. A normal facing the first basis increases that lightmap’s contribution; rotating the normal shifts the weights toward the other directions. Stored colors stay fixed while their contributions change, revealing small surface detail."
+        },
+        {
+          "number": 5,
+          "ko": "법선이 바뀌면 방향별 기여도 바뀝니다. 따라서 평평하게 저장한 밝기만 곱할 때보다 작은 요철의 방향 반응을 표현할 수 있습니다. 그러나 실제 윤곽이나 모든 동적 가림을 복원하는 것은 아닙니다.",
+          "en": "Changing the normal changes the directional contributions. This adds small-scale orientation response beyond one flat brightness value, without reconstructing geometry or every dynamic occlusion."
+        },
+        {
+          "number": 6,
+          "ko": "입체 도식에서 같은 바위 요철을 실제 기하와 법선맵으로 나누어 보겠습니다. 법선 화살표만 바꾸면 내부의 밝기는 달라져도 바깥 윤곽은 평면으로 남습니다. 반대로 정점을 실제로 옮기면 윤곽과 가림도 바뀝니다. 두 방식이 만드는 정보를 구별하는 지점입니다.",
+          "en": "Our spatial diagram separates a rock-like surface into actual geometry and normal-map detail. Changing normal arrows affects internal shading while the outer silhouette remains flat. Moving real vertices also changes silhouette and occlusion. The distinction is the information each representation creates."
+        },
+        {
+          "number": 7,
+          "ko": "움직이는 물체의 문제는 저장 위치가 다릅니다. 표면에 붙은 라이트맵 대신 공간의 조명 표본을 읽어야 하죠. 당시 앰비언트 큐브와 다른 엔진의 구면조화 프로브를 같은 구현으로 부르지는 않습니다.",
+          "en": "Moving-object lighting stores and queries data differently. It needs spatial samples rather than a lightmap attached to a surface. Half-Life 2’s ambient cube is not identical to every engine’s spherical-harmonic probes."
+        },
+        {
+          "number": 8,
+          "ko": "나중의 언리얼 조명 시연에서는 공간 표본을 표시하고, 캐릭터를 어두운 방과 밝은 바닥 사이로 움직입니다. 표면의 텍셀 격자와 공간에 놓인 표본 점은 저장 위치부터 다릅니다. 이 시연은 이천십칠년 엔진의 공간 조명 예이며, 하프라이프 투의 앰비언트 큐브와 같은 구현이라고 부르지는 않겠습니다.",
+          "en": "A later Unreal lighting demonstration displays spatial samples and moves a character between a dark room and a bright floor. A surface-texel grid and samples distributed through space store information in different locations. This is a 2017 engine example of spatial lighting, not the identical implementation of Half-Life 2 ambient cubes."
+        },
+        {
+          "number": 9,
+          "ko": "베이크를 정교하게 할수록 준비 시간과 저장 공간이 필요합니다. 실행 비용이 낮아지는 대신, 제작 중 계산과 수정 비용이 커지는 교환입니다. 특정 맵의 소요 시간을 모든 게임의 값으로 옮길 수는 없습니다.",
+          "en": "Higher-quality baking consumes preparation time and storage. Lower runtime cost trades against production work and update cost. One map’s bake time cannot serve as a universal figure for games."
+        },
+        {
+          "number": 10,
+          "ko": "광원을 껐는데 이전 빛이 남는 상황도 이 가정에서 이해할 수 있습니다. 바뀌는 직접광은 동적으로 계산하고 정적 간접광은 저장하는 혼합에서는, 두 결과가 언제 갱신되는지 따로 봐야 합니다.",
+          "en": "A remaining baked contribution after a light changes follows from this assumption. Hybrid systems may update direct light dynamically while retaining static indirect light, so the two update schedules must be examined separately."
+        }
+      ],
+      "primarySources": [
+        "valve2004"
+      ],
+      "explanationRole": "울퉁불퉁한 벽에 세 방향 기저 화살표; 옆에는 공간에 떠 있는 조명 표본과 이동 캐릭터. 표면의 값과 공간의 값이 섞이지 않게 깊이 층 분리.",
+      "actualCandidates": [
+        {
+          "id": "epic-lighting-techniques-2017",
+          "url": "https://www.youtube.com/watch?v=jCsrWzt9F28",
+          "sha256": "9758467122551d523f8a9691b4db59a573e36afa6783d3df6db022a045566d48",
+          "intervals": [
+            {
+              "start": 238,
+              "end": 260,
+              "seconds": 22,
+              "completeIntervalApproved": false,
+              "group": "cache-grid"
+            },
+            {
+              "start": 435,
+              "end": 470,
+              "seconds": 35,
+              "completeIntervalApproved": false,
+              "group": "cache-interpolation"
+            },
+            {
+              "start": 522,
+              "end": 550,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "cache-move"
+            },
+            {
+              "start": 600,
+              "end": 628,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "cache-height"
+            },
+            {
+              "start": 646,
+              "end": 670,
+              "seconds": 24,
+              "completeIntervalApproved": false,
+              "group": "cache-height"
+            },
+            {
+              "start": 704,
+              "end": 732,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "capsule-shadow"
+            },
+            {
+              "start": 739,
+              "end": 751,
+              "seconds": 12,
+              "completeIntervalApproved": false,
+              "group": "capsule-shadow"
+            },
+            {
+              "start": 1140,
+              "end": 1157,
+              "seconds": 17,
+              "completeIntervalApproved": false,
+              "group": "bake-room"
+            },
+            {
+              "start": 1194,
+              "end": 1210,
+              "seconds": 16,
+              "completeIntervalApproved": false,
+              "group": "bake-room"
+            },
+            {
+              "start": 1913,
+              "end": 1960,
+              "seconds": 47,
+              "completeIntervalApproved": false,
+              "group": "far-shadows"
+            },
+            {
+              "start": 2024,
+              "end": 2058,
+              "seconds": 34,
+              "completeIntervalApproved": false,
+              "group": "csm-distance"
+            },
+            {
+              "start": 2100,
+              "end": 2135,
+              "seconds": 35,
+              "completeIntervalApproved": false,
+              "group": "csm-settings"
+            },
+            {
+              "start": 2174,
+              "end": 2238,
+              "seconds": 64,
+              "completeIntervalApproved": false,
+              "group": "csm-settings"
+            },
+            {
+              "start": 2970,
+              "end": 2990,
+              "seconds": 20,
+              "completeIntervalApproved": false,
+              "group": "lightmap-128"
+            },
+            {
+              "start": 3000,
+              "end": 3045,
+              "seconds": 45,
+              "completeIntervalApproved": false,
+              "group": "lightmap-1024"
+            },
+            {
+              "start": 3104,
+              "end": 3116,
+              "seconds": 12,
+              "completeIntervalApproved": false,
+              "group": "lighting-edit"
+            },
+            {
+              "start": 3176,
+              "end": 3196,
+              "seconds": 20,
+              "completeIntervalApproved": false,
+              "group": "lighting-edit"
+            }
+          ],
+          "focus": "Genuine engine operation candidate: baked light/samples, moving receiver, room seams and shadow distance/settings. Later engine example is explicitly labeled2017, not originalQuake/HL2 internals.",
+          "connection": "Genuine engine operation candidate: baked light/samples, moving receiver, room seams and shadow distance/settings. Later engine example is explicitly labeled2017, not originalQuake/HL2 internals.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-lighting-techniques-review/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "09",
+      "title": "섀도 맵: 같은 점을 광원 좌표에서 검사하기",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "섀도 맵은 광원의 자리에서 깊이를 저장합니다. 한 방향에서 처음 보이는 표면이 얼마나 가까운지 기록해 두고, 카메라에 보인 점을 같은 광원 좌표로 옮겨 검사합니다.",
+          "en": "A shadow map stores depth from the light. It records the nearest visible surface, then transforms a camera-visible point into the same light coordinates for comparison."
+        },
+        {
+          "number": 2,
+          "ko": "깊이가 커질수록 멀어지는 규약을 예로 들면, 검사한 점이 저장한 깊이보다 뒤에 있을 때 다른 표면에 가려졌다고 판단합니다. 비교하려는 두 값은 같은 좌표와 깊이 규약을 써야 합니다.",
+          "en": "With a depth convention where larger means farther, a tested point behind the stored depth is considered blocked. Both values must use matching coordinates and conventions."
+        },
+        {
+          "number": 3,
+          "ko": "수치를 넣어 보면 명확합니다. 같은 광원 좌표에서 저장한 깊이가 영 점 삼삼이고 검사할 점의 깊이가 영 점 팔이라면, 처음 만난 표면보다 뒤에 있습니다. 반대로 가림 물체를 옮겨 저장한 깊이가 영 점 구가 되면, 영 점 팔인 점은 그 앞에 있으므로 이 검사에서는 가려지지 않습니다.",
+          "en": "For a numerical example, stored depth of 0.33 and receiver depth of 0.80 place the receiver behind the first surface. If moving the blocker changes stored depth to 0.90, the receiver at 0.80 lies in front and is unoccluded by this test."
+        },
+        {
+          "number": 4,
+          "ko": "광원에서 본 깊이 그림을 확대하면 격자가 보입니다. 넓은 공간을 적은 텍셀로 덮을수록 그림자의 경계가 계단처럼 나타날 수 있습니다. 이는 원래 물체가 계단 모양이라는 뜻이 아닙니다.",
+          "en": "Magnifying the light’s depth image reveals its texel grid. Covering a large region with few texels can create stair-stepped shadow edges, even when the original shape is smooth."
+        },
+        {
+          "number": 5,
+          "ko": "표면을 기록한 깊이와 다시 계산한 깊이가 수치 오차로 조금 다르면 자기 자신을 가렸다고 판정할 수도 있습니다. 이를 줄이는 바이어스는 비교 기준을 조금 이동하는 보정입니다.",
+          "en": "Small numerical differences between stored and reconstructed depth can cause a surface to shadow itself. Bias adjusts the comparison to reduce this error."
+        },
+        {
+          "number": 6,
+          "ko": "너무 큰 바이어스는 그림자가 물체에서 떨어져 보이게 만들 수 있습니다. 좋은 값을 하나 적어 두면 모든 거리와 기울기에서 해결된다는 식으로 설명하지 않겠습니다.",
+          "en": "Excessive bias can detach the shadow from the object. A single chosen value is not guaranteed to solve every distance and surface slope."
+        },
+        {
+          "number": 7,
+          "ko": "피시에프는 주변 텍셀에서 깊이 비교를 여러 번 하고, 빛을 받는다는 판정들의 평균을 냅니다. 깊이를 먼저 평균한 다음 한 번 비교하는 것과는 결과가 다릅니다.",
+          "en": "PCF performs several neighboring depth comparisons and averages their visibility results. Averaging depths first and comparing once is a different operation."
+        },
+        {
+          "number": 8,
+          "ko": "주변 네 번의 검사에서 두 번만 빛을 받는다고 나오면, 피시에프의 평균은 영 점 오입니다. 부드러운 중간 밝기를 만들지만, 이것이 실제 면광원의 모든 경로를 정확히 계산했다는 뜻은 아닙니다. 필터가 넓어질수록 추가 표본과 다른 부작용도 함께 고려해야 합니다.",
+          "en": "If two of four neighboring tests report visibility, their PCF average is one half. This produces an intermediate visibility value, but does not exactly integrate every path from an area light. Wider filters require more samples and introduce further tradeoffs."
+        },
+        {
+          "number": 9,
+          "ko": "피시시에스는 가림 물체를 찾고 수광면과의 관계로 필터 폭을 조절합니다. 깊이의 평균과 제곱 평균을 저장하는 배리언스 섀도 맵은 또 다른 근사이며 빛샘 같은 한계가 있습니다.",
+          "en": "PCSS searches for blockers and adjusts filter width using their relation to the receiver. Variance Shadow Maps instead use depth moments and have their own limitations, including light leakage."
+        },
+        {
+          "number": 10,
+          "ko": "배리언스 섀도 맵과 최신 언리얼의 버추얼 섀도 맵은 약자가 같아도 다른 기법입니다. 뒤의 편에서 가상 페이지로 관리하는 그림자와 다시 구별하겠습니다.",
+          "en": "Variance Shadow Maps and Unreal’s Virtual Shadow Maps share an abbreviation but are different methods. A later episode will distinguish virtual-page shadow management."
+        }
+      ],
+      "primarySources": [
+        "cryengine2007",
+        "ue427-csm",
+        "pcss",
+        "variance-sm"
+      ],
+      "explanationRole": "광원·상자·수신 바닥·광원 깊이 평면을 분리된 공간에 배치한다. 같은 바닥 표본을 두 좌표계에서 연결하고, 한 texel을 확대해 bias 전후와 PCF 비교 표본이 차례로 작동하도록 애니메이션한다.",
+      "actualCandidates": [
+        {
+          "id": "epic-lighting-techniques-2017",
+          "url": "https://www.youtube.com/watch?v=jCsrWzt9F28",
+          "sha256": "9758467122551d523f8a9691b4db59a573e36afa6783d3df6db022a045566d48",
+          "intervals": [
+            {
+              "start": 238,
+              "end": 260,
+              "seconds": 22,
+              "completeIntervalApproved": false,
+              "group": "cache-grid"
+            },
+            {
+              "start": 435,
+              "end": 470,
+              "seconds": 35,
+              "completeIntervalApproved": false,
+              "group": "cache-interpolation"
+            },
+            {
+              "start": 522,
+              "end": 550,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "cache-move"
+            },
+            {
+              "start": 600,
+              "end": 628,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "cache-height"
+            },
+            {
+              "start": 646,
+              "end": 670,
+              "seconds": 24,
+              "completeIntervalApproved": false,
+              "group": "cache-height"
+            },
+            {
+              "start": 704,
+              "end": 732,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "capsule-shadow"
+            },
+            {
+              "start": 739,
+              "end": 751,
+              "seconds": 12,
+              "completeIntervalApproved": false,
+              "group": "capsule-shadow"
+            },
+            {
+              "start": 1140,
+              "end": 1157,
+              "seconds": 17,
+              "completeIntervalApproved": false,
+              "group": "bake-room"
+            },
+            {
+              "start": 1194,
+              "end": 1210,
+              "seconds": 16,
+              "completeIntervalApproved": false,
+              "group": "bake-room"
+            },
+            {
+              "start": 1913,
+              "end": 1960,
+              "seconds": 47,
+              "completeIntervalApproved": false,
+              "group": "far-shadows"
+            },
+            {
+              "start": 2024,
+              "end": 2058,
+              "seconds": 34,
+              "completeIntervalApproved": false,
+              "group": "csm-distance"
+            },
+            {
+              "start": 2100,
+              "end": 2135,
+              "seconds": 35,
+              "completeIntervalApproved": false,
+              "group": "csm-settings"
+            },
+            {
+              "start": 2174,
+              "end": 2238,
+              "seconds": 64,
+              "completeIntervalApproved": false,
+              "group": "csm-settings"
+            },
+            {
+              "start": 2970,
+              "end": 2990,
+              "seconds": 20,
+              "completeIntervalApproved": false,
+              "group": "lightmap-128"
+            },
+            {
+              "start": 3000,
+              "end": 3045,
+              "seconds": 45,
+              "completeIntervalApproved": false,
+              "group": "lightmap-1024"
+            },
+            {
+              "start": 3104,
+              "end": 3116,
+              "seconds": 12,
+              "completeIntervalApproved": false,
+              "group": "lighting-edit"
+            },
+            {
+              "start": 3176,
+              "end": 3196,
+              "seconds": 20,
+              "completeIntervalApproved": false,
+              "group": "lighting-edit"
+            }
+          ],
+          "focus": "Genuine engine operation candidate: baked light/samples, moving receiver, room seams and shadow distance/settings. Later engine example is explicitly labeled2017, not originalQuake/HL2 internals.",
+          "connection": "Genuine engine operation candidate: baked light/samples, moving receiver, room seams and shadow distance/settings. Later engine example is explicitly labeled2017, not originalQuake/HL2 internals.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-lighting-techniques-review/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "09a",
+      "title": "캐스케이드 섀도 맵: 가까운 영역에 더 작은 텍셀",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "한 장의 그림자 맵으로 넓은 야외를 덮으면 가까운 발밑도 거칠어집니다. 캐스케이드 섀도 맵은 카메라 시야를 거리 구간으로 나누고, 각 구간에 그림자 맵을 배정합니다.",
+          "en": "One map covering a broad outdoor scene can make nearby shadows coarse. Cascaded Shadow Maps split the camera’s view by distance and assign shadow maps to those regions."
+        },
+        {
+          "number": 2,
+          "ko": "광원을 여러 개 만드는 것이 아닙니다. 같은 방향성 광원의 그림자를, 카메라에서 가까운 영역과 먼 영역에 다른 밀도로 기록하는 것입니다.",
+          "en": "This does not create more lights. It records shadows from one directional light at different spatial densities near and far from the camera."
+        },
+        {
+          "number": 3,
+          "ko": "교육용 수치를 보죠. 이천사십팔 칸으로 이십 미터를 덮으면 한 칸은 약 일 센티미터입니다. 같은 칸 수로 이백 미터를 덮으면 약 십 센티미터가 됩니다.",
+          "en": "For an illustrative example, 2,048 texels covering 20 meters gives roughly one centimeter per texel. Covering 200 meters with the same count gives roughly ten centimeters."
+        },
+        {
+          "number": 4,
+          "ko": "이것은 실제 게임의 설정값이나 성능 측정이 아닙니다. 같은 해상도라도 덮는 영역에 따라 그림자 표본의 크기가 달라진다는 비교입니다.",
+          "en": "Those numbers are not settings or performance measurements from a game. They illustrate how coverage changes world-space texel size at the same resolution."
+        },
+        {
+          "number": 5,
+          "ko": "화면의 점이 어느 시야 구간에 있는지 찾아 해당 맵을 읽습니다. 경계에서는 두 결과를 섞어 전환을 줄일 수 있고, 카메라 이동에는 투영을 텍셀 격자에 맞추는 안정화도 필요합니다.",
+          "en": "The point’s view depth selects a cascade. Blending near boundaries can soften transitions, while camera movement may require stabilization relative to the texel grid."
+        },
+        {
+          "number": 6,
+          "ko": "확보한 언리얼 공식 예에서는 캐릭터가 바닥을 달릴 때 그림자가 보이다가 계단에서는 보이지 않습니다. 문서에서는 계단의 캐스케이드 그림자 수신 설정을 끈 상태로 설명합니다.",
+          "en": "In the acquired official Unreal example, the character casts a visible shadow while running on the floor, but not on the stairs. The documentation describes disabled CSM reception on the stairs."
+        },
+        {
+          "number": 7,
+          "ko": "이 화면은 수신 설정의 효과를 보여주며, 거리 구간의 분할 자체를 보여주는 디버그 화면은 아닙니다. 분할 원리는 별도 입체 도식으로 연결하고, 실제 엔진의 설정과 보이는 결과를 구별합니다.",
+          "en": "That clip demonstrates receiver configuration, rather than visualizing cascade partitions. A separate spatial diagram explains the splits, while the observed engine result illustrates the setting."
+        },
+        {
+          "number": 8,
+          "ko": "분할 자체는 이천십칠년 언리얼 공식 시연에서 더 직접 볼 수 있습니다. 쇼 메뉴의 고급 항목에서 섀도 프러스텀을 켜면, 서로 다른 색의 투영 경계가 장면 위에 나타납니다. 그림자 거리와 분포 값을 바꿀 때 이 경계가 어떻게 달라지는지 보세요.",
+          "en": "A 2017 official Unreal demonstration shows the partitions more directly. Enabling Show, Advanced, Shadow Frustums displays differently colored projected boundaries over the scene. Observe how those boundaries change with the shadow distance and distribution controls."
+        },
+        {
+          "number": 9,
+          "ko": "같은 시연에서는 캐스케이드 개수를 네 개에서 영 개, 한 개, 세 개로 바꾸고 그림자 거리도 조정합니다. 영 개로 끈 상태와 한 장이 넓은 영역을 맡는 상태를 구별해 보세요. 한 개와 여러 개의 가장자리 차이는 같은 해상도에서 덮는 범위가 달라지는 도식과 연결됩니다. 여러 설정이 바뀌므로 모든 변화를 한 숫자의 효과로 단정하지는 않겠습니다.",
+          "en": "The same demonstration changes the cascade count through four, zero, one, and three while also adjusting shadow distance. Distinguish disabling cascades from assigning a broad region to one map. Relate the one-versus-multiple edge comparison to our equal-resolution coverage diagram. Several controls change, so we do not attribute every difference to one parameter."
+        },
+        {
+          "number": 10,
+          "ko": "캐스케이드 수를 늘리면 처리해야 할 맵도 늘어납니다. 경계와 흔들림을 관리하며 제한된 비용을 어디에 배분할지 선택하는 기술입니다.",
+          "en": "More cascades require additional maps and work. The technique allocates a limited budget while managing transitions and instability."
+        }
+      ],
+      "primarySources": [
+        "cryengine2007",
+        "ue427-csm",
+        "csm2007",
+        "ue427-csm-receiver"
+      ],
+      "explanationRole": "두께 있는 카메라 시야 피라미드를 세 구간으로 절단하고 각각을 광원 방향의 깊이 평면으로 투영한다. 카메라가 전진하면 구간과 texel 격자가 따라 움직인다. 캐스케이드 색상·경계 혼합 전후를 같은 위치에서 비교한다.",
+      "actualCandidates": [
+        {
+          "id": "epic-lighting-techniques-2017",
+          "url": "https://www.youtube.com/watch?v=jCsrWzt9F28",
+          "sha256": "9758467122551d523f8a9691b4db59a573e36afa6783d3df6db022a045566d48",
+          "intervals": [
+            {
+              "start": 238,
+              "end": 260,
+              "seconds": 22,
+              "completeIntervalApproved": false,
+              "group": "cache-grid"
+            },
+            {
+              "start": 435,
+              "end": 470,
+              "seconds": 35,
+              "completeIntervalApproved": false,
+              "group": "cache-interpolation"
+            },
+            {
+              "start": 522,
+              "end": 550,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "cache-move"
+            },
+            {
+              "start": 600,
+              "end": 628,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "cache-height"
+            },
+            {
+              "start": 646,
+              "end": 670,
+              "seconds": 24,
+              "completeIntervalApproved": false,
+              "group": "cache-height"
+            },
+            {
+              "start": 704,
+              "end": 732,
+              "seconds": 28,
+              "completeIntervalApproved": false,
+              "group": "capsule-shadow"
+            },
+            {
+              "start": 739,
+              "end": 751,
+              "seconds": 12,
+              "completeIntervalApproved": false,
+              "group": "capsule-shadow"
+            },
+            {
+              "start": 1140,
+              "end": 1157,
+              "seconds": 17,
+              "completeIntervalApproved": false,
+              "group": "bake-room"
+            },
+            {
+              "start": 1194,
+              "end": 1210,
+              "seconds": 16,
+              "completeIntervalApproved": false,
+              "group": "bake-room"
+            },
+            {
+              "start": 1913,
+              "end": 1960,
+              "seconds": 47,
+              "completeIntervalApproved": false,
+              "group": "far-shadows"
+            },
+            {
+              "start": 2024,
+              "end": 2058,
+              "seconds": 34,
+              "completeIntervalApproved": false,
+              "group": "csm-distance"
+            },
+            {
+              "start": 2100,
+              "end": 2135,
+              "seconds": 35,
+              "completeIntervalApproved": false,
+              "group": "csm-settings"
+            },
+            {
+              "start": 2174,
+              "end": 2238,
+              "seconds": 64,
+              "completeIntervalApproved": false,
+              "group": "csm-settings"
+            },
+            {
+              "start": 2970,
+              "end": 2990,
+              "seconds": 20,
+              "completeIntervalApproved": false,
+              "group": "lightmap-128"
+            },
+            {
+              "start": 3000,
+              "end": 3045,
+              "seconds": 45,
+              "completeIntervalApproved": false,
+              "group": "lightmap-1024"
+            },
+            {
+              "start": 3104,
+              "end": 3116,
+              "seconds": 12,
+              "completeIntervalApproved": false,
+              "group": "lighting-edit"
+            },
+            {
+              "start": 3176,
+              "end": 3196,
+              "seconds": 20,
+              "completeIntervalApproved": false,
+              "group": "lighting-edit"
+            }
+          ],
+          "focus": "Genuine engine operation candidate: baked light/samples, moving receiver, room seams and shadow distance/settings. Later engine example is explicitly labeled2017, not originalQuake/HL2 internals.",
+          "connection": "Genuine engine operation candidate: baked light/samples, moving receiver, room seams and shadow distance/settings. Later engine example is explicitly labeled2017, not originalQuake/HL2 internals.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-lighting-techniques-review/extraction.json"
+        },
+        {
+          "id": "epic-csm-receiver",
+          "url": "https://dev.epicgames.com/documentation/unreal-engine/use-cascaded-shadows?application_version=4.27",
+          "sha256": "9157b45fe14eb2cf9d0b32f7cd785bb9e0483252cad44a4c1cf1d986674830b1",
+          "intervals": [
+            {
+              "start": 0.8,
+              "end": 3.2
+            }
+          ],
+          "focus": "Follow the character shadow across the receiver surfaces.",
+          "connection": "Engine receiver flag controls application of an already generated shadow test; cascade resolution diagram remains separate.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-csm-review/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "09b",
+      "title": "포워드와 디퍼드: 같은 빛을 더하는 다른 순서",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "그림자를 구한 뒤에도 조명 수가 늘면 계산량이 커집니다. 포워드 렌더링에서는 표면을 처리하면서 재질과 그 표면에 영향을 주는 광원을 평가합니다.",
+          "en": "Even with shadow information, more lights increase work. Forward rendering evaluates material and relevant lighting as it shades a surface."
+        },
+        {
+          "number": 2,
+          "ko": "디퍼드 셰이딩에서는 우선 카메라에 보이는 표면의 깊이와 법선, 재질 정보를 지 버퍼에 저장합니다. 조명 단계는 이 정보를 읽어 각 광원의 기여를 더합니다.",
+          "en": "Deferred shading first stores visible-surface depth, normals, and material data in a G-buffer. The lighting stage reads that data to accumulate light contributions."
+        },
+        {
+          "number": 3,
+          "ko": "실제 엔진에서도 기본색과 법선, 거칠기 같은 데이터를 따로 확인할 수 있습니다. 이천십칠년 언리얼의 재질 시연은 책 모형을 펼쳐 보고, 버퍼 데이터를 별도의 이미지로 내보냅니다. 최종 조명 색 하나가 아닌 여러 종류의 표면 정보가 있다는 연결입니다. 재질 굽기나 버퍼 내보내기는 조명을 베이크하는 작업과 구별해야 합니다.",
+          "en": "An actual engine can inspect base color, normals, and roughness separately. The 2017 Unreal material demonstration flattens a book model and exports buffer data as separate images. This connects to distinct surface information rather than one final shaded color. Baking materials or exporting buffers is different from baking illumination."
+        },
+        {
+          "number": 4,
+          "ko": "한 픽셀의 재질을 평가한 뒤 두 광원의 기여가 영 점 이오와 영 점 삼오라고 해보죠. 포워드에서는 표면을 그리는 과정에서 둘을 더해 영 점 육을 만듭니다. 디퍼드에서는 표면 정보를 먼저 기록한 뒤, 조명 단계에서 같은 두 기여를 더합니다. 결과의 목표가 같아도 중간 데이터와 작업 순서는 달라집니다.",
+          "en": "Suppose two lights contribute 0.25 and 0.35 to a shaded pixel. Forward shading adds them while processing the surface, producing 0.60. Deferred shading stores surface data first and accumulates the same contributions later. The target result can match while intermediate data and ordering differ."
+        },
+        {
+          "number": 5,
+          "ko": "도식의 네 물체와 세 광원은 계산 순서의 차이를 보기 위한 예입니다. 광원이 영향을 주지 않는 픽셀을 제외하는 최적화도 있으므로, 모든 픽셀에 모든 광원을 무조건 계산한다고 가정하지 않습니다.",
+          "en": "Four objects and three lights illustrate ordering, not a universal workload. Culling can skip pixels outside a light’s influence, so not every renderer evaluates every light at every pixel."
+        },
+        {
+          "number": 6,
+          "ko": "스토커 개발 자료에서는 여러 광원을 처리하는 디퍼드 구성이 설명됩니다. 광원 개수와 성능 수치는 당시 장면과 하드웨어의 맥락이 있으므로, 오늘 모든 게임의 속도라고 옮기지 않겠습니다.",
+          "en": "S.T.A.L.K.E.R.’s development materials describe a deferred approach for many lights. Its counts and performance figures belong to the documented scene and hardware context."
+        },
+        {
+          "number": 7,
+          "ko": "장점에는 비용이 따릅니다. 재질 정보를 여러 버퍼에 쓰고 다시 읽어야 하며, 한 픽셀의 여러 겹 투명 표면을 단일 표면 정보만으로 다루기는 어렵습니다.",
+          "en": "The benefit has costs: material data must be written and read, and one stored surface does not naturally represent several translucent layers at a pixel."
+        },
+        {
+          "number": 8,
+          "ko": "불투명한 벽 앞에 유리 두 장이 있다고 해보죠. 가장 앞의 표면 정보 하나만 저장한 버퍼에는 뒤의 유리와 벽의 재질이 모두 들어 있지 않습니다. 여러 겹을 합성하려면 추가 정보나 별도 패스가 필요합니다. 그래서 실제 엔진은 장면 전체를 한 가지 경로만으로 그린다고 생각하면 놓치는 부분이 생깁니다.",
+          "en": "Place two glass layers in front of an opaque wall. A buffer storing only the nearest surface does not contain every layer’s material. Compositing them needs additional information or passes. A real engine can therefore combine rendering paths within one frame."
+        },
+        {
+          "number": 9,
+          "ko": "그래서 투명체를 별도의 포워드 패스로 그리는 혼합도 쓰입니다. 라이트 프리패스처럼 법선과 깊이로 조명을 먼저 구하고 재질을 나중에 결합하는 다른 절충도 있습니다.",
+          "en": "Hybrid renderers may shade transparency in separate forward passes. Light pre-pass is another compromise, computing lighting from normals and depth before a later material pass."
+        },
+        {
+          "number": 10,
+          "ko": "포워드가 폐기된 것도 아닙니다. 언리얼의 로보 리콜 사례는 기능 선택과 멀티샘플 안티앨리어싱, 브이알 요구에 맞춘 포워드 경로를 보여줍니다. 어떤 비용을 줄였는지 함께 봐야 합니다.",
+          "en": "Forward rendering remains useful. Unreal’s Robo Recall example combines feature choices, multisample anti-aliasing, and VR requirements. The relevant question is which work the implementation reduces."
+        },
+        {
+          "number": 11,
+          "ko": "특정 언리얼 버전의 포워드에서 화면 공간 효과를 지원하지 않는다는 것은 그 구현의 기능 제한입니다. 모든 포워드 렌더러에서 그런 효과가 수학적으로 불가능하다는 뜻은 아닙니다.",
+          "en": "Missing screen-space features in a particular Unreal forward implementation are implementation constraints, not proof that such effects are mathematically impossible in every forward renderer."
+        },
+        {
+          "number": 12,
+          "ko": "앞에서 본 티비디알의 디퍼드와도 다시 구별해 두죠. 거기서는 가시성 판정과 셰이딩을 나누었고, 여기서는 재질 정보 기록과 조명 평가의 순서를 나눕니다.",
+          "en": "We also distinguish this from TBDR’s deferred terminology. That division concerns visibility before shading; this division concerns material storage before lighting evaluation."
+        }
+      ],
+      "primarySources": [
+        "stalker2005",
+        "ue-forward",
+        "unity-lightprepass",
+        "unity-paths"
+      ],
+      "explanationRole": "같은 물체를 복제한 두 공간을 병렬로 놓는다. 포워드에서는 표면에 재질과 빛이 함께 도착하고, 디퍼드에서는 깊이·법선·재질의 얇은 평면들이 층으로 분리된 뒤 광원 부피가 교차한다. 투명한 유리층을 추가해 단일 표면 G-buffer의 한계를 설명한다.",
+      "actualCandidates": [
+        {
+          "id": "epic-material-baking-2017",
+          "url": "https://www.youtube.com/watch?v=WaM_owaUpbE",
+          "sha256": "bbc1cf65bc5f2fe7bcccad87450698d79547ff4c8a78a38913031b55a257e616",
+          "intervals": [
+            {
+              "start": 1620,
+              "end": 1695,
+              "group": "material-preview-and-graph",
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 1700,
+              "end": 1780,
+              "group": "book-flatten-camera",
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 1910,
+              "end": 1925,
+              "group": "buffer-export-command",
+              "completeIntervalApproved": false
+            }
+          ],
+          "focus": "Separate geometry, surface data and shaded color; follow real engine preview/mesh/camera operations. Buffer export is not a lightmap bake or a Forward/Deferred benchmark.",
+          "connection": "Normal-map silhouette distinction and the data stored before lighting. Book material flattening does not demonstrate RNM or Quake baking internals.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-material-baking-review-v1/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "10",
+      "title": "2007: 화면 깊이에서 구석의 가림을 찾는 SSAO",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "그림자가 있어도 물체와 바닥이 닿는 부분이 밋밋해 보일 수 있습니다. 화면 공간 앰비언트 오클루전은 현재 화면의 깊이와 주변 표본으로 가까운 가림을 근사합니다.",
+          "en": "Even with shadows, contact regions can appear flat. Screen-space ambient occlusion estimates nearby occlusion using screen depth and neighboring samples."
+        },
+        {
+          "number": 2,
+          "ko": "표면의 주변 방향이 막혀 있다면 환경에서 들어오는 빛이 줄어들 수 있다는 생각입니다. 에스에스에이오는 전체 장면을 모든 방향으로 정확하게 추적하는 대신 화면에 남은 정보로 이를 어림합니다.",
+          "en": "Nearby obstructions can reduce environmental illumination. SSAO approximates this with information already present on the screen instead of tracing the complete scene in every direction."
+        },
+        {
+          "number": 3,
+          "ko": "도식에서는 상자 모서리 주변에 표본을 놓고 깊이와 비교합니다. 범위가 작으면 접촉 주변을 강조하고, 크게 잡으면 넓게 번지지만 표본 부족과 잘못된 연결도 늘 수 있습니다.",
+          "en": "Our diagram places samples around a box corner and compares depths. A small radius emphasizes contact; a larger one reaches farther but can increase undersampling and incorrect associations."
+        },
+        {
+          "number": 4,
+          "ko": "노이즈를 줄이려고 주변 결과를 섞을 때에는 경계를 넘겨 번지는 문제도 생길 수 있습니다. 표본 수와 필터링, 깊이 차이를 함께 다루는 이유입니다.",
+          "en": "Filtering can reduce noise but may blur across boundaries. Sample count, filtering, and depth differences must be considered together."
+        },
+        {
+          "number": 5,
+          "ko": "깊이 버퍼에는 현재 보이는 앞쪽 표면만 남는다고 생각해 보세요. 앞의 얇은 막대 뒤에 먼 벽이 있어도, 한 방향의 깊이만으로 막대의 두께를 알 수 없습니다. 표본 범위를 너무 넓히면 서로 멀리 떨어진 표면을 이웃처럼 연결해, 물체 둘레에 어두운 테두리가 생길 수 있습니다.",
+          "en": "The depth buffer primarily describes visible front surfaces. A thin rod in front of a distant wall does not reveal its thickness through a single depth value. An excessive sample range can associate unrelated surfaces and produce a dark halo around the object."
+        },
+        {
+          "number": 6,
+          "ko": "크라이엔진 투의 2007년 기술 설명과 언리얼의 문서에서 이런 화면 기반 근사와 한계를 확인할 수 있습니다. 실제 비교 장면은 버전과 설정을 표시해 읽어야 합니다.",
+          "en": "CryEngine 2’s 2007 technical discussion and Unreal documentation describe screen-based approximations and their limitations. Actual comparisons need identified versions and settings."
+        },
+        {
+          "number": 7,
+          "ko": "이천십칠년 언리얼 사 점 십육 시연에서는 같은 큐브 모형을 가까이 보고, 가림의 파워와 바이어스 값을 바꿉니다. 큐브 사이와 바닥에 닿는 부분을 함께 보세요. 설정을 바꾸어 접촉을 강조하는 것과 새로운 광원을 놓는 것은 서로 다른 작업입니다.",
+          "en": "A 2017 Unreal 4.16 demonstration approaches a cube model and changes the AO Power and Bias controls. Watch the gaps between cubes and their floor contacts. Adjusting this contact treatment is different from adding a light source."
+        },
+        {
+          "number": 8,
+          "ko": "다만 이 비교에서는 여러 설정과 카메라가 함께 바뀝니다. 어느 숫자 하나만 바꾸었을 때의 효과라고 전부 단정하지 않겠습니다. 먼저 실제 접촉 변화와 조작을 보고, 표본 범위와 깊이 정보의 한계는 별도 도식에서 하나씩 분리해 확인합니다.",
+          "en": "Several controls and the camera change in this sequence, so we will not attribute every difference to one isolated number. First observe the actual manipulations and contacts; our separate diagram isolates sample range and the limits of depth information."
+        },
+        {
+          "number": 9,
+          "ko": "이 결과를 직접광 그림자의 대체물로 보면 안 됩니다. 구석을 어둡게 만든다고 특정 광원의 가림이나 다른 벽에서 반사되어 오는 색까지 계산한 것은 아닙니다.",
+          "en": "This is not a substitute for direct-light shadows. Darkening corners does not calculate occlusion for a particular lamp or colored indirect light reflected from another wall."
+        },
+        {
+          "number": 10,
+          "ko": "화면 밖과 다른 물체 뒤의 정보가 부족하다는 약점도 남습니다. 다음 편의 화면 공간 반사에서도 이 정보 범위가 중요한 실패 원인으로 돌아옵니다.",
+          "en": "Information outside the screen and behind visible surfaces is still missing. The same information boundary becomes important for screen-space reflections in the next episode."
+        }
+      ],
+      "primarySources": [
+        "cryengine2007"
+      ],
+      "explanationRole": "깊이가 다른 바닥·상자·벽 모서리 위에 표본 영역을 놓고 화면 깊이 평면과 대응시킨다. 표본이 가려질 때 ambient 항만 줄어드는 흐름과 화면 경계의 정보 손실을 비교한다.",
+      "actualCandidates": [
+        {
+          "id": "epic-post-processing-2017",
+          "url": "https://www.youtube.com/watch?v=DFT7hFz_DpE",
+          "sha256": "d4c422af11f1242fb9d1ac8fd233ddd5638dbfc4be6a93417e50d826f92ea723",
+          "intervals": [
+            {
+              "start": 3085,
+              "end": 3103,
+              "seconds": 18,
+              "role": "AO Power/Bias manipulation and contact changes",
+              "completeIntervalApproved": false
+            },
+            {
+              "start": 3105,
+              "end": 3128,
+              "seconds": 23,
+              "role": "Camera/visible cube contact comparison",
+              "completeIntervalApproved": false
+            }
+          ],
+          "focus": "AO controls and nearby cube contacts, separated from the unrelated SSR or CustomDepth platforms.",
+          "connection": "Chapter10 visible-depth-neighbor sampling, dark contacts and parameter tradeoffs; not full indirect-light transport.",
+          "wholeDecodeExit": 0,
+          "evidence": "production/research/game-lighting-history/local/epic-post-processing-review-v1/extraction.json"
+        }
+      ],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Candidate actual engine/game operations; stills, menus, waits and third-party presenters excluded at final cut review."
+    },
+    {
+      "id": "24",
+      "title": "이번 편의 답과 다음 질문",
+      "paragraphs": [
+        {
+          "number": 1,
+          "ko": "이번 편에서 게임은 밝기를 정하고, 표면에 계산 결과를 저장하고, 움직이는 빛의 가림을 다시 검사했습니다. 조명이 많아지면 재질과 빛을 평가하는 순서도 바꾸었죠.",
+          "en": "This episode followed assigned brightness, stored surface lighting, and updated visibility for moving lights. More lights also changed the ordering of material and lighting work."
+        },
+        {
+          "number": 2,
+          "ko": "방법을 구별할 때에는 세 가지를 보세요. 무엇을 저장하는지, 어떤 상태가 바뀌면 다시 계산해야 하는지, 그리고 어떤 정보는 애초에 입력에 없는지입니다.",
+          "en": "To distinguish methods, ask three questions: what is stored, which changes require recomputation, and which information is missing from the input?"
+        },
+        {
+          "number": 3,
+          "ko": "다음 편에서는 반사와 간접광, 물과 안개로 범위를 넓힙니다. 포톤 매핑과 화면 공간 반사, 포워드 플러스와 클러스터드가 어떤 문제를 나누어 해결하는지 연결하겠습니다.",
+          "en": "The next episode extends the discussion to indirect light, reflections, water, and fog, connecting photon mapping, SSR, Forward+, and clustered lighting to the different problems they address."
+        },
+        {
+          "number": 4,
+          "ko": "이렇게 입력과 처리 순서로 기술을 읽으면, 긴 이름보다 실제 엔진의 한 프레임을 이해하기 쉬워집니다. 직접 구현하며 익히고 싶다면 설명란의 프로그래밍 코칭 링크도 확인해 주세요.",
+          "en": "Reading techniques through their inputs and processing order makes an engine frame easier to understand than names alone. The programming-coaching link in the description is available for hands-on learning."
+        }
+      ],
+      "primarySources": [],
+      "explanationRole": "Independent opening/conclusion in projected white scene",
+      "actualCandidates": [],
+      "actualSecondsApproved": 0,
+      "preciseNarrationTimingPending": true,
+      "fullSelectedMotionReviewed": false,
+      "classificationNote": "Original equations/algorithms/overview are explanation time; no unrelated action quota inserted."
+    }
+  ],
+  "sourceBeforeNarration": true,
+  "rawDurationIsNotQuota": true,
+  "approvedVoice": "Existing channel Qwen3-TTS1.7B/reference15–35s transcript-assisted voice",
+  "humanListening": "pending",
+  "publicRights": "pending",
+  "fullEncodedPixels": "pending",
+  "footageTiming": "pending measured narration and exact action trims"
+}

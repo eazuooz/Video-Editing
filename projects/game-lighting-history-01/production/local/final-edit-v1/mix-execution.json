@@ -1,0 +1,242 @@
+{
+  "status": "complete-awaiting-current-mixed-ASR",
+  "startedAt": "2026-10-13T06:28:04.823171+00:00",
+  "pid": 73344,
+  "createTime": 1791872884.6562073,
+  "command": [
+    "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+    "-X",
+    "utf8",
+    "projects/game-lighting-history-01/production/mix-final-edit-v1.py"
+  ],
+  "cpuThreads": 2,
+  "gpuJobs": 0,
+  "planSha256": "be5910baf2e2078a49b34c6593f7df7e3b9173869aac69c59fc9449985e8806b",
+  "steps": [
+    {
+      "label": "narration-measure",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\placed-narration.wav",
+        "-af",
+        "loudnorm=I=-16:TP=-3:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/narration-measure.log"
+    },
+    {
+      "label": "narration-normalize",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\placed-narration.wav",
+        "-af",
+        "loudnorm=I=-16:TP=-3:LRA=11:measured_I=-24.47:measured_TP=2.82:measured_LRA=16.20:measured_thresh=-35.78:offset=3.85:linear=true:print_format=json",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-c:a",
+        "pcm_s24le",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\narration-normalized.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/narration-normalize.log"
+    },
+    {
+      "label": "music-measure",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+        "-af",
+        "loudnorm=I=-31:TP=-5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/music-measure.log"
+    },
+    {
+      "label": "music-normalize",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\shared\\assets\\music\\youtube-audio-library\\Nimbus-Eveningland-restored.m4a",
+        "-af",
+        "loudnorm=I=-31:TP=-5:LRA=11:measured_I=-12.35:measured_TP=-4.04:measured_LRA=2.10:measured_thresh=-22.45:offset=-0.04:linear=true:print_format=json",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-c:a",
+        "pcm_s24le",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\music-normalized.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/music-normalize.log"
+    },
+    {
+      "label": "premix",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\narration-normalized.wav",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\music-continuous.wav",
+        "-filter_complex_threads",
+        "2",
+        "-filter_complex",
+        "[0:a]asplit=2[n][side];[1:a][side]sidechaincompress=threshold=0.05:ratio=3:attack=30:release=400:makeup=1[b];[n][b]amix=inputs=2:duration=first:normalize=0[out]",
+        "-map",
+        "[out]",
+        "-ar",
+        "48000",
+        "-c:a",
+        "pcm_s24le",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\premix.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/premix.log"
+    },
+    {
+      "label": "final-measure",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\premix.wav",
+        "-af",
+        "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/final-measure.log"
+    },
+    {
+      "label": "final-normalize",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\premix.wav",
+        "-af",
+        "loudnorm=I=-16:TP=-1.5:LRA=11:measured_I=-19.16:measured_TP=-5.35:measured_LRA=8.40:measured_thresh=-29.82:offset=0.26:linear=true:print_format=json",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-c:a",
+        "pcm_s24le",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\final-mix.wav"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/final-normalize.log"
+    },
+    {
+      "label": "aac",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\final-mix.wav",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "192k",
+        "-ar",
+        "48000",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\final-mix.m4a"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/aac.log"
+    },
+    {
+      "label": "final-loudness",
+      "command": [
+        "C:/ProgramData/HP/LCDDisplayHelper/bin/ffmpeg.exe",
+        "-hide_banner",
+        "-nostdin",
+        "-n",
+        "-threads",
+        "2",
+        "-i",
+        "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\final-edit-v1\\final-mix.m4a",
+        "-af",
+        "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exitCode": 0,
+      "log": "projects/game-lighting-history-01/production/local/final-edit-v1/final-loudness.log"
+    }
+  ],
+  "endedAt": "2026-10-13T06:31:36.635554+00:00",
+  "exitCode": 0,
+  "outputs": {
+    "final-mix.wav": "628f75c8bcf69ad14b17ed350e4150f9f8e353007a6233b848859bf38ae6eb43",
+    "final-mix.m4a": "634307aaccadbf92db083e9388f7b264db7a360b7af6851e53afadd8f2dac653"
+  },
+  "loudness": {
+    "input_i": "-16.05",
+    "input_tp": "-2.12",
+    "input_lra": "8.40",
+    "input_thresh": "-26.70",
+    "output_i": "-16.26",
+    "output_tp": "-1.68",
+    "output_lra": "7.70",
+    "output_thresh": "-26.47",
+    "normalization_type": "dynamic",
+    "target_offset": "0.26"
+  },
+  "sourceAudioUsed": false,
+  "sourceAudioReason": "Acquired source tracks mix third-party presentation narration/music; current approved source contract excludes them. No clean effects stem was fabricated.",
+  "musicOriginalFileAcquisition": "pending-browser-security-policy-block",
+  "humanListening": "pending",
+  "finalMixedAsrApproved": false
+}

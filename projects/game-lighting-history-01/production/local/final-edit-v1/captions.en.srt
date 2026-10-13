@@ -1,0 +1,1791 @@
+1
+00:00:02,000 --> 00:00:07,080
+When a light moves in a game, why can brightness remain on a wall
+while a shadow follows the change?
+
+2
+00:00:07,300 --> 00:00:11,220
+We will connect DOOM’s sector brightness to Quake’s lightmaps,
+
+3
+00:00:11,220 --> 00:00:15,280
+real-time shadows, and the ordering of forward and deferred
+shading.
+
+4
+00:00:15,567 --> 00:00:22,820
+You will be able to distinguish stored data from per-frame work and
+identify where an image’s limitations come from.
+
+5
+00:00:23,120 --> 00:00:25,720
+Let us begin with a single surface.
+
+6
+00:00:26,567 --> 00:00:32,360
+Making a pixel starts with identifying the visible surface.
+
+7
+00:00:32,640 --> 00:00:37,340
+The next task is estimating how much light that surface sends
+toward the camera.
+
+8
+00:00:37,833 --> 00:00:41,353
+Let us inspect that first stage in a Robo Recall diagnostic view.
+
+9
+00:00:41,713 --> 00:00:45,853
+Diagnostic colors replace the usual material appearance to reveal
+overlapping drawing.
+
+10
+00:00:46,193 --> 00:00:49,993
+As the camera moves, the visible overlap of walls and railings
+changes.
+
+11
+00:00:50,173 --> 00:00:53,093
+These colors do not represent light intensity.
+
+12
+00:00:53,353 --> 00:00:57,973
+We are separating visibility from lighting the visible surface.
+
+13
+00:01:04,567 --> 00:01:09,287
+Rasterization projects triangles onto the screen and finds the
+covered samples.
+
+14
+00:01:09,547 --> 00:01:13,467
+A depth test selects the visible surface when triangles overlap.
+
+15
+00:01:13,817 --> 00:01:15,777
+Now inspect an isolated wall.
+
+16
+00:01:16,197 --> 00:01:24,217
+A broad face in the front view becomes a thin edge from the side
+because the relation between camera and object has changed.
+
+17
+00:01:24,517 --> 00:01:28,577
+Projecting triangles requires those positions and depths.
+
+18
+00:01:28,877 --> 00:01:33,117
+Whether the wall is metallic and which light reaches it are separate
+questions.
+
+19
+00:01:33,497 --> 00:01:39,577
+This diagnostic view does not by itself reveal the GPU’s complete
+execution order.
+
+20
+00:01:51,687 --> 00:01:54,027
+Visibility alone does not calculate lighting.
+
+21
+00:01:54,227 --> 00:01:59,107
+Position, surface normal, material, and light data are needed to
+determine color.
+
+22
+00:01:59,447 --> 00:02:02,947
+The normal describes a surface’s orientation.
+
+23
+00:02:03,267 --> 00:02:09,627
+For a worked example, the dot product of an upward unit normal
+and an upward light direction is one.
+
+24
+00:02:09,927 --> 00:02:13,047
+At sixty degrees it is one half.
+
+25
+00:02:13,727 --> 00:02:18,927
+In this simple diffuse model, with other factors unchanged, the
+angular term is halved.
+
+26
+00:02:19,633 --> 00:02:23,467
+Normalizing both vectors
+
+27
+00:02:24,107 --> 00:02:28,487
+keeps their lengths from changing a comparison intended to
+measure orientation.
+
+28
+00:02:29,087 --> 00:02:34,687
+Visibility is a separate factor: even a perfectly aligned surface
+receives no direct contribution from that light if the path is blocked.
+
+29
+00:02:35,287 --> 00:02:40,567
+The rendering equation adds emitted light to reflected incoming
+light.
+
+30
+00:02:41,367 --> 00:02:44,927
+Material response and the cosine of the incident angle contribute to
+that sum.
+
+31
+00:02:45,550 --> 00:02:51,027
+Rather than deriving the entire integral, we will follow how games
+divide this work.
+
+32
+00:02:51,527 --> 00:02:55,407
+The directions they omit and the values they store affect the
+resulting image.
+
+33
+00:03:01,550 --> 00:03:05,610
+Rays can perform different tasks: finding a visible surface,
+
+34
+00:03:05,610 --> 00:03:11,490
+testing visibility to a light, or finding a surface along a reflection
+direction.
+
+35
+00:03:11,690 --> 00:03:15,250
+A rasterized image can still use ray-based calculations.
+
+36
+00:03:15,590 --> 00:03:20,430
+Rays may compute lighting before gameplay, while the running
+game reads the stored result.
+
+37
+00:03:22,683 --> 00:03:28,839
+Our first choice replaces complex light transport with a brightness
+value assigned to each part of the world.
+
+38
+00:03:30,290 --> 00:03:35,430
+DOOM’s basic 1993 lighting starts with a sector brightness value.
+
+39
+00:03:35,690 --> 00:03:41,950
+The map assigns brightness to a sector, and the renderer uses it to
+choose a color table.
+
+40
+00:03:44,687 --> 00:03:51,587
+The source uses a bit shift of sector brightness to derive a light-table
+index, with extra lighting added.
+
+41
+00:03:51,827 --> 00:03:55,007
+It then applies wall-orientation adjustments and clamps the index.
+
+42
+00:03:55,387 --> 00:03:59,367
+Horizontal and vertical walls receive different adjustments.
+
+43
+00:03:59,627 --> 00:04:05,327
+This is an axis-based rule, rather than a continuous calculation of the
+angle to a light.
+
+44
+00:04:05,533 --> 00:04:10,027
+Two perpendicular walls can appear at different brightness in the
+same sector.
+
+45
+00:04:10,187 --> 00:04:14,747
+The sector has not changed; the wall orientation changes the
+color-table selection.
+
+46
+00:04:15,067 --> 00:04:19,047
+This is a simple orientation distinction rather than continuous
+lighting over a curved surface.
+
+47
+00:04:19,269 --> 00:04:24,009
+Distance-related behavior also enters through scale-dependent
+color-table selection.
+
+48
+00:04:24,349 --> 00:04:28,309
+Reducing the process to a single sector lookup would omit that
+stage.
+
+49
+00:04:28,589 --> 00:04:32,209
+This is not a per-light visibility test between an object and a lamp.
+
+50
+00:04:32,469 --> 00:04:37,989
+The scheme alone does not automatically produce a local light
+footprint or a precise object shadow.
+
+51
+00:04:38,289 --> 00:04:41,389
+The footage is labeled as the 2024 rerelease.
+
+52
+00:04:41,389 --> 00:04:47,689
+Later lighting added by a modern source port is not evidence of the
+1993 implementation, even on the same DOOM map.
+
+53
+00:04:47,909 --> 00:04:53,289
+We inspect the original sector-brightness and wall-orientation rules
+separately in released source and our diagram.
+
+54
+00:04:54,267 --> 00:04:57,687
+Quake stores more detailed lighting on surfaces.
+
+55
+00:04:57,947 --> 00:05:03,627
+We distinguish the texture containing the wall’s appearance from
+the lightmap containing lighting on that wall.
+
+56
+00:05:04,217 --> 00:05:07,617
+As the viewpoint moves, the pattern stays attached to the surface.
+
+57
+00:05:07,897 --> 00:05:11,477
+Keep its texture coordinates distinct from the coordinates used to
+store lighting.
+
+58
+00:05:11,670 --> 00:05:16,210
+Surface samples test visibility to lights.
+
+59
+00:05:16,470 --> 00:05:20,570
+Orientation, distance, and light strength contribute to values
+calculated before gameplay.
+
+60
+00:05:20,933 --> 00:05:25,050
+Our diagram fills samples in sequence and transfers the results to a
+texture.
+
+61
+00:05:25,370 --> 00:05:29,190
+Samples behind the box are darker because the light is blocked.
+
+62
+00:05:29,583 --> 00:05:36,083
+Carry the same question between rooms: which detail is the wall
+pattern, and which is a broad lighting variation?
+
+63
+00:05:36,683 --> 00:05:41,063
+If lighting was computed before play, the runtime needs an address
+for finding the stored result.
+
+64
+00:05:41,303 --> 00:05:44,683
+That is the role of the separate lightmap in our diagram.
+
+65
+00:05:50,450 --> 00:05:53,790
+A wall texture may contain fine detail while its lightmap uses coarse
+samples.
+
+66
+00:05:54,030 --> 00:05:57,810
+Raising texture resolution alone does not refine the lighting
+boundary.
+
+67
+00:05:58,010 --> 00:06:03,010
+Raising lightmap resolution improves stored lighting detail without
+inventing detail in the wall texture.
+
+68
+00:06:03,217 --> 00:06:05,970
+A later engine demonstration makes the distinction observable.
+
+69
+00:06:05,970 --> 00:06:13,350
+The 2017 Unreal comparison rooms are labeled with lightmap
+resolutions of 128, 256, 512, and 1,024.
+
+70
+00:06:13,610 --> 00:06:15,790
+Separate texture detail from lighting boundaries.
+
+71
+00:06:16,090 --> 00:06:21,630
+The camera visits different authored rooms; this is not a
+single-object on/off experiment.
+
+72
+00:06:22,000 --> 00:06:25,440
+The numbers in each room identify the displayed comparison
+conditions.
+
+73
+00:06:25,740 --> 00:06:29,960
+First inspect the wall pattern, then the boundary where a shadow
+crosses it.
+
+74
+00:06:30,240 --> 00:06:34,940
+The two kinds of detail need not be stored at the same density.
+
+75
+00:06:37,220 --> 00:06:40,080
+At runtime, the renderer combines stored lighting with the surface
+texture.
+
+76
+00:06:40,340 --> 00:06:46,440
+Their coordinates and resolutions can differ; texture detail and
+lightmap detail need not match.
+
+77
+00:06:46,850 --> 00:06:51,310
+Inspect texture sharpness separately from lighting-edge sharpness.
+
+78
+00:06:52,220 --> 00:06:57,500
+Quake II’s 1997 tools add reflected-light patch contributions to the
+final lightmap samples,
+
+79
+00:06:57,680 --> 00:07:01,780
+allowing baked indirect light to contribute beyond directly lit areas.
+
+80
+00:07:02,200 --> 00:07:04,720
+Even a dark passage need not have a uniform color.
+
+81
+00:07:04,960 --> 00:07:09,540
+Its appearance alone does not identify the algorithm used to
+compute indirect lighting.
+
+82
+00:07:10,217 --> 00:07:14,070
+This should not be labeled photon mapping.
+
+83
+00:07:14,350 --> 00:07:18,790
+Algorithms can share the goal of storing indirect light while
+calculating it through different processes.
+
+84
+00:07:19,000 --> 00:07:23,460
+A similar visual impression and an identical calculation method are
+different claims.
+
+85
+00:07:25,217 --> 00:07:28,572
+Thinking in separate layers explains update cost.
+
+86
+00:07:28,773 --> 00:07:32,633
+Changing a wall texture and moving a light are different edits.
+
+87
+00:07:32,932 --> 00:07:35,192
+The latter changes which samples receive illumination,
+
+88
+00:07:35,292 --> 00:07:39,052
+so stored visibility and indirect lighting must be checked against the
+new scene.
+
+89
+00:07:39,383 --> 00:07:43,523
+Here the viewpoint travels along wall junctions.
+
+90
+00:07:43,983 --> 00:07:47,243
+Compare the broad surface with the seam.
+
+91
+00:07:47,743 --> 00:07:53,843
+A visible boundary can have several causes, including sample
+density and surface partitioning.
+
+92
+00:07:54,163 --> 00:07:58,363
+Identifying the cause requires the stored data and production
+settings as well.
+
+93
+00:07:58,523 --> 00:08:01,843
+Camera movement itself is not evidence of a new bake.
+
+94
+00:08:04,219 --> 00:08:06,179
+Moving a light exposes the limitation:
+
+95
+00:08:06,259 --> 00:08:08,459
+stored values describe the old configuration.
+
+96
+00:08:08,579 --> 00:08:13,179
+New visibility and orientation require recalculation or an additional
+dynamic-lighting method.
+
+97
+00:08:13,617 --> 00:08:19,677
+This is object manipulation in the editor, not a completed light-off
+and rebake comparison.
+
+98
+00:08:22,220 --> 00:08:25,300
+A moving character is not attached to one wall location.
+
+99
+00:08:25,300 --> 00:08:30,120
+Quake includes a downward query that samples surface lighting.
+
+100
+00:08:30,260 --> 00:08:33,720
+Static surface storage and a moving object’s lighting query are
+separate concerns.
+
+101
+00:08:34,600 --> 00:08:40,380
+Moving the camera does not make stored lighting samples follow it.
+
+102
+00:08:40,700 --> 00:08:44,200
+A moving object must retrieve values appropriate to its own
+location.
+
+103
+00:08:44,400 --> 00:08:48,860
+Shortly we will compare samples on a wall with samples distributed
+through space.
+
+104
+00:08:55,467 --> 00:08:58,060
+Texture lookup creates another problem.
+
+105
+00:08:58,260 --> 00:09:02,060
+A distant screen pixel can cover many texels;
+
+106
+00:09:02,460 --> 00:09:06,420
+sampling only one can make the pattern unstable as the camera
+moves.
+
+107
+00:09:06,633 --> 00:09:11,793
+Viewed obliquely, distant road details crowd into a narrow part of
+the image.
+
+108
+00:09:12,053 --> 00:09:17,813
+Selecting one texel as if it were a nearby surface cannot adequately
+represent that larger region.
+
+109
+00:09:19,467 --> 00:09:22,827
+Mipmaps store progressively smaller versions of a texture.
+
+110
+00:09:22,907 --> 00:09:28,867
+Selecting an appropriate level avoids repeatedly resolving details
+finer than the pixel’s footprint.
+
+111
+00:09:29,117 --> 00:09:32,097
+Smaller mip levels combine fine details.
+
+112
+00:09:32,197 --> 00:09:37,737
+The purpose is to choose values representing the sampled region,
+not to select a blurry image arbitrarily.
+
+113
+00:09:38,270 --> 00:09:42,170
+Bilinear filtering weights four neighboring texels within one level.
+
+114
+00:09:42,310 --> 00:09:47,383
+Our diagram changes their weights as the sample moves between
+them.
+
+115
+00:09:47,390 --> 00:09:51,010
+Take a horizontal fraction of one quarter and a vertical fraction of
+one half.
+
+116
+00:09:51,010 --> 00:09:56,890
+The top-left and bottom-left weights are each three eighths; the
+right-hand weights are each one eighth.
+
+117
+00:09:56,890 --> 00:10:01,250
+They sum to one, and the nearer left values contribute more.
+
+118
+00:10:01,483 --> 00:10:04,663
+A texture can hold data other than photographic color.
+
+119
+00:10:04,843 --> 00:10:08,263
+This view separates masks packed into different channels.
+
+120
+00:10:08,503 --> 00:10:12,163
+Red, green and blue do not automatically identify a normal map.
+
+121
+00:10:12,423 --> 00:10:16,683
+Before interpreting filtering, identify what the blended values
+actually mean.
+
+122
+00:10:20,552 --> 00:10:24,312
+Trilinear filtering also blends between two adjacent mip levels.
+
+123
+00:10:24,473 --> 00:10:30,052
+It smooths level transitions; it does not describe lighting along three
+spatial axes.
+
+124
+00:10:30,152 --> 00:10:33,733
+At an oblique viewing angle, a pixel’s footprint becomes elongated.
+
+125
+00:10:33,852 --> 00:10:39,632
+Anisotropic filtering accounts for this directional shape instead of
+using only a roughly square footprint.
+
+126
+00:10:39,867 --> 00:10:42,247
+Follow the thin fire-escape edges.
+
+127
+00:10:42,487 --> 00:10:46,327
+Their width in the image changes with the viewpoint.
+
+128
+00:10:46,587 --> 00:10:54,747
+Stabilizing a distant thin structure resembles texture sampling, but
+the problems are not identical.
+
+129
+00:10:55,047 --> 00:10:58,687
+Texture filters handle the region read from stored detail.
+
+130
+00:10:58,867 --> 00:11:05,087
+How much of a pixel an actual triangle edge covers is a question
+about image samples.
+
+131
+00:11:05,087 --> 00:11:10,587
+The later Forward example connects this to testing edges with
+multiple samples.
+
+132
+00:11:25,733 --> 00:11:29,032
+Filtering does not invent missing texture detail.
+
+133
+00:11:29,192 --> 00:11:35,312
+It reads existing data more appropriately for screen samples, with
+costs that depend on the chosen quality.
+
+134
+00:11:38,733 --> 00:11:43,787
+Independent of the lighting model, processing order matters.
+
+135
+00:11:44,027 --> 00:11:49,467
+Tile-based rendering divides the screen into smaller regions and
+assigns triangles to them.
+
+136
+00:11:49,817 --> 00:11:53,837
+Tilting the camera toward the building changes the geometry
+covering the image.
+
+137
+00:11:54,097 --> 00:11:59,477
+Classifying those triangles by the image region they affect is the
+starting point for our tile explanation.
+
+138
+00:11:59,917 --> 00:12:04,277
+This engine view is not an execution trace of historical PowerVR
+hardware.
+
+139
+00:12:08,387 --> 00:12:12,527
+The 1990s PowerVR lineage illustrates this hardware approach.
+
+140
+00:12:12,647 --> 00:12:17,887
+We will not project the complete structure of a modern
+programmable renderer onto those earlier devices.
+
+141
+00:12:18,250 --> 00:12:25,667
+Keeping a tile’s working data close to the chip can reduce traffic to
+larger external buffers.
+
+142
+00:12:25,967 --> 00:12:28,847
+The tile is processed locally before its result is written out.
+
+143
+00:12:29,017 --> 00:12:34,789
+In PowerVR’s TBDR terminology, deferred describes resolving
+visibility before shading the required surfaces.
+
+144
+00:12:35,009 --> 00:12:40,369
+This differs from the G-buffer-based deferred shading we will discuss
+later.
+
+145
+00:12:40,617 --> 00:12:42,709
+The list here contains primitives.
+
+146
+00:12:42,789 --> 00:12:47,609
+Tiled lighting instead lists lights affecting a screen region.
+
+147
+00:12:47,669 --> 00:12:50,849
+Similar-looking grids can contain different data for different
+purposes.
+
+148
+00:12:50,889 --> 00:12:57,309
+Skipping hidden opaque shading can help, but transparency,
+discard operations, and intermediate geometry still have costs.
+
+149
+00:12:57,529 --> 00:13:02,029
+Other GPUs also reduce work through early depth tests and caches.
+
+150
+00:13:02,787 --> 00:13:09,907
+DOOM 3’s 2004 approach calculates direct-light and shadow
+responses to moving lights and objects.
+
+151
+00:13:10,167 --> 00:13:13,607
+This is a different update task from reading baked indirect lighting.
+
+152
+00:13:14,117 --> 00:13:17,037
+Inspect the lit surfaces from the moving viewpoint.
+
+153
+00:13:18,787 --> 00:13:24,727
+A simple diffuse model receives more direct light when its normal
+faces the light.
+
+154
+00:13:25,027 --> 00:13:28,767
+That example does not describe every material or effect in the game.
+
+155
+00:13:30,283 --> 00:13:33,063
+A normal map stores small-scale surface orientation in a texture.
+
+156
+00:13:33,063 --> 00:13:40,143
+It can produce rock-like shading without automatically changing a
+flat surface’s outer silhouette.
+
+157
+00:13:40,150 --> 00:13:46,623
+Official DOOM 3 game footage moves through dark industrial spaces
+and shows illuminated characters and structures.
+
+158
+00:13:47,043 --> 00:13:53,343
+We first observe that appearance, then examine shadow
+construction through released source and our diagram.
+
+159
+00:13:53,343 --> 00:13:56,923
+Game pixels alone do not reveal every stencil operation.
+
+160
+00:13:57,250 --> 00:14:01,310
+While moving, distinguish surface brightness from the object’s
+silhouette.
+
+161
+00:14:01,570 --> 00:14:04,350
+The next diagram constructs the space behind that boundary.
+
+162
+00:14:05,157 --> 00:14:09,777
+A shadow volume constructs the region behind an object from
+boundaries seen by the light.
+
+163
+00:14:10,177 --> 00:14:15,197
+The released source includes a step that connects original and
+projected boundary points to form side faces.
+
+164
+00:14:15,537 --> 00:14:20,577
+Stencil-buffer tests relate that volume to screen samples and
+suppress the corresponding light contribution.
+
+165
+00:14:20,657 --> 00:14:25,877
+The method tests a shadowed region rather than simply placing a
+dark image on the floor.
+
+166
+00:14:26,017 --> 00:14:30,057
+The stencil test is not simply painting the volume sides black.
+
+167
+00:14:30,317 --> 00:14:34,817
+It counts how the test path crosses front and back faces
+
+168
+00:14:34,817 --> 00:14:39,817
+to determine whether a sample is inside the shadowed region.
+
+169
+00:14:40,177 --> 00:14:44,797
+Camera-inside cases also require careful counting direction and cap
+handling.
+
+170
+00:14:44,917 --> 00:14:50,017
+A point-light assumption produces sharp boundaries, and large
+screen coverage can increase cost.
+
+171
+00:14:50,177 --> 00:14:55,097
+Real-time direct lighting does not by itself solve indirect reflections
+or color bleeding.
+
+172
+00:14:55,967 --> 00:14:59,247
+Now inspect a robot surface in a more recent engine.
+
+173
+00:14:59,567 --> 00:15:03,367
+Separate the outer silhouette from small variations inside it.
+
+174
+00:15:03,887 --> 00:15:08,887
+Painted color, material reflection and surface orientation can all
+affect the image.
+
+175
+00:15:09,287 --> 00:15:15,347
+A bumpy appearance does not prove that the vertices have moved
+into the same shape.
+
+176
+00:15:15,507 --> 00:15:19,587
+This distinction leads into normals and stored lighting.
+
+177
+00:15:26,917 --> 00:15:32,490
+Half-Life 2 illustrates another 2004 choice: richer use of baked
+lighting.
+
+178
+00:15:32,850 --> 00:15:37,490
+Responding to normal-map orientation requires more information
+than one brightness value.
+
+179
+00:15:38,000 --> 00:15:41,800
+Notice the impression that the character and background occupy
+one space.
+
+180
+00:15:42,040 --> 00:15:47,360
+That does not mean static walls and moving characters must
+retrieve lighting from the same storage.
+
+181
+00:15:47,720 --> 00:15:51,300
+We will separate directional components from spatial samples.
+
+182
+00:15:53,920 --> 00:15:59,300
+Valve’s contemporary presentation combines three basis-direction
+lightmaps with a surface normal.
+
+183
+00:15:59,700 --> 00:16:05,000
+Our three arrows represent stored directional components, rather
+than three newly added lamps.
+
+184
+00:16:05,267 --> 00:16:12,440
+The shown code weights each lightmap color by a saturated dot
+product with its basis direction, then sums the results.
+
+185
+00:16:12,740 --> 00:16:17,100
+We keep this version separate from variants that use squared
+weights.
+
+186
+00:16:17,517 --> 00:16:21,097
+The final image does not display directional lighting components
+separately.
+
+187
+00:16:21,557 --> 00:16:26,937
+The game shows the result; the diagram separates the intermediate
+values producing it.
+
+188
+00:16:27,357 --> 00:16:30,737
+Reading them together makes the storage scheme meaningful.
+
+189
+00:16:34,383 --> 00:16:36,920
+Suppose the three stored directional colors differ.
+
+190
+00:16:37,200 --> 00:16:41,000
+A normal facing the first basis increases that lightmap’s
+contribution;
+
+191
+00:16:41,000 --> 00:16:44,200
+rotating the normal shifts the weights toward the other directions.
+
+192
+00:16:44,460 --> 00:16:49,680
+Stored colors stay fixed while their contributions change, revealing
+small surface detail.
+
+193
+00:16:50,367 --> 00:16:53,487
+Inspect the changes in object position and orientation a little longer.
+
+194
+00:16:53,847 --> 00:16:59,187
+First identify the face presented to the camera, then follow its
+pattern and shading.
+
+195
+00:16:59,627 --> 00:17:03,107
+Also distinguish object motion from camera motion.
+
+196
+00:17:03,467 --> 00:17:07,487
+Our diagram changed only a normal direction to isolate one input.
+
+197
+00:17:07,907 --> 00:17:11,027
+Several conditions may change together in a real editor.
+
+198
+00:17:11,387 --> 00:17:16,747
+A brighter patch therefore does not reveal a numerical increase in a
+particular lightmap component.
+
+199
+00:17:16,787 --> 00:17:23,147
+Keep the three stages connected: surface orientation, stored data
+and the retrieved result.
+
+200
+00:17:52,240 --> 00:17:55,020
+Changing the normal changes the directional contributions.
+
+201
+00:17:55,220 --> 00:18:01,180
+This adds small-scale orientation response beyond one flat
+brightness value,
+
+202
+00:18:01,480 --> 00:18:05,480
+without reconstructing geometry or every dynamic occlusion.
+
+203
+00:18:05,900 --> 00:18:10,580
+In a game, camera and object motion can combine several changes.
+
+204
+00:18:10,880 --> 00:18:15,160
+Isolating the effect of normals therefore requires a controlled
+diagram.
+
+205
+00:18:15,500 --> 00:18:20,040
+Compare the bright and dark detail within materials with their outer
+silhouette.
+
+206
+00:18:20,360 --> 00:18:27,120
+A richer way to read stored illumination does not automatically
+create every moving object’s occlusion.
+
+207
+00:18:27,440 --> 00:18:33,800
+Connect the finished scene to the calculation without guessing
+invisible implementation details.
+
+208
+00:18:42,767 --> 00:18:48,160
+Our spatial diagram separates a rock-like surface into actual
+geometry and normal-map detail.
+
+209
+00:18:48,420 --> 00:18:53,760
+Changing normal arrows affects internal shading while the outer
+silhouette remains flat.
+
+210
+00:18:53,940 --> 00:18:57,480
+Moving real vertices also changes silhouette and occlusion.
+
+211
+00:18:57,760 --> 00:19:00,520
+The distinction is the information each representation creates.
+
+212
+00:19:01,300 --> 00:19:03,700
+Here we inspect the robot’s arm and torso from different directions.
+
+213
+00:19:03,700 --> 00:19:12,240
+The outline gives clues about geometry, while small variations inside
+a face give clues about material and orientation.
+
+214
+00:19:12,760 --> 00:19:16,640
+Treating them as the same thing overstates what normal maps can
+do.
+
+215
+00:19:17,140 --> 00:19:20,740
+Our earlier diagram changed directions without moving the plane’s
+vertices.
+
+216
+00:19:21,400 --> 00:19:24,740
+Apply the same habit of separating outline from interior detail here.
+
+217
+00:19:39,167 --> 00:19:41,980
+Moving-object lighting stores and queries data differently.
+
+218
+00:19:42,200 --> 00:19:45,900
+It needs spatial samples rather than a lightmap attached to a
+surface.
+
+219
+00:19:46,240 --> 00:19:52,120
+Half-Life 2’s ambient cube is not identical to every engine’s
+spherical-harmonic probes.
+
+220
+00:19:52,500 --> 00:19:54,980
+Look at the positions of the displayed points.
+
+221
+00:19:55,140 --> 00:19:59,820
+They occupy the room rather than forming a wall-texture grid.
+
+222
+00:19:59,960 --> 00:20:05,460
+Selecting the character lets us inspect the spatial relation between it
+and the samples.
+
+223
+00:20:05,780 --> 00:20:10,760
+A moving object needs lighting information for its new location.
+
+224
+00:20:10,920 --> 00:20:18,920
+This follows our Half-Life2 discussion, but the Unreal demonstration
+is a separate engine example, not the same storage format.
+
+225
+00:20:31,167 --> 00:20:38,040
+A later Unreal lighting demonstration displays spatial samples and
+moves a character between a dark room and a bright floor.
+
+226
+00:20:38,360 --> 00:20:42,860
+A surface-texel grid and samples distributed through space store
+information in different locations.
+
+227
+00:20:42,900 --> 00:20:49,980
+This is a 2017 engine example of spatial lighting, not the identical
+implementation of Half-Life 2 ambient cubes.
+
+228
+00:20:50,550 --> 00:20:54,210
+First inspect the character together with the surrounding sample
+visualization.
+
+229
+00:20:54,690 --> 00:21:01,010
+Locate the prepared values, then follow the character as it changes
+position.
+
+230
+00:21:01,410 --> 00:21:08,570
+It cannot carry a single wall texel around the room; it needs lighting
+information appropriate to its location.
+
+231
+00:21:08,910 --> 00:21:13,430
+The room interior and the floor outside have different surroundings
+and incoming illumination.
+
+232
+00:21:13,950 --> 00:21:19,390
+As the character moves between them, inspect its body brightness
+together with its position.
+
+233
+00:21:19,450 --> 00:21:26,610
+The displayed samples are spatial clues for this lookup, not
+necessarily actual light sources.
+
+234
+00:21:26,950 --> 00:21:30,390
+Later, a changed viewpoint reveals the samples and object from
+another direction.
+
+235
+00:21:30,650 --> 00:21:35,210
+Two points close in the image may be separated in depth.
+
+236
+00:21:35,530 --> 00:21:39,770
+Unlike a surface lightmap, this distribution must be read in height as
+well.
+
+237
+00:21:40,090 --> 00:21:45,890
+These operations do not measure exact interpolation weights or
+per-frame cost.
+
+238
+00:21:46,150 --> 00:21:48,910
+Internal values require separate engine evidence.
+
+239
+00:22:23,300 --> 00:22:25,800
+Finally inspect the room from another viewpoint.
+
+240
+00:22:25,940 --> 00:22:30,660
+Consider sample placement together with the places a character can
+occupy.
+
+241
+00:22:30,920 --> 00:22:34,980
+The existence of samples does not make lighting exact everywhere.
+
+242
+00:22:35,280 --> 00:22:39,960
+Their density, placement and interpolation are further design
+choices.
+
+243
+00:22:40,500 --> 00:22:45,120
+The key here is that storage is in space rather than on the wall.
+
+244
+00:22:55,170 --> 00:22:58,670
+Higher-quality baking consumes preparation time and storage.
+
+245
+00:22:59,090 --> 00:23:03,450
+Lower runtime cost trades against production work and update cost.
+
+246
+00:23:03,850 --> 00:23:07,310
+One map’s bake time cannot serve as a universal figure for games.
+
+247
+00:23:07,817 --> 00:23:14,437
+For an editor, the question is not merely whether the image is bright
+or dark, but what must be recomputed after a change.
+
+248
+00:23:14,737 --> 00:23:18,277
+This room and wall inspection is part of scene authoring.
+
+249
+00:23:18,557 --> 00:23:23,077
+It is not a baking benchmark, and its playback duration is not a
+computation-time measurement.
+
+250
+00:23:32,173 --> 00:23:36,573
+A remaining baked contribution after a light changes follows from
+this assumption.
+
+251
+00:23:36,953 --> 00:23:41,213
+Hybrid systems may update direct light dynamically while retaining
+static indirect light,
+
+252
+00:23:41,593 --> 00:23:44,013
+so the two update schedules must be examined separately.
+
+253
+00:23:44,873 --> 00:23:47,673
+A shadow map stores depth from the light.
+
+254
+00:23:47,913 --> 00:23:55,073
+It records the nearest visible surface, then transforms a
+camera-visible point into the same light coordinates for comparison.
+
+255
+00:23:55,500 --> 00:24:02,713
+With a depth convention where larger means farther, a tested point
+behind the stored depth is considered blocked.
+
+256
+00:24:02,933 --> 00:24:06,473
+Both values must use matching coordinates and conventions.
+
+257
+00:24:06,633 --> 00:24:13,573
+For a numerical example, stored depth of 0.33 and receiver depth of
+0.80
+
+258
+00:24:13,573 --> 00:24:16,253
+place the receiver behind the first surface.
+
+259
+00:24:16,253 --> 00:24:23,593
+If moving the blocker changes stored depth to 0.90, the receiver at
+0.80 lies in front and is unoccluded by this test.
+
+260
+00:24:23,600 --> 00:24:26,873
+Magnifying the light’s depth image reveals its texel grid.
+
+261
+00:24:26,873 --> 00:24:33,993
+Covering a large region with few texels can create stair-stepped
+shadow edges, even when the original shape is smooth.
+
+262
+00:24:34,273 --> 00:24:39,913
+Small numerical differences between stored and reconstructed
+depth can cause a surface to shadow itself.
+
+263
+00:24:40,073 --> 00:24:43,373
+Bias adjusts the comparison to reduce this error.
+
+264
+00:24:43,800 --> 00:24:47,433
+Excessive bias can detach the shadow from the object.
+
+265
+00:24:47,733 --> 00:24:52,173
+A single chosen value is not guaranteed to solve every distance and
+surface slope.
+
+266
+00:24:52,673 --> 00:24:58,013
+PCF performs several neighboring depth comparisons and averages
+their visibility results.
+
+267
+00:24:58,473 --> 00:25:01,933
+Averaging depths first and comparing once is a different operation.
+
+268
+00:25:02,500 --> 00:25:07,996
+If two of four neighboring tests report visibility, their PCF average is
+one half.
+
+269
+00:25:07,996 --> 00:25:14,136
+This produces an intermediate visibility value, but does not exactly
+integrate every path from an area light.
+
+270
+00:25:14,336 --> 00:25:18,256
+Wider filters require more samples and introduce further tradeoffs.
+
+271
+00:25:18,456 --> 00:25:23,256
+PCSS searches for blockers and adjusts filter width using their
+relation to the receiver.
+
+272
+00:25:23,256 --> 00:25:29,596
+Variance Shadow Maps instead use depth moments and have their
+own limitations, including light leakage.
+
+273
+00:25:29,600 --> 00:25:34,476
+Variance Shadow Maps and Unreal’s Virtual Shadow Maps share an
+abbreviation but are different methods.
+
+274
+00:25:34,656 --> 00:25:38,316
+A later episode will distinguish virtual-page shadow management.
+
+275
+00:25:39,200 --> 00:25:43,453
+One map covering a broad outdoor scene can make nearby shadows
+coarse.
+
+276
+00:25:43,713 --> 00:25:49,193
+Cascaded Shadow Maps split the camera’s view by distance and
+assign shadow maps to those regions.
+
+277
+00:25:49,453 --> 00:25:51,493
+This does not create more lights.
+
+278
+00:25:51,813 --> 00:25:57,633
+It records shadows from one directional light at different spatial
+densities near and far from the camera.
+
+279
+00:25:57,973 --> 00:26:03,333
+For an illustrative example, 2,048 texels covering 20 meters gives
+roughly one centimeter per texel.
+
+280
+00:26:03,553 --> 00:26:06,393
+Covering 200 meters with the same count gives roughly ten
+centimeters.
+
+281
+00:26:06,873 --> 00:26:09,693
+Those numbers are not settings or performance measurements
+from a game.
+
+282
+00:26:10,133 --> 00:26:14,133
+They illustrate how coverage changes world-space texel size at the
+same resolution.
+
+283
+00:26:14,600 --> 00:26:17,693
+The point’s view depth selects a cascade.
+
+284
+00:26:18,193 --> 00:26:24,253
+Blending near boundaries can soften transitions, while camera
+movement may require stabilization relative to the texel grid.
+
+285
+00:26:24,453 --> 00:26:29,993
+In the acquired official Unreal example, the character casts a visible
+shadow while running on the floor, but not on the stairs.
+
+286
+00:26:30,333 --> 00:26:34,173
+The documentation describes disabled CSM reception on the stairs.
+
+287
+00:26:34,400 --> 00:26:39,813
+That clip demonstrates receiver configuration, rather than
+visualizing cascade partitions.
+
+288
+00:26:40,173 --> 00:26:45,373
+A separate spatial diagram explains the splits, while the observed
+engine result illustrates the setting.
+
+289
+00:26:45,536 --> 00:26:49,556
+A 2017 official Unreal demonstration shows the partitions more
+directly.
+
+290
+00:26:49,756 --> 00:26:55,516
+Enabling Show, Advanced, Shadow Frustums displays differently
+colored projected boundaries over the scene.
+
+291
+00:26:55,796 --> 00:26:59,676
+Observe how those boundaries change with the shadow distance
+and distribution controls.
+
+292
+00:27:00,167 --> 00:27:04,707
+The colored boundaries visualize shadow-recording regions, not
+additional lights.
+
+293
+00:27:07,536 --> 00:27:13,896
+The same demonstration changes the cascade count through four,
+zero, one, and three while also adjusting shadow distance.
+
+294
+00:27:14,056 --> 00:27:17,896
+Distinguish disabling cascades from assigning a broad region to one
+map.
+
+295
+00:27:17,896 --> 00:27:23,516
+Relate the one-versus-multiple edge comparison to our
+equal-resolution coverage diagram.
+
+296
+00:27:23,656 --> 00:27:27,956
+Several controls change, so we do not attribute every difference to
+one parameter.
+
+297
+00:27:28,283 --> 00:27:30,883
+Inspect near and far regions together.
+
+298
+00:27:31,163 --> 00:27:34,283
+The total distance and distribution change as well as the number of
+splits.
+
+299
+00:27:34,543 --> 00:27:42,103
+Connect each visible setting change with the affected region instead
+of drawing a conclusion from one still image.
+
+300
+00:27:44,539 --> 00:27:47,479
+More cascades require additional maps and work.
+
+301
+00:27:47,699 --> 00:27:52,159
+The technique allocates a limited budget while managing transitions
+and instability.
+
+302
+00:27:52,917 --> 00:27:56,757
+Even with shadow information, more lights increase work.
+
+303
+00:27:57,057 --> 00:28:03,097
+Forward rendering evaluates material and relevant lighting as it
+shades a surface.
+
+304
+00:28:03,483 --> 00:28:10,277
+Deferred shading first stores visible-surface depth, normals, and
+material data in a G-buffer.
+
+305
+00:28:10,557 --> 00:28:14,377
+The lighting stage reads that data to accumulate light contributions.
+
+306
+00:28:14,967 --> 00:28:17,927
+Here we inspect Robo Recall material data.
+
+307
+00:28:18,107 --> 00:28:21,387
+Channel masks distinguish surface properties.
+
+308
+00:28:21,627 --> 00:28:26,527
+Their colors do not automatically represent final display color or
+normals.
+
+309
+00:28:26,747 --> 00:28:29,427
+In Deferred shading, the important question is not just the number
+of buffers,
+
+310
+00:28:29,427 --> 00:28:33,427
+but what each value represents and what the next stage reads.
+
+311
+00:28:40,967 --> 00:28:45,367
+Unwrapping the book places information from different faces onto
+one plane,
+
+312
+00:28:45,627 --> 00:28:49,887
+relating the original three-dimensional surfaces to texture
+addresses.
+
+313
+00:28:50,287 --> 00:28:54,127
+This does not mean storing only final lighting brightness.
+
+314
+00:28:54,447 --> 00:28:58,487
+Separate data such as base color and roughness by their meaning.
+
+315
+00:28:58,927 --> 00:29:03,647
+The export process then demonstrates handling those surface data
+independently.
+
+316
+00:29:10,353 --> 00:29:15,253
+An actual engine can inspect base color, normals, and roughness
+separately.
+
+317
+00:29:15,253 --> 00:29:21,293
+The 2017 Unreal material demonstration flattens a book model and
+exports buffer data as separate images.
+
+318
+00:29:21,713 --> 00:29:25,433
+This connects to distinct surface information rather than one final
+shaded color.
+
+319
+00:29:25,833 --> 00:29:29,913
+Baking materials or exporting buffers is different from baking
+illumination.
+
+320
+00:29:30,273 --> 00:29:35,973
+Suppose two lights contribute 0.25 and 0.35 to a shaded pixel.
+
+321
+00:29:36,173 --> 00:29:39,993
+Forward shading adds them while processing the surface, producing
+0.60.
+
+322
+00:29:40,253 --> 00:29:44,893
+Deferred shading stores surface data first and accumulates the
+same contributions later.
+
+323
+00:29:44,973 --> 00:29:49,153
+The target result can match while intermediate data and ordering
+differ.
+
+324
+00:29:49,333 --> 00:29:54,293
+Four objects and three lights illustrate ordering, not a universal
+workload.
+
+325
+00:29:54,633 --> 00:30:02,553
+Culling can skip pixels outside a light’s influence, so not every
+renderer evaluates every light at every pixel.
+
+326
+00:30:02,800 --> 00:30:07,613
+S.T.A.L.K.E.R.’s development materials describe a deferred approach
+for many lights.
+
+327
+00:30:07,933 --> 00:30:15,453
+Its counts and performance figures belong to the documented scene
+and hardware context.
+
+328
+00:30:15,833 --> 00:30:20,553
+The benefit has costs: material data must be written and read,
+
+329
+00:30:20,553 --> 00:30:26,313
+and one stored surface does not naturally represent several
+translucent layers at a pixel.
+
+330
+00:30:26,500 --> 00:30:29,633
+Place two glass layers in front of an opaque wall.
+
+331
+00:30:29,973 --> 00:30:36,673
+A buffer storing only the nearest surface does not contain every
+layer’s material.
+
+332
+00:30:36,673 --> 00:30:40,553
+Compositing them needs additional information or passes.
+
+333
+00:30:40,553 --> 00:30:46,993
+A real engine can therefore combine rendering paths within one
+frame.
+
+334
+00:30:47,074 --> 00:30:51,173
+Hybrid renderers may shade transparency in separate forward
+passes.
+
+335
+00:30:51,534 --> 00:30:57,673
+Light pre-pass is another compromise, computing lighting from
+normals and depth before a later material pass.
+
+336
+00:30:58,017 --> 00:31:00,234
+Forward rendering remains useful.
+
+337
+00:31:00,494 --> 00:31:07,614
+Unreal’s Robo Recall example combines feature choices,
+multisample anti-aliasing, and VR requirements.
+
+338
+00:31:07,954 --> 00:31:10,394
+The relevant question is which work the implementation reduces.
+
+339
+00:31:11,283 --> 00:31:14,343
+This is actual VR interaction with objects.
+
+340
+00:31:14,883 --> 00:31:17,183
+Inspect both the response and the image edges.
+
+341
+00:31:19,450 --> 00:31:24,550
+In the game running from the editor, hands, robots and fragments
+move together.
+
+342
+00:31:24,770 --> 00:31:32,870
+A clear image requires more than material brightness: thin
+structures and moving outlines must also be sampled.
+
+343
+00:31:33,150 --> 00:31:39,430
+This is an example of real renderer inputs, not evidence of a
+particular frame rate.
+
+344
+00:31:51,450 --> 00:31:55,910
+The comparison magnifies edges while handling multisample
+settings.
+
+345
+00:31:56,350 --> 00:31:59,030
+First locate the enlarged line in the original image.
+
+346
+00:31:59,410 --> 00:32:04,350
+A single image sample may not adequately distinguish the area
+covered by a thin triangle.
+
+347
+00:32:04,650 --> 00:32:08,430
+Testing coverage at multiple positions can represent the boundary
+differently.
+
+348
+00:32:08,750 --> 00:32:13,510
+The magnified change alone does not establish a speedup.
+
+349
+00:32:13,750 --> 00:32:17,710
+Sample count, resolution, materials and scene conditions all matter.
+
+350
+00:32:17,710 --> 00:32:22,470
+Observe the console operations and edge changes without inferring
+unreadable settings.
+
+351
+00:32:22,710 --> 00:32:27,250
+This is a case of choosing a Forward path by considering quality,
+required features and cost together.
+
+352
+00:32:53,320 --> 00:33:00,120
+Missing screen-space features in a particular Unreal forward
+implementation are implementation constraints,
+
+353
+00:33:00,520 --> 00:33:04,980
+not proof that such effects are mathematically impossible in every
+forward renderer.
+
+354
+00:33:05,500 --> 00:33:10,200
+Changing diagnostic modes reveals information otherwise
+combined in the final image.
+
+355
+00:33:10,460 --> 00:33:15,180
+This reflection view is not automatically screen-space reflection.
+
+356
+00:33:15,440 --> 00:33:19,160
+Even when effect names resemble one another, their inputs and
+implementation must be identified.
+
+357
+00:33:25,317 --> 00:33:28,310
+We also distinguish this from TBDR’s deferred terminology.
+
+358
+00:33:28,610 --> 00:33:34,990
+That division concerns visibility before shading; this division
+concerns material storage before lighting evaluation.
+
+359
+00:33:35,790 --> 00:33:39,910
+Even with shadows, contact regions can appear flat.
+
+360
+00:33:40,250 --> 00:33:45,930
+Screen-space ambient occlusion estimates nearby occlusion using
+screen depth and neighboring samples.
+
+361
+00:33:46,283 --> 00:33:51,177
+Nearby obstructions can reduce environmental illumination.
+
+362
+00:33:51,437 --> 00:33:57,937
+SSAO approximates this with information already present on the
+screen instead of tracing the complete scene in every direction.
+
+363
+00:33:58,057 --> 00:34:02,257
+Our diagram places samples around a box corner and compares
+depths.
+
+364
+00:34:02,497 --> 00:34:09,137
+A small radius emphasizes contact; a larger one reaches farther but
+can increase undersampling and incorrect associations.
+
+365
+00:34:09,337 --> 00:34:14,057
+Filtering can reduce noise but may blur across boundaries.
+
+366
+00:34:14,117 --> 00:34:17,597
+Sample count, filtering, and depth differences must be considered
+together.
+
+367
+00:34:17,857 --> 00:34:21,257
+The depth buffer primarily describes visible front surfaces.
+
+368
+00:34:21,297 --> 00:34:26,477
+A thin rod in front of a distant wall does not reveal its thickness
+through a single depth value.
+
+369
+00:34:26,477 --> 00:34:33,197
+An excessive sample range can associate unrelated surfaces and
+produce a dark halo around the object.
+
+370
+00:34:33,200 --> 00:34:39,137
+CryEngine 2’s 2007 technical discussion and Unreal documentation
+describe screen-based approximations and their limitations.
+
+371
+00:34:39,137 --> 00:34:42,337
+Actual comparisons need identified versions and settings.
+
+372
+00:34:42,500 --> 00:34:49,057
+A 2017 Unreal 4.16 demonstration approaches a cube model and
+changes the AO Power and Bias controls.
+
+373
+00:34:49,157 --> 00:34:51,537
+Watch the gaps between cubes and their floor contacts.
+
+374
+00:34:51,877 --> 00:34:56,697
+Adjusting this contact treatment is different from adding a light
+source.
+
+375
+00:34:57,000 --> 00:35:04,160
+Several controls and the camera change in this sequence, so we will
+not attribute every difference to one isolated number.
+
+376
+00:35:04,280 --> 00:35:10,720
+First observe the actual manipulations and contacts; our separate
+diagram isolates sample range and the limits of depth information.
+
+377
+00:35:13,000 --> 00:35:15,960
+This is not a substitute for direct-light shadows.
+
+378
+00:35:15,980 --> 00:35:21,440
+Darkening corners does not calculate occlusion for a particular lamp
+or colored indirect light reflected from another wall.
+
+379
+00:35:21,467 --> 00:35:25,040
+Information outside the screen and behind visible surfaces is still
+missing.
+
+380
+00:35:25,200 --> 00:35:29,580
+The same information boundary becomes important for
+screen-space reflections in the next episode.
+
+381
+00:35:30,320 --> 00:35:37,000
+This episode followed assigned brightness, stored surface lighting,
+and updated visibility for moving lights.
+
+382
+00:35:37,220 --> 00:35:40,560
+More lights also changed the ordering of material and lighting work.
+
+383
+00:35:40,717 --> 00:35:44,433
+To distinguish methods, ask three questions: what is stored,
+
+384
+00:35:44,433 --> 00:35:49,793
+which changes require recomputation, and which information is
+missing from the input?
+
+385
+00:35:50,133 --> 00:35:54,413
+The next episode extends the discussion to indirect light, reflections,
+water, and fog,
+
+386
+00:35:54,533 --> 00:36:01,193
+connecting photon mapping, SSR, Forward+, and clustered lighting
+to the different problems they address.
+
+387
+00:36:01,500 --> 00:36:07,493
+Reading techniques through their inputs and processing order
+makes an engine frame easier to understand than names alone.
+
+388
+00:36:07,493 --> 00:36:12,293
+The programming-coaching link in the description is available for
+hands-on learning.

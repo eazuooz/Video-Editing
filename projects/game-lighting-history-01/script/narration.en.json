@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "status": "source-matched-wording-approved-for-tts",
+  "episode": 1,
+  "seriesPlan": "production/research/game-lighting-history/series-plan.json",
+  "durationMeasured": false,
+  "targetMinutes": 20,
+  "footageDependentLinesFinalApproved": true,
+  "scope": "Independent educational wording; actual footage references only where native samples were read. No full original-script translation.",
+  "title": "How Game Lighting Began: From DOOM to Deferred Rendering",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "이번 편의 질문: 저장한 빛과 계산하는 빛",
+      "lines": [
+        "When a light moves in a game, why can brightness remain on a wall while a shadow follows the change?",
+        "We will connect DOOM’s sector brightness to Quake’s lightmaps, real-time shadows, and the ordering of forward and deferred shading.",
+        "You will be able to distinguish stored data from per-frame work and identify where an image’s limitations come from. Let us begin with a single surface."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "밝기 계산과 가시성은 서로 다른 일",
+      "lines": [
+        "Making a pixel starts with identifying the visible surface. The next task is estimating how much light that surface sends toward the camera.",
+        "Rasterization projects triangles onto the screen and finds the covered samples. A depth test selects the visible surface when triangles overlap.",
+        "Visibility alone does not calculate lighting. Position, surface normal, material, and light data are needed to determine color. The normal describes a surface’s orientation.",
+        "For a worked example, the dot product of an upward unit normal and an upward light direction is one. At sixty degrees it is one half. In this simple diffuse model, with other factors unchanged, the angular term is halved.",
+        "Normalizing both vectors keeps their lengths from changing a comparison intended to measure orientation. Visibility is a separate factor: even a perfectly aligned surface receives no direct contribution from that light if the path is blocked.",
+        "The rendering equation adds emitted light to reflected incoming light. Material response and the cosine of the incident angle contribute to that sum.",
+        "Rather than deriving the entire integral, we will follow how games divide this work. The directions they omit and the values they store affect the resulting image.",
+        "Rays can perform different tasks: finding a visible surface, testing visibility to a light, or finding a surface along a reflection direction.",
+        "A rasterized image can still use ray-based calculations. Rays may compute lighting before gameplay, while the running game reads the stored result.",
+        "Our first choice replaces complex light transport with a brightness value assigned to each part of the world."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "1993: 둠의 밝기 숫자와 색상표",
+      "lines": [
+        "DOOM’s basic 1993 lighting starts with a sector brightness value. The map assigns brightness to a sector, and the renderer uses it to choose a color table.",
+        "The source uses a bit shift of sector brightness to derive a light-table index, with extra lighting added. It then applies wall-orientation adjustments and clamps the index.",
+        "Horizontal and vertical walls receive different adjustments. This is an axis-based rule, rather than a continuous calculation of the angle to a light.",
+        "Two perpendicular walls can appear at different brightness in the same sector. The sector has not changed; the wall orientation changes the color-table selection. This is a simple orientation distinction rather than continuous lighting over a curved surface.",
+        "Distance-related behavior also enters through scale-dependent color-table selection. Reducing the process to a single sector lookup would omit that stage.",
+        "This is not a per-light visibility test between an object and a lamp. The scheme alone does not automatically produce a local light footprint or a precise object shadow.",
+        "The footage is labeled as the 2024 rerelease. Later lighting added by a modern source port is not evidence of the 1993 implementation, even on the same DOOM map. We inspect the original sector-brightness and wall-orientation rules separately in released source and our diagram."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "1996–1997: 계산을 게임 앞으로 옮긴 라이트맵",
+      "lines": [
+        "Quake stores more detailed lighting on surfaces. We distinguish the texture containing the wall’s appearance from the lightmap containing lighting on that wall.",
+        "Surface samples test visibility to lights. Orientation, distance, and light strength contribute to values calculated before gameplay.",
+        "Our diagram fills samples in sequence and transfers the results to a texture. Samples behind the box are darker because the light is blocked.",
+        "A wall texture may contain fine detail while its lightmap uses coarse samples. Raising texture resolution alone does not refine the lighting boundary. Raising lightmap resolution improves stored lighting detail without inventing detail in the wall texture.",
+        "A later engine demonstration makes the distinction observable. The 2017 Unreal comparison rooms are labeled with lightmap resolutions of 128, 256, 512, and 1,024. Separate texture detail from lighting boundaries. The camera visits different authored rooms; this is not a single-object on/off experiment.",
+        "At runtime, the renderer combines stored lighting with the surface texture. Their coordinates and resolutions can differ; texture detail and lightmap detail need not match.",
+        "Quake II’s 1997 tools add reflected-light patch contributions to the final lightmap samples, allowing baked indirect light to contribute beyond directly lit areas.",
+        "This should not be labeled photon mapping. Algorithms can share the goal of storing indirect light while calculating it through different processes.",
+        "Thinking in separate layers explains update cost. Changing a wall texture and moving a light are different edits. The latter changes which samples receive illumination, so stored visibility and indirect lighting must be checked against the new scene.",
+        "Moving a light exposes the limitation: stored values describe the old configuration. New visibility and orientation require recalculation or an additional dynamic-lighting method.",
+        "A moving character is not attached to one wall location. Quake includes a downward query that samples surface lighting. Static surface storage and a moving object’s lighting query are separate concerns."
+      ]
+    },
+    {
+      "id": "04f",
+      "title": "라이트맵도 텍스처: 작은 픽셀이 넓은 면을 덮을 때",
+      "lines": [
+        "Texture lookup creates another problem. A distant screen pixel can cover many texels; sampling only one can make the pattern unstable as the camera moves.",
+        "Mipmaps store progressively smaller versions of a texture. Selecting an appropriate level avoids repeatedly resolving details finer than the pixel’s footprint.",
+        "Bilinear filtering weights four neighboring texels within one level. Our diagram changes their weights as the sample moves between them.",
+        "Take a horizontal fraction of one quarter and a vertical fraction of one half. The top-left and bottom-left weights are each three eighths; the right-hand weights are each one eighth. They sum to one, and the nearer left values contribute more.",
+        "Trilinear filtering also blends between two adjacent mip levels. It smooths level transitions; it does not describe lighting along three spatial axes.",
+        "At an oblique viewing angle, a pixel’s footprint becomes elongated. Anisotropic filtering accounts for this directional shape instead of using only a roughly square footprint.",
+        "Filtering does not invent missing texture detail. It reads existing data more appropriately for screen samples, with costs that depend on the chosen quality."
+      ]
+    },
+    {
+      "id": "04t",
+      "title": "1990년대의 다른 갈래: 타일 베이스드 GPU",
+      "lines": [
+        "Independent of the lighting model, processing order matters. Tile-based rendering divides the screen into smaller regions and assigns triangles to them.",
+        "The 1990s PowerVR lineage illustrates this hardware approach. We will not project the complete structure of a modern programmable renderer onto those earlier devices.",
+        "Keeping a tile’s working data close to the chip can reduce traffic to larger external buffers. The tile is processed locally before its result is written out.",
+        "In PowerVR’s TBDR terminology, deferred describes resolving visibility before shading the required surfaces. This differs from the G-buffer-based deferred shading we will discuss later.",
+        "The list here contains primitives. Tiled lighting instead lists lights affecting a screen region. Similar-looking grids can contain different data for different purposes.",
+        "Skipping hidden opaque shading can help, but transparency, discard operations, and intermediate geometry still have costs. Other GPUs also reduce work through early depth tests and caches."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "2004: 둠 쓰리의 법선 반응과 섀도 볼륨",
+      "lines": [
+        "DOOM 3’s 2004 approach calculates direct-light and shadow responses to moving lights and objects. This is a different update task from reading baked indirect lighting.",
+        "A simple diffuse model receives more direct light when its normal faces the light. That example does not describe every material or effect in the game.",
+        "A normal map stores small-scale surface orientation in a texture. It can produce rock-like shading without automatically changing a flat surface’s outer silhouette.",
+        "Official DOOM 3 game footage moves through dark industrial spaces and shows illuminated characters and structures. We first observe that appearance, then examine shadow construction through released source and our diagram. Game pixels alone do not reveal every stencil operation.",
+        "A shadow volume constructs the region behind an object from boundaries seen by the light. The released source includes a step that connects original and projected boundary points to form side faces.",
+        "Stencil-buffer tests relate that volume to screen samples and suppress the corresponding light contribution. The method tests a shadowed region rather than simply placing a dark image on the floor.",
+        "The stencil test is not simply painting the volume sides black. It counts how the test path crosses front and back faces to determine whether a sample is inside the shadowed region. Camera-inside cases also require careful counting direction and cap handling.",
+        "A point-light assumption produces sharp boundaries, and large screen coverage can increase cost. Real-time direct lighting does not by itself solve indirect reflections or color bleeding."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "2004: 하프라이프 투의 방향별 베이크와 이동 물체",
+      "lines": [
+        "Half-Life 2 illustrates another 2004 choice: richer use of baked lighting. Responding to normal-map orientation requires more information than one brightness value.",
+        "Valve’s contemporary presentation combines three basis-direction lightmaps with a surface normal. Our three arrows represent stored directional components, rather than three newly added lamps.",
+        "The shown code weights each lightmap color by a saturated dot product with its basis direction, then sums the results. We keep this version separate from variants that use squared weights.",
+        "Suppose the three stored directional colors differ. A normal facing the first basis increases that lightmap’s contribution; rotating the normal shifts the weights toward the other directions. Stored colors stay fixed while their contributions change, revealing small surface detail.",
+        "Changing the normal changes the directional contributions. This adds small-scale orientation response beyond one flat brightness value, without reconstructing geometry or every dynamic occlusion.",
+        "Our spatial diagram separates a rock-like surface into actual geometry and normal-map detail. Changing normal arrows affects internal shading while the outer silhouette remains flat. Moving real vertices also changes silhouette and occlusion. The distinction is the information each representation creates.",
+        "Moving-object lighting stores and queries data differently. It needs spatial samples rather than a lightmap attached to a surface. Half-Life 2’s ambient cube is not identical to every engine’s spherical-harmonic probes.",
+        "A later Unreal lighting demonstration displays spatial samples and moves a character between a dark room and a bright floor. A surface-texel grid and samples distributed through space store information in different locations. This is a 2017 engine example of spatial lighting, not the identical implementation of Half-Life 2 ambient cubes.",
+        "Higher-quality baking consumes preparation time and storage. Lower runtime cost trades against production work and update cost. One map’s bake time cannot serve as a universal figure for games.",
+        "A remaining baked contribution after a light changes follows from this assumption. Hybrid systems may update direct light dynamically while retaining static indirect light, so the two update schedules must be examined separately."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "섀도 맵: 같은 점을 광원 좌표에서 검사하기",
+      "lines": [
+        "A shadow map stores depth from the light. It records the nearest visible surface, then transforms a camera-visible point into the same light coordinates for comparison.",
+        "With a depth convention where larger means farther, a tested point behind the stored depth is considered blocked. Both values must use matching coordinates and conventions.",
+        "For a numerical example, stored depth of 0.33 and receiver depth of 0.80 place the receiver behind the first surface. If moving the blocker changes stored depth to 0.90, the receiver at 0.80 lies in front and is unoccluded by this test.",
+        "Magnifying the light’s depth image reveals its texel grid. Covering a large region with few texels can create stair-stepped shadow edges, even when the original shape is smooth.",
+        "Small numerical differences between stored and reconstructed depth can cause a surface to shadow itself. Bias adjusts the comparison to reduce this error.",
+        "Excessive bias can detach the shadow from the object. A single chosen value is not guaranteed to solve every distance and surface slope.",
+        "PCF performs several neighboring depth comparisons and averages their visibility results. Averaging depths first and comparing once is a different operation.",
+        "If two of four neighboring tests report visibility, their PCF average is one half. This produces an intermediate visibility value, but does not exactly integrate every path from an area light. Wider filters require more samples and introduce further tradeoffs.",
+        "PCSS searches for blockers and adjusts filter width using their relation to the receiver. Variance Shadow Maps instead use depth moments and have their own limitations, including light leakage.",
+        "Variance Shadow Maps and Unreal’s Virtual Shadow Maps share an abbreviation but are different methods. A later episode will distinguish virtual-page shadow management."
+      ]
+    },
+    {
+      "id": "09a",
+      "title": "캐스케이드 섀도 맵: 가까운 영역에 더 작은 텍셀",
+      "lines": [
+        "One map covering a broad outdoor scene can make nearby shadows coarse. Cascaded Shadow Maps split the camera’s view by distance and assign shadow maps to those regions.",
+        "This does not create more lights. It records shadows from one directional light at different spatial densities near and far from the camera.",
+        "For an illustrative example, 2,048 texels covering 20 meters gives roughly one centimeter per texel. Covering 200 meters with the same count gives roughly ten centimeters.",
+        "Those numbers are not settings or performance measurements from a game. They illustrate how coverage changes world-space texel size at the same resolution.",
+        "The point’s view depth selects a cascade. Blending near boundaries can soften transitions, while camera movement may require stabilization relative to the texel grid.",
+        "In the acquired official Unreal example, the character casts a visible shadow while running on the floor, but not on the stairs. The documentation describes disabled CSM reception on the stairs.",
+        "That clip demonstrates receiver configuration, rather than visualizing cascade partitions. A separate spatial diagram explains the splits, while the observed engine result illustrates the setting.",
+        "A 2017 official Unreal demonstration shows the partitions more directly. Enabling Show, Advanced, Shadow Frustums displays differently colored projected boundaries over the scene. Observe how those boundaries change with the shadow distance and distribution controls.",
+        "The same demonstration changes the cascade count through four, zero, one, and three while also adjusting shadow distance. Distinguish disabling cascades from assigning a broad region to one map. Relate the one-versus-multiple edge comparison to our equal-resolution coverage diagram. Several controls change, so we do not attribute every difference to one parameter.",
+        "More cascades require additional maps and work. The technique allocates a limited budget while managing transitions and instability."
+      ]
+    },
+    {
+      "id": "09b",
+      "title": "포워드와 디퍼드: 같은 빛을 더하는 다른 순서",
+      "lines": [
+        "Even with shadow information, more lights increase work. Forward rendering evaluates material and relevant lighting as it shades a surface.",
+        "Deferred shading first stores visible-surface depth, normals, and material data in a G-buffer. The lighting stage reads that data to accumulate light contributions.",
+        "An actual engine can inspect base color, normals, and roughness separately. The 2017 Unreal material demonstration flattens a book model and exports buffer data as separate images. This connects to distinct surface information rather than one final shaded color. Baking materials or exporting buffers is different from baking illumination.",
+        "Suppose two lights contribute 0.25 and 0.35 to a shaded pixel. Forward shading adds them while processing the surface, producing 0.60. Deferred shading stores surface data first and accumulates the same contributions later. The target result can match while intermediate data and ordering differ.",
+        "Four objects and three lights illustrate ordering, not a universal workload. Culling can skip pixels outside a light’s influence, so not every renderer evaluates every light at every pixel.",
+        "S.T.A.L.K.E.R.’s development materials describe a deferred approach for many lights. Its counts and performance figures belong to the documented scene and hardware context.",
+        "The benefit has costs: material data must be written and read, and one stored surface does not naturally represent several translucent layers at a pixel.",
+        "Place two glass layers in front of an opaque wall. A buffer storing only the nearest surface does not contain every layer’s material. Compositing them needs additional information or passes. A real engine can therefore combine rendering paths within one frame.",
+        "Hybrid renderers may shade transparency in separate forward passes. Light pre-pass is another compromise, computing lighting from normals and depth before a later material pass.",
+        "Forward rendering remains useful. Unreal’s Robo Recall example combines feature choices, multisample anti-aliasing, and VR requirements. The relevant question is which work the implementation reduces.",
+        "Missing screen-space features in a particular Unreal forward implementation are implementation constraints, not proof that such effects are mathematically impossible in every forward renderer.",
+        "We also distinguish this from TBDR’s deferred terminology. That division concerns visibility before shading; this division concerns material storage before lighting evaluation."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "2007: 화면 깊이에서 구석의 가림을 찾는 SSAO",
+      "lines": [
+        "Even with shadows, contact regions can appear flat. Screen-space ambient occlusion estimates nearby occlusion using screen depth and neighboring samples.",
+        "Nearby obstructions can reduce environmental illumination. SSAO approximates this with information already present on the screen instead of tracing the complete scene in every direction.",
+        "Our diagram places samples around a box corner and compares depths. A small radius emphasizes contact; a larger one reaches farther but can increase undersampling and incorrect associations.",
+        "Filtering can reduce noise but may blur across boundaries. Sample count, filtering, and depth differences must be considered together.",
+        "The depth buffer primarily describes visible front surfaces. A thin rod in front of a distant wall does not reveal its thickness through a single depth value. An excessive sample range can associate unrelated surfaces and produce a dark halo around the object.",
+        "CryEngine 2’s 2007 technical discussion and Unreal documentation describe screen-based approximations and their limitations. Actual comparisons need identified versions and settings.",
+        "A 2017 Unreal 4.16 demonstration approaches a cube model and changes the AO Power and Bias controls. Watch the gaps between cubes and their floor contacts. Adjusting this contact treatment is different from adding a light source.",
+        "Several controls and the camera change in this sequence, so we will not attribute every difference to one isolated number. First observe the actual manipulations and contacts; our separate diagram isolates sample range and the limits of depth information.",
+        "This is not a substitute for direct-light shadows. Darkening corners does not calculate occlusion for a particular lamp or colored indirect light reflected from another wall.",
+        "Information outside the screen and behind visible surfaces is still missing. The same information boundary becomes important for screen-space reflections in the next episode."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "이번 편의 답과 다음 질문",
+      "lines": [
+        "This episode followed assigned brightness, stored surface lighting, and updated visibility for moving lights. More lights also changed the ordering of material and lighting work.",
+        "To distinguish methods, ask three questions: what is stored, which changes require recomputation, and which information is missing from the input?",
+        "The next episode extends the discussion to indirect light, reflections, water, and fog, connecting photon mapping, SSR, Forward+, and clustered lighting to the different problems they address.",
+        "Reading techniques through their inputs and processing order makes an engine frame easier to understand than names alone. The programming-coaching link in the description is available for hands-on learning."
+      ]
+    }
+  ],
+  "revision": "source-matched-wording-v4",
+  "updatedAt": "2026-10-08T05:18:06.122Z",
+  "reviewedAt": "2026-10-08T05:21:20.241Z",
+  "footageDependentWordingReviewed": true,
+  "finalFootageIntervalsApproved": false,
+  "finalEncodedPixelsApproved": false
+}
