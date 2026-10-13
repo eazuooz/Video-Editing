@@ -1,70 +1,21 @@
 # {{TITLE_KO}}
 
-- 프로젝트 ID: `{{SLUG}}`
-- 생성일: {{CREATED_AT}}
-- 상태: 기획 중
+프로젝트 `{{SLUG}}` · 생성일 {{CREATED_AT}} · 사용자 영상 선택 근거를 기록한 뒤 한 편 자동 완료.
 
-## 작업 순서
+현재 기준은 `docs/VIDEO_WORKFLOW.md`, 운영 상태는 `shared/publishing/video-production-control.json`이다. 선택한 한 편만 진행하며 다음 편은 자동 착수하지 않는다.
 
-1. `planning/outline.md`에서 영상의 질문과 결론을 확정하고 기존 영상과 중복을 검토합니다.
-2. `docs/VIDEO_GAME_FOOTAGE_POLICY.md`에 따라 실제 존재하는 게임의 플레이 자료를 먼저 확보·검토하고, `sources/SOURCES.md`에 출처·사용 조건·구간·보이는 행동을 기록합니다. 자체 게임이나 데모를 제작해 예시를 대체하지 않습니다.
-3. 확인한 실제 장면에 맞춰 `script/narration.ko.json`과 영어 대본에 해설을 작성합니다. 본편 실제 게임 영상 60% / 검정 배경 2.5D 설명 40%를 유지합니다.
-4. 짧은 TTS 샘플의 톤과 속도를 승인받습니다.
-5. 1.7B 장면 단위 TTS, SRT, 타이밍과 전체 받아쓰기 검수를 만듭니다.
-6. 대본과 같은 수의 독립 Motion Canvas 씬을 만들고, 실제 예시와 자체 설명 화면을 페어로 배치합니다.
-7. 라이선스를 확인한 BGM 후보를 먼저 제시하고 사용자의 선택을 받습니다.
-8. 승인된 내레이션은 유지하고 전체 연속 BGM 위에 게임 원음을 함께 믹스합니다.
-9. 무자막 MP4·기본 한국어 박스 자막판·편집기에 같은 전체 믹스를 연결하고 언어별 SRT·최종 청취 검수를 합니다.
-10. `publishing/`의 제목, 설명, 챕터와 음악 출처를 완성합니다.
+1. 해당 Sakurai 원본의 전체 대사·관련 화면을 먼저 확인한다. `planning/outline.md`에 원본 주장/순서/예시/결론→우리 씬 대응, 원본 짜임새를 보존한 KOEN 대본과 해당 위치의 세부 PPT 보강, 원본 게임의 동등한 최신 버전 검토(추가 게임 기본0), 실제소스·인과 연결·모든 씬의 상세대상/2.5D/움직임/자막 공간·비중·오디오·썸네일을 설계한다. 대응 원본이 없는 수업은 실제 수업자료를 기준으로 하고 게임 수를 강제하지 않는다.
+2. `planning/production-plan.json`에 기존 근거와 입력해시를 연결하고 대표 움직임·오디오 샘플로 내부 품질을 확인한다. 기존 승인 설정을 재사용하고 승인된 스타일 안의 곡 선택도 내부에서 마친다. 제작 전 패키지는 사용자 승인 대기 단계가 아니다.
+3. 실제 승인 범위 안에서 전체TTS/실측타임라인/믹스/독립씬/고정자막/최종쌍을 제작한다. 기본 생성기의3개씬·무음WAV·준비카드는 scaffold이며 승인된 스타일/실제영상이 아니다.
+4. `production/review-ledger.json`에 한 번의 현재 검수와 재사용 근거를 연결한다. PCM/믹스ASR·모든큐/컷/움직임·두decode/PTS/음량/동일AAC·4파일을 확인한다. 변경 없는 검사/미디어를 반복 생성하지 않는다.
+5. 검수한 captioned 파일을 한 번 비공개 업로드하고 가능한 설정을 저장·재열람한 뒤 선택 Git 전달을 마친다. 완성된 비공개 링크를 사용자에게 제시해 수정 검수를 받고 멈춘다. 다음 편·공개·예약·기존 업로드 교체/삭제는 별도 명시 범위를 따른다.
 
-전체 절차는 저장소의 `docs/VIDEO_WORKFLOW.md`와
-`docs/NARRATION_AUDIO_STANDARD.md`를 참고하세요.
+TTS 명령은 승인·현재 GPU 인계·실행기 적용 범위를 확인한 후에만 사용한다:
+`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-project-narration.ps1 -Project {{SLUG}}`
 
-## 기본 내레이션 명령
+납품: `node scripts/collect-video-output.cjs {{SLUG}}`. clean/captioned/KO/EN은 `output/{{SLUG}}/`, YouTube에는 captioned만 사용한다. 제작계획의 pending을 템플릿 생성이나 도구 실행 성공만으로 approved로 바꾸지 않는다.
 
-먼저 첫 장면 미리듣기를 생성합니다.
-
-```powershell
-qwen3-tts/.venv/Scripts/python.exe qwen3-tts/generate_sample.py `
-  --project {{SLUG}} --scene 01
-```
-
-대본과 TTS 미리듣기가 승인된 뒤 전체 패키지를 생성합니다.
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File scripts/build-project-narration.ps1 -Project {{SLUG}}
-```
-
-음악은 이 단계에서 자동으로 섞이지 않습니다. `project.json`의
-`audio.backgroundMusic.approvalStatus`는 곡을 선택할 때까지 `pending`으로 둡니다.
-
-## 전체 믹스와 미리보기
-
-`project.json`에는 2026-09-06 승인된 기본값인 내레이션 -16 LUFS, 게임 원음
--23 LUFS, BGM -28 LUFS와 가벼운 덕킹이 들어 있습니다. 곡 선택 후 파일 경로를
-기록하고, 실제 타임라인에 맞춘 믹서에서 이 값을 사용합니다.
-BGM은 처음부터 끝까지 이어지며 게임 원음 구간에도 함께 재생합니다.
-겹칠 때 BGM만 3dB 낮추고, 곡 반복은 1초 크로스페이드로 연결합니다.
-
-- 원본 TTS는 `paths.narration`에 보관하며 배경음 조정 때문에 다시 생성하지 않습니다.
-- 전체 믹스는 `paths.audioMix`에 생성하고 `project.ts`의 `audio`에 연결합니다.
-  처음 생성되는 무음 플레이스홀더·나레이션 전용 연결은 초안용입니다.
-- MP4와 M4A를 함께 갱신하고, 개별 Video 재생만 음소거해 원음 중복을 막습니다.
-- 각 씬의 배경 단독 트랙과 편집기 재생을 확인하고 `audio/mix-report.md`에 기록합니다.
-- 설명 디자인 기본값은 `docs/VIDEO_VISUAL_STYLE.md`의 `research-black-v1`입니다. 검정 배경·흰 본문·노랑 제목·청록 선·주황 초점과 실제 투영/가림/높이/움직임을 사용합니다. 공통 코드는 `motion-canvas/src/styles/research-dark.ts`이며 준비 텍스트 화면만으로 2.5D 완료를 기록하지 않습니다. 기존 인트로·회원 엔딩·실제 게임·썸네일의 색감은 각각 기존 기준을 따릅니다.
-- 내레이션 자막 기본값은 `docs/CAPTION_STYLE.md`의 `boxed-white-forest-v1`입니다. 흰 사각 박스·검정 글자와 얇은 테두리·짙은 초록 하드 그림자, 1080p 기준 Noto Sans KR 500/48px·최대 두 줄을 사용합니다. 매니페스트 설정만으로 자동 표시되지는 않으므로 씬의 자막 레이어에 실측 타이밍을 연결합니다.
-- 무자막 원본·한국어 자막판·KO/EN SRT를 별도 보관합니다. 모든 큐의 잘림과 게임 UI·하단 요약 겹침을 검사하고, 스타일 때문에 음성이나 영상 길이를 바꾸지 않습니다.
-- 본편은 **실제 게임·개발 동작 영상 60% / PPT·자체 설명 40%**입니다. 인트로·회원 엔딩은 제외하고 프레임 반올림은 최대 1프레임입니다. 도식·숫자 비교 중심인 자체 테스트도 PPT 비중입니다. 각 주요 2.5D 설명에 맞는 실제 동작을 본론 중간에 넣고 관찰할 지점과 원리·적용 결과를 연결합니다. `planning/outline.md`에 출처/구간·보이는 동작·PPT 연결·삽입 위치를 적고 컷별로 직접 검수합니다.
-- `editing.targetGameplayShare = 0.6`을 시작점으로 사용합니다. `exampleSeconds = 19.5`는 기획 참고값이며 고정 길이가 아닙니다. 템플릿의 준비 화면을 실제 허용 영상으로 교체하고 실측 구간을 편집 큐·믹서에 함께 반영해야 합니다.
-- 내레이션은 실제 예시와 설명에 걸쳐 계속 이어집니다. 장면 앞에 예시 길이만큼 무음을 추가하지 않습니다. KO/EN SRT와 씬 타이밍을 함께 맞춥니다.
-- 편집 완료 시 `actualGameplaySeconds`, `actualExplanationSeconds`, `actualGameplayShare`를 실측하여 기록하고 `rebuild.json`을 갱신합니다. 60:40 목표를 맞추려고 원본을 억지로 반복하거나 늦추지 않습니다.
-- FPS 믹서는 과거 20개 씬·6.5초 예시 구간용이므로 새 영상에 그대로 쓰지 않습니다.
-
-세부 수치와 재발 방지 규칙은 `docs/NARRATION_AUDIO_STANDARD.md`를 따릅니다.
-
-## 관련 코드
-
-- Motion Canvas: `motion-canvas/src/projects/{{SLUG}}`
-- Manim: `manim/projects/{{SLUG}}`
-- 생성 결과: `shared/output`
+- 화면: `docs/VIDEO_VISUAL_STYLE.md`; 고정자막: `docs/CAPTION_STYLE.md`
+- 음성/믹스: `docs/NARRATION_AUDIO_STANDARD.md`; 게시: `docs/YOUTUBE_PUBLISHING.md`
+- 코드: `motion-canvas/src/projects/{{SLUG}}`, `manim/projects/{{SLUG}}`
+- 프로젝트 manifest의 예외/측정값이 실제 제작 입력이다. 준비파일의 예시길이를 실측값으로 사용하지 않는다.

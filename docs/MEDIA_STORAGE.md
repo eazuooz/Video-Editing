@@ -1,52 +1,20 @@
-# 미디어는 외부 보관, 제작 설계는 Git
+# 미디어 보관·선택 Git 전달
 
-2026-09-29 사용자 승인: 모든 영상·음성·BGM과 압축/분할 미디어를 최신 파일뿐 아니라 공개 main의 과거 이력에서도 제거합니다. 실제 로컬 파일은 삭제하지 않습니다. 폰트, 코드, 프로젝트 설정, 대본, 자막, 출처/라이선스, 편집 기록을 보존합니다. 이미지는 아래 최신 최소 보관 규칙을 따릅니다.
+현재 운영은 [통합 제작 규칙](VIDEO_WORKFLOW.md)을 따른다. 미디어를 보존하면서 승인된 제작 설계·대본·자막·코드·근거만 전달한다.
 
-## 이미지 최소 보관과 한 편씩 푸시
+- 영상·내레이션·게임소리·BGM·압축/분할/LFS 미디어와 다운로드 원본info/연구 전체자막은 Git에 추가하지 않는다. 로컬 원본은 삭제하지 않는다.
+- 새 JPG/PNG/WebP/GIF/BMP/TIFF는 기본 local-only. 추출프레임/연락판/렌더시퀀스/자막오버레이/반복QA 이미지는 생성경로·PTS·검수결과·SHA만 기록한다.
+- 원본 로고/회원/씬 필수자산, 전달 썸네일, 최소 게시/권리증거만 직접 필요성을 검토해 `shared/git-essential-images.json`의 exactpath/purpose/reason/reviewedAt/SHA256과 파일별 ignore 예외를 추가한다. 폴더 예외·force-add 금지. 기존 모든 이미지가 필수라는 뜻은 아니다.
+- 해당 편 완료 후 명시 경로만 선택해 일반 commit/push한다. 공유checkout에서는 실제HEAD에서 임시index를 만들고 최종 staged blob·경로와 외부index bytes/entries를 대조한다. 다른 작업의 staged/working파일을 변경·혼합하지 않는다. force-push/이력 재작성/변경 폐기 금지.
+- `node scripts/media-policy.cjs`와 `node scripts/build-rebuild-manifests.cjs <slug> --check` 등 변경 범위의 필수 검사를 실행한다. 전체 index lock/다른 미완료 프로젝트 실패를 무시해 전체통과라 하지 않는다. 명령·범위·한계를 기록하고 자신의 manifest만 수정한다.
+- 실제 commit/push/remote SHA를 확인해 증거를 남긴다. 미래 자신의 SHA를 예상해 문서에 쓰지 않는다. 같은 완료 전달을 매 턴 다시커밋/푸시하거나 증거의 증거를 무한히 커밋하지 않는다.
 
-2026-10-05 사용자 재확인: `영상하나 제작끝나면 푸쉬좀 해줘 엄청쌓였어... jpg나 이미지파일은 필요한것만 나두고 추가 안하기로 했었어 확인해줘`.
+## 재현과 외부 보관
 
-새 JPG/PNG/WebP/GIF/BMP/TIFF는 기본적으로 Git에서 제외합니다. 게임 원본 추출 프레임, 연락판(contact sheet), 렌더 시퀀스, 자막 오버레이, 반복 검수 이미지는 로컬에 두고 생성 명령·PTS·검수 결과·해시를 JSON으로 보존합니다. 원본 로고/회원 이미지/씬 필수 자산, 전달 썸네일과 최소한의 실제 게시·권리 증거만 필요성을 직접 확인하여 추적합니다. 기존에 Git에 있던 재생성 가능한 이미지도 정리 시 로컬 파일을 보존하고 경로·기존 blob·SHA256을 기록합니다. 원본 회원 자료나 실제 저장 증거를 자동 분류로 삭제하지 않습니다.
+`projects/<slug>/rebuild.json`은 현재 설정·대본·편집·원본위치/컷·타이밍·믹스·자막해시·렌더 소스의 재현 목록이다. `projects/rebuild-index.json`은 공유 전체 목록이며 동시 작업 중 함부로 재작성하지 않는다. record 수는 최종 컷 수가 아닐 수 있고 supporting 항목은 역사 자료다. 현재 매니페스트가 고른 입력부터 읽는다.
 
-필수 새 이미지를 추가할 때는 `shared/git-essential-images.json`에 정확한 경로, `allowedPurposes` 중 목적, 구체적 필요 이유, 직접 검토 일시와 SHA256을 기록하고 `.gitignore`에 해당 파일만 예외로 둡니다. `scripts/media-policy.cjs`는 새 이미지의 이 기록과 실제 staged blob 해시를 검사합니다. 폴더 전체 예외나 강제 추가로 프레임 은행을 올리지 않습니다. 기존 추적 이미지가 모두 새 허용 목록에 있다는 의미는 아닙니다.
+`node scripts/collect-video-output.cjs <slug>`로 clean/captioned/KO/EN과 output index를 수집한다. 출력폴더는 Git 제외, 준비된 중간파일을 납품본에 섞지 않는다. 원본을 이동/삭제하지 않고 납품해시와 실제 미완료 항목을 유지한다.
 
-한 편의 렌더·QA·수집과 가능한 비공개 저장이 끝나면 해당 제작 기록을 선택 커밋하고 일반 푸시합니다. 플랫폼 썸네일 제한은 비차단 후속 작업으로 남깁니다. 동시 작업이 있는 공유 checkout에서는 실제 HEAD로 만든 임시 Git index에 명시적 경로만 넣고 최종 커밋 경로를 검사합니다. 다른 작업의 index·작업 파일을 섞거나 변경하지 않고, 푸시 뒤 실제 로컬/원격 SHA를 기록합니다. 정리 전 커밋의 이미지 이력은 이 정상 후속 커밋으로 사라지지 않으며, 이 작업에서는 이력을 재작성하지 않습니다.
+다른 컴퓨터에서는 외부에 보관된 미디어·목소리 레퍼런스·회원 원본을 실제 경로와 해시로 복원한 뒤 현재 제작 실행기를 사용한다. JSON만으로 소실된 미디어를 복원할 수 없고 TTS 재합성도 동일바이트/길이를 보장하지 않는다. 백업이 미확인이라면 pending이다. 과거 `shared/media-archives/**/manifest.json`과 restore 도구는 실제 외부 조각이 있을 때만 사용한다.
 
-## 프로젝트별 재제작 파일
-
-- 전체 목록: `projects/rebuild-index.json`
-- 프로젝트마다 `projects/<slug>/rebuild.json`
-- 제거 목록과 이전 Git blob 식별자: `docs/media-removal-inventory.json` (바이너리 백업 아님)
-
-각 JSON에는 원래 프로젝트 설정, 대본의 씬 수, 실제 편집 레코드, 원본 위치·컷 구간·출처, 타이밍 자료, 음량/BGM 승인, 자막 위치/큐 수/해시, 편집 가능한 렌더 소스, 제작 스크립트 경로가 들어갑니다. 레코드 수는 서로 다른 자료의 행 수이며, 타임라인과 컷 목록이 중복되므로 최종 영상의 컷 수와 혼동하지 않습니다. `purpose`가 supporting인 자료는 과거 버전일 수 있습니다. 선택한 현재 자료와 `projectSettings.paths`부터 읽으세요.
-
-자료마다 시간 기준이 다릅니다. `startFrame`은 프레임, `in`/`rawStart`/`fileStart`는 원본 또는 부분 다운로드의 위치일 수 있습니다. 원래 값을 그대로 보존하고 제작 스크립트에서 해석합니다. 기록이 없는 값은 추측하지 않으며 `rebuild.gaps`에 한계를 표시합니다.
-
-```powershell
-# 새 프로젝트 생성/납품 수집 시 자동 갱신. 편집 후 수동 갱신도 가능.
-node scripts/build-rebuild-manifests.cjs
-node scripts/build-rebuild-manifests.cjs visible-rewards
-npm run rebuild:check
-npm run media:check
-```
-
-## 다른 컴퓨터에서
-
-1. 이력 정리 이후 저장소를 새 폴더에 clone합니다. 옛 checkout에서 강제 pull/merge하지 마세요. 개인 작업을 먼저 별도 보관합니다.
-2. 프로젝트 `rebuild.json`과 제작 기준을 읽고 Node/Python/FFmpeg 및 해당 엔진 환경을 설치합니다.
-3. 개인 외장 저장소/클라우드에서 원본 미디어를 JSON의 동일 경로로 가져옵니다. 별도 백업 위치는 아직 지정되어 있지 않습니다. 없으면 출처·권리를 확인하여 원본을 다시 확보합니다. 링크가 없거나 삭제된 자료는 수동 확보가 필요합니다.
-4. 개인 목소리 샘플·TTS 모델·회원 원본 이미지를 별도 준비합니다. 없는 회원 이미지/뱃지를 새로 만들어 대체하지 않습니다.
-5. 해당 프로젝트의 제작 스크립트/README를 확인하고 클립 준비 → TTS → 믹스 → 렌더 → 자막 검사 순서로 실행합니다. 여러 버전의 스크립트를 전부 실행하지 마세요.
-6. 최종 검사 후 `node scripts/collect-video-output.cjs <slug>`로 로컬 `output/`에 모읍니다.
-
-JSON만으로 소실된 영상/음성 자체를 되살릴 수는 없습니다. 특히 TTS 재생성은 동일 바이트/길이를 보장하지 않습니다. 재합성하면 전체 씬 타이밍·KO/EN SRT·믹스를 함께 검수/갱신합니다. 이전 영상과 정확히 같아야 한다면 원본 음성과 영상을 외부에 보관하세요. 사용 권리나 게시 승인도 JSON 생성으로 새로 부여되지 않습니다.
-
-`shared/media-archives/**/manifest.json`은 기존 외부 백업 조각의 해시/경로를 확인하는 기록입니다. 압축 조각은 더 이상 Git에 없습니다. 별도로 조각을 가져온 경우에만 `node scripts/restore-media.cjs --project <slug>`로 복원할 수 있습니다.
-
-## 커밋 전
-
-`npm run rebuild:manifests` → `npm run rebuild:check` → `npm run media:check`를 실행합니다. `.gitignore`는 기존 추적 파일이나 `git add -f`를 차단하지 못하므로 검사도 필요합니다. 확장자만 바꾸거나 Git LFS, ZIP/분할 압축으로 우회 업로드하지 않습니다.
-
-## 이력 정리의 범위
-
-GitHub main에서 도달 가능한 커밋에서 미디어 경로를 제거합니다. 커밋 ID가 변경됩니다. 로컬 복구용 bundle/백업 참조는 공개하지 않습니다. GitHub의 옛 커밋 URL, 캐시, fork, 다른 사람의 clone까지 즉시 삭제되는 것은 아니며, 서버 용량 회수 시점도 GitHub에 달려 있습니다. 민감 자료의 완전 삭제가 필요하면 별도로 GitHub 지원 절차를 확인해야 합니다.
+2026-09-29의 미디어 이력 제거는 완료/과거 작업 기록이며 새 자동 이력 재작성 명령이 아니다. 과거 원문은 [보관본](history/video-policy-before-20261013-consolidation/docs/MEDIA_STORAGE.md)에 있다.

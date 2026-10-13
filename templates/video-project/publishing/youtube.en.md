@@ -1,31 +1,15 @@
-# YouTube Publishing — English
+# {{TITLE_EN}} — English publishing draft
 
-## Title
+Draft only. Follow `docs/YOUTUBE_PUBLISHING.md` and this video's user-approved delivery scope.
 
-{{TITLE_EN}}
+## Localized title and description
 
-## Thumbnail Text
+Write independent English metadata matching the actual video. Keep the measured chapters and exact canonical coaching/community/membership links. Add the existing valid channel footer once. Keep source/rights records internally and resolve any mandatory attribution before using a source.
 
-One short phrase
+## Measured chapters
 
-## Description
+Start at00:00 and use the final timeline; do not publish placeholder timestamps.
 
-Use the first two lines to state the main topic clearly and include one or two natural search terms.
+## Language verification
 
-Explain what the video compares and what viewers will learn.
-
-## Music Credits
-
-Paste the exact attribution required by the approved track license. For a
-YouTube Audio Library track that requires no attribution, keep the title and
-license-check date in the internal source document.
-
-## Chapters
-
-00:00 Introduction  
-00:00 First topic  
-00:00 Conclusion
-
-## Hashtags
-
-#GameDevelopment #GameDesign
+Publish the manual English SRT and separate English title/description to the same actual upload ID. Record saved/reopened evidence in the current receipt. A prepared file is not published metadata.

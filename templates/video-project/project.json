@@ -133,7 +133,32 @@
       "selfCreatedFootageCountsTowardActualShare": false,
       "footageBeforeNarration": true,
       "preserveCompletedHistory": true
-    }
+    },
+    "detailedSubjects": {
+      "required": true,
+      "planBeforeRendering": true,
+      "person": "recognizable face/equipment, torso, articulated limbs, hands/feet, clothing and relevant action",
+      "object": "recognizable structure and working parts with projected depth/occlusion",
+      "genericCubeSubstitution": false
+    },
+    "overview": {
+      "required": true,
+      "afterBrandingSeconds": 2,
+      "targetSeconds": [
+        20,
+        30
+      ],
+      "sentences": [
+        2,
+        4
+      ],
+      "questionBenefitActualOrderAndFirstExampleConnection": true
+    },
+    "causalScenePlanRequired": true,
+    "captionSafeAreaBeforeSceneBuild": true,
+    "referenceAndGamePolicy": "shared/publishing/game-example-coverage-policy.json",
+    "additionalGamesDefault": 0,
+    "referenceStructurePreservedWithDetailedPptInsertions": true
   },
   "titles": {
     "ko": "{{TITLE_KO}}",
@@ -174,6 +199,28 @@
     "duckingDb": -3,
     "gameAudioTargetLufs": -23,
     "bgmTargetLufs": -28,
+    "lectureDefaults": {
+      "policyId": "lecture-lofi-game-audio-v1",
+      "guide": "docs/NARRATION_AUDIO_STANDARD.md",
+      "applyWhen": "user-selected lecture; explicitly resolve these defaults into actual mixer fields before production",
+      "bgmTargetLufs": -31,
+      "bgmStartingRangeLufs": [
+        -32,
+        -30
+      ],
+      "musicStyle": "quiet instrumental lo-fi; restrained melody and drums; narration first",
+      "gameAudio": "retain synchronized useful effects and ambience; adjust competing game music/commentary; record missing original audio",
+      "lowerMusicFor": [
+        "important game sounds",
+        "dense calculations and key explanations"
+      ],
+      "comparisonSampleSeconds": [
+        30,
+        60
+      ],
+      "comparisonSampleStatus": "pending",
+      "existingDeliveriesAutomaticallyRemixed": false
+    },
     "bgmPlacement": "continuous",
     "bgmDuringGameplayDb": -3,
     "bgmLoopCrossfadeSeconds": 1,
@@ -209,6 +256,18 @@
   "publishing": {
     "coachingEndingLinkRequired": true,
     "pinnedCoachingCommentRequired": true,
-    "defaults": "shared/publishing/youtube-defaults.json"
+    "defaults": "shared/publishing/youtube-defaults.json",
+    "authorizationMode": "per-video-user-confirmed",
+    "automaticNextVideo": false
+  },
+  "productionPolicy": {
+    "id": "preproduction-first-v1",
+    "guide": "docs/VIDEO_WORKFLOW.md",
+    "control": "shared/publishing/video-production-control.json",
+    "plan": "projects/{{SLUG}}/planning/production-plan.json",
+    "reviewLedger": "projects/{{SLUG}}/production/review-ledger.json",
+    "automaticNextVideo": false,
+    "fullProductionRequiresUserApproval": true,
+    "starterSceneIsApprovedProduction": false
   }
 }
