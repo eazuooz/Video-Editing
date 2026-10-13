@@ -1,0 +1,618 @@
+{
+  "at": "2026-10-13T13:27:38.791384+00:00",
+  "status": "acquired-awaiting-source-review",
+  "worker": {
+    "pid": 88952,
+    "createTime": 1791898058.725913,
+    "command": [
+      "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+      "-X",
+      "utf8",
+      "projects/hierarchical-game-outlines/production/pokemon-opening-v2/acquire-pokemon.py"
+    ],
+    "cwd": "D:\\Github\\Video-Editing"
+  },
+  "source": "https://www.youtube.com/watch?v=D1SrSFZrV7A",
+  "sourceRole": "independent-gameplay",
+  "window": [
+    480,
+    1500
+  ],
+  "resource": {
+    "cpu": 8.2,
+    "ramAvailable": 36576690176,
+    "gpu": "28188, 3\n"
+  },
+  "exitCode": 0,
+  "processes": [
+    {
+      "create_time": 1791897106.2033384,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 2584,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1790958568.496284,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 14480,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\bin\\a51e250fa15c740a"
+    },
+    {
+      "create_time": 1791545714.4928143,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 18284,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\renderformer"
+    },
+    {
+      "create_time": 1791398255.6849065,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 18312,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\bin\\a51e250fa15c740a"
+    },
+    {
+      "create_time": 1790958568.5317023,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 19008,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791898058.4243329,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "--eval",
+        "// Windows may deny ancestor metadata even when the configured folder is readable.\nconst fs = require(\"node:fs\");\nconst pathApi = require(\"node:path\");\nconst { fileURLToPath } = require(\"node:url\");\n\nconst originalRealpathSync = fs.realpathSync;\nconst key = (path) =>\n  pathApi.toNamespacedPath(pathApi.resolve(path)).toLowerCase();\nconst roots = new Set(\n  [\n    pathApi.dirname(process.argv[1]),\n    ...(process.env.NODE_REPL_NODE_MODULE_DIRS ?? \"\")\n      .split(pathApi.delimiter)\n      .map((entry) => entry.trim()),\n    ...(process.env.NODE_REPL_TRUSTED_CODE_PATHS ?? \"\")\n      .split(pathApi.delimiter)\n      .filter(pathApi.isAbsolute),\n  ]\n    .filter(Boolean)\n    .map(key),\n);\n\nfs.realpathSync = function realpathSync(path, options) {\n  try {\n    // Preserve Node's canonical paths (including short names and links) when possible.\n    return originalRealpathSync.native(path, options);\n  } catch (error) {\n    if (error.code !== \"EPERM\" && error.code !== \"EACCES\") {\n      throw error;\n    }\n    if (path instanceof URL) {\n      path = fileURLToPath(path);\n    }\n    if (Buffer.isBuffer(path)) {\n      path = path.toString();\n    }\n\n    const filename = pathApi.resolve(path);\n    // Only accept paths below a configured root. A junction or symlink could\n    // point outside that root, so it must not receive the lexical fallback.\n    for (let current = filename; ; current = pathApi.dirname(current)) {\n      if (fs.lstatSync(current).isSymbolicLink()) {\n        throw error;\n      }\n      if (roots.has(key(current))) {\n        const encoding =\n          typeof options === \"string\" ? options : options?.encoding;\n        const buffer = Buffer.from(filename);\n        return encoding === \"buffer\"\n          ? buffer\n          : buffer.toString(encoding ?? \"utf8\");\n      }\n      if (pathApi.dirname(current) === current) {\n        throw error;\n      }\n    }\n  }\n};\nfs.realpathSync.native = fs.realpathSync;\n\n// --eval leaves the script at argv[1]. Use Node's ordinary main-module loader\n// so argv, require.main, and relative imports keep their normal meaning.\nrequire(\"node:module\").runMain();\n",
+        "C:\\Users\\eazuo\\AppData\\Local\\Temp\\.tmpFMnmO4\\trusted-worker.js",
+        "D:\\Github\\Video-Editing"
+      ],
+      "pid": 19552,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791849665.858521,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 19896,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791897983.4411564,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 20364,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791898058.418298,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "--eval",
+        "// Windows may deny ancestor metadata even when the configured folder is readable.\nconst fs = require(\"node:fs\");\nconst pathApi = require(\"node:path\");\nconst { fileURLToPath } = require(\"node:url\");\n\nconst originalRealpathSync = fs.realpathSync;\nconst key = (path) =>\n  pathApi.toNamespacedPath(pathApi.resolve(path)).toLowerCase();\nconst roots = new Set(\n  [\n    pathApi.dirname(process.argv[1]),\n    ...(process.env.NODE_REPL_NODE_MODULE_DIRS ?? \"\")\n      .split(pathApi.delimiter)\n      .map((entry) => entry.trim()),\n    ...(process.env.NODE_REPL_TRUSTED_CODE_PATHS ?? \"\")\n      .split(pathApi.delimiter)\n      .filter(pathApi.isAbsolute),\n  ]\n    .filter(Boolean)\n    .map(key),\n);\n\nfs.realpathSync = function realpathSync(path, options) {\n  try {\n    // Preserve Node's canonical paths (including short names and links) when possible.\n    return originalRealpathSync.native(path, options);\n  } catch (error) {\n    if (error.code !== \"EPERM\" && error.code !== \"EACCES\") {\n      throw error;\n    }\n    if (path instanceof URL) {\n      path = fileURLToPath(path);\n    }\n    if (Buffer.isBuffer(path)) {\n      path = path.toString();\n    }\n\n    const filename = pathApi.resolve(path);\n    // Only accept paths below a configured root. A junction or symlink could\n    // point outside that root, so it must not receive the lexical fallback.\n    for (let current = filename; ; current = pathApi.dirname(current)) {\n      if (fs.lstatSync(current).isSymbolicLink()) {\n        throw error;\n      }\n      if (roots.has(key(current))) {\n        const encoding =\n          typeof options === \"string\" ? options : options?.encoding;\n        const buffer = Buffer.from(filename);\n        return encoding === \"buffer\"\n          ? buffer\n          : buffer.toString(encoding ?? \"utf8\");\n      }\n      if (pathApi.dirname(current) === current) {\n        throw error;\n      }\n    }\n  }\n};\nfs.realpathSync.native = fs.realpathSync;\n\n// --eval leaves the script at argv[1]. Use Node's ordinary main-module loader\n// so argv, require.main, and relative imports keep their normal meaning.\nrequire(\"node:module\").runMain();\n",
+        "--experimental-vm-modules",
+        "C:\\Users\\eazuo\\AppData\\Local\\Temp\\.tmpFMnmO4\\kernel.js",
+        "--session-id",
+        "cf84a38c1b3d4316b836bb5d6f921a51",
+        "--working-dir",
+        "D:\\Github\\Video-Editing"
+      ],
+      "pid": 26012,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791818020.4417837,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 26108,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791802348.664732,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 26240,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\bin\\a51e250fa15c740a"
+    },
+    {
+      "create_time": 1790958568.5317037,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 26656,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791849665.7650588,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 31012,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791549591.1335409,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 31836,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791296687.74121,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 35836,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\bin\\a51e250fa15c740a"
+    },
+    {
+      "create_time": 1791818023.8979988,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 37392,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\bin\\a51e250fa15c740a"
+    },
+    {
+      "create_time": 1791599064.012264,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 41924,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\bin\\a51e250fa15c740a"
+    },
+    {
+      "create_time": 1791897106.1289976,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 42272,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791549591.0995665,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 42708,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\renderformer"
+    },
+    {
+      "create_time": 1791818020.4464996,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 43712,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791532618.6188753,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 45120,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791867182.7832484,
+      "cmdline": [
+        "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vite/bin/vite.js",
+        "--config",
+        "vite.game-lighting-history-01.explanation-assets-v1.config.ts"
+      ],
+      "pid": 46896,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing\\motion-canvas"
+    },
+    {
+      "create_time": 1791398255.7477272,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 47620,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791897465.2261958,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 48880,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791190915.780814,
+      "cmdline": [
+        "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vite/bin/vite.js",
+        "--config",
+        "vite.making-game-sequels.config.ts"
+      ],
+      "pid": 49388,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing\\motion-canvas"
+    },
+    {
+      "create_time": 1791296687.7784545,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 50016,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791603603.3778229,
+      "cmdline": [
+        "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "production/batches/game-math-part2-teaching-revision/serve-review.cjs"
+      ],
+      "pid": 51692,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791549591.137941,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 51792,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791861596.479631,
+      "cmdline": [
+        "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vite/bin/vite.js",
+        "--config",
+        "vite.game-lighting-history-01.preflight-v7.config.ts"
+      ],
+      "pid": 51956,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing\\motion-canvas"
+    },
+    {
+      "create_time": 1791545714.5546196,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 54056,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791897983.3700655,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 54776,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\renderformer"
+    },
+    {
+      "create_time": 1791398255.7477252,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 56408,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791820186.1984272,
+      "cmdline": [
+        "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "D:\\Github\\Video-Editing\\production\\research\\game-lighting-history\\current-review-server-v325.cjs"
+      ],
+      "pid": 56812,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791296687.7789276,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 60160,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791532618.61892,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 63184,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791532618.569268,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 63456,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\renderformer"
+    },
+    {
+      "create_time": 1791897465.1119869,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 63788,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791897465.2245843,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 65496,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791805435.4900556,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node_modules\\@oai\\cua-repl\\bin\\cua-repl.mjs"
+      ],
+      "pid": 66340,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\renderformer"
+    },
+    {
+      "create_time": 1791818023.93933,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 67460,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791599064.0716372,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 67948,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791545714.5275552,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 68144,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791897775.1848512,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "--eval",
+        "// Windows may deny ancestor metadata even when the configured folder is readable.\nconst fs = require(\"node:fs\");\nconst pathApi = require(\"node:path\");\nconst { fileURLToPath } = require(\"node:url\");\n\nconst originalRealpathSync = fs.realpathSync;\nconst key = (path) =>\n  pathApi.toNamespacedPath(pathApi.resolve(path)).toLowerCase();\nconst roots = new Set(\n  [\n    pathApi.dirname(process.argv[1]),\n    ...(process.env.NODE_REPL_NODE_MODULE_DIRS ?? \"\")\n      .split(pathApi.delimiter)\n      .map((entry) => entry.trim()),\n    ...(process.env.NODE_REPL_TRUSTED_CODE_PATHS ?? \"\")\n      .split(pathApi.delimiter)\n      .filter(pathApi.isAbsolute),\n  ]\n    .filter(Boolean)\n    .map(key),\n);\n\nfs.realpathSync = function realpathSync(path, options) {\n  try {\n    // Preserve Node's canonical paths (including short names and links) when possible.\n    return originalRealpathSync.native(path, options);\n  } catch (error) {\n    if (error.code !== \"EPERM\" && error.code !== \"EACCES\") {\n      throw error;\n    }\n    if (path instanceof URL) {\n      path = fileURLToPath(path);\n    }\n    if (Buffer.isBuffer(path)) {\n      path = path.toString();\n    }\n\n    const filename = pathApi.resolve(path);\n    // Only accept paths below a configured root. A junction or symlink could\n    // point outside that root, so it must not receive the lexical fallback.\n    for (let current = filename; ; current = pathApi.dirname(current)) {\n      if (fs.lstatSync(current).isSymbolicLink()) {\n        throw error;\n      }\n      if (roots.has(key(current))) {\n        const encoding =\n          typeof options === \"string\" ? options : options?.encoding;\n        const buffer = Buffer.from(filename);\n        return encoding === \"buffer\"\n          ? buffer\n          : buffer.toString(encoding ?? \"utf8\");\n      }\n      if (pathApi.dirname(current) === current) {\n        throw error;\n      }\n    }\n  }\n};\nfs.realpathSync.native = fs.realpathSync;\n\n// --eval leaves the script at argv[1]. Use Node's ordinary main-module loader\n// so argv, require.main, and relative imports keep their normal meaning.\nrequire(\"node:module\").runMain();\n",
+        "--experimental-vm-modules",
+        "C:\\Users\\eazuo\\AppData\\Local\\Temp\\.tmpdKIOo7\\kernel.js",
+        "--session-id",
+        "a33c7a537fbe4c1a8cb03d146419a5e3",
+        "--working-dir",
+        "D:\\Github\\Video-Editing"
+      ],
+      "pid": 69844,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791599064.0715873,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 70756,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791897983.441147,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 72216,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791849665.894024,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 73996,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791802348.7350533,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 74216,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791897775.191656,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "--eval",
+        "// Windows may deny ancestor metadata even when the configured folder is readable.\nconst fs = require(\"node:fs\");\nconst pathApi = require(\"node:path\");\nconst { fileURLToPath } = require(\"node:url\");\n\nconst originalRealpathSync = fs.realpathSync;\nconst key = (path) =>\n  pathApi.toNamespacedPath(pathApi.resolve(path)).toLowerCase();\nconst roots = new Set(\n  [\n    pathApi.dirname(process.argv[1]),\n    ...(process.env.NODE_REPL_NODE_MODULE_DIRS ?? \"\")\n      .split(pathApi.delimiter)\n      .map((entry) => entry.trim()),\n    ...(process.env.NODE_REPL_TRUSTED_CODE_PATHS ?? \"\")\n      .split(pathApi.delimiter)\n      .filter(pathApi.isAbsolute),\n  ]\n    .filter(Boolean)\n    .map(key),\n);\n\nfs.realpathSync = function realpathSync(path, options) {\n  try {\n    // Preserve Node's canonical paths (including short names and links) when possible.\n    return originalRealpathSync.native(path, options);\n  } catch (error) {\n    if (error.code !== \"EPERM\" && error.code !== \"EACCES\") {\n      throw error;\n    }\n    if (path instanceof URL) {\n      path = fileURLToPath(path);\n    }\n    if (Buffer.isBuffer(path)) {\n      path = path.toString();\n    }\n\n    const filename = pathApi.resolve(path);\n    // Only accept paths below a configured root. A junction or symlink could\n    // point outside that root, so it must not receive the lexical fallback.\n    for (let current = filename; ; current = pathApi.dirname(current)) {\n      if (fs.lstatSync(current).isSymbolicLink()) {\n        throw error;\n      }\n      if (roots.has(key(current))) {\n        const encoding =\n          typeof options === \"string\" ? options : options?.encoding;\n        const buffer = Buffer.from(filename);\n        return encoding === \"buffer\"\n          ? buffer\n          : buffer.toString(encoding ?? \"utf8\");\n      }\n      if (pathApi.dirname(current) === current) {\n        throw error;\n      }\n    }\n  }\n};\nfs.realpathSync.native = fs.realpathSync;\n\n// --eval leaves the script at argv[1]. Use Node's ordinary main-module loader\n// so argv, require.main, and relative imports keep their normal meaning.\nrequire(\"node:module\").runMain();\n",
+        "C:\\Users\\eazuo\\AppData\\Local\\Temp\\.tmpdKIOo7\\trusted-worker.js",
+        "D:\\Github\\Video-Editing"
+      ],
+      "pid": 75268,
+      "name": "node.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791818023.9637957,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 82748,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791898058.7144363,
+      "cmdline": [
+        "D:\\Github\\Video-Editing\\qwen3-tts\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "projects/hierarchical-game-outlines/production/pokemon-opening-v2/acquire-pokemon.py"
+      ],
+      "pid": 84580,
+      "name": "python.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    },
+    {
+      "create_time": 1791897106.203531,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 87976,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\plugins\\cache\\openai-bundled\\codex-app-tools\\0.1.5"
+    },
+    {
+      "create_time": 1791802348.735058,
+      "cmdline": [
+        "C:\\Users\\eazuo\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\2134bcb1950af07e\\bin\\node.exe",
+        "./server.mjs"
+      ],
+      "pid": 88792,
+      "name": "node.exe",
+      "cwd": "C:\\Users\\eazuo\\.codex\\code-review-plugin"
+    },
+    {
+      "create_time": 1791898058.725913,
+      "cmdline": [
+        "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+        "-X",
+        "utf8",
+        "projects/hierarchical-game-outlines/production/pokemon-opening-v2/acquire-pokemon.py"
+      ],
+      "pid": 88952,
+      "name": "python.exe",
+      "cwd": "D:\\Github\\Video-Editing"
+    }
+  ],
+  "childPid": 79408,
+  "command": [
+    "D:\\Github\\Video-Editing\\qwen3-tts\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "yt_dlp",
+    "--no-playlist",
+    "--no-overwrites",
+    "--ffmpeg-location",
+    "C:/ProgramData/HP/LCDDisplayHelper/bin",
+    "-f",
+    "best[height<=720][ext=mp4]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]",
+    "--download-sections",
+    "*480-1500",
+    "--merge-output-format",
+    "mp4",
+    "-o",
+    "D:\\Github\\Video-Editing\\shared\\assets\\game-footage\\hierarchical-pokemon\\D1SrSFZrV7A-480-1500.%(ext)s",
+    "https://www.youtube.com/watch?v=D1SrSFZrV7A"
+  ],
+  "endedAt": "2026-10-13T13:37:45.120594+00:00",
+  "files": [
+    {
+      "path": "shared/assets/game-footage/hierarchical-pokemon/D1SrSFZrV7A-480-1500.mp4",
+      "bytes": 51073206,
+      "sha256": "f0da92797a9be9ebc8d2e3162212a3f7e530a7891131d096bc7ea1488102af40"
+    }
+  ]
+}
