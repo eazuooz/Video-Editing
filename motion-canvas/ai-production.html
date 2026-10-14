@@ -1,0 +1,16 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>얌얌코딩 · AI와 게임 개발 제작 검수</title>
+<style>body{margin:24px;background:#111;color:#fff;font:18px 'Malgun Gothic'}canvas{width:100%;height:auto;max-width:1920px}button{padding:12px}#status{margin:20px}</style>
+<button id="play">재생 / 정지</button><span id="status">불러오는 중</span><div id="stage"></div>
+<script type="module">
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+const id=new URLSearchParams(location.search).get('scene');
+const route=id==='members'?'/src/projects/ai-game-development-human-craft/member-project.ts':id?`/src/projects/ai-game-development-human-craft/scenes/${id}/project.ts`:'/src/projects/ai-game-development-human-craft/project.ts';
+const {default:project}=await import(/* @vite-ignore */route+'?project');
+window.reviewErrors=[];project.logger.onLogged.subscribe(e=>{if(e.level==='error')reviewErrors.push(String(e.message)+' '+String(e.remarks||''));});
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#000'});document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{muted:true,paused:true});let ready=false,rendered=-1;
+player.onRecalculated.subscribe(()=>ready=true);
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=`${(rendered/60).toFixed(1)}초`;});
+document.querySelector('#play').onclick=()=>player.togglePlayback();
+window.sampleReview={player,stage,get ready(){return ready;},get rendered(){return rendered;}};
+</script></html>

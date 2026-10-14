@@ -8,6 +8,8 @@ helper keeps that preparation and final read-back step local and repeatable.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 from pathlib import Path
 
 import torch
@@ -30,6 +32,8 @@ def main() -> None:
     )
     parser.add_argument("--language", default="korean")
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
+    parser.add_argument("--timestamps", choices=["segment", "word"], default="word",
+                        help="Cache word timing with the same full read-back, avoiding a second ASR pass for captions.")
     args = parser.parse_args()
 
     audio = args.audio.resolve()
@@ -59,7 +63,7 @@ def main() -> None:
     result = transcriber(
         str(audio),
         generate_kwargs={"language": args.language, "task": "transcribe"},
-        return_timestamps=True,
+        return_timestamps="word" if args.timestamps == "word" else True,
     )
     transcript = str(result["text"]).strip()
     print(transcript)
@@ -67,6 +71,12 @@ def main() -> None:
         output = args.output.resolve()
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(transcript + "\n", encoding="utf-8")
+        output.with_suffix(".timestamps.json").write_text(json.dumps({
+            "audio_sha256": hashlib.sha256(audio.read_bytes()).hexdigest(),
+            "audio": str(audio), "model": args.model, "language": args.language,
+            "timestampMode": args.timestamps, "text": transcript,
+            "chunks": result.get("chunks", []),
+        }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"Created {output}")
 
 

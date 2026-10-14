@@ -17,7 +17,7 @@ public static class AiCraftProductionBridge
     static readonly string Output=Path.Combine(Repo,"shared/output/ai-game-development-human-craft/unity-production");
     const string Scenes="Assets/VideoScenes/ai-game-development-human-craft";
     static string RequestPath=>Path.Combine(Application.dataPath,"../Library/AiCraftProduction.request");
-    [Serializable] public class Request {public string command,scene;public int frames=1800;public int fps=60;}
+    [Serializable] public class Request {public string command,scene;public int frames=1800;public int fps=60;public int[] sampleFrames;}
     [Serializable] public class Capture {public string scenePath,unity=Application.unityVersion,urp="17.6.0",kind="self-authored-engine-explanation";public int width=1920,height=1080,fps=60,frames;public List<AiCraftLessonScene.State> timeline=new List<AiCraftLessonScene.State>();}
     static Scene opened, previous;
     static AiCraftLessonScene lesson;
@@ -79,12 +79,13 @@ public static class AiCraftProductionBridge
             }finally{EditorSceneManager.CloseScene(scene,true);}
         }
         if(old.IsValid())SceneManager.SetActiveScene(old);
+        AiCraftExtraBuilder.Build();
         var a=new AiCraftLessonScene.Wallet(100);if(a.Buy("A")!="purchased"||a.gold!=70||a.items!=1)throw new Exception("Normal transaction failed");
         if(a.Buy("A")!="duplicate-ignored"||a.gold!=70||a.items!=1)throw new Exception("Duplicate handling failed");
         if(a.Buy("B")!="purchased"||a.gold!=40||a.items!=2)throw new Exception("Distinct purchase failed");
         var b=new AiCraftLessonScene.Wallet(20);if(b.Buy("A")!="insufficient-gold"||b.gold!=20||b.items!=0)throw new Exception("Insufficient transaction changed state");
         var cfull=new AiCraftLessonScene.Wallet(100,3);if(cfull.Buy("A")!="inventory-full"||cfull.gold!=100||cfull.items!=3)throw new Exception("Full inventory changed state");
-        File.WriteAllText(Path.Combine(Output,"build-status.json"),"{\"status\":\"pass\",\"savedScenes\":7,\"transactionChecks\":[\"normal\",\"insufficient\",\"full\",\"duplicate\",\"distinct\"],\"networkAndPersistence\":\"not-implemented\"}");
+        File.WriteAllText(Path.Combine(Output,"build-status.json"),"{\"status\":\"pass\",\"savedScenes\":12,\"transactionChecks\":[\"normal\",\"insufficient\",\"full\",\"duplicate\",\"distinct\"],\"networkAndPersistence\":\"not-implemented\"}");
     }
     static void StartCapture()
     {
@@ -105,7 +106,8 @@ public static class AiCraftProductionBridge
     static void Tick()
     {
         try{
-            int f=request.command=="preflight"?Mathf.Min(request.frames-1,frame*Mathf.Max(1,request.frames/12)):frame;
+            bool custom=request.sampleFrames!=null&&request.sampleFrames.Length>0;
+            int f=request.command=="preflight"?(custom?request.sampleFrames[frame]:Mathf.Min(request.frames-1,frame*Mathf.Max(1,request.frames/12))):frame;
             if(!prepared){pending=lesson.ApplyFrame(f);prepared=true;EditorApplication.QueuePlayerLoopUpdate();return;}
             RenderPipeline.SubmitRenderRequest(lesson.captureCamera,new UniversalRenderPipeline.SingleCameraRequest{destination=target});
             var prior=RenderTexture.active;RenderTexture.active=target;pixels.ReadPixels(new Rect(0,0,1920,1080),0,0);pixels.Apply(false);RenderTexture.active=prior;
@@ -114,7 +116,7 @@ public static class AiCraftProductionBridge
             if(request.command=="preflight")File.WriteAllBytes(Path.Combine(dir,$"frame-{f:D5}.png"),pixels.EncodeToPNG());
             capture.timeline.Add(pending);prepared=false;frame++;
             if(frame%60==0)File.WriteAllText(Path.Combine(dir,"progress.txt"),$"{frame}/{request.frames}");
-            if(frame>=(request.command=="preflight"?12:request.frames))Finish(null);
+            if(frame>=(request.command=="preflight"?(custom?request.sampleFrames.Length:12):request.frames))Finish(null);
         }catch(Exception e){Finish(e);}
     }
     static void Finish(Exception error)
