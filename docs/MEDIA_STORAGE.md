@@ -4,6 +4,7 @@
 
 - 영상·내레이션·게임소리·BGM·압축/분할/LFS 미디어와 다운로드 원본info/연구 전체자막은 Git에 추가하지 않는다. 로컬 원본은 삭제하지 않는다.
 - 새 JPG/PNG/WebP/GIF/BMP/TIFF는 기본 local-only. 추출프레임/연락판/렌더시퀀스/자막오버레이/반복QA 이미지는 생성경로·PTS·검수결과·SHA만 기록한다.
+- Unity는 프로젝트별 `Assets`의 씬·프리팹·스크립트·셰이더와 대응 `.meta`, `Packages/manifest.json`·`packages-lock.json`, `ProjectSettings`를 보존한다. 새 프로젝트 `unity/VideoEditing/.gitignore`는 그 프로젝트의 Library/Temp/Obj/Logs/UserSettings·IDE 생성물·빌드·캡처를 제외하며 기존 `unity/` 프로젝트는 그대로 둔다. 영상·음성·압축·이미지에는 같은 저장 규칙이 적용되므로 `Assets` 전체를 이미지 예외로 풀거나 `.meta`를 일괄 제외하지 않는다. Unity 원본 자산의 권리/필수 이미지 등록·외부 미디어 보관도 동일 기준이다.
 - 원본 로고/회원/씬 필수자산, 전달 썸네일, 최소 게시/권리증거만 직접 필요성을 검토해 `shared/git-essential-images.json`의 exactpath/purpose/reason/reviewedAt/SHA256과 파일별 ignore 예외를 추가한다. 폴더 예외·force-add 금지. 기존 모든 이미지가 필수라는 뜻은 아니다.
 - 해당 편 완료 후 명시 경로만 선택해 일반 commit/push한다. 공유checkout에서는 실제HEAD에서 임시index를 만들고 최종 staged blob·경로와 외부index bytes/entries를 대조한다. 다른 작업의 staged/working파일을 변경·혼합하지 않는다. force-push/이력 재작성/변경 폐기 금지.
 - `node scripts/media-policy.cjs`와 `node scripts/build-rebuild-manifests.cjs <slug> --check` 등 변경 범위의 필수 검사를 실행한다. 전체 index lock/다른 미완료 프로젝트 실패를 무시해 전체통과라 하지 않는다. 명령·범위·한계를 기록하고 자신의 manifest만 수정한다.
