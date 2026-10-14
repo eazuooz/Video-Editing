@@ -27,7 +27,9 @@ Git에는 편집 가능한 코드·KOEN 대사·현재 계획/자막·ASR 결과
 
 `output/handoff-game-lighting-history-01-beginner-v1/media.tar`
 
-이는 로컬 전송 묶음이다. 외부 클라우드 업로드/다른 컴퓨터 복원은 아직 확인되지 않았다. 이 파일을 외장 저장소나 사용자가 선택한 공유 저장소로 옮긴 다음 새 checkout의 루트에 상대경로를 유지하여 복원한다. 빈 미디어를 만들어 검사만 통과시키거나, 파일이 없다는 이유로 이미 완료된 TTS/렌더를 자동 재생성하지 않는다.
+사용자의 추가 요청으로 [Google Drive 전용 폴더](https://drive.google.com/drive/folders/17WbjD1-NRp5gbKrp-38Klc9NYpEcfOMU)에 원본 `media.tar`를 브라우저로 업로드 중이다. **아직 업로드 완료를 확인하지 않았다.** `media-package-receipt.json#googleDrive`가 현재 상태이며 다른 컴퓨터 복원도 미확인이다. 연결 도구의 512MiB 제한과 분할 전송의 5분 시간 초과가 있어 원본 브라우저 전송을 유지한다. 폴더의 `unused-incomplete-attempt-media.tar.part013`은 실패한 분할 시도의 작은 잔여 조각이며 복원용이 아니다. 업로드 중인 원래 컴퓨터를 깨워 두고 Codex의 Drive 탭을 닫거나 새로고침하지 않는다. 자동 채팅/연구/제작 재시작은 하지 않았다.
+
+Drive의 `media.tar`가 **6,067,906,560바이트로 완료**된 뒤 내려받는다. 같은 폴더에 업로드한 `README.md`, `transfer-manifest.json`, `restore-media.py`의 안내대로 원본 SHA256과 274파일을 검증할 수 있다. 또는 아래처럼 새 checkout의 루트에 상대경로를 유지하여 복원한다. 빈 미디어를 만들어 검사만 통과시키거나, 파일이 없다는 이유로 이미 완료된 TTS/렌더를 자동 재생성하지 않는다.
 
 ```powershell
 # 새 컴퓨터의 저장소 루트. Python 3.12+ tarfile의 data 필터 사용.
