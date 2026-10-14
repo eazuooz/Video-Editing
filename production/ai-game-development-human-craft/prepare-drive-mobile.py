@@ -57,15 +57,27 @@ if options.compact and target.stat().st_size>=100*1024*1024:
 recipe.update(localSha256=sha(target),sizeBytes=target.stat().st_size)
 assert recipe['sizeBytes']<(100 if options.compact else 192)*1024*1024
 write(Q/'recipe.json',recipe)
-run(['ffmpeg','-v','error','-xerror','-i',str(target),'-map','0:v:0','-map','0:a:0','-f','null','-'],'decode.log')
+integrity_cache=Q/'integrity.json'
+cached=read(integrity_cache) if integrity_cache.exists() else None
+if cached:
+    assert cached['sha256']==recipe['localSha256'] and cached['frames']==expectedFrames
+    assert cached['fullVideoAudioDecode']==cached['pts']=='pass'
+else:
+    run(['ffmpeg','-v','error','-xerror','-i',str(target),'-map','0:v:0','-map','0:a:0','-f','null','-'],'decode.log')
 probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(target)]))
 v=next(s for s in probe['streams'] if s['codec_type']=='video')
 assert (v['width'],v['height'],v['avg_frame_rate'],int(v['nb_frames']))==(1280,720,'30/1',expectedFrames)
 assert abs(float(v['duration'])-sourceQA['duration'])<1/30
-pts=subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','frame=best_effort_timestamp_time','-of','csv=p=0',str(target)]).decode().splitlines()
-times=[float(x.split(',')[0]) for x in pts if x and re.match(r'^\d',x)]
-assert len(times)==expectedFrames and all(abs(t-i/30)<0.000002 for i,t in enumerate(times))
-audio=Q/'audio.aac';run(['ffmpeg','-v','error','-n','-i',str(target),'-map','0:a:0','-c:a','copy','-f','adts',str(audio)],'audio.log')
+if not cached:
+    pts=subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','frame=best_effort_timestamp_time','-of','csv=p=0',str(target)]).decode().splitlines()
+    times=[float(x.split(',')[0]) for x in pts if x and re.match(r'^\d',x)]
+    assert len(times)==expectedFrames and all(abs(t-i/30)<0.000002 for i,t in enumerate(times))
+    write(integrity_cache,{'sha256':recipe['localSha256'],'frames':expectedFrames,'fullVideoAudioDecode':'pass','pts':'pass'})
+audio=Q/'audio.aac'
+if not audio.exists():
+    run(['ffmpeg','-v','error','-n','-i',str(target),'-map','0:a:0','-c:a','copy','-f','adts',str(audio)],'audio.log')
+else:
+    assert options.resume_compact, 'Inspect existing extracted AAC before reuse'
 sameAAC=sha(audio)==sourceQA['aacAdtsSha256'];audioComparison=None
 if not sameAAC:
     assert recipe.get('rateControl',{}).get('audioKbps')==160 or recipe.get('audioSizeAdjustment')
@@ -73,11 +85,24 @@ if not sameAAC:
         return np.frombuffer(subprocess.check_output(['ffmpeg','-v','error','-i',str(path),'-vn','-ac','1','-ar','16000','-f','f32le','-']),dtype=np.float32)
     original=pcm(source);current=pcm(target);n=min(len(original),len(current))
     assert abs(len(original)-len(current))<1600
-    correlation=float(np.corrcoef(original[:n],current[:n])[0,1]);assert correlation>.995
+    # Bound temporary arrays while the user's other applications remain open.
+    sums=np.zeros(5,dtype=np.float64)
+    for start in range(0,n,160000):
+        a=original[start:min(start+160000,n)].astype(np.float64)
+        b=current[start:min(start+160000,n)].astype(np.float64)
+        sums+=np.array([a.sum(),b.sum(),(a*a).sum(),(b*b).sum(),(a*b).sum()])
+    sa,sb,saa,sbb,sab=sums
+    correlation=float((sab-sa*sb/n)/np.sqrt((saa-sa*sa/n)*(sbb-sb*sb/n)))
+    print(json.dumps({'audioCorrelation':correlation,'sampleDelta':len(current)-len(original)}),flush=True)
+    assert correlation>.995
     def levels(x):
-        sums=np.r_[0,np.cumsum(x[:n].astype(np.float64)**2)]
-        starts=np.arange(0,n-6400+1,1600)
-        return 10*np.log10(np.maximum((sums[starts+6400]-sums[starts])/6400,1e-12))
+        chunks=[]
+        for start in range(0,n-6400+1,160000):
+            a=x[start:min(start+164800,n)].astype(np.float64)
+            sums=np.r_[0,np.cumsum(a*a)]
+            starts=np.arange(0,min(160000,len(a)-6400+1),1600)
+            chunks.append(10*np.log10(np.maximum((sums[starts+6400]-sums[starts])/6400,1e-12)))
+        return np.concatenate(chunks)
     before=levels(original);after=levels(current);diff=(after-before)[before>-40]
     audioComparison={'status':'pass','method':'All decoded16kHz mono samples correlated and400ms windows/100ms hop compared; active windows above-40dBFS. Same source mix, AAC160kbps encoding only. No new TTS or mixing.',
                      'correlation':correlation,'activeWindows':len(diff),'medianGainChangeDb':float(np.median(diff)),

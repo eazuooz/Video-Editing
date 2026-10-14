@@ -73,6 +73,9 @@ check('first-word-listening-followup', status='revised-complete-readback; human-
 check('full-composite-visual-qa', status=motion['status'], evidence=f'{BASE}/encoded-motion-review/review.json',
       movieSha256=motion['movieSha256'], frames=motion['frames'], scope=motion['method'], humanFullPlayback='pending')
 check('final-caption-pixels', status='pass', evidence=f'{BASE}/caption-pixel-qa/report.json', movieSha256=motion['movieSha256'])
+check('v2-caption-alignment-preflight', status='pass-current343cues; current-final-encoded-pixels-pass',
+      evidence=[f'{BASE}/caption-data-compatibility.json', f'{BASE}/caption-pixel-qa/report.json'],
+      scope='Current bilingual cue timing and unchanged clean visual data verified; final caption pixels subsequently passed all343 cues.')
 check('final-encoded-integrity', status='pass', evidence=f'{BASE}/encoded-integrity.json', outputs=integrity['outputs'], captions=integrity['captions'])
 check('narration-level-continuity', status='pass-measured-processing; source-prosody-listening-pending',
       evidence=f'{BASE}/audio/level-continuity.json', sourceSha256=audio['sourceSha256'],
@@ -93,6 +96,14 @@ for obj, key in [(ledger, 'finalDriveReview'), (checkpoint, 'finalReviewDelivery
 checkpoint.update(updatedAt=now, stage='drive-review-delivered-awaiting-user', activeJobs=[],
                   pending=['Human complete-v2 review and listening before YouTube'], nextAction=next_action,
                   finalGitReceipt=f'{BASE}/git-final-delivery/committed.json')
+prior_recovery = checkpoint.get('narrationRecovery')
+if prior_recovery and prior_recovery.get('sourceSha256') != narration['sourceSha256']:
+    checkpoint.setdefault('priorNarrationRecovery', []).append(prior_recovery)
+checkpoint['narrationRecovery'] = {
+    'current': 'v2 complete;23 revised scene takes and5 byte-identical retained takes; full raw and encoded readback reviewed',
+    'sourceSha256': narration['sourceSha256'], 'researchPaused': False, 'activeLease': None,
+    'humanListening': 'pending', 'evidence': f'{BASE}/narration-assembly.json'}
+checkpoint['driveDestinationReadback'].update(finalFileId=delivery['fileId'], observedAt=now)
 checkpoint['gitDelivery'] = {'status': 'consult-final-operation-receipt', 'receipt': checkpoint['finalGitReceipt'],
                             'rule': 'Only actual commit and remote SHA confirm delivery; no future self-SHA is embedded.'}
 for item in ['v2 standalone narration and complete current readbacks reviewed', 'v2 four outputs and current encoded QA complete', 'v2 private Drive upload and complete remote byte verification complete; v1 retained']:
@@ -104,5 +115,20 @@ m['delivery']['driveReview'] = delivery
 m['revision']['status'] = 'delivered-awaiting-user-review'
 ledger.update(updatedAt=now, activeRevision='v2')
 control['updatedAt'] = now
+# Canonical output now contains v2. Keep old review records pointing at the
+# preserved v1 master instead of silently pointing them at the replacement.
+old_sha = 'ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc'
+archives = sorted((P/'production/delivery-history').glob(f'*/{SLUG}.captioned.mp4'), reverse=True)
+old_master = next((p for p in archives if sha(p) == old_sha), None)
+assert old_master is not None, 'Preserved v1 master must remain available'
+def repair_historical_pointer(obj):
+    if isinstance(obj, dict):
+        if obj.get('sourceMasterSha256') == old_sha and 'sourceMasterPath' in obj:
+            obj.setdefault('sourceMasterPathAtOriginalDelivery', obj['sourceMasterPath'])
+            obj['sourceMasterPath'] = old_master.relative_to(ROOT).as_posix()
+        for value in obj.values(): repair_historical_pointer(value)
+    elif isinstance(obj, list):
+        for value in obj: repair_historical_pointer(value)
+for obj in [m, ledger, checkpoint, plan, control]: repair_historical_pointer(obj)
 for path, obj in [(P/'project.json',m),(P/'production/review-ledger.json',ledger),(P/'production/checkpoint.json',checkpoint),(P/'planning/production-plan.json',plan),(control_path,control)]: write(path,obj)
 print(json.dumps({'stage': checkpoint['stage'], 'driveUrl': delivery['url'], 'publishReady': False}))
