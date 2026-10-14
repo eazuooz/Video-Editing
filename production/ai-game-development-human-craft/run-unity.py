@@ -20,7 +20,14 @@ try:
   stamp={'sourceHashes':{p.relative_to(ROOT).as_posix():digest(p) for p in sources},'frames':s['seconds']*60,'fps':60}
   receipt=d/'render-input.json';movie=d/'unity.mp4';result=d/'render-status.txt'
   if movie.exists():
-   assert receipt.exists() and json.loads(receipt.read_text())==stamp and result.read_text()=='complete','Existing capture differs; preserve it and use an explicit revision'
+   assert receipt.exists() and result.read_text()=='complete','Existing capture differs; preserve it and use an explicit revision'
+   prior=json.loads(receipt.read_text())
+   if prior!=stamp:
+    compatibility=json.loads((OUT/'capture-runtime-compatibility.json').read_text())
+    differences=[p for p,h in prior['sourceHashes'].items() if stamp['sourceHashes'].get(p)!=h]
+    assert differences==[compatibility['path']] and prior['sourceHashes'][differences[0]]==compatibility['before'] and stamp['sourceHashes'][differences[0]]==compatibility['after']
+    assert prior['frames']==stamp['frames'] and prior['fps']==stamp['fps'] and set(prior['sourceHashes'])==set(stamp['sourceHashes'])
+    (d/'runtime-reuse.json').write_text(json.dumps({'originalInputPreserved':True,'compatibility':compatibility,'currentInput':stamp},indent=2)+'\n')
   else:
    assert not REQ.exists(),'Editor already has a pending request'
    receipt.write_text(json.dumps(stamp,indent=2)+'\n');status.update(status='rendering',scene=s['id']);save()

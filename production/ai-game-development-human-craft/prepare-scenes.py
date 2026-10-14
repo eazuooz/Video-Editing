@@ -3,7 +3,7 @@
 Estimated timing is for layout preflight only; full render refuses it.
 """
 from pathlib import Path
-import json, math
+import json, math, re
 ROOT=Path(__file__).resolve().parents[2]
 SLUG='ai-game-development-human-craft'
 P=ROOT/'motion-canvas/src/projects'/SLUG
@@ -12,6 +12,14 @@ script=json.loads((ROOT/f'projects/{SLUG}/script/narration.ko.json').read_text(e
 manifest=json.loads((ROOT/f'projects/{SLUG}/project.json').read_text(encoding='utf-8'))
 timingfile=ROOT/manifest['tts']['outputDir']/(manifest['tts']['filenameStem']+'.timing.json')
 timing=json.loads(timingfile.read_text(encoding='utf-8')) if timingfile.exists() else None
+captions=[]
+if timing and timing.get('alignment'):
+ captionfile=ROOT/manifest['tts']['outputDir']/(manifest['tts']['filenameStem']+'.srt')
+ def seconds(t):
+  h,m,s=t.replace(',','.').split(':');return int(h)*3600+int(m)*60+float(s)
+ for block in re.split(r'\r?\n\s*\r?\n',captionfile.read_text(encoding='utf-8').strip()):
+  lines=block.splitlines();a,b=lines[1].split(' --> ')
+  captions.append({'id':int(lines[0]),'start':seconds(a),'end':seconds(b),'text':'\n'.join(lines[2:])})
 # Short editorial beats. The complete narration remains the source of truth.
 specs=[
  ('flow','실력은 어디에 쓰일까?','도구의 변화|자동화의 영향|상점으로 확인','오늘 살펴볼 순서'),
@@ -60,13 +68,15 @@ for i,(s,spec) in enumerate(zip(script['scenes'],specs)):
   end=start+math.ceil((local+.72)*60)/60
  origin=end
  mode,heading,labels,note=spec
- data.append({'id':s['id'],'title':s['title'],'start':start,'duration':end-start,'paragraphs':paragraphs,'mode':mode,'heading':heading,'labels':labels.split('|'),'note':note,'source':sources.get(s['id'])})
-payload={'timingStatus':'measured-narration' if timing else 'estimated-layout-only','fps':60,'scenes':data}
+ localcues=[dict(c,start=c['start']-start,end=c['end']-start) for c in captions if c['end']>start and c['start']<end]
+ data.append({'id':s['id'],'title':s['title'],'start':start,'duration':end-start,'paragraphs':paragraphs,'captions':localcues,'mode':mode,'heading':heading,'labels':labels.split('|'),'note':note,'source':sources.get(s['id'])})
+payload={'timingStatus':'measured-narration' if timing else 'estimated-layout-only','captionTimingStatus':'asr-aligned' if captions else 'pending','fps':60,'scenes':data}
 (P/'scene-data.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 for s in data:
  d=P/'scenes'/s['id'];d.mkdir(parents=True,exist_ok=True)
  (d/'scene.tsx').write_text("import {makeScene2D} from '@motion-canvas/2d';\nimport {lesson} from '../../scene-kit';\nexport default makeScene2D(function*(view){yield* lesson(view,"+str(int(s['id'])-1)+");});\n",encoding='utf-8')
  (d/'project.ts').write_text("import {makeProject} from '@motion-canvas/core';\nimport scene from './scene?scene';\nexport default makeProject({name:'ai-craft-scene-"+s['id']+"',scenes:[scene]});\n",encoding='utf-8')
 imports='\n'.join(f"import s{s['id']} from './scenes/{s['id']}/scene?scene';" for s in data)
-(P/'project.ts').write_text("import {makeProject} from '@motion-canvas/core';\n"+imports+"\nexport default makeProject({name:'ai-game-development-human-craft',scenes:["+','.join('s'+s['id'] for s in data)+"]});\n",encoding='utf-8')
+audio=(P/'assets/final-mix.wav').exists()
+(P/'project.ts').write_text("import {makeProject} from '@motion-canvas/core';\nimport intro from './intro-scene?scene';\nimport members from './member-scene?scene';\n"+imports+("\nimport audio from './assets/final-mix.wav';" if audio else '')+"\nexport default makeProject({name:'ai-game-development-human-craft',"+('audio,' if audio else '')+"scenes:[intro,"+','.join('s'+s['id'] for s in data)+",members]});\n",encoding='utf-8')
 print(json.dumps({'timing':payload['timingStatus'],'scenes':len(data),'paragraphs':sum(len(s['paragraphs']) for s in data),'duration':origin}))

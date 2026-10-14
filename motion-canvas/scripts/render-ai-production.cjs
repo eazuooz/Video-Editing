@@ -7,16 +7,22 @@ const render=process.argv.includes('--render'),captions=process.argv.includes('-
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const run=(cmd,args)=>{const r=spawnSync(cmd,args,{encoding:'utf8',windowsHide:true,maxBuffer:128e6});if(r.status!==0)throw Error(r.stderr||r.error);return r.stdout;};
 async function main(){
+ const control=JSON.parse(fs.readFileSync(path.join(root,'shared/publishing/video-production-control.json'),'utf8').replace(/^\uFEFF/,''));
+ if(control.selectedVideo!==slug||!control.newProductionAuthorization.fullProductionAuthorized)throw Error('Selected production authorization changed');
  const d=JSON.parse(fs.readFileSync(path.join(project,'scene-data.json'),'utf8'));
  if(render&&d.timingStatus!=='measured-narration')throw Error('Final render requires measured narration timing.');
+ if((render||captions)&&d.captionTimingStatus!=='asr-aligned')throw Error('Actual ASR-aligned captions must be prepared first.');
  const browser=await puppeteer.launch({headless:true,args:['--autoplay-policy=no-user-gesture-required'],protocolTimeout:180000});
  const page=await browser.newPage();let errors=[];page.on('pageerror',e=>errors.push(e.message));
  try{for(const id of ids){
+  if(JSON.parse(fs.readFileSync(path.join(root,'shared/publishing/video-production-control.json'),'utf8').replace(/^\uFEFF/,'')).selectedVideo!==slug)throw Error('Selection changed; stopped at scene boundary');
   const s=d.scenes.find(s=>s.id===id);if(!s)throw Error('Unknown scene');
   const frames=Math.round(s.duration*60),dir=path.join(out,id);fs.mkdirSync(dir,{recursive:true});
   await page.goto(`http://127.0.0.1:9199/ai-production.html?scene=${id}${captions?'&captions=1':''}`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>window.sampleReview?.ready,{timeout:60000});
-  const samples=[...new Set([0,...s.paragraphs.map(p=>Math.min(frames-1,Math.round((p.start+Math.min(1,(p.end-p.start)/2))*60))),frames-1])];
+  const extraPath=process.argv.find(a=>a.startsWith('--extra-samples='))?.split('=')[1];
+  const extra=extraPath?(JSON.parse(fs.readFileSync(path.resolve(root,extraPath),'utf8'))[id]||[]):[];
+  const samples=[...new Set([0,...s.paragraphs.map(p=>Math.min(frames-1,Math.round((p.start+Math.min(1,(p.end-p.start)/2))*60))),...extra,frames-1])].filter(f=>f>=0&&f<frames).sort((a,b)=>a-b);
   for(const f of samples){
    await page.evaluate(f=>sampleReview.player.requestSeek(f),f);
    await page.waitForFunction(f=>sampleReview.rendered===f,{timeout:45000},f);

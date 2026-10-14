@@ -1,0 +1,46 @@
+"""Current encoded outputs: complete frame decode, PTS, AAC and subtitle integrity."""
+from pathlib import Path
+import json, subprocess, hashlib, re
+import numpy as np
+ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
+OUT=ROOT/'shared/output'/SLUG
+def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def run(args):
+ p=subprocess.run(args,cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,creationflags=subprocess.CREATE_NO_WINDOW)
+ if p.returncode or p.stderr.strip():raise RuntimeError(p.stderr.decode('utf-8','replace'))
+ return p.stdout
+m=read(ROOT/f'projects/{SLUG}/project.json');assembly=read(OUT/'assembly.json');expected=assembly['frames']
+results=[];aac=[]
+for key in ['videoClean','videoBurnedCaptions']:
+ path=ROOT/m['paths'][key]
+ metadata=json.loads(run(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(path)]))
+ v=next(s for s in metadata['streams'] if s['codec_type']=='video');a=next(s for s in metadata['streams'] if s['codec_type']=='audio')
+ assert (v['width'],v['height'],v['r_frame_rate'],int(v['nb_frames']))==(1920,1080,'60/1',expected)
+ assert a['codec_name']=='aac' and a['sample_rate']=='48000' and a['channels']==2
+ # -show_frames actually decodes the complete video; any error is fatal.
+ frames=json.loads(run(['ffprobe','-v','error','-err_detect','explode','-select_streams','v:0','-show_frames','-show_entries','frame=best_effort_timestamp_time,pkt_duration_time','-of','json',str(path)]))['frames']
+ pts=np.array([float(f['best_effort_timestamp_time']) for f in frames]);assert len(pts)==expected
+ assert abs(pts[0])<=.0001 and np.max(np.abs(np.diff(pts)-1/60))<.0001
+ assert abs(float(metadata['format']['duration'])-expected/60)<.08
+ packets=run(['ffmpeg','-v','error','-i',str(path),'-map','0:a:0','-c:a','copy','-f','adts','-'])
+ digest=hashlib.sha256(packets).hexdigest();aac.append(digest)
+ results.append({'path':path.relative_to(ROOT).as_posix(),'sha256':sha(path),'bytes':path.stat().st_size,'frames':len(pts),'fullVideoDecode':'pass','pts':'pass','duration':float(metadata['format']['duration']),'aacAdtsSha256':digest})
+assert aac[0]==aac[1],'Clean/captioned audio differs'
+script=read(ROOT/m['paths']['script']);translated=read(ROOT/m['paths']['scriptEn'])
+cue_reports=[]
+def normalized(t):return re.sub(r'\s+','',t)
+for lang,script in [('ko',script),('en',translated)]:
+ path=OUT/f'final.{lang}.srt';blocks=re.split(r'\r?\n\s*\r?\n',path.read_text(encoding='utf-8').strip())
+ texts=[];previous=0;count=0
+ for block in blocks:
+  lines=block.splitlines();count+=1;assert int(lines[0])==count
+  a,b=lines[1].split(' --> ')
+  def sec(t):
+   h,m,s=t.replace(',','.').split(':');return int(h)*3600+int(m)*60+float(s)
+  a,b=sec(a),sec(b);assert 2<=a<b<=expected/60-10+.02 and a>=previous-.001;previous=b
+  assert len(lines[2:])<=2;texts+=lines[2:]
+ assert normalized(''.join(texts))==normalized(''.join(line for s in script['scenes'] for line in s['lines'])),'Caption text lost/added'
+ cue_reports.append({'language':lang,'cues':count,'sha256':sha(path),'allScriptTextRetained':True,'introAndMemberClear':True})
+(OUT/'encoded-integrity.json').write_text(json.dumps({'outputs':results,'identicalAAC':True,'captions':cue_reports,'semanticAndListeningReview':'separate-review-ledger'},indent=2)+'\n',encoding='utf-8')
+print(json.dumps({'fullDecodeAndPTS':'pass','frames':expected,'identicalAAC':True,'captions':cue_reports}))

@@ -93,7 +93,10 @@ public static class AiCraftProductionBridge
         string directory=Path.Combine(Output,request.scene);Directory.CreateDirectory(directory);
         string movie=Path.Combine(directory,"unity.mp4");
         if(request.command=="render"&&File.Exists(movie))throw new Exception("Preserving existing scene render");
-        previous=SceneManager.GetActiveScene();opened=EditorSceneManager.OpenScene(scene,OpenSceneMode.Additive);SceneManager.SetActiveScene(opened);
+        previous=SceneManager.GetActiveScene();opened=SceneManager.GetSceneByPath(scene);
+        if(!opened.IsValid()||!opened.isLoaded)opened=EditorSceneManager.OpenScene(scene,OpenSceneMode.Additive);
+        if(previous==opened)previous=SceneManager.GetSceneAt(0);
+        SceneManager.SetActiveScene(opened);
         lesson=opened.GetRootGameObjects().Select(x=>x.GetComponent<AiCraftLessonScene>()).First(x=>x);lesson.durationFrames=request.frames;lesson.captureFps=request.fps;
         target=new RenderTexture(1920,1080,24,RenderTextureFormat.ARGB32){antiAliasing=4};target.Create();pixels=new Texture2D(1920,1080,TextureFormat.RGBA32,false);
         capture=new Capture{scenePath=scene,fps=request.fps,frames=request.frames};frame=0;prepared=false;
@@ -101,6 +104,8 @@ public static class AiCraftProductionBridge
             var psi=new System.Diagnostics.ProcessStartInfo("ffmpeg",$"-hide_banner -loglevel error -n -f rawvideo -pixel_format rgba -video_size 1920x1080 -framerate {request.fps} -i pipe:0 -vf vflip -an -c:v libx264 -preset fast -crf 17 -pix_fmt yuv420p -movflags +faststart \"{movie}\""){UseShellExecute=false,CreateNoWindow=true,RedirectStandardInput=true,RedirectStandardError=true};
             encoder=System.Diagnostics.Process.Start(psi);stream=encoder.StandardInput.BaseStream;
         }
+        // A focus-triggered asset refresh must not unload an active capture.
+        EditorApplication.LockReloadAssemblies();AssetDatabase.DisallowAutoRefresh();
         EditorApplication.update+=Tick;
     }
     static void Tick()
@@ -128,5 +133,6 @@ public static class AiCraftProductionBridge
         File.WriteAllText(Path.Combine(dir,request.command+"-status.txt"),error==null?"complete":error.ToString());
         if(target){target.Release();Object.DestroyImmediate(target);}if(pixels)Object.DestroyImmediate(pixels);
         lesson=null;if(opened.IsValid())EditorSceneManager.CloseScene(opened,true);if(previous.IsValid())SceneManager.SetActiveScene(previous);
+        AssetDatabase.AllowAutoRefresh();EditorApplication.UnlockReloadAssemblies();
     }
 }

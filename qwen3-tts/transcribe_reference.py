@@ -32,7 +32,7 @@ def main() -> None:
     )
     parser.add_argument("--language", default="korean")
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
-    parser.add_argument("--timestamps", choices=["segment", "word"], default="word",
+    parser.add_argument("--timestamps", choices=["segment", "word"], default="segment",
                         help="Cache word timing with the same full read-back, avoiding a second ASR pass for captions.")
     args = parser.parse_args()
 
@@ -43,13 +43,13 @@ def main() -> None:
     use_cuda = args.device == "cuda" or (args.device == "auto" and torch.cuda.is_available())
     device = "cuda:0" if use_cuda else "cpu"
     dtype = torch.float16 if use_cuda else torch.float32
-    if not use_cuda:
-        torch.set_num_threads(2)
+    torch.set_num_threads(2)
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
         args.model,
         dtype=dtype,
         low_cpu_mem_usage=True,
         use_safetensors=True,
+        attn_implementation="eager" if args.timestamps == "word" else "sdpa",
     ).to(device)
     processor = AutoProcessor.from_pretrained(args.model)
     transcriber = pipeline(

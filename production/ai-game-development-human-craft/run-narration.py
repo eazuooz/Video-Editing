@@ -18,16 +18,18 @@ if '--render-child' in sys.argv:
  import render_narration as renderer
  from dataclasses import replace
  original=renderer.render_chunks
- pronunciations={'Wild Ox Studios':'와일드 옥스 스튜디오','Unity Spark':'유니티 스파크','UE6':'언리얼 엔진 식스','MCP':'엠씨피','UV':'유브이','UDK':'유디케이','NFT':'엔에프티','Verse':'버스','AI':'에이아이'}
+ pronunciations={'Wild Ox Studios':'와일드 옥스 스튜디오','Unity Spark':'유니티 스파크','UE6':'언 리얼 엔진 식스','MCP':'엠씨피','UV':'유브이','UDK':'유디케이','NFT':'엔에프티','Verse':'벌스','AI':'에이아이','언리얼':'언 리얼','원영상':'원 영상','얌얌코딩':'얌얌 코딩','100골드':'백 골드','70골드':'칠십 골드','30골드':'삼십 골드','20골드':'이십 골드'}
  def spoken(items,batch_size,force_scenes=None):
   changed=[]
   for item in items:
+   if force_scenes and item.key.split('-')[0] not in force_scenes:continue
    text=item.text
    for a,b in pronunciations.items():text=text.replace(a,b)
    changed.append(replace(item,text=text))
   return original(changed,batch_size,force_scenes)
  renderer.render_chunks=spoken
- sys.argv=['render_narration.py','--project',SLUG,'--batch-size','1']
+ forced=next((a for a in sys.argv if a.startswith('--force-scenes=')),None)
+ sys.argv=['render_narration.py','--project',SLUG,'--batch-size','1']+([forced] if forced else [])
  renderer.main()
  raise SystemExit(0)
 
@@ -57,7 +59,7 @@ try:
  status['stage']='full-narration-asr';save()
  m=json.loads((ROOT/f'projects/{SLUG}/project.json').read_text(encoding='utf-8'))
  wav=ROOT/m['paths']['narration'];review=wav.with_suffix('.asr-review.txt')
- if not review.exists():run([sys.executable,'-X','utf8','qwen3-tts/transcribe_reference.py',str(wav),'--output',str(review)])
+ if not review.exists():run([sys.executable,'-X','utf8','qwen3-tts/transcribe_reference.py',str(wav),'--output',str(review),'--timestamps','word'])
  status.update(status='complete-pending-content-review',stage='done',wavSha256=hashlib.sha256(wav.read_bytes()).hexdigest());save()
 except BaseException as e:
  status.update(status='failed',error=str(e));save();raise
