@@ -35,9 +35,6 @@ ko='''AI가 게임을 만드는 시대, 개발자의 실력은 어디에 쓰일�
 
 개발 도구와 자동화가 바뀌어도 조건을 정하고 결과를 검증하는 일은 남습니다. 에픽과 Unity의 공개 자료, 독립 개발 화면, 직접 만든 Unity 상점·점프 시연으로 그 차이를 살펴봅니다.
 
-이 영상은 Wild Ox Studios 영상과 사용자가 제공한 자막의 논점을 바탕으로 설명을 확장했습니다. 제작자의 개인 경험은 해당 제작자의 이야기로 소개합니다.
-https://youtu.be/Zxbn55DVi-Q
-
 2026년 10월 14일 확인 기준입니다. Epic의 장기 계획과 보도, Unity Spark의 출시 예정 상태를 구분합니다. 자체 Unity 장면은 설명용 구현이며 상점의 저장·네트워크 기능은 구현하지 않았습니다.
 
 챕터
@@ -45,9 +42,6 @@ https://youtu.be/Zxbn55DVi-Q
 en='''When AI Makes Games, Where Do a Developer's Skills Matter?
 
 Tools and automation change, but defining conditions and checking results still matter. We explore official Epic and Unity material, an independent development demo, and original Unity shop and input-response examples.
-
-Expanded from ideas in the Wild Ox Studios video and the user-supplied transcript. Personal experiences are attributed to that creator.
-https://youtu.be/Zxbn55DVi-Q
 
 Information checked on October 14, 2026. Long-term plans, reporting and Unity Spark's coming-soon status are distinguished. Our Unity scenes are explanations; persistent storage and networking are not implemented in the shop demo.
 

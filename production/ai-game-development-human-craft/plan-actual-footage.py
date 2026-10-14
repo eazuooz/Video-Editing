@@ -1,13 +1,14 @@
 """Narration-anchored, unique native-speed source cuts for the selected essay."""
 from pathlib import Path
-import json,hashlib
+import json,hashlib,sys
+from revision_paths import workroot
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 data=read(ROOT/f'motion-canvas/src/projects/{SLUG}/scene-data.json');scenes={s['id']:s for s in data['scenes']}
 sources={
- 'ue':('ue-map','Unreal Engine 5 · 실제 장면 제작','Ai Artistry Studio · 2024 · 원본 타임랩스','편집기에서 오브젝트·재질을 선택하고 장면을 바꾸는 과정. AI 실행 증거가 아님.'),
+ 'ue':('ue-map','Unreal Engine 5 · 실제 장면 제작','Ai Artistry Studio · 2024 · 타임랩스','편집기에서 오브젝트·재질을 선택하고 장면을 바꾸는 과정. AI 실행 증거가 아님.'),
  'godot':('godot-workflow','Godot · 실제 프로젝트 조작','Juan Linietsky · Godot Engine · 2019','독립 공개 시연의 편집기 조작만 사용. 참고 대본 제작자의 프로젝트가 아님.'),
- 'krita':('krita-workflow','Krita · 사람이 직접 그리는 과정','David Revoy · 2022 · 원본 제작 기록','드로잉·채색·구도 수정 동작. Thomas Brush나 Wild Ox의 작업으로 표시하지 않음.'),
+ 'krita':('krita-workflow','Krita · 사람이 직접 그리는 과정','David Revoy · 2022 · 제작 과정','드로잉·채색·구도 수정 동작. Thomas Brush나 Wild Ox의 작업으로 표시하지 않음.'),
  'ai':('unity-ai','Unity + Stable Diffusion · 별도 연동 사례','Dominic Branchaud · 2023 · Spark 화면 아님','서드파티 플러그인의 입력·생성·재질 적용. 현재 Unity 공식 AI/Spark의 기능 시연이 아님.'),
  'robot':('robot-stool','통나무를 의자로 가공하는 로봇','designboom · 7Xstool · 2013','별도 로봇 가공 실연. 원영상 제작자의 공장이나 일자리 감소의 측정 자료가 아님.'),
  'wood':('wood-carving','손으로 형태를 깎아 가는 과정','Ainembabazi leviticus · 2024','독립 목공 작업 기록. 수작업 자체가 품질을 보장한다는 근거로 사용하지 않음.'),
@@ -82,10 +83,15 @@ add('28',p('28',3),p('28',4),'ue',1760,'완성 중인 거리 → 카메라 이�
 for sid,s in scenes.items():
  cuts=sorted([r for r in rows if r['scene']==sid],key=lambda r:r['startFrame'])
  for x,y in zip(cuts,cuts[1:]):assert x['endFrame']<=y['startFrame'],(sid,x['id'],y['id'])
+source_overlaps=[]
 for key in sources:
  cuts=sorted([r for r in rows if r['source']==key],key=lambda r:r['sourceInSeconds'])
- for x,y in zip(cuts,cuts[1:]):assert x['sourceOutSeconds']<=y['sourceInSeconds']+.00001,(key,x['id'],y['id'],x['sourceOutSeconds'])
+ for x,y in zip(cuts,cuts[1:]):
+  if x['sourceOutSeconds']>y['sourceInSeconds']+.00001:source_overlaps.append({'source':key,'left':x['id'],'right':y['id'],'overlapSeconds':x['sourceOutSeconds']-y['sourceInSeconds']})
+if '--draft' not in sys.argv:assert not source_overlaps,source_overlaps
 body=sum(round(s['duration']*60) for s in scenes.values());actual=sum(r['frames'] for r in rows)
 payload={'schemaVersion':1,'selectedVideo':SLUG,'bodyFrames':body,'actualFrames':actual,'explanationFrames':body-actual,'actualShare':actual/body,'targetActualFrames':round(body*.6),'pendingFramesToTarget':round(body*.6)-actual,'narrationSha256':hashlib.sha256((ROOT/f'projects/{SLUG}/script/narration.ko.json').read_bytes()).hexdigest(),'footageRoles':'independent actual development, craft/automation and gameplay; self-authored Unity and source screenshots remain explanation','sourceAudio':'omitted; narration and source music excluded','cuts':rows}
-dest=ROOT/f'projects/{SLUG}/planning/actual-footage-plan.json';dest.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+if '--draft' in sys.argv:payload.update(status='unresolved-timing-draft',sourceOverlaps=source_overlaps)
+dest=workroot(ROOT)/'footage-draft.json' if '--draft' in sys.argv else ROOT/f'projects/{SLUG}/planning/actual-footage-plan.json'
+dest.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps({k:v for k,v in payload.items() if k not in ('cuts',)},ensure_ascii=False))

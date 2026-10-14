@@ -1,6 +1,6 @@
 """Inspect/normalize exact selected source cuts. Never loop or slow footage."""
 from pathlib import Path
-import argparse,json,subprocess,hashlib,math
+import argparse,json,subprocess,hashlib,math,shutil
 from PIL import Image,ImageDraw
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft';FLAGS=subprocess.CREATE_NO_WINDOW
 p=argparse.ArgumentParser();p.add_argument('--normalize',action='store_true');p.add_argument('--inspect',action='store_true');a=p.parse_args()
@@ -30,10 +30,18 @@ for cut in d['cuts']:
   inputs={'cut':cut,'sourceSha256':source_info[key]['sha256'],'vf':'fps=60,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1','encoder':'h264_nvenc-p5-cq18'}
   if target.exists():assert receipt.exists() and json.loads(receipt.read_text(encoding='utf-8'))['inputs']==inputs,'Changed existing clip: '+cut['id']
   else:
-   run(['ffmpeg','-v','error','-n','-ss',str(cut['sourceInSeconds']),'-i',str(source),'-an','-vf',inputs['vf'],'-frames:v',str(cut['frames']),'-c:v','h264_nvenc','-preset','p5','-cq','18','-pix_fmt','yuv420p','-movflags','+faststart',str(target)])
+   previous=ROOT/f'shared/output/{SLUG}/actual-footage'/(cut['id']+'.json')
+   reusable=None
+   if previous.exists() and previous.resolve()!=receipt.resolve():
+    old=json.loads(previous.read_text(encoding='utf-8'));oldinputs=old['inputs'];oldclip=ROOT/old['path']
+    if (all(oldinputs.get(k)==inputs[k] for k in ['sourceSha256','vf','encoder'])
+        and oldinputs['cut']['sourceInSeconds']==cut['sourceInSeconds']
+        and oldinputs['cut']['frames']==cut['frames'] and sha(oldclip)==old['sha256']):reusable=oldclip
+   if reusable:shutil.copy2(reusable,target)
+   else:run(['ffmpeg','-v','error','-n','-ss',str(cut['sourceInSeconds']),'-i',str(source),'-an','-vf',inputs['vf'],'-frames:v',str(cut['frames']),'-c:v','h264_nvenc','-preset','p5','-cq','18','-pix_fmt','yuv420p','-movflags','+faststart',str(target)])
    probe=json.loads(run(['ffprobe','-v','error','-show_streams','-of','json',str(target)]).stdout);v=probe['streams'][0]
    assert int(v['nb_frames'])==cut['frames'],(cut['id'],v['nb_frames'])
-   receipt.write_text(json.dumps({'inputs':inputs,'path':target.relative_to(ROOT).as_posix(),'sha256':sha(target),'frames':int(v['nb_frames'])},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+   receipt.write_text(json.dumps({'inputs':inputs,'path':target.relative_to(ROOT).as_posix(),'sha256':sha(target),'frames':int(v['nb_frames']),'reusedIdenticalSource':reusable.relative_to(ROOT).as_posix() if reusable else None},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
   records.append(dict(cut,path=target.relative_to(ROOT).as_posix(),sha256=json.loads(receipt.read_text(encoding='utf-8'))['sha256']))
  print(cut['id'],flush=True)
 if images:
