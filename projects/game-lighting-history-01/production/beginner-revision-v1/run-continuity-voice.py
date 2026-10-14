@@ -2,7 +2,10 @@
 import datetime,json,os,pathlib,runpy,subprocess,sys,time,uuid
 import psutil
 R=pathlib.Path(__file__).resolve().parents[4];H=pathlib.Path(__file__).parent
-O=R/'projects/game-lighting-history-01/production/local/continuity-v2';O.mkdir(parents=True,exist_ok=True)
+repair='--repair' in sys.argv
+O=R/'projects/game-lighting-history-01/production/local/continuity-v2'
+if repair:O=O/'repairs'
+O.mkdir(parents=True,exist_ok=True)
 def rd(p):return json.loads(p.read_text(encoding='utf8'))
 def wr(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 runpy.run_path(str(H/'production-authority.py'))['require_selected_production']()
@@ -14,15 +17,15 @@ raw=subprocess.check_output(['nvidia-smi','--query-gpu=name,memory.free,utilizat
 name,free,util=[v.strip() for v in raw.split(',')];assert int(free)>=11000 and int(util)<40,raw
 token=str(uuid.uuid4());record=dict(token=token,project='game-lighting-history-01',state='gpu_granted_to_tts',coordinator=dict(pid=me.pid,createTime=me.create_time()),researchPaused=False,gpuBefore=raw)
 with lease.open('x',encoding='utf8') as f:json.dump(record,f,indent=2)
-state=dict(status='running',stage='synthesis',pid=me.pid,startedAt=time.time(),researchPaused=False,changedParagraphs=14,retainedPcmRegenerated=False)
+state=dict(status='running',stage='synthesis',pid=me.pid,startedAt=time.time(),researchPaused=False,changedParagraphs=4 if repair else 14,retainedPcmRegenerated=False)
 def run(stage,cmd):
  state['stage']=stage;wr(O/'voice-execution.json',state)
  with (O/(stage+'.log')).open('ab') as log:subprocess.run(cmd,cwd=R,stdout=log,stderr=subprocess.STDOUT,check=True,creationflags=subprocess.CREATE_NO_WINDOW)
 try:
- run('synthesis',[sys.executable,'-X','utf8',str(H/'synthesize-continuity.py')])
+ run('synthesis',[sys.executable,'-X','utf8',str(H/'synthesize-continuity.py')]+(['--repair'] if repair else []))
  cache=pathlib.Path('C:/Users/1/.cache/huggingface/hub/models--openai--whisper-large-v3-turbo/snapshots')
  snapshots=[p for p in cache.iterdir() if (p/'model.safetensors').exists()];assert len(snapshots)==1
- run('source-asr',[sys.executable,'-X','utf8','qwen3-tts/review_project_narration.py','--project','game-lighting-history-01','--manifest',(H/'continuity-tts.project.json').relative_to(R).as_posix(),'--model',str(snapshots[0])])
+ run('source-asr',[sys.executable,'-X','utf8','qwen3-tts/review_project_narration.py','--project','game-lighting-history-01','--manifest',(H/('continuity-repair-tts.project.json' if repair else 'continuity-tts.project.json')).relative_to(R).as_posix(),'--model',str(snapshots[0])])
  state.update(status='complete-pending-direct-review',finishedAt=time.time());wr(O/'voice-execution.json',state)
 except BaseException as e:
  state.update(status='failed',error=repr(e),finishedAt=time.time());wr(O/'voice-execution.json',state);raise

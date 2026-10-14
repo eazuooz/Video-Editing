@@ -2,6 +2,7 @@ import {SpatialModel} from '../threejs-revision-v1/spatial-models.mjs';
 import {overlay} from '../threejs-revision-v1/teaching-overlay.mjs';
 import {addTeachingMotion} from '../threejs-revision-v1/spatial-annotations.mjs';
 import {diagramKeys,drawDiagram,drawCaption,label} from './lesson-overlays.mjs';
+import {spatialPolicyOverlay,shadowFilterPolicy} from './policy-overlays.mjs';
 export class BeginnerLesson {
  constructor(output,spatial){this.output=output;this.ctx=output.getContext('2d');this.model=new SpatialModel(spatial);}
  draw(p,row,frame,block,caption=null){
@@ -14,7 +15,8 @@ export class BeginnerLesson {
   const fit=(s,x,y,w,size,color)=>{ctx.font=`500 ${size}px 'Noto Sans KR','Malgun Gothic'`;while(ctx.measureText(s).width>w&&size>24)ctx.font=`500 ${--size}px 'Noto Sans KR','Malgun Gothic'`;label(ctx,s,x,y,size,color);};
   fit(row.screenLabel,960,65,1730,46,'#e8cf83');
   if(diagramKeys.has(p.key)){
-   label(ctx,'원리와 작업 순서를 풀어 쓴 설명 도식',960,108,25,'#aaa');drawDiagram(ctx,p.key,u);
+   label(ctx,'원리와 작업 순서를 풀어 쓴 설명 도식',960,108,25,'#aaa');
+   if(p.key==='09-p9')shadowFilterPolicy(ctx,frame);else drawDiagram(ctx,p.key,u);
   }else{
    m.setPose(p.model,q,p);m.scene.updateMatrixWorld(true);
    if(p.key==='02-p5')addTeachingMotion(m,q,p);
@@ -62,6 +64,7 @@ export class BeginnerLesson {
     label(ctx,forward?'이 표면의 재질과 빛을 함께 계산하는 순서':'작업 순서 도식 · 버퍼 이미지는 이 3D 모형에서 생성',960,887,24,'#aaa');
    }else{
     overlay(ctx,m,p,q,text);
+    spatialPolicyOverlay(ctx,p.key,q,frame,block);
     if(p.key==='02-p5')label(ctx,result.labels[1],960,765,32,'#e8cf83');
     fit(p.expression,960,829,1710,34,'#eee');fit(p.limit,960,873,1730,25,'#aaa');
    }
