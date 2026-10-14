@@ -36,7 +36,8 @@
     },
     "wholeKoEnScriptAndCausalFlow": {
       "status": "pending",
-      "evidence": null
+      "evidence": null,
+      "required": "Review every chapter closing/opening as a meaningful pair, then read complete narration without headings; preserve reference order; plan screen/audio handoffs and vary transition forms."
     },
     "originalContentPreservation": {
       "status": "pending",
@@ -170,6 +171,38 @@
   "explanationRendering": {
     "policyId": "explanation-fit-renderer-v1",
     "defaultMandatoryRenderer": null,
+    "defaultForSelfAuthoredGameDemos": "Unity",
+    "excludedProductionTools": [
+      "Blender"
+    ],
+    "explicitUserRendererSelectionTakesPrecedence": true,
+    "rendererGuide": "docs/VIDEO_VISUAL_STYLE.md",
+    "toolRoles": {
+      "Unity": "primary for self-authored game demonstrations and most 3D explanations; also available for 2D explanations when pixel-art/sprite animation, game-state behavior or scene reuse improves understanding; select per scene",
+      "MotionCanvas": "2D diagrams, progressive arrows/paths, state labels, captions and compositing",
+      "ThreeJS": "optional for browser-interactive 3D explanations, beneficial reuse of existing Three.js scenes or another documented scene-specific advantage; not mandatory for rendering-principle explanations",
+      "Manim": "equation derivations, vectors, matrices, graphs and mathematical transformations"
+    },
+    "unityAssetPreference": "find and reuse suitable rights-confirmed free pixel-art/sprite assets, models, rigs and animations; record source URL, creator, revision/version, license, attribution, source hash and source-redistribution rights; reuse suitable existing assets without mandatory downloads",
+    "primaryProductionTools": [
+      "Unity",
+      "Motion Canvas",
+      "Manim"
+    ],
+    "selfAuthoredScenesCountAs": "explanation",
+    "unityProjectPath": "unity/VideoEditing",
+    "unitySceneFields": [
+      "projectPath",
+      "scenePath",
+      "editorVersion",
+      "renderPipelineAndPackageVersions",
+      "relevantSceneSettings",
+      "captureResolutionAndFps",
+      "frameAndNarrationTiming",
+      "assetRecords",
+      "sharedAssetPaths",
+      "sceneSaveStatus"
+    ],
     "selectionOwner": "agent-per-explanation-within-user-selected-video",
     "sceneSelections": [],
     "selectionFields": [
@@ -186,6 +219,87 @@
       "labels",
       "narrationTiming",
       "fixedCaptions"
-    ]
+    ],
+    "animatedRelationships": {
+      "policyId": "animated-explanation-paths-v1",
+      "guide": "docs/VIDEO_VISUAL_STYLE.md",
+      "useWhen": "order, dependency, choice, feedback, merging, or tracked spatial relations improve understanding",
+      "fields": [
+        "relationshipMeaning",
+        "sourceTargetAnchors",
+        "revealCue",
+        "arrivalCue",
+        "stateEncoding",
+        "traceData",
+        "clearAtCut"
+      ],
+      "unityMotionCanvasCombination": "when useful",
+      "originalCreatorSoftwareInferenceIsEvidence": false
+    },
+    "optionalProductionTools": [
+      "Three.js"
+    ],
+    "defaultFor3DExplanations": "Unity",
+    "rendererRoutingApprovedOn": "2026-10-14",
+    "rendererRoutingUserEvidence": "Unity 주력, Motion Canvas 설명/합성, Manim 수학, Three.js 선택 도구 제안에 사용자: 응 그렇게 가자",
+    "optionalRendererRequiresSceneReason": true,
+    "duplicateSceneAcrossRenderersByDefault": false,
+    "unity2DExplanationPolicy": {
+      "allowed": true,
+      "recordedOn": "2026-10-14",
+      "userEvidence": "2d 설명에도 유니티 써도 괜찮아. 적당한 도트 에셋 찾아서 영상에 필요한걸로 씬별로 만들고 저장해두면 좋아.",
+      "selection": "per explanation: Unity for useful sprite animation/stateful demonstrations/reuse; Motion Canvas for suitable diagrams/arrows/labels; neither is mandatory for all 2D",
+      "pixelArtStyleMandatory": false,
+      "mandatoryMotionCanvasFinishing": false,
+      "automaticRemakeExistingScenes": false
+    },
+    "unitySceneSavePolicy": {
+      "id": "unity-editable-scenes-v1",
+      "scope": "new or user-selected 2D and 3D Unity scene work",
+      "unit": "one independently editable .unity file per script scene; shared prefabs/assets/animations are referenced, not duplicated",
+      "suggestedNewScenePath": "unity/VideoEditing/Assets/VideoScenes/<slug>/<scene-id>.unity",
+      "preserveExistingPaths": true,
+      "preserve": [
+        "scene state and capture settings",
+        "prefabs",
+        "AnimationClips and Animator controllers",
+        "scripts",
+        "materials",
+        "sprite import and slicing settings",
+        "source assets and .meta under media/license policy"
+      ],
+      "recordInExistingPlan": [
+        "scenePath",
+        "assetRecords",
+        "sharedAssetPaths",
+        "sceneSaveStatus"
+      ],
+      "plannedSceneIsNotSavedEvidence": true,
+      "narrativeContinuityAcrossSceneFiles": true,
+      "guide": "docs/VIDEO_VISUAL_STYLE.md"
+    }
+  },
+  "narrativeContinuity": {
+    "policyId": "chapter-continuity-v1",
+    "scenePlanField": "transitionToNext",
+    "requiredFields": [
+      "toScene",
+      "relation",
+      "previousResult",
+      "nextNeed",
+      "closingNarration",
+      "openingNarration",
+      "visualCarry",
+      "audioCarry"
+    ],
+    "boundaryCount": null,
+    "textReview": "pending",
+    "renderedJoinReview": "pending",
+    "reviewLedger": "projects/{{SLUG}}/production/review-ledger.json"
+  },
+  "gitWorkCompletion": {
+    "policyId": "completed-work-selective-commit-v1",
+    "guide": "docs/MEDIA_STORAGE.md",
+    "cadence": "after validation of each completed meaningful authorized work unit, including rules, scripts, assets and scenes; do not defer until full video delivery"
   }
 }

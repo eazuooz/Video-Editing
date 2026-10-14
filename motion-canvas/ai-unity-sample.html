@@ -1,0 +1,15 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>Unity 캐릭터 애니메이션 시안</title>
+<style>body{background:#101316;color:#f5f5f5;font:16px 'Malgun Gothic',sans-serif;margin:24px auto;max-width:1280px}h1{font-size:25px}button{font:inherit;padding:9px 16px;margin:0 8px 12px 0;cursor:pointer}canvas{width:100%;height:auto;display:block}p{color:#b8b8b8}</style>
+<h1>Unity 캐릭터 애니메이션 시안</h1><p>Unity에서 만든 상점과 실제 캐릭터 애니메이션에 Motion Canvas 설명을 합성한 무음 시안입니다.</p>
+<button id="play">재생 / 정지</button><button id="restart">처음부터</button><span id="status">불러오는 중</span><div id="stage"></div>
+<script type="module">
+import project from '/src/projects/ai-game-development-human-craft/unity-sample/project.ts?project';
+import {Player,Stage,Vector2} from '@motion-canvas/core';
+project.logger.onLogged.subscribe(e=>{if(e.level==='error'){document.querySelector('#status').textContent=String(e.message);console.error(e.message,e.remarks);}});
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#000'});document.querySelector('#stage').append(stage.finalBuffer);
+const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{muted:true,paused:true});let ready=false,rendered=-1;
+player.onRecalculated.subscribe(()=>ready=true);
+player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=`${(rendered/60).toFixed(1)}초`;});
+document.querySelector('#play').onclick=()=>player.togglePlayback();document.querySelector('#restart').onclick=()=>player.requestSeek(0);
+window.sampleReview={player,stage,jump:s=>player.requestSeek(Math.round(s*60)),get ready(){return ready;},get rendered(){return rendered;}};
+</script></html>
