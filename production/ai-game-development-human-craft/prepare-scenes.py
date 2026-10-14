@@ -74,8 +74,9 @@ payload={'timingStatus':'measured-narration' if timing else 'estimated-layout-on
 if script.get('revision',0)>=4:
  # Inspect viewer-facing text only. Source/license history is deliberately
  # retained and must not be confused with narration or diagram copy.
- visible='\n'.join([t for s in script['scenes'] for t in s['lines']]+[s['note'] for s in data])
- assert not re.search(r'원\s*영상|원작자|제공된?\s*자막|Wild Ox Studios',visible),'Source-video framing returned to the current lesson'
+ english=json.loads((ROOT/manifest['paths']['scriptEn']).read_text(encoding='utf-8'))
+ visible='\n'.join([t for lesson in [script,english] for s in lesson['scenes'] for t in s['lines']]+[t for s in data for t in [s['heading'],s['note'],*s['labels']]])
+ assert not re.search(r'원\s*영상|원작자|제공된?\s*자막|Wild Ox Studios|(?:original|source|reference) video|provided transcript',visible,re.I),'Source-video framing returned to the current lesson'
 (P/'scene-data.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 for s in data:
  d=P/'scenes'/s['id'];d.mkdir(parents=True,exist_ok=True)

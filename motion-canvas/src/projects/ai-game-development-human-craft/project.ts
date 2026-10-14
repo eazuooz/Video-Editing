@@ -1,5 +1,4 @@
 import {makeProject} from '@motion-canvas/core';
-import audio from './assets/final-mix.wav';
 import intro from './intro-scene?scene';
 import members from './member-scene?scene';
 import s01 from './scenes/01/scene?scene';
@@ -30,4 +29,5 @@ import s25 from './scenes/25/scene?scene';
 import s26 from './scenes/26/scene?scene';
 import s27 from './scenes/27/scene?scene';
 import s28 from './scenes/28/scene?scene';
+import audio from './assets/final-mix.wav';
 export default makeProject({name:'ai-game-development-human-craft',audio,scenes:[intro,s01,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19,s20,s21,s22,s23,s24,s25,s26,s27,s28,members]});
