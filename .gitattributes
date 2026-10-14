@@ -6,3 +6,15 @@ shared/media-archives/**/manifest.json text eol=lf
 # Keep byte-level delivery hashes stable on Windows/macOS/Linux for this approved subtitle pair.
 shared/output/narration/visible-rewards/**/*.srt text eol=crlf
 shared/output/motion-canvas/visible-rewards-final.*.srt text eol=crlf
+
+# Portable production records use exact stored bytes: checkpoints bind raw SHA256.
+# Disable newline conversion, not text diffs. Preserve existing media exclusions.
+projects/** -text
+production/** -text
+motion-canvas/src/projects/** -text
+manim/projects/** -text
+shared/output/narration/** -text
+qwen3-tts/*.py -text
+motion-canvas/*.json -text
+motion-canvas/*.ts -text
+shared/publishing/** -text

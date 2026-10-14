@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),p='production/preflight/game-lighting-history-04-1.json',folder='production/research/game-lighting-history/local/part1-duplicate-refresh-v203';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const previous=read(p),backup=path.join(root,folder,'previous-preflight.json');
+if(fs.existsSync(backup))throw Error('Preserve duplicate snapshot');
+fs.mkdirSync(path.dirname(backup),{recursive:true});fs.copyFileSync(path.join(root,p),backup);
+cp.execFileSync(process.execPath,['scripts/review-video-duplicates.cjs','game-lighting-history-04-1','--candidate-file','production/research/game-lighting-history/candidate-04-1.json'],{cwd:root,stdio:'inherit'});
+const current=read(p),old=new Map(previous.inputFiles.map(x=>[x.path,x.sha256])),changed=current.inputFiles.filter(x=>old.get(x.path)!==x.sha256);
+fs.writeFileSync(path.join(root,folder,'changed-inputs.json'),JSON.stringify({observedAt:new Date().toISOString(),previousSnapshot:{path:folder+'/previous-preflight.json',sha256:crypto.createHash('sha256').update(fs.readFileSync(backup)).digest('hex')},newInventoryDigest:current.inputsDigest,currentProjects:current.existingProjects.length,unchanged:current.inputFiles.length-changed.length,changed,removed:previous.inputFiles.filter(x=>!current.inputFiles.some(y=>y.path===x.path)),exactMatches:current.exactMatches,verdict:'pending whole changed-content and current Studio review'},null,2)+'\n');
+console.log(JSON.stringify({changed,removed:previous.inputFiles.filter(x=>!current.inputFiles.some(y=>y.path===x.path)),existingProjects:current.existingProjects.length,exactMatches:current.exactMatches.map(x=>x.slug)}));

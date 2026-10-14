@@ -1,0 +1,9 @@
+const fs=require('node:fs'),path=require('node:path');const root=path.resolve(__dirname,'../../..');
+let code=fs.readFileSync(path.join(root,'production/research/game-lighting-history/review-episode03-guide-repairs-v2.py'),'utf8');
+const replace=(a,b)=>{if(!code.includes(a))throw Error('Missing exact worker template '+a);code=code.replace(a,b);};
+replace("REQUEST=BASE/'native-guide-repairs-tts-request-v2.json';TTS=BASE/'native-guide-repairs-tts-execution-v2.json';STATE=BASE/'native-guide-repairs-asr-execution-v2.json'","REQUEST=BASE/'native-guide01-onset-tts-request-v3.json';TTS=BASE/'native-guide01-onset-tts-execution-v3.json';STATE=BASE/'native-guide01-onset-asr-execution-v3.json'");
+replace("assert len(request['scenes'])==2 and request['expectedSentenceChunks']==13","assert len(request['scenes'])==1 and request['expectedSentenceChunks']==1");
+replace("len(done['results'])==13 and len(done['joinedGuides'])==2","len(done['results'])==1 and len(done['joinedGuides'])==1");
+replace("enumerate(guide['sentences'])","enumerate(guide['sentences'][:1])");replace('assert len(windows)==17','assert len(windows)==3');replace('totalWindows=17','totalWindows=3');replace('total=17','total=3');
+code=code.replaceAll("cp.get('episode03GuideRepairAsrSessionId')","cp.get('episode03GuideOnsetAsrV3SessionId')").replaceAll('local/native-guide-repairs-asr-v2','local/native-guide01-onset-asr-v3').replaceAll('17-repair-windows-complete-awaiting-direct-comparison','3-opener-windows-complete-awaiting-direct-comparison').replaceAll("+'/17'","+'/3'").replaceAll('13 sentence +2 whole +2 independent context windows planned','1 sentence +1 whole +1 independent context windows planned');
+const out=path.join(root,'production/research/game-lighting-history/review-guide01-onset-v3.py');if(fs.existsSync(out))throw Error('Preserve worker');fs.writeFileSync(out,code);console.log('CPU2/GPU0 three-window opener worker prepared; no audio/ASR approval.');

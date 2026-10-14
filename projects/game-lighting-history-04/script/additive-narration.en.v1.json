@@ -1,0 +1,176 @@
+{
+  "title": "Rendering history episode4: additive prerequisites and observation guides",
+  "language": "en",
+  "independentlyWritten": true,
+  "original87Regenerated": false,
+  "scenes": [
+    {
+      "id": "01-guide-overview-cases",
+      "title": "guide-overview-cases",
+      "lines": [
+        "We will examine shadow storage in an Unreal demonstration, then separate rendering from reconstruction in a Cyberpunk comparison. Finally, we will follow exposure controls and a RenderDoc color input. Linking these three examples gives us a way to ask which stage caused an image to change."
+      ]
+    },
+    {
+      "id": "02-pre-vsm-address",
+      "title": "pre-vsm-address",
+      "lines": [
+        "A page is a small piece of the larger map. Its virtual address identifies that piece, while physical memory holds its contents. Having an address does not mean every piece is resident. Our sixteen-piece map and five occupied slots illustrate this distinction."
+      ]
+    },
+    {
+      "id": "03-guide-vsm-regions",
+      "title": "guide-vsm-regions",
+      "lines": [
+        "Look at the colored shadow regions in the recorded demonstration. Switching between the scene and this debug view separates surface color from a visualization of shadow data. The colored regions are not additional lights. Our sixteen cells were illustrative; here we observe the regions displayed by the engine."
+      ]
+    },
+    {
+      "id": "04-guide-vsm-motion",
+      "title": "guide-vsm-motion",
+      "lines": [
+        "Now follow the camera as it moves upward. Tracking the Ferris wheel and its shadow shows the same space from a different viewpoint. Moving the camera, an object and a light are different conditions. Recording which one changed is necessary before comparing newly rendered data with reused data."
+      ]
+    },
+    {
+      "id": "05-pre-upscaling-grid",
+      "title": "pre-upscaling-grid",
+      "lines": [
+        "Consider only the grid dimensions here. Eight columns and four rows give thirty-two pixels. Halving both dimensions gives four by two, or eight pixels. The output can return to thirty-two pixels even though the new internal image began with eight."
+      ]
+    },
+    {
+      "id": "06-guide-tsr-reveal",
+      "title": "guide-tsr-reveal",
+      "lines": [
+        "During this short camera move, watch windows become visible behind the nearer building. Those windows were hidden in the previous image. Blindly reusing history could bring back the foreground building instead. Following motion is therefore not enough: the history must also refer to the same surface."
+      ]
+    },
+    {
+      "id": "07-pre-visibility-interpolation",
+      "title": "pre-visibility-interpolation",
+      "lines": [
+        "Start with an example whose vertices have equal perspective denominators. Their texture coordinates are zero-zero, one-zero and zero-one. Weights of one-half, one-quarter and one-quarter produce one-quarter, one-quarter. The weights sum to one. Different perspective denominators require perspective correction."
+      ]
+    },
+    {
+      "id": "08-pre-mobile-local-memory",
+      "title": "pre-mobile-local-memory",
+      "lines": [
+        "Forward versus deferred describes how work is organized. Keeping data in nearby tile memory is a different choice. If a lighting stage can immediately consume material data inside the same tile, it may avoid an external-memory round trip."
+      ]
+    },
+    {
+      "id": "09-guide-mobile-limits",
+      "title": "guide-mobile-limits",
+      "lines": [
+        "This is a mobile engine demonstration from twenty-fourteen. Follow the surfaces and lighting as the camera moves. Its final image does not reveal how many transfers occurred in internal tile memory. That requires the data-flow explanation and separate checks of the platform conditions."
+      ]
+    },
+    {
+      "id": "10-guide-path-game",
+      "title": "guide-path-game",
+      "lines": [
+        "In the Cyberpunk scene, use reflected objects and wet surfaces as comparison targets. First read the feature labels, then follow the same object outlines. This is the developer’s comparison demonstration. It is not our independent measurement of path sample count or the performance of a single feature."
+      ]
+    },
+    {
+      "id": "11-pre-path-probability",
+      "title": "pre-path-probability",
+      "lines": [
+        "Our target is the mean of the two directions: five. Select the bright direction with probability point-eight and the dim direction with point-two. Correct each value by its original half-share divided by the new selection probability. Eight times point-five over point-eight is five. Two times point-five over point-two is also five. In this particular example, either selection returns the target."
+      ]
+    },
+    {
+      "id": "12-pre-path-survival",
+      "title": "pre-path-survival",
+      "lines": [
+        "A survival probability of point-eight does not delete exactly one out of every five paths. A survivor receives a factor of one-point-two-five; a terminated path contributes zero. In expectation, point-eight times one-point-two-five equals one, preserving the original contribution. Individual results can become more variable."
+      ]
+    },
+    {
+      "id": "13-pre-reconstruction-boundary",
+      "title": "pre-reconstruction-boundary",
+      "lines": [
+        "Two different sample values do not always represent the same problem. Variation on one wall may be noise; variation across a wall-window boundary may be real structure. First use depth and surface orientation to identify the surfaces, then decide which values to combine."
+      ]
+    },
+    {
+      "id": "14-guide-reconstruction-game",
+      "title": "guide-reconstruction-game",
+      "lines": [
+        "Next, follow reflected detail after movement. When several labelled settings differ together, the entire difference cannot be isolated as Ray Reconstruction alone. This teaches us what detail to inspect. In our own controlled test, we would match camera, resolution and exposure, then change one condition at a time."
+      ]
+    },
+    {
+      "id": "15-guide-megalights-view",
+      "title": "guide-megalights-view",
+      "lines": [
+        "In the Unreal market demonstration, follow the small lights and the surfaces they illuminate. Seeing a light does not mean it reaches every surface. Distinguish our annotation of a light candidate from the visibility test connecting it to a surface. Image brightness alone does not tell us how many samples were selected."
+      ]
+    },
+    {
+      "id": "16-pre-direct-versus-transparent",
+      "title": "pre-direct-versus-transparent",
+      "lines": [
+        "We have chosen which light contributions to evaluate. Now ask how to combine the resulting colors across transparent layers. Transparency and its methods did not first appear after MegaLights. This section revisits an older problem as a responsibility that still remains in a modern frame."
+      ]
+    },
+    {
+      "id": "17-guide-hair-material",
+      "title": "guide-hair-material",
+      "lines": [
+        "In the hair demonstration, connect the melanin-related material inputs to the model’s changing appearance. How many strands are drawn and what color those strands produce are different questions. A material-driven color change does not show new strand generation or replacement of the entire lighting computation."
+      ]
+    },
+    {
+      "id": "18-pre-generated-frame-count",
+      "title": "pre-generated-frame-count",
+      "lines": [
+        "Keep one actually rendered frame as a white block. Adding three generated frames gives four displayed blocks; adding five gives six. More generated blocks do not mean that the game has performed its simulation that many times."
+      ]
+    },
+    {
+      "id": "19-guide-generated-ui",
+      "title": "guide-generated-ui",
+      "lines": [
+        "In the recorded comparison, inspect both the moving image and its interface. A larger displayed frame-rate number does not establish more frequent responses to input. After this short demonstration, separate rendered and generated blocks again to distinguish display updates from game updates."
+      ]
+    },
+    {
+      "id": "20-pre-display-transform",
+      "title": "pre-display-transform",
+      "lines": [
+        "Separate the lighting value from the displayed value. An illustrative linear intensity of two with an exposure multiplier of one-half feeds a value of one into tone mapping. The light itself has not changed. Tone mapping applies a separate curve, so the final display is not explained by that multiplication alone."
+      ]
+    },
+    {
+      "id": "21-guide-post-exposure",
+      "title": "guide-post-exposure",
+      "lines": [
+        "This editor demonstration adjusts exposure settings rather than rearranging the lights. Follow the controls alongside the image brightness. It illustrates how the displayed result can change even when the lighting setup remains the same. That is why we must match exposure before comparing reconstruction features."
+      ]
+    },
+    {
+      "id": "22-guide-post-focus",
+      "title": "guide-post-focus",
+      "lines": [
+        "Next, inspect focus. Separate near, focused and far regions in the debug view, then return to the scene and observe blur on the nearer object. Here the blur is connected to focus controls. Recording those conditions prevents us from confusing it with a reconstruction error in a reflection."
+      ]
+    },
+    {
+      "id": "23-pre-capture-dataflow",
+      "title": "pre-capture-dataflow",
+      "lines": [
+        "In the recorded RenderDoc demonstration, follow the selected triangle draw and then the pixel shader’s color input and return value. This shader simply returns its input color. Locate the matching numbers as they move from input to output. This example teaches inspection, rather than demonstrating an entire lighting pipeline."
+      ]
+    },
+    {
+      "id": "24-guide-renderdoc-input",
+      "title": "guide-renderdoc-input",
+      "lines": [
+        "Now switch to our channel’s RenderDoc demonstration. Identify the selected triangle and its color input, then connect them to the shader returning that same color. Our red annotation marks the data flow being inspected. A connection verified in this simple shader does not establish the implementation of a complex lighting system in another game."
+      ]
+    }
+  ]
+}

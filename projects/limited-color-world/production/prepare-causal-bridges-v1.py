@@ -1,0 +1,39 @@
+"""Preserve the active voice request; prepare additive causal connections."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json
+ROOT=Path(__file__).resolve().parents[3];BASE=Path(__file__).resolve().parent;PL=BASE.parent/'planning'
+read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'))
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+req=read(BASE/'narration-tts-request-v1.json')
+for x in req['protectedInputs']:assert sha(ROOT/x['path'])==x['sha256']
+ko=read(BASE.parent/'script/narration.ko.json');en=read(BASE.parent/'script/narration.en.json')
+assert [s['id'] for s in ko['scenes']]==[s['id'] for s in en['scenes']]
+chains=[
+ ('01-overview','色を読めなくても次の行動を選べるか','색이 달라도 읽는 데 필요한 단서를 찾는다','먼저 고정된 집과 길의 구조를 읽어야 한다','집의 면을 칠해도 윤곽은 남는다','윤곽 외에 어떤 단서를 더할 수 있는가'),
+ ('02-contours','집의 채움이 바뀌어도 경계를 읽을 수 있는가','집과 길의 검은 경계가 남는다','색과 구조를 다른 역할로 나누면 둘을 함께 잃지 않는다','면의 색 변경과 윤곽 유지/약화 비교','면 안의 무늬도 구조를 남길 수 있는가'),
+ ('03-pattern-and-erasing','색 외에 모양과 무늬가 어떻게 보조하는가','윤곽을 남기면 면을 따라갈 수 있다','하나의 단서를 놓쳤을 때 다른 단서가 필요하다','빗금 유지와 가상 둥근/각진 손잡이 비교','정적인 모양만으로 움직이는 발판의 상태도 읽을 수 있는가'),
+ ('04-height-and-motion','높이가 바뀌면 다음 이동을 어떻게 읽는가','윤곽과 무늬는 고정된 구조를 읽게 한다','움직이는 발판에는 현재 높이와 접촉 결과도 필요하다','버섯 상승→착지/튕김→압축을 별도 도식에 연결','다시 변하는 상태를 영구적인 열린 길로 오해하지 않으려면'),
+ ('05-state-not-hue','변하는 발판의 현재 상태를 어떻게 읽는가','높이와 움직임은 상태 변화 단서다','칠하기/지우기와 현재 높이를 함께 보여야 한다','꽃 칠하기/지우기의 별도 샷과 일부 높이 복귀를 구별','많은 단서 중 건널 때 꼭 읽어야 할 것은 무엇인가'),
+ ('06-route-information','건널 때 어떤 단서가 먼저 보여야 하는가','현재 높이/칠 여부를 함께 읽어야 한다','배경이 윗면과 도착 턱을 가리면 이동 단서를 잃는다','같은 꽃 경로/토큰/목적지 비교와 장식의 가림 변화','모양을 남겨도 어둠에 묻히면 읽을 수 있는가'),
+ ('07-local-contrast','어두운 곳에서 경계를 어떻게 남기는가','캐릭터·윗면·도착 경계가 배경보다 읽혀야 한다','모양만 남겨도 밝기 차이가 사라지면 물체를 구별하기 어렵다','제한된 밝은 원 안의 전경/배경 명도 비교','이 단서들이 다른 색 조건에서도 남는지 어떻게 확인하는가'),
+ ('08-check-and-conclusion','다른 색 조건에서 중요한 단서가 남는가','윤곽·무늬·높이·움직임·밝기 차이가 서로 보조한다','설계자가 보는 색 조건만으로 확정할 수 없다','미리보기로 문제 찾기→실제 플레이에서 대상/상태/행동 확인','중요 정보를 색 하나에만 맡기지 않는 설계로 적용한다')]
+# Only the initial viewer question is stored in Korean, matching the script.
+chains[0]=(chains[0][0],'색을 구별하기 어려워도 다음 행동을 선택할 수 있는가',*chains[0][2:])
+bridges=[
+ dict(id='03b-static-to-state',before='04-height-and-motion',ko=['집의 윤곽과 무늬는 멈춰 있는 구조를 읽게 해 줬습니다. 그런데 발판의 높이가 바뀔 때는 다음 움직임까지 알아야 하죠. 그래서 높이 변화와 캐릭터의 이동을 함께 보겠습니다.'],en=['Outlines and patterns helped us read a static structure. When a platform changes height, we also need to understand the next movement. We will therefore watch height changes together with the character moving.'],reason='The original opening “이번에는” names a new example but does not state why a state/motion cue is needed after static shape.'),
+ dict(id='06b-outline-to-contrast',before='07-local-contrast',ko=['꽃을 건널 때는 발판의 윗면과 도착할 턱을 배경에서 구별해야 했습니다. 하지만 모양을 남겨도 어둠 속에 경계가 묻히면 갈 곳을 찾기 어렵겠죠. 이 문제를 밝고 어두운 차이로 확인해 보겠습니다.'],en=['Crossing the flowers required distinguishing platform tops and the destination ledge from the background. Even a retained shape can become difficult to follow when its boundary disappears into darkness. We will examine that problem through lightness differences.'],reason='The original cave opening changes environment without deriving the contrast question from the foreground/background boundary result.'),
+ dict(id='07b-cues-to-check',before='08-check-and-conclusion',ko=['지금까지 윤곽과 무늬, 높이와 움직임, 밝기 차이를 연결했습니다. 이 단서들이 색이 달라져도 남는지 확인하려면, 평소 보는 화면 밖의 조건에서도 다시 살펴봐야 합니다.'],en=['We have connected outlines, patterns, height, motion and lightness differences. To check whether those cues survive different colors, we need to examine conditions beyond the screen we normally see.'],reason='Connect the resulting cue set to the need for grayscale/perception previews and actual play checks.')]
+stamp=datetime.now(timezone.utc).isoformat()
+plan=dict(schemaVersion=1,slug='limited-color-world',preparedAt=stamp,rule='AGENTS.md causal teaching flow 2026-10-10 and docs/VIDEO_WORKFLOW.md first section, read after the immutable8scene voice request was launched.',
+ centralViewerQuestion=chains[0][1],wholeCurrentKoEnTextDirectlyRead=True,originalSceneOrderPreserved=True,original24PairedParagraphsPreserved=True,
+ originalActiveRequestUnchanged=True,activeRequestSession=1912,originalTtsNotRepeated=True,
+ sceneChain=[dict(id=a,incomingQuestion=b,previousResult=c,reasonNextToolIsNeeded=d,inputAndResult=e,nextQuestion=f) for a,b,c,d,e,f in chains],
+ preparedAdditions=bridges,additionalKoCharacters=sum(len(t) for b in bridges for t in b['ko']),
+ narrationBridgeReadyForSynthesis=False,bridgeTtsStarted=False,bridgePcmCreated=0,finalCausalFlowApproved=False,
+ currentVoiceRole='Preserved original8scene measurement. These3 connections are additive insertions after its successful TTS/research-resume and direct current-hash voice review, with their own protected request and one serialized batch.',
+ finalPixelAndContinuousNarrationReview=False,sourceLectureReplication=False,publicRightsApproved=False,
+ nextAction='Directly review both languages and retained/insertion mapping; measure retained8PCM, then prepare one additive3bridge voice request after the active request and original research restoration. No duplicate/parallelTTS. Allocate additional unique actions as needed for measured60:40 without shortening the original paragraphs/PCM.')
+out=PL/'causal-chain-additions-v1.json';assert not out.exists();out.write_text(json.dumps(plan,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+for x in req['protectedInputs']:assert sha(ROOT/x['path'])==x['sha256']
+print('Prepared8 causal-chain entries and3 additive KOEN bridge paragraphs; original24 paragraphs/request10inputs unchanged. BridgeTTS and finalflowapproval0.')

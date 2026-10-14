@@ -1,0 +1,405 @@
+{
+  "status": "future-full-source-and-independent-math-preparation",
+  "atUtc": "2026-10-08T23:47:12.214956+00:00",
+  "target": "game-math-pipeline-shaders",
+  "sources": [
+    {
+      "id": "3e10b1ffa61e81d48a95fb2cf0a41b56",
+      "path": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e81d48a95fb2cf0a41b56.txt",
+      "sha256": "6c94a26f6194eb7d6cc17ec042d1c966719fd03829b9d177a4e7b8a47be60166",
+      "characters": 21160,
+      "wholeFetchedTextDirectlyRead": true
+    },
+    {
+      "id": "3e10b1ffa61e81e7aac4e718a255f15c",
+      "path": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e81e7aac4e718a255f15c.txt",
+      "sha256": "0889a50da43a0bf50c89411f8c53cb6b8ac69a272c9c583068cd73519d1ab98c",
+      "characters": 28243,
+      "wholeFetchedTextDirectlyRead": true
+    },
+    {
+      "id": "3e10b1ffa61e81c49172fdebf83ba3c2",
+      "path": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e81c49172fdebf83ba3c2.txt",
+      "sha256": "587814e71d49a048f4a30bf7029f95e0c6295b5ae474923b11b8dd1bcb21a037",
+      "characters": 2462,
+      "wholeFetchedTextDirectlyRead": true
+    },
+    {
+      "id": "3e10b1ffa61e8152b52de62f22610495",
+      "path": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e8152b52de62f22610495.txt",
+      "sha256": "f6693f4521030d935c603698685e2b8109c2617395304428ba7b47c9aae91a94",
+      "characters": 4726,
+      "wholeFetchedTextDirectlyRead": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "Wii-resolution-is-not-physical-aspect",
+      "passed": true,
+      "evidence": {
+        "assumption": "Source historical640x480 frame fills the stated TV; no overscan/crop/letterboxing.",
+        "views": [
+          {
+            "displayAspect": 1.3333333333333333,
+            "pixelWidthToHeight": 1,
+            "physicalHalfViewportAspect": 0.6666666666666666,
+            "horizontalFovDegrees": 60,
+            "horizontalZoom": 1.7320508075688774,
+            "verticalZoom": 1.1547005383792515,
+            "verticalFovDegrees": 81.78678929826182
+          },
+          {
+            "displayAspect": 1.7777777777777777,
+            "pixelWidthToHeight": 1.3333333333333333,
+            "physicalHalfViewportAspect": 0.8888888888888888,
+            "horizontalFovDegrees": 60,
+            "horizontalZoom": 1.7320508075688774,
+            "verticalZoom": 1.539600717839002,
+            "verticalFovDegrees": 66.00898319776617
+          }
+        ]
+      }
+    },
+    {
+      "name": "explicit-projection-conventions-and-depth-boundaries",
+      "passed": true,
+      "evidence": {
+        "contract": "Column vectors; chosen standard OpenGL RH negative forward/NDCz[-1,1], chosen D3D LH positive forward/NDCz[0,1]. APIs do not mandate world handedness.",
+        "near": 1.0,
+        "far": 256.0,
+        "openGLMatrix": [
+          [
+            1.7320508075688774,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.1547005383792515,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -1.007843137254902,
+            -2.007843137254902
+          ],
+          [
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "direct3DMatrix": [
+          [
+            1.7320508075688774,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.1547005383792515,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.003921568627451,
+            -1.003921568627451
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "clearDepthComparison": "Clear1 with LESS does not accept exactly1; compare state and mapped depth are separate."
+      }
+    },
+    {
+      "name": "row-source-to-column-course-transposition",
+      "passed": true,
+      "evidence": {
+        "rowExpression": "mul(p,Mrow)",
+        "columnExpression": "Mcolumn @ p",
+        "relation": "Mrow=Mcolumn.T",
+        "separateFrom": "Row/column matrix memory packing. HistoricalSM2 semantics and shader profiles are not modernSV semantics."
+      }
+    },
+    {
+      "name": "direction-w0-and-normalize3-before-w1",
+      "passed": true,
+      "evidence": {
+        "directionW": 0,
+        "translationEffect": "none",
+        "incorrectNormalize4NormalLength": 0.7071067811865476,
+        "generalTransform": "Use inverse transpose for invertible nonuniform linear transform, then nonzero normalize. Source uniform/orthogonal examples are restricted."
+      }
+    },
+    {
+      "name": "specified-eight-bit-encoding-and-quantization",
+      "passed": true,
+      "evidence": {
+        "formula": "RGB=round-half-up(clamp((N+1)*127.5,0,255)); decode2RGB/255-1 then nonzero normalization.",
+        "sourceRoundedInputsNotSilentlyRenormalized": true,
+        "results": [
+          {
+            "sourceNormal": [
+              -1.0,
+              0,
+              0
+            ],
+            "roundHalfUpRGB": [
+              0,
+              128,
+              128
+            ],
+            "rawDecoded": [
+              -1.0,
+              0.0039215686274509665,
+              0.0039215686274509665
+            ],
+            "decodeLength": 1.0000153785822494
+          },
+          {
+            "sourceNormal": [
+              0.267,
+              -0.535,
+              0.805
+            ],
+            "roundHalfUpRGB": [
+              162,
+              59,
+              230
+            ],
+            "rawDecoded": [
+              0.2705882352941176,
+              -0.5372549019607843,
+              0.803921568627451
+            ],
+            "decodeLength": 1.0040670850420794
+          },
+          {
+            "sourceNormal": [
+              0,
+              0,
+              1
+            ],
+            "roundHalfUpRGB": [
+              128,
+              128,
+              255
+            ],
+            "rawDecoded": [
+              0.0039215686274509665,
+              0.0039215686274509665,
+              1.0
+            ],
+            "decodeLength": 1.0000153785822494
+          },
+          {
+            "sourceNormal": [
+              0,
+              0.857,
+              0.514
+            ],
+            "roundHalfUpRGB": [
+              128,
+              237,
+              193
+            ],
+            "rawDecoded": [
+              0.0039215686274509665,
+              0.8588235294117648,
+              0.5137254901960784
+            ],
+            "decodeLength": 1.0007532726146746
+          }
+        ]
+      }
+    },
+    {
+      "name": "four-TBN-exercises-with-declared-rounding-repair",
+      "passed": true,
+      "evidence": {
+        "method": "Nonzero normalizedN; Gram-SchmidtT; B=handedness*cross(N,T); unit decoded tangent normal; modelTBN @ nt. Rounded source bases are repaired explicitly, not claimed exact.",
+        "cases": [
+          {
+            "rgb": [
+              128,
+              255,
+              128
+            ],
+            "sourceRoundedNormal": [
+              0.408,
+              -0.408,
+              -0.816
+            ],
+            "sourceRoundedTangent": [
+              0.707,
+              0.707,
+              0
+            ],
+            "handedness": 1,
+            "bitangent": [
+              0.5773502691896258,
+              -0.5773502691896258,
+              0.5773502691896258
+            ],
+            "tangentUnitNormal": [
+              0.003921508320212722,
+              0.9999846216542477,
+              0.003921508320212722
+            ],
+            "modelUnitNormal": [
+              0.5817152646910346,
+              -0.5761694144396308,
+              0.5741394923620328
+            ],
+            "sourceDotError": 0.0
+          },
+          {
+            "rgb": [
+              106,
+              155,
+              250
+            ],
+            "sourceRoundedNormal": [
+              0,
+              1,
+              0
+            ],
+            "sourceRoundedTangent": [
+              1,
+              0,
+              0
+            ],
+            "handedness": -1,
+            "bitangent": [
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "tangentUnitNormal": [
+              -0.16879106487387602,
+              0.21589554809449255,
+              0.9617165324209217
+            ],
+            "modelUnitNormal": [
+              -0.16879106487387602,
+              0.9617165324209217,
+              0.21589554809449255
+            ],
+            "sourceDotError": 0.0
+          },
+          {
+            "rgb": [
+              128,
+              218,
+              218
+            ],
+            "sourceRoundedNormal": [
+              1,
+              0,
+              0
+            ],
+            "sourceRoundedTangent": [
+              0,
+              0.447,
+              -0.894
+            ],
+            "handedness": 1,
+            "bitangent": [
+              -0.0,
+              0.8944271909999159,
+              0.4472135954999579
+            ],
+            "tangentUnitNormal": [
+              0.003906637487839783,
+              0.7071013852990031,
+              0.7071013852990031
+            ],
+            "modelUnitNormal": [
+              0.7071013852990031,
+              0.6341978072023883,
+              0.31273115010806474
+            ],
+            "sourceDotError": 0.0
+          },
+          {
+            "rgb": [
+              233,
+              58,
+              145
+            ],
+            "sourceRoundedNormal": [
+              0.154,
+              -0.617,
+              0.772
+            ],
+            "sourceRoundedTangent": [
+              0.986,
+              0.046,
+              -0.161
+            ],
+            "handedness": -1,
+            "bitangent": [
+              -0.06380517875430716,
+              -0.7857419072210396,
+              -0.6152548694653085
+            ],
+            "tangentUnitNormal": [
+              0.8271838822383836,
+              -0.544922083559883,
+              0.13721059657982662
+            ],
+            "modelUnitNormal": [
+              0.8715094388381222,
+              0.38114828482916674,
+              0.3085405694359269
+            ],
+            "sourceDotError": -0.0008299999999999835
+          }
+        ]
+      }
+    }
+  ],
+  "newProjectCreated": false,
+  "ttsStarted": false,
+  "officialDuplicateDecision": "pending",
+  "historicalCodeCompileStatus": "not compiled; source examples must be scoped to originalshader-profile or adapted and actually validated later.",
+  "unverifiedFigureMatches": "Exercise4/5 external figures not inspected; do not invent correspondence answers.",
+  "independentPrimaryDocumentation": [
+    "https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-rasterizer-stage-rules",
+    "https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage",
+    "https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics",
+    "https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-mul",
+    "https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-normalize",
+    "https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-packing-rules"
+  ],
+  "clarifications": [
+    "Conceptual pipeline order is not a guarantee of physicalexecution order; earlydepth depends on the shader and state.",
+    "Clipz, interpolated/mappedz/w, depthrange, clearvalue and comparisonfunction are distinct.",
+    "Historical fixedalpha-test state is replaced by shaderdiscard in modernDirect3D; transparentdepth writes require explicitpolicy.",
+    "Pixel/sample coverage and top-leftshared-edge rules do not mean universalonepixelpertriangle or globallyuniquepixel.",
+    "Clipped polygons can contain duplicate/degenerate vertices; count uniquevalidvertices explicitly.",
+    "Frontface/winding configuration is independent of worldhandedness and may change under reflection; camera-relative normaldot is not universally normal.z.",
+    "Source25/33instructions, MAX_BONES40, manualunrolling and AoS/SoA claims are historical examples, not measured2026performance.",
+    "Legacy POSITION/COLOR/uniform/sampler2D/tex2D source must be named historical; modern SV_Position/SV_Target/inputformats require explicitadaptation.",
+    "float3+float can share a16byteconstantbuffer slot; matrixpacking is distinct from row/columnmul convention.",
+    "Source normalw0 comment contains a translationtypo; float4 normalization afterw1 yields a nonunitxyz normal.",
+    "Source Gouraud light-direction temporary requires float3, not scalarfloat; byte4 is not a promised built-inmodernHLSL inputtype.",
+    "Bone transform arrays, not allmeshvertices, are shaderconstant inputs in the skinningexample.",
+    "TBN transpose equals inverse only for an orthonormalbasis; mirrored handedness, GS, singularcases and nonuniformmetric require explicitcare.",
+    "Normal decoding/filtering/quantization requires nonzero normalization; zero lightdistance or zero halfvector requires a guard.",
+    "Gouraudvertex-color representation cannot recover per-pixelnormal detail by itself; do not turn this into a universalhardware prohibition.",
+    "HistoricalPS2DMA, scanout and doublebuffer examples remain explicitlyhistorical; no universalcurrentengineCPU/GPU percentage.",
+    "SourcePhar spelling and historicalfreePDF statements need author/currentavailability verification before recommendedpurchase or downloadlinks."
+  ]
+}

@@ -1,0 +1,22 @@
+// Run only after the original batch closes; preserve all valid old takes.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),b='projects/game-lighting-history-04/production',s='projects/game-lighting-history-04/script';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,''));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const write=(p,j)=>{if(fs.existsSync(path.join(root,p)))throw Error('Preserve '+p);fs.writeFileSync(path.join(root,p),JSON.stringify(j,null,2)+'\n');};
+const ep=b+'/part1-guided-actions-tts-execution-v169.json',old=read(ep),oldreq=read(b+'/part1-guided-actions-tts-request-v169.json');
+if(!old.endedAt||old.results.length!==37)throw Error('Original37 must finish before a scoped repair can be prepared');
+const hist='shared/output/gpu-handoff/'+old.leaseToken+'.json';
+if(read(hist).state!=='research_resume_verified'||fs.existsSync(path.join(root,'shared/output/GPU_HANDOFF.json')))throw Error('Actual GPU restoration and no active lease required');
+for(const r of old.results)if(sha(r.path)!==r.sha256)throw Error('Historical take changed '+r.id);
+const script=read(s+'/physical-part1-guided-actions.koen.v175.json');
+const ids=new Set(['shadow-wheel-surface',...old.results.filter(r=>!r.technicalTailGatePassed).map(r=>r.id)]);
+const selected=script.scenes.filter(r=>ids.has(r.id));if(selected.length!==ids.size)throw Error('Unknown repair id');
+for(const lang of ['ko','en'])write(s+`/physical-part1-scoped-repair.${lang}.v176.json`,{title:'현재 자료 명칭/실제 끝소리 제한 수정',scenes:selected.map(r=>({id:r.id,title:r.id,lines:[r[lang]],screenRole:r.role}))});
+const mf=read(b+'/part1-guided-actions-tts-manifest-v169.json'),dir='shared/output/narration/game-lighting-history-04/qwen3-1.7b-part1-scoped-repair-v176',stem='game-lighting-history-04-part1-scoped-repair-v176';
+mf.paths={...mf.paths,script:s+'/physical-part1-scoped-repair.ko.v176.json',scriptEn:s+'/physical-part1-scoped-repair.en.v176.json',narration:dir+'/'+stem+'.wav',captionsKo:dir+'/'+stem+'.srt',captionsEn:dir+'/'+stem+'.en.srt'};
+mf.tts={...mf.tts,outputDir:dir,filenameStem:stem,maxRenderAttempts:3,maxNewTokens:1536};
+const mpath=b+'/part1-scoped-repair-tts-manifest-v176.json';write(mpath,mf);
+const protects=[...oldreq.protectedInputs.map(x=>x.path),ep,hist,s+'/physical-part1-guided-actions.koen.v175.json',s+'/physical-part1-scoped-repair.ko.v176.json',s+'/physical-part1-scoped-repair.en.v176.json',mpath,b+'/part1-ferris-wording-direct-review-v175.json'];
+write(b+'/part1-scoped-repair-tts-request-v176.json',{preparedAt:new Date().toISOString(),slug:'game-lighting-history-04',manifestOverride:mpath,previousExecution:{path:ep,sha256:sha(ep)},repairIds:selected.map(r=>r.id),reason:'One observed Ferris-wheel wording correction plus only actual technical tail failures from completed37. No other takes repeated.',protectedInputs:[...new Set(protects)].map(path=>({path,sha256:sha(path)})),preservedTakes:old.results.filter(r=>!ids.has(r.id)),scenes:selected.map(r=>({id:r.id,path:dir+'/chunks/'+r.id+'-scene.wav'})),cpuThreads:2,gpuJobs:1,batchSize:1,researchRestoreRequired:true,allAsrApproved:false});
+console.log(JSON.stringify({repairIds:[...ids],preserved:37-ids.size,newJobStarted:false}));

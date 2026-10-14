@@ -1,0 +1,70 @@
+{
+  "status": "future-cpu-numerical-preparation-not-production-approval",
+  "atUtc": "2026-10-09T01:52:51.728626+00:00",
+  "target": "game-math-momentum-collisions",
+  "preparedSection": "12.3",
+  "checks": [
+    {
+      "name": "Impulse changes momentum, including the initial state",
+      "passed": true,
+      "detail": "m2kg,v0=4m/s,F10N,dt.3s: J3N·s, p8→11kg·m/s, v4→5.5m/s; p=J only if p0=0."
+    },
+    {
+      "name": "Equal impulse does not require equal force or duration",
+      "passed": true,
+      "detail": "10N for.3s and30N for.1s each give3N·s; no claim of equal maximum force/contact damage."
+    },
+    {
+      "name": "Variable vector force with a nonzero time origin",
+      "passed": true,
+      "detail": "F=(2t,3)N on[1,3], initial p=(5,-2): impulse(8,6),final p(13,4). Differentiate p(t) to recover force."
+    },
+    {
+      "name": "Mass weighting, not the geometric midpoint",
+      "passed": true,
+      "detail": "Masses1kg at0m and3kg at4m: COM3m; velocities3 and1m/s: total p6 and COM velocity1.5m/s."
+    },
+    {
+      "name": "Internal equal and opposite force preserves total momentum",
+      "passed": true,
+      "detail": "Internal ±10N for.2s moves momentum between two bodies: velocities5 and1/3m/s; total p stays6. An individual body does not conserve p."
+    },
+    {
+      "name": "System boundary determines external impulse",
+      "passed": true,
+      "detail": "Adding external4N for.2s changes total momentum by.8N·s; internal-force cancellation alone is insufficient."
+    },
+    {
+      "name": "Center of mass and relative motion are separate",
+      "passed": true,
+      "detail": "p=MvCOM and mass-weighted relative momentum is0; kinetic energy6J=COM4.5J+relative1.5J. Conserving p does not imply conserving kinetic energy."
+    },
+    {
+      "name": "Physics COM to graphics origin after rotation",
+      "passed": true,
+      "detail": "Local COM(2,0),world COM(5,3),90° rotation: graphics origin(5,1). Subtract the rotated offset, not the unrotated offset."
+    },
+    {
+      "name": "COM and center of gravity coincide only for uniform gravity",
+      "passed": true,
+      "detail": "Toy nonuniform field g=(10,20): center of gravity24/7m differs from COM3m; uniform g cancels out of the weighting."
+    }
+  ],
+  "source": {
+    "path": "tmp/game-math-part2-sources/3e10b1ffa61e816b9141de8f5b289c86.txt",
+    "sha256": "abac114b727c24a50e0514242eb4a3bf04bc50e5bbacd9297ebcb884a2f00b4b",
+    "readScope": "Full12.3,12.3.1,12.3.2 and closing correction callout; all cached text read; figures not inspected; fresh Notion comparison pending"
+  },
+  "clarifications": [
+    "Use net external force for a defined closed system in an inertial frame; constant total mass for M*aCOM=Fext. Open mass-transfer systems require momentum flux, not an unqualified rocket F=m*a claim.",
+    "Impulse is a momentum change, not force itself; integration constants and initial momentum are retained.",
+    "Momentum conservation is independent of kinetic-energy conservation; collision response is the next section, not inferred from this chapter.",
+    "Free rigid motion decomposes into translation of COM plus rotation about COM, but need not rotate without tumbling or precession.",
+    "Model origin and physics COM are distinct; transform the local COM offset with the actual orientation before subtracting it.",
+    "The Earth/person/fan analogies and Earth-Moon orbit are simplified systems, not measured contemporary celestial dynamics.",
+    "No heavy-object throwing demonstration is requested or created; original figure observations remain pending."
+  ],
+  "gpuWorkStarted": false,
+  "dependentNarrationWritten": false,
+  "formalDuplicateReview": "not started"
+}

@@ -1,0 +1,172 @@
+{
+  "status": "future-partial-chapter-source-and-independent-math-preparation",
+  "atUtc": "2026-10-09T00:17:19.498874+00:00",
+  "target": "game-math-velocity-derivatives",
+  "source": {
+    "pageId": "3e10b1ffa61e81d4bc3ee19712b63d65",
+    "path": "tmp/game-math-part2-sources/3e10b1ffa61e81d4bc3ee19712b63d65.txt",
+    "sha256": "db8cf6fa2e9786c85b283d29e03abbc52f146460ade0f0aa6bf99f0dad119fa3",
+    "wholeFetchedTextDirectlyRead": false,
+    "directlyReadInclusiveLineRanges": [
+      [
+        1,
+        703
+      ]
+    ],
+    "completeSourceSections": [
+      "11.1",
+      "11.2",
+      "11.3",
+      "11.4.1–11.4.7",
+      "11.5"
+    ],
+    "followingSection": "11.6introduction only; rest pending",
+    "cachedFetchDate": "2026-09-20; freshnative retrieval/verification before production remains pending"
+  },
+  "checks": [
+    {
+      "name": "source-quadratic-limit-and-unrounded-table",
+      "passed": true,
+      "evidence": {
+        "position": "-t^2+6t-1",
+        "differenceQuotient": "-2t-h+6 for h!=0",
+        "velocity": "-2t+6",
+        "at2point5": 1,
+        "units": "Sourcefur/min, not inferred gameworld units.",
+        "rows": [
+          {
+            "deltaT": 0.5,
+            "position": 8.0,
+            "displacement": 0.25,
+            "averageVelocity": 0.5
+          },
+          {
+            "deltaT": 0.1,
+            "position": 7.84,
+            "displacement": 0.09,
+            "averageVelocity": 0.9
+          },
+          {
+            "deltaT": 0.05,
+            "position": 7.7975,
+            "displacement": 0.0475,
+            "averageVelocity": 0.95
+          },
+          {
+            "deltaT": 0.01,
+            "position": 7.7599,
+            "displacement": 0.0099,
+            "averageVelocity": 0.99
+          },
+          {
+            "deltaT": 0.005,
+            "position": 7.754975,
+            "displacement": 0.004975,
+            "averageVelocity": 0.995
+          },
+          {
+            "deltaT": 0.001,
+            "position": 7.750999,
+            "displacement": 0.000999,
+            "averageVelocity": 0.999
+          }
+        ],
+        "roundingPolicy": "Calculate before displayrounding;0.004975/0.005=.995 and0.000999/0.001=.999."
+      }
+    },
+    {
+      "name": "exact-international-foot-and-time-conversion",
+      "passed": true,
+      "evidence": {
+        "internationalFootMeters": 0.3048,
+        "meters14point57InFeet": 47.80183727034121,
+        "kph188InFeetPerSecond": 171.33275007290754,
+        "sourceApproximation3point28083": "Approximateconversion, not exactdefinition.",
+        "milliseconds16InSeconds": 0.016,
+        "displacementAt3MetersPerSecond": 0.048
+      }
+    },
+    {
+      "name": "signed-displacement-versus-total-distance",
+      "passed": true,
+      "evidence": {
+        "contract": "1D,x0=0,v0=3m/s,a=-1m/s^2,t4s.",
+        "turnTime": 3,
+        "maxPosition": 4.5,
+        "finalPosition": 4,
+        "distance": 5,
+        "averageVelocity": 1,
+        "averageSpeed": 1.25,
+        "meaning": "Positiveposition is independent of velocitysign; return to start may have0averagevelocity with nonzerodistance."
+      }
+    },
+    {
+      "name": "power-linearity-and-domain-guards",
+      "passed": true,
+      "evidence": {
+        "examples": [
+          "d(3t^5-4t)/dt=15t^4-4",
+          "d(1/t+4/t^3)/dt=-1/t^2-12/t^4 for t!=0",
+          "d(constant)/dt=0 including t0"
+        ],
+        "guards": "Do not compute0*(t^-1) at t0 to prove constantderivative; state the constantfunction directly. Negativepowers require nonzero input."
+      }
+    },
+    {
+      "name": "radian-sine-polynomial-and-correct-factorial",
+      "passed": true,
+      "evidence": {
+        "polynomial": "x-x^3/3!+x^5/5!-x^7/7!",
+        "maximumSampledAbsoluteErrorOnMinus1To1": 2.7308396425285153e-06,
+        "alternatingSeriesBound": 2.7557319223985893e-06,
+        "sourceTypo": "d(x^5/5!)/dx=5x^4/5!=x^4/4!, not5x^4/4!.",
+        "scope": "Teachingpolynomial, not a claim of every currentmathlibraryimplementation; radians and range matter."
+      }
+    },
+    {
+      "name": "chain-rule-independent-variable",
+      "passed": true,
+      "evidence": {
+        "sourceExamples": [
+          "sin3x",
+          "sin(x^2)",
+          "exp(cosx+3x)",
+          "exp(sin3x+sin(x^2))"
+        ],
+        "correctDifferentiationVariable": "x",
+        "ifXIsTimeDependent": "Multiply each dx derivative by dx/dt.",
+        "slopeVsVerticalVelocity": "dy/dt=(dy/ds)(ds/dt); signedtrackparameter is not totaldistancetraveled."
+      }
+    },
+    {
+      "name": "finite-precision-is-not-the-limit",
+      "passed": true,
+      "evidence": {
+        "atTime": 2.5,
+        "deltaTooSmall": 1e-20,
+        "tPlusDeltaEqualsT": true,
+        "result": "Directfloatingdifference becomes0orundefined instead of mathematicalderivative1; smallerstep is not alwaysmoreaccurate.",
+        "corner": "x=abs(t) has distinct left/rightslopes at0; do not assign a uniqueinstantaneousvelocity there."
+      }
+    }
+  ],
+  "newProjectCreated": false,
+  "ttsStarted": false,
+  "officialDuplicateDecision": "pending",
+  "primaryReference": {
+    "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors",
+    "supports": "Internationalfoot=.3048m exactly; distinguish older U.S.survey foot. Not used for outdatedSIbaseunit definitions."
+  },
+  "clarifications": [
+    "Use a declaredcontinuousclassicalmodel; no claim thatspacetimequantization is proven or required.",
+    "Newton/Leibnizcalculus history is17thcentury; no15thcenturyclaim.",
+    "Masskg and weightN are distinct even underconstantgravity; J=N*m, notN*m^2.",
+    "Use same start/end times when comparingaveragevelocities; source tortoisefinish t6, not inconsistentt7.",
+    "General derivativedefinition is a two-sided limit where it exists; positiveforwardstep demonstration is not a proof for corners.",
+    "Slopeangle depends on graphaxis scales; units of dx/dt must remain explicit.",
+    "The finiteclimberdata are steps; smoothfittedsurvivalcurve is a separatemodel, with decreasingdropouts meaning Sderivative approaches0 frombelow.",
+    "Source happiness/finance sketches are illustrative, not measured empiricalfinancial advice or selectedinvestmentproducts.",
+    "Taylor equality/convergence is not guaranteed for everyfunction; source sin/cos/exp are appropriateexamples.",
+    "The source trainpositionaddition assumes straighttrack/nonrotating alignedaxes; a rotatingframe has additionalterms."
+  ]
+}

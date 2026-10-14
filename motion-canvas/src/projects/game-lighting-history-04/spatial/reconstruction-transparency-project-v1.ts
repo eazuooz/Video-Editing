@@ -1,0 +1,16 @@
+import {makeProject} from '@motion-canvas/core';
+import p0 from './reconstruction-proof0-v1?scene';
+import p1 from './reconstruction-proof1-v1?scene';
+import p2 from './reconstruction-proof2-v1?scene';
+import p3 from './reconstruction-proof3-v1?scene';
+import p4 from './reconstruction-proof4-v1?scene';
+import p5 from './reconstruction-proof5-v1?scene';
+import p6 from './transparency-proof0-v1?scene';
+import p7 from './transparency-proof1-v1?scene';
+import p8 from './transparency-proof2-v1?scene';
+import p9 from './transparency-proof3-v1?scene';
+import p10 from './transparency-proof4-v1?scene';
+import p11 from './transparency-proof5-v1?scene';
+import p12 from './transparency-proof6-v1?scene';
+import p13 from './transparency-proof7-v1?scene';
+export default makeProject({scenes:[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13]});

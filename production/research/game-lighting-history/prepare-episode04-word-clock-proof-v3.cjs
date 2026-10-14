@@ -1,0 +1,34 @@
+// Six changed models, current PCM and measured word anchors. Local technical
+// proof only: no final ratio, mixed audio, human listening or upload approval.
+const fs=require('fs'),crypto=require('crypto'),path=require('path'),cp=require('child_process');
+const root=path.resolve(__dirname,'../../..');process.chdir(root);
+const b='projects/game-lighting-history-04/production/',read=p=>JSON.parse(fs.readFileSync(p,'utf8')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+cp.execFileSync(process.execPath,['scripts/review-video-duplicates.cjs','game-lighting-history-04','--candidate-file','production/research/game-lighting-history/candidate-04.json','--check'],{stdio:'inherit'});
+const motionPath=b+'local/semantic-motion-draft-v2.json',m=read(motionPath),c=read(m.captionDraft.path),review=read(b+'semantic-motion-direct-review-v3.json'),captions=read(b+'caption-text-direct-review-v2.json'),contexts=read(b+'additive-context-direct-progress-v2.json');
+if(sha(motionPath)!==review.source.sha256||!review.technicalSentenceAnchorReadComplete||!review.all111CompleteParagraphsAnd348DisplayedWordIntervalsDirectlyRead||sha(m.captionDraft.path)!==captions.source.sha256||!captions.all374KoCueTextAndDisplayedDraftTimesDirectlyRead||!contexts.all24DirectlyCompared||!contexts.correctedContextsApproved||sha(m.audio.path)!==m.audio.sha256||sha(m.assembly.path)!==m.assembly.sha256)throw Error('Current exact review bindings required');
+const specs=[['05-pre-upscaling-grid','해상도와 픽셀 수'],['08-pre-mobile-local-memory','계산 순서와 메모리 위치'],['11-pre-path-probability','방향을 고르는 확률과 보정'],['12-pre-path-survival','생존 확률과 기대값'],['original-21a-3','합성 순서가 색을 바꿉니다'],['18-pre-generated-frame-count','계산한 프레임과 표시할 프레임']];
+const dir='production/research/game-lighting-history/local/episode04-word-clock-proof-v3',src='motion-canvas/src/projects/game-lighting-history-04/spatial';
+if(fs.existsSync(dir))throw Error('Existing proof files preserved');
+const wav=fs.readFileSync(m.audio.path);if(wav.toString('ascii',0,4)!=='RIFF'||wav.toString('ascii',8,12)!=='WAVE')throw Error('PCM WAVE required');
+let format,data;for(let at=12;at+8<=wav.length;){const id=wav.toString('ascii',at,at+4),n=wav.readUInt32LE(at+4);if(id==='fmt ')format=wav.subarray(at+8,at+8+n);if(id==='data')data=wav.subarray(at+8,at+8+n);at+=8+n+(n%2);}
+if(!format||!data||format.readUInt16LE(0)!==1||format.readUInt16LE(2)!==1||format.readUInt32LE(4)!==24000||format.readUInt16LE(14)!==16||data.length!==m.audio.samples*2)throw Error('Exact mono24k PCM16 required');
+fs.mkdirSync(dir,{recursive:true});let cursor=0;const blocks=[],scenes=[];
+for(const [i,[id,title]]of specs.entries()){
+ const p=m.paragraphs.find(p=>p.id===id),entry=c.paragraphs.find(p=>p.id===id);if(!p||!entry)throw Error('Missing paragraph');
+ const samples=entry.endSample-entry.startSample,frames=Math.ceil(samples/400),clip=data.subarray(entry.startSample*2,entry.endSample*2),padding=frames*400-samples;
+ blocks.push(clip,Buffer.alloc(padding*2));
+ const frame=t=>Math.max(0,Math.min(frames,Math.round((t-p.from)*60)));
+ const cues=c.cues.filter(x=>x.entryId===id).map(x=>({fromFrame:frame(x.from),toFrame:frame(x.to),text:x.text}));
+ const stages=p.stages.map(s=>({fromFrame:frame(s.from),toFrame:frame(s.to),progressFrom:s.progressFrom,progressTo:s.progressTo,anchor:s.anchor,wordTimesDirectlyReviewed:true}));
+ const chapter={id:'계산 예시 '+(i+1),model:p.model,prerequisiteId:p.prerequisiteId??undefined,frames,currentAudioSha256:m.audio.sha256,boundAudioSha256:m.audio.sha256,allWholeAndIndependentContextTextCompared:true,captionWordTimesDirectlyReviewed:true,paragraphs:[{fromFrame:0,toFrame:frames,mode:p.mode??0,title,stages}],cues};
+ const wrapper=src+'/episode04-word-clock-scope'+i+'-v3.tsx';if(fs.existsSync(wrapper))throw Error('Prior wrapper preserved');
+ fs.writeFileSync(wrapper,"import {narratedScene04} from './narrated-runtime-v1';\nexport default narratedScene04("+JSON.stringify(chapter,null,2)+");\n");
+ scenes.push({id,title,wrapper,fromFrame:cursor,toFrame:cursor+frames,frames,sourceSamples:[entry.startSample,entry.endSample],originalPcmSha256:crypto.createHash('sha256').update(clip).digest('hex'),silentPaddingSamples:padding,stages,cues,scope:id==='original-21a-3'?'Complete whole21a plus complete independent tail21a texts directly compared; numerical paragraph3 is covered by whole21a, not by the tail context. No independent numerical-context claim.':'Current full new take and corrected complete adjacent context directly compared.'});cursor+=frames;
+}
+const pcm=Buffer.concat(blocks),head=Buffer.alloc(44);head.write('RIFF');head.writeUInt32LE(pcm.length+36,4);head.write('WAVE',8);head.write('fmt ',12);head.writeUInt32LE(16,16);head.writeUInt16LE(1,20);head.writeUInt16LE(1,22);head.writeUInt32LE(24000,24);head.writeUInt32LE(48000,28);head.writeUInt16LE(2,32);head.writeUInt16LE(16,34);head.write('data',36);head.writeUInt32LE(pcm.length,40);
+const audio=dir+'/narration.wav';fs.writeFileSync(audio,Buffer.concat([head,pcm]));
+const project=src+'/episode04-word-clock-scope-v3-project.ts';fs.writeFileSync(project,"import {makeProject} from '@motion-canvas/core';\n"+scenes.map((s,i)=>"import p"+i+" from './episode04-word-clock-scope"+i+"-v3?scene';").join('\n')+"\nexport default makeProject({scenes:["+scenes.map((s,i)=>'p'+i).join(',')+"],audio:"+JSON.stringify('/@fs/'+root.replace(/\\/g,'/')+'/'+audio)+"});\n");
+const meta=read(src+'/additive-prerequisite-project-v1.meta');meta.shared.range=[0,(cursor-1)/60];fs.writeFileSync(project.replace(/\.ts$/,'.meta'),JSON.stringify(meta,null,2)+'\n');
+fs.writeFileSync('motion-canvas/tsconfig.game-lighting-history04-word-clock-v3.json',JSON.stringify({extends:'./tsconfig.json',include:['src/env.d.ts',project.replace('motion-canvas/',''),...scenes.map(s=>s.wrapper.replace('motion-canvas/',''))]},null,2)+'\n');
+const rec={preparedAt:new Date().toISOString(),scope:'Six changed-model narration-timed local proofs. Byte-identical full paragraph PCM with only ceil-frame silent padding. Not a final render or whole-series approval.',motion:{path:motionPath,sha256:sha(motionPath)},captionDraft:m.captionDraft,currentAudio:m.audio,currentAssembly:m.assembly,review:{path:b+'semantic-motion-direct-review-v3.json',sha256:sha(b+'semantic-motion-direct-review-v3.json')},scenes,totalFrames:cursor,proofAudio:{path:audio,sha256:sha(audio),samples:pcm.length/2},project,models:['additive-prerequisite-model-v1.tsx','transparency-model-v3.tsx','narrated-runtime-v1.tsx'].map(f=>({path:src+'/'+f,sha256:sha(src+'/'+f)})),finalTimingApproved:false,finalMixedAsrApproved:false,allFinalPixelsReviewed:false,humanListeningApproved:false,newTts:0,newGitImages:0};
+fs.writeFileSync(b+'word-clock-proof-plan-v3.json',JSON.stringify(rec,null,2)+'\n');console.log(JSON.stringify({scenes:scenes.length,totalFrames:cursor,seconds:cursor/60,project,newTts:0,approved:false}));

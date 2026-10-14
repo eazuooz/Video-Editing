@@ -1,0 +1,49 @@
+"""Current pair: all 36 directly-reviewed/current-sample windows, no automatic gate bypass."""
+from pathlib import Path
+import importlib.util,hashlib,json,psutil,os
+spec=importlib.util.spec_from_file_location('common',Path(__file__).with_name('review-media-common-v15.py'))
+m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+ROOT=m.ROOT;P=ROOT/'projects/game-lighting-history-04/production'
+OUT=ROOT/'production/research/game-lighting-history/local/part1-review-pair-v293'
+PP=P/'part1-final-input-plan-v288.json';plan=m.read(PP)
+settings=m.read(P/'part1-final-mix-settings-v289.json')
+AP=P/'part1-final-current-mixed-asr-direct-review-v292.json';approval=m.read(AP)
+assert approval['allWholeAndIndependentTextsDirectlyCompared'] and approval['allWordEndingsAndTimestampsCompared']
+assert approval['finalMixedAsrApproved'] and approval['allObservedRecognitionConcernsResolved'] and approval['noRemainingContentFailures'] and approval['all36CurrentMixWindowSamplesExact']
+assert approval['currentMixSha256']==settings['wavSha256']==m.sha(ROOT/settings['wav']) and approval['planSha256']==m.sha(PP)
+assert len(approval['records'])==36 and approval['mainWindows']==30 and approval['additionalCompleteContexts']==6
+assert approval['bitExactReusedWindows']==33 and approval['freshCurrentWindows']==3
+for r in approval['records']:
+ assert r['currentMixSamplesExact'] and m.sha(ROOT/r['path'])==r['sha256']
+ assert r['expectedParagraphsAndFullActualTextDirectlyRead'] and r['allWordTimestampsDirectlyRead'] and r['observedResolution'].strip()
+ e=r['directReviewEvidence'];assert m.sha(ROOT/e['path'])==e['sha256']
+for key in ['windowReuse','freshDirectReview','originalDirectProgress','originalArtifactProgress','independentNumericalLexicalResolution','pcmPreservation']:
+ e=approval[key];assert m.sha(ROOT/e['path'])==e['sha256']
+currentExecution=m.read(P/'part1-current-mixed-asr-execution-v290.json')
+assert currentExecution['status']=='complete' and currentExecution['exitCode']==0 and len(currentExecution['results'])==3
+assert currentExecution['mixSha256']==settings['wavSha256'] and currentExecution['planSha256']==m.sha(PP)
+w=currentExecution['worker'];assert not psutil.pid_exists(w['pid']) or abs(psutil.Process(w['pid']).create_time()-w['createTime'])>.01
+pcm=m.read(ROOT/approval['pcmPreservation']['path'])
+assert pcm['allSelectedPcmValuesExact'] and pcm['allOriginalChapterSamplesPartitionedOnce'] and pcm['allOtherNormalized48kSamplesExact']
+visualproof=m.read(P/'part1-final-visual-build-v289.json')
+assert visualproof['planSha256']==m.sha(PP) and visualproof['wholeDecodeExitCode']==0 and visualproof['all89148PtsExact1500']
+visual=ROOT/visualproof['path'];assert m.sha(visual)==visualproof['sha256']
+OP=P/'part1-input-overrides-v289.json';overrides=m.read(OP);assert overrides['inputPlan']['sha256']==m.sha(PP)
+visualproof['inputOverrides']={'path':m.rel(OP),'sha256':m.sha(OP)}
+oldvisual=m.read(P/'part1-final-visual-build-v250.json');moving=m.read(P/'part1-corrected-moving-input-direct-review-v257.json')
+assert moving['allCorrectedEncodedMovingPixelsReviewed'] and moving['visualBuildSha256']==m.sha(P/'part1-final-visual-build-v250.json') and len(moving['records'])==5
+currentCuts={r['id']:r for r in visualproof['cuts']};oldcuts={r['id']:r for r in oldvisual['cuts']}
+assert len(currentCuts)==94
+for key,r in currentCuts.items():
+ assert m.sha(ROOT/r['path'])==r['sha256']
+ if key!='outer-comparison-before:model':assert r['sha256']==oldcuts[key]['sha256']
+for r in oldvisual['repairs']:
+ assert currentCuts[r['id']]['sha256']==r['sha256']
+ assert any(q['id']==r['id'] and q['sha256']==r['sha256'] and q['normalSpeedPlaybackDirectlyObserved'] and q['movingPixelsApproved'] for q in moving['records'])
+guide=m.read(P/'part1-selected-guide-moving-review-v289.json')
+assert guide['planSha256']==m.sha(PP) and guide['normalSpeedPlaybackObserved'] and guide['actualProjectedTopSideFaces'] and guide['displaySequenceArrowProgressObserved'] and guide['separateGameStateUpdateTrackClear'] and guide['final81FramesReadableComparisonHold']
+assert guide['video']==next(c['video'] for c in plan['cuts'] if c['id']=='outer-comparison-before:model')
+layout=m.read(P/'part1-caption-layout-v288.json');ass=ROOT/layout['ass']['path']
+assert m.sha(ass)==layout['ass']['sha256'] and layout['cueCount']==335 and layout['planSha256']==m.sha(PP)
+sem=m.read(P/'part1-semantic-caption-review-v291.json');assert sem['approved'] and sem['manualSemanticReview'] and len(sem['paragraphs'])==77 and sem['planSha256']==m.sha(PP)
+audio=ROOT/settings['aac'];assert m.sha(audio)==settings['aacSha256']

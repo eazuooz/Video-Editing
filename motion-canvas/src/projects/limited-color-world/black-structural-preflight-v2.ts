@@ -1,0 +1,13 @@
+import {makeProject} from '@motion-canvas/core';
+import scene0 from './scenes/01-overview?scene';
+import scene1 from './scenes/02-contours?scene';
+import scene2 from './scenes/03-pattern-and-erasing?scene';
+import scene3 from './scenes/03b-static-to-state?scene';
+import scene4 from './scenes/04-height-and-motion?scene';
+import scene5 from './scenes/05-state-not-hue?scene';
+import scene6 from './scenes/06-route-information?scene';
+import scene7 from './scenes/06b-outline-to-contrast?scene';
+import scene8 from './scenes/07-local-contrast?scene';
+import scene9 from './scenes/07b-cues-to-check?scene';
+import scene10 from './scenes/08-check-and-conclusion?scene';
+export default makeProject({name:'limited-color-world-black-structural-preflight-v2',scenes:[scene0,scene1,scene2,scene3,scene4,scene5,scene6,scene7,scene8,scene9,scene10]});

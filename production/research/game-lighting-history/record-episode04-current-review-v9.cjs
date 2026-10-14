@@ -1,0 +1,37 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),b='production/research/game-lighting-history',base='projects/game-lighting-history-04/production';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const write=(p,v)=>{if(fs.existsSync(path.join(root,p)))throw Error('Preserve existing '+p);fs.writeFileSync(path.join(root,p),JSON.stringify(v,null,2)+'\n');};
+const previous=b+'/episode04-current-duplicate-rereview-v8.json',old=read(previous),snapshot=read(b+'/local/episode04-input-delta-v9.json');
+const expected={
+ 'projects/game-math-bounds-transform-v2/project.json':{sha256:'59fd00683b1edc7d34d36a62d7e640dea0663ea631f7c713b7038c8d2392529e',reason:'Affine componentwise box bounds and abs(A)e enclosure, not virtual shadow page addressing or ray/sample reconstruction; preparing, no new upload.'},
+ 'projects/game-math-interpolation-paths-v2/project.json':{sha256:'66047a2e20680be2570d789db383a85710ec455dfac89116944ae2045f854492',reason:'Same orientation endpoints, shortest quaternion path and timing functions; distinct from temporal image reconstruction and frame generation. Actual private _SzbJR4R6OI newly observed in Studio.'},
+ 'projects/game-math-lines-circles-v2/project.json':{sha256:'fa95755ae4eeb49c8f872bf64f509cecb9d1fff63a5d1047e3eb42c3e8c2e2cb',reason:'Geometric line/circle/bisector and parameter versus distance, not light transport or image formation; preparing, no new upload.'},
+ 'projects/game-math-rotation-conversions-v2/project.json':{sha256:'805356e87b30758fe83d64b401eca1bab91142872a8c30d2a3652413cfc68987',reason:'Same rotation across Euler/quaternion/axis-angle/matrix with explicit Hamilton/YXZ conventions and round-trip verification; distinct from rendering-history. Actual private n-k7zwaSum0 newly observed in Studio.'}
+};
+if(snapshot.projects.length!==71||snapshot.currentFiles.length!==443||snapshot.deleted.length||snapshot.delta.length!==4)throw Error('Unread inventory change');
+for(const d of snapshot.delta)if(!expected[d.path]||expected[d.path].sha256!==d.sha256)throw Error('Unexpected full-read delta '+d.path);
+for(const f of snapshot.currentFiles)if(sha(f.path)!==f.sha256)throw Error('Input changed after full read '+f.path);
+const studioRefresh={observedAt:new Date().toISOString(),method:'CUA actual browser4 tab4; visible filtered Studio rows and descriptions directly read',query:'회전 보간',rows:[
+ {id:'mGBYkpSC9Mw',title:'게임수학 Part 2 · 3D 회전 ④ 자연스러운 보간과 회전 표현 변환',visibility:'scheduled',date:'2026-10-19',duration:'19:10'},
+ {id:'_SzbJR4R6OI',title:'게임수학 Part 2 · 회전 보간 ① 두 자세 사이의 경로와 속도',visibility:'private',date:'2026-10-10',duration:'15:18',description:'Same body/reference axes, short angular path, linear/quaternion interpolation, time function and midpoint examples.'},
+ {id:'n-k7zwaSum0',title:'게임수학 Part 2 · 회전 보간 ② 같은 자세를 다른 표현으로 옮기기',visibility:'private',date:'2026-10-10',duration:'14:02',description:'Same body forward/up, coordinate and multiplication conventions, representation conversion and inverse; rotate/restore direction and length.'}
+],platformSettingsModified:false,fullForeignPixelsOrAudioApproved:false};
+const output=b+'/episode04-current-duplicate-rereview-v9.json';
+const reason='Read all four changed full manifests in the71-project/443-input current inventory. The439 other fingerprints, including all previously directly compared KO/EN scripts, remain byte-identical; no new/deleted input or changed script. New interpolation private IDs _SzbJR4R6OI and n-k7zwaSum0 plus scheduled baseline mGBYkpSC9Mw were directly observed through CUA with actual titles/descriptions/status. Geometry, affine box enclosure and rotation path/representation lessons answer different viewer questions from rendering-history04 shadow storage, visibility, temporal reconstruction, path sampling, transparency, DLSS through5, display transform and frame debugging. Preserve prior full script and26-row renderer-topic Studio comparison evidence; this distinctness review does not approve foreign final media/settings/rights. Evidence '+output;
+write(output,{schemaVersion:1,reviewedAt:new Date().toISOString(),previous:{path:previous,sha256:sha(previous)},inputFiles:snapshot.currentFiles,changedManifests:Object.entries(expected).map(([p,v])=>({path:p,...v,wholeManifestDirectlyRead:true})),unchangedInputCount:439,allUnchangedEvidenceHashesMatch:true,changedScripts:0,newInputs:0,deletedInputs:0,studio:old.studio,studioRefresh,comparison:reason,decision:'distinct',foreignFilesModified:false,finalEpisode04Approved:false});
+const args=['scripts/review-video-duplicates.cjs','game-lighting-history-04','--candidate-file',b+'/candidate-04.json'];
+cp.execFileSync(process.execPath,[...args,'--decision','distinct','--reason',reason,'--studio-evidence',output],{cwd:root,stdio:'inherit'});
+cp.execFileSync(process.execPath,[...args,'--check'],{cwd:root,stdio:'inherit'});
+const prior=base+'/additive-tail-repair-request-v2.json',request=read(prior);
+request.preparedAt=new Date().toISOString();request.previousRequest={path:prior,sha256:sha(prior)};
+request.protectedInputs=request.protectedInputs.map(f=>f.path===previous?{path:output,sha256:sha(output)}:f.path==='production/preflight/game-lighting-history-04.json'?{...f,sha256:sha(f.path)}:f);
+request.duplicateEvidence=output;write(base+'/additive-tail-repair-request-v3.json',request);
+const execution=read(base+'/additive-tts-execution-v1.json'),hpath='shared/output/gpu-handoff/'+execution.leaseToken+'.json',handoff=read(hpath);
+if(execution.exitCode!==1||execution.results.length!==24||handoff.state!=='research_resume_verified')throw Error('Observed24-take gate failure and verified restoration required');
+const checkpoint=b+'/checkpoint.json',c=read(checkpoint);c.updatedAt=new Date().toISOString();c.stage='episode04-additive24-generated22-tail-pass2-scoped-repair-prepared-current71';
+c.episode04AdditiveNarration={...c.episode04AdditiveNarration,currentState:'24-generated22-stored-tail-pass2-fail-research-queue-restored',execution:{path:base+'/additive-tts-execution-v1.json',sha256:sha(base+'/additive-tts-execution-v1.json')},generatedNewChunks:24,technicalTailPassed:22,technicalTailFailed:execution.results.filter(r=>!r.technicalTailGatePassed),generationComplete:false,closedSession:63161,researchHandoff:{path:hpath,sha256:sha(hpath),state:handoff.state,resumedQueue:handoff.resumedQueue,resumedStatus:handoff.resumedStatus},nextScopedRequest:base+'/additive-tail-repair-request-v3.json',duplicateEvidence:output,original87Regenerated:false,fullNewAsrApproved:false,finalMixedAsrApproved:false,finalApproved:false};
+c.ownedJobsRunning=[];c.ownedGpuJobs=0;c.next='Run only the two observed failed additions using immutable repair requestv3 after safe research boundary; preserve22 passed and all87 original PCM; verify actual research restore, select24 takes, then full+independent CPU ASR.';
+const tmp=path.join(root,checkpoint+'.writing-'+process.pid);fs.writeFileSync(tmp,JSON.stringify(c,null,2)+'\n');fs.renameSync(tmp,path.join(root,checkpoint));
+console.log(JSON.stringify({review:output,request:base+'/additive-tail-repair-request-v3.json',retakes:request.scenes.map(s=>s.id),prior24Preserved:true,finalApproved:false}));

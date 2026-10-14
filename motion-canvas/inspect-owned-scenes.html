@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Owned scene timing inspection</title></head><body><script type="module">
+import {Renderer} from '@motion-canvas/core';
+window.inspectOwnedScenes=async()=>{
+ const {default:project}=await import('/src/projects/game-reward-planning/measured-reel-project.ts?project');
+ const errors=[];project.logger.onLogged.subscribe(e=>{if(e.level==='error')errors.push({message:e.message,remarks:e.remarks});});
+ const renderer=new Renderer(project);renderer.playback.fps=60;await renderer.playback.recalculate();
+ return {fps:60,durationFrames:renderer.playback.duration,scenes:renderer.playback.scenes.current.map(s=>({name:s.name,firstFrame:s.firstFrame,lastFrame:s.lastFrame,...s.cache.current})),errors};
+};
+</script></body></html>

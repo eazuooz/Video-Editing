@@ -1,0 +1,25 @@
+// Preserve all six original takes; request only the observed failed courtyard tail.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),base='projects/game-lighting-history-04/production/';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,''));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const ref=p=>({path:p,sha256:sha(p)});
+const write=(p,j)=>{const f=path.join(root,p);if(fs.existsSync(f))throw Error('Preserve existing '+p);fs.writeFileSync(f,JSON.stringify(j,null,2)+'\n');};
+const sourceRequest=base+'hogwarts-observation-tts-request-v85.json',sourceExecution=base+'hogwarts-observation-tts-execution-v85.json';
+const r=read(sourceRequest),e=read(sourceExecution),history='shared/output/gpu-handoff/'+e.leaseToken+'.json';
+if(!e.endedAt||e.exitCode!==1||e.results?.length!==6||!e.error.includes('scoped observation tail repair'))throw Error('Inspect the completed six-take failure first');
+if(read(history).state!=='research_resume_verified'||read(history).ttsExitCode!==1)throw Error('Research restoration required');
+if(e.requestSha256!==sha(sourceRequest))throw Error('Original request changed');
+for(const x of r.protectedInputs)if(sha(x.path)!==x.sha256)throw Error('Protected input changed '+x.path);
+for(const x of e.results)if(sha(x.path)!==x.sha256)throw Error('Original take changed '+x.id);
+const failures=e.results.filter(x=>!x.technicalTailGatePassed);
+if(failures.length!==1||failures[0].id!=='hogwarts-courtyard-ui')throw Error('Only the observed courtyard repair is scoped');
+const m=read(r.manifestOverride),ko=read(m.paths.script),en=read(m.paths.scriptEn),id=failures[0].id;
+const kp='projects/game-lighting-history-04/script/hogwarts-tail.ko.v104.json',ep='projects/game-lighting-history-04/script/hogwarts-tail.en.v104.json';
+write(kp,{...ko,scenes:ko.scenes.filter(x=>x.id===id)});write(ep,{...en,scenes:en.scenes.filter(x=>x.id===id)});
+const dir='shared/output/narration/game-lighting-history-04/qwen3-1.7b-hogwarts-tail-v104',stem='game-lighting-history-04-hogwarts-tail-v104';
+const mp=base+'hogwarts-tail-manifest-v104.json';
+write(mp,{...m,paths:{...m.paths,script:kp,scriptEn:ep,narration:dir+'/'+stem+'.wav',captionsKo:dir+'/'+stem+'.srt',captionsEn:dir+'/'+stem+'.en.srt'},tts:{...m.tts,outputDir:dir,filenameStem:stem,maxRenderAttempts:3,maxNewTokens:1536,maxNewTokensReason:'Single observed courtyard tail failure; preserve all six originals and every supplied word.'}});
+const output=base+'hogwarts-tail-request-v104.json';
+write(output,{schemaVersion:1,preparedAt:new Date().toISOString(),slug:'game-lighting-history-04',sourceRequest:ref(sourceRequest),sourceExecution:ref(sourceExecution),sourceResearchRestoration:ref(history),manifestOverride:mp,protectedInputs:[...r.protectedInputs,ref(kp),ref(ep),ref(mp)],originalSixTakeFiles:e.results.map(x=>ref(x.path)),observedFailures:failures.map(x=>({id:x.id,tailRatio:x.tailRatio,tailDecayMs:x.tailDecayMs,technicalTailGatePassed:false})),scenes:[{id,path:dir+'/chunks/'+id+'-scene.wav'}],thresholdChanged:false,scriptWordsChanged:false,originalPcmRegenerated:false,wholeAndIndependentAsrRequired:true});
+console.log(JSON.stringify({output,failedOnly:id,ttsStarted:false}));

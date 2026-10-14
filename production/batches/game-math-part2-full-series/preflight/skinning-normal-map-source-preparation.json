@@ -1,0 +1,175 @@
+{
+  "status": "future-source-and-independent-math-preparation",
+  "preparedAtUtc": "2026-10-08T22:19:16.426319+00:00",
+  "target": "game-math-skinning-normal-map",
+  "sources": [
+    {
+      "pageId": "3e10b1ffa61e8152a895c0dc5c84dce5",
+      "path": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e8152a895c0dc5c84dce5.txt",
+      "sha256": "3a0e3b7cc9e284e9e56977f6af32992e2a01e0b162d2adb3f36b1565e652fc4a",
+      "wholeFetchedTextDirectlyRead": true,
+      "notionVerification": "Do not imply verified-page status; metadata/rights remain separate."
+    },
+    {
+      "pageId": "3e10b1ffa61e81e78763ecf6583c03b9",
+      "path": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e81e78763ecf6583c03b9.txt",
+      "sha256": "20e9c00f3e7e49377157756e729f4d3d25113c46773b28f061c8b76e49c7281d",
+      "wholeFetchedTextDirectlyRead": true,
+      "notionVerification": "Do not imply verified-page status; metadata/rights remain separate."
+    }
+  ],
+  "checks": [
+    {
+      "name": "bind-space-to-current-model-and-weighted-position",
+      "passed": true,
+      "evidence": {
+        "contract": "Column vectors; all bones in common model coordinates; glTF node-output conventions are separate.",
+        "bindVertex": [
+          3.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "rigidCandidates": [
+          [
+            3.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            2.0,
+            1.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "weights": [
+          0.6,
+          0.4
+        ],
+        "weightedPosition": [
+          2.6,
+          0.4,
+          0
+        ],
+        "restPalette": "identity; inverse bind is applied first"
+      }
+    },
+    {
+      "name": "rigid-bones-do-not-guarantee-rigid-blend",
+      "passed": true,
+      "evidence": {
+        "individualDeterminants": [
+          1.0,
+          1.0
+        ],
+        "blendDeterminant": 0.0,
+        "normalizationGuardRequired": true,
+        "scope": "Independent LBS counterexample; do not call weighted rotations SLERP or promise general exact surface normals."
+      }
+    },
+    {
+      "name": "illustrative-unpadded-record-memory",
+      "passed": true,
+      "evidence": {
+        "assumptions": "int32,float32,Vector3=three floats; four influences; no padding/compression",
+        "separateBonePositionsAndNormalsBytes": 96,
+        "singleBindPositionAndNormalBytes": 24,
+        "reductionBytes": 72,
+        "fourInfluences": "Example cap, not a universal hardware limit"
+      }
+    },
+    {
+      "name": "eight-bit-normal-decoding-is-quantized",
+      "passed": true,
+      "evidence": {
+        "encoded": [
+          37,
+          128,
+          218
+        ],
+        "decoded": [
+          -0.7098039215686274,
+          0.0039215686274509665,
+          0.7098039215686274
+        ],
+        "unit": [
+          -0.7071013852990031,
+          0.003906637487839783,
+          0.7071013852990031
+        ],
+        "formula": "2c/255-1 then nonzero normalization",
+        "sourceApproximation": [
+          -0.707,
+          0,
+          0.707
+        ]
+      }
+    },
+    {
+      "name": "negative-uv-determinant-preserves-both-axis-signs",
+      "passed": true,
+      "evidence": {
+        "determinant": -1.0,
+        "tangent": [
+          -2.0,
+          -0.0,
+          -0.0
+        ],
+        "bitangent": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "handedness": -1.0,
+        "wrongIfDenominatorDropped": {
+          "tangent": [
+            2.0,
+            0.0,
+            0.0
+          ],
+          "bitangent": [
+            -0.0,
+            -1.0,
+            -0.0
+          ]
+        },
+        "guards": [
+          "zero UV determinant",
+          "zero accumulated tangent",
+          "zero normal",
+          "mirrored seam duplication"
+        ]
+      }
+    },
+    {
+      "name": "unit-axes-alone-do-not-make-transpose-an-inverse",
+      "passed": true,
+      "evidence": {
+        "unitButNonorthogonal": true,
+        "requires": "Orthogonalize with a nonzero Gram-Schmidt tangent and matched handedness; otherwise use a valid inverse in the declared space."
+      }
+    }
+  ],
+  "primaryReferences": [
+    {
+      "url": "https://terathon.com/blog/tangent-space.html",
+      "supports": "Signed UV determinant,TBN inverse,Gram-Schmidt and per-vertex handedness."
+    },
+    {
+      "url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#skins",
+      "supports": "LBS joint weights and inverse-bind ordering; bitangent uses tangent.w."
+    }
+  ],
+  "sourceCorrections": [
+    "Do not combine originalTomb Raider with PlayStation2 as a current platform fact.",
+    "Treat original skinning normal transform and performance observations as an approximation/history,not a universal2026 prescription.",
+    "Do not discard negative UV determinant sign or divide by a zero determinant.",
+    "Source75%/25% tooling split is an authors historical observation,not a measured current industry statistic.",
+    "Normal-map vector channels and UV y conventions must match; encoded images are not measured proprietary game internals."
+  ],
+  "completeDuplicateAndNativeChannelReview": "pending-before-new-production",
+  "newProjectCreated": false,
+  "ttsStarted": false
+}

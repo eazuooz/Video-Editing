@@ -1,0 +1,11 @@
+import {makeProject} from '@motion-canvas/core';
+import p0 from './path-budget-proof0-v1?scene';
+import p1 from './path-budget-proof1-v1?scene';
+import p2 from './path-budget-proof2-v1?scene';
+import p3 from './path-budget-proof3-v1?scene';
+import p4 from './path-budget-proof4-v1?scene';
+import p5 from './path-budget-proof5-v1?scene';
+import p6 from './path-budget-proof6-v1?scene';
+import p7 from './path-budget-proof7-v1?scene';
+import p8 from './path-budget-proof8-v1?scene';
+export default makeProject({scenes:[p0,p1,p2,p3,p4,p5,p6,p7,p8]});

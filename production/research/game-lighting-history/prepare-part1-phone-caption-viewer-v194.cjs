@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),out='production/research/game-lighting-history/local/part1-phone-caption-review-v194';
+const input='projects/game-lighting-history-04/production/part1-caption-phrases-v194.json';
+const p=JSON.parse(fs.readFileSync(path.join(root,input),'utf8'));
+const rows=p.rows.filter(r=>r.id==='fortnite-mobile-test'||r.id==='fortnite-normal-material').flatMap(r=>r.cues.map((c,i)=>({...c,entryId:r.id,index:i+1,image:'projects/game-lighting-history-04/production/local/part1-mobile-framing-v173/'+(r.id==='fortnite-mobile-test'?'phone-rock.png':'phone-wall.png')})));
+if(fs.existsSync(path.join(root,out)))throw Error('Preserve viewer');fs.mkdirSync(path.join(root,out),{recursive:true});
+const html=`<!doctype html><html lang="ko"><meta charset="utf-8"><title>④-1 모바일 자막 여백 초안 검수</title><style>
+body{background:#202426;color:#fff;font-family:'Malgun Gothic',sans-serif;margin:20px}select{font:18px 'Malgun Gothic';max-width:95vw}#stage{position:relative;width:960px;height:540px;overflow:hidden;background:black;margin-top:20px}#stage img{width:100%;height:100%}#caption{position:absolute;box-sizing:border-box;left:480px;top:485px;transform:translate(-50%,-50%);background:#fff;color:#080b09;border:1.5px solid #161b18;box-shadow:7px 7px 0 #073c32;padding:5.5px 11px;font-family:'Malgun Gothic';font-size:24px;line-height:31px;text-align:center;white-space:pre}p{max-width:960px}#detail{white-space:pre-wrap}
+</style><h1>고정 하단 자막 · 모바일 UI 여백</h1><p>960×540 표시(원본1920×1080의½). 동일48px 서체·박스·(960,970) 위치. 정지 구성 검수이며 최종 영상 픽셀/타이밍 승인이 아닙니다.</p><label>자막 문장 <select id="pick"></select></label><div id="stage"><img id="frame"><div id="caption"></div></div><p id="detail"></p><script>
+const rows=${JSON.stringify(rows).replaceAll('<','\\u003c')},pick=document.querySelector('#pick');rows.forEach((r,i)=>pick.add(new Option(r.entryId+' / '+r.index+' / '+r.text.replaceAll('\\n',' '),i)));
+function show(){const r=rows[Number(pick.value)];document.querySelector('#frame').src='/@fs/D:/Github/Video-Editing/'+r.image;document.querySelector('#caption').textContent=r.text;document.querySelector('#caption').style.width=r.boxWidth/2+'px';document.querySelector('#detail').textContent='박스 폭 '+r.boxWidth+'px / 제한980px. 하단 버튼 영역과 텍스트·그림자 여백 직접 검수 필요. 초안/최종 승인false.'}pick.onchange=show;show();</script></html>`;
+fs.writeFileSync(path.join(root,out,'index.html'),html);
+fs.writeFileSync(path.join(root,out,'plan.json'),JSON.stringify({preparedAt:new Date().toISOString(),input:{path:input,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,input))).digest('hex')},rows,newImages:0,encodedPixels:false,allReviewed:false,uploaded:false},null,2)+'\n');
+console.log(JSON.stringify({viewer:out+'/index.html',cues:rows.length,newImages:0,approved:false}));

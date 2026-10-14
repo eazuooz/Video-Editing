@@ -1,0 +1,38 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),{spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),rel='projects/game-lighting-history-04/production/native-direct-progress-v3.json';
+if(fs.existsSync(path.join(root,rel)))throw Error('Preserve recorded observations');
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const gpu=spawnSync('nvidia-smi',['--query-gpu=memory.used,memory.total,utilization.gpu','--format=csv,noheader'],{encoding:'utf8',windowsHide:true});
+const proc=spawnSync('powershell.exe',['-NoProfile','-Command',"Get-CimInstance Win32_Process | Where-Object { ($_.Name -match 'ffmpeg|python|node') -and $_.CommandLine -match 'game-lighting-history|resume_with_preview|train_multiview' -and $_.CommandLine -notmatch 'record-episode04-native-progress-v3|Get-CimInstance' } | Select-Object ProcessId,ParentProcessId,CreationDate,CommandLine | ConvertTo-Json -Compress"],{encoding:'utf8',windowsHide:true});
+if(gpu.status!==0||proc.status!==0)throw Error('Live resource identity observation required');
+const processes=proc.stdout.trim()?JSON.parse(proc.stdout):[];
+const a1=read('production/research/game-lighting-history/local/episode04-native-v1/execution.json');
+const a2=read('production/research/game-lighting-history/local/episode04-native-v2/strand-hair-editor-ue426-2021.acquisition.json');
+const resume=read('production/research/game-lighting-history/local/episode04-native-v2/execution-resume-v2.json');
+const targeted=read('production/research/game-lighting-history/local/episode04-process-v3/execution.json');
+const v22=read('production/research/game-lighting-history/episode03-git-evidence-verification-v22.json');
+const now=new Date().toISOString();
+const record={schemaVersion:1,reviewedAt:now,scope:'Derivative actual native progress; acquired raw histories retain their original false review flags.',sources:[...(a1.completed||[]),a2].map(s=>({id:s.id,slug:s.slug,media:s.media,sha256:s.sha256,wholeDownloadedWindowDecodeExit:s.wholeDownloadedWindowDecodeExit,wholeOriginalDecoded:s.wholeOriginalDecoded,sourceStartOffsetVerified:s.sourceStartOffsetVerified,boards:(s.boards||[]).map(b=>({path:b.path,sha256:b.sha256,directlyRead:true})),allBroadBoardsDirectlyRead:true,fullMotionReviewed:false,finalUseApproved:false})),
+ broadReviewCaveat:'Broad samples identify candidate activity; their fps filter labels are sampling times and cannot establish exact cut boundaries. Native player timestamps govern exact observations.',
+ directNativePlayback:[
+  {source:'megalights-engine-2024',requestedLocalWindow:[4,120.066],speed:1,muted:true,observations:[{time:4,visible:'Echo moves at candlelit stairs; controller inset is still visible in the lower left.'},{time:37.537,visible:'Moving camera and Echo in the wet colored market; no controller inset in this observed frame.'},{time:74.466,visible:'Colored light-volume outlines appear over the actual moving market scene.'},{time:120.066,visible:'Market return with controller inset visible again.'}],approval:false,required:'Locate clean action boundaries; exclude controller frames or verify a concept-preserving crop. No manufacturer FPS equals our benchmark.'},
+  {source:'cyberpunk-ray-reconstruction',requestedLocalWindow:[29,39.118],speed:1,muted:true,observations:[{time:29,visible:'RTX ON neon statue and wet street.'},{time:39.118,visible:'Manufacturer split comparison labelled DLSS OFF / DLSS3.5; wet street and reflection details.'}],approval:false,required:'Comparison contains multiple DLSS conditions; it does not isolate Ray Reconstruction alone.'},
+  {source:'dlss45-ui-comparison',requestedLocalWindow:[0,6.35],speed:1,muted:true,observations:[{time:0,visible:'Side-by-side DLSS4 / DLSS4.5 labelled pipes and reticle.'},{time:6.35,visible:'Camera rises; comparison ends with white/green UI-box details.'}],approval:false,required:'No unobserved FPS or proprietary implementation conclusion.'},
+  {source:'strand-hair-editor-ue426-2021',requestedLocalWindow:[558,635],speed:1,muted:true,observations:[{time:558,visible:'Mongoose character with hair in the cactus-world editor.'},{time:573.421,visible:'Groom preview with yellow/green strand visualization and editable Hair Group properties.'},{time:601.598,visible:'Material Geometry Parameters slide; exclude this from actual-action quota.'},{time:617.800,visible:'Groom preview has multicolored strand visualization; properties remain visible.'},{time:635.080,visible:'Returns to world-editor mongoose hair.'}],approval:false,required:'Separate intervening slides from real editor actions, verify exact no-slide cut boundaries and fixed-caption clearance.'}
+ ],
+ hairBroadObservations:'All10 acquisition boards read. They locate the world/gameplay, groom preview/attributes, material graph, solver controls and LOD/card/strand examples. Title, credit, hardware/requirements, simulation-count and LOD-method slides are excluded from actual quota. This is UE4.26 in2021, not a2020 demonstration; rabbit/mongoose model credits and third-party reuse remain recorded.',
+ sourceRightsApproved:false,recentUseCheckPassed:false,allFinalUseApproved:false,newTtsProduced:false,newRenderProduced:false,retainedOriginalParagraphPairs:87,
+ hairResume:{status:resume.status,completedAt:resume.completedAt,current:resume.current,session:53413,sessionClosedObserved:true,sourcePreservedPartialBytes:98543075,restartedCompletedAcquisition:false},
+ newTargetedExtraction:{execution:'production/research/game-lighting-history/local/episode04-process-v3/execution.json',session:4507,status:targeted.status,parentPid:targeted.parentPid,current:targeted.current,completedWindows:targeted.completed.length,directlyRead:false},
+ resourceObservation:{observedAt:now,gpu:gpu.stdout.trim(),processes,foreignResearchPreserved:true,ownedGpuJobs:0},
+ episode03GitEvidence:{record:'production/research/game-lighting-history/episode03-git-evidence-verification-v22.json',recordSha256:hash('production/research/game-lighting-history/episode03-git-evidence-verification-v22.json'),actual:v22},
+ next:'Finish exact native action/crop/recent-use/rights selection, preserve87 current paragraph PCM, add narrated prerequisites and source-dependent guides, then current distinct check and one cooperative GPU TTS batch. No final gates unlocked from samples.'};
+fs.writeFileSync(path.join(root,rel),JSON.stringify(record,null,2)+'\n');
+const cpPath='production/research/game-lighting-history/checkpoint.json',cp=read(cpPath);
+cp.updatedAt=now;cp.stage='episode03-private-Git-verified-episode04-native-process-selection';
+cp.nextAction=record.next;cp.episode04NativeDirectProgress=rel;
+cp.ownedJobsRunning=targeted.current&&processes.some(p=>p.ProcessId===targeted.current.pid&&p.CommandLine.includes('episode04-process-v3'))?[{project:'game-lighting-history-04',sessionId:4507,parentPid:targeted.parentPid,process:targeted.current,cpuThreads:2,gpuJobs:0,execution:record.newTargetedExtraction.execution,note:'One current extraction job; native hair resume53413 already completed and closed.'}]:[];
+cp.ownedGpuJobs=0;cp.episode03GitEvidenceFollowup={record:'production/research/game-lighting-history/episode03-git-evidence-verification-v22.json',futureSelfShaGuessed:false};
+fs.writeFileSync(path.join(root,cpPath),JSON.stringify(cp,null,2)+'\n');
+console.log(JSON.stringify({record:rel,sources:record.sources.length,broadBoards:record.sources.reduce((n,s)=>n+s.boards.length,0),ownedJobsRunning:cp.ownedJobsRunning.length,allFinalUseApproved:false}));

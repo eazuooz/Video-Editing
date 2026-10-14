@@ -1,0 +1,16 @@
+// Full delta bodies were directly read before this recorder. No foreign edits.
+const fs=require('node:fs'),crypto=require('node:crypto'),cp=require('node:child_process');
+const hash=s=>crypto.createHash('sha256').update(s).digest('hex');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const prior=read('production/preflight/game-lighting-history-04.json');
+const allowed=['projects/game-math-polygon-centers-v2/project.json','projects/game-math-polygon-partition-v2/project.json','projects/game-math-polygon-partition-v2/script/narration.ko.json','projects/game-math-polygon-partition-v2/script/narration.en.json'];
+const changes=prior.inputFiles.filter(f=>fs.existsSync(f.path)&&hash(fs.readFileSync(f.path,'utf8'))!==f.sha256);
+if(prior.inputFiles.some(f=>!fs.existsSync(f.path))||changes.length!==4||changes.some(f=>!allowed.includes(f.path)))throw Error('Inspect changed inventory; never assume the reviewed delta');
+const out='production/research/game-lighting-history/episode04-current-duplicate-rereview-v68.json';
+if(fs.existsSync(out))throw Error('Preserve previous recorder output');
+const reason='Directly reread both complete current polygon-center/partition manifests and every paired KO/EN paragraph of polygon-partition-v2. New Shapez2 prerequisite and boundary/path distinction, Tiny Glade/Noita/Dorfromantik region-preservation contrasts and factory bridge ordering teach triangle-partition validity and empty-space preservation. They do not teach rendering04 virtual resources, image reconstruction, surface appearance, exposure/focus or frame-resource inspection. Existing coordinate centers and L-shaped ear removal remain distinct. Preserve their white40:60/noBGM exception, all previous inventory/body reads and own earlier Studio evidence; do not copy it into black60:40/Nimbus rendering04. Studio lIDe30dqC28 was directly reopened/read in this session: title Ray tracing/Lumen/BVH/ReSTIR/Nanite and visibility private; it is the preserved logical03 baseline, not a duplicated04 upload. Every original111 rendering04 PCM/text and completed framing source are preserved. Four-game teaching/final pixels/upload remain pending. Evidence: '+out;
+const record={schemaVersion:1,reviewedAt:new Date().toISOString(),previous:'production/research/game-lighting-history/episode04-current-duplicate-rereview-v20.json',changes:changes.map(f=>({path:f.path,previousSha256:f.sha256,sha256:hash(fs.readFileSync(f.path,'utf8')),directReadScope:'complete current file, including every KO/EN line for both changed scripts'})),removed:[],decision:'distinct',comparison:reason,studioObservation:{url:'https://studio.youtube.com/video/lIDe30dqC28/edit',actualId:'lIDe30dqC28',title:'레이 트레이싱·루멘은 화면 밖의 빛을 어떻게 찾을까? | BVH·ReSTIR·나나이트',visibility:'비공개',readOnly:true},foreignFilesModified:false,newMedia:0,fourGameCoverageApproved:false};
+fs.writeFileSync(out,JSON.stringify(record,null,2)+'\n');
+const args=['scripts/review-video-duplicates.cjs','game-lighting-history-04','--candidate-file','production/research/game-lighting-history/candidate-04.json'];
+cp.execFileSync(process.execPath,[...args,'--decision','distinct','--reason',reason,'--studio-evidence',out],{stdio:'inherit'});
+cp.execFileSync(process.execPath,[...args,'--check'],{stdio:'inherit'});

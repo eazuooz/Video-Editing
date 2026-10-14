@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),from='production/research/game-lighting-history/local/part1-extended-review-v170/index.html',dir='production/research/game-lighting-history/local/part1-capacity-review-v183';
+const html=fs.readFileSync(path.join(root,from),'utf8'),start=html.indexOf('const rows=')+11,end=html.indexOf(',pick=document.querySelector');
+if(start<11||end<start)throw Error('Unknown viewer');
+const ranges={'mobile-texture-group':[[0,18]],'mobile-device-profile':[[28,52]],'mobile-compiler-warning':[[132,154]],'geometry-barrier-debug':[[96,135.5]],'geometry-courtyard-mask':[[180,218]],'outer-generated-display':[[0,16.4]],'cyber-light-reconstruction':[[44,63.5]],'fortnite-mobile-profiling':[[274.8,289.9]],'rivalry-mobile-lighting':[[25.8,41],[51,93]]};
+const rows=JSON.parse(html.slice(start,end)).filter(r=>r.id in ranges).map(r=>({...r,ranges:ranges[r.id],capacityExtensionApproved:false}));
+fs.mkdirSync(path.join(root,dir),{recursive:true});
+for(const f of ['index.html','plan.json'])if(fs.existsSync(path.join(root,dir,f)))throw Error('Preserve '+f);
+fs.writeFileSync(path.join(root,dir,'index.html'),html.slice(0,start)+JSON.stringify(rows)+html.slice(end));
+fs.writeFileSync(path.join(root,dir,'plan.json'),JSON.stringify({preparedAt:new Date().toISOString(),sourceViewer:{path:from,sha256:crypto.createHash('sha256').update(html).digest('hex')},scope:'Inspect only small normal-speed native boundary extensions prompted by actual whole narration duration. No prior TTS inputs changed.',rows,allBoundaryExtensionsReviewed:false,actualSourceOffsetCertified:false,allFinalPixelsReviewed:false,uploaded:false},null,2)+'\n');
+console.log(JSON.stringify({viewer:dir+'/index.html',candidates:rows.length,approved:false}));

@@ -1,0 +1,303 @@
+{
+  "title": "Game Mathematics Part 2: Rotation Interpolation 1 — Paths and Timing Between Orientations",
+  "scenes": [
+    {
+      "id": "IF01",
+      "title": "앞 편의 회전값에서 중간 자세로",
+      "lines": [
+        "The previous episode found the rotation difference from the starting to the target orientation. We now construct intermediate orientations along that rotation."
+      ]
+    },
+    {
+      "id": "01",
+      "title": "이번 강의에서 배울 것",
+      "lines": [
+        "How do we construct natural intermediate orientations between two poses?",
+        "We will observe driving and flight, then visualize the short path and speed of quaternion interpolation.",
+        "Next, we will convert Euler angles, axis-angle, quaternions and matrices under one convention.",
+        "Finally, we will calculate the midpoint of a ninety-degree turn and verify a conversion round trip."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "차체와 카메라의 회전 경로 관찰",
+      "lines": [
+        "This is driving on a bend in Forza Horizon4. Read the car facing separately from the following camera.",
+        "Matching the first and last directions does not prevent an awkward sudden turn between them.",
+        "Compare the front of the car, the bend and the moving background.",
+        "The footage does not reveal which interpolation function the game uses. It shows why intermediate orientations matter.",
+        "Changes in apparent car size also involve camera and distance. Following its facing separately helps avoid mixing translation with rotation.",
+        "Our next diagram will hold position and camera fixed and change only orientation."
+      ]
+    },
+    {
+      "id": "IB03",
+      "title": "두 끝점만으로는 중간 화면이 비어 있습니다",
+      "lines": [
+        "After observing the body changing direction, can we make intermediate poses by mixing the four numbers at the start and end?"
+      ]
+    },
+    {
+      "id": "03",
+      "title": "숫자를 섞는 것과 회전을 잇는 것",
+      "lines": [
+        "Consider the midpoint between identity and a180-degree turn about z.",
+        "Averaging the entries yields a diagonal of0,0,1. Two axes collapse.",
+        "Quaternions must maintain unit length too. A component blend generally leaves the unit surface.",
+        "We will distinguish a normalized linear blend from following an arc on the unit sphere.",
+        "Matrices can be interpolated with methods that respect the rotation structure; naive entry blending is the problem."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "부호부터 골라 짧은 경로 만들기",
+      "lines": [
+        "As we learned, q and minus q represent the same orientation, yet a component path between them can differ.",
+        "Take the dot product of unit endpoints. If it is negative, flip every component of the end quaternion.",
+        "This selects the closer representative of the same endpoint; it is not conjugation.",
+        "For endpoints q and minus q, sign alignment makes them identical, avoiding a zero midpoint.",
+        "A physical180-degree separation has two equally short paths. Choose a direction with an explicit policy.",
+        "We can also use the relative rotation from the previous lesson. After sign alignment, delta is the end quaternion times the inverse of the start. Applying delta to the power t to the start follows the same short arc."
+      ]
+    },
+    {
+      "id": "IP01",
+      "title": "티는 회전 차이 중 얼마나 적용할지입니다",
+      "lines": [
+        "In delta to the power t, t is the exponent on delta; the expression does not square t.",
+        "With a z ninety-degree delta and t equal to one half, apply half the difference, forty-five degrees, to the starting orientation.",
+        "We will now calculate weights that keep the intermediate orientation on the unit arc."
+      ]
+    },
+    {
+      "id": "IG01",
+      "title": "절반 자세는 움직임 중간에 있습니다",
+      "lines": [
+        "Observe connected poses in Skate 3. Red follows the body direction.",
+        "Blue follows the visible board length. Follow takeoff, the airborne pose and landing separately.",
+        "The fraction for constructing intermediate poses is t. The previous forty-five degrees was a worked example, not an angle measured here."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "가까운 방향과 돌아가는 과정",
+      "lines": [
+        "Track the car facing as it follows the next bend.",
+        "An endpoint image alone does not tell whether the turn was short or included an extra revolution.",
+        "Interpolation between two orientations chooses a path without storing the number of earlier revolutions.",
+        "Interpolating a position along the road differs from interpolating orientation.",
+        "Even when two moments have similar facing, the intervening turn requires observing the motion. Distinguish endpoint orientation from rotation history over time.",
+        "Now we will relate an arc on the unit sphere to the orientation change."
+      ]
+    },
+    {
+      "id": "IP02",
+      "title": "내적과 아크코사인이 호의 각도를 찾는 이유",
+      "lines": [
+        "Following an arc requires the angle between its endpoints. Begin with the familiar unit circle in a plane.",
+        "The rightward unit vector is one, zero. A thirty-degree vector is square root three over two, one half. Multiplying corresponding entries and adding gives square root three over two.",
+        "That number is cosine of thirty degrees. Arccosine performs the reverse lookup and returns thirty degrees.",
+        "For quaternions, the dot sums four component products and gives the angle alpha in the section joining the two unit points. Alpha must be distinguished from the object's physical rotation."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "SLERP는 단위 구면의 호를 따라갑니다",
+      "lines": [
+        "Unit quaternions lie on a sphere in four dimensions, with squared components summing to one.",
+        "This circle illustrates the relevant arc in a two-dimensional section, rather than depicting the full four-dimensional sphere.",
+        "Let d be the sign-aligned dot product, and let alpha be its arccosine.",
+        "The quaternion arc angle differs from the physical turn angle: the minimum physical rotation is twice alpha.",
+        "Sine-ratio weights combine the endpoints into the point at fraction t of the arc.",
+        "This is spherical linear interpolation. It does not mean the components change linearly."
+      ]
+    },
+    {
+      "id": "IG10",
+      "title": "움직이는 몸체와 단위 방향의 길이",
+      "lines": [
+        "Red follows the body; blue follows the board direction.",
+        "Their directions change in the air before another landing.",
+        "Unit length in the calculation is a condition on the stored direction values.",
+        "It does not set the game travel distance or the displayed line length to one."
+      ]
+    },
+    {
+      "id": "IB07",
+      "title": "맞는 식에도 입력 검사가 필요한 이유",
+      "lines": [
+        "We found the unit arc, but its denominator becomes small as the endpoints coincide. Handle nearly identical orientations first."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "작은 각도와 잘못된 입력을 먼저 처리",
+      "lines": [
+        "Our code requires finite t between zero and one. Validate and normalize both quaternion endpoints first.",
+        "Near-zero or nonfinite inputs need an error or an explicit fallback to a valid orientation.",
+        "Flip the endpoint when the dot is negative, then clamp the dot to protect arccosine from rounding error.",
+        "When d exceeds0.9995, this example uses normalized linear interpolation to avoid a small sine denominator.",
+        "Otherwise, use the sine weights and normalize the result. Check the endpoint orientations at t zero and one."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "주행에서는 중간 상태도 보여야 합니다",
+      "lines": [
+        "In these other driving intervals, separate car facing from background motion.",
+        "The edit between excerpts is not a computed intermediate pose. Observe continuous motion within each excerpt.",
+        "Code produces intermediate rotations by changing t between the endpoints.",
+        "Imagine both a forward line and an up line on the car. A single direction can miss its twist.",
+        "A cut can change location and camera. Observe continuous pose changes within each excerpt before connecting them to the next fixed-condition calculation.",
+        "The next calculation holds camera and position fixed. For a ninety-degree turn, examine t equal to zero point two five and zero point five."
+      ]
+    },
+    {
+      "id": "IB09",
+      "title": "관찰한 중간 자세를 작은 계산으로",
+      "lines": [
+        "To verify the observation made with a moving camera, fix the camera and z axis and compute the intermediate poses of a ninety-degree turn."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "구십 도 회전의 중간을 직접 계산",
+      "lines": [
+        "Start at[1,0,0,0], ending at a z90-degree turn:[cos45degrees,0,0,sin45degrees].",
+        "The dot is square root two over two: alpha is45degrees, while the physical rotation is90degrees.",
+        "At t equal to zero point two five, the object rotates twenty-two point five degrees, the first of four equal steps. At the halfway value t equal to zero point five, it rotates forty-five degrees.",
+        "At the third step, t equal to zero point seven five, it is sixty-seven point five degrees. Equal t intervals give equal rotation-angle intervals.",
+        "Each quaternion is converted to a matrix to draw the body axes. We can verify intermediate results as well as endpoints."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "NLERP도 회전이지만 속도는 다릅니다",
+      "lines": [
+        "NLERP aligns signs, blends components linearly and normalizes: a simple calculation that preserves unit length.",
+        "Linear progression of t generally does not produce constant physical angular speed.",
+        "Between identity and a120-degree turn, NLERP at one quarter rotates approximately27.8degrees.",
+        "SLERP gives30degrees there. Both give60degrees halfway, but differ at other points along the path.",
+        "Small differences may be hard to see. Compare motion requirements and cost without assuming SLERP is always faster."
+      ]
+    },
+    {
+      "id": "IG02",
+      "title": "방향의 변화와 지나가는 속도 나누기",
+      "lines": [
+        "Watch the order in which the red body line and blue board line change.",
+        "Travel distance and the fraction between orientations are different values. The camera also follows the action.",
+        "Fast-looking screen motion does not establish constant angular speed. We will state the timing conditions separately in the calculation."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "속도와 자세를 같은 값으로 읽지 않기",
+      "lines": [
+        "Driving speed and angular speed are separate quantities.",
+        "Observe distance travelled and change in car facing separately.",
+        "The camera also moves, so this footage is not a measurement of exact angular velocity.",
+        "The speedometer reports travel speed, not the angular velocity of orientation. Keep units and measured quantities distinct.",
+        "A large camera turn does not imply the same car rotation. Observe car and road together to separate pose changes.",
+        "Our fixed-axis calculation can compare turn angles over equal time intervals. Changing the time function changes the speed."
+      ]
+    },
+    {
+      "id": "IB12",
+      "title": "자세의 비율과 실제 시간을 연결하기",
+      "lines": [
+        "Using intermediate orientations in playback also requires deciding how t increases over time."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "일정 속도에는 시간 조건도 필요합니다",
+      "lines": [
+        "Constant angular speed requires fixed endpoints and t that is linear in time.",
+        "An easing function follows the same arc with a varying speed.",
+        "Repeatedly interpolating from the current pose toward a target differs from one fixed-endpoint interpolation.",
+        "A fixed fraction per frame may yield different responses at different frame rates. Design the fraction using elapsed time.",
+        "Moving-target tracking and long animation curves require their own design; a single SLERP does not solve everything."
+      ]
+    },
+    {
+      "id": "IP07",
+      "title": "같은 호도 시간에 따라 다르게 움직입니다",
+      "lines": [
+        "After the time conditions, compare the same rotation with small numbers. This defined example fixes the camera and z axis and turns from zero to ninety degrees over one second.",
+        "At half a second, elapsed time divided by duration gives t equal to one half. With linear time, half of ninety degrees is forty-five degrees.",
+        "Now use the square of the elapsed-time fraction as t. One half squared is one quarter, so the same instant gives one quarter of ninety degrees: twenty-two point five degrees.",
+        "At one second both reach t equal to one and ninety degrees. The endpoints and arc stay the same, but progress at intermediate times differs. Choosing the path and mapping time to progress are separate decisions."
+      ]
+    },
+    {
+      "id": "IB13",
+      "title": "한 바퀴의 기록이 끝 자세에 남을까요",
+      "lines": [
+        "Even after choosing a timing rule, we must check whether the final orientation retains the record of an extra complete turn."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "연속 부호와 여러 바퀴의 기록",
+      "lines": [
+        "Making w positive independently each frame can create a component sign jump at the180-degree boundary.",
+        "Flipping a new quaternion when its dot with the previous one is negative can maintain a nearby representative.",
+        "That choice helps component continuity, but does not recover the number of revolutions.",
+        "If an animation intentionally spins a full turn, preserve intermediate keys or accumulated turn information.",
+        "The desired direction at180degrees is a design policy: shortest alone does not make the choice unique."
+      ]
+    },
+    {
+      "id": "IG07",
+      "title": "지나온 회전의 기록과 현재 자세 나누기",
+      "lines": [
+        "The red body direction changes and becomes upright again.",
+        "The current pose and the rotation history are different information.",
+        "This is a different excerpt. Follow the blue board direction separately as well.",
+        "Passing the final orientation does not also store how many turns occurred."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "윙슈트와 스키의 몸체 기준",
+      "lines": [
+        "This is wingsuit flight down a mountain in Riders Republic. Observe the bank of the arms and body.",
+        "Position continues changing while facing and up directions change too. One facing arrow does not capture the whole orientation.",
+        "Storing the arrival orientation does not preserve every rotation made along the flight.",
+        "Separate the following camera motion too. This footage does not expose internal quaternion or interpolation code.",
+        "With different equipment too, distinguish torso facing from body bank. Attached forward and up directions provide a frame for reading orientation.",
+        "Do not connect cuts or rewind screens into continuous motion. We selected actual action within separate excerpts; imagine the three attached axes in each.",
+        "We will now choose a suitable representation for each task and convert between them."
+      ]
+    },
+    {
+      "id": "IP03",
+      "title": "중간 자세를 다음 작업에 넘기려면",
+      "lines": [
+        "We now have an intermediate orientation at one instant. Editing its angles and applying it to many vertices call for different representations.",
+        "Keep the same body axes while passing that orientation between editable angles, interpolation quaternions and matrices that transform vectors."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "하나만 고집하지 말고 작업에 맞게 쓰세요",
+      "lines": [
+        "Euler angles suit human reading and editing, with order, equivalent encodings and singular poses to handle.",
+        "Quaternions suit composition and interpolation, but need unit-length and sign management and are hard to edit directly.",
+        "Matrices expose the three axes and suit transforming many vectors. Check orthonormality and determinant.",
+        "Float32 components alone occupy12bytes for Euler,16for a quaternion and36for a3-by-3matrix, excluding padding and metadata.",
+        "Axis-angle explains a single turn clearly. Measure compression and runtime in your implementation; other representations also have rotation-aware interpolation methods.",
+        "Storage or transmission may compress components. Reconstructing an omitted component from unit length requires sign rules and quantization-error checks. Sixteen bytes is not a universal minimum."
+      ]
+    },
+    {
+      "id": "IF02",
+      "title": "보간한 자세를 다음 계산에 넘기기",
+      "lines": [
+        "Between two orientations, we chose a path, kept unit length and specified how t follows physical time. Extra turn history needed separate storage.",
+        "We now pass one intermediate orientation to the next task. The next episode retains the same object and axes while converting angles, quaternions and matrices and verifying the same rotation."
+      ]
+    }
+  ]
+}

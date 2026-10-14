@@ -1,0 +1,268 @@
+{
+  "createdAt": "2026-10-09T19:42:07.920Z",
+  "scene": "19",
+  "style": "research-black-v1",
+  "scope": "Original9KOEN paragraphs/27motion samples. Independent explanation geometry; no captured game quota/performance or undisclosed game implementation claim.",
+  "primarySources": [
+    {
+      "url": "https://pbr-book.org/4ed/Monte_Carlo_Integration/Improving_Efficiency",
+      "readAt": "2026-10-09T19:42:07.921Z",
+      "claims": [
+        "importance sampling probability correction",
+        "MIS strategy probabilities and balance weights",
+        "Russian roulette inverse survival probability preserves expectation and increases variance"
+      ]
+    },
+    {
+      "url": "https://pbr-book.org/4ed/Light_Transport_I_Surface_Reflection/A_Better_Path_Tracer",
+      "readAt": "2026-10-09T19:42:07.921Z",
+      "claims": [
+        "camera ray/surface/BSDF sampling",
+        "light and BSDF strategies combined",
+        "finite maximum depth and path termination"
+      ]
+    }
+  ],
+  "independentNumericalAudit": {
+    "target": "(2+8)/2=5; discrete integrand f=(1,4)",
+    "uniform": "q=(.5,.5), f/q=(2,8), E=5",
+    "matched": "q=(.2,.8), f/q=(5,5), E=5",
+    "mis": "same-point pA=.8,pB=.2; balance weights .8/.2 sum1",
+    "roulette": "s=.8; surviving1/s=1.25; .8*1.25+.2*0=1",
+    "sampleRelation": "Independent-sample error proportional1/sqrt(N); N×4→error×.5. Correlated history/reconstruction are exceptions."
+  },
+  "paragraphs": [
+    {
+      "paragraph": 1,
+      "originalKo": "2023년 사이버펑크 이공칠칠의 패치 일 점 육 이는 레이 트레이싱 오버드라이브 모드를 기술 미리보기로 제공했습니다. 출시된 게임에서 경로 추적 방식의 조명을 비교할 수 있는 사례입니다. 이 모드의 요구 조건과 당시의 미리보기 상태를 함께 구별해야 합니다.",
+      "originalEn": "Cyberpunk 2077 patch 1.62 introduced Ray Tracing: Overdrive as a technology preview in 2023. It provides a released-game example for comparing path-traced lighting. Its requirements and preview status at the time should remain explicit.",
+      "timelineFrom": 0,
+      "duration": 4,
+      "poseIndices": [
+        0,
+        1
+      ],
+      "sampleTimes": [
+        0.15,
+        2,
+        3.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 2,
+      "originalKo": "패스 트레이싱은 카메라 표본에서 시작해 표면을 찾고, 재질에 따라 다음 방향을 표본 추출하며 빛의 경로를 이어갑니다. 경로에서 얻은 기여를 합해 화면의 밝기를 추정합니다. 모든 가능한 경로를 빠짐없이 계산한다는 뜻은 아닙니다.",
+      "originalEn": "Path tracing starts from a camera sample, finds a surface, and samples subsequent directions according to the material. Contributions along sampled paths estimate image brightness. This does not mean that every possible path is exhaustively evaluated.",
+      "timelineFrom": 4,
+      "duration": 4,
+      "poseIndices": [
+        2,
+        3
+      ],
+      "sampleTimes": [
+        4.15,
+        6,
+        7.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 3,
+      "originalKo": "확산 표면에서는 여러 방향에서 들어올 빛을 적분해야 합니다. 반짝이는 표면에서는 특정 방향 근처가 큰 기여를 할 수 있습니다. 중요한 방향을 더 자주 고르는 표본 분포가 도움이 되지만, 선택 확률에 맞게 기여를 나누어야 합니다.",
+      "originalEn": "A diffuse surface requires integrating light arriving from many directions. A glossy surface may receive large contributions near particular directions. Sampling important directions more often can help, but contributions must be divided by the corresponding sampling probability.",
+      "timelineFrom": 8,
+      "duration": 4,
+      "poseIndices": [
+        4,
+        5
+      ],
+      "sampleTimes": [
+        8.15,
+        10,
+        11.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 4,
+      "originalKo": "설명용으로 두 방향의 기여가 이와 팔이라고 해보죠. 두 방향을 같은 확률로 고르면 기대값의 평균은 오입니다. 더 밝은 방향을 자주 선택하는 분포를 쓰더라도 확률 보정을 올바르게 하면 같은 목표를 추정해야 합니다. 숫자는 알고리즘을 설명하는 예시입니다.",
+      "originalEn": "For illustration, two directions contribute two and eight. Equal-probability sampling targets an average of five. A distribution that favors the brighter direction must still estimate the same target after correct probability weighting. These numbers are explanatory examples.",
+      "timelineFrom": 12,
+      "duration": 4,
+      "poseIndices": [
+        6,
+        7
+      ],
+      "sampleTimes": [
+        12.15,
+        14,
+        15.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 5,
+      "originalKo": "광원을 직접 고르는 방식과 재질의 방향을 고르는 방식은 서로 다른 상황에 유리합니다. 다중 중요도 표본 추출은 여러 전략의 결과를 확률과 가중치에 맞게 결합합니다. 한 전략의 표본을 다른 전략이 만든 것처럼 취급하면 가중치가 틀어집니다.",
+      "originalEn": "Sampling a light directly and sampling a material direction excel in different situations. Multiple importance sampling combines strategies using their probabilities and weights. Treating a sample as though it came from a different strategy produces incorrect weighting.",
+      "timelineFrom": 16,
+      "duration": 4,
+      "poseIndices": [
+        8,
+        9
+      ],
+      "sampleTimes": [
+        16.15,
+        18,
+        19.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 6,
+      "originalKo": "경로를 계속 늘리면 비용이 커집니다. 러시안 룰렛은 일부 경로를 확률적으로 종료하고, 살아남은 기여를 그 확률의 역수로 보정하는 방법입니다. 예를 들어 생존 확률이 영 점 팔이면 살아남은 기여에는 일 나누기 영 점 팔의 배율이 들어갑니다.",
+      "originalEn": "Extending paths increases cost. Russian roulette probabilistically terminates some paths and compensates surviving contributions by the inverse survival probability. With a survival probability of 0.8, a surviving contribution receives a factor of one divided by 0.8.",
+      "timelineFrom": 20,
+      "duration": 4,
+      "poseIndices": [
+        10,
+        11
+      ],
+      "sampleTimes": [
+        20.15,
+        22,
+        23.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 7,
+      "originalKo": "이 보정은 분산과 비용을 조절하기 위한 것입니다. 중요하지 않은 경로를 항상 잘라 버리는 것과는 다릅니다. 최대 반사 횟수나 다른 근사까지 포함하면, 최종 구현의 편향과 제한은 별도로 확인해야 합니다.",
+      "originalEn": "This compensation manages variance and cost. It differs from always discarding seemingly unimportant paths. Maximum bounce limits and other approximations require separate examination of an implementation's bias and limitations.",
+      "timelineFrom": 24,
+      "duration": 4,
+      "poseIndices": [
+        12,
+        13
+      ],
+      "sampleTimes": [
+        24.15,
+        26,
+        27.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 8,
+      "originalKo": "독립 표본의 오차 크기는 대체로 표본 수의 제곱근과 연결됩니다. 다른 조건이 같을 때 오차를 절반으로 줄이는 데 표본이 네 배 필요하다는 관계가 여기서 나옵니다. 시간적 표본의 상관관계나 복원 알고리즘이 있으면 이 단순 관계만으로 화면을 예측할 수는 없습니다.",
+      "originalEn": "Error for independent samples is generally related to the square root of sample count. Under comparable conditions, halving error requires four times as many samples. Correlated temporal samples and reconstruction algorithms prevent this simple relationship from predicting the entire image.",
+      "timelineFrom": 28,
+      "duration": 4,
+      "poseIndices": [
+        14,
+        15
+      ],
+      "sampleTimes": [
+        28.15,
+        30,
+        31.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 9,
+      "originalKo": "따라서 게임의 패스 트레이싱은 경로 추적만 따로 보면 이해가 부족합니다. 표본을 어디에 배정하고, 이전 표본을 어떻게 재사용하며, 남은 노이즈를 어떻게 복원하는지까지 함께 봐야 합니다. 다음은 바로 그 복원 단계입니다.",
+      "originalEn": "Understanding game path tracing requires more than examining ray paths. Sample allocation, reuse, and reconstruction of the remaining noise all matter. Reconstruction is our next step.",
+      "timelineFrom": 32,
+      "duration": 4,
+      "poseIndices": [
+        16,
+        17
+      ],
+      "sampleTimes": [
+        32.15,
+        34,
+        35.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    }
+  ],
+  "duration": 36,
+  "plannedFrames": 2160,
+  "inputs": [
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof0-v1.tsx",
+      "sha256": "750a09ef02c3c4782838eb154534f14ab22608978db85d842555ed71bfcdd176"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof1-v1.tsx",
+      "sha256": "23f059642256d6f1387d633d31f5da70f8318075d0971d7fd6f45ad37a9f10e2"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof2-v1.tsx",
+      "sha256": "f51b55c1358492ad2a4e7fba93536e0103db842c621f99d953b0065f4eb479d2"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof3-v1.tsx",
+      "sha256": "d9ea4c7354169585ae315d0df482931a79e2892a5f801be5dd4a10752d61e5dd"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof4-v1.tsx",
+      "sha256": "63e7d4937475a3625ec038ed42eae0f29c9583712bd3881a5208d154a8a897d8"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof5-v1.tsx",
+      "sha256": "24ba9fea7e5db07f6f8757238e3f9762c50dd0f66e257542a7a6a34079f5b156"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof6-v1.tsx",
+      "sha256": "86e2523142377b09dd6bc7cc07f7663a633ce3c8dfae17b9b914904aa55031f9"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof7-v1.tsx",
+      "sha256": "f55326749e3d4eb11501024ef8d2080e56667ec11ded20ef380e748c516fa52f"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof8-v1.tsx",
+      "sha256": "9c908f70fae02674b98d8b8342c2c9cf168f4baa6a8d50a6158dfd8820a71ce5"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-project-v1.ts",
+      "sha256": "2038ea77be14420f8cc84e2a3cb8635b91c65803a9226df3147e47d0a2f3205b"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-project-v1.meta",
+      "sha256": "5554c7b45f6f73362c090407e1c81aa9570efde619dd4283168a73e8b24f66f2"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-model-v1.tsx",
+      "sha256": "f32e665d1a86899a96682faa00ac698179a02834f6eef63f2344c5beaea69558"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-proof-runtime-v1.tsx",
+      "sha256": "ee78f132bd72127c736e90667ec371dcd8868a1c09f60c5397984ea3d9d74297"
+    },
+    {
+      "path": "projects/game-lighting-history-04/script/narration.ko.json",
+      "sha256": "7322c25b33e7c98afd9843d52f334a8c45a91f61aa4368cb05bec61e178a9a5b"
+    },
+    {
+      "path": "projects/game-lighting-history-04/script/narration.en.json",
+      "sha256": "a6b2eab74e0ab629956249bd21fd33c8c117d174eb12ef0e7fd9e5c31cc5d4b1"
+    }
+  ],
+  "project": "motion-canvas/src/projects/game-lighting-history-04/spatial/path-budget-project-v1.ts",
+  "renderStarted": false,
+  "modelMotionProofReviewed": false,
+  "narrationTimingApproved": false,
+  "fullEpisodeApproved": false,
+  "localOnly": true
+}

@@ -1,0 +1,201 @@
+{
+  "title": "Game Math Part 2 · Rendering 3: From One 3D Point to a Screen Pixel",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "한 점이 픽셀이 될 때까지",
+      "lines": [
+        "How does one corner of a game building end up at a specific screen position?",
+        "First we follow landmarks in real games and calculate one point from object coordinates to camera coordinates.",
+        "Next we clip the viewing volume, divide, and map through an output rectangle to obtain the screen coordinates.",
+        "Finally, include the origin and size of a smaller viewport and complete the calculation of where that same point appears on screen."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "기둥은 그대로인데 화면 위치는 바뀝니다",
+      "lines": [
+        "This is official Portal2 gameplay. Follow both the moving viewpoint and the central pillar.",
+        "The pillar changes screen position without moving, while a device behind it becomes hidden.",
+        "To calculate that difference, express the same point in world coordinates and camera coordinates."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "계산 전에 네 가지 약속부터",
+      "lines": [
+        "Matching matrix names do not guarantee matching formulas. Today we use left-handed view coordinates with forward plusz.",
+        "Vectors are rows with matrices multiplied on the right; distinguish this from the earlier rotation lesson’s column convention.",
+        "Clip depth runs from0 tow; after division depth runs from0 to1. Keep the stages distinct.",
+        "The screen origin is top-left andy increases downward, opposite the camera’s upwardy.",
+        "Record space,vector convention,depth range and screen origin separately; an API name alone cannot settle them all.",
+        "Recall the earlier matrix derivations as needed; this lesson connects every intermediate value of one point to its final result."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "로컬 점을 세계에 배치하기",
+      "lines": [
+        "Choose a corner of a small box at local coordinates(1,0,0); its position hasw1.",
+        "Translate the box by(3,2,5), with no rotation or scale in this first example.",
+        "Adding the translation gives world coordinates(4,2,5); the local coordinates remain valid in their own frame.",
+        "For our row vectors, translation occupies the last row, rather than the last column of a column-vector matrix.",
+        "A direction hasw0, so transforming direction(1,0,0) by the same translation does not add(3,2,5).",
+        "Normals are directions, but nonuniform scaling requires a separate normal transformation, covered in the lighting lesson."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "새 건물과 기존 지붕을 구별하기",
+      "lines": [
+        "Choose a front roof corner in Townscaper. New blocks grow from a platform and change the structure.",
+        "Distinguish newly created corners from the original landmark; comparing different points cannot verify one coordinate transformation.",
+        "Orbiting reveals the long roof’s sides and interior opening, while the original corner keeps changing screen position.",
+        "Connect these visible changes to separate world placement and camera-relative coordinates.",
+        "To record a world position, identify a point in the object’s frame and store the resulting world-space position after its model transform.",
+        "Orbiting a camera does not require rewriting every building’s world coordinates; a later step changes the viewing frame.",
+        "These pixels do not reveal the game’s matrices. Our local point and translation are separately defined teaching values.",
+        "Separating construction changes from viewpoint changes is the first habit for inspecting intermediate coordinates."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "카메라를 기준으로 다시 읽기",
+      "lines": [
+        "Place the camera at(2,1,1), aligned with the world’s right,up and forward axes.",
+        "Subtracting the camera position from world point(4,2,5) gives view point(2,1,4): right2,up1,forward4.",
+        "A rotated camera also requires expressing the displacement along its right,up and forward axes.",
+        "The view matrix is the inverse camera-to-world transform; check that it maps the camera’s own position to the origin.",
+        "An orthonormal rotation can be inverted by transposing; this does not extend blindly to arbitrary scale or shear.",
+        "For our rows, multiply the point by model,view and projection in that order; column-vector notation reverses the written product."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "행렬은 w를 준비하고 나눗셈은 나중에",
+      "lines": [
+        "Our view point is(2,1,4). The simplest perspective preparation copies itsz4 into the fourth componentw.",
+        "No division by4 has occurred yet; this step only prepares a four-component clip representation.",
+        "Dividing this simplified result gives(0.5,0.25,1), but this is not a complete near-to-far depth mapping.",
+        "The complete matrix also prepares both zoom axes and near-to-far depth; we fill those terms next.",
+        "Orthographic projection keepsw1, so the same division stage does not introduce distance-based shrinking.",
+        "The common representation also supports asymmetric views and tiled rendering; left and right bounds need not be symmetric.",
+        "Homogeneous division connects different projections through one convention; it does not replace the separately retained world coordinates."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "같은 탑의 앞면과 옆면을 따라가기",
+      "lines": [
+        "Track the tall tower’s roof corner and lower terrace as orbiting changes which faces are visible.",
+        "Screen movement alone cannot tell whether the point moved in the world or the camera frame changed.",
+        "New blocks also change the structure; persistent windows or railings help compare the surrounding moments.",
+        "Wide and close framing change a corner’s image extent; calculations should retain view coordinates and projection parameters separately.",
+        "Multiplying a3D value by a matrix does not immediately produce the final pixel; clipping,division and viewport mapping remain.",
+        "A tower near the top of the image cannot use worldy directly as screeny; camera up and screen down also differ.",
+        "We observe visible changes in the game and continue the numeric proof in our separately defined example."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "완성된 원근 행렬에 값을 넣기",
+      "lines": [
+        "Use the previous lesson’s horizontal90-degree view: zoomX1 and zoomY16/9 for a square-pixel16:9 viewport.",
+        "With near1 andfar11, map normalized depth to0–1 using clipz equalAz plusB.",
+        "Requiring depth0 atz1 and1 atz11 givesA1.1 andB minus1.1.",
+        "For viewz4, clipz is3.3 andw stores the originalz4.",
+        "The complete clip coordinate is(2,16/9,3.3,4), from the two zoom terms and the depth mapping.",
+        "The third row contains1.1 and1; the last contains minus1.1 and0. The final column copiesz intow."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "나누기 전에 여섯 경계를 검사하기",
+      "lines": [
+        "Before division, clipx andy lie between minusw andw, while depth lies between0 andw.",
+        "Our point hasw4; x2 andy16/9 both lie between minus4 and4.",
+        "Depth3.3 is between0 and4, so the point satisfies all three pairs of bounds.",
+        "A point with clip x five and w four crosses the right boundary and lies outside the view. We can test that boundary before calculating its final pixel position.",
+        "Clipping limits the viewing region; occlusion behind another object is determined through a separate process such as depth testing.",
+        "Dividing first can lose crucial sign and singularity handling; triangles must be clipped in homogeneous clip space before division."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "큐브를 옮긴 변화와 시점을 옮긴 변화",
+      "lines": [
+        "Carrying the cube changes its location in the chamber; compare it with the fixed pillars.",
+        "The player sets down the cube from another view and connects the laser; world placement and image position are different information.",
+        "Compare the large close cube with wider chamber views; image proportions alone do not reveal its exact viewz.",
+        "The portal view is another viewing problem; we use visible cube and pillar landmarks without inferring portal rendering internals.",
+        "Laser activation changes the route and exit indicators; distinguish game-state changes from camera-coordinate changes.",
+        "Real gameplay mixes changes; a one-point calculation isolates world placement,camera and projection one at a time."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "가까운 경계를 가로지르는 삼각형",
+      "lines": [
+        "Consider a separate triangle with its near plane at one. Vertex A has view depth zero point five zero, while the other two vertices have depth two.",
+        "Discarding the whole triangle would remove its visible portion; compute the two edge intersections instead.",
+        "Travel along an edge from depth two toward zero point five zero. The near-plane intersection at depth one occurs two-thirds of the way along that directed edge.",
+        "Interpolate the other coordinates at the same parameter; our intersections havex minusone-third and plusone-third.",
+        "The two inside vertices and two intersections form a quadrilateral, which can be triangulated for drawing.",
+        "At each new intersection, clipz0 andw1 match the near boundary; divide only after completing clipping.",
+        "Correct the source’s wording: a small positivez makesw small, while1/w and divided results can grow large.",
+        "A near plane limits that unstable region, but an overly large value cuts nearby walls and floors; choose it with range and precision in mind."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "같은 장면을 다른 규약으로 적는 법",
+      "lines": [
+        "Normalized depth may instead use minus1 to1, requiring clipz between minusw andw.",
+        "Keep near one and far eleven. The multiplier for view z is one point two zero. Subtract two point two zero from that result, then divide by w.",
+        "Atz4 this gives clipz2.6 and depth0.65, rather than0.825 from the previous convention.",
+        "Adding one to zero point six five gives one point six five. Dividing by two gives zero point eight two five. The two depth conventions describe the same position.",
+        "For right-handed negativez-forward camera coordinates and column vectors, transpose and account for the changed inputz sign.",
+        "A column matrix with last row(0,0,−1,0) makesw equal−z; our depth4 is written as viewz−4 in that camera convention.",
+        "Orthographic depth keeps w at one and changes linearly. For zero to one, subtract one from view z and divide by ten. For minus one to one, double that result and subtract one.",
+        "Compare the four conventions rather than just formula names; historical hardware restrictions do not define all modern graphics systems."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "가려진 지붕과 화면 밖을 구별하기",
+      "lines": [
+        "New construction changes the front terrace and long roof; watch the interior opening and rear tower together.",
+        "Orbiting hides part of the tower behind a front roof; that differs from leaving the screen boundary.",
+        "An elevated view reveals previously hidden platforms; treating all invisibility as one problem makes debugging difficult.",
+        "First ask whether a point is within the view, then consider its relation to foreground objects.",
+        "We have not identified a near-plane hole here; the observed changes are construction and viewpoint-dependent occlusion.",
+        "The image does not establish the game’s near distance or depth format; our defined triangle supplies the numeric clipping proof.",
+        "Keep the same landmark through closer or wider views; switching to another roof changes the object of comparison.",
+        "Next we map surviving points to screen coordinates, still distinguishing camera axes from pixel axes."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "w로 나누고 출력 창에 놓기",
+      "lines": [
+        "Return to our point in clip space: horizontal two, vertical sixteen ninths, depth three point three, and fourth component four. Divide all four components by four.",
+        "NDC is(0.5,4/9,0.825); these are not yet pixel coordinates.",
+        "Use a viewport starting at(100,50), width800 and height450: a rectangle offset within the full image.",
+        "For horizontal position, add one to the normalized value, divide by two, multiply by the width, and add the window origin. Zero point five maps to three-quarters of the window width.",
+        "The result isx700, two hundred pixels right of the viewport’s center500.",
+        "For vertical position, subtract four ninths from one to reverse the upward-positive direction. Multiply by half of height four hundred fifty, then add fifty.",
+        "The vertical position is one hundred seventy-five. The same point therefore has horizontal position seven hundred and vertical position one hundred seventy-five.",
+        "This is a continuous screen position; pixel-center and coverage rules belong to rasterization. Do not blindly round the vertex to an integer."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "한 점의 화면 좌표 계산을 마무리하기",
+      "lines": [
+        "We expressed the same point in local, world, and camera frames, then used the projection matrix to produce clip coordinates.",
+        "After clipping, division by w, and viewport mapping, our point appears at horizontal seven hundred and vertical one hundred seventy-five.",
+        "Next, examine how stored depth differs from distance and why texture interpolation still needs w."
+      ]
+    }
+  ]
+}

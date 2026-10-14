@@ -1,0 +1,81 @@
+{
+  "status": "future-cpu-numerical-preparation-not-production-approval",
+  "atUtc": "2026-10-09T01:15:27.534289+00:00",
+  "target": "game-math-springs-control",
+  "checks": [
+    {
+      "name": "undamped amplitude and signed initial velocity",
+      "passed": true,
+      "detail": "A√2,θ=-π/4,ω2 reconstruct x0=1,v0=2. A and x0 alone allow ±v0; zero amplitude has arbitrary phase. k/m has units s^-2 and ω has rad/s."
+    },
+    {
+      "name": "physical versus mass-normalized coefficients",
+      "passed": true,
+      "detail": "Critical physical c8kg/s for m2kg,k8N/m; mass-normalized code k4,c4. Quadruple k with fixed m doubles frequency, not quadruples it."
+    },
+    {
+      "name": "underdamped solution and differential equation",
+      "passed": true,
+      "detail": "ω0=4,ζ=.25 givesωd=√15; initial position/velocity and x″+ω0²x+2ζω0x′=0 independently checked. ζ0 has no decay; ζ1 requires its own limit formula."
+    },
+    {
+      "name": "critical damping can cross the target once",
+      "passed": true,
+      "detail": "x=(1-8t)e^-2t with x0=1,v0=-10 crosses at.125s. Nonoscillatory does not guarantee no overshoot for arbitrary initial velocity."
+    },
+    {
+      "name": "overdamped real roots and initial conditions",
+      "passed": true,
+      "detail": {
+        "omega0": 2,
+        "zeta": 2,
+        "roots": [
+          -0.5358983848622456,
+          -7.464101615137754
+        ],
+        "assumptions": "Positive m,k,c; comparison depends on initial conditions and criterion. No blanket fastest/no-overshoot guarantee."
+      }
+    },
+    {
+      "name": "viscous damping dissipates energy",
+      "passed": true,
+      "detail": "For fixed rest position,m1,k16,c2: d(.5mv²+.5kx²)/dt=-cv². A moving set point can supply energy; do not extrapolate autonomous decay to arbitrary inputs."
+    },
+    {
+      "name": "semi-implicit Euler does not inherit unconditional stability",
+      "passed": true,
+      "detail": {
+        "spectralRadiusSmallDt": 0.9270156211871642,
+        "spectralRadiusLargeDt": 6.464101615137755,
+        "codeOrder": "velocity+=accel*dt; position+=updatedVelocity*dt. Continuous critical damping is stable, butdt1 discrete update diverges."
+      }
+    },
+    {
+      "name": "first-order lag sign and constant-target composition",
+      "passed": true,
+      "detail": "Positiveλ with x′=-λx decays. Exact qnew=r+(q-r)e^-λdt is independent of step subdivision for a fixed target; changing targets are a different forcing problem. A first-order filter has no separate velocity state."
+    }
+  ],
+  "source": {
+    "path": "tmp/game-math-part2-sources/3e10b1ffa61e813b8611ee04a6c6c3ea.txt",
+    "sha256": "ae67dcb1e355d7a95c23dffda89ac08e310db02164a255aafbe4acf946432b1a",
+    "cachedTextDirectlyRead": "all12.2 including all equations/code/corrections",
+    "freshNative": "pending",
+    "figures": "not directly viewed"
+  },
+  "clarifications": [
+    "Hooke signed force is different from its magnitude; nonsingular spring direction and elastic range need guards.",
+    "k1/k2 integration constants are not the physical spring constant k.",
+    "Set point derivatives affect whether D uses value velocity or error velocity; the historical code damps value velocity.",
+    "PID integral action removes steady bias only under suitable stable control assumptions; no universal guarantee.",
+    "Nearζ1 avoid evaluating an underdamped expression with vanishingωd as a numerically safe universal solution.",
+    "Zero k/m,negative damping and arbitrary changing inputs require separate handling.",
+    "No named-game camera spring implementation is inferred from a gameplay shot."
+  ],
+  "production": {
+    "projectCreated": false,
+    "footageSelected": false,
+    "ttsStarted": false,
+    "duplicateReview": "pending after current private delivery"
+  }
+}

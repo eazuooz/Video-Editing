@@ -1,0 +1,96 @@
+{
+  "reviewedAt": "2026-10-09T17:41:43.530Z",
+  "plan": "production/research/game-lighting-history/voice-diagnostic-plan-v1.json",
+  "planSha256": "7fecdbb37278b28369ad6398f6856c407cb23414871c86e521d4345913e343a2",
+  "currentAudio": {
+    "path": "shared/output/narration/game-lighting-history-04/qwen3-1.7b-balanced-v1/game-lighting-history-04-qwen3-1.7b-balanced-v1.wav",
+    "sha256": "ce7f004f73e8c8488b8fb1a8bbcec7e4394c9e242630f3ab41e1febaac7910a5",
+    "durationSeconds": 1266.160041666667,
+    "sceneCount": 14,
+    "paragraphPairs": 87,
+    "timing": {
+      "path": "shared/output/narration/game-lighting-history-04/qwen3-1.7b-balanced-v1/game-lighting-history-04-qwen3-1.7b-balanced-v1.timing.json",
+      "sha256": "38a84a45777c40be5b80542552b2450dcc3fc9698674ef244d40f0a915ee327b"
+    },
+    "captions": {
+      "ko": {
+        "path": "shared/output/narration/game-lighting-history-04/qwen3-1.7b-balanced-v1/game-lighting-history-04-qwen3-1.7b-balanced-v1.srt",
+        "sha256": "cc491696eac5d80c663aff68d0723683a8d671238420a6f385ab08d183b2d029",
+        "cueCount": 87,
+        "wordAligned": false,
+        "finalPixelsApproved": false
+      },
+      "en": {
+        "path": "shared/output/narration/game-lighting-history-04/qwen3-1.7b-balanced-v1/game-lighting-history-04-qwen3-1.7b-balanced-v1.en.srt",
+        "sha256": "8e55e410c8f80eb1af761de16682c8bdfe46d90ed2067843ed1c34441e9042c0",
+        "cueCount": 281,
+        "wordAligned": false,
+        "finalPixelsApproved": false
+      }
+    }
+  },
+  "scope": "Five short independent recognizer outputs directly compared with original whole/context scripts; no expected-text prompt, no TTS or audio edits in this review.",
+  "records": [
+    {
+      "label": "18v-18-40",
+      "result": "projects/game-lighting-history-04/production/local/voice-diagnostics-v1/18v-18-40.json",
+      "sha256": "292b092aa711216604b1fea1ca23a1874b13d5bbe7848528c4bb618a9319130d",
+      "exitCode": 0,
+      "fullTextAndAllTimestampsDirectlyRead": true,
+      "observation": "All expected/actual text and every word timestamp read. Independent22s window carries small-screen/wasted-shadow cost,near-camera fine samples,virtual address/page/physical-memory/depth statements once. Whole29.98s collapse and backwards20s duplicate are absent; recognizer chunk artifact is the supported explanation. Human 언리얼 pronunciation remains pending."
+    },
+    {
+      "label": "18t-70-92",
+      "result": "projects/game-lighting-history-04/production/local/voice-diagnostics-v1/18t-70-92.json",
+      "sha256": "b598065cd8b98bca5dff21399ea357c397567cd2f6e3a54bfd573655e40203ea",
+      "exitCode": 0,
+      "fullTextAndAllTimestampsDirectlyRead": true,
+      "observation": "All text and timestamps read. Paragraph6 once at0–14.22; paragraph7 starts14.64–16.32 with 그래서 비교 표에는 내부 해상도; paragraph6 second/third sentences then reappear16.66–21.98 in this single short no-chunk window. Consistent with whole and independent tail recognition; suspected actual TTS repetition, not dismissed as chunk artifact."
+    },
+    {
+      "label": "18t-90-110",
+      "result": "projects/game-lighting-history-04/production/local/voice-diagnostics-v1/18t-90-110.json",
+      "sha256": "ff68b237767ad27694c344595fe8644267b026a4acf4192cd4b7e33a35f7db57",
+      "exitCode": 0,
+      "fullTextAndAllTimestampsDirectlyRead": true,
+      "observation": "All text and timestamps read. Starts with repeated paragraph6 ending0–6.30, then restarts paragraph7 그래서 비교 표에는 내부 해상도 at6.60–13.32 followed by its final sentence13.60–19.02. Combined overlapping diagnostic supports a duplicated fragment within current PCM; exact speech edit boundaries not inferred from ASR times."
+    },
+    {
+      "label": "22r-0-22",
+      "result": "projects/game-lighting-history-04/production/local/voice-diagnostics-v1/22r-0-22.json",
+      "sha256": "d25d07815ef883bde645b369ac92ade08ba2e7c08ab2573e4c9385a13066fde6",
+      "exitCode": 0,
+      "fullTextAndAllTimestampsDirectlyRead": true,
+      "observation": "All text and timestamps read. Again starts 엔지니라도 버전과; expected entire first sentence 엔진의 기능 이름만으로 실제 프레임의 구조를 확정하지 않겠습니다 and 같은 are absent. Matches whole recognition; onset content repair required before approval."
+    },
+    {
+      "label": "22r-leading12-10",
+      "result": "projects/game-lighting-history-04/production/local/voice-diagnostics-v1/22r-leading12-10.json",
+      "sha256": "c5eeb09743077fad896047b0aa698dc3a69133ccba9b97552791f35f12414563",
+      "exitCode": 0,
+      "fullTextAndAllTimestampsDirectlyRead": true,
+      "observation": "All neighboring/target text and timestamps read. Previous scene ends its final-pixel/connection-frame explanation10.84s; target begins11.92s with 엔지니라도 버전과. Missing expected first sentence is not in the previous12s either. Consistent current-PCM omission, not just a chunk-onset guess. Human listening remains pending."
+    }
+  ],
+  "resolvedRecognizerArtifactScenes": [
+    "18v"
+  ],
+  "suspectedCurrentPcmDefects": [
+    {
+      "scene": "18t",
+      "type": "repeated-p6-fragment-inside-p7",
+      "repairScope": "Regenerate only this unapproved chapter in bounded continuous subchapters; preserve full original text and other12chapter PCM."
+    },
+    {
+      "scene": "22r",
+      "type": "first-sentence-and-second-sentence-onset-missing",
+      "repairScope": "Regenerate only this unapproved chapter in bounded continuous subchapters; preserve full original text and other12chapter PCM."
+    }
+  ],
+  "currentNarrationApproved": false,
+  "humanWholeListeningApproved": false,
+  "humanPronunciationApproved": false,
+  "finalMixedAsr": false,
+  "actualListeningClaimed": false,
+  "rawEvidencePreserved": true
+}

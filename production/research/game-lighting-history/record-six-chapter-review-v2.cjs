@@ -1,0 +1,21 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),rel='production/research/game-lighting-history/local/spatial-narrated-rehearsal-v2/qa/extraction.json';
+const file=path.join(root,rel),r=JSON.parse(fs.readFileSync(file,'utf8'));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+if(r.video.sha256!=='ff4b9e36d08f53e4a2591f07e65dc430127f35c194d3fd01b3a33e2fcb57e43e'||sha(r.video.path)!==r.video.sha256||r.boards.length!==37||r.frames.length!==221)throw Error('Reviewed render changed');
+for(const b of r.boards){if(sha(b.path)!==b.sha256)throw Error('Reviewed board changed');b.directlyViewed=true;}
+const reviewedAt=new Date().toISOString();
+r.directReview={reviewedAt,boardsRead:37,scope:'All six cells on boards01–36 and all five cells on board37 directly read:127 original cue centers and41 paragraph motion samples deduplicated to221 frames. These are selected rehearsal pixels, not every caption boundary or final episode.',
+ chapterObservations:{
+ '13a':'All8 paragraphs: projected XYZ box/ray/slab intervals/hierarchy, shifted z rejection, triangle hit distinction, closest/any-hit and coarse-box/cost comparison. Fixed caption words legible. First two spoken ray/formula sentences retain a stationary t=0 dot until8.22s; add an independently timed early ray segment in final scene before the existing8.22–13.28 box movement. No PCM retime required.',
+ '15a':'All6 paragraphs: receiving point and spatial probes, camera motion separate from probe coordinates, unoccluded E=6 versus attenuated E=2, spacing/storage/update and discrete cached response. Original independent numbers and real-engine caveats visible; previous orphan caption fixed.',
+ '15b':'All7 paragraphs: candidate selection, reservoir contents, weights1/3 and probability.75/.25, candidate PDF/count correction, neighbor/history reuse and current door occlusion, separate denoising. Projected faces and arrows progress during their narrated claims; no clipped cue text observed.',
+ '16a':'All7 paragraphs: detailed/source versus selected geometry, cluster/group hierarchy, world/screen error, independent f*e/d changes5→2.5px, boundary seam→joined boundary, selected versus resident data, separate Nanite geometry and Lumen lighting. No unlimited-triangles or complete-engine equation claim.',
+ '17a':'All7 paragraphs: tracing/storage/query, screen fallback, distance-field versus triangle path, capture cards distinct from mesh walls, tracing/query arrows distinct, GI comparison and Nanite support relationship. Fixed captions do not overlap diagrams in the reviewed samples.',
+ '17b':'All6 paragraphs: immediate direct lighting versus discrete cached response, disocclusion/history correspondence, missing coverage repaired independently of brightness, thin-wall leakage versus occlusion, lighting versus camera-controlled comparison, partial-update budget. Yellow equation/body notes remain above the fixed caption box.'},
+ representativeFullFramesDirectlyRead:['production/research/game-lighting-history/local/spatial-narrated-rehearsal-v2/qa/frame-013.png','production/research/game-lighting-history/local/spatial-narrated-rehearsal-v2/qa/frame-054.png'],
+ resizedBoardDisplayCheck:[{frame:13,board:3,decodedScaledRgbMd5:'63dded4787c55721d3ece034a3d4a61b',decodedBoardCellRgbMd5:'63dded4787c55721d3ece034a3d4a61b'},{frame:54,board:9,decodedScaledRgbMd5:'5f191d1c6e7755bf54000ccbd9d88930',decodedBoardCellRgbMd5:'5f191d1c6e7755bf54000ccbd9d88930'}],
+ issues:[{scene:'13a',paragraph:1,status:'final-runtime-fix-required',reason:'Show ray p(t) path during spoken formula before boundary-box argument; preserve original8.22–13.28 box transition and PCM.'},{status:'final-PTS-gate-pending',reason:'Rehearsal31026 frames differs from planned31022 by4 endpoint frames; no final timebase/frame-count approval inferred.'}]};
+r.allCueCentersReviewed=true;r.allParagraphMotionSamplesDirectlyRead=true;r.allCaptionBoundaryPixelsReviewed=false;r.fullEpisodeApproved=false;r.finalMix=false;
+fs.writeFileSync(file,JSON.stringify(r,null,2)+'\n');
+console.log(JSON.stringify({record:rel,boardsRead:37,framesRead:221,cueCentersRead:127,allFinalPixels:false,issues:r.directReview.issues.length}));

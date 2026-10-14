@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),p='projects/game-lighting-history-04/production/part1-guided-actions-tts-execution-v169.json';
+const read=x=>JSON.parse(fs.readFileSync(path.join(root,x),'utf8').replace(/^\uFEFF/,''));
+const state=read(p),lease=read('shared/output/GPU_HANDOFF.json'),worker=state.actualIdentity;
+if(lease.token!==state.leaseToken||lease.coordinator.pid!==worker.pid||Math.abs(lease.coordinator.createTime-worker.createTime)>.01)throw Error('Owned lease identity mismatch');
+const query=`$p=Get-CimInstance Win32_Process -Filter 'ProcessId = ${worker.pid}';if($p){$p|Select-Object ProcessId,ParentProcessId,CreationDate,Name,CommandLine|ConvertTo-Json -Compress}`;
+const actual=JSON.parse(cp.execFileSync('powershell.exe',['-NoProfile','-Command',query],{encoding:'utf8',windowsHide:true}));
+if(!actual.CommandLine.includes('render-part1-guided-actions-v169.py'))throw Error('PID reused');
+const observed={recordedAt:new Date().toISOString(),worker,actualCim:actual,session:86972,log:'projects/game-lighting-history-04/production/local/part1-guided-actions-tts-v169.log',leaseToken:state.leaseToken,alive:true,cpuThreads:2,gpuJobs:1,newGuidesOnly:37,original111AndFiveFramingRegenerated:false,generationComplete:false,wholeAsrApproved:false,finalMixedAsrApproved:false,uploaded:false,nextAction:'Observe generation and token-matching idle-GPU release; then direct whole/context ASR, measured crop/cut allocation and spatial scenes.'};
+const file='projects/game-lighting-history-04/production/part1-live-worker-observation-v170.json';if(fs.existsSync(path.join(root,file)))throw Error('Preserve observation');fs.writeFileSync(path.join(root,file),JSON.stringify(observed,null,2)+'\n');
+const checkpoint='production/research/game-lighting-history/checkpoint.json',c=read(checkpoint);c.updatedAt=observed.recordedAt;c.status='episode04-physical01-new37-guides-exclusive-TTS-v169';c.ownedActiveWork={owner:'game-lighting-history',status:state.status,pid:worker.pid,processCreateTime:worker.createTime,commandLine:worker.command,cwd:worker.cwd,session:86972,cpuThreads:2,gpuJobs:1,leaseToken:state.leaseToken,total:37,completed:null,execution:p,log:observed.log,nextAction:observed.nextAction};
+const tmp=path.join(root,checkpoint+'.v170.tmp');fs.writeFileSync(tmp,JSON.stringify(c,null,2)+'\n');fs.renameSync(tmp,path.join(root,checkpoint));console.log(JSON.stringify({file,pid:worker.pid,session:86972,alive:true}));

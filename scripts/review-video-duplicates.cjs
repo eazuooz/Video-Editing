@@ -31,8 +31,9 @@ for (const entry of fs.readdirSync(path.join(root, 'projects'), {withFileTypes: 
   // Additive revisions keep the old script and receipt. Review and hash the
   // active final script/receipt as well, so new chapters cannot evade review.
   const scriptPaths = new Set([`${base}/script/narration.ko.json`, manifest.paths?.script].filter(Boolean));
+  const englishScriptPaths = new Set([`${base}/script/narration.en.json`, manifest.paths?.scriptEn, manifest.paths?.scriptEnglish].filter(Boolean));
   const receiptPaths = new Set([`${base}/publishing/youtube-upload.json`, manifest.publishing?.receipt].filter(Boolean));
-  const files = [...new Set([manifestPath, ...scriptPaths, `${base}/script/narration.en.json`, manifest.paths?.scriptEn, `${base}/planning/outline.md`, `${base}/sources/SOURCES.md`, `${base}/README.md`, ...receiptPaths].filter(Boolean))];
+  const files = [...new Set([manifestPath, ...scriptPaths, ...englishScriptPaths, `${base}/planning/outline.md`, `${base}/sources/SOURCES.md`, `${base}/README.md`, ...receiptPaths].filter(Boolean))];
   for (const relative of files) {
     if (!fs.existsSync(path.join(root, relative))) continue;
     const text = fs.readFileSync(path.join(root, relative), 'utf8');
@@ -55,6 +56,7 @@ for (const entry of fs.readdirSync(path.join(root, 'projects'), {withFileTypes: 
   record.exactTitleMatch = [...Object.values(record.titles), record.scriptTitle].some(title => title && candidateTitles.includes(normalized(title)));
   record.scriptPath = manifest.paths?.script || `${base}/script/narration.ko.json`;
   record.scriptPaths = [...scriptPaths];
+  record.englishScriptPaths = [...englishScriptPaths];
   projects.push(record);
 }
 const candidateRecord = candidateFile ? candidate : {slug, sourceVideoId: candidate.sourceVideoId, sourceTitle: candidate.sourceTitle};

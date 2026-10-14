@@ -1,0 +1,13 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),rp='projects/game-lighting-history-04/production/additive-prerequisite-capture-repair-v2.json';
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const r=JSON.parse(fs.readFileSync(path.join(root,rp),'utf8'));
+if(sha(r.proof.path)!==r.proof.sha256||sha(r.board.path)!==r.board.sha256)throw Error('Proof pixels changed');
+r.reviewedAt=new Date().toISOString();r.allSamplesDirectlyRead=true;r.observation='All4encoded samples directly read. Returned vector now appears in white below the teal projected front face, clear on black ground at full reveal. Fixed caption zone unchanged; input/return/output matching values remain exact.';
+r.actualProbe={frames:528,width:1920,height:1080,fps:60,timeBase:'1/90000',startPts:0,durationTs:792000,durationSeconds:8.8,audioStreams:0,wholeDecodeExitCode:0};
+r.renderExecution=JSON.parse(fs.readFileSync(path.join(root,'production/research/game-lighting-history/local/episode03-chapter-render-v4/renders/additive-prerequisite-capture-repair-v2-project.execution.json'),'utf8'));
+r.renderPidObserved=false;r.renderPidNote='8.226s scoped export ended before CIM observation; server/start/command/end/actualexit0 preserved. No numerical worker PID guessed.';
+r.cuaPlayback={tab:27,rate:1,observedStart:0.0197,observedEnded:8.8,ended:true,sourceCurrentlyRead:true,allIntermediateFramesDirectlyObserved:false};
+r.labelIssueResolved=true;r.wholeMovingProofsApproved=false;r.finalNarratedQaApproved=false;
+fs.writeFileSync(path.join(root,rp),JSON.stringify(r,null,2)+'\n');
+console.log(JSON.stringify({all4SamplesRead:true,labelIssueResolved:true,wholeDecodeExitCode:0,finalNarratedQaApproved:false}));

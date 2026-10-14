@@ -1,0 +1,13 @@
+import {makeProject} from '@motion-canvas/core';
+import p0 from './megalights-proof0-v1?scene';
+import p1 from './megalights-proof1-v1?scene';
+import p2 from './megalights-proof2-v1?scene';
+import p3 from './megalights-proof3-v1?scene';
+import p4 from './megalights-proof4-v1?scene';
+import p5 from './megalights-proof5-v1?scene';
+import p6 from './dlss-latest-proof0-v1?scene';
+import p7 from './dlss-latest-proof1-v1?scene';
+import p8 from './dlss-latest-proof2-v1?scene';
+import p9 from './dlss-latest-proof3-v1?scene';
+import p10 from './dlss-latest-proof4-v1?scene';
+export default makeProject({scenes:[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10]});

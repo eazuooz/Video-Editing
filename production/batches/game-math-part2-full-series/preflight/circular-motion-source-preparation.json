@@ -1,0 +1,114 @@
+{
+  "status": "future-source-and-math-preparation-only",
+  "atUtc": "2026-10-09T00:44:07.482274+00:00",
+  "target": "game-math-circular-motion",
+  "sourceSnapshot": "tmp/game-math-part2-sources/3e10b1ffa61e81d4bc3ee19712b63d65.txt",
+  "sourceSha256": "db8cf6fa2e9786c85b283d29e03abbc52f146460ade0f0aa6bf99f0dad119fa3",
+  "directReadSections": [
+    "11.8.1",
+    "11.8.2 including notes39/40 and inverseconditioncallout"
+  ],
+  "sourceFiguresDirectlyViewed": false,
+  "exercise11.9DirectRead": "pending",
+  "freshNativeVerificationBeforeProduction": "pending",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Position derivatives and constant speed with varying velocity",
+      "passed": true,
+      "formulas": [
+        "v=dp/dt",
+        "a=-omega²(p-center)",
+        "speed=r*abs(omega)",
+        "ac=r*omega²=speed²/r"
+      ],
+      "condition": "constant radius>0 and angular velocity; fixed center; angles in radians"
+    },
+    {
+      "name": "Period,frequency and angular speed distinguish reciprocal units",
+      "passed": true,
+      "radius": 5,
+      "speed": 10,
+      "centripetalAcceleration": 20.0,
+      "periodSeconds": 3.141592653589793,
+      "frequencyHz": 0.3183098861837907,
+      "angularSpeedRadiansPerSecond": 2.0,
+      "doubledSpeedAcceleration": 80.0
+    },
+    {
+      "name": "Chord versus arc limit needs division by elapsed time",
+      "passed": true,
+      "correctLimit": "lim_dt->0 norm(delta_p)/abs(dt)=speed",
+      "finiteChord": "2r*abs(sin(omega*dt/2))",
+      "finiteArc": "r*abs(omega*dt)",
+      "condition": "nonzero finite dt:chord and traveled arc generally differ"
+    },
+    {
+      "name": "Arbitrary3Daxis perpendicular radius, speed and inverse",
+      "passed": true,
+      "unitAxis": [
+        0.5773502691896258,
+        0.5773502691896258,
+        0.5773502691896258
+      ],
+      "radiusVector": [
+        1.0,
+        -1.0,
+        0.0
+      ],
+      "angularVector": [
+        1.1547005383792517,
+        1.1547005383792517,
+        1.1547005383792517
+      ],
+      "velocity": [
+        1.1547005383792517,
+        1.1547005383792517,
+        -2.3094010767585034
+      ],
+      "speed": 2.8284271247461903,
+      "coordinateConvention": "Explicit right-handed cross product; adapt the source left-handed axis/sign convention consistently,never mix the two"
+    },
+    {
+      "name": "One point cannot identify angular component parallel to radius",
+      "passed": true,
+      "fullAngularVector": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "pointVelocity": [
+        -6.0,
+        0.0,
+        2.0
+      ],
+      "recoverablePerpendicularComponent": [
+        1.0,
+        -0.0,
+        3.0
+      ],
+      "condition": "r!=0; remove center translation for a movingcenter;radialvelocity is discarded; uniformcircular model assumes omega perpendicular to r"
+    },
+    {
+      "name": "Constant linear motion has changing apparent angular velocity",
+      "passed": true,
+      "position": "(t,2,0)",
+      "linearVelocity": "(1,0,0)",
+      "omegaZ": "-2/(t²+4)",
+      "maximumMagnitudeAtClosestApproach": 0.5,
+      "condition": "Relative to fixed origin,not a uniform circular orbit"
+    },
+    {
+      "name": "SourceEarth example is a declared approximation",
+      "passed": true,
+      "radiusMeters": 6371000,
+      "rotationPeriodSeconds": 86400,
+      "centripetalMetersPerSecondSquared": 0.03369301356703334,
+      "scope": "Use source mean-radius and24hour assumptions; not an exact geodetic model or precise sidereal-rotation calculation"
+    }
+  ],
+  "futureProjectCreated": false,
+  "futureNarrationWritten": false,
+  "futureTtsStarted": false,
+  "formalDuplicateReview": "not started"
+}

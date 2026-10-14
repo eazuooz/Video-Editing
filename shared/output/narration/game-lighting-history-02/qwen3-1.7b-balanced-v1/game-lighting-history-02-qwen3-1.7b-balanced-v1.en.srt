@@ -1,0 +1,1379 @@
+1
+00:00:00,000 --> 00:00:04,887
+How does a room receive light without a direct
+view of a lamp, and why can a
+
+2
+00:00:04,887 --> 00:00:10,100
+reflection lose an object outside the screen?
+We will examine stored light,
+
+3
+00:00:10,100 --> 00:00:15,720
+reused screen information and light lists,
+then transport through water and fog.
+
+4
+00:00:15,720 --> 00:00:21,340
+Understanding the data each technique keeps
+also reveals what it cannot recover.
+
+5
+00:00:21,340 --> 00:00:26,960
+We begin with photon mapping, which collects
+light arrivals before the game runs.
+
+6
+00:00:27,680 --> 00:00:33,675
+Previously we separated stored wall lighting
+from shadows evaluated during play.
+
+7
+00:00:33,675 --> 00:00:37,956
+Now consider light that continues after
+meeting a surface.
+
+8
+00:00:37,956 --> 00:00:42,152
+A red wall can reflect light toward a white
+wall and tint it.
+
+9
+00:00:42,152 --> 00:00:46,979
+Random paths starting at the camera do not
+find every important route easily.
+
+10
+00:00:46,979 --> 00:00:50,989
+Light passing through a refracting object and
+concentrating on
+
+11
+00:00:50,989 --> 00:00:55,072
+a small floor area can be difficult to reach
+by ordinary sampling.
+
+12
+00:00:55,072 --> 00:00:59,718
+Photon mapping changes the starting point. It
+sends energy samples from emitters and
+
+13
+00:00:59,718 --> 00:01:04,428
+records their positions and directions after
+surface interactions. A computational
+
+14
+00:01:04,428 --> 00:01:09,202
+photon represents a sample, rather than a
+literal simulation of every physical photon.
+
+15
+00:01:09,202 --> 00:01:13,457
+The emitter pass gathers arrivals. The camera
+pass finds the visible surface,
+
+16
+00:01:13,457 --> 00:01:16,809
+queries nearby arrivals and estimates outgoing
+light there.
+
+17
+00:01:16,809 --> 00:01:20,612
+Keeping those two jobs separate makes the
+algorithm easier to follow.
+
+18
+00:01:20,612 --> 00:01:24,773
+Our diagram places the emitter, glass and
+floor at different depths.
+
+19
+00:01:24,773 --> 00:01:30,009
+Gold paths show transport, green dots mark
+stored arrivals, and a blue disk identifies
+
+20
+00:01:30,009 --> 00:01:34,742
+the query neighborhood. These colors
+distinguish movement from stored data.
+
+21
+00:01:34,742 --> 00:01:38,122
+Counting dots alone does not determine
+brightness.
+
+22
+00:01:38,122 --> 00:01:42,960
+The estimate accounts for sample energy, query
+area and surface response.
+
+23
+00:01:42,960 --> 00:01:47,952
+Increasing the number of emitted samples must
+not create extra total energy.
+
+24
+00:01:47,952 --> 00:01:51,529
+A fixed circular query has area pi times
+radius squared.
+
+25
+00:01:51,529 --> 00:01:54,953
+Doubling its radius makes the area four times
+larger.
+
+26
+00:01:54,953 --> 00:02:00,812
+This simple calculation explains why a surface
+estimate depends on the neighborhood area.
+
+27
+00:02:00,812 --> 00:02:05,578
+A smaller radius can preserve a narrow feature
+but become noisy when too few samples arrive.
+
+28
+00:02:05,578 --> 00:02:09,538
+A larger radius gathers more samples while
+blurring neighboring features.
+
+29
+00:02:09,538 --> 00:02:12,880
+Radius and sample count must therefore be
+considered together.
+
+30
+00:02:13,600 --> 00:02:19,187
+The photon-mapping principle dates to research
+in 1996. Its adoption by a game engine is a
+
+31
+00:02:19,187 --> 00:02:24,923
+separate question. Unreal Lightmass provides
+an example of precomputed static lighting,
+
+32
+00:02:24,923 --> 00:02:30,212
+without implying that an engine implements
+every feature of the original research.
+
+33
+00:02:30,212 --> 00:02:34,208
+An important Lightmass question is where work
+is concentrated.
+
+34
+00:02:34,208 --> 00:02:39,461
+An importance region directs quality toward
+the space used by the player. It does not
+
+35
+00:02:39,461 --> 00:02:45,232
+simply erase everything outside the volume,
+and the precise behavior is version dependent.
+
+36
+00:02:45,232 --> 00:02:49,647
+A game can reuse baked results instead of
+resolving the same static
+
+37
+00:02:49,647 --> 00:02:54,771
+transport each frame. Changing a lamp or a
+wall can invalidate those answers.
+
+38
+00:02:54,771 --> 00:02:59,342
+Fast lookup comes with a tradeoff in how the
+scene responds to change.
+
+39
+00:02:59,342 --> 00:03:03,024
+This connects to the original script's concern
+about baking cost.
+
+40
+00:03:03,024 --> 00:03:07,035
+Finer spatial detail, more samples and
+complicated transport add work.
+
+41
+00:03:07,035 --> 00:03:11,702
+A reported number of hours is meaningful only
+with its scene, settings and hardware.
+
+42
+00:03:11,702 --> 00:03:17,666
+Testing baked lighting requires separating a
+runtime intensity change from a rebuild
+
+43
+00:03:17,666 --> 00:03:23,792
+of stored lighting. Otherwise an intended
+static contribution can be mistaken for a bug.
+
+44
+00:03:23,792 --> 00:03:28,029
+A bright pattern behind glass does not
+identify photon mapping.
+
+45
+00:03:28,029 --> 00:03:32,109
+A texture or another caustic approximation may
+look similar.
+
+46
+00:03:32,109 --> 00:03:37,052
+Implementation evidence and visible output
+answer different questions.
+
+47
+00:03:37,052 --> 00:03:42,840
+Progressive methods accumulate samples and
+adjust query neighborhoods over iterations.
+
+48
+00:03:42,840 --> 00:03:45,696
+Shrinking the radius alone is insufficient;
+
+49
+00:03:45,696 --> 00:03:48,852
+the update rule must also provide enough
+samples.
+
+50
+00:03:48,852 --> 00:03:51,561
+We now move from precomputation to coarse
+spatial
+
+51
+00:03:51,561 --> 00:03:55,107
+representations that update indirect light in
+a changing scene.
+
+52
+00:03:55,107 --> 00:03:59,040
+The quantity remains light, but its storage
+and update schedule change.
+
+53
+00:03:59,760 --> 00:04:06,759
+Light Propagation Volumes, or LPV, represent
+low-frequency directional light in spatial
+
+54
+00:04:06,759 --> 00:04:13,212
+cells. Sharing a grid layout does not make all
+volume techniques the same algorithm.
+
+55
+00:04:13,212 --> 00:04:18,597
+Transporting a cell's light information to
+neighboring cells approximates indirect
+
+56
+00:04:18,597 --> 00:04:24,056
+illumination. Our diagram separates one
+propagation step from repeated propagation,
+
+57
+00:04:24,056 --> 00:04:27,522
+without treating each step as a complete
+physical path.
+
+58
+00:04:27,522 --> 00:04:33,710
+Direction matters because equal light arriving
+from opposite sides illuminates different
+
+59
+00:04:33,710 --> 00:04:39,262
+faces of a wall. A single brightness value
+cannot represent that distinction well.
+
+60
+00:04:39,262 --> 00:04:45,010
+A thin wall is difficult when the wall and the
+spaces on both sides share coarse cells.
+
+61
+00:04:45,010 --> 00:04:51,242
+The representation may fail to distinguish
+blocked directions, producing light leakage.
+
+62
+00:04:51,242 --> 00:04:54,257
+Finer cells increase storage and update work.
+
+63
+00:04:54,257 --> 00:04:58,895
+Covering an entire large world at one fine
+resolution can be expensive.
+
+64
+00:04:58,895 --> 00:05:03,532
+Cell size is therefore a resource decision as
+well as a quality setting.
+
+65
+00:05:03,532 --> 00:05:08,274
+An engine demonstration establishes what that
+implementation explored.
+
+66
+00:05:08,274 --> 00:05:12,338
+It does not by itself prove use in a released
+game. Presentation,
+
+67
+00:05:12,338 --> 00:05:16,402
+engine support and shipped adoption remain
+separate evidence.
+
+68
+00:05:16,402 --> 00:05:21,594
+Fog will also use spatial cells later, but
+density and directional illumination
+
+69
+00:05:21,594 --> 00:05:26,480
+are different quantities. The important
+question is what each cell stores.
+
+70
+00:05:27,200 --> 00:05:32,481
+Plausible lighting does not prevent thin
+geometry from flickering in motion.
+
+71
+00:05:32,481 --> 00:05:37,362
+Anti-aliasing addresses both spatial edges and
+temporal instability,
+
+72
+00:05:37,362 --> 00:05:39,843
+which must be evaluated separately.
+
+73
+00:05:39,843 --> 00:05:45,333
+Supersampling renders more spatial samples
+before reducing the image.
+
+74
+00:05:45,333 --> 00:05:51,813
+It may increase surface and shading work,
+unlike merely enlarging a completed image.
+
+75
+00:05:51,813 --> 00:05:57,851
+MSAA evaluates geometric coverage at multiple
+sample positions. It helps polygon boundaries,
+
+76
+00:05:57,851 --> 00:06:01,951
+but does not automatically solve every form of
+shading aliasing.
+
+77
+00:06:01,951 --> 00:06:05,083
+Its scope depends on what is evaluated per
+sample.
+
+78
+00:06:05,083 --> 00:06:10,258
+Image-based methods such as FXAA detect and
+filter edges in a completed frame.
+
+79
+00:06:10,258 --> 00:06:15,983
+They avoid additional geometry samples, but
+their filtering can soften fine details.
+
+80
+00:06:15,983 --> 00:06:21,352
+SMAA has spatial and temporal variants. A
+shared family name does not
+
+81
+00:06:21,352 --> 00:06:27,093
+imply identical inputs. Comparisons need the
+exact mode and resolution.
+
+82
+00:06:27,093 --> 00:06:30,299
+TAA reprojects previous samples into the
+current frame.
+
+83
+00:06:30,299 --> 00:06:33,171
+Motion information establishes correspondence,
+
+84
+00:06:33,171 --> 00:06:37,513
+while jitter can provide samples at slightly
+different positions over time.
+
+85
+00:06:37,513 --> 00:06:43,139
+A newly revealed surface may have no valid
+history. Reusing an old color there can leave
+
+86
+00:06:43,139 --> 00:06:48,843
+a trail. More temporal information is useful
+only when its correspondence is reliable.
+
+87
+00:06:48,843 --> 00:06:54,819
+These principles return in reconstruction.
+Remember the distinction between spatial
+
+88
+00:06:54,819 --> 00:07:01,360
+samples, current-image filtering and history.
+A still image cannot establish motion quality.
+
+89
+00:07:02,080 --> 00:07:06,826
+Forward and deferred shading organize material
+and lighting work.
+
+90
+00:07:06,826 --> 00:07:11,405
+Either can still waste work by testing every
+light at every pixel.
+
+91
+00:07:11,405 --> 00:07:17,233
+Forward+ and clustered approaches address
+light selection as a separate problem.
+
+92
+00:07:17,233 --> 00:07:24,383
+Screen tiles hold lists of potentially
+relevant lights. Shading reads a tile's list
+
+93
+00:07:24,383 --> 00:07:31,533
+instead of the global list, then performs the
+remaining surface-level evaluation.
+
+94
+00:07:31,533 --> 00:07:37,057
+In a teaching example, a scene has twelve
+lights and one tile has three candidates.
+
+95
+00:07:37,057 --> 00:07:40,179
+Pixels in that tile examine those three first.
+
+96
+00:07:40,179 --> 00:07:44,583
+These counts illustrate selection rather than
+a game benchmark.
+
+97
+00:07:44,583 --> 00:07:51,544
+Light bounds can be represented as volumes
+intersecting the space associated with a tile.
+
+98
+00:07:51,544 --> 00:07:54,200
+Disjoint volumes can be excluded.
+
+99
+00:07:54,200 --> 00:08:00,063
+The chosen bounds and depth range determine
+how conservative selection is.
+
+100
+00:08:00,063 --> 00:08:04,627
+A foreground object and distant wall may
+occupy the same tile but need different
+
+101
+00:08:04,627 --> 00:08:08,783
+lights. Clusters divide the view volume in
+depth to reduce this overlap.
+
+102
+00:08:08,783 --> 00:08:15,831
+We extrude the tile diagram into depth slices.
+Light volumes intersect particular slices,
+
+103
+00:08:15,831 --> 00:08:22,423
+and unrelated names leave each list. This
+visualizes the actual selection question.
+
+104
+00:08:22,423 --> 00:08:25,845
+Forward+ uses the selected list in forward
+shading.
+
+105
+00:08:25,845 --> 00:08:29,890
+Tiled or clustered lists can also support
+deferred lighting.
+
+106
+00:08:29,890 --> 00:08:35,413
+Light assignment does not replace a material
+model or an indirect-light algorithm.
+
+107
+00:08:35,413 --> 00:08:41,778
+Tile-based hardware organizes primitive and
+pixel processing. Our current lists contain
+
+108
+00:08:41,778 --> 00:08:48,143
+lights. The same word describes different data
+and stages, and the approaches can coexist.
+
+109
+00:08:48,143 --> 00:08:53,910
+Building lists costs work and memory. Large
+light volumes may leave many candidates,
+
+110
+00:08:53,910 --> 00:08:58,797
+while transparency and depth discontinuities
+complicate assignment.
+
+111
+00:08:58,797 --> 00:09:01,360
+The method is not universally faster.
+
+112
+00:09:02,080 --> 00:09:07,137
+After selecting lights, we combine values.
+Image colors are often encoded
+
+113
+00:09:07,137 --> 00:09:12,113
+for storage and display rather than
+representing linear light directly.
+
+114
+00:09:12,113 --> 00:09:15,003
+Adding encoded values changes the result.
+
+115
+00:09:15,003 --> 00:09:20,425
+Decode color into a linear representation,
+perform lighting and blending there,
+
+116
+00:09:20,425 --> 00:09:26,163
+then encode the displayed output. That
+sequence gives addition its intended meaning.
+
+117
+00:09:26,163 --> 00:09:31,430
+In our numerical example, the linear midpoint
+between black and white is 0.5.
+
+118
+00:09:31,430 --> 00:09:34,348
+Its sRGB encoding is approximately 0.735.
+
+119
+00:09:34,348 --> 00:09:39,373
+That is different from taking a midpoint of
+0.5 in encoded storage values.
+
+120
+00:09:39,373 --> 00:09:44,323
+The sRGB transfer function includes a linear
+segment near black and a separate
+
+121
+00:09:44,323 --> 00:09:49,423
+curved segment. A power of 2.2 is a useful
+approximation, not the exact function.
+
+122
+00:09:49,423 --> 00:09:57,327
+Not every texture represents color. Normals
+and roughness encode data even when displayed
+
+123
+00:09:57,327 --> 00:10:04,923
+as images. Their meaning determines whether a
+color transfer function is appropriate.
+
+124
+00:10:04,923 --> 00:10:09,836
+Automatic exposure can hide the cause of a
+comparison. Hold lighting,
+
+125
+00:10:09,836 --> 00:10:14,249
+camera and exposure fixed when testing color
+interpretation.
+
+126
+00:10:14,249 --> 00:10:18,080
+This separates a data error from a display
+adjustment.
+
+127
+00:10:18,800 --> 00:10:23,049
+PBR describes how a surface responds to
+incoming light.
+
+128
+00:10:23,049 --> 00:10:27,478
+Finding that light and its visibility is a
+different task.
+
+129
+00:10:27,478 --> 00:10:32,993
+A better material cannot automatically restore
+missing illumination.
+
+130
+00:10:32,993 --> 00:10:38,509
+A microfacet model treats a surface as a
+distribution of small orientations.
+
+131
+00:10:38,509 --> 00:10:42,922
+Roughness changes how reflection is
+concentrated or spread.
+
+132
+00:10:42,922 --> 00:10:45,893
+Rough materials can still reflect light.
+
+133
+00:10:45,893 --> 00:10:50,275
+Distribution, Fresnel and geometric masking
+terms serve different roles.
+
+134
+00:10:50,275 --> 00:10:53,425
+Treating them as one realism control obscures
+errors.
+
+135
+00:10:53,425 --> 00:10:58,493
+We focus here on their connection to transport
+rather than repeating a material course.
+
+136
+00:10:58,493 --> 00:11:03,044
+Image-based lighting combines directional
+environment information with
+
+137
+00:11:03,044 --> 00:11:07,810
+material response. Rough surfaces can use
+filtered directional information,
+
+138
+00:11:07,810 --> 00:11:11,793
+but a reflection probe does not know every
+current local occluder.
+
+139
+00:11:11,793 --> 00:11:17,494
+PBR, lightmaps and dynamic shadows are not
+mutually exclusive. They can represent
+
+140
+00:11:17,494 --> 00:11:23,440
+surface response, stored illumination and
+current visibility within the same frame.
+
+141
+00:11:24,160 --> 00:11:28,340
+Bricks that appear raised may use different
+representations.
+
+142
+00:11:28,340 --> 00:11:34,018
+Normal mapping changes the shading direction
+without moving the original vertices.
+
+143
+00:11:34,018 --> 00:11:37,173
+The silhouette helps reveal that distinction.
+
+144
+00:11:37,173 --> 00:11:41,746
+Parallax occlusion mapping uses a view
+direction and height
+
+145
+00:11:41,746 --> 00:11:46,499
+field to change texture lookup. It can suggest
+self-occlusion
+
+146
+00:11:46,499 --> 00:11:51,073
+and depth without generally creating a new
+mesh silhouette.
+
+147
+00:11:51,073 --> 00:11:57,418
+Displacement changes surface positions and can
+use tessellation when more geometry is needed.
+
+148
+00:11:57,418 --> 00:12:03,763
+Separating shading direction, lookup location
+and geometry position makes their roles clear.
+
+149
+00:12:03,763 --> 00:12:10,520
+Subsurface scattering allows light entering at
+one location to emerge elsewhere.
+
+150
+00:12:10,520 --> 00:12:16,603
+It is distinct from emission and from
+reflection at a single surface point.
+
+151
+00:12:16,603 --> 00:12:21,269
+These surface techniques still depend on
+illumination. In reflections,
+
+152
+00:12:21,269 --> 00:12:25,709
+our first question is therefore what scene
+information is available,
+
+153
+00:12:25,709 --> 00:12:28,720
+rather than how impressive the material looks.
+
+154
+00:12:29,440 --> 00:12:34,615
+Screen-space reflections use an existing
+frame's color and depth.
+
+155
+00:12:34,615 --> 00:12:40,154
+A reflection direction is projected onto the
+screen and searched there.
+
+156
+00:12:40,154 --> 00:12:44,603
+Reusing the image also limits the available
+information.
+
+157
+00:12:44,603 --> 00:12:51,065
+With a unit normal and a defined incident
+direction, reflection subtracts twice the
+
+158
+00:12:51,065 --> 00:12:57,983
+normal component. Our diagram states the
+direction convention before moving the arrows.
+
+159
+00:12:57,983 --> 00:13:01,478
+Project points along the reflection ray,
+compare their depth with
+
+160
+00:13:01,478 --> 00:13:04,974
+the stored surface depth, and fetch screen
+color at a suitable hit.
+
+161
+00:13:04,974 --> 00:13:08,033
+The depth image normally records a visible
+front surface.
+
+162
+00:13:08,033 --> 00:13:14,410
+A depth crossing is not a complete
+three-dimensional intersection test.
+
+163
+00:13:14,410 --> 00:13:18,936
+Thickness tolerance and skipped intervals
+matter.
+
+164
+00:13:18,936 --> 00:13:24,903
+A comparison cannot manufacture hidden
+back-surface information.
+
+165
+00:13:24,903 --> 00:13:30,178
+Tilting the camera can move an object outside
+the image while it remains in the world.
+
+166
+00:13:30,178 --> 00:13:33,225
+The reflection then has no screen color to
+fetch.
+
+167
+00:13:33,225 --> 00:13:36,643
+The missing information is in the input, not
+the scene.
+
+168
+00:13:36,643 --> 00:13:42,318
+A surface hidden in the primary view may need
+to appear in a reflection. A single visible
+
+169
+00:13:42,318 --> 00:13:47,760
+depth layer lacks the complete scene
+information needed to resolve that mismatch.
+
+170
+00:13:48,480 --> 00:13:55,236
+Fading a reflection near screen edges can make
+failure less distracting. It does not recover
+
+171
+00:13:55,236 --> 00:14:01,473
+the absent object. Concealment and information
+recovery are different operations.
+
+172
+00:14:01,473 --> 00:14:05,951
+A cubemap records the surroundings from a
+probe position.
+
+173
+00:14:05,951 --> 00:14:11,252
+It includes off-screen directions, but can
+differ from a reflection
+
+174
+00:14:11,252 --> 00:14:15,823
+at another position and may contain stale
+dynamic content.
+
+175
+00:14:15,823 --> 00:14:20,254
+Planar reflections render another view using a
+reflected camera.
+
+176
+00:14:20,254 --> 00:14:23,577
+They suit planar surfaces but add rendering
+work.
+
+177
+00:14:23,577 --> 00:14:28,563
+One reflected camera does not accurately
+represent every curved surface.
+
+178
+00:14:28,563 --> 00:14:33,811
+Ray-traced reflections query a scene
+representation, allowing off-screen hits.
+
+179
+00:14:33,811 --> 00:14:38,009
+They still require construction, intersection
+and shading work.
+
+180
+00:14:38,009 --> 00:14:41,833
+Extending information coverage is not
+unlimited accuracy.
+
+181
+00:14:41,833 --> 00:14:48,505
+Rough reflections consider a distribution of
+directions. Sparse sampling introduces noise,
+
+182
+00:14:48,505 --> 00:14:53,009
+while temporal filtering raises correspondence
+issues again.
+
+183
+00:14:53,009 --> 00:14:56,763
+Roughness, search and filtering are linked
+choices.
+
+184
+00:14:56,763 --> 00:15:01,527
+Hierarchical depth can accelerate search by
+summarizing regions.
+
+185
+00:15:01,527 --> 00:15:07,628
+Empty candidate regions permit larger steps,
+while potential hits need finer checks.
+
+186
+00:15:07,628 --> 00:15:11,223
+The underlying information is still screen
+space.
+
+187
+00:15:11,223 --> 00:15:16,487
+A useful test fixes camera conditions,
+exposure and quality while an object leaves
+
+188
+00:15:16,487 --> 00:15:21,901
+the screen. If its reflection remains, a probe
+or ray-based fallback may contribute.
+
+189
+00:15:21,901 --> 00:15:25,360
+The image alone does not identify the
+implementation.
+
+190
+00:15:26,080 --> 00:15:32,932
+A large ceiling light is not equivalent to a
+single point. Its angular extent interacts
+
+191
+00:15:32,932 --> 00:15:39,503
+with the surface's reflection distribution.
+Area-light shading considers both.
+
+192
+00:15:39,503 --> 00:15:44,149
+LTC stands for Linearly Transformed Cosines.
+It approximates a reflection
+
+193
+00:15:44,149 --> 00:15:48,287
+distribution by transforming a simpler
+integrable distribution,
+
+194
+00:15:48,287 --> 00:15:52,063
+with a corresponding inverse transform of the
+light polygon.
+
+195
+00:15:52,063 --> 00:15:55,779
+We separate the reflection lobe from the
+light's corners.
+
+196
+00:15:55,779 --> 00:15:59,345
+Roughness and viewing angle change the
+approximation.
+
+197
+00:15:59,345 --> 00:16:03,593
+The light is not merely replaced by a
+universal brightness number.
+
+198
+00:16:03,593 --> 00:16:07,321
+An intervening cube requires visibility
+handling.
+
+199
+00:16:07,321 --> 00:16:13,676
+Integrating an area-light contribution and
+determining occlusion are separate tasks;
+
+200
+00:16:13,676 --> 00:16:17,913
+area-light shading does not automatically
+solve shadows.
+
+201
+00:16:17,913 --> 00:16:23,563
+A rectangle-light control does not prove an
+LTC implementation.
+
+202
+00:16:23,563 --> 00:16:31,680
+We explain the principle and verify the method
+separately against engine-version evidence.
+
+203
+00:16:32,400 --> 00:16:38,578
+Water and glass involve refraction, reflection
+and attenuation. We separate direction
+
+204
+00:16:38,578 --> 00:16:45,003
+change at a boundary, energy allocation there,
+and loss during travel through the material.
+
+205
+00:16:45,003 --> 00:16:51,382
+Snell's law relates refractive indices and
+angles measured from the interface normal.
+
+206
+00:16:51,382 --> 00:16:56,813
+Our diagram varies the index and shows the
+changed transmitted direction.
+
+207
+00:16:56,813 --> 00:17:02,689
+Fresnel behavior changes reflection and
+transmission with angle. Comparing grazing
+
+208
+00:17:02,689 --> 00:17:08,163
+and near-normal views separates this
+allocation from the refracted direction.
+
+209
+00:17:08,163 --> 00:17:12,108
+Travel distance is another variable. Under
+absorption alone,
+
+210
+00:17:12,108 --> 00:17:17,097
+transmittance is an exponential of absorption
+coefficient times path length.
+
+211
+00:17:17,097 --> 00:17:20,373
+Thickness can therefore change the observed
+color.
+
+212
+00:17:20,373 --> 00:17:26,585
+Different absorption per color channel leaves
+unequal amounts of red, green and blue.
+
+213
+00:17:26,585 --> 00:17:32,713
+A single transparency value cannot capture
+every distance-dependent color change.
+
+214
+00:17:32,713 --> 00:17:38,137
+Unreal's Single Layer Water connects a water
+layer with scene color and depth.
+
+215
+00:17:38,137 --> 00:17:41,754
+It is an engine approximation rather than a
+complete
+
+216
+00:17:41,754 --> 00:17:45,453
+solution for arbitrary participating-media
+paths.
+
+217
+00:17:45,453 --> 00:17:50,349
+Screen-based refraction can fail on off-screen
+or hidden information.
+
+218
+00:17:50,349 --> 00:17:54,041
+A moving-object comparison distinguishes full
+scene
+
+219
+00:17:54,041 --> 00:17:57,413
+intersection from an approximate screen
+lookup.
+
+220
+00:17:57,413 --> 00:18:03,218
+Overlapping transparent layers also require
+composition order. Each front layer
+
+221
+00:18:03,218 --> 00:18:09,520
+changes the contribution behind it. Transport
+and layer handling meet at the final pixel.
+
+222
+00:18:10,240 --> 00:18:16,626
+Fog and clouds contain material along the view
+path, not just at an ending surface.
+
+223
+00:18:16,626 --> 00:18:23,013
+Rendering accounts for both loss along the
+path and light scattered into the view.
+
+224
+00:18:23,013 --> 00:18:28,318
+Absorption and out-scattering reduce radiance
+along the beam;
+
+225
+00:18:28,318 --> 00:18:35,393
+together they form extinction. In-scattering
+adds radiance from other directions.
+
+226
+00:18:35,393 --> 00:18:42,328
+Constant coefficients give an exponential
+transmittance. Varying density requires
+
+227
+00:18:42,328 --> 00:18:49,073
+integrating along the path. A homogeneous
+example is not a complete model of a cloud.
+
+228
+00:18:49,073 --> 00:18:53,471
+Our worked example uses extinction of 0.5 per
+meter over two meters.
+
+229
+00:18:53,471 --> 00:18:57,946
+Optical thickness is one and transmittance is
+approximately 0.368.
+
+230
+00:18:57,946 --> 00:19:01,573
+These are teaching values, not measured game
+settings.
+
+231
+00:19:01,573 --> 00:19:08,071
+Splitting that path into two one-meter
+segments gives the same result when segment
+
+232
+00:19:08,071 --> 00:19:14,013
+transmittances are multiplied. This supports
+incremental accumulation.
+
+233
+00:19:14,013 --> 00:19:18,091
+A fog overlay can approximate atmosphere using
+distance or height.
+
+234
+00:19:18,091 --> 00:19:23,100
+Volumetric lighting instead uses spatial
+density, illumination and visibility.
+
+235
+00:19:23,100 --> 00:19:26,320
+Similar colors do not imply identical
+calculations.
+
+236
+00:19:27,040 --> 00:19:30,951
+Divide the camera ray into segments. Evaluate
+density,
+
+237
+00:19:30,951 --> 00:19:34,197
+illumination and visibility within each one,
+
+238
+00:19:34,197 --> 00:19:40,023
+then attenuate its contribution by the medium
+between that segment and the camera.
+
+239
+00:19:40,023 --> 00:19:45,821
+A rear contribution must not receive full
+weight after an opaque front segment.
+
+240
+00:19:45,821 --> 00:19:52,053
+Add it using current transmittance, then
+update transmittance for the next segment.
+
+241
+00:19:52,053 --> 00:19:55,155
+Segment opacity is one minus segment
+transmittance.
+
+242
+00:19:55,155 --> 00:20:00,463
+The corresponding color must represent the
+defined scattering or emission contribution;
+
+243
+00:20:00,463 --> 00:20:05,083
+substituting an arbitrary surface color is not
+a physical volume calculation.
+
+244
+00:20:05,083 --> 00:20:10,868
+In our example, the first layer has opacity
+0.2 and the second 0.5. The second color
+
+245
+00:20:10,868 --> 00:20:16,653
+is weighted by 0.8, and the remaining
+transmittance becomes 0.8 times 0.5, or 0.4.
+
+246
+00:20:16,653 --> 00:20:20,599
+The camera path alone does not determine light
+visibility.
+
+247
+00:20:20,599 --> 00:20:23,914
+Each sample also needs transport from the
+source.
+
+248
+00:20:23,914 --> 00:20:29,203
+We use different colors for the
+source-to-sample and sample-to-camera paths.
+
+249
+00:20:29,203 --> 00:20:33,395
+A longer path through the cloud attenuates
+incoming sunlight.
+
+250
+00:20:33,395 --> 00:20:36,718
+Deep regions and thin edges can therefore
+differ.
+
+251
+00:20:36,718 --> 00:20:41,623
+A bright edge is more than an arbitrary white
+outline in a transport model.
+
+252
+00:20:41,623 --> 00:20:46,420
+Coarse steps can miss density changes or
+produce bands. More steps cost work,
+
+253
+00:20:46,420 --> 00:20:50,332
+while jitter and history introduce temporal
+considerations.
+
+254
+00:20:50,332 --> 00:20:54,023
+Both sampling position and time handling need
+evaluation.
+
+255
+00:20:54,023 --> 00:20:57,315
+Early termination can skip distant
+contributions
+
+256
+00:20:57,315 --> 00:20:59,688
+after transmittance becomes small.
+
+257
+00:20:59,688 --> 00:21:05,200
+Its threshold controls approximation error and
+must be treated as part of the method.
+
+258
+00:21:05,920 --> 00:21:11,101
+Frostbite volumetric lighting and Horizon
+cloud development illustrate
+
+259
+00:21:11,101 --> 00:21:15,706
+engine approaches. Spatial grid processing and
+procedural cloud
+
+260
+00:21:15,706 --> 00:21:20,723
+density are separate decisions, even when
+discussed in the same period.
+
+261
+00:21:20,723 --> 00:21:26,461
+Density generation and lighting are different
+stages. Animating a noise texture
+
+262
+00:21:26,461 --> 00:21:32,283
+creates shape without automatically solving
+sunlight visibility or scattering.
+
+263
+00:21:32,283 --> 00:21:39,108
+Height fog, local volumetric fog and planetary
+atmosphere operate over different
+
+264
+00:21:39,108 --> 00:21:46,713
+representations and scales. Their apparent
+similarity should not hide these differences.
+
+265
+00:21:46,713 --> 00:21:51,106
+Atmospheric lookup tables reuse expensive
+transport computations.
+
+266
+00:21:51,106 --> 00:21:54,084
+Their representation differs from a lightmap,
+
+267
+00:21:54,084 --> 00:21:59,743
+but both trade stored results for repeated
+work. Updates still have conditions and costs.
+
+268
+00:21:59,743 --> 00:22:03,586
+A reported millisecond cost belongs to
+specific hardware,
+
+269
+00:22:03,586 --> 00:22:08,120
+scene and settings. Wider coverage or more
+samples need not retain it.
+
+270
+00:22:08,120 --> 00:22:12,963
+Process demonstrations and performance claims
+require separate checks.
+
+271
+00:22:12,963 --> 00:22:18,555
+Motion tests examine camera movement, sunlight
+direction and density changes together.
+
+272
+00:22:18,555 --> 00:22:24,000
+A single still cannot establish stability of
+temporal accumulation or marching steps.
+
+273
+00:22:24,720 --> 00:22:29,653
+We asked how renderers handle light beyond
+direct illumination.
+
+274
+00:22:29,653 --> 00:22:34,586
+Photon mapping gathered arrivals, LPV
+propagated coarse light,
+
+275
+00:22:34,586 --> 00:22:41,403
+light lists reduced candidates, and reflection
+methods used screen, probe or scene data.
+
+276
+00:22:41,403 --> 00:22:47,869
+Water and fog required direction, distance and
+scattering. These methods are not a
+
+277
+00:22:47,869 --> 00:22:54,613
+replacement ladder; different inputs and
+responsibilities can coexist in one frame.
+
+278
+00:22:54,613 --> 00:23:00,831
+Ask what an option stores, when it updates and
+which information is absent.
+
+279
+00:23:00,831 --> 00:23:07,840
+Next we follow rays beyond the screen and
+connect them to sampling, caches and Lumen.

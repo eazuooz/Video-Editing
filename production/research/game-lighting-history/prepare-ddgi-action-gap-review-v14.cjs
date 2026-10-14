@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path');
+const dir=__dirname,target=path.join(dir,'extract-native-action-support-v14.cjs');
+if(fs.existsSync(target))throw Error('Preserve prepared extraction');
+let s=fs.readFileSync(path.join(dir,'extract-native-action-support-v13.cjs'),'utf8');
+s=s.replaceAll('v13','v14').replaceAll('ddgi-additional','ddgi-action-gaps');
+const before="[['rtxgi-ue5-preview2-2022',124,157,null],['rtxgi-ue5-preview2-2022',193,205,null],['rtxgi-ue5-preview2-2022',318,363,null]]";
+if(!s.includes(before))throw Error('Expected source definitions missing');
+s=s.replace(before,"[['escape-naraka-rtxgi-2021',5,38,null],['rtxgi-ue5-preview2-2022',313,318,null]]");
+fs.writeFileSync(target,s);
+console.log('Prepared new33 game samples and5 boundary samples; previous extractions preserved.');

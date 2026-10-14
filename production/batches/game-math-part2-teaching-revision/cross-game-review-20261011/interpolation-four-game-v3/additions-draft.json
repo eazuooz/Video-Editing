@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "status": "CPU draft after native candidate comparison; measured narration and new moving pixels pending",
+  "preserveAllOriginalKOENScenesFormulasOrderPcmAndClips": true,
+  "gamesPerEpisode": ["Forza Horizon 4", "Riders Republic", "Skate 3", "Trailmakers"],
+  "actualShare": 0.4,
+  "explanationShare": 0.6,
+  "bgm": false,
+  "sourceAudio": false,
+  "renderer": "Manim Community; preserve the started white 3D/2.5D lecture style",
+  "conventions": "Right-handed, column vectors, local-to-world, Hamilton wxyz; trigonometric inputs in radians",
+  "sourceComparison": "candidate-comparison.json",
+  "sourceReuseDisclosure": "The same official aircraft source was used in quaternion v3. These additions transfer the viewer question to intermediate poses and representation checks; source familiarity alone does not approve the teaching.",
+  "scenes": [
+    {
+      "id": "IPF00", "episode": "game-math-interpolation-paths-v3", "after": "01", "classification": "explanation",
+      "title": "몸과 보드에서 비행기로 넓혀 보기",
+      "ko": ["보드뿐 아니라 비행기의 몸통과 날개에서도, 중간 자세와 시간의 빠르기를 나눠 보겠습니다."],
+      "en": ["We will also use an aircraft's body and wings to separate intermediate orientation from how quickly time advances."],
+      "visual": "Brief four-game map: retain the baseline sports examples; add the aircraft model and connect it to intermediate orientation and time. Narrate this addition immediately after the retained overview."
+    },
+    {
+      "id": "IPF10", "episode": "game-math-interpolation-paths-v3", "after": "09", "classification": "actual",
+      "title": "비행기에서 중간 자세를 관찰하기",
+      "ko": [
+        "이번에는 비행기를 보세요. 빨간 선은 몸통, 파란 선은 날개입니다.",
+        "기체가 기울어지는 동안 두 방향이 함께 달라집니다. 앞과 뒤의 자세 사이에도 자세가 있죠.",
+        "카메라도 움직이므로 화면의 기울기를 실제 각도로 재지는 않겠습니다.",
+        "게임의 내부 보간을 알아낸 것은 아닙니다. 다음 모형에서는 시작과 목표를 직접 정해 계산합니다."
+      ],
+      "en": [
+        "Look at the aircraft. Red marks its body direction; blue marks its wings.",
+        "As the craft banks, both directions change. There are intermediate orientations between its earlier and later poses.",
+        "The camera moves too, so screen inclination is not a measured game-world angle.",
+        "This does not reveal the game's interpolation algorithm. We choose explicit starting and target orientations in the next model."
+      ],
+      "sourceId": "JvTCVUEc1ZE", "interval": [665,700], "maximumSeconds": 35,
+      "sourceSpeed": 1, "loop": false,
+      "annotation": "Reuse the editable source-coordinate track only as a geometry starting point. Red body and blue wing reveals must be aligned to this new narration. Hide unreliable intervals listed in candidate-comparison.json; keep the caption box fixed and clear."
+    },
+    {
+      "id": "IPF11", "episode": "game-math-interpolation-paths-v3", "after": "IPF10", "classification": "explanation",
+      "title": "정한 두 자세의 절반을 실제로 만들기",
+      "ko": [
+        "모형의 시작은 영도, 목표는 제트축 구십 도로 정합니다. 시간 비율 절반이면 사십오 도입니다.",
+        "쿼터니언에는 반각 이십이 점 오 도를 넣습니다. 네 숫자를 그냥 반으로 줄이는 계산이 아닙니다.",
+        "몸통과 날개를 같은 회전으로 돌려 보세요. 서로 직각인 관계와 길이가 그대로 남습니다."
+      ],
+      "en": [
+        "Our model starts at zero degrees and targets a ninety-degree rotation about z. At half the time parameter, SLERP gives forty-five degrees.",
+        "The quaternion stores the half angle, twenty-two point five degrees. Halving all four components is a different operation.",
+        "Rotate the body and wing directions together. Their lengths and perpendicular relationship remain unchanged."
+      ],
+      "visual": "Projected aircraft/basis at z=0,45,90 degrees; animate the two perpendicular local directions together. Fixed endpoints and t=0.5 are explicit. Show quaternion half-angle 22.5 degrees and check both vector lengths. These are chosen model values."
+    },
+    {
+      "id": "IPF12", "episode": "game-math-interpolation-paths-v3", "after": "IP07", "classification": "explanation",
+      "title": "같은 경로라도 시간 사용은 다를 수 있습니다",
+      "ko": [
+        "같은 비행기 모형으로 비교하겠습니다. 끝 자세를 고정하고 시간 비율을 그대로 쓰면, 절반에서 사십오 도입니다.",
+        "시간 비율을 제곱하면 절반이 사분의 일이 되어 이십이 점 오 도입니다. 경로와 끝은 같아도 도달하는 빠르기는 다릅니다."
+      ],
+      "en": [
+        "Compare the same aircraft model with fixed endpoints. A linear time parameter gives forty-five degrees at half time.",
+        "Squaring that parameter changes one half to one quarter, giving twenty-two point five degrees. The orientation path and endpoints stay the same, but progress along the path changes."
+      ],
+      "visual": "Two projected identical aircraft follow the same z-axis 0-to-90-degree path. At normalized time 0.5, label linear=45 degrees and squared=22.5 degrees. Show that SLERP alone does not make an eased time parameter constant-speed."
+    },
+    {
+      "id": "RCF00", "episode": "game-math-rotation-conversions-v3", "after": "IF03", "classification": "explanation",
+      "title": "비행기에서도 같은 자세를 바꿔 적기",
+      "ko": ["차체와 보드에서 본 방향을 비행기의 몸통과 날개에도 옮겨, 같은 자세인지 확인하겠습니다."],
+      "en": ["We will transfer the direction checks from cars and boards to an aircraft's body and wings, and verify the same orientation."],
+      "visual": "Four-game overview; connect the added aircraft to basis-vector and representation checks without claiming any hidden engine values."
+    },
+    {
+      "id": "RCF10", "episode": "game-math-rotation-conversions-v3", "after": "19", "classification": "actual",
+      "title": "몸통 하나만으로 전체 자세를 알 수 있을까요",
+      "ko": [
+        "자동차 대신 비행기를 보겠습니다. 빨간 몸통 선과 파란 날개 선을 함께 따라가세요.",
+        "몸통이 비슷한 쪽을 향해도 날개의 기울기는 달라질 수 있습니다. 한 방향만 같다고 전체 자세가 같지는 않죠.",
+        "카메라가 바뀌는 순간에는 선을 숨깁니다. 화면만 보고 행렬 아홉 값을 알아낼 수는 없습니다.",
+        "다음에서는 모형의 세 축을 직접 돌려, 쿼터니언과 행렬이 같은 결과를 만드는지 확인합니다."
+      ],
+      "en": [
+        "Now compare an aircraft instead of a car. Follow the red body direction and blue wing direction together.",
+        "A similar forward direction can coexist with different wing inclinations. Matching one direction does not prove a matching complete orientation.",
+        "We hide the lines when camera changes make them unreliable. A screen image does not reveal nine engine matrix values.",
+        "Next we rotate explicitly defined model axes and compare the quaternion and matrix results."
+      ],
+      "sourceId": "JvTCVUEc1ZE", "interval": [665,700], "maximumSeconds": 35,
+      "sourceSpeed": 1, "loop": false,
+      "annotation": "Red body and blue wing semantic colors; independent narration-timed reveals. Suppress all unreliable camera/occlusion intervals. These are projected screen directions, not reconstructed world coordinates."
+    },
+    {
+      "id": "RCF11", "episode": "game-math-rotation-conversions-v3", "after": "RCF10", "classification": "explanation",
+      "title": "행렬의 열은 돌린 기준축입니다",
+      "ko": [
+        "모형을 제트축 구십 도로 돌리면, 앞쪽 엑스축은 와이축으로 갑니다. 날개 방향 와이축은 마이너스 엑스축으로 갑니다.",
+        "위쪽 제트축은 그대로입니다. 이 세 결과가 행렬의 첫째, 둘째, 셋째 열입니다.",
+        "같은 쿼터니언으로 세 벡터를 돌려도 결과가 같아야 합니다. 바꿔 적는 것만으로 기체가 더 돌지는 않습니다."
+      ],
+      "en": [
+        "Rotate the model ninety degrees about z. Its forward x direction becomes y; its wing y direction becomes minus x.",
+        "The upward z direction is unchanged. Those three results form the first, second and third matrix columns.",
+        "The same quaternion must rotate all three vectors to those same results. Changing representation does not add another rotation to the craft."
+      ],
+      "visual": "Manim projected aircraft and three labeled local axes. Hamilton q=(sqrt(2)/2,0,0,sqrt(2)/2). Animate each result into the corresponding column of [[0,-1,0],[1,0,0],[0,0,1]]. Retain a stable world frame and explicit column-vector convention."
+    },
+    {
+      "id": "RCF12", "episode": "game-math-rotation-conversions-v3", "after": "IP05", "classification": "explanation",
+      "title": "세 직각 화살표라도 반사가 섞일 수 있습니다",
+      "ko": [
+        "세 축의 길이가 일이고 서로 직각이면 정규직교입니다. 하지만 엑스축만 뒤집고 나머지를 두면 거울 반사입니다.",
+        "이 대각행렬의 행렬식은 마이너스 일, 일, 일의 곱이라 마이너스 일입니다. 두 축을 뒤집는 반 바퀴 회전의 곱은 플러스 일입니다.",
+        "그래서 길이와 직각뿐 아니라 행렬식도 검사합니다. 쿼터니언의 길이를 맞춘다고 반사를 회전으로 고칠 수는 없습니다."
+      ],
+      "en": [
+        "Three unit-length, perpendicular axes are orthonormal. But reversing only x while keeping y and z gives a reflection.",
+        "For this diagonal matrix, the determinant is minus one times one times one: minus one. A half-turn reverses two axes, whose diagonal product is plus one.",
+        "We therefore check the determinant as well as lengths and right angles. Quaternion normalization cannot turn a reflection into a valid rotation."
+      ],
+      "visual": "Compare original axes, reflection diag(-1,1,1), and z half-turn diag(-1,-1,1) with projected cube/aircraft and handedness. Qualify the diagonal-product determinant rule to these diagonal examples. Insert this prerequisite before retained scene21's orthonormal/determinant checks."
+    }
+  ],
+  "timing": "Planning only. Preserve original frames and PCM; measure all new narration first, then solve exact body-wide40:60 at60fps. Do not fill missing source duration with loops, freezes or slowed playback.",
+  "pending": ["Original-content and numerical audit before TTS", "Cooperative GPU boundary and verified restoration", "Measured slots and bilingual captions", "Narration-timed actual-pixel annotations", "Independent explanation scenes", "Final whole-video and publishing QA"],
+  "ttsStarted": false,
+  "movingPixelApproval": false,
+  "humanListeningComplete": false,
+  "rightsHumanReviewComplete": false
+}

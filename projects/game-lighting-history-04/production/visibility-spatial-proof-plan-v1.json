@@ -1,0 +1,183 @@
+{
+  "createdAt": "2026-10-09T18:42:52.207Z",
+  "scene": "18a",
+  "style": "research-black-v1",
+  "scope": "Six original KOEN paragraphs,18before/middle/after proof samples; independent projected examples, not narrated episode.",
+  "paragraphs": [
+    {
+      "paragraph": 1,
+      "originalKo": "디퍼드 렌더링에서는 위치를 복원할 깊이와 법선, 재질 속성 등을 지 버퍼에 저장했습니다. 비지빌리티 버퍼는 다른 저장 선택을 합니다. 지금 보이는 표본이 어떤 삼각형이나 인스턴스에 속하는지 나타내는 식별 정보를 먼저 저장합니다.",
+      "originalEn": "Deferred rendering stores depth for position reconstruction, normals, and material attributes in a G-buffer. A visibility buffer makes a different storage choice: it first records identification information for the triangle or instance visible at each sample.",
+      "timelineFrom": 0,
+      "duration": 4,
+      "poseIndices": [
+        0,
+        1
+      ],
+      "sampleTimes": [
+        0.15,
+        2,
+        3.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 2,
+      "originalKo": "나중 단계는 이 식별 정보를 이용해 원래 기하 데이터에 접근합니다. 삼각형의 꼭짓점 속성과 화면의 표본 위치를 연결하고, 필요한 재질 속성과 텍스처 좌표를 구합니다. 신원을 저장한 것이지 조명 결과를 저장한 것은 아닙니다.",
+      "originalEn": "A later stage uses those identifiers to access geometry. Vertex attributes are connected to the screen sample, and the required material attributes and texture coordinates are reconstructed. The buffer stores identity, not the finished lighting result.",
+      "timelineFrom": 4,
+      "duration": 4,
+      "poseIndices": [
+        2,
+        3
+      ],
+      "sampleTimes": [
+        4.15,
+        6,
+        7.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 3,
+      "originalKo": "설명용 예시에서 화면의 한 표본이 삼각형 번호 칠을 가리킨다고 해보죠. 그 번호로 세 꼭짓점을 찾고, 표본에 대응하는 보간 가중치로 텍스처 좌표를 계산합니다. 실제 구현에서는 투영에 맞는 보간과 미분을 정확히 처리해야 합니다.",
+      "originalEn": "Suppose an illustrative screen sample identifies triangle seven. Its three vertices are retrieved, and interpolation weights produce the sample's texture coordinates. A real implementation must correctly handle perspective interpolation and derivatives.",
+      "timelineFrom": 8,
+      "duration": 4,
+      "poseIndices": [
+        4,
+        5
+      ],
+      "sampleTimes": [
+        8.15,
+        10,
+        11.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 4,
+      "originalKo": "텍스처의 밉 수준을 고르는 미분은 특히 중요합니다. 단순히 좌표를 복원했다고 끝나는 문제가 아닙니다. 옆 표본이 다른 삼각형을 가리키는 경계에서 미분을 잘못 구하면 텍스처가 불안정해질 수 있습니다.",
+      "originalEn": "Derivatives used for texture mip selection deserve particular attention. Reconstructing coordinates alone is insufficient. At a boundary where adjacent samples identify different triangles, incorrect derivatives can destabilize texture sampling.",
+      "timelineFrom": 12,
+      "duration": 4,
+      "poseIndices": [
+        6,
+        7
+      ],
+      "sampleTimes": [
+        12.15,
+        14,
+        15.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 5,
+      "originalKo": "넓은 재질 속성을 매번 쓰고 읽는 비용을 줄일 가능성이 있지만, 대신 원래 데이터 접근과 속성 복원 비용이 생깁니다. 자료 배치, 재질 분기, 캐시와 압축, 멀티샘플링 요구에 따라 실제 이득이 달라집니다.",
+      "originalEn": "This approach can reduce bandwidth spent writing and reading broad material attributes, but introduces geometry access and reconstruction work. Results depend on data layout, material branching, caches, compression, and multisampling requirements.",
+      "timelineFrom": 16,
+      "duration": 4,
+      "poseIndices": [
+        8,
+        9
+      ],
+      "sampleTimes": [
+        16.15,
+        18,
+        19.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 6,
+      "originalKo": "마이크로소프트의 공식 게임 개발 샘플은 이런 파이프라인을 직접 살펴볼 수 있는 자료입니다. 샘플이 제공된 시점을 기술의 최초 발명 시점이나 모든 게임의 채택 시점으로 해석하지는 않겠습니다. 여기서 비교할 것은 저장한 데이터와 뒤 단계의 책임입니다.",
+      "originalEn": "Microsoft's official game-development sample provides a concrete pipeline to study. Its publication date should not be interpreted as the technique's invention date or universal adoption date. The comparison concerns stored data and the responsibilities of later stages.",
+      "timelineFrom": 20,
+      "duration": 4,
+      "poseIndices": [
+        10,
+        11
+      ],
+      "sampleTimes": [
+        20.15,
+        22,
+        23.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    }
+  ],
+  "duration": 24,
+  "plannedFrames": 1440,
+  "inputs": [
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-proof0.tsx",
+      "sha256": "d6031907c225e27a32cd402908b223e4609d210897c441ef89d95749f362e1e0"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-proof1.tsx",
+      "sha256": "c65aeca914a4d01ac8791732769678c05a2e0403bdafddaaea78abcfdb8118ee"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-proof2.tsx",
+      "sha256": "292543ecc9abda88a34343a7bb9d9b37027f460ea4d0c541763432016e04bd8c"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-proof3.tsx",
+      "sha256": "5abe01f4d3ae043bfdac5596db86a819189eb895b603b179169b05660ae91149"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-proof4.tsx",
+      "sha256": "7abbe32f97d5ed39391d356a48913414080bc22c7ff842250ad6c7eeac8dd57d"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-proof5.tsx",
+      "sha256": "cbfa2d73d1b32dfbb8f16506c717736d5af6944420330e6e7e04c125bb42a35c"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-project-v1.ts",
+      "sha256": "6c2c47e022687550a5bf5967387b9be20b9c01df8806823e16699894cedd464c"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-proof-runtime-v1.tsx",
+      "sha256": "6dc8f7d806c5026d153eb28a259f7031436de2300ffc7a491c90c994a82000a3"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-model-v1.tsx",
+      "sha256": "bd2cc7c104d56c40aceafc2c0cf5a019187043e3d9f43937892284392aa8ad5f"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-shared/depth-space.tsx",
+      "sha256": "d28527e8d2ac89242b95f83f2b004eb23b7de21c123b66689d2808ca7f4c6761"
+    },
+    {
+      "path": "motion-canvas/src/styles/research-dark.ts",
+      "sha256": "4bf7b2f8922d6101d6956ddffea6159d97ae702c80334b06d9c807f85f008fe7"
+    },
+    {
+      "path": "projects/game-lighting-history-04/script/narration.ko.json",
+      "sha256": "7322c25b33e7c98afd9843d52f334a8c45a91f61aa4368cb05bec61e178a9a5b"
+    },
+    {
+      "path": "projects/game-lighting-history-04/script/narration.en.json",
+      "sha256": "a6b2eab74e0ab629956249bd21fd33c8c117d174eb12ef0e7fd9e5c31cc5d4b1"
+    }
+  ],
+  "project": "motion-canvas/src/projects/game-lighting-history-04/spatial/visibility-project-v1.ts",
+  "primarySource": {
+    "url": "https://learn.microsoft.com/en-us/samples/microsoft/xbox-gdk-samples/visibilitybuffer/",
+    "directlyReadAt": "2026-10-09T18:42:52.207Z",
+    "scope": "Full implementation/control/performance description. March2022 compatibility differs from invention date. Single32bit ID resource, compute reconstruction of hit point/UV/derivatives, separate Forward mode. Sample texture-fetch stress is not shipping-game performance."
+  },
+  "renderStarted": false,
+  "modelMotionProofReviewed": false,
+  "narrationTimingApproved": false,
+  "fullEpisodeApproved": false,
+  "localOnly": true
+}

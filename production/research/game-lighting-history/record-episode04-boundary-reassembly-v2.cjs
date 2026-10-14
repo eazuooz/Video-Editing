@@ -1,0 +1,12 @@
+const fs=require('fs'),crypto=require('crypto');
+const base='projects/game-lighting-history-04/production/';
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const rec=p=>({path:p,sha256:sha(p)});
+const assembly=read(base+'additive-unmixed-review-assembly-v2.json');
+if(!assembly.original87FullPcmByteIdentical||!assembly.new24SelectedPcmByteIdentical||sha(assembly.audio.path)!==assembly.audio.sha256)throw Error('Actual review reassembly preservation evidence required');
+const path='production/research/game-lighting-history/checkpoint.json',checkpoint=read(path);
+checkpoint.episode04BoundaryReassembly={observedAt:new Date().toISOString(),boundaryReview:rec(base+'additive-splice-boundary-review-v2.json'),reviewAssembly:rec(base+'additive-unmixed-review-assembly-v2.json'),contextPlan:rec(base+'additive-context-plan-v2.json'),audio:assembly.audio,paragraphs:111,original87FullPcmByteIdentical:true,new24SelectedPcmByteIdentical:true,historicalV1Preserved:true,reason:'Legacy allocated paragraph ends interrupted complete original speech at18v4/18a3/19p4. New positions use directly compared original whole-word boundaries and measured quiet PCM runs.',currentV1RecognizerInputsChanged:false,correctedContextRecognizerStarted:false,wholeOriginalAsrRepeated:false,wholeNewAsrRepeated:false,allCorrectedContextsApproved:false,finalTimingApproved:false,finalMixedAsrApproved:false,finalVideoProduced:false};
+checkpoint.nextAction='Finish and directly compare existing48 v1 whole/context records; retain the unsafe legacy-boundary diagnosis. Then one CPU2/GPU0 recognizer for24 corrected v2 complete original-neighbor contexts, reusing all original87/new24 whole evidence. Prepare original-word-timed captions/independent black2.5D explanations and exact concept-matched actual cuts; final mixed audio/pixels/60:40/output/private/Git remain pending.';
+checkpoint.updatedAt=new Date().toISOString();const tmp=path+'.writing';fs.writeFileSync(tmp,JSON.stringify(checkpoint,null,2)+'\n');fs.renameSync(tmp,path);
+console.log(JSON.stringify({paragraphs:111,durationSeconds:assembly.audio.durationSeconds,correctedContexts:24,finalVideoProduced:false}));

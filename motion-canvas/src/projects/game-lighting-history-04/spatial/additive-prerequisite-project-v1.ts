@@ -1,0 +1,13 @@
+import {makeProject} from '@motion-canvas/core';
+import p0 from './additive-prerequisite-proof0-v1?scene';
+import p1 from './additive-prerequisite-proof1-v1?scene';
+import p2 from './additive-prerequisite-proof2-v1?scene';
+import p3 from './additive-prerequisite-proof3-v1?scene';
+import p4 from './additive-prerequisite-proof4-v1?scene';
+import p5 from './additive-prerequisite-proof5-v1?scene';
+import p6 from './additive-prerequisite-proof6-v1?scene';
+import p7 from './additive-prerequisite-proof7-v1?scene';
+import p8 from './additive-prerequisite-proof8-v1?scene';
+import p9 from './additive-prerequisite-proof9-v1?scene';
+import p10 from './additive-prerequisite-proof10-v1?scene';
+export default makeProject({scenes:[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10]});

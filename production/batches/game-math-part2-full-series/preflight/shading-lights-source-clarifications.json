@@ -1,0 +1,151 @@
+{
+  "status": "future-source-reading-and-numerical-clarifications-only",
+  "atUtc": "2026-10-08T21:42:46.537103+00:00",
+  "sources": [
+    {
+      "id": "3e10b1ffa61e818dbd19d4e6710ce6b1",
+      "url": "https://app.notion.com/p/3e10b1ffa61e818dbd19d4e6710ce6b1",
+      "snapshot": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e818dbd19d4e6710ce6b1.txt",
+      "sha256": "7f0abbabdf3d4a507bc6e6d3c337a375f004e36d50925190b2febe9016a81c84",
+      "entireReturnedTextDirectlyRead": true,
+      "nativeSourceWasTruncated": false,
+      "verification": "Fetched contents are source material; native verification was not independently requested or claimed."
+    },
+    {
+      "id": "3e10b1ffa61e81f3a491c4964afbfb01",
+      "url": "https://app.notion.com/p/3e10b1ffa61e81f3a491c4964afbfb01",
+      "snapshot": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e81f3a491c4964afbfb01.txt",
+      "sha256": "af9ee9c673f677c2c37a5796fc2c16dd972c67bf8fa92dd879544eb885f1a109",
+      "entireReturnedTextDirectlyRead": true,
+      "nativeSourceWasTruncated": false,
+      "verification": "Fetched contents are source material; native verification was not independently requested or claimed."
+    },
+    {
+      "id": "3e10b1ffa61e815f9edcf2eb633065b7",
+      "url": "https://app.notion.com/p/3e10b1ffa61e815f9edcf2eb633065b7",
+      "snapshot": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e815f9edcf2eb633065b7.txt",
+      "sha256": "9c6352cf0a9a2a17a3781606efa3cb401df9ac8110d781074fda666321d5c7be",
+      "entireReturnedTextDirectlyRead": true,
+      "nativeSourceWasTruncated": false,
+      "verification": "Fetched contents are source material; native verification was not independently requested or claimed."
+    },
+    {
+      "id": "3e10b1ffa61e817580f1f2df48eb9dfb",
+      "url": "https://app.notion.com/p/3e10b1ffa61e817580f1f2df48eb9dfb",
+      "snapshot": "tmp/game-math-part2-sources/current-20261009-3e10b1ffa61e817580f1f2df48eb9dfb.txt",
+      "sha256": "c83c08c0a9e6c19b2ffd420de04797df3988831d786bbcd2d36cf7552357b5be",
+      "entireReturnedTextDirectlyRead": true,
+      "nativeSourceWasTruncated": false,
+      "verification": "Fetched contents are source material; native verification was not independently requested or claimed."
+    }
+  ],
+  "primaryReferences": [
+    {
+      "title": "PBRT4 Radiometry",
+      "url": "https://pbr-book.org/4ed/Radiometry,_Spectra,_and_Color/Radiometry",
+      "use": "Flux isW;incoming/outgoing flux per area is irradiance/radiant exitance inW/m²;radiance is directional density and stays constant along empty-space rays."
+    },
+    {
+      "title": "PBRT4 Point Lights",
+      "url": "https://pbr-book.org/4ed/Light_Sources/Point_Lights",
+      "use": "Point-light sample uses inverse squared source distance;spotlight has inner/outer transition and projection lights map an image into a cone."
+    }
+  ],
+  "requiredClarifications": [
+    "10.7.4 calls its incoming per-area value radiant flux but givesW/m². Teach irradiance,retain the historical lightmap/radiosity labels and distinguish outgoing radiosity/radiant exitance.",
+    "10.6 Wii/popularity,Facebook and artist familiarity are historical source context;do not repeat them as2026market facts.",
+    "Traditional emissive color alone does not illuminate neighbors in the scoped local model;modernGI can transport emission. Do not state a universal real-time limitation.",
+    "10.7 Doom matrices use row vectors;transpose for this series column vectors and compose M_texture @ M_worldToLight.",
+    "Spot matrix provides homogeneousXY withw=z;divideXYonly. Attenuationz/sz is not divided again;rejectz<=0before division. Preserveclamp/black-border outside the finite light volume.",
+    "10.6 lambert/pi,direct-indirect,radiometry and 10.6.7normal versus color interpolation are prerequisites already covered by our rendering-light/mesh lectures;use compact bridging plus the new numerical local-model/nonlinear-highlight derivation rather than recreate those whole questions."
+  ],
+  "independentMatrixTests": [
+    {
+      "name": "omni-center",
+      "lightLocalPoint": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "columnResult": [
+        0.5,
+        0.5,
+        0.5,
+        1.0
+      ],
+      "uv": [
+        0.5,
+        0.5
+      ],
+      "attenuationCoordinate": 0.5,
+      "rowColumnEqual": true
+    },
+    {
+      "name": "omni-top-boundary",
+      "lightLocalPoint": [
+        0,
+        1.0,
+        0,
+        1
+      ],
+      "columnResult": [
+        0.5,
+        0.0,
+        0.5,
+        1.0
+      ],
+      "uv": [
+        0.5,
+        0.0
+      ],
+      "attenuationCoordinate": 0.5,
+      "rowColumnEqual": true
+    },
+    {
+      "name": "spot-center-middepth",
+      "lightLocalPoint": [
+        0,
+        0,
+        3.0,
+        1
+      ],
+      "columnResult": [
+        1.5,
+        1.5,
+        0.5,
+        3.0
+      ],
+      "uv": [
+        0.5,
+        0.5
+      ],
+      "attenuationCoordinate": 0.5,
+      "rowColumnEqual": true
+    },
+    {
+      "name": "spot-right-boundary",
+      "lightLocalPoint": [
+        1.0,
+        0,
+        3.0,
+        1
+      ],
+      "columnResult": [
+        3.0,
+        1.5,
+        0.5,
+        3.0
+      ],
+      "uv": [
+        1.0,
+        0.5
+      ],
+      "attenuationCoordinate": 0.5,
+      "rowColumnEqual": true
+    }
+  ],
+  "newProjectCreated": false,
+  "futureTtsStarted": false,
+  "episodeDurationAndCompleteCoveragePlan": "pending after current sequential review delivery"
+}

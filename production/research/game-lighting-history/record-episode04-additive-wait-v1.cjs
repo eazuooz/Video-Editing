@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),checkpoint=path.join(__dirname,'checkpoint.json');
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const state=read('shared/output/GPU_HANDOFF.json');
+if(state.project!=='game-lighting-history-04'||state.token!=='83615f4b-a869-4562-bda3-1a73dfe6baa0')throw Error('Actual owned handoff required');
+const c=read('production/research/game-lighting-history/checkpoint.json');
+c.updatedAt=new Date().toISOString();c.stage='episode04-24-additions-cooperative-handoff-requested';
+c.episode04AdditiveNarration={...c.episode04AdditiveNarration,request:{path:'projects/game-lighting-history-04/production/additive-tts-request-v2.json',sha256:sha('projects/game-lighting-history-04/production/additive-tts-request-v2.json')},duplicateEvidence:'production/research/game-lighting-history/episode04-current-duplicate-rereview-v7.json',launchSession:69896,launchPid:46580,proxyPid:77392,coordinator:state.coordinator,leaseToken:state.token,log:'production/research/game-lighting-history/local/episode04-additive-tts-v1.log',researchQueueOwner:state.queueOwner,originalStatus:state.originalStatus,ttsStarted:state.state==='tts_running',currentState:state.state,original87TextAndPcmPreserved:true,fullNewAsrApproved:false,finalMixedAsrApproved:false,finalApproved:false};
+c.ownedJobsRunning=[{type:'cooperative-GPU-handoff',session:69896,actualCoordinatorPid:state.coordinator.pid,createTime:state.coordinator.createTime,command:state.coordinator.command,log:c.episode04AdditiveNarration.log,modelAllocated:false}];c.ownedGpuJobs=0;
+c.episode04PrerequisiteScenes='projects/game-lighting-history-04/production/additive-spatial-preparation-v1.json';
+c.next='Current train_shadow_only_p008_44 began at the handoff boundary race; let it seal and finish. Only owned token controls pause the queue. Then synthesize24 additions and restore research even on failure. While waiting, inspect independent spatial preview and exact native-source action intervals. Do not render/ASR original87 again.';
+const tmp=checkpoint+'.writing-'+process.pid;fs.writeFileSync(tmp,JSON.stringify(c,null,2)+'\n');fs.renameSync(tmp,checkpoint);
+console.log(JSON.stringify({checkpointUpdated:true,actualOwnedCoordinator:state.coordinator.pid,actualLeaseState:state.state,trainingJob:state.originalStatus.job,ttsStarted:c.episode04AdditiveNarration.ttsStarted}));

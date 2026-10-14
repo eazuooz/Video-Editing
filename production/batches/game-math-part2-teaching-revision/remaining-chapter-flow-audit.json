@@ -1,0 +1,118 @@
+{
+  "observedDate": "2026-10-10",
+  "scope": "Eight original unpublished scheduled lectures after interpolation and lines/bounds. Full Korean source scripts read; these are insertion plans, not completed videos or approval.",
+  "preservation": "Keep all original scenes, bilingual wording, claims, worked examples, formulas and their order. Separate new speech/visuals; never overwrite baseline audio or uploaded originals.",
+  "policy": {"actualShare":0.4,"explanationShare":0.6,"bgm":false,"sourceAudio":false,"originalPalettePreserved":true,"newGameplaySelectionBeforeDependentNarration":true,"trackedNarratedMathRequired":true},
+  "chapters": [
+    {
+      "slug":"game-math-planes-barycentric","fullOriginalKoRead":true,"originalScenes":22,
+      "viewerQuestion":"선과 범위를 정의했는데, 평평한 표면까지의 거리와 그 안의 위치는 어떻게 계산할까?",
+      "causalSpine":["앞 편의 점·선·범위","법선이 정한 평면","대입값과 실제 거리 구분","수직 투영점","삼각형의 면 방향과 넓이","세 꼭짓점의 가중치로 면 안 주소","면 밖·평면 밖 분리","같은 가중치로 표면 속성 전달"],
+      "insertions":[
+        {"before":"03","purpose":"평면·법선·수직의 뜻부터","example":"바닥 y=2와 위를 향하는 n=(0,1,0). n은 높이나 위치가 아니라 면에 수직인 방향. n·p=d가 높이 검사로 단순해지는 이유."},
+        {"before":"07","purpose":"외적이 면 방향과 넓이를 함께 주는 이유","example":"같은 두 모서리 (6,0,0),(0,4,0), 직사각형24와 삼각형12. 방향은 오른손·꼭짓점 순서에 따름; 외적 길이와 삼각형 면적의2배 구분."},
+        {"before":"09","purpose":"세 점의 평면에서 여러 꼭짓점으로 넓히는 이유","example":"세 점은 간단한 평면을 주지만 여러 꼭짓점의 대표 방향은 경계를 따라 정렬된 점을 사용. Newell을 무작위 점 집합의 최소제곱 평면으로 설명하지 않음."},
+        {"before":"13","purpose":"무게중심 좌표의 이름보다 실제 가중합부터","example":"세 꼭짓점에서20%,30%,50%를 섞고 합1 확인. 익숙한 평균에서 비율이 다른 평균으로 확장; 직교 좌표축이나 질량 실험 자체라는 비유로 확대하지 않음."},
+        {"before":"18","purpose":"면 안과 평면 위가 서로 다른 검사임을 연결","example":"같은 x,y에 z=7인 점은 투영하면 같은 가중치가 나오지만 원래 삼각형 위의 점은 아님. 거리 허용값의 길이 단위와 무차원 가중치 허용값 분리."},
+        {"before":"20","purpose":"주소를 얻었으니 색도 이어 붙이는 다음 문제","example":"같은 세 꼭짓점과 같은 가중치를 계속 사용. 선형 RGB와 방향 보간의 재정규화; 원근 보정은 뒤의 w 강의로 연결."}
+      ],
+      "numericChecksToPreserve":["n=(0,2,0),d=4,p=(4,5,-3): 대입값6/거리3/투영(4,2,-3)","3-4-5 삼각형 면적6","(.2,.3,.5) on (0,0,0),(6,0,0),(0,4,0) gives (1.8,2,0)","(-.2,.7,.5) gives (4.2,2,0), outside"],
+      "nextConnection":"삼각형의 주소를 구했으니 중심을 고르거나 더 큰 경계를 유효한 삼각형들로 나눌 수 있음"
+    },
+    {
+      "slug":"game-math-polygons-triangulation","fullOriginalKoRead":true,"originalScenes":22,
+      "viewerQuestion":"삼각형 한 조각은 이해했는데, 중심과 복잡한 전체 경계를 어떻게 다룰까?",
+      "causalSpine":["삼각형 하나의 중심 목적","무게·변 거리·꼭짓점 거리의 서로 다른 중심","경계가 큰 다각형으로 확장","볼록이면 부채꼴이 안전","오목한 경계에서 면적만 맞추면 실패","귀를 찾아 실제 덮임을 보존하며 제거","유효성 뒤에 삼각형 품질"],
+      "insertions":[
+        {"before":"03","purpose":"왜 중심이 세 가지인지 먼저 질문","example":"같은3-4-5삼각형에서 균일한 무게를 받칠 점, 안에 놓을 원, 세 꼭짓점을 지나는 원은 다른 문제. 무게중심·내심·외심의 입력과 목표 분리."},
+        {"before":"09","purpose":"한 조각의 답에서 전체 경계로 이어가기","example":"같은 삼각형만으로 L자 영역 전체를 설명할 수 없음. 원래 여섯 꼭짓점과 순서를 유지."},
+        {"before":"12","purpose":"내적과 다른2D 방향 판정의 작은 계산","example":"(1,0)에서(0,1)로 방향이 바뀌면 x1*y2-y1*x2=1. 순서를 바꾸면-1. 넓이 숫자·꺾임 방향·부호를 구분."},
+        {"before":"15","purpose":"삼각형 개수와 합산 넓이만으로 부족한 이유","example":"원래 L자 영역의 n-2=4와 면적7은 유지. 잘못된 부채꼴은 바깥 덮임과 겹침/빈 곳을 직접 비교해야 함."},
+        {"before":"16","purpose":"실패한 부채꼴이 귀 자르기를 필요로 함","example":"전체를 한 꼭짓점에 연결하지 말고, 내부에 안전한 한 삼각형을 골라 제거. 원래 인덱스를 유지하며 남은 경계만 변경."},
+        {"before":"20","purpose":"그릴 수 있음과 계산이 안정적임 구분","example":"먼저 밖을 덮지 않고 빈 곳 없는지 확인. 그 뒤에 너무 가늘고 거의 퇴화한 삼각형의 수치 민감도와 품질을 검토."}
+      ],
+      "numericChecksToPreserve":["G=(4/3,1),I=(1,1),r=1,O=(2,1.5),R=2.5","obtuse (0,0),(4,0),(1,1): O=(2,-1)","L six ordered vertices: area7; ears2+1.5+1.5+2=7; coverage verified separately"],
+      "nextConnection":"유효한 삼각형 표면을 만들었으니, 빛·재질·시선이 그 표면의 색을 정하는 과정을 계산"
+    },
+    {
+      "slug":"game-math-rendering-light","fullOriginalKoRead":true,"originalScenes":22,
+      "viewerQuestion":"삼각형으로 만든 표면을 왜 이 색과 밝기로 보게 될까?",
+      "causalSpine":["표면의 가림과 픽셀 위치","계산을 실행하는 경로","입사·출사 방향과 재질 함수","빛의 양과 단위","방향 영역과 입사각","잘게 나눠 더하는 렌더링 방정식","다른 표면에서 오는 빛","유한한 표본으로 평균 추정"],
+      "insertions":[
+        {"before":"07","purpose":"BRDF 이름보다 어떤 입력이 색을 바꾸는지","example":"같은 표면 위치와 재질을 유지하고 빛 방향·눈 방향만 바꿔 비교. wi는 표면에서 광원을 향하며 입사 광선의 진행 방향과 반대."},
+        {"before":"09","purpose":"함수값과 전체 반사량을 구분","example":"좁은 방향에 집중된 값이1보다 커도 전체 방향의 가중합이 에너지 조건을 지킬 수 있음. BRDF의1/sr를 확률 자체로 읽지 않음."},
+        {"before":"12","purpose":"숫자를 비교하려면 무엇의 양인지 먼저","example":"4J를2초에 전달하면2W; 그2W가2m²에 고르게 들어오면1W/m². 같은 숫자라도 에너지·시간당 양·면적당 양을 구분."},
+        {"before":"13","purpose":"입체각을 고등학교 구의 면적으로 설명","example":"반지름1인 구의 표면 조각으로 방향 영역 크기를 표현. 전체4πsr/반구2πsr, 작은 조각의 근사는 r²로 나눈 면적. 화면 각도와 혼동 금지."},
+        {"before":"16","purpose":"적분을 계산 순서가 보이는 가중합으로","example":"여러 방향 조각의 Li*f*cosθ*Δω를 차례로 더하는 그림에서 시작. 적분 기호는 조각을 더 잘게 나눈 합; 밝기 네 요소의 단위가 함께 맞음."},
+        {"before":"20","purpose":"많이 뽑으면 밝아지는 것이 아니라 평균이 안정됨","example":"유한한 표본값에1/pdf를 곱한 뒤 N으로 나눔. 같은 평균을2표본과4표본으로 비교, 표본 수 자체를 광량 배율로 쓰지 않음."}
+      ],
+      "numericChecksToPreserve":["z8/z3 overlap: nearer blue3 wins both draw orders","cos0=1,cos60=.5","rho=.6,E=10: Lo=6/pi approx1.91 W/(m² sr),M=6 W/m²","uniform hemisphere pdf=1/(2pi),linear RGB"],
+      "nextConnection":"표면에서 나오는 빛을 구했지만, 어떤 카메라가 어떤 시야와 출력 창으로 보는지 아직 정해야 함"
+    },
+    {
+      "slug":"game-math-camera-frustum","fullOriginalKoRead":true,"originalScenes":22,
+      "viewerQuestion":"같은 장면을 카메라의 시야·줌·출력 창으로 어떻게 다르게 볼까?",
+      "causalSpine":["출력 저장 공간과 놓을 창","화면 비율과 픽셀 모양","잠재적으로 보일 시야 영역","삼각형의 경계 처리","FOV와 줌의 삼각비","줌과 카메라 이동의 깊이별 차이","원근과 직교의 목적","분할 화면에서 비율 다시 맞추기"],
+      "insertions":[
+        {"before":"04","purpose":"픽셀 개수의 비율과 실제 화면의 비율 구분","example":"1920x1080을 좌우로 나누면 각960x1080. 픽셀은 정사각형일 때만 그 수의 비율이 표시 비율과 같음."},
+        {"before":"07","purpose":"앞의 경계 검사에서 여섯 조건을 동시에 적용","example":"z.5/6/12와 n1/f11을 같은 선 위에 놓고, 깊이 조건에 더해 좌우·상하 조건도 모두 만족해야 함. 가림 여부와 잠재 시야 구분."},
+        {"before":"09","purpose":"탄젠트의 뜻을 직각삼각형으로 먼저","example":"tan(half FOV)=half width/distance. 90°의 절반45°,거리3이면반너비3. 반너비를 전체너비6과 구분."},
+        {"before":"14","purpose":"줌과 이동을 구별하려면 두 깊이를 비교","example":"한 물체의 크기만 보면 여러 입력이 비슷한 결과를 줄 수 있음. z4/z8의 두 물체를 유지해줌2와dolly+2의 배율2/4/3 비교."},
+        {"before":"17","purpose":"거리마다 같은 크기로 보고 싶은 목적","example":"지도나 도면에서 크기 비교가 목적이면 원근의 거리축소가 방해. 직교에서는 z2/z10 같은 크기, 하지만 깊이·가림·시야검사는 남음."}
+      ],
+      "numericChecksToPreserve":["square pixels16:9,FOVx90,FOVy58.72","zoom2 gives53.13deg,not45","36mm sensor/18mm focal=>90;focal36=>53.13","ortho8x4.5=>240px/unit;4x2.25=>480","split960x1080 aspect8/9,keep vertical zoom16/9 => horizontal2"],
+      "nextConnection":"카메라 네 가지 입력을 정했으니 같은 한 점을 로컬부터 실제 화면 위치까지 계산"
+    },
+    {
+      "slug":"game-math-camera-projection","fullOriginalKoRead":true,"originalScenes":16,
+      "causalSpine":["카메라의 시야를 정한 결과","동일한 꼭짓점 식별","이번 계산의 규약 선언","로컬→월드→카메라","w를 준비한 클립 좌표","나누기 전 경계 검사","남은 점을 나누고 출력 창에 배치"],
+      "insertions":[
+        {"before":"03","purpose":"이전 회전 약속에서 규약을 바꾸는 이유","example":"이번 행렬 예제를 한 규약으로 끝까지 따라가기 위해 왼손/행벡터/+z전방을 사용. 실제 물체를 반전시키는 것과 기록 규약을 바꾸는 것 분리; 엔진/API의 보편 규칙으로 확대하지 않음."},
+        {"before":"04","purpose":"같은 위치 이름의 기준부터","example":"집 안 책상 좌표와 지도 위 집 좌표처럼 기준이 다르면 숫자가 달라짐. 방금 선택한 꼭짓점 하나를 계속 유지; 비유에서 공간적 회전도 가능하다는 한계 명시."},
+        {"before":"07","purpose":"거리로 나누는 이유를 닮은 삼각형으로","example":"카메라 점(2,1,4)에서 z1평면에 대한 비율1/4. x=.5,y=.25는 그 평면의 좌표. 완성 깊이 행렬은 뒤에서 채우며 단순 z'=1을 최종 깊이로 사용하지 않음."},
+        {"before":"12","purpose":"한 꼭짓점이 밖이어도 보이는 면은 남음","example":"n=1을 가로지르는 두 변을 자르고 내부의 새 꼭짓점을 잇기. 2→.5에서1이 되는 비율2/3; 뒤의 원래 교점 계산 유지."},
+        {"before":"15","purpose":"영에서 일이 아니라 가운데가 영인 창 좌표부터","example":"NDC -1,0,1을 출력 창의 왼쪽·가운데·오른쪽에 대응. y는 위가양수에서 화면아래양수로전환; 창시작위치도더해야함."}
+      ],
+      "numericChecksToPreserve":["local(1,0,0),model translation(3,2,5)=>world(4,2,5),camera(2,1,1)=>view(2,1,4)","row/LH clip(2,16/9,3.3,4),NDC(.5,4/9,.825)","viewport x100,y50,w800,h450=>screen(700,175)","alternate[-1,1]depth.65 maps to.825; RH inputz-4 and column transpose/sign both needed"],
+      "nextConnection":"한 점의 화면 위치를 얻어도 깊이와 표면 무늬의 보간에는 나누기 전 정보가 계속 필요"
+    },
+    {
+      "slug":"game-math-projection-depth","fullOriginalKoRead":true,"originalScenes":10,
+      "causalSpine":["앞 편의(700,175)와깊이.825","겹친 표면의 앞뒤","거리와 저장 깊이의 비선형 관계","화면 중간이 원래 변 중간은 아님","w를 유지한 원근 보정","자동 파이프라인과 직접 좌표검사","하나의 입력만 바꾸는 검산"],
+      "insertions":[
+        {"before":"02","purpose":"카메라앞깊이z와공간거리부터분리","example":"같은z4라도 카메라점(2,1,4)의 거리√21과앞깊이4는 다름. 저장깊이.825는 다시다른변환결과이며 거리단위가아님."},
+        {"before":"04","purpose":"화면의절반이원래변의절반이아닌작은예","example":"별도2D단면 A=(x0,z1),B=(x4,z4). 원래중간(2,2.5)은 x/z=.8. 화면중간.5는 world t=.2; 뒤의w1/4와u0/1 원래계산결과.2에연결."},
+        {"before":"07","purpose":"손계산이자동처리를이해하고오류를찾는도구","example":"앞에서기록한모델·뷰·클립·NDC·창좌표를순서대로유지. 처음다른단계가원인후보. 자동단계가있어도CPU이름표등같은계산에서규약필요."}
+      ],
+      "numericChecksToPreserve":["d(z)=1.1-1.1/z,z2=>.55,z4=>.825,z6=>.9166667","w1/4,u0/1,screen weights.5/.5 => (.125)/(.625)=.2","move camera to(3,1,1)=>screen(600,175); viewport origin0=>first(600,125);full1920x1080=>first(1440,300)"],
+      "nextConnection":"표면 무늬의 위치가필요했으니,이제삼각형연결과법선·UV라는저장입력을정의"
+    },
+    {
+      "slug":"game-math-mesh-uv","fullOriginalKoRead":true,"originalScenes":16,
+      "causalSpine":["화면으로옮길표면의입력","부피표현과표면조각","반복정점데이터→인덱스공유","위치같음과속성같음분리","기하법선과셰이딩법선","정점별합산과재정규화","날카로운경계분리","삼각분할편향과가중치"],
+      "insertions":[
+        {"before":"04","purpose":"인덱스는좌표가아닌목록번호","example":"책갈피비유로 정점0의레코드를여러삼각형이가리킴. 번호0이위치(0,0,0)를의미하지않음. 원래0,1,2 /0,2,3과32byte/2byte예제유지."},
+        {"before":"08","purpose":"형태를바꾸지않고빛입력만바꾸는이유","example":"같은육각기둥의위치·인덱스는그대로두고표면방향입력만변경. 실루엣과면안밝기의두역할을시각적으로연결."},
+        {"before":"12","purpose":"평균방향알고리즘의입력과결과","example":"정점하나에연결된면들이어떤방향으로한표씩더하는지부터. 누적상태0→x→x+y→x+y+z,최종정규화. 원래완전한알고리즘을삭제하지않음."},
+        {"before":"13","purpose":"부드러운합산이원하지않는모서리를만드는문제","example":"바로얻은(1,1,1)/√3을상자위·옆면에공유하면각진표면과빛방향이달라짐. 복제는좌표에틈을내는것이아님."},
+        {"before":"14","purpose":"삼각형한표는분할방법에따라달라짐","example":"같은사각형대각선만변경하면서한정점에닿는삼각형수가달라지는과정을비교. 먼저매끄럽게이을영역정한뒤가중치정책."}
+      ],
+      "numericChecksToPreserve":["unindexed6*32=192,indexed4*32+6*2=140;singlevertex6uses32+12=44different scope","box8locations,24fullrecords","(.5,.5)normsqrt(.5)=>normalized(.707,.707)","(1,1,1)/sqrt3≈(.577,.577,.577);(1,2,1)/sqrt6≈(.408,.816,.408)"],
+      "nextConnection":"위치·법선을저장했으니비균일확대에서도수직을지키고,무늬를붙일UV를정의"
+    },
+    {
+      "slug":"game-math-normal-transform-uv","fullOriginalKoRead":true,"originalScenes":13,
+      "causalSpine":["앞편의위치와법선데이터","비균일확대가수직을깨는문제","역전치후단위길이검산","형태·빛방향이맞아도무늬주소는별도","픽셀·텍셀·UV","같은판과이미지대응","범위밖조회규칙","보간전접으면범위이력을잃음","인덱스·법선·UV세역할검산"],
+      "insertions":[
+        {"before":"02","purpose":"접선·법선·역전치이름을사용전설명","example":"접선은면을따르는방향,법선은그면에수직. 역행렬은변환을되돌리는계산,전치는행과열을바꿈. 행렬[[a,b],[c,d]]→[[a,c],[b,d]]로시각화한뒤원래식·수치예제로연결."},
+        {"before":"06","purpose":"같은표면에세입력이왜필요한지","example":"인덱스는연결,법선은빛계산방향,UV는이미지주소. 같은작은판의위치/방향/무늬주소를별도색으로유지; UV를삼차원위치로읽지않음."},
+        {"before":"10","purpose":"바닥값과절삭의뜻을음수수직선으로","example":"floor는입력보다크지않은가장큰정수. -.75는-1과0사이이므로floor=-1;0쪽절삭0과다름. 원래repeat .25와clamp0결과는뒤에서유지."},
+        {"before":"11","purpose":"조회주소를접는시점이왜중요한지","example":"반복규칙을정했으니원래범위0→2를끝까지전달. 정점에서둘다0으로접으면사이의두타일정보를잃는다는질문을먼저제시."},
+        {"after":"13","purpose":"PART2의입력이후속조명계산으로이어지는전체결론","example":"이번범위의강의가마친입력→계산→화면결과를같은표면으로요약. 원래다음조명예고는유지하고새조명제작을이수정범위의완료로추가하지않음."}
+      ],
+      "numericChecksToPreserve":["t=(1,-1),n=(1,1),M=diag(2,1):Mt=(2,-1),Mn=(2,1),dot3;normalize wrong remains3/sqrt5","M^-T*n=(.5,1),dot0,normalized≈(.447,.894)","repeat1.25 and-.75=>.25;floor differs truncation","u0→2 at.25=>.5,at.75=>1.5;repeat last=>.5 both;repeat vertexfirst=>0all"],
+      "nextConnection":"기존최종예고를유지. 이번요청은11개미공개예약강의의개정과배포까지이며후속신규조명편은포함하지않음"
+    }
+  ],
+  "review": {"allEightFullKoreanScriptsRead":true,"newNarrationWritten":false,"newFootageSelected":false,"numericTestsRun":false,"ttsStarted":false,"finalRenderComplete":false,"platformComplete":false}
+}

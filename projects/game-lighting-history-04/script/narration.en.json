@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "status": "reviewed-independent-explanation-input-for-tts",
+  "episode": 4,
+  "seriesPlan": "production/research/game-lighting-history/series-plan.json",
+  "durationMeasured": false,
+  "targetMinutes": 20,
+  "footageDependentLinesFinalApproved": false,
+  "scope": "Complete independent educational narration. Any new shot-specific observation must await native pixel/source review. No final footage quota or rights approval.",
+  "title": "What Reconstructs the Final Pixel? From Path Tracing to DLSS 5",
+  "scenes": [
+    {
+      "id": "overview",
+      "title": "이번 편의 질문: 마지막 픽셀은 무엇을 계산하고 무엇을 복원할까",
+      "lines": [
+        "Even when shadows and reflections look convincing, the final image does not consist entirely of freshly computed answers. This episode connects virtual shadow maps and modern visibility processing to path tracing, ray reconstruction, and the different roles of DLSS. We finish with a practical framework for inspecting the resources of a rendered frame. First, where should shadow memory be allocated?"
+      ]
+    },
+    {
+      "id": "18v",
+      "title": "가상 그림자 맵: 필요한 페이지에 깊이를 저장하기",
+      "lines": [
+        "Earlier, a shadow map stored the closest depth from a light's viewpoint. A visible surface was transformed into light space and compared against that stored depth to test occlusion. Virtual shadow maps retain this fundamental question.",
+        "Allocating high resolution across an entire large region is expensive. Detailed storage for areas that are tiny on screen or completely invisible wastes memory and rendering work. Meanwhile, a small shadow close to the camera may need much denser sampling.",
+        "Unreal Engine's virtual shadow maps divide a large virtual address space into small pages. Pages needed by the current view receive physical memory and are rendered. The size of the virtual address space must be distinguished from the memory actually allocated.",
+        "Consider an explanatory grid. A virtual shadow region contains sixteen cells, but surfaces in the current view reference only five. Allocating memory to those five illustrates the principle; these numbers are not measurements from a particular game.",
+        "Camera movement reveals different regions and changes which pages are needed. If the light and objects remain unchanged, previously rendered pages can be cached. Moving a light or changing a shadow-casting object requires affected pages to be updated.",
+        "Soft shadows require more than a single depth comparison. Multiple samples estimate occlusion and the penumbra associated with light size. Unreal's SMRT traces against shadow-map depth; it must be distinguished from tracing every ray against the scene's actual triangles.",
+        "Static scenes with effective caching can cost differently from constantly changing scenes. A useful comparison examines newly rendered pages, reused pages, and invalidated regions alongside resolution. This technique does not solve global indirect illumination."
+      ]
+    },
+    {
+      "id": "18t",
+      "title": "시간적 업스케일링과 표시 프레임의 구별",
+      "lines": [
+        "Another strategy reduces the cost of evaluating lighting and materials at high resolution. Temporal upscaling renders at a lower internal resolution, then reconstructs a higher-resolution image using information from the current and previous frames.",
+        "Unreal's TSR and DLSS Super Resolution can be compared in this role. Their implementations and requirements differ, but both require separating input resolution from output resolution. A sharp image does not imply that lighting was evaluated independently at every output pixel.",
+        "Halving both width and height reduces internal pixel count to one quarter. Frame time does not necessarily become one quarter, because geometry processing, shadows, reconstruction itself, and other fixed costs can remain.",
+        "Motion vectors describe where previous samples moved. Camera projection, jitter conventions, and object motion must agree. Incorrect vectors can retrieve history from a different surface, producing ghosting or blur.",
+        "Newly exposed regions may have no valid history. Transparency, particles, thin structures, and interface graphics also require consideration. Reconstruction depends on the quality and validity of the available information.",
+        "Introduced with DLSS 3 in 2022, frame generation has a different role: it inserts display frames between rendered frames. An increase in displayed frame count is not equivalent to the same proportional increase in simulation or input-processing frequency.",
+        "A useful comparison separates internal resolution, rendered frame rate, displayed frame rate, and latency. A single on-screen number can conflate responsiveness with visual quality."
+      ]
+    },
+    {
+      "id": "18a",
+      "title": "비지빌리티 버퍼: 속성 대신 보이는 표면의 신원을 저장하기",
+      "lines": [
+        "Deferred rendering stores depth for position reconstruction, normals, and material attributes in a G-buffer. A visibility buffer makes a different storage choice: it first records identification information for the triangle or instance visible at each sample.",
+        "A later stage uses those identifiers to access geometry. Vertex attributes are connected to the screen sample, and the required material attributes and texture coordinates are reconstructed. The buffer stores identity, not the finished lighting result.",
+        "Suppose an illustrative screen sample identifies triangle seven. Its three vertices are retrieved, and interpolation weights produce the sample's texture coordinates. A real implementation must correctly handle perspective interpolation and derivatives.",
+        "Derivatives used for texture mip selection deserve particular attention. Reconstructing coordinates alone is insufficient. At a boundary where adjacent samples identify different triangles, incorrect derivatives can destabilize texture sampling.",
+        "This approach can reduce bandwidth spent writing and reading broad material attributes, but introduces geometry access and reconstruction work. Results depend on data layout, material branching, caches, compression, and multisampling requirements.",
+        "Microsoft's official game-development sample provides a concrete pipeline to study. Its publication date should not be interpreted as the technique's invention date or universal adoption date. The comparison concerns stored data and the responsibilities of later stages."
+      ]
+    },
+    {
+      "id": "18m",
+      "title": "모바일 디퍼드와 타일 메모리",
+      "lines": [
+        "Now connect tiled hardware with deferred rendering. Tiled hardware can retain some data in nearby internal memory while processing a small screen region. Deferred rendering concerns how material information and lighting evaluation are ordered.",
+        "These terms are not interchangeable. Tiled hardware can run forward or deferred pipelines. A Forward+ screen-space light list is also not automatically the same structure as the hardware's tile storage.",
+        "On supported platforms and rendering paths, Unreal's mobile deferred renderer can use tile memory for the G-buffer. The relevant connection is reducing the cost of writing intermediate data to external memory and reading it back.",
+        "Conditions depend on the graphics API, device, available memory, and pass structure. It would be incorrect to claim that every mobile deferred implementation avoids all external intermediate writes. Separated passes or required stores can still consume bandwidth.",
+        "Transparent surfaces can be handled through a separate forward path. A G-buffer sample that records the frontmost opaque surface does not contain enough information to describe multiple transparent layers behind it.",
+        "Forward and deferred should be evaluated against materials, light counts, transparency, bandwidth, and device characteristics. Multiple paths can coexist within one engine."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "2023: 사이버펑크의 패스 트레이싱과 표본 예산",
+      "lines": [
+        "Cyberpunk 2077 patch 1.62 introduced Ray Tracing: Overdrive as a technology preview in 2023. It provides a released-game example for comparing path-traced lighting. Its requirements and preview status at the time should remain explicit.",
+        "Path tracing starts from a camera sample, finds a surface, and samples subsequent directions according to the material. Contributions along sampled paths estimate image brightness. This does not mean that every possible path is exhaustively evaluated.",
+        "A diffuse surface requires integrating light arriving from many directions. A glossy surface may receive large contributions near particular directions. Sampling important directions more often can help, but contributions must be divided by the corresponding sampling probability.",
+        "For illustration, two directions contribute two and eight. Equal-probability sampling targets an average of five. A distribution that favors the brighter direction must still estimate the same target after correct probability weighting. These numbers are explanatory examples.",
+        "Sampling a light directly and sampling a material direction excel in different situations. Multiple importance sampling combines strategies using their probabilities and weights. Treating a sample as though it came from a different strategy produces incorrect weighting.",
+        "Extending paths increases cost. Russian roulette probabilistically terminates some paths and compensates surviving contributions by the inverse survival probability. With a survival probability of 0.8, a surviving contribution receives a factor of one divided by 0.8.",
+        "This compensation manages variance and cost. It differs from always discarding seemingly unimportant paths. Maximum bounce limits and other approximations require separate examination of an implementation's bias and limitations.",
+        "Error for independent samples is generally related to the square root of sample count. Under comparable conditions, halving error requires four times as many samples. Correlated temporal samples and reconstruction algorithms prevent this simple relationship from predicting the entire image.",
+        "Understanding game path tracing requires more than examining ray paths. Sample allocation, reuse, and reconstruction of the remaining noise all matter. Reconstruction is our next step."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "레이 재구성: 노이즈 제거와 업스케일링의 역할",
+      "lines": [
+        "Low-sample ray results contain noise. A denoiser tries to reduce it while preserving boundaries, material changes, and reflection details. Simply averaging nearby colors removes genuine detail as well as noise.",
+        "Depth, normals, and material information help determine which samples can be combined. History supplies additional evidence, but values that no longer match the current surface must be rejected. Motion and newly exposed regions complicate that decision.",
+        "DLSS 3.5 introduced Ray Reconstruction in 2023 for reconstructing ray-based effects. It is a learned reconstruction feature intended to replace multiple hand-tuned denoisers, and it depends on the inputs and integration supplied by the game.",
+        "Super Resolution, Frame Generation, and Ray Reconstruction have different roles despite sharing a family name. One reconstructs output resolution, another adds display frames, and another reconstructs noisy ray results. A comparison must identify which features are enabled.",
+        "Useful comparison subjects include small reflected text, moving objects, and thin lines. Inspect not just a still image but how details stabilize after motion. Look for consistent detail, ghosting, and flicker.",
+        "A feature should not be declared universally superior across all games and scenes. Matching camera, internal resolution, exposure, and lighting makes differences interpretable. Promotional comparisons should also remain distinct from direct measurements."
+      ]
+    },
+    {
+      "id": "21m",
+      "title": "메가라이트: 많은 직접광의 표본을 고르는 문제",
+      "lines": [
+        "Unreal Engine 5.5 introduced experimental MegaLights in 2024 as an approach to many dynamic lights and shadows. Its central question is how to focus work on useful direct-light samples rather than evaluating every light uniformly at every pixel.",
+        "The system considers lights that can affect a region and samples likely to contribute significantly. Selected samples undergo visibility testing, and results are reused or reconstructed. Candidate selection and testing whether light actually reaches a surface are separate tasks.",
+        "Forward+ focused on narrowing light lists before evaluating their contents. Stochastic selection also makes sampling distributions, reuse, and noise handling important. Using many lights does not make these approaches identical.",
+        "Effective selection captures important contributions with less work. Complex occlusion or rapidly changing bright contributions can expose undersampling. Increasing light count should not be assumed to leave both cost and quality perfectly unchanged.",
+        "MegaLights' direct lighting and Lumen's indirect illumination connect through different responsibilities. Enabling MegaLights does not automatically make every indirect bounce exact. Engine version, supported paths, and feature responsibilities need separate inspection.",
+        "Experimental Nanite Foliage in Unreal 5.7, introduced in 2025, provides a brief geometry example. It addresses dense vegetation detail and representation across distance, rather than naming a new indirect-lighting solution. Announcement status and actual project integration must be recorded separately."
+      ]
+    },
+    {
+      "id": "21a",
+      "title": "투명도와 머리카락: 가장 앞의 표면만으로 부족한 경우",
+      "lines": [
+        "Depth testing can select the frontmost opaque surface. Transparent surfaces also transmit contributions from behind them. Glass, smoke, overlapping particles, and hair require more information than a single stored surface.",
+        "Conventional alpha compositing weights the front color by alpha and the back color by one minus alpha. Alpha represents opacity for compositing here. It should not automatically be equated with a physical medium's absorption coefficient.",
+        "Consider two half-opacity layers, red and blue, over a black background. With red in front, red contributes 0.5 and blue contributes 0.25. Reversing the order exchanges those contributions. Order changes the result.",
+        "Sorting only object centers cannot always correctly order intersecting transparent surfaces. Their front-to-back relationship can change across pixels. Object sorting and per-sample depth sorting address different levels of the problem.",
+        "Order-independent transparency encompasses several approaches. Depth peeling can recover successive layers but needs additional passes. Storing fragments in structures such as linked lists introduces memory and data-structure costs.",
+        "Weighted blending reduces sorting requirements by choosing an approximation. It is not guaranteed to match exact compositing of every sorted layer. Differences deserve inspection in strongly overlapping, high-opacity, contrasting layers.",
+        "Hair combines thin-strand coverage, overlapping visibility, and directional scattering. Strand data, visibility, and scattering models deserve separate examination. Handling hair does not make an algorithm identical to volume rendering.",
+        "Recent game-development presentations expose production constraints. Their dates should not be labeled as the invention dates of transparency or hair rendering. Our numerical examples also do not claim to reproduce a game's undisclosed implementation."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "디엘에스에스 4에서 5까지: 기능별 입력과 출력",
+      "lines": [
+        "DLSS 4 Multi Frame Generation was introduced in 2025 with support for adding up to three generated frames per rendered frame under supported conditions. Its output is display frames; it does not imply three additional sets of ray samples.",
+        "In 2026, DLSS 4.5 expanded Super Resolution and Multi Frame Generation features. Its 6X mode must be understood as up to five generated frames per rendered frame. Dynamic operation considers display targets and execution conditions; it does not promise 6X operation on every device.",
+        "DLSS 5 was announced in 2026 and became available in NBA 2K27 in September. NVIDIA describes using game color, motion, and 3D guidance to improve the appearance of lighting and materials. We discuss the vendor's input-output description without claiming our own quality measurements of that game.",
+        "Creators can use controls such as strength, color treatment, and exclusions to preserve artistic intent. These controls connect the feature's output to the intended design. They should be distinguished from exact computation of every physical light path.",
+        "Throughout this progression, actual computation, temporal reconstruction, and display-frame generation should remain distinct. Comparisons record hardware support, game version, internal resolution, and latency. A higher version number does not mean every preceding function has merged into one replacement."
+      ]
+    },
+    {
+      "id": "22p",
+      "title": "마지막 색: 노출, 톤 매핑과 후처리",
+      "lines": [
+        "Lighting results are not yet the colors sent directly to a monitor. Bright values can exceed a display's range. Exposure and tone mapping connect that wider range to the final display range.",
+        "Exposure scales scene brightness, while tone mapping applies nonlinear transformations such as highlight compression. Automatic exposure can change the whole image without a lighting change, so technical comparisons need controlled exposure conditions.",
+        "Bloom adds the appearance of bright regions spreading into neighboring pixels. A glowing image does not establish that indirect illumination reached surrounding surfaces. Bloom around an edge is not proof of a light bounce.",
+        "Depth of field represents differences in focus and distance, while motion blur approximates movement over an exposure interval. These effects can conceal small shadow or reflection errors or introduce their own blur. Comparisons should distinguish enabled and disabled conditions.",
+        "Check again whether color inputs represent linear values or display values. This closes the linear-space discussion from episode two. Missing or duplicated transformations at texture input, lighting, and final output produce incorrect brightness.",
+        "Final pixels combine geometry, visibility, lighting, materials, reconstruction, and post-processing. We can now examine how to trace those connections during frame inspection."
+      ]
+    },
+    {
+      "id": "22r",
+      "title": "프레임 검사: 기술 이름 대신 실제 자원을 따라가기",
+      "lines": [
+        "Feature names alone do not determine a frame's actual structure. Engine version, platform, rendering path, and settings can change its passes. A frame debugger such as RenderDoc helps inspect commands and resources from a captured frame.",
+        "Start with a comparison question: whether reflections retain off-screen objects, how shadow pages are updated, or which attributes a G-buffer stores. A specific question determines what to inspect among many events.",
+        "Record execution conditions: engine version, graphics API, rendering path, internal and output resolution, camera, and feature settings. Frames captured under differing conditions cannot easily isolate a single cause.",
+        "When opening a resource, inspect dimensions, format, layers, and mip levels. Determine whether it is screen-sized, light-space data, or a paged or layered structure. Names provide clues, but contents and usage relationships need verification.",
+        "Examine a depth resource using its depth convention rather than treating it as a color image. Projected depth is generally nonlinear with physical distance. Reversed-Z can also change which numerical values represent near and far surfaces.",
+        "Match G-buffer channels to engine documentation. A normal buffer displayed as color is a visualization, not the surface's actual color. Compression and encoding must be understood before interpreting channel values as material attributes.",
+        "For shadow resources, connect the producing light with the consuming pass. Locate the transformation from a screen surface to light space and its depth comparison. Cascades and pages require examination of their partitioning and selection rules.",
+        "In reflection passes, distinguish screen-depth tracing from fallback inputs. Inspect whether probes or other trace results supply values for off-screen or occluded regions. A single reflection image does not prove that all samples were produced identically."
+      ]
+    },
+    {
+      "id": "22rb",
+      "title": "프레임 검사: 누적과 최종 출력 연결하기",
+      "lines": [
+        "Volume processing may require more than viewing a color image. Separate spatial density and lighting grids from view-integrated transmittance. Grid resolution and depth partitioning connect to both artifacts and cost.",
+        "Temporal processing separates history from current inputs. Inspect which resources are written for later use and how motion and depth reject samples. A single capture may omit earlier execution conditions, so its interpretive limits need documentation.",
+        "Compare color before and after tone mapping. Locate exposure, color-space conversion, upscaling, and interface compositing in the actual passes. Do not assume an identical order in every engine or label a prepared diagram as a captured result.",
+        "Selecting an event allows its input resources to be traced back to their producers. Connecting producing and consuming commands reveals a resource's role more concretely than a feature name. Resources can also be reused for multiple purposes.",
+        "Performance requires separate measurement. Frame capture can introduce overhead or change execution behavior. Use the engine's GPU profiler and repeated runs to inspect pass timing and variability under matched conditions.",
+        "Report sample count and variation alongside averages. Check shader preparation, loading, cache state, and matched camera paths. A single frame's timing may not represent an entire scene.",
+        "Record the connections among actual resources, inputs, and outputs. Separating visual observations from implementation evidence makes the scope of each conclusion clear. This method provides a more reusable understanding than memorizing feature names."
+      ]
+    },
+    {
+      "id": "conclusion",
+      "title": "네 편을 관통하는 질문: 어디에서 어떤 정보를 얻는가",
+      "lines": [
+        "We connected DOOM's brightness values to baked lighting, real-time shadows, screen-space effects, spatial grids, rays, caches, and final reconstruction. This was not a history in which every older technique disappeared simultaneously into one replacement.",
+        "Our first question was what gets stored. Brightness, surface attributes, depth, triangle identity, spatial lighting, and frame history contain different information. Different storage determines which questions later stages can answer.",
+        "Our second question was where the renderer searches: screen depth, a simplified spatial representation, or actual triangles. Limitations involving off-screen objects, hidden surfaces, and thin structures follow from this choice.",
+        "Our third question was how much gets computed and how results are reused. Light candidates, path samples, pages, caches, history, and reconstruction have different costs and errors. Timing changed alongside representation, sampling, hardware, and reconstruction.",
+        "When you next examine game lighting, think beyond a feature name. Understanding the data and calculations behind an image helps explain both why it looks convincing and why it breaks."
+      ]
+    }
+  ]
+}

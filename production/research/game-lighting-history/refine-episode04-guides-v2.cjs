@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),base='projects/game-lighting-history-04/script';
+const input=base+'/native-observation-guides.draft-v1.json',output=base+'/native-observation-guides.draft-v2.json';
+if(fs.existsSync(path.join(root,output)))throw Error('Preserve existing refined draft');
+const doc=JSON.parse(fs.readFileSync(path.join(root,input),'utf8'));
+doc.previousDraft={path:input,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,input))).digest('hex')};
+doc.preparedAt=new Date().toISOString();
+const regions=doc.guides.find(g=>g.id==='guide-vsm-regions');
+regions.ranges=[[0,16],[56,72]];
+regions.focus='Colored Clipmap/Mip visualization observed at5.328s and16.218s, normal Ferris-wheel scene at24s/48.196s. Final clean normal pool56–72 requires exact crop/cut review. The historical24–48 pool chiefly shows console controls and is rejected for this guide.';
+const motion=doc.guides.find(g=>g.id==='guide-vsm-motion');
+motion.ko='이번에는 카메라가 위로 이동하는 구간을 보죠. 관람차와 그 그림자를 함께 따라가면, 같은 공간이 다른 시점에서 어떻게 보이는지 확인할 수 있습니다. 카메라 이동, 물체 이동, 광원 이동은 서로 다른 조건입니다. 어떤 조건을 바꿨는지 기록해야 다시 그린 자료와 재사용한 자료를 비교할 수 있습니다.';
+motion.en='Now follow the camera as it moves upward. Tracking the Ferris wheel and its shadow shows the same space from a different viewpoint. Moving the camera, an object and a light are different conditions. Recording which one changed is necessary before comparing newly rendered data with reused data.';
+doc.corrections=['24–48s VSM pool rejected for debug-region guide because observed normal wheel/console controls do not supply the colored region comparison.','90.359s VSM camera-rise image directly read; describe wheel/shadow/viewpoint, without claiming an unobserved cache-counter change.'];
+fs.writeFileSync(path.join(root,output),JSON.stringify(doc,null,2)+'\n');
+console.log(JSON.stringify({output,guideCount:doc.guides.length,original87Changed:false,newAudio:false}));

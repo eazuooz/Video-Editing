@@ -4,6 +4,8 @@
 
 # 기획·게임 디자인 영상 일괄 제작
 
+2026-10-09 latest source checkpoint: presenting-game-scores has a current distinct check and eleven source-bank intervals, maximum183.324967s of unique normal-speed action from official TEC Classic/Score Attack and two Balatro scored-hand/count-up shots. All149 nominal boards/886 samples,50 native trial boards/295 overlays,23 reframed Tetris boards/133 samples,5 Balatro native boards/25 samples and2 corrected count-up boards/10 samples were directly read. The uncropped caption collisions and original filter failure are preserved history. Source-bank review is not final timing, actual-narration caption or final-pixel approval. Four originals and all QA rasters stay local; no new project/TTS/media/upload yet. Black projected explanations are next. Research processes remain untouched. Fifteen completed private deliveries and one content duplicate remain preserved.
+
 2026-10-09 actual delivery: similar-game-design was saved once privately as _p1IqDeg6YE. Production/QA/four-file collection/available publishing settings and CC-off gameplay/spatial-caption pixels are verified. Normal production push 00fb7a13a2be615eb2f06eb91e2719ffcfd6d3aa matched actual local/remote and all608 final blobs; four individually reviewed raster additions are the thumbnail and three minimal publishing proofs, with media/QA rasters excluded and unrelated index entries preserved. Current batch:15 reviewed private deliveries, one content duplicate excluded, eight queued. Next: presenting-game-scores (source URL retained in its batch queue entry), full source/content/current Studio duplicate review before creation, with future research-black-v1. Human listening/pronunciation/public-rights/Nimbus/handles/backup/dubbing/optionalCC/private comment remain pending. No completion modal was invented and no completed media/upload/research handoff is repeated.
 
 The earlier checkpoint paragraphs below are preserved history; this actual delivery and current receipt take precedence.
@@ -312,6 +314,24 @@ Continuous approvedNimbus mix has been built and measured at−16.04LUFS/−1.98
 
 실제 제작 전달 cb751d5197e9e4bba7efdb5e9bb3078638bb9f06을 origin/main에 일반 푸시하고 local/remote SHA 일치를 확인했다. 명시618경로·최종blob/외부index항목동일·필수이미지5/새QA이미지0/미디어0이며13편 제작Git·비공개전달/12전체게시설정/1썸네일후속·10queued 정지다. 자동화24는PAUSED, 현재검수서버2개는정확명령줄과생성시각을 대조 후 종료했고 논문실험/GPU보류/외부작업을 보존했다. 증거 커밋의 미래 자체SHA는 기록하지 않는다.
 
+## 2026-10-09 현재 전달과 점수 표현 편 사전 검토
+
+위 정지 기록은 당시의 역사다. 이후 사용자 재개 지시에 따라 automation24는 ACTIVE이며, 실제 최신 queue와 개별 receipt가 우선한다. 요청한 일곱 수정본과 정확한 옛 일곱 ID 삭제는 완료됐고 반복하지 않는다. player-customization의 비공개 lf765yYhPdM과 similar-game-design의 비공개 [_p1IqDeg6YE](https://youtu.be/_p1IqDeg6YE)도 검수·수집·가능한 전체 설정·선택 Git 전달을 완료했다. 현재15편 전달, natural-tutorials 내용중복 제외1편, 남은8편이다.
+
+similar의 현재618.3초/37098프레임1080p60, 두 decode0/90000PTS/동일AAC, 전체48혼합ASR와1810최종표본302판/400KO148EN·69컷73음성시작·19입체설명을 직접 검토했다. 현재24씬73문단605.540083333초 PCM과 고양이2초·원래 회원10초를 보존한다. 본편 actual21827/explanation14551은60:40오차0.2프레임이다. 업로드의 CC off 실제 게임·입체 설명 고정자막, 수동KOEN/영어정보/링크·14챕터/00초카드/회원3요소·SDHD/광고 자동검사 완료를 저장 후 확인했다. production00fb7a13a2be615eb2f06eb91e2719ffcfd6d3aa와 evidencea2655c3702a4c9ac24fcea521946007d93635e4b는 일반 push 및 실제 local/remote·모든 선택 blob·외부 index 보존을 확인했다. 새 필수 래스터는 썸네일1과 최소 게시 증거3만이며 QA·소스·미디어는 Git0이다. 별도 wizard 완료 modal은 미관찰이며 사람 전체청취/발음·최종 공개권리/Nimbus·잘린 회원핸들/백업/자동더빙·optionalCC·비공개 댓글은 pending이다. 완료 제작과 업로드를 반복하지 않는다.
+
+다음 presenting-game-scores는 원본 FeekeBW26AI의 전체JA 개념,52기존 프로젝트의 개념/장별 주장,7관련 전체KOEN과 실제 Studio를 비교했다. 첫 distinct 이후 다른 정상 제작의 법선·UV manifest/README/receipt 세 파일이 바뀌어 전체를 다시 읽었고, 새 nalAZHtEtw0의 현재 Studio 제목·전체 설명·비공개/검토 중 상태를 직접 확인했다. 법선 역전치와 UV 보간/주소 처리의 질문은 점수 이름·단위·비교 기준·표현으로 플레이 성과를 이해하는 질문과 다르다. 최신 digest c618cafa0a54836824286c3a5c0b13501576cf91be3e3c905e194f51bf0cdc77의 --check를 통과했다. 외부 제작 파일/게시설정과40:60·noBGM 예외는 변경하거나 복사하지 않았다.
+
+공식 Ballionaire49.866667초와 Balatro73.033333초 원본의 단일CPU2 전체 decode0을 확인하고246관찰 표본42판을 모두 직접 읽었다. source-direct-review-v1.json은 정확 PTS나 채택 경계의 승인이 아니다. 예고편의 홍보/메뉴/타 게임오버/몽타주는 실제60% 시간에 넣지 않으며, 배급사 재생목록에 있는 Skoottie의34분 영상도 녹화 재사용 권리 확인 전 채택하지 않는다. 아직 새 프로젝트·대본·TTS·MC·채택 footage0이다. 더 긴 관련 공식 플레이나 재사용 조건이 확인된 녹화를 확보하고 실제 움직임/소스 PTS/컷·UI를 검토한 뒤 독립 대본을 쓴다. localhost9250 원본 검수 helper만 유지하며 실제 PID/명령줄/생성시각부터 재확인해 재사용한다. 연구 중지·GPU 작업·완료 source decode 재실행0이다.
+
+미래 설명 색감은 사용자 최신 지시에 따라 이 점수 편부터 research-black-v1을 사용한다. 검정 배경·흰/밝은 회색 글씨·따뜻한 금색 제목·청록 도형·주황 강조와 실제 투영2.5D 움직임을 적용한다. 이미 착수하거나 완성된 흰 설명은 보존한다. 고정 boxed-white-forest 자막과 노란 헤더·흰 바탕의 자연스러운 얌얌코딩 삽화 썸네일은 그대로 유지한다. AGENTS.md, 관련 스타일/워크플로 문서와 shared/publishing/explanation-style-policy.json을 읽고 미래 규칙을 적용한다.
+
 ## 2026-10-10 게임 점수 수정본 전달
 
 발라트로6:테트리스4 수정본 `L5DA2xiV46M`의 제작·혼합ASR·1112최종표본186판·4파일수집·전체가능게시설정과 선택Git일반push를 완료했다. 본편11561실제/7707검정설명, 게임6936발라트로/4625테트리스는 각각1프레임이내의60:40이다. 사용자가 승인한 녹화자 한줄을 한영설명에 실제 저장했다. 2026-10-28 오전09:00 Asia/Seoul 예약을 저장하고 재열람했다. 옛 `oDYJlcv2Dqk`는 비공개로 보존했다. 현재16편전달·natural중복제외1·다음7queued이며 다음은character-parameters다. 사람전체청취/발음·최종공개권리 등은pending으로 보존한다. 실제receipt/최신queue가 위 과거 준비기록보다 우선한다.
+
+## 2026-10-10 캐릭터 능력치 구조·음성 실행
+
+character-parameters의 원본 전체 연구 내용, 관련 전체KOEN 대본과 실제Studio를 직접 비교해 current distinct를 확인했다. 공식19개 고유 행동 창과 native 경계·UI 프레이밍을 검수한 뒤 독립12씬/37KOEN문단·자연스러운 전체안내를 작성하고 전체 본문을 직접 대조했다. 검정2.5D 구조 v1/v2/v3의132표본24판을 모두 읽었고, 수정된 현재 선택은94표본17판이다. 구조 표본 승인과 최종 음성/연속 애니메이션/고정자막 승인은 구별한다.
+
+단일 TTS session59763은 학습의 최종 저장·검증·done 경계 뒤 owned 협력인계로 실행 중이다. 종료 뒤 원래 연구를 반드시 복원하고 실제command/cwd/queuejob을 검증한다. 현재 음성/전체·독립ASR/실측/믹스/최종pair/QA/4파일/업로드/예약/Git은 완료가 아니며 actualIDnull이다. 썸네일·한영 게시글은 준비된 로컬 파일이고 새 Git 이미지/미디어0이다. 현재16편 전달·중복 제외1·진행1과후속6, 남은7편을 유지한다.

@@ -1,0 +1,31 @@
+// Actual ended source checks and the duplicate-gate failure; no media approvals.
+const fs=require('node:fs'),crypto=require('node:crypto'),path=require('node:path');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const write=(p,j)=>{const tmp=p+'.writing-'+process.pid;fs.writeFileSync(tmp,JSON.stringify(j,null,2)+'\n');fs.renameSync(tmp,p);};
+const base='projects/game-lighting-history-04/production';
+const sourcePath='production/research/game-lighting-history/local/own-frame-submit-v73/execution.json',source=read(sourcePath);
+if(source.status!=='candidate-source-and-samples-ready'||source.source.boards.length!==10||source.source.sha256!=='4f63bd66b2a71dd574275d21f317f0a3b1d4209901241aba5289af31390f5c78')throw Error('Source changed');
+if(sha(source.source.media)!==source.source.sha256||source.source.wholeDownloadedWindowDecodeExit!==0)throw Error('Changed source media or decode evidence');
+const out=base+'/own-frame-submit-direct-review-v78.json';if(fs.existsSync(out))throw Error('Preserve existing source review');
+for(const b of source.source.boards)if(sha(b.path)!==b.sha256)throw Error('Board changed');
+write(out,{reviewedAt:new Date().toISOString(),execution:{path:sourcePath,sha256:sha(sourcePath)},allTenBoardsDirectlyRead:true,boards:source.source.boards.map(b=>({...b,directlyViewed:true,localOnly:true})),wholeDownloadedWindowDecodeExit:0,sourceStartOffsetVerified:false,continuousMotionReviewed:false,observations:[
+ {nativeSeconds:[0,36],role:'held-code-inspection-pending',action:'Descriptor heap and ImGui command-list/resource-barrier calls are selected/read; no observed edit→compile→rendered-result chain. Do not count this entire interval as actual action.'},
+ {nativeSeconds:[42,64],role:'candidate-debugger-action',action:'Breakpoint/call-stack at GuiEnd, OnGUI, ExecuteCommandList and GetDevice; candidate22s only. Exact cuts and native motion remain pending.'},
+ {nativeSeconds:[66,219],role:'explanation-dominant-reject-from-actual-quota',action:'Hand-drawn magenta triangle/orange overlapping shapes stay above code through fence/frame-resource explanation and console termination. This is explanation despite the editor application.'},
+ {nativeSeconds:[222,232.033008],role:'candidate-renderdoc-opening',action:'RenderDoc Launch Application opens empty and is moved; no loaded capture or rendered triangle result. Candidate setup footage only.'}
+],quotaDisposition:'Reject the whole232s as actual footage; retain only bounded debugger/setup candidates after exact-cut and moving review.',finalUseApproved:false,allFinalPixelsReviewed:false,rightsApprovedForPublicUse:false,newGitImages:0});
+const failedPath='production/research/game-lighting-history/local/hogwarts-lighting-walkthrough-v75/execution.json',failed=read(failedPath);
+if(failed.status!=='failed-preserve-partial'||!failed.endedAt||failed.current?.exitCode!==1)throw Error('Inspect changed source failure');
+const oldPath='shared/output/gpu-handoff/e9d27024-4890-436d-bbc0-e1c38bc4ade1.json',old=read(oldPath),lease=read('shared/output/GPU_HANDOFF.json');
+if(old.state!=='research_resume_verified'||old.ttsExitCode!==1||lease.project!=='game-lighting-history-04'||lease.token===old.token)throw Error('Inspect actual handoff history');
+const log='shared/output/gpu-handoff/e9d27024-4890-436d-bbc0-e1c38bc4ade1-tts.log';
+if(!fs.readFileSync(log,'utf8').includes('Existing project evidence changed'))throw Error('Failure cause changed');
+const progress='production/research/game-lighting-history/guided-progress-v78.json';if(fs.existsSync(progress))throw Error('Preserve existing progress record');
+write(progress,{recordedAt:new Date().toISOString(),sourceReview:out,unavailableHogwartsCandidate:{execution:failedPath,sha256:sha(failedPath),sourceId:failed.request.id,status:failed.status,downloadExit:failed.current.exitCode,reason:'HTTP403 from requested video media; no usable MP4/decode. Partial metadata and failure preserved; no repeat or workaround.',usableFootage:false},priorTtsAttempt:{history:oldPath,sha256:sha(oldPath),token:old.token,outerSession:82454,actualExit:1,reason:'Current foreign publishing/manifests changed; duplicate gate stopped before model/execution creation.',generationComplete:false,modelStarted:false,newTakes:0,researchQueueRestored:true,restorationObserved:old.resumedStatus},currentDuplicateReview:'production/research/game-lighting-history/episode04-current-duplicate-rereview-v77.json',retry:{leaseToken:lease.token,coordinator:lease.coordinator,state:lease.state,outerSession:28590,request:'projects/game-lighting-history-04/production/part3-guided-actions-tts-request-v69.json',newOnly37:true,ttsStarted:false,cpuThreads:0,gpuJobs:0},allFinalPixelsReviewed:false,finalMixedAsrApproved:false,bodyRatioApproved:false,currentRevisionUploaded:false,next:'Let current research job finish/seal; refresh only observed content deltas before grant. Complete new37 synthesis and verified research restoration, then74 CPU ASR windows and measured native allocation.'});
+const checkpoint='production/research/game-lighting-history/checkpoint.json',c=read(checkpoint);
+c.episode04GuidedTtsV69={...c.episode04GuidedTtsV69,history:c.episode04GuidedTtsV69?.history||[],session:28590,leaseToken:lease.token,status:lease.state,actualCoordinator:lease.coordinator,ttsStarted:false,cpuThreads:0,gpuJobs:0,progressEvidence:progress,next:'Finish current job normally; one guarded37-scene batch, restoration and74 CPU ASR windows'};
+c.episode04GuidedTtsV69.history.push({session:82454,leaseToken:old.token,executionExit:1,ttsGenerated:0,modelStarted:false,reason:'duplicate-review-input-delta',researchRestored:true,history:oldPath});
+c.episode04OwnFrameSubmitV73={execution:sourcePath,review:out,status:'whole-source-rejected-for-quota; bounded-debugger-candidates-pending',cpuThreads:0,gpuJobs:0,finalApproved:false};
+c.episode04HogwartsWalkthroughV75={execution:failedPath,status:failed.status,usableFootage:false,actualExit:1,cpuThreads:0,gpuJobs:0};
+c.updatedAt=new Date().toISOString();write(checkpoint,c);console.log(JSON.stringify({token:lease.token,coordinator:lease.coordinator,sourceReview:out,allFinalPixels:false,ttsStarted:false}));

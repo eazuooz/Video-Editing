@@ -1,0 +1,14 @@
+const fs=require('fs'),crypto=require('crypto'),{spawnSync}=require('child_process');
+const base='production/research/game-lighting-history/local/episode04-tsr-browser-v3/',path=base+'execution.json';
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const x=read(path);
+const ps=spawnSync('powershell.exe',['-NoProfile','-Command',`$taskNode=Get-CimInstance Win32_Process -Filter "ProcessId=${x.coordinatorPid}"; if($taskNode -and $taskNode.CommandLine -match 'acquire-episode04-tsr-browser-v3.cjs'){$taskNode | Select-Object ProcessId,CreationDate,CommandLine | ConvertTo-Json -Compress}`],{encoding:'utf8',windowsHide:true});
+if(ps.status!==0)throw Error('Actual identity observation failed');
+const actual=ps.stdout.trim()?JSON.parse(ps.stdout):null;
+if(x.exitCode===undefined&&!actual)throw Error('Unfinished coordinator is not live; diagnose before recording');
+if(x.exitCode!==undefined&&actual)throw Error('Finished state still has live coordinator; wait for real exit');
+const record={observedAt:new Date().toISOString(),session:81989,actualCoordinator:actual,coordinatorPid:x.coordinatorPid,actualIdentityLive:!!actual,sessionClosed:x.exitCode!==undefined,status:x.status,exitCode:x.exitCode??null,current:x.current,execution:{path,sha256:sha(path)},completedSources:x.completed.length,cpuThreads:2,gpuJobs:0,finalUseApproved:false};
+fs.writeFileSync(base+'session.json',JSON.stringify(record,null,2)+'\n');
+const cp='production/research/game-lighting-history/checkpoint.json',c=read(cp);c.updatedAt=record.observedAt;c.ownedJobsRunning=actual?[record]:[];c.ownedGpuJobs=0;
+c.stage='episode04-current111-native-TSR-window-review';c.episode04TsrNative=record;c.next='Directly inspect acquired TSR motion at normal speed, verify offsets/crop/tracking and current111 independent animated explanation scenes; final60:40 timing/mix/render/QA/private/Git remain pending.';
+const tmp=cp+'.writing';fs.writeFileSync(tmp,JSON.stringify(c,null,2)+'\n');fs.renameSync(tmp,cp);console.log(JSON.stringify({session:81989,status:record.status,live:record.actualIdentityLive,completed:record.completedSources}));

@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),b='production/research/game-lighting-history/local',old=b+'/part1-trim-review-v168',out=b+'/part1-extended-review-v170';
+const plan=JSON.parse(fs.readFileSync(path.join(root,old,'plan.json'),'utf8'));
+const oldData=JSON.stringify(plan.rows).replaceAll('<','\\u003c');
+plan.rows.find(x=>x.id==='fortnite-mobile-profiling').ranges=[[234,289.9]];
+plan.rows.find(x=>x.id==='runtime-texture-write-read').observed='Native RVT assets: displacement then color, virtual dimensions/tile/border and stored content type. Material write/read graph is not established by this window. Trim static idle after inspection.';
+plan.preparedAt=new Date().toISOString();plan.extendedFortniteApproved=false;
+fs.mkdirSync(path.join(root,out),{recursive:true});if(fs.existsSync(path.join(root,out,'index.html')))throw Error('Preserve viewer');
+const html=fs.readFileSync(path.join(root,old,'index.html'),'utf8').replace(oldData,JSON.stringify(plan.rows).replaceAll('<','\\u003c'));
+fs.writeFileSync(path.join(root,out,'index.html'),html);fs.writeFileSync(path.join(root,out,'plan.json'),JSON.stringify(plan,null,2)+'\n');
+console.log(JSON.stringify({viewer:out+'/index.html',allApproved:false,extraFortniteSeconds:29.9,newImages:0}));

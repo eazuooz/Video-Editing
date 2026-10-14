@@ -1,0 +1,289 @@
+{
+  "title": "Game Math Part 2 · 3D Rotation 1: Orientation and Rotation Matrices",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "이번 강의에서 배울 것",
+      "lines": [
+        "Why can an object tilt while facing the same direction?",
+        "We will observe flight in a game and distinguish direction from orientation.",
+        "Then we will build a rotation matrix from three axes and convert local coordinates into world coordinates.",
+        "Finally, we will check inverse transforms and invalid rotations, then solve two problems to verify the signs and calculation order."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "비행을 볼 때 두 가지를 나누세요",
+      "lines": [
+        "The character flies between structures in Superflight.",
+        "Watch the body's location separately from the direction it faces.",
+        "Its position changes, and its body also tilts as it passes obstacles.",
+        "Facing direction alone cannot tell us how far the arms are tilted.",
+        "One forward arrow carries less information than the body's full orientation.",
+        "Let us translate that difference into a simple set of axes."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "방향은 화살표, 자세는 몸 전체",
+      "lines": [
+        "A direction vector is an arrow pointing somewhere. Twisting around its length does not change its direction.",
+        "Twist an object with wings around that same axis and the wings tilt. Its orientation has changed.",
+        "Two orientations can therefore share a forward direction but have different up directions.",
+        "A 3D unit direction can usually be parameterized by two angles, while orientation has three rotational degrees of freedom.",
+        "Orientation describes a state; angular displacement describes a change between orientations.",
+        "Both require a reference orientation and a coordinate frame."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "물체에 붙어 있는 세 좌표축",
+      "lines": [
+        "Attach three small axes to the object. These form its local coordinate frame.",
+        "Red is x, green is y, and blue is z. These arrows follow the right-hand rule: x cross y equals z.",
+        "The three axes are mutually perpendicular unit vectors.",
+        "When the object rotates, its axes rotate with it, but their coordinates in its own frame remain unchanged.",
+        "To describe orientation, record where those local axes point in world coordinates.",
+        "Axis names and body-facing directions are conventions. Check your project's conventions first."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "몸의 위와 화면의 위",
+      "lines": [
+        "Look at the flying character and the surrounding structures again.",
+        "It is easy to confuse the top of the screen with the character's local up direction.",
+        "When the body tilts, the screen's up direction still belongs to the camera's separate frame.",
+        "Compare structural edges, the torso, and the arms to distinguish those references.",
+        "Our calculation describes the relationship between the object's axes and the world frame.",
+        "The recording alone does not establish the game's internal rotation implementation."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "열벡터와 변환 방향을 먼저 고정",
+      "lines": [
+        "We place vectors vertically and multiply by the matrix on the left: the column-vector convention.",
+        "Our matrix R converts a local vector into a world vector.",
+        "Its first, second, and third columns contain the local x, y, and z axes measured in world coordinates.",
+        "The book uses a left-handed frame and row vectors, so we must also check its axes and rotation signs.",
+        "Matrices for the same transform under these two conventions are transposes of each other.",
+        "Before trying a transpose to fix a picture, write down the input and output frames."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "90도 회전을 숫자로 계산",
+      "lines": [
+        "Rotate by positive ninety degrees around z, using the right-hand rule: thumb along positive z and fingers following the rotation.",
+        "Local x becomes world y, so the first column is zero, one, zero.",
+        "Local y becomes negative world x, so the second column is minus one, zero, zero.",
+        "Local z remains unchanged, so the third column is zero, zero, one.",
+        "Multiplying the local vector two, one, zero combines twice the x-axis column with once the y-axis column.",
+        "The world result is minus one, two, zero. Matrix multiplication is a weighted sum of the transformed axes."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "로컬의 앞과 월드의 방향",
+      "lines": [
+        "Watch the character turn as it flies beside the structures.",
+        "The body's local forward direction rotates with the body.",
+        "A direction defined in the world frame remains a reference even when the object's orientation changes.",
+        "Moving along the object's forward direction differs from moving along a fixed world axis.",
+        "A local-to-world matrix connects those two kinds of commands.",
+        "For now, focus on the coordinate frame rather than speed or collision."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "역방향은 왜 전치로 계산할까?",
+      "lines": [
+        "Now express a world vector in the object's frame. We must undo the transform we defined.",
+        "With orthonormal local axes, the dot product with each axis gives the corresponding local component.",
+        "Multiplication by the transpose performs those three dot products at once.",
+        "Multiply world vector minus one, two, zero on the left by the transpose of the rotation matrix to recover local vector two, one, zero.",
+        "For a pure rotation the transpose is the inverse. This shortcut does not apply unchanged to arbitrary scaled or sheared matrices.",
+        "Points also include translation. To transform a point back, first subtract the object's world-space origin."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "방향코사인 행렬은 내적의 표",
+      "lines": [
+        "A rotation matrix is also called a direction-cosine matrix. This is not a new kind of matrix.",
+        "It is a table of dot products between axes from two frames, all expressed in one common frame.",
+        "For unit vectors, the dot product is the cosine of their angle: one for parallel, zero for perpendicular, and minus one for opposite.",
+        "Under our column-vector convention, row and column indices correspond to world components and local axes.",
+        "Reading the first column therefore gives the three world components of local x.",
+        "Do not dot coordinate numbers measured in different frames. Express both axes in a common frame first."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "같은 물체도 다른 기준에서 보입니다",
+      "lines": [
+        "The character moves while the camera shows its flight.",
+        "Observe the torso's tilt separately from the angle of background edges on the screen.",
+        "The object's world orientation is different from its orientation relative to the camera.",
+        "A different viewpoint changes the screen appearance of the same object.",
+        "To connect multiple frames, we need to know which frame each transform starts and ends in.",
+        "Let us connect those relationships through matrix multiplication."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "중첩된 자세를 하나로 합치기",
+      "lines": [
+        "Let B transform a child object's local coordinates into its parent's frame.",
+        "Let A transform the parent's frame into world coordinates.",
+        "Applying B first and then A to a column vector is equivalent to the product A B.",
+        "The rightmost transform acts first. Labeling input and output frames makes the order easier to check.",
+        "A part attached to an aircraft goes from the part frame to the aircraft frame, then into the world.",
+        "Changing rotation order does not generally preserve the result. Next time we will compare two ninety-degree rotations directly."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "회전 행렬인지 확인하는 두 조건",
+      "lines": [
+        "Nine numbers do not automatically make a rotation matrix.",
+        "First check that its three columns have unit length and are mutually perpendicular: the orthonormality condition.",
+        "In matrix form, R transpose times R must equal the identity.",
+        "A reflection also passes this condition. A proper 3D rotation must additionally have determinant positive one.",
+        "Check orthonormality and determinant positive one together.",
+        "With floating-point data, use a tolerance instead of exact equality. Choose that tolerance for the data and the intended use."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "회전과 늘어나 보이는 모습을 구분",
+      "lines": [
+        "The character appears larger or smaller as its distance from the camera changes.",
+        "That visual change alone does not prove its rotation matrix contains scaling.",
+        "Perspective and camera distance also affect screen size.",
+        "Separate the body's 3D axes from its projected appearance.",
+        "The rotation matrix we are testing preserves lengths and angles of 3D vectors.",
+        "It does not require pixel lengths in screenshots to remain constant."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "반사와 스케일이 왜 통과하면 안 될까?",
+      "lines": [
+        "Set the x diagonal component to two and the y and z components to one each. Only the x direction doubles, so length is not preserved.",
+        "Now change the x component to minus one and keep y and z at one. This produces a reflection across a plane.",
+        "A reflection preserves lengths and perpendicularity but reverses handedness.",
+        "Its determinant is minus one, so it must fail the proper-rotation test.",
+        "Flipping two axes is different: set x and y to minus one and z to one. This is a half-turn around z.",
+        "Do not judge from a single negative entry. Check orthonormality and the determinant together."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "작은 오차가 쌓이는 행렬 크리프",
+      "lines": [
+        "Repeatedly multiplying small rotations each frame can accumulate floating-point rounding error.",
+        "Axes that were initially valid may drift slightly in length or perpendicularity. This is called matrix creep.",
+        "In code, measure orthonormality error and repair the axes when needed.",
+        "One method normalizes the first axis, removes its component from the second axis, then normalizes the second.",
+        "Constructing the third axis with their cross product preserves right-handedness. Degenerate input, such as nearly parallel axes, needs separate handling.",
+        "This correction handles small numerical drift. It does not automatically fix intentional scale or incorrect data semantics."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "부드러운 비행에도 계산 상태는 따로",
+      "lines": [
+        "The character continues to move smoothly on screen.",
+        "Visual smoothness and mathematically valid internal data are separate questions.",
+        "During development, axis lengths and dot products can be inspected numerically.",
+        "We can monitor whether orientation updates increase the error.",
+        "This is an example of what developers can check, not a claim that this game has an error.",
+        "Next, we will connect this to storage costs and a clear code interface."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "행렬은 명확하지만 아홉 숫자를 저장",
+      "lines": [
+        "Matrices directly support coordinate transforms and composition, and their axes are easy to inspect.",
+        "However, a three-by-three matrix stores nine numbers for an orientation with three rotational degrees of freedom.",
+        "Counting only 32-bit floating-point components, a matrix takes 36 bytes and three Euler angles take 12.",
+        "A four-component quaternion takes 16 bytes but has a unit-length constraint. It does not represent four independent rotation axes.",
+        "These figures count components only. Structure alignment and metadata may add storage.",
+        "Editing, storing many poses, and transforming vectors have different requirements, so multiple representations are often used together."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "코드에는 변환 방향을 이름으로",
+      "lines": [
+        "Give the functions distinct names: localToWorld and worldToLocal.",
+        "The forward direction multiplies by R; the reverse uses its transpose for a pure rotation.",
+        "The names make the required input and returned output frames clear.",
+        "Points need translation added or subtracted. Direction vectors do not receive that translation.",
+        "Mathematical vector convention is separate from memory layout. Row-major storage does not by itself imply row-vector multiplication.",
+        "Check the library's multiplication and data-transfer conventions, then verify a small example with basis vectors."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "게임에서 명령을 표현하는 기준",
+      "lines": [
+        "Now think about left and right relative to the flying body.",
+        "Screen-left can differ from the body's local left.",
+        "Some games use camera-relative input while others use object-relative input.",
+        "This is why direction variables should identify the frame their values belong to.",
+        "The recording does not establish the precise input mapping. We are connecting visible orientation changes to coordinate-frame concepts.",
+        "Next, we will examine what happens when we blend matrix entries independently."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "행렬 원소를 섞으면 회전도 될까?",
+      "lines": [
+        "Suppose the starting pose is the identity and the ending pose is a 180-degree rotation around z.",
+        "The ending matrix has diagonal minus one, minus one, one.",
+        "Averaging corresponding entries halfway gives diagonal zero, zero, one.",
+        "This middle matrix collapses the x and y directions to zero. It is not a rotation.",
+        "Linear interpolation of matrix entries does not automatically produce a valid rotation path.",
+        "We will return to this problem in the quaternion and rotation-interpolation lectures."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "직접 풀어 보는 두 문제",
+      "lines": [
+        "First problem: what happens when the ninety-degree z-rotation matrix acts on local vector one, zero, zero?",
+        "Select the first column. The world result is zero, one, zero.",
+        "Second problem: a world point is four, five, zero, the object's origin is three, three, zero, and its orientation is the same ninety-degree rotation.",
+        "Subtract the origin first to get world displacement one, two, zero.",
+        "Then multiply by the transpose to obtain local coordinates two, minus one, zero.",
+        "Check the result by rotating it forward and adding the object's position, returning to four, five, zero."
+      ]
+    },
+    {
+      "id": "23",
+      "title": "이제 비행에서 자세를 읽어 보세요",
+      "lines": [
+        "It is the same game, but we now have more specific things to observe.",
+        "Distinguish the body's position, its forward direction, and the tilt of its arms.",
+        "Also consider the difference between the camera's screen frame and the object's frame.",
+        "A rotation matrix records orientation through three axes and transforms vectors between frames.",
+        "We have not measured exact coordinate values from the recording, but we now know what to represent.",
+        "Next time we will study Euler angles and the order of rotations."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "오늘의 기준 세 가지",
+      "lines": [
+        "Remember three things: a single direction does not determine a complete orientation.",
+        "Expressing three local axes in the same world frame gives a rotation matrix.",
+        "Always check input and output frames, the vector-multiplication convention, and the validity conditions.",
+        "Next time we will study rotation order, gimbal lock, and axis-angle representation."
+      ]
+    }
+  ]
+}

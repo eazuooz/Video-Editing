@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../..'),config=path.join(root,'motion-canvas/vite.game-lighting-history.chapter-v4.config.ts');
+let t=fs.readFileSync(config,'utf8');
+const entry='./src/projects/game-lighting-history-04/spatial/additive-prerequisite-project-v1.ts';
+if(t.includes(entry))throw Error('Viewer already added; preserve checkpoint');
+const old="const record=fileURLToPath(new URL('../production/research/game-lighting-history/local/current-render-execution-v1.json',import.meta.url));";
+const chapter="const chapterRecord=fileURLToPath(new URL('../production/research/game-lighting-history/local/episode03-chapter-render-v4/renders/'+(this as any).command._outputs[0].target.split(/[\\\\/]/).pop().replace(/\\.mp4$/,'.execution.json'),import.meta.url));";
+if(!t.includes(old)||!t.includes(chapter))throw Error('Owned exporter layout changed; inspect before editing');
+t=t.replace(old,"const outputName=(this as any).command._outputs[0].target.split(/[\\\\/]/).pop();\n const isEpisode04=outputName.startsWith('additive-prerequisite');\n const record=fileURLToPath(new URL('../production/research/game-lighting-history/local/'+(isEpisode04?'episode04-prerequisite-render-execution-v1.json':'current-render-execution-v1.json'),import.meta.url));");
+t=t.replace(chapter,"const chapterRecord=fileURLToPath(new URL('../production/research/game-lighting-history/local/'+(isEpisode04?'episode04-prerequisite-proof-v1/':'episode03-chapter-render-v4/renders/')+outputName.replace(/\\.mp4$/,'.execution.json'),import.meta.url));\n fs.mkdirSync(path.dirname(chapterRecord),{recursive:true});");
+t=t.replace('project:[','project:['+JSON.stringify(entry)+',');
+fs.mkdirSync(path.join(root,'production/research/game-lighting-history/local/episode04-prerequisite-proof-v1'),{recursive:true});
+fs.writeFileSync(config,t);
+console.log(JSON.stringify({entry,existingEpisode03RoutingPreserved:true,episode04ExecutionSeparate:true,noRenderingStarted:true}));

@@ -1,0 +1,935 @@
+{
+  "slug": "game-math-orientation-matrices",
+  "chapter": 8,
+  "part": 1,
+  "totalParts": 4,
+  "sourceSections": [
+    "8.1",
+    "8.2.1",
+    "8.2.2 corrected DCM",
+    "8.2.3",
+    "8.2.4",
+    "8.2.5"
+  ],
+  "contract": {
+    "handedness": "right",
+    "vector": "column",
+    "axes": "Right-handed +x,+y,+z defined by colored arrows; +x cross +y = +z. +y is drawing-up and body +z is forward. Screen right and anatomical right do not define the handedness.",
+    "transform": "local-to-world",
+    "matrixColumns": "local axes in world coordinates",
+    "bookDifference": "Book uses a left-handed frame and row vectors. This lecture uses a right-handed frame and column vectors. Transposition exchanges row/column forms only for the same geometric transform; handedness and axis/sign changes require a separate change of basis."
+  },
+  "scenes": [
+    {
+      "id": "01",
+      "kind": "explanation",
+      "title": "이번 강의에서 배울 것",
+      "mode": "overview",
+      "ko": [
+        "같은 방향을 보는데 몸이 기울어지는 이유는 무엇일까요?",
+        "이번 시간에는 게임 속 비행을 보며 방향과 자세를 구분합니다.",
+        "세 좌표축으로 회전 행렬을 만들고, 로컬 좌표를 월드 좌표로 바꿔 봅니다.",
+        "마지막으로 역변환과 잘못된 회전을 검사하고, 두 문제를 직접 풀며 부호와 계산 순서까지 확인하겠습니다."
+      ],
+      "en": [
+        "Why can an object tilt while facing the same direction?",
+        "We will observe flight in a game and distinguish direction from orientation.",
+        "Then we will build a rotation matrix from three axes and convert local coordinates into world coordinates.",
+        "Finally, we will check inverse transforms and invalid rotations, then solve two problems to verify the signs and calculation order."
+      ],
+      "beats": [
+        "같은 방향, 다른 자세?",
+        "비행 관찰 → 방향과 자세",
+        "세 축 → 행렬 → 좌표 변환",
+        "역변환·검사 → 두 문제"
+      ]
+    },
+    {
+      "id": "02",
+      "kind": "actual",
+      "title": "비행을 볼 때 두 가지를 나누세요",
+      "ko": [
+        "슈퍼플라이트에서 캐릭터가 건물 사이를 날아갑니다.",
+        "먼저 몸이 있는 위치와 몸이 향하는 방향을 따로 보세요.",
+        "위치는 계속 달라지고, 장애물을 지나며 몸의 기울기도 바뀝니다.",
+        "어느 쪽을 향하는지만 알아서는 팔이 얼마나 기울었는지 알 수 없습니다.",
+        "앞으로 뻗은 화살표 하나와 몸 전체의 자세는 정보량이 다릅니다.",
+        "이 차이를 단순한 좌표축으로 옮겨 보겠습니다."
+      ],
+      "en": [
+        "The character flies between structures in Superflight.",
+        "Watch the body's location separately from the direction it faces.",
+        "Its position changes, and its body also tilts as it passes obstacles.",
+        "Facing direction alone cannot tell us how far the arms are tilted.",
+        "One forward arrow carries less information than the body's full orientation.",
+        "Let us translate that difference into a simple set of axes."
+      ],
+      "focus": "몸 중심의 이동과 팔·몸통의 기울기를 구분해 관찰",
+      "claim": "위치·방향·자세는 서로 다른 정보이며 방향벡터 하나로 roll을 결정할 수 없다",
+      "sourceId": "-Hpr1dqRzIk",
+      "sourceSegments": [
+        {
+          "in": 22,
+          "maxSeconds": 39
+        }
+      ],
+      "in": 22,
+      "maxSeconds": 39
+    },
+    {
+      "id": "03",
+      "kind": "explanation",
+      "title": "방향은 화살표, 자세는 몸 전체",
+      "mode": "direction",
+      "ko": [
+        "방향벡터는 어느 쪽을 가리키는 화살표입니다. 화살표의 길이 방향으로 비틀어도 방향은 같습니다.",
+        "하지만 날개가 있는 물체를 같은 축으로 비틀면 날개가 기울어집니다. 자세가 달라진 것이죠.",
+        "따라서 앞쪽 방향이 같아도 위쪽 방향이 다른 두 자세가 있을 수 있습니다.",
+        "3D 단위 방향은 보통 두 각도로 표현할 수 있지만, 자세는 회전 자유도가 세 개입니다.",
+        "여기서 자세는 현재 상태이고, 각변위는 한 자세에서 다른 자세로 가는 변화입니다.",
+        "둘 다 어떤 기준 자세와 좌표계를 기준으로 말하는지 정해야 합니다."
+      ],
+      "en": [
+        "A direction vector is an arrow pointing somewhere. Twisting around its length does not change its direction.",
+        "Twist an object with wings around that same axis and the wings tilt. Its orientation has changed.",
+        "Two orientations can therefore share a forward direction but have different up directions.",
+        "A 3D unit direction can usually be parameterized by two angles, while orientation has three rotational degrees of freedom.",
+        "Orientation describes a state; angular displacement describes a change between orientations.",
+        "Both require a reference orientation and a coordinate frame."
+      ],
+      "beats": [
+        "화살표 비틀기: 방향 그대로",
+        "몸 비틀기: 날개 기울기 변화",
+        "앞쪽 같음 / 위쪽 다름",
+        "방향 2자유도 / 자세 3자유도",
+        "상태와 변화",
+        "기준 자세를 먼저 정하기"
+      ]
+    },
+    {
+      "id": "04",
+      "kind": "explanation",
+      "title": "물체에 붙어 있는 세 좌표축",
+      "mode": "basis",
+      "ko": [
+        "물체에 작은 좌표축 세 개를 붙여 보겠습니다. 이것이 로컬 좌표계입니다.",
+        "빨강은 엑스, 초록은 와이, 파랑은 제트축입니다. 엑스와 와이의 외적이 제트가 되는 오른손 규칙을 따릅니다.",
+        "세 축은 서로 수직이고 길이가 일인 단위벡터입니다.",
+        "물체가 회전하면 축도 함께 돌아갑니다. 하지만 물체 자체에서 본 축의 좌표는 그대로입니다.",
+        "자세를 알려면 이 로컬 축들이 월드 좌표계에서 어디를 향하는지 기록해야 합니다.",
+        "좌표축의 이름과 몸에 붙인 방향은 약속입니다. 프로젝트의 약속부터 확인하세요."
+      ],
+      "en": [
+        "Attach three small axes to the object. These form its local coordinate frame.",
+        "Red is x, green is y, and blue is z. These arrows follow the right-hand rule: x cross y equals z.",
+        "The three axes are mutually perpendicular unit vectors.",
+        "When the object rotates, its axes rotate with it, but their coordinates in its own frame remain unchanged.",
+        "To describe orientation, record where those local axes point in world coordinates.",
+        "Axis names and body-facing directions are conventions. Check your project's conventions first."
+      ],
+      "beats": [
+        "물체에 붙인 축 = 로컬",
+        "빨강 x × 초록 y = 파랑 z",
+        "단위 길이 + 서로 수직",
+        "물체가 돌면 축도 회전",
+        "월드에서 본 로컬 축을 기록",
+        "축 약속부터 확인"
+      ]
+    },
+    {
+      "id": "05",
+      "kind": "actual",
+      "title": "몸의 위와 화면의 위",
+      "ko": [
+        "다시 비행 장면을 보세요. 캐릭터의 몸과 주변 건물은 함께 보입니다.",
+        "화면 위쪽을 언제나 캐릭터의 위쪽이라고 생각하면 헷갈리기 쉽습니다.",
+        "몸이 기울어져도 카메라가 보여 주는 화면의 위는 별도의 기준입니다.",
+        "건물의 모서리, 몸통, 양팔을 비교하며 각각의 기준을 구분해 보세요.",
+        "우리가 계산할 것은 물체 축을 월드 기준으로 표현하는 관계입니다.",
+        "이 영상만 보고 게임 내부의 정확한 회전 구현을 단정하지는 않습니다."
+      ],
+      "en": [
+        "Look at the flying character and the surrounding structures again.",
+        "It is easy to confuse the top of the screen with the character's local up direction.",
+        "When the body tilts, the screen's up direction still belongs to the camera's separate frame.",
+        "Compare structural edges, the torso, and the arms to distinguish those references.",
+        "Our calculation describes the relationship between the object's axes and the world frame.",
+        "The recording alone does not establish the game's internal rotation implementation."
+      ],
+      "focus": "몸 기울기·건물 모서리·화면 기준을 서로 구분",
+      "claim": "객체·월드·카메라 기준은 구별해야 하며 정확한 게임 내부 수학 구현을 영상만으로 추정하지 않는다",
+      "sourceId": "-Hpr1dqRzIk",
+      "sourceSegments": [
+        {
+          "in": 143,
+          "maxSeconds": 37
+        },
+        {
+          "in": 189,
+          "maxSeconds": 12
+        }
+      ],
+      "in": 143,
+      "maxSeconds": 49
+    },
+    {
+      "id": "06",
+      "kind": "explanation",
+      "title": "열벡터와 변환 방향을 먼저 고정",
+      "mode": "contract",
+      "ko": [
+        "이번 계산에서는 벡터를 세로로 놓고, 행렬을 왼쪽에서 곱합니다. 열벡터 약속입니다.",
+        "회전 행렬 알은 로컬 벡터를 월드 벡터로 바꾸는 행렬로 정하겠습니다.",
+        "첫 열에는 월드에서 본 로컬 엑스축, 둘째 열에는 와이축, 셋째 열에는 제트축을 넣습니다.",
+        "책은 왼손 좌표계와 행벡터 약속을 씁니다. 우리는 축과 회전 부호도 함께 확인해야 합니다.",
+        "같은 변환을 나타내려면 행벡터 행렬과 열벡터 행렬은 서로 전치 관계가 됩니다.",
+        "그림이 이상하다고 무작정 전치하지 말고, 입력 공간과 출력 공간부터 적으세요."
+      ],
+      "en": [
+        "We place vectors vertically and multiply by the matrix on the left: the column-vector convention.",
+        "Our matrix R converts a local vector into a world vector.",
+        "Its first, second, and third columns contain the local x, y, and z axes measured in world coordinates.",
+        "The book uses a left-handed frame and row vectors, so we must also check its axes and rotation signs.",
+        "Matrices for the same transform under these two conventions are transposes of each other.",
+        "Before trying a transpose to fix a picture, write down the input and output frames."
+      ],
+      "beats": [
+        "열벡터: v_world = R v_local",
+        "R: 로컬 → 월드",
+        "R의 세 열 = 로컬 축의 월드 좌표",
+        "책: 왼손·행벡터 / 강의: 오른손·열벡터",
+        "같은 변환: 두 표기는 전치",
+        "입력 공간 → 출력 공간"
+      ],
+      "matrix": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "07",
+      "kind": "explanation",
+      "title": "90도 회전을 숫자로 계산",
+      "mode": "matrix",
+      "ko": [
+        "제트축을 중심으로 양의 구십 도를 회전시켜 봅시다. 오른손 엄지가 양의 제트를 가리킬 때 손가락이 감기는 방향입니다.",
+        "로컬 엑스축은 월드 와이축으로 갑니다. 그래서 첫 열은 영, 일, 영입니다.",
+        "로컬 와이축은 월드 엑스의 음의 방향으로 갑니다. 둘째 열은 마이너스 일, 영, 영입니다.",
+        "제트축은 그대로이므로 셋째 열은 영, 영, 일입니다.",
+        "로컬 벡터 이, 일, 영을 곱하면, 엑스축 두 배와 와이축 한 배를 더합니다.",
+        "결과는 월드 좌표 마이너스 일, 이, 영입니다. 숫자 곱셈은 축들의 가중합인 셈입니다."
+      ],
+      "en": [
+        "Rotate by positive ninety degrees around z, using the right-hand rule: thumb along positive z and fingers following the rotation.",
+        "Local x becomes world y, so the first column is zero, one, zero.",
+        "Local y becomes negative world x, so the second column is minus one, zero, zero.",
+        "Local z remains unchanged, so the third column is zero, zero, one.",
+        "Multiplying the local vector two, one, zero combines twice the x-axis column with once the y-axis column.",
+        "The world result is minus one, two, zero. Matrix multiplication is a weighted sum of the transformed axes."
+      ],
+      "beats": [
+        "+z축 · 오른손 +90°",
+        "첫 열 (0,1,0)",
+        "둘째 열 (-1,0,0)",
+        "셋째 열 (0,0,1)",
+        "2 × 첫 열 + 1 × 둘째 열",
+        "(2,1,0) → (-1,2,0)"
+      ],
+      "matrix": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "vector": [
+        2,
+        1,
+        0
+      ],
+      "result": [
+        -1,
+        2,
+        0
+      ]
+    },
+    {
+      "id": "08",
+      "kind": "actual",
+      "title": "로컬의 앞과 월드의 방향",
+      "ko": [
+        "캐릭터가 건물 옆을 돌며 날아가는 모습을 보세요.",
+        "몸에 붙은 앞쪽 방향은 몸이 돌아갈 때 같이 돌아갑니다.",
+        "반대로 월드에서 정한 한 방향은 물체 자세가 바뀌어도 기준으로 남습니다.",
+        "물체의 앞쪽으로 이동시키는 것과 월드의 한 축으로 이동시키는 것은 다른 명령입니다.",
+        "로컬 방향을 월드로 바꾸는 행렬이 이 두 명령 사이를 연결합니다.",
+        "지금은 이동 속도나 충돌보다 방향을 표현하는 기준에 집중하세요."
+      ],
+      "en": [
+        "Watch the character turn as it flies beside the structures.",
+        "The body's local forward direction rotates with the body.",
+        "A direction defined in the world frame remains a reference even when the object's orientation changes.",
+        "Moving along the object's forward direction differs from moving along a fixed world axis.",
+        "A local-to-world matrix connects those two kinds of commands.",
+        "For now, focus on the coordinate frame rather than speed or collision."
+      ],
+      "focus": "몸에 붙인 방향과 고정된 월드 방향을 비교",
+      "claim": "로컬 방향 명령은 현재 자세에 의해 월드 방향으로 변환된다",
+      "sourceId": "-Hpr1dqRzIk",
+      "sourceSegments": [
+        {
+          "in": 253,
+          "maxSeconds": 27
+        },
+        {
+          "in": 285,
+          "maxSeconds": 25
+        }
+      ],
+      "in": 253,
+      "maxSeconds": 52
+    },
+    {
+      "id": "09",
+      "kind": "explanation",
+      "title": "역방향은 왜 전치로 계산할까?",
+      "mode": "inverse",
+      "ko": [
+        "이제 월드 벡터를 물체 기준으로 표현해 봅시다. 앞에서 정한 변환을 되돌리는 문제입니다.",
+        "로컬 축들이 정규직교라면, 월드 벡터와 각 축의 내적이 해당 로컬 성분이 됩니다.",
+        "세 내적을 한 번에 계산하는 것이 회전 행렬의 전치 곱입니다.",
+        "월드 벡터 마이너스 일, 이, 영의 왼쪽에 회전 행렬의 전치를 곱하면, 로컬 벡터 이, 일, 영으로 돌아옵니다.",
+        "순수 회전에서는 전치가 역행렬입니다. 늘리기나 기울이기를 섞은 일반 행렬에는 그대로 적용할 수 없습니다.",
+        "점에는 위치 이동도 있습니다. 점을 되돌릴 때는 먼저 물체 원점의 월드 위치를 빼야 합니다."
+      ],
+      "en": [
+        "Now express a world vector in the object's frame. We must undo the transform we defined.",
+        "With orthonormal local axes, the dot product with each axis gives the corresponding local component.",
+        "Multiplication by the transpose performs those three dot products at once.",
+        "Multiply world vector minus one, two, zero on the left by the transpose of the rotation matrix to recover local vector two, one, zero.",
+        "For a pure rotation the transpose is the inverse. This shortcut does not apply unchanged to arbitrary scaled or sheared matrices.",
+        "Points also include translation. To transform a point back, first subtract the object's world-space origin."
+      ],
+      "beats": [
+        "월드 → 로컬: 변환 되돌리기",
+        "성분 = 월드 벡터 · 로컬 축",
+        "v_local = Rᵀ v_world",
+        "(-1,2,0) → (2,1,0)",
+        "순수 회전에서만 R⁻¹ = Rᵀ",
+        "점: p_local = Rᵀ(p_world - t)"
+      ],
+      "matrix": [
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "vector": [
+        -1,
+        2,
+        0
+      ],
+      "result": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "10",
+      "kind": "explanation",
+      "title": "방향코사인 행렬은 내적의 표",
+      "mode": "dcm",
+      "ko": [
+        "회전 행렬을 방향코사인 행렬이라고도 부릅니다. 갑자기 새로운 행렬이 나온 것은 아닙니다.",
+        "서로 다른 기준의 축 두 개를 같은 좌표계에서 표현하고 내적을 구한 표입니다.",
+        "단위벡터의 내적은 두 축 사이 각도의 코사인입니다. 나란하면 일, 수직이면 영, 반대면 마이너스 일입니다.",
+        "우리 열벡터 약속에서 행과 열의 인덱스는 월드 성분과 로컬 축에 각각 대응합니다.",
+        "따라서 첫 열을 읽으면 로컬 엑스축의 월드 성분 세 개를 얻습니다.",
+        "축을 서로 다른 공간의 숫자로 둔 채 내적하면 안 됩니다. 같은 기준으로 표현한 뒤 계산하세요."
+      ],
+      "en": [
+        "A rotation matrix is also called a direction-cosine matrix. This is not a new kind of matrix.",
+        "It is a table of dot products between axes from two frames, all expressed in one common frame.",
+        "For unit vectors, the dot product is the cosine of their angle: one for parallel, zero for perpendicular, and minus one for opposite.",
+        "Under our column-vector convention, row and column indices correspond to world components and local axes.",
+        "Reading the first column therefore gives the three world components of local x.",
+        "Do not dot coordinate numbers measured in different frames. Express both axes in a common frame first."
+      ],
+      "beats": [
+        "방향코사인 = 축 사이 내적",
+        "모든 축은 같은 외부 기준",
+        "나란함 1 / 수직 0 / 반대 -1",
+        "행: 월드 성분 / 열: 로컬 축",
+        "첫 열 = 로컬 x의 월드 좌표",
+        "서로 다른 공간 숫자를 직접 내적하지 않기"
+      ],
+      "matrix": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "11",
+      "kind": "actual",
+      "title": "같은 물체도 다른 기준에서 보입니다",
+      "ko": [
+        "캐릭터는 움직이고, 카메라는 그 움직임을 따라 보여 줍니다.",
+        "몸통의 기울기와 배경 모서리가 화면에 보이는 각도를 따로 관찰하세요.",
+        "물체 자체의 월드 자세와 카메라에 대한 상대 자세는 같지 않습니다.",
+        "카메라가 어디서 바라보는지에 따라 같은 물체의 화면 모습이 달라집니다.",
+        "여러 좌표계를 연결하려면 각 변환이 어느 공간에서 어느 공간으로 가는지 알아야 합니다.",
+        "그 관계를 행렬 곱셈으로 이어 보겠습니다."
+      ],
+      "en": [
+        "The character moves while the camera shows its flight.",
+        "Observe the torso's tilt separately from the angle of background edges on the screen.",
+        "The object's world orientation is different from its orientation relative to the camera.",
+        "A different viewpoint changes the screen appearance of the same object.",
+        "To connect multiple frames, we need to know which frame each transform starts and ends in.",
+        "Let us connect those relationships through matrix multiplication."
+      ],
+      "focus": "카메라 기준에서 보이는 몸 자세와 배경 방향",
+      "claim": "연결된 공간 변환의 입력·출력 공간을 명확히 구별",
+      "sourceId": "-Hpr1dqRzIk",
+      "sourceSegments": [
+        {
+          "in": 351,
+          "maxSeconds": 14
+        },
+        {
+          "in": 370,
+          "maxSeconds": 27
+        }
+      ],
+      "in": 351,
+      "maxSeconds": 41
+    },
+    {
+      "id": "12",
+      "kind": "explanation",
+      "title": "중첩된 자세를 하나로 합치기",
+      "mode": "composition",
+      "ko": [
+        "자식 물체의 로컬에서 부모 공간으로 가는 행렬을 비라고 하겠습니다.",
+        "부모 공간에서 월드로 가는 행렬은 에이입니다.",
+        "열벡터에 비를 먼저 적용한 뒤 에이를 적용하면, 두 행렬의 곱 에이 비로 묶을 수 있습니다.",
+        "계산은 오른쪽부터 적용됩니다. 코드에 출발과 도착 공간을 적으면 순서를 확인하기 쉽습니다.",
+        "예를 들어 비행기 몸체에 붙은 부품은 부품에서 몸체로, 몸체에서 월드로 이어집니다.",
+        "회전 순서를 바꿔도 항상 같지는 않습니다. 다음 편에서 두 구십 도 회전으로 직접 비교하겠습니다."
+      ],
+      "en": [
+        "Let B transform a child object's local coordinates into its parent's frame.",
+        "Let A transform the parent's frame into world coordinates.",
+        "Applying B first and then A to a column vector is equivalent to the product A B.",
+        "The rightmost transform acts first. Labeling input and output frames makes the order easier to check.",
+        "A part attached to an aircraft goes from the part frame to the aircraft frame, then into the world.",
+        "Changing rotation order does not generally preserve the result. Next time we will compare two ninety-degree rotations directly."
+      ],
+      "beats": [
+        "B: 자식 → 부모",
+        "A: 부모 → 월드",
+        "v_world = A B v_child",
+        "열벡터: 오른쪽부터 적용",
+        "부품 → 몸체 → 월드",
+        "AB와 BA는 보통 다름"
+      ]
+    },
+    {
+      "id": "13",
+      "kind": "explanation",
+      "title": "회전 행렬인지 확인하는 두 조건",
+      "mode": "valid",
+      "ko": [
+        "숫자 아홉 개를 넣었다고 모두 회전 행렬이 되는 것은 아닙니다.",
+        "먼저 세 열의 길이가 일이고 서로 수직인지 확인합니다. 이것이 정규직교 조건입니다.",
+        "식으로는 전치 알 곱하기 알이 항등행렬인지 확인하면 됩니다.",
+        "하지만 이 조건만으로는 반사도 통과합니다. 행렬식이 플러스 일이어야 순수한 3D 회전입니다.",
+        "따라서 정규직교 조건과 행렬식 플러스 일을 함께 검사해야 합니다.",
+        "부동소수점 계산에서는 정확히 같은지 비교하지 말고 오차 범위를 정합니다. 허용 오차는 데이터와 목적에 맞춰 선택하세요."
+      ],
+      "en": [
+        "Nine numbers do not automatically make a rotation matrix.",
+        "First check that its three columns have unit length and are mutually perpendicular: the orthonormality condition.",
+        "In matrix form, R transpose times R must equal the identity.",
+        "A reflection also passes this condition. A proper 3D rotation must additionally have determinant positive one.",
+        "Check orthonormality and determinant positive one together.",
+        "With floating-point data, use a tolerance instead of exact equality. Choose that tolerance for the data and the intended use."
+      ],
+      "beats": [
+        "3×3이라고 모두 회전은 아님",
+        "세 열: 길이 1 · 서로 수직",
+        "Rᵀ R = I",
+        "반사를 제외: det(R) = +1",
+        "두 조건을 함께 검사",
+        "실수 계산: 허용 오차 사용"
+      ]
+    },
+    {
+      "id": "14",
+      "kind": "actual",
+      "title": "회전과 늘어나 보이는 모습을 구분",
+      "ko": [
+        "캐릭터가 가까워졌다가 멀어지면 화면에서 크기가 달라집니다.",
+        "이 변화만 보고 회전 행렬에 크기 변환이 들어 있다고 단정할 수는 없습니다.",
+        "카메라의 원근과 거리도 화면의 크기에 영향을 줍니다.",
+        "몸 자체의 축이 유지되는지와 화면에 투영된 모양을 나누어 생각하세요.",
+        "우리가 검사하는 회전 행렬은 3D 벡터의 길이와 각도를 보존합니다.",
+        "스크린샷의 픽셀 길이가 항상 같아야 한다는 뜻은 아닙니다."
+      ],
+      "en": [
+        "The character appears larger or smaller as its distance from the camera changes.",
+        "That visual change alone does not prove its rotation matrix contains scaling.",
+        "Perspective and camera distance also affect screen size.",
+        "Separate the body's 3D axes from its projected appearance.",
+        "The rotation matrix we are testing preserves lengths and angles of 3D vectors.",
+        "It does not require pixel lengths in screenshots to remain constant."
+      ],
+      "focus": "접근·이탈에 따른 원근 크기와 몸 자체 형태를 구분",
+      "claim": "3D 회전의 길이 보존은 투영된 픽셀 길이 보존을 뜻하지 않는다",
+      "sourceId": "-Hpr1dqRzIk",
+      "sourceSegments": [
+        {
+          "in": 504,
+          "maxSeconds": 57
+        }
+      ],
+      "in": 504,
+      "maxSeconds": 57
+    },
+    {
+      "id": "15",
+      "kind": "explanation",
+      "title": "반사와 스케일이 왜 통과하면 안 될까?",
+      "mode": "invalid",
+      "ko": [
+        "대각 성분에서 엑스축은 이, 와이와 제트축은 각각 일로 놓습니다. 엑스 방향만 두 배가 되어 길이가 보존되지 않습니다.",
+        "이번에는 엑스축 성분을 마이너스 일로 바꾸고, 와이와 제트축은 일로 둡니다. 그러면 좌우를 뒤집는 반사가 됩니다.",
+        "반사는 길이와 수직 관계를 보존하지만, 좌표계의 손잡이 방향을 바꿉니다.",
+        "그래서 반사 행렬의 행렬식은 마이너스 일이고 회전 검사에서 제외해야 합니다.",
+        "두 번의 축 반전은 상황이 다릅니다. 엑스와 와이 성분을 마이너스 일, 제트 성분을 일로 놓으면 제트축 반 바퀴 회전입니다.",
+        "원소의 부호 하나만 보고 판단하지 말고, 전체 정규직교 조건과 행렬식을 함께 보세요."
+      ],
+      "en": [
+        "Set the x diagonal component to two and the y and z components to one each. Only the x direction doubles, so length is not preserved.",
+        "Now change the x component to minus one and keep y and z at one. This produces a reflection across a plane.",
+        "A reflection preserves lengths and perpendicularity but reverses handedness.",
+        "Its determinant is minus one, so it must fail the proper-rotation test.",
+        "Flipping two axes is different: set x and y to minus one and z to one. This is a half-turn around z.",
+        "Do not judge from a single negative entry. Check orthonormality and the determinant together."
+      ],
+      "beats": [
+        "diag(2,1,1): 길이 변화",
+        "diag(-1,1,1): 반사",
+        "반사도 RᵀR = I",
+        "det = -1 → 회전 아님",
+        "diag(-1,-1,1): z축 180° 회전",
+        "원소 하나 대신 전체 조건 검사"
+      ]
+    },
+    {
+      "id": "16",
+      "kind": "explanation",
+      "title": "작은 오차가 쌓이는 행렬 크리프",
+      "mode": "creep",
+      "ko": [
+        "매 프레임 작은 회전을 여러 번 곱하면, 실수 반올림 오차가 쌓일 수 있습니다.",
+        "처음에는 정상인 축이 아주 조금 길어지거나 수직에서 벗어나는 현상을 행렬 크리프라고 부릅니다.",
+        "실제 코드에서는 정규직교 오차를 측정하고 필요할 때 축을 다시 정리합니다.",
+        "첫 축을 정규화하고, 둘째 축에서 첫 축 방향 성분을 빼고 정규화하는 방법이 있습니다.",
+        "마지막 축은 두 축의 외적으로 만들면 오른손 방향을 맞출 수 있습니다. 거의 평행한 축처럼 퇴화한 입력도 별도로 처리해야 합니다.",
+        "이 보정은 작은 수치 오차를 다루는 방법입니다. 의도된 스케일이나 잘못된 데이터 의미를 자동으로 해결하는 것은 아닙니다."
+      ],
+      "en": [
+        "Repeatedly multiplying small rotations each frame can accumulate floating-point rounding error.",
+        "Axes that were initially valid may drift slightly in length or perpendicularity. This is called matrix creep.",
+        "In code, measure orthonormality error and repair the axes when needed.",
+        "One method normalizes the first axis, removes its component from the second axis, then normalizes the second.",
+        "Constructing the third axis with their cross product preserves right-handedness. Degenerate input, such as nearly parallel axes, needs separate handling.",
+        "This correction handles small numerical drift. It does not automatically fix intentional scale or incorrect data semantics."
+      ],
+      "beats": [
+        "반복 곱셈 → 반올림 오차",
+        "축 길이·수직 관계가 조금 변함",
+        "오차를 측정하고 필요 시 보정",
+        "첫 축 정규화 / 둘째 축 직교화",
+        "셋째 축 = 첫 축 × 둘째 축",
+        "퇴화 입력·의도된 스케일은 별도"
+      ]
+    },
+    {
+      "id": "17",
+      "kind": "actual",
+      "title": "부드러운 비행에도 계산 상태는 따로",
+      "ko": [
+        "장면에서는 캐릭터가 계속 부드럽게 움직입니다.",
+        "하지만 화면이 부드럽다는 사실과 내부 데이터가 수학 조건을 만족한다는 사실은 구분해야 합니다.",
+        "개발할 때는 축 길이와 내적을 숫자로 점검할 수 있습니다.",
+        "자세를 갱신하고 나서 오차가 커지는지 관찰하는 것이죠.",
+        "이 게임에서 오류가 발생한다고 말하는 것이 아니라, 개발자가 확인할 항목을 설명하는 예입니다.",
+        "다음에는 저장 비용과 코드 인터페이스까지 연결해 보겠습니다."
+      ],
+      "en": [
+        "The character continues to move smoothly on screen.",
+        "Visual smoothness and mathematically valid internal data are separate questions.",
+        "During development, axis lengths and dot products can be inspected numerically.",
+        "We can monitor whether orientation updates increase the error.",
+        "This is an example of what developers can check, not a claim that this game has an error.",
+        "Next, we will connect this to storage costs and a clear code interface."
+      ],
+      "focus": "부드러운 가시적 움직임과 내부 수치 검증의 차이",
+      "claim": "실제게임의버그를 추정하지 않고 개발자가 검사할 축 조건을 연결",
+      "sourceId": "-Hpr1dqRzIk",
+      "sourceSegments": [
+        {
+          "in": 605,
+          "maxSeconds": 47
+        }
+      ],
+      "in": 605,
+      "maxSeconds": 47
+    },
+    {
+      "id": "18",
+      "kind": "explanation",
+      "title": "행렬은 명확하지만 아홉 숫자를 저장",
+      "mode": "storage",
+      "ko": [
+        "행렬의 장점은 좌표 변환과 합성에 바로 쓸 수 있고 축 방향을 직접 읽을 수 있다는 점입니다.",
+        "반면 자세의 회전 자유도는 세 개인데, 삼 바이 삼 행렬은 아홉 숫자를 저장합니다.",
+        "삼십이 비트 실수만 세면 행렬 하나는 삼십육 바이트, 오일러 각 세 개는 십이 바이트입니다.",
+        "쿼터니언 네 개는 십육 바이트지만 단위 길이 제약이 있습니다. 네 개의 독립 회전축이라는 뜻은 아닙니다.",
+        "이 수치는 성분만 센 값입니다. 실제 구조체 정렬과 메타데이터는 추가될 수 있습니다.",
+        "사람이 편집할 때, 많은 자세를 저장할 때, 벡터를 변환할 때의 요구가 달라서 여러 표현을 함께 씁니다."
+      ],
+      "en": [
+        "Matrices directly support coordinate transforms and composition, and their axes are easy to inspect.",
+        "However, a three-by-three matrix stores nine numbers for an orientation with three rotational degrees of freedom.",
+        "Counting only 32-bit floating-point components, a matrix takes 36 bytes and three Euler angles take 12.",
+        "A four-component quaternion takes 16 bytes but has a unit-length constraint. It does not represent four independent rotation axes.",
+        "These figures count components only. Structure alignment and metadata may add storage.",
+        "Editing, storing many poses, and transforming vectors have different requirements, so multiple representations are often used together."
+      ],
+      "beats": [
+        "명확한 축 · 변환 · 합성",
+        "3자유도 / 저장 숫자 9개",
+        "float32: 행렬 36 B / Euler 12 B",
+        "단위 quaternion 16 B",
+        "성분만 계산: 정렬·메타데이터 별도",
+        "편집·저장·변환에 맞는 표현"
+      ]
+    },
+    {
+      "id": "19",
+      "kind": "explanation",
+      "title": "코드에는 변환 방향을 이름으로",
+      "mode": "code",
+      "ko": [
+        "함수 이름을 로컬 투 월드와 월드 투 로컬로 나누어 봅시다.",
+        "앞 방향은 알과 벡터를 곱하고, 뒤 방향은 순수 회전의 전치와 벡터를 곱합니다.",
+        "이름만 보고도 어떤 공간의 값을 넣고 어떤 공간의 값을 받는지 알 수 있습니다.",
+        "점 변환에는 월드 위치를 더하거나 빼는 과정이 필요합니다. 방향벡터에는 그 이동을 더하지 않습니다.",
+        "수학 표기와 메모리 저장 순서는 별개입니다. 행 우선 저장이라는 이유만으로 행벡터라고 단정하면 안 됩니다.",
+        "라이브러리의 곱셈 규약과 전달 형식을 확인하고, 기준 벡터로 작은 계산을 검증하세요."
+      ],
+      "en": [
+        "Give the functions distinct names: localToWorld and worldToLocal.",
+        "The forward direction multiplies by R; the reverse uses its transpose for a pure rotation.",
+        "The names make the required input and returned output frames clear.",
+        "Points need translation added or subtracted. Direction vectors do not receive that translation.",
+        "Mathematical vector convention is separate from memory layout. Row-major storage does not by itself imply row-vector multiplication.",
+        "Check the library's multiplication and data-transfer conventions, then verify a small example with basis vectors."
+      ],
+      "beats": [
+        "localToWorld(v)",
+        "R * v",
+        "worldToLocal(v): transpose(R) * v",
+        "점은 이동 포함 / 방향은 이동 제외",
+        "행 우선 저장 ≠ 행벡터 규약",
+        "기준 벡터로 규약 검증"
+      ],
+      "code": [
+        "// right-handed, column vectors, R: local -> world",
+        "Vec3 localToWorld(Vec3 v) { return R * v; }",
+        "Vec3 worldToLocal(Vec3 v) { return transpose(R) * v; }",
+        "Vec3 pointToWorld(Vec3 p) { return R * p + position; }",
+        "Vec3 pointToLocal(Vec3 p) { return transpose(R) * (p-position); }"
+      ]
+    },
+    {
+      "id": "20",
+      "kind": "actual",
+      "title": "게임에서 명령을 표현하는 기준",
+      "ko": [
+        "이번에는 비행하는 몸을 기준으로 왼쪽과 오른쪽을 생각해 보세요.",
+        "화면에서 왼쪽으로 보이는 것과 몸의 로컬 왼쪽은 상황에 따라 다를 수 있습니다.",
+        "카메라 기준 입력을 쓰는 게임도 있고 물체 기준 입력을 쓰는 게임도 있습니다.",
+        "그래서 방향을 담은 변수에 어떤 공간의 값인지 표시하는 습관이 중요합니다.",
+        "이 녹화에서 정확한 입력 방식은 알 수 없습니다. 보이는 자세 변화와 좌표계 개념을 연결하는 관찰입니다.",
+        "다음 예에서는 행렬을 숫자별로 섞을 때 생기는 문제를 확인합니다."
+      ],
+      "en": [
+        "Now think about left and right relative to the flying body.",
+        "Screen-left can differ from the body's local left.",
+        "Some games use camera-relative input while others use object-relative input.",
+        "This is why direction variables should identify the frame their values belong to.",
+        "The recording does not establish the precise input mapping. We are connecting visible orientation changes to coordinate-frame concepts.",
+        "Next, we will examine what happens when we blend matrix entries independently."
+      ],
+      "focus": "화면 기준 좌우와 몸 기준 좌우를 비교",
+      "claim": "입력·방향값의 좌표계를 이름과 인터페이스로 명확히 기록",
+      "sourceId": "-Hpr1dqRzIk",
+      "sourceSegments": [
+        {
+          "in": 661,
+          "maxSeconds": 35
+        }
+      ],
+      "in": 661,
+      "maxSeconds": 35
+    },
+    {
+      "id": "21",
+      "kind": "explanation",
+      "title": "행렬 원소를 섞으면 회전도 될까?",
+      "mode": "lerp",
+      "ko": [
+        "처음 자세는 항등행렬이고, 끝 자세는 제트축 백팔십 도 회전이라고 해 봅시다.",
+        "끝 행렬의 대각선은 마이너스 일, 마이너스 일, 일입니다.",
+        "각 숫자를 절반씩 평균 내면 대각선 영, 영, 일이 됩니다.",
+        "이 중간 행렬은 엑스와 와이 방향을 영으로 눌러 버립니다. 회전이 아니라 형태가 무너지는 변환입니다.",
+        "행렬을 원소별로 선형 보간한다고 올바른 회전 경로가 자동으로 나오는 것은 아닙니다.",
+        "이 문제를 어떻게 다룰지 쿼터니언과 회전 보간 강의에서 이어서 보겠습니다."
+      ],
+      "en": [
+        "Suppose the starting pose is the identity and the ending pose is a 180-degree rotation around z.",
+        "The ending matrix has diagonal minus one, minus one, one.",
+        "Averaging corresponding entries halfway gives diagonal zero, zero, one.",
+        "This middle matrix collapses the x and y directions to zero. It is not a rotation.",
+        "Linear interpolation of matrix entries does not automatically produce a valid rotation path.",
+        "We will return to this problem in the quaternion and rotation-interpolation lectures."
+      ],
+      "beats": [
+        "시작 I / 끝 Rz(180°)",
+        "끝: diag(-1,-1,1)",
+        "절반 평균: diag(0,0,1)",
+        "x·y가 0으로 붕괴",
+        "원소별 보간 ≠ 올바른 회전 경로",
+        "쿼터니언·보간에서 이어서 해결"
+      ]
+    },
+    {
+      "id": "22",
+      "kind": "explanation",
+      "title": "직접 풀어 보는 두 문제",
+      "mode": "practice",
+      "ko": [
+        "첫 문제입니다. 앞의 제트축 구십 도 행렬에 로컬 벡터 일, 영, 영을 넣으면 무엇이 나올까요?",
+        "첫 열을 고르면 됩니다. 답은 월드 영, 일, 영입니다.",
+        "두 번째 문제입니다. 월드 점은 사, 오, 영이고 물체 원점은 삼, 삼, 영입니다. 물체 자세는 같은 구십 도 회전입니다.",
+        "먼저 위치를 빼면 월드 변위 일, 이, 영입니다.",
+        "이제 전치 행렬을 곱하면 로컬 좌표 이, 마이너스 일, 영이 됩니다.",
+        "다시 원래 행렬을 곱하고 물체 위치를 더해서 월드 사, 오, 영으로 돌아오는지도 확인해 보세요."
+      ],
+      "en": [
+        "First problem: what happens when the ninety-degree z-rotation matrix acts on local vector one, zero, zero?",
+        "Select the first column. The world result is zero, one, zero.",
+        "Second problem: a world point is four, five, zero, the object's origin is three, three, zero, and its orientation is the same ninety-degree rotation.",
+        "Subtract the origin first to get world displacement one, two, zero.",
+        "Then multiply by the transpose to obtain local coordinates two, minus one, zero.",
+        "Check the result by rotating it forward and adding the object's position, returning to four, five, zero."
+      ],
+      "beats": [
+        "문제 1: R(1,0,0) = ?",
+        "답: (0,1,0)",
+        "문제 2: p=(4,5,0), t=(3,3,0)",
+        "p - t = (1,2,0)",
+        "Rᵀ(p - t) = (2,-1,0)",
+        "R(2,-1,0) + t = (4,5,0)"
+      ],
+      "matrix": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "23",
+      "kind": "actual",
+      "title": "이제 비행에서 자세를 읽어 보세요",
+      "ko": [
+        "처음과 같은 게임이지만 이제 볼 항목이 조금 늘었습니다.",
+        "몸의 위치, 몸이 향하는 앞쪽, 팔이 기울어진 방향을 따로 구분해 보세요.",
+        "카메라가 보여 주는 화면 기준과 물체 기준도 함께 생각해 보세요.",
+        "회전 행렬은 이 자세를 세 축의 방향으로 기록하고 공간 사이의 벡터를 바꿔 줍니다.",
+        "보이는 움직임을 실제 좌표값으로 측정한 것은 아니지만, 무엇을 기록할지는 분명해졌습니다.",
+        "다음 편에서는 사람이 입력하기 쉬운 오일러 각과 회전 순서를 배웁니다."
+      ],
+      "en": [
+        "It is the same game, but we now have more specific things to observe.",
+        "Distinguish the body's position, its forward direction, and the tilt of its arms.",
+        "Also consider the difference between the camera's screen frame and the object's frame.",
+        "A rotation matrix records orientation through three axes and transforms vectors between frames.",
+        "We have not measured exact coordinate values from the recording, but we now know what to represent.",
+        "Next time we will study Euler angles and the order of rotations."
+      ],
+      "focus": "위치·forward·up/roll·카메라 기준을 종합 관찰",
+      "claim": "새 개념을 실제 비행으로 회수하고 다음 Euler순서강의로 연결",
+      "sourceId": "-Hpr1dqRzIk",
+      "sourceSegments": [
+        {
+          "in": 821,
+          "maxSeconds": 53
+        }
+      ],
+      "in": 821,
+      "maxSeconds": 53
+    },
+    {
+      "id": "24",
+      "kind": "explanation",
+      "title": "오늘의 기준 세 가지",
+      "mode": "summary",
+      "ko": [
+        "오늘의 핵심은 세 가지입니다. 방향 하나만으로 전체 자세를 정할 수는 없습니다.",
+        "로컬 축 세 개를 같은 월드 기준으로 표현하면 회전 행렬을 만들 수 있습니다.",
+        "입력과 출력 공간, 벡터 곱셈 약속, 올바른 회전 조건을 함께 확인하세요.",
+        "다음 편에서는 회전 순서가 결과를 바꾸는 이유와 짐벌락, 축각 표현까지 이어서 설명하겠습니다."
+      ],
+      "en": [
+        "Remember three things: a single direction does not determine a complete orientation.",
+        "Expressing three local axes in the same world frame gives a rotation matrix.",
+        "Always check input and output frames, the vector-multiplication convention, and the validity conditions.",
+        "Next time we will study rotation order, gimbal lock, and axis-angle representation."
+      ],
+      "beats": [
+        "방향 하나 ≠ 전체 자세",
+        "세 로컬 축의 월드 좌표 → R",
+        "공간·곱셈 약속·두 회전 조건",
+        "다음: Euler 순서·짐벌락·축각"
+      ]
+    }
+  ],
+  "gameCandidates": {
+    "reviewedAt": "2026-10-05",
+    "historyCheck": "Exact source IDs and title checked with rg across all projects and production; no previous Superflight use found.",
+    "candidates": [
+      {
+        "game": "Superflight",
+        "sourceId": "-Hpr1dqRzIk",
+        "selected": true,
+        "reason": "Explicit uploader free-use permission and visibly sustained character banking; source intervals inspected before dependent narration."
+      },
+      {
+        "game": "Superflight",
+        "sourceId": "FvSgGn941U0",
+        "selected": false,
+        "reason": "Permission inspected, recording downloaded and coarse frames reviewed; frequent map changes make the NCR intervals easier to connect to this lesson."
+      },
+      {
+        "game": "Brotato",
+        "selected": false,
+        "reason": "Already used in polar2D; top-down direction is less suitable for3D body orientation."
+      },
+      {
+        "game": "Descenders",
+        "selected": false,
+        "reason": "Already used in polar3D; choose a fresh title here."
+      },
+      {
+        "game": "Exo One",
+        "selected": false,
+        "reason": "Featureless ball orientation is less readable for the first forward/up/roll example; reserve for physics after separate permission/action review."
+      }
+    ]
+  },
+  "coverage": {
+    "8.1": [
+      "03",
+      "04"
+    ],
+    "8.2.1": [
+      "06",
+      "07",
+      "09",
+      "19"
+    ],
+    "8.2.2 corrected": [
+      "10"
+    ],
+    "8.2.3": [
+      "09",
+      "12"
+    ],
+    "8.2.4": [
+      "13",
+      "15",
+      "16",
+      "18",
+      "21"
+    ],
+    "8.2.5": [
+      "22",
+      "24"
+    ]
+  }
+}

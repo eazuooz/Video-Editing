@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),b='projects/game-lighting-history-04/production/';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,'')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex'),ref=p=>({path:p,sha256:sha(p)});
+const write=(p,j)=>{if(fs.existsSync(path.join(root,p)))throw Error('Preserve '+p);fs.writeFileSync(path.join(root,p),JSON.stringify(j,null,2)+'\n');};
+const oldPath=b+'part1-selected-current-tts-execution-v181.json',repairPath=b+'part1-onset-repairs-tts-execution-v199.json',repairRequest=b+'part1-onset-repairs-tts-request-v199.json',old=read(oldPath),repair=read(repairPath),request=read(repairRequest),history='shared/output/gpu-handoff/'+repair.leaseToken+'.json';
+if(!repair.generationComplete||repair.exitCode!==0||repair.requestSha256!==sha(repairRequest)||read(history).state!=='research_resume_verified'||fs.existsSync(path.join(root,'shared/output/GPU_HANDOFF.json')))throw Error('Successful current repairs and actual GPU return required');
+for(const x of request.protectedInputs)if(sha(x.path)!==x.sha256)throw Error('Protected input changed '+x.path);
+const replacements=new Map(repair.results.map(x=>[x.id,x]));
+if([...replacements.keys()].join('|')!==request.repairIds.join('|'))throw Error('Only exact two replacements allowed');
+const results=old.results.map(x=>{const r=replacements.get(x.id)||x;if(!r.technicalTailGatePassed||sha(r.path)!==r.sha256)throw Error('Unaccepted current take');return{...r,selectedFrom:replacements.has(x.id)?'onset-v199':x.selectedFrom||'retained-v181',retainedFromV181:!replacements.has(x.id)};});
+if(results.length!==37||results.filter(x=>x.retainedFromV181).length!==35)throw Error('Preserve35 current takes');
+const script='projects/game-lighting-history-04/script/physical-part1-guided-actions.koen.v175.json',reqPath=b+'part1-selected-current-tts-request-v208.json';
+const protectedPaths=[...request.protectedInputs.map(x=>x.path),oldPath,repairPath,repairRequest,history,script,b+'part1-current-asr-direct-review-v201.json',b+'part1-current-asr-pcm-corroboration-v202.json'];
+const req={schemaVersion:1,preparedAt:new Date().toISOString(),slug:'game-lighting-history-04',physicalPart:'game-lighting-history-04-1',script:ref(script),scenes:results.map(x=>({id:x.id,path:x.path})),protectedInputs:[...new Set(protectedPaths)].map(ref),sourceExecutions:[oldPath,repairPath].map(ref),replacementAsrLabels:request.replacementAsrLabels,original111Repeated:false,fiveFramingRepeated:false,allAsrApproved:false};write(reqPath,req);
+write(b+'part1-selected-current-tts-execution-v208.json',{schemaVersion:1,physicalPart:'game-lighting-history-04-1',status:'37-current-takes-selected-five-replacement-ASR-pending',selectionRecordedAt:new Date().toISOString(),endedAt:repair.endedAt,requestSha256:sha(reqPath),leaseToken:repair.leaseToken,results,generationComplete:true,exitCode:0,selectionIsNewTtsExecution:false,retainedTakes:35,repairedTakes:2,sourceExecutions:req.sourceExecutions,allAsrApproved:false,finalMixedAsrApproved:false,allFinalPixelsReviewed:false,uploaded:false});
+console.log(JSON.stringify({selected:37,retained:35,repaired:2,newTts:false,replacementAsrWindows:5}));

@@ -1,0 +1,131 @@
+{
+  "title": "Game Math Part 2 · Rendering 4: Depth and w After the Perspective Divide",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "나눈 뒤에도 깊이와 w가 필요한 이유",
+      "lines": [
+        "Once a screen position is known, why does stored depth differ from distance, and why do we still need w?",
+        "First, compare forward distance with stored depth, then observe overlapping buildings in an actual game.",
+        "Then use slanted roof patterns to explain perspective-correct interpolation of texture values.",
+        "Finally, solve three viewport exercises and organize how to locate the first incorrect coordinate stage."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "깊이0.825는 실제 거리0.825가 아닙니다",
+      "lines": [
+        "Retain depth after mappingx andy to pixels; it helps determine the front surface where triangles overlap.",
+        "Our perspective depth is1.1 minus1.1/z, so it is not linear in forward distance.",
+        "Atz2 depth is0.55; atz4 it is0.825. Equal distance increments do not produce equal stored-depth increments.",
+        "Atz6 depth is about0.9167, not0.5 even though6 is midway between1 and11.",
+        "Orthographic depth uses(z−1)/10;z6 maps to0.5 and varies linearly with distance.",
+        "Precision depends on the projection mapping and storage format together; floating-point storage alone does not guarantee equal distance precision.",
+        "The source’sw-buffering is historical distance-related storage; constant orthographicw1 cannot distinguish depths by itself."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "겹치는 건물의 앞뒤를 읽기",
+      "lines": [
+        "Watch the front platform and taller rear buildings as new small structures add walls in front of the long railing.",
+        "Surfaces at similar screen positions may cover one another; screenx andy alone cannot determine that relationship.",
+        "Elevated views expose interior platforms, while lower views overlap roofs and walls; notice which surface comes first.",
+        "Computed depth is the output of a chosen mapping, not a distance label;0.825 is not0.825 world units.",
+        "State which direction represents nearer and farther surfaces. In this example the stored depth at the near plane is zero, and the stored depth at the far plane is one.",
+        "We have not established the game’s depth representation; this footage motivates the need for occlusion handling.",
+        "Compare depth values produced by the same camera and projection; values from different views are not directly comparable.",
+        "Retaining intermediate coordinates lets you check world placement,view boundaries and depth comparison in turn."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "텍스처 값도 w를 기억해야 합니다",
+      "lines": [
+        "The role ofw continues into perspective-correct interpolation of texture coordinates and other vertex attributes.",
+        "For a separate edge example, endpoints havew1 and4 and texture coordinateu0 and1.",
+        "A direct screen-space average gives0.5, but a projected midpoint is not the geometric midpoint of the3D edge.",
+        "Interpolateu/w and1/w separately, then divide the interpolated results.",
+        "Add0 and0.25 and divide by2 to get0.125. This numerator equals1/8. For the denominator, add1 and0.25 and divide by2. The result is0.625,which equals5/8.",
+        "The correctu is0.2, rather than0.5, explaining how a texture remains attached under perspective.",
+        "For triangles, use three screen-space weights with the same principle; hardware commonly handles this unless another interpolation mode is requested."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "투영 평면의 거리와 행렬 배율",
+      "lines": [
+        "Using a plane atz1 is convenient; moving the virtual plane to2 can preserve the final image if the view is kept unchanged.",
+        "Ray intersections double, but so do the rectangle’s width and height on that plane.",
+        "The point’s fraction of the rectangle stays unchanged, yielding the same final pixel position.",
+        "A physical camera with a fixed sensor and changing focal length has different conditions, as the preceding lesson illustrated.",
+        "Multiplying all four clip components by the same positive factor preserves their divided position; doubling also doublesw to8.",
+        "Still verify the pre-divisionw value and supported hardware conditions; equal images do not imply every internal operation is identical."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "지붕 무늬와 표면을 함께 보기",
+      "lines": [
+        "Choose a roof pattern and nearby window; the pattern remains on the building surface as the view changes.",
+        "Screen spacing alone cannot determine matching surface fractions across a tilted face.",
+        "Our edge calculation explained why a screen midpoint needsu0.2; that number was not measured from this game.",
+        "We do not infer the shader that creates this roof pattern; it motivates the required connection between surface and image.",
+        "The texture lesson continues this connection by assigningUV coordinates to surfaces."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "어디까지 GPU가 자동으로 처리할까요?",
+      "lines": [
+        "In a conventional graphics path, the vertex shader outputs clip coordinates, rather than pre-divided NDC or screen pixels.",
+        "The pipeline then clips triangles,divides and maps to the viewport; our manual calculation explains those automatic stages.",
+        "CPU calculations can place name labels or test visibility; retainw and the clipping conditions there too.",
+        "One point inside the view does not prove an entire object visible; bounds,occlusion andLOD selection serve different purposes.",
+        "Lighting must combine geometry and lights in the same space; world or view space can be chosen, but values from different spaces cannot be directly subtracted.",
+        "A light can have a camera-like viewing space, useful for shadow maps and projectedgobo images.",
+        "A surface can carry tangent,bitangent and normal axes; their construction returns in theUV and normal-mapping lessons."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "숫자를 바꾸어 직접 풀어보기",
+      "lines": [
+        "For practice, keep the local point and model translation but move the camera to(3,1,1), with rotation and projection unchanged.",
+        "Subtracting the new camera gives view(1,1,4), changing only the horizontal component.",
+        "Clip becomes(1,16/9,3.3,4); dividedx is0.25 whiley and depth stay unchanged.",
+        "The same viewport yields(600,175); moving the camera right moves this fixed point left in the image.",
+        "For another exercise, change only the viewport origin to(0,0); the original point’s NDC stays fixed and screen position becomes(600,125).",
+        "Using the full1920-by1080 viewport instead places the original point at(1440,300); distinguish it from the offset small-window result.",
+        "Mark only the changed input and find the first differing stage among local,world,view,clip and screen to narrow down errors."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "실제 건물의 한 점으로 확인하는 습관",
+      "lines": [
+        "Look at the arch between buildings and the front terrace; keep finding the same landmark through wider and rotating views.",
+        "When it disappears, first check foreground occlusion and avoid confusing a similar arch elsewhere with the original point.",
+        "Adding blocks changes terrace height and structure; distinguish those moments from camera-only movement.",
+        "Railings and small trees near a high terrace help identify which surface is being viewed.",
+        "In a real development project, name an object-attached point and log its local coordinates,then world and view values in order.",
+        "Log all four clip components before division; omittingw obscures the connection between clipping and the projected result.",
+        "Record viewport origin and size when they change; mapping a split window with full-screen dimensions misplaces the marker.",
+        "These game pixels do not reveal the intermediate numbers; practice with actual values accessible in your own project.",
+        "Depth and surface patterns show that the chain also supports occlusion and interpolation, beyond moving a single point.",
+        "When the result is wrong, inspect the first incorrect transform; carry that method into the upcoming mesh and texture exercises."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "한 점의 여정을 끝까지 정리하기",
+      "lines": [
+        "Our point moved through local(1,0,0),world(4,2,5) andview(2,1,4): the same point expressed in different frames.",
+        "The projection prepared zoom and depth withw4; clipping preceded division into normalized coordinates.",
+        "The800-by450 viewport at(100,50) placed the point at(700,175); viewport placement is part of the calculation.",
+        "Depth is not metric distance, and interpolation still usesw information after coordinate division.",
+        "Next we connect vertices into meshes and attachUV coordinates; today’s transforms move those surfaces onto the screen."
+      ]
+    }
+  ]
+}

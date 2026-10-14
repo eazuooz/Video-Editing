@@ -1,0 +1,34 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),{spawn,spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../../..'),base='production/research/game-lighting-history/local/episode04-native-v2',out=path.join(root,base),py=path.join(root,'qwen3-tts/.venv/Scripts/python.exe'),bin='C:/ProgramData/HP/LCDDisplayHelper/bin',ffmpeg=bin+'/ffmpeg.exe',ffprobe=bin+'/ffprobe.exe';
+const candidates=JSON.parse(fs.readFileSync(path.join(root,'projects/game-lighting-history-04/sources/game-candidates.json'),'utf8'));
+const requests=[
+ {id:'__BScFPJy3E',slug:'strand-hair-editor-ue426-2021'}
+].map(r=>({...r,primary:candidates.candidates.find(c=>c.id===r.id)?.primary||null,chapters:candidates.candidates.find(c=>c.id===r.id)?.chapters||[]}));
+const guard=spawnSync('powershell.exe',['-NoProfile','-Command',"Get-CimInstance Win32_Process | Where-Object { ($_.Name -eq 'ffmpeg.exe' -or $_.Name -eq 'python.exe' -or $_.Name -eq 'node.exe') -and $_.CommandLine -match 'game-lighting-history' -and $_.CommandLine -notmatch 'vite|acquire-episode04-native-v2|deliver-episode03-private-v21|powershell' } | Select-Object ProcessId,CreationDate,CommandLine | ConvertTo-Json -Compress"],{encoding:'utf8',windowsHide:true});
+if(guard.status!==0||guard.stdout.trim())throw Error('Owned media/ASR slot busy; inspect actual identity first');
+const gpu=spawnSync('nvidia-smi',['--query-gpu=memory.used,memory.total,utilization.gpu','--format=csv,noheader'],{encoding:'utf8',windowsHide:true});if(gpu.status!==0)throw Error('Actual resource observation failed');
+fs.mkdirSync(out,{recursive:true});
+const statePath=path.join(out,'execution.json');
+if(fs.existsSync(statePath)&&JSON.parse(fs.readFileSync(statePath,'utf8')).status==='running')throw Error('Prior execution marked running; verify survival instead of duplicating');
+const startedAt=new Date().toISOString();let completed=[],failures=[],current=null;
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const write=extra=>fs.writeFileSync(statePath,JSON.stringify({schemaVersion:1,startedAt,parentPid:process.pid,command:process.argv,cwd:root,cpuThreads:2,gpuJobs:0,gpuObserved:gpu.stdout.trim(),requests,completed,failures,current,sourceAudioAcquired:false,finalUseApproved:false,...extra},null,2)+'\n');
+const run=(label,exe,args)=>new Promise((resolve,reject)=>{const log=fs.openSync(path.join(out,label+'.log'),'a'),child=spawn(exe,args,{cwd:root,windowsHide:true,env:{...process.env,OMP_NUM_THREADS:'2'},stdio:['ignore',log,log]});current={label,pid:child.pid,executable:exe,args,startedAt:new Date().toISOString()};write({status:'running'});child.on('error',e=>{fs.closeSync(log);reject(e)});child.on('close',code=>{fs.closeSync(log);current={...current,exitCode:code,endedAt:new Date().toISOString()};write({status:code===0?'step-complete':'step-failed'});code===0?resolve():reject(Error(label+' actual exit '+code));});});
+(async()=>{
+ for(const r of requests){try{
+  const file=path.join(out,r.slug+'.mp4'),meta=path.join(out,r.slug+'.info.json'),evidence=path.join(out,r.slug+'.acquisition.json');
+  if(fs.existsSync(evidence)){const previous=JSON.parse(fs.readFileSync(evidence,'utf8'));if(previous.sha256!==sha(file))throw Error('Preserved acquisition SHA changed');completed.push(previous);continue;}
+  if(fs.existsSync(file)||fs.existsSync(meta))throw Error('Incomplete preserved source requires diagnosis; do not silently overwrite or assume complete');
+  const section=r.window?['--download-sections','*'+r.window.join('-'),'--downloader-args','ffmpeg_i:-threads 2','--downloader-args','ffmpeg_o:-threads 2']:[];
+  await run(r.slug+'-download',py,['-X','utf8','-m','yt_dlp','--no-progress','--http-chunk-size','1M','--ffmpeg-location',bin,...section,'--no-playlist','--no-overwrites','--write-info-json','--no-write-thumbnail','--js-runtimes','node:'+process.execPath,'--retries','2','--fragment-retries','2','--socket-timeout','30','-f','bv*[height<=1080][ext=mp4][vcodec^=avc]/bv*[height<=1080][ext=mp4]','-o',path.join(out,r.slug+'.%(ext)s'),'https://www.youtube.com/watch?v='+r.id]);
+  const info=JSON.parse(fs.readFileSync(meta,'utf8'));
+  const probeResult=spawnSync(ffprobe,['-v','error','-show_entries','stream=codec_name,codec_type,width,height,r_frame_rate,time_base,nb_frames:format=duration,size','-of','json',file],{encoding:'utf8',windowsHide:true});if(probeResult.status!==0)throw Error('Actual ffprobe failed');const probe=JSON.parse(probeResult.stdout);
+  if(probe.streams.some(s=>s.codec_type==='audio'))throw Error('Only silent source acquisition allowed');
+  await run(r.slug+'-whole-decode',ffmpeg,['-v','error','-threads','2','-i',file,'-f','null','-']);
+  const dir=path.join(out,r.slug+'-review');fs.mkdirSync(dir,{recursive:true});
+  await run(r.slug+'-samples',ffmpeg,['-v','error','-threads','2','-i',file,'-vf',"fps=1/30,scale=640:360,drawtext=fontfile='C\\:/Windows/Fonts/arial.ttf':text='%{pts\\:hms}':x=8:y=8:fontsize=22:fontcolor=white:box=1:boxcolor=black@0.8,tile=3x2:nb_frames=6:padding=4:margin=4",'-vsync','0','-threads','2',path.join(dir,'board-%03d.png')]);
+  const record={...r,url:'https://www.youtube.com/watch?v='+r.id,title:info.title,publisher:info.channel,channelId:info.channel_id,uploadDate:info.upload_date,originalDurationSeconds:info.duration,media:path.relative(root,file).replaceAll('\\','/'),sha256:sha(file),probe,wholeDownloadedWindowDecodeExit:0,wholeOriginalDecoded:!r.window,sourceStartOffsetVerified:!r.window,requestedSourceWindow:r.window||null,sourceAudioAcquired:false,sampleSpacingSeconds:30,boards:fs.readdirSync(dir).filter(n=>/^board-\d+\.png$/.test(n)).map(n=>({path:path.relative(root,path.join(dir,n)).replaceAll('\\','/'),sha256:sha(path.join(dir,n)),directlyViewed:false})),rightsApproved:false,recentUseCheckPassed:false,fullMotionReviewed:false,finalUseApproved:false,acquiredAt:new Date().toISOString(),localOnly:true};
+  fs.writeFileSync(evidence,JSON.stringify(record,null,2)+'\n');completed.push(record);current=null;write({status:'source-complete'});console.log(JSON.stringify({source:r.slug,actualDuration:probe.format.duration,boards:record.boards.length,finalUseApproved:false}));
+ }catch(e){failures.push({source:r.slug,error:e.message,observedAt:new Date().toISOString(),noAuthenticationOrAccessBypass:true});console.log(JSON.stringify(failures.at(-1)));current=null;write({status:'source-failed-continuing-independent-sources'});}}
+ write({status:failures.length?'partial-native-and-samples-ready':'native-and-samples-ready',completedAt:new Date().toISOString(),next:'Directly inspect every board and normal-speed candidate before/action/after; verify section offsets, crop, rights/recent use and claimed numerical conditions before approving intervals or writing shot-dependent guides.'});
+})().catch(e=>{write({status:'failed',error:e.stack});console.error(e);process.exitCode=1;});

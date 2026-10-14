@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "status": "reviewed-independent-explanation-input-for-tts",
+  "episode": 4,
+  "seriesPlan": "production/research/game-lighting-history/series-plan.json",
+  "durationMeasured": false,
+  "targetMinutes": 20,
+  "footageDependentLinesFinalApproved": false,
+  "scope": "Complete independent educational narration. Any new shot-specific observation must await native pixel/source review. No final footage quota or rights approval.",
+  "title": "What Reconstructs the Final Pixel? From Path Tracing to DLSS 5",
+  "scenes": [
+    {
+      "id": "18tg1",
+      "title": "시간적 업스케일링과 표시 프레임의 구별",
+      "lines": [
+        "Another strategy reduces the cost of evaluating lighting and materials at high resolution. Temporal upscaling renders at a lower internal resolution, then reconstructs a higher-resolution image using information from the current and previous frames.",
+        "Unreal's TSR and DLSS Super Resolution can be compared in this role. Their implementations and requirements differ, but both require separating input resolution from output resolution. A sharp image does not imply that lighting was evaluated independently at every output pixel.",
+        "Halving both width and height reduces internal pixel count to one quarter. Frame time does not necessarily become one quarter, because geometry processing, shadows, reconstruction itself, and other fixed costs can remain."
+      ]
+    },
+    {
+      "id": "18tg2",
+      "title": "시간적 업스케일링과 표시 프레임의 구별",
+      "lines": [
+        "Motion vectors describe where previous samples moved. Camera projection, jitter conventions, and object motion must agree. Incorrect vectors can retrieve history from a different surface, producing ghosting or blur.",
+        "Newly exposed regions may have no valid history. Transparency, particles, thin structures, and interface graphics also require consideration. Reconstruction depends on the quality and validity of the available information."
+      ]
+    },
+    {
+      "id": "18tg3",
+      "title": "시간적 업스케일링과 표시 프레임의 구별",
+      "lines": [
+        "Introduced with DLSS 3 in 2022, frame generation has a different role: it inserts display frames between rendered frames. An increase in displayed frame count is not equivalent to the same proportional increase in simulation or input-processing frequency.",
+        "A useful comparison separates internal resolution, rendered frame rate, displayed frame rate, and latency. A single on-screen number can conflate responsiveness with visual quality."
+      ]
+    },
+    {
+      "id": "22rg4",
+      "title": "프레임 검사: 기술 이름 대신 실제 자원을 따라가기",
+      "lines": [
+        "Feature names alone do not determine a frame's actual structure. Engine version, platform, rendering path, and settings can change its passes. A frame debugger such as RenderDoc helps inspect commands and resources from a captured frame.",
+        "Start with a comparison question: whether reflections retain off-screen objects, how shadow pages are updated, or which attributes a G-buffer stores. A specific question determines what to inspect among many events.",
+        "Record execution conditions: engine version, graphics API, rendering path, internal and output resolution, camera, and feature settings. Frames captured under differing conditions cannot easily isolate a single cause."
+      ]
+    },
+    {
+      "id": "22rg5",
+      "title": "프레임 검사: 기술 이름 대신 실제 자원을 따라가기",
+      "lines": [
+        "When opening a resource, inspect dimensions, format, layers, and mip levels. Determine whether it is screen-sized, light-space data, or a paged or layered structure. Names provide clues, but contents and usage relationships need verification.",
+        "Examine a depth resource using its depth convention rather than treating it as a color image. Projected depth is generally nonlinear with physical distance. Reversed-Z can also change which numerical values represent near and far surfaces.",
+        "Match G-buffer channels to engine documentation. A normal buffer displayed as color is a visualization, not the surface's actual color. Compression and encoding must be understood before interpreting channel values as material attributes."
+      ]
+    },
+    {
+      "id": "22rg6",
+      "title": "프레임 검사: 기술 이름 대신 실제 자원을 따라가기",
+      "lines": [
+        "For shadow resources, connect the producing light with the consuming pass. Locate the transformation from a screen surface to light space and its depth comparison. Cascades and pages require examination of their partitioning and selection rules.",
+        "In reflection passes, distinguish screen-depth tracing from fallback inputs. Inspect whether probes or other trace results supply values for off-screen or occluded regions. A single reflection image does not prove that all samples were produced identically."
+      ]
+    }
+  ]
+}

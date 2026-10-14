@@ -1,0 +1,20 @@
+// Two unchanged onsets; no synthesis or lease is started by this preparation.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),b='projects/game-lighting-history-04/production',s='projects/game-lighting-history-04/script';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,''));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const write=(p,j)=>{if(fs.existsSync(path.join(root,p)))throw Error('Preserve '+p);fs.writeFileSync(path.join(root,p),JSON.stringify(j,null,2)+'\n');};
+const ep=b+'/part1-selected-current-tts-execution-v181.json',selected=read(ep),oldRequest=read(b+'/part1-selected-current-tts-request-v181.json');
+if(!selected.generationComplete||selected.exitCode!==0||selected.results.length!==37)throw Error('Current37 required');
+for(const r of selected.results)if(sha(r.path)!==r.sha256)throw Error('Changed '+r.id);
+const scriptPath=s+'/physical-part1-guided-actions.koen.v175.json',script=read(scriptPath),ids=['runtime-texture-size','geometry-car-material'],scenes=ids.map(id=>script.scenes.find(r=>r.id===id));
+if(scenes.some(x=>!x)||!scenes[0].ko.startsWith('이번 자산 창에서는')||!scenes[1].ko.startsWith('자동차 표면의'))throw Error('Current literal paragraphs required');
+for(const lang of ['ko','en'])write(s+`/physical-part1-onset-repairs.${lang}.v199.json`,{title:'두 문단의 첫 단어 제한 보완',scenes:scenes.map(r=>({id:r.id,title:r.id,lines:[r[lang]],screenRole:r.role}))});
+const manifest=read(b+'/part1-guided-actions-tts-manifest-v169.json'),dir='shared/output/narration/game-lighting-history-04/qwen3-1.7b-part1-onset-repairs-v199',stem='game-lighting-history-04-part1-onset-repairs-v199';
+manifest.paths={...manifest.paths,script:s+'/physical-part1-onset-repairs.ko.v199.json',scriptEn:s+'/physical-part1-onset-repairs.en.v199.json',narration:dir+'/'+stem+'.wav',captionsKo:dir+'/'+stem+'.srt',captionsEn:dir+'/'+stem+'.en.srt'};
+manifest.tts={...manifest.tts,outputDir:dir,filenameStem:stem,maxRenderAttempts:3,maxNewTokens:1536};
+const mpath=b+'/part1-onset-repairs-tts-manifest-v199.json';write(mpath,manifest);
+const labels=['whole-runtime-texture-size','context-runtime-texture-size','context-ordinary-streaming-budget','whole-geometry-car-material','context-geometry-car-material'];
+const protectedPaths=[...oldRequest.protectedInputs.map(r=>r.path),ep,b+'/part1-selected-current-tts-request-v181.json',scriptPath,...['ko','en'].map(l=>s+`/physical-part1-onset-repairs.${l}.v199.json`),mpath,b+'/part1-current-asr-direct-progress-v198.json',...selected.results.map(r=>r.path),...labels.map(id=>b+'/local/part1-selected-actions-asr-v182/'+id+'.json')];
+write(b+'/part1-onset-repairs-tts-request-v199.json',{preparedAt:new Date().toISOString(),slug:'game-lighting-history-04',manifestOverride:mpath,previousExecution:{path:ep,sha256:sha(ep)},repairIds:ids,reason:'The literal first words 이번 자산 창에서는 and 자동차 표면의 are unresolved in both whole and complete independent context. Preserve old recognition/PCM; synthesize only these two unchanged paragraphs after the single74-window CPU worker actually exits. No pronunciation claim from ASR alone.',supersedesPreparedOnly:b+'/part1-onset-repair-tts-request-v196.json',protectedInputs:[...new Set(protectedPaths)].map(path=>({path,sha256:sha(path)})),preservedTakes:selected.results.filter(r=>!ids.includes(r.id)),scenes:scenes.map(r=>({id:r.id,path:dir+'/chunks/'+r.id+'-scene.wav'})),replacementAsrLabels:labels,requiredPreviousCpuExecution:b+'/part1-selected-actions-asr-execution-v182.json',cpuThreads:2,gpuJobs:1,batchSize:1,researchRestoreRequired:true,allAsrApproved:false,newJobStarted:false});
+console.log(JSON.stringify({repairIds:ids,preserved:35,replacementAsrWindows:5,original111AndFiveFramingPreserved:true,newJobStarted:false}));

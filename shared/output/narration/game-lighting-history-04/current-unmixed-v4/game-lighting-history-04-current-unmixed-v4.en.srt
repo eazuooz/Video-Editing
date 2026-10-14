@@ -1,0 +1,347 @@
+1
+00:00:00,000 --> 00:00:22,800
+Even when shadows and reflections look convincing, the final image does not consist entirely of freshly computed answers. This episode connects virtual shadow maps and modern visibility processing to path tracing, ray reconstruction, and the different roles of DLSS. We finish with a practical framework for inspecting the resources of a rendered frame. First, where should shadow memory be allocated?
+
+2
+00:00:23,520 --> 00:00:35,553
+Earlier, a shadow map stored the closest depth from a light's viewpoint. A visible surface was transformed into light space and compared against that stored depth to test occlusion. Virtual shadow maps retain this fundamental question.
+
+3
+00:00:35,553 --> 00:00:52,313
+Allocating high resolution across an entire large region is expensive. Detailed storage for areas that are tiny on screen or completely invisible wastes memory and rendering work. Meanwhile, a small shadow close to the camera may need much denser sampling.
+
+4
+00:00:52,313 --> 00:01:07,033
+Unreal Engine's virtual shadow maps divide a large virtual address space into small pages. Pages needed by the current view receive physical memory and are rendered. The size of the virtual address space must be distinguished from the memory actually allocated.
+
+5
+00:01:07,033 --> 00:01:20,933
+Consider an explanatory grid. A virtual shadow region contains sixteen cells, but surfaces in the current view reference only five. Allocating memory to those five illustrates the principle; these numbers are not measurements from a particular game.
+
+6
+00:01:20,933 --> 00:01:36,013
+Camera movement reveals different regions and changes which pages are needed. If the light and objects remain unchanged, previously rendered pages can be cached. Moving a light or changing a shadow-casting object requires affected pages to be updated.
+
+7
+00:01:36,013 --> 00:01:52,463
+Soft shadows require more than a single depth comparison. Multiple samples estimate occlusion and the penumbra associated with light size. Unreal's SMRT traces against shadow-map depth; it must be distinguished from tracing every ray against the scene's actual triangles.
+
+8
+00:01:52,463 --> 00:02:07,760
+Static scenes with effective caching can cost differently from constantly changing scenes. A useful comparison examines newly rendered pages, reused pages, and invalidated regions alongside resolution. This technique does not solve global indirect illumination.
+
+9
+00:02:08,480 --> 00:02:21,943
+Another strategy reduces the cost of evaluating lighting and materials at high resolution. Temporal upscaling renders at a lower internal resolution, then reconstructs a higher-resolution image using information from the current and previous frames.
+
+10
+00:02:21,943 --> 00:02:39,593
+Unreal's TSR and DLSS Super Resolution can be compared in this role. Their implementations and requirements differ, but both require separating input resolution from output resolution. A sharp image does not imply that lighting was evaluated independently at every output pixel.
+
+11
+00:02:39,593 --> 00:02:53,440
+Halving both width and height reduces internal pixel count to one quarter. Frame time does not necessarily become one quarter, because geometry processing, shadows, reconstruction itself, and other fixed costs can remain.
+
+12
+00:02:53,720 --> 00:03:06,583
+Motion vectors describe where previous samples moved. Camera projection, jitter conventions, and object motion must agree. Incorrect vectors can retrieve history from a different surface, producing ghosting or blur.
+
+13
+00:03:06,583 --> 00:03:20,200
+Newly exposed regions may have no valid history. Transparency, particles, thin structures, and interface graphics also require consideration. Reconstruction depends on the quality and validity of the available information.
+
+14
+00:03:20,480 --> 00:03:35,423
+Introduced with DLSS 3 in 2022, frame generation has a different role: it inserts display frames between rendered frames. An increase in displayed frame count is not equivalent to the same proportional increase in simulation or input-processing frequency.
+
+15
+00:03:35,423 --> 00:03:48,000
+A useful comparison separates internal resolution, rendered frame rate, displayed frame rate, and latency. A single on-screen number can conflate responsiveness with visual quality.
+
+16
+00:03:48,720 --> 00:04:03,323
+Deferred rendering stores depth for position reconstruction, normals, and material attributes in a G-buffer. A visibility buffer makes a different storage choice: it first records identification information for the triangle or instance visible at each sample.
+
+17
+00:04:03,323 --> 00:04:16,763
+A later stage uses those identifiers to access geometry. Vertex attributes are connected to the screen sample, and the required material attributes and texture coordinates are reconstructed. The buffer stores identity, not the finished lighting result.
+
+18
+00:04:16,763 --> 00:04:30,873
+Suppose an illustrative screen sample identifies triangle seven. Its three vertices are retrieved, and interpolation weights produce the sample's texture coordinates. A real implementation must correctly handle perspective interpolation and derivatives.
+
+19
+00:04:30,873 --> 00:04:45,513
+Derivatives used for texture mip selection deserve particular attention. Reconstructing coordinates alone is insufficient. At a boundary where adjacent samples identify different triangles, incorrect derivatives can destabilize texture sampling.
+
+20
+00:04:45,513 --> 00:04:59,063
+This approach can reduce bandwidth spent writing and reading broad material attributes, but introduces geometry access and reconstruction work. Results depend on data layout, material branching, caches, compression, and multisampling requirements.
+
+21
+00:04:59,063 --> 00:05:15,040
+Microsoft's official game-development sample provides a concrete pipeline to study. Its publication date should not be interpreted as the technique's invention date or universal adoption date. The comparison concerns stored data and the responsibilities of later stages.
+
+22
+00:05:15,760 --> 00:05:32,503
+Now connect tiled hardware with deferred rendering. Tiled hardware can retain some data in nearby internal memory while processing a small screen region. Deferred rendering concerns how material information and lighting evaluation are ordered.
+
+23
+00:05:32,503 --> 00:05:45,323
+These terms are not interchangeable. Tiled hardware can run forward or deferred pipelines. A Forward+ screen-space light list is also not automatically the same structure as the hardware's tile storage.
+
+24
+00:05:45,323 --> 00:05:58,503
+On supported platforms and rendering paths, Unreal's mobile deferred renderer can use tile memory for the G-buffer. The relevant connection is reducing the cost of writing intermediate data to external memory and reading it back.
+
+25
+00:05:58,503 --> 00:06:12,993
+Conditions depend on the graphics API, device, available memory, and pass structure. It would be incorrect to claim that every mobile deferred implementation avoids all external intermediate writes. Separated passes or required stores can still consume bandwidth.
+
+26
+00:06:12,993 --> 00:06:24,463
+Transparent surfaces can be handled through a separate forward path. A G-buffer sample that records the frontmost opaque surface does not contain enough information to describe multiple transparent layers behind it.
+
+27
+00:06:24,463 --> 00:06:35,840
+Forward and deferred should be evaluated against materials, light counts, transparency, bandwidth, and device characteristics. Multiple paths can coexist within one engine.
+
+28
+00:06:36,560 --> 00:06:53,333
+Cyberpunk 2077 patch 1.62 introduced Ray Tracing: Overdrive as a technology preview in 2023. It provides a released-game example for comparing path-traced lighting. Its requirements and preview status at the time should remain explicit.
+
+29
+00:06:53,333 --> 00:07:04,593
+Path tracing starts from a camera sample, finds a surface, and samples subsequent directions according to the material. Contributions along sampled paths estimate image brightness. This does not mean that every possible path is exhaustively evaluated.
+
+30
+00:07:04,593 --> 00:07:19,103
+A diffuse surface requires integrating light arriving from many directions. A glossy surface may receive large contributions near particular directions. Sampling important directions more often can help, but contributions must be divided by the corresponding sampling probability.
+
+31
+00:07:19,103 --> 00:07:34,803
+For illustration, two directions contribute two and eight. Equal-probability sampling targets an average of five. A distribution that favors the brighter direction must still estimate the same target after correct probability weighting. These numbers are explanatory examples.
+
+32
+00:07:34,803 --> 00:07:47,843
+Sampling a light directly and sampling a material direction excel in different situations. Multiple importance sampling combines strategies using their probabilities and weights. Treating a sample as though it came from a different strategy produces incorrect weighting.
+
+33
+00:07:47,843 --> 00:08:04,153
+Extending paths increases cost. Russian roulette probabilistically terminates some paths and compensates surviving contributions by the inverse survival probability. With a survival probability of 0.8, a surviving contribution receives a factor of one divided by 0.8.
+
+34
+00:08:04,153 --> 00:08:16,083
+This compensation manages variance and cost. It differs from always discarding seemingly unimportant paths. Maximum bounce limits and other approximations require separate examination of an implementation's bias and limitations.
+
+35
+00:08:16,083 --> 00:08:30,873
+Error for independent samples is generally related to the square root of sample count. Under comparable conditions, halving error requires four times as many samples. Correlated temporal samples and reconstruction algorithms prevent this simple relationship from predicting the entire image.
+
+36
+00:08:30,873 --> 00:08:43,440
+Understanding game path tracing requires more than examining ray paths. Sample allocation, reuse, and reconstruction of the remaining noise all matter. Reconstruction is our next step.
+
+37
+00:08:44,160 --> 00:08:57,603
+Low-sample ray results contain noise. A denoiser tries to reduce it while preserving boundaries, material changes, and reflection details. Simply averaging nearby colors removes genuine detail as well as noise.
+
+38
+00:08:57,603 --> 00:09:11,963
+Depth, normals, and material information help determine which samples can be combined. History supplies additional evidence, but values that no longer match the current surface must be rejected. Motion and newly exposed regions complicate that decision.
+
+39
+00:09:11,963 --> 00:09:25,653
+DLSS 3.5 introduced Ray Reconstruction in 2023 for reconstructing ray-based effects. It is a learned reconstruction feature intended to replace multiple hand-tuned denoisers, and it depends on the inputs and integration supplied by the game.
+
+40
+00:09:25,653 --> 00:09:41,293
+Super Resolution, Frame Generation, and Ray Reconstruction have different roles despite sharing a family name. One reconstructs output resolution, another adds display frames, and another reconstructs noisy ray results. A comparison must identify which features are enabled.
+
+41
+00:09:41,293 --> 00:09:55,453
+Useful comparison subjects include small reflected text, moving objects, and thin lines. Inspect not just a still image but how details stabilize after motion. Look for consistent detail, ghosting, and flicker.
+
+42
+00:09:55,453 --> 00:10:11,440
+A feature should not be declared universally superior across all games and scenes. Matching camera, internal resolution, exposure, and lighting makes differences interpretable. Promotional comparisons should also remain distinct from direct measurements.
+
+43
+00:10:12,160 --> 00:10:28,613
+Unreal Engine 5.5 introduced experimental MegaLights in 2024 as an approach to many dynamic lights and shadows. Its central question is how to focus work on useful direct-light samples rather than evaluating every light uniformly at every pixel.
+
+44
+00:10:28,613 --> 00:10:42,083
+The system considers lights that can affect a region and samples likely to contribute significantly. Selected samples undergo visibility testing, and results are reused or reconstructed. Candidate selection and testing whether light actually reaches a surface are separate tasks.
+
+45
+00:10:42,083 --> 00:10:56,853
+Forward+ focused on narrowing light lists before evaluating their contents. Stochastic selection also makes sampling distributions, reuse, and noise handling important. Using many lights does not make these approaches identical.
+
+46
+00:10:56,853 --> 00:11:10,993
+Effective selection captures important contributions with less work. Complex occlusion or rapidly changing bright contributions can expose undersampling. Increasing light count should not be assumed to leave both cost and quality perfectly unchanged.
+
+47
+00:11:10,993 --> 00:11:25,133
+MegaLights' direct lighting and Lumen's indirect illumination connect through different responsibilities. Enabling MegaLights does not automatically make every indirect bounce exact. Engine version, supported paths, and feature responsibilities need separate inspection.
+
+48
+00:11:25,133 --> 00:11:40,400
+Experimental Nanite Foliage in Unreal 5.7, introduced in 2025, provides a brief geometry example. It addresses dense vegetation detail and representation across distance, rather than naming a new indirect-lighting solution. Announcement status and actual project integration must be recorded separately.
+
+49
+00:11:41,120 --> 00:11:55,423
+Depth testing can select the frontmost opaque surface. Transparent surfaces also transmit contributions from behind them. Glass, smoke, overlapping particles, and hair require more information than a single stored surface.
+
+50
+00:11:55,423 --> 00:12:09,163
+Conventional alpha compositing weights the front color by alpha and the back color by one minus alpha. Alpha represents opacity for compositing here. It should not automatically be equated with a physical medium's absorption coefficient.
+
+51
+00:12:09,163 --> 00:12:19,353
+Consider two half-opacity layers, red and blue, over a black background. With red in front, red contributes 0.5 and blue contributes 0.25. Reversing the order exchanges those contributions. Order changes the result.
+
+52
+00:12:19,353 --> 00:12:32,123
+Sorting only object centers cannot always correctly order intersecting transparent surfaces. Their front-to-back relationship can change across pixels. Object sorting and per-sample depth sorting address different levels of the problem.
+
+53
+00:12:32,123 --> 00:12:46,723
+Order-independent transparency encompasses several approaches. Depth peeling can recover successive layers but needs additional passes. Storing fragments in structures such as linked lists introduces memory and data-structure costs.
+
+54
+00:12:46,723 --> 00:13:00,783
+Weighted blending reduces sorting requirements by choosing an approximation. It is not guaranteed to match exact compositing of every sorted layer. Differences deserve inspection in strongly overlapping, high-opacity, contrasting layers.
+
+55
+00:13:00,783 --> 00:13:15,333
+Hair combines thin-strand coverage, overlapping visibility, and directional scattering. Strand data, visibility, and scattering models deserve separate examination. Handling hair does not make an algorithm identical to volume rendering.
+
+56
+00:13:15,333 --> 00:13:29,600
+Recent game-development presentations expose production constraints. Their dates should not be labeled as the invention dates of transparency or hair rendering. Our numerical examples also do not claim to reproduce a game's undisclosed implementation.
+
+57
+00:13:30,320 --> 00:13:45,883
+DLSS 4 Multi Frame Generation was introduced in 2025 with support for adding up to three generated frames per rendered frame under supported conditions. Its output is display frames; it does not imply three additional sets of ray samples.
+
+58
+00:13:45,883 --> 00:14:04,563
+In 2026, DLSS 4.5 expanded Super Resolution and Multi Frame Generation features. Its 6X mode must be understood as up to five generated frames per rendered frame. Dynamic operation considers display targets and execution conditions; it does not promise 6X operation on every device.
+
+59
+00:14:04,563 --> 00:14:25,643
+DLSS 5 was announced in 2026 and became available in NBA 2K27 in September. NVIDIA describes using game color, motion, and 3D guidance to improve the appearance of lighting and materials. We discuss the vendor's input-output description without claiming our own quality measurements of that game.
+
+60
+00:14:25,643 --> 00:14:38,623
+Creators can use controls such as strength, color treatment, and exclusions to preserve artistic intent. These controls connect the feature's output to the intended design. They should be distinguished from exact computation of every physical light path.
+
+61
+00:14:38,623 --> 00:14:55,200
+Throughout this progression, actual computation, temporal reconstruction, and display-frame generation should remain distinct. Comparisons record hardware support, game version, internal resolution, and latency. A higher version number does not mean every preceding function has merged into one replacement.
+
+62
+00:14:55,920 --> 00:15:07,973
+Lighting results are not yet the colors sent directly to a monitor. Bright values can exceed a display's range. Exposure and tone mapping connect that wider range to the final display range.
+
+63
+00:15:07,973 --> 00:15:22,933
+Exposure scales scene brightness, while tone mapping applies nonlinear transformations such as highlight compression. Automatic exposure can change the whole image without a lighting change, so technical comparisons need controlled exposure conditions.
+
+64
+00:15:22,933 --> 00:15:34,803
+Bloom adds the appearance of bright regions spreading into neighboring pixels. A glowing image does not establish that indirect illumination reached surrounding surfaces. Bloom around an edge is not proof of a light bounce.
+
+65
+00:15:34,803 --> 00:15:48,723
+Depth of field represents differences in focus and distance, while motion blur approximates movement over an exposure interval. These effects can conceal small shadow or reflection errors or introduce their own blur. Comparisons should distinguish enabled and disabled conditions.
+
+66
+00:15:48,723 --> 00:16:02,683
+Check again whether color inputs represent linear values or display values. This closes the linear-space discussion from episode two. Missing or duplicated transformations at texture input, lighting, and final output produce incorrect brightness.
+
+67
+00:16:02,683 --> 00:16:11,600
+Final pixels combine geometry, visibility, lighting, materials, reconstruction, and post-processing. We can now examine how to trace those connections during frame inspection.
+
+68
+00:16:12,320 --> 00:16:28,880
+Feature names alone do not determine a frame's actual structure. Engine version, platform, rendering path, and settings can change its passes. A frame debugger such as RenderDoc helps inspect commands and resources from a captured frame.
+
+69
+00:16:29,160 --> 00:16:44,453
+Start with a comparison question: whether reflections retain off-screen objects, how shadow pages are updated, or which attributes a G-buffer stores. A specific question determines what to inspect among many events.
+
+70
+00:16:44,453 --> 00:16:58,360
+Record execution conditions: engine version, graphics API, rendering path, internal and output resolution, camera, and feature settings. Frames captured under differing conditions cannot easily isolate a single cause.
+
+71
+00:16:58,640 --> 00:17:13,833
+When opening a resource, inspect dimensions, format, layers, and mip levels. Determine whether it is screen-sized, light-space data, or a paged or layered structure. Names provide clues, but contents and usage relationships need verification.
+
+72
+00:17:13,833 --> 00:17:27,573
+Examine a depth resource using its depth convention rather than treating it as a color image. Projected depth is generally nonlinear with physical distance. Reversed-Z can also change which numerical values represent near and far surfaces.
+
+73
+00:17:27,573 --> 00:17:42,640
+Match G-buffer channels to engine documentation. A normal buffer displayed as color is a visualization, not the surface's actual color. Compression and encoding must be understood before interpreting channel values as material attributes.
+
+74
+00:17:42,920 --> 00:17:56,903
+For shadow resources, connect the producing light with the consuming pass. Locate the transformation from a screen surface to light space and its depth comparison. Cascades and pages require examination of their partitioning and selection rules.
+
+75
+00:17:56,903 --> 00:18:11,960
+In reflection passes, distinguish screen-depth tracing from fallback inputs. Inspect whether probes or other trace results supply values for off-screen or occluded regions. A single reflection image does not prove that all samples were produced identically.
+
+76
+00:18:12,680 --> 00:18:26,913
+Volume processing may require more than viewing a color image. Separate spatial density and lighting grids from view-integrated transmittance. Grid resolution and depth partitioning connect to both artifacts and cost.
+
+77
+00:18:26,913 --> 00:18:41,833
+Temporal processing separates history from current inputs. Inspect which resources are written for later use and how motion and depth reject samples. A single capture may omit earlier execution conditions, so its interpretive limits need documentation.
+
+78
+00:18:41,833 --> 00:18:57,093
+Compare color before and after tone mapping. Locate exposure, color-space conversion, upscaling, and interface compositing in the actual passes. Do not assume an identical order in every engine or label a prepared diagram as a captured result.
+
+79
+00:18:57,093 --> 00:19:11,193
+Selecting an event allows its input resources to be traced back to their producers. Connecting producing and consuming commands reveals a resource's role more concretely than a feature name. Resources can also be reused for multiple purposes.
+
+80
+00:19:11,193 --> 00:19:23,893
+Performance requires separate measurement. Frame capture can introduce overhead or change execution behavior. Use the engine's GPU profiler and repeated runs to inspect pass timing and variability under matched conditions.
+
+81
+00:19:23,893 --> 00:19:37,273
+Report sample count and variation alongside averages. Check shader preparation, loading, cache state, and matched camera paths. A single frame's timing may not represent an entire scene.
+
+82
+00:19:37,273 --> 00:19:52,840
+Record the connections among actual resources, inputs, and outputs. Separating visual observations from implementation evidence makes the scope of each conclusion clear. This method provides a more reusable understanding than memorizing feature names.
+
+83
+00:19:53,560 --> 00:20:08,973
+We connected DOOM's brightness values to baked lighting, real-time shadows, screen-space effects, spatial grids, rays, caches, and final reconstruction. This was not a history in which every older technique disappeared simultaneously into one replacement.
+
+84
+00:20:08,973 --> 00:20:24,193
+Our first question was what gets stored. Brightness, surface attributes, depth, triangle identity, spatial lighting, and frame history contain different information. Different storage determines which questions later stages can answer.
+
+85
+00:20:24,193 --> 00:20:38,103
+Our second question was where the renderer searches: screen depth, a simplified spatial representation, or actual triangles. Limitations involving off-screen objects, hidden surfaces, and thin structures follow from this choice.
+
+86
+00:20:38,103 --> 00:20:54,993
+Our third question was how much gets computed and how results are reused. Light candidates, path samples, pages, caches, history, and reconstruction have different costs and errors. Timing changed alongside representation, sampling, hardware, and reconstruction.
+
+87
+00:20:54,993 --> 00:21:07,880
+When you next examine game lighting, think beyond a feature name. Understanding the data and calculations behind an image helps explain both why it looks convincing and why it breaks.

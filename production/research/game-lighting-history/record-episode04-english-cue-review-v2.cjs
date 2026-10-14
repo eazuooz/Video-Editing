@@ -1,0 +1,14 @@
+// Direct complete review: all511 actual draft cues were read in five bounded
+// groups, alongside all111 independent English paragraphs and their Korean
+// meaning. This records text/breaks, never English ASR or encoded pixels.
+const fs=require('fs'),crypto=require('crypto'),base='projects/game-lighting-history-04/production/';
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const path=base+'local/english-caption-draft-v2.json',en=read(path),ko=read(en.source.path);
+if(en.source.sha256!==sha(en.source.path)||en.paragraphs.length!==111||en.cues.length!==511||!en.complete111EnglishParagraphsPreserved||!en.semanticMappingsDirectlyRead)throw Error('Current complete semantic source required');
+let last=0;
+for(const c of en.cues){if(c.from<last-1e-8||c.to<=c.from||c.text.split('\n').length>2||c.text.split('\n').some(l=>l.length>42)||c.measuredEnglishWordTiming)throw Error('Invalid translation cue');last=c.to;}
+for(const p of ko.paragraphs){const text=en.cues.filter(c=>c.entryId===p.id).map(c=>c.text.replace(/\n/g,' ')).join(' ');if(text!==p.en.replace(/\s+/g,' ').trim())throw Error('Independent English wording incomplete '+p.id);}
+const report={reviewedAt:new Date().toISOString(),englishDraft:{path,sha256:sha(path)},koreanDraft:en.source,currentAudio:en.audio,paragraphs:111,cues:511,directReadGroups:[[1,90],[91,190],[191,290],[291,395],[396,511]],all511CueTextsBreaksAndDisplayedDraftTimesDirectlyRead:true,all111IndependentEnglishParagraphsPreserved:true,decimalValuesAndCaveatsRetained:true,translationTrackOverKoreanAudio:true,measuredEnglishWordTimes:false,minimumCueDuration:Math.min(...en.cues.map(c=>c.to-c.from)),scope:'Balanced phrase splits stay inside matching Korean semantic sentence boundaries. Fraction, alpha0.5/0.25, survival0.8/1.25, generated3/5 counts, dates and implementation/measurement limitations directly reread. Draft times still require final integer timeline and rendered pixels.',integerFinalTimingProduced:false,finalMixedAsrApproved:false,allFinalCaptionPixelsReviewed:false,humanWholeListeningApproved:false};
+fs.writeFileSync(base+'english-caption-direct-review-v2.json',JSON.stringify(report,null,2)+'\n');
+const captionPath=base+'caption-text-direct-review-v2.json',caption=read(captionPath);if(caption.englishDraft.sha256!==sha(path))throw Error('Caption source changed');caption.all511EnglishCueBreaksDirectlyRead=true;caption.englishCueDirectReview={path:base+'english-caption-direct-review-v2.json',sha256:sha(base+'english-caption-direct-review-v2.json')};fs.writeFileSync(captionPath,JSON.stringify(caption,null,2)+'\n');
+console.log(JSON.stringify({paragraphs:111,enCues:511,directlyRead:true,minimumSeconds:report.minimumCueDuration,finalTiming:false,pixels:false}));

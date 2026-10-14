@@ -1,0 +1,124 @@
+{
+  "status": "future-source-reading-and-math-preparation-only",
+  "atUtc": "2026-10-09T00:28:52.289480+00:00",
+  "target": "game-math-acceleration-integration",
+  "sourceSnapshot": "tmp/game-math-part2-sources/3e10b1ffa61e81d4bc3ee19712b63d65.txt",
+  "sourceSha256": "db8cf6fa2e9786c85b283d29e03abbc52f146460ade0f0aa6bf99f0dad119fa3",
+  "directReadSections": [
+    "11.5",
+    "11.6 complete including both rectangle tables and multidimensional cases",
+    "11.7.1",
+    "11.7.2",
+    "11.7.3"
+  ],
+  "directReadRanges": [
+    "1–1407, with truncated middle passages reread separately"
+  ],
+  "wholeChapter11DirectlyRead": false,
+  "sourceFiguresDirectlyViewed": false,
+  "freshNativeVerificationBeforeProduction": "pending",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Constant32ft/s2 left rectangles approach signed integral92.16ft",
+      "passed": true,
+      "sums": [
+        {
+          "rectangles": 6,
+          "leftEndpointSumFeet": 76.8
+        },
+        {
+          "rectangles": 12,
+          "leftEndpointSumFeet": 84.48
+        },
+        {
+          "rectangles": 24,
+          "leftEndpointSumFeet": 88.32
+        }
+      ],
+      "exactFeet": 92.16
+    },
+    {
+      "name": "Scalar/vector acceleration inverse needs factor2 on both terms",
+      "passed": true,
+      "correctAcceleration": -1.0,
+      "sourceTypoValue": -0.25,
+      "condition": "t!=0; components use the same scalar formula"
+    },
+    {
+      "name": "Historical1353ft toy arithmetic unrounded",
+      "passed": true,
+      "gravityFeetPerSecondSquared": 32,
+      "fallSeconds": 9.19578707887476,
+      "impactFeetPerSecond": 294.2651865239923,
+      "initialFor12s": -79.25,
+      "roundedSourceInitial": -79.2,
+      "roundingResidualFeet": 0.599999999999909,
+      "condition": "No air resistance;32ft/s2 is the declared approximation, not an exact physical constant or verified building measurement"
+    },
+    {
+      "name": "Choose physically valid quadratic roots and handle a0 separately",
+      "passed": true,
+      "twoPositiveRoots": [
+        0.552786404500042,
+        1.4472135954999579
+      ],
+      "linearCaseSeconds": 2,
+      "unreachableExample": "10t-5t² cannot reach6 because its maximum is5"
+    },
+    {
+      "name": "Jump design and equal-elevation range conditions",
+      "passed": true,
+      "heightMeters": 2,
+      "apexSeconds": 1,
+      "gravityMagnitude": 4,
+      "initialVerticalSpeed": 4,
+      "horizontalSpeed": 3,
+      "flightSeconds": 2,
+      "rangeMeters": 6,
+      "doublingSpeedRangeMultiplier": 4,
+      "condition": "constant gravity; no drag/collision; landing at initial elevation"
+    },
+    {
+      "name": "Projection supplies a candidate, full vector residual proves hit or miss",
+      "passed": true,
+      "candidateSeconds": 2,
+      "position": [
+        6.0,
+        0.0,
+        0.0
+      ],
+      "target": [
+        7.0,
+        0.0,
+        0.0
+      ],
+      "missDistance": 1,
+      "condition": "Project consistently; nonunit direction scales all coefficients equally;a0 and zero projected acceleration need separate linear handling"
+    },
+    {
+      "name": "Signed integral versus traveled distance, endpoint convention and units",
+      "passed": true,
+      "netDisplacement": 4,
+      "totalDistance": 5,
+      "rightEndpoint": "a+i*dx,i1..n",
+      "leftEndpoint": "a+(i-1)*dx,i1..n",
+      "rightSumLimit": 0.5,
+      "toyEnergyJoules": 300,
+      "kWh": 8.333333333333333e-05,
+      "conditions": "continuous/piecewise continuous scoped functions; distance integrates absolute speed;W*s=J"
+    },
+    {
+      "name": "Fundamental theorem, integration variable and arbitrary constant",
+      "passed": true,
+      "correct": "integral_a^b f(t)dt=F(b)-F(a)",
+      "initialPosition": "x(t)=x0+integral_t0^t v(u)du",
+      "counterexample": "f=0:changing only the lower endpoint cannot represent every constant",
+      "conditions": "continuous f; v power rule excludes exponent-1 unless logarithm/domain handled separately"
+    }
+  ],
+  "futureProjectCreated": false,
+  "formalDuplicateReview": "not started",
+  "futureNarrationWritten": false,
+  "futureTtsStarted": false
+}

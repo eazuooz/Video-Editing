@@ -1,0 +1,9 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const [name,decision,note]=process.argv.slice(2);
+const root=path.resolve(__dirname,'../../..'),b='projects/game-lighting-history-'+(['temporal-pipeline','rehearsal-layout'].includes(name)?'03':'04')+'/production',read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8')),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+if(!['vsm','upscaling','visibility','mobile','path-budget','reconstruction-transparency','reconstruction-transparency-layout','reconstruction-transparency-peeling','megalights-dlss','temporal-pipeline','postprocess-inspection','postprocess-layout','postprocess-camera','rehearsal-layout'].includes(name)||!['pass','fix'].includes(decision)||!note)throw Error('Exact model, direct pixel decision and observations required');
+const source=b+'/'+name+'-spatial-proof-extraction-v1.json',x=read(source),dest=b+'/'+name+'-spatial-proof-direct-review-v1.json';
+if(fs.existsSync(path.join(root,dest)))throw Error('Preserve existing review');
+for(const f of [...x.frames,...x.boards])if(sha(f.path)!==f.sha256)throw Error('Reviewed pixels changed');
+const r={reviewedAt:new Date().toISOString(),scope:x.scope,extraction:{path:source,sha256:sha(source)},video:x.video,boards:x.boards.map(y=>({...y,directlyViewed:true,allCellsViewed:true})),allPlannedPosesDirectlyViewed:true,observations:note,modelMotionProofReviewed:decision==='pass',modelLayoutCorrectionRequired:decision==='fix',narrationTimingApproved:false,fullEpisodeApproved:false,finalVideoProduced:false,humanWholeListeningApproved:false,localOnly:true};
+fs.writeFileSync(path.join(root,dest),JSON.stringify(r,null,2)+'\n');console.log(JSON.stringify({model:name,poses:x.frames.length,boards:x.boards.length,modelMotionProofReviewed:r.modelMotionProofReviewed,correction:r.modelLayoutCorrectionRequired,finalVideo:false}));

@@ -1,0 +1,1021 @@
+1
+00:00:00,000 --> 00:00:05,960
+What extra information lets a reflection find
+an object outside the screen? We compare scene
+
+2
+00:00:05,960 --> 00:00:12,072
+representations and ray acceleration, follow
+spatial and temporal reuse of limited samples,
+
+3
+00:00:12,072 --> 00:00:16,962
+then separate Nanite's geometry selection from
+Lumen's lighting updates.
+
+4
+00:00:16,962 --> 00:00:20,400
+We begin with three representations of the
+same wall.
+
+5
+00:00:21,120 --> 00:00:24,809
+Screen-space reflections read visible color
+and depth.
+
+6
+00:00:24,809 --> 00:00:29,651
+Off-screen information requires another
+representation. Camera depth,
+
+7
+00:00:29,651 --> 00:00:35,492
+world-space distance and voxel lighting may
+all appear as grids but store different data.
+
+8
+00:00:35,492 --> 00:00:40,132
+A depth image summarizes the front surface at
+each pixel. Its contents change with the
+
+9
+00:00:40,132 --> 00:00:44,772
+camera. Repeated reads cannot fully recover
+hidden surfaces that were never stored.
+
+10
+00:00:44,772 --> 00:00:50,745
+A distance field stores distance from spatial
+points to a nearby surface,
+
+11
+00:00:50,745 --> 00:00:55,368
+possibly with a sign distinguishing inside and
+outside.
+
+12
+00:00:55,368 --> 00:01:00,762
+Our wall diagram shows distance layers rather
+than camera pixels.
+
+13
+00:01:00,762 --> 00:01:07,898
+Voxels partition volume. They may store
+occupancy, material or directional lighting.
+
+14
+00:01:07,898 --> 00:01:14,262
+The term voxel alone does not specify a
+reflection or illumination algorithm.
+
+15
+00:01:14,262 --> 00:01:19,547
+Ambient occlusion summarizes visibility,
+whereas global illumination includes
+
+16
+00:01:19,547 --> 00:01:25,132
+transported light and color. Darkening a
+corner does not fully compute color bleeding.
+
+17
+00:01:25,132 --> 00:01:28,312
+Distance-field AO can query world-space data.
+
+18
+00:01:28,312 --> 00:01:33,002
+Screen-space GI uses color and depth but
+retains screen limitations.
+
+19
+00:01:33,002 --> 00:01:37,613
+Moving a hidden object off-screen tests that
+information boundary.
+
+20
+00:01:37,613 --> 00:01:44,461
+Coarse distance fields or voxels can lose thin
+walls or merge nearby surfaces.
+
+21
+00:01:44,461 --> 00:01:48,922
+Coverage, detail and update cost must be
+balanced.
+
+22
+00:01:48,922 --> 00:01:52,867
+Rays can query scene triangles beyond the
+screen,
+
+23
+00:01:52,867 --> 00:01:59,440
+but that does not make the work cheap. We
+first need a way to skip unrelated geometry.
+
+24
+00:02:00,160 --> 00:02:05,960
+A ray is an origin plus a direction multiplied
+by a parameter.
+
+25
+00:02:05,960 --> 00:02:13,692
+Before testing every triangle, we can test
+boxes enclosing groups of triangles.
+
+26
+00:02:13,692 --> 00:02:19,811
+A BVH organizes bounding volumes
+hierarchically. Missing a parent box allows
+
+27
+00:02:19,811 --> 00:02:27,042
+its descendants to be skipped. We distinguish
+visited and rejected branches in the diagram.
+
+28
+00:02:27,042 --> 00:02:35,223
+An axis-aligned box can be tested using ray
+intervals between the two bounds of each axis.
+
+29
+00:02:35,223 --> 00:02:41,222
+Without a common interval across all axes, the
+ray misses the box.
+
+30
+00:02:41,222 --> 00:02:44,804
+Our example uses intervals of two to six,
+three to five,
+
+31
+00:02:44,804 --> 00:02:47,917
+and four to seven. Their overlap is four to
+five.
+
+32
+00:02:47,917 --> 00:02:53,522
+Replacing one interval with eight to nine
+removes the overlap and rejects the branch.
+
+33
+00:02:53,522 --> 00:03:01,819
+A box hit does not guarantee a geometry hit.
+Bounds conservatively retain candidates;
+
+34
+00:03:01,819 --> 00:03:06,592
+leaf geometry still needs intersection
+testing.
+
+35
+00:03:06,592 --> 00:03:10,707
+Closest-hit and visibility queries have
+different goals.
+
+36
+00:03:10,707 --> 00:03:15,234
+One needs the nearest valid surface, while
+another can terminate
+
+37
+00:03:15,234 --> 00:03:19,842
+after finding an appropriate blocker. Their
+costs need not match.
+
+38
+00:03:19,842 --> 00:03:26,092
+Poor bounds can group unrelated objects and
+leave excessive candidate work. Building a
+
+39
+00:03:26,092 --> 00:03:32,342
+better hierarchy also costs time. Traversal
+quality and construction cost are linked.
+
+40
+00:03:32,342 --> 00:03:37,553
+Hardware ray tracing in 2018 accelerated
+portions of intersection work.
+
+41
+00:03:37,553 --> 00:03:43,520
+It did not make traversal, material evaluation
+and scene updates universally free.
+
+42
+00:03:44,240 --> 00:03:51,865
+A mesh can appear in multiple scene instances.
+Geometry-level and scene-instance acceleration
+
+43
+00:03:51,865 --> 00:03:58,002
+structures separate those responsibilities,
+commonly called BLAS and TLAS.
+
+44
+00:03:58,002 --> 00:04:05,245
+Moving an instance differs from deforming its
+triangles. The required structure
+
+45
+00:04:05,245 --> 00:04:12,592
+updates change, and update versus rebuild
+conditions depend on the engine and API.
+
+46
+00:04:12,592 --> 00:04:19,297
+A cheap update does not always preserve
+optimal traversal. Deformation can reduce
+
+47
+00:04:19,297 --> 00:04:25,522
+bound quality, trading lower update cost for
+more expensive future queries.
+
+48
+00:04:25,522 --> 00:04:31,378
+Hybrid rendering combines a rasterized base
+with selected ray-traced effects such as
+
+49
+00:04:31,378 --> 00:04:37,152
+shadows or reflections. Different tasks can
+use different methods within one frame.
+
+50
+00:04:37,152 --> 00:04:42,501
+Battlefield V's initial DXR reflections
+illustrate that hybrid approach.
+
+51
+00:04:42,501 --> 00:04:46,346
+They are distinct from later full path-tracing
+modes,
+
+52
+00:04:46,346 --> 00:04:50,942
+and game release dates should be separated
+from feature updates.
+
+53
+00:04:50,942 --> 00:04:57,345
+Access to off-screen lights does not remove
+noise from sparse rough-reflection samples.
+
+54
+00:04:57,345 --> 00:05:02,400
+The next question is how to produce a stable
+estimate with limited work.
+
+55
+00:05:03,120 --> 00:05:08,860
+When many directions or paths contribute,
+samples can estimate their combined effect.
+
+56
+00:05:08,860 --> 00:05:12,505
+The estimator must account for selection
+probability,
+
+57
+00:05:12,505 --> 00:05:15,452
+not simply average arbitrary chosen values.
+
+58
+00:05:15,452 --> 00:05:20,642
+Two equally weighted teaching values, two and
+eight, average to five.
+
+59
+00:05:20,642 --> 00:05:26,359
+Sampling eight more often without compensation
+biases the estimate upward.
+
+60
+00:05:26,359 --> 00:05:30,492
+Better selection still requires appropriate
+weights.
+
+61
+00:05:30,492 --> 00:05:37,729
+Monte Carlo estimators divide contributions by
+sampling density. Rare, large contributions
+
+62
+00:05:37,729 --> 00:05:44,512
+can have large weights. Distribution design
+therefore matters alongside sample count.
+
+63
+00:05:44,512 --> 00:05:49,730
+Under independent sampling and finite
+variance, standard error scales inversely with
+
+64
+00:05:49,730 --> 00:05:54,948
+the square root of sample count. Halving it
+requires roughly four times as many samples.
+
+65
+00:05:54,948 --> 00:05:58,332
+Correlated or filtered samples need separate
+analysis.
+
+66
+00:05:58,332 --> 00:06:03,089
+Accumulation can add information in a static
+scene. In motion,
+
+67
+00:06:03,089 --> 00:06:07,396
+the same pixel coordinate can belong to
+another surface.
+
+68
+00:06:07,396 --> 00:06:12,153
+Image coordinates and surface correspondence
+are different.
+
+69
+00:06:12,153 --> 00:06:18,145
+Two separated frame planes help visualize
+correspondence. Object motion and
+
+70
+00:06:18,145 --> 00:06:24,320
+camera motion determine which previous
+location might provide usable history.
+
+71
+00:06:25,040 --> 00:06:29,606
+DLSS 2, introduced in 2020, combines a
+lower-resolution current image,
+
+72
+00:06:29,606 --> 00:06:34,845
+motion information and temporal feedback to
+produce a higher-resolution output.
+
+73
+00:06:34,845 --> 00:06:38,812
+Its approach differs from the earliest DLSS
+implementations.
+
+74
+00:06:38,812 --> 00:06:42,007
+Reconstruction consumes engine-rendered
+information.
+
+75
+00:06:42,007 --> 00:06:44,811
+It is not the same stage as casting additional
+rays.
+
+76
+00:06:44,811 --> 00:06:50,093
+Savings from lower internal resolution must be
+considered together with reconstruction cost.
+
+77
+00:06:50,093 --> 00:06:54,640
+Halving both image dimensions gives one
+quarter as many pixels.
+
+78
+00:06:54,640 --> 00:06:59,524
+That does not imply one quarter of total game
+cost, since simulation,
+
+79
+00:06:59,524 --> 00:07:03,903
+geometry, memory and reconstruction may scale
+differently.
+
+80
+00:07:03,903 --> 00:07:07,531
+Motion vectors help locate previous
+correspondence.
+
+81
+00:07:07,531 --> 00:07:11,396
+Their direction, units and jitter convention
+must agree.
+
+82
+00:07:11,396 --> 00:07:16,523
+A single global image shift cannot represent
+independently moving objects.
+
+83
+00:07:16,523 --> 00:07:20,919
+Newly revealed surfaces may lack history and
+require greater reliance on current
+
+84
+00:07:20,919 --> 00:07:25,060
+information. Depth or surface changes help
+reject invalid correspondence;
+
+85
+00:07:25,060 --> 00:07:27,672
+more accumulation is not automatically better.
+
+86
+00:07:27,672 --> 00:07:33,289
+Thin moving lines, small lettering and
+disocclusion boundaries are useful tests.
+
+87
+00:07:33,289 --> 00:07:38,182
+Still sharpness and temporal stability remain
+separate observations.
+
+88
+00:07:38,182 --> 00:07:40,731
+We keep the discussion at renderer inputs,
+
+89
+00:07:40,731 --> 00:07:44,696
+outputs and failure conditions rather than
+neural architecture.
+
+90
+00:07:44,696 --> 00:07:49,440
+Missing information is not guaranteed to be
+recovered correctly in every case.
+
+91
+00:07:50,160 --> 00:07:56,599
+DDGI updates spatial probes with rays and lets
+surfaces query the resulting irradiance field.
+
+92
+00:07:56,599 --> 00:08:02,153
+This can avoid independently tracing long
+indirect-light paths for every pixel.
+
+93
+00:08:02,153 --> 00:08:08,629
+Probes are world-space locations rather than
+camera pixels. Their directional ray
+
+94
+00:08:08,629 --> 00:08:14,923
+results can update with lighting and serve
+multiple surfaces as the camera moves.
+
+95
+00:08:14,923 --> 00:08:21,280
+Unconditionally blending nearby probes can
+leak light across walls.
+
+96
+00:08:21,280 --> 00:08:27,853
+Distance and visibility information are needed
+to constrain the query.
+
+97
+00:08:27,853 --> 00:08:33,458
+Our diagram contrasts distance-only blending
+with occlusion-aware weighting across a wall.
+
+98
+00:08:33,458 --> 00:08:38,643
+The example explains the query, without
+claiming a universal implementation formula.
+
+99
+00:08:38,643 --> 00:08:45,186
+Wider probe spacing smooths small features.
+Denser probes cost storage and updates,
+
+100
+00:08:45,186 --> 00:08:50,002
+while partial updates add convergence-time
+considerations.
+
+101
+00:08:50,002 --> 00:08:55,478
+Dynamic updates do not imply instantaneous
+perfect results. Moving lights
+
+102
+00:08:55,478 --> 00:09:01,040
+and wall boundaries help separate latency,
+leakage and computational cost.
+
+103
+00:09:01,760 --> 00:09:09,574
+ReSTIR's 2020 paper addressed dynamic direct
+lighting by reusing candidates over
+
+104
+00:09:09,574 --> 00:09:17,053
+space and time. Later GI and path-tracing
+variants are distinct developments.
+
+105
+00:09:17,053 --> 00:09:20,968
+A reservoir keeps a selected candidate and
+summary information
+
+106
+00:09:20,968 --> 00:09:25,318
+rather than all candidates. Its weighted
+selection is probabilistic,
+
+107
+00:09:25,318 --> 00:09:28,653
+not an instruction to always keep the
+brightest light.
+
+108
+00:09:28,653 --> 00:09:33,311
+In our example, weights one and three give a
+cumulative weight of four.
+
+109
+00:09:33,311 --> 00:09:38,285
+The second candidate replaces the first with
+probability three quarters,
+
+110
+00:09:38,285 --> 00:09:41,523
+leaving the first with probability one
+quarter.
+
+111
+00:09:41,523 --> 00:09:45,309
+This illustrates weighted selection only. A
+final lighting estimator
+
+112
+00:09:45,309 --> 00:09:48,969
+also accounts for proposal distributions and
+represented samples.
+
+113
+00:09:48,969 --> 00:09:52,502
+The replacement probability alone is not the
+complete estimator.
+
+114
+00:09:52,502 --> 00:10:00,184
+Neighboring and historical candidates broaden
+the search. Their usefulness can change with
+
+115
+00:10:00,184 --> 00:10:07,963
+surface position, orientation and visibility,
+so reuse requires appropriate reevaluation.
+
+116
+00:10:07,963 --> 00:10:13,293
+Closing a door can occlude a previously useful
+light. Rechecking current visibility
+
+117
+00:10:13,293 --> 00:10:18,252
+explains why reusing a candidate differs from
+copying an old brightness value.
+
+118
+00:10:18,252 --> 00:10:24,582
+ReSTIR concerns sample selection and reuse;
+denoising concerns stabilizing
+
+119
+00:10:24,582 --> 00:10:30,720
+evaluated results. They can work together
+without being interchangeable.
+
+120
+00:10:31,440 --> 00:10:37,889
+Efficient lighting does not eliminate geometry
+and visibility work. Frustum culling rejects
+
+121
+00:10:37,889 --> 00:10:43,693
+objects outside the view, while occlusion
+culling targets hidden objects within it.
+
+122
+00:10:43,693 --> 00:10:49,150
+Being inside the view volume does not
+guarantee visibility.
+
+123
+00:10:49,150 --> 00:10:56,533
+A wall can hide an in-frustum object. The two
+tests address different conditions.
+
+124
+00:10:56,533 --> 00:11:02,872
+Early depth testing can avoid shading occluded
+samples when pipeline conditions permit.
+
+125
+00:11:02,872 --> 00:11:07,459
+Depth writes or shader side effects can change
+those conditions;
+
+126
+00:11:07,459 --> 00:11:10,963
+not every hidden fragment is automatically
+free.
+
+127
+00:11:10,963 --> 00:11:16,523
+A hierarchical depth buffer summarizes regions
+for conservative occlusion tests.
+
+128
+00:11:16,523 --> 00:11:21,066
+Its reduction and comparison rules must match
+the depth convention,
+
+129
+00:11:21,066 --> 00:11:23,573
+including reversed depth where used.
+
+130
+00:11:23,573 --> 00:11:30,346
+Previous-frame depth can become stale when
+doors open or the camera moves quickly.
+
+131
+00:11:30,346 --> 00:11:36,733
+Conservative handling prevents newly visible
+objects from being discarded.
+
+132
+00:11:36,733 --> 00:11:42,653
+These culling methods resemble BVH rejection
+in spirit but act at different pipeline
+
+133
+00:11:42,653 --> 00:11:48,080
+stages. Identify which query they accelerate
+and which data they pass onward.
+
+134
+00:11:48,800 --> 00:11:55,525
+Mesh shaders provide a pipeline for generating
+and processing grouped geometry. That
+
+135
+00:11:55,525 --> 00:12:02,343
+role is separate from indirect illumination
+and can support geometry-work reduction.
+
+136
+00:12:02,343 --> 00:12:09,922
+Variable Rate Shading changes how frequently
+shading is evaluated in selected regions.
+
+137
+00:12:09,922 --> 00:12:15,683
+Shading frequency and output pixel count are
+separate dimensions.
+
+138
+00:12:15,683 --> 00:12:21,473
+A two-by-two teaching block can share one
+shading evaluation. Platform support and
+
+139
+00:12:21,473 --> 00:12:27,183
+pipeline behavior still matter, and this is
+not a promise of fourfold performance.
+
+140
+00:12:27,183 --> 00:12:35,230
+Virtual texturing manages residency of needed
+pages rather than keeping every texture region
+
+141
+00:12:35,230 --> 00:12:42,573
+resident. It concerns data availability, not
+learned generation of texture content.
+
+142
+00:12:42,573 --> 00:12:48,457
+Sampler feedback can report texture demand.
+Knowing the demand does not make
+
+143
+00:12:48,457 --> 00:12:54,613
+data immediately available; streaming latency
+and residency remain relevant.
+
+144
+00:12:54,613 --> 00:13:00,471
+Geometry groups, shading rate and texture
+pages target different resources.
+
+145
+00:13:00,471 --> 00:13:06,240
+Nanite, VRS and DLSS should not be collapsed
+into one resolution technology.
+
+146
+00:13:06,960 --> 00:13:11,893
+Nanite's 2020 reveal introduced a workflow for
+selecting and supplying needed
+
+147
+00:13:11,893 --> 00:13:16,605
+detail from dense geometry. We distinguish the
+2021 technical description
+
+148
+00:13:16,605 --> 00:13:21,023
+from later engine features. It does not make
+unlimited triangles free.
+
+149
+00:13:21,023 --> 00:13:24,114
+Geometry is partitioned into clusters,
+grouped,
+
+150
+00:13:24,114 --> 00:13:28,089
+simplified and repartitioned into multiple
+representations.
+
+151
+00:13:28,089 --> 00:13:32,433
+This supports finer-grained selection than a
+few whole-object LODs.
+
+152
+00:13:32,433 --> 00:13:36,599
+The need for fine geometry depends on
+projected error. The same world-space
+
+153
+00:13:36,599 --> 00:13:41,483
+deviation appears smaller at greater distance,
+changing the required representation.
+
+154
+00:13:41,483 --> 00:13:47,250
+Our illustrative projection estimate is focal
+length times world-space
+
+155
+00:13:47,250 --> 00:13:52,552
+error divided by distance. Doubling distance
+halves the estimate.
+
+156
+00:13:52,552 --> 00:13:56,273
+This is not the complete Nanite selection
+rule.
+
+157
+00:13:56,273 --> 00:14:02,624
+Independently simplified neighbors can form
+cracks. Group boundaries and repartitioning
+
+158
+00:14:02,624 --> 00:14:08,813
+maintain consistency. Triangle reduction alone
+does not solve hierarchy construction.
+
+159
+00:14:08,813 --> 00:14:13,051
+Selecting clusters and making their data
+resident are different jobs.
+
+160
+00:14:13,051 --> 00:14:17,220
+Rapid camera motion exposes both visibility
+and streaming behavior;
+
+161
+00:14:17,220 --> 00:14:20,823
+triangle visualization alone does not measure
+memory cost.
+
+162
+00:14:20,823 --> 00:14:26,383
+Nanite is a geometry system, not a lighting
+solution. We now connect it to Lumen,
+
+163
+00:14:26,383 --> 00:14:31,280
+which updates indirect illumination and
+reflections over the scene.
+
+164
+00:14:32,000 --> 00:14:39,830
+Lumen combines tracing methods with cached
+lighting. We separate finding a hit,
+
+165
+00:14:39,830 --> 00:14:46,393
+storing surface information and querying the
+final illumination.
+
+166
+00:14:46,393 --> 00:14:49,663
+Screen tracing uses detailed visible surfaces.
+
+167
+00:14:49,663 --> 00:14:54,528
+Misses or unsuitable screen-space paths can
+fall back to scene tracing,
+
+168
+00:14:54,528 --> 00:14:59,473
+preserving screen-space benefits without
+relying on them exclusively.
+
+169
+00:14:59,473 --> 00:15:06,261
+Software and hardware tracing can use
+different scene representations.
+
+170
+00:15:06,261 --> 00:15:14,473
+Distance-field and triangle-based modes
+require explicit version and setting labels.
+
+171
+00:15:14,473 --> 00:15:19,254
+The Surface Cache provides reusable surface
+information at ray hits.
+
+172
+00:15:19,254 --> 00:15:22,982
+Cards relate to capturing meshes from multiple
+views;
+
+173
+00:15:22,982 --> 00:15:26,873
+they are not simply replacements for the
+original walls.
+
+174
+00:15:26,873 --> 00:15:32,786
+Our cutaway separates walls, capture cards and
+lighting caches in depth.
+
+175
+00:15:32,786 --> 00:15:38,033
+Hit detection and cached-light lookup receive
+distinct arrows.
+
+176
+00:15:38,033 --> 00:15:42,588
+The reviewed initial UE5 reveal includes Lumen
+off/on views showing
+
+177
+00:15:42,588 --> 00:15:47,615
+changed indirect lighting in the cave. Those
+pixels demonstrate an effect,
+
+178
+00:15:47,615 --> 00:15:51,543
+not every internal pass or a universal
+performance result.
+
+179
+00:15:51,543 --> 00:15:57,533
+Nanite can accelerate mesh captures used by
+lighting caches. That connection does not
+
+180
+00:15:57,533 --> 00:16:03,360
+make it the definition of Lumen; geometry
+supply supports a separate lighting task.
+
+181
+00:16:04,080 --> 00:16:11,091
+A light change can affect direct lighting and
+cached indirect lighting at different rates.
+
+182
+00:16:11,091 --> 00:16:14,915
+Partial updates require budgets and
+priorities,
+
+183
+00:16:14,915 --> 00:16:18,193
+making cache age a quality consideration.
+
+184
+00:16:18,193 --> 00:16:23,461
+Newly exposed surfaces or major lighting
+changes reduce history reliability.
+
+185
+00:16:23,461 --> 00:16:27,157
+Stability and responsiveness can conflict, so
+trails,
+
+186
+00:16:27,157 --> 00:16:30,853
+noise and convergence speed must be examined
+together.
+
+187
+00:16:30,853 --> 00:16:34,838
+Cache coverage can fail on complex surfaces or
+interiors.
+
+188
+00:16:34,838 --> 00:16:40,288
+Debug views help identify missing coverage
+before changing mesh organization
+
+189
+00:16:40,288 --> 00:16:45,413
+or representation; brightness controls alone
+cannot supply absent data.
+
+190
+00:16:45,413 --> 00:16:48,762
+Thin walls and small bright objects challenge
+
+191
+00:16:48,762 --> 00:16:52,456
+representation resolution and sampling
+budgets.
+
+192
+00:16:52,456 --> 00:16:58,383
+A technology name alone does not establish
+that leakage or instability is solved.
+
+193
+00:16:58,383 --> 00:17:03,295
+Separate fixed-camera lighting changes from
+fixed-lighting camera movement.
+
+194
+00:17:03,295 --> 00:17:07,125
+This distinguishes screen-trace changes from
+scene updates,
+
+195
+00:17:07,125 --> 00:17:10,593
+while exposure and post-processing remain
+controlled.
+
+196
+00:17:10,593 --> 00:17:16,546
+Dynamic illumination does not imply complete
+transport solved anew every frame.
+
+197
+00:17:16,546 --> 00:17:22,240
+Lumen combines tracing, storage and
+distributed updates as an engine system.
+
+198
+00:17:22,960 --> 00:17:27,736
+We separated scene representations, ray
+acceleration, sample reuse,
+
+199
+00:17:27,736 --> 00:17:33,148
+geometry selection and lighting caches. BVHs
+reduce intersection candidates,
+
+200
+00:17:33,148 --> 00:17:38,243
+while probes and reservoirs manage different
+forms of reused information.
+
+201
+00:17:38,243 --> 00:17:42,893
+Nanite selects needed geometry; Lumen traces
+and updates illumination.
+
+202
+00:17:42,893 --> 00:17:47,168
+Sharing an engine does not make their
+responsibilities identical.
+
+203
+00:17:47,168 --> 00:17:51,893
+Evaluate information coverage, work budget and
+update latency together.
+
+204
+00:17:51,893 --> 00:17:57,902
+Next we connect shadow pages, path tracing,
+reconstruction and post-processing.
+
+205
+00:17:57,902 --> 00:18:01,936
+We distinguish rendered frames from generated
+display
+
+206
+00:18:01,936 --> 00:18:06,400
+frames and follow renderer inputs and outputs
+through DLSS 5.

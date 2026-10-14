@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "status": "reviewed-independent-explanation-input-for-tts",
+  "episode": 2,
+  "seriesPlan": "production/research/game-lighting-history/series-plan.json",
+  "durationMeasured": false,
+  "targetMinutes": 20,
+  "footageDependentLinesFinalApproved": false,
+  "scope": "Complete independent educational narration. Any new shot-specific observation must await native pixel/source review. No final footage quota or rights approval.",
+  "title": "Where Games Store Light: Photon Mapping, SSR, Water and Fog",
+  "scenes": [
+    {
+      "id": "overview",
+      "title": "빛이 돌아오는 길",
+      "lines": [
+        "How does a room receive light without a direct view of a lamp, and why can a reflection lose an object outside the screen? We will examine stored light, reused screen information and light lists, then transport through water and fog. Understanding the data each technique keeps also reveals what it cannot recover. We begin with photon mapping, which collects light arrivals before the game runs."
+      ]
+    },
+    {
+      "id": "05a",
+      "title": "광원에서 표면으로",
+      "lines": [
+        "Previously we separated stored wall lighting from shadows evaluated during play. Now consider light that continues after meeting a surface. A red wall can reflect light toward a white wall and tint it.",
+        "Random paths starting at the camera do not find every important route easily. Light passing through a refracting object and concentrating on a small floor area can be difficult to reach by ordinary sampling.",
+        "Photon mapping changes the starting point. It sends energy samples from emitters and records their positions and directions after surface interactions. A computational photon represents a sample, rather than a literal simulation of every physical photon.",
+        "The emitter pass gathers arrivals. The camera pass finds the visible surface, queries nearby arrivals and estimates outgoing light there. Keeping those two jobs separate makes the algorithm easier to follow.",
+        "Our diagram places the emitter, glass and floor at different depths. Gold paths show transport, green dots mark stored arrivals, and a blue disk identifies the query neighborhood. These colors distinguish movement from stored data.",
+        "Counting dots alone does not determine brightness. The estimate accounts for sample energy, query area and surface response. Increasing the number of emitted samples must not create extra total energy.",
+        "A fixed circular query has area pi times radius squared. Doubling its radius makes the area four times larger. This simple calculation explains why a surface estimate depends on the neighborhood area.",
+        "A smaller radius can preserve a narrow feature but become noisy when too few samples arrive. A larger radius gathers more samples while blurring neighboring features. Radius and sample count must therefore be considered together."
+      ]
+    },
+    {
+      "id": "05b",
+      "title": "게임엔진 베이킹과의 연결",
+      "lines": [
+        "The photon-mapping principle dates to research in 1996. Its adoption by a game engine is a separate question. Unreal Lightmass provides an example of precomputed static lighting, without implying that an engine implements every feature of the original research.",
+        "An important Lightmass question is where work is concentrated. An importance region directs quality toward the space used by the player. It does not simply erase everything outside the volume, and the precise behavior is version dependent.",
+        "A game can reuse baked results instead of resolving the same static transport each frame. Changing a lamp or a wall can invalidate those answers. Fast lookup comes with a tradeoff in how the scene responds to change.",
+        "This connects to the original script's concern about baking cost. Finer spatial detail, more samples and complicated transport add work. A reported number of hours is meaningful only with its scene, settings and hardware.",
+        "Testing baked lighting requires separating a runtime intensity change from a rebuild of stored lighting. Otherwise an intended static contribution can be mistaken for a bug.",
+        "A bright pattern behind glass does not identify photon mapping. A texture or another caustic approximation may look similar. Implementation evidence and visible output answer different questions.",
+        "Progressive methods accumulate samples and adjust query neighborhoods over iterations. Shrinking the radius alone is insufficient; the update rule must also provide enough samples.",
+        "We now move from precomputation to coarse spatial representations that update indirect light in a changing scene. The quantity remains light, but its storage and update schedule change."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "LPV의 격자는 무엇을 저장할까",
+      "lines": [
+        "Light Propagation Volumes, or LPV, represent low-frequency directional light in spatial cells. Sharing a grid layout does not make all volume techniques the same algorithm.",
+        "Transporting a cell's light information to neighboring cells approximates indirect illumination. Our diagram separates one propagation step from repeated propagation, without treating each step as a complete physical path.",
+        "Direction matters because equal light arriving from opposite sides illuminates different faces of a wall. A single brightness value cannot represent that distinction well.",
+        "A thin wall is difficult when the wall and the spaces on both sides share coarse cells. The representation may fail to distinguish blocked directions, producing light leakage.",
+        "Finer cells increase storage and update work. Covering an entire large world at one fine resolution can be expensive. Cell size is therefore a resource decision as well as a quality setting.",
+        "An engine demonstration establishes what that implementation explored. It does not by itself prove use in a released game. Presentation, engine support and shipped adoption remain separate evidence.",
+        "Fog will also use spatial cells later, but density and directional illumination are different quantities. The important question is what each cell stores."
+      ]
+    },
+    {
+      "id": "11aa",
+      "title": "픽셀의 경계와 시간",
+      "lines": [
+        "Plausible lighting does not prevent thin geometry from flickering in motion. Anti-aliasing addresses both spatial edges and temporal instability, which must be evaluated separately.",
+        "Supersampling renders more spatial samples before reducing the image. It may increase surface and shading work, unlike merely enlarging a completed image.",
+        "MSAA evaluates geometric coverage at multiple sample positions. It helps polygon boundaries, but does not automatically solve every form of shading aliasing. Its scope depends on what is evaluated per sample.",
+        "Image-based methods such as FXAA detect and filter edges in a completed frame. They avoid additional geometry samples, but their filtering can soften fine details.",
+        "SMAA has spatial and temporal variants. A shared family name does not imply identical inputs. Comparisons need the exact mode and resolution.",
+        "TAA reprojects previous samples into the current frame. Motion information establishes correspondence, while jitter can provide samples at slightly different positions over time.",
+        "A newly revealed surface may have no valid history. Reusing an old color there can leave a trail. More temporal information is useful only when its correspondence is reliable.",
+        "These principles return in reconstruction. Remember the distinction between spatial samples, current-image filtering and history. A still image cannot establish motion quality."
+      ]
+    },
+    {
+      "id": "11a",
+      "title": "포워드 플러스와 광원 선별",
+      "lines": [
+        "Forward and deferred shading organize material and lighting work. Either can still waste work by testing every light at every pixel. Forward+ and clustered approaches address light selection as a separate problem.",
+        "Screen tiles hold lists of potentially relevant lights. Shading reads a tile's list instead of the global list, then performs the remaining surface-level evaluation.",
+        "In a teaching example, a scene has twelve lights and one tile has three candidates. Pixels in that tile examine those three first. These counts illustrate selection rather than a game benchmark.",
+        "Light bounds can be represented as volumes intersecting the space associated with a tile. Disjoint volumes can be excluded. The chosen bounds and depth range determine how conservative selection is.",
+        "A foreground object and distant wall may occupy the same tile but need different lights. Clusters divide the view volume in depth to reduce this overlap.",
+        "We extrude the tile diagram into depth slices. Light volumes intersect particular slices, and unrelated names leave each list. This visualizes the actual selection question.",
+        "Forward+ uses the selected list in forward shading. Tiled or clustered lists can also support deferred lighting. Light assignment does not replace a material model or an indirect-light algorithm.",
+        "Tile-based hardware organizes primitive and pixel processing. Our current lists contain lights. The same word describes different data and stages, and the approaches can coexist.",
+        "Building lists costs work and memory. Large light volumes may leave many candidates, while transparency and depth discontinuities complicate assignment. The method is not universally faster."
+      ]
+    },
+    {
+      "id": "11c",
+      "title": "선형 빛과 저장된 색",
+      "lines": [
+        "After selecting lights, we combine values. Image colors are often encoded for storage and display rather than representing linear light directly. Adding encoded values changes the result.",
+        "Decode color into a linear representation, perform lighting and blending there, then encode the displayed output. That sequence gives addition its intended meaning.",
+        "In our numerical example, the linear midpoint between black and white is 0.5. Its sRGB encoding is approximately 0.735. That is different from taking a midpoint of 0.5 in encoded storage values.",
+        "The sRGB transfer function includes a linear segment near black and a separate curved segment. A power of 2.2 is a useful approximation, not the exact function.",
+        "Not every texture represents color. Normals and roughness encode data even when displayed as images. Their meaning determines whether a color transfer function is appropriate.",
+        "Automatic exposure can hide the cause of a comparison. Hold lighting, camera and exposure fixed when testing color interpretation. This separates a data error from a display adjustment."
+      ]
+    },
+    {
+      "id": "11p",
+      "title": "재질의 대답과 빛의 출처",
+      "lines": [
+        "PBR describes how a surface responds to incoming light. Finding that light and its visibility is a different task. A better material cannot automatically restore missing illumination.",
+        "A microfacet model treats a surface as a distribution of small orientations. Roughness changes how reflection is concentrated or spread. Rough materials can still reflect light.",
+        "Distribution, Fresnel and geometric masking terms serve different roles. Treating them as one realism control obscures errors. We focus here on their connection to transport rather than repeating a material course.",
+        "Image-based lighting combines directional environment information with material response. Rough surfaces can use filtered directional information, but a reflection probe does not know every current local occluder.",
+        "PBR, lightmaps and dynamic shadows are not mutually exclusive. They can represent surface response, stored illumination and current visibility within the same frame."
+      ]
+    },
+    {
+      "id": "11m",
+      "title": "표면의 모양은 어디서 바뀔까",
+      "lines": [
+        "Bricks that appear raised may use different representations. Normal mapping changes the shading direction without moving the original vertices. The silhouette helps reveal that distinction.",
+        "Parallax occlusion mapping uses a view direction and height field to change texture lookup. It can suggest self-occlusion and depth without generally creating a new mesh silhouette.",
+        "Displacement changes surface positions and can use tessellation when more geometry is needed. Separating shading direction, lookup location and geometry position makes their roles clear.",
+        "Subsurface scattering allows light entering at one location to emerge elsewhere. It is distinct from emission and from reflection at a single surface point.",
+        "These surface techniques still depend on illumination. In reflections, our first question is therefore what scene information is available, rather than how impressive the material looks."
+      ]
+    },
+    {
+      "id": "10ba",
+      "title": "SSR가 찾는 것은 화면이다",
+      "lines": [
+        "Screen-space reflections use an existing frame's color and depth. A reflection direction is projected onto the screen and searched there. Reusing the image also limits the available information.",
+        "With a unit normal and a defined incident direction, reflection subtracts twice the normal component. Our diagram states the direction convention before moving the arrows.",
+        "Project points along the reflection ray, compare their depth with the stored surface depth, and fetch screen color at a suitable hit. The depth image normally records a visible front surface.",
+        "A depth crossing is not a complete three-dimensional intersection test. Thickness tolerance and skipped intervals matter. A comparison cannot manufacture hidden back-surface information.",
+        "Tilting the camera can move an object outside the image while it remains in the world. The reflection then has no screen color to fetch. The missing information is in the input, not the scene.",
+        "A surface hidden in the primary view may need to appear in a reflection. A single visible depth layer lacks the complete scene information needed to resolve that mismatch."
+      ]
+    },
+    {
+      "id": "10bb",
+      "title": "반사의 정보와 비용",
+      "lines": [
+        "Fading a reflection near screen edges can make failure less distracting. It does not recover the absent object. Concealment and information recovery are different operations.",
+        "A cubemap records the surroundings from a probe position. It includes off-screen directions, but can differ from a reflection at another position and may contain stale dynamic content.",
+        "Planar reflections render another view using a reflected camera. They suit planar surfaces but add rendering work. One reflected camera does not accurately represent every curved surface.",
+        "Ray-traced reflections query a scene representation, allowing off-screen hits. They still require construction, intersection and shading work. Extending information coverage is not unlimited accuracy.",
+        "Rough reflections consider a distribution of directions. Sparse sampling introduces noise, while temporal filtering raises correspondence issues again. Roughness, search and filtering are linked choices.",
+        "Hierarchical depth can accelerate search by summarizing regions. Empty candidate regions permit larger steps, while potential hits need finer checks. The underlying information is still screen space.",
+        "A useful test fixes camera conditions, exposure and quality while an object leaves the screen. If its reflection remains, a probe or ray-based fallback may contribute. The image alone does not identify the implementation."
+      ]
+    },
+    {
+      "id": "11l",
+      "title": "넓은 광원을 적분하는 LTC",
+      "lines": [
+        "A large ceiling light is not equivalent to a single point. Its angular extent interacts with the surface's reflection distribution. Area-light shading considers both.",
+        "LTC stands for Linearly Transformed Cosines. It approximates a reflection distribution by transforming a simpler integrable distribution, with a corresponding inverse transform of the light polygon.",
+        "We separate the reflection lobe from the light's corners. Roughness and viewing angle change the approximation. The light is not merely replaced by a universal brightness number.",
+        "An intervening cube requires visibility handling. Integrating an area-light contribution and determining occlusion are separate tasks; area-light shading does not automatically solve shadows.",
+        "A rectangle-light control does not prove an LTC implementation. We explain the principle and verify the method separately against engine-version evidence."
+      ]
+    },
+    {
+      "id": "12w",
+      "title": "굴절과 물속 거리",
+      "lines": [
+        "Water and glass involve refraction, reflection and attenuation. We separate direction change at a boundary, energy allocation there, and loss during travel through the material.",
+        "Snell's law relates refractive indices and angles measured from the interface normal. Our diagram varies the index and shows the changed transmitted direction.",
+        "Fresnel behavior changes reflection and transmission with angle. Comparing grazing and near-normal views separates this allocation from the refracted direction.",
+        "Travel distance is another variable. Under absorption alone, transmittance is an exponential of absorption coefficient times path length. Thickness can therefore change the observed color.",
+        "Different absorption per color channel leaves unequal amounts of red, green and blue. A single transparency value cannot capture every distance-dependent color change.",
+        "Unreal's Single Layer Water connects a water layer with scene color and depth. It is an engine approximation rather than a complete solution for arbitrary participating-media paths.",
+        "Screen-based refraction can fail on off-screen or hidden information. A moving-object comparison distinguishes full scene intersection from an approximate screen lookup.",
+        "Overlapping transparent layers also require composition order. Each front layer changes the contribution behind it. Transport and layer handling meet at the final pixel."
+      ]
+    },
+    {
+      "id": "12a",
+      "title": "안개를 통과하는 빛",
+      "lines": [
+        "Fog and clouds contain material along the view path, not just at an ending surface. Rendering accounts for both loss along the path and light scattered into the view.",
+        "Absorption and out-scattering reduce radiance along the beam; together they form extinction. In-scattering adds radiance from other directions.",
+        "Constant coefficients give an exponential transmittance. Varying density requires integrating along the path. A homogeneous example is not a complete model of a cloud.",
+        "Our worked example uses extinction of 0.5 per meter over two meters. Optical thickness is one and transmittance is approximately 0.368. These are teaching values, not measured game settings.",
+        "Splitting that path into two one-meter segments gives the same result when segment transmittances are multiplied. This supports incremental accumulation.",
+        "A fog overlay can approximate atmosphere using distance or height. Volumetric lighting instead uses spatial density, illumination and visibility. Similar colors do not imply identical calculations."
+      ]
+    },
+    {
+      "id": "12b",
+      "title": "볼륨을 앞에서 뒤로 누적하기",
+      "lines": [
+        "Divide the camera ray into segments. Evaluate density, illumination and visibility within each one, then attenuate its contribution by the medium between that segment and the camera.",
+        "A rear contribution must not receive full weight after an opaque front segment. Add it using current transmittance, then update transmittance for the next segment.",
+        "Segment opacity is one minus segment transmittance. The corresponding color must represent the defined scattering or emission contribution; substituting an arbitrary surface color is not a physical volume calculation.",
+        "In our example, the first layer has opacity 0.2 and the second 0.5. The second color is weighted by 0.8, and the remaining transmittance becomes 0.8 times 0.5, or 0.4.",
+        "The camera path alone does not determine light visibility. Each sample also needs transport from the source. We use different colors for the source-to-sample and sample-to-camera paths.",
+        "A longer path through the cloud attenuates incoming sunlight. Deep regions and thin edges can therefore differ. A bright edge is more than an arbitrary white outline in a transport model.",
+        "Coarse steps can miss density changes or produce bands. More steps cost work, while jitter and history introduce temporal considerations. Both sampling position and time handling need evaluation.",
+        "Early termination can skip distant contributions after transmittance becomes small. Its threshold controls approximation error and must be treated as part of the method."
+      ]
+    },
+    {
+      "id": "12c",
+      "title": "엔진의 구름과 대기",
+      "lines": [
+        "Frostbite volumetric lighting and Horizon cloud development illustrate engine approaches. Spatial grid processing and procedural cloud density are separate decisions, even when discussed in the same period.",
+        "Density generation and lighting are different stages. Animating a noise texture creates shape without automatically solving sunlight visibility or scattering.",
+        "Height fog, local volumetric fog and planetary atmosphere operate over different representations and scales. Their apparent similarity should not hide these differences.",
+        "Atmospheric lookup tables reuse expensive transport computations. Their representation differs from a lightmap, but both trade stored results for repeated work. Updates still have conditions and costs.",
+        "A reported millisecond cost belongs to specific hardware, scene and settings. Wider coverage or more samples need not retain it. Process demonstrations and performance claims require separate checks.",
+        "Motion tests examine camera movement, sunlight direction and density changes together. A single still cannot establish stability of temporal accumulation or marching steps."
+      ]
+    },
+    {
+      "id": "conclusion",
+      "title": "저장된 정보의 범위로 옵션 읽기",
+      "lines": [
+        "We asked how renderers handle light beyond direct illumination. Photon mapping gathered arrivals, LPV propagated coarse light, light lists reduced candidates, and reflection methods used screen, probe or scene data.",
+        "Water and fog required direction, distance and scattering. These methods are not a replacement ladder; different inputs and responsibilities can coexist in one frame.",
+        "Ask what an option stores, when it updates and which information is absent. Next we follow rays beyond the screen and connect them to sampling, caches and Lumen."
+      ]
+    }
+  ]
+}

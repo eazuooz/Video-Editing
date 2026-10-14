@@ -1,0 +1,335 @@
+{
+  "preparedAt": "2026-10-10T04:07:32.128Z",
+  "status": "prepared-text-and-causal-plan-only",
+  "episode": 4,
+  "originalInputs": {
+    "projects/game-lighting-history-04/script/narration.ko.json": "7322c25b33e7c98afd9843d52f334a8c45a91f61aa4368cb05bec61e178a9a5b",
+    "projects/game-lighting-history-04/script/narration.en.json": "a6b2eab74e0ab629956249bd21fd33c8c117d174eb12ef0e7fd9e5c31cc5d4b1",
+    "projects/game-lighting-history-04/production/current-unmixed-assembly-v4.json": "d542257313126d6e2af80109b2f4d9fa29d5698ae7f12d859f2f3b9e4896581f"
+  },
+  "originalParagraphs": 87,
+  "originalScenes": 14,
+  "originalOrder": [
+    "overview",
+    "18v",
+    "18t",
+    "18a",
+    "18m",
+    "19",
+    "20",
+    "21m",
+    "21a",
+    "22",
+    "22p",
+    "22r",
+    "22rb",
+    "conclusion"
+  ],
+  "centralViewerQuestion": "마지막 픽셀은 무엇을 새로 계산하고 무엇을 저장·복원·생성한 결과일까?",
+  "scope": "Add prerequisites, small computations and explicit causal bridges beside difficult retained passages. Do not replace or shorten existing claims/formulas/examples/current87paragraphPCM.",
+  "style": {
+    "id": "research-black-v1",
+    "background": "black",
+    "mainText": "white",
+    "secondaryText": "lightgray",
+    "headings": "warmyellow",
+    "vectors": "teal",
+    "focus": "orange",
+    "projectedFaces": true,
+    "occlusion": true,
+    "narrationTimedMotion": true,
+    "caption": "boxed-white-forest-v1",
+    "captionPosition": [
+      960,
+      970
+    ]
+  },
+  "assumptionPolicy": "Announce new numericexample/equal-perspectivedenominator condition. Keep object/axis/colors/units across one calculation. Separate illustrative values from source-measured values.",
+  "sourceObservationEvidence": "production/research/game-lighting-history/episode04-editor-browser-observations-v2.json",
+  "nodes": [
+    {
+      "id": "pre-vsm-address",
+      "scene": "18v",
+      "position": "before-line-3",
+      "question": "넓은 그림자 지도를 정밀하게 저장하면서 지금 필요하지 않은 부분의 비용은 어떻게 줄일까?",
+      "previousResult": "가장 가까운 깊이 비교는 유지하지만 전 영역 고해상도 저장은 비싸다.",
+      "nextQuestion": "필요한 페이지가 다음 프레임에도 그대로 유효할까?",
+      "ko": "페이지는 큰 지도를 나눈 작은 칸입니다. 가상 주소는 그 칸의 이름이고, 물리 메모리는 실제 내용을 놓는 자리입니다. 이름만 있다고 내용이 모두 메모리에 들어 있는 것은 아닙니다. 이 차이를 열여섯 칸과 다섯 자리로 보겠습니다.",
+      "en": "A page is a small piece of the larger map. Its virtual address identifies that piece, while physical memory holds its contents. Having an address does not mean every piece is resident. Our sixteen-piece map and five occupied slots illustrate this distinction.",
+      "terms": [
+        "virtual address",
+        "physical allocation",
+        "page"
+      ],
+      "input": [
+        "16 illustrative virtual cells",
+        "5 illustrative referenced cells"
+      ],
+      "calculation": "Allocate only the5required cells;16addresses do not imply16resident pages.",
+      "spatialMotion": "Projected16-cell map behind5physical slots; teal request arrows move from selected cells to slots, with orange occupied faces. Preserve originalcell identities.",
+      "source": "https://dev.epicgames.com/documentation/en-us/unreal-engine/virtual-shadow-maps-in-unreal-engine"
+    },
+    {
+      "id": "pre-upscaling-grid",
+      "scene": "18t",
+      "position": "before-line-3",
+      "question": "복원된 화면의 픽셀 수와 새로 조명을 계산한 픽셀 수는 어떻게 다를까?",
+      "previousResult": "그림자 저장 비용을 필요한 부분으로 좁혔다.",
+      "nextQuestion": "이전 프레임의 값은 지금도 같은 표면을 가리킬까?",
+      "ko": "이번 숫자는 해상도만 비교하는 예시입니다. 가로 여덟 칸과 세로 네 칸이면 서른두 픽셀입니다. 두 길이를 절반으로 줄인 네 칸과 두 칸은 여덟 픽셀입니다. 출력은 다시 서른두 픽셀이어도, 새 내부 화면은 여덟 픽셀에서 시작합니다.",
+      "en": "Consider only the grid dimensions here. Eight columns and four rows give thirty-two pixels. Halving both dimensions gives four by two, or eight pixels. The output can return to thirty-two pixels even though the new internal image began with eight.",
+      "terms": [
+        "internal resolution",
+        "output resolution"
+      ],
+      "input": [
+        "8×4output grid",
+        "4×2input grid"
+      ],
+      "calculation": "32output pixels/8internal pixels=4; this is not a4×frame-time improvement.",
+      "spatialMotion": "Two projected pixel planes with fixedscale labels;8internal cells expand into32output positions while history enters from a distinctdepth layer.",
+      "source": "Retained18t mathematical dimensional example; existing verified TSR/DLSS role research."
+    },
+    {
+      "id": "pre-visibility-interpolation",
+      "scene": "18a",
+      "position": "after-line-3",
+      "question": "삼각형 번호만 저장한 뒤 한 점의 텍스처 좌표는 어떻게 되찾을까?",
+      "previousResult": "표본이 가리키는 삼각형 신원을 저장했다.",
+      "nextQuestion": "표본이 삼각형 경계를 넘으면 텍스처의 밉 선택은 어떻게 달라질까?",
+      "ko": "먼저 원근의 영향을 같게 놓은 작은 예를 계산하죠. 삼각형의 세 텍스처 좌표는 영 영, 일 영, 영 일입니다. 가중치가 절반, 사분의 일, 사분의 일이면 결과는 영 점 이오, 영 점 이오입니다. 세 가중치의 합은 일입니다. 원근 조건이 달라지면 보정도 필요합니다.",
+      "en": "Start with an example whose vertices have equal perspective denominators. Their texture coordinates are zero-zero, one-zero and zero-one. Weights of one-half, one-quarter and one-quarter produce one-quarter, one-quarter. The weights sum to one. Different perspective denominators require perspective correction.",
+      "terms": [
+        "vertex attribute",
+        "interpolation weight"
+      ],
+      "input": [
+        "UV0=(0,0)",
+        "UV1=(1,0)",
+        "UV2=(0,1)",
+        "weights=(0.5,0.25,0.25)",
+        "equal clip-space w"
+      ],
+      "calculation": "UV=.5UV0+.25UV1+.25UV2=(.25,.25); illustrative, not the RenderDoccapture coordinate.",
+      "spatialMotion": "Projectedtriangle ID7 remainsfixed; moving point connects three vertices to a separateUVplane; showweights before arithmetic. Do notrelabel a capture value as this example.",
+      "source": "https://learn.microsoft.com/en-us/samples/microsoft/xbox-gdk-samples/visibilitybuffer/"
+    },
+    {
+      "id": "pre-mobile-local-memory",
+      "scene": "18m",
+      "position": "after-line-2",
+      "question": "조명 계산 순서와 데이터가 머무는 장소를 왜 따로 구별할까?",
+      "previousResult": "저장할속성 또는삼각형신원은 선택할 수있다.",
+      "nextQuestion": "중간정보를 외부메모리에 언제 내보내야할까?",
+      "ko": "계산 순서는 포워드와 디퍼드가 나누는 질문입니다. 데이터가 가까운 타일 메모리에 머무는지는 다른 질문입니다. 같은 타일 안에서 재질 정보를 만든 뒤 조명 단계가 곧바로 읽을 수 있다면, 밖으로 내보냈다가 다시 가져오는 왕복을 줄일 수 있습니다.",
+      "en": "Forward versus deferred describes how work is organized. Keeping data in nearby tile memory is a different choice. If a lighting stage can immediately consume material data inside the same tile, it may avoid an external-memory round trip.",
+      "terms": [
+        "tile memory",
+        "external bandwidth",
+        "pass boundary"
+      ],
+      "input": [
+        "material stage",
+        "lighting stage",
+        "local tile memory"
+      ],
+      "calculation": "Comparelocalproducer→consumer with externalwrite→externalread; no inventedbandwidth amount.",
+      "spatialMotion": "Retain sameprojectedtile; blue-greenmaterialpacket crosseslocalstage then alternateexternalroute; warmyellowmarks a requiredstore/load boundary.",
+      "source": "https://dev.epicgames.com/documentation/unreal-engine/using-the-mobile-deferred-shading-mode-in-unreal-engine"
+    },
+    {
+      "id": "pre-path-probability",
+      "scene": "19",
+      "position": "after-line-4",
+      "question": "밝은 방향을 더 자주 고르면서 원래 평균을 유지하려면 무엇을 보정할까?",
+      "previousResult": "두 방향의기여2와8을 같은확률로고른 목표평균은5다.",
+      "nextQuestion": "표본전략과 경로길이를 바꾸어도 어떤조건을 보존해야할까?",
+      "ko": "목표는 두 방향의 평균 오입니다. 이제 밝은 방향을 영 점 팔의 확률로, 어두운 방향을 영 점 이로 고릅니다. 원래 절반의 몫을 새 확률로 나누어 보정하죠. 밝은 값 팔에 영 점 오 나누기 영 점 팔을 곱하면 오입니다. 어두운 값 이도 같은 방식으로 오입니다. 이 숫자 예에서는 어느 방향을 골라도 목표가 유지됩니다.",
+      "en": "Our target is the mean of the two directions: five. Select the bright direction with probability point-eight and the dim direction with point-two. Correct each value by its original half-share divided by the new selection probability. Eight times point-five over point-eight is five. Two times point-five over point-two is also five. In this particular example, either selection returns the target.",
+      "terms": [
+        "selection probability",
+        "target mean",
+        "probability correction"
+      ],
+      "input": [
+        "f=(2,8)",
+        "targetp=(.5,.5)",
+        "proposalq=(.2,.8)"
+      ],
+      "calculation": "f(i)*.5/q(i)=5forbothchoices. This estimatesmean5, notunweighted sum10; realdistributions needvalidsupport and accurateprobabilities.",
+      "spatialMotion": "Same two raydirections/2and8values; selectionwheelchanges. Original.5targetweights remainonbackplane; new.2/.8selection onfrontplane; correction shownbefore result.",
+      "source": "https://pbr-book.org/4ed/Monte_Carlo_Integration/Improving_Efficiency"
+    },
+    {
+      "id": "pre-path-survival",
+      "scene": "19",
+      "position": "after-line-6",
+      "question": "일부 경로를 종료하면 밝기가 왜 체계적으로 줄어들지 않을까?",
+      "previousResult": "방향선택확률을 바꿀때 기여보정이 필요했다.",
+      "nextQuestion": "적은표본으로 생긴 노이즈는 최종화면에서 어떻게 처리할까?",
+      "ko": "생존 확률이 영 점 팔이라는 말은 매번 정확히 다섯 개 중 하나를 지운다는 뜻이 아닙니다. 살아남으면 원래 기여에 일 점 이오를 곱하고, 종료하면 영을 더합니다. 기대값에서는 영 점 팔 곱하기 일 점 이오가 일이 되어 원래 기여를 유지합니다. 개별 결과의 흔들림은 더 커질 수 있습니다.",
+      "en": "A survival probability of point-eight does not delete exactly one out of every five paths. A survivor receives a factor of one-point-two-five; a terminated path contributes zero. In expectation, point-eight times one-point-two-five equals one, preserving the original contribution. Individual results can become more variable.",
+      "terms": [
+        "survival probability",
+        "expected value",
+        "variance"
+      ],
+      "input": [
+        "survival=.8",
+        "survivor factor=1.25",
+        "termination contribution=0"
+      ],
+      "calculation": ".8×1.25+.2×0=1; efficiencytradeoff, notvariancereduction.",
+      "spatialMotion": "One raybranch splits into live/terminated possibilities; survivingbranchwidth1.25and probability.8 on distinctplanes; expectation recombines at1.",
+      "source": "https://pbr-book.org/4ed/Monte_Carlo_Integration/Improving_Efficiency"
+    },
+    {
+      "id": "pre-reconstruction-boundary",
+      "scene": "20",
+      "position": "after-line-1",
+      "question": "어떤 차이가 노이즈이고 어떤 차이가 실제 경계일까?",
+      "previousResult": "확률적경로표본은 적은수에서 흔들린다.",
+      "nextQuestion": "복원은 현재와이전의 어떤정보를 신뢰할까?",
+      "ko": "값이 조금 다른 표본 두 개를 섞는다고 모두 같은 문제가 아닙니다. 같은 벽에서 나온 차이는 노이즈일 수 있지만, 벽과 창문을 가로지른 차이는 실제 경계일 수 있습니다. 먼저 깊이와 표면 방향으로 대상을 구별하고, 그다음 섞을 값을 고르는 순서로 보겠습니다.",
+      "en": "Two different sample values do not always represent the same problem. Variation on one wall may be noise; variation across a wall-window boundary may be real structure. First use depth and surface orientation to identify the surfaces, then decide which values to combine.",
+      "terms": [
+        "surface normal",
+        "history validity"
+      ],
+      "input": [
+        "samewall samples",
+        "wall-window boundary"
+      ],
+      "calculation": "Illustrativeeligibilitycomparison; noassertion ofexactDLSSreconstruction rule.",
+      "spatialMotion": "Keeponewall/windowplane; tealnormals andorangeboundary. Neighborarrowsremainwithinsurface, crossboundaryarrow rejected before averaging.",
+      "source": "https://www.nvidia.com/en-us/geforce/news/nvidia-dlss-3-5-ray-reconstruction/"
+    },
+    {
+      "id": "pre-direct-versus-transparent",
+      "scene": "21a",
+      "position": "before-line-1",
+      "question": "직접광 계산이 빨라져도 여러 투명층의 색이 자동으로 해결될까?",
+      "previousResult": "메가라이트는 유용한직접광표본에 작업을집중한다.",
+      "nextQuestion": "앞뒤순서가 바뀌면 색이 어떻게 달라질까?",
+      "ko": "앞에서는 어떤 빛을 계산할지 골랐습니다. 이제 그 빛이 만든 색을 여러 투명 층에서 어떻게 합칠지 보겠습니다. 이 문제와 해법이 메가라이트 뒤에 처음 생긴 것은 아닙니다. 오래된 투명도 문제를 최신 프레임의 남은 책임과 연결하는 절입니다.",
+      "en": "We have chosen which light contributions to evaluate. Now ask how to combine the resulting colors across transparent layers. Transparency and its methods did not first appear after MegaLights. This section revisits an older problem as a responsibility that still remains in a modern frame.",
+      "terms": [
+        "lighting contribution",
+        "compositing"
+      ],
+      "input": [
+        "litcolors",
+        "transparentlayers"
+      ],
+      "calculation": "Separatelight evaluation fromlayer composition; preservehistoricaldates andoriginalorder.",
+      "spatialMotion": "Samecoloredlight reachesred/bluetransparentplanes; cameraray crossesboth, withocclusionandprojectedtop/sidefaces; then reuseoriginalalphacalculation.",
+      "source": "Retained21a alpha-compositing example; existing primary hair/transparency research."
+    },
+    {
+      "id": "pre-generated-frame-count",
+      "scene": "22",
+      "position": "after-line-2",
+      "question": "표시 프레임이 늘어났을 때 무엇을 새로 계산한 것일까?",
+      "previousResult": "조명표본복원과투명색합성까지 계산역할을구분했다.",
+      "nextQuestion": "DLSS5는 표시프레임추가와 어떻게다른역할로설명될까?",
+      "ko": "표에서 실제 렌더링 프레임 한 개는 흰 칸으로 고정하겠습니다. 그 사이에 생성 프레임 세 개를 더하면 표시할 칸은 네 개이고, 다섯 개를 더하면 여섯 개입니다. 생성 칸이 늘어도 흰 칸의 게임 계산이 같은 횟수로 늘어난 것은 아닙니다.",
+      "en": "Keep one actually rendered frame as a white block. Adding three generated frames gives four displayed blocks; adding five gives six. More generated blocks do not mean that the game has performed its simulation that many times.",
+      "terms": [
+        "rendered frame",
+        "generated display frame",
+        "simulation update"
+      ],
+      "input": [
+        "1rendered+3generated",
+        "1rendered+5generated"
+      ],
+      "calculation": "4or6displayframes; not4or6times ray samples/simulation. Hardware/game/versionconditions retained.",
+      "spatialMotion": "Timelineextrudedblocks: whiteR fixedtealGadded; simulationticksondistinctloweraxis; nofakevendorfps.",
+      "source": "https://www.nvidia.com/en-gb/geforce/news/nvidia-app-dlss-4-5-dynamic-multi-frame-generation-available-now/"
+    },
+    {
+      "id": "pre-display-transform",
+      "scene": "22p",
+      "position": "before-line-2",
+      "question": "조명을 그대로 두어도 화면이 왜 밝아지거나 어두워질까?",
+      "previousResult": "현재기능들은 계산/복원/생성을 각기다르게담당한다.",
+      "nextQuestion": "최종색까지 실제패스에서 무엇을추적해야할까?",
+      "ko": "이번에는 조명 계산값과 표시값을 분리하죠. 설명용 선형 밝기가 이이고 노출 배율이 절반이면, 톤 매핑에 들어가는 값은 일입니다. 이 계산은 광원을 바꾼 것이 아닙니다. 그 뒤의 톤 매핑은 별도의 곡선이므로 최종 화면을 단순한 곱셈 하나로 읽으면 안 됩니다.",
+      "en": "Separate the lighting value from the displayed value. An illustrative linear intensity of two with an exposure multiplier of one-half feeds a value of one into tone mapping. The light itself has not changed. Tone mapping applies a separate curve, so the final display is not explained by that multiplication alone.",
+      "terms": [
+        "linear intensity",
+        "exposure multiplier",
+        "tone mapping"
+      ],
+      "input": [
+        "linearvalue2",
+        "exposure.5"
+      ],
+      "calculation": "2×.5=1beforetonemap; curveanddisplaytransformseparate; notsourcepixelmeasurement.",
+      "spatialMotion": "Projectedvalueplanes lighting→exposure→curve→display; warmyellowheading/tealcurve/orangeactiveinput; annotateunits/stagenames.",
+      "source": "Retained22p linear-space/exposure explanation; existing primary post-process research."
+    },
+    {
+      "id": "pre-capture-dataflow",
+      "scene": "22r",
+      "position": "after-line-4",
+      "question": "실제로 선택한 명령이 어떤 입력으로 출력을 만들었는지 어떻게 확인할까?",
+      "previousResult": "자원의크기/형식/층/밉을 확인한다.",
+      "nextQuestion": "관찰한프레임의 구조와 일반실행성능은 왜별도로측정할까?",
+      "ko": "실제 렌더독 시연에서는 선택한 그리기 명령의 삼각형을 보고, 픽셀 셰이더의 색 입력과 반환값을 따라갑니다. 이 셰이더는 입력 색을 그대로 돌려줍니다. 같은 숫자가 입력에서 출력으로 이어지는 위치를 보세요. 이 예가 보여주는 것은 검사 방법이며, 복잡한 조명 패스 전체가 아닙니다.",
+      "en": "In the recorded RenderDoc demonstration, follow the selected triangle draw and then the pixel shader’s color input and return value. This shader simply returns its input color. Locate the matching numbers as they move from input to output. This example teaches inspection, rather than demonstrating an entire lighting pipeline.",
+      "terms": [
+        "draw event",
+        "shader input",
+        "render target"
+      ],
+      "input": [
+        "sourceFrame622/EID14",
+        "COLOR",
+        "return input.color",
+        "SV_Target"
+      ],
+      "calculation": "ObservedCOLOR=(.96125,.01312,.02562,1) matchesSV_Target afterstep. NoGBuffer/GI claim.",
+      "spatialMotion": "Actualactionfootagewithtrackedorangefocus oninput→returnline→output; independentexplaineddiagram usesdistinctprojectedlayers andsame labels.",
+      "source": "https://www.youtube.com/watch?v=eiT2GlSeSeU",
+      "footageDependent": true
+    }
+  ],
+  "independentScenesRequired": [
+    "pre-vsm-address",
+    "pre-upscaling-grid",
+    "pre-visibility-interpolation",
+    "pre-mobile-local-memory",
+    "pre-path-probability",
+    "pre-path-survival",
+    "pre-reconstruction-boundary",
+    "pre-direct-versus-transparent",
+    "pre-generated-frame-count",
+    "pre-display-transform",
+    "pre-capture-dataflow"
+  ],
+  "languageTracksIndependent": true,
+  "originalScriptChanged": false,
+  "originalPcmChanged": false,
+  "synthesizedParagraphs": 0,
+  "newImages": 0,
+  "newMedia": 0,
+  "allAdditionsTextReviewed": true,
+  "allFootageDependentLinesFinalApproved": false,
+  "allNativePixelsReviewed": false,
+  "exactPlacementTimingApproved": false,
+  "bodyRatioApproved": false,
+  "allAnimatedPixelsReviewed": false,
+  "finalMixedAsrApproved": false,
+  "privateUploaded": false,
+  "requiredBeforeSynthesis": [
+    "Freshduplicatecheckafteranyforeigninputchange",
+    "Nativecontinuousbefore/action/afterreview ofselectedsources",
+    "Rightsandrecent-use evidence",
+    "Preserved87paragraphtextandPCM partition",
+    "ExactindependentKOEN insertionmap",
+    "CurrentGPUtrainingsealedcheckpoint/cooperativequeuehandoff"
+  ],
+  "retimingPolicy": "AftermeasurednewPCM, updateallscene starts/mix/KOEN captions/chapters/memberending together; enforcebody60:40withinoneframe withoutloops/slowdowns.",
+  "next": "Currentepisode03ASR remains the soleCPUmediajob. These additions areprepared, notTTS/render/QA/outputdelivery."
+}

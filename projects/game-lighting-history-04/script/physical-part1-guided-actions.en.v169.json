@@ -1,0 +1,301 @@
+{
+  "title": "Reading limited pixels and memory in actual examples",
+  "scenes": [
+    {
+      "id": "shadow-address-view",
+      "title": "shadow-address-view",
+      "lines": [
+        "In the editor, distinguish the colored shadow visualization from the ordinary view. The colored regions inspect shadow data; they are not new colored lights on the wall."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "shadow-wheel-surface",
+      "title": "shadow-wheel-surface",
+      "lines": [
+        "As the camera moves around the wheel and body, identify the wheel surface and its shadow separately. A changed view can require different shadow regions. Apparent softness and which regions were recomputed are different questions. First connect the visible object with the camera movement. Keep the wheel as a reference while separating object movement, viewpoint movement and changed lighting conditions. Similar image changes can alter the required shadow data in different ways."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "shadow-wheel-change",
+      "title": "shadow-wheel-change",
+      "lines": [
+        "Follow surfaces entering the view. Previous presence does not guarantee valid reusable shadow data when objects or lights change. A page cache divides a large map so the required regions can be handled separately. Establishing actual redraws also requires the engine’s invalidation visualization. Also distinguish no longer needed from no longer valid: skipping an unseen region differs from discarding stale contents. The diagram’s address lookup and update arrows therefore have different roles."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "shadow-resource-cache",
+      "title": "shadow-resource-cache",
+      "lines": [
+        "In the resource viewer, locate the shadow physical-page pool. Virtual addresses identify regions, while the physical pool supplies storage. Connect those roles with the address and storage cells in the diagram. A resource name alone does not reveal this frame’s reuse rate. Connect the resource view, the consuming scene and the update conditions. This investigation method transfers to another engine even when its implementation differs."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "texture-streaming-input",
+      "title": "texture-streaming-input",
+      "lines": [
+        "The same memory question appears in surface textures. A virtual-streaming setting is followed by the material graph, connecting the texture asset with its shader input. Shadow pages stored light-view depth; these tiles store surface data. They share selective residency, but hold different information and serve different readers."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "texture-stack-uv",
+      "title": "texture-stack-uv",
+      "lines": [
+        "Follow inputs sharing coordinates as nodes are duplicated and reconnected. The displayed virtual-texture stack count changes. Sharing coordinates can allow address work to be grouped, while different connections can alter that grouping. A stack count is not total frame time or the number of all texture reads."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "texture-dependent-conversion",
+      "title": "texture-dependent-conversion",
+      "lines": [
+        "Read the conversion direction first: this window converts virtual textures to ordinary textures. Its affected textures and materials show that the readers must match the changed asset as well."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "texture-project-tile-settings",
+      "title": "texture-project-tile-settings",
+      "lines": [
+        "Locate virtual-texture settings and distinguish tile size from border size. Larger tiles fetch larger regions; borders provide neighboring data for filtering and also consume storage. Select them with the surface and filtering requirements in mind."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "runtime-texture-producer",
+      "title": "runtime-texture-producer",
+      "lines": [
+        "This runtime virtual-texture asset specifies displacement data. Runtime-generated surface results can be cached. Separate the initial production cost from later reads of the stored data."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "runtime-texture-consumer",
+      "title": "runtime-texture-consumer",
+      "lines": [
+        "The next asset stores color information, alongside tile settings. Different contents serve different readers: shadow pages supplied depth comparisons, while this asset supplies surface data. Choosing tile size and choosing content format are separate decisions; equal dimensions do not imply equal meaning or production cost."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "runtime-texture-size",
+      "title": "runtime-texture-size",
+      "lines": [
+        "The asset exposes virtual dimensions and tile settings. Distinguish the addressable extent from the resident contents. A large address range does not mean every texel is simultaneously resident. Addressing data also needs storage, so budget addresses and contents separately."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "ordinary-streaming-budget",
+      "title": "ordinary-streaming-budget",
+      "lines": [
+        "These are ordinary texture-streaming statistics. Read the Streaming label and pool-size control before interpreting the numbers. Combining them with the virtual-texture physical pool would hide which storage is constrained. Identify the resource represented by a value first."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "virtual-pool-policy",
+      "title": "virtual-pool-policy",
+      "lines": [
+        "Return to virtual-texture pool settings: default capacity, fixed pools and editor auto-growth have different roles. Discovering capacity while editing differs from saving a deployment configuration. Record both the resource type and its pool policy to reproduce the comparison."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "texture-scene-return",
+      "title": "texture-scene-return",
+      "lines": [
+        "Return to the scene and follow the camera across floors and walls. Sharp-looking textures alone do not reveal the cache state. Identify newly exposed surfaces during movement and record the relevant streaming statistics when a measurement is required."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "tsr-silhouette-history",
+      "title": "tsr-silhouette-history",
+      "lines": [
+        "Follow the moving mannequin’s silhouette against the background. Starting with fewer internal pixels makes valid temporal information valuable, but a previous pixel can represent a different surface after motion. Reuse therefore requires deciding which history remains trustworthy. Read internal resolution separately from output resolution. Newly revealed background behind the figure is a useful observation region. Continuing to mix the old figure’s color can blur its boundary; check whether history and the current pixel represent the same surface."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "tsr-rotation-vectors",
+      "title": "tsr-rotation-vectors",
+      "lines": [
+        "Thin rotating blades expose rapidly changing edges and newly uncovered background. Motion vectors help locate corresponding samples but do not supply the correct newly revealed background by themselves. Compare the mannequin’s broad silhouette with these thin fast edges: both use temporal reconstruction under different history-validity conditions. A broad slowly translating surface and a thin rotating blade present different correspondence challenges. Follow the tip and newly revealed background separately instead of relying only on an overall impression."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "horizon-comparison-before",
+      "title": "horizon-comparison-before",
+      "lines": [
+        "Transfer the question to four games. In Horizon, read the reconstruction-method labels and follow the embroidery on the moving bag, keeping the same object as the reference."
+      ],
+      "screenRole": "explanation"
+    },
+    {
+      "id": "horizon-detail-motion",
+      "title": "horizon-detail-motion",
+      "lines": [
+        "Follow the moving embroidery on Aloy’s bag and compare its edges under the two labelled reconstruction methods."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "outer-comparison-before",
+      "title": "outer-comparison-before",
+      "lines": [
+        "Detail reconstruction differs from displaying more frames. In The Outer Worlds, inspect the frame-generation multiplier."
+      ],
+      "screenRole": "explanation"
+    },
+    {
+      "id": "outer-displayed-frames",
+      "title": "outer-displayed-frames",
+      "lines": [
+        "The source changes scenes and its generation multiplier. Its FPS is the source demonstration’s value. Distinguish more frequent displayed images from more frequent game-state updates. The bag comparison reconstructed detail; this example examines display frequency."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "cyber-comparison-before",
+      "title": "cyber-comparison-before",
+      "lines": [
+        "Next inspect light reconstruction in Cyberpunk. Read the conditions and identify reflection and indirect-light regions in the moving scene."
+      ],
+      "screenRole": "explanation"
+    },
+    {
+      "id": "cyber-light-reconstruction",
+      "title": "cyber-light-reconstruction",
+      "lines": [
+        "This DLSS3.5 game demonstration combines several processing stages. Follow surface light and reflections during motion. It is not an isolated single-feature fixed-camera experiment. Compare the role of reconstructing sparse lighting information with the different inputs used for embroidery detail."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "geometry-road-mask",
+      "title": "geometry-road-mask",
+      "lines": [
+        "Return to geometry diagnostics and follow the curved road and sign. Green regions belong to the selected visualization. Distinguish debug colors from ordinary material appearance and identify the inspected data first."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "geometry-barrier-views",
+      "title": "geometry-barrier-views",
+      "lines": [
+        "The scene switches among wireframe, triangle diagnostics and ordinary shading. Geometry subdivision and material appearance answer different questions, so read each mode’s legend again. A shared small-cell appearance does not make geometry elements, shadow pages and texture tiles the same data. Keep the same wall and barrier as references across camera movement. First identify the same object, then interpret the new diagnostic; distinguish a changed visualization from a changed target."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "geometry-courtyard-data",
+      "title": "geometry-courtyard-data",
+      "lines": [
+        "In the moving courtyard, keep people and walls as spatial references while diagnostics alternate with ordinary shading. Separate locating a surface from shading it. The visibility-buffer idea retains visible-surface identifiers, but a diagnostic color alone does not verify every buffer in this scene. Watch the wall revealed behind a person. Resolving which surface is in front differs from calculating the revealed surface’s texture and light. Separating those tasks identifies the data required later."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "geometry-programmable-material",
+      "title": "geometry-programmable-material",
+      "lines": [
+        "Follow selection of the programmable diagnostic and the changing tree and ground colors. Knowing a surface location differs from knowing its shading work. Material inputs and branches can still affect cost. Compact geometry identifiers do not remove all subsequent shading work. Read the menu selection, diagnostic appearance and surface location in that order. Otherwise red or purple can be mistaken for the original material color. Ask which data perspective is being applied to the same surface."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "geometry-car-material",
+      "title": "geometry-car-material",
+      "lines": [
+        "The car’s surface appearance changes. Keep the body and wheel as references while separating shape from material appearance."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "mobile-texture-group",
+      "title": "mobile-texture-group",
+      "lines": [
+        "The mobile editor selects a texture group. Grouping the stone texture by usage permits a corresponding size policy. Connect the selected group with the texture preview; this is policy selection rather than a device-speed measurement."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "mobile-device-policy",
+      "title": "mobile-device-policy",
+      "lines": [
+        "The device-profile list connects Android conditions with settings. A platform name does not make every device’s memory and display identical. Record the selected profile before comparing policies for texture size or enabled features."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "mobile-lod-settings",
+      "title": "mobile-lod-settings",
+      "lines": [
+        "Texture-detail controls decide how much of a large source texture to use on this device. Maximum-size and LOD fields record that choice. Smaller data can reduce storage and transfer requirements, but inspect nearby surface detail as well as the chosen settings."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "mobile-console-policy",
+      "title": "mobile-console-policy",
+      "lines": [
+        "Console variables attach further policies to the profile. Interpret each value through the control it names. Texture size, shadows and image reconstruction receive different budgets. This demonstration selects device settings; benefits require a separate measurement under defined scene and resolution conditions."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "mobile-compiler-availability",
+      "title": "mobile-compiler-availability",
+      "lines": [
+        "The shader statistics view warns that one target platform requires an offline compiler. Separate available entries from unavailable ones; an empty entry is not evidence of a cheap shader. Verify the tool and target platform, and record missing measurements honestly."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "fortnite-comparison-before",
+      "title": "fortnite-comparison-before",
+      "lines": [
+        "The preceding games compared reconstruction and display. Fortnite now connects a mobile test scene with performance diagnostics."
+      ],
+      "screenRole": "explanation"
+    },
+    {
+      "id": "fortnite-mobile-test",
+      "title": "fortnite-mobile-test",
+      "lines": [
+        "In Fortnite’s mobile test map, the character and camera move past rocks. Read the high- and low-quality surface labels, then separate the left diagnostic graph from the surfaces. Record both the material conditions and the diagnostic being inspected."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "fortnite-normal-material",
+      "title": "fortnite-normal-material",
+      "lines": [
+        "Move to the wall’s test surface. Inspect the surface and source diagnostics as the camera approaches. Material conditions vary even within one game. As in the reconstruction examples, identify the object and input conditions before interpreting the comparison."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "rivalry-mobile-history",
+      "title": "rivalry-mobile-history",
+      "lines": [
+        "Return to2014 for a mobile engine technology demonstration. Follow the armored figure, bright metal and dark background. It adds historical context, not a fifth game. Retain its year and demonstration status rather than treating it as proof of a later mobile-deferred implementation. Separate a display goal from the implementation history. The bright metal regions move with the figure. After observing the highlight, ask whether the comparison concerns appearance or rendering time. Fortnite supplied diagnostics, while this scene supplies no matching measurement conditions. Compare goals and observation methods rather than ranking device performance."
+      ],
+      "screenRole": "actual"
+    },
+    {
+      "id": "four-game-transfer-conclusion",
+      "title": "four-game-transfer-conclusion",
+      "lines": [
+        "The four games did not supply one universal quality score. They examined detail reconstruction, display frequency, lighting reconstruction and a device budget. The transferable question is which data is produced, stored and reused."
+      ],
+      "screenRole": "explanation"
+    }
+  ]
+}

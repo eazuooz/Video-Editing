@@ -1,0 +1,265 @@
+{
+  "title": "Game Mathematics Part 2: Rotation Interpolation 2 — Converting the Same Orientation",
+  "scenes": [
+    {
+      "id": "IF03",
+      "title": "다른 숫자가 같은 자세인지 확인하기",
+      "lines": [
+        "The first episode found intermediate orientations and chose representations for different tasks. We now convert the same pose between angles, quaternions and matrices.",
+        "First declare axes and multiplication order, then use a small direction vector and round trips to verify that the rotation remains the same."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "변환 그래프보다 먼저 정할 약속",
+      "lines": [
+        "All conversions preserve our right-handed column-vector local-to-world convention.",
+        "Use Hamilton quaternions in wxyz order and radians for trigonometric inputs.",
+        "Euler uses moving axes Y-X-Z, with matrix product Ry times Rx times Rz.",
+        "Mixing the book's left-handed row-vector formulas can change signs and order. Memory layout is a separate issue.",
+        "Euler and quaternions connect bidirectionally through matrices; axis-angle connects to quaternions through the half-angle formula."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "몸체 기준과 화면 기준을 함께 보기",
+      "lines": [
+        "Watch the body bank and turn during flight. Distinguish screen up from body up.",
+        "Equipment changes across edits between these excerpts; those cuts are not one continuous rotation.",
+        "Within each excerpt, observe the attached body axes and the following camera.",
+        "Changing how attached axes are represented must not rotate the object. Distinguish converting a representation from applying a new rotation.",
+        "Equivalent pose does not require identical components. Compare the three resulting axes in the same coordinate frame.",
+        "A matrix and a quaternion should describe the same pose in the same frame. Our next diagram calculates that relationship."
+      ]
+    },
+    {
+      "id": "IG03",
+      "title": "보이는 방향에서 각도 읽기로 이어가기",
+      "lines": [
+        "Observe the same body lean and become upright. Red follows the body; blue follows the board.",
+        "Turning a direction into numbers first requires axes. These screen lines are projected observations through the camera.",
+        "The next triangle is a worked example with fixed axes. Read its length and direction angle from its horizontal and vertical components."
+      ]
+    },
+    {
+      "id": "IP04",
+      "title": "에이탄 투와 하이폿을 작은 수로 읽기",
+      "lines": [
+        "Before extracting angles from a matrix, consider two functions. Hypot gives a right triangle’s hypotenuse. The horizontal length is three and the vertical length is four. Three squared is nine; four squared is sixteen. Their sum is twenty-five, whose square root is five.",
+        "Atan2 takes vertical and horizontal values together to recover a direction angle. One and one give forty-five degrees, while their signs identify the quadrant.",
+        "These tools read directions, but singular orientations merge information. Recovering one unique original angle set then requires a separate convention."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "오일러 각과 행렬을 왕복하기",
+      "lines": [
+        "Build Y, X and Z matrices from heading, pitch and bank, then multiply in our declared order.",
+        "For extraction, indices start at zero. Sine of pitch is minus the entry at row1,column2.",
+        "Away from singular poses, heading is atan2 of R02 and R22; bank is atan2 of R10 and R11.",
+        "This implementation extracts pitch with atan2 and uses the hypotenuse of two matrix entries to detect a singular pose.",
+        "At pitch plus or minus90degrees, choose bank zero and heading atan2 of minus R20 and R00.",
+        "Different returned Euler values can represent the same orientation. Compare the reconstructed matrices in a round trip."
+      ]
+    },
+    {
+      "id": "IB19",
+      "title": "같은 세 축을 쿼터니언에서 읽기",
+      "lines": [
+        "Now build the three axes from the quaternion as well as the angles, and compare the resulting direction vector."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "쿼터니언에서 행렬의 세 축 만들기",
+      "lines": [
+        "With a quaternion at unit length, its four components give the nine rotation-matrix entries. Check and normalize a general-length input first.",
+        "Insert a quaternion for a ninety-degree z turn. The first matrix row is zero, minus one, zero; the second is one, zero, zero; the third is zero, zero, one. This matches the earlier matrix.",
+        "The first column gives local x in world coordinates:[0,1,0]; the second is[-1,0,0].",
+        "Multiplying[1,0,0]gives[0,1,0], matching the two-sided quaternion rotation.",
+        "If signs differ, check axes, rotation direction and input/output spaces first. The full formula is also preserved in the reproducible code."
+      ]
+    },
+    {
+      "id": "IG04",
+      "title": "몸체와 보드에는 다른 방향이 붙어 있습니다",
+      "lines": [
+        "Red follows the body. Blue follows the visible board length.",
+        "Their directions change separately and then reconnect.",
+        "Distinguish the objects before comparing calculated results for the same direction vector."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "다른 숫자로도 같은 차체 자세",
+      "lines": [
+        "Look at the car again. Follow the body facing and road inclination. We can record the same visible orientation as a matrix or a quaternion.",
+        "Changing representation does not automatically change position or speed, and must preserve the input/output frames.",
+        "We have not read stored values from the game. The footage prepares us to check equivalent axes in our calculation.",
+        "Matching forward directions alone can still leave different up directions. Follow the bank as well as facing.",
+        "Mathematically we can transform basis axes using stored rotations. Instead of inferring hidden values from pixels, we verify them in the next independent calculation.",
+        "We will check that conversion remains valid near a half-turn."
+      ]
+    },
+    {
+      "id": "IG11",
+      "title": "한 자세를 여러 작업에 넘겨 쓰기",
+      "lines": [
+        "Compare the red body line and blue board line.",
+        "The moving object has one orientation at a particular instant.",
+        "That pose can be expressed as angles for editing, a quaternion for interpolation or a matrix for applying it to vectors.",
+        "The next round trip checks whether the converted numbers produce the same direction."
+      ]
+    },
+    {
+      "id": "IP05",
+      "title": "행렬에서 회전값을 읽을 때 나눗셈을 지키기",
+      "lines": [
+        "After converting a quaternion to a matrix, check the reverse path. Trace is simply the sum of the three entries on the main diagonal.",
+        "For a z one-hundred-eighty-degree matrix, minus one plus minus one plus one gives minus one. The quaternion's w is zero, so a method that divides by w cannot be used throughout.",
+        "The next calculation chooses a sufficiently large component to divide by, then checks that it rebuilds the same matrix."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "백팔십 도에서도 행렬을 쿼터니언으로",
+      "lines": [
+        "First require an orthonormal matrix with determinant plus one. Do not interpret scale or reflection as a rotation.",
+        "The trace is the diagonal sum. A positive trace suits the branch that calculates a large w component.",
+        "At a180-degree rotation w is zero, so using only a formula that divides by w is unsafe.",
+        "Otherwise choose the x,y or z branch associated with the largest diagonal entry, avoiding division by a small component.",
+        "For a z180-degree turn the z branch yields[0,0,0,1]; the opposite sign represents the same pose.",
+        "Normalize the result, rebuild its matrix and compare with the input. Quaternion normalization is not an arbitrary repair of an invalid matrix."
+      ]
+    },
+    {
+      "id": "IG05",
+      "title": "같은 자세를 바꿔 적는 것과 실제로 돌리는 것",
+      "lines": [
+        "Follow the red body direction. Even with a following camera, the body has one orientation at each instant.",
+        "Converting a matrix to a quaternion does not add another physical rotation.",
+        "This is a different excerpt. The blue board direction changes before another landing.",
+        "Separate an action that changes the pose from a conversion that writes the same pose in different numbers."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "오일러 각과 쿼터니언 연결하기",
+      "lines": [
+        "Convert heading about Y, pitch about X and bank about Z into individual half-angle quaternions.",
+        "Under our convention, multiply qy times qx times qz, matching the matrix product.",
+        "For the reverse, build the unit-quaternion matrix and use our Euler extraction. Substituting its entries yields equivalent direct formulas.",
+        "At a singular pose, choose bank zero and set pitch to the signed pi over two. The source formula needs this boundary correction.",
+        "Clamping protects against small rounding errors, rather than hiding non-unit inputs or mismatched conventions."
+      ]
+    },
+    {
+      "id": "IG08",
+      "title": "카메라의 그림과 몸체의 자세 구분하기",
+      "lines": [
+        "Follow the red body line while the camera also moves with it.",
+        "The tilt projected on screen is not the body three-dimensional angle.",
+        "Continue observing the same object in a different excerpt.",
+        "Verifying recovered angles requires declared axes and rotation data in addition to the camera observation."
+      ]
+    },
+    {
+      "id": "23",
+      "title": "관찰한 축과 계산한 축을 연결하기",
+      "lines": [
+        "Read facing and bank in these three driving excerpts. Edits between them are not rotation interpolation.",
+        "Imagining three attached body axes helps compare poses separately from the camera frame.",
+        "Matrix/quaternion conversion must preserve the axes relationship, without automatically explaining speed or collision.",
+        "With forward and up defined consistently, the third axis is determined too. Consistent handedness and axis directions are the starting point for conversion checks.",
+        "Visible gameplay does not prove a particular conversion implementation. It supplies the question; independent calculations verify values and boundaries.",
+        "We will return to axis-angle and check a midpoint and a conversion round trip."
+      ]
+    },
+    {
+      "id": "IB24",
+      "title": "축과 각도를 되찾을 때의 빈 정보",
+      "lines": [
+        "Having converted the same pose, check what information remains at zero and half a turn when returning to axis and angle."
+      ]
+    },
+    {
+      "id": "24",
+      "title": "축각으로 돌아갈 때의 영도와 반 바퀴",
+      "lines": [
+        "Axis-angle to quaternion uses the half-angle formula: cosine for the scalar, unit axis times sine for the vector.",
+        "For a short representative angle, validate unit length and flip all components if w is negative.",
+        "The angle is twice arccosine of clamped w. When the vector part is long enough, normalize it to get the axis.",
+        "At zero rotation the axis is undefined. Our code selects x by convention, rather than claiming a unique physical axis.",
+        "At180degrees, opposite axes give the same endpoint orientation. Manage path direction and accumulated turns separately."
+      ]
+    },
+    {
+      "id": "IG09",
+      "title": "정보가 부족하면 각도를 추측하지 않습니다",
+      "lines": [
+        "The red body direction is visible, but that line alone does not determine the complete rotation axis.",
+        "This is the blue board direction in a different excerpt.",
+        "We will not guess information that is hidden.",
+        "The calculation uses the declared inputs and exceptional-case rules to verify the same orientation."
+      ]
+    },
+    {
+      "id": "IB25",
+      "title": "변환한 숫자는 같은 방향을 만들까요",
+      "lines": [
+        "Insert the midpoint of a ninety-degree rotation into the formulas, including their exceptional cases, and verify the same direction vector."
+      ]
+    },
+    {
+      "id": "25",
+      "title": "중간 자세와 왕복 변환을 직접 확인",
+      "lines": [
+        "First exercise: what is the halfway SLERP pose from identity to z90degrees?",
+        "The answer is45degrees, stored using cosine and sine of the22.5-degree half-angle.",
+        "Convert to a matrix and rotate[1,0,0]. The result is[sqrt2/2,sqrt2/2,0]; check its unit length.",
+        "Second exercise: convert a z180-degree matrix to a quaternion and back.",
+        "The z branch gives[0,0,0,1]. The reconstructed matrix has diagonal[-1,-1,1].",
+        "An opposite quaternion sign can still pass when the matrices agree. Compare entry errors and transformed basis axes."
+      ]
+    },
+    {
+      "id": "IP08",
+      "title": "같은 방향인지 벡터를 돌렸다가 되돌려 봅니다",
+      "lines": [
+        "Check the same forty-five-degree orientation with a small vector. Keep the right-handed z axis and column-vector convention. The input points one unit right: one, zero, zero.",
+        "Its quaternion uses the cosine and sine of the half angle, twenty-two point five degrees. The physical orientation still turns forty-five degrees. Stored components and the physical angle have different roles.",
+        "Apply the matrix for the same orientation to the vector. Its first component is square root of two over two. The second is also square root of two over two. The third is zero. The rightward and upward components match, and the length remains one.",
+        "Applying the inverse rotation, minus forty-five degrees, returns one, zero, zero. Equivalent representations give the same direction and the inverse undoes the operation. These are defined calculation results, not angles measured from game footage."
+      ]
+    },
+    {
+      "id": "IG06",
+      "title": "끝 자세와 검산의 목적 연결하기",
+      "lines": [
+        "Finally follow the body and board directions together through the action.",
+        "The red body line and blue board line represent different objects. Compare the input and output direction of the same object.",
+        "The worked numerical example fixed the camera and axes to verify that comparison.",
+        "We have not extracted the game internal rotation values. Next define moving points as lines and bounds."
+      ]
+    },
+    {
+      "id": "26",
+      "title": "회전은 약속과 검증까지가 한 묶음",
+      "lines": [
+        "We aligned signs, preserved unit length and interpolated rotations along a short arc.",
+        "Constant speed also needed fixed endpoints and linear time; accumulated large turns require separate records.",
+        "Conversions preserve axes and multiplication conventions and handle zero,180degrees and Euler singularities.",
+        "Go beyond memorizing representation names: rotate a small vector and reverse the transformation to verify it.",
+        "This completes the3Drotation chapter. Next we will combine orientation and position in rigid-body transformations."
+      ]
+    },
+    {
+      "id": "IP06",
+      "title": "회전한 물체를 선과 경계로 다루는 다음 단계",
+      "lines": [
+        "To use the position and orientation transformations just announced in game space, first define what moves and how far it reaches.",
+        "The next lesson builds lines and rays from points and tests ranges with spheres and boxes. We will then connect rotation and translation to changes in those shapes and bounds."
+      ]
+    }
+  ]
+}

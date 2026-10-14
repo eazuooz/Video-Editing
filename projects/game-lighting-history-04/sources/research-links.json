@@ -1,0 +1,153 @@
+{
+  "researchPack": "production/research/game-lighting-history/research-pack.json",
+  "chapters": [
+    {
+      "id": "18",
+      "era": "2022",
+      "seconds": 180,
+      "title": "VSM·TSR·DLSS 3: 다른 병목을 푸는 세 단계",
+      "problem": "기하, 그림자 해상도, 출력 프레임 수의 병목은 서로 다르다.",
+      "explain": "VSM은 필요한 그림자 페이지에 해상도를 배정하고 캐시를 재사용한다. TSR은 시간 정보를 사용해 영상 해상도를 복원하는 선택지다. DLSS 3의 Frame Generation은 렌더된 프레임 사이 표시용 영상을 만든다. 입력을 받아 게임 상태가 변하는 시계와 디스플레이에 프레임이 제시되는 시계를 나란히 놓는다.",
+      "formula": "예시: 실제 렌더 60fps와 표시 120fps를 별도 레인으로 표시. 이 숫자는 설명용이며 실제 성능 보장 아님.",
+      "visual25d": "빛 카메라의 타일 평면 → 저해상도/고해상도 픽셀 평면 → 시간축 위 원본/생성 프레임을 세 개의 독립 공간 장면으로 구성.",
+      "demoNeed": "공식 VSM page visualization, TSR 가림 해제, DLSS 3 frame generation/input-latency 비교",
+      "limits": "VSM은 GI가 아니고 TSR은 Frame Generation이 아니다. FG가 게임 로직을 추가 실행하는 것으로 표현하지 않음. VSM의 SMRT는 shadow map 깊이를 표본화하며 실제 기하 교차 레이와 구별. 광원/물체 변화 시 페이지 캐시 무효화 비용이 남음.",
+      "sources": [
+        "ue5-release",
+        "tsr",
+        "dlss3",
+        "vsm"
+      ]
+    },
+    {
+      "id": "18a",
+      "era": "2022 호환 GDK 샘플 / 공식 설명 갱신 2026",
+      "seconds": 50,
+      "title": "Visibility Buffer: 재질 대신 보인 삼각형의 ID를 남기기",
+      "problem": "G-buffer에 많은 재질 정보를 쓰지 않고도 보이는 표면을 다시 찾을 수 있을까?",
+      "explain": "객체·삼각형 ID로 가시성을 기록한 뒤 표면 속성을 재구성하고 셰이딩하는 방법을 설명한다. Microsoft 샘플의 포워드 전환과 ID 표시를 시연 후보로 연결한다. 2022는 샘플의 SDK 호환 기준이지 이 기법 최초 발표 연도라고 하지 않는다.",
+      "formula": "pixel → object/primitive ID → 속성 재구성 → material/light. 샘플의 특정 비트 배치를 일반 표준이라고 말하지 않는다.",
+      "visual25d": "색·법선 여러 장 대신 얇은 ID 평면을 남긴다. 선택된 삼각형을 원래 메시에서 꺼내 재질 계산 층으로 전달한다.",
+      "demoNeed": "Microsoft GDK VisibilityBuffer 공식 샘플. 실행·픽셀 검토 미완료.",
+      "limits": "버퍼 축소만으로 전체 프레임이 빨라진다고 추정하지 않는다. 재구성·미분·재질 분기 비용이 있으며 샘플의 인위적 texture-load stress는 상용 게임 성능이 아니다.",
+      "sources": [
+        "ms-visibility"
+      ]
+    },
+    {
+      "id": "18m",
+      "era": "현대 모바일 엔진의 결합 사례 / 발명 연도 표기 아님",
+      "seconds": 50,
+      "title": "모바일 디퍼드: G-buffer도 타일 안에서 처리할 수 있다",
+      "problem": "디퍼드의 임시 버퍼 비용을 타일 기반 GPU에서 줄일 수 있을까?",
+      "explain": "Unreal의 모바일 디퍼드를 앞서 배운 두 축의 결합으로 보여 준다. 지원되는 경로에서는 G-buffer를 타일 메모리에 두고 같은 픽셀의 조명 패스가 읽는다. 메모리리스 기능을 쓸 수 없는 기기는 외부 메모리를 할당할 수 있으므로 항상 메모리가 사라진다고 설명하지 않는다.",
+      "formula": "geometry/material → tile-local G-buffer → lighting → final color. 실제 상주 여부는 GPU·API·렌더 패스 구성에 의존한다.",
+      "visual25d": "디퍼드의 여러 데이터 층을 하나의 타일 메모리 상자 안으로 넣는다. 재질 패스와 조명 패스가 같은 상자를 순서대로 읽고, 바깥 메모리 왕복 화살표가 조건부로 줄어든다.",
+      "demoNeed": "UE Mobile Forward/Deferred와 타일 메모리 사용을 보여 주는 공식 엔진 디버그/프로파일링 시연 후보. 문서의 예시 셰이더 명령 수를 실제 FPS 향상으로 바꾸지 않는다.",
+      "limits": "현재 UE 모바일 디퍼드의 투명체는 포워드 패스, MSAA 제약은 이 구현/플랫폼 조건으로 설명한다. 모든 디퍼드 렌더러에서 MSAA가 수학적으로 불가능하다는 일반화 금지.",
+      "sources": [
+        "ue-mobile-deferred"
+      ]
+    },
+    {
+      "id": "19",
+      "era": "2023년 4월",
+      "seconds": 70,
+      "title": "패스 트레이싱: 효과별 근사를 빛의 경로로 연결하기",
+      "problem": "반사·그림자·간접광을 따로 근사하면 서로 다른 정보가 충돌할 수 있다.",
+      "explain": "카메라 경로에서 재질에 따라 방향을 샘플링하고 경로 기여를 누적한다. 직접광 샘플링과 중요도 샘플링이 왜 필요한지 원리를 짚는다. Cyberpunk의 Overdrive는 2023년 4월 기술 프리뷰로 소개한다.",
+      "formula": "경로 기여의 누적과 PDF 보정; Russian roulette는 확률로 종료하되 살아남은 경로 가중치 보정",
+      "visual25d": "같은 골목에서 별도 효과 레이어가 하나의 경로 그래프로 이어지는 비교. 한 경로를 모든 픽셀의 정답처럼 표시하지 않음.",
+      "demoNeed": "CDPR/NVIDIA 공식 Overdrive developer deep dive와 효과 on/off",
+      "limits": "모든 빛·경로를 무한히 계산한다는 표현 금지. 실시간 구현에는 표본 수·바운스·재사용·디노이징 제한이 남는다.",
+      "sources": [
+        "cyberpunk2023",
+        "pbrt-path"
+      ]
+    },
+    {
+      "id": "20",
+      "era": "2023년 8월 발표 / 9월 적용",
+      "seconds": 130,
+      "title": "Ray Reconstruction: 노이즈를 지우며 어떤 정보를 잃는가",
+      "problem": "희소한 레이 결과를 깨끗한 화면으로 만들 때 디테일과 시간 안정성이 충돌한다.",
+      "explain": "기존의 효과별 필터와 학습된 재구성을 비교한다. 반사 속 작은 글자, 이동하는 물체 뒤의 잔상, 새로 드러난 표면을 관찰 대상으로 삼는다. RR과 SR, Frame Generation이 입력과 목적에서 다름을 다시 한 번 파이프라인에 고정한다.",
+      "formula": "noisy lighting + engine guides/history → reconstructed lighting; 신경망 내부의 정확한 수식으로 가장하지 않는 교육용 도식",
+      "visual25d": "같은 픽셀 주변의 표본 원뿔과 시간층, 경계가 다른 물체의 표본을 섞었을 때 번지는 사례. 원본 표본과 추정 결과를 서로 다른 색 테두리로 표시.",
+      "demoNeed": "공식 DLSS 3.5 Cyberpunk 반사/디테일 비교; 동일 노출·카메라 조건의 시연 선택",
+      "limits": "RR이 실제 추적 레이 수를 늘린다고 말하지 않는다. 화질 우월성을 모든 상황에 일반화하지 않음.",
+      "sources": [
+        "dlss35-announcement",
+        "dlss35-release"
+      ]
+    },
+    {
+      "id": "21",
+      "era": "2024~2025",
+      "seconds": 60,
+      "title": "MegaLights·나나이트 확장: 같은 예산에서 더 많은 요소",
+      "problem": "현대 장면은 광원·식생·기하가 함께 많아진다.",
+      "explain": "MegaLights는 많은 직접광 후보를 확률적으로 다루는 방향으로 소개하고 Lumen의 간접광과 분리한다. Nanite Foliage는 최신 확장으로 짚되 최초 공개 당시 지원 범위와 구분한다.",
+      "formula": "직접광 샘플 수/분포와 재구성 예산; 제품별 정확한 수식 대신 역할 비교",
+      "visual25d": "같은 방의 여러 면광원 중 이번 프레임에 표본화한 광원만 점등; 식생 장면은 기하/커버리지로 별도 전환.",
+      "demoNeed": "Epic MegaLights 2024 공식 실시간 시연, UE5.7 foliage 공식 비교 후보",
+      "limits": "MegaLights 2024 UE5.5 당시 experimental, Nanite Foliage 2025 UE5.7 당시 experimental. 출시·버전 상태를 화면에 표시.",
+      "sources": [
+        "megalights",
+        "ue55",
+        "ue57"
+      ]
+    },
+    {
+      "id": "21a",
+      "era": "2025 개발사 공개 사례 / 이전부터 이어진 문제",
+      "seconds": 50,
+      "title": "투명체·머리카락: 표면 하나로 끝나지 않는 픽셀",
+      "problem": "유리와 머리카락처럼 여러 겹이 겹치면 무엇을 저장하고 어떤 순서로 섞을까?",
+      "explain": "알파 블렌딩의 순서 문제를 먼저 보이고 OIT 계열이 저장량·정확도·비용을 교환함을 소개한다. Activision의 Call of Duty 엔진 OIT 발표와 MachineGames의 Indiana Jones 머리카락 발표를 별도 사례로 연결한다. 새 기법 세부 수식은 전체 발표 자료를 읽은 뒤 확정한다.",
+      "formula": "앞에서 뒤로 C=Σi Ti·αi·Ci, Ti=Πj<i(1−αj). 순서를 바꾸면 일반적으로 결과가 달라진다.",
+      "visual25d": "반투명한 세 겹 판을 실제 앞뒤로 이동해 색 변화 비교. 머리카락은 다수의 얇은 교차 곡선으로 별도 표현한다.",
+      "demoNeed": "SIGGRAPH 2025 개발사 OIT·hair 발표의 실제 엔진/게임 구간. 현재 초록 확인만 완료.",
+      "limits": "모든 OIT가 정확하거나 무제한 레이어를 처리하는 것은 아니다. 발표 연도를 OIT/머리카락 렌더링 발명 연도로 쓰지 않는다. 화면을 보지 않은 기법을 해당 게임에 임의로 부여하지 않는다.",
+      "sources": [
+        "advances2025"
+      ]
+    },
+    {
+      "id": "22",
+      "era": "2025~2026",
+      "seconds": 120,
+      "title": "DLSS 4·4.5·5: 복원과 생성의 범위가 넓어지다",
+      "problem": "모든 DLSS 버전을 업스케일링 하나로 설명하면 현재 기능을 오해한다.",
+      "explain": "DLSS 4의 재구성과 Multi Frame Generation, 4.5의 재구성 모델·동적 생성 프레임 수를 순서대로 정리한다. DLSS 5까지 포함하되 렌더 결과와 모션 정보 등 입력, 생성되는 외관, 개발자의 마스크·아트 제어와 한계에 집중한다. 학습된 외관 지식과 물리 경로 계산의 차이를 설명하고 별도 뉴럴 렌더링 연구 계열이나 신경망 내부 구조 강의로 확장하지 않는다. 발표와 실제 적용 날짜는 원문 근거로 분리한다.",
+      "formula": "MFG 4x: 렌더 1 + 생성 최대 3; 6x: 렌더 1 + 생성 최대 5. DLSS 5는 입력 → 외관 생성 → 개발자 제어의 개념도까지 설명. 신경망 내부 수식·구조 전개는 제외.",
+      "visual25d": "시간축 프레임 슬롯과 실제 렌더 슬롯을 분리. 뒤이어 엔진 기본 영상·모션·마스크가 생성 결과로 이어지는 별도 깊이 레이어를 구성.",
+      "demoNeed": "제조사 공식 DLSS 4/4.5 과정 시연, DLSS 5 developer art controls; 아직 실제 픽셀 미검토",
+      "limits": "제조사의 안정성·정체성 보존 주장을 검증 결과로 쓰지 않는다. 생성된 외관이 정확한 광수송의 증거는 아니다. 기존 채널의 DLSS 5 소개와 겹치는 제품 소개를 반복하지 않고 계산 파이프라인의 차이에 집중한다. 공개 자료에서 확인하지 못한 내부 계산은 추정하지 않는다.",
+      "sources": [
+        "dlss4",
+        "dlss4-research",
+        "dlss45-announcement",
+        "dlss45-release",
+        "dlss5-research",
+        "dlss5-release"
+      ]
+    },
+    {
+      "id": "22r",
+      "era": "전체 과정 정리 · 실제 프레임",
+      "seconds": 300,
+      "title": "실제 엔진의 한 프레임을 분해해서 읽어 보자",
+      "problem": "기법 이름을 알아도 실제 한 프레임의 비용과 입력을 연결하기 어렵다.",
+      "explain": "RenderDoc 실제 캡처의 GPU event와 attachment를 따라 depth, material/G-buffer, shadow, light, reflection/volume, temporal history, postprocess의 입력·출력을 확인한다. 선택한 엔진/버전의 실제 pass 순서를 따른다. 화면에 없는 기능을 가짜 pass로 추가하지 않는다. 실제 캡처의 event 번호·resource 이름/해상도·깊이/색 attachment를 짝지어 기록하고, 선택한 pass 앞뒤의 차이와 프레임 비용을 확인한다. 엔진 버전·설정·캡처 프레임을 고정하며, 설명할 기능이 없는 캡처라면 다른 실제 시연을 선정한다.",
+      "formula": "각 pass = 실제 입력 resource → 실제 shader/event → 출력 resource; universal fixed order 없음",
+      "visual25d": "실제 캡처와 교차하며 resource 판을 깊이 방향으로 쌓고 pass 연결을 진행 순서대로 움직인다. 설명 도식과 실제 GPU resource view를 별도로 분류한다.",
+      "demoNeed": "게임 또는 게임엔진의 실제 RenderDoc 캡처 시연. 문서 화면이나 자체 도식만으로 실제 시연이라 하지 않는다.",
+      "limits": "캡처 권한/게임 anti-cheat/호환성을 우회하지 않는다. 실제 원본 확보와 검토 전에는 이 장 완료 false.",
+      "sources": [
+        "ue-renderdoc"
+      ]
+    }
+  ],
+  "finalFootageRightsApproved": false
+}

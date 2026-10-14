@@ -1,0 +1,14 @@
+// Literal bilingual semantic review and ten still compositions, not encoded QA.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),b='projects/game-lighting-history-04/production/';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,''));
+const ref=p=>({path:p,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')});
+const scriptPath='projects/game-lighting-history-04/script/physical-part1-guided-actions.koen.v175.json',script=read(scriptPath),phrases=read(b+'part1-caption-phrases-v194.json');
+const groups=require('./part1-english-semantic-groups-v194.cjs');
+const sentence=t=>(t.match(/[\s\S]+?(?:[.!?](?=\s|$)|$)/g)||[]).filter(s=>s.trim());
+for(const s of script.scenes){const ko=sentence(s.ko),en=sentence(s.en),g=groups[s.id];if(!g||g.length!==en.length||g.flat().join(',')!==ko.map((_,i)=>i).join(','))throw Error('Incomplete semantic partition '+s.id);}
+const rows=phrases.rows.filter(r=>['fortnite-mobile-test','fortnite-normal-material'].includes(r.id)).map(r=>({id:r.id,cues:r.cues.map((c,i)=>({cue:i+1,text:c.text,boxWidth:c.boxWidth,directStillCompositionRead:true,mainButtonAndDiagnosticTextClear:true,source:ref(b+'local/part1-mobile-framing-v173/'+(r.id==='fortnite-mobile-test'?'phone-rock':'phone-wall')+'.png')}))}));
+if(rows.reduce((n,r)=>n+r.cues.length,0)!==10)throw Error('Ten exact phone compositions required');
+const out=b+'part1-caption-composition-direct-review-v197.json';if(fs.existsSync(path.join(root,out)))throw Error('Preserve existing review');
+fs.writeFileSync(path.join(root,out),JSON.stringify({reviewedAt:new Date().toISOString(),currentScript:ref(scriptPath),phrasePlan:ref(b+'part1-caption-phrases-v194.json'),semanticGroups:ref('production/research/game-lighting-history/part1-english-semantic-groups-v194.cjs'),bilingualReview:{completeParagraphs:37,fullKoAndEnDirectlyRead:true,independentEnSentencesPreserved:true,koSentenceGroupIndicesDirectlyCompared:true,englishSpokenWordTimingMeasured:false},viewer:ref('production/research/game-lighting-history/local/part1-phone-caption-review-v194/index.html'),method:'CUA browser screenshot and selected literal cue. 960x540 display represents 1920x1080 at half scale; exact48px font/fixed960,970/white box/forest shadow. Initial stale wall image was rejected; image complete/currentSrc verified and correct wall pixels reread.',rows,fontSize:48,captionCenter:[960,970],maximumPhoneBoxWidth:980,actualMaximumPhoneBoxWidth:956,stillCompositionsReviewed:10,allCurrentMovingCaptionPixelsReviewed:false,allWordTimingsReviewed:false,allFinalEncodedPixelsReviewed:false,qaApproved:false,uploaded:false,newImages:0},null,2)+'\n');
+console.log(JSON.stringify({bilingualParagraphs:37,phoneStillCues:10,finalPixelsApproved:false,newImages:0}));

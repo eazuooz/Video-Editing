@@ -1,0 +1,197 @@
+{
+  "status": "CPU-source-and-math-preparation-only",
+  "source": {
+    "path": "tmp/game-math-part2-sources/3e10b1ffa61e81d4bc3ee19712b63d65.txt",
+    "sha256": "db8cf6fa2e9786c85b283d29e03abbc52f146460ade0f0aa6bf99f0dad119fa3",
+    "directReadSections": [
+      "11.1 through 11.8.2",
+      "11.9 all twelve exercises and closing source note"
+    ],
+    "wholeCachedChapterRead": true,
+    "freshNativePageVerification": "pending",
+    "sourceFiguresViewed": false
+  },
+  "checks": [
+    {
+      "name": "pressure uses force per area",
+      "passed": true,
+      "evidence": {
+        "pascalPerPsi": 6894.757293168361,
+        "psiPerPascal": 0.00014503773773020924,
+        "inputs": "1 international inch=.0254m; conventional pound-force=4.4482216152605N"
+      }
+    },
+    {
+      "name": "piecewise average velocities",
+      "passed": true,
+      "evidence": {
+        "intervals": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            5.5,
+            6.5
+          ],
+          [
+            0,
+            9
+          ]
+        ],
+        "answers": [
+          1.0,
+          -1.0,
+          0.0,
+          2.0,
+          -0.2222222222222222
+        ]
+      }
+    },
+    {
+      "name": "interior derivatives and continuous positions with velocity jumps",
+      "passed": true,
+      "evidence": {
+        "times": [
+          0.1,
+          1,
+          1.9,
+          4.1,
+          5,
+          6.5,
+          8,
+          9
+        ],
+        "velocities": [
+          1.8,
+          0,
+          -1.7999999999999998,
+          2.987832164741558,
+          -3.141592653589793,
+          -3.079817694975484e-15,
+          -1,
+          -1
+        ],
+        "accelerations": [
+          -2,
+          -2,
+          -2,
+          -3.049875487694365,
+          -6.0433897193223565e-15,
+          -9.869604401089358,
+          0,
+          0
+        ],
+        "joins": [
+          {
+            "t": 2,
+            "position": 0,
+            "leftVelocity": -2,
+            "rightVelocity": 0
+          },
+          {
+            "t": 4,
+            "position": 0,
+            "leftVelocity": 0,
+            "rightVelocity": 3.141592653589793
+          },
+          {
+            "t": 7,
+            "position": 0,
+            "leftVelocity": -3.141592653589793,
+            "rightVelocity": -1
+          }
+        ],
+        "joinDerivative": "undefined; no ordinary finite acceleration at these jumps"
+      }
+    },
+    {
+      "name": "projectile at forty degrees",
+      "passed": true,
+      "evidence": {
+        "gravityFeetPerSecondSquared": 32,
+        "initialVelocity": [
+          114.9066664678467,
+          96.41814145298089
+        ],
+        "peakSeconds": 3.013066920405653,
+        "peakPosition": [
+          346.22147566835434,
+          155.25715626948488
+        ],
+        "sameInitialHeightSeconds": 6.026133840811306,
+        "horizontalDisplacement": 692.4429513367087
+      }
+    },
+    {
+      "name": "vector quadratic requires full residual",
+      "passed": true,
+      "evidence": {
+        "formula": "t=(-a·v0 ± sqrt((a·v0)^2+2|a|^2 a·delta))/|a|^2",
+        "guards": [
+          "a=0: linear motion",
+          "negative discriminant: no real projected candidate",
+          "filter t>=0 and compare all position components"
+        ],
+        "counterexample": {
+          "v0": [
+            3,
+            4,
+            0
+          ],
+          "a": [
+            0,
+            -4,
+            0
+          ],
+          "target": [
+            7,
+            0,
+            0
+          ],
+          "candidateSeconds": 2.0,
+          "actualPosition": [
+            6.0,
+            0.0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "Euler formula from convergent complex series",
+      "passed": true,
+      "evidence": {
+        "result": "exp(i theta)=cos(theta)+i sin(theta)",
+        "grouping": "even powers form cosine; odd powers form i times sine; theta is in radians"
+      }
+    },
+    {
+      "name": "orbital radius includes altitude",
+      "passed": true,
+      "evidence": {
+        "status": "declared ideal circular toy; source historical conditions",
+        "earthMeanRadiusMetres": 6371000,
+        "altitudeMetres": 340000,
+        "speedMetresPerSecond": 7705.555555555556,
+        "orbitalRadiusMetres": 6711000,
+        "periodSeconds": 5472.214987286803,
+        "periodMinutes": 91.20358312144671,
+        "centripetalMetresPerSecondSquared": 8.847502074169734
+      }
+    }
+  ],
+  "passed": true,
+  "productionCreated": false,
+  "narrationWritten": false,
+  "ttsStarted": false,
+  "formalDuplicateReview": "pending"
+}

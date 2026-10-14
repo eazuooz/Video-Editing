@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "IPF00",
+      "title": "몸과 보드에서 비행기로 넓혀 보기",
+      "lines": [
+        "We will also use an aircraft's body and wings to separate intermediate orientation from how quickly time advances."
+      ]
+    },
+    {
+      "id": "IPF10",
+      "title": "비행기에서 중간 자세를 관찰하기",
+      "lines": [
+        "Look at the aircraft. Red marks its body direction; blue marks its wings.",
+        "As the craft banks, both directions change. There are intermediate orientations between its earlier and later poses.",
+        "The camera moves too, so screen inclination is not a measured game-world angle.",
+        "This does not reveal the game's interpolation algorithm. We choose explicit starting and target orientations in the next model."
+      ]
+    },
+    {
+      "id": "IPF11",
+      "title": "정한 두 자세의 절반을 실제로 만들기",
+      "lines": [
+        "Our model starts at zero degrees and targets a ninety-degree rotation about z. At half the time parameter, SLERP gives forty-five degrees.",
+        "The quaternion stores the half angle, twenty-two point five degrees. Halving all four components is a different operation.",
+        "Rotate the body and wing directions together. Their lengths and perpendicular relationship remain unchanged."
+      ]
+    },
+    {
+      "id": "IPF12",
+      "title": "같은 경로라도 시간 사용은 다를 수 있습니다",
+      "lines": [
+        "Compare the same aircraft model with fixed endpoints. A linear time parameter gives forty-five degrees at half time.",
+        "Squaring that parameter changes one half to one quarter, giving twenty-two point five degrees. The orientation path and endpoints stay the same, but progress along the path changes."
+      ]
+    },
+    {
+      "id": "RCF00",
+      "title": "비행기에서도 같은 자세를 바꿔 적기",
+      "lines": [
+        "We will transfer the direction checks from cars and boards to an aircraft's body and wings, and verify the same orientation."
+      ]
+    },
+    {
+      "id": "RCF10",
+      "title": "몸통 하나만으로 전체 자세를 알 수 있을까요",
+      "lines": [
+        "Now compare an aircraft instead of a car. Follow the red body direction and blue wing direction together.",
+        "A similar forward direction can coexist with different wing inclinations. Matching one direction does not prove a matching complete orientation.",
+        "We hide the lines when camera changes make them unreliable. A screen image does not reveal nine engine matrix values.",
+        "Next we rotate explicitly defined model axes and compare the quaternion and matrix results."
+      ]
+    },
+    {
+      "id": "RCF11",
+      "title": "행렬의 열은 돌린 기준축입니다",
+      "lines": [
+        "Rotate the model ninety degrees about z. Its forward x direction becomes y; its wing y direction becomes minus x.",
+        "The upward z direction is unchanged. Those three results form the first, second and third matrix columns.",
+        "The same quaternion must rotate all three vectors to those same results. Changing representation does not add another rotation to the craft."
+      ]
+    },
+    {
+      "id": "RCF12",
+      "title": "세 직각 화살표라도 반사가 섞일 수 있습니다",
+      "lines": [
+        "Three unit-length, perpendicular axes are orthonormal. But reversing only x while keeping y and z gives a reflection.",
+        "For this diagonal matrix, the determinant is minus one times one times one: minus one. A half-turn reverses two axes, whose diagonal product is plus one.",
+        "We therefore check the determinant as well as lengths and right angles. Quaternion normalization cannot turn a reflection into a valid rotation."
+      ]
+    }
+  ]
+}

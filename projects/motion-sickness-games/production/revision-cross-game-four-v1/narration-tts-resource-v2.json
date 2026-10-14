@@ -1,0 +1,34 @@
+{
+  "observedAt": "2026-10-11T16:48:42.8171870+09:00",
+  "processes": [
+    {
+      "ProcessId": 73128,
+      "ParentProcessId": 17364,
+      "CreationDate": "2026-10-11T16:45:01.005469+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe",
+      "CommandLine": "C:\\Users\\eazuo\\anaconda3\\envs\\renderformer\\python.exe -u C:/Users/eazuo/renderformer/lora_experiment/analysis/placement_focus/resume_with_preview.py --identity C:/Users/eazuo/renderformer/tmp/placement_focus_20261008/preview_identity_20261009.json"
+    },
+    {
+      "ProcessId": 83900,
+      "ParentProcessId": 24480,
+      "CreationDate": "2026-10-11T16:48:42.126758+09:00",
+      "ExecutablePath": "C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "CommandLine": "\"C:\\Users\\eazuo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n& 'C:/Users/eazuo/anaconda3/envs/renderformer/python.exe' -X utf8 production/batches/cross-game-example-coverage-review/prepare-motion-four-runtime-v2.py; & 'D:/Github/Video-Editing/qwen3-tts/.venv/Scripts/python.exe' -X utf8 production/batches/cross-game-example-coverage-review/render-motion-four-additions-v2.py --dry-run; $taskMotionResource = [ordered]@{observedAt=(Get-Date).ToString('o');processes=@(Get-CimInstance Win32_Process | Where-Object {$_.CommandLine -match 'resume_with_preview|gpu-handoff.py|render-motion-four|render-physical|render-polygons'} | Select-Object ProcessId,ParentProcessId,CreationDate,ExecutablePath,CommandLine);gpu=(& nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits);researchStatus=(Get-Content -Raw -LiteralPath 'C:/Users/eazuo/renderformer/tmp/placement_focus_20261008/status.json' | ConvertFrom-Json);lease=if(Test-Path -LiteralPath 'shared/output/GPU_HANDOFF.json'){Get-Content -Raw -LiteralPath 'shared/output/GPU_HANDOFF.json' | ConvertFrom-Json}else{$null};ownTtsStateExists=(Test-Path -LiteralPath 'projects/motion-sickness-games/production/revision-cross-game-four-v1/narration-tts-execution-v2.json');modelLoadedByOwnRequest=$false;processOrControlChanges=0}; $taskMotionResource | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath 'projects/motion-sickness-games/production/revision-cross-game-four-v1/narration-tts-resource-v2.json' -Encoding utf8; Get-Content -LiteralPath 'projects/motion-sickness-games/production/revision-cross-game-four-v1/narration-tts-resource-v2.json'\""
+    }
+  ],
+  "gpu": "NVIDIA GeForce RTX 5090, 12070, 20118, 94",
+  "researchStatus": {
+    "status": "running",
+    "time": "2026-10-11T16:47:34+09:00",
+    "owner_pid": 73128,
+    "child_pid": 36276,
+    "job": "train_shadow_only_head_42",
+    "completed": 942,
+    "total": 1088,
+    "log": "C:\\Users\\eazuo\\renderformer\\tmp\\placement_focus_20261008\\logs\\train_shadow_only_head_42_1791704854377280200.log"
+  },
+  "lease": null,
+  "ownTtsStateExists": false,
+  "modelLoadedByOwnRequest": false,
+  "processOrControlChanges": 0
+}

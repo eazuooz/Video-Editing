@@ -1,0 +1,271 @@
+{
+  "title": "Game Math Part 2 · Rendering 2: Camera View, Zoom and Output Windows",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "카메라를 바꾸는 네 가지 질문",
+      "lines": [
+        "Why do moving a camera and changing its zoom give different views of the same world?",
+        "First, real split-screen gameplay will help separate cameras from output windows, followed by a pixel-aspect calculation.",
+        "Then we connect field of view with zoom numerically and compare that with moving the camera forward.",
+        "Finally, orthographic projection and a split-screen exercise will show which parameters to change."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "같은 게임의 두 화면을 따로 보기",
+      "lines": [
+        "Split Fiction divides the two players at a central boundary. Follow each character in its own view.",
+        "Different directions produce different backgrounds and occlusion; these are more than identical pieces of one picture.",
+        "The camera determines the view; the output window determines where that result goes.",
+        "We will calculate with our own defined diagram rather than infer this game’s internal settings."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "그림을 저장할 곳과 놓을 영역",
+      "lines": [
+        "A render target stores rendering results, either in a display buffer or a texture used by another calculation.",
+        "Our output rectangle uses a top-left origin with pixel coordinates increasing rightward and downward.",
+        "Store the rectangle’s position and width and height separately. Split a1920-by1080 image vertically.",
+        "The left window begins at(0,0) with size960 by1080; the right begins at(960,0) with the same size.",
+        "The left window’s last integer column is959; position plus width gives the next boundary at960.",
+        "One camera result may appear in two windows, or different camera results may occupy them. Storage and viewing are separate choices.",
+        "Shadow maps and in-world monitors can store results in textures. Implementation and the full pixel transformation come in the next lecture."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "화면 비율과 픽셀 비율을 나누기",
+      "lines": [
+        "A1920-by1080 image has aspect16:9; an individual pixel is not16:9.",
+        "If display and resolution both have aspect16:9, a physical pixel has equal width and height:1:1.",
+        "Multiply physical display width-to-height by resolution height-to-width; all aspect ratios here use width divided by height.",
+        "A4:3 pixel array stretched across a16:9 physical area gives physical pixel aspect4/3.",
+        "A circle drawn assuming square pixels becomes horizontally stretched. Fixing that with camera rotation or object scale breaks other relationships.",
+        "Moving or splitting a window does not change physical pixel aspect, although the rectangle’s aspect changes.",
+        "Off-screen bitmaps commonly assume square pixels; an anamorphic plan must record the later display stretch.",
+        "The source’s1153-by720 is not exactly16:10;1152-by720 is. Verify ratios rather than memorize resolution lists."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "건물의 모양과 화면의 움직임",
+      "lines": [
+        "Townscaper moves from a small waterside building to a closer view. Choose a roof corner and window as landmarks.",
+        "Orbiting reveals sides and stairs. A changed appearance does not mean physical pixel aspect changed.",
+        "Adding blocks changes the building itself. Distinguish construction from changes of viewpoint.",
+        "Tracking the same roof shows parts coming forward or being hidden; camera position and direction change how the scene reads.",
+        "These pixels alone do not establish the game’s projection matrix or numeric zoom method.",
+        "Our original diagram can hold position, field of view and output rectangle fixed and change one at a time.",
+        "Keep the overlap of the building faces in mind as we construct the camera’s potential viewing volume."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "카메라가 보는 공간은 입체입니다",
+      "lines": [
+        "The screen is flat, but a perspective camera’s potential view is a volume. Begin with four corner rays.",
+        "Cut the pyramid by near and far planes to obtain the view frustum.",
+        "A point inside is only potentially visible: an opaque object may still occlude it.",
+        "Moving translates the volume, rotating changes its orientation and changing FOV changes its opening.",
+        "Moving the output rectangle rightward is different: the same view may simply be placed elsewhere.",
+        "We will classify inside and outside with the six boundary planes, beyond the outline of a pyramid."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "여섯 클립 평면으로 안쪽 고르기",
+      "lines": [
+        "A frustum has left,right,top,bottom,near and far boundaries; each boundary is an infinite plane.",
+        "Choose the inner half-space of each plane and retain their intersection.",
+        "Our example faces positive z with near1 and far11; these are defined values, not measurements of the game.",
+        "Points at z0.5,z6 and z12 are before near,between the distance planes and beyond far.",
+        "Being at z6 is insufficient if x extends beyond a side boundary at that depth.",
+        "A triangle crossing a boundary may retain a portion. One outside vertex does not justify deleting the whole primitive.",
+        "Near and far also affect depth precision; the actual depth format and projection convention matter.",
+        "The next lecture calculates depth and division order; retain both distance boundaries and four screen-side boundaries."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "시점이 돌아도 같은 건물을 추적하기",
+      "lines": [
+        "Floors are added while a low view reveals the building’s side. Observe empty screen space and the roof boundary.",
+        "An elevated view reveals roofs and terraces; entering the view and becoming unoccluded are different events.",
+        "Walls overlapping frontally separate in an oblique view; the same spatial relationship gives a different arrangement.",
+        "Later framing becomes wider and closer again. Record apparent size separately from which faces are visible.",
+        "Leaving the image does not prove that the building vanished; consider the viewing volume.",
+        "The recording does not reveal numeric near or far planes. Keep observed pixels separate from defined math examples.",
+        "Our next diagram holds camera position fixed while changing FOV, isolating it from movement."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "시야각은 얼마나 벌어지는 각도일까요?",
+      "lines": [
+        "In a top view, connect the camera to the left and right boundaries; their whole angle is horizontal FOV.",
+        "The angle from the center to either edge is half the FOV:45 degrees for a90-degree horizontal view.",
+        "At depth3, the half-width is3 times tan45 degrees, or3.",
+        "The horizontal span at that depth runs from−3 to3, width6; at depth6 it becomes12.",
+        "A smaller FOV captures less at the same depth; the same object occupies a larger fraction of the image.",
+        "Horizontal and vertical FOV are distinct; an aspect ratio links them, but equal numeric angles are a separate choice."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "줌 두 배가 되는 시야각 계산",
+      "lines": [
+        "The source defines zoom relative to90-degree FOV as one divided by tan of the half-angle.",
+        "For90 degrees, tan45 is1, giving zoom1 as our reference.",
+        "Zoom2 requires half-angle tangent0.5; FOV is twice arctan of one half.",
+        "The result is about53.13 degrees, not45: FOV and zoom are not linearly proportional.",
+        "With camera and objects fixed, central image sizes double because the captured range narrows.",
+        "Check whether tangent functions accept radians; passing degree values directly changes the result.",
+        "This zoom is a projection parameter; orthographic zoom has a different meaning and units."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "캐릭터 크기와 함께 보이는 공간",
+      "lines": [
+        "The players cross the candy town from different positions. Compare character size with the surrounding paths in view.",
+        "A larger character does not prove a different FOV: distance,direction and scene arrangement may also differ.",
+        "The gameplay supplies an observation question; controlled examples isolate position and angle."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "두 시야각을 화면 비율로 연결하기",
+      "lines": [
+        "For square pixels in a16:9 window, horizontal zoom1 requires vertical zoom16/9 to preserve shape.",
+        "Horizontal FOV is90 degrees; vertical FOV is twice arctan(9/16), about58.72 degrees.",
+        "A wider window captures a larger horizontal angle; using90 degrees on both axes can stretch a circle horizontally.",
+        "Vertical-to-horizontal zoom equals the window’s physical aspect; nonsquare pixels need more than pixel counts.",
+        "Include any physical display stretch in addition to1920-by1080 counts; this connects the pixel-aspect calculation.",
+        "If an engine exposes one FOV parameter, check whether it is horizontal or vertical and how aspect derives the other.",
+        "Resizing may preserve horizontal or vertical FOV; verify what becomes visible or disappears."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "확대 전후 같은 지붕을 따라가기",
+      "lines": [
+        "Track one roof while the waterside structure grows, separating newly constructed faces.",
+        "Wider framing changes to a closer view: the roof grows while less surrounding water fits in the image.",
+        "Compare roofs at other depths as well as the foreground target.",
+        "We will not label this game’s input as zoom or movement; a defined two-depth example will calculate the distinction."
+      ]
+    },
+    {
+      "id": "14",
+      "title": "앞으로 이동하면 모든 물체가 두 배일까요?",
+      "lines": [
+        "Place equal-sized panels at forward depths4 and8; perspective size is proportional to object size and inversely proportional to depth.",
+        "Doubling zoom without moving the camera doubles both panels while preserving their relative image-size ratio.",
+        "Move the camera forward2 at fixed zoom: depths change4→2 and8→6.",
+        "The near panel grows by4/2=2; the far grows by8/6=4/3, changing their relative image sizes.",
+        "Both methods can double the front panel, but the rear differs; camera movement and lens zoom are different.",
+        "The denominator is forward-axis z, not the Euclidean distance to an off-axis point.",
+        "Use landmarks at multiple depths; one target can hide changes in their relationship."
+      ]
+    },
+    {
+      "id": "15",
+      "title": "렌즈와 센서에서 시야각 구하기",
+      "lines": [
+        "Physical-camera FOV depends on sensor size as well as focal length; consider sensor width.",
+        "Horizontal FOV is twice arctan of sensor width divided by twice focal length, using consistent units.",
+        "A36mm-wide sensor with18mm focal length gives ratio1 and horizontal FOV90 degrees.",
+        "Keeping the sensor and using36mm focal length gives ratio0.5 and FOV about53.13 degrees.",
+        "An18mm sensor width at18mm focal length gives the same FOV; one number alone is insufficient.",
+        "Distinguish an arbitrary mathematical projection-plane distance from the physical lens focal length.",
+        "Check sensor,focal length and fit policy in physical-camera settings. These calculations address FOV, not depth of field or lens distortion."
+      ]
+    },
+    {
+      "id": "16",
+      "title": "가까운 면과 먼 건물을 같이 보기",
+      "lines": [
+        "Use a large wall and rear roof as landmarks, separating newly added geometry from orbit-revealed faces.",
+        "Close framing emphasizes the wall; wide framing includes water and other structures.",
+        "Changing orientation affects visible area beyond a simple enlargement factor; record viewpoint conditions.",
+        "The next interval adds blocks around an upper terrace; distinguish existing railings from new walls.",
+        "Wider framing returns to a close view; track front and rear landmarks together.",
+        "We do not infer game camera calls; our factors2 and4/3 belong to the defined diagram, not this recording.",
+        "Gameplay motivates a readable result; the mathematical example isolates its changed variables. Connect them while respecting the evidence.",
+        "If distance-based shrinking is unwanted, maps and modeling drawings can use another projection."
+      ]
+    },
+    {
+      "id": "17",
+      "title": "직교 투영에서는 투영선이 평행합니다",
+      "lines": [
+        "Perspective rays meet at the camera; orthographic projection lines are parallel.",
+        "Equal panels at depths2 and10 shrink differently in perspective but have equal orthographic image sizes.",
+        "Orthographic projection does not preserve all shape: rotating a panel reduces its projected width and collapses viewing-direction information.",
+        "Moving along the viewing direction leaves surviving image sizes unchanged; clipping and occlusion still require checks.",
+        "Its viewing volume is a box, described by width and height rather than an opening angle.",
+        "A constant scale is useful for maps and drawings. This proof uses our diagram; Townscaper’s actual projection remains unverified."
+      ]
+    },
+    {
+      "id": "18",
+      "title": "직교 상자의 크기로 줌 계산하기",
+      "lines": [
+        "Use an orthographic box8 by4.5 with aspect16:9 and a1920-by1080 output.",
+        "Mapping width8 to1920 pixels gives240 pixels per world unit; check the same scale vertically.",
+        "Halve both dimensions to4 by2.25 for480 pixels per unit, doubling image size without moving forward.",
+        "The source’s orthographic zoom is2 divided by size:0.25 for width8 and0.5 for width4.",
+        "Perspective zoom comes from an angle ratio; orthographic zoom corresponds to inverse world length.",
+        "Changing only width creates unequal scales and turns a circle into an ellipse; preserve physical output aspect.",
+        "Orthographic rendering still uses near,far and depth comparison; absence of shrinking does not remove depth."
+      ]
+    },
+    {
+      "id": "19",
+      "title": "정면과 지붕 위 시점을 나누어 보기",
+      "lines": [
+        "More construction and viewpoint changes reveal terrace walls and roofs. Separate frontal and overhead views.",
+        "Reading a different face requires another direction; enlargement alone cannot reveal every hidden roof or wall.",
+        "The orthographic diagram demonstrated a constant scale as an option, not an inferred property of the game.",
+        "Choose viewing direction,perspective and range before dividing the output; our next problem returns to two player windows."
+      ]
+    },
+    {
+      "id": "20",
+      "title": "두 플레이어 화면에서 유지할 값 정하기",
+      "lines": [
+        "Start with square pixels,1920 by1080,horizontal FOV90,zoomX1 and zoomY16/9.",
+        "Each vertical half is960 by1080 with aspect8:9 rather than16:9.",
+        "Preserve vertical FOV and zoomY; their zoom ratio must become8/9.",
+        "This gives zoomX2 and horizontal FOV about53.13 degrees, narrowing the visible sides.",
+        "Preserving horizontal FOV instead is another choice; declare the preserved axis before validating shape and range.",
+        "For the orthographic exercise,8 by4.5 gives240 pixels per unit;4 by2.25 doubles it in the same output.",
+        "Neither exercise moved the camera forward; name output-aspect and projection changes separately in code."
+      ]
+    },
+    {
+      "id": "21",
+      "title": "건축과 관찰을 따로 기록하기",
+      "lines": [
+        "The final example changes from a close roof and frontal view to wider,elevated framing.",
+        "Later blocks change the building itself. New faces differ from existing faces revealed by another view.",
+        "Write what to observe,from which direction,over what range and in which output window.",
+        "Change one condition and compare the same landmarks to check both readability and the camera calculation."
+      ]
+    },
+    {
+      "id": "22",
+      "title": "시야·줌·출력 창의 계산을 정리하기",
+      "lines": [
+        "We separated what a camera sees from where the result goes: position,direction,projection range and output rectangle are related but distinct.",
+        "Square pixels can form a16:9 image; the two zoom axes must match physical window aspect.",
+        "Zoom2 changed90 degrees to about53.13; moving forward instead changes objects at different depths by different factors.",
+        "Orthographic projection uses box size instead of FOV; occlusion,clipping and axis scales still matter.",
+        "Record window size and the preserved FOV axis,compare multiple depths and avoid inferring game internals from pixels.",
+        "Next we follow one point from local space through clip space to a screen pixel,using these camera and output choices as inputs."
+      ]
+    }
+  ]
+}

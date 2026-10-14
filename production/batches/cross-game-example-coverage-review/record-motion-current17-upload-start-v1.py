@@ -1,0 +1,14 @@
+"""Record the single actual CUA upload; no processing/settings completion claim."""
+from pathlib import Path
+from datetime import datetime,timezone
+import json,os
+ROOT=Path(__file__).resolve().parents[3];R=ROOT/'projects/motion-sickness-games/production/revision-cross-game-four-v1'
+read=lambda p:json.loads(p.read_text('utf-8-sig'))
+def save(p,v):
+ t=p.with_name(p.name+'.writing');t.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n','utf-8');os.replace(t,p)
+out=R/'publishing/youtube-upload-v1.json';assert not out.exists()
+m=read(R/'publishing/prepared-metadata-v1.json');d=read(ROOT/'projects/motion-sickness-games/production/delivery-output.json')
+v=dict(schemaVersion=1,startedAt=datetime.now(timezone.utc).isoformat(),actualVideoId='lXjDBqONLWs',videoUrl='https://youtu.be/lXjDBqONLWs',status='single-captioned-upload-in-progress;private-draft',privacy='private',uploadSelections=1,sourceFile='output/motion-sickness-games/motion-sickness-games.captioned.mp4',sourceSha256=d['files'][0]['sha256'],sourceBytes=d['files'][0]['bytes'],actualCuaTab=100,observedProgressPercent=8,observedPlatformText='비공개로 저장됨',titles=m['titles'],descriptions=m['descriptions'],koDescriptionEntered=True,thumbnailSelected=True,thumbnailSavedAndReopened=False,playlistSelected='Planning & Game Design & Tech',videoLanguage='한국어',audience='not-made-for-kids',paidPromotion=False,alteredSyntheticContentDisclosed=True,monetizationSelected='on',adSelfRatingSubmitted=True,adSelfRating='none-applicable',uploadComplete=False,sdComplete=False,hdComplete=False,checksComplete=False,manualKoSrtSaved=False,manualEnSrtSaved=False,englishMetadataSaved=False,cardSaved=False,endScreenSaved=False,ccOffPixelsVerified=False,fullSettingsVerified=False,scheduled=False,obsoleteDeleted=False,baselineVideoId='mBDd9VzSTkA',baselinePlatformModified=False,humanListeningApproved=False,publicRightsApproved=False,pinnedComment=m['pinnedComment'])
+save(out,v);cp=read(R/'latest-checkpoint.json');cp.update(recordedAt=v['startedAt'],stage='current17-single-private-upload-in-progress',actualReplacementVideoId=v['actualVideoId'],currentUploadReceipt='publishing/youtube-upload-v1.json',newUploadStarted=True,privateSettingsVerified=False,next='Reuse CUA100 actual upload lXjDBqONLWs; no second upload. Complete tracks/EN/card/member ending/checks/SDHD/CCoff/save-reopen before Git/current09schedule/matchingobsolete deletion.');save(R/'latest-checkpoint.json',cp)
+bp=ROOT/'production/batches/cross-game-example-coverage-review/queue.json';b=read(bp);b.update(updatedAt=v['startedAt'],newUploadStarted=True,next=cp['next']);b['currentMotionReview'].update(actualReplacementVideoId=v['actualVideoId'],singleUploadStarted=True,outputCollected=True,privateSettingsVerified=False,stage=cp['stage']);save(bp,b)
+print(json.dumps(dict(actualVideoId=v['actualVideoId'],uploadSelections=1,processingComplete=False,settingsComplete=False)))

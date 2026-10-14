@@ -1,0 +1,203 @@
+{
+  "createdAt": "2026-10-09T18:07:48.970Z",
+  "scene": "18v",
+  "style": "research-black-v1",
+  "scope": "7original independent KOEN paragraphs,21motion samples. Model proof only: not narration-timed, not a gameplay quota substitute or full episode.",
+  "primarySource": {
+    "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/virtual-shadow-maps-in-unreal-engine",
+    "readAt": "2026-10-09T18:07:48.970Z",
+    "versionLabel": "5.8 documentation; no current-default values generalized to historical2020demo",
+    "claims": [
+      "screen-depth-driven requested pages, virtual address/physical page distinction",
+      "page reuse and invalidation on camera disocclusion, light or shadow-caster changes",
+      "SMRT ray samples test shadow-map depths, not scene triangle intersections"
+    ],
+    "independentExamples": "16virtual addresses,5required pages,2reused/3new and3dirty are original teaching values, not engine measurements."
+  },
+  "paragraphs": [
+    {
+      "paragraph": 1,
+      "originalKo": "앞선 편의 그림자 맵은 광원의 시점에서 가장 가까운 깊이를 저장했습니다. 카메라가 보는 표면을 광원 공간으로 옮기고, 저장한 깊이와 비교해 가려짐을 판단했죠. 이 기본 질문은 가상 그림자 맵에서도 유지됩니다.",
+      "originalEn": "Earlier, a shadow map stored the closest depth from a light's viewpoint. A visible surface was transformed into light space and compared against that stored depth to test occlusion. Virtual shadow maps retain this fundamental question.",
+      "timelineFrom": 0,
+      "duration": 4,
+      "poseIndices": [
+        0,
+        1
+      ],
+      "sampleTimes": [
+        0.15,
+        2,
+        3.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 2,
+      "originalKo": "문제는 넓은 공간 전체에 높은 해상도를 배정할 때입니다. 화면에 아주 작게 보이거나 아예 보이지 않는 부분까지 세밀하게 저장하면 메모리와 그리는 비용을 낭비합니다. 카메라 바로 앞의 작은 그림자에는 오히려 더 촘촘한 표본이 필요합니다.",
+      "originalEn": "Allocating high resolution across an entire large region is expensive. Detailed storage for areas that are tiny on screen or completely invisible wastes memory and rendering work. Meanwhile, a small shadow close to the camera may need much denser sampling.",
+      "timelineFrom": 4,
+      "duration": 4,
+      "poseIndices": [
+        2,
+        3
+      ],
+      "sampleTimes": [
+        4.15,
+        6,
+        7.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 3,
+      "originalKo": "언리얼 엔진의 가상 그림자 맵은 큰 가상 주소 공간을 작은 페이지로 나눕니다. 실제 화면에 필요한 페이지를 찾아 물리 메모리에 배정하고, 그 부분의 깊이를 그립니다. 주소 공간의 크기와 실제로 배정된 메모리 크기를 구별해야 합니다.",
+      "originalEn": "Unreal Engine's virtual shadow maps divide a large virtual address space into small pages. Pages needed by the current view receive physical memory and are rendered. The size of the virtual address space must be distinguished from the memory actually allocated.",
+      "timelineFrom": 8,
+      "duration": 4,
+      "poseIndices": [
+        4,
+        5
+      ],
+      "sampleTimes": [
+        8.15,
+        10,
+        11.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 4,
+      "originalKo": "설명을 위한 격자를 생각해 보죠. 가상의 그림자 영역을 열여섯 칸으로 나누었지만, 지금 보이는 표면이 참조하는 칸은 다섯 개뿐입니다. 다섯 칸에 메모리를 배정하는 그림은 원리를 나타낸 예시이며, 특정 게임의 실제 페이지 수를 측정한 결과는 아닙니다.",
+      "originalEn": "Consider an explanatory grid. A virtual shadow region contains sixteen cells, but surfaces in the current view reference only five. Allocating memory to those five illustrates the principle; these numbers are not measurements from a particular game.",
+      "timelineFrom": 12,
+      "duration": 4,
+      "poseIndices": [
+        6,
+        7
+      ],
+      "sampleTimes": [
+        12.15,
+        14,
+        15.85
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 5,
+      "originalKo": "카메라가 움직여 새로운 부분을 보면 다른 페이지가 필요해집니다. 광원과 물체가 그대로라면 이미 계산한 페이지를 캐시에 남겨 재사용할 수 있습니다. 광원이 움직이거나 그림자를 만드는 물체가 바뀌면 관련 페이지를 다시 계산해야 합니다.",
+      "originalEn": "Camera movement reveals different regions and changes which pages are needed. If the light and objects remain unchanged, previously rendered pages can be cached. Moving a light or changing a shadow-casting object requires affected pages to be updated.",
+      "timelineFrom": 16,
+      "duration": 5.6,
+      "poseIndices": [
+        8,
+        9
+      ],
+      "sampleTimes": [
+        16.15,
+        18.8,
+        21.450000000000003
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 6,
+      "originalKo": "부드러운 그림자를 만들 때에는 하나의 깊이 비교로 끝나지 않습니다. 여러 표본으로 가려진 범위를 어림하고 광원의 크기에 따른 반그림자를 구성합니다. 언리얼의 에스엠알티는 그림자 맵의 깊이를 이용한 추적이며, 장면의 모든 실제 삼각형을 레이로 검사하는 방식과 구별해야 합니다.",
+      "originalEn": "Soft shadows require more than a single depth comparison. Multiple samples estimate occlusion and the penumbra associated with light size. Unreal's SMRT traces against shadow-map depth; it must be distinguished from tracing every ray against the scene's actual triangles.",
+      "timelineFrom": 21.6,
+      "duration": 4,
+      "poseIndices": [
+        10,
+        11
+      ],
+      "sampleTimes": [
+        21.75,
+        23.6,
+        25.450000000000003
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    },
+    {
+      "paragraph": 7,
+      "originalKo": "따라서 캐시가 잘 맞는 정적인 장면과 계속 변하는 장면의 비용은 다를 수 있습니다. 비교 시에는 그림자 해상도만 보지 말고 새로 그린 페이지와 재사용한 페이지, 무효화된 영역을 함께 확인해야 합니다. 이 기술은 간접광 전체를 해결하는 기능이 아닙니다.",
+      "originalEn": "Static scenes with effective caching can cost differently from constantly changing scenes. A useful comparison examines newly rendered pages, reused pages, and invalidated regions alongside resolution. This technique does not solve global indirect illumination.",
+      "timelineFrom": 25.6,
+      "duration": 4,
+      "poseIndices": [
+        12,
+        13
+      ],
+      "sampleTimes": [
+        25.75,
+        27.6,
+        29.450000000000003
+      ],
+      "pixelsReviewed": false,
+      "narrationTimed": false
+    }
+  ],
+  "duration": 29.6,
+  "plannedFrames": 1776,
+  "inputs": [
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-proof0.tsx",
+      "sha256": "1e209bcfe2c013d34178a2cf949df5da9ae36d1168db6abcb4db189032606e73"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-proof1.tsx",
+      "sha256": "9e486dbe5a23cc49ffe7cc7b9e3700696dad0e58019ac6aa7c747d1f290178fc"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-proof2.tsx",
+      "sha256": "bceeadaf8c936f0a0aafce78b81103be2c297e1f917b7bf80e71cd7a28f6bacf"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-proof3.tsx",
+      "sha256": "633f1eab7ffd6426af40dffde38f4b5fa17cfa91e63e8793ea9cea71541c98dd"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-proof4.tsx",
+      "sha256": "c320479687abd641b48b677db6404772cc95281184da1480a51e34f0c497dc3a"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-proof5.tsx",
+      "sha256": "38c9d95a4714c1047463539ee6cc8948424a9f6af63f051d7d558820c0a678ef"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-proof6.tsx",
+      "sha256": "3a09773d01b5197d9bdde93fa5b60b389483664074f8bd238f77ed7cf8dc49bc"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-project-v1.ts",
+      "sha256": "047493f7371378fb010f427c8dfde487626ed912905c6373eac762eea3155aaf"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-model-v1.tsx",
+      "sha256": "662219277ffaff20a53d8b3bd523eb23f61c8390ffb6d58c779fa7f786edee4a"
+    },
+    {
+      "path": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-proof-runtime-v1.tsx",
+      "sha256": "fe1b046979fab2fc4fafdb72027d703c8c27bb60c383d8a4f16102f6147c34f0"
+    },
+    {
+      "path": "projects/game-lighting-history-04/script/narration.ko.json",
+      "sha256": "7322c25b33e7c98afd9843d52f334a8c45a91f61aa4368cb05bec61e178a9a5b"
+    },
+    {
+      "path": "projects/game-lighting-history-04/script/narration.en.json",
+      "sha256": "a6b2eab74e0ab629956249bd21fd33c8c117d174eb12ef0e7fd9e5c31cc5d4b1"
+    }
+  ],
+  "project": "motion-canvas/src/projects/game-lighting-history-04/spatial/vsm-project-v1.ts",
+  "renderStarted": false,
+  "modelMotionProofReviewed": false,
+  "narrationTimingApproved": false,
+  "fullEpisodeApproved": false,
+  "localOnly": true
+}

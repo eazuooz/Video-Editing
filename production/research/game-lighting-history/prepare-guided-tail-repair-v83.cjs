@@ -1,0 +1,25 @@
+// Prepare fresh paths only for failures observed after the complete37 batch.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),base='projects/game-lighting-history-04/production/';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,''));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const ref=p=>({path:p,sha256:sha(p)});
+const write=(p,j)=>{const file=path.join(root,p);if(fs.existsSync(file))throw Error('Preserve existing '+p);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(j,null,2)+'\n');};
+const sourceRequest=base+'part3-guided-actions-tts-request-v69.json',sourceExecution=base+'part3-guided-actions-tts-execution-v69.json';
+const r=read(sourceRequest),e=read(sourceExecution);
+if(!e.endedAt||e.exitCode!==1||e.results?.length!==37||!String(e.error).includes('observed tail failure'))throw Error('Inspect the actual completed37 failure first');
+const history='shared/output/gpu-handoff/'+e.leaseToken+'.json',h=read(history);
+if(h.state!=='research_resume_verified'||h.ttsExitCode!==1)throw Error('Original batch research restoration must be observed');
+if(e.requestSha256!==sha(sourceRequest))throw Error('Original request changed');
+for(const x of r.protectedInputs)if(sha(x.path)!==x.sha256)throw Error('Protected input changed '+x.path);
+for(const x of e.results)if(sha(x.path)!==x.sha256)throw Error('Original take changed '+x.id);
+const failed=e.results.filter(x=>!x.technicalTailGatePassed),ids=new Set(failed.map(x=>x.id));
+if(!failed.length||failed.length>=37)throw Error('Only a bounded observed failed subset is allowed');
+const originalManifest=read(r.manifestOverride),ko=read(originalManifest.paths.script),en=read(originalManifest.paths.scriptEn);
+const audioDir='shared/output/narration/game-lighting-history-04/qwen3-1.7b-guided-tail-v83',stem='game-lighting-history-04-guided-tail-v83';
+const koPath='projects/game-lighting-history-04/script/guided-tail-repair.ko.v83.json',enPath='projects/game-lighting-history-04/script/guided-tail-repair.en.v83.json';
+write(koPath,{...ko,scenes:ko.scenes.filter(x=>ids.has(x.id))});write(enPath,{...en,scenes:en.scenes.filter(x=>ids.has(x.id))});
+const manifest={...originalManifest,paths:{...originalManifest.paths,script:koPath,scriptEn:enPath,narration:audioDir+'/'+stem+'.wav',captionsKo:audioDir+'/'+stem+'.srt',captionsEn:audioDir+'/'+stem+'.en.srt'},tts:{...originalManifest.tts,outputDir:audioDir,filenameStem:stem,maxRenderAttempts:3,maxNewTokens:1536,maxNewTokensReason:'Observed technically failed new paragraphs only; preserve every original111/framing/37 take and all supplied words.'}};
+const mf=base+'guided-tail-repair-manifest-v83.json',req=base+'guided-tail-repair-request-v83.json';write(mf,manifest);
+write(req,{schemaVersion:1,preparedAt:new Date().toISOString(),slug:'game-lighting-history-04',sourceRequest:ref(sourceRequest),sourceExecution:ref(sourceExecution),sourceResearchRestoration:ref(history),manifestOverride:mf,protectedInputs:[...r.protectedInputs,ref(koPath),ref(enPath),ref(mf)],original37TakeFiles:e.results.map(x=>ref(x.path)),observedFailures:failed.map(x=>({id:x.id,tailRatio:x.tailRatio,tailDecayMs:x.tailDecayMs,technicalTailGatePassed:false})),scenes:ko.scenes.filter(x=>ids.has(x.id)).map(x=>({id:x.id,path:audioDir+'/chunks/'+x.id+'-scene.wav'})),thresholdChanged:false,originalPcmRegenerated:false,scriptWordsChanged:false,cpuThreads:2,gpuJobs:1,batchSize:1,wholeAndIndependentAsrRequired:true});
+console.log(JSON.stringify({request:req,failedOnly:failed.map(x=>x.id),original37Preserved:true,ttsStarted:false}));

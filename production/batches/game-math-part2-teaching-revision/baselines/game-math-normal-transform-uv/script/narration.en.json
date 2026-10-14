@@ -1,0 +1,164 @@
+{
+  "title": "Game Math Part 2 · Rendering6: Transforming Normals and UV Mapping",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "확대된 표면의 법선과 무늬를 연결하기",
+      "lines": [
+        "What should you check when lighting directions or patterns look wrong after stretching a shape?",
+        "First verify normal-tangent perpendicularity and the inverse-transpose rule in a numerical example.",
+        "Then inspect game wall and roof patterns and explain UV correspondence, crop, rotation and flipping.",
+        "Finally compare repeat and clamp and demonstrate why wrapping vertices before interpolation fails."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "법선은 접선과 수직이어야 합니다",
+      "lines": [
+        "Normals must remain perpendicular to tangents. Use column vectors t and n with n transpose t equal zero.",
+        "Let M be the invertible linear transform of positions and tangents; do not add translation to directions.",
+        "Transform normals with the inverse transpose M inverse transpose; inverse and transpose commute in this expression.",
+        "The transformed dot product cancels M inverse M and equals the original zero dot product, preserving perpendicularity.",
+        "For orthogonal rotations the inverse transpose equals M; positive uniform scale preserves the normalized direction.",
+        "Nonuniform scale and shear require inverse transpose then normalization; singular zero-axis transforms have no inverse.",
+        "Orientation-reversing transforms also require consistent front-face handling; our worked example uses positive scales."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "가로 두 배 확대를 직접 검산하기",
+      "lines": [
+        "Choose tangent(1,−1) and normal(1,1): their dot product1−1 is zero.",
+        "Scaling x by two produces tangent(2,−1), changing the surface slope.",
+        "Applying M to the normal gives(2,1), whose dot with the new tangent is4−1=3 rather than zero.",
+        "Normalizing the wrong vector by square root five leaves dot3 divided by square root five, so its direction remains wrong.",
+        "The inverse transpose scales x by one half, giving(.5,1) with transformed dot1−1=0.",
+        "Final normalization gives approximately(.447,.894): first correct the perpendicular direction, then normalize.",
+        "The same perpendicularity condition extends to3D; distinguish the linear position transform from the normal matrix in lighting code."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "각진 바위와 벽 무늬의 대응 보기",
+      "lines": [
+        "Move among Megabonk rocks and buildings, separating faceted rock surfaces from wall markings.",
+        "View changes preserve angular outlines, while face brightness and wall markings motivate lighting and surface-property questions.",
+        "The next passage crosses low rocks and sand; the final section alternately reveals building front and side faces.",
+        "Windows and strip-like marks appear on faces; we observe their relationship without reading game UVs or texture files.",
+        "Our numerical example preserved normal-tangent perpendicularity; next connect separate image coordinates for patterns.",
+        "Correct geometry and normals cannot fix lookup of the wrong image region; verify these data roles separately."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "벽돌 무늬와 창문 격자는 어디에서 올까요?",
+      "lines": [
+        "Inspect another Sunset Overdrive roof and wall, where repeated rectangular windows meet a sloped roof.",
+        "Observe the large outline first, then internal patterns; abundant detail does not imply one vertex per detail.",
+        "The closer wall shows brick-like patterns and grids, motivating correspondence between image locations and surface locations.",
+        "We have not inspected game texture files or address modes; the visible patterns motivate separate pattern coordinates.",
+        "Our diagram applies an original labeled texture to a four-vertex plate and changes its image mapping while keeping the plate fixed."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "픽셀과 텍셀, 위치와 UV",
+      "lines": [
+        "A texture stores surface color or other attributes; its texels differ from pixels in the final image.",
+        "One texel may affect multiple screen pixels when magnified, while multiple texels may contribute to a smaller screen footprint.",
+        "Here u runs right and v down, with top-left(0,0) and bottom-right(1,1).",
+        "This is an explicit example convention; file row order, tools and transforms matter, so API names alone do not decide orientation.",
+        "Normalized0-to1 coordinates cover an image regardless of whether it is8 by8 or larger, independently of3D positions.",
+        "Planar, cylindrical and spherical mapping construct the correspondence, authored in tools or computed procedurally at vertices.",
+        "Interpolate vertex UVs inside faces, retaining the earlier perspective-correct treatment while focusing on the data being interpolated."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "같은 판에 전체·확대·회전 무늬 붙이기",
+      "lines": [
+        "Imagine pinning cloth to four plate vertices; their selected image locations define the interior correspondence.",
+        "Assign(0,0),(1,0),(1,1),(0,1) in order to cover the plate with the entire image without moving vertices.",
+        "Restrict both coordinates to.25 through.75, stretching the central half-width and half-height over the plate.",
+        "Cycling the UV corners rotates the pattern correspondence rather than rotating the3D plate.",
+        "Using1−u flips the image horizontally while preserving geometry positions and face winding.",
+        "UVs also apply to multi-triangle meshes, changing placement and stretching without changing their geometry.",
+        "The cloth analogy explains correspondence, not physical cloth simulation or guaranteed area preservation."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "무늬는 면을 따라가고 윤곽은 남습니다",
+      "lines": [
+        "Move near a red facade where markings sit within a larger curved form.",
+        "View changes alter the apparent pattern orientation and size, reminding us that texture and screen coordinates differ.",
+        "The next roof shows repeated strips and glass panes; the container then reveals differently oriented top and side panels.",
+        "We do not read these game UVs; the observed pattern-surface relationships motivate our explicitly authored examples.",
+        "As with our plate, a surface can map a whole image or a portion; next consider coordinates outside0 through1.",
+        "Repeated appearance alone does not prove repeat addressing: separate geometry or repeated content in an image can look similar."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "면 안의 반복 무늬를 따라 관찰하기",
+      "lines": [
+        "Characters move in Big Walk green room; locate the black grid panel and circular wall markings.",
+        "Turning views changes the grid apparent angle; screen locations differ from pattern locations on a surface.",
+        "As characters approach and move sideways, markings remain associated with their surface regions, motivating texture correspondence.",
+        "Repeated shapes do not prove repeat addressing; the repetitions could be contained within the image itself.",
+        "The black grid has not been verified as triangle topology; distinguish repeated markings from geometric connections.",
+        "Our next diagram uses one original image with explicitly chosen UV spans and addressing, letting us verify the resulting patterns.",
+        "Remember to interpolate within the face before texture lookup; we also compare the failure of folding vertex coordinates too early."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "범위 밖의 UV를 조회하는 규칙",
+      "lines": [
+        "UVs can exceed0 through1. Keep vertices and UVs identical while comparing repeat and clamp addressing.",
+        "Repeat reuses the image across integer tiles; use u minus floor u consistently for negative coordinates.",
+        "For1.25 floor is1, giving.25; for−.75 floor is−1, also giving.25.",
+        "Truncating toward zero differs for negative inputs; distinguish floor from truncation when implementing repeat.",
+        "Clamp limits below-zero to0 and above-one to1, extending edge values outward.",
+        "Mirrored repeat alternates tile orientation, and u and v may use separate address modes.",
+        "Addressing selects coordinates independently of filtering, which combines texels; exact edge behavior also depends on those sampling conventions."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "정점에서 먼저 반복하면 정보가 사라집니다",
+      "lines": [
+        "A0-to2 u edge should display two repeats; store the unmodified endpoint coordinates0 and2.",
+        "Interpolation gives.5 at one quarter and1.5 at three quarters along the edge.",
+        "Applying repeat at lookup maps both positions to.5, the same relative location in different tiles.",
+        "Wrapping endpoints0 and2 first turns both into zero, so interpolation loses the entire0-to2 variation.",
+        "The two-repeat span is lost; interpolate first and apply addressing only at texture lookup.",
+        "Use the preceding perspective-correct UV interpolation before this step; perspective correction and repeat order are separate requirements."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "윤곽·방향·무늬를 나누어 다시 관찰하기",
+      "lines": [
+        "Move among stairs and buildings in Sunset Overdrive, first identifying near and distant surface boundaries.",
+        "As roofs and building sides appear, separate three questions: geometry, lighting direction and surface pattern.",
+        "The following wall has repeated windows and the roof repeated panels, which do not reveal vertex counts or address modes.",
+        "Our calculations used indices for vertex records, normals for perpendicular directions and UVs for image correspondence; their roles differ.",
+        "When checking a model, inspect silhouettes, normal boundaries and pattern placement separately to narrow the source of an error.",
+        "Finish with explicitly defined mesh exercises that verify storage and calculation order rather than guessing game internals."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "세 가지 질문으로 계산을 검산하기",
+      "lines": [
+        "First exercise: four32-byte vertices and six2-byte indices total140 bytes; distinguish record count from index count.",
+        "Second, split a cube corner shading direction by duplicating records and updating the corresponding face indices.",
+        "The transformed tangent(2,−1) and normal(.5,1) have zero dot product; verify perpendicularity and unit length after nonuniform scale.",
+        "Third, preserve0-to2 UVs for interpolation, repeat at lookup and use floor for negative coordinates.",
+        "We separated topology indices, shading normals and UV correspondence; equal positions need not share all attributes.",
+        "Next we evaluate lighting with these normals and examine lights and materials; today surface data supplies those inputs."
+      ]
+    }
+  ]
+}

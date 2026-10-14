@@ -1,0 +1,24 @@
+// Select actual successful takes after the limited repair closes and restores GPU.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),b='projects/game-lighting-history-04/production';
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,''));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const write=(p,j)=>{if(fs.existsSync(path.join(root,p)))throw Error('Preserve '+p);fs.writeFileSync(path.join(root,p),JSON.stringify(j,null,2)+'\n');};
+const oldPath=b+'/part1-guided-actions-tts-execution-v169.json',repairPath=b+'/part1-scoped-repair-tts-execution-v176.json';
+const old=read(oldPath),repair=read(repairPath),rrPath=b+'/part1-scoped-repair-tts-request-v176.json',rr=read(rrPath),orPath=b+'/part1-guided-actions-tts-request-v169.json',oldreq=read(orPath);
+if(!old.endedAt||old.results.length!==37||!repair.endedAt||repair.exitCode!==0||!repair.generationComplete)throw Error('Actual original37 and successful limited repair required');
+if(repair.requestSha256!==sha(rrPath))throw Error('Repair request changed');
+const hPath='shared/output/gpu-handoff/'+repair.leaseToken+'.json';
+if(read(hPath).state!=='research_resume_verified'||fs.existsSync(path.join(root,'shared/output/GPU_HANDOFF.json')))throw Error('Actual restoration and no current GPU lease required');
+for(const x of [...oldreq.protectedInputs,...rr.protectedInputs])if(sha(x.path)!==x.sha256)throw Error('Protected input changed '+x.path);
+const corrections=new Map(repair.results.map(r=>[r.id,r]));
+if([...corrections.keys()].join('|')!==rr.repairIds.join('|'))throw Error('Repair scope changed');
+const results=old.results.map(r=>{const c=corrections.get(r.id),selected=c||r;if(!selected.technicalTailGatePassed||sha(selected.path)!==selected.sha256)throw Error('Take not technically accepted '+r.id);return {...selected,selectedFrom:c?'scoped-v176':'retained-v169'};});
+const currentScript='projects/game-lighting-history-04/script/physical-part1-guided-actions.koen.v175.json';
+if(read(currentScript).scenes.map(s=>s.id).join('|')!==results.map(s=>s.id).join('|'))throw Error('Current script order changed');
+const protects=[...oldreq.protectedInputs.map(x=>x.path),oldPath,repairPath,rrPath,hPath,currentScript,b+'/part1-ferris-wording-direct-review-v175.json',b+'/part1-boundary-direct-review-v180.json'];
+const req={schemaVersion:1,preparedAt:new Date().toISOString(),slug:'game-lighting-history-04',physicalPart:'game-lighting-history-04-1',script:{path:currentScript,sha256:sha(currentScript)},scenes:results.map(r=>({id:r.id,path:r.path})),protectedInputs:[...new Set(protects)].map(path=>({path,sha256:sha(path)})),sourceExecutions:[oldPath,repairPath].map(path=>({path,sha256:sha(path)})),original111Repeated:false,fiveFramingRepeated:false,wholeAsrApproved:false,independentContextAsrApproved:false,finalMixedAsrApproved:false};
+const reqPath=b+'/part1-selected-current-tts-request-v181.json';write(reqPath,req);
+const exec={schemaVersion:1,physicalPart:'game-lighting-history-04-1',status:'37-current-technical-takes-selected-awaiting-ASR',startedAt:old.startedAt,endedAt:repair.endedAt,selectionRecordedAt:new Date().toISOString(),requestSha256:sha(reqPath),leaseToken:repair.leaseToken,results,generationComplete:true,exitCode:0,selectionIsNewTtsExecution:false,sourceExecutions:req.sourceExecutions,original111AndFiveFramingPreserved:true,retainedTakes:results.filter(r=>r.selectedFrom==='retained-v169').length,repairedTakes:corrections.size,wholeAsrApproved:false,independentContextAsrApproved:false,finalMixedAsrApproved:false,allFinalPixelsReviewed:false,uploaded:false};
+write(b+'/part1-selected-current-tts-execution-v181.json',exec);
+console.log(JSON.stringify({selected:37,retained:exec.retainedTakes,repaired:exec.repairedTakes,asrApproved:false,newTts:false}));

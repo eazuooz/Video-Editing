@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),checkpoint=path.join(__dirname,'checkpoint.json');
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+const state=read('shared/output/GPU_HANDOFF.json');
+if(state.project!=='game-lighting-history-04'||state.token!=='55649b32-8197-417c-b560-cbeaa8a21ab4')throw Error('Actual owned handoff required');
+const c=read('production/research/game-lighting-history/checkpoint.json');c.updatedAt=new Date().toISOString();c.stage='episode04-24-additions-current71-cooperative-handoff-requested';
+c.episode04AdditiveNarration={...c.episode04AdditiveNarration,request:{path:'projects/game-lighting-history-04/production/additive-tts-request-v3.json',sha256:sha('projects/game-lighting-history-04/production/additive-tts-request-v3.json')},duplicateEvidence:'production/research/game-lighting-history/episode04-current-duplicate-rereview-v8.json',launchSession:63161,coordinator:state.coordinator,leaseToken:state.token,log:'production/research/game-lighting-history/local/episode04-additive-tts-v2.log',researchQueueOwner:state.queueOwner,originalStatus:state.originalStatus,ttsStarted:state.state==='tts_running',currentState:state.state,original87TextAndPcmPreserved:true,fullNewAsrApproved:false,finalMixedAsrApproved:false,finalApproved:false};
+c.ownedJobsRunning=[{type:'cooperative-GPU-handoff',session:63161,actualCoordinatorPid:state.coordinator.pid,createTime:state.coordinator.createTime,command:state.coordinator.command,log:c.episode04AdditiveNarration.log,modelAllocated:false}];c.ownedGpuJobs=0;
+c.next='Let current train_shadow_only_p032_42 seal and finish; own token controls pause only at its boundary. Then synthesize24 additions through requestv3 and restore the original research queue on success/failure. Inspect prerequisite moving preview and native framing while waiting. Preserve original87 PCM and all foreign work.';
+const tmp=checkpoint+'.writing-'+process.pid;fs.writeFileSync(tmp,JSON.stringify(c,null,2)+'\n');fs.renameSync(tmp,checkpoint);
+console.log(JSON.stringify({session:63161,actualCoordinator:state.coordinator,state:state.state,currentTraining:state.originalStatus.job,ttsStarted:c.episode04AdditiveNarration.ttsStarted}));
