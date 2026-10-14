@@ -12,6 +12,23 @@ const control=()=>{const c=read(path.join(root,'shared/publishing/video-producti
 const data=read(path.join(project,'scene-data.json')),actual=read(path.join(project,'actual-footage.json'));
 const ids=process.argv.find(a=>a.startsWith('--scenes='))?.split('=')[1].split(',')||data.scenes.map(s=>s.id);
 const fingerprint={sceneDataHash:hash(path.join(project,'scene-data.json')),sceneKitHash:hash(path.join(project,'scene-kit.tsx')),mediaHash:hash(path.join(project,'media.json')),actualFootageHash:hash(path.join(project,'actual-footage.json'))};
+function compatible(previous,id){
+ if(JSON.stringify(previous)===JSON.stringify(fingerprint))return true;
+ const file=path.join(out,'../scene-kit-compatibility.json');if(!fs.existsSync(file))return false;
+ const config=read(file),steps=config.steps||[{...config,beforeSourcePath:`shared/output/${slug}/composite/17/timing-v2/scene-kit.before.tsx`}];
+ let currentHash=previous.sceneKitHash;
+ for(const c of steps){
+  if(c.oldKitSha256!==currentHash)continue;
+  if(id===c.onlyAffectedScene)return false;
+  const before=path.join(root,c.beforeSourcePath);if(!fs.existsSync(before)||hash(before)!==c.oldKitSha256)return false;
+  const old=fs.readFileSync(before,'utf8');if(old.split(c.oldExpression).length!==2)return false;
+  const changed=old.replace(c.oldExpression,c.newExpression);
+  if(crypto.createHash('sha256').update(changed).digest('hex')!==c.newKitSha256)return false;
+  currentHash=c.newKitSha256;
+ }
+ if(currentHash!==fingerprint.sceneKitHash)return false;
+ return Object.keys(fingerprint).every(k=>k==='sceneKitHash'||previous[k]===fingerprint[k]);
+}
 async function main(){
  control();if(data.timingStatus!=='measured-narration'||data.captionTimingStatus!=='asr-aligned')throw Error('Unmeasured timeline');
  const browser=await puppeteer.launch({headless:true,args:['--autoplay-policy=no-user-gesture-required'],protocolTimeout:180000});
@@ -19,7 +36,7 @@ async function main(){
  try{for(const id of ids){
   control();const s=data.scenes.find(s=>s.id===id),frames=Math.round(s.duration*60),dir=path.join(out,id);fs.mkdirSync(dir,{recursive:true});
   const movie=path.join(root,`shared/output/motion-canvas/ai-craft-scene-${id}-v1.mp4`),receipt=path.join(dir,'render.json');
-  if(fs.existsSync(movie)){const r=read(receipt);if(JSON.stringify(r.fingerprint)!==JSON.stringify(fingerprint)||r.encoded.sha256!==hash(movie))throw Error('Changed existing scene '+id);console.log('Reuse '+id);continue;}
+  if(fs.existsSync(movie)){const r=read(receipt);if(!compatible(r.fingerprint,id)||r.encoded.sha256!==hash(movie))throw Error('Changed existing scene '+id);console.log('Reuse '+id);continue;}
   const cuts=actual.cuts.filter(c=>c.scene===id).sort((a,b)=>a.startFrame-b.startFrame),parts=[];let cursor=0;
   for(const cut of cuts){if(cut.startFrame>cursor)parts.push({kind:'explanation',start:cursor,end:cut.startFrame});parts.push({kind:'actual',start:cut.startFrame,end:cut.endFrame,cut});cursor=cut.endFrame;}
   if(cursor<frames)parts.push({kind:'explanation',start:cursor,end:frames});

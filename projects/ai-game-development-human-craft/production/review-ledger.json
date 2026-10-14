@@ -17,8 +17,76 @@
     },
     {
       "id": "whole-video-delivery",
-      "status": "pending",
-      "scope": "No final media, ASR or upload yet"
+      "status": "pass-local-four-files; drive-transfer-blocked",
+      "scope": "Complete current high-bitrate clean/captioned/KO/EN saved and reviewed. Original940MB fails connector512MiB preflight; reviewed527MB copy reaches transfer service but fails413; browser transfer did not progress. No final Drive ID or YouTube upload.",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "evidence": "projects/ai-game-development-human-craft/production/delivery-output.json",
+      "files": [
+        {
+          "name": "ai-game-development-human-craft.captioned.mp4",
+          "source": "shared/output/motion-canvas/ai-game-development-human-craft-subtitled.mp4",
+          "bytes": 940090300,
+          "sha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc"
+        },
+        {
+          "name": "ai-game-development-human-craft.clean.mp4",
+          "source": "shared/output/motion-canvas/ai-game-development-human-craft.mp4",
+          "bytes": 978794764,
+          "sha256": "00b6aa7115b5fba8f9b47ce124c05ffbca84118ecffdf03230c978978bdfa354"
+        },
+        {
+          "name": "ai-game-development-human-craft.ko.srt",
+          "source": "shared/output/ai-game-development-human-craft/final.ko.srt",
+          "bytes": 43758,
+          "sha256": "173cdd6739f92164569e94056f9b941ba0ebda90ac46a63d152adea064befeec"
+        },
+        {
+          "name": "ai-game-development-human-craft.en.srt",
+          "source": "shared/output/ai-game-development-human-craft/final.en.srt",
+          "bytes": 33493,
+          "sha256": "3dc1a3b98f1dfd854cdf8c116b252c8ab18b0e1ba3a981b1374b91729ebe2e34"
+        }
+      ],
+      "drive": {
+        "status": "blocked-transfer",
+        "fileId": null,
+        "url": null,
+        "version": null,
+        "localSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
+        "sizeBytes": 940090300,
+        "accessStatus": "no-final-file-created",
+        "processingAndPlaybackStatus": "not-uploaded",
+        "userReviewMessage": null,
+        "reviewedAt": null,
+        "block": {
+          "at": "2026-10-14T12:28:52.259651+00:00",
+          "finalLocalSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
+          "finalFile": "D:\\Github\\VideoEditing\\output\\ai-game-development-human-craft\\ai-game-development-human-craft.captioned.mp4",
+          "attempts": [
+            {
+              "method": "connector-original",
+              "bytes": 940090300,
+              "result": "Rejected before transfer: exceeds536870912-byte limit",
+              "evidence": "shared/output/ai-game-development-human-craft/drive-final-v1-connector-error.json"
+            },
+            {
+              "method": "Drive web UI file chooser",
+              "bytes": 940090300,
+              "result": "Stayed at upload starting; owned tab closed after no progress; exact-name search found no file"
+            },
+            {
+              "method": "connector-optimized-full1080p60",
+              "bytes": 527008264,
+              "sha256": "03e3582265234532ec15f83df99e4468c165594f7d8fcb07048fb98805b52c0a",
+              "result": "Blob transfer failed HTTP413 Payload Too Large before Drive file creation",
+              "evidence": "shared/output/ai-game-development-human-craft/drive-final-v1-optimized-connector-error.json"
+            }
+          ],
+          "finalDriveSearch": "No final file found by exact title or original file basename",
+          "fileId": null,
+          "decision": "Keep the original high-bitrate reviewed master as final; retain optimized attempt and its QA separately. No speculative lower-quality rerenders or duplicate upload."
+        }
+      }
     },
     {
       "id": "motion-canvas-arrow-sample-v1",
@@ -279,7 +347,7 @@
         "projects/ai-game-development-human-craft/planning/scene-design.json",
         "projects/ai-game-development-human-craft/planning/outline.md"
       ],
-      "renderedJoinReview": "pending",
+      "renderedJoinReview": "agent-scoped-state/cut review complete; human continuous listening pending",
       "humanListening": "pending",
       "notPassed": [
         "source footage rights and capacity",
@@ -393,13 +461,12 @@
     },
     {
       "id": "production-source-acquisition",
-      "status": "pending",
-      "reviewedAt": "2026-10-14T08:04:16.190179+00:00",
-      "scope": "Four development recordings acquired;001–003 sampled at12 frames each. Final third-party asset/audio rights, full playback and cut selection unresolved. Kenney CC0 provenance verified.",
+      "status": "pass-selected-production-ranges",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "scope": "52 unique native-speed independent development,craft/history/automation and game cuts selected; licensed asset/source records retained.",
       "evidence": [
-        "projects/ai-game-development-human-craft/sources/SOURCES.md",
         "projects/ai-game-development-human-craft/sources/source-manifest.json",
-        "unity/VideoEditing/Assets/ThirdParty/KenneyTinyDungeon/provenance.json"
+        "projects/ai-game-development-human-craft/planning/actual-footage-plan.json"
       ]
     },
     {
@@ -430,27 +497,52 @@
     },
     {
       "id": "full-narration-production",
-      "status": "running",
-      "scope": "Qwen3 approved reference; selected-video GPU lease; source chunks retained",
-      "evidence": "shared/output/ai-game-development-human-craft/narration-job/status.json"
+      "status": "complete-human-listening-pending",
+      "scope": "All28 scenes complete; targeted repairs bounded to3 attempts; unchanged approved PCM retained. No GPU lease/research pause remains.",
+      "evidence": "shared/output/ai-game-development-human-craft/audio/final-asr/complete-readback.json",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "sourceSha256": "b1870839c13f035971096e7e508c7c5183185ed955dac002b3517935f1e2dee0"
     },
     {
       "id": "independent-source-rights",
       "status": "selected-visual-ranges-cleared-with-notices",
-      "scope": "Mix and Jam001/002,Jammo,Nyhver gameplay; original audio excluded",
-      "evidence": "projects/ai-game-development-human-craft/sources/source-manifest.json"
+      "scope": "Mix and Jam,Jammo,Nyhver,Unreal,Unity AI third-party demo,Godot,Krita,wood carving,robot and1906history; attribution/license notices retained. Research-only lessons excluded.",
+      "evidence": "projects/ai-game-development-human-craft/sources/source-manifest.json",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00"
     },
     {
       "id": "full-composite-visual-qa",
-      "status": "pending",
-      "scope": "Early layout samples exist; final aligned caption and movement review not complete",
-      "evidence": "shared/output/ai-game-development-human-craft/composite"
+      "status": "pass-agent-scoped-visual-review",
+      "scope": "Prior complete contact/action/cut review retained against unchanged source scenes,timing and caption art; current decoded-frame comparison and direct review of all131 frames outside compression tolerance on11 changed contact sheets. Not continuous human playback/listening.",
+      "evidence": "shared/output/ai-game-development-human-craft/encoded-motion-review/review.json",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "movieSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
+      "frames": 524,
+      "currentDirectlyReviewedFrames": 131,
+      "retainedCompressionEquivalentFrames": 393,
+      "exactIdenticalFrames": 21,
+      "humanFullPlayback": "pending",
+      "findings": [
+        "All changed frames on11 sheets directly inspected; restored held captions including cues8,318,328,329.",
+        "Member start is frame88132, exact600-frame ending; no duplicated prior body frame.",
+        "Retained door approach/locked/key/open result, normal purchase prerequisite timing, duplicate-request and jump demonstrations.",
+        "Black/yellow brand labels and fixed caption clearance retained.",
+        "Brief source OS volume overlay near scene19 remains genuine recorded source UI."
+      ],
+      "allFrameCompressionComparison": null
     },
     {
       "id": "narration-level-continuity",
-      "status": "pending",
-      "scope": "Source/stem/final aligned speech-active400ms/100ms measurements and contextual review required",
-      "evidence": null
+      "status": "pass-measured-processing; source-prosody-listening-pending",
+      "scope": "13742speech-active400ms/100ms windows across source/stem/AAC;185paragraph medians and184joins; progressive source decay corrected. All53source-prosody flags retained for human listening.",
+      "evidence": "shared/output/ai-game-development-human-craft/audio/level-continuity.json",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "sourceSha256": "b1870839c13f035971096e7e508c7c5183185ed955dac002b3517935f1e2dee0",
+      "stemSha256": "9d3eb495896cfb92709beae86f2cdea5a9b1c39bf09a55abb4dcf266d693dd47",
+      "finalSha256": "681c25af1714e13719d45800ee03ae71a760923216e2cd6027bc6f6b36db06a7",
+      "voiceTransferMedianDb": -0.050606823808625606,
+      "processingAttenuationStatus": "pass",
+      "humanListening": "pending"
     },
     {
       "id": "complete-narration-readback-v1",
@@ -466,7 +558,7 @@
       "scope": "12actualUnity1920x1080p60captures, nativeframecounts/timelines and full decode.02/06 reused after capture-lifecycle-only fix; partial08preserved and resumed.",
       "evidence": "shared/output/ai-game-development-human-craft/unity-production/job-status.json",
       "runtimeCompatibility": "shared/output/ai-game-development-human-craft/unity-production/capture-runtime-compatibility.json",
-      "visualReview": "Current scene/frame event review underway; not whole-video approval."
+      "visualReview": "Current action/cut evidence in shared/output/ai-game-development-human-craft/encoded-motion-review/review.json"
     },
     {
       "id": "current-visual-preflight",
@@ -486,15 +578,17 @@
     },
     {
       "id": "actual-footage-60-v2",
-      "status": "pass-plan/source-sample-review",
-      "scope": "52 unique native-speed cuts, 52807/88012body frames; one-frame rounding",
-      "evidence": "projects/ai-game-development-human-craft/planning/actual-footage-plan.json",
+      "status": "pass-measured-current-output",
+      "scope": "52807/88012 body frames actual footage;60% within one frame. Self-authored Unity remains explanation.52unique native-speed ranges; no loops,padding or slowdown.",
+      "evidence": "shared/output/ai-game-development-human-craft/screen-role-measurement.json",
       "sourceVisualEvidence": "shared/output/ai-game-development-human-craft/actual-footage/review/mapping.json",
       "fixes": [
         "02-03 heading admits external Maya model edit",
         "12-02 starts889s to exclude slide"
       ],
-      "motionReview": "pending-current-encoded-video"
+      "motionReview": "pass-agent-scoped-visual-review",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "actualShare": 0.5999977275826024
     },
     {
       "id": "encoded-narration-readback-v2",
@@ -509,6 +603,69 @@
       "scope": "185paragraph medians,184joins and whole-source/stem/AAC aligned400ms/100ms; fixed progressive within-take decay; short peak guard; voice never ducked",
       "evidence": "shared/output/ai-game-development-human-craft/audio/level-continuity.json",
       "humanListening": "pending"
+    },
+    {
+      "id": "final-caption-pixels",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "status": "pass",
+      "scope": "All340 cues,2124 encoded cue-start/end and actual-cut/scene-neighbor samples;0 failures. Fixed48px,max2lines,960/970.",
+      "evidence": "shared/output/ai-game-development-human-craft/caption-pixel-qa/report.json",
+      "movieSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
+      "captionStateRepair": "shared/output/ai-game-development-human-craft/caption-state-repair.json"
+    },
+    {
+      "id": "final-encoded-integrity",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "status": "pass",
+      "scope": "Both complete88732-frame1920x1080p60 masters: full video/audio decode,monotonic60fps PTS,duration and identical AAC packet hash.",
+      "evidence": "shared/output/ai-game-development-human-craft/encoded-integrity.json",
+      "outputs": [
+        {
+          "path": "shared/output/motion-canvas/ai-game-development-human-craft.mp4",
+          "sha256": "00b6aa7115b5fba8f9b47ce124c05ffbca84118ecffdf03230c978978bdfa354",
+          "bytes": 978794764,
+          "frames": 88732,
+          "fullVideoDecode": "pass",
+          "fullAudioDecode": "pass",
+          "pts": "pass",
+          "duration": 1478.866667,
+          "aacAdtsSha256": "a5235fa3c593b204b18f6af22431fb00f5367e21958a1dc63119275cc485fbb0"
+        },
+        {
+          "path": "shared/output/motion-canvas/ai-game-development-human-craft-subtitled.mp4",
+          "sha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
+          "bytes": 940090300,
+          "frames": 88732,
+          "fullVideoDecode": "pass",
+          "fullAudioDecode": "pass",
+          "pts": "pass",
+          "duration": 1478.866667,
+          "aacAdtsSha256": "a5235fa3c593b204b18f6af22431fb00f5367e21958a1dc63119275cc485fbb0"
+        }
+      ],
+      "captions": [
+        {
+          "language": "ko",
+          "cues": 340,
+          "sha256": "173cdd6739f92164569e94056f9b941ba0ebda90ac46a63d152adea064befeec",
+          "allScriptTextRetained": true,
+          "introAndMemberClear": true
+        },
+        {
+          "language": "en",
+          "cues": 340,
+          "sha256": "3dc1a3b98f1dfd854cdf8c116b252c8ab18b0e1ba3a981b1374b91729ebe2e34",
+          "allScriptTextRetained": true,
+          "introAndMemberClear": true
+        }
+      ]
+    },
+    {
+      "id": "first-word-listening-followup",
+      "reviewedAt": "2026-10-14T12:28:52.327802+00:00",
+      "status": "pending-human-listening",
+      "scope": "01:43.2,scene03: expected 지금까지는; full-mix and independent-context ASR recognized 까지는. Do not turn text inference into a listening pass;3targeted TTS attempts already exhausted.",
+      "evidence": "shared/output/ai-game-development-human-craft/audio/current-ambiguity/result.json"
     }
   ],
   "finalDriveReview": {
@@ -534,13 +691,44 @@
       "userReviewMessage",
       "reviewedAt"
     ],
-    "status": "pending-final-render",
+    "status": "blocked-transfer",
     "fileId": null,
     "url": null,
     "version": null,
-    "localSha256": null,
+    "localSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
     "userReviewMessage": null,
-    "reviewedAt": null
+    "reviewedAt": null,
+    "sizeBytes": 940090300,
+    "accessStatus": "no-final-file-created",
+    "processingAndPlaybackStatus": "not-uploaded",
+    "block": {
+      "at": "2026-10-14T12:28:52.259651+00:00",
+      "finalLocalSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
+      "finalFile": "D:\\Github\\VideoEditing\\output\\ai-game-development-human-craft\\ai-game-development-human-craft.captioned.mp4",
+      "attempts": [
+        {
+          "method": "connector-original",
+          "bytes": 940090300,
+          "result": "Rejected before transfer: exceeds536870912-byte limit",
+          "evidence": "shared/output/ai-game-development-human-craft/drive-final-v1-connector-error.json"
+        },
+        {
+          "method": "Drive web UI file chooser",
+          "bytes": 940090300,
+          "result": "Stayed at upload starting; owned tab closed after no progress; exact-name search found no file"
+        },
+        {
+          "method": "connector-optimized-full1080p60",
+          "bytes": 527008264,
+          "sha256": "03e3582265234532ec15f83df99e4468c165594f7d8fcb07048fb98805b52c0a",
+          "result": "Blob transfer failed HTTP413 Payload Too Large before Drive file creation",
+          "evidence": "shared/output/ai-game-development-human-craft/drive-final-v1-optimized-connector-error.json"
+        }
+      ],
+      "finalDriveSearch": "No final file found by exact title or original file basename",
+      "fileId": null,
+      "decision": "Keep the original high-bitrate reviewed master as final; retain optimized attempt and its QA separately. No speculative lower-quality rerenders or duplicate upload."
+    }
   },
-  "updatedAt": "2026-10-14T10:50:03.656184+00:00"
+  "updatedAt": "2026-10-14T12:28:52.327802+00:00"
 }

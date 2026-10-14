@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "policyId": "preproduction-first-v1",
   "slug": "ai-game-development-human-craft",
-  "status": "production-scenes-and-narration-in-progress",
+  "status": "local-complete-drive-transfer-blocked",
   "guide": "docs/VIDEO_WORKFLOW.md",
   "outline": "projects/ai-game-development-human-craft/planning/outline.md",
   "scope": {
@@ -140,7 +140,7 @@
       ]
     },
     "finalDriveUserReview": {
-      "status": "pending-final-drive-version",
+      "status": "pending-final-file; transfer-blocked",
       "fileId": null,
       "version": null,
       "sha256": null,
@@ -150,7 +150,7 @@
     }
   },
   "reviewLedger": "projects/ai-game-development-human-craft/production/review-ledger.json",
-  "nextAction": "Complete selected video source rights/playback, scene designs, KO/EN, TTS and final QA; deliver full captioned review copy on Google Drive, then wait for review of that concrete version before YouTube upload.",
+  "nextAction": "Upload the complete reviewed captioned MP4 through a working Google Drive transfer path; read back actual ID/access/playback, then user reviews that version before YouTube.",
   "automaticNextVideo": false,
   "referencePolicy": "shared/publishing/game-example-coverage-policy.json",
   "referenceAlignment": {
@@ -916,7 +916,7 @@
     "scenePlanField": "transitionToNext",
     "boundaryCount": 27,
     "textReview": "pass",
-    "renderedJoinReview": "pending",
+    "renderedJoinReview": "agent-scoped-state/cut review complete; human continuous listening pending",
     "reviewLedger": "projects/ai-game-development-human-craft/production/review-ledger.json"
   },
   "gitWorkCompletion": {
@@ -947,13 +947,44 @@
       "userReviewMessage",
       "reviewedAt"
     ],
-    "status": "pending-final-render",
+    "status": "blocked-transfer",
     "fileId": null,
     "url": null,
     "version": null,
-    "localSha256": null,
+    "localSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
     "userReviewMessage": null,
-    "reviewedAt": null
+    "reviewedAt": null,
+    "sizeBytes": 940090300,
+    "accessStatus": "no-final-file-created",
+    "processingAndPlaybackStatus": "not-uploaded",
+    "block": {
+      "at": "2026-10-14T12:28:52.259651+00:00",
+      "finalLocalSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
+      "finalFile": "D:\\Github\\VideoEditing\\output\\ai-game-development-human-craft\\ai-game-development-human-craft.captioned.mp4",
+      "attempts": [
+        {
+          "method": "connector-original",
+          "bytes": 940090300,
+          "result": "Rejected before transfer: exceeds536870912-byte limit",
+          "evidence": "shared/output/ai-game-development-human-craft/drive-final-v1-connector-error.json"
+        },
+        {
+          "method": "Drive web UI file chooser",
+          "bytes": 940090300,
+          "result": "Stayed at upload starting; owned tab closed after no progress; exact-name search found no file"
+        },
+        {
+          "method": "connector-optimized-full1080p60",
+          "bytes": 527008264,
+          "sha256": "03e3582265234532ec15f83df99e4468c165594f7d8fcb07048fb98805b52c0a",
+          "result": "Blob transfer failed HTTP413 Payload Too Large before Drive file creation",
+          "evidence": "shared/output/ai-game-development-human-craft/drive-final-v1-optimized-connector-error.json"
+        }
+      ],
+      "finalDriveSearch": "No final file found by exact title or original file basename",
+      "fileId": null,
+      "decision": "Keep the original high-bitrate reviewed master as final; retain optimized attempt and its QA separately. No speculative lower-quality rerenders or duplicate upload."
+    }
   },
   "videoUiDesignPolicy": {
     "policyId": "yamyam-video-ui-v1",
@@ -975,19 +1006,23 @@
     "addsApprovalGate": false
   },
   "sourceStatus": {
-    "developmentDemo": "Mix and Jam001/002 licensed visual-only clips selected",
-    "commercialGameplay": "Nyhver WoW Classic55s selected; entire range inspected at2fps; final composite movement review pending",
+    "developmentDemo": "Native-speed editor/drawing/development records with original attribution; eight newly licensed sources plus existingMixandJam/WoW. See source-manifest.json and actual-footage-plan.json.",
+    "commercialGameplay": "Nyhver2020WoWClassic source,69.017s in two unique ranges; established style illustration, not a current-version or performance claim.",
     "announcements": "actual Epic and Unity browser screenshots acquired",
-    "unavailable": "Reddit network blocked; no substitute/fabricated comments"
+    "unavailable": "Reddit network blocked; no substitute/fabricated comments",
+    "actualCutCount": 52
   },
   "selectedFootageSteering": {
     "at": "2026-10-14T10:22:25.044875+00:00",
     "message": "대본을 확인해 봐야겠지만 이번 내용은 게임내용보다 개발 내용이 많아서 unity 중심일 필요는 없어 실제 영상 60으로 가는게 좋을것 같아 너가판단해줘 영상퀄리티가 높은쪽으로",
     "targetActualShare": 0.6,
     "revision": "actual-development-footage-v2",
-    "sourceSelection": "pending-viewed-clips",
+    "sourceSelection": "selected/licensed; current encoded agent-scoped state/cut review complete",
     "preserveNarration": true,
     "preserveUnityScenes": true,
-    "useUnityWhenNeededForExplanation": true
+    "useUnityWhenNeededForExplanation": true,
+    "cutPlan": "projects/ai-game-development-human-craft/planning/actual-footage-plan.json",
+    "actualFrames": 52807,
+    "bodyFrames": 88012
   }
 }

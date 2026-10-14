@@ -122,10 +122,10 @@ function unityScene(view:View2D,s:any,t:()=>number,p:()=>number){
   if(s.id==='18')return t()<7?12+clamp(t(),0,7-1/60):clamp(t()-7,0,7-1/60);
   if(s.id==='17'){
    const phase=t()>=s.paragraphs[6].start?2:t()>=s.paragraphs[5].start?1:0;
-   const begin=s.paragraphs[phase===2?6:phase===1?5:2].start;
+   const begin=s.paragraphs[phase===2?6:phase===1?5:3].start;
    return clamp(phase*12+clamp(t()-begin,0,12-1/60),0,end);
   }
-  return clamp(t()-start,0,end);
+  return clamp(t()-start+(s.id==='02'?2:0),0,end);
  };
  const captured:any=m?(captures as any)['../../../../'+m.capture]:null;
  const requestEvents=(captured?.timeline||[]).filter((r:any,i:number,list:any[])=>r.requestDeliveries>0&&(i===0||r.requestDeliveries!==list[i-1].requestDeliveries||r.scenario!==list[i-1].scenario)).map((r:any)=>r.frame);

@@ -30,7 +30,7 @@ WoW Classic footage: Nyhver (2020)
 https://www.youtube.com/watch?v=A2VQbPrw9-g
 Unity illustration assets: KayKit Adventurers / Kenney Tiny Dungeon (CC0).'''
 sources=json.loads((ROOT/f'projects/{SLUG}/sources/source-manifest.json').read_text(encoding='utf-8'))['actualFootageSources']
-credit+='\n\nIndependent production footage (native-speed excerpts, overlays added, original audio omitted):\n'+'\n'.join(f"{r['author']} / {r['license']} — {r['sourceUrl']}" for r in sources)+'\nCC BY3.0: https://creativecommons.org/licenses/by/3.0/\nCC BY4.0: https://creativecommons.org/licenses/by/4.0/\nCC0: https://creativecommons.org/publicdomain/zero/1.0/'
+credit+='\n\nIndependent production footage (native-speed excerpts, overlays added, original audio omitted):\n'+'\n'.join(f"{r['title']} — {r['author']} ({r['date']}) / {r['license']}\n{r['sourceUrl']}" for r in sources)+'\nCC BY3.0: https://creativecommons.org/licenses/by/3.0/\nCC BY4.0: https://creativecommons.org/licenses/by/4.0/\nCC0: https://creativecommons.org/publicdomain/zero/1.0/'
 ko='''AI가 게임을 만드는 시대, 개발자의 실력은 어디에 쓰일까?
 
 개발 도구와 자동화가 바뀌어도 조건을 정하고 결과를 검증하는 일은 남습니다. 에픽과 Unity의 공개 자료, 독립 개발 화면, 직접 만든 Unity 상점·점프 시연으로 그 차이를 살펴봅니다.

@@ -1,6 +1,6 @@
 """Aligned source/stem/encoded-mix level evidence. Does not invent listening QA."""
 from pathlib import Path
-import json, hashlib, subprocess, argparse
+import json, hashlib, subprocess, argparse, sys
 import numpy as np
 import soundfile as sf
 from scipy.ndimage import median_filter
@@ -9,7 +9,9 @@ OUT=ROOT/'shared/output'/SLUG/'audio';RATE=24000;STEP=2400;WIN=9600
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def decode(p):
- r=subprocess.run(['ffmpeg','-v','error','-i',str(p),'-ar',str(RATE),'-ac','1','-f','f32le','-'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True,creationflags=subprocess.CREATE_NO_WINDOW)
+ # Explicit arithmetic stereo average avoids FFmpeg's default equal-power
+ # downmix adding3dB relative to the original mono narration stem.
+ r=subprocess.run(['ffmpeg','-v','error','-i',str(p),'-af','pan=mono|c0=0.5*c0+0.5*c1','-ar',str(RATE),'-f','f32le','-'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True,creationflags=subprocess.CREATE_NO_WINDOW)
  return np.frombuffer(r.stdout,np.float32)
 def rolling(x,starts):
  sums=np.r_[0,np.cumsum(x.astype(np.float64)**2)]
@@ -21,6 +23,18 @@ def groups(mask):
 
 p=argparse.ArgumentParser();p.add_argument('--mix-only',action='store_true');args=p.parse_args()
 m=read(ROOT/f'projects/{SLUG}/project.json');report=read(OUT/'mix-report.json')
+prior=OUT/'level-continuity.json';integrityFile=OUT.parent/'encoded-integrity.json'
+if not args.mix_only and prior.exists() and integrityFile.exists():
+ previous=read(prior);integrity=read(integrityFile)
+ sourcePath=ROOT/m['tts']['outputDir']/(m['tts']['filenameStem']+'.wav')
+ if (previous['finalSha256']==sha(OUT/'mix.m4a') and previous['sourceSha256']==sha(sourcePath)
+     and previous['stemSha256']==sha(OUT/'narration-stem.wav') and integrity['identicalAAC']
+     and all(r['fullAudioDecode']=='pass' and r['sha256']==sha(ROOT/r['path']) for r in integrity['outputs'])):
+  previous['encodedAudioEquivalence']={'method':'Complete AAC packet identity against measured mix, full audio decode, current master SHA verification','outputs':[{'path':r['path'],'sha256':r['sha256'],'aacAdtsSha256':r['aacAdtsSha256']} for r in integrity['outputs']]}
+  previous['encodedScope']='Measured AAC mix retained bit-identically in current clean and captioned masters'
+  prior.write_text(json.dumps(previous,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+  print('Reused identical complete aligned audio evidence; current output integrity independently passed.')
+  sys.exit(0)
 stem,rate=sf.read(OUT/'narration-stem.wav',dtype='float32');assert rate==RATE
 final=OUT/'mix.m4a' if args.mix_only else ROOT/m['paths']['videoClean'];assert final.exists(),'Analyze the actual encoded audio'
 audio=decode(final);n=min(len(audio),len(stem));audio=audio[:n];stem=stem[:n]

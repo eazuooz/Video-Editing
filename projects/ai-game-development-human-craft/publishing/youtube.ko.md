@@ -36,14 +36,22 @@ https://www.youtube.com/watch?v=A2VQbPrw9-g
 Unity illustration assets: KayKit Adventurers / Kenney Tiny Dungeon (CC0).
 
 Independent production footage (native-speed excerpts, overlays added, original audio omitted):
-Ai Artistry Studio / CC BY 3.0 — https://www.youtube.com/watch?v=TOGMcrb_FkY
-Dominic Branchaud / CC BY 3.0 — https://www.youtube.com/watch?v=8gf5GPzhgk8
-Juan Linietsky / Godot Engine / CC BY 4.0 — https://www.youtube.com/watch?v=wrGLIt322jM
-David Revoy / CC BY 4.0 — https://www.youtube.com/watch?v=kisT96h5h80
-Ainembabazi leviticus / CC0 — https://commons.wikimedia.org/wiki/File:Wood_curving_process_4.webm
-Ainembabazi leviticus / CC0 — https://commons.wikimedia.org/wiki/File:Wood_curving_process_2.webm
-designboom / CC BY 3.0 — https://vimeo.com/57937071
-Miles Brothers / Public domain — https://commons.wikimedia.org/wiki/File:A_Trip_down_market_street_(1906).webm
+Unreal Engine 5 Custom Map Creation Timelapse — Part 1 — Ai Artistry Studio (2024-02-07) / CC BY 3.0
+https://www.youtube.com/watch?v=TOGMcrb_FkY
+Easy Stable Diffusion Unity Integration package — Dominic Branchaud (2023-01-30) / CC BY 3.0
+https://www.youtube.com/watch?v=8gf5GPzhgk8
+Making the next blockbuster 3D game with FOSS tools — Director’s Cut — Juan Linietsky / Godot Engine (2019) / CC BY 4.0
+https://www.youtube.com/watch?v=wrGLIt322jM
+Overview of my Krita Digital Painting Workflow − end of2022 — David Revoy (2022-12-19) / CC BY 4.0
+https://www.youtube.com/watch?v=kisT96h5h80
+Wood curving process4 — Ainembabazi leviticus (2024-04-05) / CC0
+https://commons.wikimedia.org/wiki/File:Wood_curving_process_4.webm
+Wood curving process2 — Ainembabazi leviticus (2024-04-05) / CC0
+https://commons.wikimedia.org/wiki/File:Wood_curving_process_2.webm
+Chainsaw robot carves the7Xstool — Tom Pawlofsky / Tibor Weissmahr — designboom (2013-01-22) / CC BY 3.0
+https://vimeo.com/57937071
+A Trip down Market Street — Miles Brothers (1906) / Public domain
+https://commons.wikimedia.org/wiki/File:A_Trip_down_market_street_(1906).webm
 CC BY3.0: https://creativecommons.org/licenses/by/3.0/
 CC BY4.0: https://creativecommons.org/licenses/by/4.0/
 CC0: https://creativecommons.org/publicdomain/zero/1.0/

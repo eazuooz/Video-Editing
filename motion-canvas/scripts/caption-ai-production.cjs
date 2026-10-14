@@ -62,7 +62,11 @@ function burn(list){
  if(control.selectedVideo!==slug)throw Error('Selected production changed');
  const clean=path.join(root,m.paths.videoClean),target=path.join(root,m.paths.videoBurnedCaptions);
  if(fs.existsSync(target))throw Error('Preserve existing captioned master; explicitly version revisions');
- run('ffmpeg',['-v','error','-n','-i',clean,'-f','concat','-safe','0','-i',list,'-filter_complex','[0:v][1:v]overlay=x=0:y=870:format=auto:shortest=1,format=yuv420p[v]','-map','[v]','-map','0:a:0','-c:v','h264_nvenc','-preset','p5','-cq','18','-b:v','0','-r','60','-frames:v',String(totalFrames),'-c:a','copy','-movflags','+faststart',target]);
+ // The retained scene streams have identical dimensions/pixel formats but
+ // may change SAR at a cut. Reinitializing framesync would discard the held
+ // caption until its next PNG packet and can repeat the preceding video frame.
+ // Preserve graph state, normalize SAR, and retain the verified60fps PTS.
+ run('ffmpeg',['-v','error','-n','-reinit_filter','0','-i',clean,'-f','concat','-safe','0','-i',list,'-filter_complex','[0:v]setsar=1[base];[base][1:v]overlay=x=0:y=870:format=auto:shortest=1,format=yuv420p[v]','-map','[v]','-map','0:a:0','-c:v','h264_nvenc','-preset','p5','-cq','18','-b:v','0','-fps_mode','passthrough','-frames:v',String(totalFrames),'-c:a','copy','-movflags','+faststart',target]);
  console.log(target);
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

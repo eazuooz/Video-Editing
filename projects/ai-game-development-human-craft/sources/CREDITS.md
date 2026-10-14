@@ -30,4 +30,4 @@ Unity 설명 씬: 얌얌코딩. KayKit Adventurers / Kenney Tiny Dungeon CC0 자
 - Wood curving process4 — Ainembabazi leviticus (2024-04-05), CC0. [원본](https://commons.wikimedia.org/wiki/File:Wood_curving_process_4.webm) · [이용 조건](https://creativecommons.org/publicdomain/zero/1.0/)
 - Wood curving process2 — Ainembabazi leviticus (2024-04-05), CC0. [원본](https://commons.wikimedia.org/wiki/File:Wood_curving_process_2.webm) · [이용 조건](https://creativecommons.org/publicdomain/zero/1.0/)
 - Chainsaw robot carves the7Xstool — Tom Pawlofsky / Tibor Weissmahr — designboom (2013-01-22), CC BY 3.0. [원본](https://vimeo.com/57937071) · [이용 조건](https://creativecommons.org/licenses/by/3.0/)
-- A Trip down Market Street — Miles Brothers (1906), Public domain. [원본](https://commons.wikimedia.org/wiki/File:A_Trip_down_market_street_(1906).webm) · [이용 조건](https://www.loc.gov/item/00694408/)
+- A Trip down Market Street — Miles Brothers (1906), Public domain. [원본](https://commons.wikimedia.org/wiki/File:A_Trip_down_market_street_(1906).webm) · [이용 조건](https://hdl.loc.gov/loc.mbrsmi/cmp003.01142)

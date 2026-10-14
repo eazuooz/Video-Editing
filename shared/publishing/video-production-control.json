@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "policyId": "preproduction-first-v1",
-  "updatedAt": "2026-10-14T10:22:25.044875+00:00",
+  "updatedAt": "2026-10-14T12:28:52.327802+00:00",
   "authority": "explicit-human-user",
   "userEvidence": "영상 제작 규칙 재설계하자 ... 검수해야하는 내용을 처음 영상제작규칙에 추가해서 처음에 잘만들게 해줘 규칙 확인하고 전부 통합해서 수정해줘. 지피티 자동 채팅보내는거 해제 ... 있는거 검수하고 새로운거 만드는것 부터는 이제 내가 하나씩 확인하면서 만들려고",
   "mode": "one-video-autonomous-until-drive-final-review",
@@ -380,13 +380,44 @@
       "userReviewMessage",
       "reviewedAt"
     ],
-    "status": "pending-final-render",
+    "status": "blocked-transfer",
     "fileId": null,
     "url": null,
     "version": null,
-    "localSha256": null,
+    "localSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
     "userReviewMessage": null,
-    "reviewedAt": null
+    "reviewedAt": null,
+    "sizeBytes": 940090300,
+    "accessStatus": "no-final-file-created",
+    "processingAndPlaybackStatus": "not-uploaded",
+    "block": {
+      "at": "2026-10-14T12:28:52.259651+00:00",
+      "finalLocalSha256": "ab8915aa1b62655335e60f69c897787b9ac55e1857666276da9f2ebf611d4efc",
+      "finalFile": "D:\\Github\\VideoEditing\\output\\ai-game-development-human-craft\\ai-game-development-human-craft.captioned.mp4",
+      "attempts": [
+        {
+          "method": "connector-original",
+          "bytes": 940090300,
+          "result": "Rejected before transfer: exceeds536870912-byte limit",
+          "evidence": "shared/output/ai-game-development-human-craft/drive-final-v1-connector-error.json"
+        },
+        {
+          "method": "Drive web UI file chooser",
+          "bytes": 940090300,
+          "result": "Stayed at upload starting; owned tab closed after no progress; exact-name search found no file"
+        },
+        {
+          "method": "connector-optimized-full1080p60",
+          "bytes": 527008264,
+          "sha256": "03e3582265234532ec15f83df99e4468c165594f7d8fcb07048fb98805b52c0a",
+          "result": "Blob transfer failed HTTP413 Payload Too Large before Drive file creation",
+          "evidence": "shared/output/ai-game-development-human-craft/drive-final-v1-optimized-connector-error.json"
+        }
+      ],
+      "finalDriveSearch": "No final file found by exact title or original file basename",
+      "fileId": null,
+      "decision": "Keep the original high-bitrate reviewed master as final; retain optimized attempt and its QA separately. No speculative lower-quality rerenders or duplicate upload."
+    }
   },
   "videoUiDesignPolicy": {
     "policyId": "yamyam-video-ui-v1",

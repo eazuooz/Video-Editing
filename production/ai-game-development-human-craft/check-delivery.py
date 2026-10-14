@@ -1,6 +1,6 @@
 """Current encoded outputs: complete frame decode, PTS, AAC and subtitle integrity."""
 from pathlib import Path
-import json, subprocess, hashlib, re
+import json, subprocess, hashlib, re, argparse
 import numpy as np
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
 OUT=ROOT/'shared/output'/SLUG
@@ -10,12 +10,20 @@ def run(args):
  p=subprocess.run(args,cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,creationflags=subprocess.CREATE_NO_WINDOW)
  if p.returncode or p.stderr.strip():raise RuntimeError(p.stderr.decode('utf-8','replace'))
  return p.stdout
+parser=argparse.ArgumentParser();parser.add_argument('--clean-only',action='store_true');args=parser.parse_args()
 m=read(ROOT/f'projects/{SLUG}/project.json');assembly=read(OUT/'assembly.json');expected=assembly['frames']
+receipts=OUT/'integrity-stages';receipts.mkdir(exist_ok=True)
 results=[];aac=[]
 mix_packets=run(['ffmpeg','-v','error','-i',str(OUT/'audio/mix.m4a'),'-map','0:a:0','-c:a','copy','-f','adts','-'])
 mix_packet_sha=hashlib.sha256(mix_packets).hexdigest()
-for key in ['videoClean','videoBurnedCaptions']:
+for key in (['videoClean'] if args.clean_only else ['videoClean','videoBurnedCaptions']):
  path=ROOT/m['paths'][key]
+ receipt=receipts/(key+'.json');current_sha=sha(path)
+ if receipt.exists():
+  prior=read(receipt)
+  if (prior['sha256']==current_sha and prior['frames']==expected and prior['aacAdtsSha256']==mix_packet_sha
+      and all(prior[x]=='pass' for x in ['fullVideoDecode','fullAudioDecode','pts'])):
+   results.append(prior);aac.append(prior['aacAdtsSha256']);continue
  metadata=json.loads(run(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(path)]))
  v=next(s for s in metadata['streams'] if s['codec_type']=='video');a=next(s for s in metadata['streams'] if s['codec_type']=='audio')
  assert (v['width'],v['height'],v['r_frame_rate'],int(v['nb_frames']))==(1920,1080,'60/1',expected)
@@ -29,7 +37,11 @@ for key in ['videoClean','videoBurnedCaptions']:
  digest=hashlib.sha256(packets).hexdigest();aac.append(digest)
  assert digest==mix_packet_sha,'Encoded master differs from the reviewed final AAC mix'
  run(['ffmpeg','-v','error','-err_detect','explode','-i',str(path),'-map','0:a:0','-f','null','-'])
- results.append({'path':path.relative_to(ROOT).as_posix(),'sha256':sha(path),'bytes':path.stat().st_size,'frames':len(pts),'fullVideoDecode':'pass','fullAudioDecode':'pass','pts':'pass','duration':float(metadata['format']['duration']),'aacAdtsSha256':digest})
+ result={'path':path.relative_to(ROOT).as_posix(),'sha256':current_sha,'bytes':path.stat().st_size,'frames':len(pts),'fullVideoDecode':'pass','fullAudioDecode':'pass','pts':'pass','duration':float(metadata['format']['duration']),'aacAdtsSha256':digest}
+ receipt.write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8');results.append(result)
+if args.clean_only:
+ print('Current clean master full decode/PTS/AAC passed; captioned integrity remains pending.')
+ raise SystemExit(0)
 assert aac[0]==aac[1],'Clean/captioned audio differs'
 script=read(ROOT/m['paths']['script']);translated=read(ROOT/m['paths']['scriptEn'])
 cue_reports=[]

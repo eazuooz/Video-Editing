@@ -11,6 +11,10 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
 OUT=ROOT/'shared/output'/SLUG;QA=OUT/'caption-pixel-qa';QA.mkdir(exist_ok=True)
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
+def select_expr(indices):
+ if len(indices)==1:return f'eq(round(t*60),{indices[0]})'
+ mid=len(indices)//2
+ return '('+select_expr(indices[:mid])+'+'+select_expr(indices[mid:])+')'
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 m=read(ROOT/f'projects/{SLUG}/project.json');layout=read(OUT/'caption-overlays/layout.json')
 data=read(ROOT/f'motion-canvas/src/projects/{SLUG}/scene-data.json')
@@ -20,6 +24,11 @@ for c in cues:
  for edge in [c['startFrame'],c['endFrame']]:frames.update([edge-1,edge,edge+1])
 for s in data['scenes']:
  cut=120+round(s['start']*60);frames.update([cut-1,cut,cut+1])
+actual=read(ROOT/f'projects/{SLUG}/planning/actual-footage-plan.json')
+sceneStarts={s['id']:round(s['start']*60)+120 for s in data['scenes']}
+for cut in actual['cuts']:
+ for edge in [cut['startFrame'],cut['endFrame']]:
+  f=sceneStarts[cut['scene']]+edge;frames.update([f-1,f,f+1])
 frames=sorted(f for f in frames if 0<=f<total)
 def active(f):return next((c for c in cues if c['startFrame']<=f<c['endFrame']),None)
 blanks=[f for f in frames if active(f) is None]
@@ -28,8 +37,8 @@ def extract(key,indices):
  receipt=dest/'input.json';stamp={'sourceSha256':sha(path),'frames':indices,'crop':[0,870,1920,210]}
  if receipt.exists() and read(receipt)==stamp and len(list(dest.glob('*.png')))==len(indices):return dest
  assert not list(dest.glob('*.png')),'Changed extraction must use an explicit new QA version'
- vf=dest/'filter.txt';vf.write_text("select='"+'+'.join(f'eq(n,{f})' for f in indices)+"',crop=1920:210:0:870",encoding='ascii')
- subprocess.run(['ffmpeg','-v','error','-i',str(path),'-filter_script:v',str(vf),'-fps_mode','vfr','-compression_level','2',str(dest/'%06d.png')],check=True,creationflags=subprocess.CREATE_NO_WINDOW)
+ vf=dest/'filter.txt';vf.write_text("select='"+select_expr(indices)+"',crop=1920:210:0:870",encoding='ascii')
+ subprocess.run(['ffmpeg','-v','error','-i',str(path),'-/filter:v',str(vf),'-fps_mode','passthrough','-compression_level','2',str(dest/'%06d.png')],check=True,creationflags=subprocess.CREATE_NO_WINDOW)
  assert len(list(dest.glob('*.png')))==len(indices)
  receipt.write_text(json.dumps(stamp,indent=2)+'\n',encoding='utf-8');return dest
 encoded=extract('videoBurnedCaptions',frames);clean=extract('videoClean',blanks)
@@ -50,7 +59,7 @@ for i,f in enumerate(frames):
  if not ok:fail.append(row)
 result={'status':'pass' if not fail else 'fail','method':'decoded1920px caption strips; exact canvas artwork; clean control for no-caption intervals',
  'captionedSha256':sha(ROOT/m['paths']['videoBurnedCaptions']),'cleanSha256':sha(ROOT/m['paths']['videoClean']),
- 'cues':len(cues),'sampledFrames':len(frames),'everyCueMidpoint':True,'everyCueStartEndNeighbors':True,'everySceneCutNeighbors':True,
+ 'cues':len(cues),'sampledFrames':len(frames),'everyCueMidpoint':True,'everyCueStartEndNeighbors':True,'everySceneCutNeighbors':True,'everyActualCutNeighbors':True,
  'comparisonThreshold':{'meanAbsoluteRgbErrorLessThan':6,'p95LessThan':25},'failures':fail,'frames':records,
  'agentVisualAndMovementReview':'separate scoped review required'}
 (QA/'report.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
