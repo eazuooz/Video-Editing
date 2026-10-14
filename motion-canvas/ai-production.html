@@ -7,7 +7,7 @@ const id=new URLSearchParams(location.search).get('scene');
 const route=id==='members'?'/src/projects/ai-game-development-human-craft/member-project.ts':id?`/src/projects/ai-game-development-human-craft/scenes/${id}/project.ts`:'/src/projects/ai-game-development-human-craft/project.ts';
 const {default:project}=await import(/* @vite-ignore */route+'?project');
 window.reviewErrors=[];project.logger.onLogged.subscribe(e=>{if(e.level==='error')reviewErrors.push(String(e.message)+' '+String(e.remarks||''));});
-const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:'#000'});document.querySelector('#stage').append(stage.finalBuffer);
+const stage=new Stage();stage.configure({size:new Vector2(1920,1080),resolutionScale:1,background:new URLSearchParams(location.search).get('actualOverlay')==='1'?'#00000000':'#000'});document.querySelector('#stage').append(stage.finalBuffer);
 const player=new Player(project,{fps:60,size:new Vector2(1920,1080),resolutionScale:1},{muted:true,paused:true});let ready=false,rendered=-1;
 player.onRecalculated.subscribe(()=>ready=true);
 player.onRender.subscribe(async()=>{await stage.render(player.playback.currentScene,player.playback.previousScene);rendered=player.playback.frame;document.querySelector('#status').textContent=`${(rendered/60).toFixed(1)}초`;});

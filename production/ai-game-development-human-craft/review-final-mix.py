@@ -17,7 +17,11 @@ assert read(ROOT/'shared/publishing/video-production-control.json')['selectedVid
 out=ROOT/f'shared/output/{SLUG}/audio/final-asr';out.mkdir(exist_ok=True)
 source=out.parent/'mix.m4a';source_sha=sha(source);data=read(ROOT/f'motion-canvas/src/projects/{SLUG}/scene-data.json')
 pcm=out/'encoded-mix-decoded.wav'
-if not pcm.exists():run(['ffmpeg','-v','error','-n','-i',str(source),'-ar','24000','-ac','1',str(pcm)])
+decoded_receipt=out/'decoded-input.json'
+if pcm.exists():assert decoded_receipt.exists() and read(decoded_receipt)['sourceSha256']==source_sha
+else:
+ run(['ffmpeg','-v','error','-n','-i',str(source),'-ar','24000','-ac','1',str(pcm)])
+ decoded_receipt.write_text(json.dumps({'sourceSha256':source_sha,'pcmSha256':sha(pcm),'sampleRate':24000,'channels':1},indent=2)+'\n')
 samples,sr=sf.read(pcm,dtype='float32')
 intervals=[('intro',0,2)]+[(s['id'],2+s['start'],2+s['start']+s['duration']) for s in data['scenes']]+[('members',2+sum(s['duration'] for s in data['scenes']),len(samples)/sr)]
 lease=ROOT/'shared/output/GPU_HANDOFF.json';assert not lease.exists()

@@ -15,12 +15,14 @@
 
 1. `align-captions.py`: 한 번 수행한 full ASR의 단어 시각을 씬별로 분리해 정렬한다. 새 ASR을 실행하지 않는다. `complete-asr-scene-review.json`의 **전체** 원문/인식문을 직접 대조하고 숫자·고유명사·발음의 차이를 검토한다. 정렬 커버리지만으로 내용/발음을 승인하지 않는다.
 2. `prepare-scenes.py`, `sync-media.py`: 확정 문단/자막 시간과 완료된 Unity 캡처를 연결한다. 실제 자막 상태가 없으면 최종 렌더가 거절된다. `render-ai-production.cjs --scenes=01,...,28 --captions`의 현재 타이밍과 모든 이동/구매 전후를 검토한다.
-3. `build-audio.py`: 원본 보존, 일정한 씬 게인, 연속 음악과 음성 기준 음악 덕킹으로 믹스한다. 새 믹스의 전체 ASR은 한 번 별도로 수행한다. `audio/mix-report.json`의 실측값을 확인한다.
-4. `render-ai-production.cjs --scenes=01,...,28 --render`: 현재 입력의28개 시각 씬을 순차 렌더한다. `assemble-video.py`는 원래2초 브랜딩과10초 회원 엔딩을 붙이고 같은 믹스를 연결한다. 이후 `prepare-scenes.py`로 편집기의 전체 믹스도 연결한다.
+3. `build-audio.py`: 원본 보존, 문단별 발화 게인과 짧은 피크 보호, 연속 음악과 음성 기준 음악 덕킹으로 믹스한다. 새 믹스의 전체 ASR은 한 번 별도로 수행한다. `audio/mix-report.json`의 실측값을 확인한다.
+4. `render-ai-hybrid.cjs`: 현재 입력의28개 시각 씬을 순차 렌더한다. `assemble-video.py`는 원래2초 브랜딩과10초 회원 엔딩을 붙이고 같은 믹스를 연결한다. 이후 `prepare-scenes.py`로 편집기의 전체 믹스도 연결한다.
 5. `caption-ai-production.cjs`: 기존 CaptionBox의 실제 그리기 코드로 모든 자막을 만든다. `--burn`은 같은 자막 PNG를 재사용해 clean에 합성한다. 원래 body SRT를 보존하고 `shared/output/<slug>/final.ko.srt`, `final.en.srt`에2초를 더한 납품 자막을 별도로 만든다.
 6. `check-delivery.py`, `check-caption-pixels.py`, `inspect-audio.py`: 새 출력의 전체 프레임 디코드/PTS/AAC, 모든 자막 및 경계의 실제 픽셀, 원본→내레이션 stem→최종 파일의 국소 레벨을 확인한다. 픽셀 비교는 사람/에이전트의 내용·동작 검토를 대신하지 않으며 미해결 음량 의심 구간과 실제 청취는 그대로 pending으로 남긴다.
 7. `prepare-publishing.py`: 실측 챕터/한영 소개/필수 라이선스/과외 링크/고정댓글 원문만 준비한다. 외부 업로드를 하지 않는다. 납품 전 manifest의 자막 경로를 위 final SRT로 연결하고 collector를 실행한다.
 
-검수/보존: 원본 PCM, 현재 full ASR과 단어 시각, 내레이션 단독 트랙, 현재 믹스의 국소 음량, 최종 mix ASR, 전체 decode/PTS/자막/움직임을 기존 원장에 연결한다. 현재 전체 영상이 완료된 것으로 간주하지 않는다. 현재 요청 중인 화면 비율 예외는 사용자 응답 없이 승인하지 않는다.
+검수/보존: 원본 PCM, 현재 full ASR과 단어 시각, 내레이션 단독 트랙, 현재 믹스의 국소 음량, 최종 mix ASR, 전체 decode/PTS/자막/움직임을 기존 원장에 연결한다. 현재 전체 영상이 완료된 것으로 간주하지 않는다. 최신 사용자 응답에 따라 실제 제작·개발·공예/역사·게임 녹화60%, 설명40%로 구성했다. 자체 Unity는 설명으로 분류하며 루프·저속 재생은 없다.
 
 최종 경계: clean/captioned/KO/EN 네 파일을 collector로 모은 뒤 **전체 자막 포함 완성본을 Google Drive에 먼저 업로드**한다. 해당 버전을 사용자가 검수하기 전에는 YouTube에 업로드하지 않는다. 다른 영상으로 넘어가지 않는다.
+
+실제 자료: `plan-actual-footage.py` → `prepare-actual-footage.py --normalize` → `sync-media.py`. `record-actual-sources.py`는 현재 자료의 출처/권리와 검수 근거를 한 곳에 기록한다. 하이브리드 합성은 설명 구간만 Motion Canvas로 프레임 렌더하고 실제 녹화에는 같은 MC 크레딧 레이어를 합성한다. 씬·부분 해시가 같은 완료 결과만 재사용한다.

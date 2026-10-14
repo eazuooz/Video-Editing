@@ -37,3 +37,7 @@
 기존 사용자 승인 차분한 곡 **Wholesome / Kevin MacLeod**를 재사용한다. CC BY4.0 근거·해시는 `shared/assets/music/incompetech/Wholesome.LICENSE.md`. 현재 믹스에서는−31LUFS를 시작값으로 내레이션 중심 덕킹과 비교 검수를 한다. 스타일 승인과 현재 믹스 검수는 별개다. 필수 고지는 `CREDITS.md`와 게시 설명에 보존한다.
 
 원본 녹화·음성·웹 캡처·QA 이미지는 `shared/sources/ai-game-development-human-craft/`, `shared/output/ai-game-development-human-craft/`에 로컬 보관하며 Git에는 넣지 않는다. 확보·부분 검수·완성본 검수를 구분한다.
+
+<!-- selected-actual-footage-v2 -->
+
+최신 실제 화면60:설명40 구성은 [컷 계획](../planning/actual-footage-plan.json)과 [자료 매니페스트](source-manifest.json)의 `actualFootageSources`를 따른다. 각 원본의 제작자·연도·실제 동작·권리·해시·네이티브 인아웃을 기록했다. 자체 Unity 시연은 설명이며 공지 캡처도 실제 녹화 비중에 포함하지 않는다. David Revoy의 작업을 Thomas Brush의 작품으로,2023년 별도 Unity 플러그인을 Spark로 소개하지 않는다.

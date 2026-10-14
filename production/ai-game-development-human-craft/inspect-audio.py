@@ -1,6 +1,6 @@
 """Aligned source/stem/encoded-mix level evidence. Does not invent listening QA."""
 from pathlib import Path
-import json, hashlib, subprocess
+import json, hashlib, subprocess, argparse
 import numpy as np
 import soundfile as sf
 from scipy.ndimage import median_filter
@@ -19,9 +19,10 @@ def groups(mask):
  if not len(ids):return []
  return np.split(ids,np.where(np.diff(ids)>1)[0]+1)
 
+p=argparse.ArgumentParser();p.add_argument('--mix-only',action='store_true');args=p.parse_args()
 m=read(ROOT/f'projects/{SLUG}/project.json');report=read(OUT/'mix-report.json')
 stem,rate=sf.read(OUT/'narration-stem.wav',dtype='float32');assert rate==RATE
-final=ROOT/m['paths']['videoClean'];assert final.exists(),'Analyze the actual encoded master'
+final=OUT/'mix.m4a' if args.mix_only else ROOT/m['paths']['videoClean'];assert final.exists(),'Analyze the actual encoded audio'
 audio=decode(final);n=min(len(audio),len(stem));audio=audio[:n];stem=stem[:n]
 tts=ROOT/m['tts']['outputDir'];name=m['tts']['filenameStem']
 original,sr=sf.read(tts/(name+'.wav'),dtype='float32');assert sr==RATE
@@ -46,21 +47,29 @@ for g in groups(speech&((nearby-srcdb)>=6)):
                'sourceToStemGainRangeDb':[float(np.min(stemdb[g]-srcdb[g])),float(np.max(stemdb[g]-srcdb[g]))],
                'mixVoiceTransferMedianDb':float(np.median(voice_transfer[g])),
                'context':text,'listening':'pending','resolution':'pending-contextual-listening'})
+paragraphs=[]
+for para in report['paragraphGains']:
+ mask=speech&(centers>=para['start']+2)&(centers<para['end']+2)
+ paragraphs.append(dict(para,sourceMedianDbfs=float(np.median(srcdb[mask])),stemMedianDbfs=float(np.median(stemdb[mask])),encodedVoiceTransferDb=float(np.median(voice_transfer[mask]))))
 joins=[]
-for prev,now in zip(report['sceneGains'],report['sceneGains'][1:]):
- before=prev['speechMedianDbfs']+prev['constantGainDb'];after=now['speechMedianDbfs']+now['constantGainDb']
- joins.append({'scene':now['scene'],'seconds':2+now['origin'],'sourceDifferenceDb':now['speechMedianDbfs']-prev['speechMedianDbfs'],'stemDifferenceDb':after-before,'flag':abs(after-before)>=3})
+for prev,now in zip(paragraphs,paragraphs[1:]):
+ delta=now['stemMedianDbfs']-prev['stemMedianDbfs']
+ joins.append({'scene':now['scene'],'paragraph':now['paragraph'],'kind':'scene' if prev['scene']!=now['scene'] else 'paragraph','seconds':2+now['start'],'sourceDifferenceDb':now['sourceMedianDbfs']-prev['sourceMedianDbfs'],'stemDifferenceDb':delta,'flag':abs(delta)>=3})
+decay=[]
+for scene in report['sceneMeasurements']:
+ rows=[p for p in paragraphs if p['scene']==scene['scene']]
+ decay.append({'scene':scene['scene'],'sourceLastMinusFirstDb':rows[-1]['sourceMedianDbfs']-rows[0]['sourceMedianDbfs'],'stemLastMinusFirstDb':rows[-1]['stemMedianDbfs']-rows[0]['stemMedianDbfs']})
 attenuation=[]
 for g in groups(speech&(voice_transfer<-1.0)):
  if len(g)*.1>=.5:attenuation.append({'start':float(centers[g[0]]),'end':float(centers[g[-1]]),'medianDb':float(np.median(voice_transfer[g]))})
 result={'method':'400ms RMS windows,100ms hop; ASR word-time speech mask; matched stem projection in encoded mix',
  'sourceSha256':sha(tts/(name+'.wav')),'stemSha256':sha(OUT/'narration-stem.wav'),'finalSha256':sha(final),
  'windowSeconds':.4,'hopSeconds':.1,'scope':'complete speech plus every scene join',
- 'sourceLowLevelFlags':flags,'sceneJoins':joins,'encodedVoiceAttenuationFlags':attenuation,
+ 'sourceLowLevelFlags':flags,'paragraphMeasurements':paragraphs,'paragraphAndSceneJoins':joins,'withinTakeDecayBeforeAfter':decay,'encodedVoiceAttenuationFlags':attenuation,
  'speechWindows':int(speech.sum()),'voiceTransferMedianDb':float(np.median(voice_transfer[speech])),
  'processingAttenuationStatus':'pass' if not attenuation and not any(j['flag'] for j in joins) else 'fail',
  'sourceProsodyListening':'pending' if flags else 'no-threshold-flags; full-listening-pending',
- 'fullHumanListening':'pending'}
+ 'fullHumanListening':'pending','encodedScope':'reviewed AAC mix before video mux' if args.mix_only else 'actual encoded video master'}
 (OUT/'level-continuity.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 np.savez_compressed(OUT/'level-windows.npz',seconds=centers,sourceDbfs=srcdb,stemDbfs=stemdb,mixDbfs=10*np.log10(mixpower),voiceTransferDb=voice_transfer,speech=speech)
 print(json.dumps({'sourceFlags':len(flags),'processingAttenuation':result['processingAttenuationStatus'],'humanListening':'pending'}))

@@ -1,0 +1,55 @@
+// Render editable explanation ranges with Motion Canvas; retain native source
+// motion in FFmpeg. Both routes use the same MC source-credit layout.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const {spawnSync}=require('node:child_process'),puppeteer=require('puppeteer');
+const root=path.resolve(__dirname,'../..'),slug='ai-game-development-human-craft';
+const project=path.join(root,'motion-canvas/src/projects',slug),out=path.join(root,'shared/output',slug,'composite');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
+const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const run=(cmd,args)=>{const r=spawnSync(cmd,args,{windowsHide:true,encoding:'utf8',maxBuffer:64e6});if(r.status!==0)throw Error(r.stderr||r.error);return r.stdout;};
+const encode=['-an','-c:v','h264_nvenc','-preset','p5','-cq','17','-pix_fmt','yuv420p','-r','60','-video_track_timescale','15360','-movflags','+faststart'];
+const control=()=>{const c=read(path.join(root,'shared/publishing/video-production-control.json'));if(c.selectedVideo!==slug||!c.newProductionAuthorization.fullProductionAuthorized)throw Error('Selection changed');};
+const data=read(path.join(project,'scene-data.json')),actual=read(path.join(project,'actual-footage.json'));
+const ids=process.argv.find(a=>a.startsWith('--scenes='))?.split('=')[1].split(',')||data.scenes.map(s=>s.id);
+const fingerprint={sceneDataHash:hash(path.join(project,'scene-data.json')),sceneKitHash:hash(path.join(project,'scene-kit.tsx')),mediaHash:hash(path.join(project,'media.json')),actualFootageHash:hash(path.join(project,'actual-footage.json'))};
+async function main(){
+ control();if(data.timingStatus!=='measured-narration'||data.captionTimingStatus!=='asr-aligned')throw Error('Unmeasured timeline');
+ const browser=await puppeteer.launch({headless:true,args:['--autoplay-policy=no-user-gesture-required'],protocolTimeout:180000});
+ const page=await browser.newPage();page.on('pageerror',e=>console.error(e));
+ try{for(const id of ids){
+  control();const s=data.scenes.find(s=>s.id===id),frames=Math.round(s.duration*60),dir=path.join(out,id);fs.mkdirSync(dir,{recursive:true});
+  const movie=path.join(root,`shared/output/motion-canvas/ai-craft-scene-${id}-v1.mp4`),receipt=path.join(dir,'render.json');
+  if(fs.existsSync(movie)){const r=read(receipt);if(JSON.stringify(r.fingerprint)!==JSON.stringify(fingerprint)||r.encoded.sha256!==hash(movie))throw Error('Changed existing scene '+id);console.log('Reuse '+id);continue;}
+  const cuts=actual.cuts.filter(c=>c.scene===id).sort((a,b)=>a.startFrame-b.startFrame),parts=[];let cursor=0;
+  for(const cut of cuts){if(cut.startFrame>cursor)parts.push({kind:'explanation',start:cursor,end:cut.startFrame});parts.push({kind:'actual',start:cut.startFrame,end:cut.endFrame,cut});cursor=cut.endFrame;}
+  if(cursor<frames)parts.push({kind:'explanation',start:cursor,end:frames});
+  const outputs=[];
+  for(const [i,part] of parts.entries()){
+   const name=`ai-craft-part-${id}-${String(i).padStart(2,'0')}-v1`,count=part.end-part.start;
+   const target=path.join(root,'shared/output/motion-canvas',name+'.mp4'),record=path.join(dir,name+'.json');
+   const inputs={fingerprint,part};
+   if(fs.existsSync(target)){if(!fs.existsSync(record)||JSON.stringify(read(record).inputs)!==JSON.stringify(inputs)||read(record).sha256!==hash(target))throw Error('Incomplete/changed part '+name);outputs.push(target);continue;}
+   if(part.kind==='actual'){
+    await page.goto(`http://127.0.0.1:9199/ai-production.html?scene=${id}&actualOverlay=1`,{waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>window.sampleReview?.ready,{timeout:60000});
+    const f=Math.floor((part.start+part.end)/2);await page.evaluate(f=>sampleReview.player.requestSeek(f),f);await page.waitForFunction(f=>sampleReview.rendered===f,{timeout:60000},f);
+    const png=await page.evaluate(()=>sampleReview.stage.finalBuffer.toDataURL('image/png'));const overlay=path.join(dir,`credit-${part.cut.id}.png`);fs.writeFileSync(overlay,Buffer.from(png.split(',')[1],'base64'));
+    run('ffmpeg',['-v','error','-n','-i',path.join(root,part.cut.path),'-i',overlay,'-filter_complex','[0:v][1:v]overlay=0:0:format=auto,format=yuv420p','-frames:v',String(count),...encode,target]);
+   }else{
+    await page.goto('http://127.0.0.1:9199/render-worker.html?skipActual=1',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof renderVideo==='function');
+    await page.evaluate(c=>{renderVideo(c).catch(e=>window.renderFailure=String(e.stack||e));},{route:`/src/projects/${slug}/scenes/${id}/project.ts`,name,firstFrame:part.start,frames:count,fps:60,width:1920,height:1080,exactFrameRange:true});
+    let last=-1,changed=Date.now(),logged=0;
+    while(true){await new Promise(r=>setTimeout(r,1000));const st=await page.evaluate(()=>({...renderJob,failure:window.renderFailure}));if(st.failure||st.errors.length)throw Error(JSON.stringify(st));if(st.frame!==last){last=st.frame;changed=Date.now();}if(Date.now()-logged>20000){console.log(`${name} ${last}/${part.end}`);logged=Date.now();}if(st.done){if(st.result!==0)throw Error('Exporter failed');break;}if(Date.now()-changed>180000)throw Error('Render stalled');}
+   }
+   const v=readProbe(target);if(+v.nb_frames!==count)throw Error(`Frame mismatch ${name} ${v.nb_frames}/${count}`);
+   fs.writeFileSync(record,JSON.stringify({inputs,frames:count,sha256:hash(target)},null,2));outputs.push(target);console.log(`Completed ${name} ${count}f`);
+  }
+  const list=path.join(dir,'parts.ffconcat');fs.writeFileSync(list,'ffconcat version 1.0\n'+outputs.map(p=>`file '${p.replaceAll('\\','/')}'`).join('\n')+'\n');
+  run('ffmpeg',['-v','error','-n','-f','concat','-safe','0','-i',list,'-frames:v',String(frames),...encode,movie]);
+  const v=readProbe(movie);if(+v.nb_frames!==frames||v.width!==1920||v.height!==1080||v.r_frame_rate!=='60/1')throw Error('Scene integrity');
+  run('ffmpeg',['-v','error','-i',movie,'-f','null','-']);
+  fs.writeFileSync(receipt,JSON.stringify({scene:id,frames,fingerprint,parts,timingStatus:data.timingStatus,visualReview:'pending-final-encoded-motion/caption-review',encoded:{path:path.relative(root,movie).replaceAll('\\','/'),frames,sha256:hash(movie),decode:'pass'}},null,2)+'\n');console.log(`SCENE ${id} COMPLETE`);
+ }}finally{await browser.close();}
+}
+function readProbe(p){return JSON.parse(run('ffprobe',['-v','error','-show_streams','-of','json',p])).streams.find(s=>s.codec_type==='video');}
+main().catch(e=>{console.error(e);process.exitCode=1;});

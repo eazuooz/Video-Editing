@@ -3,6 +3,7 @@ import {View2D,Node,Txt,Rect,Circle,Line,Video,Img} from '@motion-canvas/2d';
 import {createSignal,tween,Vector2} from '@motion-canvas/core';
 import data from './scene-data.json';
 import media from './media.json';
+import actual from './actual-footage.json';
 import {CaptionBox} from '../game-dev-career/preview/caption-box';
 // Recorded states stay in local output storage, not in Git or hand-written UI.
 const captures=import.meta.glob('../../../../shared/output/ai-game-development-human-craft/unity-production/*/*-capture.json',{eager:true,import:'default'});
@@ -17,6 +18,34 @@ function label(text:any,x:number,y:number,size=38,fill:any=C.ink,width=1600){ret
 function arrow(parent:Node,points:any,progress:any,color:any=C.teal,width=7,dash:number[]=[]){const l=new Line({points,stroke:color,lineWidth:width,end:progress,endArrow:true,arrowSize:20,lineDash:dash,radius:24});parent.add(l);return l;}
 function dot(parent:Node,x:number,y:number,text:string,active:()=>boolean,fill=C.teal){parent.add(new Circle({x,y,size:260,fill:C.bg,stroke:()=>active()?fill:C.line,lineWidth:5}));const words=label(text.split(/\s+/).join('\n'),x,y,44,()=>active()?C.ink:C.muted,240);words.textWrap('pre');parent.add(words);}
 const fs=(p:string)=>'/@fs/D:/Github/VideoEditing/'+p;
+
+function actualFootage(view:View2D,s:any,t:()=>number){
+ const params=new URLSearchParams(window.location.search);
+ if(params.get('skipActual')==='1')return;
+ const overlayOnly=params.get('actualOverlay')==='1';
+ for(const cut of (actual as any).cuts.filter((c:any)=>c.scene===s.id)){
+  const start=cut.startFrame/60,end=cut.endFrame/60;
+  const node=new Node({opacity:()=>t()>=start&&t()<end?1:0});view.add(node);
+  if(!overlayOnly){
+   node.add(new Rect({width:1920,height:1080,fill:C.bg}));
+   node.add(new Video({src:fs(cut.path),width:1920,height:1080,time:()=>clamp(t()-start,0,(cut.frames-1)/60)}));
+  }
+  // Compact credit band preserves the working viewport. No persistent giant
+  // chapter card on top of footage; the source action remains the main image.
+  node.add(new Rect({y:-486,width:1920,height:108,fill:'#000000f2'}));
+  node.add(label(cut.heading,-330,-505,34,C.yellow,1180));
+  node.add(label(cut.credit,-330,-460,25,C.ink,1180));
+  node.add(label('얌얌코딩',735,-484,30,C.ink,320));
+  if(cut.source==='ai'){
+   node.add(new Rect({y:310,width:1920,height:55,fill:'#000000e8'}));
+   node.add(label('서드파티 이미지 생성 연동 · 현재 Unity Spark 시연이 아닙니다.',0,310,27,C.ink,1800));
+  }
+  if(cut.source==='mix1'||cut.source==='mix2'){
+   node.add(new Rect({y:310,width:1920,height:55,fill:'#000000e8'}));
+   node.add(label('독립 개발 실험 · Nintendo 게임 본편이 아닙니다.',0,310,27,C.ink,1800));
+  }
+ }
+}
 
 function flow(parent:Node,labels:string[],progress:()=>number,mode:string){
  const n=labels.length;
@@ -169,20 +198,24 @@ export function* lesson(view:View2D,index:number){
  const s=data.scenes[index],t=createSignal(0);
  // Hold the current concept across breathing gaps; don't flash paragraph0.
  const paragraph=()=>{let current=0;for(let i=0;i<s.paragraphs.length;i++)if(t()>=s.paragraphs[i].start)current=i;return current;};
- view.fill(C.bg);
+ const overlayOnly=typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('actualOverlay')==='1';
+ view.fill(overlayOnly?'#00000000':C.bg);
  const mode=s.mode;
+ if(!overlayOnly){
  if(mode==='unity')unityScene(view,s,t,paragraph);
  else if(mode==='source')sourceScene(view,s,t,paragraph);
  else if(mode==='compare')compareScene(view,s,t);
  else if(mode==='timeline')timelineScene(view,s,t);
  else if(mode==='road')roadScene(view,s,t);
  else if(mode==='horizon')horizonScene(view,s,t);
- else if(mode==='footage')footageScene(view,s,t,paragraph);
- else{flow(view,s.labels,()=>clamp(t()/Math.max(1,s.duration-5))*s.labels.length,mode);view.add(label(s.note,0,304,32,C.muted));}
+ else if(mode==='footage'){flow(view,s.labels,()=>clamp(t()/7)*s.labels.length,'flow');view.add(label(s.note,0,304,32,C.muted));}
+ else{flow(view,s.labels,()=>clamp(t()/8)*s.labels.length,mode);view.add(label(s.note,0,304,32,C.muted));}
  if(mode==='footage')view.add(new Rect({x:0,y:-432,width:1920,height:216,fill:'#000000ed'}));
  view.add(label('얌얌코딩  /  게임과 개발',-590,-486,25,C.muted,650));
  view.add(label('AI 시대, 개발자의 실력',610,-486,25,C.muted,650));
  view.add(label(s.heading,0,-385,61,C.yellow,1770));
+ }
+ actualFootage(view,s,t);
  // QA page only; final clean frames never carry a subtitle overlay.
  if(typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('captions')==='1'){
   const caption=new CaptionBox({y:430});view.add(caption);

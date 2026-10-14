@@ -12,6 +12,8 @@ def run(args):
  return p.stdout
 m=read(ROOT/f'projects/{SLUG}/project.json');assembly=read(OUT/'assembly.json');expected=assembly['frames']
 results=[];aac=[]
+mix_packets=run(['ffmpeg','-v','error','-i',str(OUT/'audio/mix.m4a'),'-map','0:a:0','-c:a','copy','-f','adts','-'])
+mix_packet_sha=hashlib.sha256(mix_packets).hexdigest()
 for key in ['videoClean','videoBurnedCaptions']:
  path=ROOT/m['paths'][key]
  metadata=json.loads(run(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(path)]))
@@ -25,7 +27,9 @@ for key in ['videoClean','videoBurnedCaptions']:
  assert abs(float(metadata['format']['duration'])-expected/60)<.08
  packets=run(['ffmpeg','-v','error','-i',str(path),'-map','0:a:0','-c:a','copy','-f','adts','-'])
  digest=hashlib.sha256(packets).hexdigest();aac.append(digest)
- results.append({'path':path.relative_to(ROOT).as_posix(),'sha256':sha(path),'bytes':path.stat().st_size,'frames':len(pts),'fullVideoDecode':'pass','pts':'pass','duration':float(metadata['format']['duration']),'aacAdtsSha256':digest})
+ assert digest==mix_packet_sha,'Encoded master differs from the reviewed final AAC mix'
+ run(['ffmpeg','-v','error','-err_detect','explode','-i',str(path),'-map','0:a:0','-f','null','-'])
+ results.append({'path':path.relative_to(ROOT).as_posix(),'sha256':sha(path),'bytes':path.stat().st_size,'frames':len(pts),'fullVideoDecode':'pass','fullAudioDecode':'pass','pts':'pass','duration':float(metadata['format']['duration']),'aacAdtsSha256':digest})
 assert aac[0]==aac[1],'Clean/captioned audio differs'
 script=read(ROOT/m['paths']['script']);translated=read(ROOT/m['paths']['scriptEn'])
 cue_reports=[]

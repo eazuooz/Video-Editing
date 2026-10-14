@@ -1,13 +1,14 @@
 """One selected-video mix. Original Qwen PCM is immutable.
 
-Constant scene gain, voice-driven background ducking, no narration compressor.
+Phrase gain corrects measured within-take decay. A short lookahead peak guard
+protects rare peaks without lowering the entire take. Background alone ducks.
 Writes source/stem/mix measurements without claiming that listening occurred.
 """
 from pathlib import Path
 import json, hashlib, subprocess, re, math
 import numpy as np
 import soundfile as sf
-from scipy.ndimage import gaussian_filter1d
+from scipy.ndimage import gaussian_filter1d, maximum_filter1d
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
 OUT=ROOT/'shared/output'/SLUG/'audio';OUT.mkdir(parents=True,exist_ok=True)
 RATE=24000;HOP=.1;WINDOW=.4
@@ -55,12 +56,37 @@ for s in data['scenes']:
 reference=float(np.median(medians));voice=original.copy();scene_gains=[]
 for s,median,(origin,duration) in zip(data['scenes'],medians,ranges):
     gain=float(np.clip(reference-median,-6,6))
-    a=round(origin*sr);b=min(len(voice),round((origin+duration)*sr));voice[a:b]*=10**(gain/20)
     scene_gains.append({'scene':s['id'],'origin':origin,'duration':duration,'speechMedianDbfs':median,'constantGainDb':gain})
+# Source inspection found 10--15dB progressive decay inside several takes.
+# Measure each complete spoken paragraph; keep silence and syllabic prosody.
+phrase_gains=[];gain_times=[];gain_values=[]
+for s in data['scenes']:
+ for i,p in enumerate(s['paragraphs']):
+    a=s['start']+p['start'];b=s['start']+p['end'];mask=speech&(times>=a)&(times<b)
+    measure=float(np.median(srcdb[mask]))
+    gain=float(np.clip(-23-measure,-6,18))
+    # Constant inside a paragraph with a 300ms transition at a boundary.
+    gain_times.extend([a+min(.15,(b-a)/4),b-min(.15,(b-a)/4)])
+    gain_values.extend([gain,gain])
+    phrase_gains.append({'scene':s['id'],'paragraph':i,'start':a,'end':b,'sourceSpeechMedianDbfs':measure,'gainDb':gain})
+envelope=np.interp(np.arange(len(voice))/sr,gain_times,gain_values).astype(np.float32)
+voice*=10**(envelope/20);del envelope
 sf.write(OUT/'scene-balanced.wav',voice,sr,subtype='FLOAT')
 pre=levels(OUT/'scene-balanced.wav')
-global_gain=min(-16-float(pre['input_i']),-3-float(pre['input_tp']))
+global_gain=-18-float(pre['input_i'])
 voice*=10**(global_gain/20)
+# 5ms lookahead, 60ms release. Apply before the unmodified background sum.
+# Work at 1ms blocks to retain waveform shape rather than hard clipping.
+block=24;count=math.ceil(len(voice)/block)
+peaks=np.max(np.abs(np.pad(voice,(0,count*block-len(voice)))).reshape(count,block),axis=1)
+ceiling=10**(-2.5/20)
+target=np.minimum(1,ceiling/np.maximum(maximum_filter1d(peaks,size=11,mode='nearest'),1e-12))
+guard=target.copy();release=math.exp(-.001/.060)
+for i in range(1,len(guard)):guard[i]=min(target[i],release*guard[i-1]+(1-release))
+guard_samples=np.interp(np.arange(len(voice))/block,np.arange(count),guard).astype(np.float32)
+voice*=guard_samples
+peak_guard={'lookaheadMs':5,'releaseMs':60,'ceilingDbfs':-2.5,'maximumReductionDb':float(-20*np.log10(max(1e-9,guard.min()))),'fractionOver1dB':float(np.mean(guard<10**(-1/20))),'fractionOver3dB':float(np.mean(guard<10**(-3/20)))}
+del guard_samples
 body_frames=sum(round(s['duration']*60) for s in data['scenes']);total_frames=body_frames+720
 n=round(total_frames/60*sr);pad=round(2*sr)
 processed=np.zeros(n,np.float32);processed[pad:pad+len(voice)]=voice[:min(len(voice),n-pad)]
@@ -98,10 +124,10 @@ run(['ffmpeg','-v','error','-n','-i',str(OUT/'mix.wav'),'-ar','48000','-ac','2',
 encoded=levels(OUT/'mix.m4a');assert float(encoded['input_tp'])<=-1.5
 report={'sourceSha256':sha(source),'completeAsrSha256':sha(tts/(stem+'.asr-review.timestamps.json')),
     'totalFrames':total_frames,'duration':total_frames/60,'sampleRateWorking':sr,
-    'sceneGains':scene_gains,'globalConstantGainDb':global_gain,'narrationLoudnessBeforeGlobalGain':pre,
+    'sceneMeasurements':scene_gains,'paragraphGains':phrase_gains,'globalConstantGainDb':global_gain,'narrationLoudnessBeforeGlobalGain':pre,'peakGuard':peak_guard,
     'bgmSourceSha256':sha(music),'bgmInitialTargetLufs':-31,'bgmConstantGainDb':music_gain,'voiceDrivenDuckingDb':-6,
     'bgmLoopCrossfadeSeconds':1,'bgmOnlyEdgeFadeSeconds':.45,'chimeSeconds':chime_at,
-    'narrationCompressionOrDucking':False,'sumNormalization':False,'encodedMix':encoded,
+    'narrationDucking':False,'narrationProcessing':'paragraph-level speech median gain, 300ms joins, short peak guard','sumNormalization':False,'encodedMix':encoded,
     'mixSha256':sha(OUT/'mix.m4a'),'stemSha256':sha(OUT/'narration-stem.wav'),
     'fullListening':'pending','localLevelContinuity':'pending-aligned-source-stem-final-analysis'}
 (OUT/'mix-report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
