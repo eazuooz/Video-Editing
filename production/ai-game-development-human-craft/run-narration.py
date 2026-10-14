@@ -18,7 +18,7 @@ if '--render-child' in sys.argv:
  import render_narration as renderer
  from dataclasses import replace
  original=renderer.render_chunks
- pronunciations={'Wild Ox Studios':'와일드 옥스 스튜디오','Unity Spark':'유니티 스파크','UE6':'언 리얼 엔진 식스','MCP':'엠씨피','UV':'유브이','UDK':'유디케이','NFT':'엔에프티','Verse':'벌스','AI':'에이아이','언리얼':'언 리얼','원영상':'원 영상','얌얌코딩':'얌 얌 코딩','지금까지는':'지금 까지는','100골드':'백 골드','70골드':'칠십 골드','30골드':'삼십 골드','20골드':'이십 골드'}
+ pronunciations={'Wild Ox Studios':'와일드 옥스 스튜디오','Unity Spark':'유니티 스파크','UE6':'언 리얼 엔진 식스','MCP':'엠씨피','UV':'유브이','UDK':'유디케이','NFT':'엔에프티','Verse':'벌스','AI':'에이아이','언리얼':'언 리얼','100골드':'백 골드','70골드':'칠십 골드','30골드':'삼십 골드','20골드':'이십 골드'}
  def spoken(items,batch_size,force_scenes=None):
   changed=[]
   for item in items:
