@@ -1,6 +1,7 @@
 """Record explicit review approval and prepare its1080p60 production master."""
 from pathlib import Path
-import datetime, hashlib, json
+import datetime, hashlib, json, subprocess
+from fractions import Fraction
 R=Path(__file__).resolve().parents[2];S='ai-game-development-human-craft';P=R/'projects'/S
 Q=R/f'shared/output/{S}/revision-v2';U=Q/'youtube-private';U.mkdir(exist_ok=True)
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
@@ -15,12 +16,14 @@ assert sha(R/d['localPath'])==d['localSha256']==d['remoteSha256']
 assert read(R/d['qualityEvidence'])['status']=='pass-agent-mobile-review-copy'
 master=R/d['sourceMasterPath'];master_sha=sha(master)
 assert master_sha==d['sourceMasterSha256']==read(R/d['qualityEvidence'])['sourceSha256']
+probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height,avg_frame_rate','-of','json',str(master)],text=True))['streams'][0]
+assert (probe['width'],probe['height'],Fraction(probe['avg_frame_rate']))==(1920,1080,60),'YouTube requires the1080p60 captioned production master, never the mobile review copy.'
 approval={'status':'approved-by-user','message':'좋다 업로드해줘 우리 업로드 규칙 따라서','recordedAt':now,'version':'v2','driveFileId':d['fileId'],'sha256':d['localSha256'],'scope':'User accepts this Drive version and requests upload under current rules. Private upload only; no publication, scheduling, replacement or next video.','listeningScope':'User accepted current version; no fabricated claim of detailed per-range human listening.'}
 for target in [d,cp['finalReviewDelivery'],plan['finalReviewDelivery'],ledger['finalDriveReview'],c['finalReviewDelivery']]:
  target.update(userReviewMessage=approval['message'],reviewedAt=now,reviewDecision='approved-for-private-youtube-upload',approval=True)
 plan['approvals']['finalDriveUserReview'].update(status='approved-by-user',userMessage=approval['message'],reviewedAt=now)
 ledger['checks'].append({'id':'v2-user-final-review-and-private-upload-authorization','revision':'v2',**approval})
-cp.update(updatedAt=now,stage='youtube-private-upload-authorized',pending=['Private YouTube upload and actual saved/reopened settings'],nextAction='Upload exact approved Drive v2 bytes once; verify available Studio settings and deliver selective Git.')
+cp.update(updatedAt=now,stage='youtube-private-upload-authorized',pending=['Private YouTube upload and actual saved/reopened settings'],nextAction='Upload approved v2 captioned1080p60 master once, linked to the Drive review copy by hash and conversion evidence; verify Studio settings and deliver selective Git.')
 cp['revision']['status']='approved-for-private-upload'
 m['status']=cp['stage'];m['revision']['status']='approved-for-private-upload'
 c['updatedAt']=now;c['newProductionAuthorization']['latestUploadInstruction']=approval
