@@ -5,7 +5,8 @@ import numpy as np
 import soundfile as sf
 from scipy.ndimage import median_filter
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
-OUT=ROOT/'shared/output'/SLUG/'audio';RATE=24000;STEP=2400;WIN=9600
+from revision_paths import workroot
+OUT=workroot(ROOT)/'audio';RATE=24000;STEP=2400;WIN=9600
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def decode(p):

@@ -7,7 +7,8 @@ from pathlib import Path
 import json, hashlib, subprocess, math, sys
 from PIL import Image, ImageDraw
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
-OUT=ROOT/f'shared/output/{SLUG}/encoded-motion-review';OUT.mkdir(exist_ok=True)
+from revision_paths import workroot
+OUT=workroot(ROOT)/'encoded-motion-review';OUT.mkdir(exist_ok=True)
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def select_expr(indices):
  if len(indices)==1:return f'eq(round(t*60),{indices[0]})'

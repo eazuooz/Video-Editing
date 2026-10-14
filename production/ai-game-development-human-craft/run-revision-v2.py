@@ -32,6 +32,9 @@ try:
  for sid in prepared['retainedScenes']:
   assert sha(out/'chunks'/f'{sid}-scene.wav')==sha(ROOT/prepared['oldTtsDirectory']/'chunks'/f'{sid}-scene.wav')
  status.update(status='complete-pending-text-and-acoustic-review',finishedAt=time.time());save(statuspath,status)
+except BaseException as error:
+ status.update(status='failed',error=str(error),finishedAt=time.time());save(statuspath,status)
+ raise
 finally:
  if lease.exists() and read(lease).get('token')==token:
   record.update(state='released',finishedAt=time.time(),researchRestarts=0);save(OUT/(tag+'-gpu-lease.json'),record);lease.unlink()

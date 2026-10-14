@@ -5,7 +5,8 @@ import numpy as np
 from PIL import Image,ImageDraw
 ROOT=Path(__file__).resolve().parents[2]
 SLUG='ai-game-development-human-craft'
-O=ROOT/'shared/output'/SLUG
+from revision_paths import workroot
+O=workroot(ROOT)
 parser=argparse.ArgumentParser();parser.add_argument('--compact',action='store_true');parser.add_argument('--resume-compact',action='store_true');options=parser.parse_args()
 Q=O/('drive-mobile-compact' if options.compact else 'drive-mobile-review');Q.mkdir(exist_ok=True)
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
@@ -16,19 +17,28 @@ def run(args,name,cwd=Q):
     with (Q/name).open('wb') as log:
         subprocess.run(args,cwd=cwd,stdout=log,stderr=subprocess.STDOUT,check=True,creationflags=subprocess.CREATE_NO_WINDOW)
 assert read(ROOT/'shared/publishing/video-production-control.json')['selectedVideo']==SLUG
-source=ROOT/f'shared/output/motion-canvas/{SLUG}-subtitled.mp4'
+manifest=read(ROOT/f'projects/{SLUG}/project.json')
+source=ROOT/manifest['paths']['videoBurnedCaptions']
 sourceQA=read(O/'encoded-integrity.json')['outputs'][1]
 assert sha(source)==sourceQA['sha256']
+sourceFrames=sourceQA['frames'];expectedFrames=(sourceFrames+1)//2
+assert sourceFrames%2==0,'Inspect half-frame mobile duration before encoding'
+duration=sourceFrames/60
+# Leave3MiB below the actual connector100MiB ceiling for container overhead.
+videoKbps=max(160,int((97*1024*1024*8/duration-160000)/1000))
 target=Q/'ai-game-development-human-craft-mobile-review.mp4'
 recipe={'sourcePath':source.relative_to(ROOT).as_posix(),'sourceSha256':sourceQA['sha256'],
         'localPath':target.relative_to(ROOT).as_posix(),'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'reason':'Transfer fallback: connector downstream explicitly limits downloads to100MiB; web uploads fail or stall. Full720p30 mobile review copy; archival masters unchanged.',
-        'resolution':[1280,720],'fps':30,'sourceFrames':88732,'expectedFrames':44366,'humanListening':'pending'}
-args=['ffmpeg','-hide_banner','-v','warning','-n','-i',str(source),'-map','0:v:0','-map','0:a:0',
-      '-vf','fps=30:start_time=0,scale=1280:720:flags=lanczos','-c:v','h264_nvenc','-preset','p7','-tune','hq',
-      '-rc','vbr','-multipass','fullres','-b:v','340k' if options.compact else '700k','-maxrate','4M','-bufsize','8M','-rc-lookahead','32',
-      '-spatial-aq','1','-temporal-aq','1','-aq-strength','8','-bf','3','-b_ref_mode','middle',
-      '-c:a','copy','-movflags','+faststart','-progress',str(Q/'encode-progress.txt'),str(target)]
+        'resolution':[1280,720],'fps':30,'sourceFrames':sourceFrames,'expectedFrames':expectedFrames,'humanListening':'pending'}
+common=['ffmpeg','-hide_banner','-v','warning','-n','-i',str(source),'-map','0:v:0',
+        '-vf','fps=30:start_time=0,scale=1280:720:flags=lanczos','-c:v','libx264','-preset','medium',
+        '-threads','8','-b:v',str(videoKbps)+'k','-maxrate','3M','-bufsize','6M','-pix_fmt','yuv420p',
+        '-passlogfile',str(Q/'rate-control')]
+firstPass=common+['-pass','1','-an','-f','null','NUL']
+args=common+['-pass','2','-map','0:a:0','-c:a','aac','-b:a','160k','-movflags','+faststart',
+             '-progress',str(Q/'encode-progress.txt'),str(target)]
+recipe['rateControl']={'encoder':'libx264','passes':2,'preset':'medium','videoKbps':videoKbps,'audioKbps':160,'targetBytes':97*1024*1024}
 if options.resume_compact:
     assert options.compact and target.exists() and not (Q/'review.json').exists()
     previous=read(Q/'recipe.json');assert previous['sourceSha256']==recipe['sourceSha256']
@@ -36,6 +46,7 @@ if options.resume_compact:
 else:
     assert not target.exists(),'Do not repeat an existing encode without inspecting its receipt.'
     recipe['args']=args;write(Q/'recipe.json',recipe)
+    run(firstPass,'first-pass.log')
     run(args,'encode.log')
 if options.compact and target.stat().st_size>=100*1024*1024:
     preserved=Q/'oversized-video-identical.mp4';assert not preserved.exists()
@@ -49,15 +60,15 @@ write(Q/'recipe.json',recipe)
 run(['ffmpeg','-v','error','-xerror','-i',str(target),'-map','0:v:0','-map','0:a:0','-f','null','-'],'decode.log')
 probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(target)]))
 v=next(s for s in probe['streams'] if s['codec_type']=='video')
-assert (v['width'],v['height'],v['avg_frame_rate'],int(v['nb_frames']))==(1280,720,'30/1',44366)
+assert (v['width'],v['height'],v['avg_frame_rate'],int(v['nb_frames']))==(1280,720,'30/1',expectedFrames)
 assert abs(float(v['duration'])-sourceQA['duration'])<1/30
 pts=subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','frame=best_effort_timestamp_time','-of','csv=p=0',str(target)]).decode().splitlines()
 times=[float(x.split(',')[0]) for x in pts if x and re.match(r'^\d',x)]
-assert len(times)==44366 and all(abs(t-i/30)<0.000002 for i,t in enumerate(times))
+assert len(times)==expectedFrames and all(abs(t-i/30)<0.000002 for i,t in enumerate(times))
 audio=Q/'audio.aac';run(['ffmpeg','-v','error','-n','-i',str(target),'-map','0:a:0','-c:a','copy','-f','adts',str(audio)],'audio.log')
 sameAAC=sha(audio)==sourceQA['aacAdtsSha256'];audioComparison=None
 if not sameAAC:
-    assert options.compact and recipe.get('audioSizeAdjustment')
+    assert recipe.get('rateControl',{}).get('audioKbps')==160 or recipe.get('audioSizeAdjustment')
     def pcm(path):
         return np.frombuffer(subprocess.check_output(['ffmpeg','-v','error','-i',str(path),'-vn','-ac','1','-ar','16000','-f','f32le','-']),dtype=np.float32)
     original=pcm(source);current=pcm(target);n=min(len(original),len(current))
@@ -78,7 +89,7 @@ run(['ffmpeg','-v','info','-i',str(source),'-i',str(target),'-filter_complex',
      '-map','[f]','-map','[c]','-an','-f','null','-'],'comparison.log')
 def values(name):
     rows=(Q/name).read_text().splitlines()
-    assert len(rows)==44366
+    assert len(rows)==expectedFrames
     return [float(re.search(r'All:([\d.]+)',line)[1]) for line in rows]
 full=values('frames.txt');captions=values('captions.txt')
 data=read(ROOT/f'motion-canvas/src/projects/{SLUG}/scene-data.json')
@@ -88,7 +99,7 @@ for s in data['scenes']:
     a=60+round(s['start']*30);b=a+round(s['duration']*30)
     w=min(range(a,b),key=lambda i:full[i]);selected.add(w)
     scenes.append({'scene':s['id'],'firstFrame':a,'endFrame':b,'worstFrame':w,'minSsim':full[w]})
-selected.update([0,59,60,44065,44066,44365]);selected=sorted(selected)
+selected.update([0,59,60,expectedFrames-301,expectedFrames-300,expectedFrames-1]);selected=sorted(selected)
 def expr(xs):
     if len(xs)==1:return f'eq(n,{xs[0]})'
     m=len(xs)//2;return '('+expr(xs[:m])+'+'+expr(xs[m:])+')'
@@ -106,11 +117,11 @@ for cue in layout:
     a=(cue['startFrame']+1)//2;b=(cue['endFrame']+1)//2
     assert b>a
     cues.append({'cue':cue['cue'],'frames':b-a,'meanCaptionSsim':sum(captions[a:b])/(b-a),'minCaptionSsim':min(captions[a:b])})
-result={**recipe,'status':'technical-pass-visual-review-pending','fullVideoAudioDecode':'pass','pts':'pass','frames':44366,
+result={**recipe,'status':'technical-pass-visual-review-pending','fullVideoAudioDecode':'pass','pts':'pass','frames':expectedFrames,
         'durationSeconds':float(v['duration']),'identicalAAC':sameAAC,'aacAdtsSha256':sha(audio),'audioEncodingContinuity':audioComparison,
         'allFramesCompared':len(full),'meanSsim':sum(full)/len(full),'minSsim':min(full),
         'allCaptionFramesCompared':len(captions),'meanCaptionSsim':sum(captions)/len(captions),'minCaptionSsim':min(captions),
         'cues':cues,'scenes':scenes,'selectedFrames':selected,'pages':pages,
-        'comparisonScope':'Every mobile frame against the same fps/scale transform of the reviewed1080p60 master; all340cue intervals covered. Metric is evidence, not semantic or human listening approval.'}
+        'comparisonScope':'Every mobile frame against the same fps/scale transform of the reviewed1080p60 master; all current cue intervals covered. Metric is evidence, not semantic or human listening approval.'}
 write(Q/'review.json',result)
 print(json.dumps({k:result[k] for k in ['status','localSha256','sizeBytes','frames','meanSsim','minSsim','meanCaptionSsim','pages']}))

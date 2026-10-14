@@ -3,7 +3,9 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {spawnSync}=require('node:child_process'),puppeteer=require('puppeteer');
 const root=path.resolve(__dirname,'../..'),slug='ai-game-development-human-craft';
-const project=path.join(root,'motion-canvas/src/projects',slug),out=path.join(root,'shared/output',slug,'composite');
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'projects',slug,'project.json'),'utf8'));
+const version=manifest.revision?.id||'v1';
+const project=path.join(root,'motion-canvas/src/projects',slug),out=path.join(root,manifest.revision?.workDir||`shared/output/${slug}`,'composite');
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
 const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const run=(cmd,args)=>{const r=spawnSync(cmd,args,{windowsHide:true,encoding:'utf8',maxBuffer:64e6});if(r.status!==0)throw Error(r.stderr||r.error);return r.stdout;};
@@ -35,14 +37,14 @@ async function main(){
  const page=await browser.newPage();page.on('pageerror',e=>console.error(e));
  try{for(const id of ids){
   control();const s=data.scenes.find(s=>s.id===id),frames=Math.round(s.duration*60),dir=path.join(out,id);fs.mkdirSync(dir,{recursive:true});
-  const movie=path.join(root,`shared/output/motion-canvas/ai-craft-scene-${id}-v1.mp4`),receipt=path.join(dir,'render.json');
+  const movie=path.join(root,`shared/output/motion-canvas/ai-craft-scene-${id}-${version}.mp4`),receipt=path.join(dir,'render.json');
   if(fs.existsSync(movie)){const r=read(receipt);if(!compatible(r.fingerprint,id)||r.encoded.sha256!==hash(movie))throw Error('Changed existing scene '+id);console.log('Reuse '+id);continue;}
   const cuts=actual.cuts.filter(c=>c.scene===id).sort((a,b)=>a.startFrame-b.startFrame),parts=[];let cursor=0;
   for(const cut of cuts){if(cut.startFrame>cursor)parts.push({kind:'explanation',start:cursor,end:cut.startFrame});parts.push({kind:'actual',start:cut.startFrame,end:cut.endFrame,cut});cursor=cut.endFrame;}
   if(cursor<frames)parts.push({kind:'explanation',start:cursor,end:frames});
   const outputs=[];
   for(const [i,part] of parts.entries()){
-   const name=`ai-craft-part-${id}-${String(i).padStart(2,'0')}-v1`,count=part.end-part.start;
+   const name=`ai-craft-part-${id}-${String(i).padStart(2,'0')}-${version}`,count=part.end-part.start;
    const target=path.join(root,'shared/output/motion-canvas',name+'.mp4'),record=path.join(dir,name+'.json');
    const inputs={fingerprint,part};
    if(fs.existsSync(target)){if(!fs.existsSync(record)||JSON.stringify(read(record).inputs)!==JSON.stringify(inputs)||read(record).sha256!==hash(target))throw Error('Incomplete/changed part '+name);outputs.push(target);continue;}

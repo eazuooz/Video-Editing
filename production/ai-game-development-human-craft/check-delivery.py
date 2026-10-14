@@ -3,7 +3,8 @@ from pathlib import Path
 import json, subprocess, hashlib, re, argparse
 import numpy as np
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
-OUT=ROOT/'shared/output'/SLUG
+from revision_paths import workroot
+OUT=workroot(ROOT)
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def run(args):

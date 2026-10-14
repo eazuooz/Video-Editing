@@ -10,7 +10,8 @@ import numpy as np
 import soundfile as sf
 from scipy.ndimage import gaussian_filter1d, maximum_filter1d
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
-OUT=ROOT/'shared/output'/SLUG/'audio';OUT.mkdir(parents=True,exist_ok=True)
+from revision_paths import workroot
+OUT=workroot(ROOT)/'audio';OUT.mkdir(parents=True,exist_ok=True)
 RATE=24000;HOP=.1;WINDOW=.4
 FLAGS=subprocess.CREATE_NO_WINDOW
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))

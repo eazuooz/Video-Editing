@@ -71,6 +71,11 @@ for i,(s,spec) in enumerate(zip(script['scenes'],specs)):
  localcues=[dict(c,start=c['start']-start,end=c['end']-start) for c in captions if c['end']>start and c['start']<end]
  data.append({'id':s['id'],'title':s['title'],'start':start,'duration':end-start,'paragraphs':paragraphs,'captions':localcues,'mode':mode,'heading':heading,'labels':labels.split('|'),'note':note,'source':sources.get(s['id'])})
 payload={'timingStatus':'measured-narration' if timing else 'estimated-layout-only','captionTimingStatus':'asr-aligned' if captions else 'pending','fps':60,'scenes':data}
+if script.get('revision',0)>=4:
+ # Inspect viewer-facing text only. Source/license history is deliberately
+ # retained and must not be confused with narration or diagram copy.
+ visible='\n'.join([t for s in script['scenes'] for t in s['lines']]+[s['note'] for s in data])
+ assert not re.search(r'원\s*영상|원작자|제공된?\s*자막|Wild Ox Studios',visible),'Source-video framing returned to the current lesson'
 (P/'scene-data.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 for s in data:
  d=P/'scenes'/s['id'];d.mkdir(parents=True,exist_ok=True)

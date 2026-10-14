@@ -2,7 +2,8 @@
 from pathlib import Path
 import json, subprocess, hashlib, shutil
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
-OUT=ROOT/'shared/output'/SLUG
+from revision_paths import workroot
+OUT=workroot(ROOT)
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def run(args):
  p=subprocess.run(args,cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,creationflags=subprocess.CREATE_NO_WINDOW)
@@ -16,7 +17,7 @@ m=read(ROOT/f'projects/{SLUG}/project.json');data=read(ROOT/f'motion-canvas/src/
 assert data['captionTimingStatus']=='asr-aligned'
 files=[ROOT/'shared/output/motion-canvas/yamyam-intro-sample-v2-visual.mp4']
 for s in data['scenes']:
- p=ROOT/f"shared/output/motion-canvas/ai-craft-scene-{s['id']}-v1.mp4"
+ p=ROOT/f"shared/output/motion-canvas/ai-craft-scene-{s['id']}-{m.get('revision',{}).get('id','v1')}.mp4"
  r=read(OUT/'composite'/s['id']/'render.json')
  assert r['encoded']['sha256']==sha(p)
  assert r['frames']==round(s['duration']*60)

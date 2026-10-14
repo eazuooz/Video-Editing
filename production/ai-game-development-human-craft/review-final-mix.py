@@ -14,7 +14,8 @@ def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def run(a):return subprocess.run(a,cwd=ROOT,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,creationflags=FLAGS)
 assert read(ROOT/'shared/publishing/video-production-control.json')['selectedVideo']==SLUG
-out=ROOT/f'shared/output/{SLUG}/audio/final-asr';out.mkdir(exist_ok=True)
+from revision_paths import workroot
+out=workroot(ROOT)/'audio/final-asr';out.mkdir(exist_ok=True)
 source=out.parent/'mix.m4a';source_sha=sha(source);data=read(ROOT/f'motion-canvas/src/projects/{SLUG}/scene-data.json')
 pcm=out/'encoded-mix-decoded.wav'
 decoded_receipt=out/'decoded-input.json'

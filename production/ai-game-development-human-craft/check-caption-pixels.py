@@ -9,7 +9,8 @@ import json, subprocess, hashlib
 import numpy as np
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft'
-OUT=ROOT/'shared/output'/SLUG;QA=OUT/'caption-pixel-qa';QA.mkdir(exist_ok=True)
+from revision_paths import workroot
+OUT=workroot(ROOT);QA=OUT/'caption-pixel-qa';QA.mkdir(exist_ok=True)
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def select_expr(indices):
  if len(indices)==1:return f'eq(round(t*60),{indices[0]})'

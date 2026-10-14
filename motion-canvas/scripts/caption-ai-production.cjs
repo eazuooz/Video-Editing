@@ -2,8 +2,8 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {spawnSync}=require('node:child_process'),puppeteer=require('puppeteer');
 const root=path.resolve(__dirname,'../..'),slug='ai-game-development-human-craft';
-const base=path.join(root,'shared/output',slug),dir=path.join(base,'caption-overlays');fs.mkdirSync(dir,{recursive:true});
 const m=JSON.parse(fs.readFileSync(path.join(root,'projects',slug,'project.json'),'utf8'));
+const base=path.join(root,m.revision?.workDir||`shared/output/${slug}`),dir=path.join(base,'caption-overlays');fs.mkdirSync(dir,{recursive:true});
 const data=JSON.parse(fs.readFileSync(path.join(root,'motion-canvas/src/projects',slug,'scene-data.json'),'utf8'));
 if(data.captionTimingStatus!=='asr-aligned')throw Error('Aligned captions required');
 const totalFrames=120+data.scenes.reduce((n,s)=>n+Math.round(s.duration*60),0)+600;

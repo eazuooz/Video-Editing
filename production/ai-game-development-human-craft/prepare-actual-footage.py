@@ -6,7 +6,8 @@ ROOT=Path(__file__).resolve().parents[2];SLUG='ai-game-development-human-craft';
 p=argparse.ArgumentParser();p.add_argument('--normalize',action='store_true');p.add_argument('--inspect',action='store_true');a=p.parse_args()
 plan=ROOT/f'projects/{SLUG}/planning/actual-footage-plan.json';d=json.loads(plan.read_text(encoding='utf-8'))
 assert d['actualFrames']==d['targetActualFrames']
-out=ROOT/f'shared/output/{SLUG}/actual-footage';out.mkdir(parents=True,exist_ok=True)
+from revision_paths import workroot
+out=workroot(ROOT)/'actual-footage';out.mkdir(parents=True,exist_ok=True)
 review=out/'review';review.mkdir(exist_ok=True)
 def run(args):return subprocess.run(args,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,creationflags=FLAGS)
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()

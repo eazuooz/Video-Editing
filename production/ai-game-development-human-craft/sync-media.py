@@ -14,6 +14,7 @@ if selection.exists():
  records=json.loads(selection.read_text(encoding='utf-8'))
  data['footage']={'16':records[:2],'22':records[2:]}
 (P/'media.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n',encoding='utf-8')
-actual=OUT/'actual-footage/selection.json'
+from revision_paths import workroot
+actual=workroot(ROOT)/'actual-footage/selection.json'
 if actual.exists():(P/'actual-footage.json').write_text(actual.read_text(encoding='utf-8'),encoding='utf-8')
 print(json.dumps({'unity':list(data['unity']),'footage':list(data['footage'])}))
