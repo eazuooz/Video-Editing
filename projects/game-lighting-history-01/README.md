@@ -1,3 +1,5 @@
+> **현재 제작 인수인계:** [초심자 보강본 이어가기](production/beginner-revision-v1/HANDOFF.md). 재부팅으로 최종 믹스 ASR 3/13장에서 중단. 원본 업로드는 보존했고 수정본은 미업로드입니다. Git 외 미디어 전송이 별도로 필요합니다.
+
 # 게임 렌더링 역사 · 1편
 
 사용자가 선택한 첫 편의 Three.js 수정본을 [비공개 업로드](https://youtu.be/uT5FTLJx5_c)했다. 1080p60 실제 재생과 저장 설정을 확인했고, 광고 적합성 검사는 아직 진행 중이다. 현재 상태·실제 작업은 [체크포인트](production/checkpoint.json), 검사 근거는 [리뷰 원장](production/review-ledger.json)에서 관리한다. 자동 채팅·다음 편 자동 착수는 꺼져 있다.
