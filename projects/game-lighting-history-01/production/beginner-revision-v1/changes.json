@@ -1,0 +1,1960 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-13T17:35:33.043920+00:00",
+  "baselineVideoId": "uT5FTLJx5_c",
+  "baselinePlan": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json",
+  "rows": [
+    {
+      "key": "02-p2",
+      "ko": "입체 물체의 겉면을 작은 삼각형들로 나눕니다. 카메라에서 본 모양을 평평한 화면으로 옮기고, 어느 칸을 덮는지 찾는 것이 래스터화입니다. 겹친 면 중 앞에 있는 것을 고르는 깊이 검사도 합니다.",
+      "en": "A 3D object’s surface is divided into small triangles. Rasterization projects them onto the flat image and finds the samples they cover. A depth test helps select the surface in front when surfaces overlap.",
+      "beginnerGoal": "삼각형·투영·표본을 일상어로 먼저 풀기",
+      "screenLabel": "입체 표면 → 화면의 칸 → 앞쪽 표면",
+      "ttsSceneId": "b001",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "02-p2",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 856800,
+        "samples": 218800,
+        "targetStartSample": 1549600,
+        "startFrame": 3874,
+        "frames": 547
+      },
+      "baselineSpeechSeconds": 9.116666666666667,
+      "oldKO": "래스터화는 삼각형을 화면으로 투영하고, 삼각형이 덮는 표본을 찾습니다. 앞뒤가 겹칠 때에는 깊이 테스트로 보이는 쪽을 선택합니다.",
+      "oldEN": "Rasterization projects triangles onto the screen and finds the covered samples. A depth test selects the visible surface when triangles overlap.",
+      "characterRatio": 1.5,
+      "ttsEstimatedSeconds": 13.68,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#02-p2",
+        "beforeActionResult": [
+          "삼각형·투영·표본을 일상어로 먼저 풀기",
+          "입체 표면 → 화면의 칸 → 앞쪽 표면",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "02-p4",
+      "ko": "손전등을 종이에 똑바로 비출 때와 기울여 비출 때를 떠올려 보세요. 방향이 얼마나 마주 보는지 나타내는 계산이 내적입니다. 길이를 일로 맞춘 두 화살표가 같은 방향이면 일, 육십 도 벌어지면 영 점 오입니다. 지금의 단순한 모델에서는 다른 조건이 같을 때 방향에 따른 밝기 몫이 절반이 됩니다.",
+      "en": "Imagine illuminating paper head-on, then at a slant. A dot product measures how closely the directions align. For two arrows normalized to length one, alignment gives one and a sixty-degree angle gives 0.5. In this simple model, with other inputs fixed, the directional contribution is halved.",
+      "beginnerGoal": "내적의 의미를 직관→수치→적용범위 순서로",
+      "screenLabel": "정면 1 / 60° 0.5 · 방향만 비교",
+      "ttsSceneId": "b002",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "02-p4",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 1353600,
+        "samples": 392800,
+        "targetStartSample": 2958400,
+        "startFrame": 7396,
+        "frames": 982
+      },
+      "baselineSpeechSeconds": 16.366666666666667,
+      "oldKO": "계산을 한 번 해보죠. 위를 향하는 단위 법선과 똑바로 위에서 오는 빛 방향의 내적은 일입니다. 빛 방향이 육십 도 기울면 내적은 영 점 오가 됩니다. 이 단순 확산 모델에서는 다른 조건이 같을 때 방향에 따른 항이 절반이 되는 것입니다.",
+      "oldEN": "For a worked example, the dot product of an upward unit normal and an upward light direction is one. At sixty degrees it is one half. In this simple diffuse model, with other factors unchanged, the angular term is halved.",
+      "characterRatio": 1.233,
+      "ttsEstimatedSeconds": 20.18,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#02-p4",
+        "beforeActionResult": [
+          "내적의 의미를 직관→수치→적용범위 순서로",
+          "정면 1 / 60° 0.5 · 방향만 비교",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "02-p5",
+      "ko": "여기서 벡터는 방향과 길이를 가진 화살표입니다. 단위 벡터는 길이를 일로 맞춘 화살표고요. 길이를 맞춰야 방향만 비교할 수 있습니다. 하지만 잘 마주 본다고 언제나 밝지는 않습니다. 중간에 벽이 있으면 빛이 막힙니다. 방향 계산과 가림 검사는 별개입니다.",
+      "en": "A vector is an arrow with a direction and length. A unit vector has length one, allowing us to compare direction without mixing in length. Good alignment does not guarantee illumination: a wall in between can block the light. Directional response and visibility are separate tests.",
+      "beginnerGoal": "단위벡터와 방향/가림 차이",
+      "screenLabel": "화살표 길이를 1로 / 중간 벽은 따로 검사",
+      "ttsSceneId": "b003",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "02-p5",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 1746400,
+        "samples": 375600,
+        "targetStartSample": 3351200,
+        "startFrame": 8378,
+        "frames": 939
+      },
+      "baselineSpeechSeconds": 15.65,
+      "oldKO": "법선과 빛 방향을 단위 벡터로 만드는 이유도 여기에 있습니다. 벡터 길이가 섞이면 방향만 비교하려던 내적에 다른 크기가 들어갑니다. 또한 광원까지 막힌 경로라면 방향이 아무리 잘 맞아도 그 광원의 직접광은 차단해야 합니다.",
+      "oldEN": "Normalizing both vectors keeps their lengths from changing a comparison intended to measure orientation. Visibility is a separate factor: even a perfectly aligned surface receives no direct contribution from that light if the path is blocked.",
+      "characterRatio": 1.145,
+      "ttsEstimatedSeconds": 17.92,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#02-p5",
+        "beforeActionResult": [
+          "단위벡터와 방향/가림 차이",
+          "화살표 길이를 1로 / 중간 벽은 따로 검사",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "02-p6",
+      "ko": "화면의 긴 식은 들어온 빛을 모으는 장부입니다. 스스로 빛나는 양에, 다른 곳에서 와서 반사된 양을 더합니다. 재질은 어떤 빛을 얼마나 돌려보낼지 정합니다. 여러 방향의 기여를 모두 합친다는 표시가 적분 기호입니다.",
+      "en": "The long equation is a ledger of light. It adds emitted light to light arriving from elsewhere and reflected toward us. The material determines how much is reflected. The integral indicates that contributions from many directions are combined.",
+      "beginnerGoal": "방정식을 해독하지 않아도 의미를 이해",
+      "screenLabel": "스스로 내는 빛 + 들어와 반사된 빛",
+      "ttsSceneId": "b004",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "02-p6",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 2122000,
+        "samples": 246400,
+        "targetStartSample": 3726800,
+        "startFrame": 9317,
+        "frames": 616
+      },
+      "baselineSpeechSeconds": 10.266666666666667,
+      "oldKO": "렌더링 방정식에서는 스스로 내는 빛과 다른 방향에서 들어와 반사되는 빛을 더합니다. 재질의 반사 규칙과 입사 방향의 코사인도 이 합에 들어갑니다.",
+      "oldEN": "The rendering equation adds emitted light to reflected incoming light. Material response and the cosine of the incident angle contribute to that sum.",
+      "characterRatio": 1.481,
+      "ttsEstimatedSeconds": 15.2,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#02-p6",
+        "beforeActionResult": [
+          "방정식을 해독하지 않아도 의미를 이해",
+          "스스로 내는 빛 + 들어와 반사된 빛",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "02-p7",
+      "ko": "식을 외울 필요는 없습니다. 앞으로는 세 질문만 따라가세요. 어떤 면이 보이나, 빛이 그 면까지 오나, 그 면은 빛을 얼마나 반사하나입니다. 게임은 이 일을 전부 새로 계산하기도 하고, 일부 답을 미리 저장해 읽기도 합니다.",
+      "en": "You do not need to memorize the equation. Follow three questions: which surface is visible, can light reach it, and how does that surface reflect it? Games may recompute these answers or store some of them in advance.",
+      "beginnerGoal": "시청자의 인지 과제 제한",
+      "screenLabel": "보이는 면 → 빛의 도착 → 표면의 반응",
+      "ttsSceneId": "b005",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "02-p7",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 2368400,
+        "samples": 245200,
+        "targetStartSample": 3973200,
+        "startFrame": 9933,
+        "frames": 613
+      },
+      "baselineSpeechSeconds": 10.216666666666667,
+      "oldKO": "이번에는 적분 전체를 유도하기보다, 이 계산을 게임이 어떻게 나누어 처리했는지 따라가겠습니다. 어느 방향의 빛을 무시하고 어떤 값을 저장하는지가 화면을 바꿉니다.",
+      "oldEN": "Rather than deriving the entire integral, we will follow how games divide this work. The directions they omit and the values they store affect the resulting image.",
+      "characterRatio": 1.389,
+      "ttsEstimatedSeconds": 14.19,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#02-p7",
+        "beforeActionResult": [
+          "시청자의 인지 과제 제한",
+          "보이는 면 → 빛의 도착 → 표면의 반응",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "02-p8",
+      "ko": "레이는 한 점에서 한 방향으로 뻗는 검사선입니다. 카메라에서 보내면 먼저 보이는 물체를 찾고, 표면에서 광원으로 보내면 중간의 장애물을 찾습니다. 반사 방향으로 보내면 거울에 비칠 다른 물체를 찾을 수 있습니다.",
+      "en": "A ray is a test line extending from a point in a direction. From the camera it can find the first visible object; from a surface toward a light it can test for blockers. A reflected ray can find an object visible in a mirror.",
+      "beginnerGoal": "레이를 빛그림 장식과 구분",
+      "screenLabel": "레이 = 한 방향으로 무엇과 만나는지 검사",
+      "ttsSceneId": "b006",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "02-p8",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 2613600,
+        "samples": 243200,
+        "targetStartSample": 4357200,
+        "startFrame": 10893,
+        "frames": 608
+      },
+      "baselineSpeechSeconds": 10.133333333333333,
+      "oldKO": "레이를 쏘는 일도 한 가지가 아닙니다. 카메라에서 표면을 찾거나, 표면에서 광원까지 가려지는지 확인하거나, 반사된 방향의 다른 표면을 찾을 수 있습니다.",
+      "oldEN": "Rays can perform different tasks: finding a visible surface, testing visibility to a light, or finding a surface along a reflection direction.",
+      "characterRatio": 1.388,
+      "ttsEstimatedSeconds": 14.07,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#02-p8",
+        "beforeActionResult": [
+          "레이를 빛그림 장식과 구분",
+          "레이 = 한 방향으로 무엇과 만나는지 검사",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "03-p2",
+      "ko": "색상표는 같은 벽 무늬를 밝게, 또는 어둡게 보여 줄 색들의 목록입니다. 코드의 비트 이동은 구역 밝기를 거친 단계로 묶어 목록 번호를 만드는 계산입니다. 여기에 추가 밝기와 벽 방향 보정을 적용하고, 쓸 수 있는 번호 범위를 넘지 않게 합니다.",
+      "en": "A colormap provides colors that display the same wall pattern at different brightnesses. The code’s bit shift groups sector brightness into coarse levels to form an index. Extra lighting and orientation adjustments are applied, with the index restricted to its valid range.",
+      "beginnerGoal": "비트이동/인덱스 대신 먼저 색상표 역할",
+      "screenLabel": "밝기 값 → 목록 번호 → 어두운/밝은 색",
+      "ttsSceneId": "b007",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "03-p2",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 3552400,
+        "samples": 256800,
+        "targetStartSample": 5392400,
+        "startFrame": 13481,
+        "frames": 642
+      },
+      "baselineSpeechSeconds": 10.7,
+      "oldKO": "실제 코드에는 구역 밝기를 비트 이동으로 바꾸어 조명 인덱스를 만들고, 추가 밝기를 더하는 단계가 있습니다. 이후 벽 방향에 따른 보정과 범위 제한이 이어집니다.",
+      "oldEN": "The source uses a bit shift of sector brightness to derive a light-table index, with extra lighting added. It then applies wall-orientation adjustments and clamps the index.",
+      "characterRatio": 1.522,
+      "ttsEstimatedSeconds": 16.29,
+      "sceneDesign": {
+        "renderer": "Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#03-p2",
+        "beforeActionResult": [
+          "비트이동/인덱스 대신 먼저 색상표 역할",
+          "밝기 값 → 목록 번호 → 어두운/밝은 색",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "conceptual-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04-p1",
+      "ko": "벽돌 무늬를 붙이는 디지털 그림을 텍스처라고 합니다. 퀘이크는 무늬와 별도로, 벽의 어느 곳이 얼마나 밝은지 적은 그림도 저장합니다. 이 조명용 그림이 라이트맵입니다. 무늬 그림과 빛 그림, 두 장을 구별해 보죠.",
+      "en": "A texture can be a digital picture applied to a surface, such as brickwork. Quake stores another image describing illumination at different places on that wall. This lighting image is the lightmap. Separate the pattern picture from the light picture.",
+      "beginnerGoal": "텍스처를 먼저 정의하고 라이트맵 소개",
+      "screenLabel": "벽 무늬 그림 / 조명 그림",
+      "ttsSceneId": "b008",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04-p1",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 5222400,
+        "samples": 235600,
+        "targetStartSample": 7062400,
+        "startFrame": 17656,
+        "frames": 589
+      },
+      "baselineSpeechSeconds": 9.816666666666666,
+      "oldKO": "퀘이크에서는 표면마다 더 세밀한 빛을 저장합니다. 벽의 그림 자체를 담은 텍스처와, 그 벽에 들어오는 조명 정보를 담은 라이트맵을 구별해 보죠.",
+      "oldEN": "Quake stores more detailed lighting on surfaces. We distinguish the texture containing the wall’s appearance from the lightmap containing lighting on that wall.",
+      "characterRatio": 1.488,
+      "ttsEstimatedSeconds": 14.61,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04-p1",
+        "beforeActionResult": [
+          "텍스처를 먼저 정의하고 라이트맵 소개",
+          "벽 무늬 그림 / 조명 그림",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04-p2",
+      "ko": "벽 전체를 연속해서 계산하기는 어려우니 대표 지점을 찍습니다. 이것이 표본입니다. 각 지점에서 광원까지 가려지는지 검사하고 방향과 거리, 빛의 세기를 반영합니다. 이 결과를 게임 전에 계산해 두는 작업을 베이크라고 부릅니다.",
+      "en": "Instead of computing every point on a continuous wall, we choose representative samples. At each sample we test visibility to the light and account for direction, distance and intensity. Computing these results before gameplay is called baking.",
+      "beginnerGoal": "표본/베이크 선행정의",
+      "screenLabel": "대표 지점에서 계산 → 미리 저장 = 베이크",
+      "ttsSceneId": "b009",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04-p2",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 5458000,
+        "samples": 222400,
+        "targetStartSample": 7480000,
+        "startFrame": 18700,
+        "frames": 556
+      },
+      "baselineSpeechSeconds": 9.266666666666667,
+      "oldKO": "표면을 작은 표본으로 나누고, 각 표본에서 광원까지 가려지는지 확인합니다. 방향과 거리, 광원 세기를 반영한 결과를 게임 전에 계산해 둡니다.",
+      "oldEN": "Surface samples test visibility to lights. Orientation, distance, and light strength contribute to values calculated before gameplay.",
+      "characterRatio": 1.582,
+      "ttsEstimatedSeconds": 14.66,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04-p2",
+        "beforeActionResult": [
+          "표본/베이크 선행정의",
+          "대표 지점에서 계산 → 미리 저장 = 베이크",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04-p6",
+      "ko": "실행할 때에는 벽 무늬를 읽고, 같은 표면에 해당하는 조명 값을 읽어 조합합니다. 그림 속 어디를 읽을지 가리키는 주소가 텍스처 좌표입니다. 두 그림의 주소 배치나 칸 수는 달라도 됩니다.",
+      "en": "At runtime, the renderer reads the wall pattern and the lighting value for the corresponding surface location, then combines them. Texture coordinates specify where to look in an image. The two images can use different layouts and resolutions.",
+      "beginnerGoal": "좌표=주소 비유, 두해상도 구분",
+      "screenLabel": "표면 위치 → 두 그림의 주소 → 조합",
+      "ttsSceneId": "b010",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04-p6",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 6638800,
+        "samples": 228000,
+        "targetStartSample": 9533200,
+        "startFrame": 23833,
+        "frames": 570
+      },
+      "baselineSpeechSeconds": 9.5,
+      "oldKO": "실행 중에는 저장한 조명과 표면 텍스처를 조합합니다. 서로 다른 좌표로 읽을 수도 있으므로, 벽의 세밀한 무늬와 조명의 격자 크기를 같다고 생각할 필요는 없습니다.",
+      "oldEN": "At runtime, the renderer combines stored lighting with the surface texture. Their coordinates and resolutions can differ; texture detail and lightmap detail need not match.",
+      "characterRatio": 1.154,
+      "ttsEstimatedSeconds": 10.96,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04-p6",
+        "beforeActionResult": [
+          "좌표=주소 비유, 두해상도 구분",
+          "표면 위치 → 두 그림의 주소 → 조합",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04-p7",
+      "ko": "빛이 조명에서 벽으로 바로 오면 직접광입니다. 다른 벽에 반사된 뒤 오면 간접광이고요. 퀘이크 투는 표면을 나눈 작은 패치 사이의 반사광도 계산해 라이트맵에 더했습니다. 직접 빛이 닿지 않는 곳에도 밝기가 생기는 이유입니다.",
+      "en": "Direct light travels from a light to a surface. Indirect light arrives after reflecting off another surface. Quake II’s tools also computed reflected contributions between surface patches and added them to lightmap samples, illuminating places without direct exposure.",
+      "beginnerGoal": "직접/간접/패치 정의",
+      "screenLabel": "조명 → 벽 = 직접 / 다른 벽 경유 = 간접",
+      "ttsSceneId": "b011",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04-p7",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 6866800,
+        "samples": 236400,
+        "targetStartSample": 9893200,
+        "startFrame": 24733,
+        "frames": 591
+      },
+      "baselineSpeechSeconds": 9.85,
+      "oldKO": "1997년 퀘이크 투의 도구에서는 표면 패치에 모인 반사광을 최종 라이트맵 표본에 더합니다. 빛이 한 번 반사되어 직접 조명이 닿지 않는 곳에도 기여하도록 베이크하는 것입니다.",
+      "oldEN": "Quake II’s 1997 tools add reflected-light patch contributions to the final lightmap samples, allowing baked indirect light to contribute beyond directly lit areas.",
+      "characterRatio": 1.276,
+      "ttsEstimatedSeconds": 12.57,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04-p7",
+        "beforeActionResult": [
+          "직접/간접/패치 정의",
+          "조명 → 벽 = 직접 / 다른 벽 경유 = 간접",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04f-p1",
+      "ko": "화면의 한 칸은 픽셀, 텍스처 그림의 한 칸은 텍셀입니다. 둘은 일대일이 아닙니다. 먼 바닥을 보면 픽셀 하나 안에 많은 텍셀이 들어갑니다. 그중 하나만 집으면 카메라가 조금 움직일 때 선택이 바뀌어 무늬가 흔들릴 수 있습니다.",
+      "en": "A pixel belongs to the output image; a texel belongs to a texture. They are not necessarily one-to-one. A distant floor can put many texels inside one pixel’s footprint. Choosing just one can make the pattern fluctuate as the camera moves.",
+      "beginnerGoal": "픽셀과 텍셀 분리",
+      "screenLabel": "화면의 칸 = 픽셀 / 원본 그림의 칸 = 텍셀",
+      "ttsSceneId": "b012",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04f-p1",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 8164000,
+        "samples": 264800,
+        "targetStartSample": 12851200,
+        "startFrame": 32128,
+        "frames": 662
+      },
+      "baselineSpeechSeconds": 11.033333333333333,
+      "oldKO": "텍스처를 읽는다고 문제가 끝나지는 않습니다. 먼 바닥에서는 화면의 픽셀 하나가 텍스처의 많은 칸을 덮습니다. 그중 한 칸만 고르면 카메라 이동에 따라 무늬가 불안정해질 수 있습니다.",
+      "oldEN": "Texture lookup creates another problem. A distant screen pixel can cover many texels; sampling only one can make the pattern unstable as the camera moves.",
+      "characterRatio": 1.257,
+      "ttsEstimatedSeconds": 13.87,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04f-p1",
+        "beforeActionResult": [
+          "픽셀과 텍셀 분리",
+          "화면의 칸 = 픽셀 / 원본 그림의 칸 = 텍셀",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04f-p3",
+      "ko": "칸 사이의 색이 필요하면 가까운 네 칸을 섞습니다. 가까운 칸은 많이, 먼 칸은 적게 넣는 비중을 가중치라고 합니다. 한 크기의 그림에서 이 일을 하는 방법이 바이리니어 필터입니다.",
+      "en": "When a value is needed between texture samples, bilinear filtering combines four neighbors. Their weights determine how much each contributes, with closer samples contributing more. This operation works within one texture level.",
+      "beginnerGoal": "가중평균을 먼저 정의",
+      "screenLabel": "네 칸의 색 × 각 비중 → 더하기",
+      "ttsSceneId": "b013",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04f-p3",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 8657200,
+        "samples": 218800,
+        "targetStartSample": 13878400,
+        "startFrame": 34696,
+        "frames": 547
+      },
+      "baselineSpeechSeconds": 9.116666666666667,
+      "oldKO": "바이리니어 필터는 한 레벨에서 주변 네 텍셀을 가중 평균합니다. 도식에서는 읽는 위치가 네 칸 사이를 움직일수록 각 칸의 비중이 달라지는 모습을 보죠.",
+      "oldEN": "Bilinear filtering weights four neighboring texels within one level. Our diagram changes their weights as the sample moves between them.",
+      "characterRatio": 1.202,
+      "ttsEstimatedSeconds": 10.96,
+      "sceneDesign": {
+        "renderer": "Manim",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04f-p3",
+        "beforeActionResult": [
+          "가중평균을 먼저 정의",
+          "네 칸의 색 × 각 비중 → 더하기",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "conceptual-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04f-p5",
+      "ko": "멀리 갈수록 더 작은 밉맵을 고르지만, 갑자기 바꾸면 티가 날 수 있습니다. 트라이리니어는 이웃한 두 크기에서 읽은 결과를 다시 섞습니다. 네 칸 사이를 섞고, 두 크기 사이도 섞는다고 이해하면 됩니다.",
+      "en": "As distance increases, a smaller mip level may be appropriate, but abrupt switches can be visible. Trilinear filtering blends the bilinear results from two neighboring mip levels: interpolation within each level and between levels.",
+      "beginnerGoal": "보간/레벨 용어 평이하게",
+      "screenLabel": "그림 안의 네 칸 + 두 그림 크기 사이",
+      "ttsSceneId": "b014",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04f-p5",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 9211200,
+        "samples": 230400,
+        "targetStartSample": 14893200,
+        "startFrame": 37233,
+        "frames": 576
+      },
+      "baselineSpeechSeconds": 9.6,
+      "oldKO": "트라이리니어는 여기에 인접한 두 밉 레벨 사이의 보간도 더합니다. 레벨을 갑자기 바꾸는 대신 섞는 것이지, 세 개의 공간 축을 따라 빛을 계산한다는 뜻은 아닙니다.",
+      "oldEN": "Trilinear filtering also blends between two adjacent mip levels. It smooths level transitions; it does not describe lighting along three spatial axes.",
+      "characterRatio": 1.242,
+      "ttsEstimatedSeconds": 11.92,
+      "sceneDesign": {
+        "renderer": "Manim",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04f-p5",
+        "beforeActionResult": [
+          "보간/레벨 용어 평이하게",
+          "그림 안의 네 칸 + 두 그림 크기 사이",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "conceptual-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04t-p3",
+      "ko": "큰 그림 전체의 재료를 멀리 있는 메모리에서 계속 가져오면 이동 비용이 듭니다. 작은 타일에 필요한 자료를 칩 안의 가까운 저장 공간에 모아 처리하면, 이런 왕복을 줄일 수 있습니다. 타일을 완성한 뒤 결과를 내보냅니다.",
+      "en": "Repeatedly moving data to and from external memory costs bandwidth. Keeping a small tile’s working data in nearby on-chip storage can reduce those trips. The tile is completed and its result is then written out.",
+      "beginnerGoal": "메모리/버퍼 비용 구체화",
+      "screenLabel": "작은 작업판 안에서 처리 → 완성 결과 저장",
+      "ttsSceneId": "b015",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04t-p3",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 10420400,
+        "samples": 258400,
+        "targetStartSample": 17718000,
+        "startFrame": 44295,
+        "frames": 646
+      },
+      "baselineSpeechSeconds": 10.766666666666667,
+      "oldKO": "선택한 타일의 작업 집합을 칩 안의 가까운 메모리에서 처리하면, 큰 외부 버퍼를 오가는 읽기와 쓰기를 줄일 수 있습니다. 작은 타일을 완성하고 결과를 내보내는 흐름입니다.",
+      "oldEN": "Keeping a tile’s working data close to the chip can reduce traffic to larger external buffers. The tile is processed locally before its result is written out.",
+      "characterRatio": 1.295,
+      "ttsEstimatedSeconds": 13.94,
+      "sceneDesign": {
+        "renderer": "Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04t-p3",
+        "beforeActionResult": [
+          "메모리/버퍼 비용 구체화",
+          "작은 작업판 안에서 처리 → 완성 결과 저장",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04t-p4",
+      "ko": "셰이딩은 표면의 색과 밝기를 계산하는 일입니다. 파워브이알의 티비디알은 먼저 보이는 표면을 가려낸 뒤 필요한 셰이딩을 하는 구조입니다. 이름의 디퍼드는 뒤로 미룬다는 뜻입니다. 뒤에서 나올 디퍼드 셰이딩은 미루는 일이 다릅니다.",
+      "en": "Shading computes a surface’s color and illumination. PowerVR’s TBDR resolves visibility before performing needed shading. Deferred means postponed. The later technique called deferred shading postpones a different part of the work.",
+      "beginnerGoal": "셰이딩/디퍼드 뜻과 동음이의",
+      "screenLabel": "무엇을 뒤로 미루는지 확인",
+      "ttsSceneId": "b016",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04t-p4",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 10678800,
+        "samples": 278400,
+        "targetStartSample": 17976400,
+        "startFrame": 44941,
+        "frames": 696
+      },
+      "baselineSpeechSeconds": 11.6,
+      "oldKO": "파워브이알의 티비디알에서 디퍼드는 가시성을 판정한 뒤 필요한 표면을 셰이딩하는 구조를 가리킵니다. 뒤에서 볼 재질 정보를 저장하는 디퍼드 셰이딩과 같은 용어로 묶으면 혼동하기 쉽습니다.",
+      "oldEN": "In PowerVR’s TBDR terminology, deferred describes resolving visibility before shading the required surfaces. This differs from the G-buffer-based deferred shading we will discuss later.",
+      "characterRatio": 1.233,
+      "ttsEstimatedSeconds": 14.3,
+      "sceneDesign": {
+        "renderer": "Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04t-p4",
+        "beforeActionResult": [
+          "셰이딩/디퍼드 뜻과 동음이의",
+          "무엇을 뒤로 미루는지 확인",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "04t-p6",
+      "ko": "앞의 벽에 완전히 가린 물체는 색을 계산하지 않아도 됩니다. 다만 유리처럼 뒤가 보이거나 일부를 잘라 버리는 재질은 다르게 다뤄야 합니다. 다른 GPU도 깊이를 일찍 검사하고 가까운 자료를 재사용합니다. 그래서 타일이라는 이름만으로 속도를 단정할 수 없습니다.",
+      "en": "A surface fully hidden behind an opaque wall may not need shading. Transparent or discarding materials require different handling. Other GPUs also test depth early and reuse nearby data. The word tile alone does not determine performance.",
+      "beginnerGoal": "earlyZ/cache/discard를 역할로 설명",
+      "screenLabel": "완전히 가린 면 / 뒤가 비치는 면 구분",
+      "ttsSceneId": "b017",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "04t-p6",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 11203600,
+        "samples": 285600,
+        "targetStartSample": 18501200,
+        "startFrame": 46253,
+        "frames": 714
+      },
+      "baselineSpeechSeconds": 11.9,
+      "oldKO": "가려진 불투명 표면을 건너뛰는 이점이 있어도 투명체와 버림 연산, 기하 중간 데이터에는 별도 비용이 있습니다. 다른 GPU도 얼리 제트와 캐시로 낭비를 줄이므로 단순한 승패 비교는 어렵습니다.",
+      "oldEN": "Skipping hidden opaque shading can help, but transparency, discard operations, and intermediate geometry still have costs. Other GPUs also reduce work through early depth tests and caches.",
+      "characterRatio": 1.355,
+      "ttsEstimatedSeconds": 16.12,
+      "sceneDesign": {
+        "renderer": "Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#04t-p6",
+        "beforeActionResult": [
+          "earlyZ/cache/discard를 역할로 설명",
+          "완전히 가린 면 / 뒤가 비치는 면 구분",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "07-p5",
+      "ko": "손전등 앞에 손을 두면 손 뒤로 빛이 닿지 않는 공간이 생깁니다. 섀도 볼륨은 그 공간을 입체로 만드는 방법입니다. 광원에서 본 물체의 테두리를 뒤로 늘여 옆면을 잇습니다. 둠 쓰리의 공개 코드에서도 이런 구성을 확인할 수 있습니다.",
+      "en": "Put a hand in front of a flashlight and a region behind it loses that light. Shadow volumes construct this region in 3D. Edges on the light-facing silhouette are extruded and connected into side faces, as seen in DOOM 3’s public code.",
+      "beginnerGoal": "그림자볼륨 실생활 원인부터",
+      "screenLabel": "물체의 테두리 → 빛 반대쪽 그늘 공간",
+      "ttsSceneId": "b018",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "07-p5",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 12644000,
+        "samples": 249200,
+        "targetStartSample": 20283600,
+        "startFrame": 50709,
+        "frames": 623
+      },
+      "baselineSpeechSeconds": 10.383333333333333,
+      "oldKO": "섀도 볼륨은 광원에서 본 물체의 경계를 찾아 그 뒤로 그늘의 공간을 구성합니다. 실제 공개 코드에는 경계에서 앞쪽 점과 투영한 점을 연결해 옆면을 더하는 단계가 있습니다.",
+      "oldEN": "A shadow volume constructs the region behind an object from boundaries seen by the light. The released source includes a step that connects original and projected boundary points to form side faces.",
+      "characterRatio": 1.368,
+      "ttsEstimatedSeconds": 14.2,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#07-p5",
+        "beforeActionResult": [
+          "그림자볼륨 실생활 원인부터",
+          "물체의 테두리 → 빛 반대쪽 그늘 공간",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "07-p6",
+      "ko": "이제 화면에 보이는 점이 그 공간 안에 있는지 검사합니다. 스텐실 버퍼는 화면 위치마다 검사 숫자를 적어 두는 메모입니다. 그늘 속에 있다고 나오면 해당 조명의 빛을 더하지 않습니다. 검은 그림을 붙이는 것과 다릅니다.",
+      "en": "We test whether the visible surface point lies inside that region. The stencil buffer stores test values at image locations. If a point is in shadow, that light’s contribution is omitted; this is not simply a black image pasted onto the scene.",
+      "beginnerGoal": "스텐실 버퍼를 값저장+용도 연결",
+      "screenLabel": "위치별 검사 메모 → 이 조명을 더할지 결정",
+      "ttsSceneId": "b019",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "07-p6",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 12893200,
+        "samples": 251600,
+        "targetStartSample": 20532800,
+        "startFrame": 51332,
+        "frames": 629
+      },
+      "baselineSpeechSeconds": 10.483333333333333,
+      "oldKO": "그 공간과 화면 표본의 관계를 스텐실 버퍼로 판별해 해당 광원의 기여를 막습니다. 그림자를 검은 사진으로 붙이는 대신, 빛을 받지 못하는 공간을 검사하는 접근입니다.",
+      "oldEN": "Stencil-buffer tests relate that volume to screen samples and suppress the corresponding light contribution. The method tests a shadowed region rather than simply placing a dark image on the floor.",
+      "characterRatio": 1.304,
+      "ttsEstimatedSeconds": 13.67,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#07-p6",
+        "beforeActionResult": [
+          "스텐실 버퍼를 값저장+용도 연결",
+          "위치별 검사 메모 → 이 조명을 더할지 결정",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      },
+      "audioRepair": {
+        "reason": "Clarify homophonic inside/not-shadow wording and explain interpolation with an explicit plain-language gloss.",
+        "priorTtsSceneId": "b019",
+        "newTtsSceneId": "b019r1",
+        "currentResultPending": true,
+        "priorKo": "이제 화면에 보이는 점이 그 공간 안에 있는지 검사합니다. 스텐실 버퍼는 화면 위치마다 검사 숫자를 적어 두는 메모입니다. 그늘 안이라고 나오면 해당 조명의 빛을 더하지 않습니다. 검은 그림을 붙이는 것과 다릅니다."
+      },
+      "replacementAudioPath": "shared/output/narration/game-lighting-history-01/beginner-terminology-r1/chunks/b019r1-scene.wav",
+      "asrResultPath": "projects/game-lighting-history-01/production/local/beginner-revision-v1/voice-asr-repairs/07-p6.json"
+    },
+    {
+      "key": "08-p2",
+      "ko": "밝기 하나만 저장하면 빛이 어느 쪽에서 왔는지 잃습니다. 밸브의 자료는 세 기준 방향에 해당하는 조명을 따로 저장합니다. 이 기준 방향을 기저라고 합니다. 그림의 세 화살표는 새 조명 세 개가 아니라, 방향 정보를 나누는 기준입니다.",
+      "en": "One brightness value loses the direction from which light arrived. Valve’s example stores lighting for three reference directions, called a basis. The three arrows are not three newly added lights; they define components of stored directional information.",
+      "beginnerGoal": "기저를 기준방향으로 풀기",
+      "screenLabel": "밝기 하나 → 방향별 조명 세 몫",
+      "ttsSceneId": "b020",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "08-p2",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 14123200,
+        "samples": 272400,
+        "targetStartSample": 22894000,
+        "startFrame": 57235,
+        "frames": 681
+      },
+      "baselineSpeechSeconds": 11.35,
+      "oldKO": "밸브의 당시 자료는 세 방향의 기저별 라이트맵을 법선과 결합하는 예를 제시합니다. 도식의 세 화살표는 세 개의 새 조명이라기보다 저장한 방향 성분을 읽는 기준입니다.",
+      "oldEN": "Valve’s contemporary presentation combines three basis-direction lightmaps with a surface normal. Our three arrows represent stored directional components, rather than three newly added lamps.",
+      "characterRatio": 1.413,
+      "ttsEstimatedSeconds": 16.04,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#08-p2",
+        "beforeActionResult": [
+          "기저를 기준방향으로 풀기",
+          "밝기 하나 → 방향별 조명 세 몫",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "08-p3",
+      "ko": "각 기준 방향을 표면이 얼마나 향하는지 구하고, 그 비중만큼 저장된 색을 섞습니다. 코드의 곱하기는 각 몫을 구하고, 더하기는 모으는 단계입니다. 이 자료의 제한된 내적 가중치와 다른 버전의 제곱 가중치 식은 구별합니다.",
+      "en": "Determine how closely the surface faces each basis direction and blend the stored colors using those weights. Multiplication computes each contribution; addition combines them. This source’s clamped dot-product example is distinct from squared-weight formulations in other versions.",
+      "beginnerGoal": "코드 연산을 조명몫과 연결",
+      "screenLabel": "방향별 저장색 × 비중 → 합",
+      "ttsSceneId": "b021",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "08-p3",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 14395600,
+        "samples": 290800,
+        "targetStartSample": 23166400,
+        "startFrame": 57916,
+        "frames": 727
+      },
+      "baselineSpeechSeconds": 12.116666666666667,
+      "oldKO": "화면의 코드 예에서는 법선과 각 기저의 내적을 제한한 가중치에 해당 라이트맵 색을 곱하고 더합니다. 이 버전의 예를 다른 버전의 제곱 가중치 식과 섞지 않겠습니다.",
+      "oldEN": "The shown code weights each lightmap color by a saturated dot product with its basis direction, then sums the results. We keep this version separate from variants that use squared weights.",
+      "characterRatio": 1.352,
+      "ttsEstimatedSeconds": 16.38,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#08-p3",
+        "beforeActionResult": [
+          "코드 연산을 조명몫과 연결",
+          "방향별 저장색 × 비중 → 합",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "08-p7",
+      "ko": "벽의 라이트맵은 벽에 붙어 있지만, 캐릭터는 움직입니다. 그래서 방 안의 여러 위치에 조명 값을 준비해 가까운 정보를 읽을 수 있습니다. 이런 조회용 공간 표본을 프로브라고 부릅니다. 당시 앰비언트 큐브와 다른 엔진의 프로브는 정보를 담는 방식이 다릅니다.",
+      "en": "A wall lightmap stays attached to the wall, but a character moves. Lighting can instead be prepared at locations in the room and nearby information retrieved. Such spatial samples are commonly called probes. The historical ambient cube and other engines’ probe systems use different representations.",
+      "beginnerGoal": "프로브 공간표본 정의",
+      "screenLabel": "벽에 붙은 저장 / 공간 위치의 저장",
+      "ttsSceneId": "b022",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "08-p7",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 15833200,
+        "samples": 316800,
+        "targetStartSample": 28300000,
+        "startFrame": 70750,
+        "frames": 792
+      },
+      "baselineSpeechSeconds": 13.2,
+      "oldKO": "움직이는 물체의 문제는 저장 위치가 다릅니다. 표면에 붙은 라이트맵 대신 공간의 조명 표본을 읽어야 하죠. 당시 앰비언트 큐브와 다른 엔진의 구면조화 프로브를 같은 구현으로 부르지는 않습니다.",
+      "oldEN": "Moving-object lighting stores and queries data differently. It needs spatial samples rather than a lightmap attached to a surface. Half-Life 2’s ambient cube is not identical to every engine’s spherical-harmonic probes.",
+      "characterRatio": 1.336,
+      "ttsEstimatedSeconds": 17.64,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#08-p7",
+        "beforeActionResult": [
+          "프로브 공간표본 정의",
+          "벽에 붙은 저장 / 공간 위치의 저장",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09-p1",
+      "ko": "조명 자리에 카메라가 있다고 생각해 보세요. 색 사진 대신, 각 방향에서 처음 만난 표면의 깊이를 적습니다. 이것이 섀도 맵입니다. 이제 우리가 보는 표면점도 조명 쪽에서 바라보면, 먼저 만난 물체 뒤에 있는지 비교할 수 있습니다.",
+      "en": "Imagine a camera at the light. Instead of colors, it records depth to the first surface in each image direction: a shadow map. Projecting a visible surface point into that light view lets us check whether it lies behind the first recorded surface.",
+      "beginnerGoal": "광원좌표를 광원시점으로 구체화",
+      "screenLabel": "조명 시점의 첫 표면 기록 → 뒤인지 비교",
+      "ttsSceneId": "b023",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09-p1",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 17217200,
+        "samples": 255200,
+        "targetStartSample": 34196800,
+        "startFrame": 85492,
+        "frames": 638
+      },
+      "baselineSpeechSeconds": 10.633333333333333,
+      "oldKO": "섀도 맵은 광원의 자리에서 깊이를 저장합니다. 한 방향에서 처음 보이는 표면이 얼마나 가까운지 기록해 두고, 카메라에 보인 점을 같은 광원 좌표로 옮겨 검사합니다.",
+      "oldEN": "A shadow map stores depth from the light. It records the nearest visible surface, then transforms a camera-visible point into the same light coordinates for comparison.",
+      "characterRatio": 1.418,
+      "ttsEstimatedSeconds": 15.08,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09-p1",
+        "beforeActionResult": [
+          "광원좌표를 광원시점으로 구체화",
+          "조명 시점의 첫 표면 기록 → 뒤인지 비교",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09-p2",
+      "ko": "여기서는 작은 깊이가 가깝고 큰 깊이가 멉니다. 검사할 점이 기록보다 멀면 앞의 물체가 빛을 막습니다. 자로 잴 때 시작점과 단위를 맞추듯, 두 깊이는 같은 조명 시점의 기준으로 비교해야 합니다.",
+      "en": "In this example, smaller depth means nearer and larger means farther. A test point behind the stored surface is blocked. Just as rulers need matching origins and units, both depths must be compared using the same light-view convention.",
+      "beginnerGoal": "같은좌표/규약 이유",
+      "screenLabel": "같은 기준으로 잰 깊이끼리 비교",
+      "ttsSceneId": "b024",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09-p2",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 17472400,
+        "samples": 267200,
+        "targetStartSample": 34452000,
+        "startFrame": 86130,
+        "frames": 668
+      },
+      "baselineSpeechSeconds": 11.133333333333333,
+      "oldKO": "깊이가 커질수록 멀어지는 규약을 예로 들면, 검사한 점이 저장한 깊이보다 뒤에 있을 때 다른 표면에 가려졌다고 판단합니다. 비교하려는 두 값은 같은 좌표와 깊이 규약을 써야 합니다.",
+      "oldEN": "With a depth convention where larger means farther, a tested point behind the stored depth is considered blocked. Both values must use matching coordinates and conventions.",
+      "characterRatio": 1.079,
+      "ttsEstimatedSeconds": 12.01,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09-p2",
+        "beforeActionResult": [
+          "같은좌표/규약 이유",
+          "같은 기준으로 잰 깊이끼리 비교",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09-p5",
+      "ko": "컴퓨터가 저장하는 숫자에는 정밀도 한계가 있습니다. 같은 표면인데 두 번 구한 깊이가 조금 달라, 자기 앞에 장애물이 있다고 오해할 수 있죠. 비교할 때 작은 여유를 주는 보정이 바이어스입니다.",
+      "en": "Stored numbers have limited precision. Two computations of the same surface depth can differ slightly, making it appear to block itself. Bias adds a small adjustment to the comparison to reduce this self-shadowing error.",
+      "beginnerGoal": "수치오차와 바이어스 원인",
+      "screenLabel": "같은 표면의 작은 오차 → 비교 여유",
+      "ttsSceneId": "b025",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09-p5",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 18402800,
+        "samples": 228800,
+        "targetStartSample": 35382400,
+        "startFrame": 88456,
+        "frames": 572
+      },
+      "baselineSpeechSeconds": 9.533333333333333,
+      "oldKO": "표면을 기록한 깊이와 다시 계산한 깊이가 수치 오차로 조금 다르면 자기 자신을 가렸다고 판정할 수도 있습니다. 이를 줄이는 바이어스는 비교 기준을 조금 이동하는 보정입니다.",
+      "oldEN": "Small numerical differences between stored and reconstructed depth can cause a surface to shadow itself. Bias adjusts the comparison to reduce this error.",
+      "characterRatio": 1.125,
+      "ttsEstimatedSeconds": 10.72,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09-p5",
+        "beforeActionResult": [
+          "수치오차와 바이어스 원인",
+          "같은 표면의 작은 오차 → 비교 여유",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09-p7",
+      "ko": "한 칸만 검사하면 경계가 거칠어집니다. 피시에프는 주변 여러 칸에서 각각 빛이 통하는지 물어보고, 통한다는 답의 비율을 씁니다. 거리 숫자를 먼저 섞는 것이 아니라, 검사 결과를 섞는 방법입니다.",
+      "en": "A single shadow-map lookup can give a hard jagged boundary. PCF tests several nearby locations and averages the lit results. It combines comparison outcomes, rather than averaging depths before one comparison.",
+      "beginnerGoal": "PCF 비교결과평균 쉬운질문",
+      "screenLabel": "주변 칸마다 통과? → 통과 비율",
+      "ttsSceneId": "b026",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09-p7",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 18844400,
+        "samples": 236000,
+        "targetStartSample": 35824000,
+        "startFrame": 89560,
+        "frames": 590
+      },
+      "baselineSpeechSeconds": 9.833333333333334,
+      "oldKO": "피시에프는 주변 텍셀에서 깊이 비교를 여러 번 하고, 빛을 받는다는 판정들의 평균을 냅니다. 깊이를 먼저 평균한 다음 한 번 비교하는 것과는 결과가 다릅니다.",
+      "oldEN": "PCF performs several neighboring depth comparisons and averages their visibility results. Averaging depths first and comparing once is a different operation.",
+      "characterRatio": 1.239,
+      "ttsEstimatedSeconds": 12.18,
+      "sceneDesign": {
+        "renderer": "Manim",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09-p7",
+        "beforeActionResult": [
+          "PCF 비교결과평균 쉬운질문",
+          "주변 칸마다 통과? → 통과 비율",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "conceptual-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09-p9",
+      "ko": "필터는 주변 결과를 섞는 범위입니다. 피 씨 에스 에스는 막는 물체와 그림자를 받는 면의 관계로 그 범위를 바꿉니다. 배리언스 섀도 맵은 깊이의 평균과 제곱 평균을 저장해 가림을 어림합니다. 서로 다른 근사이며 빛이 새는 등 한계도 있습니다.",
+      "en": "A filter’s extent controls the neighborhood combined. PCSS adjusts it using the relationship between blockers and receivers. Variance shadow maps store depth’s first and second moments to approximate visibility. These are different approximations, with limitations such as light leaking in the latter.",
+      "beginnerGoal": "수광면/필터폭/모멘트를 역할로",
+      "screenLabel": "받는 면과 막는 물체 / 섞는 범위",
+      "ttsSceneId": "b027",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09-p9",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 19463200,
+        "samples": 267600,
+        "targetStartSample": 36442800,
+        "startFrame": 91107,
+        "frames": 669
+      },
+      "baselineSpeechSeconds": 11.15,
+      "oldKO": "피시시에스는 가림 물체를 찾고 수광면과의 관계로 필터 폭을 조절합니다. 깊이의 평균과 제곱 평균을 저장하는 배리언스 섀도 맵은 또 다른 근사이며 빛샘 같은 한계가 있습니다.",
+      "oldEN": "PCSS searches for blockers and adjusts filter width using their relation to the receiver. Variance Shadow Maps instead use depth moments and have their own limitations, including light leakage.",
+      "characterRatio": 1.365,
+      "ttsEstimatedSeconds": 15.22,
+      "sceneDesign": {
+        "renderer": "Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09-p9",
+        "beforeActionResult": [
+          "수광면/필터폭/모멘트를 역할로",
+          "받는 면과 막는 물체 / 섞는 범위",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "conceptual-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      },
+      "audioRepair": {
+        "reason": "PCSS letter order in supplied current KO pronunciation was P-C-C-S; correct to P-C-S-S, without changing the algorithm explanation.",
+        "priorTtsSceneId": "b027",
+        "newTtsSceneId": "b027r1",
+        "currentResultPending": true
+      },
+      "replacementAudioPath": "shared/output/narration/game-lighting-history-01/beginner-terminology-r1/chunks/b027r1-scene.wav",
+      "asrResultPath": "projects/game-lighting-history-01/production/local/beginner-revision-v1/voice-asr-repairs/09-p9.json"
+    },
+    {
+      "key": "09a-p5",
+      "ko": "검사할 점이 가까운 구간인지 먼 구간인지 찾아 그 구간의 맵을 읽습니다. 이음새에서는 두 결과를 섞습니다. 카메라가 조금 움직일 때 격자도 계속 미끄러지면 그림자가 떨릴 수 있어, 격자 칸에 맞춰 움직이는 안정화도 씁니다.",
+      "en": "Choose the shadow map for the point’s camera-distance interval and blend results near transitions. Tiny camera motions can make the projected grid slide and shadows shimmer, so stabilization can snap the projection to the texel grid.",
+      "beginnerGoal": "맵선택/텍셀스냅 시각적원인",
+      "screenLabel": "거리로 맵 선택 / 경계 섞기 / 격자 안정화",
+      "ttsSceneId": "b028",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09a-p5",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 20810800,
+        "samples": 236400,
+        "targetStartSample": 37790400,
+        "startFrame": 94476,
+        "frames": 591
+      },
+      "baselineSpeechSeconds": 9.85,
+      "oldKO": "화면의 점이 어느 시야 구간에 있는지 찾아 해당 맵을 읽습니다. 경계에서는 두 결과를 섞어 전환을 줄일 수 있고, 카메라 이동에는 투영을 텍셀 격자에 맞추는 안정화도 필요합니다.",
+      "oldEN": "The point’s view depth selects a cascade. Blending near boundaries can soften transitions, while camera movement may require stabilization relative to the texel grid.",
+      "characterRatio": 1.253,
+      "ttsEstimatedSeconds": 12.34,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09a-p5",
+        "beforeActionResult": [
+          "맵선택/텍셀스냅 시각적원인",
+          "거리로 맵 선택 / 경계 섞기 / 격자 안정화",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "educational-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09b-p1",
+      "ko": "이제 같은 화면을 어떤 작업 순서로 칠할지 보죠. 포워드는 표면을 그릴 때 그 재질과 관련 조명들을 함께 계산해 색을 냅니다. 벽의 이 픽셀을 맡았다면, 그 자리의 빛 계산까지 마치는 방식입니다.",
+      "en": "Now compare work order for the same image. Forward shading evaluates the material and relevant lights while drawing a surface. When processing this wall pixel, it computes the lighting contribution as part of that surface’s shading.",
+      "beginnerGoal": "같은픽셀 작업순서 출발",
+      "screenLabel": "포워드: 표면 처리 중 조명도 계산",
+      "ttsSceneId": "b029",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09b-p1",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 22597200,
+        "samples": 253600,
+        "targetStartSample": 40150000,
+        "startFrame": 100375,
+        "frames": 634
+      },
+      "baselineSpeechSeconds": 10.566666666666666,
+      "oldKO": "그림자를 구한 뒤에도 조명 수가 늘면 계산량이 커집니다. 포워드 렌더링에서는 표면을 처리하면서 재질과 그 표면에 영향을 주는 광원을 평가합니다.",
+      "oldEN": "Even with shadow information, more lights increase work. Forward rendering evaluates material and relevant lighting as it shades a surface.",
+      "characterRatio": 1.363,
+      "ttsEstimatedSeconds": 14.4,
+      "sceneDesign": {
+        "renderer": "Three.js + Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09b-p1",
+        "beforeActionResult": [
+          "같은픽셀 작업순서 출발",
+          "포워드: 표면 처리 중 조명도 계산",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09b-p2",
+      "ko": "디퍼드는 조명 계산을 뒤로 미룹니다. 먼저 보이는 표면의 기본색, 방향, 깊이 같은 정보를 화면 위치별로 적습니다. 이 표면 정보 묶음이 지 버퍼입니다. 다음 조명 작업이 그 메모를 읽어 색을 계산합니다.",
+      "en": "Deferred shading postpones lighting. It first records visible-surface properties such as base color, orientation and depth by image position. This collection is the G-buffer. A later lighting stage reads those records to compute illumination.",
+      "beginnerGoal": "버퍼의정의/저장정보/후속사용",
+      "screenLabel": "디퍼드: 표면 메모 → 나중에 조명 계산",
+      "ttsSceneId": "b030",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09b-p2",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 22850800,
+        "samples": 272400,
+        "targetStartSample": 40403600,
+        "startFrame": 101009,
+        "frames": 681
+      },
+      "baselineSpeechSeconds": 11.35,
+      "oldKO": "디퍼드 셰이딩에서는 우선 카메라에 보이는 표면의 깊이와 법선, 재질 정보를 지 버퍼에 저장합니다. 조명 단계는 이 정보를 읽어 각 광원의 기여를 더합니다.",
+      "oldEN": "Deferred shading first stores visible-surface depth, normals, and material data in a G-buffer. The lighting stage reads that data to accumulate light contributions.",
+      "characterRatio": 1.326,
+      "ttsEstimatedSeconds": 15.05,
+      "sceneDesign": {
+        "renderer": "Three.js + Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09b-p2",
+        "beforeActionResult": [
+          "버퍼의정의/저장정보/후속사용",
+          "디퍼드: 표면 메모 → 나중에 조명 계산",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09b-p3",
+      "ko": "기본색은 조명까지 합친 최종 색이 아닙니다. 법선은 표면 방향, 거칠기는 반사가 얼마나 넓게 퍼지는지를 다루는 재질 값입니다. 언리얼의 책 모형 시연에서는 이런 재질 정보를 따로 살펴보고 그림으로 내보냅니다. 물체에 붙인 재질 그림과 현재 화면의 지 버퍼는 저장 기준이 다르지만, 표면 정보의 종류를 구별하는 데 도움이 됩니다.",
+      "en": "Base color is not the final lit color. Normals encode orientation; roughness controls the spread of a material’s reflection. The Unreal book example inspects and exports material data separately. Object textures and the current frame’s G-buffer use different domains, but the demonstration helps distinguish property types.",
+      "beginnerGoal": "재질그림과Gbuffer 혼동방지/정보정의",
+      "screenLabel": "기본색·방향·거칠기 ≠ 최종 조명색",
+      "ttsSceneId": "b031",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09b-p3",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 23350800,
+        "samples": 250400,
+        "targetStartSample": 42236000,
+        "startFrame": 105590,
+        "frames": 626
+      },
+      "baselineSpeechSeconds": 10.433333333333334,
+      "oldKO": "실제 엔진에서도 기본색과 법선, 거칠기 같은 데이터를 따로 확인할 수 있습니다. 이천십칠년 언리얼의 재질 시연은 책 모형을 펼쳐 보고, 버퍼 데이터를 별도의 이미지로 내보냅니다. 최종 조명 색 하나가 아닌 여러 종류의 표면 정보가 있다는 연결입니다. 재질 굽기나 버퍼 내보내기는 조명을 베이크하는 작업과 구별해야 합니다.",
+      "oldEN": "An actual engine can inspect base color, normals, and roughness separately. The 2017 Unreal material demonstration flattens a book model and exports buffer data as separate images. This connects to distinct surface information rather than one final shaded color. Baking materials or exporting buffers is different from baking illumination.",
+      "characterRatio": 1.022,
+      "ttsEstimatedSeconds": 10.66,
+      "sceneDesign": {
+        "renderer": "Three.js + Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09b-p3",
+        "beforeActionResult": [
+          "재질그림과Gbuffer 혼동방지/정보정의",
+          "기본색·방향·거칠기 ≠ 최종 조명색",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09b-p4",
+      "ko": "같은 벽의 한 픽셀만 따라가 보죠. 재질까지 반영한 두 조명의 몫이 영 점 이오와 영 점 삼오라면 합은 영 점 육입니다. 포워드는 표면을 그리면서 이 합을 만듭니다. 디퍼드는 표면 정보를 적은 뒤 다음 단계에서 합칩니다. 조명을 더하는 목표는 같고, 언제 어떤 정보를 가지고 계산하는지가 다릅니다.",
+      "en": "Follow one pixel on the same wall. Suppose two lighting contributions, already accounting for the material, are 0.25 and 0.35; their sum is 0.6. Forward computes this during surface shading. Deferred records surface data first, then combines lighting in a later stage. The goal is the same; the ordering and intermediate data differ.",
+      "beginnerGoal": "하나의픽셀 수치완결비교",
+      "screenLabel": "같은 픽셀 · 0.25 + 0.35 = 0.60",
+      "ttsSceneId": "b032",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09b-p4",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 23601200,
+        "samples": 457600,
+        "targetStartSample": 42486400,
+        "startFrame": 106216,
+        "frames": 1144
+      },
+      "baselineSpeechSeconds": 19.066666666666666,
+      "oldKO": "한 픽셀의 재질을 평가한 뒤 두 광원의 기여가 영 점 이오와 영 점 삼오라고 해보죠. 포워드에서는 표면을 그리는 과정에서 둘을 더해 영 점 육을 만듭니다. 디퍼드에서는 표면 정보를 먼저 기록한 뒤, 조명 단계에서 같은 두 기여를 더합니다. 결과의 목표가 같아도 중간 데이터와 작업 순서는 달라집니다.",
+      "oldEN": "Suppose two lights contribute 0.25 and 0.35 to a shaded pixel. Forward shading adds them while processing the surface, producing 0.60. Deferred shading stores surface data first and accumulates the same contributions later. The target result can match while intermediate data and ordering differ.",
+      "characterRatio": 0.994,
+      "ttsEstimatedSeconds": 18.95,
+      "sceneDesign": {
+        "renderer": "Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09b-p4",
+        "beforeActionResult": [
+          "하나의픽셀 수치완결비교",
+          "같은 픽셀 · 0.25 + 0.35 = 0.60",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "conceptual-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09b-p5",
+      "ko": "조명이 오른쪽 벽에만 닿는다면 왼쪽 픽셀에는 계산할 필요가 없습니다. 이런 제외 작업은 두 방식 모두에 쓸 수 있습니다. 화면의 네 물체와 세 조명은 순서 설명용입니다. 포워드가 언제나 모든 조명을 계산한다거나 디퍼드가 무조건 빠르다는 뜻은 아닙니다.",
+      "en": "If a light only reaches the right wall, pixels on the left need not evaluate it. Both approaches can cull irrelevant lights. The four objects and three lights illustrate ordering, not a claim that Forward always evaluates every light or Deferred always wins.",
+      "beginnerGoal": "최적화/성능 고정관념예방",
+      "screenLabel": "닿지 않는 조명 제외는 두 방식 모두 가능",
+      "ttsSceneId": "b033",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09b-p5",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 24058800,
+        "samples": 323200,
+        "targetStartSample": 42944000,
+        "startFrame": 107360,
+        "frames": 808
+      },
+      "baselineSpeechSeconds": 13.466666666666667,
+      "oldKO": "도식의 네 물체와 세 광원은 계산 순서의 차이를 보기 위한 예입니다. 광원이 영향을 주지 않는 픽셀을 제외하는 최적화도 있으므로, 모든 픽셀에 모든 광원을 무조건 계산한다고 가정하지 않습니다.",
+      "oldEN": "Four objects and three lights illustrate ordering, not a universal workload. Culling can skip pixels outside a light’s influence, so not every renderer evaluates every light at every pixel.",
+      "characterRatio": 1.308,
+      "ttsEstimatedSeconds": 17.61,
+      "sceneDesign": {
+        "renderer": "Three.js + Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09b-p5",
+        "beforeActionResult": [
+          "최적화/성능 고정관념예방",
+          "닿지 않는 조명 제외는 두 방식 모두 가능",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09b-p7",
+      "ko": "메모를 남기면 다음 작업이 쓰기 편하지만, 쓰고 읽는 비용이 듭니다. 지 버퍼도 같습니다. 또 한 픽셀에 가장 앞 표면 한 겹만 적으면, 그 뒤가 비치는 유리창처럼 여러 층이 필요한 장면은 이 정보만으로 완성할 수 없습니다.",
+      "en": "A record is useful to a later operation, but writing and reading it costs work and bandwidth. The G-buffer has that tradeoff. A record of only one frontmost surface cannot by itself describe all the layers needed for transparent glass.",
+      "beginnerGoal": "대역폭/단일층 한계 구체화",
+      "screenLabel": "메모 왕복 비용 / 한 칸에 한 표면만",
+      "ttsSceneId": "b034",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09b-p7",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 24694800,
+        "samples": 256000,
+        "targetStartSample": 43580000,
+        "startFrame": 108950,
+        "frames": 640
+      },
+      "baselineSpeechSeconds": 10.666666666666666,
+      "oldKO": "장점에는 비용이 따릅니다. 재질 정보를 여러 버퍼에 쓰고 다시 읽어야 하며, 한 픽셀의 여러 겹 투명 표면을 단일 표면 정보만으로 다루기는 어렵습니다.",
+      "oldEN": "The benefit has costs: material data must be written and read, and one stored surface does not naturally represent several translucent layers at a pixel.",
+      "characterRatio": 1.488,
+      "ttsEstimatedSeconds": 15.87,
+      "sceneDesign": {
+        "renderer": "Three.js + Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09b-p7",
+        "beforeActionResult": [
+          "대역폭/단일층 한계 구체화",
+          "메모 왕복 비용 / 한 칸에 한 표면만",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09b-p9",
+      "ko": "패스는 화면을 만들기 위한 작업 한 차례를 뜻합니다. 그래서 불투명 물체는 디퍼드로 그리고, 유리는 별도의 포워드 패스로 합칠 수 있습니다. 라이트 프리패스는 법선과 깊이로 조명부터 구한 뒤 재질을 결합하는 또 다른 절충입니다.",
+      "en": "A pass is a stage or round of rendering work. An engine can shade opaque objects with Deferred and composite glass in a separate Forward pass. Light pre-pass is another compromise: lighting from depth and normals, followed by material combination.",
+      "beginnerGoal": "패스를 사용전 해설",
+      "screenLabel": "패스 = 작업 한 차례 / 유리는 별도 처리 가능",
+      "ttsSceneId": "b035",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09b-p9",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 25444400,
+        "samples": 262800,
+        "targetStartSample": 44329600,
+        "startFrame": 110824,
+        "frames": 657
+      },
+      "baselineSpeechSeconds": 10.95,
+      "oldKO": "그래서 투명체를 별도의 포워드 패스로 그리는 혼합도 쓰입니다. 라이트 프리패스처럼 법선과 깊이로 조명을 먼저 구하고 재질을 나중에 결합하는 다른 절충도 있습니다.",
+      "oldEN": "Hybrid renderers may shade transparency in separate forward passes. Light pre-pass is another compromise, computing lighting from normals and depth before a later material pass.",
+      "characterRatio": 1.411,
+      "ttsEstimatedSeconds": 15.45,
+      "sceneDesign": {
+        "renderer": "Three.js + Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09b-p9",
+        "beforeActionResult": [
+          "패스를 사용전 해설",
+          "패스 = 작업 한 차례 / 유리는 별도 처리 가능",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "09b-p10",
+      "ko": "포워드도 지금 쓰입니다. 로보 리콜은 머리 움직임에 화면이 따라오는 브이알 게임입니다. 가장자리를 또렷하게 만드는 멀티샘플 처리와 필요한 기능을 함께 고려해 포워드 경로를 선택한 사례입니다. 이 시연은 그 선택이 보이는 결과와 어떻게 연결되는지 보려는 것입니다.",
+      "en": "Forward remains in use. Robo Recall is a VR game whose view follows head movement. Its Forward path was chosen with multisampling and required features in mind. We use this demonstration to connect that engineering choice to visible image quality.",
+      "beginnerGoal": "RoboRecall등장이유 명료화",
+      "screenLabel": "VR의 가장자리 품질과 기능 선택 사례",
+      "ttsSceneId": "b036",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "09b-p10",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 25707200,
+        "samples": 315200,
+        "targetStartSample": 44592400,
+        "startFrame": 111481,
+        "frames": 788
+      },
+      "baselineSpeechSeconds": 13.133333333333333,
+      "oldKO": "포워드가 폐기된 것도 아닙니다. 언리얼의 로보 리콜 사례는 기능 선택과 멀티샘플 안티앨리어싱, 브이알 요구에 맞춘 포워드 경로를 보여줍니다. 어떤 비용을 줄였는지 함께 봐야 합니다.",
+      "oldEN": "Forward rendering remains useful. Unreal’s Robo Recall example combines feature choices, multisample anti-aliasing, and VR requirements. The relevant question is which work the implementation reduces.",
+      "characterRatio": 1.446,
+      "ttsEstimatedSeconds": 18.99,
+      "sceneDesign": {
+        "renderer": "Motion Canvas",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#09b-p10",
+        "beforeActionResult": [
+          "RoboRecall등장이유 명료화",
+          "VR의 가장자리 품질과 기능 선택 사례",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "conceptual-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "10-p1",
+      "ko": "빛을 직접 막는 그림자까지 그렸는데 구석이 떠 보일 수 있습니다. 주변이 트인 점보다 벽 틈의 점이 여러 방향에서 빛을 받기 어렵기 때문입니다. 화면 공간 앰비언트 오클루전, 줄여서 에스에스에이오는 화면에 기록한 깊이로 이 주변 가림을 어림합니다.",
+      "en": "Even after direct shadows, corners can appear ungrounded. A point in a crevice has fewer open directions for environmental illumination than an exposed point. Screen-space ambient occlusion, SSAO, estimates this nearby occlusion using recorded screen depth.",
+      "beginnerGoal": "환경가림 문제부터 약어소개",
+      "screenLabel": "트인 곳 / 막힌 틈 → 주변 가림 근사",
+      "ttsSceneId": "b037",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "10-p1",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 26562800,
+        "samples": 250400,
+        "targetStartSample": 48378800,
+        "startFrame": 120947,
+        "frames": 626
+      },
+      "baselineSpeechSeconds": 10.433333333333334,
+      "oldKO": "그림자가 있어도 물체와 바닥이 닿는 부분이 밋밋해 보일 수 있습니다. 화면 공간 앰비언트 오클루전은 현재 화면의 깊이와 주변 표본으로 가까운 가림을 근사합니다.",
+      "oldEN": "Even with shadows, contact regions can appear flat. Screen-space ambient occlusion estimates nearby occlusion using screen depth and neighboring samples.",
+      "characterRatio": 1.551,
+      "ttsEstimatedSeconds": 16.18,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#10-p1",
+        "beforeActionResult": [
+          "환경가림 문제부터 약어소개",
+          "트인 곳 / 막힌 틈 → 주변 가림 근사",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "10-p2",
+      "ko": "화면 공간이라는 말은 현재 카메라에 보인 정보를 바탕으로 한다는 뜻입니다. 에스에스에이오는 장면 전체의 빛을 다시 추적하지 않습니다. 주변 화면 칸의 깊이를 살펴, 이 표면 주위가 얼마나 막혀 있을지 추정합니다.",
+      "en": "Screen-space means operating on information available in the current camera image. SSAO does not trace all lighting through the scene. It examines nearby screen-depth samples to estimate occlusion around a surface.",
+      "beginnerGoal": "화면공간 정의",
+      "screenLabel": "현재 카메라에 남은 정보만 사용",
+      "ttsSceneId": "b038",
+      "baselineVoice": {
+        "kind": "original",
+        "key": "10-p2",
+        "path": "shared/output/narration/game-lighting-history-01/qwen3-1.7b-balanced-v4/game-lighting-history-01-qwen3-1.7b-balanced-v4.wav",
+        "sourceStartSample": 26813200,
+        "samples": 282400,
+        "targetStartSample": 48630800,
+        "startFrame": 121577,
+        "frames": 706
+      },
+      "baselineSpeechSeconds": 11.766666666666667,
+      "oldKO": "표면의 주변 방향이 막혀 있다면 환경에서 들어오는 빛이 줄어들 수 있다는 생각입니다. 에스에스에이오는 전체 장면을 모든 방향으로 정확하게 추적하는 대신 화면에 남은 정보로 이를 어림합니다.",
+      "oldEN": "Nearby obstructions can reduce environmental illumination. SSAO approximates this with information already present on the screen instead of tracing the complete scene in every direction.",
+      "characterRatio": 1.124,
+      "ttsEstimatedSeconds": 13.23,
+      "sceneDesign": {
+        "renderer": "Three.js",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/animation-storyboard-v4.json#10-p2",
+        "beforeActionResult": [
+          "화면공간 정의",
+          "현재 카메라에 남은 정보만 사용",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "actual-implementation-with-labeled-illustration",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g00",
+      "ko": "게임 화면은 작은 색 칸, 픽셀로 이루어집니다. 이 칸들을 채워 그림 한 장을 만들고, 그런 그림을 빠르게 바꾸면 움직임이 됩니다. 한 장을 프레임, 입체 장면에서 그림을 만드는 일을 렌더링이라고 합니다. 지금은 이 화면의 한 칸에 무엇이 보여야 하는지부터 생각해 보겠습니다.",
+      "en": "A game image consists of small color cells called pixels. Filling them produces one frame, and displaying successive frames creates motion. Rendering turns the scene into an image. Start by asking what should appear at one position in this view.",
+      "beginnerGoal": "픽셀·프레임·렌더링 사전설명",
+      "screenLabel": "픽셀 → 한 장의 프레임 → 연속 화면",
+      "ttsSceneId": "b039",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g00",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v2/chunks/g00-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 487920,
+        "targetStartSample": 908000,
+        "startFrame": 2270,
+        "frames": 1220,
+        "audioSha256": "6f8c658a4c0f58235e07656a72013264014ebf09d14981f86653a07da0ecd99b",
+        "packetIndex": 0
+      },
+      "baselineSpeechSeconds": 20.33,
+      "oldKO": "로보 리콜의 진단 화면으로 이 첫 단계를 보겠습니다. 평소의 재질 색 대신, 겹쳐 그리는 상태를 확인하는 색이 표시됩니다. 카메라를 움직이면 벽과 난간이 겹쳐 보이는 영역도 달라지죠. 이 색은 광원의 밝기를 나타내는 값이 아닙니다. 무엇이 보이는지 결정하는 일과 그 표면을 밝히는 일을 나누어 보는 화면입니다.",
+      "oldEN": "Let us inspect that first stage in a Robo Recall diagnostic view. Diagnostic colors replace the usual material appearance to reveal overlapping drawing. As the camera moves, the visible overlap of walls and railings changes. These colors do not represent light intensity. We are separating visibility from lighting the visible surface.",
+      "characterRatio": 0.89,
+      "ttsEstimatedSeconds": 18.09,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g00",
+        "beforeActionResult": [
+          "픽셀·프레임·렌더링 사전설명",
+          "픽셀 → 한 장의 프레임 → 연속 화면",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g01",
+      "ko": "카메라가 보는 면을 따라가 보세요. 물체는 입체지만 화면은 평평합니다. 그래서 같은 화면 자리에 앞의 벽과 뒤의 물체가 겹칠 수 있습니다. 앞뒤 순서를 알려 주는 값이 깊이입니다. 표면이 어디를 향하는지 알려 주는 법선과는 다르죠. 위치, 앞뒤, 방향을 따로 기록해야 빛도 제대로 계산할 수 있습니다.",
+      "en": "Follow the surfaces visible to the camera. Objects are three-dimensional, but the image is flat, so front and back surfaces can overlap at one image location. Depth distinguishes their order. A normal instead describes surface orientation. Position, depth and direction are different inputs to shading.",
+      "beginnerGoal": "깊이와법선의차이",
+      "screenLabel": "깊이 = 앞뒤 / 법선 = 표면 방향",
+      "ttsSceneId": "b040",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g01",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g01-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 620160,
+        "targetStartSample": 1771600,
+        "startFrame": 4429,
+        "frames": 1551,
+        "audioSha256": "39d193cf6fce48cd57ba9f2bba2eb6ae09cdf4bbb53ae11651ef24bae4967440",
+        "packetIndex": 1
+      },
+      "baselineSpeechSeconds": 25.84,
+      "oldKO": "이번에는 벽을 따로 떼어 봅니다. 정면에서는 넓게 보이던 면이 옆으로 돌아가면 가느다란 가장자리로 보입니다. 카메라와 물체의 관계가 바뀌었기 때문이죠. 삼각형을 화면에 옮기는 단계에서는 이런 위치와 깊이가 필요합니다. 반면 이 벽이 금속인지, 어느 쪽의 빛을 받는지는 그다음 질문입니다. 진단 화면을 보고 실제 지피유가 모든 작업을 어떤 순서로 실행했는지까지 알아냈다고 말할 수는 없습니다.",
+      "oldEN": "Now inspect an isolated wall. A broad face in the front view becomes a thin edge from the side because the relation between camera and object has changed. Projecting triangles requires those positions and depths. Whether the wall is metallic and which light reaches it are separate questions. This diagnostic view does not by itself reveal the GPU’s complete execution order.",
+      "characterRatio": 0.789,
+      "ttsEstimatedSeconds": 20.39,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g01",
+        "beforeActionResult": [
+          "깊이와법선의차이",
+          "깊이 = 앞뒤 / 법선 = 표면 방향",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      },
+      "alignmentTextAdjustment": {
+        "removed": "지금은 ",
+        "reason": "Both actual whole/context recognition begin 카메라가; connective has no teaching content; preserve current complete PCM and align captions honestly."
+      }
+    },
+    {
+      "key": "g14",
+      "ko": "방의 벽에서 반복되는 무늬와 넓게 번진 밝기를 따로 보세요. 무늬 그림을 바꿔도 조명 계산이 저절로 새로 되지는 않습니다. 거꾸로 조명 그림을 더 촘촘히 만들었다고 벽돌 원본 그림까지 세밀해지는 것도 아닙니다. 두 자료의 역할이 다릅니다.",
+      "en": "Separate the repeating wall pattern from the broad illumination in these rooms. Changing the pattern does not automatically recompute lighting. Increasing lightmap resolution does not add detail to the original brick picture either. The two data sources serve different purposes.",
+      "beginnerGoal": "텍스처와라이트맵 역할복습",
+      "screenLabel": "무늬 해상도 / 조명 해상도 따로",
+      "ttsSceneId": "b041",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g14",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g14-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 362880,
+        "targetStartSample": 7910000,
+        "startFrame": 19775,
+        "frames": 908,
+        "audioSha256": "52157deab32b21e7313ede1f64fa7620d39d30ea6cb900910c0467b4610cc99c",
+        "packetIndex": 14
+      },
+      "baselineSpeechSeconds": 15.12,
+      "oldKO": "방을 옮기며 같은 질문으로 표면을 읽어 보죠. 벽의 무늬는 무엇이고, 넓게 퍼진 밝기 변화는 무엇일까요? 게임 전에 조명을 계산했다면, 실행 중에는 그 결과를 찾는 주소가 필요합니다. 도식에서 별도로 만든 라이트맵이 바로 이 역할을 맡습니다.",
+      "oldEN": "Carry the same question between rooms: which detail is the wall pattern, and which is a broad lighting variation? If lighting was computed before play, the runtime needs an address for finding the stored result. That is the role of the separate lightmap in our diagram.",
+      "characterRatio": 0.985,
+      "ttsEstimatedSeconds": 14.89,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g14",
+        "beforeActionResult": [
+          "텍스처와라이트맵 역할복습",
+          "무늬 해상도 / 조명 해상도 따로",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g12",
+      "ko": "벽의 색을 바꾸는 일은 그림의 재료를 바꾸는 일입니다. 조명을 옮기는 일은 빛이 도착하는 경로를 바꾸는 일이고요. 지금은 방의 구조와 밝기를 관찰하는 화면입니다. 이 둘 중 무엇을 수정했느냐에 따라 다시 만들어야 할 정보도 달라진다는 점을 기억해 두세요.",
+      "en": "Changing a wall’s color changes a material input; moving a light changes light paths. This view lets us inspect the room’s structure and illumination. Which information needs rebuilding depends on which input was changed.",
+      "beginnerGoal": "입력변경과재계산 인과",
+      "screenLabel": "무엇을 바꿨나 → 어떤 답이 낡았나",
+      "ttsSceneId": "b042",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g12",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v2/chunks/g12-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 546960,
+        "targetStartSample": 11025200,
+        "startFrame": 27563,
+        "frames": 1368,
+        "audioSha256": "b4eb8bd9045a2db386ef624aad6f91f5dd7065f1b45d94153e8c40b602b89a52",
+        "packetIndex": 12
+      },
+      "baselineSpeechSeconds": 22.79,
+      "oldKO": "이 장면에서는 벽이 만나는 부분을 따라 시점이 이동합니다. 넓은 면의 밝기와 이음새 부근을 나누어 보세요. 결과 화면에서 경계가 보이더라도, 원인은 표본 밀도나 표면 분할 등 여러 가지일 수 있습니다. 원인을 확인하려면 저장된 데이터와 제작 설정까지 함께 보아야 합니다. 카메라 이동만으로 조명을 다시 계산했다고 말할 수는 없습니다.",
+      "oldEN": "Here the viewpoint travels along wall junctions. Compare the broad surface with the seam. A visible boundary can have several causes, including sample density and surface partitioning. Identifying the cause requires the stored data and production settings as well. Camera movement itself is not evidence of a new bake.",
+      "characterRatio": 0.763,
+      "ttsEstimatedSeconds": 17.39,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g12",
+        "beforeActionResult": [
+          "입력변경과재계산 인과",
+          "무엇을 바꿨나 → 어떤 답이 낡았나",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g19",
+      "ko": "비스듬한 계단의 가느다란 선을 보세요. 픽셀 한 칸 안에 선과 빈 공간이 함께 들어갈 수 있습니다. 한 위치만 검사하면 선을 놓치기도 하죠. 여러 위치에서 선이 덮는지 검사하면 가장자리를 더 안정적으로 표현할 수 있습니다. 이것이 뒤에서 볼 멀티샘플의 출발점입니다. 벽 무늬를 섞어 읽는 텍스처 필터와는 검사하는 대상이 다릅니다.",
+      "en": "Look at the thin stair edges at an angle. One pixel can contain both an edge and empty space. Testing one location may miss that edge; testing coverage at several locations can represent it more consistently. This motivates multisampling later. Texture filtering instead combines values from a surface texture.",
+      "beginnerGoal": "MSAA이전 픽셀덮임 선행설명",
+      "screenLabel": "선이 픽셀을 얼마나 덮는가?",
+      "ttsSceneId": "b043",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g19",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g19-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 739200,
+        "targetStartSample": 15356800,
+        "startFrame": 38392,
+        "frames": 1848,
+        "audioSha256": "74707752a6646c1c14cab786bc41a1ab90677777ab4375c1028891a111f0ffb8",
+        "packetIndex": 19
+      },
+      "baselineSpeechSeconds": 30.8,
+      "oldKO": "철제 계단의 가는 선을 따라가 보세요. 시점이 바뀌면 선이 화면에서 차지하는 폭도 달라집니다. 멀리 있는 가느다란 구조를 안정적으로 보이게 만드는 문제는, 벽에 붙은 무늬를 읽는 문제와 닮았지만 완전히 같지는 않습니다. 텍스처 필터는 저장된 무늬를 읽는 범위를 다룹니다. 실제 삼각형의 바깥 가장자리가 한 픽셀을 얼마나 덮는지는 화면의 표본을 다루는 문제죠. 뒤의 포워드 사례에서는 이 가장자리를 여러 표본으로 검사하는 방법과 연결하겠습니다.",
+      "oldEN": "Follow the thin fire-escape edges. Their width in the image changes with the viewpoint. Stabilizing a distant thin structure resembles texture sampling, but the problems are not identical. Texture filters handle the region read from stored detail. How much of a pixel an actual triangle edge covers is a question about image samples. The later Forward example connects this to testing edges with multiple samples.",
+      "characterRatio": 0.745,
+      "ttsEstimatedSeconds": 22.95,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g19",
+        "beforeActionResult": [
+          "MSAA이전 픽셀덮임 선행설명",
+          "선이 픽셀을 얼마나 덮는가?",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g25",
+      "ko": "로봇의 몸 안쪽 명암과 바깥 윤곽을 따로 보세요. 표면 방향을 계산할 때 쓰는 화살표만 바꾸면 작은 홈처럼 보이게 할 수 있습니다. 하지만 물체를 옆에서 봤을 때 튀어나오는 실제 모양까지 생기지는 않죠. 조명 계산용 방향과 실제 입체 모양을 구별하는 것이 법선맵의 핵심입니다.",
+      "en": "Separate the robot’s interior shading from its silhouette. Changing the directions used for lighting can suggest grooves, but it does not create the actual protruding shape visible in silhouette. Normal mapping changes shading directions, not the underlying geometry.",
+      "beginnerGoal": "법선맵이가능/불가능한일",
+      "screenLabel": "표면 명암 변화 ≠ 실제 윤곽 변화",
+      "ttsSceneId": "b044",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g25",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v2/chunks/g25-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 569520,
+        "targetStartSample": 21503200,
+        "startFrame": 53758,
+        "frames": 1424,
+        "audioSha256": "b93137f9f43d1ea20542533398cd0fdae04d2c9a769500d69b81a8cf435e4003",
+        "packetIndex": 25
+      },
+      "baselineSpeechSeconds": 23.73,
+      "oldKO": "이번에는 현대 엔진의 로봇 표면으로 옮겨 보겠습니다. 몸의 바깥 실루엣과 안쪽의 작은 명암을 따로 살펴보세요. 도색된 색, 재질 반사, 표면 방향은 모두 화면에 영향을 줄 수 있습니다. 결과가 울퉁불퉁해 보인다는 이유만으로 정점이 모두 같은 모양으로 움직였다고 말할 수는 없습니다. 이 구별은 다음에 설명할 표면 방향과 저장된 조명으로 이어집니다.",
+      "oldEN": "Now inspect a robot surface in a more recent engine. Separate the outer silhouette from small variations inside it. Painted color, material reflection and surface orientation can all affect the image. A bumpy appearance does not prove that the vertices have moved into the same shape. This distinction leads into normals and stored lighting.",
+      "characterRatio": 0.794,
+      "ttsEstimatedSeconds": 18.84,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g25",
+        "beforeActionResult": [
+          "법선맵이가능/불가능한일",
+          "표면 명암 변화 ≠ 실제 윤곽 변화",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g27",
+      "ko": "한 값에 모두 섞어 저장하면 나중에 방향을 바꿔 읽기 어렵습니다. 방향별로 나누어 저장하면 표면이 향하는 쪽의 몫을 더 많이 고를 수 있습니다. 그림자를 새로 만드는 것과는 다릅니다. 지금 게임에서는 완성된 명암을 보고, 입체 도식에서는 그 명암을 이루는 방향별 몫을 나누어 보는 것입니다.",
+      "en": "A single combined value loses directional information. Keeping separate directional components allows a surface to select more of the contribution it faces. This does not independently generate new moving shadows. The game shows completed shading; the diagram separates the directional contributions.",
+      "beginnerGoal": "방향별저장 필요성 반복예제로",
+      "screenLabel": "한 값에 합치기 / 방향별로 나눠 저장",
+      "ttsSceneId": "b045",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g27",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g27-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 670080,
+        "targetStartSample": 26061600,
+        "startFrame": 65154,
+        "frames": 1676,
+        "audioSha256": "85d8fa3b257571ddfad14c2fb1bf3c1bcd54c742be88c8cb43afae525af1ae3c",
+        "packetIndex": 27
+      },
+      "baselineSpeechSeconds": 27.92,
+      "oldKO": "실제 게임에서는 카메라와 물체가 동시에 움직여 여러 변화가 겹칩니다. 그래서 법선의 효과만 확인하려면 조건을 나눈 도식이 필요합니다. 이 화면에서는 재질 안의 밝고 어두운 부분과 바깥 윤곽을 비교해 두세요. 저장된 조명을 읽는 법을 풍부하게 만든다고 해서 모든 움직이는 물체의 가림까지 자동으로 생기는 것은 아닙니다. 완성된 장면과 내부 계산을 연결하되, 화면에서 보이지 않는 구현을 추측하지 않는 것이 중요합니다.",
+      "oldEN": "In a game, camera and object motion can combine several changes. Isolating the effect of normals therefore requires a controlled diagram. Compare the bright and dark detail within materials with their outer silhouette. A richer way to read stored illumination does not automatically create every moving object’s occlusion. Connect the finished scene to the calculation without guessing invisible implementation details.",
+      "characterRatio": 0.698,
+      "ttsEstimatedSeconds": 19.49,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g27",
+        "beforeActionResult": [
+          "방향별저장 필요성 반복예제로",
+          "한 값에 합치기 / 방향별로 나눠 저장",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g29",
+      "ko": "방 안의 점들은 작은 조명들이 아니라 조명 정보를 읽어 올 장소라고 생각하세요. 벽의 그림은 벽에 붙어 있고, 이 점들은 높이까지 있는 공간에 놓여 있습니다. 캐릭터가 움직이면 가까운 점들의 정보를 이용합니다. 점 사이에서 값이 갑자기 튀지 않게 섞어 읽는 일을 보간, 즉 사잇값을 구하는 계산이라고 합니다. 지금 언리얼은 하프라이프 투와 다른 엔진 사례입니다.",
+      "en": "Think of these points as locations storing lighting information, not little light sources. A wall texture stays on a surface; these samples occupy volume, including height. A moving character uses nearby information. Interpolation combines values between samples to avoid abrupt changes. This Unreal example is a different engine from Half-Life 2.",
+      "beginnerGoal": "프로브/보간 정의",
+      "screenLabel": "공간 표본 → 가까운 값들을 섞어 읽기",
+      "ttsSceneId": "b046",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g29",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v2/chunks/g29-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 634800,
+        "targetStartSample": 28620000,
+        "startFrame": 71550,
+        "frames": 1587,
+        "audioSha256": "9645e90f5e038a9f423f5dfe519b019d8e5bd601e149eedafb0f9947bff8376a",
+        "packetIndex": 29
+      },
+      "baselineSpeechSeconds": 26.45,
+      "oldKO": "이제 화면에 표시된 점들의 위치를 보세요. 벽 무늬의 칸처럼 표면에 붙어 있는 것이 아니라 방 안의 공간에 놓여 있습니다. 캐릭터를 선택해 바라보면, 캐릭터와 표본 사이의 공간 관계를 함께 읽을 수 있습니다. 움직이는 물체가 새로운 위치로 갔을 때 쓸 조명 정보를 찾아야 하기 때문입니다. 하프라이프 투의 설명에서 이어 왔지만, 이 화면은 언리얼 엔진의 별도 사례입니다. 저장 형식까지 같다고 섞어 부르지 않겠습니다.",
+      "oldEN": "Look at the positions of the displayed points. They occupy the room rather than forming a wall-texture grid. Selecting the character lets us inspect the spatial relation between it and the samples. A moving object needs lighting information for its new location. This follows our Half-Life2 discussion, but the Unreal demonstration is a separate engine example, not the same storage format.",
+      "characterRatio": 0.803,
+      "ttsEstimatedSeconds": 21.24,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g29",
+        "beforeActionResult": [
+          "프로브/보간 정의",
+          "공간 표본 → 가까운 값들을 섞어 읽기",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      },
+      "audioRepair": {
+        "reason": "Clarify homophonic inside/not-shadow wording and explain interpolation with an explicit plain-language gloss.",
+        "priorTtsSceneId": "b046",
+        "newTtsSceneId": "b046r1",
+        "currentResultPending": true,
+        "priorKo": "방 안의 점들은 작은 조명들이 아니라 조명 정보를 읽어 올 장소라고 생각하세요. 벽의 그림은 벽에 붙어 있고, 이 점들은 높이까지 있는 공간에 놓여 있습니다. 캐릭터가 움직이면 가까운 점들의 정보를 이용합니다. 점 사이에서 값이 갑자기 튀지 않게 섞어 읽는 일을 보간이라고 합니다. 지금 언리얼은 하프라이프 투와 다른 엔진 사례입니다."
+      },
+      "replacementAudioPath": "shared/output/narration/game-lighting-history-01/beginner-terminology-r1/chunks/b046r1-scene.wav",
+      "asrResultPath": "projects/game-lighting-history-01/production/local/beginner-revision-v1/voice-asr-repairs/g29.json"
+    },
+    {
+      "key": "g31",
+      "ko": "계산을 미리 해 두면 게임 중에는 답을 읽으면 됩니다. 대신 방이나 조명을 고쳤다면 예전 답이 여전히 맞는지 확인해야 합니다. 이 편집 화면은 방을 살펴보는 과정입니다. 화면이 재생되는 시간은 베이크 계산 시간이 아닙니다.",
+      "en": "Precomputation lets the game read prepared answers. Changing the room or lighting may invalidate them. This editor view inspects a scene; its playback time is not a measurement of baking time.",
+      "beginnerGoal": "시간비용교환 일상어로",
+      "screenLabel": "미리 계산의 이득 / 수정 뒤 답의 유효성",
+      "ttsSceneId": "b047",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g31",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g31-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 366720,
+        "targetStartSample": 33307600,
+        "startFrame": 83269,
+        "frames": 917,
+        "audioSha256": "395c7ede8a9c5ad31513c5e7478c9c0f9ad9261613c7050f4223ac003e05644d",
+        "packetIndex": 31
+      },
+      "baselineSpeechSeconds": 15.28,
+      "oldKO": "편집하는 입장에서는 결과가 밝은지 어두운지뿐 아니라, 수정 뒤에 무엇을 다시 계산해야 하는지가 중요합니다. 방과 벽을 돌아보는 지금 화면은 제작 중의 장면 확인입니다. 베이크 시간을 재는 실험은 아니므로, 이 길이를 계산 비용이라고 읽지 않겠습니다.",
+      "oldEN": "For an editor, the question is not merely whether the image is bright or dark, but what must be recomputed after a change. This room and wall inspection is part of scene authoring. It is not a baking benchmark, and its playback duration is not a computation-time measurement.",
+      "characterRatio": 0.892,
+      "ttsEstimatedSeconds": 13.63,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g31",
+        "beforeActionResult": [
+          "시간비용교환 일상어로",
+          "미리 계산의 이득 / 수정 뒤 답의 유효성",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g32",
+      "ko": "앞에서 말한 가중치는 섞을 비중입니다. 같은 재료라도 어느 것을 많이 넣는지에 따라 결과가 달라지죠. 방향별 라이트맵도 저장된 세 몫 가운데 표면이 더 향하는 쪽의 비중을 높입니다.\n\n지금은 로봇을 여러 방향에서 봅니다. 몸의 면이 향하는 쪽과 카메라가 옮겨 간 쪽을 구별해 보세요. 실제 화면에서는 재질과 조명까지 함께 영향을 줍니다. 다음 도식에서는 표면 방향 하나만 바꿔, 저장된 값과 그것을 읽는 비중을 분리해서 확인합니다.",
+      "en": "A weight is a mixing proportion. Even with the same ingredients, changing their proportions changes the result. Directional lightmaps give more weight to components aligned with the surface.\n\nHere the robot is inspected from different viewpoints. Distinguish surface orientation from camera motion. Materials and lighting also affect the real image. Our diagram isolates surface direction so stored values and the weights used to read them can be considered separately.",
+      "beginnerGoal": "가중치를혼합비율로 재정착",
+      "screenLabel": "저장한 값은 그대로 / 읽는 비중 변경",
+      "ttsSceneId": "b048",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g32",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g32-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 787200,
+        "targetStartSample": 24248800,
+        "startFrame": 60622,
+        "frames": 1968,
+        "audioSha256": "6434b50459c23dd896fe365b1e604d3cb01fdbdc77071e538c9afc521a4c6f1d",
+        "packetIndex": 32
+      },
+      "baselineSpeechSeconds": 32.8,
+      "oldKO": "물체의 위치와 방향을 바꾸는 장면을 조금 더 보죠. 물체가 어느 면을 카메라에 보여 주는지 먼저 확인하고, 그 면의 무늬와 명암을 따라가 보세요. 물체가 이동한 것인지, 카메라가 돌아간 것인지도 구별해야 합니다.\n\n우리 도식에서는 입력 하나의 효과를 보여 주려고 법선 방향만 바꾸었습니다. 실제 편집 화면은 여러 조건이 함께 달라질 수 있습니다. 따라서 밝아진 부분 하나를 보고 특정 라이트맵 성분이 얼마만큼 늘었다고 숫자를 붙일 수는 없습니다. 대신 표면 방향, 저장된 데이터, 읽어 온 결과라는 세 단계를 놓치지 않고 연결하는 것입니다.",
+      "oldEN": "Inspect the changes in object position and orientation a little longer. First identify the face presented to the camera, then follow its pattern and shading. Also distinguish object motion from camera motion.\n\nOur diagram changed only a normal direction to isolate one input. Several conditions may change together in a real editor. A brighter patch therefore does not reveal a numerical increase in a particular lightmap component. Keep the three stages connected: surface orientation, stored data and the retrieved result.",
+      "characterRatio": 0.798,
+      "ttsEstimatedSeconds": 26.17,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g32",
+        "beforeActionResult": [
+          "가중치를혼합비율로 재정착",
+          "저장한 값은 그대로 / 읽는 비중 변경",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g38",
+      "ko": "책 표지를 펼치면 입체의 여러 면이 그림의 어느 위치를 쓸지 정할 수 있습니다. 이 주소가 유브이 좌표입니다. 기본색은 칠한 재료의 색, 거칠기는 반사의 퍼짐, 법선은 조명 계산에 쓸 방향입니다. 같은 표면도 이런 정보를 여러 장으로 나누어 다룹니다. 지금은 물체의 재질 자료를 보는 시연이며, 화면 픽셀의 지 버퍼 자체와는 구별합니다.",
+      "en": "Unwrapping the book assigns image locations to its 3D faces: UV coordinates. Base color describes material color, roughness the spread of reflection, and normals the orientation used in lighting. One surface can have several property images. This is an object-material demonstration, distinct from a screen-space G-buffer.",
+      "beginnerGoal": "UV/재질기본정보 정의",
+      "screenLabel": "주소(UV) / 색 / 거칠기 / 방향",
+      "ttsSceneId": "b049",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g38",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g38-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 545280,
+        "targetStartSample": 41303200,
+        "startFrame": 103258,
+        "frames": 1364,
+        "audioSha256": "6028208bbafa45387acdbebf219ee653634c166a38eeed5faa2a26757aebe8b3",
+        "packetIndex": 38
+      },
+      "baselineSpeechSeconds": 22.72,
+      "oldKO": "책 모형을 펼쳐 놓으면 서로 다른 면의 정보가 한 평면에 나타납니다. 원래 입체로 배치되었던 표면을 텍스처의 주소로 연결한 것입니다. 이 화면은 최종 조명의 밝기 하나만 저장한다는 뜻이 아닙니다. 기본색이나 거칠기처럼 서로 다른 의미의 정보를 나누어 생각하세요. 이제 내보내기 과정에서는 이런 표면 데이터를 별도로 다룬다는 점을 확인하겠습니다.",
+      "oldEN": "Unwrapping the book places information from different faces onto one plane, relating the original three-dimensional surfaces to texture addresses. This does not mean storing only final lighting brightness. Separate data such as base color and roughness by their meaning. The export process then demonstrates handling those surface data independently.",
+      "characterRatio": 0.979,
+      "ttsEstimatedSeconds": 22.24,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g38",
+        "beforeActionResult": [
+          "UV/재질기본정보 정의",
+          "주소(UV) / 색 / 거칠기 / 방향",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g39",
+      "ko": "버퍼는 다음 계산에 쓸 값을 잠시 담아 두는 저장 공간입니다. 지 버퍼는 같은 화면 칸에 해당하는 표면의 여러 정보를 모읍니다. 지금 재질 화면의 색도 단순한 장식이 아니라 어떤 값을 표시하는지부터 봐야 합니다. 표면 정보를 읽고, 조명을 계산하고, 마지막 색을 만드는 순서로 연결해 보세요.",
+      "en": "A buffer stores values for later processing. The G-buffer gathers properties of the visible surface at each image location. Colors in this material view represent specific data rather than decoration; their meaning must be identified. Connect surface information to lighting evaluation and then to the final color.",
+      "beginnerGoal": "메모리/Gbuffer 초심자정의",
+      "screenLabel": "표면 정보 → 조명 계산 → 최종 색",
+      "ttsSceneId": "b050",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g39",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g39-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 443520,
+        "targetStartSample": 40679200,
+        "startFrame": 101698,
+        "frames": 1109,
+        "audioSha256": "073e0f690c16f8daf8825531fdd560f6c108d2cfca0e755f87a5cc1c63b706ca",
+        "packetIndex": 39
+      },
+      "baselineSpeechSeconds": 18.48,
+      "oldKO": "여기서는 로보 리콜의 재질 자료를 확인합니다. 채널별 마스크는 표면 속성을 구분하는 데이터입니다. 여러 색으로 보인다는 이유만으로 화면의 최종 색이나 법선이라고 정할 수는 없습니다. 디퍼드 설명에서도 중요한 것은 버퍼의 개수보다 각 값이 무엇을 나타내며 다음 단계가 무엇을 읽는지입니다.",
+      "oldEN": "Here we inspect Robo Recall material data. Channel masks distinguish surface properties. Their colors do not automatically represent final display color or normals. In Deferred shading, the important question is not just the number of buffers, but what each value represents and what the next stage reads.",
+      "characterRatio": 1.019,
+      "ttsEstimatedSeconds": 18.83,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g39",
+        "beforeActionResult": [
+          "메모리/Gbuffer 초심자정의",
+          "표면 정보 → 조명 계산 → 최종 색",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g41",
+      "ko": "이 게임을 넣은 이유는 가느다란 윤곽이 많이 움직이는 브이알의 요구를 보기 위해서입니다. 손과 로봇, 파편의 가장자리를 따라가 보세요. 밝기를 계산하는 순서뿐 아니라, 한 픽셀을 물체가 얼마나 덮는지도 화면 품질에 영향을 줍니다. 이제 실제 확대 비교에서 그 가장자리를 보겠습니다.",
+      "en": "This game illustrates VR’s moving thin edges. Follow the outlines of hands, robots and fragments. Image quality depends on pixel coverage as well as the order of lighting calculations. Next, inspect those edges in the magnified comparison.",
+      "beginnerGoal": "불필요해보이는시연의역할선명화",
+      "screenLabel": "빛 계산 순서 + 움직이는 가장자리 품질",
+      "ttsSceneId": "b051",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g41",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g41-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 493440,
+        "targetStartSample": 45106800,
+        "startFrame": 112767,
+        "frames": 1234,
+        "audioSha256": "e1cf33f48221fac223c3beb011226fe943c907323c6c0d0ebf146b160ce6886f",
+        "packetIndex": 41
+      },
+      "baselineSpeechSeconds": 20.56,
+      "oldKO": "에디터에서 실행한 게임에서는 손과 로봇, 파편이 함께 움직입니다. 화면을 또렷하게 읽는 일은 재질의 밝기만으로 끝나지 않습니다. 가느다란 구조와 움직이는 외곽을 어떻게 표본화할지도 필요하죠. 이 장면을 특정 프레임 속도의 증거로 쓰지 않고, 렌더러가 처리해야 하는 실제 입력의 예로 보겠습니다.",
+      "oldEN": "In the game running from the editor, hands, robots and fragments move together. A clear image requires more than material brightness: thin structures and moving outlines must also be sampled. This is an example of real renderer inputs, not evidence of a particular frame rate.",
+      "characterRatio": 0.957,
+      "ttsEstimatedSeconds": 19.68,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g41",
+        "beforeActionResult": [
+          "불필요해보이는시연의역할선명화",
+          "빛 계산 순서 + 움직이는 가장자리 품질",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    },
+    {
+      "key": "g42",
+      "ko": "안티앨리어싱은 계단처럼 거친 가장자리나 깜빡임을 줄이는 처리입니다. 멀티샘플은 픽셀 안의 여러 위치에서 물체가 덮는지 검사합니다. 네 위치 중 두 곳을 덮는다면 경계를 절반 정도 덮은 것으로 표현할 수 있죠. 이 예시는 덮임 설명이며 게임의 실제 샘플 수를 단정하는 숫자는 아닙니다.\n\n확대창에서 선이 어떻게 달라지는지 보세요. 선의 덮임을 여러 번 검사한다고 모든 재질과 조명을 그 횟수만큼 다시 계산하는 것은 아닙니다. 비용은 엔진 구현과 설정에 따라 달라집니다. 그래서 포워드와 디퍼드는 이름의 신구보다 필요한 화질, 기능, 메모리 비용을 함께 보고 선택합니다.",
+      "en": "Anti-aliasing reduces jagged or unstable image edges. Multisampling tests coverage at several positions inside a pixel. If two of four positions are covered, the edge can contribute roughly half the coverage; this is an illustrative example, not a claim about the game’s sample setting.\n\nObserve the magnified line. Multiple coverage tests do not necessarily repeat every material and lighting computation that many times. Cost depends on implementation and settings. Forward versus Deferred is therefore a choice involving image quality, features and memory costs, not simply which name is newer.",
+      "beginnerGoal": "AA/MSAA 정의와비용제한",
+      "screenLabel": "픽셀 안 여러 덮임 검사 → 가장자리 표현",
+      "ttsSceneId": "b052",
+      "baselineVoice": {
+        "kind": "guide",
+        "key": "g42",
+        "path": "shared/output/narration/game-lighting-history-01/native-guides-v1/chunks/g42-scene.wav",
+        "sourceStartSample": 0,
+        "samples": 865920,
+        "targetStartSample": 45874800,
+        "startFrame": 114687,
+        "frames": 2165,
+        "audioSha256": "5aa51f88dd069320dd6123b5e99f8ffed1e71bc2c960bc987e99c2f44f7448c0",
+        "packetIndex": 42
+      },
+      "baselineSpeechSeconds": 36.08,
+      "oldKO": "비교 화면에서는 가장자리를 확대하고 멀티샘플 설정을 다룹니다. 확대된 선이 원래 화면의 어디인지 먼저 확인하세요. 화면 표본 하나로는 가는 삼각형이 차지하는 영역을 충분히 구별하기 어려울 수 있습니다. 여러 위치에서 덮임을 검사하면 그 경계를 다르게 표현할 수 있죠.\n\n다만 확대창에 보이는 변화만으로 속도가 몇 배 빨라졌다고 결론 내릴 수는 없습니다. 샘플 수, 해상도, 재질과 장면 조건을 함께 알아야 합니다. 콘솔 조작과 선의 변화를 관찰하되, 보이지 않는 설정값은 추정하지 않겠습니다. 포워드 경로의 선택을 품질과 필요한 기능, 비용을 묶어 판단하는 사례입니다.",
+      "oldEN": "The comparison magnifies edges while handling multisample settings. First locate the enlarged line in the original image. A single image sample may not adequately distinguish the area covered by a thin triangle. Testing coverage at multiple positions can represent the boundary differently.\n\nThe magnified change alone does not establish a speedup. Sample count, resolution, materials and scene conditions all matter. Observe the console operations and edge changes without inferring unreadable settings. This is a case of choosing a Forward path by considering quality, required features and cost together.",
+      "characterRatio": 0.997,
+      "ttsEstimatedSeconds": 35.97,
+      "sceneDesign": {
+        "renderer": "native-footage with restrained tracked labels",
+        "reason": "Preserve approved spatial depth; add plain-language definition and isolate one cause per speech beat.",
+        "retainedScene": "production/local/threejs-revision-v1/pair-caption-decoder-v3/plan.json#g42",
+        "beforeActionResult": [
+          "AA/MSAA 정의와비용제한",
+          "픽셀 안 여러 덮임 검사 → 가장자리 표현",
+          "Return to retained claim/order and next original passage"
+        ],
+        "captionReserve": "y896–1020 fixed boxed captions; labels only above850; no arbitrary moving captions",
+        "implementationKind": "independent engine/game footage; labels not measured engine values",
+        "motionTiming": "Bind changed speech semantic beats to existing model pose after measuredPCM; do not rubber-stamp old same-timing review."
+      }
+    }
+  ],
+  "completeKoEnDirectReview": true,
+  "measuredTimingApproved": false,
+  "policy": "Keep useful claims, chronological order and actual3D depth; explain prerequisites adjacent to their first use. Change only listed speech. No shortening or audio speedup to fit slots.",
+  "hashes": {
+    "ko": "35367bb7410f59a99c1bcc8fd89c81dc9dd284a92b0c4c6add5b6dfde490d1ee",
+    "en": "2d0eb1305e54f6ccff5835c6699f7997c9e1851475ac0bf2aee1783916e63de7"
+  },
+  "scriptReviewedAt": "2026-10-13T17:50:34.560585+00:00",
+  "reviewNotes": [
+    "All52replacementKOEN pairs directly read; no skipped core historical stages.",
+    "Prerequisite naming before use; pixel/depth/surface-direction distinct; toy sum 0.25+0.35=0.60; actual buffers vs explanatory flow explicitly separated.",
+    "Quake/HL2 and Unreal versions remain distinct. Forward culling/MSAA costs not universalized.",
+    "Speech measurement and final scene timing remain pending; no audio speedup."
+  ],
+  "terminologyRepair": {
+    "key": "09-p9",
+    "previousKo": "필터는 주변 결과를 섞는 범위입니다. 피시시에스는 막는 물체와 그림자를 받는 면의 관계로 그 범위를 바꿉니다. 배리언스 섀도 맵은 깊이의 평균과 제곱 평균을 저장해 가림을 어림합니다. 서로 다른 근사이며 빛이 새는 등 한계도 있습니다.",
+    "currentKo": "필터는 주변 결과를 섞는 범위입니다. 피 씨 에스 에스는 막는 물체와 그림자를 받는 면의 관계로 그 범위를 바꿉니다. 배리언스 섀도 맵은 깊이의 평균과 제곱 평균을 저장해 가림을 어림합니다. 서로 다른 근사이며 빛이 새는 등 한계도 있습니다.",
+    "reviewedAt": "2026-10-13T19:02:27.539976+00:00",
+    "priorPcmPreserved": true,
+    "currentAudioApproved": false
+  }
+}

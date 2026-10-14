@@ -1,0 +1,467 @@
+{
+  "startedAt": "2026-10-13T20:13:09.466164+00:00",
+  "status": "complete-awaiting-level-rereview",
+  "pid": 21608,
+  "createTime": 1791922389.2964022,
+  "command": [
+    "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+    "-X",
+    "utf8",
+    "projects/game-lighting-history-01/production/beginner-revision-v1/repair-local-levels.py"
+  ],
+  "cpuThreads": 2,
+  "gpuJobs": 0,
+  "planSha256": "e2ad5ad040b6a2d3ab5c326a094918adc0a3aef265f6128166e26de32e8b4267",
+  "priorMix": {
+    "status": "complete-awaiting-current-mixed-ASR",
+    "startedAt": "2026-10-13T19:59:34.921461+00:00",
+    "pid": 87628,
+    "createTime": 1791921947.1286428,
+    "command": [
+      "C:\\Users\\eazuo\\miniconda3\\envs\\renderformer\\python.exe",
+      "-X",
+      "utf8",
+      "projects/game-lighting-history-01/production/beginner-revision-v1/repair-aac-headroom.py"
+    ],
+    "cpuThreads": 2,
+    "gpuJobs": 0,
+    "planSha256": "e2ad5ad040b6a2d3ab5c326a094918adc0a3aef265f6128166e26de32e8b4267",
+    "steps": [
+      {
+        "label": "narration-peak-limit",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\leveled-narration.wav",
+          "-af",
+          "alimiter=limit=0.707945784:attack=5:release=50:level=false:latency=true",
+          "-ar",
+          "24000",
+          "-c:a",
+          "pcm_f32le",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\limited-narration.wav"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/narration-peak-limit.log"
+      },
+      {
+        "label": "narration-measure",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\limited-narration.wav",
+          "-af",
+          "loudnorm=I=-16:TP=-3:LRA=11:print_format=json",
+          "-f",
+          "null",
+          "-"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/narration-measure.log"
+      },
+      {
+        "label": "narration-normalize",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\limited-narration.wav",
+          "-af",
+          "loudnorm=I=-16:TP=-3:LRA=11:measured_I=-24.57:measured_TP=-0.18:measured_LRA=6.90:measured_thresh=-34.98:offset=3.13:linear=true:print_format=json",
+          "-ar",
+          "48000",
+          "-ac",
+          "2",
+          "-c:a",
+          "pcm_s24le",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\narration-normalized.wav"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/narration-normalize.log"
+      },
+      {
+        "label": "premix",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\narration-normalized.wav",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\music-continuous.wav",
+          "-filter_complex_threads",
+          "2",
+          "-filter_complex",
+          "[0:a]asplit=2[n][side];[1:a][side]sidechaincompress=threshold=0.05:ratio=3:attack=30:release=400:makeup=1[b];[n][b]amix=inputs=2:duration=first:normalize=0[out]",
+          "-map",
+          "[out]",
+          "-ar",
+          "48000",
+          "-c:a",
+          "pcm_s24le",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\premix.wav"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/premix.log"
+      },
+      {
+        "label": "final-measure",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\premix.wav",
+          "-af",
+          "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json",
+          "-f",
+          "null",
+          "-"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/final-measure.log"
+      },
+      {
+        "label": "final-normalize",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\premix.wav",
+          "-af",
+          "loudnorm=I=-16:TP=-1.5:LRA=11:measured_I=-18.61:measured_TP=-5.39:measured_LRA=12.80:measured_thresh=-29.39:offset=0.57:linear=true:print_format=json",
+          "-ar",
+          "48000",
+          "-ac",
+          "2",
+          "-c:a",
+          "pcm_s24le",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix.wav"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/final-normalize.log"
+      },
+      {
+        "label": "aac",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix.wav",
+          "-c:a",
+          "aac",
+          "-b:a",
+          "192k",
+          "-ar",
+          "48000",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix.m4a"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/aac.log"
+      },
+      {
+        "label": "final-loudness",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix.m4a",
+          "-af",
+          "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json",
+          "-f",
+          "null",
+          "-"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/final-loudness.log"
+      },
+      {
+        "label": "peak-safe-wav",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix.wav",
+          "-af",
+          "volume=-0.5dB,atrim=end_sample=116614400",
+          "-c:a",
+          "pcm_s24le",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix-peak-safe.wav"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/peak-safe-wav.log"
+      },
+      {
+        "label": "peak-safe-aac",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix-peak-safe.wav",
+          "-c:a",
+          "aac",
+          "-b:a",
+          "192k",
+          "-ar",
+          "48000",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix-peak-safe.m4a"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/peak-safe-aac.log"
+      },
+      {
+        "label": "peak-safe-loudness",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix-peak-safe.m4a",
+          "-af",
+          "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json",
+          "-f",
+          "null",
+          "-"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/peak-safe-loudness.log"
+      },
+      {
+        "label": "decode-aac-diagnostic",
+        "command": [
+          "C:/Users/eazuo/miniconda3/envs/renderformer/Lib/site-packages/imageio_ffmpeg/binaries/ffmpeg-win-x86_64-v7.1.exe",
+          "-hide_banner",
+          "-nostdin",
+          "-n",
+          "-threads",
+          "2",
+          "-i",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-mix-peak-safe.m4a",
+          "-ar",
+          "48000",
+          "-c:a",
+          "pcm_f32le",
+          "D:\\Github\\Video-Editing\\projects\\game-lighting-history-01\\production\\local\\beginner-revision-v1\\final-aac-decoded.wav"
+        ],
+        "exitCode": 0,
+        "log": "projects/game-lighting-history-01/production/local/beginner-revision-v1/decode-aac-diagnostic.log"
+      }
+    ],
+    "reusedNormalizedMusic": {
+      "path": "projects/game-lighting-history-01/production/local/final-edit-v1/music-normalized.wav",
+      "sha256": "1a19c5fbb62d81062bf19a0938c81eea1e03589e6a4de90867bca9ceea0e75e4"
+    },
+    "error": null,
+    "endedAt": "2026-10-13T20:07:56.708501+00:00",
+    "priorExecution": "mix-execution-first-failure.json",
+    "repairStartedAt": "2026-10-13T20:05:47.199282+00:00",
+    "repairReason": "AAC true peak -1.19dBTP exceeded -1.5 while integrated loudness -16.06 was valid. Preserve normalization/mix; final constant -0.5dB and exact ending sample trim only.",
+    "retainedPremasterSha256": "31475182b5872fd895fc10dbbc159163663c2896512938ad5c10e58706935878",
+    "active": null,
+    "exitCode": 0,
+    "outputs": {
+      "final-mix-peak-safe.wav": "09c6fc698e30a449d20d163010b24b57298f654695e806adec0e6b1e1a06f9c9",
+      "final-mix-peak-safe.m4a": "072468901d4468b11f0990176a987925053b1d6a119236853f59d0cc364818c9"
+    },
+    "currentWav": "final-mix-peak-safe.wav",
+    "currentAac": "final-mix-peak-safe.m4a",
+    "loudness": {
+      "input_i": "-16.56",
+      "input_tp": "-1.81",
+      "input_lra": "8.00",
+      "input_thresh": "-26.77",
+      "output_i": "-15.97",
+      "output_tp": "-1.50",
+      "output_lra": "7.00",
+      "output_thresh": "-26.15",
+      "normalization_type": "dynamic",
+      "target_offset": "-0.03"
+    },
+    "finalMixedAsrApproved": false,
+    "humanListening": "pending",
+    "sourceAudioUsed": false,
+    "sourceAudioReason": "Source recordings contain inseparable presenter narration/music; previous source-audio exclusions retained.",
+    "originalMusicAcquisition": "pending",
+    "constantFinalGainDb": -0.5
+  },
+  "dips": [
+    {
+      "key": "03-p7",
+      "utteranceSeconds": [
+        3.1,
+        3.6
+      ],
+      "gainDb": 4,
+      "fadeSeconds": 0.35,
+      "reason": "Actual processed voice below median by6dB for>=0.5s; corresponding edit-copy speech above median-6dB, processing gain reduction>=6dB.",
+      "timelineSeconds": [
+        317.4,
+        318.6
+      ]
+    },
+    {
+      "key": "g32",
+      "utteranceSeconds": [
+        2.2,
+        2.7
+      ],
+      "gainDb": 4,
+      "fadeSeconds": 0.35,
+      "reason": "Actual processed voice below median by6dB for>=0.5s; corresponding edit-copy speech above median-6dB, processing gain reduction>=6dB.",
+      "timelineSeconds": [
+        1134.0500000000002,
+        1135.25
+      ]
+    },
+    {
+      "key": "x29",
+      "utteranceSeconds": [
+        1.4000000000000001,
+        1.9
+      ],
+      "gainDb": 4,
+      "fadeSeconds": 0.35,
+      "reason": "Actual processed voice below median by6dB for>=0.5s; corresponding edit-copy speech above median-6dB, processing gain reduction>=6dB.",
+      "timelineSeconds": [
+        1354.1833333333336,
+        1355.3833333333334
+      ]
+    },
+    {
+      "key": "08-p9",
+      "utteranceSeconds": [
+        4.7,
+        5.300000000000001
+      ],
+      "gainDb": 4,
+      "fadeSeconds": 0.35,
+      "reason": "Actual processed voice below median by6dB for>=0.5s; corresponding edit-copy speech above median-6dB, processing gain reduction>=6dB.",
+      "timelineSeconds": [
+        1518.3500000000001,
+        1519.6499999999999
+      ]
+    },
+    {
+      "key": "09b-p9",
+      "utteranceSeconds": [
+        4.9,
+        5.500000000000001
+      ],
+      "gainDb": 4,
+      "fadeSeconds": 0.35,
+      "reason": "Actual processed voice below median by6dB for>=0.5s; corresponding edit-copy speech above median-6dB, processing gain reduction>=6dB.",
+      "timelineSeconds": [
+        2084.8,
+        2086.1
+      ]
+    },
+    {
+      "key": "10-p5",
+      "utteranceSeconds": [
+        9.4,
+        9.9
+      ],
+      "gainDb": 4,
+      "fadeSeconds": 0.35,
+      "reason": "Actual processed voice below median by6dB for>=0.5s; corresponding edit-copy speech above median-6dB, processing gain reduction>=6dB.",
+      "timelineSeconds": [
+        2312.866666666667,
+        2314.0666666666666
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "label": "local-final-measure",
+      "exitCode": 0
+    },
+    {
+      "label": "local-final-normalize",
+      "exitCode": 0
+    },
+    {
+      "label": "local-final-aac",
+      "exitCode": 0
+    },
+    {
+      "label": "local-final-loudness",
+      "exitCode": 0
+    },
+    {
+      "label": "local-decode-aac",
+      "exitCode": 0
+    }
+  ],
+  "humanContextListening": "pending",
+  "sourcePcmChanged": false,
+  "active": null,
+  "exitCode": 0,
+  "endedAt": "2026-10-13T20:14:32.629056+00:00",
+  "loudness": {
+    "input_i": "-16.43",
+    "input_tp": "-2.42",
+    "input_lra": "5.80",
+    "input_thresh": "-26.69",
+    "output_i": "-15.89",
+    "output_tp": "-2.00",
+    "output_lra": "5.80",
+    "output_thresh": "-26.14",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.11"
+  },
+  "outputs": {
+    "narration-local-corrected.wav": "8ac59db1c9865cc6e813c75c7774aabb55d7ebccff488a99a90dc8e2bc8954b0",
+    "final-mix-local-corrected.wav": "c2ad9bbe24546be3b9d083a7ef2abf7ca9f01a1b25d1785af7a755ac7eeee53a",
+    "final-mix-local-corrected.m4a": "b5542279d69450c45324d918da2236833c8b2b2ae967b317fc0684acd47c6992"
+  },
+  "subsequentLengthCheck": {
+    "result": "fail",
+    "expectedSamples": 116614400,
+    "observedSamples": 29153600,
+    "originalStatusPreserved": "complete-awaiting-level-rereview",
+    "resume": "local-mix-tail-resume.json"
+  }
+}
