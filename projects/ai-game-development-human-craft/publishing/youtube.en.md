@@ -2,23 +2,20 @@ When AI Makes Games, Where Do a Developer's Skills Matter?
 
 Tools and automation change, but defining conditions and checking results still matter. We explore official Epic and Unity material, an independent development demo, and original Unity shop and input-response examples.
 
-Expanded from ideas in the Wild Ox Studios video and the user-supplied transcript. Personal experiences are attributed to that creator.
-https://youtu.be/Zxbn55DVi-Q
-
 Information checked on October 14, 2026. Long-term plans, reporting and Unity Spark's coming-soon status are distinguished. Our Unity scenes are explanations; persistent storage and networking are not implemented in the shop demo.
 
 Chapters
 00:00 What skills mean in the AI era
-00:37 Tools for people and AI
-05:26 Automation, work and value
-07:44 A wider doorway to creation
-09:03 The meaning of making things
-13:18 From a demo to a product
-14:14 Testing a shop transaction
-16:26 Validation and game feel
-19:10 Lasting style and expression
+00:34 Tools for people and AI
+05:21 Automation, work and value
+07:43 A wider doorway to creation
+09:02 The meaning of making things
+13:28 From a demo to a product
+14:24 Testing a shop transaction
+16:34 Validation and game feel
+19:12 Lasting style and expression
 21:16 Judgment behind the tools
-23:41 What has your experience been?
+23:34 What has your experience been?
 
 License notices and attribution
 Wholesome Kevin MacLeod (incompetech.com)

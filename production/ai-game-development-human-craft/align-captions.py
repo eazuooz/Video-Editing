@@ -62,6 +62,15 @@ for r in review:
 if '--cache-only' in sys.argv:
     print('Cached complete scene read-back for direct text review; no alignment or inference performed.')
     raise SystemExit(0)
-sys.argv=['align_project_subtitles.py','--project',SLUG]
+# Keep narration-local aligned captions separate from the final video tracks,
+# whose timestamps include the2s branding. The aligner writes both languages
+# with identical cue boundaries; do not run the independent EN splitter after it.
+from revision_paths import workroot
+alignment_manifest=json.loads(json.dumps(m))
+alignment_manifest['paths']['captionsKo']=(out/(stem+'.srt')).relative_to(ROOT).as_posix()
+alignment_manifest['paths']['captionsEn']=(out/(stem+'.en.srt')).relative_to(ROOT).as_posix()
+alignment_manifest_path=workroot(ROOT)/'narration-alignment-manifest.json'
+alignment_manifest_path.write_text(json.dumps(alignment_manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+sys.argv=['align_project_subtitles.py','--project',SLUG,'--manifest',alignment_manifest_path.relative_to(ROOT).as_posix()]
 aligner.main()
 print('Aligned cached words. Complete text and pronunciation still require review.')

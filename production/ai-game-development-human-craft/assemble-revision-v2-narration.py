@@ -28,6 +28,6 @@ for s,a in zip(script['scenes'],current):
  texts.append(a['text']);evidence.append({'scene':sid,'origin':origin,'audioSha256':a['audio_sha256'],'asrCacheSha256':sha(out/'asr'/f'{sid}.json'),'status':'unchanged-approved-PCM-ASR-reused' if sid in prepared['retainedScenes'] else 'revised-complete-scene-context-ASR'})
 full={'audio_sha256':sha(renderer.FINAL_WAV),'audio':str(renderer.FINAL_WAV),'timestampMode':'word','text':' '.join(texts),'chunks':words,'sceneEvidence':evidence,'method':'one current complete readback per scene hash; prior approved evidence retained only for identical unchanged PCM','humanListening':'pending'}
 write(out/(stem+'.asr-review.timestamps.json'),full);(out/(stem+'.asr-review.txt')).write_text(full['text']+'\n',encoding='utf-8')
-for command in [[sys.executable,'-X','utf8',f'production/{SLUG}/align-captions.py'],[sys.executable,'-X','utf8','qwen3-tts/build_translated_srt.py','--project',SLUG,'--language','en'],[sys.executable,'-X','utf8',f'production/{SLUG}/prepare-scenes.py']]:
+for command in [[sys.executable,'-X','utf8',f'production/{SLUG}/align-captions.py'],[sys.executable,'-X','utf8',f'production/{SLUG}/prepare-scenes.py']]:
  subprocess.run(command,cwd=ROOT,check=True,creationflags=subprocess.CREATE_NO_WINDOW)
 write(workroot(ROOT)/'narration-assembly.json',{'sourceSha256':sha(renderer.FINAL_WAV),'scriptRevision':4,'sceneEvidence':evidence,'fullTextReview':'pending','joinReview':'pending','humanListening':'pending'})

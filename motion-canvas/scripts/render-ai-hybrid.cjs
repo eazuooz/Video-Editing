@@ -18,6 +18,22 @@ const jsonHash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).
 let fingerprint;
 function compatible(previous,id){
  if(JSON.stringify(previous)===JSON.stringify(fingerprint))return true;
+ // Captions are burned separately. The clean-scene routes never set the
+ // captions=1 query, so a proven caption-data-only correction changes no
+ // pixels here. Keep the exact prior input rather than rerendering the scene.
+ const captionProof=path.join(out,'../caption-data-compatibility.json');
+ if(fs.existsSync(captionProof)){
+  const proof=read(captionProof),before=path.join(root,proof.beforeSceneDataFile);
+  if(proof.sceneKitHash===fingerprint.sceneKitHash&&fs.existsSync(before)&&hash(before)===proof.beforeSceneDataFileSha256
+     &&Object.keys(fingerprint).every(k=>k==='sceneDataHash'||previous[k]===fingerprint[k])){
+   const a={...read(before).scenes.find(s=>s.id===id)},b={...data.scenes.find(s=>s.id===id)};
+   delete a.start;delete b.start;
+   if(jsonHash(a)===previous.sceneDataHash&&jsonHash(b)===fingerprint.sceneDataHash){
+    delete a.captions;delete b.captions;
+    if(JSON.stringify(a)===JSON.stringify(b))return true;
+   }
+  }
+ }
  const file=path.join(out,'../scene-kit-compatibility.json');if(!fs.existsSync(file))return false;
  const config=read(file),steps=config.steps||[{...config,beforeSourcePath:`shared/output/${slug}/composite/17/timing-v2/scene-kit.before.tsx`}];
  let currentHash=previous.sceneKitHash;
