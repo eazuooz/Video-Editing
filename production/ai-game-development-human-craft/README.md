@@ -10,6 +10,8 @@
 
 Drive 연결 도구의 실제 전송 한도는100MiB다. `prepare-drive-mobile.py --compact`는 현재 전체 길이로 비트레이트를 계산하고720p30 H.2642pass/AAC160k 검수본을 만든다. 전편 디코드·PTS·오디오 연속성·모든 자막 구간/압축 비교와 실제 시각 검수 후 새로운 v2 파일로 업로드한다. 고화질1080p60 master와 기존 Drive 파일은 보존한다. 이 모바일 파일이 게시용 원본으로 자동 승격되지는 않는다.
 
+수정2차의 마지막 기록은 `record-revision-v2-review.py`로 합친다. 현재 전편 내용·발화 접합·음량·자막·영상·네 파일·Drive 원격 바이트 증거가 모두 있어야 실행되며, 과거 v1 전용 `record-final-review.py`의 고정 길이·자막 수·업로드 ID를 사용하지 않는다. 사람 청취와 v2 사용자 검수는 별도로 남긴다.
+
 아래는 기존 제작 순서와 보존된 v1 실행 기록이다. 현재 매니페스트·체크포인트가 우선한다.
 
 현재 작업의 상태는 `projects/ai-game-development-human-craft/production/checkpoint.json` 및 기존 review ledger가 기준이다. 아래 실행기는 다른 영상·자동 반복 작업을 시작하지 않는다.

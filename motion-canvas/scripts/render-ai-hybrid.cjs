@@ -13,7 +13,9 @@ const encode=['-an','-c:v','h264_nvenc','-preset','p5','-cq','17','-pix_fmt','yu
 const control=()=>{const c=read(path.join(root,'shared/publishing/video-production-control.json'));if(c.selectedVideo!==slug||!c.newProductionAuthorization.fullProductionAuthorized)throw Error('Selection changed');};
 const data=read(path.join(project,'scene-data.json')),actual=read(path.join(project,'actual-footage.json'));
 const ids=process.argv.find(a=>a.startsWith('--scenes='))?.split('=')[1].split(',')||data.scenes.map(s=>s.id);
-const fingerprint={sceneDataHash:hash(path.join(project,'scene-data.json')),sceneKitHash:hash(path.join(project,'scene-kit.tsx')),mediaHash:hash(path.join(project,'media.json')),actualFootageHash:hash(path.join(project,'actual-footage.json'))};
+const fingerprintBase={sceneKitHash:hash(path.join(project,'scene-kit.tsx')),mediaHash:hash(path.join(project,'media.json'))};
+const jsonHash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+let fingerprint;
 function compatible(previous,id){
  if(JSON.stringify(previous)===JSON.stringify(fingerprint))return true;
  const file=path.join(out,'../scene-kit-compatibility.json');if(!fs.existsSync(file))return false;
@@ -37,6 +39,10 @@ async function main(){
  const page=await browser.newPage();page.on('pageerror',e=>console.error(e));
  try{for(const id of ids){
   control();const s=data.scenes.find(s=>s.id===id),frames=Math.round(s.duration*60),dir=path.join(out,id);fs.mkdirSync(dir,{recursive:true});
+  // Each project renders a scene-local clock. Absolute assembly start does
+  // not affect its pixels; local paragraphs/captions/cuts and duration do.
+  const localScene={...s};delete localScene.start;
+  fingerprint={...fingerprintBase,sceneDataHash:jsonHash(localScene),actualFootageHash:jsonHash(actual.cuts.filter(c=>c.scene===id)),scope:'scene-local-v2'};
   const movie=path.join(root,`shared/output/motion-canvas/ai-craft-scene-${id}-${version}.mp4`),receipt=path.join(dir,'render.json');
   if(fs.existsSync(movie)){const r=read(receipt);if(!compatible(r.fingerprint,id)||r.encoded.sha256!==hash(movie))throw Error('Changed existing scene '+id);console.log('Reuse '+id);continue;}
   const cuts=actual.cuts.filter(c=>c.scene===id).sort((a,b)=>a.startFrame-b.startFrame),parts=[];let cursor=0;

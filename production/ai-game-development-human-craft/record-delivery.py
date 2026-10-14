@@ -27,7 +27,7 @@ for s in data['scenes']:
 actual=commercial+development+craft;assert actual==plan['actualFrames'] and abs(actual-body*.6)<=1
 ratio={'status':'pass','requiredActualShare':.6,'bodyFrames':body,'actualFrames':actual,'actualShare':actual/body,'commercialGameplayFrames':commercial,'externalDevelopmentDemoFrames':development,'independentCraftHistoryFrames':craft,'selfAuthoredUnityClassifiedAs':'explanation','paddingAdded':False,'latestUserSteering':'actual footage60%; no Unity majority requirement; agent chooses quality','scenes':roles}
 write(OUT/'screen-role-measurement.json',ratio)
-m['status']='drive-review-candidate';m['publishReady']=False;m['video']['durationSeconds']=assembly['duration']
+m['status']='drive-review-candidate';m['publishReady']=False;m['video']['durationSeconds']=assembly['duration'];m['video']['durationStatus']='measured-current-encoded-output'
 m['paths'].update(captionsKo=f'{REL}/final.ko.srt',captionsEn=f'{REL}/final.en.srt',editorAudioMix=f'motion-canvas/src/projects/{SLUG}/assets/final-mix.wav')
 m['membershipOutro'].update(appliedToFinal=True,renderStatus='rendered-original-identities-10s')
 m['editing'].update(timingStatus='measured-and-asr-aligned',actualGameplaySeconds=commercial/60,actualCommercialGameplaySeconds=commercial/60,actualDevelopmentFootageSeconds=development/60,actualCraftHistorySeconds=craft/60,actualExplanationSeconds=(body-actual)/60,actualFootageShare=actual/body,actualGameplayShare=commercial/body,ratioVerification=ratio)
