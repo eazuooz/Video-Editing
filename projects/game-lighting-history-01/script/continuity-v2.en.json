@@ -1,0 +1,102 @@
+{
+  "scenes": [
+    {
+      "id": "c01",
+      "title": "03-p7",
+      "lines": [
+        "The footage shows the 2024 rerelease. Modern source-port lighting must be distinguished from the rules in the original 1993 code. Beyond sector brightness and wall-direction adjustments, storing small patches of light requires finer surface information."
+      ]
+    },
+    {
+      "id": "c02",
+      "title": "04-p1",
+      "lines": [
+        "Quake stores that information at locations on the wall. A texture is a digital image supplying a pattern such as bricks; a lightmap is a separate image recording illumination across the surface. Separate the pattern image from the lighting image used on the same wall."
+      ]
+    },
+    {
+      "id": "c03",
+      "title": "g15",
+      "lines": [
+        "Moving the camera does not move the stored lighting samples off the wall. We will compare how moving objects read spatial lighting later. First, consider how to read the same wall image stably when it is farther away."
+      ]
+    },
+    {
+      "id": "c04",
+      "title": "04f-p1",
+      "lines": [
+        "The difference begins with screen cells and texture cells. A screen cell is a pixel; an image cell in a texture is a texel. A distant floor puts many texels inside one pixel. Selecting just one can change the choice with a small viewpoint movement, making the pattern shimmer."
+      ]
+    },
+    {
+      "id": "c05",
+      "title": "04f-p7",
+      "lines": [
+        "Filtering reads stored information stably rather than inventing missing detail. Higher quality may require more reads and blending. Where data is gathered and the order of processing therefore also matter."
+      ]
+    },
+    {
+      "id": "c06",
+      "title": "04t-p1",
+      "lines": [
+        "Tile-based rendering organizes that work by regions of the screen. It divides the image into small tiles and bins the triangles covering each tile. Alongside how lighting is calculated, we are considering how the required data is processed."
+      ]
+    },
+    {
+      "id": "c07",
+      "title": "04t-p6",
+      "lines": [
+        "Color calculation can be skipped for opaque surfaces hidden behind a wall, while transparent or discarded fragments need different handling. Other GPUs also use early depth tests and caches, so tiling alone does not determine performance. So far, we have selected surfaces visible to the camera."
+      ]
+    },
+    {
+      "id": "c08",
+      "title": "07-p1",
+      "lines": [
+        "Whether a light reaches that visible surface is a different question. DOOM 3 in 2004 updates direct lighting and shadows as lights and objects move. Distinguish that task from reading previously stored indirect lighting."
+      ]
+    },
+    {
+      "id": "c09",
+      "title": "08-p10",
+      "lines": [
+        "Light remaining after a source is disabled can also reflect different update times. Static indirect light may be stored while direct lighting is updated dynamically. Next, record depth to determine where that changing direct light is blocked."
+      ]
+    },
+    {
+      "id": "c10",
+      "title": "09-p1",
+      "lines": [
+        "Imagine placing a camera at the light. A shadow map records the first surface depth in each direction instead of color. Comparing a visible surface point against that depth reveals whether another object blocks the light before it arrives."
+      ]
+    },
+    {
+      "id": "c11",
+      "title": "09a-p10",
+      "lines": [
+        "More cascades require more maps. Managing transitions and stability allocates a budget to shadows. With multiple lights, adding their lighting contributions also has a cost."
+      ]
+    },
+    {
+      "id": "c12",
+      "title": "09b-p1",
+      "lines": [
+        "That cost is also connected to the order of material and lighting evaluation. Forward rendering evaluates the material and relevant lights while drawing a surface. Once it handles a wall pixel, it completes the lighting calculation there to produce its color."
+      ]
+    },
+    {
+      "id": "c13",
+      "title": "09b-p12",
+      "lines": [
+        "TBDR separates visibility determination from shading; deferred shading separates surface-data storage from lighting. Screen depth retained during rendering can also support effects after lighting."
+      ]
+    },
+    {
+      "id": "c14",
+      "title": "10-p1",
+      "lines": [
+        "Use that depth to inspect a wall crevice. Corners can still look ungrounded after direct-light shadows are drawn because they receive light from fewer surrounding directions than open areas. Screen-space ambient occlusion, or SSAO, estimates this local occlusion from screen depth."
+      ]
+    }
+  ]
+}
