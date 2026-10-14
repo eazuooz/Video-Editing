@@ -95,6 +95,12 @@
       "status": "pending",
       "evidence": null,
       "required": "Select tool per explanation; verify spatial depth and before/action/result; distinguish actual outputs from illustrative overlays within the existing sample/scene design gate."
+    },
+    "brandedUiAndMobileReadability": {
+      "policyId": "yamyam-video-ui-v1",
+      "status": "pending",
+      "evidence": null,
+      "required": "Apply shared tokens/components and restrained brand identity; inspect current full-size/mobile output, actual captions, contrast and moving states in existing QA."
     }
   },
   "approvals": {
@@ -104,14 +110,18 @@
       "selectedAt": null,
       "authorizedScope": []
     },
-    "postUploadUserReview": {
-      "status": "pending-after-upload",
+    "finalDriveUserReview": {
+      "status": "pending-final-drive-version",
+      "fileId": null,
+      "version": null,
+      "sha256": null,
       "userMessage": null,
-      "reviewedAt": null
+      "reviewedAt": null,
+      "requiredBeforeYouTubeUpload": true
     }
   },
   "reviewLedger": "projects/{{SLUG}}/production/review-ledger.json",
-  "nextAction": "After the user selects this video, fill and internally verify the preproduction plan, then complete it through private upload without intermediate approval. Stop after this video.",
+  "nextAction": "Complete selected video source rights/playback, scene designs, KO/EN, TTS and final QA; deliver full captioned review copy on Google Drive, then wait for review of that concrete version before YouTube upload.",
   "automaticNextVideo": false,
   "referencePolicy": "shared/publishing/game-example-coverage-policy.json",
   "referenceAlignment": {
@@ -145,7 +155,7 @@
     "referenceRole": "research-reference-only"
   },
   "executionPolicy": {
-    "id": "one-video-autonomous-through-private-upload-v1",
+    "id": "one-video-drive-review-before-youtube-v1",
     "userEvidence": "영상제작은 한개 단위 끝날때까지 자동이야 다완성되면 내가 섬수해서 수정할지 봐줄게 업로드까지 한개단위로 지금하는거 마무리짓고 규칙애도 추가해줘",
     "recordedAt": "2026-10-13T04:34:46.614982+00:00",
     "intermediateUserApprovalRequired": false,
@@ -158,15 +168,21 @@
       "edit",
       "internal-qa",
       "four-outputs",
+      "google-drive-final-review-upload",
       "private-upload-and-available-settings",
       "selective-git"
     ],
-    "userReviewStage": "after-completed-private-upload",
+    "userReviewStage": "google-drive-final-version-before-youtube-upload",
     "stopAfterSelectedVideo": true,
     "automaticNextVideo": false,
     "automaticChatEnabled": false,
     "publicationMode": "private",
-    "scheduleOrBaselineDeletionIncluded": false
+    "scheduleOrBaselineDeletionIncluded": false,
+    "latestUserEvidence": "앞으로 영상 최종업로드 전 검수는 구글드라이브에 올려줘",
+    "updatedAt": "2026-10-14T08:04:16.190179+00:00",
+    "finalUserReviewRequiredBeforeYouTube": true,
+    "autonomousBoundary": "complete-drive-review-copy-and-selective-git",
+    "afterFinalUserReview": "same approved captioned file to private YouTube upload and available settings"
   },
   "explanationRendering": {
     "policyId": "explanation-fit-renderer-v1",
@@ -301,5 +317,55 @@
     "policyId": "completed-work-selective-commit-v1",
     "guide": "docs/MEDIA_STORAGE.md",
     "cadence": "after validation of each completed meaningful authorized work unit, including rules, scripts, assets and scenes; do not defer until full video delivery"
+  },
+  "finalReviewDelivery": {
+    "policyId": "drive-final-review-before-youtube-v1",
+    "provider": "Google Drive",
+    "userEvidence": "앞으로 영상 최종업로드 전 검수는 구글드라이브에 올려줘",
+    "recordedAt": "2026-10-14T08:04:16.190179+00:00",
+    "scope": "selected current production and future videos; no retroactive reupload of unselected deliveries",
+    "artifact": "complete internally reviewed captioned MP4 with final audio",
+    "requiredBeforeYouTubeUpload": true,
+    "humanReviewRequired": true,
+    "visibility": "preserve existing private/user-accessible permissions; do not enable public sharing automatically",
+    "sameHashReuse": true,
+    "preserveEarlierVersions": true,
+    "recordFields": [
+      "fileId",
+      "url",
+      "version",
+      "localSha256",
+      "sizeBytes",
+      "processingAndPlaybackStatus",
+      "accessStatus",
+      "userReviewMessage",
+      "reviewedAt"
+    ],
+    "status": "pending-final-render",
+    "fileId": null,
+    "url": null,
+    "version": null,
+    "localSha256": null,
+    "userReviewMessage": null,
+    "reviewedAt": null
+  },
+  "videoUiDesignPolicy": {
+    "policyId": "yamyam-video-ui-v1",
+    "guide": "docs/VIDEO_VISUAL_STYLE.md",
+    "tokenSource": "motion-canvas/src/styles/research-dark.ts",
+    "recordedAt": "2026-10-14T08:04:16.190179+00:00",
+    "userEvidence": "영상에 추가되는 ui나 이런건 위 문서 규칙 참고해서 ai 티안나고 얌얌코딩 브랜드 잘 살릴수 있게 만들어서 규칙에 추가해줘",
+    "reference": "User-supplied DESIGN.md screenshot, 2026-10-14; adapt design principles to video, not its example web palette/font/rem values.",
+    "scope": "current selected production and future new/user-selected revisions; preserve existing samples and unselected deliveries",
+    "checks": [
+      "one clear visual focus",
+      "shared semantic tokens and components",
+      "original Yamyam Coding identity",
+      "contrast and actual font measurements",
+      "375px mobile readability",
+      "fixed-caption clearance",
+      "meaningful motion and restrained decoration"
+    ],
+    "addsApprovalGate": false
   }
 }

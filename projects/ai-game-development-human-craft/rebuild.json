@@ -11,7 +11,7 @@
   "projectSettings": {
     "schemaVersion": 2,
     "slug": "ai-game-development-human-craft",
-    "status": "preproduction",
+    "status": "production-source-and-scene-preparation",
     "delivery": {
       "directory": "output/ai-game-development-human-craft",
       "collector": "node scripts/collect-video-output.cjs ai-game-development-human-craft",
@@ -268,7 +268,9 @@
       "pinnedCoachingCommentRequired": true,
       "defaults": "shared/publishing/youtube-defaults.json",
       "authorizationMode": "per-video-user-confirmed",
-      "automaticNextVideo": false
+      "automaticNextVideo": false,
+      "finalReviewPolicy": "drive-final-review-before-youtube-v1",
+      "youtubeUploadRequiresDriveUserReview": true
     },
     "productionPolicy": {
       "id": "preproduction-first-v1",
@@ -279,21 +281,23 @@
       "automaticNextVideo": false,
       "fullProductionRequiresUserApproval": false,
       "starterSceneIsApprovedProduction": false,
-      "preproductionIsInternalQualityGate": true
+      "preproductionIsInternalQualityGate": true,
+      "autonomousBoundary": "google-drive-final-review-copy"
     },
     "reference": {
       "url": "https://www.youtube.com/watch?v=Zxbn55DVi-Q",
       "author": "Wild Ox Studios",
       "role": "research-reference-only",
       "sourceTextProvidedByUser": true
-    }
+    },
+    "visualUiPolicy": "yamyam-video-ui-v1"
   },
   "counts": {
     "scriptScenes": 28,
     "timelineScenes": 0,
     "clipRecords": 0,
     "selectedEditRecords": 0,
-    "referencedMediaFiles": 10,
+    "referencedMediaFiles": 14,
     "formerlyTrackedMediaFiles": 0
   },
   "sceneScript": {
@@ -1206,13 +1210,13 @@
   "structuredRecords": [
     {
       "file": "projects/ai-game-development-human-craft/planning/production-plan.json",
-      "sha256": "815c11d4719607dbe5dade422113dca89b62fb96e2f2afc4c4d5bca913cd9de3",
+      "sha256": "a7a3bd9202af6116b538573c990f5eddca154299eb4223ef217304f79bdc03bc",
       "purpose": "supporting-record-not-necessarily-current",
       "data": {
         "schemaVersion": 1,
         "policyId": "preproduction-first-v1",
         "slug": "ai-game-development-human-craft",
-        "status": "continuous-ko-script-review-draft",
+        "status": "production-source-and-scene-preparation",
         "guide": "docs/VIDEO_WORKFLOW.md",
         "outline": "projects/ai-game-development-human-craft/planning/outline.md",
         "scope": {
@@ -1324,6 +1328,12 @@
             "status": "pending",
             "evidence": null,
             "required": "Select tool per explanation; verify spatial depth and before/action/result; distinguish actual outputs from illustrative overlays within the existing sample/scene design gate."
+          },
+          "brandedUiAndMobileReadability": {
+            "policyId": "yamyam-video-ui-v1",
+            "status": "pending",
+            "evidence": null,
+            "required": "Apply shared tokens/components and restrained brand identity; inspect current full-size/mobile output, actual captions, contrast and moving states in existing QA."
           }
         },
         "approvals": {
@@ -1343,14 +1353,18 @@
               "selective-git"
             ]
           },
-          "postUploadUserReview": {
-            "status": "pending-after-upload",
+          "finalDriveUserReview": {
+            "status": "pending-final-drive-version",
+            "fileId": null,
+            "version": null,
+            "sha256": null,
             "userMessage": null,
-            "reviewedAt": null
+            "reviewedAt": null,
+            "requiredBeforeYouTubeUpload": true
           }
         },
         "reviewLedger": "projects/ai-game-development-human-craft/production/review-ledger.json",
-        "nextAction": "Deliver the user-requested continuous full KO script; finalize source-matched footage/rights and real execution evidence before TTS, then review actual audiovisual joins.",
+        "nextAction": "Complete selected video source rights/playback, scene designs, KO/EN, TTS and final QA; deliver full captioned review copy on Google Drive, then wait for review of that concrete version before YouTube upload.",
         "automaticNextVideo": false,
         "referencePolicy": "shared/publishing/game-example-coverage-policy.json",
         "referenceAlignment": {
@@ -1665,7 +1679,7 @@
           "referenceRole": "research-reference-only"
         },
         "executionPolicy": {
-          "id": "one-video-autonomous-through-private-upload-v1",
+          "id": "one-video-drive-review-before-youtube-v1",
           "userEvidence": "영상제작은 한개 단위 끝날때까지 자동이야 다완성되면 내가 섬수해서 수정할지 봐줄게 업로드까지 한개단위로 지금하는거 마무리짓고 규칙애도 추가해줘",
           "recordedAt": "2026-10-13T04:34:46.614982+00:00",
           "intermediateUserApprovalRequired": false,
@@ -1678,15 +1692,25 @@
             "edit",
             "internal-qa",
             "four-outputs",
+            "google-drive-final-review-upload",
             "private-upload-and-available-settings",
             "selective-git"
           ],
-          "userReviewStage": "after-completed-private-upload",
+          "userReviewStage": "google-drive-final-version-before-youtube-upload",
           "stopAfterSelectedVideo": true,
           "automaticNextVideo": false,
           "automaticChatEnabled": false,
           "publicationMode": "private",
-          "scheduleOrBaselineDeletionIncluded": false
+          "scheduleOrBaselineDeletionIncluded": false,
+          "latestUserProductionRequest": {
+            "message": "그럼 위 대본 영상제작 들어가자",
+            "recordedAt": "2026-10-14T07:39:49Z"
+          },
+          "latestUserEvidence": "앞으로 영상 최종업로드 전 검수는 구글드라이브에 올려줘",
+          "updatedAt": "2026-10-14T08:04:16.190179+00:00",
+          "finalUserReviewRequiredBeforeYouTube": true,
+          "autonomousBoundary": "complete-drive-review-copy-and-selective-git",
+          "afterFinalUserReview": "same approved captioned file to private YouTube upload and available settings"
         },
         "explanationRendering": {
           "policyId": "explanation-fit-renderer-v1",
@@ -2113,12 +2137,62 @@
           "policyId": "completed-work-selective-commit-v1",
           "guide": "docs/MEDIA_STORAGE.md",
           "cadence": "after validation of each completed meaningful authorized work unit, including rules, scripts, assets and scenes; do not defer until full video delivery"
+        },
+        "finalReviewDelivery": {
+          "policyId": "drive-final-review-before-youtube-v1",
+          "provider": "Google Drive",
+          "userEvidence": "앞으로 영상 최종업로드 전 검수는 구글드라이브에 올려줘",
+          "recordedAt": "2026-10-14T08:04:16.190179+00:00",
+          "scope": "selected current production and future videos; no retroactive reupload of unselected deliveries",
+          "artifact": "complete internally reviewed captioned MP4 with final audio",
+          "requiredBeforeYouTubeUpload": true,
+          "humanReviewRequired": true,
+          "visibility": "preserve existing private/user-accessible permissions; do not enable public sharing automatically",
+          "sameHashReuse": true,
+          "preserveEarlierVersions": true,
+          "recordFields": [
+            "fileId",
+            "url",
+            "version",
+            "localSha256",
+            "sizeBytes",
+            "processingAndPlaybackStatus",
+            "accessStatus",
+            "userReviewMessage",
+            "reviewedAt"
+          ],
+          "status": "pending-final-render",
+          "fileId": null,
+          "url": null,
+          "version": null,
+          "localSha256": null,
+          "userReviewMessage": null,
+          "reviewedAt": null
+        },
+        "videoUiDesignPolicy": {
+          "policyId": "yamyam-video-ui-v1",
+          "guide": "docs/VIDEO_VISUAL_STYLE.md",
+          "tokenSource": "motion-canvas/src/styles/research-dark.ts",
+          "recordedAt": "2026-10-14T08:04:16.190179+00:00",
+          "userEvidence": "영상에 추가되는 ui나 이런건 위 문서 규칙 참고해서 ai 티안나고 얌얌코딩 브랜드 잘 살릴수 있게 만들어서 규칙에 추가해줘",
+          "reference": "User-supplied DESIGN.md screenshot, 2026-10-14; adapt design principles to video, not its example web palette/font/rem values.",
+          "scope": "current selected production and future new/user-selected revisions; preserve existing samples and unselected deliveries",
+          "checks": [
+            "one clear visual focus",
+            "shared semantic tokens and components",
+            "original Yamyam Coding identity",
+            "contrast and actual font measurements",
+            "375px mobile readability",
+            "fixed-caption clearance",
+            "meaningful motion and restrained decoration"
+          ],
+          "addsApprovalGate": false
         }
       }
     },
     {
       "file": "projects/ai-game-development-human-craft/planning/scene-design.json",
-      "sha256": "c1fe1f9063417037c3cacc2c41285468bfd2dfd222d417df2a2a2c5404ab78d3",
+      "sha256": "d1c6a06509ad9b5ec881be910b688942bdf3e3844dc69b7633a48147139ab09c",
       "purpose": "supporting-record-not-necessarily-current",
       "data": {
         "schemaVersion": 1,
@@ -2656,7 +2730,7 @@
             "sourceCapacitySeconds": null,
             "screenDirection": "동일한 상점·캐릭터·구매 결과를 유지한다. 첫 비교는 숫자만 갱신하고, 다음 비교는 반응 동작·효과음·보상 표시를 맞춘다.",
             "productionNote": "연출 비교용 자체 제작 시연. 특정 상용 게임의 효과를 재현했다고 주장하지 않음.",
-            "designStatus": "planned-for-full-video",
+            "designStatus": "saved-unity-base-final-composite-pending",
             "sourceLinks": [],
             "cueOrder": [
               "같은100→70 결과→표현 요소의 순서 변경→경험 비교"
@@ -2688,6 +2762,33 @@
               "audioCarry": "Follow the spoken thought across the cut; do not add a scene-ID pause or restart/fade BGM. Retain meaningful breath and source-sound changes after actual timing review.",
               "textReview": "pass",
               "renderedJoinReview": "pending"
+            },
+            "unityProduction": {
+              "projectPath": "unity/VideoEditing",
+              "scenePath": "unity/VideoEditing/Assets/VideoScenes/ai-game-development-human-craft/09-shop.unity",
+              "sceneSaveStatus": "saved-editable-base; final narration timing and composite pending",
+              "editorVersion": "6000.6.0f1",
+              "renderPipelineAndPackageVersions": {
+                "URP": "17.6.0"
+              },
+              "captureResolutionAndFps": {
+                "width": 1920,
+                "height": 1080,
+                "fps": 60
+              },
+              "frameAndNarrationTiming": "integer-frame deterministic ApplyFrame; current frames are preflight only, bind final measured narration later",
+              "relevantSceneSettings": {
+                "background": "black",
+                "capture": "URP SingleCameraRequest; saved scene active for lighting",
+                "camera": "orthographic"
+              },
+              "classification": "self-authored-engine-explanation",
+              "sharedAssetPaths": [
+                "unity/VideoEditing/Assets/AiCraftProduction/AiCraftLessonScene.cs"
+              ],
+              "assetRecords": [
+                "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/provenance.json"
+              ]
             }
           },
           {
@@ -3072,7 +3173,7 @@
               ]
             },
             "sourceIds": [],
-            "sourceReviewStatus": "pending-full-scene-source-review",
+            "sourceReviewStatus": "downloaded-and-frames-sampled; full playback/rights/cut timing pending",
             "timingStatus": "pending-narration",
             "sourceCapacitySeconds": null,
             "screenDirection": "스플래툰풍 게임을 만드는 외부 개발자의 실제 편집/실행 영상 확보 후 사용한다. 입력→이동→바닥 색 변화가 보이는 구간에서 관찰된 기능만 짚고 제품 요구사항으로 전환한다.",
@@ -3094,7 +3195,11 @@
               "audioCarry": "Follow the spoken thought across the cut; do not add a scene-ID pause or restart/fade BGM. Retain meaningful breath and source-sound changes after actual timing review.",
               "textReview": "pass",
               "renderedJoinReview": "pending"
-            }
+            },
+            "sourceCandidates": [
+              "mixandjam-recording-001",
+              "mixandjam-recording-002"
+            ]
           },
           {
             "id": "17",
@@ -3144,7 +3249,7 @@
             },
             "screenDirection": "검수한 KayKit 상점 샘플을 바탕으로 정상 구매와 골드 부족을 확장한다. 가방 용량 조건은 추가 구현한다. 같은 카메라·가격·캐릭터를 유지하고 바뀐 조건만 강조한다.",
             "productionNote": "정상/잔액 부족만 기존26초 샘플 구현·검수됨. 가방 용량은 신규 구현/검수 예정. UI 숫자는 실제 실행 데이터에 연결.",
-            "designStatus": "planned-for-full-video",
+            "designStatus": "saved-unity-base-final-composite-pending",
             "sourceLinks": [],
             "cueOrder": [
               "100골드/0개→30골드 구매→70골드/1개",
@@ -3178,6 +3283,33 @@
               "audioCarry": "Follow the spoken thought across the cut; do not add a scene-ID pause or restart/fade BGM. Retain meaningful breath and source-sound changes after actual timing review.",
               "textReview": "pass",
               "renderedJoinReview": "pending"
+            },
+            "unityProduction": {
+              "projectPath": "unity/VideoEditing",
+              "scenePath": "unity/VideoEditing/Assets/VideoScenes/ai-game-development-human-craft/17-shop.unity",
+              "sceneSaveStatus": "saved-editable-base; final narration timing and composite pending",
+              "editorVersion": "6000.6.0f1",
+              "renderPipelineAndPackageVersions": {
+                "URP": "17.6.0"
+              },
+              "captureResolutionAndFps": {
+                "width": 1920,
+                "height": 1080,
+                "fps": 60
+              },
+              "frameAndNarrationTiming": "integer-frame deterministic ApplyFrame; current frames are preflight only, bind final measured narration later",
+              "relevantSceneSettings": {
+                "background": "black",
+                "capture": "URP SingleCameraRequest; saved scene active for lighting",
+                "camera": "orthographic"
+              },
+              "classification": "self-authored-engine-explanation",
+              "sharedAssetPaths": [
+                "unity/VideoEditing/Assets/AiCraftProduction/AiCraftLessonScene.cs"
+              ],
+              "assetRecords": [
+                "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/provenance.json"
+              ]
             }
           },
           {
@@ -3228,7 +3360,7 @@
             },
             "screenDirection": "상점 화면 옆으로 구매 요청 한 건의 식별자를 두 번 도착시킨다. 서로 다른 구매 두 건과 구별한다. 저장/멀티플레이는 회색 요구사항 카드로 분리한다.",
             "productionNote": "중복 요청은 신규 구현/검수 예정. 저장/네트워크는 현재 개념 요구사항으로만 제시하며 녹색 통과나 구현 완료 표시 금지.",
-            "designStatus": "planned-for-full-video",
+            "designStatus": "saved-unity-base-final-composite-pending",
             "sourceLinks": [],
             "cueOrder": [
               "같은요청2회 도착→첫1회 처리→나머지 중복 처리 방지",
@@ -3261,6 +3393,34 @@
               "audioCarry": "Follow the spoken thought across the cut; do not add a scene-ID pause or restart/fade BGM. Retain meaningful breath and source-sound changes after actual timing review.",
               "textReview": "pass",
               "renderedJoinReview": "pending"
+            },
+            "unityProduction": {
+              "projectPath": "unity/VideoEditing",
+              "scenePath": "unity/VideoEditing/Assets/VideoScenes/ai-game-development-human-craft/18-shop.unity",
+              "sceneSaveStatus": "saved-editable-base; final narration timing and composite pending",
+              "editorVersion": "6000.6.0f1",
+              "renderPipelineAndPackageVersions": {
+                "URP": "17.6.0"
+              },
+              "captureResolutionAndFps": {
+                "width": 1920,
+                "height": 1080,
+                "fps": 60
+              },
+              "frameAndNarrationTiming": "integer-frame deterministic ApplyFrame; current frames are preflight only, bind final measured narration later",
+              "relevantSceneSettings": {
+                "background": "black",
+                "capture": "URP SingleCameraRequest; saved scene active for lighting",
+                "camera": "orthographic"
+              },
+              "classification": "self-authored-engine-explanation",
+              "sharedAssetPaths": [
+                "unity/VideoEditing/Assets/AiCraftProduction/AiCraftLessonScene.cs"
+              ],
+              "assetRecords": [
+                "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/provenance.json"
+              ],
+              "limitations": "In-memory duplicate request ID handling only; no implemented network transport or persistence."
             }
           },
           {
@@ -3377,7 +3537,7 @@
             },
             "screenDirection": "같은 거리의 점프에서 입력 반응 시점만 바꿔 비교한다. 버튼 표시·발이 떨어지는 프레임·착지 위치를 실제 캡처 프레임과 연결한다.",
             "productionNote": "점프 시연 신규 구현 예정. 실측하지 않은 지연시간 숫자나 플레이어 선호 통계는 표시하지 않음.",
-            "designStatus": "planned-for-full-video",
+            "designStatus": "saved-unity-base-final-composite-pending",
             "sourceLinks": [],
             "cueOrder": [
               "입력→지연된 반응→설정 변경→더 빠른 반응→직접 비교"
@@ -3409,6 +3569,35 @@
               "audioCarry": "Follow the spoken thought across the cut; do not add a scene-ID pause or restart/fade BGM. Retain meaningful breath and source-sound changes after actual timing review.",
               "textReview": "pass",
               "renderedJoinReview": "pending"
+            },
+            "unityProduction": {
+              "projectPath": "unity/VideoEditing",
+              "scenePath": "unity/VideoEditing/Assets/VideoScenes/ai-game-development-human-craft/20-input-response.unity",
+              "sceneSaveStatus": "saved-editable-base; final narration timing and composite pending",
+              "editorVersion": "6000.6.0f1",
+              "renderPipelineAndPackageVersions": {
+                "URP": "17.6.0"
+              },
+              "captureResolutionAndFps": {
+                "width": 1920,
+                "height": 1080,
+                "fps": 60
+              },
+              "frameAndNarrationTiming": "integer-frame deterministic ApplyFrame; current frames are preflight only, bind final measured narration later",
+              "relevantSceneSettings": {
+                "background": "black",
+                "capture": "URP SingleCameraRequest; saved scene active for lighting",
+                "camera": "orthographic",
+                "sprite": "16x16 rect at(0,32), PPU16, scale2, Point, native NPOT size, no compression/mipmaps",
+                "jump": "72-frame analytic arc, 18-frame delayed trigger at60fps; educational animation, not physics benchmark"
+              },
+              "classification": "self-authored-engine-explanation",
+              "sharedAssetPaths": [
+                "unity/VideoEditing/Assets/AiCraftProduction/AiCraftLessonScene.cs"
+              ],
+              "assetRecords": [
+                "unity/VideoEditing/Assets/ThirdParty/KenneyTinyDungeon/provenance.json"
+              ]
             }
           },
           {
@@ -3549,7 +3738,7 @@
             "sourceCapacitySeconds": null,
             "screenDirection": "자체 제작 상점의 같은 카메라·캐릭터에서 표현 설정을 한 가지씩 비교한다. WoW 실제 화면과 컷을 명확히 분리하고 자체 제작 비교라고 표시한다.",
             "productionNote": "개념 비교. WoW의 셰이더나 내부 렌더링 구현을 재현/측정한 화면이 아님.",
-            "designStatus": "planned-for-full-video",
+            "designStatus": "saved-unity-base-final-composite-pending",
             "sourceLinks": [],
             "cueOrder": [
               "기준 표현→명암/색/재질 방향을 한 조건씩 변경→세계관과의 어울림 판단"
@@ -3581,6 +3770,34 @@
               "audioCarry": "Follow the spoken thought across the cut; do not add a scene-ID pause or restart/fade BGM. Retain meaningful breath and source-sound changes after actual timing review.",
               "textReview": "pass",
               "renderedJoinReview": "pending"
+            },
+            "unityProduction": {
+              "projectPath": "unity/VideoEditing",
+              "scenePath": "unity/VideoEditing/Assets/VideoScenes/ai-game-development-human-craft/23-shop.unity",
+              "sceneSaveStatus": "saved-editable-base; final narration timing and composite pending",
+              "editorVersion": "6000.6.0f1",
+              "renderPipelineAndPackageVersions": {
+                "URP": "17.6.0"
+              },
+              "captureResolutionAndFps": {
+                "width": 1920,
+                "height": 1080,
+                "fps": 60
+              },
+              "frameAndNarrationTiming": "integer-frame deterministic ApplyFrame; current frames are preflight only, bind final measured narration later",
+              "relevantSceneSettings": {
+                "background": "black",
+                "capture": "URP SingleCameraRequest; saved scene active for lighting",
+                "camera": "orthographic"
+              },
+              "classification": "self-authored-engine-explanation",
+              "sharedAssetPaths": [
+                "unity/VideoEditing/Assets/AiCraftProduction/AiCraftLessonScene.cs"
+              ],
+              "assetRecords": [
+                "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/provenance.json"
+              ],
+              "limitations": "Warm/cool light direction comparison; does not implement or prove PBR versus non-PBR."
             }
           },
           {
@@ -3669,7 +3886,7 @@
             "sourceCapacitySeconds": null,
             "screenDirection": "상점의 조건 검사, 캐릭터 반응, 화면 구성으로 돌아온다. 검증하는 판단과 연출하는 판단을 같은 장면에서 차례로 강조한다.",
             "productionNote": "앞 장면의 동일 검수 구간을 필요한 논점에 맞춰 사용. 분량 채우기 반복 재생은 하지 않음.",
-            "designStatus": "planned-for-full-video",
+            "designStatus": "saved-unity-base-final-composite-pending",
             "sourceLinks": [],
             "cueOrder": [
               "빠진조건 발견→구현 수정→보상 전달 연출→결과 확인"
@@ -3701,6 +3918,33 @@
               "audioCarry": "Follow the spoken thought across the cut; do not add a scene-ID pause or restart/fade BGM. Retain meaningful breath and source-sound changes after actual timing review.",
               "textReview": "pass",
               "renderedJoinReview": "pending"
+            },
+            "unityProduction": {
+              "projectPath": "unity/VideoEditing",
+              "scenePath": "unity/VideoEditing/Assets/VideoScenes/ai-game-development-human-craft/25-shop.unity",
+              "sceneSaveStatus": "saved-editable-base; final narration timing and composite pending",
+              "editorVersion": "6000.6.0f1",
+              "renderPipelineAndPackageVersions": {
+                "URP": "17.6.0"
+              },
+              "captureResolutionAndFps": {
+                "width": 1920,
+                "height": 1080,
+                "fps": 60
+              },
+              "frameAndNarrationTiming": "integer-frame deterministic ApplyFrame; current frames are preflight only, bind final measured narration later",
+              "relevantSceneSettings": {
+                "background": "black",
+                "capture": "URP SingleCameraRequest; saved scene active for lighting",
+                "camera": "orthographic"
+              },
+              "classification": "self-authored-engine-explanation",
+              "sharedAssetPaths": [
+                "unity/VideoEditing/Assets/AiCraftProduction/AiCraftLessonScene.cs"
+              ],
+              "assetRecords": [
+                "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/provenance.json"
+              ]
             }
           },
           {
@@ -3857,7 +4101,7 @@
             "sourceCapacitySeconds": null,
             "screenDirection": "상점 구매가 정확히 끝난 캐릭터와 코드·그림·게임 감각의 세 경로를 모은다. 댓글 질문 뒤 채널 마무리, 기존 과외 연결 카드와 정확10초 회원 엔딩으로 이어간다.",
             "productionNote": "회원 프로필/이름/배지/로고 및 멤버쉽가입 감사드립니다. 제목 보존. 엔딩10초 동안 추가 내레이션 없음.",
-            "designStatus": "planned-for-full-video",
+            "designStatus": "saved-unity-base-final-composite-pending",
             "sourceLinks": [],
             "cueOrder": [
               "지식→판단→완성된 경험→시청자 질문→기존 엔딩"
@@ -3889,6 +4133,33 @@
               "audioCarry": "마무리 발화 완료 후 내레이션 없는 회원 엔딩10초",
               "textReview": "pass",
               "renderedJoinReview": "pending"
+            },
+            "unityProduction": {
+              "projectPath": "unity/VideoEditing",
+              "scenePath": "unity/VideoEditing/Assets/VideoScenes/ai-game-development-human-craft/28-shop.unity",
+              "sceneSaveStatus": "saved-editable-base; final narration timing and composite pending",
+              "editorVersion": "6000.6.0f1",
+              "renderPipelineAndPackageVersions": {
+                "URP": "17.6.0"
+              },
+              "captureResolutionAndFps": {
+                "width": 1920,
+                "height": 1080,
+                "fps": 60
+              },
+              "frameAndNarrationTiming": "integer-frame deterministic ApplyFrame; current frames are preflight only, bind final measured narration later",
+              "relevantSceneSettings": {
+                "background": "black",
+                "capture": "URP SingleCameraRequest; saved scene active for lighting",
+                "camera": "orthographic"
+              },
+              "classification": "self-authored-engine-explanation",
+              "sharedAssetPaths": [
+                "unity/VideoEditing/Assets/AiCraftProduction/AiCraftLessonScene.cs"
+              ],
+              "assetRecords": [
+                "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/provenance.json"
+              ]
             }
           }
         ],
@@ -3922,7 +4193,8 @@
           "traceData": "shared/output/ai-game-development-human-craft/unity-sample/capture.json",
           "reviewId": "unity-animation-sample-v1"
         },
-        "currentNarrationRevision": 3
+        "currentNarrationRevision": 3,
+        "videoUiPolicy": "yamyam-video-ui-v1"
       }
     },
     {
@@ -4829,6 +5101,73 @@
         "editorialSectionTitlesSpoken": false,
         "sceneIdsAreProductionUnitsNotMandatoryChapterCards": true
       }
+    },
+    {
+      "file": "projects/ai-game-development-human-craft/sources/source-manifest.json",
+      "sha256": "98b7b4a2ab10ff7452500a6a779999e97cff89e7e8d08a839d48fb2b1a9d7743",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "repository": "https://api.github.com/repos/mixandjam/Splatoon-Ink",
+        "revision": "10a730cc26d48d9a3f8a34983827291f4ecef5b2",
+        "files": [
+          {
+            "path": "shared/sources/ai-game-development-human-craft/mixandjam-movie001.mp4",
+            "sourceUrl": "https://raw.githubusercontent.com/mixandjam/Splatoon-Ink/10a730cc26d48d9a3f8a34983827291f4ecef5b2/Recordings/movie001.mp4",
+            "sha256": "312e5f1517b4265f7ff2d85b1d225e2f4b596e9489f5d0c1f20da83da4e5bf15",
+            "bytes": 11547086,
+            "sourceId": "mixandjam-recording-001",
+            "classification": "independent-development-demo",
+            "usageStatus": "candidate-rights-pending",
+            "review": "12-frame visual sample only; full playback/audio/in-out pending",
+            "durationSeconds": 11.666633
+          },
+          {
+            "path": "shared/sources/ai-game-development-human-craft/mixandjam-movie002.mp4",
+            "sourceUrl": "https://raw.githubusercontent.com/mixandjam/Splatoon-Ink/10a730cc26d48d9a3f8a34983827291f4ecef5b2/Recordings/movie002.mp4",
+            "sha256": "d6e126c4bdf265022716261cd1cb15f0332c9a7fd7c22bece0aa775d895495ce",
+            "bytes": 9382275,
+            "sourceId": "mixandjam-recording-002",
+            "classification": "independent-development-demo",
+            "usageStatus": "candidate-rights-pending",
+            "review": "12-frame visual sample only; full playback/audio/in-out pending",
+            "durationSeconds": 9.3
+          },
+          {
+            "path": "shared/sources/ai-game-development-human-craft/mixandjam-movie003.mp4",
+            "sourceUrl": "https://raw.githubusercontent.com/mixandjam/Splatoon-Ink/10a730cc26d48d9a3f8a34983827291f4ecef5b2/Recordings/movie003.mp4",
+            "sha256": "de2d748713ed84ad652b39903a88b987574b953722e7ce9c2a30927c133c64b2",
+            "bytes": 12008164,
+            "sourceId": "mixandjam-recording-003",
+            "classification": "independent-development-demo",
+            "usageStatus": "candidate-rights-pending",
+            "review": "12-frame visual sample only; full playback/audio/in-out pending",
+            "durationSeconds": 11.9
+          },
+          {
+            "path": "shared/sources/ai-game-development-human-craft/mixandjam-movie004.mp4",
+            "sourceUrl": "https://raw.githubusercontent.com/mixandjam/Splatoon-Ink/10a730cc26d48d9a3f8a34983827291f4ecef5b2/Recordings/movie004.mp4",
+            "sha256": "1e2c05f91457bb29a4e16a6b1bfe5f49e7494d7bbc4c0608af3483f5e2c11a83",
+            "bytes": 833440,
+            "sourceId": "mixandjam-recording-004",
+            "classification": "independent-development-demo",
+            "usageStatus": "candidate-rights-pending",
+            "review": "not visually reviewed",
+            "durationSeconds": 1.2333
+          }
+        ],
+        "schemaVersion": 1,
+        "recordedAt": "2026-10-14T08:04:16.190179+00:00",
+        "productionCutListFinal": false,
+        "licenseUrl": "https://github.com/mixandjam/Splatoon-Ink/blob/10a730cc26d48d9a3f8a34983827291f4ecef5b2/LICENSE",
+        "rightsNote": "Repository permission notice inspected; third-party asset and recording/audio scope unresolved. Do not infer standard SPDX MIT or Nintendo footage permission.",
+        "selectedCandidateIds": [
+          "mixandjam-recording-001",
+          "mixandjam-recording-002"
+        ],
+        "excludedAsRedundant": [
+          "mixandjam-recording-003"
+        ]
+      }
     }
   ],
   "editableSourceFiles": [
@@ -4842,8 +5181,26 @@
     "projects/ai-game-development-human-craft/production/analyze-style-references.py",
     "projects/ai-game-development-human-craft/production/review-unity-sample.py"
   ],
-  "sourceAndRightsDocuments": [],
-  "referenceUrls": [],
+  "sourceAndRightsDocuments": [
+    "projects/ai-game-development-human-craft/sources/SOURCES.md"
+  ],
+  "referenceUrls": [
+    "https://atmosgames.com/presskit",
+    "https://github.com/mixandjam/Splatoon-Ink",
+    "https://github.com/mixandjam/Splatoon-Ink/blob/10a730cc26d48d9a3f8a34983827291f4ecef5b2/LICENSE",
+    "https://kenney.nl/assets/tiny-dungeon",
+    "https://unity.com/blog/why-we-built-unity-spark",
+    "https://unity.com/spark",
+    "https://worldofwarcraft.blizzard.com/en-us/midnight",
+    "https://www.blizzard.com/en-gb/legal/2068564f-f427-4c1c-8664-c107c90b34d5/blizzard-video-policy",
+    "https://www.bloomberg.com/news/articles/2026-10-12/epic-games-delays-disney-project-asks-developers-to-use-more-ai",
+    "https://www.reddit.com/r/gamedev/comments/1x4fg83/epic_games_delays_disney_game_and_tells/",
+    "https://www.thomasbrush.com/",
+    "https://www.unrealengine.com/news/the-road-to-ue-6",
+    "https://www.warcraftmovies.com/movieview.php?id=252801",
+    "https://www.youtube.com/watch?v=A2VQbPrw9-g",
+    "https://www.youtube.com/watch?v=Zxbn55DVi-Q"
+  ],
   "subtitles": {},
   "mediaAssets": [
     {
@@ -4906,6 +5263,34 @@
       "path": "shared/output/narration/ai-game-development-human-craft/qwen3-1.7b-balanced-v1/ai-game-development-human-craft-qwen3-1.7b-balanced-v1.wav",
       "references": [
         "project.json$.paths.narration"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shared/sources/ai-game-development-human-craft/mixandjam-movie001.mp4",
+      "references": [
+        "projects/ai-game-development-human-craft/sources/source-manifest.json$.files.0.path"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shared/sources/ai-game-development-human-craft/mixandjam-movie002.mp4",
+      "references": [
+        "projects/ai-game-development-human-craft/sources/source-manifest.json$.files.1.path"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shared/sources/ai-game-development-human-craft/mixandjam-movie003.mp4",
+      "references": [
+        "projects/ai-game-development-human-craft/sources/source-manifest.json$.files.2.path"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shared/sources/ai-game-development-human-craft/mixandjam-movie004.mp4",
+      "references": [
+        "projects/ai-game-development-human-craft/sources/source-manifest.json$.files.3.path"
       ],
       "storage": "external-or-regenerate; never Git"
     },

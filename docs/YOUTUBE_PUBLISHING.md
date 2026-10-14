@@ -1,10 +1,10 @@
 # YouTube 게시 규격
 
-현재 한 편 자동 완료 범위는 [통합 제작 규칙](VIDEO_WORKFLOW.md)과 `shared/publishing/video-production-control.json`이 우선한다. 사용자가 제작·수정할 한 편을 지정하면 자체 검수 후 비공개 업로드와 가능한 설정 저장·재열람까지 중간 승인 없이 완료하고, 그 뒤 사용자 검수를 받는다. 자동 채팅과 다음 편 자동 착수는 꺼 둔다. 공개·예약·기존 업로드 교체/삭제는 별도 명시 범위가 필요하며 기존 업로드는 보존한다.
+현재 한 편 자동 완료 범위는 [통합 제작 규칙](VIDEO_WORKFLOW.md)과 `shared/publishing/video-production-control.json`이 우선한다. 2026-10-14 사용자 지시로 자체 검수한 전체 captioned MP4를 **먼저 Google Drive에 올려 최종 사용자 검수**를 받는다. 파일 ID·버전·SHA256·재생/접근 확인·사용자 확인을 기존 원장에 연결한다. 해당 버전 확인 후 같은 파일의 YouTube 비공개 업로드와 가능한 설정 저장·재열람을 진행하며 단계별 승인을 반복하지 않는다. 자동 채팅과 다음 편 자동 착수는 꺼 둔다. 공개·예약·기존 업로드 교체/삭제는 별도 명시 범위가 필요하며 기존 업로드는 보존한다.
 
 ## 업로드 전에 준비할 하나의 패키지
 
-- `output/<slug>/<slug>.captioned.mp4`의 현재 검수/해시, clean·KO·EN 수집. clean 업로드 금지. 기존 실제 ID/진행 중 업로드부터 확인해 중복 업로드하지 않는다.
+- `output/<slug>/<slug>.captioned.mp4`의 현재 검수/해시, clean·KO·EN 수집. 같은 해시의 Drive 최종 검수본과 사용자 확인을 연결한다. clean 업로드 금지. 기존 실제 ID/진행 중 업로드부터 확인해 중복 업로드하지 않는다.
 - [채널 삽화 썸네일](VIDEO_25D_THUMBNAIL_REVIEW.md): 자연스러운 고양이/얌얌코딩, 노란 띠·흰 바탕·큰 검정/빨강 제목; PPT/영상 inset 제외.
 - 주제 검색어와 실제 내용을 반영한 KO/EN 제목. 검색 순위/성과를 보장하지 않는다.
 - 새 설명과 실측00:00 시작 챕터를 기존 채널 소개 위에 한 번만 추가한다. 과외·Discord·회원 canonical URL은 `shared/publishing/youtube-defaults.json` 및 채널 소개 원문에서 정확히 복사한다. 미작성 노트/GitHub 자리표시는 제외한다.

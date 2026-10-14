@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "policyId": "preproduction-first-v1",
-  "updatedAt": "2026-10-14T06:50:47Z",
+  "updatedAt": "2026-10-14T08:04:16.190179+00:00",
   "authority": "explicit-human-user",
   "userEvidence": "영상 제작 규칙 재설계하자 ... 검수해야하는 내용을 처음 영상제작규칙에 추가해서 처음에 잘만들게 해줘 규칙 확인하고 전부 통합해서 수정해줘. 지피티 자동 채팅보내는거 해제 ... 있는거 검수하고 새로운거 만드는것 부터는 이제 내가 하나씩 확인하면서 만들려고",
-  "mode": "one-video-autonomous-until-private-upload",
+  "mode": "one-video-autonomous-until-drive-final-review",
   "automaticChatEnabled": false,
   "automaticNextVideoEnabled": false,
   "automaticBatchResumeEnabled": false,
-  "existingWork": "Inspection-only requests receive a gap report. A selected production/revision continues autonomously through private upload; preserve unrelated work and all baseline uploads/reservations.",
-  "newWork": "User selection authorizes autonomous completion of that one video through internal QA, private upload/settings and selective Git. User reviews after completion; no intermediate approvals or automatic next video.",
+  "existingWork": "Inspection requests receive a gap report. Selected production/revision completes to Drive final review; upload to YouTube after user review of that version. Preserve unrelated work and all baseline uploads/reservations.",
+  "newWork": "Complete one selected video through internal QA, four outputs, Google Drive final-review upload and selective Git. User reviews the complete Drive version before YouTube upload. No intermediate script/sample approvals or automatic next video.",
   "selectedVideo": "ai-game-development-human-craft",
   "newProductionAuthorization": {
     "userMessage": "딱좋다 제작 들어가자\n모션캔버스랑 애니메이션 활용하고\n유니티 에서 뮤료에샛 다운빋이서 애니메이션 활용해보자\n영상은 에픽게임즈 공지나 레딧 등등 활용하자\n게임만드는 영상 (스플래툰) 떠오면 좋을거같아",
@@ -18,8 +18,11 @@
     "fullProductionAuthorized": true,
     "privateUploadAuthorized": true,
     "scope": "One approved AI/game-development human-craft video through private delivery under existing one-video policy; no other video or baseline upload changes.",
-    "latestSteering": "User requests the complete script rewritten for natural chapter-to-chapter continuity and this continuity standard added to all future production rules.",
-    "completionPolicy": "one-video-autonomous-through-private-upload-v1"
+    "latestSteering": "그럼 위 대본 영상제작 들어가자",
+    "completionPolicy": "one-video-drive-review-before-youtube-v1",
+    "latestProductionStartAt": "2026-10-14T07:39:49Z",
+    "latestReviewSteering": "앞으로 영상 최종업로드 전 검수는 구글드라이브에 올려줘",
+    "privateUploadCondition": "User review of the completed Drive version; prior blanket private-upload scope does not bypass this newer boundary."
   },
   "lectureAudioPolicy": {
     "id": "lecture-lofi-game-audio-v1",
@@ -35,7 +38,7 @@
     "authorizesBatchResume": false
   },
   "userCheckpoints": [
-    "Completed private upload: user reviews and decides requested revisions."
+    "Completed Google Drive final-review version before YouTube upload."
   ],
   "supersedesAutomaticContinuationIn": [
     "old heartbeat prompts",
@@ -136,7 +139,7 @@
     "automaticNextVideo": false
   },
   "oneVideoCompletion": {
-    "id": "one-video-autonomous-through-private-upload-v1",
+    "id": "one-video-drive-review-before-youtube-v1",
     "userEvidence": "영상제작은 한개 단위 끝날때까지 자동이야 다완성되면 내가 섬수해서 수정할지 봐줄게 업로드까지 한개단위로 지금하는거 마무리짓고 규칙애도 추가해줘",
     "recordedAt": "2026-10-13T04:34:46.614982+00:00",
     "intermediateUserApprovalRequired": false,
@@ -149,15 +152,21 @@
       "edit",
       "internal-qa",
       "four-outputs",
+      "google-drive-final-review-upload",
       "private-upload-and-available-settings",
       "selective-git"
     ],
-    "userReviewStage": "after-completed-private-upload",
+    "userReviewStage": "google-drive-final-version-before-youtube-upload",
     "stopAfterSelectedVideo": true,
     "automaticNextVideo": false,
     "automaticChatEnabled": false,
     "publicationMode": "private",
-    "scheduleOrBaselineDeletionIncluded": false
+    "scheduleOrBaselineDeletionIncluded": false,
+    "latestUserEvidence": "앞으로 영상 최종업로드 전 검수는 구글드라이브에 올려줘",
+    "updatedAt": "2026-10-14T08:04:16.190179+00:00",
+    "finalUserReviewRequiredBeforeYouTube": true,
+    "autonomousBoundary": "complete-drive-review-copy-and-selective-git",
+    "afterFinalUserReview": "same approved captioned file to private YouTube upload and available settings"
   },
   "narrationLevelContinuityPolicy": {
     "id": "narration-level-continuity-v1",
@@ -347,5 +356,55 @@
     "mediaPolicy": "docs/MEDIA_STORAGE.md",
     "push": "normal push under existing repository policy; never force push",
     "report": "verified actual commit SHA and push/remote status or concrete blocker; do not create recursive evidence commits"
+  },
+  "finalReviewDelivery": {
+    "policyId": "drive-final-review-before-youtube-v1",
+    "provider": "Google Drive",
+    "userEvidence": "앞으로 영상 최종업로드 전 검수는 구글드라이브에 올려줘",
+    "recordedAt": "2026-10-14T08:04:16.190179+00:00",
+    "scope": "selected current production and future videos; no retroactive reupload of unselected deliveries",
+    "artifact": "complete internally reviewed captioned MP4 with final audio",
+    "requiredBeforeYouTubeUpload": true,
+    "humanReviewRequired": true,
+    "visibility": "preserve existing private/user-accessible permissions; do not enable public sharing automatically",
+    "sameHashReuse": true,
+    "preserveEarlierVersions": true,
+    "recordFields": [
+      "fileId",
+      "url",
+      "version",
+      "localSha256",
+      "sizeBytes",
+      "processingAndPlaybackStatus",
+      "accessStatus",
+      "userReviewMessage",
+      "reviewedAt"
+    ],
+    "status": "pending-final-render",
+    "fileId": null,
+    "url": null,
+    "version": null,
+    "localSha256": null,
+    "userReviewMessage": null,
+    "reviewedAt": null
+  },
+  "videoUiDesignPolicy": {
+    "policyId": "yamyam-video-ui-v1",
+    "guide": "docs/VIDEO_VISUAL_STYLE.md",
+    "tokenSource": "motion-canvas/src/styles/research-dark.ts",
+    "recordedAt": "2026-10-14T08:04:16.190179+00:00",
+    "userEvidence": "영상에 추가되는 ui나 이런건 위 문서 규칙 참고해서 ai 티안나고 얌얌코딩 브랜드 잘 살릴수 있게 만들어서 규칙에 추가해줘",
+    "reference": "User-supplied DESIGN.md screenshot, 2026-10-14; adapt design principles to video, not its example web palette/font/rem values.",
+    "scope": "current selected production and future new/user-selected revisions; preserve existing samples and unselected deliveries",
+    "checks": [
+      "one clear visual focus",
+      "shared semantic tokens and components",
+      "original Yamyam Coding identity",
+      "contrast and actual font measurements",
+      "375px mobile readability",
+      "fixed-caption clearance",
+      "meaningful motion and restrained decoration"
+    ],
+    "addsApprovalGate": false
   }
 }
