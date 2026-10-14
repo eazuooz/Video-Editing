@@ -2,7 +2,7 @@
 import pathlib,json,hashlib,datetime,math,os,sys
 import av,psutil
 from PIL import Image,ImageDraw,ImageFont
-R=pathlib.Path(__file__).resolve().parents[4];P=R/'projects/game-lighting-history-01';H=pathlib.Path(__file__).parent;O=P/'production/local/continuity-v2';D=O/'pair/encoded-review'
+R=pathlib.Path(__file__).resolve().parents[4];P=R/'projects/game-lighting-history-01';H=pathlib.Path(__file__).parent;O=P/'production/local/continuity-v2';D=O/'pair-exact-v2/encoded-review'
 def rd(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def sha(p):
  h=hashlib.sha256()
@@ -35,8 +35,8 @@ def main():
  if '--plan-only' in sys.argv:wr(O/'encoded-review-request.json',request);print(len(rows),'planned frames; no images');return
  import runpy
  runpy.run_path(str(pathlib.Path(__file__).with_name('production-authority.py')))['require_selected_production']()
- exe=rd(O/'pair/visual-execution.json');assert exe['status']=='complete-awaiting-mix-and-pixel-review'
- src=O/'pair/captioned-video.mp4';assert sha(src)==exe['outputs']['captioned-video.mp4'];assert not D.exists();D.mkdir()
+ exe=rd(O/'pair-exact-v2/visual-execution.json');assert exe['status']=='complete-awaiting-mix-and-pixel-review'
+ src=O/'pair-exact-v2/captioned-video.mp4';assert sha(src)==exe['outputs']['captioned-video.mp4'];assert not D.exists();D.mkdir()
  state=dict(status='extracting',startedAt=now(),pid=os.getpid(),createTime=psutil.Process().create_time(),command=psutil.Process().cmdline(),cpuThreads=2,gpuJobs=0,sourceSha256=sha(src),request=request,images=[],boards=[],allFinalPixelsApproved=False)
  wr(D/'execution.json',state)
  with av.open(str(src)) as c:

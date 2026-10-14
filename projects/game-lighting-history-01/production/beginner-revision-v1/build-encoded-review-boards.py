@@ -1,17 +1,23 @@
 """Readable boards: all captions, every cut edge, motion phases and joins."""
-import pathlib,json,math,datetime
+import pathlib,json,math,datetime,sys,hashlib
 from PIL import Image,ImageDraw,ImageFont
-R=pathlib.Path(__file__).resolve().parents[4];P=R/'projects/game-lighting-history-01';O=P/'production/local/continuity-v2';D=O/'pair/encoded-review';B=D/'review-boards'
+R=pathlib.Path(__file__).resolve().parents[4];P=R/'projects/game-lighting-history-01';O=P/'production/local/continuity-v2';D=O/'pair-exact-v2/encoded-review';B=D/'review-boards'
 def rd(p):return json.loads(p.read_text(encoding='utf8'))
 def main():
+ global D,B
+ preflight='--preflight' in sys.argv
+ if preflight:D=O/'pair/reference-frames';B=D/'review-boards'
  assert not B.exists();B.mkdir()
  data=rd(D/'execution.json');caps=rd(O/'captions.json')['cues']['ko'];rows=data['images'];font=ImageFont.truetype('C:/Windows/Fonts/arial.ttf',20);boards=[]
+ if preflight:
+  points=rd(O/'encoded-review-request.json')['points'];rows=[dict(points[r['index']-1],path=r['path']) for r in sorted(rows,key=lambda r:r['index'])];data['sourceSha256']=hashlib.sha256((D/'execution.json').read_bytes()).hexdigest()
  def make(kind,items,cols,perPage,width,height,crop=None):
   for offset in range(0,len(items),perPage):
    subset=items[offset:offset+perPage];canvas=Image.new('RGB',(width*cols,height*math.ceil(len(subset)/cols)),(20,20,20));draw=ImageDraw.Draw(canvas)
    for j,(label,row) in enumerate(subset):
     x=j%cols*width;y=j//cols*height
     with Image.open(R/row['path']) as img:
+     if preflight and 120<=row['frame']<438:img=img.copy();ImageDraw.Draw(img).rectangle((800,819,1119,863),fill='black')
      if crop:img=img.crop(crop)
      canvas.paste(img.resize((width,height-26)),(x,y+26))
     draw.text((x+5,y+3),label,fill='white',font=font)
@@ -31,6 +37,6 @@ def main():
   matching=[r for r in rows if r['node']=='e-'+anchor and r['cueIds']]
   if matching:mobile.append((anchor,matching[len(matching)//2]))
  make('mobile375',mobile,3,6,375,237)
- result=dict(createdAt=datetime.datetime.now(datetime.timezone.utc).isoformat(),sourceSha256=data['sourceSha256'],captionCount=len(cueItems),cutEdgeImages=len(cutItems),motionPhaseImages=len(motionItems),joinImages=len(joins),boards=boards,manualReviewComplete=False)
+ result=dict(createdAt=datetime.datetime.now(datetime.timezone.utc).isoformat(),stage='source-plus-final-ASS-preflight' if preflight else 'actual-encoded',sourceSha256=data['sourceSha256'],captionCount=len(cueItems),cutEdgeImages=len(cutItems),motionPhaseImages=len(motionItems),joinImages=len(joins),boards=boards,manualReviewComplete=False)
  (B/'index.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8');print(json.dumps({k:result[k] for k in ['captionCount','cutEdgeImages','motionPhaseImages','joinImages']}));print(len(boards),'boards')
 if __name__=='__main__':main()
