@@ -1,6 +1,6 @@
 """Reconcile current output evidence into the existing review ledger/checkpoint."""
 from pathlib import Path
-import datetime,json
+import datetime,json,hashlib
 ROOT=Path(__file__).resolve().parents[2]
 SLUG='ai-game-development-human-craft'
 P=ROOT/'projects'/SLUG
@@ -52,10 +52,51 @@ assert control['selectedVideo']==SLUG
 deliveryPath=O/'drive-final-v1-delivery.json'
 if deliveryPath.exists():
     delivery=read(deliveryPath)
-    assert delivery['localSha256']==motion['movieSha256'] and delivery['sizeBytes']==integrity['outputs'][1]['bytes']
+    if delivery['localSha256']==motion['movieSha256']:
+        assert delivery['sizeBytes']==integrity['outputs'][1]['bytes']
+    elif delivery.get('reviewFormat')=='720p30-mobile':
+        mobileEvidence=ROOT/delivery['qualityEvidence']
+        assert mobileEvidence in [O/'drive-mobile-review/review.json',O/'drive-mobile-compact/review.json']
+        mobile=read(mobileEvidence)
+        assert mobile['status']=='pass-agent-mobile-review-copy'
+        assert delivery['sourceMasterSha256']==mobile['sourceSha256']==motion['movieSha256']
+        assert delivery['localSha256']==mobile['localSha256'] and delivery['sizeBytes']==mobile['sizeBytes']
+        assert mobile['fullVideoAudioDecode']==mobile['pts']=='pass'
+        assert mobile['frames']*2==integrity['outputs'][1]['frames']
+        assert abs(mobile['durationSeconds']-integrity['outputs'][1]['duration'])<1/30
+        assert len(mobile['cues'])==340
+        if mobile['identicalAAC']:
+            assert mobile['aacAdtsSha256']==integrity['outputs'][1]['aacAdtsSha256']
+        else:
+            assert mobile['audioEncodingContinuity']['status']=='pass'
+            assert mobile['audioEncodingContinuity']['sourceAACSha256']==integrity['outputs'][1]['aacAdtsSha256']
+        with (ROOT/delivery['localPath']).open('rb') as f:
+            assert hashlib.file_digest(f,'sha256').hexdigest()==delivery['localSha256']
+    else:
+        # A separately reviewed transfer copy need not replace the archival master.
+        copyIntegrity=read(O/'drive-optimized-attempt/encoded-integrity.json')['outputs'][1]
+        copyCaptions=read(O/'drive-optimized-attempt/caption-pixel-qa/report.json')
+        copyReview=read(O/'drive-compression-qa/review.json')
+        assert delivery['sourceMasterSha256']==motion['movieSha256']==copyReview['sourceSha256']
+        assert delivery['localSha256']==copyIntegrity['sha256']==copyCaptions['captionedSha256']==copyReview['currentSha256']
+        assert delivery['sizeBytes']==copyIntegrity['bytes']
+        assert copyIntegrity['fullVideoDecode']==copyIntegrity['fullAudioDecode']==copyIntegrity['pts']=='pass'
+        assert copyIntegrity['frames']==copyReview['framesCompared']==integrity['outputs'][1]['frames']
+        assert copyIntegrity['aacAdtsSha256']==integrity['outputs'][1]['aacAdtsSha256']
+        assert copyCaptions['status']=='pass' and copyReview['status']=='pass-agent-compression-quality-review'
+        with (ROOT/delivery['localPath']).open('rb') as f:
+            assert hashlib.file_digest(f,'sha256').hexdigest()==delivery['localSha256']
     assert delivery['fileId'] and delivery['accessStatus']=='verified-owner-only'
-    for obj,key in [(ledger,'finalDriveReview'),(checkpoint,'finalReviewDelivery'),(plan,'finalReviewDelivery'),(control,'finalReviewDelivery')]:obj.setdefault(key,{}).update(delivery)
+    for obj,key in [(ledger,'finalDriveReview'),(checkpoint,'finalReviewDelivery'),(plan,'finalReviewDelivery'),(control,'finalReviewDelivery')]:
+        obj.setdefault(key,{}).pop('block',None)
+        obj[key].update(delivery)
     checkpoint.update(stage='drive-review-delivered-awaiting-user',nextAction='User reviews this complete Drive version; revise selected issues or upload this exact approved SHA to private YouTube only after review.',pending=['Human complete-version review and listening before YouTube'])
+    if delivery.get('reviewFormat')=='720p30-mobile':
+        checkpoint['nextAction']='User reviews the complete720p30 mobile Drive copy. Preserve the1080p60 master; exact publication file and user review remain pending. Do not silently substitute the mobile copy for the publication master.'
+        checkpoint['pending'].append('Publication file choice:1080p60 archival master versus720p30 mobile review copy; no YouTube upload authorized before user review.')
+    checkpoint['finalGitReceipt']=delivery.get('gitReceipt',checkpoint['finalGitReceipt'])
+    if delivery.get('sourceCommit'):
+        checkpoint['latestVerifiedSourceCommit'].update(sha=delivery['sourceCommit'],scope='Verified source commit before this Drive upload; actual new commit is recorded in the operation receipt.')
     checkpoint['gitDelivery']={'status':'consult-final-operation-receipt','receipt':checkpoint['finalGitReceipt'],'rule':'Only the actual commit/remote SHA in this receipt confirms Git completion; no future self-SHA is embedded in this commit.'}
     checkpoint['driveDestinationReadback']['finalFileId']=delivery['fileId']
     item='Complete captioned MP4 uploaded to private Drive; actual ID,size and permissions read back'
@@ -63,7 +104,10 @@ if deliveryPath.exists():
     plan.update(status='drive-review-delivered-awaiting-user',nextAction=checkpoint['nextAction'])
     plan['approvals']['finalDriveUserReview'].update(status='pending-user-review',fileId=delivery['fileId'],version=delivery['version'],sha256=delivery['localSha256'])
     check('whole-video-delivery',status='pass-delivered-for-user-review',scope='Complete local clean/captioned/KO/EN and private Drive captioned v1 delivered; human listening/review pending; no YouTube upload.',drive=delivery)
+    if delivery.get('reviewFormat')=='720p30-mobile':
+        check('whole-video-delivery',status='pass-local-four-files; full-mobile-review-delivered',scope='Complete24:38.867720p30 content/narration review copy uploaded privately. Original1080p60 four-file delivery preserved. Fast footage is more compressed; do not treat this copy as final image-quality approval or silently use it for publication.',drive=delivery)
     manifest['delivery']['driveReview']=delivery
+    manifest['status']='drive-review-delivered-awaiting-user'
     control['updatedAt']=now
     write(ROOT/'shared/publishing/video-production-control.json',control)
 elif (O/'drive-transfer-block.json').exists():
