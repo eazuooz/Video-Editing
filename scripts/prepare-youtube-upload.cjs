@@ -13,9 +13,22 @@ if (!receipt || !/^youtube-upload(?:-[a-z0-9]+)*\.json$/.test(receipt)) throw ne
 const file = path.join(dir, receipt);
 const descriptionPrefix = receipt === 'youtube-upload.json' ? 'upload-description' : receipt.replace('.json', '').replace('youtube-upload', 'upload-description');
 const upload = JSON.parse(fs.readFileSync(file, 'utf8'));
-const videoData = fs.readFileSync(path.join(root, upload.video.path));
-const videoHash = crypto.createHash('sha256').update(videoData).digest('hex');
-if (videoHash !== upload.video.sha256 || videoData.length !== upload.video.bytes) throw new Error('Video differs from approved delivery; prepare a new revision record first');
+const videoPath = path.join(root, upload.video.path);
+const videoFd = fs.openSync(videoPath, 'r');
+const videoDigest = crypto.createHash('sha256');
+let videoBytes = 0;
+try {
+  const chunk = Buffer.allocUnsafe(8 * 1024 * 1024);
+  let bytesRead;
+  while ((bytesRead = fs.readSync(videoFd, chunk, 0, chunk.length, null)) > 0) {
+    videoDigest.update(chunk.subarray(0, bytesRead));
+    videoBytes += bytesRead;
+  }
+} finally {
+  fs.closeSync(videoFd);
+}
+const videoHash = videoDigest.digest('hex');
+if (videoHash !== upload.video.sha256 || videoBytes !== upload.video.bytes) throw new Error('Video differs from approved delivery; prepare a new revision record first');
 const defaults = JSON.parse(fs.readFileSync(path.join(root, 'shared/publishing/youtube-defaults.json'), 'utf8'));
 if (defaults.uploadVideo?.burnedKoreanCaptionsRequired) {
   const expected = defaults.uploadVideo.path.replaceAll('<slug>', slug);
