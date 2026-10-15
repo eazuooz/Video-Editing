@@ -72,10 +72,13 @@ export function buildModel(kind:ModelKind){
   const s=depthSpace(()=>26,[-150,50],.95);
   for(const [x,color]of [[-350,'#35483f'],[-30,'#4b5748']]as const)add(s.box(x,0,0,320,300,15,color),s.box(x,-140,15,320,14,145,color));
   for(const y of [-115,115])add(s.box(-190,y,15,14,70,145,'#3b4c46'));
-  add(s.box(125,0,15,14,300,145,'#4b5748'),s.actor(()=>n('actor'),40,P.green,'●',15));
+  add(s.box(125,0,15,14,300,145,'#4b5748'));
   const horizontal=s.polygon(()=>[[-510,-140,15],[-190,-140,15],[-190,-140,160],[-510,-140,160]],'#35483f')as Line;
   const vertical=s.polygon(()=>[[125,-150,15],[125,150,15],[125,150,160],[125,-150,160]],'#4b5748')as Line;
-  horizontal.fill(()=>Color.lerp('#35483f','#2b3c33',n('axis')));vertical.fill(()=>Color.lerp('#4b5748','#636349',n('axis')));add(horizontal,vertical);
+  horizontal.fill(()=>Color.lerp('#35483f','#2b3c33',n('axis')));vertical.fill(()=>Color.lerp('#4b5748','#636349',n('axis')));add(horizontal);
+  // The rear-wall color overlay belongs behind the person in the room.
+  // Retain the right foreground wall after the person for genuine occlusion.
+  add(s.actor(()=>n('actor'),40,P.green,'●',15),vertical);
   const distancePoint=new Circle({position:()=>s.point(-350+45*(n('distance')-1),80,20),size:24,fill:P.blue});add(distancePoint);
   add(s.label('구역 A: 96',-350,205,0),s.label('구역 B: 160',-30,205,0));
   add(mono(()=>`lightnum = (${n('actor')<-190?96:160} >> 4) + extra`,390,-50,30));

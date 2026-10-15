@@ -2,6 +2,7 @@
 import copy, datetime, hashlib, json, pathlib
 R=pathlib.Path(__file__).resolve().parents[4]
 P=R/'projects/game-lighting-history-01';H=pathlib.Path(__file__).parent
+assert not (H/'design.json').exists(), 'Initial preparation must not overwrite the current reviewed design.'
 def rd(p):return json.loads(p.read_text(encoding='utf8'))
 def wr(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
