@@ -1,0 +1,325 @@
+{
+  "id": "review-v3",
+  "status": "script-and-design-ready-for-source-voice",
+  "createdAt": "2026-10-15T02:38:00.577148+00:00",
+  "userRequests": [
+    "DOOM character head is occluded by incorrect wall painter order",
+    "This episode only: explanation43 actual57",
+    "High-school-understandable foundations progressing to specialist detail",
+    "Always use precise official terminology"
+  ],
+  "baselinePlan": "projects/game-lighting-history-01/production/local/continuity-v2/plan.json",
+  "baselinePlanSha256": "281a062eca4502e89062ec7047cb5719deb2d6198d7fdeee06c3a85f9d626ade",
+  "preserve": [
+    "all v2 media",
+    "unmodified PCM",
+    "reference chronology",
+    "independent actual footage",
+    "fixed captions",
+    "no YouTube upload before v3 review"
+  ],
+  "replaces": [
+    "08-p2",
+    "08-p3"
+  ],
+  "rows": [
+    {
+      "key": "08-r1",
+      "id": "v01",
+      "ko": "밝기 하나로는 표면이 어느 쪽을 향할 때 밝아지는지 알 수 없습니다. 손전등 아래 종이를 놓고 천천히 기울여 보죠. 빛을 정면으로 받으면 좁은 면적에 모이고, 비스듬히 받으면 같은 빛이 더 넓게 퍼집니다. 그래서 종이 한 부분이 받는 빛의 양도 달라집니다. 이제 종이가 향하는 방향을 정확하게 표시해 보겠습니다.",
+      "en": "A single brightness value cannot describe how brightness changes with surface orientation. Slowly tilt a sheet under a flashlight. Facing the beam concentrates it into a smaller area, while a tilt spreads the same beam across a larger area. The amount received by a small part of the sheet therefore changes. Let us mark the direction the sheet faces precisely.",
+      "title": "종이를 기울이면, 같은 빛이 넓게 퍼진다",
+      "learningSteps": [
+        "same beam",
+        "tilt one sheet",
+        "projected footprint grows",
+        "introduce orientation"
+      ],
+      "renderer": "Three.js with synchronized 2D labels",
+      "implementationKind": "independently-authored explanatory model",
+      "reason": "Preserve the selected spatial renderer and show the same surface, normal and basis through the calculation."
+    },
+    {
+      "key": "08-r2",
+      "id": "v02",
+      "ko": "종이에서 수직으로 나온 화살표를 법선이라고 합니다. 여기서는 길이를 일로 맞춘 단위 법선을 씁니다. 표면에서 빛이 오는 쪽을 가리키는 화살표도 같은 길이로 그려 보죠. 두 화살표가 나란하면 정면이고, 벌어질수록 비스듬한 상태입니다. 빛이 날아오는 진행 방향과, 표면에서 광원을 바라보는 방향은 반대라는 점도 구별해야 합니다.",
+      "en": "An arrow perpendicular to the sheet is a normal. Here we use a unit normal with length one. Draw another unit arrow from the surface toward the light. Parallel arrows mean the sheet faces the light directly, and a wider angle means more oblique illumination. The incoming ray travels opposite to the direction from the surface toward the light.",
+      "title": "법선 Normal · 표면에 수직인 방향",
+      "learningSteps": [
+        "perpendicular normal",
+        "unit length",
+        "surface-to-light direction",
+        "distinguish incoming ray"
+      ],
+      "renderer": "Three.js with synchronized 2D labels",
+      "implementationKind": "independently-authored explanatory model",
+      "reason": "Preserve the selected spatial renderer and show the same surface, normal and basis through the calculation."
+    },
+    {
+      "key": "08-r3",
+      "id": "v03",
+      "ko": "두 방향이 얼마나 나란한지 계산하는 연산이 내적입니다. 길이가 모두 일인 두 화살표의 내적은, 사이 각도의 코사인과 같습니다. 각도가 영 도면 일, 육십 도면 영 점 오, 구십 도면 영입니다. 이 숫자는 같은 조건에서 표면이 받는 직접광의 방향 계수입니다. 빛의 세기나 재질까지 포함한 최종 화면 밝기 전체를 뜻하지는 않습니다.",
+      "en": "The dot product measures how aligned two directions are. For two unit arrows it equals the cosine of their angle. Zero degrees gives one, sixty gives one half, and ninety gives zero. Under otherwise equal conditions this is the directional factor for diffuse direct light. It is not the complete displayed brightness, which also depends on light intensity and material.",
+      "title": "내적 Dot Product · 나란함을 숫자로",
+      "learningSteps": [
+        "angle 0/60/90",
+        "cosine 1/.5/0",
+        "diffuse directional factor",
+        "not final display luminance"
+      ],
+      "renderer": "Three.js with synchronized 2D labels",
+      "implementationKind": "independently-authored explanatory model",
+      "reason": "Preserve the selected spatial renderer and show the same surface, normal and basis through the calculation."
+    },
+    {
+      "key": "08-r4",
+      "id": "v04",
+      "ko": "이 방향 반응을 미리 계산한 조명에서도 쓰려면, 밝기 하나보다 더 많은 정보를 저장해야 합니다. 하프라이프 투의 라디오시티 노멀 매핑은 표면에 붙은 좌표계에서 세 기준 방향별 조명 색을 저장합니다. 이 방향 묶음이 기저입니다. 화살표 세 개는 방 안에 새로 설치한 전등이 아니라, 표면 방향에 따라 저장된 조명을 읽기 위한 계산 기준입니다.",
+      "en": "Precomputed lighting needs more than one brightness value to retain directional response. Half-Life 2 radiosity normal mapping stores lighting colors for three reference directions in a surface-attached coordinate system. These directions form a basis. The three arrows are calculation references for reading stored illumination as the surface direction changes, rather than newly installed lamps.",
+      "title": "라디오시티 노멀 매핑 · Radiosity Normal Mapping",
+      "learningSteps": [
+        "single value loses direction",
+        "surface tangent frame",
+        "three stored components",
+        "basis is not three lamps"
+      ],
+      "renderer": "Three.js with synchronized 2D labels",
+      "implementationKind": "independently-authored explanatory model",
+      "reason": "Preserve the selected spatial renderer and show the same surface, normal and basis through the calculation."
+    },
+    {
+      "key": "08-r5",
+      "id": "v05",
+      "ko": "이제 벽의 한 점만 확대하겠습니다. 그 점에는 세 방향에 대응하는 조명 값이 준비되어 있습니다. 법선맵에서 읽은 작은 표면의 법선을 첫 기준 방향과 비교하고, 두 번째와 세 번째에도 같은 내적을 계산합니다. 뒤를 향해서 음수가 나오면 영으로 제한합니다. 이렇게 얻은 가중치는 각 저장값을 얼마만큼 더할지 정하는 계수이며, 합이 반드시 일이 되는 확률은 아닙니다.",
+      "en": "Now enlarge one point on the wall. It has three stored lighting components. Compare the small surface normal read from the normal map with the first basis direction, then compute the same dot product for the other two. Clamp negative values to zero. The resulting weights determine how much each stored value contributes, and need not sum to one like probabilities.",
+      "title": "한 표면점: 법선 → 세 내적 → 세 가중치",
+      "learningSteps": [
+        "one texel",
+        "normal and basis in same frame",
+        "clamp negative to zero",
+        "weights need not sum to one"
+      ],
+      "renderer": "Three.js with synchronized 2D labels",
+      "implementationKind": "independently-authored explanatory model",
+      "reason": "Preserve the selected spatial renderer and show the same surface, normal and basis through the calculation."
+    },
+    {
+      "key": "08-r6",
+      "id": "v06",
+      "ko": "계산을 보기 쉽게 색의 한 성분만 쓰겠습니다. 세 저장값을 영 점 팔, 영 점 이, 영 점 일로 두죠. 법선이 첫 기준 방향과 같으면 가중치는 일, 영, 영이 되어 결과는 영 점 팔입니다. 첫 방향에서 두 번째 방향 쪽으로 삼십 도 돌리면, 가중치는 약 영 점 팔육육, 영 점 오, 영이 됩니다. 저장값은 그대로 두고 법선만 바꾼 것입니다.",
+      "en": "Use one color channel to make the calculation easy to follow. Set the stored values to point eight, point two and point one. With the normal equal to the first basis direction, weights are one, zero and zero, giving point eight. Rotate thirty degrees toward the second basis direction and the weights become approximately point eight six six, point five and zero. Only the normal changed; the stored values stayed fixed.",
+      "title": "작은 수치 예제 · 저장값은 그대로",
+      "learningSteps": [
+        "one linear color channel",
+        "orthonormal basis",
+        "n=b1 gives 1/0/0",
+        "rotate toward b2 by 30 degrees"
+      ],
+      "renderer": "Three.js with synchronized 2D labels",
+      "implementationKind": "independently-authored explanatory model",
+      "reason": "Preserve the selected spatial renderer and show the same surface, normal and basis through the calculation."
+    },
+    {
+      "key": "08-r7",
+      "id": "v07",
+      "ko": "각 저장값에 방금 구한 가중치를 곱하고 더해 보죠. 영 점 팔 곱하기 영 점 팔육육에, 영 점 이 곱하기 영 점 오를 더하면 약 영 점 칠구삼입니다. 화면의 식은 바로 이 세 번의 곱셈과 덧셈을 줄여 쓴 것입니다. 실제 색은 빨강, 초록, 파랑 성분에 같은 계산을 합니다. 여기의 숫자는 원리를 보여 주는 예제이며 게임에서 측정한 밝기는 아닙니다.",
+      "en": "Multiply each stored value by its weight and add the contributions. Point eight times point eight six six, plus point two times point five, is approximately point seven nine three. The displayed formula abbreviates these three multiplications and additions. For real colors the operation is applied to red, green and blue components. These illustrative values are not measured game brightness.",
+      "title": "저장색 × 가중치, 세 결과를 더한다",
+      "learningSteps": [
+        ".8×.866 + .2×.5 + .1×0",
+        "result .793",
+        "general sum",
+        "each RGB channel"
+      ],
+      "renderer": "Three.js with synchronized 2D labels",
+      "implementationKind": "independently-authored explanatory model",
+      "reason": "Preserve the selected spatial renderer and show the same surface, normal and basis through the calculation."
+    },
+    {
+      "key": "08-r8",
+      "id": "v08",
+      "ko": "구현에서는 두 방향의 좌표계를 먼저 맞추고, 내적을 영에서 일 사이로 제한한 뒤 저장색을 곱해 합칩니다. 지금 설명한 것은 밸브의 이천사 년 공개 코드에 나온 방식입니다. 가중치를 제곱하는 다른 방식과 섞어 계산하면 결과가 달라집니다. 이 과정을 알고 나면, 다음 장면에서 저장한 색은 그대로인데 작은 요철의 밝기가 달라지는 이유를 직접 따라갈 수 있습니다.",
+      "en": "In implementation, first express both directions in the same coordinate frame, clamp each dot product between zero and one, then multiply and sum the stored colors. This is the method in Valve’s published 2004 code. Substituting squared weights from another formulation changes the result. We can now follow why small bumps change shading in the next scene while the stored colors remain unchanged.",
+      "title": "같은 좌표계 → saturate(dot) → 조명 합산",
+      "learningSteps": [
+        "coordinate agreement",
+        "clamped dot formula",
+        "version-specific implementation",
+        "handoff to retained 08-p4"
+      ],
+      "renderer": "Three.js with synchronized 2D labels",
+      "implementationKind": "independently-authored explanatory model",
+      "reason": "Preserve the selected spatial renderer and show the same surface, normal and basis through the calculation."
+    }
+  ],
+  "sources": {
+    "valve": "https://cdn.steamstatic.com/apps/valve/2004/GDC2004_Half-Life2_Shading.pdf",
+    "csm": "https://learn.microsoft.com/en-us/windows/desktop/DxTechArts/cascaded-shadow-maps",
+    "pcf": "https://developer.nvidia.com/gpugems/gpugems/part-ii-light-and-shadows/chapter-11-shadow-map-antialiasing",
+    "pcss": "https://developer.download.nvidia.com/shaderlibrary/docs/shadow_PCSS.pdf"
+  },
+  "sourceReview": {
+    "valvePages": [
+      9,
+      10,
+      11,
+      49
+    ],
+    "method": "Read primary PDF text, verify orthonormal basis and saturate(dot) code; new teaching examples independently authored.",
+    "squaredWeightsUsed": false
+  },
+  "ratio": {
+    "actual": 0.57,
+    "explanation": 0.43,
+    "scope": "body excluding120branding and600member frames",
+    "method": "Measured new explanation and concept-matched recuts; no padding or time stretch.",
+    "measured": false
+  },
+  "doom": {
+    "affected": [
+      "03-p7"
+    ],
+    "rootCause": "Retained Motion Canvas sector model adds horizontal/vertical wall overlays after the actor. Confirm affected realized frames before replacement.",
+    "source": "motion-canvas/src/projects/game-lighting-history-01/final/black-models-v2.tsx",
+    "fix": "Place rear-wall color overlays before the actor, preserve legitimate foreground occlusion.",
+    "review": "pending"
+  },
+  "terminology": [
+    {
+      "ko": "법선",
+      "en": "Normal",
+      "abbreviation": null,
+      "meaning": "표면에 수직인 방향",
+      "first": "08-r2",
+      "spokenAlias": null
+    },
+    {
+      "ko": "단위 법선",
+      "en": "Unit Normal",
+      "abbreviation": null,
+      "meaning": "길이가 1인 법선",
+      "first": "08-r2",
+      "spokenAlias": null
+    },
+    {
+      "ko": "내적",
+      "en": "Dot Product",
+      "abbreviation": null,
+      "meaning": "두 단위 방향의 내적은 사이각의 코사인",
+      "first": "08-r3",
+      "spokenAlias": null
+    },
+    {
+      "ko": "라디오시티 노멀 매핑",
+      "en": "Radiosity Normal Mapping",
+      "abbreviation": "RNM",
+      "meaning": "방향별 저장 조명과 법선맵을 결합",
+      "first": "08-r4",
+      "spokenAlias": null
+    },
+    {
+      "ko": "접선 공간",
+      "en": "Tangent Space",
+      "abbreviation": null,
+      "meaning": "표면에 붙은 좌표계",
+      "first": "08-r4",
+      "spokenAlias": null
+    },
+    {
+      "ko": "기저",
+      "en": "Basis",
+      "abbreviation": null,
+      "meaning": "방향 정보를 표현하는 독립적인 기준 벡터 묶음",
+      "first": "08-r4",
+      "spokenAlias": null
+    },
+    {
+      "ko": "라이트맵",
+      "en": "Lightmap",
+      "abbreviation": null,
+      "meaning": "표면 위치별로 미리 계산한 조명을 저장",
+      "first": "04-p1",
+      "spokenAlias": null
+    },
+    {
+      "ko": "법선맵",
+      "en": "Normal Map",
+      "abbreviation": null,
+      "meaning": "표면의 세부 방향을 저장한 텍스처",
+      "first": "08-r5",
+      "spokenAlias": null
+    },
+    {
+      "ko": "섀도 맵",
+      "en": "Shadow Map",
+      "abbreviation": null,
+      "meaning": "광원 시점에서 가장 가까운 표면의 깊이 저장",
+      "first": "09-p1",
+      "spokenAlias": null
+    },
+    {
+      "ko": "캐스케이드 섀도 맵",
+      "en": "Cascaded Shadow Maps",
+      "abbreviation": "CSM",
+      "meaning": "카메라 거리 구간마다 섀도 맵 배정",
+      "first": "09a-p1",
+      "spokenAlias": null
+    },
+    {
+      "ko": "퍼센티지 클로저 필터링",
+      "en": "Percentage-Closer Filtering",
+      "abbreviation": "PCF",
+      "meaning": "깊이 비교 결과를 필터링",
+      "first": "09-p7",
+      "spokenAlias": "PCF=피시에프; PCSS=피시시에스"
+    },
+    {
+      "ko": "퍼센티지 클로저 소프트 섀도",
+      "en": "Percentage-Closer Soft Shadows",
+      "abbreviation": "PCSS",
+      "meaning": "가림 물체 탐색과 수광면 관계로 필터 폭 결정",
+      "first": "09-p9",
+      "spokenAlias": "PCF=피시에프; PCSS=피시시에스"
+    },
+    {
+      "ko": "분산 섀도 맵",
+      "en": "Variance Shadow Maps",
+      "abbreviation": "VSM",
+      "meaning": "깊이 모멘트로 가림을 근사; 가상 섀도 맵과 구별",
+      "first": "09-p9",
+      "spokenAlias": null
+    }
+  ],
+  "transitionFromPrevious": "08-p1: one stored brightness cannot react to a normal map -> physical orientation example",
+  "transitionToNext": "08-r8 explains immutable stored values -> retain08-p4 demonstrated normal rotation and small-bump response",
+  "mathematicalChecks": {
+    "basis": "orthonormal three-vector basis from Valve2004",
+    "nA": [
+      1,
+      0,
+      0
+    ],
+    "nB": [
+      0.8660254037844386,
+      0.5,
+      0
+    ],
+    "normalLength": 1,
+    "storedSingleChannel": [
+      0.8,
+      0.2,
+      0.1
+    ],
+    "resultA": 0.8,
+    "resultB": 0.7928203230275509,
+    "weightsNormalizedToSumOne": false,
+    "illustrationNotGameMeasurement": true
+  },
+  "quality": {
+    "scriptKoEnReviewed": true,
+    "sourceTtsReviewed": false,
+    "scenePixelsReviewed": false,
+    "finalEncodedReviewed": false,
+    "driveUserReview": "pending"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "status": "reviewed-for-scoped-TTS",
+  "scenes": [
+    {
+      "id": "v01",
+      "title": "08-r1",
+      "lines": [
+        "A single brightness value cannot describe how brightness changes with surface orientation. Slowly tilt a sheet under a flashlight. Facing the beam concentrates it into a smaller area, while a tilt spreads the same beam across a larger area. The amount received by a small part of the sheet therefore changes. Let us mark the direction the sheet faces precisely."
+      ]
+    },
+    {
+      "id": "v02",
+      "title": "08-r2",
+      "lines": [
+        "An arrow perpendicular to the sheet is a normal. Here we use a unit normal with length one. Draw another unit arrow from the surface toward the light. Parallel arrows mean the sheet faces the light directly, and a wider angle means more oblique illumination. The incoming ray travels opposite to the direction from the surface toward the light."
+      ]
+    },
+    {
+      "id": "v03",
+      "title": "08-r3",
+      "lines": [
+        "The dot product measures how aligned two directions are. For two unit arrows it equals the cosine of their angle. Zero degrees gives one, sixty gives one half, and ninety gives zero. Under otherwise equal conditions this is the directional factor for diffuse direct light. It is not the complete displayed brightness, which also depends on light intensity and material."
+      ]
+    },
+    {
+      "id": "v04",
+      "title": "08-r4",
+      "lines": [
+        "Precomputed lighting needs more than one brightness value to retain directional response. Half-Life 2 radiosity normal mapping stores lighting colors for three reference directions in a surface-attached coordinate system. These directions form a basis. The three arrows are calculation references for reading stored illumination as the surface direction changes, rather than newly installed lamps."
+      ]
+    },
+    {
+      "id": "v05",
+      "title": "08-r5",
+      "lines": [
+        "Now enlarge one point on the wall. It has three stored lighting components. Compare the small surface normal read from the normal map with the first basis direction, then compute the same dot product for the other two. Clamp negative values to zero. The resulting weights determine how much each stored value contributes, and need not sum to one like probabilities."
+      ]
+    },
+    {
+      "id": "v06",
+      "title": "08-r6",
+      "lines": [
+        "Use one color channel to make the calculation easy to follow. Set the stored values to point eight, point two and point one. With the normal equal to the first basis direction, weights are one, zero and zero, giving point eight. Rotate thirty degrees toward the second basis direction and the weights become approximately point eight six six, point five and zero. Only the normal changed; the stored values stayed fixed."
+      ]
+    },
+    {
+      "id": "v07",
+      "title": "08-r7",
+      "lines": [
+        "Multiply each stored value by its weight and add the contributions. Point eight times point eight six six, plus point two times point five, is approximately point seven nine three. The displayed formula abbreviates these three multiplications and additions. For real colors the operation is applied to red, green and blue components. These illustrative values are not measured game brightness."
+      ]
+    },
+    {
+      "id": "v08",
+      "title": "08-r8",
+      "lines": [
+        "In implementation, first express both directions in the same coordinate frame, clamp each dot product between zero and one, then multiply and sum the stored colors. This is the method in Valve’s published 2004 code. Substituting squared weights from another formulation changes the result. We can now follow why small bumps change shading in the next scene while the stored colors remain unchanged."
+      ]
+    }
+  ]
+}
