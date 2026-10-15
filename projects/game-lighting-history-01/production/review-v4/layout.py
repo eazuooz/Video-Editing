@@ -3,6 +3,7 @@ from probe import *
 
 def build():
  d=rd(H/'annotations.json'); by={w['id']:w for w in d['windows']};d['authoringCanvas']=[480,270]
+ retained_character=by['character']['keyframes'] if by['character'].get('tracking','').startswith('per-frame anchor') else None
  def mark(id,a,b,label,kind,role,keys,labelAt=(30,58),reason=''):
   w=by[id];w.update(startFrame=round(a*60),endFrame=round(b*60),label=label,shape=kind,colorRole=role,
    keyframes=[dict(frame=round(t*60),points=pts) for t,pts in keys],labelAt=list(labelAt),
@@ -37,7 +38,7 @@ def build():
  box('triangles',813.5,814.7,'관찰 대상 · 삼각형으로 나뉜 면','reference',[(813.5,[[12,41],[178,159]]),(814.7,[[12,41],[178,159]])],labelAt=(217,70),reason='Same left facade during settled camera interval; no fabricated tile grid.')
  omit('doom3','Multiple crossfades within speech window; no persistent head outline over dissolving subjects.')
  omit('robot-inner','Rapid orbit/zoom makes this interval unsuitable for detailed tracing; clearer stable body surface is marked at1272s.')
- line('robot-outer',1019.8,1021.05,'실제 바깥 윤곽','distinction',[(1019.8,[[200,86],[239,82],[304,87],[331,111],[346,148],[347,173],[325,197]]),(1020.3,[[167,87],[197,77],[256,78],[294,89],[313,121],[315,150],[302,174]]),(1020.8,[[147,87],[175,78],[229,79],[264,87],[285,110],[288,143],[276,171]]),(1021.05,[[147,87],[175,78],[229,79],[264,87],[285,110],[288,143],[276,171]])],labelAt=(290,45),reason='Open contour outside curved torso plate; line leaves material interior uncovered and clears before rapid side orbit.')
+ line('robot-outer',1019.8,1020.85,'실제 바깥 윤곽','distinction',[(1019.8,[[200,86],[239,82],[304,87],[331,111],[346,148],[347,173],[325,197]]),(1020.3,[[167,87],[197,77],[256,78],[294,89],[313,121],[315,150],[302,174]]),(1020.8,[[147,87],[175,78],[229,79],[264,87],[285,110],[288,143],[276,171]]),(1020.85,[[147,87],[175,78],[229,79],[264,87],[285,110],[288,143],[276,171]])],labelAt=(290,45),reason='Open contour outside curved torso plate; line leaves material interior uncovered and clears before rapid side orbit.')
  box('hl2',1054.5,1056.05,'관찰 · 인물과 주변 공간','reference',[(1054.5,[[199,87],[290,191]]),(1055,[[215,91],[277,189]]),(1055.5,[[219,92],[266,184]]),(1056.05,[[209,94],[265,183]])],labelAt=(32,65),reason='Hallway characters; clears before white crossfade. No claim this reveals RNM buffers.')
  line('robot-normal',1272,1278.4,'표면 안의 명암 · 면의 방향을 관찰','result',[(1272,[[260,122],[278,114],[311,114],[328,128],[334,166],[322,185],[274,186],[258,165],[260,122]]),(1278.4,[[260,122],[278,114],[311,114],[328,128],[334,166],[322,185],[274,186],[258,165],[260,122]])],labelAt=(213,55),reason='Stable torso front plate; contour encloses interior shading without labelling any particular detail as a measured normal-map effect.')
  box('probes',1445.6,1450.6,'공간 표본 · 전구가 아닌 조회 위치','reference',[(1445.6,[[166,116],[290,166]]),(1450.6,[[166,116],[290,166]])],labelAt=(71,58),reason='Floating rows of sample points above left room; points not emitters.')
@@ -55,6 +56,8 @@ def build():
  mark('ao-setting',2460.1,2461.25,'조작 · Power / Bias','rectangle','reference',[(2460.1,[[316,130],[440,153]]),(2461.25,[[316,130],[440,153]])],labelAt=(271,171),reason='Actual AO power and bias rows; no inferred numerical output.')
  box('ao-contact',2461.35,2462.9,'결과 관찰 · 큐브가 맞닿는 틈','result',[(2461.35,[[105,145],[196,190]]),(2462.9,[[105,145],[196,190]])],labelAt=(20,65),reason='Same recess after parameter edit; clear before camera pans to distant example.')
  d['revisionIntent']='Standalone general-viewer understanding: each visible mark names a narrated observation, not inferred engine data.'
+ if retained_character:
+  by['character'].update(keyframes=retained_character,labelAt=[15,38],tracking='per-frame anchor from visible editor body-selection pixels; see encoded motion review')
  d['userReferenceImages']=['C:/Users/1/.codex/codex-remote-attachments/01a1382b-9f87-7b82-942b-ba38e671a085/9BB0F3B9-24B9-4F11-A092-BBB69378BAB7/1-사진-1.jpg','C:/Users/1/.codex/codex-remote-attachments/01a1382b-9f87-7b82-942b-ba38e671a085/9BB0F3B9-24B9-4F11-A092-BBB69378BAB7/2-사진-2.jpg']
  d['referenceUse']='Observed supplied screenshots: character silhouette/path linkage, not source footage/assets/measurements.'
  d['baselinePreservation']={'audio':'exactAAC','captions':'same KO/EN bytes and timing','duration':'same153402frames','actualExplanationRatio':'same57:43','priorMaster':'preserved'}
