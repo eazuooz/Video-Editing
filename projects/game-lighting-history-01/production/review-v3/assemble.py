@@ -26,7 +26,10 @@ def main():
  plan=rd(O/'plan.json');assert plan['finalTimingApproved'];D.mkdir(exist_ok=True)
  source=B/'pair-exact-v2';base=source/'visual.mp4';total=145768
  with av.open(str(base)) as c:
-  s=c.streams.video[0];extra=s.codec_context.extradata;keys=[p.pts//1500 for p in c.demux(s) if p.pts is not None and p.is_keyframe]+[total]
+  s=c.streams.video[0];extra=s.codec_context.extradata;cleanKeys={p.pts//1500 for p in c.demux(s) if p.pts is not None and p.is_keyframe}|{total}
+ with av.open(str(source/'captioned-video.mp4')) as c:
+  captionKeys={p.pts//1500 for p in c.demux(c.streams.video[0]) if p.pts is not None and p.is_keyframe}|{total}
+ keys=sorted(cleanKeys&captionKeys)
  windows=[]
  for a,b in plan['changedBaselineRanges']:
   lo=max(k for k in keys if k<=a);hi=min(k for k in keys if k>=b)
@@ -35,7 +38,7 @@ def main():
  delta=plan['frames']-total;mapf=lambda f:f if f<=64119 else f+delta if f>=67924 else (_ for _ in []).throw(ValueError('boundary inside replacement'))
  state=dict(status='encoding-selected-ranges',planSha256=sha(O/'plan.json'),windows=windows,completed=[],retainedPackets={},outputs={},startedAt=datetime.datetime.now(datetime.timezone.utc).isoformat())
  statepath=D/'visual-execution.json'
- if statepath.exists():state=rd(statepath);assert state['planSha256']==sha(O/'plan.json')
+ if statepath.exists():state=rd(statepath);assert state['planSha256']==sha(O/'plan.json') and state['windows']==windows
  codec=['-an','-fps_mode','passthrough','-c:v','h264_nvenc','-preset','p7','-tune','hq','-rc','vbr','-cq','18','-b:v','0','-multipass','fullres','-spatial-aq','1','-temporal-aq','1','-rc-lookahead','32','-pix_fmt','yuv420p','-video_track_timescale','90000','-movflags','+faststart']
  ass=(O/'captions.ko.ass').relative_to(R).as_posix();fonts=(P/'production/local/final-edit-v1/fonts').relative_to(R).as_posix()
  for i,(lo,hi) in enumerate(windows):
@@ -83,7 +86,7 @@ def main():
     if any(a<=f<b for a,b in windows):continue
     while i<len(windows) and f>=windows[i][1]:i+=1
     retained.update(bytes(p));retainedCount+=1;offset=(mapf(f)-f)*1500;p.pts+=offset;p.dts+=offset;assert p.dts>last;last=p.dts;p.stream=target;out.mux(p);written+=1
-  assert written==plan['frames']
+  assert written==plan['frames'],(name,written,plan['frames'])
   check=hashlib.sha256();count=0;pts=[]
   nw=[(mapf(a),mapf(b)) for a,b in windows]
   with av.open(str(outpath)) as c:

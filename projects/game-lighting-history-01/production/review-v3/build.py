@@ -61,8 +61,8 @@ def main():
  header('09-p1','섀도 맵 · Shadow Map','광원에서 본 첫 표면의 깊이를 기록하고 비교합니다')
  header('09-p7','퍼센티지 클로저 필터링 · PCF','Percentage-Closer Filtering · 깊이 비교 결과를 평균합니다')
  header('09-p9','퍼센티지 클로저 소프트 섀도 · PCSS','Percentage-Closer Soft Shadows · 가림 관계로 필터 폭 조절',stop=496)
- header('09-p9','분산 섀도 맵 · Variance Shadow Maps','VSM · 깊이의 평균과 제곱 평균을 저장합니다',offset=496)
- header('09-p10','분산 섀도 맵과 가상 섀도 맵','Variance Shadow Maps ≠ Virtual Shadow Maps · 같은 VSM, 다른 기법')
+ header('09-p9','배리언스 섀도 맵 · Variance Shadow Maps','VSM · 분산 섀도 맵 · 깊이의 평균과 제곱 평균을 저장합니다',offset=496)
+ header('09-p10','배리언스 섀도 맵과 버추얼 섀도 맵','Variance Shadow Maps ≠ Virtual Shadow Maps · 같은 VSM, 다른 기법')
  header('09a-p1','캐스케이드 섀도 맵 · CSM','Cascaded Shadow Maps · 카메라 거리 구간마다 섀도 맵을 배정합니다')
  plan['termHeaders']=headers;plan['changedBaselineRanges']=[[18879,19838],[64119,67924]]+sorted({(h['baselineStartFrame'],h['baselineEndFrame']) for h in headers})
  plan['audioSplices']=[dict(kind='retained',oldStartFrame=0,oldEndFrame=64119,newStartFrame=0),dict(kind='new',newStartFrame=64119,frames=target),dict(kind='retained',oldStartFrame=65953,oldEndFrame=66973,newStartFrame=64119+target),dict(kind='retained',oldStartFrame=67924,oldEndFrame=base['frames'],newStartFrame=64119+target+1020)]
@@ -72,7 +72,11 @@ def main():
  for lang in cues:
   for c in rd(B/'captions.json')['cues'][lang]:
    if c['key'] in replaced:continue
-   c=copy.deepcopy(c);shift=(newv[c['key']]['startFrame']-oldv[c['key']]['startFrame'])/60;c['startSeconds']+=shift;c['endSeconds']+=shift;c['reusedLayout']=True;cues[lang].append(c)
+   c=copy.deepcopy(c);shift=(newv[c['key']]['startFrame']-oldv[c['key']]['startFrame'])/60;c['startSeconds']+=shift;c['endSeconds']+=shift;c['reusedLayout']=True
+   if lang=='ko' and c['key'] in ['09-p7','09-p9']:
+    text=c['text'].replace('피시에프','PCF').replace('피 씨 에스 에스','PCSS')
+    if text!=c['text']:c.update(text=text,lines=layout.wrap(text),reusedLayout=False,canonicalSpelling=True)
+   cues[lang].append(c)
   for r in rows:
    for c in r[lang+'Cues']:cues[lang].append(dict(c,key=r['key'],startSeconds=newv[r['key']]['startFrame']/60+c['seconds'][0],endSeconds=newv[r['key']]['startFrame']/60+c['seconds'][1],reusedLayout=False))
   cues[lang].sort(key=lambda c:c['startSeconds'])
