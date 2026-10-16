@@ -1,0 +1,16 @@
+import {makeProject} from '@motion-canvas/core';
+import overview from './01-overview?scene';
+import growth from './02-growth?scene';
+import powerLoss from './02-powerLoss?scene';
+import training from './03-training?scene';
+import unlock from './04-unlock?scene';
+import trophyCost from './05-trophyCost?scene';
+import stickers from './06-stickers?scene';
+import costMath from './06-costMath?scene';
+import spiritRules from './06-spiritRules?scene';
+import coins from './07-coins?scene';
+import music from './08-music?scene';
+import checklist from './09-checklist?scene';
+import progress from './10-progress?scene';
+import worksheet from './11-worksheet?scene';
+export default makeProject({name:'game-reward-planning-v2-lesson-visuals',scenes:[overview,growth,powerLoss,training,unlock,trophyCost,stickers,costMath,spiritRules,coins,music,checklist,progress,worksheet]});
