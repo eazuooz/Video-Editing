@@ -1,3 +1,14 @@
+# 현재 수정본 자료 상태 — reference-preserving-v2
+
+현재 선택·권리·해상도·해시·실제 관찰과 미확인 사항은 `../planning/chapter-plan.json#currentRevision.sourceSelection`에 통합한다. 아래 기록은 과거 버전의 출처이며 새 수정본의 사용 승인을 뜻하지 않는다.
+
+- 연구 전용: https://www.youtube.com/watch?v=gYuvggptkDM . 전체 일본어 자동 자막과 필요한 마리오/후속작 설명 화면을 확인했다. 편집 소스로 사용하지 않는다.
+- 독립 녹화 확보: https://www.youtube.com/watch?v=FJgSiI-Fols — LongplayArchive / Spazbo4, Super Mario Odyssey Nintendo Switch2 enhanced. 180–360초 및555–705초 구간, 실제 디코딩1920×1080/60fps. 긴 대화·도입은 분량 채우기에 쓰지 않는다. 캡처→당김/발사→벽 파괴→파워문 획득을 표본으로 확인했으며 정밀 인아웃·동작 검수는 남아 있다.
+- 녹화자는 변형한 짧은 사용과 채널 표시를 허용한다. 공개 채널 설명의2026-10-16 확인 기록은 보상 편의 `production/local/reference-preserving-v2/longplayarchive-reuse.txt`를 재사용한다. 게임 권리는 https://www.nintendo.co.jp/networkservice_guideline/en/index.html 과 별도로 검토한다. 영상과 설명에 녹화 채널/플레이어를 표시한다.
+- NES 후보 `6ufyQSAVrn0`는1080p 포맷이 없어 제외. Nintendo Switch Online 녹화 `zzpG-ekjV2w`와4K 녹화 `R59Pb_rVbto`는 후보일 뿐, 재사용 허용 근거가 확인되지 않아 생산 컷에 넣지 않았다.
+
+---
+
 # 내부 자료와 권리 기록
 
 개념 연구: https://www.youtube.com/watch?v=gYuvggptkDM — 원문 전체 자동 자막은 local-only이며 새 내레이션으로 복사/번역하지 않는다.
