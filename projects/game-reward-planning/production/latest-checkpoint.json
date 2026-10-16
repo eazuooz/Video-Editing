@@ -244,11 +244,11 @@
       "fixedExplanationShare": null,
       "defaultPolicyForOtherVideosUnchanged": true
     },
-    "stage": "complete-local-drive-storage-blocked",
+    "stage": "standalone-correction-complete-local-drive-storage-blocked",
     "tts": {
-      "status": "complete-with3-targeted-pronunciation-patches",
-      "asr": "all11 raw scenes plus patched contexts and whole final mix complete",
-      "humanListening": "pending user Drive review"
+      "status": "complete-with6-current-sentence-patches",
+      "asr": "Retained raw scene evidence, four current creator-free replacement takes and current whole encoded mix checked",
+      "humanListening": "pending user review"
     },
     "visuals": {
       "sourceCutCount": 34,
@@ -348,7 +348,68 @@
     },
     "lastVerifiedCommit": "3f8c93147fedc1742107bbd7bb89a4a936c11602",
     "missingAssetsScope": "Historical baseline media only; independently sourced new revision has all required inputs.",
-    "audioReview": "production/script-source-review.json#currentRevision.audioReview",
+    "audioReview": {
+      "sourceSceneCount": 11,
+      "sourcePcmPreserved": true,
+      "targetedReplacementCount": 6,
+      "patchMap": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/combined-sentence-patches.json",
+      "rawFullAsr": "11 complete scenes reviewed once;3 replacement takes separately checked",
+      "wholeFinalMixAsr": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/final-mix-asr.json",
+      "wholeTextComparison": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/final-mix-text-comparison.json",
+      "wholeRecognizedTextRead": true,
+      "all11ChaptersAndCoreClaimsPresent": true,
+      "asrSpellingDifferences": [
+        "숫자/영문 약칭 표기",
+        "봄버맨/본범맨",
+        "해금/태금; replacement context recognized 해금",
+        "어택커/어테커",
+        "웨이들 디/웨이들 뒤"
+      ],
+      "outroFalsePositive": {
+        "recognized": "다음 영상에서 만나요",
+        "timestamps": [
+          561.1,
+          562.8
+        ],
+        "sourceNarrationStemPeakFrom560Seconds": 0,
+        "sourceSmoothStemPeakFrom553Seconds": 0,
+        "conclusion": "No narration in these source samples; ASR hallucinates over the instrumental outro. Do not add this text to captions."
+      },
+      "levelContinuity": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/audio-level-continuity.json",
+      "originalBgmFileRightsAndHashVerified": true,
+      "humanWholeListening": "pending user review",
+      "retainedAfterVisualRepair": false,
+      "decodedAudioSha256": "SHA256=c471949fce9ff5182f7c5652ae091f8cb31c89f07aecb8041a8b3c60e9f21c24",
+      "asrAndLevelEvidenceReusedForIdenticalDecodedAudio": false,
+      "standaloneCorrection": {
+        "id": "standalone-v3",
+        "completedAt": "2026-10-16T10:57:20.047886+00:00",
+        "scope": "Only four narration sentences, corresponding TTS/captions and local audio joins; scene video/timing unchanged.",
+        "patchSpecification": "projects/game-reward-planning/production/reference-preserving-v2/standalone-patches.json",
+        "pcmEvidence": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/patch-evidence.json",
+        "changedTtsFullAsr": "shared/output/narration/game-reward-planning/reference-preserving-v2/standalone-patches/standalone-patches.asr-review.json",
+        "wholeFinalMixAsr": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/final-mix-asr.json",
+        "wholeFinalMixTextComparison": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/final-mix-text-comparison.json",
+        "levelContinuity": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/audio-level-continuity.json",
+        "visualStreamReuse": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/visual-reuse.json",
+        "changedCaptionPixelReview": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/changed-caption-review.json",
+        "outputIntegrity": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/integrity.json",
+        "replacementCount": 4,
+        "unchangedCaptions": 147,
+        "currentCaptionCues": 152,
+        "sourceResolutionScope": "Future/selected source work requires1080p FHD. Existing638x480 DX source retained under explicit current script/TTS-only request.",
+        "humanWholeListening": "pending user review",
+        "internalQaComplete": true,
+        "creatorMentionsRemainingInNarration": false,
+        "unselectedVideosChanged": false
+      },
+      "precedingAudioEvidence": {
+        "ledgerGitCommit": "8ffa59e4573c28c1d4b0f58b278e934b775bf176",
+        "originalEncodedHash": "SHA256=154b55095711568780c844e1dd57f9cd8855a159d2f659c070288299cdc23bfa",
+        "path": "projects/game-reward-planning/production/local/reference-preserving-v2/edit",
+        "unchangedPcmEvidence": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/patch-evidence.json"
+      }
+    },
     "measuredRatio": {
       "actual": 0.242571860816944,
       "explanation": 0.757428139183056,
@@ -362,7 +423,7 @@
     "productionComplete": true,
     "driveReview": {
       "attemptedAt": "2026-10-16T04:56:17.499523+00:00",
-      "status": "blocked-storage-quota",
+      "status": "blocked-storage-quota-not-retried",
       "tool": "google_drive.upload_file",
       "httpStatus": 403,
       "errorReason": "storageQuotaExceeded",
@@ -383,9 +444,77 @@
       "proof": "production/local/reference-preserving-v2/edit/qa/drive-storage-blocker.jpg",
       "permissionChanges": false,
       "baselineDeletions": false,
-      "userInputRequired": "Free approximately150MB total available space, identify specific obsolete files for separate authorized cleanup, or provide a different account/shared drive with capacity. No automatic retry or next video."
+      "userInputRequired": "Free approximately150MB total available space, identify specific obsolete files for separate authorized cleanup, or provide a different account/shared drive with capacity. No automatic retry or next video.",
+      "previousUploadAttempt": {
+        "attemptedAt": "2026-10-16T04:56:17.499523+00:00",
+        "localSha256": "b45ea859ee2fbd2e344c4f68ffc814cf69ffb3eac7cfdbb7a89827d4e741cf9d",
+        "bytes": 103474629,
+        "httpStatus": 403,
+        "errorReason": "storageQuotaExceeded"
+      },
+      "currentFileAttempted": false,
+      "currentLocalSha256": "8c43d37b6d05ed55c28b766bf87f11a1741ba293236a4043b98b756c61d8571a",
+      "currentBytes": 103459160,
+      "note": "Existing quota blocker remains unresolved. This changed file has not been uploaded; previous error belongs to the preserved prior master."
     },
-    "fourOutputs": "production/delivery-output.json",
+    "fourOutputs": {
+      "slug": "game-reward-planning",
+      "createdAt": "2026-10-16T10:57:20.960Z",
+      "directory": "output/game-reward-planning",
+      "publishReady": false,
+      "notices": [
+        "최신 완성 파일 모음입니다. 게시 승인 완료 상태는 아니며 최종 청취·잔여 검수를 확인하세요.",
+        "Drive 저장용량 초과로 업로드 미완료. 약150MB 여유 공간 또는 다른 저장 위치 필요.",
+        "현재 완성본의 사용자 전체 청취·발음 및 최종 검수 대기.",
+        "YouTube 업로드는 같은 버전의 Drive 검수 후 진행."
+      ],
+      "videos": [
+        {
+          "duration": 562.833333,
+          "width": 1920,
+          "height": 1080,
+          "fps": "60/1"
+        },
+        {
+          "duration": 562.833333,
+          "width": 1920,
+          "height": 1080,
+          "fps": "60/1"
+        }
+      ],
+      "cues": 152,
+      "cueCounts": {
+        "ko": 152,
+        "en": 152
+      },
+      "captionAlignment": "identical-cue-timing",
+      "files": [
+        {
+          "name": "game-reward-planning.captioned.mp4",
+          "source": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/game-reward-planning-v2-captioned.mp4",
+          "bytes": 103459160,
+          "sha256": "8c43d37b6d05ed55c28b766bf87f11a1741ba293236a4043b98b756c61d8571a"
+        },
+        {
+          "name": "game-reward-planning.clean.mp4",
+          "source": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/game-reward-planning-v2-clean.mp4",
+          "bytes": 104976597,
+          "sha256": "c9bb4b62ff98c51615179a8d42ac729c36f38c611e67fc0344f9d1aec42ca870"
+        },
+        {
+          "name": "game-reward-planning.ko.srt",
+          "source": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/captions.ko.srt",
+          "bytes": 17682,
+          "sha256": "d29ce5d5c52875fde1367e6e59b74b15c6f2687d1782f3050e26e73a9b0aa6ba"
+        },
+        {
+          "name": "game-reward-planning.en.srt",
+          "source": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/captions.en.srt",
+          "bytes": 15717,
+          "sha256": "4cfbe6bf2e788317a3d2a968fa292effcca3e75e0dede24bad93f9801d5a070b"
+        }
+      ]
+    },
     "lastVerifiedProductionCommit": "5f77847b9324ac91d8c39985d5c7e117666b14bc",
     "gitDelivery": {
       "productionCommit": "5f77847b9324ac91d8c39985d5c7e117666b14bc",
@@ -396,29 +525,41 @@
     },
     "standaloneCorrection": {
       "id": "standalone-v3",
-      "stage": "script-complete-tts-pending",
-      "plan": "planning/reference-preserving-v2.json#standaloneCorrection",
-      "scriptReview": "Four source-creator references removed; adjacent transitions and paired KO/EN meaning directly read; other claims/order retained.",
-      "audio": "pending changed complete sentences only",
-      "visualEvidence": "Previous unchanged layout/motion/source reviews reusable after stream/timing verification",
-      "humanListening": "pending",
-      "drive": "Existing storageQuotaExceeded remains unresolved; do not retry or delete baselines."
+      "completedAt": "2026-10-16T10:57:20.047886+00:00",
+      "scope": "Only four narration sentences, corresponding TTS/captions and local audio joins; scene video/timing unchanged.",
+      "patchSpecification": "projects/game-reward-planning/production/reference-preserving-v2/standalone-patches.json",
+      "pcmEvidence": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/patch-evidence.json",
+      "changedTtsFullAsr": "shared/output/narration/game-reward-planning/reference-preserving-v2/standalone-patches/standalone-patches.asr-review.json",
+      "wholeFinalMixAsr": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/final-mix-asr.json",
+      "wholeFinalMixTextComparison": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/final-mix-text-comparison.json",
+      "levelContinuity": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/audio-level-continuity.json",
+      "visualStreamReuse": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/visual-reuse.json",
+      "changedCaptionPixelReview": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/changed-caption-review.json",
+      "outputIntegrity": "projects/game-reward-planning/production/local/reference-preserving-v2/edit/standalone-v3/integrity.json",
+      "replacementCount": 4,
+      "unchangedCaptions": 147,
+      "currentCaptionCues": 152,
+      "sourceResolutionScope": "Future/selected source work requires1080p FHD. Existing638x480 DX source retained under explicit current script/TTS-only request.",
+      "humanWholeListening": "pending user review",
+      "internalQaComplete": true,
+      "creatorMentionsRemainingInNarration": false,
+      "unselectedVideosChanged": false
     }
   },
-  "stage": "standalone-narration-tts-correction",
-  "status": "active",
-  "updatedAt": "2026-10-16T04:56:17.499523+00:00",
+  "stage": "standalone-correction-complete-local-drive-storage-blocked",
+  "status": "awaiting-user-storage-resolution",
+  "updatedAt": "2026-10-16T10:57:20.047886+00:00",
   "baselineVideoId": "Njz_o1YJh8Q",
   "actualVideoId": null,
-  "finalVideoComplete": false,
+  "finalVideoComplete": true,
   "privateUploadComplete": false,
   "availableSettingsVerified": false,
   "gitDeliveryComplete": false,
   "execution": {
-    "observedAt": "2026-10-16T04:56:17.499523+00:00",
+    "observedAt": "2026-10-16T10:57:20.047886+00:00",
     "gpuSynthesisJobs": 0,
     "fullRenderJobs": 0,
     "uploads": 0
   },
-  "nextAction": "Generate four replacement sentences with approved Qwen voice; preserve unchanged PCM, footage and timing. Verify changed captions/audio and new outputs. Drive quota remains blocked."
+  "nextAction": "After user resolves Drive storage/destination, upload the current standalone-v3 captioned1080p60 master with SHA256 8c43d37b6d05ed55c28b766bf87f11a1741ba293236a4043b98b756c61d8571a; verify remote version/checksum/access/playback. No re-render or ASR of unchanged outputs. No YouTube until this version is reviewed."
 }
