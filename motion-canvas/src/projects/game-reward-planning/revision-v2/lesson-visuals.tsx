@@ -102,8 +102,8 @@ export function* lesson(view:View2D,kind:LessonKind,timing:LessonTiming){
       view.add(txt('각 화면은 별도 상태 · 숫자 변화량을 비교하지 않습니다',-400,240,28,D.muted));official();break;
     case 'music':
       view.add(<><Img src={myMusic} height={460} x={-440} y={-90}/>{txt('곡별 재생 비중을 고르는 화면',-440,230,38,D.muted)}</>);
-      block('해금 전\n바로 들을 수 없음',460,-190,0,D.red,650);block('해금 후\n감상·선택의 폭이 늘어남',460,110,2,D.green,650);
-      arrow([[460,-100],[460,20]],2);official();break;
+      block('해금 전\n바로 들을 수 없음',460,-190,2,D.red,650);block('해금 후\n감상·선택의 폭이 늘어남',460,110,1,D.green,650);
+      arrow([[460,-100],[460,20]],3);official();break;
     case 'checklist':
     case 'progress': {
       const isProgress=kind==='progress';
