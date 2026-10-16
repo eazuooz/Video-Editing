@@ -81,22 +81,23 @@ function build(slug, files) {
     }
   }
   const selected=documents.filter(d=>d.purpose.startsWith('selected'));
-  const rows=selected.flatMap(d=>(Array.isArray(d.data)?d.data:(d.data.scenes||d.data.clips||d.data.pages||[])).map((data,index)=>({record:d.file,index,data})));
+  const rows=selected.flatMap(d=>(Array.isArray(d.data)?d.data:(d.data.scenes||d.data.cuts||d.data.clips||d.data.pages||[])).map((data,index)=>({record:d.file,index,data})));
   const literalFiles=[`motion-canvas/src/projects/${slug}/timing.ts`,...(slug==='frame-rate-modern-rendering'?['motion-canvas/src/projects/frame-rate-modern-rendering/scenes/broll.tsx']:[]),...(slug==='jump-physics'?['motion-canvas/src/narration.ts','motion-canvas/src/broll.ts']:[])];
   const literalRecords=literalFiles.map(literalSettings).filter(Boolean);
   const timing=literalRecords.find(d=>d.data.SCENE_STARTS)?.data;
   // Source-cut records can also have starts. Prefer the explicitly declared
   // production timeline so reconstruction retains explanation scenes as well.
-  const hasSceneStarts=d=>d.data.scenes?.some(r=>Number.isFinite(r.start)||Number.isFinite(r.startFrame));
+  const hasSceneStarts=d=>(d.data.scenes||d.data.cuts)?.some(r=>Number.isFinite(r.start)||Number.isFinite(r.startFrame));
   const declaredTimeline=selected.find(d=>d.file===project.paths?.timeline&&hasSceneStarts(d));
-  const explicitScenes=(declaredTimeline||selected.find(hasSceneStarts))?.data.scenes;
+  const explicitData=(declaredTimeline||selected.find(hasSceneStarts))?.data;
+  const explicitScenes=explicitData?.scenes||explicitData?.cuts;
   const sceneLayout=explicitScenes||(timing?timing.SCENE_STARTS.map((start,i)=>({id:String(i+1).padStart(2,'0'),startSeconds:start,durationSeconds:timing.SCENE_DURATIONS?.[i]??null,title:timing.SCENE_TITLES?.[i]??null})):literalRecords.find(d=>d.data.SEGMENTS)?.data.SEGMENTS||[]);
   const clipRecords=selected.flatMap(d=>{
-    const items=d.data.clips||d.data.scenes||[];
+    const items=d.data.clips||d.data.scenes||d.data.cuts||[];
     return items.flatMap((r,i)=>{
       const cuts=r.cuts||r.segments;
       if(cuts)return cuts.map((cut,j)=>({record:d.file,scene:r.scene||r.id||i,index:j,data:cut}));
-      return r.source&&('sourceIn' in r)?[{record:d.file,scene:r.id||i,index:0,data:r}]:[];
+      return r.source&&('sourceIn' in r||'sourceStart' in r)?[{record:d.file,scene:r.scene||r.id||i,index:0,data:r}]:[];
     });
   });
   for(const d of literalRecords)for(const [i,r] of (d.data.EXAMPLES||d.data.BROLL||[]).entries()) {
