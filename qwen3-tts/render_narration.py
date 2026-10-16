@@ -31,6 +31,7 @@ TIMING_JSON = OUTPUT_DIR / "jump-physics-qwen3-balanced.timing.json"
 LANGUAGE = "Korean"
 RENDER_MODE = "scene"
 INFERENCE_DEVICE = "cuda:0"
+GPU_MINIMUM_FREE_MIB = 18000
 
 
 def load_tts_dependencies() -> None:
@@ -122,6 +123,7 @@ def configure_project(project: str, manifest_override: str | None = None) -> Non
     global LINE_GAP_SECONDS, SCENE_GAP_SECONDS, TAIL_RATIO_THRESHOLD
     global EXAMPLE_SECONDS, NARRATION_PLACEMENT
     global DECAY_MS_THRESHOLD, MAX_RENDER_ATTEMPTS, MAX_NEW_TOKENS, FADE_SECONDS
+    global GPU_MINIMUM_FREE_MIB
 
     manifest_path = _repo_path(manifest_override) if manifest_override else ROOT / "projects" / project / "project.json"
     if not manifest_path.exists():
@@ -176,6 +178,9 @@ def configure_project(project: str, manifest_override: str | None = None) -> Non
     MAX_RENDER_ATTEMPTS = int(tts.get("maxRenderAttempts", MAX_RENDER_ATTEMPTS))
     MAX_NEW_TOKENS = int(tts.get("maxNewTokens", MAX_NEW_TOKENS))
     FADE_SECONDS = float(tts.get("edgeFadeSeconds", FADE_SECONDS))
+    GPU_MINIMUM_FREE_MIB = int(tts.get("gpuMinimumFreeMiB", 18000))
+    if GPU_MINIMUM_FREE_MIB < 18000 and (RENDER_MODE != "scene" or not tts.get("gpuProfileReason")):
+        raise ValueError("Reduced GPU profile requires scene-mode batch1 and a documented gpuProfileReason")
 
 
 def timestamp(seconds: float) -> str:
@@ -633,12 +638,12 @@ def main() -> None:
     )
     args = parser.parse_args()
     from gpu_handoff_guard import schedule_gpu_handoff
-    schedule_gpu_handoff(args.project, args.device, args.dry_run)
     if args.batch_size < 1:
         raise ValueError("--batch-size must be at least 1")
 
     INFERENCE_DEVICE = args.device
     configure_project(args.project, args.manifest)
+    schedule_gpu_handoff(args.project, args.device, args.dry_run, GPU_MINIMUM_FREE_MIB)
     print(f"Project: {args.project}")
     print(f"Script:  {SCRIPT_PATH}")
     print(f"Output:  {OUTPUT_DIR}")

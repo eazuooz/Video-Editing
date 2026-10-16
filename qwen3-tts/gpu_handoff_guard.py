@@ -31,7 +31,7 @@ def check_gpu_handoff(project, device, dry_run=False):
     raise SystemExit('GPU is reserved for a cooperative training/TTS handoff. Preserve this narration checkpoint and wait for the lease to finish.')
 
 
-def schedule_gpu_handoff(project, device, dry_run=False):
+def schedule_gpu_handoff(project, device, dry_run=False, minimum_free_mib=18000):
     """Serialize shared Qwen entrypoints and use the inspected research queue.
 
     The child launched by the lease coordinator is allowed through exactly once.
@@ -40,6 +40,8 @@ def schedule_gpu_handoff(project, device, dry_run=False):
     """
     if dry_run or not str(device).startswith('cuda'):
         return
+    if not isinstance(minimum_free_mib, int) or minimum_free_mib < 8192:
+        raise ValueError('GPU capacity profile must reserve at least8192MiB; keep a measured model/batch-specific profile in the manifest.')
     import psutil
     lease = ROOT / 'shared/output/GPU_HANDOFF.json'
     announced = False
@@ -80,8 +82,10 @@ def schedule_gpu_handoff(project, device, dry_run=False):
                                   '--format=csv,noheader,nounits'], text=True,
                                  creationflags=subprocess.CREATE_NO_WINDOW)
     free, util = map(int, raw.splitlines()[0].replace(' ', '').split(','))
-    if free < 18000 or util >= 15:
-        raise SystemExit('Unregistered GPU work is active. Inspect its safe completion/resume interface before GPU TTS; current work was preserved.')
+    if free < minimum_free_mib:
+        raise SystemExit(f'GPU capacity is insufficient for this profile: {free}MiB free, {minimum_free_mib}MiB required. Existing work was preserved.')
+    if util >= 15:
+        raise SystemExit('Unregistered GPU activity is present. Inspect its safe completion/resume interface before GPU TTS; current work was preserved.')
     # Idle GPU entrypoints also serialize, including calls outside this batch.
     # Keep ownership until process exit so its model cannot retain CUDA memory
     # after releasing the lease. No research restart is needed in this case.
@@ -89,13 +93,13 @@ def schedule_gpu_handoff(project, device, dry_run=False):
     record = dict(schemaVersion=1, token=str(uuid.uuid4()), project=project, state='tts_running',
                   requestedAt=time.time(), queueDir=None, idleGpu=True,
                   coordinator=dict(pid=me.pid, createTime=me.create_time()),
-                  gpuBeforeTts=dict(freeMiB=free, utilization=util))
+                  gpuBeforeTts=dict(freeMiB=free, utilization=util, minimumFreeMiB=minimum_free_mib))
     lease.parent.mkdir(parents=True, exist_ok=True)
     try:
         with lease.open('x', encoding='utf-8') as f:
             json.dump(record, f, ensure_ascii=False, indent=2)
     except FileExistsError:
-        return schedule_gpu_handoff(project, device, dry_run)
+        return schedule_gpu_handoff(project, device, dry_run, minimum_free_mib)
 
     def release_idle():
         if lease.exists():
