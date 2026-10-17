@@ -1,0 +1,112 @@
+"""Paired independently worded narration; finalize against inspected footage."""
+from pathlib import Path
+import json
+R=Path(__file__).resolve().parents[4];P=R/'projects/making-game-sequels';S=P/'script/reference-preserving-v2';S.mkdir(parents=True,exist_ok=True)
+parts=[
+('01','전편은 재밌었는데','''안녕하세요, 얌얌코딩입니다.
+전편을 재미있게 했는데도, 속편은 선뜻 사고 싶지 않을 때가 있죠.
+만드는 입장에서는 익숙한 기반이 큰 도움이 되지만, 하는 사람에게는 다시 즐길 이유가 필요합니다.
+피크민과 그란 투리스모의 플레이를 출발점으로 제작의 이점을 살펴보고, 스매시브라더스의 사례를 거쳐, 그 이점을 새로운 재미로 바꾸는 방법까지 연결해 보겠습니다.''','''Hello, this is Yamyam Coding.
+You can enjoy a game and still hesitate to buy its sequel.
+A familiar foundation can help the developers, but players need a reason to return.
+Starting with Pikmin and Gran Turismo, we will examine that production advantage, consider the example of Smash Bros., and connect the advantage to a fresh experience.'''),
+('02','게임에서 재사용할 수 있는 것','''피크민에서는 작은 대원들에게 일을 맡기고, 그란 투리스모에서는 차를 조종해 코스를 달립니다.
+여러 편으로 이어져도, 시리즈를 알아보게 만드는 행동은 남아 있죠.
+그렇다고 전편과 같은 것을 한 번 더 내놓기만 하면, 같은 사람들이 다시 구매한다는 보장은 없습니다. 처음 느꼈던 신선함은 이미 경험했기 때문입니다.
+그런데도 속편을 만드는 큰 이유가 있습니다. 이미 작동하는 기반에서 출발할 수 있다는 점입니다.
+영화도 인물과 설정을 이어 쓰지만, 관객이 볼 새 장면은 다시 만들어야 합니다.
+게임은 새 장면을 채우기 전에, 플레이어의 입력에 반응하고 규칙을 처리하는 구조부터 필요합니다.''','''In Pikmin, you assign tasks to a small squad; in Gran Turismo, you control a car around a course.
+The actions that identify each series can remain across several installments.
+But releasing the same experience again does not guarantee that the same people will buy it again. They have already experienced its novelty.
+There is nevertheless a major reason to make sequels: development can begin from a working foundation.
+Films can retain characters and settings, but still need new scenes for their audiences.
+Before filling a game with new situations, developers need structures that respond to player input and apply the rules.'''),
+('03','기반 위에 새 내용을 쌓기','''그 구조를, 화면에 보이는 내용과 나누어 보죠.
+운전 게임에서 핸들을 돌렸을 때 차가 어떻게 회전하는지, 다른 물체에 닿으면 어떻게 반응하는지는 기반 시스템에 해당합니다.
+반면 어떤 차로 어느 코스를 달릴지는 그 시스템 위에 올리는 구체적인 콘텐츠입니다. 여기서 콘텐츠는 플레이어가 실제로 경험할 장소와 도전을 뜻합니다.
+개발자는 코스나 상대를 만들고 수정할 제작 도구도 필요합니다. 게임을 실행하는 기능과, 그 게임의 내용을 만드는 도구가 함께 준비돼야 하는 거죠.
+속편은 이 기반을 검토하고 필요한 부분을 고친 뒤, 새로운 내용에 힘을 더 쓸 수 있습니다.
+가령 설명을 위해, 기반을 만드는 작업이 여섯 달이고 콘텐츠 작업이 네 달인 가상의 계획을 생각해 봅시다. 합하면 열 달입니다.
+재사용 덕분에 기반 작업이 두 달로 줄어든다면, 같은 계산에서는 총 여섯 달이 됩니다. 실제 게임의 개발 기간이 아니라, 무엇이 줄어드는지 보여 주는 예입니다.
+새 기기 대응이나 큰 규칙 변경이 필요하면 오히려 기반을 많이 고쳐야 합니다. 재사용은 출발점의 이점이지, 작업이 사라진다는 뜻은 아닙니다.''','''Let us separate that structure from the content visible on screen.
+In a driving game, the way the car turns with steering input and reacts to contact belongs to its underlying systems.
+The particular car and course are content built on those systems. Content here means the places and challenges that players actually experience.
+Developers also need tools for creating and modifying courses and opponents. They need both the functions that run the game and the tools that make its content.
+A sequel can review that foundation, improve what needs changing, and devote more effort to new content.
+For illustration, imagine a plan with six months of foundation work and four months of content work: ten months in total.
+If reuse reduces the foundation work to two months, the same calculation gives six months overall. These are illustrative figures, not the development time of an actual game.
+A new platform or major rule changes may require extensive rebuilding. Reuse offers a head start; it does not make the work disappear.'''),
+('04','재미도 실제로 확인해야 한다','''이미 해 본 작업에서 출발한다는 이점은, 일정 계산보다 더 깊은 곳에도 있습니다.
+게임은 줄거리나 기능 목록을 읽었다고 해서, 직접 조작할 때의 재미까지 알 수 있는 매체가 아닙니다.
+피크민에서 대원을 보내고 다시 불러오는 행동도, 얼마나 빠르게 반응하는지, 위험한 곳에 얼마나 오래 맡겨 둘지에 따라 느낌이 달라집니다.
+같은 기능 이름이라도, 손으로 해 보기 전에는 이 판단이 즐거운지 번거로운지 알기 어렵습니다.
+그래서 핵심 행동만 실행되는 작은 시제품, 프로토타입을 만들고 직접 시험합니다. 이렇게 실제 조작으로 경험을 확인하는 과정을 플레이테스트라고 합니다.
+속편에는 전편을 만들고 시험한 경험이 남아 있습니다. 아무것도 확인되지 않은 출발점보다, 유지할 재미와 고칠 문제를 판단할 근거가 많은 셈입니다.
+완전히 새로운 기획은 만들다가 재미가 성립하지 않아 중단될 수도 있습니다. 속편의 이점은 이름이 알려져 있다는 홍보 효과에만 있지 않습니다.''','''Starting from work that has already been tried offers an advantage beyond the schedule.
+Reading a plot or feature list does not tell you how a game will feel to control.
+Even sending out Pikmin and calling them back feels different depending on their response and how long you leave them exposed to danger.
+The same feature name can describe an enjoyable decision or an inconvenience. Hands-on experience helps reveal the difference.
+Developers therefore build a small working prototype of the core actions and test it. Checking the experience through actual play is called playtesting.
+A sequel can draw on the experience of building and testing its predecessor. It has more evidence about which pleasures to retain and which problems to address.
+A completely new concept may be stopped if its gameplay never comes together. The advantage of a sequel goes beyond the marketing value of a familiar name.'''),
+('05','같은 시리즈라고 같은 출발점은 아니다','''다만 시리즈 이름이 이어진다고, 제작 기반까지 자동으로 이어지는 것은 아닙니다.
+스매시브라더스는 상대를 공격해 멀리 밀어내고, 경기장 밖으로 떨어뜨리는 대전 게임입니다.
+화면의 퍼센트는 쌓인 대미지를 나타내며, 일반적으로 대미지가 클수록 공격에 더 멀리 밀려납니다. 이런 공통 규칙 때문에 다른 편에서도 익숙한 대전을 알아볼 수 있죠.
+하지만 이 시리즈에서도 개발팀이 달라지며 기반 시스템을 다시 구축한 경우들이 있었습니다. 겉으로 이어지는 플레이와 내부 제작 환경의 연속성은 별개입니다.
+위 유와 닌텐도 쓰리디에스용 작품에서 얼티밋으로 이어질 때는 같은 개발팀과 가까운 제작 환경을 이어 갈 수 있었습니다.
+공식 개발 실적에서도 위 유용 작품과 얼티밋 모두 반다이남코 스튜디오의 개발 참여를 확인할 수 있습니다.
+중요한 것은 속편이라는 이름 자체보다, 실제로 무엇을 이어 쓸 수 있느냐입니다. 그리고 그렇게 만든 결과를 다시 판단하는 쪽은 플레이어입니다.''','''However, a continuing series name does not automatically mean a continuing production foundation.
+Smash Bros. is a fighting game in which you attack opponents to launch them out of the arena.
+The percentage indicates accumulated damage. In general, higher damage makes a fighter easier to launch farther. These shared rules make the fighting recognizable across installments.
+Yet the series has also had changes of development team that required its underlying systems to be rebuilt. Familiar play and continuity of the development environment are separate matters.
+The transition from the Wii U and Nintendo 3DS games to Ultimate could retain the development team and a similar production environment.
+The official development portfolio also confirms Bandai Namco Studios' involvement in both the Wii U game and Ultimate.
+What matters is what can actually carry forward, rather than the sequel label itself. Players then judge the resulting experience.'''),
+('06','기대는 경험을 거쳐 돌아온다','''플레이어가 첫 작품을 살 때는, 아직 직접 해 보지 않은 재미를 기대합니다.
+화면을 보고 재미있어 보인다고 생각해서 구매하지만, 실제로 잘 맞는지는 플레이한 뒤에 알게 되죠.
+예를 들어 스매시브라더스의 공격과 밀어내기가 흥미로워 보여 시작했어도, 직접 했을 때 조작이 답답하거나 진행이 지루하면 다음 편을 망설일 수 있습니다.
+끝까지 즐겼는지 중간에 그만뒀는지도 영향을 줍니다. 다만 중단했다고 모두 싫어한 것은 아닙니다. 게임의 구성뿐 아니라 취향과 시간 사정도 다르니까요.
+반대로 전편에서 만족한 경험이 있다면, 그 재미를 더 하고 싶다는 기대가 생깁니다.
+첫 구매가 기대에서 시작했다면, 다음 구매에는 실제 경험의 기억이 더해집니다. 그래서 전편을 잘 만드는 일도 다음 편의 출발점이 됩니다.''','''When buying a first installment, players anticipate enjoyment they have not yet experienced themselves.
+They may buy because it looks fun, but only learn whether it suits them after playing.
+For example, Smash Bros.' attacks and launching can look appealing, yet frustrating controls or tedious progression for a particular player could make that person hesitate over the next game.
+Finishing or stopping partway through can matter too. But stopping does not always mean dislike: personal taste and available time also differ.
+A satisfying experience, on the other hand, can create the desire for more of that enjoyment.
+The first purchase begins with expectations; the next adds memories of actual play. Making the previous game well also helps establish the next one's starting point.'''),
+('07','더 하고 싶은 재미와 이미 한 경험','''그런데 만족했던 사람에게도, 새 작품을 살 이유는 따로 필요합니다.
+규모와 내용이 너무 비슷하면, 좋아했던 경험이어도 이미 충분히 했다고 느낄 수 있기 때문입니다.
+익숙한 재미는 남기되, 이번에는 무엇을 새롭게 해 볼 수 있는지가 보여야 합니다.
+피크민 사에서는 대원들에게 일을 맡기는 활동에, 우주견 오치라는 동료가 더해집니다.
+새 동료를 추가했다는 이름보다 중요한 것은, 함께 이동하고 일을 나눌 때 플레이어의 선택이 어떻게 바뀌는지입니다.
+새로운 캐릭터나 기능을 나열하는 데서 멈추지 말고, 기존 행동이 어떤 상황에서 달라지는지를 실제로 보여 주어야 합니다.''','''Even satisfied players still need a reason to buy the new game.
+If its scale and content feel too similar, they may feel they have already had enough of an experience they enjoyed.
+The familiar appeal can remain, but players should be able to see what they can newly try.
+Pikmin 4 adds the space dog Oatchi alongside the established activity of assigning tasks to Pikmin.
+The important part is not simply the name of a new companion, but how moving together and sharing work change the player's choices.
+Rather than stopping at a list of new characters and features, show the situations in which existing actions change.'''),
+('08','제작의 이점을 플레이의 가치로','''이렇게 보면, 개발자가 절약한 작업과 플레이어가 받는 가치는 서로 다른 항목입니다.
+기반을 이어 쓴 덕분에 개발이 편해졌더라도, 그 사실만으로 플레이어에게 새로운 즐거움이 생기지는 않습니다.
+절약한 여유를 조작 개선에 쓰거나, 도전할 상황을 넓히거나, 기존 행동으로 다른 판단을 하게 만드는 데 쓸 수 있습니다.
+피크민에서는 누구에게 어떤 일을 맡길지, 운전 게임에서는 어느 지점에서 방향과 속도를 바꿀지처럼, 플레이어가 직접 하는 판단을 기준으로 살펴보는 겁니다.
+그래서 속편 기획에는 두 문장이 함께 필요합니다. 제작에서는 무엇을 이어 쓰고, 플레이에서는 무엇을 새롭게 느끼게 할 것인가.
+둘 사이가 구체적인 행동으로 연결될수록, 단순히 같은 것을 한 번 더 만든다는 인상에서 벗어날 수 있습니다.''','''This separates work saved by the developers from value received by the players.
+Even if retaining a foundation makes production easier, that fact alone does not give players new enjoyment.
+The resulting room can go into improved controls, a broader set of challenges, or different decisions using familiar actions.
+Look at decisions players actually make: whom to assign a task to in Pikmin, or where to change direction and speed in a driving game.
+A sequel concept therefore needs two statements together: what will production carry forward, and what will players experience anew?
+The more concretely those statements connect through player actions, the better the concept can move beyond simply doing the same thing again.'''),
+('09','이어서 만들되 다시 할 이유를','''속편에는 이미 만든 시스템과 도구, 그리고 실제 플레이로 확인한 경험이 있습니다.
+하지만 그 이점을 얻으려면 이어 쓸 기반이 실제로 남아 있어야 하고, 새 작품도 충분히 공들여 완성해야 합니다.
+전편의 만족은 기대를 만들지만, 다음 편을 대신 즐겨 주지는 않습니다. 이번에도 해 보고 싶은 행동과 도전이 필요하죠.
+새로운 게임이냐 속편이냐만으로 가치를 정할 수는 없습니다. 어느 쪽이든 플레이어가 좋은 시간을 보낼 수 있게 만드는 것이 중요합니다.
+기획을 볼 때, 만드는 쪽의 출발점과 하는 쪽의 새 경험을 함께 확인해 보세요. 익숙한 기반을 이어 쓰면서도 다시 즐길 이유를 만드는 것, 그것이 속편을 설계할 때 붙잡아야 할 핵심입니다.''','''A sequel can inherit systems, tools, and experience tested through real play.
+But the usable foundation must actually remain, and the new game still needs care and effort to reach completion.
+Satisfaction with the previous game builds expectations; it does not play the next one on the player's behalf. There must be actions and challenges worth trying this time.
+Being original or a sequel does not determine a game's value. Either way, the aim is to give players a worthwhile experience.
+When reviewing a concept, consider both the developers' starting point and the players' new experience. Carrying forward a familiar foundation while giving people a reason to return is central to designing a sequel.''')
+]
+for lang,index,title in [('ko',2,'전편은 재밌었는데, 왜 속편은 안 살까?'),('en',3,'Why Enjoy a Game but Skip Its Sequel?')]:
+ d={'title':title,'revision':'reference-preserving-v2','status':'draft-pending-final-footage-match','scenes':[{'id':s[0],'title':s[1],'lines':s[index].splitlines()} for s in parts]}
+ (S/f'narration.{lang}.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+assert all(len(x[2].splitlines())==len(x[3].splitlines()) for x in parts)
+print(len(parts),'paired scenes;',sum(len(s[2].splitlines()) for s in parts),'paragraphs; footage matching still required')
