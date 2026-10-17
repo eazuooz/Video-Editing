@@ -3,8 +3,12 @@ from pathlib import Path
 import os,subprocess,json,hashlib,shutil,datetime,sys
 R=Path(__file__).resolve().parents[4]
 unit=sys.argv[1]; spec=json.loads((R/sys.argv[2]).read_text(encoding='utf8'));paths=spec['paths']
-assert paths and all(p.startswith(('projects/making-game-sequels/','motion-canvas/src/projects/making-game-sequels/')) or p in ['shared/publishing/video-worklist.json','docs/VIDEO_WORKLIST.md','shared/publishing/video-production-control.json','shared/assets/essential-image-registry.json'] for p in paths)
-assert all(Path(p).suffix in ['.json','.md','.py','.cjs','.mjs','.ts','.tsx','.txt','.srt','.ass','.html','.css'] for p in paths)
+thumbnail='projects/making-game-sequels/publishing/reference-preserving-v2/thumbnail-v2.png'
+assert paths and all(p.startswith(('projects/making-game-sequels/','motion-canvas/src/projects/making-game-sequels/')) or p in ['shared/publishing/video-worklist.json','docs/VIDEO_WORKLIST.md','shared/publishing/video-production-control.json','shared/git-essential-images.json','.gitignore'] for p in paths)
+assert all(Path(p).suffix in ['.json','.md','.py','.cjs','.mjs','.ts','.tsx','.txt','.srt','.ass','.html','.css'] or p in ['.gitignore',thumbnail] for p in paths)
+if thumbnail in paths:
+ registry=json.loads((R/'shared/git-essential-images.json').read_text(encoding='utf8'))
+ assert any(e['path']==thumbnail and e['sha256']==hashlib.sha256((R/thumbnail).read_bytes()).hexdigest() for e in registry['entries'])
 O=R/'shared/output/making-game-sequels'/('git-'+unit);O.mkdir(parents=True,exist_ok=True)
 def git(*a,env=None):return subprocess.run(['git',*a],cwd=R,env=env,capture_output=True,check=True).stdout
 def foreign():return [r for r in git('ls-files','--stage','-z').split(b'\0') if r and r.split(b'\t',1)[1].decode() not in paths]

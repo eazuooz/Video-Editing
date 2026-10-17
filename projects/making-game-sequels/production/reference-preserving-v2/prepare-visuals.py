@@ -1,7 +1,7 @@
 from pathlib import Path
 import json,subprocess
 R=Path(__file__).resolve().parents[4];P=R/'projects/making-game-sequels';L=P/'production/local/reference-preserving-v2';A=L/'assets';A.mkdir(exist_ok=True);M=R/'motion-canvas/src/projects/making-game-sequels/revision-v2'
-shots=[('gt-turn','gt7-sunday',32),('pikmin-task','pikmin4-day2',48),('pikmin-wall','pikmin4-day2',233),('pikmin-open','pikmin4-day2',249),('wiiu-fight','smash-wiiu',64),('ultimate-fight','smash-ultimate',21),('oatchi-before','pikmin4-day2',330),('oatchi-work','pikmin4-day2',334),('oatchi-result','pikmin4-day2',344)]
+shots=[('gt-turn','gt7-sunday',32),('pikmin-task','pikmin4-day2',48),('pikmin-wall','pikmin4-day2',233),('pikmin-open','pikmin4-day2',249),('wiiu-fight','smash-wiiu',64),('ultimate-fight','smash-ultimate',21),('oatchi-before','pikmin4-day2',333.5),('oatchi-work','pikmin4-day2',336.5),('oatchi-result','pikmin4-day2',348)]
 for name,source,sec in shots:
  target=A/(name+'.png')
  if not target.exists():subprocess.run(['ffmpeg','-v','error','-ss',str(sec),'-i',str(L/'media'/(source+'.mp4')),'-frames:v','1',str(target)],check=True)

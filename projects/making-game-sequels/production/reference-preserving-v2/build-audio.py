@@ -44,6 +44,9 @@ if __name__=='__main__':
  rate=48000;game=np.zeros((round(duration*rate),2),dtype=np.float32);gameRecords=[]
  for c in plan['cuts']:
   if c['kind']!='independent-gameplay':continue
+  if c.get('originalAudio')=='exclude':
+   gameRecords.append({'cut':c['id'],'mixedOriginalAudio':False,'reason':c['audioExclusionReason']})
+   continue
   d=c['frames']/60;f=O/(c['id']+'-game.wav');run(['-ss',str(c['sourceStart']),'-i',c['sourceFile'],'-t',str(d),'-vn','-ar','48000','-ac','2','-c:a','pcm_f32le',str(f)],c['id']+'-game')
   a,r=sf.read(f,dtype='float32',always_2d=True);a=a[:round(d*rate)];level=rms(a);gain=min(1.,10**(-33/20)/max(level,1e-9));a*=gain
   fade=min(960,len(a)//2);a[:fade]*=np.linspace(0,1,fade)[:,None];a[-fade:]*=np.linspace(1,0,fade)[:,None]
