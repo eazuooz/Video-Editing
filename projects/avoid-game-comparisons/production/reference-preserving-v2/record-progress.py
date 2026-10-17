@@ -21,4 +21,8 @@ control['selectedVideoRevision']={'video':P.name,'id':rev['id'],'status':stage,'
 control['selectedVideoFinalReview']={'video':P.name,'version':rev['id'],'status':'pending-user-local-review' if stage=='local-review' else 'production-in-progress','driveRequired':False,'reason':'User explicitly waived Drive for this request; preserve earlier platform copies','userReview':None,'youtubeUploadAuthorized':False}
 control['updatedAt']=now;write(p,control)
 p=R/'shared/publishing/video-worklist.json';work=read(p);row=next(r for r in work['rows'] if r.get('slug')==P.name);row['currentRevision'].update(productionComplete=stage=='local-review',ttsComplete=True,renderStarted=stage!='voice-reviewed',localReviewPending=stage=='local-review');row.update(productionStatus={'voice-reviewed':'수정본 대본·전체 음성 검증 완료 / 렌더 준비','rendering':'수정본1080p60 렌더·자막·전체 검수 중','local-review':'수정본1080p60·네 가지 결과물 완성'}[stage],executionStatus={'voice-reviewed':'선택됨 · 실제60·설명40 프레임 편집 확정','rendering':'선택됨 · 최종 렌더와 검수 진행','local-review':'현재 완성본 사용자 검수 대기'}[stage],localMasterAvailable=stage=='local-review',reviewStatus='전체 음성·화면·한영 자막 내부 검수 완료 / 사용자 최종 청취 대기' if stage=='local-review' else '전체 음성 대조 완료 / 최종 화면·자막·믹스 검수 진행',notes='D18만 진행. 실제60·설명40, 독립1080p 자료. 기존 비공개본 cQE7_ygx_XM 보존. Drive 생략 요청 유지; 새 완성본 검수 전 YouTube 교체·다음 편 시작 없음.');work['updatedAt']=now;write(p,work)
+if stage=='local-review':
+ row['reviewStatus']='화면·자막 검수 및 전체 음성 전사·인코딩 검사 완료 / 발음·국소 음량과 전체 청취 최종 확인 대기'
+ row['currentRevision']['humanListeningComplete']=False
+ write(p,work)
 print(stage,edit['totalFrames']/60,'seconds; baseline unchanged')

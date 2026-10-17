@@ -87,7 +87,7 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
    label('가상 기획 예시 · 실제 마리오 규칙의 변경을 뜻하지 않습니다',0,330,4,D.muted,33);break;
   default:
    label('이름 없이도 설명할 수 있나요?',0,-190,0,D.title,60);
-   ['목표','행동','조건과 결과','다시 말해 보기'].forEach((s,i)=>{const x=-660+i*440;label(s,x,20,i,D.ink,i===3?40:48);if(i<3)arrow([[x+130,20],[x+290,20]],i+1,D.teal);});
+   ['목표','행동','조건과 결과','다시 말해 보기'].forEach((s,i)=>{const x=-660+i*440;label(s,x,20,i,D.ink,i===3?40:48);if(i<3)arrow([[x+(i===2?190:130),20],[x+(i===2?260:290),20]],i+1,D.teal);});
    label('비교는 설명을 돕고, 내 게임의 매력은 직접 말합니다',0,250,4,D.green,46);
  }
  yield* t(duration,duration,linear);

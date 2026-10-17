@@ -34,7 +34,12 @@ if __name__=='__main__':
   reports.append({'scene':s['id'],'sourceSha256':q['audio_sha256'],'sourceSpeechRmsDbfs':level,'fixedGainDb':db(gain),'windows':windows,'noSourcePcmOverwrite':True})
  sf.write(O/'voice-fixed-gain.wav',voice,sr,subtype='FLOAT')
  logs=run(['-i',str(O/'voice-fixed-gain.wav'),'-af','loudnorm=I=-16:TP=-2:LRA=9:print_format=json','-f','null','-'],'voice-measure')
- stats=json.loads(logs[logs.rfind('{'):logs.rfind('}')+1]);norm='loudnorm=I=-16:TP=-2:LRA=9:linear=true:measured_I={input_i}:measured_TP={input_tp}:measured_LRA={input_lra}:measured_thresh={input_thresh}:offset={target_offset}'.format(**stats)
+ stats=json.loads(logs[logs.rfind('{'):logs.rfind('}')+1]);gainDb=-16-float(stats['input_i'])
+ # loudnorm silently falls back to dynamic mode when the requested linear
+ # gain would exceed its peak ceiling. That changed local voice gain by17dB
+ # in the first mix. Keep one constant global gain and a short peak limiter;
+ # never apply a seconds-long adaptive normalization envelope to narration.
+ norm=f'volume={gainDb}dB:precision=double,alimiter=limit=0.7499:attack=5:release=50:level=false:latency=true'
  run(['-i',str(O/'voice-fixed-gain.wav'),'-af',norm+',pan=stereo|c0=c0|c1=c0','-ar','48000','-c:a','pcm_s24le',str(O/'narration-stem.wav')],'voice-normalize')
  rate=48000;game=np.zeros((round(duration*rate),2),dtype=np.float32);gameRecords=[]
  for c in plan['cuts']:
@@ -49,5 +54,5 @@ if __name__=='__main__':
  run(['-stream_loop','-1','-i',str(music),'-t',str(duration),'-af',f'loudnorm=I=-31:TP=-4:LRA=7,afade=t=in:st=0:d=1,afade=t=out:st={duration-2}:d=2','-ar','48000','-ac','2','-c:a','pcm_s24le',str(O/'music-stem.wav')],'music-level')
  graph='[0:a]asplit=3[voice][side1][side2];[1:a][side1]sidechaincompress=threshold=0.025:ratio=3:attack=35:release=400[bg];[2:a][side2]sidechaincompress=threshold=0.035:ratio=2:attack=15:release=250[game];[voice][bg][game]amix=inputs=3:normalize=0:duration=first,alimiter=limit=0.794:level=false:latency=true[out]'
  run(['-i',str(O/'narration-stem.wav'),'-i',str(O/'music-stem.wav'),'-i',str(O/'game-stem.wav'),'-filter_complex',graph,'-map','[out]','-t',str(duration),'-ar','48000','-c:a','pcm_s24le',str(O/'final-mix.wav')],'final-mix')
- report={'scenes':reports,'gameAudio':gameRecords,'duration':duration,'normalization':stats,'musicInitialLufs':-31,'music':'Nimbus — Eveningland','voiceDucked':False,'amixNormalize':False,'sourcePcmPreserved':True,'sourceToStemToEncodedContinuity':'pending','fullFinalAsr':'pending','humanWholeListening':'pending'}
+ report={'scenes':reports,'gameAudio':gameRecords,'duration':duration,'normalizationMeasurementOnly':stats,'voiceGainMode':'constant-global-gain-with-short-peak-limiter','globalGainDb':gainDb,'peakLimiter':{'ceilingDbfs':-2.5,'attackMs':5,'releaseMs':50,'autoMakeup':False},'musicInitialLufs':-31,'music':'Nimbus — Eveningland','voiceDucked':False,'amixNormalize':False,'sourcePcmPreserved':True,'sourceToStemToEncodedContinuity':'pending','fullFinalAsr':'pending','humanWholeListening':'pending'}
  (O/'audio-build.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8');print('Mixed',duration,'seconds')

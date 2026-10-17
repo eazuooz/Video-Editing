@@ -18,7 +18,7 @@ def nes(s,a,b,label):
  c=film(s,a,b,'nes-gameplay-project',pool,label);pool+=c['frames']/60+1;assert pool<138,'Inspect another relevant source range, never pad';return c
 def diagram(s,a,b,kind,cues=None):return add(s,a,b,'explanation',visual=kind,cues=cues or [0,(b-a)*.18,(b-a)*.38,(b-a)*.58,(b-a)*.78],renderer='Motion Canvas',implementationKind='independent conceptual diagram')
 
-nes('01',0,10.5,'같은 이름이 떠올리는 횡스크롤 플레이')
+nes('01',0,10.5,'같은 이름이 떠올리는 횡스크롤 플레이').update(sourceStart=43)  # Reviewed active jumps; exclude the earlier level-loading range.
 film('01',10.5,E['01'],'odyssey-switch2-180-360',60,'같은 마리오, 다른 공간과 모자 행동')
 film('02',0,E['02'],'nes-gameplay-project',10,'오른쪽으로 이동 · 점프로 장애물과 적을 통과')
 # Scene03 is first built entirely as a diagram. Its last concrete-play passage
@@ -36,7 +36,7 @@ film('06',B['06'][4],B['06'][5],'nes-gameplay-project',178,'기억으로 남는 
 film('06',B['06'][5],E['06'],'odyssey-switch2-705-820',29,'평면 점프의 기억에서 입체 공간 탐색으로 연결')
 film('07',0,B['07'][2],'odyssey-switch2-705-820',68-B['07'][2],'공간에서 이동 경로와 캡처 대상을 탐색').update(labels=[{'from':B['07'][1]+3,'to':B['07'][2]-.1,'text':'캡처 (Capture) · 특정 대상을 조종하는 기능','position':[470,70]}])
 film('07',B['07'][2],B['07'][4],'odyssey-switch2-705-820',68,'티라노사우루스 캡처 → 돌 부수기')
-nes('07',B['07'][4],B['07'][5],'같은 단어가 불러오는 첫 번째 경험: 횡스크롤 점프')
+nes('07',B['07'][4],B['07'][5],'같은 단어가 불러오는 첫 번째 경험: 횡스크롤 점프').update(sourceStart=169)  # Keep the character visible, rather than above the underground ceiling/HUD.
 film('07',B['07'][5],E['07'],'odyssey-switch2-705-820',68+B['07'][4]-B['07'][2],'다른 경험: 조종 대상의 능력으로 길 열기')
 actual08=B['08'][4]  # Keep the actual Moon collection through goal/action/condition; diagram begins when the condition is varied.
 source08=94-(B['08'][2]+4.0)
@@ -68,6 +68,10 @@ for i,c in enumerate(cuts):
   video,credit,game=sourceInfo[c['source']];c.update(sourceFile=(L/(c['source']+'.mp4')).relative_to(R).as_posix(),sourceUrl='https://www.youtube.com/watch?v='+video,credit=credit,game=game,classification='independent-gameplay',showGameTitle=game not in seen,coordinateSystem='Source1920x1080; aspect-preserved1600x900 at160,0; fixed captions960,970',clearAtSourceCut=True);seen.add(game)
  else:
   c.update(mcStartFrame=mc,mcEndFrame=mc+c['frames']);mc+=c['frames'];name='production-'+c['id'];parts.append(name)
+  if c['visual']=='conclusion':
+   c['renderedOverride']='shared/output/motion-canvas/avoid-comparisons-conclusion-fixed-v2.mp4'
+   c['holdAfterFrames']=1200
+   c['holdReason']='All diagram reveals settle before19.1s; hold the completed diagram from20s until narration finishes, avoiding renderer tail glyph deletion. Explanation only; actual footage remains native speed.'
   (M/(name+'.tsx')).write_text("import {makeScene2D} from '@motion-canvas/2d';\nimport {lesson} from './visuals';\nexport default makeScene2D(function*(view){yield* lesson(view,"+json.dumps(c['visual'])+','+json.dumps({'duration':c['frames']/60,'cues':c['cues']})+");});\n",encoding='utf8')
 for a,b in zip(cuts,cuts[1:]):assert a['endFrame']==b['startFrame'],(a,b)
 assert cuts[0]['startFrame']==120 and cuts[-1]['endFrame']==body+120

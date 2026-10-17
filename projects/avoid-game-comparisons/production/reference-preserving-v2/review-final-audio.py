@@ -5,6 +5,7 @@ R=Path(__file__).resolve().parents[4];P=R/'projects/avoid-game-comparisons';O=P/
 sys.path.insert(0,str(R/'qwen3-tts'))
 from review_project_narration import normalize
 assert json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf8'))['selectedVideo']==P.name
+assert json.loads((O/'audio-build.json').read_text(encoding='utf8')).get('voiceGainMode')=='constant-global-gain-with-short-peak-limiter','Stop at completed encode boundary: replace the diagnosed adaptive voice normalization before final ASR'
 video=O/'avoid-game-comparisons-v2-captioned.mp4';out=O/'encoded-audio.wav'
 subprocess.run(['ffmpeg','-v','error','-y','-i',str(video),'-vn','-ac','1','-ar','16000','-c:a','pcm_s16le',str(out)],check=True)
 digest=hashlib.sha256(out.read_bytes()).hexdigest();cache=O/'final-mix-asr.json'
@@ -16,7 +17,7 @@ else:
  free=int(subprocess.check_output(['nvidia-smi','--query-gpu=memory.free','--format=csv,noheader,nounits'],text=True).splitlines()[0]);assert free>=8000
  import torch
  from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
- torch.set_num_threads(2);mid=str(R/'qwen3-tts/models/whisper-large-v3-turbo');m=AutoModelForSpeechSeq2Seq.from_pretrained(mid,dtype=torch.float16,attn_implementation='eager').to('cuda:0');p=AutoProcessor.from_pretrained(mid)
+ torch.set_num_threads(2);local=R/'qwen3-tts/models/whisper-large-v3-turbo';mid=str(local) if (local/'config.json').exists() else 'openai/whisper-large-v3-turbo';m=AutoModelForSpeechSeq2Seq.from_pretrained(mid,dtype=torch.float16,attn_implementation='eager',local_files_only=True).to('cuda:0');p=AutoProcessor.from_pretrained(mid,local_files_only=True)
  asr=pipeline('automatic-speech-recognition',model=m,tokenizer=p.tokenizer,feature_extractor=p.feature_extractor,dtype=torch.float16,device='cuda:0')
  result=asr(str(out),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word')
  cache.write_text(json.dumps({'audioSha256':digest,'text':result['text'],'words':result['chunks'],'scope':'complete encoded final mix, including joins and music; direct full-text comparison required','humanListening':'pending local user review','noOtherProcessPaused':True},ensure_ascii=False,indent=2)+'\n',encoding='utf8')
