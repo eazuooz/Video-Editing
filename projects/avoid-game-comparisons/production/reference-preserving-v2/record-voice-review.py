@@ -1,0 +1,14 @@
+from pathlib import Path
+import json,hashlib,datetime
+R=Path(__file__).resolve().parents[4];P=R/'projects/avoid-game-comparisons';V=P/'production/reference-preserving-v2';N=R/'shared/output/narration/avoid-game-comparisons/reference-preserving-v2'
+report=json.loads((N/'avoid-comparisons-reference-v2.asr-review.json').read_text(encoding='utf8'));assert report['complete'] and report['sceneCount']==12
+ledger={
+ 'revision':'reference-preserving-v2','updatedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ 'fullNarration':{'audio':str((N/'avoid-comparisons-reference-v2.wav').relative_to(R)).replace('\\','/'),'sha256':hashlib.sha256((N/'avoid-comparisons-reference-v2.wav').read_bytes()).hexdigest(),'completeIndependentAsrPasses':1,'asrReport':str((N/'avoid-comparisons-reference-v2.asr-review.json').relative_to(R)).replace('\\','/'),'allTwelveRecognizedTextsDirectlyRead':True,'all68ExpectedParagraphsCompared':True,'chapterOrderAndClaimsRetained':True,'humanListening':'pending; text comparison and acoustic checks do not establish listening approval','ambiguousRecognitionToRecheckInFinalMix':[{'scene':'07','expected':'캐피','recognized':'캡피','context':'Canonical display spelling stays 캐피; complete final mix will provide independent context'},{'scene':'08','expected':'수집물','recognized':'수진물','context':'달 모양 수집물인 파워문; spelling/utterance ambiguity to resolve'},{'scene':'09','expected':'이제 이 장면을','recognized':'이 장면을','context':'Check whole mix across the incoming join, not a clipped ending heuristic'},{'scene':'10','expected':'점프해서','recognized':'점프에서','context':'Full sentence meaning retained; check pronunciation in independent mix context'}]},
+ 'sourceReview':{'genuineFhdFiles':5,'frameDimensions':[1920,1080],'rightsRecords':'projects/avoid-game-comparisons/planning/chapter-plan.json#currentRevision.sourceSelection','uniqueSourceRangesChecked':True,'speed':1,'loops':False,'referenceLessonExcludedFromProduction':True},
+ 'editPlan':'projects/avoid-game-comparisons/production/reference-preserving-v2/edit-plan.json',
+ 'captionTiming':{'method':'recognized word-to-supplied paragraph alignment','bilingualPairs':115,'allBilingualParagraphsPreserved':True,'fixedPosition':[960,970],'actualFinalPixels':'pending'},
+ 'visualQA':{'earlyCaptioned1080And375Preflight':'passed with arrow label clearance correction','completeFinalPixels':'pending','movingAnnotations':'pending'},
+ 'audioQA':{'sourcePcmPreserved':True,'sourceStemEncodedLocalLevelComparison':'pending','wholeEncodedMixAsr':'pending','humanWholeListening':'pending current local user review'},
+ 'delivery':{'driveRequired':False,'currentUserReview':'pending','youtubeUploadAuthorized':False,'baselinePrivateVideo':'cQE7_ygx_XM','baselineUnchanged':True,'automaticNextVideo':False}}
+(V/'review-ledger.json').write_text(json.dumps(ledger,ensure_ascii=False,indent=2)+'\n',encoding='utf8');print('Whole current narration text review recorded; listening remains explicit')

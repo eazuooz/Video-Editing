@@ -34,8 +34,8 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
    show(0,<Circle x={-580} y={-10} width={170} height={170} stroke={D.teal} lineWidth={6}/>);
    show(1,<Circle x={580} y={-10} width={170} height={170} stroke={D.green} lineWidth={6}/>);
    label('선명한 플레이',-580,145,0,D.ink,44);label('아직 보이지 않음',580,145,1,D.muted,44);
-   arrow([[-465,-10],[-190,-10]],2);label('피치 (Pitch)',0,-10,2,D.title,48);arrow([[190,-10],[465,-10]],3,D.green);
-   show(4,<>{text('무엇을 만들까',-410,285,46)}{text('왜 만들 가치가 있을까',390,285,46,D.title)}</>);break;
+   arrow([[-465,-10],[-190,-10]],3);label('피치 (Pitch)',0,-10,3,D.title,48);arrow([[190,-10],[465,-10]],3,D.green);
+   show(2,<>{text('무엇을 만들까',-410,285,46)}{text('왜 만들 가치가 있을까',390,285,46,D.title)}</>);break;
   case 'difference':
    label('“비슷하다”',-480,-155,0,D.muted,68);arrow([[-170,-155],[135,-155]],1,D.red);
    label('기존 게임을 하면 되지 않을까?',420,-155,1,D.red,42);
