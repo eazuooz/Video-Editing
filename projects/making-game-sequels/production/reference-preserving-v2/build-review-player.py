@@ -11,7 +11,7 @@ for c in plan['cuts']:
   if b>a:ranges.append([c['id']+' · '+m['label'],c['startFrame']/60+a-c['sourceStart']-.5,c['startFrame']/60+b-c['sourceStart']+.5])
 for a,b in zip(plan['scenes'],plan['scenes'][1:]):ranges.append(['연결 '+a['id']+' → '+b['id'],b['startFrame']/60-3,b['startFrame']/60+4])
 html='''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>속편 만들기 · 완성본 검수</title>
-<style>body{background:#101214;color:#eee;font:17px system-ui;margin:20px}video{width:min(100%,1200px);display:block;background:black}video.mobile{width:375px;max-width:100%}button{padding:9px;margin:3px;background:#242930;color:white;border:1px solid #747a80;border-radius:4px}output{display:block;margin:10px}nav{max-width:1200px}h1{font-size:24px}</style>
+<style>body{background:#101214;color:#eee;font:17px system-ui;margin:20px}video{width:min(100%,900px);display:block;background:black}video.mobile{width:375px;max-width:100%}button{padding:9px;margin:3px;background:#242930;color:white;border:1px solid #747a80;border-radius:4px}output{display:block;margin:10px}nav{max-width:1200px}h1{font-size:24px}</style>
 <h1>속편 만들기 · 1080p 60fps 완성본 검수</h1><video controls preload="metadata" src="making-game-sequels-v2-captioned.mp4"></video><output>재생할 구간을 선택하세요.</output>
 <section><button id="all">전체 재생</button><button id="pause">일시정지</button><button id="play">재생</button><button id="mobile">모바일 375px</button><button id="desktop">큰 화면</button><button id="previous">이전 프레임</button><button id="next">다음 프레임</button></section><nav></nav><script>
 const ranges=RANGES,v=document.querySelector('video'),o=document.querySelector('output');let end=Infinity,name='전체';

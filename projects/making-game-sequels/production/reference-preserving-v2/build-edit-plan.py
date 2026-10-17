@@ -102,10 +102,21 @@ annotations=read(V/'source-annotations.json')['marks']
 for i,c in enumerate(cuts):
  c['id']=f'cut{i:02}'
  if c['kind']=='independent-gameplay':
+  # Final decoded pixels exposed loading/intro transitions missed by the broad
+  # source ranges. These inspected replacements preserve every edit boundary.
+  correctedStarts={'cut00':520.,'cut13':45.,'cut14':5.,'cut16':179.5,'cut28':193.}
+  if c['id'] in correctedStarts:
+   c['sourceStart']=correctedStarts[c['id']]
+   c['inpointCorrection']='final-pixel-review: active gameplay replaces loading/versus/black transition; timing unchanged'
   src=info[c['source']];game={'pikmin4-day2':'피크민 4','gt7-sunday':'그란 투리스모 7','smash-wiiu':'슈퍼 스매시브라더스 for Wii U','smash-ultimate':'슈퍼 스매시브라더스 얼티밋'}[c['source']]
   c.update(sourceFile=src['file'],sourceUrl=src['url'],sourceSha256=src['sha256'],credit=('Nintendo' if c['source']=='pikmin4-day2' else src['recorder']),game=game,classification='independent-gameplay',showGameTitle=game not in seen,clearAtSourceCut=True,coordinateSystem='Source1920x1080; aspect-preserved1600x900 at160,0; fixed captions960,970')
   if c['source']=='gt7-sunday':c.update(originalAudio='exclude',audioExclusionReason='Source broadcast-mode and third-party music rights not established; quiet approved music retained.')
-  for mark in annotations:
+  for originalMark in annotations:
+   mark=copy.deepcopy(originalMark)
+   if c['id']=='cut14' and mark['source']=='smash-ultimate' and mark['scene']=='05':
+    # Keep the callout on the same spoken cue after moving to active combat.
+    mark['from']+=5;mark['to']+=5
+    for key in mark.get('keyframes',[]):key[0]+=5
    if mark['source']==c['source'] and mark['scene']==c['scene'] and mark['from']<c['sourceStart']+c['frames']/60 and mark['to']>c['sourceStart']:
     c['marks'].append({k:v for k,v in mark.items() if k not in ['source','scene']})
   seen.add(game)
