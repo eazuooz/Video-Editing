@@ -1,5 +1,5 @@
 from pathlib import Path
-import json,math,ast,re
+import json,math,ast,re,sys
 from PIL import ImageFont
 R=Path(__file__).resolve().parents[4];P=R/'projects/making-game-sequels';O=P/'production/local/reference-preserving-v2/edit';font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',48)
 def seconds(s):
@@ -16,6 +16,16 @@ def parse(p):
 module=ast.parse((R/'projects/game-reward-planning/production/reference-preserving-v2/build-caption-layout.py').read_text(encoding='utf8'))
 ass=next(ast.literal_eval(n.value) for n in module.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='ass' for t in n.targets))
 ko=parse(O/'body.ko.srt');en=parse(O/'body.en.srt');assert len(ko)==len(en)
+sys.path.insert(0,str(R/'qwen3-tts'))
+from build_translated_srt import wrapped_lines
+breaks=json.loads((P/'production/reference-preserving-v2/english-caption-breaks.json').read_text(encoding='utf8'))
+flat=lambda s:' '.join(s.split())
+for paragraph in breaks['paragraphs']:
+ count=len(paragraph['chunks']);matches=[i for i in range(len(en)-count+1) if flat(' '.join(r['text'] for r in en[i:i+count]))==flat(paragraph['text'])]
+ assert len(matches)==1,('Stale English caption mapping',paragraph['scene'],paragraph['paragraph'])
+ assert flat(' '.join(paragraph['chunks']))==flat(paragraph['text'])
+ for row,text in zip(en[matches[0]:matches[0]+count],paragraph['chunks']):
+  lines=wrapped_lines(text,46);assert len(lines)<=2;row['text']='\n'.join(lines)
 aliases={r'닌텐도\s*쓰리디에스':'닌텐도 3DS',r'위\s*유':'Wii U',r'피크민\s*사':'피크민 4'}
 for row in ko:
  for spoken,display in aliases.items():row['text']=re.sub(spoken,display,row['text'])

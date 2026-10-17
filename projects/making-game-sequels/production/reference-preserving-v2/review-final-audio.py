@@ -6,7 +6,7 @@ sys.path.insert(0,str(R/'qwen3-tts'))
 from review_project_narration import normalize
 parser=argparse.ArgumentParser();parser.add_argument('--device',choices=['cpu','cuda:0'],default='cpu');args=parser.parse_args()
 assert json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf8'))['selectedVideo']==P.name
-assert json.loads((O/'audio-build.json').read_text(encoding='utf8')).get('voiceGainMode')=='constant-global-gain-with-short-peak-limiter','Stop at completed encode boundary: replace the diagnosed adaptive voice normalization before final ASR'
+assert json.loads((O/'audio-build.json').read_text(encoding='utf8')).get('voiceGainMode')=='constant-global-gain-with-short-peak-limiter','Inspect narration gain processing before final ASR; do not silently apply adaptive voice normalization'
 video=O/'making-game-sequels-v2-captioned.mp4';out=O/'encoded-audio.wav'
 subprocess.run(['ffmpeg','-v','error','-y','-i',str(video),'-vn','-ac','1','-ar','16000','-c:a','pcm_s16le',str(out)],check=True)
 digest=hashlib.sha256(out.read_bytes()).hexdigest();cache=O/'final-mix-asr.json'

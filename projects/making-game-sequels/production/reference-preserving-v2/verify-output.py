@@ -25,7 +25,10 @@ actual=sum(c['frames'] for c in plan['cuts'] if c['kind']=='independent-gameplay
 # processed stem and final encoded mixture. Whole-file LUFS is not this check.
 for name,src in [('stem',O/'narration-stem.wav'),('encoded',O/'making-game-sequels-v2-captioned.mp4')]:
  dest=Q/(name+'-mono.wav')
- if not dest.exists():run(['ffmpeg','-v','error','-i',str(src),'-vn','-ac','1','-ar','24000','-c:a','pcm_f32le',str(dest)])
+ receipt=Q/(name+'-mono-source.json');signature={'sourceSha256':sha(src),'sampleRate':24000,'channels':1,'format':'pcm_f32le'}
+ if not(dest.exists() and receipt.exists() and json.loads(receipt.read_text())==signature):
+  run(['ffmpeg','-v','error','-y','-i',str(src),'-vn','-ac','1','-ar','24000','-c:a','pcm_f32le',str(dest)])
+  receipt.write_text(json.dumps(signature,indent=2)+'\n')
 stem,sr=sf.read(Q/'stem-mono.wav',dtype='float32');encoded,_=sf.read(Q/'encoded-mono.wav',dtype='float32');N=R/'shared/output/narration/making-game-sequels/reference-preserving-v2';windows=[];summaries=[]
 db=lambda x:float(20*np.log10(max(float(x),1e-10)))
 for scene in plan['scenes']:

@@ -80,7 +80,7 @@ The first purchase begins with expectations; the next adds memories of actual pl
 새 동료를 추가했다는 이름보다 중요한 것은, 함께 이동하고 일을 나눌 때 플레이어의 선택이 어떻게 바뀌는지입니다.
 새로운 캐릭터나 기능을 나열하는 데서 멈추지 말고, 기존 행동이 어떤 상황에서 달라지는지를 실제로 보여 주어야 합니다.''','''Even satisfied players still need a reason to buy the new game.
 If its scale and content feel too similar, they may feel they have already had enough of an experience they enjoyed.
-The familiar appeal can remain, but players should be able to see what they can newly try.
+The familiar appeal can remain, but players should be able to see what new things they can try.
 Pikmin 4 adds the space dog Oatchi alongside the established activity of assigning tasks to Pikmin.
 The important part is not simply the name of a new companion, but how moving together and sharing work change the player's choices.
 Rather than stopping at a list of new characters and features, show the situations in which existing actions change.'''),
@@ -91,7 +91,7 @@ Rather than stopping at a list of new characters and features, show the situatio
 그래서 속편 기획에는 두 문장이 함께 필요합니다. 제작에서는 무엇을 이어 쓰고, 플레이에서는 무엇을 새롭게 느끼게 할 것인가.
 둘 사이가 구체적인 행동으로 연결될수록, 단순히 같은 것을 한 번 더 만든다는 인상에서 벗어날 수 있습니다.''','''This separates work saved by the developers from value received by the players.
 Even if retaining a foundation makes production easier, that fact alone does not give players new enjoyment.
-The resulting room can go into improved controls, a broader set of challenges, or different decisions using familiar actions.
+The time and resources saved can go into improved controls, a broader set of challenges, or different decisions using familiar actions.
 Look at decisions players actually make: whom to assign a task to in Pikmin, or where to change direction and speed in a driving game.
 A sequel concept therefore needs two statements together: what will production carry forward, and what will players experience anew?
 The more concretely those statements connect through player actions, the better the concept can move beyond simply doing the same thing again.'''),
@@ -101,7 +101,7 @@ The more concretely those statements connect through player actions, the better 
 새로운 게임이냐 속편이냐만으로 가치를 정할 수는 없습니다. 어느 쪽이든 플레이어가 좋은 시간을 보낼 수 있게 만드는 것이 중요합니다.
 기획을 볼 때, 만드는 쪽의 출발점과 하는 쪽의 새 경험을 함께 확인해 보세요. 익숙한 기반을 이어 쓰면서도 다시 즐길 이유를 만드는 것, 그것이 속편을 설계할 때 붙잡아야 할 핵심입니다.''','''A sequel can inherit systems, tools, and experience tested through real play.
 But the usable foundation must actually remain, and the new game still needs care and effort to reach completion.
-Satisfaction with the previous game builds expectations; it does not play the next one on the player's behalf. There must be actions and challenges worth trying this time.
+Satisfaction with the previous game builds expectations, but cannot substitute for enjoying the next game. There must be actions and challenges worth trying this time.
 Being original or a sequel does not determine a game's value. Either way, the aim is to give players a worthwhile experience.
 When reviewing a concept, consider both the developers' starting point and the players' new experience. Carrying forward a familiar foundation while giving people a reason to return is central to designing a sequel.''')
 ]

@@ -49,4 +49,4 @@ if __name__=='__main__':
   for branch,suffix in [('clean','clean'),('captioned','captioned')]:args+=['-map',f'[{branch}]','-map','1:a','-frames:v',str(plan['totalFrames']),'-t',str(plan['totalFrames']/60),*enc,'-c:a','copy','-movflags','+faststart',str(O/f'making-game-sequels-v2-{suffix}.mp4')]
   run(args,'pair-encode')
   for suffix in ['clean','captioned']:assert frames(O/f'making-game-sequels-v2-{suffix}.mp4')==plan['totalFrames']
-  print('Both1080p60 masters encoded with identical approved AAC stream')
+  print('Both1080p60 masters encoded with identical AAC stream; current-output review still required')

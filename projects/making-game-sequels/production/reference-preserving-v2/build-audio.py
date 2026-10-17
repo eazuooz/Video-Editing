@@ -37,8 +37,7 @@ if __name__=='__main__':
  logs=run(['-i',str(O/'voice-fixed-gain.wav'),'-af','loudnorm=I=-16:TP=-2:LRA=9:print_format=json','-f','null','-'],'voice-measure')
  stats=json.loads(logs[logs.rfind('{'):logs.rfind('}')+1]);gainDb=-16-float(stats['input_i'])
  # loudnorm silently falls back to dynamic mode when the requested linear
- # gain would exceed its peak ceiling. That changed local voice gain by17dB
- # in the first mix. Keep one constant global gain and a short peak limiter;
+ # gain would exceed its peak ceiling. Keep one constant global gain and a short peak limiter;
  # never apply a seconds-long adaptive normalization envelope to narration.
  norm=f'volume={gainDb}dB:precision=double,alimiter=limit=0.7499:attack=5:release=50:level=false:latency=true'
  run(['-i',str(O/'voice-fixed-gain.wav'),'-af',norm+',pan=stereo|c0=c0|c1=c0','-ar','48000','-c:a','pcm_s24le',str(O/'narration-stem.wav')],'voice-normalize')
