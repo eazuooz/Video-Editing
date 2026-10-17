@@ -6,12 +6,12 @@
 
 | 게임 | 제작 기간의 의미 | 모델 | 제작 도구 |
 |---|---|---|---|
-| [I Just Wanted to Fish](https://store.steampowered.com/app/5350560/I_Just_Wanted_to_Fish/) | Almost three weeks · Creator's progress report | Claude Opus 5.5 | Claude Code, Blender MCP, Blender 5.2, Unity 6 HDRP, Unity MCP |
-| [Emberfall — Luminati](https://broad-grass-ea4b.supportinfo-593.workers.dev/editor) | 전체 기간 미공개/미확인 · Total development time undisclosed | Claude Opus 5.5 (소개자 언급만 확인) | Luminati browser editor, Three.js, JSON level format luminati-level v1 |
-| [Nightshoal](https://profactor.itch.io/nightshoal) | Week 11 · Ongoing project update | Claude Opus 5.5 / Codex Astra | Godot, Tripo AI, Blender MCP, ElevenLabs sound effects, Stable Audio music, OpenAI image API |
-| [VECTOR: Anti-Gravity Racing](https://wavedash.com/games/vector-anti-gravity-racing) | 전체 기간 미공개/미확인 · Total duration undisclosed | Opus, exact version undisclosed (소개자 언급만 확인) | Three.js, WebGPU with WebGL 2 fallback, Blender for models as described by the creator |
-| [AUGURY: Duel of the Gods](https://sybiote.itch.io/augury-duel) | 전체 기간 미공개/미확인 · Total duration undisclosed | 정확한 모델 미공개 | Phaser, TypeScript, DreamLayer, ImageGen, Local Python Pixelize, Creator's Move/Pose/Rig/Arena Studio tools |
-| [Rally Road Rash — Off-Road Championship](https://sandscape.app/play?g=3UpDloEh) | About three days · Initial version shown in creator post | Opus 5.5 / Astra 6 | Sandscape, Meshy, ElevenLabs music |
+| [I Just Wanted to Fish](https://store.steampowered.com/app/5350560/I_Just_Wanted_to_Fish/) | 약3주 · 제작자 진행 보고 | Claude Opus 5.5 | Claude Code, Blender MCP, Blender 5.2, Unity 6 HDRP, Unity MCP |
+| [Emberfall — Luminati](https://broad-grass-ea4b.supportinfo-593.workers.dev/editor) | 전체 기간 미공개/미확인 | Claude Opus 5.5 (소개자 언급만 확인) | Luminati browser editor, Three.js, JSON level format luminati-level v1 |
+| [Nightshoal](https://profactor.itch.io/nightshoal) | 11주 차 · 개발 진행 보고 | Claude Opus 5.5 / Codex Astra | Godot, Tripo AI, Blender MCP, ElevenLabs sound effects, Stable Audio music, OpenAI image API |
+| [VECTOR: Anti-Gravity Racing](https://wavedash.com/games/vector-anti-gravity-racing) | 전체 기간 미공개/미확인 | Opus, exact version undisclosed (소개자 언급만 확인) | Three.js, WebGPU with WebGL 2 fallback, Blender for models as described by the creator |
+| [AUGURY: Duel of the Gods](https://sybiote.itch.io/augury-duel) | 전체 기간 미공개/미확인 | 정확한 모델 미공개 | Phaser, TypeScript, DreamLayer, ImageGen, Local Python Pixelize, Creator's Move/Pose/Rig/Arena Studio tools |
+| [Rally Road Rash — Off-Road Championship](https://sandscape.app/play?g=3UpDloEh) | 약3일 · 초기 버전 | Opus 5.5 / Astra 6 | Sandscape, Meshy, ElevenLabs music |
 
 기간은 완료까지 걸린 동일한 척도가 아니다. 첫 버전의3일, 진행 중인11주 차, 약3주 작업을 구분한다. 출처별 주장과 반례는 [연구 기록](../sources/research.json), 확보 파일·해상도·권리는 [자료 목록](../sources/media.json)에 연결했다.
 
@@ -132,7 +132,8 @@ AI가 쓰인 곳이 코드에만 머물지 않습니다. 모델과 그림, 애�
 ## 제작 상태
 
 - 완료: 제작자 자료 조사, 미확인 정보 분리, 네 작품1080p이상 영상 확보, 두 브라우저 게임 실제 조작·1080p 캡처, 한영 대본 초안과8개씬 구성.
-- 진행: 사용할 움직이는 구간의 세부 검수와 자막을 포함한 화면 샘플.
+- 화면 시안: 실제 자료·자막을 넣은12초 무음1080p60 샘플 제작.1080p/375px 화면 확인과 출처 라벨의 게임UI 가림 수정 완료. 완성 영상이나 음성 검수본은 아님.
+- 진행: 사용할 움직이는 구간의 세부 검수와 음성 확정 후 컷 배치.
 - 대기: 사용자의 이전 지시에 따른 게임·Unity 사용 종료/GPU 인계 확인 후Qwen3 음성 생성.
 - 미완료: 음성·전체 편집·최종QA·4파일·Drive 검수본.
 - 별도 승인 경계: 이 버전의Drive 사용자 검수 후YouTube 업로드. 자동 다음 편 없음.

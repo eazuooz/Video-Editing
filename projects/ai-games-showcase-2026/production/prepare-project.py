@@ -91,8 +91,8 @@ scene_details = [
 scenes=[]
 for id,game,visual,focus,transition,limitation in scene_details:
     lines=next(s['lines'] for s in ko['scenes'] if s['id']==id)
-    scenes.append(dict(id=id,game=game,narration=f'script/narration.ko.json#{id}',renderer='Motion Canvas labels/compositing + acquired media',
-        rendererReason='This selected showcase examines existing games; no engine recreation needed.',
+    scenes.append(dict(id=id,game=game,narration=f'script/narration.ko.json#{id}',renderer='FFmpeg/ASS compositing + acquired media; existing Motion Canvas branding' ,
+        rendererReason='This selected showcase needs clean source footage, short labels and still-state comparison. Reuse the actual ASS layout sample and existing branding instead of recreating games or duplicating a scene in an engine.',
         implementationKind='editorial-analysis-of-actual-game',visualEvidence=visual,focus=focus,
         sourceAssets=[a['path'] for a in media if a['game']==game] if game else [],
         transitionToNext={'narrative':transition,'lastLine':lines[-1],'visual':'Carry the relevant game frame or label into the following opening; no chapter-black reset','audio':'Continuous approved music under speech; no artificial scene pause'},
