@@ -25,8 +25,8 @@ body=round(cursor*60);target=round(body*.6)
 pools={
  'pikmin-task':[['pikmin4-day2',85,115],['pikmin4-day2',40,55],['pikmin4-day2',300,326],['pikmin4-day2',440,465],['pikmin4-day2',520,565],['pikmin4-day2',145,158],['pikmin4-day2',397,406],['pikmin4-day2',487,498]],
  'pikmin-wall':[['pikmin4-day2',200,255]],
- 'driving':[['gt7-sunday',2,21.5],['gt7-sunday',42,92]],
- 'steering':[['gt7-sunday',22,41]],
+ 'driving':[['gt7-sunday',2,21.5],['gt7-sunday',45,92]],
+ 'steering':[['gt7-sunday',22,44.5]],
  'smash-intro':[['smash-wiiu',35,85]],
  'smash-rule':[['smash-ultimate',0,34]],
  'smash-experience':[['smash-ultimate',175,205.5],['smash-wiiu',130,153]],
@@ -53,8 +53,8 @@ def cues(sid,a,indices):return [max(0,B[sid][i]-a) for i in indices]
 
 # One adjustable boundary remains within the summary's same familiar/new-play
 # explanation. It never changes audio duration or playback speed.
-fixedActual=E['01']+B['02'][4]+B['03'][3]+B['04'][4]+(E['04']-B['04'][6])+B['05'][3]+B['06'][3]+B['07'][3]+B['08'][4]
-oatchiStart=max(327.,334-(B['07'][4]-B['07'][3]));oatchiFirst=337.8-oatchiStart
+fixedActual=E['01']+B['02'][4]+B['03'][3]+B['04'][4]+(E['04']-B['04'][6])+B['05'][3]+B['06'][4]+B['07'][3]+B['08'][4]
+oatchiStart=max(327.,334-(B['07'][4]-B['07'][3]));oatchiFirst=336.8-oatchiStart
 oatchiSecond=8.;oatchiActual=min(E['07']-B['07'][3],oatchiFirst+oatchiSecond)
 fixedActual+=oatchiActual
 summaryActual=target/60-fixedActual
@@ -69,14 +69,15 @@ diagram('02',B['02'][4],E['02'],'foundation',[0,1,max(2,B['02'][5]-B['02'][4]),m
 film('03',0,B['03'][3],'steering','핸들의 방향과 코스, 게임 화면에서 보이는 행동')
 diagram('03',B['03'][3],B['03'][5],'layers',[0,0,0,1,2])
 diagram('03',B['03'][5],E['03'],'work',[0,2,B['03'][6]-B['03'][5],B['03'][6]-B['03'][5]+3,B['03'][7]-B['03'][5]])
-film('04',0,B['04'][4],'pikmin-wall','지시와 이동을 직접 실행하며 작업의 결과를 확인')
+assert 200<=261-B['04'][4]<245,'Reinspect wall sequence if voice exceeds reviewed source capacity'
+direct('04',0,B['04'][4],'pikmin4-day2',261-B['04'][4],'대원에게 작업 지시 → 벽이 허물어짐 → 열린 길 확인')
 diagram('04',B['04'][4],B['04'][6],'test',[0,.6,1.2,3,5])
 film('04',B['04'][6],E['04'],'pikmin-task','실행 가능한 플레이에서 작업과 반응을 확인')
 film('05',0,B['05'][1],'smash-intro','Wii U에서 이어지는 공격과 밀어내기')
 film('05',B['05'][1],B['05'][3],'smash-rule','얼티밋의 공격과 누적 대미지 퍼센트')
 diagram('05',B['05'][3],E['05'],'teams',[0,1,B['05'][4]-B['05'][3],B['05'][5]-B['05'][3],B['05'][6]-B['05'][3]])
-film('06',0,B['06'][3],'smash-experience','직접 플레이하는 경험 · 만족도는 가상의 플레이어 상황')
-diagram('06',B['06'][3],E['06'],'experience',[0,.6,1.2,max(2,B['06'][4]-B['06'][3]),max(3,B['06'][5]-B['06'][3])])
+film('06',0,B['06'][4],'smash-experience','직접 플레이하는 경험 · 만족도는 가상의 플레이어 상황')
+diagram('06',B['06'][4],E['06'],'experience',[0,.6,1.2,2,max(3,B['06'][5]-B['06'][4])])
 film('07',0,B['07'][3],'pikmin-task','기존 대원에게 일을 맡기는 행동에서 새로운 동료로 연결')
 a=B['07'][3];b=a+oatchiFirst
 direct('07',a,b,'pikmin4-day2',oatchiStart,'와치가 항아리 앞에서 돌진해 첫 항아리를 부숨')
@@ -97,12 +98,16 @@ if delta:
  a['frames']+=delta;a['endFrame']+=delta;b['frames']-=delta;b['startFrame']+=delta
 
 info={s['id']:s for s in read(V/'source-selection.json')['sources']};seen=set();mc=0;parts=[]
+annotations=read(V/'source-annotations.json')['marks']
 for i,c in enumerate(cuts):
  c['id']=f'cut{i:02}'
  if c['kind']=='independent-gameplay':
   src=info[c['source']];game={'pikmin4-day2':'피크민 4','gt7-sunday':'그란 투리스모 7','smash-wiiu':'슈퍼 스매시브라더스 for Wii U','smash-ultimate':'슈퍼 스매시브라더스 얼티밋'}[c['source']]
   c.update(sourceFile=src['file'],sourceUrl=src['url'],sourceSha256=src['sha256'],credit=('Nintendo' if c['source']=='pikmin4-day2' else src['recorder']),game=game,classification='independent-gameplay',showGameTitle=game not in seen,clearAtSourceCut=True,coordinateSystem='Source1920x1080; aspect-preserved1600x900 at160,0; fixed captions960,970')
   if c['source']=='gt7-sunday':c.update(originalAudio='exclude',audioExclusionReason='Source broadcast-mode and third-party music rights not established; quiet approved music retained.')
+  for mark in annotations:
+   if mark['source']==c['source'] and mark['scene']==c['scene'] and mark['from']<c['sourceStart']+c['frames']/60 and mark['to']>c['sourceStart']:
+    c['marks'].append({k:v for k,v in mark.items() if k not in ['source','scene']})
   seen.add(game)
  else:
   c.update(mcStartFrame=mc,mcEndFrame=mc+c['frames']);mc+=c['frames'];name='production-'+c['id'];parts.append(name)

@@ -5,9 +5,9 @@ def read(p):return json.loads(p.read_text(encoding='utf8'))
 def write(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 assert read(R/'shared/publishing/video-production-control.json')['selectedVideo']==P.name
 ko=read(S/'narration.ko.json');en=read(S/'narration.en.json')
-ko['scenes'][6]['lines'][3]='피크민 4에서는 대원들에게 일을 맡기는 활동에, 우주견 오치라는 동료가 더해집니다.'
-ko['scenes'][6]['lines'][4]='지금은 오치에게 흙더미를 파게 한 뒤, 흙더미가 사라지고 안에 묻혀 있던 물건이 드러납니다. 대원들에게 일을 맡기는 것과 함께, 동료의 능력도 활용하는 거죠.'
-en['scenes'][6]['lines'][4]='Here Oatchi is sent to excavate a dirt mound, removing the soil and revealing a buried object. Alongside assigning jobs to Pikmin, the player can use the companion’s abilities.'
+ko['scenes'][6]['lines'][3]='피크민 4에서는 대원들에게 일을 맡기는 활동에, 우주견 와치라는 동료가 더해집니다.'
+ko['scenes'][6]['lines'][4]='와치가 몸으로 들이받는 돌진을 쓰면, 항아리가 깨지고 안에 있던 물건이 드러납니다. 대원들에게 일을 맡기는 것과 함께, 동료의 능력도 활용하는 거죠.'
+en['scenes'][6]['lines'][4]='Oatchi can Rush forward to smash the pots, revealing the items inside. Alongside assigning jobs to Pikmin, the player can use the companion’s abilities.'
 ko['scenes'][4]['lines'][4]='Wii U와 닌텐도 3DS용 작품에서 얼티밋으로 이어질 때는 같은 개발팀과 가까운 제작 환경을 이어 갈 수 있었습니다.'
 ko['scenes'][4]['lines'][5]='두 작품 모두 반다이남코 스튜디오가 개발에 참여했습니다. 같은 시리즈 안에서도, 기반을 다시 세우는 경우와 이어 가는 경우가 달랐던 겁니다.'
 en['scenes'][4]['lines'][5]='Bandai Namco Studios worked on both games. Even within one series, rebuilding a foundation and carrying it forward have been different situations.'
@@ -33,7 +33,7 @@ design=[
  ('04','피크민 지시→부수기/회수의 반응을 확인.','설명만 읽기 → 작은 실행본 → 실제 조작 → 확인','test','pikmin4-day2:225–255,300–327,440–465','벽이 남은 상태와 열린 상태 스샷을 나란히 놓고 프로토타입/플레이테스트 단계도. 실제게임 제작툴/테스트계측인 것처럼 표시하지 않는다.','검증된 기반이 항상 이어지는 것은 아니라는05첫 문장으로 연결.'),
  ('05','WiiU와Ultimate의 대미지/밀어내기 비교; 연속성과 재구축의 차이.','공통 규칙 → 다른 제작 출발점 → 이어지는 개발 환경','teams','smash-wiiu:30–90;smash-ultimate:0–35','두게임 실제 스샷과2014→2018연결; 개발사 사실만 표기, 비공개코드재사용률 주장 없음.','개발 결과를 판단하는 플레이어가06구매 경험 흐름을 이어받는다.'),
  ('06','대전의 공격/반응에서 첫 기대와 직접 한 뒤의 평가를 구분.','기대 → 플레이 → 기억 → 다음 선택','experience','smash-ultimate:175–205;smash-wiiu:180–212','대전 스샷에 연결된 네 단계, 만족/불일치 두 갈래. 실제 이용자 조사나 이탈률이 아닌 개념도.','만족의 기억이 새 구매 이유와 같지는 않다는07전환.'),
- ('07','피크민4에서 오치에게 흙더미 파기 지시, 발굴과 묻힌 물건 노출.','동료 선택 → 일 맡김 → 상태 변화','oatchi','pikmin4-day2:327–347,520–565','330전상태/334작업/344결과 실제스샷. 이동카메라와가림구간에서는표식중단.','새행동/상황의 필요성을08의 제작효율과 플레이가치 구분으로 이어간다.'),
+ ('07','피크민4에서 와치가 돌진해 항아리를 깨고 물건이 나타나는 행동.','항아리 선택 → 와치 돌진 → 파괴와 물건 등장','oatchi','pikmin4-day2:331.5–336.8,341.5–349.5,520–565','333.5전상태/336.5파괴/348결과 실제스샷. 이동카메라와가림구간에서는표식중단.','새행동/상황의 필요성을08의 제작효율과 플레이가치 구분으로 이어간다.'),
  ('08','피크민 일 배정과GT코너 진입의 구체적 판단으로 두 가치 연결.','이어 쓸 것 → 개선할 행동 → 새로 느낄 결과','value','pikmin4-day2:465–498;gt7-sunday:65–92','그림과스샷을양쪽에놓고 재사용→투자→새경험 화살표. 판매효과수치없음.','두문장의 연결을09에서 전체 제작/플레이 점검으로 마무리.'),
  ('09','기반·경험과 완성도·새도전의 정리.','제작의 출발점 + 다시 할 이유','conclusion','pikmin4-day2:145–158,397–406','이미본개념을새로운실제컷으로정리하고두질문+개발/플레이측스샷. 마지막자막뒤회원10초원본.','내부씬제목으로음악리셋하지않으며결론뒤원본회원엔딩으로연결.')]
 plan=read(P/'planning/chapter-plan.json');rev=plan['currentRevision'];rev.update(status='script-and-scene-design-complete-preflight-pending',sourceSelection=sources,scriptKo=(S/'narration.ko.json').relative_to(R).as_posix(),scriptEn=(S/'narration.en.json').relative_to(R).as_posix(),pronunciationAliases=aliases)

@@ -11,6 +11,7 @@ def frames(p):
 enc=['-c:v','libx264','-threads','4','-preset','veryfast','-crf','17','-pix_fmt','yuv420p','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-video_track_timescale','60000']
 if __name__=='__main__':
  ap=argparse.ArgumentParser();ap.add_argument('stage',choices=['slices','pair','remux']);args=ap.parse_args();plan=json.loads((V/'edit-plan.json').read_text(encoding='utf8'))
+ assert plan.get('timing')=='measured-and-asr-aligned','Estimated timing must not enter production'
  if args.stage=='slices':
   mc=R/'shared/output/motion-canvas/game-sequels-production-v2.mp4';assert frames(mc)==plan['mcFrames'];digest=hashlib.sha256(mc.read_bytes()).hexdigest()
   for c in plan['cuts']:

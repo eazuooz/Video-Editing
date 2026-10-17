@@ -16,6 +16,10 @@ def parse(p):
 module=ast.parse((R/'projects/game-reward-planning/production/reference-preserving-v2/build-caption-layout.py').read_text(encoding='utf8'))
 ass=next(ast.literal_eval(n.value) for n in module.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='ass' for t in n.targets))
 ko=parse(O/'body.ko.srt');en=parse(O/'body.en.srt');assert len(ko)==len(en)
+aliases={r'닌텐도\s*쓰리디에스':'닌텐도 3DS',r'위\s*유':'Wii U',r'피크민\s*사':'피크민 4'}
+for row in ko:
+ for spoken,display in aliases.items():row['text']=re.sub(spoken,display,row['text'])
+assert not any(re.search(a,r['text']) for a in aliases for r in ko),'Pronunciation alias leaked into displayed captions'
 proof=[]
 for i,(row,translation) in enumerate(zip(ko,en),1):
  assert row['start']==translation['start'] and row['end']==translation['end']

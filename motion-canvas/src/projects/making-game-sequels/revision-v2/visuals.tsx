@@ -14,7 +14,7 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
  const add=(children:any,i=0)=>view.add(<Node opacity={reveal(i)}>{children}</Node>);
  const label=(s:string,x:number,y:number,i=0,size=46,color:string=D.ink)=>add(txt(s,x,y,size,color),i);
  const arrow=(points:[number,number][],i=0,color:string=D.teal)=>view.add(<Line points={points} stroke={color} lineWidth={9} endArrow arrowSize={21} end={reveal(i)}/>);
- const shot=(name:string,x:number,y:number,w:number,i=0)=>add(<><Img src={base+name+'.png'} x={x} y={y} width={w} height={w*9/16}/><Rect x={x} y={y} width={w} height={w*9/16} stroke={D.line} lineWidth={2}/></>,i);
+ const shot=(name:string,x:number,y:number,w:number,i=0,h=w*9/16)=>add(<><Img src={base+name+'.png'} x={x} y={y} width={w} height={h}/><Rect x={x} y={y} width={w} height={h} stroke={D.line} lineWidth={2}/></>,i);
  const titles:Record<string,string>={overview:'전편은 재밌었는데, 다음 편은?',foundation:'새 장면보다 먼저 필요한 것',layers:'게임을 움직이는 기반과 그 안의 내용',work:'줄어드는 작업이 어디인지 보기',test:'직접 해 봐야 알 수 있는 재미',teams:'익숙한 플레이 ≠ 같은 제작 출발점',experience:'기대가 경험을 거쳐 돌아옵니다',oatchi:'새 동료가 바꾸는 행동',value:'제작의 이점을 플레이의 가치로',conclusion:'이어 쓸 기반과 다시 할 이유'};
  view.fill(D.background);
  view.add(<>{txt('얌얌코딩  /  속편 만들기',-650,-475,29,D.muted)}{txt(titles[kind],0,-380,57,D.title)}</>);
@@ -57,14 +57,15 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
  }
  case 'test':
   shot('pikmin-wall',-455,-60,810);shot('pikmin-open',455,-60,810,1);
-  label('지시 전: 길을 막은 벽',-455,-310,0,42,D.teal);label('일을 맡긴 뒤: 열린 길',455,-310,1,42,D.green);
+  label('작업 중: 길을 막은 벽',-455,-310,0,42,D.teal);label('작업 뒤: 열린 길',455,-310,1,42,D.green);
   arrow([[-30,-60],[30,-60]],1,D.title);
   label('작은 실행본',-575,230,2,45);label('직접 조작',0,230,3,45,D.teal);label('느낌과 문제 확인',575,230,4,42,D.green);
   arrow([[-390,230],[-170,230]],3);arrow([[160,230],[350,230]],4,D.green);
   label('프로토타입 (Prototype)',-575,315,2,31,D.muted);label('플레이테스트 (Playtest)',300,315,3,33,D.muted);break;
  case 'teams':
-  shot('wiiu-fight',-450,-25,800);shot('ultimate-fight',450,-25,800,1);
-  label('2014  ·  for Wii U / 3DS',-450,-280,0,42,D.teal);label('2018  ·  Ultimate',450,-280,1,44,D.green);
+  view.add(<Node opacity={()=>1-reveal(2)()}>{txt('이름은 이어져도',0,-180,54,D.ink)}{txt('개발팀 변경 → 기반 재구축',0,-20,62,D.title)}{txt('플레이의 연속성과 제작 환경의 연속성은 별개',0,165,42,D.muted)}</Node>);
+  shot('wiiu-fight',-450,-25,800,2);shot('ultimate-fight',450,-25,800,2);
+  label('2014  ·  for Wii U / 3DS',-450,-280,2,42,D.teal);label('2018  ·  Ultimate',450,-280,2,44,D.green);
   arrow([[-35,-25],[35,-25]],2,D.title);
   label('이어지는 개발팀 · 가까운 제작 환경',0,245,2,49,D.title);
   label('두 작품의 개발: 반다이남코 스튜디오 참여',0,325,3,36,D.muted);break;
@@ -80,12 +81,12 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
   label('완주 여부만으로 만족도를 단정하지 않습니다',160,285,4,36,D.muted);
   label('개념도 · 실제 이용자 조사나 판매 예측이 아닙니다',160,335,4,29,D.muted);break;
  case 'oatchi':
-  ['oatchi-before','oatchi-work','oatchi-result'].forEach((s,i)=>{
-   const x=(i-1)*580;shot(s,x,-35,545,i);label(['항아리 앞의 와치','돌진 (Rush)','파괴 → 물건 등장'][i],x,-235,i,40,[D.teal,D.title,D.green][i]);
+  ['oatchi-before-focus','oatchi-work-focus','oatchi-result-focus'].forEach((s,i)=>{
+   const x=(i-1)*580;shot(s,x,-35,545,i,436);label(['항아리 앞의 와치','돌진 (Rush)','파괴 → 물건 등장'][i],x,-290,i,40,[D.teal,D.title,D.green][i]);
    if(i<2)arrow([[x+275,-35],[x+305,-35]],i+1);
   });
   label('추가 기능의 이름보다, 달라진 행동을 보여 주기',0,240,3,47,D.title);
-  label('실제 장면에서 확인한 전 상태 → 행동 → 결과',0,330,4,33,D.muted);break;
+  label('실제 장면에서 확인한 전 상태 → 행동 → 결과',0,315,4,33,D.muted);break;
  case 'value':
   shot('gt-turn',-460,-50,790);shot('oatchi-result',460,-50,790,1);
   label('제작에서 이어 쓸 것',-460,-300,0,46,D.teal);label('플레이에서 달라질 것',460,-300,1,46,D.green);

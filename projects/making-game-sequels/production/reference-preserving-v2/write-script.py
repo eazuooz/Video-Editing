@@ -76,7 +76,7 @@ The first purchase begins with expectations; the next adds memories of actual pl
 ('07','더 하고 싶은 재미와 이미 한 경험','''그런데 만족했던 사람에게도, 새 작품을 살 이유는 따로 필요합니다.
 규모와 내용이 너무 비슷하면, 좋아했던 경험이어도 이미 충분히 했다고 느낄 수 있기 때문입니다.
 익숙한 재미는 남기되, 이번에는 무엇을 새롭게 해 볼 수 있는지가 보여야 합니다.
-피크민 사에서는 대원들에게 일을 맡기는 활동에, 우주견 오치라는 동료가 더해집니다.
+피크민 사에서는 대원들에게 일을 맡기는 활동에, 우주견 와치라는 동료가 더해집니다.
 새 동료를 추가했다는 이름보다 중요한 것은, 함께 이동하고 일을 나눌 때 플레이어의 선택이 어떻게 바뀌는지입니다.
 새로운 캐릭터나 기능을 나열하는 데서 멈추지 말고, 기존 행동이 어떤 상황에서 달라지는지를 실제로 보여 주어야 합니다.''','''Even satisfied players still need a reason to buy the new game.
 If its scale and content feel too similar, they may feel they have already had enough of an experience they enjoyed.

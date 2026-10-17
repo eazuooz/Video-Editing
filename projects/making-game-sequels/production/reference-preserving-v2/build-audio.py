@@ -19,6 +19,7 @@ def speech_mask(n,rate,words):
  return mask
 if __name__=='__main__':
  plan=json.loads((V/'edit-plan.json').read_text(encoding='utf8'));duration=plan['totalFrames']/60
+ assert plan.get('timing')=='measured-and-asr-aligned','Estimated timing must not enter production'
  sr=24000;voice=np.zeros(round(duration*sr),dtype=np.float32);reports=[]
  for s in plan['scenes']:
   f=N/'chunks'/(s['id']+'-scene.wav');a,r=sf.read(f,dtype='float32');assert r==sr

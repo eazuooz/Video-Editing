@@ -71,6 +71,7 @@ def run(args,log):
  if r.returncode:raise RuntimeError(log.read_text(encoding='utf8',errors='replace')[-3000:])
 if __name__=='__main__':
  plan=json.loads((V/'edit-plan.json').read_text(encoding='utf8'));codehash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+ assert plan.get('timing')=='measured-and-asr-aligned','Estimated cuts must not enter production'
  for c in plan['cuts']:
   if c['kind']!='independent-gameplay':continue
   assert c['playbackSpeed']==1 and not c.get('loop')
