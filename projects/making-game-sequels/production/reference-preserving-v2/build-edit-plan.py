@@ -104,7 +104,7 @@ for i,c in enumerate(cuts):
  if c['kind']=='independent-gameplay':
   # Final decoded pixels exposed loading/intro transitions missed by the broad
   # source ranges. These inspected replacements preserve every edit boundary.
-  correctedStarts={'cut00':520.,'cut13':45.,'cut14':5.,'cut16':179.5,'cut28':193.}
+  correctedStarts={'cut00':448.55,'cut13':45.,'cut14':5.,'cut16':179.5,'cut28':193.}
   if c['id'] in correctedStarts:
    c['sourceStart']=correctedStarts[c['id']]
    c['inpointCorrection']='final-pixel-review: active gameplay replaces loading/versus/black transition; timing unchanged'
