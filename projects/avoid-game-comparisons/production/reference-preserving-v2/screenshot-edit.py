@@ -17,7 +17,7 @@ def frames(p):
 def read_probe(p):return json.loads(run(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(p)]))
 enc=['-c:v','libx264','-threads','4','-preset','veryfast','-crf','17','-pix_fmt','yuv420p','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-video_track_timescale','60000']
 plan=read(V/'edit-plan.json');changed=[c for c in plan['cuts'] if c['kind']=='explanation'];ass=(B/'captions.ko.ass').relative_to(R).as_posix()
-ap=argparse.ArgumentParser();ap.add_argument('stage',choices=['preflight','slices','pair','verify','pixels']);a=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('stage',choices=['preflight','layouts','slices','pair','verify','pixels','playback-page']);a=ap.parse_args()
 if a.stage=='preflight':
  start=(17405+420)/60;src=R/'shared/output/motion-canvas/avoid-comparisons-screenshots-preflight.mp4'
  ff(['-i',str(src),'-vf',f'setpts=PTS+{start}/TB,ass={ass},setpts=PTS-STARTPTS','-an',*enc,str(O/'preflight-captioned.mp4')],'preflight')
@@ -25,6 +25,16 @@ if a.stage=='preflight':
   ff(['-ss',str(sec),'-i',str(O/'preflight-captioned.mp4'),'-frames:v','1','-update','1',str(Q/f'preflight-{n}.png')],f'preflight-{n}')
   with Image.open(Q/f'preflight-{n}.png') as im:im.resize((375,211)).save(Q/f'preflight-mobile-{n}.png')
  print('Actual captions at current global times applied to 5-second preflight')
+elif a.stage=='layouts':
+ src=R/'shared/output/motion-canvas/avoid-comparisons-screenshots-v1.mp4';assert frames(src)==plan['mcFrames']
+ sheet=Image.new('RGB',(1280,3*390),'#151515');draw=ImageDraw.Draw(sheet)
+ for i,(c,sec) in enumerate(zip(changed,[18,19.5,33,25,15,22])):
+  global_time=c['startFrame']/60+sec;out=Q/(c['id']+'-layout.png')
+  ff(['-ss',str(c['mcStartFrame']/60+sec),'-i',str(src),'-vf',f'setpts=PTS-STARTPTS+{global_time}/TB,ass={ass}','-frames:v','1','-update','1',str(out)],c['id']+'-layout')
+  with Image.open(out) as im:
+   sheet.paste(im.resize((640,360)),(i%2*640,i//2*390));im.resize((375,211)).save(Q/(c['id']+'-mobile.png'))
+  draw.text((i%2*640+10,i//2*390+367),c['id']+' / '+str(round(global_time,2))+'s',fill='white')
+ sheet.save(Q/'layouts.jpg');print('Six current-caption layout samples extracted')
 elif a.stage=='slices':
  control=read(R/'shared/publishing/video-production-control.json');assert control['selectedVideo']==P.name
  src=R/'shared/output/motion-canvas/avoid-comparisons-screenshots-v1.mp4';assert frames(src)==plan['mcFrames'];digest=sha(src)
@@ -59,6 +69,10 @@ elif a.stage=='verify':
  retained=read(O/'retained-inputs.json');assert all(sha(R/r['path'])==r['sha256'] for r in retained['retainedClips']);assert sha(B/'final-mix.m4a')==retained['audio']['sha256']
  assert sum(c['frames'] for c in plan['cuts'] if c['kind']=='independent-gameplay')==plan['bodyFrames']*.6
  write(Q/'integrity.json',{'outputs':results,'bodyFrames':plan['bodyFrames'],'actualFrames':plan['actualFrames'],'explanationFrames':plan['explanationFrames'],'ratioErrorFrames':0,'unchangedSourceCutsVerified':True,'audioEvidenceReused':'Identical encoded AAC, narration and timestamps; previous ASR and continuity findings retained including pending listening','pixelReview':'pending','humanListening':'pending'});print('Full decode/PTS/FHD60 passed; AAC exactly identical; 60:40 exact')
+elif a.stage=='playback-page':
+ buttons=''.join(f'<button onclick="playRange({c["startFrame"]/60},{c["endFrame"]/60})">{c["id"]} {c["visual"]}</button>' for c in changed)
+ (O/'playback.html').write_text('''<!doctype html><meta charset="utf-8"><title>설명 스크린샷 검수</title><style>body{margin:20px;background:#171717;color:white;font:18px sans-serif}video{width:min(1100px,95vw);display:block}button{padding:8px;margin:5px}#state{white-space:pre}</style><h2>설명 스크린샷 검수 · 1080p60</h2><p>각 구간을 원래 속도로 재생합니다. 표시 시간은 완성본 기준입니다.</p>'''+buttons+'''<button onclick="v.pause()">일시정지</button><video id="v" controls preload="metadata" src="avoid-game-comparisons-screenshots-v1-captioned.mp4"></video><div id="state"></div><script>const v=document.querySelector('#v');let stop=Infinity;function playRange(a,b){stop=b;v.currentTime=a;v.play()}v.ontimeupdate=()=>{document.querySelector('#state').textContent='시간 '+v.currentTime.toFixed(3)+'초 / 재생 '+(!v.paused)+' / 속도 '+v.playbackRate+' / '+v.videoWidth+'×'+v.videoHeight;if(v.currentTime>=stop)v.pause()};</script>''',encoding='utf8')
+ print(O/'playback.html')
 else:
  samples={};layout=read(B/'caption-layout.json')
  def sample(f,label):samples.setdefault(max(0,min(plan['totalFrames']-1,f)),[]).append(label)
