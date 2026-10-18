@@ -28,7 +28,10 @@ def build():
    f=voice/'chunks'/f'{sid}-scene.wav';a=voice/'asr'/f'{sid}.json';pcm,sr=sf.read(f,dtype='float32');assert sr==24000 and pcm.ndim==1
    asr=read(a);assert asr['audio_sha256']==sha(f)
    origin=entries[0]['start'];s.update(title=d['title'],voice=rel(f),voiceSha256=sha(f),voiceSeconds=len(pcm)/sr,asr=rel(a),asrSha256=sha(a),rawOrigin=origin,paragraphs=entries,rawLineStarts=[e['voice_start']-origin for e in entries])
-   if sid=='01':s['frames']=math.ceil((len(pcm)/sr+.6)*60/3)*3
+   if sid=='01':
+    minimum=math.ceil((len(pcm)/sr+.6)*60)
+    fixed_explanation=sum(v['frames'] for v in old['scenes'] if v['kind']=='explanation' and v['id']!='01')
+    s['frames']=minimum+(-(fixed_explanation+minimum))%3
    else:
     # Pause only between complete aligned paragraphs. Never split a caption's sentence.
     h.INTERNAL_OBSERVATION_PURPOSES[sid]={};h.PARAGRAPH_OBSERVATION_PURPOSES[sid]=d['beats'][:-1]

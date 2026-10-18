@@ -6,6 +6,8 @@ import cv2
 from PIL import Image,ImageDraw,ImageFont
 src=json.loads((P/'sources/cut-plan-v3.json').read_text(encoding='utf8'))['sources'];out=O/'manual-frames';out.mkdir(exist_ok=True)
 groups={
+ 'hook-lead':('YNQ20CKbY8U',[222,224,226]),
+ 'log-lead':('YNQ20CKbY8U',[393,395,397,982,985,988]),
  'raft-trace':('YNQ20CKbY8U',[1026,1027,1028,1029,1030,1031,1032,1033,1034]),
  'hook':('YNQ20CKbY8U',[240.5,241,241.5,242,242.5,243]),
  'logs':('YNQ20CKbY8U',[418.5,419,419.5,420,420.5,421]),
