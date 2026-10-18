@@ -5,7 +5,7 @@ HERE=Path(__file__).parent
 s=importlib.util.spec_from_file_location('edit',HERE/'render-edit.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 m.selected();plan=m.read(m.P/'sources/cut-plan-v3.json');media=m.read(m.P/'sources/media-revision-v3.json');annotations=m.read(m.P/'sources/annotation-plan-v3.json')
 assert annotations['status']=='source-keyframes-reviewed'
-allowed={'02','11','14','17'};selected=set(sys.argv[1:]) or allowed;assert selected<=allowed
+allowed={'02','05','08','11','14','17','20'};selected=set(sys.argv[1:]) or allowed;assert selected<=allowed
 for sid in sorted(selected):
  p=plan['scenes'][sid];source=plan['sources'][p['sourceId']];src=m.R/source['file'];digest=m.sha(src)
  assert digest==next(x for x in media['sources'] if x['id']==p['sourceId'])['downloadedSha256']

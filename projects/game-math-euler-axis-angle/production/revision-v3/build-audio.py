@@ -7,6 +7,21 @@ R=Path(__file__).resolve().parents[4];P=R/'projects/game-math-euler-axis-angle';
 spec=importlib.util.spec_from_file_location('v2_audio',P/'production/revision-v2/build-audio.py');h=importlib.util.module_from_spec(spec);spec.loader.exec_module(h)
 read=h.read;sha=h.sha;save=h.save;rel=h.relative
 def run(args,name):return h.run(args,name,O)
+def quiet_game_cut(c,cache):
+ raw=cache/(c['id']+'-raw.wav');quiet=cache/(c['id']+'.wav');receipt=cache/(c['id']+'.json');sig=dict(sourceSha256=c['sourceSha256'],sourceStart=c['sourceStart'],frames=c['frames'],targetLufs=-32,sourceSpeed=1)
+ if not(quiet.exists() and receipt.exists() and read(receipt).get('inputs')==sig):
+  run(['-ss',c['sourceStart'],'-i',R/c['sourceFile'],'-t',c['seconds'],'-vn','-ar',48000,'-ac',2,'-c:a','pcm_f32le',raw],c['id']+'-game-extract')
+  log=run(['-i',raw,'-af','loudnorm=I=-32:TP=-2:LRA=11:print_format=json','-f','null','-'],c['id']+'-game-measure')
+  stats_game=json.loads(log[log.rfind('{'):log.rfind('}')+1])
+  # Some independently supplied captures are genuinely silent. Retain silence
+  # rather than amplify noise or fabricate replacement game effects.
+  silent_source=not math.isfinite(float(stats_game['input_i']))
+  if silent_source:
+   measured,measured_rate=sf.read(raw,dtype='float32');assert float(np.max(np.abs(measured)))<1e-4
+  gain_game=0. if silent_source else min(0.,-32-float(stats_game['input_i']))
+  run(['-i',raw,'-af',f'volume={gain_game}dB:precision=double,alimiter=limit=0.1:attack=3:release=80:level=false:latency=true,afade=t=in:d=0.025,afade=t=out:st={max(0,c["seconds"]-.025)}:d=0.025','-ar',48000,'-ac',2,'-c:a','pcm_f32le',quiet],c['id']+'-game-quiet')
+  save(receipt,dict(inputs=sig,measurement=stats_game,gainDb=gain_game,silentSource=silent_source,sha256=sha(quiet)))
+ info=read(receipt);assert sha(quiet)==info['sha256'];return quiet,info
 def build():
  h.require_selected();planfile=Path(__file__).parent/'timeline.json';plan=read(planfile);assert plan['actualFrames']*3==plan['explanationFrames']*2
  for f,d in plan['inputHashes'].items():assert sha(R/f)==d,('Stale timeline input',f)
@@ -29,17 +44,10 @@ def build():
  run(['-i',fixed,'-af',f'volume={global_gain}dB:precision=double,alimiter=limit=0.7499:attack=5:release=50:level=false:latency=true,pan=stereo|c0=c0|c1=c0','-ar',48000,'-c:a','pcm_s24le',narration],'narration-fixed-gain')
  game=np.zeros((round(duration*48000),2),dtype=np.float32);game_report=[];cache=O/'game-audio';cache.mkdir(exist_ok=True)
  for c in plan['cuts']:
-  raw=cache/(c['id']+'-raw.wav');quiet=cache/(c['id']+'.wav');receipt=cache/(c['id']+'.json');sig=dict(sourceSha256=c['sourceSha256'],sourceStart=c['sourceStart'],frames=c['frames'],targetLufs=-32,sourceSpeed=1)
-  if not(quiet.exists() and receipt.exists() and read(receipt).get('inputs')==sig):
-   run(['-ss',c['sourceStart'],'-i',R/c['sourceFile'],'-t',c['seconds'],'-vn','-ar',48000,'-ac',2,'-c:a','pcm_f32le',raw],c['id']+'-game-extract')
-   stats_game=h.loudness_stats(run(['-i',raw,'-af','loudnorm=I=-32:TP=-20:LRA=11:print_format=json','-f','null','-'],c['id']+'-game-measure'))
-   gain_game=min(0.,-32-float(stats_game['input_i']))
-   run(['-i',raw,'-af',f'volume={gain_game}dB:precision=double,alimiter=limit=0.1:attack=3:release=80:level=false:latency=true,afade=t=in:d=0.025,afade=t=out:st={max(0,c["seconds"]-.025)}:d=0.025','-ar',48000,'-ac',2,'-c:a','pcm_f32le',quiet],c['id']+'-game-quiet')
-   save(receipt,dict(inputs=sig,measurement=stats_game,gainDb=gain_game,sha256=sha(quiet)))
-  info=read(receipt);assert sha(quiet)==info['sha256'];samples,rate=sf.read(quiet,dtype='float32',always_2d=True);assert rate==48000 and samples.shape[1]==2
+  quiet,info=quiet_game_cut(c,cache);samples,rate=sf.read(quiet,dtype='float32',always_2d=True);assert rate==48000 and samples.shape[1]==2
   count=c['frames']*800;assert abs(len(samples)-count)<=1024
   at=c['globalStartFrame']*800;game[at:at+min(count,len(samples))]=samples[:count]
-  game_report.append(dict(cut=c['id'],sourceId=c['sourceId'],sourceStart=c['sourceStart'],seconds=c['seconds'],outputStart=c['globalStartFrame']/60,gainDb=info['gainDb'],targetLufs=-32,peakCeilingDbfs=-20,sourceAudioKind='original synchronous mixed game track; not separated effects',separationClaim=False))
+  game_report.append(dict(cut=c['id'],sourceId=c['sourceId'],sourceStart=c['sourceStart'],seconds=c['seconds'],outputStart=c['globalStartFrame']/60,gainDb=info['gainDb'],targetLufs=-32,peakCeilingDbfs=-20,silentSource=info.get('silentSource',False),sourceAudioKind='original synchronous mixed game track; silent captures remain silent; not separated effects',separationClaim=False))
  gamefile=O/'game-stem.wav';sf.write(gamefile,game,48000,subtype='PCM_24');del game
  # Narration never receives a sidechain or automatic background duck.
  graph='[0:a]asplit=2[voice][side];[1:a][side]sidechaincompress=threshold=0.025:ratio=3:attack=25:release=250[quiet];[voice][quiet]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.794:level=false:latency=true[out]'

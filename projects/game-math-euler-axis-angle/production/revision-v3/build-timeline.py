@@ -34,7 +34,8 @@ def build():
     s['frames']=minimum+(-(fixed_explanation+minimum))%3
    else:
     # Pause only between complete aligned paragraphs. Never split a caption's sentence.
-    h.INTERNAL_OBSERVATION_PURPOSES[sid]={};h.PARAGRAPH_OBSERVATION_PURPOSES[sid]=d['beats'][:-1]
+    h.INTERNAL_OBSERVATION_PURPOSES[sid]={3:'차체의 양옆을 짚은 뒤, 실제 공중 자세를 관찰'} if sid=='02' else {}
+    h.PARAGRAPH_OBSERVATION_PURPOSES[sid]=d['beats'][:-1]
    raw[sid]=(pcm,asr)
   rows.append(s)
  explanation=sum(s['frames'] for s in rows if s['kind']=='explanation');assert explanation%3==0
@@ -65,12 +66,34 @@ def build():
   intervals=sorted((a,b) for src,a,b in usage if src==sid);assert all(a[1]<=b[0] for a,b in zip(intervals,intervals[1:])),'Source reuse forbidden'
  # Retained explanation captions keep exact local text and timing. Changed scenes
  # use current ASR-aligned bilingual cues, not character-count timing.
- caps={};changed_rows={}
+ caps={};changed_rows={};caption_splits=[]
+ bilingual={lang:h.read_srt(R/m['paths']['captions'+lang.title()]) for lang in ['ko','en']}
+ assert len(bilingual['ko'])==len(bilingual['en'])
+ split_cues={}
+ for n,(ko,en) in enumerate(zip(bilingual['ko'],bilingual['en']),1):
+  assert (ko['start'],ko['end'])==(en['start'],en['end'])
+  sid=max((s['id'] for s in rows if ko['start']>=next(e['start'] for e in timing['entries'] if e['scene_id']==s['id'])-.004),key=lambda k:next(e['start'] for e in timing['entries'] if e['scene_id']==k))
+  if sid not in CHANGED:continue
+  s=next(s for s in rows if s['id']==sid);a=ko['start']-s['rawOrigin'];b=ko['end']-s['rawOrigin']
+  crossing=[p for p in s['observationPauses'] if a+.025<p['rawAt']<b-.025]
+  if not crossing:continue
+  assert len(crossing)==1,('Multiple observation seams inside one cue',sid,n)
+  pause=crossing[0];parts={}
+  for lang,cue in [('ko',ko),('en',en)]:
+   text=' '.join(cue['text'].split());approved=' '.join(designs[sid][lang][pause['afterLine']-1].split())
+   first,sep,rest=text.partition('. ');first+='.'
+   assert sep and rest and approved.startswith(text),('Exact bilingual sentence split needs review',sid,n,lang,text,approved)
+   if lang=='ko':assert first==pause['approvedSentence']
+   parts[lang]=[first,rest]
+  end=pause['asrEndingWord']['timestamp'][1];start=pause['nextAsrWord']['timestamp'][0]
+  assert a<end<=pause['rawAt']<=start<b
+  split_cues[n]={lang:[{**cue,'text':parts[lang][0],'end':s['rawOrigin']+end,'sourceCuePart':1},{**cue,'text':parts[lang][1],'start':s['rawOrigin']+start,'sourceCuePart':2}] for lang,cue in [('ko',ko),('en',en)]}
+  caption_splits.append({'sourceCue':n,'scene':sid,'parts':parts,'rawSpeechEnd':end,'rawNextSpeechStart':start,'pause':pause,'sourceSrtUnmodified':True})
  origins=sorted((s['rawOrigin'],s['id']) for s in rows if s['id'] in CHANGED)
  all_origins={sid:next(e['start'] for e in timing['entries'] if e['scene_id']==sid) for sid in designs}
  for lang in ['ko','en']:
   result=[];new=[]
-  for n,c in enumerate(h.read_srt(R/m['paths']['captions'+lang.title()]),1):
+  for n,c in [(n,child) for n,cue in enumerate(bilingual[lang],1) for child in split_cues.get(n,{}).get(lang,[cue])]:
    sid=max((sid for sid,o in all_origins.items() if c['start']>=o-.004),key=lambda k:all_origins[k])
    if sid not in CHANGED:continue
    s=next(s for s in rows if s['id']==sid);a=c['start']-s['rawOrigin'];b=c['end']-s['rawOrigin'];assert b<=s['voiceSeconds']+.05
@@ -95,5 +118,6 @@ def build():
   h.write_srt(O/f'captions.{lang}.srt',caps[lang])
  inputs=[HERE/'tts-manifest.json',HERE/'lesson.json',timing_file,P/'sources/cut-plan-v3.json',P/'sources/media-revision-v3.json',P/'sources/annotation-plan-v3.json',Path(__file__),P/'production/revision-v2/timeline.json',R/m['paths']['script'],R/m['paths']['scriptEn'],R/m['paths']['captionsKo'],R/m['paths']['captionsEn']]
  result={**old,'revision':'nintendo-annotated-no-bgm-v3','frames':cursor+600,'totalFrames':cursor+600,'seconds':(cursor+600)/60,'bodyFrames':actual+explanation,'actualFrames':actual,'explanationFrames':explanation,'scenes':rows,'cuts':cuts,'sources':sources,'captions':{lang:rel(O/f'captions.{lang}.srt') for lang in caps},'captionCount':len(caps['ko']),'koCaptions':caps['ko'],'enCaptions':caps['en'],'inputHashes':{rel(f):sha(f) for f in inputs},'captionDisplayReview':{'retainedExplanationCanonicalDisplay':'identical local text/time, only global shift','newGameplay':'current bilingual word alignment; canonical game title display'},'speechAndAnnotationsMovingReview':'pending','humanWholeListening':'pending','annotationWindowsLocked':False,'actualCutValidation':{'status':'passed','minimumSelectedFrames':min(c['frames'] for c in cuts),'selectedCutCount':len(cuts),'sourceIntervalsUnique':True},'retainedExplanationCount':17,'newVoiceScenes':sorted(CHANGED)}
+ result['captionObservationSplits']=caption_splits
  save(HERE/'timeline.json',result);print(json.dumps({'frames':cursor+600,'seconds':result['seconds'],'ratio':[actual,explanation],'deltaFrames':delta,'captions':len(caps['ko'])}))
 if __name__=='__main__':build()
