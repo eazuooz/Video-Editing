@@ -64,7 +64,10 @@ elif stage=='split':
         for w in q['words']:
             x,y=w['timestamp']
             if x is None or y is None:continue
-            if (x+y)/2>=lo/sr and (x+y)/2<hi/sr:words.append({'text':w['text'],'timestamp':[max(0,x-lo/sr),min((hi-lo)/sr,y-lo/sr)]})
+            # Whisper may start a new word before the preceding sentence ends
+            # (the Fish title's I). Assign by its endpoint across the verified
+            # silent split, rather than dropping it into the preceding scene.
+            if y>lo/sr and y<=hi/sr+.001:words.append({'text':w['text'],'timestamp':[max(0,x-lo/sr),min((hi-lo)/sr,y-lo/sr)]})
         save(asrdir/(s['id']+'.json'),{'scene':s['id'],'audio_sha256':sha(f),'text':' '.join(w['text'].strip() for w in words),'words':words,'derivedFrom':{'path':str(cache.relative_to(R)),'sha256':sha(cache),'startSample':lo,'endSample':hi},'newRecognitionPass':False})
         for line in s['lines']:entries.append({'index':len(entries)+1,'scene_id':s['id'],'scene_title':s['title'],'text':line,'start':lo/sr,'end':hi/sr})
         reports.append({'scene':s['id'],'samples':hi-lo,'start':lo/sr,'duration':(hi-lo)/sr,'sha256':sha(f)})
