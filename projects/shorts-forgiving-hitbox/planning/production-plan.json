@@ -14,8 +14,17 @@
       "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/01-hook.unity",
       "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/02-reveal.unity",
       "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/03-wide.unity",
-      "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/04-narrow.unity"
-    ]
+      "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/04-narrow.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/05-resolution.unity"
+    ],
+    "antiAliasing": 4,
+    "sourceCapture": {
+      "width": 1080,
+      "height": 1920,
+      "fps": 60,
+      "frames": 1800
+    },
+    "shader": "CharacterSurface.shader: authored textured Lambert illumination"
   },
   "terminology": [
     {
@@ -34,22 +43,88 @@
   "sceneBeats": [
     {
       "id": "01-hook",
-      "purpose": "First2seconds: attack visibly brushes armor, health unchanged",
-      "reveal": false
+      "start": 0,
+      "end": 3.5,
+      "attackStart": 0.15,
+      "attackSeconds": 1.8,
+      "width": 0.86,
+      "purpose": "Attack brushes armor; health100; exact opening question",
+      "renderer": "Unity + Motion Canvas",
+      "boundaryLink": "Same knight, camera, projectile and coordinate system; prior question/state retained",
+      "visualEvidence": {
+        "source": "capture-full-v1/unity-master.mp4",
+        "anchors": "capture-full-v1/trace.json",
+        "meaning": "actual collider query and health, not computer vision detection",
+        "captionClearance": "Fixed captions below feet/platform; labels left/right of knight"
+      }
     },
     {
       "id": "02-reveal",
-      "purpose": "Same motion: green receiving bounds, then red attack bounds; connect each name to target",
-      "reveal": true
+      "start": 3.5,
+      "end": 13.25,
+      "attackStart": 6.7,
+      "attackSeconds": 3,
+      "width": 0.86,
+      "purpose": "Green Hurtbox then red Hitbox; trace real projected bounds",
+      "renderer": "Unity + Motion Canvas",
+      "boundaryLink": "Same knight, camera, projectile and coordinate system; prior question/state retained",
+      "visualEvidence": {
+        "source": "capture-full-v1/unity-master.mp4",
+        "anchors": "capture-full-v1/trace.json",
+        "meaning": "actual collider query and health, not computer vision detection",
+        "captionClearance": "Fixed captions below feet/platform; labels left/right of knight"
+      }
     },
     {
-      "id": "03-compare",
-      "purpose": "Same attack trajectory/pose/camera: wide hurtbox hit versus narrow hurtbox miss",
-      "onlyVariable": "hurtbox size"
+      "id": "03-wide",
+      "start": 13.25,
+      "end": 15.4,
+      "attackStart": 13.75,
+      "attackSeconds": 1.6,
+      "width": 1.4,
+      "purpose": "Widen only receiving collider: overlap, health100→70 and actual Hit_A reaction",
+      "renderer": "Unity + Motion Canvas",
+      "boundaryLink": "Same knight, camera, projectile and coordinate system; prior question/state retained",
+      "visualEvidence": {
+        "source": "capture-full-v1/unity-master.mp4",
+        "anchors": "capture-full-v1/trace.json",
+        "meaning": "actual collider query and health, not computer vision detection",
+        "captionClearance": "Fixed captions below feet/platform; labels left/right of knight"
+      }
     },
     {
-      "id": "04-resolution",
-      "purpose": "Return to opening narrow configuration and visibly resolve why it survived"
+      "id": "04-narrow",
+      "start": 15.4,
+      "end": 21.5,
+      "attackStart": 15.55,
+      "attackSeconds": 1.5,
+      "width": 0.86,
+      "purpose": "Restore narrow receiving collider: same attack, health100",
+      "renderer": "Unity + Motion Canvas",
+      "boundaryLink": "Same knight, camera, projectile and coordinate system; prior question/state retained",
+      "visualEvidence": {
+        "source": "capture-full-v1/unity-master.mp4",
+        "anchors": "capture-full-v1/trace.json",
+        "meaning": "actual collider query and health, not computer vision detection",
+        "captionClearance": "Fixed captions below feet/platform; labels left/right of knight"
+      }
+    },
+    {
+      "id": "05-resolution",
+      "start": 21.5,
+      "end": 30,
+      "attackStart": 22.1,
+      "attackSeconds": 7.2,
+      "width": 0.86,
+      "purpose": "Slow replay of opening configuration resolves why it survived",
+      "renderer": "Unity + Motion Canvas",
+      "boundaryLink": "Same knight, camera, projectile and coordinate system; prior question/state retained",
+      "visualEvidence": {
+        "source": "capture-full-v1/unity-master.mp4",
+        "anchors": "capture-full-v1/trace.json",
+        "meaning": "actual collider query and health, not computer vision detection",
+        "captionClearance": "Fixed captions below feet/platform; labels left/right of knight"
+      }
     }
   ],
   "continuity": "Same knight, camera, projectile and attack path; no scene-title resets. Narration determines final cue timings after measured PCM.",
@@ -85,11 +160,19 @@
     "modelClaimsQualifiedAsDemonstration": true
   },
   "visualPreflight": {
-    "status": "passed limited native sample",
-    "preview": "production/local/capture-preview-v3",
-    "directlyViewed": "Native frame0070: textured articulated Knight, falling attack grazing armor, feet on platform, room for header/HP/captions. Earlier v2 magenta shader failure resolved with single-pass authored shader. Full moving/composited output pending.",
-    "physicsSamples": "wide1.4 health70; narrow0.86 health100; actual ComputePenetration traces",
-    "limitations": "No final Motion Canvas captions/layout yet"
+    "status": "passed corrected composed native sample",
+    "preview": "production/local/motion-preview-v2-captioned.png",
+    "observed": "Readable two-line canonical labels, real collider outlines, textured knight, fixed caption box clear of demonstration",
+    "fullMovingReview": "pending"
   },
-  "humanFinalReview": "pending"
+  "humanFinalReview": "pending",
+  "narrationRevision": {
+    "assembly": "production/local/pcm-edit.json",
+    "current": "production/local/narration-timeline.wav",
+    "fullSourceAsr": "projects/shorts-forgiving-hitbox/production/local/asr-voice-425592c58dca.json",
+    "cutReview": "Independent whole introductory contexts plus actual waveform valleys; no endings clipped",
+    "fullFinalMixAsr": "projects/shorts-forgiving-hitbox/production/local/asr-mix-3b313d1591e6.json",
+    "asrReview": "Complete recognized text read; only orthographic 예요/에요 and spacing differ. No semantic omissions or repeated words. Human listening remains pending."
+  },
+  "sceneTiming": "production/local/visual-timing.json"
 }

@@ -1,9 +1,12 @@
 """One cached complete ASR per current voice or encoded mix; no expected-text prompt."""
+import os
+os.environ['HF_HUB_OFFLINE']='1'
+os.environ['TRANSFORMERS_OFFLINE']='1'
 from pathlib import Path
 import os,sys,json,hashlib,subprocess,re,difflib,time
 R=Path(__file__).resolve().parents[3];P=Path(__file__).resolve().parents[1];L=P/'production/local'
 role=sys.argv[1];assert role in ['voice','mix']
-source=R/'shared/output/narration/shorts-forgiving-hitbox/hitbox-v2/hitbox-v2.wav' if role=='voice' else L/'final-mix.m4a'
+source=(L/'narration-timeline.wav' if (L/'narration-timeline.wav').exists() else R/'shared/output/narration/shorts-forgiving-hitbox/hitbox-v2/hitbox-v2.wav') if role=='voice' else L/'final-mix.m4a'
 sha=hashlib.sha256(source.read_bytes()).hexdigest();out=L/f'asr-{role}-{sha[:12]}.json'
 if out.exists():print(str(out));raise SystemExit(0)
 ff=Path('C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe')

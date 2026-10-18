@@ -79,7 +79,7 @@ public static class HitboxCapture {
         cam=new GameObject("Portrait camera").AddComponent<Camera>();cam.enabled=false;cam.orthographic=true;cam.orthographicSize=3.5f;cam.aspect=W/(float)H;
         cam.transform.position=new Vector3(0,1,8);cam.transform.LookAt(new Vector3(0,1,0));cam.backgroundColor=Color.black;cam.clearFlags=CameraClearFlags.SolidColor;cam.nearClipPlane=.1f;cam.farClipPlane=30;cam.allowHDR=false;
         MakeLight("Warm key",new Vector3(25,-35,0),new Color(1,.92f,.80f),1.4f);MakeLight("Soft fill",new Vector3(20,145,0),new Color(.65f,.85f,1),.65f);
-        for(int s=0;s<4;s++){Apply((int)(job.shots[s].start*60),true);EditorSceneManager.SaveScene(scene,Root+"/Scenes/"+job.shots[s].id+".unity");}
+        for(int s=0;s<job.shots.Length;s++){Apply((int)(job.shots[s].start*60),true);EditorSceneManager.SaveScene(scene,Root+"/Scenes/"+job.shots[s].id+".unity");}
         AssetDatabase.SaveAssets();previousShot="";damageTime=-100;
         File.WriteAllText(Path.Combine(job.output,"model-bounds.txt"),"Normalizedheight=2.2;scale="+scale+";beforeTranslation="+b+";root="+heroBase);
     }
