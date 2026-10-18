@@ -1,4 +1,4 @@
-"""Maintain this episode's consolidated preproduction package; never launch media jobs."""
+"""Initial package bootstrap only; existing revisions must not be overwritten."""
 from pathlib import Path
 import datetime, hashlib, json, subprocess
 
@@ -6,6 +6,9 @@ R = Path(__file__).resolve().parents[3]
 P = R / 'projects/ai-games-showcase-2026'
 L = R / 'production/preflight/ai-games-showcase-2026/local'
 now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+if (P / 'planning/production-plan.json').exists():
+    raise SystemExit('Existing plan preserved. Edit its current fields and use production/render-outline.py to refresh the readable script.')
 
 def read(path):
     return json.loads(path.read_text(encoding='utf8'))
