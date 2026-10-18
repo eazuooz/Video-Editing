@@ -5,6 +5,7 @@ side effect. The parent coordinates this after the exclusive voice jobs finish.
 """
 from pathlib import Path
 import argparse,hashlib,json,math,re,shutil,subprocess
+from functools import lru_cache
 from PIL import ImageFont
 
 ROOT=Path(__file__).resolve().parents[4]
@@ -176,7 +177,10 @@ ROLES={
 def read(path):return json.loads(Path(path).read_text(encoding='utf-8-sig'))
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 def clock(frames):
-    hundredths=round(frames*100/60);h,rest=divmod(hundredths,360000);m,rest=divmod(rest,6000);s,cs=divmod(rest,100)
+    # ASS timestamps have centisecond precision. Flooring both boundaries
+    # includes the intended exact60fps sample in its own event, unlike round()
+    # which can show the previous frame's label at t=1/60,4/60,... .
+    hundredths=int(frames)*100//60;h,rest=divmod(hundredths,360000);m,rest=divmod(rest,6000);s,cs=divmod(rest,100)
     return f'{h}:{m:02d}:{s:02d}.{cs:02d}'
 def clean(text):return str(text).replace('{','(').replace('}',')').replace('\\','/').replace('\n','\\N')
 
@@ -209,9 +213,13 @@ class Overlay:
         position=f'\\pos({round(x)},{round(y)})' if move is None else f'\\move({round(x)},{round(y)},{round(move[0])},{round(move[1])})'
         border=f'\\bord{outline}\\3c&HFFFFFF&\\3a&H00&\\shad0' if outline else '\\bord0'
         self.lines.append(f'Dialogue: {layer},{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an{align}{position}\\fs{size}\\c&H{color}&\\b{int(bold)}{border}}}'+clean(text))
-    def leader(self,start,end,a,b,color='707070',force=False):
+    def leader(self,start,end,a,b,color='707070',force=False,clip=None):
         if math.dist(a,b)<30 and not force:return
-        self.lines.append(f'Dialogue: 3,{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c&H{color}&\\bord1\\1a&HFF&}}m {round(a[0])} {round(a[1])} l {round(b[0])} {round(b[1])}{{\\p0}}')
+        clipping='' if clip is None else '\\clip('+','.join(str(round(v)) for v in clip)+')'
+        self.lines.append(f'Dialogue: 3,{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an7\\pos(0,0)\\p1{clipping}\\c&H{color}&\\bord1.5\\1a&HFF&}}m {round(a[0])} {round(a[1])} l {round(b[0])} {round(b[1])}{{\\p0}}')
+    def white_band(self,start,end,box):
+        x0,y0,x1,y1=box
+        self.lines.append(f'Dialogue: 1,{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c&HFFFFFF&\\bord0}}m {x0} {y0} l {x1} {y0} l {x1} {y1} l {x0} {y1}{{\\p0}}')
     def save(self,path):
         header='''[Script Info]
 ScriptType: v4.00+
@@ -243,11 +251,71 @@ def positively_collinear(a,b):
     # its own label. Only numerically identical positive unit directions merge.
     return sum(x*y for x,y in zip(a,b))>=1.0-1e-6
 
-def measured_axis_label_width(text):
-    box=AXIS_LABEL_FONT.getbbox(text)
-    return max(AXIS_LABEL_FONT.getlength(text),box[2]-box[0])+2*AXIS_LABEL_PADDING
+@lru_cache(maxsize=32)
+def axis_label_metrics(text):
+    """Actual bold40 glyph ink, centered as ASS an5, plus white outline room."""
+    box=AXIS_LABEL_FONT.getbbox(text,anchor='mm')
+    half=max(AXIS_LABEL_FONT.getlength(text),box[2]-box[0])*.5
+    return (-half-AXIS_LABEL_PADDING,box[1]-AXIS_LABEL_PADDING,
+            half+AXIS_LABEL_PADDING,box[3]+AXIS_LABEL_PADDING)
 
-def label_candidates(state,pair):
+def measured_axis_label_width(text):
+    box=axis_label_metrics(text);return box[2]-box[0]
+
+def axis_label_box(label,x=None,y=None):
+    x=label['x'] if x is None else x;y=label['y'] if y is None else y
+    box=axis_label_metrics(label['text'])
+    return (x+box[0],y+box[1],x+box[2],y+box[3])
+
+def boxes_overlap(a,b,gap=8):
+    return a[0]<b[2]+gap and a[2]+gap>b[0] and a[1]<b[3]+gap and a[3]+gap>b[1]
+
+def place_axis_label(candidate,accepted,pair,previous=None):
+    """Keep every distinct axis name; move the measured box, never omit it."""
+    bounds=(60,220,1860,735) if pair else (60,80,1015,872)
+    metrics=axis_label_metrics(candidate['text'])
+    preferred=(candidate['x'],candidate['y'])
+    if previous is not None:
+        # Preserve the last collision-free lane relative to its real anchor.
+        # Camera motion then moves the label naturally; do not reset to the
+        # nearest side every frame when a competing box is only a pixel away.
+        preferred=(previous['x']+candidate['target'][0]-previous['target'][0],
+                   previous['y']+candidate['target'][1]-previous['target'][1])
+    # Horizontal alternatives first at the top/bottom plot boundary. This
+    # separates coincident world-y/body-z names without moving one onto the
+    # other name. The finite grid is deterministic for a given anchor state.
+    offsets=[(0,0)]
+    edge_offsets=[]
+    for old in accepted:
+        box=old['bbox']
+        edge_offsets.extend([(box[0]-10-metrics[2]-preferred[0],0),
+                             (box[2]+10-metrics[0]-preferred[0],0),
+                             (0,box[1]-10-metrics[3]-preferred[1]),
+                             (0,box[3]+10-metrics[1]-preferred[1])])
+    offsets.extend(sorted(edge_offsets,key=lambda v:v[0]*v[0]+v[1]*v[1]))
+    for ring in range(1,9):
+        offsets.extend([(-80*ring,0),(80*ring,0),(0,-56*ring),(0,56*ring)])
+        offsets.extend((dx,dy) for dx in (-80*ring,80*ring) for dy in (-56*ring,56*ring))
+    tried=set()
+    for dx,dy in offsets:
+        x=max(bounds[0]-metrics[0],min(bounds[2]-metrics[2],preferred[0]+dx))
+        y=max(bounds[1]-metrics[1],min(bounds[3]-metrics[3],preferred[1]+dy))
+        key=(round(x,3),round(y,3))
+        if key in tried:continue
+        tried.add(key);box=axis_label_box(candidate,x,y);tip=candidate['target']
+        # A label is a callout, not lettering over the actual arrowhead.
+        if box[0]-6<=tip[0]<=box[2]+6 and box[1]-6<=tip[1]<=box[3]+6:continue
+        if any(boxes_overlap(box,old['bbox']) for old in accepted):continue
+        candidate['x']=x;candidate['y']=y;candidate['bbox']=box
+        candidate['measuredWidth']=metrics[2]-metrics[0]
+        candidate['layoutAdjusted']=math.dist(preferred,(x,y))>.01
+        candidate['clampedToGeometryPane']=not pair and abs(x-preferred[0])>.01
+        candidate['leaderEnd']=(max(box[0],min(box[2],tip[0])),max(box[1],min(box[3],tip[1])))
+        candidate['plotBounds']=bounds
+        return candidate
+    raise ValueError(f'Cannot place distinct axis label without collision: {candidate}')
+
+def label_candidates(state,pair,previous=None,candidates_only=False,merge_axes=None):
     data={a['name']:a for a in state['anchors']}
     result=[]
     for prefix in (['a','b'] if pair else ['a']):
@@ -260,7 +328,11 @@ def label_candidates(state,pair):
                 origin_key=prefix+'.center' if kind=='body' else (('worldA' if prefix=='a' else 'worldB')+'.origin' if pair else 'world.origin')
                 direction=mathematical_direction(a,data.get(origin_key))
                 v=a['pixelTopLeft'];dx=v['x']-center['x'];dy=v['y']-center['y'];length=max(1,math.hypot(dx,dy))
-                x=v['x']+dx/length*32;y=v['y']+dy/length*32
+                # Put the entire text beyond the tip, rather than centering
+                # a 130px word only32px from the arrow and covering its head.
+                metrics=axis_label_metrics(f'{kind} {axis}')
+                support=abs(dx/length)*(metrics[2]-metrics[0])*.5+abs(dy/length)*(metrics[3]-metrics[1])*.5+18
+                x=v['x']+dx/length*support;y=v['y']+dy/length*support
                 if pair and y>710:
                     x+=90 if x<1730 else -90
                 result.append(dict(group=prefix,axis=axis,kind=kind,text=f'{kind} {axis}',
@@ -272,56 +344,102 @@ def label_candidates(state,pair):
     for candidate in result:
         merged=False
         for old in collapsed:
-            if old['group']==candidate['group'] and old['axis']==candidate['axis'] and math.hypot(old['x']-candidate['x'],old['y']-candidate['y'])<65 and positively_collinear(old['directionMath'],candidate['directionMath']):
+            allowed=merge_axes is None or (candidate['group'],candidate['axis']) in merge_axes
+            if allowed and old['group']==candidate['group'] and old['axis']==candidate['axis'] and math.hypot(old['x']-candidate['x'],old['y']-candidate['y'])<65 and positively_collinear(old['directionMath'],candidate['directionMath']):
                 old['text']='world/body '+candidate['axis'];merged=True;break
         if not merged:collapsed.append(candidate)
-    # Keep at most two labels within a collision neighborhood. Additional
-    # unhelpful labels are omitted; the axis legend remains explicit.
+    # Use measured text rectangles, not center distance. All distinct names
+    # survive; a third nearby axis is scientifically important at gimbal lock.
+    # Fixed-world labels keep their lanes while moving-body labels yield.
+    collapsed.sort(key=lambda v:(v['group'],0 if v['kind']=='world' or v['text'].startswith('world/body') else 1,v['axis']))
+    if candidates_only:return collapsed
     accepted=[]
+    prior={(v['group'],v['axis'],v['text']):v for v in (previous or [])}
     for candidate in collapsed:
-        if not pair:
-            # Axis labels use centered alignment. Clamp the actual bold40px
-            # text box, including spare outline/bearing room, to the geometry
-            # pane; a long merged name must not enter notes beginning at1050.
-            width=measured_axis_label_width(candidate['text'])
-            before=candidate['x']
-            candidate['x']=max(60+width*.5,min(1015-width*.5,candidate['x']))
-            candidate['clampedToGeometryPane']=abs(candidate['x']-before)>.01
-            candidate['measuredWidth']=width
-        nearby=[old for old in accepted if math.hypot(old['x']-candidate['x'],old['y']-candidate['y'])<85]
-        if len(nearby)>=2:continue
-        if nearby:
-            lower,upper=(245,710) if pair else (100,835)
-            down=candidate['y']+52
-            up=candidate['y']-52
-            candidate['y']=down if down<=upper else (up if up>=lower else candidate['y'])
-        accepted.append(candidate)
+        key=(candidate['group'],candidate['axis'],candidate['text'])
+        accepted.append(place_axis_label(candidate,accepted,pair,prior.get(key)))
     return accepted
 
-def add_anchors(overlay,slot,states,pair):
+def clip_label_layouts(states,pair,previous=None):
+    """Reserve one anchor-relative callout lane for the entire finite clip.
+
+    Testing the complete authored motion before choosing each lane prevents a
+    greedy per-frame solver from suddenly jumping a name to the opposite side.
+    A clamp is continuous; aside from actual anchor movement, names do not pop.
+    """
+    raw=[label_candidates(st,pair,candidates_only=True,merge_axes=set()) for st in states]
+    merge_axes=set()
+    for group in (['a','b'] if pair else ['a']):
+        for axis in 'xyz':
+            for labels in raw:
+                matching=[v for v in labels if v['group']==group and v['axis']==axis]
+                if len(matching)!=2 or not positively_collinear(matching[0]['directionMath'],matching[1]['directionMath']):break
+                if math.dist((matching[0]['x'],matching[0]['y']),(matching[1]['x'],matching[1]['y']))>=65:break
+            else:merge_axes.add((group,axis))
+    # Merge a name only when the same relationship holds throughout the clip.
+    # One-frame mathematical coincidences must not flash a combined identity.
+    candidates=[label_candidates(st,pair,candidates_only=True,merge_axes=merge_axes) for st in states]
+    layouts=[[] for _ in states];bounds=(60,220,1860,735) if pair else (60,80,1015,872)
+    key=lambda v:(v['group'],v['axis'],v['text'])
+    prior={key(v):v for v in (previous or [])};occurrences={}
+    for frame,labels in enumerate(candidates):
+        for label in labels:occurrences.setdefault(key(label),[]).append((frame,label))
+    ordered=sorted(occurrences,key=lambda k:(k[0],0 if k[2].startswith('world') else 1,k[1],k[2]))
+    offsets=sorted(((x*40,y*28) for x in range(-16,17) for y in range(-16,17)),key=lambda p:p[0]*p[0]+p[1]*p[1])
+    for name in ordered:
+        samples=occurrences[name];first=samples[0][1];old=prior.get(name)
+        seed=((old['x']-old['target'][0],old['y']-old['target'][1]) if old else
+              (first['x']-first['target'][0],first['y']-first['target'][1]))
+        metrics=axis_label_metrics(first['text']);chosen=None
+        for dx,dy in offsets:
+            trial=[]
+            for frame,label in samples:
+                tip=label['target'];x=max(bounds[0]-metrics[0],min(bounds[2]-metrics[2],tip[0]+seed[0]+dx))
+                y=max(bounds[1]-metrics[1],min(bounds[3]-metrics[3],tip[1]+seed[1]+dy))
+                box=axis_label_box(label,x,y)
+                if box[0]-6<=tip[0]<=box[2]+6 and box[1]-6<=tip[1]<=box[3]+6:break
+                if any(boxes_overlap(box,other['bbox']) for other in layouts[frame]):break
+                v=dict(label,x=x,y=y,bbox=box,measuredWidth=metrics[2]-metrics[0],
+                       layoutAdjusted=math.dist((label['x'],label['y']),(x,y))>.01,
+                       clampedToGeometryPane=not pair and abs(x-label['x'])>.01,
+                       leaderEnd=(max(box[0],min(box[2],tip[0])),max(box[1],min(box[3],tip[1]))),
+                       plotBounds=bounds,motionPolicy='constant anchor-relative offset through this clip')
+                trial.append((frame,v))
+            else:chosen=trial;break
+        if chosen is None:raise ValueError(f'No stable collision-free callout lane for {name}.')
+        for frame,label in chosen:layouts[frame].append(label)
+    return layouts
+
+def add_anchors(overlay,slot,states,pair,previous=None):
     budget=slot['endFrame']-slot['startFrame'];capture=len(states)
-    # 3frame(50ms) interpolation intervals give smooth60fps label motion while
-    # avoiding a whole-lecture per-frame ASS event explosion.
-    for index in range(0,capture,3):
-        next_index=min(capture-1,index+3)
+    layouts=clip_label_layouts(states,pair,previous)
+    # Only the finite captured motion (5,009 frames across the 76 clips) needs
+    # per-frame callouts. Do not interpolate between alternative label lanes:
+    # that would pass the text through another name between two valid layouts.
+    # Long narration holds still use one authored endpoint event per label.
+    for index,labels in enumerate(layouts):
         start=slot['startFrame']+index
-        end=slot['startFrame']+min(capture,index+3)
+        end=slot['startFrame']+min(capture,index+1)
         if end<=start:continue
-        now=label_candidates(states[index],pair);later=label_candidates(states[next_index],pair)
-        lookup={(l['group'],l['axis'],l['text']):l for l in later}
-        for label in now:
-            dest=lookup.get((label['group'],label['axis'],label['text']),label)
-            overlay.text(start,end,label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6,(dest['x'],dest['y']),outline=3)
-            overlay.leader(start,end,label['target'],(label['x'],label['y']),force=label.get('clampedToGeometryPane',False))
+        previous=labels
+        for label in previous:
+            overlay.text(start,end,label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6,outline=3)
+            overlay.leader(start,end,label['target'],label['leaderEnd'],force=label.get('layoutAdjusted',False) or label.get('clampedToGeometryPane',False),clip=label['plotBounds'] if pair else None)
     hold_start=slot['startFrame']+capture
     if hold_start<slot['endFrame']:
-        for label in label_candidates(states[-1],pair):
+        for label in previous:
             overlay.text(hold_start,slot['endFrame'],label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6,outline=3)
-            overlay.leader(hold_start,slot['endFrame'],label['target'],(label['x'],label['y']),force=label.get('clampedToGeometryPane',False))
+            overlay.leader(hold_start,slot['endFrame'],label['target'],label['leaderEnd'],force=label.get('layoutAdjusted',False) or label.get('clampedToGeometryPane',False),clip=label['plotBounds'] if pair else None)
+    return previous
 
 def build_overlay(scene,lesson_scene,slots,out):
     sid=str(scene['id']).zfill(2);pair=sid in PAIRS;overlay=Overlay();frames=int(scene['frames'])
     title=TERM_TITLES.get(sid,lesson_scene['title'])
+    if sid=='21':
+        # The authored axis-guide cylinder extends beyond the chart. Protect
+        # the title/roles and worked explanation without changing its geometry.
+        overlay.white_band(0,frames,(0,0,1920,220))
+        overlay.white_band(0,frames,(0,735,1920,1080))
     if pair:
         overlay.text(0,frames,wrap(title,1660,54,True,2),120,42,54,bold=True)
         roles=ROLES[sid]
@@ -337,6 +455,7 @@ def build_overlay(scene,lesson_scene,slots,out):
             overlay.text(0,frames,roles[0],160,162,38,bold=True);overlay.text(0,frames,roles[1],1080,162,38,bold=True)
     else:
         overlay.text(0,frames,wrap(title,750,54,True,2),1050,60,54,bold=True)
+    previous_labels=None
     for slot in slots:
         if 'lineIndex' not in slot:continue
         index=slot['lineIndex'];start=slot['startFrame'];end=slot['endFrame']
@@ -351,7 +470,7 @@ def build_overlay(scene,lesson_scene,slots,out):
             overlay.text(start,end,wrap(note,730,41,False,3),1050,610,41)
         states=[json.loads(line) for line in Path(slot['anchors']).read_text(encoding='utf8').splitlines() if line.strip()]
         if len(states)!=slot['captureFrames']:raise ValueError(f'{sid} line{index}: anchor count differs from clipframes.')
-        add_anchors(overlay,slot,states,pair)
+        previous_labels=add_anchors(overlay,slot,states,pair,previous_labels)
     # The words distinguish fixed and moving axes independently of color.
     legend='world: 고정 축   /   body: 물체와 함께 도는 축'
     overlay.text(0,frames,legend,1050 if not pair else 120,800 if not pair else 110,34 if not pair else 32)

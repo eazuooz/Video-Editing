@@ -28,9 +28,10 @@ def main():
     assert len(opposite)==2,opposite
     cases.append('Opposite parallel directions: separate')
     bottom=module.label_candidates(state((0,1,0),(1,0,0),(500,710),True),True)
-    assert len(bottom)==2 and abs(bottom[0]['y']-bottom[1]['y'])>=52,bottom
-    assert max(x['y'] for x in bottom)<=710,bottom
-    cases.append('Pair labels already at bottom clearance: second shifts upward52px')
+    assert len(bottom)==2,bottom
+    assert max(x['bbox'][3] for x in bottom)<=735,bottom
+    assert not module.boxes_overlap(bottom[0]['bbox'],bottom[1]['bbox']),bottom
+    cases.append('Pair labels at bottom clearance retain both names with non-overlapping measured boxes')
     unknown=state((1,0,0),(1,0,0))
     unknown['anchors'][-1].pop('mathWorld')
     missing=module.label_candidates(unknown,False)
@@ -44,6 +45,20 @@ def main():
     assert label['x']-width*.5>=59.999999,(label,width)
     assert label['target']==(1600,500) and label['clampedToGeometryPane'],label
     cases.append('Measured actual bold40px merged label plus6px clearance stays atx≤1015; actual anchor retained for leader')
+    folder=SOURCE.parents[1]/'local/revision-v2/unity-spatial-clips'
+    real12=folder/'12-line-04.anchors.ndjson'
+    if real12.exists():
+        import itertools
+        sample=json.loads(real12.read_text(encoding='utf8').splitlines()[-1])
+        labels=module.label_candidates(sample,True)
+        for group in ('a','b'):
+            assert {v['text'] for v in labels if v['group']==group}=={f'{k} {a}' for k in ('world','body') for a in 'xyz'}
+        assert not any(module.boxes_overlap(a['bbox'],b['bbox']) for a,b in itertools.combinations(labels,2))
+        cases.append('Actual p=-90 scene12: all six axis names on both aircraft survive without overlap')
+    for frame in range(93556):
+        start=frame*100//60;end=(frame+1)*100//60
+        assert start*60<=frame*100<end*60
+    cases.append('ASS centisecond floor boundaries contain every intended 60fps sample over the current full timeline')
     print(json.dumps(dict(status='passed',cases=cases,gpuOrMediaJobsStarted=False),ensure_ascii=False))
 
 if __name__=='__main__':main()
