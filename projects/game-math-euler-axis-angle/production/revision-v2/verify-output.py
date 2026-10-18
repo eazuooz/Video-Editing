@@ -7,6 +7,7 @@ from PIL import Image,ImageDraw
 R=Path(__file__).resolve().parents[4];P=R/'projects/game-math-euler-axis-angle';O=P/'production/local/revision-v2';Q=O/'qa';Q.mkdir(exist_ok=True)
 def read(p):return json.loads(p.read_text(encoding='utf8'))
 def sha(p):
+ p=Path(p)
  h=hashlib.sha256()
  with p.open('rb') as f:
   for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
@@ -81,7 +82,7 @@ def audio(plan):
  stats=measure(O/'euler-captioned.mp4');save(Q/'encoded-loudness.json',stats);assert float(stats['input_tp'])<=-1.5,stats
  save(Q/'audio-continuity.json',dict(inputs=inputs,windowSeconds=.4,hopSeconds=.1,speechMask='current word timestamps mapped around intentional sentence-seam pauses',scenes=summaries,windows=windows,flaggedVoiceTransferWindows=flags,sustainedLocalDropCandidates=sustained,sceneJoins=joins,humanListening='pending; not inferred from ASR or loudness'))
 def pixels(plan):
- layout=read(O/'caption-layout.json');sig=dict(videoSha256=sha(O/'euler-captioned.mp4'),layoutSha256=sha(O/'caption-layout.json'),timelineSha256=sha(P/'production/revision-v2/timeline.json'))
+ layout=read(O/'caption-layout.json');sig=dict(videoSha256=sha(O/'euler-captioned.mp4'),layoutSha256=sha(O/'caption-layout.json'),timelineSha256=sha(P/'production/revision-v2/timeline.json'),placementSha256=sha(O/'unity-spatial-placement.json'),extractorSha256=sha(__file__))
  receipt=Q/'pixel-extraction.json'
  if receipt.exists() and read(receipt).get('inputs')==sig:return
  samples={12:['branding early'],108:['branding exit'],plan['totalFrames']-580:['membership enter'],plan['totalFrames']-300:['membership names'],plan['totalFrames']-18:['membership exit']}
@@ -95,15 +96,27 @@ def pixels(plan):
   if c.get('annotationWindowIndex') is not None:
    s=next(s for s in plan['scenes'] if s['id']==c['scene']);n=s['annotationWindow']['endFrame']
    for f in [1,n//2,n-1]:samples.setdefault(c['globalStartFrame']+f,[]).append(c['id']+' guide')
+ # Inspect every finite authored Unity motion at start/middle/end in the
+ # same current-output extraction, alongside all captions and source cuts.
+ # Browser playback still supplies the moving-output review; contacts alone
+ # are never recorded as a full movement pass.
+ placement=read(O/'unity-spatial-placement.json')
+ for slot in placement['placements']:
+  if slot.get('captureFrames',1)<=1:continue
+  scene=next(s for s in plan['scenes'] if s['id']==slot['sceneId'])
+  cap=slot['captureFrames']
+  for delta,label in [(1,'start'),(cap//2,'middle'),(cap-1,'end')]:
+   frame=min(scene['endFrame']-1,scene['startFrame']+slot['startFrame']+delta)
+   samples.setdefault(frame,[]).append(slot['sceneId']+' motion'+str(slot['lineNumber'])+' '+label)
  rows=[dict(frame=f,time=f/60,labels=ls) for f,ls in sorted(samples.items())];save(Q/'pixel-sample-index.json',rows)
  def balanced(terms):
   if len(terms)==1:return terms[0]
   m=len(terms)//2;return '('+balanced(terms[:m])+'+'+balanced(terms[m:])+')'
- expression=balanced(['eq(n,'+str(r['frame'])+')' for r in rows]);run(['ffmpeg','-v','error','-i',str(O/'euler-captioned.mp4'),'-an','-vf',"select='"+expression+"',scale=960:540:flags=lanczos",'-fps_mode','vfr','-c:v','mjpeg','-threads','1','-q:v','3','-y',str(Q/'frame-%04d.jpg')])
+ expression=balanced(['eq(n,'+str(r['frame'])+')' for r in rows]);run(['ffmpeg','-v','error','-i',str(O/'euler-captioned.mp4'),'-an','-vf',"select='"+expression+"'",'-fps_mode','vfr','-c:v','mjpeg','-threads','1','-q:v','3','-y',str(Q/'frame-%04d.jpg')])
  for page in range(math.ceil(len(rows)/8)):
   chunk=rows[page*8:(page+1)*8];sheet=Image.new('RGB',(1920,580*math.ceil(len(chunk)/2)),(22,22,22));draw=ImageDraw.Draw(sheet)
   for k,row in enumerate(chunk):
-   im=Image.open(Q/f'frame-{page*8+k+1:04}.jpg');x=k%2*960;y=k//2*580;sheet.paste(im,(x,y));draw.text((x+5,y+544),f"{row['time']:.2f}s | "+' / '.join(row['labels'])[:100],fill='white')
+   im=Image.open(Q/f'frame-{page*8+k+1:04}.jpg').resize((960,540),Image.Resampling.LANCZOS);x=k%2*960;y=k//2*580;sheet.paste(im,(x,y));draw.text((x+5,y+544),f"{row['time']:.2f}s | "+' / '.join(row['labels'])[:100],fill='white')
   sheet.save(Q/f'contact-{page:02}.jpg')
  # Mobile inspection sheets preserve the actual375px video width, with the
  # final encoded captions. They are QA rasters and excluded from Git.
@@ -113,7 +126,7 @@ def pixels(plan):
  sheet=Image.new('RGB',(1500,240*math.ceil(len(mobile)/4)),(22,22,22));draw=ImageDraw.Draw(sheet)
  for i,(sid,n) in enumerate(mobile):
   im=Image.open(Q/f'frame-{n:04}.jpg').resize((375,211),Image.Resampling.LANCZOS);x=i%4*375;y=i//4*240;sheet.paste(im,(x,y));draw.text((x+5,y+214),sid,fill='white')
- sheet.save(Q/'mobile-all-scenes.jpg');save(receipt,dict(inputs=sig,samples=len(rows),sheets=math.ceil(len(rows)/8),review='pending direct whole contact/movement review'))
+ sheet.save(Q/'mobile-all-scenes.jpg');save(receipt,dict(inputs=sig,samples=len(rows),sheets=math.ceil(len(rows)/8),nativeSampleSize=[1920,1080],contactSampleSize=[960,540],mobileVideoWidth=375,review='pending direct whole contact/movement review'))
 def main():
  assert read(R/'shared/publishing/video-production-control.json')['selectedVideo']==P.name
  plan=read(P/'production/revision-v2/timeline.json');stage=sys.argv[1] if len(sys.argv)>1 else 'all'
