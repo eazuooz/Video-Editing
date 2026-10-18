@@ -174,8 +174,18 @@ def parent(args):
         return 0
     me = psutil.Process()
     family = {p.pid for p in [me, *me.parents()]}
-    assert not [p.pid for p in psutil.process_iter(["name"])
-                if p.pid not in family and (p.info["name"] or "").lower().startswith("python")], "Another compute process must finish"
+    # CPU research and read-only preview servers may coexist. Only another
+    # Python process actually attached to this GPU conflicts with this lease;
+    # the separate free-memory floor and allocator cap remain mandatory.
+    gpu_python = []
+    if args.device != "cpu":
+        import csv
+        gpu_rows = subprocess.check_output(
+            ["nvidia-smi", "--query-compute-apps=pid,process_name", "--format=csv,noheader"], text=True)
+        for row in csv.reader(gpu_rows.splitlines()):
+            if len(row) >= 2 and int(row[0].strip()) not in family and Path(row[1].strip()).name.lower().startswith("python"):
+                gpu_python.append(int(row[0].strip()))
+    assert not gpu_python, ("Another GPU Python computation must finish at its own safe boundary", gpu_python)
     attempt = dict(schemaVersion=1, status="worker-pending", inputs=inputs, device=args.device,
                    recognition=ASR_OPTIONS, startedAt=time.time(),
                    parent=dict(pid=me.pid, createTime=me.create_time()), humanListening="pending")
