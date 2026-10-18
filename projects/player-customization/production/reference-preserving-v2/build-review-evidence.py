@@ -235,13 +235,19 @@ def probe_video(video, executable, total):
 def export_once(video, samples, folder, ffmpeg, threads):
     native = folder / 'native'
     native.mkdir()
-    expression = '+'.join(f'eq(n,{s["frame"]})' for s in samples)
+    # A left-nested sum of hundreds of terms exceeds FFmpeg's expression
+    # parser depth. A balanced tree retains every requested index at log depth.
+    terms = [f'eq(n,{s["frame"]})' for s in samples]
+    while len(terms)>1:
+        terms = ['('+terms[i]+'+'+terms[i+1]+')' if i+1<len(terms) else terms[i]
+                 for i in range(0,len(terms),2)]
+    expression = terms[0]
     script = folder / 'select.filter.txt'
     script.write_text(f"setpts=PTS-STARTPTS,select='{expression}',showinfo\n", encoding='ascii')
     log = folder / 'ffmpeg-selected-frames.log'
     command = [ffmpeg, '-hide_banner', '-nostdin', '-n', '-loglevel', 'info', '-threads', str(threads),
                '-filter_threads', '1', '-i', str(video), '-map', '0:v:0', '-an', '-sn', '-dn',
-               '-filter_script:v', str(script), '-fps_mode', 'passthrough', '-c:v', 'png',
+               '-vf', script.read_text(encoding='ascii').strip(), '-fps_mode', 'passthrough', '-c:v', 'png',
                '-compression_level', '2', '-threads', str(threads), str(native / 'sample-%06d.png')]
     with log.open('wb') as stream:
         completed = subprocess.run(command, stdout=subprocess.DEVNULL, stderr=stream)
