@@ -10,7 +10,7 @@ def git(*args,env=None,data=None):
  return r.stdout
 def rel(p):return p.relative_to(R).as_posix()
 control='shared/publishing/video-production-control.json';field='shortsRecurringAuthorization'
-paths=[rel(p) for p in P.rglob('*') if p.is_file() and '/local/' not in rel(p) and '__pycache__' not in rel(p) and p.suffix in ['.py','.json','.md','.txt','.srt','.ass','.cjs']]
+paths=[rel(p) for p in P.rglob('*') if p.is_file() and '/local/' not in rel(p) and '/delivery-history/' not in rel(p) and '__pycache__' not in rel(p) and p.suffix in ['.py','.json','.md','.txt','.srt','.ass','.cjs']]
 u=R/'unity/VideoEditing/Assets/VideoScenes'/P.name
 if u.exists():paths += [rel(p) for p in u.rglob('*') if p.is_file() and p.suffix in ['.cs','.meta','.unity','.mat','.asset','.asmdef','.md','.shader']]
 if Path(str(u)+'.meta').exists():paths.append(rel(Path(str(u)+'.meta')))
