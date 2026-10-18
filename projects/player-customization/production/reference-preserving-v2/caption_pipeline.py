@@ -306,7 +306,10 @@ def build(data: dict, output: Path) -> dict:
         raise ValueError("Production caption clock must be60fps")
     if not data.get("paragraphs"):
         raise ValueError("A caption build requires actual aligned paragraphs")
-    font_file = path(data.get("fontFile", "C:/Windows/Fonts/malgun.ttf"))
+    font_value = data.get("fontFile", "C:/Windows/Fonts/malgun.ttf")
+    # System fonts are read-only inputs, not arbitrary output locations.
+    font_file = (Path(font_value).resolve() if str(font_value).replace("\\", "/").lower()
+                 == "c:/windows/fonts/malgun.ttf" else path(font_value))
     font = ImageFont.truetype(str(font_file), FONT_SIZE)
     font_name = data.get("fontName", "Malgun Gothic")
     ko_script, en_script = script_lookup(data.get("scriptKo")), script_lookup(data.get("scriptEn"))

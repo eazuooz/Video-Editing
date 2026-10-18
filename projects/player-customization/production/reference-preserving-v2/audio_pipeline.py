@@ -259,6 +259,37 @@ def alignment_helpers():
     return align_characters, normalized
 
 
+def pronunciation_words(words):
+    """Approved numeral/letter aliases for alignment only; raw ASR stays intact."""
+    aliases = read(SCRIPT / "caption-aliases.json")
+    rows = []
+    index = 0
+    while index < len(words):
+        original = dict(words[index])
+        index += 1
+        # Whisper can split a decimal into 0 and .5초. Keep the union of its
+        # measured intervals before mapping the approved 0.5 pronunciation.
+        if original["text"].strip() == "0" and index < len(words) and words[index]["text"].lstrip().startswith(".5"):
+            following = words[index]
+            if abs(float(original["timestamp"][1]) - float(following["timestamp"][0])) <= .02:
+                original["text"] += following["text"].lstrip()
+                original["timestamp"] = [original["timestamp"][0], following["timestamp"][1]]
+                index += 1
+        item = dict(original)
+        value = item["text"]
+        for display, spoken in sorted(aliases.items(), key=lambda pair: -len(pair[0])):
+            if display in ("A", "B"):
+                value = re.sub(r"(?<![A-Za-z])" + display + r"(?![A-Za-z])", spoken, value, flags=re.I)
+            else:
+                value = value.replace(display, spoken)
+        if value != item["text"]:
+            item["recognizedText"] = item["text"]
+            item["text"] = value
+            item["alignmentAliasOnly"] = True
+        rows.append(item)
+    return rows
+
+
 def assemble(manifest):
     specification = read(manifest)
     if not specification.get("sources"):
@@ -458,7 +489,8 @@ def split(review_path, overrides_path=None):
     override_rows = {row["afterScene"]: row for row in overrides.get("boundaries", [])}
     inputs = {"sourceSha256": digest, "asrSha256": sha(cache), "scripts": script_files,
               "comparisonReview": artifact(review_path), "boundaryOverrides": overrides,
-              "boundaryPolicy": "word-aligned plus >=50ms waveform low-energy pause; no time stretch"}
+              "boundaryPolicy": "word-aligned plus >=50ms waveform low-energy pause; no time stretch",
+              "alignmentAliases": artifact(SCRIPT / "caption-aliases.json")}
     signature = canonical_signature(inputs)
     receipt_path = NARRATION / "scene-split-review.json"
     if output_cache(receipt_path, signature):
@@ -469,7 +501,8 @@ def split(review_path, overrides_path=None):
     if rate != RATE or audio.ndim != 1:
         raise ValueError("Expected mono float source at 24kHz")
     expected = " ".join(line for scene in spoken["scenes"] for line in scene["lines"])
-    starts, ends, coverage = align_characters(expected, recognition["words"], len(audio) / rate)
+    aligned_words = pronunciation_words(recognition["words"])
+    starts, ends, coverage = align_characters(expected, aligned_words, len(audio) / rate)
     bounds, boundaries, cursor = [0], [], 0
     for scene in spoken["scenes"][:-1]:
         cursor += sum(len(normalized(line)) for line in scene["lines"])
@@ -489,14 +522,14 @@ def split(review_path, overrides_path=None):
     outputs, scene_rows, entries, reconstructed, cursor = [], [], [], [], 0
     for scene, translation, tts_scene, lo, hi in zip(ko["scenes"], en["scenes"], spoken["scenes"], bounds, bounds[1:]):
         destination, word_file = chunks / f"{scene['id']}-scene.wav", asr_dir / f"{scene['id']}.json"
-        require_new(destination, word_file)
-        sf.write(destination, audio[lo:hi], rate, subtype="FLOAT")
+        if not destination.exists():
+            sf.write(destination, audio[lo:hi], rate, subtype="FLOAT")
         back, check_rate = sf.read(destination, dtype="float32")
         if check_rate != rate or not np.array_equal(back, audio[lo:hi]):
             raise ValueError("Split output failed exact decoded sample preservation")
         reconstructed.append(back)
         words = []
-        for word in recognition["words"]:
+        for word in aligned_words:
             begin, end = word["timestamp"]
             if begin is None or end is None:
                 continue

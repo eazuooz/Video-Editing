@@ -285,7 +285,9 @@ def annotations(cut: dict, plan: dict) -> tuple[str, dict]:
     from PIL import ImageFont
     duration, result, geometry_log = cut["frames"] / FPS, ass_header(), []
     protected = [plan.get("captionProtectedRect", CAPTION_RECT), *cut.get("protectedRects", [])]
-    font_file = path(plan.get("annotationFontFile", "C:/Windows/Fonts/malgun.ttf"))
+    font_value = plan.get("annotationFontFile", "C:/Windows/Fonts/malgun.ttf")
+    font_file = (Path(font_value).resolve() if str(font_value).replace("\\", "/").lower()
+                 == "c:/windows/fonts/malgun.ttf" else path(font_value))
     credit = cut.get("credit")
     if credit:
         credit = {"text": credit} if isinstance(credit, str) else credit
@@ -487,10 +489,23 @@ def render_pair(plan: dict, output: Path, mix_override=None, ass_override=None):
     mix_info = probe(mix)
     if abs(float(mix_info["format"]["duration"]) - duration) > 1 / FPS:
         raise ValueError("Final mix must match timeline; no implicit padding/truncation")
-    aac, aac_receipt = output / "final-mix.m4a", output / "aac-source.json"
+    # Keep the mixer's hashed AAC intact. Both masters copy this exact stream.
+    mixed_aac = output / "final-mix.m4a"
+    mixed_receipt = output / "audio-build.json"
+    retained = False
+    if mixed_aac.exists() and mixed_receipt.exists():
+        build = load(mixed_receipt)
+        verified = {str(path(x["path"])): x["sha256"] for x in build["outputs"]}
+        if verified.get(str(mix)) != sha(mix) or verified.get(str(mixed_aac)) != sha(mixed_aac):
+            raise ValueError("The mix WAV/AAC differs from its completed audio-build receipt")
+        if abs(float(build["duration"]) - duration) > 1 / FPS:
+            raise ValueError("Retained continuous AAC belongs to a different measured timeline")
+        retained = True
+    aac = mixed_aac if retained else output / "pair-audio.m4a"
+    aac_receipt = output / "aac-source.json"
     audio_signature = {"sourceSha256": sha(mix), "duration": duration, "codec": "aac",
                        "bitrate": 192000, "sampleRate": 48000, "channels": 2}
-    if not (aac.exists() and aac_receipt.exists() and
+    if not retained and not (aac.exists() and aac_receipt.exists() and
             load(aac_receipt).get("signature") == audio_signature and
             load(aac_receipt).get("outputSha256") == sha(aac)):
         run(["-i", str(mix), "-vn", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2",
