@@ -1,5 +1,6 @@
 """Cache a bounded independently recorded FHD excerpt and its provenance."""
 from pathlib import Path
+from fractions import Fraction
 import argparse, datetime, hashlib, json, os, subprocess
 import yt_dlp
 from yt_dlp.utils import download_range_func
@@ -33,6 +34,11 @@ f=candidates[0]
 probe=json.loads(subprocess.check_output([str(FF/'ffprobe.exe'),'-v','error','-show_streams','-show_format','-of','json',str(f)]))
 v=next(s for s in probe['streams'] if s['codec_type']=='video')
 assert v['width']>=1920 and v['height']>=1080,v
+expected=a.end-a.start
+video_duration=float(v.get('duration') or 0)
+if not video_duration:
+ video_duration=float(subprocess.check_output([str(FF/'ffprobe.exe'),'-v','error','-select_streams','v:0','-count_frames','-show_entries','stream=nb_read_frames','-of','csv=p=0',str(f)]))/float(Fraction(v['r_frame_rate']))
+assert video_duration>=expected-.6,('truncated video stream',video_duration,expected)
 formats=[dict(id=x.get('format_id'),width=x.get('width'),height=x.get('height'),fps=x.get('fps'),vcodec=x.get('vcodec'),acodec=x.get('acodec')) for x in info.get('requested_formats',[])]
 d={'game':a.game,'url':a.url,'id':info.get('id'),'title':info.get('title'),'uploader':info.get('uploader'),
  'channelUrl':info.get('channel_url'),'uploadDate':info.get('upload_date'),'license':info.get('license'),
@@ -40,6 +46,7 @@ d={'game':a.game,'url':a.url,'id':info.get('id'),'title':info.get('title'),'uplo
  'referenceLesson':False,'requestedOriginalRange':[a.start,a.end],
  'file':f.relative_to(R).as_posix(),'sha256':hashlib.sha256(f.read_bytes()).hexdigest(),
  'dimensions':[v['width'],v['height']],'fps':v['r_frame_rate'],'duration':float(probe['format']['duration']),
+ 'videoDuration':video_duration,'videoFrames':v.get('nb_frames'),
  'selectedFormats':formats,'actualBeforeActionResult':'pending-direct-view',
  'rightsReview':'pending; original uploader license and publisher rules are separate',
  'audioPolicy':'Preserve original locally; inspect before deciding game SFX/music/narration treatment',
