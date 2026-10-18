@@ -1,0 +1,1315 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-euler-axis-angle",
+  "auditDate": "2026-10-18",
+  "scope": "Full current KO/EN narration, 26-scene lesson data, source/cut records and existing math checks; content audit only. No rendering, GPU, batch execution or shared source edits.",
+  "overall": {
+    "recommendation": "Preserve the existing 26-scene order, all substantive Euler/axis-angle claims and worked examples; add prerequisite and visible state-change explanations beside their original passages.",
+    "mathConclusion": "Existing coordinate-specific examples and central claims are sound. The clearest actionable issues are unexplained prerequisites, source-adaptation framing, a radian/degree function-call label, and insufficient visible evidence/annotations.",
+    "baselineVideo": "C:/Users/1/Downloads/게임수학 Part 2 · 3D 회전 ② 오일러 각과 축·각.mp4",
+    "baselinePlaybackInspectedByThisAudit": false,
+    "humanListening": "pending",
+    "preserveRatio": "Actual existing-game footage40% / explanation60%, excluding original2s branding and10s membership.",
+    "referenceKind": "User Notion mathematical lesson, not Sakurai",
+    "lessonSource": "https://app.notion.com/p/3e10b1ffa61e81d289e1da0dd7584a13",
+    "sourceSections": [
+      "8.3.1",
+      "8.3.2",
+      "8.3.3",
+      "8.3.4",
+      "8.3.5",
+      "8.4"
+    ],
+    "sourceReadingLimit": "Actual Notion8.3-8.4 fetched by parent; complete saved source snapshot read and compared with both full scripts. Hash recorded.",
+    "unchangedPcm": "Reuse baseline decoded narration only when exact relevant wording and timing can be retained; new/rewritten passages require affected-range TTS and join checks. Do not label YouTube restoration as original approved PCM.",
+    "visualPalette": "Preserve approved research-paper-white-v1; improve objects, contrast andfocus without a black restyle."
+  },
+  "inputs": [
+    {
+      "path": "projects/game-math-euler-axis-angle/script/narration.ko.json",
+      "sha256": "8a5b1eaff35dfe3cea75f1fc763187ef0d43db7705af42166d3bfb008637f501",
+      "bytes": 25024
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/script/narration.en.json",
+      "sha256": "6e4531e4d1fdc8c23d36cf24a35524c1f9e7346b171675ee25ac55ac0f723d3c",
+      "bytes": 20789
+    },
+    {
+      "path": "production/batches/game-math-part2-full-series/lessons/game-math-euler-axis-angle.json",
+      "sha256": "2bccf233cd95028f6d492ca6bd2c49e77b7e75e86b5de5a517d68caf3adbf48e",
+      "bytes": 56890
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/production/math-verification.json",
+      "sha256": "c41ef3eaf39c0162b8f26b007dfe05e8bf059b7fbd94c291e449ea39b29a6450",
+      "bytes": 1110
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/sources/SOURCES.md",
+      "sha256": "63d48b065b8617c204eb0e7bb0822323edbeae2df2748a71e4189e6dfaa8fb43",
+      "bytes": 726
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/sources/gameplay-cuts.json",
+      "sha256": "1673b288528311251c6c9439f691f960d31855ea4bcade98ae68b78cc4746956",
+      "bytes": 18995
+    },
+    {
+      "path": "manim/projects/game-math-part2-full-series/euler.py",
+      "sha256": "55d151b066d5878f3104c7a939a90a2efbdce65690e875b4bcd562c10e2d0e49",
+      "bytes": 13162
+    },
+    {
+      "path": "manim/projects/game-math-part2-full-series/lesson.py",
+      "sha256": "7c1ec9bec9199ec4f3ad8cee6016b55827e16810aa898d6bac57bec97e5a0454",
+      "bytes": 13073
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/source-lesson-8.3-8.4.md",
+      "sha256": "27e0196ab23f804d9560888d28cf55ded0be334be6e69dc0762cc616f4d7cd4b",
+      "bytes": 41500
+    }
+  ],
+  "urgentFixes": [
+    {
+      "id": "source-framing",
+      "locations": [
+        "03.5",
+        "15.4",
+        "15 beat4",
+        "19.2"
+      ],
+      "problem": "Viewer narration names the book or supplied original code; scene15 explicitly reveals source correction/adaptation.",
+      "replacementIntent": "03.5: 좌표계나 벡터를 적는 방향이 다른 식을 옮길 때는 축·부호·행렬 적용 순서를 함께 맞춥니다. 15.4: 이 조건은 마이너스 파이를 플러스 파이로 바꾸는 경우에만 실행합니다. 반대로 쓰면 정상 범위의 값까지 바뀝니다. 19.2: 회전벡터를 회전 행렬로 바꾸는 연산이 지수 사상입니다. 벡터 자체와 그 변환 연산을 구별합니다.",
+      "alsoUpdate": "KO/EN captions, on-screen beats and slide UI; keep original attribution/correction in internal records."
+    },
+    {
+      "id": "unit-mismatch",
+      "locations": [
+        "25 beat2"
+      ],
+      "problem": "The visual formula Δ=wrapPi(-340°)=+20° passes degree notation to the radian-only C++ function introduced in scene15.",
+      "fix": "Show degree arithmetic Δdeg=-340°+360°=20°, or show wrapPi(-17π/9)=π/9 rad and then convert to20°. Do not show a raw degree argument to wrapPi."
+    },
+    {
+      "id": "standalone-prerequisites",
+      "locations": [
+        "03.2 before03.3",
+        "06.3 before06.4",
+        "13.4 before13.5",
+        "18.5",
+        "19.4",
+        "24.5"
+      ],
+      "problem": "Right-hand frame, column vector, local/world mapping, interpolation fraction, radians, normalization and degrees of freedom are named before a novice has a usable explanation.",
+      "fix": "Use the same recognizable object and labeled axes, one coordinate/angle change, a small numerical example, then the corresponding formula. Definitions and numbers are specified per scene below."
+    }
+  ],
+  "coordinateContract": {
+    "retain": {
+      "handedness": "Right-handed logical frame; x×y=z; positive rotation follows the right-hand rule.",
+      "vector": "Column vectors",
+      "mapping": "v_world=R v_body, active local-to-world orientation",
+      "euler": "Intrinsic body Y-X-Z angles(h,p,b), R=Ry(h)Rx(p)Rz(b); equivalent extrinsic fixed Z-X-Y angles(b,p,h).",
+      "units": "Degree examples for intuition; C++ wrapPi, rotation-vector exponential formulas and angular velocity formulas use radians/radians per second unless explicitly converted.",
+      "displayColors": "x red, y green, z blue; add axis labels so color is never the only identifier.",
+      "camera": "Camera/view projection changes the presentation, not the logical coordinate contract."
+    },
+    "pitfalls": [
+      "Do not equate screen-right/up with logical axes or infer Euler values from Superflight footage.",
+      "Here positive Rx sends +z toward -y. The words pitch-up/nose-up alone do not specify the sign.",
+      "Distinguish the original heading rotation axis from the final body-y axis at gimbal lock. At p=+90°, final +z is -world+y; at p=-90°, final +z is +world+y.",
+      "Right-to-left matrix application describes fixed-axis action; it does not reverse the narrated intrinsic chronology.",
+      "Headings(yaw)/pitch/bank(roll) are conventional names, not universal axis definitions.",
+      "The three-distinct-axis Y-X-Z representation is the Tait–Bryan subclass commonly grouped under Euler angles; a short first-appearance note is sufficient.",
+      "Unity documentation declares a left-handed native frame and extrinsic Z-X-Y. Preserve this lesson's declared mathematical contract through an explicit renderer mapping; verify +Ry90·ez=ex, +Rx90·ez=-ey and both gimbal identities in the actual saved scene.",
+      "Unity Quaternion.Euler arguments are(x,y,z), not(h,p,b). With a compatible verified mapping, the corresponding degree parameter order is(p,h,b), but do not assume a parameter-order swap alone resolves frame/sign differences.",
+      "A rotation vector is an axial representation of rotation amount, not the Euler angle triple and not a translation arrow.",
+      "ω is generally not the derivative of the three rotation-vector components for arbitrary time-varying axes; nor are Euler angle rates themselves angular velocity components."
+    ],
+    "unityImplementationBoundary": "Use Unity for recognizable3D body/gimbal demonstrations if chosen; use Manim for actual worked arithmetic/transformations. Do not edit shared lesson.py/euler.py in ways that revise unselected episodes; use project-scoped adapters or a new selected revision module."
+  },
+  "glossary": [
+    {
+      "ko": "오일러 각",
+      "en": "Euler angles",
+      "meaning": "축과 순서까지 정한 세 회전각",
+      "firstScene": "03"
+    },
+    {
+      "ko": "테이트–브라이언 각",
+      "en": "Tait–Bryan angles",
+      "meaning": "세 축이 서로 다른 오일러 계열 표현",
+      "firstScene": "03",
+      "treatment": "Brief on-screen subtype note, no extra chapter"
+    },
+    {
+      "ko": "월드 좌표계 / 로컬·몸체 좌표계",
+      "en": "World frame / local·body frame",
+      "meaning": "주변에 고정한 방향자 / 물체에 붙인 방향자",
+      "firstScene": "03"
+    },
+    {
+      "ko": "열벡터 / 회전 행렬",
+      "en": "Column vector / rotation matrix",
+      "meaning": "좌표 세 값을 세로로 적은 표 / 그 좌표를 회전 후 좌표로 바꾸는 연산",
+      "firstScene": "03"
+    },
+    {
+      "ko": "내재적 회전 / 외재적 회전",
+      "en": "Intrinsic rotation / extrinsic rotation",
+      "meaning": "함께 움직이는 축 / 고정된 축으로 순서대로 회전",
+      "firstScene": "04 / 06"
+    },
+    {
+      "ko": "짐벌락",
+      "en": "Gimbal lock",
+      "meaning": "선택한 세 회전각의 두 제어축이 정렬되어 독립적인 변화 방향이 줄어드는 특이점",
+      "firstScene": "10"
+    },
+    {
+      "ko": "보간",
+      "en": "Interpolation",
+      "meaning": "시작과 끝 사이의 중간 값을 만드는 계산",
+      "firstScene": "13"
+    },
+    {
+      "ko": "라디안",
+      "en": "Radian",
+      "meaning": "반지름 대비 원호 길이로 잰 각도;180°=π rad",
+      "firstScene": "13 / 15"
+    },
+    {
+      "ko": "축·각 표현 / 단위벡터",
+      "en": "Axis–angle representation / unit vector",
+      "meaning": "한 회전축과 그 회전량 / 길이가1인 방향벡터",
+      "firstScene": "18"
+    },
+    {
+      "ko": "회전벡터 / 지수 사상",
+      "en": "Rotation vector / exponential map",
+      "meaning": "방향이 회전축이고 길이가 회전각인 벡터 / 그 벡터의 반대칭 행렬을 회전 행렬로 보내는 연산",
+      "firstScene": "19"
+    },
+    {
+      "ko": "각속도",
+      "en": "Angular velocity",
+      "meaning": "순간 회전축 방향과 초당 회전량을 담은 벡터",
+      "firstScene": "24"
+    }
+  ],
+  "sceneChanges": [
+    {
+      "id": "01",
+      "keep": "All4 overview lines; clear question and truthful ordered promises.",
+      "add": "Carry the first previewed aircraft/body state directly into02; retain original2s branding. Avoid a fresh music/title reset at02.",
+      "learning": "Viewer question→observed flight→ordered mechanisms"
+    },
+    {
+      "id": "02",
+      "keep": "All6 lines; important distinction between observable movement and unknown game internals.",
+      "add": "Trace a short torso/forward guide and arm-line guide with named labels during their exact clauses. Follow verified motion; clear at source cuts. Introduce heading/pitch/bank in plain language, then retain canonical labels.",
+      "evidence": "Inspected FHD independent gameplay; no invented detector/angle measurement",
+      "annotationClarification": "Useverifiedvisibletorso/wingsuitsilhouetteandscreentiltonly.Noanatomicalarmlineorprecise3Dforwardreconstruction.Markedpathisscreenposition,notmeasuredgameworldtrajectory.Clearatcuts."
+    },
+    {
+      "id": "03",
+      "keep": "03.1,03.3,03.4,03.6 and mathematical meaning of03.2/03.5.",
+      "add": "Before jargon: room-fixed tripod arrows=world; matching arrows painted on aircraft=body. A direction(0,0,1) means one unit along+z. Show same numbers written vertically=column vector; R changes body coordinates into world coordinates. Demonstrate right thumb+axis with a labeled rotation arc. Replace book framing; no prerequisite on the preceding lecture.",
+      "worked": "+Ry90 sends(0,0,1) to(1,0,0)",
+      "evidence": "One recognizable object and actual3D axes, not three decorative cubes"
+    },
+    {
+      "id": "04",
+      "keep": "All6 statements, especially positive-pitch sign.",
+      "add": "Numerically expose one value at a time: h0→45°, hold; p0→30° about the now-moved x, hold; b0→35° about final forward. World tripod stays still. Use small arc and labels; show R=Ry45Rx30Rz35 only after the changes.",
+      "limit": "One changing angle per beat; retain axes through05"
+    },
+    {
+      "id": "05",
+      "keep": "Body/screen distinction and all8 useful observations.",
+      "add": "Replace ‘imagine an arrow’ instruction with actual tracked torso arrow/arm contour. No numeric angle overlays. One unobtrusive cut reset keeps excerpt changes clear; preserve the forward-arrow color into06.",
+      "annotationClarification": "Useverifiedvisibletorso/wingsuitsilhouetteandscreentiltonly.Noanatomicalarmlineorprecise3Dforwardreconstruction.Markedpathisscreenposition,notmeasuredgameworldtrajectory.Clearatcuts."
+    },
+    {
+      "id": "06",
+      "keep": "All6 mathematical points.",
+      "add": "Use two copies from identical start: intrinsic Y→movingX→movingZ on left; fixedZ→fixedX→fixedY on right; ghosts show equal final full frames. Explain Rz acts on the column first, then Rx then Ry, with a moving activation outline rather than presenting an unexplained product.",
+      "worked": "Use04's45°,30°,35° in both routes; numerical equality is an illustrative calculation, not gameplay telemetry."
+    },
+    {
+      "id": "07",
+      "keep": "All6 lines and both exact90° examples.",
+      "add": "Actually carry the same front arrow through each intermediate coordinate: ez→-ey→-ey versus ez→ex→ex. Reset both copies to the same beginning before the second route. Show numeric rows only after the direction is visible."
+    },
+    {
+      "id": "08",
+      "keep": "All6 lines.",
+      "add": "Reuse torso/arm annotation meanings; pin a world/reference label to a verified stable scene feature only if defensible. Otherwise label it screen-reference and do not pretend it is a recovered3D world axis. Final state hands off to09's same-position comparison.",
+      "annotationClarification": "Useverifiedvisibletorso/wingsuitsilhouetteandscreentiltonly.Noanatomicalarmlineorprecise3Dforwardreconstruction.Markedpathisscreenposition,notmeasuredgameworldtrajectory.Clearatcuts."
+    },
+    {
+      "id": "09",
+      "keep": "All alias examples and chosen range conventions.",
+      "add": "Overlay equal full aircraft frames for(0,135,0) and(180,45,180), then toggle the numbers while body remains aligned. Explain interval brackets in spoken words. State canonical range is our chosen normalization; uniqueness still needs the±90° rule.",
+      "worked": "Extra360° keeps the endpoint; three-angle alias also preserves all body axes, not just forward."
+    },
+    {
+      "id": "10",
+      "keep": "All6 lines; keep object ability vs coordinate singularity distinction.",
+      "add": "Show p0→45→80→90 with only p changing. Heading-axis handle and bank-axis handle become the same line with opposite directions at+90. Demonstrate h+5,b+5 cancel atp90 while the aircraft still can change orientation through another control/representation.",
+      "specialist": "Optional Jacobian/independent-directions label only after handle demonstration; no need to introduce an unexplained matrix determinant."
+    },
+    {
+      "id": "11",
+      "keep": "All6 safeguards against diagnosing game-engine gimbal lock from pixels.",
+      "add": "Trace the steep body contour but label the mark ‘화면에서 보이는 자세’. Return to10's exact labeled axes in12 rather than labeling footage as measured gimbal lock.",
+      "annotationClarification": "Useverifiedvisibletorso/wingsuitsilhouetteandscreentiltonly.Noanatomicalarmlineorprecise3Dforwardreconstruction.Markedpathisscreenposition,notmeasuredgameworldtrajectory.Clearatcuts."
+    },
+    {
+      "id": "12",
+      "keep": "All6 claims and both singular signs.",
+      "add": "Compute30−10=20 beside matched full body frames. For negative case show a separate reset with30+10=40 and(30,-90,10)=(40,-90,0), clearing every positive-case label first. Then a small near90 change illustrates angle sensitivity.",
+      "limit": "No mixed positive/negative labels during transitions; these are illustrative computed models."
+    },
+    {
+      "id": "13",
+      "keep": "All6 angle-wrap explanations.",
+      "add": "Define interpolation before t: t0=start,t0.5=halfway,t1=end. Animate compass needle along340° versus-20°, use same start/end. Work -170+0.5×(-20)=-180≡180. Defineπrad=180° before introducing wrapPi; label circle arithmetic in degrees and function input in radians.",
+      "specialist": "θ(t)=start+t·wrapPi(end-start),0≤t≤1, one-axis only"
+    },
+    {
+      "id": "14",
+      "keep": "All6 observations and no-implementation-claim limitation.",
+      "add": "Highlight the relevant short turn/path in actual video without fabricating a long-way counterfactual. Carry the needle/short-change concept into15's code.",
+      "annotationClarification": "Useverifiedvisibletorso/wingsuitsilhouetteandscreentiltonly.Noanatomicalarmlineorprecise3Dforwardreconstruction.Markedpathisscreenposition,notmeasuredgameworldtrajectory.Clearatcuts."
+    },
+    {
+      "id": "15",
+      "keep": "Finite/radian premise, std::remainder, endpoint mapping, wrap the difference and unit warning.",
+      "add": "Replace15.4 source framing. Explain std::remainder removes a nearest whole-turn multiple; it differs from generic percent/fmod. Show angle=-π→w=-π→conditiontrue→w=π, then angle=π/2→conditionfalse→unchanged. Defineθrad=θdegπ/180. Bound t explicitly when interpolating.",
+      "codeReview": "Current w<=-pi branch is valid for finite angle and tau2pi; numerical floating-point range limits can be a short implementation footnote, not a new chapter."
+    },
+    {
+      "id": "16",
+      "keep": "All6 limits, including no premature promise that quaternions automatically solve every issue.",
+      "add": "Show a real computed pair of paths with same endpoints and different intermediate full orientations, reusing09's alias. At halfway(0,67.5,0) vs(90,22.5,90) differ; explain this is representation-dependent editing, not constant angular-speed proof. Do not add a new SLERP derivation reserved for later.",
+      "boundaryFix": "Close on ‘끝 자세와 그곳까지 가는 경로는 별도’ before17; the next-lecture preview can move to26 or be one concise sentence that returns to today's remaining axis-angle question."
+    },
+    {
+      "id": "17",
+      "keep": "All6 lines; strong existing bridge to18.",
+      "add": "Overlay start/end thumbnail markers and a tracked full body contour in gameplay; neither graphic claims reconstructed angles. Carry the same final body pose into18's independently constructed model.",
+      "annotationClarification": "Useverifiedvisibletorso/wingsuitsilhouetteandscreentiltonly.Noanatomicalarmlineorprecise3Dforwardreconstruction.Markedpathisscreenposition,notmeasuredgameworldtrajectory.Clearatcuts."
+    },
+    {
+      "id": "18",
+      "keep": "Euler rotation theorem, n/θ definition,+y90 example, full-frame rotation, constrained components and half-angle claim.",
+      "add": "Explain unit vector as direction arrow resized to length1 and degree of freedom as independently adjustable amount. Keep the object center/pivot fixed so pure rotation is clear. Work n=(0,1,0),θ90,halfθ45; show entire body axes, not only forward.",
+      "implementation": "If displaying Rodrigues, define I,skew[n] andmatrixoperation or keep it to later19's final specialist note; do not drop an unexplained equation onto the screen."
+    },
+    {
+      "id": "19",
+      "keep": "e=θn,π/2 example,norm recovery,zero safeguard and paired-sign equality.",
+      "add": "Replace book framing with formal exponential-map distinction. Define vector length via a small e=(0,π/2,0) calculation sqrt(0²+(π/2)²+0²)=π/2, divide nonzero vector by length to getn. Add optional n=(0,3/5,4/5),θπ/2 to show normalization isn't merely selecting an axis.",
+      "specialist": "R=exp([e]×), with[e]×v=e×v; label exp a matrix operation and avoid ambiguity with the variable e. If shown, Rodrigues R=I+sinθ[n]×+(1−cosθ)[n]×² follows after definitions; small-angle implementation requires safe zero handling."
+    },
+    {
+      "id": "20",
+      "keep": "All8 distinction/observation lines.",
+      "add": "Use named center marker, translation trail and torso/forward guide with different stroke style; keep rotation-vector arrow in a separate anchored explanatory inset rather than falsely reconstructing it from game motion. Cuts clear every trail.",
+      "annotationClarification": "Useverifiedvisibletorso/wingsuitsilhouetteandscreentiltonly.Noanatomicalarmlineorprecise3Dforwardreconstruction.Markedpathisscreenposition,notmeasuredgameworldtrajectory.Clearatcuts."
+    },
+    {
+      "id": "21",
+      "keep": "All6 endpoint/nonuniqueness cases.",
+      "add": "Two ghost paths90°n and270°(-n) terminate in an overlaid full frame; show0≤θ≤π convention then180°axis-sign tie and zero case. Make it explicit uniqueness is selected locally with boundary rules, not globally continuous and singularity-free."
+    },
+    {
+      "id": "22",
+      "keep": "All6 nonadditivity and small-angle caveats.",
+      "add": "Carry07's Rx90 thenRy90 result. Compare to eSum=(π/2,π/2,0), whose axis=(1/√2,1/√2,0), angle=π/√2≈127.28°; actual sum-rotation forward differs from(0,-1,0). Exact numeric components should be generated and verified, not guessed. Mention same-axis rotations as an exact special case if useful, without weakening ‘generally not’."
+    },
+    {
+      "id": "23",
+      "keep": "All6 observations; strong direct bridge to24.",
+      "add": "Use body-center/arm/forward marks already taught. Clear at cuts and never present angle addition or angular speed as detected game data.",
+      "annotationClarification": "Useverifiedvisibletorso/wingsuitsilhouetteandscreentiltonly.Noanatomicalarmlineorprecise3Dforwardreconstruction.Markedpathisscreenposition,notmeasuredgameworldtrajectory.Clearatcuts."
+    },
+    {
+      "id": "24",
+      "keep": "All6 orientation/history/rate/frame distinctions.",
+      "add": "State constant speed about the same fixed axis for720°/s and1080°/s examples. At0.25s show half-turn versus three-quarter-turn, at1s same endpoints with2/3turn counters. For angular velocity frame conversion, show ωbody=(0,0,1)rad/s and Ry90 givingωworld=(1,0,0)rad/s before combining components.",
+      "specialist": "ωworld=Rωbody; Rdot=[ωworld]×R=R[ωbody]×. Optional formulas require explained Rdot/rad/s; never equate generalω with derivative of rotation-vector components."
+    },
+    {
+      "id": "25",
+      "keep": "Both exercises, intended numerical answers and final composition warning.",
+      "add": "Fix degree argument in visual wrapPi call. Reveal question→brief thinking beat→subtraction→wrap→midpoint; second exercise reveal norm→axis→full-frame direction result. Maintain selected endpoint convention at180°."
+    },
+    {
+      "id": "26",
+      "keep": "All4 substantive summary/next-lecture lines.",
+      "add": "Revisit the exact three objects/results used earlier rather than an abstract list alone: ordered rotations, aligned handles,axis+angle. Preserve original10s membership identities and requested coaching space; no automatic next-video start."
+    }
+  ],
+  "chapterJoins": [
+    {
+      "from": "01",
+      "to": "02",
+      "link": "The promised flight observation becomes the first visible body/arm target."
+    },
+    {
+      "from": "02",
+      "to": "03",
+      "link": "Observed three changes need explicitly defined axes/signs; carry torso/front marker into the diagram."
+    },
+    {
+      "from": "03",
+      "to": "04",
+      "link": "DeclaredY-X-Z/rule now gets one angle at a time on the same model."
+    },
+    {
+      "from": "04",
+      "to": "05",
+      "link": "Moved body axes explain the torso/arm behavior revisited in game footage."
+    },
+    {
+      "from": "05",
+      "to": "06",
+      "link": "Known body-vs-world distinction permits fixed-world-axis alternative."
+    },
+    {
+      "from": "06",
+      "to": "07",
+      "link": "Reversed descriptions can match; arbitrary same-axis reorder cannot. Add this contrast to avoid apparent contradiction."
+    },
+    {
+      "from": "07",
+      "to": "08",
+      "link": "Order changed numeric front direction; revisit moving-front consequences in real flight."
+    },
+    {
+      "from": "08",
+      "to": "09",
+      "link": "Same changing orientation can have multiple numeric labels; shift from order sensitivity to representation redundancy."
+    },
+    {
+      "from": "09",
+      "to": "10",
+      "link": "Why±90 needs an extra normalization rule: show axes aligning."
+    },
+    {
+      "from": "10",
+      "to": "11",
+      "link": "The defined axis condition limits what can be concluded from a steep gameplay pose."
+    },
+    {
+      "from": "11",
+      "to": "12",
+      "link": "Move from unmeasured pixels back to the exact model and calculate the condition."
+    },
+    {
+      "from": "12",
+      "to": "13",
+      "link": "Numeric angle jumps are one representation issue; first solve the simpler full-turn seam on a circle. Rewrite adjacent close/open to state that connection."
+    },
+    {
+      "from": "13",
+      "to": "14",
+      "link": "The chosen short one-axis route motivates visibly smooth in-game turns."
+    },
+    {
+      "from": "14",
+      "to": "15",
+      "link": "Short angular difference now becomes explicit unit-safe code before returning to3D limitations."
+    },
+    {
+      "from": "15",
+      "to": "16",
+      "link": "Correct scalar wrap is established; show why three copies do not guarantee a shortest3D route."
+    },
+    {
+      "from": "16",
+      "to": "17",
+      "link": "Remove premature chapter ending; inherit endpoint/path distinction and observe the whole path."
+    },
+    {
+      "from": "17",
+      "to": "18",
+      "link": "Existing last two lines already motivate one freely chosen axis very well."
+    },
+    {
+      "from": "18",
+      "to": "19",
+      "link": "Axis and angle already known; multiply them into one three-component record."
+    },
+    {
+      "from": "19",
+      "to": "20",
+      "link": "New rotation-vector arrow requires separation from the visible translation/forward arrows."
+    },
+    {
+      "from": "20",
+      "to": "21",
+      "link": "Existing last line directly promises comparing different vectors with the same endpoint."
+    },
+    {
+      "from": "21",
+      "to": "22",
+      "link": "Even after selecting a representative vector, combining finite rotations still needs composition; add this specific bridge."
+    },
+    {
+      "from": "22",
+      "to": "23",
+      "link": "Nonadditive computed rotations limit conclusions about compound real movement."
+    },
+    {
+      "from": "23",
+      "to": "24",
+      "link": "Existing last line naturally introduces amount vs amount-per-second."
+    },
+    {
+      "from": "24",
+      "to": "25",
+      "link": "Retain units/frame distinctions while checking the same wrap andaxis-angle calculations with two exercises."
+    },
+    {
+      "from": "25",
+      "to": "26",
+      "link": "Exercise answers establish the final axis/order/unit reminders; no new lesson reset."
+    }
+  ],
+  "primarySources": [
+    {
+      "id": "scipy-euler",
+      "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_euler.html",
+      "verifiedOn": "2026-10-18",
+      "supports": "Intrinsic body-attached versus extrinsic global frames, explicit sequence and units. Capital axis sequence denotes intrinsic in SciPy; lowercase denotes extrinsic."
+    },
+    {
+      "id": "scipy-gimbal",
+      "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.as_euler.html",
+      "verifiedOn": "2026-10-18",
+      "supports": "At gimbal lock first and third angles are not uniquely determined; choosing third anglezero can still represent the correct rotation. Distinct-axis middle-angle canonical range is±90°; endpoint conventions can differ between implementations."
+    },
+    {
+      "id": "scipy-rotvec",
+      "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_rotvec.html",
+      "verifiedOn": "2026-10-18",
+      "supports": "Rotation-vector direction is the rotation axis and its norm is the angle; default radians, explicit degree option."
+    },
+    {
+      "id": "scipy-compose",
+      "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.__mul__.html",
+      "verifiedOn": "2026-10-18",
+      "supports": "q thenp means p*q or matrixP@matrixQ; composition generally does not commute."
+    },
+    {
+      "id": "unity-frame",
+      "url": "https://docs.unity3d.com/6000.0/Documentation/Manual/QuaternionAndEulerRotationsInUnity.html",
+      "verifiedOn": "2026-10-18",
+      "supports": "Unity native coordinates are described as left-handed; rotations are stored as quaternions; its Euler application uses extrinsicZ-X-Y.",
+      "caution": "Do not reuse this manual's simplified uniqueness/gimbal prose as a mathematical proof; the lesson's explicit model and SciPy/robotics references supply precise distinctions."
+    },
+    {
+      "id": "unity-euler",
+      "url": "https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Quaternion.Euler.html",
+      "verifiedOn": "2026-10-18",
+      "supports": "Quaternion.Euler accepts degree components(x,y,z) and appliesZ-X-Y. API parameter order differs from this lesson's(h,p,b) order."
+    },
+    {
+      "id": "robotics-exp1",
+      "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-3-exponential-coordinates-of-rotation-part-1-of-2/",
+      "verifiedOn": "2026-10-18",
+      "supports": "A unitaxis timesangle gives three exponential coordinates describing orientation from an aligned initial frame."
+    },
+    {
+      "id": "robotics-exp2",
+      "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-3-exponential-coordinates-of-rotation-part-2-of-2/",
+      "verifiedOn": "2026-10-18",
+      "supports": "Matrix exponential maps the skew-symmetric representation of rotation-vector coordinates toSO(3); Rodrigues gives the equivalent sine/cosine closed form."
+    },
+    {
+      "id": "robotics-omega",
+      "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-2-angular-velocities/",
+      "verifiedOn": "2026-10-18",
+      "supports": "Angular velocity isaxis times instantaneousrate, withωspace=Rωbody; Rdot=[ωspace]R and equivalentlyR[ωbody]. Its coordinate frame matters."
+    },
+    {
+      "id": "ms-remainder",
+      "url": "https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/remainder-remainderf-remainderl?view=msvc-170",
+      "verifiedOn": "2026-10-18",
+      "supports": "remainder subtracts a nearest integer multiple of the divisor, with nearest-even quotient at ties. This justifies a separate -π-to+π endpoint adjustment for the selected interval."
+    }
+  ],
+  "numericRecheck": {
+    "method": "Fresh CPU-only stdlib matrix arithmetic; no runtime/media/GPU job.",
+    "eulerAliasMaxError": 1.1102230246251565e-16,
+    "positiveGimbalMaxError": 5.551115123125783e-17,
+    "negativeGimbalMaxError": 1.1102230246251565e-16,
+    "gimbalCancelMaxError": 1.1102230246251565e-16,
+    "order": {
+      "RxThenRy": [
+        6.123233995736766e-17,
+        -1.0,
+        3.749399456654644e-33
+      ],
+      "RyThenRx": [
+        1.0,
+        -6.123233995736766e-17,
+        3.749399456654644e-33
+      ]
+    },
+    "rotationVectorSum": {
+      "axis": [
+        0.7071067811865475,
+        0.7071067811865475,
+        0
+      ],
+      "angleDegrees": 127.27922061357854,
+      "summedForward": [
+        0.5626400585724002,
+        -0.5626400585724002,
+        -0.6056998670788134
+      ],
+      "composedForward": [
+        6.123233995736766e-17,
+        -1.0,
+        3.749399456654644e-33
+      ]
+    },
+    "twoInterpolationMidpoints": {
+      "A": [
+        0,
+        67.5,
+        0
+      ],
+      "B": [
+        90,
+        22.5,
+        90
+      ],
+      "forwardA": [
+        0.0,
+        -0.9238795325112867,
+        0.38268343236508984
+      ],
+      "forwardB": [
+        0.9238795325112867,
+        -0.3826834323650898,
+        5.657130561438501e-17
+      ]
+    },
+    "wrapExamples": [
+      {
+        "inputDegrees": -180,
+        "inputRad": -3.141592653589793,
+        "outputRad": 3.141592653589793,
+        "outputDegrees": 180.0
+      },
+      {
+        "inputDegrees": 180,
+        "inputRad": 3.141592653589793,
+        "outputRad": 3.141592653589793,
+        "outputDegrees": 180.0
+      },
+      {
+        "inputDegrees": 90,
+        "inputRad": 1.5707963267948966,
+        "outputRad": 1.5707963267948966,
+        "outputDegrees": 90.0
+      },
+      {
+        "inputDegrees": -340,
+        "inputRad": -5.934119456780721,
+        "outputRad": 0.3490658503988655,
+        "outputDegrees": 19.99999999999998
+      },
+      {
+        "inputDegrees": 340,
+        "inputRad": 5.934119456780721,
+        "outputRad": -0.3490658503988655,
+        "outputDegrees": -19.99999999999998
+      },
+      {
+        "inputDegrees": 0,
+        "inputRad": 0.0,
+        "outputRad": 0.0,
+        "outputDegrees": 0.0
+      },
+      {
+        "inputDegrees": 540,
+        "inputRad": 9.42477796076938,
+        "outputRad": 3.141592653589793,
+        "outputDegrees": 180.0
+      },
+      {
+        "inputDegrees": -540,
+        "inputRad": -9.42477796076938,
+        "outputRad": 3.141592653589793,
+        "outputDegrees": 180.0
+      }
+    ],
+    "passed": true
+  },
+  "handoff": {
+    "readyFor": "Parent full-textreviewofthe3revisiondrafts before selectedvideo-only TTS/production.No batchadvance.",
+    "notPerformed": [
+      "baseline moving-pixel review",
+      "whole human listening",
+      "FHD gameplay reacquisition",
+      "media generation",
+      "shared policy changes",
+      "commit/push"
+    ],
+    "finalQaImplications": [
+      "All changed narrated terms andunits must match KO/EN captions anddisplay spelling.",
+      "New3D frames must prove axes/occlusion with actual moving playback and375px readability.",
+      "Current full-sourcePCM and finalmixASR once each, plus speech-active local-level joins.",
+      "Actual gameplay annotations are qualitative editorial guides; never claim measured angles/game-engine internals."
+    ]
+  },
+  "authoredDraft": {
+    "status": "ready-for-parent-full-text-review-before-TTS",
+    "files": [
+      {
+        "path": "projects/game-math-euler-axis-angle/script/revision-v2/narration.ko.json",
+        "sha256": "b516f7d51793b4743be57fd3b35a93c55e0fedb5f1f2be034493ec01824f0b37"
+      },
+      {
+        "path": "projects/game-math-euler-axis-angle/script/revision-v2/narration.en.json",
+        "sha256": "3fc4283a57d5dff8cfaa9505166e87b1edbfb74688e148d541abf903ebce8ee0"
+      },
+      {
+        "path": "projects/game-math-euler-axis-angle/production/revision-v2/lesson.json",
+        "sha256": "b429f0bbe20c247909a8bf7de950a41e62d310aeb7103a94a7bebc26eaa6883e"
+      }
+    ],
+    "sceneCount": 26,
+    "paragraphCount": 157,
+    "koChars": 10855,
+    "scopePreserved": true,
+    "ttsStarted": false,
+    "mediaStarted": false
+  },
+  "outlineMarkdown": "# Euler / Axis-Angle revision-v2\n\nApproved white palette;26scenes;40:60lecture ratio retained.\n\n## 01 이번 강의에서 배울 것 [explanation]\n\n안녕하세요, 얌얌코딩입니다. 같은 각도를 넣었는데 회전 순서를 바꾸면 왜 다른 자세가 나올까요?\n\n비행 장면을 보며 몸이 향하는 방향과 비틀림을 나누고, 세 각도로 자세를 적는 오일러 각을 알아보겠습니다.\n\n축과 순서를 직접 바꾸면서 짐벌락과 각도 보간이 어려워지는 이유를 확인합니다.\n\n마지막에는 하나의 축과 각도로 회전을 표현하고, 두 문제를 풀겠습니다. 먼저 몸통과 팔의 방향부터 보세요.\n\n## 02 비행 자세를 세 가지 변화로 보기 [actual]\n\n슈퍼플라이트의 몸통 표시와 날개옷의 윤곽을 보세요. 몸이 구조물 사이를 지나며 화면에서 보이는 기울기가 달라집니다.\n\n옆으로 방향을 바꾸는 모습과, 몸의 긴 방향이 위아래로 달라지는 모습을 먼저 나눠 봅니다.\n\n이번에는 날개옷의 옆 윤곽을 보세요. 몸의 방향과 함께 화면에서 보이는 비틀림도 달라집니다.\n\n이런 자세를 헤딩, 피치, 뱅크라는 세 각도로 정리할 수 있습니다. 옆으로 방향을 정하고, 앞쪽을 기울이고, 그 앞쪽 주위로 비트는 순서입니다.\n\n다만 카메라도 따라 움직입니다. 화면의 왼쪽이나 위쪽을 그대로 몸의 축이라고 생각하면 두 움직임이 섞입니다.\n\n표시는 관찰할 대상을 알려 주는 안내입니다. 게임 내부의 각도를 측정한 값은 아닙니다.\n\n지금 본 세 변화를 정확히 계산하려면, 먼저 몸에 붙인 방향자와 주변에 고정한 방향자를 구분해야 합니다.\n\n## 03 오일러 각은 순서가 있는 세 회전 [explanation]\n\n주변에 고정한 방향자를 월드 좌표계, 물체에 붙어 함께 움직이는 방향자를 로컬 좌표계, 또는 몸체 좌표계라고 부릅니다.\n\n자세는 물체가 어느 방향으로 놓였는지를 뜻합니다. 앞쪽 방향만 같아도 옆으로 비틀린 정도가 다르면 다른 자세입니다.\n\n오일러 각은 숫자 세 개로 자세를 표현합니다. 각도뿐 아니라 어느 축을 어떤 순서로 돌리는지도 정해야 합니다.\n\n이 강의에서는 오른손 규칙을 씁니다. 엄지가 축의 양의 방향을 가리킬 때 나머지 손가락이 감기는 쪽이 양의 회전입니다.\n\n헤딩은 와이축, 피치는 헤딩과 함께 움직인 엑스축, 뱅크는 앞의 두 회전과 함께 움직인 제트축으로 정합니다. 몸체 축 와이, 엑스, 제트 순서입니다.\n\n방향을 영, 영, 일로 적으면 제트축으로 한 칸 향한다는 뜻입니다. 세 숫자를 세로로 적은 것이 열벡터입니다.\n\n회전 행렬 알은 이 몸체 기준 방향을 월드 기준 방향으로 바꾸는 계산입니다. 좌표계나 벡터를 적는 방향이 다른 식을 옮길 때는 축과 부호, 적용 순서를 함께 맞춰야 합니다.\n\n## 04 몸에 붙은 축도 함께 돌아간다 [explanation]\n\n처음에는 두 방향자가 나란합니다. 헤딩만 영 도에서 사십오 도로 바꾸면, 몸체와 몸에 붙인 세 축이 함께 돌아갑니다.\n\n여기서 피치를 삼십 도 적용합니다. 처음의 고정 엑스축이 아니라, 헤딩과 함께 돌아간 몸체 엑스축을 중심으로 돕니다.\n\n마지막으로 뱅크를 삼십오 도 적용합니다. 앞의 두 회전을 거친 몸의 제트축, 즉 앞쪽 축을 중심으로 비틉니다.\n\n이처럼 단계마다 물체와 함께 움직인 축을 사용하는 것이 내재적 회전입니다. 지금은 헤딩, 피치, 뱅크 순서를 지켰습니다.\n\n우리 규약에서 양의 피치는 앞쪽 제트를 음의 와이 쪽으로 보냅니다. 피치라는 이름만 보고 위로 든다고 생각하면 부호를 바꾸기 쉽습니다.\n\n헤딩과 피치로 앞쪽 방향을 정하고, 뱅크로 그 주위의 비틀림을 정한 것입니다. 이 움직이는 방향자를 실제 비행에 겹쳐 생각해 보세요.\n\n## 05 몸체 축과 화면 축은 다릅니다 [actual]\n\n몸통 표시와 날개옷의 윤곽을 다시 보세요. 몸이 방향을 바꾸면 표시도 보이는 윤곽을 따라 움직입니다.\n\n날개옷의 윤곽이 기울어지는 동안 몸의 긴 방향도 달라집니다. 몸통과 옆 윤곽을 나눠 보면 한 표시만 볼 때 놓치던 변화를 확인할 수 있습니다.\n\n몸에 붙은 아래쪽과 화면 아래쪽은 항상 같지 않습니다. 주변 구조물을 기준으로 보는 방향과 몸을 기준으로 보는 방향이 다르기 때문입니다.\n\n따라오는 카메라는 화면에서 보이는 기울기를 또 바꿉니다. 그래서 코드에 피치라는 이름 하나만 적으면 어느 회전인지 충분히 설명되지 않습니다.\n\n이번 표시도 몸통과 날개옷을 관찰하는 안내입니다. 화면에서 보이지 않는 축이나 정확한 각도를 복원한 것은 아닙니다.\n\n발췌 화면이 바뀔 때는 이전 표시를 지웁니다. 서로 다른 비행 구간을 한 번의 연속 회전으로 읽지 않도록, 각 구간 안의 변화를 보세요.\n\n어느 좌표계의 어느 축인지 적어 두면 다음 회전의 중심이 분명해집니다. 이제 물체와 함께 움직이지 않는 고정축만으로 같은 자세를 만들어 보겠습니다.\n\n## 06 고정축에서는 순서를 뒤집는다 [explanation]\n\n월드에 고정된 축을 사용하는 방식을 외재적 회전이라고 합니다. 이번에는 몸이 돌아가도 회전축은 제자리에 둡니다.\n\n몸체 축에서 헤딩, 피치, 뱅크 순서로 돌린 결과는, 고정축에서 뱅크, 피치, 헤딩 순서로 돌린 결과와 같습니다. 같은 각도를 반대 순서로 적용합니다.\n\n열벡터에 쓰는 전체 행렬은 와이 회전, 엑스 회전, 제트 회전을 왼쪽부터 곱한 형태입니다.\n\n벡터 바로 옆에 있는 제트 회전이 먼저 계산되고, 그 결과에 엑스 회전, 마지막으로 와이 회전이 작용합니다. 이것이 고정축 설명에서 순서가 뒤집히는 이유입니다.\n\n요, 피치, 롤이라는 이름도 자주 씁니다. 롤은 뱅크에 대응하지만, 요가 어떤 축을 뜻하는지는 확인해야 합니다.\n\n아래를 향한 물체를 보세요. 몸체 와이축으로 요 운동을 주면 앞쪽 방향이 달라집니다. 월드의 수직 와이축으로 헤딩을 바꾸면 계속 아래를 향한 채 비틉니다.\n\n축이 달라서 결과도 다른 것입니다. 여기서 내재적 와이, 엑스, 제트와 외재적 제트, 엑스, 와이는 같은 행렬을 만드는 두 설명입니다.\n\n축을 바꾸면서 순서를 뒤집은 이 관계를, 같은 고정축 두 개의 순서를 마음대로 바꿔도 된다는 뜻으로 받아들이면 안 됩니다.\n\n## 07 90도 두 번도 순서에 따라 다르다 [explanation]\n\n앞쪽 방향을 영, 영, 일로 놓고, 이번에는 고정 엑스축과 고정 와이축만 사용하겠습니다. 두 경우를 같은 시작 자세에서 비교합니다.\n\n먼저 엑스축으로 구십 도 돌리면 앞쪽은 음의 와이 방향, 영, 마이너스 일, 영이 됩니다.\n\n그다음 와이축으로 돌려도 와이축 위의 방향은 바뀌지 않습니다. 최종 결과도 영, 마이너스 일, 영입니다.\n\n시작 자세로 돌아가서 와이 회전을 먼저 합니다. 앞쪽이 양의 엑스 방향, 일, 영, 영으로 갑니다.\n\n그다음 엑스축으로 돌리면 엑스축 위의 방향은 그대로입니다. 이번 결과는 일, 영, 영입니다.\n\n같은 두 각도여도 적용 순서가 다르면 자세가 달라집니다. 회전 행렬의 곱은 보통 순서를 바꿀 수 없습니다.\n\n## 08 방향이 바뀐 뒤 기울기를 보세요 [actual]\n\n이제 몸통 표시를 먼저 따라가 보세요. 몸이 구조물 사이를 돌아 들어가며 화면에서 보이는 긴 방향이 달라집니다.\n\n그다음 날개옷의 기울기를 보세요. 이 모습을 몸체 축으로 해석할 때는, 앞쪽이 바뀌면 그 앞쪽 주위로 비트는 축의 월드 방향도 달라진다는 점을 생각해야 합니다.\n\n처음에 고정한 축으로 돌리는 것과 돌아간 몸의 축으로 돌리는 것을 구분해야 하는 이유입니다.\n\n표시는 정확한 각도를 재는 눈금이 아닙니다. 한 구간 안에서 몸통과 날개옷의 윤곽이 어떻게 함께 바뀌는지 확인하세요.\n\n회전량과 순서, 축의 기준을 모두 알아야 결과를 정할 수 있습니다. 그런데 이 조건을 정한 뒤에도 같은 자세를 서로 다른 세 숫자로 적을 수 있습니다.\n\n## 09 같은 자세를 여러 각도로 표현한다 [explanation]\n\n오일러 각은 사람이 읽고 편집하기 쉽고, 각도 세 개만 저장합니다. 정한 규약에서 유한한 세 각도는 어떤 값이어도 하나의 자세를 만듭니다.\n\n하지만 숫자가 다르다고 자세도 다른 것은 아닙니다. 헤딩 영 도와 삼백육십 도는 한 바퀴 차이라 끝 자세가 같습니다.\n\n우리 순서에서 헤딩 영, 피치 백삼십오, 뱅크 영으로 만든 자세를 보세요.\n\n헤딩 백팔십, 피치 사십오, 뱅크 백팔십을 넣어도 몸체의 세 축 전체가 겹칩니다. 한 자세에 여러 표현이 있는 것을 중복 표현이라고 합니다.\n\n한 표현을 고르기 위해 헤딩과 뱅크는 마이너스 백팔십보다 크고 백팔십 이하로, 피치는 마이너스 구십부터 구십까지 정리할 수 있습니다.\n\n피치가 양이나 음의 구십 도이면 뱅크를 영으로 정하는 규칙도 필요합니다. 이 특수한 규칙이 필요한 이유를 축의 움직임으로 확인해 보겠습니다.\n\n## 10 짐벌락: 두 회전축이 겹치는 순간 [explanation]\n\n피치만 사십오 도, 팔십 도, 구십 도로 바꿔 보겠습니다. 헤딩을 조절하는 축과 마지막 뱅크에 쓰는 축을 함께 보세요.\n\n피치가 양의 구십 도가 되면, 마지막 몸체 제트축이 첫 헤딩의 월드 와이축과 같은 직선 위에 놓입니다.\n\n우리 규약에서 두 축의 양의 방향은 서로 반대입니다. 이제 헤딩과 뱅크의 두 손잡이가 같은 축선에 영향을 줍니다.\n\n여기서 헤딩과 뱅크를 각각 오 도씩 함께 늘리면 서로 상쇄되어 끝 자세가 그대로입니다. 독립적으로 조절하던 두 값이 묶인 것입니다.\n\n따로 조절할 수 있는 변화의 수를 자유도라고 합니다. 이 자세에서는 오일러 매개변수로 만드는 독립적인 순간 회전 방향이 하나 줄어듭니다. 이것이 짐벌락입니다.\n\n물체의 물리적인 회전 능력이 없어진 것은 아닙니다. 세 각도로 자세를 조절하는 이 표현이 특이해진 것입니다. 따라서 실제 화면이 가파르다는 이유만으로 짐벌락이라고 판단할 수는 없습니다.\n\n## 11 화면에서 세운 자세와 짐벌락은 다릅니다 [actual]\n\n몸이 급하게 기울고 앞쪽이 위아래를 향하는 비행을 보세요. 윤곽선은 화면에서 보이는 몸의 자세를 따라갑니다.\n\n몸이 화면에서 세로로 보이더라도 카메라 각도의 영향일 수 있습니다. 게임이 어떤 회전 표현을 쓰는지도 이 장면만으로 알 수 없습니다.\n\n몸통과 날개옷의 윤곽이 함께 바뀌는 동안에도 제어는 자연스러워야 합니다. 이 사례는 그런 요구가 생기는 상황을 보여 줍니다.\n\n정확한 짐벌락 조건을 확인하려면 방금 정한 오일러 순서에서 두 제어축이 겹치는지 검사해야 합니다.\n\n게임에서 관찰한 움직임은 질문을 주고, 계산 가능한 모형은 그 원리를 설명합니다. 같은 축선에 묶인 두 각도가 숫자에서는 어떻게 합쳐지는지 보겠습니다.\n\n## 12 90도에서는 헤딩과 뱅크가 합쳐진다 [explanation]\n\n우리 와이, 엑스, 제트 순서에서 피치가 양의 구십 도이면, 자세는 헤딩에서 뱅크를 뺀 값에 달려 있습니다.\n\n헤딩 삼십, 피치 구십, 뱅크 십 도를 넣으면 삼십 빼기 십, 이십 도입니다.\n\n헤딩 이십, 피치 구십, 뱅크 영도 같은 회전 행렬을 만듭니다. 두 몸체의 세 축이 정확히 겹칩니다.\n\n이번에는 피치를 음의 구십 도로 바꿉니다. 이때는 헤딩과 뱅크의 합입니다. 삼십 더하기 십이 사십이므로, 헤딩 사십과 뱅크 영으로 적어도 같습니다.\n\n모든 자세를 표현할 수는 있지만, 가까운 자세로 조금 움직였을 때 개별 각도는 크게 튈 수 있습니다.\n\n뱅크를 영으로 고르는 규칙은 표현 하나를 고를 뿐, 경계의 불연속과 보간 문제까지 없애지는 않습니다. 먼저 더 단순한 원 위에서 숫자가 튀는 문제부터 풀어 보죠.\n\n## 13 각도 보간은 짧은 차이를 골라야 한다 [explanation]\n\n보간은 시작과 끝 사이의 중간 값을 만드는 계산입니다. 비율 티가 영이면 시작, 절반이면 중간, 일이면 끝입니다.\n\n헤딩 칠백이십 도에서 사십오 도로 간다고 합시다. 시작은 두 바퀴를 돈 영 도와 같은 자세인데, 그대로 빼면 마이너스 육백칠십오 도나 돌아갑니다.\n\n시작을 영 도로 정리하면 필요한 변화는 사십오 도입니다. 하지만 입력을 정리해도 다음 문제는 남습니다.\n\n마이너스 백칠십 도에서 플러스 백칠십 도로 가면, 그대로 뺀 차이는 플러스 삼백사십 도입니다.\n\n원 위의 두 방향은 이십 도만 떨어져 있습니다. 음의 이십 도로 가면 짧은 길입니다.\n\n이처럼 각도 차이에서 한 바퀴의 배수를 제거하는 함수가 랩 파이입니다. 라디안은 각도를 재는 다른 단위로, 백팔십 도가 파이 라디안입니다.\n\n함수의 결과는 마이너스 파이보다 크고 파이 이하로 고릅니다. 짧은 차이에 비율을 곱해 시작 각도에 더하면 됩니다.\n\n절반에서는 마이너스 백칠십에 마이너스 십을 더해 마이너스 백팔십 도를 지납니다. 플러스 백팔십 도와 같은 방향입니다. 정확히 반 바퀴 떨어진 경우에는 두 길이 같으므로 끝점 규칙으로 한쪽을 고릅니다.\n\n## 14 자연스러운 회전 경로가 필요합니다 [actual]\n\n장애물 가까이에서 몸이 방향을 바꾸는 구간을 보세요. 몸통 표시와 날개옷의 윤곽이 함께 달라집니다.\n\n첫 화면과 마지막 화면만 맞는 것으로는 충분하지 않습니다. 그 사이 어느 쪽으로 돌아갔는지도 움직임의 느낌을 만듭니다.\n\n가까운 방향으로 가려는데 거의 한 바퀴 돌아간다면 어색하겠죠. 앞의 각도 감싸기는 한 축에서 그런 긴 경로를 피하는 방법입니다.\n\n이 게임이 그 함수를 쓴다는 뜻은 아닙니다. 표시된 몸의 변화를 보며 자연스러운 경로가 필요한 이유를 확인하는 것입니다.\n\n이제 방금 계산한 짧은 차이를 코드로 옮기겠습니다. 먼저 단위와 끝점이 맞아야, 그다음 삼차원 보간에 남는 문제도 구별할 수 있습니다.\n\n## 15 라디안과 끝점까지 정한 wrap 코드 [explanation]\n\n이 코드는 유한한 실수 라디안을 입력받습니다. 도를 라디안으로 바꿀 때는 파이를 곱하고 백팔십으로 나눕니다. 한 바퀴는 이 파이 라디안입니다.\n\n표준 라이브러리의 리메인더는 가장 가까운 한 바퀴의 배수를 빼서 남은 값을 구합니다. 일반적인 나머지 연산과 끝점 처리가 같다고 가정하면 안 됩니다.\n\n결과가 마이너스 파이이면 한 바퀴를 더해 플러스 파이로 옮깁니다. 마이너스 파이를 제외하고 플러스 파이를 포함하는 규칙입니다.\n\n입력이 마이너스 파이일 때는 이 조건이 참이라 플러스 파이로 바뀝니다. 파이의 절반처럼 이미 범위 안인 값은 조건이 거짓이라 그대로 남습니다.\n\n보간할 때 감싸는 값은 끝 각도 자체가 아니라 끝에서 시작을 뺀 차이입니다. 그 차이에 영부터 일 사이의 비율을 곱해 시작 값에 더합니다.\n\n도 단위 숫자를 이 함수에 바로 넣으면 안 됩니다. 단위와 끝점을 맞추면 한 축의 긴 경로는 줄일 수 있지만, 세 축의 보간까지 해결된 것은 아닙니다.\n\n## 16 세 각을 따로 보간하면 남는 문제 [explanation]\n\n각도 차이를 잘 감싸도, 세 각을 따로 직선 보간한 경로가 항상 삼차원에서 가장 짧은 회전은 아닙니다.\n\n앞서 같은 자세였던 두 표현을 다시 보세요. 영, 백삼십오, 영과 백팔십, 사십오, 백팔십입니다.\n\n항등 자세에서 이 두 숫자 묶음으로 각각 보간하면, 절반일 때는 영, 육십칠 점 오, 영과 구십, 이십이 점 오, 구십이 됩니다. 끝 자세는 같지만 중간의 몸체 축은 다릅니다.\n\n피치가 구십 도 근처로 가면 헤딩과 뱅크가 비슷한 축에 영향을 줍니다. 각 숫자가 일정한 속도로 변해도 몸의 실제 회전 속도가 일정하다는 보장은 없습니다.\n\n오일러 각은 사람이 편집하기에 편합니다. 하지만 끝 자세를 저장하는 일과, 그곳까지 가는 경로를 정하는 일은 구별해야 합니다.\n\n다른 표현을 함께 검토할 이유가 생긴 것입니다. 그 차이를 실제 움직임에서 확인한 뒤, 한 축만으로 같은 자세 변화를 표현해 보겠습니다.\n\n## 17 끝 자세와 이동 과정은 따로 봅니다 [actual]\n\n몸이 방향을 바꾸며 구조물 곁을 지나는 과정을 보세요. 처음과 마지막 표시 사이에도 날개옷의 기울기와 몸통 윤곽이 계속 바뀝니다.\n\n끝의 두 화면만으로는 중간에 어느 쪽으로 얼마나 돌았는지 알기 어렵습니다. 움직이는 동안의 자세도 따로 봐야 합니다.\n\n끝 자세를 저장하는 일과 움직임의 경로를 제어하는 일은 서로 연결되지만 다릅니다. 자연스러운 카메라나 캐릭터 회전에는 중간 자세도 필요합니다.\n\n발췌 구간이 바뀌면 시작과 끝 표시도 새로 잡습니다. 서로 다른 비행을 한 경로로 잇는 표시는 하지 않습니다.\n\n지금까지는 세 축으로 나눴지만, 축 자체를 자유롭게 고를 수도 있습니다. 같은 자세 변화에 맞는 축 하나를 찾아 한 번에 돌아보겠습니다.\n\n## 18 축 하나와 각도 하나로 표현 [explanation]\n\n오일러의 회전 정리에 따르면, 두 삼차원 자세 사이의 변화는 적절한 한 축 주위의 회전으로 나타낼 수 있습니다. 지금은 물체 중심을 고정해 회전만 봅니다.\n\n축의 방향은 단위벡터 엔으로 적습니다. 단위벡터는 길이를 일로 맞춘 방향 화살표입니다. 여기에 회전각 세타를 함께 기록하는 것이 축·각 표현입니다.\n\n축을 영, 일, 영으로 두고 구십 도 돌리면 양의 제트가 양의 엑스로 갑니다. 앞쪽 하나만 움직이는 것이 아니라 몸에 붙은 세 축 전체가 함께 돌아갑니다.\n\n축은 세 성분이지만 길이가 일이라는 조건이 있습니다. 따라서 축의 방향을 정하는 두 자유도와 각도 하나, 합해서 세 자유도입니다. 네 성분을 저장한다고 자유도가 네 개인 것은 아닙니다.\n\n같은 축에서 구십 도의 절반은 사십오 도입니다. 회전량의 배수를 구할 때는 각도에 그 배수를 곱하면 됩니다.\n\n이렇게 정한 축과 각도를 따로 저장할 수도 있고, 둘을 곱해 하나의 세 성분 벡터로 묶을 수도 있습니다.\n\n## 19 회전벡터의 길이가 각도 [explanation]\n\n단위축 엔에 라디안 각도 세타를 곱한 벡터 이, 즉 세타 엔을 회전벡터라고 부릅니다. 방향은 축이고 길이는 회전각입니다.\n\n이 회전벡터를 회전 행렬로 바꾸는 연산이 지수 사상입니다. 벡터 자체와 그 벡터를 회전으로 보내는 연산을 구별해 두세요.\n\n축이 영, 일, 영이고 각도가 파이의 절반이면, 곱한 벡터는 영, 파이의 절반, 영입니다.\n\n길이는 각 성분의 제곱을 더한 뒤 제곱근으로 구합니다. 이 예에서는 파이의 절반이 남으므로 회전각은 구십 도입니다.\n\n벡터를 그 길이로 나누면 길이 일인 축을 되찾습니다. 이런 계산이 정규화입니다. 결과는 영, 일, 영입니다.\n\n영 벡터는 회전이 없는 항등 자세입니다. 길이가 영이므로 나눗셈으로 축을 만들면 안 됩니다.\n\n축과 각도의 부호를 동시에 바꿔도 같은 벡터가 됩니다. 다만 같은 끝 자세를 나타내는 다른 중복까지 모두 없어진 것은 아닙니다. 먼저 이 화살표가 이동 경로와 어떻게 다른지 보겠습니다.\n\n## 20 움직인 거리와 돌린 양을 구분하세요 [actual]\n\n몸통 중심에 찍은 점을 보세요. 점이 구조물 사이를 지나가는 화면상의 경로는, 몸이 보이는 위치의 변화를 알려 줍니다.\n\n몸통 표시와 날개옷의 윤곽은 화면에서 보이는 기울기를 관찰하는 안내입니다. 점이 움직이는 동안 자세도 달라집니다.\n\n회전벡터는 이 이동 경로를 따라가는 화살표가 아닙니다. 그 방향은 회전축이고 길이는 선택한 단위의 회전각입니다.\n\n위치를 적는 위치 벡터, 물체 앞쪽을 나타내는 방향벡터, 회전을 적는 회전벡터를 구분해야 합니다. 화살표처럼 그려도 담고 있는 정보가 다릅니다.\n\n카메라도 움직이므로 화면 기울기만으로 회전벡터를 정확히 복원할 수는 없습니다. 계산용 회전벡터는 따로 정의한 모형에서 보여 줍니다.\n\n화면이 바뀌면 지나간 경로와 관찰 표시도 지웁니다. 각 발췌 구간 안에서 이동과 자세 변화를 따로 따라가 보세요.\n\n회전벡터는 정한 시작 자세에서 끝 자세로 가는 회전을 표현합니다. 그렇다면 다른 회전벡터로도 같은 끝 자세에 도착할 수 있을까요?\n\n## 21 한 바퀴 미만이어도 표현은 중복된다 [explanation]\n\n한 축 주위로 플러스 구십 도 돌린 결과와 마이너스 이백칠십 도 돌린 결과는 같습니다. 지나온 길은 달라도 끝 자세가 겹칩니다.\n\n각도를 벡터 길이로 적으면, 같은 축 방향의 구십 도 벡터와 반대 축 방향의 이백칠십 도 벡터가 같은 끝 자세를 만듭니다.\n\n두 길이는 모두 삼백육십 도보다 작습니다. 따라서 길이가 한 바퀴 미만이라는 조건만으로 표현이 유일해지지는 않습니다.\n\n보통 회전각을 영부터 백팔십 도까지로 고르고, 백팔십 도에서 축의 부호를 고르는 규칙을 더합니다. 백팔십 도에서는 축을 뒤집어도 같은 회전이기 때문입니다.\n\n이 경계의 중복과 불연속은 주의해야 합니다. 항등 자세에서는 각도가 영이므로 어느 축도 같은 결과를 내지만, 회전벡터 영으로 다루면 축을 억지로 고를 필요가 없습니다.\n\n한 자세에 사용할 벡터를 골랐다고 해서 두 회전을 벡터 덧셈으로 합칠 수 있는 것도 아닙니다. 앞의 순서 비교를 다시 이용해 보겠습니다.\n\n## 22 회전벡터는 보통 더할 수 없다 [explanation]\n\n엑스축 구십 도 회전 뒤 와이축 구십 도 회전을 합성하면, 앞쪽 방향은 영, 마이너스 일, 영이었습니다.\n\n두 회전벡터를 성분별로 더하면, 파이의 절반, 파이의 절반, 영입니다. 이 벡터는 엑스와 와이 사이의 대각선 축으로 한 번 도는 회전입니다.\n\n그 길이는 파이를 루트 이로 나눈 값, 약 백이십칠 점 이팔 도입니다. 모형에서 실제로 돌려 보면 앞의 두 회전과 끝 자세가 다릅니다.\n\n벡터 덧셈은 순서를 바꿔도 같지만 삼차원 회전은 보통 그렇지 않습니다. 두 연산을 일반적으로 같은 공식으로 쓸 수 없는 이유입니다.\n\n정확한 합성은 순서를 정한 회전 행렬의 곱이나 뒤에서 배울 쿼터니언 곱으로 계산합니다.\n\n각도가 아주 작으면 벡터 합이 근사값이 될 수 있지만 유한한 회전의 정확한 공식은 아닙니다. 회전의 양과 순간적인 변화율도 나눠 생각해야 합니다.\n\n## 23 세 축의 변화가 섞인 실제 움직임 [actual]\n\n몸통과 날개옷의 윤곽이 계속 바뀌는 비행을 마지막으로 보겠습니다. 먼저 몸통 표시를 따라가고, 이어 날개옷의 기울기를 보세요.\n\n복잡한 움직임도 각 순간의 자세와 그 사이의 변화로 나눠 생각할 수 있습니다. 중심점의 이동과 몸의 회전은 다른 정보입니다.\n\n헤딩과 기울기가 동시에 바뀌는 듯 보여도, 화면만 보고 내부에서 각도를 더한다고 결론 내릴 수는 없습니다.\n\n우리가 계산할 때는 먼저 축의 기준과 합성 순서를 정해야 합니다. 벡터의 성분합인지, 작은 각도의 근사인지, 정확한 회전 합성인지도 구분해야 합니다.\n\n이제 몸이 얼마나 돌아갔는지에서, 같은 시간 동안 얼마나 빠르게 도는지로 넘어가겠습니다. 끝 자세만 저장할 때 사라지는 정보가 보일 것입니다.\n\n## 24 각속도와 여러 바퀴의 회전 기록 [explanation]\n\n각속도 벡터의 방향은 순간적인 회전축이고, 길이는 초당 라디안 같은 회전 변화율입니다. 회전각과 달리 시간으로 나눈 단위를 씁니다.\n\n같은 고정축에서 일정하게 초당 칠백이십 도와 천팔십 도로 돌려 봅시다. 사분의 일 초에서는 각각 반 바퀴와 사분의 삼 바퀴로 자세가 다릅니다.\n\n일 초가 지나면 두 바퀴와 세 바퀴를 돌아 둘 다 시작 자세로 돌아옵니다. 끝 자세가 같아도 움직임의 이력은 다른 것입니다.\n\n여러 바퀴의 동작이 필요하면 누적 각도나 시간에 따른 각속도를 별도로 기록해야 합니다.\n\n각속도를 더할 때도 먼저 같은 좌표계로 표현합니다. 몸체가 와이축으로 구십 도 돌아 있다면, 몸체 제트축의 초당 일 라디안은 월드 엑스축의 초당 일 라디안입니다.\n\n몸체 기준과 월드 기준 성분을 그대로 더하면 서로 다른 방향을 같은 칸에 넣게 됩니다. 회전 행렬로 같은 기준에 맞춘 뒤 계산하세요.\n\n자세, 회전량, 회전속도를 이렇게 구분했습니다. 이제 단위와 기준을 지키면서 두 문제로 확인해 보겠습니다.\n\n## 25 직접 풀어 보는 두 문제 [explanation]\n\n첫 문제입니다. 시작 헤딩이 백칠십 도, 끝 헤딩이 마이너스 백칠십 도일 때 짧은 차이는 얼마일까요?\n\n그대로 빼면 마이너스 삼백사십 도입니다. 한 바퀴를 더하면 플러스 이십 도가 됩니다.\n\n비율이 절반이면 백칠십에 십을 더해 백팔십 도를 지납니다. 도 단위로 한 계산을 랩 파이에 넣으려면 먼저 라디안으로 바꿉니다.\n\n두 번째입니다. 회전벡터가 영, 파이의 절반, 영이고 단위가 라디안일 때 축과 각도는 무엇일까요?\n\n길이는 파이의 절반, 즉 구십 도입니다. 그 길이로 나누면 축은 영, 일, 영입니다. 우리 오른손 규칙에서 앞쪽 제트는 양의 엑스로 갑니다.\n\n여기에 엑스축 구십 도 회전을 더 합성하려면 성분을 그냥 더하면 안 됩니다. 어느 회전을 먼저 적용할지 정한 뒤 행렬의 곱으로 계산해야 합니다.\n\n## 26 축·순서·단위를 함께 기억하세요 [explanation]\n\n두 문제에서 확인한 것처럼 오일러 각은 다루기 쉬운 세 숫자지만, 축과 순서가 빠지면 뜻이 정해지지 않습니다.\n\n짐벌락은 정한 표현에서 두 제어축이 겹치는 현상입니다. 물체가 돌 수 없다는 뜻이 아니라, 각도를 조절하는 방식의 특이점입니다.\n\n축·각과 회전벡터는 한 축 주위의 회전을 표현합니다. 단위와 영 벡터, 같은 자세의 중복 표현, 합성의 한계를 함께 확인해야 합니다.\n\n다음 시간에는 쿼터니언이 어떻게 같은 회전을 네 성분으로 표현하는지 알아보고, 곱과 역회전을 실제 숫자로 계산해 보겠습니다.",
+  "learningSteps": [
+    {
+      "scene": "01",
+      "classification": "explanation",
+      "retainedClaim": "All4 overview lines; clear question and truthful ordered promises.",
+      "prerequisiteAndVisibleChange": "Carry the first previewed aircraft/body state directly into02; retain original2s branding. Avoid a fresh music/title reset at02.",
+      "workedExample": [
+        "같은 각도 / 순서가 다르면?",
+        "비행 관찰 → 방향과 비틀림",
+        "회전 순서 → 짐벌락 → 보간",
+        "축·각 → 두 문제"
+      ],
+      "limit": null
+    },
+    {
+      "scene": "02",
+      "classification": "actual",
+      "retainedClaim": "All6 lines; important distinction between observable movement and unknown game internals.",
+      "prerequisiteAndVisibleChange": "Trace a short torso/forward guide and arm-line guide with named labels during their exact clauses. Follow verified motion; clear at source cuts. Introduce heading/pitch/bank in plain language, then retain canonical labels.",
+      "workedExample": null,
+      "limit": {
+        "targets": "verified visible torso/wingsuit silhouette only",
+        "meaning": "qualitative screen observation, not recovered3Dforward/axes/gamevalues",
+        "clearAtCuts": true,
+        "screenPositionTrailNotWorldPath": true
+      }
+    },
+    {
+      "scene": "03",
+      "classification": "explanation",
+      "retainedClaim": "03.1,03.3,03.4,03.6 and mathematical meaning of03.2/03.5.",
+      "prerequisiteAndVisibleChange": "Before jargon: room-fixed tripod arrows=world; matching arrows painted on aircraft=body. A direction(0,0,1) means one unit along+z. Show same numbers written vertically=column vector; R changes body coordinates into world coordinates. Demonstrate right thumb+axis with a labeled rotation arc. Replace book framing; no prerequisite on the preceding lecture.",
+      "workedExample": "+Ry90 sends(0,0,1) to(1,0,0)",
+      "limit": null
+    },
+    {
+      "scene": "04",
+      "classification": "explanation",
+      "retainedClaim": "All6 statements, especially positive-pitch sign.",
+      "prerequisiteAndVisibleChange": "Numerically expose one value at a time: h0→45°, hold; p0→30° about the now-moved x, hold; b0→35° about final forward. World tripod stays still. Use small arc and labels; show R=Ry45Rx30Rz35 only after the changes.",
+      "workedExample": [
+        "h:0°→45° / 몸체 축 함께 이동",
+        "p:0°→30° / 움직인 몸체 x",
+        "b:0°→35° / 움직인 몸체 z",
+        "Intrinsic rotation / R=Ry45° Rx30° Rz35°",
+        "우리 +pitch: +z→-y",
+        "앞쪽 방향 + 앞쪽 주위 비틀림"
+      ],
+      "limit": "One changing angle per beat; retain axes through05"
+    },
+    {
+      "scene": "05",
+      "classification": "actual",
+      "retainedClaim": "Body/screen distinction and all8 useful observations.",
+      "prerequisiteAndVisibleChange": "Replace ‘imagine an arrow’ instruction with actual tracked torso arrow/arm contour. No numeric angle overlays. One unobtrusive cut reset keeps excerpt changes clear; preserve the forward-arrow color into06.",
+      "workedExample": null,
+      "limit": {
+        "targets": "verified visible torso/wingsuit silhouette only",
+        "meaning": "qualitative screen observation, not recovered3Dforward/axes/gamevalues",
+        "clearAtCuts": true,
+        "screenPositionTrailNotWorldPath": true
+      }
+    },
+    {
+      "scene": "06",
+      "classification": "explanation",
+      "retainedClaim": "All6 mathematical points.",
+      "prerequisiteAndVisibleChange": "Use two copies from identical start: intrinsic Y→movingX→movingZ on left; fixedZ→fixedX→fixedY on right; ghosts show equal final full frames. Explain Rz acts on the column first, then Rx then Ry, with a moving activation outline rather than presenting an unexplained product.",
+      "workedExample": "Use04's45°,30°,35° in both routes; numerical equality is an illustrative calculation, not gameplay telemetry.",
+      "limit": null
+    },
+    {
+      "scene": "07",
+      "classification": "explanation",
+      "retainedClaim": "All6 lines and both exact90° examples.",
+      "prerequisiteAndVisibleChange": "Actually carry the same front arrow through each intermediate coordinate: ez→-ey→-ey versus ez→ex→ex. Reset both copies to the same beginning before the second route. Show numeric rows only after the direction is visible.",
+      "workedExample": [
+        "v=(0,0,1) / 같은 시작",
+        "Rx90° v=(0,-1,0)",
+        "Ry90° Rx90° v=(0,-1,0)",
+        "초기화 / Ry90° v=(1,0,0)",
+        "Rx90° Ry90° v=(1,0,0)",
+        "회전 합성은 일반적으로 비가환"
+      ],
+      "limit": null
+    },
+    {
+      "scene": "08",
+      "classification": "actual",
+      "retainedClaim": "All6 lines.",
+      "prerequisiteAndVisibleChange": "Reuse torso/arm annotation meanings; pin a world/reference label to a verified stable scene feature only if defensible. Otherwise label it screen-reference and do not pretend it is a recovered3D world axis. Final state hands off to09's same-position comparison.",
+      "workedExample": null,
+      "limit": {
+        "targets": "verified visible torso/wingsuit silhouette only",
+        "meaning": "qualitative screen observation, not recovered3Dforward/axes/gamevalues",
+        "clearAtCuts": true,
+        "screenPositionTrailNotWorldPath": true
+      }
+    },
+    {
+      "scene": "09",
+      "classification": "explanation",
+      "retainedClaim": "All alias examples and chosen range conventions.",
+      "prerequisiteAndVisibleChange": "Overlay equal full aircraft frames for(0,135,0) and(180,45,180), then toggle the numbers while body remains aligned. Explain interval brackets in spoken words. State canonical range is our chosen normalization; uniqueness still needs the±90° rule.",
+      "workedExample": "Extra360° keeps the endpoint; three-angle alias also preserves all body axes, not just forward.",
+      "limit": null
+    },
+    {
+      "scene": "10",
+      "classification": "explanation",
+      "retainedClaim": "All6 lines; keep object ability vs coordinate singularity distinction.",
+      "prerequisiteAndVisibleChange": "Show p0→45→80→90 with only p changing. Heading-axis handle and bank-axis handle become the same line with opposite directions at+90. Demonstrate h+5,b+5 cancel atp90 while the aircraft still can change orientation through another control/representation.",
+      "workedExample": [
+        "p:45°→80°→90°",
+        "p=+90°: 첫 heading 축 ∥ 마지막 bank 축",
+        "world +y / body +z: 반대 방향, 같은 직선",
+        "h+5°,b+5°: 끝 자세 동일",
+        "자유도 / 매개변수의 독립 변화 방향 감소",
+        "Gimbal lock: 표현의 특이점 / 물체는 회전 가능"
+      ],
+      "limit": "Optional Jacobian/independent-directions label only after handle demonstration; no need to introduce an unexplained matrix determinant."
+    },
+    {
+      "scene": "11",
+      "classification": "actual",
+      "retainedClaim": "All6 safeguards against diagnosing game-engine gimbal lock from pixels.",
+      "prerequisiteAndVisibleChange": "Trace the steep body contour but label the mark ‘화면에서 보이는 자세’. Return to10's exact labeled axes in12 rather than labeling footage as measured gimbal lock.",
+      "workedExample": null,
+      "limit": {
+        "targets": "verified visible torso/wingsuit silhouette only",
+        "meaning": "qualitative screen observation, not recovered3Dforward/axes/gamevalues",
+        "clearAtCuts": true,
+        "screenPositionTrailNotWorldPath": true
+      }
+    },
+    {
+      "scene": "12",
+      "classification": "explanation",
+      "retainedClaim": "All6 claims and both singular signs.",
+      "prerequisiteAndVisibleChange": "Compute30−10=20 beside matched full body frames. For negative case show a separate reset with30+10=40 and(30,-90,10)=(40,-90,0), clearing every positive-case label first. Then a small near90 change illustrates angle sensitivity.",
+      "workedExample": [
+        "p=+90° → h-b",
+        "30°-10°=20°",
+        "R(30°,90°,10°)=R(20°,90°,0°)",
+        "p=-90° → h+b / 30°+10°=40°",
+        "가까운 자세 / 개별 각도는 큰 변화",
+        "표현 선택 ≠ 경계 불연속 해소"
+      ],
+      "limit": "No mixed positive/negative labels during transitions; these are illustrative computed models."
+    },
+    {
+      "scene": "13",
+      "classification": "explanation",
+      "retainedClaim": "All6 angle-wrap explanations.",
+      "prerequisiteAndVisibleChange": "Define interpolation before t: t0=start,t0.5=halfway,t1=end. Animate compass needle along340° versus-20°, use same start/end. Work -170+0.5×(-20)=-180≡180. Defineπrad=180° before introducing wrapPi; label circle arithmetic in degrees and function input in radians.",
+      "workedExample": [
+        "보간 t:0=시작 / 0.5=중간 / 1=끝",
+        "720°→45° / 45°-720°=-675°",
+        "720°≡0° / 필요한 변화 +45°",
+        "-170°→+170° / 단순 차이 +340°",
+        "짧은 차이 -20°",
+        "Δ=wrapPi(end-start) / 180°=π rad",
+        "θ(t)=start+tΔ / Δ∈(-π,π]",
+        "t=0.5: -170°-10°=-180°≡180° / 반 바퀴 동률"
+      ],
+      "limit": "θ(t)=start+t·wrapPi(end-start),0≤t≤1, one-axis only"
+    },
+    {
+      "scene": "14",
+      "classification": "actual",
+      "retainedClaim": "All6 observations and no-implementation-claim limitation.",
+      "prerequisiteAndVisibleChange": "Highlight the relevant short turn/path in actual video without fabricating a long-way counterfactual. Carry the needle/short-change concept into15's code.",
+      "workedExample": null,
+      "limit": {
+        "targets": "verified visible torso/wingsuit silhouette only",
+        "meaning": "qualitative screen observation, not recovered3Dforward/axes/gamevalues",
+        "clearAtCuts": true,
+        "screenPositionTrailNotWorldPath": true
+      }
+    },
+    {
+      "scene": "15",
+      "classification": "explanation",
+      "retainedClaim": "Finite/radian premise, std::remainder, endpoint mapping, wrap the difference and unit warning.",
+      "prerequisiteAndVisibleChange": "Replace15.4 source framing. Explain std::remainder removes a nearest whole-turn multiple; it differs from generic percent/fmod. Show angle=-π→w=-π→conditiontrue→w=π, then angle=π/2→conditionfalse→unchanged. Defineθrad=θdegπ/180. Bound t explicitly when interpolating.",
+      "workedExample": [
+        "finite radians / θ_rad=θ_deg π/180",
+        "w=std::remainder(angle,2π)",
+        "if(w<=-π) w+=2π / (-π,π]",
+        "실행 추적: -π→π / π/2→π/2",
+        "Δ=wrapPi(end-start); value=start+tΔ / 0≤t≤1",
+        "degrees≠radians / 한 축 wrap≠3D 최단 경로"
+      ],
+      "limit": null
+    },
+    {
+      "scene": "16",
+      "classification": "explanation",
+      "retainedClaim": "All6 limits, including no premature promise that quaternions automatically solve every issue.",
+      "prerequisiteAndVisibleChange": "Show a real computed pair of paths with same endpoints and different intermediate full orientations, reusing09's alias. At halfway(0,67.5,0) vs(90,22.5,90) differ; explain this is representation-dependent editing, not constant angular-speed proof. Do not add a new SLERP derivation reserved for later.",
+      "workedExample": [
+        "한 축의 짧은 차이 ≠ 최단 3D 회전",
+        "끝 자세: (0°,135°,0°)=(180°,45°,180°)",
+        "t=0.5: (0°,67.5°,0°)≠(90°,22.5°,90°)",
+        "각도 성분 일정 속도 ≠ 몸의 일정 각속도",
+        "끝 자세 저장 / 경로 선택 구분",
+        "중간 자세를 보고 한 축 표현으로"
+      ],
+      "limit": null
+    },
+    {
+      "scene": "17",
+      "classification": "actual",
+      "retainedClaim": "All6 lines; strong existing bridge to18.",
+      "prerequisiteAndVisibleChange": "Overlay start/end thumbnail markers and a tracked full body contour in gameplay; neither graphic claims reconstructed angles. Carry the same final body pose into18's independently constructed model.",
+      "workedExample": null,
+      "limit": {
+        "targets": "verified visible torso/wingsuit silhouette only",
+        "meaning": "qualitative screen observation, not recovered3Dforward/axes/gamevalues",
+        "clearAtCuts": true,
+        "screenPositionTrailNotWorldPath": true
+      }
+    },
+    {
+      "scene": "18",
+      "classification": "explanation",
+      "retainedClaim": "Euler rotation theorem, n/θ definition,+y90 example, full-frame rotation, constrained components and half-angle claim.",
+      "prerequisiteAndVisibleChange": "Explain unit vector as direction arrow resized to length1 and degree of freedom as independently adjustable amount. Keep the object center/pivot fixed so pure rotation is clear. Work n=(0,1,0),θ90,halfθ45; show entire body axes, not only forward.",
+      "workedExample": [
+        "두 자세 사이 변화 / 중심 고정",
+        "단위축 ||n||=1 + 회전각 θ / Axis–Angle",
+        "n=(0,1,0), θ=90° / +z→+x",
+        "축 방향 자유도2 + 각도1 = 3 / 저장성분4",
+        "같은 축: 90°/2=45°",
+        "축과 각을 곱해 e=θn"
+      ],
+      "limit": null
+    },
+    {
+      "scene": "19",
+      "classification": "explanation",
+      "retainedClaim": "e=θn,π/2 example,norm recovery,zero safeguard and paired-sign equality.",
+      "prerequisiteAndVisibleChange": "Replace book framing with formal exponential-map distinction. Define vector length via a small e=(0,π/2,0) calculation sqrt(0²+(π/2)²+0²)=π/2, divide nonzero vector by length to getn. Add optional n=(0,3/5,4/5),θπ/2 to show normalization isn't merely selecting an axis.",
+      "workedExample": [
+        "e=θ n [rad] / Rotation vector",
+        "Exponential map: 회전벡터→회전 행렬",
+        "e=(0,π/2,0) [rad]",
+        "θ=||e||=√(0²+(π/2)²+0²)=π/2",
+        "정규화 n=e/||e||=(0,1,0)",
+        "e=0: 항등 / 0으로 나누지 않기",
+        "(-θ)(-n)=θn / 다른 중복은 남음"
+      ],
+      "limit": "R=exp([e]×), with[e]×v=e×v; label exp a matrix operation and avoid ambiguity with the variable e. If shown, Rodrigues R=I+sinθ[n]×+(1−cosθ)[n]×² follows after definitions; small-angle implementation requires safe zero handling."
+    },
+    {
+      "scene": "20",
+      "classification": "actual",
+      "retainedClaim": "All8 distinction/observation lines.",
+      "prerequisiteAndVisibleChange": "Use named center marker, translation trail and torso/forward guide with different stroke style; keep rotation-vector arrow in a separate anchored explanatory inset rather than falsely reconstructing it from game motion. Cuts clear every trail.",
+      "workedExample": null,
+      "limit": {
+        "targets": "verified visible torso/wingsuit silhouette only",
+        "meaning": "qualitative screen observation, not recovered3Dforward/axes/gamevalues",
+        "clearAtCuts": true,
+        "screenPositionTrailNotWorldPath": true
+      }
+    },
+    {
+      "scene": "21",
+      "classification": "explanation",
+      "retainedClaim": "All6 endpoint/nonuniqueness cases.",
+      "prerequisiteAndVisibleChange": "Two ghost paths90°n and270°(-n) terminate in an overlaid full frame; show0≤θ≤π convention then180°axis-sign tie and zero case. Make it explicit uniqueness is selected locally with boundary rules, not globally continuous and singularity-free.",
+      "workedExample": [
+        "+90°와 -270°: 경로는 달라도 같은 끝 자세",
+        "e1=90° n / e2=270°(-n)",
+        "둘 다 ||e||<360°: 유일하지 않음",
+        "0≤θ≤180° / 180°에서 축 부호 규칙",
+        "경계 중복·불연속 / 0°에서는 e=0",
+        "표현 선택 ≠ 벡터 덧셈으로 합성"
+      ],
+      "limit": null
+    },
+    {
+      "scene": "22",
+      "classification": "explanation",
+      "retainedClaim": "All6 nonadditivity and small-angle caveats.",
+      "prerequisiteAndVisibleChange": "Carry07's Rx90 thenRy90 result. Compare to eSum=(π/2,π/2,0), whose axis=(1/√2,1/√2,0), angle=π/√2≈127.28°; actual sum-rotation forward differs from(0,-1,0). Exact numeric components should be generated and verified, not guessed. Mention same-axis rotations as an exact special case if useful, without weakening ‘generally not’.",
+      "workedExample": [
+        "Rx90° 후 Ry90°: 앞쪽 (0,-1,0)",
+        "e_sum=(π/2,π/2,0) / 대각선 축",
+        "||e_sum||=π/√2≈127.28° / 다른 끝 자세",
+        "벡터 합 교환 / 회전 합성 비가환",
+        "정확한 합성: 순서를 정한 행렬곱",
+        "작은 각도 1차 근사 / 회전량과 변화율 구분"
+      ],
+      "limit": null
+    },
+    {
+      "scene": "23",
+      "classification": "actual",
+      "retainedClaim": "All6 observations; strong direct bridge to24.",
+      "prerequisiteAndVisibleChange": "Use body-center/arm/forward marks already taught. Clear at cuts and never present angle addition or angular speed as detected game data.",
+      "workedExample": null,
+      "limit": {
+        "targets": "verified visible torso/wingsuit silhouette only",
+        "meaning": "qualitative screen observation, not recovered3Dforward/axes/gamevalues",
+        "clearAtCuts": true,
+        "screenPositionTrailNotWorldPath": true
+      }
+    },
+    {
+      "scene": "24",
+      "classification": "explanation",
+      "retainedClaim": "All6 orientation/history/rate/frame distinctions.",
+      "prerequisiteAndVisibleChange": "State constant speed about the same fixed axis for720°/s and1080°/s examples. At0.25s show half-turn versus three-quarter-turn, at1s same endpoints with2/3turn counters. For angular velocity frame conversion, show ωbody=(0,0,1)rad/s and Ry90 givingωworld=(1,0,0)rad/s before combining components.",
+      "workedExample": [
+        "ω: 순간 회전축 × 회전 변화율 [rad/s]",
+        "같은 고정축 / 0.25s: 180° vs270°",
+        "1.00s:720°=2회전 /1080°=3회전 / 같은 끝 자세",
+        "누적 각도·시간 이력 별도 기록",
+        "Ry90°: ω_body=(0,0,1) → ω_world=(1,0,0) [rad/s]",
+        "ω_world=R ω_body / 같은 좌표계에서 합",
+        "자세 / 회전량 / 회전속도 → 두 문제"
+      ],
+      "limit": "ωworld=Rωbody; Rdot=[ωworld]×R=R[ωbody]×. Optional formulas require explained Rdot/rad/s; never equate generalω with derivative of rotation-vector components."
+    },
+    {
+      "scene": "25",
+      "classification": "explanation",
+      "retainedClaim": "Both exercises, intended numerical answers and final composition warning.",
+      "prerequisiteAndVisibleChange": "Fix degree argument in visual wrapPi call. Reveal question→brief thinking beat→subtraction→wrap→midpoint; second exercise reveal norm→axis→full-frame direction result. Maintain selected endpoint convention at180°.",
+      "workedExample": [
+        "문제1: +170°→-170° / 짧은 차이?",
+        "Δ_deg=-340°+360°=+20°",
+        "t=0.5:170°+10°=180° / rad 변환 후 wrapPi",
+        "문제2: e=(0,π/2,0) [rad]",
+        "θ=π/2=90° / n=(0,1,0) / +z→+x",
+        "추가 회전: 성분합 금지 / 순서→행렬곱"
+      ],
+      "limit": null
+    },
+    {
+      "scene": "26",
+      "classification": "explanation",
+      "retainedClaim": "All4 substantive summary/next-lecture lines.",
+      "prerequisiteAndVisibleChange": "Revisit the exact three objects/results used earlier rather than an abstract list alone: ordered rotations, aligned handles,axis+angle. Preserve original10s membership identities and requested coaching space; no automatic next-video start.",
+      "workedExample": [
+        "Euler angles: 세 각도 + 축 + 순서",
+        "Gimbal lock: 표현의 특이점",
+        "Axis–Angle / Rotation vector: 단위·영·중복·합성",
+        "다음: 쿼터니언 성분·곱·역회전"
+      ],
+      "limit": null
+    }
+  ],
+  "transitionReview": {
+    "status": "passed-KO-EN-text-pairs;realized-joins-pending",
+    "method": "All26draftscenesand25closing/openingpairs reviewed in order.",
+    "boundaries": [
+      {
+        "from": "01",
+        "to": "02",
+        "koClosing": "마지막에는 하나의 축과 각도로 회전을 표현하고, 두 문제를 풀겠습니다. 먼저 몸통과 팔의 방향부터 보세요.",
+        "koOpening": "슈퍼플라이트의 몸통 표시와 날개옷의 윤곽을 보세요. 몸이 구조물 사이를 지나며 화면에서 보이는 기울기가 달라집니다.",
+        "enClosing": "Finally, we will describe a rotation using one axis and angle, and solve two problems. Start by watching the torso and arms.",
+        "enOpening": "Watch the torso mark and wingsuit outline in Superflight. As the body passes between structures, its visible tilt changes.",
+        "link": "The promised flight observation becomes the first visible body/arm target."
+      },
+      {
+        "from": "02",
+        "to": "03",
+        "koClosing": "지금 본 세 변화를 정확히 계산하려면, 먼저 몸에 붙인 방향자와 주변에 고정한 방향자를 구분해야 합니다.",
+        "koOpening": "주변에 고정한 방향자를 월드 좌표계, 물체에 붙어 함께 움직이는 방향자를 로컬 좌표계, 또는 몸체 좌표계라고 부릅니다.",
+        "enClosing": "To calculate the three changes precisely, we must first distinguish a frame attached to the body from one fixed in its surroundings.",
+        "enOpening": "A frame fixed in the surroundings is the world frame. A frame attached to and moving with the object is its local frame, or body frame.",
+        "link": "Observed three changes need explicitly defined axes/signs; carry torso/front marker into the diagram."
+      },
+      {
+        "from": "03",
+        "to": "04",
+        "koClosing": "회전 행렬 알은 이 몸체 기준 방향을 월드 기준 방향으로 바꾸는 계산입니다. 좌표계나 벡터를 적는 방향이 다른 식을 옮길 때는 축과 부호, 적용 순서를 함께 맞춰야 합니다.",
+        "koOpening": "처음에는 두 방향자가 나란합니다. 헤딩만 영 도에서 사십오 도로 바꾸면, 몸체와 몸에 붙인 세 축이 함께 돌아갑니다.",
+        "enClosing": "Rotation matrix R converts a direction expressed in body coordinates to world coordinates. When adapting formulas with different frames or row-versus-column notation, check axes, signs, and application order together.",
+        "enOpening": "Initially the two frames align. Changing heading alone from zero to forty-five degrees rotates the body and all three attached axes together.",
+        "link": "DeclaredY-X-Z/rule now gets one angle at a time on the same model."
+      },
+      {
+        "from": "04",
+        "to": "05",
+        "koClosing": "헤딩과 피치로 앞쪽 방향을 정하고, 뱅크로 그 주위의 비틀림을 정한 것입니다. 이 움직이는 방향자를 실제 비행에 겹쳐 생각해 보세요.",
+        "koOpening": "몸통 표시와 날개옷의 윤곽을 다시 보세요. 몸이 방향을 바꾸면 표시도 보이는 윤곽을 따라 움직입니다.",
+        "enClosing": "Heading and pitch set the forward direction; bank sets the twist around it. Keep that moving frame in mind as we return to real flight.",
+        "enOpening": "Watch the torso mark and wingsuit outline again. As the body changes direction, the marks follow the visible outline.",
+        "link": "Moved body axes explain the torso/arm behavior revisited in game footage."
+      },
+      {
+        "from": "05",
+        "to": "06",
+        "koClosing": "어느 좌표계의 어느 축인지 적어 두면 다음 회전의 중심이 분명해집니다. 이제 물체와 함께 움직이지 않는 고정축만으로 같은 자세를 만들어 보겠습니다.",
+        "koOpening": "월드에 고정된 축을 사용하는 방식을 외재적 회전이라고 합니다. 이번에는 몸이 돌아가도 회전축은 제자리에 둡니다.",
+        "enClosing": "Recording the frame and axis makes the next rotation's center clear. Now we will reach the same orientation using only axes fixed in the world.",
+        "enOpening": "Using axes fixed in the world is called extrinsic rotation. This time the rotation axes stay in place while the body turns.",
+        "link": "Known body-vs-world distinction permits fixed-world-axis alternative."
+      },
+      {
+        "from": "06",
+        "to": "07",
+        "koClosing": "축을 바꾸면서 순서를 뒤집은 이 관계를, 같은 고정축 두 개의 순서를 마음대로 바꿔도 된다는 뜻으로 받아들이면 안 됩니다.",
+        "koOpening": "앞쪽 방향을 영, 영, 일로 놓고, 이번에는 고정 엑스축과 고정 와이축만 사용하겠습니다. 두 경우를 같은 시작 자세에서 비교합니다.",
+        "enClosing": "This equivalence changes both the axis reference and the sequence. It does not mean that two rotations about the same fixed axes can be freely reordered.",
+        "enOpening": "Set forward to zero, zero, one. Now use only fixed x and fixed y axes, comparing both routes from the same initial orientation.",
+        "link": "Reversed descriptions can match; arbitrary same-axis reorder cannot. Add this contrast to avoid apparent contradiction."
+      },
+      {
+        "from": "07",
+        "to": "08",
+        "koClosing": "같은 두 각도여도 적용 순서가 다르면 자세가 달라집니다. 회전 행렬의 곱은 보통 순서를 바꿀 수 없습니다.",
+        "koOpening": "이제 몸통 표시를 먼저 따라가 보세요. 몸이 구조물 사이를 돌아 들어가며 화면에서 보이는 긴 방향이 달라집니다.",
+        "enClosing": "The same two angles produce different orientations when reordered. Rotation-matrix multiplication generally does not commute.",
+        "enOpening": "Follow the torso mark first. As the body turns between structures, its visible lengthwise direction changes.",
+        "link": "Order changed numeric front direction; revisit moving-front consequences in real flight."
+      },
+      {
+        "from": "08",
+        "to": "09",
+        "koClosing": "회전량과 순서, 축의 기준을 모두 알아야 결과를 정할 수 있습니다. 그런데 이 조건을 정한 뒤에도 같은 자세를 서로 다른 세 숫자로 적을 수 있습니다.",
+        "koOpening": "오일러 각은 사람이 읽고 편집하기 쉽고, 각도 세 개만 저장합니다. 정한 규약에서 유한한 세 각도는 어떤 값이어도 하나의 자세를 만듭니다.",
+        "enClosing": "Rotation amount, order, and axis reference all determine the result. Yet even after fixing those rules, different triples of numbers can still describe the same orientation.",
+        "enOpening": "Euler angles are easy to read and edit and store just three angles. Under a fixed convention, any three finite angles define an orientation.",
+        "link": "Same changing orientation can have multiple numeric labels; shift from order sensitivity to representation redundancy."
+      },
+      {
+        "from": "09",
+        "to": "10",
+        "koClosing": "피치가 양이나 음의 구십 도이면 뱅크를 영으로 정하는 규칙도 필요합니다. 이 특수한 규칙이 필요한 이유를 축의 움직임으로 확인해 보겠습니다.",
+        "koOpening": "피치만 사십오 도, 팔십 도, 구십 도로 바꿔 보겠습니다. 헤딩을 조절하는 축과 마지막 뱅크에 쓰는 축을 함께 보세요.",
+        "enClosing": "At pitch plus or minus ninety, we also need a rule such as setting bank to zero. Let us inspect the axes to see why this special rule is necessary.",
+        "enOpening": "Change pitch alone through forty-five, eighty, and ninety degrees. Watch the heading axis together with the axis used for the final bank rotation.",
+        "link": "Why±90 needs an extra normalization rule: show axes aligning."
+      },
+      {
+        "from": "10",
+        "to": "11",
+        "koClosing": "물체의 물리적인 회전 능력이 없어진 것은 아닙니다. 세 각도로 자세를 조절하는 이 표현이 특이해진 것입니다. 따라서 실제 화면이 가파르다는 이유만으로 짐벌락이라고 판단할 수는 없습니다.",
+        "koOpening": "몸이 급하게 기울고 앞쪽이 위아래를 향하는 비행을 보세요. 윤곽선은 화면에서 보이는 몸의 자세를 따라갑니다.",
+        "enClosing": "The object has not lost its physical ability to rotate. This three-angle parameterization has become singular. A steep-looking image alone therefore cannot establish gimbal lock.",
+        "enOpening": "Observe steep tilts and changes in where the front points. The contour follows the body's orientation as it appears on screen.",
+        "link": "The defined axis condition limits what can be concluded from a steep gameplay pose."
+      },
+      {
+        "from": "11",
+        "to": "12",
+        "koClosing": "게임에서 관찰한 움직임은 질문을 주고, 계산 가능한 모형은 그 원리를 설명합니다. 같은 축선에 묶인 두 각도가 숫자에서는 어떻게 합쳐지는지 보겠습니다.",
+        "koOpening": "우리 와이, 엑스, 제트 순서에서 피치가 양의 구십 도이면, 자세는 헤딩에서 뱅크를 뺀 값에 달려 있습니다.",
+        "enClosing": "Observed gameplay raises the question; a computable model explains the principle. Let us calculate how the two angles combine when they share an axis line.",
+        "enOpening": "For our Y-X-Z order at positive ninety pitch, the orientation depends on heading minus bank.",
+        "link": "Move from unmeasured pixels back to the exact model and calculate the condition."
+      },
+      {
+        "from": "12",
+        "to": "13",
+        "koClosing": "뱅크를 영으로 고르는 규칙은 표현 하나를 고를 뿐, 경계의 불연속과 보간 문제까지 없애지는 않습니다. 먼저 더 단순한 원 위에서 숫자가 튀는 문제부터 풀어 보죠.",
+        "koOpening": "보간은 시작과 끝 사이의 중간 값을 만드는 계산입니다. 비율 티가 영이면 시작, 절반이면 중간, 일이면 끝입니다.",
+        "enClosing": "Setting bank to zero chooses one representation without removing boundary discontinuities or interpolation problems. First, let us solve the simpler numeric seam on a circle.",
+        "enOpening": "Interpolation calculates intermediate values between a start and end. Fraction t equal to zero means the start, one-half means halfway, and one means the end.",
+        "link": "Numeric angle jumps are one representation issue; first solve the simpler full-turn seam on a circle. Rewrite adjacent close/open to state that connection."
+      },
+      {
+        "from": "13",
+        "to": "14",
+        "koClosing": "절반에서는 마이너스 백칠십에 마이너스 십을 더해 마이너스 백팔십 도를 지납니다. 플러스 백팔십 도와 같은 방향입니다. 정확히 반 바퀴 떨어진 경우에는 두 길이 같으므로 끝점 규칙으로 한쪽을 고릅니다.",
+        "koOpening": "장애물 가까이에서 몸이 방향을 바꾸는 구간을 보세요. 몸통 표시와 날개옷의 윤곽이 함께 달라집니다.",
+        "enClosing": "At halfway, minus one hundred seventy plus minus ten reaches minus one hundred eighty degrees, equivalent to plus one hundred eighty. For directions exactly a half-turn apart, both routes have equal length, so our endpoint convention chooses one.",
+        "enOpening": "Watch a turn close to an obstacle. The torso mark and wingsuit outline change together.",
+        "link": "The chosen short one-axis route motivates visibly smooth in-game turns."
+      },
+      {
+        "from": "14",
+        "to": "15",
+        "koClosing": "이제 방금 계산한 짧은 차이를 코드로 옮기겠습니다. 먼저 단위와 끝점이 맞아야, 그다음 삼차원 보간에 남는 문제도 구별할 수 있습니다.",
+        "koOpening": "이 코드는 유한한 실수 라디안을 입력받습니다. 도를 라디안으로 바꿀 때는 파이를 곱하고 백팔십으로 나눕니다. 한 바퀴는 이 파이 라디안입니다.",
+        "enClosing": "Now we will implement the short difference. Units and endpoints must be consistent before we can distinguish the remaining problems in three-dimensional interpolation.",
+        "enOpening": "This code accepts finite real-valued radians. To convert degrees, multiply by pi and divide by one hundred eighty. A full turn is two pi radians.",
+        "link": "Short angular difference now becomes explicit unit-safe code before returning to3D limitations."
+      },
+      {
+        "from": "15",
+        "to": "16",
+        "koClosing": "도 단위 숫자를 이 함수에 바로 넣으면 안 됩니다. 단위와 끝점을 맞추면 한 축의 긴 경로는 줄일 수 있지만, 세 축의 보간까지 해결된 것은 아닙니다.",
+        "koOpening": "각도 차이를 잘 감싸도, 세 각을 따로 직선 보간한 경로가 항상 삼차원에서 가장 짧은 회전은 아닙니다.",
+        "enClosing": "Do not pass degree values directly to this function. Consistent units and endpoints can shorten a one-axis route, but they do not solve interpolation about three axes.",
+        "enOpening": "Even after correctly wrapping differences, linearly interpolating three angles separately does not always yield the shortest three-dimensional rotation.",
+        "link": "Correct scalar wrap is established; show why three copies do not guarantee a shortest3D route."
+      },
+      {
+        "from": "16",
+        "to": "17",
+        "koClosing": "다른 표현을 함께 검토할 이유가 생긴 것입니다. 그 차이를 실제 움직임에서 확인한 뒤, 한 축만으로 같은 자세 변화를 표현해 보겠습니다.",
+        "koOpening": "몸이 방향을 바꾸며 구조물 곁을 지나는 과정을 보세요. 처음과 마지막 표시 사이에도 날개옷의 기울기와 몸통 윤곽이 계속 바뀝니다.",
+        "enClosing": "We now have a reason to consider other representations. After observing that distinction in motion, we will describe the same orientation change using just one axis.",
+        "enOpening": "Watch the body turn while passing beside structures. Between the start and end markers, the wingsuit tilt and torso outline keep changing.",
+        "link": "Remove premature chapter ending; inherit endpoint/path distinction and observe the whole path."
+      },
+      {
+        "from": "17",
+        "to": "18",
+        "koClosing": "지금까지는 세 축으로 나눴지만, 축 자체를 자유롭게 고를 수도 있습니다. 같은 자세 변화에 맞는 축 하나를 찾아 한 번에 돌아보겠습니다.",
+        "koOpening": "오일러의 회전 정리에 따르면, 두 삼차원 자세 사이의 변화는 적절한 한 축 주위의 회전으로 나타낼 수 있습니다. 지금은 물체 중심을 고정해 회전만 봅니다.",
+        "enClosing": "We have used three specified axes, but we can also choose the axis freely. Let us find one axis suited to the same orientation change and rotate around it once.",
+        "enOpening": "Euler's rotation theorem says the change between two three-dimensional orientations can be represented by rotation about one suitable axis. Keep the object's center fixed here to observe rotation alone.",
+        "link": "Existing last two lines already motivate one freely chosen axis very well."
+      },
+      {
+        "from": "18",
+        "to": "19",
+        "koClosing": "이렇게 정한 축과 각도를 따로 저장할 수도 있고, 둘을 곱해 하나의 세 성분 벡터로 묶을 수도 있습니다.",
+        "koOpening": "단위축 엔에 라디안 각도 세타를 곱한 벡터 이, 즉 세타 엔을 회전벡터라고 부릅니다. 방향은 축이고 길이는 회전각입니다.",
+        "enClosing": "We can store axis and angle separately or multiply them into one three-component vector.",
+        "enOpening": "Multiply unit axis n by radian angle theta to obtain e equals theta n: a rotation vector. Its direction is the axis and its length is the angle.",
+        "link": "Axis and angle already known; multiply them into one three-component record."
+      },
+      {
+        "from": "19",
+        "to": "20",
+        "koClosing": "축과 각도의 부호를 동시에 바꿔도 같은 벡터가 됩니다. 다만 같은 끝 자세를 나타내는 다른 중복까지 모두 없어진 것은 아닙니다. 먼저 이 화살표가 이동 경로와 어떻게 다른지 보겠습니다.",
+        "koOpening": "몸통 중심에 찍은 점을 보세요. 점이 구조물 사이를 지나가는 화면상의 경로는, 몸이 보이는 위치의 변화를 알려 줍니다.",
+        "enClosing": "Negating both axis and angle produces the same vector. Other redundant representations of the endpoint still remain. First, let us distinguish this arrow from a travel path.",
+        "enOpening": "Watch the point at the torso center. Its path across the screen shows changes in the body's visible position.",
+        "link": "New rotation-vector arrow requires separation from the visible translation/forward arrows."
+      },
+      {
+        "from": "20",
+        "to": "21",
+        "koClosing": "회전벡터는 정한 시작 자세에서 끝 자세로 가는 회전을 표현합니다. 그렇다면 다른 회전벡터로도 같은 끝 자세에 도착할 수 있을까요?",
+        "koOpening": "한 축 주위로 플러스 구십 도 돌린 결과와 마이너스 이백칠십 도 돌린 결과는 같습니다. 지나온 길은 달라도 끝 자세가 겹칩니다.",
+        "enClosing": "A rotation vector describes a rotation from a defined starting orientation to an endpoint. Could a different vector reach that same endpoint?",
+        "enOpening": "Positive ninety and negative two hundred seventy degrees about one axis have the same result. Their paths differ, but their endpoints align.",
+        "link": "Existing last line directly promises comparing different vectors with the same endpoint."
+      },
+      {
+        "from": "21",
+        "to": "22",
+        "koClosing": "한 자세에 사용할 벡터를 골랐다고 해서 두 회전을 벡터 덧셈으로 합칠 수 있는 것도 아닙니다. 앞의 순서 비교를 다시 이용해 보겠습니다.",
+        "koOpening": "엑스축 구십 도 회전 뒤 와이축 구십 도 회전을 합성하면, 앞쪽 방향은 영, 마이너스 일, 영이었습니다.",
+        "enClosing": "Choosing a representative vector for an orientation also does not let us combine two rotations by ordinary addition. Let us revisit our order comparison.",
+        "enOpening": "A ninety-degree x rotation followed by a ninety-degree y rotation sent forward to zero, minus one, zero.",
+        "link": "Even after selecting a representative vector, combining finite rotations still needs composition; add this specific bridge."
+      },
+      {
+        "from": "22",
+        "to": "23",
+        "koClosing": "각도가 아주 작으면 벡터 합이 근사값이 될 수 있지만 유한한 회전의 정확한 공식은 아닙니다. 회전의 양과 순간적인 변화율도 나눠 생각해야 합니다.",
+        "koOpening": "몸통과 날개옷의 윤곽이 계속 바뀌는 비행을 마지막으로 보겠습니다. 먼저 몸통 표시를 따라가고, 이어 날개옷의 기울기를 보세요.",
+        "enClosing": "For very small angles, vector addition can approximate composition, but it is not an exact finite-rotation formula. We must also distinguish rotation amount from its instantaneous rate.",
+        "enOpening": "Watch the changing torso and wingsuit outlines one last time. First follow the torso mark, then observe the wingsuit tilt.",
+        "link": "Nonadditive computed rotations limit conclusions about compound real movement."
+      },
+      {
+        "from": "23",
+        "to": "24",
+        "koClosing": "이제 몸이 얼마나 돌아갔는지에서, 같은 시간 동안 얼마나 빠르게 도는지로 넘어가겠습니다. 끝 자세만 저장할 때 사라지는 정보가 보일 것입니다.",
+        "koOpening": "각속도 벡터의 방향은 순간적인 회전축이고, 길이는 초당 라디안 같은 회전 변화율입니다. 회전각과 달리 시간으로 나눈 단위를 씁니다.",
+        "enClosing": "Now move from how far the body has rotated to how quickly it turns over the same time. We will see information lost when only the endpoint is stored.",
+        "enOpening": "An angular velocity vector points along the instantaneous rotation axis. Its length is a rotational rate, such as radians per second. Unlike an angle, its unit includes division by time.",
+        "link": "Existing last line naturally introduces amount vs amount-per-second."
+      },
+      {
+        "from": "24",
+        "to": "25",
+        "koClosing": "자세, 회전량, 회전속도를 이렇게 구분했습니다. 이제 단위와 기준을 지키면서 두 문제로 확인해 보겠습니다.",
+        "koOpening": "첫 문제입니다. 시작 헤딩이 백칠십 도, 끝 헤딩이 마이너스 백칠십 도일 때 짧은 차이는 얼마일까요?",
+        "enClosing": "We have separated orientation, rotation amount, and rotation rate. Now check the units and references with two problems.",
+        "enOpening": "First problem: from heading one hundred seventy to minus one hundred seventy degrees, what is the short difference?",
+        "link": "Retain units/frame distinctions while checking the same wrap andaxis-angle calculations with two exercises."
+      },
+      {
+        "from": "25",
+        "to": "26",
+        "koClosing": "여기에 엑스축 구십 도 회전을 더 합성하려면 성분을 그냥 더하면 안 됩니다. 어느 회전을 먼저 적용할지 정한 뒤 행렬의 곱으로 계산해야 합니다.",
+        "koOpening": "두 문제에서 확인한 것처럼 오일러 각은 다루기 쉬운 세 숫자지만, 축과 순서가 빠지면 뜻이 정해지지 않습니다.",
+        "enClosing": "To additionally compose a ninety-degree x rotation, do not simply add components. Decide the application order and then calculate the matrix product.",
+        "enOpening": "As the problems showed, Euler angles are three convenient numbers whose meaning also requires axes and order.",
+        "link": "Exercise answers establish the final axis/order/unit reminders; no new lesson reset."
+      }
+    ]
+  },
+  "sourceCoverageAdditions": [
+    {
+      "section": "8.3.2",
+      "scene": "06",
+      "addition": "Concrete body-y yaw versus fixed world-y heading at downward pitch."
+    },
+    {
+      "section": "8.3.3",
+      "scene": "09",
+      "addition": "Any three finite angles define a valid rotation;3angular components. Avoid universal compression superiority."
+    },
+    {
+      "section": "8.3.4",
+      "scene": "13",
+      "addition": "720-to45 degree normalization first, then alreadycanonical-170to+170 seam, preserving sourceorder."
+    },
+    {
+      "section": "8.4",
+      "scene": "18-24",
+      "addition": "Retain half-angle scaling, correctednormbound, zero, nonadditivity and same-frame angularvelocity."
+    }
+  ],
+  "parentFollowup": {
+    "scope": "Parent read fullnewKO; independent fullKOENreviewcaughtprerequisite, signedangle, units andmarkpromiseitems; corrected beforeTTS",
+    "newHashes": {
+      "projects/game-math-euler-axis-angle/script/revision-v2/narration.ko.json": "d83871cc11d10f732cec4920c7b26bf8f4a25864455de2cd58f7b1ce01be373d",
+      "projects/game-math-euler-axis-angle/script/revision-v2/narration.en.json": "f3b079feacb8392de0e7b951f25d4d61f2156f841c0c0403ec5a2dd70c7a9380",
+      "projects/game-math-euler-axis-angle/production/revision-v2/lesson.json": "8baa23ea0803e15b8542761fdc1032be6e27d7a1a295b1266bba231a29791a7c"
+    },
+    "remaining": "New speech and realized pixels not yet checked"
+  }
+}
