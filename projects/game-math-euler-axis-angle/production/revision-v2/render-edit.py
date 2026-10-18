@@ -36,7 +36,7 @@ Style: Guide,Malgun Gothic,48,&H00FFFFFF,&H00FFFFFF,&H0057D5F4,&H00000000,0,0,0,
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 '''
-ENC=['-c:v','libx264','-threads','4','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-video_track_timescale','60000']
+ENC=['-c:v','libx264','-threads','4','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-color_range','tv','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-video_track_timescale','60000']
 def interpolate(keys,t):
  if t<keys[0]['sourceTime'] or t>keys[-1]['sourceTime']:return None
  for a,b in zip(keys,keys[1:]):
@@ -47,10 +47,10 @@ def interpolate(keys,t):
 def ellipse(cx,cy,rx,ry):
  pts=[(cx+rx*math.cos(i*math.tau/48),cy+ry*math.sin(i*math.tau/48)) for i in range(49)]
  return 'm '+' '.join(f'{x:.2f} {y:.2f}' if i==0 else f'l {x:.2f} {y:.2f}' for i,(x,y) in enumerate(pts))
-def guide_event(a,b,path,color='57D5F4',layer=2):
- return f'Dialogue: {layer},{stamp(a)},{stamp(b)},Guide,,0,0,0,,{{\\an7\\pos(0,0)\\1a&HFF&\\3c&H{color}&\\p1}}'+path
+def guide_event(a,b,path,color='57D5F4',layer=2,outline=5):
+ return f'Dialogue: {layer},{stamp(a)},{stamp(b)},Guide,,0,0,0,,{{\\an7\\pos(0,0)\\1a&HFF&\\bord{outline}\\3c&H{color}&\\p1}}'+path
 def cut_ass(c,annotations):
- duration=c['frames']/60;events=[f'Dialogue: 1,0:00:00.00,{stamp(duration)},Credit,,0,0,0,,{{\\pos(40,36)}}Superflight / Morkala · 독립 게임 플레이 발췌']
+ duration=c['frames']/60;events=[f'Dialogue: 1,0:00:00.00,{stamp(duration)},Credit,,0,0,0,,{{\\pos(40,36)}}게임 화면: Superflight / Morkala']
  marks=[]
  for w in annotations['windows']:
   if w['scene']!=c['scene'] or w['sourceId']!=c['sourceId']:continue
@@ -63,6 +63,7 @@ def cut_ass(c,annotations):
    t=c['sourceStart']+f/60;p=interpolate(w['keyframes'],t)
    if not p:continue
    cx,cy=p['center'];rx,ry=p['ellipseRadius'];path=ellipse(cx,cy,rx,ry)
+   events.append(guide_event(f/60,(f+1)/60,path,'101010',1,8))
    events.append(guide_event(f/60,(f+1)/60,path))
    if c['scene']=='20':
     events.append(guide_event(f/60,(f+1)/60,ellipse(cx,cy,8,8),'E8A354',3))

@@ -212,6 +212,22 @@ Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
 '''
         path.write_text(header+'\n'.join(self.lines)+'\n',encoding='utf8')
 
+def mathematical_direction(endpoint,origin):
+    """Actual world-space math direction; screen proximity cannot establish it."""
+    end=endpoint.get('mathWorld') if endpoint else None
+    start=origin.get('mathWorld') if origin else None
+    if end is None or start is None:return None
+    vector=tuple(float(end[k])-float(start[k]) for k in ('x','y','z'))
+    length=math.sqrt(sum(v*v for v in vector))
+    if not math.isfinite(length) or length<1e-10:return None
+    return tuple(v/length for v in vector)
+
+def positively_collinear(a,b):
+    if a is None or b is None:return False
+    # A negative parallel axis points in the opposite direction and must keep
+    # its own label. Only numerically identical positive unit directions merge.
+    return sum(x*y for x,y in zip(a,b))>=1.0-1e-6
+
 def label_candidates(state,pair):
     data={a['name']:a for a in state['anchors']}
     result=[]
@@ -222,19 +238,22 @@ def label_candidates(state,pair):
             for kind,key in [('body',prefix+'.body'+axis.upper()),('world',('worldA' if prefix=='a' else 'worldB')+'.'+axis if pair else 'world.'+axis)]:
                 a=data.get(key)
                 if not a or not a.get('inFrame'):continue
+                origin_key=prefix+'.center' if kind=='body' else (('worldA' if prefix=='a' else 'worldB')+'.origin' if pair else 'world.origin')
+                direction=mathematical_direction(a,data.get(origin_key))
                 v=a['pixelTopLeft'];dx=v['x']-center['x'];dy=v['y']-center['y'];length=max(1,math.hypot(dx,dy))
                 x=v['x']+dx/length*32;y=v['y']+dy/length*32
                 if pair and y>710:
                     x+=90 if x<1730 else -90
                 result.append(dict(group=prefix,axis=axis,kind=kind,text=f'{kind} {axis}',
                     x=max(95,min(1825,x)),y=max(245 if pair else 100,min(710 if pair else 835,y)),
-                    target=(v['x'],v['y']),color=COLORS[axis]))
-    # Collapse visually coincident world/body names into one explicit label.
+                    target=(v['x'],v['y']),color=COLORS[axis],directionMath=direction))
+    # Screen-coincident arrows may have distinct3Ddirections. Merge only when
+    # the actual positive math directions also coincide, never from pixels alone.
     collapsed=[]
     for candidate in result:
         merged=False
         for old in collapsed:
-            if old['group']==candidate['group'] and old['axis']==candidate['axis'] and math.hypot(old['x']-candidate['x'],old['y']-candidate['y'])<65:
+            if old['group']==candidate['group'] and old['axis']==candidate['axis'] and math.hypot(old['x']-candidate['x'],old['y']-candidate['y'])<65 and positively_collinear(old['directionMath'],candidate['directionMath']):
                 old['text']='world/body '+candidate['axis'];merged=True;break
         if not merged:collapsed.append(candidate)
     # Keep at most two labels within a collision neighborhood. Additional
@@ -243,7 +262,11 @@ def label_candidates(state,pair):
     for candidate in collapsed:
         nearby=[old for old in accepted if math.hypot(old['x']-candidate['x'],old['y']-candidate['y'])<85]
         if len(nearby)>=2:continue
-        if nearby:candidate['y']=max(245 if pair else 100,min(710 if pair else 835,candidate['y']+44))
+        if nearby:
+            lower,upper=(245,710) if pair else (100,835)
+            down=candidate['y']+52
+            up=candidate['y']-52
+            candidate['y']=down if down<=upper else (up if up>=lower else candidate['y'])
         accepted.append(candidate)
     return accepted
 
