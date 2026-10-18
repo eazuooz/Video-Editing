@@ -4,10 +4,11 @@ import subprocess,json,hashlib,math,sys
 import numpy as np
 import soundfile as sf
 from PIL import Image,ImageDraw
-R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';V=P/'production';O=P/'production/local/compact-edit';Q=O/'qa';Q.mkdir(exist_ok=True)
+from revision_context import paths, ensure_authorized
+R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';V=P/'production';O,N,EDIT_PLAN,STEM=paths();Q=O/'qa';Q.mkdir(exist_ok=True);ensure_authorized()
 def run(cmd):return subprocess.run(cmd,cwd=R,capture_output=True,check=True).stdout
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
-plan=json.loads((V/'edit-plan.json').read_text(encoding='utf8'));layout=json.loads((O/'caption-layout.json').read_text(encoding='utf8'))
+plan=json.loads(EDIT_PLAN.read_text(encoding='utf8'));layout=json.loads((O/'caption-layout.json').read_text(encoding='utf8'))
 results=[]
 for kind in ['clean','captioned']:
  f=O/f'ai-games-{kind}.mp4';digest=sha(f);receipt=Q/(kind+'-integrity.json')
@@ -29,7 +30,7 @@ for name,src in [('stem',O/'narration-stem.wav'),('encoded',O/'ai-games-captione
  if not(dest.exists() and receipt.exists() and json.loads(receipt.read_text())==signature):
   run(['ffmpeg','-v','error','-y','-i',str(src),'-vn','-ac','1','-ar','24000','-c:a','pcm_f32le',str(dest)])
   receipt.write_text(json.dumps(signature,indent=2)+'\n')
-stem,sr=sf.read(Q/'stem-mono.wav',dtype='float32');encoded,_=sf.read(Q/'encoded-mono.wav',dtype='float32');N=R/'shared/output/narration/ai-games-showcase-2026/game-tools-five-second-ppt-v1';windows=[];summaries=[]
+stem,sr=sf.read(Q/'stem-mono.wav',dtype='float32');encoded,_=sf.read(Q/'encoded-mono.wav',dtype='float32');windows=[];summaries=[]
 db=lambda x:float(20*np.log10(max(float(x),1e-10)))
 for scene in plan['scenes']:
  sid=scene['id'];raw,_=sf.read(N/'chunks'/f'{sid}-scene.wav',dtype='float32');words=json.loads((N/'asr'/f'{sid}.json').read_text(encoding='utf8'))['words'];mask=np.zeros(len(raw),dtype=bool)

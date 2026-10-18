@@ -2,7 +2,9 @@
 from pathlib import Path
 import sys,json,hashlib,subprocess,difflib,psutil,argparse,uuid,time
 from contextlib import contextmanager
+from revision_context import paths, ensure_authorized
 R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';O=P/'production/local/compact-edit'
+O,N,EDIT_PLAN,STEM=paths()
 sys.path.insert(0,str(R/'qwen3-tts'))
 from review_project_narration import normalize
 parser=argparse.ArgumentParser();parser.add_argument('--device',choices=['cpu','cuda:0'],default='cpu');args=parser.parse_args()
@@ -17,7 +19,7 @@ def gpu_lease():
  try:yield
  finally:
   if lease.exists() and json.loads(lease.read_text(encoding='utf8')).get('token')==token:lease.unlink()
-assert json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf8'))['selectedVideo']==P.name
+ensure_authorized()
 assert json.loads((O/'audio-build.json').read_text(encoding='utf8')).get('voiceGainMode')=='constant-global-gain-with-short-peak-limiter','Inspect narration gain processing before final ASR; do not silently apply adaptive voice normalization'
 video=O/'ai-games-captioned.mp4';out=O/'encoded-audio.wav'
 subprocess.run(['ffmpeg','-v','error','-y','-i',str(video),'-vn','-ac','1','-ar','16000','-c:a','pcm_s16le',str(out)],check=True)
@@ -25,11 +27,11 @@ digest=hashlib.sha256(out.read_bytes()).hexdigest();cache=O/'final-mix-asr.json'
 if cache.exists() and json.loads(cache.read_text(encoding='utf8')).get('audioSha256')==digest:print('Reusing current complete final-mix ASR')
 else:
  me=psutil.Process();family={p.pid for p in [me,*me.parents()]}
- assert not [p.pid for p in psutil.process_iter(['name']) if p.pid not in family and (p.info['name'] or '').lower().startswith('python')],'Another compute process must finish'
+ if args.device!='cpu':assert not [p.pid for p in psutil.process_iter(['name']) if p.pid not in family and (p.info['name'] or '').lower().startswith('python')],'Another compute process must finish'
  with gpu_lease():
   import torch
   from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
-  torch.set_num_threads(8 if args.device=='cpu' else 2);dtype=torch.float32 if args.device=='cpu' else torch.float16
+  torch.set_num_threads(4 if args.device=='cpu' else 2);dtype=torch.float32 if args.device=='cpu' else torch.float16
   local=R/'qwen3-tts/models/whisper-large-v3-turbo';mid=str(local) if (local/'config.json').exists() else 'openai/whisper-large-v3-turbo';m=AutoModelForSpeechSeq2Seq.from_pretrained(mid,dtype=dtype,attn_implementation='eager',local_files_only=True).to(args.device);p=AutoProcessor.from_pretrained(mid,local_files_only=True)
   asr=pipeline('automatic-speech-recognition',model=m,tokenizer=p.tokenizer,feature_extractor=p.feature_extractor,dtype=dtype,device=args.device)
   result=asr(str(out),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word')

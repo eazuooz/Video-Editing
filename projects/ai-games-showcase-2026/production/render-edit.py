@@ -1,10 +1,12 @@
 """Render inspected sources at native speed, exact slides, original brand/member."""
 from pathlib import Path
 import json,subprocess,hashlib,shutil,sys
+from revision_context import paths, ensure_authorized
 R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';O=P/'production/local/compact-edit'
 def read(p):return json.loads(p.read_text(encoding='utf8'))
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
-def selected():assert read(R/'shared/publishing/video-production-control.json')['selectedVideo']==P.name
+O,N,EDIT_PLAN,STEM=paths()
+def selected():ensure_authorized()
 def run(cmd,name):
  with (O/(name+'.log')).open('w',encoding='utf8') as f:r=subprocess.run(cmd,cwd=R,stdout=f,stderr=subprocess.STDOUT)
  if r.returncode:raise RuntimeError((O/(name+'.log')).read_text(encoding='utf8',errors='replace')[-2500:])
@@ -28,7 +30,7 @@ Style: Note,Malgun Gothic,40,&H00FFFFFF,&H00FFFFFF,&H00151F1B,&H00151F1B,-1,0,0,
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 '''
-selected();plan=read(P/'production/edit-plan.json');assert plan['timing']=='measured-and-asr-aligned'
+selected();plan=read(EDIT_PLAN);assert plan['timing']=='measured-and-asr-aligned'
 stage=sys.argv[1] if len(sys.argv)>1 else 'cuts'
 if stage=='cuts':
  for c in plan['cuts']:

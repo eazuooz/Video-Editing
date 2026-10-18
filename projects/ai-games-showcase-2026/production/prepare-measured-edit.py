@@ -2,13 +2,15 @@
 from pathlib import Path
 import json,math,re,sys,hashlib,subprocess
 from PIL import ImageFont
+from revision_context import paths, ensure_authorized
 R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';O=P/'production/local/compact-edit';N=R/'shared/output/narration/ai-games-showcase-2026/game-tools-five-second-ppt-v1';M=R/'production/preflight/ai-games-showcase-2026/local'
 def read(p):return json.loads(p.read_text(encoding='utf8'))
 def save(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def rel(p):return p.relative_to(R).as_posix()
-assert read(R/'shared/publishing/video-production-control.json')['selectedVideo']==P.name
-timing=read(N/'ai-games-compact-v1.timing.json');assert timing.get('alignment')
+O,N,EDIT_PLAN,STEM=paths();O.mkdir(parents=True,exist_ok=True)
+ensure_authorized()
+timing=read(N/(STEM+'.timing.json'));assert timing.get('alignment')
 script=read(P/'script/narration.ko.json');design=read(P/'planning/production-plan.json');aliases=read(P/'script/pronunciation.json')['aliases'];font=ImageFont.truetype('C:/Windows/Fonts/malgunbd.ttf',48)
 def display(s):
  for canonical,spoken in sorted(aliases.items(),key=lambda p:len(p[1]),reverse=True):s=re.sub(r'(?<![가-힣A-Za-z0-9])'+re.escape(spoken),lambda _:canonical,s)
@@ -78,5 +80,5 @@ cuts.sort(key=lambda c:c['startFrame']);cursor=120
 for i,c in enumerate(cuts):assert c['startFrame']==cursor,(i,c,cursor);cursor+=c['frames'];c['endFrame']=cursor;c['id']=f'cut-{i+1:03d}';c['sourceSha256']=sha(R/c['sourceFile'])
 assert cursor==total-600
 plan={'schemaVersion':1,'timing':'measured-and-asr-aligned','totalFrames':total,'bodyFrames':total-720,'fps':60,'scenes':scenes,'cuts':cuts,'toolSlideFrames':1800,'captionStartCorrections':[leadingCorrection],'sourcesNoUpscale':True,'stillSequenceNotContinuousGameplay':True,'humanWholeListening':'pending'}
-save(P/'production/edit-plan.json',plan);save(P/'planning/production-plan.json',design)
+save(EDIT_PLAN,plan);save(P/'planning/production-plan.json',design)
 print(json.dumps({'duration':total/60,'cuts':len(cuts),'captions':len(captions),'toolSlides':6}))

@@ -4,6 +4,7 @@ import math
 import json,subprocess,hashlib
 import numpy as np
 import soundfile as sf
+from revision_context import paths, ensure_authorized, REVISION
 R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';V=P/'production';O=P/'production/local/compact-edit';N=R/'shared/output/narration/ai-games-showcase-2026/game-tools-five-second-ppt-v1'
 def run(args,name):
  p=subprocess.run(['ffmpeg','-hide_banner','-y',*args],cwd=R,capture_output=True);(O/(name+'.log')).write_bytes(p.stderr)
@@ -19,13 +20,18 @@ def speech_mask(n,rate,words):
   mask[max(0,round(a*rate)):min(n,round(b*rate))]=True
  return mask
 if __name__=='__main__':
- plan=json.loads((V/'edit-plan.json').read_text(encoding='utf8'));duration=plan['totalFrames']/60
+ O,N,EDIT_PLAN,STEM=paths();ensure_authorized()
+ plan=json.loads(EDIT_PLAN.read_text(encoding='utf8'));duration=plan['totalFrames']/60
  assert plan.get('timing')=='measured-and-asr-aligned','Estimated timing must not enter production'
  sr=24000;voice=np.zeros(round(duration*sr),dtype=np.float32);reports=[]
+ commonLevel=None
+ if REVISION:
+  full,_=sf.read(N/(STEM+'.wav'),dtype='float32');allWords=json.loads((N/'whole-source-asr.json').read_text(encoding='utf8'))['words']
+  commonLevel=db(rms(full[speech_mask(len(full),sr,allWords)]))
  for s in plan['scenes']:
   f=N/'chunks'/(s['id']+'-scene.wav');a,r=sf.read(f,dtype='float32');assert r==sr
   q=json.loads((N/'asr'/(s['id']+'.json')).read_text(encoding='utf8'));assert q['audio_sha256']==hashlib.sha256(f.read_bytes()).hexdigest()
-  mask=speech_mask(len(a),sr,q['words']);level=db(rms(a[mask]));gain=float(10**((-20-level)/20))
+  mask=speech_mask(len(a),sr,q['words']);level=db(rms(a[mask]));gain=float(10**((-20-(commonLevel if commonLevel is not None else level))/20))
   # Constant per-scene gain preserves local prosody; only the background has
   # time-varying sidechain compression. Drift flags require bounded review.
   out=a*gain
