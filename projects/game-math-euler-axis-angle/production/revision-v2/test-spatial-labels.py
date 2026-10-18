@@ -36,6 +36,14 @@ def main():
     missing=module.label_candidates(unknown,False)
     assert len(missing)==2,missing
     cases.append('Missing mathematical direction: do not infer equality')
+    long_label=module.label_candidates(state((1,0,0),(2,0,0),(1600,500)),False)
+    assert len(long_label)==1 and long_label[0]['text']=='world/body x',long_label
+    label=long_label[0]
+    width=module.measured_axis_label_width(label['text'])
+    assert label['x']+width*.5<=1015.000001,(label,width)
+    assert label['x']-width*.5>=59.999999,(label,width)
+    assert label['target']==(1600,500) and label['clampedToGeometryPane'],label
+    cases.append('Measured actual bold40px merged label plus6px clearance stays atx≤1015; actual anchor retained for leader')
     print(json.dumps(dict(status='passed',cases=cases,gpuOrMediaJobsStarted=False),ensure_ascii=False))
 
 if __name__=='__main__':main()

@@ -15,6 +15,9 @@ LESSON=P/'production/revision-v2/lesson.json'
 FONT=Path('C:/Windows/Fonts/malgun.ttf')
 BOLD=Path('C:/Windows/Fonts/malgunbd.ttf')
 COLORS={'x':'4234D5','y':'4C8515','z':'C36422'}
+AXIS_LABEL_SIZE=40
+AXIS_LABEL_PADDING=3  # Reserved on each side for glyph bearing/outline clearance.
+AXIS_LABEL_FONT=ImageFont.truetype(str(BOLD if BOLD.exists() else FONT),AXIS_LABEL_SIZE)
 
 # Each row is a relevant worked relation next to that exact narration line.
 # These are authored calculations, not values measured from commercial gameplay.
@@ -194,8 +197,8 @@ class Overlay:
     def text(self,start,end,text,x,y,size=44,color='101810',bold=False,align=7,layer=5,move=None):
         position=f'\\pos({round(x)},{round(y)})' if move is None else f'\\move({round(x)},{round(y)},{round(move[0])},{round(move[1])})'
         self.lines.append(f'Dialogue: {layer},{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an{align}{position}\\fs{size}\\c&H{color}&\\b{int(bold)}\\bord0}}'+clean(text))
-    def leader(self,start,end,a,b,color='707070'):
-        if math.dist(a,b)<30:return
+    def leader(self,start,end,a,b,color='707070',force=False):
+        if math.dist(a,b)<30 and not force:return
         self.lines.append(f'Dialogue: 3,{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c&H{color}&\\bord1\\1a&HFF&}}m {round(a[0])} {round(a[1])} l {round(b[0])} {round(b[1])}{{\\p0}}')
     def save(self,path):
         header='''[Script Info]
@@ -227,6 +230,10 @@ def positively_collinear(a,b):
     # A negative parallel axis points in the opposite direction and must keep
     # its own label. Only numerically identical positive unit directions merge.
     return sum(x*y for x,y in zip(a,b))>=1.0-1e-6
+
+def measured_axis_label_width(text):
+    box=AXIS_LABEL_FONT.getbbox(text)
+    return max(AXIS_LABEL_FONT.getlength(text),box[2]-box[0])+2*AXIS_LABEL_PADDING
 
 def label_candidates(state,pair):
     data={a['name']:a for a in state['anchors']}
@@ -260,6 +267,15 @@ def label_candidates(state,pair):
     # unhelpful labels are omitted; the axis legend remains explicit.
     accepted=[]
     for candidate in collapsed:
+        if not pair:
+            # Axis labels use centered alignment. Clamp the actual bold40px
+            # text box, including spare outline/bearing room, to the geometry
+            # pane; a long merged name must not enter notes beginning at1050.
+            width=measured_axis_label_width(candidate['text'])
+            before=candidate['x']
+            candidate['x']=max(60+width*.5,min(1015-width*.5,candidate['x']))
+            candidate['clampedToGeometryPane']=abs(candidate['x']-before)>.01
+            candidate['measuredWidth']=width
         nearby=[old for old in accepted if math.hypot(old['x']-candidate['x'],old['y']-candidate['y'])<85]
         if len(nearby)>=2:continue
         if nearby:
@@ -283,13 +299,13 @@ def add_anchors(overlay,slot,states,pair):
         lookup={(l['group'],l['axis'],l['text']):l for l in later}
         for label in now:
             dest=lookup.get((label['group'],label['axis'],label['text']),label)
-            overlay.text(start,end,label['text'],label['x'],label['y'],40,label['color'],True,5,6,(dest['x'],dest['y']))
-            overlay.leader(start,end,label['target'],(label['x'],label['y']))
+            overlay.text(start,end,label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6,(dest['x'],dest['y']))
+            overlay.leader(start,end,label['target'],(label['x'],label['y']),force=label.get('clampedToGeometryPane',False))
     hold_start=slot['startFrame']+capture
     if hold_start<slot['endFrame']:
         for label in label_candidates(states[-1],pair):
-            overlay.text(hold_start,slot['endFrame'],label['text'],label['x'],label['y'],40,label['color'],True,5,6)
-            overlay.leader(hold_start,slot['endFrame'],label['target'],(label['x'],label['y']))
+            overlay.text(hold_start,slot['endFrame'],label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6)
+            overlay.leader(hold_start,slot['endFrame'],label['target'],(label['x'],label['y']),force=label.get('clampedToGeometryPane',False))
 
 def build_overlay(scene,lesson_scene,slots,out):
     sid=str(scene['id']).zfill(2);pair=sid in PAIRS;overlay=Overlay();frames=int(scene['frames'])
