@@ -100,11 +100,12 @@ for i,c in enumerate(cuts):
  else:
   c.update(renderedSource='shared/output/motion-canvas/familiar-controls-production-v2b.mp4',renderedStartFrame=mc,mcStartFrame=mc,mcEndFrame=mc+c['frames']);mc+=c['frames']
   c['cues']=[min(max(0,x),max(0,c['frames']/60-.1)) for x in c['cues']]
+  if c['visual']=='remap':c.update(renderedSource='shared/output/motion-canvas/familiar-controls-remap-correction-v2.mp4',renderedStartFrame=0)
   name='production-'+c['id'];modules.append(name)
   credits={'controller':"RAGE2: JVGS · Apex: EA 공식 설정",'remap':'Avataryaya · Magic Game World · Gopher Community Racing','analog':'Jb Sprinkles · Nintendo','unusual':'Kawaii Games · Data East','standard':'개념도: 얌얌코딩','newcomer':'Apex Legends · Silent Gaming','preference':'Street Fighter6 · Avataryaya','conclusion':'Avataryaya · Kawaii Games'}
   # A quarter-frame margin avoids floating-point endpoint truncation.
   # Verified for every current scene; export range is exactly 0..mcFrames-1.
-  (M/(name+'.tsx')).write_text("import {makeScene2D} from '@motion-canvas/2d';\nimport {lesson} from './visuals';\nexport default makeScene2D(function*(view){yield* lesson(view,"+json.dumps(c['visual'])+','+json.dumps(dict(duration=(c['frames']-.75)/60,cues=c['cues'],credit=credits.get(c['visual'],'실제 화면과 출처: 제작 설계표')),ensure_ascii=False)+');});\n',encoding='utf-8')
+  (M/(name+'.tsx')).write_text("import {makeScene2D} from '@motion-canvas/2d';\nimport {lesson} from './visuals';\nexport default makeScene2D(function*(view){yield* lesson(view,"+json.dumps(c['visual'])+','+json.dumps(dict(duration=(c['frames']-.75)/60,cues=c['cues'],retainMismatch=c['visual']=='remap',credit=credits.get(c['visual'],'실제 화면과 출처: 제작 설계표')),ensure_ascii=False)+');});\n',encoding='utf-8')
 for a,b in zip(cuts,cuts[1:]):assert a['endFrame']==b['startFrame'],(a,b)
 for key in sources:
  spans=sorted((c['sourceStart'],c['sourceStart']+c['frames']/60,c['id']) for c in cuts if c.get('source')==key)

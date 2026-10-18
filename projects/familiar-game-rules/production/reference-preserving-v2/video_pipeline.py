@@ -519,7 +519,7 @@ def render_pair(plan: dict, output: Path, mix_override=None, ass_override=None):
 
 
 def pts_review(p: Path, expected: int) -> dict:
-    args = [binary("ffprobe"), "-v", "error", "-select_streams", "v:0", "-show_frames",
+    args = [binary("ffprobe"), "-v", "error", "-threads", "4", "-err_detect", "explode", "-select_streams", "v:0", "-show_frames",
             "-show_entries", "frame=best_effort_timestamp_time", "-of", "csv=p=0", str(p)]
     process = subprocess.Popen(args, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                text=True, encoding="utf-8", errors="replace")
@@ -552,10 +552,10 @@ def pts_review(p: Path, expected: int) -> dict:
 def verify(plan: dict, output: Path):
     ratio, records = validate_plan(plan), {}
     for suffix, p in output_files(plan, output).items():
-        meta = assert_video(p, plan["totalFrames"], count=True)
+        meta = assert_video(p, plan["totalFrames"])
         log = output / (suffix + "-full-decode.log")
         run(["-xerror", "-err_detect", "explode", "-threads", "4", "-i", str(p),
-             "-map", "0:v:0", "-map", "0:a:0", "-f", "null", "-"], log)
+             "-map", "0:a:0", "-vn", "-f", "null", "-"], log)
         info = probe(p)
         audio = [s for s in info["streams"] if s["codec_type"] == "audio"]
         if len(audio) != 1 or audio[0]["codec_name"] != "aac" or audio[0]["sample_rate"] != "48000":
@@ -566,7 +566,7 @@ def verify(plan: dict, output: Path):
         records[suffix] = {"path": str(p), "sha256": sha(p), "video": meta,
                            "pts": pts_review(p, plan["totalFrames"]),
                            "audioPacketsSha256": stream_hash(p, "0:a:0"),
-                           "fullAudioVideoDecode": "pass", "durationSeconds": actual_duration}
+                           "fullAudioVideoDecode": "pass: one complete video frame/PTS decode and one complete audio decode", "durationSeconds": actual_duration}
     if records["clean"]["audioPacketsSha256"] != records["captioned"]["audioPacketsSha256"]:
         raise ValueError("Clean and captioned masters have different audio packets")
     save(output / "structural-verification.json", {"status": "pass", "ratio": ratio,

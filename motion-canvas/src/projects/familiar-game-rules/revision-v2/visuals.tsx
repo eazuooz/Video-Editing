@@ -2,7 +2,7 @@ import {Circle, Img, Line, Node, Rect, Txt, type View2D} from '@motion-canvas/2d
 import {createSignal, linear} from '@motion-canvas/core';
 import {DARK as D} from '../../../styles/research-dark';
 
-export interface Timing {duration:number; cues?:number[]; title?:string; credit?:string;}
+export interface Timing {duration:number; cues?:number[]; title?:string; credit?:string; retainMismatch?:boolean;}
 type Point = [number,number];
 const ASSETS='/@fs/D:/Github/VideoEditing/output/familiar-game-rules/preproduction-assets/';
 const clamp=(value:number)=>Math.max(0,Math.min(1,value));
@@ -151,7 +151,7 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
     <Circle x={220} y={78} width={104} height={104} stroke={D.green} lineWidth={6}/>{text('B',220,78,58,D.green)}
     <Line points={[[290,78],[430,78],[565,-108]]} stroke={D.green} lineWidth={9} endArrow arrowSize={22} end={reveal(2,0,.85)}/>
    </>);
-   const repaired=()=>reveal(3,1.8,.45)();
+   const repaired=()=>timing.retainMismatch?0:reveal(3,1.8,.45)();
    add(3,<>
     <Rect x={470} y={238} width={610} height={96} stroke={()=>repaired()>.95?D.green:D.red} lineWidth={5}/>
     <Txt text={()=>repaired()>.95?'실행 B  ·  안내 B':'실행 B  ·  안내 A'} x={470} y={238} fontSize={45} fontFamily={D.font} fontWeight={600} fill={()=>repaired()>.95?D.green:D.red}/>

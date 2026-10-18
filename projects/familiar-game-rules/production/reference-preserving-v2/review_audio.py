@@ -68,6 +68,7 @@ SETTINGS = {
     "alignmentSearchMs": 10, "alignmentAcceptedMs": 2.0,
     "alignmentDriftMs": 1.0, "minimumProjectionCorrelation": .6,
     "fullScaleClipThreshold": .9999,
+    "diagnosticStereoDownmix": "Arithmetic channel average: normalize FFmpeg default equal-power stereo sum by1/sqrt(2); never change source PCM",
     "meaning": "Diagnostic starting criteria, not automatic perceptual approval or automatic repair",
 }
 
@@ -157,6 +158,17 @@ def cached_decode(p, cache, name):
     inputs = {"source": source, "sampleRate": RATE, "channels": 1,
               "format": "pcm_f32le", "ffmpeg": tool("ffmpeg")}
     key = signature(inputs)
+    # A validation-only tool repair changes the full review signature, not the
+    # decoding input/settings. Reuse a separately authenticated prior decode
+    # rather than repeat it under the new review-key directory.
+    for prior_receipt in sorted(cache.parent.glob("*/" + name + ".json")):
+        prior = read(prior_receipt)
+        if prior.get("inputSignature") != key:
+            continue
+        prior_target = path(prior["output"]["path"])
+        prior_target.relative_to(cache.parent.resolve())
+        if prior_target.is_file() and sha(prior_target) == prior["output"]["sha256"]:
+            return (*mono(prior_target), {**prior, "reusedExistingReceipt": relative(prior_receipt)})
     if receipt.exists():
         previous = read(receipt)
         if previous.get("inputSignature") == key and target.exists() and sha(target) == previous["output"]["sha256"]:
@@ -183,10 +195,42 @@ def db(value):
     return float(20 * np.log10(max(float(value), 1e-12)))
 
 
+def stereo_analysis_average(values, source, receipt):
+    """Compare per-channel voice level, not the +3dB default stereo sum.
+
+    All three diagnostic inputs are required to be true stereo. Their existing
+    FFmpeg -ac1 decode uses equal-power coefficients sqrt(.5) per channel.
+    Dividing that cached float waveform by sqrt(2) yields (L+R)/2 without a
+    second full decode. A bounded explicit-pan calibration is kept in local QA.
+    """
+    info = json.loads(subprocess.check_output([tool("ffprobe"), "-v", "error",
+        "-select_streams", "a:0", "-show_entries", "stream=channels,channel_layout",
+        "-of", "json", str(source)], cwd=ROOT, text=True,
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)))
+    streams = info.get("streams", [])
+    if len(streams) != 1 or streams[0].get("channels") != 2 or streams[0].get("channel_layout") != "stereo":
+        raise ValueError("Inspect diagnostic downmix coefficients for a non-stereo source")
+    factor = 1 / math.sqrt(2)
+    return values * np.float32(factor), {**receipt, "analysisNormalization": {
+        "sourceChannels": streams[0], "factor": factor, "gainDb": db(factor),
+        "result": "Arithmetic average (L+R)/2; compare to original mono voice at declared gain",
+        "cachedPcmOverwritten": False, "additionalFullDecode": False}}
+
+
 def rms(values):
     if not len(values):
         return 0.0
     return float(np.sqrt(np.mean(np.asarray(values, dtype=np.float64) ** 2)))
+
+
+def dot(a, b):
+    """One-dimensional float64 inner product without optional native BLAS.
+
+    The installed Windows BLAS delay-load fails on np.dot for these vectors.
+    Elementwise multiplication/reduction is the same bounded calculation and
+    avoids changing global DLL/runtime settings or another running job.
+    """
+    return float(np.sum(np.asarray(a, dtype=np.float64) * np.asarray(b, dtype=np.float64), dtype=np.float64))
 
 
 def projection(reference, observed):
@@ -198,12 +242,12 @@ def projection(reference, observed):
     about independent audio samples or a speech source-separation result.
     """
     x, y = np.asarray(reference, dtype=np.float64), np.asarray(observed, dtype=np.float64)
-    energy = float(np.dot(x, x))
+    energy = dot(x, x)
     if len(x) < 8 or energy < 1e-15:
         return {"gain": None, "gainDb": None, "ordinaryGainDb": None,
                 "correlation": None, "residualDbfs": None, "uncertaintyDb": None,
                 "usable": False, "reason": "Insufficient reference speech energy; no inferred gain"}
-    ordinary = float(np.dot(x, y) / energy)
+    ordinary = dot(x, y) / energy
     gain = ordinary
     for _ in range(3):
         residual = y - gain * x
@@ -211,15 +255,15 @@ def projection(reference, observed):
         if scale < 1e-9:
             break
         weights = np.minimum(1.0, (2.5 * scale) / np.maximum(np.abs(residual), 1e-12))
-        gain = float(np.dot(weights * x, y) / max(float(np.dot(weights * x, x)), 1e-15))
-    correlation = float(np.dot(x, y) / max(math.sqrt(float(np.dot(x, x) * np.dot(y, y))), 1e-15))
+        gain = dot(weights * x, y) / max(dot(weights * x, x), 1e-15)
+    correlation = dot(x, y) / max(math.sqrt(dot(x, x) * dot(y, y)), 1e-15)
     block = round(.020 * RATE)
     gains = []
     for start in range(0, len(x) - block + 1, block):
         a, b = x[start:start + block], y[start:start + block]
-        e = float(np.dot(a, a))
+        e = dot(a, a)
         if e > 1e-12:
-            gains.append(float(np.dot(a, b) / e))
+            gains.append(dot(a, b) / e)
     uncertainty = None
     if len(gains) >= 3:
         scatter = 1.4826 * float(np.median(np.abs(np.asarray(gains) - np.median(gains))))
@@ -240,6 +284,10 @@ def intervals(words, duration):
         if a is None or b is None:
             raise ValueError("Existing source ASR requires complete word timestamps")
         a, b = float(a), float(b)
+        # Whisper can emit a token without measurable duration. Preserve its
+        # original record, but do not invent a non-zero speech-active span.
+        if 0 <= a == b <= duration:
+            continue
         if not 0 <= a < b <= duration + .031:
             raise ValueError(f"ASR word outside its measured PCM: {a}--{b}/{duration}")
         rows.append((a, min(duration, b)))
@@ -278,7 +326,7 @@ def correlation_lag(reference, observed, center, mask):
         if start + lag < 0 or start + count + lag > len(observed):
             continue
         y = observed[start + lag:start + lag + count][active].astype(np.float64)
-        score = float(np.dot(x, y) / max(math.sqrt(float(np.dot(x, x) * np.dot(y, y))), 1e-15))
+        score = dot(x, y) / max(math.sqrt(dot(x, x) * dot(y, y)), 1e-15)
         scored.append((score, lag))
     if not scored:
         return None
@@ -288,7 +336,7 @@ def correlation_lag(reference, observed, center, mask):
         if start + lag < 0 or start + count + lag > len(observed):
             continue
         y = observed[start + lag:start + lag + count][active].astype(np.float64)
-        score = float(np.dot(x, y) / max(math.sqrt(float(np.dot(x, x) * np.dot(y, y))), 1e-15))
+        score = dot(x, y) / max(math.sqrt(dot(x, x) * dot(y, y)), 1e-15)
         refined.append((score, lag))
     score, lag = max(refined)
     return {"time": center / RATE, "lagSamples": lag, "lagMs": lag / RATE * 1000,
@@ -591,6 +639,9 @@ def review(args):
     stem, stem_rate, stem_decode = cached_decode(edit / "narration-stem.wav", cache, "narration-stem24k")
     mixed, mixed_rate, mixed_decode = cached_decode(edit / "final-mix.wav", cache, "pre-encode-mix24k")
     final, final_rate, encoded_decode = cached_decode(encoded, cache, "actual-encoded24k")
+    stem, stem_decode = stereo_analysis_average(stem, edit / "narration-stem.wav", stem_decode)
+    mixed, mixed_decode = stereo_analysis_average(mixed, edit / "final-mix.wav", mixed_decode)
+    final, encoded_decode = stereo_analysis_average(final, encoded, encoded_decode)
     expected_count = round(plan["totalFrames"] / 60 * RATE)
     if any(r != RATE for r in (stem_rate, mixed_rate, final_rate)) or len(timed) != expected_count or len(stem) != expected_count or len(mixed) != expected_count:
         raise ValueError("Processed stems do not match the actual measured timeline")
@@ -599,7 +650,7 @@ def review(args):
     if abs(len(final) - expected_count) > 513:
         raise ValueError("Actual encoded audio duration differs beyond one AAC frame")
     timeline_mask, expected_reference = np.zeros(expected_count, bool), np.zeros(expected_count, np.float32)
-    sources, sample_proofs = {}, []
+    sources, sample_proofs, zero_duration_tokens = {}, [], []
     build_scenes = {str(s["scene"]): s for s in build["scenes"]}
     for scene, identity in zip(plan["scenes"], source_records):
         sid = str(scene["id"])
@@ -608,6 +659,13 @@ def review(args):
             raise ValueError("Expected unchanged source24k PCM")
         recognition = read(path(identity["asr"]["path"]))
         spans = intervals(recognition["words"], len(values) / RATE)
+        for index, word in enumerate(recognition["words"]):
+            a, b = word.get("timestamp", [word.get("start"), word.get("end")])
+            if a is not None and b is not None and 0 <= float(a) == float(b) <= len(values) / RATE:
+                zero_duration_tokens.append({"scene": sid, "wordIndex": index,
+                    "originalWord": word, "asrSha256": identity["asr"]["sha256"],
+                    "pcmSha256": identity["pcm"]["sha256"], "speechMaskAddedSamples": 0,
+                    "reason": "Zero-duration ASR token inside valid PCM contributes zero measured area; original token and PCM unchanged"})
         active = speech_mask(len(values), spans)
         origin_seconds = float(scene["voiceStartFrame"]) / 60 if "voiceStartFrame" in scene else float(scene["voiceStart"])
         origin = round(origin_seconds * RATE)
@@ -758,6 +816,7 @@ def review(args):
         "status": "needs-contextual-review" if flags or cadence or any(not a["accepted"] for a in alignments.values()) or any(abs(j["speechMedianDifferenceDb"]) >= 3 for j in scene_joins) else "pass-measured-continuity",
         "settings": SETTINGS, "scope": "Complete current source, processed narration, pre-encode mix and actual encoded speech-active timeline",
         "speechMask": "Existing authenticated ASR word timestamps; quiet syllables are not excluded by an amplitude gate",
+        "zeroDurationSpeechMaskTokens": zero_duration_tokens,
         "newAsrRuns": 0, "gpuWork": False, "foreignProcessesChanged": [], "sourcePcmModified": False,
         "samplePreservation": sample_proofs, "alignment": alignments, "rawSourceAssembly": raw_assembly,
         "decodedInputs": {"stem": stem_decode, "preEncodeMix": mixed_decode, "actualEncoded": encoded_decode},
