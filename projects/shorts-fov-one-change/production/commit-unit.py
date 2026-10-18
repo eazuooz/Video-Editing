@@ -12,7 +12,7 @@ def rel(p):return p.relative_to(R).as_posix()
 control='shared/publishing/video-production-control.json';field='shortsRecurringAuthorization'
 paths=[rel(p) for p in P.rglob('*') if p.is_file() and '/local/' not in rel(p) and '__pycache__' not in rel(p) and p.suffix in ['.py','.json','.md','.txt','.srt','.ass','.cjs']]
 u=R/'unity/VideoEditing/Assets/VideoScenes'/P.name
-if u.exists():paths += [rel(p) for p in u.rglob('*') if p.is_file() and p.suffix in ['.cs','.meta','.unity','.mat','.asset','.asmdef']]
+if u.exists():paths += [rel(p) for p in u.rglob('*') if p.is_file() and p.suffix in ['.cs','.meta','.unity','.mat','.asset','.asmdef','.md']]
 if Path(str(u)+'.meta').exists():paths.append(rel(Path(str(u)+'.meta')))
 paths += ['docs/VIDEO_WORKFLOW.md','shared/publishing/shorts-worklist.json']
 paths += ['projects/shorts-visible-rewards-300-gold/'+x for x in ['project.json','production/checkpoint.json','production/review-ledger.json','publishing/drive-review.json']]

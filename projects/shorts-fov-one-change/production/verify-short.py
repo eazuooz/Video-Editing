@@ -38,7 +38,11 @@ def ensure(condition, message):
 
 def artifact(path):
     path = Path(path)
-    return dict(path=renderer.rel(path), sha256=renderer.sha(path), bytes=path.stat().st_size)
+    try:
+        display = renderer.rel(path)
+    except ValueError:
+        display = path.as_posix()
+    return dict(path=display, sha256=renderer.sha(path), bytes=path.stat().st_size)
 
 
 def signature(value):
@@ -286,8 +290,10 @@ def pixel_samples(captions, captioned):
             add(frame+delta, f'{reason}-{label}')
     # Quarter-second samples observe changing camera/FOV and edge visibility;
     # still samples alone never approve continuous motion.
-    for frame in range(0, FRAMES, 15):
-        add(frame, 'FOV-motion-quarter-second-sample')
+    for beat in timeline['beats']:
+        if 'indexFrom' in beat:
+            for frame in range(math.floor(beat['start']*FPS), math.ceil(beat['end']*FPS)+1, 15):
+                add(frame, 'FOV-motion-quarter-second-sample')
     numbers = sorted(requested)
     plan_signature = signature(dict(captionedSha256=renderer.sha(captioned), frames=numbers))
     target = QA/'pixel-samples.json'
