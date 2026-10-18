@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-euler-axis-angle",
+  "scope": "Independent CPU/static pipeline audit only; no full TTS/ASR/render/mix/outputQA execution.",
+  "status": "code-and-bounded-contract-checks-passed; final-output-pending",
+  "files": [
+    {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/build-timeline.py",
+      "sha256": "c5e37438dc2adf381070dc4e607d5f050768917726e1015182a9b73bb891ef90"
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/build-audio.py",
+      "sha256": "c151e5d25b4ffd41d56a8591e801d7c135e23ddfccfbceb480e9b46d4d5527c4"
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/prepare-captions.py",
+      "sha256": "79059cbdba55236afe6fe26984e48d930a4669b90bb4114668ae3726e4d33dbf"
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/render-edit.py",
+      "sha256": "b8ef057b8c6e26f7deb15d807209e0302cd8fa45ca0cc64c0f4748d63513031e"
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/verify-output.py",
+      "sha256": "10eee12c0e84bfec8756163447d283f7f9fe993e675c749bef17f3ec4e06768d"
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/review-final-audio.py",
+      "sha256": "6e94339e96cbb3917ddd460c7abcf6cc9d34654f568892ea651e5c5ebf470f13"
+    }
+  ],
+  "inputBindings": [
+    {
+      "path": "projects/game-math-euler-axis-angle/sources/media-revision-v2.json",
+      "sha256": "a3078cb8f2871e4c4ddb31d2be49a3e2946294f6934d88369a92e7cfc8080f1d"
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/sources/annotation-plan-v2.json",
+      "sha256": "368f7ec5988ad84fcf2d0fbe07d5e7dc522d67c96cdae2c587c4f7d39600ac37"
+    },
+    {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/lesson.json",
+      "sha256": "8baa23ea0803e15b8542761fdc1032be6e27d7a1a295b1266bba231a29791a7c"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Python syntax",
+      "status": "passed",
+      "scope": "six production scripts compiled in memory; no output jobs"
+    },
+    {
+      "name": "real locked annotation contracts",
+      "status": "passed",
+      "scope": "all8 canonical windows generate ASS once in matching scenes; source02starts23s/source20starts509s; no reused sourceinventory"
+    },
+    {
+      "name": "source capacity",
+      "status": "passed",
+      "primarySeconds": 467,
+      "supplementarySeconds": 155,
+      "totalSeconds": 622,
+      "scope": "actual narrowed candidateintervals only;165s acquisition history is not currentcapacity"
+    },
+    {
+      "name": "caption branding shift",
+      "status": "passed-code-contract",
+      "scope": "timeline adds branding once; prepare-captions checks every KO/EN boundary/text against timeline and2s/bodyend bounds; timestamp units crosschecked"
+    },
+    {
+      "name": "scene-relative versus global cuts",
+      "status": "passed-code-contract",
+      "scope": "startFrame is scene-relative; globalStartFrame adds scene globalstart; renderer asserts contiguous coverage"
+    },
+    {
+      "name": "PCM silence preservation",
+      "status": "passed-bounded-test",
+      "scope": "originalsamples recovered unchanged;nonzero insertedpause rejected in prior build-audio test"
+    },
+    {
+      "name": "full current render/decode/PTS/audio/ASR/visual/listening",
+      "status": "pending",
+      "scope": "requires completed measured TTS/alignment and actual final files"
+    }
+  ],
+  "actualDefectsFixed": [
+    {
+      "file": "review-final-audio.py",
+      "issue": "old AI-showcase voiceGainMode assertion rejected selected mixer report",
+      "fix": "bind exact selected fixed-perscene+globalgain mode, currenttimeline and currentpairhash; cache identical encoded extraction"
+    },
+    {
+      "file": "build-audio.py",
+      "issue": "mono loudness measurement followed by dualmono stereo raises speech by about3LU",
+      "fix": "measure final stereo channel layout before computing one global gain; report remains measurement-only"
+    },
+    {
+      "file": "render-edit.py",
+      "issue": "changed FHD sourcebytes could be accepted as new cacheinput without matching approvedtimeline sourcehash",
+      "fix": "assert sourcehash against measuredcut, cache eachsourcehash once; assert current input hashes and contiguous cut offsets"
+    },
+    {
+      "file": "render-edit.py",
+      "issue": "pair could combine staleclips/captions/mix fromdifferenttimeline and repeat unchanged finalrender",
+      "fix": "assembly,pair,layout,audio and perfilehash bindings; currentAACreceipt reuse; cachedpair includes filtergraph andcodec"
+    },
+    {
+      "file": "prepare-captions.py",
+      "issue": "comment promised finalSRToffset but code did not verify one branding shift or KO/EN correspondence",
+      "fix": "everyboundary/text must match canonicaltimeline; cuecounts and KO/ENtimes equal; no captions over branding/members"
+    },
+    {
+      "file": "verify-output.py",
+      "issue": "integrity cache bypassed currentexpectedframechecks; audio cache lackedcurrentrawscenehash binding",
+      "fix": "bindcurrentpairhash/timeline,48kstereo/duration,allrawPCM/ASRhashes; cacheonlyidenticalaudioinputs; retain pending human statuses"
+    }
+  ],
+  "notPerformed": [
+    "GPUmodel load",
+    "TTS",
+    "ASR",
+    "fullmix",
+    "scene render",
+    "final render",
+    "full media QA",
+    "human listening",
+    "commit/push"
+  ],
+  "audioMappingReview": {
+    "status": "passed-code-and-layout-contract; realencodedmeasurements-pending",
+    "frameSampleMapping": "60fpsscene boundaries are exact24kHz400sample boundaries. Placed voice uses same startFrame/60 origin as QA voiceStart.",
+    "pauseBoundary": "Insertion occurs before rawSample; rawTime>=rawAt maps afterinsertedzeros. Both mixerrecoveryandQAuse thatsameconvention. Windowsstraddlingquietinsertionsareskippedratherthancomparedascontinuousaudio.",
+    "sampleRate": "Mixer resamplesmono24k todualmono48k. QA extracts bothnarration-stemandfinalencodedmixidentically to24kmono. A common channel-sum/downmix factor cancelsin final/stem waveformprojection.",
+    "expectedLevel": "Source-to-stem dBincludes fixedperscenegain, fixedglobalgain andcommonchannelconversion; it isrecorded ratherthancomparedtozero. Transferflagsuse final/stem, avoidinganartificial3dBfail.",
+    "stereoLoudnessFix": "Globalgain measurementnowappliesstereopan beforeR128measurement, matchingactualfinalchannels.",
+    "pending": [
+      "ActualAACdecodealignment",
+      "Localencodedleveloutliersandcontextplayback",
+      "Sourcepronunciation/fullhumanlistening"
+    ]
+  },
+  "canonicalReport": "projects/game-math-euler-axis-angle/production/pipeline-review-v2.json",
+  "schemaContract": {
+    "timeline": "projects/game-math-euler-axis-angle/production/revision-v2/timeline.json",
+    "sceneStartFrame": "global",
+    "cutStartFrame": "scene-relative",
+    "cutGlobalStartFrame": "global",
+    "lineStarts": "secondsrelativeScene",
+    "voiceStart": "globalseconds",
+    "captions": "local/revision-v2/captions.ko.srt/en.srt; branding2seconds alreadyincluded",
+    "audioReportGainMode": "one-constant-gain-per-scene-plus-one-global-gain-and-short-peak-limiter",
+    "pairReceipt": "local/revision-v2/pair-source.json; outputsboundtoassembly/currenttimeline/currentcaptions/currentAAC"
+  }
+}

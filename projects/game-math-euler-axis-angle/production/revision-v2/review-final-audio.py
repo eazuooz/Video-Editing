@@ -1,0 +1,51 @@
+"""One cached whole encoded-mix recognition pass, independent of the script."""
+from pathlib import Path
+import sys,json,hashlib,subprocess,difflib,psutil,argparse,uuid,time
+from contextlib import contextmanager
+R=Path(__file__).resolve().parents[4];P=R/'projects/game-math-euler-axis-angle';O=P/'production/local/revision-v2'
+sys.path.insert(0,str(R/'qwen3-tts'))
+from review_project_narration import normalize
+def sha_file(path):
+ h=hashlib.sha256()
+ with path.open('rb') as f:
+  for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+parser=argparse.ArgumentParser();parser.add_argument('--device',choices=['cpu','cuda:0'],default='cpu');args=parser.parse_args()
+@contextmanager
+def gpu_lease():
+ lease=R/'shared/output/GPU_HANDOFF.json';token=str(uuid.uuid4())
+ if args.device=='cpu':yield;return
+ assert not lease.exists(),'Preserve another GPU lease'
+ free=int(subprocess.check_output(['nvidia-smi','--query-gpu=memory.free','--format=csv,noheader,nounits'],text=True).splitlines()[0]);assert free>=8000,free
+ me=psutil.Process()
+ with lease.open('x',encoding='utf8') as f:json.dump({'token':token,'project':P.name,'state':'tts_running','purpose':'one complete final encoded mix ASR','coordinator':{'pid':me.pid,'createTime':me.create_time()},'startedAt':time.time(),'foreignProcessesPaused':[]},f)
+ try:yield
+ finally:
+  if lease.exists() and json.loads(lease.read_text(encoding='utf8')).get('token')==token:lease.unlink()
+assert json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf8'))['selectedVideo']==P.name
+audio_build=json.loads((O/'audio-build.json').read_text(encoding='utf8'))
+assert audio_build.get('voiceGainMode')=='one-constant-gain-per-scene-plus-one-global-gain-and-short-peak-limiter','Inspect narration gain processing before final ASR; do not silently apply adaptive voice normalization'
+assert audio_build.get('voiceDucked') is False and audio_build.get('sourceAudioUsed') is False
+assert audio_build['timelineSha256']==hashlib.sha256((P/'production/revision-v2/timeline.json').read_bytes()).hexdigest(),'Stale mixed audio timeline'
+video=O/'euler-captioned.mp4';out=O/'encoded-audio.wav'
+audio_source=O/'encoded-audio-source.json';video_hash=sha_file(video);extraction=dict(videoSha256=video_hash,rate=16000,channels=1,format='pcm_s16le')
+pair_source=json.loads((O/'pair-source.json').read_text(encoding='utf8'));assert pair_source['outputs']['captioned']['sha256']==video_hash and pair_source['inputs']['timelineSha256']==audio_build['timelineSha256'],'Encoded video is not the current measured pair'
+if not(out.exists() and audio_source.exists() and json.loads(audio_source.read_text(encoding='utf8')).get('inputs')==extraction and json.loads(audio_source.read_text(encoding='utf8')).get('audioSha256')==hashlib.sha256(out.read_bytes()).hexdigest()):
+ subprocess.run(['ffmpeg','-v','error','-y','-i',str(video),'-vn','-ac','1','-ar','16000','-c:a','pcm_s16le',str(out)],check=True)
+ audio_source.write_text(json.dumps(dict(inputs=extraction,audioSha256=hashlib.sha256(out.read_bytes()).hexdigest()))+'\n',encoding='utf8')
+digest=hashlib.sha256(out.read_bytes()).hexdigest();cache=O/'final-mix-asr.json'
+if cache.exists() and json.loads(cache.read_text(encoding='utf8')).get('audioSha256')==digest:print('Reusing current complete final-mix ASR')
+else:
+ me=psutil.Process();family={p.pid for p in [me,*me.parents()]}
+ assert not [p.pid for p in psutil.process_iter(['name']) if p.pid not in family and (p.info['name'] or '').lower().startswith('python')],'Another compute process must finish'
+ with gpu_lease():
+  import torch
+  from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
+  torch.set_num_threads(8 if args.device=='cpu' else 2);dtype=torch.float32 if args.device=='cpu' else torch.float16
+  local=R/'qwen3-tts/models/whisper-large-v3-turbo';mid=str(local) if (local/'config.json').exists() else 'openai/whisper-large-v3-turbo';m=AutoModelForSpeechSeq2Seq.from_pretrained(mid,dtype=dtype,attn_implementation='eager',local_files_only=True).to(args.device);p=AutoProcessor.from_pretrained(mid,local_files_only=True)
+  asr=pipeline('automatic-speech-recognition',model=m,tokenizer=p.tokenizer,feature_extractor=p.feature_extractor,dtype=dtype,device=args.device)
+  result=asr(str(out),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word')
+  cache.write_text(json.dumps({'audioSha256':digest,'text':result['text'],'words':result['chunks'],'scope':'complete encoded final mix, including joins and music; direct full-text comparison required','humanListening':'pending local user review','noOtherProcessPaused':True},ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+script=json.loads((P/'script/revision-v2/narration.ko.json').read_text(encoding='utf8'));expected=' '.join(x for s in script['scenes'] for x in s['lines']);actual=json.loads(cache.read_text(encoding='utf8'))['text'];a,b=normalize(expected),normalize(actual);matcher=difflib.SequenceMatcher(None,a,b,autojunk=False)
+diff=[{'kind':op,'expected':a[i:j],'recognized':b[k:l]} for op,i,j,k,l in matcher.get_opcodes() if op!='equal']
+(O/'final-mix-text-comparison.json').write_text(json.dumps({'similarity':matcher.ratio(),'expected':expected,'recognized':actual,'differences':diff,'reviewStatus':'pending direct reading of complete recognized text'},ensure_ascii=False,indent=2)+'\n',encoding='utf8');print('Final encoded mix ASR complete; similarity',matcher.ratio())

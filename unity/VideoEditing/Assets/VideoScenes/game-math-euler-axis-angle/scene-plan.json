@@ -1,0 +1,461 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-euler-axis-angle",
+  "renderer": "Unity",
+  "editorVersion": "6000.6.0f1",
+  "canonicalPipeline": "Main project URP17.6.0 PC quality; no settings changed",
+  "isolatedCapturePipeline": "Built-in renderer in disposable isolated project, linear color, no shadows/postprocessing",
+  "palette": {
+    "background": "#FFFFFF",
+    "aircraft": "#F4BC33",
+    "cockpit": "#2C4859",
+    "x": "#D53442",
+    "y": "#15854C",
+    "z": "#2264C3"
+  },
+  "axisConversion": {
+    "C": "diag(1,1,-1)",
+    "point": "pUnity=C pMath",
+    "rotation": "RUnity=C RMath C",
+    "nose": "math+z maps to Unity-z",
+    "triangleWinding": "Swap triangle indices1/2 after reflected geometry",
+    "matrix": "R=Ry(h)Rx(p)Rz(b),right-handed,column-vectors,local-to-world",
+    "sanity": [
+      "Rx(+90)*(0,0,1)=(0,-1,0)",
+      "Ry(+90)*(0,0,1)=(1,0,0)"
+    ]
+  },
+  "capture": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 60,
+    "audio": false,
+    "stream": "RGB24 pipe -> x264, yuv420p, vertical flip",
+    "anchorCoordinates": "top-left pixels at1920x1080; depth + inFrame. Occlusion is NOT a detector result; parent verifies/hides labels.",
+    "captionReserve": {
+      "center": [
+        960,
+        970
+      ],
+      "fontSize": 48,
+      "maxLines": 2,
+      "clearanceBottomY": 890
+    },
+    "cameraMathPosition": [
+      7,
+      4.5,
+      8
+    ],
+    "cameraMathTarget": [
+      0,
+      -0.35,
+      0
+    ],
+    "orthographic": true,
+    "currentLayout": {
+      "singleCenter": [
+        580,
+        470
+      ],
+      "singleOrtho": 3.6,
+      "pairCenters": [
+        [
+          560,
+          470
+        ],
+        [
+          1320,
+          470
+        ]
+      ],
+      "pairOrtho": 3.9,
+      "pairScale": 0.8,
+      "note": "Presentation translations preserve exact rotation matrices. Upper+Yaxis can occupy y90; place title away from that band. Currentlayout not yet GPUcaptured."
+    }
+  },
+  "lessonSource": "projects/game-math-euler-axis-angle/production/revision-v2/lesson.json",
+  "measuredTimingAdapter": "prepare-capture-job.py --timeline <revision-v2/timeline.json>; scenes{id,frames,seconds,lineStarts[]}",
+  "provenance": {
+    "author": "Yamyam Coding procedural source",
+    "downloadedAssets": false,
+    "externalLicenseNeeded": false
+  },
+  "scenes": [
+    {
+      "id": "03",
+      "mode": "euler",
+      "title": "오일러 각은 순서가 있는 세 회전",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/03-euler.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": false,
+      "cueCount": 7,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "월드: 고정 / 몸체: 함께 움직임",
+        "같은 앞쪽 + 다른 비틀림 = 다른 자세",
+        "오일러 각: 세 각도 + 축 + 순서",
+        "양의 회전: 오른손 규칙",
+        "heading y → moving x pitch → moving z bank",
+        "방향 v=(0,0,1) / 열벡터",
+        "v_world = R v_body / 좌표·부호·순서 확인"
+      ],
+      "result": "v_world = R v_body / 좌표·부호·순서 확인",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "04",
+      "mode": "intrinsic",
+      "title": "몸에 붙은 축도 함께 돌아간다",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/04-intrinsic.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": false,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "h:0°→45° / 몸체 축 함께 이동",
+        "p:0°→30° / 움직인 몸체 x",
+        "b:0°→35° / 움직인 몸체 z",
+        "Intrinsic rotation / R=Ry45° Rx30° Rz35°",
+        "우리 +pitch: +z→-y",
+        "앞쪽 방향 + 앞쪽 주위 비틀림"
+      ],
+      "result": "앞쪽 방향 + 앞쪽 주위 비틀림",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "06",
+      "mode": "extrinsic",
+      "title": "고정축에서는 순서를 뒤집는다",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/06-extrinsic.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": true,
+      "cueCount": 8,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "Extrinsic rotation: 고정된 월드 축",
+        "몸체 Y-X-Z = 고정 Z-X-Y",
+        "R = Ry(h) Rx(p) Rz(b)",
+        "v 옆 Rz부터 → Rx → Ry",
+        "yaw / pitch / roll: 작동 축 확인",
+        "몸체 y yaw ≠ 월드 y heading",
+        "같은 행렬 / 두 축 기준 설명",
+        "고정축 Rx Ry ≠ Ry Rx"
+      ],
+      "result": "고정축 Rx Ry ≠ Ry Rx",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "07",
+      "mode": "order",
+      "title": "90도 두 번도 순서에 따라 다르다",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/07-order.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": true,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "v=(0,0,1) / 같은 시작",
+        "Rx90° v=(0,-1,0)",
+        "Ry90° Rx90° v=(0,-1,0)",
+        "초기화 / Ry90° v=(1,0,0)",
+        "Rx90° Ry90° v=(1,0,0)",
+        "회전 합성은 일반적으로 비가환"
+      ],
+      "result": "회전 합성은 일반적으로 비가환",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "09",
+      "mode": "aliases",
+      "title": "같은 자세를 여러 각도로 표현한다",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/09-aliases.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": true,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "유한한 세 각도 → 유효한 자세 / 3성분",
+        "0° ≡ 360°: 같은 끝 자세",
+        "(h,p,b)=(0°,135°,0°)",
+        "= (180°,45°,180°) / 중복 표현",
+        "h,b∈(-180°,180°] / p∈[-90°,90°]",
+        "p=±90°일 때 b=0"
+      ],
+      "result": "p=±90°일 때 b=0",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "10",
+      "mode": "gimbal",
+      "title": "짐벌락: 두 회전축이 겹치는 순간",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/10-gimbal.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": false,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "p:45°→80°→90°",
+        "p=+90°: 첫 heading 축 ∥ 마지막 bank 축",
+        "world +y / body +z: 반대 방향, 같은 직선",
+        "h+5°,b+5°: 끝 자세 동일",
+        "자유도 / 매개변수의 독립 변화 방향 감소",
+        "Gimbal lock: 표현의 특이점 / 물체는 회전 가능"
+      ],
+      "result": "Gimbal lock: 표현의 특이점 / 물체는 회전 가능",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "12",
+      "mode": "gimbal-values",
+      "title": "90도에서는 헤딩과 뱅크가 합쳐진다",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/12-gimbal-values.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": true,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "p=+90° → h-b",
+        "30°-10°=20°",
+        "R(30°,90°,10°)=R(20°,90°,0°)",
+        "p=-90° → h+b / 30°+10°=40°",
+        "가까운 자세 / 개별 각도는 큰 변화",
+        "표현 선택 ≠ 경계 불연속 해소"
+      ],
+      "result": "표현 선택 ≠ 경계 불연속 해소",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "16",
+      "mode": "interpolation",
+      "title": "세 각을 따로 보간하면 남는 문제",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/16-interpolation.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": true,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "한 축의 짧은 차이 ≠ 최단 3D 회전",
+        "끝 자세: (0°,135°,0°)=(180°,45°,180°)",
+        "t=0.5: (0°,67.5°,0°)≠(90°,22.5°,90°)",
+        "각도 성분 일정 속도 ≠ 몸의 일정 각속도",
+        "끝 자세 저장 / 경로 선택 구분",
+        "중간 자세를 보고 한 축 표현으로"
+      ],
+      "result": "중간 자세를 보고 한 축 표현으로",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "18",
+      "mode": "axis-angle",
+      "title": "축 하나와 각도 하나로 표현",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/18-axis-angle.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": false,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "두 자세 사이 변화 / 중심 고정",
+        "단위축 ||n||=1 + 회전각 θ / Axis–Angle",
+        "n=(0,1,0), θ=90° / +z→+x",
+        "축 방향 자유도2 + 각도1 = 3 / 저장성분4",
+        "같은 축: 90°/2=45°",
+        "축과 각을 곱해 e=θn"
+      ],
+      "result": "축과 각을 곱해 e=θn",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "19",
+      "mode": "rotation-vector",
+      "title": "회전벡터의 길이가 각도",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/19-rotation-vector.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": false,
+      "cueCount": 7,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "e=θn / θ≥0 / θ=||e||",
+        "Exponential map: 회전벡터→회전 행렬",
+        "e=(0,π/2,0) [rad]",
+        "θ=||e||=√(0²+(π/2)²+0²)=π/2",
+        "정규화 n=e/||e||=(0,1,0)",
+        "e=0: 항등 / 0으로 나누지 않기",
+        "(-θ)(-n)=θn / 다른 중복은 남음"
+      ],
+      "result": "(-θ)(-n)=θn / 다른 중복은 남음",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "21",
+      "mode": "axis-aliases",
+      "title": "한 바퀴 미만이어도 표현은 중복된다",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/21-axis-aliases.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": true,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "+90°와 -270°: 경로는 달라도 같은 끝 자세",
+        "e1=90° n / e2=270°(-n)",
+        "둘 다 ||e||<360°: 유일하지 않음",
+        "0≤θ≤180° / 180°에서 축 부호 규칙",
+        "경계 중복·불연속 / 0°에서는 e=0",
+        "표현 선택 ≠ 벡터 덧셈으로 합성"
+      ],
+      "result": "표현 선택 ≠ 벡터 덧셈으로 합성",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    },
+    {
+      "id": "22",
+      "mode": "nonadd",
+      "title": "회전벡터는 보통 더할 수 없다",
+      "scene": "unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/Scenes/22-nonadd.unity",
+      "geometry": "Self-authored articulated propulsive aircraft; orientation illustration, not measured game simulation",
+      "pair": true,
+      "cueCount": 6,
+      "mathContract": {
+        "handedness": "right",
+        "vector": "column",
+        "transform": "local-to-world",
+        "axes": "Positive axes are defined by arrows, x cross y = z. y drawing-up, body z forward; screen/anatomical directions do not define handedness.",
+        "order": "Intrinsic body Y-X-Z; R=Ry(h)Rx(p)Rz(b), equivalent extrinsic fixed Z-X-Y.",
+        "bookDifference": "Left-handed/row-vector book conventions adapted explicitly; signs and basis must be checked independently of transpose.",
+        "units": "Narrative examples in degrees; code and rotation vectors explicitly radians."
+      },
+      "before": "Body axes aligned with world axes or explicitly labeled comparison starting pose",
+      "action": [
+        "Rx90° 후 Ry90°: 앞쪽 (0,-1,0)",
+        "e_sum=(π/2,π/2,0) / 대각선 축",
+        "||e_sum||=π/√2 rad≈2.22144 rad≈127.28°",
+        "벡터 합 교환 / 회전 합성 비가환",
+        "정확한 합성: 순서를 정한 행렬곱",
+        "작은 각도 1차 근사 / 회전량과 변화율 구분"
+      ],
+      "result": "작은 각도 1차 근사 / 회전량과 변화율 구분",
+      "timing": "Measured narration -> capture keys frame/normalized; six default staged beats are editable, no fixed total runtime",
+      "labels": "Parent composites canonical terms/formulas and axis names from anchors; fixed caption center 960,970,48px,max2lines",
+      "status": "Source scene exists; first visual-system bake/preview completed. Updated layout and current narration profiles require fresh bake during coordinated capture."
+    }
+  ]
+}
