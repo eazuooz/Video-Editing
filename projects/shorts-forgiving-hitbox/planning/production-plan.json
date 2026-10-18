@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "userEvidence": "쇼츠 영상 제작 규칙을 추가해줘. 닿았는데 왜 안 맞았지?로30초 쇼츠 만들어줘. 방금 분석한 방식 적용하고 영상제작 도구들 활용해서 제작해줘봐",
+  "question": "닿았는데 왜 안 맞았지?",
+  "answer": "보이는 모델과 별도로 정한 피격 영역이 공격 영역과 겹치지 않았기 때문.",
+  "scope": "one mechanism; no attack startup, dodge immunity or hitstop lesson",
+  "renderer": {
+    "primary": "Unity",
+    "reason": "Real collider overlap, animation, health response and per-frame projected anchors",
+    "compositor": "Motion Canvas: progressive bounds/labels, result and editorial hierarchy",
+    "editor": "6000.6.0f1",
+    "pipeline": "Built-in in isolated owned capture workspace",
+    "savedScenes": [
+      "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/01-hook.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/02-reveal.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/03-wide.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-forgiving-hitbox/Scenes/04-narrow.unity"
+    ]
+  },
+  "terminology": [
+    {
+      "ko": "공격 판정 영역",
+      "en": "Hitbox",
+      "tts": "히트박스",
+      "color": "red"
+    },
+    {
+      "ko": "피격 판정 영역",
+      "en": "Hurtbox",
+      "tts": "허트박스",
+      "color": "green"
+    }
+  ],
+  "sceneBeats": [
+    {
+      "id": "01-hook",
+      "purpose": "First2seconds: attack visibly brushes armor, health unchanged",
+      "reveal": false
+    },
+    {
+      "id": "02-reveal",
+      "purpose": "Same motion: green receiving bounds, then red attack bounds; connect each name to target",
+      "reveal": true
+    },
+    {
+      "id": "03-compare",
+      "purpose": "Same attack trajectory/pose/camera: wide hurtbox hit versus narrow hurtbox miss",
+      "onlyVariable": "hurtbox size"
+    },
+    {
+      "id": "04-resolution",
+      "purpose": "Return to opening narrow configuration and visibly resolve why it survived"
+    }
+  ],
+  "continuity": "Same knight, camera, projectile and attack path; no scene-title resets. Narration determines final cue timings after measured PCM.",
+  "layout": {
+    "width": 1080,
+    "height": 1920,
+    "headArea": [
+      70,
+      120,
+      930,
+      300
+    ],
+    "demoArea": [
+      0,
+      400,
+      1080,
+      1250
+    ],
+    "captionCenter": [
+      510,
+      1380
+    ],
+    "captionSize": 60,
+    "maxCaptionLines": 2,
+    "rightUiSafe": 150
+  },
+  "beforeTtsReview": {
+    "fullNarrationRead": true,
+    "independentWording": true,
+    "sourceCreatorFraming": false,
+    "oneCauseOnly": true,
+    "preciseTerminology": true,
+    "modelClaimsQualifiedAsDemonstration": true
+  },
+  "visualPreflight": {
+    "status": "passed limited native sample",
+    "preview": "production/local/capture-preview-v3",
+    "directlyViewed": "Native frame0070: textured articulated Knight, falling attack grazing armor, feet on platform, room for header/HP/captions. Earlier v2 magenta shader failure resolved with single-pass authored shader. Full moving/composited output pending.",
+    "physicsSamples": "wide1.4 health70; narrow0.86 health100; actual ComputePenetration traces",
+    "limitations": "No final Motion Canvas captions/layout yet"
+  },
+  "humanFinalReview": "pending"
+}
