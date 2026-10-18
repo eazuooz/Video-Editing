@@ -1,6 +1,6 @@
 """Bounded GPU-only scene batch; preserve all other applications and source PCM."""
 from pathlib import Path
-import datetime, hashlib, json, os, psutil, subprocess, sys, time, uuid
+import argparse, datetime, hashlib, json, os, psutil, shutil, subprocess, sys, time, uuid
 
 R = Path(__file__).resolve().parents[3]
 P = R / 'projects/game-math-euler-axis-angle'
@@ -12,6 +12,23 @@ def save(p, v): p.write_text(json.dumps(v, ensure_ascii=False, indent=2)+'\n', e
 def gpu():
     raw = subprocess.check_output(['nvidia-smi','--query-gpu=memory.free,memory.total,utilization.gpu','--format=csv,noheader,nounits'], text=True)
     return [int(x.strip()) for x in raw.splitlines()[0].split(',')]
+
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--force-scenes',default='',help='Selected clarity retakes only; preserve every other source chunk')
+args=parser.parse_args()
+force_scenes={v.strip().zfill(2) for v in args.force_scenes.split(',') if v.strip()}
+assert force_scenes <= {'03','12','15'}, 'Only the current three reviewed clarity retakes are authorized here'
+preserved={}
+if force_scenes:
+    manifest=read(P/'production/revision-v2/tts-manifest.json')
+    chunks=R/manifest['tts']['outputDir']/'chunks'
+    for i in range(1,27):
+        sid=f'{i:02}';file=chunks/f'{sid}-scene.wav';assert file.exists(),file
+        if sid not in force_scenes:preserved[sid]=hashlib.sha256(file.read_bytes()).hexdigest()
+    previous=L/'tts-gpu-coordination.json'
+    if previous.exists():
+        stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+        shutil.copy2(previous,L/f'tts-gpu-coordination-before-retake-{stamp}.json')
 
 control = read(R/'shared/publishing/video-production-control.json')
 assert control['selectedVideo'] == P.name
@@ -34,10 +51,11 @@ for row in raw.splitlines():
 before = gpu()
 assert before[0] >= 8000, ('Bounded profile needs8000MiB free',before)
 token = str(uuid.uuid4())
-state = dict(schemaVersion=1,token=token,project=P.name,state='gpu_granted_to_tts',requestedAt=time.time(),queueDir=None,coordinator={'pid':me.pid,'createTime':me.create_time()},gpuBeforeTts={'freeMiB':before[0],'totalMiB':before[1],'utilization':before[2]},inspectedClients=clients,foreignProcessesPaused=[],userEvidence='User-selected M04 production; bounded GPU allocation preserves all existing apps',allocatorLimitMiB=7168,profile='bf16-scene-batch1-bounded-8GiB',generations=[])
+state = dict(schemaVersion=1,token=token,project=P.name,state='gpu_granted_to_tts',requestedAt=time.time(),queueDir=None,coordinator={'pid':me.pid,'createTime':me.create_time()},gpuBeforeTts={'freeMiB':before[0],'totalMiB':before[1],'utilization':before[2]},inspectedClients=clients,foreignProcessesPaused=[],userEvidence='User-selected M04 production; bounded GPU allocation preserves all existing apps',allocatorLimitMiB=7168,profile='bf16-scene-batch1-bounded-8GiB',generations=[],selectedRetakeScenes=sorted(force_scenes),preservedSceneHashes=preserved)
 with LEASE.open('x',encoding='utf8') as f: json.dump(state,f,indent=2)
 code=1
 try:
+    save(L/'tts-gpu-coordination.json',state)
     sys.path.insert(0,str(R/'qwen3-tts'))
     import torch
     torch.cuda.set_per_process_memory_fraction(7168*1024*1024/torch.cuda.get_device_properties(0).total_memory,0)
@@ -53,7 +71,11 @@ try:
         return result
     worker.Qwen3TTSModel.generate_voice_clone=measured
     items=worker.build_render_items(worker.load_jobs())
-    worker.render_chunks(items,1)
+    if force_scenes:items=[item for item in items if item.key.split('-')[0] in force_scenes]
+    worker.render_chunks(items,1,force_scenes)
+    if force_scenes:
+        for sid,digest in preserved.items():assert hashlib.sha256((chunks/f'{sid}-scene.wav').read_bytes()).hexdigest()==digest,('Untouched PCM changed',sid)
+        state['unchangedPcmPreservationPassed']=True
     worker.assemble_outputs(worker.load_jobs())
     code=0
 finally:

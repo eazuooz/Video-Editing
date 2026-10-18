@@ -29,7 +29,7 @@
       "id": "03",
       "title": "Euler angles require axes and an order",
       "lines": [
-        "A frame fixed in the surroundings is the world frame. A frame attached to and moving with the object is its local frame, or body frame.",
+        "A frame fixed in the surroundings is the world frame. A frame that turns with the object is its local frame, also called its body frame.",
         "Orientation describes how an object is placed directionally. Two objects can face the same way yet have different orientations because their twists differ.",
         "Euler angles describe orientation with three numbers. Besides the angles, we must define which axes to rotate around and in what order.",
         "This lesson uses the right-hand rule. Point your thumb along the positive axis; the way your fingers curl defines positive rotation.",
@@ -142,7 +142,7 @@
         "For our Y-X-Z order at positive ninety pitch, the orientation depends on heading minus bank.",
         "Heading thirty, pitch ninety, and bank ten give thirty minus ten: twenty degrees.",
         "Heading twenty, pitch ninety, and bank zero produce the same rotation matrix. All three axes of the two bodies align.",
-        "Now change pitch to negative ninety. Heading and bank add instead. Thirty plus ten equals forty, so heading forty and bank zero represent the same result.",
+        "Now change pitch to negative ninety degrees. Heading and bank now add. Thirty degrees of heading plus ten degrees of bank makes forty degrees. Heading forty degrees and bank zero therefore represents the same orientation.",
         "Every orientation remains representable, but a small change to a nearby orientation can cause large changes in individual angles.",
         "Setting bank to zero chooses one representation without removing boundary discontinuities or interpolation problems. First, let us solve the simpler numeric seam on a circle."
       ]
@@ -179,7 +179,7 @@
         "This code accepts finite real-valued radians. To convert degrees, multiply by pi and divide by one hundred eighty. A full turn is two pi radians.",
         "The standard remainder function subtracts the nearest whole-turn multiple. Do not assume that its endpoint behavior matches a generic remainder or modulus operation.",
         "If the result is minus pi, add a full turn to move it to plus pi. Our interval excludes minus pi and includes plus pi.",
-        "For input minus pi, this condition is true and the value becomes plus pi. For an already interior value such as pi over two, the condition is false and the value remains unchanged.",
+        "For an input of minus pi, the condition is true and the result becomes plus pi. Half of pi already lies within the chosen interval. The condition is false, so that input remains unchanged.",
         "For interpolation, wrap the end minus the start, rather than the endpoint alone. Multiply that difference by a fraction from zero through one and add it to the start.",
         "Do not pass degree values directly to this function. Consistent units and endpoints can shorten a one-axis route, but they do not solve interpolation about three axes."
       ]
@@ -263,7 +263,7 @@
       "lines": [
         "A ninety-degree x rotation followed by a ninety-degree y rotation sent forward to zero, minus one, zero.",
         "Adding their rotation-vector components gives pi over two, pi over two, zero. That vector represents one rotation about a diagonal axis between x and y.",
-        "Its magnitude is pi divided by the square root of two radians, which is approximately127.28 degrees after conversion. Rotating the model shows a different final orientation from the sequential pair.",
+        "Its magnitude is pi divided by the square root of two radians, which is approximately 127.28 degrees after conversion. Rotating the model shows a different final orientation from the sequential pair.",
         "Vector addition commutes, but three-dimensional rotation generally does not. The two operations therefore cannot be interchangeable in general.",
         "For exact composition, fix the order and multiply rotation matrices, or use the quaternion product introduced later.",
         "For very small angles, vector addition can approximate composition, but it is not an exact finite-rotation formula. We must also distinguish rotation amount from its instantaneous rate."

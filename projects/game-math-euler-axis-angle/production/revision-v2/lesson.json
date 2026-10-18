@@ -100,7 +100,7 @@
       "title": "오일러 각은 순서가 있는 세 회전",
       "mode": "euler",
       "ko": [
-        "주변에 고정한 방향자를 월드 좌표계, 물체에 붙어 함께 움직이는 방향자를 로컬 좌표계, 또는 몸체 좌표계라고 부릅니다.",
+        "주변에 고정한 방향자를 월드 좌표계라고 부릅니다. 물체와 함께 도는 방향자는 로컬 좌표계, 또는 몸체 좌표계입니다.",
         "자세는 물체가 어느 방향으로 놓였는지를 뜻합니다. 앞쪽 방향만 같아도 옆으로 비틀린 정도가 다르면 다른 자세입니다.",
         "오일러 각은 숫자 세 개로 자세를 표현합니다. 각도뿐 아니라 어느 축을 어떤 순서로 돌리는지도 정해야 합니다.",
         "이 강의에서는 오른손 규칙을 씁니다. 엄지가 축의 양의 방향을 가리킬 때 나머지 손가락이 감기는 쪽이 양의 회전입니다.",
@@ -109,7 +109,7 @@
         "회전 행렬 알은 이 몸체 기준 방향을 월드 기준 방향으로 바꾸는 계산입니다. 좌표계나 벡터를 적는 방향이 다른 식을 옮길 때는 축과 부호, 적용 순서를 함께 맞춰야 합니다."
       ],
       "en": [
-        "A frame fixed in the surroundings is the world frame. A frame attached to and moving with the object is its local frame, or body frame.",
+        "A frame fixed in the surroundings is the world frame. A frame that turns with the object is its local frame, also called its body frame.",
         "Orientation describes how an object is placed directionally. Two objects can face the same way yet have different orientations because their twists differ.",
         "Euler angles describe orientation with three numbers. Besides the angles, we must define which axes to rotate around and in what order.",
         "This lesson uses the right-hand rule. Point your thumb along the positive axis; the way your fingers curl defines positive rotation.",
@@ -432,7 +432,7 @@
         "우리 와이, 엑스, 제트 순서에서 피치가 양의 구십 도이면, 자세는 헤딩에서 뱅크를 뺀 값에 달려 있습니다.",
         "헤딩 삼십, 피치 구십, 뱅크 십 도를 넣으면 삼십 빼기 십, 이십 도입니다.",
         "헤딩 이십, 피치 구십, 뱅크 영도 같은 회전 행렬을 만듭니다. 두 몸체의 세 축이 정확히 겹칩니다.",
-        "이번에는 피치를 음의 구십 도로 바꿉니다. 이때는 헤딩과 뱅크의 합입니다. 삼십 더하기 십이 사십이므로, 헤딩 사십과 뱅크 영으로 적어도 같습니다.",
+        "이번에는 피치를 음의 구십 도로 바꿉니다. 이때는 헤딩과 뱅크를 더합니다. 헤딩 삼십 도에 뱅크 십 도를 더하면 사십 도가 됩니다. 따라서 헤딩 사십 도와 뱅크 영도로 적어도 같은 자세입니다.",
         "모든 자세를 표현할 수는 있지만, 가까운 자세로 조금 움직였을 때 개별 각도는 크게 튈 수 있습니다.",
         "뱅크를 영으로 고르는 규칙은 표현 하나를 고를 뿐, 경계의 불연속과 보간 문제까지 없애지는 않습니다. 먼저 더 단순한 원 위에서 숫자가 튀는 문제부터 풀어 보죠."
       ],
@@ -440,7 +440,7 @@
         "For our Y-X-Z order at positive ninety pitch, the orientation depends on heading minus bank.",
         "Heading thirty, pitch ninety, and bank ten give thirty minus ten: twenty degrees.",
         "Heading twenty, pitch ninety, and bank zero produce the same rotation matrix. All three axes of the two bodies align.",
-        "Now change pitch to negative ninety. Heading and bank add instead. Thirty plus ten equals forty, so heading forty and bank zero represent the same result.",
+        "Now change pitch to negative ninety degrees. Heading and bank now add. Thirty degrees of heading plus ten degrees of bank makes forty degrees. Heading forty degrees and bank zero therefore represents the same orientation.",
         "Every orientation remains representable, but a small change to a nearby orientation can cause large changes in individual angles.",
         "Setting bank to zero chooses one representation without removing boundary discontinuities or interpolation problems. First, let us solve the simpler numeric seam on a circle."
       ],
@@ -538,7 +538,7 @@
         "이 코드는 유한한 실수 라디안을 입력받습니다. 도를 라디안으로 바꿀 때는 파이를 곱하고 백팔십으로 나눕니다. 한 바퀴는 이 파이 라디안입니다.",
         "표준 라이브러리의 리메인더는 가장 가까운 한 바퀴의 배수를 빼서 남은 값을 구합니다. 일반적인 나머지 연산과 끝점 처리가 같다고 가정하면 안 됩니다.",
         "결과가 마이너스 파이이면 한 바퀴를 더해 플러스 파이로 옮깁니다. 마이너스 파이를 제외하고 플러스 파이를 포함하는 규칙입니다.",
-        "입력이 마이너스 파이일 때는 이 조건이 참이라 플러스 파이로 바뀝니다. 파이의 절반처럼 이미 범위 안인 값은 조건이 거짓이라 그대로 남습니다.",
+        "입력이 마이너스 파이일 때는 이 조건이 참이라 플러스 파이로 바뀝니다. 파이의 절반은 처음부터 정해 둔 범위에 들어 있습니다. 이때는 조건이 거짓이므로 입력값 그대로 남습니다.",
         "보간할 때 감싸는 값은 끝 각도 자체가 아니라 끝에서 시작을 뺀 차이입니다. 그 차이에 영부터 일 사이의 비율을 곱해 시작 값에 더합니다.",
         "도 단위 숫자를 이 함수에 바로 넣으면 안 됩니다. 단위와 끝점을 맞추면 한 축의 긴 경로는 줄일 수 있지만, 세 축의 보간까지 해결된 것은 아닙니다."
       ],
@@ -546,7 +546,7 @@
         "This code accepts finite real-valued radians. To convert degrees, multiply by pi and divide by one hundred eighty. A full turn is two pi radians.",
         "The standard remainder function subtracts the nearest whole-turn multiple. Do not assume that its endpoint behavior matches a generic remainder or modulus operation.",
         "If the result is minus pi, add a full turn to move it to plus pi. Our interval excludes minus pi and includes plus pi.",
-        "For input minus pi, this condition is true and the value becomes plus pi. For an already interior value such as pi over two, the condition is false and the value remains unchanged.",
+        "For an input of minus pi, the condition is true and the result becomes plus pi. Half of pi already lies within the chosen interval. The condition is false, so that input remains unchanged.",
         "For interpolation, wrap the end minus the start, rather than the endpoint alone. Multiply that difference by a fraction from zero through one and add it to the start.",
         "Do not pass degree values directly to this function. Consistent units and endpoints can shorten a one-axis route, but they do not solve interpolation about three axes."
       ],
@@ -801,7 +801,7 @@
       "en": [
         "A ninety-degree x rotation followed by a ninety-degree y rotation sent forward to zero, minus one, zero.",
         "Adding their rotation-vector components gives pi over two, pi over two, zero. That vector represents one rotation about a diagonal axis between x and y.",
-        "Its magnitude is pi divided by the square root of two radians, which is approximately127.28 degrees after conversion. Rotating the model shows a different final orientation from the sequential pair.",
+        "Its magnitude is pi divided by the square root of two radians, which is approximately 127.28 degrees after conversion. Rotating the model shows a different final orientation from the sequential pair.",
         "Vector addition commutes, but three-dimensional rotation generally does not. The two operations therefore cannot be interchangeable in general.",
         "For exact composition, fix the order and multiply rotation matrices, or use the quaternion product introduced later.",
         "For very small angles, vector addition can approximate composition, but it is not an exact finite-rotation formula. We must also distinguish rotation amount from its instantaneous rate."

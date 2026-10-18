@@ -21,7 +21,7 @@ me=psutil.Process();token=str(uuid.uuid4());owned={'token':token,'project':P.nam
 with LEASE.open('x',encoding='utf8') as f:json.dump(owned,f)
 code=1
 try:
- save('whole-current-PCM-ASR-running',device='cuda',reuse='matching01/02source-hash caches')
+ save('whole-current-PCM-ASR-running',device='cuda',reuse='matching source-hash scene caches; only changed audio is recognized')
  with (O/'whole-voice-asr.log').open('w',encoding='utf8') as log:
   code=subprocess.call([sys.executable,'-u','-X','utf8','qwen3-tts/review_project_narration.py','--project',P.name,'--manifest','projects/game-math-euler-axis-angle/production/revision-v2/tts-manifest.json','--device','cuda'],cwd=R,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
 finally:
