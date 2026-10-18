@@ -14,6 +14,7 @@ spec=spec_from_file_location('portrait_renderer',Path(__file__).with_name('rende
 renderer=module_from_spec(spec);spec.loader.exec_module(renderer)
 R,P,O=renderer.ROOT,renderer.PROJECT,renderer.OUT
 RATE,SECONDS,VOICE_END=48000,30.2,30.1
+NARRATION_TARGET_LUFS=-18
 
 def loudness(path):
     args=[renderer.FFMPEG,'-hide_banner','-i',str(path),'-vn','-af','loudnorm=I=-16:TP=-1.5:LRA=9:print_format=json','-f','null','-']
@@ -37,7 +38,7 @@ def build():
     source=renderer.read(P/'sources/source-map.json');voice=R/source['narration']['path'];music=R/source['music']['path']
     assert renderer.sha(voice)==source['narration']['sha256']
     assert renderer.sha(music)==source['music']['sha256']
-    signature=dict(code=renderer.sha(__file__),voice=source['narration']['sha256'],music=source['music']['sha256'],voiceEnd=VOICE_END,seconds=SECONDS,targetSpeechLufs=-16,targetMusicLufs=-31,rate=RATE)
+    signature=dict(code=renderer.sha(__file__),voice=source['narration']['sha256'],music=source['music']['sha256'],voiceEnd=VOICE_END,seconds=SECONDS,targetSpeechLufs=NARRATION_TARGET_LUFS,targetMusicLufs=-31,rate=RATE)
     receipt=O/'audio-build.json';final=O/'final-mix.m4a'
     if receipt.exists() and final.exists():
         old=renderer.read(receipt)
@@ -54,7 +55,7 @@ def build():
     retained=O/'retained-voice-24k.wav';write_pcm(retained,raw,sr)
     prepared=O/'voice-input-stereo.wav'
     renderer.run([renderer.FFMPEG,'-v','warning','-n','-i',str(retained),'-af',f'aresample={RATE},apad=whole_dur={SECONDS},atrim=duration={SECONDS}', '-ar',str(RATE),'-ac','2','-c:a','pcm_f32le',str(prepared)])
-    before=loudness(prepared);gain=-16-float(before['input_i'])
+    before=loudness(prepared);gain=NARRATION_TARGET_LUFS-float(before['input_i'])
     stem=O/'narration-stem.wav'
     # alimiter latency compensation preserves original speech alignment.
     renderer.run([renderer.FFMPEG,'-v','warning','-n','-i',str(prepared),'-af',f'volume={gain:.9f}dB,alimiter=limit=0.841395:attack=5:release=50:level=0:latency=1', '-c:a','pcm_f32le',str(stem)])
@@ -80,7 +81,7 @@ def build():
     renderer.run([renderer.FFMPEG,'-v','warning','-n','-i',str(final_wav),'-c:a','aac','-b:a','192k','-ar',str(RATE),'-ac','2',str(final)])
     measurements=dict(sourceStereo=before,narration=loudness(stem),musicInput=music_before,finalWav=loudness(final_wav),encoded=loudness(final))
     assert float(measurements['encoded']['input_tp'])<=-1.5,'Encoded true peak exceeds ceiling; retain current evidence and adjust only peak protection.'
-    assert -17.5<=float(measurements['narration']['input_i'])<=-14.5,'Inspect speech gain; do not hide an unexpected voice-level shift.'
+    assert NARRATION_TARGET_LUFS-1.5<=float(measurements['narration']['input_i'])<=NARRATION_TARGET_LUFS+1.5,'Inspect speech gain; do not hide an unexpected voice-level shift.'
     encoded=read_exact(final)[:count];sw=list(windows(speech,RATE));ew=list(windows(encoded,RATE));transfers=[]
     for a,b in zip(sw,ew):
         if a['rmsDbfs']>-43:transfers.append(dict(start=a['start'],end=a['end'],stemDbfs=a['rmsDbfs'],encodedDbfs=b['rmsDbfs'],deltaDb=b['rmsDbfs']-a['rmsDbfs']))

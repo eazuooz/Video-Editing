@@ -265,7 +265,9 @@ def audio_review(source, audio_receipt, encoded):
     # repeat a successful measurement of unchanged encoded audio.
     measured = audio_receipt['measurements']['encoded']
     ensure(float(measured['input_tp']) <= -1.5, 'Encoded true peak exceeds-1.5dBTP')
-    ensure(-18 <= float(measured['input_i']) <= -13, 'Unexpected final integrated loudness; inspect the mix')
+    working_target=float(audio_receipt['signature']['targetSpeechLufs'])
+    ensure(-18 <= working_target <= -14, 'Unexpected planned speech working target')
+    ensure(working_target-1.5 <= float(measured['input_i']) <= working_target+1.5, 'Final integrated loudness differs from the selected speech working target')
     report = dict(status='pass-no-induced-attenuation-flags' if not flags else 'fail-flagged-ranges-need-contextual-review',
         windowSeconds=.4, hopSeconds=.1, activeThresholdDbfs=-43, plannedConstantNarrationGainDb=gain,
         speechDuckApplied=False, musicSubtractionIsApproximateDiagnostic=True, speechActiveWindows=rows,

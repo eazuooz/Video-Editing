@@ -134,7 +134,9 @@ def check_design():
     source=read(PROJECT/'sources/source-map.json');assert source['videoUse']['out']==VIDEO_END and source['videoUse']['audio'] is False
     assert source['narration']['out']==VOICE_END and source['narration']['postSilenceSeconds']==.1
     assert font(62,True).getlength('딱 300골드가 부족하다면?')<=890
-    assert font(62,True).getlength('2,000 − 1,700 = 300')<=900
+    # ASCII minus is intentionally used: the installed bold Korean font lacks
+    # U+2212 and the first encoded revision displayed a tofu square.
+    assert font(62,True).getlength('2,000 - 1,700 = 300')<=900
     assert FRAMES==round(DURATION*FPS) and VOICE_END<DURATION
     source_words=read(ROOT/source['narration']['wordEvidence'])
     assert 'words' in source_words and sha(ROOT/source['narration']['wordEvidence'])==source['narration']['wordEvidenceSha256']
@@ -181,7 +183,7 @@ def frame(t):
         text(d,(265,750),'1,700골드',56,fill='blue',bold=True)
         arrow(d,(430,680),(585,680),ease((t-16.34)/.65),'white',9)
     if t>=18.44:
-        text(d,(510,962),'2,000 − 1,700 = 300',62,fill='yellow',bold=True)
+        text(d,(510,962),'2,000 - 1,700 = 300',62,fill='yellow',bold=True)
     # One continuous current -> remainder -> goal relationship, not a UI mock.
     left,right,y=100,900,1124
     if t<16.34:
