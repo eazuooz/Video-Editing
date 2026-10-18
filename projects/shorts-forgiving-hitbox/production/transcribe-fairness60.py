@@ -30,25 +30,27 @@ def normalized(text):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('role', choices=['additions', 'numbers', 'voice', 'mix'])
-    role = parser.parse_args().role
+    parser.add_argument('--mix-revision',choices=['fairness-60s','fairness-60s-bgm'],default='fairness-60s')
+    args=parser.parse_args();role=args.role
+    output_dir=P/'production/local'/args.mix_revision if role=='mix' else L
     sources = {
         'additions': R / 'shared/output/narration/shorts-forgiving-hitbox/fairness60-additions-v1/fairness60-additions-v1.wav',
         'numbers': R / 'shared/output/narration/shorts-forgiving-hitbox/fairness60-code-numbers-v1/fairness60-code-numbers-v1.wav',
         'voice': L / 'narration-timeline.wav',
-        'mix': L / 'final-mix.m4a',
+        'mix': output_dir / 'final-mix.m4a',
     }
     source = sources[role]
     expected_path = S / (role+'.ko.txt' if role in ['additions','numbers'] else 'narration.ko.txt')
     expected = expected_path.read_text(encoding='utf8').strip()
     sha = hashlib.sha256(source.read_bytes()).hexdigest()
-    out = L / f'asr-{role}-{sha[:12]}.json'
+    out = output_dir / f'asr-{role}-{sha[:12]}.json'
     if out.exists():
         print(str(out))
         return
 
-    L.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
     os.environ['PATH'] = str(FF.parent) + os.pathsep + os.environ.get('PATH', '')
-    wav = L / f'asr-{role}-{sha[:12]}-16k.wav'
+    wav = output_dir / f'asr-{role}-{sha[:12]}-16k.wav'
     if not wav.exists():
         subprocess.run([str(FF), '-v', 'error', '-n', '-i', str(source), '-ac', '1', '-ar', '16000', str(wav)], check=True)
 

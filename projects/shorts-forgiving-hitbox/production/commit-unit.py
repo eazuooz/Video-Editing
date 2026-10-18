@@ -14,7 +14,7 @@ paths=[rel(p) for p in P.rglob('*') if p.is_file() and '/local/' not in rel(p) a
 u=R/'unity/VideoEditing/Assets/VideoScenes'/P.name
 if u.exists():paths += [rel(p) for p in u.rglob('*') if p.is_file() and p.suffix in ['.cs','.meta','.unity','.mat','.asset','.asmdef','.md','.shader']]
 if Path(str(u)+'.meta').exists():paths.append(rel(Path(str(u)+'.meta')))
-paths += ['docs/VIDEO_WORKFLOW.md','shared/publishing/shorts-worklist.json']
+paths += ['docs/VIDEO_WORKFLOW.md','docs/NARRATION_AUDIO_STANDARD.md','shared/publishing/shorts-worklist.json']
 mc=R/'motion-canvas/src/projects'/P.name
 if mc.exists():paths += [rel(p) for p in mc.rglob('*') if p.is_file() and p.suffix in ['.ts','.tsx','.meta','.json']]
 paths += ['motion-canvas/vite.shorts-hitbox.config.ts']
