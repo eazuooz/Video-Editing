@@ -45,20 +45,35 @@ function walkValues(value, visit, key='$') {
   if (typeof value==='string') visit(value,key);
   else if(value && typeof value==='object') for(const [k,v] of Object.entries(value)) walkValues(v,visit,key+'.'+k);
 }
+// Discovery must not turn private captures, runtime caches or diagnostics into
+// editable rebuild sources, even when they arrived through Git's cached list.
+// Explicit media path REFERENCES in project settings/timelines remain below.
+function excludedSource(file) {
+  const f=path.posix.normalize(file.replaceAll('\\','/'));
+  return /^projects\/[^/]+\/production\/local(?:\/|$)/i.test(f)
+    || /(?:^|\/)(?:node_modules|\.git|\.venv|__pycache__|\.cache|\.pytest_cache|\.mypy_cache|\.ruff_cache|Library|Temp|Obj|Logs|UserSettings|MemoryCaptures|CrashReports|diagnostics?|caches?)(?:\/|$)/i.test(f)
+    || /\.info\.json$/i.test(f);
+}
+const discoveryPathspecs=['projects/*/production/local/**','**/*.info.json',
+  ...['node_modules','.git','.venv','__pycache__','.cache','.pytest_cache','.mypy_cache','.ruff_cache',
+    'Library','Temp','Obj','Logs','UserSettings','MemoryCaptures','CrashReports','diagnostic','diagnostics','cache','caches'].map(d=>`**/${d}/**`)
+].map(p=>`:(glob,icase,exclude)${p}`);
 function walk(dir) {
-  if(!exists(dir)) return [];
+  if(excludedSource(dir)||!exists(dir)) return [];
   return fs.readdirSync(path.join(root,dir),{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name)).flatMap(e=>{
     if(e.isSymbolicLink() || /^(node_modules|\.git|\.venv|delivery-history|delivery-stage-.*|media.*|chunks)$/.test(e.name)) return [];
     const f=dir+'/'+e.name;
+    if(excludedSource(f)) return [];
     return e.isDirectory()?walk(f):[f];
   });
 }
 function build(slug, files) {
+  files=files.filter(f=>!excludedSource(f));
   const base=`projects/${slug}`, project=json(`${base}/project.json`);
   const selectedPaths=[...new Set([...(canonical[slug]||[]),...['timeline','footageManifest','footageCuts','activeFootage','exampleClips'].map(k=>project.paths?.[k]).filter(f=>typeof f==='string'&&f.endsWith('.json'))])];
   const related=f=>f.startsWith(base+'/')||f.startsWith(`motion-canvas/src/projects/${slug}/`)||f.startsWith(`manim/projects/${slug}/`)||f.startsWith(`shared/output/narration/${slug}/`);
   const own=files.filter(related).filter(f=>!f.includes('/revisions/')&&!f.includes('/archive/')&&!f.endsWith('/rebuild.json'));
-  const docs=[...new Set([...own.filter(f=>/\.json$/.test(f)&&/(plan|timeline|storyboard|timing|cuts|sources|footage|media-report|mix.*report|delivery-output)/i.test(f)),...selectedPaths,...Object.values(project.paths||{}).filter(f=>typeof f==='string'&&f.endsWith('.json'))])].filter(exists).sort();
+  const docs=[...new Set([...own.filter(f=>/\.json$/.test(f)&&/(plan|timeline|storyboard|timing|cuts|sources|footage|media-report|mix.*report|delivery-output)/i.test(f)),...selectedPaths,...Object.values(project.paths||{}).filter(f=>typeof f==='string'&&f.endsWith('.json'))])].filter(f=>!excludedSource(f)&&exists(f)).sort();
   const documents=docs.map(file=>({file,sha256:hash(read(file)),purpose:selectedPaths.includes(file)?'selected-timeline-or-source-record':'supporting-record-not-necessarily-current',data:json(file)}));
   const scriptPath=project.paths?.script;
   const script=scriptPath&&exists(scriptPath)?json(scriptPath):null;
@@ -138,7 +153,8 @@ function generate(slug,check=false) {
   if(slug&&!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw Error('Invalid project slug');
   const slugs=fs.readdirSync(path.join(root,'projects')).filter(s=>exists(`projects/${s}/project.json`)).sort();
   if(slug&&!slugs.includes(slug)) throw Error('Unknown project: '+slug);
-  const files=[...new Set([...git(['ls-files','--cached','--others','--exclude-standard','-z']).split('\0').filter(Boolean),...slugs.flatMap(s=>walk(`projects/${s}`)),...slugs.flatMap(s=>walk(`motion-canvas/src/projects/${s}`))])].filter(f=>exists(f)).sort();
+  const targets=slug?[slug]:slugs;
+  const files=[...new Set([...git(['ls-files','--cached','--others','--exclude-standard','-z','--','.',...discoveryPathspecs]).split('\0').filter(Boolean),...targets.flatMap(s=>walk(`projects/${s}`)),...targets.flatMap(s=>walk(`motion-canvas/src/projects/${s}`))])].filter(f=>!excludedSource(f)&&exists(f)).sort();
   for(const s of slug?[slug]:slugs) {
     const data=build(s,files), target=`projects/${s}/rebuild.json`, text=JSON.stringify(data,null,2)+'\n';
     if(check){if(!exists(target)||read(target)!==text)throw Error('Stale rebuild manifest: '+target);}
@@ -146,7 +162,8 @@ function generate(slug,check=false) {
     console.log(`${s}: ${data.counts.scriptScenes} script scenes; ${data.counts.selectedEditRecords} edit records; ${data.counts.referencedMediaFiles} media references`);
   }
   const index={schemaVersion:1,policy:'metadata-only-v1',projects:slugs.map(s=>({slug:s,manifest:`projects/${s}/rebuild.json`}))};
-  if(!check)fs.writeFileSync(path.join(root,'projects/rebuild-index.json'),JSON.stringify(index,null,2)+'\n');
+  // Scoped collection never rewrites the shared index or another task's edits.
+  if(!check&&!slug)fs.writeFileSync(path.join(root,'projects/rebuild-index.json'),JSON.stringify(index,null,2)+'\n');
 }
 module.exports={generate,build};
 if(require.main===module){try{generate(process.argv.slice(2).find(a=>!a.startsWith('--')),process.argv.includes('--check'));}catch(e){console.error(e);process.exitCode=1;}}

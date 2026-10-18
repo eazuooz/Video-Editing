@@ -1,3 +1,9 @@
-# 내레이션 전용 강의
+# M04 teaching-rules-v2 audio
 
-BGM 없음. 입력은 승인된 Qwen 내레이션 WAV 하나뿐이며 게임 원음·OST·Nimbus를 혼합하지 않는다.48kHz stereo AAC, 목표-16LUFS/true peak≤-1.5dBTP. 전체1131.417초. 사람의 전체 청취 승인 대기.
+Current source and encoded-mix ASR direct whole-text reviews: projects/game-math-euler-axis-angle/production/revision-v2/final-audio-review.json
+
+Same-speech400ms/100ms source → stem → encoded level analysis: projects/game-math-euler-axis-angle/production/local/revision-v2/qa/audio-continuity.json
+
+Voice gain is constant per scene plus one global gain and a short peak limiter. Only the instrumental music is ducked. Selected production files are video-only streams. Exact processing and hashes: projects/game-math-euler-axis-angle/production/local/revision-v2/audio-build.json
+
+Human whole listening and pronunciation remain pending the complete Drive review.
