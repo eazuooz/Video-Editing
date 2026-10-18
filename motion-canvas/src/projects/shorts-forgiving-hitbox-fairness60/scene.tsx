@@ -58,10 +58,10 @@ export default makeScene2D(function*(view){
  view.add(<Txt text={'공격 영역\nHitbox'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={32} lineHeight={40} fill={C.red} position={[310,-170]} opacity={()=>red()?1:0}/>);
  view.add(<Line points={()=>[new Vector2(250,-120),new Vector2(Math.max(...state().attack.map(p=>p.x))-530,state().projectile.y-970)]} stroke={C.red} lineWidth={5} endArrow arrowSize={12} opacity={()=>red()?1:0}/>);
  view.add(<Txt text={()=>section().id==='attacker'?'공격한 쪽: “왜 안 맞아?”':section().id==='survivor'?'살아남은 쪽: “잘 피했다!”':section().id==='resolution'?'겉은 스쳐도, 판정은 안 겹침':state().hitApplied?'겹침 → 피해 30':'겹치지 않음 → 피해 0'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={()=>section().id==='attacker'||section().id==='survivor'?42:38} fill={()=>section().id==='attacker'||state().hitApplied?C.red:C.green} position={[-30,-335]} opacity={()=>isGame()||t()<3?0:1}/>);
- view.add(<Txt text={()=>section().id==='wide'?'몸 크기로\n설정':section().id==='resolution'?'처음 장면\n다시 확인':section().id==='limit'?'너무 작아도\n어색하다':green()?'조금 작게\n설정':''} fontFamily="Malgun Gothic" fontWeight={700} fontSize={34} lineHeight={43} fill={C.white} position={[-365,170]} opacity={()=>isGame()?0:1}/>);
+ view.add(<Txt text={()=>section().id==='wide'?'몸 크기로\n설정':section().id==='resolution'?'처음 장면\n다시 확인':section().id==='limit'?'여기서 더\n줄인다면?':green()?'조금 작게\n설정':''} fontFamily="Malgun Gothic" fontWeight={700} fontSize={34} lineHeight={43} fill={C.white} position={[-365,170]} opacity={()=>isGame()?0:1}/>);
  // A separate public-code diagram; no guessed bounds are placed on gameplay.
  const diagram=new Rect({width:900,height:720,position:[-70,-30],fill:'#000000',opacity:()=>code() ? .96 : 0});view.add(diagram);
- diagram.add(<Txt text="공개 코드 기준 도식" fontFamily="Malgun Gothic" fontWeight={700} fontSize={38} fill={C.yellow} position={[0,-265]}/>);
+ diagram.add(<Txt text="공개 코드 · 기본 상태" fontFamily="Malgun Gothic" fontWeight={700} fontSize={38} fill={C.yellow} position={[0,-265]}/>);
  diagram.add(<Txt text="이동 충돌 영역" fontFamily="Malgun Gothic" fontWeight={700} fontSize={36} fill={C.white} position={[-220,-185]}/>);
  diagram.add(<Txt text="피격 영역" fontFamily="Malgun Gothic" fontWeight={700} fontSize={36} fill={C.green} position={[220,-185]}/>);
  diagram.add(<Rect width={224} height={308} position={[-220,16]} stroke={C.white} lineWidth={7}/>);

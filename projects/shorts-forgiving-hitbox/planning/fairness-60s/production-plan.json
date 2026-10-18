@@ -9,7 +9,7 @@
   "narration": [
     "분명 닿았는데, 왜 안 맞았죠?",
     "공격한 쪽은 왜 안 맞아? 살아남은 쪽은 잘 피했다!",
-    "같은 장면도 다르게 느낄 수 있어요.",
+    "같은 판정도, 공정하다는 느낌은 달라질 수 있어요.",
     "그래서 보이는 몸보다 피격 영역을 작게 잡기도 합니다.",
     "초록색은 피해를 받는 영역, 허트박스예요.",
     "빨간 공격 영역, 히트박스와 겹쳐야 체력이 줄죠.",
@@ -23,10 +23,10 @@
     "아까 살아남은 이유도, 보이는 몸이 아니라 이 두 영역으로 판정했기 때문입니다."
   ],
   "narrationSizing": {
-    "hangulSyllables": 250,
+    "hangulSyllables": 280,
     "estimatedSpeechSeconds": [
-      43,
-      48
+      47,
+      53
     ],
     "basis": "Existing approved 127-syllable narration used roughly 22 seconds of speech; this is an estimate, not a measured new TTS duration.",
     "targetMasterSeconds": 60,
@@ -49,116 +49,173 @@
   ],
   "beats": [
     {
+      "id": "hook",
       "rangeSeconds": [
         0,
         3
       ],
-      "narrationLines": [
-        0
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        0.05,
+        1.85
       ],
-      "visual": "Existing Unity knight: attack visibly brushes armor while HP remains 100. Begin with the event; integrated brand, no independent intro card.",
-      "purpose": "A visible incident understandable on mute.",
-      "join": "Keep this exact knight, attack path and state available for the final answer."
+      "purpose": "Visible graze and unchanged HP"
     },
     {
+      "id": "attacker",
       "rangeSeconds": [
         3,
-        10.5
+        7.5
       ],
-      "narrationLines": [
-        1,
-        2
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        0.4,
+        1.9
       ],
-      "visual": "Replay the same event once. Sequential editorial viewpoint labels: 공격한 쪽: 왜 안 맞아? / 살아남은 쪽: 잘 피했다! Clear role labels distinguish imagined reactions from reported facts.",
-      "purpose": "Use the supplied comment's contrast without claiming a universal psychological law.",
-      "join": "The different reactions lead directly to why the visible model need not be the receiving region."
+      "purpose": "Imagined attacker viewpoint"
     },
     {
+      "id": "survivor",
       "rangeSeconds": [
-        10.5,
-        14
+        7.5,
+        11
       ],
-      "narrationLines": [
-        3
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        0.4,
+        1.8
       ],
-      "visual": "Reveal the actual green receiving collider inside the Unity knight. Brief label: 피격 영역.",
-      "purpose": "Show the one hidden design variable before introducing a real-game example.",
-      "join": "Carry the same green region meaning into Celeste."
+      "purpose": "Imagined survivor viewpoint; perceived fairness may differ"
     },
     {
+      "id": "reveal",
       "rangeSeconds": [
-        14,
-        24
+        11,
+        14.5
       ],
-      "narrationLines": [
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        4,
         4
       ],
-      "visual": "Independently sourced genuine-FHD Celeste gameplay, directly inspected for the relevant state. Track the visible player. If the public-code geometry is overlaid, label it 공개 코드 기준 설명 and use a verified matching state; otherwise use an adjacent clearly labeled code-based diagram, not a purported measured in-game detector.",
-      "onScreenEvidence": "Public code normalHitbox 8×11 px and normalHurtbox 8×9 px, subject to source verification by the main research task. Same top offset, different lower boundary; do not center both rectangles arbitrarily.",
-      "purpose": "Connect the authored demonstration to a documented shipped game without asserting developer intent from a code constant.",
-      "join": "Carry green receiving-region meaning back into the same Unity comparison."
+      "purpose": "Reveal actual authored receiving collider"
     },
     {
+      "id": "terms",
       "rangeSeconds": [
-        24,
-        31
+        14.5,
+        21
       ],
-      "narrationLines": [
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
         5,
-        6
+        10.9
       ],
-      "visual": "Unity scene with actual projected green Hurtbox and red Hitbox. Show 피격 판정 영역 / Hurtbox and 공격 판정 영역 / Hitbox next to their actual targets in speech order.",
-      "purpose": "Canonical terms appear while each object and function are visible.",
-      "join": "Keep the current attack and labels through the width comparison."
+      "purpose": "Define Hurtbox then Hitbox while showing their actual projected bounds"
     },
     {
+      "id": "celeste",
       "rangeSeconds": [
-        31,
-        43.5
+        21,
+        27.5
       ],
-      "narrationLines": [
-        7,
-        8
+      "renderer": "Motion Canvas over independent Celeste footage",
+      "sourceRange": [
+        93,
+        99.5
       ],
-      "visual": "Same-size large A→B comparison, same camera/knight/attack path. Wide receiving collider: overlap and actual HP 100→70. Narrow receiving collider: no overlap, actual HP stays 100. Brief observation pauses around the two results.",
-      "purpose": "Only the receiving-region width changes; health is actual simulated state.",
-      "join": "The narrow example establishes a useful margin, then asks how far it should go without adding another technique."
+      "purpose": "Independent FHD gameplay; ring identifies character position, not a measured collider"
     },
     {
+      "id": "code",
       "rangeSeconds": [
-        43.5,
+        27.5,
+        31.5
+      ],
+      "renderer": "Motion Canvas over independent Celeste footage",
+      "sourceRange": [
+        99.5,
+        99.5
+      ],
+      "purpose": "Public code basic-state schematic: equal top, lower boundary2px shorter; no runtime measurement claim"
+    },
+    {
+      "id": "compare-intro",
+      "rangeSeconds": [
+        31.5,
+        34.5
+      ],
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        12,
+        12
+      ],
+      "purpose": "Return to same authored Unity attack"
+    },
+    {
+      "id": "wide",
+      "rangeSeconds": [
+        34.5,
+        37
+      ],
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        13.25,
+        15.38
+      ],
+      "purpose": "Actual BoxCollider width1.4, health100 to70"
+    },
+    {
+      "id": "narrow",
+      "rangeSeconds": [
+        37,
+        43
+      ],
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        15.4,
+        21.3
+      ],
+      "purpose": "Actual BoxCollider width.86, same attack leaves health100"
+    },
+    {
+      "id": "limit",
+      "rangeSeconds": [
+        43,
         50
       ],
-      "narrationLines": [
-        9
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        4,
+        4
       ],
-      "visual": "Keep the comparison. An optional hypothetical tiny green outline must be labeled 설명용 극단 예시 and must not masquerade as the current measured collider. Prefer a simple diagram if adding the extreme helps; no need for a new game or a new technique.",
-      "purpose": "State the limit: a smaller receiving region is not automatically better.",
-      "join": "Return to the modest narrow region rather than the exaggerated hypothetical one."
+      "purpose": "Hypothetical limit; label here is a question, existing .86 collider is not a too-small measured example"
     },
     {
+      "id": "return-game",
       "rangeSeconds": [
         50,
         55
       ],
-      "narrationLines": [
-        10
+      "renderer": "Motion Canvas over independent Celeste footage",
+      "sourceRange": [
+        99,
+        103.5
       ],
-      "visual": "Use the inspected Celeste near-miss or the authored modest-margin comparison. Key label: 피했다고 납득할 여유.",
-      "purpose": "Tie the mechanism to the intended player experience with qualified wording.",
-      "join": "Carry the surviving state into the exact opening replay."
+      "purpose": "Resume independent source; player collects strawberry and continues"
     },
     {
+      "id": "resolution",
       "rangeSeconds": [
         55,
         60
       ],
-      "narrationLines": [
-        11
+      "renderer": "Motion Canvas over existing actual Unity collider capture",
+      "sourceRange": [
+        0.4,
+        1.9
       ],
-      "visual": "Return to the exact initial Unity event. Reveal green/red regions at their closest approach and HP 100. Final concise statement: 겉은 스쳤지만 / 판정은 겹치지 않았다.",
-      "purpose": "Resolve the exact opening question within the last five seconds; no generic ending slogan.",
-      "join": "End on a completed result, with no CTA or new question needed."
+      "purpose": "Answer exact opening with same original event and actual two collider outlines"
     }
   ],
   "factAndVisualGuards": [
@@ -188,7 +245,7 @@
   "narrationEn": [
     "That clearly touched. Why was there no hit?",
     "The attacker says, “Why did that miss?” The survivor says, “Nice dodge!”",
-    "The same moment can feel different.",
+    "The same hit decision can feel more or less fair.",
     "One design choice is to make the hurtbox smaller than the visible body.",
     "The green damage-receiving region is the hurtbox.",
     "Health drops when it overlaps the red attack region, the hitbox.",
@@ -245,5 +302,11 @@
     "reuseApprovedPcm": true,
     "newTtsScope": "7changed/additional sentences in one continuous scene",
     "gpu": "wait for current M04 batch completion; no competing lease or foreign interruption"
+  },
+  "visualTimingStatus": "Provisional ranges; replace with measured narration alignment before full render",
+  "independentAudit": {
+    "claims": "Celeste basic state and separate diagram verified; no guessed runtime boxes; limit text made explicitly hypothetical",
+    "caption": "30 KO/EN cues exact to current narration, maximum2lines and796px at Malgun Gothic Bold60",
+    "audio": "Changed additions wait for foreign M04 GPU batch to finish; no foreign process or lease touched"
   }
 }
