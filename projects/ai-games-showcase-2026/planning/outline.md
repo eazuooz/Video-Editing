@@ -9,7 +9,7 @@
 | 게임 | 어디서 실행하는가 | 엔진·프레임워크·플랫폼 | 확인 범위 |
 |---|---|---|---|
 | [I Just Wanted to Fish](https://store.steampowered.com/app/5350560/I_Just_Wanted_to_Fish/) | Steam 출시 준비 중인 PC 게임 | Unity 6 / HDRP | 플레이 중 AI 미사용은 Steam 안내로 확인. 세부 PC 사양·HDRP 버전 미확정. |
-| [Emberfall — Luminati](https://broad-grass-ea4b.supportinfo-593.workers.dev/editor) | 공개 웹페이지에서 실행 | Luminati 편집기·게임 기반 / Three.js 그래픽 라이브러리 | 직접 이동·카메라 회전 확인. 전체 엔진 구현·AI 모델·정확한 기간 미확인. |
+| [Emberfall — Luminati](https://broad-grass-ea4b.supportinfo-593.workers.dev/game) · [레벨 에디터](https://broad-grass-ea4b.supportinfo-593.workers.dev/editor) | 공개 웹페이지에서 실행 | Luminati 편집기·게임 기반 / Three.js 그래픽 라이브러리 | 직접 이동·카메라 회전 확인. 전체 엔진 구현·AI 모델·정확한 기간 미확인. |
 | [Nightshoal](https://profactor.itch.io/nightshoal) | Windows 다운로드형 PC 공개 빌드 | Godot 게임 엔진 | pre-demo·개발 중. Godot 세부 버전 및 최소 사양 미확인. |
 | [VECTOR: Anti-Gravity Racing](https://wavedash.com/games/vector-anti-gravity-racing) | Wavedash 웹페이지의 브라우저 게임 | Three.js / WebGPU, WebGL 2 대체 경로 | 그래픽 라이브러리·그래픽 API를 엔진/AI와 구분. 모바일 호환 미검증. |
 | [AUGURY: Duel of the Gods](https://sybiote.itch.io/augury-duel) | itch.io 웹페이지의 HTML5 브라우저 게임 | Phaser 2D 게임 프레임워크 / TypeScript | 직접 선택·미리보기·확정 조작 확인. 프레임워크 세부 버전 미공개. |
@@ -98,7 +98,7 @@ Steam에 출시를 준비 중인 PC 게임이고, 게임 엔진은 Unity 6입니
 
 Emberfall — Luminati입니다. 캐릭터는 도트 그림처럼 보이지만, 집과 길이 놓인 공간은 카메라를 돌려서 다른 각도로 볼 수 있습니다. 그림을 올려놓은 작은 모형 마을 같은 느낌이죠.
 
-별도 게임 파일을 설치하는 대신, 공개된 웹페이지에서 실행합니다. 게임 화면에서는 캐릭터 이동과 카메라 회전을 직접 확인했고, 편집기에서는 지형 높이와 물건, 조명을 다룰 수 있었습니다.
+게임 플레이 페이지와 레벨 에디터가 따로 공개되어 있습니다. 플레이 페이지는 별도 설치 없이 브라우저에서 실행하고, 캐릭터 이동과 카메라 회전을 직접 확인할 수 있었어요. 레벨 에디터에서는 지형 높이와 물건, 조명을 다룰 수 있습니다. 두 주소는 설명란에 구분해서 넣어 둘게요.
 
 편집기는 Luminati라는 이름과 Three.js 기반이라는 표시를 사용합니다. Three.js는 브라우저에 입체 장면을 그리는 기능을 모아 둔 그래픽 라이브러리예요. 이 위에 게임 규칙과 편집 기능을 더해, 지금 보이는 마을을 만들고 움직이게 한 겁니다.
 
@@ -106,7 +106,7 @@ Emberfall — Luminati입니다. 캐릭터는 도트 그림처럼 보이지만, 
 
 여기까지는 작은 세계의 모양과 공간을 봤습니다. 다음 낚시 게임에서는 그 공간에 이야기와 여러 시스템을 계속 쌓아 가는 과정을 볼 수 있어요.
 
-화면 구성: 브라우저 실제 마을·카메라 회전 화면 → 공개 편집기의 Three.js 표기와 지형/조명 조작 위치. 정지 캡처는 정지 분석으로 표시하며 임의의 이동 영상을 만들지 않는다.
+화면 구성: 본게임 /game의 타이틀·마을·카메라 화면 → 레벨 에디터 /editor의 지형·물건·조명 도구. 플레이 페이지와 편집기를 각각 표시하고, 설명란에도 링크를 분리한다. 기존 FHD 게임 캡처를 재사용하며 정지 캡처를 연속 플레이로 꾸미지 않는다.
 
 다음 연결: 작은 세계의 공간 구성에서 그 안에 이야기·시스템을 채우는 Nightshoal로 넘어간다.
 

@@ -31,7 +31,10 @@ lines = [
 ]
 for g in research['games']:
     env = g['runtimeAndEngine']
-    lines.append(f"| [{g['name']}]({g['url']}) | {env['viewerRuntimeKo']} | {env['viewerEngineKo']} | {env['limitsKo']} |")
+    game_link = f"[{g['name']}]({g['url']})"
+    if g.get('editorUrl'):
+        game_link += f" · [레벨 에디터]({g['editorUrl']})"
+    lines.append(f"| {game_link} | {env['viewerRuntimeKo']} | {env['viewerEngineKo']} | {env['limitsKo']} |")
 lines += ['', '## 개발 기간과 AI 사용 근거', '',
           '| 게임 | 개발 기간의 의미 | 공개된 모델·AI |', '|---|---|---|']
 for g in research['games']:
