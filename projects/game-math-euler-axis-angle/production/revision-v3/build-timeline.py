@@ -50,7 +50,12 @@ def build():
     placed,pauses,evidence=h.place_verified_observation_pauses(pcm,24000,seams,s['seconds'],review)
    else:placed,pauses,evidence=pcm,[],{'status':'new-overview-current-PCM','rawSamplesPreserved':True}
    s.update(observationPauses=pauses,observationReview=evidence,lineStarts=[obs.mapped_time(x,pauses) for x in s['rawLineStarts']],voicePlacedSamples=len(placed),voicePlacementSeconds=len(placed)/24000)
-   f=O/'placed-voice'/f'{sid}.wav';f.parent.mkdir(parents=True,exist_ok=True);sf.write(f,placed,24000,subtype='FLOAT');s.update(placedVoice=rel(f),placedVoiceSha256=sha(f))
+   f=O/'placed-voice'/f'{sid}.wav';f.parent.mkdir(parents=True,exist_ok=True)
+   if f.exists():
+    kept,kept_rate=sf.read(f,dtype='float32')
+    if kept_rate!=24000 or not np.array_equal(kept,placed):sf.write(f,placed,24000,subtype='FLOAT')
+   else:sf.write(f,placed,24000,subtype='FLOAT')
+   s.update(placedVoice=rel(f),placedVoiceSha256=sha(f))
   if s['kind']=='actual':
    s.pop('annotationWindow',None);s.pop('sourceAllocationReview',None);cplan=cutplan['scenes'][sid];source=sources[cplan['sourceId']];local=0
    ranges=[[round(a*60),round(b*60)] for a,b in cplan['ranges']]

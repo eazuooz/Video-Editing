@@ -94,7 +94,7 @@ def parent_lease(device):
         free = int(subprocess.check_output(
             ["nvidia-smi", "--query-gpu=memory.free", "--format=csv,noheader,nounits"],
             text=True).splitlines()[0])
-        assert free >= 6000, ('Bounded Whisper batch1 requires6000MiB free',free)
+        assert free >= 9000, ('Bounded Whisper batch1 requires9000MiB free',free)
     token = str(uuid.uuid4())
     me = psutil.Process()
     owned = dict(token=token, project=P.name, state="tts_running",
@@ -139,7 +139,7 @@ def model_worker(args):
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
     torch.set_num_threads(8 if args.device == "cpu" else 2)
     if args.device != 'cpu':
-        torch.cuda.set_per_process_memory_fraction(5120*1024*1024/torch.cuda.get_device_properties(0).total_memory,0)
+        torch.cuda.set_per_process_memory_fraction(8192*1024*1024/torch.cuda.get_device_properties(0).total_memory,0)
     dtype = torch.float32 if args.device == "cpu" else torch.float16
     local = R / "qwen3-tts/models/whisper-large-v3-turbo"
     mid = str(local) if (local / "config.json").exists() else "openai/whisper-large-v3-turbo"
@@ -158,7 +158,7 @@ def model_worker(args):
         scope="complete encoded final mix, including joins and quiet native game sound; no added music; direct full-text comparison required",
         recognition=dict(ASR_OPTIONS, expectedTextPrompt=False,
                          peakReservedMiB=torch.cuda.max_memory_reserved()/1048576 if args.device!='cpu' else None,
-                         allocatorLimitMiB=5120 if args.device!='cpu' else None,
+                         allocatorLimitMiB=8192 if args.device!='cpu' else None,
                          coverage="entire authenticated encoded-audio.wav passed to the pipeline",
                          overlapReconciliation="Transformers Whisper decoder reconciles left/right strides and word timestamps"),
         humanListening="pending local user review", noOtherProcessPaused=True))

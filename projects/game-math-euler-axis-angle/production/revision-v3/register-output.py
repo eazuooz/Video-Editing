@@ -21,7 +21,10 @@ def main():
  assert t['actualFrames']*3==t['explanationFrames']*2 and integrity['ratioErrorFrames']==0
  narration=read(HERE/'narration-review.json');final=read(HERE/'final-audio-review.json');visual=read(HERE/'visual-review.json')
  assert narration['directlyComparedCurrentScenes']==26 and narration['fullTextReviewComplete']
- assert final['directWholeTextReviewed'] and final['narrationLevelContinuityStatus'] in ['pass','pass-with-natural-prosody-evidence']
+ assert final['directWholeTextReviewed'] and final['narrationLevelContinuityStatus'] in ['pass','pass-with-natural-prosody-evidence','technical-transfer-pass-context-listening-pending']
+ if final['narrationLevelContinuityStatus']=='technical-transfer-pass-context-listening-pending':
+  assert final['humanWholeListening']=='pending' and final['contextualDropReview']['sourceOriginOnly'] is True
+  assert final['contextualDropReview']['reviewedCandidates']==111 and final['unresolvedConfirmedContentErrors']==0
  assert final['captionedVideoSha256']==visual['captionedVideoSha256']==pair['outputs']['captioned']['sha256']
  assert all(visual[k] for k in ['currentCaptionAndCutPixelsReviewed','movingExplanationsAndAnnotationsReviewed','nativeAndMobileReviewed'])
  assert not read(O/'qa/audio-continuity.json')['flaggedVoiceTransferWindows']
