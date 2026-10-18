@@ -35,11 +35,11 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.Editor
             RunMathChecks();
             UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline = null;
             QualitySettings.renderPipeline = null;
-            Scene original = SceneManager.GetActiveScene();
-            // A fresh isolated editor starts with an untitled scene. Unity
-            // refuses additive authoring until that bootstrap scene is saved.
-            if (original.IsValid() && string.IsNullOrEmpty(original.path))
-                EditorSceneManager.SaveScene(original, Root + "/CaptureBootstrap.unity");
+            // The isolated editor may reopen the last captured scene. Start
+            // from a saved bootstrap so additive baking cannot duplicate a
+            // currently loaded scene path or meet an unsaved blank scene.
+            Scene original = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            EditorSceneManager.SaveScene(original, Root + "/CaptureBootstrap.unity");
             for (int i = 0; i < Ids.Length; i++)
             {
                 Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);

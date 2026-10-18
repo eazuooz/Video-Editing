@@ -1,0 +1,619 @@
+{
+  "schemaVersion": 1,
+  "status": "verified-caption-only-change-with-identical-PCM",
+  "createdAt": "2026-10-18T12:26:10.721095+00:00",
+  "scope": "M04 revision-v2 caption splits only; read-only current timeline/audio audit",
+  "inputs": {
+    "timeline": {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/timeline.json",
+      "sha256": "6393fa2fc4fe0617634a047e3aece694c434330d65d15db86b922173de2a97e4"
+    },
+    "previousAudit": {
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/caption-pause-split-audit.json",
+      "sha256": "956b8832f037e7e79ea7c9ad3c62fba5d71c1aadd9cde2197e2dfdf66e57e31e",
+      "baselineTimelineSha256": "50901d24a1d324d6af6491ac9b6024ce50682e970c3b5e87912c6341ef586103"
+    },
+    "builder": {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/build-timeline.py",
+      "sha256": "a3437c9f84aa770d8396f67f9de3db40b6ced4d4a8ae5ba2c7e40840501c69c1"
+    },
+    "lesson": {
+      "path": "projects/game-math-euler-axis-angle/production/revision-v2/lesson.json",
+      "sha256": "59ae3e8013e4648ce6248228aa088791d49b28c1de0c16146918b45418557d8b"
+    }
+  },
+  "diagnosis": {
+    "sceneObjectEqualityFailureField": "placedVoiceSha256 on the eight actual scenes",
+    "builderCause": "Every non-check build rewrites actual placed FLOAT WAV files via soundfile.write. The RIFF PEAK chunk carries a write-time timestamp, so byte hashes change despite identical PCM.",
+    "timestampSearchBoundsInclusive": [
+      1792325106,
+      1792325113
+    ],
+    "timestampSearchEvidence": "Previous build-timeline-final.log creation/completion window, recorded during the initial diagnosis; no PCM regeneration used.",
+    "proof": "For each current WAV, replacing only bytes [60,64) in memory with its previous PEAK timestamp reproduces the entire saved previous SHA256. Every other file byte, including the complete data chunk, is therefore identical.",
+    "oldFullSceneSnapshotAvailable": false,
+    "claimLimit": "No full before/after scenes-object diff is claimed: the old scene snapshot was not saved. The eight previous WAV hashes and their exact timestamp-only reconstruction are independently preserved."
+  },
+  "actualPlacedVoice": [
+    {
+      "scene": "02",
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/placed-voice/02.wav",
+      "previousFileSha256": "581a9e1f5083467bd1649a8556fed44794fd85a7629fcfe87c590660e093649b",
+      "currentFileSha256": "1a11ccda48fb3eb5e9deeae076c3741bdb10ae308fcdd5e36c2a0f3e77801565",
+      "currentTimelineHashMatches": true,
+      "priorFileHashRecoveredByOnlyInMemoryPeakTimestampReplacement": true,
+      "replacementByteIntervalHalfOpen": [
+        60,
+        64
+      ],
+      "actuallyDifferentByteOffsets": [
+        60,
+        61
+      ],
+      "previousPeakTimestamp": 1792325109,
+      "currentPeakTimestamp": 1792325524,
+      "previousPeakTimestampUtc": "2026-10-18T12:05:09+00:00",
+      "currentPeakTimestampUtc": "2026-10-18T12:12:04+00:00",
+      "pcmDataSha256": "4d6de8a805933df7339f5e35fac4dd3ae37d9d3ce316df0e988f24facb8adb2b",
+      "pcmDataBytes": 7905600,
+      "pcmBytesIdentical": true,
+      "allBytesOutsideTimestampFieldIdentical": true,
+      "format": {
+        "waveFormatTag": 3,
+        "channels": 1,
+        "sampleRate": 24000,
+        "bitsPerSample": 32,
+        "sampleFrames": 1976400,
+        "seconds": 82.35
+      },
+      "chunks": [
+        {
+          "id": "fmt ",
+          "payloadOffset": 20,
+          "bytes": 16
+        },
+        {
+          "id": "fact",
+          "payloadOffset": 44,
+          "bytes": 4
+        },
+        {
+          "id": "PEAK",
+          "payloadOffset": 56,
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "payloadOffset": 80,
+          "bytes": 7905600
+        }
+      ]
+    },
+    {
+      "scene": "05",
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/placed-voice/05.wav",
+      "previousFileSha256": "ddbe70c16e83dc655d1e07b8b76a2beb0686879ad797eae18d4c4d7fdb5d51d6",
+      "currentFileSha256": "d27c25a687b96eb07a808f0de4364c1e6970319e0d5bbb386b1d4342de390179",
+      "currentTimelineHashMatches": true,
+      "priorFileHashRecoveredByOnlyInMemoryPeakTimestampReplacement": true,
+      "replacementByteIntervalHalfOpen": [
+        60,
+        64
+      ],
+      "actuallyDifferentByteOffsets": [
+        60,
+        61
+      ],
+      "previousPeakTimestamp": 1792325109,
+      "currentPeakTimestamp": 1792325524,
+      "previousPeakTimestampUtc": "2026-10-18T12:05:09+00:00",
+      "currentPeakTimestampUtc": "2026-10-18T12:12:04+00:00",
+      "pcmDataSha256": "a0952f302da2206e9ddb16b541dc99c52cea8ad44df5d28afa4ae81471460512",
+      "pcmDataBytes": 9640000,
+      "pcmBytesIdentical": true,
+      "allBytesOutsideTimestampFieldIdentical": true,
+      "format": {
+        "waveFormatTag": 3,
+        "channels": 1,
+        "sampleRate": 24000,
+        "bitsPerSample": 32,
+        "sampleFrames": 2410000,
+        "seconds": 100.41666666666667
+      },
+      "chunks": [
+        {
+          "id": "fmt ",
+          "payloadOffset": 20,
+          "bytes": 16
+        },
+        {
+          "id": "fact",
+          "payloadOffset": 44,
+          "bytes": 4
+        },
+        {
+          "id": "PEAK",
+          "payloadOffset": 56,
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "payloadOffset": 80,
+          "bytes": 9640000
+        }
+      ]
+    },
+    {
+      "scene": "08",
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/placed-voice/08.wav",
+      "previousFileSha256": "2fb0892dcc70afecb64e3a0468f29bc287930ac49d01e519d2b40935ed6b2651",
+      "currentFileSha256": "7f34bcd5e4ac3ff4c09e34cb0576ab1847fa38e3eb6afff58914d92b828748b5",
+      "currentTimelineHashMatches": true,
+      "priorFileHashRecoveredByOnlyInMemoryPeakTimestampReplacement": true,
+      "replacementByteIntervalHalfOpen": [
+        60,
+        64
+      ],
+      "actuallyDifferentByteOffsets": [
+        60,
+        61
+      ],
+      "previousPeakTimestamp": 1792325109,
+      "currentPeakTimestamp": 1792325524,
+      "previousPeakTimestampUtc": "2026-10-18T12:05:09+00:00",
+      "currentPeakTimestampUtc": "2026-10-18T12:12:04+00:00",
+      "pcmDataSha256": "a634dc730e1cd08de113cddced83f5aaf24284e8dbadd817acb72a97892ac30f",
+      "pcmDataBytes": 6168000,
+      "pcmBytesIdentical": true,
+      "allBytesOutsideTimestampFieldIdentical": true,
+      "format": {
+        "waveFormatTag": 3,
+        "channels": 1,
+        "sampleRate": 24000,
+        "bitsPerSample": 32,
+        "sampleFrames": 1542000,
+        "seconds": 64.25
+      },
+      "chunks": [
+        {
+          "id": "fmt ",
+          "payloadOffset": 20,
+          "bytes": 16
+        },
+        {
+          "id": "fact",
+          "payloadOffset": 44,
+          "bytes": 4
+        },
+        {
+          "id": "PEAK",
+          "payloadOffset": 56,
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "payloadOffset": 80,
+          "bytes": 6168000
+        }
+      ]
+    },
+    {
+      "scene": "11",
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/placed-voice/11.wav",
+      "previousFileSha256": "e667c612fbe357667d8f3f953bd7377c31bf779fd0136949c8a37a78b0f4d8a0",
+      "currentFileSha256": "86777cdca29a583dcdb192729cc9e4ba876d7c453c21d9dd2570974d4832347c",
+      "currentTimelineHashMatches": true,
+      "priorFileHashRecoveredByOnlyInMemoryPeakTimestampReplacement": true,
+      "replacementByteIntervalHalfOpen": [
+        60,
+        64
+      ],
+      "actuallyDifferentByteOffsets": [
+        60,
+        61
+      ],
+      "previousPeakTimestamp": 1792325109,
+      "currentPeakTimestamp": 1792325525,
+      "previousPeakTimestampUtc": "2026-10-18T12:05:09+00:00",
+      "currentPeakTimestampUtc": "2026-10-18T12:12:05+00:00",
+      "pcmDataSha256": "93ac63acd273bcc3b1d77f5842c2221c179fc03851ab9f9d37e3e806e82a29e6",
+      "pcmDataBytes": 6564800,
+      "pcmBytesIdentical": true,
+      "allBytesOutsideTimestampFieldIdentical": true,
+      "format": {
+        "waveFormatTag": 3,
+        "channels": 1,
+        "sampleRate": 24000,
+        "bitsPerSample": 32,
+        "sampleFrames": 1641200,
+        "seconds": 68.38333333333334
+      },
+      "chunks": [
+        {
+          "id": "fmt ",
+          "payloadOffset": 20,
+          "bytes": 16
+        },
+        {
+          "id": "fact",
+          "payloadOffset": 44,
+          "bytes": 4
+        },
+        {
+          "id": "PEAK",
+          "payloadOffset": 56,
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "payloadOffset": 80,
+          "bytes": 6564800
+        }
+      ]
+    },
+    {
+      "scene": "14",
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/placed-voice/14.wav",
+      "previousFileSha256": "90e14674cf4ff20c23959b9b63e00a8792ff95e6b36df4c43c459e7543a89a4a",
+      "currentFileSha256": "1c6ee80c232964283844b4a032b0abf14e5a2e5279c22f7d8b368fe33b644382",
+      "currentTimelineHashMatches": true,
+      "priorFileHashRecoveredByOnlyInMemoryPeakTimestampReplacement": true,
+      "replacementByteIntervalHalfOpen": [
+        60,
+        64
+      ],
+      "actuallyDifferentByteOffsets": [
+        60,
+        61
+      ],
+      "previousPeakTimestamp": 1792325109,
+      "currentPeakTimestamp": 1792325525,
+      "previousPeakTimestampUtc": "2026-10-18T12:05:09+00:00",
+      "currentPeakTimestampUtc": "2026-10-18T12:12:05+00:00",
+      "pcmDataSha256": "2eaa39417e7d16f754bce8c54aafb0dd1f528d91cbb1b060ad817a802c7a66e8",
+      "pcmDataBytes": 6006400,
+      "pcmBytesIdentical": true,
+      "allBytesOutsideTimestampFieldIdentical": true,
+      "format": {
+        "waveFormatTag": 3,
+        "channels": 1,
+        "sampleRate": 24000,
+        "bitsPerSample": 32,
+        "sampleFrames": 1501600,
+        "seconds": 62.56666666666667
+      },
+      "chunks": [
+        {
+          "id": "fmt ",
+          "payloadOffset": 20,
+          "bytes": 16
+        },
+        {
+          "id": "fact",
+          "payloadOffset": 44,
+          "bytes": 4
+        },
+        {
+          "id": "PEAK",
+          "payloadOffset": 56,
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "payloadOffset": 80,
+          "bytes": 6006400
+        }
+      ]
+    },
+    {
+      "scene": "17",
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/placed-voice/17.wav",
+      "previousFileSha256": "8a49cd26c8f9a9b1b328cffa97a2dbedd3de03415dac64fef9b83f2dfd6cb475",
+      "currentFileSha256": "4a593e998d006973b14c88ab4e4742de13587bc7c66301f0d29d0034283561f9",
+      "currentTimelineHashMatches": true,
+      "priorFileHashRecoveredByOnlyInMemoryPeakTimestampReplacement": true,
+      "replacementByteIntervalHalfOpen": [
+        60,
+        64
+      ],
+      "actuallyDifferentByteOffsets": [
+        60,
+        61
+      ],
+      "previousPeakTimestamp": 1792325110,
+      "currentPeakTimestamp": 1792325525,
+      "previousPeakTimestampUtc": "2026-10-18T12:05:10+00:00",
+      "currentPeakTimestampUtc": "2026-10-18T12:12:05+00:00",
+      "pcmDataSha256": "e697e775f6faba01142fa7f50da2ae913752767da174a28cc21ae2ae90002f94",
+      "pcmDataBytes": 6182400,
+      "pcmBytesIdentical": true,
+      "allBytesOutsideTimestampFieldIdentical": true,
+      "format": {
+        "waveFormatTag": 3,
+        "channels": 1,
+        "sampleRate": 24000,
+        "bitsPerSample": 32,
+        "sampleFrames": 1545600,
+        "seconds": 64.4
+      },
+      "chunks": [
+        {
+          "id": "fmt ",
+          "payloadOffset": 20,
+          "bytes": 16
+        },
+        {
+          "id": "fact",
+          "payloadOffset": 44,
+          "bytes": 4
+        },
+        {
+          "id": "PEAK",
+          "payloadOffset": 56,
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "payloadOffset": 80,
+          "bytes": 6182400
+        }
+      ]
+    },
+    {
+      "scene": "20",
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/placed-voice/20.wav",
+      "previousFileSha256": "b7b2d5a3f935b223e26a01cea71946a1e03ab14d625f3f45ac79104f3e31a286",
+      "currentFileSha256": "f62f07e1e38b47ff375d882e32f4a62240d8bcc679ec535a5cdd086716f5bf0e",
+      "currentTimelineHashMatches": true,
+      "priorFileHashRecoveredByOnlyInMemoryPeakTimestampReplacement": true,
+      "replacementByteIntervalHalfOpen": [
+        60,
+        64
+      ],
+      "actuallyDifferentByteOffsets": [
+        60,
+        61
+      ],
+      "previousPeakTimestamp": 1792325110,
+      "currentPeakTimestamp": 1792325525,
+      "previousPeakTimestampUtc": "2026-10-18T12:05:10+00:00",
+      "currentPeakTimestampUtc": "2026-10-18T12:12:05+00:00",
+      "pcmDataSha256": "b4648d26c9134f3b392a2be6b26915ca3a87f841f9967a417afb0441eb77b2cb",
+      "pcmDataBytes": 9622400,
+      "pcmBytesIdentical": true,
+      "allBytesOutsideTimestampFieldIdentical": true,
+      "format": {
+        "waveFormatTag": 3,
+        "channels": 1,
+        "sampleRate": 24000,
+        "bitsPerSample": 32,
+        "sampleFrames": 2405600,
+        "seconds": 100.23333333333333
+      },
+      "chunks": [
+        {
+          "id": "fmt ",
+          "payloadOffset": 20,
+          "bytes": 16
+        },
+        {
+          "id": "fact",
+          "payloadOffset": 44,
+          "bytes": 4
+        },
+        {
+          "id": "PEAK",
+          "payloadOffset": 56,
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "payloadOffset": 80,
+          "bytes": 9622400
+        }
+      ]
+    },
+    {
+      "scene": "23",
+      "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/placed-voice/23.wav",
+      "previousFileSha256": "7d1ec78c270590c47461cd2356a85c0566f59128bf83f5a1b623feeb44051dd1",
+      "currentFileSha256": "c477c1d03610fff5ed71a63d12025d578367eb7e2c0b8a00ea605ca8a11e0519",
+      "currentTimelineHashMatches": true,
+      "priorFileHashRecoveredByOnlyInMemoryPeakTimestampReplacement": true,
+      "replacementByteIntervalHalfOpen": [
+        60,
+        64
+      ],
+      "actuallyDifferentByteOffsets": [
+        60,
+        61
+      ],
+      "previousPeakTimestamp": 1792325110,
+      "currentPeakTimestamp": 1792325525,
+      "previousPeakTimestampUtc": "2026-10-18T12:05:10+00:00",
+      "currentPeakTimestampUtc": "2026-10-18T12:12:05+00:00",
+      "pcmDataSha256": "8823665d2eebb4fee8ac2966d40bf91514e8b4b75fdccb3f1bb3c25a85db4d69",
+      "pcmDataBytes": 6864000,
+      "pcmBytesIdentical": true,
+      "allBytesOutsideTimestampFieldIdentical": true,
+      "format": {
+        "waveFormatTag": 3,
+        "channels": 1,
+        "sampleRate": 24000,
+        "bitsPerSample": 32,
+        "sampleFrames": 1716000,
+        "seconds": 71.5
+      },
+      "chunks": [
+        {
+          "id": "fmt ",
+          "payloadOffset": 20,
+          "bytes": 16
+        },
+        {
+          "id": "fact",
+          "payloadOffset": 44,
+          "bytes": 4
+        },
+        {
+          "id": "PEAK",
+          "payloadOffset": 56,
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "payloadOffset": 80,
+          "bytes": 6864000
+        }
+      ]
+    }
+  ],
+  "unchangedExplanationVoices": [
+    {
+      "scene": "01",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/01-scene.wav",
+      "sha256": "a45b4ded247094d23945857cdf4c3eec4e109e38381be69b8236563206880bf1"
+    },
+    {
+      "scene": "03",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/03-scene.wav",
+      "sha256": "f5de62181b44a7ebd76caa6e897b8fd30eaa1da07605f0f68dbd171350e66e6c"
+    },
+    {
+      "scene": "04",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/04-scene.wav",
+      "sha256": "62de85d022a21794b1fdff973681d7dd43df9760e14f083a0c24b65e7eca7ea0"
+    },
+    {
+      "scene": "06",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/06-scene.wav",
+      "sha256": "126039da1e1d211f1f5664512792ec06ff0c4d586eb9557754ff2bc80ba41415"
+    },
+    {
+      "scene": "07",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/07-scene.wav",
+      "sha256": "308a3025d10bae37b0b1b1a0bb36bce730818074733dc828c54e792e99c0e24f"
+    },
+    {
+      "scene": "09",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/09-scene.wav",
+      "sha256": "e1cb2f1e187486fbf90652bc1930648082943a2155dcba701110ed7cc18a7d93"
+    },
+    {
+      "scene": "10",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/10-scene.wav",
+      "sha256": "fd27c50796c77631312122725faf9469246d6bea09ee61f8061fe215db0130bf"
+    },
+    {
+      "scene": "12",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/12-scene.wav",
+      "sha256": "be4a0e05356ee129bd3db2de49a43d309da6f56488fa3971f38163edad67ffa9"
+    },
+    {
+      "scene": "13",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/13-scene.wav",
+      "sha256": "ec7d02de0b3bbd3637e0ff5b9833a4904139947d47888205fc2e8dca1e93c347"
+    },
+    {
+      "scene": "15",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/15-scene.wav",
+      "sha256": "6a443b6d6537b431fc31e2edae5b8cd52f1723c13fb16033ca86e0be5602bd13"
+    },
+    {
+      "scene": "16",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/16-scene.wav",
+      "sha256": "a30730531d50e184de3e576087cc1067568a62590a4650690e71bdef4dd3c836"
+    },
+    {
+      "scene": "18",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/18-scene.wav",
+      "sha256": "444cc6d05e2f4e3f379555c6f847d56ea13e57c1265cc2155d150223cf807cb2"
+    },
+    {
+      "scene": "19",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/19-scene.wav",
+      "sha256": "94e09b1abd6314d87c57609995b7f082a2da6bdfbe9c3dc78e6735909789511a"
+    },
+    {
+      "scene": "21",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/21-scene.wav",
+      "sha256": "da7bd222321917dcf9304f814a22b385dd2c9c7b55afd91f7ce60d31aae47a5f"
+    },
+    {
+      "scene": "22",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/22-scene.wav",
+      "sha256": "6f06a09ad9d5ad347113849c67931eb935fca326069e8ad819f853d0d63e1314"
+    },
+    {
+      "scene": "24",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/24-scene.wav",
+      "sha256": "cfb4f276e1564517c9fb3dc825ab8b5cc14fcb2b9671f94467efb7be874a5fb8"
+    },
+    {
+      "scene": "25",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/25-scene.wav",
+      "sha256": "bdf4c4140d9e78377472527e85c3cd8976e94627b0ba97e24eaaad5797e16eab"
+    },
+    {
+      "scene": "26",
+      "path": "shared/output/narration/game-math-euler-axis-angle/teaching-rules-v2/chunks/26-scene.wav",
+      "sha256": "0a1cad199d8538ccc04b01f54238ec676cd7bce30bcb4c9cb576214136ed15b5"
+    }
+  ],
+  "captionHelperReadOnlyTest": {
+    "method": "Extracted only split_observation_caption_cues by AST; reconstructed its 328 input rows in memory from current captions and their saved original fields; no builder execution.",
+    "inputSceneCanonicalJsonSha256": "73ee9bd97c5a023c797e2e49800182366059f687ea5dcddd84baf44fb532a0bb",
+    "sceneObjectsDeepEqualAfterHelper": true,
+    "sceneFieldsAdded": [],
+    "observationPauseFieldsAdded": [],
+    "finalCueCounts": {
+      "ko": 330,
+      "en": 330
+    },
+    "splitSourceCues": [
+      93,
+      167
+    ]
+  },
+  "captureInputEquivalence": {
+    "path": "projects/game-math-euler-axis-angle/production/local/revision-v2/caption-split-capture-equivalence.json",
+    "sha256": "b134642a1e366e2992af854fecc75cdc952260e35535a2523a65d51906e09165",
+    "reportedBy": "root independent capture-input comparison",
+    "timelineSha256Matches": true,
+    "captureJobByteIdentical": {
+      "fullJob": true,
+      "placements": true
+    },
+    "representativeComposites": [
+      {
+        "scene": "03",
+        "signature": "b28f161699ee7535ef9a4e21bb72790b35796f484b7c28cac72fac3ea1378592",
+        "outputSha256": "c2f5e2f2342490425439812b09807c1f7e150c5d35d31cfb3bf571d4025c5f87",
+        "relevantInputsIdentical": true
+      },
+      {
+        "scene": "07",
+        "signature": "9903bbc43c7fc516c76b7c2b7eb77931e31b6ee8c90f8d86083ba73f0088e711",
+        "outputSha256": "0a48605011ad03019473da05ceb9c3c122cd280282ba212e14164381a95b997e",
+        "relevantInputsIdentical": true
+      }
+    ],
+    "movingFinalReview": "pending; metadata equivalence does not approve unreviewed moving output"
+  },
+  "timelineInvariants": {
+    "totalFrames": 93555,
+    "fps": 60,
+    "actualFrames": 37134,
+    "actualSeconds": 618.9,
+    "actualCutCount": 50,
+    "captionCues": 330
+  },
+  "mutationSafety": {
+    "timelineAndAudioHashesUnchangedDuringAudit": true,
+    "audioFilesWritten": false,
+    "canonicalTimelineWritten": false,
+    "builderExecuted": false,
+    "ASRStarted": false,
+    "GPUOrMediaJobStarted": false
+  }
+}

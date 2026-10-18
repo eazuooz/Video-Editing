@@ -4,6 +4,10 @@ These are self-authored teaching illustrations, not Superflight footage or a mea
 
 Canonical editor: **Unity6000.6.0f1**. Main project: **URP17.6.0** (existing PC quality setting). The disposable local capture project uses the **built-in pipeline**, linear color, two directional lights, no shadows or postprocessing. It changes only its own pipeline selection. White background preserves this lecture's approved style; semantic axes are X red, Y green and Z blue.
 
+The canonical `.mat` files explicitly reference the installed URP Lit/Unlit shader GUIDs and preserve BaseColor, BaseMap, opaque blend/depth settings and authored smoothness. They are not left as built-in Standard materials after sync. `verify-pipeline-compat.py` checks the installed shader source/GUID/property contract and saved hierarchy using CPU only, records unchanged main ProjectSettings and makes no rendered-URP claim.
+
+Playback now reuses saved editable geometry: camera/aircraft/axis/control-surface references are serialized, and older scenes can recover them by their existing names. `Start` does not discard a valid baked hierarchy. If that saved hierarchy is incomplete, it reports the issue and preserves edits instead of rebuilding automatically. When the active pipeline differs from the stored material, adaptation creates renderer material instances while preserving color/smoothness; it never edits the canonical `.mat` asset, switches the main pipeline or regenerates meshes. The explicit Build context command remains available when intentional regeneration is wanted.
+
 ## Mathematical contract
 
 All displayed equations are **right-handed, column-vector, local-to-world**. Forward is +z and up is +y. Intrinsic body Y–X–Z is `R = Ry(h) Rx(p) Rz(b)`, equivalent to extrinsic fixed Z–X–Y. Unity Euler values are never substituted for that equation.

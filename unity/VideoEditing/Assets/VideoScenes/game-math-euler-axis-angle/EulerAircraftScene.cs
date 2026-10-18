@@ -31,20 +31,22 @@ namespace YamyamCoding.GameMath.EulerAxisAngle
         public float pairLayoutOrthoSize = 3.9f;
         public float pairAircraftScale = .80f;
         public const int CaptureWidth = 1920, CaptureHeight = 1080, CaptureFps = 60;
-        public Camera SceneCamera { get; private set; }
-        public Transform AircraftA { get; private set; }
-        public Transform AircraftB { get; private set; }
+        [SerializeField, HideInInspector] private Camera savedSceneCamera;
+        [SerializeField, HideInInspector] private Transform savedAircraftA, savedAircraftB;
+        public Camera SceneCamera { get => savedSceneCamera; private set => savedSceneCamera = value; }
+        public Transform AircraftA { get => savedAircraftA; private set => savedAircraftA = value; }
+        public Transform AircraftB { get => savedAircraftB; private set => savedAircraftB = value; }
         public Matrix4x4 MathRotationA { get; private set; } = Matrix4x4.identity;
         public Matrix4x4 MathRotationB { get; private set; } = Matrix4x4.identity;
         public string StageLabel { get; private set; } = "initial";
 
-        private Transform generated, worldAxes, axisAngleGuide;
-        private Transform alternateAxisGuide;
+        [SerializeField, HideInInspector] private Transform generated, worldAxes, axisAngleGuide;
+        [SerializeField, HideInInspector] private Transform alternateAxisGuide;
         private readonly List<Material> ownedMaterials = new List<Material>();
         private readonly Dictionary<string, Material> materialCache = new Dictionary<string, Material>();
         private readonly List<Mesh> ownedMeshes = new List<Mesh>();
-        private Transform aileronLeftA, aileronRightA, elevatorA, rudderA;
-        private Transform aileronLeftB, aileronRightB, elevatorB, rudderB;
+        [SerializeField, HideInInspector] private Transform aileronLeftA, aileronRightA, elevatorA, rudderA;
+        [SerializeField, HideInInspector] private Transform aileronLeftB, aileronRightB, elevatorB, rudderB;
         private float startTime;
         private Vector3 eulerA, eulerB, rotationVectorA, rotationVectorB;
         private bool hasEulerA, hasEulerB, hasRotationVectorA, hasRotationVectorB;
@@ -54,7 +56,20 @@ namespace YamyamCoding.GameMath.EulerAxisAngle
 
         private void Start()
         {
-            if (generated == null) Build();
+            // Keep the editor-saved editable hierarchy, meshes and manual
+            // source edits on playback. Older source scenes are rebound by
+            // name rather than discarded because private fields were unsaved.
+            if (!BindSavedGeometry())
+            {
+                if (transform.Find("Generated lesson geometry") != null)
+                {
+                    Debug.LogError("M04 saved geometry is incomplete; restore its aircraft/camera or explicitly rebuild. Existing edits were preserved.", this);
+                    enabled = false;
+                    return;
+                }
+                Build();
+            }
+            AdaptSavedMaterialsToActivePipeline();
             startTime = Time.time;
             Evaluate(normalizedTime);
         }
@@ -66,6 +81,84 @@ namespace YamyamCoding.GameMath.EulerAxisAngle
         public bool HasTwoAircraft => lessonMode == "extrinsic" || lessonMode == "order"
             || lessonMode == "aliases" || lessonMode == "gimbal-values" || lessonMode == "interpolation"
             || lessonMode == "axis-aliases" || lessonMode == "nonadd";
+
+        private static bool UsesSrp()
+        {
+            // Before the first rendered frame currentRenderPipeline may be
+            // null although the selected quality/default asset is already URP.
+            return GraphicsSettings.currentRenderPipeline != null
+                || QualitySettings.renderPipeline != null || GraphicsSettings.defaultRenderPipeline != null;
+        }
+        public bool BindSavedGeometry()
+        {
+            if (generated == null) generated = transform.Find("Generated lesson geometry");
+            if (generated == null) return false;
+            if (SceneCamera == null) SceneCamera = generated.GetComponentInChildren<Camera>(true);
+            if (AircraftA == null) AircraftA = generated.Find("Aircraft A");
+            if (AircraftB == null) AircraftB = generated.Find("Aircraft B");
+            if (worldAxes == null) worldAxes = generated.Find("Fixed world axes");
+            if (axisAngleGuide == null) axisAngleGuide = generated.Find("Axis angle guide");
+            if (alternateAxisGuide == null) alternateAxisGuide = generated.Find("B explicit rotation axis");
+            if (AircraftA != null)
+            {
+                if (aileronLeftA == null) aileronLeftA = AircraftA.Find("Port hinged aileron");
+                if (aileronRightA == null) aileronRightA = AircraftA.Find("Starboard hinged aileron");
+                if (elevatorA == null) elevatorA = AircraftA.Find("Hinged elevator");
+                if (rudderA == null) rudderA = AircraftA.Find("Hinged rudder");
+            }
+            if (AircraftB != null)
+            {
+                if (aileronLeftB == null) aileronLeftB = AircraftB.Find("Port hinged aileron");
+                if (aileronRightB == null) aileronRightB = AircraftB.Find("Starboard hinged aileron");
+                if (elevatorB == null) elevatorB = AircraftB.Find("Hinged elevator");
+                if (rudderB == null) rudderB = AircraftB.Find("Hinged rudder");
+            }
+            return SceneCamera != null && AircraftA != null && worldAxes != null && (!HasTwoAircraft || AircraftB != null);
+        }
+
+        [ContextMenu("Adapt saved materials to active render pipeline")]
+        public void AdaptSavedMaterialsToActivePipeline()
+        {
+            if (!BindSavedGeometry()) return;
+            bool srp = UsesSrp();
+            var adapted = new Dictionary<Material, Material>();
+            foreach (Renderer renderer in generated.GetComponentsInChildren<Renderer>(true))
+            {
+                Material original = renderer.sharedMaterial;
+                if (original == null || original.shader == null) continue;
+                string originalName = original.shader.name;
+                bool alreadyCompatible = srp ? originalName.StartsWith("Universal Render Pipeline/", StringComparison.Ordinal)
+                    : !originalName.StartsWith("Universal Render Pipeline/", StringComparison.Ordinal);
+                if (alreadyCompatible) continue;
+                if (!adapted.TryGetValue(original, out Material copy))
+                {
+                    bool unlit = originalName.IndexOf("Unlit", StringComparison.OrdinalIgnoreCase) >= 0;
+                    Shader target = Shader.Find(srp ? (unlit ? "Universal Render Pipeline/Unlit" : "Universal Render Pipeline/Lit")
+                        : (unlit ? "Unlit/Color" : "Standard"));
+                    if (target == null)
+                    {
+                        Debug.LogError("M04 target shader is unavailable; install/restore the existing project package lock before preview. Original source material was preserved.", this);
+                        continue;
+                    }
+                    Color color = original.HasProperty("_BaseColor") ? original.GetColor("_BaseColor")
+                        : original.HasProperty("_Color") ? original.GetColor("_Color") : Color.white;
+                    float smoothness = original.HasProperty("_Smoothness") ? original.GetFloat("_Smoothness")
+                        : original.HasProperty("_Glossiness") ? original.GetFloat("_Glossiness") : .22f;
+                    // Clone only the material instance; never edit a canonical
+                    // .mat asset, switch the project pipeline, or rebuild meshes.
+                    copy = new Material(target) { name = original.name + " active-pipeline instance" };
+                    copy.color = color;
+                    if (copy.HasProperty("_BaseColor")) copy.SetColor("_BaseColor", color);
+                    if (copy.HasProperty("_Color")) copy.SetColor("_Color", color);
+                    if (copy.HasProperty("_Smoothness")) copy.SetFloat("_Smoothness", smoothness);
+                    if (copy.HasProperty("_Glossiness")) copy.SetFloat("_Glossiness", smoothness);
+                    if (copy.HasProperty("_Metallic")) copy.SetFloat("_Metallic", 0f);
+                    if (copy.HasProperty("_Cull")) copy.SetFloat("_Cull", 0f);
+                    ownedMaterials.Add(copy); adapted.Add(original, copy);
+                }
+                renderer.sharedMaterial = copy;
+            }
+        }
 
         [ContextMenu("Build editable lesson objects")]
         public void Build()
@@ -530,7 +623,7 @@ namespace YamyamCoding.GameMath.EulerAxisAngle
         }
         private Material MakeMaterial(Color color, bool unlit)
         {
-            bool srp = GraphicsSettings.currentRenderPipeline != null;
+            bool srp = UsesSrp();
             string cacheKey = ColorUtility.ToHtmlStringRGBA(color) + "-" + unlit + "-" + srp;
             if (materialCache.TryGetValue(cacheKey, out Material existing)) return existing;
             Shader shader = Shader.Find(srp ? (unlit ? "Universal Render Pipeline/Unlit" : "Universal Render Pipeline/Lit")
@@ -540,6 +633,7 @@ namespace YamyamCoding.GameMath.EulerAxisAngle
             material.color = color;
             if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
             if (material.HasProperty("_Smoothness")) material.SetFloat("_Smoothness", .22f);
+            if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", .22f);
             if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", 0f);
             // Procedural surfaces are double-sided for stable authoring and interior visibility.
             if (material.HasProperty("_Cull")) material.SetFloat("_Cull", 0f);

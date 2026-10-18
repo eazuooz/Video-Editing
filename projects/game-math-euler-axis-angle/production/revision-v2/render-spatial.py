@@ -185,18 +185,30 @@ def wrap(text,width,size,bold=False,max_lines=3):
     result=[]
     for paragraph in text.split('\n'):
         line=''
-        for char in paragraph:
-            if line and font.getlength(line+char)>width:result.append(line.rstrip());line=char.lstrip()
-            else:line+=char
+        # Keep normal Latin words/numbers intact when wrapping mixed Korean
+        # terminology. Korean text keeps the previous character fallback.
+        for token in re.findall(r'[A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?|.',paragraph):
+            if line and font.getlength(line+token)>width:
+                result.append(line.rstrip());line=''
+            if not line:token=token.lstrip()
+            if not token:continue
+            if font.getlength(token)>width:
+                # Only a token longer than the entire available line needs a
+                # character fallback; ordinary words such as moving stay whole.
+                for char in token:
+                    if line and font.getlength(line+char)>width:result.append(line.rstrip());line=char
+                    else:line+=char
+            else:line+=token
         if line:result.append(line.rstrip())
     if len(result)>max_lines:raise ValueError(f'Text exceeds planned{max_lines}lines at{size}px: {text}')
     return '\n'.join(result)
 
 class Overlay:
     def __init__(self):self.lines=[]
-    def text(self,start,end,text,x,y,size=44,color='101810',bold=False,align=7,layer=5,move=None):
+    def text(self,start,end,text,x,y,size=44,color='101810',bold=False,align=7,layer=5,move=None,outline=0):
         position=f'\\pos({round(x)},{round(y)})' if move is None else f'\\move({round(x)},{round(y)},{round(move[0])},{round(move[1])})'
-        self.lines.append(f'Dialogue: {layer},{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an{align}{position}\\fs{size}\\c&H{color}&\\b{int(bold)}\\bord0}}'+clean(text))
+        border=f'\\bord{outline}\\3c&HFFFFFF&\\3a&H00&\\shad0' if outline else '\\bord0'
+        self.lines.append(f'Dialogue: {layer},{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an{align}{position}\\fs{size}\\c&H{color}&\\b{int(bold)}{border}}}'+clean(text))
     def leader(self,start,end,a,b,color='707070',force=False):
         if math.dist(a,b)<30 and not force:return
         self.lines.append(f'Dialogue: 3,{clock(start)},{clock(end)},Text,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\c&H{color}&\\bord1\\1a&HFF&}}m {round(a[0])} {round(a[1])} l {round(b[0])} {round(b[1])}{{\\p0}}')
@@ -299,12 +311,12 @@ def add_anchors(overlay,slot,states,pair):
         lookup={(l['group'],l['axis'],l['text']):l for l in later}
         for label in now:
             dest=lookup.get((label['group'],label['axis'],label['text']),label)
-            overlay.text(start,end,label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6,(dest['x'],dest['y']))
+            overlay.text(start,end,label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6,(dest['x'],dest['y']),outline=3)
             overlay.leader(start,end,label['target'],(label['x'],label['y']),force=label.get('clampedToGeometryPane',False))
     hold_start=slot['startFrame']+capture
     if hold_start<slot['endFrame']:
         for label in label_candidates(states[-1],pair):
-            overlay.text(hold_start,slot['endFrame'],label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6)
+            overlay.text(hold_start,slot['endFrame'],label['text'],label['x'],label['y'],AXIS_LABEL_SIZE,label['color'],True,5,6,outline=3)
             overlay.leader(hold_start,slot['endFrame'],label['target'],(label['x'],label['y']),force=label.get('clampedToGeometryPane',False))
 
 def build_overlay(scene,lesson_scene,slots,out):
