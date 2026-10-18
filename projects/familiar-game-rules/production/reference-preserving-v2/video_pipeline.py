@@ -406,13 +406,22 @@ def render_cuts(plan: dict, output: Path):
         sar = Fraction(raw_sar.replace(":", "/")) if raw_sar not in ("N/A", "0:1", "0/1") else Fraction(1)
         if sar <= 0:
             sar = Fraction(1)
-        aspect = source_info["width"] * float(sar) / source_info["height"]
+        crop = cut.get("sourceCrop")
+        crop_filter = ""
+        if crop:
+            cx, cy, cw, ch = crop
+            if any(int(v) != v or v % 2 for v in crop) or min(cx, cy) < 0 or min(cw, ch) <= 0 or cx + cw > source_info["width"] or cy + ch > source_info["height"]:
+                raise ValueError(f"Invalid inspected source crop: {cut['id']}")
+            aspect = cw * float(sar) / ch
+            crop_filter = f"crop={cw}:{ch}:{cx}:{cy},"
+        else:
+            aspect = source_info["width"] * float(sar) / source_info["height"]
         fit_w, fit_h = w, 2 * math.floor((w / aspect) / 2)
         if fit_h > h:
             fit_h, fit_w = h, 2 * math.floor((h * aspect) / 2)
         left, top = x + (w - fit_w) // 2, y + (h - fit_h) // 2
         left, top = left // 2 * 2, top // 2 * 2
-        vf = f"fps=60,scale={fit_w}:{fit_h}:flags=lanczos,setsar=1,pad=1920:1080:{left}:{top}:black,setpts=PTS-STARTPTS"
+        vf = crop_filter + f"fps=60,scale={fit_w}:{fit_h}:flags=lanczos,setsar=1,pad=1920:1080:{left}:{top}:black,setpts=PTS-STARTPTS"
         if ass:
             vf += ",ass=" + filter_path(mark_file)
         temp = destination.with_suffix(".partial.mp4")

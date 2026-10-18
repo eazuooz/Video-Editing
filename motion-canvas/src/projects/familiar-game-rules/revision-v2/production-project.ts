@@ -1,0 +1,10 @@
+import {makeProject} from '@motion-canvas/core';
+import s0 from './production-cut04?scene';
+import s1 from './production-cut27?scene';
+import s2 from './production-cut32?scene';
+import s3 from './production-cut39?scene';
+import s4 from './production-cut41?scene';
+import s5 from './production-cut42?scene';
+import s6 from './production-cut45?scene';
+import s7 from './production-cut49?scene';
+export default makeProject({scenes:[s0,s1,s2,s3,s4,s5,s6,s7]});

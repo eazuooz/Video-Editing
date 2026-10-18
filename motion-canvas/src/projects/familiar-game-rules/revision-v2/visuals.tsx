@@ -4,7 +4,7 @@ import {DARK as D} from '../../../styles/research-dark';
 
 export interface Timing {duration:number; cues?:number[]; title?:string; credit?:string;}
 type Point = [number,number];
-const ASSETS='/@fs/D:/Github/VideoEditing/projects/familiar-game-rules/production/local/reference-preserving-v2/assets/';
+const ASSETS='/@fs/D:/Github/VideoEditing/output/familiar-game-rules/preproduction-assets/';
 const clamp=(value:number)=>Math.max(0,Math.min(1,value));
 const smooth=(value:number)=>{const x=clamp(value);return x*x*(3-2*x);};
 const text=(value:string,x:number,y:number,size=48,color:string=D.ink)=><Txt text={value} x={x} y={y} fontSize={size} lineHeight={size*1.28} fill={color} fontWeight={600} fontFamily={D.font}/>;
@@ -18,10 +18,13 @@ const text=(value:string,x:number,y:number,size=48,color:string=D.ink)=><Txt tex
  */
 export function* lesson(view:View2D,kind:string,timing:Timing){
  const t=createSignal(0),duration=timing.duration;
+ // Short look-development scenes compress their reveal/response durations
+ // along with the supplied cues. Normal measured lesson scenes retain1x.
+ const motionScale=Math.min(1,duration/8);
  const fallback=[0,.18,.36,.54,.72,.88];
  const at=(index:number)=>timing.cues?.[index]??duration*(fallback[Math.min(index,fallback.length-1)]??0);
- const reveal=(index:number,delay=0,length=.55)=>()=>smooth((t()-at(index)-delay)/length);
- const interval=(index:number,endIndex?:number)=>()=>reveal(index)()*(endIndex===undefined?1:1-smooth((t()-at(endIndex))/.4));
+ const reveal=(index:number,delay=0,length=.55)=>()=>smooth((t()-at(index)-delay*motionScale)/(length*motionScale));
+ const interval=(index:number,endIndex?:number)=>()=>reveal(index)()*(endIndex===undefined?1:1-smooth((t()-at(endIndex))/(.4*motionScale)));
  const add=(index:number,children:any,delay=0)=>view.add(<Node opacity={reveal(index,delay)}>{children}</Node>);
  const during=(index:number,endIndex:number|undefined,children:any)=>view.add(<Node opacity={interval(index,endIndex)}>{children}</Node>);
  const label=(value:string,x:number,y:number,index:number,color:string=D.ink,size=48,delay=0)=>add(index,text(value,x,y,size,color),delay);
@@ -114,7 +117,7 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
   }
   case 'standard': {
    label('사실상의 표준  /  de facto standard',0,-300,0,D.title,43);
-   const u=()=>smooth((t()-at(1)-.85)/1.35);
+   const u=()=>smooth((t()-at(1)-.85*motionScale)/(1.35*motionScale));
    // Recognizable mouse and pointer silhouettes are authored illustrations.
    const mouse=<Node x={()=>-570+70*u()} y={-48}>
     <Rect width={142} height={208} radius={65} stroke={D.ink} lineWidth={7} fill={D.background}/>
@@ -130,7 +133,7 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
    break;
   }
   case 'remap': {
-   const menuSwitch=()=>at(0)+Math.max(1.8,(at(1)-at(0))*.52);
+   const menuSwitch=()=>at(0)+Math.max(.02,(at(1)-at(0))*.52);
    const beforeSwitch=()=>t()<menuSwitch()?1:0;
    const afterSwitch=()=>t()>=menuSwitch()?1:0;
    view.add(<Node opacity={()=>t()>=at(0)&&t()<at(1)?1:0}>
@@ -176,7 +179,7 @@ export function* lesson(view:View2D,kind:string,timing:Timing){
     <Circle x={450} y={-27} width={225} height={225} stroke={D.line} lineWidth={6}/>
     <Line points={[[450,-27],[550,-27]]} stroke={D.green} lineWidth={7} endArrow arrowSize={17} end={reveal(2,0,.85)}/>
    </>);
-   const phase=()=>clamp((t()-at(2))/Math.max(2,at(3)-at(2)));
+   const phase=()=>clamp((t()-at(2))/Math.max(.08,at(3)-at(2)));
    const value=()=>phase()<.2?0:phase()<.45?.25:phase()<.75?.75:1;
    during(1,5,<>
     <Circle x={()=>450+100*value()} y={-27} width={86} height={86} fill={D.background} stroke={D.green} lineWidth={7}/>

@@ -291,7 +291,8 @@ def full_asr(audio_path, cache_path, *, final=False):
     inputs = {"audio": current_audio, "model": relative(local_model) if model_id != "openai/whisper-large-v3-turbo" else model_id,
               "modelConfigSha256": sha(config_path) if config_path and config_path.is_file() else None, "device": "cpu",
               "threads": 4, "language": "korean", "task": "transcribe",
-              "timestampGranularity": "segment" if final else "word", "expectedPrompt": None}
+              "timestampGranularity": "segment" if final else "word", "expectedPrompt": None,
+              "boundedRecognition": {"chunkSeconds":30,"strideSeconds":[5,5],"batchSize":1,"numBeams":1}}
     signature = canonical_signature(inputs)
     cached = output_cache(cache_path, signature)
     if cached:
@@ -306,7 +307,8 @@ def full_asr(audio_path, cache_path, *, final=False):
     recognizer = pipeline("automatic-speech-recognition", model=model, tokenizer=processor.tokenizer,
                           feature_extractor=processor.feature_extractor, dtype=torch.float32, device="cpu")
     print("Recognizing the complete current audio once on CPU4, without a supplied prompt", flush=True)
-    result = recognizer(str(audio_path), generate_kwargs={"language": "korean", "task": "transcribe"},
+    result = recognizer(str(audio_path), generate_kwargs={"language": "korean", "task": "transcribe", "num_beams":1},
+                        chunk_length_s=30, stride_length_s=(5,5), batch_size=1,
                         return_timestamps=True if final else "word")
     record = {"inputSignature": signature, "createdAt": now(), "inputs": inputs,
               "audio_sha256": inputs["audio"]["sha256"], "text": result["text"],
@@ -536,12 +538,45 @@ def caption_input(plan_path, output_dir):
             words = [word for word in source_asr["words"] if lower < word["timestamp"][1] <= upper]
             if not words:
                 raise ValueError(f"No measured words for paragraph {scene['id']}/{index + 1}")
+            # Whisper sometimes emits a zero-length leading fragment (e.g.
+            # 'De' immediately before 'facto'). Retain all text by grouping it
+            # with the following measured phrase, never inventing a new time.
+            grouped, merges, pending = [], [], None
+            for word in words:
+                item = dict(word)
+                begin, end = item["timestamp"]
+                if end == begin:
+                    if pending is not None:
+                        raise ValueError("Consecutive zero-duration fragments require contextual review")
+                    pending = item
+                    continue
+                if pending is not None:
+                    if abs(pending["timestamp"][1] - begin) > .002:
+                        raise ValueError("Untimed ASR fragment is not adjacent to a measured phrase")
+                    merges.append({"fragment": pending, "following": item,
+                                   "policy": "same measured phrase interval; complete text retained"})
+                    item["text"] = pending["text"] + item["text"]
+                    pending = None
+                if grouped and begin < grouped[-1]["timestamp"][1] - .002:
+                    previous = grouped.pop()
+                    if begin < previous["timestamp"][0] or end < previous["timestamp"][0]:
+                        raise ValueError("Reversed ASR phrase order requires contextual review")
+                    merges.append({"overlapping": [previous, item],
+                                   "policy": "group complete adjacent phrase in union of measured intervals; no invented word time"})
+                    item = {"text": previous["text"] + item["text"],
+                            "timestamp": [previous["timestamp"][0], max(previous["timestamp"][1], end)]}
+                grouped.append(item)
+            if pending is not None:
+                raise ValueError("Trailing untimed fragment needs complete-context review")
+            words = grouped
             paragraphs.append({"id": f"{scene['id']}-p{index + 1:02d}", "scene": scene["id"], "line": index,
                                "start": scene_origins[scene["id"]], "duration": scene["duration"],
                                "ko": paragraph["text"], "en": paragraph["english"], "words": words,
                                "audioFile": scene["path"], "audioFileSha256": scene["sha256"],
                                "wordSelection": "paragraph endpoint intervals from full-source script-matched ASR; timestamps retain scene origin",
                                "audioFileScope": "intact scene PCM; no extra paragraph extraction or ASR"})
+            if merges:
+                paragraphs[-1]["measuredPhraseGrouping"] = merges
     output_dir.mkdir(parents=True, exist_ok=True)
     destination = output_dir / "caption-input.json"
     save(destination, {"fps": 60, "scriptKo": relative(SCRIPT / "narration.ko.json"),
