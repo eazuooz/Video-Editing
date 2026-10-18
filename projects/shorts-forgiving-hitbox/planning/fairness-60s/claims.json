@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "checkedOn": "2026-10-19",
+  "purpose": "60초 피격 판정 쇼츠의 주장 및 오버레이 정확성 조사. 실측 기록이나 영상 사용 허가가 아님.",
+  "sources": [
+    {
+      "id": "celeste-developer-player-code",
+      "url": "https://github.com/NoelFB/Celeste/blob/master/Source/Player/Player.cs",
+      "rawUrl": "https://raw.githubusercontent.com/NoelFB/Celeste/master/Source/Player/Player.cs",
+      "owner": "Noel Berry / Celeste 개발자 공개 저장소",
+      "type": "primary-source-code",
+      "locator": "normalHitbox / normalHurtbox 선언, 생성자, DebugRender, Player Colliders, Ducking, StarFlyBegin",
+      "versionCaveat": "공개 master 스냅샷. 최신 배포판 실행 파일과의 일치 또는 특정 촬영본 버전은 확인하지 않았다. GitHub 렌더와 raw 응답의 표시 줄 수가 달라 심볼 이름으로 추적한다."
+    },
+    {
+      "id": "celeste-forgiveness",
+      "url": "https://www.mattmakesgames.com/articles/celeste_and_forgiveness/index.html",
+      "owner": "Maddy Thorson",
+      "type": "primary-developer-explanation",
+      "locator": "마지막 정리 문단",
+      "supports": "타이밍과 위치의 허용 여유를 플레이어에게 유리하게 설정하는 설계 의도. 이 글은 피격 상자의 8×11/8×9 수치를 설명하는 근거가 아니다."
+    },
+    {
+      "id": "celeste-physics",
+      "url": "https://www.maddymakesgames.com/articles/celeste_and_towerfall_physics/index.html",
+      "owner": "Maddy Thorson",
+      "type": "primary-developer-explanation",
+      "locator": "Actor Basics 및 physics constraints",
+      "supports": "지형용 Actor/Solid 충돌의 축 정렬 사각형과 정수 픽셀 좌표. 게임의 모든 위험물 판정이 사각형이라는 주장으로 확대하지 않는다."
+    },
+    {
+      "id": "everest-collider-api",
+      "url": "https://github.com/EverestAPI/Resources/wiki/Custom-Entities,-Triggers-and-Stylegrounds",
+      "owner": "Everest API 유지관리자",
+      "type": "primary-maintainer-documentation",
+      "locator": "Hitboxes / Collision",
+      "supports": "Hitbox 생성자의 앞 두 인자는 폭·높이, 뒤 두 인자는 엔티티 기준 오프셋. PlayerCollider는 피해 이외의 상호작용에도 사용될 수 있다."
+    },
+    {
+      "id": "celeste-changelog",
+      "url": "https://www.celestegame.com/changelog.html",
+      "owner": "Celeste 개발팀",
+      "type": "primary-release-notes",
+      "locator": "V1.4.0.0 Physics and Gameplay Changes",
+      "supports": "대시 보정 검사에 physicsbox 대신 hurtbox를 사용하도록 변경한 이력이 있다. 상자 용도를 버전에 관계없이 일률적으로 단정하면 안 된다."
+    }
+  ],
+  "verifiedCodeFacts": {
+    "normalHitbox": {
+      "constructorArguments": [8, 11, -4, -11],
+      "role": "기본 지형 물리 충돌용 Collider",
+      "localBounds": {"left": -4, "top": -11, "right": 4, "bottom": 0}
+    },
+    "normalHurtbox": {
+      "constructorArguments": [8, 9, -4, -11],
+      "role": "PlayerCollider 검사 중 임시로 사용하는 플레이어 상자",
+      "localBounds": {"left": -4, "top": -11, "right": 4, "bottom": -2}
+    },
+    "difference": "가로폭과 위쪽 경계는 같다. hurtbox의 아래쪽 경계만 2 게임 픽셀 위에 있다. 몸 중앙을 기준으로 사방이 축소되는 예시로 그리지 않는다.",
+    "origin": "normalHitbox의 아래 중앙이 Player.Position과 일치한다. 원점은 매 애니메이션 이미지의 눈에 보이는 신발 픽셀이 아니라 엔티티 좌표다.",
+    "stateCaveat": "앉기와 깃털 비행은 별도 상자를 선택한다. 모든 프레임에 normalHurtbox를 붙이지 않는다.",
+    "terminologyCaveat": "공개 코드의 Hitbox 클래스와 normalHitbox 필드명은 사각형 충돌체/물리 상자다. 이를 격투 게임 용어의 공격 판정 영역으로 소개하지 않는다.",
+    "debugEvidence": "Player.DebugRender는 실제 hurtbox를 Lime 테두리로 그린다. 이 동작을 확인한 같은 버전의 디버그 촬영이 가장 강한 정렬 근거다."
+  },
+  "actualFootageOverlay": {
+    "exactOverlayRequires": [
+      "실제 촬영 게임의 플랫폼·버전·모드·Assist/Variant 설정과 상태를 기록한다.",
+      "해당 버전의 디버그 경계 또는 프레임별 Player.Position/Collider 자료를 촬영본과 동기화한다.",
+      "원본 화면의 게임 픽셀 배율, 카메라 위치·줌·흔들림과 편집 크롭/이동/확대를 확인한다.",
+      "카메라 변환 후 (Player.X-4, Player.Y-11)에 8×9 게임 픽셀을 투영한다. 실제 프레임에서 정상 상태임이 검증될 때만 이 기본값을 쓴다.",
+      "위험물 상자도 별도 검증한다. 이미지의 톱날/가시 외곽을 실제 공격 판정으로 추정하지 않는다. 무적, 방향별 조건, 업데이트 순서도 배제해야 특정 생존 원인을 단정할 수 있다."
+    ],
+    "ifNoDebugAlignment": {
+      "persistentOnscreenLabel": "원리 설명용 표시 · 실제 판정 추적 아님",
+      "recommendedUse": "실제 플레이에는 캐릭터·위험물 위치를 가리키는 윤곽과 화살표만 추적하고, 옆의 독립 도식에서 공개 코드 기준 8×11/8×9를 보여 준다. 영상 위 상자를 쓸 경우 수치 실측·정확 경계·충돌 발생 여부를 주장하지 않는다.",
+      "narration": "화면의 초록 선은 원리를 설명하려고 그린 표시입니다. 공개된 셀레스트 코드에는 이동용 상자와 더 짧은 상자가 따로 있습니다.",
+      "avoid": ["실측 히트박스", "AI가 찾아낸 판정", "이 프레임에서 정확히 2픽셀 때문에 살았다", "모든 게임이 플레이어에게 같은 보정을 준다"]
+    },
+    "evidenceStatus": "지금은 수치와 원리만 확인. 특정 실제 게임 촬영본의 좌표 정렬·권리·해상도는 미검증."
+  },
+  "fairnessFraming": {
+    "status": "사용자 댓글 이미지는 아이디어 참고이며 심리학 실험 자료가 아니다.",
+    "cautions": [
+      "'사람은 자기에게 유리하면 공정하다고 생각한다'를 보편적 과학 사실로 단정하지 않는다. '작은 여유를 줘서 억울한 피격을 줄이는 설계가 있다'라는 설계 관점으로 말한다.",
+      "공정함을 쉬움과 동일시하지 않는다. 상자를 지나치게 줄이면 공격이 통과해 보일 수 있고, 경쟁 게임에서는 양쪽 규칙과 예측 가능성도 필요하다.",
+      "개발자의 의도, 실제 코드, 특정 프레임의 생존 원인을 구분한다. 작은 hurtbox가 있어도 해당 촬영에서 그것 때문에 살았다는 인과관계는 별도 검증 대상이다."
+    ],
+    "suggestedHook": "게임이 공정해서 살았을까요? 몰래 당신 편을 들어줘서 살았을 수도 있습니다.",
+    "suggestedResolution": "보이는 대로 한 픽셀도 빠짐없이 맞히는 것보다, 피했다고 느낀 순간에 억울하게 죽지 않도록 여유를 주는 설계도 있습니다.",
+    "noUniversalGuarantee": true
+  }
+}

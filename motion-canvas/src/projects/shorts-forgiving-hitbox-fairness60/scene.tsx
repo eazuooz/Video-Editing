@@ -1,0 +1,76 @@
+import {makeScene2D,Video,Txt,Rect,Line,Circle} from '@motion-canvas/2d';
+import {createSignal,linear,Vector2} from '@motion-canvas/core';
+import trace from '../../../../projects/shorts-forgiving-hitbox/production/local/capture-full-v1/trace.json';
+import footage from '../../../../projects/shorts-forgiving-hitbox/production/source-fairness-60s.json';
+import timing from '../../../../projects/shorts-forgiving-hitbox/production/local/fairness-60s/visual-timing.json';
+const C={white:'#FFFFFF',yellow:'#FFD25A',green:'#92DF9C',red:'#F27C70',muted:'#B8C3BC',forest:'#073C32'};
+const ROOT='/@fs/D:/Github/VideoEditing/projects/shorts-forgiving-hitbox/production/local/';
+export default makeScene2D(function*(view){
+ const t=createSignal(0),clamp=(x:number,a:number,b:number)=>Math.min(b,Math.max(a,x));
+ const section=()=>timing.sections.find(s=>t()>=s.start&&t()<s.end)??timing.sections[timing.sections.length-1];
+ const isGame=()=>['celeste','code','return-game'].includes(section().id);
+ const code=()=>section().id==='code';
+ const codeProgress=()=>code()?clamp((t()-section().start)/.8,0,1):0;
+ const unityTime=()=>{
+  const s=section();if(s.kind==='unity')return clamp(s.sourceStart+(t()-s.start)*s.rate,s.sourceStart,s.sourceEnd);
+  return 4;
+ };
+ const state=()=>trace.frames[clamp(Math.floor(unityTime()*60+1e-5),0,1799)];
+ const green=()=>!isGame()&&t()>=timing.revealStart;
+ const red=()=>{const u=unityTime(),s=state();const sh=trace.frames.find(f=>f.shot===s.shot)!;return green()&&t()>=timing.termsStart&&s.projectile.y>650&&s.projectile.y<1235&&Math.abs(s.projectile.x)<1200&&u>=0;};
+ const point=(p:{x:number,y:number})=>new Vector2(p.x-540,p.y-960);
+ const outline=(key:'hurt'|'attack')=>{const a=state()[key].map(point);return [...a,a[0]];};
+ const sourceTime=()=>{const s=section();return s.kind==='game'?clamp(s.sourceStart+t()-s.start,s.sourceStart,s.sourceEnd):99.5;};
+ const anchors=footage.editorialTracking.anchors;
+ const anchor=()=>{
+  const st=sourceTime();let a=anchors[0],b=anchors[anchors.length-1];
+  for(let i=0;i<anchors.length-1;i++)if(st>=anchors[i].sourceSeconds&&st<=anchors[i+1].sourceSeconds){a=anchors[i];b=anchors[i+1];break;}
+  if(!a.targetCenter||!b.targetCenter)return null;
+  const p=clamp((st-a.sourceSeconds)/Math.max(.0001,b.sourceSeconds-a.sourceSeconds),0,1);
+  return new Vector2(a.targetCenter[0]*(1-p)+b.targetCenter[0]*p,a.targetCenter[1]*(1-p)+b.targetCenter[1]*p);
+ };
+ const scale=5/6,gameCenter=()=>{const p=anchor()??new Vector2(1700,600);return new Vector2(clamp(p.x,540,1380),clamp(p.y,432,648));};
+ const toGame=(p:Vector2)=>p.sub(gameCenter()).scale(scale);
+ const markVisible=()=>isGame()&&!code()&&anchor()!==null&&!footage.editorialTracking.hideIntervals.some(i=>sourceTime()>=i.startSeconds&&sourceTime()<=i.endSeconds);
+ view.fill('#000000');
+ view.add(<Video src={ROOT+'capture-full-v1/unity-master.mp4'} width={1080} height={1920} time={unityTime} opacity={()=>isGame()?0:1}/>);
+ view.add(<Rect width={1080} height={600} position={[0,-660]} fill="#000000" opacity={()=>isGame()?0:1}/>);
+ view.add(<Rect width={1080} height={622} position={[0,649]} fill="#000000"/>);
+ const gamePane=new Rect({width:900,height:720,position:[-70,-30],clip:true,opacity:()=>isGame()?1:0});view.add(gamePane);
+ gamePane.add(<Video src={ROOT+'fairness-60s/footage/celeste-selected-92p6-103p6.mp4'} width={1600} height={900} smoothing={false} time={()=>sourceTime()-92.6} position={()=>new Vector2(960,540).sub(gameCenter()).scale(scale)}/>);
+ gamePane.add(<Circle width={114} height={114} position={()=>toGame(anchor()??new Vector2(0,0))} stroke={C.green} lineWidth={7} opacity={()=>markVisible()?1:0}/>);
+ // This ring identifies the visible character. It is not an inferred collider.
+ view.add(<Txt text="초록 원: 캐릭터 위치" fontFamily="Malgun Gothic" fontSize={30} fill={C.green} position={[-70,-430]} opacity={()=>isGame()&&!code()?1:0}/>);
+ view.add(<Txt text="Celeste · UltraPita · CC BY" fontFamily="Malgun Gothic" fontSize={27} fill={C.muted} position={[-70,340]} opacity={()=>isGame()?1:0}/>);
+ view.add(<Rect width={1080} height={510} position={[0,-705]} fill="#000000"/>);
+ view.add(<Txt text="얌얌코딩" fontFamily="Malgun Gothic" fontWeight={700} fontSize={37} fill={C.muted} position={[-340,-820]}/>);
+ view.add(<Txt text="닿았는데 안 맞는" fontFamily="Malgun Gothic" fontWeight={700} fontSize={74} fill={C.white} position={[-30,-700]}/>);
+ view.add(<Txt text="게임의 작은 봐주기" fontFamily="Malgun Gothic" fontWeight={700} fontSize={74} fill={C.yellow} position={[-30,-590]}/>);
+ view.add(<Txt text={()=>code()?'공개 코드로 보는 판정':isGame()?'실제 게임 플레이':'Unity 직접 시연'} fontFamily="Malgun Gothic" fontSize={30} fill={C.muted} position={[-30,-490]}/>);
+ view.add(<Txt text="체력" fontFamily="Malgun Gothic" fontWeight={700} fontSize={42} fill={C.white} position={[-225,-390]} opacity={()=>isGame()?0:1}/>);
+ view.add(<Rect width={300} height={35} fill="#23392F" stroke={C.white} lineWidth={2} position={[10,-390]} opacity={()=>isGame()?0:1}/>);
+ view.add(<Rect width={()=>300*state().health/100} height={31} fill={()=>state().health===100?C.green:C.red} position={()=>[-140+150*state().health/100,-390]} opacity={()=>isGame()?0:1}/>);
+ view.add(<Txt text={()=>String(state().health)} fontFamily="Malgun Gothic" fontWeight={700} fontSize={46} fill={C.white} position={[220,-390]} opacity={()=>isGame()?0:1}/>);
+ view.add(<Line points={()=>outline('hurt')} stroke={C.green} lineWidth={7} end={()=>clamp((t()-timing.revealStart)/.55,0,1)} opacity={()=>green()?1:0}/>);
+ view.add(<Line points={()=>outline('attack')} stroke={C.red} lineWidth={7} opacity={()=>red()?1:0}/>);
+ view.add(<Txt text={'피격 영역\nHurtbox'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={36} lineHeight={44} fill={C.green} position={[-365,-25]} opacity={()=>green()?1:0}/>);
+ view.add(<Line points={()=>[new Vector2(-270,-25),new Vector2(Math.min(...state().hurt.map(p=>p.x))-555,-25)]} stroke={C.green} lineWidth={5} endArrow arrowSize={12} opacity={()=>green()?1:0}/>);
+ view.add(<Txt text={'공격 영역\nHitbox'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={32} lineHeight={40} fill={C.red} position={[310,-170]} opacity={()=>red()?1:0}/>);
+ view.add(<Line points={()=>[new Vector2(250,-120),new Vector2(Math.max(...state().attack.map(p=>p.x))-530,state().projectile.y-970)]} stroke={C.red} lineWidth={5} endArrow arrowSize={12} opacity={()=>red()?1:0}/>);
+ view.add(<Txt text={()=>section().id==='attacker'?'공격한 쪽: “왜 안 맞아?”':section().id==='survivor'?'살아남은 쪽: “잘 피했다!”':section().id==='resolution'?'겉은 스쳐도, 판정은 안 겹침':state().hitApplied?'겹침 → 피해 30':'겹치지 않음 → 피해 0'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={()=>section().id==='attacker'||section().id==='survivor'?42:38} fill={()=>section().id==='attacker'||state().hitApplied?C.red:C.green} position={[-30,-335]} opacity={()=>isGame()||t()<3?0:1}/>);
+ view.add(<Txt text={()=>section().id==='wide'?'몸 크기로\n설정':section().id==='resolution'?'처음 장면\n다시 확인':section().id==='limit'?'너무 작아도\n어색하다':green()?'조금 작게\n설정':''} fontFamily="Malgun Gothic" fontWeight={700} fontSize={34} lineHeight={43} fill={C.white} position={[-365,170]} opacity={()=>isGame()?0:1}/>);
+ // A separate public-code diagram; no guessed bounds are placed on gameplay.
+ const diagram=new Rect({width:900,height:720,position:[-70,-30],fill:'#000000',opacity:()=>code() ? .96 : 0});view.add(diagram);
+ diagram.add(<Txt text="공개 코드 기준 도식" fontFamily="Malgun Gothic" fontWeight={700} fontSize={38} fill={C.yellow} position={[0,-265]}/>);
+ diagram.add(<Txt text="이동 충돌 영역" fontFamily="Malgun Gothic" fontWeight={700} fontSize={36} fill={C.white} position={[-220,-185]}/>);
+ diagram.add(<Txt text="피격 영역" fontFamily="Malgun Gothic" fontWeight={700} fontSize={36} fill={C.green} position={[220,-185]}/>);
+ diagram.add(<Rect width={224} height={308} position={[-220,16]} stroke={C.white} lineWidth={7}/>);
+ diagram.add(<Rect width={224} height={308} position={[220,16]} stroke={C.muted} lineWidth={3} lineDash={[12,9]}/>);
+ diagram.add(<Rect width={224} height={()=>308-56*codeProgress()} position={()=>[220,16-28*codeProgress()]} stroke={C.green} lineWidth={8}/>);
+ diagram.add(<Txt text="8 × 11" fontFamily="Malgun Gothic" fontWeight={700} fontSize={48} fill={C.white} position={[-220,15]}/>);
+ diagram.add(<Txt text={()=>codeProgress()>.8?'8 × 9':'8 × 11'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={48} fill={C.green} position={[220,-12]}/>);
+ diagram.add(<Line points={[[350,170],[350,114]]} stroke={C.yellow} lineWidth={5} endArrow arrowSize={12} opacity={()=>codeProgress()>=1?1:0}/>);
+ diagram.add(<Txt text="아래쪽 2픽셀 차이" fontFamily="Malgun Gothic" fontWeight={700} fontSize={38} fill={C.yellow} position={[0,235]}/>);
+ diagram.add(<Txt text="공개 코드 재구성 · 실측 아님" fontFamily="Malgun Gothic" fontSize={32} fill={C.muted} position={[0,300]}/>);
+ yield* t(60,60,linear);
+});

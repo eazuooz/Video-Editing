@@ -18,6 +18,9 @@ paths += ['docs/VIDEO_WORKFLOW.md','shared/publishing/shorts-worklist.json']
 mc=R/'motion-canvas/src/projects'/P.name
 if mc.exists():paths += [rel(p) for p in mc.rglob('*') if p.is_file() and p.suffix in ['.ts','.tsx','.meta','.json']]
 paths += ['motion-canvas/vite.shorts-hitbox.config.ts']
+mc60=R/'motion-canvas/src/projects/shorts-forgiving-hitbox-fairness60'
+if mc60.exists():paths += [rel(p) for p in mc60.rglob('*') if p.is_file() and p.suffix in ['.ts','.tsx','.meta','.json']]
+paths += ['motion-canvas/vite.shorts-hitbox-fairness60.config.ts']
 paths += [rel(P/'.gitignore')]
 paths=sorted(set(paths));owned=set(paths)
 def foreign():return [x for x in git('ls-files','--stage','-z').split(b'\0') if x and x.split(b'\t',1)[1].decode() not in owned|{control}]
