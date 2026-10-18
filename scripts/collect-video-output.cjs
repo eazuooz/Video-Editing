@@ -89,6 +89,13 @@ async function main() {
   if (fs.lstatSync(outputRoot).isSymbolicLink()) throw Error('Output root must not be a link.');
   const dest=inside(outputRoot,slug);
   if (fs.existsSync(dest) && fs.lstatSync(dest).isSymbolicLink()) throw Error('Output project must not be a link.');
+  // A selected project may already expose a planning/PPT preview while it has
+  // no previous delivery. Keep that preview directory in place (it may be open
+  // in an editor on Windows); never classify it as a previous four-file master.
+  const planningOnly = !!manifest.delivery?.preservePlanningDirectory && fs.existsSync(dest)
+    && fs.readdirSync(dest).length===1 && fs.readdirSync(dest)[0]==='planning'
+    && fs.lstatSync(path.join(dest,'planning')).isDirectory()
+    && !fs.lstatSync(path.join(dest,'planning')).isSymbolicLink();
   const production=path.join(project,'production');fs.mkdirSync(production,{recursive:true});
   const stage=fs.mkdtempSync(path.join(production,'delivery-stage-'));
   const files=[];
@@ -107,13 +114,20 @@ async function main() {
   const links=files.map(f=>`<li><a href="${esc(f.name)}" download>${esc(f.name)}</a></li>`).join('');
   fs.writeFileSync(path.join(stage,'index.html'),page(title,`<p><a href="../index.html">전체 목록</a> · ${Math.floor(videos[0].duration/60)}분 ${Math.round(videos[0].duration%60)}초 · 한글 자막 ${ko.length}개 / 영어 자막 ${en.length}개</p>${notices.length?`<div class="notice">${notices.map(esc).join('<br>')}</div>`:''}<section><h2>한글 자막 영상</h2><video controls preload="metadata" src="${slug}.captioned.mp4"></video></section><section><h2>자막 없는 영상</h2><video controls preload="none" src="${slug}.clean.mp4"></video></section><h2>파일</h2><ul>${links}</ul><small>원본 작업 파일은 유지됩니다. SRT는 별도로 내려받아 편집기나 YouTube에 넣어 주세요.</small>`));
   // Preserve previous deliveries outside output, so output only shows the current set.
-  if (fs.existsSync(dest)) {
+  if (fs.existsSync(dest) && !planningOnly) {
     const archive=path.join(production,'delivery-history');fs.mkdirSync(archive,{recursive:true});
     const saved=inside(archive,new Date().toISOString().replace(/[:.]/g,'-'));
     if (fs.existsSync(saved)) throw Error('Archive collision');
     fs.renameSync(dest,saved);
   }
-  fs.renameSync(stage,dest);
+  if (planningOnly) {
+    for (const name of [...files.map(f=>f.name),'index.html']) {
+      const target=inside(dest,name);
+      if (fs.existsSync(target)) throw Error('Refusing to overwrite an existing deliverable: '+target);
+      fs.renameSync(inside(stage,name),target);
+    }
+    fs.rmdirSync(stage); // Only the now-empty, explicitly created staging folder.
+  } else fs.renameSync(stage,dest);
   const report={slug,createdAt:new Date().toISOString(),directory:`output/${slug}`,publishReady:!!manifest.publishReady,notices,videos,cues:ko.length,cueCounts:{ko:ko.length,en:en.length},captionAlignment,files};
   fs.writeFileSync(path.join(production,'delivery-output.json'),JSON.stringify(report,null,2)+'\n');
   require('./build-rebuild-manifests.cjs').generate(slug);

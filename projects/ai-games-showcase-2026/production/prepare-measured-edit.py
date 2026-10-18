@@ -24,10 +24,15 @@ def stamp(s,ass=False):
 def seconds(s):
  h,m,z=s.replace(',','.').split(':');return int(h)*3600+int(m)*60+float(z)
 captions=[]
+fishEntry=next(e for e in timing['entries'] if e['scene_id']=='02')
+fishFirstWord=read(N/'asr/02.json')['words'][0]['timestamp'][0]
+leadingCorrection={'scene':'02','from':fishEntry['voice_start']+2,'to':fishEntry['start']+fishFirstWord+2,'reason':'ASR renders the spoken Korean game title in Latin letters; restore first title caption to the actual first recognized word onset. Raw ASR and PCM remain unchanged.'}
 for lang in ['ko','en']:
  blocks=[];prev=0
  for i,block in enumerate((O/f'body.{lang}.srt').read_text(encoding='utf8').strip().split('\n\n'),1):
-  lines=block.splitlines();a,b=[seconds(s)+2 for s in lines[1].split(' --> ')];text=' '.join(lines[2:]);text=wrap(display(text)) if lang=='ko' else '\n'.join(lines[2:]);assert a>=prev-.002 and b>a;prev=b
+  lines=block.splitlines();a,b=[seconds(s)+2 for s in lines[1].split(' --> ')]
+  if abs(a-leadingCorrection['from'])<.002:a=leadingCorrection['to']
+  text=' '.join(lines[2:]);text=wrap(display(text)) if lang=='ko' else '\n'.join(lines[2:]);assert a>=prev-.002 and b>a;prev=b
   blocks.append(f'{i}\n{stamp(a)} --> {stamp(b)}\n{text}')
   if lang=='ko':captions.append({'id':i,'cue':i,'start':a,'end':b,'text':text})
  (O/f'captions.{lang}.srt').write_text('\n\n'.join(blocks)+'\n',encoding='utf8')
@@ -72,6 +77,6 @@ for idx,s in enumerate(script['scenes']):
 cuts.sort(key=lambda c:c['startFrame']);cursor=120
 for i,c in enumerate(cuts):assert c['startFrame']==cursor,(i,c,cursor);cursor+=c['frames'];c['endFrame']=cursor;c['id']=f'cut-{i+1:03d}';c['sourceSha256']=sha(R/c['sourceFile'])
 assert cursor==total-600
-plan={'schemaVersion':1,'timing':'measured-and-asr-aligned','totalFrames':total,'bodyFrames':total-720,'fps':60,'scenes':scenes,'cuts':cuts,'toolSlideFrames':1800,'sourcesNoUpscale':True,'stillSequenceNotContinuousGameplay':True,'humanWholeListening':'pending'}
+plan={'schemaVersion':1,'timing':'measured-and-asr-aligned','totalFrames':total,'bodyFrames':total-720,'fps':60,'scenes':scenes,'cuts':cuts,'toolSlideFrames':1800,'captionStartCorrections':[leadingCorrection],'sourcesNoUpscale':True,'stillSequenceNotContinuousGameplay':True,'humanWholeListening':'pending'}
 save(P/'production/edit-plan.json',plan);save(P/'planning/production-plan.json',design)
 print(json.dumps({'duration':total/60,'cuts':len(cuts),'captions':len(captions),'toolSlides':6}))

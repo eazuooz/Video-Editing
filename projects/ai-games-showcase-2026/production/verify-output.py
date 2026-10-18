@@ -65,7 +65,7 @@ if '--integrity-only' in sys.argv:
  (Q/'integrity.json').write_text(json.dumps({'outputs':results,'bodyFrames':plan['bodyFrames'],'actualFrames':actual,'explanationFrames':plan['bodyFrames']-actual,'ratioRoundingErrorFrames':None,'captionPairs':len(layout['rows']),'retainedPixelEvidence':'first-pass/qa plus identical retained cut hashes/timing/ASS/settings','changedPixels':'pending','humanWholeListening':'pending'},indent=2)+'\n');print('New full decode, PTS, AAC and level checks complete; retained pixel evidence reused');raise SystemExit(0)
 # Every caption and every source/diagram cut receives a decoded final-frame
 # contact view. Additional start/mid/end marker frames cover tracked highlights.
-samples={}
+samples={12:['original branding early'],108:['original branding exit'],plan['totalFrames']-580:['membership enter'],plan['totalFrames']-300:['membership names'],plan['totalFrames']-18:['membership exit']}
 for c in layout['rows']:
  f=round((c['start']+c['end'])/2*60);samples.setdefault(f,[]).append(f"KO/EN cue {c['cue']}")
 for c in plan['cuts']:

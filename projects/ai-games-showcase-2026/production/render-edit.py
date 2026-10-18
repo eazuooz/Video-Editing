@@ -40,6 +40,7 @@ if stage=='cuts':
   ass.write_text(header+'\n'.join(events)+'\n',encoding='utf8')
   movie=src.suffix=='.mp4';vf='fps=60,setsar=1'
   if c['kind']!='tool-summary':vf+=',scale=1536:864:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:0:black'
+  if not movie:vf+=',scale=in_range=auto:out_range=tv,format=yuv420p,setparams=range=limited'
   if 'augury-preview-1080' in src.name and c['scene']=='06':vf+=",drawbox=x=966:y=506:w=143:h=290:color=0x70D69F:t=6:enable='gte(t,0.35)'"
   vf+=',ass='+ass.relative_to(R).as_posix()
   sig={'sourceSha256':sha(src),'assSha256':sha(ass),'frames':c['frames'],'sourceStart':c['sourceStart'],'filter':vf,'codec':enc}
@@ -55,9 +56,11 @@ elif stage=='pair':
  selected();mix=O/'final-mix.wav';aac=O/'final-mix.m4a';sig=sha(mix);receipt=O/'aac-source.json'
  if not(aac.exists() and receipt.exists() and read(receipt).get('sha256')==sig):
   run(['ffmpeg','-hide_banner','-y','-i',str(mix),'-c:a','aac','-b:a','192k','-ar','48000',str(aac)],'audio-encode');receipt.write_text(json.dumps({'sha256':sig})+'\n')
- graph='[0:v]fps=60,setsar=1,split=2[clean][capin];[capin]ass='+(O/'captions.ko.ass').relative_to(R).as_posix()+'[captioned]'
- args=['ffmpeg','-hide_banner','-y','-f','concat','-safe','0','-i',str(O/'concat.txt'),'-i',str(aac),'-filter_complex',graph]
- for kind in ['clean','captioned']:args+=['-map',f'[{kind}]','-map','1:a','-frames:v',str(plan['totalFrames']),'-t',str(plan['totalFrames']/60),*enc,'-c:a','copy','-movflags','+faststart',str(O/f'ai-games-{kind}.mp4')]
+ # Every input is already frame-count-checked at60fps. Rebase the decoded
+ # sequence itself: concat demuxer timestamps must not create gaps at cuts.
+ graph='[0:v]settb=expr=1/60,setpts=N,setsar=1,split=2[clean][capin];[capin]ass='+(O/'captions.ko.ass').relative_to(R).as_posix()+'[captioned]'
+ args=['ffmpeg','-hide_banner','-y','-reinit_filter','0','-f','concat','-safe','0','-i',str(O/'concat.txt'),'-i',str(aac),'-filter_complex',graph]
+ for kind in ['clean','captioned']:args+=['-map',f'[{kind}]','-map','1:a','-frames:v',str(plan['totalFrames']),'-t',str(plan['totalFrames']/60),'-r','60','-fps_mode','cfr','-enc_time_base','1:60',*enc,'-c:a','copy','-movflags','+faststart',str(O/f'ai-games-{kind}.mp4')]
  run(args,'pair-encode')
  for kind in ['clean','captioned']:assert frames(O/f'ai-games-{kind}.mp4')==plan['totalFrames']
 else:raise ValueError(stage)
