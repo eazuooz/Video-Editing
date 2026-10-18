@@ -16,6 +16,14 @@ class MathScene(Scene):
   data=json.loads((P/'production/revision-v2/lesson.json').read_text(encoding='utf8'));s=next(v for v in data['scenes'] if v['id']==self.sid)
   timing=os.environ.get('MATH_RENDER_TIMING');slots=json.loads(Path(timing).read_text(encoding='utf8'))['scenes'] if timing else []
   slot=next((v for v in slots if v['id']==self.sid),{'seconds':len(s['ko'])*2.5+1,'lineStarts':[i*2.5 for i in range(len(s['ko']))]})
+  def wait_until(t):
+   # Cairo's frozen hold uses int(duration / frame_dt). Pass an integer
+   # frame budget with a tiny sub-frame margin so float subtraction cannot
+   # turn, for example, 452 frames into 451. No encoded-frame repair is used.
+   target=round(t*60);remaining=target-round(self.renderer.time*60)
+   if remaining<0:raise ValueError(f'{self.sid}: visual action exceeded cue frame {target}.')
+   if remaining:self.wait((remaining+1e-6)/60,frozen_frame=True)
+   if round(self.renderer.time*60)!=target:raise ValueError(f'{self.sid}: hold missed cue frame {target}.')
   self.add(fit(text(s['title'],46,GOLD),12.65).move_to([-6.35,3.35,0],aligned_edge=LEFT),fit(text('게임수학 · 오일러 각과 축–각',26,MUTED),12).move_to([-6.35,2.82,0],aligned_edge=LEFT))
   self.add(Line([-6.35,2.52,0],[6.35,2.52,0],stroke_width=1.5,color=RULE))
   note=None;focus=None;special=[]
@@ -55,7 +63,7 @@ class MathScene(Scene):
    self.add(formula(['① 축과 적용 순서','② 표현의 특이점과 물체의 회전','③ 단위 · 중복 표현 · 합성'],46,width=11.6).move_to([0,.25,0]))
   for i,beat in enumerate(s['beats']):
    at=slot['lineStarts'][min(i,len(slot['lineStarts'])-1)]
-   if at>self.renderer.time+1/60:self.wait(at-self.renderer.time,frozen_frame=True)
+   wait_until(at)
    if focus:self.remove(focus)
    # Keep the worst-case two-line caption box (top y=897px) unobstructed.
    focus=fit(text(beat,34,GREEN),12.4).move_to([0,-2.25,0]);self.add(focus)
@@ -108,7 +116,6 @@ class MathScene(Scene):
     if i==5:self.remove(problem_prompt)
     examples=[['start = +170°','end = −170°'],['Δdeg = −340° + 360° = +20°'],['170° + 0.5 × 20° = 180°','wrapPi(−17π/9) = +π/9 rad'],['e = (0, π/2, 0) rad'],['θ = ||e|| = π/2 rad = 90°','n = e/||e|| = (0,1,0)'],['다른 축의 회전 합성: 행렬 곱','벡터의 성분합과 구분']]
     replace(formula(examples[min(i,5)],43,width=11.5),[0,-.45,0])
-  left=slot['seconds']-self.renderer.time
-  if left>1/60:self.wait(left,frozen_frame=True)
+  wait_until(slot['frames']/60 if 'frames' in slot else slot['seconds'])
 for sid in ['01','13','15','24','25','26']:
  globals()['Scene'+sid]=type('Scene'+sid,(MathScene,),{'sid':sid,'__module__':__name__})
