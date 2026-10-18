@@ -33,8 +33,11 @@ def interpolate(keys,t):
 
 def poly(points,progress=1):
  # Reveal a real traced boundary in spatial order, then retain its full shape.
- count=max(2,min(len(points),math.ceil(len(points)*progress)))
- return 'm '+f'{points[0][0]:.2f} {points[0][1]:.2f}'+''.join(f' l {x:.2f} {y:.2f}' for x,y in points[1:count])
+ count=max(2,min(len(points),math.ceil(len(points)*progress)));shown=points[:count]
+ # ASS closes drawing contours. Retrace open paths to their start so brackets
+ # and curved boundaries do not acquire an unwanted diagonal closing edge.
+ if shown[-1]!=shown[0]:shown=shown+list(reversed(shown[:-1]))
+ return 'm '+f'{shown[0][0]:.2f} {shown[0][1]:.2f}'+''.join(f' l {x:.2f} {y:.2f}' for x,y in shown[1:])
 
 def shape(p,kind,progress):
  if 'points' in p:return poly(p['points'],progress)
@@ -47,9 +50,12 @@ def shape(p,kind,progress):
    [(cx+rx*.65,cy+ry),(cx+rx,cy+ry),(cx+rx,cy+ry*.55)]])
  return poly([(cx+rx*math.cos(i*math.tau/64),cy+ry*math.sin(i*math.tau/64)) for i in range(65)],progress)
 
-def event(a,b,path,color,layer,width):
+def event(a,b,path,color,layer,width,occluded=None):
  # Clipping reserves the fixed caption area; shapes are always hollow.
- return f'Dialogue: {layer},{stamp(a)},{stamp(b)},Guide,,0,0,0,,{{\\an7\\pos(0,0)\\clip(0,100,1920,878)\\1a&HFF&\\bord{width}\\3c&H{color}&\\p1}}'+path
+ clip='\\clip(0,0,1920,878)'
+ if occluded:
+  cx,cy=occluded['center'];rx,ry=occluded['ellipseRadius'];clip=f'\\iclip({round(cx-rx)},{round(cy-ry)},{round(cx+rx)},{round(cy+ry)})'
+ return f'Dialogue: {layer},{stamp(a)},{stamp(b)},Guide,,0,0,0,,{{\\an7\\pos(0,0){clip}\\1a&HFF&\\bord{width}\\3c&H{color}&\\p1}}'+path
 
 def cut_ass(c,annotations):
  duration=c['frames']/60
@@ -69,8 +75,11 @@ def cut_ass(c,annotations):
    t=c['sourceStart']+f/60;p=interpolate(w['keyframes'],t)
    if not p:continue
    path=shape(p,w['shape'],min(1,(t-low)/.25+.08))
-   events.append(event(f/60,(f+1)/60,path,'101010',1,8))
-   events.append(event(f/60,(f+1)/60,path,color,2,5))
+   mask=None
+   if w.get('occlusionTracker'):
+    body=next(v for v in annotations['windows'] if v['id']==w['occlusionTracker']);mask=interpolate(body['keyframes'],t)
+   events.append(event(f/60,(f+1)/60,path,'101010',1,10,mask))
+   events.append(event(f/60,(f+1)/60,path,color,2,7,mask))
    if w.get('screenTrace'):
     past=[k['center'] for k in w['keyframes'] if low<=k['sourceTime']<=t and k.get('visible',True)]+[p['center']]
     if len(past)>1:

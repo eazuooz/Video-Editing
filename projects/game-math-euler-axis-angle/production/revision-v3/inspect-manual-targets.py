@@ -13,7 +13,7 @@ groups={
  'road05':('dbA2StfJhqw',[115,115.5,116,116.5,117,117.5,118,118.5,119,119.5]),
  'road11':('dbA2StfJhqw',[244,244.5,245,245.5,246,246.5,247,247.5]),
  'road23':('dbA2StfJhqw',[379.5,380,380.5,381,381.5,382,382.5,383]),
- 'glider05':('dbA2StfJhqw',[214,215,216,217,218,219,220,221,222])}
+ 'glider05':('dbA2StfJhqw',[220,220.5,221,221.5,222,222.5,223])}
 font=ImageFont.truetype('C:/Windows/Fonts/consola.ttf',24)
 for name,(sid,times) in groups.items():
  if len(sys.argv)>1 and name not in sys.argv[1:]:continue

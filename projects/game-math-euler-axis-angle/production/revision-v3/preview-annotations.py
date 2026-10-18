@@ -5,6 +5,7 @@ R=Path(__file__).resolve().parents[4];P=R/'projects/game-math-euler-axis-angle';
 def load(name):
  spec=importlib.util.spec_from_file_location(name,Path(__file__).with_name(name+'.py'));m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 a=load('annotation-render')
+assert json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf8'))['selectedVideo']==P.name
 p=json.loads((P/'sources/annotation-plan-v3.json').read_text(encoding='utf8'));sources=json.loads((P/'sources/cut-plan-v3.json').read_text(encoding='utf8'))['sources']
 for w in p['windows']:
  if len(sys.argv)>1 and w['id'] not in sys.argv[1:]:continue
