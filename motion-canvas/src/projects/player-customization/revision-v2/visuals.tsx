@@ -125,12 +125,12 @@ export function* lesson(view: View2D, kind: string, timing: Timing) {
     case 'overview': {
       during(0, 1, image('acnh-before.png', 0, -26, 1040, '캐릭터를 고르는 순간부터'));
       during(1, 2, <>
-        {image('jets-preview.png', -440, -55, 790, '선택의 결과를 보기', D.teal)}
+        {image('jets-shop-preview.png', -440, -55, 790, '선택의 결과를 보기', D.teal)}
         {image('acnh-after.png', 440, -55, 790, '마음에 드는 모습 찾기', D.green)}
         {text('결과 보기  →  고르기와 시험  →  나를 표현하기', 0, 294, 41, D.title)}
       </>);
       during(2, undefined, <>
-        {image('jets-preview.png', -420, -35, 880, 'Jets’n’Guns 2 · 상점과 시험 공간')}
+        {image('jets-shop-preview.png', -420, -35, 880, 'Jets’n’Guns 2 · 상점과 시험 공간')}
         {text('무기를 고르면', 525, -155, 45, D.ink)}
         <Line points={[[525, -105], [525, 0]]} stroke={D.teal} lineWidth={8} endArrow arrowSize={20} end={reveal(2, .3, .8)}/>
         <Node opacity={reveal(2, 1.1)}>{text('발사 모습까지', 525, 60, 48, D.teal)}{text('함께 확인', 525, 129, 48, D.teal)}</Node>
@@ -138,9 +138,9 @@ export function* lesson(view: View2D, kind: string, timing: Timing) {
       break;
     }
     case 'effects': {
-      during(0, 1, image('jets-preview.png', -420, -35, 880, 'Jets’n’Guns 2 · 실제 상점 화면'));
+      during(0, 1, image('jets-shop-preview.png', -420, -35, 880, 'Jets’n’Guns 2 · 실제 상점 화면'));
       during(1, 3, image('jets-weapons.png', -420, -35, 880, '고른 항목과 발사 결과를 함께 보기'));
-      during(3, undefined, image('jets-preview.png', -420, -35, 880, '결정에 필요한 차이를 보여 주는 프리뷰'));
+      during(3, undefined, image('jets-shop-preview.png', -420, -35, 880, '결정에 필요한 차이를 보여 주는 프리뷰'));
       during(0, 3, <>{text('장착할 무기', 525, -196, 46, D.ink)}{text('선택', 525, -132, 39, D.muted)}</>);
       const effectsFlow = <Node opacity={interval(0, 3)}/>;
       view.add(effectsFlow);
@@ -169,15 +169,14 @@ export function* lesson(view: View2D, kind: string, timing: Timing) {
       during(2, undefined, <>
         {text('A', -460, -279, 53, D.teal)}{text('B', 460, -279, 53, D.green)}
         {gun(-460, -180, true, D.teal)}{gun(460, -180, false, D.green)}
-        {text('한 발 피해 100  /  간격 2초', -460, -45, 37, D.teal)}
-        {text('한 발 피해 40  /  간격 0.5초', 460, -45, 37, D.green)}
+        <Node opacity={reveal(2, 4.3)}>{text('한 발 피해 100  /  간격 2초', -460, -45, 37, D.teal)}</Node>
+        <Node opacity={reveal(2, 7.7)}>{text('한 발 피해 40  /  간격 0.5초', 460, -45, 37, D.green)}</Node>
         {text('설명용 수치 · 실제 게임 측정값이 아닙니다', 0, 311, 33, D.muted)}
       </>);
       during(2, 3, <>
-        {text('초당 평균 피해 / Damage per second · DPS', 0, 35, 33, D.title)}
-        <Node opacity={reveal(2, .4)}>{text('한 발 피해 ÷ 발사 간격', 0, 88, 37, D.ink)}</Node>
-        <Node opacity={reveal(2, 1.1)}>{text('100 ÷ 2 = 50', -460, 171, 57, D.teal)}{text('40 ÷ 0.5 = 80', 460, 171, 57, D.green)}</Node>
-        {text('오래 계속 맞히는 조건으로 비교', 0, 253, 31, D.title)}
+        <Node opacity={reveal(2, 10.8)}>{text('초당 평균 피해 / Damage per second · DPS', 0, 35, 33, D.title)}{text('오래 계속 맞히는 조건으로 비교', 0, 253, 31, D.title)}</Node>
+        <Node opacity={reveal(2, 11.3)}>{text('한 발 피해 ÷ 발사 간격', 0, 88, 37, D.ink)}</Node>
+        <Node opacity={reveal(2, 12)}>{text('100 ÷ 2 = 50', -460, 171, 57, D.teal)}{text('40 ÷ 0.5 = 80', 460, 171, 57, D.green)}</Node>
       </>);
       during(3, 4, <>
         {text('한 번만 쏠 기회  ·  적의 남은 체력 90', 0, 50, 43, D.title)}
@@ -295,9 +294,9 @@ export function* lesson(view: View2D, kind: string, timing: Timing) {
       break;
     }
     case 'test': {
-      during(0, 1, image('jets-preview.png', -420, -35, 880, '고른 조합을 직접 확인하기'));
+      during(0, 1, image('jets-shop-preview.png', -420, -35, 880, '고른 조합을 직접 확인하기'));
       during(1, 2, image('terratech-build.png', -420, -35, 880, 'TerraTech · 실제 조립 화면'));
-      during(2, undefined, image('jets-preview.png', -420, -35, 880, 'Jets’n’Guns 2 · 장비와 시험 공간을 가까이'));
+      during(2, undefined, image('jets-shop-preview.png', -420, -35, 880, 'Jets’n’Guns 2 · 장비와 시험 공간을 가까이'));
       step('바꾸기', 525, -218, 0, D.teal, 300);
       trace([[525, -160], [525, -91]], 1, D.teal, .15);
       step('시험하기', 525, -27, 1, D.green, 300);
@@ -329,7 +328,7 @@ export function* lesson(view: View2D, kind: string, timing: Timing) {
       break;
     }
     case 'conclusion': {
-      during(0, 2, <>{image('jets-preview.png', -440, -65, 790, '효과를 보고, 다음 조합으로', D.teal)}{image('acvi-assembly.png', 440, -65, 790, '잘하는 일을 골라 조합하기', D.green)}</>);
+      during(0, 2, <>{image('jets-shop-preview.png', -440, -65, 790, '효과를 보고, 다음 조합으로', D.teal)}{image('acvi-assembly.png', 440, -65, 790, '잘하는 일을 골라 조합하기', D.green)}</>);
       during(2, undefined, <>{image('acvi-assembly.png', -440, -65, 790, '성능을 고르는 재미', D.teal)}{image('acnh-after.png', 440, -65, 790, '취향을 표현하는 재미', D.green)}</>);
       during(0, 1, text('완성품뿐 아니라, 선택하는 과정을 설계하기', 0, 294, 40, D.title));
       during(1, 2, text('결과 보기  →  비교  →  찾기  →  시험', 0, 294, 43, D.title));

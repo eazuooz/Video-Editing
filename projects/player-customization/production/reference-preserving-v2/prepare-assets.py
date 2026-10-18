@@ -5,7 +5,7 @@ R=Path(__file__).resolve().parents[4];P=R/'projects/player-customization';L=P/'p
 FF=os.environ.get('FFMPEG','C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe')
 O=L/'assets';O.mkdir(parents=True,exist_ok=True)
 rows=[
- ('jets-preview','jets2-shop',100,'The equipment layout and the adjacent Test Range are visible together.'),
+ ('jets-shop-preview','jets2-shop',124,'The equipment layout and the adjacent Test Range are visible together.'),
  ('jets-weapons','jets2-shop',140,'Weapon list, selected weapon detail and the Test Range; do not attribute both ships to one weapon.'),
  ('acvi-assembly','acvi-shop-tradeoffs',156,'Actual booster comparison: Boost Speed306→320 and QB EN Consumption480→560.'),
  ('botw-armor','nintendo-botw-opening',205.5,'Armor category and clothing choices; no sorting execution or temperature resistance inferred.'),

@@ -51,7 +51,7 @@ os.environ["MKL_NUM_THREADS"] = "4"
 import numpy as np
 import soundfile as sf
 
-from audio_pipeline import require_authorized, current_local_output, current_plan
+from audio_pipeline import require_authorized, current_local_output, current_plan, audio_plan_contract
 
 ROOT = Path(__file__).resolve().parents[4]
 PROJECT = Path(__file__).resolve().parents[2]
@@ -600,7 +600,8 @@ def review(args):
     build_file = edit / "audio-build.json"
     build = read(build_file)
     if build.get("inputs", {}).get("plan", {}).get("sha256") != sha(plan_file):
-        raise ValueError("Current audio-build is not authenticated to this exact edit plan")
+        if build.get("inputs", {}).get("audioPlanContract") != audio_plan_contract(plan):
+            raise ValueError("Current audio-build audio dependencies differ from the measured edit plan")
     if build.get("voiceGainMode") != "constant-global-gain-with-short-peak-limiter" or build.get("voiceDucked") is not False or build.get("amixNormalize") is not False:
         raise ValueError("Inspect current voice processing; expected constant gain, voice not ducked, amix normalize0")
     for item in build["outputs"]:

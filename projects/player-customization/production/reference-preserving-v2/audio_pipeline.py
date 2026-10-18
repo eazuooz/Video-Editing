@@ -592,6 +592,16 @@ def mask_words(length, rate, words):
     return mask
 
 
+def audio_plan_contract(plan):
+    """All audio dependencies, separated from visual-only marks/crops/cuts."""
+    preserve = plan.get("audio", {}).get("preserveGameAudio", True)
+    return {"fps": plan["fps"], "totalFrames": plan["totalFrames"],
+            "introFrames": plan.get("introFrames", 120), "outroFrames": plan.get("outroFrames", 600),
+            "scenes": [{key: scene[key] for key in ("id", "voiceStart", "voiceStartFrame", "startFrame", "endFrame") if key in scene} for scene in plan["scenes"]],
+            "audio": plan.get("audio", {}),
+            "audibleGameCuts": [{key: cut[key] for key in ("id", "sourceFile", "sourceSha256", "sourceStart", "startFrame", "frames")} for cut in plan.get("cuts", []) if preserve and cut.get("sourceAudioEnabled") is True]}
+
+
 def caption_input(plan_path, output_dir):
     """Bridge actual scene PCM and words to the paired-caption builder."""
     plan = read(plan_path)
@@ -710,7 +720,8 @@ def mix(plan_path, output_dir):
             raise ValueError("A split PCM/timing input changed; preserve and review the correction")
     duration, count = frames / fps, frames * (RATE // fps)
     signature_inputs = {"plan": artifact(plan_path), "splitReceipt": artifact(NARRATION / "scene-split-review.json"),
-                        "scripts": script_files, "audioSettings": settings, "pipelineSha256": sha(Path(__file__))}
+                        "scripts": script_files, "audioSettings": settings, "pipelineSha256": sha(Path(__file__)),
+                        "audioPlanContract": audio_plan_contract(plan)}
     if settings.get("music"):
         music = settings["music"]
         music_path = repo_path(music["path"])
@@ -776,7 +787,10 @@ def mix(plan_path, output_dir):
     if not -24 <= target <= -12 or not -6 <= peak <= -1:
         raise ValueError("Narration level/peak target outside the supported production range")
     measured = loudness(timed, output_dir / "voice-measure.log", target, peak)
-    global_gain = target - finite_db(measured["input_i"], "source integrated loudness")
+    # The measurement is mono; the final voice bus duplicates it into two
+    # channels. Compensate that energy increase before applying a constant gain.
+    stereo_energy_compensation = 10 * math.log10(2)
+    global_gain = target - finite_db(measured["input_i"], "source integrated loudness") - stereo_energy_compensation
     finite_db(measured["input_tp"], "source peak")
     limiter_ceiling = 10 ** (peak / 20)
     # loudnorm is measurement-only on the voice bus. A constant gain and short
@@ -870,6 +884,7 @@ def mix(plan_path, output_dir):
                        "music": music_report, "normalizationMeasurementOnly": measured,
                        "voiceGainMode": "constant-global-gain-with-short-peak-limiter",
                        "sceneMatchingEnabled": bool(settings.get("matchSceneRms", False)), "globalGainDb": global_gain,
+                       "monoToStereoEnergyCompensationDb": stereo_energy_compensation,
                        "peakLimiter": {"ceilingDbfs": peak, "attackMs": 5, "releaseMs": 50, "autoMakeup": False},
                        "voiceDucked": False, "amixNormalize": False, "sourcePcmPreserved": True,
                        "finalAacMeasurement": final_stats, "levelTargetsMet": abs(final_lufs - target) <= 1 and final_peak <= -1.5,

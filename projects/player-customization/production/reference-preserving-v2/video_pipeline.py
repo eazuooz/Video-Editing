@@ -67,8 +67,8 @@ ENCODER = ["-c:v", "libx264", "-threads", "4", "-preset", "veryfast",
            "-crf", "17", "-pix_fmt", "yuv420p", "-color_primaries", "bt709",
            "-color_trc", "bt709", "-colorspace", "bt709",
            "-video_track_timescale", "60000"]
-COLORS = {"red": "EF5350", "blue": "42A5F5", "green": "66BB6A",
-          "yellow": "FFD54F"}
+COLORS = {"red": "EF8585", "blue": "73C7C2", "green": "A4C6A0",
+          "yellow": "E8CF83", "orange": "F39A4B"}
 CAPTION_RECT = [150, 892, 1784, 1060]  # x0,y0,x1,y1; two lines+outline+shadow
 
 
@@ -298,6 +298,14 @@ def annotations(cut: dict, plan: dict) -> tuple[str, dict]:
         check_bounds(bounds, protected, "Credit")
         protected.append(bounds)
         result += event(0, duration, f"{{\\an7\\pos({x},{y})\\fs{size}\\bord3}}" + ass_text(text), 0)
+    notice = cut.get("copyrightCredit")
+    if notice:
+        size, x, y = 20, 24, 62
+        font = ImageFont.truetype(str(font_file), size)
+        bounds = [x-4, y-4, x+math.ceil(font.getlength(notice))+4, y+size*1.5+4]
+        check_bounds(bounds, protected, "Rights-holder notice")
+        protected.append(bounds)
+        result += event(0, duration, f"{{\\an7\\pos({x},{y})\\fs{size}\\bord3}}" + ass_text(notice), 0)
     for index, mark in enumerate(cut.get("marks", [])):
         shape = mark["shape"]
         if shape == "rectangle":
