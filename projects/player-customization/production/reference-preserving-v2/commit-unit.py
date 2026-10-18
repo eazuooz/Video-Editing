@@ -6,6 +6,7 @@ unit=sys.argv[1]
 spec=json.loads((R/sys.argv[2]).read_text(encoding='utf-8-sig'))
 paths=spec['paths']
 shared={'AGENTS.md','docs/VIDEO_WORKFLOW.md','shared/publishing/game-example-coverage-policy.json','shared/publishing/video-production-control.json','.gitignore','shared/git-essential-images.json','shared/publishing/video-worklist.json','docs/VIDEO_WORKLIST.md'}
+shared.add('production/batches/sakurai-planning-game-design/preflight/player-customization.json')
 assert paths and all(p.startswith(('projects/player-customization/','motion-canvas/src/projects/player-customization/')) or p in shared for p in paths)
 rasters=[p for p in paths if Path(p).suffix.lower() in ['.png','.jpg','.webp']]
 assert all('/publishing/' in p for p in rasters)
@@ -15,7 +16,7 @@ O.mkdir(parents=True,exist_ok=True)
 
 def git(*args,env=None):
     p=subprocess.run(['git',*args],cwd=R,env=env,capture_output=True)
-    if p.returncode:raise RuntimeError(p.stderr.decode(errors='replace'))
+    if p.returncode:raise RuntimeError((p.stderr+p.stdout).decode(errors='replace'))
     return p.stdout
 def foreign():
     return [v for v in git('ls-files','--stage','-z').split(b'\0') if v and v.split(b'\t',1)[1].decode() not in paths]
