@@ -40,22 +40,26 @@ def audio():
   a,b=round(p['dest']*48000),round(p['destinationEnd']*48000);v=narration[a:b]
   windows=[db(v[i:i+19200]) for i in range(0,max(1,len(v)-19200),4800)];active=[x for x in windows if x>-45];reference=float(np.median(active));change=-22-reference
   narration[a:b]*=10**(change/20);levels.append(dict(id=p['id'],start=a/48000,end=b/48000,sourceActiveMedianDbfs=reference,clipGainDb=change))
- sf.write(L/'narration-level-matched.wav',narration,48000,subtype='FLOAT')
+ if (L/'narration-level-matched.wav').exists():assert np.max(abs(pcm(L/'narration-level-matched.wav')-narration))<2e-6,'Preserve only identical successful prepared PCM'
+ else:sf.write(L/'narration-level-matched.wav',narration,48000,subtype='FLOAT')
  compression='acompressor=threshold=0.12:ratio=3:attack=5:release=140:makeup=1'
- run([FF,'-v','error','-n','-i',str(L/'narration-level-matched.wav'),'-af',compression,'-c:a','pcm_f32le',str(L/'narration-prepared-stem.wav')])
+ if not (L/'narration-prepared-stem.wav').exists():run([FF,'-v','error','-n','-i',str(L/'narration-level-matched.wav'),'-af',compression,'-c:a','pcm_f32le',str(L/'narration-prepared-stem.wav')])
  narration=pcm(L/'narration-prepared-stem.wav');before=loud(L/'narration-prepared-stem.wav');gain=min(10**((-18-float(before['input_i']))/20),.75/max(abs(narration).max(),1e-9));stem=narration*gain
  background=np.zeros_like(stem);timing=read(L/'visual-timing.json');src=pcm(L/'footage/celeste-selected-92p6-103p6.mp4');events=[]
  # Native effects and in-game music are inseparable in this recording; no added music.
  for p in timing['sections']:
   if p['id'] not in ['celeste','return-game']:continue
   a=round((p['sourceStart']-92.6)*48000);count=min(round((p['sourceEnd']-p['sourceStart'])*48000),round((p['end']-p['start'])*48000));clip=src[a:a+count].copy();d=round(p['start']*48000)
-  active=[db(clip[i:i+19200]) for i in range(0,max(1,len(clip)-19200),4800)];level=float(np.median([x for x in active if x>-55]));clip*=10**((-36-level)/20)
+  active=[db(clip[i:i+19200]) for i in range(0,max(1,len(clip)-19200),4800)];audible=[x for x in active if x>-55]
+  if not audible:events.append(dict(start=d/48000,end=(d+len(clip))/48000,kind='source-game-audio-inaudible-omitted',sourceRmsDbfs=db(clip)));continue
+  level=float(np.median(audible));clip*=10**((-36-level)/20)
   n=min(4800,len(clip)//2);clip[:n]*=np.linspace(0,1,n)[:,None];clip[-n:]*=np.linspace(1,0,n)[:,None]
   background[d:d+len(clip)]+=clip;events.append(dict(start=d/48000,end=(d+len(clip))/48000,kind='native-game-audio-including-music',activeMedianTargetDbfs=-36))
  # Speech drives only background gain, never narration gain.
  activity=np.sqrt(np.mean(stem[::240]**2,axis=1));activity=np.convolve(activity,np.ones(80)/80,mode='same');duck=1-.45*np.minimum(1,activity/.04);background*=np.interp(np.arange(N),np.arange(len(activity))*240,duck)[:,None]
  effect=np.zeros_like(stem);wide=next(s for s in timing['sections'] if s['id']=='wide');hit=wide['start']+14.25-wide['sourceStart'];start=round(hit*48000);t=np.arange(7200)/48000;z=.035*np.sin(2*np.pi*(180*t+350*t*t))*np.exp(-35*t);effect[start:start+len(z)]+=z[:,None];events.append(dict(seconds=hit,kind='authored-impact-sound',cause='actualUnity health decrement'))
  mix=stem+background+effect;overall=min(1,10**(-1.8/20)/max(abs(mix).max(),1e-9));stem*=overall;background*=overall;effect*=overall;mix*=overall
+ assert np.isfinite(mix).all(),'Never encode nonfinite samples'
  for name,a in [('narration-stem.wav',stem),('background-stem.wav',background+effect),('final-mix.wav',mix)]:sf.write(L/name,a,48000,subtype='FLOAT')
  run([FF,'-v','warning','-n','-i',str(L/'final-mix.wav'),'-t','60','-c:a','aac','-b:a','192k',str(L/'final-mix.m4a')]);measured=loud(L/'final-mix.m4a');assert float(measured['input_tp'])<=-1.5
  save(L/'audio-build.json',dict(narrationSource=sha(L/'narration-timeline.wav'),preparedStemSha256=sha(L/'narration-prepared-stem.wav'),phraseLevels=levels,compression=compression,speechGainDb=20*math.log10(gain*overall),addedBackgroundMusic=False,nativeGameSoundQuiet=True,backgroundDucked=True,speechFades=False,speed=1,events=events,finalMeasured=measured,mixSha256=sha(L/'final-mix.m4a')));print(json.dumps(measured))

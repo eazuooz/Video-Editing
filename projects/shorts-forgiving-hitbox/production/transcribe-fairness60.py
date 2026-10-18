@@ -29,15 +29,16 @@ def normalized(text):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('role', choices=['additions', 'voice', 'mix'])
+    parser.add_argument('role', choices=['additions', 'numbers', 'voice', 'mix'])
     role = parser.parse_args().role
     sources = {
         'additions': R / 'shared/output/narration/shorts-forgiving-hitbox/fairness60-additions-v1/fairness60-additions-v1.wav',
+        'numbers': R / 'shared/output/narration/shorts-forgiving-hitbox/fairness60-code-numbers-v1/fairness60-code-numbers-v1.wav',
         'voice': L / 'narration-timeline.wav',
         'mix': L / 'final-mix.m4a',
     }
     source = sources[role]
-    expected_path = S / ('additions.ko.txt' if role == 'additions' else 'narration.ko.txt')
+    expected_path = S / (role+'.ko.txt' if role in ['additions','numbers'] else 'narration.ko.txt')
     expected = expected_path.read_text(encoding='utf8').strip()
     sha = hashlib.sha256(source.read_bytes()).hexdigest()
     out = L / f'asr-{role}-{sha[:12]}.json'

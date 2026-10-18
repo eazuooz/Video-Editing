@@ -1,4 +1,4 @@
-import {makeScene2D,Video,Txt,Rect,Line,Circle} from '@motion-canvas/2d';
+import {makeScene2D,Img,Txt,Rect,Line,Circle} from '@motion-canvas/2d';
 import {createSignal,linear,Vector2} from '@motion-canvas/core';
 import trace from '../../../../projects/shorts-forgiving-hitbox/production/local/capture-full-v1/trace.json';
 import footage from '../../../../projects/shorts-forgiving-hitbox/production/source-fairness-60s.json';
@@ -10,7 +10,7 @@ export default makeScene2D(function*(view){
  const section=()=>timing.sections.find(s=>t()>=s.start&&t()<s.end)??timing.sections[timing.sections.length-1];
  const isGame=()=>['celeste','code','return-game'].includes(section().id);
  const code=()=>section().id==='code';
- const codeProgress=()=>code()?clamp((t()-section().start)/.8,0,1):0;
+ const codeProgress=()=>code()?clamp((t()-section().start-3.46)/.9,0,1):0;
  const unityTime=()=>{
   const s=section();if(s.kind==='unity')return clamp(s.sourceStart+(t()-s.start)*s.rate,s.sourceStart,s.sourceEnd);
   return 4;
@@ -21,6 +21,8 @@ export default makeScene2D(function*(view){
  const point=(p:{x:number,y:number})=>new Vector2(p.x-540,p.y-960);
  const outline=(key:'hurt'|'attack')=>{const a=state()[key].map(point);return [...a,a[0]];};
  const sourceTime=()=>{const s=section();return s.kind==='game'?clamp(s.sourceStart+t()-s.start,s.sourceStart,s.sourceEnd):99.5;};
+ // Exact original-frame selection matches the inspected anchor stills. Avoid HTMLVideo seek lag.
+ const gameFrame=()=>clamp(Math.ceil(sourceTime()*30000/1001-1e-7)-2776,0,329);
  const anchors=footage.editorialTracking.anchors;
  const anchor=()=>{
   const st=sourceTime();let a=anchors[0],b=anchors[anchors.length-1];
@@ -29,15 +31,24 @@ export default makeScene2D(function*(view){
   const p=clamp((st-a.sourceSeconds)/Math.max(.0001,b.sourceSeconds-a.sourceSeconds),0,1);
   return new Vector2(a.targetCenter[0]*(1-p)+b.targetCenter[0]*p,a.targetCenter[1]*(1-p)+b.targetCenter[1]*p);
  };
- const scale=5/6,gameCenter=()=>{const p=anchor()??new Vector2(1700,600);return new Vector2(clamp(p.x,540,1380),clamp(p.y,432,648));};
+ // Keep the editorial crop continuous across a dash flash; the marker itself stays hidden.
+ const validAnchors=anchors.filter(a=>a.targetCenter!==null);
+ const cropAnchor=()=>{
+  const st=sourceTime();let a=validAnchors[0],b=validAnchors[validAnchors.length-1];
+  for(let i=0;i<validAnchors.length-1;i++)if(st>=validAnchors[i].sourceSeconds&&st<=validAnchors[i+1].sourceSeconds){a=validAnchors[i];b=validAnchors[i+1];break;}
+  if(st>=validAnchors[validAnchors.length-1].sourceSeconds)a=b=validAnchors[validAnchors.length-1];
+  const p=clamp((st-a.sourceSeconds)/Math.max(.0001,b.sourceSeconds-a.sourceSeconds),0,1);
+  return new Vector2(a.targetCenter![0]*(1-p)+b.targetCenter![0]*p,a.targetCenter![1]*(1-p)+b.targetCenter![1]*p);
+ };
+ const scale=5/6,gameCenter=()=>{const p=cropAnchor();return new Vector2(clamp(p.x,540,1380),clamp(p.y,432,648));};
  const toGame=(p:Vector2)=>p.sub(gameCenter()).scale(scale);
  const markVisible=()=>isGame()&&!code()&&anchor()!==null&&!footage.editorialTracking.hideIntervals.some(i=>sourceTime()>=i.startSeconds&&sourceTime()<=i.endSeconds);
  view.fill('#000000');
- view.add(<Video src={ROOT+'capture-full-v1/unity-master.mp4'} width={1080} height={1920} time={unityTime} opacity={()=>isGame()?0:1}/>);
+ view.add(<Img src={()=>ROOT+'fairness-60s/footage/unity-frames/frame-'+String(state().frame).padStart(4,'0')+'.png'} width={1080} height={1920} opacity={()=>isGame()?0:1}/>);
  view.add(<Rect width={1080} height={600} position={[0,-660]} fill="#000000" opacity={()=>isGame()?0:1}/>);
  view.add(<Rect width={1080} height={622} position={[0,649]} fill="#000000"/>);
  const gamePane=new Rect({width:900,height:720,position:[-70,-30],clip:true,opacity:()=>isGame()?1:0});view.add(gamePane);
- gamePane.add(<Video src={ROOT+'fairness-60s/footage/celeste-selected-92p6-103p6.mp4'} width={1600} height={900} smoothing={false} time={()=>sourceTime()-92.6} position={()=>new Vector2(960,540).sub(gameCenter()).scale(scale)}/>);
+ gamePane.add(<Img src={()=>ROOT+'fairness-60s/footage/frames/frame-'+String(gameFrame()).padStart(4,'0')+'.png'} width={1600} height={900} smoothing={false} position={()=>new Vector2(960,540).sub(gameCenter()).scale(scale)}/>);
  gamePane.add(<Circle width={114} height={114} position={()=>toGame(anchor()??new Vector2(0,0))} stroke={C.green} lineWidth={7} opacity={()=>markVisible()?1:0}/>);
  // This ring identifies the visible character. It is not an inferred collider.
  view.add(<Txt text="초록 원: 캐릭터 위치" fontFamily="Malgun Gothic" fontSize={30} fill={C.green} position={[-70,-430]} opacity={()=>isGame()&&!code()?1:0}/>);
@@ -70,7 +81,7 @@ export default makeScene2D(function*(view){
  diagram.add(<Txt text="8 × 11" fontFamily="Malgun Gothic" fontWeight={700} fontSize={48} fill={C.white} position={[-220,15]}/>);
  diagram.add(<Txt text={()=>codeProgress()>.8?'8 × 9':'8 × 11'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={48} fill={C.green} position={[220,-12]}/>);
  diagram.add(<Line points={[[350,170],[350,114]]} stroke={C.yellow} lineWidth={5} endArrow arrowSize={12} opacity={()=>codeProgress()>=1?1:0}/>);
- diagram.add(<Txt text="아래쪽 2픽셀 차이" fontFamily="Malgun Gothic" fontWeight={700} fontSize={38} fill={C.yellow} position={[0,235]}/>);
+ diagram.add(<Txt text="아래쪽 2픽셀 차이" fontFamily="Malgun Gothic" fontWeight={700} fontSize={38} fill={C.yellow} position={[0,235]} opacity={()=>codeProgress()>=1?1:0}/>);
  diagram.add(<Txt text="공개 코드 재구성 · 실측 아님" fontFamily="Malgun Gothic" fontSize={32} fill={C.muted} position={[0,300]}/>);
  yield* t(60,60,linear);
 });

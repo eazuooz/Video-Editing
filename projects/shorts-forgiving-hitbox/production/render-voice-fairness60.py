@@ -3,6 +3,9 @@ from pathlib import Path
 import json,subprocess,sys,time,uuid
 import psutil
 R=Path(__file__).resolve().parents[3];P=Path(__file__).resolve().parents[1];L=P/'production/local/fairness-60s';LEASE=R/'shared/output/GPU_HANDOFF.json'
+phase=sys.argv[1] if len(sys.argv)>1 else 'additions';assert phase in ['additions','numbers']
+manifest='tts-fairness60.json' if phase=='additions' else 'tts-fairness60-numbers.json'
+execution='tts-execution.json' if phase=='additions' else 'tts-numbers-execution.json'
 def read(p):return json.loads(Path(p).read_text(encoding='utf8'))
 def save(p,v):Path(p).write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 control=read(R/'shared/publishing/video-production-control.json')['shortsRecurringAuthorization'];assert control['selectedShort']==P.name and control['latestSelection']['selectedRevision']=='fairness-60s'
@@ -18,10 +21,10 @@ try:
  import torch
  torch.cuda.set_per_process_memory_fraction(7168*1048576/torch.cuda.get_device_properties(0).total_memory,0)
  sys.path.insert(0,str(R/'qwen3-tts'));import render_narration as worker
- worker.configure_project(P.name,f'projects/{P.name}/production/tts-fairness60.json');worker.load_tts_dependencies()
+ worker.configure_project(P.name,f'projects/{P.name}/production/{manifest}');worker.load_tts_dependencies()
  items=worker.build_render_items(worker.load_jobs());assert len(items)==1,'One continuous additions scene only'
  worker.render_chunks(items,1);worker.assemble_outputs(worker.load_jobs())
  record.update(peakAllocatedMiB=torch.cuda.max_memory_allocated()/1048576,peakReservedMiB=torch.cuda.max_memory_reserved()/1048576);code=0
 finally:
- record.update(state='finished' if code==0 else 'failed',finishedAt=time.time(),exitCode=code);save(L/'tts-execution.json',record)
+ record.update(state='finished' if code==0 else 'failed',phase=phase,finishedAt=time.time(),exitCode=code);save(L/execution,record)
  if LEASE.exists() and read(LEASE).get('token')==token:LEASE.unlink()

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "selected internal plan; timings await actual new PCM",
+  "status": "all scene designs and current-caption preflight passed; final render",
   "scope": "One 60-second revision of shorts-forgiving-hitbox. Preserve prior 30-second master and Drive review.",
   "centralQuestion": "닿았는데 왜 안 맞았지?",
   "centralAnswer": "보이는 그림과 피격 판정 영역은 다를 수 있다. 자체 시연의 첫 장면은 Hitbox와 Hurtbox가 겹치지 않아 살아남았다.",
@@ -14,6 +14,7 @@
     "초록색은 피해를 받는 영역, 허트박스예요.",
     "빨간 공격 영역, 히트박스와 겹쳐야 체력이 줄죠.",
     "셀레스트도 공개 코드에서 이동용 충돌 영역보다 피격 영역의 높이가 작아요.",
+    "가로는 여덟 픽셀로 같고, 세로만 열한 픽셀에서 아홉 픽셀로 짧아집니다. 아래쪽 두 픽셀 차이예요.",
     "같은 공격으로 비교해 볼게요.",
     "몸만큼 넓히면 맞고, 조금 줄이면 빗나갑니다.",
     "겉모습은 그대로고, 피격 영역만 바꾼 겁니다.",
@@ -23,14 +24,15 @@
     "아까 살아남은 이유도, 보이는 몸이 아니라 이 두 영역으로 판정했기 때문입니다."
   ],
   "narrationSizing": {
-    "hangulSyllables": 280,
+    "hangulSyllables": 319,
     "estimatedSpeechSeconds": [
       47,
       53
     ],
     "basis": "Existing approved 127-syllable narration used roughly 22 seconds of speech; this is an estimate, not a measured new TTS duration.",
     "targetMasterSeconds": 60,
-    "remainingTimePurpose": "Observe the attack, replay the two controlled conditions, inspect Celeste evidence and see the final resolution. No unrelated padding or repeated idle footage."
+    "remainingTimePurpose": "Observe the attack, replay the two controlled conditions, inspect Celeste evidence and see the final resolution. No unrelated padding or repeated idle footage.",
+    "measuredRetainedSpeechSourceSeconds": 53.84
   },
   "titleCandidates": [
     {
@@ -250,6 +252,7 @@
     "The green damage-receiving region is the hurtbox.",
     "Health drops when it overlaps the red attack region, the hitbox.",
     "Celeste’s published code also defines a hurtbox shorter than its movement collision box.",
+    "Both are eight pixels wide, while the height shrinks from eleven pixels to nine. The difference is two pixels at the bottom.",
     "Let’s compare the same attack.",
     "As wide as the body: a hit. Slightly smaller: a miss.",
     "The appearance is unchanged. Only the hurtbox changed.",
@@ -262,7 +265,7 @@
   "humanFinalReview": "pending",
   "audio": {
     "additionalBgm": false,
-    "sourceEffects": "quiet actual source audio if separable; otherwise record limitation",
+    "sourceEffects": "Selected native game recording is effectively silent (RMS −124dBFS), omitted instead of amplified. One authored impact cue follows actual Unity HP decrease. No added music.",
     "approvedPcmReused": true,
     "newTts": "additions only"
   },
@@ -308,5 +311,129 @@
     "claims": "Celeste basic state and separate diagram verified; no guessed runtime boxes; limit text made explicitly hypothetical",
     "caption": "30 KO/EN cues exact to current narration, maximum2lines and796px at Malgun Gothic Bold60",
     "audio": "Changed additions wait for foreign M04 GPU batch to finish; no foreign process or lease touched"
-  }
+  },
+  "visualTiming": "production/local/fairness-60s/visual-timing.json",
+  "preflight": "production/local/fairness-60s/preflight-current-captions.json",
+  "speechVerification": "production/local/fairness-60s/asr-full-review.json",
+  "frameAccurateComposition": {
+    "gameplay": "production/source-fairness-60s.json#renderFrameSelection",
+    "unity": "production/local/fairness-60s/footage/unity-frames.json",
+    "reason": "Use actual source image frames so projected collider bounds and character anchors are synchronized, avoiding HTMLVideo seek lag"
+  },
+  "lockedSections": [
+    {
+      "id": "hook",
+      "kind": "unity",
+      "start": 0,
+      "end": 3,
+      "sourceStart": 0.05,
+      "sourceEnd": 1.85,
+      "rate": 0.6
+    },
+    {
+      "id": "attacker",
+      "kind": "unity",
+      "start": 3,
+      "end": 4.866666666666666,
+      "sourceStart": 0.4,
+      "sourceEnd": 1.9,
+      "rate": 0.8035714285714287
+    },
+    {
+      "id": "survivor",
+      "kind": "unity",
+      "start": 4.866666666666666,
+      "end": 10.4,
+      "sourceStart": 0.4,
+      "sourceEnd": 1.8,
+      "rate": 0.253012048192771
+    },
+    {
+      "id": "reveal",
+      "kind": "unity",
+      "start": 10.4,
+      "end": 14.35,
+      "sourceStart": 4,
+      "sourceEnd": 4,
+      "rate": 0
+    },
+    {
+      "id": "terms",
+      "kind": "unity",
+      "start": 14.35,
+      "end": 20.683333333333334,
+      "sourceStart": 5,
+      "sourceEnd": 10.9,
+      "rate": 1
+    },
+    {
+      "id": "celeste",
+      "kind": "game",
+      "start": 20.683333333333334,
+      "end": 25.816666666666666,
+      "sourceStart": 93,
+      "sourceEnd": 98.13333333333333
+    },
+    {
+      "id": "code",
+      "kind": "game",
+      "start": 25.816666666666666,
+      "end": 33.016666666666666,
+      "sourceStart": 98.13333333333333,
+      "sourceEnd": 98.13333333333333
+    },
+    {
+      "id": "compare-intro",
+      "kind": "unity",
+      "start": 33.016666666666666,
+      "end": 35.016666666666666,
+      "sourceStart": 12,
+      "sourceEnd": 12,
+      "rate": 0
+    },
+    {
+      "id": "wide",
+      "kind": "unity",
+      "start": 35.016666666666666,
+      "end": 36.86666666666667,
+      "sourceStart": 13.25,
+      "sourceEnd": 15.38,
+      "rate": 1
+    },
+    {
+      "id": "narrow",
+      "kind": "unity",
+      "start": 36.86666666666667,
+      "end": 42.31666666666667,
+      "sourceStart": 15.4,
+      "sourceEnd": 21.3,
+      "rate": 1
+    },
+    {
+      "id": "limit",
+      "kind": "unity",
+      "start": 42.31666666666667,
+      "end": 49.63333333333333,
+      "sourceStart": 4,
+      "sourceEnd": 4,
+      "rate": 0
+    },
+    {
+      "id": "return-game",
+      "kind": "game",
+      "start": 49.63333333333333,
+      "end": 55.0,
+      "sourceStart": 98.13333333333333,
+      "sourceEnd": 103.5
+    },
+    {
+      "id": "resolution",
+      "kind": "unity",
+      "start": 55.0,
+      "end": 60,
+      "sourceStart": 0.4,
+      "sourceEnd": 1.9,
+      "rate": 0.3
+    }
+  ]
 }
