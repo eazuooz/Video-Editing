@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys,json,hashlib,subprocess,difflib,psutil,argparse,uuid,time
 from contextlib import contextmanager
-from revision_context import paths, ensure_authorized
+from revision_context import paths, ensure_authorized, REVISION
 R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';O=P/'production/local/compact-edit'
 O,N,EDIT_PLAN,STEM=paths()
 sys.path.insert(0,str(R/'qwen3-tts'))
@@ -34,8 +34,10 @@ else:
   torch.set_num_threads(4 if args.device=='cpu' else 2);dtype=torch.float32 if args.device=='cpu' else torch.float16
   local=R/'qwen3-tts/models/whisper-large-v3-turbo';mid=str(local) if (local/'config.json').exists() else 'openai/whisper-large-v3-turbo';m=AutoModelForSpeechSeq2Seq.from_pretrained(mid,dtype=dtype,attn_implementation='eager',local_files_only=True).to(args.device);p=AutoProcessor.from_pretrained(mid,local_files_only=True)
   asr=pipeline('automatic-speech-recognition',model=m,tokenizer=p.tokenizer,feature_extractor=p.feature_extractor,dtype=dtype,device=args.device)
-  result=asr(str(out),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word')
-  cache.write_text(json.dumps({'audioSha256':digest,'text':result['text'],'words':result['chunks'],'scope':'complete encoded final mix, including joins and music; direct full-text comparison required','humanListening':'pending local user review','noOtherProcessPaused':True},ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+  # Final-mix QA needs complete independent text, not a second word alignment.
+  # Source-word timestamps already drive the speech-active level measurements.
+  result=asr(str(out),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps=True if REVISION else 'word')
+  cache.write_text(json.dumps({'audioSha256':digest,'text':result['text'],'segments' if REVISION else 'words':result['chunks'],'timestampGranularity':'segment' if REVISION else 'word','scope':'complete encoded final mix, including joins and music; direct full-text comparison required','humanListening':'pending local user review','noOtherProcessPaused':True},ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 script=json.loads((P/'script/narration.ko.json').read_text(encoding='utf8'));expected=' '.join(x for s in script['scenes'] for x in s['lines']);actual=json.loads(cache.read_text(encoding='utf8'))['text'];a,b=normalize(expected),normalize(actual);matcher=difflib.SequenceMatcher(None,a,b,autojunk=False)
 diff=[{'kind':op,'expected':a[i:j],'recognized':b[k:l]} for op,i,j,k,l in matcher.get_opcodes() if op!='equal']
 (O/'final-mix-text-comparison.json').write_text(json.dumps({'similarity':matcher.ratio(),'expected':expected,'recognized':actual,'differences':diff,'reviewStatus':'pending direct reading of complete recognized text'},ensure_ascii=False,indent=2)+'\n',encoding='utf8');print('Final encoded mix ASR complete; similarity',matcher.ratio())

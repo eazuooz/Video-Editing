@@ -74,7 +74,9 @@ elif stage=='split':
     restored=np.concatenate([sf.read(chunks/(s['id']+'-scene.wav'),dtype='float32')[0] for s in script['scenes']]);assert np.array_equal(restored,a)
     save(N/(STEM+'.timing.json'),{'sample_rate':sr,'duration_seconds':duration,'render_mode':'continuous-source-split-on-speech-pause','entries':entries})
     save(N/'scene-split-review.json',{'matchingCoverage':coverage,'boundaries':contexts,'scenes':reports,'decodedSourceReconstructionIdentical':True,'humanListening':'pending'})
-    manifest=read(P/'production/tts-manifest.json');manifest['revision']='elevenlabs-b-v2';manifest['tts'].update(engine='elevenlabs',model='Eleven v4',voiceId='jIRSnF8OWAsWEChVwCuK',outputDir=str(N.relative_to(R).as_posix()),filenameStem=STEM)
+    manifest=read(P/'production/tts-manifest.json');manifest['revision']='elevenlabs-b-v2'
+    manifest['tts']={'engine':'elevenlabs','model':'Eleven v4','voiceId':'jIRSnF8OWAsWEChVwCuK','language':'Korean','outputDir':N.relative_to(R).as_posix(),'filenameStem':STEM,'settings':{'stability':.5,'similarity':.75,'speed':1},'approvedSample':'production/elevenlabs-own-voice-sample-20261018.json#takes/1','renderMode':'two-continuous-cloud-takes-split-on-verified-pauses'}
+    manifest['executionState']='cloud-generated-complete-source-ASR-reviewed'
     for language in ['ko','en']:manifest['paths']['captions'+language.capitalize()]=str((O/f'body.{language}.srt').relative_to(R).as_posix())
     save(P/'production/elevenlabs-tts-manifest.json',manifest)
     print(json.dumps({'seconds':duration,'coverage':coverage,'scenes':len(reports)}))

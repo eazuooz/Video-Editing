@@ -23,20 +23,33 @@ if __name__=='__main__':
  O,N,EDIT_PLAN,STEM=paths();ensure_authorized()
  plan=json.loads(EDIT_PLAN.read_text(encoding='utf8'));duration=plan['totalFrames']/60
  assert plan.get('timing')=='measured-and-asr-aligned','Estimated timing must not enter production'
- sr=24000;voice=np.zeros(round(duration*sr),dtype=np.float32);reports=[]
+ sr=48000 if REVISION else 24000;voice=np.zeros(round(duration*sr),dtype=np.float32);reports=[]
  commonLevel=None
  if REVISION:
-  full,_=sf.read(N/(STEM+'.wav'),dtype='float32');allWords=json.loads((N/'whole-source-asr.json').read_text(encoding='utf8'))['words']
+  # ASR/alignment uses a24k derivative. Mix from the original44.1k downloads
+  # directly at48k, preserving their high-frequency content in the master.
+  assembly=json.loads((N/'source-assembly.json').read_text(encoding='utf8'));parts=[]
+  for idx,source in enumerate(assembly['inputs']['sources']):
+   src=R/source['path'];assert hashlib.sha256(src.read_bytes()).hexdigest()==source['sha256']
+   target=N/f'native-source-{idx+1}-48k.wav'
+   if not target.exists():run(['-i',str(src),'-ac','1','-ar','48000','-c:a','pcm_f32le',str(target)],f'native-source-{idx+1}')
+   a,r=sf.read(target,dtype='float32');assert r==sr;parts.append(a)
+  full=np.concatenate([parts[0],np.zeros(round(.2*sr),dtype=np.float32),parts[1]])
+  sf.write(N/'native-narration-48k.wav',full,sr,subtype='FLOAT')
+  allWords=json.loads((N/'whole-source-asr.json').read_text(encoding='utf8'))['words']
   commonLevel=db(rms(full[speech_mask(len(full),sr,allWords)]))
  for s in plan['scenes']:
-  f=N/'chunks'/(s['id']+'-scene.wav');a,r=sf.read(f,dtype='float32');assert r==sr
+  f=N/'chunks'/(s['id']+'-scene.wav');a,r=sf.read(f,dtype='float32');assert r==24000
   q=json.loads((N/'asr'/(s['id']+'.json')).read_text(encoding='utf8'));assert q['audio_sha256']==hashlib.sha256(f.read_bytes()).hexdigest()
+  if REVISION:
+   lo=round((s['voiceStart']-2)*sr);a=full[lo:lo+len(a)*2]
   mask=speech_mask(len(a),sr,q['words']);level=db(rms(a[mask]));gain=float(10**((-20-(commonLevel if commonLevel is not None else level))/20))
   # Constant per-scene gain preserves local prosody; only the background has
   # time-varying sidechain compression. Drift flags require bounded review.
   out=a*gain
   edge=min(round(.006*sr),len(out)//2)
-  out[:edge]*=np.linspace(0,1,edge);out[-edge:]*=np.linspace(1,0,edge)
+  if not REVISION or s['id']==plan['scenes'][0]['id']:out[:edge]*=np.linspace(0,1,edge)
+  if not REVISION or s['id']==plan['scenes'][-1]['id']:out[-edge:]*=np.linspace(1,0,edge)
   start=round(s['voiceStart']*sr);voice[start:start+len(out)]=out
   windows=[]
   for i in range(0,len(a)-sr,round(sr*.5)):
@@ -73,4 +86,5 @@ if __name__=='__main__':
  graph='[0:a]asplit=3[voice][side1][side2];[1:a][side1]sidechaincompress=threshold=0.025:ratio=3:attack=35:release=400[bg];[2:a][side2]sidechaincompress=threshold=0.035:ratio=2:attack=15:release=250[game];[voice][bg][game]amix=inputs=3:normalize=0:duration=first,alimiter=limit=0.794:level=false:latency=true[out]'
  run(['-i',str(O/'narration-stem.wav'),'-i',str(O/'music-stem.wav'),'-i',str(O/'game-stem.wav'),'-filter_complex',graph,'-map','[out]','-t',str(duration),'-ar','48000','-c:a','pcm_s24le',str(O/'final-mix.wav')],'final-mix')
  report={'scenes':reports,'gameAudio':gameRecords,'duration':duration,'normalizationMeasurementOnly':stats,'voiceGainMode':'constant-global-gain-with-short-peak-limiter','globalGainDb':gainDb,'peakLimiter':{'ceilingDbfs':-2.5,'attackMs':5,'releaseMs':50,'autoMakeup':False},'musicInitialLufs':-31,'music':'Nimbus — Eveningland','voiceDucked':False,'amixNormalize':False,'sourcePcmPreserved':True,'sourceToStemToEncodedContinuity':'pending','fullFinalAsr':'pending','humanWholeListening':'pending'}
+ if REVISION:report.update(nativeSourceMixing=True,mixingSampleRate=48000,sourceDownloadSampleRate=44100,asrDerivativeSampleRate=24000,internalSceneFades=False,nativeSourceSha256=hashlib.sha256((N/'native-narration-48k.wav').read_bytes()).hexdigest())
  (O/'audio-build.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8');print('Mixed',duration,'seconds')

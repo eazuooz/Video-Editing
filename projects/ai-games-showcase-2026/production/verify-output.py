@@ -4,8 +4,9 @@ import subprocess,json,hashlib,math,sys
 import numpy as np
 import soundfile as sf
 from PIL import Image,ImageDraw
-from revision_context import paths, ensure_authorized
+from revision_context import paths, ensure_authorized, REVISION
 R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';V=P/'production';O,N,EDIT_PLAN,STEM=paths();Q=O/'qa';Q.mkdir(exist_ok=True);ensure_authorized()
+if REVISION:assert json.loads((O/'audio-build.json').read_text(encoding='utf8')).get('nativeSourceMixing') is True,'Complete native-rate mix and audio remux before final verification'
 def run(cmd):return subprocess.run(cmd,cwd=R,capture_output=True,check=True).stdout
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 plan=json.loads(EDIT_PLAN.read_text(encoding='utf8'));layout=json.loads((O/'caption-layout.json').read_text(encoding='utf8'))

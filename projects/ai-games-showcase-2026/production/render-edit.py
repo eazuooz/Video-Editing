@@ -1,7 +1,7 @@
 """Render inspected sources at native speed, exact slides, original brand/member."""
 from pathlib import Path
 import json,subprocess,hashlib,shutil,sys
-from revision_context import paths, ensure_authorized
+from revision_context import paths, ensure_authorized, REVISION
 R=Path(__file__).resolve().parents[3];P=R/'projects/ai-games-showcase-2026';O=P/'production/local/compact-edit'
 def read(p):return json.loads(p.read_text(encoding='utf8'))
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -54,10 +54,18 @@ if stage=='cuts':
  for name,count in [('branding',120),('membership',600)]:
   src=R/'projects/game-reward-planning/production/local/reference-preserving-v2/edit'/(name+'.mp4');assert frames(src)==count;shutil.copy2(src,O/(name+'.mp4'))
  files=[O/'branding.mp4',*[O/(c['id']+'.mp4') for c in plan['cuts']],O/'membership.mp4'];(O/'concat.txt').write_text('\n'.join("file '"+p.as_posix()+"'" for p in files)+'\n',encoding='utf8')
-elif stage=='pair':
+elif stage in ('pair','audio'):
+ if REVISION:assert read(O/'audio-build.json').get('nativeSourceMixing') is True,'Complete native-rate ElevenLabs mix before encoding'
  selected();mix=O/'final-mix.wav';aac=O/'final-mix.m4a';sig=sha(mix);receipt=O/'aac-source.json'
  if not(aac.exists() and receipt.exists() and read(receipt).get('sha256')==sig):
   run(['ffmpeg','-hide_banner','-y','-i',str(mix),'-c:a','aac','-b:a','192k','-ar','48000',str(aac)],'audio-encode');receipt.write_text(json.dumps({'sha256':sig})+'\n')
+ if stage=='audio':
+  # Audio-only refinement retains the already encoded visual frames exactly.
+  for kind in ['clean','captioned']:
+   old=O/f'ai-games-{kind}.mp4';new=O/f'ai-games-{kind}.audio-updated.mp4'
+   run(['ffmpeg','-v','error','-y','-i',str(old),'-i',str(aac),'-map','0:v:0','-map','1:a:0','-c','copy','-t',str(plan['totalFrames']/60),'-movflags','+faststart',str(new)],'audio-remux-'+kind)
+   assert frames(new)==plan['totalFrames'];new.replace(old)
+  raise SystemExit(0)
  # Every input is already frame-count-checked at60fps. Rebase the decoded
  # sequence itself: concat demuxer timestamps must not create gaps at cuts.
  graph='[0:v]settb=expr=1/60,setpts=N,setsar=1,split=2[clean][capin];[capin]ass='+(O/'captions.ko.ass').relative_to(R).as_posix()+'[captioned]'
