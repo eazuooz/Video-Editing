@@ -14,15 +14,15 @@
     "unchangedAudioAndTimingEvidenceReusable": true,
     "automaticOtherVideoRevision": false
   },
-  "updatedAt": "2026-10-19T08:27:14.754995+00:00",
+  "updatedAt": "2026-10-19T09:29:02.750024+00:00",
   "authority": "explicit-human-user",
   "userEvidence": "영상 제작 규칙 재설계하자 ... 검수해야하는 내용을 처음 영상제작규칙에 추가해서 처음에 잘만들게 해줘 규칙 확인하고 전부 통합해서 수정해줘. 지피티 자동 채팅보내는거 해제 ... 있는거 검수하고 새로운거 만드는것 부터는 이제 내가 하나씩 확인하면서 만들려고",
-  "mode": "one-video-autonomous-until-drive-final-review",
+  "mode": "one-video-autonomous-until-local-final-review",
   "automaticChatEnabled": false,
   "automaticNextVideoEnabled": false,
   "automaticBatchResumeEnabled": false,
-  "existingWork": "Inspection requests receive a gap report. Selected production/revision completes to Drive final review; upload to YouTube after user review of that version. Preserve unrelated work and all baseline uploads/reservations.",
-  "newWork": "Complete one selected video through internal QA, four outputs, Google Drive final-review upload and selective Git. User reviews the complete Drive version before YouTube upload. No intermediate script/sample approvals or automatic next video.",
+  "existingWork": "Selected revision completes to local final review; YouTube follows user review of that exact version. Preserve unrelated work and existing uploads.",
+  "newWork": "Complete one selected video through internal QA, four outputs, local folder/captioned-video review links and selective Git. Drive only on explicit request. Same reviewed version to private YouTube; no automatic next video.",
   "selectedVideo": "game-math-euler-axis-angle",
   "newProductionAuthorization": {
     "selectedOn": "2026-10-18T02:01:26.0311941+09:00",
@@ -53,7 +53,7 @@
     }
   },
   "userCheckpoints": [
-    "Completed Google Drive final-review version before YouTube upload."
+    "Completed local full-version user review before YouTube upload."
   ],
   "supersedesAutomaticContinuationIn": [
     "old heartbeat prompts",
@@ -61,7 +61,7 @@
     "previous continue-all requests",
     "thumbnail follow-up next-video instructions"
   ],
-  "runningWorkBoundary": "M04 selected revision only through Drive final review. Existing private YouTube baseline and unselected videos preserved.",
+  "runningWorkBoundary": "M04 local final review only; user approval remains pending. Existing Drive/YouTube and unselected work preserved.",
   "preserveExistingYouTubeSchedules": true,
   "preserveUnrelatedResearchAndStaging": true,
   "automations": {
@@ -174,7 +174,7 @@
     "automaticNextVideo": false
   },
   "oneVideoCompletion": {
-    "id": "one-video-drive-review-before-youtube-v1",
+    "id": "one-video-local-review-before-youtube-v1",
     "userEvidence": "영상제작은 한개 단위 끝날때까지 자동이야 다완성되면 내가 섬수해서 수정할지 봐줄게 업로드까지 한개단위로 지금하는거 마무리짓고 규칙애도 추가해줘",
     "recordedAt": "2026-10-13T13:34:46.614982+09:00",
     "intermediateUserApprovalRequired": false,
@@ -187,21 +187,23 @@
       "edit",
       "internal-qa",
       "four-outputs",
-      "google-drive-final-review-upload",
+      "local-final-review-delivery",
       "private-upload-and-available-settings",
       "selective-git"
     ],
-    "userReviewStage": "google-drive-final-version-before-youtube-upload",
+    "userReviewStage": "complete-local-version-before-youtube-upload",
     "stopAfterSelectedVideo": true,
     "automaticNextVideo": false,
     "automaticChatEnabled": false,
     "publicationMode": "private",
     "scheduleOrBaselineDeletionIncluded": false,
-    "latestUserEvidence": "앞으로 영상 최종업로드 전 검수는 구글드라이브에 올려줘",
-    "updatedAt": "2026-10-14T17:04:16.190179+09:00",
+    "latestUserEvidence": "폴더 링크줘~ 드라이브로 안올려줘도 돼 이제는 규칙에서 제거해줘",
+    "updatedAt": "2026-10-19T09:29:02.750024+00:00",
     "finalUserReviewRequiredBeforeYouTube": true,
-    "autonomousBoundary": "complete-drive-review-copy-and-selective-git",
-    "afterFinalUserReview": "same approved captioned file to private YouTube upload and available settings"
+    "autonomousBoundary": "complete-local-review-links-and-selective-git",
+    "afterFinalUserReview": "same approved captioned file to private YouTube upload and available settings",
+    "driveUploadRequired": false,
+    "driveUploadOnExplicitRequestOnly": true
   },
   "narrationLevelContinuityPolicy": {
     "id": "narration-level-continuity-v1",
@@ -393,14 +395,36 @@
     "report": "verified actual commit SHA and push/remote status or concrete blocker; do not create recursive evidence commits"
   },
   "finalReviewDelivery": {
-    "project": "game-lighting-history-01",
-    "status": "not-yet-produced",
-    "userReview": "pending",
-    "requiredMaster": {
-      "width": 1920,
-      "height": 1080,
-      "fps": 60
-    }
+    "policyId": "local-final-review-before-youtube-v1",
+    "provider": "local-filesystem",
+    "userEvidence": "폴더 링크줘~ 드라이브로 안올려줘도 돼 이제는 규칙에서 제거해줘",
+    "recordedAt": "2026-10-19T09:29:02.750024+00:00",
+    "scope": "Selected current and future explicitly selected production; no automatic remake or next video.",
+    "artifact": "complete internally reviewed captioned FHD60 master and output-folder links",
+    "requiredBeforeYouTubeUpload": true,
+    "humanReviewRequired": true,
+    "driveUploadRequired": false,
+    "driveUploadOnExplicitRequestOnly": true,
+    "preserveExistingDriveFilesVersionsPermissionsAndHistory": true,
+    "sameHashReuse": true,
+    "recordFields": [
+      "directory",
+      "captionedPath",
+      "version",
+      "localSha256",
+      "sizeBytes",
+      "localPlaybackAndIntegrityEvidence",
+      "userReviewMessage",
+      "reviewedAt"
+    ],
+    "status": "awaiting-human-local-final-review",
+    "version": "tracked-gizmos-code-colors-v5",
+    "localSha256": "6df84ad726d59ce9739a0a4daa73f73302848b02175135f2f4ab5afae08dcbbb",
+    "userReviewMessage": null,
+    "reviewedAt": null,
+    "project": "game-math-euler-axis-angle",
+    "directory": "output/game-math-euler-axis-angle",
+    "captionedPath": "output/game-math-euler-axis-angle/game-math-euler-axis-angle.captioned.mp4"
   },
   "videoUiDesignPolicy": {
     "policyId": "yamyam-video-ui-v1",
@@ -485,6 +509,32 @@
       "remoteChecksumEvidence": "shared/output/ai-game-development-human-craft/drive-remote-checksum.json",
       "downloadStatus": "verified-complete102069192bytes-and-matchingSHA256",
       "sourceMasterPathAtOriginalDelivery": "output/ai-game-development-human-craft/ai-game-development-human-craft.captioned.mp4"
+    },
+    {
+      "recordKind": "superseded-active-delivery-record",
+      "supersededBy": "local-final-review-before-youtube-v1",
+      "record": {
+        "project": "game-lighting-history-01",
+        "status": "not-yet-produced",
+        "userReview": "pending",
+        "requiredMaster": {
+          "width": 1920,
+          "height": 1080,
+          "fps": 60
+        }
+      }
+    },
+    {
+      "recordKind": "previous-selected-video-review-record",
+      "supersededBy": "local-final-review-before-youtube-v1",
+      "record": {
+        "video": "making-game-sequels",
+        "version": "reference-preserving-v2",
+        "status": "not-produced",
+        "driveRequired": true,
+        "youtubeUploadAuthorized": false,
+        "userReview": null
+      }
     }
   ],
   "publicationMaster": {
@@ -754,12 +804,23 @@
     }
   ],
   "selectedVideoFinalReview": {
-    "video": "making-game-sequels",
-    "version": "reference-preserving-v2",
-    "status": "not-produced",
-    "driveRequired": true,
+    "video": "game-math-euler-axis-angle",
+    "version": "tracked-gizmos-code-colors-v5",
+    "status": "awaiting-human-local-final-review",
+    "driveRequired": false,
     "youtubeUploadAuthorized": false,
-    "userReview": null
+    "userReview": "pending",
+    "localReview": {
+      "policyId": "local-final-review-before-youtube-v1",
+      "provider": "local-filesystem",
+      "directory": "output/game-math-euler-axis-angle",
+      "captioned": "output/game-math-euler-axis-angle/game-math-euler-axis-angle.captioned.mp4",
+      "index": "output/game-math-euler-axis-angle/index.html",
+      "version": "tracked-gizmos-code-colors-v5",
+      "sha256": "6df84ad726d59ce9739a0a4daa73f73302848b02175135f2f4ab5afae08dcbbb",
+      "humanReview": "pending",
+      "driveUploadRequired": false
+    }
   },
   "explanationLearningPolicy": {
     "id": "high-school-to-specialist-v1",
@@ -918,10 +979,10 @@
   },
   "selectedDelivery": {
     "slug": "game-math-euler-axis-angle",
-    "stage": "drive-upload-complete-playback-processing",
+    "stage": "awaiting-human-local-final-review",
     "checkpoint": "projects/game-math-euler-axis-angle/production/checkpoint.json",
     "youtubeUploadAuthorized": false,
-    "userReview": "pending exact V5 complete version",
+    "userReview": "pending exact V5 local complete version",
     "userEvidence": "비공개로 업로드해둔 게임수학 강의들 중 공개 안 된 우리 강의를 검수하고 새 규칙으로 다시 제작",
     "selectedAt": "2026-10-18T09:52:55.209020+00:00",
     "selectionReason": "Earliest unpublished lecture M04; M01–M03 public; Studio confirms M04 private18:52/HDcomplete",
@@ -933,7 +994,21 @@
     "driveId": "1b08WxJ50GS7bXwt0PK8kvpAJTVGFxbVB",
     "driveRevisionId": "0B__JCPwFbAsxVFlqeGtBSk9jUXB4dVlXRUlTMzNFMm5xOW9RPQ",
     "masterSha256": "6df84ad726d59ce9739a0a4daa73f73302848b02175135f2f4ab5afae08dcbbb",
-    "completedAt": "2026-10-19T08:27:14.754995+00:00"
+    "completedAt": "2026-10-19T08:27:14.754995+00:00",
+    "reviewProvider": "local-filesystem",
+    "localReview": {
+      "policyId": "local-final-review-before-youtube-v1",
+      "provider": "local-filesystem",
+      "directory": "output/game-math-euler-axis-angle",
+      "captioned": "output/game-math-euler-axis-angle/game-math-euler-axis-angle.captioned.mp4",
+      "index": "output/game-math-euler-axis-angle/index.html",
+      "version": "tracked-gizmos-code-colors-v5",
+      "sha256": "6df84ad726d59ce9739a0a4daa73f73302848b02175135f2f4ab5afae08dcbbb",
+      "humanReview": "pending",
+      "driveUploadRequired": false
+    },
+    "driveUploadRequired": false,
+    "driveProcessingRequired": false
   },
   "previousSelectedDelivery": {
     "slug": "ai-games-showcase-2026",

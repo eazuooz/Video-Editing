@@ -35,7 +35,7 @@ if (defaults.uploadVideo?.burnedKoreanCaptionsRequired) {
   if (upload.video.path !== expected) throw new Error('Upload the reviewed bottom-center Korean-captioned MP4; the clean master is local preservation only');
   upload.burnedCaptionVerification ||= {required: true, position: [960, 970], playerCaptionsOff: true, status: 'pending-real-uploaded-frame-review'};
 }
-if (defaults.uploadAuthorization.status === 'private-upload-authorized') {
+if (defaults.uploadAuthorization.initialUploadPrivacy === 'private') {
   if (upload.metadata.privacyStatus !== 'private' || upload.scheduled === true || upload.schedule?.active === true) {
     throw new Error('Current authorization permits private uploads only; public publication and scheduling belong to the user');
   }
