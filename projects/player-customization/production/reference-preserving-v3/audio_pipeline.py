@@ -375,6 +375,11 @@ def full_asr(audio_path, cache_path, *, final=False):
     if cached:
         print("Reusing unchanged complete ASR; no new recognition")
         return cached
+    # Processor fallback resolution can issue metadata HEAD requests even with
+    # local_files_only=True. This task uses the already installed model only;
+    # enforce offline resolution in this process before importing the loaders.
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
     import torch
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
     torch.set_num_threads(4)
