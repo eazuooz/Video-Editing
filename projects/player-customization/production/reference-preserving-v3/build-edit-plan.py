@@ -11,6 +11,11 @@ purpose/reviewEvidence. Complete events use atomic=true and eventGuard
 the whole event must appear. Ranges must stay inside recommendedRanges. This
 does not certify continuous playback: the generated cuts still need moving QA.
 
+Current semantic-placement.json binds the reviewed02 exchange to the actual
+ASR/script hashes and preserves every bank's used prefix and unrelated slot.
+--defer-annotations keeps prior annotation files intact, applies no old marks
+to changed cuts, and leaves explicit native-coordinate remapping pending.
+
 No media, audio, ASR, render, browser, Git or other-project job runs here.
 """
 from __future__ import annotations
@@ -37,7 +42,7 @@ MC_VIDEO = "shared/output/motion-canvas/customization-production-v3.mp4"
 KINDS = {"01": "overview", "02": "effects", "03": "tradeoffs", "04": "find",
          "05": "auto", "06": "test", "07": "appearance", "08": "conclusion"}
 COUNTS = [3, 5, 5, 5, 4, 5, 4, 4]
-ROLES = {"overview-greeting", "overview-shop", "appearance-overview", "preview-shop", "choice-shop", "effects", "tradeoff-menu", "tradeoff-choice",
+ROLES = {"overview-greeting", "overview-shop", "overview-visible-results", "appearance-overview", "preview-shop", "choice-shop", "effects", "tradeoff-menu", "tradeoff-choice",
          "find-category", "find-equipment", "test-context", "test-build", "test-shop",
          "test-loop", "appearance", "recap-choice", "recap-mechanics", "recap-appearance"}
 EXPECTED_GAMES = {"Splatoon Raiders", "The Legend of Zelda: Breath of the Wild",
@@ -200,7 +205,7 @@ def banks_from_sources(sources: dict) -> list[Bank]:
                 "Splatoon Raiders": {"overview-greeting", "overview-shop", "effects", "preview-shop",
                                "choice-shop", "tradeoff-menu", "tradeoff-choice", "test-shop",
                                "test-loop", "recap-choice", "recap-mechanics"},
-                "The Legend of Zelda: Breath of the Wild": {"find-category", "test-build",
+                "The Legend of Zelda: Breath of the Wild": {"overview-visible-results", "find-category", "test-build",
                                "test-loop", "recap-choice", "recap-mechanics"},
                 "Animal Crossing: New Horizons": {"find-equipment", "appearance", "recap-appearance"},
             }[source["game"]]
@@ -356,8 +361,9 @@ def make_slots(rows, body, banks):
         if sid == "01":
             put(0, 1, "overview-greeting", 3,
                 "Verified Raiders customization choice introduces choosing as play; source context must match")
-            put(1, 2, None, 0,
-                "Authored ordered overview, continuing the opening question and current choices")
+            put(1, 2, "overview-visible-results", 0,
+                "Observed weapon use previews the promised visible-result step; retain the authored three-step overview beside the same unchanged narration",
+                tail=2.5, maximum=9)
             put(2, None, "overview-shop", 2,
                 "Verified Raiders choice connects directly to its inspected visible result")
         elif sid == "02":
@@ -491,114 +497,275 @@ def capacity_report(banks, body_seconds):
                 exactCutPlanCreated=False)
 
 
-def allocate(banks, slots, target):
-    allocated = defaultdict(int)
-    bank_left = [b.capacity for b in banks]
-    slot_left = [s.actual_capacity for s in slots]
-    by_id = {b.id: i for i, b in enumerate(banks)}
-    # Reserve selection-recorded complete events first; a generic pool
-    # prefix may never omit the actual action/result or confirmation.
+def load_semantic_placement(banks, sources, timing, target, inputs):
+    """Load reviewed ASR-bound placement facts, never guess timing constraints."""
+    path = HERE / "semantic-placement.json"
+    data = read(path)
+    require((data.get("slug"), data.get("revision")) == (SLUG, REVISION)
+            and data.get("status") == "reviewed-source-asr-bound-frame-preserving-semantic-pins",
+            "Expected current reviewed D21 semantic-placement record.")
+    expected = {
+        "scriptKo": PROJECT / "script/reference-preserving-v3/narration.ko.json",
+        "scriptEn": PROJECT / "script/reference-preserving-v3/narration.en.json",
+        "scriptSpokenKo": PROJECT / "script/reference-preserving-v3/narration.spoken-ko.json",
+        "sourceSelection": HERE / "source-selection.json",
+        "measuredTiming": TIMING,
+        "wholeSourceAsr": VOICE / "whole-source-asr.json",
+        "scene02Words": VOICE / "asr/02.json",
+    }
+    require(set(data.get("bindings", {})) == set(expected), "Missing/foreign semantic-placement input.")
+    for key, current in expected.items():
+        entry = data["bindings"][key]
+        require(scoped(entry["path"]) == current.resolve() and digest(current) == entry["sha256"],
+                f"Semantic placement is stale for {key}; review changed speech/source facts before constraining its cuts.")
+        if rel(current) not in {item["path"] for item in inputs}:
+            inputs.append(dict(path=rel(current), sha256=entry["sha256"]))
+    whole = read(expected["wholeSourceAsr"])
+    scene_words = read(expected["scene02Words"])
+    require(data.get("sourcePcmSha256") == timing.get("sourceSha256") == whole.get("audio_sha256")
+            and whole.get("completeAudioSubmitted") is True and whole.get("noExpectedPrompt") is True,
+            "Semantic placement must bind the actual whole-source ASR/PCM, never a supplied expected transcript.")
+    derived = scene_words.get("derivedFrom", {})
+    require(derived.get("path") == rel(expected["wholeSourceAsr"])
+            and derived.get("sha256") == data["bindings"]["wholeSourceAsr"]["sha256"],
+            "Scene02 words no longer derive from the bound complete source ASR.")
+    require(data.get("fps") == FPS and data.get("exactTargetActualFrames") == target
+            and data.get("preserveEveryBankUsedFrameTotal") is True,
+            "Semantic placement cannot change source frame totals, fps or the exact target.")
+    totals = data.get("bankTotals", [])
+    by_id = {row["bankId"]: row for row in totals}
+    require(len(totals) == len(by_id) == len(banks) and set(by_id) == {b.id for b in banks},
+            "Every current bank, including unused banks, needs its original used-frame total.")
+    for bank in banks:
+        row = by_id[bank.id]
+        require(isinstance(row["usedFrames"], int) and 0 <= row["usedFrames"] <= bank.capacity
+                and row["source"] == bank.source
+                and row["sourceSha256"] == sources[bank.source]["media"]["sha256"]
+                and abs(float(row["bankLocalIn"])-bank.lo/FPS) < 1e-7
+                and abs(float(row["bankLocalOut"])-bank.hi/FPS) < 1e-7
+                and abs(float(row["selectedPrefixOut"])-(bank.lo+row["usedFrames"])/FPS) < 1e-7,
+                f"Original source-prefix evidence differs for {bank.id}.")
+    require(sum(row["usedFrames"] for row in totals) == target,
+            "Preserved bank totals disagree with the exact actual target.")
+    inputs.append(dict(path=rel(path), sha256=digest(path)))
+    # The live baseline plan is provenance, not a mutable required input. The
+    # explicit original bank prefixes above survive rebuilding that plan.
+    data["_receipt"] = dict(path=rel(path), sha256=digest(path))
+    return data
+
+
+def allocate(banks, slots, target, placement):
+    """Solve exact integer frames; never repair a quota with a flash fragment.
+
+    Each compatible bank/slot pair has integer frames and a use binary. Whole
+    inspected events are fixed to their declared slot. Optional blocks are zero
+    or >=2 seconds, and every slot's remaining explanation is zero or >=2.5 seconds.
+    First minimize used source blocks, then briefly improve explanation-bearing
+    slots at that fixed optimum. This is a bank/slot-block objective, not a claim about the
+    final merged movie's globally minimal edit count or semantic approval.
+    """
+    try:
+        import numpy as np
+        from scipy import __version__ as scipy_version
+        from scipy.optimize import Bounds, LinearConstraint, milp
+    except ImportError as exc:
+        raise PlanError("Integer-frame allocation requires the existing Qwen environment's SciPy; run qwen3-tts/.venv/Scripts/python.exe. No dependency is installed here.") from exc
+
+    optional_min, explanation_min = 2 * FPS, round(2.5 * FPS)
+    require(isinstance(target, int) and target >= 0, "Actual target must be integer frames.")
+    bank_by_id = {b.id: bi for bi, b in enumerate(banks)}
+    slot_by_id = {s.id: si for si, s in enumerate(slots)}
+    require(len(bank_by_id) == len(banks) and len(slot_by_id) == len(slots),
+            "Allocation IDs must be unique.")
+    required = {}
     for si, slot in enumerate(slots):
+        require(0 <= slot.minimum <= slot.actual_capacity <= slot.capacity,
+                f"Necessary event/minimum exceeds measured slot {slot.id}; no useful explanation may be trimmed.")
         for bank_id in slot.required_banks:
-            require(bank_id in by_id, f"Required event bank missing: {bank_id}; retain/review its complete event, not a generic replacement.")
-            bi = by_id[bank_id]; bank = banks[bi]
-            require(bank.atomic and slot.role in bank.roles and bank_left[bi] == bank.capacity,
-                    f"Required atomic event {bank_id} has a wrong role or was already spent.")
-            require(bank.capacity <= slot_left[si],
-                    f"Measured slot {slot.id} cannot hold the full {bank_id} event ({bank.capacity/FPS:.3f}s); review placement, never trim away its result.")
-            allocated[bi, si] = bank.capacity
-            bank_left[bi] = 0; slot_left[si] -= bank.capacity
-    for si, slot in enumerate(slots):
-        have = sum(allocated[bi, si] for bi in range(len(banks)))
-        need = max(0, slot.minimum-have)
-        require(need <= slot_left[si], f"Measured slot {slot.id} is too short for its necessary native demonstration.")
-        for bi, bank in enumerate(banks):
-            if bank.atomic or slot.role not in bank.roles or not need:
-                continue
-            n = min(need, bank_left[bi])
-            # Initial optional pieces are not allowed to become flash fragments.
-            if n and n < MIN_CUT and allocated[bi, si] == 0:
-                continue
-            allocated[bi, si] += n; bank_left[bi] -= n; slot_left[si] -= n; need -= n
-        require(need == 0, f"Missing concept-matched capacity for {slot.id}: {need/FPS:.3f}s. No filler selected.")
-    floors = dict(allocated)
-    seeded = sum(allocated.values())
-    require(seeded <= target, f"Necessary native demonstrations{seeded/FPS:.3f}s exceed60% target{target/FPS:.3f}s; review allocation.")
-    # Optional flow is in whole-second pieces. Exact residual frames may extend
-    #an existing valid cut, but cannot create a new one-frame/half-second insert.
-    graph = Flow(len(banks) + len(slots) + 2)
-    source, sink = len(graph.g) - 2, len(graph.g) - 1
-    edges = {}
+            require(bank_id in bank_by_id and bank_id not in required,
+                    f"Missing/repeated mandatory event: {bank_id}")
+            bi = bank_by_id[bank_id]; bank = banks[bi]
+            require(bank.atomic and bank.required_slot == slot.id and slot.role in bank.roles,
+                    f"Mandatory event {bank_id} has an incompatible slot/role.")
+            required[bank_id] = si
+    for bank in banks:
+        require(not bank.atomic or bank.id in required,
+                f"Atomic event {bank.id} must be declared in its actual required slot.")
+
+    # Atomic pairs are forced whole; optional pairs exist only for the current
+    # authored semantic role and have enough capacity for a readable2s block.
+    pairs = []
     for bi, bank in enumerate(banks):
-        graph.edge(source, bi, bank_left[bi] // MIN_CUT)
         for si, slot in enumerate(slots):
-            if not bank.atomic and slot.role and slot.role in bank.roles:
-                cap = min(bank_left[bi], slot_left[si]) // MIN_CUT
-                edges[bi, si] = (graph.edge(bi, len(banks)+si, cap), cap)
-    for si, slot in enumerate(slots):
-        graph.edge(len(banks)+si, sink, slot_left[si] // MIN_CUT)
-    graph.run(source, sink, (target-seeded) // MIN_CUT)
-    for (bi, si), (edge, initial) in edges.items():
-        n = (initial-edge[2]) * MIN_CUT
-        allocated[bi, si] += n; bank_left[bi] -= n; slot_left[si] -= n
-    left = target-sum(allocated.values())
-    for (bi, si), count in sorted(list(allocated.items()), key=lambda x: (x[0][1], x[0][0])):
-        if count < MIN_CUT or banks[bi].atomic or not left:
-            continue
-        n = min(left, bank_left[bi], slot_left[si])
-        allocated[bi, si] += n; bank_left[bi] -= n; slot_left[si] -= n; left -= n
-    if left:
-        report = dict(targetActualSeconds=target/FPS,
-                      availableConceptMatchedSeconds=(target-left)/FPS, shortfallSeconds=left/FPS,
-                      unusedBanks=[dict(id=b.id, source=b.source, seconds=bank_left[bi]/FPS,
-                                        roles=sorted(b.roles)) for bi, b in enumerate(banks) if bank_left[bi]],
-                      slots=[dict(id=s.id, role=s.role, spanSeconds=s.capacity/FPS,
-                                  actualSeconds=sum(allocated[bi, si] for bi in range(len(banks)))/FPS,
-                                  reservedExplanationTailSeconds=s.explanation_tail/FPS) for si, s in enumerate(slots)],
-                      action="Inspect additional relevant ranges or review precise placements. Required explanations and complete events are protected; no idle/loop/slowdown/subsecond patch.")
-        raise PlanError("Insufficient meaningful actual footage for exact60:40:\n"+json.dumps(report, ensure_ascii=False, indent=2))
+            if bank.atomic:
+                if required[bank.id] == si:
+                    pairs.append((bi, si, bank.capacity, bank.capacity, True))
+            elif slot.role in bank.roles:
+                upper = min(bank.capacity, slot.actual_capacity)
+                if upper >= optional_min:
+                    pairs.append((bi, si, optional_min, upper, False))
+    require(pairs or target == 0, "No compatible whole events/readable optional source blocks.")
+    pair_count = len(pairs)
+    variable_count = 2 * pair_count + len(slots)
+    lower = np.zeros(variable_count)
+    upper = np.ones(variable_count)
+    for ei, (_, _, minimum, maximum, fixed) in enumerate(pairs):
+        upper[ei] = maximum
+        if fixed:
+            lower[ei] = maximum
+            lower[pair_count + ei] = 1
+    constraint_rows, lower_rows, upper_rows = [], [], []
 
-    def safe_extension_room(bi, si):
-        if banks[bi].atomic or allocated[bi, si] < MIN_CUT:
-            return 0
-        total = sum(allocated[j, si] for j in range(len(banks)))
-        gap = slots[si].capacity-total
-        # Leave a readable at-least-one-second MC state rather than creating
-        #a tiny explanation blink while moving fractional rounding frames.
-        return max(0, min(bank_left[bi], slot_left[si], gap-MIN_CUT))
+    def constrain(coefficients, lo=-math.inf, hi=math.inf):
+        row = np.zeros(variable_count)
+        for index, value in coefficients.items():
+            row[index] = value
+        constraint_rows.append(row); lower_rows.append(lo); upper_rows.append(hi)
 
+    for ei, (_, _, minimum, maximum, _) in enumerate(pairs):
+        # minimum*y <= x <= maximum*y
+        constrain({ei: 1, pair_count + ei: -minimum}, lo=0)
+        constrain({ei: 1, pair_count + ei: -maximum}, hi=0)
+    for bi, bank in enumerate(banks):
+        constrain({ei: 1 for ei, pair in enumerate(pairs) if pair[0] == bi}, hi=bank.capacity)
+    preserved_totals = {row["bankId"]: row["usedFrames"] for row in placement["bankTotals"]}
+    for bi, bank in enumerate(banks):
+        count = preserved_totals[bank.id]
+        constrain({ei: 1 for ei, pair in enumerate(pairs) if pair[0] == bi}, lo=count, hi=count)
+    pair_indices = {(bi, si): ei for ei, (bi, si, _, _, _) in enumerate(pairs)}
+    changed_slots = set(placement.get("changedSlotIds", []))
+    unchanged_slots = set(placement.get("unchangedSlotIds", []))
+    require(placement.get("preserveUnchangedSlotAllocations") is True
+            and changed_slots == {"02-p1-3", "02-p4-4"}
+            and unchanged_slots == set(slot_by_id)-changed_slots,
+            "The current reviewed exchange may change only the two02 semantic slots.")
+    baseline_pairs = {}
+    for row in placement.get("baselineBankSlotFrames", []):
+        key = row["bankId"], row["slotId"]
+        require(key not in baseline_pairs and key[0] in bank_by_id and key[1] in slot_by_id
+                and isinstance(row["frames"], int) and row["frames"] > 0,
+                "Invalid original bank/slot allocation evidence.")
+        baseline_pairs[key] = row["frames"]
+    for bank in banks:
+        require(sum(count for (bank_id, _), count in baseline_pairs.items() if bank_id == bank.id)
+                == preserved_totals[bank.id], "Original pair totals do not match the preserved bank prefix.")
+    for ei, (bi, si, _, _, _) in enumerate(pairs):
+        if slots[si].id in unchanged_slots:
+            count = baseline_pairs.get((banks[bi].id, slots[si].id), 0)
+            constrain({ei: 1}, lo=count, hi=count)
+    seen_pins = set()
+    for pin in placement.get("fixedBankSlotFrames", []):
+        require(pin["bankId"] in bank_by_id and pin["slotId"] in slot_by_id,
+                "Semantic pin refers to a missing bank/slot.")
+        pair = bank_by_id[pin["bankId"]], slot_by_id[pin["slotId"]]
+        require(pair in pair_indices and pair not in seen_pins,
+                "Semantic pin is duplicated or incompatible with its current teaching role.")
+        seen_pins.add(pair)
+        ei = pair_indices[pair]
+        _, _, minimum, maximum, _ = pairs[ei]
+        count = pin["frames"]
+        require(isinstance(count, int) and (count == 0 or minimum <= count <= maximum),
+                "Semantic pin violates a whole-event or readable-cut boundary.")
+        constrain({ei: 1}, lo=count, hi=count)
     for si, slot in enumerate(slots):
-        count = sum(allocated[bi, si] for bi in range(len(banks)))
-        gap = slot.capacity-count
-        if not count or gap == 0 or gap >= MIN_CUT:
-            continue
-        # A short tail is harmless if it joins the next continuing MC state.
-        if si+1 < len(slots) and slots[si+1].scene == slot.scene and not sum(allocated[bi, si+1] for bi in range(len(banks))):
-            continue
-        if si+1 < len(slots) and slots[si+1].scene == slot.scene:
-            following = slots[si+1]
-            following_gap = following.capacity-sum(allocated[bi, si+1] for bi in range(len(banks)))
-            if following_gap and gap+following_gap >= MIN_CUT:
-                # Keep an atomic event whole. The next paragraph's already
-                #allocated explanation may precede its native footage, merging
-                #with this short tail into one readable continuing MC shot.
-                #No voice, footage count or paragraph-role boundary is moved.
-                continue
-        move = MIN_CUT-gap
-        donor = next((bi for bi in range(len(banks)) if not banks[bi].atomic and
-                      allocated[bi, si]-floors.get((bi, si), 0) >= move and allocated[bi, si]-move >= MIN_CUT), None)
-        recipient = next(((bi, sj) for sj in range(len(slots)) if sj != si
-                          for bi in range(len(banks)) if safe_extension_room(bi, sj) >= move), None)
-        require(donor is not None and recipient is not None,
-                f"{slot.id} would create a {gap/FPS:.3f}s MC blink. No plan written; review this exact boundary without cutting a mandatory event.")
-        allocated[donor, si] -= move; bank_left[donor] += move; slot_left[si] += move
-        bi, sj = recipient
-        allocated[bi, sj] += move; bank_left[bi] -= move; slot_left[sj] -= move
-    # No source-specific end-card transfer. A fresh source range or the
-    # continuing authored conclusion may finish the question; never reuse an
-    # earlier game frame to imitate a closing state.
-    require(sum(allocated.values()) == target, "Fragment repair changed the exact ratio.")
+        source = {ei: 1 for ei, pair in enumerate(pairs) if pair[1] == si}
+        constrain(source, lo=slot.minimum, hi=slot.actual_capacity)
+        # z identifies a nonzero MC remainder. Existing reserved tails and
+        #maximumActualFrames are already protected by actual_capacity above.
+        z = 2 * pair_count + si
+        constrain({**source, z: slot.capacity}, lo=slot.capacity)
+        constrain({**source, z: explanation_min}, hi=slot.capacity)
+    constrain({ei: 1 for ei in range(pair_count)}, lo=target, hi=target)
+    bounds = Bounds(lower, upper)
+    integrality = np.ones(variable_count, dtype=int)
+    objective = np.zeros(variable_count)
+    objective[pair_count:2 * pair_count] = 1
+    def solve(cost, phase, *, time_limit=20.0, accept_limited_incumbent=False):
+        result = milp(cost, integrality=integrality, bounds=bounds,
+            constraints=LinearConstraint(np.asarray(constraint_rows),
+                                         np.asarray(lower_rows), np.asarray(upper_rows)),
+            options=dict(presolve=True, time_limit=time_limit, mip_rel_gap=0.0))
+        if result.status != 0 or result.x is None:
+            if accept_limited_incumbent and result.status == 1:
+                if result.x is None:
+                    return None, result
+                # Only an independently checked feasible incumbent is useful.
+                # The primary optimum and all readability constraints stay fixed.
+            else:
+                report = dict(phase=phase, status=int(result.status), message=result.message,
+                    targetActualSeconds=target/FPS, optionalMinimumSeconds=optional_min/FPS,
+                    minimumExplanationRemainderSeconds=explanation_min/FPS,
+                    mandatorySeconds=sum(b.capacity for b in banks if b.atomic)/FPS,
+                    sourceBankSeconds=sum(b.capacity for b in banks)/FPS,
+                    slots=[dict(id=s.id, spanFrames=s.capacity, minimumActualFrames=s.minimum,
+                                maximumActualFrames=s.actual_capacity) for s in slots],
+                    action="Review only actual source/slot compatibility or the exact measured boundary; do not trim useful explanation/events, loop, slow playback or add flash patches.")
+                raise PlanError("No proven optimal readable integer-frame allocation:\n"
+                                + json.dumps(report, ensure_ascii=False, indent=2))
+        rounded = np.rint(result.x).astype(int)
+        require(np.max(np.abs(result.x-rounded), initial=0) < 1e-5,
+                "Solver returned noninteger source frames/binaries.")
+        values = np.asarray(constraint_rows) @ rounded
+        require(np.all(values >= np.asarray(lower_rows)-1e-7)
+                and np.all(values <= np.asarray(upper_rows)+1e-7)
+                and np.all(rounded >= lower-1e-7) and np.all(rounded <= upper+1e-7),
+                "Rounded solver result violates an original frame constraint.")
+        return rounded, result
+
+    first, first_result = solve(objective, "minimum-used-source-bank-slot-blocks")
+    minimum_blocks = int(sum(first[pair_count:2 * pair_count]))
+    constrain({pair_count+ei: 1 for ei in range(pair_count)},
+              lo=minimum_blocks, hi=minimum_blocks)
+    objective[:] = 0
+    objective[2 * pair_count:] = 1
+    candidate, second_result = solve(objective, "prefer-fewer-explanation-remainders-at-fixed-source-block-optimum",
+                                    time_limit=4.0, accept_limited_incumbent=True)
+    answer = first
+    if candidate is not None and sum(candidate[2*pair_count:]) <= sum(first[2*pair_count:]):
+        answer = candidate
+    allocated = defaultdict(int)
+    for ei, (bi, si, minimum, maximum, fixed) in enumerate(pairs):
+        frames = int(answer[ei])
+        if frames:
+            require(minimum <= frames <= maximum and (not fixed or frames == banks[bi].capacity),
+                    "A selected source block violates its whole-event/minimum-cut condition.")
+            allocated[bi, si] = frames
+    require(sum(allocated.values()) == target, "Integer allocation changed the exact60:40 target.")
+    slot_summaries = []
+    for si, slot in enumerate(slots):
+        actual = sum(allocated[bi, si] for bi in range(len(banks)))
+        remainder = slot.capacity-actual
+        require(slot.minimum <= actual <= slot.actual_capacity
+                and (remainder == 0 or remainder >= explanation_min),
+                f"Unreadable explanation remainder or violated slot: {slot.id}")
+        slot_summaries.append(dict(id=slot.id, actualFrames=actual, explanationFrames=remainder,
+                                   blocks=sum(allocated[bi, si] > 0 for bi in range(len(banks)))))
+    for bi, bank in enumerate(banks):
+        count = sum(allocated[bi, si] for si in range(len(slots)))
+        require(count <= bank.capacity, f"Source bank capacity exceeded: {bank.id}")
+        require(count == preserved_totals[bank.id], f"Original used source frames changed: {bank.id}")
+        if bank.atomic:
+            require(count == bank.capacity and allocated[bi, required[bank.id]] == count,
+                    f"Mandatory event {bank.id} was trimmed, moved or fragmented.")
+    allocate.last_report = dict(method="scipy.optimize.milp", scipyVersion=scipy_version,
+        exactIntegerFrameTarget=target, minimumOptionalSourceBlockFrames=optional_min,
+        minimumNonzeroExplanationRemainderFrames=explanation_min,
+        optimizedUsedBankSlotBlocks=minimum_blocks,
+        selectedExplanationBearingSlots=int(sum(answer[2 * pair_count:])),
+        objectiveOrder=["proven minimum used source bank/slot pairs", "bounded preference for fewer explanation-bearing slots at that fixed optimum"],
+        objectiveLimit="Final adjacent cuts can merge; this objective is not proof of globally minimal merged movie cuts or semantic approval.",
+        firstSolveStatus=int(first_result.status), secondSolveStatus=int(second_result.status),
+        secondaryOptimumProven=second_result.status == 0,
+        secondaryMessage=second_result.message,
+        selectedSolution="secondary feasible result" if answer is candidate else "primary proven optimum retained",
+        semanticPlacement=placement["_receipt"],
+        originalUsedFramesPreservedForEveryBank=True,
+        unchangedSlotAllocationsPreserved=True,
+        semanticBankSlotPins=placement["fixedBankSlotFrames"],
+        unchangedConstraints="Current bank ranges, roles, atomic required slots, voice timing, reserved explanation tails, maximum actual frames and exact60:40 target.",
+        slots=slot_summaries)
     return allocated
+
 
 
 def make_cuts(banks, slots, allocation, rows, sources, body):
@@ -751,6 +918,7 @@ def make_cuts(banks, slots, allocation, rows, sources, body):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true", help="Validate measured timing/source capacity without writing any output")
+    parser.add_argument("--defer-annotations", action="store_true", help="Preserve existing annotation files, apply no marks to the new plan, and leave explicit remapping pending")
     parser.add_argument("--capacity-audit", action="store_true", help="Read-only best-case source bound, without loading ASR paragraph timing")
     parser.add_argument("--body-seconds", type=float, help="Measured complete narration duration for --capacity-audit only")
     args = parser.parse_args(argv)
@@ -809,7 +977,8 @@ def main(argv=None):
     banks = banks_from_sources(sources)
     slots = make_slots(rows, body, banks)
     target = round(body * .6)
-    allocation = allocate(banks, slots, target)
+    placement = load_semantic_placement(banks, sources, timing, target, inputs)
+    allocation = allocate(banks, slots, target, placement)
     cuts, modules, mc_frames, warnings = make_cuts(banks, slots, allocation, rows, sources, body)
     actual = sum(c["frames"] for c in cuts if c["kind"] == "independent-gameplay")
     require(actual == target and abs(actual-body*.6) <= 1, "Actual/explanation body ratio escaped one-frame tolerance.")
@@ -827,6 +996,7 @@ def main(argv=None):
                 brandingFile=rel(branding), membershipFile=rel(membership),
                 brandingSha256=digest(branding), membershipSha256=digest(membership),
                 actualFrames=actual, explanationFrames=body-actual, mcFrames=mc_frames,
+                allocationReview=allocate.last_report,
                 expectedGameplayShare=.6, ratioToleranceFrames=1,
                 outputDir=rel(LOCAL/"edit"), outputStem="player-customization-v3",
                 captionAliases=read(aliases_path),
@@ -868,7 +1038,14 @@ def main(argv=None):
                 renderStatus="pending", shortCutReviewWarnings=warnings, youtubeUploadAuthorized=False,
                 automaticNextVideo=False, baselineReplacementOrDeletionAuthorized=False)
     annotation = HERE / "source-annotations.json"
-    if annotation.exists():
+    if annotation.exists() and args.defer_annotations:
+        # Exact cut geometry/timing is changing. Keep the previous native/ASS
+        #evidence intact, never transfer coordinates by a coincidental cut ID.
+        plan["deferredAnnotationSource"] = dict(path=rel(annotation), sha256=digest(annotation),
+            action="Existing file preserved and not applied; remap the inspected native targets against these new cuts.")
+        plan["annotationsReview"] = "pending explicit annotation remap; --defer-annotations applied no previous marks"
+        require(all(not cut.get("marks") for cut in cuts), "Deferred plan must have no transplanted marks.")
+    elif annotation.exists():
         by_id = {c["id"]: c for c in cuts}
         for item in read(annotation)["annotations"]:
             c = by_id[item["cutId"]]
@@ -882,7 +1059,9 @@ def main(argv=None):
     summary = dict(bodySeconds=body/FPS, totalSeconds=plan["totalFrames"]/FPS,
                    actualSeconds=actual/FPS, explanationSeconds=(body-actual)/FPS,
                    cuts=len(cuts), motionCanvasFrames=mc_frames, warnings=warnings,
-                   sourceBankCapacitySeconds=sum(b.capacity for b in banks)/FPS,
+                    sourceBankCapacitySeconds=sum(b.capacity for b in banks)/FPS,
+                    allocation=allocate.last_report,
+                    annotationsDeferred=args.defer_annotations,
                    written=not args.dry_run)
     if not args.dry_run:
         # Validate everything before the first mutation. Only the D21 plan and

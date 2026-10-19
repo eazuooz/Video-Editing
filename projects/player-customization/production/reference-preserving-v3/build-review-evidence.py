@@ -161,6 +161,14 @@ def make_samples(plan, layout, alignment):
         boundary(end, 'cut-end', cutId=cut['id'], scene=cut['scene'])
         add((start + end - 1) // 2, 'cut-midpoint', cutId=cut['id'], scene=cut['scene'])
         duration = (end - start) / FPS
+        for event in cut.get('editorialGuideAss', {}).get('events', []):
+            lo, hi = finite(event['start']), finite(event['end'])
+            require(0 <= lo < hi <= duration + 1e-7, 'Editorial guide event is outside its cut.')
+            context = {'cutId': cut['id'], 'guideId': event['guideId'],
+                       'activeStage': event.get('activeStage')}
+            boundary(start + seconds_frame(lo), 'editorial-guide-start', **context)
+            boundary(start + seconds_frame(hi), 'editorial-guide-end', **context)
+            add(start + seconds_frame((lo + hi) / 2), 'editorial-guide-midpoint', **context)
         for index, mark in enumerate(cut.get('marks', [])):
             mid = mark.get('id', f'{cut["id"]}-mark{index}')
             lo, hi = finite(mark['t0']), finite(mark['t1'])

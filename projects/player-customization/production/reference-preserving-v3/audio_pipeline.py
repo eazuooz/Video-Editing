@@ -613,6 +613,24 @@ def caption_input(plan_path, output_dir):
     ko, _en, _spoken, script_files = scripts()
     split_record = read(NARRATION / "scene-split-review.json")
     timing = read(NARRATION / "source-scene-timings.json")
+    units_path = Path(__file__).parent / "caption-units.json"
+    caption_units = read(units_path)
+    if (caption_units.get("slug"), caption_units.get("revision")) != (SLUG, REVISION):
+        raise ValueError("Explicit bilingual units must identify this current revision")
+    if {(x["path"], x["sha256"]) for x in caption_units["scriptInputs"]} != {(x["path"], x["sha256"]) for x in script_files}:
+        raise ValueError("Bilingual units describe stale scripts")
+    expected_ids = {f"{s['id']}-p{i+1:02d}" for s in ko["scenes"] for i in range(len(s["lines"]))}
+    if set(caption_units["paragraphs"]) != expected_ids:
+        raise ValueError("All current paragraphs need explicit semantically paired caption units")
+    override_path = Path(__file__).parent / "caption-recognition-overrides.json"
+    recognition_overrides = read(override_path) if override_path.exists() else None
+    if recognition_overrides:
+        review_input = repo_path(recognition_overrides["review"]["path"])
+        if (recognition_overrides["sourceAsrSha256"] != sha(NARRATION / "whole-source-asr.json")
+                or recognition_overrides["sourceAudioSha256"] != timing["sourceSha256"]
+                or recognition_overrides["review"]["sha256"] != sha(review_input)
+                or read(review_input).get("fullTextDirectlyCompared") is not True):
+            raise ValueError("Recognition-only caption aliases need the current reviewed ASR/audio")
     scene_origins = {scene["id"]: (float(scene["voiceStartFrame"]) / 60 if "voiceStartFrame" in scene else float(scene["voiceStart"]))
                      for scene in plan["scenes"]}
     if [scene["id"] for scene in timing["scenes"]] != [scene["id"] for scene in ko["scenes"]] or set(scene_origins) != {scene["id"] for scene in ko["scenes"]}:
@@ -671,13 +689,29 @@ def caption_input(plan_path, output_dir):
                                "audioFileScope": "intact scene PCM; no extra paragraph extraction or ASR"})
             if merges:
                 paragraphs[-1]["measuredPhraseGrouping"] = merges
+            unit_spec = caption_units["paragraphs"][paragraphs[-1]["id"]]
+            if unit_spec.get("semanticPairingReviewed") is not True:
+                raise ValueError("Explicit bilingual units need direct semantic comparison")
+            units = unit_spec["captionUnits"]
+            for language, text in (("ko", paragraph["text"]), ("en", paragraph["english"])):
+                if re.sub(r"\s+", "", "".join(u[language] for u in units)) != re.sub(r"\s+", "", text):
+                    raise ValueError("Explicit caption units changed current complete text")
+            paragraphs[-1]["captionUnits"] = units
+            correction = (recognition_overrides or {}).get("paragraphs", {}).get(paragraphs[-1]["id"])
+            if correction:
+                if not correction.get("basis") or not correction.get("aliases"):
+                    raise ValueError("A paragraph recognition alias needs explicit review evidence")
+                paragraphs[-1]["aliases"] = {**plan.get("captionAliases", {}), **correction["aliases"]}
+                paragraphs[-1]["recognitionAliasEvidence"] = correction["basis"]
     output_dir.mkdir(parents=True, exist_ok=True)
     destination = output_dir / "caption-input.json"
     save(destination, {"fps": 60, "scriptKo": relative(SCRIPT / "narration.ko.json"),
                        "scriptEn": relative(SCRIPT / "narration.en.json"), "paragraphs": paragraphs,
                        "aliases": plan.get("captionAliases", {}), "bodyEndFrame": int(plan["totalFrames"]) - int(plan.get("outroFrames", 600)),
                        "minCoverage": .93, "sourceSplitReviewSha256": sha(NARRATION / "scene-split-review.json"),
-                       "measuredPlanSha256": sha(plan_path), "humanListening": "pending"})
+                       "measuredPlanSha256": sha(plan_path), "humanListening": "pending",
+                       "explicitBilingualUnits": artifact(units_path),
+                       "alignmentOnlyRecognitionOverrides": artifact(override_path) if recognition_overrides else None})
     print(f"Prepared {len(paragraphs)} measured paragraphs for caption_pipeline.py: {relative(destination)}")
 
 

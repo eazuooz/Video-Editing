@@ -1,0 +1,11 @@
+// Generated D21v3 silent visual preflight; never a production module.
+import {makeProject} from '@motion-canvas/core';
+import s0 from './preflight-overview?scene';
+import s1 from './preflight-effects?scene';
+import s2 from './preflight-tradeoffs?scene';
+import s3 from './preflight-find?scene';
+import s4 from './preflight-auto?scene';
+import s5 from './preflight-test?scene';
+import s6 from './preflight-appearance?scene';
+import s7 from './preflight-conclusion?scene';
+export default makeProject({scenes:[s0,s1,s2,s3,s4,s5,s6,s7]});

@@ -37,6 +37,12 @@ Mark and label bounds must avoid ``captionProtectedRect`` (default the complete
 two-line fixed-caption area including outline/shadow), credits and optional
 ``protectedRects``. Internal source cuts must be split into separate edit cuts.
 
+Optional ``editorialGuideAss`` is a hash-pinned, cut-relative ASS receipt from
+build-editorial-guides.py. These explicitly authored design-summary labels are
+baked into the shared cut before pairing, so clean/captioned masters contain
+the same guide. Its source/cut binding, times and protected bounds are checked
+before rendering; it is never a game HUD, detector output or measured statistic.
+
 Optional plan keys: brandingFile, membershipFile, mixFile, captionsAss, outputDir,
 outputStem, expectedGameplayShare (default0.6), ratioToleranceFrames (default1).
 The first two default to the byte-preserved approved reward-project clips.
@@ -373,12 +379,93 @@ def filter_path(p: Path) -> str:
     return "'" + p.as_posix().replace("\\", "\\\\").replace(":", r"\:").replace("'", r"\'") + "'"
 
 
+def editorial_guide_binding(cut: dict, plan: dict) -> str:
+    """Bind authored guides to the actual cut, not a circular plan-file hash."""
+    payload = {
+        "cut": {k: v for k, v in cut.items() if k != "editorialGuideAss"},
+        "fps": plan["fps"], "width": plan["width"], "height": plan["height"],
+        "captionProtectedRect": plan.get("captionProtectedRect", CAPTION_RECT),
+        "annotationFontFile": plan.get("annotationFontFile", "C:/Windows/Fonts/malgun.ttf"),
+    }
+    return hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True,
+                                     separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def editorial_guide_ass(cut: dict, plan: dict) -> tuple[Path | None, dict | None]:
+    """Validate a prepared guide receipt without producing media or moving text."""
+    item = cut.get("editorialGuideAss")
+    if item is None:
+        return None, None
+    if not isinstance(item, dict) or cut["kind"] != "independent-gameplay":
+        raise ValueError("Editorial guide requires an independent-gameplay cut receipt")
+    expected = item.get("sha256", "")
+    if not re.fullmatch(r"[0-9a-f]{64}", expected):
+        raise ValueError("Editorial guide requires its actual ASS SHA256")
+    p = path(item["path"])
+    p.relative_to((DEFAULT_OUTPUT / "editorial-guides").resolve())
+    content = p.read_bytes()
+    if p.suffix.lower() != ".ass" or hashlib.sha256(content).hexdigest() != expected:
+        raise ValueError("Editorial guide ASS changed; prepare its current receipt again")
+    if item.get("cutBindingSha256") != editorial_guide_binding(cut, plan):
+        raise ValueError("Editorial guide cut/source/layout binding changed; prepare again")
+    references = [item.get("guideSpec"), *item.get("mappingInputs", [])]
+    if len(references) < 4 or any(not isinstance(row, dict) for row in references):
+        raise ValueError("Editorial guide requires its current spec/ASR/caption/source-selection receipts")
+    for row in references:
+        if sha(path(row["path"])) != row["sha256"]:
+            raise ValueError("Editorial guide speech/caption/source evidence changed; prepare again")
+    if (item.get("clock"), item.get("coordinateSystem"), item.get("detectorOutput"),
+            item.get("measuredGameData"), item.get("appliesTo")) != (
+            "cut-relative-seconds", "output1920x1080", False, False,
+            ["clean", "captioned"]):
+        raise ValueError("Editorial guide must be explicit authored guidance in both masters")
+    script = content.decode("utf-8-sig")
+    if not (re.search(r"(?m)^PlayResX:\s*1920\s*$", script)
+            and re.search(r"(?m)^PlayResY:\s*1080\s*$", script)):
+        raise ValueError("Editorial guide ASS must retain native output coordinates")
+    from PIL import ImageFont
+    protected = [plan.get("captionProtectedRect", CAPTION_RECT), *cut.get("protectedRects", [])]
+    font_value = plan.get("annotationFontFile", "C:/Windows/Fonts/malgun.ttf")
+    font_file = Path(font_value) if Path(font_value).is_absolute() else path(font_value)
+    credit = cut.get("credit")
+    if credit:
+        credit = {"text": credit} if isinstance(credit, str) else credit
+        size = credit.get("fontSize", 26)
+        x, y = credit.get("position", [30, 34])
+        font = ImageFont.truetype(str(font_file), size)
+        protected.append([x - 4, y - 4, x + math.ceil(font.getlength(credit["text"])) + 4,
+                          y + size * 1.5 + 4])
+    if cut.get("copyrightCredit"):
+        font = ImageFont.truetype(str(font_file), 20)
+        protected.append([20, 58, 28 + math.ceil(font.getlength(cut["copyrightCredit"])), 96])
+    events = item.get("events", [])
+    if not events:
+        raise ValueError("Editorial guide requires recorded actual cue/cut intersections")
+    for row in events:
+        begin, end = float(row["start"]), float(row["end"])
+        if not all(math.isfinite(v) for v in (begin, end)) or not 0 <= begin < end <= cut["frames"] / FPS + 1e-7:
+            raise ValueError("Editorial guide times must remain inside their own cut")
+        if (abs(row["globalStart"] - (cut["startFrame"] / FPS + begin)) > 1e-7
+                or abs(row["globalEnd"] - (cut["startFrame"] / FPS + end)) > 1e-7):
+            raise ValueError("Editorial guide global/cut-relative mapping changed")
+        bounds = row["bounds"]
+        if len(bounds) != 4 or not all(math.isfinite(v) for v in bounds):
+            raise ValueError("Editorial guide requires finite output bounds")
+        check_bounds(bounds, protected, "Editorial design guide")
+    return p, {"path": str(p), "sha256": expected,
+               "cutBindingSha256": item["cutBindingSha256"], "events": events,
+               "mappingInputs": references,
+               "meaning": "authored design summary; never game HUD/detector/measurement",
+               "finalMovingAnd375pxPixels": "pending"}
+
+
 def render_cuts(plan: dict, output: Path):
     ratio = validate_plan(plan)
     output.mkdir(parents=True, exist_ok=True)
     source_hashes, code_hash = {}, sha(Path(__file__))
     for cut in plan["cuts"]:
         gameplay = cut["kind"] == "independent-gameplay"
+        guide_file, guide_geometry = editorial_guide_ass(cut, plan)
         source = path(cut["sourceFile"] if gameplay else cut["renderedSource"])
         source_info = video_stream(source)
         start = float(cut.get("sourceStart", 0)) if gameplay else cut.get("renderedStartFrame", 0) / FPS
@@ -404,11 +491,16 @@ def render_cuts(plan: dict, output: Path):
             raise ValueError(f"Source too short; no hold/loop permitted: {cut['id']}")
         if str(source) not in source_hashes:
             source_hashes[str(source)] = sha(source)
-        ass, geometry = annotations(cut, plan) if gameplay else (None, None)
+        annotation_cut = cut
+        if guide_geometry:
+            annotation_cut = {**cut, "protectedRects": [*cut.get("protectedRects", []),
+                              *[row["bounds"] for row in guide_geometry["events"]]]}
+        ass, geometry = annotations(annotation_cut, plan) if gameplay else (None, None)
         mark_file, destination = output / (cut["id"] + "-marks.ass"), output / (cut["id"] + ".mp4")
         signature = {"cut": cut, "sourceSha256": source_hashes[str(source)], "sourceDecoded": decoded,
                      "codeSha256": code_hash, "encoder": ENCODER, "markGeometry": geometry,
-                     "assSha256": hashlib.sha256(ass.encode()).hexdigest() if ass else None}
+                     "assSha256": hashlib.sha256(ass.encode()).hexdigest() if ass else None,
+                     "editorialGuideAss": guide_geometry}
         receipt = output / (cut["id"] + "-render.json")
         if destination.exists() and receipt.exists():
             old = load(receipt)
@@ -444,6 +536,10 @@ def render_cuts(plan: dict, output: Path):
         vf = crop_filter + f"fps=60,scale={fit_w}:{fit_h}:flags=lanczos,setsar=1,pad=1920:1080:{left}:{top}:black,setpts=PTS-STARTPTS"
         if ass:
             vf += ",ass=" + filter_path(mark_file)
+        if guide_file:
+            if sha(guide_file) != cut["editorialGuideAss"]["sha256"]:
+                raise ValueError("Editorial guide changed before cut encode")
+            vf += ",ass=" + filter_path(guide_file)
         temp = destination.with_suffix(".partial.mp4")
         run(["-ss", f"{start:.9f}", "-threads", "4", "-i", str(source), "-an", "-vf", vf,
              "-frames:v", str(cut["frames"]), *ENCODER, "-movflags", "+faststart", str(temp)],

@@ -78,8 +78,9 @@ function gun(x: number, y: number, heavy: boolean, color: string) {
 /**
  * D21 independently authored explanations, using root-supplied independent
  * gameplay stills. Stills remain explanation footage, not moving gameplay.
- * V3 assets are not yet supplied/reviewed: paths reserve the selected three
- * game examples only; no successful image load or pixel approval is implied.
+ * Current V3 assets are independently inspected captures of the selected three
+ * games; visual-assets.json records the exact source frames. Actual captioned
+ * scene loading, layout and moving/mobile review are separate checks.
  * Image slots use 16:9; supplied captures must have that reviewed crop/aspect.
  * No in-image target or captured measurement is invented by this renderer.
  * The final caption anchor is MC (0,430); content ends above MC y=340.
