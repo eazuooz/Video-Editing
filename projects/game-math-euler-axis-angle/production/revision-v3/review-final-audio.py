@@ -199,7 +199,8 @@ def parent(args):
     try:
         with parent_lease(args.device) as token:
             command = [sys.executable, "-u", "-X", "utf8", str(Path(__file__).resolve()),
-                       "--device", args.device, "--worker", "--lease-token", token]
+                       "--device", args.device, "--worker", "--lease-token", token,
+                       "--output-dir", str(O)]
             with worker_stdout.open("wb") as stdout, worker_stderr.open("wb") as stderr:
                 worker = subprocess.Popen(command, cwd=R, stdout=stdout, stderr=stderr,
                                           creationflags=subprocess.CREATE_NO_WINDOW)
@@ -236,11 +237,16 @@ def parent(args):
 
 
 def main():
+    global O, EXECUTION
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", default=str(O))
     parser.add_argument("--device", choices=["cpu", "cuda:0"], default="cpu")
     parser.add_argument("--worker", action="store_true")
     parser.add_argument("--lease-token")
     args = parser.parse_args()
+    O = Path(args.output_dir).resolve()
+    assert O.parent == (P / 'production/local').resolve(), 'Selected project output only'
+    EXECUTION = O / 'final-asr-execution.json'
     assert not args.worker or args.lease_token, "A worker requires the parent's existing lease token"
     assert args.worker or args.lease_token is None, "Only a worker accepts a lease token"
     return model_worker(args) if args.worker else parent(args)
