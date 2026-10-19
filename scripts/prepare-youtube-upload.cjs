@@ -70,14 +70,45 @@ ${defaults.membershipUrl}
 
 ━━━━━━━━━━━━━━━━━━`;
 upload.descriptionBody ||= {ko: upload.metadata.description.trim(), en: upload.englishMetadata.description.trim()};
-if (defaults.description.includePublicSourceCredits === false) {
-  // Remove only an explicit credits section; keep chapters, channel links and internal source records.
-  upload.descriptionBody.ko = upload.descriptionBody.ko.replace(/\n+출처\n[\s\S]*?(?=\n+챕터\n|$)/g, '').trim();
-  upload.descriptionBody.en = upload.descriptionBody.en.replace(/\n+Credits\n[\s\S]*?(?=\n+Chapters\n|$)/g, '').trim();
+// Credits belong after every channel footer. Never remove attribution or append links after it.
+const sourceHeading = /^(?:#{1,6}\s*)?(?:출처(?:[·\s]*(?:자료|영상|이미지|음악|제작 도구|및|참고자료))*|영상 출처|자료 출처|게임 화면 기록|Gameplay recordings|Credits|Sources(?:\s*(?:&|and|,)\s*(?:credits|assets|production tools))*)\s*[:：]?$/i;
+const nextSectionHeading = /^(?:#{1,6}\s+\S.*|(?:챕터|Chapters|타임라인|Timeline|해시태그|Hashtags|채널 소개|About the channel|코칭|Coaching|Community|커뮤니티|Membership|멤버십|멤버쉽)\s*[:：]?)$/i;
+const normalizeText = value => String(value ?? '').replace(/\r\n?/g, '\n').trim();
+function splitSourceCredits(value, footer) {
+  const text = normalizeText(value).split(normalizeText(footer)).join('').trim();
+  const body = [], credits = [];
+  let section = null;
+  for (const line of text.split('\n')) {
+    if (sourceHeading.test(line.trim())) {
+      section = [];
+      credits.push(section);
+    } else if (section && nextSectionHeading.test(line.trim())) {
+      section = null;
+      body.push(line);
+    } else {
+      (section || body).push(line);
+    }
+  }
+  return {body: body.join('\n').trim(), credits: credits.map(lines => lines.join('\n').trim()).filter(Boolean)};
+}
+const preparedCredits = {};
+for (const [language, footer] of [['ko', footerKo], ['en', footerEn]]) {
+  const extracted = splitSourceCredits(upload.descriptionBody[language], footer);
+  // sourceCredits is the reviewed source/rights text supplied for this video, not a guessed inventory.
+  const supplied = normalizeText(upload.sourceCredits?.[language]);
+  const suppliedLines = supplied.split('\n');
+  if (sourceHeading.test(suppliedLines[0]?.trim())) suppliedLines.shift();
+  preparedCredits[language] = [...new Set([suppliedLines.join('\n').trim(), ...extracted.credits].filter(Boolean))].join('\n\n');
+  if (!preparedCredits[language] || !/https?:\/\/\S+/.test(preparedCredits[language])) {
+    throw new Error(`Missing verified ${language.toUpperCase()} source credits with original URLs; supply sourceCredits.${language} from the current production source/rights records`);
+  }
+  upload.descriptionBody[language] = extracted.body;
 }
 if (!upload.descriptionBody.ko || !upload.descriptionBody.en) throw new Error('Missing video description body; do not overwrite live metadata with an empty read');
-upload.metadata.description = upload.descriptionBody.ko + '\n\n' + footerKo;
-upload.englishMetadata.description = upload.descriptionBody.en + '\n\n' + footerEn;
+upload.sourceCredits = preparedCredits;
+upload.metadata.description = [upload.descriptionBody.ko, footerKo, '출처·자료 및 제작 도구\n' + preparedCredits.ko].join('\n\n');
+upload.englishMetadata.description = [upload.descriptionBody.en, footerEn, 'Sources, assets and production tools\n' + preparedCredits.en].join('\n\n');
+upload.descriptionSourceCredits = {policy: 'description-sources-last-v1', position: 'absolute-bottom', languages: ['ko', 'en'], sha256: Object.fromEntries(Object.entries(preparedCredits).map(([language, text]) => [language, crypto.createHash('sha256').update(text).digest('hex')])), actualUseAndRightsEvidence: 'existing production source/rights records; not inferred from a URL or this text assembler'};
 for (const metadata of [upload.metadata, upload.englishMetadata]) {
   if (metadata.title.length > 100 || metadata.description.length > 5000) throw new Error('YouTube metadata character limit exceeded');
   for (const required of [defaults.coaching.url, defaults.membershipUrl]) {

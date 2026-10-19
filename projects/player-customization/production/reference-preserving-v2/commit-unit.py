@@ -5,7 +5,11 @@ R=Path(__file__).resolve().parents[4]
 unit=sys.argv[1]
 spec=json.loads((R/sys.argv[2]).read_text(encoding='utf-8-sig'))
 paths=spec['paths']
+partial=spec.get('partialPaths',[])
+assert set(partial)<=set(paths)
+partial_patch=R/spec['partialPatch'] if partial else None
 shared={'AGENTS.md','docs/VIDEO_WORKFLOW.md','shared/publishing/game-example-coverage-policy.json','shared/publishing/video-production-control.json','.gitignore','shared/git-essential-images.json','shared/publishing/video-worklist.json','docs/VIDEO_WORKLIST.md'}
+shared.update({'docs/YOUTUBE_PUBLISHING.md','scripts/prepare-youtube-upload.cjs','shared/publishing/youtube-defaults.json'})
 shared.add('production/batches/sakurai-planning-game-design/preflight/player-customization.json')
 assert paths and all(p.startswith(('projects/player-customization/','motion-canvas/src/projects/player-customization/')) or p in shared for p in paths)
 rasters=[p for p in paths if Path(p).suffix.lower() in ['.png','.jpg','.webp']]
@@ -30,7 +34,10 @@ shutil.copy2(index,O/'real-index-before.bin')
 head=git('rev-parse','HEAD').decode().strip()
 isolated=O/'commit.index';assert not isolated.exists()
 env=dict(os.environ,GIT_INDEX_FILE=str(isolated))
-git('read-tree',head,env=env);git('add','--',*paths,env=env)
+git('read-tree',head,env=env)
+full=[p for p in paths if p not in partial]
+if full:git('add','--',*full,env=env)
+if partial:git('apply','--cached','--unidiff-zero',str(partial_patch),env=env)
 changed=set(git('diff','--cached','--name-only','-z',env=env).decode().split('\0'))-{''}
 assert changed and changed<=set(paths)
 git('diff','--cached','--check',env=env)
@@ -38,7 +45,8 @@ subprocess.run(['node','scripts/media-policy.cjs'],cwd=R,env=env,check=True)
 assert git('rev-parse','HEAD').decode().strip()==head,'Concurrent HEAD changed; refresh isolated index from new HEAD before commit'
 git('commit','-m',spec['message'],env=env)
 sha=git('rev-parse','HEAD').decode().strip()
-git('reset','-q','HEAD','--',*paths)
+if full:git('reset','-q','HEAD','--',*full)
+if partial:git('apply','--cached','--unidiff-zero',str(partial_patch))
 assert before==foreign(),'Foreign staging changed concurrently; do not restore or overwrite it'
 branch=git('branch','--show-current').decode().strip()
 git('push','origin','HEAD:refs/heads/'+branch)
