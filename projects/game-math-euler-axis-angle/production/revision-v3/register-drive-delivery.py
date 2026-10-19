@@ -39,12 +39,14 @@ project['publishing']['driveFileId'] = incoming['fileId']
 project['publishing']['driveUrl'] = incoming['url']
 project['publishing']['youtubeReplacementAuthorized'] = False
 project['finalRender']['openItems'] = ['완성본 Drive 사용자 검수 및 전체 청취·발음 확인 대기', '기존 비공개 YouTube 업로드 유지']
+if incoming['playback'].get('highDefinitionProcessing') == 'pending':
+    project['finalRender']['openItems'].insert(0, 'Drive1080p 미리보기 변환 대기; 업로드 원본은1920×1080/60fps')
 save(P / 'project.json', project)
 checkpoint = read(P / 'production/checkpoint.json')
 pair = read(O / 'pair-source.json')
 checkpoint.update(updatedAt=now, stage=stage, runningJob=None,
     nextAction='Wait for user review of the exact complete Drive version; no YouTube or next video.',
-    lastCompletedCommit='bc3d55aea5dc98fb568e2be3ce13f4aeaee7e9fb')
+    lastCompletedCommit='1727fbd7515aec735ec2bbff9688d113abfbeda0')
 checkpoint['currentMaster'].update(outputs=pair['outputs'], status='complete; current integrity and changed visual checks recorded')
 checkpoint['annotationSourceReview'] = '25 source-timed guide windows; current final captions and moving native/mobile output reviewed;14-turn clears before jump'
 checkpoint['preparedActualScenes'] = ['02','05','08','11','14','17','20','23']
