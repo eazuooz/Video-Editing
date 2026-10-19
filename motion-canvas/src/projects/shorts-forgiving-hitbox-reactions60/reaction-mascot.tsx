@@ -19,15 +19,17 @@ const easeOut = (x: number) => 1 - Math.pow(1 - clamp01(x), 3);
 const once = (elapsed: number, start: number, seconds: number) =>
   Math.sin(Math.PI * clamp01((elapsed - start) / seconds));
 
+export function reactionPresence(clock: () => number): number {
+  const c = reactionCues.find(c => clock() >= c.start && clock() < c.end);
+  if (!c) return 0;
+  return easeOut((clock() - c.start) / .12) * easeOut((c.end - clock()) / .15);
+}
+
 export function createReactionMascot(clock: () => number): Rect {
   const cue = () => reactionCues.find(c => clock() >= c.start && clock() < c.end);
   const elapsed = () => Math.max(0, clock() - (cue()?.start ?? clock()));
   const kind = () => cue()?.kind ?? 'puzzled';
-  const alpha = () => {
-    const c = cue();
-    if (!c) return 0;
-    return easeOut(elapsed() / .12) * easeOut((c.end - clock()) / .15);
-  };
+  const alpha = () => reactionPresence(clock);
   const lift = () => {
     if (kind() === 'relief') return -8 * once(elapsed(), .12, .50);
     if (kind() === 'realize') return -4 * once(elapsed(), .12, .36);
@@ -45,17 +47,18 @@ export function createReactionMascot(clock: () => number): Rect {
   const size = () => 1 + (kind() === 'realize' ? .05 : .035)
     * once(elapsed(), .12, kind() === 'relief' ? .50 : .36);
 
-  // Native dock: center(170,765), hard maximum bounds x70..270/y665..865.
-  // It clears the HP/result, hero, Hurtbox label and the fixed caption box.
-  const bounds = new Rect({width: 200, height: 200, position: [-370, -195],
+  // Reference-sized lower-right bust:780px square, center(900,1070).
+  // The right silhouette exits the canvas; fixed captions composite in front.
+  // Native clip x540..1100/y610..1470; the Unity group yields the left gutter.
+  const bounds = new Rect({width: 560, height: 860, position: [280, 80],
     clip: true, opacity: alpha});
   const actor = new Node({
-    x: () => -24 * (1 - easeOut(elapsed() / .12)),
-    y: lift, rotation, scale: size,
+    x: () => 80 + 40 * (1 - easeOut(elapsed() / .12)),
+    y: () => 30 + lift(), rotation, scale: size,
   });
   actor.add(<Img
     src={() => kind() === 'puzzled' ? puzzled : kind() === 'realize' ? realize : relief}
-    width={174} height={174} smoothing={true}
+    width={780} height={780} smoothing={true}
   />);
   bounds.add(actor);
   return bounds;

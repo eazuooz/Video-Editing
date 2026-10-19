@@ -3,13 +3,14 @@ import {createSignal,linear,Vector2} from '@motion-canvas/core';
 import trace from '../../../../projects/shorts-forgiving-hitbox/production/local/capture-full-v1/trace.json';
 import footage from '../../../../projects/shorts-forgiving-hitbox/production/source-fairness-60s.json';
 import timing from '../../../../projects/shorts-forgiving-hitbox/production/local/fairness-60s/visual-timing.json';
-import {createReactionMascot} from './reaction-mascot';
+import {createReactionMascot,reactionPresence} from './reaction-mascot';
 const C={white:'#FFFFFF',yellow:'#FFD25A',green:'#92DF9C',red:'#F27C70',muted:'#B8C3BC',forest:'#073C32'};
 const ROOT='/@fs/D:/Github/VideoEditing/projects/shorts-forgiving-hitbox/production/local/';
 export default makeScene2D(function*(view){
  const t=createSignal(0),clamp=(x:number,a:number,b:number)=>Math.min(b,Math.max(a,x));
  const section=()=>timing.sections.find(s=>t()>=s.start&&t()<s.end)??timing.sections[timing.sections.length-1];
  const isGame=()=>['celeste','code','return-game'].includes(section().id);
+ const reaction=()=>reactionPresence(t);
  const code=()=>section().id==='code';
  const codeProgress=()=>code()?clamp((t()-section().start-3.46)/.9,0,1):0;
  const unityTime=()=>{
@@ -45,7 +46,8 @@ export default makeScene2D(function*(view){
  const toGame=(p:Vector2)=>p.sub(gameCenter()).scale(scale);
  const markVisible=()=>isGame()&&!code()&&anchor()!==null&&!footage.editorialTracking.hideIntervals.some(i=>sourceTime()>=i.startSeconds&&sourceTime()<=i.endSeconds);
  view.fill('#000000');
- view.add(<Img src={()=>ROOT+'fairness-60s/footage/unity-frames/frame-'+String(state().frame).padStart(4,'0')+'.png'} width={1080} height={1920} opacity={()=>isGame()?0:1}/>);
+ const unityDemo=new Node({x:()=>-200*reaction(),scale:()=>1-.25*reaction()});view.add(unityDemo);
+ unityDemo.add(<Img src={()=>ROOT+'fairness-60s/footage/unity-frames/frame-'+String(state().frame).padStart(4,'0')+'.png'} width={1080} height={1920} opacity={()=>isGame()?0:1}/>);
  view.add(<Rect width={1080} height={600} position={[0,-660]} fill="#000000" opacity={()=>isGame()?0:1}/>);
  view.add(<Rect width={1080} height={622} position={[0,649]} fill="#000000"/>);
  const gamePane=new Rect({width:900,height:720,position:[-70,-30],clip:true,opacity:()=>isGame()?1:0});view.add(gamePane);
@@ -62,15 +64,15 @@ export default makeScene2D(function*(view){
  view.add(<Rect width={300} height={35} fill="#23392F" stroke={C.white} lineWidth={2} position={[10,-390]} opacity={()=>isGame()?0:1}/>);
  view.add(<Rect width={()=>300*state().health/100} height={31} fill={()=>state().health===100?C.green:C.red} position={()=>[-140+150*state().health/100,-390]} opacity={()=>isGame()?0:1}/>);
  view.add(<Txt text={()=>String(state().health)} fontFamily="Malgun Gothic" fontWeight={700} fontSize={46} fill={C.white} position={[220,-390]} opacity={()=>isGame()?0:1}/>);
- view.add(<Line points={()=>outline('hurt')} stroke={C.green} lineWidth={7} end={()=>clamp((t()-timing.revealStart)/.55,0,1)} opacity={()=>green()?1:0}/>);
- view.add(<Line points={()=>outline('attack')} stroke={C.red} lineWidth={7} opacity={()=>red()?1:0}/>);
- view.add(<Txt text={'피격 영역\nHurtbox'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={36} lineHeight={44} fill={C.green} position={[-365,-25]} opacity={()=>green()?1:0}/>);
- view.add(<Line points={()=>[new Vector2(-270,-25),new Vector2(Math.min(...state().hurt.map(p=>p.x))-555,-25)]} stroke={C.green} lineWidth={5} endArrow arrowSize={12} opacity={()=>green()?1:0}/>);
- view.add(<Txt text={'공격 영역\nHitbox'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={32} lineHeight={40} fill={C.red} position={[310,-170]} opacity={()=>red()?1:0}/>);
- view.add(<Line points={()=>[new Vector2(250,-120),new Vector2(Math.max(...state().attack.map(p=>p.x))-530,state().projectile.y-970)]} stroke={C.red} lineWidth={5} endArrow arrowSize={12} opacity={()=>red()?1:0}/>);
+ unityDemo.add(<Line points={()=>outline('hurt')} stroke={C.green} lineWidth={7} end={()=>clamp((t()-timing.revealStart)/.55,0,1)} opacity={()=>green()?1:0}/>);
+ unityDemo.add(<Line points={()=>outline('attack')} stroke={C.red} lineWidth={7} opacity={()=>red()?1:0}/>);
+ unityDemo.add(<Txt text={'피격 영역\nHurtbox'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={36} lineHeight={44} fill={C.green} position={[-365,-25]} opacity={()=>green()?1:0}/>);
+ unityDemo.add(<Line points={()=>[new Vector2(-270,-25),new Vector2(Math.min(...state().hurt.map(p=>p.x))-555,-25)]} stroke={C.green} lineWidth={5} endArrow arrowSize={12} opacity={()=>green()?1:0}/>);
+ unityDemo.add(<Txt text={'공격 영역\nHitbox'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={32} lineHeight={40} fill={C.red} position={()=>[310-74*reaction(),-170-240*reaction()]} opacity={()=>red()?1:0}/>);
+ unityDemo.add(<Line points={()=>[new Vector2(250-10*reaction(),-120-225*reaction()),new Vector2(Math.max(...state().attack.map(p=>p.x))-530,state().projectile.y-970)]} stroke={C.red} lineWidth={5} endArrow arrowSize={12} opacity={()=>red()?1:0}/>);
  // Keep the result above HP, inside the opaque header rather than the projectile path.
  view.add(<Txt text={()=>section().id==='attacker'?'공격한 쪽: “왜 안 맞아?”':section().id==='survivor'?'살아남은 쪽: “잘 피했다!”':section().id==='resolution'?'겉은 스쳐도, 판정은 안 겹침':state().hitApplied?'겹침 → 피해 30':'겹치지 않음 → 피해 0'} fontFamily="Malgun Gothic" fontWeight={700} fontSize={()=>section().id==='attacker'||section().id==='survivor'?42:38} fill={()=>section().id==='attacker'||state().hitApplied?C.red:C.green} position={[-30,-445]} opacity={()=>isGame()||t()<3?0:1}/>);
- view.add(<Txt text={()=>section().id==='wide'?'몸 크기로\n설정':section().id==='resolution'?'처음 장면\n다시 확인':section().id==='limit'?'여기서 더\n줄인다면?':green()?'조금 작게\n설정':''} fontFamily="Malgun Gothic" fontWeight={700} fontSize={34} lineHeight={43} fill={C.white} position={[-365,170]} opacity={()=>isGame()?0:1}/>);
+ unityDemo.add(<Txt text={()=>section().id==='wide'?'몸 크기로\n설정':section().id==='resolution'?'처음 장면\n다시 확인':section().id==='limit'?'여기서 더\n줄인다면?':green()?'조금 작게\n설정':''} fontFamily="Malgun Gothic" fontWeight={700} fontSize={34} lineHeight={43} fill={C.white} position={[-365,170]} opacity={()=>isGame()?0:1}/>);
  // A separate public-code diagram; no guessed bounds are placed on gameplay.
  const diagram=new Rect({width:900,height:720,position:[-70,-30],fill:'#000000',opacity:()=>code() ? .96 : 0});view.add(diagram);
  diagram.add(<Txt text="공개 코드 · 기본 상태" fontFamily="Malgun Gothic" fontWeight={700} fontSize={38} fill={C.yellow} position={[0,-265]}/>);

@@ -7,8 +7,8 @@ spec=importlib.util.spec_from_file_location('base',Path(__file__).with_name('fin
 f=importlib.util.module_from_spec(spec);spec.loader.exec_module(f)
 R,P=f.R,f.P
 L=P/'production/local/fairness-60s-reactions-v1'
-VERSION=sys.argv[2] if len(sys.argv)>2 else 'v2'
-assert VERSION in ('v1','v2')
+VERSION=sys.argv[2] if len(sys.argv)>2 else 'v3'
+assert VERSION in ('v1','v2','v3')
 V=R/f'shared/output/motion-canvas/shorts-forgiving-hitbox-reactions60-full-{VERSION}.mp4'
 OLD=P/'production/local/fairness-60s'
 
