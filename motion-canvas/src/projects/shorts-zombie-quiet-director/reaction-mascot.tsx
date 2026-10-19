@@ -6,7 +6,7 @@ import relief from '../../../../shared/assets/branding/cat-reactions-v1/relief.p
 type ReactionKind = 'puzzled' | 'relief' | 'realize' | 'understood';
 type ReactionCue = {start: number; end: number; kind: ReactionKind};
 
-import timing from '../../../../projects/shorts-zombie-quiet-director/production/local/visual-timing.json';
+import timing from '../../../../projects/shorts-zombie-quiet-director/production/visual-timing.json';
 export const reactionCues = timing.reactions as readonly ReactionCue[];
 
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));

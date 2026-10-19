@@ -1,6 +1,6 @@
 import {makeScene2D,Img,Node,Txt,Rect,Circle,Line} from '@motion-canvas/2d';
 import {createSignal,linear} from '@motion-canvas/core';
-import timing from '../../../../projects/shorts-zombie-quiet-director/production/local/visual-timing.json';
+import timing from '../../../../projects/shorts-zombie-quiet-director/production/visual-timing.json';
 import {makePacingDiagram,makeSoundMigrationDiagram} from './explanation';
 import {createReactionMascot,reactionPresence} from './reaction-mascot';
 const C={white:'#FFFFFF',yellow:'#FFD25A',green:'#92DF9C',red:'#F27C70',muted:'#B8C3BC'};
@@ -21,7 +21,9 @@ export default makeScene2D(function*(view){
  pane.add(<Img src={()=>ROOT+'frames/'+(game()?s().id:'opening-combat')+'/frame-'+String(game()?frame():0).padStart(4,'0')+'.jpg'} width={1000} height={750}/>);
  // Verified player location in the camera-follow PZ range, never a collider or detector.
  pane.add(<Circle width={95} height={128} position={[0,10]} stroke={C.green} lineWidth={7} opacity={()=>pz()?1:0}/>);
- gameGroup.add(<Txt text={()=>s().id==='intensity-events'?'':pz()?'초록 원: 플레이어':'실제 게임 플레이'} fontFamily="Malgun Gothic" fontSize={31} fill={()=>pz()?C.green:C.muted} position={[0,-405]}/>);
+ // Keep the marker key outside the camera/cat transform and below the header.
+ view.add(<Rect width={1000} height={44} position={[-30,-445]} fill="#000000" opacity={()=>game()?1:0}/>);
+ view.add(<Txt text={()=>s().id==='intensity-events'?'':pz()?'초록 원: 플레이어':game()?'실제 게임 플레이':''} fontFamily="Malgun Gothic" fontSize={31} fill={()=>pz()?C.green:C.muted} position={[-30,-445]}/>);
  // These two independent recordings establish context, not the hidden game state.
  const pacing=makePacingDiagram(t,pacePhase,()=>progress(timing.pacingPhases));view.add(pacing);
  const sound=makeSoundMigrationDiagram(t,soundPhase,()=>progress(timing.soundPhases));view.add(sound);

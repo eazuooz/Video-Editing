@@ -28,7 +28,7 @@ def preflight():
   target=L/f'preflight-{t}.png'
   if not target.exists():run([FF,'-v','error','-n','-ss',str(t),'-i',str(out),'-frames:v','1',str(target)])
 def pair():
- guard();c=read(P/'script/captions.json');visual=R/'shared/output/motion-canvas/shorts-zombie-quiet-director-full-v1.mp4';mix=L/'final-mix.m4a'
+ guard();c=read(P/'script/captions.json');visual=R/'shared/output/motion-canvas/shorts-zombie-quiet-director-full-v2.mp4';mix=L/'final-mix.m4a'
  clean=L/'clean.mp4';captioned=L/'captioned.mp4'
  assert not clean.exists() and not captioned.exists(),'Preserve completed pair'
  run([FF,'-v','warning','-n','-i',str(visual),'-i',str(mix),'-map','0:v:0','-map','1:a:0','-c','copy','-movflags','+faststart',str(clean)])

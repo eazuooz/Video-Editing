@@ -40,6 +40,9 @@ def main():
  target=L/'visual-timing.json'
  if target.exists(): assert read(target)==timing,'Preserve previous timing until reviewed'
  else: save(target,timing)
+ canonical=P/'production/visual-timing.json'
+ if canonical.exists(): assert read(canonical)==timing,'Canonical timing differs'
+ else: save(canonical,timing)
  if '--frames' not in sys.argv: print(json.dumps(timing,ensure_ascii=False));return
  for s in sections:
   if s['kind']!='game':continue
