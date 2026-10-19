@@ -4,7 +4,7 @@ import json, hashlib, importlib.util, shutil, math, subprocess, sys
 import numpy as np
 import soundfile as sf
 R=Path(__file__).resolve().parents[4];P=R/'projects/game-math-euler-axis-angle';H=Path(__file__).parent
-V3=P/'production/local/revision-v3';O=P/'production/local/revision-v4';O.mkdir(exist_ok=True)
+V3=P/'production/local/revision-v3';O=P/'production/local/revision-v4-clarity';O.mkdir(exist_ok=True)
 spec=importlib.util.spec_from_file_location('audio_helpers',P/'production/revision-v2/build-audio.py');h=importlib.util.module_from_spec(spec);spec.loader.exec_module(h)
 read=h.read;sha=h.sha;save=h.save;rel=h.relative
 def run(args,name):return h.run(args,name,O)
@@ -30,12 +30,20 @@ for c in t['cuts']:
  count=c['frames']*800;at=c['globalStartFrame']*800;game[at:at+min(count,len(samples))]=samples[:count]
  rows.append(dict(cut=c['id'],sourceId=c['sourceId'],start=c['globalStartFrame']/60,seconds=c['seconds'],rawSha256=sig['rawSha256'],sourceIntegratedLufs=lufs if math.isfinite(lufs) else None,oldGainDb=prior['gainDb'],gainDb=gain,gameGainChangeDb=gain-prior['gainDb'],nominalPostGainLufs=lufs+gain if math.isfinite(lufs) else None,silentSource=silent,sourceMusicSeparationClaim=False))
  print(c['id'],'native sound restored',round(gain-prior['gainDb'],2),'dB; silent',silent,flush=True)
+# Only the new encoded-ASR masking concern in the Zelda definition receives
+# a short speech-priority ride. General game sound remains the standard level.
+ride=dict(start=1195.55,end=1216.7,fadeSeconds=.3,gainDb=-8,reason='Current mixed ASR obscured length/information words that remain clear in source PCM and previous quieter mix.')
+left=round(ride['start']*48000);right=round(ride['end']*48000);fade=round(ride['fadeSeconds']*48000);gain=10**(ride['gainDb']/20)
+envelope=np.ones(len(game),dtype=np.float32);envelope[left:right]=gain;envelope[left-fade:left]=np.linspace(1,gain,fade);envelope[right:right+fade]=np.linspace(gain,1,fade)
+game*=envelope[:,None];del envelope
 gamefile=O/'game-stem.wav';sf.write(gamefile,game,48000,subtype='PCM_24');del game
 graph='[0:a]asplit=2[voice][side];[1:a][side]sidechaincompress=threshold=0.08:ratio=2.2:attack=15:release=280:makeup=1[game];[voice][game]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.794:level=false:latency=true[out]'
 mix=O/'final-mix.wav';run(['-i',O/'narration-stem.wav','-i',gamefile,'-filter_complex',graph,'-map','[out]','-t',duration,'-ar',48000,'-ac',2,'-c:a','pcm_s24le',mix],'restore-game-mix')
 aac=O/'final-mix.m4a';run(['-i',mix,'-ar',48000,'-ac',2,'-c:a','aac','-b:a','192k',aac],'final-aac')
 stats=h.loudness_stats(run(['-i',aac,'-af','loudnorm=I=-16:TP=-1.5:LRA=9:print_format=json','-f','null','-'],'encoded-loudness'));assert float(stats['input_tp'])<=-1.5
 report=dict(old,revision='standard-game-audio-v4',music=dict(addedBgm=False,externalMusicStem=None),voiceDucked=False,sourceAudioUsed=True,gameAudio=rows,gameTargetLufs=-23,sidechain=graph,encodedLoudnessMeasurement=stats,narrationUnchanged=dict(old=rel(V3/'narration-stem.wav'),current=rel(O/'narration-stem.wav'),sha256=sha(O/'narration-stem.wav')),outputs=[dict(file=rel(f),sha256=sha(f),bytes=f.stat().st_size) for f in [O/'narration-stem.wav',gamefile,mix,aac]],sourceToStemToEncodedSpeechContinuity='pending current mix',currentFinalMixFullAsr='pending one pass',humanWholeListening='pending')
+report.pop('visualOnlyRebind',None)
+report['speechPriorityGameRide']=ride
 save(O/'audio-build.json',report);outputs={};video_equivalence=[]
 for kind in ['clean','captioned']:
  selected();src=V3/f'euler-{kind}.mp4';dst=O/f'euler-{kind}.mp4'
