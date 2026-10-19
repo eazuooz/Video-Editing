@@ -33,14 +33,20 @@ def draw(window,tracker,f,frames):
  anchor=p.get('center',p.get('points',[None,None])[1]);c=list(anchor)
  offset=window.get('offset',[0,0]);c=[c[i]+offset[i] for i in range(2)]
  r=150 if window['id']!='20-mast' else 132
+ # A low-on-screen kart remains visible even when its center enters the
+ # caption reserve. Keep its conceptual rings above that reserve and connect
+ # the actual tracked center, rather than toggling the rings at radius95.
+ clampedKart=window['id']=='05-kart' and c[1]>700
+ if clampedKart:c[1]=700
  if offset!=[0,0]:c[0]=min(1710,max(190,c[0]));c[1]=min(700,max(185,c[1]))
  else:
   r=min(r,868-c[1])
   if r<95:return []
  if window['id']=='14-turn' and anchor[1]>765:return []
  a,b=f/60,(f+1)/60;events=[]
- if offset!=[0,0]:
-  edge=[c[0]-r*.9,c[1]+r*.1];events +=[stroke(a,b,[anchor,edge],'#101010',7,layer=3),stroke(a,b,[anchor,edge],'#B8B8B8',3,layer=4)]
+ if offset!=[0,0] or clampedKart:
+  edge=[c[0],c[1]+r*.85] if clampedKart else [c[0]-r*.9,c[1]+r*.1]
+  events +=[stroke(a,b,[anchor,edge],'#101010',7,layer=3),stroke(a,b,[anchor,edge],'#B8B8B8',3,layer=4)]
  # All three orthogonal rings share a single explicitly illustrative screen
  # projection. No numeric game angle, fitted world camera or telemetry is shown.
  for axis,pts in rings(c,r):
