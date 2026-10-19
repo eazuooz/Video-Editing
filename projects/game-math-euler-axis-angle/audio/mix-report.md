@@ -1,9 +1,11 @@
-# M04 teaching-rules-v2 audio
+# M04 Nintendo revision audio
 
-Current source and encoded-mix ASR direct whole-text reviews: projects/game-math-euler-axis-angle/production/revision-v2/final-audio-review.json
+No added background music. Narration receives constant scene and global gains; only the quiet native game mix is ducked. The original mixed gameplay track retains its own sounds; effects-only isolation is not claimed.
 
-Same-speech400ms/100ms source → stem → encoded level analysis: projects/game-math-euler-axis-angle/production/local/revision-v2/qa/audio-continuity.json
+Current complete source/encoded ASR reviews: projects/game-math-euler-axis-angle/production/revision-v3/final-audio-review.json
 
-Voice gain is constant per scene plus one global gain and a short peak limiter. Only the instrumental music is ducked. Selected production files are video-only streams. Exact processing and hashes: projects/game-math-euler-axis-angle/production/local/revision-v2/audio-build.json
+Local source → stem → encoded speech levels and joins: projects/game-math-euler-axis-angle/production/local/revision-v3/qa/audio-continuity.json
+
+Exact processing and hashes: projects/game-math-euler-axis-angle/production/local/revision-v3/audio-build.json
 
 Human whole listening and pronunciation remain pending the complete Drive review.

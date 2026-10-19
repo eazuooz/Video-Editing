@@ -62,6 +62,12 @@ def main():
  design['currentProduction']=dict(measuredTimeline=dict(timeline='production/revision-v3/timeline.json',sha256=sha(HERE/'timeline.json'),fps=60,totalFrames=t['totalFrames'],totalSeconds=t['seconds'],bodyFrames=t['bodyFrames'],actualFrames=t['actualFrames'],explanationFrames=t['explanationFrames'],ratioErrorFrames=0),sourceVoiceReview='production/revision-v3/narration-review.json',finalAudioReview='production/revision-v3/final-audio-review.json',visualReview='production/revision-v3/visual-review.json',retainedExplanationCount=17,priorVersionEvidence='production/revision-v2/timeline.json',humanWholeListening='pending complete Drive review')
  design['audio']=dict(addedBackgroundMusic=False,gameAudioTargetLufs=-32,narrationTargetLufs=-16,source='quiet synchronized original mixed gameplay track',review='production/revision-v3/final-audio-review.json',humanWholeListening='pending')
  save(P/'planning/production-plan.json',design)
+ current_script=read(R/manifest['paths']['script'])
+ outline=['# 같은 각도인데 왜 다르게 돌까? — 오일러 각과 축·각','','현재 검수본 `nintendo-annotated-no-bgm-v3`. 기존26장면의 개념 순서와 설명17장면 유지. 마리오 카트8디럭스·젤다의 전설 티어스 오브 더 킹덤·슈퍼 마리오 오디세이 실제 화면40% / 설명60%,1920×1080/60fps. 추가 배경음악 없이 작은 원음과 내레이션. 완성본Drive검수 후 해당 버전의YouTube업로드를 별도로 진행한다.','']
+ for s in current_script['scenes']:
+  title=next(x['title'] for x in t['scenes'] if x['id']==s['id']);outline.extend(['## '+s['id']+' · '+title,''])
+  for line in s['lines']:outline.extend([line,''])
+ (P/'planning/outline.md').write_text('\n'.join(outline),encoding='utf8')
  chapters=[('00:00','같은 각도와 다른 회전 순서')]+[(tc(s['start']),s['title']) for s in t['scenes'] if s['kind']=='explanation' and s['id']!='01']+[(tc((t['totalFrames']-600)/60),'멤버십 감사와 프로그래밍 코칭 안내')]
  old=(P/'publishing/upload-description.ko.txt').read_text(encoding='utf8');footer=old[old.index('🎮 게임 개발은'):]
  credits='게임 화면 출처 / Gameplay recordings\nMario Kart 8 Deluxe — mrlateforschool\nhttps://www.youtube.com/watch?v=dbA2StfJhqw\nThe Legend of Zelda: Tears of the Kingdom — Royalty Free Game Clips\nhttps://www.youtube.com/watch?v=YNQ20CKbY8U\nSuper Mario Odyssey Free To Use Gameplay No Copyright No Commentary #1 — Fox - No Copyright Gameplay (CC BY 4.0)\nhttps://www.youtube.com/watch?v=_wH_-1saHnw\nhttps://creativecommons.org/licenses/by/4.0/\n원본을 발췌·편집하고 설명 표식과 내레이션을 추가했습니다. / Excerpted and edited with instructional annotations and narration.\n게임 IP: Nintendo 및 각 권리자. Nintendo의 후원·공식 제작물이 아닙니다.\n'
