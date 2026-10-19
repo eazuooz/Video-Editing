@@ -171,11 +171,11 @@ export function* lesson(view: View2D, kind: string, timing: Timing) {
       // equipment, component types and their actual differences await source
       // inspection; these reserved still names do not establish measured stats.
       during(0, 2, <>
-        {image('raiders-test.png', -440, -75, 790, '공격 방식의 차이', D.teal)}
-        {image('raiders-choice.png', 440, -75, 790, '준비 시간의 차이', D.green)}
+        {image('raiders-test.png', -440, -75, 790, '장비를 사용한 모습', D.teal)}
+        {image('raiders-choice.png', 440, -75, 790, '비교할 선택지', D.green)}
       </>);
       during(0, 1, <>
-        {text('공격 방식과 준비 과정을 함께 비교', 0, 249, 38, D.title)}
+        {text('기준이 달라지면, 고를 이유도 달라집니다', 0, 249, 38, D.title)}
         {text('사용 방식을 관찰 · 특정 무기의 수치 비교가 아닙니다', 0, 311, 33, D.muted)}
       </>);
       during(1, 2, <>

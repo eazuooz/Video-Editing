@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "slug": "player-customization",
+  "revision": "reference-preserving-v3",
+  "updatedAt": "2026-10-19T03:02:27.003175+00:00",
+  "status": "two-helpers-code-prepared; no extraction/mapping execution",
+  "ownedFiles": [
+    "projects/player-customization/production/reference-preserving-v3/prepare-assets.py",
+    "projects/player-customization/production/reference-preserving-v3/map-source-annotations.py",
+    "projects/player-customization/production/reference-preserving-v3/helper-adaptation.json"
+  ],
+  "helpers": [
+    {
+      "path": "projects/player-customization/production/reference-preserving-v3/prepare-assets.py",
+      "sha256": "fd7927e948d2b56f38ce2ce77fa9b4bd96be4ad3503bf43e8b9188f03e2dba61",
+      "bytes": 10701
+    },
+    {
+      "path": "projects/player-customization/production/reference-preserving-v3/map-source-annotations.py",
+      "sha256": "89809d6e7abcb07fd434728f335369399bb193edf63940d6a6e4d0baf4b599a9",
+      "bytes": 13892
+    }
+  ],
+  "annotationBaseline": {
+    "path": "projects/player-customization/production/reference-preserving-v2/map-source-annotations.py",
+    "sha256": "2279de95c93ae35056be09749ba3f57f26e7580406f8be3f2cd2a6f3048ef852",
+    "bytes": 5400
+  },
+  "latestExactSelection": {
+    "path": "projects/player-customization/production/reference-preserving-v3/title-selection.json",
+    "sha256": "15e0467e52c5560bf0b3c2250d0fa8fc899dd4bb0d4a23d7ba25656a051a5d08",
+    "bytes": 4925
+  },
+  "assetHelper": {
+    "selectionPath": "projects/player-customization/production/reference-preserving-v3/visual-asset-selection.json",
+    "spec": {
+      "slug": "player-customization",
+      "revision": "reference-preserving-v3",
+      "sourceSelectionSha256": "Actual current source-selection.json SHA256",
+      "titleSelectionSha256": "Actual current title-selection.json SHA256",
+      "assets": [
+        {
+          "id": "one exact ID, optional.png suffix",
+          "source": "current selected source key",
+          "localSeconds": "actually inspected LOCAL frame time",
+          "purpose": "specific explanation role",
+          "actuallyInspected": true,
+          "reviewEvidence": "native-view receipt/path/description"
+        }
+      ]
+    },
+    "exactIDs": [
+      "raiders-equipment",
+      "raiders-test",
+      "raiders-choice",
+      "botw-inventory",
+      "botw-test",
+      "acnh-before",
+      "acnh-after",
+      "acnh-categories"
+    ],
+    "validation": [
+      "Explicit current Raiders/BOTW/ACNH authorization and exact title-selection hashes.",
+      "Each current selected independent source has genuine downloaded/decoded nativeFHD evidence and matching live mediaSHA.",
+      "ID prefix cannot rename a different game; actuallyInspected/purpose/reviewEvidence required.",
+      "Frame must fall inside selected inspected recommendedRanges.",
+      "On prepare only, FFprobe verifies actual source dimensions/duration and square-pixel compatibility.",
+      "Accurate input seek extracts one frame; contain scale+black letterbox+setsar preserves aspect, no crop/stretch, final1920x1080 PNG checked."
+    ],
+    "cache": "production/local/reference-preserving-v3/assets-current only. Old local/assets candidate cache is never read or changed. Identical extraction parameters/sourceSHA/imageSHA reuse PNG bytes; changed selection/rights metadata can be rebound after validation without re-extraction. Changed pixel inputs stop rather than silently overwrite current cache.",
+    "copies": "Copy only exact eight current PNG names into output/player-customization/preproduction-assets-v3, verifying bytes. Unrelated/old candidate filenames are not deleted.",
+    "receipts": "Per-image ignored extraction JSON plus current production/reference-preserving-v3/visual-assets.json with source URL/recorder/fileSHA/time/purpose/evidence.",
+    "dryRun": "Reads and hashes input specs/media but does not FFprobe, extract, mkdir, copy or write.",
+    "help": "Stdlib only and no input reads."
+  },
+  "annotationHelper": {
+    "input": "projects/player-customization/production/reference-preserving-v3/source-space-annotations.json",
+    "schema": "Existing marks[] sourceKey/sourceSha256/type/localStart/localEnd/keyframes/label/labelAnchorSource/colorSemantics/nativeLineWidth/semanticPurpose/evidenceFrames or reviewEvidence. Current sourceSelection:{path,sha256} required. Optional per-mark sourceDimensions, sourceFile and visibility/hidden intervals.",
+    "speechCue": {
+      "optional": true,
+      "shape": {
+        "scene": "06",
+        "paragraph": 2,
+        "koStartsWith": "Actual current cue prefix"
+      },
+      "meaning": "Unique current caption-layout row with matching scene/one-based paragraph and whitespace-normalized KO prefix. Intersect that exact cue start/end with native window and cut. No cue found or ambiguity stops; absent binding uses only inspected native window.",
+      "paragraphAccepted": "Integer2, digit string2 or full06-p02 ID.",
+      "captionSource": "production/local/reference-preserving-v3/edit/caption-layout.json"
+    },
+    "coordinates": "Native decoded source pixels → aspect-contain current cut viewport, using each selected source actual dimensions. No crop accepted without new reviewed conversion.",
+    "retainedChecks": [
+      "No extrapolation beyond strictly increasing inspected keyframes.",
+      "Rect/circle or path/arrow geometry and finite coordinates.",
+      "Actual label text preserved, no source-specific numeric rewrites or old ACVI cue special cases.",
+      "Output font metrics for source-anchor→top-left label positioning; existing safe label gutter clamp.",
+      "Each mark clipped to inspected native localStart/localEnd, current cut and optional speech cue. End times exclusive; clear at every source cut.",
+      "Existing video_pipeline.annotations(cut,plan) checks EVERY visible interpolated output-frame geometry, current font labels, credits, copyright notice, fixed caption and protected UI rectangles.",
+      "Native visibility/occlusion intervals map to cut-relative time, without inventing tracking after the final keyframe."
+    ],
+    "outputs": "On --prepare only, source-annotations.json and current edit-plan.json marks; mapping receipt includes source/title/caption/input hashes, cue bindings and all-frame geometry logs.",
+    "dryRun": "Computes mapping/protected-area geometry in memory, no media decode/render or writes.",
+    "help": "Stdlib only; PIL/audio/video dependencies imported after argument parsing."
+  },
+  "commands": [
+    "qwen3-tts/.venv/Scripts/python.exe projects/player-customization/production/reference-preserving-v3/prepare-assets.py --dry-run",
+    "qwen3-tts/.venv/Scripts/python.exe projects/player-customization/production/reference-preserving-v3/prepare-assets.py --prepare",
+    "qwen3-tts/.venv/Scripts/python.exe projects/player-customization/production/reference-preserving-v3/map-source-annotations.py --dry-run",
+    "qwen3-tts/.venv/Scripts/python.exe projects/player-customization/production/reference-preserving-v3/map-source-annotations.py --prepare"
+  ],
+  "checksPerformed": {
+    "ASTBothHelpers": "passed",
+    "prepareAssetsHelp": "exit0",
+    "mapAnnotationsHelp": "exit0",
+    "oldACVINumericLabelsAndCueRemoved": true,
+    "actualDryRunExecuted": false,
+    "actualFFprobeExecuted": false,
+    "actualExtractionOrPNGCopyExecuted": false,
+    "actualAllFrameMappingExecuted": false,
+    "actualEditPlanMutation": false
+  },
+  "reviewLimits": [
+    "Source selection/specs/native-frame inspection supplied by root/source agents remain pending; code has not inspected actual images or source motion.",
+    "Geometry checks do not approve actual rendered moving/native/mobile pixels, final captions, source meanings or human listening.",
+    "No duplicate download/ASR/render, media change, browser/platform/Git operation, shared control mutation or foreign job action was performed."
+  ],
+  "platformBoundary": "Current complete Drive user review before any YouTube upload; no automatic next video."
+}
