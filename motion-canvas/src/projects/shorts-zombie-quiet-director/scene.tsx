@@ -23,7 +23,7 @@ export default makeScene2D(function*(view){
  pane.add(<Circle width={95} height={128} position={[0,10]} stroke={C.green} lineWidth={7} opacity={()=>pz()?1:0}/>);
  // Keep the marker key outside the camera/cat transform and below the header.
  view.add(<Rect width={1000} height={44} position={[-30,-445]} fill="#000000" opacity={()=>game()?1:0}/>);
- view.add(<Txt text={()=>s().id==='intensity-events'?'':pz()?'초록 원: 플레이어':game()?'실제 게임 플레이':''} fontFamily="Malgun Gothic" fontSize={31} fill={()=>pz()?C.green:C.muted} position={[-30,-445]}/>);
+ view.add(<Txt text={()=>s().id==='intensity-events'?'':pz()?'초록 원: 플레이어 · 조용한 주택가':game()?'실제 게임 플레이':''} fontFamily="Malgun Gothic" fontSize={31} fill={()=>pz()?C.green:C.muted} position={[-30,-445]}/>);
  // These two independent recordings establish context, not the hidden game state.
  const pacing=makePacingDiagram(t,pacePhase,()=>progress(timing.pacingPhases));view.add(pacing);
  const sound=makeSoundMigrationDiagram(t,soundPhase,()=>progress(timing.soundPhases));view.add(sound);
@@ -34,11 +34,9 @@ export default makeScene2D(function*(view){
  view.add(<Txt text="얌얌코딩" fontFamily="Malgun Gothic" fontSize={37} fontWeight={700} fill={C.muted} position={[-340,-820]}/>);
  view.add(<Txt text="좀비가 조용해지면" fontFamily="Malgun Gothic" fontSize={74} fontWeight={700} fill={C.white} position={[-30,-700]}/>);
  view.add(<Txt text="안심해도 될까?" fontFamily="Malgun Gothic" fontSize={84} fontWeight={700} fill={C.yellow} position={[-30,-590]}/>);
- view.add(<Txt text={()=>pz()||s().id==='sound-migration'?'PROJECT ZOMBOID':'LEFT 4 DEAD'} fontFamily="Malgun Gothic" fontSize={33} fill={C.muted} position={[-30,-500]}/>);
+ view.add(<Txt text={()=>pz()?'PROJECT ZOMBOID · 녹화 버전 42.5.0':s().id==='sound-migration'?'PROJECT ZOMBOID':'LEFT 4 DEAD'} fontFamily="Malgun Gothic" fontSize={33} fill={C.muted} position={[-30,-500]}/>);
  view.add(createReactionMascot(t));
- // Credits sit above the fixed two-line caption area and in front of the cat.
- view.add(<Rect width={1040} height={86} position={[-10,292]} fill="#000000" opacity={()=>game()?.88:0}/>);
- view.add(<Txt text={()=>pz()?'녹화 버전 42.5.0 · 조용한 주택가':''} fontFamily="Malgun Gothic" fontSize={28} fill={C.muted} position={[-30,264]}/>);
- view.add(<Txt text={()=>game()?(pz()?'Project Zomboid · Survival Gamer':'Left 4 Dead · GamerSky · CC BY'):''} fontFamily="Malgun Gothic" fontSize={27} fill={C.muted} position={[-30,302]}/>);
+ // Footage attribution belongs in the full video description. Keep factual
+ // game/version labels above the footage so the lower-right cat stays clear.
  yield* t(timing.durationSeconds,timing.durationSeconds,linear);
 });
