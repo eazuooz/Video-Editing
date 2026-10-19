@@ -1,0 +1,416 @@
+{
+  "schemaVersion": 1,
+  "researchId": "gdc-ideas-20261019",
+  "researchedOn": "2026-10-19",
+  "status": "candidate-only-unselected",
+  "purpose": "기발한 실제 게임 개발 아이디어를 일반 시청자도 이해하는 30–60초 쇼츠 후보로 조사한다.",
+  "userEvidence": "기발한 게임개발에 사용한 아이디어 중에 쇼츠 내용으로 쓸 만한 거 GDC 같은 데서 찾아줘 다음 영상 제작해보게",
+  "selectedNextVideo": null,
+  "nextVideoProductionAuthorized": false,
+  "automationChanged": false,
+  "currentHitboxRevision": "별도 선택 제작·게시 작업이다. 이 연구 후보 기록은 현재 영상의 승인·음악·업로드 상태를 변경하지 않는다.",
+  "duplicateReview": {
+    "status": "preliminary-candidates-require-later-channel-review",
+    "studioInventoryReviewedForTheseCandidates": false,
+    "requiredBeforeSelection": "기존 공개·예약·비공개 영상 및 쇼츠의 실제 핵심 주장·대본을 Studio와 로컬 목록에서 대조한다. 제목 차이만으로 새 주제로 판정하지 않는다."
+  },
+  "recommendations": [
+    {
+      "candidateId": "superliminal-forced-perspective",
+      "priority": "top-choice-visual-reveal",
+      "reason": "실제 물체 크기 변화와 옆 카메라의 거리·크기 공개를 결합하면 첫눈에 놀랍고 한 원리가 60초 안에 완결된다."
+    },
+    {
+      "candidateId": "blacklist-offscreen-hearing",
+      "priority": "top-choice-game-design-cheat",
+      "reason": "화면 밖 경비병의 청각을 낮춘다는 단순한 반전과 납득 가능한 플레이어 경험을 연결한다. 피격 영역 축소와 다른 AI 지각 주제다."
+    }
+  ],
+  "researchMethod": {
+    "primarySourcesOnlyForClaims": true,
+    "completeTalkViewingClaimed": false,
+    "evidenceScope": "개발자 본인 기고, 공개 구현, 공식 발표 설명 및 관련 PDF 본문을 확인했다. 전체 강연 시청이나 출시 실행 파일 실측으로 확대하지 않는다.",
+    "publicResearchAccessIsReusePermission": false,
+    "footageAcquired": false,
+    "beforeProduction": [
+      "선택한 한 편만 제작하며 공개 자료를 재사용 허가로 간주하지 않는다.",
+      "독립 실제 게임 영상의 원출처·권리·원음·실제 1080p 이상 녹화를 확인한다.",
+      "개발자 강연·완성 설명 영상은 연구용으로 분리하고 우리 설명은 독립 작성한다.",
+      "Unity 원리 재현은 출시 게임의 측정값·실제 디버그 출력과 구분한다.",
+      "한 변수를 바꾼 비교와 전제·정식 용어·결과·한계를 같은 짧은 이야기 안에 배치한다.",
+      "고양이는 승인된 큰 오른쪽 하단 리액션 방식으로 필요할 때만 사용하고 핵심 시연·자막·플랫폼 UI를 보호한다."
+    ]
+  },
+  "candidates": [
+    {
+      "id": "superliminal-forced-perspective",
+      "status": "research-candidate-not-selected",
+      "game": "Superliminal",
+      "developer": "Pillow Castle",
+      "genre": "1인칭 원근 퍼즐",
+      "editorialHooksKo": ["작은 체스말이 갑자기 거대해지는 게임의 비밀", "멀리 내려놨는데 왜 더 커졌지?"],
+      "engine": {
+        "name": "Unity",
+        "basis": "해당 게임의 GOG·EGS 작업에 참여한 General Arcade가 Unity·C# 사용을 명시한다."
+      },
+      "supportedClaim": "집어 든 물체의 화면상 크기를 유지하면서 물리적으로 놓을 수 있는 가장 먼 위치로 이동·확대한다. 카메라에서 물체의 보이는 표면 전체를 통과하는 다수의 광선으로 복잡한 배경과의 충돌을 검사한다.",
+      "sources": [
+        {
+          "url": "https://blog.playstation.com/2020/06/30/breaking-down-the-tech-behind-superliminals-mind-bending-illusions/",
+          "title": "Breaking down the tech behind Superliminal’s mind-bending illusions",
+          "author": "Phil Fortier, Graphics Programmer, Pillow Castle",
+          "type": "first-party-developer-article",
+          "readStatus": "relevant-full-article-text-reviewed",
+          "usedSection": "Forced Perspective",
+          "supports": "화면상 크기 유지, 가능한 먼 위치, 표면 전체 다중 광선, 멀티스레딩, 크기에 따른 물리 속성 변화"
+        },
+        {
+          "url": "https://hacx.generalarcade.com/projects/superliminal/",
+          "title": "Superliminal — General Arcade",
+          "type": "participating-developer-project-record",
+          "readStatus": "project-text-reviewed",
+          "supports": "실제 참여 작업의 Unity·C# 사용"
+        }
+      ],
+      "oneVariableDemo": {
+        "targetSeconds": 60,
+        "renderer": "Unity 3D; Motion Canvas는 거리·크기 라벨 합성에 필요한 경우만",
+        "controlledVariable": "물체 뒤 배경까지 허용되는 거리",
+        "heldConstant": "카메라 FOV·물체의 화면상 크기·시점",
+        "before": "가까운 벽 앞 작은 체스말",
+        "action": "먼 벽 쪽을 향해 들고 놓는다.",
+        "result": "화면상 크기는 유지되지만 물체의 실제 거리·크기가 함께 증가한다.",
+        "reveal": "옆 카메라로 실제 거리와 크기 변화를 공개하고 충돌 검사 광선을 짧게 보여준다.",
+        "implementationLabel": "우리 Unity 원리 재현; 출시 게임 코드와 동일 구현이라는 주장은 하지 않는다."
+      },
+      "scopeLimits": [
+        "단순히 착시 그림만 보여주는 것이 아니라 실제 물체 크기·물리 속성이 변한다.",
+        "광선 한 줄이면 충분하다고 설명하지 않는다.",
+        "마음대로 무한 확대하거나 어떤 배경에서도 완벽하다고 약속하지 않는다."
+      ],
+      "accessLimits": [],
+      "productionReadiness": "주장 근거 확보; 채널 중복·독립 FHD 실제 영상·권리·시연 설계는 선택 후 확인"
+    },
+    {
+      "id": "blacklist-offscreen-hearing",
+      "status": "research-candidate-not-selected",
+      "game": "Tom Clancy’s Splinter Cell Blacklist",
+      "developer": "Ubisoft",
+      "genre": "잠입 액션",
+      "editorialHooksKo": ["화면 밖 경비병은 귀가 더 나쁩니다", "고개를 돌리면 경비병이 덜 듣는 게임"],
+      "engine": {"name": null, "basis": "이번 인용 자료에서 엔진 버전을 검증하지 않아 제작 대본에 넣지 않는다."},
+      "supportedClaim": "플레이어는 화면 밖에서 누가 소리를 듣는지 알기 어렵고 자신이 내는 소리를 직접 통제하기 어렵다. Blacklist 개발 발표는 이를 위한 청각 지각 조정으로 화면 밖 NPC가 덜 듣도록 했다고 명시한다.",
+      "sources": [
+        {
+          "url": "https://www.gdcvault.com/play/1021236/Modeling-AI-Perception-and-Awareness",
+          "title": "Modeling AI Perception and Awareness in Splinter Cell Blacklist",
+          "author": "Martin Walsh, Ubisoft",
+          "type": "official-gdc-2014-session",
+          "readStatus": "session-context-reviewed-not-full-talk-viewed",
+          "supports": "발표자·게임·GDC 발표 식별"
+        },
+        {
+          "url": "https://media.gdcvault.com/GDC2014/Presentations/Walsh_Martin_Modeling_AI_Perception.pdf",
+          "title": "Modeling AI Perception and Awareness in Splinter Cell Blacklist — slides",
+          "type": "first-party-gdc-slides",
+          "readStatus": "relevant-pdf-text-reviewed",
+          "pagesOneBased": [25, 26, 27],
+          "supports": "청각 이벤트의 거리·우선순위, 지각 피드백 문제, 화면 밖 NPC의 청각 저하"
+        }
+      ],
+      "oneVariableDemo": {
+        "targetSeconds": 45,
+        "renderer": "Unity 3D + 필요시 Motion Canvas 소리 경로·의심 상태 라벨",
+        "controlledVariable": "경비병이 플레이어 화면 안에 있는가",
+        "heldConstant": "발소리 이벤트·플레이어/경비병 위치·거리·지형·경로",
+        "before": "화면 안 경비병이 같은 발소리에 의심 반응",
+        "action": "플레이어 카메라만 돌려 경비병을 화면 밖으로 보낸다.",
+        "result": "우리 시연의 청각 보정 조건이 적용되어 같은 소리를 덜 감지한다.",
+        "reveal": "분리된 위쪽 관찰 카메라에서 같은 위치를 유지한 채 청각 보정 조건과 의심 상태만 보여준다.",
+        "implementationLabel": "원리 재현; 시연 임곗값·보정 계수는 설명용이며 Blacklist 실측값 아님"
+      },
+      "scopeLimits": [
+        "화면 밖 NPC가 모든 소리에 완전히 귀머거리가 된다고 말하지 않는다.",
+        "보정 계수·감지 거리·시간의 실제 수치는 확인되지 않았다.",
+        "카메라 회전만으로 모든 실제 상황의 반응이 반드시 뒤집힌다고 단정하지 않는다.",
+        "다른 Splinter Cell 작품이나 모든 잠입 게임으로 확대하지 않는다."
+      ],
+      "accessLimits": ["관련 발표 슬라이드 본문 확인이며 전체 강연 시청·상용 실행 파일 실측은 아니다."],
+      "productionReadiness": "핵심 반전 1차 근거 확보; 같은 조건의 독립 게임 실례 확보 여부를 먼저 확인"
+    },
+    {
+      "id": "portal-stencil-recursion",
+      "status": "research-candidate-not-selected",
+      "game": "Portal (2007)",
+      "developer": "Valve",
+      "genre": "1인칭 공간 퍼즐",
+      "editorialHooksKo": ["이 문 안의 다른 세상은 어떻게 그릴까?", "끝없이 보이는 포털의 비밀"],
+      "engine": {"name": "Source", "basis": "개발팀 기고에서 직접 명시"},
+      "supportedClaim": "원작 Portal은 포털 시점에 스텐실 버퍼를 사용하는 렌더링 방식을 구현했고, 포털 경계 기준 시야 절두체 컬링과 렌더 목록 최적화로 추가 렌더링 비용을 줄였다. 서로 보이는 포털의 재귀 깊이는 성능의 제한을 받는다.",
+      "sources": [
+        {
+          "url": "https://www.gamedeveloper.com/design/thinking-with-portals-creating-valve-s-new-ip",
+          "title": "Thinking With Portals: Creating Valve’s New IP",
+          "author": "Kim Swift; 원잡지판 공동 저자 Kim Swift, Erik Wolpaw, Jeep Barnett",
+          "type": "first-party-developer-postmortem-reprint",
+          "readStatus": "relevant-article-sections-reviewed",
+          "usedSection": "Porting Portals; LOD Runner",
+          "supports": "초기 카메라·모니터 시험 구현과 이후 별도 포털 시스템의 구분, 스텐실·재귀·추가 렌더링 최적화"
+        }
+      ],
+      "oneVariableDemo": {
+        "targetSeconds": 60,
+        "renderer": "Unity 3D; 포털 시점·마스크·재귀를 설명하는 편집 가능한 씬",
+        "controlledVariable": "허용하는 포털 재귀 깊이",
+        "heldConstant": "두 방·포털 위치·플레이어 시점·장면 조명",
+        "before": "포털 영역에 다음 시점만 보인다.",
+        "action": "설명용 재귀 깊이를 1단계에서 3단계로 늘린다.",
+        "result": "포털 안에 보이는 포털의 반복이 더 깊어진다.",
+        "reveal": "두 방의 위쪽 배치와 포털 영역 마스크를 같은 장면 옆에 공개한다.",
+        "implementationLabel": "우리 원리 재현; RenderTexture를 쓰는 단순화 시안은 원작의 최종 스텐실 구현과 구분"
+      },
+      "scopeLimits": [
+        "초기 CCTV형 시험 구현을 출시판의 전부라고 설명하지 않는다.",
+        "무한한 방을 실제로 무한 계산한다고 말하지 않는다.",
+        "원작 설명을 Portal 2·Portal with RTX와 동일한 구현이라고 확대하지 않는다."
+      ],
+      "accessLimits": ["공식 잡지 PDF는 크기로 웹 열람 실패했으나 동일 개발팀 기고의 정식 HTML 재수록 본문 확인"],
+      "productionReadiness": "핵심 근거 확보; 포털 재현 복잡도·독립 FHD 영상·중복 여부 확인 필요"
+    },
+    {
+      "id": "horizon-runtime-procedural-placement",
+      "status": "research-candidate-not-selected",
+      "game": "Horizon Zero Dawn",
+      "developer": "Guerrilla Games",
+      "genre": "오픈 월드 액션 RPG",
+      "editorialHooksKo": ["걸을 때마다 만들어지는 호라이즌의 숲", "게임 속 숲을 한 그루씩 심지 않는 방법"],
+      "engine": {"name": "Decima", "basis": "Guerrilla 기술팀의 DECIMA Visibility in Horizon Zero Dawn 발표 제목·본문"},
+      "supportedClaim": "아티스트가 그래프 편집기에서 배치 규칙을 정의하고 GPU 알고리즘이 플레이어 주변의 환경을 동적으로 조립한다. 공식 설명에는 바위·나무 외에도 소리·효과·야생동물·게임플레이 요소가 포함된다.",
+      "sources": [
+        {
+          "url": "https://www.guerrilla-games.com/read/gpu-based-procedural-placement-in-horizon-zero-dawn",
+          "title": "GPU-Based Procedural Placement in Horizon Zero Dawn",
+          "author": "Jaap van Muijden, Guerrilla Games",
+          "type": "first-party-gdc-2017-publication",
+          "readStatus": "official-publication-description-reviewed",
+          "supports": "GPU 실시간 배치·플레이어 주변 조립·아티스트 규칙 편집·환경 요소 범위"
+        },
+        {
+          "url": "https://www.guerrilla-games.com/media/News/Files/GCAP2017_DecimaVisibility.pdf",
+          "title": "DECIMA Visibility in Horizon Zero Dawn",
+          "author": "Will Vale, Second Intention / Guerrilla Tech Team",
+          "type": "first-party-technical-slides",
+          "readStatus": "engine-context-reviewed",
+          "supports": "게임·Decima 엔진 맥락"
+        }
+      ],
+      "oneVariableDemo": {
+        "targetSeconds": 45,
+        "renderer": "Unity 3D 자체 배치 시연",
+        "controlledVariable": "식생 배치 규칙에서 도로 제외 영역",
+        "heldConstant": "같은 지형·같은 시드·플레이어 경로·주변 생성 범위",
+        "before": "도로를 포함해 규칙에 따라 식생이 배치된다.",
+        "action": "도로 영역만 배치에서 제외한다.",
+        "result": "도로는 비고 주변 숲은 유지된다.",
+        "reveal": "밀도/제외 지도와 플레이어 주변 조립 범위를 위에서 공개한다.",
+        "implementationLabel": "아티스트 규칙 기반 원리 재현; 실제 Decima GPU 알고리즘·성능값을 재현했다고 주장하지 않는다."
+      },
+      "scopeLimits": [
+        "화면 밖에 아무것도 없거나 모든 맵이 무작위로 새로 생성된다는 뜻이 아니다.",
+        "AI가 나무를 만든다는 설명은 근거가 없다.",
+        "실제 개체 수·생성 거리·성능 향상 수치는 확인 전 사용하지 않는다."
+      ],
+      "accessLimits": ["GDC 배치 원 PDF 약239MB로 웹 열람 도구 제한. 이번 기록의 세부 주장 범위는 공식 출판 설명이며 상세 알고리즘은 제작 전 원 발표 검토 필요."],
+      "productionReadiness": "일반 원리 후보 확보; 세부 발표 추가 검토 필요"
+    },
+    {
+      "id": "inside-temporal-reprojection",
+      "status": "research-candidate-not-selected",
+      "game": "INSIDE",
+      "developer": "Playdead",
+      "genre": "횡스크롤 퍼즐 어드벤처",
+      "editorialHooksKo": ["화면을 일부러 흔들었더니 더 선명해졌다", "직전 화면을 다시 쓰면 그래픽이 선명해지는 이유"],
+      "engine": {"name": "Unity", "basis": "Playdead 공식 공개 구현이 Unity 5.0+용이며 INSIDE에서 사용한 솔루션이라고 명시"},
+      "supportedClaim": "시점을 미세하게 이동해 샘플 위치를 달리하고, 최근 프레임과 과거 프레임 정보를 재투영해 맞추어 누적한다. 움직임과 새로 드러난 영역에서는 과거 샘플을 적절히 거부해야 잔상을 줄일 수 있다.",
+      "sources": [
+        {
+          "url": "https://www.gdcvault.com/play/1022970/",
+          "title": "Temporal Reprojection Anti-Aliasing in INSIDE",
+          "author": "Lasse Jon Fuglsang Pedersen, Playdead",
+          "type": "official-gdc-2016-session",
+          "readStatus": "official-mechanism-summary-reviewed-not-full-talk-viewed",
+          "supports": "시점 지터·이력 재투영·시간 누적·샘플 수용/거부·잔상/가림 해제 문제"
+        },
+        {
+          "url": "https://github.com/playdeadgames/temporal",
+          "title": "Temporal Reprojection Anti-Aliasing for Unity 5.0+",
+          "type": "first-party-source-code",
+          "readStatus": "README-and-TemporalReprojection-code-reviewed",
+          "supports": "INSIDE 솔루션 공개 구현·Unity 대상·MIT 라이선스·움직이는 메시의 모션 벡터 태그"
+        }
+      ],
+      "oneVariableDemo": {
+        "targetSeconds": 60,
+        "renderer": "Unity 3D 비교 + Motion Canvas 샘플 점/이력 대응 설명",
+        "controlledVariable": "시간 이력 누적 활성화 여부",
+        "heldConstant": "같은 대각선 울타리·카메라 경로·해상도·조명",
+        "before": "얇은 선의 계단 현상과 반짝임",
+        "action": "서로 다른 서브픽셀 위치의 정보를 재투영·누적한다.",
+        "result": "안정된 정지 부분의 가장자리 표현이 더 매끄러워진다.",
+        "reveal": "샘플 점과 대응 위치를 크게 보여주고 움직이는 대상에서 과거 샘플을 버려야 하는 이유를 덧붙인다.",
+        "implementationLabel": "정식 용어 시간적 안티앨리어싱(Temporal Anti-Aliasing, TAA)·시간 재투영을 구분해 설명; 공개 코드 사용시 라이선스 기록"
+      },
+      "scopeLimits": [
+        "단순한 전체 프레임 평균이나 모션 블러와 같지 않다.",
+        "해상도를 완벽하게 복원하거나 지터만 주면 무조건 선명해진다고 말하지 않는다.",
+        "잔상·가림 해제 등 적용 한계를 숨기지 않는다."
+      ],
+      "accessLimits": ["전체 발표 시청은 아님; 공식 설명과 공개 코드 검토 범위"],
+      "productionReadiness": "근거·공개 구현 확보; 60초에서 설명 밀도 검토 필요"
+    },
+    {
+      "id": "a-short-hike-pixel-3d",
+      "status": "research-candidate-not-selected",
+      "game": "A Short Hike",
+      "developer": "Adam Robinson-Yu / Whippoorwill",
+      "genre": "소규모 오픈 월드 탐험",
+      "editorialHooksKo": ["이 도트 게임, 사실은 3D입니다", "픽셀을 줄였는데 숲이 더 풍성해 보이는 이유"],
+      "engine": {"name": "Unity", "basis": "Yarn Spinner 제작사의 해당 게임 실사용 사례에서 Unity용 Yarn Spinner를 명시"},
+      "supportedClaim": "제작자는 적은 픽셀로도 아름답고 읽기 쉬운 3D 세계를 만들려 했다. 평평하고 일관된 셰이딩·안티앨리어싱 제거·부드러운 윤곽선으로 오브젝트 구분을 돕고 픽셀 크기 설정을 제공했다.",
+      "sources": [
+        {
+          "url": "https://blog.playstation.com/2021/08/05/crafting-a-tiny-open-world-a-look-behind-the-scenes-at-the-creation-of-a-short-hike/",
+          "title": "Crafting a tiny open world: A look behind the scenes at the creation of A Short Hike",
+          "author": "Adam Robinson-Yu, developer",
+          "type": "first-party-developer-article",
+          "readStatus": "relevant-full-article-text-reviewed",
+          "supports": "3D 픽셀 미학·셰이딩·안티앨리어싱 제거·외곽선·픽셀 크기 설정"
+        },
+        {
+          "url": "https://www.gdcvault.com/play/1026613/",
+          "title": "Crafting A Tiny Open World: A Short Hike Postmortem",
+          "author": "Adam Robinson-Yu",
+          "type": "official-gdc-2020-session",
+          "readStatus": "session-summary-reviewed-not-full-talk-viewed",
+          "supports": "4개월 초기 제작 범위·시각 스타일·레벨 디자인을 다루는 포스트모템 맥락"
+        },
+        {
+          "url": "https://yarnspinner.dev/showcase/a-short-hike/",
+          "title": "A Short Hike is powered by Yarn Spinner",
+          "type": "middleware-vendor-first-party-adoption-record",
+          "readStatus": "showcase-text-reviewed",
+          "supports": "Unity용 Yarn Spinner 사용"
+        }
+      ],
+      "oneVariableDemo": {
+        "targetSeconds": 40,
+        "renderer": "Unity 3D 자체 숲·새 캐릭터 시연",
+        "controlledVariable": "저해상도 장면의 윤곽선 활성화",
+        "heldConstant": "같은 지오메트리·카메라·픽셀 해상도·배경색·위치",
+        "before": "픽셀화된 장면에서 캐릭터와 숲의 경계가 흐릿하다.",
+        "action": "설명을 돕는 윤곽선을 켠다.",
+        "result": "작은 픽셀 수를 유지하면서 캐릭터가 더 잘 구분된다.",
+        "reveal": "같은 장면의 3D 구조를 옆에서 공개한 후 플레이 화면으로 돌아온다.",
+        "implementationLabel": "RenderTexture·Point 필터 등은 우리 재현 방법이며 공식 기고가 해당 세부 설정을 직접 증명한다고 쓰지 않는다."
+      },
+      "scopeLimits": [
+        "2D 도트 그림을 3D처럼 속인 사례로 설명하지 않는다.",
+        "픽셀을 줄이면 언제나 더 좋아진다는 주장이 아니다.",
+        "플레이어 추종 바다 평면은 별도 원개발자 게시물 직접 접근이 막혀 이 후보의 확정 주장에 포함하지 않는다."
+      ],
+      "accessLimits": ["바다 평면 별도 X 게시물 https://twitter.com/adamgryu/status/1112783007566450691 은403. 보존 인용만 확보하여 확정 주장에 미사용."],
+      "productionReadiness": "공식 시각 스타일 근거 확보; 기존 채널 도트·렌더링 주제 중복 검토 필요"
+    },
+    {
+      "id": "ellie-stealth-detection-exemption",
+      "status": "research-candidate-not-selected",
+      "game": "The Last of Us (원작 개발 사례)",
+      "developer": "Naughty Dog",
+      "genre": "서바이벌 잠입 액션",
+      "editorialHooksKo": ["눈앞에서 뛰어다니는데 왜 안 들키지?", "엘리가 숨어 다닐 때 적이 못 보는 이유"],
+      "engine": {"name": null, "basis": "이 후보에서 엔진 이름·버전을 별도 검증하지 않았다."},
+      "supportedClaim": "플레이어가 잠입 중이면 동료가 적 NPC에게 보이지 않도록 했다. 동료의 실수 한 번으로 플레이어 위치가 노출되어 동료와의 유대가 깨지는 문제를 피하기 위한 결정이다. 이미 전투 중인 상황까지 언제나 탐지 면제라는 뜻은 아니다.",
+      "sources": [
+        {
+          "url": "https://www.gdcvault.com/play/1020364/",
+          "title": "Ellie: Buddy AI in The Last of Us",
+          "author": "Max Dyckhoff, Naughty Dog",
+          "type": "official-gdc-2014-session",
+          "readStatus": "session-context-reviewed-not-full-talk-viewed",
+          "supports": "발표자·게임·동료 AI 개발 맥락"
+        },
+        {
+          "url": "https://www.gameaipro.com/GameAIPro2/GameAIPro2_Chapter35_Ellie_Buddy_AI_in_The_Last_of_Us.pdf",
+          "title": "Ellie: Buddy AI in The Last of Us — Game AI Pro 2 Chapter 35",
+          "author": "Max Dyckhoff",
+          "type": "first-party-developer-technical-chapter",
+          "readStatus": "relevant-pdf-text-reviewed",
+          "usedSection": "35.6.3 Cheating",
+          "printedPage": 440,
+          "pdfPageOneBased": 10,
+          "supports": "잠입 중 동료 탐지 예외·보이는 곳을 뛰어갈 수 있는 부작용·유대 관계를 위한 이유"
+        }
+      ],
+      "oneVariableDemo": {
+        "targetSeconds": 45,
+        "renderer": "Unity 3D 두 캐릭터·적 시야 원리 시연",
+        "controlledVariable": "플레이어 잠입 시 동료의 탐지 대상 등록 예외",
+        "heldConstant": "같은 동료 경로·적 시야·시점·플레이어 은신 위치",
+        "before": "동료가 적 시야를 지나가 경보가 발생한다.",
+        "action": "동료 탐지 예외만 켠다.",
+        "result": "플레이어가 잠입 중인 같은 상황에서 동료 이동으로 경보가 발생하지 않는다.",
+        "reveal": "시야에 들어옴→탐지 대상 검사→경보 단계를 분리해 설명한다.",
+        "implementationLabel": "우리 탐지 예외 시연; 실제 상용 디버그 화면·측정 시야 값 아님"
+      },
+      "scopeLimits": [
+        "엘리가 실제 화면에서 투명하게 렌더링된다는 뜻이 아니다.",
+        "동료가 전투 중에도 항상 무적·탐지 불가라고 설명하지 않는다.",
+        "원작 개발 자료를 리메이크·Part II의 모든 상황에 확대하지 않는다."
+      ],
+      "accessLimits": ["공개 기술 챕터의 해당 절 본문 확인이며 전체 강연 시청은 아니다."],
+      "productionReadiness": "주장 근거 확보; 피격 편과 관대한 규칙이라는 인접 주제이므로 연속 편성 중복감 검토"
+    },
+    {
+      "id": "left4dead-adaptive-pacing",
+      "status": "research-candidate-not-selected",
+      "game": "Left 4 Dead",
+      "developer": "Valve",
+      "genre": "협동 좀비 FPS",
+      "editorialHooksKo": ["좀비가 갑자기 조용해진 건 우연이 아닙니다", "게임이 당신에게 쉬는 시간을 주는 방법"],
+      "engine": {"name": null, "basis": "이 후보의 메커니즘 근거와 별도로 엔진 명칭을 검증하지 않아 엔진 표기는 보류"},
+      "supportedClaim": "AI Director는 피해·무력화·근처 감염자 사망 등 사건으로 각 생존자의 강도를 추정하고 네 명 중 최대값을 사용해 위협의 파도와 휴식 구간을 조정한다. 이 발표는 난이도 진폭보다 전투 발생 간격을 조절하는 페이싱이라고 구분한다.",
+      "sources": [
+        {
+          "url": "https://cdn.akamai.steamstatic.com/apps/valve/2009/ai_systems_of_l4d_mike_booth.pdf",
+          "title": "The AI Systems of Left 4 Dead",
+          "author": "Michael Booth, Valve",
+          "type": "first-party-developer-technical-presentation",
+          "readStatus": "relevant-pdf-text-reviewed",
+          "eventContext": "AIIDE 2009 자료. GDC와 동일한 특정 세션이라고 단정하지 않는다.",
+          "pagesOneBased": [78, 79, 80, 81, 82, 92],
+          "supports": "강도 추정 사건·팀 최대값·Build Up/Sustain Peak/Peak Fade/Relax·페이싱과 난이도 구분"
+        }
+      ],
+      "oneVariableDemo": {
+        "targetSeconds": 60,
+        "renderer": "Unity 2D 또는3D 같은 경로 시연 + Motion Canvas 강도·상태 라벨",
+        "controlledVariable": "적 생성 사이 휴식 구간을 조절하는 페이싱 활성화",
+        "heldConstant": "경로·시드·플레이어 장비·적 개별 체력·공격력·이동 속도",
+        "before": "일정 간격 전투가 계속되어 쉴 틈이 없다.",
+        "action": "동일한 전투 사건에서 추정 강도가 높아지면 새로운 큰 위협의 생성을 잠시 줄인다.",
+        "result": "현재 전투가 끝난 뒤 조용한 구간이 생기고 다음 파도가 온다.",
+        "reveal": "강도 상승→정점 유지→현재 전투 해소→휴식→다음 파도를 화면과 상태 라벨로 연결한다.",
+        "implementationLabel": "설명용 축약 시간은 축약임을 표시. 실제 발표의 정점 유지3–5초·휴식30–45초 또는 이동 거리 조건과 혼동하지 않는다."
+      },
+      "scopeLimits": [
+        "심박수나 실제 감정을 센서로 읽는다는 뜻이 아니다.",
+        "현재 존재하는 적을 모두 삭제하거나 기존 특수 감염자가 절대 공격하지 않는다는 뜻이 아니다.",
+        "보스 조우는 이 적응형 페이싱의 예외로 발표에 명시된다.",
+        "모든 후속작·모드의 현재 수치를2009년 발표와 동일하다고 단정하지 않는다.",
+        "어려워하면 적 체력·공격력을 무조건 낮춘다는 다른 주장과 섞지 않는다."
+      ],
+      "accessLimits": ["공식 기술 발표 PDF 확인이며 전체 강연 시청·실행 파일 내부 실측은 아니다."],
+      "productionReadiness": "핵심 근거 확보; 60초 범위에서 상태 수를 이해 가능하게 줄이는 설계 필요"
+    }
+  ]
+}
