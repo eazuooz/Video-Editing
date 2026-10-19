@@ -1,11 +1,7 @@
-# M04 Nintendo revision audio
+# M04 game sound correction
 
-No added background music. Narration receives constant scene and global gains; only the quiet native game mix is ducked. The original mixed gameplay track retains its own sounds; effects-only isolation is not claimed.
+Only separately added BGM is disabled. Standard game-sound target-23LUFS and ordinary speech-driven ducking restored. Narration PCM and compressed video streams are identical to v3. The Mario Kart capture is silent from its original source; other games retain their synchronous original mixed sound.
 
-Current complete source/encoded ASR reviews: projects/game-math-euler-axis-angle/production/revision-v3/final-audio-review.json
+Current measurements and direct encoded ASR review: production/revision-v4/audio-review.json. Full pair integrity: production/local/revision-v4/qa/integrity.json.
 
-Local source → stem → encoded speech levels and joins: projects/game-math-euler-axis-angle/production/local/revision-v3/qa/audio-continuity.json
-
-Exact processing and hashes: projects/game-math-euler-axis-angle/production/local/revision-v3/audio-build.json
-
-Human whole listening and pronunciation remain pending the complete Drive review.
+Human whole listening and subjective pronunciation remain pending.

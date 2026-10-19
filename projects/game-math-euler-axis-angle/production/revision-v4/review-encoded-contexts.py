@@ -12,7 +12,7 @@ if (D/'results.json').exists() and guard.read(D/'results.json').get('status')=='
 source=O/'encoded-audio.wav';digest=guard.sha_file(source)
 assert digest==guard.read(O/'final-mix-asr.json')['audioSha256']
 ranges=[('07-vector',410,429.45),('14-tail',814.8,824.5),('17-landing-overlap',958,984.4),('17-negation',986.5,998.6),('20-vector-length',1195.8,1217),('24-units',1399.12,1425),('24-overlap',1436,1457.65),('25-wrap',1466,1480.03)]
-if '--clarity' in sys.argv:ranges=[r for r in ranges if r[0].startswith(('20-','24-','25-'))]
+if '--clarity' in sys.argv:ranges=[r for r in ranges if r[0].startswith(('20-','24-','25-'))]+[('26-overlap',1519,1541.6)]
 audio,rate=sf.read(source,dtype='float32');assert rate==16000
 report={'status':'running','audioSha256':digest,'ranges':[],'expectedPromptUsed':False,'purpose':'Only ambiguities in successful complete encoded-mix recognition; no whole-video repeat','humanListening':'pending'}
 with guard.parent_lease('cuda:0'):

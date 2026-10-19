@@ -50,7 +50,7 @@ checkpoint = read(P / 'production/checkpoint.json')
 pair = read(O / 'pair-source.json')
 checkpoint.update(updatedAt=now, stage=stage, runningJob=None,
     nextAction='Wait for user review of the exact complete Drive version; no YouTube or next video.',
-    lastCompletedCommit='5ec3f95cf4b217e0afcd26093388ff78c8b72ceb')
+    lastCompletedCommit='cfeb5c00e81ca9f753aeac51dbb36ec2b91d0100')
 checkpoint['currentMaster'].update(outputs=pair['outputs'], status='complete; current integrity and changed visual checks recorded')
 checkpoint['annotationSourceReview'] = '25 source-timed guide windows; current final captions and moving native/mobile output reviewed;14-turn clears before jump'
 checkpoint['preparedActualScenes'] = ['02','05','08','11','14','17','20','23']
