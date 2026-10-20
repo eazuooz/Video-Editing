@@ -1,0 +1,12 @@
+"""One justified ambiguous complete context, without expected-text prompting."""
+from pathlib import Path
+import os,json,hashlib,subprocess,time
+R=Path(__file__).resolve().parents[3];P=Path(__file__).resolve().parents[1];L=P/'production/local';V=L/'voice/one-action-v1.wav';O=L/'asr-context-world.json'
+assert not O.exists(),'Reuse existing one-time context evidence'
+c=json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf8'));assert c.get('selectedShortVideo')==P.name and c['shortsDirectSelection']['selectedRevision']=='one-action-v1'
+BIN=Path('C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin');os.environ['PATH']=str(BIN)+os.pathsep+os.environ['PATH'];os.environ['HF_HUB_OFFLINE']='1';os.environ['TRANSFORMERS_OFFLINE']='1';os.environ['OMP_NUM_THREADS']='3';os.environ['MKL_NUM_THREADS']='3'
+clip=L/'asr-context-world-6.70-12.55.wav'
+if not clip.exists():subprocess.run([str(BIN/'ffmpeg.exe'),'-v','error','-n','-ss','6.70','-i',str(V),'-t','5.85','-ar','16000','-ac','1','-c:a','pcm_s16le',str(clip)],check=True)
+import torch
+from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
+torch.set_num_threads(3);torch.set_num_interop_threads(1);dedicated=R/'qwen3-tts/models/whisper-large-v3-turbo';model_id=str(dedicated) if (dedicated/'config.json').exists() else 'openai/whisper-large-v3-turbo';t=time.monotonic();model=AutoModelForSpeechSeq2Seq.from_pretrained(model_id,dtype=torch.float32,attn_implementation='eager',local_files_only=True).to('cpu');processor=AutoProcessor.from_pretrained(model_id,local_files_only=True);p=pipeline('automatic-speech-recognition',model=model,tokenizer=processor.tokenizer,feature_extractor=processor.feature_extractor,dtype=torch.float32,device='cpu');result=p(str(clip),generate_kwargs={'language':'korean','task':'transcribe','num_beams':3},return_timestamps='word');report=dict(voiceSha256=hashlib.sha256(V.read_bytes()).hexdigest(),sourceRange=[6.7,12.55],reason='Whole ASR rendered supplied 세계가 as homophonic3개가; one independent complete two-sentence context only',expectedTextPromptUsed=False,fullAsrRepeated=False,rawRecognitionUnmodified=True,device='cpu',cpuThreads=3,decoding='beam3 vs originalgreedy',text=result['text'],chunks=result['chunks'],elapsedSeconds=time.monotonic()-t,humanListening='pending');O.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8');print(json.dumps(report,ensure_ascii=False))
