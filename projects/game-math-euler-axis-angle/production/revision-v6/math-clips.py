@@ -31,7 +31,7 @@ class FiniteMathBeat(Scene):
    if kind=='code':
     marker=SurroundingRectangle(group[0],color=GOLD,buff=.08,stroke_width=2);self.play(Create(marker),run_time=.35)
     for m in group[1:]:self.play(Transform(marker,SurroundingRectangle(m,color=GOLD,buff=.08,stroke_width=2)),run_time=.4);self.wait(.8)
-    notes=VGroup(*[tx(t,30,MUTED,width=11.5) for t in d.get('notes',[])]).arrange(DOWN,aligned_edge=LEFT,buff=.12).move_to([-5.7,-1.35,0],aligned_edge=UL)
+    notes=VGroup(*[tx(t,28,MUTED,width=11.5) for t in d.get('notes',[])]).arrange(DOWN,aligned_edge=LEFT,buff=.12).move_to([-5.7,-.65 if len(rows)==2 else -1.35,0],aligned_edge=UL)
     for m in notes:self.play(FadeIn(m),run_time=.25);self.wait(.7)
    elif kind=='ranges':
     self.add(tx('해설용 대표 범위 · 끝점 포함 여부에 주의',29,MUTED).move_to([0,-1.83,0]))
@@ -39,7 +39,10 @@ class FiniteMathBeat(Scene):
   elif kind=='flow':
    boxes=VGroup();labels=VGroup()
    for i,s in enumerate(rows):
-    x=-4.1+i*4.1;box=Rectangle(width=3.55,height=1.55,stroke_color=TEAL if i==1 else RULE,stroke_width=3,fill_color=PANEL,fill_opacity=.6).move_to([x,0,0]);lab=tx(s,39,width=3.05).move_to(box)
+    x=-4.1+i*4.1;box=Rectangle(width=3.55,height=1.55,stroke_color=TEAL if i==1 else RULE,stroke_width=3,fill_color=PANEL,fill_opacity=.6).move_to([x,0,0])
+    if '\n' in s:
+     head,detail=s.split('\n',1);lab=VGroup(tx(head,39,width=3.05),tx(detail,30,MUTED,width=3.05)).arrange(DOWN,buff=.16).move_to(box)
+    else:lab=tx(s,39,width=3.05).move_to(box)
     self.play(FadeIn(box),FadeIn(lab),run_time=.4);boxes.add(box);labels.add(lab)
     if i:
      arrow=Arrow(boxes[i-1].get_right(),box.get_left(),buff=.08,color=GOLD,stroke_width=5,max_tip_length_to_length_ratio=.22);self.play(GrowArrow(arrow),run_time=.65)
@@ -51,15 +54,15 @@ class FiniteMathBeat(Scene):
     grid=VGroup(*[Square(side_length=.48,stroke_width=1.5,stroke_color=RULE) for _ in range(9)]).arrange_in_grid(rows=3,cols=3,buff=.06).move_to([-.5,.4,0]);self.play(Create(grid),run_time=.6)
     self.play(GrowArrow(Arrow(inp.get_right(),grid.get_left(),buff=.08,color=GOLD)),run_time=.6)
     self.add(tx('1 × 3',31,MUTED).next_to(inp,DOWN),tx('3 × 3',31,MUTED).next_to(grid,DOWN))
-    for i,s in enumerate(rows):self.play(FadeIn(tx(s,39,width=6).move_to([3.4,1.0-i*.78,0])),run_time=.45);self.wait(1.2)
+    for i,s in enumerate(rows):self.play(FadeIn(tx(s,38,width=5.2).move_to([.55,1.15-i*.73,0],aligned_edge=LEFT)),run_time=.45);self.wait(1.2)
    else:
     square=Square(side_length=1.6,color=TEAL,stroke_width=5).move_to([-3.7,.1,0]);self.add(square)
     self.play(square.animate.stretch(1.8,0),run_time=1.6);self.add(tx('길이 변함 → 순수 회전 아님',30,ORANGE,width=4.4).move_to([-3.7,-1.2,0]))
-    g=rowgroup(rows,size=38,width=7.0).move_to([2.4,.0,0]);
+    g=rowgroup(rows,size=36,width=6.6).move_to([-.6,.0,0],aligned_edge=LEFT);
     for m in g:self.play(FadeIn(m),run_time=.4);self.wait(1.0)
   elif kind=='circle':
    c=np.array([-3.7,-.15,0]);rad=1.55;circle=Circle(radius=rad,color=RULE,stroke_width=3).move_to(c);self.add(circle)
-   self.add(tx('+Z',29,MUTED).move_to(c+np.array([-.45,1.58,0])),tx('+X',29,MUTED).move_to(c+RIGHT*1.88),tx('+Y 쪽 → 원점',25,MUTED).move_to(c+DOWN*1.9))
+   self.add(tx('+Z',29,MUTED).move_to(c+np.array([-.45,.95,0])),tx('+X',29,MUTED).move_to(c+RIGHT*1.88),tx('+Y 쪽 → 원점',25,MUTED).move_to(c+DOWN*1.9))
    angle=d['startAngle'];delta=d['delta']*d.get('progress',1);a=(90-angle)*DEGREES
    needle=Arrow(c,c+rad*np.array([math.cos(a),math.sin(a),0]),buff=0,color=TEAL,stroke_width=6);self.add(needle)
    self.add(DashedVMobject(Line(c,needle.get_end(),color=TEAL,stroke_width=3),num_dashes=12),Dot(needle.get_end(),color=TEAL,radius=.06))
@@ -67,12 +70,12 @@ class FiniteMathBeat(Scene):
    trace=Arc(radius=rad*1.06,start_angle=a,angle=-delta*DEGREES,color=GOLD,stroke_width=5).move_arc_center_to(c)
    duration=max(2.6,min(8,abs(delta)/90))
    self.play(Rotate(needle,angle=-delta*DEGREES,about_point=c),Create(trace),run_time=duration,rate_func=linear)
-   g=rowgroup(rows,size=38,width=7.2).move_to([2.7,.2,0])
+   g=rowgroup(rows,size=37,width=6.6).move_to([-.55,.2,0],aligned_edge=LEFT)
    for m in g:self.play(FadeIn(m),run_time=.4);self.wait(.9)
   elif kind in ['floor','quantize']:
    if kind=='floor':
     axis=NumberLine(x_range=[-1.4,.5,.5],length=9,include_numbers=False,color=RULE).move_to([0,.5,0]);self.add(axis)
-    for val,label in [(-1,'−1'),(-.1,'−0.1'),(0,'0')]:self.add(tx(label,38,TEAL if val==-.1 else INK).next_to(axis.n2p(val),DOWN,buff=.22))
+    for val,label in [(-1,'−1'),(-.1,'−0.1'),(0,'0')]:self.add(tx(label,38,TEAL if val==-.1 else INK).next_to(axis.n2p(val),UP if val==-.1 else DOWN,buff=.22))
     dot=Dot(axis.n2p(-.1),color=TEAL,radius=.09);self.add(dot);self.play(dot.animate.move_to(axis.n2p(-1)),run_time=1.8)
     self.add(rowgroup(rows,size=40).move_to([0,-1.05,0]))
    else:
@@ -95,15 +98,15 @@ class FiniteMathBeat(Scene):
   elif kind=='sine':
    axes=Axes(x_range=[0,90,30],y_range=[0,1,.5],x_length=5.2,y_length=2.6,axis_config={'color':RULE,'include_tip':False}).move_to([-3.2,-.0,0]);self.add(axes)
    curve=axes.plot(lambda a:math.sin(math.radians(a)),x_range=[0,90],color=TEAL);self.play(Create(curve),run_time=2)
-   self.add(tx('θ: 0° → 90°',29,MUTED).next_to(axes,DOWN,buff=.12),tx('sin θ',29,MUTED).next_to(axes,UP,buff=.15))
+   self.add(tx('θ: 0° → 90°',29,MUTED).next_to(axes,DOWN,buff=.12),tx('sin θ',29,MUTED).move_to([-5.1,1.03,0]))
    for a in [20,80]:self.add(Dot(axes.c2p(a,math.sin(a*DEGREES)),color=ORANGE))
-   g=rowgroup(rows,size=36,width=6).move_to([3.2,.1,0]);
+   g=rowgroup(rows,size=34,width=5.5).move_to([.4,.0,0],aligned_edge=LEFT);
    for m in g:self.play(FadeIn(m),run_time=.4);self.wait(1)
   elif kind=='local':
    dots=VGroup(*[Dot(np.array([math.cos(a),math.sin(a),0])*1.55+LEFT*3.5,color=RULE,radius=.06) for a in np.linspace(0,TAU,32,endpoint=False)])
    self.add(dots);self.play(VGroup(*dots[:5]).animate.set_color(TEAL).scale(1.6),run_time=1.2)
    self.add(tx('표현 범위의 비유',27,MUTED).move_to([-3.5,-1.9,0]))
-   g=rowgroup(rows,size=37,width=7).move_to([2.5,.2,0]);
+   g=rowgroup(rows,size=36,width=6.5).move_to([-.5,.2,0],aligned_edge=LEFT);
    for m in g:self.play(FadeIn(m),run_time=.45);self.wait(1)
   else:raise ValueError(kind)
   self.wait(.4)

@@ -1,4 +1,4 @@
-"""CPU-only raw line timing and safe106-beat seam candidates; never edit PCM.
+"""CPU raw line timing and safe106-beat+explicit auxiliary seams; never edit PCM.
 
 Run after the one current source-ASR batch. Unmatched/unsafe seams stay pending;
 the edit timeline must not invent a timing or cut a word to fit a planned hold.
@@ -32,6 +32,7 @@ def quiet_seam(samples,rate,low,high):
 def main():
  assert read(R/'shared/publishing/video-production-control.json')['selectedVideo']==P.name
  plan=read(H/'voice-plan.json');script=read(P/'script/revision-v6-article-flow/narration.ko.json');input_script=read(H/'voice-input.ko.json')
+ extra_file=H/'voice-extra-visuals.json';extra=read(extra_file)['visuals'] if extra_file.exists() else []
  assert sha(P/'script/revision-v6-article-flow/narration.ko.json')==plan['inputs']['koSha256'],'Current script changed; refresh CPU voice preparation without replacing PCM'
  # Install only existing math text normalization; the historical batch's main
  # never executes and no generic alignment/source/ASR script is modified.
@@ -48,16 +49,19 @@ def main():
   cursor=0;lines=[]
   for number,line in enumerate(spoken['lines'],1):
    length=len(normalize(line));assert length
-   lines.append(dict(line=number,rawStart=float(starts[cursor]),rawEnd=float(ends[cursor+length-1])))
+   lines.append(dict(line=number,rawStart=float(starts[cursor]),rawEnd=float(ends[cursor+length-1]),
+    normalizedSpokenText=normalize(line),characterStarts=[float(x) for x in starts[cursor:cursor+length]],characterEnds=[float(x) for x in ends[cursor:cursor+length]]))
    cursor+=length
+  assert cursor==len(starts)==len(ends),'Paragraph normalization must preserve the full continuous input'
   words=[];actual=''
   for w in cached['words']:
    text=normalize(w['text']);a,b=w['timestamp']
    if not text:continue
    begin=len(actual);actual+=text
    words.append(dict(beginChar=begin,endChar=len(actual),start=a,end=b,text=w['text']))
-  beat_rows=[]
-  for beat in planned['beats']:
+  beat_rows=[];auxiliary_rows=[]
+  extra_for_scene=[b for b in extra if b['sceneId']==sid]
+  for beat in [*planned['beats'],*extra_for_scene]:
    number=beat['seamAfterLine'];expected_end=normalize(spoken['lines'][number-1])[-12:]
    next_prefix=normalize(spoken['lines'][number])[:8] if number<len(lines) else ''
    candidates=[]
@@ -78,12 +82,12 @@ def main():
     row['existingQuietSeconds']=high-low
     budget=beat['plannedObservationBudgetSeconds'];row['plannedAdditionalPauseSeconds']=None if budget is None else max(0,budget-(high-low))
    else:pending.append(dict(scene=sid,beat=beat['id'],afterLine=number,reason='Do not invent a gap or split a word. Inspect complete context/word timestamps/waveform.'))
-   beat_rows.append(row)
+   (auxiliary_rows if beat in extra_for_scene else beat_rows).append(row)
   scenes.append(dict(id=sid,wav=wav.relative_to(R).as_posix(),wavSha256=cached['audio_sha256'],asrSha256=sha(O/'asr'/f'{sid}.json'),sampleRate=rate,samples=len(mono),seconds=duration,
-   rawOrigin=0,lineStarts=[x['rawStart'] for x in lines],lines=lines,matchingCharacterCoverage=coverage,beats=beat_rows))
+   rawOrigin=0,lineStarts=[x['rawStart'] for x in lines],lines=lines,matchingCharacterCoverage=coverage,beats=beat_rows,auxiliaryVisuals=auxiliary_rows))
  report=dict(schemaVersion=1,revision='article-flow-v6',scope='Raw source PCM line timing and word-safe quiet seam candidates only. No PCM or final timeline modification.',
-  inputs=dict(voicePlanSha256=sha(H/'voice-plan.json'),koSha256=sha(P/'script/revision-v6-article-flow/narration.ko.json')),
-  scenes=scenes,sceneCount=len(scenes),lineCount=sum(len(x['lines']) for x in scenes),beatCount=sum(len(x['beats']) for x in scenes),pendingSeams=pending,
+  inputs=dict(voicePlanSha256=sha(H/'voice-plan.json'),koSha256=sha(P/'script/revision-v6-article-flow/narration.ko.json'),extraVisualsSha256=sha(extra_file) if extra_file.exists() else None),
+  scenes=scenes,sceneCount=len(scenes),lineCount=sum(len(x['lines']) for x in scenes),beatCount=sum(len(x['beats']) for x in scenes),auxiliaryVisualCount=sum(len(x['auxiliaryVisuals']) for x in scenes),pendingSeams=pending,
   status='pending-seam-review' if pending else 'measured-candidates-ready-for-edit-placement',humanWholeListening='pending')
  save(O/'voice-alignment.json',report);print('Raw timing prepared;',len(pending),'seams pending explicit contextual review; original PCM unchanged.')
 if __name__=='__main__':main()

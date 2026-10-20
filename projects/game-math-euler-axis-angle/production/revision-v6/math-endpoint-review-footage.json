@@ -1,0 +1,2371 @@
+{
+  "schemaVersion": 1,
+  "revision": "v6",
+  "stage": "pre-compositor source finite-math QA, before root layout-repair batch",
+  "selectedProject": "game-math-euler-axis-angle",
+  "reviewer": "math_footage",
+  "source": {
+    "outputsFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/outputs.json",
+    "outputsSha256": "eccd04d0e22faef584d956842c0da3ac4abcfb3427c95666cc7a5076f2fd6154",
+    "preservedSnapshot": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/outputs-before-layout-repair.json",
+    "snapshotSha256": "eccd04d0e22faef584d956842c0da3ac4abcfb3427c95666cc7a5076f2fd6154",
+    "note": "Source paths are mutable renderer outputs. The reviewer observed the root layout-repair batch beginning afterward; this report is bound to the preserved pre-repair source and QA artifact hashes, not an approval of later replacement files."
+  },
+  "scope": {
+    "finiteBeats": 54,
+    "nativeLastFramesIndividuallyOpened": 54,
+    "firstAndLastMobileEndpointsOpened": 108,
+    "mobileWidth": 375,
+    "mobileRasterHeight": 211,
+    "mobileBoardsOpened": 9,
+    "motionTypesCovered": 17,
+    "motionSampleClips": 20,
+    "temporalSamplesOpened": 100,
+    "temporalSampling": "0%,25%,50%,75%,last frame; each5-frame board opened directly",
+    "realTimePlayback": false,
+    "wholeMotionFrameReview": false,
+    "audioListened": false,
+    "finalCaptionsPresent": false,
+    "finalUnityBackgroundPresent": false
+  },
+  "status": "changes requested; changed source assets and final composed output require recheck",
+  "findings": [
+    {
+      "id": "math-qa-01",
+      "priority": "high",
+      "beats": [
+        "v6-14.B03"
+      ],
+      "category": "right-column clipping",
+      "observed": "The final intrinsic/fixed-axis equivalence line reaches beyond the right panel and image edge; its final h is cut.",
+      "suggestion": "Left-align the right calculation column inside the panel; split the long equivalence into two lines without losing order."
+    },
+    {
+      "id": "math-qa-02",
+      "priority": "high",
+      "beats": [
+        "v6-16.B03"
+      ],
+      "category": "clipping and overlap",
+      "observed": "The long right-side sine/explanation lines exceed the panel and image right edge. The sin theta label sits against/under the title.",
+      "suggestion": "Use short line breaks in a bounded left-aligned right column and place the sine label inside the graph below the heading."
+    },
+    {
+      "id": "math-qa-03",
+      "priority": "high",
+      "beats": [
+        "v6-25.B01"
+      ],
+      "category": "numeric-label collision",
+      "observed": "The -0.1 and 0 number-line labels overlap, visually reading as -0.0. Visible during the dot motion and in the last state.",
+      "suggestion": "Put -0.1 above the number line, 0 below it; preserve the actual positions."
+    },
+    {
+      "id": "math-qa-04",
+      "priority": "medium",
+      "beats": [
+        "v6-26.B04"
+      ],
+      "category": "panel and caption clearance",
+      "observed": "The third note extends below the panel bottom near y900. The fixed caption is not present in these source images, so caption clearance cannot be passed.",
+      "suggestion": "Move the note block upward and compact its vertical spacing while preserving each statement."
+    },
+    {
+      "id": "math-qa-05",
+      "priority": "medium",
+      "beats": [
+        "v6-23.B01",
+        "v6-23.B02",
+        "v6-24.B03"
+      ],
+      "category": "right-column margin",
+      "observed": "Long circle-side rows extend beyond the panel boundary or nearly to the frame edge; some final glyphs are too close to the boundary at375px. Across circle scenes the +Z label also crosses the circle/yellow arc.",
+      "suggestion": "Bound the right text column and wrap long clauses; offset +Z above/left of the actual circle stroke. Keep +X-right/+Z-up and the view from +Y convention."
+    },
+    {
+      "id": "math-qa-06",
+      "priority": "medium",
+      "beats": [
+        "v6-21.B03",
+        "v6-32.B01",
+        "v6-34.B03"
+      ],
+      "category": "mobile readability",
+      "observed": "The long flow-box labels shrink to approximately5-8px at375px-wide output, especially the third box.",
+      "suggestion": "Use two lines in each fixed box with a short stage title and optional second line; do not shrink an entire long clause to one line."
+    },
+    {
+      "id": "math-qa-07",
+      "priority": "high",
+      "beats": [
+        "v6-31.B01"
+      ],
+      "category": "diagram-to-formula mismatch",
+      "observed": "The shown basis has X=(1,0),Y=(0,1),Z=(-.65,-.35) in screen projection, but the drawn(1,2,2) vector points upper-right. The actual projected sum is(-.3,1.3), upper-left. The Z label is teal rather than the established blue axis token.",
+      "suggestion": "Project the actual stated vector using the shown basis, then scale it by1/3 without changing direction. Use the established blue Z token. Do not assert a3D length from a2D screen length."
+    },
+    {
+      "id": "math-qa-08",
+      "priority": "medium",
+      "beats": [
+        "v6-40.B02"
+      ],
+      "category": "unlabeled vector meaning",
+      "observed": "The two arrows have no omega1/omega2 labels and different application positions. They can be read as force/translation arrows rather than the two instantaneous angular-velocity terms.",
+      "suggestion": "Name the two terms and explicitly bind them to angular velocity in a common reference frame. Preserve the same-object/same-instant condition; avoid presenting unrelated moving objects as an additive angular-velocity example."
+    },
+    {
+      "id": "math-qa-09",
+      "priority": "advisory",
+      "beats": [
+        "v6-12.B03",
+        "v6-17.B02",
+        "v6-28.B01",
+        "v6-39.B01"
+      ],
+      "category": "tight margins and dense formula",
+      "observed": "Text is inside the frame but some right-side lines and the39.B01 norm expansion have little spare width or become dense at375px. No additional formula arithmetic error was found.",
+      "suggestion": "Include these in the common panel-boundary/mobile recheck. Prefer a useful line break over global font shrinking."
+    }
+  ],
+  "mathReview": {
+    "rowVectorProduct": "R=Rz(b)Rx(p)Ry(h) agrees with the stated row-vector/body Y-X-Z convention",
+    "gimbalBoundary": "At p=+90 use h-b; at p=-90 use h+b; the displayed numeric30,90,10 to20,90,0 example agrees",
+    "canonicalRanges": "h,b in(-180,180],p in[-90,90],boundary representative rule not presented as a cure for gimbal lock",
+    "interpolationExamples": "10 to30,t.5=20;720 to45 raw-675 vs canonical+45;-170 to+170 raw+340 vs short-20 and midpoint-180 equivalent+180 all consistent",
+    "floorAndRadians": "floor(-.1)=-1, floor wrap produces[-180,180), endpoint maps-180 to+180;1rad s=r and180deg=pi rad correct",
+    "code": "std::remainder nearest integer multiple/ties even and -pi boundary correction are consistent; no complete float-extreme robustness claim",
+    "axisAngleVector": "e=(0,pi/2,0),norm pi/2 and n=(0,1,0);zero vector avoids division;unit-axis diagram defect noted separately",
+    "normAddition": "norm((pi/2,pi/2,0))=pi/sqrt2 approximately127.28deg correct, labeled as component sum rather than actual composition",
+    "questionReveal": "Both final question clips keep answers hidden in all sampled states",
+    "referenceCreatorFraming": "No Sakurai,reference-creator,source-URL or tool-credit framing seen in any reviewed math image"
+  },
+  "endpointReviews": {
+    "v6-03.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-03.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-03.B01/first.png",
+          "sourceSha256": "b40306d3d040db767d3e6708159abbe0e3b598d99a3584d2cfcce2fd02a5beec",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-03.B01-firstFrame-375.png",
+          "mobileSha256": "fa2d071275238fa5e223e8a9c882de2a967e8d310ce11db180af9cf85c37024b"
+        },
+        {
+          "id": "v6-03.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-03.B01/last.png",
+          "sourceSha256": "9e62d0b1c3b7f6982e7a75c226c488d8d80d3132bd12c98a14333e8f18c8e608",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-03.B01-lastFrame-375.png",
+          "mobileSha256": "a801def7c71a53bda29df4ae745c1ccd0bd01e1a44b3b2c30d325d6c9efd5fb3"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-09.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-09.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-09.B01/first.png",
+          "sourceSha256": "96945376b31fb5c1ddfb18ac0c341928bb9d155797ac2031b2f4797326c18815",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-09.B01-firstFrame-375.png",
+          "mobileSha256": "948c77bf9022c827cd7e31f32c450e6207f451212036799139324dedd2d1c438"
+        },
+        {
+          "id": "v6-09.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-09.B01/last.png",
+          "sourceSha256": "f0283619ed4c5d0e64169d3d36eb5952034432680bae545b5623581694e9128f",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-09.B01-lastFrame-375.png",
+          "mobileSha256": "ec55fbdec7ddd6b72de0ed38961f2c76930109580b216f0e0af19bcd4bc36841"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-09.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-09.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-09.B02/first.png",
+          "sourceSha256": "239f0a8ed878ba51c184ac660989bbeba8b308261ceec677efc73843b6dd7992",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-09.B02-firstFrame-375.png",
+          "mobileSha256": "2f8cc15a4e123819b85f4c45ff94499152d1ea356c0b417fb9b03d5753a2ec10"
+        },
+        {
+          "id": "v6-09.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-09.B02/last.png",
+          "sourceSha256": "132e69cfcf740ec95046ffd13764fc3dee3cafbb4a071e0efffe975151314b77",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-09.B02-lastFrame-375.png",
+          "mobileSha256": "9f771ce37b5ca87ac65efddbc4faf7008e5e57aa4ae5bf435bc34c46f0f21b56"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-12.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-12.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-12.B03/first.png",
+          "sourceSha256": "8f7f58ece955cc65638954409e6db5067d0b7aa093f7f4aeac824bd4e1d51b4f",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-12.B03-firstFrame-375.png",
+          "mobileSha256": "dd494a463815a4c43c9316d9eb06a72ed24a9f329bb822a4e4321145006e008c"
+        },
+        {
+          "id": "v6-12.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-12.B03/last.png",
+          "sourceSha256": "ea4e37597723e79470b7bb294d19061c46655c776849c4f13a2604708b0cad25",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-12.B03-lastFrame-375.png",
+          "mobileSha256": "0bdbe3946320278c67c970103100680eac56ec2ae3c70e7dba27c4fcec9ce1d1"
+        }
+      ],
+      "findingIds": [
+        "math-qa-09"
+      ]
+    },
+    "v6-14.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-14.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-14.B01/first.png",
+          "sourceSha256": "f7c63eb1d0506effb30b4d855e9d97785c7c5245cd05d3990fc98395a389730d",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-14.B01-firstFrame-375.png",
+          "mobileSha256": "caae3802497b2ec8ec3538ffbdf69abfb971a2c059fce98c4e1782fde30bdb22"
+        },
+        {
+          "id": "v6-14.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-14.B01/last.png",
+          "sourceSha256": "ddca8fecd8e7c14d5a9034c8c01936dd3fb4c1ac9dd1b00160b1e9302edebb72",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-14.B01-lastFrame-375.png",
+          "mobileSha256": "feb892338fb890d24a74e984a08c7d7f20e7198204b9b87bbea58b100ed76185"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-14.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-14.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-14.B02/first.png",
+          "sourceSha256": "48d611b427b703ebc0ab3a73c0e4eed2eea5ec8776e316a55b27f0a7b340ad0c",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-14.B02-firstFrame-375.png",
+          "mobileSha256": "2d8bb0b0a26690b145428edf1d6a09c4647f954e6a330984b35a62d7c7cc233b"
+        },
+        {
+          "id": "v6-14.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-14.B02/last.png",
+          "sourceSha256": "d7044d3abcc846ed82c92af6f1e6a5628ead8aeb88efcb37cc10d76e517ffe78",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-14.B02-lastFrame-375.png",
+          "mobileSha256": "d8f333084e799ae5f8b45bceea2ccafc9f6a2197686355c385961262865a7cc3"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-14.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-14.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-14.B03/first.png",
+          "sourceSha256": "2cf65909ad3413d0d985db9d60ef95991cd85fc8f2309a16e488c2af2f1c121b",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-14.B03-firstFrame-375.png",
+          "mobileSha256": "4af40ba5cc3122950d572f6e89e287d235366031136bbda788f3faaa70f99dce"
+        },
+        {
+          "id": "v6-14.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-14.B03/last.png",
+          "sourceSha256": "767f83ec66d7b837fee97ba925386d0ac5cdba575da5d49261ba04522ca3a3ac",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-14.B03-lastFrame-375.png",
+          "mobileSha256": "7fa1ba5b3714c772c4aa17840ccbe9c16d7949d936bfabc9e356be291445e35a"
+        }
+      ],
+      "findingIds": [
+        "math-qa-01"
+      ]
+    },
+    "v6-16.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-16.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-16.B01/first.png",
+          "sourceSha256": "50660c9824fd0983bab621086ca6dec05b2911c5602b289c2031918be5be2460",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-16.B01-firstFrame-375.png",
+          "mobileSha256": "8fe3e9cbb5c0891a1027aa8cea5ad0d76ee1006b7d839fa78b1a0395732bda1a"
+        },
+        {
+          "id": "v6-16.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-16.B01/last.png",
+          "sourceSha256": "61942a5bc30706b9570e0ed3a6c91d954a628c23ab99d93fc7fc23e95bb2df05",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-16.B01-lastFrame-375.png",
+          "mobileSha256": "1e20f6129d88ae704c318a6d8a477ac762027fdc86c0d91aca7fdbaebc2b0bea"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-16.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-16.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-16.B02/first.png",
+          "sourceSha256": "4d9950ffcb2082a72e2572bf8235399ff176d09f33d2979ea87d2ac21f12e6a3",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-16.B02-firstFrame-375.png",
+          "mobileSha256": "561fb2f9ab552033e86522dc11f827fb7fd1498eba2e1b1f48cf11bfbd1c8206"
+        },
+        {
+          "id": "v6-16.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-16.B02/last.png",
+          "sourceSha256": "2b0c1c4c1adcd272cb73e7ff050a00775bd6741e8da88be8a9fc6be4aa2681c9",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-16.B02-lastFrame-375.png",
+          "mobileSha256": "b2ff9b405e617be15dc363dcd6c29d9c41a83e906661f706ab4dd40168d42bfe"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-16.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-16.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-16.B03/first.png",
+          "sourceSha256": "9d4bd52b035e58969cb37c410e1fec17f04e4378f1c33fb1647be04acdf36a80",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-16.B03-firstFrame-375.png",
+          "mobileSha256": "0e7a9e1284f18261e08ac7c4d3b85819443e6a46ae36a35b60b013cbd414bbc7"
+        },
+        {
+          "id": "v6-16.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-16.B03/last.png",
+          "sourceSha256": "336625102859b3958d5ec63c87de87e472d3811bc5366eb4a45e128dbe5c1321",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-16.B03-lastFrame-375.png",
+          "mobileSha256": "82a76a7d0cf53d028ece6304a8667c01fd3722bec9d130132db4d6a27273c0f1"
+        }
+      ],
+      "findingIds": [
+        "math-qa-02"
+      ]
+    },
+    "v6-17.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-17.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-17.B01/first.png",
+          "sourceSha256": "7f6d43a3d6a3292cae3da1aa03d9880c0e7fb71eedfddce43445476cdf262dc2",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-17.B01-firstFrame-375.png",
+          "mobileSha256": "e67c1b96c617bc845289af18611bab8ef0e84a5b4989ebf004c033c9e6ec17bc"
+        },
+        {
+          "id": "v6-17.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-17.B01/last.png",
+          "sourceSha256": "8ebed2f2bbed6239503ce374e8d531488624ce1ae854e30f3e2e954d4f4022c2",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-17.B01-lastFrame-375.png",
+          "mobileSha256": "5a36a62727bbd04cb6fb7a989e1eee975abe3f15d22c8c855130d2cb68864475"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-17.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-17.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-17.B02/first.png",
+          "sourceSha256": "fa94e34dd27c1f74791c4d43e53867009f0d1be5d0c01f30838be9d6e147cb6c",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-17.B02-firstFrame-375.png",
+          "mobileSha256": "b879ad9f4a8f8408bca21423ed1421a5aa317d33e07052c72dfde7a8c8b5a570"
+        },
+        {
+          "id": "v6-17.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-17.B02/last.png",
+          "sourceSha256": "e1244bd7d6d0a9fb8dbdd710b3cb9f83f9cb9eadafae434e0bcfb336874bb1cf",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-17.B02-lastFrame-375.png",
+          "mobileSha256": "dce63c0cb2eb2300b7da646c285dcf04228e3242c7b3ccfcd94136886d9410d2"
+        }
+      ],
+      "findingIds": [
+        "math-qa-09"
+      ]
+    },
+    "v6-19.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-19.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-19.B01/first.png",
+          "sourceSha256": "302fdde16f7fe51aba28bb460873e19fb8ed2a96ccebf6775c1f86497f341400",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-19.B01-firstFrame-375.png",
+          "mobileSha256": "d2c2f17d0ba6947679892c9be2cb421a596895142a8358258e340bda40ed3cc3"
+        },
+        {
+          "id": "v6-19.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-19.B01/last.png",
+          "sourceSha256": "da2db6cdfd1f1918871f268d98df2398773679262fa57549082f31dc0c58d105",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-19.B01-lastFrame-375.png",
+          "mobileSha256": "c6d9fe36508139c8617acb764e3dfe4a7fd2c169fc4d59c7b4d869706170ae73"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-19.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-19.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-19.B02/first.png",
+          "sourceSha256": "55ff7dfeb620ed3cd0bc62593023e836c249d2f869501bd293a152d691d0263b",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-19.B02-firstFrame-375.png",
+          "mobileSha256": "bc89542f15cbbff408e0629f2d5930d35f80a38cd5e0b7a5ecb248e0aae5d344"
+        },
+        {
+          "id": "v6-19.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-19.B02/last.png",
+          "sourceSha256": "60f559b130aab91b2ce9a4016dfa1a64549296d0f1e655036e3dcbe7702d4195",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-19.B02-lastFrame-375.png",
+          "mobileSha256": "0b39d84348614c96bee8f9f6b2338b1a1075958fd65c76119d01b91cf6fe5975"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-19.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-19.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-19.B03/first.png",
+          "sourceSha256": "d0d484a2518ffc004e3e3afb8883c788436e6508737783925e7caa119c0c67c0",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-19.B03-firstFrame-375.png",
+          "mobileSha256": "57675ee0bbc779fa649729ba5f2bf9f21a5645c2ace8505238864c6f66c9beb0"
+        },
+        {
+          "id": "v6-19.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-19.B03/last.png",
+          "sourceSha256": "b4e19b80c19429d9fa7f6dd83d7c681957b75db6e1ebdaae8606be4508f8540b",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-19.B03-lastFrame-375.png",
+          "mobileSha256": "8666ad2647ba007d2c00b4fdd4bbdd6518b229cf710fb1eb4dc248762120a899"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-21.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-21.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-21.B01/first.png",
+          "sourceSha256": "211dcb3e17fb4ff66c00a3e54fb43cf3df8d9a8ca990c006bb3678014f84d367",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-21.B01-firstFrame-375.png",
+          "mobileSha256": "084317b77597ded544363c9d2a59e3f6c1f6861e70c91ec30efc07bf4b3a0c5b"
+        },
+        {
+          "id": "v6-21.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-21.B01/last.png",
+          "sourceSha256": "025c8cd31f4d7e788b4021e738db4598f0993c42fc8a6eddfaeb515b1de4dd7b",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-21.B01-lastFrame-375.png",
+          "mobileSha256": "f1540bf2ea961c035816a1358c75f54bb806a228ace499e3cf4746919ef88cb6"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-21.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-21.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-21.B02/first.png",
+          "sourceSha256": "f5d885cfc917a6778dd252968b96e2b2d9058c2706fb417227df7133e53900b8",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-21.B02-firstFrame-375.png",
+          "mobileSha256": "8d95fe2df602f04e5becb4d9f82fe5cdd528b899731aa3d9bfb5ef19399fccf9"
+        },
+        {
+          "id": "v6-21.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-21.B02/last.png",
+          "sourceSha256": "e207ca57534718aa57c31c7586bbac61d1dfec75beefc311604f1b063b63f1df",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-21.B02-lastFrame-375.png",
+          "mobileSha256": "c86177591f5439ddf9ee4a381fd8df1c8ab78c358a5b7b2feaa78b3d2975d5b1"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-21.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-21.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-21.B03/first.png",
+          "sourceSha256": "e566451e0babd93f19f86c8a6339b4a765eacbb715c1683f97b117c8ad01ed47",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-21.B03-firstFrame-375.png",
+          "mobileSha256": "b64b60b8826070b2c75b07a86bf681fbc4fda46c09033016894d61ca4367cacd"
+        },
+        {
+          "id": "v6-21.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-21.B03/last.png",
+          "sourceSha256": "82e41c0cf9e1811a956ac56b83842d49859a58fa339faf0ba7bb9a810d076db6",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-21.B03-lastFrame-375.png",
+          "mobileSha256": "5eae392c05be292debde6b7b5df3229f0d433f99c4b4271782c3521457d2c4b2"
+        }
+      ],
+      "findingIds": [
+        "math-qa-06"
+      ]
+    },
+    "v6-22.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-22.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-22.B01/first.png",
+          "sourceSha256": "002727cfea8fb38def3c74bc75efeaa7900be91e071817ec124fc1b126016363",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-22.B01-firstFrame-375.png",
+          "mobileSha256": "2acc3abcc88659c9560586c2d8c5eedcc2303828c9b70eaf2e97cf29a599586a"
+        },
+        {
+          "id": "v6-22.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-22.B01/last.png",
+          "sourceSha256": "c71c1ae0f1caf9e7be75b41732787414b11f6fcc29a856f237e698c814b2b120",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-22.B01-lastFrame-375.png",
+          "mobileSha256": "5c7b8dbfb2d0150be4a73bc065ceb23a708209d5d9cdf64fb2f2d84eef58f055"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-22.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-22.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-22.B02/first.png",
+          "sourceSha256": "f64ce61367e11001ebab9f7a01ca93b590c6423a8a26fcb6383f51b87e5519ec",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-22.B02-firstFrame-375.png",
+          "mobileSha256": "fecfd9bcad6317a201c6414bff9cd1db2532b9b244fcb2482ff2376ce165f625"
+        },
+        {
+          "id": "v6-22.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-22.B02/last.png",
+          "sourceSha256": "853a8c0aee66ceee9f68b70cda6f30f55f80ef6a11edfa034a8f8f95bfa3c8ad",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-22.B02-lastFrame-375.png",
+          "mobileSha256": "babd86cc99b93933a646c13165c2147548ad8660dbd89556608790ff6d77e846"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-23.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-23.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-23.B01/first.png",
+          "sourceSha256": "13775e10d2630ce8e895529b7a043cbe0c540a0519ef3c8cf36850e76d4507d2",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-23.B01-firstFrame-375.png",
+          "mobileSha256": "b5513ee2bbb7ad2d6ba0fff9538271f44600d747749dd3870dc28eef6be85d17"
+        },
+        {
+          "id": "v6-23.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-23.B01/last.png",
+          "sourceSha256": "a1aca202008ecb3a923fcb9647df31e5e2e46540dda2ecdf260cfb2c3e6af9d5",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-23.B01-lastFrame-375.png",
+          "mobileSha256": "b6e1eacd25e1103cf360ea145f1f205672a1eee177295bcd1c33250f40ab21ce"
+        }
+      ],
+      "findingIds": [
+        "math-qa-05"
+      ]
+    },
+    "v6-23.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-23.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-23.B02/first.png",
+          "sourceSha256": "7be9a19855599364c81f9b0bcdecb689b6a9933d1826886f445f29ac45578f10",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-23.B02-firstFrame-375.png",
+          "mobileSha256": "86e06da389863461792b38d74657110e44a5e5fcec29644960efc1022c7e03a4"
+        },
+        {
+          "id": "v6-23.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-23.B02/last.png",
+          "sourceSha256": "e64edd570a166f5b0ddde5b07f5ac9ed43866031f01601f1cdb5d7c253ba93a4",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-23.B02-lastFrame-375.png",
+          "mobileSha256": "a19235ad5d530e6206fec6bf601be85f5947705dae8eb83befbd379939d44f00"
+        }
+      ],
+      "findingIds": [
+        "math-qa-05"
+      ]
+    },
+    "v6-24.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-24.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-24.B01/first.png",
+          "sourceSha256": "5d9a493156b14b4084e2e8ce691c1589fdb9472970c2f9dcf01542145b0d187a",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-24.B01-firstFrame-375.png",
+          "mobileSha256": "b745411eb52ffbd9d91b4e8d28cf2a4fbbbefed4b7eb6a8c22a45d439b4d2168"
+        },
+        {
+          "id": "v6-24.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-24.B01/last.png",
+          "sourceSha256": "f31c5abe5502980b06ca899bd389184240202afecf7358ad9fdb2c8c0c7eb408",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-24.B01-lastFrame-375.png",
+          "mobileSha256": "8441b19c33d97c11e9dd2473150b2b3bf1de94bafa0e8f1e482803ebf57163e9"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-24.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-24.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-24.B02/first.png",
+          "sourceSha256": "8a877a89f4bb893e3d0f811c4a89c10b99e50b2ec0578a805f7e0520a4df9c87",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-24.B02-firstFrame-375.png",
+          "mobileSha256": "8e65e3133d5525c0197b7e8e9977658c5d168007ba39f4bcee2c1c5578d9f151"
+        },
+        {
+          "id": "v6-24.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-24.B02/last.png",
+          "sourceSha256": "3af5983746251a1c6f9d98a72c4fb6886bca04db636c25c6cd79b359c30bd8a0",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-24.B02-lastFrame-375.png",
+          "mobileSha256": "4e695383a6e24a2ccf98e0a997f43e067ae1310815b9e0f829e7bd9d70176c8d"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-24.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-24.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-24.B03/first.png",
+          "sourceSha256": "0baabf3579f56eaa5d1bccfa45e6caccae5e70261f2b573d69ca4178d1830b05",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-24.B03-firstFrame-375.png",
+          "mobileSha256": "cbc8aa1314bf1a77573c51f67a6be67f5e245d76939901690f2182117d20b231"
+        },
+        {
+          "id": "v6-24.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-24.B03/last.png",
+          "sourceSha256": "7605c52a4b39efeb51097e7d84b436828528b12765c9ecb2e87bc7101798f567",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-24.B03-lastFrame-375.png",
+          "mobileSha256": "335951da2114508788202807fc84f57cb50ff994048fabb2b98fff88dfeb0522"
+        }
+      ],
+      "findingIds": [
+        "math-qa-05"
+      ]
+    },
+    "v6-25.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-25.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-25.B01/first.png",
+          "sourceSha256": "33bc4615e2adebb8361f3bd6087d7ec004c93ae0e45f1ac81c82ce0211fe4ddd",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-25.B01-firstFrame-375.png",
+          "mobileSha256": "7ee8ea1110ceac851922a303670dcd11fd1e9e1dd91691469b269584d7065047"
+        },
+        {
+          "id": "v6-25.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-25.B01/last.png",
+          "sourceSha256": "a2616a9b05f57772da158a5fd0051b818b53bba47ff8a7eb4e6e38d506fa2cbc",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-25.B01-lastFrame-375.png",
+          "mobileSha256": "8c820af93b968b24948a182c0358830809a929dc49fc06f5d5c8ef9cd038b85f"
+        }
+      ],
+      "findingIds": [
+        "math-qa-03"
+      ]
+    },
+    "v6-25.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-25.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-25.B02/first.png",
+          "sourceSha256": "24dc1cc4dddec48c1e986398c9671a72a79c9029ed14c84da6903bd89ae1e579",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-25.B02-firstFrame-375.png",
+          "mobileSha256": "fcf8a0cfb6063adebf01843234f41e23f42f6fe7f5859a2b5b27e0e1af946bbb"
+        },
+        {
+          "id": "v6-25.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-25.B02/last.png",
+          "sourceSha256": "d7499368ac63767ee1a08e2264cd6ae7b8772b6efd5f4529dbef92170887c2ae",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-25.B02-lastFrame-375.png",
+          "mobileSha256": "1d31d8c9d1f6c3aaf0e6913f3ed4a93bdc485cb307306c5a900a46afb65f6add"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-25.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-25.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-25.B03/first.png",
+          "sourceSha256": "6905f3a9838fc4fe53fc8aee797d25913490bedbf568a6fbd017a854f7e4a6ec",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-25.B03-firstFrame-375.png",
+          "mobileSha256": "a8f2c0c6b9b801ba10fac2c68ac0da02584d6c0bd873986f4981f66736ebe07c"
+        },
+        {
+          "id": "v6-25.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-25.B03/last.png",
+          "sourceSha256": "3a12390a2b8f26c91522be0bac5cb7e5b751c3c5256e9e423ae389cb34145269",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-25.B03-lastFrame-375.png",
+          "mobileSha256": "2207367c645361f6c0818c1a85fe2f6d359dfcdb824e8ae2f3cb3a8028a327a7"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-26.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-26.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B01/first.png",
+          "sourceSha256": "c516ee719c506d203bc7884a460605f4bac49c85e71108f3ccee4931bbe827c5",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-26.B01-firstFrame-375.png",
+          "mobileSha256": "718248903c8d6e533c08f90042412493c79c587e12aec4a7cc9d3a07c319d12c"
+        },
+        {
+          "id": "v6-26.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B01/last.png",
+          "sourceSha256": "986e4f241ef066a855c6cb8acd5efea034dc8bdd9a9bb0e2b34b43686f2a7480",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-26.B01-lastFrame-375.png",
+          "mobileSha256": "dae60b4357b9709e04ed46f123cc42d0b07e848633269dde6adf310efed86eae"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-26.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-26.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B02/first.png",
+          "sourceSha256": "650c988c3ac234640a36c81d94d94be3866dede5fc4573344a95ccb05e0b877d",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-26.B02-firstFrame-375.png",
+          "mobileSha256": "b73d3eacb4f5eac04c2d7dcb8be36fc5233f233188915af2f79030b8cfa532bc"
+        },
+        {
+          "id": "v6-26.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B02/last.png",
+          "sourceSha256": "481823f6de532aa29d085f289a38aebb898ae9833e43f28957157f9cb414c920",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-26.B02-lastFrame-375.png",
+          "mobileSha256": "661b9a96fae2d03bff8175cee730fb703a885f2cbee23902ae024c443d8056ad"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-26.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-26.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B03/first.png",
+          "sourceSha256": "199dcd9f283d9feaf9dbb50b8095723f3ff743a28c584d1e6dd76b0fd7e3b79d",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-26.B03-firstFrame-375.png",
+          "mobileSha256": "7024fb16d67217941e2042afa942997a84a6bd6f23c611072ce52d765910e45a"
+        },
+        {
+          "id": "v6-26.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B03/last.png",
+          "sourceSha256": "0185fa65df2d79eaaca4b884f00c5b57a329af9034b506b70de56599cbbf1bc7",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-26.B03-lastFrame-375.png",
+          "mobileSha256": "fff366bbaed4af0bd45d23bc6ab01e3ba750614106032160dc36422b85fb7919"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-26.B04": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-26.B04",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B04/first.png",
+          "sourceSha256": "59e5c650bea2e81cc9be77ccceeae7c5cf0a2fb40670c86f146d0be98b85cafe",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-26.B04-firstFrame-375.png",
+          "mobileSha256": "b428f5674d1e1f485d3f4d46df97fabc32cb7f461edf69166b357c964421f67f"
+        },
+        {
+          "id": "v6-26.B04",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B04/last.png",
+          "sourceSha256": "c1953c06a9ff4cfb821ec0994b2eb3fab810cfb2f703f8fecbecac8aeef1dc3b",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-26.B04-lastFrame-375.png",
+          "mobileSha256": "041927526ca8a10be8c25ecc4ce4a93f60fba91d3eaf1e46c53329b8bbd482da"
+        }
+      ],
+      "findingIds": [
+        "math-qa-04"
+      ]
+    },
+    "v6-28.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-28.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-28.B01/first.png",
+          "sourceSha256": "dc2101b81a1a3551ca761727df742266c0637e983f35b9a964bd9488f38ae13a",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-28.B01-firstFrame-375.png",
+          "mobileSha256": "44a1491b2318fa3cec7afbf76ac2e8df9b26f186f99421384420536de5ba6c0e"
+        },
+        {
+          "id": "v6-28.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-28.B01/last.png",
+          "sourceSha256": "041eeb239e30128ec33d3bb6a61f68aa68b99da5832f85293abb73fbf9d1b92b",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-28.B01-lastFrame-375.png",
+          "mobileSha256": "9fdbcd7e7467cde25b9c8ce66bc59f2e340e450c9f01092f63202c3652fa5ac1"
+        }
+      ],
+      "findingIds": [
+        "math-qa-09"
+      ]
+    },
+    "v6-28.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-28.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-28.B02/first.png",
+          "sourceSha256": "658750bd5783f0455da2bbd4903fa4dc07f6267e5c259e347b6f19778f6807bc",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-28.B02-firstFrame-375.png",
+          "mobileSha256": "2580e277a27e895085a201c747e79ba4421f27489864fb99f443968f69230969"
+        },
+        {
+          "id": "v6-28.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-28.B02/last.png",
+          "sourceSha256": "a14332cd0acba6679c6737ab9309a276f41c49f7ed1fe57c26a3b0507fce41a6",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-28.B02-lastFrame-375.png",
+          "mobileSha256": "89be4381efb3af7809504be4ddc5fee42032251f584a278a7f7e4947a0115d3a"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-29.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-29.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-29.B01/first.png",
+          "sourceSha256": "2f9a6dd5d00104dbe500c54935348022d1db404a9754e21fb5314348eee34af1",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-29.B01-firstFrame-375.png",
+          "mobileSha256": "529ec966d8e3f4134f62f0d6e5331b3d8301774508d8d28f45ab30d55ed4206e"
+        },
+        {
+          "id": "v6-29.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-29.B01/last.png",
+          "sourceSha256": "79d955afb51a23f8e5824165e16f0402f9546cf921ddc521916a5b57114d6a6f",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-29.B01-lastFrame-375.png",
+          "mobileSha256": "5e7fbbc69088cb6939640f1cd6f81b5f0e5be0e6f70b798069a5dd8c7ed64d6c"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-29.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-29.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-29.B02/first.png",
+          "sourceSha256": "b502774ea232d1dd512795fa2bc25b35b3a4555f2d3585d8c4ebec6761cde59c",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-29.B02-firstFrame-375.png",
+          "mobileSha256": "386eb237f9190ad8da363deb1fed4574fc5ef9c9d1a3d595532ad26bedcd2043"
+        },
+        {
+          "id": "v6-29.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-29.B02/last.png",
+          "sourceSha256": "81642481e6bcbfb004fff613122a7ab94708c439afc203d935efed5ab9e1c1ce",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-29.B02-lastFrame-375.png",
+          "mobileSha256": "fd388bcd7db50731fe55a5db6cbfc2d4420bb5bc2be02aca7aaee2eff15703b5"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-29.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-29.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-29.B03/first.png",
+          "sourceSha256": "c242a2c87df2391f69657649e4a35beb39f073c0de1f1b3cb4737082e1f7263d",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-29.B03-firstFrame-375.png",
+          "mobileSha256": "dbab344288f42e52bfe38a37f9829283ba2d52f1ad2c1eb23dd58a37ae4c6cdb"
+        },
+        {
+          "id": "v6-29.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-29.B03/last.png",
+          "sourceSha256": "1d7d0f0b655e3b5a72354149e6b8848f28b8fb36a49dbb76d10057560a1992c6",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-29.B03-lastFrame-375.png",
+          "mobileSha256": "3b0286dbb6909b196cb95d86425549336b7dac53becb543599852e9ae7f6c033"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-31.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-31.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-31.B01/first.png",
+          "sourceSha256": "c9495b932971077fef7efdbdd1bbfc2fb0b1e3f1bee2a704e8b77c3fbaa6dd52",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-31.B01-firstFrame-375.png",
+          "mobileSha256": "2c1531036e98444bf0ad9dbe88c5e74ec16b09515c60626d3b4870d51a31fffb"
+        },
+        {
+          "id": "v6-31.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-31.B01/last.png",
+          "sourceSha256": "a41f29148903f96a1b395515f80c5ae1c2d27b4480a92496e41dee3c8ccc9d0d",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-31.B01-lastFrame-375.png",
+          "mobileSha256": "aa0a228d0bef56ef472f1f5a388b4698fb8c7f708b0bfd1a10e5d46578fa1146"
+        }
+      ],
+      "findingIds": [
+        "math-qa-07"
+      ]
+    },
+    "v6-31.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-31.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-31.B03/first.png",
+          "sourceSha256": "9d83d54b6ff9a30ab4f6a847fcd83c48b340df942fa7296170ace5c418e1a8ec",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-31.B03-firstFrame-375.png",
+          "mobileSha256": "ff36869b013b8b5177f993ade3b04b9d415b72bb20169690f790d5f10cc08aa9"
+        },
+        {
+          "id": "v6-31.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-31.B03/last.png",
+          "sourceSha256": "ad673a9340b2e13d99e446329d7756dcba0fef5a0ab8a2f48e0087255d7a90cc",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-31.B03-lastFrame-375.png",
+          "mobileSha256": "f239672cdeffc45e38413a302df39f245a9df9f8c07353a4a9023b22788e9d9c"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-32.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-32.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-32.B01/first.png",
+          "sourceSha256": "3107f3cf182a9cea5902cb5017aeeeb857d6fa63a38a286887735fa8c6da346d",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-32.B01-firstFrame-375.png",
+          "mobileSha256": "2832617f6007469c58d93cec44f3ed6754ccfdfc79367fc405541b027748e6a2"
+        },
+        {
+          "id": "v6-32.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-32.B01/last.png",
+          "sourceSha256": "ca6b1448460e69682f5d97ba85a047901fd357a2b7c0000657dade8948499ed2",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-32.B01-lastFrame-375.png",
+          "mobileSha256": "687955f54074fb36eab718bd5fe0775b7802844fe718f352ad10cd2fb8b8f1f9"
+        }
+      ],
+      "findingIds": [
+        "math-qa-06"
+      ]
+    },
+    "v6-33.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-33.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-33.B01/first.png",
+          "sourceSha256": "e1c8de73bfdc3e1478a70eabfde251be6cdb8775f63a0c95b88ae9f55e83de74",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-33.B01-firstFrame-375.png",
+          "mobileSha256": "53980aea10524a93a478bf2b31fdb4b84198cd7ba9b4f3445f4fadd5ef30f092"
+        },
+        {
+          "id": "v6-33.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-33.B01/last.png",
+          "sourceSha256": "6222b59406ac5d64f7f202db3d24da17d76a5d3b61fbb3ab953bff26838ac6f9",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-33.B01-lastFrame-375.png",
+          "mobileSha256": "0fb6f87f53a5c404bdd4d68313c7312a8930107559cb19cbc222e29e8cea0b64"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-33.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-33.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-33.B02/first.png",
+          "sourceSha256": "65ad608a2aceedbb01b027bcbe72f7aff652c7dccfd46e3b2ba187238e75050a",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-33.B02-firstFrame-375.png",
+          "mobileSha256": "8f11901f6d847c849c3dbd265140a36415d23bdba0b350de8d2630b62998655e"
+        },
+        {
+          "id": "v6-33.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-33.B02/last.png",
+          "sourceSha256": "082634b3b86d92891e46aa6dceee4e970281f6cb955aba3cdd3f317ea49ce0af",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-33.B02-lastFrame-375.png",
+          "mobileSha256": "e7ae781b9b7337e5b7f5b3c1d270d1fa32c8dad2b8d3074399c167b15f01b3da"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-33.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-33.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-33.B03/first.png",
+          "sourceSha256": "23c9970db8e4ed6022d04970858bcc0adcf72fa3f9d250f18084aeed3ff8dd3f",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-33.B03-firstFrame-375.png",
+          "mobileSha256": "a89db7c158c5ac8c721793de7c0e1f053d7e207ef3ff1da6bc5df4bdb70630c1"
+        },
+        {
+          "id": "v6-33.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-33.B03/last.png",
+          "sourceSha256": "633c09f145b0979ba8680f892874e531f4f241ff49fa209261e62c6fe8f87d48",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-33.B03-lastFrame-375.png",
+          "mobileSha256": "47c2bbccb757a8a8e28adea84e23fc94674f88380e4ef56b80afe325078d5c6c"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-34.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-34.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-34.B03/first.png",
+          "sourceSha256": "8a58312c218e972e5968a291c1b976f3c59f4033f96d6aefa88060fd0f2eda5c",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-34.B03-firstFrame-375.png",
+          "mobileSha256": "d2bea3a5ac5066d47915c5b92a8a974a7b195f4d1a4eeccc004d164a78186444"
+        },
+        {
+          "id": "v6-34.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-34.B03/last.png",
+          "sourceSha256": "8ffc09da359ad226b0ee33db711039d0fa89f15c1b2969d19a464abc29efca9f",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-34.B03-lastFrame-375.png",
+          "mobileSha256": "5cccbd08d2573192b1dc86609f4a7e4f52c7c1f238b465b17c4e7f9f8162a7d1"
+        }
+      ],
+      "findingIds": [
+        "math-qa-06"
+      ]
+    },
+    "v6-35.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-35.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-35.B01/first.png",
+          "sourceSha256": "47f1e134e7a0d61340383c65a7c724e74ced5972900a86085dfba80c13c4f16d",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-35.B01-firstFrame-375.png",
+          "mobileSha256": "9a655f436d0bfbe7a69d3619e72baddcc7aa96b4bdd18b3a28a2ad117c57af4a"
+        },
+        {
+          "id": "v6-35.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-35.B01/last.png",
+          "sourceSha256": "23ef7e863a62aeab58ca07c7fe8924b8fc1fa932045fceed8ef3608a5ef76831",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-35.B01-lastFrame-375.png",
+          "mobileSha256": "66a209ba664cc988b7a8015d2b3b80f366dc782dd38666d7e977d32064bdc389"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-35.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-35.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-35.B02/first.png",
+          "sourceSha256": "1ec40ad21b8ab034b0f69900374a905a6aa7072c70acefbdecd904fe0a38e1b3",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-35.B02-firstFrame-375.png",
+          "mobileSha256": "da9627f57e0ac21d4cc996816221af138184c8a955a730305aed31439fc5d203"
+        },
+        {
+          "id": "v6-35.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-35.B02/last.png",
+          "sourceSha256": "aa512e30460617a9259ab2fbc84809f37f324f9a2bd1beb3b9b390e56c178a00",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-35.B02-lastFrame-375.png",
+          "mobileSha256": "d2172f70bd9b59561baa7f227dc8c89468c07e8842069a3da8239994a6f6806e"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-35.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-35.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-35.B03/first.png",
+          "sourceSha256": "d645da83b549c24c45f327a4f2299b588861dc83ad0bed40b54f4539d41e7411",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-35.B03-firstFrame-375.png",
+          "mobileSha256": "9ab7d10d8e6121eeae828bcf12862a1007efa1935fd6119b27341b57696eab87"
+        },
+        {
+          "id": "v6-35.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-35.B03/last.png",
+          "sourceSha256": "c1eab4940bd28b00f1649b26743da17aeea8063eeec6ff43f018326aa1895601",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-35.B03-lastFrame-375.png",
+          "mobileSha256": "e3f879fa03be728774e1a31e8060e7392ae755d4144bf2ee27740eba97b27546"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-36.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-36.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-36.B01/first.png",
+          "sourceSha256": "38044687892817a7f3ab17363b64ae0386938d043d437217f1268da2c3427243",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-36.B01-firstFrame-375.png",
+          "mobileSha256": "43da708bdd0286c6489b58f5aa1b6b580a2f7fe952b63458d675089c5b31db6b"
+        },
+        {
+          "id": "v6-36.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-36.B01/last.png",
+          "sourceSha256": "9c370518e2d1ee47a4e47fcc134643bdb28a69e32a5bcc54914413d924311414",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-36.B01-lastFrame-375.png",
+          "mobileSha256": "c003812e6fa52f4bdea13aac134f6e5b4b011effd76a5ad7ded6331b9f7c046b"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-36.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-36.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-36.B03/first.png",
+          "sourceSha256": "90e4fcaf9da99b9da764977311ddf015b51b96bf879797030d378d0e8cec9656",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-36.B03-firstFrame-375.png",
+          "mobileSha256": "3b7a052b4f64b5038f6581d0d3dfe960519c6b4eb38ed7b05aea507801d03c1f"
+        },
+        {
+          "id": "v6-36.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-36.B03/last.png",
+          "sourceSha256": "99ac0c84096d387d37fcfef4121ebd65bf023502455b60d160116d6f43056d03",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-36.B03-lastFrame-375.png",
+          "mobileSha256": "14486826c73bb0f64a7551e25257d35a3a3d0a952d5b971c2b8167a424ad2e0d"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-39.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-39.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-39.B01/first.png",
+          "sourceSha256": "4cf4d831761770f454d7ace78794a852c3e6e5f5beb55ea1a19c39867775a2d6",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-39.B01-firstFrame-375.png",
+          "mobileSha256": "85d59301197aadd5351c1063639ea1e690297dfc69644b496c1c2fb49c3bb838"
+        },
+        {
+          "id": "v6-39.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-39.B01/last.png",
+          "sourceSha256": "cf596bd56b9f76be9e17cd299646572d3d4dbc9e937847cfb738714e05472f65",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-39.B01-lastFrame-375.png",
+          "mobileSha256": "9d6ed05cd4e0a20b077e121175efaf34396c9acfefc755c34a4d81a7952165a0"
+        }
+      ],
+      "findingIds": [
+        "math-qa-09"
+      ]
+    },
+    "v6-40.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-40.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-40.B02/first.png",
+          "sourceSha256": "035fb18e6864eb34b55b65cfec51f22cab2dd357332335ad4925101dd925543b",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-40.B02-firstFrame-375.png",
+          "mobileSha256": "1bc7e1eefd8bf68be0266998722b154cb2fb191e6abbe45ef8c0b8e927226696"
+        },
+        {
+          "id": "v6-40.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-40.B02/last.png",
+          "sourceSha256": "e5e5913e2b0f436d3aadabdb66e930f5c73bb7c7d34584dff3f02dde6e4664f7",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-40.B02-lastFrame-375.png",
+          "mobileSha256": "b6346abe5033c9ed9b41409ab93fb9f9e58a3b674461d12fb168ba5435fd09d3"
+        }
+      ],
+      "findingIds": [
+        "math-qa-08"
+      ]
+    },
+    "v6-41.B01": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-41.B01",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-41.B01/first.png",
+          "sourceSha256": "b0084d6c74610623ea6f363617defb05261b0056c68c70e104ee2c9064be1a37",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-41.B01-firstFrame-375.png",
+          "mobileSha256": "07f5957987f2718dd32dfb84c5a7ddac1ce784b472b6c30afa8d8650aab0bad9"
+        },
+        {
+          "id": "v6-41.B01",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-41.B01/last.png",
+          "sourceSha256": "3a3aace0b2ae7d5131071aa75a7500c3e2398c9904951396b5cd5c613d234c15",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-41.B01-lastFrame-375.png",
+          "mobileSha256": "f16741fc89390596121729aed92560afaee82b4787c160ead6c130c4e3cbc914"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-41.B02": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-41.B02",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-41.B02/first.png",
+          "sourceSha256": "9bd9b37b7ed8ab109c7dfd5ef22d04fb996b2a2924b370c90d57f1a2e1612710",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-41.B02-firstFrame-375.png",
+          "mobileSha256": "5ec3d7a51c321788b3b05c7b56a2a7754ac8829ff01c0bade79f22008bb8a853"
+        },
+        {
+          "id": "v6-41.B02",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-41.B02/last.png",
+          "sourceSha256": "4c26e61970efe3e02b702edd946641a33dad41eb0786a24d35d5d05790d6244e",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-41.B02-lastFrame-375.png",
+          "mobileSha256": "cff30a57ab4f6735924753ceac6e2ab8a7bd66088527ebebb0083a63a78d8f7c"
+        }
+      ],
+      "findingIds": []
+    },
+    "v6-41.B03": {
+      "nativeLastPngOpened": true,
+      "mobileFirstAndLastPngOpened": true,
+      "nativeFirstPngIndividuallyOpened": false,
+      "endpointProof": [
+        {
+          "id": "v6-41.B03",
+          "field": "firstFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-41.B03/first.png",
+          "sourceSha256": "24da12188fc7d63c775883dbdfe2bbd33c56c23d05f66349ff75f046da9b88f2",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-41.B03-firstFrame-375.png",
+          "mobileSha256": "ed82d4beff1a93919c61f5b8b3d2a84b6c422c6fa739176e807cf064e19d618f"
+        },
+        {
+          "id": "v6-41.B03",
+          "field": "lastFrame",
+          "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-41.B03/last.png",
+          "sourceSha256": "a76ac1124c57a054d9695befa3bb12eed0253f3ddf81d0ad5b464e5580c69abe",
+          "mobileFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/v6-41.B03-lastFrame-375.png",
+          "mobileSha256": "6d7fa6cf12996874b00b5ef2cae00a7ed8bd87665ecc1fce90876aae0a4dde9b"
+        }
+      ],
+      "findingIds": []
+    }
+  },
+  "mobileBoardProof": [
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-01.png",
+      "sha256": "80dbd9ab7bc3ffa60701e1ee682b9aa962a1c80641685d943c2f3e8027cec8fb"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-02.png",
+      "sha256": "3bc0f006f096ab6a031d3ead81209466206ac269b65605da68ca2b1864344a3c"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-03.png",
+      "sha256": "c66b242b53fbf85070a44f4edf8b491cd53c1a3c84bc317d7943021085e6d67d"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-04.png",
+      "sha256": "c35cec1269de907dda092f074d242a137ef8056d1561383132b713685b9bf2d0"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-05.png",
+      "sha256": "641b81dc4a943fc294baa61f153b738f2ed50a518717c69b8edacd66239b8d71"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-06.png",
+      "sha256": "5ab7345d28e4cbed8ac8672ff01448e08c8053525f12b91853bf2ff638ce4379"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-07.png",
+      "sha256": "d3fcf5fc6b39a80b5875d3cd679bd8f1cc5229137a73649412f514b2ade0f728"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-08.png",
+      "sha256": "09b05b8801bd5255a17fb86ed9c3a3988b7fd817f946160d2d8cf1789e19fcb5"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/mobile-09.png",
+      "sha256": "0443424b4bc77097c6b5e8aea0720851fa7ab50880319837f68b2664a98dd12b"
+    }
+  ],
+  "temporalSequenceProof": {
+    "index": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/index.json",
+    "indexSha256": "eda522bba42d84c36f2deb20c07f577d54d42c83f620e03c54cd8a2cca52795e",
+    "clips": [
+      {
+        "id": "v6-09.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-09.B01/manim/videos/math-clips/1080p60/v6-09.B01.mov",
+        "sourceSignature": "87f92318e323fd21674d67663617de1984bfd81c61eb62ddbcec778590a38c62",
+        "sourceClipReceiptSha256": "2d405bedfbeb568db213f3c79c7ec214b4e8f042cff5a6fe1a1cb91cff326714",
+        "durationFrames": 360,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-09.B01/sample-01.png",
+            "sha256": "c2d473d6cf0df9442c5bb7d0cffa2fc1069e2f28adac0dfa1e066413b7b55a2c"
+          },
+          {
+            "frame": 90,
+            "seconds": 1.5,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-09.B01/sample-02.png",
+            "sha256": "2b6b012a381790f37af8e45958a40bf3416d2217d272a22da78776166bc263b0"
+          },
+          {
+            "frame": 180,
+            "seconds": 3.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-09.B01/sample-03.png",
+            "sha256": "b33d674c7092b3d0b336f5d073ccf1abfa866b20cb02dd25873593c337610d5e"
+          },
+          {
+            "frame": 269,
+            "seconds": 4.483333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-09.B01/sample-04.png",
+            "sha256": "d6af8b24bd8928ee7ddc14f4c937a0e2bc8f1efa613af4630dc900acd23d8488"
+          },
+          {
+            "frame": 359,
+            "seconds": 5.983333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-09.B01/sample-05.png",
+            "sha256": "d6af8b24bd8928ee7ddc14f4c937a0e2bc8f1efa613af4630dc900acd23d8488"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-09.B01/sequence.png",
+        "boardSha256": "178600d6f8aabfcdc15b3a14b0fb2cdec79fbcb18623099482ce90dce2b9d033",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-19.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-19.B01/manim/videos/math-clips/1080p60/v6-19.B01.mov",
+        "sourceSignature": "00cdfc37742eecd3fb0257fbb2e033e5ab3e014c840ac0a1db2c028c3e341612",
+        "sourceClipReceiptSha256": "f3ab74d5d2e043dd333c1d80e8de502ab71294cc7f05906adb078600d4ac408f",
+        "durationFrames": 360,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-19.B01/sample-01.png",
+            "sha256": "80b668de3c84a1f7099fa5c6200ea0d97be72323d7ef978bedd9fcc68206c618"
+          },
+          {
+            "frame": 90,
+            "seconds": 1.5,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-19.B01/sample-02.png",
+            "sha256": "f43cf868bd92b49c7fc74eb3a359c79b3b14b6d9f3de0cd03b18cc7b8d521e25"
+          },
+          {
+            "frame": 180,
+            "seconds": 3.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-19.B01/sample-03.png",
+            "sha256": "630dbd274618b135616413e83cf1a0e9e431b946601b8a6aad0439974ea85ae1"
+          },
+          {
+            "frame": 269,
+            "seconds": 4.483333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-19.B01/sample-04.png",
+            "sha256": "2a356cb789054a29ffac3c8d4edbe705f33357415d0433f3b61542244d686a11"
+          },
+          {
+            "frame": 359,
+            "seconds": 5.983333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-19.B01/sample-05.png",
+            "sha256": "2fb21917191c107f3ce756ec83aed4d24ce441ab63039b59408db1caaca0a471"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-19.B01/sequence.png",
+        "boardSha256": "a3f2d78f41e46561e9bbf516e1d078355ba74e4edc97ae32fa7a6a5c187bfd6a",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-41.B02",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-41.B02/manim/videos/math-clips/1080p60/v6-41.B02.mov",
+        "sourceSignature": "7e8d45dbf3f085c3ec082944c5f0ba486c2e562b7cd33871eb476d5c091150e2",
+        "sourceClipReceiptSha256": "51f916501199053dc46c771ebc6dfa2aa4ced3bc81dda14eb42deb9cdd9b5114",
+        "durationFrames": 252,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-41.B02/sample-01.png",
+            "sha256": "360873849b90a29f399d735345327b5bba3be8364306257af04b0bd93467c62a"
+          },
+          {
+            "frame": 63,
+            "seconds": 1.05,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-41.B02/sample-02.png",
+            "sha256": "1ae2d0a04af80ea797a9f256f4a1fb51111f837e9e4b8a9369f3667878fd2284"
+          },
+          {
+            "frame": 126,
+            "seconds": 2.1,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-41.B02/sample-03.png",
+            "sha256": "bf41861c1b7186da6ca9dee1a1a46030d52126e33d3da39ab728d446adbda56f"
+          },
+          {
+            "frame": 188,
+            "seconds": 3.1333333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-41.B02/sample-04.png",
+            "sha256": "96cd9371b05873bf66b44c63e2af756da73dd578acb6439fb502b3673ac8d0dd"
+          },
+          {
+            "frame": 251,
+            "seconds": 4.183333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-41.B02/sample-05.png",
+            "sha256": "266d8d01817442b87c849bb0582c09b177948b4b35392e571b6d83c22c8dbd69"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-41.B02/sequence.png",
+        "boardSha256": "8cd29f7d48dd7afd45b0626c75b0201f6f3789d07c40147cebfe447be8dd3c1e",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-26.B03",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B03/manim/videos/math-clips/1080p60/v6-26.B03.mov",
+        "sourceSignature": "62b2d7f256fb8495fd96ca59b31c7bd5045644e490e37214be9bbe48e1c2468e",
+        "sourceClipReceiptSha256": "27c083b4bb716624c3196ce71fc8c75fa262e7bc0eb896dda349081eebfde21e",
+        "durationFrames": 639,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B03/sample-01.png",
+            "sha256": "80def8114292f893cdbbc1e6b2303f2eda054ffed36c91c8a00244742f8bed43"
+          },
+          {
+            "frame": 160,
+            "seconds": 2.6666666666666665,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B03/sample-02.png",
+            "sha256": "a40e6471391bcc745b6b46ff137abfa8f0e5fcc026069343206d211170edac96"
+          },
+          {
+            "frame": 319,
+            "seconds": 5.316666666666666,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B03/sample-03.png",
+            "sha256": "e32b45ca9486068cfb3c10f638b8f685f945e76871d583a2d2bfc875f593cfe5"
+          },
+          {
+            "frame": 478,
+            "seconds": 7.966666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B03/sample-04.png",
+            "sha256": "d877e68aa7e51a564780c9c4a2ae8c16366f37e173951e6315cd9488aa14e137"
+          },
+          {
+            "frame": 638,
+            "seconds": 10.633333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B03/sample-05.png",
+            "sha256": "a3cda38560216c3384217f0232399ae6b4b3e136c7c00fa621ab60221bb3ac3d"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B03/sequence.png",
+        "boardSha256": "7feb8869fa276bd629f9be84218f561a6a684d547367a06e5840affcb0fcd29f",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-03.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-03.B01/manim/videos/math-clips/1080p60/v6-03.B01.mov",
+        "sourceSignature": "444c00a659c7dfc5747aba79910a6579ba21409e36d3eccd6f03843b1aaf1a6e",
+        "sourceClipReceiptSha256": "f63194d22db673592204ea17f560abd6f9405555336a2ab36664ee2b09ff921c",
+        "durationFrames": 396,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-03.B01/sample-01.png",
+            "sha256": "047e68206d92af9f9145c0087f7385285afc4c8469a2761fceabac33bfe0df8f"
+          },
+          {
+            "frame": 99,
+            "seconds": 1.65,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-03.B01/sample-02.png",
+            "sha256": "2c2392a7f4a68bacc14ca72bcbaa1d839a315699a52de9b5641abf422f9b62bf"
+          },
+          {
+            "frame": 198,
+            "seconds": 3.3,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-03.B01/sample-03.png",
+            "sha256": "937f15a822b3c6afa83f8b8a430358f91c201330bacf3e266954a826f2ca0028"
+          },
+          {
+            "frame": 296,
+            "seconds": 4.933333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-03.B01/sample-04.png",
+            "sha256": "5c9994a9e79a3c22d1904de1753cbded8707a69cd5561781e9b3ce8ed9ce9b08"
+          },
+          {
+            "frame": 395,
+            "seconds": 6.583333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-03.B01/sample-05.png",
+            "sha256": "f52ba77831eb2230c89367542c43cabff918ab1ec5069e18b068c8ab0af3eeda"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-03.B01/sequence.png",
+        "boardSha256": "d23633223f774ec22136e55caa6fda6055d7477b05330a70aa72345c7c977531",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-17.B02",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-17.B02/manim/videos/math-clips/1080p60/v6-17.B02.mov",
+        "sourceSignature": "b5c9863859abfd8e1802ee373e02226da5fa183dd4744d959c46297ae0777768",
+        "sourceClipReceiptSha256": "ff3a20b663327be2c0edc8a531e0b92ff8648131e655b75577e1257e96501a99",
+        "durationFrames": 384,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-17.B02/sample-01.png",
+            "sha256": "cebb2db6463d2d2f3562009995bb78b12bab9bb7fcb8d34f3fc02de8786fb497"
+          },
+          {
+            "frame": 96,
+            "seconds": 1.6,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-17.B02/sample-02.png",
+            "sha256": "9e7c81f06d7f7936ec621f8962e8c2342d86f204dd3c090fa4ded10a99c7ae45"
+          },
+          {
+            "frame": 192,
+            "seconds": 3.2,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-17.B02/sample-03.png",
+            "sha256": "2a1fceb519d969d27105ae9f62a12e06814c268ecb80d5a84c90acbf71a0ada1"
+          },
+          {
+            "frame": 287,
+            "seconds": 4.783333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-17.B02/sample-04.png",
+            "sha256": "ca93bf8336630f63c83845749b2a77df2a6d01c2bc87f2d15879aacf452bb761"
+          },
+          {
+            "frame": 383,
+            "seconds": 6.383333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-17.B02/sample-05.png",
+            "sha256": "bc2b877d56d65562c4e869fb7fb0178a731c5f0ad9542edd2fa34aea65c41b10"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-17.B02/sequence.png",
+        "boardSha256": "9d41e5d0036cb77dd8905a91dde3f84bf4f989b45278019a4c4004d3fea8637a",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-14.B03",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-14.B03/manim/videos/math-clips/1080p60/v6-14.B03.mov",
+        "sourceSignature": "4effa3b27b8c605d574fc9a6a4f5e26e38ea7c3be65be6a7910759623ef5790a",
+        "sourceClipReceiptSha256": "9d8c4d32bafddd3a57f809830a7d92bd6c72115cb2ae8e585bda9df602b1d7cd",
+        "durationFrames": 405,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-14.B03/sample-01.png",
+            "sha256": "ac1a1226fad72a7836fa8a9ac458cfc8a3c4dff4dc78962a313ba972ee301e12"
+          },
+          {
+            "frame": 101,
+            "seconds": 1.6833333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-14.B03/sample-02.png",
+            "sha256": "765780b134e73bbf09bee62790a926dc6b3ca468e32907aca8353f9388df1339"
+          },
+          {
+            "frame": 202,
+            "seconds": 3.3666666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-14.B03/sample-03.png",
+            "sha256": "a0825371f413535fb004c224892cec06955ec3e9e22b7c34046836b421ed64f3"
+          },
+          {
+            "frame": 303,
+            "seconds": 5.05,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-14.B03/sample-04.png",
+            "sha256": "e1f98a9030d3d497864bec610c31f9f6fd29e874b27c8922cbdfbb5b3e4ed2d2"
+          },
+          {
+            "frame": 404,
+            "seconds": 6.733333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-14.B03/sample-05.png",
+            "sha256": "9082241e917edec99da425890ec87f0e80b3894863bd907da46d4b8d498fc983"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-14.B03/sequence.png",
+        "boardSha256": "b24cebac9c24118c53dd72f312302e6c0951e53294510332af2f041725ec4f6b",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-23.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-23.B01/manim/videos/math-clips/1080p60/v6-23.B01.mov",
+        "sourceSignature": "d3c4b8e75c90167b5ac5ec2d8d83110c79f6af902efd6e7b8fcb53ced7e47bd5",
+        "sourceClipReceiptSha256": "2afb21ce5397b6f574d50a48cb35ff9559cf0ac2356740ad2662262dbfb6c8fa",
+        "durationFrames": 642,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-23.B01/sample-01.png",
+            "sha256": "2acb8ddf2999da13f75983c3aa0a2c2de76b98f78c3050399f5fdcafbe8f614b"
+          },
+          {
+            "frame": 160,
+            "seconds": 2.6666666666666665,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-23.B01/sample-02.png",
+            "sha256": "ed28b311aeb705f1985c7d41ed81b1572bbcd899411a8f7766abb7dc41b9de37"
+          },
+          {
+            "frame": 320,
+            "seconds": 5.333333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-23.B01/sample-03.png",
+            "sha256": "8b9f83f1244adc2d988ca5432a7fe5ead49112aa97594a4c00c605ac3bc9f952"
+          },
+          {
+            "frame": 481,
+            "seconds": 8.016666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-23.B01/sample-04.png",
+            "sha256": "1647ecf1ecb3eee057f443c051b7c74e4ddb4a6304ecf8368822cd8a8c6c103e"
+          },
+          {
+            "frame": 641,
+            "seconds": 10.683333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-23.B01/sample-05.png",
+            "sha256": "5fa96db10d1d9805732bd65b8f645785e27a5664069b843796fe1073918a5de9"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-23.B01/sequence.png",
+        "boardSha256": "8471a8d64a1fcc371642616addd7db5c93e559cb1d8cdd70db12cc2b73f2d38f",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-24.B02",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-24.B02/manim/videos/math-clips/1080p60/v6-24.B02.mov",
+        "sourceSignature": "3e03a47be7b4908b9c59e8d3fa99301824e440486d8a3a83f0dafa3c46f43db9",
+        "sourceClipReceiptSha256": "fc77cea5339cc583bc41a92657a32441ffd4a1269ca79099062beb587666ee61",
+        "durationFrames": 348,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-24.B02/sample-01.png",
+            "sha256": "3ee8a5dca4a46f6078ef56bc4e844ed3e25c02d35f361aa26e520ad5ed4e57d8"
+          },
+          {
+            "frame": 87,
+            "seconds": 1.45,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-24.B02/sample-02.png",
+            "sha256": "28630efb3d198917346f49630f804f93ed770ad9fb41f4fc0b82a835b350aa24"
+          },
+          {
+            "frame": 174,
+            "seconds": 2.9,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-24.B02/sample-03.png",
+            "sha256": "d0f878b95b9b77b01fb473a096ffff7f3c0cdc8b7b4bbe32489ca99e7ee1e5c7"
+          },
+          {
+            "frame": 260,
+            "seconds": 4.333333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-24.B02/sample-04.png",
+            "sha256": "5e8675787f7de44b93447a1223ea9392d88bd966af298a6caa7d7e29f58726f9"
+          },
+          {
+            "frame": 347,
+            "seconds": 5.783333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-24.B02/sample-05.png",
+            "sha256": "1c9f660752b3d8ce3e27861485f3938c89e47c772b288667018b1ed45d332cbb"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-24.B02/sequence.png",
+        "boardSha256": "b1aa684af71808586f6d9200e4f4651bc071dfec202e910feb2a825648f8acfe",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-25.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-25.B01/manim/videos/math-clips/1080p60/v6-25.B01.mov",
+        "sourceSignature": "e85796fe3827b1281ae98c2e03ef57aa3ea241af4bac03677ed352b22efdfcaf",
+        "sourceClipReceiptSha256": "2c2a6c42e812cb91929e71f1a976e679b5c62616fd8fc9c4593319a9aeb5b95e",
+        "durationFrames": 144,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-25.B01/sample-01.png",
+            "sha256": "84f564c45d604d548355a85f9764143d313614aaaff89f2ddd77f6cf33f96bb4"
+          },
+          {
+            "frame": 36,
+            "seconds": 0.6,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-25.B01/sample-02.png",
+            "sha256": "f5efd0479a8bd27cf656f45e3e6b11c11339f05419e00dce566770b69e930d92"
+          },
+          {
+            "frame": 72,
+            "seconds": 1.2,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-25.B01/sample-03.png",
+            "sha256": "ecb6f1a4168978cc4cd801022b5dbb439135dd0c97022733d0227fdca8f72547"
+          },
+          {
+            "frame": 107,
+            "seconds": 1.7833333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-25.B01/sample-04.png",
+            "sha256": "9dcd2bd1d0a1bab1e84eae76bcd3189390967ab29dcaff919ac1fd599cbcaf41"
+          },
+          {
+            "frame": 143,
+            "seconds": 2.3833333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-25.B01/sample-05.png",
+            "sha256": "92b24deff56759506293906625b567e162c48dcc86374a5e16a6bc2c689007d5"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-25.B01/sequence.png",
+        "boardSha256": "3fd96ec5d788ef2d861bbecd2c4df11ab8d090db62907540dcd7a80a669957d1",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-16.B02",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-16.B02/manim/videos/math-clips/1080p60/v6-16.B02.mov",
+        "sourceSignature": "db2615ccfe123dc320f1f685d99aba095d47823f6d126fa63118a2d122e3b614",
+        "sourceClipReceiptSha256": "b766e0f55f33b41b0bbe8d533c2ee06712e9db9aff32b40e973529e169a208e9",
+        "durationFrames": 132,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B02/sample-01.png",
+            "sha256": "4e63be49f3ff45a5f0126a3196db59ea58172a382da1258442f8713208a90fa9"
+          },
+          {
+            "frame": 33,
+            "seconds": 0.55,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B02/sample-02.png",
+            "sha256": "52d747a26d2584e42535a57cb7d6dbc82672aa4352ceecd8fc4f37618d3875da"
+          },
+          {
+            "frame": 66,
+            "seconds": 1.1,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B02/sample-03.png",
+            "sha256": "544d0a4b5a3d75fad93896acad85cb5d1cdcff62e2eaad5023fb81b29dde29e3"
+          },
+          {
+            "frame": 98,
+            "seconds": 1.6333333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B02/sample-04.png",
+            "sha256": "10bbddde0f5816c0dc26d26c2720c37a3e6bba276daeabc07a22664984dedcf5"
+          },
+          {
+            "frame": 131,
+            "seconds": 2.183333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B02/sample-05.png",
+            "sha256": "21adaafbfeae254432586d5311be24d18ccb9d8e6a1e1e72bcc854003807fa10"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B02/sequence.png",
+        "boardSha256": "86150d922887c4cbdfcdee8ca42647b1c598c871b9c678a9c13c6a23c51df18e",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-26.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B01/manim/videos/math-clips/1080p60/v6-26.B01.mov",
+        "sourceSignature": "8abad2baf71779f04926a709335a3c4b862ea5f05d30b935c34490dbcb3fe100",
+        "sourceClipReceiptSha256": "767570b0a6940c4c0aed69d7f989382ea4ab4c68fe3fe57af8907a2f918ff761",
+        "durationFrames": 360,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B01/sample-01.png",
+            "sha256": "ab3833e52e0fb14555571e3749766fb86cd48b79ed4a71e882e06cdf85121de8"
+          },
+          {
+            "frame": 90,
+            "seconds": 1.5,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B01/sample-02.png",
+            "sha256": "94f0252dff574ba5067027300d8659caa8b0c735a93690e8fa51e47e156eef89"
+          },
+          {
+            "frame": 180,
+            "seconds": 3.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B01/sample-03.png",
+            "sha256": "cfd83d207c8c6fef4899fd0c1d8af4a77849acf05f5f0da9ecfc5cf6a15e794c"
+          },
+          {
+            "frame": 269,
+            "seconds": 4.483333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B01/sample-04.png",
+            "sha256": "7093622d14b682dd466e98e80687b1940b3da04efa44eae388c7022d93e1467b"
+          },
+          {
+            "frame": 359,
+            "seconds": 5.983333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B01/sample-05.png",
+            "sha256": "7093622d14b682dd466e98e80687b1940b3da04efa44eae388c7022d93e1467b"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B01/sequence.png",
+        "boardSha256": "7eb30c0930472b20f02793f5b282b64e99ed524a3046f9613b732693230692aa",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-26.B02",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-26.B02/manim/videos/math-clips/1080p60/v6-26.B02.mov",
+        "sourceSignature": "454eac7ceb43b195c87cacc19ae90bb28bf0dc3ae1e536dc8215434f4349b58a",
+        "sourceClipReceiptSha256": "1461886455d915f20142dbbc3ac97ee626ec00f96937a497a8fc77868fc02ca6",
+        "durationFrames": 456,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B02/sample-01.png",
+            "sha256": "31efec975ecc0e57deadbd9e7d5918f910c44b8104f311073699be8fc0b56fb6"
+          },
+          {
+            "frame": 114,
+            "seconds": 1.9,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B02/sample-02.png",
+            "sha256": "dae83b93cd42ff8e4e84e78670f9d01efa6c51822c96539f6ae82b3fd656946f"
+          },
+          {
+            "frame": 228,
+            "seconds": 3.8,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B02/sample-03.png",
+            "sha256": "e02a7ec5d6ae7acdb2fc2698cee3962e70cb632931afee9b0c412aa13520eb95"
+          },
+          {
+            "frame": 341,
+            "seconds": 5.683333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B02/sample-04.png",
+            "sha256": "0f77c38f78dc8886881e9498c8a5822736792f169af716fb80bc71352f42219d"
+          },
+          {
+            "frame": 455,
+            "seconds": 7.583333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B02/sample-05.png",
+            "sha256": "eff7bc29115afd5a24b0ea29d8fa8872fe9791afcbdeb929a5ff0785936a50f5"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-26.B02/sequence.png",
+        "boardSha256": "f4f33817025422115eee0680567338f2435a972138233d330c6a45bdab0e921d",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-16.B03",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-16.B03/manim/videos/math-clips/1080p60/v6-16.B03.mov",
+        "sourceSignature": "6483236fe9f572a8e2aba5e14cac15ba9d0dda319a7cf2efe1574344e5c206f7",
+        "sourceClipReceiptSha256": "2184133a26fca0c98c192e63fada9db9a5dc6a40e24a67697b8d99c1b478ddb8",
+        "durationFrames": 408,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B03/sample-01.png",
+            "sha256": "9c8139993031078a2ad8f698d47defd4eb22e6cedf4bbcf98fa546ba2fd11c40"
+          },
+          {
+            "frame": 102,
+            "seconds": 1.7,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B03/sample-02.png",
+            "sha256": "b99cb3cd4c85c28de7f9d8cc79dacb87d7fef9ed19233390d7c128076d6269f1"
+          },
+          {
+            "frame": 204,
+            "seconds": 3.4,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B03/sample-03.png",
+            "sha256": "4f2666bd356860c0c5497c90c201f121f54bcf34bbe57e227ad0abbfdff07ec6"
+          },
+          {
+            "frame": 305,
+            "seconds": 5.083333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B03/sample-04.png",
+            "sha256": "8d77714823dd1615b1504ea8ec9a4bf1ce004ebc40a60e02f959eadcd6909f14"
+          },
+          {
+            "frame": 407,
+            "seconds": 6.783333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B03/sample-05.png",
+            "sha256": "eeb7c5f176a5b8151239e3409871d60f82494e5e1421cd9341a81609f0c10a6e"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-16.B03/sequence.png",
+        "boardSha256": "5d372563ec61379023f32ea868d17f3660d3a6393f1531d1efa241b2b628a58e",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-28.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-28.B01/manim/videos/math-clips/1080p60/v6-28.B01.mov",
+        "sourceSignature": "65a18a55f48068c29cd7fa87163224f1e0dc1bd5fe1d7e89c84f23b94038b4d3",
+        "sourceClipReceiptSha256": "09e995a267b16693c7b7d498479fc940e595070308d433581c5adfabd8ca1422",
+        "durationFrames": 369,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-28.B01/sample-01.png",
+            "sha256": "ba43dfd2282dd91e2e16015ed598fce249d252c10af1906d22e36781f86e2993"
+          },
+          {
+            "frame": 92,
+            "seconds": 1.5333333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-28.B01/sample-02.png",
+            "sha256": "87e227de9b4b678e6b6234b9031cf96a4e3f9c2873e92a70e4217d805f56bc37"
+          },
+          {
+            "frame": 184,
+            "seconds": 3.066666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-28.B01/sample-03.png",
+            "sha256": "568c8162bd7815034a1fb280a061345f597c8696d0c823f9f533f47034da2236"
+          },
+          {
+            "frame": 276,
+            "seconds": 4.6,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-28.B01/sample-04.png",
+            "sha256": "9bc4ebb68a47a52c56c2626455864a515933e8f825c6eb1bca246484c261bece"
+          },
+          {
+            "frame": 368,
+            "seconds": 6.133333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-28.B01/sample-05.png",
+            "sha256": "3dd08b4a1fa2460d7895a1eb8b46650ad536e84b11186aa76a7ef1ac03b5b7ae"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-28.B01/sequence.png",
+        "boardSha256": "51c15d9e6df48dbcf84fb8745628a22bb04077cbb8e7fd5f67956becf5685a62",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-22.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-22.B01/manim/videos/math-clips/1080p60/v6-22.B01.mov",
+        "sourceSignature": "4b4e233de99ecfbf023d7d682230f53cbd5129b40818bcc36723fdbe3cba7ec1",
+        "sourceClipReceiptSha256": "4117adf562e128cd572d1b2081daf5adb36facc7858bc6a9c33f27835463b85b",
+        "durationFrames": 342,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-22.B01/sample-01.png",
+            "sha256": "e3fa11c06918a1a8ee270169994361a9915798bef90e70e3b862b22713e6de4c"
+          },
+          {
+            "frame": 85,
+            "seconds": 1.4166666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-22.B01/sample-02.png",
+            "sha256": "84bfb1856d3d1d82a66a1b03d62c0075a0ab35707c8370d9336b8a17a2181c11"
+          },
+          {
+            "frame": 170,
+            "seconds": 2.8333333333333335,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-22.B01/sample-03.png",
+            "sha256": "9e7b95761eff39582548d9a3d7cac94480291d095b95b5fdcfdaec703376802e"
+          },
+          {
+            "frame": 256,
+            "seconds": 4.266666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-22.B01/sample-04.png",
+            "sha256": "9a52e447db41dc5770545feb57a9059fa8f97d3d35a659154e9dd847ed1eb0d5"
+          },
+          {
+            "frame": 341,
+            "seconds": 5.683333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-22.B01/sample-05.png",
+            "sha256": "b2f58222d048cc5ad35247d5d460a18cf9972a2b877aab7cf03eb6f04e7a9640"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-22.B01/sequence.png",
+        "boardSha256": "5f87f9ed5f8a04ffcdec0fde2ba051b7d25fd2b4fed7495a10a899e4bcdae3d9",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-31.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-31.B01/manim/videos/math-prerequisites/1080p60/v6-31.B01.mov",
+        "sourceSignature": "b9036f88a909ff9a00b6bfcb1bb907d2c2cd64a245280921825039a9189bd8d6",
+        "sourceClipReceiptSha256": "c0d64c61de076220f0c724ea1bc1a68d92ca615eaecc986b9ce5920e6a29807a",
+        "durationFrames": 525,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-31.B01/sample-01.png",
+            "sha256": "b4a890233345ed21cd99c11743191ced44784b1d3fab665bdff3d5a6771ed367"
+          },
+          {
+            "frame": 131,
+            "seconds": 2.183333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-31.B01/sample-02.png",
+            "sha256": "7811d927fb0f17d051caf3df107e6c5403ee91569252d4d70c1c5bf3929f7b2c"
+          },
+          {
+            "frame": 262,
+            "seconds": 4.366666666666666,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-31.B01/sample-03.png",
+            "sha256": "a6d019868c2021e338ae27252d1530e7c30103f300f9ade7b0c5af0655a001fb"
+          },
+          {
+            "frame": 393,
+            "seconds": 6.55,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-31.B01/sample-04.png",
+            "sha256": "0c7cd8416e1fe30332b4c3027650632400f794adb9b65e93163a417d0ae04e57"
+          },
+          {
+            "frame": 524,
+            "seconds": 8.733333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-31.B01/sample-05.png",
+            "sha256": "5fc201cef1458826dc4b4fc53b1287069c836a6cecaa70e0c7ee74b800dfa177"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-31.B01/sequence.png",
+        "boardSha256": "c371a20a1ff1281fb799b046b72ba939b9a863a17e1aefa95e4516e90701c565",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-12.B03",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-12.B03/manim/videos/math-prerequisites/1080p60/v6-12.B03.mov",
+        "sourceSignature": "7ddaad562c4e186dd8e9f75c12fa6174f530de9176dc7d5e6302066c5529d787",
+        "sourceClipReceiptSha256": "0ae25f6af9b21a30162d0b185a847a4234519313e852a87521c7ffe16ffde4a0",
+        "durationFrames": 414,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-12.B03/sample-01.png",
+            "sha256": "98b2b27ab1c595698f7539c77351f19198ba400fbc7b5b866dd0eb293d28a118"
+          },
+          {
+            "frame": 103,
+            "seconds": 1.7166666666666666,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-12.B03/sample-02.png",
+            "sha256": "7b4863bddbe229cbf94f69fbabe41ee048908719b2878bdc0e442a8fd6675015"
+          },
+          {
+            "frame": 206,
+            "seconds": 3.433333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-12.B03/sample-03.png",
+            "sha256": "51bb90f04431d67de0a307b466772a48f9975a2ef12f9dcf386a3f49439baa2c"
+          },
+          {
+            "frame": 310,
+            "seconds": 5.166666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-12.B03/sample-04.png",
+            "sha256": "3fa912d8065964ec983038db1e6694b1d1e0a6c230e73be8b83bf276b6543825"
+          },
+          {
+            "frame": 413,
+            "seconds": 6.883333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-12.B03/sample-05.png",
+            "sha256": "867558b81982b0410f28d4af9baecdd76afa088249b8f1bdb69a67b2625e01b5"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-12.B03/sequence.png",
+        "boardSha256": "3dbf8282c83bae93359498e112ceec2e157ab7a438458839e2dd906bc997e015",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-39.B01",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-39.B01/manim/videos/math-prerequisites/1080p60/v6-39.B01.mov",
+        "sourceSignature": "a29c10b1a04ad53cab31b66dcfe9e175b85f068387b29746a039f6ffc45ebe99",
+        "sourceClipReceiptSha256": "6cba397a93dc0494707edf0fb95c9de26e7f5da56b13df188bde8636a05dd0c6",
+        "durationFrames": 534,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-39.B01/sample-01.png",
+            "sha256": "dca04f4981e0d8e2eaec68e3d10f60a1a1f9a0d9fb5cd890a2b135c23bee209f"
+          },
+          {
+            "frame": 133,
+            "seconds": 2.216666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-39.B01/sample-02.png",
+            "sha256": "3e9023b2b18e5fc3c48476267814d6976339f1c3e9aa3e1de90f45efb8713743"
+          },
+          {
+            "frame": 266,
+            "seconds": 4.433333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-39.B01/sample-03.png",
+            "sha256": "92364feccf9bf7a12380428542a97ccf82ac206707c371f3db6f2abc4fe10a63"
+          },
+          {
+            "frame": 400,
+            "seconds": 6.666666666666667,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-39.B01/sample-04.png",
+            "sha256": "a242097ba03a3191c8f629f1d9d60d7a388ff91349ee1f7da3f0f3ec3f87522c"
+          },
+          {
+            "frame": 533,
+            "seconds": 8.883333333333333,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-39.B01/sample-05.png",
+            "sha256": "1e1ac7e71cbd620fd27610667462b7d3730d0415e61a8e8001fe075ac7bcb3a5"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-39.B01/sequence.png",
+        "boardSha256": "2a32cd18ab1473ee353bdf9a3b5a3dd3356b84bb0e0841d7b88e64d3ffeb4712",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      },
+      {
+        "id": "v6-40.B02",
+        "sourceClip": "projects/game-math-euler-axis-angle/production/local/revision-v6/math/v6-40.B02/manim/videos/math-prerequisites/1080p60/v6-40.B02.mov",
+        "sourceSignature": "c9486716ab970582faa0deb3941f0eeba23add0051b9c0db1d78a37df50eb7de",
+        "sourceClipReceiptSha256": "90bdae97e0d5dcbbd8f68ed051832c0174fdb1bbb6a7a60448844a9bbe19d2a3",
+        "durationFrames": 432,
+        "samples": [
+          {
+            "frame": 0,
+            "seconds": 0.0,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-40.B02/sample-01.png",
+            "sha256": "328adca53359b0b208cfccb161bc520397ae4aee9ac916fa8f99d5e765c4aaea"
+          },
+          {
+            "frame": 108,
+            "seconds": 1.8,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-40.B02/sample-02.png",
+            "sha256": "db16b27c3dae1526263d14057a52fffcf008cb39e97350e0e3bab1f5e0f189d6"
+          },
+          {
+            "frame": 216,
+            "seconds": 3.6,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-40.B02/sample-03.png",
+            "sha256": "62440f057d5b9f205dd8e154f512d7447733f0849dd2a8541f1a1da08b6567a1"
+          },
+          {
+            "frame": 323,
+            "seconds": 5.383333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-40.B02/sample-04.png",
+            "sha256": "f96f2e61ebed40654e3e6ae5e61f323682752cb593b13d827e33748537eec312"
+          },
+          {
+            "frame": 431,
+            "seconds": 7.183333333333334,
+            "file": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-40.B02/sample-05.png",
+            "sha256": "b9365aaed2743f4e45573058e7604dba5dc135c4ffebb43196073bee84a2c3e4"
+          }
+        ],
+        "board": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/math-qa/motion/v6-40.B02/sequence.png",
+        "boardSha256": "08afda8d7046a555dec1b23a9347e4d77423276ff6ace70d82b22c2668b7aa99",
+        "allFiveTemporalSamplesOpenedInSequenceBoard": true
+      }
+    ],
+    "limits": "Sparse temporal frame-sequence review, not realtime playback, not a speech-synchronization/whole-final-motion pass. Receipt source clip hashes are from the preserved renderer manifest; QA raster hashes identify the actual frames inspected."
+  },
+  "pending": [
+    "Root applies layout/math-projection fixes and rerenders only affected assets",
+    "Recheck changed hashes/ranges only",
+    "Real Unity testbed plus math alpha panel contrast",
+    "Final native1080 and375px output with actual fixed captions",
+    "Current final moving output and joins",
+    "Actual narration and final-mix listening remains pending"
+  ],
+  "noMutation": [
+    "No narration/TTS/PCM/ASR/GPU/render/commit/platform action by this QA subtask",
+    "Only current footage plan tracking keys and owned QA artifacts were written"
+  ],
+  "recordedAt": 1792489264.849797
+}

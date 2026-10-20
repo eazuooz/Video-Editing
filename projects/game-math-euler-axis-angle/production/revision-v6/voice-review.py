@@ -41,9 +41,14 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('--gpu-approved',action='store_true');p.add_argument('--worker');a=p.parse_args()
  if a.worker:return worker(a.worker)
  assert a.gpu_approved,'Root GPU allocation required'
+ control=v.read(R/'shared/publishing/video-production-control.json')
+ assert control['selectedVideo']==P.name and control['newProductionAuthorization']['fullProductionAuthorized']
  v.validate();done=v.read(O/'tts-current.json');assert done['status']=='complete-source-ASR-pending' and done['sceneCount']==41
  assert not LEASE.exists(),'Preserve current GPU lease; source ASR starts only after TTS exits'
  free,total,util=v.gpu();assert free>=5000
+ family={x.pid for x in [psutil.Process(),*psutil.Process().parents()]}
+ clients=subprocess.check_output(['nvidia-smi','--query-compute-apps=pid,process_name','--format=csv,noheader'],text=True)
+ assert not any('python' in line.lower() and int(line.split(',')[0]) not in family for line in clients.splitlines()),'Foreign GPU compute remains untouched; do not overlap source ASR'
  me=psutil.Process();token=str(uuid.uuid4());state=dict(token=token,project=P.name,state='tts_running',purpose='one current41-scene source ASR cache batch',coordinator=dict(pid=me.pid,createTime=me.create_time()),startedAt=time.time(),foreignProcessesPaused=[],gpuBefore=dict(freeMiB=free,totalMiB=total,utilization=util))
  with LEASE.open('x',encoding='utf8') as f:json.dump(state,f)
  code=1
