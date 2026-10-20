@@ -1,0 +1,2814 @@
+{
+  "policy": "article-faithful-teaching-pace-v1",
+  "revision": "revision-v6-article-flow",
+  "status": "planning-only; no TTS, animation, rendered timing or actual listening reviewed",
+  "source": {
+    "path": "projects/game-math-euler-axis-angle/script/revision-v6-article-flow/narration.ko.json",
+    "fileSha256AtPlanning": "da6f162121e0b34dfbd8fcfe42236dc56783489cac21687aa58bf9c9da639e8a",
+    "idLinesSha256": "3ea69b7bc59885d7f4e2a6c3e4c124333d153e9511546688a2fb9f94e656c050",
+    "idLinesHashEncoding": "SHA256 of UTF-8 json.dumps([{id,lines}...],ensure_ascii=False,separators=(',',':')); scene order preserved; titles excluded",
+    "binding": "scene id plus one-based line number; scene titles are not inputs",
+    "reviewedSceneCount": 41,
+    "reviewedLineCount": 250
+  },
+  "scope": {
+    "output": "current-versus-new script comparison and planning only",
+    "preserves": "spoken draft, source article order, terminology contract, approved PCM and existing outputs",
+    "noProductionClaims": [
+      "no new TTS",
+      "no audio listening pass",
+      "no rendered timing pass",
+      "no actual gameplay selection pass",
+      "no upload"
+    ],
+    "sceneConvention": "Current draft: left-handed +X right/+Y up/+Z forward; positive left-hand rotations; intrinsic body Y-X-Z; row-vector Rz(b)Rx(p)Ry(h). Old-version visuals require a convention audit before reuse."
+  },
+  "timingContract": {
+    "sequence": "speech concept → show target/action/result → reading/observation opportunity → short check/connection; repeat only at meaningful concept boundaries",
+    "afterLine": "One-based spoken draft line after which the planned visual demonstration begins. The original lines remain continuous speech; this is an editorial cue, not an instruction to cut or regenerate every line.",
+    "hold": "plannedSeconds is an initial observation/read opportunity after the visual result, not obligatory silent time or a runtime cap. Natural breathing, suitable continuing explanation and synchronized original game audio may continue; silenceRequired is always false.",
+    "notEverySentence": "Do not create a fixed pause after every line. Adjacent lines that teach one concept stay in one natural spoken unit.",
+    "pending": "Retiming requires the actual naturally paced voice, readable numeric/code reveals, rendered motion, and listening/viewing; no speed pass is established by this plan.",
+    "noForcedShortening": "No total runtime ceiling. null motion length means determine sufficient native-speed demonstration/calculation time during production; never speed multiple turns or original gameplay to fit the plan.",
+    "answerReveal": "In v6-41.B02/B03 the numeric answer and its motion remain hidden during the question observation, then appear with the mapped result-check lines.",
+    "canonicalDisplay": "Keep X/Y/Z, h/p/b, R, n, θ, e, ω, wrapPi, std::remainder and fmod as canonical display spelling; TTS pronunciation aliases do not replace UI or caption spellings."
+  },
+  "validation": {
+    "sceneCount": 41,
+    "lineCount": 250,
+    "beatCount": 106,
+    "allLinesCoveredExactlyOnceInOrder": true,
+    "coverageSequence": "For each scene, concatenate speech.lineNumbers then resultCheckAndConnection.lineNumbers for each successive beat. This equals 1..scene.lines.length exactly.",
+    "visualAfterLineMatchesLastSpeechLine": true,
+    "holdSecondsRange": [
+      3,
+      8
+    ],
+    "allSilenceRequiredFalse": true,
+    "complexSceneException": "v6-26 has four distinct learning units: 1rad definition, conversion/constants, remainder/boundaries, branch/tests; no fixed three-beat cap imposed.",
+    "productionEvidenceStatus": "pending; planning validation only",
+    "revalidatedAfterTargetedGlosses": {
+      "changedSpokenLines": 7,
+      "sceneCount": 41,
+      "lineCount": 250,
+      "beatCount": 106,
+      "unchangedBeatObjects": true,
+      "lineNumbersAndConceptBoundariesUnchanged": true,
+      "actualTimingStatus": "pending; longer plain-language glosses must receive natural speech time, not faster delivery"
+    }
+  },
+  "scenes": {
+    "v6-01": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "기존2초 브랜드 뒤 같은 비행기로 오른쪽 돌리기→숙이기와 역순을 차례로 예고한다. 두 끝 자세만 남기고 아직 축 이름·행렬을 한꺼번에 펼치지 않는다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 3,
+          "purpose": "같은 각도라도 두 끝 자세가 달라 보이는지 기수와 날개를 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "id": "v6-01.B01"
+      }
+    ],
+    "v6-02": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "중심점을 표시한 비행기를 먼저 옆으로 옮긴 뒤 원위치에서 회전한다. 이어 기수 방향이 같은 두 비행기에서 날개만 다르게 기울여 비교한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "중심 위치가 달라진 경우와 방향·날개가 달라진 경우를 구별한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "id": "v6-02.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5,
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "오른쪽X→위Y→앞Z를 한 축씩 공개한다. 직립 축은 점선, 물체 축은 실선으로 같은 중심에 놓고 물체만 조금 돌려 두 기준의 차이를 보인다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "축 여섯 개를 통째로 외우지 않고 같은 이름의 물체/직립 축 한 쌍씩 위치와 방향을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-02.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            7
+          ]
+        },
+        "visual": {
+          "afterLine": 7,
+          "targetActionResult": "두 축 세트를 기준 자세로 정확히 겹치고 '항등 자세' 라벨을 붙인다. 이후 중심점은 고정한 채 유지한다.",
+          "plannedMotionSeconds": 3,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 3,
+          "purpose": "항등 자세는 위치가0이라는 뜻이 아니라 정한 기준 방향과 일치한 자세임을 화면에서 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-02.B03"
+      }
+    ],
+    "v6-03": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "오일러 각이라는 큰 이름 아래 헤딩·피치·뱅크의 빈 세 칸만 순서대로 놓는다. 각 칸의 동작은 아직 재생하지 않는다.",
+          "plannedMotionSeconds": 3,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 3,
+          "purpose": "세 번의 회전과 각각의 숫자라는 관계만 읽고 세부 동작은 다음 설명으로 남긴다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-03.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "왼손 엄지와 감기는 손가락을 분리해 표시한 뒤 +Y 엄지에 맞춰 기수+Z가+X로 가는 양의90°를 한 번 보여 준다. 좌표계/양의 회전 약속을 같은 화면에 유지한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "엄지의 축 방향과 손가락의 회전 방향을 먼저 찾고 화면의+Z→+X를 대조한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "id": "v6-03.B02"
+      }
+    ],
+    "v6-04": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "항등 자세의Y 링만 밝힌다. h=0→+45°를 재생하고 직립X/Z 점선과 회전한 물체X/Z 실선을 남긴다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "움직인X/Z와 그대로인Y를 한 쌍씩 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "id": "v6-04.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "카메라를+Y쪽에 놓은 위보기 보조 화면을 공개한다. 관찰 화살표+Y→원점과 시계 방향 호를 연결한다.",
+          "plannedMotionSeconds": 3,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 3,
+          "purpose": "시계 방향을 판정한 관찰 위치를 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "id": "v6-04.B02"
+      }
+    ],
+    "v6-05": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "h45° 상태에서 직립X와 현재 물체X를 먼저 구별한다. 물체X를 중심으로 p=0→+20°를 돌려 기수가 내려가는 것을 보여 주고 음수는 반대임을 짧은 호로 비교한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "어느X를 잡았는지와 양의 피치에서 기수가 내려간 결과를 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-05.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "같은 시작 자세를 복제해 현재 물체X 회전과 고정 직립X 회전을 차례로 재생한다. 두 결과의 기수·위 방향을 멈춰 놓는다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "같은20°라도 다른 축을 고르면 다른 끝 자세가 된다는 점을 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "id": "v6-05.B02"
+      }
+    ],
+    "v6-06": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "h45°,p20°를 고정하고 현재 물체Z 링만 밝힌 뒤 b=0→30°를 재생한다. 기수 끝의 기준점과 움직이는 두 날개 끝을 구별한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "기수 방향은 유지되고 날개 기울기가 바뀌는지 본다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "id": "v6-06.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "처음Z와 현재Z를 나란히 표시하고 H45→P20→B30의 중간 자세 세 장을 순서대로 공개한다. 새 회전 대신 이미 만든 결과를 이어 정리한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "세 숫자 아래 적용 순서와 각 단계의 축 이름을 함께 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-06.B02"
+      }
+    ],
+    "v6-07": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "헤딩을 내려다본 화면과 양의 뱅크를 뒤에서 본 화면을 순차 공개한다. 서로 다른 관찰 화살표를 먼저 찾게 하고 부호는 유지한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "시계/반시계 이름보다 카메라가 축의 어느 쪽인지 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "id": "v6-07.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "동일한 한 회전 화살표를 유지한 채 카메라만 축 반대편으로 이동한다. 앞보기/뒤보기 두 끝 화면을 남긴다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "물체의 회전 규약은 그대로인데 화면의 감기는 방향만 뒤집혔는지 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "id": "v6-07.B02"
+      }
+    ],
+    "v6-08": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "H/P로 같은 기수 방향을 정한 두 비행기를 겹친 뒤 한 대에만 뱅크를 준다. 경도·위도 비유는 방향 두 숫자까지만 작은 구도로 연결한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "같은 앞쪽 방향에도 날개 기울기 하나가 더 필요함을 본다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-08.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "직접 확인한 마리오카트 독립 영상에서 앞쪽과 위쪽을 한 번에 하나씩 짚는다. 실제 내부축 수치가 아닌 '화면 관찰/설명용' 표기를 유지한다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "계획 단계에서 길이를 제한하지 않는다. 확인된 원속도 독립 영상과 필요한 앞/동작/결과가 확보된 뒤 실제 길이를 정한다."
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "차체·도로·카메라가 모두 기울기를 보여 준다는 한계를 함께 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "id": "v6-08.B02"
+      }
+    ],
+    "v6-09": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "H/P/B 옆에 yaw/pitch/roll을 대응 후보로 한 쌍씩 공개한다. 영문 이름을 빠르게 한 화면에 쏟지 않고 현재 말한 이름만 강조한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "같은 이름의 존재와 실제 규약의 동일함을 구분하며 이름 쌍을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-09.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "방위각·고도각·틸트와 그리스 문자 표기는 작은 '다른 표기 예' 영역에 순서대로 놓는다. 동의어 전체 암기를 요구하지 않는다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "용어가 많아도 확인할 대상은 축·양의 방향·순서라는 세 항목임을 찾는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "id": "v6-09.B02"
+      }
+    ],
+    "v6-10": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "현재 물체 축Y→X→Z를 단계마다 따라가며 한 대의 비행기를 돌린다. 앞 회전이 다음 축을 옮기는 지점을 정지해 표시한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "실선 물체 축이 비행기와 함께 움직이는 모습을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-10.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "두 번째 비행기에는 처음 방향의 직립 축을 점선으로 유지하고 Z→X→Y를 역순 적용한다. 마지막에 두 결과를 겹쳐 놓는다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "축 기준도 바뀌고 순서도 바뀌었을 때 끝 자세가 같아지는지 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "id": "v6-10.B02"
+      }
+    ],
+    "v6-11": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1
+          ]
+        },
+        "visual": {
+          "afterLine": 1,
+          "targetActionResult": "왼쪽 비행기에 현재 물체Y로h30°를 준 뒤 돌아간 물체X로p20°를 준다. 각 동작 후 축과 숫자를 잠깐 고정한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "두 번째 축이 처음X가 아니라 헤딩 후의X임을 찾는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-11.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "오른쪽 비행기에 고정 직립X로p20°→고정 직립Y로h30°를 순서대로 준다. 중간/끝 자세를 왼쪽과 같은 크기로 남긴다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "중간은 다르지만 끝의 기수·날개·위쪽이 모두 일치하는지 겹쳐 본다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "id": "v6-11.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "앞 비교와 분리된 작은 패널에서 고정X90→Y90와 고정Y90→X90를 따로 재생한다. 기수의 끝 방향을 아래/오른쪽 라벨로 남긴다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "같은 고정 축을 그대로 쓰면서 순서만 바꾸면 결과가 달라진다는 별도 예를 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-11.B03"
+      }
+    ],
+    "v6-12": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "수평 자세의 두Y가 겹친 상태에서 비행기만 수직하강 자세로 숙인다. 고정 직립Y와 기울어진 물체Y를 끝 화면에서 분리한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "현재 물체Y가 더 이상 수직 기준Y와 같지 않음을 찾는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-12.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "동일한 수직하강 자세를 두 개 놓고 현재 물체Y의yaw90°와 고정 직립Y의heading변경을 차례로 재생한다. 기수 자취는 회전축과 다른 선으로 표시한다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "한쪽 기수는 수평으로 이동하고 다른 쪽 기수는 아래에 남는지 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "id": "v6-12.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "새 게임 녹화 대신 직접 만든1인칭 카메라 도식에서 아래를 보는 상태와 수직 기준 좌우 방향 변경을 보여 준다. 실제 게임 구현을 단정하지 않는다.",
+          "plannedMotionSeconds": 4,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "화면을 기울이는 효과와 수직 기준으로 보는 방향을 바꾸는 효과를 구별한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            7
+          ]
+        },
+        "id": "v6-12.B03"
+      }
+    ],
+    "v6-13": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "b=0 때의 피치 변화와 뱅크 후의 피치 숫자 변화/현재bodyX 추가회전을 두 단계로 비교한다. 현재X와 피치를 적용한 단계의X를 서로 다른 라벨로 남긴다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "같은'피치'라는 말에도 어느 단계의 축인지 확인해야 함을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "id": "v6-13.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "팽이의 세차→장동→자전을 한 번에 하나씩 보여 주고 각 명칭을 해당 동작 뒤에 붙인다. 반복축 예와 서로 다른Y-X-Z 축 순서를 나란히 남긴다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "낯선 세 이름을 외우기보다 반복되는 축과 서로 다른 축의 차이를 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-13.B02"
+      }
+    ],
+    "v6-14": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "두 프로그램의 숫자 칸과 축/양의 방향/순서 안내를 비교한다. 단순 칸 교환은 안전하지 않다는 주의 표시를 두고 아직 행렬식을 펼치지 않는다.",
+          "plannedMotionSeconds": 3,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "같은이름·비슷한화면이 규약의 일치를 뜻하지 않음을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-14.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "규약A 숫자→동일 회전 행렬→규약B 숫자 흐름을 단계별 공개한다. 행렬은 각 기준 방향을 보낸 결과라는 축 그림을 옆에 붙인다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "중간의 공통 표현은 물체의 자세이며 숫자 이름만 교환한 것이 아님을 본다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-14.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "1×3 행벡터가 오른쪽3×3 행렬을 만나는 모양을 먼저 보이고 Rz(b)Rx(p)Ry(h)를 한 항씩 공개한다. 동작 순서Y-X-Z와 표기 순서는 별도 줄에 적는다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 7,
+          "purpose": "행과 열의 위치 및 두 종류의 순서를 따로 읽을 시간을 확보한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-14.B03"
+      }
+    ],
+    "v6-15": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "한 비행기에 H/P/B 슬라이더를 붙이고 헤딩만→피치만 한 번에 하나씩 조절한다. 아홉 숫자 행렬은 비교용 작은 표로만 둔다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "슬라이더 한 칸과 예측 가능한 한 동작의 연결을 찾는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-15.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "검증된 젤다 독립 영상에서 통나무를 옮기는 조작과 긴 방향을 맞추는 조작을 구별해 순차 표식으로 보인다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "계획 단계에서 길이를 제한하지 않는다. 확인된 원속도 독립 영상과 필요한 앞/동작/결과가 확보된 뒤 실제 길이를 정한다."
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "위치와 놓인 방향을 사람이 각각 판단하는 장면을 관찰한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "id": "v6-15.B02"
+      }
+    ],
+    "v6-16": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "한 자세의3각도와9칸 행렬을 먼저 비교하고, 같은 자세 기록이 뼈·프레임별로 쌓이는 표를 순서대로 늘린다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "무엇을 여러 번 저장하는지와 숫자 칸 수의 차이만 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-16.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "연속 각도 눈금에서20°와20.4°를 같은1° 저장칸의20°로 모은다. 최대 반올림 오차0.5°를 한 성분의 눈금으로만 표시한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "저장값이 같아지는 두 입력과 잃어버린 작은 차이를 직접 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "id": "v6-16.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "각도 오차라는 정보와 sin/cos 성분 오차라는 정보를 다른 범례로 둔다. 새 삼각함수 유도를 추가하지 않고 두 오류의 뜻이 같지 않음을 연결한다.",
+          "plannedMotionSeconds": 3,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "성분 한 칸의 오차와 최종 자세 오차를 같은 숫자로 읽지 않도록 범례를 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            7
+          ]
+        },
+        "id": "v6-16.B03"
+      }
+    ],
+    "v6-17": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1
+          ]
+        },
+        "visual": {
+          "afterLine": 1,
+          "targetActionResult": "h720°,p135° 같은 유한 입력을 넣은 뒤 생성된 강체 자세를 보여 준다. 큰 숫자가 곧 계산 불가능은 아니라는 표시만 붙인다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "유효한 숫자 입력과 유효한 자세라는 관계를 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-17.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "임의3×3 숫자로 늘어난 모형과 순수 회전 모형을 비교한다. 쿼터니언은'조건을 관리하는 다른 표현'이라는 이름만 남기고 미학습 공식을 펼치지 않는다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "다른 표현은 지켜야 하는 조건이 있음을 길이·직각 그림으로 구별한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "id": "v6-17.B02"
+      }
+    ],
+    "v6-18": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1
+          ]
+        },
+        "visual": {
+          "afterLine": 1,
+          "targetActionResult": "0→360→720°를 차례로 돌린 뒤 세 끝 자세를 겹쳐 놓는다. 누적 회전 계기는 따로 유지한다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "0→360→720°를 관찰 가능한 속도로 보여 준다. 여러 바퀴를 고정 길이에 맞추려고 빠르게 돌리지 않고 끝 자세와 누적량을 각각 확인할 시간을 둔다."
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "지나온 바퀴수와 마지막 자세가 서로 다른 정보임을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            2
+          ]
+        },
+        "id": "v6-18.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "H/P/B세 열에(0,135,0)과(180,45,180)을 한 행씩 공개한 뒤 두 비행기를 각각 만든다. 마지막 세 축을 반투명 겹침으로 비교한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 7,
+          "purpose": "숫자 여섯 개를 순서대로 읽은 뒤 기수·날개·위쪽의 일치를 찾는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "id": "v6-18.B02"
+      }
+    ],
+    "v6-19": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "H/B범위(-180,180]와P범위[-90,90]를 한 줄씩 공개한다. 열린/닫힌 끝점을 빈점/찬점으로 함께 표시한다.",
+          "plannedMotionSeconds": 4,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "어느 끝점을 포함하는지와 H/B/P의 서로 다른 범위를 숫자 눈금에서 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-19.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "직전(0,135,0)을(180,45,180)으로 옮긴 표시를 이어 받아 피치뿐 아니라H/B도 바뀌는 것을 한 칸씩 강조한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "각 칸에서360만 빼는 단순 조작과 다름을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-19.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "피치 범위 내부와 정확한±90°경계를 분리하고 같은 비행기 중심에 다음 장면의 두 축을 남긴다.",
+          "plannedMotionSeconds": 4,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "대표 범위의 경계에 아직 특별한 문제가 남아 있음을 찾는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "id": "v6-19.B03"
+      }
+    ],
+    "v6-20": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "p45→80→90°를 천천히 순차 재생한다. 처음Y와 최종 뱅크Z의 직선을 끝에서 강조하고 양의 화살표가 반대임을 분리해 보인다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "축 두 개의 위치와 양의 방향을 구별해 공선 상태를 관찰한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "id": "v6-20.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "p=+90°를 고정한 첫 숫자쌍(30,90,10)/(20,90,0)부터 확인한 뒤 두 번째쌍(45,90,0)/(0,90,-45)을 별도로 공개한다. h-b 계산과 같은 끝 자세를 각 쌍마다 멈춰 보여 준다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "두 숫자쌍은 각자 계산→회전→같은 끝 자세 순서로 확인한다. 고정 길이에 맞춰 두 예를 동시에 펼치거나 재생 속도를 높이지 않는다."
+        },
+        "hold": {
+          "plannedSeconds": 8,
+          "purpose": "두 예를 한꺼번에 외우지 않고 각 표의 뺄셈·뱅크 부호·끝 자세 일치를 차례로 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-20.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "p=-90°패널로 바꾸고 h+b라는 부호 관계만 별도로 공개한다. +90°패널의 h-b와 색이 아닌 글자·연산기호로 대비한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "플러스 경계와 마이너스 경계의 다른 연산을 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            7
+          ]
+        },
+        "id": "v6-20.B03"
+      }
+    ],
+    "v6-21": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "p=+90°와 p=-90°를 따로 보여 준다. 먼저 뱅크를0으로 고르는 규칙을 적용하고, 각각 h-b와 h+b를 헤딩 칸으로 모아도 물체의 끝 자세가 그대로임을 겹쳐 확인한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "두 경계의 연산 부호가 다르며 자세는 바뀌지 않는다는 점을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-21.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "같은 작은 실제 자세 변화가 정규형 각도 출력에서는 큰 점프로 나타나는 짧은 곡선을 보여 준다. 축을 고치는 장치가 아니라 출력 표기의 경계라는 범례를 붙인다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "연속으로 움직이는 물체와 점프하는 숫자를 구별한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-21.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "입력 허용 범위→회전 생성→출력 대표값의 세 단계를 차례로 공개한다. 기울어진 게임 화면 옆에는 '화면만으로 내부 표현/짐벌 락을 판정할 수 없음'을 짧게 표시한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "입력값, 대표 출력, 화면 관찰이라는 서로 다른 증거 수준을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-21.B03"
+      }
+    ],
+    "v6-22": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "같은 시작과 끝 자세를 고정하고 서로 다른 두 중간 경로를 먼저 보여 준다. t를 경과 초가 아닌 진행 비율로 표시해 0/0%,0.5/50%,1/100% 눈금을 단계적으로 공개한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "끝점만으로 중간 움직임이 정해지지 않는다는 점과 t의 뜻을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-22.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "10°→30°의 한 각도 눈금에서 차이20°를 분리하고, 10°+t×20°의 입력 칸을 공개한다. t=0.5를 넣는 계산은 수치를 한 줄씩 바꾼 뒤 중간 위치에 표시한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "시작값, 차이, 진행 비율의 역할과 중간 계산을 직접 따라간다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "id": "v6-22.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "직접 확인한 마리오 독립 영상에서 출발→공중의 방향 변화→착지의 대응 프레임을 원속도로 보여 준다. 게임 내부 보간 알고리즘을 측정했다고 쓰지 않고 관찰한 중간 자세만 짚는다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "계획 단계에서 길이를 제한하지 않는다. 확인된 원속도 독립 영상과 필요한 앞/동작/결과가 확보된 뒤 실제 길이를 정한다."
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "출발·도착이 맞는 것과 공중 자세가 의도에 맞는 것을 따로 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-22.B03"
+      }
+    ],
+    "v6-23": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "720°와0°의 시작 자세가 같음을 먼저 겹친다. 45-720=-675°를 한 줄씩 공개하고, 회전 방향·진행 화살표·누적 바퀴 표시를 따라 긴 경로를 관찰한다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "여러 바퀴 경로를 확인 가능한 속도로 보여 준다. 설명 시간을 줄이기 위한 가속이나 전체 길이 상한을 두지 않는다."
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "끝 자세가 같아도 거의 두 바퀴를 거꾸로 돌아가는 중간 경로를 눈으로 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-23.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "시작 표기를0°로 바꾼 뒤 같은 시작 자세에서 +45°만 회전시킨다. 앞의 긴 경로 자취는 옅게 남겨 길이와 방향을 비교하고 같은 끝 자세에 도착하면 멈춘다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "표기 정리가 경로의 숫자 차이를 어떻게 바꾸었는지 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "id": "v6-23.B02"
+      }
+    ],
+    "v6-24": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "원 위의 -170°와+170°를 먼저 표시하고 원시 차이 +340°의 긴 호를 순서대로 그린다. t=0.5에서0°가 되는 중간 자세를 멈춰 보여 준다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "두 끝점이 대표 범위 안이어도 앞쪽을 지나 멀리 도는 경로가 생긴다는 점을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-24.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "뒤쪽 경계에 두 끝 화살표가 가까이 있음을 확대한다. -20°의 짧은 호를 따로 그린 뒤 +340°-360°=-20°를 공개한다. 긴 호와 짧은 호를 색 외에도 '원시 차이/짧은 차이'로 구분한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "뒤 경계의 작은 간격과 한 바퀴를 빼는 계산을 대응해 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-24.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "짧은 호의 절반에 중간 화살표를 놓고 -170°+(-20°)/2=-180°를 순차 표시한다. -180°와+180° 두 표기를 같은 한 화살표에 연결한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "중간 자세와 숫자의 경계 표기가 같은 위치를 가리키는지 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-24.B03"
+      }
+    ],
+    "v6-25": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "도 단위 원을 수직선으로 펴서 (a+180)/360이 어떤 바퀴 칸을 고르는지 보인다. 음수 예에서는 -0.1과-1을 수직선에 놓고 내림과0쪽 버림을 분리한다. floor라는 이름은 그 동작 뒤에 붙인다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "floor(-0.1)=-1의 방향과 '그 값보다 크지 않은 정수'라는 뜻을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-25.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "입력340을 고정하고 +180→520, /360→약1.44, floor→1, 340-360×1→-20 순서로 현재 계산 줄만 강조한다. 원의 같은 끝 방향과 수직선의 이동을 연결한다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 7,
+          "purpose": "각 중간 수치를 읽고 왜 한 바퀴만 빼는지 스스로 따라간다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-25.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "a-360 floor((a+180)/360)을 앞의 계산 자리와 연결한다. [-180,180) 눈금과 선택한(-180,180] 눈금을 순차로 보여 주고 -180만+180으로 옮기는 경계 보정을 공개한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "열린 끝점/닫힌 끝점과 보정되는 정확히 한 값만 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            7
+          ]
+        },
+        "id": "v6-25.B03"
+      }
+    ],
+    "v6-26": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1
+          ]
+        },
+        "visual": {
+          "afterLine": 1,
+          "targetActionResult": "원의 반지름 r 선분과 같은 길이의 호를 같은 표시로 비교한다. 그 호의 양 끝과 중심을 연결하고 중심각1rad를 마지막에 붙인다. 아직 π 환산표와 코드를 동시에 공개하지 않는다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "반지름 길이와 호 길이가 같을 때의 각도라는 1rad의 정의를 관찰한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-26.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "호를 반 바퀴/한 바퀴로 확장해 180°=πrad,360°=2πrad를 차례로 붙인다. 도×π/180 변환과 코드의 π,τ=2π 상수를 같은 범례로 연결한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "도와 라디안의 대응 및 τ가 한 바퀴라는 뜻을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-26.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5,
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "std::remainder의 '가장 가까운 정수 배를 빼기'를 수직선의 후보 배수로 보여 준다. 정확한 절반의 짝수 선택은 별도 작은 예로 보이고, 이어 -π→+π 보정과 출력(-π,π]를 공개한다. fmod와 같은 동작으로 묶지 않는다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "수직선 예·최근접 배수·동점 규칙·끝점 보정·fmod 주의가 서로 다른 공개 단계다. 코드 전체를 한 화면에 빠르게 낭독하지 않고 실제 읽기 시간을 보고 길이를 정한다."
+        },
+        "hold": {
+          "plannedSeconds": 8,
+          "purpose": "일반 나머지와의 차이, 정확한 양 끝점, 추가 보정의 역할을 한 단계씩 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-26.B03"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            7,
+            8
+          ]
+        },
+        "visual": {
+          "afterLine": 8,
+          "targetActionResult": "범위 밖일 때만 줄이는 분기 흐름을 보여 주고 잘못된 범위 안 조건은 주석과 대비한다. 340°에 해당하는 라디안→-20°에 해당하는 라디안,±π→+π의 테스트를 한 개씩 실행 표시한다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 7,
+          "purpose": "분기 조건과 세 경계 테스트를 읽고 앞의 원 그림과 결과가 맞는지 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            9
+          ]
+        },
+        "id": "v6-26.B04"
+      }
+    ],
+    "v6-27": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "한 각도 원의 wrap 결과를 H/P/B 세 칸으로 확장하되, p90°의 겹치는 두 효과를 바로 옆에 다시 보여 준다. '숫자 경계 처리'와 '3D 경로 결정'을 다른 문제로 구분한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "각 성분에 wrap을 쓴다는 사실만으로 전체 움직임이 정해지지 않는 이유를 떠올린다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-27.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "두 줄의 시작/절반/끝 표를 순서대로 채운다. 위는 (0,0,0)→(0,67.5,0)→(0,135,0), 아래는 (0,0,0)→(90,22.5,90)→(180,45,180)이다. 한 줄씩 계산·재생 후 절반 자세의 기수와 날개를 비교하고 마지막만 겹친다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "두 행의 계산과 회전을 독립적으로 읽고 비교할 수 있게 편집한다. 6개 자세와12개 각도 수치를 고정5초에 모두 소화하도록 압축하지 않는다."
+        },
+        "hold": {
+          "plannedSeconds": 8,
+          "purpose": "많은 숫자를 한꺼번에 외우지 않고 같은 끝점과 다른 중간 자세를 행별로 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "id": "v6-27.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "H/P/B의 일정한 성분 변화 그래프와 3D 물체의 중간 회전을 나란히 보인다. 앞의 마리오 공중 자세 관찰을 작은 대응 프레임으로 다시 연결하되 내부 각속도 측정값을 만들지 않는다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "숫자의 일정한 변화율과 실제 공간 회전의 일정한 속도가 서로 다른 조건임을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            7
+          ]
+        },
+        "id": "v6-27.B03"
+      }
+    ],
+    "v6-28": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "한 자세 주변의 작은 범위에서는 세 조절값으로 편하게 다루는 그림부터 보인다. 이어 전체 회전을 하나의 표로 덮을 때 요구하는 '중복 없음/끊김 없음/특이점 없음'을 하나씩 표시한다. 구나 지구 지도 비유를 쓰면 SO(3) 자체와 같다고 그리지 않는다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "작은 범위의 편리함과 모든 자세를 동시에 덮으려는 요구를 구별한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-28.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "앞서 확인한 짐벌 경계와 대표값 경계를 각각 재사용한다. 사람이 편집하는 입력 칸과 내부 회전 계산 도구를 연결하고, 도구의 목적이 다르다는 범례를 붙인다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "다른 표현을 고르면 문제가 없어지는 것이 아니라 연산상의 장단점이 달라진다는 점을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "id": "v6-28.B02"
+      }
+    ],
+    "v6-29": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "한 비행기를 유지해 몸체 Y→X→Z의 세 회전을 짧게 다시 보여 준다. 기수 방향을 정하는 두 회전과 그 방향 주위 뱅크를 나눈 뒤, 고정 축 역순의 같은 끝 자세를 겹친다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "세 회전의 역할과 같은 끝 자세의 동등한 순서를 다시 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-29.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "축·양의 방향·순서라는 규약 체크 항목을 하나씩 공개한다. 이어 세 편집 칸과 저장 칸의 장점을 각각 해당 비행기·표에 연결한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "이름만 암기하지 않고 무엇을 먼저 확인해야 하며 언제 편리한지 정리한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-29.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "중복 표현, 대표값 경계, 짐벌 경계, 보간 경로를 앞서 본 작은 증거 네 개로 차례로 다시 보여 준다. 출력 정리와 경로/속도 확인을 분리한 두 열에 배치한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "각 규칙이 해결하는 문제와 남는 문제를 연결해 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            7
+          ]
+        },
+        "id": "v6-29.B03"
+      }
+    ],
+    "v6-30": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "같은 중심의 시작/끝 비행기를 고정하고 먼저 세 단계 회전으로 같은 끝 자세를 확인한다. 그 뒤 원점을 지나는 비스듬한 축 하나를 공개해 같은 끝 자세를 한 회전으로 재현한다. 오일러 각/오일러의 회전 정리는 서로 다른 표제로 둔다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "세 단계와 한 축 회전을 차례로 관찰하는 데 필요한 시간을 확보한다. 정리의 전제와 한 축의 의미를 보여 주는 개념도이며 새 수치를 추정하지 않는다."
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "미리 정한 세 축의 단계와 이번 변화에 맞춘 축 하나가 같은 시작/끝을 잇는지 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-30.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "중심 고정과 길이·방향 관계 보존을 축 회전 장면 위에 짧게 표시한다. 늘이기·반사는 회전의 범위 밖이라는 작은 대비만 두고, 기수·날개·위쪽 세 표시가 모두 끝 자세에 맞으면 멈춘다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "기수 점만 맞춘 것이 아니라 물체 전체의 방향 관계가 맞는지 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-30.B02"
+      }
+    ],
+    "v6-31": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "n의 X/Y/Z 성분을 가진 화살표를 먼저 공개한다. 같은 방향의 긴/짧은 화살표를 한 축에 겹친 뒤 길이를1로 맞추고 단위벡터 표기를 붙인다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "축의 방향 정보는 유지하고 불필요한 길이 차이를 없앤다는 정규화의 목적을 본다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-31.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "n=(0,1,0),θ=90°를 한 줄씩 입력하고 정한 왼손 규약에서 Y축 주위 회전을 보여 준다. 기수와 오른쪽 축을 함께 추적하며 회전축Y는 고정한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "앞쪽+Z와 오른쪽+X가 함께 움직이고 Y축만 그대로임을 관찰한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "id": "v6-31.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "길이1 조건이 있는 축 방향 두 조절값과 각도 한 조절값을 분리해 보여 준다. 세 성분이 모두 자유로운 위치 화살표와 혼동하지 않게 '방향2+회전각1'을 붙인다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "성분 칸의 수와 독립적으로 정할 값의 수가 다르다는 점을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-31.B03"
+      }
+    ],
+    "v6-32": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "n,θ,e를 한꺼번에 놓지 않고 단위축 n→라디안 θ→e=θn 순서로 공개한다. e는 영문 소문자임을 표시하고 방향/길이 범례를 화살표 옆에 연결한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "방향은 축이고 길이는 회전각이며 단위축의 길이1이 곱셈의 기준임을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-32.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "n=(0,1,0)에 π/2를 곱해 e=(0,π/2,0)이 되는 칸별 계산을 보여 준다. 같은 축에서 화살표 길이와 회전각을 두 배로 바꾸되 물체 중심의 위치는 고정한다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "벡터의 끝은 이동 목적지가 아니며 길이 변화가 각도 변화라는 점을 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-32.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "검수한 젤다 독립 영상의 통나무 중심 이동 자취와 돛대 자세 변화 구간을 순서대로 보여 준다. 이동은 화면 위치 자취, 회전축은 설명용 개념도로 분리해 내부 실제 값처럼 표기하지 않는다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "계획 단계에서 길이를 제한하지 않는다. 확인된 원속도 독립 영상과 필요한 앞/동작/결과가 확보된 뒤 실제 길이를 정한다."
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "같은 화살표 모양도 위치와 회전에서 다른 정보를 담는다는 점을 관찰한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6,
+            7
+          ]
+        },
+        "id": "v6-32.B03"
+      }
+    ],
+    "v6-33": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "e=(0,π/2,0)의 성분을 각각 제곱→합→제곱근 순서로 옮겨 √(0²+(π/2)²+0²)를 한 단계씩 완성한다. 원래 벡터와 계산의 같은 성분을 대응시킨다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "길이 계산에서 각 성분이 어디에 쓰이는지 직접 따라간다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "id": "v6-33.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "원래 e의 각 칸을 π/2로 나누어 n=(0,1,0)이 되는 정규화를 보여 준다. 복원한 축과 각도로 비행기를 Y축 주위90° 회전시켜 앞의 결과와 겹친다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "길이에서 각도, 나눗셈에서 축을 복원하고 실제 자세까지 같은지 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-33.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "e=0 입력에서는 길이0을 구한 뒤 축 복원 나눗셈 앞에서 멈춘다. '회전각0/축은 특정하지 않음' 결과를 남기고 0으로 나누는 코드는 실행하지 않는다.",
+          "plannedMotionSeconds": 4,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "영 벡터의 회전각은 알지만 특정 축을 복원할 수 없는 예외를 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-33.B03"
+      }
+    ],
+    "v6-34": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "같은 Y축을 고정하고90° 기준에서 1/3→30°,2.65→238.5°의 배수 계산을 각각 공개한다. 각도 호와 끝 자세를 한 예씩 확인하고 기준 자세를 유지한다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "30°와238.5°를 읽고 회전 방향을 볼 충분한 속도로 각각 재생한다. 두 예를 고정 길이에 맞추기 위한 가속은 하지 않는다."
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "같은 축에서 덜 돌기와 한 바퀴 안의 더 큰 회전량을 각각 관찰한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-34.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "e의 길이만 같은 배수로 늘리고 줄이며 방향 유지/각도 변화의 대응을 보인다. 음수 배수는 부호와 회전 진행 화살표로 반대 방향을 따로 보여 준다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "양수 크기 조절과 음수 방향 반전을 구별한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "id": "v6-34.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "한 축의 각도 배수 도식 옆에 서로 다른 축의 순차 회전 두 단계를 작게 놓는다. 아직 벡터 덧셈 해답을 앞당기지 않고 두 질문의 차이를 이름 붙인다.",
+          "plannedMotionSeconds": 4,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 3,
+          "purpose": "배수 구하기와 서로 다른 회전의 합성이 다른 질문임을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-34.B03"
+      }
+    ],
+    "v6-35": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "e 입력 화살표→지수 사상이라는 연산→실제 회전/회전 행렬 결과를 차례로 연결한다. e 자체와 연산 상자를 분리하고 이 자리에서는 전개식 유도를 새로 쌓지 않는다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "자료인 회전벡터와 자료를 회전으로 보내는 연산을 구별한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-35.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "앞에서 만든 회전량 배수와 애니메이션 중간 자세 그림을 재사용해 쓰임을 연결한다. 미분은 후속 세부 전개 없이 '시간에 따른 변화 계산'이라는 역할만 그림으로 표시한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 3,
+          "purpose": "새 이름 목록을 암기하기보다 이미 본 동작에서 어떤 계산에 쓰이는지 본다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-35.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "같은 축의 회전량 e에는 rad,초시계와 함께 도는 각속도 ω에는 rad/s를 붙인다. 같은 길이 화살표를 같은 의미로 읽지 않도록 '얼마나/1초에 얼마나' 범례를 연결한다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "회전량과 순간의 회전 속도라는 서로 다른 단위를 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-35.B03"
+      }
+    ],
+    "v6-36": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "축 방향을 몇 가지로 바꾸되 θ=0에서는 비행기를 그대로 둔다. 각 n×0의 결과가 같은 e=0으로 모이는 관계를 순차 연결한다.",
+          "plannedMotionSeconds": 5,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "0회전에서 축 선택은 달라도 자세와 회전벡터 결과는 같음을 본다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-36.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "n과+90° 조합을 먼저 재생한 뒤 -n과-90° 조합을 같은 규약으로 재생한다. 축 화살표 반전과 각도 부호 반전을 따로 표시하고 끝 자세를 겹친다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "두 부호를 동시에 바꾸면 같은 동작이 되는지 직접 비교한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "id": "v6-36.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "앞의 e=0 복원 도식으로 돌아와 축 칸을 빈 오류값 대신 '특정하지 않음'으로 남긴다. 누적 바퀴 수 항목은 다음 단계로 연결되는 표제만 예고한다.",
+          "plannedMotionSeconds": 4,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 3,
+          "purpose": "영 벡터에서 특정 축이 안 나오는 이유가 계산 실패가 아니라 정보의 성질임을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-36.B03"
+      }
+    ],
+    "v6-37": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1
+          ]
+        },
+        "visual": {
+          "afterLine": 1,
+          "targetActionResult": "같은 축에서+90°와-270°를 차례로 움직여 서로 다른 진행 호를 그린다. 마지막 자세는 겹치고 두 회전벡터의 길이/방향은 나란히 남긴다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "긴 -270° 경로도 관찰 가능한 속도로 재생하고 수치와 호를 함께 읽을 시간을 둔다."
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "서로 다른 벡터와 이동한 회전량이 같은 끝 자세를 가질 수 있음을 관찰한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            2
+          ]
+        },
+        "id": "v6-37.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3,
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "720°/s와1080°/s 바퀴를 같은 시계로 구동한다. t=0→0.25s→1s를 따로 정지해180°/270°의 서로 다른 중간 자세와2바퀴/3바퀴 뒤 같은 끝 자세를 모두 확인한다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "단위 rad/s·도/s와 실제 경과시간의 관계를 보존한다. 시연 시각0.25s와1s에서 멈춰 해설하되 회전 자체를 임의 가속해 맞추지 않는다."
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "마지막 사진만으로 구별되지 않는 정보가 중간 시각과 누적 카운터에는 남는다는 점을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            5,
+            6,
+            7
+          ]
+        },
+        "id": "v6-37.B02"
+      }
+    ],
+    "v6-38": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "n축90°와 -n축270°를 각자 방향·각도 호·벡터 길이로 보인다. 둘 다2π 미만인 범위 표시에 놓고 끝 자세만 겹친다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "90°와270°의 다른 길이를 읽고 볼 시간을 확보한다.270° 시연을 고정 짧은 길이에 맞춰 가속하지 않는다."
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "둘 다 한 바퀴보다 작아도 서로 다른 벡터가 같은 끝 자세를 만드는 반례를 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "id": "v6-38.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "같은 끝 자세를 더 짧은 반대 축 회전으로 바꿔 θ∈[0,π]에 옮긴다. 축 반전과 각도 길이 변경을 한 번에 하나씩 보여 준다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "단순히 긴 각도만 자르는 것이 아니라 축을 함께 바꾸는 대표 선택임을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-38.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "정확히π에서는 n과-n의180° 회전을 차례로 적용하고 같은 끝 자세를 겹친다.0의 축 미정과π의 부호 선택을 서로 다른 경계 칸에 남긴다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "0과π가 서로 다른 이유로 추가 주의가 필요한 경계임을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-38.B03"
+      }
+    ],
+    "v6-39": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "고정X90°와고정Y90°의 입력 벡터를 각각 공개하고 성분합(π/2,π/2,0)을 만든다. 제곱→합→제곱근으로 길이π/√2를 얻고127.28° 환산을 단계별로 읽은 뒤 비스듬한 축을 공개한다.",
+          "plannedMotionSeconds": null,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+          "timingNote": "계산 표와 회전축 해석을 한 번에 빠르게 낭독하지 않는다. 각 중간 수치를 읽은 뒤 다음 단계로 가도록 실제 발화·표의 읽기 속도에 맞춰 정한다."
+        },
+        "hold": {
+          "plannedSeconds": 8,
+          "purpose": "두 벡터의 성분합이 뜻하는 축과 각도를 계산 단계마다 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-39.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "visual": {
+          "afterLine": 4,
+          "targetActionResult": "같은 시작 자세에서 왼쪽은 고정X90° 뒤고정Y90°를 순차 적용하고,오른쪽은 합벡터의 대각선 축 회전을 한 번 적용한다. 모두 멈춘 뒤 기수와 위쪽 표시를 각각 비교한다.",
+          "plannedMotionSeconds": 8,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "두 끝 자세가 다르다는 주장을 실제 두 방향 표시로 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-39.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5,
+            6
+          ]
+        },
+        "visual": {
+          "afterLine": 6,
+          "targetActionResult": "벡터 덧셈의 순서 교환은 같은 결과인 반면 회전 두 단계의 순서 반전은 다른 끝 자세가 되는 비교를 보여 준다. 정확한 합성은 정한 행렬 곱 순서로 연결하되 여기서 새 행렬 유도를 시작하지 않는다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "덧셈과 회전 합성이 왜 다른 연산인지 순서와 결과를 연결한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            7
+          ]
+        },
+        "id": "v6-39.B03"
+      }
+    ],
+    "v6-40": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1
+          ]
+        },
+        "visual": {
+          "afterLine": 1,
+          "targetActionResult": "앞의90° 비교를 남기고 각 입력을2°로 줄여 동일 절차로 적용한다. 가까워진 두 자세를 보이되 정확히 같다고 겹쳐 숨기지 않고 오차가 남는다는 확대 범례를 붙인다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "차이가 작아짐과 정확히0이 됨을 구별한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            2
+          ]
+        },
+        "id": "v6-40.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "한 물체에 같은 순간 합성되는 상대 회전의 관계를 한 중첩 도식으로 보여 준다. 두 각속도 화살표는 같은 좌표계로 표현될 때만 합 상자로 연결하고 무관한 두 물체의 속도는 합치지 않는다.",
+          "plannedMotionSeconds": 6,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 4,
+          "purpose": "합산하는 대상과 '한 물체/같은 순간/같은 좌표계' 조건을 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-40.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            4,
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "현재 몸체Z가 세계X와 나란한 자세를 먼저 보인다. 같은 각속도 화살표를 몸체 성분(0,0,ω)에서 세계 성분(ω,0,0)으로 바꾸어 적고,좌표계가 같아진 뒤에만 다른 성분과 합한다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 6,
+          "purpose": "화살표 자체는 그대로인데 좌표 성분 이름이 바뀌는 과정을 확인한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6
+          ]
+        },
+        "id": "v6-40.B03"
+      }
+    ],
+    "v6-41": [
+      {
+        "speech": {
+          "lineNumbers": [
+            1,
+            2
+          ]
+        },
+        "visual": {
+          "afterLine": 2,
+          "targetActionResult": "축·각(n,θ),회전벡터 e=θn,지수 사상 e→R를 한 단계씩 연결한다. 오일러 축과 오일러 각은 분리된 이름 칸으로 두고 각 칸의 저장 정보/연산을 대응시킨다.",
+          "plannedMotionSeconds": 7,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 5,
+          "purpose": "비슷한 이름보다 자료와 연산이 무엇인지 구별해 읽는다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": []
+        },
+        "id": "v6-41.B01"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            3
+          ]
+        },
+        "visual": {
+          "afterLine": 3,
+          "targetActionResult": "답을 가린 원 위에 시작+170°와끝-170° 두 화살표만 표시한다. 짧은 방향을 직접 고를 수 있게 빈 차이 칸과 중간 자세 자리만 두고 +20°나180° 답은 아직 공개하지 않는다.",
+          "plannedMotionSeconds": 3,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 7,
+          "purpose": "두 방향을 찾고 짧은 차이와 중간 자세를 스스로 생각한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            4
+          ]
+        },
+        "id": "v6-41.B02"
+      },
+      {
+        "speech": {
+          "lineNumbers": [
+            5
+          ]
+        },
+        "visual": {
+          "afterLine": 5,
+          "targetActionResult": "e=(0,π/2,0) 질문과 빈 '길이/단위축/회전 결과' 칸을 공개한다. 제곱근 계산·축 답·최종 동작은 질문 관찰이 끝날 때까지 숨긴다.",
+          "plannedMotionSeconds": 3,
+          "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+        },
+        "hold": {
+          "plannedSeconds": 8,
+          "purpose": "벡터 길이를 구하고 성분을 그 길이로 나누어 축과 각도를 스스로 복원한다.",
+          "silenceRequired": false,
+          "status": "planned-not-rendered-not-listened"
+        },
+        "resultCheckAndConnection": {
+          "lineNumbers": [
+            6,
+            7,
+            8
+          ]
+        },
+        "id": "v6-41.B03"
+      }
+    ]
+  },
+  "sourceHistory": [
+    {
+      "pass": "initial-full-text-planning-review",
+      "source": {
+        "path": "projects/game-math-euler-axis-angle/script/revision-v6-article-flow/narration.ko.json",
+        "fileSha256AtPlanning": "040277e6ecdf8dc3c9a4c75f955db0b3946e66edf3d92bbad599684269c70c6f",
+        "idLinesSha256": "1cc329aacdf025fd50279c0d26d6af8e077eec9c35ce9c133e4395568fa1d45c",
+        "idLinesHashEncoding": "SHA256 of UTF-8 json.dumps([{id,lines}...],ensure_ascii=False,separators=(',',':')); scene order preserved; titles excluded",
+        "binding": "scene id plus one-based line number; scene titles are not inputs",
+        "reviewedSceneCount": 41,
+        "reviewedLineCount": 250
+      },
+      "overlaySha256": "87365db347aa951e5887ea5ab3ff366a577a119c604261c7be1e62729327d422"
+    }
+  ]
+}

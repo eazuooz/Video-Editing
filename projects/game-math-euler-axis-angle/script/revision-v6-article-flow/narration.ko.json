@@ -1,0 +1,3717 @@
+{
+  "title": "게임 수학 PART2 · 3차원 회전 — 글의 학습 순서를 복원한 전체 대본",
+  "revision": "article-flow-v6-script-comparison",
+  "status": "complete-korean-script-and-planned-visual-beats; user-comparison-request; no-new-audio-video",
+  "source": {
+    "title": "🧭 3차원 회전(3D Rotations)",
+    "url": "https://app.notion.com/p/3e10b1ffa61e81d289e1da0dd7584a13?pvs=204",
+    "edited": "2026-10-10T02:59:19.060Z",
+    "coveredSections": [
+      "8.3.1",
+      "8.3.2",
+      "8.3.3",
+      "8.3.4",
+      "8.3.5",
+      "8.4"
+    ],
+    "scope": "M04의 기존 8.3–8.4 범위 유지. 8.1/8.2 필요한 선행개념만 해당 설명 옆에 보충; 8.5 이후 강의로 확대하지 않음.",
+    "textTreatment": "독립적인 구어 대본. 글의 학습 논리·순서·유용한 세부를 보존하되 원문 오류 교정. 이력·농담·다음 장의 유도식 자동 추가 제외."
+  },
+  "speechContract": {
+    "policyId": "article-faithful-teaching-pace-v1",
+    "coordinateConvention": "left-handed, +X right/+Y up/+Z forward; positive left-hand rotations; intrinsic body Y-X-Z heading/pitch/bank; equivalent fixed Z-X-Y; row vectors; object-to-upright R=Rz(b)Rx(p)Ry(h)",
+    "changedFromDeliveredV5": "V5 narration-v3 used right-handed column-vector world/local convention. This draft follows the article convention. All future scene/caption/formula changes must migrate together before production; do not mix with retained V5 diagrams.",
+    "pace": "설명→한 변수 변화의 시각화→실제 관찰/읽기→결과 확인→다음 단락. 재생 배속을 일괄로 낮추거나 모든 문장 뒤에 고정 침묵을 붙이지 않는다.",
+    "timing": "hold와motion은 계획값이며 실제 TTS/애니메이션 후 조정. 총 길이를 먼저 제한하지 않음. 음성 속도/청취는 아직 미검수.",
+    "audio": "새 TTS 생성 안 함. 기존 승인 PCM/영상은 그대로 보존. 향후 강의에서는 별도 BGM만 제거하고 표준 게임음/덕킹 유지.",
+    "branding": "기존2초브랜딩. 인사는 한 호흡으로 안녕하세요. 얌얌코딩입니다. 멤버10초 기존아이덴티티 유지."
+  },
+  "terminology": [
+    {
+      "ko": "자세",
+      "en": "Orientation",
+      "firstScene": "v6-02",
+      "displayMeaning": "앞·위·옆 방향까지 정해진 상태; 위치와 구별"
+    },
+    {
+      "ko": "직립 공간",
+      "en": "Upright Space",
+      "firstScene": "v6-02",
+      "displayMeaning": "물체와 원점 공유, 축은 세계 기준에 평행; 이 수업의 좌표계 용어"
+    },
+    {
+      "ko": "항등 자세",
+      "en": "Identity Orientation",
+      "firstScene": "v6-02",
+      "displayMeaning": "물체 축과 직립 축이 일치하는 기준 자세"
+    },
+    {
+      "ko": "오일러 각",
+      "en": "Euler Angles",
+      "firstScene": "v6-03",
+      "displayMeaning": "정해진 축·순서의 세 회전으로 자세 표현"
+    },
+    {
+      "ko": "헤딩",
+      "en": "Heading (h)",
+      "firstScene": "v6-04",
+      "displayMeaning": "첫 번째 수직Y 회전"
+    },
+    {
+      "ko": "피치",
+      "en": "Pitch (p)",
+      "firstScene": "v6-05",
+      "displayMeaning": "헤딩 뒤 물체X 회전; 이번 양의 규약에서 기수 숙임"
+    },
+    {
+      "ko": "뱅크",
+      "en": "Bank (b)",
+      "firstScene": "v6-06",
+      "displayMeaning": "헤딩·피치 뒤 물체Z 회전"
+    },
+    {
+      "ko": "내재적 회전",
+      "en": "Intrinsic Rotation",
+      "firstScene": "v6-10",
+      "displayMeaning": "움직이는 물체 축을 기준으로 회전"
+    },
+    {
+      "ko": "외재적 회전",
+      "en": "Extrinsic Rotation",
+      "firstScene": "v6-10",
+      "displayMeaning": "고정된 기준 축으로 회전"
+    },
+    {
+      "ko": "고유 오일러 각",
+      "en": "Proper Euler Angles",
+      "firstScene": "v6-13",
+      "displayMeaning": "첫째·셋째 기본 축이 같은 규약"
+    },
+    {
+      "ko": "테이트–브라이언 각",
+      "en": "Tait–Bryan Angles",
+      "firstScene": "v6-13",
+      "displayMeaning": "서로 다른 세 기본 축을 사용하는 규약"
+    },
+    {
+      "ko": "양자화",
+      "en": "Quantization",
+      "firstScene": "v6-16",
+      "displayMeaning": "연속 값들을 정해진 간격의 대표값으로 저장"
+    },
+    {
+      "ko": "중복 표현",
+      "en": "Aliasing",
+      "firstScene": "v6-18",
+      "displayMeaning": "다른 숫자 묶음이 같은 자세를 나타냄"
+    },
+    {
+      "ko": "짐벌 락",
+      "en": "Gimbal Lock",
+      "firstScene": "v6-20",
+      "displayMeaning": "특정 자세에서 독립적 매개변수 조절 방향이 겹침"
+    },
+    {
+      "ko": "선형 보간",
+      "en": "Linear Interpolation",
+      "firstScene": "v6-22",
+      "displayMeaning": "시작값에 차이의t배를 더해 중간값 계산"
+    },
+    {
+      "ko": "내림",
+      "en": "Floor",
+      "firstScene": "v6-25",
+      "displayMeaning": "입력보다 크지 않은 가장 큰 정수; 음수에서 trunc와 구별"
+    },
+    {
+      "ko": "라디안",
+      "en": "Radian",
+      "firstScene": "v6-26",
+      "displayMeaning": "호 길이/반지름으로 정의한 각도 단위"
+    },
+    {
+      "ko": "축·각 표현",
+      "en": "Axis–Angle Representation",
+      "firstScene": "v6-30",
+      "displayMeaning": "단위 회전축과 회전각을 함께 기록"
+    },
+    {
+      "ko": "회전벡터",
+      "en": "Rotation Vector",
+      "firstScene": "v6-32",
+      "displayMeaning": "e=θn; θ는 라디안"
+    },
+    {
+      "ko": "정규화",
+      "en": "Normalization",
+      "firstScene": "v6-33",
+      "displayMeaning": "영이 아닌 벡터를 길이로 나누어 단위 길이로 맞춤"
+    },
+    {
+      "ko": "지수 사상",
+      "en": "Exponential Map",
+      "firstScene": "v6-35",
+      "displayMeaning": "회전벡터 좌표를 실제 회전으로 보내는 연산"
+    },
+    {
+      "ko": "각속도",
+      "en": "Angular Velocity",
+      "firstScene": "v6-35",
+      "displayMeaning": "순간 회전축 방향과 초당 회전량; 단위rad/s"
+    }
+  ],
+  "pronunciationAliases": {
+    "purpose": "Future TTS aliases only; canonical display spelling stays unchanged. Actual generated pronunciation not reviewed.",
+    "e": "이",
+    "n": "엔",
+    "θ": "세타",
+    "ω": "오메가",
+    "π": "파이",
+    "X": "엑스",
+    "Y": "와이",
+    "Z": "제트"
+  },
+  "scenes": [
+    {
+      "id": "v6-01",
+      "title": "자세를 세 숫자로 적으면 어떤 일이 생길까",
+      "articleSection": "overview",
+      "currentSceneIds": [
+        "01"
+      ],
+      "lines": [
+        "안녕하세요, 얌얌코딩입니다.",
+        "비행기의 기수를 오른쪽으로 돌린 다음 아래로 숙여 볼게요. 그런데 두 동작의 순서를 바꾸면, 같은 각도를 썼는데도 마지막 자세가 달라집니다.",
+        "오늘은 이 차이를 출발점으로, 오일러 각으로 자세를 만드는 순서부터 장점과 한계까지 차근차근 살펴보겠습니다. 그다음에는 축 하나와 각도 하나로 같은 회전을 표현해 보겠습니다.",
+        "먼저 축이 어디에 붙어 있는지 정하고, 한 번에 한 축만 움직이겠습니다. 숫자를 계산한 뒤에는 그 숫자가 바꾼 자세를 화면에서 확인하고 넘어갈게요."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "기존2초 브랜드 뒤 같은 비행기로 오른쪽 돌리기→숙이기와 역순을 차례로 예고한다. 두 끝 자세만 남기고 아직 축 이름·행렬을 한꺼번에 펼치지 않는다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 3,
+            "purpose": "같은 각도라도 두 끝 자세가 달라 보이는지 기수와 날개를 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "id": "v6-01.B01"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "먼저 축이 어디에 붙어 있는지 정하고, 한 번에 한 축만 움직이겠습니다. 숫자를 계산한 뒤에는 그 숫자가 바꾼 자세를 화면에서 확인하고 넘어갈게요.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-02",
+      "title": "위치·방향·자세, 그리고 직립 공간",
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "02",
+        "03"
+      ],
+      "lines": [
+        "먼저 위치와 자세를 나눠 보겠습니다. 비행기를 옆으로 옮기면 위치가 달라집니다. 중심을 그대로 두고 기수나 날개를 돌리면 자세가 달라집니다.",
+        "기수가 어느 쪽을 보는지만으로는 자세를 전부 알 수 없습니다. 기수가 같은 쪽을 향해도, 날개가 수평인 비행기와 옆으로 기운 비행기는 서로 다른 자세입니다.",
+        "자세는 영어로 오리엔테이션이라고 합니다. 앞으로는 기수 방향뿐 아니라 위쪽과 옆쪽까지 함께 정해진 상태를 뜻하겠습니다.",
+        "바닥에 오른쪽, 위쪽, 앞쪽을 가리키는 기준 축을 놓겠습니다. 각각 엑스, 와이, 제트 축입니다. 비행기에도 같은 이름의 축을 붙입니다.",
+        "비행기의 오른쪽이 물체 엑스, 위쪽이 물체 와이, 기수 앞쪽이 물체 제트입니다. 이 축은 비행기와 함께 움직입니다.",
+        "두 종류를 같은 중심에 겹쳐 놓되, 기준 축은 바깥의 기준 방향을 계속 유지하게 하겠습니다. 이렇게 물체의 중심을 공유하면서 기준 방향을 유지하는 좌표계를 직립 공간이라고 부르겠습니다.",
+        "처음에는 물체 축과 직립 축을 완전히 일치시킵니다. 이 기준 자세가 항등 자세입니다. 이제부터 위치는 고정하고, 이 자세가 어떻게 바뀌는지만 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "중심점을 표시한 비행기를 먼저 옆으로 옮긴 뒤 원위치에서 회전한다. 이어 기수 방향이 같은 두 비행기에서 날개만 다르게 기울여 비교한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "중심 위치가 달라진 경우와 방향·날개가 달라진 경우를 구별한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "id": "v6-02.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5,
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "오른쪽X→위Y→앞Z를 한 축씩 공개한다. 직립 축은 점선, 물체 축은 실선으로 같은 중심에 놓고 물체만 조금 돌려 두 기준의 차이를 보인다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "축 여섯 개를 통째로 외우지 않고 같은 이름의 물체/직립 축 한 쌍씩 위치와 방향을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-02.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              7
+            ]
+          },
+          "visual": {
+            "afterLine": 7,
+            "targetActionResult": "두 축 세트를 기준 자세로 정확히 겹치고 '항등 자세' 라벨을 붙인다. 이후 중심점은 고정한 채 유지한다.",
+            "plannedMotionSeconds": 3,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 3,
+            "purpose": "항등 자세는 위치가0이라는 뜻이 아니라 정한 기준 방향과 일치한 자세임을 화면에서 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-02.B03"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "처음에는 물체 축과 직립 축을 완전히 일치시킵니다. 이 기준 자세가 항등 자세입니다. 이제부터 위치는 고정하고, 이 자세가 어떻게 바뀌는지만 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-03",
+      "title": "왼손 규약과 양의 회전",
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "03",
+        "04"
+      ],
+      "lines": [
+        "오일러 각은 좌표계의 기본 축을 기준으로 정해진 순서의 세 회전으로 자세를 나타내는 방식입니다. 여기서는 그 세 각도를 헤딩, 피치, 뱅크라고 부르겠습니다. 지금부터 한 단계씩 실제 동작에 연결하겠습니다.",
+        "축의 이름만 정해서는 회전 방향이 아직 정해지지 않았습니다. 어느 쪽을 양의 회전으로 부를지도 정해야 합니다.",
+        "이번에는 엑스가 오른쪽, 와이가 위쪽, 제트가 앞쪽인 왼손 좌표계와 왼손 양의 회전을 사용하겠습니다. 왼손 엄지를 축의 양의 방향으로 뻗었을 때 나머지 손가락이 감기는 쪽입니다.",
+        "와이 축을 따라 엄지를 위로 세우고 보세요. 기수가 앞쪽에서 오른쪽으로 도는 쪽을 양의 회전으로 표시하겠습니다.",
+        "반대쪽을 양으로 정하는 규약도 있습니다. 그것이 틀린 계산이라는 뜻은 아닙니다. 같은 자세를 설명하더라도 좌표계와 양의 방향이 다르면 식의 부호가 달라질 수 있습니다.",
+        "그래서 화면의 축, 화살표, 각도 표시를 이 규약으로 통일하겠습니다. 잠시 뒤 나오는 헤딩, 피치, 뱅크도 이 약속을 기준으로 읽어 주세요."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "오일러 각이라는 큰 이름 아래 헤딩·피치·뱅크의 빈 세 칸만 순서대로 놓는다. 각 칸의 동작은 아직 재생하지 않는다.",
+            "plannedMotionSeconds": 3,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 3,
+            "purpose": "세 번의 회전과 각각의 숫자라는 관계만 읽고 세부 동작은 다음 설명으로 남긴다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-03.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "왼손 엄지와 감기는 손가락을 분리해 표시한 뒤 +Y 엄지에 맞춰 기수+Z가+X로 가는 양의90°를 한 번 보여 준다. 좌표계/양의 회전 약속을 같은 화면에 유지한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "엄지의 축 방향과 손가락의 회전 방향을 먼저 찾고 화면의+Z→+X를 대조한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "id": "v6-03.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "그래서 화면의 축, 화살표, 각도 표시를 이 규약으로 통일하겠습니다. 잠시 뒤 나오는 헤딩, 피치, 뱅크도 이 약속을 기준으로 읽어 주세요.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-04",
+      "title": "첫 번째 회전: 헤딩",
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "04"
+      ],
+      "lines": [
+        "항등 자세에서 첫 번째로 헤딩을 정하겠습니다. 헤딩은 위아래로 선 와이 축 주위의 회전입니다.",
+        "지금은 물체 축과 직립 축이 겹쳐 있으므로, 어느 와이 축을 집어도 같은 첫 회전이 됩니다. 헤딩을 양의 사십오 도로 바꿔 보겠습니다.",
+        "기수가 오른쪽으로 돌아갑니다. 엑스 축과 제트 축도 함께 돌아가지만, 회전축인 와이 축은 그대로입니다.",
+        "와이 축의 양의 쪽에서 원점을 내려다보면 시계 방향입니다. 여기서 시계 방향이라는 말에는 어느 쪽에서 보는지까지 포함되어 있습니다.",
+        "이 자세를 저장해 두겠습니다. 두 번째 회전은 처음의 축이 아니라, 방금 돌아간 비행기에 붙은 축을 기준으로 이어집니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "항등 자세의Y 링만 밝힌다. h=0→+45°를 재생하고 직립X/Z 점선과 회전한 물체X/Z 실선을 남긴다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "움직인X/Z와 그대로인Y를 한 쌍씩 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "id": "v6-04.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "카메라를+Y쪽에 놓은 위보기 보조 화면을 공개한다. 관찰 화살표+Y→원점과 시계 방향 호를 연결한다.",
+            "plannedMotionSeconds": 3,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 3,
+            "purpose": "시계 방향을 판정한 관찰 위치를 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "id": "v6-04.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "이 자세를 저장해 두겠습니다. 두 번째 회전은 처음의 축이 아니라, 방금 돌아간 비행기에 붙은 축을 기준으로 이어집니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-05",
+      "title": "두 번째 회전: 피치",
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "04"
+      ],
+      "lines": [
+        "다음은 피치입니다. 피치는 헤딩을 마친 물체의 엑스 축 주위로 돌리는 각도입니다.",
+        "지금 비행기의 오른쪽 날개 방향을 보세요. 물체 엑스 축이 처음보다 사십오 도 돌아가 있습니다. 바로 이 축을 잡아야 합니다.",
+        "피치를 양의 이십 도로 바꾸겠습니다. 이번 규약에서는 양의 피치가 기수를 아래로 숙이는 방향입니다. 음의 피치는 기수를 위로 듭니다.",
+        "기수를 숙이는 동안 물체 와이와 제트 축이 함께 변합니다. 직립 공간의 엑스 축을 잡아 돌린 경우와 결과를 나란히 비교해 보겠습니다.",
+        "같은 이십 도라도 축이 다르면 다른 동작입니다. 헤딩을 한 뒤에는 물체 엑스와 처음의 엑스를 바꿔 읽으면 안 됩니다.",
+        "이제 비행기는 오른쪽을 향하면서 조금 아래를 보고 있습니다. 이 상태의 기수 방향을 유지한 채 날개만 기울이는 마지막 회전이 남았습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "h45° 상태에서 직립X와 현재 물체X를 먼저 구별한다. 물체X를 중심으로 p=0→+20°를 돌려 기수가 내려가는 것을 보여 주고 음수는 반대임을 짧은 호로 비교한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "어느X를 잡았는지와 양의 피치에서 기수가 내려간 결과를 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-05.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "같은 시작 자세를 복제해 현재 물체X 회전과 고정 직립X 회전을 차례로 재생한다. 두 결과의 기수·위 방향을 멈춰 놓는다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "같은20°라도 다른 축을 고르면 다른 끝 자세가 된다는 점을 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "id": "v6-05.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "이제 비행기는 오른쪽을 향하면서 조금 아래를 보고 있습니다. 이 상태의 기수 방향을 유지한 채 날개만 기울이는 마지막 회전이 남았습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-06",
+      "title": "세 번째 회전: 뱅크",
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "04"
+      ],
+      "lines": [
+        "세 번째는 뱅크입니다. 헤딩과 피치를 모두 마친 뒤, 현재 물체의 제트 축 주위로 돌립니다.",
+        "물체 제트는 기수가 향하는 축입니다. 이 축을 중심으로 양의 삼십 도를 주겠습니다. 기수 방향은 그대로이고 날개의 기울기가 달라집니다.",
+        "물체 엑스와 와이는 함께 돌아갑니다. 따라서 기수가 같은 쪽을 향한다고 같은 자세인 것은 아니라는 처음의 차이가 여기서 다시 나타납니다.",
+        "뱅크를 줄 때도 처음의 제트 축을 쓰지 않습니다. 헤딩과 피치가 이미 그 축의 방향을 바꾸었기 때문입니다.",
+        "지금 만든 자세는 헤딩 사십오 도, 피치 이십 도, 뱅크 삼십 도의 순서로 얻었습니다. 세 숫자만큼이나 그 숫자를 적용한 순서와 축이 중요합니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "h45°,p20°를 고정하고 현재 물체Z 링만 밝힌 뒤 b=0→30°를 재생한다. 기수 끝의 기준점과 움직이는 두 날개 끝을 구별한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "기수 방향은 유지되고 날개 기울기가 바뀌는지 본다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "id": "v6-06.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "처음Z와 현재Z를 나란히 표시하고 H45→P20→B30의 중간 자세 세 장을 순서대로 공개한다. 새 회전 대신 이미 만든 결과를 이어 정리한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "세 숫자 아래 적용 순서와 각 단계의 축 이름을 함께 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-06.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "지금 만든 자세는 헤딩 사십오 도, 피치 이십 도, 뱅크 삼십 도의 순서로 얻었습니다. 세 숫자만큼이나 그 숫자를 적용한 순서와 축이 중요합니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-07",
+      "title": "시계 방향이 다르게 보이는 이유",
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "04"
+      ],
+      "lines": [
+        "여기서 헤딩과 뱅크의 시계 방향 표현을 한 번 정리하겠습니다. 헤딩은 위에서 내려다보면 시계 방향이라고 했습니다.",
+        "반면 비행기의 뒤에서 기수 쪽을 보면, 양의 뱅크는 반시계 방향으로 보입니다. 회전 규칙이 갑자기 바뀐 것일까요?",
+        "달라진 것은 관찰 위치입니다. 헤딩은 양의 와이 쪽에서 원점을 봤고, 뱅크는 원점 쪽에서 양의 제트 방향을 보고 있습니다. 축을 바라보는 방향이 서로 반대입니다.",
+        "같은 회전 화살표를 앞과 뒤에서 차례로 보겠습니다. 카메라가 반대편으로 넘어가면 화면에서 보이는 시계 방향도 바뀝니다.",
+        "따라서 시계 방향이라는 말만 외우기보다, 양의 축과 관찰 방향을 함께 확인해야 합니다. 세 회전에는 계속 같은 왼손 규칙을 쓰고 있습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "헤딩을 내려다본 화면과 양의 뱅크를 뒤에서 본 화면을 순차 공개한다. 서로 다른 관찰 화살표를 먼저 찾게 하고 부호는 유지한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "시계/반시계 이름보다 카메라가 축의 어느 쪽인지 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "id": "v6-07.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "동일한 한 회전 화살표를 유지한 채 카메라만 축 반대편으로 이동한다. 앞보기/뒤보기 두 끝 화면을 남긴다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "물체의 회전 규약은 그대로인데 화면의 감기는 방향만 뒤집혔는지 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "id": "v6-07.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "따라서 시계 방향이라는 말만 외우기보다, 양의 축과 관찰 방향을 함께 확인해야 합니다. 세 회전에는 계속 같은 왼손 규칙을 쓰고 있습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-08",
+      "title": "헤딩·피치는 방향, 뱅크는 그 주위의 비틀림",
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "02",
+        "05"
+      ],
+      "lines": [
+        "세 단계를 끝냈으니 각 숫자의 역할을 다시 보겠습니다. 헤딩과 피치는 먼저 기수가 향할 방향을 정합니다. 뱅크는 그 기수 방향 주위에서 위와 옆이 어떻게 놓일지 정합니다.",
+        "지구의 경도와 위도로 표면의 한 방향을 정하는 것과 비슷합니다. 하지만 물체의 자세에는 그 방향을 축으로 얼마나 비틀렸는지가 하나 더 필요합니다.",
+        "마리오 카트의 반중력 구간을 보겠습니다. 길을 따라 차체의 앞쪽이 향하고, 차체의 위쪽도 함께 기울어집니다. 기수가 향하는 방향과 위쪽을 따로 따라가 보세요.",
+        "화면에서 차가 기울어 보이는 데에는 카메라와 도로도 관계합니다. 그래서 여기서는 실제로 보이는 차체의 앞과 위만 구별하겠습니다. 표시한 축은 회전의 의미를 설명하는 안내입니다.",
+        "방금 배운 헤딩, 피치, 뱅크라는 이름이 모든 프로그램에서 똑같이 쓰이는 것은 아닙니다. 같은 동작을 다른 이름과 순서로 적는 경우를 이어서 살펴보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "H/P로 같은 기수 방향을 정한 두 비행기를 겹친 뒤 한 대에만 뱅크를 준다. 경도·위도 비유는 방향 두 숫자까지만 작은 구도로 연결한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "같은 앞쪽 방향에도 날개 기울기 하나가 더 필요함을 본다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-08.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "직접 확인한 마리오카트 독립 영상에서 앞쪽과 위쪽을 한 번에 하나씩 짚는다. 실제 내부축 수치가 아닌 '화면 관찰/설명용' 표기를 유지한다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "계획 단계에서 길이를 제한하지 않는다. 확인된 원속도 독립 영상과 필요한 앞/동작/결과가 확보된 뒤 실제 길이를 정한다."
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "차체·도로·카메라가 모두 기울기를 보여 준다는 한계를 함께 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "id": "v6-08.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "방금 배운 헤딩, 피치, 뱅크라는 이름이 모든 프로그램에서 똑같이 쓰이는 것은 아닙니다. 같은 동작을 다른 이름과 순서로 적는 경우를 이어서 살펴보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-09",
+      "title": "이름만으로 회전 규약을 알 수는 없다",
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06"
+      ],
+      "lines": [
+        "오일러 각은 세 번의 회전으로 자세를 표현하는 방식입니다. 그런데 어떤 축을 어떤 순서로 돌릴지는 별도의 약속입니다.",
+        "헤딩, 피치, 뱅크 대신 요, 피치, 롤이라는 이름을 자주 봅니다. 롤은 뱅크와 같은 뜻으로 쓰이는 경우가 많습니다. 요를 헤딩과 같은 뜻으로 적는 문서도 있습니다.",
+        "방위각이나 고도각, 틸트 같은 이름도 등장하고, 알파, 베타, 감마 같은 그리스 문자를 쓰기도 합니다. 이름이 다르다고 반드시 다른 회전인 것도 아니고, 이름이 같다고 반드시 같은 회전인 것도 아닙니다.",
+        "확인할 것은 세 가지입니다. 어느 축을 쓰는지, 양의 방향이 어느 쪽인지, 어떤 순서로 적용하는지입니다.",
+        "특히 축이 물체와 함께 움직이는지, 처음 방향을 고정해서 쓰는지에 따라 설명 순서가 달라집니다. 같은 결과를 두 방식으로 만들어 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "H/P/B 옆에 yaw/pitch/roll을 대응 후보로 한 쌍씩 공개한다. 영문 이름을 빠르게 한 화면에 쏟지 않고 현재 말한 이름만 강조한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "같은 이름의 존재와 실제 규약의 동일함을 구분하며 이름 쌍을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-09.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "방위각·고도각·틸트와 그리스 문자 표기는 작은 '다른 표기 예' 영역에 순서대로 놓는다. 동의어 전체 암기를 요구하지 않는다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "용어가 많아도 확인할 대상은 축·양의 방향·순서라는 세 항목임을 찾는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "id": "v6-09.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "특히 축이 물체와 함께 움직이는지, 처음 방향을 고정해서 쓰는지에 따라 설명 순서가 달라집니다. 같은 결과를 두 방식으로 만들어 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-10",
+      "title": "움직이는 축과 고정된 축의 순서",
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06"
+      ],
+      "lines": [
+        "지금까지는 비행기에 붙어 움직이는 물체 축을 사용했습니다. 이런 회전을 내재적 회전, 영어로 인트린식 로테이션이라고 합니다.",
+        "헤딩을 한 다음 물체 엑스로 피치하고, 마지막에는 물체 제트로 뱅크했습니다. 앞 회전의 결과가 뒤 회전의 축에 반영됩니다.",
+        "이번에는 직립 공간의 축을 처음 방향에 고정하겠습니다. 이런 고정 축 방식은 외재적 회전, 엑스트린식 로테이션이라고 부릅니다.",
+        "물체 축을 따라 헤딩, 피치, 뱅크를 적용한 결과는, 고정 축을 따라 뱅크, 피치, 헤딩을 적용한 결과와 같습니다. 축을 고정하는 대신 순서가 뒤집힌 것입니다.",
+        "그래서 요, 피치, 롤 순서로 설명하는 자료와 롤, 피치, 요 순서로 적는 자료를 함께 만날 수 있습니다. 두 자료가 같은 회전을 뜻하려면, 순서뿐 아니라 움직이는 축과 고정 축의 약속도 서로 맞아야 합니다.",
+        "이 말은 같은 축을 같은 순서로 돌려도 된다는 뜻이 아닙니다. 고정 축인지 움직이는 축인지가 함께 바뀌어야 합니다. 우선 뱅크를 영으로 두고 두 회전만 비교하겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "현재 물체 축Y→X→Z를 단계마다 따라가며 한 대의 비행기를 돌린다. 앞 회전이 다음 축을 옮기는 지점을 정지해 표시한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "실선 물체 축이 비행기와 함께 움직이는 모습을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-10.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "두 번째 비행기에는 처음 방향의 직립 축을 점선으로 유지하고 Z→X→Y를 역순 적용한다. 마지막에 두 결과를 겹쳐 놓는다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "축 기준도 바뀌고 순서도 바뀌었을 때 끝 자세가 같아지는지 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "id": "v6-10.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "이 말은 같은 축을 같은 순서로 돌려도 된다는 뜻이 아닙니다. 고정 축인지 움직이는 축인지가 함께 바뀌어야 합니다. 우선 뱅크를 영으로 두고 두 회전만 비교하겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-11",
+      "title": "헤딩 30도·피치 20도, 두 경로의 같은 결과",
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06",
+        "07"
+      ],
+      "lines": [
+        "왼쪽 비행기는 헤딩 삼십 도를 먼저 적용합니다. 그러면 물체 엑스 축도 함께 돌아갑니다. 그 돌아간 물체 엑스를 기준으로 피치 이십 도를 줍니다.",
+        "오른쪽 비행기는 처음 방향으로 고정한 직립 엑스를 기준으로 피치 이십 도를 먼저 줍니다. 그다음 고정된 직립 와이를 기준으로 헤딩 삼십 도를 줍니다.",
+        "동작 중간에는 두 비행기의 자세가 다릅니다. 하지만 마지막에는 기수, 날개, 위쪽이 모두 일치합니다. 눈으로 겹쳐 확인해 보세요.",
+        "오른쪽의 두 번째 회전은 비행기와 이미 기울어진 물체 와이가 아니라, 계속 위를 향하는 직립 와이를 사용했습니다. 이 구별이 결과를 맞춥니다.",
+        "반대로 고정 축에서 순서만 바꾼 두 계산은 보통 같지 않습니다. 고정 엑스 구십 도 뒤 고정 와이 구십 도를 주면 기수는 아래를 향합니다. 순서를 바꾸면 오른쪽을 향합니다.",
+        "따라서 회전의 순서는 생략할 수 없는 정보입니다. 이제 이름도 비슷한 요와 헤딩이 실제 동작에서는 어떻게 달라지는지 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1
+            ]
+          },
+          "visual": {
+            "afterLine": 1,
+            "targetActionResult": "왼쪽 비행기에 현재 물체Y로h30°를 준 뒤 돌아간 물체X로p20°를 준다. 각 동작 후 축과 숫자를 잠깐 고정한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "두 번째 축이 처음X가 아니라 헤딩 후의X임을 찾는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-11.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "오른쪽 비행기에 고정 직립X로p20°→고정 직립Y로h30°를 순서대로 준다. 중간/끝 자세를 왼쪽과 같은 크기로 남긴다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "중간은 다르지만 끝의 기수·날개·위쪽이 모두 일치하는지 겹쳐 본다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "id": "v6-11.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "앞 비교와 분리된 작은 패널에서 고정X90→Y90와 고정Y90→X90를 따로 재생한다. 기수의 끝 방향을 아래/오른쪽 라벨로 남긴다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "같은 고정 축을 그대로 쓰면서 순서만 바꾸면 결과가 달라진다는 별도 예를 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-11.B03"
+        }
+      ],
+      "visualFormula": "row-vector object→upright: R = Rz(b) Rx(p) Ry(h); p_upright = p_object R",
+      "transitionToNext": "따라서 회전의 순서는 생략할 수 없는 정보입니다. 이제 이름도 비슷한 요와 헤딩이 실제 동작에서는 어떻게 달라지는지 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-12",
+      "title": "요 동작과 헤딩을 바꾸는 일은 다를 수 있다",
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06"
+      ],
+      "lines": [
+        "처음 수평인 비행기에서는 물체 와이와 직립 와이가 겹칩니다. 이때 둘 중 어느 축으로 돌려도 같은 동작처럼 보입니다.",
+        "하지만 기수가 수직 아래를 향하도록 비행기를 숙이면 두 와이 축이 달라집니다. 직립 와이는 여전히 수직이고, 물체 와이는 비행기와 함께 기울어져 있습니다.",
+        "현재 물체 와이 주위로 비행기를 돌리는 동작을 요라고 하겠습니다. 이 상태에서 요를 구십 도 주면 기수가 아래에서 수평 방향으로 움직입니다.",
+        "반면 헤딩 값을 바꾸는 것은 처음의 수직 축 주위로 전체 자세를 돌리는 일입니다. 기수는 계속 아래를 향하고, 비행기의 기울어진 옆과 위 방향이 바뀝니다.",
+        "두 동작의 결과를 멈춰 비교해 보세요. 같은 와이라는 이름을 붙였어도 실제 공간에서의 축이 다르기 때문에 결과도 다릅니다.",
+        "일인칭 게임에서 아래를 보며 마우스를 좌우로 움직이는 상황을 떠올려 보세요. 보통은 기울어진 물체 와이 축을 따르는 요보다, 수직 기준으로 보는 방향을 바꾸는 헤딩으로 설명할 수 있습니다. 실제 구현 규약은 확인해야 하지만 두 동작을 구별하는 데 도움이 됩니다.",
+        "요를 만들어야 할 때 헤딩 숫자 하나만 더하면 언제나 해결된다고 생각하면 안 됩니다. 현재 자세에 따라 다른 오일러 각도 함께 바뀌어야 할 수 있습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "수평 자세의 두Y가 겹친 상태에서 비행기만 수직하강 자세로 숙인다. 고정 직립Y와 기울어진 물체Y를 끝 화면에서 분리한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "현재 물체Y가 더 이상 수직 기준Y와 같지 않음을 찾는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-12.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "동일한 수직하강 자세를 두 개 놓고 현재 물체Y의yaw90°와 고정 직립Y의heading변경을 차례로 재생한다. 기수 자취는 회전축과 다른 선으로 표시한다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "한쪽 기수는 수평으로 이동하고 다른 쪽 기수는 아래에 남는지 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "id": "v6-12.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "새 게임 녹화 대신 직접 만든1인칭 카메라 도식에서 아래를 보는 상태와 수직 기준 좌우 방향 변경을 보여 준다. 실제 게임 구현을 단정하지 않는다.",
+            "plannedMotionSeconds": 4,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "화면을 기울이는 효과와 수직 기준으로 보는 방향을 바꾸는 효과를 구별한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              7
+            ]
+          },
+          "id": "v6-12.B03"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "요를 만들어야 할 때 헤딩 숫자 하나만 더하면 언제나 해결된다고 생각하면 안 됩니다. 현재 자세에 따라 다른 오일러 각도 함께 바뀌어야 할 수 있습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-13",
+      "title": "뱅크 뒤의 피치와 여러 오일러 규약",
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06"
+      ],
+      "lines": [
+        "피치에도 비슷한 주의가 필요합니다. 뱅크가 영일 때는 피치가 물체의 현재 엑스 축을 돌리는 모습과 맞아 보입니다.",
+        "그러나 뱅크를 준 뒤에는 물체 엑스 축이 다시 돌아가 있습니다. 오일러 각의 가운데 숫자인 피치를 바꾸는 것과, 완성된 자세의 현재 물체 엑스로 회전하는 것은 일반적으로 다릅니다.",
+        "오일러 각은 최종 자세를 만드는 순서이지, 완성된 물체에서 아무 축으로나 더 돌리는 명령 세 개가 아닙니다. 어느 단계의 축인지까지 기억해야 합니다.",
+        "바닥이 있는 게임에서는 수직 축, 가로 축, 진행 방향 축을 쓰는 헤딩, 피치, 뱅크가 이해하기 편합니다. 하지만 모든 분야가 이 선택을 따르는 것은 아닙니다.",
+        "처음과 마지막 회전에서 같은 축을 다시 쓰는 고유 오일러 각 규약도 있습니다. 팽이의 축이 도는 세차, 축의 기울기가 변하는 장동, 팽이 자체의 자전을 나누는 예를 생각할 수 있습니다.",
+        "지금처럼 서로 다른 세 축을 쓰는 경우는 엄밀하게 테이트–브라이언 각이라고 부릅니다. 실무에서는 이 방식도 넓게 오일러 각이라고 부르므로, 이름만 보고 축 순서를 판단하지 않는 것이 중요합니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "b=0 때의 피치 변화와 뱅크 후의 피치 숫자 변화/현재bodyX 추가회전을 두 단계로 비교한다. 현재X와 피치를 적용한 단계의X를 서로 다른 라벨로 남긴다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "같은'피치'라는 말에도 어느 단계의 축인지 확인해야 함을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "id": "v6-13.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "팽이의 세차→장동→자전을 한 번에 하나씩 보여 주고 각 명칭을 해당 동작 뒤에 붙인다. 반복축 예와 서로 다른Y-X-Z 축 순서를 나란히 남긴다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "낯선 세 이름을 외우기보다 반복되는 축과 서로 다른 축의 차이를 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-13.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "지금처럼 서로 다른 세 축을 쓰는 경우는 엄밀하게 테이트–브라이언 각이라고 부릅니다. 실무에서는 이 방식도 넓게 오일러 각이라고 부르므로, 이름만 보고 축 순서를 판단하지 않는 것이 중요합니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-14",
+      "title": "다른 규약으로 옮길 때",
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "03",
+        "06"
+      ],
+      "lines": [
+        "다른 엔진이나 파일에서 회전 값을 가져왔다면, 먼저 그 문서의 축과 양의 방향, 적용 순서를 확인해야 합니다. 화면이 비슷하다는 이유로 숫자 이름만 바꾸면 안 됩니다.",
+        "예를 들어 헤딩, 피치, 뱅크 세 칸을 다른 프로그램의 엑스, 와이, 제트 칸에 순서만 바꿔 넣는 방식은 일반적으로 맞지 않습니다. 회전이 서로 영향을 주기 때문입니다.",
+        "안전한 방법은 원래 규약으로 회전 행렬을 만든 다음, 같은 회전을 새 규약의 오일러 각으로 다시 읽는 것입니다. 좌표계 자체가 다르면 그 기준 변환도 함께 반영합니다.",
+        "행렬은 한 자세가 각 기준 방향을 어디로 보내는지 담는 표라고 생각하면 됩니다. 자세를 중간의 공통 표현으로 옮긴 뒤, 다른 약속의 숫자를 구하는 것입니다.",
+        "이번 표기에서는 점의 엑스, 와이, 제트 숫자 셋을 가로 한 줄로 적습니다. 이것이 행벡터입니다. 그 오른쪽에 행렬을 곱합니다. 물체 공간에서 직립 공간으로 가는 행렬은 뱅크, 피치, 헤딩 행렬의 순서로 곱해집니다. 내재적 동작 설명의 순서와 행렬 표기의 순서를 혼동하지 마세요.",
+        "개별 변환식의 전체 유도는 변환을 다루는 범위에서 확인하면 됩니다. 여기서는 숫자 세 개가 규약까지 포함해야 의미가 있다는 점을 먼저 잡겠습니다. 그 약속이 명확하면 오일러 각은 꽤 편리한 표현입니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "두 프로그램의 숫자 칸과 축/양의 방향/순서 안내를 비교한다. 단순 칸 교환은 안전하지 않다는 주의 표시를 두고 아직 행렬식을 펼치지 않는다.",
+            "plannedMotionSeconds": 3,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "같은이름·비슷한화면이 규약의 일치를 뜻하지 않음을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-14.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "규약A 숫자→동일 회전 행렬→규약B 숫자 흐름을 단계별 공개한다. 행렬은 각 기준 방향을 보낸 결과라는 축 그림을 옆에 붙인다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "중간의 공통 표현은 물체의 자세이며 숫자 이름만 교환한 것이 아님을 본다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-14.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "1×3 행벡터가 오른쪽3×3 행렬을 만나는 모양을 먼저 보이고 Rz(b)Rx(p)Ry(h)를 한 항씩 공개한다. 동작 순서Y-X-Z와 표기 순서는 별도 줄에 적는다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 7,
+            "purpose": "행과 열의 위치 및 두 종류의 순서를 따로 읽을 시간을 확보한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-14.B03"
+        }
+      ],
+      "visualFormula": "v_upright = v_object R; R = Rz(b) Rx(p) Ry(h)",
+      "transitionToNext": "개별 변환식의 전체 유도는 변환을 다루는 범위에서 확인하면 됩니다. 여기서는 숫자 세 개가 규약까지 포함해야 의미가 있다는 점을 먼저 잡겠습니다. 그 약속이 명확하면 오일러 각은 꽤 편리한 표현입니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-15",
+      "title": "장점1: 사람이 읽고 조절하기 쉽다",
+      "articleSection": "8.3.3",
+      "currentSceneIds": [
+        "09"
+      ],
+      "lines": [
+        "첫 번째 장점은 사람이 자세를 읽고 조절하기 쉽다는 것입니다. 오른쪽으로 삼십 도 보고, 아래로 십 도 숙이고, 날개를 이십 도 기울인다고 하면 동작을 상상할 수 있습니다.",
+        "같은 자세를 회전 행렬의 아홉 숫자로 보여 주면 바로 모습을 떠올리기는 어렵습니다. 오일러 각은 사람이 입력하거나 편집할 때 뜻을 붙이기 쉽습니다.",
+        "헤딩만 바꿔 방향을 조절하고, 피치만 바꿔 위아래 시선을 조절하는 편집 상황을 보겠습니다. 슬라이더 하나를 움직일 때 어떤 변화가 생길지 예상할 수 있습니다.",
+        "젤다에서 통나무를 옮겨 옆에 붙이는 장면도 보겠습니다. 어디로 옮길지와 어느 쪽으로 놓을지를 따로 정합니다. 지금 통나무의 긴 방향이 맞는지를 눈으로 판단하는 데 주목해 주세요.",
+        "이 게임이 내부에서 오일러 각을 쓴다고 단정하는 예시는 아닙니다. 자세를 사람이 이해할 수 있는 회전 조작으로 나누는 일이 왜 유용한지 보는 예입니다.",
+        "사람에게 편리한 표현이라는 장점과, 컴퓨터에서 모든 연산에 가장 좋은 표현이라는 말은 다릅니다. 다음으로 저장하는 데이터의 관점에서 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "한 비행기에 H/P/B 슬라이더를 붙이고 헤딩만→피치만 한 번에 하나씩 조절한다. 아홉 숫자 행렬은 비교용 작은 표로만 둔다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "슬라이더 한 칸과 예측 가능한 한 동작의 연결을 찾는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-15.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "검증된 젤다 독립 영상에서 통나무를 옮기는 조작과 긴 방향을 맞추는 조작을 구별해 순차 표식으로 보인다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "계획 단계에서 길이를 제한하지 않는다. 확인된 원속도 독립 영상과 필요한 앞/동작/결과가 확보된 뒤 실제 길이를 정한다."
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "위치와 놓인 방향을 사람이 각각 판단하는 장면을 관찰한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "id": "v6-15.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "사람에게 편리한 표현이라는 장점과, 컴퓨터에서 모든 연산에 가장 좋은 표현이라는 말은 다릅니다. 다음으로 저장하는 데이터의 관점에서 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-16",
+      "title": "장점2: 세 숫자로 저장하고 정밀도를 정한다",
+      "articleSection": "8.3.3",
+      "currentSceneIds": [
+        "09"
+      ],
+      "lines": [
+        "삼차원 자세는 한 자세 주변의 작은 변화를 다룰 때, 서로 따로 조절할 수 있는 세 개의 회전량이 필요합니다. 이렇게 작은 범위를 다루는 것을 국소적이라고 합니다. 오일러 각은 그 세 숫자만 저장합니다. 아홉 칸의 행렬을 그대로 저장하는 것보다 적은 수입니다.",
+        "애니메이션에 자세를 아주 많이 저장한다면 이 차이가 누적됩니다. 프레임 수와 뼈 수가 늘수록 한 자세에 필요한 데이터 크기가 중요해집니다.",
+        "각도를 어느 정도 간격으로 저장할지도 정할 수 있습니다. 예를 들어 일 도 단위로 가장 가까운 값에 반올림하면, 각 숫자의 반올림 오차는 최대 영 점 오 도입니다.",
+        "화면에서 이십 도와 이십 점 사 도를 같은 이십 도 칸에 넣어 보겠습니다. 값이 줄어드는 대신 작은 차이를 잃는 것입니다. 이런 과정을 양자화라고 부릅니다.",
+        "다만 각 성분의 오차가 영 점 오 도라고 해서 최종 자세의 오차도 언제나 그 숫자와 같다는 뜻은 아닙니다. 세 회전의 조합과 현재 자세를 함께 보아야 합니다.",
+        "각도를 저장하면 정밀도에 붙은 의미가 비교적 직관적이라는 장점이 있습니다. 사인과 코사인 성분을 저장할 때는 성분 오차가 각도에 미치는 영향을 따로 따져야 합니다.",
+        "다른 표현도 압축할 수 있으므로 오일러 각만 압축할 수 있다는 뜻은 아닙니다. 이 장점은 사람이 이해할 수 있는 각도와 작은 저장량을 함께 얻는 데 있습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "한 자세의3각도와9칸 행렬을 먼저 비교하고, 같은 자세 기록이 뼈·프레임별로 쌓이는 표를 순서대로 늘린다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "무엇을 여러 번 저장하는지와 숫자 칸 수의 차이만 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-16.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "연속 각도 눈금에서20°와20.4°를 같은1° 저장칸의20°로 모은다. 최대 반올림 오차0.5°를 한 성분의 눈금으로만 표시한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "저장값이 같아지는 두 입력과 잃어버린 작은 차이를 직접 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "id": "v6-16.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "각도 오차라는 정보와 sin/cos 성분 오차라는 정보를 다른 범례로 둔다. 새 삼각함수 유도를 추가하지 않고 두 오류의 뜻이 같지 않음을 연결한다.",
+            "plannedMotionSeconds": 3,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "성분 한 칸의 오차와 최종 자세 오차를 같은 숫자로 읽지 않도록 범례를 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              7
+            ]
+          },
+          "id": "v6-16.B03"
+        }
+      ],
+      "visualFormula": "nearest 1° quantization: per-component rounding error ≤ 0.5°",
+      "transitionToNext": "다른 표현도 압축할 수 있으므로 오일러 각만 압축할 수 있다는 뜻은 아닙니다. 이 장점은 사람이 이해할 수 있는 각도와 작은 저장량을 함께 얻는 데 있습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-17",
+      "title": "장점3: 유한한 각도 세 개는 자세를 만든다",
+      "articleSection": "8.3.3",
+      "currentSceneIds": [
+        "09"
+      ],
+      "lines": [
+        "세 번째 장점은 정한 규약 아래에서 유한한 실수 세 개를 넣으면 회전을 만들 수 있다는 것입니다. 여기서 유한한 실수는 무한대나 계산 불가 값이 아닌 숫자를 말합니다. 헤딩이 칠백이십 도여도, 피치가 백삼십오 도여도 계산 자체는 가능한 자세를 만듭니다.",
+        "반면 회전 행렬의 아홉 칸에 숫자를 아무렇게나 채우면 회전이 아닐 수 있습니다. 길이가 늘어나거나 축이 비뚤어지는 변환이 될 수 있기 때문입니다.",
+        "쿼터니언도 회전에 쓸 때에는 길이 같은 조건을 관리합니다. 오늘은 그 식을 미리 외우기보다, 표현마다 지켜야 하는 조건이 다르다는 정도로 구별해 두겠습니다.",
+        "유한한 세 각도가 유효한 자세를 만든다는 말과, 우리가 원한 자세가 된다는 말도 구별해야 합니다. 축이나 순서를 잘못 고르면 유효하지만 엉뚱한 자세가 나옵니다.",
+        "이렇게 편리한 세 숫자에도 대가가 있습니다. 같은 자세가 숫자로 여러 번 나타나고, 숫자 사이를 연결하는 과정에도 문제가 생깁니다. 먼저 같은 자세가 겹쳐 적히는 경우부터 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1
+            ]
+          },
+          "visual": {
+            "afterLine": 1,
+            "targetActionResult": "h720°,p135° 같은 유한 입력을 넣은 뒤 생성된 강체 자세를 보여 준다. 큰 숫자가 곧 계산 불가능은 아니라는 표시만 붙인다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "유효한 숫자 입력과 유효한 자세라는 관계를 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-17.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "임의3×3 숫자로 늘어난 모형과 순수 회전 모형을 비교한다. 쿼터니언은'조건을 관리하는 다른 표현'이라는 이름만 남기고 미학습 공식을 펼치지 않는다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "다른 표현은 지켜야 하는 조건이 있음을 길이·직각 그림으로 구별한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "id": "v6-17.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "이렇게 편리한 세 숫자에도 대가가 있습니다. 같은 자세가 숫자로 여러 번 나타나고, 숫자 사이를 연결하는 과정에도 문제가 생깁니다. 먼저 같은 자세가 겹쳐 적히는 경우부터 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-18",
+      "title": "단점1: 숫자가 달라도 같은 자세",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "08",
+        "09"
+      ],
+      "lines": [
+        "헤딩 영 도인 비행기를 한 바퀴 돌려 삼백육십 도로 만들겠습니다. 지나온 동작은 있지만 마지막 자세는 처음과 같습니다. 칠백이십 도도 마지막 자세는 같습니다.",
+        "각도에 삼백육십 도의 정수 배를 더해도 같은 끝 자세가 됩니다. 이처럼 서로 다른 숫자가 같은 결과를 나타내는 중복 표현을 에일리어싱이라고 부릅니다.",
+        "세 회전을 함께 쓰면 각도 하나의 한 바퀴보다 덜 눈에 띄는 중복도 생깁니다. 첫 비행기는 헤딩 영, 피치 백삼십오, 뱅크 영 도입니다. 두 번째는 헤딩 백팔십, 피치 사십오, 뱅크 백팔십 도입니다.",
+        "세 숫자는 다르지만 두 비행기를 겹치면 기수, 날개, 위쪽이 일치합니다. 같은 최종 자세에 도착한 것입니다.",
+        "따라서 오일러 각 세 숫자를 그대로 비교해 다르다고 해서 자세도 다르다고 결론 내릴 수 없습니다. 비교와 출력을 편하게 하려면, 여러 표현 중 하나를 대표로 고르는 규칙이 필요합니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1
+            ]
+          },
+          "visual": {
+            "afterLine": 1,
+            "targetActionResult": "0→360→720°를 차례로 돌린 뒤 세 끝 자세를 겹쳐 놓는다. 누적 회전 계기는 따로 유지한다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "0→360→720°를 관찰 가능한 속도로 보여 준다. 여러 바퀴를 고정 길이에 맞추려고 빠르게 돌리지 않고 끝 자세와 누적량을 각각 확인할 시간을 둔다."
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "지나온 바퀴수와 마지막 자세가 서로 다른 정보임을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              2
+            ]
+          },
+          "id": "v6-18.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "H/P/B세 열에(0,135,0)과(180,45,180)을 한 행씩 공개한 뒤 두 비행기를 각각 만든다. 마지막 세 축을 반투명 겹침으로 비교한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 7,
+            "purpose": "숫자 여섯 개를 순서대로 읽은 뒤 기수·날개·위쪽의 일치를 찾는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "id": "v6-18.B02"
+        }
+      ],
+      "visualFormula": "(h,p,b)=(0°,135°,0°) ≡ (180°,45°,180°)",
+      "transitionToNext": "따라서 오일러 각 세 숫자를 그대로 비교해 다르다고 해서 자세도 다르다고 결론 내릴 수 없습니다. 비교와 출력을 편하게 하려면, 여러 표현 중 하나를 대표로 고르는 규칙이 필요합니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-19",
+      "title": "대표 범위와 정규형",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "09",
+        "12"
+      ],
+      "lines": [
+        "대표 표현을 고르는 한 방법은 헤딩과 뱅크를 마이너스 백팔십 도보다 크고 백팔십 도 이하로, 피치를 마이너스 구십 도부터 구십 도까지로 제한하는 것입니다.",
+        "이렇게 정해진 범위의 대표를 정규형이라고 부르겠습니다. 피치를 뒤집어 표현하던 앞의 두 비행기에서도, 이 범위에 맞는 쪽으로 표현을 고릅니다.",
+        "각 칸에서 무조건 삼백육십 도만 빼면 끝나는 것은 아닙니다. 피치를 범위 안으로 옮기는 과정에서 헤딩과 뱅크도 함께 바뀔 수 있습니다.",
+        "그리고 피치가 정확히 플러스나 마이너스 구십 도인 곳에는 특별한 처리가 더 필요합니다. 그곳에서는 헤딩과 뱅크가 독립적으로 드러나지 않습니다.",
+        "범위를 정했으니 무조건 유일해졌다고 끝내지 말고, 그 경계의 비행기를 직접 보겠습니다. 이 현상이 짐벌 락으로 이어집니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "H/B범위(-180,180]와P범위[-90,90]를 한 줄씩 공개한다. 열린/닫힌 끝점을 빈점/찬점으로 함께 표시한다.",
+            "plannedMotionSeconds": 4,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "어느 끝점을 포함하는지와 H/B/P의 서로 다른 범위를 숫자 눈금에서 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-19.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "직전(0,135,0)을(180,45,180)으로 옮긴 표시를 이어 받아 피치뿐 아니라H/B도 바뀌는 것을 한 칸씩 강조한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "각 칸에서360만 빼는 단순 조작과 다름을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-19.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "피치 범위 내부와 정확한±90°경계를 분리하고 같은 비행기 중심에 다음 장면의 두 축을 남긴다.",
+            "plannedMotionSeconds": 4,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "대표 범위의 경계에 아직 특별한 문제가 남아 있음을 찾는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "id": "v6-19.B03"
+        }
+      ],
+      "visualFormula": "-180° < h ≤ 180°; -90° ≤ p ≤ 90°; -180° < b ≤ 180°",
+      "transitionToNext": "범위를 정했으니 무조건 유일해졌다고 끝내지 말고, 그 경계의 비행기를 직접 보겠습니다. 이 현상이 짐벌 락으로 이어집니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-20",
+      "title": "짐벌 락: 두 회전축이 한 선에 놓인다",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "10",
+        "11",
+        "12"
+      ],
+      "lines": [
+        "비행기의 피치를 사십오 도에서 팔십 도로, 그리고 구십 도로 바꾸겠습니다. 피치가 커질수록 처음의 와이 축과 마지막 뱅크의 제트 축이 가까운 직선 방향으로 놓입니다.",
+        "피치가 구십 도가 되면 두 축은 같은 직선 위에 놓입니다. 축의 양의 방향은 서로 반대일 수 있지만, 회전하는 직선은 하나가 됩니다.",
+        "이때 헤딩을 바꾸는 효과와 뱅크를 바꾸는 효과가 겹칩니다. 서로 독립적이던 두 조절 방향이 같은 효과를 나눠 맡는 것입니다. 이것을 짐벌 락이라고 합니다.",
+        "현재 규약에서 피치가 플러스 구십 도이면 헤딩에서 뱅크를 뺀 값이 남습니다. 헤딩 삼십, 뱅크 십 도인 자세는 헤딩 이십, 뱅크 영 도인 자세와 같습니다.",
+        "헤딩 사십오, 뱅크 영 도와 비교하려면 헤딩 영, 뱅크 마이너스 사십오 도를 써야 합니다. 양의 사십오를 양쪽에 그대로 넣는 것이 아닙니다. 축의 양의 방향이 반대인 점을 확인해 주세요.",
+        "피치가 마이너스 구십 도인 쪽에서는 헤딩과 뱅크를 더한 값이 남습니다. 두 경계의 부호까지 같은 것으로 외우면 안 됩니다.",
+        "이 상태에서도 비행기 자체가 물리적으로 회전할 수 없게 되는 것은 아닙니다. 모든 자세는 여전히 나타낼 수 있습니다. 문제는 그 부근에서 세 숫자를 독립적으로 조절하고 연속적으로 읽는 방식에 생깁니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "p45→80→90°를 천천히 순차 재생한다. 처음Y와 최종 뱅크Z의 직선을 끝에서 강조하고 양의 화살표가 반대임을 분리해 보인다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "축 두 개의 위치와 양의 방향을 구별해 공선 상태를 관찰한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "id": "v6-20.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "p=+90°를 고정한 첫 숫자쌍(30,90,10)/(20,90,0)부터 확인한 뒤 두 번째쌍(45,90,0)/(0,90,-45)을 별도로 공개한다. h-b 계산과 같은 끝 자세를 각 쌍마다 멈춰 보여 준다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "두 숫자쌍은 각자 계산→회전→같은 끝 자세 순서로 확인한다. 고정 길이에 맞춰 두 예를 동시에 펼치거나 재생 속도를 높이지 않는다."
+          },
+          "hold": {
+            "plannedSeconds": 8,
+            "purpose": "두 예를 한꺼번에 외우지 않고 각 표의 뺄셈·뱅크 부호·끝 자세 일치를 차례로 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-20.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "p=-90°패널로 바꾸고 h+b라는 부호 관계만 별도로 공개한다. +90°패널의 h-b와 색이 아닌 글자·연산기호로 대비한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "플러스 경계와 마이너스 경계의 다른 연산을 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              7
+            ]
+          },
+          "id": "v6-20.B03"
+        }
+      ],
+      "visualFormula": "p=+90° → h-b; p=-90° → h+b",
+      "transitionToNext": "이 상태에서도 비행기 자체가 물리적으로 회전할 수 없게 되는 것은 아닙니다. 모든 자세는 여전히 나타낼 수 있습니다. 문제는 그 부근에서 세 숫자를 독립적으로 조절하고 연속적으로 읽는 방식에 생깁니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-21",
+      "title": "짐벌 경계의 대표값과 프로그램 입출력",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "09",
+        "12"
+      ],
+      "lines": [
+        "대표값을 하나 고르려면 피치가 플러스나 마이너스 구십 도일 때 뱅크를 영으로 정할 수 있습니다. 나머지 효과를 헤딩으로 모으는 것입니다.",
+        "플러스 구십 도에서는 기존 헤딩에서 뱅크를 빼고, 마이너스 구십 도에서는 둘을 더합니다. 같은 자세를 유지하면서 표기를 하나로 정리합니다.",
+        "이것은 중복 표현을 정리하는 규칙입니다. 짐벌 락 근처의 연속성 문제를 없애는 마법은 아닙니다. 물체는 조금 움직였는데 출력 각도가 갑자기 크게 바뀔 수도 있습니다.",
+        "프로그램 입력에서는 범위 밖의 유한한 오일러 각을 받아도 회전을 만들 수 있습니다. 반대로 사람이 읽는 출력에서는 정규형이 비교적 편리합니다. 입력 허용 범위와 출력 대표 규칙을 나눠 생각하면 됩니다.",
+        "그리고 게임 화면이 가파르거나 차체가 기울었다는 사실만으로 짐벌 락이라고 판정할 수는 없습니다. 카메라와 지형도 화면을 기울이며, 게임 내부의 회전 표현도 별도 확인이 필요합니다.",
+        "여기까지는 같은 자세를 어떻게 적는지의 문제였습니다. 이제 그 숫자들을 시간에 따라 바꿀 때 어떤 경로가 생기는지 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "p=+90°와 p=-90°를 따로 보여 준다. 먼저 뱅크를0으로 고르는 규칙을 적용하고, 각각 h-b와 h+b를 헤딩 칸으로 모아도 물체의 끝 자세가 그대로임을 겹쳐 확인한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "두 경계의 연산 부호가 다르며 자세는 바뀌지 않는다는 점을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-21.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "같은 작은 실제 자세 변화가 정규형 각도 출력에서는 큰 점프로 나타나는 짧은 곡선을 보여 준다. 축을 고치는 장치가 아니라 출력 표기의 경계라는 범례를 붙인다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "연속으로 움직이는 물체와 점프하는 숫자를 구별한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-21.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "입력 허용 범위→회전 생성→출력 대표값의 세 단계를 차례로 공개한다. 기울어진 게임 화면 옆에는 '화면만으로 내부 표현/짐벌 락을 판정할 수 없음'을 짧게 표시한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "입력값, 대표 출력, 화면 관찰이라는 서로 다른 증거 수준을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-21.B03"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "여기까지는 같은 자세를 어떻게 적는지의 문제였습니다. 이제 그 숫자들을 시간에 따라 바꿀 때 어떤 경로가 생기는지 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-22",
+      "title": "보간은 중간 자세를 고르는 일",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "13",
+        "16",
+        "17"
+      ],
+      "lines": [
+        "시작 자세와 끝 자세를 정했다고, 그 사이 움직임이 전부 정해진 것은 아닙니다. 같은 출발과 도착 사이에도 여러 회전 경로가 있습니다.",
+        "보간은 두 값 사이의 중간 값을 만드는 일입니다. 전체 움직임의 진행 비율을 티라고 적겠습니다. 티를 영부터 일까지 움직이고, 영이면 시작, 일이면 끝, 영 점 오이면 중간 지점으로 보겠습니다.",
+        "우선 한 각도만 생각하겠습니다. 시작이 십 도, 끝이 삼십 도라면 차이는 이십 도입니다. 그 차이에 티를 곱해 시작 값에 더하면 됩니다.",
+        "티가 영 점 오일 때는 십 도에 이십 도의 절반을 더하므로 이십 도입니다. 이것이 선형 보간의 기본 계산입니다.",
+        "마리오가 발판을 향해 돌아서 점프하고 착지하는 모습을 떠올려 보세요. 출발 자세와 착지 자세가 맞아도, 도중에 몸이 엉뚱하게 크게 돌면 자연스럽지 않습니다. 중간 자세까지 확인해야 하는 이유입니다.",
+        "각도는 한 바퀴마다 같은 자세로 돌아오므로, 보통 숫자의 보간과 다른 주의점이 생깁니다. 먼저 불필요한 여러 바퀴가 끼어드는 예부터 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "같은 시작과 끝 자세를 고정하고 서로 다른 두 중간 경로를 먼저 보여 준다. t를 경과 초가 아닌 진행 비율로 표시해 0/0%,0.5/50%,1/100% 눈금을 단계적으로 공개한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "끝점만으로 중간 움직임이 정해지지 않는다는 점과 t의 뜻을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-22.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "10°→30°의 한 각도 눈금에서 차이20°를 분리하고, 10°+t×20°의 입력 칸을 공개한다. t=0.5를 넣는 계산은 수치를 한 줄씩 바꾼 뒤 중간 위치에 표시한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "시작값, 차이, 진행 비율의 역할과 중간 계산을 직접 따라간다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "id": "v6-22.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "직접 확인한 마리오 독립 영상에서 출발→공중의 방향 변화→착지의 대응 프레임을 원속도로 보여 준다. 게임 내부 보간 알고리즘을 측정했다고 쓰지 않고 관찰한 중간 자세만 짚는다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "계획 단계에서 길이를 제한하지 않는다. 확인된 원속도 독립 영상과 필요한 앞/동작/결과가 확보된 뒤 실제 길이를 정한다."
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "출발·도착이 맞는 것과 공중 자세가 의도에 맞는 것을 따로 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-22.B03"
+        }
+      ],
+      "visualFormula": "Δθ = θ1-θ0; θ(t) = θ0 + t Δθ; 0≤t≤1",
+      "transitionToNext": "각도는 한 바퀴마다 같은 자세로 돌아오므로, 보통 숫자의 보간과 다른 주의점이 생깁니다. 먼저 불필요한 여러 바퀴가 끼어드는 예부터 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-23",
+      "title": "문제 1: 720도에서 45도로 보간하면",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "13"
+      ],
+      "lines": [
+        "시작 헤딩을 칠백이십 도, 끝 헤딩을 사십오 도로 적었다고 하겠습니다. 시작 비행기의 자세만 보면 영 도와 같습니다.",
+        "하지만 숫자를 그대로 빼면 사십오에서 칠백이십을 뺀 마이너스 육백칠십오 도입니다. 이 차이를 따라가면 반대쪽으로 거의 두 바퀴를 돌아서 도착합니다.",
+        "화면에서 그 긴 경로를 먼저 보겠습니다. 우리가 원한 것이 같은 시작 자세에서 오른쪽으로 사십오 도만 도는 움직임이었다면, 이 결과는 불필요합니다.",
+        "시작을 같은 자세의 대표값인 영 도로 바꾸면 차이는 사십오 도가 됩니다. 이번에는 짧은 경로로 도착합니다.",
+        "물론 일부러 여러 바퀴 회전시키는 애니메이션이라면 긴 경로가 필요한 경우도 있습니다. 여기서는 시작과 끝의 자세만 주고 짧게 연결하려는 상황을 다룹니다.",
+        "끝점의 표현을 정리하면 이 문제는 줄일 수 있습니다. 그러나 두 끝점이 모두 대표 범위 안에 있어도 남는 문제가 있습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "720°와0°의 시작 자세가 같음을 먼저 겹친다. 45-720=-675°를 한 줄씩 공개하고, 회전 방향·진행 화살표·누적 바퀴 표시를 따라 긴 경로를 관찰한다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "여러 바퀴 경로를 확인 가능한 속도로 보여 준다. 설명 시간을 줄이기 위한 가속이나 전체 길이 상한을 두지 않는다."
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "끝 자세가 같아도 거의 두 바퀴를 거꾸로 돌아가는 중간 경로를 눈으로 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-23.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "시작 표기를0°로 바꾼 뒤 같은 시작 자세에서 +45°만 회전시킨다. 앞의 긴 경로 자취는 옅게 남겨 길이와 방향을 비교하고 같은 끝 자세에 도착하면 멈춘다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "표기 정리가 경로의 숫자 차이를 어떻게 바꾸었는지 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "id": "v6-23.B02"
+        }
+      ],
+      "visualFormula": "45°-720°=-675°; 45°-0°=45°",
+      "transitionToNext": "끝점의 표현을 정리하면 이 문제는 줄일 수 있습니다. 그러나 두 끝점이 모두 대표 범위 안에 있어도 남는 문제가 있습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-24",
+      "title": "문제 2: 마이너스 170도와 플러스 170도 사이",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "13",
+        "14"
+      ],
+      "lines": [
+        "시작은 마이너스 백칠십 도, 끝은 플러스 백칠십 도입니다. 두 값은 모두 앞에서 정한 대표 범위 안에 있습니다.",
+        "그대로 빼면 끝에서 시작을 뺀 값은 플러스 삼백사십 도입니다. 선형 보간의 중간 값은 영 도가 되고, 비행기는 앞쪽을 지나 멀리 돌아갑니다.",
+        "그런데 원 위에서 두 화살표를 보세요. 뒤쪽 경계를 사이에 두고 이십 도밖에 떨어져 있지 않습니다. 반대 방향으로 이십 도만 돌면 도착합니다.",
+        "따라서 필요한 차이는 플러스 삼백사십 도와 같은 끝 회전을 만드는 마이너스 이십 도입니다. 차이에서 한 바퀴를 빼 준 것입니다.",
+        "이 차이의 절반을 시작에 더하면 마이너스 백팔십 도입니다. 표기를 플러스 백팔십 도로 바꿔도 같은 중간 자세입니다.",
+        "여기서는 끝점 각각만 정리해서는 충분하지 않았습니다. 두 값의 차이 자체를 원하는 대표 범위로 감싸야 합니다. 그 계산을 랩 함수로 만들겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "원 위의 -170°와+170°를 먼저 표시하고 원시 차이 +340°의 긴 호를 순서대로 그린다. t=0.5에서0°가 되는 중간 자세를 멈춰 보여 준다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "두 끝점이 대표 범위 안이어도 앞쪽을 지나 멀리 도는 경로가 생긴다는 점을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-24.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "뒤쪽 경계에 두 끝 화살표가 가까이 있음을 확대한다. -20°의 짧은 호를 따로 그린 뒤 +340°-360°=-20°를 공개한다. 긴 호와 짧은 호를 색 외에도 '원시 차이/짧은 차이'로 구분한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "뒤 경계의 작은 간격과 한 바퀴를 빼는 계산을 대응해 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-24.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "짧은 호의 절반에 중간 화살표를 놓고 -170°+(-20°)/2=-180°를 순차 표시한다. -180°와+180° 두 표기를 같은 한 화살표에 연결한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "중간 자세와 숫자의 경계 표기가 같은 위치를 가리키는지 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-24.B03"
+        }
+      ],
+      "visualFormula": "raw Δ=170°-(-170°)=340°; wrapped Δ=-20°; mid=-180°≡180°",
+      "transitionToNext": "여기서는 끝점 각각만 정리해서는 충분하지 않았습니다. 두 값의 차이 자체를 원하는 대표 범위로 감싸야 합니다. 그 계산을 랩 함수로 만들겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-25",
+      "title": "랩 함수의 원리: 한 바퀴를 몇 번 뺄까",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "15"
+      ],
+      "lines": [
+        "랩은 한 바퀴의 정수 배를 더하거나 빼서, 같은 각도를 정한 범위로 옮기는 일입니다. 먼저 도 단위에서 계산 원리를 보겠습니다.",
+        "각도에 백팔십을 더하고 삼백육십으로 나눈 뒤, 소수점 아래를 내립니다. 이 내림을 플로어라고 합니다. 음수에서는 영 쪽으로 버리는 계산과 다릅니다.",
+        "예를 들어 마이너스 영 점 일의 플로어는 마이너스 일입니다. 수직선에서 그 값보다 크지 않은 가장 가까운 정수를 고르는 것입니다.",
+        "각도 삼백사십에 백팔십을 더하면 오백이십, 삼백육십으로 나누면 약 일 점 사사입니다. 플로어는 일이므로 한 바퀴를 빼서 마이너스 이십 도를 얻습니다.",
+        "식으로는 원래 각도에서 삼백육십 곱하기 그 플로어 값을 뺍니다. 이 식의 출력 범위는 마이너스 백팔십 도 이상, 플러스 백팔십 도 미만입니다.",
+        "앞에서 대표 범위를 마이너스 백팔십 도보다 크고 플러스 백팔십 도 이하로 정했으므로, 경계인 마이너스 백팔십만 플러스 백팔십으로 바꿔 주면 표기가 일치합니다.",
+        "음수 입력과 양 끝점을 따로 확인하는 이유가 여기에 있습니다. 한 바퀴를 빼는 원리를 이해했으니, 같은 동작을 라디안 코드로 옮겨 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "도 단위 원을 수직선으로 펴서 (a+180)/360이 어떤 바퀴 칸을 고르는지 보인다. 음수 예에서는 -0.1과-1을 수직선에 놓고 내림과0쪽 버림을 분리한다. floor라는 이름은 그 동작 뒤에 붙인다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "floor(-0.1)=-1의 방향과 '그 값보다 크지 않은 정수'라는 뜻을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-25.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "입력340을 고정하고 +180→520, /360→약1.44, floor→1, 340-360×1→-20 순서로 현재 계산 줄만 강조한다. 원의 같은 끝 방향과 수직선의 이동을 연결한다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 7,
+            "purpose": "각 중간 수치를 읽고 왜 한 바퀴만 빼는지 스스로 따라간다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-25.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "a-360 floor((a+180)/360)을 앞의 계산 자리와 연결한다. [-180,180) 눈금과 선택한(-180,180] 눈금을 순차로 보여 주고 -180만+180으로 옮기는 경계 보정을 공개한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "열린 끝점/닫힌 끝점과 보정되는 정확히 한 값만 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              7
+            ]
+          },
+          "id": "v6-25.B03"
+        }
+      ],
+      "visualFormula": "w = x - 360 floor((x+180)/360); w∈[-180,180); if w=-180 then w=180",
+      "transitionToNext": "음수 입력과 양 끝점을 따로 확인하는 이유가 여기에 있습니다. 한 바퀴를 빼는 원리를 이해했으니, 같은 동작을 라디안 코드로 옮겨 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-26",
+      "title": "라디안과 안전한 wrapPi 코드",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "15"
+      ],
+      "lines": [
+        "라디안은 각도를 재는 다른 단위입니다. 원의 둘레에서 반지름과 같은 길이의 호를 잡았을 때, 그 호가 중심에서 벌리는 각도가 일 라디안입니다. 반지름과 호의 길이를 같은 색 표시로 먼저 비교해 보겠습니다.",
+        "반 바퀴의 호 길이는 반지름의 파이 배이므로 백팔십 도가 파이 라디안이고, 한 바퀴는 이 파이 라디안입니다. 도에 파이를 곱하고 백팔십으로 나누면 라디안이 됩니다.",
+        "코드의 랩 파이 함수는 유한한 라디안 값을 받겠습니다. 먼저 파이와 한 바퀴인 타우를 정의합니다. 타우는 파이의 두 배입니다.",
+        "여기서는 표준 라이브러리의 리메인더 함수를 사용합니다. 입력에서 타우의 가장 가까운 정수 배를 뺀 나머지를 구합니다. 정확히 반인 경우에는 짝수 정수를 고르는 규칙이 있어, 출력 양 끝의 처리까지 확인해야 합니다.",
+        "그 결과가 마이너스 파이이면 타우를 한 번 더합니다. 그러면 최종 출력은 마이너스 파이보다 크고 플러스 파이 이하가 됩니다. 앞서 선택한 대표 범위와 같습니다.",
+        "이 함수는 일반적인 나머지 연산이나 에프모드와 음수 처리가 같다고 가정하면 안 됩니다. 지금 사용하는 함수의 정의와 경계 보정을 한 묶음으로 보아야 합니다.",
+        "한 바퀴를 넘는 값을 따로 조건 검사해 줄이는 구현이라면, 줄이는 처리는 범위 밖에서 실행되어야 합니다. 범위 안일 때만 줄이는 잘못된 조건식을 그대로 쓰지 않겠습니다.",
+        "코드가 하는 일은 앞의 그림과 같습니다. 삼백사십 도에 해당하는 라디안을 넣으면 마이너스 이십 도에 해당하는 값을 얻습니다. 파이와 마이너스 파이는 모두 같은 대표값인 플러스 파이로 맞춥니다.",
+        "이제 차이에 랩 함수를 적용하고, 그 짧은 차이에 티를 곱해 시작에 더하겠습니다. 이 방식이 한 축의 경계 문제를 해결합니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1
+            ]
+          },
+          "visual": {
+            "afterLine": 1,
+            "targetActionResult": "원의 반지름 r 선분과 같은 길이의 호를 같은 표시로 비교한다. 그 호의 양 끝과 중심을 연결하고 중심각1rad를 마지막에 붙인다. 아직 π 환산표와 코드를 동시에 공개하지 않는다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "반지름 길이와 호 길이가 같을 때의 각도라는 1rad의 정의를 관찰한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-26.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "호를 반 바퀴/한 바퀴로 확장해 180°=πrad,360°=2πrad를 차례로 붙인다. 도×π/180 변환과 코드의 π,τ=2π 상수를 같은 범례로 연결한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "도와 라디안의 대응 및 τ가 한 바퀴라는 뜻을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-26.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5,
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "std::remainder의 '가장 가까운 정수 배를 빼기'를 수직선의 후보 배수로 보여 준다. 정확한 절반의 짝수 선택은 별도 작은 예로 보이고, 이어 -π→+π 보정과 출력(-π,π]를 공개한다. fmod와 같은 동작으로 묶지 않는다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "수직선 예·최근접 배수·동점 규칙·끝점 보정·fmod 주의가 서로 다른 공개 단계다. 코드 전체를 한 화면에 빠르게 낭독하지 않고 실제 읽기 시간을 보고 길이를 정한다."
+          },
+          "hold": {
+            "plannedSeconds": 8,
+            "purpose": "일반 나머지와의 차이, 정확한 양 끝점, 추가 보정의 역할을 한 단계씩 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-26.B03"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              7,
+              8
+            ]
+          },
+          "visual": {
+            "afterLine": 8,
+            "targetActionResult": "범위 밖일 때만 줄이는 분기 흐름을 보여 주고 잘못된 범위 안 조건은 주석과 대비한다. 340°에 해당하는 라디안→-20°에 해당하는 라디안,±π→+π의 테스트를 한 개씩 실행 표시한다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 7,
+            "purpose": "분기 조건과 세 경계 테스트를 읽고 앞의 원 그림과 결과가 맞는지 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              9
+            ]
+          },
+          "id": "v6-26.B04"
+        }
+      ],
+      "visualFormula": "double wrapPiCanonical(double angle) {\n  constexpr double pi = 3.14159265358979323846;\n  constexpr double tau = 2.0*pi;\n  double wrapped = std::remainder(angle, tau);\n  if (wrapped <= -pi) wrapped += tau;\n  return wrapped;\n}\n// finite radians\nvalue = start + t * wrapPiCanonical(end-start);",
+      "transitionToNext": "이제 차이에 랩 함수를 적용하고, 그 짧은 차이에 티를 곱해 시작에 더하겠습니다. 이 방식이 한 축의 경계 문제를 해결합니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-27",
+      "title": "세 성분을 따로 랩해도 3D 보간이 완성되지는 않는다",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "16",
+        "17"
+      ],
+      "lines": [
+        "한 축에서 긴 우회를 줄였으니 헤딩, 피치, 뱅크 각각에 같은 방법을 쓰면 될 것처럼 보입니다. 많은 상황에서 도움이 되지만, 모든 삼차원 회전 경로를 해결하지는 못합니다.",
+        "앞에서 피치 구십 도일 때 헤딩과 뱅크의 효과가 겹쳤습니다. 그런 곳에서는 끝 자세를 어떤 세 숫자로 골랐는지가 중간 경로에 큰 영향을 줍니다.",
+        "앞서 같은 자세였던 영, 백삼십오, 영과 백팔십, 사십오, 백팔십을 다시 쓰겠습니다. 항등 자세에서 절반까지 보간하면 각각 영, 육십칠 점 오, 영과 구십, 이십이 점 오, 구십입니다. 끝 자세는 같지만 중간의 기수와 날개는 다릅니다.",
+        "이 예의 첫 피치 백삼십오 도는 정규 범위 밖입니다. 끝 표현을 어떻게 고르느냐가 경로에 영향을 준다는 예이지, 완전한 정규화를 모두 마친 두 끝점의 반례로 쓰는 것은 아닙니다. 정규화를 해도 짐벌 경계의 민감성과 일정 각속도 문제는 별도로 남습니다.",
+        "오일러 각의 각 성분을 일정한 속도로 바꾼다고 해서 물체 전체가 공간에서 일정한 각속도로 도는 것도 아닙니다. 숫자의 변화량과 실제 회전량은 같은 것이 아닙니다.",
+        "마리오의 출발과 착지만 보지 않고 공중 자세까지 확인했던 이유도 이와 연결됩니다. 끝 자세가 맞는 것에 더해 중간 움직임도 의도와 맞아야 합니다.",
+        "랩 함수는 주기적인 숫자의 경계 문제를 다룹니다. 짐벌 락과 삼차원 경로 문제까지 모두 해결하는 함수로 쓰면 안 됩니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "한 각도 원의 wrap 결과를 H/P/B 세 칸으로 확장하되, p90°의 겹치는 두 효과를 바로 옆에 다시 보여 준다. '숫자 경계 처리'와 '3D 경로 결정'을 다른 문제로 구분한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "각 성분에 wrap을 쓴다는 사실만으로 전체 움직임이 정해지지 않는 이유를 떠올린다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-27.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "두 줄의 시작/절반/끝 표를 순서대로 채운다. 위는 (0,0,0)→(0,67.5,0)→(0,135,0), 아래는 (0,0,0)→(90,22.5,90)→(180,45,180)이다. 한 줄씩 계산·재생 후 절반 자세의 기수와 날개를 비교하고 마지막만 겹친다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "두 행의 계산과 회전을 독립적으로 읽고 비교할 수 있게 편집한다. 6개 자세와12개 각도 수치를 고정5초에 모두 소화하도록 압축하지 않는다."
+          },
+          "hold": {
+            "plannedSeconds": 8,
+            "purpose": "많은 숫자를 한꺼번에 외우지 않고 같은 끝점과 다른 중간 자세를 행별로 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "id": "v6-27.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "H/P/B의 일정한 성분 변화 그래프와 3D 물체의 중간 회전을 나란히 보인다. 앞의 마리오 공중 자세 관찰을 작은 대응 프레임으로 다시 연결하되 내부 각속도 측정값을 만들지 않는다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "숫자의 일정한 변화율과 실제 공간 회전의 일정한 속도가 서로 다른 조건임을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              7
+            ]
+          },
+          "id": "v6-27.B03"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "랩 함수는 주기적인 숫자의 경계 문제를 다룹니다. 짐벌 락과 삼차원 경로 문제까지 모두 해결하는 함수로 쓰면 안 됩니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-28",
+      "title": "세 숫자의 편리함과 전역적인 한계",
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "16"
+      ],
+      "lines": [
+        "이 문제가 생긴다고 해서 세 숫자로 회전을 전혀 표현할 수 없다는 뜻은 아닙니다. 작은 자세 범위에서는 세 개의 독립적인 값으로 잘 다룰 수 있습니다.",
+        "어려운 것은 가능한 모든 삼차원 자세를, 중복 없이, 끊김 없이, 특이점도 없이 하나의 세 숫자 체계로 덮으려는 일입니다. 이 조건을 전역적으로 한꺼번에 만족시킬 수는 없습니다.",
+        "오일러 각에서는 그 문제가 짐벌 락과 대표값의 경계로 드러납니다. 다른 세 성분 표현을 택하면 문제가 생기는 위치와 모습이 달라질 수는 있습니다.",
+        "그래서 사람에게 편한 입력 표현과 회전을 계산하는 내부 표현을 나눠 쓰기도 합니다. 어느 표현이 어떤 연산에 유리한지를 보고 고르는 것입니다.",
+        "다음 표현으로 넘어가기 전에, 지금까지 배운 오일러 각의 역할과 한계를 한 번 묶어 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "한 자세 주변의 작은 범위에서는 세 조절값으로 편하게 다루는 그림부터 보인다. 이어 전체 회전을 하나의 표로 덮을 때 요구하는 '중복 없음/끊김 없음/특이점 없음'을 하나씩 표시한다. 구나 지구 지도 비유를 쓰면 SO(3) 자체와 같다고 그리지 않는다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "작은 범위의 편리함과 모든 자세를 동시에 덮으려는 요구를 구별한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-28.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "앞서 확인한 짐벌 경계와 대표값 경계를 각각 재사용한다. 사람이 편집하는 입력 칸과 내부 회전 계산 도구를 연결하고, 도구의 목적이 다르다는 범례를 붙인다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "다른 표현을 고르면 문제가 없어지는 것이 아니라 연산상의 장단점이 달라진다는 점을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "id": "v6-28.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "다음 표현으로 넘어가기 전에, 지금까지 배운 오일러 각의 역할과 한계를 한 번 묶어 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-29",
+      "title": "오일러 각 정리: 편한 곳과 주의할 곳",
+      "articleSection": "8.3.5",
+      "currentSceneIds": [
+        "26"
+      ],
+      "lines": [
+        "오일러 각은 순서가 정해진 세 회전으로 자세를 만듭니다. 이번에는 물체와 함께 움직이는 와이, 엑스, 제트 축을 따라 헤딩, 피치, 뱅크를 적용했습니다.",
+        "헤딩과 피치가 기수 방향을 정하고, 뱅크가 그 방향 주위의 비틀림을 정합니다. 같은 결과는 고정 축에서 반대 순서로 만들 수 있습니다.",
+        "다른 이름을 만났을 때는 이름보다 축, 양의 방향, 순서를 확인해야 합니다. 다른 규약으로 숫자만 바꿔 끼우는 방식은 안전하지 않습니다.",
+        "사람이 읽고 편집하기 쉽고, 세 숫자로 저장하며 정밀도를 정하기도 편합니다. 정한 규약에서 유한한 세 각도는 유효한 회전을 만듭니다.",
+        "다만 같은 자세가 여러 숫자로 적힙니다. 대표 범위와 짐벌 경계의 뱅크 영 규칙은 출력을 정리하지만, 짐벌 락 자체와 모든 보간 문제를 없애지는 않습니다.",
+        "한 축의 차이는 랩해서 짧게 연결할 수 있습니다. 그래도 세 성분을 따로 보간한 경로와 실제 물체의 회전 속도는 계속 확인해야 합니다.",
+        "이제 고정된 세 종류의 축을 고르는 방식에서 한 걸음 물러나겠습니다. 이번 자세 변화에 꼭 맞는 축 하나를 자유롭게 고를 수 있다면 어떻게 될까요?"
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "한 비행기를 유지해 몸체 Y→X→Z의 세 회전을 짧게 다시 보여 준다. 기수 방향을 정하는 두 회전과 그 방향 주위 뱅크를 나눈 뒤, 고정 축 역순의 같은 끝 자세를 겹친다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "세 회전의 역할과 같은 끝 자세의 동등한 순서를 다시 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-29.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "축·양의 방향·순서라는 규약 체크 항목을 하나씩 공개한다. 이어 세 편집 칸과 저장 칸의 장점을 각각 해당 비행기·표에 연결한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "이름만 암기하지 않고 무엇을 먼저 확인해야 하며 언제 편리한지 정리한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-29.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "중복 표현, 대표값 경계, 짐벌 경계, 보간 경로를 앞서 본 작은 증거 네 개로 차례로 다시 보여 준다. 출력 정리와 경로/속도 확인을 분리한 두 열에 배치한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "각 규칙이 해결하는 문제와 남는 문제를 연결해 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              7
+            ]
+          },
+          "id": "v6-29.B03"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "이제 고정된 세 종류의 축을 고르는 방식에서 한 걸음 물러나겠습니다. 이번 자세 변화에 꼭 맞는 축 하나를 자유롭게 고를 수 있다면 어떻게 될까요?",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-30",
+      "title": "축 하나와 각도 하나: 오일러의 회전 정리",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "18"
+      ],
+      "lines": [
+        "삼차원에서 중심을 고정한 물체의 시작 자세와 끝 자세가 있다고 하겠습니다. 오일러의 회전 정리에 따르면, 이 둘 사이의 유한한 회전은 적절한 축 하나 주위의 회전으로 나타낼 수 있습니다.",
+        "이 정리의 이름에 오일러가 들어가지만, 앞의 오일러 각 세 숫자와는 다른 이야기입니다. 세 번으로 나누었던 자세 변화를, 알맞은 한 축과 한 각도로 나타낸다는 뜻입니다.",
+        "엑스, 와이, 제트라는 미리 정한 축에만 매달릴 필요가 없습니다. 비스듬한 축도 선택할 수 있습니다. 축은 지금 고정한 원점을 지나도록 잡습니다.",
+        "여기서 다루는 것은 물체가 늘어나거나 거울처럼 뒤집히는 변환이 아닌, 거리와 방향 관계를 보존하는 순수한 회전입니다. 위치 이동은 별도로 다룹니다.",
+        "시작과 끝의 비행기를 나란히 놓고, 그 변화에 맞는 축을 그려 보겠습니다. 그 축 주위로 돌리면 기수뿐 아니라 날개와 위쪽까지 끝 자세에 맞습니다.",
+        "이렇게 축과 각도를 기록하는 방식을 축·각 표현, 영어로 액시스 앵글 리프리젠테이션이라고 합니다. 먼저 축에 어떤 정보를 담는지 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "같은 중심의 시작/끝 비행기를 고정하고 먼저 세 단계 회전으로 같은 끝 자세를 확인한다. 그 뒤 원점을 지나는 비스듬한 축 하나를 공개해 같은 끝 자세를 한 회전으로 재현한다. 오일러 각/오일러의 회전 정리는 서로 다른 표제로 둔다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "세 단계와 한 축 회전을 차례로 관찰하는 데 필요한 시간을 확보한다. 정리의 전제와 한 축의 의미를 보여 주는 개념도이며 새 수치를 추정하지 않는다."
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "미리 정한 세 축의 단계와 이번 변화에 맞춘 축 하나가 같은 시작/끝을 잇는지 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-30.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "중심 고정과 길이·방향 관계 보존을 축 회전 장면 위에 짧게 표시한다. 늘이기·반사는 회전의 범위 밖이라는 작은 대비만 두고, 기수·날개·위쪽 세 표시가 모두 끝 자세에 맞으면 멈춘다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "기수 점만 맞춘 것이 아니라 물체 전체의 방향 관계가 맞는지 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-30.B02"
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": "이렇게 축과 각도를 기록하는 방식을 축·각 표현, 영어로 액시스 앵글 리프리젠테이션이라고 합니다. 먼저 축에 어떤 정보를 담는지 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-31",
+      "title": "축은 길이 1인 방향벡터로 정한다",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "18"
+      ],
+      "lines": [
+        "회전축의 방향을 엔이라는 벡터로 적겠습니다. 벡터는 엑스, 와이, 제트 방향의 성분 세 개를 가진 화살표입니다.",
+        "같은 방향의 짧은 화살표와 긴 화살표는 같은 축을 가리킵니다. 축 정보만 적을 때는 길이의 차이가 필요하지 않으므로 길이를 일로 맞춥니다. 이것이 단위벡터입니다.",
+        "축이 영, 일, 영이면 양의 와이 방향입니다. 회전각 세타를 구십 도로 정하면 그 와이 축 주위로 구십 도 회전합니다.",
+        "앞에서 정한 규약대로 기수의 양의 제트 방향이 양의 엑스 방향으로 갑니다. 오른쪽 엑스 축도 함께 돌아가고, 회전축인 와이는 그대로입니다. 기수 점 하나만 움직이는 변환이 아닙니다.",
+        "서로 독립적으로 정할 수 있는 값의 수를 자유도라고 합니다. 축에는 세 성분이 있지만 길이가 일이라는 조건이 있습니다. 독립적인 방향 정보는 두 개이고, 회전각 하나를 더하면 회전의 세 자유도와 맞습니다.",
+        "축의 세 성분과 각도 하나를 따로 저장할 수 있습니다. 다음에는 이 둘을 곱해서 하나의 세 성분 벡터로 묶어 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "n의 X/Y/Z 성분을 가진 화살표를 먼저 공개한다. 같은 방향의 긴/짧은 화살표를 한 축에 겹친 뒤 길이를1로 맞추고 단위벡터 표기를 붙인다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "축의 방향 정보는 유지하고 불필요한 길이 차이를 없앤다는 정규화의 목적을 본다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-31.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "n=(0,1,0),θ=90°를 한 줄씩 입력하고 정한 왼손 규약에서 Y축 주위 회전을 보여 준다. 기수와 오른쪽 축을 함께 추적하며 회전축Y는 고정한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "앞쪽+Z와 오른쪽+X가 함께 움직이고 Y축만 그대로임을 관찰한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "id": "v6-31.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "길이1 조건이 있는 축 방향 두 조절값과 각도 한 조절값을 분리해 보여 준다. 세 성분이 모두 자유로운 위치 화살표와 혼동하지 않게 '방향2+회전각1'을 붙인다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "성분 칸의 수와 독립적으로 정할 값의 수가 다르다는 점을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-31.B03"
+        }
+      ],
+      "visualFormula": "||n||=1; axis-angle=(n,θ)",
+      "transitionToNext": "축의 세 성분과 각도 하나를 따로 저장할 수 있습니다. 다음에는 이 둘을 곱해서 하나의 세 성분 벡터로 묶어 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-32",
+      "title": "회전벡터: 방향은 축, 길이는 각도",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "19"
+      ],
+      "lines": [
+        "단위축 엔에 라디안 단위의 회전각 세타를 곱하겠습니다. 이렇게 얻는 벡터를 회전벡터라고 부르겠습니다. 화면 기호는 영문 소문자 e입니다.",
+        "각도를 영 이상으로 골랐을 때, 영이 아닌 회전벡터의 방향은 축이고 길이는 회전각입니다. 단위축의 길이가 일이므로, 세타를 곱하면 길이가 세타가 됩니다.",
+        "와이 축으로 구십 도를 돌리는 예를 다시 쓰겠습니다. 구십 도는 파이의 절반 라디안입니다. 영, 일, 영에 파이의 절반을 곱하면 영, 파이의 절반, 영입니다.",
+        "화살표를 두 배 길게 하면 같은 축 주위로 두 배 각도를 돌립니다. 화살표의 끝이 물체가 도착하는 위치는 아닙니다.",
+        "젤다에서 통나무를 옆으로 옮긴 자취와, 누운 돛대를 세우는 자세 변화를 비교해 보겠습니다. 위치 화살표는 중심의 이동을, 회전벡터는 축과 회전량을 담습니다.",
+        "화살표의 생김새가 같아도 정보의 뜻이 다릅니다. 화면의 이동 자취를 세계 공간의 실제 거리라고 읽거나, 회전벡터를 이동 목적지로 읽으면 안 됩니다.",
+        "이제 세 성분만 보고 축과 각도를 다시 꺼내 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "n,θ,e를 한꺼번에 놓지 않고 단위축 n→라디안 θ→e=θn 순서로 공개한다. e는 영문 소문자임을 표시하고 방향/길이 범례를 화살표 옆에 연결한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "방향은 축이고 길이는 회전각이며 단위축의 길이1이 곱셈의 기준임을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-32.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "n=(0,1,0)에 π/2를 곱해 e=(0,π/2,0)이 되는 칸별 계산을 보여 준다. 같은 축에서 화살표 길이와 회전각을 두 배로 바꾸되 물체 중심의 위치는 고정한다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "벡터의 끝은 이동 목적지가 아니며 길이 변화가 각도 변화라는 점을 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-32.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "검수한 젤다 독립 영상의 통나무 중심 이동 자취와 돛대 자세 변화 구간을 순서대로 보여 준다. 이동은 화면 위치 자취, 회전축은 설명용 개념도로 분리해 내부 실제 값처럼 표기하지 않는다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "계획 단계에서 길이를 제한하지 않는다. 확인된 원속도 독립 영상과 필요한 앞/동작/결과가 확보된 뒤 실제 길이를 정한다."
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "같은 화살표 모양도 위치와 회전에서 다른 정보를 담는다는 점을 관찰한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6,
+              7
+            ]
+          },
+          "id": "v6-32.B03"
+        }
+      ],
+      "visualFormula": "e=θn (θ in radians); θ≥0 → ||e||=θ",
+      "transitionToNext": "이제 세 성분만 보고 축과 각도를 다시 꺼내 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-33",
+      "title": "회전벡터를 읽는 작은 계산",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "19",
+        "25"
+      ],
+      "lines": [
+        "회전벡터가 영, 파이의 절반, 영이라고 하겠습니다. 먼저 길이를 구하면 회전각을 읽을 수 있습니다.",
+        "벡터의 길이는 세 성분을 각각 제곱해서 더한 뒤 제곱근을 취합니다. 이 예에서는 영 제곱과 파이의 절반 제곱과 영 제곱을 더합니다.",
+        "제곱근을 취하면 파이의 절반입니다. 따라서 회전각은 파이의 절반 라디안, 즉 구십 도입니다.",
+        "축은 원래 벡터를 그 길이로 나누어 얻습니다. 각 성분을 파이의 절반으로 나누면 영, 일, 영이 됩니다. 이처럼 길이를 일로 맞추는 계산이 정규화입니다.",
+        "따라서 이 벡터는 양의 와이 축 주위 구십 도 회전입니다. 앞서 본 자세와 같은지 비행기에 적용해 확인하겠습니다.",
+        "단, 벡터가 영일 때는 이 나눗셈을 하면 안 됩니다. 회전각은 영이지만, 영으로 나눠 특정 축을 복원할 수는 없습니다. 이 예외는 중복 표현을 볼 때 다시 정리하겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "e=(0,π/2,0)의 성분을 각각 제곱→합→제곱근 순서로 옮겨 √(0²+(π/2)²+0²)를 한 단계씩 완성한다. 원래 벡터와 계산의 같은 성분을 대응시킨다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "길이 계산에서 각 성분이 어디에 쓰이는지 직접 따라간다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "id": "v6-33.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "원래 e의 각 칸을 π/2로 나누어 n=(0,1,0)이 되는 정규화를 보여 준다. 복원한 축과 각도로 비행기를 Y축 주위90° 회전시켜 앞의 결과와 겹친다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "길이에서 각도, 나눗셈에서 축을 복원하고 실제 자세까지 같은지 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-33.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "e=0 입력에서는 길이0을 구한 뒤 축 복원 나눗셈 앞에서 멈춘다. '회전각0/축은 특정하지 않음' 결과를 남기고 0으로 나누는 코드는 실행하지 않는다.",
+            "plannedMotionSeconds": 4,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "영 벡터의 회전각은 알지만 특정 축을 복원할 수 없는 예외를 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-33.B03"
+        }
+      ],
+      "visualFormula": "θ=||e||=sqrt(ex²+ey²+ez²); n=e/||e|| for e≠0",
+      "transitionToNext": "단, 벡터가 영일 때는 이 나눗셈을 하면 안 됩니다. 회전각은 영이지만, 영으로 나눠 특정 축을 복원할 수는 없습니다. 이 예외는 중복 표현을 볼 때 다시 정리하겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-34",
+      "title": "같은 축에서 회전량의 배수 구하기",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "18",
+        "19"
+      ],
+      "lines": [
+        "축과 각도를 쓰면 같은 축을 따라 회전량을 늘리거나 줄이기 쉽습니다. 축은 그대로 두고 각도에 원하는 배수를 곱하면 됩니다.",
+        "구십 도 회전의 삼분의 일은 삼십 도입니다. 같은 축 주위로 덜 돌게 됩니다. 이 점 육오 배라면 구십에 이 점 육오를 곱한 이백삼십팔 점 오 도입니다.",
+        "회전벡터에도 같은 배수를 곱하면 됩니다. 방향은 같고 길이만 그 배수로 바뀌므로 축은 유지되고 회전각이 바뀝니다. 음수를 곱하면 반대 방향 회전으로 읽습니다.",
+        "벡터의 크기를 조절하듯 회전량을 다룰 수 있다는 장점입니다. 다른 표현에서도 이에 대응하는 연산을 만들 수 있지만, 축·각에서는 그 뜻이 직접 보입니다.",
+        "다만 이것은 같은 축의 한 회전량을 배로 만드는 이야기입니다. 서로 다른 축의 두 회전을 합성하는 법과는 구별해야 합니다. 그 문제는 잠시 뒤 따로 확인하겠습니다.",
+        "먼저 이 표현이 어떤 데이터와 계산에서 유용한지 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "같은 Y축을 고정하고90° 기준에서 1/3→30°,2.65→238.5°의 배수 계산을 각각 공개한다. 각도 호와 끝 자세를 한 예씩 확인하고 기준 자세를 유지한다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "30°와238.5°를 읽고 회전 방향을 볼 충분한 속도로 각각 재생한다. 두 예를 고정 길이에 맞추기 위한 가속은 하지 않는다."
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "같은 축에서 덜 돌기와 한 바퀴 안의 더 큰 회전량을 각각 관찰한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-34.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "e의 길이만 같은 배수로 늘리고 줄이며 방향 유지/각도 변화의 대응을 보인다. 음수 배수는 부호와 회전 진행 화살표로 반대 방향을 따로 보여 준다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "양수 크기 조절과 음수 방향 반전을 구별한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "id": "v6-34.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "한 축의 각도 배수 도식 옆에 서로 다른 축의 순차 회전 두 단계를 작게 놓는다. 아직 벡터 덧셈 해답을 앞당기지 않고 두 질문의 차이를 이름 붙인다.",
+            "plannedMotionSeconds": 4,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 3,
+            "purpose": "배수 구하기와 서로 다른 회전의 합성이 다른 질문임을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-34.B03"
+        }
+      ],
+      "visualFormula": "θ/3=30°; 2.65θ=238.5° for θ=90°; e_scaled=s e",
+      "transitionToNext": "먼저 이 표현이 어떤 데이터와 계산에서 유용한지 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-35",
+      "title": "지수 사상과 쓰임새",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "19",
+        "24"
+      ],
+      "lines": [
+        "회전벡터를 실제 회전 행렬로 보내는 연산을 지수 사상이라고 합니다. 벡터 자체와, 그 벡터를 회전으로 바꾸는 연산을 구별하겠습니다.",
+        "여기서 사상은 입력을 정해진 출력으로 보내는 연산입니다. 지금은 회전벡터가 들어가고 회전이 나오는 관계를 확인하겠습니다. 벡터는 자료이고, 지수 사상은 그 자료를 회전으로 바꾸는 연산이라는 차이를 화면에서 짚어 보겠습니다.",
+        "이 방식은 애니메이션의 회전 데이터를 다루거나, 같은 축의 회전량을 조절하거나, 회전을 미분해 움직임을 계산할 때 유용합니다. 특정 범위의 보간에도 이점이 있지만 모든 경계 문제가 사라지는 것은 아닙니다.",
+        "특히 각속도와 잘 연결됩니다. 각속도는 물체가 어느 축을 중심으로, 일 초에 얼마나 회전하는지 나타냅니다. 순간의 축 방향과 초당 라디안 단위를 함께 담을 수 있습니다.",
+        "회전벡터의 길이는 라디안이고 각속도 벡터의 길이는 초당 라디안입니다. 같은 모양의 화살표라도 자세 변화량과 변화 속도라는 의미가 다릅니다.",
+        "기울어진 도로를 달리는 차에서 이동 방향, 차체 자세, 카메라 움직임을 구별했듯, 계산에서도 위치와 자세와 속도를 따로 읽어야 합니다. 이제 이 표현에도 남아 있는 중복을 살펴보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "e 입력 화살표→지수 사상이라는 연산→실제 회전/회전 행렬 결과를 차례로 연결한다. e 자체와 연산 상자를 분리하고 이 자리에서는 전개식 유도를 새로 쌓지 않는다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "자료인 회전벡터와 자료를 회전으로 보내는 연산을 구별한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-35.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "앞에서 만든 회전량 배수와 애니메이션 중간 자세 그림을 재사용해 쓰임을 연결한다. 미분은 후속 세부 전개 없이 '시간에 따른 변화 계산'이라는 역할만 그림으로 표시한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 3,
+            "purpose": "새 이름 목록을 암기하기보다 이미 본 동작에서 어떤 계산에 쓰이는지 본다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-35.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "같은 축의 회전량 e에는 rad,초시계와 함께 도는 각속도 ω에는 rad/s를 붙인다. 같은 길이 화살표를 같은 의미로 읽지 않도록 '얼마나/1초에 얼마나' 범례를 연결한다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "회전량과 순간의 회전 속도라는 서로 다른 단위를 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-35.B03"
+        }
+      ],
+      "visualFormula": "rotation vector e (rad) ≠ angular velocity ω (rad/s); Exp maps rotation coordinates to a rotation",
+      "transitionToNext": "기울어진 도로를 달리는 차에서 이동 방향, 차체 자세, 카메라 움직임을 구별했듯, 계산에서도 위치와 자세와 속도를 따로 읽어야 합니다. 이제 이 표현에도 남아 있는 중복을 살펴보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-36",
+      "title": "중복 1: 영 회전과 축·각 동시 부호 반전",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "19",
+        "21"
+      ],
+      "lines": [
+        "첫 번째는 회전각이 영인 경우입니다. 어느 축을 고르든 영 도를 돌리면 처음 자세 그대로입니다. 축을 하나로 정할 이유가 없습니다.",
+        "회전벡터로 묶으면 어떤 단위축에 영을 곱해도 영 벡터입니다. 축·각에서 제각각이던 영 회전을 하나의 영 벡터로 정리할 수 있습니다.",
+        "두 번째는 축과 각도의 부호를 동시에 바꾸는 경우입니다. 위쪽 축으로 플러스 구십 도를 도는 것과, 아래쪽 축으로 마이너스 구십 도를 도는 것은 같은 동작입니다.",
+        "벡터에서도 두 마이너스를 곱하면 같은 결과가 됩니다. 그래서 이 중복 역시 회전벡터로 묶었을 때 같은 벡터로 합쳐집니다.",
+        "영 벡터에서 축을 복원할 수 없었던 것은 오류가 아닙니다. 회전이 없는 상태에는 애초에 특별한 축이 없기 때문입니다.",
+        "그러나 이 두 중복을 줄였다고 끝 자세마다 회전벡터가 하나씩만 남는 것은 아닙니다. 각도에 한 바퀴를 더할 수 있다는 문제는 여전히 남아 있습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "축 방향을 몇 가지로 바꾸되 θ=0에서는 비행기를 그대로 둔다. 각 n×0의 결과가 같은 e=0으로 모이는 관계를 순차 연결한다.",
+            "plannedMotionSeconds": 5,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "0회전에서 축 선택은 달라도 자세와 회전벡터 결과는 같음을 본다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-36.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "n과+90° 조합을 먼저 재생한 뒤 -n과-90° 조합을 같은 규약으로 재생한다. 축 화살표 반전과 각도 부호 반전을 따로 표시하고 끝 자세를 겹친다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "두 부호를 동시에 바꾸면 같은 동작이 되는지 직접 비교한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "id": "v6-36.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "앞의 e=0 복원 도식으로 돌아와 축 칸을 빈 오류값 대신 '특정하지 않음'으로 남긴다. 누적 바퀴 수 항목은 다음 단계로 연결되는 표제만 예고한다.",
+            "plannedMotionSeconds": 4,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 3,
+            "purpose": "영 벡터에서 특정 축이 안 나오는 이유가 계산 실패가 아니라 정보의 성질임을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-36.B03"
+        }
+      ],
+      "visualFormula": "0·n=0; θn=(-θ)(-n)",
+      "transitionToNext": "그러나 이 두 중복을 줄였다고 끝 자세마다 회전벡터가 하나씩만 남는 것은 아닙니다. 각도에 한 바퀴를 더할 수 있다는 문제는 여전히 남아 있습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-37",
+      "title": "중복 2: 같은 끝 자세와 여러 바퀴의 정보",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "21",
+        "24"
+      ],
+      "lines": [
+        "같은 축에서 구십 도와 마이너스 이백칠십 도를 비교하겠습니다. 회전벡터는 서로 다르지만 마지막 자세는 같습니다. 두 각도 차이가 한 바퀴이기 때문입니다.",
+        "축·각이나 회전벡터에도 각도에 한 바퀴의 정수 배를 더하는 중복이 남습니다. 하지만 지나온 바퀴 수가 필요한 상황에서는 이 차이가 유용한 정보가 됩니다.",
+        "예를 들어 초당 칠백이십 도와 초당 천팔십 도로 도는 두 바퀴를 보겠습니다. 일 초 뒤에는 각각 두 바퀴와 세 바퀴를 돌아 모두 처음 자세입니다. 마지막 사진만 보면 같은 상태입니다.",
+        "하지만 사분의 일 초 뒤에는 하나가 백팔십 도, 다른 하나가 이백칠십 도를 돌았습니다. 회전 속도와 중간 경로가 다릅니다.",
+        "최종 자세만 저장하는 자료와, 누적 회전량이나 각속도를 저장하는 자료는 목적이 다릅니다. 자세 하나를 나타내는 행렬이나 쿼터니언의 한 장면만으로 여러 바퀴의 이력을 복원할 수는 없습니다.",
+        "그렇다고 그런 표현을 쓰는 애니메이션에서 여러 바퀴를 만들 수 없다는 뜻은 아닙니다. 시간에 따른 데이터나 누적 각도, 속도 정보를 함께 관리하면 됩니다.",
+        "이제 마지막 자세만 대표하는 회전벡터를 고르려면 어느 범위까지 줄일 수 있는지 보겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1
+            ]
+          },
+          "visual": {
+            "afterLine": 1,
+            "targetActionResult": "같은 축에서+90°와-270°를 차례로 움직여 서로 다른 진행 호를 그린다. 마지막 자세는 겹치고 두 회전벡터의 길이/방향은 나란히 남긴다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "긴 -270° 경로도 관찰 가능한 속도로 재생하고 수치와 호를 함께 읽을 시간을 둔다."
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "서로 다른 벡터와 이동한 회전량이 같은 끝 자세를 가질 수 있음을 관찰한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              2
+            ]
+          },
+          "id": "v6-37.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3,
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "720°/s와1080°/s 바퀴를 같은 시계로 구동한다. t=0→0.25s→1s를 따로 정지해180°/270°의 서로 다른 중간 자세와2바퀴/3바퀴 뒤 같은 끝 자세를 모두 확인한다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "단위 rad/s·도/s와 실제 경과시간의 관계를 보존한다. 시연 시각0.25s와1s에서 멈춰 해설하되 회전 자체를 임의 가속해 맞추지 않는다."
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "마지막 사진만으로 구별되지 않는 정보가 중간 시각과 누적 카운터에는 남는다는 점을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              5,
+              6,
+              7
+            ]
+          },
+          "id": "v6-37.B02"
+        }
+      ],
+      "visualFormula": "720°/s ×0.25s=180°;1080°/s ×0.25s=270°; at1s both orientation=identity",
+      "transitionToNext": "이제 마지막 자세만 대표하는 회전벡터를 고르려면 어느 범위까지 줄일 수 있는지 보겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-38",
+      "title": "2파이보다 작으면 언제나 유일할까",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "21"
+      ],
+      "lines": [
+        "회전벡터의 길이를 한 바퀴인 이 파이보다 작게 제한하면 유일해질 것처럼 보입니다. 그러나 구십 도와 반대 축의 이백칠십 도는 모두 한 바퀴보다 작고, 같은 끝 자세를 만듭니다.",
+        "방향을 엔으로 잡은 구십 도와, 방향을 마이너스 엔으로 잡은 이백칠십 도를 나란히 보세요. 벡터가 서로 다르다는 것을 확인할 수 있습니다.",
+        "따라서 길이가 이 파이 미만이라는 조건만으로 유일성을 주장하면 안 됩니다. 이 범위 안에도 중복이 있습니다.",
+        "대표를 고를 때는 보통 회전각을 영부터 파이, 즉 영 도부터 백팔십 도까지로 제한합니다. 더 긴 회전은 반대 축을 따라 더 짧게 나타낼 수 있기 때문입니다.",
+        "그래도 정확히 백팔십 도에서는 축을 엔으로 고르든 마이너스 엔으로 고르든 같은 자세입니다. 한쪽을 고르는 추가 규칙이 필요하고, 이 경계에서 연속성 문제까지 사라지지는 않습니다.",
+        "영에서는 축이 정해지지 않고, 백팔십 도 경계에는 축 부호 문제가 남는다고 정리해 두겠습니다. 표현을 바꾸면 문제의 위치와 모양이 달라지지만, 앞서 본 전역적 한계가 마법처럼 없어지지는 않습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "n축90°와 -n축270°를 각자 방향·각도 호·벡터 길이로 보인다. 둘 다2π 미만인 범위 표시에 놓고 끝 자세만 겹친다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "90°와270°의 다른 길이를 읽고 볼 시간을 확보한다.270° 시연을 고정 짧은 길이에 맞춰 가속하지 않는다."
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "둘 다 한 바퀴보다 작아도 서로 다른 벡터가 같은 끝 자세를 만드는 반례를 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "id": "v6-38.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "같은 끝 자세를 더 짧은 반대 축 회전으로 바꿔 θ∈[0,π]에 옮긴다. 축 반전과 각도 길이 변경을 한 번에 하나씩 보여 준다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "단순히 긴 각도만 자르는 것이 아니라 축을 함께 바꾸는 대표 선택임을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-38.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "정확히π에서는 n과-n의180° 회전을 차례로 적용하고 같은 끝 자세를 겹친다.0의 축 미정과π의 부호 선택을 서로 다른 경계 칸에 남긴다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "0과π가 서로 다른 이유로 추가 주의가 필요한 경계임을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-38.B03"
+        }
+      ],
+      "visualFormula": "Exp(θn)=Exp(-(2π-θ)n), 0<θ<2π; principal θ∈[0,π], π-axis sign needs a rule",
+      "transitionToNext": "영에서는 축이 정해지지 않고, 백팔십 도 경계에는 축 부호 문제가 남는다고 정리해 두겠습니다. 표현을 바꾸면 문제의 위치와 모양이 달라지지만, 앞서 본 전역적 한계가 마법처럼 없어지지는 않습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-39",
+      "title": "유한한 회전은 벡터처럼 더할 수 없다",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "22"
+      ],
+      "lines": [
+        "회전벡터는 세 성분짜리 벡터입니다. 그렇다면 첫 회전과 둘째 회전의 벡터를 더하면 합성 회전이 될까요? 일반적으로는 아닙니다.",
+        "첫 회전은 고정 엑스 축 구십 도, 둘째는 고정 와이 축 구십 도로 하겠습니다. 두 벡터를 더하면 파이의 절반, 파이의 절반, 영이 됩니다.",
+        "이 합 벡터가 뜻하는 것은 엑스와 와이 중간의 비스듬한 축 주위 회전입니다. 길이를 계산하면 파이를 루트 이로 나눈 값, 약 백이십칠 점 이팔 도입니다.",
+        "하지만 두 회전을 차례로 적용한 결과는 이 한 번의 회전과 다릅니다. 기수와 위쪽까지 화면에서 비교해 보세요.",
+        "이유를 순서로도 확인할 수 있습니다. 벡터의 덧셈은 순서를 바꾸어도 같은데, 유한한 회전의 순서를 바꾸면 결과가 달라질 수 있습니다. 두 연산을 같은 것으로 볼 수 없는 것입니다.",
+        "따라서 유한한 회전을 합성할 때는 정해진 순서로 회전 행렬을 곱하거나, 그에 대응하는 정확한 회전 합성 연산을 사용합니다. 숫자 세 칸을 더하는 것으로 대신하지 않습니다.",
+        "다만 아주 작은 회전을 다룰 때와 순간의 회전 속도를 다룰 때에는 다른 이야기가 가능합니다. 마지막으로 그 조건을 분명히 하겠습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2,
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "고정X90°와고정Y90°의 입력 벡터를 각각 공개하고 성분합(π/2,π/2,0)을 만든다. 제곱→합→제곱근으로 길이π/√2를 얻고127.28° 환산을 단계별로 읽은 뒤 비스듬한 축을 공개한다.",
+            "plannedMotionSeconds": null,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review",
+            "timingNote": "계산 표와 회전축 해석을 한 번에 빠르게 낭독하지 않는다. 각 중간 수치를 읽은 뒤 다음 단계로 가도록 실제 발화·표의 읽기 속도에 맞춰 정한다."
+          },
+          "hold": {
+            "plannedSeconds": 8,
+            "purpose": "두 벡터의 성분합이 뜻하는 축과 각도를 계산 단계마다 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-39.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "visual": {
+            "afterLine": 4,
+            "targetActionResult": "같은 시작 자세에서 왼쪽은 고정X90° 뒤고정Y90°를 순차 적용하고,오른쪽은 합벡터의 대각선 축 회전을 한 번 적용한다. 모두 멈춘 뒤 기수와 위쪽 표시를 각각 비교한다.",
+            "plannedMotionSeconds": 8,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "두 끝 자세가 다르다는 주장을 실제 두 방향 표시로 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-39.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5,
+              6
+            ]
+          },
+          "visual": {
+            "afterLine": 6,
+            "targetActionResult": "벡터 덧셈의 순서 교환은 같은 결과인 반면 회전 두 단계의 순서 반전은 다른 끝 자세가 되는 비교를 보여 준다. 정확한 합성은 정한 행렬 곱 순서로 연결하되 여기서 새 행렬 유도를 시작하지 않는다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "덧셈과 회전 합성이 왜 다른 연산인지 순서와 결과를 연결한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              7
+            ]
+          },
+          "id": "v6-39.B03"
+        }
+      ],
+      "visualFormula": "e1=(π/2,0,0);e2=(0,π/2,0);||e1+e2||=π/√2 ≈127.279°; Exp(e1+e2)≠composition in general",
+      "transitionToNext": "다만 아주 작은 회전을 다룰 때와 순간의 회전 속도를 다룰 때에는 다른 이야기가 가능합니다. 마지막으로 그 조건을 분명히 하겠습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-40",
+      "title": "작은 회전의 근사와 같은 좌표계의 각속도",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "22",
+        "24"
+      ],
+      "lines": [
+        "두 회전을 각각 구십 도 대신 이 도처럼 작게 줄여 보겠습니다. 차례로 회전한 결과와 벡터를 더해 회전한 결과가 훨씬 가까워집니다.",
+        "작은 회전량에서는 벡터 합을 첫 단계 근사로 쓸 수 있습니다. 그러나 유한한 이 도에서 정확히 같아졌다는 뜻은 아닙니다. 허용 오차와 시간 간격에 따라 근사의 적절함을 판단해야 합니다.",
+        "한 물체의 운동에 같은 순간에 합성되는 상대 각속도들은, 같은 좌표계로 표현했을 때 벡터로 합할 수 있습니다. 서로 관계없는 두 물체의 속도를 임의로 합친다는 뜻은 아닙니다. 여기서 같은 좌표계라는 조건도 빼면 안 됩니다.",
+        "예를 들어 물체의 제트 축이 현재 세계의 엑스 방향으로 돌아가 있다고 하겠습니다. 그 물체 제트 축 기준의 각속도는 세계 좌표에서는 엑스 성분으로 적어야 합니다.",
+        "물체 좌표의 제트 숫자를 세계 좌표의 제트 숫자에 곧바로 더하면 다른 방향을 더한 셈입니다. 먼저 한 좌표계로 바꾸고 나서 합해야 합니다.",
+        "이렇게 유한한 자세 변화의 합성, 작은 변화의 근사, 순간 각속도의 합을 나눠 두면 벡터라는 같은 겉모습에 속지 않을 수 있습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1
+            ]
+          },
+          "visual": {
+            "afterLine": 1,
+            "targetActionResult": "앞의90° 비교를 남기고 각 입력을2°로 줄여 동일 절차로 적용한다. 가까워진 두 자세를 보이되 정확히 같다고 겹쳐 숨기지 않고 오차가 남는다는 확대 범례를 붙인다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "차이가 작아짐과 정확히0이 됨을 구별한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              2
+            ]
+          },
+          "id": "v6-40.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "한 물체에 같은 순간 합성되는 상대 회전의 관계를 한 중첩 도식으로 보여 준다. 두 각속도 화살표는 같은 좌표계로 표현될 때만 합 상자로 연결하고 무관한 두 물체의 속도는 합치지 않는다.",
+            "plannedMotionSeconds": 6,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 4,
+            "purpose": "합산하는 대상과 '한 물체/같은 순간/같은 좌표계' 조건을 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-40.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              4,
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "현재 몸체Z가 세계X와 나란한 자세를 먼저 보인다. 같은 각속도 화살표를 몸체 성분(0,0,ω)에서 세계 성분(ω,0,0)으로 바꾸어 적고,좌표계가 같아진 뒤에만 다른 성분과 합한다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 6,
+            "purpose": "화살표 자체는 그대로인데 좌표 성분 이름이 바뀌는 과정을 확인한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6
+            ]
+          },
+          "id": "v6-40.B03"
+        }
+      ],
+      "visualFormula": "small increments: Exp(δ1+δ2)≈composition; angular velocities add only after expressing in a common frame",
+      "transitionToNext": "이렇게 유한한 자세 변화의 합성, 작은 변화의 근사, 순간 각속도의 합을 나눠 두면 벡터라는 같은 겉모습에 속지 않을 수 있습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    },
+    {
+      "id": "v6-41",
+      "title": "용어를 묶고 직접 확인하기",
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "25",
+        "26"
+      ],
+      "lines": [
+        "용어를 정리하겠습니다. 축·각 표현은 축과 각도를 따로 적습니다. 회전벡터는 단위축에 라디안 각도를 곱해 세 성분에 담습니다. 지수 사상은 이 좌표를 실제 회전으로 보내는 연산입니다.",
+        "회전축을 오일러 축이라고 부르는 문서도 있지만, 오일러 각 세 성분과 혼동하지 않겠습니다. 이름보다 지금 어떤 정보를 저장하고 어떤 연산을 하는지가 중요합니다.",
+        "첫 번째 확인입니다. 시작이 플러스 백칠십 도, 끝이 마이너스 백칠십 도일 때 짧은 차이는 얼마일까요? 원 위에서 먼저 두 방향을 찾아보세요.",
+        "원시 차이는 마이너스 삼백사십 도이고, 한 바퀴를 더하면 플러스 이십 도입니다. 중간은 플러스 백팔십 도입니다. 앞의 예를 반대로 움직인 경우입니다.",
+        "두 번째 확인입니다. 회전벡터가 영, 파이의 절반, 영이면 어느 축으로 얼마나 돌릴까요? 먼저 길이를 구하고, 그 길이로 각 성분을 나누어 보세요.",
+        "길이는 파이의 절반이고, 단위축은 영, 일, 영입니다. 이 규약에서는 앞쪽 제트가 오른쪽 엑스로 돌아갑니다. 숫자와 실제 동작을 함께 확인해 주세요.",
+        "오일러 각을 쓸 때는 축과 양의 방향과 순서를 먼저 정합니다. 대표값 정리와 실제 경로 문제를 구별하고, 축·각에서는 끝 자세와 누적 회전량을 구별합니다.",
+        "숫자를 바꾼 뒤에는 꼭 중간 동작과 마지막 자세를 함께 확인해 주세요. 그 연결을 이해하면 다음에 다른 회전 표현을 배우더라도, 어떤 문제를 해결하려는 도구인지 스스로 판단할 수 있습니다."
+      ],
+      "teachingBeats": [
+        {
+          "speech": {
+            "lineNumbers": [
+              1,
+              2
+            ]
+          },
+          "visual": {
+            "afterLine": 2,
+            "targetActionResult": "축·각(n,θ),회전벡터 e=θn,지수 사상 e→R를 한 단계씩 연결한다. 오일러 축과 오일러 각은 분리된 이름 칸으로 두고 각 칸의 저장 정보/연산을 대응시킨다.",
+            "plannedMotionSeconds": 7,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 5,
+            "purpose": "비슷한 이름보다 자료와 연산이 무엇인지 구별해 읽는다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": []
+          },
+          "id": "v6-41.B01"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              3
+            ]
+          },
+          "visual": {
+            "afterLine": 3,
+            "targetActionResult": "답을 가린 원 위에 시작+170°와끝-170° 두 화살표만 표시한다. 짧은 방향을 직접 고를 수 있게 빈 차이 칸과 중간 자세 자리만 두고 +20°나180° 답은 아직 공개하지 않는다.",
+            "plannedMotionSeconds": 3,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 7,
+            "purpose": "두 방향을 찾고 짧은 차이와 중간 자세를 스스로 생각한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              4
+            ]
+          },
+          "id": "v6-41.B02"
+        },
+        {
+          "speech": {
+            "lineNumbers": [
+              5
+            ]
+          },
+          "visual": {
+            "afterLine": 5,
+            "targetActionResult": "e=(0,π/2,0) 질문과 빈 '길이/단위축/회전 결과' 칸을 공개한다. 제곱근 계산·축 답·최종 동작은 질문 관찰이 끝날 때까지 숨긴다.",
+            "plannedMotionSeconds": 3,
+            "timingStatus": "planning-only; retime after natural speech, visual playback and reading review"
+          },
+          "hold": {
+            "plannedSeconds": 8,
+            "purpose": "벡터 길이를 구하고 성분을 그 길이로 나누어 축과 각도를 스스로 복원한다.",
+            "silenceRequired": false,
+            "status": "planned-not-rendered-not-listened"
+          },
+          "resultCheckAndConnection": {
+            "lineNumbers": [
+              6,
+              7,
+              8
+            ]
+          },
+          "id": "v6-41.B03"
+        }
+      ],
+      "visualFormula": "wrap(-170°-170°)=+20°; e=(0,π/2,0)→n=(0,1,0),θ=π/2",
+      "transitionToNext": "숫자를 바꾼 뒤에는 꼭 중간 동작과 마지막 자세를 함께 확인해 주세요. 그 연결을 이해하면 다음에 다른 회전 표현을 배우더라도, 어떤 문제를 해결하려는 도구인지 스스로 판단할 수 있습니다.",
+      "productionStatus": "script-and-visual-direction-only; no regenerated TTS or video"
+    }
+  ]
+}

@@ -1,0 +1,2377 @@
+{
+  "schemaVersion": 1,
+  "auditId": "m04-article-flow-technical-audit-v6",
+  "auditedAt": "2026-10-20T08:24:36.235223+00:00",
+  "scope": "Planning/script/source comparison only: article8.3–8.4, current26-scene v3 narration/timing. No TTS/render/ASR/media inspection/asset reuse authorization.",
+  "inputs": {
+    "articleSelected": {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6-script/article-selected.json",
+      "sha256": "47d90195b60897fa1fa3b7ba235a886dd2c8f43b4eb1801e88aa9864998c7446"
+    },
+    "articleCurrent": {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6-script/article-current.json",
+      "sha256": "c5c61c05b85634ae154f2ee9b160f8e6db09dd04c512a13380d39b9eff6c38cb"
+    },
+    "narration": {
+      "file": "projects/game-math-euler-axis-angle/script/revision-v3/narration.ko.json",
+      "sha256": "b8c2fa9e3de921f2fb5dd34d532a003c40152171aedeb4a9d8991f4607229295"
+    },
+    "timeline": {
+      "file": "projects/game-math-euler-axis-angle/production/revision-v3/timeline.json",
+      "sha256": "49c05d4577aed0f8817e90718c0b39bf4cc21a9f0b71d60c4fa4671499467417"
+    }
+  },
+  "sourceScope": {
+    "title": "🧭 3차원 회전(3D Rotations)",
+    "url": "https://app.notion.com/p/3e10b1ffa61e81d289e1da0dd7584a13?pvs=204",
+    "selectedSectionOrder": [
+      "8.3.1",
+      "8.3.2",
+      "8.3.3",
+      "8.3.4",
+      "8.3.5",
+      "8.4"
+    ],
+    "fullArticleUsedFor": "8.1/8.2 frame/row convention and8.7.1 explicit matrices only; no expansion of new lesson scope into8.5–8.8",
+    "figurePolicy": "Article figures/URLs are teaching references only. This audit neither imports nor licenses them as new video assets."
+  },
+  "recommendedConvention": {
+    "status": "recommended; parent agreed to use source-compatible convention for the new script",
+    "handedness": "left-handed book geometry",
+    "axes": {
+      "x": "right",
+      "y": "up",
+      "z": "forward"
+    },
+    "positiveRotations": "left-hand rule, defined viewpoint per axis; avoid clockwise/counterclockwise without viewpoint",
+    "vectors": "row vectors on left",
+    "frames": {
+      "object": "attached to and rotating with object",
+      "upright": "same origin as object; axes parallel to world axes",
+      "world": "reference origin and orientation for positions; translation separates it from upright"
+    },
+    "orientationMatrix": "M_object_to_upright = Rz_row(b) Rx_row(p) Ry_row(h)",
+    "directionTransform": "v_upright = v_object M_object_to_upright",
+    "inverse": "M_upright_to_object = transpose(M_object_to_upright)",
+    "intrinsicSequence": "bodyY heading → moved bodyX pitch → moved bodyZ bank",
+    "equivalentExtrinsicSequence": "fixed uprightZ bank → fixed uprightX pitch → fixed uprightY heading",
+    "rowMatrixElements": {
+      "Rx(p)": "[[1,0,0],[0,cos(p),sin(p)],[0,-sin(p),cos(p)]]",
+      "Ry(h)": "[[cos(h),0,-sin(h)],[0,1,0],[sin(h),0,cos(h)]]",
+      "Rz(b)": "[[cos(b),sin(b),0],[-sin(b),cos(b),0],[0,0,1]]"
+    },
+    "currentConventionAssessment": "Current right-hand/column R=Ry(h)Rx(p)Rz(b) is internally consistent. With the explicit matrices used here its numeric transpose equals the book row matrix; that algebraic relation alone does not license relabeling existing spatial assets without checking physical handedness, frame origins and capture conversion.",
+    "formulaIntroductionTiming": "Basic HPB visual sequence first; row/matrix convention and fixed-axis application only beside the corresponding explanation. Do not front-load8.7 conversion derivation into8.3 introduction."
+  },
+  "recommendations": [
+    {
+      "id": "T01",
+      "priority": "high",
+      "articleSections": [
+        "8.3.1",
+        "8.3.2"
+      ],
+      "currentScenes": [
+        "03",
+        "04",
+        "06"
+      ],
+      "title": "원문과 같은 왼손·행벡터·object/upright 규약으로 통일",
+      "findings": [
+        "현재 오른손·열벡터 contract 자체는 일관되고 틀린 수학이 아니다. 원문과 동시에 따라갈 때 부호·곱순서·공간 이름을 재번역하게 되는 학습 부담이 문제다.",
+        "직립 공간은 물체 원점을 공유하며 축은 월드와 평행하다. 물체가 이동하면 직립 원점도 이동하므로 단순히 월드 공간과 동일하다고 부르지 않는다."
+      ],
+      "proposal": [
+        "+X 오른쪽,+Y 위,+Z 앞 및 왼손 양의 회전, 시작 항등 자세를 먼저 그림과 짧은 말로 고정한다.",
+        "필요한 시점에만 행벡터 v_u=v_o M_o→u, M_o→u=Rz(b)Rx(p)Ry(h), M_u→o=M_o→u^T를 도입한다. 행벡터와 열벡터를 두 체계로 동시에 강의하지 않는다.",
+        "직립↔월드 점 변환에는 평행이동이 더 필요하고, 이번은 중심을 고정한 순수 자세 문제임을 명시한다."
+      ],
+      "futureRendererConstraint": "기존 Unity는 오른손 mathematical contract 및 C=diag(1,1,-1) 변환으로 제작됐다. 나중에 제작 허가가 있어도 라벨만 왼손으로 바꿔 기존 영상이 합치한다고 주장하지 말고, 새 명시 행렬·기저·양의 회전 sanity를 검증해야 한다."
+    },
+    {
+      "id": "T02",
+      "priority": "high",
+      "articleSections": [
+        "8.3.1",
+        "8.3.2"
+      ],
+      "currentScenes": [
+        "04",
+        "06",
+        "07"
+      ],
+      "title": "h30°·p20°로 움직이는 축과 고정축을 먼저 연결",
+      "findings": [
+        "현재45/30/35도 예시는 유효하나 원문의30/20도 두 회전 비교를 대체해 원문 독자의 공통 출발점이 사라졌다.",
+        "몸체축 heading→pitch→bank와 고정 직립축 bank→pitch→heading은 동등하다. 같은 고정축의 순서를 임의로 바꿔도 된다는 뜻이 아니다."
+      ],
+      "proposal": [
+        "항등→heading30→이동한 bodyX에서 pitch20→현재 bodyZ에서 bank라는 원문 네 단계를 유지한다.",
+        "다음에 고정 X20→고정 Y30이 같은 자세를 만드는 것을 나란히 확인한다. 행벡터 식의 왼쪽부터 작용하는 순서는 이 고정축 설명에 붙인다.",
+        "h/p가 바라보는 방향을 정하고 bank가 앞 방향 주위 비틀림을 정한다는 결과를 계산 뒤가 아니라 해당 움직임 바로 옆에서 설명한다."
+      ],
+      "math": "현재 자세 M에서 고정축 증분 F는 M′=MF, 몸체축 증분 D는 M′=DM. 저장 Euler p 편집은 bank 후 현재 bodyX 증분과 일반적으로 같지 않다."
+    },
+    {
+      "id": "T03",
+      "priority": "high",
+      "articleSections": [
+        "8.3.2"
+      ],
+      "currentScenes": [
+        "06"
+      ],
+      "title": "이름 차이와 실제 축 차이를 분리하고 누락된 pitch·Tait–Bryan를 복원",
+      "findings": [
+        "현재 yaw/bodyY와 heading/uprightY 비교는 유용하고 맞다.",
+        "bank가0이 아닐 때 Euler p만 바꾸는 동작은 이미 bank된 현재 bodyX 주위 pitch 운동과 다르다는 원문의 중요한 주의가 빠졌다.",
+        "proper Euler와 Tait–Bryan, 그리고 규약 변환을 행렬 경유로 한다는 원문 핵심이 생략됐다."
+      ],
+      "proposal": [
+        "수직 하강에서 bodyY yaw는 앞을 수평 쪽으로 바꾸지만 uprightY heading은 아래를 본 채 비튼다는 비교를 유지한다.",
+        "그 뒤 bank된 몸체의 현재 X와 Euler p의 pre-bank X를 구분한다.",
+        "서로 다른 세 기본축을 쓰는 Y-X-Z는 Tait–Bryan, 첫째·셋째 축이 같은 Z-X-Z 같은 것은 proper Euler라고 첫 등장에 정의한다. 실제 세 회전축이 항상 서로 수직이라는 설명은 하지 않는다.",
+        "yaw/roll·그리스 문자·azimuth/elevation 같은 이름 목록은 뜻과 출처 규약을 짧게 연결하되 음성 한 문장에 몰지 않는다. 특정 규약만 실용적이거나 전 분야 표준이라는 절대 주장은 완화한다."
+      ]
+    },
+    {
+      "id": "T04",
+      "priority": "medium",
+      "articleSections": [
+        "8.3.3"
+      ],
+      "currentScenes": [
+        "09"
+      ],
+      "title": "장점 세 가지를 단점보다 먼저 충분히 설명",
+      "findings": [
+        "현재09 첫 문장에 사람의 편집 편의와 숫자3개가 압축되어, 원문의 독립적인 장점 절이 거의 한 문장으로 줄었다.",
+        "유한한 실수 세 각도는 자세를 만들지만 NaN/무한대까지 유효하다고 말하면 안 된다.",
+        "Euler가 항상 압축 최선이며 양자화 오차가 자세 전체에 균일하다는 주장은 현대의 다른 압축 포맷·특이점 민감도까지 고려하면 절대 법칙이 아니다."
+      ],
+      "proposal": [
+        "사람이 각도로 편집하기 쉽다→정규화 전제 없는3개 지역 매개변수→유한 입력 삼중항을 해석할 수 있다는 순서로 별도 문단을 둔다.",
+        "동일32비트 스칼라의 단순 저장 비교라면 Euler3개12B/축각4개16B/행렬9개36B처럼 전제를 보여준다. 압축 쿼터니언 등을 포함한 모든 구현에서 우월하다는 주장으로 넓히지 않는다.",
+        "장점을 이해한 다음 같은 자세에 여러 숫자가 있다는 첫 단점으로 자연스럽게 넘어간다."
+      ]
+    },
+    {
+      "id": "T05",
+      "priority": "high",
+      "articleSections": [
+        "8.3.4",
+        "8.3.5"
+      ],
+      "currentScenes": [
+        "09",
+        "10",
+        "12"
+      ],
+      "title": "표준 범위와 짐벌락을 유지하되 원문의45도 부호 오류는 교정",
+      "findings": [
+        "h,b∈(−180°,180°], p∈[−90°,90°], p=±90°일 때 b=0이라는 표준형은 유지 가능하다.",
+        "원문 h45,p90,b0 = h0,p90,b45 주장은 원문 자체의8.7.1 식과 불일치한다. 행/열 또는 왼손/오른손 변경으로 생긴 문제가 아니다.",
+        "같은 source행렬에서 p+90은 h−b, p−90은 h+b가 남는다. 현재12의 이 계산은 맞으므로 버리지 않는다."
+      ],
+      "proposal": [
+        "135도 피치와180/45/180의 중복→각도 범위 제한→수직 피치에서 남는 중복→b=0의 추가 규칙 순서를 유지한다.",
+        "45도 예시를 쓰면 (45,90,0)=(0,90,−45)로 고치거나 검산된30−10=20 예제를 쓴다.",
+        "축선이 겹친다는 말과 양의 축 방향이 같다는 말을 구분한다. p+90에서는 body+Z가 upright−Y이다.",
+        "잃는 것은 이 매개변수의 독립적 순간 제어 방향이며 물체의 물리적 회전 능력이 아니다. 표준형을 고르는 것과 경계 불연속을 없애는 것도 구분한다."
+      ]
+    },
+    {
+      "id": "T06",
+      "priority": "high",
+      "articleSections": [
+        "8.3.4"
+      ],
+      "currentScenes": [
+        "13",
+        "16"
+      ],
+      "title": "720→45와−170→170의 서로 다른 문제를 순서대로 유지",
+      "findings": [
+        "현재13은 두 예시와 짧은 차이의 의미를 보존하고 있어 유지할 가치가 높다.",
+        "720→45의 t=0.5만 보면 감싼 중간 방향이 우연히 같아 경로 차이가 숨는다.",
+        "각 성분의 짧은 차이를 골라도3D 최단 경로나 일정 각속도가 보장되지는 않는다."
+      ],
+      "proposal": [
+        "첫 문제는 큰 입력각720을0으로 표준화하는 문제, 두 번째는 두 표준 입력의 차이340을−20으로 감싸는 문제로 분리한다.",
+        "720→45는 t=0.25 또는 진행 경로/누적각을 보여준다. −170→170은 t=0.5의 직선값0과 짧은 길−180을 대비한다.",
+        "표준화와 wrap을 고친 다음 원문이 말하는 짐벌락/보간의 남은 한계로 돌아간다. 추가90도·135도 예제가 원문 순서를 대체하지 않게 바로 옆 보충으로 둔다."
+      ]
+    },
+    {
+      "id": "T07",
+      "priority": "high",
+      "articleSections": [
+        "8.3.4"
+      ],
+      "currentScenes": [
+        "13",
+        "15"
+      ],
+      "title": "floor를 먼저 풀고 wrap 조건과 끝점을 한 규약으로 맞춤",
+      "findings": [
+        "원문 if(fabs(theta)<=PI)는 범위 밖에서 실행하려는 의도와 반대다. >PI만으로 고쳐도 ±π를 모두 그대로 반환하는 빠른 경로라 반열린 표준 범위의 유일한 끝점 규칙까지 해결되지는 않는다.",
+        "x−2π floor((x+π)/(2π))는 [−π,π)이다. 본문의 (−π,π]를 원하면 −π를+π로 옮기는 처리가 추가로 필요하다.",
+        "현재 std::remainder+끝점 교정 코드는 유효하나 원문 floor의 이해 과정을 건너뛰었다."
+      ],
+      "proposal": [
+        "floor는 자신보다 크지 않은 가장 큰 정수이며 floor(−0.25)=−1이다. 정수로 잘라0으로 만드는 연산과 다름을 작은 음수로 설명한다.",
+        "340에서 floor(520/360)=1바퀴를 빼−20, −340에서 floor(−160/360)=−1을 빼+20이 되는 과정을 먼저 보인다.",
+        "바닥 함수 식의 기본 끝점과 선택 규약을 구별한 뒤, 실제 C++에서는 현재처럼 remainder와 −π 교정을 쓰는 대안을 연결한다.",
+        "remainder는 가장 가까운 정수 배수를 빼고 동점에서는 짝수 배수를 쓰므로 %/fmod와 같다고 말하지 않는다. 입력은 유한 라디안이며 매우 큰 입력에서는 원래 각도 정밀도 한계가 남는다고 제한한다."
+      ],
+      "recommendedImplementation": "double wrapPi(double angle) {\n  constexpr double pi = 3.14159265358979323846;\n  constexpr double tau = 2.0 * pi;\n  double w = std::remainder(angle, tau);\n  if (w <= -pi) w += tau;\n  return w;\n}",
+      "implementationPrecondition": "<cmath>; finite input radians; chosen interval(−π,π]. Floor is the mathematical derivation, not a promise that naive large-number subtraction is numerically robust."
+    },
+    {
+      "id": "T08",
+      "priority": "high",
+      "articleSections": [
+        "8.3.5",
+        "8.4"
+      ],
+      "currentScenes": [
+        "18",
+        "19"
+      ],
+      "title": "축·각→회전벡터→지수 사상의 이름과0을 구별",
+      "findings": [
+        "원문의 e=θn에서 θ=||e||는 θ≥0로 고른 경우다. 부호가 허용되면 길이는 |θ|이다. 현재19가 θ≥0를 명시한 것은 유지한다.",
+        "n,θ의 축·각 저장과 e의 회전벡터, e를 회전으로 보내는 exponential map 연산은 서로 관련되지만 동일한 종류의 대상은 아니다.",
+        "θ=0일 때 축·각의 축은 미정이나 e=0은 유일하고 exp는0에서 매끄럽다. 정규화0으로 나누기를 피해야 한다."
+      ],
+      "proposal": [
+        "8.3.5 요약을 마친 뒤 기본축 제한을 풀어 임의의 단위축 하나를 고르는 원문 연결을 유지한다.",
+        "단위벡터의 길이1, e=θn [rad], θ=||e||, θ>0에서 n=e/θ 순서로 숫자 예제를 계산한다.",
+        "UI는 축·각(Axis–Angle), 회전벡터(Rotation Vector), 지수 사상(Exponential Map)으로 구분하고, 본문에서 책의 지수 사상 표현이 이 회전벡터를 뜻한다는 관계를 한 번 설명한다.",
+        "n=(0,1,0),θ=π/2 예제와 e=0 분기를 유지한다. 곱셈/제곱근/정규화 기호는 쓰기 직전에 의미를 설명한다."
+      ]
+    },
+    {
+      "id": "T09",
+      "priority": "high",
+      "articleSections": [
+        "8.4"
+      ],
+      "currentScenes": [
+        "21",
+        "24"
+      ],
+      "title": "π와2π의 다른 경계 및 여러 바퀴의 기록을 정확히 구분",
+      "findings": [
+        "||e||<2π만으로 유일하다는 원문 주장은 틀리며 e=(0,π/2,0)과(0,−3π/2,0)이 반례다.",
+        "대표값은0≤θ≤π로 고르고 θ=π에서 축 부호 규약을 더할 수 있지만 전역 불연속은 남는다. π의 주로그 분기 경계와2π의 exp 미분 특이점을 같은 것으로 부르면 안 된다.",
+        "최종 자세 하나는 어떤 표현이든 경로/회전수를 전부 복원하지 못한다. 회전벡터가 숫자3개여서 자동으로 일반 회전 이력을 저장하는 것도 아니고, 쿼터니언 시계열이 회전 운동을 표현할 수 없는 것도 아니다."
+      ],
+      "proposal": [
+        "0에서는 e=0, π에서는 n과−n이 같은 끝 자세, 2π에서는 모든 축의 한 바퀴가 항등이라는 세 상태를 구분한다.",
+        "단일 축의 누적 θ나 시간별 ω를 별도로 보관하는 경우에만720°/s와1080°/s 기록을 설명한다. 기존24의0.25초와1초 계산은 유지 가능하다.",
+        "숫자3개로 모든 자세를 전역에서 매끄럽고 유일한 하나의 좌표로 덮는 문제와, 지역적으로 정상 동작하는 매개화는 구별한다. 위상수학 증명은 이번 대본의 새 장으로 확장하지 않는다."
+      ]
+    },
+    {
+      "id": "T10",
+      "priority": "high",
+      "articleSections": [
+        "8.4"
+      ],
+      "currentScenes": [
+        "22",
+        "24",
+        "25"
+      ],
+      "title": "유한 회전 합성과 순간 각속도 합의 전제를 먼저 제시",
+      "findings": [
+        "유한 e1 뒤 e2는 보통 e1+e2가 아니다. 현재22의π/√2rad≈127.28° 반례는 맞다.",
+        "작은 각도의 합은1차 근사이며 유한한 작은 값에서도 일반적으로 정확하지 않다.",
+        "ω[rad/s]와 e[rad]는 단위와 역할이 다르다. 움직이는 축에서는 일반적으로 de/dt≠ω이며, 같은 순간·같은 좌표계의 실제 합성 가능한 상대 각속도를 더해야 한다."
+      ],
+      "proposal": [
+        "90도 X→Y와 Y→X를 먼저 다르게 보인 뒤,2도에서는 오차가 작아진다는 원문의 질문을 이어간다. 벡터 합이 정확해졌다고 표현하지 않는다.",
+        "고정축·일정 ω에서는 누적각=속도×시간이라는 선행 예제로 들어간다. 이후 body+Z의1rad/s가 h90 자세에서 upright+X의1rad/s임을 옮겨 쓴다.",
+        "각속도 합은 프레임 사슬/상대 운동의 합이라는 조건을 말하고 같은 기준으로 변환한 뒤 더한다. 임의의 두 Euler 각 변화율을 그대로 더할 수 있다는 결론으로 넓히지 않는다.",
+        "Jacobian/리 대수·쿼터니언 상세 유도는 이번8.3–8.4의 필수 선수 지식으로 갑자기 추가하지 않는다. 필요하면 구현 보충으로 분리한다."
+      ]
+    }
+  ],
+  "numericChecks": {
+    "method": "Python standard-library scalar arithmetic only; explicit book row matrices. No renderer, ASR or media decoding.",
+    "tolerance": 1e-12,
+    "elementarySanity": [
+      {
+        "name": "heading +90 from identity",
+        "input": [
+          0,
+          0,
+          1
+        ],
+        "output": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "expected": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "pitch +90 from identity",
+        "input": [
+          0,
+          0,
+          1
+        ],
+        "output": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "expected": [
+          0,
+          -1,
+          0
+        ]
+      },
+      {
+        "name": "bank +90, up vector from identity",
+        "input": [
+          0,
+          1,
+          0
+        ],
+        "output": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "expected": [
+          -1,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "fixed X90 then Y90",
+        "input": [
+          0,
+          0,
+          1
+        ],
+        "output": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "expected": [
+          0,
+          -1,
+          0
+        ]
+      },
+      {
+        "name": "fixed Y90 then X90",
+        "input": [
+          0,
+          0,
+          1
+        ],
+        "output": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "expected": [
+          1,
+          0,
+          0
+        ]
+      }
+    ],
+    "h30p20": {
+      "anglesDegrees": [
+        30,
+        20,
+        0
+      ],
+      "objectToUprightRowMatrix": [
+        [
+          0.866025403784,
+          0.0,
+          -0.5
+        ],
+        [
+          0.171010071663,
+          0.939692620786,
+          0.296198132726
+        ],
+        [
+          0.469846310393,
+          -0.342020143326,
+          0.813797681349
+        ]
+      ],
+      "forwardInUpright": [
+        0.469846310393,
+        -0.342020143326,
+        0.813797681349
+      ],
+      "bodyXAfterHeading": [
+        0.866025403784,
+        0.0,
+        -0.5
+      ],
+      "intrinsicHeadingThenPitchEqualsFixedPitchThenHeading": true,
+      "additionalBank35ForwardDifference": 0.0
+    },
+    "bankAlreadyNonzeroPitchCaveat": {
+      "anglesDegrees": [
+        30,
+        20,
+        35
+      ],
+      "currentBodyX": [
+        0.807493827401,
+        0.538985544696,
+        -0.239683752722
+      ],
+      "eulerPitchParameterAxisInUpright": [
+        0.866025403784,
+        0.0,
+        -0.5
+      ],
+      "axisDot": 0.8191520442889918,
+      "meaning": "Changing stored p while h/b fixed is about the pre-bank lateral axis; it is not generally an instantaneous rotation about the current banked body x."
+    },
+    "verticalDiveYawHeading": {
+      "startingAnglesDegrees": [
+        0,
+        90,
+        0
+      ],
+      "headingIncrement90Forward": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "bodyYawIncrement90Forward": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "safeNarration": "Heading retains the vertical forward direction; body-y yaw turns it into a horizontal direction. Numeric sign depends on the explicitly chosen increment."
+    },
+    "alias135": {
+      "triples": [
+        [
+          0,
+          135,
+          0
+        ],
+        [
+          180,
+          45,
+          180
+        ]
+      ],
+      "maxMatrixError": 1.1102230246251565e-16
+    },
+    "gimbal": {
+      "plus90Effective": "h-b",
+      "minus90Effective": "h+b",
+      "plus90ExampleMaxError": 5.551115123125783e-17,
+      "minus90ExampleMaxError": 1.1102230246251565e-16,
+      "sourcePositive45BankClaimMaxError": 1.4142135623730951,
+      "correctedNegative45BankClaimMaxError": 4.329780281177467e-17,
+      "positive45SourceClaimStatus": "incorrect under the source own equation8.14, independent of row/column notation"
+    },
+    "interpolation": {
+      "720to45": {
+        "rawDeltaDegrees": -675,
+        "canonicalDeltaDegrees": 45,
+        "quarterRawAngleDegrees": 551.25,
+        "quarterRawWrappedDegrees": -168.75,
+        "quarterShortAngleDegrees": 11.25,
+        "midpointWarning": "At t=0.5 both paths happen to point22.5deg after wrapping; a midpoint-only visual comparison can hide the two-turn path difference."
+      },
+      "minus170to170": {
+        "rawDeltaDegrees": 340,
+        "wrappedDeltaDegrees": -20,
+        "rawMidpointDegrees": 0,
+        "shortMidpointDegrees": -180,
+        "shortMidpointEquivalentDegrees": 180
+      }
+    },
+    "floorExamples": {
+      "floor(-0.25)": -1,
+      "trunc(-0.25)": 0,
+      "wrap340": -20,
+      "wrapMinus340": 20
+    },
+    "rotvecNonAdd": {
+      "e1Radians": [
+        1.5707963267948966,
+        0,
+        0
+      ],
+      "e2Radians": [
+        0,
+        1.5707963267948966,
+        0
+      ],
+      "sumNormRadians": 2.221441469079183,
+      "sumNormDegrees": 127.27922061357854,
+      "sequentialForward": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "sumVectorForward": [
+        0.562640058572,
+        -0.562640058572,
+        -0.605699867079
+      ],
+      "sumVsCompositionAngleDegrees": 62.350271135194305,
+      "orderDifferenceAt2Degrees": 0.06980608267037244
+    },
+    "axisVectorBranches": {
+      "sameEndPoseVectorsRadians": [
+        [
+          0,
+          1.5707963267948966,
+          0
+        ],
+        [
+          0,
+          -4.71238898038469,
+          0
+        ]
+      ],
+      "normsBothLessThan2Pi": true,
+      "maxMatrixError": 3.3306690738754696e-16,
+      "piAxisSignMaxMatrixError": 2.4492935982947064e-16,
+      "zeroVectorMatrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "twoPiIdentityMaxError": 2.4492935982947064e-16,
+      "expDifferentialDeterminantAt0Pi2Pi": [
+        1,
+        0.40528473456935116,
+        0
+      ],
+      "differentialMeaning": "In a standard signed-generator convention, det(dexp)=(sin(theta/2)/(theta/2))^2. At pi the principal-log branch is ambiguous, not a zero Jacobian of exp; nonzero2pi is a differential singularity."
+    },
+    "angularVelocityFrameChange": {
+      "objectToUprightAnglesDegrees": [
+        90,
+        0,
+        0
+      ],
+      "bodyRadiansPerSecond": [
+        0,
+        0,
+        1
+      ],
+      "uprightRadiansPerSecond": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "rowFormula": "omega_upright = omega_body M_object_to_upright"
+    }
+  },
+  "currentNarrationStatistics": {
+    "method": "Literal current KO script counts divided by existing timeline narration-chunk duration metadata; no new media read/ASR. A hangul syllable character is a written block, not a measured phoneme. Whitespace tokens are eojeol, not English words. Chunk duration includes recorded pauses. Technical density is a transparent limited-lexicon proxy, not a comprehension/pass threshold.",
+    "sceneCount": 26,
+    "lineCount": 160,
+    "hangulSyllableCharacters": 8604,
+    "nonWhitespaceCharacters": 9106,
+    "eojeolCount": 3053,
+    "narrationChunkSeconds": 1400.6402083333332,
+    "bodySceneSeconds": 1539.6666666666667,
+    "masterSecondsIncludingBrandingAndMembership": 1551.6666666666667,
+    "weightedHangulCharactersPerChunkSecond": 6.143,
+    "technicalTermOccurrences": 304,
+    "weightedTechnicalOccurrencesPerChunkMinute": 13.02,
+    "lexicon": [
+      {
+        "category": "선형보간",
+        "regex": "선형\\s*보간"
+      },
+      {
+        "category": "오일러각",
+        "regex": "오일러\\s*각"
+      },
+      {
+        "category": "회전벡터",
+        "regex": "회전\\s*벡터"
+      },
+      {
+        "category": "단위벡터",
+        "regex": "단위\\s*벡터"
+      },
+      {
+        "category": "좌표계",
+        "regex": "좌표계"
+      },
+      {
+        "category": "오른손규칙",
+        "regex": "오른손\\s*규칙"
+      },
+      {
+        "category": "왼손규칙",
+        "regex": "왼손\\s*(?:규칙|법칙)"
+      },
+      {
+        "category": "내재적회전",
+        "regex": "내재적(?:\\s*회전)?"
+      },
+      {
+        "category": "외재적회전",
+        "regex": "외재적(?:\\s*회전)?"
+      },
+      {
+        "category": "열벡터",
+        "regex": "열벡터"
+      },
+      {
+        "category": "행벡터",
+        "regex": "행벡터"
+      },
+      {
+        "category": "고정축",
+        "regex": "고정\\s*축"
+      },
+      {
+        "category": "중복표현",
+        "regex": "중복\\s*표현"
+      },
+      {
+        "category": "지수사상",
+        "regex": "지수\\s*사상"
+      },
+      {
+        "category": "축각",
+        "regex": "축[·–\\s]*각"
+      },
+      {
+        "category": "각속도",
+        "regex": "각속도"
+      },
+      {
+        "category": "랩파이",
+        "regex": "랩\\s*파이|wrapPi"
+      },
+      {
+        "category": "리메인더",
+        "regex": "리메인더|std::remainder"
+      },
+      {
+        "category": "바닥함수",
+        "regex": "바닥\\s*함수|floor"
+      },
+      {
+        "category": "테이트브라이언",
+        "regex": "테이트[–·\\s]*브라이언"
+      },
+      {
+        "category": "정통오일러",
+        "regex": "정통(?:\\s*오일러)?"
+      },
+      {
+        "category": "짐벌락",
+        "regex": "짐벌\\s*락"
+      },
+      {
+        "category": "헤딩",
+        "regex": "헤딩"
+      },
+      {
+        "category": "피치",
+        "regex": "피치"
+      },
+      {
+        "category": "뱅크",
+        "regex": "뱅크"
+      },
+      {
+        "category": "요",
+        "regex": "(?<![가-힣])요(?=\\s|[,·]|가|는|를|의)"
+      },
+      {
+        "category": "롤",
+        "regex": "롤"
+      },
+      {
+        "category": "월드",
+        "regex": "월드"
+      },
+      {
+        "category": "로컬",
+        "regex": "로컬"
+      },
+      {
+        "category": "오브젝트",
+        "regex": "오브젝트"
+      },
+      {
+        "category": "직립",
+        "regex": "직립"
+      },
+      {
+        "category": "몸체",
+        "regex": "몸체"
+      },
+      {
+        "category": "자유도",
+        "regex": "자유도"
+      },
+      {
+        "category": "특이점",
+        "regex": "특이점"
+      },
+      {
+        "category": "항등",
+        "regex": "항등"
+      },
+      {
+        "category": "라디안",
+        "regex": "라디안"
+      },
+      {
+        "category": "정규화",
+        "regex": "정규화"
+      },
+      {
+        "category": "쿼터니언",
+        "regex": "쿼터니언"
+      },
+      {
+        "category": "매개변수",
+        "regex": "매개변수"
+      },
+      {
+        "category": "보간",
+        "regex": "보간"
+      },
+      {
+        "category": "벡터",
+        "regex": "벡터"
+      },
+      {
+        "category": "행렬",
+        "regex": "행렬"
+      },
+      {
+        "category": "엑스",
+        "regex": "엑스"
+      },
+      {
+        "category": "와이",
+        "regex": "와이"
+      },
+      {
+        "category": "제트",
+        "regex": "제트"
+      },
+      {
+        "category": "파이",
+        "regex": "파이"
+      },
+      {
+        "category": "세타",
+        "regex": "세타"
+      },
+      {
+        "category": "오메가",
+        "regex": "오메가"
+      },
+      {
+        "category": "델타",
+        "regex": "델타"
+      }
+    ],
+    "topTechnicalDensityScenes": [
+      {
+        "scene": "06",
+        "technicalOccurrencesPerChunkMinute": 36.42,
+        "firstSeenTermCategories": [
+          "롤",
+          "외재적회전",
+          "요"
+        ]
+      },
+      {
+        "scene": "12",
+        "technicalOccurrencesPerChunkMinute": 29.49,
+        "firstSeenTermCategories": []
+      },
+      {
+        "scene": "03",
+        "technicalOccurrencesPerChunkMinute": 25.46,
+        "firstSeenTermCategories": [
+          "로컬",
+          "몸체",
+          "벡터",
+          "엑스",
+          "열벡터",
+          "오른손규칙",
+          "와이",
+          "월드",
+          "제트",
+          "좌표계",
+          "행렬"
+        ]
+      },
+      {
+        "scene": "04",
+        "technicalOccurrencesPerChunkMinute": 24.67,
+        "firstSeenTermCategories": [
+          "내재적회전"
+        ]
+      },
+      {
+        "scene": "10",
+        "technicalOccurrencesPerChunkMinute": 19.92,
+        "firstSeenTermCategories": [
+          "매개변수",
+          "자유도"
+        ]
+      },
+      {
+        "scene": "09",
+        "technicalOccurrencesPerChunkMinute": 18.84,
+        "firstSeenTermCategories": [
+          "중복표현"
+        ]
+      }
+    ],
+    "absentOrPresentArticleTerms": {
+      "upright": false,
+      "rowVector": false,
+      "leftHand": false,
+      "properEuler": false,
+      "TaitBryan": false,
+      "floorDefinition": false,
+      "quantizationCompression": false,
+      "yaw": true,
+      "pitchAfterBankCaveat": false
+    },
+    "scenes": [
+      {
+        "scene": "01",
+        "title": "이번 강의에서 배울 것",
+        "kind": "explanation",
+        "lineCount": 4,
+        "hangulSyllableCharacters": 131,
+        "nonWhitespaceCharacters": 139,
+        "eojeolCount": 42,
+        "narrationChunkSeconds": 21.68,
+        "sceneSeconds": 22.316666666666666,
+        "hangulCharactersPerChunkSecond": 6.042,
+        "eojeolPerChunkMinute": 116.24,
+        "technicalTermOccurrences": 3,
+        "distinctTechnicalCategories": 3,
+        "technicalOccurrencesPerChunkMinute": 8.3,
+        "technicalOccurrencesPer100Eojeol": 7.14,
+        "firstSeenTermCategories": [
+          "보간",
+          "오일러각",
+          "짐벌락"
+        ],
+        "terms": {
+          "오일러각": 1,
+          "짐벌락": 1,
+          "보간": 1
+        }
+      },
+      {
+        "scene": "02",
+        "title": "차체의 방향과 기울기를 나눠 보기",
+        "kind": "actual",
+        "lineCount": 7,
+        "hangulSyllableCharacters": 377,
+        "nonWhitespaceCharacters": 400,
+        "eojeolCount": 131,
+        "narrationChunkSeconds": 63.68,
+        "sceneSeconds": 82.95,
+        "hangulCharactersPerChunkSecond": 5.92,
+        "eojeolPerChunkMinute": 123.43,
+        "technicalTermOccurrences": 3,
+        "distinctTechnicalCategories": 3,
+        "technicalOccurrencesPerChunkMinute": 2.83,
+        "technicalOccurrencesPer100Eojeol": 2.29,
+        "firstSeenTermCategories": [
+          "뱅크",
+          "피치",
+          "헤딩"
+        ],
+        "terms": {
+          "헤딩": 1,
+          "피치": 1,
+          "뱅크": 1
+        }
+      },
+      {
+        "scene": "03",
+        "title": "오일러 각은 순서가 있는 세 회전",
+        "kind": "explanation",
+        "lineCount": 7,
+        "hangulSyllableCharacters": 353,
+        "nonWhitespaceCharacters": 375,
+        "eojeolCount": 127,
+        "narrationChunkSeconds": 61.28,
+        "sceneSeconds": 61.88333333333333,
+        "hangulCharactersPerChunkSecond": 5.76,
+        "eojeolPerChunkMinute": 124.35,
+        "technicalTermOccurrences": 26,
+        "distinctTechnicalCategories": 15,
+        "technicalOccurrencesPerChunkMinute": 25.46,
+        "technicalOccurrencesPer100Eojeol": 20.47,
+        "firstSeenTermCategories": [
+          "로컬",
+          "몸체",
+          "벡터",
+          "엑스",
+          "열벡터",
+          "오른손규칙",
+          "와이",
+          "월드",
+          "제트",
+          "좌표계",
+          "행렬"
+        ],
+        "terms": {
+          "월드": 2,
+          "좌표계": 4,
+          "로컬": 1,
+          "몸체": 3,
+          "오일러각": 1,
+          "오른손규칙": 1,
+          "헤딩": 2,
+          "와이": 2,
+          "피치": 1,
+          "엑스": 2,
+          "뱅크": 1,
+          "제트": 3,
+          "열벡터": 1,
+          "행렬": 1,
+          "벡터": 1
+        }
+      },
+      {
+        "scene": "04",
+        "title": "몸에 붙은 축도 함께 돌아간다",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 292,
+        "nonWhitespaceCharacters": 310,
+        "eojeolCount": 103,
+        "narrationChunkSeconds": 48.64004166666667,
+        "sceneSeconds": 49.25,
+        "hangulCharactersPerChunkSecond": 6.003,
+        "eojeolPerChunkMinute": 127.06,
+        "technicalTermOccurrences": 20,
+        "distinctTechnicalCategories": 8,
+        "technicalOccurrencesPerChunkMinute": 24.67,
+        "technicalOccurrencesPer100Eojeol": 19.42,
+        "firstSeenTermCategories": [
+          "내재적회전"
+        ],
+        "terms": {
+          "헤딩": 4,
+          "몸체": 2,
+          "피치": 5,
+          "엑스": 2,
+          "뱅크": 3,
+          "제트": 2,
+          "내재적회전": 1,
+          "와이": 1
+        }
+      },
+      {
+        "scene": "05",
+        "title": "차체의 위쪽과 화면의 위쪽",
+        "kind": "actual",
+        "lineCount": 8,
+        "hangulSyllableCharacters": 473,
+        "nonWhitespaceCharacters": 496,
+        "eojeolCount": 158,
+        "narrationChunkSeconds": 76.32,
+        "sceneSeconds": 101.01666666666667,
+        "hangulCharactersPerChunkSecond": 6.198,
+        "eojeolPerChunkMinute": 124.21,
+        "technicalTermOccurrences": 7,
+        "distinctTechnicalCategories": 5,
+        "technicalOccurrencesPerChunkMinute": 5.5,
+        "technicalOccurrencesPer100Eojeol": 4.43,
+        "firstSeenTermCategories": [
+          "고정축"
+        ],
+        "terms": {
+          "월드": 2,
+          "좌표계": 2,
+          "피치": 1,
+          "헤딩": 1,
+          "고정축": 1
+        }
+      },
+      {
+        "scene": "06",
+        "title": "고정축에서는 순서를 뒤집는다",
+        "kind": "explanation",
+        "lineCount": 8,
+        "hangulSyllableCharacters": 408,
+        "nonWhitespaceCharacters": 440,
+        "eojeolCount": 144,
+        "narrationChunkSeconds": 69.2,
+        "sceneSeconds": 69.8,
+        "hangulCharactersPerChunkSecond": 5.896,
+        "eojeolPerChunkMinute": 124.86,
+        "technicalTermOccurrences": 42,
+        "distinctTechnicalCategories": 16,
+        "technicalOccurrencesPerChunkMinute": 36.42,
+        "technicalOccurrencesPer100Eojeol": 29.17,
+        "firstSeenTermCategories": [
+          "롤",
+          "외재적회전",
+          "요"
+        ],
+        "terms": {
+          "월드": 2,
+          "외재적회전": 2,
+          "몸체": 2,
+          "헤딩": 3,
+          "피치": 3,
+          "뱅크": 3,
+          "고정축": 3,
+          "열벡터": 1,
+          "행렬": 2,
+          "와이": 6,
+          "엑스": 4,
+          "제트": 4,
+          "벡터": 1,
+          "요": 3,
+          "롤": 2,
+          "내재적회전": 1
+        }
+      },
+      {
+        "scene": "07",
+        "title": "90도 두 번도 순서에 따라 다르다",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 239,
+        "nonWhitespaceCharacters": 263,
+        "eojeolCount": 89,
+        "narrationChunkSeconds": 39.68,
+        "sceneSeconds": 40.28333333333333,
+        "hangulCharactersPerChunkSecond": 6.023,
+        "eojeolPerChunkMinute": 134.58,
+        "technicalTermOccurrences": 11,
+        "distinctTechnicalCategories": 3,
+        "technicalOccurrencesPerChunkMinute": 16.63,
+        "technicalOccurrencesPer100Eojeol": 12.36,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "엑스": 5,
+          "와이": 5,
+          "행렬": 1
+        }
+      },
+      {
+        "scene": "08",
+        "title": "물체를 돌릴 때 필요한 정보",
+        "kind": "actual",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 384,
+        "nonWhitespaceCharacters": 405,
+        "eojeolCount": 134,
+        "narrationChunkSeconds": 58.4,
+        "sceneSeconds": 64.85,
+        "hangulCharactersPerChunkSecond": 6.575,
+        "eojeolPerChunkMinute": 137.67,
+        "technicalTermOccurrences": 0,
+        "distinctTechnicalCategories": 0,
+        "technicalOccurrencesPerChunkMinute": 0.0,
+        "technicalOccurrencesPer100Eojeol": 0.0,
+        "firstSeenTermCategories": [],
+        "terms": {}
+      },
+      {
+        "scene": "09",
+        "title": "같은 자세를 여러 각도로 표현한다",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 296,
+        "nonWhitespaceCharacters": 312,
+        "eojeolCount": 107,
+        "narrationChunkSeconds": 47.760041666666666,
+        "sceneSeconds": 48.36666666666667,
+        "hangulCharactersPerChunkSecond": 6.198,
+        "eojeolPerChunkMinute": 134.42,
+        "technicalTermOccurrences": 15,
+        "distinctTechnicalCategories": 6,
+        "technicalOccurrencesPerChunkMinute": 18.84,
+        "technicalOccurrencesPer100Eojeol": 14.02,
+        "firstSeenTermCategories": [
+          "중복표현"
+        ],
+        "terms": {
+          "오일러각": 1,
+          "헤딩": 4,
+          "피치": 4,
+          "뱅크": 4,
+          "몸체": 1,
+          "중복표현": 1
+        }
+      },
+      {
+        "scene": "10",
+        "title": "짐벌락: 두 회전축이 겹치는 순간",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 325,
+        "nonWhitespaceCharacters": 341,
+        "eojeolCount": 115,
+        "narrationChunkSeconds": 51.2,
+        "sceneSeconds": 51.8,
+        "hangulCharactersPerChunkSecond": 6.348,
+        "eojeolPerChunkMinute": 134.77,
+        "technicalTermOccurrences": 17,
+        "distinctTechnicalCategories": 10,
+        "technicalOccurrencesPerChunkMinute": 19.92,
+        "technicalOccurrencesPer100Eojeol": 14.78,
+        "firstSeenTermCategories": [
+          "매개변수",
+          "자유도"
+        ],
+        "terms": {
+          "피치": 2,
+          "헤딩": 4,
+          "뱅크": 3,
+          "몸체": 1,
+          "제트": 1,
+          "월드": 1,
+          "와이": 1,
+          "자유도": 1,
+          "매개변수": 1,
+          "짐벌락": 2
+        }
+      },
+      {
+        "scene": "11",
+        "title": "가파른 화면이 곧 짐벌락은 아니다",
+        "kind": "actual",
+        "lineCount": 5,
+        "hangulSyllableCharacters": 333,
+        "nonWhitespaceCharacters": 351,
+        "eojeolCount": 111,
+        "narrationChunkSeconds": 52.08,
+        "sceneSeconds": 68.98333333333333,
+        "hangulCharactersPerChunkSecond": 6.394,
+        "eojeolPerChunkMinute": 127.88,
+        "technicalTermOccurrences": 6,
+        "distinctTechnicalCategories": 4,
+        "technicalOccurrencesPerChunkMinute": 6.91,
+        "technicalOccurrencesPer100Eojeol": 5.41,
+        "firstSeenTermCategories": [
+          "특이점"
+        ],
+        "terms": {
+          "짐벌락": 2,
+          "특이점": 2,
+          "피치": 1,
+          "오일러각": 1
+        }
+      },
+      {
+        "scene": "12",
+        "title": "90도에서는 헤딩과 뱅크가 합쳐진다",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 283,
+        "nonWhitespaceCharacters": 304,
+        "eojeolCount": 114,
+        "narrationChunkSeconds": 46.8,
+        "sceneSeconds": 47.4,
+        "hangulCharactersPerChunkSecond": 6.047,
+        "eojeolPerChunkMinute": 146.15,
+        "technicalTermOccurrences": 23,
+        "distinctTechnicalCategories": 9,
+        "technicalOccurrencesPerChunkMinute": 29.49,
+        "technicalOccurrencesPer100Eojeol": 20.18,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "와이": 1,
+          "엑스": 1,
+          "제트": 1,
+          "피치": 4,
+          "헤딩": 6,
+          "뱅크": 7,
+          "행렬": 1,
+          "몸체": 1,
+          "보간": 1
+        }
+      },
+      {
+        "scene": "13",
+        "title": "각도 보간은 짧은 차이를 골라야 한다",
+        "kind": "explanation",
+        "lineCount": 8,
+        "hangulSyllableCharacters": 398,
+        "nonWhitespaceCharacters": 419,
+        "eojeolCount": 140,
+        "narrationChunkSeconds": 62.64,
+        "sceneSeconds": 63.25,
+        "hangulCharactersPerChunkSecond": 6.354,
+        "eojeolPerChunkMinute": 134.1,
+        "technicalTermOccurrences": 8,
+        "distinctTechnicalCategories": 5,
+        "technicalOccurrencesPerChunkMinute": 7.66,
+        "technicalOccurrencesPer100Eojeol": 5.71,
+        "firstSeenTermCategories": [
+          "라디안",
+          "랩파이",
+          "파이"
+        ],
+        "terms": {
+          "보간": 1,
+          "헤딩": 1,
+          "랩파이": 1,
+          "라디안": 2,
+          "파이": 3
+        }
+      },
+      {
+        "scene": "14",
+        "title": "끝 방향과 그 사이의 회전 경로",
+        "kind": "actual",
+        "lineCount": 5,
+        "hangulSyllableCharacters": 321,
+        "nonWhitespaceCharacters": 337,
+        "eojeolCount": 114,
+        "narrationChunkSeconds": 53.520041666666664,
+        "sceneSeconds": 63.166666666666664,
+        "hangulCharactersPerChunkSecond": 5.998,
+        "eojeolPerChunkMinute": 127.8,
+        "technicalTermOccurrences": 1,
+        "distinctTechnicalCategories": 1,
+        "technicalOccurrencesPerChunkMinute": 1.12,
+        "technicalOccurrencesPer100Eojeol": 0.88,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "보간": 1
+        }
+      },
+      {
+        "scene": "15",
+        "title": "라디안과 끝점까지 정한 wrap 코드",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 355,
+        "nonWhitespaceCharacters": 370,
+        "eojeolCount": 127,
+        "narrationChunkSeconds": 56.0,
+        "sceneSeconds": 56.6,
+        "hangulCharactersPerChunkSecond": 6.339,
+        "eojeolPerChunkMinute": 136.07,
+        "technicalTermOccurrences": 15,
+        "distinctTechnicalCategories": 4,
+        "technicalOccurrencesPerChunkMinute": 16.07,
+        "technicalOccurrencesPer100Eojeol": 11.81,
+        "firstSeenTermCategories": [
+          "리메인더"
+        ],
+        "terms": {
+          "라디안": 3,
+          "파이": 9,
+          "리메인더": 1,
+          "보간": 2
+        }
+      },
+      {
+        "scene": "16",
+        "title": "세 각을 따로 보간하면 남는 문제",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 316,
+        "nonWhitespaceCharacters": 339,
+        "eojeolCount": 120,
+        "narrationChunkSeconds": 52.4,
+        "sceneSeconds": 53.0,
+        "hangulCharactersPerChunkSecond": 6.031,
+        "eojeolPerChunkMinute": 137.4,
+        "technicalTermOccurrences": 8,
+        "distinctTechnicalCategories": 7,
+        "technicalOccurrencesPerChunkMinute": 9.16,
+        "technicalOccurrencesPer100Eojeol": 6.67,
+        "firstSeenTermCategories": [
+          "항등"
+        ],
+        "terms": {
+          "보간": 2,
+          "항등": 1,
+          "몸체": 1,
+          "피치": 1,
+          "헤딩": 1,
+          "뱅크": 1,
+          "오일러각": 1
+        }
+      },
+      {
+        "scene": "17",
+        "title": "중간 자세까지 보아야 하는 이유",
+        "kind": "actual",
+        "lineCount": 5,
+        "hangulSyllableCharacters": 345,
+        "nonWhitespaceCharacters": 363,
+        "eojeolCount": 119,
+        "narrationChunkSeconds": 52.72,
+        "sceneSeconds": 65.0,
+        "hangulCharactersPerChunkSecond": 6.544,
+        "eojeolPerChunkMinute": 135.43,
+        "technicalTermOccurrences": 3,
+        "distinctTechnicalCategories": 1,
+        "technicalOccurrencesPerChunkMinute": 3.41,
+        "technicalOccurrencesPer100Eojeol": 2.52,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "보간": 3
+        }
+      },
+      {
+        "scene": "18",
+        "title": "축 하나와 각도 하나로 표현",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 336,
+        "nonWhitespaceCharacters": 355,
+        "eojeolCount": 126,
+        "narrationChunkSeconds": 53.2,
+        "sceneSeconds": 53.8,
+        "hangulCharactersPerChunkSecond": 6.316,
+        "eojeolPerChunkMinute": 142.11,
+        "technicalTermOccurrences": 10,
+        "distinctTechnicalCategories": 7,
+        "technicalOccurrencesPerChunkMinute": 11.28,
+        "technicalOccurrencesPer100Eojeol": 7.94,
+        "firstSeenTermCategories": [
+          "단위벡터",
+          "세타",
+          "축각"
+        ],
+        "terms": {
+          "단위벡터": 2,
+          "세타": 1,
+          "축각": 1,
+          "제트": 1,
+          "엑스": 1,
+          "자유도": 3,
+          "벡터": 1
+        }
+      },
+      {
+        "scene": "19",
+        "title": "회전벡터의 길이가 각도",
+        "kind": "explanation",
+        "lineCount": 7,
+        "hangulSyllableCharacters": 352,
+        "nonWhitespaceCharacters": 377,
+        "eojeolCount": 127,
+        "narrationChunkSeconds": 61.04,
+        "sceneSeconds": 61.65,
+        "hangulCharactersPerChunkSecond": 5.767,
+        "eojeolPerChunkMinute": 124.84,
+        "technicalTermOccurrences": 19,
+        "distinctTechnicalCategories": 9,
+        "technicalOccurrencesPerChunkMinute": 18.68,
+        "technicalOccurrencesPer100Eojeol": 14.96,
+        "firstSeenTermCategories": [
+          "정규화",
+          "지수사상",
+          "회전벡터"
+        ],
+        "terms": {
+          "라디안": 1,
+          "세타": 2,
+          "벡터": 7,
+          "회전벡터": 2,
+          "행렬": 1,
+          "지수사상": 1,
+          "파이": 3,
+          "정규화": 1,
+          "항등": 1
+        }
+      },
+      {
+        "scene": "20",
+        "title": "위치의 화살표와 회전의 화살표",
+        "kind": "actual",
+        "lineCount": 8,
+        "hangulSyllableCharacters": 501,
+        "nonWhitespaceCharacters": 529,
+        "eojeolCount": 168,
+        "narrationChunkSeconds": 79.68,
+        "sceneSeconds": 100.83333333333333,
+        "hangulCharactersPerChunkSecond": 6.288,
+        "eojeolPerChunkMinute": 126.51,
+        "technicalTermOccurrences": 6,
+        "distinctTechnicalCategories": 3,
+        "technicalOccurrencesPerChunkMinute": 4.52,
+        "technicalOccurrencesPer100Eojeol": 3.57,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "회전벡터": 4,
+          "월드": 1,
+          "라디안": 1
+        }
+      },
+      {
+        "scene": "21",
+        "title": "한 바퀴 미만이어도 표현은 중복된다",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 332,
+        "nonWhitespaceCharacters": 346,
+        "eojeolCount": 119,
+        "narrationChunkSeconds": 51.36004166666667,
+        "sceneSeconds": 51.96666666666667,
+        "hangulCharactersPerChunkSecond": 6.464,
+        "eojeolPerChunkMinute": 139.02,
+        "technicalTermOccurrences": 7,
+        "distinctTechnicalCategories": 3,
+        "technicalOccurrencesPerChunkMinute": 8.18,
+        "technicalOccurrencesPer100Eojeol": 5.88,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "벡터": 5,
+          "항등": 1,
+          "회전벡터": 1
+        }
+      },
+      {
+        "scene": "22",
+        "title": "회전벡터는 보통 더할 수 없다",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 303,
+        "nonWhitespaceCharacters": 320,
+        "eojeolCount": 113,
+        "narrationChunkSeconds": 49.28,
+        "sceneSeconds": 49.88333333333333,
+        "hangulCharactersPerChunkSecond": 6.149,
+        "eojeolPerChunkMinute": 137.58,
+        "technicalTermOccurrences": 14,
+        "distinctTechnicalCategories": 8,
+        "technicalOccurrencesPerChunkMinute": 17.05,
+        "technicalOccurrencesPer100Eojeol": 12.39,
+        "firstSeenTermCategories": [
+          "쿼터니언"
+        ],
+        "terms": {
+          "엑스": 2,
+          "와이": 2,
+          "회전벡터": 1,
+          "파이": 3,
+          "벡터": 3,
+          "라디안": 1,
+          "행렬": 1,
+          "쿼터니언": 1
+        }
+      },
+      {
+        "scene": "23",
+        "title": "복잡한 움직임에서도 구분할 것",
+        "kind": "actual",
+        "lineCount": 5,
+        "hangulSyllableCharacters": 326,
+        "nonWhitespaceCharacters": 342,
+        "eojeolCount": 109,
+        "narrationChunkSeconds": 51.36004166666667,
+        "sceneSeconds": 69.06666666666666,
+        "hangulCharactersPerChunkSecond": 6.347,
+        "eojeolPerChunkMinute": 127.34,
+        "technicalTermOccurrences": 1,
+        "distinctTechnicalCategories": 1,
+        "technicalOccurrencesPerChunkMinute": 1.17,
+        "technicalOccurrencesPer100Eojeol": 0.92,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "회전벡터": 1
+        }
+      },
+      {
+        "scene": "24",
+        "title": "각속도와 여러 바퀴의 회전 기록",
+        "kind": "explanation",
+        "lineCount": 7,
+        "hangulSyllableCharacters": 355,
+        "nonWhitespaceCharacters": 372,
+        "eojeolCount": 127,
+        "narrationChunkSeconds": 57.92,
+        "sceneSeconds": 58.53333333333333,
+        "hangulCharactersPerChunkSecond": 6.129,
+        "eojeolPerChunkMinute": 131.56,
+        "technicalTermOccurrences": 18,
+        "distinctTechnicalCategories": 11,
+        "technicalOccurrencesPerChunkMinute": 18.65,
+        "technicalOccurrencesPer100Eojeol": 14.17,
+        "firstSeenTermCategories": [
+          "각속도"
+        ],
+        "terms": {
+          "각속도": 3,
+          "벡터": 1,
+          "라디안": 3,
+          "고정축": 1,
+          "좌표계": 1,
+          "몸체": 3,
+          "와이": 1,
+          "제트": 1,
+          "월드": 2,
+          "엑스": 1,
+          "행렬": 1
+        }
+      },
+      {
+        "scene": "25",
+        "title": "직접 풀어 보는 두 문제",
+        "kind": "explanation",
+        "lineCount": 6,
+        "hangulSyllableCharacters": 271,
+        "nonWhitespaceCharacters": 290,
+        "eojeolCount": 101,
+        "narrationChunkSeconds": 48.48,
+        "sceneSeconds": 49.083333333333336,
+        "hangulCharactersPerChunkSecond": 5.59,
+        "eojeolPerChunkMinute": 125.0,
+        "technicalTermOccurrences": 13,
+        "distinctTechnicalCategories": 9,
+        "technicalOccurrencesPerChunkMinute": 16.09,
+        "technicalOccurrencesPer100Eojeol": 12.87,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "헤딩": 2,
+          "랩파이": 1,
+          "라디안": 2,
+          "회전벡터": 1,
+          "파이": 2,
+          "오른손규칙": 1,
+          "제트": 1,
+          "엑스": 2,
+          "행렬": 1
+        }
+      },
+      {
+        "scene": "26",
+        "title": "축·순서·단위를 함께 기억하세요",
+        "kind": "explanation",
+        "lineCount": 4,
+        "hangulSyllableCharacters": 199,
+        "nonWhitespaceCharacters": 211,
+        "eojeolCount": 68,
+        "narrationChunkSeconds": 34.32,
+        "sceneSeconds": 34.93333333333333,
+        "hangulCharactersPerChunkSecond": 5.798,
+        "eojeolPerChunkMinute": 118.88,
+        "technicalTermOccurrences": 8,
+        "distinctTechnicalCategories": 8,
+        "technicalOccurrencesPerChunkMinute": 13.99,
+        "technicalOccurrencesPer100Eojeol": 11.76,
+        "firstSeenTermCategories": [],
+        "terms": {
+          "오일러각": 1,
+          "짐벌락": 1,
+          "특이점": 1,
+          "축각": 1,
+          "회전벡터": 1,
+          "벡터": 1,
+          "중복표현": 1,
+          "쿼터니언": 1
+        }
+      }
+    ],
+    "interpretation": [
+      "전반적 음성 속도의 좋고 나쁨을 이 문자 통계만으로 판정하지 않는다. 현재 오디오의 발음·쉬는 길이를 새로 청취한 결과가 아니다.",
+      "특히03은 좌표계/자세/오일러 각/오른손/세 축/열벡터/행렬을 한 장면에서 연속 도입한다. 새 대본은 원문 규약 한 가지와 네 단계 시연을 먼저 놓고 구현 표기를 필요한 시점으로 이동하는 편이 낫다.",
+      "09의 장점 절 압축,06에서 빠진 bank 후 pitch 주의와 proper/Tait–Bryan,15에서 생략된 floor 설명은 총길이보다 선수 설명·순서의 차이다.",
+      "기존26장면·총25분51.67초에 새 대본을 강제로 맞추지 않는다. 발화량·관찰 쉼·원문 단계에 따라 새 분량을 정하며 이번 감사는 새로운 목표 길이를 제시하지 않는다."
+    ]
+  },
+  "primaryVerification": [
+    {
+      "url": "https://gamemath.com/book/orient.html",
+      "publisher": "Fletcher Dunn/Ian Parberry official online book",
+      "checked": "8.3 physical convention;8.3.4 examples;8.4 wording;8.7.1 row matrices and BPH. Local user-provided article is the detailed source backbone."
+    },
+    {
+      "url": "https://gamemath.com/book/multiplespaces.html",
+      "publisher": "Official online book",
+      "checked": "3.2.4 upright origin/object relation and parallel world axes; definition is author-specific, not a universal engine frame name."
+    },
+    {
+      "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_euler.html",
+      "publisher": "SciPy official docs",
+      "checked": "Intrinsic/extrinsic distinction and radians/degrees unit parameter; library convention is not silently substituted for source convention."
+    },
+    {
+      "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.as_euler.html",
+      "publisher": "SciPy official docs",
+      "checked": "Different proper/Tait–Bryan middle-angle ranges and gimbal third-angle-zero choice. Its closed first/third output range is not a replacement for the source half-open canonical choice."
+    },
+    {
+      "url": "https://docs.python.org/3/library/math.html",
+      "publisher": "Python official docs",
+      "checked": "floor vs trunc; IEEE-style remainder nearest-integer/ties-to-even definitions used by CPU checks."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/remainder-remainderf-remainderl?view=msvc-170",
+      "publisher": "Microsoft C/C++ runtime official docs",
+      "checked": "C/C++ remainder API definition; no conflation with fmod."
+    },
+    {
+      "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-2-angular-velocities/",
+      "publisher": "Lynch/Park, Northwestern Modern Robotics",
+      "checked": "Angular velocity frame representation. Modern Robotics uses its own right-hand/column convention, so only invariant concepts are transferred."
+    },
+    {
+      "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-3-exponential-coordinates-of-rotation-part-2-of-2/",
+      "publisher": "Lynch/Park, Northwestern Modern Robotics",
+      "checked": "Exponential map is an operation from exponential coordinates to rotation matrices; constant-axis/velocity integration context."
+    }
+  ],
+  "scopeLimits": {
+    "newTts": false,
+    "newAsr": false,
+    "newRender": false,
+    "newMediaDecode": false,
+    "newImageAssetImports": false,
+    "existingPcmOrMasterModified": false,
+    "humanListeningPassed": false,
+    "sourceFiguresClearedForReuse": false,
+    "newProductionApprovedByThisAudit": false,
+    "commitPerformed": false
+  },
+  "draftReview": {
+    "reviewedAt": "2026-10-20T08:31:24.927785+00:00",
+    "kind": "CPU text/formula/visual-direction technical review only; not rendered visual, timing, voice or human-listening approval",
+    "inputs": {
+      "file": "projects/game-math-euler-axis-angle/script/revision-v6-article-flow/narration.ko.json",
+      "fileSha256": "040d399629e2769ba8c5da0ce0070502c6cd26653e835e0ee1ffbae9fa221ac3",
+      "technicalPayloadSha256": "31cbc128fa642757b995b8b2f169fc106a4cf8f8bb33c0cc5482b10984af5275",
+      "technicalPayloadDefinition": "canonical JSON(sort_keys=True,ensure_ascii=False,separators=(comma,colon)) of {coordinateConvention,scenes:[{id,title,articleSection,lines,visualFormula}]}",
+      "allSceneNarrationSha256": "d0d1f7583d156d0197568f15f4296607e78d103a8455e6ca5ea1521fb556c3ca",
+      "visualDirectionSha256": "48c23f579efe6abbf1f8d1b84535863bb2302c2a1bdf5ec4c77fef7d9701fc87",
+      "initialDraftSha256": "7bde16fafbec71ef77633921d3b8c843ba101d6d93acf6a336e9955e549db7b4"
+    },
+    "coverage": {
+      "scenes": 41,
+      "sceneIds": [
+        "v6-01",
+        "v6-02",
+        "v6-03",
+        "v6-04",
+        "v6-05",
+        "v6-06",
+        "v6-07",
+        "v6-08",
+        "v6-09",
+        "v6-10",
+        "v6-11",
+        "v6-12",
+        "v6-13",
+        "v6-14",
+        "v6-15",
+        "v6-16",
+        "v6-17",
+        "v6-18",
+        "v6-19",
+        "v6-20",
+        "v6-21",
+        "v6-22",
+        "v6-23",
+        "v6-24",
+        "v6-25",
+        "v6-26",
+        "v6-27",
+        "v6-28",
+        "v6-29",
+        "v6-30",
+        "v6-31",
+        "v6-32",
+        "v6-33",
+        "v6-34",
+        "v6-35",
+        "v6-36",
+        "v6-37",
+        "v6-38",
+        "v6-39",
+        "v6-40",
+        "v6-41"
+      ],
+      "lines": 248,
+      "allNarrationRead": true,
+      "allVisualFormulaFieldsRead": true,
+      "allTargetActionResultFieldsRead": true,
+      "hangulSyllableCharacters": 14724,
+      "eojeolCount": 5200,
+      "newAudioDurationSeconds": null,
+      "speechPaceMeasured": false,
+      "note": "No duration or comprehension claim is inferred from text length or planned holds. New41-scene content is not constrained to old26-scene runtime."
+    },
+    "result": "No unresolved technical error found in the reviewed41-scene draft after the listed parent corrections. This is bounded draft-content verification, not authorization or verification of a newly generated video.",
+    "unresolvedTechnicalErrorCount": 0,
+    "findings": [
+      {
+        "id": "D01",
+        "severity": "technical-error",
+        "location": [
+          "v6-31.lines[3]",
+          "v6-31.teachingBeats[0].visual.targetActionResult"
+        ],
+        "initialDraftSha256": "7bde16fafbec71ef77633921d3b8c843ba101d6d93acf6a336e9955e549db7b4",
+        "problem": "An axis-aligned Y90 example initially claimed all three body axes change. The rotation axis Y is invariant.",
+        "status": "resolved-by-parent-and-reread",
+        "currentEvidence": "Speech now says X rotates with Z while Y remains fixed; visual direction now explicitly says Y fixed/XZ rotate.",
+        "cpuEvidence": {
+          "bodyX": [
+            6.123233995736766e-17,
+            0.0,
+            -1.0
+          ],
+          "bodyY": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "bodyZ": [
+            1.0,
+            0.0,
+            6.123233995736766e-17
+          ]
+        }
+      },
+      {
+        "id": "D02",
+        "severity": "missing-prerequisite",
+        "location": [
+          "v6-40.lines[2]"
+        ],
+        "initialDraftSha256": "7bde16fafbec71ef77633921d3b8c843ba101d6d93acf6a336e9955e549db7b4",
+        "problem": "A common frame alone is not enough context for the intended physical angular-velocity composition.",
+        "status": "resolved-by-parent-and-reread",
+        "currentEvidence": "Current speech states one object, same instant, composable relative angular velocities, one common frame, and explicitly excludes arbitrary unrelated-body sums."
+      },
+      {
+        "id": "D03",
+        "severity": "terminology-clarity",
+        "location": [
+          "v6-12.lines[5]"
+        ],
+        "initialDraftSha256": "7bde16fafbec71ef77633921d3b8c843ba101d6d93acf6a336e9955e549db7b4",
+        "problem": "The phrase describing yaw as head tilt could suggest roll.",
+        "status": "resolved-by-parent-and-reread",
+        "currentEvidence": "Now identifies yaw by the tilted body Y axis and contrasts it with the upright vertical heading axis."
+      },
+      {
+        "id": "D04",
+        "severity": "example-scope",
+        "location": [
+          "v6-27.lines[2]",
+          "v6-27.lines[3]"
+        ],
+        "status": "resolved-in-reviewed-draft",
+        "currentEvidence": "Current exact endpoint/halfway values are correct and the script explicitly says the135-degree pitch endpoint is outside the canonical range; this is not a counterexample after full canonicalization."
+      }
+    ],
+    "sceneReviews": [
+      {
+        "sceneId": "v6-01",
+        "status": "technical-text-consistent",
+        "note": "Overview accurately promises order, advantages/limits and then axis-angle; preview is not an unexplained theorem."
+      },
+      {
+        "sceneId": "v6-02",
+        "status": "technical-text-consistent",
+        "note": "Position versus full orientation is distinct; upright shares the object origin and world directions. Identity aligns both frames."
+      },
+      {
+        "sceneId": "v6-03",
+        "status": "technical-text-consistent",
+        "note": "Euler-angle definition precedes the positive left-hand rotation convention; +Y sends forward +Z to +X."
+      },
+      {
+        "sceneId": "v6-04",
+        "status": "technical-text-consistent",
+        "note": "Heading +45 rotates object X/Z, leaves Y fixed. Clockwise is qualified by viewing from +Y toward the origin."
+      },
+      {
+        "sceneId": "v6-05",
+        "status": "technical-text-consistent",
+        "note": "Pitch uses heading-rotated object X; positive pitch lowers the nose in this convention."
+      },
+      {
+        "sceneId": "v6-06",
+        "status": "technical-text-consistent",
+        "note": "Bank uses current forward Z; forward remains fixed while X/Y turn. h45,p20,b30 statement is consistent."
+      },
+      {
+        "sceneId": "v6-07",
+        "status": "technical-text-consistent",
+        "note": "Clockwise/anticlockwise comparison reverses viewing direction, not the physical sign rule."
+      },
+      {
+        "sceneId": "v6-08",
+        "status": "technical-text-consistent",
+        "note": "Heading/pitch specify forward and bank supplies twist. Game illustration explicitly avoids measuring internal engine axes."
+      },
+      {
+        "sceneId": "v6-09",
+        "status": "technical-text-consistent",
+        "note": "Synonyms do not define a convention; axis, sign and order remain necessary."
+      },
+      {
+        "sceneId": "v6-10",
+        "status": "technical-text-consistent",
+        "note": "Intrinsic body Y-X-Z equals extrinsic fixed Z-X-Y with matched angles and reversed order. Added yaw/pitch/roll discussion retains the required convention caveat."
+      },
+      {
+        "sceneId": "v6-11",
+        "status": "technical-text-consistent",
+        "note": "h30/p20 path equivalence and fixed X90/Y90 noncommutativity pass; row object-to-upright product is Rz Rx Ry."
+      },
+      {
+        "sceneId": "v6-12",
+        "status": "technical-text-consistent",
+        "note": "Vertical-dive body-y yaw changes forward to horizontal; heading about upright Y keeps it vertical. Revised FPS wording no longer misnames a head tilt."
+      },
+      {
+        "sceneId": "v6-13",
+        "status": "technical-text-consistent",
+        "note": "Changing the stored p after nonzero bank differs from rotating about the final body X. Proper Euler repeated-axis and Tait-Bryan distinct-axis descriptions are consistent."
+      },
+      {
+        "sceneId": "v6-14",
+        "status": "technical-text-consistent",
+        "note": "Matrix intermediary and basis conversion caveat are correct; vectors multiply from the left. No direct renaming of engine component fields is promised."
+      },
+      {
+        "sceneId": "v6-15",
+        "status": "technical-text-consistent",
+        "note": "Human editing benefit is appropriately separated from a claim about engine internals."
+      },
+      {
+        "sceneId": "v6-16",
+        "status": "technical-text-consistent",
+        "note": "Nearest-1-degree per-component error is <=0.5 degrees; final-orientation error is not equated with that scalar. Other representations can also be compressed."
+      },
+      {
+        "sceneId": "v6-17",
+        "status": "technical-text-consistent",
+        "note": "Finite real angles form a rotation mathematically; NaN/infinity are excluded. Valid orientation and intended orientation are distinct."
+      },
+      {
+        "sceneId": "v6-18",
+        "status": "technical-text-consistent",
+        "note": "Periodic aliases and (0,135,0)=(180,45,180) pass as full orientation equality, not merely forward equality."
+      },
+      {
+        "sceneId": "v6-19",
+        "status": "technical-text-consistent",
+        "note": "h/b in (-180,180], p in [-90,90] are stated consistently; p endpoints still require a representative rule."
+      },
+      {
+        "sceneId": "v6-20",
+        "status": "technical-text-consistent",
+        "note": "Gimbal axes are collinear, not necessarily positive-parallel. h-b at p+90 and h+b at p-90 pass; the source positive-45 sign error is corrected."
+      },
+      {
+        "sceneId": "v6-21",
+        "status": "technical-text-consistent",
+        "note": "Set b=0 and absorb the effect into h with the correct sign; canonicalization does not remove singular sensitivity. Game appearance alone is not a gimbal-lock diagnosis."
+      },
+      {
+        "sceneId": "v6-22",
+        "status": "technical-text-consistent",
+        "note": "Linear interpolation t in [0,1], example10->30 gives20 at half; gameplay is an observation analogy, not an internal algorithm assertion."
+      },
+      {
+        "sceneId": "v6-23",
+        "status": "technical-text-consistent",
+        "note": "720->45 raw delta=-675 versus canonical0->45 delta=45. Intentional spins are not mislabeled an error. Future visual must show the full path or quarter-state, not only a coincident midpoint."
+      },
+      {
+        "sceneId": "v6-24",
+        "status": "technical-text-consistent",
+        "note": "-170->170 raw340, wrapped-20, midpoint-180 equivalent+180; endpoint canonicalization alone does not solve this case."
+      },
+      {
+        "sceneId": "v6-25",
+        "status": "technical-text-consistent",
+        "note": "Floor and truncation are distinguished for negatives; floor formula returns [-180,180), then exact -180 is remapped to+180 for (-180,180]."
+      },
+      {
+        "sceneId": "v6-26",
+        "status": "technical-text-consistent",
+        "note": "Radians, std::remainder nearest multiple/ties-to-even and negative-pi endpoint correction agree with the chosen canonical interval for finite inputs. <cmath> and displayed units remain production implementation requirements."
+      },
+      {
+        "sceneId": "v6-27",
+        "status": "technical-text-consistent",
+        "note": "Alias-endpoint interpolation numeric halves pass. The added statement correctly admits p135 is outside canonical pitch range; this is not offered as two fully canonical endpoints. Constant component speed need not be constant spatial angular velocity."
+      },
+      {
+        "sceneId": "v6-28",
+        "status": "technical-text-consistent",
+        "note": "Local three-parameter coordinates are not denied; no single global continuous nonsingular unique three-real chart is claimed. Sphere-map analogy is explicitly limited."
+      },
+      {
+        "sceneId": "v6-29",
+        "status": "technical-text-consistent",
+        "note": "Euler advantages, aliases, representative ranges and interpolation limits are summarized before entering source8.4."
+      },
+      {
+        "sceneId": "v6-30",
+        "status": "technical-text-consistent",
+        "note": "Euler rotation theorem is limited to proper rotations about a fixed center, excluding reflection, scaling and translation."
+      },
+      {
+        "sceneId": "v6-31",
+        "status": "technical-text-consistent",
+        "note": "Revised Y90 example now leaves the rotation axis Y fixed while X and Z rotate. Unit-axis constraint and two local direction degrees of freedom are consistent."
+      },
+      {
+        "sceneId": "v6-32",
+        "status": "technical-text-consistent",
+        "note": "e=theta*n; norm(e)=theta and direction=n are conditional on theta>=0 and e nonzero. A rotation vector is not a displacement endpoint."
+      },
+      {
+        "sceneId": "v6-33",
+        "status": "technical-text-consistent",
+        "note": "Length and normalization arithmetic pass; zero vector division is explicitly forbidden and zero-angle axis ambiguity retained."
+      },
+      {
+        "sceneId": "v6-34",
+        "status": "technical-text-consistent",
+        "note": "90/3=30 and2.65*90=238.5 pass; scalar multiplication of one fixed-axis rotation is separated from composition across axes. Negative scale reverses the rotation sense."
+      },
+      {
+        "sceneId": "v6-35",
+        "status": "technical-text-consistent",
+        "note": "Axis-angle pair, rotation-vector quantity and exponential-map operation are not conflated; radians versus radians/second distinguishes pose increment from angular velocity."
+      },
+      {
+        "sceneId": "v6-36",
+        "status": "technical-text-consistent",
+        "note": "All zero-axis choices map to e0. Simultaneous signed axis/angle reversal gives the same e; this algebraic signed input does not contradict the earlier conditional nonnegative recovered angle."
+      },
+      {
+        "sceneId": "v6-37",
+        "status": "technical-text-consistent",
+        "note": "90 versus-270 same endpoint, different paths;720/1080 degrees per second produce180/270 at quarter second and identity at1second. Single-pose data is distinguished from an animation time series."
+      },
+      {
+        "sceneId": "v6-38",
+        "status": "technical-text-consistent",
+        "note": "Norm<2pi nonuniqueness counterexample passes. Principal0<=theta<=pi still has pi-axis-sign and global-continuity limitations; zero rotation-axis ambiguity is not confused with a singular exponential differential."
+      },
+      {
+        "sceneId": "v6-39",
+        "status": "technical-text-consistent",
+        "note": "Finite e1+e2 has magnitude pi/sqrt2=127.279 degrees and differs from ordered X90/Y90 composition. Commutative addition versus generally noncommutative rotation is the correct distinction."
+      },
+      {
+        "sceneId": "v6-40",
+        "status": "technical-text-consistent",
+        "note": "Small finite increments are approximate, never claimed exact. Revised speech restricts angular-velocity addition to simultaneous composable relative velocities in one frame. Body Z mapped to world/upright X requires component conversion first."
+      },
+      {
+        "sceneId": "v6-41",
+        "status": "technical-text-consistent",
+        "note": "Final wrap exercise reverses the earlier case:170->-170 gives+20 and midpoint+180. e=(0,pi/2,0) maps forward+Z to+X under the chosen convention."
+      }
+    ],
+    "cpuChecks": {
+      "method": "Python standard-library scalar3x3 row-matrix/Rodrigues calculations; no renderer, media, model or external numerical package. Deterministic random seed20261020.",
+      "tolerance": 1e-12,
+      "intrinsicViaSuccessivelyMovedPhysicalAxesVsFixedReverse": {
+        "cases": 120,
+        "maximumMatrixError": 8.881784197001252e-16,
+        "passed": true
+      },
+      "h30p20Forward": [
+        0.46984631039295416,
+        -0.3420201433256687,
+        0.8137976813493738
+      ],
+      "positive90": {
+        "headingForward": [
+          1.0,
+          0.0,
+          6.123233995736766e-17
+        ],
+        "pitchForward": [
+          0.0,
+          -1.0,
+          6.123233995736766e-17
+        ],
+        "bankUp": [
+          -1.0,
+          6.123233995736766e-17,
+          0.0
+        ]
+      },
+      "fixedOrderForward": {
+        "X_then_Y": [
+          6.123233995736766e-17,
+          -1.0,
+          3.749399456654644e-33
+        ],
+        "Y_then_X": [
+          1.0,
+          -6.123233995736766e-17,
+          3.749399456654644e-33
+        ]
+      },
+      "gimbalMatrixErrors": {
+        "pPlus30_10_vs20_0": 5.551115123125783e-17,
+        "pPlus45_0_vs0_minus45": 4.329780281177467e-17,
+        "pMinus30_10_vs40_0": 1.1102230246251565e-16
+      },
+      "aliasAndIntermediateStates": {
+        "endMatrixError": 1.1102230246251565e-16,
+        "pathA_halfAnglesDegrees": [
+          0,
+          67.5,
+          0
+        ],
+        "pathB_halfAnglesDegrees": [
+          90,
+          22.5,
+          90
+        ],
+        "halfwayOrientationSeparationDegrees": 70.72769332005133
+      },
+      "wrapFloorVsRemainder": {
+        "degreesTestInputs": [
+          -1080,
+          -720,
+          -540,
+          -360,
+          -340,
+          -180,
+          -170,
+          -20,
+          0,
+          20,
+          170,
+          180,
+          340,
+          360,
+          540,
+          720,
+          1080
+        ],
+        "maximumDifferenceDegrees": 2.1316282072803006e-14,
+        "endpointPiAndMinusPiToPlusPi": true,
+        "floorMinusPointOne": -1,
+        "cppActuallyCompiled": false,
+        "note": "Python math.remainder verifies the same IEEE nearest-multiple/ties-to-even definition documented by the official C/C++ reference; this is not a claim of compiling the displayed C++."
+      },
+      "axisAngleChecks": {
+        "under2piBothNorms": [
+          1.5707963267948966,
+          4.71238898038469
+        ],
+        "under2piCounterexampleMatrixError": 2.4492935982947064e-16,
+        "piAxisSignMatrixError": 2.4492935982947064e-16,
+        "eZeroIdentityMatrixError": 0.0,
+        "twoPiIdentityMatrixError": 2.4492935982947064e-16,
+        "eThetaNormClaimRequiresNonnegativeTheta": true
+      },
+      "finiteVsSmallComposition": {
+        "ninetyDegreeSumMagnitudeDegrees": 127.27922061357856,
+        "ninetyDegreeSumVsCompositionSeparationDegrees": 62.350271135194305,
+        "twoDegreeSumVsCompositionSeparationDegrees": 0.034904222322978656,
+        "twoDegreeOrderReversalSeparationDegrees": 0.06980608267037244
+      },
+      "bodyZAngularVelocityToUprightAtHeading90": [
+        1.0,
+        0.0,
+        6.123233995736766e-17
+      ]
+    },
+    "futureProductionGuards": [
+      "Migrate geometry, positive arrows, row matrices, object/upright labels, KO/EN captions and spoken teaching together; do not relabel retained right-hand/column V5 diagrams as source-compatible left-hand/row.",
+      "A world frame and an upright frame share orientation here but only upright shares the object origin. Use world versus upright labels precisely; angular-vector components depend on orientation, not origin translation.",
+      "Render the physical rotation with the new convention and independently check fixed/moving axes; this text review does not certify old Unity assets, which use a different convention.",
+      "For720->45 show complete winding or t0.25; midpoint alone accidentally coincides after wrapping and cannot prove the path difference.",
+      "In the correctedY90 example preserve the invariantY axis visually. Keep theta>=0 qualification near norm/axis recovery and signed reversal separate.",
+      "For the current C++ snippet include<cmath>, finite-radian contract, chosen endpoint, and component/frame labels. Huge floating-point inputs have finite-precision limitations; no universal numerical guarantee was tested.",
+      "The canonical Korean/English UI glossary, actual timings, subtitles, full source/final ASR and human pronunciation/listening remain future production work. Planned hold seconds are not measured viewing or speech evidence.",
+      "Pacing-only edits may reuse this technical-content review only if the technical payload and unchanged targets remain equivalent; do not silently bind review to changed equations or words."
+    ],
+    "newMediaJobsStarted": 0,
+    "newAsrJobsStarted": 0,
+    "newTtsJobsStarted": 0,
+    "existingDraftModifiedByReviewer": false,
+    "oldMediaModified": false,
+    "commitPerformed": false,
+    "primaryVerificationReuse": "Reuse the official references and original input hashes already recorded in this same audit; no additional web or media extraction was necessary for these draft calculations.",
+    "targetedReviews": [
+      {
+        "reviewedAt": "2026-10-20T08:35:58.706822+00:00",
+        "scope": "Targeted reread of three scenes only; all other technical fields verified unchanged by reconstructing only the stated old lines and matching the previously reviewed full payload hash.",
+        "sceneIds": [
+          "v6-26",
+          "v6-32",
+          "v6-41"
+        ],
+        "file": "projects/game-math-euler-axis-angle/script/revision-v6-article-flow/narration.ko.json",
+        "fileSha256": "b2eda193e909b526faec12e1b7ba1dee89fe6876338d8f91f4fbc0c6e27e0123",
+        "priorFullReviewPreserved": {
+          "fileSha256": "040d399629e2769ba8c5da0ce0070502c6cd26653e835e0ee1ffbae9fa221ac3",
+          "technicalPayloadSha256": "31cbc128fa642757b995b8b2f169fc106a4cf8f8bb33c0cc5482b10984af5275",
+          "lineCount": 248,
+          "coverage": "41-scene248-line prior technical review remains recorded above; not overwritten by this addendum."
+        },
+        "technicalPayloadSha256": "82fdf7800100b748c3a36ca4291f49098fb3f5fb8e0bb5dfdfb14c68d202208d",
+        "technicalPayloadDefinition": "canonical JSON(sort_keys=True,ensure_ascii=False,separators=(comma,colon)) of {coordinateConvention,scenes:[{id,title,articleSection,lines,visualFormula}]}",
+        "speechFormulaSha256": "8014d1ee07b4a37460ae7cc69bd0ff9cfd3d934a2a480648f4daec82f18ae769",
+        "speechFormulaDefinition": "canonical JSON(sort_keys=True,ensure_ascii=False,separators=(comma,colon)) of {coordinateConvention,scenes:[{id,lines,visualFormula}]}",
+        "allSceneNarrationSha256": "1cc329aacdf025fd50279c0d26d6af8e077eec9c35ce9c133e4395568fa1d45c",
+        "unchangedContentProof": {
+          "method": "Reconstruct only the old26.01,32.01,41.05 text from the directly read prior snapshot; replace the split/current additions, then hash the full technical payload and full narration with the same canonicalizer.",
+          "reconstructedPriorTechnicalPayloadSha256": "31cbc128fa642757b995b8b2f169fc106a4cf8f8bb33c0cc5482b10984af5275",
+          "matchesPriorReviewedTechnicalPayload": true,
+          "reconstructedPriorNarrationSha256": "d0d1f7583d156d0197568f15f4296607e78d103a8455e6ca5ea1521fb556c3ca",
+          "matchesPriorReviewedNarration": true,
+          "other38ScenesUnchanged": true,
+          "coordinateConventionAndAllVisualFormulaFieldsUnchanged": true
+        },
+        "checks": [
+          {
+            "sceneId": "v6-26",
+            "lines": [
+              1,
+              2
+            ],
+            "status": "pass-technical-text",
+            "finding": "1radian is the angle subtended at the center by an arc whose length equals the radius; s/r=1. Semicircle arc length pi*r yields pi radians=180degrees; full circle yields2pi and degrees*pi/180 conversion. Distinguishes arc length from a chord.",
+            "cpuSamples": [
+              {
+                "radius": 1,
+                "oneRadianArcLength": 1,
+                "angleRadians": 1.0,
+                "semicircleArcLength": 3.141592653589793,
+                "semicircleRadians": 3.141592653589793
+              },
+              {
+                "radius": 2,
+                "oneRadianArcLength": 2,
+                "angleRadians": 1.0,
+                "semicircleArcLength": 6.283185307179586,
+                "semicircleRadians": 3.141592653589793
+              },
+              {
+                "radius": 5,
+                "oneRadianArcLength": 5,
+                "angleRadians": 1.0,
+                "semicircleArcLength": 15.707963267948966,
+                "semicircleRadians": 3.141592653589793
+              }
+            ],
+            "futureVisualGuard": "Show a curved arc and radius equal in length, not a straight chord; arc/radius units cancel. No new figure or footage has been rendered/cleared by this review."
+          },
+          {
+            "sceneId": "v6-32",
+            "lines": [
+              1,
+              2,
+              3
+            ],
+            "status": "pass-technical-text",
+            "finding": "Explicit English lowercase e identifies the displayed rotation-vector symbol. e=theta*n and theta>=0 norm relation, nonzero-axis recovery and radians remain unchanged. This text review does not certify TTS pronunciation of the Latin letter."
+          },
+          {
+            "sceneId": "v6-41",
+            "lines": [
+              5,
+              6
+            ],
+            "status": "pass-technical-text",
+            "finding": "Separating the question from its answer changes no arithmetic. e=(0,pi/2,0) has norm pi/2 and normalized axis(0,1,0); positiveY90 sends forward+Z to+X under the retained row/left-hand convention.",
+            "values": {
+              "normRadians": 1.5707963267948966,
+              "normDegrees": 90,
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "forwardResult": [
+                1,
+                0,
+                0
+              ]
+            },
+            "futurePacingGuard": "Preserve time to answer between question and result; hold timing is planned, not measured/listened."
+          }
+        ],
+        "currentCounts": {
+          "scenes": 41,
+          "lines": 250
+        },
+        "unresolvedTechnicalErrorCount": 0,
+        "result": "The three targeted changes are technically consistent; unchanged content is bound by the exact previous technical payload/narration hashes. No production or voice approval implied.",
+        "pacingReuseGuard": "Subsequent edits limited to teachingBeats/hold/timing metadata may reuse this technical-content addendum only if the current technicalPayloadSha256 and speechFormulaSha256 remain equal. A changed whole-file hash alone must not be silently treated as an unchanged script.",
+        "draftEditedByReviewer": false,
+        "mediaJobsStarted": 0,
+        "ttsJobsStarted": 0,
+        "asrJobsStarted": 0,
+        "humanListeningPerformed": false,
+        "commitPerformed": false
+      },
+      {
+        "reviewedAt": "2026-10-20T08:45:52.846623+00:00",
+        "scope": "Direct reread only of the six requested beginner-term explanations and greeting punctuation; source draft not edited. Current106 teaching-beat timing plans counted but not animation/audio reviewed.",
+        "sceneIds": [
+          "v6-01",
+          "v6-14",
+          "v6-16",
+          "v6-17",
+          "v6-22",
+          "v6-31",
+          "v6-35"
+        ],
+        "file": "projects/game-math-euler-axis-angle/script/revision-v6-article-flow/narration.ko.json",
+        "fileSha256": "da6f162121e0b34dfbd8fcfe42236dc56783489cac21687aa58bf9c9da639e8a",
+        "priorReviewPreserved": {
+          "initialFullReviewLineCount": 248,
+          "previousTargetedReviewLineCount": 250,
+          "previousFileSha256": "b2eda193e909b526faec12e1b7ba1dee89fe6876338d8f91f4fbc0c6e27e0123",
+          "previousSpeechFormulaSha256": "8014d1ee07b4a37460ae7cc69bd0ff9cfd3d934a2a480648f4daec82f18ae769"
+        },
+        "speechFormulaSha256": "f346046b98383f3e19998ccfb7a57adfe2a37b6c7d8dc7a643046ff1fe241491",
+        "speechFormulaDefinition": "canonical JSON(sort_keys=True,ensure_ascii=False,separators=(comma,colon)) of {coordinateConvention,scenes:[{id,lines,visualFormula}]}",
+        "technicalPayloadSha256": "ddf66f6ca9f440e980d8b37d9ade59ac46b20242ab0adbb30c93de752193fe9d",
+        "technicalPayloadDefinition": "canonical JSON(sort_keys=True,ensure_ascii=False,separators=(comma,colon)) of {coordinateConvention,scenes:[{id,title,articleSection,lines,visualFormula}]}",
+        "allSceneNarrationSha256": "3ea69b7bc59885d7f4e2a6c3e4c124333d153e9511546688a2fb9f94e656c050",
+        "unchangedSpeechFormulaProof": {
+          "method": "Restore exactly the seven prior reviewed lines from the directly read snapshots, then hash all41 scenes with the previous speech/formula canonicalizer. Titles and teachingBeats are deliberately outside this proof.",
+          "reconstructedPreviousSpeechFormulaSha256": "8014d1ee07b4a37460ae7cc69bd0ff9cfd3d934a2a480648f4daec82f18ae769",
+          "matchesPreviousReviewedSpeechFormula": true,
+          "allOtherNarrationAndAllFormulaFieldsAndConventionUnchanged": true,
+          "changedLineCount": 7,
+          "unchangedOtherSceneCount": 34
+        },
+        "checks": [
+          {
+            "sceneId": "v6-01",
+            "lines": [
+              1
+            ],
+            "status": "pass-text-only",
+            "finding": "Greeting changes a full stop to a comma without changing meaning. Natural connected speech remains an actual future TTS/listening check."
+          },
+          {
+            "sceneId": "v6-14",
+            "lines": [
+              5
+            ],
+            "status": "pass-technical-text",
+            "finding": "Three coordinates written horizontally define this3-component row-vector notation. Multiplication from the left by v and the right-side ordered matrix Rz(b)Rx(p)Ry(h) are unchanged."
+          },
+          {
+            "sceneId": "v6-16",
+            "lines": [
+              1
+            ],
+            "status": "pass-technical-text",
+            "finding": "Local is explained as a neighborhood around one orientation; independent adjustments explain local degrees of freedom. This is a claim about rotations having three local independent dimensions, not a claim that the Euler parameter map is nonsingular at every pose. Later gimbal-lock limitations remain necessary and unchanged."
+          },
+          {
+            "sceneId": "v6-17",
+            "lines": [
+              1
+            ],
+            "status": "pass-technical-text",
+            "finding": "Finite real input excludes infinity and invalid numerical values in the stated computing context; any such angle triple mathematically constructs a rotation. This plain-language wording is not a promise that arbitrary huge floating-point angles retain unlimited precision."
+          },
+          {
+            "sceneId": "v6-22",
+            "lines": [
+              2
+            ],
+            "status": "pass-technical-text",
+            "finding": "t is explicitly the progress fraction0->1. t0.5 is halfway in the interpolation parameter; later speech retains the distinction from a universal3D shortest path or constant angular velocity."
+          },
+          {
+            "sceneId": "v6-31",
+            "lines": [
+              5
+            ],
+            "status": "pass-technical-text",
+            "finding": "Degrees of freedom is correctly introduced as independently selectable information. A unit3-vector has two local direction degrees of freedom; adding an angle gives three local rotation dimensions. Zero/pi axis-angle degeneracies remain covered later."
+          },
+          {
+            "sceneId": "v6-35",
+            "lines": [
+              2
+            ],
+            "status": "pass-technical-text",
+            "finding": "A map takes an input to its specified output; rotation vector is data and exponential map is the operation yielding the rotation. Earlier e, radians and later nonuniqueness conditions remain intact."
+          }
+        ],
+        "currentCounts": {
+          "scenes": 41,
+          "lines": 250,
+          "plannedTeachingBeats": 106
+        },
+        "unresolvedTechnicalErrorCount": 0,
+        "result": "All seven targeted textual clarifications are technically consistent. The previous248-line full review and250-line targeted review remain intact; exact unchanged-speech/formula linkage is recorded. No voice, timing or rendered-picture pass is implied.",
+        "reviewLimits": {
+          "newFullNarrationReread": false,
+          "allChangedTargetLinesDirectlyRead": true,
+          "titlesSpacingNotTechnicalSubstantiveReview": true,
+          "teachingBeatMotionTimingReviewed": false,
+          "newTts": false,
+          "newMedia": false,
+          "newAsr": false,
+          "humanListening": false,
+          "draftEdited": false,
+          "commitPerformed": false
+        }
+      }
+    ],
+    "currentReviewedContent": {
+      "file": "projects/game-math-euler-axis-angle/script/revision-v6-article-flow/narration.ko.json",
+      "fileSha256": "da6f162121e0b34dfbd8fcfe42236dc56783489cac21687aa58bf9c9da639e8a",
+      "speechFormulaSha256": "f346046b98383f3e19998ccfb7a57adfe2a37b6c7d8dc7a643046ff1fe241491",
+      "technicalPayloadSha256": "ddf66f6ca9f440e980d8b37d9ade59ac46b20242ab0adbb30c93de752193fe9d",
+      "targetedReviewIndex": 1,
+      "note": "Latest text/formula binding only. Older review snapshots and their coverage remain preserved. Beat timings and actual speech/visual output remain unverified."
+    },
+    "finalSpeechFormulaSha256": "f346046b98383f3e19998ccfb7a57adfe2a37b6c7d8dc7a643046ff1fe241491"
+  }
+}
