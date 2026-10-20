@@ -62,7 +62,9 @@ def qa():
     rows=[]
     for i,t in enumerate(points):
         target=out/f'frame-{i:03}.jpg'
-        if not target.exists(): run(['ffmpeg','-v','error','-n','-ss',str(t),'-i',str(L/'captioned.mp4'),'-frames:v','1','-q:v','2',str(target)])
+        if target.exists() and target.stat().st_size==0: target.unlink()
+        if not target.exists(): run(['ffmpeg','-v','error','-n','-ss',str(max(0,t-.0001)),'-i',str(L/'captioned.mp4'),'-frames:v','1','-pix_fmt','yuvj420p','-threads','1','-q:v','2',str(target)])
+        assert target.exists() and target.stat().st_size>0, 'Frame extraction did not produce an image: '+str(t)
         rows.append(dict(seconds=t,path=str(target.relative_to(R)).replace('\\','/')))
     for start in range(0,len(rows),12):
         sheet=Image.new('RGB',(1500,2100),'#202020'); draw=ImageDraw.Draw(sheet)
