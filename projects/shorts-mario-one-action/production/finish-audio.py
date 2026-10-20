@@ -32,9 +32,9 @@ LICENSE = MUSIC.with_suffix('.LICENSE.md')
 MUSIC_SHA = 'b2609a077fae292679f25b83519f470ed308abb40d11f89bff8c6f896deefed3'
 SOURCES = {}  # Populated only from this selected edit's explicit source registry.
 SETTINGS = {
-    'audioRevision': 'one-action-v1',
+    'audioRevision': 'one-action-v1-voice-peak-correction',
     'voiceOffsetSeconds': 0.20, 'voiceTargetLufs': -16.0,
-    'narrationCompressor': 'acompressor=threshold=0.12:ratio=3:attack=5:release=140:makeup=1',
+    'narrationCompressor': 'acompressor=threshold=0.12:ratio=3:attack=5:release=140:makeup=1,alimiter=limit=0.14:attack=5:release=80:level=false:latency=true',
     'voiceSamplePeakCeilingDbfs': -3.0,
     'nativeGameTargetLufs': -23.0, 'nativeGameSamplePeakCeilingDbfs': -6.0,
     'nativeGameMaximumPositiveGainDb': 6.0,
