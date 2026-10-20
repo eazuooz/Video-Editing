@@ -30,7 +30,10 @@ def authorized():
     claim=ctl.get('scopedProductionAuthorizations',{}).get(P.name,{})
     assert auth['selectedPart']==1 and auth['fullProductionAuthorized']
     assert sha(S/'part-01.ko.json')==auth['approvedScriptSha256']
-    assert ctl['selectedVideo']==P.name or (claim.get('fullProductionAuthorized') and claim.get('authorizationSha256')==sha(H/'authorization.json'))
+    assert ctl['selectedVideo']==P.name or (
+        claim.get('status')=='explicit-human-authorized-active' and claim.get('project')==P.name and claim.get('part')==1
+        and claim.get('fullProductionAuthorized') and claim.get('authorizationSha256')==sha(H/'authorization.json')
+        and claim.get('approvedScriptSha256')==auth['approvedScriptSha256'])
     return auth
 
 def normalizer():
@@ -64,6 +67,8 @@ def make_timeline():
         duration=(frame+600)/FPS,sourceRawSeconds=sum(s['rawVoiceSeconds'] for s in scenes),
         insertedObservationFrames=0,sceneGapFrames=0,voiceRate=1,tailPaddingOnly=True,
         paneLayout=dict(game=[40,250,896,504],explanation=[980,180,900,660],simultaneous=True),
+        branding=dict(intro=dict(file='projects/game-reward-planning/production/local/reference-preserving-v2/edit/branding.mp4',startFrame=0,frames=120),
+            membership=dict(file='projects/game-reward-planning/production/local/reference-preserving-v2/edit/membership.mp4',startFrame=frame,frames=600)),
         inputs=dict(koSha256=sha(S/'part-01.ko.json'),enSha256=sha(S/'part-01.en.json'),
             authorizationSha256=sha(H/'authorization.json'),alignmentSha256=sha(A/'source-alignment.json'),
             normalizationImplementationSha256=sha(H/'voice-analysis.py'),implementationSha256=sha(Path(__file__))),

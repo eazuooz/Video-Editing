@@ -22,6 +22,26 @@ def sha(p):
     with Path(p).open('rb')as f:
         for block in iter(lambda:f.read(1048576),b''):h.update(block)
     return h.hexdigest()
+MEDIA_HASHES=None
+def media_fingerprint(file):
+    """Hash once; reuse only the same path/size/mtime snapshot thereafter."""
+    global MEDIA_HASHES
+    cache=E/'media-hashes.json'
+    if MEDIA_HASHES is None:MEDIA_HASHES=read(cache)if cache.exists()else{}
+    file=path(file).resolve();key=rel(file);stat=file.stat();snapshot=dict(size=stat.st_size,mtimeNs=stat.st_mtime_ns)
+    old=MEDIA_HASHES.get(key)
+    if old and old['snapshot']==snapshot:return dict(file=key,sha256=old['sha256'])
+    digest=sha(file);assert file.stat().st_size==stat.st_size and file.stat().st_mtime_ns==stat.st_mtime_ns
+    MEDIA_HASHES[key]=dict(snapshot=snapshot,sha256=digest);save(cache,MEDIA_HASHES)
+    return dict(file=key,sha256=digest)
+def segment_media(rows):
+    files=set()
+    def add(row):
+        files.add(row['file'])
+        for layer in row.get('overlayLayers',[]):add(layer)
+    for row in rows:add(row)
+    return [media_fingerprint(f)for f in sorted(files)]
+def digest_json(data):return hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False,separators=(',',':')).encode('utf8')).hexdigest()
 def rel(p):return Path(p).resolve().relative_to(R).as_posix()
 def path(p):return Path(p)if Path(p).is_absolute()else R/p
 def timing():
@@ -67,33 +87,51 @@ def normalize_segment(row):
     assert row['endFrameExclusive']>row['startFrame']and row['sourceStartFrame']>=0
     assert path(row['file']).exists(),row['file']
     return row
+VIDEO_PROBES={}
+def source_frame_count(row):
+    file=path(row['file']).resolve()
+    if file not in VIDEO_PROBES:
+        data=probe(file);v=next(s for s in data['streams']if s['codec_type']=='video')
+        assert v['r_frame_rate']=='60/1',(str(file),'Finite source must retain60fps')
+        VIDEO_PROBES[file]=int(v['nb_frames'])
+    return VIDEO_PROBES[file]
+def validate_source_range(row,n):
+    if row['kind']=='video':
+        available=source_frame_count(row)
+        assert row['sourceStartFrame']+n<=available,('Native finite source overflow',row,n,available)
+    for layer in row.get('overlayLayers',[]):
+        validate_source_range(normalize_segment(dict(layer,startFrame=row['startFrame'],endFrameExclusive=row['endFrameExclusive'])),n)
 def validate_segments(rows,scene):
     assert rows,(scene['id'],'No visual segment')
     cursor=scene['startFrame']
     for row in rows:
         assert row['startFrame']==cursor,(scene['id'],cursor,row)
         cursor=row['endFrameExclusive']
-        if row['kind']=='video'and row.get('sourceFrames')is not None:
-            assert row['sourceStartFrame']+row['endFrameExclusive']-row['startFrame']<=row['sourceFrames'],('Native finite source overflow',row)
+        validate_source_range(row,row['endFrameExclusive']-row['startFrame'])
     assert cursor==scene['endFrame'],(scene['id'],cursor,scene['endFrame'])
-def phase_inputs(row,args,filters,index,label,dimensions):
+def phase_inputs(row,args,filters,index,label,dimensions,alpha=False):
     n=row['endFrameExclusive']-row['startFrame'];file=path(row['file']);current=index
-    if row['kind']=='still':args+=['-loop','1','-framerate','60','-t',f'{n/60:.9f}','-i',str(file)]
-    else:args+=['-ss',f'{row["sourceStartFrame"]/60:.9f}','-t',f'{n/60:.9f}','-i',str(file)]
-    chain=f'[{index}:v]fps=60,trim=end_frame={n},setpts=N/(60*TB),setsar=1'
+    if row['kind']=='still':args+=['-framerate','60','-threads','1','-i',str(file)]
+    else:args+=['-ss',f'{row["sourceStartFrame"]/60:.9f}','-t',f'{n/60:.9f}','-threads','2','-i',str(file)]
+    freeze='loop=loop=-1:size=1:start=0,'if row['kind']=='still'else''
+    chain=f'[{index}:v]{freeze}fps=60,trim=end_frame={n},setpts=N/(60*TB),setsar=1'
     index+=1
-    if row.get('crop'):
-        x,y,w,h=row['crop'];chain+=f',crop={w}:{h}:{x}:{y}'
+    crop=row.get('cropRect',row.get('crop'))
+    if crop:
+        x,y,w,h=crop;chain+=f',crop={w}:{h}:{x}:{y}'
     w,h=dimensions
-    chain+=f',scale={w}:{h}:force_original_aspect_ratio=decrease:flags=lanczos,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[{label}base]'
+    pixel_format='rgba'if alpha else'yuv420p';pad='black@0'if alpha else'black'
+    chain+=f',format={pixel_format},scale={w}:{h}:force_original_aspect_ratio=decrease:flags=lanczos,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:color={pad},format={pixel_format}[{label}base]'
     filters.append(chain);previous=label+'base'
     for oi,overlay in enumerate(row.get('overlayLayers',[])):
         # Layers inherit the segment clock. They are controlled-model/UI
         # composition, never claimed to be recovered game-engine measurements.
         extra=dict(overlay);extra.update(startFrame=row['startFrame'],endFrameExclusive=row['endFrameExclusive'])
-        extra=normalize_segment(extra);iw,ih=extra.get('dimensions',dimensions)
-        index,over=phase_inputs(extra,args,filters,index,label+f'layer{oi}',(iw,ih))
-        x,y=overlay.get('position',[0,0]);out=label+f'over{oi}'
+        extra=normalize_segment(extra)
+        bounds=overlay.get('rect')
+        iw,ih=bounds[2:]if bounds else extra.get('dimensions',dimensions)
+        index,over=phase_inputs(extra,args,filters,index,label+f'layer{oi}',(iw,ih),alpha=True)
+        x,y=bounds[:2]if bounds else overlay.get('position',[0,0]);out=label+f'over{oi}'
         filters.append(f'[{previous}][{over}]overlay={x}:{y}:eof_action=pass:shortest=1:format=auto[{out}]');previous=out
     return index,previous
 def assemble_pane(rows,args,filters,index,prefix,size):
@@ -113,7 +151,8 @@ def scene_render(scene,left_file,right_file,codec='libx264',sample=None):
     manifest=read(left_file);ass_by=manifest.get('sceneASS',{})
     extra_ass=ass_by.get(scene['id'])
     if isinstance(extra_ass,dict):extra_ass=extra_ass.get('file')
-    signature=dict(timelineSha256=sha(H/'timeline.json'),leftManifestSha256=sha(left_file),rightManifestSha256=sha(right_file),
+    signature=dict(sceneTimingSha256=digest_json(scene),leftSceneSegmentsSha256=digest_json(left),rightSceneSegmentsSha256=digest_json(right),
+        inputMedia=segment_media(left+right),
         backdropSha256=sha(ui),implementationSha256=sha(Path(__file__)),codec=codec,frames=scene['frames'],
         annotationASSsha256=sha(path(extra_ass))if extra_ass else None)
     if destination.exists()and receipt.exists():
@@ -121,9 +160,9 @@ def scene_render(scene,left_file,right_file,codec='libx264',sample=None):
         if existing.get('inputs')==signature and existing.get('sha256')==sha(destination):
             check_video(destination,scene['frames']);print('Reused exact paired scene',scene['id'],flush=True);return existing
         raise RuntimeError('Preserve differing completed scene before selected repair: '+str(destination))
-    args=['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-filter_complex_threads','1','-threads','2',
-        '-loop','1','-framerate','60','-t',f'{scene["frames"]/60:.9f}','-i',str(ui)]
-    filters=[f'[0:v]trim=end_frame={scene["frames"]},setpts=N/(60*TB),setsar=1[base]']
+    args=['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-filter_complex_threads','1',
+        '-framerate','60','-threads','1','-i',str(ui)]
+    filters=[f'[0:v]loop=loop=-1:size=1:start=0,trim=end_frame={scene["frames"]},setpts=N/(60*TB),setsar=1[base]']
     index,left_label=assemble_pane(left,args,filters,1,'l',(896,504))
     index,right_label=assemble_pane(right,args,filters,index,'r',(900,660))
     filters.append(f'[base][{left_label}]overlay=40:250:shortest=1:eof_action=endall[pair0]')
@@ -136,32 +175,62 @@ def scene_render(scene,left_file,right_file,codec='libx264',sample=None):
     args+=['-filter_complex_script',str(graph),'-map','[out]','-an','-frames:v',str(scene['frames']),'-r','60','-fps_mode','passthrough',*encoder(codec),str(destination)]
     start=time.time();run(args,folder/(scene['id']+'.encode.log'));v=check_video(destination,scene['frames'])
     result=dict(sceneId=scene['id'],file=rel(destination),sha256=sha(destination),frames=scene['frames'],
-        inputs=signature,elapsedSeconds=time.time()-start,probe=v,leftSegmentCount=len(left),rightSegmentCount=len(right),
+        inputs=signature,sourceManifestsAtRender=dict(leftSha256=sha(left_file),rightSha256=sha(right_file),timelineSha256=sha(H/'timeline.json')),
+        elapsedSeconds=time.time()-start,probe=v,leftSegmentCount=len(left),rightSegmentCount=len(right),
         completeMovingVisualReview='pending',captionPixelReview='pending final captioned master')
     save(receipt,result);print('Rendered simultaneous scene',scene['id'],scene['frames'],'frames',flush=True);return result
+def scene_captioned(scene,clean,codec):
+    """Reusable actual-caption scene; early QC pixels enter the final master."""
+    authorized();folder=E/'captioned-scenes';folder.mkdir(parents=True,exist_ok=True)
+    target=folder/(scene['id']+'.mp4');receipt=target.with_suffix('.json')
+    cues=[dict(c)for c in read(O/'captions/captions.json')['cues']if c['scene']==scene['id']]
+    for c in cues:
+        c['start']-=scene['startFrame']/60;c['end']-=scene['startFrame']/60
+    sp=importlib.util.spec_from_file_location('v7_local_caption_geometry',P/'production/revision-v6/captions.py')
+    geom=importlib.util.module_from_spec(sp);sp.loader.exec_module(geom)
+    subtitle_dir=folder/scene['id'];subtitle_dir.mkdir(exist_ok=True);geom.O=subtitle_dir
+    geometry=geom.ass(cues,'ko');ass=subtitle_dir/'captions.ko.ass'
+    sig=dict(cleanSceneSha256=clean['sha256'],semanticSceneCaptionSha256=digest_json(cues),
+        captionAssSha256=sha(ass),approvedGeometrySha256=sha(P/'production/revision-v6/captions.py'),codec=codec,frames=scene['frames'])
+    if target.exists()and receipt.exists():
+        old=read(receipt)
+        if old['inputs']==sig and old['sha256']==sha(target):
+            check_video(target,scene['frames']);print('Reused exact captioned scene',scene['id'],flush=True);return old
+        raise RuntimeError('Preserve differing completed captioned scene before repair: '+str(target))
+    run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-threads','2','-filter_threads','2','-i',str(R/clean['file']),
+        '-vf','ass='+ffescape(ass),'-an','-frames:v',str(scene['frames']),'-r','60','-fps_mode','passthrough',*encoder(codec),str(target)],folder/(scene['id']+'.encode.log'))
+    v=check_video(target,scene['frames']);save(subtitle_dir/'geometry.json',geometry)
+    result=dict(sceneId=scene['id'],file=rel(target),sha256=sha(target),frames=scene['frames'],inputs=sig,probe=v,
+        sourceGlobalStartFrame=scene['startFrame'],actualCaptionedSceneReusableInFullMaster=True,earlySampleIsNotWholeVideoApproval=True)
+    save(receipt,result);print('Encoded actual captions',scene['id'],flush=True);return result
 def join(left_file,right_file,codec):
-    authorized();t=read(H/'timeline.json');rows=[]
-    for scene in t['scenes']:rows.append(scene_render(scene,left_file,right_file,codec))
+    authorized();t=read(H/'timeline.json');rows=[];captioned=[]
+    for scene in t['scenes']:
+        current=scene_render(scene,left_file,right_file,codec);rows.append(current);captioned.append(scene_captioned(scene,current,codec))
     check_video(INTRO,120);check_video(OUTRO,600)
-    listing=E/'join.txt';listing.write_text('\n'.join("file '"+str(p.resolve()).replace('\\','/')+"'"for p in[INTRO,*[R/r['file']for r in rows],OUTRO])+'\n',encoding='utf8')
-    visual=E/'part1-visual.mp4'
-    run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-f','concat','-safe','0','-i',str(listing),'-map','0:v:0','-an','-c:v','copy','-video_track_timescale','60000','-movflags','+faststart',str(visual)],E/'join.log')
-    check_video(visual,t['totalFrames']);save(E/'visual-build.json',dict(file=rel(visual),sha256=sha(visual),frames=t['totalFrames'],scenes=rows,introSha256=sha(INTRO),outroSha256=sha(OUTRO),audio='separate reviewed narration/game standard mix pending',captioned='pending'))
+    versions=[]
+    for kind,items in [('clean',rows),('captioned',captioned)]:
+        listing=E/('join-'+kind+'.txt');listing.write_text('\n'.join("file '"+str(p.resolve()).replace('\\','/')+"'"for p in[INTRO,*[R/r['file']for r in items],OUTRO])+'\n',encoding='utf8')
+        visual=E/('part1-'+kind+'-visual.mp4')
+        run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-f','concat','-safe','0','-i',str(listing),'-map','0:v:0','-an','-c:v','copy','-video_track_timescale','60000','-movflags','+faststart',str(visual)],E/('join-'+kind+'.log'))
+        check_video(visual,t['totalFrames']);versions.append(dict(kind=kind,file=rel(visual),sha256=sha(visual),frames=t['totalFrames'],scenes=items))
+    save(E/'visual-build.json',dict(versions=versions,frames=t['totalFrames'],introSha256=sha(INTRO),outroSha256=sha(OUTRO),audio='separate reviewed narration/game standard mix pending',captioned='actual local scene captions encoded and concatenated without repeat full re-encode'))
     print('Full paired visual joined',t['totalFrames'],'frames',flush=True)
 def finish(mix_file,codec):
-    authorized();t=read(H/'timeline.json');visual=E/'part1-visual.mp4';check_video(visual,t['totalFrames']);mix_file=path(mix_file)
+    authorized();t=read(H/'timeline.json');visual=E/'part1-clean-visual.mp4';captioned_visual=E/'part1-captioned-visual.mp4';check_video(visual,t['totalFrames']);check_video(captioned_visual,t['totalFrames']);mix_file=path(mix_file)
     assert mix_file.exists()
     clean=O/'part1-clean.mp4';burned=O/'part1-captioned.mp4';ass=O/'captions.ko.ass';assert ass.exists()
     run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-i',str(visual),'-i',str(mix_file),'-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-b:a','256k','-ar','48000','-ac','2','-t',f'{t["duration"]:.9f}','-movflags','+faststart',str(clean)],E/'clean-mux.log')
     check_video(clean,t['totalFrames'])
-    run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-threads','2','-filter_threads','2','-i',str(clean),'-vf','ass='+ffescape(ass),'-map','0:v:0','-map','0:a:0',*encoder(codec),'-c:a','copy','-r','60','-fps_mode','passthrough','-movflags','+faststart',str(burned)],E/'caption-burn.log')
-    check_video(burned,t['totalFrames']);save(E/'master-build.json',dict(schemaVersion=1,part=1,inputs=dict(timelineSha256=sha(H/'timeline.json'),visualSha256=sha(visual),mixSha256=sha(mix_file),captionAssSha256=sha(ass),implementationSha256=sha(Path(__file__))),
+    run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-i',str(captioned_visual),'-i',str(clean),'-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','copy','-video_track_timescale','60000','-movflags','+faststart',str(burned)],E/'captioned-mux.log')
+    check_video(burned,t['totalFrames']);save(E/'master-build.json',dict(schemaVersion=1,part=1,inputs=dict(timelineSha256=sha(H/'timeline.json'),visualSha256=sha(visual),captionedVisualSha256=sha(captioned_visual),mixSha256=sha(mix_file),captionAssSha256=sha(ass),implementationSha256=sha(Path(__file__))),
         outputs=[dict(kind=k,file=rel(f),sha256=sha(f),bytes=f.stat().st_size)for k,f in[('clean',clean),('captioned',burned)]],frames=t['totalFrames'],duration=t['duration'],format='1920x1080/60fps',fullDecodePtsAndAudioReview='pending',humanFinalReview='pending'))
     print('Clean and complete captioned masters encoded',flush=True)
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--left',type=Path);ap.add_argument('--right',type=Path);ap.add_argument('--scene');ap.add_argument('--join',action='store_true');ap.add_argument('--finish-mix');ap.add_argument('--codec',choices=['libx264','h264_nvenc'],default='libx264');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--left',type=Path);ap.add_argument('--right',type=Path);ap.add_argument('--scene');ap.add_argument('--captioned-scene',action='store_true');ap.add_argument('--join',action='store_true');ap.add_argument('--finish-mix');ap.add_argument('--codec',choices=['libx264','h264_nvenc'],default='libx264');a=ap.parse_args()
     if a.scene:
-        scene=next(s for s in read(H/'timeline.json')['scenes']if s['id']==a.scene);scene_render(scene,a.left,a.right,a.codec)
+        scene=next(s for s in read(H/'timeline.json')['scenes']if s['id']==a.scene);current=scene_render(scene,a.left,a.right,a.codec)
+        if a.captioned_scene:scene_captioned(scene,current,a.codec)
     elif a.join:join(a.left,a.right,a.codec)
     elif a.finish_mix:finish(a.finish_mix,a.codec)
     else:ap.print_help()

@@ -33,7 +33,7 @@ def sample_plan(left,right):
         for i,row in enumerate(rows):
             a=row['startFrame'];b=row.get('endFrameExclusive',row.get('endFrame'))
             add(a,f'{side}.{i}.first','every-pane-cut');add(b-1,f'{side}.{i}.last','every-pane-cut')
-            if row['kind']=='video':
+            if row['kind']=='video'or any(x['kind']=='video'for x in row.get('overlayLayers',[])):
                 # Dense still sequence is evidence of progression, not a
                 # claimed continuous human playback/listening approval.
                 for f in range(a,b,15):add(f,f'{side}.{i}.f{f-a}','native-action-quarter-second-sample')
@@ -108,7 +108,7 @@ def contact_pages(samples):
 def review_page(samples,pages):
     rows=[]
     for item in samples:
-        n=Path(item['native']).relative_to(Q.relative_to(R)).as_posix()if False else 'frames/'+Path(item['native']).name
+        n='frames/'+Path(item['native']).name
         m='frames/'+Path(item['mobile']).name
         labels=' · '.join(x['label']for x in item['labels'])
         rows.append(f'<section id="f{item["frame"]}"><h3>{item["time"]:.2f}s · {html.escape(labels)}</h3><a href="{n}"><img loading="lazy" src="{n}" width="960"></a><a href="{m}"><img loading="lazy" src="{m}" width="375"></a></section>')
