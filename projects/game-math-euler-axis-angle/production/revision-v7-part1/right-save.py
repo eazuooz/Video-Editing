@@ -14,6 +14,7 @@ ROOT,P,O,ISO=M.ROOT,M.P,M.O,M.ISO
 REL=Path('Assets/VideoScenes/game-math-euler-axis-angle/revision-v7-part1')
 STAGE=ISO/REL;DEST=ROOT/'unity/VideoEditing'/REL
 ALLOWED={'.cs','.json','.asmdef','.unity','.asset','.mat','.meta'}
+PATCH_REPLACE={}
 
 def guid(meta):
     found=re.search(r'^guid: ([a-f0-9]{32})$',Path(meta).read_text(encoding='utf8'),re.M)
@@ -24,7 +25,14 @@ def copy_verified(src,dst,derived=None):
     if dst!=DEST.with_suffix('.meta'):dst.resolve().relative_to(DEST.resolve())
     else:assert dst.resolve()==DEST.with_suffix('.meta').resolve()
     expected=M.sha(src)if derived is None else hashlib.sha256(derived).hexdigest()
-    if dst.exists():assert expected==M.sha(dst),'Existing nonidentical canonical asset preserved: '+str(dst)
+    if dst.exists()and expected!=M.sha(dst):
+        prior=PATCH_REPLACE.get(M.rel(dst));assert prior and prior['sha256']==M.sha(dst),'Existing nonidentical canonical asset preserved: '+str(dst)
+        patch=M.read(O/'sail31-patch.json');assert patch['status']=='captured-and-merged'
+        archive=ROOT/patch['preservedRecordDirectory']/'canonical'/dst.relative_to(DEST)
+        archive.parent.mkdir(parents=True,exist_ok=True);assert not archive.exists();shutil.copy2(dst,archive)
+        if derived is None:shutil.copy2(src,dst)
+        else:dst.write_bytes(derived)
+    elif dst.exists():assert expected==M.sha(dst),'Existing nonidentical canonical asset preserved: '+str(dst)
     else:
         dst.parent.mkdir(parents=True,exist_ok=True)
         if derived is None:shutil.copy2(src,dst)
@@ -113,6 +121,11 @@ def run():
     print(json.dumps({'savedScenes':26,'files':len(files),'canonical':M.rel(DEST),'proof':M.rel(H/'right-saved-scenes.json')}))
 
 if __name__=='__main__':
-    ap=argparse.ArgumentParser();ap.add_argument('--copy-verified',action='store_true');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--copy-verified',action='store_true');ap.add_argument('--replace-sail-patch',action='store_true');a=ap.parse_args()
+    if a.replace_sail_patch:
+        proof=M.read(H/'right-saved-scenes.json')
+        allowed=['Editor/EulerV7RightCapture.cs','spatial-shots.json','Scenes/v7-a02-sail-raise.unity']
+        PATCH_REPLACE.update({r['file']:r for r in proof['files']if r['file']in {M.rel(DEST/part)for part in allowed}})
+        assert len(PATCH_REPLACE)==3
     if a.copy_verified:run()
     else:ap.print_help()

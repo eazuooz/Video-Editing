@@ -79,9 +79,12 @@ def source_totals(prep,j):
 def schedule(clock,plan):
     """Pure scheduling: events do not modify PCM or create a silent interval."""
     base={s['id']:[]for s in clock.timeline['scenes']};issues=[];beats=[]
+    after_live_analysis={}
     for scene in plan['scenes']:
         sid=scene['targetScene'];bounds=clock.scenes[sid]
         for row in scene['paragraphs']:
+            for override in row.get('postLiveAnalysisOverrides',[]):
+                after_live_analysis[override['afterBeatId']]=override
             line=int(row['targetParagraphs'][0].rsplit('L',1)[1]);f=clock.frame(sid,line,0)
             base[sid].append(dict(frame=max(bounds['startFrame'],f),stillId=row['analysisStillIds'][0],
                 focus=focus(row),reason='approved-paragraph source-derived analysis',paragraphId=row['targetParagraphs'][0],priority=0))
@@ -118,6 +121,11 @@ def schedule(clock,plan):
             base[sid].append(dict(frame=end,sourceId=phase['sourceId'],sourceFrame=row['nativeSourceOutFrameExclusive']-1,
                 focus=b['largeFocusLabel'],reason='exact-last-frame analysis after native action; speech and right continue',
                 paragraphId=b['sourceCue']['targetParagraph'],priority=2))
+            if b['id']in after_live_analysis:
+                override=after_live_analysis[b['id']]
+                base[sid].append(dict(frame=end,stillId=override['analysisStillId'],
+                    focus=override['focus'],reason=override['purpose'],
+                    paragraphId=b['sourceCue']['targetParagraph'],priority=3))
     for sid in base:
         selected=sorted((b for b in beats if b['sceneId']==sid),key=lambda b:b['startFrame'])
         assert all(a['endFrameExclusive']<=b['startFrame']for a,b in zip(selected,selected[1:])),('Two native actions overlap one left pane',sid)

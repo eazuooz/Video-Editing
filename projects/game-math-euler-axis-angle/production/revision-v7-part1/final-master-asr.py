@@ -13,7 +13,7 @@ def packet_hash(file):
 def worker(token):
  plan=c.validate(preserve_pcm=True);c.lease_worker(token)
  input_file=H/'final-asr-input.json';selected=c.read(input_file);master=c.R/selected['master']
- assert master.name.endswith('.captioned.mp4')and c.sha(master)==selected['masterSha256'],'Exact finished captioned master required'
+ assert(master.name.endswith('.captioned.mp4')or master.name=='part1-captioned.mp4')and c.sha(master)==selected['masterSha256'],'Exact finished captioned master required'
  script=c.P/'script/revision-v7-two-part/part-01.ko.json';assert c.sha(script)==selected['scriptSha256']
  receipt=c.O/'final-master-asr.json'
  if receipt.exists():

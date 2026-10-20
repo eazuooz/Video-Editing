@@ -134,6 +134,10 @@ def native_ass(path,key,rows,shot,layout):
         for j,line in enumerate(numbers(row,shot)):
             txt+=event(i,i+1,line,450,522+j*82 if shot.get('pair')else 604,64,TEAL if j==0 else GOLD)
         if not shot.get('axes',True):continue
+        if shot.get('gimbals')and shot.get('pair'):
+            # A/B compares angle bundles and end poses. Single-model leaders
+            # are anchored to A only and would falsely appear to label B.
+            continue
         if shot.get('gimbals'):
             for g in gimbal_guides(row,shot,layout):
                 x,y=g['center'];txt+=event(i,i+1,g['label'],x,y,64,g['color'],4)+event(i,i+1,g['sub'],x,y+58,48,g['color'],4)

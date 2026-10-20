@@ -70,7 +70,7 @@ def decode(path,plan,captioned):
     early_checked=0
     folder=Q/'frames';folder.mkdir(parents=True,exist_ok=True);samples=[];pts_errors=[];sizes=set();first_pts=None;last_pts=None;count=0
     with av.open(str(path))as container:
-        stream=container.streams.video[0];stream.thread_type='AUTO'
+        stream=container.streams.video[0];stream.thread_type='AUTO';stream.codec_context.thread_count=2
         avg=str(stream.average_rate);assert avg=='60',avg
         time_base=float(stream.time_base)
         for index,frame in enumerate(container.decode(stream)):
@@ -100,7 +100,7 @@ def audio_integrity(path):
     import av,numpy as np
     digest=hashlib.sha256();count=0;peak=0.;channels=set();rates=set();pts_missing=0;backwards=0;previous=-1.;first=None;last=None
     with av.open(str(path))as container:
-        stream=container.streams.audio[0]
+        stream=container.streams.audio[0];stream.codec_context.thread_count=2
         for f in container.decode(stream):
             rates.add(f.sample_rate);channels.add(len(f.layout.channels));count+=f.samples
             t=float(f.pts*f.time_base)if f.pts is not None else None
@@ -136,8 +136,14 @@ def review_page(samples,pages,plan):
         rows.append(f'<section id="f{item["frame"]}"><h3>{item["time"]:.2f}s · {html.escape(labels)}</h3><a href="{n}"><img loading="lazy" src="{n}" width="960"></a><a href="{m}"><img loading="lazy" src="{m}" width="375"></a></section>')
     buttons=''.join(f'<button data-case="{i}">{html.escape(c["id"])} · {c["start"]:.2f}–{c["end"]:.2f}초</button>'for i,c in enumerate(plan['motionCases']))
     cases=json.dumps(plan['motionCases'],ensure_ascii=False).replace('</','<\\/')
-    script='''<script>const cases=CASES;const video=document.querySelector('video');const status=document.querySelector('#status');let selected=null;document.querySelectorAll('[data-case]').forEach(button=>button.onclick=()=>{selected=cases[+button.dataset.case];video.playbackRate=1;video.currentTime=selected.start;video.play();status.textContent=selected.id+' 재생 중';});video.ontimeupdate=()=>{document.querySelector('#clock').textContent=video.currentTime.toFixed(3)+'초';if(selected&&video.currentTime>=selected.end){video.pause();status.textContent=selected.id+' 재생 완료';selected=null;}};video.onended=()=>status.textContent='전체 재생 끝';</script>'''.replace('CASES',cases)
+    script='''<script>const cases=CASES;const video=document.querySelector('video');const status=document.querySelector('#status');let selected=null,queue=[],completed=[];
+function start(i){selected=cases[i];video.playbackRate=1;video.currentTime=selected.start;video.play();status.textContent=selected.id+' 1배 재생 중';}
+document.querySelectorAll('[data-case]').forEach(button=>button.onclick=()=>{queue=[];start(+button.dataset.case);});
+document.querySelector('#all-motion').onclick=()=>{completed=[];queue=cases.map((c,i)=>i);start(queue.shift());};
+video.ontimeupdate=()=>{document.querySelector('#clock').textContent=video.currentTime.toFixed(3)+'초';if(selected&&video.currentTime>=selected.end){video.pause();completed.push(selected.id);document.querySelector('#completed').textContent='실제 동작 재생 완료 '+completed.length+'/'+cases.length+': '+completed.join(', ');status.textContent=selected.id+' 재생 완료';selected=null;if(queue.length)start(queue.shift());}};
+video.onerror=()=>{queue=[];status.textContent='재생 오류: '+video.error.code;};video.onended=()=>status.textContent='전체 재생 끝';</script>'''.replace('CASES',cases)
     doc='<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>회전1편 실제 출력 검수</title><style>body{margin:24px;background:#080b0d;color:#f5f5f5;font:16px/1.5 Malgun Gothic,sans-serif}video{width:min(100%,1200px)}img{max-width:100%;height:auto}h3{color:#e8cf83}section{margin:40px 0}button{margin:6px;padding:9px;background:#111;color:white;border:1px solid #777;cursor:pointer}</style><h1>3차원 회전1편 · 실제 출력</h1><video controls muted preload="metadata" src="../part1-captioned.mp4"></video><p>내부 화면 검수용으로 기본 음소거입니다. 완성 영상의 게임 소리·내레이션은 그대로 들어 있습니다.</p><p id="status">대기</p><output id="clock">0.000초</output><div>'+buttons+'</div><p>아래는 현재 인코딩에서 추출한 자막·컷·동작 표본입니다. 연속 재생과 전체 청취 승인은 별도입니다.</p>'+''.join(rows)+script
+    doc=doc.replace('<div>'+buttons,'<p><button id="all-motion">모든 동작 구간 1배 재생</button></p><p id="completed">실제 동작 재생 완료 0</p><div>'+buttons)
     (Q/'review.html').write_text(doc,encoding='utf8')
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--left',type=Path,required=True);ap.add_argument('--right',type=Path,required=True);args=ap.parse_args();selected();Q.mkdir(parents=True,exist_ok=True)

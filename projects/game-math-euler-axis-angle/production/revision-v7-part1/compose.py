@@ -151,8 +151,12 @@ def assemble_pane(rows,args,filters,index,prefix,size):
     for i,row in enumerate(rows):
         index,name=phase_inputs(row,args,filters,index,f'{prefix}{i}',size);names.append(f'[{name}]')
     out=prefix+'pane'
-    if len(names)==1:filters.append(names[0]+f'null[{out}]')
-    else:filters.append(''.join(names)+f'concat=n={len(names)}:v=1:a=0[{out}]')
+    # concat emits microsecond PTS. A new phase can then be1us later than the
+    # exact base-frame timestamp, making overlay repeat the old picture at
+    # that cut while the frame-timed guide has already changed. Reconstruct
+    # the pane's exact60Hz frame clock before overlay; do not retime sources.
+    if len(names)==1:filters.append(names[0]+f'settb=1/60,setpts=N[{out}]')
+    else:filters.append(''.join(names)+f'concat=n={len(names)}:v=1:a=0,settb=1/60,setpts=N[{out}]')
     return index,out
 def ffescape(p):return rel(p).replace('\\','/').replace(':',r'\:').replace("'",r"\'")
 def scene_render(scene,left_file,right_file,codec='libx264',sample=None):

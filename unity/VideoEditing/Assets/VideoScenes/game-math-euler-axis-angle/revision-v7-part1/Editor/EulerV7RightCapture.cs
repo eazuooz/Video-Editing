@@ -18,7 +18,7 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.V7.Editor
     {
         public const string Root="Assets/VideoScenes/game-math-euler-axis-angle/revision-v7-part1";
         [Serializable] public class Clip {public string shotId;public int frames=180;}
-        [Serializable] public class Job {public string outputDirectory,ffmpegPath;public bool bakeScenes,captureTestbed,bakeOnly;public Clip[] clips;}
+        [Serializable] public class Job {public string outputDirectory,ffmpegPath;public bool bakeScenes,captureTestbed,bakeOnly;public Clip[] clips;public string[] bakeShotIds;}
         public static void Run()
         {
             RequireIsolated();EulerV6Math.Validate();
@@ -38,7 +38,7 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.V7.Editor
                     EditorApplication.Exit(0);return;
                 }
                 if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)throw new InvalidOperationException("Actual capture requires a graphics device; Null is reserved for bake-only.");
-                if(job.bakeScenes)Bake(catalog,true);
+                if(job.bakeScenes){if(job.bakeShotIds!=null&&job.bakeShotIds.Length>0)BakeSelected(job,catalog);else Bake(catalog,true);}
                 foreach(var clip in job.clips)Capture(job,clip,catalog);
                 if(job.captureTestbed)CaptureTestbedStill(job,catalog);
                 File.WriteAllText(Path.Combine(job.outputDirectory,"capture-success.json"),"{\"editor\":\""+Application.unityVersion+"\",\"pipeline\":\"isolated built-in\",\"handedness\":\"left\",\"vectorConvention\":\"row\",\"width\":1920,\"height\":1080,\"fps\":60}");
@@ -67,6 +67,23 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.V7.Editor
             EditorSceneManager.SaveScene(test,Root+"/Scenes/testbed.unity");
             AssetDatabase.SaveAssets();AssetDatabase.Refresh();
             File.WriteAllText("m04-v7-part1-scenes-saved.json","{\"sceneCount\":"+saved.Count+",\"testbedSaved\":true,\"totalSceneFiles\":"+(saved.Count+1)+",\"mathChecks\":\"passed\",\"editor\":\""+Application.unityVersion+"\",\"graphicsDeviceType\":\""+SystemInfo.graphicsDeviceType+"\",\"textMetricsPrimed\":"+(primeText?"true":"false")+",\"mode\":\""+(primeText?"gpu-capable-bake":"cpu-null-geometry-bake")+"\"}");
+        }
+        private static void BakeSelected(Job job,TextAsset catalog)
+        {
+            var data=JsonUtility.FromJson<V6Catalog>(catalog.text);var saved=new List<string>();
+            foreach(string id in job.bakeShotIds)
+            {
+                V6Shot selected=null;foreach(var candidate in data.shots)if(candidate.id==id){selected=candidate;break;}
+                if(selected==null)throw new ArgumentException("Missing selected shot: "+id);
+                var sc=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
+                EditorUtility.UnloadUnusedAssetsImmediate();
+                var owner=new GameObject("Yamyam M04 V7 "+selected.sceneId).AddComponent<EulerV7PanelScene>();
+                owner.shotCatalog=catalog;owner.LoadShot(selected.id);owner.Build();owner.Evaluate(0);owner.PrimeTextGeometry();Persist(owner);
+                string dest=Root+"/Scenes/"+selected.sceneId+".unity";
+                if(!EditorSceneManager.SaveScene(sc,dest))throw new IOException("Could not save "+dest);saved.Add(dest);
+            }
+            AssetDatabase.SaveAssets();AssetDatabase.Refresh();
+            File.WriteAllText(Path.Combine(job.outputDirectory,"selected-scenes-saved.json"),"{\"sceneCount\":"+saved.Count+",\"scope\":\"selected patch only\",\"editor\":\""+Application.unityVersion+"\"}");
         }
         private static void Persist(EulerV7PanelScene owner)
         {

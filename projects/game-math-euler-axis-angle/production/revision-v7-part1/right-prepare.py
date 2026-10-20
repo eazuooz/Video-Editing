@@ -131,6 +131,28 @@ def generated_sources(source_keys):
     bake_marker='            var data=JsonUtility.FromJson<V6Catalog>(catalog.text);'
     assert bridge.count(bake_marker)==1
     bridge=bridge.replace(bake_marker,'            Directory.CreateDirectory(Root+"/Scenes");AssetDatabase.Refresh();\n'+bake_marker)
+    bridge=bridge.replace('public bool bakeScenes,captureTestbed,bakeOnly;public Clip[] clips;',
+        'public bool bakeScenes,captureTestbed,bakeOnly;public Clip[] clips;public string[] bakeShotIds;')
+    bridge=bridge.replace('if(job.bakeScenes)Bake(catalog,true);',
+        'if(job.bakeScenes){if(job.bakeShotIds!=null&&job.bakeShotIds.Length>0)BakeSelected(job,catalog);else Bake(catalog,true);}')
+    bridge=bridge.replace('        private static void Persist(EulerV7PanelScene owner)', '''        private static void BakeSelected(Job job,TextAsset catalog)
+        {
+            var data=JsonUtility.FromJson<V6Catalog>(catalog.text);var saved=new List<string>();
+            foreach(string id in job.bakeShotIds)
+            {
+                V6Shot selected=null;foreach(var candidate in data.shots)if(candidate.id==id){selected=candidate;break;}
+                if(selected==null)throw new ArgumentException("Missing selected shot: "+id);
+                var sc=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
+                EditorUtility.UnloadUnusedAssetsImmediate();
+                var owner=new GameObject("Yamyam M04 V7 "+selected.sceneId).AddComponent<EulerV7PanelScene>();
+                owner.shotCatalog=catalog;owner.LoadShot(selected.id);owner.Build();owner.Evaluate(0);owner.PrimeTextGeometry();Persist(owner);
+                string dest=Root+"/Scenes/"+selected.sceneId+".unity";
+                if(!EditorSceneManager.SaveScene(sc,dest))throw new IOException("Could not save "+dest);saved.Add(dest);
+            }
+            AssetDatabase.SaveAssets();AssetDatabase.Refresh();
+            File.WriteAllText(Path.Combine(job.outputDirectory,"selected-scenes-saved.json"),"{\\"sceneCount\\":"+saved.Count+",\\"scope\\":\\"selected patch only\\",\\"editor\\":\\""+Application.unityVersion+"\\"}");
+        }
+        private static void Persist(EulerV7PanelScene owner)''')
     # The only permitted project remains the existing task-local isolated clone.
     # Preserve this path guard rather than broadening it to the main Unity project.
     assert 'EndsWith("/production/local/revision-v6/unity-capture"' in bridge
@@ -154,7 +176,7 @@ def generated_sources(source_keys):
        ('v7-sail-raise','v7-a02','sail',[k(0,p=90,x=1.1),k(1,p=0,x=1.1)]),
        ('v7-log-align','v7-a15','log',[k(0,h=25,x=1.1),k(.5,h=25),k(1)]),
        ('v7-hook-rotate','v7-a03','hook',[k(0),k(1,h=90)])]:
-        x=copy.deepcopy(template);x.update(id=key,sceneId=scene+'-'+key[3:],model=model,axes=False,pair=False,activeAxis='uprightY'if model=='hook'else'none',motionSeconds=6)
+        x=copy.deepcopy(template);x.update(id=key,sceneId=scene+'-'+key[3:],model=model,axes=False,pair=False,activeAxis='uprightY'if model=='hook'else'none',motionSeconds=.5 if key=='v7-sail-raise'else 6)
         x['a']=dict(kind='euler',keys=keys);x['b']=None;shots.append(x)
     # Each script scene has a separately editable testbed even when its current
     # proof is a2D board. Shared source meshes/materials are persisted once.
@@ -168,7 +190,7 @@ def generated_sources(source_keys):
     sail_move=next(x for x in shots if x['id']=='v7-sail-move')
     sail_raise=next(x for x in shots if x['id']=='v7-sail-raise')
     assert {k:v for k,v in sail_move['a']['keys'][-1].items()if k!='t'}=={k:v for k,v in sail_raise['a']['keys'][0].items()if k!='t'}
-    assert {k:v for k,v in sail_move.items()if k not in ['id','sceneId','a']}=={k:v for k,v in sail_raise.items()if k not in ['id','sceneId','a']}
+    assert {k:v for k,v in sail_move.items()if k not in ['id','sceneId','a','motionSeconds']}=={k:v for k,v in sail_raise.items()if k not in ['id','sceneId','a','motionSeconds']}
     # Assembly references the already present V6 math contract explicitly.
     save(out/'Yamyam.GameMath.EulerRight.asmdef',{'name':'Yamyam.GameMath.EulerRight','references':['Yamyam.GameMath.EulerAxisAngle.V6'],'autoReferenced':True})
     save(out/'Editor/Yamyam.GameMath.EulerRight.Editor.asmdef',{'name':'Yamyam.GameMath.EulerRight.Editor','references':['Yamyam.GameMath.EulerRight','Yamyam.GameMath.EulerAxisAngle.V6'],'includePlatforms':['Editor'],'autoReferenced':True})
@@ -279,7 +301,7 @@ def main():
     # held while narration continues, rather than relabeling a nearby pose.
     exact_counts={'v6-18.B01':541,'v6-20.B01':481,'v6-20.B02':481}
     clips=[{'shotId':key,'frames':exact_counts.get(key,row['frames'])}for key,row in source.items()]
-    clips += [{'shotId':k,'frames':360}for k in ['v7-sail-move','v7-sail-raise','v7-hook-rotate','v7-log-align']]
+    clips += [{'shotId':k,'frames':31 if k=='v7-sail-raise'else 360}for k in ['v7-sail-move','v7-sail-raise','v7-hook-rotate','v7-log-align']]
     job={'outputDirectory':str(O/'spatial-native'),'ffmpegPath':shutil.which('ffmpeg'),'bakeScenes':True,'captureTestbed':False,'clips':clips,
          'approval':approval,'generatedSourceSha256':generated['generatedRuntimeSha256'],'generatedBridgeSha256':generated['generatedBridgeSha256'],
          'catalogSha256':generated['catalogSha256'],'mathSourceSha256':generated['mathSourceSha256'],

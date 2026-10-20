@@ -38,6 +38,14 @@ def run(args):
     assert M.sha(ROOT/generated['mathSource'])==generated['mathSourceSha256']==job['mathSourceSha256']
     assert job['generatedSourceSha256']==generated['generatedRuntimeSha256']
     assert job['generatedBridgeSha256']==generated['generatedBridgeSha256']
+    patch_shot=getattr(args,'patch_shot',None)
+    if patch_shot:
+        assert not args.sample and patch_shot=='v7-sail-raise','Only the root-authorized finite sail correction is in scope.'
+        job['clips']=[x for x in job['clips']if x['shotId']==patch_shot]
+        assert len(job['clips'])==1 and job['clips'][0]['frames']==31
+        job['bakeScenes']=True;job['bakeShotIds']=[patch_shot]
+        job['outputDirectory']=str(O/'spatial-patch'/('sail31-'+job['catalogSha256'][:12]))
+        job['patchOnly']=True
     if args.sample:
         shots=args.sample_shot or ['v7-sail-raise','v7-log-align','v7-hook-rotate','v6-02.B02','v6-05.B02','v6-20.B01','v6-18.B01']
         assert all(k in {x['shotId']for x in job['clips']}for k in shots)
@@ -51,7 +59,7 @@ def run(args):
     stage=ISO/'Assets/VideoScenes/game-math-euler-axis-angle/revision-v7-part1'
     stage.resolve().relative_to(ISO.resolve())
     shutil.copytree(O/'prepared-unity',stage,dirs_exist_ok=True)
-    name=('right-sample-job-'+sample_suffix+'.json'if args.sample_shot else'right-sample-job.json')if args.sample else'right-native-job.json'
+    name=('right-sample-job-'+sample_suffix+'.json'if args.sample_shot else'right-sample-job.json')if args.sample else('right-sail-patch-job.json'if patch_shot else'right-native-job.json')
     path=O/name;M.save(path,job)
     me=psutil.Process();token=str(uuid.uuid4())
     record={'schemaVersion':1,'token':token,'project':'game-math-euler-axis-angle','part':1,'purpose':'M04-A finite right-pane label-free controlled models',
@@ -83,7 +91,7 @@ def run(args):
             count=sum(1 for _ in files['anchors'].open(encoding='utf8'));assert count==clip['frames']
             outputs.append({'sourceBeatId':key,'frames':count,'files':{k:{'file':M.rel(f),'sha256':M.sha(f)}for k,f in files.items()},'probe':probe})
         M.save(out/'capture-receipt.json',{'schemaVersion':1,'jobSha256':M.sha(path),'authorization':approval,'outputs':outputs,'success':success,
-            'sampleOnly':args.sample,'sample3FramesAreEndpointStatesNotContinuousMotion':args.sample,'newEncodedFullDecode':'pending','captionedMovingReview':'pending',
+            'sampleOnly':args.sample,'patchOnly':bool(patch_shot),'sample3FramesAreEndpointStatesNotContinuousMotion':args.sample,'newEncodedFullDecode':'pending','captionedMovingReview':'pending',
             'savedSceneEvidence':'must inspect actual Assets/VideoScenes/game-math-euler-axis-angle/revision-v7-part1/Scenes files; planned paths are not actual save proof'})
         record['state']='complete';print(json.dumps({'status':'complete','clips':len(outputs),'sampleOnly':args.sample}),flush=True)
     except BaseException:
@@ -105,7 +113,7 @@ def run(args):
             except(OSError,json.JSONDecodeError):pass
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--run',action='store_true');ap.add_argument('--sample',action='store_true');ap.add_argument('--sample-shot',nargs='+');ap.add_argument('--timeout',type=int,default=2400);args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--run',action='store_true');ap.add_argument('--sample',action='store_true');ap.add_argument('--sample-shot',nargs='+');ap.add_argument('--patch-shot');ap.add_argument('--timeout',type=int,default=2400);args=ap.parse_args()
     assert not args.sample_shot or args.sample,'A selected3-frame correction must be an explicit sample.'
     if not args.run:ap.print_help();return
     run(args)

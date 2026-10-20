@@ -50,7 +50,11 @@ def literal_frame(clock,sid,line,phrase):
     return round(clock.literal(sid,line,phrase)*FPS)
 
 def base_segment(asset,scene,start,end,frame=0):
-    return segment(scene,start,end,statefile(asset,frame),sourceBeatId=asset['sourceBeatId'],sourceStateFrame=frame)
+    # A corrected finite motion may reuse an exactly identical previously
+    # exported endpoint PNG. Its stable provenance frame belongs to that
+    # original capture, separately recorded in endpointPoseReuse.
+    provenance=asset.get('endpointPoseReuse',{}).get('sourceStateFrameAliases',{}).get(str(frame),frame)
+    return segment(scene,start,end,statefile(asset,frame),sourceBeatId=asset['sourceBeatId'],sourceStateFrame=provenance)
 
 def still_end(asset,scene,start,end,sourceFrame,obj=None,other='last'):
     if not obj:return base_segment(asset,scene,start,end,sourceFrame)
