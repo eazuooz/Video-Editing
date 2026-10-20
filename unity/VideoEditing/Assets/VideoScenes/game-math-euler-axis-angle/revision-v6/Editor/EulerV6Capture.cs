@@ -17,7 +17,7 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.V6.Editor
     {
         public const string Root="Assets/VideoScenes/game-math-euler-axis-angle/revision-v6";
         [Serializable] public class Clip {public string shotId;public int frames=180;}
-        [Serializable] public class Job {public string outputDirectory,ffmpegPath;public bool bakeScenes,captureTestbed;public Clip[] clips;}
+        [Serializable] public class Job {public string outputDirectory,ffmpegPath;public bool bakeScenes,captureTestbed,bakeOnly;public Clip[] clips;}
         public static void Run()
         {
             RequireIsolated();EulerV6Math.Validate();
@@ -28,7 +28,16 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.V6.Editor
             {
                 TextAsset catalog=AssetDatabase.LoadAssetAtPath<TextAsset>(Root+"/spatial-shots.json");
                 if(catalog==null)throw new InvalidOperationException("V6 catalog was not imported.");
-                if(job.bakeScenes)Bake(catalog);
+                if(job.bakeOnly)
+                {
+                    if(SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Null)throw new InvalidOperationException("CPU-only bake must use -nographics and the Null graphics device.");
+                    if(job.captureTestbed||(job.clips!=null&&job.clips.Length>0))throw new InvalidOperationException("CPU-only job must contain no capture clips or testbed render.");
+                    Bake(catalog,false);
+                    File.WriteAllText(Path.Combine(job.outputDirectory,"bake-success.json"),"{\"editor\":\""+Application.unityVersion+"\",\"graphicsDeviceType\":\"Null\",\"cameraRenderCalls\":0,\"capturedFrames\":0,\"encodedClips\":0,\"textMetricsPrimed\":false,\"renderReview\":\"pending actual GPU sample\"}");
+                    EditorApplication.Exit(0);return;
+                }
+                if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)throw new InvalidOperationException("Actual capture requires a graphics device; Null is reserved for bake-only.");
+                if(job.bakeScenes)Bake(catalog,true);
                 foreach(var clip in job.clips)Capture(job,clip,catalog);
                 if(job.captureTestbed)CaptureTestbedStill(job,catalog);
                 File.WriteAllText(Path.Combine(job.outputDirectory,"capture-success.json"),"{\"editor\":\""+Application.unityVersion+"\",\"pipeline\":\"isolated built-in\",\"handedness\":\"left\",\"vectorConvention\":\"row\",\"width\":1920,\"height\":1080,\"fps\":60}");
@@ -36,7 +45,7 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.V6.Editor
             }
             catch(Exception ex){UnityEngine.Debug.LogException(ex);File.WriteAllText(Path.Combine(job.outputDirectory,"capture-error.txt"),ex.ToString());EditorApplication.Exit(1);}
         }
-        private static void Bake(TextAsset catalog)
+        private static void Bake(TextAsset catalog,bool primeText)
         {
             var data=JsonUtility.FromJson<V6Catalog>(catalog.text);
             var first=new Dictionary<string,V6Shot>();foreach(var s in data.shots)if(!first.ContainsKey(s.sceneId))first[s.sceneId]=s;
@@ -46,16 +55,16 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.V6.Editor
                 Scene sc=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
                 EditorUtility.UnloadUnusedAssetsImmediate();
                 var owner=new GameObject("Yamyam M04 V6 "+item.Key).AddComponent<EulerV6Scene>();
-                owner.shotCatalog=catalog;owner.LoadShot(item.Value.id);owner.Build();owner.Evaluate(0);owner.PrimeTextGeometry();
+                owner.shotCatalog=catalog;owner.LoadShot(item.Value.id);owner.Build();owner.Evaluate(0);if(primeText)owner.PrimeTextGeometry();
                 Persist(owner);string dest=Root+"/Scenes/"+item.Key+".unity";
                 if(!EditorSceneManager.SaveScene(sc,dest))throw new IOException("Could not save "+dest);saved.Add(dest);
             }
             Scene test=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
             var bed=new GameObject("Yamyam M04 V6 shared aircraft testbed").AddComponent<EulerV6Scene>();
-            bed.shotCatalog=catalog;bed.LoadShot("v6-04.B01");bed.shot.axes=false;bed.shot.activeAxis="none";bed.Build();bed.Evaluate(0);bed.PrimeTextGeometry();Persist(bed);
+            bed.shotCatalog=catalog;bed.LoadShot("v6-04.B01");bed.shot.axes=false;bed.shot.activeAxis="none";bed.Build();bed.Evaluate(0);if(primeText)bed.PrimeTextGeometry();Persist(bed);
             EditorSceneManager.SaveScene(test,Root+"/Scenes/testbed.unity");
             AssetDatabase.SaveAssets();AssetDatabase.Refresh();
-            File.WriteAllText("m04-v6-scenes-saved.json","{\"sceneCount\":"+saved.Count+",\"testbedSaved\":true,\"mathChecks\":\"passed\",\"editor\":\""+Application.unityVersion+"\"}");
+            File.WriteAllText("m04-v6-scenes-saved.json","{\"sceneCount\":"+saved.Count+",\"testbedSaved\":true,\"totalSceneFiles\":"+(saved.Count+1)+",\"mathChecks\":\"passed\",\"editor\":\""+Application.unityVersion+"\",\"graphicsDeviceType\":\""+SystemInfo.graphicsDeviceType+"\",\"textMetricsPrimed\":"+(primeText?"true":"false")+",\"mode\":\""+(primeText?"gpu-capable-bake":"cpu-null-geometry-bake")+"\"}");
         }
         private static void Persist(EulerV6Scene owner)
         {
@@ -70,6 +79,10 @@ namespace YamyamCoding.GameMath.EulerAxisAngle.V6.Editor
             }
             foreach(var renderer in owner.GetComponentsInChildren<Renderer>(true))
             {
+                // A Null graphics import may not have allocated the dynamic
+                // font atlas. Always preserve the built-in TextMesh font
+                // material rather than misclassifying it as a solid color.
+                if(renderer.GetComponent<TextMesh>()!=null)continue;
                 Material mat=renderer.sharedMaterial;if(mat==null||EditorUtility.IsPersistent(mat))continue;
                 // Legacy font materials are built-in references; generated solid-color materials are shared.
                 if(mat.mainTexture!=null)continue;

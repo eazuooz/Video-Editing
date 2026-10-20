@@ -27,6 +27,12 @@ def dedicated_mib(pid):
         return float(result) if result else None
     except (subprocess.SubprocessError,ValueError):return None
 def prepare(args):
+    if args.bake_only:
+        if args.sample or args.scene:raise RuntimeError('CPU bake-only saves all owned scenes and cannot select rendered clips.')
+        out=LOCAL/'spatial-cpu-bake';out.mkdir(parents=True,exist_ok=True)
+        job=dict(outputDirectory=str(out),bakeOnly=True,bakeScenes=True,captureTestbed=False,clips=[])
+        path=LOCAL/'spatial-cpu-bake-job.json';path.write_text(json.dumps(job,indent=2)+'\n',encoding='utf8')
+        return path,job
     plan=json.loads((H/'spatial-plan.json').read_text(encoding='utf8'));clips=[]
     timeline=None
     if not args.sample:
@@ -79,7 +85,9 @@ def run(path,job,args):
     applications=subprocess.check_output(['nvidia-smi','--query-compute-apps=pid,process_name','--format=csv,noheader'],text=True)
     if any('python' in line.lower() for line in applications.splitlines()):raise RuntimeError('GPU Python/compute owner still visible; foreign process preserved, wait for handoff.')
     # Only explicit already-authored owned sources are copied; no foreign Library/binaries.
-    shutil.copytree(OWN,ISO/REL,dirs_exist_ok=True)
+    # Canonical Shared materials are URP-adapted; preserve the isolated
+    # built-in copies instead of bringing converted materials back here.
+    shutil.copytree(OWN,ISO/REL,dirs_exist_ok=True,ignore=shutil.ignore_patterns('Shared','Shared.meta'))
     token=str(uuid.uuid4());me=psutil.Process();proc=None
     record=dict(schemaVersion=1,token=token,project='game-math-euler-axis-angle',state='render_running',purpose='Explicit M04 V6 finite spatial capture',coordinator=dict(pid=me.pid,createTime=me.create_time()),job=str(path),jobSha256=sha(path),gpuBefore=before,foreignProcessesChanged=False,observations=[])
     with LEASE.open('x',encoding='utf8') as f:json.dump(record,f,indent=2)
@@ -130,9 +138,71 @@ def run(path,job,args):
             history=ROOT/'shared/output/gpu-handoff';history.mkdir(exist_ok=True)
             (history/(token+'.json')).write_text(json.dumps(record,indent=2)+'\n',encoding='utf8');LEASE.unlink()
 
+def run_cpu_bake(path,job,args):
+    """Explicit Null-device geometry/import/save job, independent of GPU lease."""
+    control=json.loads((ROOT/'shared/publishing/video-production-control.json').read_text(encoding='utf-8-sig'))
+    if control.get('selectedVideo')!=P.name or not control['newProductionAuthorization']['fullProductionAuthorized']:raise RuntimeError('M04 full production no longer selected.')
+    if not (ISO/'ProjectSettings/ProjectVersion.txt').exists():raise RuntimeError('Prepared owned isolated project is missing.')
+    for p in psutil.process_iter(['pid','name','cmdline']):
+        if (p.info['name'] or '').lower()=='unity.exe' and normalize(ISO) in normalize(' '.join(p.info['cmdline'] or [])):
+            raise RuntimeError('The owned V6 isolated project is already open; no process changed.')
+    memory=psutil.virtual_memory()
+    if memory.available<16*1024**3:raise RuntimeError('Less than16GiB system RAM available; CPU import deferred.')
+    out=Path(job['outputDirectory']);lock=out/'cpu-bake.lock.json';token=uuid.uuid4().hex;proc=None
+    lease_before=sha(LEASE) if LEASE.exists() else None
+    record=dict(schemaVersion=1,mode='cpu-null-geometry-bake',token=token,jobSha256=sha(path),project=str(ISO),startedAt=time.time(),
+        RAMAvailableGiBBefore=round(memory.available/1024**3,3),gpuLeaseReadOnlyBeforeSha256=lease_before,gpuLeaseWritten=False,
+        graphicsRequested='Null via -batchmode -nographics',packageManager='disabled with -noUpm; no package download/install',
+        cameraRenderCalls=0,capturedFrames=0,encodedClips=0,textMetricsPrimed=False,foreignProcessesChanged=False,
+        observations=[],documentation='https://docs.unity3d.com/6000.0/Documentation/Manual/EditorCommandLineArguments.html')
+    with lock.open('x',encoding='utf8') as f:json.dump(dict(token=token,pid=os.getpid()),f)
+    try:
+        shutil.copytree(OWN,ISO/REL,dirs_exist_ok=True,ignore=shutil.ignore_patterns('Shared','Shared.meta'))
+        log=out/'cpu-bake-editor.log'
+        command=[str(UNITY),'-batchmode','-nographics','-noUpm','-projectPath',str(ISO),'-job-worker-count','2','-background-job-worker-count','1','-gc-helper-count','2',
+            '-executeMethod','YamyamCoding.GameMath.EulerAxisAngle.V6.Editor.EulerV6Capture.Run','-m04V6Job',str(path),'-logFile',str(log)]
+        env=dict(os.environ,DOTNET_PROCESSOR_COUNT='2',OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',CUDA_VISIBLE_DEVICES='')
+        flags=subprocess.CREATE_NO_WINDOW|subprocess.BELOW_NORMAL_PRIORITY_CLASS
+        proc=subprocess.Popen(command,cwd=ROOT,env=env,creationflags=flags);owner=psutil.Process(proc.pid)
+        record['unity']=dict(pid=proc.pid,createTime=owner.create_time(),priority='BelowNormal',log=str(log),project=str(ISO))
+        print(json.dumps(dict(mode=record['mode'],pid=proc.pid,log=str(log),gpuLeaseChanged=False)),flush=True)
+        (out/'cpu-bake-process.json').write_text(json.dumps(record,indent=2)+'\n',encoding='utf8')
+        started=time.monotonic()
+        while proc.poll() is None:
+            available=psutil.virtual_memory().available
+            try:rss=owner.memory_info().rss
+            except psutil.NoSuchProcess:rss=0
+            record['observations'].append(dict(elapsedSeconds=round(time.monotonic()-started,2),RAMAvailableGiB=round(available/1024**3,3),ownRssGiB=round(rss/1024**3,3)))
+            if available<10*1024**3 or time.monotonic()-started>args.timeout:
+                owner.terminate();proc.wait(timeout=30)
+                raise RuntimeError('Own CPU bake stopped at RAM/timeout guard; foreign jobs and GPU lease preserved.')
+            time.sleep(5)
+        record['returnCode']=proc.returncode
+        record['ownEditorExited']=not owner.is_running()
+        if proc.returncode:raise RuntimeError('CPU bake failed; inspect owned log '+str(log))
+        success=json.loads((out/'bake-success.json').read_text(encoding='utf8'))
+        if success['graphicsDeviceType']!='Null' or any(success[k] for k in ['cameraRenderCalls','capturedFrames','encodedClips']):raise RuntimeError('CPU-only contract failed.')
+        marker=json.loads((ISO/'m04-v6-scenes-saved.json').read_text(encoding='utf8'))
+        if marker['totalSceneFiles']!=27 or marker['textMetricsPrimed']:raise RuntimeError('CPU source-save marker did not match27scenes/deferred text metrics.')
+        files=list((ISO/REL/'Scenes').glob('*.unity'))
+        if len(files)!=27:raise RuntimeError('Not all27detailed scene files were actually saved.')
+        record.update(status='complete',success=success,actualEditorSave=marker,savedScenes=[dict(file=str(f),sha256=sha(f)) for f in files],
+            renderReview='pending GPU sample; CPU bake does not approve pixels, lighting, font metrics or mobile readability')
+        return 0
+    finally:
+        if proc is not None and proc.poll() is None:
+            try:
+                owner=psutil.Process(proc.pid)
+                if owner.create_time()==record['unity']['createTime']:owner.terminate();proc.wait(timeout=30)
+            except psutil.NoSuchProcess:pass
+        record['finishedAt']=time.time();record['gpuLeaseReadOnlyAfterSha256']=sha(LEASE) if LEASE.exists() else None
+        record['gpuLeaseByteIdenticalDuringJob']=record['gpuLeaseReadOnlyAfterSha256']==lease_before
+        (out/'cpu-bake-process.json').write_text(json.dumps(record,indent=2)+'\n',encoding='utf8')
+        if lock.exists() and json.loads(lock.read_text()).get('token')==token:lock.unlink()
+
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--timeline',default=str(H/'timeline.json'));ap.add_argument('--scene',action='append');ap.add_argument('--sample',action='store_true');ap.add_argument('--bake',action='store_true');ap.add_argument('--run',action='store_true');ap.add_argument('--timeout',type=int,default=3600);args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--timeline',default=str(H/'timeline.json'));ap.add_argument('--scene',action='append');ap.add_argument('--sample',action='store_true');ap.add_argument('--bake',action='store_true');ap.add_argument('--bake-only',action='store_true');ap.add_argument('--run',action='store_true');ap.add_argument('--timeout',type=int,default=3600);args=ap.parse_args()
     path,job=prepare(args);print(json.dumps(dict(job=str(path),clips=len(job['clips']),frames=sum(c['frames'] for c in job['clips']),launched=args.run)),flush=True)
-    return run(path,job,args) if args.run else 0
+    return (run_cpu_bake(path,job,args) if args.bake_only else run(path,job,args)) if args.run else 0
 
 if __name__=='__main__':sys.exit(main())

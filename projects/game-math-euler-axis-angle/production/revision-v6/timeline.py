@@ -33,6 +33,8 @@ def build():
  assert alignment['inputs']['koSha256']==sha(ko_file),'Stale measured alignment'
  extra_file=H/'voice-extra-visuals.json';extra=read(extra_file)['visuals'] if extra_file.exists() else []
  assert alignment['inputs'].get('extraVisualsSha256')==(sha(extra_file) if extra_file.exists() else None)
+ breathing_file=H/'voice-breathing-plan.json'
+ assert alignment['inputs'].get('breathingPlanSha256')==(sha(breathing_file) if breathing_file.exists() else None)
  extra_by={x['id']:x for x in extra}
  assert len(ko['scenes'])==len(alignment['scenes'])==41
  assert not alignment['pendingSeams'],'Resolve actual word/PCM evidence; never invent a seam'
@@ -53,13 +55,24 @@ def build():
  approved_ids={b['id'] for s in ko['scenes'] for b in s['teachingBeats']}
  assert approved_ids==set(spatial_by)==set(screen_by)
  assert set(math_by)=={k for k,b in spatial_by.items() if b['renderer']=='root-2D'}
- scenes=[];cuts=[];auxiliary_all=[];current=120;hold_total=0;motion_total=0;insert_total=0;auxiliary_hold_total=0;auxiliary_motion_total=0
+ scenes=[];cuts=[];auxiliary_all=[];current=120;hold_total=0;motion_total=0;insert_total=0;auxiliary_hold_total=0;auxiliary_motion_total=0;breathing_total=0;breathing_count=0
  prior_picture=None
  for index,(scene,measured) in enumerate(zip(ko['scenes'],alignment['scenes'])):
   sid=scene['id'];assert sid==measured['id'];rate=measured['sampleRate'];n=measured['samples']
   assert rate==24000,'Sample-exact timeline currently requires approved24kHz PCM'
   assert sha(R/measured['wav'])==measured['wavSha256']
   events=[];beats=[];auxiliaries=[];seen_seams=set()
+  # Sparse prerequisite/numeric breaths are loaded before visual placement so
+  # every subsequent global beat accounts for them. Unverified candidates are
+  # retained in the review report, never replaced with guessed sample offsets.
+  for breath in measured.get('selectiveBreathing',[]):
+   if breath['status']!='verified-selective-breathing-candidate' or breath['insertFrames']<=0:continue
+   seam=breath['observedSeam'];sample=seam['sampleOffset'];low,high=breath['wordGap']
+   assert low<=sample/rate<=high and sample not in seen_seams
+   frames=int(breath['insertFrames']);assert 0<frames<=math.floor(breath['maximumInsertedSeconds']*FPS+1e-8)
+   events.append(dict(beat=breath['id'],selectiveBreathing=True,line=breath['line'],sourceSample=sample,sourceSeconds=sample/rate,
+    insertFrames=frames,insertSamples=frames*(rate//FPS),originalWordGap=[low,high],quietEvidence=seam,reason=breath['reason']))
+   seen_seams.add(sample);insert_total+=frames;breathing_total+=frames;breathing_count+=1
   def mapped_seconds(raw,include_equal=True):
    sample=round(raw*rate)
    added=sum(x['insertFrames'] for x in events if x['sourceSample']<sample or (include_equal and x['sourceSample']==sample))
@@ -189,7 +202,7 @@ def build():
    lineStarts=[x['start'] for x in lines],lineEnds=[x['end'] for x in lines],lines=lines,
    voiceSegments=segments,pauseInsertions=events,teachingBeats=beats,auxiliaryVisuals=auxiliaries,
    naturalTailSeconds=tail,nextNaturalHeadSeconds=next_head,addedSceneJoinFrames=join_frames,
-   paddingFrames=frames-body_frames,humanPaceListening='pending')
+   paddingFrames=frames-body_frames,selectiveBreathing=measured.get('selectiveBreathing',[]),humanPaceListening='pending')
   scenes.append(row);current+=frames
  assert len(scenes)==41 and sum(len(s['lines']) for s in scenes)==250
  assert sum(len(s['teachingBeats']) for s in scenes)==106
@@ -200,10 +213,11 @@ def build():
  return dict(schemaVersion=1,revision='article-flow-v6',slug=P.name,timing='measured-and-asr-aligned',status='measured-source-timing-finite-motion-ready; rendered/moving/audio/human review pending',
   fps=FPS,width=1920,height=1080,introFrames=120,outroFrames=600,bodyFrames=current-120,totalFrames=current+600,seconds=(current+600)/FPS,
   temporalContract=dict(beatTimes='global final-video seconds including2s branding',beatFrames='global final-video frames',lineStarts='scene-relative seconds',lineEnds='scene-relative seconds',lineFrames='scene-relative frames',voiceDestinationSamples='scene-relative at original sampleRate',outroStartFrame=current),
-  inputs=dict(koSha256=sha(ko_file),alignmentSha256=sha(V/'voice-alignment.json'),extraVisualsSha256=sha(extra_file),spatialPlanSha256=sha(H/'spatial-plan.json'),screenPlanSha256=sha(H/'screen-plan.json'),footagePlanSha256=sha(H/'footage-plan.json'),nativeGameAssetsSha256=sha(native_file),mathOutputsSha256=sha(O/'math/outputs.json'),implementationSha256=sha(Path(__file__))),
+  inputs=dict(koSha256=sha(ko_file),alignmentSha256=sha(V/'voice-alignment.json'),extraVisualsSha256=sha(extra_file),breathingPlanSha256=sha(breathing_file) if breathing_file.exists() else None,spatialPlanSha256=sha(H/'spatial-plan.json'),screenPlanSha256=sha(H/'screen-plan.json'),footagePlanSha256=sha(H/'footage-plan.json'),nativeGameAssetsSha256=sha(native_file),mathOutputsSha256=sha(O/'math/outputs.json'),implementationSha256=sha(Path(__file__))),
   scenes=scenes,cuts=cuts,sceneCount=41,lineCount=250,beatCount=106,
   plannedHoldFrames=hold_total,primaryHoldFrames=hold_total,auxiliaryHoldFrames=auxiliary_hold_total,totalHoldFrames=hold_total+auxiliary_hold_total,
   primaryFiniteMotionFrames=motion_total,auxiliaryFiniteMotionFrames=auxiliary_motion_total,finiteMotionFrames=motion_total+auxiliary_motion_total,auxiliaryVisuals=auxiliary_all,insertedPauseFrames=insert_total,
+  selectiveBreathingFrames=breathing_total,selectiveBreathingCount=breathing_count,pendingBreathing=alignment.get('pendingBreathing',[]),
   actualFrames=sum(c['frames'] for c in cuts),explanationFrames=current-120-sum(c['frames'] for c in cuts),actualExplanationRatioEnforced=False,
   ratioPolicy='lecture-concept-sized-game-examples-v1; each observed game operation once, no padding quota',
   originalPcmPreserved=True,sourceSpeed=1,gameAudioPolicy='lecture-no-added-bgm-standard-game-audio-v3',humanWholeListening='pending')

@@ -234,7 +234,7 @@ def main():
     for path in [OWN]+sorted(OWN.rglob('*')):
         if path.suffix!='.meta':meta(path)
     if args.stage:
-        dest=ISO/REL;dest.mkdir(parents=True,exist_ok=True);shutil.copytree(OWN,dest,dirs_exist_ok=True)
+        dest=ISO/REL;dest.mkdir(parents=True,exist_ok=True);shutil.copytree(OWN,dest,dirs_exist_ok=True,ignore=shutil.ignore_patterns('Shared','Shared.meta'))
         for folder in ['Packages','ProjectSettings']:(ISO/folder).mkdir(exist_ok=True)
         for name in ['manifest.json','packages-lock.json']:shutil.copy2(ROOT/'unity/VideoEditing/Packages'/name,ISO/'Packages'/name)
         for name in ['ProjectVersion.txt','ProjectSettings.asset','GraphicsSettings.asset','QualitySettings.asset','TagManager.asset','TimeManager.asset','EditorSettings.asset']:
