@@ -20,14 +20,15 @@ All footage is our own screen recording of Steam search, the Next Fest hub, stor
 
 ## Chapters
 
-Write from the final measured timeline (00:00 onward).
+Measured: edit-plan.json scene starts + 2 s branding; total 9:37.
 
-- 00:00 What happened — 1,000 demos to 8,000
-- (TBD) What 36% actually counts — tool vs output
-- (TBD) The makers — more games, less love, lines drawn
-- (TBD) What players got — quality and price
-- (TBD) The indie market and cloning
-- (TBD) The next three years — what to prepare
+- 00:00 Intro — where the future arrived first
+- 00:41 What happened at Next Fest — 1,000 demos to 8,000
+- 01:41 What 36% actually counts — tool vs output
+- 03:23 The makers — more games, less love, lines drawn
+- 04:41 What players got — quality and price
+- 06:34 The indie market and cloning
+- 08:30 The next three years — what to prepare
 
 ## Channel footer (after the body, before sources)
 

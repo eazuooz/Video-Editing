@@ -11,7 +11,7 @@
   "projectSettings": {
     "schemaVersion": 2,
     "slug": "steam-next-fest-ai-flood",
-    "status": "planning",
+    "status": "local-final-review-candidate",
     "delivery": {
       "directory": "output/steam-next-fest-ai-flood",
       "collector": "node scripts/collect-video-output.cjs steam-next-fest-ai-flood",
@@ -32,27 +32,24 @@
       "durationSeconds": 10,
       "rosterPath": "motion-canvas/src/shared/membership/members.json",
       "scenePath": "motion-canvas/src/shared/membership/membership-outro.tsx",
-      "appliedToFinal": false
+      "appliedToFinal": true
     },
     "visualStyle": "research-black-v1",
     "visualStyleGuide": "docs/VIDEO_VISUAL_STYLE.md",
     "visualStyleScope": "explanation-scenes; new productions only from 2026-10-09; preserve existing productions",
     "editing": {
-      "exampleSeconds": 19.5,
+      "exampleSeconds": 0,
       "exampleSecondsPolicy": "planning-baseline-only; actual scene slots follow measured narration and body-wide footage ratio",
-      "targetGameplayShare": 0.6,
-      "targetExplanationShare": 0.4,
-      "gameplayShareRange": [
-        0.6,
-        0.6
-      ],
+      "targetGameplayShare": null,
+      "targetExplanationShare": null,
+      "gameplayShareRange": null,
       "ratioScope": "body-excluding-channel-intro-and-membership-outro",
-      "ratioPolicy": "actual action footage 60% / PPT and explanation 40%; concept-matched examples throughout main chapters; one-frame rounding only",
-      "ratioPolicyVersion": "actual-footage-60-explanation-40-v2",
+      "ratioPolicy": "exempt — reality-check video (reality-check-no-ratio-v1): recorded platform/store/tool screens are the footage; explanation drawn over them (drawn-over-footage-explanation-v1) and evidence cards; measured share reported, no quota",
+      "ratioPolicyVersion": "reality-check-no-ratio-v1",
       "ratioRoundingToleranceFrames": 1,
-      "ratioApprovedAt": "2026-10-01",
+      "ratioApprovedAt": "2026-10-20",
       "footageClassification": {
-        "actualFootage": "Reviewed footage of an existing game demonstrating the chapter. No agent-created games, prototypes, story demos, races or simulators. Explicitly requested real programming/development demonstrations are scoped separately and cannot justify substituting a self-created game example.",
+        "actualFootage": "Our own recordings of the Steam Next Fest hub, store pages, SteamDB and the AI warning for Steam extension (platform/tool screens). No ratio quota under reality-check-no-ratio-v1; share is reported after measurement.",
         "explanation": "2.5D diagrams, timelines, numerical comparisons, text slides and diagram-like executable tests, including recorded MP4s",
         "classifyBy": "dominant visible screen role, not file type or executability",
         "noDoubleCountingOverlays": true
@@ -77,7 +74,7 @@
       "actualCommercialGameplaySeconds": null,
       "actualDevelopmentFootageSeconds": null,
       "actualPrototypeExplanationSeconds": null,
-      "explanationStyle": "projected-2.5d-black-background-white-text-yellow-teal-orange-emphasis",
+      "explanationStyle": "drawn-over-footage animation (hand-drawn-style strokes, pictograms, counters on the recording) plus research-black evidence cards",
       "memeSeconds": 0,
       "preserveExplanationTime": true,
       "exampleExpansion": {
@@ -172,11 +169,17 @@
       "captionSafeAreaBeforeSceneBuild": true,
       "referenceAndGamePolicy": "shared/publishing/game-example-coverage-policy.json",
       "additionalGamesDefault": 0,
-      "referenceStructurePreservedWithDetailedPptInsertions": true
+      "referenceStructurePreservedWithDetailedPptInsertions": true,
+      "ratioException": {
+        "policyId": "reality-check-no-ratio-v1",
+        "userEvidence": "1. 제목 2026년 스팀 넥스트 페스티벌 8000개 , 2023 스팀 넥스트 페스티벌 1000개, 3년동안 AI 가 바꾼 많은 것들, 하지만 오히려 좋은 게임 찾기는 오히려 하늘에 별따기가 됐을까? 2. 이런 실제파악영상은 설명 비율6:4 안맞춰도 돼 영상 만들고 영상위에 그림 애니메이션 그려서 설명해줘도 좋아 이렇게 수정해서 다시",
+        "recordedAt": "2026-10-20T20:30:00+09:00",
+        "scope": "this video; future explicitly selected reality-check videos"
+      }
     },
     "titles": {
-      "ko": "스팀 데모 8,000개, 좋은 게임 찾기가 왜 복권이 됐을까?",
-      "en": "8,000 Steam Demos: Why Finding a Good One Feels Like a Lottery"
+      "ko": "AI로 데모는 8배 늘었는데, 왜 유저는 더 좋은 게임을 더 싸게 받지 못할까?",
+      "en": "AI Made Eight Times the Demos — So Why Don't Players Get Better Games for Less?"
     },
     "video": {
       "width": 1920,
@@ -185,8 +188,8 @@
       "durationSeconds": null
     },
     "engines": [
-      "motion-canvas",
-      "manim"
+      "browser-recording",
+      "motion-canvas-overlays"
     ],
     "tts": {
       "engine": "qwen3-tts",
@@ -197,12 +200,15 @@
       "outputDir": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1",
       "filenameStem": "steam-next-fest-ai-flood-qwen3-1.7b-balanced-v1",
       "renderMode": "scene",
-      "sceneGapSeconds": 0.72,
+      "sceneGapSeconds": 0.3,
       "tailRatioThreshold": 0.07,
       "tailDecayMsThreshold": 70,
       "maxRenderAttempts": 3,
-      "maxNewTokens": 1024,
-      "edgeFadeSeconds": 0.006
+      "maxNewTokens": 2048,
+      "edgeFadeSeconds": 0.006,
+      "status": "waiting-for-free-gpu-boundary",
+      "gpuMinimumFreeMiB": 8192,
+      "gpuProfileReason": "Same approved 1.7B model/reference, bfloat16, scene batch 1, 8192MiB allocator cap with at least 9000MiB free (shared guard minimum). Open Unity/Unreal editors hold display memory; the batch starts automatically once the user frees the GPU. No foreign process termination, no CPU fallback."
     },
     "audio": {
       "mixStatus": "waiting-for-music-approval",
@@ -265,10 +271,18 @@
       "motionCanvasProject": "motion-canvas/src/projects/steam-next-fest-ai-flood/project.ts",
       "manimProject": "manim/projects/steam-next-fest-ai-flood/scene.py",
       "narration": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1/steam-next-fest-ai-flood-qwen3-1.7b-balanced-v1.wav",
-      "captionsKo": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1/steam-next-fest-ai-flood-qwen3-1.7b-balanced-v1.srt",
-      "captionsEn": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1/steam-next-fest-ai-flood-qwen3-1.7b-balanced-v1.en.srt",
-      "videoClean": "shared/output/motion-canvas/steam-next-fest-ai-flood.mp4",
-      "videoBurnedCaptions": "shared/output/motion-canvas/steam-next-fest-ai-flood-subtitled.mp4"
+      "captionsKo": "projects/steam-next-fest-ai-flood/production/local/edit/captions.ko.srt",
+      "captionsEn": "projects/steam-next-fest-ai-flood/production/local/edit/captions.en.srt",
+      "videoClean": "projects/steam-next-fest-ai-flood/production/local/edit/steam-next-fest-clean.mp4",
+      "videoBurnedCaptions": "projects/steam-next-fest-ai-flood/production/local/edit/steam-next-fest-captioned.mp4",
+      "scriptEn": "projects/steam-next-fest-ai-flood/script/narration.en.json",
+      "sceneProductionPlan": "projects/steam-next-fest-ai-flood/planning/production-plan.json",
+      "recordings": "projects/steam-next-fest-ai-flood/sources/recordings.json",
+      "captionsKoAss": "projects/steam-next-fest-ai-flood/production/local/edit/captions.ko.ass",
+      "editPlan": "projects/steam-next-fest-ai-flood/production/local/edit/edit-plan.json",
+      "qa": "projects/steam-next-fest-ai-flood/production/local/edit/qa",
+      "bodyCaptionsKo": "projects/steam-next-fest-ai-flood/production/local/edit/body.ko.srt",
+      "bodyCaptionsEn": "projects/steam-next-fest-ai-flood/production/local/edit/body.en.srt"
     },
     "publishing": {
       "coachingEndingLinkRequired": true,
@@ -293,112 +307,585 @@
     }
   },
   "counts": {
-    "scriptScenes": 3,
-    "timelineScenes": 3,
+    "scriptScenes": 7,
+    "timelineScenes": 0,
     "clipRecords": 0,
     "selectedEditRecords": 0,
-    "referencedMediaFiles": 9,
+    "referencedMediaFiles": 48,
     "formerlyTrackedMediaFiles": 0
   },
   "sceneScript": {
     "file": "projects/steam-next-fest-ai-flood/script/narration.ko.json",
     "data": {
-      "title": "스팀 데모 8,000개, 좋은 게임 찾기가 왜 복권이 됐을까?",
+      "schemaVersion": 1,
+      "slug": "steam-next-fest-ai-flood",
+      "title": "AI로 데모는 8배 늘었는데, 왜 유저는 더 좋은 게임을 더 싸게 받지 못할까?",
+      "language": "ko",
+      "revision": 4,
+      "status": "draft-for-user-script-review",
+      "sourceTextProvidedByUser": false,
+      "userRequest": "2026-10-20 v4: 유저는 저품질 게임을 받는데 가격은 내려가지 않았고, 아이디어 중심 인디 시장은 AI 복제 때문에 난항·수익 악화 → AI 사용의 품질 저하와 가격 대비 품질 부담이 유저에게 전가되는 그림을 추가",
+      "edits": [
+        {
+          "revision": 2,
+          "change": "제목 교체; 3년 데모 수 추이; 2023 거절→2024 표기→2026 범위 연표; 별 따기 비유."
+        },
+        {
+          "revision": 3,
+          "change": "중심을 ‘AI 게임 개발의 미래’로 이동; 도구 vs 결과물; 만드는 쪽/고르는 쪽/리스크·공정/준비."
+        },
+        {
+          "revision": 4,
+          "change": "S05를 ‘유저가 받는 것’(품질·필터·가격·예산)으로 확장, S06을 ‘인디 시장과 복제’(Needle In A Haystack 복제 14+, Peak, 로블록스 24시간, 게임메카 보도, 2025 출시 2만 개 중 3%만 리뷰 1,000, Piscatella)로 신설, S07 마무리에 ‘비용이 유저와 인디에 전가’ 결론과 세 번째 준비(아이디어 대신 실행·사람을 해자로) 반영."
+        }
+      ],
       "scenes": [
         {
           "id": "01",
-          "title": "도입",
+          "title": "개론 — 미래가 먼저 도착한 화면",
           "lines": [
-            "시청자가 바로 이해할 수 있는 문제나 질문으로 시작합니다.",
-            "이번 영상에서 무엇을 알아볼지 짧게 안내합니다."
+            "안녕하세요, 얌얌코딩입니다.",
+            "지금 보시는 화면은 오늘 스팀에서 열리고 있는 넥스트 페스트의 첫 페이지입니다. 흐릿한 칸은 전부, 생성형 AI를 썼다고 적어 둔 데모예요. 3년 전 이 행사의 데모는 천 개 남짓이었고, 지금은 8천 개가 넘습니다.",
+            "저는 이 화면이 AI 게임 개발의 미래가 가장 먼저 도착한 곳이라고 생각해요.",
+            "오늘은 넥스트 페스트에서 벌어진 일을 짧게 확인한 다음, 그 숫자가 게임을 만드는 쪽을 어떻게 바꿨는지, 유저에게는 실제로 무엇이 돌아왔는지, 아이디어로 승부하던 인디 시장에는 무슨 일이 생겼는지, 그리고 앞으로 3년을 준비하는 개발자가 무엇을 해야 하는지 이야기하겠습니다.",
+            "먼저, 벌어진 일부터요."
           ]
         },
         {
           "id": "02",
-          "title": "본론",
+          "title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
           "lines": [
-            "핵심 원리를 한 문장씩 나누어 설명합니다.",
-            "화면에 보여 줄 내용과 문장 순서를 맞춥니다."
+            "넥스트 페스트는 출시 전 게임의 데모를 모아 두는 행사이고, 1년에 세 번 열립니다. 2022년과 2023년에는 천 개 안팎이던 데모가 2025년 2천6백 개, 올해 6월 4천4백 개, 이번 10월에는 밸브 집계로 8천2백 개가 넘습니다. 집계마다 조금 다르지만, 3년 사이 여덟 배 가까이 늘었어요.",
+            "스팀 전체로 보면 작년 한 해에만 게임 2만 개가 출시됐고, 그중 절반은 리뷰가 10개도 안 됩니다.",
+            "그리고 이번 페스트가 열린 다음 날, 레딧에 “AI가 넥스트 페스트를 완전히 망쳤다”는 글이 올라와 추천 8천8백 개를 넘겼습니다. 괜찮은 데모 찾기가 복권 당첨보다 어렵다는 거였죠.",
+            "실제로 세어 보면 이번 페스트 데모의 36% 이상이 생성형 AI를 썼다고 적어 두었습니다. 넉 달 전에는 20% 안팎이었어요.",
+            "이 숫자들이 말하는 건 한 가지입니다. 만드는 비용은 떨어졌고, 고르는 비용은 올라갔다는 것.",
+            "그런데 ‘36%가 AI를 썼다’는 말이 정확히 무슨 뜻인지부터 짚어야 합니다."
           ]
         },
         {
           "id": "03",
-          "title": "결론",
+          "title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
           "lines": [
-            "영상의 핵심 내용을 다시 정리합니다.",
-            "시청자가 직접 생각하거나 적용해 볼 질문으로 마무리합니다."
+            "스팀의 AI 표기는 3년 동안 세 번 바뀌었습니다. 2023년 6월, 밸브는 AI 그림이 들어간 게임의 출시를 거절했습니다. 학습 자료의 권리가 불분명하다는 이유였죠.",
+            "2024년 1월, 적어 두면 올릴 수 있게 바뀝니다. 개발 중에 만든 사전 생성 콘텐츠, 영어로 Pre-Generated와, 실행 중에 만드는 실시간 생성 콘텐츠, Live-Generated를 설문에 적고, 그 내용이 상점 페이지 맨 아래 ‘AI 생성 콘텐츠 표기’ 칸에 실립니다. 영어로는 AI Generated Content Disclosure예요.",
+            "그리고 올해 초, 범위가 좁혀졌습니다. 플레이어가 보고 듣는, 게임과 함께 배포되는 콘텐츠만 적는다. 개발 도구의 효율 향상은 이 항목의 관심사가 아니다.",
+            "그러니까 코드를 짤 때 AI 도우미를 쓴 건 적지 않고, 캡슐 그림이나 배경음악을 AI로 만든 건 적습니다.",
+            "저는 이 선이 앞으로의 게임 개발을 가르는 선이라고 봐요. AI를 도구로 쓰는 것과, AI의 결과물을 화면에 내는 것은 다른 일이라는 거죠.",
+            "올해 GDC가 개발자 2천3백 명에게 물었더니, 36%가 일에 생성형 AI를 쓴다고 답했습니다. 쓰는 용도는 조사와 브레인스토밍 81%, 코드 보조 47%, 프로토타입 35%. 대부분 도구예요.",
+            "그런데 도구로 쓴 게 화면으로 새어 나옵니다. 올해 3월 출시된 한 대작은 초기 작업에서 실험적으로 만든 2D 소품 몇 개가 그대로 들어간 채 출시됐고, 플레이어가 몇 시간 만에 찾아냈습니다. 개발사는 사과하고, 모든 에셋을 감사해 교체하겠다고 했어요.",
+            "넥스트 페스트 표기 중에도 ‘임시 이미지’라고 적은 게임이 많습니다. 임시로 넣은 게 끝까지 남는 것. 이게 지금 가장 흔한 사고예요."
+          ]
+        },
+        {
+          "id": "04",
+          "title": "미래 1 — 만드는 쪽",
+          "lines": [
+            "그래서 만드는 쪽은 어떻게 바뀌고 있을까요. 세 가지가 보입니다.",
+            "첫째, 혼자서, 작은 팀이, 더 많이 만듭니다. 데모가 여덟 배, 출시가 한 해 2만 개. 한 기자가 넥스트 페스트 데모의 표기를 읽어 보니, 소규모 팀과 1인 개발자들이 ‘자원이 부족해서’를 이유로 적어 두었습니다. 만들기는 더 이상 병목이 아니에요.",
+            "둘째, 만드는 사람들의 마음은 반대로 갑니다. 같은 GDC 조사에서 생성형 AI가 업계에 나쁜 영향을 준다는 답이 52%였습니다. 2년 전 18%, 작년 30%, 올해 52%. 좋은 영향이라는 답은 7%뿐이에요. 특히 아트 64%, 디자인과 내러티브 63%가 부정적입니다. 쓰는 사람은 늘고, 좋아하는 사람은 줄어드는 거죠.",
+            "셋째, 스튜디오들이 선을 긋기 시작했습니다. 매너 로드를 낸 퍼블리셔는 올해 1월부터 계약서에 AI 에셋 금지를 넣었습니다. 이유가 정확해요. 프로토타입에 넣은 임시 자료 하나가 교체되지 않고 빌드에 남는 데는, 한 번이면 충분하다는 겁니다.",
+            "워프레임 개발사는 “우리 게임에 AI 생성물은 절대 없다”고 못 박았고, 올해 7월 기준으로 생성형 AI를 쓰지 않는다고 공개 선언한 스튜디오 59곳을 정리한 목록도 있습니다.",
+            "즉 앞으로 3년, 경쟁은 ‘만들 수 있느냐’가 아니라 ‘무엇을 사람이 만들었다고 증명할 수 있느냐’로 옮겨 갑니다."
+          ]
+        },
+        {
+          "id": "05",
+          "title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+          "lines": [
+            "그러면 유저에게는 무엇이 돌아왔을까요. 선택지는 여덟 배가 됐는데, 더 좋은 게임이 더 싸게 온 건 아닙니다.",
+            "먼저 품질이에요. 넥스트 페스트 허브는 처음 며칠은 무작위로 섞여 있고, 표기는 페이지 맨 아래에 있고, 첫인상은 작은 캡슐 그림 하나예요. 한 퍼블리셔 담당자는 AI로 만든 캡슐을 보면 바로 흥미가 식는다고 말했습니다. 한 게임 매체는 이번 페스트를 두고 ‘쓸모없는 바이브 코딩 슬롭이 한 단계 올라왔다’고 썼어요.",
+            "그래서 플레이어들이 직접 체를 만들었습니다. 영상 첫 장면의 흐린 칸이 그겁니다. ‘AI warning for Steam’이라는 공개 확장 프로그램은 맨 아래 표기를 팝업으로 띄우고, 검색 결과에서 표기가 있는 게임을 흐리거나 숨깁니다. ‘No AI’ 큐레이터도 생겼고, itch.io는 2024년 말부터 ‘AI 생성’과 ‘No AI’ 태그를 붙이게 했어요. 반대 의견도 있습니다. 에픽게임즈 대표는 이런 표기 의무가 개발자에게 주홍글씨를 붙이는 일이라고 했죠. 어느 쪽이든, 고르는 수고는 플랫폼이 아니라 유저에게 넘어왔습니다.",
+            "다음은 가격입니다. 만드는 비용이 내려갔으면 가격도 내려가야 할 것 같은데, 그렇지 않았어요. 대작은 70달러가 기본이 됐고, 작년 닌텐도는 80달러 게임을 냈습니다.",
+            "스팀 신작 상위 50개의 평균 가격은 2023년 초 21.8달러에서 2025년 가을 21.4달러. 2년 반 동안 거의 그대로예요. 중간값은 19.5달러에서 15.6달러로 내려갔는데, 이건 5달러에서 15달러짜리 싼 게임이 많이 팔려서지, 같은 게임이 싸진 게 아닙니다.",
+            "오히려 제대로 만드는 쪽의 비용은 올라갑니다. 2025년 스팀 신작에 들어간 개발비 추정치는 270억 달러로 기록을 세웠고, 인디 한 편의 평균 예산은 10만 달러로 10년 전보다 156% 늘었어요.",
+            "정리하면 유저는 더 많은 게임을, 더 많은 소음 속에서, 같은 값에 받고 있습니다. 저는 이게 AI 사용의 품질 저하와 가격 대비 품질의 부담이 유저에게 전가되는 그림이라고 봐요."
+          ]
+        },
+        {
+          "id": "06",
+          "title": "미래 3 — 인디 시장과 복제",
+          "lines": [
+            "그리고 아이디어로 승부하던 인디 시장은 더 어려워졌습니다. 이유는 복제예요.",
+            "올해 8월, 작은 스튜디오의 ‘건초 더미에서 바늘 찾기 시뮬레이터’가 SNS에서 터졌습니다. 그러자 비슷한 제목의 게임이 하룻밤 사이에 스팀에 올라오기 시작했고, 한 기자가 센 복제작만 열네 개가 넘어요.",
+            "그 복제작끼리도 서로 베꼈습니다. 한 팀은 다른 팀의 게임에서 자기 클래스 열세 개가 이름까지 똑같이 들어 있고, 존재하지도 않는 셰이더를 가리키는 오류 메시지가 글자 그대로 복사돼 있었다고 밝혔어요. 기자는 이걸 AI로 코드를 풀어내서 베낀 흔적이라고 봤습니다.",
+            "협동 등반 게임 ‘피크’는 입소문이 난 지 몇 주 만에 거의 똑같은 모작이 콘솔 상점에 올라왔고, 로블록스에서는 한 제작자가 영상 하나를 보고 24시간 만에 다른 게임을 복제한 뒤 ‘AI가 다 했고 나는 앉아서 봤다’고 말했습니다.",
+            "한국 매체도 이번 주에 같은 이야기를 다뤘어요. 한 일본 개발사는 ‘AI로 네 게임을 복제했다’는 협박 메일을 받았고, 증거는 없었지만, 다른 개발사는 복제를 피하려고 개발 소식 공개를 줄였습니다. 이번 페스트 사흘 전에 공개 데모를 취소하고 추첨 비공개 테스트로 바꾼 개발사가 든 이유도 정확히 이거였죠. 게임 화면이 퍼지면 AI로 흉내 낸 작품이 출시 전에 먼저 나올 수 있다는 것.",
+            "숫자로 보면 인디의 수익은 이미 좁은 문이었습니다. 2025년 스팀에 나온 2만 개 게임 중 리뷰 천 개를 넘긴 건 608개, 3%예요. 절반은 리뷰가 10개도 안 됩니다. 그 문 앞에 복제작이 먼저 줄을 서면, 원작이 팔 수 있는 시간은 더 짧아집니다.",
+            "한 시장 분석가는 이렇게 썼어요. “좋은 게임은 복제되어 묻힐 것이고, 플레이어는 아는 프랜차이즈로 돌아갈 것이다.”",
+            "아이디어를 보여 주는 순간 베껴지니까 인디는 아이디어를 숨겨야 하고, 숨기면 알릴 수 없고, 알리지 못하면 팔리지 않는 거예요. 앞으로 3년, 아이디어는 더 이상 혼자서는 해자가 아닙니다.",
+            "그래서 스튜디오 안에서는 두 가지 공정이 생깁니다. 출시 전에 모든 에셋을 사람이 다시 확인하고 어디에 AI를 썼는지 기록하는 일, 그리고 무엇을 언제 공개할지 정하는 일."
+          ]
+        },
+        {
+          "id": "07",
+          "title": "마무리 — 전가된 비용과 넓어진 하늘",
+          "lines": [
+            "정리하면, 3년 동안 AI는 게임을 ‘만드는’ 벽을 거의 없앴습니다.",
+            "그 대신 유저는 더 많은 게임을 같은 값에, 더 많은 소음 속에서 받게 됐고, 인디는 아이디어를 숨겨야 하는 시장에서 더 좁은 문을 지나게 됐어요. 만든 쪽이 아낀 비용이 고르는 유저와 작은 개발사에게 전가되는 그림입니다.",
+            "데모 천 개가 8천 개가 된 하늘에서 별이 되려면 세 가지가 필요해요.",
+            "첫째, AI를 도구로 쓰되 화면에 나오는 건 사람이 책임지고, 표기는 정직하게. 임시로 넣은 건 끝까지 추적하기.",
+            "둘째, 캡슐과 아트, 첫 10초처럼 사람 손이 보이는 데 시간을 쓰기.",
+            "셋째, 아이디어가 아니라 실행과 사람을 해자로 삼기. 커뮤니티, 업데이트 속도, ‘이 사람들이 만든 게임’이라는 신뢰는 하루 만에 복제되지 않으니까요.",
+            "하늘이 여덟 배 넓어진 건 되돌릴 수 없어요. 별을 고르는 체는 플레이어가 이미 만들고 있고, 다음 3년은 그 체를 통과하는 게임을 만드는 시간입니다."
           ]
         }
       ]
     }
   },
   "editRecords": [],
-  "sceneLayout": [
-    {
-      "id": "01",
-      "startSeconds": 0,
-      "durationSeconds": 27.5,
-      "title": "도입"
-    },
-    {
-      "id": "02",
-      "startSeconds": 27.5,
-      "durationSeconds": 27.5,
-      "title": "본론"
-    },
-    {
-      "id": "03",
-      "startSeconds": 55,
-      "durationSeconds": 27.5,
-      "title": "결론"
-    }
-  ],
+  "sceneLayout": [],
   "clipRecords": [],
-  "literalSettings": [
-    {
-      "file": "motion-canvas/src/projects/steam-next-fest-ai-flood/timing.ts",
-      "sha256": "20c67a71b30ec3201f67c5eb23e22478f1cdebc42287a2f272eb09493b14eccd",
-      "data": {
-        "NARRATION_FPS": 60,
-        "TOTAL_DURATION": 82.5,
-        "SCENE_STARTS": [
-          0,
-          27.5,
-          55
-        ],
-        "SCENE_DURATIONS": [
-          27.5,
-          27.5,
-          27.5
-        ],
-        "SCENE_TITLES": [
-          "도입",
-          "본론",
-          "결론"
-        ],
-        "TOTAL_FRAMES": 4950
-      }
-    }
-  ],
+  "literalSettings": [],
   "structuredRecords": [
     {
+      "file": "motion-canvas/src/projects/steam-next-fest-ai-flood/timing.json",
+      "sha256": "b9d4cb8b8e457d87c61d13396f35ad850cb3b7ae146e1a72322c184e6565d270",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "fps": 60,
+        "bodyStartFrame": 120,
+        "bodyFrames": 33958,
+        "segments": [
+          {
+            "id": "01-1",
+            "scene": "01",
+            "paragraph": 1,
+            "startFrame": 120,
+            "frames": 128,
+            "text": "안녕하세요, 얌얌코딩입니다."
+          },
+          {
+            "id": "01-2",
+            "scene": "01",
+            "paragraph": 2,
+            "startFrame": 248,
+            "frames": 831,
+            "text": "지금 보시는 화면은 오늘 스팀에서 열리고 있는 넥스트 페스트의 첫 페이지입니다. 흐릿한 칸은 전부, 생성형 AI를 썼다고 적어 둔 데모예요. 3년 전 이 행사의 데모는 천 개 남짓이었고, 지금은 8천 개가 넘습니다."
+          },
+          {
+            "id": "01-3",
+            "scene": "01",
+            "paragraph": 3,
+            "startFrame": 1079,
+            "frames": 283,
+            "text": "저는 이 화면이 AI 게임 개발의 미래가 가장 먼저 도착한 곳이라고 생각해요."
+          },
+          {
+            "id": "01-4",
+            "scene": "01",
+            "paragraph": 4,
+            "startFrame": 1362,
+            "frames": 1001,
+            "text": "오늘은 넥스트 페스트에서 벌어진 일을 짧게 확인한 다음, 그 숫자가 게임을 만드는 쪽을 어떻게 바꿨는지, 유저에게는 실제로 무엇이 돌아왔는지, 아이디어로 승부하던 인디 시장에는 무슨 일이 생겼는지, 그리고 앞으로 3년을 준비하는 개발자가 무엇을 해야 하는지 이야기하겠습니다."
+          },
+          {
+            "id": "01-5",
+            "scene": "01",
+            "paragraph": 5,
+            "startFrame": 2363,
+            "frames": 132,
+            "text": "먼저, 벌어진 일부터요."
+          },
+          {
+            "id": "02-1",
+            "scene": "02",
+            "paragraph": 1,
+            "startFrame": 2495,
+            "frames": 1247,
+            "text": "넥스트 페스트는 출시 전 게임의 데모를 모아 두는 행사이고, 1년에 세 번 열립니다. 2022년과 2023년에는 천 개 안팎이던 데모가 2025년 2천6백 개, 올해 6월 4천4백 개, 이번 10월에는 밸브 집계로 8천2백 개가 넘습니다. 집계마다 조금 다르지만, 3년 사이 여덟 배 가까이 늘었어요."
+          },
+          {
+            "id": "02-2",
+            "scene": "02",
+            "paragraph": 2,
+            "startFrame": 3742,
+            "frames": 380,
+            "text": "스팀 전체로 보면 작년 한 해에만 게임 2만 개가 출시됐고, 그중 절반은 리뷰가 10개도 안 됩니다."
+          },
+          {
+            "id": "02-3",
+            "scene": "02",
+            "paragraph": 3,
+            "startFrame": 4122,
+            "frames": 790,
+            "text": "그리고 이번 페스트가 열린 다음 날, 레딧에 “AI가 넥스트 페스트를 완전히 망쳤다”는 글이 올라와 추천 8천8백 개를 넘겼습니다. 괜찮은 데모 찾기가 복권 당첨보다 어렵다는 거였죠."
+          },
+          {
+            "id": "02-4",
+            "scene": "02",
+            "paragraph": 4,
+            "startFrame": 4912,
+            "frames": 522,
+            "text": "실제로 세어 보면 이번 페스트 데모의 36% 이상이 생성형 AI를 썼다고 적어 두었습니다. 넉 달 전에는 20% 안팎이었어요."
+          },
+          {
+            "id": "02-5",
+            "scene": "02",
+            "paragraph": 5,
+            "startFrame": 5434,
+            "frames": 336,
+            "text": "이 숫자들이 말하는 건 한 가지입니다. 만드는 비용은 떨어졌고, 고르는 비용은 올라갔다는 것."
+          },
+          {
+            "id": "02-6",
+            "scene": "02",
+            "paragraph": 6,
+            "startFrame": 5770,
+            "frames": 333,
+            "text": "그런데 ‘36%가 AI를 썼다’는 말이 정확히 무슨 뜻인지부터 짚어야 합니다."
+          },
+          {
+            "id": "03-1",
+            "scene": "03",
+            "paragraph": 1,
+            "startFrame": 6103,
+            "frames": 762,
+            "text": "스팀의 AI 표기는 3년 동안 세 번 바뀌었습니다. 2023년 6월, 밸브는 AI 그림이 들어간 게임의 출시를 거절했습니다. 학습 자료의 권리가 불분명하다는 이유였죠."
+          },
+          {
+            "id": "03-2",
+            "scene": "03",
+            "paragraph": 2,
+            "startFrame": 6865,
+            "frames": 1405,
+            "text": "2024년 1월, 적어 두면 올릴 수 있게 바뀝니다. 개발 중에 만든 사전 생성 콘텐츠, 영어로 Pre-Generated와, 실행 중에 만드는 실시간 생성 콘텐츠, Live-Generated를 설문에 적고, 그 내용이 상점 페이지 맨 아래 ‘AI 생성 콘텐츠 표기’ 칸에 실립니다. 영어로는 AI Generated Content Disclosure예요."
+          },
+          {
+            "id": "03-3",
+            "scene": "03",
+            "paragraph": 3,
+            "startFrame": 8270,
+            "frames": 713,
+            "text": "그리고 올해 초, 범위가 좁혀졌습니다. 플레이어가 보고 듣는, 게임과 함께 배포되는 콘텐츠만 적는다. 개발 도구의 효율 향상은 이 항목의 관심사가 아니다."
+          },
+          {
+            "id": "03-4",
+            "scene": "03",
+            "paragraph": 4,
+            "startFrame": 8983,
+            "frames": 396,
+            "text": "그러니까 코드를 짤 때 AI 도우미를 쓴 건 적지 않고, 캡슐 그림이나 배경음악을 AI로 만든 건 적습니다."
+          },
+          {
+            "id": "03-5",
+            "scene": "03",
+            "paragraph": 5,
+            "startFrame": 9379,
+            "frames": 603,
+            "text": "저는 이 선이 앞으로의 게임 개발을 가르는 선이라고 봐요. AI를 도구로 쓰는 것과, AI의 결과물을 화면에 내는 것은 다른 일이라는 거죠."
+          },
+          {
+            "id": "03-6",
+            "scene": "03",
+            "paragraph": 6,
+            "startFrame": 9982,
+            "frames": 854,
+            "text": "올해 GDC가 개발자 2천3백 명에게 물었더니, 36%가 일에 생성형 AI를 쓴다고 답했습니다. 쓰는 용도는 조사와 브레인스토밍 81%, 코드 보조 47%, 프로토타입 35%. 대부분 도구예요."
+          },
+          {
+            "id": "03-7",
+            "scene": "03",
+            "paragraph": 7,
+            "startFrame": 10836,
+            "frames": 914,
+            "text": "그런데 도구로 쓴 게 화면으로 새어 나옵니다. 올해 3월 출시된 한 대작은 초기 작업에서 실험적으로 만든 2D 소품 몇 개가 그대로 들어간 채 출시됐고, 플레이어가 몇 시간 만에 찾아냈습니다. 개발사는 사과하고, 모든 에셋을 감사해 교체하겠다고 했어요."
+          },
+          {
+            "id": "03-8",
+            "scene": "03",
+            "paragraph": 8,
+            "startFrame": 11750,
+            "frames": 453,
+            "text": "넥스트 페스트 표기 중에도 ‘임시 이미지’라고 적은 게임이 많습니다. 임시로 넣은 게 끝까지 남는 것. 이게 지금 가장 흔한 사고예요."
+          },
+          {
+            "id": "04-1",
+            "scene": "04",
+            "paragraph": 1,
+            "startFrame": 12203,
+            "frames": 259,
+            "text": "그래서 만드는 쪽은 어떻게 바뀌고 있을까요. 세 가지가 보입니다."
+          },
+          {
+            "id": "04-2",
+            "scene": "04",
+            "paragraph": 2,
+            "startFrame": 12462,
+            "frames": 953,
+            "text": "첫째, 혼자서, 작은 팀이, 더 많이 만듭니다. 데모가 여덟 배, 출시가 한 해 2만 개. 한 기자가 넥스트 페스트 데모의 표기를 읽어 보니, 소규모 팀과 1인 개발자들이 ‘자원이 부족해서’를 이유로 적어 두었습니다. 만들기는 더 이상 병목이 아니에요."
+          },
+          {
+            "id": "04-3",
+            "scene": "04",
+            "paragraph": 3,
+            "startFrame": 13415,
+            "frames": 1491,
+            "text": "둘째, 만드는 사람들의 마음은 반대로 갑니다. 같은 GDC 조사에서 생성형 AI가 업계에 나쁜 영향을 준다는 답이 52%였습니다. 2년 전 18%, 작년 30%, 올해 52%. 좋은 영향이라는 답은 7%뿐이에요. 특히 아트 64%, 디자인과 내러티브 63%가 부정적입니다. 쓰는 사람은 늘고, 좋아하는 사람은 줄어드는 거죠."
+          },
+          {
+            "id": "04-4",
+            "scene": "04",
+            "paragraph": 4,
+            "startFrame": 14906,
+            "frames": 922,
+            "text": "셋째, 스튜디오들이 선을 긋기 시작했습니다. 매너 로드를 낸 퍼블리셔는 올해 1월부터 계약서에 AI 에셋 금지를 넣었습니다. 이유가 정확해요. 프로토타입에 넣은 임시 자료 하나가 교체되지 않고 빌드에 남는 데는, 한 번이면 충분하다는 겁니다."
+          },
+          {
+            "id": "04-5",
+            "scene": "04",
+            "paragraph": 5,
+            "startFrame": 15828,
+            "frames": 653,
+            "text": "워프레임 개발사는 “우리 게임에 AI 생성물은 절대 없다”고 못 박았고, 올해 7월 기준으로 생성형 AI를 쓰지 않는다고 공개 선언한 스튜디오 59곳을 정리한 목록도 있습니다."
+          },
+          {
+            "id": "04-6",
+            "scene": "04",
+            "paragraph": 6,
+            "startFrame": 16481,
+            "frames": 415,
+            "text": "즉 앞으로 3년, 경쟁은 ‘만들 수 있느냐’가 아니라 ‘무엇을 사람이 만들었다고 증명할 수 있느냐’로 옮겨 갑니다."
+          },
+          {
+            "id": "05-1",
+            "scene": "05",
+            "paragraph": 1,
+            "startFrame": 16896,
+            "frames": 413,
+            "text": "그러면 유저에게는 무엇이 돌아왔을까요. 선택지는 여덟 배가 됐는데, 더 좋은 게임이 더 싸게 온 건 아닙니다."
+          },
+          {
+            "id": "05-2",
+            "scene": "05",
+            "paragraph": 2,
+            "startFrame": 17309,
+            "frames": 1177,
+            "text": "먼저 품질이에요. 넥스트 페스트 허브는 처음 며칠은 무작위로 섞여 있고, 표기는 페이지 맨 아래에 있고, 첫인상은 작은 캡슐 그림 하나예요. 한 퍼블리셔 담당자는 AI로 만든 캡슐을 보면 바로 흥미가 식는다고 말했습니다. 한 게임 매체는 이번 페스트를 두고 ‘쓸모없는 바이브 코딩 슬롭이 한 단계 올라왔다’고 썼어요."
+          },
+          {
+            "id": "05-3",
+            "scene": "05",
+            "paragraph": 3,
+            "startFrame": 18486,
+            "frames": 1889,
+            "text": "그래서 플레이어들이 직접 체를 만들었습니다. 영상 첫 장면의 흐린 칸이 그겁니다. ‘AI warning for Steam’이라는 공개 확장 프로그램은 맨 아래 표기를 팝업으로 띄우고, 검색 결과에서 표기가 있는 게임을 흐리거나 숨깁니다. ‘No AI’ 큐레이터도 생겼고, itch.io는 2024년 말부터 ‘AI 생성’과 ‘No AI’ 태그를 붙이게 했어요. 반대 의견도 있습니다. 에픽게임즈 대표는 이런 표기 의무가 개발자에게 주홍글씨를 붙이는 일이라고 했죠. 어느 쪽이든, 고르는 수고는 플랫폼이 아니라 유저에게 넘어왔습니다."
+          },
+          {
+            "id": "05-4",
+            "scene": "05",
+            "paragraph": 4,
+            "startFrame": 20375,
+            "frames": 675,
+            "text": "다음은 가격입니다. 만드는 비용이 내려갔으면 가격도 내려가야 할 것 같은데, 그렇지 않았어요. 대작은 70달러가 기본이 됐고, 작년 닌텐도는 80달러 게임을 냈습니다."
+          },
+          {
+            "id": "05-5",
+            "scene": "05",
+            "paragraph": 5,
+            "startFrame": 21050,
+            "frames": 1170,
+            "text": "스팀 신작 상위 50개의 평균 가격은 2023년 초 21.8달러에서 2025년 가을 21.4달러. 2년 반 동안 거의 그대로예요. 중간값은 19.5달러에서 15.6달러로 내려갔는데, 이건 5달러에서 15달러짜리 싼 게임이 많이 팔려서지, 같은 게임이 싸진 게 아닙니다."
+          },
+          {
+            "id": "05-6",
+            "scene": "05",
+            "paragraph": 6,
+            "startFrame": 22220,
+            "frames": 792,
+            "text": "오히려 제대로 만드는 쪽의 비용은 올라갑니다. 2025년 스팀 신작에 들어간 개발비 추정치는 270억 달러로 기록을 세웠고, 인디 한 편의 평균 예산은 10만 달러로 10년 전보다 156% 늘었어요."
+          },
+          {
+            "id": "05-7",
+            "scene": "05",
+            "paragraph": 7,
+            "startFrame": 23012,
+            "frames": 660,
+            "text": "정리하면 유저는 더 많은 게임을, 더 많은 소음 속에서, 같은 값에 받고 있습니다. 저는 이게 AI 사용의 품질 저하와 가격 대비 품질의 부담이 유저에게 전가되는 그림이라고 봐요."
+          },
+          {
+            "id": "06-1",
+            "scene": "06",
+            "paragraph": 1,
+            "startFrame": 23672,
+            "frames": 324,
+            "text": "그리고 아이디어로 승부하던 인디 시장은 더 어려워졌습니다. 이유는 복제예요."
+          },
+          {
+            "id": "06-2",
+            "scene": "06",
+            "paragraph": 2,
+            "startFrame": 23996,
+            "frames": 798,
+            "text": "올해 8월, 작은 스튜디오의 ‘건초 더미에서 바늘 찾기 시뮬레이터’가 SNS에서 터졌습니다. 그러자 비슷한 제목의 게임이 하룻밤 사이에 스팀에 올라오기 시작했고, 한 기자가 센 복제작만 열네 개가 넘어요."
+          },
+          {
+            "id": "06-3",
+            "scene": "06",
+            "paragraph": 3,
+            "startFrame": 24794,
+            "frames": 952,
+            "text": "그 복제작끼리도 서로 베꼈습니다. 한 팀은 다른 팀의 게임에서 자기 클래스 열세 개가 이름까지 똑같이 들어 있고, 존재하지도 않는 셰이더를 가리키는 오류 메시지가 글자 그대로 복사돼 있었다고 밝혔어요. 기자는 이걸 AI로 코드를 풀어내서 베낀 흔적이라고 봤습니다."
+          },
+          {
+            "id": "06-4",
+            "scene": "06",
+            "paragraph": 4,
+            "startFrame": 25746,
+            "frames": 822,
+            "text": "협동 등반 게임 ‘피크’는 입소문이 난 지 몇 주 만에 거의 똑같은 모작이 콘솔 상점에 올라왔고, 로블록스에서는 한 제작자가 영상 하나를 보고 24시간 만에 다른 게임을 복제한 뒤 ‘AI가 다 했고 나는 앉아서 봤다’고 말했습니다."
+          },
+          {
+            "id": "06-5",
+            "scene": "06",
+            "paragraph": 5,
+            "startFrame": 26568,
+            "frames": 1380,
+            "text": "한국 매체도 이번 주에 같은 이야기를 다뤘어요. 한 일본 개발사는 ‘AI로 네 게임을 복제했다’는 협박 메일을 받았고, 증거는 없었지만, 다른 개발사는 복제를 피하려고 개발 소식 공개를 줄였습니다. 이번 페스트 사흘 전에 공개 데모를 취소하고 추첨 비공개 테스트로 바꾼 개발사가 든 이유도 정확히 이거였죠. 게임 화면이 퍼지면 AI로 흉내 낸 작품이 출시 전에 먼저 나올 수 있다는 것."
+          },
+          {
+            "id": "06-6",
+            "scene": "06",
+            "paragraph": 6,
+            "startFrame": 27948,
+            "frames": 970,
+            "text": "숫자로 보면 인디의 수익은 이미 좁은 문이었습니다. 2025년 스팀에 나온 2만 개 게임 중 리뷰 천 개를 넘긴 건 608개, 3%예요. 절반은 리뷰가 10개도 안 됩니다. 그 문 앞에 복제작이 먼저 줄을 서면, 원작이 팔 수 있는 시간은 더 짧아집니다."
+          },
+          {
+            "id": "06-7",
+            "scene": "06",
+            "paragraph": 7,
+            "startFrame": 28918,
+            "frames": 427,
+            "text": "한 시장 분석가는 이렇게 썼어요. “좋은 게임은 복제되어 묻힐 것이고, 플레이어는 아는 프랜차이즈로 돌아갈 것이다.”"
+          },
+          {
+            "id": "06-8",
+            "scene": "06",
+            "paragraph": 8,
+            "startFrame": 29345,
+            "frames": 684,
+            "text": "아이디어를 보여 주는 순간 베껴지니까 인디는 아이디어를 숨겨야 하고, 숨기면 알릴 수 없고, 알리지 못하면 팔리지 않는 거예요. 앞으로 3년, 아이디어는 더 이상 혼자서는 해자가 아닙니다."
+          },
+          {
+            "id": "06-9",
+            "scene": "06",
+            "paragraph": 9,
+            "startFrame": 30029,
+            "frames": 626,
+            "text": "그래서 스튜디오 안에서는 두 가지 공정이 생깁니다. 출시 전에 모든 에셋을 사람이 다시 확인하고 어디에 AI를 썼는지 기록하는 일, 그리고 무엇을 언제 공개할지 정하는 일."
+          },
+          {
+            "id": "07-1",
+            "scene": "07",
+            "paragraph": 1,
+            "startFrame": 30655,
+            "frames": 316,
+            "text": "정리하면, 3년 동안 AI는 게임을 ‘만드는’ 벽을 거의 없앴습니다."
+          },
+          {
+            "id": "07-2",
+            "scene": "07",
+            "paragraph": 2,
+            "startFrame": 30971,
+            "frames": 854,
+            "text": "그 대신 유저는 더 많은 게임을 같은 값에, 더 많은 소음 속에서 받게 됐고, 인디는 아이디어를 숨겨야 하는 시장에서 더 좁은 문을 지나게 됐어요. 만든 쪽이 아낀 비용이 고르는 유저와 작은 개발사에게 전가되는 그림입니다."
+          },
+          {
+            "id": "07-3",
+            "scene": "07",
+            "paragraph": 3,
+            "startFrame": 31825,
+            "frames": 277,
+            "text": "데모 천 개가 8천 개가 된 하늘에서 별이 되려면 세 가지가 필요해요."
+          },
+          {
+            "id": "07-4",
+            "scene": "07",
+            "paragraph": 4,
+            "startFrame": 32102,
+            "frames": 498,
+            "text": "첫째, AI를 도구로 쓰되 화면에 나오는 건 사람이 책임지고, 표기는 정직하게. 임시로 넣은 건 끝까지 추적하기."
+          },
+          {
+            "id": "07-5",
+            "scene": "07",
+            "paragraph": 5,
+            "startFrame": 32600,
+            "frames": 323,
+            "text": "둘째, 캡슐과 아트, 첫 10초처럼 사람 손이 보이는 데 시간을 쓰기."
+          },
+          {
+            "id": "07-6",
+            "scene": "07",
+            "paragraph": 6,
+            "startFrame": 32923,
+            "frames": 582,
+            "text": "셋째, 아이디어가 아니라 실행과 사람을 해자로 삼기. 커뮤니티, 업데이트 속도, ‘이 사람들이 만든 게임’이라는 신뢰는 하루 만에 복제되지 않으니까요."
+          },
+          {
+            "id": "07-7",
+            "scene": "07",
+            "paragraph": 7,
+            "startFrame": 33505,
+            "frames": 573,
+            "text": "하늘이 여덟 배 넓어진 건 되돌릴 수 없어요. 별을 고르는 체는 플레이어가 이미 만들고 있고, 다음 3년은 그 체를 통과하는 게임을 만드는 시간입니다."
+          }
+        ],
+        "captionZone": {
+          "centerX": 960,
+          "centerY": 970
+        }
+      }
+    },
+    {
+      "file": "projects/steam-next-fest-ai-flood/planning/duplicate-candidate.json",
+      "sha256": "7158b9b8c603a8106fb5f600949730706edb6e1e3fbd8bd66c93c60be1b29574",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "slug": "steam-next-fest-ai-flood",
+        "titleKo": "AI로 데모는 8배 늘었는데, 왜 유저는 더 좋은 게임을 더 싸게 받지 못할까?",
+        "titleEn": "AI Made Eight Times the Demos — So Why Don't Players Get Better Games for Less?",
+        "viewerQuestion": "데모가 3년 사이 1,000개→8,000개가 되는 동안 AI는 게임 개발의 무엇을 바꿨나 — 도구로 쓰는 AI와 화면에 내는 AI의 구분, 만드는 쪽의 변화, 유저가 받은 것(품질·가격), 아이디어 복제로 좁아진 인디 시장, 비용의 전가, 개발자가 준비할 것",
+        "sourceVideoId": null,
+        "topicUrl": "https://www.reddit.com/r/Steam/comments/1xa84a2/steam_next_fest_got_absolutely_ruined_by_ai/",
+        "requestedBy": "human-user",
+        "requestedAt": "2026-10-20"
+      }
+    },
+    {
       "file": "projects/steam-next-fest-ai-flood/planning/production-plan.json",
-      "sha256": "f1adfcba960eec3f7c27f1fed6e6d6788d0450a137ddcdbc28b7378ce12628d6",
+      "sha256": "6aebefd4dd623b798a24a13937da54bf295cbfb55d0c1bf5eece9c63675e46a5",
       "purpose": "supporting-record-not-necessarily-current",
       "data": {
         "schemaVersion": 1,
         "policyId": "preproduction-first-v1",
         "slug": "steam-next-fest-ai-flood",
-        "status": "draft-awaiting-user-video-selection",
+        "status": "production-recordings-overlay-ready-waiting-gpu",
         "guide": "docs/VIDEO_WORKFLOW.md",
         "outline": "projects/steam-next-fest-ai-flood/planning/outline.md",
         "scope": {
-          "viewerQuestion": null,
-          "includedTopics": [],
-          "excludedTopics": [],
-          "episodeBoundary": null,
-          "expectedDurationSeconds": null,
-          "exceptions": [],
+          "viewerQuestion": "데모가 3년 사이 1,000개→8,000개가 되는 동안 AI는 게임 개발의 무엇을 바꿨나 — 도구로 쓰는 AI와 화면에 내는 AI의 구분, 만드는 쪽의 변화, 유저가 받은 것(품질·가격), 아이디어 복제로 좁아진 인디 시장, 비용의 전가, 개발자가 준비할 것",
+          "includedTopics": [
+            "넥스트 페스트 숫자(데모 8배·표기 36%·레딧 8,800)와 스팀 출시 20,000 — 현상 한 장면",
+            "스팀 표기 3년 연표와 ‘화면에 나오는 것만’ → 도구 vs 결과물 구분; GDC 2026 사용/용도/정서; 임시 자산 사고",
+            "만드는 쪽: 1인/소규모 증가, 정서 18→30→52%, 스튜디오 금지 계약·선언 59곳",
+            "유저가 받은 것: 품질 인식(슬롭·캡슐), 플레이어 필터/큐레이터/itch 태그, Sweeney 반론; 가격 — 대작 $70/$80, 스팀 상위50 평균 $21.8→$21.4, 중간값 하락의 의미, 개발비 $27B·인디 예산 +156% → 비용 전가(우리 전망)",
+            "인디 시장과 복제: Needle In A Haystack 14+ 복제·복제작 간 코드 복사, Peak 모작, 로블록스 24시간, 게임메카 보도, 2025 출시 2만 중 3%만 리뷰 1,000, Piscatella; 비공개화와 새 공정",
+            "개발자가 준비할 세 가지(도구·책임·표기 / 사람 손 / 실행·사람을 해자로)"
+          ],
+          "excludedTopics": [
+            "AI 게임 제작 도구 소개(ai-games-showcase-2026)",
+            "개발자 실력의 가치 자체(ai-game-development-human-craft; 한 줄 연결만)",
+            "특정 게임 고발",
+            "밸브/에픽 정책의 옳고 그름 판정"
+          ],
+          "episodeBoundary": "single standalone episode; shorts cut is a separate selection",
+          "expectedDurationSeconds": 640,
+          "exceptions": [
+            "reality-check-no-ratio-v1: no 60:40 contract; measured share reported only",
+            "drawn-over-footage-explanation-v1: explanation drawn as animated illustrations over the recordings"
+          ],
           "durationPolicy": "content-led-duration-v1",
           "fixedTotalDurationSeconds": null,
           "automaticDurationBasedSplit": false
@@ -409,13 +896,21 @@
             "ko": "projects/steam-next-fest-ai-flood/script/narration.ko.json",
             "en": "projects/steam-next-fest-ai-flood/script/narration.en.json"
           },
-          "existingEvidenceReferences": [],
-          "inputHashes": {}
+          "existingEvidenceReferences": [
+            "projects/ai-games-showcase-2026/planning/outline.md (distinct: AI-made game showcase)",
+            "projects/ai-game-development-human-craft/planning/outline.md (distinct: developer craft value)"
+          ],
+          "inputHashes": {
+            "script.ko": "508abbacf6f17922f4602e3350228b856c92148604f6ed383d953fdacaf8bd1d",
+            "script.en": "34cde710e1e72cad4a9d35d0616e28c7b361de6ac48f2895ef1eb89ced94d9e7",
+            "outline": "3d1c9a71e0e85aa3fe95851682752e51cccec85a332dd04a0df801952c87521c",
+            "sources": "f107096c365dc84f7172d68cf2f11b8677a86af92d8c74c34157428d208cd85d"
+          }
         },
         "preproduction": {
           "currentDuplicateReview": {
-            "status": "pending",
-            "evidence": null
+            "status": "pass",
+            "evidence": "production/preflight/steam-next-fest-ai-flood.json — verdict distinct, 89 projects scanned, 0 exact matches; --check passed 2026-10-20. YouTube Studio not reopened; channel inventory from video-worklist ledger."
           },
           "sourcesRightsAndActualPlayback": {
             "status": "pending",
@@ -445,8 +940,8 @@
             "evidence": null
           },
           "sourceCapacityAndRatioPlan": {
-            "status": "pending",
-            "evidence": null
+            "status": "not-applicable",
+            "evidence": "reality-check-no-ratio-v1 (user 2026-10-20); measured share will be reported in the review ledger, no quota"
           },
           "voiceMusicAndGpuHandoff": {
             "status": "pending",
@@ -470,13 +965,13 @@
             "evidence": null
           },
           "referenceStructureAndDetailedPptInsertions": {
-            "status": "pending",
-            "evidence": null,
+            "status": "not-applicable",
+            "evidence": "No Sakurai reference and no user-supplied article; backbone is Valve primary sources (see sources/SOURCES.md P1–P4).",
             "required": "Selected article full learning logic/order with paragraph→script→screen mapping, useful examples/reasons/recap, supported corrections and justified noninstructional omissions. See articleFaithfulTeaching."
           },
           "originalGamesAndModernEquivalentVersions": {
-            "status": "pending",
-            "evidence": null
+            "status": "not-applicable",
+            "evidence": "Industry-status topic; the 'games' are Next Fest demos themselves. concept-matched-genre-variety-v1 / Nintendo one-third do not apply (recorded in outline)."
           },
           "independentGameplaySourceSeparation": {
             "status": "pending",
@@ -503,10 +998,34 @@
         },
         "approvals": {
           "videoSelection": {
-            "status": "pending",
-            "userMessage": null,
-            "selectedAt": null,
-            "authorizedScope": []
+            "status": "user-approved-script-v4-and-title-4-production-authorized",
+            "userMessage": "https://www.reddit.com/r/Steam/comments/1xa84a2/steam_next_fest_got_absolutely_ruined_by_ai/ 그럼 새로 바뀐걸로 영상한번 만들어보자 위내용 대본 한번 만들어줘",
+            "selectedAt": "2026-10-20T22:10:00+09:00",
+            "authorizedScope": [
+              "planning",
+              "independent-recording",
+              "script-and-cards",
+              "tts",
+              "edit",
+              "internal-qa",
+              "four-outputs",
+              "local-final-review-delivery",
+              "selective-git"
+            ],
+            "note": "User asked for the script first; TTS/render/upload not started. Shared control/worklist files not modified because another session has them staged for M04; selection recorded here.",
+            "userMessages": [
+              "https://www.reddit.com/r/Steam/comments/1xa84a2/steam_next_fest_got_absolutely_ruined_by_ai/ 그럼 새로 바뀐걸로 영상한번 만들어보자 위내용 대본 한번 만들어줘",
+              "1. 제목 2026년 스팀 넥스트 페스티벌 8000개 , 2023 스팀 넥스트 페스티벌 1000개, 3년동안 AI 가 바꾼 많은 것들, 하지만 오히려 좋은 게임 찾기는 오히려 하늘에 별따기가 됐을까? 2. 이런 실제파악영상은 설명 비율6:4 안맞춰도 돼 영상 만들고 영상위에 그림 애니메이션 그려서 설명해줘도 좋아 이렇게 수정해서 다시",
+              "너무 스템 넥스트페스티벌 위주이ㅡ 대본이네 우리는 여기서 AI 게임개발의 미래에 대해서 논하고싶은거야",
+              "유저는 오히려 저품질의 게임을 제공받게 되었고 게임가격은 하락하지 않았어 / 아이디어가 중요한 인디개발시장은 난황을 겪고 있어 / 어떤 게임이 개발되어도 쉽게 아이디어를 카피해서 금방 비슷한 게임이 나와버리기 때문에 / 인디개발을 하는 게임사들도 더 수익내기가 힘들어졌고 / 결국 AI 사용의 품질저하와 가격대비 퀄리티는 유저에게 전가되는듯하는 그림이 그려지고 있어 — 이내용도 적절하게 추가해줘",
+              "④로 바꾸고 영상 제작 진행해줘"
+            ],
+            "notAuthorized": [
+              "youtube-upload-before-user-review",
+              "public",
+              "schedule",
+              "next-video"
+            ]
           },
           "finalUserReview": {
             "status": "pending-final-local-version",
@@ -521,14 +1040,14 @@
           }
         },
         "reviewLedger": "projects/steam-next-fest-ai-flood/production/review-ledger.json",
-        "nextAction": "Complete the selected video through internal QA and four outputs; deliver local output-folder and complete captioned-master links, then wait for review of that exact version before YouTube. Drive only on explicit request.",
+        "nextAction": "When the GPU frees: render-voice.py → review-voice.py (ASR+align) → prepare-edit.py → render-overlay.cjs (full) → render-edit.py cuts/overlay → build-audio.py → render-edit.py pair → verify-output.py → collect; then local review links.",
         "automaticNextVideo": false,
         "referencePolicy": "shared/publishing/game-example-coverage-policy.json",
         "referenceAlignment": {
-          "sourceUrl": null,
-          "fullNarrationAndRelevantVisualsReviewed": false,
+          "sourceUrl": "https://store.steampowered.com/news/group/4145017/view/3862463747997849618",
+          "fullNarrationAndRelevantVisualsReviewed": true,
           "sourceTextProvidedByUser": false,
-          "noCorrespondingReferenceReason": null,
+          "noCorrespondingReferenceReason": "Industry-status topic from a user-supplied Reddit thread; primary sources are Valve's 2024-01-10 announcement, the Steamworks Content Survey page, the live Next Fest hub text and the AI warning for Steam README.",
           "sectionMapping": [],
           "gameVersionMapping": [],
           "additionalGamesDefault": 0,
@@ -552,7 +1071,9 @@
             "not-extracted-from-reference-or-narrated-presentation"
           ],
           "referenceMediaAllowedInFinal": false,
-          "referenceRole": "research-reference-only"
+          "referenceRole": "research-reference-only",
+          "userSuppliedTopicUrl": "https://www.reddit.com/r/Steam/comments/1xa84a2/steam_next_fest_got_absolutely_ruined_by_ai/",
+          "topicUrlAccess": "blocked for fetch and built-in browser on 2026-10-20; post title/author/upvotes/quotes taken from secondary coverage (SOURCES.md R1)"
         },
         "executionPolicy": {
           "id": "one-video-local-review-before-youtube-v1",
@@ -622,7 +1143,20 @@
             "sceneSaveStatus"
           ],
           "selectionOwner": "agent-per-explanation-within-user-selected-video",
-          "sceneSelections": [],
+          "sceneSelections": [
+            {
+              "scenes": "02b 03a 03b 03d 04a 04b 06b 06c 07a",
+              "renderer": "Motion Canvas",
+              "rendererReason": "quote/number/timeline/flow/comparison-grid evidence cards and compositing over dimmed recordings (technical-explainer-grammar-v1 §5)",
+              "implementationKind": "conceptual-illustration (cards) with primary-source text"
+            },
+            {
+              "scenes": "01a 01b 02a 02c 03c 04c 04d 05a 05b 05c 06a 07b",
+              "renderer": "browser screen recording + Motion Canvas annotations",
+              "rendererReason": "actual Steam hub / store page / SteamDB / extension behaviour recorded on our account; hollow-shape annotations and measured chips",
+              "implementationKind": "actual-recording; our 16-tile count labelled 우리 측정"
+            }
+          ],
           "selectionFields": [
             "renderer",
             "rendererReason",
@@ -695,7 +1229,8 @@
             "plannedSceneIsNotSavedEvidence": true,
             "narrativeContinuityAcrossSceneFiles": true,
             "guide": "docs/VIDEO_VISUAL_STYLE.md"
-          }
+          },
+          "unityNotUsedReason": "No self-authored game demonstration or 3D principle; Unreal not applicable."
         },
         "narrativeContinuity": {
           "policyId": "chapter-continuity-v1",
@@ -774,7 +1309,43 @@
           "learningStepsPerScene": true,
           "prerequisitesBeforeUse": true,
           "workedExampleBeforeGeneralFormula": true,
-          "terminology": [],
+          "terminology": [
+            {
+              "term": "생성형 AI",
+              "en": "Generative AI",
+              "firstScene": "01"
+            },
+            {
+              "term": "사전 생성 / 실시간 생성",
+              "en": "Pre-Generated / Live-Generated",
+              "firstScene": "03"
+            },
+            {
+              "term": "AI 생성 콘텐츠 표기",
+              "en": "AI Generated Content Disclosure",
+              "firstScene": "03"
+            },
+            {
+              "term": "플레이스홀더(임시 자산)",
+              "en": "Placeholder",
+              "firstScene": "03"
+            },
+            {
+              "term": "캡슐 아트",
+              "en": "Capsule art",
+              "firstScene": "05"
+            },
+            {
+              "term": "브라우저 확장 / 큐레이터",
+              "en": "Browser extension / Steam Curator",
+              "firstScene": "05"
+            },
+            {
+              "term": "출처 기록",
+              "en": "Provenance record",
+              "firstScene": "06"
+            }
+          ],
           "termsCanonicalAcrossNarrationCaptionsUi": true,
           "understandingOverBrevity": true,
           "review": "pending"
@@ -820,39 +1391,1759 @@
           "timingStatus": "planned-not-realized",
           "paceListeningReview": "pending",
           "addsApprovalGate": false
+        },
+        "screenGrammar": {
+          "policies": [
+            "technical-explainer-grammar-v1",
+            "game-content-explainer-grammar-v1",
+            "caption-clause-keyword-v1",
+            "drawn-over-footage-explanation-v1",
+            "reality-check-no-ratio-v1"
+          ],
+          "termChip": "top-left (96,64)",
+          "pictureLabel": "top-right (1824,64)",
+          "contentBeats": [
+            "phenomenon",
+            "reveal",
+            "principle",
+            "confirm",
+            "naming",
+            "variant",
+            "depth",
+            "closing"
+          ],
+          "diagramStage": "none (cards over dimmed recordings); no Unity stage needed",
+          "catReactions": [
+            "02b 의아함",
+            "04b 놀람",
+            "07a 깨달음"
+          ],
+          "drawnOverlays": "see outline.md scene table drawnOverlay column"
+        },
+        "openDecisionsForUser": [
+          "Script v4 review (user-cost and indie-cloning chapters added) and title: keep ① or switch to ④ ‘AI로 데모는 8배 늘었는데, 왜 유저는 더 좋은 게임을 더 싸게 받지 못할까?’",
+          "Quote verification before TTS: Pocketpair (X), Sweeney (PC Gamer interview), 2022–2024 demo counts (GameDiscoverCo issues), indie budget estimate (HushCrasher method)",
+          "Shared video-production-control/worklist entries deferred (another session's staging)"
+        ],
+        "observationVsOpinion": {
+          "observationCards": "source line at bottom",
+          "opinionCards": "우리 전망 badge; scenes 04d 05g 06h 07",
+          "noFabricatedMeasurements": true,
+          "userThesisAdopted": "quality down / price not down / indie ideas cloned / revenue harder / cost passed to users — stated as our view, each paired with the nearest evidence card (R22–R29)"
+        },
+        "titleDecision": {
+          "chosen": "AI로 데모는 8배 늘었는데, 왜 유저는 더 좋은 게임을 더 싸게 받지 못할까?",
+          "candidate": "④",
+          "userMessage": "④로 바꾸고 영상 제작 진행해줘",
+          "at": "2026-10-20T22:10:00+09:00"
         }
       }
     },
     {
-      "file": "projects/steam-next-fest-ai-flood/script/narration.ko.json",
-      "sha256": "ae901c3e063c288ed555855532ca8db534727cd4377451168df76059e47a2632",
+      "file": "projects/steam-next-fest-ai-flood/production/delivery-output.json",
+      "sha256": "55909843f416b588796cdb11c816024aa913334ddd68d0dfbf2492e70b3eacda",
       "purpose": "supporting-record-not-necessarily-current",
       "data": {
-        "title": "스팀 데모 8,000개, 좋은 게임 찾기가 왜 복권이 됐을까?",
+        "slug": "steam-next-fest-ai-flood",
+        "createdAt": "2026-10-20T15:58:24.043Z",
+        "directory": "output/steam-next-fest-ai-flood",
+        "previousDeliveryDirectory": null,
+        "planningDirectoryPreserved": false,
+        "publishReady": false,
+        "notices": [
+          "최신 완성 파일 모음입니다. 게시 승인 완료 상태는 아니며 최종 청취·잔여 검수를 확인하세요."
+        ],
+        "videos": [
+          {
+            "duration": 577.966667,
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1"
+          },
+          {
+            "duration": 577.966667,
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1"
+          }
+        ],
+        "cues": 130,
+        "cueCounts": {
+          "ko": 130,
+          "en": 130
+        },
+        "captionAlignment": "identical-cue-timing",
+        "files": [
+          {
+            "name": "steam-next-fest-ai-flood.captioned.mp4",
+            "source": "projects/steam-next-fest-ai-flood/production/local/edit/steam-next-fest-captioned.mp4",
+            "bytes": 115565684,
+            "sha256": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e"
+          },
+          {
+            "name": "steam-next-fest-ai-flood.clean.mp4",
+            "source": "projects/steam-next-fest-ai-flood/production/local/edit/steam-next-fest-clean.mp4",
+            "bytes": 109069206,
+            "sha256": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+          },
+          {
+            "name": "steam-next-fest-ai-flood.ko.srt",
+            "source": "projects/steam-next-fest-ai-flood/production/local/edit/captions.ko.srt",
+            "bytes": 16246,
+            "sha256": "77c34866d2fadabce5c997cf140a4071435fc610770de5400b80c60ac8a168dc"
+          },
+          {
+            "name": "steam-next-fest-ai-flood.en.srt",
+            "source": "projects/steam-next-fest-ai-flood/production/local/edit/captions.en.srt",
+            "bytes": 14641,
+            "sha256": "8fe3db95eb8c228d72bfd6f045ff8ead406de5907610ae9db8d85811584bd245"
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/steam-next-fest-ai-flood/script/narration.en.json",
+      "sha256": "eeac7b1b49f54a8495eaf715e53cb082056add7e47e781347c55e66a6c4cfe4e",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "schemaVersion": 1,
+        "slug": "steam-next-fest-ai-flood",
+        "title": "AI Made Eight Times the Demos — So Why Don't Players Get Better Games for Less?",
+        "language": "en",
+        "sourceRevision": 4,
         "scenes": [
           {
             "id": "01",
-            "title": "도입",
+            "title": "Overview — where the future arrived first",
             "lines": [
-              "시청자가 바로 이해할 수 있는 문제나 질문으로 시작합니다.",
-              "이번 영상에서 무엇을 알아볼지 짧게 안내합니다."
+              "Hello, this is Yamyam Coding.",
+              "What you are looking at is the front page of the Steam Next Fest running today. Every blurred tile is a demo whose developer wrote down that generative AI was used. Three years ago this event had a little over a thousand demos. Now it has more than eight thousand.",
+              "I think this screen is where the future of AI game development arrived first.",
+              "Today we will briefly check what happened at Next Fest, then look at how those numbers changed the people who make games, what players actually got out of it, what happened to the indie market that used to compete on ideas, and what a developer preparing for the next three years should do.",
+              "First, what happened."
             ]
           },
           {
             "id": "02",
-            "title": "본론",
+            "title": "Phenomenon — making got cheaper, choosing got expensive",
             "lines": [
-              "핵심 원리를 한 문장씩 나누어 설명합니다.",
-              "화면에 보여 줄 내용과 문장 순서를 맞춥니다."
+              "Next Fest is the event that gathers demos of unreleased games, three times a year. In 2022 and 2023 it had around a thousand demos; in 2025 about two thousand six hundred, this June about four thousand four hundred, and this October, by Valve's count, more than eight thousand two hundred. Trackers differ a little, but that is close to an eightfold rise in three years.",
+              "Across all of Steam, twenty thousand games were released last year alone, and half of them have fewer than ten reviews.",
+              "And the day after this fest opened, a Reddit post saying that AI had absolutely ruined Next Fest passed eight thousand eight hundred upvotes. Finding a decent demo, it said, was harder than winning the lottery.",
+              "Counted properly, more than 36 percent of this fest's demos disclose generative AI. Four months ago it was around 20 percent.",
+              "These numbers say one thing: making got cheaper, and choosing got expensive.",
+              "But first we need to be precise about what 36 percent used AI actually means."
             ]
           },
           {
             "id": "03",
-            "title": "결론",
+            "title": "Principle — using AI as a tool versus shipping its output",
             "lines": [
-              "영상의 핵심 내용을 다시 정리합니다.",
-              "시청자가 직접 생각하거나 적용해 볼 질문으로 마무리합니다."
+              "Steam's AI disclosure changed three times in three years. In June 2023 Valve refused to release a game containing AI art, because the rights to the training material were unclear.",
+              "In January 2024 it became allowed as long as it was written down. Content made during development, Pre-Generated, and content made while the game runs, Live-Generated, go into the survey, and that text appears at the very bottom of the store page in a box called the AI Generated Content Disclosure.",
+              "Then early this year the scope narrowed: only content that ships with the game and that players see and hear. Efficiency gains from development tools are outside the section's focus.",
+              "So using an AI assistant while writing code is not disclosed, while making the capsule art or background music with AI is.",
+              "I think this line is the line that will divide game development from here on. Using AI as a tool and putting AI's output on screen are two different things.",
+              "This year GDC asked two thousand three hundred developers, and 36 percent said they use generative AI in their work. The uses: research and brainstorming 81 percent, code assistance 47 percent, prototyping 35 percent. Mostly tools.",
+              "But what is used as a tool leaks onto the screen. A major title released this March shipped with a few 2D props made experimentally during early iteration, and players found them within hours. The developer apologized and promised to audit every asset and replace them.",
+              "Among this fest's disclosures, many games wrote placeholder images. A temporary asset that stays to the end: that is the most common accident right now."
             ]
+          },
+          {
+            "id": "04",
+            "title": "Future 1 — the makers",
+            "lines": [
+              "So how is the making side changing? Three things are visible.",
+              "First, solo developers and small teams make more. Eight times the demos, twenty thousand releases a year. A reporter who read the disclosures at Next Fest found small teams and solo developers citing limited resources as the reason. Making is no longer the bottleneck.",
+              "Second, the makers' feelings are going the other way. In the same GDC survey, 52 percent said generative AI is having a negative effect on the industry: 18 percent two years ago, 30 percent last year, 52 percent this year. Only 7 percent said positive. Visual artists at 64 percent and designers and narrative staff at 63 percent are the most negative. More people use it, fewer people like it.",
+              "Third, studios have started drawing lines. The publisher of Manor Lords has written an AI-asset ban into its contracts since January. The reason is precise: it only takes one placeholder from a prototype slipping into a build without being replaced.",
+              "The developer of Warframe stated that nothing in its games will ever be AI-generated, and as of this July there is a published list of fifty-nine studios that have declared they do not use generative AI.",
+              "So over the next three years the competition moves from whether you can make it to what you can prove a human made."
+            ]
+          },
+          {
+            "id": "05",
+            "title": "Future 2 — what players got: quality and price",
+            "lines": [
+              "So what did players get out of this? Eight times the choice, but not better games at a lower price.",
+              "Quality first. The Next Fest hub is shuffled at random for the first few days, the disclosure sits at the very bottom of the page, and the first impression is a single small capsule image. One publisher's lead said an AI-made capsule is an immediate turn-off. One games outlet wrote that this fest's worthless vibe-coded slop had leveled up.",
+              "So players built their own sieve. The blurred tiles in the opening shot are exactly that. An open-source extension called AI warning for Steam shows the bottom-of-page disclosure as a pop-up and blurs or hides disclosed games in search results. No-AI curators appeared, and itch.io has required AI-generated and No AI tags since late 2024. There is an opposing view: the head of Epic Games called this kind of disclosure a scarlet letter pinned on developers. Either way, the work of choosing has moved from the platform to the player.",
+              "Next, price. If making got cheaper, prices should have fallen. They did not. Seventy dollars became the default for big releases, and last year Nintendo shipped an eighty-dollar game.",
+              "The average price of Steam's top fifty new releases went from 21.8 dollars in early 2023 to 21.4 dollars in autumn 2025: almost flat over two and a half years. The median fell from 19.5 to 15.6 dollars, but that is because many five-to-fifteen-dollar games sold well, not because the same games got cheaper.",
+              "If anything, the cost of making games properly went up. The estimated development budget behind 2025's new Steam releases set a record at 27 billion dollars, and the average indie budget is around a hundred thousand dollars, up 156 percent in ten years.",
+              "In short, players are getting more games, in more noise, at the same price. I think this is the picture of the quality loss and the price-to-quality burden of AI use being passed on to players."
+            ]
+          },
+          {
+            "id": "06",
+            "title": "Future 3 — the indie market and cloning",
+            "lines": [
+              "And the indie market, which used to compete on ideas, got harder. The reason is cloning.",
+              "This August a small studio's Needle In A Haystack Simulator went viral on social media. Similarly titled games started appearing on Steam overnight, and one reporter counted at least fourteen clones.",
+              "The clones even copied each other. One team said it found thirteen of its classes inside another team's game with identical names, and an error message copied word for word that points to a shader which does not even exist in that game. The reporter read this as a sign of code decompiled with AI and copied.",
+              "The co-op climbing game Peak saw near-identical knockoffs appear on a console store within weeks of going viral, and on Roblox one creator cloned another game within twenty-four hours from a single video and said the AI did everything while they sat and watched.",
+              "Korean press covered the same story this week. One Japanese developer received an extortion email claiming its game had been cloned with AI, with no proof attached, and another cut back its development updates to avoid being copied. The developer that cancelled its public demo three days before this fest and switched to a closed lottery test gave exactly this reason: once gameplay spreads, AI-made imitations can ship before the real game.",
+              "In numbers, indie revenue was already a narrow door. Of the twenty thousand games released on Steam in 2025, 608, three percent, passed a thousand reviews. Half have fewer than ten. When clones line up at that door first, the time the original has to sell gets shorter.",
+              "One market analyst put it this way: good games will get cloned and buried, and players will default to the franchises they know.",
+              "Because an idea gets copied the moment you show it, indies have to hide it; if they hide it they cannot promote it; and if they cannot promote it, it does not sell. Over the next three years an idea on its own is no longer a moat.",
+              "So two processes appear inside studios: having people re-check every asset before release and record where AI was used, and deciding what to show and when."
+            ]
+          },
+          {
+            "id": "07",
+            "title": "Closing — the passed-on cost and a wider sky",
+            "lines": [
+              "To sum up: in three years AI has nearly removed the wall on the making side of games.",
+              "In exchange, players get more games at the same price in more noise, and indies pass through a narrower door in a market where ideas must be hidden. The cost the makers saved is being passed on to the players who choose and the small studios who build.",
+              "To be a star in a sky that went from a thousand demos to eight thousand, you need three things.",
+              "First, use AI as a tool, but let humans own what appears on screen and disclose honestly. Track every placeholder to the end.",
+              "Second, spend time where the human hand shows: the capsule, the art, the first ten seconds.",
+              "Third, make execution and people your moat, not the idea. Community, update speed and the trust of these people made this game cannot be cloned in a day.",
+              "An eightfold wider sky cannot be undone. Players are already building the sieve that picks the stars, and the next three years are the time to make the games that pass through it."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/steam-next-fest-ai-flood/script/narration.ko.json",
+      "sha256": "e34401b24a64824e77485f29a953818b40c3140c8c2bbf48d73499c3a0c0a63f",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "schemaVersion": 1,
+        "slug": "steam-next-fest-ai-flood",
+        "title": "AI로 데모는 8배 늘었는데, 왜 유저는 더 좋은 게임을 더 싸게 받지 못할까?",
+        "language": "ko",
+        "revision": 4,
+        "status": "draft-for-user-script-review",
+        "sourceTextProvidedByUser": false,
+        "userRequest": "2026-10-20 v4: 유저는 저품질 게임을 받는데 가격은 내려가지 않았고, 아이디어 중심 인디 시장은 AI 복제 때문에 난항·수익 악화 → AI 사용의 품질 저하와 가격 대비 품질 부담이 유저에게 전가되는 그림을 추가",
+        "edits": [
+          {
+            "revision": 2,
+            "change": "제목 교체; 3년 데모 수 추이; 2023 거절→2024 표기→2026 범위 연표; 별 따기 비유."
+          },
+          {
+            "revision": 3,
+            "change": "중심을 ‘AI 게임 개발의 미래’로 이동; 도구 vs 결과물; 만드는 쪽/고르는 쪽/리스크·공정/준비."
+          },
+          {
+            "revision": 4,
+            "change": "S05를 ‘유저가 받는 것’(품질·필터·가격·예산)으로 확장, S06을 ‘인디 시장과 복제’(Needle In A Haystack 복제 14+, Peak, 로블록스 24시간, 게임메카 보도, 2025 출시 2만 개 중 3%만 리뷰 1,000, Piscatella)로 신설, S07 마무리에 ‘비용이 유저와 인디에 전가’ 결론과 세 번째 준비(아이디어 대신 실행·사람을 해자로) 반영."
+          }
+        ],
+        "scenes": [
+          {
+            "id": "01",
+            "title": "개론 — 미래가 먼저 도착한 화면",
+            "lines": [
+              "안녕하세요, 얌얌코딩입니다.",
+              "지금 보시는 화면은 오늘 스팀에서 열리고 있는 넥스트 페스트의 첫 페이지입니다. 흐릿한 칸은 전부, 생성형 AI를 썼다고 적어 둔 데모예요. 3년 전 이 행사의 데모는 천 개 남짓이었고, 지금은 8천 개가 넘습니다.",
+              "저는 이 화면이 AI 게임 개발의 미래가 가장 먼저 도착한 곳이라고 생각해요.",
+              "오늘은 넥스트 페스트에서 벌어진 일을 짧게 확인한 다음, 그 숫자가 게임을 만드는 쪽을 어떻게 바꿨는지, 유저에게는 실제로 무엇이 돌아왔는지, 아이디어로 승부하던 인디 시장에는 무슨 일이 생겼는지, 그리고 앞으로 3년을 준비하는 개발자가 무엇을 해야 하는지 이야기하겠습니다.",
+              "먼저, 벌어진 일부터요."
+            ]
+          },
+          {
+            "id": "02",
+            "title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "lines": [
+              "넥스트 페스트는 출시 전 게임의 데모를 모아 두는 행사이고, 1년에 세 번 열립니다. 2022년과 2023년에는 천 개 안팎이던 데모가 2025년 2천6백 개, 올해 6월 4천4백 개, 이번 10월에는 밸브 집계로 8천2백 개가 넘습니다. 집계마다 조금 다르지만, 3년 사이 여덟 배 가까이 늘었어요.",
+              "스팀 전체로 보면 작년 한 해에만 게임 2만 개가 출시됐고, 그중 절반은 리뷰가 10개도 안 됩니다.",
+              "그리고 이번 페스트가 열린 다음 날, 레딧에 “AI가 넥스트 페스트를 완전히 망쳤다”는 글이 올라와 추천 8천8백 개를 넘겼습니다. 괜찮은 데모 찾기가 복권 당첨보다 어렵다는 거였죠.",
+              "실제로 세어 보면 이번 페스트 데모의 36% 이상이 생성형 AI를 썼다고 적어 두었습니다. 넉 달 전에는 20% 안팎이었어요.",
+              "이 숫자들이 말하는 건 한 가지입니다. 만드는 비용은 떨어졌고, 고르는 비용은 올라갔다는 것.",
+              "그런데 ‘36%가 AI를 썼다’는 말이 정확히 무슨 뜻인지부터 짚어야 합니다."
+            ]
+          },
+          {
+            "id": "03",
+            "title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "lines": [
+              "스팀의 AI 표기는 3년 동안 세 번 바뀌었습니다. 2023년 6월, 밸브는 AI 그림이 들어간 게임의 출시를 거절했습니다. 학습 자료의 권리가 불분명하다는 이유였죠.",
+              "2024년 1월, 적어 두면 올릴 수 있게 바뀝니다. 개발 중에 만든 사전 생성 콘텐츠, 영어로 Pre-Generated와, 실행 중에 만드는 실시간 생성 콘텐츠, Live-Generated를 설문에 적고, 그 내용이 상점 페이지 맨 아래 ‘AI 생성 콘텐츠 표기’ 칸에 실립니다. 영어로는 AI Generated Content Disclosure예요.",
+              "그리고 올해 초, 범위가 좁혀졌습니다. 플레이어가 보고 듣는, 게임과 함께 배포되는 콘텐츠만 적는다. 개발 도구의 효율 향상은 이 항목의 관심사가 아니다.",
+              "그러니까 코드를 짤 때 AI 도우미를 쓴 건 적지 않고, 캡슐 그림이나 배경음악을 AI로 만든 건 적습니다.",
+              "저는 이 선이 앞으로의 게임 개발을 가르는 선이라고 봐요. AI를 도구로 쓰는 것과, AI의 결과물을 화면에 내는 것은 다른 일이라는 거죠.",
+              "올해 GDC가 개발자 2천3백 명에게 물었더니, 36%가 일에 생성형 AI를 쓴다고 답했습니다. 쓰는 용도는 조사와 브레인스토밍 81%, 코드 보조 47%, 프로토타입 35%. 대부분 도구예요.",
+              "그런데 도구로 쓴 게 화면으로 새어 나옵니다. 올해 3월 출시된 한 대작은 초기 작업에서 실험적으로 만든 2D 소품 몇 개가 그대로 들어간 채 출시됐고, 플레이어가 몇 시간 만에 찾아냈습니다. 개발사는 사과하고, 모든 에셋을 감사해 교체하겠다고 했어요.",
+              "넥스트 페스트 표기 중에도 ‘임시 이미지’라고 적은 게임이 많습니다. 임시로 넣은 게 끝까지 남는 것. 이게 지금 가장 흔한 사고예요."
+            ]
+          },
+          {
+            "id": "04",
+            "title": "미래 1 — 만드는 쪽",
+            "lines": [
+              "그래서 만드는 쪽은 어떻게 바뀌고 있을까요. 세 가지가 보입니다.",
+              "첫째, 혼자서, 작은 팀이, 더 많이 만듭니다. 데모가 여덟 배, 출시가 한 해 2만 개. 한 기자가 넥스트 페스트 데모의 표기를 읽어 보니, 소규모 팀과 1인 개발자들이 ‘자원이 부족해서’를 이유로 적어 두었습니다. 만들기는 더 이상 병목이 아니에요.",
+              "둘째, 만드는 사람들의 마음은 반대로 갑니다. 같은 GDC 조사에서 생성형 AI가 업계에 나쁜 영향을 준다는 답이 52%였습니다. 2년 전 18%, 작년 30%, 올해 52%. 좋은 영향이라는 답은 7%뿐이에요. 특히 아트 64%, 디자인과 내러티브 63%가 부정적입니다. 쓰는 사람은 늘고, 좋아하는 사람은 줄어드는 거죠.",
+              "셋째, 스튜디오들이 선을 긋기 시작했습니다. 매너 로드를 낸 퍼블리셔는 올해 1월부터 계약서에 AI 에셋 금지를 넣었습니다. 이유가 정확해요. 프로토타입에 넣은 임시 자료 하나가 교체되지 않고 빌드에 남는 데는, 한 번이면 충분하다는 겁니다.",
+              "워프레임 개발사는 “우리 게임에 AI 생성물은 절대 없다”고 못 박았고, 올해 7월 기준으로 생성형 AI를 쓰지 않는다고 공개 선언한 스튜디오 59곳을 정리한 목록도 있습니다.",
+              "즉 앞으로 3년, 경쟁은 ‘만들 수 있느냐’가 아니라 ‘무엇을 사람이 만들었다고 증명할 수 있느냐’로 옮겨 갑니다."
+            ]
+          },
+          {
+            "id": "05",
+            "title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "lines": [
+              "그러면 유저에게는 무엇이 돌아왔을까요. 선택지는 여덟 배가 됐는데, 더 좋은 게임이 더 싸게 온 건 아닙니다.",
+              "먼저 품질이에요. 넥스트 페스트 허브는 처음 며칠은 무작위로 섞여 있고, 표기는 페이지 맨 아래에 있고, 첫인상은 작은 캡슐 그림 하나예요. 한 퍼블리셔 담당자는 AI로 만든 캡슐을 보면 바로 흥미가 식는다고 말했습니다. 한 게임 매체는 이번 페스트를 두고 ‘쓸모없는 바이브 코딩 슬롭이 한 단계 올라왔다’고 썼어요.",
+              "그래서 플레이어들이 직접 체를 만들었습니다. 영상 첫 장면의 흐린 칸이 그겁니다. ‘AI warning for Steam’이라는 공개 확장 프로그램은 맨 아래 표기를 팝업으로 띄우고, 검색 결과에서 표기가 있는 게임을 흐리거나 숨깁니다. ‘No AI’ 큐레이터도 생겼고, itch.io는 2024년 말부터 ‘AI 생성’과 ‘No AI’ 태그를 붙이게 했어요. 반대 의견도 있습니다. 에픽게임즈 대표는 이런 표기 의무가 개발자에게 주홍글씨를 붙이는 일이라고 했죠. 어느 쪽이든, 고르는 수고는 플랫폼이 아니라 유저에게 넘어왔습니다.",
+              "다음은 가격입니다. 만드는 비용이 내려갔으면 가격도 내려가야 할 것 같은데, 그렇지 않았어요. 대작은 70달러가 기본이 됐고, 작년 닌텐도는 80달러 게임을 냈습니다.",
+              "스팀 신작 상위 50개의 평균 가격은 2023년 초 21.8달러에서 2025년 가을 21.4달러. 2년 반 동안 거의 그대로예요. 중간값은 19.5달러에서 15.6달러로 내려갔는데, 이건 5달러에서 15달러짜리 싼 게임이 많이 팔려서지, 같은 게임이 싸진 게 아닙니다.",
+              "오히려 제대로 만드는 쪽의 비용은 올라갑니다. 2025년 스팀 신작에 들어간 개발비 추정치는 270억 달러로 기록을 세웠고, 인디 한 편의 평균 예산은 10만 달러로 10년 전보다 156% 늘었어요.",
+              "정리하면 유저는 더 많은 게임을, 더 많은 소음 속에서, 같은 값에 받고 있습니다. 저는 이게 AI 사용의 품질 저하와 가격 대비 품질의 부담이 유저에게 전가되는 그림이라고 봐요."
+            ]
+          },
+          {
+            "id": "06",
+            "title": "미래 3 — 인디 시장과 복제",
+            "lines": [
+              "그리고 아이디어로 승부하던 인디 시장은 더 어려워졌습니다. 이유는 복제예요.",
+              "올해 8월, 작은 스튜디오의 ‘건초 더미에서 바늘 찾기 시뮬레이터’가 SNS에서 터졌습니다. 그러자 비슷한 제목의 게임이 하룻밤 사이에 스팀에 올라오기 시작했고, 한 기자가 센 복제작만 열네 개가 넘어요.",
+              "그 복제작끼리도 서로 베꼈습니다. 한 팀은 다른 팀의 게임에서 자기 클래스 열세 개가 이름까지 똑같이 들어 있고, 존재하지도 않는 셰이더를 가리키는 오류 메시지가 글자 그대로 복사돼 있었다고 밝혔어요. 기자는 이걸 AI로 코드를 풀어내서 베낀 흔적이라고 봤습니다.",
+              "협동 등반 게임 ‘피크’는 입소문이 난 지 몇 주 만에 거의 똑같은 모작이 콘솔 상점에 올라왔고, 로블록스에서는 한 제작자가 영상 하나를 보고 24시간 만에 다른 게임을 복제한 뒤 ‘AI가 다 했고 나는 앉아서 봤다’고 말했습니다.",
+              "한국 매체도 이번 주에 같은 이야기를 다뤘어요. 한 일본 개발사는 ‘AI로 네 게임을 복제했다’는 협박 메일을 받았고, 증거는 없었지만, 다른 개발사는 복제를 피하려고 개발 소식 공개를 줄였습니다. 이번 페스트 사흘 전에 공개 데모를 취소하고 추첨 비공개 테스트로 바꾼 개발사가 든 이유도 정확히 이거였죠. 게임 화면이 퍼지면 AI로 흉내 낸 작품이 출시 전에 먼저 나올 수 있다는 것.",
+              "숫자로 보면 인디의 수익은 이미 좁은 문이었습니다. 2025년 스팀에 나온 2만 개 게임 중 리뷰 천 개를 넘긴 건 608개, 3%예요. 절반은 리뷰가 10개도 안 됩니다. 그 문 앞에 복제작이 먼저 줄을 서면, 원작이 팔 수 있는 시간은 더 짧아집니다.",
+              "한 시장 분석가는 이렇게 썼어요. “좋은 게임은 복제되어 묻힐 것이고, 플레이어는 아는 프랜차이즈로 돌아갈 것이다.”",
+              "아이디어를 보여 주는 순간 베껴지니까 인디는 아이디어를 숨겨야 하고, 숨기면 알릴 수 없고, 알리지 못하면 팔리지 않는 거예요. 앞으로 3년, 아이디어는 더 이상 혼자서는 해자가 아닙니다.",
+              "그래서 스튜디오 안에서는 두 가지 공정이 생깁니다. 출시 전에 모든 에셋을 사람이 다시 확인하고 어디에 AI를 썼는지 기록하는 일, 그리고 무엇을 언제 공개할지 정하는 일."
+            ]
+          },
+          {
+            "id": "07",
+            "title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "lines": [
+              "정리하면, 3년 동안 AI는 게임을 ‘만드는’ 벽을 거의 없앴습니다.",
+              "그 대신 유저는 더 많은 게임을 같은 값에, 더 많은 소음 속에서 받게 됐고, 인디는 아이디어를 숨겨야 하는 시장에서 더 좁은 문을 지나게 됐어요. 만든 쪽이 아낀 비용이 고르는 유저와 작은 개발사에게 전가되는 그림입니다.",
+              "데모 천 개가 8천 개가 된 하늘에서 별이 되려면 세 가지가 필요해요.",
+              "첫째, AI를 도구로 쓰되 화면에 나오는 건 사람이 책임지고, 표기는 정직하게. 임시로 넣은 건 끝까지 추적하기.",
+              "둘째, 캡슐과 아트, 첫 10초처럼 사람 손이 보이는 데 시간을 쓰기.",
+              "셋째, 아이디어가 아니라 실행과 사람을 해자로 삼기. 커뮤니티, 업데이트 속도, ‘이 사람들이 만든 게임’이라는 신뢰는 하루 만에 복제되지 않으니까요.",
+              "하늘이 여덟 배 넓어진 건 되돌릴 수 없어요. 별을 고르는 체는 플레이어가 이미 만들고 있고, 다음 3년은 그 체를 통과하는 게임을 만드는 시간입니다."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/steam-next-fest-ai-flood/sources/recordings.json",
+      "sha256": "b30f86aae360ca09af2ed77842d2eabac32d038786542247205c156dfe0e6eb1",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "updatedAt": "2026-10-20T13:36:40.351975+00:00",
+        "recorder": "projects/steam-next-fest-ai-flood/production/record-browser.cjs",
+        "extension": "AI warning for Steam 1.1.2 (seeeeew, MIT) loaded from source",
+        "recordings": {
+          "aftermath-list": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/aftermath-list.mp4",
+            "webmSha256": "83e386b6f658c81abcb21ba405aa6abbda67c83cd25cc9dbb1ce1842b034e43d",
+            "sha256": "726135acaecd190506d70298c0e973c04605aeec5d90d5c31ebbc60a4a265523",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1329,
+            "duration": 22.15,
+            "url": "https://aftermath.site/video-games-no-ai/",
+            "urlAfterLoad": "https://aftermath.site/video-games-no-ai/",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "All The Video Game Studios That Refuse To Use Generative AI",
+            "recordedAt": "2026-10-20T13:22:54.791Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "crimson-desert": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/crimson-desert.mp4",
+            "webmSha256": "54c1dcaf19146869422a33a0852e10fcf6f38ca34c5dd81013e894a57d5b1484",
+            "sha256": "7756f3bfa6a8b46ab409c42ea6995d1654e4f5ca62f57592d916ac7204afac3b",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1270,
+            "duration": 21.166667,
+            "url": "https://store.steampowered.com/search/?term=Crimson+Desert&ndl=1",
+            "urlAfterLoad": "https://store.steampowered.com/app/3321460/Crimson_Desert_Enhanced/",
+            "pickedFromSearch": "https://store.steampowered.com/app/3321460/Crimson_Desert_Enhanced/?snr=1_7_7_151_150_1",
+            "extension": true,
+            "pageTitle": "Crimson Desert Enhanced on Steam",
+            "recordedAt": "2026-10-20T13:27:23.682Z",
+            "disclosureOnPage": true,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "curator-noai": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/curator-noai.mp4",
+            "webmSha256": "b5ded29c7d57c6457c3efe64a49175b0c52848bafc8f721d9849aa04a6d24eaf",
+            "sha256": "b33587706de134d4ec675b5c7c6690d3593feeb729aa564aba2e444bbe26b704",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1057,
+            "duration": 17.616667,
+            "url": "https://store.steampowered.com/curator/45186708-No-AI/",
+            "urlAfterLoad": "https://store.steampowered.com/curator/45186708-No-AI/",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Steam Curator: No AI",
+            "recordedAt": "2026-10-20T13:23:23.542Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "gamemeca": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/gamemeca.mp4",
+            "webmSha256": "b3dbda54a374f03fd8cf51cc99aac56889d1a0e4190ee2efe889376b06e0b62d",
+            "sha256": "d28bea2514320010d9eb6e2eb9a009e3fb09569b0d920c6469ddf5424504460b",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1183,
+            "duration": 19.716667,
+            "url": "https://www.gamemeca.com/en/view.php?gid=1782071",
+            "urlAfterLoad": "https://www.gamemeca.com/en/view.php?gid=1782071",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Severe Copying of Games via AI Reverse Engineering Destroys the Development Ecosystem - Gamemeca",
+            "recordedAt": "2026-10-20T13:26:03.383Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "gdc-report": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/gdc-report.mp4",
+            "webmSha256": "d336a9cd7b71b0ceb6909754b31b2be6f3da6f73a825b8e9b185c130cadf20d8",
+            "sha256": "c4a4f278bcfe1b2bcab249b64a72dee851dcf1f602fe43ed05df6fe952f3f47f",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1380,
+            "duration": 23,
+            "url": "https://gdconf.com/article/gdc-2026-state-of-the-game-industry-reveals-impact-of-layoffs-generative-ai-and-more/",
+            "urlAfterLoad": "https://gdconf.com/article/gdc-2026-state-of-the-game-industry-reveals-impact-of-layoffs-generative-ai-and-more/",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "GDC 2026 State of the Game Industry Reveals Impact of Layoffs, Generative AI, and More",
+            "recordedAt": "2026-10-20T13:22:13.225Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "gdco-prices": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/gdco-prices.mp4",
+            "webmSha256": "d65b106b88f3d5e1a07031506f1043dd781706adcde94c47bef52171977556b1",
+            "sha256": "ec1b242714d62bd51fa54a912f6487bb89be18030a0a5bf38736e2db936ddfd8",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1001,
+            "duration": 16.683333,
+            "url": "https://newsletter.gamediscover.co/p/are-steam-game-prices-dropping-and",
+            "urlAfterLoad": "https://newsletter.gamediscover.co/p/are-steam-game-prices-dropping-and",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Are Steam game prices dropping - and should you care?",
+            "recordedAt": "2026-10-20T13:24:53.832Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "hub-16-click": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/hub-16-click.mp4",
+            "webmSha256": "9d35cda11a69e87f48a819073c00d9d5010cd0b814116440d055a65fc2a1c8f3",
+            "sha256": "3507be0fb280c5503e67169ba8243891cf5112cd890a718f0842d34ab67d8f86",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 4097,
+            "duration": 68.283333,
+            "url": "https://store.steampowered.com/sale/nextfest",
+            "urlAfterLoad": "https://store.steampowered.com/sale/nextfest",
+            "pickedFromSearch": null,
+            "extension": true,
+            "pageTitle": "RUNTIME on Steam",
+            "recordedAt": "2026-10-20T13:20:50.057Z",
+            "disclosureOnPage": false,
+            "tiles": [
+              {
+                "index": 1,
+                "url": "https://store.steampowered.com/app/4886320?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Sea Land Air: Four Nations War on Steam"
+              },
+              {
+                "index": 2,
+                "url": "https://store.steampowered.com/app/5034650?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Blockmosis on Steam"
+              },
+              {
+                "index": 3,
+                "url": "https://store.steampowered.com/app/4698410?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Heirs of the Moon on Steam"
+              },
+              {
+                "index": 4,
+                "url": "https://store.steampowered.com/app/3598180?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Midnight Souls on Steam"
+              },
+              {
+                "index": 5,
+                "url": "https://store.steampowered.com/app/4949190?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Ernie's Big Stretch on Steam"
+              },
+              {
+                "index": 6,
+                "url": "https://store.steampowered.com/app/5106740?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Between the notes on Steam"
+              },
+              {
+                "index": 7,
+                "url": "https://store.steampowered.com/app/4992220?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Colorful Boi 2 on Steam"
+              },
+              {
+                "index": 8,
+                "url": "https://store.steampowered.com/app/3736800?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": true,
+                "extensionPopup": true,
+                "title": "Dungeon Picnic on Steam"
+              },
+              {
+                "index": 9,
+                "url": "https://store.steampowered.com/app/4116640?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Console War Giant : A Turn-Based Tycoon on Steam"
+              },
+              {
+                "index": 10,
+                "url": "https://store.steampowered.com/app/5007660?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Froggous Grove on Steam"
+              },
+              {
+                "index": 11,
+                "url": "https://store.steampowered.com/app/5042270?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": true,
+                "extensionPopup": true,
+                "title": "SUSHI PARADE on Steam"
+              },
+              {
+                "index": 12,
+                "url": "https://store.steampowered.com/app/4505670?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "Hopfinity on Steam"
+              },
+              {
+                "index": 13,
+                "url": "https://store.steampowered.com/app/5194840?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "JUST PRESS SPACE on Steam"
+              },
+              {
+                "index": 14,
+                "url": "https://store.steampowered.com/app/1584590?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": true,
+                "extensionPopup": true,
+                "title": "Suburban Manager:From Corner Store to Regional Price Cartel & Supply Chain Trust on Steam"
+              },
+              {
+                "index": 15,
+                "url": "https://store.steampowered.com/app/4956030?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": true,
+                "extensionPopup": true,
+                "title": "ASTERSTEAD on Steam"
+              },
+              {
+                "index": 16,
+                "url": "https://store.steampowered.com/app/4455590?snr=1_614_615_6000_100703&curator_clanid=39049601",
+                "disclosed": false,
+                "extensionPopup": false,
+                "title": "RUNTIME on Steam"
+              }
+            ],
+            "disclosedCount": 4,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "hub-charts": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/hub-charts.mp4",
+            "webmSha256": "f36b8513f46eac091dc5f77e35c37ef1c188745d10fd90ff0f1ee792b491cead",
+            "sha256": "83ff228186ea74c40da9567858918cdc1bf5354f3f4fb243fc389b2df650b6fa",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1706,
+            "duration": 28.433333,
+            "url": "https://store.steampowered.com/sale/nextfest",
+            "urlAfterLoad": "https://store.steampowered.com/sale/nextfest",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Next Fest October 2026 - LIVE NOW",
+            "recordedAt": "2026-10-20T13:15:40.583Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "hub-random": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/hub-random.mp4",
+            "webmSha256": "5a07bcdb3ab5246b1d8a555290e84b7ac844d0542424745e44bd3236cf5c604e",
+            "sha256": "bdf411425cc57a66fa45081d90f37b0cbe777f79f5b4a229ababa6ce075040fe",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1979,
+            "duration": 32.983333,
+            "url": "https://store.steampowered.com/sale/nextfest",
+            "urlAfterLoad": "https://store.steampowered.com/sale/nextfest",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Next Fest October 2026 - LIVE NOW",
+            "recordedAt": "2026-10-20T13:14:33.379Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "itch-tag": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/itch-tag.mp4",
+            "webmSha256": "19254a7a1d85d4a037073665ad0a475bd186f3c30cdafb4dda983bd764809699",
+            "sha256": "eb4d74282e7a23b19cf8b3798a41e2226f0b9cd85d478dd97e198f1afa712a60",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1366,
+            "duration": 22.766667,
+            "url": "https://itch.io/games/tag-no-ai",
+            "urlAfterLoad": "https://itch.io/games/tag-no-ai",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Top games tagged No AI - itch.io",
+            "recordedAt": "2026-10-20T13:23:51.247Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "kotaku-needle": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/kotaku-needle.mp4",
+            "webmSha256": "01c35d2971a072e06aefcb4725b579d31636b25f47ff38301a92ebec0af48f82",
+            "sha256": "1f5139c65a0eb67572960b15e8f25800986f0245092eff0032ced46f83128195",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1181,
+            "duration": 19.683333,
+            "url": "https://kotaku.com/devs-behind-needle-in-a-haystack-clone-complain-their-clone-has-been-cloned-by-vibe-coder-2000747284",
+            "urlAfterLoad": "https://kotaku.com/devs-behind-needle-in-a-haystack-clone-complain-their-clone-has-been-cloned-by-vibe-coder-2000747284",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Devs Of Needle In A Haystack Clone Angry It's Been Cloned By AI",
+            "recordedAt": "2026-10-20T13:26:35.395Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "mp1st-budgets": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/mp1st-budgets.mp4",
+            "webmSha256": "e913b8a429a44bb709264e93d20a131cf5831347fb1ec04047547db7879f52a0",
+            "sha256": "6e7c822cde1bcd06d0dd6c7e6307fed0074d010e6d3c83ac721f68cf16c57eaa",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 998,
+            "duration": 16.633333,
+            "url": "https://mp1st.com/news/game-development-costs-on-steam-exceed-27-billion",
+            "urlAfterLoad": "https://mp1st.com/news/game-development-costs-on-steam-exceed-27-billion",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Game Development Costs on Steam Exceed $27 Billion in 2025",
+            "recordedAt": "2026-10-20T13:25:19.134Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "price-70": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/price-70.mp4",
+            "webmSha256": "462e20a5fb08982e06b8ab0d9a6bebd2c6a4574a7ba2c018478073bc0eab16df",
+            "sha256": "bd1f45faec5803a9705164269ecd9d15f3509be506506d6a79f8fe6d683653da",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 686,
+            "duration": 11.433333,
+            "url": "https://store.steampowered.com/search/?sort_by=Released_DESC&maxprice=70&ndl=1&filter=topsellers",
+            "urlAfterLoad": "https://store.steampowered.com/search/?sort_by=Released_DESC&maxprice=70&ndl=1&filter=topsellers",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Steam Search",
+            "recordedAt": "2026-10-20T13:29:34.835Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "reflux-store": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/reflux-store.mp4",
+            "webmSha256": "48c42b024955ff4d7de77f9b9d7cf68a981ddf4cab154f328d01f5eda3a9aa49",
+            "sha256": "41c1e07b36d42d7ef5aa815c6a1b78a68c0b2174ff87d99c919d229072b95600",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 792,
+            "duration": 13.2,
+            "url": "https://store.steampowered.com/search/?term=Drunken+Goddess+Reflux&ndl=1",
+            "urlAfterLoad": "https://store.steampowered.com/app/4150720/Drunken_Goddess_Reflux/",
+            "pickedFromSearch": "https://store.steampowered.com/app/4150720/Drunken_Goddess_Reflux/?snr=1_7_7_151_150_1",
+            "extension": false,
+            "pageTitle": "Drunken Goddess Reflux on Steam",
+            "recordedAt": "2026-10-20T13:28:10.849Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "search-demos-blur": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/search-demos-blur.mp4",
+            "webmSha256": "f091dddd20e34be030f25659f4e2b573a177fce56429f8999a264277ea018473",
+            "sha256": "f967d02432ea8169b1e581066e7a9e310ebb502fb94ca56bba592eb357dc1fec",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1179,
+            "duration": 19.65,
+            "url": "https://store.steampowered.com/search/?category1=10&sort_by=Released_DESC&ndl=1",
+            "urlAfterLoad": "https://store.steampowered.com/search/?category1=10&sort_by=Released_DESC&ndl=1",
+            "pickedFromSearch": null,
+            "extension": true,
+            "pageTitle": "Steam Search",
+            "recordedAt": "2026-10-20T13:12:16.634Z",
+            "disclosureOnPage": true,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "search-demos-hide": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/search-demos-hide.mp4",
+            "webmSha256": "c8b62d4f3aa21ccc9e12e0941ea32ec3e12d8b9b659bb0f10004955618c4c9d6",
+            "sha256": "98ecddf880f5971499995c2f165eb8ceaa2736841309f29dbe5bbfb15de67cac",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 987,
+            "duration": 16.45,
+            "url": "https://store.steampowered.com/search/?category1=10&sort_by=Released_DESC&ndl=1",
+            "urlAfterLoad": "https://store.steampowered.com/search/?category1=10&sort_by=Released_DESC&ndl=1",
+            "pickedFromSearch": null,
+            "extension": true,
+            "pageTitle": "Steam Search",
+            "recordedAt": "2026-10-20T13:13:34.160Z",
+            "disclosureOnPage": true,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "search-demos-plain": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/search-demos-plain.mp4",
+            "webmSha256": "be38740f5068d08a9437c58d34898479919b3fd39c86bd29dcab1a62c8bdd066",
+            "sha256": "f3f6e6fdb9e2ad08b155cab341b25f21729bd95a7df547c0b32a3c11266de497",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1198,
+            "duration": 19.966667,
+            "url": "https://store.steampowered.com/search/?category1=10&sort_by=Released_DESC&ndl=1",
+            "urlAfterLoad": "https://store.steampowered.com/search/?category1=10&sort_by=Released_DESC&ndl=1",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Steam Search",
+            "recordedAt": "2026-10-20T13:13:59.436Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "search-needle": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/search-needle.mp4",
+            "webmSha256": "26705a9cc91b46f9f0817a015a7b7eeeda8cbcf5ae83c4edd58a379ca82b38e8",
+            "sha256": "c560d861aebb19fc4e9e1f8ab1a0c0a501b0671db8420211bdaca1a64b302b22",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 908,
+            "duration": 15.133333,
+            "url": "https://store.steampowered.com/search/?term=needle+in+a+haystack&ndl=1",
+            "urlAfterLoad": "https://store.steampowered.com/search/?term=needle+in+a+haystack&ndl=1",
+            "pickedFromSearch": null,
+            "extension": false,
+            "pageTitle": "Steam Search",
+            "recordedAt": "2026-10-20T13:24:29.916Z",
+            "disclosureOnPage": false,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          },
+          "store-disclosure": {
+            "file": "projects/steam-next-fest-ai-flood/production/local/recordings/store-disclosure.mp4",
+            "webmSha256": "ccba24031deae01ed636aa15c0b5662560c0030c08ee37f4ab56e6b7acc5846c",
+            "sha256": "00c34d84ed4db1277dc40d0fbad230fdf788df23228166740c3ef1bb295e4211",
+            "width": 1920,
+            "height": 1080,
+            "fps": "60/1",
+            "frames": 1405,
+            "duration": 23.416667,
+            "url": "https://store.steampowered.com/search/?category1=10&sort_by=Released_DESC&ndl=1",
+            "urlAfterLoad": "https://store.steampowered.com/app/3736800/Dungeon_Picnic/?curator_clanid=39049601",
+            "pickedFromSearch": "https://store.steampowered.com/app/3736800?snr=1_614_615_6000_100703&curator_clanid=39049601",
+            "extension": true,
+            "pageTitle": "Dungeon Picnic on Steam",
+            "recordedAt": "2026-10-20T13:29:54.629Z",
+            "disclosureOnPage": true,
+            "tiles": null,
+            "disclosedCount": null,
+            "role": "own-browser-recording",
+            "rights": "Our own screen recording of public web pages; platform UI and third-party marks preserved; no gameplay footage"
+          }
+        }
+      }
+    },
+    {
+      "file": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1/steam-next-fest-ai-flood-qwen3-1.7b-balanced-v1.timing.json",
+      "sha256": "35b44f631c5966eb10a05b9f57f1cc39ab46d2f704f5774ed7cf962325e77036",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "sample_rate": 24000,
+        "duration_seconds": 565.9600416666666,
+        "render_mode": "scene",
+        "example_seconds": 0,
+        "narration_placement": "continuous-across-example-and-explanation",
+        "entries": [
+          {
+            "index": 1,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "안녕하세요, 얌얌코딩입니다.",
+            "start": 0,
+            "end": 1.86,
+            "voice_start": 0,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 2,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "지금 보시는 화면은 오늘 스팀에서 열리고 있는 넥스트 페스트의 첫 페이지입니다. 흐릿한 칸은 전부, 생성형 AI를 썼다고 적어 둔 데모예요. 3년 전 이 행사의 데모는 천 개 남짓이었고, 지금은 8천 개가 넘습니다.",
+            "start": 2.14,
+            "end": 15.72,
+            "voice_start": 2.14,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 3,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "저는 이 화면이 AI 게임 개발의 미래가 가장 먼저 도착한 곳이라고 생각해요.",
+            "start": 15.98,
+            "end": 20.38,
+            "voice_start": 15.98,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 4,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "오늘은 넥스트 페스트에서 벌어진 일을 짧게 확인한 다음, 그 숫자가 게임을 만드는 쪽을 어떻게 바꿨는지, 유저에게는 실제로 무엇이 돌아왔는지, 아이디어로 승부하던 인디 시장에는 무슨 일이 생겼는지, 그리고 앞으로 3년을 준비하는 개발자가 무엇을 해야 하는지 이야기하겠습니다.",
+            "start": 20.7,
+            "end": 37.2,
+            "voice_start": 20.7,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 5,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "먼저, 벌어진 일부터요.",
+            "start": 37.38,
+            "end": 39.26,
+            "voice_start": 37.38,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 6,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "넥스트 페스트는 출시 전 게임의 데모를 모아 두는 행사이고, 1년에 세 번 열립니다. 2022년과 2023년에는 천 개 안팎이던 데모가 2025년 2천6백 개, 올해 6월 4천4백 개, 이번 10월에는 밸브 집계로 8천2백 개가 넘습니다. 집계마다 조금 다르지만, 3년 사이 여덟 배 가까이 늘었어요.",
+            "start": 39.58,
+            "end": 60.099999999999994,
+            "voice_start": 39.58,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 7,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "스팀 전체로 보면 작년 한 해에만 게임 2만 개가 출시됐고, 그중 절반은 리뷰가 10개도 안 됩니다.",
+            "start": 60.36,
+            "end": 66.7,
+            "voice_start": 60.36,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 8,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "그리고 이번 페스트가 열린 다음 날, 레딧에 “AI가 넥스트 페스트를 완전히 망쳤다”는 글이 올라와 추천 8천8백 개를 넘겼습니다. 괜찮은 데모 찾기가 복권 당첨보다 어렵다는 거였죠.",
+            "start": 66.7,
+            "end": 79.52,
+            "voice_start": 66.7,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 9,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "실제로 세어 보면 이번 페스트 데모의 36% 이상이 생성형 AI를 썼다고 적어 두었습니다. 넉 달 전에는 20% 안팎이었어요.",
+            "start": 79.86,
+            "end": 88.34,
+            "voice_start": 79.86,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 10,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "이 숫자들이 말하는 건 한 가지입니다. 만드는 비용은 떨어졌고, 고르는 비용은 올라갔다는 것.",
+            "start": 88.56,
+            "end": 94.16,
+            "voice_start": 88.56,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 11,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "그런데 ‘36%가 AI를 썼다’는 말이 정확히 무슨 뜻인지부터 짚어야 합니다.",
+            "start": 94.16,
+            "end": 99.34,
+            "voice_start": 94.16,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 12,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "스팀의 AI 표기는 3년 동안 세 번 바뀌었습니다. 2023년 6월, 밸브는 AI 그림이 들어간 게임의 출시를 거절했습니다. 학습 자료의 권리가 불분명하다는 이유였죠.",
+            "start": 99.72,
+            "end": 111.66,
+            "voice_start": 99.72,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 13,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "2024년 1월, 적어 두면 올릴 수 있게 바뀝니다. 개발 중에 만든 사전 생성 콘텐츠, 영어로 Pre-Generated와, 실행 중에 만드는 실시간 생성 콘텐츠, Live-Generated를 설문에 적고, 그 내용이 상점 페이지 맨 아래 ‘AI 생성 콘텐츠 표기’ 칸에 실립니다. 영어로는 AI Generated Content Disclosure예요.",
+            "start": 112.42,
+            "end": 135.38,
+            "voice_start": 112.42,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 14,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "그리고 올해 초, 범위가 좁혀졌습니다. 플레이어가 보고 듣는, 게임과 함께 배포되는 콘텐츠만 적는다. 개발 도구의 효율 향상은 이 항목의 관심사가 아니다.",
+            "start": 135.84,
+            "end": 146.98,
+            "voice_start": 135.84,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 15,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "그러니까 코드를 짤 때 AI 도우미를 쓴 건 적지 않고, 캡슐 그림이나 배경음악을 AI로 만든 건 적습니다.",
+            "start": 147.72,
+            "end": 154.32,
+            "voice_start": 147.72,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 16,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "저는 이 선이 앞으로의 게임 개발을 가르는 선이라고 봐요. AI를 도구로 쓰는 것과, AI의 결과물을 화면에 내는 것은 다른 일이라는 거죠.",
+            "start": 154.32,
+            "end": 163.6,
+            "voice_start": 154.32,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 17,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "올해 GDC가 개발자 2천3백 명에게 물었더니, 36%가 일에 생성형 AI를 쓴다고 답했습니다. 쓰는 용도는 조사와 브레인스토밍 81%, 코드 보조 47%, 프로토타입 35%. 대부분 도구예요.",
+            "start": 164.36,
+            "end": 178,
+            "voice_start": 164.36,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 18,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "그런데 도구로 쓴 게 화면으로 새어 나옵니다. 올해 3월 출시된 한 대작은 초기 작업에서 실험적으로 만든 2D 소품 몇 개가 그대로 들어간 채 출시됐고, 플레이어가 몇 시간 만에 찾아냈습니다. 개발사는 사과하고, 모든 에셋을 감사해 교체하겠다고 했어요.",
+            "start": 178.6,
+            "end": 193.54,
+            "voice_start": 178.6,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 19,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "넥스트 페스트 표기 중에도 ‘임시 이미지’라고 적은 게임이 많습니다. 임시로 넣은 게 끝까지 남는 것. 이게 지금 가장 흔한 사고예요.",
+            "start": 193.84,
+            "end": 201.06,
+            "voice_start": 193.84,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 20,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "그래서 만드는 쪽은 어떻게 바뀌고 있을까요. 세 가지가 보입니다.",
+            "start": 201.38,
+            "end": 205.42,
+            "voice_start": 201.38,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 21,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "첫째, 혼자서, 작은 팀이, 더 많이 만듭니다. 데모가 여덟 배, 출시가 한 해 2만 개. 한 기자가 넥스트 페스트 데모의 표기를 읽어 보니, 소규모 팀과 1인 개발자들이 ‘자원이 부족해서’를 이유로 적어 두었습니다. 만들기는 더 이상 병목이 아니에요.",
+            "start": 205.7,
+            "end": 221.35999999999999,
+            "voice_start": 205.7,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 22,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "둘째, 만드는 사람들의 마음은 반대로 갑니다. 같은 GDC 조사에서 생성형 AI가 업계에 나쁜 영향을 준다는 답이 52%였습니다. 2년 전 18%, 작년 30%, 올해 52%. 좋은 영향이라는 답은 7%뿐이에요. 특히 아트 64%, 디자인과 내러티브 63%가 부정적입니다. 쓰는 사람은 늘고, 좋아하는 사람은 줄어드는 거죠.",
+            "start": 221.57999999999998,
+            "end": 246.16,
+            "voice_start": 221.57999999999998,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 23,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "셋째, 스튜디오들이 선을 긋기 시작했습니다. 매너 로드를 낸 퍼블리셔는 올해 1월부터 계약서에 AI 에셋 금지를 넣었습니다. 이유가 정확해요. 프로토타입에 넣은 임시 자료 하나가 교체되지 않고 빌드에 남는 데는, 한 번이면 충분하다는 겁니다.",
+            "start": 246.44,
+            "end": 261.5,
+            "voice_start": 246.44,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 24,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "워프레임 개발사는 “우리 게임에 AI 생성물은 절대 없다”고 못 박았고, 올해 7월 기준으로 생성형 AI를 쓰지 않는다고 공개 선언한 스튜디오 59곳을 정리한 목록도 있습니다.",
+            "start": 261.8,
+            "end": 272.3,
+            "voice_start": 261.8,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 25,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "즉 앞으로 3년, 경쟁은 ‘만들 수 있느냐’가 아니라 ‘무엇을 사람이 만들었다고 증명할 수 있느냐’로 옮겨 갑니다.",
+            "start": 272.68,
+            "end": 279.24,
+            "voice_start": 272.68,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 26,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "그러면 유저에게는 무엇이 돌아왔을까요. 선택지는 여덟 배가 됐는데, 더 좋은 게임이 더 싸게 온 건 아닙니다.",
+            "start": 279.60004166666664,
+            "end": 285.98004166666664,
+            "voice_start": 279.60004166666664,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 27,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "먼저 품질이에요. 넥스트 페스트 허브는 처음 며칠은 무작위로 섞여 있고, 표기는 페이지 맨 아래에 있고, 첫인상은 작은 캡슐 그림 하나예요. 한 퍼블리셔 담당자는 AI로 만든 캡슐을 보면 바로 흥미가 식는다고 말했습니다. 한 게임 매체는 이번 페스트를 두고 ‘쓸모없는 바이브 코딩 슬롭이 한 단계 올라왔다’고 썼어요.",
+            "start": 286.48004166666664,
+            "end": 305.84004166666665,
+            "voice_start": 286.48004166666664,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 28,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "그래서 플레이어들이 직접 체를 만들었습니다. 영상 첫 장면의 흐린 칸이 그겁니다. ‘AI warning for Steam’이라는 공개 확장 프로그램은 맨 아래 표기를 팝업으로 띄우고, 검색 결과에서 표기가 있는 게임을 흐리거나 숨깁니다. ‘No AI’ 큐레이터도 생겼고, itch.io는 2024년 말부터 ‘AI 생성’과 ‘No AI’ 태그를 붙이게 했어요. 반대 의견도 있습니다. 에픽게임즈 대표는 이런 표기 의무가 개발자에게 주홍글씨를 붙이는 일이라고 했죠. 어느 쪽이든, 고르는 수고는 플랫폼이 아니라 유저에게 넘어왔습니다.",
+            "start": 306.10004166666664,
+            "end": 337.58004166666666,
+            "voice_start": 306.10004166666664,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 29,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "다음은 가격입니다. 만드는 비용이 내려갔으면 가격도 내려가야 할 것 같은데, 그렇지 않았어요. 대작은 70달러가 기본이 됐고, 작년 닌텐도는 80달러 게임을 냈습니다.",
+            "start": 337.58004166666666,
+            "end": 348.72004166666665,
+            "voice_start": 337.58004166666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 30,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "스팀 신작 상위 50개의 평균 가격은 2023년 초 21.8달러에서 2025년 가을 21.4달러. 2년 반 동안 거의 그대로예요. 중간값은 19.5달러에서 15.6달러로 내려갔는데, 이건 5달러에서 15달러짜리 싼 게임이 많이 팔려서지, 같은 게임이 싸진 게 아닙니다.",
+            "start": 348.84004166666665,
+            "end": 368.0000416666667,
+            "voice_start": 348.84004166666665,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 31,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "오히려 제대로 만드는 쪽의 비용은 올라갑니다. 2025년 스팀 신작에 들어간 개발비 추정치는 270억 달러로 기록을 세웠고, 인디 한 편의 평균 예산은 10만 달러로 10년 전보다 156% 늘었어요.",
+            "start": 368.34004166666665,
+            "end": 381.1200416666666,
+            "voice_start": 368.34004166666665,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 32,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "정리하면 유저는 더 많은 게임을, 더 많은 소음 속에서, 같은 값에 받고 있습니다. 저는 이게 AI 사용의 품질 저하와 가격 대비 품질의 부담이 유저에게 전가되는 그림이라고 봐요.",
+            "start": 381.54004166666664,
+            "end": 392.22004166666665,
+            "voice_start": 381.54004166666664,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 33,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "그리고 아이디어로 승부하던 인디 시장은 더 어려워졌습니다. 이유는 복제예요.",
+            "start": 392.54004166666664,
+            "end": 397.64004166666666,
+            "voice_start": 392.54004166666664,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 34,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "올해 8월, 작은 스튜디오의 ‘건초 더미에서 바늘 찾기 시뮬레이터’가 SNS에서 터졌습니다. 그러자 비슷한 제목의 게임이 하룻밤 사이에 스팀에 올라오기 시작했고, 한 기자가 센 복제작만 열네 개가 넘어요.",
+            "start": 397.9400416666666,
+            "end": 410.8200416666666,
+            "voice_start": 397.9400416666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 35,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "그 복제작끼리도 서로 베꼈습니다. 한 팀은 다른 팀의 게임에서 자기 클래스 열세 개가 이름까지 똑같이 들어 있고, 존재하지도 않는 셰이더를 가리키는 오류 메시지가 글자 그대로 복사돼 있었다고 밝혔어요. 기자는 이걸 AI로 코드를 풀어내서 베낀 흔적이라고 봤습니다.",
+            "start": 411.2400416666666,
+            "end": 426.84004166666665,
+            "voice_start": 411.2400416666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 36,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "협동 등반 게임 ‘피크’는 입소문이 난 지 몇 주 만에 거의 똑같은 모작이 콘솔 상점에 올라왔고, 로블록스에서는 한 제작자가 영상 하나를 보고 24시간 만에 다른 게임을 복제한 뒤 ‘AI가 다 했고 나는 앉아서 봤다’고 말했습니다.",
+            "start": 427.10004166666664,
+            "end": 440.46004166666665,
+            "voice_start": 427.10004166666664,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 37,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "한국 매체도 이번 주에 같은 이야기를 다뤘어요. 한 일본 개발사는 ‘AI로 네 게임을 복제했다’는 협박 메일을 받았고, 증거는 없었지만, 다른 개발사는 복제를 피하려고 개발 소식 공개를 줄였습니다. 이번 페스트 사흘 전에 공개 데모를 취소하고 추첨 비공개 테스트로 바꾼 개발사가 든 이유도 정확히 이거였죠. 게임 화면이 퍼지면 AI로 흉내 낸 작품이 출시 전에 먼저 나올 수 있다는 것.",
+            "start": 440.80004166666663,
+            "end": 463.66004166666664,
+            "voice_start": 440.80004166666663,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 38,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "숫자로 보면 인디의 수익은 이미 좁은 문이었습니다. 2025년 스팀에 나온 2만 개 게임 중 리뷰 천 개를 넘긴 건 608개, 3%예요. 절반은 리뷰가 10개도 안 됩니다. 그 문 앞에 복제작이 먼저 줄을 서면, 원작이 팔 수 있는 시간은 더 짧아집니다.",
+            "start": 463.80004166666663,
+            "end": 479.7000416666666,
+            "voice_start": 463.80004166666663,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 39,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "한 시장 분석가는 이렇게 썼어요. “좋은 게임은 복제되어 묻힐 것이고, 플레이어는 아는 프랜차이즈로 돌아갈 것이다.”",
+            "start": 479.96004166666665,
+            "end": 486.8200416666666,
+            "voice_start": 479.96004166666665,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 40,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "아이디어를 보여 주는 순간 베껴지니까 인디는 아이디어를 숨겨야 하고, 숨기면 알릴 수 없고, 알리지 못하면 팔리지 않는 거예요. 앞으로 3년, 아이디어는 더 이상 혼자서는 해자가 아닙니다.",
+            "start": 487.08004166666666,
+            "end": 498.30004166666663,
+            "voice_start": 487.08004166666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 41,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "그래서 스튜디오 안에서는 두 가지 공정이 생깁니다. 출시 전에 모든 에셋을 사람이 다시 확인하고 어디에 AI를 썼는지 기록하는 일, 그리고 무엇을 언제 공개할지 정하는 일.",
+            "start": 498.48004166666664,
+            "end": 508.36004166666663,
+            "voice_start": 498.48004166666664,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 42,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "정리하면, 3년 동안 AI는 게임을 ‘만드는’ 벽을 거의 없앴습니다.",
+            "start": 508.92004166666663,
+            "end": 513.9400416666666,
+            "voice_start": 508.92004166666663,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 43,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "그 대신 유저는 더 많은 게임을 같은 값에, 더 많은 소음 속에서 받게 됐고, 인디는 아이디어를 숨겨야 하는 시장에서 더 좁은 문을 지나게 됐어요. 만든 쪽이 아낀 비용이 고르는 유저와 작은 개발사에게 전가되는 그림입니다.",
+            "start": 514.1800416666666,
+            "end": 527.9600416666666,
+            "voice_start": 514.1800416666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 44,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "데모 천 개가 8천 개가 된 하늘에서 별이 되려면 세 가지가 필요해요.",
+            "start": 528.4200416666666,
+            "end": 532.8400416666666,
+            "voice_start": 528.4200416666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 45,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "첫째, AI를 도구로 쓰되 화면에 나오는 건 사람이 책임지고, 표기는 정직하게. 임시로 넣은 건 끝까지 추적하기.",
+            "start": 533.0400416666666,
+            "end": 540.9800416666667,
+            "voice_start": 533.0400416666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 46,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "둘째, 캡슐과 아트, 첫 10초처럼 사람 손이 보이는 데 시간을 쓰기.",
+            "start": 541.3400416666666,
+            "end": 546.2400416666667,
+            "voice_start": 541.3400416666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 47,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "셋째, 아이디어가 아니라 실행과 사람을 해자로 삼기. 커뮤니티, 업데이트 속도, ‘이 사람들이 만든 게임’이라는 신뢰는 하루 만에 복제되지 않으니까요.",
+            "start": 546.7200416666666,
+            "end": 556.0400416666666,
+            "voice_start": 546.7200416666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          },
+          {
+            "index": 48,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "하늘이 여덟 배 넓어진 건 되돌릴 수 없어요. 별을 고르는 체는 플레이어가 이미 만들고 있고, 다음 3년은 그 체를 통과하는 게임을 만드는 시간입니다.",
+            "start": 556.4200416666666,
+            "end": 565.8000416666666,
+            "voice_start": 556.4200416666666,
+            "alignment": "whisper-word-timestamps-script-matched"
+          }
+        ],
+        "alignment": {
+          "ko": "Whisper word timestamps matched to approved script; imperfect ASR matches interpolated",
+          "en": "Same numbered cue boundaries as Korean; translation partitioned within corresponding paragraphs, not English speech",
+          "paragraphCount": 48,
+          "captionCount": 130
+        }
+      }
+    },
+    {
+      "file": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1/steam-next-fest-ai-flood-qwen3-1.7b-balanced-v1.timing.unaligned.json",
+      "sha256": "2b6609ed38775ba663b72e6b736e620fd89c57f73ab0df5b534a6abcafd241cb",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "sample_rate": 24000,
+        "duration_seconds": 564.5200833333333,
+        "render_mode": "scene",
+        "example_seconds": 0,
+        "narration_placement": "continuous-across-example-and-explanation",
+        "entries": [
+          {
+            "index": 1,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "안녕하세요, 얌얌코딩입니다.",
+            "start": 0,
+            "end": 2.4625
+          },
+          {
+            "index": 2,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "지금 보시는 화면은 오늘 스팀에서 열리고 있는 넥스트 페스트의 첫 페이지입니다. 흐릿한 칸은 전부, 생성형 AI를 썼다고 적어 둔 데모예요. 3년 전 이 행사의 데모는 천 개 남짓이었고, 지금은 8천 개가 넘습니다.",
+            "start": 2.4625,
+            "end": 14.6125
+          },
+          {
+            "index": 3,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "저는 이 화면이 AI 게임 개발의 미래가 가장 먼저 도착한 곳이라고 생각해요.",
+            "start": 14.6125,
+            "end": 19.2225
+          },
+          {
+            "index": 4,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "오늘은 넥스트 페스트에서 벌어진 일을 짧게 확인한 다음, 그 숫자가 게임을 만드는 쪽을 어떻게 바꿨는지, 유저에게는 실제로 무엇이 돌아왔는지, 아이디어로 승부하던 인디 시장에는 무슨 일이 생겼는지, 그리고 앞으로 3년을 준비하는 개발자가 무엇을 해야 하는지 이야기하겠습니다.",
+            "start": 19.2225,
+            "end": 36.4725
+          },
+          {
+            "index": 5,
+            "scene_id": "01",
+            "scene_title": "개론 — 미래가 먼저 도착한 화면",
+            "text": "먼저, 벌어진 일부터요.",
+            "start": 36.4725,
+            "end": 37.840041666666664
+          },
+          {
+            "index": 6,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "넥스트 페스트는 출시 전 게임의 데모를 모아 두는 행사이고, 1년에 세 번 열립니다. 2022년과 2023년에는 천 개 안팎이던 데모가 2025년 2천6백 개, 올해 6월 4천4백 개, 이번 10월에는 밸브 집계로 8천2백 개가 넘습니다. 집계마다 조금 다르지만, 3년 사이 여덟 배 가까이 늘었어요.",
+            "start": 38.14004166666666,
+            "end": 58.89254166666666
+          },
+          {
+            "index": 7,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "스팀 전체로 보면 작년 한 해에만 게임 2만 개가 출시됐고, 그중 절반은 리뷰가 10개도 안 됩니다.",
+            "start": 58.89254166666666,
+            "end": 65.48254166666666
+          },
+          {
+            "index": 8,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "그리고 이번 페스트가 열린 다음 날, 레딧에 “AI가 넥스트 페스트를 완전히 망쳤다”는 글이 올라와 추천 8천8백 개를 넘겼습니다. 괜찮은 데모 찾기가 복권 당첨보다 어렵다는 거였죠.",
+            "start": 65.48254166666666,
+            "end": 78.04254166666666
+          },
+          {
+            "index": 9,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "실제로 세어 보면 이번 페스트 데모의 36% 이상이 생성형 AI를 썼다고 적어 두었습니다. 넉 달 전에는 20% 안팎이었어요.",
+            "start": 78.04254166666666,
+            "end": 86.32254166666667
+          },
+          {
+            "index": 10,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "이 숫자들이 말하는 건 한 가지입니다. 만드는 비용은 떨어졌고, 고르는 비용은 올라갔다는 것.",
+            "start": 86.32254166666667,
+            "end": 92.84254166666666
+          },
+          {
+            "index": 11,
+            "scene_id": "02",
+            "scene_title": "현상 — 만드는 비용은 떨어지고, 고르는 비용은 올랐다",
+            "text": "그런데 ‘36%가 AI를 썼다’는 말이 정확히 무슨 뜻인지부터 짚어야 합니다.",
+            "start": 92.84254166666666,
+            "end": 97.98004166666666
+          },
+          {
+            "index": 12,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "스팀의 AI 표기는 3년 동안 세 번 바뀌었습니다. 2023년 6월, 밸브는 AI 그림이 들어간 게임의 출시를 거절했습니다. 학습 자료의 권리가 불분명하다는 이유였죠.",
+            "start": 98.28004166666666,
+            "end": 110.29254166666666
+          },
+          {
+            "index": 13,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "2024년 1월, 적어 두면 올릴 수 있게 바뀝니다. 개발 중에 만든 사전 생성 콘텐츠, 영어로 Pre-Generated와, 실행 중에 만드는 실시간 생성 콘텐츠, Live-Generated를 설문에 적고, 그 내용이 상점 페이지 맨 아래 ‘AI 생성 콘텐츠 표기’ 칸에 실립니다. 영어로는 AI Generated Content Disclosure예요.",
+            "start": 110.29254166666666,
+            "end": 134.37254166666668
+          },
+          {
+            "index": 14,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "그리고 올해 초, 범위가 좁혀졌습니다. 플레이어가 보고 듣는, 게임과 함께 배포되는 콘텐츠만 적는다. 개발 도구의 효율 향상은 이 항목의 관심사가 아니다.",
+            "start": 134.37254166666668,
+            "end": 145.56254166666668
+          },
+          {
+            "index": 15,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "그러니까 코드를 짤 때 AI 도우미를 쓴 건 적지 않고, 캡슐 그림이나 배경음악을 AI로 만든 건 적습니다.",
+            "start": 145.56254166666668,
+            "end": 152.88254166666667
+          },
+          {
+            "index": 16,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "저는 이 선이 앞으로의 게임 개발을 가르는 선이라고 봐요. AI를 도구로 쓰는 것과, AI의 결과물을 화면에 내는 것은 다른 일이라는 거죠.",
+            "start": 152.88254166666667,
+            "end": 162.35254166666667
+          },
+          {
+            "index": 17,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "올해 GDC가 개발자 2천3백 명에게 물었더니, 36%가 일에 생성형 AI를 쓴다고 답했습니다. 쓰는 용도는 조사와 브레인스토밍 81%, 코드 보조 47%, 프로토타입 35%. 대부분 도구예요.",
+            "start": 162.35254166666667,
+            "end": 172.54254166666666
+          },
+          {
+            "index": 18,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "그런데 도구로 쓴 게 화면으로 새어 나옵니다. 올해 3월 출시된 한 대작은 초기 작업에서 실험적으로 만든 2D 소품 몇 개가 그대로 들어간 채 출시됐고, 플레이어가 몇 시간 만에 찾아냈습니다. 개발사는 사과하고, 모든 에셋을 감사해 교체하겠다고 했어요.",
+            "start": 172.54254166666666,
+            "end": 192.07254166666667
+          },
+          {
+            "index": 19,
+            "scene_id": "03",
+            "scene_title": "원리 — AI를 도구로 쓰는 것과 결과물을 화면에 내는 것",
+            "text": "넥스트 페스트 표기 중에도 ‘임시 이미지’라고 적은 게임이 많습니다. 임시로 넣은 게 끝까지 남는 것. 이게 지금 가장 흔한 사고예요.",
+            "start": 192.07254166666667,
+            "end": 199.64004166666666
+          },
+          {
+            "index": 20,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "그래서 만드는 쪽은 어떻게 바뀌고 있을까요. 세 가지가 보입니다.",
+            "start": 199.94004166666667,
+            "end": 204.18254166666668
+          },
+          {
+            "index": 21,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "첫째, 혼자서, 작은 팀이, 더 많이 만듭니다. 데모가 여덟 배, 출시가 한 해 2만 개. 한 기자가 넥스트 페스트 데모의 표기를 읽어 보니, 소규모 팀과 1인 개발자들이 ‘자원이 부족해서’를 이유로 적어 두었습니다. 만들기는 더 이상 병목이 아니에요.",
+            "start": 204.18254166666668,
+            "end": 220.13254166666667
+          },
+          {
+            "index": 22,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "둘째, 만드는 사람들의 마음은 반대로 갑니다. 같은 GDC 조사에서 생성형 AI가 업계에 나쁜 영향을 준다는 답이 52%였습니다. 2년 전 18%, 작년 30%, 올해 52%. 좋은 영향이라는 답은 7%뿐이에요. 특히 아트 64%, 디자인과 내러티브 63%가 부정적입니다. 쓰는 사람은 늘고, 좋아하는 사람은 줄어드는 거죠.",
+            "start": 220.13254166666667,
+            "end": 241.43254166666668
+          },
+          {
+            "index": 23,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "셋째, 스튜디오들이 선을 긋기 시작했습니다. 매너 로드를 낸 퍼블리셔는 올해 1월부터 계약서에 AI 에셋 금지를 넣었습니다. 이유가 정확해요. 프로토타입에 넣은 임시 자료 하나가 교체되지 않고 빌드에 남는 데는, 한 번이면 충분하다는 겁니다.",
+            "start": 241.43254166666668,
+            "end": 258.19254166666667
+          },
+          {
+            "index": 24,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "워프레임 개발사는 “우리 게임에 AI 생성물은 절대 없다”고 못 박았고, 올해 7월 기준으로 생성형 AI를 쓰지 않는다고 공개 선언한 스튜디오 59곳을 정리한 목록도 있습니다.",
+            "start": 258.19254166666667,
+            "end": 270.94254166666667
+          },
+          {
+            "index": 25,
+            "scene_id": "04",
+            "scene_title": "미래 1 — 만드는 쪽",
+            "text": "즉 앞으로 3년, 경쟁은 ‘만들 수 있느냐’가 아니라 ‘무엇을 사람이 만들었다고 증명할 수 있느냐’로 옮겨 갑니다.",
+            "start": 270.94254166666667,
+            "end": 277.86008333333336
+          },
+          {
+            "index": 26,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "그러면 유저에게는 무엇이 돌아왔을까요. 선택지는 여덟 배가 됐는데, 더 좋은 게임이 더 싸게 온 건 아닙니다.",
+            "start": 278.1600833333334,
+            "end": 284.85258333333337
+          },
+          {
+            "index": 27,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "먼저 품질이에요. 넥스트 페스트 허브는 처음 며칠은 무작위로 섞여 있고, 표기는 페이지 맨 아래에 있고, 첫인상은 작은 캡슐 그림 하나예요. 한 퍼블리셔 담당자는 AI로 만든 캡슐을 보면 바로 흥미가 식는다고 말했습니다. 한 게임 매체는 이번 페스트를 두고 ‘쓸모없는 바이브 코딩 슬롭이 한 단계 올라왔다’고 썼어요.",
+            "start": 284.85258333333337,
+            "end": 304.3925833333334
+          },
+          {
+            "index": 28,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "그래서 플레이어들이 직접 체를 만들었습니다. 영상 첫 장면의 흐린 칸이 그겁니다. ‘AI warning for Steam’이라는 공개 확장 프로그램은 맨 아래 표기를 팝업으로 띄우고, 검색 결과에서 표기가 있는 게임을 흐리거나 숨깁니다. ‘No AI’ 큐레이터도 생겼고, itch.io는 2024년 말부터 ‘AI 생성’과 ‘No AI’ 태그를 붙이게 했어요. 반대 의견도 있습니다. 에픽게임즈 대표는 이런 표기 의무가 개발자에게 주홍글씨를 붙이는 일이라고 했죠. 어느 쪽이든, 고르는 수고는 플랫폼이 아니라 유저에게 넘어왔습니다.",
+            "start": 304.3925833333334,
+            "end": 337.74258333333336
+          },
+          {
+            "index": 29,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "다음은 가격입니다. 만드는 비용이 내려갔으면 가격도 내려가야 할 것 같은데, 그렇지 않았어요. 대작은 70달러가 기본이 됐고, 작년 닌텐도는 80달러 게임을 냈습니다.",
+            "start": 337.74258333333336,
+            "end": 347.4525833333334
+          },
+          {
+            "index": 30,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "스팀 신작 상위 50개의 평균 가격은 2023년 초 21.8달러에서 2025년 가을 21.4달러. 2년 반 동안 거의 그대로예요. 중간값은 19.5달러에서 15.6달러로 내려갔는데, 이건 5달러에서 15달러짜리 싼 게임이 많이 팔려서지, 같은 게임이 싸진 게 아닙니다.",
+            "start": 347.4525833333334,
+            "end": 366.81258333333335
+          },
+          {
+            "index": 31,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "오히려 제대로 만드는 쪽의 비용은 올라갑니다. 2025년 스팀 신작에 들어간 개발비 추정치는 270억 달러로 기록을 세웠고, 인디 한 편의 평균 예산은 10만 달러로 10년 전보다 156% 늘었어요.",
+            "start": 366.81258333333335,
+            "end": 379.7225833333334
+          },
+          {
+            "index": 32,
+            "scene_id": "05",
+            "scene_title": "미래 2 — 유저에게 돌아온 것: 품질과 가격",
+            "text": "정리하면 유저는 더 많은 게임을, 더 많은 소음 속에서, 같은 값에 받고 있습니다. 저는 이게 AI 사용의 품질 저하와 가격 대비 품질의 부담이 유저에게 전가되는 그림이라고 봐요.",
+            "start": 379.7225833333334,
+            "end": 390.80008333333336
+          },
+          {
+            "index": 33,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "그리고 아이디어로 승부하던 인디 시장은 더 어려워졌습니다. 이유는 복제예요.",
+            "start": 391.1000833333334,
+            "end": 396.1425833333334
+          },
+          {
+            "index": 34,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "올해 8월, 작은 스튜디오의 ‘건초 더미에서 바늘 찾기 시뮬레이터’가 SNS에서 터졌습니다. 그러자 비슷한 제목의 게임이 하룻밤 사이에 스팀에 올라오기 시작했고, 한 기자가 센 복제작만 열네 개가 넘어요.",
+            "start": 396.1425833333334,
+            "end": 409.3925833333334
+          },
+          {
+            "index": 35,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "그 복제작끼리도 서로 베꼈습니다. 한 팀은 다른 팀의 게임에서 자기 클래스 열세 개가 이름까지 똑같이 들어 있고, 존재하지도 않는 셰이더를 가리키는 오류 메시지가 글자 그대로 복사돼 있었다고 밝혔어요. 기자는 이걸 AI로 코드를 풀어내서 베낀 흔적이라고 봤습니다.",
+            "start": 409.3925833333334,
+            "end": 425.4025833333334
+          },
+          {
+            "index": 36,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "협동 등반 게임 ‘피크’는 입소문이 난 지 몇 주 만에 거의 똑같은 모작이 콘솔 상점에 올라왔고, 로블록스에서는 한 제작자가 영상 하나를 보고 24시간 만에 다른 게임을 복제한 뒤 ‘AI가 다 했고 나는 앉아서 봤다’고 말했습니다.",
+            "start": 425.4025833333334,
+            "end": 439.04258333333337
+          },
+          {
+            "index": 37,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "한국 매체도 이번 주에 같은 이야기를 다뤘어요. 한 일본 개발사는 ‘AI로 네 게임을 복제했다’는 협박 메일을 받았고, 증거는 없었지만, 다른 개발사는 복제를 피하려고 개발 소식 공개를 줄였습니다. 이번 페스트 사흘 전에 공개 데모를 취소하고 추첨 비공개 테스트로 바꾼 개발사가 든 이유도 정확히 이거였죠. 게임 화면이 퍼지면 AI로 흉내 낸 작품이 출시 전에 먼저 나올 수 있다는 것.",
+            "start": 439.04258333333337,
+            "end": 462.54258333333337
+          },
+          {
+            "index": 38,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "숫자로 보면 인디의 수익은 이미 좁은 문이었습니다. 2025년 스팀에 나온 2만 개 게임 중 리뷰 천 개를 넘긴 건 608개, 3%예요. 절반은 리뷰가 10개도 안 됩니다. 그 문 앞에 복제작이 먼저 줄을 서면, 원작이 팔 수 있는 시간은 더 짧아집니다.",
+            "start": 462.54258333333337,
+            "end": 478.2825833333334
+          },
+          {
+            "index": 39,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "한 시장 분석가는 이렇게 썼어요. “좋은 게임은 복제되어 묻힐 것이고, 플레이어는 아는 프랜차이즈로 돌아갈 것이다.”",
+            "start": 478.2825833333334,
+            "end": 485.35258333333337
+          },
+          {
+            "index": 40,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "아이디어를 보여 주는 순간 베껴지니까 인디는 아이디어를 숨겨야 하고, 숨기면 알릴 수 없고, 알리지 못하면 팔리지 않는 거예요. 앞으로 3년, 아이디어는 더 이상 혼자서는 해자가 아닙니다.",
+            "start": 485.35258333333337,
+            "end": 496.9025833333334
+          },
+          {
+            "index": 41,
+            "scene_id": "06",
+            "scene_title": "미래 3 — 인디 시장과 복제",
+            "text": "그래서 스튜디오 안에서는 두 가지 공정이 생깁니다. 출시 전에 모든 에셋을 사람이 다시 확인하고 어디에 AI를 썼는지 기록하는 일, 그리고 무엇을 언제 공개할지 정하는 일.",
+            "start": 496.9025833333334,
+            "end": 507.18008333333336
+          },
+          {
+            "index": 42,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "정리하면, 3년 동안 AI는 게임을 ‘만드는’ 벽을 거의 없앴습니다.",
+            "start": 507.48008333333337,
+            "end": 512.6925833333333
+          },
+          {
+            "index": 43,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "그 대신 유저는 더 많은 게임을 같은 값에, 더 많은 소음 속에서 받게 됐고, 인디는 아이디어를 숨겨야 하는 시장에서 더 좁은 문을 지나게 됐어요. 만든 쪽이 아낀 비용이 고르는 유저와 작은 개발사에게 전가되는 그림입니다.",
+            "start": 512.6925833333333,
+            "end": 526.9725833333333
+          },
+          {
+            "index": 44,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "데모 천 개가 8천 개가 된 하늘에서 별이 되려면 세 가지가 필요해요.",
+            "start": 526.9725833333333,
+            "end": 531.6325833333334
+          },
+          {
+            "index": 45,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "첫째, AI를 도구로 쓰되 화면에 나오는 건 사람이 책임지고, 표기는 정직하게. 임시로 넣은 건 끝까지 추적하기.",
+            "start": 531.6325833333334,
+            "end": 539.6925833333333
+          },
+          {
+            "index": 46,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "둘째, 캡슐과 아트, 첫 10초처럼 사람 손이 보이는 데 시간을 쓰기.",
+            "start": 539.6925833333333,
+            "end": 544.9325833333334
+          },
+          {
+            "index": 47,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "셋째, 아이디어가 아니라 실행과 사람을 해자로 삼기. 커뮤니티, 업데이트 속도, ‘이 사람들이 만든 게임’이라는 신뢰는 하루 만에 복제되지 않으니까요.",
+            "start": 544.9325833333334,
+            "end": 554.7725833333334
+          },
+          {
+            "index": 48,
+            "scene_id": "07",
+            "scene_title": "마무리 — 전가된 비용과 넓어진 하늘",
+            "text": "하늘이 여덟 배 넓어진 건 되돌릴 수 없어요. 별을 고르는 체는 플레이어가 이미 만들고 있고, 다음 3년은 그 체를 통과하는 게임을 만드는 시간입니다.",
+            "start": 554.7725833333334,
+            "end": 564.5200833333333
           }
         ]
       }
@@ -860,13 +3151,24 @@
   ],
   "editableSourceFiles": [
     "manim/projects/steam-next-fest-ai-flood/scene.py",
+    "motion-canvas/src/projects/steam-next-fest-ai-flood/overlay.tsx",
     "motion-canvas/src/projects/steam-next-fest-ai-flood/project.ts",
-    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/membership-outro.tsx",
-    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/paper-scene.tsx",
-    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/scene01.tsx",
-    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/scene02.tsx",
-    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/scene03.tsx",
-    "motion-canvas/src/projects/steam-next-fest-ai-flood/timing.ts"
+    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/s01.tsx",
+    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/s02.tsx",
+    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/s03.tsx",
+    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/s04.tsx",
+    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/s05.tsx",
+    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/s06.tsx",
+    "motion-canvas/src/projects/steam-next-fest-ai-flood/scenes/s07.tsx",
+    "projects/steam-next-fest-ai-flood/production/build-audio.py",
+    "projects/steam-next-fest-ai-flood/production/convert-recordings.py",
+    "projects/steam-next-fest-ai-flood/production/prepare-edit.py",
+    "projects/steam-next-fest-ai-flood/production/record-browser.cjs",
+    "projects/steam-next-fest-ai-flood/production/render-edit.py",
+    "projects/steam-next-fest-ai-flood/production/render-overlay.cjs",
+    "projects/steam-next-fest-ai-flood/production/render-voice.py",
+    "projects/steam-next-fest-ai-flood/production/review-voice.py",
+    "projects/steam-next-fest-ai-flood/production/verify-output.py"
   ],
   "sourceAndRightsDocuments": [
     "projects/steam-next-fest-ai-flood/README.md",
@@ -875,9 +3177,105 @@
     "projects/steam-next-fest-ai-flood/publishing/youtube.ko.md",
     "projects/steam-next-fest-ai-flood/sources/SOURCES.md"
   ],
-  "referenceUrls": [],
-  "subtitles": {},
+  "referenceUrls": [
+    "https://80.lv/articles/asset-creators-on-itch-io-now-have-to-disclose-the-use-of-generative-ai/",
+    "https://aftermath.site/video-games-no-ai/",
+    "https://creativebloq.com/3d/video-game-design/has-ai-ruined-steam-next-fest",
+    "https://engadget.com/gaming/crimson-desert-developer-apologizes-and-promises-to-replace-ai-generated-art-183716439.html",
+    "https://gagadget.com/en/730765-steam-next-fest-has-8202-demos-and-a-fifth-disclose-ai-use/",
+    "https://games.gg/news/ai-vibe-coding-clone-bury-games/",
+    "https://gdconf.com/article/gdc-2026-state-of-the-game-industry-reveals-impact-of-layoffs-generative-ai-and-more/",
+    "https://github.com/seeeeew/aiwarningforsteam",
+    "https://kotaku.com/anime-gambling-horror-game-ditches-free-steam-demo-over-fears-of-getting-ripped-off-by-ai-2000746794",
+    "https://kotaku.com/devs-behind-needle-in-a-haystack-clone-complain-their-clone-has-been-cloned-by-vibe-coder-2000747284",
+    "https://kotaku.com/exploring-steam-next-fest-with-an-ai-blocking-extension-is-very-depressing-2000706695",
+    "https://mp1st.com/news/18k-games-released-steam-2025-half-have-10-reviews",
+    "https://mp1st.com/news/game-development-costs-on-steam-exceed-27-billion",
+    "https://newsletter.gamediscover.co/p/are-steam-game-prices-dropping-and",
+    "https://newsletter.gamediscover.co/p/who-won-june-2026s-steam-next-fest",
+    "https://partner.steamgames.com/doc/gettingstarted/contentsurvey",
+    "https://steamdb.info/",
+    "https://store.steampowered.com/curator/45186708-No-AI/",
+    "https://store.steampowered.com/curator/45255963-AI-Check/",
+    "https://store.steampowered.com/news/group/4145017/view/3862463747997849618",
+    "https://store.steampowered.com/sale/nextfest",
+    "https://www.engadget.com/2195840/around-a-fifth-of-steam-next-fest-demos-have-a-generative-ai-disclosure/",
+    "https://www.gamedeveloper.com/business/-it-s-cancerous-manor-lords-publisher-hooded-horse-wants-to-avoid-genai-like-the-plague",
+    "https://www.gamemeca.com/en/view.php?gid=1782071",
+    "https://www.gamingonlinux.com/2023/06/valve-appear-to-be-banning-games-with-ai-art-on-steam/",
+    "https://www.gamingonlinux.com/2026/06/the-ai-warning-for-steam-browser-plugin-adds-steam-search-filtering/",
+    "https://www.gematsu.com/2026/10/drunken-goddess-reflux-launches-december-8",
+    "https://www.pcgamer.com/gaming-industry/steam-week-in-review-steam-next-fest-has-over-8-000-demos-as-worthless-vibe-coded-slop-levels-up/",
+    "https://www.pcgamer.com/gaming-industry/tim-sweeney-on-the-future-of-games-ai-and-whether-valve-will-ever-join-forces-with-epic-its-now-clear-that-nobodys-going-to-end-up-with-an-absolute-monopoly/",
+    "https://www.pcgamesn.com/steam/next-fest-2026-generative-ai",
+    "https://www.reddit.com/r/Steam/comments/1xa84a2/steam_next_fest_got_absolutely_ruined_by_ai/",
+    "https://www.shanethegamer.com/news/steam-next-fest-ai-games-filter/",
+    "https://www.sherwood.news/culture/with-an-usd80-mario-kart-title-for-switch-2-nintendo-is-ushering-in-a-new",
+    "https://www.steampageanalyzer.com/blog/how-many-games-release-on-steam",
+    "https://www.thegamer.com/steam-next-fest-ai-usage-has-jumped-from-one-in-five-to-one-in-three/"
+  ],
+  "subtitles": {
+    "captionsKo": {
+      "file": "projects/steam-next-fest-ai-flood/production/local/edit/captions.ko.srt",
+      "sha256": "dd7f7e521a3888f4cba5dd09a742c3ae2fa3af8fa28899c0286c9bf95c4b5ace",
+      "cueCount": 130
+    },
+    "captionsEn": {
+      "file": "projects/steam-next-fest-ai-flood/production/local/edit/captions.en.srt",
+      "sha256": "d93bdfce5a3be6fd8b4267ac79cc1d52a5a3d6c9324d015ff6c21b10c213724d",
+      "cueCount": 130
+    }
+  },
   "mediaAssets": [
+    {
+      "path": "-mono.wav",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/verify-output.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "-scene.wav",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/build-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "{sid}-scene.wav",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/verify-output.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "*.webm",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/convert-recordings.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "body-footage.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/render-edit.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "body-overlaid.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/render-edit.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "branding.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/render-edit.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
     {
       "path": "captioned.mp4",
       "references": [
@@ -893,6 +3291,35 @@
       "storage": "external-or-regenerate; never Git"
     },
     {
+      "path": "encoded-mono.wav",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/verify-output.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "final-mix.m4a",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/render-edit.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "final-mix.wav",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/build-audio.py",
+        "projects/steam-next-fest-ai-flood/production/render-edit.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "membership.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/render-edit.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
       "path": "motion-canvas/src/projects/steam-next-fest-ai-flood/assets/final-mix.m4a",
       "references": [
         "project.json$.paths.audioMix"
@@ -900,9 +3327,17 @@
       "storage": "external-or-regenerate; never Git"
     },
     {
-      "path": "motion-canvas/src/projects/steam-next-fest-ai-flood/assets/narration.wav",
+      "path": "music-stem.wav",
       "references": [
-        "motion-canvas/src/projects/steam-next-fest-ai-flood/project.ts"
+        "projects/steam-next-fest-ai-flood/production/build-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "narration-stem.wav",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/build-audio.py",
+        "projects/steam-next-fest-ai-flood/production/verify-output.py"
       ],
       "storage": "external-or-regenerate; never Git"
     },
@@ -914,16 +3349,158 @@
       "storage": "external-or-regenerate; never Git"
     },
     {
-      "path": "shared/output/motion-canvas/steam-next-fest-ai-flood-subtitled.mp4",
+      "path": "projects/steam-next-fest-ai-flood/production/local/edit/steam-next-fest-captioned.mp4",
       "references": [
-        "project.json$.paths.videoBurnedCaptions"
+        "project.json$.paths.videoBurnedCaptions",
+        "projects/steam-next-fest-ai-flood/production/delivery-output.json$.files.0.source"
       ],
       "storage": "external-or-regenerate; never Git"
     },
     {
-      "path": "shared/output/motion-canvas/steam-next-fest-ai-flood.mp4",
+      "path": "projects/steam-next-fest-ai-flood/production/local/edit/steam-next-fest-clean.mp4",
       "references": [
-        "project.json$.paths.videoClean"
+        "project.json$.paths.videoClean",
+        "projects/steam-next-fest-ai-flood/production/delivery-output.json$.files.1.source"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/aftermath-list.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.aftermath-list.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/crimson-desert.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.crimson-desert.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/curator-noai.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.curator-noai.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/gamemeca.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.gamemeca.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/gdc-report.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.gdc-report.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/gdco-prices.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.gdco-prices.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/hub-16-click.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.hub-16-click.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/hub-charts.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.hub-charts.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/hub-random.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.hub-random.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/itch-tag.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.itch-tag.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/kotaku-needle.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.kotaku-needle.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/mp1st-budgets.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.mp1st-budgets.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/price-70.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.price-70.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/reflux-store.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.reflux-store.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/search-demos-blur.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.search-demos-blur.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/search-demos-hide.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.search-demos-hide.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/search-demos-plain.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.search-demos-plain.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/search-needle.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.search-needle.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/local/recordings/store-disclosure.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/sources/recordings.json$.recordings.store-disclosure.file"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shared/assets/music/youtube-audio-library/Nimbus-Eveningland.mp3",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/build-audio.py"
       ],
       "storage": "external-or-regenerate; never Git"
     },
@@ -940,6 +3517,56 @@
         "project.json$.tts.reference"
       ],
       "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "steam-next-fest-{kind}.audio-updated.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/render-edit.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "steam-next-fest-{kind}.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/render-edit.py",
+        "projects/steam-next-fest-ai-flood/production/verify-output.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "steam-next-fest-ai-flood.captioned.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/delivery-output.json$.files.0.name"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "steam-next-fest-ai-flood.clean.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/delivery-output.json$.files.1.name"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "steam-next-fest-captioned.mp4",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/verify-output.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "stem-mono.wav",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/verify-output.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "voice-fixed-gain.wav",
+      "references": [
+        "projects/steam-next-fest-ai-flood/production/build-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
     }
   ],
   "formerlyTrackedMedia": [],
@@ -952,12 +3579,72 @@
       "Private voice reference and original membership identity images must be transferred privately; never fabricate substitutes"
     ],
     "productionScripts": [
-      "manim/projects/steam-next-fest-ai-flood/scene.py"
+      "manim/projects/steam-next-fest-ai-flood/scene.py",
+      "projects/steam-next-fest-ai-flood/production/build-audio.py",
+      "projects/steam-next-fest-ai-flood/production/convert-recordings.py",
+      "projects/steam-next-fest-ai-flood/production/prepare-edit.py",
+      "projects/steam-next-fest-ai-flood/production/record-browser.cjs",
+      "projects/steam-next-fest-ai-flood/production/render-edit.py",
+      "projects/steam-next-fest-ai-flood/production/render-overlay.cjs",
+      "projects/steam-next-fest-ai-flood/production/render-voice.py",
+      "projects/steam-next-fest-ai-flood/production/review-voice.py",
+      "projects/steam-next-fest-ai-flood/production/verify-output.py"
     ],
     "scriptRecords": [
       {
         "file": "manim/projects/steam-next-fest-ai-flood/scene.py",
         "sha256": "71f5f15ca95b9bdbefb99e27ace3c52cd2a97881b390760915d40cee9ecd3e0c",
+        "usageHints": []
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/build-audio.py",
+        "sha256": "3d8520a320ab49fe1e4ccec1c164e5a38cf9494df7874996a0febb2d740270c4",
+        "usageHints": []
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/convert-recordings.py",
+        "sha256": "fea40fe18a510c4b2573350da1e7d6ebf7e58215f1adc314f86aaa8c4d079d83",
+        "usageHints": []
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/prepare-edit.py",
+        "sha256": "cd8536aa7cfff809f3036c969aba1183bb5b40806c0d30e28420bd8923f8a47f",
+        "usageHints": []
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/record-browser.cjs",
+        "sha256": "7ef49af2c2a0d1431b9e620459a7a3388a3c55f8f9cbba3ef84221956f5ccaee",
+        "usageHints": [
+          "// Usage: node projects/steam-next-fest-ai-flood/production/record-browser.cjs [shotId ...]",
+          "  const wanted = process.argv.slice(2);"
+        ]
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/render-edit.py",
+        "sha256": "2a74d0964fec3837bd5bb9bc69ffcd5b585fe38c4049d64e45d9dbd4e01cfaaa",
+        "usageHints": []
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/render-overlay.cjs",
+        "sha256": "6d0455910c87dbf7a30693e20a0dfc4d61c235dd3891f2096feb0026e02313c5",
+        "usageHints": [
+          "// Usage: node projects/steam-next-fest-ai-flood/production/render-overlay.cjs [expectedFrames]",
+          "const expected = Number(process.argv[2] || 0);"
+        ]
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/render-voice.py",
+        "sha256": "dbe047c30b8a72cf22afa94732efd54978843f86b88dd07c92b3c6eb0a6d3794",
+        "usageHints": []
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/review-voice.py",
+        "sha256": "31bd57464ad67ab5f3212d1a78f61aee484f15ffe56a05cc9fb7e93196343928",
+        "usageHints": []
+      },
+      {
+        "file": "projects/steam-next-fest-ai-flood/production/verify-output.py",
+        "sha256": "065bef5cd0a375917813d26d557ca75b5595ec2102092aa46cec08554e45ec24",
         "usageHints": []
       }
     ],
@@ -984,6 +3671,7 @@
       }
     ],
     "gaps": [
+      "No selected structured timeline adapter; inspect renderer scripts for exact placement.",
       "External backup location is not configured. URLs can disappear; Git cannot recover absent media.",
       "Project-specific render commands are retained in production scripts/README; not all legacy projects have a one-command rebuild."
     ]

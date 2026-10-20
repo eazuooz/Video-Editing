@@ -1,17 +1,32 @@
 {
   "schemaVersion": 1,
   "slug": "steam-next-fest-ai-flood",
-  "updatedAt": "2026-10-20T22:34:01.339179+09:00",
-  "stage": "recordings-and-overlay-ready-waiting-gpu-for-tts",
+  "updatedAt": "2026-10-21T01:06:57+09:00",
+  "stage": "local-final-review-delivered-awaiting-user-review",
   "completed": [
     "script v4 + title ④ approved by user",
     "20 own browser recordings (Steam search/hub/store, SteamDB blocked, report pages) with AI warning for Steam extension loaded from MIT source",
     "Motion Canvas overlay project (chips/labels/cards/strokes) compiled and 40 s sample rendered",
-    "production scripts: render-voice, review-voice, prepare-edit, render-edit, build-audio, verify-output, render-overlay"
+    "production scripts: render-voice, review-voice, prepare-edit, render-edit, build-audio, verify-output, render-overlay",
+    "Qwen3-TTS 1.7B scene batch on GPU (scene 01 retaken for a clipped greeting), whole-PCM ASR + alignment",
+    "edit plan with filler recordings (held frames 8,984), full 33,980-frame overlay render, composite, per-scene level equalization, mix, clean/captioned pair",
+    "verify-output integrity + contact sheets; final-mix whole ASR + two complete-context window ASRs",
+    "collect-video-output to output/steam-next-fest-ai-flood (4 files)"
   ],
   "blockers": [
-    "GPU: another session holds ~10 GB (foreign python jobs); bounded TTS needs 9000 MiB free and no foreign python — waiting at that boundary"
+    "scene 04 59곳 speech unclear in two ASR passes; the retake needs the GPU, currently under the game-math-euler Part1 lease (foreign): wait for its boundary",
+    "human whole listening / 6 flagged level windows pending"
   ],
-  "nextAction": "When the GPU frees: render-voice.py → review-voice.py (ASR+align) → prepare-edit.py → render-overlay.cjs (full) → render-edit.py cuts/overlay → build-audio.py → render-edit.py pair → verify-output.py → collect; then local review links.",
-  "gpuPolicy": "cooperative boundary only; no foreign process termination; no CPU fallback"
+  "nextAction": "User reviews the captioned MP4. Then: scene 04 retake (narration 59곳 to the spoken form 쉰아홉 곳, alias keeps the caption 59곳) when the GPU is free, review-voice 04, prepare-edit, overlay/cuts/mix/pair/verify/collect; YouTube private upload only after the user review of the final SHA256 version.",
+  "gpuPolicy": "cooperative boundary only; no foreign process termination; no CPU fallback",
+  "masterHashes": {
+    "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+    "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+  },
+  "localReview": {
+    "folder": "output/steam-next-fest-ai-flood",
+    "captioned": "output/steam-next-fest-ai-flood/steam-next-fest-ai-flood.captioned.mp4",
+    "durationSeconds": 577.966667,
+    "userReview": "pending"
+  }
 }
