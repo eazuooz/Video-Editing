@@ -1,0 +1,90 @@
+        // Generic independently authored lesson objects. Their controlled angles
+        // are not reconstructed Zelda engine values or extracted game assets.
+        [SerializeField] private Transform matchedReference;
+        private Transform BuildMatchedObject(string name)
+        {
+            Transform root=NewObject(name+" independent matched object",generated);
+            Color wood=new Color32(134,88,49,255),dark=new Color32(68,44,29,255);
+            Color rope=new Color32(205,177,124,255),cloth=new Color32(238,229,201,255);
+            if(shot.model=="sail")
+            {
+                Segment("Separate wooden mast",root,new Vector3(0,-1.62f,0),new Vector3(0,1.62f,0),wood,.085f);
+                Segment("Upper crossbar",root,new Vector3(-1.00f,1.12f,0),new Vector3(1.00f,1.12f,0),wood,.060f);
+                Segment("Lower crossbar",root,new Vector3(-.94f,-.92f,0),new Vector3(.94f,-.92f,0),wood,.055f);
+                const int cols=10,rows=12;
+                var vertices=new List<Vector3>();var triangles=new List<int>();
+                for(int y=0;y<=rows;y++)for(int x=0;x<=cols;x++)
+                {
+                    float u=x/(float)cols,v=y/(float)rows;
+                    float width=Mathf.Lerp(.90f,.96f,v);
+                    vertices.Add(new Vector3((u*2-1)*width,Mathf.Lerp(-.91f,1.10f,v),.04f+.28f*Mathf.Sin(u*Mathf.PI)*Mathf.Sin(v*Mathf.PI)));
+                }
+                // Separate back vertices retain proper opposing normals;
+                // reverse triangles sharing front vertices would cancel them.
+                int layer=vertices.Count;for(int i=0;i<layer;i++)vertices.Add(vertices[i]);
+                for(int y=0;y<rows;y++)for(int x=0;x<cols;x++)
+                {
+                    int i=y*(cols+1)+x,j=i+cols+1;
+                    triangles.AddRange(new[]{i,i+1,j,i+1,j+1,j,j+layer,i+1+layer,i+layer,j+layer,j+1+layer,i+1+layer});
+                }
+                CreateMesh("Curved cloth, visible from both sides",root,vertices.ToArray(),triangles.ToArray(),cloth);
+                for(int side=-1;side<=1;side+=2)
+                {
+                    Segment("Tension rope",root,new Vector3(side*.98f,1.12f,.02f),new Vector3(side*.92f,-.92f,.02f),rope,.017f);
+                    Segment("Mast supporting rope",root,new Vector3(0,1.57f,0),new Vector3(side*.95f,-.92f,.02f),rope,.014f);
+                }
+                for(int i=0;i<4;i++)
+                {
+                    float yy=i<2?1.12f:-.92f;
+                    BuildRingAt(root,new Vector3(0,yy+(i%2)*.065f,0),Vector3.up,.105f,rope,.014f);
+                }
+                Ellipsoid("Mast base socket",root,new Vector3(0,-1.55f,0),new Vector3(.22f,.18f,.22f),dark);
+            }
+            else if(shot.model=="log")
+            {
+                BuildTimber(root,wood,dark,rope);
+                matchedReference=NewObject("Stationary neighbor timber; independent of the manipulated log",generated);
+                BuildTimber(matchedReference,new Color32(103,76,48,255),dark,rope);
+            }
+            else
+            {
+                Color steel=new Color32(183,194,204,255),edge=new Color32(101,120,135,255);
+                // The opening is deliberately asymmetric, so changing its
+                // orientation is visible instead of rotating a featureless ring.
+                const int count=36;
+                for(int i=0;i<count;i++)
+                {
+                    float a=Mathf.Lerp(-.20f*Mathf.PI,1.20f*Mathf.PI,i/(float)count);
+                    float b=Mathf.Lerp(-.20f*Mathf.PI,1.20f*Mathf.PI,(i+1)/(float)count);
+                    Segment("Open curved metal hook",root,new Vector3(Mathf.Cos(a)*.80f,Mathf.Sin(a)*.80f,0),new Vector3(Mathf.Cos(b)*.80f,Mathf.Sin(b)*.80f,0),steel,.11f);
+                }
+                Segment("Hook neck",root,new Vector3(-.65f,-.47f,0),new Vector3(-.65f,-1.4f,0),steel,.12f);
+                Ellipsoid("Thick hook mount",root,new Vector3(-.65f,-1.4f,0),new Vector3(.52f,.27f,.40f),edge);
+                for(float z=-.16f;z<=.17f;z+=.32f)Ellipsoid("Mount fastener",root,new Vector3(-.65f,-1.26f,z),new Vector3(.10f,.11f,.10f),steel);
+                Ellipsoid("Visible open tip",root,new Vector3(Mathf.Cos(-.20f*Mathf.PI)*.80f,Mathf.Sin(-.20f*Mathf.PI)*.80f,0),new Vector3(.19f,.19f,.19f),edge);
+            }
+            if(shot.axes)BuildFrame(root,BodyAxisLength,false);
+            return root;
+        }
+        private void BuildTimber(Transform root,Color wood,Color dark,Color rope)
+        {
+            Segment("Recognizable cylindrical timber",root,new Vector3(-1.5f,0,0),new Vector3(1.5f,0,0),wood,.32f);
+            for(int side=-1;side<=1;side+=2)
+            {
+                Vector3 center=new Vector3(side*1.505f,0,0);
+                BuildRingAt(root,center,Vector3.right,.24f,rope,.014f);
+                BuildRingAt(root,center,Vector3.right,.13f,dark,.012f);
+            }
+            for(int i=0;i<9;i++)
+            {
+                float a=i*Mathf.PI*2/9;Vector3 q=new Vector3(0,Mathf.Cos(a),Mathf.Sin(a))*.324f;
+                Segment("Lengthwise bark groove",root,q+Vector3.left*1.4f,q+Vector3.right*1.4f,dark,.014f);
+            }
+            foreach(float x in new[]{-.92f,.92f})BuildRingAt(root,new Vector3(x,0,0),Vector3.right,.34f,rope,.026f);
+        }
+        private void BuildRingAt(Transform parent,Vector3 center,Vector3 normal,float radius,Color color,float thickness)
+        {
+            Transform holder=NewObject("Functional ring / rope tie",parent);
+            holder.localPosition=EulerV6Math.ToUnity(center);
+            BuildRing(holder,normal,radius,color,thickness);
+        }

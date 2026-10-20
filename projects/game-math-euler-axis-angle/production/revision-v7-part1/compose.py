@@ -69,7 +69,7 @@ def backdrop(scene):
     assert d.textlength(title,font=font)<=1840,'Reflow approved title; do not silently shrink'
     d.text((40,40),title,font=font,fill=GOLD)
     d.text((40,129),'실제 게임과 함께 보는 3차원 회전',font=ImageFont.truetype(FONT,44),fill=MUTED)
-    d.text((990,120),'우리의 해설 모형',font=ImageFont.truetype(FONT,44),fill=WHITE)
+    # The measured canonical-name chip supplies the right model-kind label.
     d.line((958,180,958,850),fill='#39434a',width=2)
     im.save(f);return f
 def segment_list(manifest,sid):
@@ -151,10 +151,11 @@ def scene_render(scene,left_file,right_file,codec='libx264',sample=None):
     manifest=read(left_file);ass_by=manifest.get('sceneASS',{})
     extra_ass=ass_by.get(scene['id'])
     if isinstance(extra_ass,dict):extra_ass=extra_ass.get('file')
+    terms=read(H/'semantic-term-chips.json');term_ass=terms['sceneASS'][scene['id']]['file']
     signature=dict(sceneTimingSha256=digest_json(scene),leftSceneSegmentsSha256=digest_json(left),rightSceneSegmentsSha256=digest_json(right),
         inputMedia=segment_media(left+right),
         backdropSha256=sha(ui),implementationSha256=sha(Path(__file__)),codec=codec,frames=scene['frames'],
-        annotationASSsha256=sha(path(extra_ass))if extra_ass else None)
+        annotationASSsha256=sha(path(extra_ass))if extra_ass else None,canonicalTermASSsha256=sha(path(term_ass)))
     if destination.exists()and receipt.exists():
         existing=read(receipt)
         if existing.get('inputs')==signature and existing.get('sha256')==sha(destination):
@@ -170,6 +171,7 @@ def scene_render(scene,left_file,right_file,codec='libx264',sample=None):
     label='pair1'
     if extra_ass:
         filters.append(f'[{label}]ass={ffescape(path(extra_ass))}[marked]');label='marked'
+    filters.append(f'[{label}]ass={ffescape(path(term_ass))}[named]');label='named'
     filters.append(f'[{label}]format=yuv420p[out]')
     graph=folder/(scene['id']+'.filter.txt');graph.write_text(';\n'.join(filters),encoding='utf8')
     args+=['-filter_complex_script',str(graph),'-map','[out]','-an','-frames:v',str(scene['frames']),'-r','60','-fps_mode','passthrough',*encoder(codec),str(destination)]
