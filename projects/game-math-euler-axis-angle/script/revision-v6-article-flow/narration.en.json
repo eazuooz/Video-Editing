@@ -1,0 +1,698 @@
+{
+  "title": "Game Math Part 2: 3D Rotation — Euler Angles, Axis-Angle and Rotation Vectors",
+  "revision": "article-flow-v6",
+  "language": "en",
+  "status": "complete English translation:41 scenes and250 corresponding paragraphs; no English voice requested",
+  "sourceNarration": "projects/game-math-euler-axis-angle/script/revision-v6-article-flow/narration.ko.json",
+  "sourceNarrationSha256": "da6f162121e0b34dfbd8fcfe42236dc56783489cac21687aa58bf9c9da639e8a",
+  "translationContract": {
+    "sceneAndLineCorrespondence": "Exact1:1 scene/paragraph mapping to the canonical250 Korean paragraphs; narration meaning and article order retained.",
+    "coordinateConvention": "left-handed, +X right/+Y up/+Z forward; positive left-hand rotations; intrinsic body Y-X-Z heading/pitch/bank; equivalent fixed Z-X-Y; row vectors; object-to-upright R=Rz(b)Rx(p)Ry(h)",
+    "pacingSource": "Canonical Korean teachingBeats106 entries with identical scene/line indices. Actual speech/readability/listening remains pending.",
+    "englishVoiceRequired": false,
+    "display": "Canonical technical terms and mathematical symbols retained; no source-creator/adaptation framing."
+  },
+  "scenes": [
+    {
+      "id": "v6-01",
+      "title": "Why can the same angles produce different orientations?",
+      "lines": [
+        "Hello, this is Yamyam Coding.",
+        "Let us turn an airplane's nose to the right and then tilt it downward. If we reverse those two operations, the same angles can produce a different final orientation.",
+        "We will start with that difference and carefully work through how Euler angles build an orientation, followed by their advantages and limitations. Then we will describe the same rotation with one axis and one angle.",
+        "First, we will decide where the axes belong and move just one axis at a time. After calculating a number, we will look at the orientation it actually changes before moving on."
+      ],
+      "articleSection": "overview",
+      "currentSceneIds": [
+        "01"
+      ]
+    },
+    {
+      "id": "v6-02",
+      "title": "Position, direction, orientation and upright space",
+      "lines": [
+        "First, let us separate position from orientation. Moving the airplane sideways changes its position. Keeping its center still and turning its nose or wings changes its orientation.",
+        "The direction of the nose alone does not describe the whole orientation. Two airplanes can point their noses the same way while one has level wings and the other is tilted sideways.",
+        "Orientation is the term for this complete arrangement. We will use it to mean a state in which the forward, upward and sideways directions are all determined.",
+        "We will place reference axes on the ground, pointing right, up and forward. These are the X, Y and Z axes. We will attach axes with the same names to the airplane.",
+        "The airplane's right is its object X axis, its up is its object Y axis, and its nose points along its object Z axis. These axes move with the airplane.",
+        "We will place both sets of axes at the same center, while the reference axes keep their external reference directions. We will call this coordinate system, which shares the object's center but keeps the reference directions, upright space.",
+        "Initially, we will align the object axes exactly with the upright axes. This reference state is the identity orientation. From now on, we will keep the position fixed and observe how this orientation changes."
+      ],
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "02",
+        "03"
+      ]
+    },
+    {
+      "id": "v6-03",
+      "title": "Left-handed conventions and positive rotation",
+      "lines": [
+        "Euler angles describe an orientation through three rotations in a specified order about the coordinate system's basic axes. Here, we will call the three angles heading, pitch and bank. We will connect each one to its actual motion, one step at a time.",
+        "Naming the axes does not yet determine the rotation directions. We must also decide which direction counts as positive rotation.",
+        "We will use a left-handed coordinate system with X right, Y up and Z forward, together with positive left-hand rotations. Point your left thumb along the positive axis; your other fingers curl in the positive rotation direction.",
+        "Point your thumb upward along the Y axis. We will mark the turn that moves the nose from forward to the right as positive.",
+        "Other conventions choose the opposite positive direction. That does not make their calculations wrong. Different coordinate systems or positive directions can change signs in formulas describing the same orientation.",
+        "We will therefore keep the on-screen axes, arrows and angle labels consistent with this convention. Read the heading, pitch and bank introduced next using this agreement."
+      ],
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "03",
+        "04"
+      ]
+    },
+    {
+      "id": "v6-04",
+      "title": "First rotation: heading",
+      "lines": [
+        "Starting from the identity orientation, we will set heading first. Heading is a rotation about the upright Y axis.",
+        "The object and upright axes currently coincide, so either Y axis gives the same first rotation. Let us change heading to positive 45 degrees.",
+        "The nose turns to the right. The X and Z axes turn with it, while the Y axis, which is the rotation axis, stays unchanged.",
+        "Viewed from the positive end of Y looking down toward the origin, the turn is clockwise. The word clockwise here includes the position from which we are looking.",
+        "We will keep this orientation. The second rotation continues about an axis attached to the airplane that has just turned, rather than an axis in its original direction."
+      ],
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "04"
+      ]
+    },
+    {
+      "id": "v6-05",
+      "title": "Second rotation: pitch",
+      "lines": [
+        "Next is pitch. Pitch is the rotation about the object's X axis after heading has been applied.",
+        "Look along the airplane's right wing. Its object X axis has turned 45 degrees from its original direction. This is the axis we must use.",
+        "Let us set pitch to positive 20 degrees. Under this convention, positive pitch lowers the nose. Negative pitch raises it.",
+        "As the nose tilts down, the object Y and Z axes change with it. We will compare the result with a rotation about the upright X axis.",
+        "Even the same 20-degree angle produces a different motion when the axis differs. After heading, we must not confuse the object X axis with the original X axis.",
+        "The airplane now points right and slightly downward. One final rotation remains: tilt the wings while keeping this nose direction."
+      ],
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "04"
+      ]
+    },
+    {
+      "id": "v6-06",
+      "title": "Third rotation: bank",
+      "lines": [
+        "The third rotation is bank. After both heading and pitch, we rotate about the current object Z axis.",
+        "The object Z axis points along the nose. We will apply positive 30 degrees about it. The nose direction stays the same while the tilt of the wings changes.",
+        "The object X and Y axes turn together. This brings us back to our first distinction: pointing the nose the same way does not necessarily mean having the same orientation.",
+        "We do not use the original Z axis for bank either. Heading and pitch have already changed its direction.",
+        "This orientation was obtained in the order heading 45 degrees, pitch 20 degrees, and bank 30 degrees. The order and axes are as important as the three numbers."
+      ],
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "04"
+      ]
+    },
+    {
+      "id": "v6-07",
+      "title": "Why clockwise looks different from another viewpoint",
+      "lines": [
+        "Let us clarify the clockwise descriptions of heading and bank. We said positive heading looks clockwise when viewed from above.",
+        "However, positive bank looks counterclockwise from behind the airplane looking toward its nose. Did the rotation rule suddenly change?",
+        "The viewing position changed. For heading, we looked from positive Y toward the origin. For bank, we look from near the origin toward positive Z. These are opposite directions of looking along an axis.",
+        "We will look at the same rotation arrow from the front and then the back. When the camera crosses to the opposite side, the apparent clockwise direction reverses.",
+        "Rather than memorize clockwise by itself, check both the positive axis and the viewing direction. All three rotations still follow the same left-hand rule."
+      ],
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "04"
+      ]
+    },
+    {
+      "id": "v6-08",
+      "title": "Heading and pitch choose direction; bank adds twist",
+      "lines": [
+        "Now that the three steps are complete, let us review the role of each number. Heading and pitch first determine where the nose points. Bank then determines how the upward and sideways directions lie around that nose direction.",
+        "This is similar to using longitude and latitude to specify a direction on the Earth's surface. An object's orientation also needs one more quantity: how far it is twisted about that direction.",
+        "Let us look at an anti-gravity section in Mario Kart. The front of the kart points along the track, and its upward direction tilts as well. Follow its forward and upward directions separately.",
+        "The camera and the road also affect how tilted the kart looks on screen. We will therefore distinguish only the visibly observable front and up directions here. The marked axes are guides explaining the meaning of rotation.",
+        "The names heading, pitch and bank are not used identically in every program. Next, we will examine cases where the same motion is described using different names and orders."
+      ],
+      "articleSection": "8.3.1",
+      "currentSceneIds": [
+        "02",
+        "05"
+      ]
+    },
+    {
+      "id": "v6-09",
+      "title": "Names alone do not define a rotation convention",
+      "lines": [
+        "Euler angles represent an orientation with three rotations. Which axes to use and in what order are separate conventions.",
+        "You will often see yaw, pitch and roll instead of heading, pitch and bank. Roll is often used with the same meaning as bank. Some documents also use yaw with the same meaning as heading.",
+        "Names such as azimuth, elevation and tilt also appear, along with Greek letters such as alpha, beta and gamma. Different names do not necessarily mean different rotations, and identical names do not necessarily mean identical rotations.",
+        "Check three things: which axes are used, which direction is positive, and in what order the rotations are applied.",
+        "In particular, whether an axis moves with the object or stays in its original direction changes the order of the explanation. We will produce the same result in both ways."
+      ],
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06"
+      ]
+    },
+    {
+      "id": "v6-10",
+      "title": "Moving axes, fixed axes and reversed order",
+      "lines": [
+        "So far, we have used object axes attached to and moving with the airplane. Rotations of this kind are called intrinsic rotations.",
+        "After heading, we pitched about the object X axis, then banked about the object Z axis. Each earlier rotation affects the axis used by a later rotation.",
+        "This time, we will hold the upright axes in their original directions. This fixed-axis approach is called extrinsic rotation.",
+        "Applying heading, pitch and bank about the moving object axes gives the same result as applying bank, pitch and heading about fixed axes. Fixing the axes reverses the order.",
+        "This is why you can encounter descriptions in yaw-pitch-roll order as well as roll-pitch-yaw order. For the descriptions to mean the same rotation, the moving-axis and fixed-axis conventions must agree as well as the order.",
+        "This does not mean the same axes can simply be used in the same order. The choice of fixed or moving axes must change too. First, we will set bank to zero and compare only two rotations."
+      ],
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06"
+      ]
+    },
+    {
+      "id": "v6-11",
+      "title": "Heading 30 and pitch 20: two paths, one result",
+      "lines": [
+        "The airplane on the left first applies a 30-degree heading. Its object X axis turns with it. It then pitches 20 degrees about that turned object X axis.",
+        "The airplane on the right first pitches 20 degrees about the upright X axis fixed in its original direction. It then applies heading 30 degrees about the fixed upright Y axis.",
+        "Their intermediate orientations differ. At the end, however, the noses, wings and upward directions all match. Watch them overlap to confirm this.",
+        "The second rotation on the right used the upright Y axis that kept pointing upward, rather than the object Y axis already tilted with the airplane. This distinction makes the results match.",
+        "In contrast, merely changing the order of rotations about fixed axes generally changes the result. A fixed X rotation of 90 degrees followed by fixed Y of 90 degrees leaves the nose pointing downward. Reversing the order leaves it pointing right.",
+        "Rotation order is therefore essential information. Next, let us see how yaw and heading, despite their similar names, can describe different motions."
+      ],
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06",
+        "07"
+      ]
+    },
+    {
+      "id": "v6-12",
+      "title": "Yaw motion can differ from changing heading",
+      "lines": [
+        "Initially, when the airplane is level, object Y and upright Y coincide. Rotating about either one can appear to produce the same motion.",
+        "But if we tilt the nose vertically downward, those Y axes differ. Upright Y remains vertical, while object Y tilts with the airplane.",
+        "We will call a rotation about the current object Y axis yaw. Applying yaw of 90 degrees in this state moves the nose from downward to a horizontal direction.",
+        "Changing heading instead rotates the complete orientation about the original vertical axis. The nose continues to point downward while the airplane's sideways and upward directions change.",
+        "Pause and compare the two results. Even though both axes are named Y, their directions in space differ, so the resulting motions differ.",
+        "Think of looking down and moving the mouse horizontally in a first-person game. This can usually be described as heading about a vertical reference, rather than yaw following the tilted object Y axis. The actual implementation must be checked, but this helps distinguish the two motions.",
+        "When you need a yaw motion, do not assume that adding to the heading number alone always solves it. Depending on the current orientation, other Euler angles may need to change too."
+      ],
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06"
+      ]
+    },
+    {
+      "id": "v6-13",
+      "title": "Pitch after bank and other Euler conventions",
+      "lines": [
+        "Pitch requires a similar caution. When bank is zero, changing pitch can look like rotating about the object's current X axis.",
+        "After bank, however, the object X axis has turned again. Changing the middle Euler angle, pitch, generally differs from rotating about the current object X axis of the completed orientation.",
+        "Euler angles define the sequence that constructs a final orientation. They are not three arbitrary extra rotation commands about axes of the completed object. Remember which stage's axis is meant.",
+        "In games with a ground reference, heading, pitch and bank about the vertical, sideways and forward axes are convenient to understand. Not every field makes this choice.",
+        "Some proper Euler-angle conventions reuse the same axis for the first and last rotations. Think of separating a spinning top's precession, the change in its tilt called nutation, and its spin about its own axis.",
+        "A sequence like ours, using three different axes, is more precisely called Tait-Bryan angles. In practice, this is also broadly called Euler angles, so the name alone does not determine the axis order."
+      ],
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "06"
+      ]
+    },
+    {
+      "id": "v6-14",
+      "title": "Converting between conventions",
+      "lines": [
+        "If you obtain rotation values from another engine or file, first check its documented axes, positive directions and application order. Do not just rename the numbers because the pictures look similar.",
+        "For example, simply reordering heading, pitch and bank into another program's X, Y and Z fields is generally incorrect. The rotations affect one another.",
+        "A reliable approach is to build a rotation matrix under the original convention and then read the same rotation as Euler angles under the new convention. If the coordinate system itself differs, include that change of basis too.",
+        "Think of a matrix as a table recording where an orientation sends each reference direction. We first put the orientation into a common intermediate representation, then obtain numbers under a different agreement.",
+        "Here we write a point as a row vector and multiply by the matrix on its right. The object-to-upright matrix multiplies the bank, pitch and heading matrices in that order. Do not confuse the matrix notation with the order in which intrinsic motions are described.",
+        "The full derivation of individual conversion formulas belongs in the section on conversions. For now, grasp that three numbers need their convention to have meaning. Once that agreement is clear, Euler angles are quite convenient."
+      ],
+      "articleSection": "8.3.2",
+      "currentSceneIds": [
+        "03",
+        "06"
+      ]
+    },
+    {
+      "id": "v6-15",
+      "title": "Advantage 1: easy for people to read and adjust",
+      "lines": [
+        "The first advantage is that people can easily read and adjust an orientation. Looking 30 degrees right, tilting 10 degrees downward and banking the wings 20 degrees are motions we can imagine.",
+        "Seeing the same orientation as the nine numbers of a rotation matrix makes it harder to picture immediately. Euler angles give people meaningful values to enter and edit.",
+        "Consider an editing situation where heading alone adjusts the viewing direction and pitch alone adjusts the vertical aim. We can predict what moving a single slider will change.",
+        "We will also look at attaching a log next to another in Zelda. Where to move it and which way to place it are separate decisions. Notice how you visually judge whether its long direction is aligned.",
+        "This is not a claim that the game internally uses Euler angles. It illustrates why dividing orientation adjustments into rotations people can understand is useful.",
+        "Being convenient for people differs from being the best representation for every computer operation. Next, we will consider the data we store."
+      ],
+      "articleSection": "8.3.3",
+      "currentSceneIds": [
+        "09"
+      ]
+    },
+    {
+      "id": "v6-16",
+      "title": "Advantage 2: three stored numbers and chosen precision",
+      "lines": [
+        "A three-dimensional orientation locally needs three independent rotation quantities. Euler angles store just those three numbers, fewer than storing all nine entries of a matrix directly.",
+        "When an animation stores many orientations, that difference accumulates. As the number of frames and bones increases, the data required for each orientation matters.",
+        "We can also choose the intervals at which angles are stored. For example, rounding each angle to the nearest whole degree gives a maximum rounding error of half a degree in each number.",
+        "Let us place 20 degrees and 20.4 degrees into the same 20-degree bin on screen. We use fewer distinct values at the cost of losing a small difference. This process is called quantization.",
+        "However, a half-degree error in each component does not mean the final orientation error always equals that number. The combination of the three rotations and the current orientation must be considered together.",
+        "One advantage of storing angles is that the meaning of their precision is relatively intuitive. When storing sine and cosine components, we must separately consider how component errors affect the angle.",
+        "Other representations can also be compressed; Euler angles are not the only compressible choice. Their advantage combines a small storage size with angles people can understand."
+      ],
+      "articleSection": "8.3.3",
+      "currentSceneIds": [
+        "09"
+      ]
+    },
+    {
+      "id": "v6-17",
+      "title": "Advantage 3: finite angle triples produce orientations",
+      "lines": [
+        "The third advantage is that, under a chosen convention, any three finite real angles construct a rotation. Heading 720 degrees or pitch 135 degrees still produces a mathematically valid orientation.",
+        "In contrast, arbitrarily filling the nine entries of a rotation matrix may fail to produce a rotation. The transformation could stretch lengths or skew the axes.",
+        "Quaternions used for rotation also require conditions such as a controlled length. Rather than memorize their formulas in advance, we will just distinguish that different representations have different constraints.",
+        "Three finite angles producing a valid orientation is also different from producing the orientation we wanted. Choosing the wrong axes or order gives a valid but unintended result.",
+        "These convenient three numbers have a cost. The same orientation appears under several numeric descriptions, and connecting numbers introduces further problems. First, let us examine duplicate descriptions of the same orientation."
+      ],
+      "articleSection": "8.3.3",
+      "currentSceneIds": [
+        "09"
+      ]
+    },
+    {
+      "id": "v6-18",
+      "title": "Disadvantage 1: different numbers, same orientation",
+      "lines": [
+        "Let us turn an airplane from heading zero through one full revolution to 360 degrees. There has been motion, but the final orientation matches the initial one. At 720 degrees, the final orientation also matches.",
+        "Adding an integer multiple of 360 degrees to an angle does not change the final orientation. Different numbers representing the same result in this way are called aliasing.",
+        "With three rotations, less obvious duplicates can appear as well. The first airplane has heading zero, pitch 135 and bank zero. The second has heading 180, pitch 45 and bank 180 degrees.",
+        "Although the three numbers differ, the nose, wings and upward direction coincide when the airplanes overlap. They have reached the same final orientation.",
+        "Different Euler-angle numbers therefore do not prove that orientations differ. To make comparison and output easier, we need a rule that chooses one representative among multiple descriptions."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "08",
+        "09"
+      ]
+    },
+    {
+      "id": "v6-19",
+      "title": "Representative ranges and canonical form",
+      "lines": [
+        "One approach chooses heading and bank greater than minus 180 degrees and no greater than positive 180 degrees, with pitch from minus 90 to positive 90 degrees inclusive.",
+        "We will call a representative in the prescribed ranges canonical form. For our two airplanes with differently expressed pitch, we choose the representation that fits these ranges.",
+        "This is not always accomplished by independently subtracting 360 degrees from each field. Moving pitch into range can also require changes to heading and bank.",
+        "A special rule is also needed where pitch is exactly positive or negative 90 degrees. At those points, heading and bank do not reveal independent effects.",
+        "We should not conclude that range limits alone guarantee uniqueness. Let us look at the airplane at this boundary. It leads to gimbal lock."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "09",
+        "12"
+      ]
+    },
+    {
+      "id": "v6-20",
+      "title": "Gimbal lock: two rotation axes share one line",
+      "lines": [
+        "We will change pitch from 45 to 80 and then 90 degrees. As pitch increases, the initial Y axis and the Z axis used by the final bank approach a common line.",
+        "At pitch 90 degrees, the two axes lie on the same straight line. Their positive directions can be opposite, but the line of rotation is shared.",
+        "The effects of changing heading and changing bank now overlap. Two formerly independent controls divide up the same effect. This is called gimbal lock.",
+        "Under our convention, at positive 90 degrees of pitch, heading minus bank determines the remaining effect. Heading 30 and bank 10 gives the same orientation as heading 20 and bank zero.",
+        "To match heading 45 and bank zero, the alternative is heading zero and bank minus 45 degrees. We cannot put positive 45 into both alternatives. Notice that the positive axis directions are opposite.",
+        "At negative 90 degrees of pitch, heading and bank add instead. Do not memorize the two boundaries as having the same signs.",
+        "The airplane has not physically lost the ability to rotate. Every orientation can still be represented. The problem concerns independently adjusting and continuously reading these three numbers near the boundary."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    {
+      "id": "v6-21",
+      "title": "Canonical values at gimbal boundaries and program input/output",
+      "lines": [
+        "We can choose a single representative by setting bank to zero when pitch is positive or negative 90 degrees. The remaining effect is gathered into heading.",
+        "At positive 90 degrees, subtract the old bank from heading; at negative 90 degrees, add them. This changes the description while preserving the orientation.",
+        "This rule resolves duplicate descriptions. It does not magically remove continuity problems near gimbal lock. A small motion of the object can still cause a large jump in the reported angles.",
+        "A program can accept finite Euler angles outside the usual ranges and still construct a rotation. Canonical output is often more convenient for people to read. Treat the accepted input range and the output representative rule separately.",
+        "Also, a steep-looking game scene or tilted vehicle does not by itself establish gimbal lock. The camera and terrain can tilt the image, and the game's internal rotation representation must be checked separately.",
+        "So far, we have considered how to describe the same orientation. Next, we will see what paths result when we change those numbers over time."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "09",
+        "12"
+      ]
+    },
+    {
+      "id": "v6-22",
+      "title": "Interpolation chooses intermediate orientations",
+      "lines": [
+        "Choosing starting and ending orientations does not determine all the motion between them. Different rotation paths can share the same departure and arrival.",
+        "Interpolation constructs intermediate values between two endpoints. We will vary t from zero to one: zero is the start, one the end, and 0.5 the halfway parameter.",
+        "First, consider just one angle. If it starts at 10 degrees and ends at 30 degrees, the difference is 20 degrees. Multiply that difference by t and add it to the start.",
+        "At t equal to 0.5, add half of 20 degrees to 10, giving 20 degrees. This is the basic calculation of linear interpolation.",
+        "Think of Mario turning toward a platform, jumping and landing. Even with correct departure and landing orientations, an unintended large rotation along the way would look unnatural. This is why we inspect intermediate orientations too.",
+        "Angles return to the same orientation every full revolution, so interpolating them requires precautions beyond ordinary numbers. First, we will examine unnecessary extra revolutions."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "13",
+        "16",
+        "17"
+      ]
+    },
+    {
+      "id": "v6-23",
+      "title": "Problem 1: interpolating from 720 to 45 degrees",
+      "lines": [
+        "Suppose the starting heading is written as 720 degrees and the ending heading as 45 degrees. The starting airplane's orientation alone is the same as at zero.",
+        "But subtracting the numbers directly gives 45 minus 720, or minus 675 degrees. Following that difference rotates almost two full turns in the opposite direction before arriving.",
+        "Let us watch that long path first. If we wanted only a 45-degree turn to the right from the same starting orientation, this motion is unnecessary.",
+        "Replace the start with its equivalent representative, zero degrees, and the difference becomes 45 degrees. This time, the airplane arrives by the short path.",
+        "Of course, an animation deliberately spinning through several turns may need the long path. Here, we are given endpoint orientations and want to connect them briefly.",
+        "Canonicalizing the endpoint descriptions reduces this problem. Another problem remains even when both endpoints already lie inside the representative range."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "13"
+      ]
+    },
+    {
+      "id": "v6-24",
+      "title": "Problem 2: between minus 170 and positive 170 degrees",
+      "lines": [
+        "The start is minus 170 degrees and the end is positive 170 degrees. Both values lie inside our representative range.",
+        "Directly subtracting start from end gives positive 340 degrees. Linear interpolation passes through zero at the midpoint, taking the airplane on a long route through the front.",
+        "But look at the two arrows on the circle. They are only 20 degrees apart across the rear boundary. A 20-degree turn in the opposite direction reaches the endpoint.",
+        "The needed difference is therefore minus 20 degrees, which produces the same final rotation as positive 340 degrees. We have subtracted one full revolution from the difference.",
+        "Adding half this difference to the start gives minus 180 degrees. Writing it as positive 180 degrees describes the same intermediate orientation.",
+        "Canonicalizing the endpoints separately was not enough here. The difference itself must be wrapped into the desired representative range. We will implement that with a wrap function."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "13",
+        "14"
+      ]
+    },
+    {
+      "id": "v6-25",
+      "title": "How wrapping removes full revolutions",
+      "lines": [
+        "Wrapping adds or subtracts an integer number of full turns to move an equivalent angle into a chosen range. First, we will examine the calculation in degrees.",
+        "Add 180 to the angle, divide by 360, and round down. This rounding operation is called floor. For negative inputs, it differs from truncating toward zero.",
+        "For example, floor of minus 0.1 is minus one. On a number line, it selects the nearest integer that is no greater than the input.",
+        "For an angle of 340, adding 180 gives 520. Dividing by 360 gives approximately 1.44. Its floor is one, so subtracting one full turn gives minus 20 degrees.",
+        "The formula subtracts 360 times this floor value from the original angle. Its output range includes minus 180 degrees and excludes positive 180 degrees.",
+        "Earlier, we chose the opposite endpoint convention: exclude minus 180 and include positive 180. Mapping just the boundary value minus 180 to positive 180 makes the descriptions consistent.",
+        "This is why negative inputs and the exact endpoints need separate checks. Having understood how full turns are removed, we will move the calculation into radian code."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "15"
+      ]
+    },
+    {
+      "id": "v6-26",
+      "title": "Radians and safe wrapPi code",
+      "lines": [
+        "Radians are another unit for measuring angles. Take an arc on a circle whose length equals the radius. The angle that this arc spans at the center is one radian. We will first compare the radius and arc length with matching marks.",
+        "The arc of a half circle has length pi times the radius, so 180 degrees equals pi radians and one full turn equals two pi radians. Convert degrees to radians by multiplying by pi and dividing by 180.",
+        "Our wrapPi function will accept finite values in radians. First, define pi and tau, the angle of one full revolution. Tau equals twice pi.",
+        "We will use the standard library's remainder function. It subtracts the nearest integer multiple of tau from the input. At an exact halfway tie, it chooses an even integer, so the output endpoints also need checking.",
+        "If the result is minus pi, add tau once. The final output is then greater than minus pi and no greater than positive pi, matching our chosen representative range.",
+        "Do not assume this function handles negative inputs identically to an ordinary remainder operation or fmod. Treat its definition and endpoint adjustment as a pair.",
+        "If an implementation separately checks whether an angle needs reducing, the reduction must run for out-of-range inputs. We will not use a reversed condition that only reduces inputs already inside the range.",
+        "The code does what our earlier diagram showed. An input in radians corresponding to 340 degrees gives a result corresponding to minus 20 degrees. Both positive and negative pi map to the same representative, positive pi.",
+        "Now apply wrap to the difference, multiply that short difference by t, and add it to the start. This resolves the boundary problem for one axis."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "15"
+      ]
+    },
+    {
+      "id": "v6-27",
+      "title": "Wrapping three components does not solve 3D interpolation",
+      "lines": [
+        "After avoiding a long detour on one axis, it may seem enough to do the same separately for heading, pitch and bank. This helps in many situations, but does not resolve every three-dimensional rotation path.",
+        "At pitch 90 degrees, we saw the effects of heading and bank overlap. Near such points, the particular three-number description chosen for an endpoint strongly affects the intermediate path.",
+        "Reuse our equivalent orientations: zero, 135, zero and 180, 45, 180. Interpolating halfway from the identity gives zero, 67.5, zero in the first case and 90, 22.5, 90 in the second. Their endpoint orientations match, but the intermediate noses and wings differ.",
+        "The first example's pitch of 135 degrees is outside the canonical range. This illustrates that the endpoint description affects the path; it is not a counterexample using two endpoints that have both undergone complete canonicalization. Sensitivity near gimbal boundaries and nonconstant angular speed still remain after canonicalization.",
+        "Changing each Euler-angle component at constant speed does not guarantee that the object rotates at constant angular speed in space. Changes in the numbers and the actual rotation amount are not the same thing.",
+        "This also connects to why we inspected Mario's airborne pose instead of only departure and landing. The intermediate motion must match our intention as well as the endpoint orientation.",
+        "Wrapping handles the periodic boundary of a number. It must not be treated as a solution to gimbal lock and every three-dimensional path problem."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "16",
+        "17"
+      ]
+    },
+    {
+      "id": "v6-28",
+      "title": "Three convenient numbers and a global limitation",
+      "lines": [
+        "These problems do not mean that rotation cannot be described with three numbers at all. Within a small range of orientations, three independent values can work well.",
+        "The difficulty is covering every possible three-dimensional orientation with one three-number system that has no duplicates, discontinuities or singularities. All those requirements cannot be met globally at once.",
+        "With Euler angles, this appears as gimbal lock and boundaries between representative values. Choosing a different three-component representation can change where and how the problems occur.",
+        "That is why programs may separate a human-friendly input representation from the representation used internally for rotation calculations. Choose a representation according to which operations it handles well.",
+        "Before moving to the next representation, let us bring together the role and limitations of Euler angles."
+      ],
+      "articleSection": "8.3.4",
+      "currentSceneIds": [
+        "16"
+      ]
+    },
+    {
+      "id": "v6-29",
+      "title": "Euler-angle summary: convenience and cautions",
+      "lines": [
+        "Euler angles construct an orientation with three rotations in a specified order. We used heading, pitch and bank about the moving object Y, X and Z axes.",
+        "Heading and pitch determine the nose direction; bank determines the twist about it. The same result can be constructed about fixed axes in the reverse order.",
+        "When you encounter different names, check the axes, positive directions and order rather than the names alone. Simply moving numbers between different conventions is unsafe.",
+        "Euler angles are easy for people to read and edit, store three numbers, and have intuitively adjustable precision. Under a chosen convention, any three finite angles construct a valid rotation.",
+        "However, an orientation can have several numeric descriptions. Representative ranges and the zero-bank rule at gimbal boundaries organize the output, but do not remove gimbal lock or all interpolation problems.",
+        "Wrapping the difference on one axis allows a short connection. Even so, check the path and the actual object's rotation speed when interpolating three components separately.",
+        "Let us now step back from choosing among three fixed kinds of axis. What if we could freely choose one axis suited to this particular orientation change?"
+      ],
+      "articleSection": "8.3.5",
+      "currentSceneIds": [
+        "26"
+      ]
+    },
+    {
+      "id": "v6-30",
+      "title": "One axis and one angle: Euler's rotation theorem",
+      "lines": [
+        "Suppose we have a starting and ending orientation of a three-dimensional object with its center fixed. Euler's rotation theorem says that this finite rotation can be represented as a rotation about one suitable axis.",
+        "Although Euler also appears in the name of this theorem, it differs from the three Euler-angle numbers. It expresses an orientation change previously split into three steps with one suitable axis and angle.",
+        "We need not restrict ourselves to the preselected X, Y and Z axes. An oblique axis is also possible. We choose an axis passing through the fixed origin.",
+        "We are considering a pure rotation that preserves distances and directional relationships, rather than stretching the object or reflecting it like a mirror. Translation is treated separately.",
+        "Place the starting and ending airplanes side by side, and draw an axis suited to that change. Rotating about it matches not only the nose but the wings and upward direction of the ending orientation.",
+        "Recording this axis and angle is called the axis-angle representation. First, let us examine the information stored in the axis."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "18"
+      ]
+    },
+    {
+      "id": "v6-31",
+      "title": "An axis is a unit direction vector",
+      "lines": [
+        "We will write the rotation-axis direction as a vector n. A vector is an arrow with components in the X, Y and Z directions.",
+        "Short and long arrows pointing in the same direction describe the same axis. The extra length is unnecessary for the axis direction alone, so we set its length to one. This is a unit vector.",
+        "An axis of zero, one, zero points along positive Y. Set the angle theta to 90 degrees, and the object rotates 90 degrees about that Y axis.",
+        "Under our convention, the nose along positive Z moves toward positive X. The other two object axes change as well. This is not a transformation of only the nose point.",
+        "The axis has three components, but its length is constrained to one. There are two independent direction parameters; adding the angle gives the three degrees of freedom of rotation.",
+        "We can store the three axis components and the angle separately. Next, we will multiply them together to form one three-component vector."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "18"
+      ]
+    },
+    {
+      "id": "v6-32",
+      "title": "Rotation vectors: direction is axis, length is angle",
+      "lines": [
+        "Multiply the unit axis n by the rotation angle theta in radians. We will call the resulting vector the rotation vector. Its on-screen symbol is the lowercase English letter e.",
+        "When the angle is chosen to be nonnegative, a nonzero rotation vector points along the axis and has length equal to the angle. The unit axis has length one, so multiplying it by theta gives length theta.",
+        "Let us reuse the rotation of 90 degrees about Y. Ninety degrees is pi over two radians. Multiplying zero, one, zero by pi over two gives zero, pi over two, zero.",
+        "Doubling the arrow's length doubles the rotation angle about the same axis. The arrowhead is not the position where the object arrives.",
+        "In Zelda, compare the path of a log moved sideways with the orientation change that raises a fallen mast. A position arrow describes movement of the center, while a rotation vector contains an axis and a rotation amount.",
+        "Identically shaped arrows can therefore carry different information. Do not interpret an on-screen movement trail as a measured world-space distance or a rotation vector as a movement destination.",
+        "Now, let us recover the axis and angle from the three components alone."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "19"
+      ]
+    },
+    {
+      "id": "v6-33",
+      "title": "A small calculation to read a rotation vector",
+      "lines": [
+        "Suppose the rotation vector is zero, pi over two, zero. We can first find its length to read the rotation angle.",
+        "To find a vector's length, square each component, add the results, and take the square root. Here, we add zero squared, pi over two squared, and zero squared.",
+        "Taking the square root gives pi over two. The rotation angle is therefore pi over two radians, or 90 degrees.",
+        "Recover the axis by dividing the original vector by that length. Dividing every component by pi over two gives zero, one, zero. Adjusting a vector to unit length in this way is called normalization.",
+        "This vector therefore means a 90-degree rotation about positive Y. We will apply it to the airplane and check that it matches the orientation seen earlier.",
+        "If the vector is zero, however, do not perform this division. The angle is zero, but dividing by zero cannot recover a particular axis. We will revisit this exception when discussing duplicate representations."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "19",
+        "25"
+      ]
+    },
+    {
+      "id": "v6-34",
+      "title": "Scaling rotation amount about a common axis",
+      "lines": [
+        "Axis-angle makes it easy to scale a rotation amount about the same axis. Keep the axis unchanged and multiply the angle by the desired factor.",
+        "One third of a 90-degree rotation is 30 degrees: a smaller turn about the same axis. Multiplying by 2.65 gives 90 times 2.65, or 238.5 degrees.",
+        "We can multiply the rotation vector by the same factor. Its direction stays the same while its length scales, preserving the axis and changing the rotation angle. A negative factor represents rotation in the opposite direction.",
+        "This lets us handle rotation amount as if adjusting a vector's magnitude. Other representations can provide corresponding operations, but the meaning is directly visible in axis-angle.",
+        "This concerns scaling one rotation amount about the same axis. Distinguish it from composing two rotations about different axes. We will examine that separately in a moment.",
+        "First, let us consider the data and calculations for which this representation is useful."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "18",
+        "19"
+      ]
+    },
+    {
+      "id": "v6-35",
+      "title": "The exponential map and its uses",
+      "lines": [
+        "The operation that maps a rotation vector to an actual rotation matrix is called the exponential map. We will distinguish the vector itself from the operation that converts it to a rotation.",
+        "For now, look at the relation in which a vector goes in and a rotation comes out. We are connecting the name to the representation, rather than asking you to memorize the full derivation of matrix exponentiation.",
+        "This approach is useful for animation rotation data, scaling rotation about a common axis, and calculating motion by differentiating rotations. It has interpolation advantages within suitable ranges, but does not remove every boundary problem.",
+        "It connects particularly well to angular velocity. Angular velocity describes the axis about which an object rotates and how much it turns per second. It combines an instantaneous axis direction with units of radians per second.",
+        "A rotation vector's length is measured in radians; an angular-velocity vector's length is measured in radians per second. Similar-looking arrows mean different things: an orientation change and the rate of that change.",
+        "Just as we distinguished travel direction, vehicle orientation and camera motion on a tilted road, we must distinguish position, orientation and velocity in calculations. Next, let us examine the duplicates that remain in this representation."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "19",
+        "24"
+      ]
+    },
+    {
+      "id": "v6-36",
+      "title": "Duplicates 1: zero rotation and reversing both signs",
+      "lines": [
+        "First, consider a zero rotation angle. Whatever axis we choose, rotating zero degrees leaves the initial orientation unchanged. There is no reason to select one unique axis.",
+        "In rotation-vector form, multiplying any unit axis by zero gives the zero vector. Different axis-angle descriptions of no rotation become one zero vector.",
+        "Second, consider reversing both the axis and the angle signs. Rotating positive 90 degrees about an upward axis is the same motion as rotating minus 90 degrees about a downward axis.",
+        "Multiplying the two negative signs also gives the same vector. This duplicate description therefore becomes the same rotation vector as well.",
+        "Being unable to recover an axis from the zero vector was not a computational mistake. A state with no rotation has no particular required axis.",
+        "But eliminating these two ambiguities does not leave just one rotation vector for every endpoint orientation. The ability to add a full revolution still remains."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "19",
+        "21"
+      ]
+    },
+    {
+      "id": "v6-37",
+      "title": "Duplicates 2: final orientation and multiple revolutions",
+      "lines": [
+        "Compare positive 90 degrees and minus 270 degrees about the same axis. Their rotation vectors differ, but the final orientation is identical because the angles differ by one full revolution.",
+        "Adding integer numbers of full turns therefore leaves duplicates in axis-angle and rotation vectors too. When the number of turns matters, however, that difference can carry useful information.",
+        "Consider two wheels rotating at 720 and 1080 degrees per second. After one second, they have completed two and three turns respectively and both return to their initial orientations. A final photograph shows the same state.",
+        "After one quarter of a second, however, one has turned 180 degrees and the other 270 degrees. Their rotation speeds and intermediate paths differ.",
+        "Data that stores only a final orientation serves a different purpose from accumulated rotation or angular velocity. One orientation represented by a matrix or quaternion does not recover the history of multiple turns.",
+        "That does not mean animations using those representations cannot make several turns. They can also manage time-dependent data, accumulated angles or velocity information.",
+        "Now, let us see how far we can restrict the rotation-vector range when choosing a representative of only the final orientation."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "21",
+        "24"
+      ]
+    },
+    {
+      "id": "v6-38",
+      "title": "Is a length below two pi always unique?",
+      "lines": [
+        "It may seem that restricting a rotation vector's length below one full turn, two pi, makes it unique. But 90 degrees and 270 degrees about the opposite axis are both less than one turn and produce the same final orientation.",
+        "Compare 90 degrees along direction n with 270 degrees along direction minus n. You can see that the vectors differ.",
+        "Length below two pi alone therefore does not guarantee uniqueness. This range still contains duplicate representations.",
+        "A common representative choice restricts the rotation angle from zero to pi, or zero to 180 degrees. A longer turn can be represented as a shorter turn about the opposite axis.",
+        "Even then, at exactly 180 degrees, choosing n or minus n as the axis gives the same orientation. An additional rule must choose one, and continuity problems at that boundary do not disappear.",
+        "Remember that the axis is undetermined at zero, while axis-sign ambiguity remains at the 180-degree boundary. Changing the representation moves and reshapes the problem; it does not magically remove the global limitation."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "21"
+      ]
+    },
+    {
+      "id": "v6-39",
+      "title": "Finite rotations cannot generally be added like vectors",
+      "lines": [
+        "A rotation vector has three components. Can we add the vectors of two rotations to obtain their composition? Generally, no.",
+        "Let the first rotation be 90 degrees about fixed X and the second 90 degrees about fixed Y. Their vector sum is pi over two, pi over two, zero.",
+        "This sum vector means a single rotation about an oblique axis halfway between X and Y. Its length is pi divided by the square root of two, approximately 127.28 degrees.",
+        "However, applying the two rotations successively differs from that single rotation. Compare both the nose and upward direction on screen.",
+        "We can also reason from the order. Vector addition gives the same result when reordered, while reversing the order of finite rotations can change their result. The operations cannot generally be treated as identical.",
+        "To compose finite rotations, multiply rotation matrices in the chosen order or use a corresponding exact rotation-composition operation. Simply adding three numeric fields is not a substitute.",
+        "Very small rotation increments and instantaneous rotation rates behave differently. Finally, let us make their conditions clear."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "22"
+      ]
+    },
+    {
+      "id": "v6-40",
+      "title": "Small-rotation approximation and angular velocity in a common frame",
+      "lines": [
+        "Reduce each rotation from 90 degrees to something small, such as two degrees. The successive-rotation result and the summed-vector rotation result become much closer.",
+        "For small rotation increments, a vector sum can serve as a first-order approximation. This does not mean that a finite two-degree rotation makes the results exactly equal. Judge whether the approximation is suitable using the error tolerance and time step.",
+        "Instantaneous angular velocities can be added as vectors when expressed in the same coordinate system. The common-coordinate-system condition is essential.",
+        "For example, suppose the object's Z axis has turned to align with world X. Angular velocity along that object Z axis must be written as an X component in world coordinates.",
+        "Directly adding the object-space Z number to the world-space Z number mixes different directions. Convert them to one coordinate system before adding.",
+        "Separating finite orientation-change composition, small-increment approximation and instantaneous angular-velocity addition prevents confusion from their shared vector appearance."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "22",
+        "24"
+      ]
+    },
+    {
+      "id": "v6-41",
+      "title": "Terminology and two checks",
+      "lines": [
+        "Let us organize the terminology. Axis-angle stores the axis and angle separately. A rotation vector multiplies a unit axis by an angle in radians to store the result in three components. The exponential map is the operation that sends these coordinates to an actual rotation.",
+        "Some documents call a rotation axis an Euler axis. Do not confuse that with the three Euler-angle components. What information is stored and what operation is performed matter more than the name alone.",
+        "First check: if the start is positive 170 degrees and the end minus 170 degrees, what is the short difference? First locate the two directions on the circle.",
+        "The raw difference is minus 340 degrees. Add one full revolution to obtain positive 20 degrees. The midpoint is positive 180 degrees. This reverses our earlier example.",
+        "Second check: if the rotation vector is zero, pi over two, zero, about which axis and through what angle do we turn? First find the length, then divide every component by it.",
+        "The length is pi over two and the unit axis is zero, one, zero. Under our convention, forward Z turns toward right X. Check the actual motion together with these numbers.",
+        "When using Euler angles, first choose the axes, positive directions and order. Distinguish canonicalizing a representative from selecting the actual motion path, and distinguish endpoint orientation from accumulated rotation in axis-angle.",
+        "After changing numbers, always check both the intermediate motion and final orientation. Understanding that connection lets you judge which problem a new rotation representation is meant to solve."
+      ],
+      "articleSection": "8.4",
+      "currentSceneIds": [
+        "25",
+        "26"
+      ]
+    }
+  ]
+}

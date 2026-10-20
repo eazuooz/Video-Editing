@@ -1,0 +1,2471 @@
+{
+  "schemaVersion": 1,
+  "revision": "article-flow-v6-production",
+  "scriptSha256": "da6f162121e0b34dfbd8fcfe42236dc56783489cac21687aa58bf9c9da639e8a",
+  "grammar": "technical-explainer-grammar-v1",
+  "testbed": "same detailed aircraft, same primary camera, fixed reference/attached axes; finite clip states retained through narration and observation",
+  "measurementKind": "authored illustrative math, actual values computed in our implementation; commercial-game overlays editorial only",
+  "scenes": [
+    {
+      "id": "v6-01",
+      "title": "자세를 세 숫자로 적으면 어떤 일이 생길까",
+      "termChip": {
+        "term": "3차원 자세",
+        "en": "Orientation",
+        "meaning": "앞·위·옆 방향까지 정해진 상태",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-01.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "기존2초 브랜드 뒤 같은 비행기로 오른쪽 돌리기→숙이기와 역순을 차례로 예고한다. 두 끝 자세만 남기고 아직 축 이름·행렬을 한꺼번에 펼치지 않는다.",
+          "observationPurpose": "같은 각도라도 두 끝 자세가 달라 보이는지 기수와 날개를 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "먼저 축이 어디에 붙어 있는지 정하고, 한 번에 한 축만 움직이겠습니다. 숫자를 계산한 뒤에는 그 숫자가 바꾼 자세를 화면에서 확인하고 넘어갈게요."
+    },
+    {
+      "id": "v6-02",
+      "title": "위치·방향·자세, 그리고 직립 공간",
+      "termChip": {
+        "term": "위치와 자세",
+        "en": "Orientation",
+        "meaning": "옮기는 것과 돌리는 것을 구별",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-02.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "중심점을 표시한 비행기를 먼저 옆으로 옮긴 뒤 원위치에서 회전한다. 이어 기수 방향이 같은 두 비행기에서 날개만 다르게 기울여 비교한다.",
+          "observationPurpose": "중심 위치가 달라진 경우와 방향·날개가 달라진 경우를 구별한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-02.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "오른쪽X→위Y→앞Z를 한 축씩 공개한다. 직립 축은 점선, 물체 축은 실선으로 같은 중심에 놓고 물체만 조금 돌려 두 기준의 차이를 보인다.",
+          "observationPurpose": "축 여섯 개를 통째로 외우지 않고 같은 이름의 물체/직립 축 한 쌍씩 위치와 방향을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-02.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "두 축 세트를 기준 자세로 정확히 겹치고 '항등 자세' 라벨을 붙인다. 이후 중심점은 고정한 채 유지한다.",
+          "observationPurpose": "항등 자세는 위치가0이라는 뜻이 아니라 정한 기준 방향과 일치한 자세임을 화면에서 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "처음에는 물체 축과 직립 축을 완전히 일치시킵니다. 이 기준 자세가 항등 자세입니다. 이제부터 위치는 고정하고, 이 자세가 어떻게 바뀌는지만 보겠습니다."
+    },
+    {
+      "id": "v6-03",
+      "title": "왼손 규약과 양의 회전",
+      "termChip": {
+        "term": "오일러 각",
+        "en": "Euler Angles",
+        "meaning": "축과 순서가 정해진 세 번의 회전",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-03.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "오일러 각이라는 큰 이름 아래 헤딩·피치·뱅크의 빈 세 칸만 순서대로 놓는다. 각 칸의 동작은 아직 재생하지 않는다.",
+          "observationPurpose": "세 번의 회전과 각각의 숫자라는 관계만 읽고 세부 동작은 다음 설명으로 남긴다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-03.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "왼손 엄지와 감기는 손가락을 분리해 표시한 뒤 +Y 엄지에 맞춰 기수+Z가+X로 가는 양의90°를 한 번 보여 준다. 좌표계/양의 회전 약속을 같은 화면에 유지한다.",
+          "observationPurpose": "엄지의 축 방향과 손가락의 회전 방향을 먼저 찾고 화면의+Z→+X를 대조한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "그래서 화면의 축, 화살표, 각도 표시를 이 규약으로 통일하겠습니다. 잠시 뒤 나오는 헤딩, 피치, 뱅크도 이 약속을 기준으로 읽어 주세요."
+    },
+    {
+      "id": "v6-04",
+      "title": "첫 번째 회전: 헤딩",
+      "termChip": {
+        "term": "헤딩",
+        "en": "Heading",
+        "meaning": "처음의 수직 Y축 주위 회전",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-04.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "항등 자세의Y 링만 밝힌다. h=0→+45°를 재생하고 직립X/Z 점선과 회전한 물체X/Z 실선을 남긴다.",
+          "observationPurpose": "움직인X/Z와 그대로인Y를 한 쌍씩 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-04.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "카메라를+Y쪽에 놓은 위보기 보조 화면을 공개한다. 관찰 화살표+Y→원점과 시계 방향 호를 연결한다.",
+          "observationPurpose": "시계 방향을 판정한 관찰 위치를 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이 자세를 저장해 두겠습니다. 두 번째 회전은 처음의 축이 아니라, 방금 돌아간 비행기에 붙은 축을 기준으로 이어집니다."
+    },
+    {
+      "id": "v6-05",
+      "title": "두 번째 회전: 피치",
+      "termChip": {
+        "term": "피치",
+        "en": "Pitch",
+        "meaning": "헤딩 뒤 물체 X축 주위 회전",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-05.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "h45° 상태에서 직립X와 현재 물체X를 먼저 구별한다. 물체X를 중심으로 p=0→+20°를 돌려 기수가 내려가는 것을 보여 주고 음수는 반대임을 짧은 호로 비교한다.",
+          "observationPurpose": "어느X를 잡았는지와 양의 피치에서 기수가 내려간 결과를 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-05.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "같은 시작 자세를 복제해 현재 물체X 회전과 고정 직립X 회전을 차례로 재생한다. 두 결과의 기수·위 방향을 멈춰 놓는다.",
+          "observationPurpose": "같은20°라도 다른 축을 고르면 다른 끝 자세가 된다는 점을 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이제 비행기는 오른쪽을 향하면서 조금 아래를 보고 있습니다. 이 상태의 기수 방향을 유지한 채 날개만 기울이는 마지막 회전이 남았습니다."
+    },
+    {
+      "id": "v6-06",
+      "title": "세 번째 회전: 뱅크",
+      "termChip": {
+        "term": "뱅크",
+        "en": "Bank",
+        "meaning": "현재 물체 Z축 주위의 비틀림",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-06.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "h45°,p20°를 고정하고 현재 물체Z 링만 밝힌 뒤 b=0→30°를 재생한다. 기수 끝의 기준점과 움직이는 두 날개 끝을 구별한다.",
+          "observationPurpose": "기수 방향은 유지되고 날개 기울기가 바뀌는지 본다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-06.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "처음Z와 현재Z를 나란히 표시하고 H45→P20→B30의 중간 자세 세 장을 순서대로 공개한다. 새 회전 대신 이미 만든 결과를 이어 정리한다.",
+          "observationPurpose": "세 숫자 아래 적용 순서와 각 단계의 축 이름을 함께 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "지금 만든 자세는 헤딩 사십오 도, 피치 이십 도, 뱅크 삼십 도의 순서로 얻었습니다. 세 숫자만큼이나 그 숫자를 적용한 순서와 축이 중요합니다."
+    },
+    {
+      "id": "v6-07",
+      "title": "시계 방향이 다르게 보이는 이유",
+      "termChip": {
+        "term": "관찰 방향",
+        "en": "Viewing Direction",
+        "meaning": "어느 쪽에서 축을 보는지 확인",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-07.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "헤딩을 내려다본 화면과 양의 뱅크를 뒤에서 본 화면을 순차 공개한다. 서로 다른 관찰 화살표를 먼저 찾게 하고 부호는 유지한다.",
+          "observationPurpose": "시계/반시계 이름보다 카메라가 축의 어느 쪽인지 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-07.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "동일한 한 회전 화살표를 유지한 채 카메라만 축 반대편으로 이동한다. 앞보기/뒤보기 두 끝 화면을 남긴다.",
+          "observationPurpose": "물체의 회전 규약은 그대로인데 화면의 감기는 방향만 뒤집혔는지 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "따라서 시계 방향이라는 말만 외우기보다, 양의 축과 관찰 방향을 함께 확인해야 합니다. 세 회전에는 계속 같은 왼손 규칙을 쓰고 있습니다."
+    },
+    {
+      "id": "v6-08",
+      "title": "헤딩·피치는 방향, 뱅크는 그 주위의 비틀림",
+      "termChip": {
+        "term": "방향과 자세",
+        "en": "Orientation",
+        "meaning": "앞 방향에 위·옆의 기울기까지 포함",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-08.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "H/P로 같은 기수 방향을 정한 두 비행기를 겹친 뒤 한 대에만 뱅크를 준다. 경도·위도 비유는 방향 두 숫자까지만 작은 구도로 연결한다.",
+          "observationPurpose": "같은 앞쪽 방향에도 날개 기울기 하나가 더 필요함을 본다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-08.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "직접 확인한 마리오카트 독립 영상에서 앞쪽과 위쪽을 한 번에 하나씩 짚는다. 실제 내부축 수치가 아닌 '화면 관찰/설명용' 표기를 유지한다.",
+          "observationPurpose": "차체·도로·카메라가 모두 기울기를 보여 준다는 한계를 함께 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "방금 배운 헤딩, 피치, 뱅크라는 이름이 모든 프로그램에서 똑같이 쓰이는 것은 아닙니다. 같은 동작을 다른 이름과 순서로 적는 경우를 이어서 살펴보겠습니다."
+    },
+    {
+      "id": "v6-09",
+      "title": "이름만으로 회전 규약을 알 수는 없다",
+      "termChip": {
+        "term": "회전 규약",
+        "en": "Rotation Convention",
+        "meaning": "축 · 양의 방향 · 적용 순서",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-09.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "이름보다 약속을 확인",
+            "rows": [
+              "Heading ↔ Yaw ?",
+              "Bank ↔ Roll ?",
+              "축 / 양의 방향 / 적용 순서"
+            ]
+          },
+          "explanationMeaning": "H/P/B 옆에 yaw/pitch/roll을 대응 후보로 한 쌍씩 공개한다. 영문 이름을 빠르게 한 화면에 쏟지 않고 현재 말한 이름만 강조한다.",
+          "observationPurpose": "같은 이름의 존재와 실제 규약의 동일함을 구분하며 이름 쌍을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-09.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "같은 이름 ≠ 같은 규약",
+            "rows": [
+              "α, β, γ : 이름만으로 축을 알 수 없음",
+              "내재적: 물체와 함께 도는 축",
+              "외재적: 처음 방향을 유지하는 축"
+            ]
+          },
+          "explanationMeaning": "방위각·고도각·틸트와 그리스 문자 표기는 작은 '다른 표기 예' 영역에 순서대로 놓는다. 동의어 전체 암기를 요구하지 않는다.",
+          "observationPurpose": "용어가 많아도 확인할 대상은 축·양의 방향·순서라는 세 항목임을 찾는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "특히 축이 물체와 함께 움직이는지, 처음 방향을 고정해서 쓰는지에 따라 설명 순서가 달라집니다. 같은 결과를 두 방식으로 만들어 보겠습니다."
+    },
+    {
+      "id": "v6-10",
+      "title": "움직이는 축과 고정된 축의 순서",
+      "termChip": {
+        "term": "움직이는 축과 고정 축",
+        "en": "Intrinsic / Extrinsic",
+        "meaning": "축의 기준이 바뀌면 같은 회전의 순서도 바뀜",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-10.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "현재 물체 축Y→X→Z를 단계마다 따라가며 한 대의 비행기를 돌린다. 앞 회전이 다음 축을 옮기는 지점을 정지해 표시한다.",
+          "observationPurpose": "실선 물체 축이 비행기와 함께 움직이는 모습을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-10.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "두 번째 비행기에는 처음 방향의 직립 축을 점선으로 유지하고 Z→X→Y를 역순 적용한다. 마지막에 두 결과를 겹쳐 놓는다.",
+          "observationPurpose": "축 기준도 바뀌고 순서도 바뀌었을 때 끝 자세가 같아지는지 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이 말은 같은 축을 같은 순서로 돌려도 된다는 뜻이 아닙니다. 고정 축인지 움직이는 축인지가 함께 바뀌어야 합니다. 우선 뱅크를 영으로 두고 두 회전만 비교하겠습니다."
+    },
+    {
+      "id": "v6-11",
+      "title": "헤딩 30도·피치 20도, 두 경로의 같은 결과",
+      "termChip": {
+        "term": "두 경로, 같은 자세",
+        "en": "Intrinsic / Extrinsic",
+        "meaning": "물체축 Y-X-Z ↔ 고정축 Z-X-Y",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-11.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "왼쪽 비행기에 현재 물체Y로h30°를 준 뒤 돌아간 물체X로p20°를 준다. 각 동작 후 축과 숫자를 잠깐 고정한다.",
+          "observationPurpose": "두 번째 축이 처음X가 아니라 헤딩 후의X임을 찾는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-11.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "오른쪽 비행기에 고정 직립X로p20°→고정 직립Y로h30°를 순서대로 준다. 중간/끝 자세를 왼쪽과 같은 크기로 남긴다.",
+          "observationPurpose": "중간은 다르지만 끝의 기수·날개·위쪽이 모두 일치하는지 겹쳐 본다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-11.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "앞 비교와 분리된 작은 패널에서 고정X90→Y90와 고정Y90→X90를 따로 재생한다. 기수의 끝 방향을 아래/오른쪽 라벨로 남긴다.",
+          "observationPurpose": "같은 고정 축을 그대로 쓰면서 순서만 바꾸면 결과가 달라진다는 별도 예를 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "따라서 회전의 순서는 생략할 수 없는 정보입니다. 이제 이름도 비슷한 요와 헤딩이 실제 동작에서는 어떻게 달라지는지 보겠습니다."
+    },
+    {
+      "id": "v6-12",
+      "title": "요 동작과 헤딩을 바꾸는 일은 다를 수 있다",
+      "termChip": {
+        "term": "요와 헤딩",
+        "en": "Yaw / Heading",
+        "meaning": "현재 물체 Y축과 직립 Y축을 구별",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-12.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "수평 자세의 두Y가 겹친 상태에서 비행기만 수직하강 자세로 숙인다. 고정 직립Y와 기울어진 물체Y를 끝 화면에서 분리한다.",
+          "observationPurpose": "현재 물체Y가 더 이상 수직 기준Y와 같지 않음을 찾는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-12.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "동일한 수직하강 자세를 두 개 놓고 현재 물체Y의yaw90°와 고정 직립Y의heading변경을 차례로 재생한다. 기수 자취는 회전축과 다른 선으로 표시한다.",
+          "observationPurpose": "한쪽 기수는 수평으로 이동하고 다른 쪽 기수는 아래에 남는지 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-12.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "새 게임 녹화 대신 직접 만든1인칭 카메라 도식에서 아래를 보는 상태와 수직 기준 좌우 방향 변경을 보여 준다. 실제 게임 구현을 단정하지 않는다.",
+          "observationPurpose": "화면을 기울이는 효과와 수직 기준으로 보는 방향을 바꾸는 효과를 구별한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "요를 만들어야 할 때 헤딩 숫자 하나만 더하면 언제나 해결된다고 생각하면 안 됩니다. 현재 자세에 따라 다른 오일러 각도 함께 바뀌어야 할 수 있습니다."
+    },
+    {
+      "id": "v6-13",
+      "title": "뱅크 뒤의 피치와 여러 오일러 규약",
+      "termChip": {
+        "term": "오일러 각의 규약들",
+        "en": "Proper Euler / Tait–Bryan",
+        "meaning": "반복하는 축인지 서로 다른 축인지 확인",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-13.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "b=0 때의 피치 변화와 뱅크 후의 피치 숫자 변화/현재bodyX 추가회전을 두 단계로 비교한다. 현재X와 피치를 적용한 단계의X를 서로 다른 라벨로 남긴다.",
+          "observationPurpose": "같은'피치'라는 말에도 어느 단계의 축인지 확인해야 함을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-13.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "팽이의 세차→장동→자전을 한 번에 하나씩 보여 주고 각 명칭을 해당 동작 뒤에 붙인다. 반복축 예와 서로 다른Y-X-Z 축 순서를 나란히 남긴다.",
+          "observationPurpose": "낯선 세 이름을 외우기보다 반복되는 축과 서로 다른 축의 차이를 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "지금처럼 서로 다른 세 축을 쓰는 경우는 엄밀하게 테이트–브라이언 각이라고 부릅니다. 실무에서는 이 방식도 넓게 오일러 각이라고 부르므로, 이름만 보고 축 순서를 판단하지 않는 것이 중요합니다."
+    },
+    {
+      "id": "v6-14",
+      "title": "다른 규약으로 옮길 때",
+      "termChip": {
+        "term": "회전 규약 변환",
+        "en": "Rotation Convention",
+        "meaning": "같은 회전을 공통 표현으로 옮겨 읽기",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-14.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "숫자 칸만 바꾸면 될까?",
+            "rows": [
+              "규약 A: 축 · 부호 · 순서",
+              "규약 B: 축 · 부호 · 순서",
+              "숫자 이름 교환만으로는 부족"
+            ]
+          },
+          "explanationMeaning": "두 프로그램의 숫자 칸과 축/양의 방향/순서 안내를 비교한다. 단순 칸 교환은 안전하지 않다는 주의 표시를 두고 아직 행렬식을 펼치지 않는다.",
+          "observationPurpose": "같은이름·비슷한화면이 규약의 일치를 뜻하지 않음을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-14.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "flow",
+            "prompt": "같은 자세를 거쳐 다른 규약으로",
+            "rows": [
+              "규약 A의 각도",
+              "같은 회전 R",
+              "규약 B의 각도"
+            ]
+          },
+          "explanationMeaning": "규약A 숫자→동일 회전 행렬→규약B 숫자 흐름을 단계별 공개한다. 행렬은 각 기준 방향을 보낸 결과라는 축 그림을 옆에 붙인다.",
+          "observationPurpose": "중간의 공통 표현은 물체의 자세이며 숫자 이름만 교환한 것이 아님을 본다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-14.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "matrix",
+            "prompt": "행벡터는 숫자 셋을 가로 한 줄로",
+            "rows": [
+              "v직립 = v물체 R",
+              "R = Rz(b) Rx(p) Ry(h)",
+              "물체축 h→p→b = 고정축 b→p→h"
+            ]
+          },
+          "explanationMeaning": "1×3 행벡터가 오른쪽3×3 행렬을 만나는 모양을 먼저 보이고 Rz(b)Rx(p)Ry(h)를 한 항씩 공개한다. 동작 순서Y-X-Z와 표기 순서는 별도 줄에 적는다.",
+          "observationPurpose": "행과 열의 위치 및 두 종류의 순서를 따로 읽을 시간을 확보한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "개별 변환식의 전체 유도는 변환을 다루는 범위에서 확인하면 됩니다. 여기서는 숫자 세 개가 규약까지 포함해야 의미가 있다는 점을 먼저 잡겠습니다. 그 약속이 명확하면 오일러 각은 꽤 편리한 표현입니다."
+    },
+    {
+      "id": "v6-15",
+      "title": "장점1: 사람이 읽고 조절하기 쉽다",
+      "termChip": {
+        "term": "오일러 각의 장점",
+        "en": "Euler Angles",
+        "meaning": "사람이 읽고 편집하기 쉬운 각도",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-15.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "한 비행기에 H/P/B 슬라이더를 붙이고 헤딩만→피치만 한 번에 하나씩 조절한다. 아홉 숫자 행렬은 비교용 작은 표로만 둔다.",
+          "observationPurpose": "슬라이더 한 칸과 예측 가능한 한 동작의 연결을 찾는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-15.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "검증된 젤다 독립 영상에서 통나무를 옮기는 조작과 긴 방향을 맞추는 조작을 구별해 순차 표식으로 보인다.",
+          "observationPurpose": "위치와 놓인 방향을 사람이 각각 판단하는 장면을 관찰한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "사람에게 편리한 표현이라는 장점과, 컴퓨터에서 모든 연산에 가장 좋은 표현이라는 말은 다릅니다. 다음으로 저장하는 데이터의 관점에서 보겠습니다."
+    },
+    {
+      "id": "v6-16",
+      "title": "장점2: 세 숫자로 저장하고 정밀도를 정한다",
+      "termChip": {
+        "term": "양자화",
+        "en": "Quantization",
+        "meaning": "가까운 간격의 대표값으로 저장",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-16.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "같은 정밀도로 그대로 저장할 때",
+            "rows": [
+              "오일러 각: 3개 × 4 B = 12 B",
+              "회전 행렬: 9개 × 4 B = 36 B",
+              "예시 전제: 성분 하나당 32 bit"
+            ]
+          },
+          "explanationMeaning": "한 자세의3각도와9칸 행렬을 먼저 비교하고, 같은 자세 기록이 뼈·프레임별로 쌓이는 표를 순서대로 늘린다.",
+          "observationPurpose": "무엇을 여러 번 저장하는지와 숫자 칸 수의 차이만 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-16.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "quantize",
+            "prompt": "1° 간격의 대표값",
+            "rows": [
+              "20.4° → 20°",
+              "성분 반올림 오차: 0.4°",
+              "가장 가까운 정수: 오차 ≤ 0.5°"
+            ]
+          },
+          "explanationMeaning": "연속 각도 눈금에서20°와20.4°를 같은1° 저장칸의20°로 모은다. 최대 반올림 오차0.5°를 한 성분의 눈금으로만 표시한다.",
+          "observationPurpose": "저장값이 같아지는 두 입력과 잃어버린 작은 차이를 직접 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-16.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "sine",
+            "prompt": "성분 간격과 각도 간격은 다르다",
+            "rows": [
+              "sin θ 성분의 변화 ≠ 같은 각도 변화",
+              "성분 오차와 최종 자세 오차를 구별",
+              "다른 표현도 압축할 수 있음"
+            ]
+          },
+          "explanationMeaning": "각도 오차라는 정보와 sin/cos 성분 오차라는 정보를 다른 범례로 둔다. 새 삼각함수 유도를 추가하지 않고 두 오류의 뜻이 같지 않음을 연결한다.",
+          "observationPurpose": "성분 한 칸의 오차와 최종 자세 오차를 같은 숫자로 읽지 않도록 범례를 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "다른 표현도 압축할 수 있으므로 오일러 각만 압축할 수 있다는 뜻은 아닙니다. 이 장점은 사람이 이해할 수 있는 각도와 작은 저장량을 함께 얻는 데 있습니다."
+    },
+    {
+      "id": "v6-17",
+      "title": "장점3: 유한한 각도 세 개는 자세를 만든다",
+      "termChip": {
+        "term": "유효한 세 각도",
+        "en": "Euler Angles",
+        "meaning": "유한한 세 실수는 회전을 만든다",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-17.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "범위 밖 숫자도 회전을 만든다",
+            "rows": [
+              "(h,p,b) = (720°,135°,0°)",
+              "유한한 실수 → 유효한 회전",
+              "유효한 자세 ≠ 의도한 자세"
+            ]
+          },
+          "explanationMeaning": "h720°,p135° 같은 유한 입력을 넣은 뒤 생성된 강체 자세를 보여 준다. 큰 숫자가 곧 계산 불가능은 아니라는 표시만 붙인다.",
+          "observationPurpose": "유효한 숫자 입력과 유효한 자세라는 관계를 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-17.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "matrix",
+            "prompt": "모든 숫자 표가 회전은 아니다",
+            "rows": [
+              "회전 행렬: 축 길이 1 · 서로 수직",
+              "임의의 3×3 표: 늘림/비틀림 가능",
+              "회전에 쓰는 쿼터니언도 조건 관리"
+            ]
+          },
+          "explanationMeaning": "임의3×3 숫자로 늘어난 모형과 순수 회전 모형을 비교한다. 쿼터니언은'조건을 관리하는 다른 표현'이라는 이름만 남기고 미학습 공식을 펼치지 않는다.",
+          "observationPurpose": "다른 표현은 지켜야 하는 조건이 있음을 길이·직각 그림으로 구별한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이렇게 편리한 세 숫자에도 대가가 있습니다. 같은 자세가 숫자로 여러 번 나타나고, 숫자 사이를 연결하는 과정에도 문제가 생깁니다. 먼저 같은 자세가 겹쳐 적히는 경우부터 보겠습니다."
+    },
+    {
+      "id": "v6-18",
+      "title": "단점1: 숫자가 달라도 같은 자세",
+      "termChip": {
+        "term": "중복 표현",
+        "en": "Aliasing",
+        "meaning": "다른 숫자가 같은 끝 자세를 나타냄",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-18.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "0→360→720°를 차례로 돌린 뒤 세 끝 자세를 겹쳐 놓는다. 누적 회전 계기는 따로 유지한다.",
+          "observationPurpose": "지나온 바퀴수와 마지막 자세가 서로 다른 정보임을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-18.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "H/P/B세 열에(0,135,0)과(180,45,180)을 한 행씩 공개한 뒤 두 비행기를 각각 만든다. 마지막 세 축을 반투명 겹침으로 비교한다.",
+          "observationPurpose": "숫자 여섯 개를 순서대로 읽은 뒤 기수·날개·위쪽의 일치를 찾는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "따라서 오일러 각 세 숫자를 그대로 비교해 다르다고 해서 자세도 다르다고 결론 내릴 수 없습니다. 비교와 출력을 편하게 하려면, 여러 표현 중 하나를 대표로 고르는 규칙이 필요합니다."
+    },
+    {
+      "id": "v6-19",
+      "title": "대표 범위와 정규형",
+      "termChip": {
+        "term": "대표 범위와 정규형",
+        "en": "Canonical Euler Angles",
+        "meaning": "같은 자세의 여러 표현 중 하나 선택",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-19.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "ranges",
+            "prompt": "대표 범위",
+            "rows": [
+              "−180° < h ≤ 180°",
+              "−90° ≤ p ≤ 90°",
+              "−180° < b ≤ 180°"
+            ]
+          },
+          "explanationMeaning": "H/B범위(-180,180]와P범위[-90,90]를 한 줄씩 공개한다. 열린/닫힌 끝점을 빈점/찬점으로 함께 표시한다.",
+          "observationPurpose": "어느 끝점을 포함하는지와 H/B/P의 서로 다른 범위를 숫자 눈금에서 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-19.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "피치만 따로 감싸면 끝날까?",
+            "rows": [
+              "(0°,135°,0°)",
+              "같은 자세 → (180°,45°,180°)",
+              "p를 정리하면 h·b도 함께 변할 수 있음"
+            ]
+          },
+          "explanationMeaning": "직전(0,135,0)을(180,45,180)으로 옮긴 표시를 이어 받아 피치뿐 아니라H/B도 바뀌는 것을 한 칸씩 강조한다.",
+          "observationPurpose": "각 칸에서360만 빼는 단순 조작과 다름을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-19.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "ranges",
+            "prompt": "경계 p = ±90°",
+            "rows": [
+              "안쪽: 세 조절 방향을 구별",
+              "경계: 헤딩·뱅크 효과가 겹침",
+              "대표값 규칙을 추가로 확인"
+            ]
+          },
+          "explanationMeaning": "피치 범위 내부와 정확한±90°경계를 분리하고 같은 비행기 중심에 다음 장면의 두 축을 남긴다.",
+          "observationPurpose": "대표 범위의 경계에 아직 특별한 문제가 남아 있음을 찾는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "범위를 정했으니 무조건 유일해졌다고 끝내지 말고, 그 경계의 비행기를 직접 보겠습니다. 이 현상이 짐벌 락으로 이어집니다."
+    },
+    {
+      "id": "v6-20",
+      "title": "짐벌 락: 두 회전축이 한 선에 놓인다",
+      "termChip": {
+        "term": "짐벌 락",
+        "en": "Gimbal Lock",
+        "meaning": "독립적이던 두 조절 방향의 효과가 겹침",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-20.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "p45→80→90°를 천천히 순차 재생한다. 처음Y와 최종 뱅크Z의 직선을 끝에서 강조하고 양의 화살표가 반대임을 분리해 보인다.",
+          "observationPurpose": "축 두 개의 위치와 양의 방향을 구별해 공선 상태를 관찰한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-20.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "p=+90°를 고정한 첫 숫자쌍(30,90,10)/(20,90,0)부터 확인한 뒤 두 번째쌍(45,90,0)/(0,90,-45)을 별도로 공개한다. h-b 계산과 같은 끝 자세를 각 쌍마다 멈춰 보여 준다.",
+          "observationPurpose": "두 예를 한꺼번에 외우지 않고 각 표의 뺄셈·뱅크 부호·끝 자세 일치를 차례로 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-20.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "p=-90°패널로 바꾸고 h+b라는 부호 관계만 별도로 공개한다. +90°패널의 h-b와 색이 아닌 글자·연산기호로 대비한다.",
+          "observationPurpose": "플러스 경계와 마이너스 경계의 다른 연산을 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이 상태에서도 비행기 자체가 물리적으로 회전할 수 없게 되는 것은 아닙니다. 모든 자세는 여전히 나타낼 수 있습니다. 문제는 그 부근에서 세 숫자를 독립적으로 조절하고 연속적으로 읽는 방식에 생깁니다."
+    },
+    {
+      "id": "v6-21",
+      "title": "짐벌 경계의 대표값과 프로그램 입출력",
+      "termChip": {
+        "term": "대표값으로 출력하기",
+        "en": "Canonicalization",
+        "meaning": "중복 정리와 연속성 문제는 별개",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-21.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "뱅크를 0으로 고른 대표값",
+            "rows": [
+              "p=+90° → h′=h−b, b′=0",
+              "(30°,90°,10°) → (20°,90°,0°)",
+              "p=−90° → h′=h+b, b′=0"
+            ]
+          },
+          "explanationMeaning": "p=+90°와 p=-90°를 따로 보여 준다. 먼저 뱅크를0으로 고르는 규칙을 적용하고, 각각 h-b와 h+b를 헤딩 칸으로 모아도 물체의 끝 자세가 그대로임을 겹쳐 확인한다.",
+          "observationPurpose": "두 경계의 연산 부호가 다르며 자세는 바뀌지 않는다는 점을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-21.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "물체는 조금, 숫자는 크게",
+            "rows": [
+              "같은 연속 회전: p 89° → 91°",
+              "정규형 p: 89° → 89°",
+              "h·b: 0° → 180°"
+            ]
+          },
+          "explanationMeaning": "같은 작은 실제 자세 변화가 정규형 각도 출력에서는 큰 점프로 나타나는 짧은 곡선을 보여 준다. 축을 고치는 장치가 아니라 출력 표기의 경계라는 범례를 붙인다.",
+          "observationPurpose": "연속으로 움직이는 물체와 점프하는 숫자를 구별한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-21.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "flow",
+            "prompt": "입력과 출력의 목적 구별",
+            "rows": [
+              "입력: 유한한 세 각도",
+              "같은 회전",
+              "출력: 대표 범위/경계 규칙"
+            ]
+          },
+          "explanationMeaning": "입력 허용 범위→회전 생성→출력 대표값의 세 단계를 차례로 공개한다. 기울어진 게임 화면 옆에는 '화면만으로 내부 표현/짐벌 락을 판정할 수 없음'을 짧게 표시한다.",
+          "observationPurpose": "입력값, 대표 출력, 화면 관찰이라는 서로 다른 증거 수준을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "여기까지는 같은 자세를 어떻게 적는지의 문제였습니다. 이제 그 숫자들을 시간에 따라 바꿀 때 어떤 경로가 생기는지 보겠습니다."
+    },
+    {
+      "id": "v6-22",
+      "title": "보간은 중간 자세를 고르는 일",
+      "termChip": {
+        "term": "선형 보간",
+        "en": "Linear Interpolation",
+        "meaning": "시작값에 차이의 진행 비율만큼 더함",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-22.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "progress",
+            "prompt": "t는 전체 움직임의 진행 비율",
+            "rows": [
+              "0 = 0%",
+              "0.5 = 50%",
+              "1 = 100%"
+            ]
+          },
+          "explanationMeaning": "같은 시작과 끝 자세를 고정하고 서로 다른 두 중간 경로를 먼저 보여 준다. t를 경과 초가 아닌 진행 비율로 표시해 0/0%,0.5/50%,1/100% 눈금을 단계적으로 공개한다.",
+          "observationPurpose": "끝점만으로 중간 움직임이 정해지지 않는다는 점과 t의 뜻을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-22.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "10°에서30°의 중간 값",
+            "rows": [
+              "Δθ = 30° − 10° = 20°",
+              "θ(t) = 10° + t × 20°",
+              "t=0.5 → θ=20°"
+            ]
+          },
+          "explanationMeaning": "10°→30°의 한 각도 눈금에서 차이20°를 분리하고, 10°+t×20°의 입력 칸을 공개한다. t=0.5를 넣는 계산은 수치를 한 줄씩 바꾼 뒤 중간 위치에 표시한다.",
+          "observationPurpose": "시작값, 차이, 진행 비율의 역할과 중간 계산을 직접 따라간다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-22.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "중간 자세까지 확인",
+            "rows": [
+              "출발 자세 → 공중 자세 → 착지 자세",
+              "끝점이 같아도 경로는 여러 개",
+              "실제 동작의 중간 모습을 관찰"
+            ]
+          },
+          "explanationMeaning": "직접 확인한 마리오 독립 영상에서 출발→공중의 방향 변화→착지의 대응 프레임을 원속도로 보여 준다. 게임 내부 보간 알고리즘을 측정했다고 쓰지 않고 관찰한 중간 자세만 짚는다.",
+          "observationPurpose": "출발·도착이 맞는 것과 공중 자세가 의도에 맞는 것을 따로 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "각도는 한 바퀴마다 같은 자세로 돌아오므로, 보통 숫자의 보간과 다른 주의점이 생깁니다. 먼저 불필요한 여러 바퀴가 끼어드는 예부터 보겠습니다."
+    },
+    {
+      "id": "v6-23",
+      "title": "문제 1: 720도에서 45도로 보간하면",
+      "termChip": {
+        "term": "각도 보간",
+        "en": "Angle Interpolation",
+        "meaning": "한 바퀴 차이와 의도한 경로 구별",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-23.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "circle",
+            "prompt": "720° → 45°",
+            "rows": [
+              "45° − 720° = −675°",
+              "같은 시작 자세라도 불필요한 여러 바퀴"
+            ],
+            "startAngle": 720,
+            "delta": -675
+          },
+          "explanationMeaning": "720°와0°의 시작 자세가 같음을 먼저 겹친다. 45-720=-675°를 한 줄씩 공개하고, 회전 방향·진행 화살표·누적 바퀴 표시를 따라 긴 경로를 관찰한다.",
+          "observationPurpose": "끝 자세가 같아도 거의 두 바퀴를 거꾸로 돌아가는 중간 경로를 눈으로 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-23.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "circle",
+            "prompt": "0° → 45°",
+            "rows": [
+              "720° ≡ 0°",
+              "45° − 0° = +45°",
+              "여러 바퀴를 의도했다면 별도 관리"
+            ],
+            "startAngle": 0,
+            "delta": 45
+          },
+          "explanationMeaning": "시작 표기를0°로 바꾼 뒤 같은 시작 자세에서 +45°만 회전시킨다. 앞의 긴 경로 자취는 옅게 남겨 길이와 방향을 비교하고 같은 끝 자세에 도착하면 멈춘다.",
+          "observationPurpose": "표기 정리가 경로의 숫자 차이를 어떻게 바꾸었는지 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "끝점의 표현을 정리하면 이 문제는 줄일 수 있습니다. 그러나 두 끝점이 모두 대표 범위 안에 있어도 남는 문제가 있습니다."
+    },
+    {
+      "id": "v6-24",
+      "title": "문제 2: 마이너스 170도와 플러스 170도 사이",
+      "termChip": {
+        "term": "각도 차이 감싸기",
+        "en": "Angle Wrapping",
+        "meaning": "같은 끝 회전을 만드는 짧은 차이",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-24.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "circle",
+            "prompt": "−170° → +170°",
+            "rows": [
+              "원시 차이 = +340°",
+              "중간 값 = 0° : 길게 우회"
+            ],
+            "startAngle": -170,
+            "delta": 340
+          },
+          "explanationMeaning": "원 위의 -170°와+170°를 먼저 표시하고 원시 차이 +340°의 긴 호를 순서대로 그린다. t=0.5에서0°가 되는 중간 자세를 멈춰 보여 준다.",
+          "observationPurpose": "두 끝점이 대표 범위 안이어도 앞쪽을 지나 멀리 도는 경로가 생긴다는 점을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-24.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "circle",
+            "prompt": "차이 자체를 감싼다",
+            "rows": [
+              "340° − 360° = −20°",
+              "뒤쪽 경계를 지나 짧게 연결"
+            ],
+            "startAngle": -170,
+            "delta": -20
+          },
+          "explanationMeaning": "뒤쪽 경계에 두 끝 화살표가 가까이 있음을 확대한다. -20°의 짧은 호를 따로 그린 뒤 +340°-360°=-20°를 공개한다. 긴 호와 짧은 호를 색 외에도 '원시 차이/짧은 차이'로 구분한다.",
+          "observationPurpose": "뒤 경계의 작은 간격과 한 바퀴를 빼는 계산을 대응해 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-24.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "circle",
+            "prompt": "짧은 경로의 중간",
+            "rows": [
+              "−170° + 0.5 × (−20°) = −180°",
+              "−180° ≡ +180°"
+            ],
+            "startAngle": -170,
+            "delta": -20,
+            "progress": 0.5
+          },
+          "explanationMeaning": "짧은 호의 절반에 중간 화살표를 놓고 -170°+(-20°)/2=-180°를 순차 표시한다. -180°와+180° 두 표기를 같은 한 화살표에 연결한다.",
+          "observationPurpose": "중간 자세와 숫자의 경계 표기가 같은 위치를 가리키는지 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "여기서는 끝점 각각만 정리해서는 충분하지 않았습니다. 두 값의 차이 자체를 원하는 대표 범위로 감싸야 합니다. 그 계산을 랩 함수로 만들겠습니다."
+    },
+    {
+      "id": "v6-25",
+      "title": "랩 함수의 원리: 한 바퀴를 몇 번 뺄까",
+      "termChip": {
+        "term": "내림과 각도 랩",
+        "en": "Floor / Angle Wrapping",
+        "meaning": "한 바퀴를 몇 번 빼는지 계산",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-25.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "floor",
+            "prompt": "floor는 입력보다 크지 않은 정수",
+            "rows": [
+              "floor(−0.1) = −1",
+              "0 쪽으로 버리는 trunc와 다름"
+            ]
+          },
+          "explanationMeaning": "도 단위 원을 수직선으로 펴서 (a+180)/360이 어떤 바퀴 칸을 고르는지 보인다. 음수 예에서는 -0.1과-1을 수직선에 놓고 내림과0쪽 버림을 분리한다. floor라는 이름은 그 동작 뒤에 붙인다.",
+          "observationPurpose": "floor(-0.1)=-1의 방향과 '그 값보다 크지 않은 정수'라는 뜻을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-25.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "340°에서 한 바퀴를 찾는다",
+            "rows": [
+              "(340°+180°)/360° = 1.444…",
+              "floor(1.444…) = 1",
+              "340° − 360° × 1 = −20°"
+            ]
+          },
+          "explanationMeaning": "입력340을 고정하고 +180→520, /360→약1.44, floor→1, 340-360×1→-20 순서로 현재 계산 줄만 강조한다. 원의 같은 끝 방향과 수직선의 이동을 연결한다.",
+          "observationPurpose": "각 중간 수치를 읽고 왜 한 바퀴만 빼는지 스스로 따라간다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-25.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "ranges",
+            "prompt": "floor 식과 끝점 보정",
+            "rows": [
+              "w = x − 360 floor((x+180)/360)",
+              "위 식: [−180°,180°)",
+              "w=−180°이면 +180°로 → (−180°,180°]"
+            ]
+          },
+          "explanationMeaning": "a-360 floor((a+180)/360)을 앞의 계산 자리와 연결한다. [-180,180) 눈금과 선택한(-180,180] 눈금을 순차로 보여 주고 -180만+180으로 옮기는 경계 보정을 공개한다.",
+          "observationPurpose": "열린 끝점/닫힌 끝점과 보정되는 정확히 한 값만 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "음수 입력과 양 끝점을 따로 확인하는 이유가 여기에 있습니다. 한 바퀴를 빼는 원리를 이해했으니, 같은 동작을 라디안 코드로 옮겨 보겠습니다."
+    },
+    {
+      "id": "v6-26",
+      "title": "라디안과 안전한 wrapPi 코드",
+      "termChip": {
+        "term": "라디안과 각도 랩",
+        "en": "Radian / wrapPi",
+        "meaning": "단위를 맞추고 경계값을 정리",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-26.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "radian",
+            "prompt": "호 길이 = 반지름이면 1 rad",
+            "rows": [
+              "s = r",
+              "θ = s/r = 1 rad"
+            ]
+          },
+          "explanationMeaning": "원의 반지름 r 선분과 같은 길이의 호를 같은 표시로 비교한다. 그 호의 양 끝과 중심을 연결하고 중심각1rad를 마지막에 붙인다. 아직 π 환산표와 코드를 동시에 공개하지 않는다.",
+          "observationPurpose": "반지름 길이와 호 길이가 같을 때의 각도라는 1rad의 정의를 관찰한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-26.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "radian",
+            "prompt": "반 바퀴의 호 길이는 πr",
+            "rows": [
+              "180° = π rad",
+              "360° = 2π rad = τ",
+              "radians = degrees × π/180"
+            ],
+            "halfTurn": true
+          },
+          "explanationMeaning": "호를 반 바퀴/한 바퀴로 확장해 180°=πrad,360°=2πrad를 차례로 붙인다. 도×π/180 변환과 코드의 π,τ=2π 상수를 같은 범례로 연결한다.",
+          "observationPurpose": "도와 라디안의 대응 및 τ가 한 바퀴라는 뜻을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-26.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "code",
+            "prompt": "가장 가까운 한 바퀴 배수 빼기",
+            "rows": [
+              "double w = std::remainder(angle, tau);",
+              "if (w <= -pi) w += tau;",
+              "return w;"
+            ],
+            "notes": [
+              "remainder: 최근접 정수 배 · 동점은 짝수",
+              "출력: −π < w ≤ π · 유한한 rad 입력"
+            ]
+          },
+          "explanationMeaning": "std::remainder의 '가장 가까운 정수 배를 빼기'를 수직선의 후보 배수로 보여 준다. 정확한 절반의 짝수 선택은 별도 작은 예로 보이고, 이어 -π→+π 보정과 출력(-π,π]를 공개한다. fmod와 같은 동작으로 묶지 않는다.",
+          "observationPurpose": "일반 나머지와의 차이, 정확한 양 끝점, 추가 보정의 역할을 한 단계씩 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-26.B04",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "code",
+            "prompt": "입력·경계·보간 테스트",
+            "rows": [
+              "double delta = wrapPiCanonical(end-start);",
+              "double value = start + t*delta;"
+            ],
+            "notes": [
+              "340° 해당 rad → −20° 해당 rad",
+              "+π → +π,  −π → +π",
+              "범위 밖을 줄이는 조건은 > π"
+            ]
+          },
+          "explanationMeaning": "범위 밖일 때만 줄이는 분기 흐름을 보여 주고 잘못된 범위 안 조건은 주석과 대비한다. 340°에 해당하는 라디안→-20°에 해당하는 라디안,±π→+π의 테스트를 한 개씩 실행 표시한다.",
+          "observationPurpose": "분기 조건과 세 경계 테스트를 읽고 앞의 원 그림과 결과가 맞는지 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이제 차이에 랩 함수를 적용하고, 그 짧은 차이에 티를 곱해 시작에 더하겠습니다. 이 방식이 한 축의 경계 문제를 해결합니다."
+    },
+    {
+      "id": "v6-27",
+      "title": "세 성분을 따로 랩해도 3D 보간이 완성되지는 않는다",
+      "termChip": {
+        "term": "3차원 보간의 한계",
+        "en": "Euler Interpolation",
+        "meaning": "끝 자세와 중간 경로는 별개",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-27.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "한 각도 원의 wrap 결과를 H/P/B 세 칸으로 확장하되, p90°의 겹치는 두 효과를 바로 옆에 다시 보여 준다. '숫자 경계 처리'와 '3D 경로 결정'을 다른 문제로 구분한다.",
+          "observationPurpose": "각 성분에 wrap을 쓴다는 사실만으로 전체 움직임이 정해지지 않는 이유를 떠올린다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-27.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "두 줄의 시작/절반/끝 표를 순서대로 채운다. 위는 (0,0,0)→(0,67.5,0)→(0,135,0), 아래는 (0,0,0)→(90,22.5,90)→(180,45,180)이다. 한 줄씩 계산·재생 후 절반 자세의 기수와 날개를 비교하고 마지막만 겹친다.",
+          "observationPurpose": "많은 숫자를 한꺼번에 외우지 않고 같은 끝점과 다른 중간 자세를 행별로 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-27.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "H/P/B의 일정한 성분 변화 그래프와 3D 물체의 중간 회전을 나란히 보인다. 앞의 마리오 공중 자세 관찰을 작은 대응 프레임으로 다시 연결하되 내부 각속도 측정값을 만들지 않는다.",
+          "observationPurpose": "숫자의 일정한 변화율과 실제 공간 회전의 일정한 속도가 서로 다른 조건임을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "랩 함수는 주기적인 숫자의 경계 문제를 다룹니다. 짐벌 락과 삼차원 경로 문제까지 모두 해결하는 함수로 쓰면 안 됩니다."
+    },
+    {
+      "id": "v6-28",
+      "title": "세 숫자의 편리함과 전역적인 한계",
+      "termChip": {
+        "term": "국소와 전역",
+        "en": "Local / Global",
+        "meaning": "작은 범위의 표현과 모든 자세의 표현",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-28.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "local",
+            "prompt": "한 자세 주변과 모든 자세",
+            "rows": [
+              "국소: 한 자세 주변의 작은 범위",
+              "전역: 가능한 모든 3D 자세",
+              "한 체계로 유일·연속·특이점 없음은 불가"
+            ]
+          },
+          "explanationMeaning": "한 자세 주변의 작은 범위에서는 세 조절값으로 편하게 다루는 그림부터 보인다. 이어 전체 회전을 하나의 표로 덮을 때 요구하는 '중복 없음/끊김 없음/특이점 없음'을 하나씩 표시한다. 구나 지구 지도 비유를 쓰면 SO(3) 자체와 같다고 그리지 않는다.",
+          "observationPurpose": "작은 범위의 편리함과 모든 자세를 동시에 덮으려는 요구를 구별한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-28.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "flow",
+            "prompt": "표현마다 유리한 연산이 다르다",
+            "rows": [
+              "사람이 편한 입력",
+              "회전 계산",
+              "사람이 읽는 출력"
+            ]
+          },
+          "explanationMeaning": "앞서 확인한 짐벌 경계와 대표값 경계를 각각 재사용한다. 사람이 편집하는 입력 칸과 내부 회전 계산 도구를 연결하고, 도구의 목적이 다르다는 범례를 붙인다.",
+          "observationPurpose": "다른 표현을 고르면 문제가 없어지는 것이 아니라 연산상의 장단점이 달라진다는 점을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "다음 표현으로 넘어가기 전에, 지금까지 배운 오일러 각의 역할과 한계를 한 번 묶어 보겠습니다."
+    },
+    {
+      "id": "v6-29",
+      "title": "오일러 각 정리: 편한 곳과 주의할 곳",
+      "termChip": {
+        "term": "오일러 각 정리",
+        "en": "Euler Angles",
+        "meaning": "편한 입력과 조심할 계산을 구별",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-29.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "flow",
+            "prompt": "세 각도의 역할",
+            "rows": [
+              "헤딩: 수직 Y",
+              "피치: 이동한 X",
+              "뱅크: 이동한 Z"
+            ]
+          },
+          "explanationMeaning": "한 비행기를 유지해 몸체 Y→X→Z의 세 회전을 짧게 다시 보여 준다. 기수 방향을 정하는 두 회전과 그 방향 주위 뱅크를 나눈 뒤, 고정 축 역순의 같은 끝 자세를 겹친다.",
+          "observationPurpose": "세 회전의 역할과 같은 끝 자세의 동등한 순서를 다시 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-29.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "사람에게 편리한 세 숫자",
+            "rows": [
+              "축 · 양의 방향 · 순서 확인",
+              "읽기/편집 · 저장량/정밀도",
+              "유한한 세 각도는 회전을 만듦"
+            ]
+          },
+          "explanationMeaning": "축·양의 방향·순서라는 규약 체크 항목을 하나씩 공개한다. 이어 세 편집 칸과 저장 칸의 장점을 각각 해당 비행기·표에 연결한다.",
+          "observationPurpose": "이름만 암기하지 않고 무엇을 먼저 확인해야 하며 언제 편리한지 정리한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-29.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "중복 정리와 경로 문제 구별",
+            "rows": [
+              "대표 범위 + p=±90°에서 b=0",
+              "wrap은 한 축의 주기 경계를 정리",
+              "짐벌 락과 실제 회전 경로는 별도 확인"
+            ]
+          },
+          "explanationMeaning": "중복 표현, 대표값 경계, 짐벌 경계, 보간 경로를 앞서 본 작은 증거 네 개로 차례로 다시 보여 준다. 출력 정리와 경로/속도 확인을 분리한 두 열에 배치한다.",
+          "observationPurpose": "각 규칙이 해결하는 문제와 남는 문제를 연결해 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이제 고정된 세 종류의 축을 고르는 방식에서 한 걸음 물러나겠습니다. 이번 자세 변화에 꼭 맞는 축 하나를 자유롭게 고를 수 있다면 어떻게 될까요?"
+    },
+    {
+      "id": "v6-30",
+      "title": "축 하나와 각도 하나: 오일러의 회전 정리",
+      "termChip": {
+        "term": "오일러의 회전 정리",
+        "en": "Euler Rotation Theorem",
+        "meaning": "같은 원점의 두 자세 차이 = 한 축 회전",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-30.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "같은 중심의 시작/끝 비행기를 고정하고 먼저 세 단계 회전으로 같은 끝 자세를 확인한다. 그 뒤 원점을 지나는 비스듬한 축 하나를 공개해 같은 끝 자세를 한 회전으로 재현한다. 오일러 각/오일러의 회전 정리는 서로 다른 표제로 둔다.",
+          "observationPurpose": "미리 정한 세 축의 단계와 이번 변화에 맞춘 축 하나가 같은 시작/끝을 잇는지 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-30.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "중심 고정과 길이·방향 관계 보존을 축 회전 장면 위에 짧게 표시한다. 늘이기·반사는 회전의 범위 밖이라는 작은 대비만 두고, 기수·날개·위쪽 세 표시가 모두 끝 자세에 맞으면 멈춘다.",
+          "observationPurpose": "기수 점만 맞춘 것이 아니라 물체 전체의 방향 관계가 맞는지 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이렇게 축과 각도를 기록하는 방식을 축·각 표현, 영어로 액시스 앵글 리프리젠테이션이라고 합니다. 먼저 축에 어떤 정보를 담는지 보겠습니다."
+    },
+    {
+      "id": "v6-31",
+      "title": "축은 길이 1인 방향벡터로 정한다",
+      "termChip": {
+        "term": "축·각 표현",
+        "en": "Axis–Angle",
+        "meaning": "단위축과 회전각을 함께 기록",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-31.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "n의 X/Y/Z 성분을 가진 화살표를 먼저 공개한다. 같은 방향의 긴/짧은 화살표를 한 축에 겹친 뒤 길이를1로 맞추고 단위벡터 표기를 붙인다.",
+          "observationPurpose": "축의 방향 정보는 유지하고 불필요한 길이 차이를 없앤다는 정규화의 목적을 본다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-31.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "n=(0,1,0),θ=90°를 한 줄씩 입력하고 정한 왼손 규약에서 Y축 주위 회전을 보여 준다. 기수와 오른쪽 축을 함께 추적하며 회전축Y는 고정한다.",
+          "observationPurpose": "앞쪽+Z와 오른쪽+X가 함께 움직이고 Y축만 그대로임을 관찰한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-31.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "길이1 조건이 있는 축 방향 두 조절값과 각도 한 조절값을 분리해 보여 준다. 세 성분이 모두 자유로운 위치 화살표와 혼동하지 않게 '방향2+회전각1'을 붙인다.",
+          "observationPurpose": "성분 칸의 수와 독립적으로 정할 값의 수가 다르다는 점을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "축의 세 성분과 각도 하나를 따로 저장할 수 있습니다. 다음에는 이 둘을 곱해서 하나의 세 성분 벡터로 묶어 보겠습니다."
+    },
+    {
+      "id": "v6-32",
+      "title": "회전벡터: 방향은 축, 길이는 각도",
+      "termChip": {
+        "term": "회전벡터",
+        "en": "Rotation Vector",
+        "meaning": "방향은 축, 길이는 라디안 각도",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-32.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "n,θ,e를 한꺼번에 놓지 않고 단위축 n→라디안 θ→e=θn 순서로 공개한다. e는 영문 소문자임을 표시하고 방향/길이 범례를 화살표 옆에 연결한다.",
+          "observationPurpose": "방향은 축이고 길이는 회전각이며 단위축의 길이1이 곱셈의 기준임을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-32.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "n=(0,1,0)에 π/2를 곱해 e=(0,π/2,0)이 되는 칸별 계산을 보여 준다. 같은 축에서 화살표 길이와 회전각을 두 배로 바꾸되 물체 중심의 위치는 고정한다.",
+          "observationPurpose": "벡터의 끝은 이동 목적지가 아니며 길이 변화가 각도 변화라는 점을 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-32.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "검수한 젤다 독립 영상의 통나무 중심 이동 자취와 돛대 자세 변화 구간을 순서대로 보여 준다. 이동은 화면 위치 자취, 회전축은 설명용 개념도로 분리해 내부 실제 값처럼 표기하지 않는다.",
+          "observationPurpose": "같은 화살표 모양도 위치와 회전에서 다른 정보를 담는다는 점을 관찰한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이제 세 성분만 보고 축과 각도를 다시 꺼내 보겠습니다."
+    },
+    {
+      "id": "v6-33",
+      "title": "회전벡터를 읽는 작은 계산",
+      "termChip": {
+        "term": "회전벡터 읽기",
+        "en": "Normalization",
+        "meaning": "길이로 각도, 정규화로 단위축 복원",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-33.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "e = (0,π/2,0)의 길이",
+            "rows": [
+              "θ = √(ex²+ey²+ez²)",
+              "θ = √(0²+(π/2)²+0²)",
+              "θ = π/2 rad = 90°"
+            ]
+          },
+          "explanationMeaning": "e=(0,π/2,0)의 성분을 각각 제곱→합→제곱근 순서로 옮겨 √(0²+(π/2)²+0²)를 한 단계씩 완성한다. 원래 벡터와 계산의 같은 성분을 대응시킨다.",
+          "observationPurpose": "길이 계산에서 각 성분이 어디에 쓰이는지 직접 따라간다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-33.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "영이 아닌 벡터를 길이로 나누기",
+            "rows": [
+              "n = e / ‖e‖",
+              "n = (0,π/2,0) / (π/2)",
+              "n = (0,1,0) : 단위 Y축"
+            ]
+          },
+          "explanationMeaning": "원래 e의 각 칸을 π/2로 나누어 n=(0,1,0)이 되는 정규화를 보여 준다. 복원한 축과 각도로 비행기를 Y축 주위90° 회전시켜 앞의 결과와 겹친다.",
+          "observationPurpose": "길이에서 각도, 나눗셈에서 축을 복원하고 실제 자세까지 같은지 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-33.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "영 벡터에서는 나누지 않는다",
+            "rows": [
+              "e = (0,0,0) → θ = 0",
+              "영으로 나누어 축을 만들지 않음",
+              "회전이 없으면 특정 축이 필요 없음"
+            ]
+          },
+          "explanationMeaning": "e=0 입력에서는 길이0을 구한 뒤 축 복원 나눗셈 앞에서 멈춘다. '회전각0/축은 특정하지 않음' 결과를 남기고 0으로 나누는 코드는 실행하지 않는다.",
+          "observationPurpose": "영 벡터의 회전각은 알지만 특정 축을 복원할 수 없는 예외를 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "단, 벡터가 영일 때는 이 나눗셈을 하면 안 됩니다. 회전각은 영이지만, 영으로 나눠 특정 축을 복원할 수는 없습니다. 이 예외는 중복 표현을 볼 때 다시 정리하겠습니다."
+    },
+    {
+      "id": "v6-34",
+      "title": "같은 축에서 회전량의 배수 구하기",
+      "termChip": {
+        "term": "회전량의 배수",
+        "en": "Scaled Rotation",
+        "meaning": "같은 축에서 회전각만 배로 조절",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-34.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "같은 Y축을 고정하고90° 기준에서 1/3→30°,2.65→238.5°의 배수 계산을 각각 공개한다. 각도 호와 끝 자세를 한 예씩 확인하고 기준 자세를 유지한다.",
+          "observationPurpose": "같은 축에서 덜 돌기와 한 바퀴 안의 더 큰 회전량을 각각 관찰한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-34.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "e의 길이만 같은 배수로 늘리고 줄이며 방향 유지/각도 변화의 대응을 보인다. 음수 배수는 부호와 회전 진행 화살표로 반대 방향을 따로 보여 준다.",
+          "observationPurpose": "양수 크기 조절과 음수 방향 반전을 구별한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-34.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "한 축의 각도 배수 도식 옆에 서로 다른 축의 순차 회전 두 단계를 작게 놓는다. 아직 벡터 덧셈 해답을 앞당기지 않고 두 질문의 차이를 이름 붙인다.",
+          "observationPurpose": "배수 구하기와 서로 다른 회전의 합성이 다른 질문임을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "먼저 이 표현이 어떤 데이터와 계산에서 유용한지 보겠습니다."
+    },
+    {
+      "id": "v6-35",
+      "title": "지수 사상과 쓰임새",
+      "termChip": {
+        "term": "지수 사상",
+        "en": "Exponential Map",
+        "meaning": "회전벡터를 실제 회전으로 보내는 연산",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-35.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "flow",
+            "prompt": "자료와 연산을 나눈다",
+            "rows": [
+              "회전벡터 e",
+              "지수 사상 Exp",
+              "회전 R"
+            ]
+          },
+          "explanationMeaning": "e 입력 화살표→지수 사상이라는 연산→실제 회전/회전 행렬 결과를 차례로 연결한다. e 자체와 연산 상자를 분리하고 이 자리에서는 전개식 유도를 새로 쌓지 않는다.",
+          "observationPurpose": "자료인 회전벡터와 자료를 회전으로 보내는 연산을 구별한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-35.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "쓰임새와 범위",
+            "rows": [
+              "애니메이션 회전 데이터",
+              "같은 축의 회전량 배수/미분",
+              "특정 범위 보간에 유용 · 경계는 남음"
+            ]
+          },
+          "explanationMeaning": "앞에서 만든 회전량 배수와 애니메이션 중간 자세 그림을 재사용해 쓰임을 연결한다. 미분은 후속 세부 전개 없이 '시간에 따른 변화 계산'이라는 역할만 그림으로 표시한다.",
+          "observationPurpose": "새 이름 목록을 암기하기보다 이미 본 동작에서 어떤 계산에 쓰이는지 본다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-35.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "rows",
+            "prompt": "회전량과 회전 속도의 단위",
+            "rows": [
+              "회전벡터 e : rad",
+              "각속도 ω : rad/s",
+              "방향은 축 · 길이는 서로 다른 양"
+            ]
+          },
+          "explanationMeaning": "같은 축의 회전량 e에는 rad,초시계와 함께 도는 각속도 ω에는 rad/s를 붙인다. 같은 길이 화살표를 같은 의미로 읽지 않도록 '얼마나/1초에 얼마나' 범례를 연결한다.",
+          "observationPurpose": "회전량과 순간의 회전 속도라는 서로 다른 단위를 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "기울어진 도로를 달리는 차에서 이동 방향, 차체 자세, 카메라 움직임을 구별했듯, 계산에서도 위치와 자세와 속도를 따로 읽어야 합니다. 이제 이 표현에도 남아 있는 중복을 살펴보겠습니다."
+    },
+    {
+      "id": "v6-36",
+      "title": "중복 1: 영 회전과 축·각 동시 부호 반전",
+      "termChip": {
+        "term": "영 회전과 부호",
+        "en": "Axis–Angle",
+        "meaning": "축의 모호함과 동시 부호 반전",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-36.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "축 방향을 몇 가지로 바꾸되 θ=0에서는 비행기를 그대로 둔다. 각 n×0의 결과가 같은 e=0으로 모이는 관계를 순차 연결한다.",
+          "observationPurpose": "0회전에서 축 선택은 달라도 자세와 회전벡터 결과는 같음을 본다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-36.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "n과+90° 조합을 먼저 재생한 뒤 -n과-90° 조합을 같은 규약으로 재생한다. 축 화살표 반전과 각도 부호 반전을 따로 표시하고 끝 자세를 겹친다.",
+          "observationPurpose": "두 부호를 동시에 바꾸면 같은 동작이 되는지 직접 비교한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-36.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "앞의 e=0 복원 도식으로 돌아와 축 칸을 빈 오류값 대신 '특정하지 않음'으로 남긴다. 누적 바퀴 수 항목은 다음 단계로 연결되는 표제만 예고한다.",
+          "observationPurpose": "영 벡터에서 특정 축이 안 나오는 이유가 계산 실패가 아니라 정보의 성질임을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "그러나 이 두 중복을 줄였다고 끝 자세마다 회전벡터가 하나씩만 남는 것은 아닙니다. 각도에 한 바퀴를 더할 수 있다는 문제는 여전히 남아 있습니다."
+    },
+    {
+      "id": "v6-37",
+      "title": "중복 2: 같은 끝 자세와 여러 바퀴의 정보",
+      "termChip": {
+        "term": "각속도와 회전 이력",
+        "en": "Angular Velocity",
+        "meaning": "끝 자세와 초당 회전량을 구별",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-37.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "같은 축에서+90°와-270°를 차례로 움직여 서로 다른 진행 호를 그린다. 마지막 자세는 겹치고 두 회전벡터의 길이/방향은 나란히 남긴다.",
+          "observationPurpose": "서로 다른 벡터와 이동한 회전량이 같은 끝 자세를 가질 수 있음을 관찰한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-37.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "720°/s와1080°/s 바퀴를 같은 시계로 구동한다. t=0→0.25s→1s를 따로 정지해180°/270°의 서로 다른 중간 자세와2바퀴/3바퀴 뒤 같은 끝 자세를 모두 확인한다.",
+          "observationPurpose": "마지막 사진만으로 구별되지 않는 정보가 중간 시각과 누적 카운터에는 남는다는 점을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이제 마지막 자세만 대표하는 회전벡터를 고르려면 어느 범위까지 줄일 수 있는지 보겠습니다."
+    },
+    {
+      "id": "v6-38",
+      "title": "2파이보다 작으면 언제나 유일할까",
+      "termChip": {
+        "term": "회전벡터의 대표 범위",
+        "en": "Principal Rotation Vector",
+        "meaning": "0과 π 경계 조건까지 함께 확인",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-38.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "n축90°와 -n축270°를 각자 방향·각도 호·벡터 길이로 보인다. 둘 다2π 미만인 범위 표시에 놓고 끝 자세만 겹친다.",
+          "observationPurpose": "둘 다 한 바퀴보다 작아도 서로 다른 벡터가 같은 끝 자세를 만드는 반례를 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-38.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "같은 끝 자세를 더 짧은 반대 축 회전으로 바꿔 θ∈[0,π]에 옮긴다. 축 반전과 각도 길이 변경을 한 번에 하나씩 보여 준다.",
+          "observationPurpose": "단순히 긴 각도만 자르는 것이 아니라 축을 함께 바꾸는 대표 선택임을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-38.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "정확히π에서는 n과-n의180° 회전을 차례로 적용하고 같은 끝 자세를 겹친다.0의 축 미정과π의 부호 선택을 서로 다른 경계 칸에 남긴다.",
+          "observationPurpose": "0과π가 서로 다른 이유로 추가 주의가 필요한 경계임을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "영에서는 축이 정해지지 않고, 백팔십 도 경계에는 축 부호 문제가 남는다고 정리해 두겠습니다. 표현을 바꾸면 문제의 위치와 모양이 달라지지만, 앞서 본 전역적 한계가 마법처럼 없어지지는 않습니다."
+    },
+    {
+      "id": "v6-39",
+      "title": "유한한 회전은 벡터처럼 더할 수 없다",
+      "termChip": {
+        "term": "회전 합성",
+        "en": "Rotation Composition",
+        "meaning": "유한한 두 회전은 벡터 덧셈과 다름",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-39.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "고정X90°와고정Y90°의 입력 벡터를 각각 공개하고 성분합(π/2,π/2,0)을 만든다. 제곱→합→제곱근으로 길이π/√2를 얻고127.28° 환산을 단계별로 읽은 뒤 비스듬한 축을 공개한다.",
+          "observationPurpose": "두 벡터의 성분합이 뜻하는 축과 각도를 계산 단계마다 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-39.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "같은 시작 자세에서 왼쪽은 고정X90° 뒤고정Y90°를 순차 적용하고,오른쪽은 합벡터의 대각선 축 회전을 한 번 적용한다. 모두 멈춘 뒤 기수와 위쪽 표시를 각각 비교한다.",
+          "observationPurpose": "두 끝 자세가 다르다는 주장을 실제 두 방향 표시로 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-39.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "벡터 덧셈의 순서 교환은 같은 결과인 반면 회전 두 단계의 순서 반전은 다른 끝 자세가 되는 비교를 보여 준다. 정확한 합성은 정한 행렬 곱 순서로 연결하되 여기서 새 행렬 유도를 시작하지 않는다.",
+          "observationPurpose": "덧셈과 회전 합성이 왜 다른 연산인지 순서와 결과를 연결한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "다만 아주 작은 회전을 다룰 때와 순간의 회전 속도를 다룰 때에는 다른 이야기가 가능합니다. 마지막으로 그 조건을 분명히 하겠습니다."
+    },
+    {
+      "id": "v6-40",
+      "title": "작은 회전의 근사와 같은 좌표계의 각속도",
+      "termChip": {
+        "term": "작은 회전과 순간 각속도",
+        "en": "Angular Velocity",
+        "meaning": "근사 · 정확한 합성 · 같은 좌표계 구별",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-40.B01",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "앞의90° 비교를 남기고 각 입력을2°로 줄여 동일 절차로 적용한다. 가까워진 두 자세를 보이되 정확히 같다고 겹쳐 숨기지 않고 오차가 남는다는 확대 범례를 붙인다.",
+          "observationPurpose": "차이가 작아짐과 정확히0이 됨을 구별한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-40.B02",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "한 물체에 같은 순간 합성되는 상대 회전의 관계를 한 중첩 도식으로 보여 준다. 두 각속도 화살표는 같은 좌표계로 표현될 때만 합 상자로 연결하고 무관한 두 물체의 속도는 합치지 않는다.",
+          "observationPurpose": "합산하는 대상과 '한 물체/같은 순간/같은 좌표계' 조건을 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-40.B03",
+          "renderer": "Unity",
+          "demonstration": null,
+          "explanationMeaning": "현재 몸체Z가 세계X와 나란한 자세를 먼저 보인다. 같은 각속도 화살표를 몸체 성분(0,0,ω)에서 세계 성분(ω,0,0)으로 바꾸어 적고,좌표계가 같아진 뒤에만 다른 성분과 합한다.",
+          "observationPurpose": "화살표 자체는 그대로인데 좌표 성분 이름이 바뀌는 과정을 확인한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "이렇게 유한한 자세 변화의 합성, 작은 변화의 근사, 순간 각속도의 합을 나눠 두면 벡터라는 같은 겉모습에 속지 않을 수 있습니다."
+    },
+    {
+      "id": "v6-41",
+      "title": "용어를 묶고 직접 확인하기",
+      "termChip": {
+        "term": "축·순서·단위 확인",
+        "en": "3D Rotations",
+        "meaning": "숫자와 동작과 끝 자세를 함께 확인",
+        "sourceKind": "우리 Unity 씬 / 해설용 계산",
+        "definitionAtStart": true,
+        "position": [
+          96,
+          64
+        ],
+        "collapseAfter": "first defined passage, actual reading time"
+      },
+      "pictureLabel": "우리 Unity 씬 · 해설용 모형",
+      "beats": [
+        {
+          "id": "v6-41.B01",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "flow",
+            "prompt": "오늘 사용한 자료와 연산",
+            "rows": [
+              "축·각 (n,θ)",
+              "회전벡터 e=θn",
+              "지수 사상 e→R"
+            ]
+          },
+          "explanationMeaning": "축·각(n,θ),회전벡터 e=θn,지수 사상 e→R를 한 단계씩 연결한다. 오일러 축과 오일러 각은 분리된 이름 칸으로 두고 각 칸의 저장 정보/연산을 대응시킨다.",
+          "observationPurpose": "비슷한 이름보다 자료와 연산이 무엇인지 구별해 읽는다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-41.B02",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "question",
+            "prompt": "+170° → −170° : 짧은 차이는?",
+            "rows": [
+              "짧은 차이 Δ = ?",
+              "중간 자세 θ(0.5) = ?"
+            ],
+            "answerRows": [
+              "−340° + 360° = +20°",
+              "170° + 0.5×20° = 180°"
+            ]
+          },
+          "explanationMeaning": "답을 가린 원 위에 시작+170°와끝-170° 두 화살표만 표시한다. 짧은 방향을 직접 고를 수 있게 빈 차이 칸과 중간 자세 자리만 두고 +20°나180° 답은 아직 공개하지 않는다.",
+          "observationPurpose": "두 방향을 찾고 짧은 차이와 중간 자세를 스스로 생각한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        },
+        {
+          "id": "v6-41.B03",
+          "renderer": "Manim",
+          "demonstration": {
+            "kind": "question",
+            "prompt": "e = (0,π/2,0) : 축과 각도는?",
+            "rows": [
+              "길이 ‖e‖ = ?",
+              "단위축 n = ?"
+            ],
+            "answerRows": [
+              "θ = ‖e‖ = π/2 rad = 90°",
+              "n = (0,1,0) : +Y축"
+            ]
+          },
+          "explanationMeaning": "e=(0,π/2,0) 질문과 빈 '길이/단위축/회전 결과' 칸을 공개한다. 제곱근 계산·축 답·최종 동작은 질문 관찰이 끝날 때까지 숨긴다.",
+          "observationPurpose": "벡터 길이를 구하고 성분을 그 길이로 나누어 축과 각도를 스스로 복원한다.",
+          "guide": "actual clips may replace only their relevant observed action; full useful narration retained on the same testbed otherwise"
+        }
+      ],
+      "fixedCaptions": [
+        960,
+        970
+      ],
+      "contentBounds": [
+        96,
+        230,
+        1824,
+        850
+      ],
+      "transitionToNext": "숫자를 바꾼 뒤에는 꼭 중간 동작과 마지막 자세를 함께 확인해 주세요. 그 연결을 이해하면 다음에 다른 회전 표현을 배우더라도, 어떤 문제를 해결하려는 도구인지 스스로 판단할 수 있습니다."
+    }
+  ],
+  "mathematicalBeats": 45,
+  "renderTiming": "finite authored demonstrations, actual line/quiet-seam timing defines placement; no footage ratio or total runtime quota",
+  "credits": "complete verified KO/EN description sources last; no editor-added on-screen source lines"
+}
