@@ -117,7 +117,7 @@ def plan_edit():
  out={'timelineSha256':sha(H/'timeline.json'),'screenPlanSha256':sha(H/'screen-plan.json'),'sceneCount':len(scenes),'scenes':scenes,'inputAssets':{k:{'clip':v['clipFile'],'sha256':sha(R/v['clipFile'])} for k,v in {**assets,**auxiliary}.items()},'actualFrames':sum(x['frames'] for s in scenes for x in s['phases'] if x['kind']=='motion' and x['sourceKind']=='actual'),'ratioEnforced':False}
  save(E/'scene-plan.json',out);return out
 def stamp(seconds):
- cs=round(seconds*100);h,cs=divmod(cs,360000);m,cs=divmod(cs,6000);s,cs=divmod(cs,100);return f'{h}:{m:02d}:{s:02d}.{cs:02d}'
+ cs=math.floor(seconds*100+1e-7);h,cs=divmod(cs,360000);m,cs=divmod(cs,6000);s,cs=divmod(cs,100);return f'{h}:{m:02d}:{s:02d}.{cs:02d}'
 UI_HEADER='''[Script Info]
 ScriptType: v4.00+
 PlayResX: 1920

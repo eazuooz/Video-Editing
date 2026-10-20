@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "revision": "article-flow-v6",
+  "slug": "game-math-euler-axis-angle",
+  "status": "local preparation only; measured timeline and complete final review pending",
+  "platformMutationPerformed": false,
+  "uploadAuthorizedByThisPlan": false,
+  "priorUploadsPreserved": true,
+  "scope": "V6 only. Prepare viewer-focused titles and sources-last bilingual descriptions. No YouTube/Drive operation, schedule, baseline deletion, thumbnail production or next video.",
+  "selectedTitleCandidate": "rotation-order",
+  "titleCandidates": [
+    {
+      "id": "rotation-order",
+      "ko": "회전 순서만 바꿨는데 왜 자세가 달라질까? | 오일러 각과 축·각",
+      "en": "Why Does Changing Rotation Order Change the Result? | Euler Angles & Axis–Angle",
+      "audience": "게임에서 물체나 카메라 회전을 구현하며 축과 적용 순서 때문에 혼란을 겪는 학습자",
+      "promise": "각 축과 좌표계·순서의 약속이 회전 결과를 바꾸는 이유를 구체적인 모델로 확인한다.",
+      "support": ["v6-04–v6-14: heading/pitch/bank, moving versus fixed axes and matching reversed order", "v6-39.L04–L06: finite rotation order and why vector addition is not composition"],
+      "selectionReason": "초반의 실제 학습 문제로 시작하면서 후반 축·각과 회전 합성까지 연결한다. 모든 회전 버그의 단일 원인이나 게임 내부 구현을 안다고 약속하지 않는다."
+    },
+    {
+      "id": "same-orientation",
+      "ko": "서로 다른 회전각이 같은 자세를 만드는 이유 | 오일러 각·회전벡터",
+      "en": "Why Can Different Rotation Values Describe the Same Pose? | Euler Angles & Rotation Vectors",
+      "audience": "회전값을 비교하거나 대표 범위로 정리할 때 숫자와 자세를 혼동하는 학습자",
+      "promise": "한 바퀴·세 각의 중복 표현과 축·각/회전벡터의 중복을 구분한다.",
+      "support": ["v6-18.L01–L05: 0/360/720 degrees and (0,135,0) versus (180,45,180)", "v6-36–v6-38: zero rotation, paired sign flip, full turns and non-unique sub-2pi representations"]
+    },
+    {
+      "id": "long-interpolation",
+      "ko": "45도만 돌리려는데 왜 거의 두 바퀴를 돌까? | 회전각 보간",
+      "en": "Why Does a 45° Turn Take Almost Two Full Turns? | Angle Interpolation",
+      "audience": "시작·끝 각도를 보간했는데 원하지 않는 긴 회전 경로를 만난 학습자",
+      "promise": "720→45의 -675도 경로와 0→45의 +45도 경로를 구분하고, 각도 차이의 랩이 필요한 이유를 보여 준다.",
+      "support": ["v6-23.L01–L06: -675 versus +45 degrees and intentional multi-turn qualification", "v6-24–v6-27: wrap the difference, endpoint convention and remaining 3D interpolation limits"],
+      "limitation": "강의 전체는 보간 외에 오일러 규약·짐벌 락·축·각까지 다루므로, 이 후보를 선택하면 넓은 전체 범위를 설명 첫 문단에서 분명히 한다."
+    }
+  ],
+  "thumbnailConceptOnly": {
+    "status": "No new image created; final thumbnail remains pending",
+    "supportingIdea": "같은 비행기가 X→Y와 Y→X에서 서로 다른 자세에 도착하는 한 장면. 짧은 문구 '순서가 자세를 바꾼다'.",
+    "brand": "얌얌코딩 고양이·노란 상단 띠·흰 바탕·큰 검정/빨강 한글; 영상/PPT inset 없음"
+  },
+  "descriptionBody": {
+    "ko": "같은 축을 돌려도 순서를 바꾸면 왜 다른 자세가 될까요? 비행기 모형의 축을 하나씩 움직이며 오일러 각의 약속을 확인하고, 중복 표현·짐벌 락·각도 보간을 거쳐 축·각과 회전벡터까지 연결합니다.\n\n필요한 좌표계와 기호부터 설명한 뒤 그림·동작·작은 계산을 차례로 보여 줍니다. 마리오 카트, 젤다, 마리오의 짧은 실제 화면은 관찰할 대상을 짚는 예시이며, 게임 내부 회전값을 측정한 장면은 아닙니다.\n\n이 강의의 약속: 왼손 좌표계, 물체 축 Y-X-Z, 행벡터. 다른 문헌의 축·부호·곱 순서를 그대로 혼용하지 않습니다.\n\n1920×1080 · 60fps · 한국어 강의 · 한영 수동 자막. 별도로 추가한 배경음악 없이 원래 게임 소리를 내레이션에 맞춰 사용합니다.",
+    "en": "Why can changing the order of rotations change an object's orientation? Follow an aircraft model one axis at a time, then connect Euler-angle conventions, repeated representations, gimbal lock and interpolation to axis–angle and rotation vectors.\n\nDefinitions come before diagrams, motion and small worked calculations. Brief Mario Kart, Zelda and Mario recordings identify visible examples; their overlays do not measure internal game rotation values.\n\nConvention: left-handed coordinates, body-axis Y-X-Z order and row vectors. Axis, sign and multiplication conventions must be translated together when using other references.\n\n1920×1080 at60fps. Korean narration with manual Korean/English captions. No separately added background music; original game sound is synchronized beneath narration."
+  },
+  "chapterPlan": [
+    {"scene": "v6-01", "startsAtBranding": true, "ko": "같은 회전, 다른 결과", "en": "Why rotation order matters"},
+    {"scene": "v6-02", "ko": "위치·방향·자세와 좌표계", "en": "Position, direction, orientation and frames"},
+    {"scene": "v6-04", "ko": "헤딩·피치·뱅크를 하나씩", "en": "Heading, pitch and bank, one at a time"},
+    {"scene": "v6-09", "ko": "이름보다 중요한 축과 순서", "en": "Axis conventions and rotation order"},
+    {"scene": "v6-15", "ko": "오일러 각이 편리한 이유", "en": "Why Euler angles are useful"},
+    {"scene": "v6-18", "ko": "다른 숫자, 같은 자세와 정규형", "en": "Repeated values and canonical form"},
+    {"scene": "v6-20", "ko": "짐벌 락과 경계의 대표값", "en": "Gimbal lock and boundary representatives"},
+    {"scene": "v6-22", "ko": "중간 자세와 짧은 각도 경로", "en": "Intermediate poses and short angle paths"},
+    {"scene": "v6-25", "ko": "랩 함수·라디안·wrapPi", "en": "Wrapping, radians and wrapPi"},
+    {"scene": "v6-27", "ko": "각도를 감싸도 남는 3D 보간 문제", "en": "What angle wrapping cannot solve"},
+    {"scene": "v6-30", "ko": "축 하나와 각도 하나로 표현", "en": "One axis and one angle"},
+    {"scene": "v6-33", "ko": "회전벡터 계산과 지수 사상", "en": "Rotation vectors and the exponential map"},
+    {"scene": "v6-36", "ko": "영 회전·여러 바퀴·중복 표현", "en": "Zero rotation, full turns and duplicates"},
+    {"scene": "v6-39", "ko": "회전 합성과 각속도는 다르다", "en": "Rotation composition and angular velocity"},
+    {"scene": "v6-41", "ko": "직접 풀어 보는 두 문제", "en": "Two questions to check your understanding"},
+    {"membershipOutro": true, "ko": "멤버십 감사와 코칭 안내", "en": "Member thanks and programming coaching"}
+  ],
+  "chapterTiming": {
+    "status": "pending measured V6 timeline; no timestamps copied from earlier revisions",
+    "source": "projects/game-math-euler-axis-angle/production/revision-v6/timeline.json",
+    "frameBasis": "Global scene.startFrame at fps60, including original120-frame branding. First chapter starts0; membership uses actual temporalContract.outroStartFrame.",
+    "rounding": "Floor global frame to whole seconds for display; preserve exact frames in build receipt. Validate strict order and at least10seconds per chapter.",
+    "noInventedTimestamps": true
+  },
+  "sourceCredits": {
+    "ko": "게임 녹화·원음\nMario Kart 8 Deluxe — mrlateforschool\nhttps://www.youtube.com/watch?v=dbA2StfJhqw\n녹화자 설명란의 재사용 허락에 따라 발췌. 선택 구간은 무음입니다.\nThe Legend of Zelda: Tears of the Kingdom — Royalty Free Game Clips\nhttps://www.youtube.com/watch?v=YNQ20CKbY8U\n녹화자 설명란의 상업·비상업 재사용 허락에 따라 발췌.\nSuper Mario Odyssey Free To Use Gameplay No Copyright No Commentary #1 — Fox - No Copyright Gameplay\nhttps://www.youtube.com/watch?v=_wH_-1saHnw\nCC BY 4.0: https://creativecommons.org/licenses/by/4.0/\n변경: 짧은 발췌·비율 유지 축소·설명 표식·자막·한국어 내레이션. 원본 워터마크는 보존했습니다.\n게임 IP: Nintendo 및 각 권리자. Nintendo의 후원·공식 제작물이 아닙니다.\n\n학습 내용·기술 검산\n게임수학 '3차원 회전'8.3–8.4(필요한8.1–8.2 복습)\nhttps://app.notion.com/p/3e10b1ffa61e81d289e1da0dd7584a13\nFletcher Dunn·Ian Parberry,3D Math Primer — Orientation / Multiple Coordinate Spaces\nhttps://gamemath.com/book/orient.html\nhttps://gamemath.com/book/multiplespaces.html\nSciPy — Rotation.from_euler / as_euler\nhttps://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_euler.html\nhttps://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.as_euler.html\nPython math — floor·trunc·remainder\nhttps://docs.python.org/3/library/math.html\nMicrosoft C/C++ — remainder\nhttps://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/remainder-remainderf-remainderl?view=msvc-170\nKevin Lynch·Frank Park,Modern Robotics — Angular Velocities / Exponential Coordinates of Rotation\nhttps://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-2-angular-velocities/\nhttps://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-3-exponential-coordinates-of-rotation-part-2-of-2/\n문헌별 좌표계·벡터 규약은 구별해 검산했습니다.\n\n제작 도구·자체 자산\n비행기·축·도식·브랜딩: 얌얌코딩 자체 제작. 외부 다운로드 모델 없음.\nUnity6000.6.0f1 https://unity.com/\nManim Community0.20.1 https://www.manim.community/\nQwen3-TTS12Hz1.7B-Base https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base\nPillow https://python-pillow.org/\nFFmpeg https://ffmpeg.org/\n기존 브랜딩·회원 감사 장면: Motion Canvas https://motioncanvas.io/",
+    "en": "Gameplay recordings and original game sound\nMario Kart 8 Deluxe — mrlateforschool\nhttps://www.youtube.com/watch?v=dbA2StfJhqw\nExcerpted under the uploader's stated reuse permission; selected range is silent.\nThe Legend of Zelda: Tears of the Kingdom — Royalty Free Game Clips\nhttps://www.youtube.com/watch?v=YNQ20CKbY8U\nExcerpted under the uploader's stated commercial/non-commercial reuse permission.\nSuper Mario Odyssey Free To Use Gameplay No Copyright No Commentary #1 — Fox - No Copyright Gameplay\nhttps://www.youtube.com/watch?v=_wH_-1saHnw\nCC BY4.0: https://creativecommons.org/licenses/by/4.0/\nChanges: excerpts, aspect-preserving scaling, instructional marks, subtitles and Korean narration. Original watermark retained.\nGame IP: Nintendo and respective owners. Not sponsored or officially produced by Nintendo.\n\nLesson and technical references\nGame Math,'3D Rotations',8.3–8.4 with necessary8.1–8.2 prerequisites\nhttps://app.notion.com/p/3e10b1ffa61e81d289e1da0dd7584a13\nFletcher Dunn / Ian Parberry,3D Math Primer — Orientation / Multiple Coordinate Spaces\nhttps://gamemath.com/book/orient.html\nhttps://gamemath.com/book/multiplespaces.html\nSciPy — Rotation.from_euler / as_euler\nhttps://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_euler.html\nhttps://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.as_euler.html\nPython math — floor,trunc,remainder\nhttps://docs.python.org/3/library/math.html\nMicrosoft C/C++ — remainder\nhttps://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/remainder-remainderf-remainderl?view=msvc-170\nKevin Lynch / Frank Park,Modern Robotics — Angular Velocities / Exponential Coordinates of Rotation\nhttps://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-2-angular-velocities/\nhttps://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-3-exponential-coordinates-of-rotation-part-2-of-2/\nReferences use different coordinate/vector conventions; these were distinguished during verification.\n\nProduction tools and authored assets\nAircraft,axes,diagrams and branding: YamYamCoding. No downloaded external models.\nUnity6000.6.0f1 https://unity.com/\nManim Community0.20.1 https://www.manim.community/\nQwen3-TTS12Hz1.7B-Base https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base\nPillow https://python-pillow.org/\nFFmpeg https://ffmpeg.org/\nRetained branding/member scene: Motion Canvas https://motioncanvas.io/"
+  },
+  "sourceEvidence": [
+    "projects/game-math-euler-axis-angle/sources/SOURCES.md",
+    "projects/game-math-euler-axis-angle/production/revision-v6/footage-plan.json",
+    "projects/game-math-euler-axis-angle/planning/revision-v6-article-flow/technical-audit.json",
+    "projects/game-math-euler-axis-angle/production/revision-v6/voice-plan.json",
+    "projects/game-math-euler-axis-angle/production/revision-v6/spatial-plan.json",
+    "projects/game-math-euler-axis-angle/production/revision-v6/math-clips.py",
+    "projects/game-math-euler-axis-angle/production/revision-v6/composite.py"
+  ],
+  "requiredCanonicalLinks": {
+    "coaching": "https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328",
+    "community": "https://discord.gg/wZuqe7fqkR",
+    "membership": "https://www.youtube.com/channel/UCOgtkPoyC0VXhCs7Xk3jvjQ/join"
+  },
+  "sharedAssembler": {
+    "file": "scripts/prepare-youtube-upload.cjs",
+    "receiptContract": ["descriptionBody.ko", "descriptionBody.en", "sourceCredits.ko", "sourceCredits.en", "metadata.title", "englishMetadata.title"],
+    "localPreview": "revision-v6-description-builder.py uses the same canonical KO footer and the exact EN footer template read from this shared assembler, then appends the reviewed sourceCredits last.",
+    "afterActualUserReviewOnly": "Root may prepare a revision-specific upload receipt for the same reviewed captioned SHA, then run the shared preparation tool; this plan does not create or mutate an upload receipt."
+  },
+  "review": {
+    "descriptionDraft": "Local builder validation passed: KO/EN complete footer and sources-last, canonical links once, titles under100 UTF16 units, descriptions including the full planned chapter count under5000. Draft contains no invented chapter timestamps.",
+    "chapters": "pending measured timeline",
+    "finalMaster": "pending final compositor and QA",
+    "humanWholeListening": "pending",
+    "userReviewOfExactFinalSha": "pending",
+    "youtube": "not performed",
+    "drive": "not performed"
+  }
+}

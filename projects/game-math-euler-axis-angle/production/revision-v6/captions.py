@@ -42,8 +42,8 @@ SPLITS={
 TERMS=[('오일러 각','Euler angles'),('항등 자세','identity orientation'),('왼손 좌표계','left-handed coordinate system'),
  ('헤딩','heading'),('피치','pitch'),('뱅크','bank'),('내재적 회전','intrinsic rotations'),('외재적 회전','extrinsic rotation'),
  ('행벡터','row vector'),('회전 행렬','rotation matrix'),('양자화','quantization'),('국소적','local'),('정규형','canonical form'),
- ('짐벌 락','gimbal lock'),('선형 보간','linear interpolation'),('플로어','floor'),('라디안','radians'),('랩 함수','wrap function'),
- ('지수 사상','exponential map'),('회전벡터','rotation vector'),('단위 벡터','unit vector'),('정규화','normalization'),('자유도','degrees of freedom'),('각속도','angular velocity')]
+ ('짐벌 락','gimbal lock'),('선형 보간','linear interpolation'),('floor','floor'),('라디안','radians'),('랩 함수','wrap function'),
+ ('지수 사상','exponential map'),('회전벡터','rotation vector'),('단위벡터','unit vector'),('정규화','normalization'),('자유도','degrees of freedom'),('각속도','angular velocity')]
 def cut_at(text,markers):
  out=[];at=0
  for marker in markers:
@@ -66,22 +66,46 @@ def wrap(text,font,bold,emphasis):
   if max(aw,bw)<=1570:options.append((abs(aw-bw),a,b))
  assert options,f'Clause needs a meaningful additional paired split; do not shrink/delete:{text}'
  _,a,b=min(options);return [a,b]
+def display_aliases(text,source_offset,spans):
+ result='';at=0;mapping=[];source_end=source_offset+len(text)
+ for span in spans:
+  if span['sourceEnd']<=source_offset or span['sourceStart']>=source_end:continue
+  assert source_offset<=span['sourceStart']<span['sourceEnd']<=source_end,'A canonical token must not be split between cues'
+  a,b=span['sourceStart']-source_offset,span['sourceEnd']-source_offset
+  assert text[a:b]==span['spoken'];result+=text[at:a];start=len(result);result+=span['display'];end=len(result);at=b
+  mapping.append(dict(sourceStart=a,sourceEnd=b,displayStart=start,displayEnd=end,spoken=span['spoken'],display=span['display'],meaning=span['meaning']))
+ result+=text[at:];restored=result
+ for span in reversed(mapping):
+  assert restored[span['displayStart']:span['displayEnd']]==span['display']
+  restored=restored[:span['displayStart']]+span['spoken']+restored[span['displayEnd']:]
+ assert restored==text,'Every display alias must restore the exact spoken/source text'
+ return result,mapping
 def plans():
  ko_file=P/'script/revision-v6-article-flow/narration.ko.json';en_file=P/'script/revision-v6-article-flow/narration.en.json'
  ko,en=read(ko_file),read(en_file);rows=[];mapping=[]
+ alias_file=H/'caption-aliases.json';alias=read(alias_file)
+ assert alias['sourceHashes']==dict(ko=sha(ko_file),en=sha(en_file)),'Canonical span map must be re-reviewed if source text changes'
+ alias_by={(x['language'],x['scene'],x['line']):x for x in alias['entries']}
  font=ImageFont.truetype(str(FONT),48);bold=ImageFont.truetype(str(BOLD),48)
  for scene,translation in zip(ko['scenes'],en['scenes']):
   assert scene['id']==translation['id'];assert len(scene['lines'])==len(translation['lines'])
   emphasized=set()
   for number,(k,e) in enumerate(zip(scene['lines'],translation['lines']),1):
+   per_language={}
+   for language,text in [('ko',k),('en',e)]:
+    entry=alias_by.get((language,scene['id'],number))
+    if entry:assert entry['sourceText']==text and entry['sourceTextSha256']==hashlib.sha256(text.encode('utf8')).hexdigest()
+    per_language[language]=entry['spans'] if entry else []
    sk,se=sentences(k),sentences(e);assert len(sk)==len(se),(scene['id'],number)
-   cue_ids=[]
+   cue_ids=[];ko_offset=en_offset=0
    for sno,(ks,es) in enumerate(zip(sk,se),1):
     key=f'{scene["id"]}.L{number:02}.S{sno:02}'
     if key in SPLITS:kc,ec=[cut_at(text,markers) for text,markers in zip([ks,es],SPLITS[key])]
     else:kc,ec=[ks],[es]
     assert len(kc)==len(ec)
-    for part,(kt,et) in enumerate(zip(kc,ec),1):
+    for part,(source_kt,source_et) in enumerate(zip(kc,ec),1):
+     ko_offset=k.index(source_kt,ko_offset);en_offset=e.index(source_et,en_offset)
+     kt,aliases_ko=display_aliases(source_kt,ko_offset,per_language['ko']);et,aliases_en=display_aliases(source_et,en_offset,per_language['en'])
      emphasis_ko=emphasis_en=None
      # A definition's first meaningful term is highlighted only once per
      # scene and only when an equivalent English phrase is actually present.
@@ -93,18 +117,34 @@ def plans():
      if scene['id']=='v6-41' and number==4 and '플러스 이십 도' in kt and 'positive 20 degrees' in et:
       a=kt.index('플러스 이십 도');b=et.index('positive 20 degrees');emphasis_ko=dict(start=a,end=a+len('플러스 이십 도'),role='result');emphasis_en=dict(start=b,end=b+len('positive 20 degrees'),role='result')
      kid=f'{key}.C{part:02}';cue_ids.append(kid)
-     rows.append(dict(id=kid,scene=scene['id'],line=number,sentence=sno,clause=part,ko=kt,en=et,
+     rows.append(dict(id=kid,scene=scene['id'],line=number,sentence=sno,clause=part,ko=kt,en=et,displayKo=kt,displayEn=et,
+      sourceKo=source_kt,sourceEn=source_et,sourceKoOffset=ko_offset,sourceEnOffset=en_offset,
+      displayAliasesKo=aliases_ko,displayAliasesEn=aliases_en,inverseDisplayAliasesRestoreExactSource=True,
       koLines=wrap(kt,font,bold,emphasis_ko),enLines=wrap(et,font,bold,emphasis_en),
       emphasisKo=emphasis_ko,emphasisEn=emphasis_en,semanticBoundary='paired complete sentence' if len(kc)==1 else 'explicit paired condition/action/result clause',
       nativePixelReview='pending',mobileMovingReview='pending'))
-   assert ' '.join(r['ko'] for r in rows if r['scene']==scene['id'] and r['line']==number)==k
-   assert ' '.join(r['en'] for r in rows if r['scene']==scene['id'] and r['line']==number)==e
+     ko_offset+=len(source_kt);en_offset+=len(source_et)
+   assert ' '.join(r['sourceKo'] for r in rows if r['scene']==scene['id'] and r['line']==number)==k
+   assert ' '.join(r['sourceEn'] for r in rows if r['scene']==scene['id'] and r['line']==number)==e
    mapping.append(dict(scene=scene['id'],line=number,cueIds=cue_ids))
  assert len(mapping)==250
- return dict(schemaVersion=1,policy='caption-clause-keyword-v1',inputs=dict(koSha256=sha(ko_file),enSha256=sha(en_file),fontSha256=sha(FONT),boldFontSha256=sha(BOLD),implementationSha256=sha(Path(__file__))),
+ glossary=[]
+ for term in alias['glossary']:
+  mentions=[r['id'] for r in rows if term['ko'] in r['sourceKo']]
+  definitions=[r['id'] for r in rows if r['scene']==term['firstScene'] and term['ko'] in r['sourceKo']]
+  glossary.append(dict(term,firstMentionCueId=mentions[0] if mentions else None,definitionCueId=definitions[0] if definitions else None,displayRoute='Canonical Korean/English name and plain meaning in same-scene definition chip; subtitles retain original spoken explanation with exact canonical symbol/API spellings.'))
+ symbols=[]
+ for symbol in alias['symbolGlossary']:
+  candidates=[r['id'] for r in rows if r['scene']==symbol['firstScene'] and r['line']==symbol['firstSourceLine'] and all(t in r['ko'] for t in symbol['displayMatch'])]
+  assert candidates,('Canonical symbol first appearance must be visible',symbol['symbol'])
+  symbols.append(dict(symbol,firstAppearanceCueId=candidates[0]))
+ return dict(schemaVersion=1,policy='caption-clause-keyword-v1',inputs=dict(koSha256=sha(ko_file),enSha256=sha(en_file),fontSha256=sha(FONT),boldFontSha256=sha(BOLD),implementationSha256=sha(Path(__file__)),canonicalAliasMapSha256=sha(alias_file)),
   sceneCount=41,paragraphCount=250,cueCount=len(rows),sameSemanticBilingualCueTimes=True,allParagraphsRetained=True,
   palette=PALETTE,font=dict(file=str(FONT),boldFile=str(BOLD),size=48,maximumTextWidth=1570,lineHeight=62),
-  cues=rows,paragraphMap=mapping,pixelReview='pending actual encoded output',humanPaceListening='pending')
+  cues=rows,paragraphMap=mapping,glossary=glossary,symbolGlossary=symbols,
+  spokenDisplayProof='Exact inverse of every line-specific display span restores every original cue and all250KO/EN paragraphs; timing uses unchanged sourceKo and original PCM/ASR.',
+  sourceReconstructionFields=['sourceKo','sourceEn'],displayTextFields=['displayKo','displayEn','koLines','enLines'],canonicalAliasMap='production/revision-v6/caption-aliases.json',
+  noGlobalKoreanAliases=True,pixelReview='pending actual encoded output',humanPaceListening='pending')
 def timestamp(seconds):
  value=round(seconds*1000);h,value=divmod(value,3600000);m,value=divmod(value,60000);s,ms=divmod(value,1000)
  return f'{h:02}:{m:02}:{s:02},{ms:03}'
@@ -165,7 +205,7 @@ def main():
  source={s['id']:s for s in source_ko['scenes']};speech={s['id']:s for s in spoken['scenes']};offsets={};previous=0.;captions=[]
  for row in design['cues']:
   sid,line=row['scene'],row['line'];scene=scenes[sid];data=raw[sid]['lines'][line-1]
-  key=(sid,line);offset=offsets.get(key,0);display=row['ko']
+  key=(sid,line);offset=offsets.get(key,0);display=row['sourceKo']
   # The only lexical display/speech alias is lowercase e, pronounced 이.
   # Both are a single normalized character; canonical display is preserved.
   timing_text=display.replace('소문자 e','소문자 이') if sid=='v6-32' and line==1 else display

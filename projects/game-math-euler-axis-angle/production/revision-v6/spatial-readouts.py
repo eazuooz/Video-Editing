@@ -116,6 +116,15 @@ def values(program, t):
 
 def angle_difference(a, b):
     # Geodesic comparison of actual orientation matrices, never input distance.
+    # Remove only f32 basis-length drift before acos; otherwise even two equal
+    # recorded frames can acquire a spurious small angle from trace roundoff.
+    def orthogonal(m):
+        x=[v/norm(m[0]) for v in m[0]]
+        projection=sum(a*b for a,b in zip(m[1],x))
+        y=[a-projection*b for a,b in zip(m[1],x)];length=norm(y);y=[v/length for v in y]
+        z=[x[1]*y[2]-x[2]*y[1],x[2]*y[0]-x[0]*y[2],x[0]*y[1]-x[1]*y[0]]
+        return [x,y,z]
+    a,b=orthogonal(a),orthogonal(b)
     delta = MATH['mm'](a, MATH['tr'](b))
     return math.degrees(math.acos(max(-1., min(1., (sum(delta[i][i] for i in range(3))-1)/2))))
 
@@ -148,6 +157,7 @@ def evaluated(shot, t, actual=None):
         out['sides'].append({'kind':p['kind'],'value':value,'position':position,'steps':steps,'matrix':r,
                              'axis':n,'signedDegrees':signed_angle,'lengthRadians':norm(value),'nose':r[2]})
     out['differenceDegrees'] = angle_difference(out['sides'][0]['matrix'],out['sides'][1]['matrix']) if len(out['sides'])==2 else None
+    out['maximumPairMatrixElementDifference'] = MATH['diff'](out['sides'][0]['matrix'],out['sides'][1]['matrix']) if len(out['sides'])==2 else None
     return out
 
 
@@ -162,7 +172,7 @@ def rows(shot, state, i):
         main = '현재 적용각: ' + ' → '.join(fmt(x['degrees'])+'°' for x in s['steps'])
         detail = ' → '.join(('물체 ' if x['space']=='body' else '직립 ')+x['axis'].lstrip('+') for x in s['steps'])
         initial = vec(p.get('initialEuler',{}))
-        if any(abs(x)>1e-6 for x in initial): detail += ' · 시작 HPB ' + tup(initial) + '°'
+        if any(abs(x)>1e-6 for x in initial): detail += ' · 시작 (h,p,b)=' + tup(initial) + '°'
     else:
         main = 'n='+axis(s['axis'])+' · 현재 각도 '+fmt(s['signedDegrees'])+'°'
         detail = 'e = '+tup(s['value'],3)+' rad'
@@ -206,7 +216,7 @@ def rows(shot, state, i):
     if pair and t>1-1e-6:
         difference = state['differenceDegrees']
         if key=='v6-40.B01': detail = '끝 자세 차이 ≈ '+fmt(difference,3)+'° · 근사'
-        elif difference<.05: detail += ' · 끝 자세 일치'
+        elif state['maximumPairMatrixElementDifference']<5e-5: detail += ' · 끝 자세 일치'
         else: detail += ' · 끝 자세 다름'
     if not pair:
         heading = '입력과 결과를 구별해서 보기'
