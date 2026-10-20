@@ -1,6 +1,6 @@
 # 영상 제작용 Unity 에셋 라이브러리
 
-사용 프로젝트는 `unity/VideoEditing`이다. 에셋은 `Assets/ThirdParty/YamyamAssetLibrary` 아래에 제품별 `번호-상품명` 폴더로 배치한다. 번들의 Unity 사용 대상 83개와 기존 `LittleNightmare` 패키지 1개가 대상이며, Godot 전용 셰이더 2개는 포함하지 않는다.
+사용 프로젝트는 `unity/VideoEditing`이다. 에셋은 `Assets/ThirdParty/YamyamAssetLibrary` 아래에 제품별 `번호-상품명` 폴더로 배치한다. 번들에서 실제 파일을 확보한83개 제품과 기존 `LittleNightmare` 패키지1개, 총84개가 대상이다. `Godot Project - Grass Wind Shader`와 `Godot Project - Water Shader`는 상품 메타데이터만 있고 실제 에셋 파일이 없어 임포트 대상에 넣지 않았다.
 
 제품 목록·공개 상품 주소·복원 원본·실제 설치 상태는 [에셋 목록](../shared/assets/unity-asset-library.json)에 기록한다. 준비 완료와 실제 Unity 검사 완료를 구분하며, 현재 상태는 목록의 `actualImport`를 확인한다.
 
@@ -20,6 +20,33 @@
 
 복원 시 목록의 원본 경로와 로컬 `unity-import-candidates.json`을 사용한다. 준비 도구는 `scripts/import-unity-asset-library.py`, GUID·경로 복구 도구는 `scripts/finalize-unity-asset-library.py`다. 코드 호환성 처리는 [도구 안내](../scripts/unity-asset-library-code/README.md)를 따른다.
 
-실제 Unity 검사와 생성 결과는 `unity/VideoEditing/Library/YamyamAssetLibrary` 아래에 남긴다. `headless-project`는 사용자 편집기와 분리된 숨김 검사 프로젝트다. 정상 종료 후 `record-unity-asset-import.py`로 최종 파일·GUID·생성 결과를 기록하고, `install-unity-asset-library.py`로 검증된 폴더와 대응 `.meta`를 설치한다. 기존 씬을 열거나 데스크톱을 조작하지 않는다.
+실제 Unity 검사와 생성 결과는 `unity/VideoEditing/Library/YamyamAssetLibrary` 아래에 남긴다. `headless-project`는 사용자 편집기와 분리된 숨김 검사 프로젝트다. 정상 종료 후 `record-unity-asset-import.py`로 최종 파일·GUID·생성 결과를 기록하고, `install-unity-asset-library.py`로 검증된 폴더와 대응 `.meta`를 설치한다. 파일 설치기 자체는 기존 씬을 열거나 데스크톱을 조작하지 않는다. 설치 후 정상 Refresh를 위해 기존 Unity 창에 초점을 맞췄으며 씬을 새로 열거나 전환하지 않았다.
 
 최종 설치 보고서, 검증 보고서와 제품 목록은 기술 검사 범위를 기록한다. 제품별 대표 미리보기는 전체 애니메이션·모든 데모 씬의 시각 검수를 대신하지 않는다. 영상 제작 시 실제 사용 파일과 필요한 출처·크레딧은 해당 영상의 씬 계획에 연결한다.
+
+<!-- UNITY_ASSET_LIBRARY_ACTUAL_STATUS_BEGIN -->
+## 실제 설치 검사
+
+주 편집기의 첫 임포트가 진행 중이다. 파일 설치와 분리 프로젝트 검증은 완료했으며, 주 편집기의 최종 에셋 수·새 컴파일 확인은 아직 미완료다.
+
+검사 완료본은 `Assets/ThirdParty/YamyamAssetLibrary`에84개 제품, 메타데이터를 포함한129,625개 파일로 설치했다. Unity6000.6.0f1/URP17.6.0 분리 프로젝트의 정상 종료·참조 검사와 전체 파일 SHA/GUID 검증을 통과한 동일 폴더다. 파일 설치기 자체는 기존 씬을 열거나 데스크톱을 조작하지 않았다. 설치 후 정상 Refresh를 유도하기 위해 열려 있던 Unity 창에 초점을 맞췄으며, ShopSample 씬을 새로 열거나 다른 씬으로 전환하지 않았다. 실제 검사 시각과 보고서 해시는 제품 목록의 `actualImport`에 남긴다.
+
+- 017의 선택형 caustics 효과는 공급자가 `EmaceArt/CausticsEffect` 셰이더를 제공하지 않아 안전하게 건너뛴다. 대체 효과를 만들어 원본처럼 표시하지 않았다. 모델·물 재질은 제품 폴더에서 사용한다.
+- 033의 `Plakat4_terrain`·`New Terrain 6`은 원본에 없는6개 텍스처 GUID를 참조한다. 실제 전체 의존성 검사로 미사용을 확인한 두 TerrainData와 `.meta`4파일을 원본 그대로 보존했다.
+- 추가로004·033·084의 TerrainData12개가 공급 원본에 없는31개 레이어·나무 프리팹 GUID를 참조한다. 실제 상위 참조를 갖는 데모 씬7개까지 총19개 에셋·메타38파일을 원본 그대로 `Library/YamyamAssetLibrary/SourceOnly`에 보존했다. 전체 루트에서 이 그룹을 제외한 의존성 검사를 통과했고, 사용 가능한 모델·재질·프리팹과 유효한 빈 TerrainData는 설치했다. 나무923개를 지우거나 추측한 대체 레이어를 넣지 않았다. 모든 SourceOnly 원본은 합계140파일이다.
+- HDRP·구형 후처리·누락된 공급자 도구에 의존하는 선택형 데모 씬49개도 전체 루트의 상위 참조 부재를 확인한 뒤 원본98파일로 별도 보존했다. UGUI26개 연결과 기존 MeshModifiers 런타임은 복원했고, 실제 Cinemachine6.6.0·Splines2.9.1의 클래스/GUID를 검증했다. 사용 가능한 모델·재질·프리팹은 유지했다.
+- 공급된 모든 네이티브 변형에도 없는 원본 텍스처28GUID의 활성 연결37개는 원래 Unity가 사용하던 기본값과 무관한 재질 설정을 대조한 뒤 명시적으로 비워 두었다. 이미지가 복구된 것처럼 표시하거나 추측한 맵을 넣지 않았다. 해당28개 재질과 원본 부재 근거는 목록에 기록했다.
+- 별도 영구 로컬 보관본 140파일도 `D:\얌얌코딩 에셋\_Unity 원본 보관`에 복사하고 SHA/바이트를 대조했다.
+- 별도 공개 라이선스·README 보충본은21개 제품의56문서와 원본 인덱스를 `D:\얌얌코딩 에셋\_Unity 원본 보관\extra-provenance`에 보존하고 모든 파일 바이트·SHA를 대조했다. 대체 GLB/GLTF 문서를 네이티브 Unity 패키지의 포괄적 사용 허가로 간주하지 않으며, 019의 CC0·추가 제약 혼재와067의 게임/인터랙티브 미디어 사용 문구, 003의 사용 설명만 있는 README도 원문대로 기록했다.
+- 원시 이미지200개는 분리 편집기에서 실제 Texture2D 형식·크기와 원본 바이트/GUID·나머지 importer설정 보존을 확인했다. 향후 새 원시 래스터에2D metadata를 생성하는 경로는 임시 fixture11개를 통과했으며, 이 새 생성 경로 자체의 별도 최초 native import 실행은 아직 하지 않았다.
+- Terrain 정규화는 실제 보고서의 30개 TerrainData 의미·GUID를 대조했고, 레이어10개를 제품 폴더로 이동하고 TerrainData3개만 명시 저장했다. 미참조 레이어15개는 라이브러리 밖에 보존했다.
+- 011 캐릭터15개의 누락 재질 슬롯은 공급 GLB와 위치·UV·폴리곤 영역 및 아틀라스 바이트를 대조한 뒤 기존 Hair 재질에 연결했다. 원본 FBX·메시·UV·리깅과 다른 프리팹 바이트는 유지했다. 008 유리는 공급 FBX의 실제 Opacity0.28을 확인해 URP 투명 상태로 수정했고, 변경 캐릭터·집의 추가 미리보기를 남겼다.
+- 067 호박3개는 공급 GLB의 발광 영역과 정확히 일치하는 FBX 위치·UV를 확인하고 원본의 선형 발광 값을 복구했다. 전역 Bloom·씬 설정은 바꾸지 않았다. 061 탱크18개는 공급 GLB에 공통 내장된128×72PNG 원본 바이트를 복구해 궤도 재질2개의 맵에 연결했다. 각 변경 제품의 대표 미리보기는 실제 의존성이 있을 때만 다시 렌더링하고, 단계별로 다른83개 기록·이미지를 보존했다.
+- 067의 재질 발광은 공식 URP Lit validator가 요구하는 재질별 `BakedEmissive` 플래그로 활성화하고 강제 재임포트 뒤에도 정확한 선형색·키워드·나머지 속성 보존을 확인했다. 이는 엔진 재질의 활성화 조건이며 glTF 원본이 베이크 GI를 지시했다는 뜻이 아니다. Realtime GI·전역 베이크·Bloom·프로젝트 설정은 변경하거나 실행하지 않았다.
+- 별도 카메라로 확보한 84개 제품의 정적 대표 PNG 검수도 추가 연결했다. PNG84개·대표 소스84개·기록된 직접 의존 파일312개의 동일 SHA를 설치본에서 확인했으며 기존 canonical 미리보기는 교체하지 않았다. 어두운 072와 파티클·빌보드·바인드 포즈 등 정적 검사 한계는 남긴다. 애니메이션·모든 프리팹·실제 제작 씬의 동작 품질 검증은 아니다.
+- 067 보충 이미지는 호박의 뒷면이라 얼굴 발광 외형을 시각 검증한 것으로 보지 않는다. 008 보충 이미지에도 유리가 보이지 않아 유리 외형 승인을 주장하지 않는다. 해당 항목은 선형 발광·재임포트·원본 Opacity 등 실제 native 재질 검사와 구분한다.
+- 082 지구본은 원본 ZIP에 globe.png가 없고 FBX에도 내장 이미지가 없어 외형 복원을 주장할 수 없다. 잘못 연결된 Unity 패키지 UI 아이콘을 기존 생성 재질의 두 색상 맵에서 제거하고, 원본 FBX의 Globe 재질 한 개만 해당 재질로 명시 연결했다. 원본 FBX·기존 재질의 다른 값·메시·다른 재질 슬롯·GUID·미리보기 기록은 보존했으며 다른 아틀라스로 대신 채우지 않았다.
+- 과거v1의 바이너리 GUID 부재 증명은 실제 Unity 바이트 인코딩을 누락해 무효화했다. 802개 파일의1,735개 외부 참조 GUID 필드를 실제 복구하고 전체896개 원래 검사 경로를v2로 다시 검증했다.
+
+검사는 전체 데모 씬 실행·애니메이션 감상이나 모든 제품의 예술적 품질 승인을 대신하지 않는다. 대표 미리보기와 필요한 영상별 사용 검수를 함께 확인한다.
+<!-- UNITY_ASSET_LIBRARY_ACTUAL_STATUS_END -->

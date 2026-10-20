@@ -83,6 +83,10 @@ public static class YamyamAssetLibraryBridge
         public string error;
         public bool rootExists, stagingExists, compiling, updating, playing;
         public int processed, total, upgradedMaterials;
+        public bool assetDatabaseProbeCompleted, assetDatabaseRootValid, productFoldersValid;
+        public string rootGuid, assetDatabaseProbeUtc, assetCountSelection;
+        public int rootImmediateFolderCount, actualNonFolderAssetCount;
+        public string[] rootImmediateFolders;
     }
     [Serializable] public class Issue
     {
@@ -326,13 +330,27 @@ public static class YamyamAssetLibraryBridge
         WriteJson(receipt, request);
         File.Delete(RequestPath);
         ResetSession();
-        if (request.command == "status" || request.command == "probe")
-        { job.phase = "complete"; SaveJob(); WriteStatus("ready"); return; }
+        if (request.command == "status")
+        { job.phase = "complete"; SaveJob(); WriteStatus("ready", null, true); return; }
+        if (request.command == "probe")
+        {
+            // Refresh only on the explicitly requested probe. Persist first so a compilation/domain
+            // reload resumes this same nonce; read-only status never requests a refresh.
+            job.phase = "waiting-for-probe-import"; SaveJob(); WriteStatus("probe-refresh-requested");
+            AssetDatabase.Refresh(); idleSince = -1; return;
+        }
         WriteStatus("accepted");
     }
 
     static void Advance()
     {
+        if (job.phase == "waiting-for-probe-import")
+        {
+            // Poll already waits for no compile/update/play/capture request. Match the existing
+            // install path's5second idle observation before checking only imported metadata.
+            if (EditorApplication.timeSinceStartup - idleSince < 5) return;
+            job.phase = "complete"; SaveJob(); WriteStatus("ready", null, true); return;
+        }
         if (job.phase == "accepted")
         {
             if (job.command == "install") Install();
@@ -1508,16 +1526,33 @@ public static class YamyamAssetLibraryBridge
         SaveJob(); WriteStatus(status);
     }
     static void SaveJob() { job.updatedUtc = Utc(); WriteJson(StatePath, job); }
-    static void WriteStatus(string status, string error = null)
+    static void ObserveImportedRoot(Status value)
     {
-        WriteJson(StatusPath, new Status { status = status, nonce = job != null ? job.nonce : null,
+        value.assetDatabaseRootValid = AssetDatabase.IsValidFolder(AssetsRoot);
+        value.rootGuid = AssetDatabase.AssetPathToGUID(AssetsRoot);
+        value.rootImmediateFolders = value.assetDatabaseRootValid ? AssetDatabase.GetSubFolders(AssetsRoot).OrderBy(p => p, StringComparer.Ordinal).ToArray() : new string[0];
+        value.rootImmediateFolderCount = value.rootImmediateFolders.Length;
+        // The file installer independently verifies exact84-product canonical payload/hash coverage.
+        // Return all immediate folder names so the final receipt can compare that same product set.
+        value.productFoldersValid = value.assetDatabaseRootValid && value.rootImmediateFolderCount == 84 &&
+            value.rootImmediateFolders.All(p => p.StartsWith(AssetsRoot + "/", StringComparison.Ordinal) && AssetDatabase.IsValidFolder(p));
+        value.assetCountSelection = "AssetDatabase.FindAssets(empty,ownedRoot)->GUIDToAssetPath->non-folder->Distinct; same selection as ValidateChunk; excludes root/all folders and metadata files";
+        value.actualNonFolderAssetCount = value.assetDatabaseRootValid ? AssetDatabase.FindAssets("", new[] { AssetsRoot }).Select(AssetDatabase.GUIDToAssetPath)
+            .Where(p => !AssetDatabase.IsValidFolder(p)).Distinct().Count() : 0;
+        value.assetDatabaseProbeUtc = Utc(); value.assetDatabaseProbeCompleted = true;
+    }
+    static void WriteStatus(string status, string error = null, bool observeImportedRoot = false)
+    {
+        var value = new Status { status = status, nonce = job != null ? job.nonce : null,
             command = job != null ? job.command : null, phase = job != null ? job.phase : null,
             updatedUtc = Utc(), unityVersion = Application.unityVersion, error = error,
             rootExists = Directory.Exists(Destination), stagingExists = Directory.Exists(Stage),
             compiling = EditorApplication.isCompiling, updating = EditorApplication.isUpdating,
             playing = EditorApplication.isPlayingOrWillChangePlaymode, processed = cursor,
             total = paths != null ? paths.Length : manifest != null && manifest.products != null ? manifest.products.Length : 0,
-            upgradedMaterials = job != null ? job.upgradedMaterials : 0 });
+            upgradedMaterials = job != null ? job.upgradedMaterials : 0 };
+        if (observeImportedRoot) ObserveImportedRoot(value);
+        WriteJson(StatusPath, value);
     }
     static string Receipt(string nonce)
     {
