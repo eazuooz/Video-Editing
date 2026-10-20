@@ -2,7 +2,8 @@
 
 Native game excerpts appear once at the frame-exact visual motion positions.
 The ordinary voice-driven sidechain processes the GAME input only. Program
-peak protection is one common fixed gain, never a voice limiter or fade.
+peak protection is one common fixed gain after the separately verified rare
+narration-transient safety stage; no mix-driven voice limiter or fade.
 """
 from pathlib import Path
 import hashlib,importlib.util,json,math,subprocess
@@ -51,7 +52,7 @@ def main():
     outputStartFrame=cut['globalStartFrame'],frames=cut['frames'],fadeInSeconds=.12,fadeOutSeconds=.3,
     musicSeparation='Original synchronized mixed game sound preserved; no separate BGM added; inseparable in-game music is not falsely removed.',humanListening='pending'))
  ducked=A/'game-ducked.wav';premix=A/'final-mix-pre-gain.wav'
- graph='[0:a]asplit=2[voice][control];[1:a][control]sidechaincompress=threshold=0.08:ratio=2.2:attack=15:release=280:makeup=1,asplit=2[gameout][gameformix];[voice][gameformix]amix=inputs=2:normalize=0:duration=longest:dropout_transition=0[mix]'
+ graph=f'[0:a]asplit=2[voice][control];[1:a][control]sidechaincompress=threshold=0.08:ratio=2.2:attack=15:release=280:makeup=1,apad=whole_len={total},atrim=end_sample={total},asplit=2[gameout][gameformix];[voice][gameformix]amix=inputs=2:normalize=0:duration=longest:dropout_transition=0[mix]'
  run(['-threads','2','-filter_complex_threads','2','-i',narration,'-i',game,'-filter_complex',graph,'-map','[gameout]','-c:a','pcm_f32le',ducked,'-map','[mix]','-c:a','pcm_f32le',premix],'game-sidechain-and-sum')
  stats=a.loudness(premix,'final-premix-loudness');program_gain=min(0.,-2.3-float(stats['input_tp']))
  final_wav=O/'final-mix.wav';final_aac=O/'final-mix.m4a';final_voice=A/'narration-final-stem.wav';final_game=A/'game-final-stem.wav'
@@ -68,32 +69,46 @@ def main():
    maximum_residual=max(maximum_residual,float(np.max(np.abs(m.astype(np.float64)-v.astype(np.float64)-g.astype(np.float64)))))
  assert maximum_residual<2e-6,'Final mix must equal its two actual stems without automatic normalization'
  continuity=[];voice_by={r['scene']:r for r in voice['scenes']}
- with sf.SoundFile(final_voice) as current_voice:
+ with sf.SoundFile(final_voice) as current_voice,sf.SoundFile(narration) as known_limited_voice:
   for scene in plan['scenes']:
    source_row=voice_by[scene['id']];raw,rate=sf.read(R/scene['rawVoiceFile'],dtype='int16',always_2d=True)
    mono=raw[:,0].astype(np.float32)/32768.;reference=resample_poly(mono,2,1)
-   expected=reference*10**(source_row['constantSceneGainDb']/20)
-   expected*=10**(source_row['constantGlobalGainDb']/20);expected*=10**(program_gain/20)
+   expected=reference*a.g.curve(source_row['clipGainPlan'],len(reference),48000)
+   expected*=10**(source_row['constantGlobalGainDb']/20)
    current_voice.seek(scene['startFrame']*800);current_pcm=current_voice.read(scene['frames']*800,dtype='float32',always_2d=True)
-   maximum_error=0.;local=[];asr=a.read(O/'voice/asr'/f'{scene["id"]}.json');active=np.repeat(a.mask(len(mono),rate,asr['words']),2)
+   known_limited_voice.seek(scene['startFrame']*800);limited_pcm=known_limited_voice.read(scene['frames']*800,dtype='float32',always_2d=True)
+   assert np.max(np.abs(current_pcm-limited_pcm*10**(program_gain/20)))<2e-6,'Mixer must preserve the approved narration stem with one program gain only'
+   maximum_error=0.;local=[];recovered_processed=np.zeros(len(reference),dtype=np.float32);asr_file=R/scene['rawAsrFile'];assert a.sha(asr_file)==scene['rawAsrSha256'];asr=a.read(asr_file);assert asr['audio_sha256']==scene['rawVoiceSha256'];active=np.repeat(a.mask(len(mono),rate,asr['words']),2)
    for segment in scene['voiceSegments']:
     left,right,destination=[segment[k]*2 for k in ['sourceSampleStart','sourceSampleEnd','destinationSampleStart']]
     observed=current_pcm[destination:destination+right-left]
-    maximum_error=max(maximum_error,float(np.max(np.abs(observed-expected[left:right,None]))))
+    recovered_processed[left:right]=observed[:,0]
+    expected_final=limited_pcm[destination:destination+right-left]*10**(program_gain/20)
+    maximum_error=max(maximum_error,float(np.max(np.abs(observed-expected_final))))
     for offset in range(left,right-round(.4*48000)+1,round(.1*48000)):
      end=offset+round(.4*48000);speech_mask=active[offset:end]
      if speech_mask.sum()<.15*48000:continue
      actual=observed[offset-left:end-left].mean(axis=1)[speech_mask]
      source_ref=reference[offset:end][speech_mask]
-     source_level=a.db(a.rms(source_ref));stem_level=a.db(a.rms(actual));gain=source_row['totalConstantGainDb']+program_gain
+     source_level=a.db(a.rms(source_ref));stem_level=a.db(a.rms(actual))
+     limited_local=limited_pcm[destination+offset-left:destination+end-left,0][speech_mask]
+     gain=a.db(a.rms(limited_local*10**(program_gain/20)))-source_level
+     limiter_change=a.db(a.rms(limited_local))-a.db(a.rms(expected[offset:end][speech_mask]))
      local.append(dict(rawStart=offset/48000,rawEnd=end/48000,globalStart=scene['startFrame']/60+(destination+offset-left)/48000,
-      sourceResampledSpeechDbfs=source_level,stemSpeechDbfs=stem_level,expectedConstantGainDb=gain,measuredGainDb=stem_level-source_level,
-      transferDeviationDb=stem_level-source_level-gain))
-   assert maximum_error<2e-6,'Actual final narration stem differs from unchanged resampling and fixed gains'
+      sourceResampledSpeechDbfs=source_level,stemSpeechDbfs=stem_level,expectedClipAndGlobalGainDb=gain,measuredGainDb=stem_level-source_level,
+      transferDeviationDb=stem_level-source_level-gain,intendedTransientLimiterLevelChangeDb=limiter_change))
+   assert maximum_error<2e-6,'Final narration stem differs from the approved sample-aligned limited stem plus fixed program gain'
+   paragraphs=[]
+   for paragraph in source_row['clipGainPlan']['sourceParagraphs']:
+    left,right=[round(t*48000) for t in paragraph['rawRange']];selection=active[left:right]
+    before=a.db(a.rms(reference[left:right][selection]));after=a.db(a.rms(recovered_processed[left:right][selection]))
+    paragraphs.append(dict(line=paragraph['line'],rawRange=paragraph['rawRange'],sourceSpeechDbfs=before,processedSpeechDbfs=after,
+     measuredEffectiveGainDb=after-before,clipGroup=next(i for i,g in enumerate(source_row['clipGainPlan']['groups']) if g['firstLine']<=paragraph['line']<=g['lastLine']),humanListening='pending'))
    continuity.append(dict(scene=scene['id'],sourceSha256=scene['rawVoiceSha256'],
     entireResampledSourceCompared=True,sourceToStemMaximumAbsoluteError=maximum_error,localWindows=local,
     processingDropFlags=[x for x in local if abs(x['transferDeviationDb'])>1.0],
-    sourceProsody='Natural source level changes are retained; low source windows require actual contextual listening, not automatic repair.',humanListening='pending'))
+    sourceProsody='Intra-phrase stress retained; sustained whole-paragraph decay corrected with constant group gain/quiet joins; approved transient-only peak attenuation recorded separately.',clipGainPlan=source_row['clipGainPlan'],paragraphLevelBeforeAfter=paragraphs,
+    transientLimiterReviewWindows=[x for x in local if x['intendedTransientLimiterLevelChangeDb']<-3],humanListening='pending'))
  # Joins are exact global times, not an assertion that a human listened.
  for previous,current in zip(plan['scenes'],plan['scenes'][1:]):
   boundary=current['startFrame']/60
@@ -105,12 +120,12 @@ def main():
   audioMix=a.rel(final_wav),encodedAudio=a.rel(final_aac),narrationStem=a.rel(final_voice),gameStem=a.rel(final_game),
   totalFrames=plan['totalFrames'],totalSamples=total,sampleRate=48000,channels=2,seconds=plan['seconds'],games=game_rows,
   sourcePcmProof=a.rel(A/'audio-build.json'),sourcePcmProofSha256=a.sha(A/'audio-build.json'),
-  separatelyAddedBgm=False,voiceDucking=False,voiceFades=False,limiter=False,amixNormalize=0,
+  separatelyAddedBgm=False,voiceDucking=False,voiceFades=False,limiter=voice['transientLimiter'],amixNormalize=0,
   gameDucking=dict(threshold=.08,ratio=2.2,attackMs=15,releaseMs=280,makeup=1,sidechain='narration controls game input only'),
   preGainMeasurement=stats,constantProgramGainDb=program_gain,encodedMeasurement=encoded,
   finalMixEqualsVoicePlusGameMaximumAbsoluteError=maximum_residual,joinWindows=windows,
   sourceToFinalNarrationStem=continuity,sourceToStemProcessingDropFlags=sum(len(s['processingDropFlags']) for s in continuity),
-  localContinuity='Source→voice-stem constant gains and exact mixed-stem relation proven; all local source/encoded speech-active range comparisons and contextual human listening pending final QA.',
+  localContinuity='Source→voice-stem expected constant clip-group/quiet-only join gains and exact mixed-stem relation proven; encoded speech-active comparisons and contextual human listening pending final QA.',
   wholeFinalMixAsr='pending root-owned once-only final encoded-audio ASR',humanWholeListening='pending')
  a.save(receipt,report);print('Final synchronized no-added-BGM lecture mix ready;48k stereo192kbps AAC; true peak',peak)
 if __name__=='__main__':main()

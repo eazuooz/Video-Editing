@@ -96,7 +96,7 @@ def main():
   assert all(s.frames==total for s in [mix,voice,game])
   assert enc.frames==metadata['decodedSamples'] and total<=enc.frames<=total+2048,'Unexpected AAC duration/priming mismatch requires explicit review'
   for scene in plan['scenes']:
-   asr_file=O/'voice/asr'/f'{scene["id"]}.json';asr=read(asr_file);assert asr['audio_sha256']==scene['rawVoiceSha256']
+   asr_file=R/scene['rawAsrFile'];assert sha(asr_file)==scene['rawAsrSha256'];asr=read(asr_file);assert asr['audio_sha256']==scene['rawVoiceSha256']
    active,crossings=mapped_word_mask(scene,asr['words']);word_crossings.extend([dict(scene=scene['id'],**x) for x in crossings])
    base=scene['startFrame']*800;count=scene['frames']*800
    e,m,v,g=[bounded(s,base,count) for s in streams]

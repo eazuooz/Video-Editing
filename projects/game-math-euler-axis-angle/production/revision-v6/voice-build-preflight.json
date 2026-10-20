@@ -1,17 +1,25 @@
 {
   "schemaVersion": 1,
   "revision": "article-flow-v6",
-  "stage": "CPU preparation only; source voice generating",
+  "stage": "Source/current timing/captions and synchronized final audio complete; final master render/ASR/encoded/moving/listening QA pending",
   "moduleSyntaxPassed": [
     "audio-mix.py",
     "audio-prepare.py",
     "audio-review.py",
     "captions.py",
     "timeline.py",
+    "voice-ambiguities.py",
+    "voice-effective.py",
+    "voice-fixed-gain-review.py",
+    "voice-gain-plan.py",
     "voice-next.py",
+    "voice-normalize.py",
+    "voice-opening-compose.py",
+    "voice-opening.py",
     "voice-pacing.py",
     "voice-prepare.py",
     "voice-render.py",
+    "voice-retake.py",
     "voice-review.py",
     "voice-signal-analysis.py"
   ],
@@ -21,8 +29,14 @@
     "spatialPlanSha256": "bdb53c7f1a28b397572935087336389fb470c730d76e41cd0eb87961c63a9fd6",
     "mathOutputsSha256": "eccd04d0e22faef584d956842c0da3ac4abcfb3427c95666cc7a5076f2fd6154",
     "nativeFiniteGameAssetsSha256": "b05827f6a7d2eafa3b13601a5c9704ab38c341bc71d0c8e5995de79b4e2b5318",
-    "captionPlanSha256": "40d7e38b533d5fbdb90947dfe84b514f8bc5ec86269fa8649957b9754ae51cd5",
-    "captionAliasMapSha256": "a53cd5bf712a822137c5930962e71ff9f993b9927e9ab7f339fe88c1430181c5"
+    "captionPlanSha256": "4e39e79bd7db6dce37b922f527b3ad89fe2b21268a72cf86702046da69ab9469",
+    "captionAliasMapSha256": "a53cd5bf712a822137c5930962e71ff9f993b9927e9ab7f339fe88c1430181c5",
+    "currentPcmMappingSha256": "cabf602ef573ac2064e5c328e67b5819dcd7c69776c9e5321a6a4e1b75413b59",
+    "currentSourceReviewSha256": "c076d3bb43756468e8487be390f2f1ba813b795e6dde543805a6d349cd2e75cc",
+    "alignmentSha256": "f452eff033fe3a685ca229b3745f5671746b2a9f927b40b981f107a683476676",
+    "timelineSha256": "7fa8c62918b2bcbbc0961b38a837ae65c0415bdb7c863cafcf2f4eea0e487c5e",
+    "measuredCaptionsSha256": "ae886b5509e6aa0fdb8caa09f5aeb287e21bf7a0edb32a4517b908f3cd554dae",
+    "paragraphGainPlanSha256": "0604914a9d54227b663b807ff1ac82e242890e35016657ed3139cd8ae04cdcae"
   },
   "counts": {
     "scenes": 41,
@@ -46,12 +60,6 @@
     "sparseHighlightedCues": 41
   },
   "pending": [
-    "complete41current-sourcePCM",
-    "once-only-current-sourceASR/direct-full-text-review",
-    "waveform-safe106+1seams",
-    "measuredTimeline",
-    "placedPCM-proof",
-    "voice/game/finalmix-production",
     "realizedPaceAndMoving375PixelReview",
     "finalEncodedAudioASRAndContinuity",
     "humanWholeListening"
@@ -82,8 +90,8 @@
     "humanPaceListening": "pending"
   },
   "selectivePacingPreparationReview": {
-    "voicePacingImplementationSha256": "eff25e9bccbf5c7f9660a29ef18b9a75f1821268ae43a595b04bc41f5782a4e4",
-    "timelineImplementationSha256": "4a4413e12ca856806132f3324bdf18f3e10e5b384f0fc985567b1f94e9bddca7",
+    "voicePacingImplementationSha256": "c14205741b91991087c216051679a3956ed1b443ea201db517fd0de0d270dfcd",
+    "timelineImplementationSha256": "adfa86c70b69a5e4ccf940286c083aa683206b7832aad9bc1e1ac4a696b07fa4",
     "candidatePlanSha256": "04f3c5337603a15a0aa23642eb6d32aec6a2c0ae0f9dc77172e46f0350efae2d",
     "candidates": 20,
     "allCandidateNormalizedPrefixPlusSuffixRetainWholeLine": true,
@@ -99,9 +107,10 @@
       "everySyntheticSourceSampleOnceInOrder": true,
       "noTimelineOrMediaWritten": true
     },
-    "actualCurrentWordAlignment": "pending current once-only source ASR",
-    "actualSafeBreathCount": "pending",
-    "humanPaceListening": "pending"
+    "actualCurrentWordAlignment": "41current-scene-complete;zero-unresolved-primary/aux-seams",
+    "actualSafeBreathCount": 14,
+    "humanPaceListening": "pending",
+    "retainedNaturalBoundaries": 6
   },
   "encodedAudioReviewPreparation": {
     "implementationSha256": "68f5347b731416f7be6a2c6ac209bc5bffcd83acbeada44c97315fb383e73ddd",
@@ -116,5 +125,93 @@
     ],
     "actualOutputReview": "pending final master and shared extraction",
     "humanWholeListening": "pending"
+  },
+  "currentMeasuredProduction": {
+    "sceneCount": 41,
+    "paragraphs": 250,
+    "primaryBeats": 106,
+    "auxiliaryVisuals": 1,
+    "totalFrames": 217544,
+    "seconds": 3625.733333333333,
+    "primaryFiniteMotionFrames": 40820,
+    "auxiliaryMotionFrames": 180,
+    "observationSeconds": 531,
+    "safeBreathingCount": 14,
+    "safeBreathingSeconds": 5.466666666666667,
+    "intentionallyRetainedNaturalBreathingBoundaries": 6,
+    "rawSourceSamplePreservation": "A/audio-build.json plus independent source-fixed-gain-equivalence.json",
+    "currentSourcePcmUnchanged": 39,
+    "protectedOpeningCompositions": 2,
+    "raw41AndEarlierTakesPreserved": true,
+    "captionCuePairs": 588,
+    "captionMotionObservationOverlaps": 0,
+    "humanPaceListening": "pending"
+  },
+  "gpuSequenceCompleted": [
+    "original41TTS",
+    "original41sourceASR-with-successful-cache-reuse-after-memory-guard-fix",
+    "six-bounded-complete-context-ASR",
+    "Unitysample",
+    "two-original-text-fullscene-retakes-not-selected",
+    "Unity49finite-captures",
+    "two-protected-opening-contextsTTS/ASR"
+  ],
+  "currentSourceGpuWorkComplete": true,
+  "sourceLevelCorrection": {
+    "scope": "Selected25 sustained-decay scenes;113verified complete-paragraph quiet gain joins;scene32 retains one scene gain",
+    "gainPlanFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/voice/paragraph-gain-plan.json",
+    "fixedGainEquivalenceFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/audio/source-fixed-gain-equivalence.json",
+    "sourceSamplesCompared": 114975642,
+    "maximumAbsoluteError": 0.0,
+    "narrationMeasurement": {
+      "input_i": "-16.87",
+      "input_tp": "-2.70",
+      "input_lra": "6.70",
+      "input_thresh": "-27.37",
+      "output_i": "-16.07",
+      "output_tp": "-1.80",
+      "output_lra": "6.70",
+      "output_thresh": "-26.56",
+      "normalization_type": "dynamic",
+      "target_offset": "0.07"
+    },
+    "transientPeakSafety": "Approved rare-peak-only lookahead limiter,5ms attack/50ms release,no automatic gain; exact sample count and silence retained",
+    "humanListening": "pending"
+  },
+  "currentAudioCompletion": {
+    "audioBuildFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/audio-build.json",
+    "audioBuildSha256": "099cdd49a829dd7b9a0d0aa62d3971e040386b7004a1fc3aae8bf82b49090315",
+    "handoffFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/voice/audio-handoff.json",
+    "handoffSha256": "74c651b8f2f94613625fd7894f979b76a3a56dac1f9258c95751c6d533794a82",
+    "encodedAudioFile": "projects/game-math-euler-axis-angle/production/local/revision-v6/final-mix.m4a",
+    "encodedAudioSha256": "727e3e338651c04da0706b1b51909419e003e71bba3adff116db8b80c3b6c58e",
+    "sampleRate": 48000,
+    "channels": 2,
+    "samples": 174035200,
+    "sourceToStemProcessingDropFlags": 0,
+    "actualEncodedLufs": "-16.93",
+    "actualEncodedTruePeak": "-2.29",
+    "humanWholeListening": "pending"
+  },
+  "currentImplementationSha256": {
+    "audio-mix.py": "d9940ac45512a6b36374f3574847ba28eb2dc21512d157f81d35a3c6e66fb827",
+    "audio-prepare.py": "ac7ca7e8e5b785ace7ba9a520768fc0929c4c54abd312c64e5eaa8547dc6e098",
+    "audio-review.py": "af766f711e98ad7cd53c2fac858c6d4f34c493ca6b22180e46f77f4b9190a43a",
+    "captions.py": "408aa39f644690e0fd33ff44b3687bf6c598e694f7b83bbb03329c7d58fdab54",
+    "timeline.py": "adfa86c70b69a5e4ccf940286c083aa683206b7832aad9bc1e1ac4a696b07fa4",
+    "voice-ambiguities.py": "ebf7582ca74d1f33637e96464004bed517eed143d771ef0620c3f56bd4cc86a0",
+    "voice-effective.py": "b93d0c1265ab47c8c4fe4b4792d1843b5d49310aaf95bc2f368f51497a442846",
+    "voice-fixed-gain-review.py": "5f4dfa224797900e8f431d4cd8d1e715f63c6ea2e625db38baaa7f4c73264f38",
+    "voice-gain-plan.py": "9b01cd53fe5307eb16f94745b3b30a0b1f82de611fa2a3df1b1a4bb6bcafb331",
+    "voice-next.py": "3378a5b668f82feef893352afa40dcc611a9c1d151584df8b52cc53b816a92e4",
+    "voice-normalize.py": "88acaf45e1d809bb2d4c726eabb9c7cc6ee784c8d937e8b89b1868beba24b5ab",
+    "voice-opening-compose.py": "a923426e7a15b0bc552be6d2b746c3db6a27e5df4c534bf67f4c491ca5f55120",
+    "voice-opening.py": "b8aad5b26a71f3c4598eee495dcd0674b96102a3286f08ddd0b438912c1460f0",
+    "voice-pacing.py": "c14205741b91991087c216051679a3956ed1b443ea201db517fd0de0d270dfcd",
+    "voice-prepare.py": "4ba0bec53d5abe69d8ae6995f4cfe36ca44ff0ac97db5a50f734353a6dcfd785",
+    "voice-render.py": "8f8fd23b69dd08348840c8667b61799e426f17fe9d7431333dcaf1eba5d5eb74",
+    "voice-retake.py": "fad390017b5950f63fe465bfbaec9fd42301c6b1ca92f4bbe3e5fbdaea59b9b9",
+    "voice-review.py": "07c6f0933579dea67a8b6ae84a17435703fb0b1ef9338949c599e558e33ded71",
+    "voice-signal-analysis.py": "2aeb2a60667198388024fb3d663d252e76021bd6f181cb56cad07dbcd8b45579"
   }
 }

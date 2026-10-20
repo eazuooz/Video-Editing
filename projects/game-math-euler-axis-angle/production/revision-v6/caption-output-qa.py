@@ -7,7 +7,7 @@ new dependency is needed. Run only after the complete current master is ready.
 """
 from pathlib import Path
 from fractions import Fraction
-import argparse, bisect, hashlib, json, math, re, subprocess
+import argparse, bisect, hashlib, importlib.util, json, math, re, subprocess
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
@@ -17,6 +17,8 @@ O=P/'production/local/revision-v6'
 Q=O/'qa/encoded-captions'
 FONT=Path('C:/Windows/Fonts/malgun.ttf')
 FPS=60;Y0=880;HEIGHT=200
+_visual_spec=importlib.util.spec_from_file_location('v6_final_visual_qa',H/'final-visual-qa.py')
+visual_qa=importlib.util.module_from_spec(_visual_spec);_visual_spec.loader.exec_module(visual_qa)
 
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -123,7 +125,7 @@ def sample_plan(timeline,sceneplan,captions,layout):
   frame=max(0,min(total-1,int(frame)));tags.setdefault(frame,[]).append(tag)
   if full:native.setdefault(frame,[]).append(tag)
  def boundary(frame,tag):
-  for offset in [-1,0,1]:add(frame+offset,tag+f':{offset:+}')
+  for offset in [-1,0,1]:add(frame+offset,tag+f':{offset:+}',True)
  cue_mid={}
  for cue in captions['cues']:
   lo=Fraction(clock_cs(cue['start']),100);hi=Fraction(clock_cs(cue['end']),100)
@@ -140,7 +142,7 @@ def sample_plan(timeline,sceneplan,captions,layout):
   for phase in scene['phases']:
    boundary(phase['startFrame'],'phase-start:'+scene['id']+':'+phase['kind'])
    boundary(phase['endFrame'],'phase-end:'+scene['id']+':'+phase['kind'])
- add(0,'branding-start');boundary(timeline['temporalContract']['outroStartFrame'],'member-start')
+ add(0,'branding-start',True);boundary(timeline['temporalContract']['outroStartFrame'],'member-start');add(total-1,'member-end',True)
  sizes={x['id']:max(x['widths']) for x in layout['rows']['ko']}
  for cue in sorted(captions['cues'],key=lambda c:sizes[c['id']],reverse=True)[:6]:add(cue_mid[cue['id']],'native-longest:'+cue['id'],True)
  for sid in ['v6-14','v6-25','v6-33','v6-39']:
@@ -149,7 +151,10 @@ def sample_plan(timeline,sceneplan,captions,layout):
  for line in [3,4,5,6]:
   choices=[c for c in captions['cues'] if c['scene']=='v6-26' and c['line']==line]
   cue=max(choices,key=lambda c:sizes[c['id']]);add(cue_mid[cue['id']],'native-code:'+cue['id'],True)
- return {'totalFrames':total,'cueCount':len(captions['cues']),'samples':[{'frame':f,'seconds':f/FPS,'tags':sorted(set(tags[f])),'nativeTags':sorted(set(native.get(f,[])))} for f in sorted(tags)],'nativeFrames':sorted(native),'sampling':'All cue midpoint frames plus each actual scene/source/phase boundary at-1/0/+1 frame; representative full frames share the same single source decode pass.'}
+ visual=visual_qa.sampling_plan(timeline,sceneplan,captions)
+ for row in visual['extraNativeSamples']:
+  for tag in row['tags']:add(row['frame'],tag,True)
+ return {'totalFrames':total,'cueCount':len(captions['cues']),'samples':[{'frame':f,'seconds':f/FPS,'tags':sorted(set(tags[f])),'nativeTags':sorted(set(native.get(f,[])))} for f in sorted(tags)],'nativeFrames':sorted(native),'visualReview':visual,'sampling':'Every cue midpoint; scene/source/phase boundaries at-1/0/+1; every motion first/25/50/75/last plus observation/confirmation. Deduplicated global-frame union shares one source decode/split pass.'}
 
 def extract_actual(master,plan,out,master_sha):
  out.mkdir(parents=True,exist_ok=True);roi=out/'actual';native=out/'native';roi.mkdir(exist_ok=True);native.mkdir(exist_ok=True)
@@ -224,19 +229,24 @@ def unexpected_caption_like_box(image):
 
 def boards(plan,out):
  files=[];font=ImageFont.truetype(str(FONT),19)
- samples={x['frame']:x for x in plan['samples']};frames=plan['nativeFrames']
+ samples={x['frame']:x for x in plan['samples']};all_frames=plan['nativeFrames'];index_by_frame={f:i for i,f in enumerate(all_frames)}
+ # Motion's five samples appear in their own temporal boards exactly once
+ # per review scale. General boards contain the remaining boundaries/holds.
+ temporal_frames=set(plan['visualReview']['motionFiveFrames']);frames=[f for f in all_frames if f not in temporal_frames]
  for kind,w,h,cols,rows in [('native',960,540,2,3),('mobile',375,211,4,3)]:
   per=cols*rows
   for start in range(0,len(frames),per):
    board=Image.new('RGB',(w*cols,(h+48)*rows),'#151515');draw=ImageDraw.Draw(board)
    for j,frame in enumerate(frames[start:start+per]):
-    index=frames.index(frame);src=out/'native'/f'{index:06d}.png';im=Image.open(src).convert('RGB')
+    index=index_by_frame[frame];src=out/'native'/f'{index:06d}.png';im=Image.open(src).convert('RGB')
     im=im.resize((w,h),Image.Resampling.LANCZOS);x=(j%cols)*w;y=(j//cols)*(h+48)
     board.paste(im,(x,y+48));label=f'f{frame} {frame/FPS:.3f}s '+','.join(samples[frame]['nativeTags'])
     draw.text((x+5,y+4),label[:100 if kind=='native' else 32],font=font,fill='white')
     draw.text((x+5,y+25),'current encoded master; '+('1920px original saved' if kind=='native' else '375px derived from same frame'),font=font,fill='#bbbbbb')
    dest=out/f'{kind}-contact-{start//per:02d}.jpg';board.save(dest,quality=94);files.append(proof(dest))
- return {'boards':files,'nativeFullFrames':[{'frame':f,**proof(out/'native'/f'{i:06d}.png')} for i,f in enumerate(frames)],'mobileDerivedFromSameDecodedNativeFrames':True,'humanPixelReview':'pending actual opening; generation is not viewing'}
+ motion=visual_qa.derive_motion_boards(plan,out)
+ assert set(frames).isdisjoint(temporal_frames) and set(frames)|temporal_frames==set(all_frames)
+ return {'boards':files,'motionReview':{'file':rel(out/'visual-review-targets.json'),'sha256':sha(out/'visual-review-targets.json'),'motionCount':motion['motionCount']},'nativeFullFrames':[{'frame':f,**proof(out/'native'/f'{i:06d}.png')} for i,f in enumerate(all_frames)],'generalBoardFrames':frames,'motionBoardFrames':plan['visualReview']['motionFiveFrames'],'eachNativeFrameAssignedToOneBoardFamilyPerScale':True,'mobileDerivedFromSameDecodedNativeFrames':True,'humanPixelReview':'pending actual opening; generation is not viewing'}
 
 def execute(master,out):
  control=read(R/'shared/publishing/video-production-control.json');assert control['selectedVideo']==P.name
@@ -248,7 +258,7 @@ def execute(master,out):
  v=json.loads(probe.stdout)['streams'][0];assert (v['width'],v['height'],Fraction(v['avg_frame_rate']))==(1920,1080,Fraction(60))
  assert v.get('color_range')=='tv' and v.get('color_space')=='bt709','Expected pixels require the actual TV BT709 master; do not silently substitute a different color conversion'
  assert int(v['nb_frames'])==t['totalFrames'],'Master is partial/stale or has a different timeline'
- inputs={'master':{'file':rel(master),'sha256':master_sha,'bytes':stat[0]},'timeline':proof(H/'timeline.json'),'scenePlan':proof(O/'edit/scene-plan.json'),'captions':proof(O/'captions/captions.json'),'canonicalAliasMap':proof(H/'caption-aliases.json'),'captionLayout':proof(O/'captions/caption-layout.json'),'assKo':proof(ass),'srtKo':proof(srt),'assEn':proof(O/'captions.en.ass'),'srtEn':proof(O/'captions.en.srt'),'sourceKo':proof(P/'script/revision-v6-article-flow/narration.ko.json'),'sourceEn':proof(P/'script/revision-v6-article-flow/narration.en.json'),'implementation':proof(Path(__file__))}
+ inputs={'master':{'file':rel(master),'sha256':master_sha,'bytes':stat[0]},'timeline':proof(H/'timeline.json'),'scenePlan':proof(O/'edit/scene-plan.json'),'captions':proof(O/'captions/captions.json'),'canonicalAliasMap':proof(H/'caption-aliases.json'),'captionLayout':proof(O/'captions/caption-layout.json'),'assKo':proof(ass),'srtKo':proof(srt),'assEn':proof(O/'captions.en.ass'),'srtEn':proof(O/'captions.en.srt'),'sourceKo':proof(P/'script/revision-v6-article-flow/narration.ko.json'),'sourceEn':proof(P/'script/revision-v6-article-flow/narration.en.json'),'implementation':proof(Path(__file__)),'visualSamplingImplementation':proof(H/'final-visual-qa.py')}
  final=out/'caption-output-review.json'
  if final.exists():
   old=read(final)

@@ -4,7 +4,7 @@ Energy-active seconds are a proxy, not recognized speech or a listening pass.
 Never use these energy windows alone as safe insertion/seam evidence.
 """
 from pathlib import Path
-import hashlib,json,math,re,sys,time
+import argparse,hashlib,json,math,re,sys,time
 import numpy as np
 import soundfile as sf
 R=Path(__file__).resolve().parents[4];P=R/'projects/game-math-euler-axis-angle';H=Path(__file__).parent;V=P/'production/local/revision-v6/voice'
@@ -13,9 +13,11 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def db(x):return 20*math.log10(max(float(x),1e-12))
 def rms(x):return float(np.sqrt(np.mean(np.square(x,dtype=np.float64)))) if len(x) else 0.
 def main():
+ ap=argparse.ArgumentParser();ap.add_argument('--current',action='store_true');args=ap.parse_args()
  assert read(R/'shared/publishing/video-production-control.json')['selectedVideo']==P.name
- source=read(H/'voice-input.ko.json');script={s['id']:s for s in source['scenes']};completed=read(V/'tts-current.json')
- path=V/'source-signal-analysis.json';prior=read(path) if path.exists() else {};cache={s['id']:s for s in prior.get('scenes',[])}
+ source=read(H/'voice-input.ko.json');script={s['id']:s for s in source['scenes']};mapping=V/('current-pcm.json' if args.current else 'tts-current.json');completed=read(mapping)
+ if args.current:assert completed['status']=='current41-ready-for-word-alignment'
+ path=V/('current-source-signal-analysis.json' if args.current else 'source-signal-analysis.json');prior=read(path) if path.exists() else {};cache={s['id']:s for s in prior.get('scenes',[])}
  implementation=sha(Path(__file__));rows=[]
  for item in completed['scenes']:
   old=cache.get(item['id'])
@@ -44,14 +46,14 @@ def main():
  rates=[s['scriptedHangulSyllablesPerRawSecond'] for s in rows];median_rate=float(np.median(rates)) if rates else 0
  for row in rows:row['relativeRawRateToCompletedMedian']=row['scriptedHangulSyllablesPerRawSecond']/max(median_rate,.001)
  result=dict(schemaVersion=1,revision='article-flow-v6',sourceBatchStatus=completed['status'],scenes=rows,completedSceneCount=len(rows),
-  scriptSha256=sha(H/'voice-input.ko.json'),implementationSha256=implementation,
+  scriptSha256=sha(H/'voice-input.ko.json'),sourceMappingFile=mapping.relative_to(R).as_posix(),sourceMappingSha256=sha(mapping),implementationSha256=implementation,
   scope='Current completed PCM only; no ASR, synthesis, gain, stretching, trim, final voice approval or final timing.',
   rawRateMedian=median_rate,relativePaceInspectionCandidates=[dict(id=s['id'],rawSyllablesPerSecond=s['scriptedHangulSyllablesPerRawSecond'],ratio=s['relativeRawRateToCompletedMedian']) for s in rows if s['relativeRawRateToCompletedMedian']>1.15],
   relativeTrigger='More than15percent above this completed-set median is a contextual inspection candidate, not an external speech-rate standard or automatic failure.',
   denseMathSourceScenes=[s['id'] for s in rows if int(s['id'][-2:]) in [14,16,18,19,20,21,23,24,25,26,27,31,33,37,38,39,40,41]],
   plannedPacing=dict(primaryObservationSeconds=527,auxiliaryObservationSeconds=4,primaryFiniteMotionFrames=40820,auxiliaryMotionFrames=180,
    contract='Explain→finite visualization→observation→confirmation; source natural PCM unchanged; no blanket slowdown or per-sentence fixed silence.'),
-  actualSpeechActivePacingReview='pending once-only current source ASR/full direct comparison and word-aligned dense-paragraph breathing',humanWholeListening='pending',createdAt=time.time())
+  actualSpeechActivePacingReview='Source recognition/direct comparison linked separately; actual pace listening and realized motion/observation review remain pending.' if args.current else 'pending once-only current source ASR/full direct comparison and word-aligned dense-paragraph breathing',humanWholeListening='pending',createdAt=time.time())
  path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
  print(json.dumps(dict(completed=len(rows),medianRawSyllablesPerSecond=median_rate,minimum=min(rates),maximum=max(rates),relativeOutliers=result['relativePaceInspectionCandidates'],hardClipSamples=sum(s['hardClipSampleCount'] for s in rows),sourceOnly=True),ensure_ascii=False))
 if __name__=='__main__':main()
