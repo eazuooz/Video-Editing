@@ -46,6 +46,9 @@ public static partial class YamyamAssetLibraryMaterialSlots
         public int replacementSlot, referenceSlot, replacementTriangles, referenceTriangles, sourcePolygons, matchedPolygons;
         public int[] replacementRawMaterialIndices, referenceRawMaterialIndices, axes, signs; public double scale, maxPositionError, maxUvError;
         public bool uvVFlipped; public string meshGuid, meshLocalId, meshDataBeforeSha256, meshDataAfterSha256;
+        public string proofKind, uvWeldEvidenceSha256;
+        public int uvWeldedCornerOccurrences, crossRawMaterialUvWeldOccurrences, consistentWinding;
+        public double maxUvWitnessError, maxReconstructedTriangleAreaError;
     }
     [Serializable] public sealed class Result
     {
@@ -159,54 +162,117 @@ public static partial class YamyamAssetLibraryMaterialSlots
     static double Coordinate(Corner c,int axis) { return axis==0?c.x:axis==1?c.y:c.z; }
     static Vector3 Transform(Corner c, int[] axes, int[] signs, double scale) { return new Vector3((float)(Coordinate(c,axes[0]) * signs[0] * scale), (float)(Coordinate(c,axes[1]) * signs[1] * scale), (float)(Coordinate(c,axes[2]) * signs[2] * scale)); }
     static bool Close(Vector3 a, Vector3 b, double epsilon) { return Math.Abs(a.x-b.x) <= epsilon && Math.Abs(a.y-b.y) <= epsilon && Math.Abs(a.z-b.z) <= epsilon; }
+    [Serializable] public sealed class UvWeldWitness
+    {
+        public int nativeVertexIndex, sourcePolygon, sourceRawMaterialIndex, sourceLocalCorner;
+        public Corner sourceCorner;
+    }
+    [Serializable] public sealed class UvWeldRow
+    {
+        public string prefab, sourceModel, sourceSha256, meshIdentity, nativeFullMeshHash;
+        public UvWeldWitness[] witnesses;
+    }
+    [Serializable] public sealed class UvWeldEvidence
+    {
+        public int schemaVersion; public string planSha256, nativeDiagnosticSha256; public UvWeldRow[] rows;
+    }
+    const string UvWeldEvidenceSha256 = "b0e6b24512e80b1e4dcbab3501d79b67c87d72f6b3c975aad66ae5c9c95b71ee";
+    static UvWeldRow ReviewedUvWelds(PrefabPlan plan, Mesh mesh, string meshHash)
+    {
+        string path=Path.Combine(Work,"product011-native-source-uv-witnesses.json");NoLinks(path);
+        if(HashFile(path)!=UvWeldEvidenceSha256)throw new InvalidDataException("Exact source-FBX UV-weld witness evidence changed.");
+        var data=JsonUtility.FromJson<UvWeldEvidence>(File.ReadAllText(path));
+        if(data==null||data.schemaVersion!=1||data.planSha256!=PlanSha256||data.rows==null||data.rows.Length!=15||data.rows.Select(x=>x.prefab).Distinct().Count()!=15)throw new InvalidDataException("UV-weld evidence escaped the exact15 reviewed source models.");
+        var row=data.rows.Single(x=>x.prefab==plan.prefab);
+        if(row.sourceModel!=plan.sourceModel||row.sourceSha256!=plan.sourceFbxSha256||row.meshIdentity!=ObjectIdentity(mesh)||row.nativeFullMeshHash!=meshHash||row.witnesses==null||row.witnesses.Select(x=>x.nativeVertexIndex).Distinct().Count()!=row.witnesses.Length)
+            throw new InvalidDataException("UV-weld evidence is not bound to the exact source/native full mesh.");
+        return row;
+    }
+    static double[] TriangleCross(Vector3 a,Vector3 b,Vector3 c)
+    {
+        double x=(double)b.x-a.x,y=(double)b.y-a.y,z=(double)b.z-a.z,u=(double)c.x-a.x,v=(double)c.y-a.y,w=(double)c.z-a.z;
+        return new[]{y*w-z*v,z*u-x*w,x*v-y*u};
+    }
+    static double TriangleArea(Vector3 a,Vector3 b,Vector3 c)
+    {var n=TriangleCross(a,b,c);return .5*Math.Sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);}
+    static double[] PolygonNormal(Polygon p,int[] axes,int[] signs,double scale)
+    {
+        var value=new double[3];
+        for(int n=0;n<p.corners.Length;n++){
+            Vector3 a=Transform(p.corners[n],axes,signs,scale),b=Transform(p.corners[(n+1)%p.corners.Length],axes,signs,scale);
+            value[0]+=(double)a.y*b.z-(double)a.z*b.y;value[1]+=(double)a.z*b.x-(double)a.x*b.z;value[2]+=(double)a.x*b.y-(double)a.y*b.x;
+        }
+        return value;
+    }
     static NativeProof RegionProof(PrefabPlan plan, Renderer renderer)
     {
-        Mesh mesh = MeshAt(renderer); if (mesh.subMeshCount != 3 || mesh.GetTopology(1) != MeshTopology.Triangles || mesh.GetTopology(2) != MeshTopology.Triangles) throw new InvalidDataException("Expected three triangle submeshes.");
-        Vector3[] vertices = mesh.vertices; Vector2[] uv = mesh.uv; if (uv.Length != vertices.Length || plan.sourceHairRegions == null || plan.sourceHairRegions.Length < 190) throw new InvalidDataException("Source/native corner data unavailable.");
-        int[][] indices = { mesh.GetIndices(1), mesh.GetIndices(2) }; int[] used = indices.SelectMany(value => value).Distinct().ToArray();
-        Vector3 minimum = vertices[used[0]], maximum = minimum; foreach (int i in used) { minimum = Vector3.Min(minimum, vertices[i]); maximum = Vector3.Max(maximum, vertices[i]); }
-        int[][] permutations = { new[] {0,1,2}, new[] {0,2,1}, new[] {1,0,2}, new[] {1,2,0}, new[] {2,0,1}, new[] {2,1,0} };
-        var solutions = new List<NativeProof>(); const double tolerance = .00001;
-        foreach (int[] axes in permutations) for (int mask = 0; mask < 8; mask++) foreach (double scale in new[] {.01, 1d, 100d}) {
-            int[] signs = { (mask&1)==0 ? 1:-1, (mask&2)==0 ? 1:-1, (mask&4)==0 ? 1:-1 };
-            Vector3[] source = plan.sourceHairRegions.SelectMany(p => p.corners).Select(c => Transform(c,axes,signs,scale)).ToArray();
-            Vector3 sourceMin = source[0], sourceMax = source[0]; foreach (Vector3 p in source) { sourceMin = Vector3.Min(sourceMin,p); sourceMax = Vector3.Max(sourceMax,p); }
-            if (!Close(minimum,sourceMin,tolerance) || !Close(maximum,sourceMax,tolerance)) continue;
-            foreach (bool flip in new[] {false,true}) {
-                var counts = new Dictionary<int,int>(); var edges = new Dictionary<int,Dictionary<string,int>>(); var materialIndices = new[] {new HashSet<int>(),new HashSet<int>()}; bool valid = true; double maxPosition = 0, maxUv = 0;
-                for (int sub = 0; sub < 2 && valid; sub++) for (int tri = 0; tri < indices[sub].Length && valid; tri += 3) {
-                    var candidates = new List<Tuple<Polygon,int[]>>();
-                    foreach (Polygon polygon in plan.sourceHairRegions) {
-                        int[] local = new int[3]; bool polygonMatch = true;
-                        for (int corner = 0; corner < 3; corner++) {
-                            int index = indices[sub][tri+corner]; var found = new List<int>();
-                            for (int n = 0; n < polygon.corners.Length; n++) { Corner c = polygon.corners[n]; Vector3 target = Transform(c,axes,signs,scale); double v = flip ? 1-c.v : c.v;
-                                if (Close(vertices[index],target,tolerance) && Math.Abs(uv[index].x-c.u) <= tolerance && Math.Abs(uv[index].y-v) <= tolerance) found.Add(n); }
-                            if (found.Count != 1) { polygonMatch=false;break; } local[corner]=found[0];
+        Mesh mesh=MeshAt(renderer);if(mesh.subMeshCount!=3||mesh.GetTopology(1)!=MeshTopology.Triangles||mesh.GetTopology(2)!=MeshTopology.Triangles)throw new InvalidDataException("Expected three triangle submeshes.");
+        Vector3[] vertices=mesh.vertices;Vector2[] uv=mesh.uv;if(uv.Length!=vertices.Length||plan.sourceHairRegions==null||plan.sourceHairRegions.Length<190)throw new InvalidDataException("Source/native corner data unavailable.");
+        string fullMeshHash=MeshHash(mesh);UvWeldRow reviewed=ReviewedUvWelds(plan,mesh,fullMeshHash);
+        int[][] indices={mesh.GetIndices(1),mesh.GetIndices(2)};int[] used=indices.SelectMany(v=>v).Distinct().ToArray();
+        if(indices.Any(v=>v.Length%3!=0)||used.Length==0||used.Any(i=>i<0||i>=vertices.Length))throw new InvalidDataException("Invalid triangle index data.");
+        Vector3 minimum=vertices[used[0]],maximum=minimum;foreach(int i in used){minimum=Vector3.Min(minimum,vertices[i]);maximum=Vector3.Max(maximum,vertices[i]);}
+        int[][] permutations={new[]{0,1,2},new[]{0,2,1},new[]{1,0,2},new[]{1,2,0},new[]{2,0,1},new[]{2,1,0}};
+        var solutions=new List<NativeProof>();const double positionTolerance=.00001,uvWitnessTolerance=.0000001;
+        foreach(int[] axes in permutations)for(int mask=0;mask<8;mask++)foreach(double scale in new[]{.01,1d,100d}){
+            int[] signs={(mask&1)==0?1:-1,(mask&2)==0?1:-1,(mask&4)==0?1:-1};
+            Vector3[] source=plan.sourceHairRegions.SelectMany(p=>p.corners).Select(c=>Transform(c,axes,signs,scale)).ToArray();
+            Vector3 sourceMin=source[0],sourceMax=source[0];foreach(Vector3 p in source){sourceMin=Vector3.Min(sourceMin,p);sourceMax=Vector3.Max(sourceMax,p);}
+            if(!Close(minimum,sourceMin,positionTolerance)||!Close(maximum,sourceMax,positionTolerance))continue;
+            foreach(bool flip in new[]{false,true}){
+                var counts=new Dictionary<int,int>();var edges=new Dictionary<int,Dictionary<string,int>>();var materialIndices=new[]{new HashSet<int>(),new HashSet<int>()};var usedWitnesses=new HashSet<int>();
+                bool valid=true;double maxPosition=0,maxUv=0,maxWitnessUv=0,maxAreaError=0;int orientation=0,weldedCorners=0,crossMaterialWelds=0;
+                for(int sub=0;sub<2&&valid;sub++)for(int tri=0;tri<indices[sub].Length&&valid;tri+=3){
+                    var candidates=new List<Tuple<Polygon,int[]>>();
+                    foreach(Polygon polygon in plan.sourceHairRegions){
+                        int[] local=new int[3];bool polygonMatch=true;
+                        for(int corner=0;corner<3;corner++){
+                            int index=indices[sub][tri+corner];var found=new List<int>();
+                            for(int n=0;n<polygon.corners.Length;n++)if(Close(vertices[index],Transform(polygon.corners[n],axes,signs,scale),positionTolerance))found.Add(n);
+                            if(found.Count!=1){polygonMatch=false;break;}local[corner]=found[0];
                         }
-                        if (polygonMatch) candidates.Add(Tuple.Create(polygon,local));
+                        if(polygonMatch)candidates.Add(Tuple.Create(polygon,local));
                     }
-                    if (candidates.Count != 1) { valid=false;break; }
-                    Polygon matched = candidates[0].Item1; int[] localCorners = candidates[0].Item2;
-                    if (localCorners.Distinct().Count()!=3) { valid=false;break; }
-                    int previous; counts.TryGetValue(matched.polygon,out previous);counts[matched.polygon]=previous+1; materialIndices[sub].Add(matched.sourceMaterialIndex);
-                    Dictionary<string,int> polygonEdges; if (!edges.TryGetValue(matched.polygon,out polygonEdges)) edges.Add(matched.polygon,polygonEdges=new Dictionary<string,int>());
-                    for (int c = 0;c<3;c++) { int a=localCorners[c],b=localCorners[(c+1)%3];string edge=Math.Min(a,b)+":"+Math.Max(a,b);polygonEdges.TryGetValue(edge,out previous);polygonEdges[edge]=previous+1;
-                        Corner expected=matched.corners[a];Vector3 expectedPosition=Transform(expected,axes,signs,scale);Vector3 actualPosition=vertices[indices[sub][tri+c]];
+                    if(candidates.Count!=1){valid=false;break;}
+                    Polygon matched=candidates[0].Item1;int[] localCorners=candidates[0].Item2;if(localCorners.Distinct().Count()!=3){valid=false;break;}
+                    int previous;counts.TryGetValue(matched.polygon,out previous);counts[matched.polygon]=previous+1;materialIndices[sub].Add(matched.sourceMaterialIndex);
+                    Dictionary<string,int> polygonEdges;if(!edges.TryGetValue(matched.polygon,out polygonEdges))edges.Add(matched.polygon,polygonEdges=new Dictionary<string,int>());
+                    for(int c=0;c<3;c++){
+                        int a=localCorners[c],b=localCorners[(c+1)%3],index=indices[sub][tri+c];string edge=Math.Min(a,b)+":"+Math.Max(a,b);polygonEdges.TryGetValue(edge,out previous);polygonEdges[edge]=previous+1;
+                        Corner expected=matched.corners[a];Vector3 expectedPosition=Transform(expected,axes,signs,scale),actualPosition=vertices[index];
                         maxPosition=Math.Max(maxPosition,Math.Max(Math.Abs(expectedPosition.x-actualPosition.x),Math.Max(Math.Abs(expectedPosition.y-actualPosition.y),Math.Abs(expectedPosition.z-actualPosition.z))));
-                        maxUv=Math.Max(maxUv,Math.Max(Math.Abs(expected.u-uv[indices[sub][tri+c]].x),Math.Abs((flip?1-expected.v:expected.v)-uv[indices[sub][tri+c]].y))); }
+                        double delta=Math.Max(Math.Abs(expected.u-uv[index].x),Math.Abs((flip?1-expected.v:expected.v)-uv[index].y));maxUv=Math.Max(maxUv,delta);
+                        if(delta>uvWitnessTolerance){
+                            // Unity may weld UV seams at one coincident control point. Accept only an exact,
+                            // independently parsed corner from THIS unchanged source FBX and full native mesh.
+                            var witness=reviewed.witnesses.SingleOrDefault(w=>w.nativeVertexIndex==index);
+                            if(witness==null||witness.sourceCorner==null||!Close(actualPosition,Transform(witness.sourceCorner,axes,signs,scale),positionTolerance)){valid=false;break;}
+                            double witnessDelta=Math.Max(Math.Abs(witness.sourceCorner.u-uv[index].x),Math.Abs((flip?1-witness.sourceCorner.v:witness.sourceCorner.v)-uv[index].y));
+                            if(witnessDelta>uvWitnessTolerance){valid=false;break;}
+                            maxWitnessUv=Math.Max(maxWitnessUv,witnessDelta);usedWitnesses.Add(index);weldedCorners++;if(witness.sourceRawMaterialIndex!=matched.sourceMaterialIndex)crossMaterialWelds++;
+                        }
+                    }
+                    if(!valid)break;
+                    Vector3 a0=vertices[indices[sub][tri]],a1=vertices[indices[sub][tri+1]],a2=vertices[indices[sub][tri+2]];
+                    var normal=PolygonNormal(matched,axes,signs,scale);var cr=TriangleCross(a0,a1,a2);double facing=normal[0]*cr[0]+normal[1]*cr[1]+normal[2]*cr[2];int sign=facing>0?1:facing<0?-1:0;
+                    if(sign==0||(orientation!=0&&orientation!=sign)){valid=false;break;}orientation=sign;
+                    double expectedArea=TriangleArea(Transform(matched.corners[localCorners[0]],axes,signs,scale),Transform(matched.corners[localCorners[1]],axes,signs,scale),Transform(matched.corners[localCorners[2]],axes,signs,scale));
+                    double areaError=Math.Abs(TriangleArea(a0,a1,a2)-expectedArea);maxAreaError=Math.Max(maxAreaError,areaError);if(areaError>Math.Max(.001,expectedArea*.00001)){valid=false;break;}
                 }
-                foreach (Polygon polygon in plan.sourceHairRegions) {
-                    int actual; Dictionary<string,int> pe; if (!counts.TryGetValue(polygon.polygon,out actual) || actual!=polygon.corners.Length-2 || !edges.TryGetValue(polygon.polygon,out pe)) { valid=false;break; }
+                foreach(Polygon polygon in plan.sourceHairRegions){
+                    int actual;Dictionary<string,int> pe;if(!counts.TryGetValue(polygon.polygon,out actual)||actual!=polygon.corners.Length-2||!edges.TryGetValue(polygon.polygon,out pe)){valid=false;break;}
                     var boundary=new HashSet<string>();for(int n=0;n<polygon.corners.Length;n++){int next=(n+1)%polygon.corners.Length;boundary.Add(Math.Min(n,next)+":"+Math.Max(n,next));}
-                    if (boundary.Any(e=>!pe.ContainsKey(e)||pe[e]!=1)||pe.Any(e=>!boundary.Contains(e.Key)&&e.Value!=2)) {valid=false;break;}
+                    if(pe.Count!=2*polygon.corners.Length-3||boundary.Any(e=>!pe.ContainsKey(e)||pe[e]!=1)||pe.Any(e=>!boundary.Contains(e.Key)&&e.Value!=2)){valid=false;break;}
                 }
-                if (valid) { string guid;long id; if(!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(mesh,out guid,out id)||guid!=plan.sourceFbxGuid) throw new InvalidDataException("Native mesh is not owned by the exact source FBX.");
-                    solutions.Add(new NativeProof {replacementSlot=1,referenceSlot=2,replacementTriangles=indices[0].Length/3,referenceTriangles=indices[1].Length/3,sourcePolygons=plan.sourceHairRegions.Length,matchedPolygons=counts.Count,
-                        replacementRawMaterialIndices=materialIndices[0].OrderBy(n=>n).ToArray(),referenceRawMaterialIndices=materialIndices[1].OrderBy(n=>n).ToArray(),axes=axes,signs=signs,scale=scale,uvVFlipped=flip,maxPositionError=maxPosition,maxUvError=maxUv,meshGuid=guid,meshLocalId=id.ToString(CultureInfo.InvariantCulture),meshDataBeforeSha256=MeshHash(mesh)}); }
+                if(usedWitnesses.Count!=reviewed.witnesses.Length)valid=false;
+                if(valid){string guid;long id;if(!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(mesh,out guid,out id)||guid!=plan.sourceFbxGuid)throw new InvalidDataException("Native mesh is not owned by the exact source FBX.");
+                    solutions.Add(new NativeProof{replacementSlot=1,referenceSlot=2,replacementTriangles=indices[0].Length/3,referenceTriangles=indices[1].Length/3,sourcePolygons=plan.sourceHairRegions.Length,matchedPolygons=counts.Count,
+                        replacementRawMaterialIndices=materialIndices[0].OrderBy(n=>n).ToArray(),referenceRawMaterialIndices=materialIndices[1].OrderBy(n=>n).ToArray(),axes=axes,signs=signs,scale=scale,uvVFlipped=flip,maxPositionError=maxPosition,maxUvError=maxUv,meshGuid=guid,meshLocalId=id.ToString(CultureInfo.InvariantCulture),meshDataBeforeSha256=fullMeshHash,
+                        proofKind="unique-source-polygons-topology-boundary-area-plus-source-owned-UV-weld-v1",uvWeldEvidenceSha256=UvWeldEvidenceSha256,uvWeldedCornerOccurrences=weldedCorners,crossRawMaterialUvWeldOccurrences=crossMaterialWelds,maxUvWitnessError=maxWitnessUv,maxReconstructedTriangleAreaError=maxAreaError,consistentWinding=orientation});
+                }
             }
         }
-        if (solutions.Count!=1) throw new InvalidDataException("Native imported material regions must uniquely match the proved FBX Hair polygon/UV coverage: "+solutions.Count);
+        if(solutions.Count!=1)throw new InvalidDataException("Native Hair regions must uniquely match source geometry/topology and exact source-owned existing UVs: "+solutions.Count);
         return solutions[0];
     }
     static YamyamAssetLibraryBridge.PreviewRecord RenderChanged(string prefab, string image, string id, string title, string kind)
@@ -385,6 +451,11 @@ public static partial class YamyamAssetLibraryMaterialSlots
             int emissionIndex=material.shader.FindPropertyIndex("_EmissionColor");if(emissionIndex<0||material.shader.GetPropertyType(emissionIndex)!=UnityEngine.Rendering.ShaderPropertyType.Color||(material.shader.GetPropertyFlags(emissionIndex)&UnityEngine.Rendering.ShaderPropertyFlags.HDR)==0||material.GetTexture("_EmissionMap")||material.GetTexture("_BaseMap")||!NearVector(material.GetVector("_BaseColor"),new Vector4(0,0,0,1))||!NearVector(material.GetVector("_EmissionColor"),new Vector4(0,0,0,1))||material.IsKeywordEnabled("_EMISSION"))throw new InvalidDataException("P067 original untextured black/nonemissive signature differs.");
             report.localIdBefore=materialId;report.giFlagsBefore=(int)material.globalIlluminationFlags;report.otherShaderPropertiesBeforeSha256=OtherEmissionProperties(material);prepared=new Material(material);prepared.name=material.name;
             prepared.SetVector("_EmissionColor",linear);prepared.globalIlluminationFlags=material.globalIlluminationFlags&~MaterialGlobalIlluminationFlags.EmissiveIsBlack;ValidateEmissionLit(prepared);
+            // Native clone probe proved that official validation leaves all unrelated values exact,
+            // but disables _EMISSION when original GI flags4 become None0. Source glTF emission
+            // requires the shader branch, not an invented Baked/Realtime GI setting.
+            if(!NearVector(prepared.GetVector("_EmissionColor"),linear)||(int)prepared.globalIlluminationFlags!=(report.giFlagsBefore&~(int)MaterialGlobalIlluminationFlags.EmissiveIsBlack)||OtherEmissionProperties(prepared,ObjectIdentity(material))!=report.otherShaderPropertiesBeforeSha256)throw new InvalidDataException("Official Lit validation changed source-linear emission, preserved GI mode or unrelated shader values.");
+            prepared.EnableKeyword("_EMISSION");
             // The temporary material has a different instance identity; compare
             // identical shader values using the original material identity.
             if(!NearVector(prepared.GetVector("_EmissionColor"),linear)||!prepared.IsKeywordEnabled("_EMISSION")||(int)prepared.globalIlluminationFlags!=(report.giFlagsBefore&~(int)MaterialGlobalIlluminationFlags.EmissiveIsBlack)||OtherEmissionProperties(prepared,ObjectIdentity(material))!=report.otherShaderPropertiesBeforeSha256)throw new InvalidDataException("Official Lit validator did not preserve the exact linear emission/activation/other shader values.");

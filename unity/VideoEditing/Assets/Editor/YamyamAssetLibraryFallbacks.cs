@@ -333,11 +333,27 @@ public static class YamyamAssetLibraryFallbacks
         if ((material.GetVector("_EmissionColor") - emission).sqrMagnitude > 1e-12f || !material.IsKeywordEnabled("_EMISSION")) throw new InvalidDataException("Source-proved linear emission validation failed.");
     }
 
+    static bool RejectKnownP082PackageIcon(Pack pack, Material source, string modelPath, ref Texture color)
+    {
+        const string root = "Assets/ThirdParty/YamyamAssetLibrary/082-free-vintage-retro-stylized-pack";
+        if (pack.product.index != 82 || pack.root != root || source.name != "Globe" || modelPath != root + "/Vintage Room/Props 2/Models/Unity FBX/Globe.fbx" || !color
+            || AssetDatabase.GetAssetPath(color) != "Packages/com.unity.dt.app-ui/PackageResources/Icons/Regular/Globe.png") return false;
+        string physical = Path.Combine(Path.GetDirectoryName(Application.dataPath), modelPath.Replace('/', Path.DirectorySeparatorChar));
+        using (var stream = File.OpenRead(physical)) using (var sha = SHA256.Create())
+            if (stream.Length != 128540 || BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant() != "c4e1322243414edd846a454c3cece32aca2baa43e2c70a3566a2aa00b9bdaf4a")
+                throw new InvalidDataException("Verified P082 missing-map source changed; no texture substitution is authorized.");
+        color = null;
+        AddIssue(pack.product.index, "source-map-gap-package-icon-rejected", modelPath + " :: Globe", "Supplied original references missing external globe.png and has no embedded map. The unrelated dt.app-ui package icon is rejected; source tint retained, no Props2 atlas guessed.");
+        return true;
+    }
+
     static Material ConvertMaterial(Pack pack, Material source, string modelPath, out bool unresolved)
     {
         unresolved = false;
         if (!source) { AddIssue(pack.product.index, "null-source-material", modelPath, "A renderer slot is null; it is preserved as null."); unresolved = true; return null; }
         Texture color = GetTexture(source, "_BaseMap", "_MainTex"); string resolution = color ? "source-texture-reference" : "source-color-only";
+        bool knownMissingGlobe = RejectKnownP082PackageIcon(pack, source, modelPath, ref color);
+        if (knownMissingGlobe) { unresolved = true; resolution = "verified-p082-source-globe-map-absent-package-icon-rejected"; }
         Color tint = GetColor(source, Color.white, "_BaseColor", "_Color");
         bool verifiedGlass = VerifiedP008Glass(pack, modelPath, source, tint, color);
         bool verifiedTracks = VerifiedP061Tracks(pack, source, modelPath, ref color);
@@ -345,7 +361,7 @@ public static class YamyamAssetLibraryFallbacks
         if (verifiedGlass) resolution = "verified-p008-untextured-tinted-glass";
         if (verifiedTracks) resolution = "verified-p061-recovered-source-tank-track-image";
         if (verifiedEmission) resolution = "verified-p067-untextured-source-linear-emission";
-        if (!color && !verifiedGlass && !verifiedEmission)
+        if (!color && !verifiedGlass && !verifiedEmission && !knownMissingGlobe)
         {
             string match = MatchColor(pack, source.name);
             if (match != null) { color = AssetDatabase.LoadAssetAtPath<Texture2D>(match); resolution = "unique-normalized-material-texture-name"; }
@@ -371,6 +387,7 @@ public static class YamyamAssetLibraryFallbacks
         var shader = Shader.Find("Universal Render Pipeline/Lit"); if (!shader) throw new InvalidOperationException("URP/Lit shader unavailable.");
         var material = source.shader == shader ? new Material(source) : new Material(shader);
         material.name = source.name; material.SetColor("_BaseColor", tint); material.SetTexture("_BaseMap", color);
+        if (knownMissingGlobe && material.HasProperty("_MainTex")) material.SetTexture("_MainTex", null);
         if (source.HasProperty("_BaseMap")) { material.SetTextureScale("_BaseMap", source.GetTextureScale("_BaseMap")); material.SetTextureOffset("_BaseMap", source.GetTextureOffset("_BaseMap")); }
         else if (source.HasProperty("_MainTex")) { material.SetTextureScale("_BaseMap", source.GetTextureScale("_MainTex")); material.SetTextureOffset("_BaseMap", source.GetTextureOffset("_MainTex")); }
         material.SetFloat("_Metallic", metal); material.SetFloat("_Smoothness", smooth);

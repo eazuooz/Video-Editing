@@ -15,7 +15,7 @@ using File = YamyamAssetLibraryIO.Files;
 using Directory = YamyamAssetLibraryIO.Directories;
 using FileInfo = YamyamAssetLibraryIO.Info;
 
-public static class YamyamAssetLibraryTankTracks
+public static partial class YamyamAssetLibraryTankTracks
 {
     const string ExpectedProject = "D:/Github/VideoEditing/unity/VideoEditing/Library/YamyamAssetLibrary/headless-project";
     const string Root = "Assets/ThirdParty/YamyamAssetLibrary";
@@ -35,6 +35,7 @@ public static class YamyamAssetLibraryTankTracks
         public int textureWidth, textureHeight;
         public string kind = "verified-p061-embedded-tank-track-image-correction", status = "checking", startedUtc, completedUtc, project, sourceProofSha256 = ProofSha;
         public string texturePath = TexturePath, textureGuid = TextureGuid, textureSha256 = ImageSha, textureMetadataSha256, previewPath, previewPrefab;
+        public string recoverySourceReportPath, recoverySourceReportSha256, recoveryOtherSettingsScope;
         public string originalPreviewsSha256, originalRepresentative, originalRepresentativeImage, originalRepresentativeImageSha256;
         public string previewsAfterSha256, representativeAfterImageSha256;
         public bool originalRepresentativeDependsOnChangedMaterials, representativeRefreshed;
@@ -77,7 +78,7 @@ public static class YamyamAssetLibraryTankTracks
         for (int index = 0; index < material.shader.GetPropertyCount(); index++) {
             string name = material.shader.GetPropertyName(index); var type = material.shader.GetPropertyType(index); text.Append('|').Append(name).Append('=');
             if (type == ShaderPropertyType.Texture) {
-                if (name != "_BaseMap") { Texture texture = material.GetTexture(name); string guid; long local;
+                if (name != "_BaseMap" && name != "_MainTex") { Texture texture = material.GetTexture(name); string guid; long local;
                     text.Append(!texture ? "null" : AssetDatabase.TryGetGUIDAndLocalFileIdentifier(texture, out guid, out local) ? guid + ":" + local : texture.name + ":" + texture.GetType().FullName); }
                 text.Append('|').Append(V(material.GetTextureScale(name))).Append('|').Append(V(material.GetTextureOffset(name)));
             } else if (type == ShaderPropertyType.Color || type == ShaderPropertyType.Vector) { Vector4 value = material.GetVector(name); for (int part = 0; part < 4; part++) text.Append(F(value[part])).Append(','); }
@@ -177,7 +178,7 @@ public static class YamyamAssetLibraryTankTracks
                 Material material = loaded[targets.Values.Single(value => Root + "/" + value.path == change.path).sourceMaterial]; material.SetTexture("_BaseMap", texture); EditorUtility.SetDirty(material); AssetDatabase.SaveAssetIfDirty(material);
                 AssetDatabase.ImportAsset(change.path, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport); material = AssetDatabase.LoadAssetAtPath<Material>(change.path); string guid; long id;
                 string name = targets.Values.Single(value => Root + "/" + value.path == change.path).sourceMaterial;
-                if (!material || material.GetTexture("_BaseMap") != texture || OtherSettings(material) != settings[name] || !AssetDatabase.TryGetGUIDAndLocalFileIdentifier(material, out guid, out id) || guid != change.guid || id != change.localId
+                if (!material || material.GetTexture("_BaseMap") != texture || material.GetTexture("_MainTex") != texture || OtherSettings(material) != settings[name] || !AssetDatabase.TryGetGUIDAndLocalFileIdentifier(material, out guid, out id) || guid != change.guid || id != change.localId
                     || HashFile(Absolute(change.path) + ".meta") != change.metadataSha256) throw new InvalidDataException("Persistent material map/unchanged settings/identity verification failed.");
                 change.afterSha256 = HashFile(Absolute(change.path)); if (change.afterSha256 == change.beforeSha256) throw new InvalidDataException("Material map assignment did not persist.");
             }

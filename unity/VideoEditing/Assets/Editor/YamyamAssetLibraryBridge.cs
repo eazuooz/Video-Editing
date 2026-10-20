@@ -157,6 +157,11 @@ public static class YamyamAssetLibraryBridge
         public string id, title, assetPath, imagePath, error;
         public string kind = "isolated-static-mesh-preview";
         public int drawCalls, visiblePixels, magentaLikePixels, totalPixels;
+        public int renderTextureWidth, renderTextureHeight, outputWidth, outputHeight;
+        public float editorPixelsPerPoint, fittedDistance, boundsRadius;
+        public string framingAlgorithm, sourceSelectionReason;
+        public Vector3 boundsCenter, boundsExtents, viewportMin, viewportMax;
+        public bool boundsInsideViewport;
     }
     [Serializable] public class PreviewReport
     {
@@ -536,9 +541,7 @@ public static class YamyamAssetLibraryBridge
                 string productRoot = folder.StartsWith(AssetsRoot + "/", StringComparison.Ordinal) ? folder : AssetsRoot + "/" + folder;
                 AssertAssetPath(productRoot + "/");
                 if (!AssetDatabase.IsValidFolder(productRoot)) throw new DirectoryNotFoundException(productRoot);
-                var candidates = AssetDatabase.FindAssets("t:GameObject", new[] { productRoot }).Select(AssetDatabase.GUIDToAssetPath)
-                    .Distinct().OrderByDescending(path => path.IndexOf("Generated", StringComparison.OrdinalIgnoreCase) >= 0)
-                    .ThenBy(path => path).ToArray();
+                var candidates = PreviewAssetCandidates(productRoot);
                 List<MeshDraw> draws = null; Bounds bounds = new Bounds();
                 foreach (string candidate in candidates)
                 {
@@ -546,7 +549,9 @@ public static class YamyamAssetLibraryBridge
                     if (!asset) continue;
                     draws = Draws(asset, out bounds);
                     if (draws.Count == 0) continue;
-                    result.assetPath = candidate; break;
+                    result.assetPath = candidate;
+                    result.sourceSelectionReason = PreviewCandidateKind(candidate) + "; generated prefab, native prefab, then raw model ordering; visible static mesh only";
+                    break;
                 }
                 string name = product.index.ToString("D3") + "-" + SafeName(product.id ?? product.folder);
                 result.imagePath = Path.Combine(Work, "previews", name + ".png");
@@ -587,6 +592,74 @@ public static class YamyamAssetLibraryBridge
         ResetSession();
     }
 
+    static string PreviewCandidateKind(string path)
+    {
+        bool prefab = path.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase);
+        if (prefab && path.Replace('\\', '/').IndexOf("/Generated/", StringComparison.OrdinalIgnoreCase) >= 0) return "generated-prefab";
+        return prefab ? "native-prefab" : "raw-model";
+    }
+    static string[] PreviewAssetCandidates(string productRoot)
+    {
+        return AssetDatabase.FindAssets("t:GameObject", new[] { productRoot }).Select(AssetDatabase.GUIDToAssetPath)
+            .Distinct().OrderBy(path => PreviewCandidateKind(path) == "generated-prefab" ? 0 : PreviewCandidateKind(path) == "native-prefab" ? 1 : 2)
+            .ThenBy(path => path, StringComparer.Ordinal).ToArray();
+    }
+    static IEnumerable<Vector3> PreviewBoundsCorners(Bounds bounds)
+    {
+        for (int x = -1; x <= 1; x += 2)
+            for (int y = -1; y <= 1; y += 2)
+                for (int z = -1; z <= 1; z += 2)
+                    yield return bounds.center + Vector3.Scale(bounds.extents, new Vector3(x, y, z));
+    }
+    // Fit every AABB corner in camera coordinates. A margin of .90 leaves5% on each edge.
+    // This is preview-only camera placement, not a modification of any source asset transform.
+    static void FitPreviewCamera(Camera camera, Bounds bounds, int width, int height, PreviewRecord result)
+    {
+        const float occupancy = .90f;
+        camera.rect = new Rect(0, 0, 1, 1);
+        camera.pixelRect = new Rect(0, 0, width, height);
+        camera.aspect = (float)width / height;
+        camera.orthographic = false;
+        camera.fieldOfView = 32;
+        camera.ResetProjectionMatrix();
+        Vector3 outward = new Vector3(1, .65f, -1.4f).normalized;
+        Quaternion rotation = Quaternion.LookRotation(-outward, Vector3.up);
+        Quaternion inverse = Quaternion.Inverse(rotation);
+        float radius = Mathf.Max(.01f, bounds.extents.magnitude);
+        float tanV = Mathf.Tan(camera.fieldOfView * .5f * Mathf.Deg2Rad);
+        float tanH = tanV * camera.aspect;
+        float distance = radius * .01f;
+        foreach (Vector3 corner in PreviewBoundsCorners(bounds))
+        {
+            Vector3 relative = inverse * (corner - bounds.center);
+            distance = Mathf.Max(distance, Mathf.Abs(relative.x) / (tanH * occupancy) - relative.z);
+            distance = Mathf.Max(distance, Mathf.Abs(relative.y) / (tanV * occupancy) - relative.z);
+            distance = Mathf.Max(distance, radius * .01f - relative.z);
+        }
+        camera.transform.SetPositionAndRotation(bounds.center + outward * distance, rotation);
+        float minDepth = float.PositiveInfinity, maxDepth = 0;
+        foreach (Vector3 corner in PreviewBoundsCorners(bounds))
+        {
+            float depth = (inverse * (corner - camera.transform.position)).z;
+            minDepth = Mathf.Min(minDepth, depth); maxDepth = Mathf.Max(maxDepth, depth);
+        }
+        camera.nearClipPlane = Mathf.Max(.00001f, minDepth * .5f);
+        camera.farClipPlane = Mathf.Max(camera.nearClipPlane * 2, maxDepth + radius * .1f);
+        result.framingAlgorithm = "eight-bounds-corners-perspective-fit-v1; fullHiDPIviewport; wholeRT-resample";
+        result.boundsCenter = bounds.center; result.boundsExtents = bounds.extents;
+        result.boundsRadius = radius; result.fittedDistance = distance;
+        result.viewportMin = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+        result.viewportMax = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+        foreach (Vector3 corner in PreviewBoundsCorners(bounds))
+        {
+            Vector3 point = camera.WorldToViewportPoint(corner);
+            result.viewportMin = Vector3.Min(result.viewportMin, point); result.viewportMax = Vector3.Max(result.viewportMax, point);
+        }
+        result.boundsInsideViewport = result.viewportMin.x >= .049f && result.viewportMin.y >= .049f && result.viewportMin.z > 0 &&
+            result.viewportMax.x <= .951f && result.viewportMax.y <= .951f && result.viewportMax.z <= camera.farClipPlane;
+        if (!result.boundsInsideViewport) throw new InvalidDataException("Fitted preview bounds escaped5% viewport margin.");
+    }
+
     static List<MeshDraw> Draws(GameObject asset, out Bounds bounds)
     {
         var draws = new List<MeshDraw>(); bounds = new Bounds(); bool first = true;
@@ -621,6 +694,7 @@ public static class YamyamAssetLibraryBridge
         var preview = new PreviewRenderUtility();
         Texture2D pixels = null; bool begun = false;
         var priorTarget = RenderTexture.active;
+        RenderTexture outputTarget = null;
         bool priorAsyncCompilation = ShaderUtil.allowAsyncCompilation;
         try
         {
@@ -634,13 +708,14 @@ public static class YamyamAssetLibraryBridge
             preview.lights[0].transform.rotation = Quaternion.Euler(35, 30, 0);
             preview.lights[1].intensity = .75f; preview.lights[1].color = new Color(.85f, .9f, 1);
             preview.lights[1].transform.rotation = Quaternion.Euler(335, 210, 0);
-            float radius = Mathf.Max(.01f, bounds.extents.magnitude);
-            float distance = radius / Mathf.Sin(preview.camera.fieldOfView * .5f * Mathf.Deg2Rad) * 1.2f;
-            preview.camera.nearClipPlane = Mathf.Max(.001f, radius * .005f);
-            preview.camera.farClipPlane = distance + radius * 5;
-            preview.camera.transform.position = bounds.center + new Vector3(1, .65f, -1.4f).normalized * distance;
-            preview.camera.transform.LookAt(bounds.center);
             preview.BeginPreview(new Rect(0, 0, width, height), GUIStyle.none); begun = true;
+            var target = preview.camera.targetTexture;
+            if (!target) throw new InvalidOperationException("Preview camera has no target RenderTexture.");
+            result.renderTextureWidth = target.width; result.renderTextureHeight = target.height;
+            result.outputWidth = width; result.outputHeight = height; result.editorPixelsPerPoint = EditorGUIUtility.pixelsPerPoint;
+            // BeginPreview's RT is in device pixels, while its Rect is in UI points. Fit AFTER initialization,
+            // use the whole device-pixel viewport and later resample the WHOLE RT to the requested PNG size.
+            FitPreviewCamera(preview.camera, bounds, target.width, target.height, result);
             foreach (var draw in draws)
                 for (int submesh = 0; submesh < draw.mesh.subMeshCount; submesh++)
                 {
@@ -654,7 +729,11 @@ public static class YamyamAssetLibraryBridge
             preview.Render(true, false);
             var rendered = preview.EndPreview() as RenderTexture; begun = false;
             if (!rendered) throw new InvalidOperationException("Preview API returned no RenderTexture.");
-            RenderTexture.active = rendered;
+            // Reading only640x480 of a larger HiDPI RT crops its lower-left quadrant.
+            // Resampling the complete texture preserves framing at all editor display scales.
+            outputTarget = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
+            Graphics.Blit(rendered, outputTarget);
+            RenderTexture.active = outputTarget;
             pixels = new Texture2D(width, height, TextureFormat.RGB24, false);
             pixels.ReadPixels(new Rect(0, 0, width, height), 0, 0); pixels.Apply(false);
             var colors = pixels.GetPixels32(); Color32 background = colors[0];
@@ -678,6 +757,7 @@ public static class YamyamAssetLibraryBridge
                 {
                     ShaderUtil.allowAsyncCompilation = priorAsyncCompilation;
                     RenderTexture.active = priorTarget;
+                    if (outputTarget) RenderTexture.ReleaseTemporary(outputTarget);
                     if (pixels) Object.DestroyImmediate(pixels);
                     foreach (var draw in draws) if (draw.temporary && draw.mesh) Object.DestroyImmediate(draw.mesh);
                 }
@@ -701,6 +781,162 @@ public static class YamyamAssetLibraryBridge
     }
     static string HashPreviewProbeFile(string path)
     { using(var stream=File.OpenRead(path)) using(var hash=SHA256.Create()) return Hex(hash.ComputeHash(stream)); }
+    [Serializable] public class PreviewAssetOverride
+    {
+        public string id, assetPath, sha256, reason;
+    }
+    [Serializable] public class PreviewFramingRequest
+    {
+        public string nonce, expectedPreviewsSha256;
+        public string[] ids;
+        public bool preferPrefab;
+        public PreviewAssetOverride[] assetOverrides;
+    }
+    [Serializable] public class PreviewFramingRow
+    {
+        public string id, beforeAsset, afterAsset, beforeImageSha256, afterImageSha256, sourceSha256;
+        public bool representativeChanged;
+        public PreviewRecord result;
+        public List<string> materialEvidence = new List<string>();
+    }
+    [Serializable] public class PreviewFramingReport
+    {
+        public string status, startedUtc, completedUtc, nonce, runDirectory, error, priorPreviewsSha256;
+        public string scope = "Read-only source assets; bounded explicit product IDs, one representative static preview each; outputs only into this probe's Library run directory. No canonical preview promotion, animation or full-product approval.";
+        public List<PreviewFramingRow> rows = new List<PreviewFramingRow>();
+        public List<string> nativeErrors = new List<string>();
+    }
+    // Run only after root has placed an explicit hash-bound ID list. This never replaces current previews.json/PNGs.
+    public static void RunHeadlessPreviewFramingProbe()
+    {
+        if (!CanRunHeadless()) throw new InvalidOperationException("Framing probe is isolated batch-only.");
+        RequireRoot();
+        string requestPath = Path.Combine(Work, "preview-framing-request.json");
+        string jsonPath = Path.Combine(Work, "previews.json");
+        string run = Path.Combine(Work, "preview-framing", DateTime.UtcNow.ToString("yyyyMMddTHHmmssfffffffZ") + "-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(run);
+        var probe = new PreviewFramingReport { status = "checking", startedUtc = Utc(), runDirectory = run };
+        Application.LogCallback capture = (condition, trace, type) => {
+            if (type == LogType.Error || type == LogType.Exception || type == LogType.Assert) probe.nativeErrors.Add(condition);
+        };
+        int exitCode = 0;
+        try
+        {
+            if (File.Exists(RequestPath)) throw new IOException("Existing bridge request must be preserved.");
+            var request = JsonUtility.FromJson<PreviewFramingRequest>(File.ReadAllText(requestPath));
+            if (request == null || string.IsNullOrEmpty(request.nonce) || request.ids == null || request.ids.Length < 1 || request.ids.Length > 84 || request.ids.Distinct().Count() != request.ids.Length)
+                throw new InvalidDataException("Explicit unique1..84 product IDs and nonce required.");
+            var explicitOverrides = request.assetOverrides ?? new PreviewAssetOverride[0];
+            if (explicitOverrides.Length > request.ids.Length || explicitOverrides.Any(x => x == null || !request.ids.Contains(x.id, StringComparer.Ordinal) ||
+                string.IsNullOrEmpty(x.assetPath) || x.assetPath.Contains("\\") || x.assetPath.Split('/').Any(p => p == "." || p == "..") ||
+                string.IsNullOrEmpty(x.sha256) || !Regex.IsMatch(x.sha256, "^[a-f0-9]{64}$") ||
+                !(x.assetPath.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase) || x.assetPath.EndsWith(".fbx", StringComparison.OrdinalIgnoreCase) || x.assetPath.EndsWith(".obj", StringComparison.OrdinalIgnoreCase))) ||
+                explicitOverrides.Select(x => x.id).Distinct(StringComparer.Ordinal).Count() != explicitOverrides.Length)
+                throw new InvalidDataException("Representative overrides require unique requested IDs, normalized prefab/model paths and exact SHA256.");
+            probe.nonce = request.nonce;
+            var existing = JsonUtility.FromJson<PreviewReport>(File.ReadAllText(jsonPath));
+            if (existing == null || existing.products == null || existing.products.Count != 84 || string.IsNullOrEmpty(existing.completedUtc))
+                throw new InvalidDataException("Completed84 current previews required.");
+            probe.priorPreviewsSha256 = HashPreviewProbeFile(jsonPath);
+            if (!string.Equals(request.expectedPreviewsSha256, probe.priorPreviewsSha256, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidDataException("Current preview record hash differs from explicit request.");
+            File.Copy(jsonPath, Path.Combine(run, "previews.before.json"), false);
+            File.Copy(requestPath, Path.Combine(run, "request.json"), false);
+            var immutableImages = existing.products.ToDictionary(x => x.id, x => HashPreviewProbeFile(x.imagePath), StringComparer.Ordinal);
+            var productManifest = JsonUtility.FromJson<Manifest>(File.ReadAllText(Path.Combine(Work, "staging-manifest.json")));
+            if (productManifest == null || productManifest.products == null) throw new InvalidDataException("Product manifest unavailable.");
+            Application.logMessageReceived += capture;
+            foreach (string id in request.ids)
+            {
+                var current = existing.products.Single(x => x.id == id);
+                var product = productManifest.products.Single(x => x.id == id);
+                string folder = (product.folder ?? "").Replace('\\', '/').Trim('/');
+                string productRoot = folder.StartsWith(AssetsRoot + "/", StringComparison.Ordinal) ? folder : AssetsRoot + "/" + folder;
+                AssertAssetPath(productRoot + "/");
+                var row = new PreviewFramingRow { id = id, beforeAsset = current.assetPath, beforeImageSha256 = immutableImages[id] };
+                probe.rows.Add(row);
+                var result = new PreviewRecord { id = id, title = current.title, imagePath = Path.Combine(run, id + ".png") };
+                row.result = result;
+                Bounds bounds = new Bounds(); List<MeshDraw> draws = null;
+                var explicitOverride = explicitOverrides.SingleOrDefault(x => x.id == id);
+                if (explicitOverride != null)
+                {
+                    if (!explicitOverride.assetPath.StartsWith(productRoot + "/", StringComparison.Ordinal)) throw new InvalidDataException("Representative override escaped its exact product.");
+                    AssertAssetPath(explicitOverride.assetPath);
+                    AssertContained(Path.Combine(Project, explicitOverride.assetPath), Path.Combine(Project, productRoot));
+                    if (HashPreviewProbeFile(Path.Combine(Project, explicitOverride.assetPath)) != explicitOverride.sha256) throw new InvalidDataException("Explicit representative override SHA changed.");
+                }
+                string[] candidates = explicitOverride != null ? new[] { explicitOverride.assetPath } : request.preferPrefab ? PreviewAssetCandidates(productRoot) : new[] { current.assetPath };
+                foreach (string candidate in candidates)
+                {
+                    if (!candidate.StartsWith(productRoot + "/", StringComparison.Ordinal)) throw new InvalidDataException("Representative escaped exact product scope.");
+                    var asset = AssetDatabase.LoadAssetAtPath<GameObject>(candidate);
+                    if (!asset) continue;
+                    var candidateDraws = Draws(asset, out bounds);
+                    if (candidateDraws.Count == 0) continue;
+                    draws = candidateDraws; result.assetPath = candidate;
+                    result.sourceSelectionReason = explicitOverride != null ? "explicit SHA-bound product-owned representative override; " + (explicitOverride.reason ?? "") : request.preferPrefab ? PreviewCandidateKind(candidate) + "; explicit request permits generated-prefab/native-prefab/raw-model priority" : "exact existing representative preserved";
+                    break;
+                }
+                if (draws == null)
+                {
+                    if (explicitOverride != null) throw new InvalidDataException("Explicit representative override has no static mesh draws; no silent fallback permitted.");
+                    result.assetPath = current.assetPath; result.kind = current.kind;
+                    result.sourceSelectionReason = "exact existing material/texture fallback preserved";
+                    var material = AssetDatabase.LoadAssetAtPath<Material>(current.assetPath);
+                    if (material)
+                    {
+                        Mesh sphere = PreviewSphere(); bounds = sphere.bounds;
+                        draws = new List<MeshDraw> { new MeshDraw { mesh = sphere, matrix = Matrix4x4.identity, materials = new[] { material }, temporary = true } };
+                    }
+                    else
+                    {
+                        var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(current.assetPath);
+                        if (!texture) throw new InvalidDataException("No renderable representative in explicit product scope.");
+                        RenderTexturePreview(texture, result);
+                    }
+                }
+                row.afterAsset = result.assetPath;
+                row.representativeChanged = row.beforeAsset != row.afterAsset;
+                row.sourceSha256 = HashPreviewProbeFile(Path.Combine(Project, row.afterAsset));
+                if (draws != null)
+                {
+                    foreach (var material in draws.SelectMany(x => x.materials ?? new Material[0]).Where(x => x).Distinct())
+                    {
+                        string detail = AssetDatabase.GetAssetPath(material) + " | shader=" + (material.shader ? material.shader.name : "NULL");
+                        foreach (string property in material.GetTexturePropertyNames())
+                        {
+                            var texture = material.GetTexture(property);
+                            if (texture) detail += " | " + property + "=" + AssetDatabase.GetAssetPath(texture);
+                        }
+                        row.materialEvidence.Add(detail);
+                    }
+                    RenderPreview(draws, bounds, result);
+                }
+                if (!string.IsNullOrEmpty(result.error)) throw new InvalidDataException(result.error);
+                if (HashPreviewProbeFile(Path.Combine(Project, row.afterAsset)) != row.sourceSha256) throw new IOException("Probe changed source payload.");
+                row.afterImageSha256 = HashPreviewProbeFile(result.imagePath);
+                WriteJson(Path.Combine(run, "report.json"), probe);
+                if (probe.rows.Count % 8 == 0) { EditorUtility.UnloadUnusedAssetsImmediate(); GC.Collect(); }
+            }
+            if (probe.nativeErrors.Count != 0) throw new InvalidDataException("Native errors occurred during framing probe.");
+            if (HashPreviewProbeFile(jsonPath) != probe.priorPreviewsSha256) throw new IOException("Canonical preview record changed during probe.");
+            foreach (var prior in existing.products)
+                if (HashPreviewProbeFile(prior.imagePath) != immutableImages[prior.id]) throw new IOException("Canonical preview PNG changed during probe.");
+            probe.status = "complete";
+        }
+        catch (Exception error) { probe.status = "failed"; probe.error = Unwrap(error); exitCode = 1; }
+        finally
+        {
+            Application.logMessageReceived -= capture;
+            probe.completedUtc = Utc();
+            WriteJson(Path.Combine(run, "report.json"), probe);
+            WriteJson(Path.Combine(Work, "preview-framing-report.json"), probe);
+        }
+        if (exitCode != 0) Debug.LogError(probe.error);
+        EditorApplication.Exit(exitCode);
+    }
+
     public static void RunHeadlessPreviewProbe()
     {
         if (!CanRunHeadless()) throw new InvalidOperationException("Scoped preview probe is isolated batch-only.");
