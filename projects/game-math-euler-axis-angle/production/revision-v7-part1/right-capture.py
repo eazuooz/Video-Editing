@@ -34,6 +34,10 @@ def run(args):
     plan=M.read(M.PLAN);generated=plan['generatedUnity']
     assert M.sha(ROOT/generated['generatedRuntime'])==generated['generatedRuntimeSha256']
     assert M.sha(ROOT/generated['generatedBridge'])==generated['generatedBridgeSha256']
+    assert M.sha(ROOT/generated['catalog'])==generated['catalogSha256']==job['catalogSha256']
+    assert M.sha(ROOT/generated['mathSource'])==generated['mathSourceSha256']==job['mathSourceSha256']
+    assert job['generatedSourceSha256']==generated['generatedRuntimeSha256']
+    assert job['generatedBridgeSha256']==generated['generatedBridgeSha256']
     if args.sample:
         job['clips']=[dict(shotId=k,frames=3)for k in ['v7-sail-raise','v7-log-align','v7-hook-rotate','v6-02.B02','v6-05.B02','v6-20.B01','v6-18.B01']]
         job['bakeScenes']=False;job['outputDirectory']=str(O/'spatial-sample')

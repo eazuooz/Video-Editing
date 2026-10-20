@@ -104,7 +104,7 @@ def native_ass(path,key,rows,shot,layout):
     n=len(rows);txt=ass_header()+event(0,n,title_for(key),450,34,54,GOLD)
     if shot.get('pair'):
         an,bn=pair_names(shot);txt+=event(0,n,an,225,103,64,TEAL)+event(0,n,bn,675,103,64,GOLD)
-    else:txt+=event(0,n,'실선 물체 축 · 점선 직립 축',450,91,36,MUTED)
+    elif shot.get('axes',True):txt+=event(0,n,'실선 물체 축 · 점선 직립 축',450,91,36,MUTED)
     sn=int(key[3:5])if key.startswith('v6-')else 0
     labels=S.ACTIVE_AXES.get(sn,['a.bodyY','a.bodyZ'])[:3 if key in ['v6-02.B02','v6-02.B03']else 2]
     for i,row in enumerate(rows):
@@ -261,13 +261,20 @@ def run_logged(cmd,path):
 def build():
     M.authorized();receipt=read(O/'spatial-native/capture-receipt.json');assert not receipt['sampleOnly']
     plan=read(M.PLAN);paras=[p for s in plan['scenes']for p in s['paragraphs']];cat={s['id']:s for s in read(O/'prepared-unity/spatial-shots.json')['shots']}
+    # Moving then raising the same sail shares one camera-space crop. The
+    # exact move endpoint equals the raise start; independently recentering
+    # each clip would falsely make that stationary pivot jump at the cut.
+    sail_keys=['v7-sail-move','v7-sail-raise']
+    native_by_key={n['sourceBeatId']:n for n in receipt['outputs']}
+    sail_rows=[r for key in sail_keys for r in states(ROOT/native_by_key[key]['files']['anchors']['file'])]
+    sail_layout=placement(roi(sail_rows,cat[sail_keys[0]]),False)
     out=O/'right-assets';out.mkdir(parents=True,exist_ok=True);outputs=[]
     existing={x['sourceBeatId']:x for x in read(O/'right-assets.json').get('assets',[])}if(O/'right-assets.json').exists()else{}
     def record(row):
         outputs.append(row);save(O/'right-assets.json',{'schemaVersion':1,'part':1,'scriptSha256':sha(S.SCRIPT),'planSha256':sha(M.PLAN),'paneDimensions':[900,660],
             'assets':outputs,'paragraphs':paras,'complete':False,'speechTiming':'root ASR cue binding; no forced silence or source loop'})
     for native in receipt['outputs']:
-        key=native['sourceBeatId'];file=ROOT/native['files']['clip']['file'];anchor=ROOT/native['files']['anchors']['file'];rows=states(anchor);shot=cat[key];layout=placement(roi(rows,shot),shot.get('pair'))
+        key=native['sourceBeatId'];file=ROOT/native['files']['clip']['file'];anchor=ROOT/native['files']['anchors']['file'];rows=states(anchor);shot=cat[key];layout=sail_layout if key in sail_keys else placement(roi(rows,shot),shot.get('pair'))
         ass=out/(key+'.ass');native_ass(ass,key,rows,shot,layout);sig={'sourceSha256':native['files']['clip']['sha256'],'anchorsSha256':native['files']['anchors']['sha256'],'layout':layout,'uiSha256':sha(ass),'compositorContract':'crop-scale-pad-ass-r900x660-v1'}
         if key in existing and existing[key].get('inputs')==sig and Path(ROOT/existing[key]['clip']).exists()and sha(ROOT/existing[key]['clip'])==existing[key]['clipSha256']:
             cached=dict(existing[key],targetParagraphs=[p['targetParagraphId']for p in paras if p['sourceBeatId']==key],targetScenes=sorted({p['targetScene']for p in paras if p['sourceBeatId']==key}))

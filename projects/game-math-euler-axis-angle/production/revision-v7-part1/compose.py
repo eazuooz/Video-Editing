@@ -222,11 +222,14 @@ def finish(mix_file,codec):
     authorized();t=read(H/'timeline.json');visual=E/'part1-clean-visual.mp4';captioned_visual=E/'part1-captioned-visual.mp4';check_video(visual,t['totalFrames']);check_video(captioned_visual,t['totalFrames']);mix_file=path(mix_file)
     assert mix_file.exists()
     clean=O/'part1-clean.mp4';burned=O/'part1-captioned.mp4';ass=O/'captions.ko.ass';assert ass.exists()
-    run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-i',str(visual),'-i',str(mix_file),'-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-b:a','256k','-ar','48000','-ac','2','-t',f'{t["duration"]:.9f}','-movflags','+faststart',str(clean)],E/'clean-mux.log')
+    audio=next(x for x in probe(mix_file)['streams']if x['codec_type']=='audio')
+    exact_aac=audio['codec_name']=='aac'and int(audio['sample_rate'])==48000 and audio['channels']==2
+    audio_codec=['-c:a','copy']if exact_aac else['-c:a','aac','-b:a','256k','-ar','48000','-ac','2']
+    run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-i',str(visual),'-i',str(mix_file),'-map','0:v:0','-map','1:a:0','-c:v','copy',*audio_codec,'-t',f'{t["duration"]:.9f}','-movflags','+faststart',str(clean)],E/'clean-mux.log')
     check_video(clean,t['totalFrames'])
     run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-i',str(captioned_visual),'-i',str(clean),'-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','copy','-video_track_timescale','60000','-movflags','+faststart',str(burned)],E/'captioned-mux.log')
     check_video(burned,t['totalFrames']);save(E/'master-build.json',dict(schemaVersion=1,part=1,inputs=dict(timelineSha256=sha(H/'timeline.json'),visualSha256=sha(visual),captionedVisualSha256=sha(captioned_visual),mixSha256=sha(mix_file),captionAssSha256=sha(ass),implementationSha256=sha(Path(__file__))),
-        outputs=[dict(kind=k,file=rel(f),sha256=sha(f),bytes=f.stat().st_size)for k,f in[('clean',clean),('captioned',burned)]],frames=t['totalFrames'],duration=t['duration'],format='1920x1080/60fps',fullDecodePtsAndAudioReview='pending',humanFinalReview='pending'))
+        outputs=[dict(kind=k,file=rel(f),sha256=sha(f),bytes=f.stat().st_size)for k,f in[('clean',clean),('captioned',burned)]],frames=t['totalFrames'],duration=t['duration'],format='1920x1080/60fps',preparedAacCopiedWithoutReencoding=exact_aac,fullDecodePtsAndAudioReview='pending',humanFinalReview='pending'))
     print('Clean and complete captioned masters encoded',flush=True)
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--left',type=Path);ap.add_argument('--right',type=Path);ap.add_argument('--scene');ap.add_argument('--captioned-scene',action='store_true');ap.add_argument('--join',action='store_true');ap.add_argument('--finish-mix');ap.add_argument('--codec',choices=['libx264','h264_nvenc'],default='libx264');a=ap.parse_args()

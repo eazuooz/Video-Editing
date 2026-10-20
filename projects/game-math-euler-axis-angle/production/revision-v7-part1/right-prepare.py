@@ -136,7 +136,7 @@ def generated_sources(source_keys):
     template=copy.deepcopy(next(x for x in data['shots']if x['id']=='v6-04.B01'))
     for key,scene,model,keys in [
        ('v7-sail-move','v7-a02','sail',[k(0,b=90),k(1,b=90,x=1.1)]),
-       ('v7-sail-raise','v7-a02','sail',[k(0,b=90),k(1,b=0)]),
+       ('v7-sail-raise','v7-a02','sail',[k(0,b=90,x=1.1),k(1,b=0,x=1.1)]),
        ('v7-log-align','v7-a15','log',[k(0,h=25,x=1.1),k(.5,h=25),k(1)]),
        ('v7-hook-rotate','v7-a03','hook',[k(0),k(1,h=90)])]:
         x=copy.deepcopy(template);x.update(id=key,sceneId=scene+'-'+key[3:],model=model,axes=False,pair=False,activeAxis='uprightY'if model=='hook'else'none',motionSeconds=6)
@@ -150,6 +150,10 @@ def generated_sources(source_keys):
         x=copy.deepcopy(template);x.update(id=sid+'.context',sceneId=sid,axes=False,activeAxis='none',motionSeconds=0)
         x['a']=dict(kind='euler',keys=[k(0,h=30,p=10,b=15),k(1,h=30,p=10,b=15)]);x['b']=None;shots.append(x)
     catalog=out/'spatial-shots.json';save(catalog,dict(shots=shots))
+    sail_move=next(x for x in shots if x['id']=='v7-sail-move')
+    sail_raise=next(x for x in shots if x['id']=='v7-sail-raise')
+    assert {k:v for k,v in sail_move['a']['keys'][-1].items()if k!='t'}=={k:v for k,v in sail_raise['a']['keys'][0].items()if k!='t'}
+    assert {k:v for k,v in sail_move.items()if k not in ['id','sceneId','a']}=={k:v for k,v in sail_raise.items()if k not in ['id','sceneId','a']}
     # Assembly references the already present V6 math contract explicitly.
     save(out/'Yamyam.GameMath.EulerRight.asmdef',{'name':'Yamyam.GameMath.EulerRight','references':['Yamyam.GameMath.EulerAxisAngle.V6'],'autoReferenced':True})
     save(out/'Editor/Yamyam.GameMath.EulerRight.Editor.asmdef',{'name':'Yamyam.GameMath.EulerRight.Editor','references':['Yamyam.GameMath.EulerRight','Yamyam.GameMath.EulerAxisAngle.V6'],'includePlatforms':['Editor'],'autoReferenced':True})
@@ -228,7 +232,8 @@ def main():
             'pair':'A and B horizontally inside the right pane; one shared large numeric relation. Do not shrink the entire old1920 slide.',
             'math':'reflowed short semantic lines with relevant controlled model dimmed behind, no full black reset'},
         'nativeSourceAssets':list(source.values()),'retainedMathSources':[{'sourceBeatId':x['id'],'clip':x['clipFile'],'clipSha256':x['files'][0]['sha256'],'frames':x['durationFrames'],'reuse':'same mathematical meaning/values; reflow UI to900px; source pixels only if readable'}for x in math_source],
-        'generatedUnity':generated,'newMatchedModels':{'sail':['separate pole','crossbars','slightly curved cloth mesh','rope ties'],'log':['cylindrical timber','visible endgrain','bark grooves','rope bindings','independent stationary neighbor for parallel alignment; actual anchors exported'],'hook':['curved open metal hook','thick mount/neck','visible open direction'],'motionClipCount':4,'distinctObjectCount':3,'assetKind':'independently authored generic explanation geometry; no extracted Nintendo assets; no measured game rotation angles'},
+        'generatedUnity':generated,'newMatchedModels':{'sail':['separate pole','crossbars','slightly curved cloth mesh','rope ties'],'log':['cylindrical timber','visible endgrain','bark grooves','rope bindings','independent stationary neighbor for parallel alignment; actual anchors exported'],'hook':['curved open metal hook','thick mount/neck','visible open direction'],'motionClipCount':4,'distinctObjectCount':3,'assetKind':'independently authored generic explanation geometry; no extracted Nintendo assets; no measured game rotation angles',
+            'sailContinuity':{'moveEndEqualsRaiseStart':True,'controlledPosition':[1.1,0,0],'controlledEulerHPB':[0,0,90],'crop':'one union of actual geometry bounds across both finite clips; same size and position','speechCue':'v7-a02.L02: 세우고','pixelContinuityReview':'pending actual native sources; catalog state equality verified before capture'}},
         'importedAssetConsultation':{'catalog':rel(ROOT/'shared/assets/unity-asset-library.json'),'catalogSha256':sha(ROOT/'shared/assets/unity-asset-library.json'),'consultedGuide':'docs/UNITY_ASSET_LIBRARY.md','candidates':imported,'vendorOriginalsChanged':False},
         'paragraphCount':len(paragraphs),'unityExistingClipCount':len(source),'mathExistingClipCount':len(math_source),
         'newMathMotionSources':{'source':rel(H/'right-manim.py'),'sourceSha256':sha(H/'right-manim.py'),'renderer':'Manim Cairo CPU; native900x660 reflow over retained dim detailed model','clipCount':4,'plannedFrames':574,
@@ -247,7 +252,9 @@ def main():
     clips=[{'shotId':key,'frames':exact_counts.get(key,row['frames'])}for key,row in source.items()]
     clips += [{'shotId':k,'frames':360}for k in ['v7-sail-move','v7-sail-raise','v7-hook-rotate','v7-log-align']]
     job={'outputDirectory':str(O/'spatial-native'),'ffmpegPath':shutil.which('ffmpeg'),'bakeScenes':True,'captureTestbed':False,'clips':clips,
-         'approval':approval,'generatedSourceSha256':generated['generatedRuntimeSha256'],'captureKind':'label-free exact V6 programs + four finite motions of three own matched shapes; no speech timing invented'}
+         'approval':approval,'generatedSourceSha256':generated['generatedRuntimeSha256'],'generatedBridgeSha256':generated['generatedBridgeSha256'],
+         'catalogSha256':generated['catalogSha256'],'mathSourceSha256':generated['mathSourceSha256'],
+         'captureKind':'label-free exact V6 programs + four finite motions of three own matched shapes; no speech timing invented'}
     save(O/'right-native-job.json',job)
     catalog={s['id']:s for s in read(ROOT/generated['catalog'])['shots']}
     programs=[motion_contract(catalog[c['shotId']],c['frames'],source.get(c['shotId'],{}).get('anchors'))for c in clips]

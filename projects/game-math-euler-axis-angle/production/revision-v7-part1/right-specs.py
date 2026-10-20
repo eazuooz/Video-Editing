@@ -101,7 +101,7 @@ REUSE_NOTE = ('V6 source geometry/rotation programs/camera and exact old capture
 # Multi-step keys retain each native step interval in right-assets.json.
 ACTION_CUES = {
  'v7-a02.L01': ['이 돛을 들어 올려도'],
- 'v7-a02.L02': ['누워 있던 돛을 세우고'],
+ 'v7-a02.L02': ['세우고'],
  'v7-a02.L03': ['날개만 옆으로 기울 수'],
  'v7-a02.L06': ['돌아가면 같이 돌아갑니다'],
  'v7-a02.L08': ['나란히 맞춥니다'],

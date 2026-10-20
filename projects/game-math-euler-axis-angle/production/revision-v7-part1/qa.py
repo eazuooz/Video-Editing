@@ -20,7 +20,7 @@ def save(p,x):
 def selected():
     sp=importlib.util.spec_from_file_location('v7_qa_timing',H/'timing.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);m.authorized()
 def sample_plan(left,right):
-    timeline=read(H/'timeline.json');captions=read(O/'captions/captions.json');events={}
+    timeline=read(H/'timeline.json');captions=read(O/'captions/captions.json');events={};motions=[]
     def add(frame,label,kind):
         frame=max(0,min(timeline['totalFrames']-1,int(frame)))
         events.setdefault(frame,[]).append(dict(label=label,kind=kind))
@@ -34,12 +34,20 @@ def sample_plan(left,right):
             a=row['startFrame'];b=row.get('endFrameExclusive',row.get('endFrame'))
             add(a,f'{side}.{i}.first','every-pane-cut');add(b-1,f'{side}.{i}.last','every-pane-cut')
             if row['kind']=='video'or any(x['kind']=='video'for x in row.get('overlayLayers',[])):
+                motions.append(dict(startFrame=a,endFrameExclusive=b,side=side,scene=row.get('sceneId',row.get('scene')),sourceBeatId=row.get('sourceBeatId',row.get('sourceId'))))
                 # Dense still sequence is evidence of progression, not a
                 # claimed continuous human playback/listening approval.
                 for f in range(a,b,15):add(f,f'{side}.{i}.f{f-a}','native-action-quarter-second-sample')
-    return dict(schemaVersion=1,timelineSha256=sha(H/'timeline.json'),captionJsonSha256=sha(O/'captions/captions.json'),
+    merged=[]
+    for row in sorted(motions,key=lambda x:x['startFrame']):
+        a=max(120,row['startFrame']-30);b=min(timeline['bodyEndFrame'],row['endFrameExclusive']+30)
+        if merged and a<=merged[-1]['endFrameExclusive']+30:
+            merged[-1]['endFrameExclusive']=max(b,merged[-1]['endFrameExclusive']);merged[-1]['sources'].append(row)
+        else:merged.append(dict(startFrame=a,endFrameExclusive=b,sources=[row]))
+    for i,row in enumerate(merged,1):row.update(id=f'motion-{i:02}',start=row['startFrame']/60,end=row['endFrameExclusive']/60)
+    return dict(schemaVersion=1,timelineSha256=sha(H/'timeline.json'),captionJsonSha256=sha(O/'captions/captions.json'),implementationSha256=sha(Path(__file__)),
         leftManifestSha256=sha(left),rightManifestSha256=sha(right),totalFrames=timeline['totalFrames'],
-        events=[dict(frame=f,time=f/60,labels=v)for f,v in sorted(events.items())],
+        events=[dict(frame=f,time=f/60,labels=v)for f,v in sorted(events.items())],motionCases=merged,
         limitation='Dense frame sequences and automatic full decode do not replace continuous human playback or listening.')
 def decode(path,plan,captioned):
     import av
@@ -105,21 +113,24 @@ def contact_pages(samples):
         dest=folder/f'{i//6:04}.jpg';sheet.save(dest,quality=90,subsampling=0);pages.append(dict(file=rel(dest),frames=[s['frame']for s in group]))
     save(Q/'contact-pages.json',dict(pages=pages,limitation='Navigation overview; open linked native/mobile images for actual-pixel review.'))
     return pages
-def review_page(samples,pages):
+def review_page(samples,pages,plan):
     rows=[]
     for item in samples:
         n='frames/'+Path(item['native']).name
         m='frames/'+Path(item['mobile']).name
         labels=' · '.join(x['label']for x in item['labels'])
         rows.append(f'<section id="f{item["frame"]}"><h3>{item["time"]:.2f}s · {html.escape(labels)}</h3><a href="{n}"><img loading="lazy" src="{n}" width="960"></a><a href="{m}"><img loading="lazy" src="{m}" width="375"></a></section>')
-    doc='<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>회전1편 실제 출력 검수</title><style>body{margin:24px;background:#080b0d;color:#f5f5f5;font:16px/1.5 Malgun Gothic,sans-serif}video{width:min(100%,1200px)}img{max-width:100%;height:auto}h3{color:#e8cf83}section{margin:40px 0}</style><h1>3차원 회전1편 · 실제 출력</h1><video controls preload="metadata" src="../part1-captioned.mp4"></video><p>아래는 현재 인코딩에서 추출한 자막·컷·동작 표본입니다. 연속 재생과 전체 청취 승인은 별도입니다.</p>'+''.join(rows)
+    buttons=''.join(f'<button data-case="{i}">{html.escape(c["id"])} · {c["start"]:.2f}–{c["end"]:.2f}초</button>'for i,c in enumerate(plan['motionCases']))
+    cases=json.dumps(plan['motionCases'],ensure_ascii=False).replace('</','<\\/')
+    script='''<script>const cases=CASES;const video=document.querySelector('video');const status=document.querySelector('#status');let selected=null;document.querySelectorAll('[data-case]').forEach(button=>button.onclick=()=>{selected=cases[+button.dataset.case];video.playbackRate=1;video.currentTime=selected.start;video.play();status.textContent=selected.id+' 재생 중';});video.ontimeupdate=()=>{document.querySelector('#clock').textContent=video.currentTime.toFixed(3)+'초';if(selected&&video.currentTime>=selected.end){video.pause();status.textContent=selected.id+' 재생 완료';selected=null;}};video.onended=()=>status.textContent='전체 재생 끝';</script>'''.replace('CASES',cases)
+    doc='<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>회전1편 실제 출력 검수</title><style>body{margin:24px;background:#080b0d;color:#f5f5f5;font:16px/1.5 Malgun Gothic,sans-serif}video{width:min(100%,1200px)}img{max-width:100%;height:auto}h3{color:#e8cf83}section{margin:40px 0}button{margin:6px;padding:9px;background:#111;color:white;border:1px solid #777;cursor:pointer}</style><h1>3차원 회전1편 · 실제 출력</h1><video controls muted preload="metadata" src="../part1-captioned.mp4"></video><p>내부 화면 검수용으로 기본 음소거입니다. 완성 영상의 게임 소리·내레이션은 그대로 들어 있습니다.</p><p id="status">대기</p><output id="clock">0.000초</output><div>'+buttons+'</div><p>아래는 현재 인코딩에서 추출한 자막·컷·동작 표본입니다. 연속 재생과 전체 청취 승인은 별도입니다.</p>'+''.join(rows)+script
     (Q/'review.html').write_text(doc,encoding='utf8')
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--left',type=Path,required=True);ap.add_argument('--right',type=Path,required=True);args=ap.parse_args();selected();Q.mkdir(parents=True,exist_ok=True)
     plan=sample_plan(args.left,args.right);save(Q/'sample-plan.json',plan)
     clean=decode(O/'part1-clean.mp4',plan,False);captioned=decode(O/'part1-captioned.mp4',plan,True)
     assert clean['audio']['decodedPcmSha256']==captioned['audio']['decodedPcmSha256'],'Burning captions must preserve exact encoded audio'
-    pages=contact_pages(captioned['samples']);review_page(captioned['samples'],pages)
+    pages=contact_pages(captioned['samples']);review_page(captioned['samples'],pages,plan)
     save(Q/'integrity-summary.json',dict(schemaVersion=1,part=1,completeDecodeBothMasters=True,frames=plan['totalFrames'],
         cleanSha256=clean['sha256'],captionedSha256=captioned['sha256'],decodedAudioIdentical=True,
         sampledActualOutputFrames=len(captioned['samples']),contactPages=len(pages),
