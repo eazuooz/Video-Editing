@@ -74,7 +74,8 @@ class RightDiagram(Scene):
         self.add(tx('입력',64,TEAL).move_to([-2.3,1.9,0]),tx('저장',64).move_to([2.3,1.9,0]))
         a=Rectangle(width=2.8,height=1.12,color=TEAL,stroke_width=4).move_to([-2.3,.9,0])
         b=Rectangle(width=2.8,height=1.12,color=WHITE,stroke_width=4).move_to([2.3,.9,0])
-        before=tx('20.0°',72,TEAL).move_to(a);after=tx('20.4°',72,TEAL).move_to(a)
+        value=ValueTracker(20.0)
+        before=always_redraw(lambda:tx(f'{value.get_value():.1f}°',72,TEAL).move_to(a))
         output=tx('20°',72).move_to(b)
         self.add(a,b,before,output,Arrow([-.75,.9,0],[.75,.9,0],buff=0,color=GOLD,stroke_width=5))
         self.add(tx('1° 단위 반올림',54,GOLD).move_to([0,-.2,0]))
@@ -83,7 +84,7 @@ class RightDiagram(Scene):
             self.add(Line([x,y-.13,0],[x,y+.13,0],color=WHITE,stroke_width=4),tx(label,64).move_to([x,-2.3,0]))
         pointer=Dot([-3.2,y,0],radius=.10,color=TEAL)
         self.add(pointer)
-        self.play(Transform(before,after),pointer.animate.move_to([-3.2+6.4*.4,y,0]),run_time=2,rate_func=linear)
+        self.play(value.animate.set_value(20.4),pointer.animate.move_to([-3.2+6.4*.4,y,0]),run_time=2,rate_func=linear)
         # The output20° deliberately never animates or changes. All interpolated
         # inputs20.0–20.4 round to20 at1° nearest-value spacing.
 
@@ -95,13 +96,16 @@ class RightDiagram(Scene):
         target=Polygon([x0,y0,0],[x0+2.8,y0,0],[x0+2.8,y0+1.4,0],[x0,y0+1.4,0],color=TEAL,stroke_width=5)
         self.add(ghost,square,Arrow(origin,[x0+3.1,y0,0],buff=0,color=XCOLOR,stroke_width=4),Arrow(origin,[x0,y0+1.75,0],buff=0,color=YCOLOR,stroke_width=4))
         self.add(tx('X',54,XCOLOR).move_to([x0+3.2,y0-.35,0]),tx('Y',54,YCOLOR).move_to([x0-.35,y0+1.65,0]))
-        grid=VGroup();values=[]
+        grid=VGroup();coefficient=ValueTracker(1)
         for r in range(3):
             for c in range(3):
-                center=[1.25+c*.90,1.2-r*.90,0]
-                box=Square(side_length=.84,color=GOLD if(r,c)==(0,0)else RULE,stroke_width=3).move_to(center)
-                number=tx('1'if r==c else'0',64,GOLD if(r,c)==(0,0)else WHITE).move_to(center)
-                grid.add(box,number);values.append(number)
+                center=[1.0+c*1.15,1.2-r*.90,0]
+                box=Rectangle(width=1.10,height=.84,color=GOLD if(r,c)==(0,0)else RULE,stroke_width=3).move_to(center)
+                if(r,c)==(0,0):
+                    entry_center=list(center)
+                    number=always_redraw(lambda:tx(f'{coefficient.get_value():.1f}'.removesuffix('.0'),64,GOLD).move_to(entry_center))
+                else:number=tx('1'if r==c else'0',64,WHITE).move_to(center)
+                grid.add(box,number)
         self.add(grid,tx('예: X 길이 ×2',64,GOLD).move_to([0,-1.9,0]))
-        self.play(Transform(square,target),Transform(values[0],tx('2',64,GOLD).move_to(values[0])),run_time=2.5,rate_func=smooth)
+        self.play(Transform(square,target),coefficient.animate.set_value(2),run_time=2.5,rate_func=smooth)
         self.add(tx('늘림이 생김 · 순수 회전 아님',54).move_to([0,-2.65,0]))

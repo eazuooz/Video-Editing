@@ -51,7 +51,9 @@ def design():
         clips[q['id']]=dict(id=q['id'],kind='video',file=rel(G/'cuts'/(q['id']+'.mp4')),
             originalSource=q['sourcePath'],sourceId=q['sourceId'],sourceSha256=q['sourceSha256'],
             nativeSourceInFrame=q['sourceInFrame'],nativeSourceOutFrameExclusive=q['sourceOutFrameExclusive'],
-            sourceFrames=q['nativeFrames'],dimensions=[1920,1080],fps=60,sourceSpeed=1,
+            sourceFrames=q.get('sourceEnvelopeFrames',q['nativeFrames']),selectedNativeFrames=q['nativeFrames'],
+            selectedSourceRanges=q.get('selectedSourceRanges'),explicitSourceCuts=q.get('explicitSourceCuts',[]),
+            dimensions=[1920,1080],fps=60,sourceSpeed=1,
             classification='independent-gameplay',sourceAudioOriginal=q['sourcePath'],
             sourceAudioAllowed=q['sourceAudioAllowed'],silent=q['silent'],prepared=False)
         for b in q['sourceBeats']:
@@ -67,7 +69,8 @@ def design():
         stills=catalog,clips=clips,rect=[40,250,896,504],sourceRaster=[1920,1080],
         sourceToCanvas=dict(scale=7/15,x=40,y=250),sourceCredits='description-only; originalwatermark preserved',
         audio='No addedBGM. Original audio comes from exact live source intervals only; frozen analysis is silent.',
-        heavyMediaPrepared=False,sourceSeconds=sum(x['sourceFrames']for x in clips.values())/60)
+        heavyMediaPrepared=False,sourceSeconds=sum(x['selectedNativeFrames']for x in clips.values())/60,
+        cachePolicy='Reuse identical existing files/pixels by native source frame. Unselected older cached frames are preserved on disk, never deleted.')
     save(G/'left-asset-plan.json',result)
     return result
 

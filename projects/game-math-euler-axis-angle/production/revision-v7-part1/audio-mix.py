@@ -23,23 +23,29 @@ def decode(source,start,frames,dst,name):
 def audio_streams(source):
  q=subprocess.run(['ffprobe','-v','error','-select_streams','a','-show_entries','stream=index,codec_name,sample_rate,channels','-of','json',str(source)],capture_output=True,check=True)
  return json.loads(q.stdout)['streams']
+def fingerprint(value):
+ return hashlib.sha256(json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 def build():
  c.validate(preserve_pcm=True);timeline_file=H/'timeline.json';left_file=H/'left-visual-segments.json'
  timeline=c.read(timeline_file);left=c.read(left_file);game_inputs=c.read(H/'game-inputs.json')
  voice_file=c.O/'narration-build.json';voice=c.read(voice_file);narration=c.R/voice['narrationFile']
  assert voice['inputs']['timelineSha256']==c.sha(timeline_file)
  assert left['inputs']['timelineSha256']==c.sha(timeline_file)
- assert any(x['sha256']==c.sha(narration)for x in voice['outputs'])
+ narration_sha=c.sha(narration);assert any(x['sha256']==narration_sha for x in voice['outputs'])
  assert timeline['introFrames']==120 and timeline['outroFrames']==600
- inputs=dict(timelineSha256=c.sha(timeline_file),leftVisualSegmentsSha256=c.sha(left_file),
-  gameInputsSha256=c.sha(H/'game-inputs.json'),narrationBuildSha256=c.sha(voice_file),
+ audio_cuts=[{k:x[k]for k in ['beatId','sourceId','startFrame','endFrameExclusive','nativeSourceInFrame','nativeSourceOutFrameExclusive','sourceAudioAllowed','silent']}for x in sorted(left['liveBeats'],key=lambda q:q['startFrame'])]
+ audio_sources={sid:{k:game_inputs['sources'][sid].get(k)for k in ['sourcePath','sourceSha256','sourceAudioAllowed','silent']}for sid in sorted({x['sourceId']for x in audio_cuts})}
+ audio_clock=dict(totalFrames=timeline['totalFrames'],introFrames=timeline['introFrames'],outroFrames=timeline['outroFrames'],bodyEndFrame=timeline['bodyEndFrame'],branding=timeline['branding'])
+ observed=dict(timelineSha256=c.sha(timeline_file),leftFullManifestSha256=c.sha(left_file),gameInputsFullSha256=c.sha(H/'game-inputs.json'),narrationBuildSha256=c.sha(voice_file))
+ inputs=dict(audioClockSha256=fingerprint(audio_clock),nativeAudioCutsSha256=fingerprint(audio_cuts),
+  originalAudioSourcesAndPolicySha256=fingerprint(audio_sources),narrationFile=c.rel(narration),narrationPcmSha256=narration_sha,
   implementationSha256=c.sha(Path(__file__)),voicePreparationImplementationSha256=c.sha(H/'audio-prepare.py'),
   branding=[dict(file=x['file'],sha256=c.sha(c.R/x['file']))for x in timeline['branding'].values()])
  receipt=c.O/'audio-build.json'
  if receipt.exists():
   old=c.read(receipt)
   if old['inputs']==inputs and all((c.R/x['file']).exists()and c.sha(c.R/x['file'])==x['sha256']for x in old['outputs']):
-   print('Exact successful current mix reused');return old
+   print('Exact successful current audio contract reused; annotation-only manifest changes do not regenerate audio');return old
   raise RuntimeError('Preserve differing existing mix before an authorized revision')
  total=timeline['totalFrames']*800;parts=c.O/'mix-inputs';parts.mkdir(exist_ok=True)
  game=c.O/'game-normalized.wav';brand=c.O/'branding-original.wav'
@@ -51,6 +57,7 @@ def build():
    c.selected();start=cut['startFrame'];end=cut['endFrameExclusive'];frames=end-start
    assert start>=last_end and end<=timeline['bodyEndFrame']and frames>0,'Native game audio must not overlap'
    last_end=end;sid=cut['sourceId'];source=game_inputs['sources'][sid];f=c.R/source['sourcePath']
+   assert not cut['sourceAudioAllowed']or source['sourceAudioAllowed'],'A cut cannot grant audio excluded by its original source policy'
    if sid not in checked:
     assert c.sha(f)==source['sourceSha256'],'Changed independently verified game source';checked.add(sid)
    row=dict(id=cut['beatId'],sourceId=sid,sourceFile=source['sourcePath'],sourceSha256=source['sourceSha256'],
@@ -65,8 +72,8 @@ def build():
     decoded=parts/(f'{i+1:03}-{sid}.wav')
     x=decode(f,cut['nativeSourceInFrame']/60,frames,decoded,f'game-{i+1:03}-decode')
     stats=a.loudness(decoded,f'game-{i+1:03}-measurement');value=stats['input_i']
-    silent=value in ['-inf','inf']or float(np.max(abs(x)))<1e-7
-    gain=0. if silent else -23-float(value)
+    silent=float(np.max(abs(x)))<1e-7;measurable=value not in ['-inf','inf']
+    gain=0. if silent or not measurable else -23-float(value)
     assert abs(gain)<=20,'Large original-game gain needs evidence before automatic use'
     if cut['silent']:assert silent,'Claimed-silent source contains sound; inspect source permission'
     x*=10**(gain/20)
@@ -75,7 +82,7 @@ def build():
     if no:x[-no:]*=np.linspace(1,0,no,dtype=np.float32)[:,None]
     write_at(out,start*800,x)
     row.update(audioWritten=True,decodedFile=c.rel(decoded),decodedSha256=c.sha(decoded),
-     originalMeasurement=stats,actualSilent=silent,initialTargetLufs=None if silent else -23,
+     originalMeasurement=stats,actualSilent=silent,loudnessMeasurable=measurable,initialTargetLufs=None if silent or not measurable else -23,
      constantGainDb=gain,fadeInSeconds=.12,fadeOutSeconds=.30)
    rows.append(row)
  brand_rows=[]
@@ -111,7 +118,8 @@ def build():
    residual=max(residual,float(np.max(abs(mx.astype(np.float64)-vx.astype(np.float64)-gx.astype(np.float64)-bx.astype(np.float64)))))
    voice_error=max(voice_error,float(np.max(abs(vx-rx*10**(gain/20)))))
  assert residual<2e-6 and voice_error<2e-6
- report=dict(schemaVersion=1,revision='v7-part1',part=1,inputs=inputs,
+ report=dict(schemaVersion=1,revision='v7-part1',part=1,inputs=inputs,observedManifests=observed,
+  semanticAudioContract=dict(clock=audio_clock,nativeCuts=audio_cuts,sources=audio_sources),annotationOnlyChangesExcludedFromCacheIdentity=True,
   outputs=[dict(file=c.rel(x),sha256=c.sha(x))for x in [final,aac,fv,fg,fb,game,ducked,brand]],
   audioMix=c.rel(final),encodedAudio=c.rel(aac),narrationStem=c.rel(fv),gameStem=c.rel(fg),brandingStem=c.rel(fb),
   sampleRate=48000,channels=2,totalFrames=timeline['totalFrames'],totalSamples=total,seconds=timeline['duration'],

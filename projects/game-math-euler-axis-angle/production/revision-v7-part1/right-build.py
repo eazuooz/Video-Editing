@@ -36,6 +36,13 @@ def ass_header():
         '[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n')
 def event(a,b,text,x,y,size=64,c=WHITE,layer=2):
     return f'Dialogue: {layer},{ts(a)},{ts(b)},Main,,0,0,0,,{{\\an5\\pos({x:.1f},{y:.1f})\\fs{size}\\1c{color(c)}}}{ass_text(text)}\n'
+def leader(a,b,start,end,c,width=5):
+    x0,y0=start;x1,y1=end;length=math.hypot(x1-x0,y1-y0)
+    if length<1:return ''
+    px=-(y1-y0)/length*width/2;py=(x1-x0)/length*width/2
+    corners=[(x0+px,y0+py),(x1+px,y1+py),(x1-px,y1-py),(x0-px,y0-py)]
+    drawing='m '+' l '.join(f'{x:.1f} {y:.1f}'for x,y in corners)
+    return f'Dialogue: 3,{ts(a)},{ts(b)},Main,,0,0,0,,{{\\an7\\pos(0,0)\\p1\\bord0\\shad0\\1c{color(c)}}}{drawing}\n'
 def fmt(x):
     if abs(x)<.005:x=0
     return f'{x:.1f}'.rstrip('0').rstrip('.')
@@ -64,13 +71,14 @@ def roi(rows,shot):
     # Even dimensions make subsequent yuv420 output deterministic.
     x0=x0//2*2;y0=y0//2*2;x1=min(1920,(x1+1)//2*2);y1=min(1080,(y1+1)//2*2)
     return [x0,y0,x1-x0,y1-y0]
-def placement(crop,pair):
+def placement(crop,pair,gimbals=False):
     x,y,w,h=crop;area=[10,140 if pair else 82,880,340 if pair else 454]
     scale=min(area[2]/w,area[3]/h);dw=int(w*scale)//2*2;dh=int(h*scale)//2*2
     return {'crop':crop,'size':[dw,dh],'position':[int((900-dw)/2),int(area[1]+(area[3]-dh)/2)],'scale':[dw/w,dh/h]}
 def point(p,layout):
     x,y,_,_=layout['crop'];sx,sy=layout['scale'];ox,oy=layout['position'];return((p['x']-x)*sx+ox,(p['y']-y)*sy+oy)
 def title_for(key):
+    if key=='v6-11.B03':return '고정 축 · 순서가 다르면 다른 끝'
     if key=='v7-sail-move':return '중심만 옮기기'
     if key=='v7-sail-raise':return '위치는 고정 · 자세만 바꾸기'
     if key=='v7-log-align':return '옮기는 일과 맞추는 일'
@@ -100,10 +108,25 @@ def pair_names(shot):
     # a fixed-axis sequence must be identified separately for the learner.
     return [('A · '+('물체 축'if shot['a'].get('kind')=='euler'else text('a'))),('B · '+text('b'))]
 
+def gimbal_guides(row,shot,layout):
+    # These points lie on the actual authored rings. Orthographic projection
+    # permits the same affine combinations of the exported real source anchors.
+    # The current bodyY arrow is never called the heading handle.
+    aa={a['name']:a['pixelTopLeft']for a in row['anchors']};o=aa['a.origin']
+    def combine(terms):
+        p={k:o[k]+sum((aa[name][k]-o[k])*weight for name,weight in terms)for k in ['x','y']}
+        return point(p,layout)
+    ul=2.30 if shot.get('pair')else 2.65;bl=2.35 if shot.get('pair')else 2.7
+    h=combine([('a.uprightX',2.35/ul)])
+    b=combine([('a.bodyX',-1.90/(bl*math.sqrt(2))),('a.bodyY',1.90/(bl*math.sqrt(2)))])
+    return [dict(label='헤딩 h',sub='직립 Y',center=[145,170],target=h,color=COLORS['Y']),
+        dict(label='뱅크 b',sub='변한 Z',center=[770,300],target=b,color=COLORS['Z'])]
+
 def native_ass(path,key,rows,shot,layout):
     n=len(rows);txt=ass_header()+event(0,n,title_for(key),450,34,54,GOLD)
     if shot.get('pair'):
         an,bn=pair_names(shot);txt+=event(0,n,an,225,103,64,TEAL)+event(0,n,bn,675,103,64,GOLD)
+    elif shot.get('gimbals'):txt+=event(0,n,'실선 축은 서로 직각 · 링은 회전 손잡이',450,91,36,MUTED)
     elif shot.get('axes',True):txt+=event(0,n,'실선 물체 축 · 점선 직립 축',450,91,36,MUTED)
     sn=int(key[3:5])if key.startswith('v6-')else 0
     labels=S.ACTIVE_AXES.get(sn,['a.bodyY','a.bodyZ'])[:3 if key in ['v6-02.B02','v6-02.B03']else 2]
@@ -111,6 +134,11 @@ def native_ass(path,key,rows,shot,layout):
         for j,line in enumerate(numbers(row,shot)):
             txt+=event(i,i+1,line,450,522+j*82 if shot.get('pair')else 604,64,TEAL if j==0 else GOLD)
         if not shot.get('axes',True):continue
+        if shot.get('gimbals'):
+            for g in gimbal_guides(row,shot,layout):
+                x,y=g['center'];txt+=event(i,i+1,g['label'],x,y,64,g['color'],4)+event(i,i+1,g['sub'],x,y+58,48,g['color'],4)
+                txt+=leader(i,i+1,[x,y+92],g['target'],g['color'])
+            continue
         aa={a['name']:a for a in row['anchors']}
         for name in labels:
             if name not in aa:continue
@@ -219,7 +247,7 @@ def previews():
             layout=None;native=None
         else:
             src=lookup[key];rows=states(ROOT/src['anchors']);shot=cat[key];layout=placement(roi(rows,shot),shot.get('pair'))
-            native=ROOT/src['lastFrame'];im=Image.open(native).convert('RGB');x,y,w,h=layout['crop'];im=im.crop((x,y,x+w,y+h)).resize(layout['size'],Image.Resampling.LANCZOS);panel.paste(im,layout['position']);d=ImageDraw.Draw(panel)
+            native=ROOT/src['lastFrame'];im=Image.open(native).convert('RGB');x,y,w,h=layout['crop'];im=im.crop((x,y,x+w,y+h)).resize(layout['size'],Image.Resampling.LANCZOS);panel.paste(im,tuple(layout['position']));d=ImageDraw.Draw(panel)
             d.text((26,10),title_for(key),font=ImageFont.truetype(BOLD,54),fill=GOLD)
             for i,line in enumerate(numbers(rows[-1],shot)):d.text((26,500+i*77 if shot.get('pair')else 584),safe(line),font=ImageFont.truetype(FONT,64),fill=TEAL if i==0 else GOLD)
             # Source preview intentionally retains old labels. The final new
@@ -261,6 +289,10 @@ def run_logged(cmd,path):
 def build():
     M.authorized();receipt=read(O/'spatial-native/capture-receipt.json');assert not receipt['sampleOnly']
     plan=read(M.PLAN);paras=[p for s in plan['scenes']for p in s['paragraphs']];cat={s['id']:s for s in read(O/'prepared-unity/spatial-shots.json')['shots']}
+    def uses(p,key):
+        extras=p.get('withinParagraphAssets',[])+p.get('speechStateSwitches',[])
+        base=p.get('baseSourceFrame')or{}
+        return p['sourceBeatId']==key or base.get('sourceBeatId')==key or any(x['sourceBeatId']==key for x in extras)
     # Moving then raising the same sail shares one camera-space crop. The
     # exact move endpoint equals the raise start; independently recentering
     # each clip would falsely make that stationary pivot jump at the cut.
@@ -274,10 +306,10 @@ def build():
         outputs.append(row);save(O/'right-assets.json',{'schemaVersion':1,'part':1,'scriptSha256':sha(S.SCRIPT),'planSha256':sha(M.PLAN),'paneDimensions':[900,660],
             'assets':outputs,'paragraphs':paras,'complete':False,'speechTiming':'root ASR cue binding; no forced silence or source loop'})
     for native in receipt['outputs']:
-        key=native['sourceBeatId'];file=ROOT/native['files']['clip']['file'];anchor=ROOT/native['files']['anchors']['file'];rows=states(anchor);shot=cat[key];layout=sail_layout if key in sail_keys else placement(roi(rows,shot),shot.get('pair'))
+        key=native['sourceBeatId'];file=ROOT/native['files']['clip']['file'];anchor=ROOT/native['files']['anchors']['file'];rows=states(anchor);shot=cat[key];layout=sail_layout if key in sail_keys else placement(roi(rows,shot),shot.get('pair'),shot.get('gimbals'))
         ass=out/(key+'.ass');native_ass(ass,key,rows,shot,layout);sig={'sourceSha256':native['files']['clip']['sha256'],'anchorsSha256':native['files']['anchors']['sha256'],'layout':layout,'uiSha256':sha(ass),'compositorContract':'crop-scale-pad-ass-r900x660-v1'}
         if key in existing and existing[key].get('inputs')==sig and Path(ROOT/existing[key]['clip']).exists()and sha(ROOT/existing[key]['clip'])==existing[key]['clipSha256']:
-            cached=dict(existing[key],targetParagraphs=[p['targetParagraphId']for p in paras if p['sourceBeatId']==key],targetScenes=sorted({p['targetScene']for p in paras if p['sourceBeatId']==key}))
+            cached=dict(existing[key],targetParagraphs=[p['targetParagraphId']for p in paras if uses(p,key)],targetScenes=sorted({p['targetScene']for p in paras if uses(p,key)}))
             record(cached);continue
         assert sha(file)==native['files']['clip']['sha256']and sha(anchor)==native['files']['anchors']['sha256']
         dst=out/(key+'.mp4')
@@ -292,7 +324,7 @@ def build():
                     old.resolve().relative_to(out.resolve());dest.resolve().relative_to(out.resolve())
                     assert not dest.exists();old.replace(dest)
         x,y,w,h=layout['crop'];dw,dh=layout['size'];px,py=layout['position'];vf=f'crop={w}:{h}:{x}:{y},scale={dw}:{dh}:flags=lanczos,pad=900:660:{px}:{py}:color=0x080b0d,ass={rel(ass)}'
-        run_logged(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-xerror','-err_detect','explode','-threads','2','-filter_threads','1','-i',str(file),'-vf',vf,'-an','-c:v','libx264','-threads','2','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-r','60','-fps_mode','passthrough',str(dst)],out/(key+'.encode.log'))
+        run_logged(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-xerror','-err_detect','explode','-threads','2','-filter_threads','1','-i',str(file),'-vf',vf,'-an','-c:v','libx264','-threads','2','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-fps_mode','passthrough',str(dst)],out/(key+'.encode.log'))
         probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height,avg_frame_rate,nb_frames','-of','json',str(dst)],text=True))['streams'][0]
         assert [probe['width'],probe['height']]==[900,660]and probe['avg_frame_rate']=='60/1'and int(probe['nb_frames'])==len(rows),(key,probe)
         contract=M.motion_contract(shot,len(rows),rel(anchor))
@@ -300,11 +332,12 @@ def build():
         first=out/(key+'.first.png');last=out/(key+'.last.png')
         shutil.copyfile(ROOT/statefiles[0]['file'],first);shutil.copyfile(ROOT/statefiles[-1]['file'],last)
         ghost=aligned_confirmation(out,key,last,rows,layout)if key in ['v6-11.B02','v6-18.B02']else None
-        record({**contract,'sourceBeatId':key,'inputs':sig,'targetParagraphs':[p['targetParagraphId']for p in paras if p['sourceBeatId']==key],'targetScenes':sorted({p['targetScene']for p in paras if p['sourceBeatId']==key}),'clip':rel(dst),'clipSha256':sha(dst),'frames':len(rows),'fps':60,'dimensions':[900,660],
+        record({**contract,'sourceBeatId':key,'inputs':sig,'targetParagraphs':[p['targetParagraphId']for p in paras if uses(p,key)],'targetScenes':sorted({p['targetScene']for p in paras if uses(p,key)}),'clip':rel(dst),'clipSha256':sha(dst),'frames':len(rows),'fps':60,'dimensions':[900,660],
             'firstFrame':rel(first),'firstFrameSha256':sha(first),'lastFrame':rel(last),'lastFrameSha256':sha(last),'sourceROI':layout,'uiASS':rel(ass),'uiASSsha256':sha(ass),
             'sourceKind':'authored controlled model and actual source anchors','noGameInternalValueClaim':True,'nativeSpeed':1,'loop':False,'forcedHoldFrames':0,'finalPairedCaptionMotionReview':'pending',
             'internalPairRegions':{'A':[0,135,450,350],'B':[450,135,450,350],'restriction':'Geometry partition only; recompose each numeric readout separately. Verify silhouette clearance in final frames.'}if shot.get('pair')else None,
             'sourceStateBefore':rows[0],'sourceStateAfter':rows[-1],'nativeStateFiles':statefiles,'alignedConfirmation':ghost,'generatorImplementationSha256':sha(Path(__file__)),
+            'gimbalGuideMeanings':{'ringHeading':'uprightY parameter axis; green ring','ringBank':'Z afterheading/pitch; blue ring','solidArrows':'current orthogonal bodyXYZ basis; not the pair of coincident Euler controls','targetProjection':'Actual authored orthographic ring loci from exported native anchors and recorded ring radii','unknownGameAxesClaimed':False}if shot.get('gimbals')else None,
             'probe':probe,'nativeSourceFullyDecoded':{'pass':True,'method':'full finite strict-decode crop/scale/ASS encode with-xerror/-err_detect explode and exact output framecount','log':rel(out/(key+'.encode.log'))}})
     # Boards are separate small transparent overlays, composited over the same
     # neutral detailed model by the root. Each reveal is finite and can start
@@ -330,7 +363,7 @@ def build():
             cached=dict(existing[key],targetParagraphs=[p['targetParagraphId']for p in paras if p['sourceBeatId']==key],targetScenes=sorted({p['targetScene']for p in paras if p['sourceBeatId']==key}))
             record(cached);continue
         dst=out/(key+'.mp4');assert not dst.exists(),'Preserve existing nonmatching math panel: '+key
-        run_logged(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-xerror','-err_detect','explode','-threads','2','-filter_threads','1','-i',str(file),'-an','-c:v','libx264','-threads','2','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-r','60','-fps_mode','passthrough',str(dst)],out/(key+'.encode.log'))
+        run_logged(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-xerror','-err_detect','explode','-threads','2','-filter_threads','1','-i',str(file),'-an','-c:v','libx264','-threads','2','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-fps_mode','passthrough',str(dst)],out/(key+'.encode.log'))
         windows=[{'object':'a','step':i,'meaning':a['meaning'],'nativeMotionFrames':a['sourceFrames'],'stateBeforeFrame':a['sourceFrames'][0],'stateAfterFrame':a['sourceFrames'][1],'nativeSpeed':1}for i,a in enumerate(native['actions'],1)]
         contract={'sourceBeatId':key,'motionWindows':windows};statefiles=native_state_files(out,key,dst,native['frames'],contract)
         first=statefiles[0]['file'];last=statefiles[-1]['file']

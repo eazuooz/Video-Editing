@@ -81,10 +81,14 @@ def build():
     for t,x,y in SAIL:
         streams['totk'].append(key(t,[guide('돛·뗏목',[x,y])]))
     for t,x,y in HOOK:
-        streams['totk'].append(key(t,[guide('갈고리의 열린 쪽',[x,y])]))
+        # These points name the visible hook body, not an inferred opening
+        # vector. Native rotation UI carries the actual input evidence.
+        streams['totk'].append(key(t,[guide('갈고리 윤곽',[x,y])]))
     # The rail occludes the opening, then the hook leaves the shot on landing.
-    for t in [281,284,286.9,307.4,307.5,308,308.5,308.6,310.5,311,312,313,314,315,316,317,318,319,320,320.983333]:
+    for t in [281,284,286.9,303,304,305,306,307,307.4,307.5,308,308.5,308.6,309,310,310.5,311,312,313,314,315,316,317,318,319,320,320.983333]:
         streams['totk'].append(key(t,[],False,'nativeUI sufficient, rail occlusion, or opening not verifiable; do not invent contour'))
+    for t in [1003.5,1004]:
+        streams['totk'].append(key(t,[],False,'Rotating cloth partly outside top frame; cyan tether is not the mast. Native rotation UI remains visible.'))
     for t,point in [(239.5,[.56,.23]),(241.5,[.56,.23])]:
         streams['totk'].append(key(t,[guide('열린 쪽',point)]))
     old=read(P/'production/revision-v6/footage-plan.json')['clips'][0]['annotation']['directionPointers']['sourceKeyframes']
@@ -102,12 +106,20 @@ def build():
     for t in [165.5,166,167,168,168.983333]:
         streams['mariokart'].append(key(t,[],False,'item/hit/body-camera ambiguity; no extrapolation of head/front'))
     # Native samples distinguish articulated head/feet from rigid-body rotation.
-    mario=[(1349.6,[.52,.43],[.52,.57]),(1350.4,[.52,.48],[.52,.56]),
-           (1350.6,[.52,.39],[.52,.50]),(1350.7,[.52,.414],[.52,.333]),
-           (1350.8,[.52,.40],[.51,.33]),(1351,[.52,.40],[.51,.36]),
-           (1351.4,[.52,.43],[.52,.53]),(1351.6,[.52,.43],[.52,.57]),
-           (1351.983333,[.52,.43],[.52,.57])]
-    for t,head,feet in mario:streams['odyssey'].append(key(t,[guide('머리',head),guide('발',feet,'reference')]))
+    # Rounded screen points observed in the already cached native1920 frames.
+    # The follow camera changes the standing character's screen height: never
+    # reuse a normalized standing point from a different source time.
+    mario=[(1349.6,[1000,638],[1004,728]),(1349.8,[985,616],[982,701]),
+           (1350,[974,598],[982,691]),(1350.2,[990,617],[988,688]),
+           (1350.4,[1002,641],[993,684]),(1350.6,[931,540],[978,540]),
+           (1350.7,[996,447],[996,342]),(1350.8,[998,311],[922,294]),
+           (1351,[934,232],[985,240]),(1351.2,[1009,272],[955,250]),
+           (1351.4,[992,379],[950,447]),(1351.6,[987,587],[984,675]),
+           (1351.8,[991,592],[991,674]),(1351.983333,[1010,590],[1020,665])]
+    for t,head,feet in mario:
+        if t!=1351.983333:evidence('odyssey',t,rel(research/f'odyssey-flip/frame-{t:.1f}.jpg'))
+        streams['odyssey'].append(key(t,[guide('머리',[head[0]/1920,head[1]/1080]),
+            guide('발',[feet[0]/1920,feet[1]/1080],'reference')]))
     for source,rows in streams.items():
         # Explicit hide anchors win ties; never bridge a cut/unknown target.
         dedup={x['sourceFrame']:x for x in rows}

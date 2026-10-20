@@ -186,7 +186,9 @@ def scene_render(scene,left_file,right_file,codec='libx264',sample=None):
     filters.append(f'[{label}]ass={ffescape(path(term_ass))}[named]');label='named'
     filters.append(f'[{label}]format=yuv420p[out]')
     graph=folder/(scene['id']+'.filter.txt');graph.write_text(';\n'.join(filters),encoding='utf8')
-    args+=['-filter_complex_script',str(graph),'-map','[out]','-an','-frames:v',str(scene['frames']),'-r','60','-fps_mode','passthrough',*encoder(codec),str(destination)]
+    # FFmpeg9: file-loaded option syntax replaces filter_complex_script.
+    # https://ffmpeg.org/ffmpeg.html#Options
+    args+=['-/filter_complex',str(graph),'-map','[out]','-an','-frames:v',str(scene['frames']),'-r','60','-fps_mode','cfr',*encoder(codec),str(destination)]
     start=time.time();run(args,folder/(scene['id']+'.encode.log'));v=check_video(destination,scene['frames'])
     result=dict(sceneId=scene['id'],file=rel(destination),sha256=sha(destination),frames=scene['frames'],
         inputs=signature,sourceManifestsAtRender=dict(leftSha256=sha(left_file),rightSha256=sha(right_file),timelineSha256=sha(H/'timeline.json')),
@@ -212,7 +214,7 @@ def scene_captioned(scene,clean,codec):
             check_video(target,scene['frames']);print('Reused exact captioned scene',scene['id'],flush=True);return old
         raise RuntimeError('Preserve differing completed captioned scene before repair: '+str(target))
     run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-threads','2','-filter_threads','2','-i',str(R/clean['file']),
-        '-vf','ass='+ffescape(ass),'-an','-frames:v',str(scene['frames']),'-r','60','-fps_mode','passthrough',*encoder(codec),str(target)],folder/(scene['id']+'.encode.log'))
+        '-vf','ass='+ffescape(ass),'-an','-frames:v',str(scene['frames']),'-r','60','-fps_mode','cfr',*encoder(codec),str(target)],folder/(scene['id']+'.encode.log'))
     v=check_video(target,scene['frames']);save(subtitle_dir/'geometry.json',geometry)
     result=dict(sceneId=scene['id'],file=rel(target),sha256=sha(target),frames=scene['frames'],inputs=sig,probe=v,
         sourceGlobalStartFrame=scene['startFrame'],actualCaptionedSceneReusableInFullMaster=True,earlySampleIsNotWholeVideoApproval=True)

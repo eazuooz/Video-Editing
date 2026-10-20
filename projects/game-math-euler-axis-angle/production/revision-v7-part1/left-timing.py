@@ -5,6 +5,7 @@ after timing.py creates the actual21-scene Clock; --direct-source lets the root
 paired compositor read finite native ranges once without intermediate video.
 """
 from pathlib import Path
+from fractions import Fraction
 import argparse, bisect, hashlib, importlib.util, json, math
 
 H=Path(__file__).resolve().parent;R=H.parents[3]
@@ -56,9 +57,22 @@ def source_totals(prep,j):
         if old.get(sid,{}).get('inputSignature')==signature:result[sid]=old[sid];continue
         q=prep.probe(f);v=next(x for x in q['streams']if x['codec_type']=='video')
         assert(v['width'],v['height'],v['r_frame_rate'])==(1920,1080,'60/1')
-        n=int(v['nb_frames']);assert n>0
+        if v.get('nb_frames')is not None:
+            n=int(v['nb_frames']);basis='container stream nb_frames';derived=False
+        else:
+            # A duration/CFR declaration supplies a selection range bound, not
+            # a full-file decoded frame census. Superflight has no nb_frames.
+            rate=Fraction(v['avg_frame_rate']);assert rate==Fraction(v['r_frame_rate'])==60
+            bound=Fraction(int(v['duration_ts']))*Fraction(v['time_base'])*rate
+            assert bound.denominator==1,'Nonintegral/VFR range requires a separately verified source bound'
+            n=int(bound);basis='video duration_ts × time_base × declared CFR; selection header bound, not full-source decode count';derived=True
+        assert n>0
         result[sid]=dict(inputSignature=signature,sourceTotalFrames=n,dimensions=[1920,1080],fps=60,
             averageFrameRate=v.get('avg_frame_rate'),timeBase=v.get('time_base'),sourcePath=s['sourcePath'],
+            durationTs=v.get('duration_ts'),videoDuration=v.get('duration'),frameCountBasis=basis,
+            durationDerivedRangeBound=derived,fullSourceDecodeCountPerformed=False,
+            selectedLastFrameEvidence=(dict(file=j['stills']['flight-body-end']['file'],sourceFrame=20039,
+                sha256=j['stills']['flight-body-end']['sha256'],meaning='Actual1920x1080 selected last-frame cache exists; no whole source census needed')if sid=='superflight'else None),
             verification='Previously hashed/decoded independent FHD source; actual container metadata verified, no source-content recapture')
     save(cache_file,result);return result
 
@@ -78,15 +92,15 @@ def schedule(clock,plan):
         initial=dict(base[sid][0]);initial['frame']=bounds['startFrame'];base[sid].append(initial)
     # A source-contiguous predecessor can finish after the next short cue. Its
     # native speed/order wins; expose drift for actual paired-output review.
-    previous={}
-    ordered=sorted(plan['livePhases'],key=lambda q:(clock.scenes[q['targetScene']]['startFrame'],q['sourceBeats'][0]['sourceCue']['sourceKoOffset']))
+    scene_cursor={}
+    # Unicode offsets are local to a paragraph. Sorting only by offset lets
+    # L06/offset0 precede L03/offset17 and silently delays the earlier action.
+    # The measured global cue is the authoritative order across paragraphs.
+    ordered=sorted(plan['livePhases'],key=lambda q:clause_frame(clock,q['sourceBeats'][0]['sourceCue']))
     for phase in ordered:
-        sid=phase['targetScene'];bounds=clock.scenes[sid];previous_end=None
+        sid=phase['targetScene'];bounds=clock.scenes[sid];previous_end=scene_cursor.get(sid)
         for b in phase['sourceBeats']:
             desired=clause_frame(clock,b['sourceCue'])
-            prior=previous.get(phase['sourceId'])
-            if previous_end is None and prior and prior['nativeSourceOutFrameExclusive']==b['sourceInFrame']and prior['sceneId']==sid:
-                previous_end=prior['endFrameExclusive']
             start=max(desired,previous_end or bounds['startFrame']);wanted=b['sourceOutFrameExclusive']-b['sourceInFrame']
             end=min(start+wanted,bounds['endFrame'])
             if end<=start:
@@ -100,10 +114,13 @@ def schedule(clock,plan):
                 sourceId=phase['sourceId'],nativeSourceInFrame=b['sourceInFrame'],nativeSourceOutFrameExclusive=b['sourceInFrame']+used,
                 phaseNativeInFrame=phase['sourceInFrame'],kind='video',classification='independent-gameplay',focus=b['largeFocusLabel'],
                 sourceCue=b['sourceCue'],preferredCueFrame=desired,cueDriftFrames=drift,sourceAudioAllowed=b['sourceAudioAllowed'],silent=b['silent'])
-            beats.append(row);previous_end=end;previous[phase['sourceId']]=row
+            beats.append(row);previous_end=end;scene_cursor[sid]=end
             base[sid].append(dict(frame=end,sourceId=phase['sourceId'],sourceFrame=row['nativeSourceOutFrameExclusive']-1,
                 focus=b['largeFocusLabel'],reason='exact-last-frame analysis after native action; speech and right continue',
                 paragraphId=b['sourceCue']['targetParagraph'],priority=2))
+    for sid in base:
+        selected=sorted((b for b in beats if b['sceneId']==sid),key=lambda b:b['startFrame'])
+        assert all(a['endFrameExclusive']<=b['startFrame']for a,b in zip(selected,selected[1:])),('Two native actions overlap one left pane',sid)
     return base,beats,issues
 
 def segments(clock,j,plan,assets,totals,direct):
@@ -146,7 +163,11 @@ def segments(clock,j,plan,assets,totals,direct):
                     if p['kind']=='video':p['sourceFrames']=p['frames']
                     continue
             out.append(d)
-    validate(clock.timeline,out);return out,beats,issues
+    validate(clock.timeline,out)
+    for beat in beats:
+        captured=sum(r['frames']for r in out if r.get('beatId')==beat['beatId']and r['kind']=='video')
+        assert captured==beat['endFrameExclusive']-beat['startFrame'],('Native action was masked or silently omitted',beat['beatId'],captured)
+    return out,beats,issues
 
 def validate(timeline,rows):
     for s in timeline['scenes']:
@@ -273,6 +294,8 @@ def build(direct=False,allow_missing=False):
     j=read(H/'game-inputs.json');plan=read(P/'planning/revision-v7-two-part/part-01-left-game-plan.json')
     assets=prep.design();totals=source_totals(prep,j);guides=gm.build()
     rows,beats,issues=segments(clock,j,plan,assets,totals,direct)
+    critical=[x for x in issues if x['kind']in ['boundary-trim','no-room-before-scene-boundary']]
+    if critical:raise RuntimeError('Useful native action/result would be lost at a scene boundary; explicitly repair source windows, never silently truncate: '+json.dumps(critical,ensure_ascii=False))
     missing=sorted({x['file']for x in rows if not path(x['file']).exists()})
     if missing and not allow_missing:raise RuntimeError('Run left-prepare.py --prepare-stills first; preserve input plan. Missing '+str(missing[:5]))
     ass={s['id']:ass_scene(s,[x for x in rows if x['sceneId']==s['id']],j,guides,gm)for s in clock.timeline['scenes']}
@@ -285,6 +308,7 @@ def build(direct=False,allow_missing=False):
         measuredUniqueLiveFrames=sum(x['endFrameExclusive']-x['startFrame']for x in rows if x['kind']=='video'),
         measuredAnalysisFrames=sum(x['endFrameExclusive']-x['startFrame']for x in rows if x['kind']=='still'),
         noLoops=True,sourceSpeed=1,insertedSpeechPauseFrames=0,missingFiles=missing,timingIssues=issues,
+        sceneBoundaryTruncations=0,explicitSourceCuts={q['id']:q.get('explicitSourceCuts',[])for q in j['livePhases']if q.get('explicitSourceCuts')},
         sourceAudioPolicy='Exact native sourceStartSeconds/duration under original standard mix only for live segments; no audio under frozen analysis.',
         finalQA='Actual action cue drift, all moving guide anchors/occlusion, speech/motion relation and native/mobile pixel review pending')
     save(H/'left-visual-segments.json',result)

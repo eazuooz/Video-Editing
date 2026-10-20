@@ -48,6 +48,7 @@ def motion_contract(shot,frames,anchors=None):
             b=max(a,min(frames-1,math.floor(end*(frames-1))))
             before=max(0,min(frames-1,math.floor(start*(frames-1))))
             after=max(0,min(frames-1,math.ceil(end*(frames-1))))
+            if program.get('kind')=='sequence':a,b=before,after
             windows.append({'object':prefix,**description,'normalizedInterval':[start,end],
                 'nativeMotionFrames':[a,b],'frameRangeInclusive':True,'nativeSpeed':1,
                 'stateBeforeFrame':before,'stateAfterFrame':after,
@@ -125,6 +126,11 @@ def generated_sources(source_keys):
     bridge=bridge.replace('using UnityEngine.SceneManagement;','using UnityEngine.SceneManagement;\nusing YamyamCoding.GameMath.EulerAxisAngle.V6;')
     bridge=bridge.replace('revision-v6"','revision-v7-part1"').replace('-m04V6Job','-m04V7Job')
     bridge=bridge.replace('m04-v6-scenes-saved.json','m04-v7-part1-scenes-saved.json')
+    # V6's Scenes folder already existed. This independently saved V7 stage
+    # must create/import its own folder before the first real SaveScene call.
+    bake_marker='            var data=JsonUtility.FromJson<V6Catalog>(catalog.text);'
+    assert bridge.count(bake_marker)==1
+    bridge=bridge.replace(bake_marker,'            Directory.CreateDirectory(Root+"/Scenes");AssetDatabase.Refresh();\n'+bake_marker)
     # The only permitted project remains the existing task-local isolated clone.
     # Preserve this path guard rather than broadening it to the main Unity project.
     assert 'EndsWith("/production/local/revision-v6/unity-capture"' in bridge
@@ -133,10 +139,19 @@ def generated_sources(source_keys):
     for x in data['shots']:
         if x['id'] not in source_keys:continue
         x=copy.deepcopy(x);x['sceneId']='v7-a'+x['sceneId'].split('-')[-1];shots.append(x)
+        if x['id']=='v6-11.B03':
+            # New V7 authored timing, not commercial-footage retiming. A
+            # preserves its original seven seconds. B's two90° stages each
+            # take54native frames with12frames between, and end atframe120.
+            # Capture still stores420frames; the edit selectsB0..120 at1x.
+            for step,start,end in zip(x['b']['steps'],[0,66/419],[54/419,120/419]):step.update(start=start,end=end)
+            x['v7ProgramChange']={'object':'b','originalSourceBeatId':'v6-11.B03','sourceFrames':[0,120],
+                'stepEndFrames':[54,120],'stepStartFrames':[0,66],'sameAnglesAndAxisOrder':True,
+                'reason':'Keep both reversed fixed-axis actions visible inside the actual short spoken comparison; A retains its complete original motion.'}
     template=copy.deepcopy(next(x for x in data['shots']if x['id']=='v6-04.B01'))
     for key,scene,model,keys in [
-       ('v7-sail-move','v7-a02','sail',[k(0,b=90),k(1,b=90,x=1.1)]),
-       ('v7-sail-raise','v7-a02','sail',[k(0,b=90,x=1.1),k(1,b=0,x=1.1)]),
+       ('v7-sail-move','v7-a02','sail',[k(0,p=90),k(1,p=90,x=1.1)]),
+       ('v7-sail-raise','v7-a02','sail',[k(0,p=90,x=1.1),k(1,p=0,x=1.1)]),
        ('v7-log-align','v7-a15','log',[k(0,h=25,x=1.1),k(.5,h=25),k(1)]),
        ('v7-hook-rotate','v7-a03','hook',[k(0),k(1,h=90)])]:
         x=copy.deepcopy(template);x.update(id=key,sceneId=scene+'-'+key[3:],model=model,axes=False,pair=False,activeAxis='uprightY'if model=='hook'else'none',motionSeconds=6)
@@ -160,7 +175,7 @@ def generated_sources(source_keys):
     return {'generatedRuntime':rel(runtime),'generatedRuntimeSha256':sha(runtime),'baseRuntime':rel(src),'baseRuntimeSha256':original,
         'mathSource':rel(ENGINE/'EulerV6Math.cs'),'mathSourceSha256':sha(ENGINE/'EulerV6Math.cs'),
         'generatedBridge':rel(dest),'generatedBridgeSha256':sha(dest),'catalog':rel(catalog),'catalogSha256':sha(catalog),
-        'method':'exact V6 detailed geometry/math/programs reused; omit old TextMesh labels/leaders; add separate authored sail/log/hook geometry only',
+        'method':'V6 detailed geometry/math/programs reused except explicitly recorded V7 short B timing in11.B03; omit old TextMesh labels/leaders; add separate authored sail/log/hook geometry',
         'plannedSceneDirectory':'unity/VideoEditing/Assets/VideoScenes/game-math-euler-axis-angle/revision-v7-part1/Scenes',
         'savedSceneStatus':'planned only until actual Unity save files/receipts exist','scriptSceneCount':21,'supplementaryMotionSceneCount':4,'sceneCount':25,
         'isolatedProject':rel(ISO),'mainEditorOpenedOrChanged':False,'sourceReferencePipeline':'canonicalURP17.6 compatible copied materials via recorded adaptation; existing isolated built-in linear2xMSAA native source assets/pixels remain unchanged',
@@ -202,6 +217,9 @@ def main():
                 'withinParagraphAssets':S.WITHIN_PARAGRAPH_ASSETS.get(s['id']+f'.L{i:02}',[]),
                 'explicitNativeWindows':S.PARAGRAPH_WINDOWS.get(s['id']+f'.L{i:02}',[]),
                 'pairActions':S.PAIR_ACTIONS.get(s['id']+f'.L{i:02}',[]),
+                'speechStateSwitches':S.SPEECH_STATE_SWITCHES.get(s['id']+f'.L{i:02}',[]),
+                'motionScheduling':S.MOTION_SCHEDULING.get(s['id']+f'.L{i:02}',{}),
+                'baseSourceFrame':S.BASE_SOURCE_FRAMES.get(s['id']+f'.L{i:02}'),
                 'coincidentConfirmationCue':S.COINCIDENT_CONFIRMATIONS.get(s['id']+f'.L{i:02}'),
                 'motionStartPolicy':'Resolve actual ASR word cue; hold the exact before state under continuing definition speech until the action is spoken. Never autoplay at paragraph start.',
                 'simultaneousWithLeftGame':True,'animationRequiresNarrationSilence':False,'forcedHoldFrames':0,
@@ -233,7 +251,7 @@ def main():
             'math':'reflowed short semantic lines with relevant controlled model dimmed behind, no full black reset'},
         'nativeSourceAssets':list(source.values()),'retainedMathSources':[{'sourceBeatId':x['id'],'clip':x['clipFile'],'clipSha256':x['files'][0]['sha256'],'frames':x['durationFrames'],'reuse':'same mathematical meaning/values; reflow UI to900px; source pixels only if readable'}for x in math_source],
         'generatedUnity':generated,'newMatchedModels':{'sail':['separate pole','crossbars','slightly curved cloth mesh','rope ties'],'log':['cylindrical timber','visible endgrain','bark grooves','rope bindings','independent stationary neighbor for parallel alignment; actual anchors exported'],'hook':['curved open metal hook','thick mount/neck','visible open direction'],'motionClipCount':4,'distinctObjectCount':3,'assetKind':'independently authored generic explanation geometry; no extracted Nintendo assets; no measured game rotation angles',
-            'sailContinuity':{'moveEndEqualsRaiseStart':True,'controlledPosition':[1.1,0,0],'controlledEulerHPB':[0,0,90],'crop':'one union of actual geometry bounds across both finite clips; same size and position','speechCue':'v7-a02.L02: 세우고','pixelContinuityReview':'pending actual native sources; catalog state equality verified before capture'}},
+            'sailContinuity':{'moveEndEqualsRaiseStart':True,'controlledPosition':[1.1,0,0],'controlledEulerHPB':[0,90,0],'crop':'one union of actual geometry bounds across both finite clips; same size and position','speechCue':'v7-a02.L02: 세우고','pixelContinuityReview':'first bank90 sample exposed a vertical cloth panel; corrected controlledpitch90 makes cloth horizontal before raising. Corrected3endpoint sample pending; catalog state equality verified.'}},
         'importedAssetConsultation':{'catalog':rel(ROOT/'shared/assets/unity-asset-library.json'),'catalogSha256':sha(ROOT/'shared/assets/unity-asset-library.json'),'consultedGuide':'docs/UNITY_ASSET_LIBRARY.md','candidates':imported,'vendorOriginalsChanged':False},
         'paragraphCount':len(paragraphs),'unityExistingClipCount':len(source),'mathExistingClipCount':len(math_source),
         'newMathMotionSources':{'source':rel(H/'right-manim.py'),'sourceSha256':sha(H/'right-manim.py'),'renderer':'Manim Cairo CPU; native900x660 reflow over retained dim detailed model','clipCount':4,'plannedFrames':574,
@@ -241,9 +259,20 @@ def main():
             'meaning':'3vs9 storage slots;1-degree interval and0.5-degree half-distance;input20.0->20.4 whileoutput20 stays;one matrixentry stretchesX length. No tie-breaking or fabricated game values.',
             'status':'prepared source only; actual finite render and paired timing/pixels pending'},
         'canonicalAliasVisual':'v7-a19.L03 reuses exact final v6-18.B02A(0,135,0)/B(180,45,180), actual identical3D pose; reflowed numeric focus traces representative conversion, not a false intermediate path',
+        'nativeProgramTimingChanges':{'v6-11.B03':{'object':'b','nativeSourceFramesSelected':[0,120],'nativeStepFrames':[[0,54],[66,120]],'captureFrameCount':420,'anglesAndOrder':'uprightY90 thenuprightX90; unchanged result','originalV6FilesChanged':False,'reason':'New authored V7 short motion, native1x; both changes complete before the spoken result. A remains the original seven-second program.'}},
         'newCaptureFrameCountExceptions':{'v6-18.B01':{'frames':541,'reason':'Exact360-degree halfway sample; original0-to720 linear program retained.'},'v6-20.B01':{'frames':481,'reason':'Exact80-degree halfway sample; endpoints/program retained.'},'v6-20.B02':{'frames':481,'reason':'Exact.45/.55 keys for20-degree equivalence and signed45-degree boundary examples; programs retained.'}},
         'rawBoardWidthFindings':width_errors,'rendererStarted':False,'gpuLeaseAcquired':False,
         'reuseNote':S.REUSE_NOTE,'pending':['root GPU handoff after voice/sourceASR','native clear-label sample and shape runtime review','current source ROI and larger labels native375','actual source/speech cues','all final moving paired/caption/cut review']}
+    completed_math=O/'math-native/outputs.json'
+    if completed_math.exists():
+        actual=read(completed_math)
+        if actual.get('complete')and actual.get('sourceSha256')==sha(H/'right-manim.py')and actual.get('scriptSha256')==sha(S.SCRIPT):
+            assert len(actual['outputs'])==4 and sum(x['frames']for x in actual['outputs'])==574
+            assert all((ROOT/x['files']['clip']['file']).exists()and sha(ROOT/x['files']['clip']['file'])==x['files']['clip']['sha256']for x in actual['outputs'])
+            plan['status']='four native Manim diagrams rendered; Unity native capture and paired moving review pending'
+            plan['rendererStarted']=True;plan['mathCpuRenderComplete']=True
+            plan['newMathMotionSources'].update(status='actual4clips574frames900x660/60; word-bound paired review pending',
+                actualManifest=rel(completed_math),actualManifestSha256=sha(completed_math))
     save(PLAN,plan);save(O/'paragraph-plan.json',{'scriptSha256':sha(S.SCRIPT),'paragraphs':paragraphs})
     # Odd counts place .5 on an exact native frame, and481 also samples .45
     # and .55 exactly. This allows true360°,80°,20° boundary snapshots to be
@@ -254,7 +283,7 @@ def main():
     job={'outputDirectory':str(O/'spatial-native'),'ffmpegPath':shutil.which('ffmpeg'),'bakeScenes':True,'captureTestbed':False,'clips':clips,
          'approval':approval,'generatedSourceSha256':generated['generatedRuntimeSha256'],'generatedBridgeSha256':generated['generatedBridgeSha256'],
          'catalogSha256':generated['catalogSha256'],'mathSourceSha256':generated['mathSourceSha256'],
-         'captureKind':'label-free exact V6 programs + four finite motions of three own matched shapes; no speech timing invented'}
+         'captureKind':'label-free V6 programs, explicit V7shortB11.B03 timing and four finite motions of three own matched shapes; no commercial-footage retiming'}
     save(O/'right-native-job.json',job)
     catalog={s['id']:s for s in read(ROOT/generated['catalog'])['shots']}
     programs=[motion_contract(catalog[c['shotId']],c['frames'],source.get(c['shotId'],{}).get('anchors'))for c in clips]

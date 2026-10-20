@@ -4,7 +4,7 @@ Default --prepare is metadata only. --run never starts TTS or uses CUDA.
 No other video, model, editor or existing render is interrupted or replaced.
 """
 from pathlib import Path
-import argparse,hashlib,importlib.util,json,os,subprocess,time
+import argparse,ast,hashlib,importlib.util,json,os,subprocess,time
 import psutil
 
 H=Path(__file__).resolve().parent
@@ -53,36 +53,72 @@ def run_logged(cmd,log,env):
             raise
     if code:raise RuntimeError(log.read_text(encoding='utf8',errors='replace')[-4000:])
 
-def run():
+def diagram_code(path,key):
+    tree=ast.parse(Path(path).read_text(encoding='utf8'));method=key.removeprefix('v7-math-').replace('-','_')
+    common=[x for x in tree.body if not isinstance(x,(ast.FunctionDef,ast.ClassDef))]
+    common += [x for x in tree.body if isinstance(x,ast.FunctionDef)]
+    cls=next(x for x in tree.body if isinstance(x,ast.ClassDef)and x.name=='RightDiagram')
+    common += [x for x in cls.body if isinstance(x,ast.FunctionDef)and x.name in ['construct',method]]
+    return hashlib.sha256(ast.dump(ast.Module(body=common,type_ignores=[]),include_attributes=False).encode()).hexdigest()
+
+def archive_existing_math(key,row):
+    work=DEST/key;archive=DEST/'superseded'/(key+'-'+row['files']['clip']['sha256'][:16])
+    work.resolve().relative_to(DEST.resolve());archive.resolve().relative_to(DEST.resolve())
+    assert work.exists()and not archive.exists(),'Preserve existing owned math archive for inspection.'
+    archive.parent.mkdir(exist_ok=True)
+    clip=ROOT/row['files']['clip']['file'];assert M.sha(clip)==row['files']['clip']['sha256']
+    newclip=archive/clip.relative_to(work);newlog=archive/(ROOT/row['renderLog']).relative_to(work)
+    work.replace(archive)
+    oldqa=DEST/'qa'/key
+    if oldqa.exists():oldqa.resolve().relative_to(DEST.resolve());oldqa.replace(archive/'qa')
+    proof=dict(row,files={'clip':dict(file=M.rel(newclip),sha256=M.sha(newclip))},renderLog=M.rel(newlog),
+        reason='Actual midpoint QA found unreadable glyph morphing; preserve pre-correction local source before bounded numerical repaint.')
+    M.save(archive/'superseded-receipt.json',proof)
+
+def run(only=None):
     data=prepare()
     env=dict(os.environ,PYTHONUTF8='1',PYTHONIOENCODING='utf-8',CUDA_VISIBLE_DEVICES='',OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',OPENBLAS_NUM_THREADS='2')
     spec=importlib.util.spec_from_file_location('v7_right_context_only',H/'right-build.py');builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
     context=DEST/'context-background.png';builder.context_background().save(context)
     env['V7_RIGHT_BACKGROUND']=str(context)
-    out=DEST/'outputs.json';existing={r['sourceBeatId']:r for r in M.read(out)['outputs']}if out.exists()else{};outputs=[]
+    out=DEST/'outputs.json';prior=M.read(out)if out.exists()else{};existing={r['sourceBeatId']:dict(r,renderedSourceSha256=r.get('renderedSourceSha256',prior['sourceSha256']))for r in prior.get('outputs',[])};outputs=[]
+    snapshot=DEST/'numeric-qa-before/outputs.json'
+    if only and snapshot.exists():
+        original=M.read(snapshot)
+        for r in original['outputs']:
+            if r['sourceBeatId']not in existing:existing[r['sourceBeatId']]=dict(r,renderedSourceSha256=r.get('renderedSourceSha256',original['sourceSha256']))
     for spec in SPECS:
         M.authorized();key=spec['sourceBeatId'];signature=hashlib.sha256(json.dumps({'spec':spec,'sourceSha256':M.sha(SOURCE),'backgroundSha256':M.sha(context),'fps':60,'resolution':[900,660]},sort_keys=True).encode()).hexdigest()
+        if only and key not in only:
+            old=DEST/'numeric-qa-before/right-manim.py';row=existing[key]
+            assert old.exists()and M.sha(old)==row.get('renderedSourceSha256',prior['sourceSha256'])
+            assert diagram_code(old,key)==diagram_code(SOURCE,key),'Unselected diagram code changed; do not rerender outside this handoff.'
+            assert row['background']['sha256']==M.sha(context)
+            assert all((ROOT/f['file']).exists()and M.sha(ROOT/f['file'])==f['sha256']for f in row['files'].values())
+            outputs.append(dict(row,renderedSourceSha256=M.sha(old),unchangedCodeReuse={'oldSource':M.rel(old),'oldSha256':M.sha(old),'currentSha256':M.sha(SOURCE),'relevantAstFingerprint':diagram_code(SOURCE,key),'commonCodeAndSelectedMethodIdentical':True}));continue
         if key in existing and existing[key]['signature']==signature and all((ROOT/f['file']).exists()and M.sha(ROOT/f['file'])==f['sha256']for f in existing[key]['files'].values()):
             outputs.append(existing[key]);continue
         work=DEST/key;work.mkdir(exist_ok=True)
-        assert not list(work.rglob(key+'.mov')),'Preserve existing nonmatching bounded math render, do not overwrite.'
+        if list(work.rglob(key+'.mov')):
+            assert only and key in only and key in existing,'Preserve existing nonmatching bounded math render, do not overwrite.'
+            archive_existing_math(key,existing[key]);work.mkdir(exist_ok=True)
         command=[str(ROOT/'manim/.venv/Scripts/python.exe'),'-m','manim','--renderer','cairo','--format','mov','-t','-r','900,660','--fps','60','--media_dir',str(work/'manim'),'-o',key,str(SOURCE),'RightDiagram']
         print(json.dumps({'render':key,'cpuOnly':True,'expectedFrames':spec['expectedFrames']}),flush=True)
         run_logged(command,work/'render.log',{**env,'V7_RIGHT_MATH':key})
         movies=list((work/'manim').rglob(key+'.mov'));assert len(movies)==1
         clip=movies[0];probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','stream=width,height,r_frame_rate,nb_frames,pix_fmt','-of','json',str(clip)],text=True))['streams'][0]
         assert [probe['width'],probe['height']]==[900,660]and probe['r_frame_rate']=='60/1'and int(probe['nb_frames'])==spec['expectedFrames'],(key,probe)
-        row=dict(spec,signature=signature,frames=int(probe['nb_frames']),fps=60,dimensions=[900,660],probe=probe,
+        row=dict(spec,signature=signature,renderedSourceSha256=M.sha(SOURCE),frames=int(probe['nb_frames']),fps=60,dimensions=[900,660],probe=probe,
             files={'clip':{'file':M.rel(clip),'sha256':M.sha(clip)}},background={'file':M.rel(context),'sha256':M.sha(context),'additionalDimOpacity':.82},renderLog=M.rel(work/'render.log'),sourceKind='independently authored mathematical illustration',movingPairedReview='pending actual word-bound composite')
         outputs.append(row);M.save(out,{'schemaVersion':1,'outputs':outputs,'complete':len(outputs)==len(SPECS),'sourceSha256':M.sha(SOURCE),'scriptSha256':M.sha(M.S.SCRIPT)})
     M.save(out,{'schemaVersion':1,'outputs':outputs,'complete':True,'sourceSha256':M.sha(SOURCE),'scriptSha256':M.sha(M.S.SCRIPT)})
     print(json.dumps({'mathClips':len(outputs),'totalFrames':sum(r['frames']for r in outputs),'manifest':M.rel(out)}),flush=True)
 
 if __name__=='__main__':
-    ap=argparse.ArgumentParser();ap.add_argument('--prepare',action='store_true');ap.add_argument('--run',action='store_true');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--prepare',action='store_true');ap.add_argument('--run',action='store_true');ap.add_argument('--only',nargs='+',choices=[s['sourceBeatId']for s in SPECS]);a=ap.parse_args()
     if a.run:
         sp=importlib.util.spec_from_file_location('v7_right_math_finite_lease',H/'job-lease.py');lease=importlib.util.module_from_spec(sp);sp.loader.exec_module(lease)
         with lease.finite('M04-A four finite CPU Manim mathematical diagrams',require_gpu=False)as record:
-            ACTIVE_JOB=record;run()
+            ACTIVE_JOB=record;run(set(a.only)if a.only else None)
     elif a.prepare:prepare();print('Four finite CPU math sources prepared; no render started.')
     else:ap.print_help()

@@ -21,7 +21,7 @@ SPECS = {
  3: [('board-euler','m'),('v6-03.B02','0'),('v7-hook-rotate','m'),('v6-03.B02','0'),('v6-03.B02','m'),('board-sign','m'),('v6-03.B02','1')],
  4: [('v6-04.B01','0'),('v6-04.B01','m'),('v6-04.B01','1'),('v6-04.B02','m'),('v6-04.B01','1'),('v6-04.B01','1')],
  5: [('v6-05.B01','0'),('v6-05.B01','0'),('v6-05.B01','m'),('v6-05.B02','m'),('v6-05.B02','1'),('v6-05.B02','1'),('v6-05.B01','1')],
- 6: [('v6-06.B01','0'),('v6-06.B01','m'),('v6-06.B01','1'),('v6-06.B02','1'),('v6-06.B02','m'),('v7-sail-raise','1')],
+ 6: [('v6-06.B01','0'),('v6-06.B01','m'),('v6-06.B01','1'),('v6-06.B02','1'),('v6-06.B02','1'),('v7-sail-raise','1')],
  7: [('v6-04.B02','1'),('v6-07.B01','m'),('v6-07.B01','1'),('v6-07.B02','m'),('v6-07.B02','1'),('v6-07.B02','1')],
  8: [('v6-08.B01','m'),('board-direction','m'),('v6-08.B01','0'),('v6-08.B01','1'),('v6-08.B01','1'),('v6-08.B01','1'),('board-contract','1')],
  9: [('board-contract','m'),('board-names','m'),('board-other-names','m'),('board-contract','m'),('v6-10.B01','0')],
@@ -30,7 +30,7 @@ SPECS = {
 12: [('v6-12.B01','0'),('v6-12.B01','m'),('v6-12.B02','m'),('v6-12.B02','m'),('v6-12.B02','1'),('board-camera','m'),('v6-12.B02','1')],
 13: [('v6-13.B01','0'),('v6-13.B01','m'),('board-stage','m'),('board-ground','m'),('v6-13.B02','m'),('board-tait-bryan','m')],
 14: [('board-contract','m'),('board-rename','m'),('board-convert','m'),('board-basis','m'),('board-row-matrix','m'),('board-contract','1')],
-15: [('v6-15.B01','0'),('v7-math-storage','1'),('v6-15.B01','m'),('v7-log-align','m'),('v7-sail-raise','m'),('board-input','m'),('v7-math-storage','1')],
+15: [('v6-15.B01','0'),('v7-math-storage','1'),('v6-15.B01','m'),('v7-log-align','m'),('v7-sail-move','0'),('board-input','m'),('v7-math-storage','1')],
 16: [('v7-math-storage','m'),('board-many-poses','m'),('v7-math-half-step','m'),('v7-math-quantize','m'),('board-total-error','m'),('board-sine-error','m'),('board-compression','m'),('board-valid','1')],
 17: [('board-valid','m'),('v7-math-stretch','m'),('board-quaternion-condition','m'),('board-contract','1'),('v6-18.B01','0')],
 18: [('v6-18.B01','m'),('board-periodic','m'),('v6-18.B01','1'),('v6-18.B02','m'),('v6-18.B02','1'),('board-representative','m')],
@@ -121,7 +121,7 @@ ACTION_CUES = {
  'v7-a11.L02': ['피치 이십 도를 먼저', '헤딩 삼십 도'],
  'v7-a11.L05': ['고정 엑스 구십 도', '고정 와이 구십 도', '순서를 바꾸면'],
  'v7-a12.L02': ['기수가 수직 아래로 향하게'],
- 'v7-a12.L03': ['요를 구십 도 주면'],
+ 'v7-a12.L03': ['현재 물체 와이 주위로'],
  'v7-a12.L04': ['헤딩 값을 바꾸면'],
  'v7-a13.L02': ['뱅크를 주고 나면'],
  'v7-a13.L05': ['세차', '장동', '자전'],
@@ -142,12 +142,33 @@ ACTION_CUES = {
 
 # A paragraph may discuss more than one object. Preserve the approved wording
 # and switch our corresponding model on the same spoken action as the game.
-WITHIN_PARAGRAPH_ASSETS = {
- 'v7-a15.L05': [
-   {'sourceBeatId':'v7-sail-move','cue':'누운 돛을 들어 올리고','window':0,'object':'a'},
-   {'sourceBeatId':'v7-sail-raise','cue':'세워서 뗏목에 붙이는','window':0,'object':'a'},
-   {'sourceBeatId':'v7-hook-rotate','cue':'갈고리를 돌려','window':0,'object':'a'},
+WITHIN_PARAGRAPH_ASSETS = {}
+
+# Recaps describe results already established by their complete demonstrations.
+# Exact native state changes follow speech; a six-second replay is not inserted
+# into each short object mention. The fixed-axis reversal retains full A motion
+# and identifies B by its distinct order and inspected exact final geometry.
+SPEECH_STATE_SWITCHES = {
+ 'v7-a02.L01': [
+   {'sourceBeatId':'v7-sail-move','cue':'돛대가 달린 돛이','sourceState':'first','reason':'Switch from the already-parallel two-log raft base to the separate lying sail at its actual spoken introduction; start the full lifting motion on the later action cue.'},
  ],
+ 'v7-a15.L05': [
+   {'sourceBeatId':'v7-sail-move','cue':'누운 돛을 들어 올리고','sourceState':'last','reason':'Recall the complete position-only demonstration from a02.L01.'},
+   {'sourceBeatId':'v7-sail-raise','cue':'세워서 뗏목에 붙이는','sourceState':'last','reason':'Recall the complete raising demonstration from a02.L02; exact moved→upright endpoints.'},
+   {'sourceBeatId':'v7-hook-rotate','cue':'갈고리를 돌려','sourceState':'first','reason':'Show the hook opening before the recalled orientation change.'},
+   {'sourceBeatId':'v7-hook-rotate','cue':'열린 쪽이','sourceState':'last','reason':'Confirm the exact changed opening direction; full hook rotation was shown in a03.L03.'},
+ ],
+}
+
+MOTION_SCHEDULING = {
+ 'v7-a10.L02': {'backfit':True,'allowLeadBeforeParagraphFrames':12,'reason':'A sub-0.2-second preparation lead keeps complete heading/pitch/bank phases on their following axis clauses; no speed change.'},
+ 'v7-a13.L05': {'backfit':True,'reason':'Start each visible top mechanism during its plain-language description, then give its canonical name.'},
+ 'v7-a15.L04': {'backfit':True,'reason':'Start bringing the log during the return-to-the-raft preparation sentence, then rotate on the alignment cue.'},
+ 'v7-a18.L04': {'backfit':True,'finishBy':{'line':5,'cue':'겹쳐 놓으면'},'reason':'Use the existing preparation sentence for both full paths; reach both exact endpoints before the overlap confirmation.'},
+}
+BASE_SOURCE_FRAMES = {
+ 'v7-a02.L01': {'sourceBeatId':'v7-log-align','frame':'last','reason':'Show the two parallel logs during raft/Ultrahand introduction; switch to the distinct sail when it is named.'},
+ 'v7-a20.L01': {'frame':240,'reason':'The complete45→80 change is shown in a19.L05; inherit its exact80° state and preserve every native80→90° frame here.'},
 }
 
 # Source-frame names for a repeated end-state verification do not imply that
@@ -160,7 +181,6 @@ PARAGRAPH_WINDOWS = {
  ],
  'v7-a19.L05': [{'cue':'경계까지 비행기를 조금씩 숙이면','sourceFrames':[0,240],'endMeaning':'80° exact endpoint'}],
  'v7-a20.L01': [
-   {'cue':'사십오 도에서 팔십 도로','sourceFrames':[0,240],'endMeaning':'p80°'},
    {'cue':'다시 구십 도로','sourceFrames':[240,480],'endMeaning':'p90°'},
  ],
  'v7-a20.L04': [{'cue':'헤딩 삼십 도와 뱅크 십 도','sourceFrames':[0,216],'endMeaning':'A(20,90,0) = B(20,90,0)'}],
@@ -173,10 +193,10 @@ PAIR_ACTIONS = {
  'v7-a11.L01': [{'object':'a','cue':'헤딩 삼십 도','stepCues':['헤딩 삼십 도','피치 이십 도'],'fixedOtherFrame':'first'}],
  'v7-a11.L02': [{'object':'b','cue':'피치 이십 도를 먼저','stepCues':['피치 이십 도를 먼저','헤딩 삼십 도'],'fixedOtherFrame':'last'}],
  'v7-a11.L05': [
-   {'object':'a','cue':'고정 엑스 구십 도','stepCues':['고정 엑스 구십 도','고정 와이 구십 도'],'fixedOtherFrame':'first'},
-   {'object':'b','cue':'순서를 바꾸면','fixedOtherFrame':'last'},
+   {'object':'a','cue':'이번에는 두 쪽 모두','fixedOtherFrame':'first'},
+   {'object':'b','cue':'순서를 바꾸면','sourceFrames':[0,120],'fixedOtherFrame':'last'},
  ],
- 'v7-a12.L03': [{'object':'a','cue':'요를 구십 도 주면','fixedOtherFrame':'first'}],
+ 'v7-a12.L03': [{'object':'a','cue':'현재 물체 와이 주위로','fixedOtherFrame':'first'}],
  'v7-a12.L04': [{'object':'b','cue':'헤딩 값을 바꾸면','fixedOtherFrame':'last'}],
  'v7-a18.L04': [
    {'object':'a','cue':'첫 모형은','fixedOtherFrame':'first'},

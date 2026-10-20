@@ -39,8 +39,11 @@ def run(args):
     assert job['generatedSourceSha256']==generated['generatedRuntimeSha256']
     assert job['generatedBridgeSha256']==generated['generatedBridgeSha256']
     if args.sample:
-        job['clips']=[dict(shotId=k,frames=3)for k in ['v7-sail-raise','v7-log-align','v7-hook-rotate','v6-02.B02','v6-05.B02','v6-20.B01','v6-18.B01']]
-        job['bakeScenes']=False;job['outputDirectory']=str(O/'spatial-sample')
+        shots=args.sample_shot or ['v7-sail-raise','v7-log-align','v7-hook-rotate','v6-02.B02','v6-05.B02','v6-20.B01','v6-18.B01']
+        assert all(k in {x['shotId']for x in job['clips']}for k in shots)
+        job['clips']=[dict(shotId=k,frames=3)for k in shots]
+        sample_suffix=('patch-'+job['catalogSha256'][:12])if args.sample_shot else None
+        job['bakeScenes']=False;job['outputDirectory']=str(O/'spatial-sample'/sample_suffix if sample_suffix else O/'spatial-sample')
         job['sampleOnly']=True
     out=Path(job['outputDirectory']);out.mkdir(parents=True,exist_ok=True)
     for clip in job['clips']:
@@ -48,7 +51,8 @@ def run(args):
     stage=ISO/'Assets/VideoScenes/game-math-euler-axis-angle/revision-v7-part1'
     stage.resolve().relative_to(ISO.resolve())
     shutil.copytree(O/'prepared-unity',stage,dirs_exist_ok=True)
-    path=O/('right-sample-job.json'if args.sample else'right-native-job.json');M.save(path,job)
+    name=('right-sample-job-'+sample_suffix+'.json'if args.sample_shot else'right-sample-job.json')if args.sample else'right-native-job.json'
+    path=O/name;M.save(path,job)
     me=psutil.Process();token=str(uuid.uuid4())
     record={'schemaVersion':1,'token':token,'project':'game-math-euler-axis-angle','part':1,'purpose':'M04-A finite right-pane label-free controlled models',
         'coordinator':{'pid':me.pid,'createTime':me.create_time()},'state':'render_running','job':M.rel(path),'jobSha256':M.sha(path),'authorization':approval,
@@ -101,7 +105,8 @@ def run(args):
             except(OSError,json.JSONDecodeError):pass
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--run',action='store_true');ap.add_argument('--sample',action='store_true');ap.add_argument('--timeout',type=int,default=2400);args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--run',action='store_true');ap.add_argument('--sample',action='store_true');ap.add_argument('--sample-shot',nargs='+');ap.add_argument('--timeout',type=int,default=2400);args=ap.parse_args()
+    assert not args.sample_shot or args.sample,'A selected3-frame correction must be an explicit sample.'
     if not args.run:ap.print_help();return
     run(args)
 
