@@ -19,7 +19,8 @@ def ff(args,label):
  with (Q/(label+'.log')).open('w',encoding='utf8') as f:subprocess.run(cmd,cwd=R,stdout=f,stderr=subprocess.STDOUT,check=True)
 def encode():
  guard();plan=rd(L/'edit-plan.json');clean=L/'final.clean.mp4';caption=L/'final.captioned.mp4'
- if not clean.exists():ff(['-n','-i',L/'visual.mp4','-i',L/'final-mix.wav','-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-b:a','192k','-ar','48000','-ac','2','-movflags','+faststart',clean],'encode-clean')
+ audio=rd(P/'production/final-audio.json');assert audio['status']=='passed-current-encoded-audio-levels-and-continuity' and sha(L/'final-mix.m4a')==audio['sha256']
+ if not clean.exists():ff(['-n','-i',L/'visual.mp4','-i',L/'final-mix.m4a','-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','copy','-movflags','+faststart',clean],'encode-clean')
  if not caption.exists():ff(['-n','-i',clean,'-map','0:v:0','-map','0:a:0','-vf',"ass=filename='projects/vampire-survivors-d2-copyright/production/local/captions.ass':fontsdir='projects/vampire-survivors-d2-copyright/production/local/fonts'",'-c:v','libx264','-preset','fast','-crf','18','-g','120','-pix_fmt','yuv420p','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-c:a','copy','-video_track_timescale','60000','-movflags','+faststart',caption],'encode-captioned')
  wr(P/'production/master-files.json',{'status':'encoded-awaiting-integrity-and-content-review','clean':{'path':clean.relative_to(R).as_posix(),'sha256':sha(clean)},'captioned':{'path':caption.relative_to(R).as_posix(),'sha256':sha(caption)},'totalFrames':plan['totalFrames'],'humanReview':'pending','uploadAuthorized':False})
  print('Encoded final pair',flush=True)

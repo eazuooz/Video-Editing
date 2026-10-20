@@ -20,14 +20,17 @@ def measure(src,label,target=-16):
 def db(x):return 20*np.log10(max(float(np.sqrt(np.mean(np.square(x,dtype=np.float64)))),1e-10))
 def main():
  guard();plan=rd(L/'edit-plan.json');t=rd(L/'timing.json');total=plan['totalFrames']*800;body=plan['bodyFrames']*800
- source=L/'narration-source.wav';normal=L/'narration-normalized.wav';m=measure(source,'narration-source-loudness')
+ source=L/'narration-source.wav';normal=L/'narration-normalized-v2.wav';m=measure(source,'narration-source-loudness')
  # Constant gain preserves all original sentence-to-sentence dynamics. Peak
  # headroom is reserved before the game/music sum, never duck the voice.
- gain=min(-16-float(m['input_i']),-2.5-float(m['input_tp']))
- if not normal.exists():ff(['-n','-i',source,'-af',f'volume={gain}dB,aresample=48000','-ac','2','-c:a','pcm_f32le',normal],'normalize-continuous-voice')
- a,sr=sf.read(normal,dtype='float32',always_2d=True);assert sr==48000
+ gain=-16-float(m['input_i'])
+ if not normal.exists():ff(['-n','-i',source,'-af',f'volume={gain}dB,aresample=48000,alimiter=limit=0.75:attack=2:release=50:level=0:latency=1','-ac','2','-c:a','pcm_f32le',normal],'normalize-continuous-voice-v2')
+ a,sr=sf.read(normal,dtype='float32',always_2d=True);assert sr==48000 and np.isfinite(a).all()
  voice=np.zeros((total,2),dtype=np.float32);voice[96000:96000+len(a)]=a
- placed=L/'narration-placed.wav';sf.write(placed,voice,48000,subtype='FLOAT')
+ placed=L/'narration-placed.wav'
+ if placed.exists():
+  old,rate=sf.read(placed,dtype='float32',always_2d=True);assert rate==48000 and np.array_equal(old,voice);del old
+ else:sf.write(placed,voice,48000,subtype='FLOAT')
  game=np.zeros_like(voice);game_rows=[];gains={}
  for c in plan['cuts']:
   if c['kind']!='actual' or c['audio']!='synchronized-game-mix':continue
@@ -37,21 +40,35 @@ def main():
   dest=L/'cuts'/(c['id']+'-game.wav');samples=c['frames']*800
   if not dest.exists():ff(['-n','-ss',c['sourceStartFrame']/60,'-i',src,'-vn','-af',f"volume={gains[key]}dB,aresample=48000,apad=whole_len={samples},atrim=end_sample={samples}",'-ac','2','-c:a','pcm_f32le',dest],'game-'+c['id'])
   x,rate=sf.read(dest,dtype='float32',always_2d=True);assert rate==48000 and len(x)==samples
+  correction=plan.get('audioCorrections',{}).get(c['id'],{}).get('gainDb',0)
+  if correction:x*=10**(correction/20)
   n=min(4800,len(x)//2);x[:n]*=np.linspace(0,1,n,dtype=np.float32)[:,None];x[-n:]*=np.linspace(1,0,n,dtype=np.float32)[:,None]
   at=(c['startFrame']+120)*800;game[at:at+samples]=x
-  game_rows.append({'cut':c['id'],'source':c['source'],'sourceStartFrame':c['sourceStartFrame'],'targetStartFrame':c['startFrame']+120,'frames':c['frames'],'initialTargetLufs':-23,'constantSourceGainDb':gains[key],'speed':1,'gameAndOriginalInseparableMusic':'critical synchronized excerpt, not isolated SFX or independently licensed soundtrack','fadeSeconds':.1})
- gamefile=L/'game-placed.wav';sf.write(gamefile,game,48000,subtype='FLOAT');del game
+  game_rows.append({'cut':c['id'],'source':c['source'],'sourceStartFrame':c['sourceStartFrame'],'targetStartFrame':c['startFrame']+120,'frames':c['frames'],'initialTargetLufs':-23,'constantSourceGainDb':gains[key],'additionalNarrationCorrectionDb':correction,'speed':1,'gameAndOriginalInseparableMusic':'critical synchronized excerpt, not isolated SFX or independently licensed soundtrack','fadeSeconds':.1})
+ gamefile=L/'game-placed-v3.wav'
+ if gamefile.exists():
+  old,rate=sf.read(gamefile,dtype='float32',always_2d=True);assert rate==48000 and np.array_equal(old,game);del old
+ else:sf.write(gamefile,game,48000,subtype='FLOAT')
+ del game
  music=R/'shared/assets/music/youtube-audio-library/Nimbus-Eveningland.mp3';assert sha(music)=='06ddb8d0f2aa82e499ab2cb398b8a241c626d9d3da82bbaf274d1178435f8c08'
  musicnorm=L/'music-normalized.wav';mm=measure(music,'music-source-loudness',-31);mg=-31-float(mm['input_i'])
  if not musicnorm.exists():ff(['-n','-i',music,'-af',f'volume={mg}dB,aresample=48000','-ac','2','-c:a','pcm_f32le',musicnorm],'normalize-music')
  bgm,rate=sf.read(musicnorm,dtype='float32',always_2d=True);assert rate==48000;track=np.zeros_like(voice);xf=48000;step=len(bgm)-xf;ramp=np.linspace(0,1,xf,dtype=np.float32)[:,None]
- for at in range(96000,96000+body,step):
-  count=min(len(bgm),96000+body-at);part=bgm[:count].copy()
+ member_source=R/'projects/game-reward-planning/production/local/reference-preserving-v2/edit/membership.mp4'
+ member_probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(member_source)]))
+ member_has_audio=any(s['codec_type']=='audio' for s in member_probe['streams'])
+ music_end=96000+body if member_has_audio else total
+ for at in range(96000,music_end,step):
+  count=min(len(bgm),music_end-at);part=bgm[:count].copy()
   if at>96000:part[:min(xf,count)]*=ramp[:min(xf,count)]
-  if at+len(bgm)<96000+body:part[-xf:]*=1-ramp
+  if at+len(bgm)<music_end:part[-xf:]*=1-ramp
   track[at:at+count]+=part
- track[96000:96000+24000]*=np.linspace(0,1,24000,dtype=np.float32)[:,None];track[96000+body-24000:96000+body]*=np.linspace(1,0,24000,dtype=np.float32)[:,None]
- musicfile=L/'music-placed.wav';sf.write(musicfile,track,48000,subtype='FLOAT');del track,bgm
+ track[96000:96000+24000]*=np.linspace(0,1,24000,dtype=np.float32)[:,None];track[music_end-24000:music_end]*=np.linspace(1,0,24000,dtype=np.float32)[:,None]
+ musicfile=L/'music-placed.wav'
+ if musicfile.exists():
+  old,rate=sf.read(musicfile,dtype='float32',always_2d=True);assert rate==48000 and np.array_equal(old,track);del old
+ else:sf.write(musicfile,track,48000,subtype='FLOAT')
+ del track,bgm
  # Preserve the approved branding/outro audio if present, without overwriting speech.
  brand=np.zeros_like(voice);base=R/'projects/game-reward-planning/production/local/reference-preserving-v2/edit'
  for key,at,n in [('branding',0,96000),('membership',96000+body,480000)]:

@@ -18,11 +18,13 @@ def recognize(raw,cache,word_timestamps=True):
  if cache.exists() and rd(cache).get('audio_sha256')==digest:return rd(cache)
  import torch
  from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
- torch.set_num_threads(4);local=R/'qwen3-tts/models/whisper-large-v3-turbo'
+ threads=4 if word_timestamps else 8
+ torch.set_num_threads(threads);local=R/'qwen3-tts/models/whisper-large-v3-turbo'
  mid=str(local) if (local/'config.json').exists() else 'openai/whisper-large-v3-turbo'
  m=AutoModelForSpeechSeq2Seq.from_pretrained(mid,dtype=torch.float32,attn_implementation='eager',local_files_only=True)
  p=AutoProcessor.from_pretrained(mid,local_files_only=True)
- asr=pipeline('automatic-speech-recognition',model=m,tokenizer=p.tokenizer,feature_extractor=p.feature_extractor,dtype=torch.float32,device='cpu',chunk_length_s=30,stride_length_s=5,batch_size=1)
+ chunking={'chunk_length_s':30,'stride_length_s':5,'batch_size':1} if word_timestamps else {}
+ asr=pipeline('automatic-speech-recognition',model=m,tokenizer=p.tokenizer,feature_extractor=p.feature_extractor,dtype=torch.float32,device='cpu',**chunking)
  print('Complete CPU ASR, no expected-text prompt:',raw,flush=True)
  q=asr(str(raw),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word' if word_timestamps else True)
  v={'audio_sha256':digest,'text':q['text'],'words':q['chunks'],'scope':'whole current audio, one recognition pass, no expected prompt','device':'cpu','humanListening':'pending'};wr(cache,v);return v
