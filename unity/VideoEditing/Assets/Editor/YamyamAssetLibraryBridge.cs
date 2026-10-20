@@ -33,7 +33,6 @@ public static class YamyamAssetLibraryBridge
     static readonly string ImportOnlyPath = Path.Combine(Work, "import-only-once.json");
     static readonly Regex ScriptReference = new Regex(@"m_Script:\s*\{fileID:\s*(-?\d+)(?:,\s*guid:\s*([a-fA-F0-9]{32}))?", RegexOptions.Compiled);
     static readonly Regex TextureReference = new Regex(@"m_Texture:\s*\{fileID:\s*(-?\d+)(?:,\s*guid:\s*([a-fA-F0-9]{32}))?", RegexOptions.Compiled);
-    static readonly Regex NamedTextureReference = new Regex(@"(?m)^[ \t]*-[ \t]+(?<property>[^:\r\n]+):[ \t]*\r?\n[ \t]+m_Texture:[ \t]*\{fileID:[ \t]*(?<fileId>-?\d+)(?:,[ \t]*guid:[ \t]*(?<guid>[a-fA-F0-9]{32}))?", RegexOptions.Compiled);
     static readonly PropertyInfo ReferenceIdProperty = typeof(SerializedProperty).GetProperty("objectReferenceEntityIdValue") ?? typeof(SerializedProperty).GetProperty("objectReferenceInstanceIDValue");
     static double nextPoll, idleSince = -1, lastProgress;
     static Job job;
@@ -1138,8 +1137,8 @@ public static class YamyamAssetLibraryBridge
         if (standalone)
         {
             string text = File.ReadAllText(Path.Combine(Project, path));
-            var named = NamedTextureReference.Matches(text);
-            bool mapped = named.Count == TextureReference.Matches(text).Count && named.Cast<Match>().All(match => nativeSavedNames.Contains(match.Groups["property"].Value.Trim()));
+            List<YamyamAssetLibraryMaterialTextureParser.Reference> named;
+            bool mapped = YamyamAssetLibraryMaterialTextureParser.TryParse(text, nativeSavedNames, out named);
             if (!mapped)
             {
                 // An unfamiliar serialization shape must never silently hide a GUID.
@@ -1152,9 +1151,9 @@ public static class YamyamAssetLibraryBridge
                     if (!TextureReferenceResolves(AssetDatabase.GUIDToAssetPath(guid), match.Groups[1].Value)) missing.Add("guid:" + guid);
                 }
             }
-            else foreach (Match match in named)
+            else foreach (var reference in named)
             {
-                string guid = match.Groups["guid"].Value.ToLowerInvariant(), fileId = match.Groups["fileId"].Value, property = match.Groups["property"].Value.Trim();
+                string guid = reference.guid, fileId = reference.fileId, property = reference.property;
                 if (fileId == "0" || guid.Length == 0 || guid.All(character => character == '0') || IsBuiltInGuid(guid)) continue;
                 if (!TextureReferenceResolves(AssetDatabase.GUIDToAssetPath(guid), fileId))
                 {
