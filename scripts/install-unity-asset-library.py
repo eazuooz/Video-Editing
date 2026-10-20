@@ -2,7 +2,7 @@
 """File-only final installation after isolated Unity exit and delta recording.
 
 Default is a structural dry run. --apply hashes the complete library once, then
-renames only its owned root/metadata and adds the verified Addressables dependency.
+renames only its owned root/metadata and adds the verified runtime dependencies.
 No Unity, desktop, vendor code, archive, Git, or process-control command is run.
 """
 from __future__ import annotations
@@ -176,6 +176,16 @@ def settings_snapshot(project):
 
 
 def package_candidates(project, headless, baseline):
+    """Preserve baseline packages; install only the reviewed official runtime closure."""
+    required = {ADDRESSABLES: ADDRESSABLES_VERSION,
+                "com.unity.cinemachine": "6.6.0", "com.unity.splines": "2.9.1"}
+    # The15 required Cinemachine GUID/type pairs were verified against the
+    # actual Unity6000.6 bundled package, rather than registry version3.1.7.
+    approved_new = {ADDRESSABLES: (ADDRESSABLES_VERSION, "registry"),
+                    "com.unity.cinemachine": ("6.6.0", "builtin"),
+                    "com.unity.splines": ("2.9.1", "registry"),
+                    "com.unity.settings-manager": ("2.1.1", "registry"),
+                    "com.unity.scriptablebuildpipeline": ("3.0.3", "registry")}
     old = {}
     for name in ("manifest.json", "packages-lock.json"):
         path = project / "Packages" / name
@@ -189,36 +199,46 @@ def package_candidates(project, headless, baseline):
         old[name] = data
     main = json.loads(old["manifest.json"].decode("utf-8-sig"))
     new = copy.deepcopy(main)
-    existing = new["dependencies"].get(ADDRESSABLES)
-    if existing not in (None, ADDRESSABLES_VERSION):
-        raise ValueError("An existing Addressables version must not be replaced")
-    new["dependencies"][ADDRESSABLES] = ADDRESSABLES_VERSION
+    for name, version in required.items():
+        if new["dependencies"].get(name) not in (None, version):
+            raise ValueError(f"An existing required dependency version must not be replaced: {name}")
+        new["dependencies"][name] = version
     for name in ("manifest.json", "packages-lock.json"):
         no_links(headless / "Packages" / name, project)
     isolated_manifest, _ = read_json(headless / "Packages/manifest.json")
     isolated_lock, lock_bytes = read_json(headless / "Packages/packages-lock.json")
     if isolated_manifest != new:
-        raise ValueError("Isolated manifest changes more than the required Addressables dependency")
+        raise ValueError("Isolated manifest changes more than the three reviewed runtime dependencies")
     old_lock = json.loads(old["packages-lock.json"].decode("utf-8-sig"))["dependencies"]
     new_lock = isolated_lock["dependencies"]
-    if new_lock.get(ADDRESSABLES, {}).get("version") != ADDRESSABLES_VERSION:
-        raise ValueError("Isolated lock does not resolve the required Addressables version")
+    for name, version in required.items():
+        if new_lock.get(name, {}).get("version") != version:
+            raise ValueError(f"Isolated lock does not resolve the reviewed version: {name}")
     for name, record in old_lock.items():
         before = {k: v for k, v in record.items() if k != "depth"}
         after = {k: v for k, v in new_lock.get(name, {}).items() if k != "depth"}
         if before != after:
             raise ValueError(f"Isolated lock changes an existing package identity/version/dependencies: {name}")
-    closure, pending = set(), [ADDRESSABLES]
+    closure, pending = set(), list(required)
     while pending:
         name = pending.pop()
         if name in closure:
             continue
         if name not in new_lock:
-            raise ValueError(f"Addressables dependency is absent from isolated lock: {name}")
+            raise ValueError(f"Reviewed runtime dependency is absent from isolated lock: {name}")
         closure.add(name)
         pending.extend(new_lock[name].get("dependencies", {}))
-    if set(new_lock) - set(old_lock) - closure:
+    additions = set(new_lock) - set(old_lock)
+    if additions - closure or additions - set(approved_new):
         raise ValueError("Isolated lock adds unrelated packages")
+    for name in additions | set(required):
+        record = new_lock[name]
+        if (record.get("version"), record.get("source")) != approved_new[name]:
+            raise ValueError(f"Reviewed official package identity/source differs: {name}")
+        if record["source"] == "registry" and record.get("url") != "https://packages.unity.com":
+            raise ValueError(f"Reviewed package does not use the official Unity registry: {name}")
+        if record["source"] == "builtin" and "url" in record:
+            raise ValueError("Builtin Cinemachine must retain the editor-bundled identity")
     return old, {"manifest.json": old["manifest.json"] if main == new else encode(new), "packages-lock.json": lock_bytes}
 
 

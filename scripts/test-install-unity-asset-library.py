@@ -43,10 +43,21 @@ class InstallFixtures(unittest.TestCase):
             baseline.append({"path": str(path), "bytes": len(data), "sha256": m.sha(data)})
         self.write(self.work / "preserved-project-baseline.json", baseline)
         isolated_manifest = copy.deepcopy(self.packages)
-        isolated_manifest["dependencies"][m.ADDRESSABLES] = m.ADDRESSABLES_VERSION
+        self.required_dependencies = {m.ADDRESSABLES: m.ADDRESSABLES_VERSION,
+                                      "com.unity.cinemachine": "6.6.0", "com.unity.splines": "2.9.1"}
+        isolated_manifest["dependencies"].update(self.required_dependencies)
         isolated_lock = copy.deepcopy(self.lock)
-        isolated_lock["dependencies"][m.ADDRESSABLES] = {"version": m.ADDRESSABLES_VERSION, "depth": 0, "source": "registry", "dependencies": {"com.unity.buildpipeline": "3.0.0"}}
-        isolated_lock["dependencies"]["com.unity.buildpipeline"] = {"version": "3.0.0", "depth": 1, "source": "registry", "dependencies": {}}
+        for name, version, source, dependencies in (
+                (m.ADDRESSABLES, m.ADDRESSABLES_VERSION, "registry", {"com.unity.scriptablebuildpipeline": "3.0.3"}),
+                ("com.unity.cinemachine", "6.6.0", "builtin", {"com.unity.splines": "2.8.4"}),
+                ("com.unity.splines", "2.9.1", "registry", {"com.unity.settings-manager": "1.0.3"}),
+                ("com.unity.settings-manager", "2.1.1", "registry", {}),
+                ("com.unity.scriptablebuildpipeline", "3.0.3", "registry", {})):
+            row = {"version": version, "depth": 0 if name in self.required_dependencies else 1,
+                   "source": source, "dependencies": dependencies}
+            if source == "registry":
+                row["url"] = "https://packages.unity.com"
+            isolated_lock["dependencies"][name] = row
         self.write(self.headless / "Packages/manifest.json", isolated_manifest)
         self.write(self.headless / "Packages/packages-lock.json", isolated_lock)
         self.products = []
@@ -147,7 +158,7 @@ class InstallFixtures(unittest.TestCase):
         self.assertEqual(before, self.destination.with_name(self.destination.name + ".meta").read_bytes())
         self.assertEqual(b"payload 000", (self.destination / "000-fixture/asset.txt").read_bytes())
         package, _ = m.read_json(self.project / "Packages/manifest.json")
-        self.assertEqual({**self.packages["dependencies"], m.ADDRESSABLES: m.ADDRESSABLES_VERSION}, package["dependencies"])
+        self.assertEqual({**self.packages["dependencies"], **self.required_dependencies}, package["dependencies"])
         self.assertEqual(self.settings, m.settings_snapshot(self.project))
         self.assertEqual(manifest_bytes, self.manifest_path.read_bytes())
 
@@ -208,6 +219,59 @@ class InstallFixtures(unittest.TestCase):
         lock["dependencies"]["unrelated.package"] = {"version": "1.0.0", "dependencies": {}}
         self.write(path, lock)
         self.assertIn("unrelated packages", m.install(self.project)["error"])
+        self.unchanged()
+
+    def test_registry_cinemachine_cannot_masquerade_as_verified_builtin(self):
+        path = self.headless / "Packages/packages-lock.json"
+        lock, _ = m.read_json(path)
+        lock["dependencies"]["com.unity.cinemachine"].update(version="3.1.7", source="registry", url="https://packages.unity.com")
+        self.write(path, lock)
+        self.assertIn("reviewed version", m.install(self.project)["error"])
+        lock["dependencies"]["com.unity.cinemachine"]["version"] = "6.6.0"
+        self.write(path, lock)
+        self.assertIn("identity/source", m.install(self.project)["error"])
+        self.unchanged()
+
+    def test_reviewed_runtime_closure_refuses_foreign_registry_or_unreviewed_reachable_package(self):
+        path = self.headless / "Packages/packages-lock.json"
+        lock, original = m.read_json(path)
+        lock["dependencies"]["com.unity.settings-manager"]["url"] = "https://unreviewed.invalid"
+        self.write(path, lock)
+        self.assertIn("official Unity registry", m.install(self.project)["error"])
+        lock = json.loads(original)
+        lock["dependencies"]["com.unity.splines"]["dependencies"]["com.unity.unreviewed"] = "1.0.0"
+        lock["dependencies"]["com.unity.unreviewed"] = {"version": "1.0.0", "source": "registry", "dependencies": {}, "url": "https://packages.unity.com"}
+        self.write(path, lock)
+        self.assertIn("unrelated packages", m.install(self.project)["error"])
+        self.unchanged()
+
+    def test_missing_reviewed_transitive_package_refused(self):
+        path = self.headless / "Packages/packages-lock.json"
+        lock, _ = m.read_json(path)
+        del lock["dependencies"]["com.unity.scriptablebuildpipeline"]
+        self.write(path, lock)
+        self.assertIn("absent from isolated lock", m.install(self.project)["error"])
+        self.unchanged()
+
+    def test_builtin_package_url_and_unreviewed_direct_dependency_refused(self):
+        path = self.headless / "Packages/packages-lock.json"
+        lock, original = m.read_json(path)
+        lock["dependencies"]["com.unity.cinemachine"]["url"] = "https://packages.unity.com"
+        self.write(path, lock)
+        self.assertIn("editor-bundled identity", m.install(self.project)["error"])
+        path.write_bytes(original)
+        manifest, _ = m.read_json(self.headless / "Packages/manifest.json")
+        manifest["dependencies"]["com.unity.unreviewed"] = "1.0.0"
+        self.write(self.headless / "Packages/manifest.json", manifest)
+        self.assertIn("three reviewed runtime", m.install(self.project)["error"])
+        self.unchanged()
+
+    def test_package_depth_can_change_without_changing_baseline_identity(self):
+        path = self.headless / "Packages/packages-lock.json"
+        lock, _ = m.read_json(path)
+        lock["dependencies"]["com.unity.core"]["depth"] = 2
+        self.write(path, lock)
+        self.assertEqual("ready-dry-run", m.install(self.project)["status"])
         self.unchanged()
 
     def test_exact_owned_stage_root_and_current_main_guid_are_required(self):
