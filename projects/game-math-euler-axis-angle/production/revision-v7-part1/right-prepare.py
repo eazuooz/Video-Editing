@@ -246,6 +246,11 @@ def main():
                 'motionStartPolicy':'Resolve actual ASR word cue; hold the exact before state under continuing definition speech until the action is spoken. Never autoplay at paragraph start.',
                 'simultaneousWithLeftGame':True,'animationRequiresNarrationSilence':False,'forcedHoldFrames':0,
                 'stopAfterObservedResult':True,'loopOrPadding':False,'ui':label_contract(n)}
+            if row['targetParagraphId']in S.PAIR_BASE_STATES:row['basePairState']=S.PAIR_BASE_STATES[row['targetParagraphId']]
+            if row['targetParagraphId']in S.EXACT_PAIR_RECALLS:row['exactPairRecalls']=S.EXACT_PAIR_RECALLS[row['targetParagraphId']]
+            if row['targetParagraphId']in S.BASE_EXACT_STATES:
+                cfg=S.BASE_EXACT_STATES[row['targetParagraphId']]
+                row['baseExactState']=dict(cfg,sha256=sha(ROOT/cfg['file']))
             if n<3:
                 row['pretermNumericReadoutPolicy']={'hideOnlyKnownUIReadoutBand':True,
                     'singleBand':[0,558,900,102],'pairBand':[0,490,900,170],

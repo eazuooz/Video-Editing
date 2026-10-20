@@ -229,7 +229,13 @@ def make():
             if row.get('baseSourceFrame'):
                 cfg=row['baseSourceFrame'];base_asset=assets[cfg.get('sourceBeatId',asset['sourceBeatId'])]
                 frame=base_asset['frames']-1 if cfg['frame']=='last'else cfg['frame']
-            base.append(base_segment(base_asset,sid,start,end,frame))
+            if row.get('basePairState'):
+                cfg=row['basePairState'];assert base_asset.get('pair')
+                base.append(still_end(base_asset,sid,start,end,cfg['frame'],cfg['object'],cfg['fixedOtherFrame']))
+            elif row.get('baseExactState'):
+                cfg=row['baseExactState'];assert M.sha(ROOT/cfg['file'])==cfg['sha256']
+                base.append(segment(sid,start,end,cfg['file'],sourceBeatId=asset['sourceBeatId'],kindOfPicture=cfg['meaning'],exactStateProvenance=cfg['provenance']))
+            else:base.append(base_segment(base_asset,sid,start,end,frame))
             switches=row.get('speechStateSwitches',[])
             for i,switch in enumerate(switches):
                 a=assets[switch['sourceBeatId']];at=literal_frame(clock,sid,line['line'],switch['cue'])
@@ -238,6 +244,16 @@ def make():
                 overrides.append(base_segment(a,sid,at,stop,sf))
                 state_audit.append(dict(paragraphId=pid,sourceBeatId=a['sourceBeatId'],cue=switch['cue'],frame=at,sourceFrame=sf,
                     motionFramesNotPlayedAtThisStateCue=[0,a['frames']-1],scope='this state cue only; another cue may play the complete source motion',reason=switch['reason'],cueOffsetFrames=0))
+            for recall in row.get('exactPairRecalls',[]):
+                at=literal_frame(clock,sid,line['line'],recall['cue']);stop=literal_frame(clock,sid,line['line'],recall['endCue'])
+                cfg=recall['base'];a=assets[cfg['sourceBeatId']]
+                value=base_segment(a,sid,at,stop,cfg['sourceFrame']);value['exactPairRecall']=recall['meaning']
+                for layer in recall['layers']:
+                    b=assets[layer['sourceBeatId']]
+                    value['overlayLayers'].extend(cropped_layers(b,layer['object'],'still',statefile(b,layer['sourceFrame'])))
+                overrides.append(value)
+                state_audit.append(dict(paragraphId=pid,sourceBeatId=a['sourceBeatId'],cue=recall['cue'],frame=at,endFrameExclusive=stop,
+                    sourceFrame=cfg['sourceFrame'],layers=recall['layers'],reason=recall['meaning'],cueOffsetFrames=0,newNative=False))
             if row.get('coincidentConfirmationCue'):
                 ghost=asset.get('alignedConfirmation');assert ghost
                 at=literal_frame(clock,sid,line['line'],row['coincidentConfirmationCue'])

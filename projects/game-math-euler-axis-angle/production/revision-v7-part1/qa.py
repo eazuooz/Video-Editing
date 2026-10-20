@@ -24,6 +24,9 @@ def sample_plan(left,right):
     def add(frame,label,kind):
         frame=max(0,min(timeline['totalFrames']-1,int(frame)))
         events.setdefault(frame,[]).append(dict(label=label,kind=kind))
+    for frame,label in [(0,'branding.first'),(60,'branding.middle'),(119,'branding.last'),
+        (timeline['bodyEndFrame'],'membership.first'),(timeline['bodyEndFrame']+300,'membership.middle'),
+        (timeline['totalFrames']-1,'membership.last')]:add(frame,label,'approved-branding-member-boundary')
     for cue in captions['cues']:add(round((cue['start']+cue['end'])*30),cue['id'],'every-current-caption')
     for scene in timeline['scenes']:
         for frame,tag in [(scene['startFrame'],'first'),(scene['endFrame']-1,'last')]:add(frame,scene['id']+'.'+tag,'every-scene-boundary')

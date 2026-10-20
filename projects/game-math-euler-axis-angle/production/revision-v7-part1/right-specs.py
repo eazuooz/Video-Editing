@@ -25,7 +25,7 @@ SPECS = {
  7: [('v6-04.B02','1'),('v6-07.B01','m'),('v6-07.B01','1'),('v6-07.B02','m'),('v6-07.B02','1'),('v6-07.B02','1')],
  8: [('v6-08.B01','m'),('board-direction','m'),('v6-08.B01','0'),('v6-08.B01','1'),('v6-08.B01','1'),('v6-08.B01','1'),('board-contract','1')],
  9: [('board-contract','m'),('board-names','m'),('board-other-names','m'),('board-contract','m'),('v6-10.B01','0')],
-10: [('v6-10.B01','0'),('v6-10.B01','m'),('v6-10.B02','0'),('v6-10.B02','m'),('v6-10.B02','1'),('v6-11.B01','0')],
+10: [('v6-10.B02','0'),('v6-10.B02','m'),('v6-10.B02','0'),('v6-10.B02','m'),('v6-10.B02','1'),('v6-11.B01','0')],
 11: [('v6-11.B01','m'),('v6-11.B02','m'),('v6-11.B02','1'),('v6-11.B02','1'),('v6-11.B03','m'),('v6-11.B03','1')],
 12: [('v6-12.B01','0'),('v6-12.B01','m'),('v6-12.B02','m'),('v6-12.B02','m'),('v6-12.B02','1'),('board-camera','m'),('v6-12.B02','1')],
 13: [('v6-13.B01','0'),('v6-13.B01','m'),('board-stage','m'),('board-ground','m'),('v6-13.B02','m'),('board-tait-bryan','m')],
@@ -189,6 +189,8 @@ PARAGRAPH_WINDOWS = {
 # Serial teaching from an originally simultaneous A/B capture. A comparison
 # pane is frozen at its real native endpoint while the other pane moves.
 PAIR_ACTIONS = {
+ 'v7-a05.L04': [{'object':'b','cue':'직립 엑스를 잡고 돌리겠습니다','fixedOtherFrame':'last'}],
+ 'v7-a10.L02': [{'object':'a','cue':'헤딩을 한 뒤','stepCues':['헤딩을 한 뒤','피치하고','뱅크합니다'],'fixedOtherFrame':'first'}],
  'v7-a10.L04': [{'object':'b','cue':'뱅크·피치·헤딩을','fixedOtherFrame':'last'}],
  'v7-a11.L01': [{'object':'a','cue':'헤딩 삼십 도','stepCues':['헤딩 삼십 도','피치 이십 도'],'fixedOtherFrame':'first'}],
  'v7-a11.L02': [{'object':'b','cue':'피치 이십 도를 먼저','stepCues':['피치 이십 도를 먼저','헤딩 삼십 도'],'fixedOtherFrame':'last'}],
@@ -202,6 +204,34 @@ PAIR_ACTIONS = {
    {'object':'a','cue':'첫 모형은','fixedOtherFrame':'first'},
    {'object':'b','cue':'둘째는','fixedOtherFrame':'last'},
  ],
+}
+
+# Preserve the already completed A result while B is defined/prepared.
+# These are actual separately captured endpoint PNGs, not invented poses.
+PAIR_BASE_STATES = {
+ 'v7-a05.L04': {'object':'b','frame':0,'fixedOtherFrame':'last'},
+ 'v7-a12.L04': {'object':'b','frame':0,'fixedOtherFrame':'last'},
+ 'v7-a10.L03': {'object':'b','frame':0,'fixedOtherFrame':'last'},
+ 'v7-a10.L04': {'object':'b','frame':0,'fixedOtherFrame':'last'},
+}
+
+# Recall actual first-step states only while the narration compares the paths.
+# A/B complete their demonstrated motion before this recall; the subsequent
+# same-center overlap uses their real final states, at its existing word cue.
+EXACT_PAIR_RECALLS = {
+ 'v7-a11.L03': [{'cue':'두 비행기의 자세가 다릅니다','endCue':'겹치면',
+     'base':{'sourceBeatId':'v6-11.B02','sourceFrame':155},
+     'layers':[{'sourceBeatId':'v6-11.B01','sourceFrame':155,'object':'a'}],
+     'meaning':'Recall A after bodyY30 and B after fixedX20; these different intermediate poses are not the shared final orientation.'}],
+}
+
+BASE_EXACT_STATES = {
+ 'v7-a13.L01': {
+   'file':'projects/game-math-euler-axis-angle/production/local/revision-v7-part1/explanation/right-assets/v7-a13-bank-zero.png',
+   'meaning':'Actual controlled A/B h30/p20/b0 endpoint geometry, reflowed into the a13 Euler-pitch/current-bodyX comparison; not a new motion.',
+   'provenance':{'sourceBeatId':'v6-11.B02','nativeSourceFrame':359,'targetLayoutSourceBeatId':'v6-13.B01','hpb':[30,20,0],
+      'sourceLabelsReused':False,'geometryOnlyFromNative':True,'comparedToNextState':[30,20,35],'onlyChangedEulerComponent':'bank'}
+ },
 }
 
 COINCIDENT_CONFIRMATIONS = {
