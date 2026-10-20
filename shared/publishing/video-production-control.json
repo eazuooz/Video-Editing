@@ -14,7 +14,7 @@
     "unchangedAudioAndTimingEvidenceReusable": true,
     "automaticOtherVideoRevision": false
   },
-  "updatedAt": "2026-10-20T09:53:57.973451+00:00",
+  "updatedAt": "2026-10-20T23:10:01.813022+09:00",
   "authority": "explicit-human-user",
   "userEvidence": "영상 제작 규칙 재설계하자 ... 검수해야하는 내용을 처음 영상제작규칙에 추가해서 처음에 잘만들게 해줘 규칙 확인하고 전부 통합해서 수정해줘. 지피티 자동 채팅보내는거 해제 ... 있는거 검수하고 새로운거 만드는것 부터는 이제 내가 하나씩 확인하면서 만들려고",
   "mode": "one-video-autonomous-until-local-final-review",
@@ -25,10 +25,11 @@
   "newWork": "Complete one selected video through internal QA, four outputs, local folder/captioned-video review links and selective Git. Drive only on explicit request. Same reviewed version to private YouTube; no automatic next video.",
   "selectedVideo": "game-math-euler-axis-angle",
   "newProductionAuthorization": {
-    "selectedOn": "2026-10-20T08:56:30.006396+00:00",
-    "fullProductionAuthorized": true,
-    "scope": "game-math-euler-axis-angle V6 article-flow full rebuild through local final review, four outputs and selective Git. No YouTube/Drive/next episode.",
-    "userEvidence": "게임영상 예시는 조금더 짧게 들어가도 좋을꺼같아. 강의에서는 딱 해당 내용을 보여주고 이해하기 위한 정도로만해서. 그리고 새로운 영상규칙도 수정하고 추가했어 강의 다시 제작해서 렌더링해줘~",
+    "selectedOn": "2026-10-20T23:10:01.813022+09:00",
+    "fullProductionAuthorized": false,
+    "scriptRevisionAuthorized": true,
+    "scope": "M04 V7: two-part complete KO narration, game evidence and scene/narration mapping, changed pacing rules, local script review page and selective Git first. No new TTS/full render/platform action in this script-first stage.",
+    "userEvidence": "실제 게임영상이 너무 없어졌고 설명에서 필요한 부분은 게임영상으로 해서 특히 왕눈에서 물체 회전시키는 예시로 보여주면 이해하기 쉬울거같아 또다른게임도 그런거 찾아서 4개이상으로 해주고\n이 대본의 내용을 조금 소설처럼 이해하기 쉽게 앞뒤 흐름이 알맞게 딱딱 이어지도록 대본을 먼저 수정해줘\n그리고 애니메이션 재생하는동안 대본이 멈춰서 오히려 시간이 길어지는거 같아 이 규칙은 제외시키고 다시만들어보자\n내용 자체는 좋아 그리고 영상 반으로 나눠서 2개로 나눠서 만들자",
     "automaticNextVideo": false
   },
   "lectureAudioPolicy": {
@@ -61,7 +62,7 @@
     "previous continue-all requests",
     "thumbnail follow-up next-video instructions"
   ],
-  "runningWorkBoundary": "M04 V6 complete local final review; no platform upload or next video",
+  "runningWorkBoundary": "M04 V7 two-part script-first revision; preserve complete V6 master and prior platform states",
   "preserveExistingYouTubeSchedules": true,
   "preserveUnrelatedResearchAndStaging": true,
   "automations": {
@@ -1366,19 +1367,32 @@
     "articleCoverage": "Read the entire selected article scope. Preserve its teaching logic/order, prerequisites, reasons, examples, intermediate steps, useful repetition, recap and corrections; do not substitute a highlight-only lesson.",
     "mapping": "Extend the existing source-paragraph → script → visual/teachingBeats map with retained/expanded/corrected/omitted-noninstructional reasons; independent spoken phrasing unless supplied wording is explicitly to be transformed verbatim.",
     "technicalCorrections": "Correct errors with source/numeric evidence adjacent to the lesson; do not reproduce known errors for fidelity.",
-    "teachingRhythm": "Explain one concept → progressively show target/action/result → task-sized read/observe time → brief result confirmation → next connected concept.",
+    "teachingRhythm": "Explain the target, change and result while the relevant animation or footage is visible; synchronize narration and visual action on one timeline, confirm the visible result in continuous natural speech, then inherit it in the next connected concept. Animation playback does not require narration to stop.",
     "planFields": [
       "teachingBeats.speech",
       "teachingBeats.visual",
       "teachingBeats.hold",
       "transitionToNext"
     ],
-    "timing": "Record planned and realized timings separately; natural continuous speech and breathing; no rapid formula/code reading, fixed silence after every sentence, blanket playback slowdown or target runtime.",
+    "timing": "Speech and visual cues may overlap. No automatically inserted silent observation slot per beat, sentence or animation. Optional task-justified pauses only, without increasing speech speed, deleting useful teaching depth, blanket playback slowdown or target runtime. Record planned and realized speech/action/pause timings separately.",
     "paceVerification": "Pending until actual audio listening and moving visual timing review; text statistics/ASR alone cannot pass.",
     "preserve": "Approved Qwen voice and unchanged approved PCM/media; no TTS/render/platform actions when user only selected script comparison.",
     "guide": "docs/VIDEO_WORKFLOW.md",
     "audioGuide": "docs/NARRATION_AUDIO_STANDARD.md",
-    "addsApprovalGate": false
+    "addsApprovalGate": false,
+    "revision": "speech-synchronized-v2",
+    "revisedOn": "2026-10-20",
+    "latestUserEvidence": "애니메이션 재생하는동안 대본이 멈춰서 오히려 시간이 길어지는거 같아 이 규칙은 제외시키고 다시만들어보자",
+    "animationRequiresNarrationSilence": false,
+    "defaultNarrationPlacement": "synchronized-with-relevant-visible-action",
+    "holdPolicy": {
+      "required": false,
+      "defaultSeconds": 0,
+      "whenUseful": "Natural sentence breathing, genuinely necessary formula/code reading, or a question with time to think; record the concrete purpose and duration only when used.",
+      "automaticPerBeatSilence": false,
+      "preserveNaturalTtsBreathing": true,
+      "doNotDuplicateExistingSilence": true
+    }
   },
   "lectureGameExamplesPolicy": {
     "id": "lecture-concept-sized-game-examples-v1",
@@ -1396,6 +1410,34 @@
     "changesGameDesignDefaultRatio": false,
     "automaticOtherVideoRevision": false,
     "automaticNextVideo": false,
-    "addsApprovalGate": false
-  }
+    "addsApprovalGate": false,
+    "revision": "game-demonstration-first-v2",
+    "actualGameplayExplainsWhenSuitable": true,
+    "automaticBriefCutCeilingSeconds": null,
+    "automaticReplacementWithOwnDiagrams": false,
+    "rule": "Explain the relevant concept over actually inspected gameplay when the target/action/result are visible. Use diagrams for abstracts/formulas/unobservable internal data; no padding or fixed lecture share.",
+    "selectedRevision": {
+      "project": "game-math-euler-axis-angle",
+      "revision": "story-gameplay-two-part-v7",
+      "minimumMeaningfullyTaughtGames": 4,
+      "recurringExample": "Tears of the Kingdom Ultrahand object rotation",
+      "requestedParts": 2,
+      "stage": "script-first",
+      "newTtsOrRenderStarted": false
+    },
+    "otherLecturesFixedGameMinimum": null
+  },
+  "authorizationHistory": [
+    {
+      "revision": "article-flow-v6",
+      "state": {
+        "selectedOn": "2026-10-20T08:56:30.006396+00:00",
+        "fullProductionAuthorized": true,
+        "scope": "game-math-euler-axis-angle V6 article-flow full rebuild through local final review, four outputs and selective Git. No YouTube/Drive/next episode.",
+        "userEvidence": "게임영상 예시는 조금더 짧게 들어가도 좋을꺼같아. 강의에서는 딱 해당 내용을 보여주고 이해하기 위한 정도로만해서. 그리고 새로운 영상규칙도 수정하고 추가했어 강의 다시 제작해서 렌더링해줘~",
+        "automaticNextVideo": false
+      },
+      "reason": "V6 delivered; user now selected V7 two-part script revision first."
+    }
+  ]
 }
