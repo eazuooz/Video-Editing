@@ -49,7 +49,9 @@ def main():
         d['finalRender']=dict(status='complete-local-final-review-pending',revision='v7-part1-simultaneous-comparison',
             width=1920,height=1080,fps=60,frames=timeline['totalFrames'],durationSeconds=timeline['duration'],
             captionedSha256=master_sha,cleanSha256=clean_sha,completedAt=date,reports=reports,
-            knownIssues=pixels.get('minorVisualFindings',[]),openItems=['현재 전체 영상의 사용자 최종 검수·청취 및 주관적인 속도·발음 확인'],
+            # Keep the exact frame/ASS details in the linked internal review.
+            knownIssues=['게임·분석 구분 문구에 한 프레임의 미세한 전환 오차가 있습니다. 내용 이해에는 영향이 없습니다.']if pixels.get('minorVisualFindings')else[],
+            openItems=['현재 전체 영상의 사용자 최종 검수·청취 및 주관적인 속도·발음 확인'],
             humanWholeListening='pending',humanFinalReview='pending')
         d['audio']['mixStatus']='complete-current-standard-game-audio-no-added-bgm';d['audio']['currentContinuityReview']=rel(a.audio_review);d['audio']['currentFinalAsrReview']=rel(a.asr_review)
         d['membershipOutro']['truncatedHandlesReview']='Preserved original screenshot/identities without retyping; original display truncation retained.'
