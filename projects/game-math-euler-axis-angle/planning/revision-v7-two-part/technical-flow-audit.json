@@ -1,0 +1,1481 @@
+{
+  "schemaVersion": 1,
+  "revision": "v7-two-part-script-first",
+  "auditId": "part02-independent-technical-and-causal-flow-audit",
+  "reviewedAt": "2026-10-20T14:33:50.469Z",
+  "reviewer": "/root/v7_policy_audit",
+  "scope": "Full current Part2 Korean text and all130useful V6scenes22–41 source paragraphs/order. Game-source/pixel audit is separate. This audit produces no TTS/render/GPU/platform/Git or shared metadata changes.",
+  "status": "pass-written-script-technical-structure; actual speech and final moving output pending",
+  "inputs": {
+    "v6": {
+      "file": "projects/game-math-euler-axis-angle/script/revision-v6-article-flow/narration.ko.json",
+      "sha256": "da6f162121e0b34dfbd8fcfe42236dc56783489cac21687aa58bf9c9da639e8a"
+    },
+    "part1": {
+      "file": "projects/game-math-euler-axis-angle/script/revision-v7-two-part/part-01.ko.json",
+      "sha256": "29124ccdcd21c740975b1e05aa30a44c0478181a75dc1f3d0743787a4e120223"
+    },
+    "part2": {
+      "file": "projects/game-math-euler-axis-angle/script/revision-v7-two-part/part-02.ko.json",
+      "sha256": "cebe7de1248414f6979666c4a065eb92116ad5f0f6435b76b38f9c3954bc1477"
+    },
+    "article": {
+      "file": "projects/game-math-euler-axis-angle/production/local/revision-v6-script/article-selected.json",
+      "sha256": "47d90195b60897fa1fa3b7ba235a886dd2c8f43b4eb1801e88aa9864998c7446"
+    },
+    "priorTechnical": {
+      "file": "projects/game-math-euler-axis-angle/planning/revision-v6-article-flow/technical-audit.json",
+      "sha256": "dfbe1a8f06ed3118b8a41afb171640cb6627916d98919a4e0e2eea0cf90dfe43"
+    }
+  },
+  "coverage": {
+    "sourceScenes": 20,
+    "sourceParagraphs": 130,
+    "currentScenesIncludingIntroduction": 21,
+    "currentParagraphsIncludingIntroduction": 133,
+    "addedIntroductionParagraphs": 3,
+    "exactSourceReferenceSequence": true,
+    "missing": [],
+    "unexpected": [],
+    "duplicateSourceRefs": 0,
+    "manualEntireCurrentTextRead": true,
+    "all130UsefulSourceClaimsRetained": true,
+    "confirmedOmittedUsefulClaims": 0
+  },
+  "numericChecks": [
+    {
+      "id": "scalar-lerp",
+      "status": "pass",
+      "evidence": {
+        "startDeg": 10,
+        "endDeg": 30,
+        "t": 0.5,
+        "midDeg": 20
+      }
+    },
+    {
+      "id": "720-to45",
+      "status": "pass",
+      "evidence": {
+        "rawDifferenceDeg": -675,
+        "representativeStart": 0,
+        "shortDifferenceDeg": 45
+      }
+    },
+    {
+      "id": "negative170-to170",
+      "status": "pass",
+      "evidence": {
+        "rawDifference": 340,
+        "wrappedDifference": -20,
+        "midDeg": -180
+      }
+    },
+    {
+      "id": "floor-negative-and-endpoints",
+      "status": "pass",
+      "evidence": {
+        "floorNegativePointOne": -1,
+        "wrap340Deg": -20,
+        "floorRange": "[-180,180); remap-180 to180 for canonical(-180,180]"
+      }
+    },
+    {
+      "id": "canonical-wrap-endpoint-numerics",
+      "status": "pass",
+      "evidence": {
+        "inputsRadians": [
+          -21.991148575128552,
+          -9.42477796076938,
+          -3.141592653589793,
+          0,
+          3.141592653589793,
+          9.42477796076938,
+          21.991148575128552,
+          5.934119456780721
+        ],
+        "outputsRadians": [
+          3.141592653589793,
+          3.141592653589793,
+          3.141592653589793,
+          0,
+          3.141592653589793,
+          3.141592653589793,
+          3.141592653589793,
+          -0.3490658503988655
+        ],
+        "calculation": "independent floor/remap algebra; IEEE-remainder/ties-even contract reviewed separately against existing source proof"
+      }
+    },
+    {
+      "id": "135degree-alias-with-limited-scope",
+      "status": "pass",
+      "evidence": {
+        "endMatrixMaxAbsError": 1.1102230246251565e-16,
+        "halfA": [
+          0,
+          67.5,
+          0
+        ],
+        "halfB": [
+          90,
+          22.5,
+          90
+        ],
+        "halfRelativeAngleDeg": 70.72769332005133,
+        "limitation": "Pitch135 is outside canonical range; not two fully canonical endpoints."
+      }
+    },
+    {
+      "id": "Y90-basis",
+      "status": "pass",
+      "evidence": {
+        "transformedForward": [
+          1,
+          0,
+          6.123233995736766e-17
+        ],
+        "contract": "row object-to-upright Rz(b)Rx(p)Ry(h)"
+      }
+    },
+    {
+      "id": "rotation-vector-recovery",
+      "status": "pass",
+      "evidence": {
+        "vector": [
+          0,
+          1.5707963267948966,
+          0
+        ],
+        "normRadians": 1.5707963267948966,
+        "unitAxis": [
+          0,
+          1,
+          0
+        ],
+        "zeroException": "No division by0"
+      }
+    },
+    {
+      "id": "same-axis-scaling",
+      "status": "pass",
+      "evidence": {
+        "oneThirdDeg": 30,
+        "times2Point65Deg": 238.5,
+        "scope": "same axis only"
+      }
+    },
+    {
+      "id": "sign-and-2pi-counterexample",
+      "status": "pass",
+      "evidence": {
+        "signError": 0,
+        "aliasError": 3.3306690738754696e-16,
+        "norms": [
+          1.5707963267948966,
+          4.71238898038469
+        ],
+        "piOppositeAxisError": 2.4492935982947064e-16,
+        "boundary": "principal0..pi range still needs sign rule atpi; global discontinuity remains"
+      }
+    },
+    {
+      "id": "720-and1080-history",
+      "status": "pass",
+      "evidence": {
+        "quarterSecondAngles": [
+          180,
+          270
+        ],
+        "oneSecondTurns": [
+          2,
+          3
+        ],
+        "b16Parameter": "same progress t, not same angular speed"
+      }
+    },
+    {
+      "id": "finite-composition-not-vector-sum",
+      "status": "pass",
+      "evidence": {
+        "sumVector": [
+          1.5707963267948966,
+          1.5707963267948966,
+          0
+        ],
+        "sumAngleRadians": 2.221441469079183,
+        "piOverRoot2": 2.221441469079183,
+        "sumAngleDeg": 127.27922061357856,
+        "orderedVsSumRelativeDeg": 62.35027113519432,
+        "oppositeOrderRelativeDeg": 119.99999999999999
+      }
+    },
+    {
+      "id": "small-angle-approximation-only",
+      "status": "pass",
+      "evidence": {
+        "eachAngleDeg": 2,
+        "orderedVsSumErrorDeg": 0.034904222322978656,
+        "oppositeOrderErrorDeg": 0.06980608267037244,
+        "exactEquality": false,
+        "toleranceAndTimeStepConditionRetained": true
+      }
+    },
+    {
+      "id": "angular-velocity-common-frame",
+      "status": "pass",
+      "evidence": {
+        "bodyOmega": [
+          0,
+          0,
+          1
+        ],
+        "worldOmega": [
+          1,
+          0,
+          6.123233995736766e-17
+        ],
+        "condition": "relative angular velocities in same motion/instant/common frame"
+      }
+    },
+    {
+      "id": "reverse-quiz",
+      "status": "pass",
+      "evidence": {
+        "startDeg": 170,
+        "endDeg": -170,
+        "rawDifference": -340,
+        "wrappedDifference": 19.99999999999998,
+        "midDeg": 180
+      }
+    },
+    {
+      "id": "ieee-remainder-canonical-endpoints",
+      "status": "pass",
+      "evidence": {
+        "inputs": [
+          -21.991148575128552,
+          -9.42477796076938,
+          -3.141592653589793,
+          -1.5707963267948966,
+          0,
+          1.5707963267948966,
+          3.141592653589793,
+          9.42477796076938,
+          21.991148575128552,
+          5.934119456780721
+        ],
+        "remainderBeforeEndpointFix": [
+          3.141592653589793,
+          3.141592653589793,
+          -3.141592653589793,
+          -1.5707963267948966,
+          0,
+          1.5707963267948966,
+          3.141592653589793,
+          -3.141592653589793,
+          -3.141592653589793,
+          -0.3490658503988655
+        ],
+        "canonicalOutputs": [
+          3.141592653589793,
+          3.141592653589793,
+          3.141592653589793,
+          -1.5707963267948966,
+          0,
+          1.5707963267948966,
+          3.141592653589793,
+          3.141592653589793,
+          3.141592653589793,
+          -0.3490658503988655
+        ],
+        "tiesEvenExample": {
+          "3pi": -3.141592653589793,
+          "7pi": -3.141592653589793
+        },
+        "testMethod": "Python math.remainder IEEE754 nearest/ties-even sanity check; existing std::remainder definition retained from prior source verification."
+      }
+    }
+  ],
+  "conceptualChecks": [
+    {
+      "topic": "Wrap,finite input,remainder and endpoints",
+      "targets": [
+        "v7-b03",
+        "v7-b04",
+        "v7-b05"
+      ],
+      "status": "pass",
+      "basis": "Difference wrapping distinguished from endpoint canonicalization; floor on negative inputs; radians; finite-only input; nearest/ties-even remainder; negative fmod not substituted; canonical(-pi,pi] boundary correction. Wrong source inside-range condition not reenacted."
+    },
+    {
+      "topic": "135-degree alias scope",
+      "targets": [
+        "v7-b06"
+      ],
+      "status": "pass",
+      "basis": "Same endpoint with distinct half-time orientations; first pitch135 is explicitly outside canonical pitch range. Not falsely presented as two fully normalized inputs. Component angular rate distinguished from whole-object angular speed."
+    },
+    {
+      "topic": "Axis-angle and exponential meaning",
+      "targets": [
+        "v7-b09",
+        "v7-b10",
+        "v7-b11",
+        "v7-b12",
+        "v7-b14",
+        "v7-b20"
+      ],
+      "status": "pass",
+      "basis": "Center-fixed proper rotation; freely chosen axis through origin; unit-axis constraint; theta>=0/radian norm; recovery and zero exception; rotation-vector data versus exponential-map operation. No unrestricted derivative-of-rotation-vector equals angular velocity identity."
+    },
+    {
+      "topic": "Aliasing and principal bounds",
+      "targets": [
+        "v7-b15",
+        "v7-b16",
+        "v7-b17"
+      ],
+      "status": "pass",
+      "basis": "Zero and simultaneous sign reversal; periodic aliases; history versus single orientation; norm<2pi uniqueness explicitly rejected; principal0..pi range retains pi sign and global continuity caveats."
+    },
+    {
+      "topic": "Composition,approximation,angular velocity",
+      "targets": [
+        "v7-b18",
+        "v7-b19"
+      ],
+      "status": "pass",
+      "basis": "Finite ordered rotation composition differs from vector sum;127.28degree sum-vector norm checked;2degree example is approximate and tolerance/time-step dependent. Relative angular velocities are summed only for the relevant same motion/instant/common frame."
+    }
+  ],
+  "narrativeFlow": {
+    "status": "pass-on-written-text",
+    "part1ToPart2": "Part1 ends with recorded orientation leaving intermediate motion unresolved; Part2 reuses the sail and fills that question with interpolation.",
+    "orderedChain": [
+      "endpoint versus path",
+      "scalar lerp",
+      "unnecessary720degree history",
+      "canonical endpoints across a seam",
+      "wrap/floor",
+      "radian code with finite-input/endpoint treatment",
+      "remaining3D/gimbal path issues",
+      "global limitation and Euler recap",
+      "free-axis rotation theorem",
+      "unit axis and rotation vector",
+      "recovery/scaling/exponential operation",
+      "zero/sign/periodic aliases",
+      "principal-range limits",
+      "finite composition versus vector sum",
+      "small-change approximation and common-frame angular velocity",
+      "two worked checks and return to the sail"
+    ],
+    "boundaryReview": "The previous result or unresolved need motivates the next tool. Arithmetic,code and authored model remain beside the concept they establish. Game observations do not become unsupported game-engine implementation claims.",
+    "forcedAnimationSilenceRemoved": true,
+    "runtimeOrFasterSpeechRequired": false
+  },
+  "paragraphReadCoverage": [
+    {
+      "targetRef": "v7-b00.L01",
+      "sourceRefs": [],
+      "textSha256": "c17f156b9f5cbf302e7203443ddd71523fbcdab49090cc64f133bd1ec3a3616d",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b00.L02",
+      "sourceRefs": [],
+      "textSha256": "86b10578f58d1c97735619683ff5bc94080c061339d2734a97ebe8462859c05a",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b00.L03",
+      "sourceRefs": [],
+      "textSha256": "6bc9e2c9ef59b73cf8fa76319e5eb5d5121ef23c2476a37d9c45ddadaf454e93",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b01.L01",
+      "sourceRefs": [
+        "v6-22.L01"
+      ],
+      "textSha256": "bd3b629223e28efa992765f8b6b1a0e998519b662e574b9cd56b575ff7dc5a0d",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b01.L02",
+      "sourceRefs": [
+        "v6-22.L02"
+      ],
+      "textSha256": "fd674857537338df3b1aa1c71355da69e7d002490f44de2f9eabb2f46ad53e7f",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b01.L03",
+      "sourceRefs": [
+        "v6-22.L03"
+      ],
+      "textSha256": "3bda7cc5c6365ccb0127f1c9780b08bf5806f8c406050ba6c0862e1c746f4d2a",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b01.L04",
+      "sourceRefs": [
+        "v6-22.L04"
+      ],
+      "textSha256": "2d93e3aec3e937acf9a010d3df249a69cad7b6e9a6f322b632e730cef97fccf3",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b01.L05",
+      "sourceRefs": [
+        "v6-22.L05"
+      ],
+      "textSha256": "16d1587edc9428bf72a7e924ca04454e29d4bc80ad46c19ec97e0a190a27ede0",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b01.L06",
+      "sourceRefs": [
+        "v6-22.L06"
+      ],
+      "textSha256": "edca2c9f84f04ba25fca3c4642ed76e35f5ebdbb86cc2c2325faea6dd3c02721",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b02.L01",
+      "sourceRefs": [
+        "v6-23.L01"
+      ],
+      "textSha256": "73a0940642175243a9e73705654ae4d8e15097858d469060c8160f66fdfec76c",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b02.L02",
+      "sourceRefs": [
+        "v6-23.L02"
+      ],
+      "textSha256": "27ce319c2609063681999aa1117e038022975f1b964d16d9a115480460fbb745",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b02.L03",
+      "sourceRefs": [
+        "v6-23.L03"
+      ],
+      "textSha256": "535d239fc58f72cee80f3e05ba6c5950388e64e68aa50fc574af724df79d9a46",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b02.L04",
+      "sourceRefs": [
+        "v6-23.L04"
+      ],
+      "textSha256": "d8b1d89d8f975487fa22b00ab8bc3c7fd55c0d09ae2f770b2569955632ab4ac3",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b02.L05",
+      "sourceRefs": [
+        "v6-23.L05"
+      ],
+      "textSha256": "d47599ff483a3da683b519c3129a6dbd3a6fc954b666f91e645cb44fc498cc0f",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b02.L06",
+      "sourceRefs": [
+        "v6-23.L06"
+      ],
+      "textSha256": "11a4fddbb292f17fe53212004ad37a96158ceda021490e473b31f9b4fab33187",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b03.L01",
+      "sourceRefs": [
+        "v6-24.L01"
+      ],
+      "textSha256": "f4cb3bf7a7b6569dd8015e3632aefb35f3e0363ad218e465487131ac8a252b76",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b03.L02",
+      "sourceRefs": [
+        "v6-24.L02"
+      ],
+      "textSha256": "e1e04801950cb8f6cc18bbc7e8527b5a80504d5a6aeab85f74be6d01170f0828",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b03.L03",
+      "sourceRefs": [
+        "v6-24.L03"
+      ],
+      "textSha256": "ab139b6a3f44a101a8be4604a3d7bf89316e0ca7c2569dd462244b6aaa296e1b",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b03.L04",
+      "sourceRefs": [
+        "v6-24.L04"
+      ],
+      "textSha256": "36acd17bc6f90850f3863e1ee835401bec3ed2f1d581be421bbd2a44405f8d97",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b03.L05",
+      "sourceRefs": [
+        "v6-24.L05"
+      ],
+      "textSha256": "09dbe5bb93cd609822e4121257a4dc606d1d3bd51994035b99094103a910d3cb",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b03.L06",
+      "sourceRefs": [
+        "v6-24.L06"
+      ],
+      "textSha256": "c52a4b28ad008866bd321a0a784228416e88a056498af680da820449945093e3",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b04.L01",
+      "sourceRefs": [
+        "v6-25.L01"
+      ],
+      "textSha256": "6bf543e177cc6c133dacecccf2f597060fd54aa05058311e99f90d840fb50bfc",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b04.L02",
+      "sourceRefs": [
+        "v6-25.L02"
+      ],
+      "textSha256": "d02f799bb166f24eb73fd2829da69a21feafb90e3316007504f68960e39d6be4",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b04.L03",
+      "sourceRefs": [
+        "v6-25.L03"
+      ],
+      "textSha256": "bcf4540db5578b01bf888a08a7914a1778cdf596aeb7c7199f4c1e87ec1f42fa",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b04.L04",
+      "sourceRefs": [
+        "v6-25.L04"
+      ],
+      "textSha256": "038629764427a5d930f7c278e7c78491253d3c18b0e9b66005118ab0898bdf97",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b04.L05",
+      "sourceRefs": [
+        "v6-25.L05"
+      ],
+      "textSha256": "e5b4bf1e4ac6ec8f9fb48ba8c29d3f6728ccb5293a36739d63423d417ffba926",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b04.L06",
+      "sourceRefs": [
+        "v6-25.L06"
+      ],
+      "textSha256": "4df1c37fd883c8dde1ed95e85215b89affb058233ff39ce0052fd5cbca87a606",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b04.L07",
+      "sourceRefs": [
+        "v6-25.L07"
+      ],
+      "textSha256": "d2a0d106bac7b61414198a45f56abcdcca26655b27e25fb96be8373b63f819dc",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L01",
+      "sourceRefs": [
+        "v6-26.L01"
+      ],
+      "textSha256": "101a72a0d65da2b450a1eb32328e2b9f9c8a1b276151034268e5f09c3aa0d8d0",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L02",
+      "sourceRefs": [
+        "v6-26.L02"
+      ],
+      "textSha256": "7b7d7e14f8d5ecd38c7ae1a79758c3c365ea4e80f1f535018453d5922e716989",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L03",
+      "sourceRefs": [
+        "v6-26.L03"
+      ],
+      "textSha256": "5cc159d6a99de0a1666f193cb990b4853aa14b06088f44430fa08f067e8a79a7",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L04",
+      "sourceRefs": [
+        "v6-26.L04"
+      ],
+      "textSha256": "a1e3b18e1f744bd6878ad502792ab198d09692a62e45f01eae79447e97a262ce",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L05",
+      "sourceRefs": [
+        "v6-26.L05"
+      ],
+      "textSha256": "77c6b0af73ed1129331418566843770426cb5083a0aeb7979ba61582aebbf47b",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L06",
+      "sourceRefs": [
+        "v6-26.L06"
+      ],
+      "textSha256": "c445ab381bba2e22d57ba40c2a172540dca4e3f2b31f2985b39b48106770b9bc",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L07",
+      "sourceRefs": [
+        "v6-26.L07"
+      ],
+      "textSha256": "0591950dfc39a1d208fb969f99fa54b2aa058b9999e0dbf1ed7790bcd1337c21",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L08",
+      "sourceRefs": [
+        "v6-26.L08"
+      ],
+      "textSha256": "eefea1352b16d8745aba3f4cb32057b3f19ef313c9a790a168799bbb32fe285e",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b05.L09",
+      "sourceRefs": [
+        "v6-26.L09"
+      ],
+      "textSha256": "a0005ee885ee976e9fe397fd273f554b9ce8cc1525a6bdd60f429021a7e5c702",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b06.L01",
+      "sourceRefs": [
+        "v6-27.L01"
+      ],
+      "textSha256": "9d94f540585aa8ade18c0175def941cd0691c32f3f50c57babda6dc04f953657",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b06.L02",
+      "sourceRefs": [
+        "v6-27.L02"
+      ],
+      "textSha256": "c0282f34b87b507581f1fbe5490ed9d64f1aea4de4a27b121ca12869c11bbdf3",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b06.L03",
+      "sourceRefs": [
+        "v6-27.L03"
+      ],
+      "textSha256": "1f51ce0ad236eb65bf159b207195ae5e4fd2898a697a64dfaced3cb312dc833c",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b06.L04",
+      "sourceRefs": [
+        "v6-27.L04"
+      ],
+      "textSha256": "7d70bb09e44b03233283542d752a32b3a8ef323a97ba9e7aa7e05df6a400a154",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b06.L05",
+      "sourceRefs": [
+        "v6-27.L05"
+      ],
+      "textSha256": "67db6f42717cf6d5719f7e3706aa1d56d8761395f589a012341f851c76e5ec83",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b06.L06",
+      "sourceRefs": [
+        "v6-27.L06"
+      ],
+      "textSha256": "d9405bde2d1c2643f389fd5bf45f39b392e34839adfead9d5f3f4c8b4e47fd2f",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b06.L07",
+      "sourceRefs": [
+        "v6-27.L07"
+      ],
+      "textSha256": "d26648e6feac1acb0afe9e616f572736feb1884299b99f60dbc69c5775454abb",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b07.L01",
+      "sourceRefs": [
+        "v6-28.L01"
+      ],
+      "textSha256": "c9f41e5aac8d00518690cd05eac2e1a9b5f5813d3f306ead4aee9ffda67a846e",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b07.L02",
+      "sourceRefs": [
+        "v6-28.L02"
+      ],
+      "textSha256": "4729dd8cd49cd86bdfea271a5f106cf66acb610e8255db6192d3f7ed39244bce",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b07.L03",
+      "sourceRefs": [
+        "v6-28.L03"
+      ],
+      "textSha256": "c3a2eb6a5ae813e7574a1c87096c6ee63b25704647fbc36f09e20e554d065e76",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b07.L04",
+      "sourceRefs": [
+        "v6-28.L04"
+      ],
+      "textSha256": "e05178305adadca115c05c40914a43b30bf7ca839e05a95cd7c1a7af6af96f7a",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b07.L05",
+      "sourceRefs": [
+        "v6-28.L05"
+      ],
+      "textSha256": "b01d0ecf33a5a342b3d2798af6e8fd2a09172bb1a1fa33ef5caa16f98cf645c7",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b08.L01",
+      "sourceRefs": [
+        "v6-29.L01"
+      ],
+      "textSha256": "a702932fee6ab50084bae588560bf972504eabb282cf7da5c5867ed79ee26404",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b08.L02",
+      "sourceRefs": [
+        "v6-29.L02"
+      ],
+      "textSha256": "394ba48dd45360a62f0ad1783a9781508cebb0e131242cf5e8c3dde9dcdd4009",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b08.L03",
+      "sourceRefs": [
+        "v6-29.L03"
+      ],
+      "textSha256": "e5e6b580809460211c0532d32e2c47fe6f06df8e0f95ab4ad3cfcc55da3a7483",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b08.L04",
+      "sourceRefs": [
+        "v6-29.L04"
+      ],
+      "textSha256": "e71e37995c66acfad83a6e00e8afaf94690dfeb48b608fa69009146d9cce3c68",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b08.L05",
+      "sourceRefs": [
+        "v6-29.L05"
+      ],
+      "textSha256": "f65d5ae6ece4ad7f8ecffc79c4b3e44d195c145d24150e2fd2249f3a169b2899",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b08.L06",
+      "sourceRefs": [
+        "v6-29.L06"
+      ],
+      "textSha256": "c2f5582d467e3c4348509bce860f7a437b7174fae76f4e1093ab891c712c8fb6",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b08.L07",
+      "sourceRefs": [
+        "v6-29.L07"
+      ],
+      "textSha256": "a7063c5ee1f612ad0614b0225d9c853304b0e0ac3b14d8ae95cb030b515fd091",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b09.L01",
+      "sourceRefs": [
+        "v6-30.L01"
+      ],
+      "textSha256": "46a4a82c549ac75ac0fa8c3bc521fcceca0645a851d09c9c1815363c88f22696",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b09.L02",
+      "sourceRefs": [
+        "v6-30.L02"
+      ],
+      "textSha256": "6f6b9e201f35c72eb04606bb84c981f42d33e479ffc33580511955c269762693",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b09.L03",
+      "sourceRefs": [
+        "v6-30.L03"
+      ],
+      "textSha256": "ffc9b6d037f258dff3ca513901721298349f3f44b35fbeb8a161ac109f875f27",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b09.L04",
+      "sourceRefs": [
+        "v6-30.L04"
+      ],
+      "textSha256": "c583492f3e62c84e52ddedcf7c9e56b29aedc8c45b497d887803f451ab47d0c8",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b09.L05",
+      "sourceRefs": [
+        "v6-30.L05"
+      ],
+      "textSha256": "0bac4a5531ff83f433761af8a56fe0bdbcbc72ec75c6c319c577dd91233b5dcb",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b09.L06",
+      "sourceRefs": [
+        "v6-30.L06"
+      ],
+      "textSha256": "b111012a156478f6b0bbb08fed482c62f00f752b6678c147ecdde61778e92beb",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b10.L01",
+      "sourceRefs": [
+        "v6-31.L01"
+      ],
+      "textSha256": "fc6e0943848f9da2a4f78baf27e72a09c11b477e9ba8c9c9f0e14263e10ce3b9",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b10.L02",
+      "sourceRefs": [
+        "v6-31.L02"
+      ],
+      "textSha256": "e79cda88b2a36535626b99214d82566447f1a7921575f18667dfd6dcf10b1fec",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b10.L03",
+      "sourceRefs": [
+        "v6-31.L03"
+      ],
+      "textSha256": "39e15d1179004fa4f6f624104519bcdf50c9b3b189ab8f4d5c76e6c6bade2888",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b10.L04",
+      "sourceRefs": [
+        "v6-31.L04"
+      ],
+      "textSha256": "b636fb54f699571d3e4a82b58ef15117373e71b0c361a8dec33123923dfded41",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b10.L05",
+      "sourceRefs": [
+        "v6-31.L05"
+      ],
+      "textSha256": "3428d3e65e13e2af184f856d66634ccbe4eee89058217da2bef03c7c6ea8648c",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b10.L06",
+      "sourceRefs": [
+        "v6-31.L06"
+      ],
+      "textSha256": "19178b82f5d39f17137ad5e552e3ac99622b0b88ce8390f89727b514af9213da",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b11.L01",
+      "sourceRefs": [
+        "v6-32.L01"
+      ],
+      "textSha256": "571e23e9cd2169d84fa4a3c7f5c4c0ef2594e8256e79b3116a682e1eccb05701",
+      "manualEntireParagraphRead": true,
+      "lastChangeReview": "Symbol recital removed; e=theta*n meaning and radians/unit-axis conditions unchanged."
+    },
+    {
+      "targetRef": "v7-b11.L02",
+      "sourceRefs": [
+        "v6-32.L02"
+      ],
+      "textSha256": "996c722fef95b0f5b93999595b98ae386dcb2cf8a794497d44c2f25e899bf2e0",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b11.L03",
+      "sourceRefs": [
+        "v6-32.L03"
+      ],
+      "textSha256": "7f29f972209336fc70f74a6148cab9910316a50f8dbaac9b4dda8df463c5923a",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b11.L04",
+      "sourceRefs": [
+        "v6-32.L04"
+      ],
+      "textSha256": "4531c045068af52f98291a356c4bedc4e6ca46e10e8ef9764365c91dbb1b38b1",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b11.L05",
+      "sourceRefs": [
+        "v6-32.L05"
+      ],
+      "textSha256": "5661cf757fdb45d17b2eb5c0f9e32af5d59a20a227b24d4d9fd414d111982239",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b11.L06",
+      "sourceRefs": [
+        "v6-32.L06"
+      ],
+      "textSha256": "ed46ab6b2fabb9261fa20cfe9d356cfd72006bb7679f5b1b792ec9a2826bf49b",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b11.L07",
+      "sourceRefs": [
+        "v6-32.L07"
+      ],
+      "textSha256": "d9d3d58c44fc3e2e212d3cb520c79a2437e1ad943df2367fbe452df9a09163a3",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b12.L01",
+      "sourceRefs": [
+        "v6-33.L01"
+      ],
+      "textSha256": "72932e8d972553be9ac6580f746ea2861a48e324ddb7e1a9d03284e160a749b7",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b12.L02",
+      "sourceRefs": [
+        "v6-33.L02"
+      ],
+      "textSha256": "c5193a49e5f503123b3fa2061e674528cef22cdfb81d31be5726cc2c9c5f481e",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b12.L03",
+      "sourceRefs": [
+        "v6-33.L03"
+      ],
+      "textSha256": "0cb15e053f87ffcbf59a3b9d22bfbe1bfae9126431409edadcbad65a5118cacd",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b12.L04",
+      "sourceRefs": [
+        "v6-33.L04"
+      ],
+      "textSha256": "eef9ae0b7b2f37aed77f4879156f8d6958ba686c4359ed9c32fa66fe0ba5b1fb",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b12.L05",
+      "sourceRefs": [
+        "v6-33.L05"
+      ],
+      "textSha256": "cc207a757c13ba34ffee043c0592b9093b149e74be8bc4f1b0d8506a6f3bfcda",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b12.L06",
+      "sourceRefs": [
+        "v6-33.L06"
+      ],
+      "textSha256": "471f3cca2bf70c3eaa0cdebfac55765c050c2731a6e79ea4711934e505175cc2",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b13.L01",
+      "sourceRefs": [
+        "v6-34.L01"
+      ],
+      "textSha256": "5e74662be1b1b935e86b36929b0f14dd7ea4b77b5e51fdd772a03ec37ff54a11",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b13.L02",
+      "sourceRefs": [
+        "v6-34.L02"
+      ],
+      "textSha256": "46163ff5b164e2db0657e579fe35c93c213565c7130e4f0c2b68be3a655f3c4f",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b13.L03",
+      "sourceRefs": [
+        "v6-34.L03"
+      ],
+      "textSha256": "1e278b12d6caad0afb7795deb8a9c362c9ddd5f1aa76bb3cf04f7a1662e56fe1",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b13.L04",
+      "sourceRefs": [
+        "v6-34.L04"
+      ],
+      "textSha256": "bab00bd1f7702b5031bd2f72ce8011589a58bab713482602d8588983da8bd68c",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b13.L05",
+      "sourceRefs": [
+        "v6-34.L05"
+      ],
+      "textSha256": "770315542d090740082e25d6e571102455c69c9c775b749e977df22e970c437b",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b13.L06",
+      "sourceRefs": [
+        "v6-34.L06"
+      ],
+      "textSha256": "5cbb5c6b1e096053033c222884d2cbda360b5f284bc2374b38eb50e0dce12c1f",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b14.L01",
+      "sourceRefs": [
+        "v6-35.L01"
+      ],
+      "textSha256": "204f62d5d46e1d0717ab57e25eff4e2bf1eca85be3632da29c1f6c959a080c57",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b14.L02",
+      "sourceRefs": [
+        "v6-35.L02"
+      ],
+      "textSha256": "3c923a75af3e78cb07ecd138d403c478d5cadee627d4a0d1ef9c90f4764aa800",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b14.L03",
+      "sourceRefs": [
+        "v6-35.L03"
+      ],
+      "textSha256": "b3d70a2b570d5f6bdf5c3a334f920d615f8d18f074c72781214d54a959eea028",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b14.L04",
+      "sourceRefs": [
+        "v6-35.L04"
+      ],
+      "textSha256": "477245d41f4196dcfc2e8b270edefc8068902c626a5e00babbc4ee3619f5917b",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b14.L05",
+      "sourceRefs": [
+        "v6-35.L05"
+      ],
+      "textSha256": "472095498c15a7a1ee766d83237a4000040b9f2f87879df02aca9265e4595e5d",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b14.L06",
+      "sourceRefs": [
+        "v6-35.L06"
+      ],
+      "textSha256": "47a2bc5a819f66c320a47830ff69673ce7b57634c12e03ef230a2c27c38679b1",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b15.L01",
+      "sourceRefs": [
+        "v6-36.L01"
+      ],
+      "textSha256": "d4b02167c3334339b7030265ba38de8de77fdaa023a65a5c21af2ca76dfcc3c6",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b15.L02",
+      "sourceRefs": [
+        "v6-36.L02"
+      ],
+      "textSha256": "700b76d16bbd7534be3d0702e60504f63f9307251f1e019bba33c2cc6e5f209a",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b15.L03",
+      "sourceRefs": [
+        "v6-36.L03"
+      ],
+      "textSha256": "51ba728da2d221690d330e894e4b0506b6b42b855e9cd265ce2501b7b4fa002f",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b15.L04",
+      "sourceRefs": [
+        "v6-36.L04"
+      ],
+      "textSha256": "15ad935f7c42d0d6d6156c1249181a0b452ff532039f15a7fee07eab364bc857",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b15.L05",
+      "sourceRefs": [
+        "v6-36.L05"
+      ],
+      "textSha256": "24e0286f24948d9de4402d5b87002bd9826850dc73acbbebd81611ac67fbae01",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b15.L06",
+      "sourceRefs": [
+        "v6-36.L06"
+      ],
+      "textSha256": "f28a1f0187f28746c2b281d94b3c678dd91719baf555dcb9690ef774de3cd2a1",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b16.L01",
+      "sourceRefs": [
+        "v6-37.L01"
+      ],
+      "textSha256": "2f1b9050cd591e7cea3d55ef9fee9a438b349f34ea0d48f3db67c1f1850801e9",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b16.L02",
+      "sourceRefs": [
+        "v6-37.L02"
+      ],
+      "textSha256": "12bb84574837245bcdee686516881dbc68b3325a2c00ed6666d337441c48ffe9",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b16.L03",
+      "sourceRefs": [
+        "v6-37.L03"
+      ],
+      "textSha256": "fcfa049738d5a49c3bd0c4a9e93977ea0ae96291b72ebdf0097738df67e8d1f7",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b16.L04",
+      "sourceRefs": [
+        "v6-37.L04"
+      ],
+      "textSha256": "f979f5058849035beb6f0ee2ffc38131b3aad21d7ff22fe5a7dc1ca0b36dbe71",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b16.L05",
+      "sourceRefs": [
+        "v6-37.L05"
+      ],
+      "textSha256": "56f1b80c3225c924b5340b87e76eeade5b80a93e86722fdf36f207507b8efa02",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b16.L06",
+      "sourceRefs": [
+        "v6-37.L06"
+      ],
+      "textSha256": "4873b869448b8bcc68fa0fca9c6e015a5db1b29b8998ec5f0dc79ebcbb0d91bb",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b16.L07",
+      "sourceRefs": [
+        "v6-37.L07"
+      ],
+      "textSha256": "1975988de654b0dc92c0a84d4beef1c1de36242c284bbf87abb41eee61c24142",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b17.L01",
+      "sourceRefs": [
+        "v6-38.L01"
+      ],
+      "textSha256": "373c80f87635d3a9fac0533454f0b3b461cc96dd145a8374d0c0a0d54f03d452",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b17.L02",
+      "sourceRefs": [
+        "v6-38.L02"
+      ],
+      "textSha256": "19daf9b7a16b6ed1b971f0c38972901fa1fb2f1e0699dad45d835ee7fcb940c3",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b17.L03",
+      "sourceRefs": [
+        "v6-38.L03"
+      ],
+      "textSha256": "7f11b2c3fe31a6d39664c121f2fa45b3c8a110520c67901f7eccf50c683ac1d9",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b17.L04",
+      "sourceRefs": [
+        "v6-38.L04"
+      ],
+      "textSha256": "8fa8b438ded4ddadc8578cfa88e6a007c000ab1e727b39756560b956cbcaaa8c",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b17.L05",
+      "sourceRefs": [
+        "v6-38.L05"
+      ],
+      "textSha256": "b71cba6abbd9c881595a9b41170da4f3ce30c92d045c9a5a5a85681f1d389ecf",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b17.L06",
+      "sourceRefs": [
+        "v6-38.L06"
+      ],
+      "textSha256": "bc6bf8ee0a2aca456ecaaf440eb09f4a26e5011a33ff2da2b73984478528b932",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b18.L01",
+      "sourceRefs": [
+        "v6-39.L01"
+      ],
+      "textSha256": "2872c9c620de2cd2d181534ed7041777eb924542345f76a4e7e1c662f8e175b5",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b18.L02",
+      "sourceRefs": [
+        "v6-39.L02"
+      ],
+      "textSha256": "3c9489964ec807c05bb769f3e1aae9d923c4f55516a2dd03d2ebe84efb7f73d5",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b18.L03",
+      "sourceRefs": [
+        "v6-39.L03"
+      ],
+      "textSha256": "86c1be8b4e5a94b2639539fe3aa3c793cb552922f2fdfa0d2317bbd5c0bd54ef",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b18.L04",
+      "sourceRefs": [
+        "v6-39.L04"
+      ],
+      "textSha256": "78c276877959effe3c69153075091ccce7cff9fe826c2e8f5d7efa78ce2e32d3",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b18.L05",
+      "sourceRefs": [
+        "v6-39.L05"
+      ],
+      "textSha256": "d9c820c8c94f2acc0547d38cd0c82f5b3b1d529c149509f89acebf9bf649e8d6",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b18.L06",
+      "sourceRefs": [
+        "v6-39.L06"
+      ],
+      "textSha256": "ccb191476350ce80c673696a6125cc1a5a83ccac63226c42961d2e4b950d94f4",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b18.L07",
+      "sourceRefs": [
+        "v6-39.L07"
+      ],
+      "textSha256": "3475252393fcfb4d445b4e26c16987d8c4d040b5123fcb286291a8019ceaaad3",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b19.L01",
+      "sourceRefs": [
+        "v6-40.L01"
+      ],
+      "textSha256": "aa52acddcb7f142604612d5c9455f46a1f701a779b1a83a882b0622b847cb447",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b19.L02",
+      "sourceRefs": [
+        "v6-40.L02"
+      ],
+      "textSha256": "fa2f93cc759c36b5c1f1e124539fc97af0fdbdd7ab1dc765f8e43b0359b920d0",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b19.L03",
+      "sourceRefs": [
+        "v6-40.L03"
+      ],
+      "textSha256": "c13ff4fa90919e3a6da437b5ee56f98f79d40c98d2ee62f3bf4a771de068c1dc",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b19.L04",
+      "sourceRefs": [
+        "v6-40.L04"
+      ],
+      "textSha256": "98c6707fc609ccd7c8a9ec654e3be039c8f60bc4d3e03b75b68653247022a407",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b19.L05",
+      "sourceRefs": [
+        "v6-40.L05"
+      ],
+      "textSha256": "22ba42c8ed88cc5492b1e0435f03e89bc5de81b98009d938628cf724eaf15d36",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b19.L06",
+      "sourceRefs": [
+        "v6-40.L06"
+      ],
+      "textSha256": "4226b76b400db58167d893ae4e531a4e234d23ac0f0574b8667c2007bb5b0918",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b20.L01",
+      "sourceRefs": [
+        "v6-41.L01"
+      ],
+      "textSha256": "b85539cc1ff601a7e098a13afeea0d4652989bc4a2def62dd2d8849065516874",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b20.L02",
+      "sourceRefs": [
+        "v6-41.L02"
+      ],
+      "textSha256": "1f28e3d650e551b692c0bcbe736e9cbe173529b288afe7e33290f203548889e7",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b20.L03",
+      "sourceRefs": [
+        "v6-41.L03"
+      ],
+      "textSha256": "853c8317ad3559eefe18e8b6d8af8f5fcbf78eed9ef9938167a8751b67fab613",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b20.L04",
+      "sourceRefs": [
+        "v6-41.L04"
+      ],
+      "textSha256": "f94a327a2084de3a10958fd4fc89ef9bc3ea9b10a9fdd56db747648431f7191f",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b20.L05",
+      "sourceRefs": [
+        "v6-41.L05"
+      ],
+      "textSha256": "cb2024a4922519272e00a3e3d22005c7b09317221b6a7239d1790d55e851315e",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b20.L06",
+      "sourceRefs": [
+        "v6-41.L06"
+      ],
+      "textSha256": "f30a3d0dc8af07790f55c89a9140f2419dc045618b07a89d47ad4cd770bc605b",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b20.L07",
+      "sourceRefs": [
+        "v6-41.L07"
+      ],
+      "textSha256": "87a25373665fc67449dd70a8a6920c3dbad7ded8fe1a20fd5b3279786aca2e7d",
+      "manualEntireParagraphRead": true
+    },
+    {
+      "targetRef": "v7-b20.L08",
+      "sourceRefs": [
+        "v6-41.L08"
+      ],
+      "textSha256": "dc1f34a809ab06bad0f92ba62633ccc71929bef74c7dad1e220060791ff768bc",
+      "manualEntireParagraphRead": true
+    }
+  ],
+  "advisoryResolutions": [
+    {
+      "id": "A01",
+      "target": "v7-b00.L01",
+      "status": "verified-corrected",
+      "result": "Greeting uses the comma-linked one-breath form matching Part1."
+    },
+    {
+      "id": "A02",
+      "target": "terminology[].firstScene",
+      "status": "verified-corrected",
+      "result": "Current glossary references use v7-a/v7-b scene IDs; part/introduction/inheritance fields separate Part1 context."
+    },
+    {
+      "id": "A03",
+      "target": "v7-b07.L01",
+      "status": "verified-corrected",
+      "result": "Locally convenient Euler range explicitly qualified as away from the gimbal boundary."
+    },
+    {
+      "id": "A04",
+      "target": "v7-b11.L01",
+      "status": "verified-equivalent-plain-speech",
+      "result": "Removes isolated symbol recital; explains multiplying the unit axis by the radian angle before naming e. Mathematical meaning and previous numerical proof unchanged."
+    }
+  ],
+  "blockingScriptMathErrors": 0,
+  "unresolvedScriptAdvisories": 0,
+  "notVerified": {
+    "humanWholeListening": "pending; no new voice",
+    "actualTtsPronunciationAndBreathing": "pending",
+    "naturalPaceWithActualAnimation": "pending",
+    "renderedAxesProjectionTrackingOcclusion": "pending",
+    "finalMoving1080And375Output": "pending",
+    "encodedCaptionsAndAudioIntegrity": "pending",
+    "userReviewOfExactFinalMaster": "pending"
+  },
+  "factBoundary": "Supplied article and prior verified coordinate/matrix evidence reused by actual file hash. Numerical algebra independently recomputed here. Python math.remainder used only as an IEEE754 sanity check, with prior std::remainder source definition retained. No fresh web permission,game-engine internals or final audiovisual review claimed.",
+  "changesLimitedTo": "projects/game-math-euler-axis-angle/planning/revision-v7-two-part/technical-flow-audit.json",
+  "productionPlanContextOnly": {
+    "file": "projects/game-math-euler-axis-angle/planning/revision-v7-two-part/production-plan.json",
+    "note": "Root-managed assembly/coverage record; not a frozen mathematical input to this audit. Excluded from input hash contract to avoid a cyclic dependency when it references this audit."
+  }
+}
