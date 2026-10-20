@@ -31,6 +31,10 @@ def build():
  ko_file=P/'script/revision-v6-article-flow/narration.ko.json'
  ko=read(ko_file);alignment=read(V/'voice-alignment.json')
  assert alignment['inputs']['koSha256']==sha(ko_file),'Stale measured alignment'
+ current_file=V/'current-pcm.json';current_pcm=read(current_file)
+ assert current_pcm['status']=='current41-ready-for-word-alignment'
+ assert alignment['inputs']['currentPcmMappingSha256']==sha(current_file),'Measured alignment must use the currently selected41 PCM sources'
+ assert alignment['inputs']['timingAliasesSha256']==sha(H/'voice-normalize.py'),'Stale word/character timing normalization'
  extra_file=H/'voice-extra-visuals.json';extra=read(extra_file)['visuals'] if extra_file.exists() else []
  assert alignment['inputs'].get('extraVisualsSha256')==(sha(extra_file) if extra_file.exists() else None)
  breathing_file=H/'voice-breathing-plan.json'
@@ -198,7 +202,7 @@ def build():
   row=dict(id=sid,title=scene['title'],kind='mixed' if any(b['kind']=='actual' for b in beats) else 'explanation',
    sourceKind=info.get('pictureLabel','authored illustrative mathematical explanation'),
    firstFrame=base,pictureFirstState=base,startFrame=current,endFrame=current+frames,frames=frames,seconds=frames/FPS,
-   rawVoiceFile=measured['wav'],rawVoiceSha256=measured['wavSha256'],rawVoiceSamples=n,sampleRate=rate,
+   rawVoiceFile=measured['wav'],rawVoiceSha256=measured['wavSha256'],rawVoiceSamples=n,sampleRate=rate,rawAsrFile=measured['asrFile'],rawAsrSha256=measured['asrSha256'],
    lineStarts=[x['start'] for x in lines],lineEnds=[x['end'] for x in lines],lines=lines,
    voiceSegments=segments,pauseInsertions=events,teachingBeats=beats,auxiliaryVisuals=auxiliaries,
    naturalTailSeconds=tail,nextNaturalHeadSeconds=next_head,addedSceneJoinFrames=join_frames,
@@ -213,7 +217,7 @@ def build():
  return dict(schemaVersion=1,revision='article-flow-v6',slug=P.name,timing='measured-and-asr-aligned',status='measured-source-timing-finite-motion-ready; rendered/moving/audio/human review pending',
   fps=FPS,width=1920,height=1080,introFrames=120,outroFrames=600,bodyFrames=current-120,totalFrames=current+600,seconds=(current+600)/FPS,
   temporalContract=dict(beatTimes='global final-video seconds including2s branding',beatFrames='global final-video frames',lineStarts='scene-relative seconds',lineEnds='scene-relative seconds',lineFrames='scene-relative frames',voiceDestinationSamples='scene-relative at original sampleRate',outroStartFrame=current),
-  inputs=dict(koSha256=sha(ko_file),alignmentSha256=sha(V/'voice-alignment.json'),extraVisualsSha256=sha(extra_file),breathingPlanSha256=sha(breathing_file) if breathing_file.exists() else None,spatialPlanSha256=sha(H/'spatial-plan.json'),screenPlanSha256=sha(H/'screen-plan.json'),footagePlanSha256=sha(H/'footage-plan.json'),nativeGameAssetsSha256=sha(native_file),mathOutputsSha256=sha(O/'math/outputs.json'),implementationSha256=sha(Path(__file__))),
+  inputs=dict(koSha256=sha(ko_file),alignmentSha256=sha(V/'voice-alignment.json'),currentPcmMappingSha256=sha(current_file),timingAliasesSha256=sha(H/'voice-normalize.py'),extraVisualsSha256=sha(extra_file),breathingPlanSha256=sha(breathing_file) if breathing_file.exists() else None,spatialPlanSha256=sha(H/'spatial-plan.json'),screenPlanSha256=sha(H/'screen-plan.json'),footagePlanSha256=sha(H/'footage-plan.json'),nativeGameAssetsSha256=sha(native_file),mathOutputsSha256=sha(O/'math/outputs.json'),implementationSha256=sha(Path(__file__))),
   scenes=scenes,cuts=cuts,sceneCount=41,lineCount=250,beatCount=106,
   plannedHoldFrames=hold_total,primaryHoldFrames=hold_total,auxiliaryHoldFrames=auxiliary_hold_total,totalHoldFrames=hold_total+auxiliary_hold_total,
   primaryFiniteMotionFrames=motion_total,auxiliaryFiniteMotionFrames=auxiliary_motion_total,finiteMotionFrames=motion_total+auxiliary_motion_total,auxiliaryVisuals=auxiliary_all,insertedPauseFrames=insert_total,

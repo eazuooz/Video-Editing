@@ -5,7 +5,7 @@ splits. Every original paragraph is retained; both languages share cue times.
 SRT stays plain text. JSON provides a single semantic emphasis span per cue.
 """
 from pathlib import Path
-import argparse,hashlib,json,math,re,runpy,sys
+import argparse,hashlib,importlib.util,json,math,re,runpy,sys
 from PIL import ImageFont
 R=Path(__file__).resolve().parents[4];P=R/'projects/game-math-euler-axis-angle';H=Path(__file__).parent
 O=P/'production/local/revision-v6';V=O/'voice';C=O/'captions'
@@ -200,14 +200,17 @@ def main():
  old=sys.argv[:];sys.argv=[sys.argv[0],P.name]
  try:helpers=runpy.run_path(str(R/'production/batches/game-math-part2-full-series/align.py'),run_name='v6_caption_math_normalization')
  finally:sys.argv=old
- normalize=helpers['normalized'];scenes={s['id']:s for s in timeline['scenes']};raw={s['id']:s for s in alignment['scenes']}
+ spec=importlib.util.spec_from_file_location('v6_caption_timing_aliases',H/'voice-normalize.py');aliases=importlib.util.module_from_spec(spec);spec.loader.exec_module(aliases)
+ normalize=aliases.install(helpers);assert alignment['inputs']['timingAliasesSha256']==sha(H/'voice-normalize.py')
+ scenes={s['id']:s for s in timeline['scenes']};raw={s['id']:s for s in alignment['scenes']}
  spoken=read(H/'voice-input.ko.json');source_ko=read(P/'script/revision-v6-article-flow/narration.ko.json')
  source={s['id']:s for s in source_ko['scenes']};speech={s['id']:s for s in spoken['scenes']};offsets={};previous=0.;captions=[]
  for row in design['cues']:
   sid,line=row['scene'],row['line'];scene=scenes[sid];data=raw[sid]['lines'][line-1]
   key=(sid,line);offset=offsets.get(key,0);display=row['sourceKo']
   # The only lexical display/speech alias is lowercase e, pronounced 이.
-  # Both are a single normalized character; canonical display is preserved.
+  # The same V6 timing normalizer is used for measured speech and each clause;
+  # canonical display spelling remains independent from its timing length.
   timing_text=display.replace('소문자 e','소문자 이') if sid=='v6-32' and line==1 else display
   count=len(normalize(timing_text));assert count>0
   starts,ends=data['characterStarts'],data['characterEnds'];assert offset+count<=len(starts),(row['id'],offset,count,len(starts))

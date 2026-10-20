@@ -69,21 +69,48 @@ def scene_ranges(timeline):
  for s in timeline['scenes']:
   assert s['startFrame']==cursor and s['endFrame']==s['startFrame']+s['frames']
   rate=s['sampleRate'];assert rate==24000
+  source={'sourceVoiceFile':s['rawVoiceFile'],'sourceVoiceSha256':s['rawVoiceSha256'],'sourceAsrFile':s['rawAsrFile'],'sourceAsrSha256':s['rawAsrSha256']}
   segments=[]
   for part in s['voiceSegments']:
    a,b,d=[part[k] for k in ['sourceSampleStart','sourceSampleEnd','destinationSampleStart']]
-   segments.append({'sourceStartSample':a,'sourceEndSample':b,'sourceSampleRate':rate,'sceneDestinationStartSample24k':d,'globalStartSample48k':s['startFrame']*800+d*2,'globalEndSample48k':s['startFrame']*800+(d+b-a)*2,'globalStartSeconds':s['startFrame']/60+d/rate,'globalEndSeconds':s['startFrame']/60+(d+b-a)/rate})
-  rows.append({'id':s['id'],'startFrame':s['startFrame'],'endFrame':s['endFrame'],'startSample':s['startFrame']*800,'endSample':s['endFrame']*800,'sampleRate':48000,'startSeconds':s['startFrame']/60,'endSeconds':s['endFrame']/60,'sourceVoiceFile':s['rawVoiceFile'],'sourceVoiceSha256':s['rawVoiceSha256'],'sourceVoiceSampleRate':rate,'sourceToGlobalSegments':segments,'lineOffsets':[{'line':x['line'],'sourceRawStart':x['rawStart'],'sourceRawEnd':x['rawEnd'],'sceneStartSeconds':x['start'],'sceneEndSeconds':x['end'],'globalStartSeconds':s['startFrame']/60+x['start'],'globalEndSeconds':s['startFrame']/60+x['end']} for x in s['lines']]})
+   segments.append({**source,'sourceStartSample':a,'sourceEndSample':b,'sourceSampleRate':rate,'sceneDestinationStartSample24k':d,'globalStartSample48k':s['startFrame']*800+d*2,'globalEndSample48k':s['startFrame']*800+(d+b-a)*2,'globalStartSeconds':s['startFrame']/60+d/rate,'globalEndSeconds':s['startFrame']/60+(d+b-a)/rate})
+  rows.append({'id':s['id'],'startFrame':s['startFrame'],'endFrame':s['endFrame'],'startSample':s['startFrame']*800,'endSample':s['endFrame']*800,'sampleRate':48000,'startSeconds':s['startFrame']/60,'endSeconds':s['endFrame']/60,**source,'sourceVoiceSampleRate':rate,'sourceToGlobalSegments':segments,'lineOffsets':[{'line':x['line'],'sourceRawStart':x['rawStart'],'sourceRawEnd':x['rawEnd'],'sceneStartSeconds':x['start'],'sceneEndSeconds':x['end'],'globalStartSeconds':s['startFrame']/60+x['start'],'globalEndSeconds':s['startFrame']/60+x['end']} for x in s['lines']]})
   cursor=s['endFrame']
  assert cursor==timeline['temporalContract']['outroStartFrame']
  assert sum(x['endSample']-x['startSample'] for x in rows)==(cursor-120)*800
  return rows
 
-def decode_once(master,master_sha,timeline,folder):
+def selected_source_identity(timeline):
+ # Bind the actual retake/effective-sidecar selection carried by this
+ # measured timeline. Never infer a source from a legacy chunks/asr path.
+ selection=O/'voice/current-pcm.json'
+ assert selection.exists(),'Current41 PCM/ASR selection must be finalized before encoded-mix review'
+ current=v.read(selection)
+ assert current['status']=='current41-ready-for-word-alignment' and current['sceneCount']==len(current['scenes'])==41
+ assert current['allOriginal41PcmAndAsrPreserved'] is True
+ mapping={x['id']:x for x in current['scenes']}
+ assert len(mapping)==41 and set(mapping)=={s['id'] for s in timeline['scenes']}
+ rows=[]
+ for s in timeline['scenes']:
+  chosen=mapping[s['id']]
+  assert s['rawVoiceFile']==chosen['file'] and s['rawVoiceSha256']==chosen['sha256'],f'Timeline/selection PCM mismatch: {s["id"]}'
+  assert s['rawAsrFile']==chosen['asrFile'] and s['rawAsrSha256']==chosen['asrSha256'],f'Timeline/selection ASR mismatch: {s["id"]}'
+  assert s['sampleRate']==chosen['sampleRate']==24000
+  row={'id':s['id'],'origin':chosen['origin'],'sourceSamples':chosen['samples'],'sourceSampleRate':chosen['sampleRate'],'humanListening':chosen['humanListening']}
+  for kind in ['Voice','Asr']:
+   file=R/s[f'raw{kind}File'];expected=s[f'raw{kind}Sha256']
+   file.resolve().relative_to(R.resolve())
+   assert file.is_file() and v.sha(file)==expected,f'Current selected raw{kind} input changed: {s["id"]}'
+   row[f'raw{kind}File']=rel(file);row[f'raw{kind}Sha256']=expected
+  rows.append(row)
+ assert len(rows)==41 and len({x['id'] for x in rows})==41
+ return {'selectionReceipt':proof(selection),'selectionAuthority':'Each measured timeline scene rawVoiceFile/rawVoiceSha256/rawAsrFile/rawAsrSha256 exactly matches current-pcm file/sha256/asrFile/asrSha256; all actual files hash-verified','scenes':rows}
+
+def decode_once(master,master_sha,timeline,folder,source_identity):
  import numpy as np
  import soundfile as sf
  receipt=folder/'extraction.json';decoded=folder/'decoded-final-48k-stereo.wav'
- inputs={'captionedMasterFile':rel(master),'captionedMasterSha256':master_sha,'timelineSha256':v.sha(H/'timeline.json'),'audioStream':0,'decode':'native48k stereo FLOAT, no gain/filter/trim/padding'}
+ inputs={'captionedMasterFile':rel(master),'captionedMasterSha256':master_sha,'timelineSha256':v.sha(H/'timeline.json'),'currentSourceSelection':source_identity,'audioStream':0,'decode':'native48k stereo FLOAT, no gain/filter/trim/padding'}
  if receipt.exists():
   old=v.read(receipt)
   assert old['inputs']==inputs and (R/old['decodedFile']).exists() and v.sha(R/old['decodedFile'])==old['decodedSha256'],'Different encoded extraction exists; preserve it, do not silently overwrite'
@@ -121,7 +148,8 @@ def prepare(master):
  selected();v.validate();timeline=v.read(H/'timeline.json')
  assert timeline['inputs']['koSha256']==v.sha(P/'script/revision-v6-article-flow/narration.ko.json')
  stat={'bytes':master.stat().st_size,'mtimeNs':master.stat().st_mtime_ns};master_sha=v.sha(master)
- folder=BASE/'masters'/master_sha;extraction=decode_once(master,master_sha,timeline,folder)
+ source_identity=selected_source_identity(timeline)
+ folder=BASE/'masters'/master_sha;extraction=decode_once(master,master_sha,timeline,folder,source_identity)
  assert stat=={'bytes':master.stat().st_size,'mtimeNs':master.stat().st_mtime_ns},'Master changed during preparation'
  identity=model_identity();model_hash=obj_sha(inference_identity(identity));spoken=v.read(H/'voice-input.ko.json');canonical=v.read(P/'script/revision-v6-article-flow/narration.ko.json')
  source={x['id']:x for x in spoken['scenes']};display={x['id']:x for x in canonical['scenes']}
@@ -133,7 +161,7 @@ def prepare(master):
    raw,pcm_hash,asr_hash=asr_array(stream,row);key=obj_sha({'scenePcm48kSha256':pcm_hash,'asrMono16kSha256':asr_hash,'modelConfigurationSha256':model_hash})
    cache=BASE/'asr-cache'/f'{key}.json'
    scene_rows.append({**row,'encodedScenePcm48kSha256':pcm_hash,'asrMono16kSha256':asr_hash,'asrSamples':len(raw),'asrSampleRate':16000,'asrDurationSeconds':len(raw)/16000,'cacheFile':rel(cache),'cacheKey':key,'expectedSpoken':' '.join(source[row['id']]['lines']),'expectedCanonicalNarration':' '.join(display[row['id']]['lines']),'expectedSpokenParagraphs':source[row['id']]['lines'],'expectedCanonicalParagraphs':display[row['id']]['lines']})
- inputs={'master':{**proof(master),**stat},'timeline':proof(H/'timeline.json'),'extraction':proof(folder/'extraction.json'),'spokenInput':proof(H/'voice-input.ko.json'),'canonicalNarration':proof(P/'script/revision-v6-article-flow/narration.ko.json'),'finalMixReceipt':proof(O/'audio-build.json'),'voiceRuntime':proof(H/'voice-render.py'),'approvedSourceAsrRuntime':proof(H/'voice-review.py'),'implementation':proof(Path(__file__))}
+ inputs={'master':{**proof(master),**stat},'timeline':proof(H/'timeline.json'),'currentSourceSelection':source_identity,'extraction':proof(folder/'extraction.json'),'spokenInput':proof(H/'voice-input.ko.json'),'canonicalNarration':proof(P/'script/revision-v6-article-flow/narration.ko.json'),'finalMixReceipt':proof(O/'audio-build.json'),'voiceRuntime':proof(H/'voice-render.py'),'approvedSourceAsrRuntime':proof(H/'voice-review.py'),'implementation':proof(Path(__file__))}
  data={'schemaVersion':1,'revision':'article-flow-v6','inputs':inputs,'modelIdentity':identity,'modelConfigurationSha256':model_hash,'recognitionCacheIdentity':inference_identity(identity),'memorySafety':{'allocatorCapMiB':ASR_CAP_MIB,'minimumFreeBeforeLoadMiB':ASR_MIN_FREE_MIB,'clearOnlyOwnUnusedCudaCacheAfterNewSuccessfulScene':True,'cachedSceneLoadsModelOrClearsCache':False,'partOfRecognitionCacheKey':False},'extractionFile':rel(folder/'extraction.json'),'decodedFile':extraction['decodedFile'],'decodedSha256':extraction['decodedSha256'],'decodedPcmSha256':extraction['decodedPcmSha256'],'sceneCount':41,'scenes':scene_rows,'expectedParagraphCount':sum(len(x['expectedSpokenParagraphs']) for x in scene_rows),'bodyCoverage':'Every main-body sample from original2s branding end through the exact membership outro start, scene ranges contiguous and nonoverlapping','levelReference':{'narrationStem':mix['narrationStem'],'gameStem':mix['gameStem'],'losslessMix':mix['audioMix'],'encodedAac':mix['encodedAudio'],'constantProgramGainDb':mix['constantProgramGainDb'],'referenceReceiptSha256':v.sha(O/'audio-build.json'),'actualGameFrames':sum(c['frames'] for c in timeline['cuts']),'separatelyAddedBgm':False,'actualEncodedVsReferenceLevelComparison':'pending inventory CPU review using this same decoded48k WAV'},'sourcePcmAsrRepeated':False,'humanWholeListening':'pending','directFullTextReview':'pending','automaticSpeechPass':False}
  assert data['expectedParagraphCount']==250 and data['levelReference']['actualGameFrames']==1074
  path=folder/'preparation.json';v.save(path,data);return path,data
@@ -247,10 +275,12 @@ def self_test():
  scenes=[]
  for i in range(41):
   start=120+i*6000
-  scenes.append({'id':f'v6-{i+1:02}','startFrame':start,'endFrame':start+6000,'frames':6000,'sampleRate':24000,'rawVoiceFile':'no-file-opened','rawVoiceSha256':'0'*64,'voiceSegments':[{'sourceSampleStart':0,'sourceSampleEnd':24000,'destinationSampleStart':1200}],'lines':[{'line':1,'rawStart':0,'rawEnd':1,'start':.05,'end':1.05}]})
+  scenes.append({'id':f'v6-{i+1:02}','startFrame':start,'endFrame':start+6000,'frames':6000,'sampleRate':24000,'rawVoiceFile':'no-file-opened','rawVoiceSha256':'0'*64,'rawAsrFile':'no-asr-file-opened','rawAsrSha256':'1'*64,'voiceSegments':[{'sourceSampleStart':0,'sourceSampleEnd':24000,'destinationSampleStart':1200}],'lines':[{'line':1,'rawStart':0,'rawEnd':1,'start':.05,'end':1.05}]})
  synthetic={'revision':'article-flow-v6','slug':P.name,'fps':60,'introFrames':120,'outroFrames':600,'sceneCount':41,'lineCount':250,'scenes':scenes,'temporalContract':{'outroStartFrame':246120}}
  rows=scene_ranges(synthetic);assert len(rows)==41 and rows[0]['startSample']==96000 and rows[-1]['endSample']==246120*800
  assert rows[0]['sourceToGlobalSegments'][0]['globalStartSample48k']==98400
+ assert rows[0]['sourceAsrFile']=='no-asr-file-opened' and rows[0]['sourceAsrSha256']=='1'*64
+ assert rows[0]['sourceToGlobalSegments'][0]['sourceAsrSha256']=='1'*64
  scenes[2]['startFrame']+=1
  try:scene_ranges(synthetic)
  except AssertionError:pass

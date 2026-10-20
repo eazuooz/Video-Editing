@@ -40,16 +40,20 @@ def image_out(path,source,bg=None,dim=1,game=False,answer=None):
   for i,text in enumerate(answer):dr.text((240,610+i*100),text,font=font,fill='#a4c6a0',stroke_width=1)
  path.parent.mkdir(exist_ok=True,parents=True);im.convert('RGB').save(path);save(receipt,sig);return rel(path)
 def recap_grid(source):
- path=E/'states/rotation-recap-grid.png';source=fpath(source);sig={'sourceSha256':sha(source),'authoringSha256':sha(Path(__file__))};receipt=path.with_suffix('.json')
+ path=E/'states/rotation-recap-grid.png';pose_source=fpath(source);source=O/'spatial-recap/summary-y90-neutral.png'
+ assert source.exists(),'Capture the same final Y90 pose without guides before building the recap'
+ sig={'sourceSha256':sha(source),'auxiliaryPoseSha256':sha(pose_source),'authoringSha256':sha(Path(__file__))};receipt=path.with_suffix('.json')
  if path.exists() and receipt.exists() and read(receipt)==sig:return rel(path)
  im=Image.new('RGB',(1920,1080),'#080b0d');draw=ImageDraw.Draw(im);font=lambda n,b=False:ImageFont.truetype(BOLD if b else FONT,n)
  draw.text((110,212),'같은 자세를 서로 다르게 기록',font=font(56,True),fill='#e8cf83')
  # Identical actual Unity frame/camera in each column; no second 3D implementation.
- model=Image.open(source).convert('RGB').crop((220,210,1160,850));model.thumbnail((530,360),Image.Resampling.LANCZOS)
+ model=Image.open(source).convert('RGB').crop((340,270,990,650));model.thumbnail((530,360),Image.Resampling.LANCZOS)
  cols=[('오일러 각',['(h,p,b)=(90°,0°,0°)','물체축 Y-X-Z']),('축·각',['n=(0,1,0)','θ=90° = π/2 rad']),('회전벡터',['e=(0,π/2,0)','축 방향 · 길이 π/2 rad'])]
  for i,(title,rows) in enumerate(cols):
   x=110+i*580;draw.text((x,300),title,font=font(44,True),fill='#e8cf83');im.paste(model,(x+(540-model.width)//2,363));draw.line((x,720,x+530,720),fill='#6b7280',width=2)
-  for j,text in enumerate(rows):draw.text((x,740+j*56),text,font=font(34),fill='#73c7c2' if j==0 else '#f5f5f5')
+  for j,text in enumerate(rows):
+   assert font(40).getlength(text)<=530,'Recap values must fit without shrinking'
+   draw.text((x,740+j*56),text,font=font(40),fill='#73c7c2' if j==0 else '#f5f5f5')
  path.parent.mkdir(parents=True,exist_ok=True);im.save(path);save(receipt,sig);return rel(path)
 def load_assets():
  math_assets={x['id']:x for x in read(O/'math/outputs.json')['outputs']}
@@ -68,7 +72,7 @@ def load_assets():
   numbers=readouts[row['id']];row.update({k:numbers[k] for k in ['assFile','firstDisplay','lastDisplay']})
  for key,row in games.items():
   finite=finite_games[row['id']];row['clipFile']=finite['videoFile'];assert sha(R/row['clipFile'])==finite['videoSha256'],'Native game cut changed'
-  row.update({k:v for k,v in guides.get(key,{}).items() if k in ['firstDisplay','lastDisplay']})
+  row.update({k:v for k,v in guides.get(key,{}).items() if k in ['firstDisplay','lastDisplay','assFile']})
   assert(R/row['clipFile']).exists(),('Missing actual finite game cut',key,row['clipFile'])
   row['durationFrames']=row['frames'];row['renderer']='independent-gameplay'
  assets={**spatial,**math_assets,**games};assert len(assets)==106 and set(assets)==set(screens),(len(assets),set(screens)-set(assets))
@@ -114,7 +118,11 @@ def plan_edit():
   assert all(a['endFrame']==b['startFrame'] for a,b in zip(phases,phases[1:])),scene['id']
   scenes.append(dict(id=scene['id'],startFrame=start,frames=scene['frames'],phases=phases,firstFrame=phases[0]['file'],lastFrame=last,previousFrame=previous))
   previous=last;previous_kind=phases[-1]['sourceKind'];previous_game=phases[-1].get('gameSceneId')
- out={'timelineSha256':sha(H/'timeline.json'),'screenPlanSha256':sha(H/'screen-plan.json'),'sceneCount':len(scenes),'scenes':scenes,'inputAssets':{k:{'clip':v['clipFile'],'sha256':sha(R/v['clipFile'])} for k,v in {**assets,**auxiliary}.items()},'actualFrames':sum(x['frames'] for s in scenes for x in s['phases'] if x['kind']=='motion' and x['sourceKind']=='actual'),'ratioEnforced':False}
+ source_files={base,O/'spatial-recap/summary-y90-neutral.png'}
+ for row in {**assets,**auxiliary}.values():
+  for key in ['clipFile','firstFrame','lastFrame','firstDisplay','lastDisplay','assFile']:
+   if row.get(key):source_files.add(fpath(row[key]))
+ out={'timelineSha256':sha(H/'timeline.json'),'screenPlanSha256':sha(H/'screen-plan.json'),'sceneCount':len(scenes),'scenes':scenes,'inputAssets':{k:{'clip':v['clipFile'],'sha256':sha(R/v['clipFile'])} for k,v in {**assets,**auxiliary}.items()},'sourceAssetFiles':{rel(path):sha(path) for path in sorted(source_files)},'actualFrames':sum(x['frames'] for s in scenes for x in s['phases'] if x['kind']=='motion' and x['sourceKind']=='actual'),'ratioEnforced':False}
  save(E/'scene-plan.json',out);return out
 def stamp(seconds):
  cs=math.floor(seconds*100+1e-7);h,cs=divmod(cs,360000);m,cs=divmod(cs,6000);s,cs=divmod(cs,100);return f'{h}:{m:02d}:{s:02d}.{cs:02d}'
@@ -150,24 +158,26 @@ def ui_ass(scene,screen):
    out+=ass_event(a,b,r'{\an7\pos(18,48)\fs30\c&H0083CFE8&}'+game)
    out+=ass_event(a,b,r'{\an7\pos(1714,48)\fs28\c&H00B8B8B8&}실제 게임\N녹화'+(r'\N정지 관찰' if kind=='actual-still' else ''))
   else:
-   boxh=120 if definition else 112
+   compact_definition=definition and scene['id'] in ['v6-07','v6-13']
+   boxh=120 if definition and not compact_definition else 78
    heading_width=ImageFont.truetype(BOLD,46).getlength(term['term'])
    english_width=ImageFont.truetype(FONT,30).getlength(term['en'])
    meaning_width=ImageFont.truetype(FONT,32).getlength(term['meaning'])
-   right=math.ceil(100+max(heading_width+24+english_width,meaning_width)+30) if definition else 1170
-   assert right<1400,'Definition must remain clear of the current-picture label'
+   meaning_x=100+heading_width+24+english_width+36
+   right=math.ceil(meaning_x+meaning_width+30) if compact_definition else math.ceil(100+max(heading_width+24+english_width,meaning_width)+30) if definition else math.ceil(100+heading_width+30)
+   assert right<(1520 if compact_definition else 1400),'Definition must remain clear of the current-picture label'
    out+=ass_event(a,b,r'{\an7\pos(0,0)\p1\c&H00151210&\alpha&H15&}'+f'm 80 34 l {right} 34 {right} {34+boxh} 80 {34+boxh}'+r'{\p0}',2)
    if definition:
     out+=ass_event(a,b,r'{\an7\pos(100,44)\fs46\b1\c&H0083CFE8&}'+term['term'])
     out+=ass_event(a,b,r'{\an7\pos('+f'{100+heading_width+24:.2f}'+r',57)\fs30\c&H00B8B8B8&}'+term['en'])
-    out+=ass_event(a,b,r'{\an7\pos(100,109)\fs32\c&H00F5F5F5&}'+term['meaning'])
+    out+=ass_event(a,b,r'{\an7\pos('+(f'{meaning_x:.2f},55' if compact_definition else '100,109')+r')\fs32\c&H00F5F5F5&}'+term['meaning'])
    else:
     out+=ass_event(a,b,r'{\an7\pos(100,44)\fs46\b1\c&H0083CFE8&}'+term['term'])
-    out+=ass_event(a,b,r'{\an7\pos(100,103)\fs28\c&H00B8B8B8&}'+pic)
    out+=ass_event(a,b,r'{\an9\pos(1824,48)\fs30\c&H00B8B8B8&}현재 화면\N'+pic)
  path=E/(scene['id']+'.ui.ass');path.write_text(out,encoding='utf8');return path
 def render_scenes(selected_scenes=None):
  selected();plan=read(E/'scene-plan.json');assert plan['timelineSha256']==sha(H/'timeline.json') and plan['screenPlanSha256']==sha(H/'screen-plan.json')
+ for file,expected in plan['sourceAssetFiles'].items():assert sha(R/file)==expected,('Source asset changed after planning; rebuild the plan',file)
  for key,row in plan['inputAssets'].items():assert sha(R/row['clip'])==row['sha256'],('Finite asset changed; rebuild current edit plan',key)
  screens={s['id']:s for s in read(H/'screen-plan.json')['scenes']};cap=O/'captions.ko.ass';assert cap.exists()
  for scene in plan['scenes']:
@@ -201,9 +211,9 @@ def render_scenes(selected_scenes=None):
   # Blend the first12 frames into the preceding verified state without removing time.
   args+=['-loop','1','-framerate','1','-t','2','-i',str(R/scene['previousFrame'])]
   graph.append(f'[{idx}:v]fps=60,trim=end_frame={scene["frames"]},settb=1/60,setpts=N,format=yuv420p[previous]')
-  graph.append("[body][previous]blend=all_expr='A*min(N/12,1)+B*(1-min(N/12,1))':shortest=0:repeatlast=1[continuity]")
+  graph.append("[body][previous]blend=all_expr='A*min(N/12,1)+B*(1-min(N/12,1))':enable='lt(n,12)':shortest=0:repeatlast=1[continuity]")
   graph.append(f'[continuity]settb=1/60,setpts=N+{scene["startFrame"]},ass={rel(ui)},split=2[cleanin][capin]');graph.append('[cleanin]setpts=PTS-STARTPTS[clean]');graph.append(f'[capin]ass={rel(cap)},setpts=PTS-STARTPTS[captioned]')
-  script=E/(sid+'.ffgraph');script.write_text(';\n'.join(graph),encoding='utf8');args+=['-filter_complex_script',str(script)]
+  script=E/(sid+'.ffgraph');script.write_text(';\n'.join(graph),encoding='utf8');args+=['-/filter_complex',str(script)]
   for kind,path in [('clean',clean),('captioned',captioned)]:args+=['-map',f'[{kind}]','-an','-frames:v',str(scene['frames']),'-r','60','-fps_mode','cfr','-enc_time_base','1:60',*ENC,str(path)]
   print('Render complete scene',sid,scene['frames'],'frames',flush=True);run(args,sid+'-encode')
   for path in [clean,captioned]:check(path,scene['frames'])

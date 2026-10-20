@@ -84,6 +84,10 @@ def save(p, d):
 def vec(v): return [float(v.get(k, 0)) for k in ['x', 'y', 'z']]
 @lru_cache(maxsize=128)
 def getfont(path, size): return ImageFont.truetype(str(path),size)
+def render_text(text):
+    # The actual Malgun font cmap has no U+2212/U+2016 glyph. Keep mathematical
+    # minus/norm meaning in the same supported notation in Pillow and ASS.
+    return text.replace('\u2212','-').replace('\u2016','||').replace('p\u224890\u00b0','p=90\u00b0 부근').replace('\u2248','약 ')
 def norm(v): return math.sqrt(sum(x*x for x in v))
 def matrix(p, t): return MATH['program'](p, t)
 def flat(m): return [v for row in m for v in row]
@@ -221,6 +225,8 @@ def rows(shot, state, i):
     if not pair:
         heading = '입력과 결과를 구별해서 보기'
         extra = '기수 방향 = '+tup(s['nose'],2)+' (직립 기준)'
+        if shot['model']=='top':
+            extra='자전축 +Y 방향 = '+tup(s['matrix'][1],2)+' (직립 기준)'
         if key=='v6-40.B03':
             heading='해설용 속도 벡터의 좌표 변환'
             extra='이 예에서는 세계 기준 방향=직립 방향'
@@ -240,6 +246,7 @@ def layout(shot, state):
             positions=[(1120,309),(1120,385),(1120,477),(1120,590),(1120,642)]
         text_rows=[]
         for (text,size,color,bold),pos in zip(rows(shot,state,i),positions):
+            text=render_text(text)
             maxwidth=box[2]-pos[0]-18
             fontfile=BOLD_PATH if bold else FONT_PATH
             font=getfont(fontfile,size)

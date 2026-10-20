@@ -71,7 +71,7 @@ python projects/game-math-euler-axis-angle/production/revision-v6/spatial-captur
 python projects/game-math-euler-axis-angle/production/revision-v6/spatial-sync.py
 ```
 
-The one sample job saves all 25 spatial `.unity` scenes and the shared testbed,
+The one sample job saves all 26 spatial `.unity` scenes and the shared testbed,
 captures `v6-04.B01`, exits its own Editor normally and releases only its own
 GPU lease. It requires at least 4096 MiB free, no visible Python GPU owner and
 no other lease. No main or foreign Editor is closed. It records only its own
@@ -79,11 +79,28 @@ PID/creation time/project, plus WDDM per-process memory when available; no token
 arguments are logged.
 
 Inspect current native/mobile sample and actual caption clearance before full
-capture. Full capture needs the next explicit handoff and measured timeline:
+capture. Full capture needs the next explicit GPU handoff. With a measured
+timeline available, use:
 
 ```text
 python projects/game-math-euler-axis-angle/production/revision-v6/spatial-capture.py --timeline projects/game-math-euler-axis-angle/production/revision-v6/timeline.json --run
 ```
+
+When the parent explicitly authorizes the existing fixed finite budgets before
+global speech timing is ready, use the separate mode:
+
+```text
+python projects/game-math-euler-axis-angle/production/revision-v6/spatial-capture.py --plan-durations
+python projects/game-math-euler-axis-angle/production/revision-v6/spatial-capture.py --plan-durations --run
+```
+
+The first command only prepares a job. This mode reads no speech timeline and
+does not create one. It checks all 48 primary clips total 19,020 frames and the
+auxiliary clip has 180 frames, cross-checking each budget against the shot
+catalog. The receipt says `fixed-plan-durations`, binds both plan/catalog
+hashes and leaves `timelineSha256` null. The later compositor must still check
+each measured visual interval equals its captured clip's exact frame count;
+this mode does not authorize changing speech timing or silently stretching clips.
 
 No rebake is required if source geometry/profile is unchanged. Saved source
 sync changes only V6 copied materials to installed URP shader GUIDs. Actual
