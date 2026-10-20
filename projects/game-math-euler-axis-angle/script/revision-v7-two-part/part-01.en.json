@@ -1,0 +1,1987 @@
+{
+  "title": "Why Does Rotation Order Change the Result? — 3D Rotation Part1",
+  "revision": "v7-two-part-script-first",
+  "part": 1,
+  "status": "complete-korean-script; TTS/render not started; human pace/listening pending",
+  "source": {
+    "title": "🧭 3차원 회전(3D Rotations)",
+    "url": "https://app.notion.com/p/3e10b1ffa61e81d289e1da0dd7584a13?pvs=204",
+    "coveredArticleLines": [
+      1,
+      82
+    ],
+    "coveredLearningUnits": [
+      "U01",
+      "U02",
+      "U03",
+      "U04",
+      "U05",
+      "U06",
+      "U07",
+      "U08",
+      "U09",
+      "U10",
+      "U11",
+      "U12",
+      "U13",
+      "U14",
+      "U15",
+      "U16",
+      "U17",
+      "U18",
+      "U19",
+      "U20",
+      "U21",
+      "U22",
+      "U23"
+    ],
+    "retainedV6Scenes": [
+      "v6-01",
+      "v6-02",
+      "v6-03",
+      "v6-04",
+      "v6-05",
+      "v6-06",
+      "v6-07",
+      "v6-08",
+      "v6-09",
+      "v6-10",
+      "v6-11",
+      "v6-12",
+      "v6-13",
+      "v6-14",
+      "v6-15",
+      "v6-16",
+      "v6-17",
+      "v6-18",
+      "v6-19",
+      "v6-20",
+      "v6-21"
+    ],
+    "retainedV6Paragraphs": 120,
+    "treatment": "All useful prerequisite, reason, example, numerical step, qualification and correction retained in source order; independently rewritten spoken Korean. Additional observed-game explanation is attached beside relevant passages. V6 frozen plans/audio/outputs unchanged."
+  },
+  "speechContract": {
+    "policyId": "article-faithful-teaching-pace-v1",
+    "policyRevision": "speech-synchronized-v2",
+    "coordinateConvention": "left-handed, +X right/+Y up/+Z forward; positive left-hand rotations; intrinsic body Y-X-Z heading/pitch/bank; equivalent fixed Z-X-Y; row vectors; object-to-upright R=Rz(b)Rx(p)Ry(h)",
+    "pace": "말하는 동안 실제 동작 또는 대응 모형이 변한다. 대상·변화·결과를 같은 시간축으로 연결한다. 재생을 위한 강제 침묵/관찰 후 별도 설명 슬롯은 없다. 자연 호흡·불가피한 읽기·질문만 목적에 따라 선택. 말속도 증가나 유용 깊이 삭제로 길이를 줄이지 않는다.",
+    "timing": "No target runtime and no frozen scene/paragraph timings. Audio and moving-visual pace unverified until actually produced and reviewed.",
+    "audio": "No new TTS/render in this script-first work. Approved Qwen reference and previous PCM preserved; future selected lecture removes added BGM only, standard original game audio/ducking remains.",
+    "branding": "Original2-second branding precedes narration; greeting is one continuous breath. Original10-second member identity remains at final production."
+  },
+  "gameEvidence": [
+    {
+      "file": "projects/game-math-euler-axis-angle/planning/revision-v7-two-part/game-evidence-totk.json",
+      "sha256": "7731e9d7c9187a50d291b480d4c16144178befa46c08f8c6ec9e22cf1685ae67"
+    },
+    {
+      "file": "projects/game-math-euler-axis-angle/planning/revision-v7-two-part/game-evidence-other.json",
+      "sha256": "a04da8bc1bcfcccb805a798a17b6b110ef9f5d84a7dac70d06bd9ce072eada84"
+    }
+  ],
+  "claimBoundaries": [
+    "Actual games show visible object/body actions and editorial guides, not verified internal Euler order, handedness, matrices, gimbal-lock diagnosis or measured world angles.",
+    "Exact signed angles, fixed centers, row-vector calculations and whole-rigid-body comparisons are demonstrated only in controlled authored models.",
+    "The loose horizontal logs and the separate mast-and-sail assembly remain different objects.",
+    "Animation and narration overlap by default; no game quota, padded loops, forced slowdowns or fixed silence.",
+    "Superflight recorder reuse evidence is present but commercial/publisher scope remains as limited in game-evidence-other.json; no claim of completed legal clearance."
+  ],
+  "terminology": [
+    {
+      "ko": "자세",
+      "en": "Orientation",
+      "firstScene": "v7-a02",
+      "displayMeaning": "앞·위·옆 방향까지 정해진 상태; 위치와 구별"
+    },
+    {
+      "ko": "직립 공간",
+      "en": "Upright Space",
+      "firstScene": "v7-a02",
+      "displayMeaning": "물체와 원점 공유, 축은 세계 기준에 평행; 이 수업의 좌표계 용어"
+    },
+    {
+      "ko": "항등 자세",
+      "en": "Identity Orientation",
+      "firstScene": "v7-a02",
+      "displayMeaning": "물체 축과 직립 축이 일치하는 기준 자세"
+    },
+    {
+      "ko": "오일러 각",
+      "en": "Euler Angles",
+      "firstScene": "v7-a03",
+      "displayMeaning": "정해진 축·순서의 세 회전으로 자세 표현"
+    },
+    {
+      "ko": "헤딩",
+      "en": "Heading (h)",
+      "firstScene": "v7-a04",
+      "displayMeaning": "첫 번째 수직Y 회전"
+    },
+    {
+      "ko": "피치",
+      "en": "Pitch (p)",
+      "firstScene": "v7-a05",
+      "displayMeaning": "헤딩 뒤 물체X 회전; 이번 양의 규약에서 기수 숙임"
+    },
+    {
+      "ko": "뱅크",
+      "en": "Bank (b)",
+      "firstScene": "v7-a06",
+      "displayMeaning": "헤딩·피치 뒤 물체Z 회전"
+    },
+    {
+      "ko": "내재적 회전",
+      "en": "Intrinsic Rotation",
+      "firstScene": "v7-a10",
+      "displayMeaning": "움직이는 물체 축을 기준으로 회전"
+    },
+    {
+      "ko": "외재적 회전",
+      "en": "Extrinsic Rotation",
+      "firstScene": "v7-a10",
+      "displayMeaning": "고정된 기준 축으로 회전"
+    },
+    {
+      "ko": "고유 오일러 각",
+      "en": "Proper Euler Angles",
+      "firstScene": "v7-a13",
+      "displayMeaning": "첫째·셋째 기본 축이 같은 규약"
+    },
+    {
+      "ko": "테이트–브라이언 각",
+      "en": "Tait–Bryan Angles",
+      "firstScene": "v7-a13",
+      "displayMeaning": "서로 다른 세 기본 축을 사용하는 규약"
+    },
+    {
+      "ko": "양자화",
+      "en": "Quantization",
+      "firstScene": "v7-a16",
+      "displayMeaning": "연속 값들을 정해진 간격의 대표값으로 저장"
+    },
+    {
+      "ko": "중복 표현",
+      "en": "Aliasing",
+      "firstScene": "v7-a18",
+      "displayMeaning": "다른 숫자 묶음이 같은 자세를 나타냄"
+    },
+    {
+      "ko": "짐벌 락",
+      "en": "Gimbal Lock",
+      "firstScene": "v7-a20",
+      "displayMeaning": "특정 자세에서 독립적 매개변수 조절 방향이 겹침"
+    }
+  ],
+  "pronunciationAliases": {
+    "purpose": "Future TTS aliases only; canonical display spelling stays unchanged. Actual generated pronunciation not reviewed.",
+    "e": "이",
+    "n": "엔",
+    "θ": "세타",
+    "ω": "오메가",
+    "π": "파이",
+    "X": "엑스",
+    "Y": "와이",
+    "Z": "제트",
+    "마리오 카트 8 디럭스": "마리오 카트 에이트 디럭스"
+  },
+  "scenes": [
+    {
+      "id": "v7-a01",
+      "title": "누운 돛 하나에서 시작하는 회전 이야기",
+      "articleSection": "overview",
+      "sourceSceneId": "v6-01",
+      "lines": [
+        "Hello, this is Yamyam Coding.",
+        "With the sail we want to attach to a raft lying on the ground, how is moving it to the right place different from standing it upright?",
+        "Starting with that sail, we will distinguish an object’s front, up, and side directions, then see why turning a plane to the right and pitching it down can produce a different final orientation when the order changes.",
+        "We will choose axes attached to the object, move one at a time, and connect those movements to the advantages and limits of recording an orientation with three Euler angles. First, let us separate position from orientation as we lift and turn the actual sail."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a01.L01",
+          "sourceRefs": [
+            "v6-01.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a01.L02",
+          "sourceRefs": [
+            "v6-01.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a01.L03",
+          "sourceRefs": [
+            "v6-01.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a01.L04",
+          "sourceRefs": [
+            "v6-01.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "물체에 붙은 축을 정해 한 번에 하나씩 움직이고, 그 숫자를 세 각도로 기록하는 오일러 각의 편리함과 한계까지 연결하겠습니다. 먼저 실제 돛을 들어 올리고 세우는 동작에서 위치와 자세를 나누겠습니다.",
+        "nextSceneId": "v7-a02",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a01"
+    },
+    {
+      "id": "v7-a02",
+      "title": "물가로 옮겨도 돛은 아직 누워 있다",
+      "articleSection": "8.3.1",
+      "sourceSceneId": "v6-02",
+      "lines": [
+        "Let us build a raft in The Legend of Zelda: Tears of the Kingdom. Ultrahand lets us pick up, move, rotate, and attach objects. Beside the floor made from two logs joined together, a separate sail with its mast is lying down. Lifting this sail does not by itself make it stand upright. That is why moving and rotating must be distinguished.",
+        "Now the lying sail is turned upright and attached to the raft. Position tells us where something is; orientation tells us which way it faces and how it is tilted. For now, we are identifying only these two visible changes.",
+        "But would the direction of the mast alone tell us the complete orientation? A plane can keep its nose pointing the same way while tilting its wings sideways. Its front direction is unchanged, but its up and side directions differ, so its orientation differs.",
+        "The state that specifies front, up, and side directions together is called orientation. Here, orientation will mean how those directions are arranged, rather than where the object is located.",
+        "Let us put down a model so we can examine that distinction with precise numbers. On the ground, we draw reference axes pointing right, up, and forward, called X, Y, and Z. We attach axes with the same names to the plane.",
+        "The plane’s right direction is object X, its up direction is object Y, and the forward direction of its nose is object Z. These axes are attached to its body, so they turn with the plane.",
+        "We place the origins of the two sets of axes together. The outside reference axes keep their original directions even when the plane turns. Here, we call this coordinate frame, sharing the object’s origin but retaining those reference directions, upright space.",
+        "Initially, we align the object axes with the upright axes. This reference state, where the two sets coincide, is the identity orientation. We will now keep the model’s position fixed and change only its orientation.",
+        "The sail in the game also changed position while being lifted. Fixing the center was a condition of our model, chosen to isolate rotation. Distinguishing the actual game footage from this controlled condition makes the change much clearer."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a02.L01",
+          "sourceRefs": [
+            "v6-02.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a02.L02",
+          "sourceRefs": [
+            "v6-02.L01"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a02.L03",
+          "sourceRefs": [
+            "v6-02.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a02.L04",
+          "sourceRefs": [
+            "v6-02.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a02.L05",
+          "sourceRefs": [
+            "v6-02.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a02.L06",
+          "sourceRefs": [
+            "v6-02.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a02.L07",
+          "sourceRefs": [
+            "v6-02.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a02.L08",
+          "sourceRefs": [
+            "v6-02.L07"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a02.L09",
+          "sourceRefs": [
+            "v6-02.L07"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "게임 속 돛은 들어 올리면서 중심도 움직였습니다. 방금 중심을 고정한 것은 회전만 따로 살피기 위한 우리 모형의 조건입니다. 실제 게임 화면과 이 통제 조건을 구분해 두면, 무엇이 달라졌는지 훨씬 또렷해집니다.",
+        "nextSceneId": "v7-a03",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "totk-log-position-and-binding",
+        "totk-sail-flat-to-upright"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a02"
+    },
+    {
+      "id": "v7-a03",
+      "title": "돌릴 축을 골랐다면 양의 방향도 정해야 한다",
+      "articleSection": "8.3.1",
+      "sourceSceneId": "v6-03",
+      "lines": [
+        "We are ready to record an orientation. Euler angles represent it by applying three rotations about coordinate axes in a specified order. We will call these three angles heading, pitch, and bank.",
+        "Choosing an axis does not yet choose a rotation direction. We can turn either way around the same axis, so we also need to agree which direction is positive.",
+        "When the hook is held with Ultrahand, holding R and pressing a direction button reveals an axis indicator and a rotation guide. Moving the hook’s location and changing the direction of its open side are distinct operations. We will use that idea to establish the axes and directions of our own model.",
+        "Our model uses a left-handed coordinate frame: X to the right, Y up, and Z forward, with positive left-hand rotations. Point your left thumb along an axis’s positive direction; the curl of your other fingers gives the positive rotation direction.",
+        "Point your thumb upward along Y. With this convention, turning the nose from forward toward the right is positive. The arrow will follow that change.",
+        "Other conventions choose the opposite direction as positive. That does not make their calculations wrong. Even for the same orientation, signs can differ when the coordinate frame and positive direction differ.",
+        "From here on, our model’s axes, arrows, and angles will all follow this one convention. We have not concluded that the game uses it internally. We will check exact heading, pitch, and bank values only in this controlled model."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a03.L01",
+          "sourceRefs": [
+            "v6-03.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a03.L02",
+          "sourceRefs": [
+            "v6-03.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a03.L03",
+          "sourceRefs": [
+            "v6-03.L02"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a03.L04",
+          "sourceRefs": [
+            "v6-03.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a03.L05",
+          "sourceRefs": [
+            "v6-03.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a03.L06",
+          "sourceRefs": [
+            "v6-03.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a03.L07",
+          "sourceRefs": [
+            "v6-03.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "그래서 지금부터 모형의 축, 화살표, 각도를 이 약속 하나로 통일합니다. 왕눈의 화면이 이 규약을 내부에서 쓴다고 판단한 것은 아닙니다. 헤딩·피치·뱅크의 정확한 숫자는 우리가 조건을 정한 이 모형에서 확인하겠습니다.",
+        "nextSceneId": "v7-a04",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "totk-hook-axis-ui"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a03"
+    },
+    {
+      "id": "v7-a04",
+      "title": "먼저 기수를 돌리면 다음 축도 따라 움직인다",
+      "articleSection": "8.3.1",
+      "sourceSceneId": "v6-04",
+      "lines": [
+        "Starting from the identity orientation, let us set the first value, heading. Heading is rotation about the vertical Y axis.",
+        "The object and upright axes currently coincide, so either Y axis gives the same first movement. Set heading to positive 45 degrees.",
+        "As the nose turns right, object X and Z turn with the plane. The rotation axis, Y, keeps its direction. Changing one number has already changed the directions of axes that we will use next.",
+        "Looking down toward the origin from the positive Y side, this rotation appears clockwise. Remember that the word clockwise also depends on where you are looking from.",
+        "In the actual flight footage from Superflight, we can separately follow where the body faces and the tilt of the outstretched arms. Read the route beside the structures as a path, and the changing front and up directions as orientation. We will not treat the entire screen’s tilt as body rotation.",
+        "Our model now retains its right-facing nose direction. For the next step, instead of picking an axis from the original ground frame, we use the one that has just turned with the plane."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a04.L01",
+          "sourceRefs": [
+            "v6-04.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a04.L02",
+          "sourceRefs": [
+            "v6-04.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a04.L03",
+          "sourceRefs": [
+            "v6-04.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a04.L04",
+          "sourceRefs": [
+            "v6-04.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a04.L05",
+          "sourceRefs": [
+            "v6-04.L04"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a04.L06",
+          "sourceRefs": [
+            "v6-04.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "이제 우리 모형은 기수를 오른쪽으로 돌린 자세를 유지합니다. 다음 동작은 처음 바닥에 있던 축을 새로 잡는 일이 아니라, 방금 비행기와 함께 돌아간 축을 이어서 잡는 일입니다.",
+        "nextSceneId": "v7-a05",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "superflight-morkala"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a04"
+    },
+    {
+      "id": "v7-a05",
+      "title": "숙이는 방향은 돌아간 날개가 정한다",
+      "articleSection": "8.3.1",
+      "sourceSceneId": "v6-05",
+      "lines": [
+        "From that state, we add the second value, pitch. Pitch rotates about the plane’s object X axis after heading has been applied.",
+        "Follow the direction of the right wing. Heading has turned object X by 45 degrees from its original direction. This turned axis is the one we now use.",
+        "With our convention, setting pitch to positive 20 degrees lowers the nose. Negative pitch raises it. The movement represented by a sign depends on the convention we established.",
+        "As the nose lowers, object Y and Z change with it. A second model will instead turn about upright X, which has kept its original direction. Both rotations are 20 degrees, but the nose follows a different path and reaches a different orientation.",
+        "The difference comes from the axis rather than the number. After heading, object X and the original upright X point differently, so treating them as the same axis computes a different orientation.",
+        "As the Superflight character passes close to a structure, screen right and body right are not necessarily the same direction either. The actual footage shows why directions relative to the body matter; our model makes the exact comparison between the two axes.",
+        "The plane now faces to the right and slightly downward. One final value remains: how much its wings are tilted while keeping that nose direction."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a05.L01",
+          "sourceRefs": [
+            "v6-05.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a05.L02",
+          "sourceRefs": [
+            "v6-05.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a05.L03",
+          "sourceRefs": [
+            "v6-05.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a05.L04",
+          "sourceRefs": [
+            "v6-05.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a05.L05",
+          "sourceRefs": [
+            "v6-05.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a05.L06",
+          "sourceRefs": [
+            "v6-05.L05"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a05.L07",
+          "sourceRefs": [
+            "v6-05.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "이제 비행기는 오른쪽을 향하면서 조금 아래를 보고 있습니다. 기수가 향하는 이 방향을 유지한 채, 날개가 얼마나 기울었는지를 정할 마지막 숫자가 남았습니다.",
+        "nextSceneId": "v7-a06",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "superflight-morkala"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a05"
+    },
+    {
+      "id": "v7-a06",
+      "title": "같은 쪽을 바라봐도 날개는 다르게 기울 수 있다",
+      "articleSection": "8.3.1",
+      "sourceSceneId": "v6-06",
+      "lines": [
+        "The third value is bank. After heading and pitch, it rotates about the current object Z axis.",
+        "Current object Z points along the nose. Applying positive 30 degrees about this axis leaves the nose direction unchanged while changing the tilt of the wings.",
+        "Object X and Y rotate together. This is why the nose direction alone did not completely specify orientation. Front can remain the same while up and side change.",
+        "Again, we do not use the original upright Z. Heading and pitch have already changed the nose direction, so bank must follow the current nose axis after those changes.",
+        "The completed orientation is the result of applying heading 45 degrees, pitch 20 degrees, and bank 30 degrees in that order. The three values include an application order and the stage at which each axis is used.",
+        "We can also separate the goals of the sail operation this way. Choosing where to place it and deciding which way its mast should stand are different judgments. The three model values are no longer a list to memorize: they are steps for arranging the front, up, and side of the same object."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a06.L01",
+          "sourceRefs": [
+            "v6-06.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a06.L02",
+          "sourceRefs": [
+            "v6-06.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a06.L03",
+          "sourceRefs": [
+            "v6-06.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a06.L04",
+          "sourceRefs": [
+            "v6-06.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a06.L05",
+          "sourceRefs": [
+            "v6-06.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a06.L06",
+          "sourceRefs": [
+            "v6-06.L05"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "돛을 세우는 실제 조작을 볼 때도 단순히 ‘돌렸다’는 말보다 어느 쪽을 맞추고 무엇을 그대로 두려는지 짚으면 이해가 쉬워집니다. 다만 게임에서 보이는 그 동작의 각도를 지금 모형의 삼십 도나 이십 도와 같다고 읽지는 않겠습니다.",
+        "nextSceneId": "v7-a07",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "totk-sail-flat-to-upright"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a06"
+    },
+    {
+      "id": "v7-a07",
+      "title": "같은 회전이 반대로 보이는 까닭",
+      "articleSection": "8.3.1",
+      "sourceSceneId": "v6-07",
+      "lines": [
+        "Once we have built this orientation, our use of clockwise may seem odd. We said heading was clockwise when viewed from above.",
+        "But positive bank appears counterclockwise when we look from behind the plane toward its nose. Why do the directions look opposite if both use the same left-hand rule?",
+        "The rule has not changed; the viewing position has. For heading, we looked from positive Y toward the origin, whereas for bank, we looked from the origin toward positive Z. These are opposite ways of looking along their respective axes.",
+        "The arrow continues to indicate the same rotation while only the camera moves between the two sides. From the opposite side, the apparent clockwise direction reverses. The object has not suddenly started rotating the other way.",
+        "So memorizing clockwise is not enough. We must also check the positive axis direction and which side we are viewing from. All three rotations still follow the same left-hand rule.",
+        "The same caution applies when a real game’s camera moves. Let us set aside the assumption that screen up must be the object’s up direction."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a07.L01",
+          "sourceRefs": [
+            "v6-07.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a07.L02",
+          "sourceRefs": [
+            "v6-07.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a07.L03",
+          "sourceRefs": [
+            "v6-07.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a07.L04",
+          "sourceRefs": [
+            "v6-07.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a07.L05",
+          "sourceRefs": [
+            "v6-07.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a07.L06",
+          "sourceRefs": [
+            "v6-07.L05"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "이제 실제 게임의 카메라가 움직일 때도 같은 주의가 필요합니다. 화면에서 위로 보이는 쪽이 곧 물체의 위쪽이라는 생각부터 잠시 내려놓겠습니다.",
+        "nextSceneId": "v7-a08",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a07"
+    },
+    {
+      "id": "v7-a08",
+      "title": "카트의 앞쪽과 위쪽을 따로 따라가면",
+      "articleSection": "8.3.1",
+      "sourceSceneId": "v6-08",
+      "lines": [
+        "Heading and pitch first chose the nose direction; bank then chose how up and side are arranged around that nose. The information selecting front is separate from the twist around front.",
+        "It is similar to choosing a direction on Earth’s surface using longitude and latitude. To specify an object’s orientation, however, we need one additional value for twist about that direction.",
+        "In Mario Kart 8 Deluxe, passing the blue strip changes the wheels and enters the anti-gravity section. As the kart follows the banked corner, separately follow its front and the side where the driver’s head is.",
+        "The kart’s front points along the road, while its up direction appears tilted with the surface. A single direction called screen up cannot explain both. That is why the front marker and the up marker follow different features.",
+        "The camera and road also change here. On the actual recording, we therefore mark only the visible front and head side of the kart. These are editorial observation guides, not measurements of the game’s internal axes or angles.",
+        "Our model can keep the outside reference axes visible while moving only the body axes. Having identified what we were looking at on the actual kart, we can now connect it to why the model needs front, up, and side.",
+        "Separating these directions clarifies the roles of the three values. But another program’s use of the names heading, pitch, and bank does not guarantee the same interpretation. Let us check the conventions attached to those values."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a08.L01",
+          "sourceRefs": [
+            "v6-08.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a08.L02",
+          "sourceRefs": [
+            "v6-08.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a08.L03",
+          "sourceRefs": [
+            "v6-08.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a08.L04",
+          "sourceRefs": [
+            "v6-08.L03"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a08.L05",
+          "sourceRefs": [
+            "v6-08.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a08.L06",
+          "sourceRefs": [
+            "v6-08.L04"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a08.L07",
+          "sourceRefs": [
+            "v6-08.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "이처럼 방향을 나누면 세 숫자의 역할이 분명해집니다. 다만 다른 프로그램에 들어갔을 때도 ‘헤딩·피치·뱅크’라는 이름만 보고 똑같이 읽어도 되는 것은 아닙니다. 이제 숫자에 붙은 약속을 확인하겠습니다.",
+        "nextSceneId": "v7-a09",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "mariokart8-mrlateforschool"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a08"
+    },
+    {
+      "id": "v7-a09",
+      "title": "이름이 같아도 같은 회전이라는 보장은 없다",
+      "articleSection": "8.3.2",
+      "sourceSceneId": "v6-09",
+      "lines": [
+        "The Euler angles we have used build an orientation with three rotations. Which axes are used and in which order are separate conventions of that representation.",
+        "Documentation often uses yaw, pitch, and roll instead of heading, pitch, and bank. Roll is often used in the same sense as bank, and some documents use yaw as a synonym for heading.",
+        "Other names include azimuth, elevation, and tilt, or Greek letters such as alpha, beta, and gamma. Different names do not necessarily mean different rotations, and identical names do not necessarily mean identical rotations.",
+        "Check the three agreements behind the names. Which axes are used, which directions are positive, and in which order are the rotations applied?",
+        "In particular, check whether an axis moves with the object or remains fixed in its original direction. This explains why rotation orders can be described differently. Let us rebuild the same orientation in two ways."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a09.L01",
+          "sourceRefs": [
+            "v6-09.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a09.L02",
+          "sourceRefs": [
+            "v6-09.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a09.L03",
+          "sourceRefs": [
+            "v6-09.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a09.L04",
+          "sourceRefs": [
+            "v6-09.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a09.L05",
+          "sourceRefs": [
+            "v6-09.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "특히 그 축이 물체와 함께 움직이는지, 처음 방향에 고정돼 있는지를 확인해야 합니다. 여기서 회전 설명의 순서가 달라지는 이유가 나옵니다. 방금 만든 같은 자세를 두 가지 경로로 다시 만들어 보겠습니다.",
+        "nextSceneId": "v7-a10",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a09"
+    },
+    {
+      "id": "v7-a10",
+      "title": "축을 고정하면 순서를 뒤집어 같은 자세에 도착한다",
+      "articleSection": "8.3.2",
+      "sourceSceneId": "v6-10",
+      "lines": [
+        "The left model moves about axes attached to the plane, as before. This is called intrinsic rotation.",
+        "After heading, we apply pitch about the turned object X, then bank about object Z resulting from those steps. Each preceding result affects the axis used next.",
+        "For the right model, we keep the upright-space axes fixed in their original directions. This is called extrinsic rotation.",
+        "The final orientation produced by heading, pitch, and bank about moving object axes is the same as applying bank, pitch, and heading about fixed axes. The axes are fixed instead, and the order is reversed.",
+        "The yaw-pitch-roll and roll-pitch-yaw descriptions can both appear because of this relationship. To represent the same rotation, reversing the order alone is insufficient: the moving-axis and fixed-axis conventions must match as well.",
+        "Do not interpret this as permission to change the order freely. It is an equivalence where the axes used also change. First, let us set bank to zero and compare just heading and pitch."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a10.L01",
+          "sourceRefs": [
+            "v6-10.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a10.L02",
+          "sourceRefs": [
+            "v6-10.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a10.L03",
+          "sourceRefs": [
+            "v6-10.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a10.L04",
+          "sourceRefs": [
+            "v6-10.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a10.L05",
+          "sourceRefs": [
+            "v6-10.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a10.L06",
+          "sourceRefs": [
+            "v6-10.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "그러니 ‘어차피 같으니 순서를 바꿔도 된다’고 받아들이면 안 됩니다. 어떤 축을 쓰는지가 같이 바뀐 경우의 동등성입니다. 우선 뱅크는 영으로 두고 헤딩과 피치 두 단계만 나란히 확인하겠습니다.",
+        "nextSceneId": "v7-a11",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a10"
+    },
+    {
+      "id": "v7-a11",
+      "title": "서로 다른 중간 모습이 같은 끝 자세로 모인다",
+      "articleSection": "8.3.2",
+      "sourceSceneId": "v6-11",
+      "lines": [
+        "Give the left plane heading 30 degrees first. Object X turns with it, so we then apply pitch 20 degrees about that turned X.",
+        "The right plane uses the reverse order. First apply pitch 20 degrees about fixed upright X, then heading 30 degrees about fixed upright Y.",
+        "The two planes differ during the intermediate movement. But when we overlap them at the end, their nose, wings, and up direction all match. Different paths have reached the same final orientation.",
+        "Look again at the axis used for the right plane’s second rotation. It is not the already tilted object Y, but upright Y, which has continued to point upward. That distinction makes the final orientations match.",
+        "Now use fixed axes for both models and change only the order. Fixed X 90 degrees followed by fixed Y 90 degrees leaves the nose pointing down. Reversing that order leaves it pointing right. Reversing two rotations about the same fixed axes is a different calculation.",
+        "Application order is therefore information as important as the numbers. Without this distinction, we may also mistake similar names such as yaw and heading for the same operation. Let us pitch the plane down first and compare them."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a11.L01",
+          "sourceRefs": [
+            "v6-11.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a11.L02",
+          "sourceRefs": [
+            "v6-11.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a11.L03",
+          "sourceRefs": [
+            "v6-11.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a11.L04",
+          "sourceRefs": [
+            "v6-11.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a11.L05",
+          "sourceRefs": [
+            "v6-11.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a11.L06",
+          "sourceRefs": [
+            "v6-11.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": "row-vector object→upright: R = Rz(b) Rx(p) Ry(h); p_upright = p_object R",
+      "transitionToNext": {
+        "carryForward": "이제 회전 순서가 숫자만큼 중요한 정보라는 점이 드러납니다. 이 구별을 놓치면 비슷한 이름인 요와 헤딩도 같은 동작이라고 생각하기 쉽습니다. 비행기를 먼저 숙여 놓고 그 차이를 이어서 보겠습니다.",
+        "nextSceneId": "v7-a12",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a11"
+    },
+    {
+      "id": "v7-a12",
+      "title": "숙인 비행기에서 요와 헤딩이 갈라진다",
+      "articleSection": "8.3.2",
+      "sourceSceneId": "v6-12",
+      "lines": [
+        "When the plane is initially level, object Y and upright Y coincide. Rotating about either Y can appear to produce the same movement.",
+        "Pitch the plane so its nose points vertically down. Upright Y remains vertical, but object Y has tilted with the plane and now points in another direction.",
+        "Here, we will call rotation about current object Y yaw. Giving it 90 degrees of yaw moves the downward-pointing nose toward a horizontal direction. The plane ends up appearing to lie on its side.",
+        "Changing the heading value instead turns the entire orientation about the original vertical axis. The nose remains downward while the tilted up and side directions change.",
+        "Compare the two results from the same viewpoint. Although both axes are named Y, they now point in different spatial directions.",
+        "Think of looking downward in a first-person game and moving the mouse horizontally. Rather than turning the head about tilted object Y, we can often describe it as changing heading around a consistently vertical reference. A particular game’s implementation convention must still be checked separately.",
+        "Adding a value to heading alone will not always implement the yaw operation you want. Depending on the current orientation, other Euler angles may also need to change. A similar issue appears with the middle value, pitch."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a12.L01",
+          "sourceRefs": [
+            "v6-12.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a12.L02",
+          "sourceRefs": [
+            "v6-12.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a12.L03",
+          "sourceRefs": [
+            "v6-12.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a12.L04",
+          "sourceRefs": [
+            "v6-12.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a12.L05",
+          "sourceRefs": [
+            "v6-12.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a12.L06",
+          "sourceRefs": [
+            "v6-12.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a12.L07",
+          "sourceRefs": [
+            "v6-12.L07"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "따라서 요 동작이 필요하다고 헤딩 숫자 하나만 더하면 언제나 해결되는 것은 아닙니다. 현재 자세에 따라 다른 오일러 각도 함께 바뀌어야 할 수 있습니다. 같은 문제가 가운데 숫자인 피치에도 나타납니다.",
+        "nextSceneId": "v7-a13",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a12"
+    },
+    {
+      "id": "v7-a13",
+      "title": "세 숫자는 완성된 물체의 회전 버튼 세 개가 아니다",
+      "articleSection": "8.3.2",
+      "sourceSceneId": "v6-13",
+      "lines": [
+        "With zero bank, changing the middle pitch value appears to match rotation about current object X. It is tempting to think pitch always means rotation about the finished object’s horizontal axis.",
+        "But bank turns object X again. After that, changing the middle Euler pitch value and adding rotation about the finished orientation’s current object X generally produce different results.",
+        "Euler angles describe a sequence that constructs the final orientation. They are not three commands that pick any remaining axis of the finished object and rotate it further. We must read which stage’s axis each angle uses.",
+        "For games with a ground reference, heading-pitch-bank is intuitive: first the vertical axis, then the body’s lateral axis, then its forward axis. Not every field follows that choice.",
+        "Proper Euler-angle conventions use the same axis for the first and last rotations. One example separates a spinning top’s precession, where its axis sweeps around, nutation, where the axis changes tilt, and the top’s own spin.",
+        "Strictly, a convention using three different axes, like ours, is called Tait–Bryan angles. In practice, Euler angles is often used broadly to include this case, so whatever the name, check the actual axes and order first."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a13.L01",
+          "sourceRefs": [
+            "v6-13.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a13.L02",
+          "sourceRefs": [
+            "v6-13.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a13.L03",
+          "sourceRefs": [
+            "v6-13.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a13.L04",
+          "sourceRefs": [
+            "v6-13.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a13.L05",
+          "sourceRefs": [
+            "v6-13.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a13.L06",
+          "sourceRefs": [
+            "v6-13.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "지금처럼 서로 다른 세 축을 쓰는 방식은 엄밀하게 테이트–브라이언 각이라고 부릅니다. 실무에서는 이 방식까지 넓게 오일러 각이라고 부르니, 어느 이름을 쓰든 실제 축과 순서를 먼저 확인하는 습관이 필요합니다.",
+        "nextSceneId": "v7-a14",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a13"
+    },
+    {
+      "id": "v7-a14",
+      "title": "다른 프로그램의 세 숫자를 그대로 가져오면",
+      "articleSection": "8.3.2",
+      "sourceSceneId": "v6-14",
+      "lines": [
+        "This habit matters when importing rotation values from another engine or file. First check the other system’s axes, positive directions, and application order. Similar-looking screens do not make renaming numbers safe.",
+        "For example, simply rearranging heading, pitch, and bank into another program’s X, Y, and Z fields will not generally work. As we saw, preceding rotations affect later axes, so the three rotations influence one another.",
+        "One safe approach is to construct a rotation matrix using the original convention, then recover Euler angles for the same rotation under the new convention. If the coordinate frames themselves differ, that basis change must also be included.",
+        "Think of the matrix as a table describing where an orientation sends each reference direction. Instead of renaming the values, we move the same orientation through a common representation and recover numbers under the new agreement.",
+        "Our notation writes a point’s X, Y, and Z values in one horizontal row. This is a row vector, multiplied by a matrix on its right. The object-to-upright matrix multiplies the bank, pitch, and heading matrices in that order. Do not confuse this written matrix order with our description of movements about object axes.",
+        "The full derivation of individual transformation formulas belongs in the transformation material. The key here is that three values acquire meaning together with their convention. Once that agreement is clear, we can explain why these values are convenient for people."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a14.L01",
+          "sourceRefs": [
+            "v6-14.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a14.L02",
+          "sourceRefs": [
+            "v6-14.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a14.L03",
+          "sourceRefs": [
+            "v6-14.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a14.L04",
+          "sourceRefs": [
+            "v6-14.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a14.L05",
+          "sourceRefs": [
+            "v6-14.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a14.L06",
+          "sourceRefs": [
+            "v6-14.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": "v_upright = v_object R; R = Rz(b) Rx(p) Ry(h)",
+      "transitionToNext": {
+        "carryForward": "개별 변환식의 전체 유도는 변환을 다루는 범위에서 확인하면 됩니다. 지금 붙잡을 핵심은 세 숫자가 규약까지 포함해야 뜻을 갖는다는 점입니다. 그 약속을 분명히 정하고 나면, 이 세 숫자가 사람에게 편리한 이유도 설명할 수 있습니다.",
+        "nextSceneId": "v7-a15",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a14"
+    },
+    {
+      "id": "v7-a15",
+      "title": "돌리고 붙이는 손동작을 숫자로 읽을 수 있다",
+      "articleSection": "8.3.3",
+      "sourceSceneId": "v6-15",
+      "lines": [
+        "The first advantage is that people can easily read and adjust orientation. Turning right 30 degrees, pitching down 10 degrees, and banking the wings 20 degrees suggests recognizable movements.",
+        "Showing the same orientation as nine rotation-matrix values makes its appearance harder to imagine immediately. Euler angles make it easier to associate an editable number with a movement.",
+        "In the model, moving the heading slider changes left-right direction; moving the pitch slider changes upward-downward facing. We can read the value being changed together with the visible result.",
+        "Return to the logs used for the raft in Tears of the Kingdom. A log is brought sideways and attached beside another. Where to move it and which direction its long side should face are different judgments.",
+        "The sail beside them was a separate object. Lifting the lying sail, standing it upright, and attaching it to the raft requires judging both placement and orientation. When rotating the hook and attaching it to the wooden board, the direction of its open side matters too.",
+        "This is not evidence that the game internally uses Euler angles. It shows why it is useful for people to break a desired orientation into understandable rotation operations and adjust them by checking the result.",
+        "The benefit we have established is convenient human input and editing. This is not necessarily the best representation for every computer operation. If many orientations must be stored, data size and precision also need attention."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a15.L01",
+          "sourceRefs": [
+            "v6-15.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a15.L02",
+          "sourceRefs": [
+            "v6-15.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a15.L03",
+          "sourceRefs": [
+            "v6-15.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a15.L04",
+          "sourceRefs": [
+            "v6-15.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a15.L05",
+          "sourceRefs": [
+            "v6-15.L04"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a15.L06",
+          "sourceRefs": [
+            "v6-15.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a15.L07",
+          "sourceRefs": [
+            "v6-15.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "여기서 얻은 장점은 사람에게 편리한 입력과 편집입니다. 컴퓨터의 모든 연산에도 항상 가장 좋은 표현이라는 뜻은 아닙니다. 같은 자세를 많이 저장해야 한다면 데이터의 크기와 정밀도도 따로 보아야 합니다.",
+        "nextSceneId": "v7-a16",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "totk-log-position-and-binding",
+        "totk-sail-flat-to-upright",
+        "totk-hook-axis-ui"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a15"
+    },
+    {
+      "id": "v7-a16",
+      "title": "많은 자세를 저장할 때 세 숫자의 의미",
+      "articleSection": "8.3.3",
+      "sourceSceneId": "v6-16",
+      "lines": [
+        "For small changes around one orientation, three independently adjustable quantities are needed for 3D rotation. Working within such a neighborhood is called local treatment. Euler angles store those three values, using fewer numbers than storing all nine entries of a matrix.",
+        "The difference accumulates when many orientations are stored, as in character animation. As frame counts and bone counts grow, the data size per orientation matters.",
+        "We can also choose the spacing used to store angles. Suppose each angle is rounded to the nearest whole degree. Each component’s rounding error is then at most 0.5 degrees.",
+        "If 20 degrees and 20.4 degrees are both placed in the 20-degree bin, fewer distinct values are stored, but their original small difference disappears. Representing values at specified intervals is called quantization.",
+        "A component error of 0.5 degrees does not mean the final orientation error is always 0.5 degrees. We must consider how the three rotations combine and the current orientation.",
+        "Storing angles gives precision a relatively intuitive meaning. When storing sine and cosine components instead, we must separately examine how errors in those values affect the angle.",
+        "Other rotation representations can also be compressed; Euler angles are not the only compressible option. The advantage here is combining human-readable angles with compact storage.",
+        "Now separate reducing data size from ensuring the numbers represent a rotation at all. Similar-looking numeric fields can have different constraints."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a16.L01",
+          "sourceRefs": [
+            "v6-16.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a16.L02",
+          "sourceRefs": [
+            "v6-16.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a16.L03",
+          "sourceRefs": [
+            "v6-16.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a16.L04",
+          "sourceRefs": [
+            "v6-16.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a16.L05",
+          "sourceRefs": [
+            "v6-16.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a16.L06",
+          "sourceRefs": [
+            "v6-16.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a16.L07",
+          "sourceRefs": [
+            "v6-16.L07"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a16.L08",
+          "sourceRefs": [
+            "v6-16.L07"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": "nearest 1° quantization: per-component rounding error ≤ 0.5°",
+      "transitionToNext": {
+        "carryForward": "이제 숫자의 크기를 줄이는 문제와, 숫자를 넣었을 때 회전 자체가 되는 문제를 나누겠습니다. 세 칸이 비슷하게 생겨도 표현마다 지켜야 할 조건은 다릅니다.",
+        "nextSceneId": "v7-a17",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a16"
+    },
+    {
+      "id": "v7-a17",
+      "title": "어떤 세 숫자든 자세가 되지만 원하는 자세인지는 별개다",
+      "articleSection": "8.3.3",
+      "sourceSceneId": "v6-17",
+      "lines": [
+        "Under our specified convention, any three finite real values produce a rotation. Finite means a number other than infinity or an invalid numeric value. Heading 720 degrees or pitch 135 degrees still produces a computable orientation.",
+        "By contrast, filling nine matrix entries with arbitrary numbers may not produce a rotation. It can produce a transformation that stretches lengths or skews the axes.",
+        "Quaternions also require constraints such as length when used for rotation. There is no need to memorize their formula yet. Simply distinguish the conditions that different representations require to describe a valid rotation.",
+        "Three finite angles producing a valid orientation is also different from producing the orientation we wanted. Choose the wrong axes or order and the calculation remains possible, but the object faces the wrong way.",
+        "So far, we have considered the convenience of three values. That convenience has a cost. The same orientation can occur under different values, and connecting those values over time can cause problems. First, let us examine multiple numeric descriptions of one orientation."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a17.L01",
+          "sourceRefs": [
+            "v6-17.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a17.L02",
+          "sourceRefs": [
+            "v6-17.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a17.L03",
+          "sourceRefs": [
+            "v6-17.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a17.L04",
+          "sourceRefs": [
+            "v6-17.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a17.L05",
+          "sourceRefs": [
+            "v6-17.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "여기까지는 세 숫자의 편리함이었습니다. 그런데 이 편리함에는 대가가 있습니다. 같은 자세가 숫자로 여러 번 나타나고, 그 숫자를 이어 움직일 때도 문제가 생깁니다. 먼저 한 자세가 여러 숫자로 적히는 경우부터 보겠습니다.",
+        "nextSceneId": "v7-a18",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a17"
+    },
+    {
+      "id": "v7-a18",
+      "title": "한 바퀴 돌아오면 숫자는 달라도 모습은 같다",
+      "articleSection": "8.3.4",
+      "sourceSceneId": "v6-18",
+      "lines": [
+        "Turn our plane’s heading from zero to 360 degrees. A complete turn occurred, but the final orientation matches the start. Turning through 720 degrees, or two full turns, produces that same final orientation.",
+        "Adding an integer multiple of 360 degrees gives the same final orientation. These different values describing the same result are called redundant representations, or aliasing.",
+        "Mario jumping from a stone pillar, flipping his body in the air, and standing again illustrates the distinction. The final standing image alone does not preserve the fact that his body was inverted in midair. We have not measured an exact angle in the footage; we are distinguishing final appearance from movement history.",
+        "Combining three rotations introduces less obvious redundancy than a full turn in one angle. Set the first model to heading 0, pitch 135, and bank 0 degrees. Set the second to heading 180, pitch 45, and bank 180 degrees.",
+        "Their numbers differ, but when overlapped, their nose, wings, and up direction all coincide. Different paths have reached the same final orientation.",
+        "Different angle triples therefore do not necessarily mean different orientations. To compare orientations or print readable output, we need a rule that chooses one representative from several descriptions of the same appearance."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a18.L01",
+          "sourceRefs": [
+            "v6-18.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a18.L02",
+          "sourceRefs": [
+            "v6-18.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a18.L03",
+          "sourceRefs": [
+            "v6-18.L02"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a18.L04",
+          "sourceRefs": [
+            "v6-18.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a18.L05",
+          "sourceRefs": [
+            "v6-18.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a18.L06",
+          "sourceRefs": [
+            "v6-18.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": "(h,p,b)=(0°,135°,0°) ≡ (180°,45°,180°)",
+      "transitionToNext": {
+        "carryForward": "그러니 세 숫자가 다르다는 이유만으로 자세도 다르다고 결론 낼 수 없습니다. 자세를 비교하거나 읽기 좋게 출력하려면, 같은 모습을 가리키는 여러 표현 중 하나를 대표로 고르는 규칙이 필요합니다.",
+        "nextSceneId": "v7-a19",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "odyssey-fox"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a18"
+    },
+    {
+      "id": "v7-a19",
+      "title": "대표 범위를 정해도 경계에는 한 가지 일이 더 남는다",
+      "articleSection": "8.3.4",
+      "sourceSceneId": "v6-19",
+      "lines": [
+        "One approach restricts heading and bank to greater than −180 degrees and at most +180 degrees. Pitch is restricted to the interval from −90 through +90 degrees.",
+        "We will call the representative expression under these rules the canonical form. In the pair of equivalent models with different pitch values, we choose the representation fitting these ranges.",
+        "Subtracting 360 independently from each field is not always sufficient. Bringing pitch into its chosen interval may require changing heading and bank together.",
+        "At pitch exactly +90 or −90 degrees, one additional step is needed. Heading and bank no longer appear independently at those boundaries.",
+        "A range table therefore does not finish the problem. As we gradually pitch the plane toward that boundary, we can directly examine what gimbal lock means."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a19.L01",
+          "sourceRefs": [
+            "v6-19.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a19.L02",
+          "sourceRefs": [
+            "v6-19.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a19.L03",
+          "sourceRefs": [
+            "v6-19.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a19.L04",
+          "sourceRefs": [
+            "v6-19.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a19.L05",
+          "sourceRefs": [
+            "v6-19.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": "-180° < h ≤ 180°; -90° ≤ p ≤ 90°; -180° < b ≤ 180°",
+      "transitionToNext": {
+        "carryForward": "범위표를 정했으니 모든 문제가 끝났다고 할 수 없는 이유입니다. 그 경계까지 비행기를 조금씩 숙이면, 짐벌 락이라는 말이 가리키는 현상을 직접 확인할 수 있습니다.",
+        "nextSceneId": "v7-a20",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a19"
+    },
+    {
+      "id": "v7-a20",
+      "title": "두 조절이 같은 축선의 효과를 나눠 맡을 때",
+      "articleSection": "8.3.4",
+      "sourceSceneId": "v6-20",
+      "lines": [
+        "Change the model’s pitch from 45 to 80 and then 90 degrees. As pitch increases, follow how the initial Y axis and the final bank’s Z axis approach the same line.",
+        "At 90 degrees, both axes lie on one line. Their positive directions may be opposite, but there is only one line about which the rotations occur.",
+        "Here, changing heading and changing bank have overlapping effects. This loss of independent parameter-control directions is gimbal lock.",
+        "In our convention, pitch +90 degrees leaves the combination heading minus bank. Heading 30 degrees and bank 10 degrees gives the same orientation as heading 20 degrees and bank zero.",
+        "Compare against heading 45 degrees and bank zero. The corresponding case is heading zero and bank −45 degrees. We must not put positive 45 degrees into both cases. The opposite positive directions of the two axes appear in this sign.",
+        "At the pitch −90-degree boundary, the remaining combination is instead heading plus bank. The same subtraction rule does not apply at both boundaries.",
+        "This does not physically prevent the plane itself from rotating further. Every orientation can still be represented. What becomes difficult is independently adjusting the three values and reading them continuously near that region.",
+        "A body or kart tilting abruptly in game footage is not enough to diagnose this calculation. The overlapping-axis condition and numerical relationships here are checked in our model under a specified convention."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a20.L01",
+          "sourceRefs": [
+            "v6-20.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a20.L02",
+          "sourceRefs": [
+            "v6-20.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a20.L03",
+          "sourceRefs": [
+            "v6-20.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a20.L04",
+          "sourceRefs": [
+            "v6-20.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a20.L05",
+          "sourceRefs": [
+            "v6-20.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a20.L06",
+          "sourceRefs": [
+            "v6-20.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a20.L07",
+          "sourceRefs": [
+            "v6-20.L07"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a20.L08",
+          "sourceRefs": [
+            "v6-20.L07"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": "p=+90° → h-b; p=-90° → h+b",
+      "transitionToNext": {
+        "carryForward": "게임 화면에서 몸이나 차가 급하게 기울었다는 이유만으로 이런 계산이 일어났다고 판단할 수도 없습니다. 지금 축이 겹치는 조건과 수치 관계는 우리가 규약을 정해 만든 모형에서 확인한 것입니다.",
+        "nextSceneId": "v7-a21",
+        "boundaryKind": "result-inherited-by-next-need"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "translationOf": "v7-a20"
+    },
+    {
+      "id": "v7-a21",
+      "title": "자세를 기록해도 움직이는 길은 아직 남아 있다",
+      "articleSection": "8.3.4",
+      "sourceSceneId": "v6-21",
+      "lines": [
+        "To choose one representative at those boundaries, we can set bank to zero when pitch is +90 or −90 degrees. We collect the overlapping effect into heading alone.",
+        "For +90-degree pitch, subtract the previous bank from heading; for −90-degree pitch, add them. The object’s orientation is retained while its numeric description is standardized.",
+        "But this rule removes redundant descriptions. It does not remove continuity problems near gimbal lock. A small physical movement can still cause the output angles to change abruptly by large amounts.",
+        "A program can accept finite input angles outside the representative ranges and still construct a rotation. Canonical output is convenient for people to read. The accepted input range and the rule for choosing an output representative are separate decisions.",
+        "Simply separating front, up, and side already helped us read the real result of the sail standing or the kart tilting. We did not infer the game’s internal representation or diagnose gimbal lock from its screen. Exact conventions and numbers were checked in a controlled model of orientation.",
+        "The raft now forms one structure with the upright sail attached, ready to be moved onto the water and boarded by Link. The small judgments about where to place something and how to stand it have come together into a usable object.",
+        "So far, this has been about making a desired orientation and choosing numbers to record it. Recording the start and end orientations, however, does not determine the movement between them.",
+        "We can reach the same destination by turning far in the opposite direction or by taking a short route. In the next part, we will begin with the paths produced when these values change over time, then examine another way to record rotation using one axis and one angle."
+      ],
+      "paragraphSources": [
+        {
+          "paragraphId": "v7-a21.L01",
+          "sourceRefs": [
+            "v6-21.L01"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a21.L02",
+          "sourceRefs": [
+            "v6-21.L02"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a21.L03",
+          "sourceRefs": [
+            "v6-21.L03"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a21.L04",
+          "sourceRefs": [
+            "v6-21.L04"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a21.L05",
+          "sourceRefs": [
+            "v6-21.L05"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a21.L06",
+          "sourceRefs": [
+            "v6-21.L05"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a21.L07",
+          "sourceRefs": [
+            "v6-21.L06"
+          ],
+          "treatment": "retained-independent-spoken-rewrite",
+          "sourceLearningOrderPreserved": true
+        },
+        {
+          "paragraphId": "v7-a21.L08",
+          "sourceRefs": [
+            "v6-21.L06"
+          ],
+          "treatment": "expanded-observation-or-causal-bridge",
+          "sourceLearningOrderPreserved": true
+        }
+      ],
+      "visualFormula": null,
+      "transitionToNext": {
+        "carryForward": "같은 곳에 도착해도 반대로 크게 돌아갈 수 있고, 짧게 이어질 수도 있습니다. 다음 편에서는 방금 정리한 숫자를 시간에 따라 바꿀 때 어떤 길이 생기는지부터 이어서, 한 축과 한 각도로 회전을 기록하는 다른 방법까지 살펴보겠습니다.",
+        "nextSceneId": "part-02 first scene",
+        "boundaryKind": "recorded-endpoints-to-intermediate-motion"
+      },
+      "productionStatus": "script-first; no TTS/render/timing lock",
+      "narrationAnimationPolicy": {
+        "synchronizedByDefault": true,
+        "mandatorySilentAnimation": false,
+        "holdSeconds": 0,
+        "optionalPauseNeedsConcretePurpose": true
+      },
+      "gameEvidenceRefs": [
+        "totk-combined-raft-to-water"
+      ],
+      "gamePresentation": {
+        "use": "관련 관찰 대상과 동작을 해설하는 동안 실제 게임 화면을 유지하고 필요한 표식을 직접 겹친다. 정의·정확한 수치·수식 검증은 같은 대상의 자체 모형으로 연결한다.",
+        "notFinalCut": "Evidence ranges are source capacities, not fixed durations, loop instructions or complete footage lock.",
+        "annotations": "대상 윤곽/앞·위 방향/회전 안내를 발화와 동기화. 내부3D측정으로 주장하지 않으며 가림·컷에서 정리한다."
+      },
+      "translationOf": "v7-a21"
+    }
+  ],
+  "language": "en",
+  "translationStatus": "complete-semantic-paragraph-translation; final cue alignment pending",
+  "sourceKoreanSha256": "29124ccdcd21c740975b1e05aa30a44c0478181a75dc1f3d0743787a4e120223"
+}

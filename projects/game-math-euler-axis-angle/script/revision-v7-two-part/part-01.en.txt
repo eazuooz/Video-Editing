@@ -1,0 +1,271 @@
+Why Does Rotation Order Change the Result? — 3D Rotation Part1
+
+Hello, this is Yamyam Coding.
+
+With the sail we want to attach to a raft lying on the ground, how is moving it to the right place different from standing it upright?
+
+Starting with that sail, we will distinguish an object’s front, up, and side directions, then see why turning a plane to the right and pitching it down can produce a different final orientation when the order changes.
+
+We will choose axes attached to the object, move one at a time, and connect those movements to the advantages and limits of recording an orientation with three Euler angles. First, let us separate position from orientation as we lift and turn the actual sail.
+
+Let us build a raft in The Legend of Zelda: Tears of the Kingdom. Ultrahand lets us pick up, move, rotate, and attach objects. Beside the floor made from two logs joined together, a separate sail with its mast is lying down. Lifting this sail does not by itself make it stand upright. That is why moving and rotating must be distinguished.
+
+Now the lying sail is turned upright and attached to the raft. Position tells us where something is; orientation tells us which way it faces and how it is tilted. For now, we are identifying only these two visible changes.
+
+But would the direction of the mast alone tell us the complete orientation? A plane can keep its nose pointing the same way while tilting its wings sideways. Its front direction is unchanged, but its up and side directions differ, so its orientation differs.
+
+The state that specifies front, up, and side directions together is called orientation. Here, orientation will mean how those directions are arranged, rather than where the object is located.
+
+Let us put down a model so we can examine that distinction with precise numbers. On the ground, we draw reference axes pointing right, up, and forward, called X, Y, and Z. We attach axes with the same names to the plane.
+
+The plane’s right direction is object X, its up direction is object Y, and the forward direction of its nose is object Z. These axes are attached to its body, so they turn with the plane.
+
+We place the origins of the two sets of axes together. The outside reference axes keep their original directions even when the plane turns. Here, we call this coordinate frame, sharing the object’s origin but retaining those reference directions, upright space.
+
+Initially, we align the object axes with the upright axes. This reference state, where the two sets coincide, is the identity orientation. We will now keep the model’s position fixed and change only its orientation.
+
+The sail in the game also changed position while being lifted. Fixing the center was a condition of our model, chosen to isolate rotation. Distinguishing the actual game footage from this controlled condition makes the change much clearer.
+
+We are ready to record an orientation. Euler angles represent it by applying three rotations about coordinate axes in a specified order. We will call these three angles heading, pitch, and bank.
+
+Choosing an axis does not yet choose a rotation direction. We can turn either way around the same axis, so we also need to agree which direction is positive.
+
+When the hook is held with Ultrahand, holding R and pressing a direction button reveals an axis indicator and a rotation guide. Moving the hook’s location and changing the direction of its open side are distinct operations. We will use that idea to establish the axes and directions of our own model.
+
+Our model uses a left-handed coordinate frame: X to the right, Y up, and Z forward, with positive left-hand rotations. Point your left thumb along an axis’s positive direction; the curl of your other fingers gives the positive rotation direction.
+
+Point your thumb upward along Y. With this convention, turning the nose from forward toward the right is positive. The arrow will follow that change.
+
+Other conventions choose the opposite direction as positive. That does not make their calculations wrong. Even for the same orientation, signs can differ when the coordinate frame and positive direction differ.
+
+From here on, our model’s axes, arrows, and angles will all follow this one convention. We have not concluded that the game uses it internally. We will check exact heading, pitch, and bank values only in this controlled model.
+
+Starting from the identity orientation, let us set the first value, heading. Heading is rotation about the vertical Y axis.
+
+The object and upright axes currently coincide, so either Y axis gives the same first movement. Set heading to positive 45 degrees.
+
+As the nose turns right, object X and Z turn with the plane. The rotation axis, Y, keeps its direction. Changing one number has already changed the directions of axes that we will use next.
+
+Looking down toward the origin from the positive Y side, this rotation appears clockwise. Remember that the word clockwise also depends on where you are looking from.
+
+In the actual flight footage from Superflight, we can separately follow where the body faces and the tilt of the outstretched arms. Read the route beside the structures as a path, and the changing front and up directions as orientation. We will not treat the entire screen’s tilt as body rotation.
+
+Our model now retains its right-facing nose direction. For the next step, instead of picking an axis from the original ground frame, we use the one that has just turned with the plane.
+
+From that state, we add the second value, pitch. Pitch rotates about the plane’s object X axis after heading has been applied.
+
+Follow the direction of the right wing. Heading has turned object X by 45 degrees from its original direction. This turned axis is the one we now use.
+
+With our convention, setting pitch to positive 20 degrees lowers the nose. Negative pitch raises it. The movement represented by a sign depends on the convention we established.
+
+As the nose lowers, object Y and Z change with it. A second model will instead turn about upright X, which has kept its original direction. Both rotations are 20 degrees, but the nose follows a different path and reaches a different orientation.
+
+The difference comes from the axis rather than the number. After heading, object X and the original upright X point differently, so treating them as the same axis computes a different orientation.
+
+As the Superflight character passes close to a structure, screen right and body right are not necessarily the same direction either. The actual footage shows why directions relative to the body matter; our model makes the exact comparison between the two axes.
+
+The plane now faces to the right and slightly downward. One final value remains: how much its wings are tilted while keeping that nose direction.
+
+The third value is bank. After heading and pitch, it rotates about the current object Z axis.
+
+Current object Z points along the nose. Applying positive 30 degrees about this axis leaves the nose direction unchanged while changing the tilt of the wings.
+
+Object X and Y rotate together. This is why the nose direction alone did not completely specify orientation. Front can remain the same while up and side change.
+
+Again, we do not use the original upright Z. Heading and pitch have already changed the nose direction, so bank must follow the current nose axis after those changes.
+
+The completed orientation is the result of applying heading 45 degrees, pitch 20 degrees, and bank 30 degrees in that order. The three values include an application order and the stage at which each axis is used.
+
+We can also separate the goals of the sail operation this way. Choosing where to place it and deciding which way its mast should stand are different judgments. The three model values are no longer a list to memorize: they are steps for arranging the front, up, and side of the same object.
+
+Once we have built this orientation, our use of clockwise may seem odd. We said heading was clockwise when viewed from above.
+
+But positive bank appears counterclockwise when we look from behind the plane toward its nose. Why do the directions look opposite if both use the same left-hand rule?
+
+The rule has not changed; the viewing position has. For heading, we looked from positive Y toward the origin, whereas for bank, we looked from the origin toward positive Z. These are opposite ways of looking along their respective axes.
+
+The arrow continues to indicate the same rotation while only the camera moves between the two sides. From the opposite side, the apparent clockwise direction reverses. The object has not suddenly started rotating the other way.
+
+So memorizing clockwise is not enough. We must also check the positive axis direction and which side we are viewing from. All three rotations still follow the same left-hand rule.
+
+The same caution applies when a real game’s camera moves. Let us set aside the assumption that screen up must be the object’s up direction.
+
+Heading and pitch first chose the nose direction; bank then chose how up and side are arranged around that nose. The information selecting front is separate from the twist around front.
+
+It is similar to choosing a direction on Earth’s surface using longitude and latitude. To specify an object’s orientation, however, we need one additional value for twist about that direction.
+
+In Mario Kart 8 Deluxe, passing the blue strip changes the wheels and enters the anti-gravity section. As the kart follows the banked corner, separately follow its front and the side where the driver’s head is.
+
+The kart’s front points along the road, while its up direction appears tilted with the surface. A single direction called screen up cannot explain both. That is why the front marker and the up marker follow different features.
+
+The camera and road also change here. On the actual recording, we therefore mark only the visible front and head side of the kart. These are editorial observation guides, not measurements of the game’s internal axes or angles.
+
+Our model can keep the outside reference axes visible while moving only the body axes. Having identified what we were looking at on the actual kart, we can now connect it to why the model needs front, up, and side.
+
+Separating these directions clarifies the roles of the three values. But another program’s use of the names heading, pitch, and bank does not guarantee the same interpretation. Let us check the conventions attached to those values.
+
+The Euler angles we have used build an orientation with three rotations. Which axes are used and in which order are separate conventions of that representation.
+
+Documentation often uses yaw, pitch, and roll instead of heading, pitch, and bank. Roll is often used in the same sense as bank, and some documents use yaw as a synonym for heading.
+
+Other names include azimuth, elevation, and tilt, or Greek letters such as alpha, beta, and gamma. Different names do not necessarily mean different rotations, and identical names do not necessarily mean identical rotations.
+
+Check the three agreements behind the names. Which axes are used, which directions are positive, and in which order are the rotations applied?
+
+In particular, check whether an axis moves with the object or remains fixed in its original direction. This explains why rotation orders can be described differently. Let us rebuild the same orientation in two ways.
+
+The left model moves about axes attached to the plane, as before. This is called intrinsic rotation.
+
+After heading, we apply pitch about the turned object X, then bank about object Z resulting from those steps. Each preceding result affects the axis used next.
+
+For the right model, we keep the upright-space axes fixed in their original directions. This is called extrinsic rotation.
+
+The final orientation produced by heading, pitch, and bank about moving object axes is the same as applying bank, pitch, and heading about fixed axes. The axes are fixed instead, and the order is reversed.
+
+The yaw-pitch-roll and roll-pitch-yaw descriptions can both appear because of this relationship. To represent the same rotation, reversing the order alone is insufficient: the moving-axis and fixed-axis conventions must match as well.
+
+Do not interpret this as permission to change the order freely. It is an equivalence where the axes used also change. First, let us set bank to zero and compare just heading and pitch.
+
+Give the left plane heading 30 degrees first. Object X turns with it, so we then apply pitch 20 degrees about that turned X.
+
+The right plane uses the reverse order. First apply pitch 20 degrees about fixed upright X, then heading 30 degrees about fixed upright Y.
+
+The two planes differ during the intermediate movement. But when we overlap them at the end, their nose, wings, and up direction all match. Different paths have reached the same final orientation.
+
+Look again at the axis used for the right plane’s second rotation. It is not the already tilted object Y, but upright Y, which has continued to point upward. That distinction makes the final orientations match.
+
+Now use fixed axes for both models and change only the order. Fixed X 90 degrees followed by fixed Y 90 degrees leaves the nose pointing down. Reversing that order leaves it pointing right. Reversing two rotations about the same fixed axes is a different calculation.
+
+Application order is therefore information as important as the numbers. Without this distinction, we may also mistake similar names such as yaw and heading for the same operation. Let us pitch the plane down first and compare them.
+
+When the plane is initially level, object Y and upright Y coincide. Rotating about either Y can appear to produce the same movement.
+
+Pitch the plane so its nose points vertically down. Upright Y remains vertical, but object Y has tilted with the plane and now points in another direction.
+
+Here, we will call rotation about current object Y yaw. Giving it 90 degrees of yaw moves the downward-pointing nose toward a horizontal direction. The plane ends up appearing to lie on its side.
+
+Changing the heading value instead turns the entire orientation about the original vertical axis. The nose remains downward while the tilted up and side directions change.
+
+Compare the two results from the same viewpoint. Although both axes are named Y, they now point in different spatial directions.
+
+Think of looking downward in a first-person game and moving the mouse horizontally. Rather than turning the head about tilted object Y, we can often describe it as changing heading around a consistently vertical reference. A particular game’s implementation convention must still be checked separately.
+
+Adding a value to heading alone will not always implement the yaw operation you want. Depending on the current orientation, other Euler angles may also need to change. A similar issue appears with the middle value, pitch.
+
+With zero bank, changing the middle pitch value appears to match rotation about current object X. It is tempting to think pitch always means rotation about the finished object’s horizontal axis.
+
+But bank turns object X again. After that, changing the middle Euler pitch value and adding rotation about the finished orientation’s current object X generally produce different results.
+
+Euler angles describe a sequence that constructs the final orientation. They are not three commands that pick any remaining axis of the finished object and rotate it further. We must read which stage’s axis each angle uses.
+
+For games with a ground reference, heading-pitch-bank is intuitive: first the vertical axis, then the body’s lateral axis, then its forward axis. Not every field follows that choice.
+
+Proper Euler-angle conventions use the same axis for the first and last rotations. One example separates a spinning top’s precession, where its axis sweeps around, nutation, where the axis changes tilt, and the top’s own spin.
+
+Strictly, a convention using three different axes, like ours, is called Tait–Bryan angles. In practice, Euler angles is often used broadly to include this case, so whatever the name, check the actual axes and order first.
+
+This habit matters when importing rotation values from another engine or file. First check the other system’s axes, positive directions, and application order. Similar-looking screens do not make renaming numbers safe.
+
+For example, simply rearranging heading, pitch, and bank into another program’s X, Y, and Z fields will not generally work. As we saw, preceding rotations affect later axes, so the three rotations influence one another.
+
+One safe approach is to construct a rotation matrix using the original convention, then recover Euler angles for the same rotation under the new convention. If the coordinate frames themselves differ, that basis change must also be included.
+
+Think of the matrix as a table describing where an orientation sends each reference direction. Instead of renaming the values, we move the same orientation through a common representation and recover numbers under the new agreement.
+
+Our notation writes a point’s X, Y, and Z values in one horizontal row. This is a row vector, multiplied by a matrix on its right. The object-to-upright matrix multiplies the bank, pitch, and heading matrices in that order. Do not confuse this written matrix order with our description of movements about object axes.
+
+The full derivation of individual transformation formulas belongs in the transformation material. The key here is that three values acquire meaning together with their convention. Once that agreement is clear, we can explain why these values are convenient for people.
+
+The first advantage is that people can easily read and adjust orientation. Turning right 30 degrees, pitching down 10 degrees, and banking the wings 20 degrees suggests recognizable movements.
+
+Showing the same orientation as nine rotation-matrix values makes its appearance harder to imagine immediately. Euler angles make it easier to associate an editable number with a movement.
+
+In the model, moving the heading slider changes left-right direction; moving the pitch slider changes upward-downward facing. We can read the value being changed together with the visible result.
+
+Return to the logs used for the raft in Tears of the Kingdom. A log is brought sideways and attached beside another. Where to move it and which direction its long side should face are different judgments.
+
+The sail beside them was a separate object. Lifting the lying sail, standing it upright, and attaching it to the raft requires judging both placement and orientation. When rotating the hook and attaching it to the wooden board, the direction of its open side matters too.
+
+This is not evidence that the game internally uses Euler angles. It shows why it is useful for people to break a desired orientation into understandable rotation operations and adjust them by checking the result.
+
+The benefit we have established is convenient human input and editing. This is not necessarily the best representation for every computer operation. If many orientations must be stored, data size and precision also need attention.
+
+For small changes around one orientation, three independently adjustable quantities are needed for 3D rotation. Working within such a neighborhood is called local treatment. Euler angles store those three values, using fewer numbers than storing all nine entries of a matrix.
+
+The difference accumulates when many orientations are stored, as in character animation. As frame counts and bone counts grow, the data size per orientation matters.
+
+We can also choose the spacing used to store angles. Suppose each angle is rounded to the nearest whole degree. Each component’s rounding error is then at most 0.5 degrees.
+
+If 20 degrees and 20.4 degrees are both placed in the 20-degree bin, fewer distinct values are stored, but their original small difference disappears. Representing values at specified intervals is called quantization.
+
+A component error of 0.5 degrees does not mean the final orientation error is always 0.5 degrees. We must consider how the three rotations combine and the current orientation.
+
+Storing angles gives precision a relatively intuitive meaning. When storing sine and cosine components instead, we must separately examine how errors in those values affect the angle.
+
+Other rotation representations can also be compressed; Euler angles are not the only compressible option. The advantage here is combining human-readable angles with compact storage.
+
+Now separate reducing data size from ensuring the numbers represent a rotation at all. Similar-looking numeric fields can have different constraints.
+
+Under our specified convention, any three finite real values produce a rotation. Finite means a number other than infinity or an invalid numeric value. Heading 720 degrees or pitch 135 degrees still produces a computable orientation.
+
+By contrast, filling nine matrix entries with arbitrary numbers may not produce a rotation. It can produce a transformation that stretches lengths or skews the axes.
+
+Quaternions also require constraints such as length when used for rotation. There is no need to memorize their formula yet. Simply distinguish the conditions that different representations require to describe a valid rotation.
+
+Three finite angles producing a valid orientation is also different from producing the orientation we wanted. Choose the wrong axes or order and the calculation remains possible, but the object faces the wrong way.
+
+So far, we have considered the convenience of three values. That convenience has a cost. The same orientation can occur under different values, and connecting those values over time can cause problems. First, let us examine multiple numeric descriptions of one orientation.
+
+Turn our plane’s heading from zero to 360 degrees. A complete turn occurred, but the final orientation matches the start. Turning through 720 degrees, or two full turns, produces that same final orientation.
+
+Adding an integer multiple of 360 degrees gives the same final orientation. These different values describing the same result are called redundant representations, or aliasing.
+
+Mario jumping from a stone pillar, flipping his body in the air, and standing again illustrates the distinction. The final standing image alone does not preserve the fact that his body was inverted in midair. We have not measured an exact angle in the footage; we are distinguishing final appearance from movement history.
+
+Combining three rotations introduces less obvious redundancy than a full turn in one angle. Set the first model to heading 0, pitch 135, and bank 0 degrees. Set the second to heading 180, pitch 45, and bank 180 degrees.
+
+Their numbers differ, but when overlapped, their nose, wings, and up direction all coincide. Different paths have reached the same final orientation.
+
+Different angle triples therefore do not necessarily mean different orientations. To compare orientations or print readable output, we need a rule that chooses one representative from several descriptions of the same appearance.
+
+One approach restricts heading and bank to greater than −180 degrees and at most +180 degrees. Pitch is restricted to the interval from −90 through +90 degrees.
+
+We will call the representative expression under these rules the canonical form. In the pair of equivalent models with different pitch values, we choose the representation fitting these ranges.
+
+Subtracting 360 independently from each field is not always sufficient. Bringing pitch into its chosen interval may require changing heading and bank together.
+
+At pitch exactly +90 or −90 degrees, one additional step is needed. Heading and bank no longer appear independently at those boundaries.
+
+A range table therefore does not finish the problem. As we gradually pitch the plane toward that boundary, we can directly examine what gimbal lock means.
+
+Change the model’s pitch from 45 to 80 and then 90 degrees. As pitch increases, follow how the initial Y axis and the final bank’s Z axis approach the same line.
+
+At 90 degrees, both axes lie on one line. Their positive directions may be opposite, but there is only one line about which the rotations occur.
+
+Here, changing heading and changing bank have overlapping effects. This loss of independent parameter-control directions is gimbal lock.
+
+In our convention, pitch +90 degrees leaves the combination heading minus bank. Heading 30 degrees and bank 10 degrees gives the same orientation as heading 20 degrees and bank zero.
+
+Compare against heading 45 degrees and bank zero. The corresponding case is heading zero and bank −45 degrees. We must not put positive 45 degrees into both cases. The opposite positive directions of the two axes appear in this sign.
+
+At the pitch −90-degree boundary, the remaining combination is instead heading plus bank. The same subtraction rule does not apply at both boundaries.
+
+This does not physically prevent the plane itself from rotating further. Every orientation can still be represented. What becomes difficult is independently adjusting the three values and reading them continuously near that region.
+
+A body or kart tilting abruptly in game footage is not enough to diagnose this calculation. The overlapping-axis condition and numerical relationships here are checked in our model under a specified convention.
+
+To choose one representative at those boundaries, we can set bank to zero when pitch is +90 or −90 degrees. We collect the overlapping effect into heading alone.
+
+For +90-degree pitch, subtract the previous bank from heading; for −90-degree pitch, add them. The object’s orientation is retained while its numeric description is standardized.
+
+But this rule removes redundant descriptions. It does not remove continuity problems near gimbal lock. A small physical movement can still cause the output angles to change abruptly by large amounts.
+
+A program can accept finite input angles outside the representative ranges and still construct a rotation. Canonical output is convenient for people to read. The accepted input range and the rule for choosing an output representative are separate decisions.
+
+Simply separating front, up, and side already helped us read the real result of the sail standing or the kart tilting. We did not infer the game’s internal representation or diagnose gimbal lock from its screen. Exact conventions and numbers were checked in a controlled model of orientation.
+
+The raft now forms one structure with the upright sail attached, ready to be moved onto the water and boarded by Link. The small judgments about where to place something and how to stand it have come together into a usable object.
+
+So far, this has been about making a desired orientation and choosing numbers to record it. Recording the start and end orientations, however, does not determine the movement between them.
+
+We can reach the same destination by turning far in the opposite direction or by taking a short route. In the next part, we will begin with the paths produced when these values change over time, then examine another way to record rotation using one axis and one angle.
