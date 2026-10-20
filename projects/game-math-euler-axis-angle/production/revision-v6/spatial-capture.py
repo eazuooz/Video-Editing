@@ -1,6 +1,7 @@
-"""Prepare V6 finite clips from measured beats; explicit --run needs GPU handoff.
+"""Prepare V6 finite clips from measured beats or explicit fixed plan durations.
 
 No main-editor control, installs, foreign process termination, or automatic jobs.
+--plan-durations never invents a measured timeline or global speech timestamps.
 """
 from pathlib import Path
 import argparse, hashlib, json, os, shutil, subprocess, sys, time, uuid
@@ -27,25 +28,37 @@ def dedicated_mib(pid):
         return float(result) if result else None
     except (subprocess.SubprocessError,ValueError):return None
 def prepare(args):
+    if args.plan_durations and (args.sample or args.bake_only):
+        raise RuntimeError('Fixed plan durations are for finite production clips, not sample/CPU bake-only jobs.')
     if args.bake_only:
         if args.sample or args.scene:raise RuntimeError('CPU bake-only saves all owned scenes and cannot select rendered clips.')
         out=LOCAL/'spatial-cpu-bake';out.mkdir(parents=True,exist_ok=True)
         job=dict(outputDirectory=str(out),bakeOnly=True,bakeScenes=True,captureTestbed=False,clips=[])
         path=LOCAL/'spatial-cpu-bake-job.json';path.write_text(json.dumps(job,indent=2)+'\n',encoding='utf8')
         return path,job
-    plan=json.loads((H/'spatial-plan.json').read_text(encoding='utf8'));clips=[]
+    plan_path=H/'spatial-plan.json'
+    plan=json.loads(plan_path.read_text(encoding='utf8'));clips=[]
+    catalog_path=OWN/'spatial-shots.json'
+    catalog={s['id']:s for s in json.loads(catalog_path.read_text(encoding='utf8'))['shots']}
+    timing_source=dict(mode='sample-180f' if args.sample else 'fixed-plan-durations' if args.plan_durations else 'measured-timeline',
+        planSha256=sha(plan_path),shotCatalogSha256=sha(catalog_path),fps=60,
+        globalSpeechTimingIncluded=False if args.sample or args.plan_durations else True)
     timeline=None
-    if not args.sample:
+    if not args.sample and not args.plan_durations:
         path=Path(args.timeline).resolve()
         if not path.exists():raise RuntimeError('Measured timeline is not ready; sample or prepare after actual speech timing.')
         timeline=json.loads(path.read_text(encoding='utf-8-sig'))
         by_scene={s['id']:s for s in timeline['scenes']}
+        timing_source.update(timelineFile=str(path),timelineSha256=sha(path))
     for scene in plan['scenes']:
         if args.scene and scene['id'] not in args.scene:continue
         for beat in scene['beats']:
             if beat['renderer']!='Unity':continue
             if args.sample and beat['id']!='v6-04.B01':continue
             frames=beat['durationFrames']
+            if type(frames) is not int or frames<2:raise RuntimeError('Invalid fixed finite frame budget: '+beat['id'])
+            if args.plan_durations and round(catalog[beat['id']]['motionSeconds']*60)!=frames:
+                raise RuntimeError('Plan/catalog finite durations disagree: '+beat['id'])
             if timeline is not None:
                 measured=by_scene[scene['id']]
                 found=next((b for b in measured['teachingBeats'] if b['id']==beat['id']),None)
@@ -59,15 +72,24 @@ def prepare(args):
     if not args.sample:
         for auxiliary in plan.get('auxiliaryClips',[]):
             if args.scene and auxiliary['sceneId'] not in args.scene:continue
-            candidates=timeline.get('auxiliaryVisuals',[])+by_scene[auxiliary['sceneId']].get('auxiliaryVisuals',[])
-            found=next((b for b in candidates if b['id']==auxiliary['id']),None)
-            if found is None:raise RuntimeError('Measured auxiliary interval missing: '+auxiliary['id'])
-            frames=int(found['visualEndFrame'])-int(found['visualStartFrame'])
+            frames=auxiliary['durationFrames']
+            if timeline is not None:
+                candidates=timeline.get('auxiliaryVisuals',[])+by_scene[auxiliary['sceneId']].get('auxiliaryVisuals',[])
+                found=next((b for b in candidates if b['id']==auxiliary['id']),None)
+                if found is None:raise RuntimeError('Measured auxiliary interval missing: '+auxiliary['id'])
+                frames=int(found['visualEndFrame'])-int(found['visualStartFrame'])
             if frames!=auxiliary['durationFrames']:raise RuntimeError('Auxiliary finite frame budget changed: '+auxiliary['id'])
+            if args.plan_durations and round(catalog[auxiliary['id']]['motionSeconds']*60)!=frames:
+                raise RuntimeError('Auxiliary plan/catalog finite durations disagree: '+auxiliary['id'])
             clips.append(dict(shotId=auxiliary['id'],frames=frames))
     if not clips:raise RuntimeError('No selected V6 physical shots.')
+    if args.plan_durations and not args.scene:
+        primary=[c for c in clips if c['shotId']!='v6-41.answer-y90']
+        auxiliary=[c for c in clips if c['shotId']=='v6-41.answer-y90']
+        if len(primary)!=48 or sum(c['frames'] for c in primary)!=19020 or len(auxiliary)!=1 or auxiliary[0]['frames']!=180:
+            raise RuntimeError('The authorized fixed48+1 finite clip budget changed; do not silently retime production.')
     out=LOCAL/('spatial-sample' if args.sample else 'spatial-clips');out.mkdir(parents=True,exist_ok=True)
-    job=dict(outputDirectory=str(out),ffmpegPath=shutil.which('ffmpeg'),bakeScenes=args.bake,captureTestbed=args.sample,clips=clips)
+    job=dict(outputDirectory=str(out),ffmpegPath=shutil.which('ffmpeg'),bakeScenes=args.bake,captureTestbed=args.sample,clips=clips,timingSource=timing_source)
     if not job['ffmpegPath']:raise RuntimeError('Existing FFmpeg is required; no install performed.')
     path=LOCAL/('spatial-sample-job.json' if args.sample else 'spatial-capture-job.json')
     path.write_text(json.dumps(job,indent=2)+'\n',encoding='utf8')
@@ -75,7 +97,12 @@ def prepare(args):
 
 def run(path,job,args):
     control=json.loads((ROOT/'shared/publishing/video-production-control.json').read_text(encoding='utf-8-sig'))
-    if control.get('selectedVideo')!='game-math-euler-axis-angle':raise RuntimeError('M04 is no longer selected.')
+    if control.get('selectedVideo')!='game-math-euler-axis-angle' or not control.get('newProductionAuthorization',{}).get('fullProductionAuthorized'):raise RuntimeError('M04 full production is no longer selected.')
+    timing=job['timingSource']
+    if timing['planSha256']!=sha(H/'spatial-plan.json') or timing['shotCatalogSha256']!=sha(OWN/'spatial-shots.json'):
+        raise RuntimeError('The finite capture plan changed after preparation; re-prepare before taking GPU ownership.')
+    if timing.get('timelineSha256') and timing['timelineSha256']!=sha(Path(timing['timelineFile'])):
+        raise RuntimeError('The measured timeline changed after preparation.')
     if LEASE.exists():raise RuntimeError('Existing GPU lease preserved; wait for explicit handoff.')
     for p in psutil.process_iter(['pid','name','cmdline']):
         if p.info['name'] and p.info['name'].lower()=='unity.exe' and normalize(ISO) in normalize(' '.join(p.info['cmdline'] or [])):
@@ -93,7 +120,7 @@ def run(path,job,args):
     with LEASE.open('x',encoding='utf8') as f:json.dump(record,f,indent=2)
     out=Path(job['outputDirectory']);log=out/('sample-editor.log' if args.sample else 'capture-editor.log')
     try:
-        command=[str(UNITY),'-batchmode','-projectPath',str(ISO),'-force-d3d11','-job-worker-count','2','-background-job-worker-count','1','-executeMethod','YamyamCoding.GameMath.EulerAxisAngle.V6.Editor.EulerV6Capture.Run','-m04V6Job',str(path),'-logFile',str(log)]
+        command=[str(UNITY),'-batchmode','-noUpm','-projectPath',str(ISO),'-force-d3d11','-job-worker-count','2','-background-job-worker-count','1','-executeMethod','YamyamCoding.GameMath.EulerAxisAngle.V6.Editor.EulerV6Capture.Run','-m04V6Job',str(path),'-logFile',str(log)]
         proc=subprocess.Popen(command,cwd=ROOT,creationflags=subprocess.CREATE_NO_WINDOW)
         identity=psutil.Process(proc.pid)
         record['unity']=dict(pid=proc.pid,createTime=identity.create_time(),project=str(ISO),log=str(log),argumentsContainTokens=False)
@@ -120,12 +147,13 @@ def run(path,job,args):
             probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height,avg_frame_rate,nb_frames','-of','json',str(files['clip'])],text=True))['streams'][0]
             if n!=c['frames'] or int(probe['nb_frames'])!=c['frames'] or [probe['width'],probe['height']]!=[1920,1080] or probe['avg_frame_rate']!='60/1':raise RuntimeError('V6 clip/anchors fail the exact FHD60 frame contract.')
             actual.append(dict(id=c['shotId'],frames=n,probe=probe,files={k:dict(path=str(v),sha256=sha(v)) for k,v in files.items()}))
-        receipt=dict(schemaVersion=1,jobSha256=sha(path),sampleOnly=args.sample,outputs=actual,ownEditorExited=record['ownEditorExited'],fullDecodePerformed=False,visualReview='pending native/mobile inspection',sourceMath='left-handed,row,object-to-upright; native engine transpose',timelineSha256=sha(Path(args.timeline)) if not args.sample else None)
+        receipt=dict(schemaVersion=1,jobSha256=sha(path),sampleOnly=args.sample,outputs=actual,ownEditorExited=record['ownEditorExited'],fullDecodePerformed=False,visualReview='pending native/mobile inspection',sourceMath='left-handed,row,object-to-upright; native engine transpose',timingSource=timing,timelineSha256=timing.get('timelineSha256'))
         (out/'spatial-capture-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf8')
         if args.sample:
             shared=LOCAL/'spatial-clips';shared.mkdir(exist_ok=True)
             shutil.copy2(out/'testbed-still.png',shared/'testbed-still.png')
             record['sharedTestbedStill']=dict(file=str(shared/'testbed-still.png'),sha256=sha(shared/'testbed-still.png'),source='same aircraft/camera in neutral identity pose; axes/active arc hidden for parent2D background; not a full production timing approval')
+        record['state']='complete'
         return 0
     finally:
         if proc is not None and proc.poll() is None:
@@ -133,6 +161,7 @@ def run(path,job,args):
                 owner=psutil.Process(proc.pid)
                 if owner.create_time()==record['unity']['createTime']:owner.terminate();proc.wait(timeout=30)
             except psutil.NoSuchProcess:pass
+        if record['state']!='complete':record['state']='failed_or_interrupted'
         record['finishedAt']=time.time();(out/'spatial-process.json').write_text(json.dumps(record,indent=2)+'\n',encoding='utf8')
         if LEASE.exists() and json.loads(LEASE.read_text(encoding='utf-8-sig')).get('token')==token:
             history=ROOT/'shared/output/gpu-handoff';history.mkdir(exist_ok=True)
@@ -201,7 +230,7 @@ def run_cpu_bake(path,job,args):
         if lock.exists() and json.loads(lock.read_text()).get('token')==token:lock.unlink()
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--timeline',default=str(H/'timeline.json'));ap.add_argument('--scene',action='append');ap.add_argument('--sample',action='store_true');ap.add_argument('--bake',action='store_true');ap.add_argument('--bake-only',action='store_true');ap.add_argument('--run',action='store_true');ap.add_argument('--timeout',type=int,default=3600);args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--timeline',default=str(H/'timeline.json'));ap.add_argument('--scene',action='append');ap.add_argument('--sample',action='store_true');ap.add_argument('--bake',action='store_true');ap.add_argument('--bake-only',action='store_true');ap.add_argument('--plan-durations',action='store_true',help='Use authored clip-relative fixed finite budgets; no measured/global speech timeline is read or fabricated.');ap.add_argument('--run',action='store_true');ap.add_argument('--timeout',type=int,default=3600);args=ap.parse_args()
     path,job=prepare(args);print(json.dumps(dict(job=str(path),clips=len(job['clips']),frames=sum(c['frames'] for c in job['clips']),launched=args.run)),flush=True)
     return (run_cpu_bake(path,job,args) if args.bake_only else run(path,job,args)) if args.run else 0
 

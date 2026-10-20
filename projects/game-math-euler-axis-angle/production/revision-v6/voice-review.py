@@ -5,7 +5,18 @@ import psutil
 H=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('voice_render_v6',H/'voice-render.py');v=importlib.util.module_from_spec(spec);spec.loader.exec_module(v)
 R,P,O,LEASE=v.R,v.P,v.O,v.LEASE
+ASR_CAP_MIB=6656
+ASR_MIN_FREE_MIB=7168
 def norm(s):return re.sub('[^a-z0-9가-힣]','',s.lower())
+def model_path():
+ local=R/'qwen3-tts/models/whisper-large-v3-turbo'
+ if not (local/'config.json').exists():
+  # The approved V5 helper used this existing HF cache, not a second repo
+  # model copy. Resolve offline; never download a model during production.
+  from huggingface_hub import snapshot_download
+  local=Path(snapshot_download('openai/whisper-large-v3-turbo',local_files_only=True))
+ assert (local/'config.json').exists() and (local/'model.safetensors').exists(),'Existing approved offline ASR snapshot is incomplete'
+ return local
 def worker(token):
  v.validate();lease=v.read(LEASE);owner=lease['coordinator'];me=psutil.Process()
  assert lease['token']==token and lease['project']==P.name
@@ -21,15 +32,19 @@ def worker(token):
    if transcriber is None:
     import torch
     from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
-    torch.set_num_threads(2);torch.cuda.set_per_process_memory_fraction(6144*1048576/torch.cuda.get_device_properties(0).total_memory)
-    model_path=R/'qwen3-tts/models/whisper-large-v3-turbo';assert (model_path/'model.safetensors').exists()
-    model=AutoModelForSpeechSeq2Seq.from_pretrained(str(model_path),dtype=torch.float16,low_cpu_mem_usage=True,use_safetensors=True,attn_implementation='eager').to('cuda:0')
-    processor=AutoProcessor.from_pretrained(str(model_path))
+    torch.set_num_threads(2);torch.cuda.set_per_process_memory_fraction(ASR_CAP_MIB*1048576/torch.cuda.get_device_properties(0).total_memory)
+    local_model=model_path();print('Using approved existing offline ASR snapshot',str(local_model),flush=True)
+    model=AutoModelForSpeechSeq2Seq.from_pretrained(str(local_model),dtype=torch.float16,low_cpu_mem_usage=True,use_safetensors=True,attn_implementation='eager',local_files_only=True).to('cuda:0')
+    processor=AutoProcessor.from_pretrained(str(local_model),local_files_only=True)
     transcriber=pipeline('automatic-speech-recognition',model=model,tokenizer=processor.tokenizer,feature_extractor=processor.feature_extractor,dtype=torch.float16,device='cuda:0',chunk_length_s=25,stride_length_s=3,batch_size=1)
    print('Recognizing current source PCM once',audio['id'],flush=True)
    raw=transcriber(str(path),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word')
    cached=dict(scene=audio['id'],audio_sha256=audio['sha256'],text=raw['text'],words=raw['chunks'],configuration=dict(chunkLengthSeconds=25,strideSeconds=3,batchSize=1,prompt=None))
    v.save(cache,cached)
+   del raw
+   # Release only this finished scene's unused allocator cache. Keep model,
+   # float16 and all recognition parameters unchanged; no foreign process.
+   torch.cuda.empty_cache()
   else:print('Reused exact-PCM successful ASR cache',audio['id'],flush=True)
   expected=' '.join(byid[audio['id']]['lines']);a,b=norm(expected),norm(cached['text']);matcher=difflib.SequenceMatcher(None,a,b,autojunk=False)
   summaries.append(dict(scene=audio['id'],audio_sha256=audio['sha256'],expected=expected,recognized=cached['text'],similarity=matcher.ratio(),
@@ -44,12 +59,13 @@ def main():
  control=v.read(R/'shared/publishing/video-production-control.json')
  assert control['selectedVideo']==P.name and control['newProductionAuthorization']['fullProductionAuthorized']
  v.validate();done=v.read(O/'tts-current.json');assert done['status']=='complete-source-ASR-pending' and done['sceneCount']==41
+ local_model=model_path()
  assert not LEASE.exists(),'Preserve current GPU lease; source ASR starts only after TTS exits'
- free,total,util=v.gpu();assert free>=5000
+ free,total,util=v.gpu();assert free>=ASR_MIN_FREE_MIB
  family={x.pid for x in [psutil.Process(),*psutil.Process().parents()]}
  clients=subprocess.check_output(['nvidia-smi','--query-compute-apps=pid,process_name','--format=csv,noheader'],text=True)
  assert not any('python' in line.lower() and int(line.split(',')[0]) not in family for line in clients.splitlines()),'Foreign GPU compute remains untouched; do not overlap source ASR'
- me=psutil.Process();token=str(uuid.uuid4());state=dict(token=token,project=P.name,state='tts_running',purpose='one current41-scene source ASR cache batch',coordinator=dict(pid=me.pid,createTime=me.create_time()),startedAt=time.time(),foreignProcessesPaused=[],gpuBefore=dict(freeMiB=free,totalMiB=total,utilization=util))
+ me=psutil.Process();token=str(uuid.uuid4());state=dict(token=token,project=P.name,state='tts_running',purpose='one current41-scene source ASR cache batch',coordinator=dict(pid=me.pid,createTime=me.create_time()),startedAt=time.time(),foreignProcessesPaused=[],gpuBefore=dict(freeMiB=free,totalMiB=total,utilization=util),allocatorCapMiB=ASR_CAP_MIB,minimumFreeMiB=ASR_MIN_FREE_MIB,offlineModelPath=str(local_model),offlineModelConfigSha256=v.sha(local_model/'config.json'),implementationSha256=v.sha(Path(__file__)))
  with LEASE.open('x',encoding='utf8') as f:json.dump(state,f)
  code=1
  try:

@@ -10,13 +10,15 @@ import argparse,difflib,hashlib,importlib.util,json,math,os,subprocess,sys,time,
 import psutil
 
 H=Path(__file__).resolve().parent
-spec=importlib.util.spec_from_file_location('v6_final_mix_voice_runtime',H/'voice-render.py')
-v=importlib.util.module_from_spec(spec);spec.loader.exec_module(v)
+spec=importlib.util.spec_from_file_location('v6_final_mix_approved_asr',H/'voice-review.py')
+approved_asr=importlib.util.module_from_spec(spec);spec.loader.exec_module(approved_asr)
+v=approved_asr.v
 R,P,LEASE=v.R,v.P,v.LEASE
 O=P/'production/local/revision-v6';BASE=O/'qa/final-mix-asr'
-MODEL=R/'qwen3-tts/models/whisper-large-v3-turbo'
+ASR_CAP_MIB=approved_asr.ASR_CAP_MIB
+ASR_MIN_FREE_MIB=approved_asr.ASR_MIN_FREE_MIB
 PYTHON=R/'qwen3-tts/.venv/Scripts/python.exe'
-CONFIG={'model':'qwen3-tts/models/whisper-large-v3-turbo','dtype':'float16','device':'cuda:0','attention':'eager','chunkLengthSeconds':25,'strideSeconds':3,'batchSize':1,'language':'korean','task':'transcribe','timestamps':'word','prompt':None,'asrSampleRate':16000,'conversion':'exact48k stereo scene range -> arithmetic channel mean -> scipy.resample_poly(1,3); no gain/fade/time stretch'}
+CONFIG={'model':'openai/whisper-large-v3-turbo','modelResolver':'voice-review.py:model_path; existing offline files only','localFilesOnly':True,'dtype':'float16','device':'cuda:0','attention':'eager','chunkLengthSeconds':25,'strideSeconds':3,'batchSize':1,'language':'korean','task':'transcribe','timestamps':'word','prompt':None,'asrSampleRate':16000,'conversion':'exact48k stereo scene range -> arithmetic channel mean -> scipy.resample_poly(1,3); no gain/fade/time stretch'}
 
 def norm(s):
  import re
@@ -33,9 +35,31 @@ def run(args,log):
  assert cp.returncode==0,cp.stderr.decode(errors='replace')[-2500:]
  return cp
 def model_identity():
- assert (MODEL/'model.safetensors').exists() and PYTHON.exists()
- files=[MODEL/'model.safetensors',MODEL/'config.json',MODEL/'preprocessor_config.json']
- return {'configuration':CONFIG,'files':[proof(f) for f in files if f.exists()]}
+ local=approved_asr.model_path();assert PYTHON.exists()
+ names=['model.safetensors','config.json','generation_config.json','preprocessor_config.json','tokenizer.json','tokenizer_config.json','special_tokens_map.json','added_tokens.json','merges.txt','normalizer.json','vocab.json']
+ required=['model.safetensors','config.json','preprocessor_config.json','tokenizer_config.json']
+ assert all((local/name).exists() for name in required),'The same approved offline model/processor files must exist'
+ files=[local/name for name in names if (local/name).exists()]
+ return {'configuration':CONFIG,'resolvedModelPath':str(local.resolve()),'resolver':proof(H/'voice-review.py'),'configSha256':v.sha(local/'config.json'),'files':[{'name':f.name,'file':str(f.resolve()),'sha256':v.sha(f),'bytes':f.stat().st_size} for f in files]}
+
+def inference_identity(identity):
+ # Allocation limits, resolver code hashes and cache paths do not change
+ # the model/inference result. Keep successful recognition reusable when
+ # only memory safety or provenance changes.
+ return {'configuration':identity['configuration'],'configSha256':identity['configSha256'],'modelFiles':[{'name':x.get('name',Path(x['file']).name),'sha256':x['sha256']} for x in identity['files']]}
+
+def check_model_only():
+ local=approved_asr.model_path()
+ identity={'resolvedModelPath':str(local.resolve()),'configSha256':v.sha(local/'config.json'),'weightBytes':(local/'model.safetensors').stat().st_size,'modelAndProcessorFilesExist':all((local/name).exists() for name in ['model.safetensors','config.json','preprocessor_config.json','tokenizer_config.json','tokenizer.json']),'resolverReusedDirectly':'voice-review.py:model_path','localFilesOnly':True,'modelLoaded':False,'asrExecuted':False,'gpuQueriedOrOpened':False}
+ source_execution=v.O/'source-asr-execution.json'
+ if source_execution.exists():
+  source=v.read(source_execution)
+  if 'offlineModelPath' in source:
+   assert Path(source['offlineModelPath']).resolve()==local.resolve()
+   assert source['offlineModelConfigSha256']==identity['configSha256']
+   identity['samePathAndConfigAsSourceAsrExecution']=True
+ assert identity['modelAndProcessorFilesExist']
+ print(json.dumps(identity,ensure_ascii=False,indent=2))
 
 def scene_ranges(timeline):
  assert timeline['revision']=='article-flow-v6' and timeline['slug']==P.name
@@ -99,7 +123,7 @@ def prepare(master):
  stat={'bytes':master.stat().st_size,'mtimeNs':master.stat().st_mtime_ns};master_sha=v.sha(master)
  folder=BASE/'masters'/master_sha;extraction=decode_once(master,master_sha,timeline,folder)
  assert stat=={'bytes':master.stat().st_size,'mtimeNs':master.stat().st_mtime_ns},'Master changed during preparation'
- identity=model_identity();model_hash=obj_sha(identity);spoken=v.read(H/'voice-input.ko.json');canonical=v.read(P/'script/revision-v6-article-flow/narration.ko.json')
+ identity=model_identity();model_hash=obj_sha(inference_identity(identity));spoken=v.read(H/'voice-input.ko.json');canonical=v.read(P/'script/revision-v6-article-flow/narration.ko.json')
  source={x['id']:x for x in spoken['scenes']};display={x['id']:x for x in canonical['scenes']}
  mix=v.read(O/'audio-build.json');assert mix['inputs']['timelineSha256']==v.sha(H/'timeline.json')
  assert mix['separatelyAddedBgm'] is False and mix['sampleRate']==48000 and mix['channels']==2 and mix['totalFrames']==timeline['totalFrames']
@@ -110,7 +134,7 @@ def prepare(master):
    cache=BASE/'asr-cache'/f'{key}.json'
    scene_rows.append({**row,'encodedScenePcm48kSha256':pcm_hash,'asrMono16kSha256':asr_hash,'asrSamples':len(raw),'asrSampleRate':16000,'asrDurationSeconds':len(raw)/16000,'cacheFile':rel(cache),'cacheKey':key,'expectedSpoken':' '.join(source[row['id']]['lines']),'expectedCanonicalNarration':' '.join(display[row['id']]['lines']),'expectedSpokenParagraphs':source[row['id']]['lines'],'expectedCanonicalParagraphs':display[row['id']]['lines']})
  inputs={'master':{**proof(master),**stat},'timeline':proof(H/'timeline.json'),'extraction':proof(folder/'extraction.json'),'spokenInput':proof(H/'voice-input.ko.json'),'canonicalNarration':proof(P/'script/revision-v6-article-flow/narration.ko.json'),'finalMixReceipt':proof(O/'audio-build.json'),'voiceRuntime':proof(H/'voice-render.py'),'approvedSourceAsrRuntime':proof(H/'voice-review.py'),'implementation':proof(Path(__file__))}
- data={'schemaVersion':1,'revision':'article-flow-v6','inputs':inputs,'modelIdentity':identity,'modelConfigurationSha256':model_hash,'extractionFile':rel(folder/'extraction.json'),'decodedFile':extraction['decodedFile'],'decodedSha256':extraction['decodedSha256'],'decodedPcmSha256':extraction['decodedPcmSha256'],'sceneCount':41,'scenes':scene_rows,'expectedParagraphCount':sum(len(x['expectedSpokenParagraphs']) for x in scene_rows),'bodyCoverage':'Every main-body sample from original2s branding end through the exact membership outro start, scene ranges contiguous and nonoverlapping','levelReference':{'narrationStem':mix['narrationStem'],'gameStem':mix['gameStem'],'losslessMix':mix['audioMix'],'encodedAac':mix['encodedAudio'],'constantProgramGainDb':mix['constantProgramGainDb'],'referenceReceiptSha256':v.sha(O/'audio-build.json'),'actualGameFrames':sum(c['frames'] for c in timeline['cuts']),'separatelyAddedBgm':False,'actualEncodedVsReferenceLevelComparison':'pending inventory CPU review using this same decoded48k WAV'},'sourcePcmAsrRepeated':False,'humanWholeListening':'pending','directFullTextReview':'pending','automaticSpeechPass':False}
+ data={'schemaVersion':1,'revision':'article-flow-v6','inputs':inputs,'modelIdentity':identity,'modelConfigurationSha256':model_hash,'recognitionCacheIdentity':inference_identity(identity),'memorySafety':{'allocatorCapMiB':ASR_CAP_MIB,'minimumFreeBeforeLoadMiB':ASR_MIN_FREE_MIB,'clearOnlyOwnUnusedCudaCacheAfterNewSuccessfulScene':True,'cachedSceneLoadsModelOrClearsCache':False,'partOfRecognitionCacheKey':False},'extractionFile':rel(folder/'extraction.json'),'decodedFile':extraction['decodedFile'],'decodedSha256':extraction['decodedSha256'],'decodedPcmSha256':extraction['decodedPcmSha256'],'sceneCount':41,'scenes':scene_rows,'expectedParagraphCount':sum(len(x['expectedSpokenParagraphs']) for x in scene_rows),'bodyCoverage':'Every main-body sample from original2s branding end through the exact membership outro start, scene ranges contiguous and nonoverlapping','levelReference':{'narrationStem':mix['narrationStem'],'gameStem':mix['gameStem'],'losslessMix':mix['audioMix'],'encodedAac':mix['encodedAudio'],'constantProgramGainDb':mix['constantProgramGainDb'],'referenceReceiptSha256':v.sha(O/'audio-build.json'),'actualGameFrames':sum(c['frames'] for c in timeline['cuts']),'separatelyAddedBgm':False,'actualEncodedVsReferenceLevelComparison':'pending inventory CPU review using this same decoded48k WAV'},'sourcePcmAsrRepeated':False,'humanWholeListening':'pending','directFullTextReview':'pending','automaticSpeechPass':False}
  assert data['expectedParagraphCount']==250 and data['levelReference']['actualGameFrames']==1074
  path=folder/'preparation.json';v.save(path,data);return path,data
 
@@ -156,11 +180,18 @@ def worker(token,preparation,retry_failed=False):
    file=R/row['cacheFile'];file.parent.mkdir(parents=True,exist_ok=True);attempt=file.with_suffix('.attempt.json')
    if attempt.exists():assert retry_failed and v.read(attempt)['status']=='failed','Prior incomplete recognition is preserved. Inspect the failure before an explicit --retry-failed; successful cache is never rerun.'
    if transcriber is None:
+    # Recheck current free memory immediately before the first model load.
+    # Do not demand the unloaded-model threshold again after our model is
+    # resident; that would misclassify our own allocation as foreign use.
+    free,total,util=v.gpu();assert free>=ASR_MIN_FREE_MIB
     import torch
     from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
-    torch.set_num_threads(2);torch.cuda.set_per_process_memory_fraction(6144*1048576/torch.cuda.get_device_properties(0).total_memory)
-    model=AutoModelForSpeechSeq2Seq.from_pretrained(str(MODEL),dtype=torch.float16,low_cpu_mem_usage=True,use_safetensors=True,attn_implementation='eager').to('cuda:0')
-    processor=AutoProcessor.from_pretrained(str(MODEL))
+    torch.set_num_threads(2);torch.cuda.set_per_process_memory_fraction(ASR_CAP_MIB*1048576/torch.cuda.get_device_properties(0).total_memory)
+    local_model=approved_asr.model_path()
+    assert local_model.resolve()==Path(p['modelIdentity']['resolvedModelPath']).resolve()
+    assert v.sha(local_model/'config.json')==p['modelIdentity']['configSha256']
+    model=AutoModelForSpeechSeq2Seq.from_pretrained(str(local_model),dtype=torch.float16,low_cpu_mem_usage=True,use_safetensors=True,attn_implementation='eager',local_files_only=True).to('cuda:0')
+    processor=AutoProcessor.from_pretrained(str(local_model),local_files_only=True)
     transcriber=pipeline('automatic-speech-recognition',model=model,tokenizer=processor.tokenizer,feature_extractor=processor.feature_extractor,dtype=torch.float16,device='cuda:0',chunk_length_s=25,stride_length_s=3,batch_size=1)
    state={'status':'running','cacheKey':row['cacheKey'],'scene':row['id'],'pid':me.pid,'startedAt':time.time(),'preparationSha256':v.sha(preparation)};v.save(attempt,state)
    try:
@@ -168,6 +199,11 @@ def worker(token,preparation,retry_failed=False):
     result=transcriber({'raw':raw,'sampling_rate':16000},generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word')
     v.save(file,{'status':'recognized-evidence-only','cacheKey':row['cacheKey'],'audioPcm48kSha256':pcm_hash,'asrMono16kSha256':asr_hash,'modelConfigurationSha256':p['modelConfigurationSha256'],'configuration':CONFIG,'text':result['text'],'words':result['chunks'],'firstMasterSha256':p['inputs']['master']['sha256'],'firstScene':row['id'],'recognizedAt':time.time(),'automaticSpeechPass':False})
     state.update(status='complete',endedAt=time.time(),cacheSha256=v.sha(file));v.save(attempt,state)
+    del result,raw
+    # Only this finished scene's unused allocator cache is released. Keep
+    # model, dtype, chunk/stride, batch and prompt unchanged; touch no
+    # foreign process or successful recognition cache.
+    torch.cuda.empty_cache()
    except BaseException as error:
     state.update(status='failed',endedAt=time.time(),error=repr(error));v.save(attempt,state);raise
    aggregate(preparation)
@@ -178,11 +214,11 @@ def acquire(preparation,data,retry_failed=False):
  missing,output=aggregate(preparation)
  if not missing:print('Reused all exact encoded-scene ASR caches; no GPU/model loaded.',rel(output));return
  assert not LEASE.exists(),'Existing GPU lease is preserved; wait for TTS/other owner to finish'
- free,total,util=v.gpu();assert free>=5000
+ free,total,util=v.gpu();assert free>=ASR_MIN_FREE_MIB
  family={x.pid for x in [psutil.Process(),*psutil.Process().parents()]}
  clients=subprocess.check_output(['nvidia-smi','--query-compute-apps=pid,process_name','--format=csv,noheader'],text=True)
  assert not any('python' in line.lower() and int(line.split(',')[0]) not in family for line in clients.splitlines()),'Foreign GPU Python compute remains untouched'
- me=psutil.Process();token=str(uuid.uuid4());state={'token':token,'project':P.name,'state':'final_mix_asr_running','purpose':'one current encoded-final-mix ASR evidence batch','coordinator':{'pid':me.pid,'createTime':me.create_time()},'foreignProcessesPaused':[],'gpuBefore':{'freeMiB':free,'totalMiB':total,'utilization':util},'preparationSha256':v.sha(preparation),'startedAt':time.time()}
+ me=psutil.Process();token=str(uuid.uuid4());state={'token':token,'project':P.name,'state':'final_mix_asr_running','purpose':'one current encoded-final-mix ASR evidence batch','coordinator':{'pid':me.pid,'createTime':me.create_time()},'foreignProcessesPaused':[],'gpuBefore':{'freeMiB':free,'totalMiB':total,'utilization':util},'allocatorCapMiB':ASR_CAP_MIB,'minimumFreeMiB':ASR_MIN_FREE_MIB,'preparationSha256':v.sha(preparation),'startedAt':time.time()}
  with LEASE.open('x',encoding='utf-8') as f:json.dump(state,f)
  code=1
  try:
@@ -202,6 +238,10 @@ def self_test():
  a,b=norm(example['expectedSpoken']),norm('칠백이십 도에서 사십오 도');assert difflib.SequenceMatcher(None,a,b).ratio()==1
  assert obj_sha({'audio':'same','model':'same'})==obj_sha({'model':'same','audio':'same'})
  assert obj_sha({'audio':'changed','model':'same'})!=obj_sha({'audio':'same','model':'same'})
+ assert ASR_CAP_MIB==6656 and ASR_MIN_FREE_MIB==7168
+ identity={'configuration':CONFIG,'configSha256':'c','resolver':{'sha256':'old-safety-code'},'resolvedModelPath':'old-path','files':[{'name':'model.safetensors','file':'old-path/model.safetensors','sha256':'same-weights'}]}
+ before=obj_sha(inference_identity(identity));identity['resolver']['sha256']='new-memory-safety-code';identity['resolvedModelPath']='other-cache-path'
+ assert before==obj_sha(inference_identity(identity)),'Memory/provenance changes must preserve successful ASR cache'
  schema={'captionedMasterSha256':'pending','decodedFile':'pending','decodedSha256':'pending','sampleRate':48000,'channels':2,'decodedSamples':None,'bodyStartSample':96000,'bodyEndSample':None,'humanListening':'pending','automaticSpeechPass':False}
  assert not schema['automaticSpeechPass'] and schema['bodyStartSample']==120*800
  scenes=[]
@@ -218,8 +258,9 @@ def self_test():
  print('CPU schema/cache/difference tests passed; no master, media, ASR, model or GPU job opened.')
 
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--master',type=Path,default=O/'euler-captioned.mp4');ap.add_argument('--prepare-only',action='store_true');ap.add_argument('--gpu-approved',action='store_true');ap.add_argument('--worker');ap.add_argument('--preparation',type=Path);ap.add_argument('--retry-failed',action='store_true');ap.add_argument('--self-test',action='store_true');args=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--master',type=Path,default=O/'euler-captioned.mp4');ap.add_argument('--prepare-only',action='store_true');ap.add_argument('--gpu-approved',action='store_true');ap.add_argument('--worker');ap.add_argument('--preparation',type=Path);ap.add_argument('--retry-failed',action='store_true');ap.add_argument('--self-test',action='store_true');ap.add_argument('--check-model',action='store_true');args=ap.parse_args()
  if args.self_test:return self_test()
+ if args.check_model:return check_model_only()
  if args.worker:
   assert args.preparation;return worker(args.worker,args.preparation,args.retry_failed)
  assert args.prepare_only or args.gpu_approved,'Choose CPU --prepare-only after master ready, or root-allocated --gpu-approved. This tool never starts automatically.'

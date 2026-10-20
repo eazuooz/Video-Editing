@@ -167,7 +167,7 @@ def rows(shot, state, i):
     title = prefix + TITLES[key][i]
     if s['kind']=='euler':
         main = '현재 입력 (h,p,b) = ' + tup(s['value']) + '°'
-        detail = '물체 → 직립 · 적용 순서 Y → X → Z'
+        detail = '물체 → 직립 · 물체축 순서 Y → X → Z'
     elif s['kind']=='sequence':
         main = '현재 적용각: ' + ' → '.join(fmt(x['degrees'])+'°' for x in s['steps'])
         detail = ' → '.join(('물체 ' if x['space']=='body' else '직립 ')+x['axis'].lstrip('+') for x in s['steps'])

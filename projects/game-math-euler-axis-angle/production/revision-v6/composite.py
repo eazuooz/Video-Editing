@@ -4,9 +4,9 @@ import argparse,json,hashlib,math,subprocess,os
 from PIL import Image,ImageEnhance,ImageDraw,ImageFont
 R=Path(__file__).resolve().parents[4];P=R/'projects/game-math-euler-axis-angle';H=Path(__file__).parent;O=P/'production/local/revision-v6';E=O/'edit';E.mkdir(parents=True,exist_ok=True)
 read=lambda p:json.loads(Path(p).read_text(encoding='utf-8-sig'))
-ENC=['-c:v','libx264','-threads','4','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-color_range','tv','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-video_track_timescale','60000']
+ENC=['-c:v','libx264','-threads','2','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-color_range','tv','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-video_track_timescale','60000']
 FONT='C:/Windows/Fonts/malgun.ttf';BOLD='C:/Windows/Fonts/malgunbd.ttf'
-WORLD_DIM=.75;DIAGRAM_ALPHA=.76
+WORLD_DIM=.75;DIAGRAM_ALPHA=1.
 def sha(p):
  h=hashlib.sha256()
  with Path(p).open('rb') as f:
@@ -144,18 +144,23 @@ def ui_ass(scene,screen):
    else:windows.append((a,b,state))
  out=UI_HEADER
  for a,b,(kind,definition,game_scene) in windows:
-  actual=kind.startswith('actual');pic='실제 게임 녹화' if kind=='actual' else '실제 게임 녹화 · 정지 관찰' if actual else '우리 모형 · 해설용 계산' if kind=='our-calculation' else '우리 모형 · 비교 도식' if kind=='our-comparison' else '우리 Unity 씬 · 해설용 모형'
+  actual=kind.startswith('actual');pic='실제 게임 녹화' if kind=='actual' else '실제 게임 녹화 · 정지 관찰' if actual else '모형 위 계산 도식' if kind=='our-calculation' else '같은 모형 비교 도식' if kind=='our-comparison' else '해설용 3D 모형'
   if actual:
    game={'v6-08':r'마리오 카트\N8 디럭스','v6-15':r'젤다의 전설\N티어스 오브\N더 킹덤','v6-22':r'슈퍼 마리오\N오디세이','v6-32':r'젤다의 전설\N티어스 오브\N더 킹덤'}[game_scene or scene['id']]
    out+=ass_event(a,b,r'{\an7\pos(18,48)\fs30\c&H0083CFE8&}'+game)
    out+=ass_event(a,b,r'{\an7\pos(1714,48)\fs28\c&H00B8B8B8&}실제 게임\N녹화'+(r'\N정지 관찰' if kind=='actual-still' else ''))
   else:
-   boxh=170 if definition else 112
-   out+=ass_event(a,b,r'{\an7\pos(0,0)\p1\c&H00151210&\alpha&H15&}'+f'm 80 34 l 1170 34 1170 {34+boxh} 80 {34+boxh}'+r'{\p0}',2)
+   boxh=120 if definition else 112
+   heading_width=ImageFont.truetype(BOLD,46).getlength(term['term'])
+   english_width=ImageFont.truetype(FONT,30).getlength(term['en'])
+   meaning_width=ImageFont.truetype(FONT,32).getlength(term['meaning'])
+   right=math.ceil(100+max(heading_width+24+english_width,meaning_width)+30) if definition else 1170
+   assert right<1400,'Definition must remain clear of the current-picture label'
+   out+=ass_event(a,b,r'{\an7\pos(0,0)\p1\c&H00151210&\alpha&H15&}'+f'm 80 34 l {right} 34 {right} {34+boxh} 80 {34+boxh}'+r'{\p0}',2)
    if definition:
-    out+=ass_event(a,b,r'{\an7\pos(100,45)\fs30\c&H00B8B8B8&}'+term['en'])
-    out+=ass_event(a,b,r'{\an7\pos(100,82)\fs48\b1\c&H0083CFE8&}'+term['term'])
-    out+=ass_event(a,b,r'{\an7\pos(100,144)\fs34\c&H00F5F5F5&}'+term['meaning'])
+    out+=ass_event(a,b,r'{\an7\pos(100,44)\fs46\b1\c&H0083CFE8&}'+term['term'])
+    out+=ass_event(a,b,r'{\an7\pos('+f'{100+heading_width+24:.2f}'+r',57)\fs30\c&H00B8B8B8&}'+term['en'])
+    out+=ass_event(a,b,r'{\an7\pos(100,109)\fs32\c&H00F5F5F5&}'+term['meaning'])
    else:
     out+=ass_event(a,b,r'{\an7\pos(100,44)\fs46\b1\c&H0083CFE8&}'+term['term'])
     out+=ass_event(a,b,r'{\an7\pos(100,103)\fs28\c&H00B8B8B8&}'+pic)
