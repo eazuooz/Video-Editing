@@ -13,17 +13,18 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def run(a):subprocess.run(a,check=True)
 def guard():
  c=rd(R/'shared/publishing/video-production-control.json');assert c['selectedVideo']==P.name and c['newProductionAuthorization']['fullProductionAuthorized']
-def recognize(raw,cache):
+def recognize(raw,cache,word_timestamps=True):
  digest=sha(raw)
  if cache.exists() and rd(cache).get('audio_sha256')==digest:return rd(cache)
  import torch
  from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
  torch.set_num_threads(4);local=R/'qwen3-tts/models/whisper-large-v3-turbo'
- m=AutoModelForSpeechSeq2Seq.from_pretrained(str(local),dtype=torch.float32,attn_implementation='eager',local_files_only=True)
- p=AutoProcessor.from_pretrained(str(local),local_files_only=True)
- asr=pipeline('automatic-speech-recognition',model=m,tokenizer=p.tokenizer,feature_extractor=p.feature_extractor,dtype=torch.float32,device='cpu')
+ mid=str(local) if (local/'config.json').exists() else 'openai/whisper-large-v3-turbo'
+ m=AutoModelForSpeechSeq2Seq.from_pretrained(mid,dtype=torch.float32,attn_implementation='eager',local_files_only=True)
+ p=AutoProcessor.from_pretrained(mid,local_files_only=True)
+ asr=pipeline('automatic-speech-recognition',model=m,tokenizer=p.tokenizer,feature_extractor=p.feature_extractor,dtype=torch.float32,device='cpu',chunk_length_s=30,stride_length_s=5,batch_size=1)
  print('Complete CPU ASR, no expected-text prompt:',raw,flush=True)
- q=asr(str(raw),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word')
+ q=asr(str(raw),generate_kwargs={'language':'korean','task':'transcribe'},return_timestamps='word' if word_timestamps else True)
  v={'audio_sha256':digest,'text':q['text'],'words':q['chunks'],'scope':'whole current audio, one recognition pass, no expected prompt','device':'cpu','humanListening':'pending'};wr(cache,v);return v
 def compare(q,name):
  expected=' '.join(x for s in rd(P/'script/narration.spoken-ko.json')['scenes'] for x in s['lines'])
@@ -33,6 +34,20 @@ def stamp(t,ass=False):
  u=100 if ass else 1000;v=round(t*u);h,v=divmod(v,3600*u);m,v=divmod(v,60*u);s,v=divmod(v,u)
  return f'{h}:{m:02}:{s:02}.{v:02}' if ass else f'{h:02}:{m:02}:{s:02},{v:03}'
 font=ImageFont.truetype('C:/Windows/Fonts/NotoSansKR-VF.ttf',48);font.set_variation_by_axes([500])
+def prepare_fonts():
+ # Private static instances avoid system-font fallback/variable-face ambiguity.
+ # No fonts are installed or redistributed through Git.
+ from fontTools.ttLib import TTFont
+ from fontTools.varLib.instancer import instantiateVariableFont
+ directory=L/'fonts';directory.mkdir(exist_ok=True)
+ for weight,style in [(500,'Medium'),(700,'Bold')]:
+  output=directory/f'YamyamCaption-{weight}.ttf'
+  if output.exists():continue
+  f=instantiateVariableFont(TTFont('C:/Windows/Fonts/NotoSansKR-VF.ttf'),{'wght':weight},inplace=True)
+  names={1:'Yamyam Caption',2:style,4:'Yamyam Caption '+style,6:'YamyamCaption-'+style,16:'Yamyam Caption',17:style}
+  for n in f['name'].names:
+   if n.nameID in names:n.string=names[n.nameID].encode(n.getEncoding(),errors='replace')
+  f['OS/2'].usWeightClass=weight;f['OS/2'].fsSelection=64 if weight==500 else 32;f['head'].macStyle=0 if weight==500 else 1;f.save(output)
 def wrap(s):
  lines=[];line=''
  for w in s.split():
@@ -42,18 +57,30 @@ def wrap(s):
  if line:lines.append(line)
  return lines
 def pieces(s):
- # Prefer sentence/clause boundaries. Long clauses are split at a complete word.
+ # Prefer real clauses over arbitrary ten-word cuts. In particular, never
+ # flash orphan predicates such as '됩니다.' after an otherwise complete cue.
  out=[]
- for part in re.split(r'(?<=[.!?])\s+|(?<=,)\s+',s):
-  words=part.split();temp=[]
-  for w in words:
-   if temp and (len(temp)>=10 or font.getlength(' '.join(temp+[w]))>1500):out.append(' '.join(temp));temp=[]
-   temp.append(w)
-  if temp:out.append(' '.join(temp))
+ for sentence in re.split(r'(?<=[.!?])\s+',s):
+  words=sentence.split();best={0:(0,[])};total=len(words)
+  for end in range(1,total+1):
+   if end<total and words[end-1].rstrip(',') in ['뱀파이어','매직','D2','디아블로','팜','히어로']:continue
+   for start in range(max(0,end-16),end):
+    if start not in best:continue
+    text=' '.join(words[start:end]);lines=wrap(text)
+    if len(lines)>2:continue
+    count=end-start;last=words[end-1];stem=last.rstrip(',');terminal=end==total
+    conjunction=bool(re.search(r'(고|며|면서|지만|는데|다면|하면|뒤|만큼|것과|행위와)$',stem))
+    boundary=-15 if terminal else 0 if last.endswith(',') and conjunction else 5 if conjunction else 15 if last.endswith(',') else 65
+    score=best[start][0]+8+10*(len(lines)-1)+.5*(count-6)**2+boundary
+    if count<3 and total>3:score+=100
+    if end not in best or score<best[end][0]:best[end]=(score,best[start][1]+[text])
+  assert total in best,('Cannot partition complete caption sentence',sentence)
+  out.extend(best[total][1])
  return out
 def align():
+ prepare_fonts()
  spoken=rd(P/'script/narration.spoken-ko.json');ko=rd(P/'script/narration.ko.json');en=rd(P/'script/narration.en.json')
- raw=L/'narration-source.wav';a,sr=sf.read(raw,dtype='float32');duration=len(a)/sr;q=rd(L/'whole-source-asr.json');assert q['audio_sha256']==sha(raw)
+ raw=L/'narration-source.wav';a,sr=sf.read(raw,dtype='float32');duration=len(a)/sr;q=rd(L/'whole-source-asr-aligned.json');assert q['audio_sha256']==sha(raw)
  expected=' '.join(x for s in spoken['scenes'] for x in s['lines']);starts,ends,coverage=align_characters(expected,q['words'],duration)
  cursor=0;paras=[];cues=[];scene_rows=[]
  for sk,ss,se in zip(ko['scenes'],spoken['scenes'],en['scenes']):
@@ -70,7 +97,13 @@ def align():
     for block in m.get_matching_blocks():
      for d in range(block.size):x.append(block.a+d);ys.append(starts[cursor+block.b+d]);ye.append(ends[cursor+block.b+d])
     cs=np.interp(np.arange(len(ak)),x,ys);ce=np.interp(np.arange(len(ak)),x,ye)
-   ec=partition_fixed(e,70,len(chunks));off=0;indices=[]
+   ksents=re.split(r'(?<=[.!?])\s+',k)
+   esents=[x.replace('US_TOKEN','U.S.') for x in re.split(r'(?<=[.!?])\s+',e.replace('U.S.','US_TOKEN'))]
+   assert len(ksents)==len(esents),('Bilingual sentence mapping',len(paras)+1)
+   ec=[]
+   for ks,es in zip(ksents,esents):ec.extend(partition_fixed(es,70,len(pieces(ks))))
+   assert len(ec)==len(chunks) and ' '.join(ec)==' '.join(e.split())
+   off=0;indices=[]
    for kk,ee in zip(chunks,ec):
     count=len(normalized(kk));lo=max(begin,float(cs[off]));hi=min(end,float(ce[off+count-1]));off+=count
     if cues:lo=max(lo,cues[-1]['end'])
@@ -87,8 +120,8 @@ def align():
  body_frames=math.ceil(duration*60);actual_frames=round(body_frames*.6)
  wr(L/'timing.json',{'sourceSha256':sha(raw),'continuousSpeech':True,'timeStretch':False,'duration':duration,'bodyFrames':body_frames,'actualFrames':actual_frames,'explanationFrames':body_frames-actual_frames,'coverage':coverage,'scenes':scene_rows,'paragraphs':paras,'cues':cues})
  for lang in ['ko','en']:
-  (L/f'final.{lang}.srt').write_text('\n\n'.join(f"{c['index']}\n{stamp(c['start']+2)} --> {stamp(c['end']+2)}\n{c[lang]}" for c in cues)+'\n',encoding='utf8')
- head='[Script Info]\nScriptType: v4.00+\nPlayResX: 1920\nPlayResY: 1080\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Default,Noto Sans KR,48,&H00090B08,&H00090B08,&H00181B16,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n'
+  (L/f'final.{lang}.srt').write_text('\n\n'.join(f"{c['index']}\n{stamp(c['start']+2)} --> {stamp(c['end']+2)}\n"+'\n'.join(c['lines'] if lang=='ko' else wrap(c['en'])) for c in cues)+'\n',encoding='utf8')
+ head='[Script Info]\nScriptType: v4.00+\nPlayResX: 1920\nPlayResY: 1080\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Default,Yamyam Caption,68.286,&H00090B08,&H00090B08,&H00181B16,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n'
  events=[]
  def event(layer,a,z,text):events.append(f'Dialogue: {layer},{stamp(a,True)},{stamp(z,True)},Default,,0,0,0,,{text}')
  for c in cues:
@@ -114,5 +147,5 @@ if __name__=='__main__':
  elif stage=='final-asr':
   raw=L/'final-mix-asr.wav'
   if not raw.exists():run(['ffmpeg','-v','error','-i',str(L/'final.captioned.mp4'),'-vn','-ac','1','-ar','24000','-c:a','pcm_f32le',str(raw)])
-  compare(recognize(raw,L/'whole-final-mix-asr.json'),'whole-final-mix')
+  compare(recognize(raw,L/'whole-final-mix-asr.json',word_timestamps=False),'whole-final-mix')
  else:raise ValueError(stage)

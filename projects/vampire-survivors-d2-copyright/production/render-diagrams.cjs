@@ -22,7 +22,8 @@ async function main() {
       if (!/^vs-d2-[a-z0-9-]+$/.test(job.name) || !job.route.startsWith(`/src/projects/${slug}/`)) throw Error('Unowned render target');
       const output = path.join(root,'shared/output/motion-canvas',job.name+'.mp4');
       const receipt = path.join(local,job.name+'.render.json');
-      const signature = {job,visualsSha256:sha(path.join(root,`motion-canvas/src/projects/${slug}/visuals.tsx`)),entrySha256:sha(path.join(root,'motion-canvas',job.route.slice(1)))};
+      const sceneRoute=job.route.replace(/-project\.ts$/,'.tsx');
+      const signature = {job,visualsSha256:sha(path.join(root,`motion-canvas/src/projects/${slug}/visuals.tsx`)),sceneSha256:sha(path.join(root,'motion-canvas',sceneRoute.slice(1))),entrySha256:sha(path.join(root,'motion-canvas',job.route.slice(1)))};
       if (fs.existsSync(output) && fs.existsSync(receipt)) {
         const old=JSON.parse(fs.readFileSync(receipt,'utf8'));
         if (JSON.stringify(old.signature)===JSON.stringify(signature) && old.sha256===sha(output)) {console.log('Reused',job.name);continue;}

@@ -30,7 +30,7 @@ export function* lesson(view: View2D, d: Diagram) {
   const paired = ['overview', 'power', 'conclusion'].includes(d.kind);
   if (paired && d.image && d.image2) {
     picture(d.image, -440, -65, 790); picture(d.image2, 440, -65, 790);
-  } else if (d.image && !['files', 'court', 'permissions'].includes(d.kind)) {
+  } else if (d.image && !['files', 'court', 'permissions', 'puzzle'].includes(d.kind)) {
     picture(d.image, -420, -50, 900);
   }
 
@@ -80,6 +80,20 @@ export function* lesson(view: View2D, d: Diagram) {
       if (i < 2) arrow([[x + 170, 35], [x + 300, 35]], i + 1);
     });
     add(2, txt('별개 게임 판례 · D2 침해 판결 아님', 0, 265, 45, D.orange));
+  } else if (d.kind === 'puzzle') {
+    const colors = [D.teal, D.title, D.orange];
+    for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) {
+      const x = -650 + col * 175, y = -220 + row * 175;
+      add(0, <Circle x={x} y={y} width={110} height={110} fill={colors[row === 1 ? 1 : (row + col) % 3]}/>);
+    }
+    add(1, <Rect x={-475} y={-45} width={495} height={140} stroke={D.green} lineWidth={8}/>);
+    ['세 개를 맞추는 큰 규칙', '캐릭터 · 효과 · 단계 전개', '선택과 배열의 구체적 결합'].forEach((s,i)=>add(i,txt(s,460,-220+i*195,44,i===2?D.title:D.ink)));
+    add(2, txt('두 퍼즐게임의 판례 · D2 판결 아님', 0, 310, 45, D.orange));
+  } else if (d.kind === 'notice' || d.kind === 'choices') {
+    const labels = d.cueLabels ?? (d.kind === 'notice'
+      ? ['비공식 · 블리자드 승인 아님', '무료 제공 · 요청 시 대응 방침', '방침의 고지 ≠ 이용허락 증거']
+      : ['조건을 정해 허락', '별도의 자산으로 변경 요청', '자산 이용 중단 요청']);
+    labels.forEach((s, i) => add(i, txt(s, 515, -220 + i * 200, 42, i === 2 ? D.title : D.ink)));
   } else {
     const defaults: Record<string, string[]> = {
       loop: ['이동 · 자동 공격', '경험치 · 레벨업', '다음 강화 선택'],
@@ -92,7 +106,7 @@ export function* lesson(view: View2D, d: Diagram) {
     const labels = d.cueLabels ?? defaults[d.kind] ?? defaults.quality;
     labels.slice(0, 3).forEach((s, i) => {
       add(i, txt(s, 515, -220 + i * 200, 49, i === 2 ? D.title : D.ink));
-      if (i < 2 && d.kind !== 'quality') arrow([[515, -155 + i * 200], [515, -95 + i * 200]], i + 1);
+      if (i < 2 && !['quality', 'reactions'].includes(d.kind)) arrow([[515, -155 + i * 200], [515, -95 + i * 200]], i + 1);
       if (d.kind === 'quality') add(i, <Line points={[[205, -160 + i * 200], [825, -160 + i * 200]]} stroke={i === 2 ? D.teal : D.line} lineWidth={4}/>);
     });
   }
