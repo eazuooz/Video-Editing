@@ -14,9 +14,23 @@ def base_helpers(source):
  tree=ast.parse(Path(source).read_text(encoding='utf8'));colors={'INK','MUTED','RULE','GOLD','TEAL','ORANGE','RED','GREEN','PURPLE','PANEL'}
  nodes=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in ['tx','rowgroup'] or isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id in colors for t in n.targets)]
  return hashlib.sha256('\n'.join(ast.dump(n,include_attributes=False) for n in nodes).encode()).hexdigest()
+def signature_source_sha(beat,module):
+ source=(H/module).read_bytes()
+ if module!='math-clips.py':return hashlib.sha256(source).hexdigest()
+ # The only edit is guarded by halfTurn. Preserve the prior source identity
+ # for every other branch only after exact byte reconstruction is verified.
+ begin=b'   # BEGIN half-turn-radius-guide-v1\r\n';end=b'   # END half-turn-radius-guide-v1\r\n'
+ assert source.count(begin)==source.count(end)==1,'Radius-guide proof markers changed'
+ start=source.index(begin);stop=source.index(end,start)+len(end)
+ unchanged=source[:start]+source[stop:]
+ old_sha=hashlib.sha256(unchanged).hexdigest()
+ assert old_sha=='bd116ef81aacfd9a7e57e1b1dd8bad524adbc50cb12ab37c5ffc7f95e9e695e0','Other math source changed; re-audit signatures'
+ spec=beat['demonstration']
+ return hashlib.sha256(source).hexdigest() if spec['kind']=='radian' and spec.get('halfTurn') else old_sha
+
 def signature_for(beat):
  module='math-prerequisites.py' if beat['demonstration'].get('module')=='prerequisites' else 'math-clips.py'
- signature={'spec':beat['demonstration'],'sourceSha256':sha(H/module),'fps':60,'resolution':[1920,1080],'engine':'Manim Cairo alpha qtrle; CPU-only'}
+ signature={'spec':beat['demonstration'],'sourceSha256':signature_source_sha(beat,module),'fps':60,'resolution':[1920,1080],'engine':'Manim Cairo alpha qtrle; CPU-only'}
  if module=='math-prerequisites.py':signature['baseHelpersSha256']=base_helpers(H/'math-clips.py')
  return hashlib.sha256(json.dumps(signature,ensure_ascii=False,sort_keys=True).encode()).hexdigest()
 def main():
@@ -30,7 +44,12 @@ def main():
    receipt=O/beat['id']/'output.json'
    if receipt.exists():
     done=read(receipt)
-    if done['signature']==signature_for(beat) and all((R/f['file']).exists() and sha(R/f['file'])==f['sha256'] for f in done['files']):outputs[beat['id']]=done
+    files_valid=all((R/f['file']).exists() and sha(R/f['file'])==f['sha256'] for f in done['files'])
+    # A bounded --beat repair preserves existing, byte-verified receipts outside
+    # its scope, including their prior branch-equivalence provenance. It does
+    # not re-certify unrelated source changes or silently remove their outputs.
+    outside_repair=bool(args.beat and beat['id'] not in args.beat)
+    if files_valid and (outside_repair or done['signature']==signature_for(beat)):outputs[beat['id']]=done
  def manifest():save(O/'outputs.json',{'outputs':[outputs[key] for key in order if key in outputs],'renderedAt':time.time(),'complete':len(outputs)==len(order),'expected':len(order)})
  for scene in plan['scenes']:
   for beat in scene['beats']:

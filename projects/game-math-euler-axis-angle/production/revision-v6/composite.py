@@ -225,9 +225,9 @@ def pair():
  for kind in ['clean','captioned']:
   files=[R/'projects/game-reward-planning/production/local/reference-preserving-v2/edit/branding.mp4']+[E/(s['id']+'.'+kind+'.mp4') for s in plan['scenes']]+[R/'projects/game-reward-planning/production/local/reference-preserving-v2/edit/membership.mp4']
   for s,path in zip(plan['scenes'],files[1:-1]):check(path,s['frames'])
-  concat=E/(kind+'.concat.txt');concat.write_text('\n'.join("file '"+p.as_posix()+"'" for p in files)+'\n',encoding='utf8');out=O/('euler-'+kind+'.mp4');sig={'files':[(rel(p),sha(p)) for p in files],'audioSha256':sha(audio),'timelineSha256':sha(H/'timeline.json')};receipt=out.with_suffix('.json')
+  concat=E/(kind+'.concat.txt');concat.write_text('\n'.join("file '"+p.as_posix()+"'" for p in files)+'\n',encoding='utf8');out=O/('euler-'+kind+'.mp4');sig={'files':[(rel(p),sha(p)) for p in files],'audioSha256':sha(audio),'timelineSha256':sha(H/'timeline.json'),'packetTimingPolicy':'Existing60fps timestamps rounded to1000ticks;packet duration1000;movie/video timescales60000;coded payloads preserved','packagingImplementationSha256':sha(Path(__file__))};receipt=out.with_suffix('.json')
   if receipt.exists() and out.exists() and read(receipt).get('inputs')==sig and read(receipt).get('sha256')==sha(out):print('Cached complete master',kind);continue
-  run(['ffmpeg','-v','warning','-y','-f','concat','-safe','0','-i',str(concat),'-i',str(audio),'-map','0:v:0','-map','1:a:0','-c','copy','-video_track_timescale','60000','-movflags','+faststart',str(out)],kind+'-mux');check(out,t['totalFrames']);save(receipt,{'inputs':sig,'file':rel(out),'sha256':sha(out)})
+  run(['ffmpeg','-v','warning','-y','-f','concat','-safe','0','-i',str(concat),'-i',str(audio),'-map','0:v:0','-map','1:a:0','-c','copy','-bsf:v','setts=pts=round(PTS/1000)*1000:dts=round(DTS/1000)*1000:duration=1000','-video_track_timescale','60000','-movie_timescale','60000','-movflags','+faststart',str(out)],kind+'-mux');check(out,t['totalFrames']);save(receipt,{'inputs':sig,'file':rel(out),'sha256':sha(out)})
 def main():
  ap=argparse.ArgumentParser();ap.add_argument('stage',choices=['plan','scenes','pair']);ap.add_argument('--scene',action='append');args=ap.parse_args()
  if args.stage=='plan':plan_edit()

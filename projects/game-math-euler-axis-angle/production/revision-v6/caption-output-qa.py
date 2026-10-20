@@ -30,6 +30,15 @@ def sha(p):
  return h.hexdigest()
 def digest(d):return hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest()
 def proof(p):return {'file':rel(p),'sha256':sha(p)}
+
+def balanced_select(values):
+ """Keep AVExpr recursion depth logarithmic for thousands of exact frames."""
+ values=list(values);assert values and values==sorted(set(values))
+ def branch(a,b):
+  if b-a==1:return f'eq(n\\,{values[a]})'
+  middle=(a+b)//2
+  return '('+branch(a,middle)+'+'+branch(middle,b)+')'
+ return branch(0,len(values))
 def run(args,log):
  cp=subprocess.run(args,cwd=R,capture_output=True,text=True,encoding='utf-8',errors='replace')
  log.parent.mkdir(parents=True,exist_ok=True);log.write_text(cp.stderr,encoding='utf-8')
@@ -166,10 +175,9 @@ def extract_actual(master,plan,out,master_sha):
   if old['inputs']==signature and all((R/x['file']).exists() and sha(R/x['file'])==x['sha256'] for x in old['files']):return old
   raise AssertionError('Existing extraction differs. Preserve it and select a new --qa-directory; never overwrite/redecode unchanged evidence')
  assert not list(roi.glob('*.png')) and not list(native.glob('*.png')),'Partial source extraction exists without a receipt; preserve it and use a fresh --qa-directory'
- select=lambda values:'+'.join(f'eq(n\\,{f})' for f in values)
- graph=f'[0:v]split=2[r][n];[r]select={select(frames)},crop=1920:200:0:880,format=rgb24[rout];[n]select={select(full)},format=rgb24[nout]'
+ graph=f'[0:v]split=2[r][n];[r]select={balanced_select(frames)},crop=1920:200:0:880,format=rgb24[rout];[n]select={balanced_select(full)},format=rgb24[nout]'
  graph_path=out/'actual-extraction.ffgraph';graph_path.write_text(graph,encoding='utf-8')
- run(['ffmpeg','-nostdin','-hide_banner','-loglevel','warning','-threads','2','-filter_complex_threads','1','-i',str(master),'-filter_complex_script',str(graph_path),'-map','[rout]','-fps_mode','passthrough','-start_number','0','-frames:v',str(len(frames)),'-compression_level','1',str(roi/'%06d.png'),'-map','[nout]','-fps_mode','passthrough','-start_number','0','-frames:v',str(len(full)),'-compression_level','1',str(native/'%06d.png')],out/'actual-extraction.log')
+ run(['ffmpeg','-nostdin','-hide_banner','-loglevel','warning','-threads','2','-filter_complex_threads','1','-i',str(master),'-/filter_complex',str(graph_path),'-map','[rout]','-fps_mode','passthrough','-start_number','0','-frames:v',str(len(frames)),'-compression_level','1',str(roi/'%06d.png'),'-map','[nout]','-fps_mode','passthrough','-start_number','0','-frames:v',str(len(full)),'-compression_level','1',str(native/'%06d.png')],out/'actual-extraction.log')
  files=[]
  for folder,count in [(roi,len(frames)),(native,len(full))]:
   got=sorted(folder.glob('*.png'));assert len(got)==count,(folder,len(got),count)

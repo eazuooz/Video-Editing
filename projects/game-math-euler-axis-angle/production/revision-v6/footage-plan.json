@@ -374,10 +374,11 @@
       },
       "annotation": {
         "target": "player's visible rider/chassis",
-        "shape": "short hollow brackets or restrained contour; one label at a time",
+        "shape": "Sequential labeled arrows to observed front-control and head-up targets; final state compares both; no fabricated3D axes",
         "labels": [
-          "차체",
-          "앞쪽과 위쪽을 따로 보기"
+          "앞쪽 · 조종부",
+          "위쪽 · 머리 쪽",
+          "화면 관찰 · 방향 안내"
         ],
         "coordinateFrame": "source image pixels, editorial screen guide",
         "sourceWindow": "05-kart",
@@ -475,7 +476,152 @@
         "reuse": "Reuse the existing full sourceTime tracking inside116.5–119.9; these4 listed keys are planning anchors, not a license to interpolate across hidden content.",
         "occlusion": "Small splashes/sparks do not remove the full body. Hide the mark on any actual loss; no detector confidence or internal-axis readout.",
         "clearAtSourceCut": true,
-        "finalSourceFrameReviewed": true
+        "finalSourceFrameReviewed": true,
+        "directionPointers": {
+          "policy": "property-matched-visible-direction-pointers-v1",
+          "meaning": "Point to visible parts that let viewers distinguish body front/control side and head/up side. The arrows are labeled screen callout leaders, not internal3D orientation vectors.",
+          "displayQualification": "화면 관찰 · 방향 안내",
+          "coordinateFrame": "source1920x1080 image coordinates mapped with exact existing content affine; no world/localXYZ reconstruction",
+          "roles": {
+            "front": {
+              "label": "앞쪽 · 조종부",
+              "labelPosition": [
+                300,
+                650
+              ],
+              "color": "#6cce8e",
+              "observableTarget": "visible forward-facing control/hand region; broad pedagogical pointer"
+            },
+            "up": {
+              "label": "위쪽 · 머리 쪽",
+              "labelPosition": [
+                300,
+                300
+              ],
+              "color": "#f2ce72",
+              "observableTarget": "visible rider head; not world vertical or measured normal"
+            }
+          },
+          "sourceKeyframes": [
+            {
+              "sourceTime": 116.5,
+              "sourceFrame": 6990,
+              "front": [
+                1025,
+                658
+              ],
+              "up": [
+                1002,
+                536
+              ],
+              "visible": true,
+              "evidence": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/mk-body-up/evidence-01.png",
+              "evidenceSha256": "12a221df56c6bf36a7ae8d1f424956b319ef849e580586cb4fa96e876cf35ea1",
+              "reviewMeaning": "Observed broad control/hand region and rider-head region in native image; pointer endpoints only, not reconstructed3D axes."
+            },
+            {
+              "sourceTime": 117.25,
+              "sourceFrame": 7035,
+              "front": [
+                990,
+                596
+              ],
+              "up": [
+                873,
+                530
+              ],
+              "visible": true,
+              "evidence": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/mk-body-up/evidence-02.png",
+              "evidenceSha256": "ef8876cf709700b12c0c6669ae2999a8ef7b1f75aa71d93ffb69116921872082",
+              "reviewMeaning": "Observed broad control/hand region and rider-head region in native image; pointer endpoints only, not reconstructed3D axes."
+            },
+            {
+              "sourceTime": 118,
+              "sourceFrame": 7080,
+              "front": [
+                952,
+                590
+              ],
+              "up": [
+                829,
+                560
+              ],
+              "visible": true,
+              "evidence": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/mk-body-up/evidence-03.png",
+              "evidenceSha256": "dea3daecf77a858e995f57d6158895f2b6f28464746953693149f84dabea8d94",
+              "reviewMeaning": "Observed broad control/hand region and rider-head region in native image; pointer endpoints only, not reconstructed3D axes."
+            },
+            {
+              "sourceTime": 119,
+              "sourceFrame": 7140,
+              "front": [
+                929,
+                600
+              ],
+              "up": [
+                799,
+                588
+              ],
+              "visible": true,
+              "evidence": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/mk-body-up/evidence-04.png",
+              "evidenceSha256": "bfda53f98ceb256524b2b39f21c050dd7c896c3f904807d4769b04924e8a2d10",
+              "reviewMeaning": "Observed broad control/hand region and rider-head region in native image; pointer endpoints only, not reconstructed3D axes."
+            },
+            {
+              "sourceTime": 119.88333333333334,
+              "sourceFrame": 7193,
+              "front": [
+                904,
+                620
+              ],
+              "up": [
+                786,
+                600
+              ],
+              "visible": true,
+              "evidence": "projects/game-math-euler-axis-angle/production/local/revision-v6/footage/mk-body-up/evidence-05.png",
+              "evidenceSha256": "e0a4b315f2abfcb53477b944c37071cb092f423678285eb7a87c1f67646c5592",
+              "reviewMeaning": "Observed broad control/hand region and rider-head region in native image; pointer endpoints only, not reconstructed3D axes."
+            }
+          ],
+          "temporalSequence": [
+            {
+              "relativeFrames": [
+                0,
+                80
+              ],
+              "show": [
+                "front"
+              ]
+            },
+            {
+              "relativeFrames": [
+                80,
+                140
+              ],
+              "show": [
+                "up"
+              ]
+            },
+            {
+              "relativeFrames": [
+                140,
+                204
+              ],
+              "show": [
+                "front",
+                "up"
+              ]
+            }
+          ],
+          "interpolation": "Only between these5 directly inspected visible source frames; existing dense body-visibility guard still hides any unverified/occluded frame.",
+          "limitations": [
+            "Do not claim engineXYZ, angles, detector output,3D positive-angle convention or measured forward/up axes.",
+            "Camera and track bank both change screen appearance; these leaders identify observable parts only."
+          ],
+          "clearAtSourceCut": true,
+          "replaces": "MK broad-body brackets and 차체 label only; other3 game guides preserved byte-for-byte"
+        }
       },
       "gizmo": {
         "preferred": false,

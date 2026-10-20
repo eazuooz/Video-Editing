@@ -87,6 +87,11 @@ class FiniteMathBeat(Scene):
    c=np.array([-3.5,-.1,0]);radius=1.5;self.add(Circle(radius=radius,color=RULE).move_to(c));self.add(Line(c,c+RIGHT*radius,color=TEAL,stroke_width=5))
    theta=PI if d.get('halfTurn') else 1.0
    arc=Arc(radius=radius,start_angle=0,angle=theta,color=ORANGE,stroke_width=6).move_arc_center_to(c);ray=Line(c,c+radius*np.array([math.cos(theta),math.sin(theta),0]),color=TEAL,stroke_width=4)
+   # BEGIN half-turn-radius-guide-v1
+   if d.get('halfTurn'):
+    ray=DashedVMobject(ray.copy().set_color(RULE),num_dashes=10)
+    self.add(Dot(c,radius=.065,color=GOLD),tx('O',27,MUTED,width=1).move_to(c+np.array([-.16,-.35,0])))
+   # END half-turn-radius-guide-v1
    self.play(Create(arc),Create(ray),run_time=2.2);self.add(tx('r',37,TEAL).move_to(c+np.array([.8,-.3,0])))
    self.add(tx('s',37,ORANGE).move_to(c+np.array([radius*.9,radius*.75,0])))
    g=rowgroup(rows,size=41,width=6.4).move_to([2.7,.1,0])

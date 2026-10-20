@@ -5,10 +5,12 @@ ASS times are clip-relative. The source image and every guide share one affine
 placement; root applies this ASS after scaling/padding the native finite clip.
 """
 from pathlib import Path
+import argparse
 import bisect
 import hashlib
 import json
 import math
+import shutil
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -117,9 +119,40 @@ def offset_polyline(points, amount):
     return result
 
 
-def guide_geometry(clip, state):
+def direction_pointer_geometry(clip, source_frame, relative_frame):
+    spec = clip['annotation']['directionPointers']
+    keys = spec['sourceKeyframes']
+    fs = [round(k['sourceTime'] * 60) for k in keys]
+    if not fs[0] <= source_frame <= fs[-1]:
+        return None
+    i = bisect.bisect_right(fs, source_frame) - 1
+    j = min(i + 1, len(keys) - 1)
+    t = 0 if fs[i] == fs[j] else (source_frame - fs[i]) / (fs[j] - fs[i])
+    active = ['front'] if relative_frame < 80 else ['up'] if relative_frame < 140 else ['front', 'up']
+    marks = []
+    for role in active:
+        target = point([keys[i][role][n] + (keys[j][role][n] - keys[i][role][n]) * t for n in range(2)])
+        label = spec['roles'][role]['label']
+        lx, ly = spec['roles'][role]['labelPosition']
+        w = math.ceil(FONT.getlength(label)) + 30
+        rect = (lx, ly, lx + w, ly + 62)
+        origin = (rect[2] + 16, ly + 31)
+        dx, dy = target[0] - origin[0], target[1] - origin[1]
+        size = math.hypot(dx, dy); ux, uy = dx / size, dy / size
+        back = (target[0] - ux * 20, target[1] - uy * 20)
+        head = [(back[0] - uy * 11, back[1] + ux * 11), target,
+                (back[0] + uy * 11, back[1] - ux * 11)]
+        marks.append(dict(label=label, labelRect=rect, paths=[[origin, target], head],
+                          color=spec['roles'][role]['color'], role=role, target=target))
+    return dict(mode='observed-direction-pointers', marks=marks,
+                note='화면 관찰 · 방향 안내', noteRect=(300, 190, 850, 246), width=6)
+
+
+def guide_geometry(clip, state, source_frame=None, relative_frame=None):
     if state is None:
         return None
+    if clip['id'] == 'mk-body-up' and 'directionPointers' in clip['annotation']:
+        return direction_pointer_geometry(clip, source_frame, relative_frame)
     if 'points' in state:
         source_points = state['points']
         assert all(0 <= p[0] <= 1920 and 0 <= p[1] <= 1080 for p in source_points)
@@ -187,6 +220,17 @@ def event(frame, layer, text):
 def ass_events(frame, geom):
     if geom is None:
         return ''
+    if geom.get('mode') == 'observed-direction-pointers':
+        out = ''
+        for mark in geom['marks']:
+            rgb = mark['color'].lstrip('#');color = rgb[4:6] + rgb[2:4] + rgb[:2]
+            out += event(frame, 1, rf'{{\an7\pos(0,0)\p1\c&H00{color}&\bord2\3c&H000D0B08&\shad0\clip(224,32,1696,860)}}' + ass_path(mark['paths'],6) + r'{\p0}')
+        for mark in [dict(label=geom['note'],labelRect=geom['noteRect']),*geom['marks']]:
+            left,top,right,bottom=mark['labelRect'];box=f'm {left} {top} l {right} {top} {right} {bottom} {left} {bottom}'
+            out += event(frame,2,r'{\an7\pos(0,0)\p1\c&H000D0B08&\alpha&H10&\bord0\shad0}'+box+r'{\p0}')
+            size=34 if mark['label']==geom['note'] else 40
+            out += event(frame,3,rf'{{\an7\pos({left+15},{top+7})\fs{size}\b1\c&H00F5F5F5&\bord0\shad0}}'+mark['label'])
+        return out
     paths = ass_path(geom['paths'], 6)
     leader = ass_path([geom['leader']], 3)
     left, top, right, bottom = geom['labelRect']
@@ -206,7 +250,18 @@ def still(clip, which, geom):
     assert image.size == (1920, 1080)
     canvas = Image.new('RGB', (1920, 1080), BLACK)
     canvas.paste(image.resize((WIDTH, HEIGHT), Image.Resampling.LANCZOS), (X, Y))
-    if geom is not None:
+    if geom is not None and geom.get('mode') == 'observed-direction-pointers':
+        draw = ImageDraw.Draw(canvas)
+        for mark in geom['marks']:
+            for path in mark['paths']:
+                draw.line(path,fill=BLACK,width=10,joint='curve')
+                draw.line(path,fill=mark['color'],width=6,joint='curve')
+        for mark in [dict(label=geom['note'],labelRect=geom['noteRect']),*geom['marks']]:
+            x0,y0,x1,y1=mark['labelRect'];draw.rectangle((x0,y0,x1,y1),fill=BLACK)
+            font=ImageFont.truetype(str(FONT_FILE),34) if mark['label']==geom['note'] else FONT
+            ink=font.getbbox(mark['label']);height=ink[3]-ink[1]
+            draw.text((x0+15-ink[0],y0+((y1-y0)-height)/2-ink[1]),mark['label'],font=font,fill=WHITE)
+    elif geom is not None:
         draw = ImageDraw.Draw(canvas)
         for lines, width in [(geom['paths'], 6), ([geom['leader']], 3)]:
             for line in lines:
@@ -228,18 +283,35 @@ def still(clip, which, geom):
 
 
 def main():
+    parser=argparse.ArgumentParser();parser.add_argument('--clip',choices=list(LABELS));args=parser.parse_args()
     control = read(ROOT / 'shared/publishing/video-production-control.json')
     assert control['selectedVideo'] == PROJECT.name
     assert control['newProductionAuthorization']['fullProductionAuthorized']
     plan, old = read(PLAN), read(LEGACY)
     OUT.mkdir(parents=True, exist_ok=True)
     rows, bounds, total_visible = [], [], 0
+    previous=read(OUT/'guide-outputs.json') if args.clip else None
+    previous_rows={r['id']:r for r in previous['clips']} if previous else {}
+    previous_bounds=read(OUT/'guide-label-bounds.json')['rows'] if previous else []
+    if previous:
+        backup=OUT/('before-'+args.clip+'-direction-pointers');backup.mkdir(exist_ok=True)
+        owned=previous_rows[args.clip]
+        for file in [OUT/'guide-outputs.json',OUT/'guide-label-bounds.json',ROOT/owned['assFile'],ROOT/owned['firstDisplay'],ROOT/owned['lastDisplay']]:
+            dest=backup/file.name
+            if not dest.exists():shutil.copy2(file,dest)
     for clip in plan['clips']:
+        if args.clip and clip['id'] != args.clip:
+            row=previous_rows[clip['id']]
+            assert sha(ROOT/row['assFile'])==row['assSha256']
+            for endpoint in row['stills'].values():
+                assert sha(ROOT/endpoint['path'])==endpoint['sha256'] and sha(ROOT/endpoint['mobile'])==endpoint['mobileSha256']
+            rows.append(row);bounds += [b for b in previous_bounds if b['clip']==clip['id']]
+            total_visible += row['visibleFrames'];continue
         keys = tracking_keys(clip, old)
         count = clip['frames']
         assert count == clip['sourceFrames'] == round((clip['sourceOutExclusive'] - clip['sourceIn']) * 60)
         start = round(clip['sourceIn'] * 60)
-        geometries = [guide_geometry(clip, state_at(clip, keys, start + frame)) for frame in range(count)]
+        geometries = [guide_geometry(clip, state_at(clip, keys, start + frame),start+frame,frame) for frame in range(count)]
         ass = HEADER
         visible = []
         for frame, geom in enumerate(geometries):
@@ -247,6 +319,12 @@ def main():
             if geom is None:
                 continue
             visible.append(frame)
+            if geom.get('mode') == 'observed-direction-pointers':
+                for mark in [dict(labelRect=geom['noteRect'],paths=[]),*geom['marks']]:
+                    box=mark['labelRect'];assert X<=box[0]<box[2]<=X+WIDTH and Y<=box[1]<box[3]<880
+                    assert all(X<=px<=X+WIDTH and Y<=py<=Y+HEIGHT for path in mark['paths'] for px,py in path)
+                    bounds.append({'clip':clip['id'],'frame':frame,'labelRect':list(box),'mode':'observed-direction-pointer'})
+                continue
             box = geom['labelRect']
             assert box[0] >= X and box[2] <= X + WIDTH and box[1] >= Y and box[3] < 880
             # Geometry is source-bound and clipped to the same content rectangle.
@@ -264,7 +342,7 @@ def main():
                      'assFile': rel(path), 'assSha256': sha(path), 'visibleFrames': len(visible),
                      'firstVisibleRelativeFrame': visible[0] if visible else None, 'lastVisibleRelativeFrame': visible[-1] if visible else None,
                      'firstDisplay': first['path'], 'lastDisplay': last['path'], 'stills': {'first': first, 'last': last},
-                     'label': LABELS[clip['id']], 'clearAtSourceCut': True})
+                     'label': '앞쪽 · 조종부 / 위쪽 · 머리 쪽' if clip['id']=='mk-body-up' and 'directionPointers' in clip['annotation'] else LABELS[clip['id']], 'clearAtSourceCut': True})
     # Explicit regression guard for the verified Zelda attachment hide.
     zelda = next(row for row in rows if row['id'] == 'zelda-log-position')
     assert (zelda['firstVisibleRelativeFrame'], zelda['lastVisibleRelativeFrame']) == (15, 266)
@@ -279,7 +357,7 @@ def main():
               'tracking': {'method': 'Reuse dense inspected sourceWindow keys, override exact frame with current final verified keys; linear interpolation only between visible observations',
                            'beforeFirstKey': 'hidden', 'afterLastKey': 'hidden', 'falseKey': 'hide immediately; never interpolate to zero bbox',
                            'assFrameTiming': 'floor centisecond event boundaries preserve exact per-frame state at native 60fps sample times',
-                           'measurements': 'Editorial image-space brackets/parallel shaft contours only; no internal axes, angle, detector or world-distance claim',
+                           'measurements': 'Editorial image-space brackets/parallel shaft contours/observable-part direction pointers only; no internal axes, angle, detector or world-distance claim',
                            'sourceCut': 'Separate beat-local ASS; no event outside its own finite clip'},
               'clips': rows, 'checks': {'clips': len(rows), 'totalFrames': sum(r['frames'] for r in rows),
                                       'visibleFrameGeometryAndLabelBoundsChecked': total_visible,
