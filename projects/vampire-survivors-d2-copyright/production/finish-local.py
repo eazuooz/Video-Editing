@@ -29,9 +29,21 @@ def integrity():
  for name in ['clean','captioned']:
   src=L/f'final.{name}.mp4';cache=Q/f'{name}-integrity.json'
   if cache.exists() and rd(cache)['sha256']==sha(src):reports.append(rd(cache));continue
-  ff(['-v','info','-i',src,'-map','0:v:0','-map','0:a:0','-vf','showinfo','-af','ashowinfo','-f','null','-'],name+'-full-decode')
-  log=(Q/(name+'-full-decode.log')).read_text(encoding='utf8');vpts=[float(x) for x in re.findall(r'Parsed_showinfo_.*?\bn:\s*\d+\s+pts:\s*-?\d+\s+pts_time:([\d.eE+-]+)',log)]
-  apts=[float(x) for x in re.findall(r'Parsed_ashowinfo_.*?\bn:\s*\d+\s+pts:\s*-?\d+\s+pts_time:([\d.eE+-]+)',log)]
+  logfile=Q/(name+'-full-decode.log')
+  # Completed decode logs can be re-parsed after a parser failure. The output
+  # and encoding receipt bind this earlier run; do not repeat an intact decode.
+  master=rd(P/'production/master-files.json')[name]
+  reusable=(logfile.exists() and logfile.stat().st_mtime>=src.stat().st_mtime and master['sha256']==sha(src)
+            and re.search(r'frame=\s*'+str(plan['totalFrames'])+r'\s+.*Lsize=',logfile.read_text(encoding='utf8')))
+  if not reusable:ff(['-v','info','-i',src,'-map','0:v:0','-map','0:a:0','-vf','showinfo','-af','ashowinfo','-f','null','-'],name+'-full-decode')
+  log=logfile.read_text(encoding='utf8')
+  # FFmpeg audio/video logger prefixes can interleave. Match the record's own
+  # format, not a possibly displaced prefix; verify every sequential index.
+  vr=re.findall(r'n:\s*(\d+)\s+pts:\s*-?\d+\s+pts_time:([\d.eE+-]+)\s+duration:.*?fmt:yuv420p',log)
+  ar=re.findall(r'n:\s*(\d+)\s+pts:\s*-?\d+\s+pts_time:([\d.eE+-]+)\s+fmt:fltp',log)
+  assert [int(n) for n,_ in vr]==list(range(plan['totalFrames'])),(name,'missing/duplicate video indices')
+  assert [int(n) for n,_ in ar]==list(range(len(ar))),(name,'missing/duplicate audio indices')
+  vpts=[float(t) for _,t in vr];apts=[float(t) for _,t in ar]
   assert len(vpts)==plan['totalFrames'],(name,len(vpts),plan['totalFrames'])
   gaps=np.diff(vpts);assert np.all(gaps>0) and np.max(np.abs(gaps-1/60))<.0011
   assert apts and np.all(np.diff(apts)>0)
@@ -54,10 +66,13 @@ def pixels():
   if c.get('annotation'):
    a=c['annotation'];lo=a['cue'];hi=min(c['frames']/60,lo+a['seconds'])
    for x in np.arange(max(0,lo-.1),hi+.1,.25):add(start+x*60,c['id']+'-annotation')
+ for f in [0,60,119,plan['totalFrames']-600,plan['totalFrames']-599,plan['totalFrames']-300,plan['totalFrames']-1]:add(f,'branding/membership-boundary')
  selected=sorted(frames);directory=Q/'frames';directory.mkdir(exist_ok=True);receipt=Q/'frame-selection.json'
  sig={'sourceSha256':sha(src),'selectedFrames':selected}
  if not receipt.exists():
-  expression='+'.join(f'eq(n,{f})' for f in selected)
+  terms=[f'eq(n,{f})' for f in selected]
+  while len(terms)>1:terms=['('+terms[i]+'+'+terms[i+1]+')' if i+1<len(terms) else terms[i] for i in range(0,len(terms),2)]
+  expression=terms[0]
   ff(['-v','warning','-i',src,'-an','-vf',f"select='{expression}'",'-fps_mode','vfr','-q:v','2',directory/'%05d.jpg'],'all-cue-cut-motion-selection')
   actual=sorted(directory.glob('*.jpg'));assert len(actual)==len(selected),(len(actual),len(selected))
   wr(receipt,{'signature':sig,'mapping':[{'frame':f,'file':p.name,'reasons':reasons[f]} for f,p in zip(selected,actual)]})
