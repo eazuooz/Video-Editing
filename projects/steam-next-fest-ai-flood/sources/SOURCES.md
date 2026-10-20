@@ -30,6 +30,15 @@
 | R12 | GamingOnLinux, 2023-06-30 (업데이트 07-01) | https://www.gamingonlinux.com/2023/06/valve-appear-to-be-banning-games-with-ai-art-on-steam/ | 밸브의 AI 그림 게임 출시 거절(“cannot ship games for which the developer does not have all of the necessary rights”, 학습 자료 권리 불분명), 7월 1일 밸브 성명(AI를 막으려는 것이 아니라 현행 저작권법 적용) |
 | R13 | PC Gamer, 2026-10 | https://www.pcgamer.com/gaming-industry/steam-week-in-review-steam-next-fest-has-over-8-000-demos-as-worthless-vibe-coded-slop-levels-up/ | 프레스 미리보기 페이지 8,011개(검색 요약) — 8,202와의 차이는 집계 시점 |
 
+| R14 | GDC 2026 State of the Game Industry (gdconf.com, Beth Elderkin) | https://gdconf.com/article/gdc-2026-state-of-the-game-industry-reveals-impact-of-layoffs-generative-ai-and-more/ | 응답자 2,300+; 생성형 AI 업무 사용 36%(스튜디오 30%, 퍼블리싱/마케팅 58%); 부정 52%(전년 30%, 전전년 18%), 긍정 7%; 아트 64%·디자인/내러티브 63%·프로그래밍 59% 부정; 용도 조사/브레인스토밍 81%·일상 업무 47%·코드 보조 47%·프로토타입 35% |
+| R15 | Game Developer (Hooded Horse / Tim Bender via Kotaku), 2026-01-09 | https://www.gamedeveloper.com/business/-it-s-cancerous-manor-lords-publisher-hooded-horse-wants-to-avoid-genai-like-the-plague | 계약서에 AI 에셋 금지, “it only takes one of those slipping through in some build and not getting replaced”, “constantly having to watch and deal with it” (원문 욕설 표현은 영상에서 사용하지 않음) |
+| R16 | Engadget (Crimson Desert / Pearl Abyss), 2026-03-22 | https://engadget.com/gaming/crimson-desert-developer-apologizes-and-promises-to-replace-ai-generated-art-183716439.html | 초기 작업의 “experimental AI generative tools”로 만든 2D 소품이 출시판에 포함, 플레이어가 출시 직후 발견, 사과·전체 에셋 감사·패치 교체, 스팀 페이지에 사후 표기 |
+| R17 | Aftermath, 2026-07-29 | https://aftermath.site/video-games-no-ai/ | 생성형 AI 거부 선언 스튜디오/퍼블리셔 59곳 목록; Digital Extremes “Nothing in our games will be AI-generated. Ever.”, Hinterland “humans-first company” |
+| R18 | MP1st / Tom's Hardware / VGC (PC Gamer 인터뷰), 2026-06 | https://mp1st.com/news/epic-ceo-criticizes-steams-ai-disclosure-requirement | Tim Sweeney: 스팀 표기 의무 “really irresponsible”, “Scarlet Letter” — **PC Gamer 원문 인터뷰 확인 후 확정** |
+| R19 | MP1st (SteamDB 집계), 2025-12 | https://mp1st.com/news/18k-games-released-steam-2025-half-have-10-reviews | 2025년 스팀 출시 약 19,000개(기록), 절반은 리뷰 10개 미만 |
+| R20 | 80.lv / Mobile Marketing Magazine (itch.io), 2024-11 | https://80.lv/articles/asset-creators-on-itch-io-now-have-to-disclose-the-use-of-generative-ai/ | itch.io 생성형 AI 공개 필드, ‘AI-Generated’/‘No AI’ 태그, 미표기 시 색인 제외 |
+| R21 | Steam 큐레이터 “No AI”, “AI Check” | https://store.steampowered.com/curator/45186708-No-AI/ · https://store.steampowered.com/curator/45255963-AI-Check/ | 플레이어 큐레이션 존재 근거(화면 녹화) |
+
 ### 데모 수·AI 표기 집계의 기준 차이(카드 각주용)
 
 | 시점 | 데모/참가작 수 | AI 표기 | 집계 주체 |
