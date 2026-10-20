@@ -26,6 +26,24 @@
 | R8 | Kotaku / Gematsu / Automaton, 2026-10-16~ | https://kotaku.com/anime-gambling-horror-game-ditches-free-steam-demo-over-fears-of-getting-ripped-off-by-ai-2000746794 · https://www.gematsu.com/2026/10/drunken-goddess-reflux-launches-december-8 | Alliance Arts 〈Drunken Goddess Reflux〉 10/19 공개 데모 취소 → 추첨 비공개 플레이테스트, 이유: AI 모작 우려·스트리밍 금지 집행 인력 부족, 출시 2026-12-08 |
 | R9 | Creative Bloq 등, 2026-10 | https://creativebloq.com/3d/video-game-design/has-ai-ruined-steam-next-fest | Pocketpair John “Bucky” Buckley의 X 발언: AI 캡슐 아트는 “immediate turn off” — **X 원문 확인 전까지 보류**(발화는 “한 퍼블리셔 담당자”로 익명 처리) |
 | R10 | GamesRadar(ResetEra 집계) | 검색 결과만 확인 | 6월 1,694/8,682 — 집계 시점 차이로 카드 각주에만 사용 |
+| R11 | GameDiscoverCo (Simon Carless), 2026-06-23 | https://newsletter.gamediscover.co/p/who-won-june-2026s-steam-next-fest | 데모 수 2025-06 2,645 → 2026-06 4,382; AI 표기 2026-02 750(21.2%) → 2026-06 1,163(26.5%); “broad tickbox” 주의. 2022-06 1,000+ / 2023-06 ~900 / 2024-06 ~1,800은 같은 뉴스레터 과거 호(검색 결과 요약) — 제작 전 각 호 원문 재확인 |
+| R12 | GamingOnLinux, 2023-06-30 (업데이트 07-01) | https://www.gamingonlinux.com/2023/06/valve-appear-to-be-banning-games-with-ai-art-on-steam/ | 밸브의 AI 그림 게임 출시 거절(“cannot ship games for which the developer does not have all of the necessary rights”, 학습 자료 권리 불분명), 7월 1일 밸브 성명(AI를 막으려는 것이 아니라 현행 저작권법 적용) |
+| R13 | PC Gamer, 2026-10 | https://www.pcgamer.com/gaming-industry/steam-week-in-review-steam-next-fest-has-over-8-000-demos-as-worthless-vibe-coded-slop-levels-up/ | 프레스 미리보기 페이지 8,011개(검색 요약) — 8,202와의 차이는 집계 시점 |
+
+### 데모 수·AI 표기 집계의 기준 차이(카드 각주용)
+
+| 시점 | 데모/참가작 수 | AI 표기 | 집계 주체 |
+|---|---|---|---|
+| 2022-06 | 1,000+ | — | PC Gamer 보도 |
+| 2023-06 | ~900 | — (밸브가 AI 그림 게임 거절하던 시기) | GameDiscoverCo |
+| 2024-06 | ~1,800 | — | GameDiscoverCo |
+| 2025-06 | 2,645 | — | GameDiscoverCo |
+| 2025-10 | — | 500+ | PCGamesN 인용 |
+| 2026-02 | 3,456 (PCGamesN) / 3,5xx | 750 = 21.2% (GDCo) · Top100 중 10 (PCGamesN) | GameDiscoverCo · PCGamesN |
+| 2026-06 | 4,382 (GDCo) / 8,700 참가작 (SteamDB) | 1,163 = 26.5% (GDCo) · 1,704 = 19.5% (SteamDB/Eurogamer) | 분모가 다름 |
+| 2026-10 | 8,202 (Valve 프레스) / 8,011 (PC Gamer) / 7,145 (SteamDB) / 7,131 (Output Lag) | 2,595 = 36%+ (SteamDB/TheGamer) | 집계 시점·기준 차이 |
+
+내레이션은 “집계하는 곳마다 조금씩 다르다”고 말하고, 카드에는 집계 주체를 적는다. 제목의 “1,000개 → 8,000개”는 2022–2023년 약 900–1,000과 2026-10 밸브 집계 8,202의 반올림이다.
 
 ## 직접 녹화 계획(실제 영상)
 
