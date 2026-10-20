@@ -54,7 +54,8 @@ try:
         save(receipt, state)
         return result
     worker.Qwen3TTSModel.generate_voice_clone = measured
-    sys.argv = ['render_narration.py', '--project', P.name, '--batch-size', '1']
+    force = sys.argv[1] if len(sys.argv) > 1 else ''
+    sys.argv = ['render_narration.py', '--project', P.name, '--batch-size', '1'] + (['--force-scenes', force] if force else [])
     worker.main()
     code = 0
     state.update(state='finished', finishedAt=time.time(), exitCode=0)

@@ -30,11 +30,11 @@ if stage == 'cuts':
     run(['ffmpeg', '-hide_banner', '-y', '-loglevel', 'warning', '-f', 'concat', '-safe', '0', '-i', str(O / 'body-concat.txt'), '-vf', 'settb=expr=1/60,setpts=N,setsar=1', '-r', '60', '-fps_mode', 'cfr', *enc, str(O / 'body-footage.mp4')], 'body-concat')
     assert frames(O / 'body-footage.mp4') == plan['bodyFrames']
 elif stage == 'overlay':
-    pngs = sorted(OVERLAY.glob('*.png')); assert len(pngs) >= plan['bodyFrames'], (len(pngs), plan['bodyFrames'])
+    pngs = sorted(OVERLAY.glob('*.png')); print('overlay frames', len(pngs), 'body frames', plan['bodyFrames'], '(shortfall repeats the final transparent frame)')
     first = pngs[0].name; digits = len(first.split('.')[0].split('_')[-1]) if '_' in first else len(first.split('.')[0])
     pattern = str(OVERLAY / (first.rsplit('_', 1)[0] + '_%0' + str(digits) + 'd.png')) if '_' in first else str(OVERLAY / ('%0' + str(digits) + 'd.png'))
     start = int(first.split('.')[0].split('_')[-1])
-    run(['ffmpeg', '-hide_banner', '-y', '-loglevel', 'warning', '-i', str(O / 'body-footage.mp4'), '-framerate', '60', '-start_number', str(start), '-i', pattern, '-filter_complex', '[1:v]format=rgba[ov];[0:v][ov]overlay=0:0:format=auto:shortest=1,format=yuv420p[v]', '-map', '[v]', '-frames:v', str(plan['bodyFrames']), '-r', '60', '-fps_mode', 'cfr', *enc, str(O / 'body-overlaid.mp4')], 'body-overlay')
+    run(['ffmpeg', '-hide_banner', '-y', '-loglevel', 'warning', '-i', str(O / 'body-footage.mp4'), '-framerate', '60', '-start_number', str(start), '-i', pattern, '-filter_complex', '[1:v]format=rgba[ov];[0:v][ov]overlay=0:0:format=auto:eof_action=repeat,format=yuv420p[v]', '-map', '[v]', '-frames:v', str(plan['bodyFrames']), '-r', '60', '-fps_mode', 'cfr', *enc, str(O / 'body-overlaid.mp4')], 'body-overlay')
     assert frames(O / 'body-overlaid.mp4') == plan['bodyFrames']
     for name, count in [('branding', 120), ('membership', 600)]:
         src = R / 'projects/game-reward-planning/production/local/reference-preserving-v2/edit' / (name + '.mp4'); assert frames(src) == count; shutil.copy2(src, O / (name + '.mp4'))

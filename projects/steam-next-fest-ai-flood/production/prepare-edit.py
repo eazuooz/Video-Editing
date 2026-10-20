@@ -69,10 +69,15 @@ V = {
  '07': [['hub-random'], ['hub-charts'], ['search-demos-blur'], ['search-demos-blur'], ['search-demos-blur'], ['search-demos-blur'], ['search-demos-blur']],
 }
 cursor = {}
+FILLERS = ['hub-16-click', 'hub-random', 'search-demos-plain', 'hub-charts', 'search-demos-blur', 'search-demos-hide', 'curator-noai', 'itch-tag']
+def remaining(rid): return max(0.0, recordings[rid]['duration'] - cursor.get(rid, 0.0) - 0.1)
 def take(rid, need_frames):
-    rec = recordings.get(rid)
-    if not rec: return None
-    start = cursor.get(rid, 0.0); avail = max(0.0, rec['duration'] - start - 0.1); use = min(avail, need_frames / 60)
+    # Use the requested recording while it has unseen footage; then continue on an
+    # unseen stretch of a filler recording instead of freezing a frame (no loops).
+    if rid not in recordings or remaining(rid) < 1.0:
+        pool = [f for f in FILLERS if f in recordings and remaining(f) >= 1.0]
+        rid = max(pool, key=remaining) if pool else rid
+    rec = recordings[rid]; start = cursor.get(rid, 0.0); use = min(remaining(rid), need_frames / 60)
     cursor[rid] = start + use
     return {'sourceFile': rec['file'], 'sourceSha256': rec['sha256'], 'sourceStart': round(start, 3), 'holdFrames': need_frames - round(use * 60), 'recording': rid}
 total = math.ceil((LEAD + timing['duration_seconds'] + 10) * 60); scenes = []; cuts = []; overlays = []

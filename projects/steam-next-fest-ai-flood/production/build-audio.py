@@ -25,7 +25,10 @@ sr = 24000; voice = np.zeros(round(duration * sr), dtype=np.float32); reports = 
 for s in plan['scenes']:
     f = N / 'chunks' / (s['id'] + '-scene.wav'); a, r = sf.read(f, dtype='float32'); assert r == sr
     q = json.loads((N / 'asr' / (s['id'] + '.json')).read_text(encoding='utf8')); assert q['audio_sha256'] == hashlib.sha256(f.read_bytes()).hexdigest()
-    mask = speech_mask(len(a), sr, q['words']); level = db(rms(a[mask])); gain = float(10 ** ((-20 - level) / 20))
+    mask = speech_mask(len(a), sr, q['words']); level = db(rms(a[mask]))
+    # Equalize scenes on the median of 1 s speech windows (perceptual level), not on peak-weighted RMS.
+    wl = [db(rms(a[i:i + sr][mask[i:i + sr]])) for i in range(0, len(a) - sr, round(sr * .5)) if mask[i:i + sr].sum() >= sr * .25]
+    median = float(np.median(wl)) if wl else level; gain = float(10 ** ((-21 - median) / 20))
     out = a * gain; edge = min(round(.006 * sr), len(out) // 2); out[:edge] *= np.linspace(0, 1, edge); out[-edge:] *= np.linspace(1, 0, edge)
     start = round((s['paragraphs'][0]['start'] + LEAD) * sr); voice[start:start + len(out)] = out
     windows = []

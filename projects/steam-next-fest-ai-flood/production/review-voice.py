@@ -17,7 +17,7 @@ code = 1
 try:
     save('whole-current-PCM-ASR-running', device='cuda')
     with (L / 'whole-voice-asr.log').open('w', encoding='utf8') as log:
-        code = subprocess.call([str(PY), '-u', '-X', 'utf8', 'qwen3-tts/review_project_narration.py', '--project', P.name, '--device', 'cuda'], cwd=R, stdout=log, stderr=subprocess.STDOUT)
+        code = subprocess.call([str(PY), '-u', '-X', 'utf8', 'qwen3-tts/review_project_narration.py', '--project', P.name, '--device', 'cuda'] + (['--scenes', sys.argv[1]] if len(sys.argv) > 1 else []), cwd=R, stdout=log, stderr=subprocess.STDOUT)
 finally:
     if LEASE.exists() and read(LEASE).get('token') == token: LEASE.unlink()
 if code == 0:
