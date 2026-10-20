@@ -427,6 +427,30 @@ class InstallFixtures(unittest.TestCase):
         self.assertEqual("ready-dry-run", result["status"], result)
         self.assertTrue(result["fallbackEvidenceReusedByValidationOnlySession"])
 
+    def test_validation_only_unity_empty_string_uses_preserved_fallback_evidence(self):
+        # Unity JsonUtility serializes the unused string field as "", not null.
+        self.result.update(command="validate", fallbackPath="")
+        self.write_result()
+        result = m.install(self.project)
+        self.assertEqual("ready-dry-run", result["status"], result)
+        self.assertTrue(result["fallbackEvidenceReusedByValidationOnlySession"])
+        self.unchanged()
+
+    def test_validation_only_fallback_reuse_does_not_accept_other_paths_or_commands(self):
+        for command, field, value in (("finalize", "fallbackPath", ""), ("finalize", "fallbackPath", None),
+                                     ("validate", "fallbackPath", " "), ("validate", "fallbackPath", str(self.work / "wrong.json")),
+                                     ("validate", "fallbackPath", []), ("validate", "fallbackPath", 42),
+                                     ("validate", "validationPath", "")):
+            with self.subTest(command=command, field=field, value=value):
+                self.result.update(command=command, validationPath=str(self.inner / "validation.json"),
+                                   fallbackPath=str(self.inner / "fallback-preparation-report.json"))
+                self.result[field] = value
+                self.write_result()
+                result = m.install(self.project)
+                self.assertNotEqual("ready-dry-run", result["status"], result)
+                self.assertNotEqual("installed", result["status"], result)
+                self.unchanged()
+
     def test_post_repair_validation_requires_fresh_final_session_and_exact_binary_scene_proof(self):
         relative = self.products[0]["folder"] + "/binary.unity"
         path = self.source / relative

@@ -801,7 +801,7 @@ def install(project, apply=False, exit_proof=None, reviewed_issues=None):
             value = result.get(field)
             # A fresh validation-only session intentionally reuses the earlier
             # full-finalize fallback evidence; it does not run the builder again.
-            if field == "fallbackPath" and value is None and result.get("command") == "validate":
+            if field == "fallbackPath" and value in (None, "") and result.get("command") == "validate":
                 report["fallbackEvidenceReusedByValidationOnlySession"] = True
                 value = str(inner / name)
             if not value or Path(value).resolve() != (inner / name).resolve():
