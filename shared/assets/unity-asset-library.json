@@ -113,6 +113,18 @@
         "isolatedProjectStatus": "installed and validated",
         "mainProjectStatus": "installed by verified final installation",
         "existingDirectDependencyVersionsPreserved": true
+      },
+      {
+        "package": "com.unity.postprocessing",
+        "version": "3.5.4",
+        "source": "registry",
+        "mainProjectStatus": "required for the five supplied legacy PostProcessProfile data assets",
+        "isolatedProjectStatus": "not added; original isolated proof preserved as historical",
+        "report": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/postprocessing-package-settings-verification.json",
+          "sha256": "67b340ce0a8f78b6735d035df4cbe91b7e090f4239133af6df151550dea059de",
+          "bytes": 3851
+        }
       }
     ],
     "guidRepairHistory": [
@@ -224,7 +236,10 @@
       "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryMissingTextures.cs",
       "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryShaderRepair.cs",
       "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryTextureDefaults.cs",
-      "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryGlobe.cs"
+      "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryGlobe.cs",
+      "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.Scoped.cs",
+      "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.PackageResolve.cs",
+      "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.PackageObserve.cs"
     ],
     "futureFreshRasterMetadata": {
       "script": "scripts/import-unity-asset-library.py",
@@ -245,7 +260,7 @@
     "validationCompletedUtc": "2026-10-20T09:16:51.8733688Z",
     "validationStatus": "pass",
     "validationMode": "isolated-editor; identical canonical asset paths/GUIDs moved to main project",
-    "mainEditorValidationStatus": "not-independently-rerun; existing Editor may perform its normal import",
+    "mainEditorValidationStatus": "native-AssetDatabase-ready;scoped-post-import-validation-passed-with-disclosed-source-scene-limit",
     "projectSettingsPreserved": true,
     "existingPackageVersionsPreserved": true,
     "requiredDependencyAdded": {
@@ -1481,6 +1496,35 @@
           "sha256": "3b8e0cbc188f9d3643519a372dd9582d21198cb822e4773140aec1972c3c5854"
         },
         "historicalFallbackClassificationRetained": true
+      },
+      {
+        "productId": "079",
+        "code": "p079-original-optional-scene-terraindata-not-supplied",
+        "status": "original-source-gap-recorded",
+        "terrainDataGuid": "72a46daa0efc16a4cbe3333dd097d619",
+        "sourceArchiveAssetEntriesChecked": 294,
+        "detail": "The supplied original optional scene already references absent TerrainData. No matching GUID occurs in its source package. Ordinary scene validation checks explicit script references; it does not prove all TerrainData or scene references resolve.",
+        "provenance": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/main079-native-upgrade/scene-provenance-report.json",
+          "sha256": "fa2ca861c60f0bd9f9af014a8b86f52890e962d9648ef4852695fabd2a0229cb",
+          "bytes": 661664
+        },
+        "sourcePackageCensus": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/main079-native-upgrade/original-package-guid-census.json",
+          "sha256": "72e5a1d90c9aaf2ac3d7fbb86f73665f1747ff8e6cb0c66372e57de122637933",
+          "bytes": 2544
+        }
+      },
+      {
+        "code": "native-package-list-built-in-burst-omission",
+        "status": "observed-with-list-graph-disagreement",
+        "report": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/package-observe/087cbf6ac9fda4cd3643884408e0fa8ae310a3fb09a2839a9c0fc24273849d54/report.json",
+          "sha256": "791910fcc78b1e8e114ae6cc3c8ff57f266ddec9f76e34687a19a3e65cbcebd9",
+          "bytes": 127290
+        },
+        "detail": "Asset import acceptance uses actual registered-package versions, real serialized types, exact lock graph, successful native compile and918-payload integrity. List API omission of registered built-in Burst is preserved as a metadata-query limitation, not relabeled as a passed List check.",
+        "doesNotConstitutePassedListApiCheck": true
       }
     ],
     "evidence": {
@@ -1708,6 +1752,17 @@
         "package": "com.unity.splines",
         "version": "2.9.1",
         "source": "registry"
+      },
+      {
+        "package": "com.unity.postprocessing",
+        "version": "3.5.4",
+        "source": "registry",
+        "phase": "post-native-legacy-profile-type-restoration",
+        "report": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/postprocessing-package-settings-verification.json",
+          "sha256": "67b340ce0a8f78b6735d035df4cbe91b7e090f4239133af6df151550dea059de",
+          "bytes": 3851
+        }
       }
     ],
     "permanentSourceOnlyCopy": {
@@ -2244,10 +2299,506 @@
       "scope": "Historical canonical previews retained; scoped supplemental renders and the separate final84 review do not replace or expand their visual claims."
     },
     "mainEditorVerification": {
-      "status": "import-in-progress",
-      "fileInstallationComplete": true,
-      "finalNativeAssetCountAndFreshCompilationPending": true,
-      "requestedProbeNonce": "asset-library-main-final-probe-cab7fe2042ac46c18c407c2f7507e7fe"
+      "status": "pass",
+      "completedUtc": "2026-10-20T11:16:39.209024+00:00",
+      "report": {
+        "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-import-verification.json",
+        "sha256": "67bf0e57506913c825ea67de445d645f9f5d52f21cabb2d46c4835f1218fcf0e",
+        "bytes": 16598
+      },
+      "scope": "Actual main-editor import84products/62904 assets, genuine fresh native compile, strict918 migrated-payload and1805 dependency checks, preserved old71package entries plus exact required PostProcessing3.5.4 data-type dependency, only its standard scripting symbol added, current file stability and static84 representative evidence with documented source limitations. No vendor scene opening by verification, all-animation/all-prefab artistic approval, or legacy PostProcessing-on-URP effect equivalence claim.",
+      "nativeStatus": {
+        "status": "ready",
+        "nonce": "asset-library-final-installed-native-fce3de8a2405470c980d56ce19928858",
+        "command": "probe",
+        "phase": "complete",
+        "updatedUtc": "2026-10-20T11:13:23.2751352Z",
+        "unityVersion": "6000.6.0f1",
+        "compiledAckTrigger": "",
+        "compiledAssemblyName": "",
+        "compiledAssemblyMvid": "",
+        "compiledBridgeSourceSha256": "",
+        "compiledScopedSourceSha256": "",
+        "compiledParserSourceSha256": "",
+        "assetsRoot": "Assets/ThirdParty/YamyamAssetLibrary",
+        "stagingRoot": "D:\\Github\\VideoEditing\\unity\\VideoEditing\\Library/YamyamAssetLibrary\\staging/CreatorBundle",
+        "error": "",
+        "rootExists": true,
+        "stagingExists": false,
+        "compiling": false,
+        "updating": false,
+        "playing": false,
+        "processed": 0,
+        "total": 0,
+        "upgradedMaterials": 0,
+        "assetDatabaseProbeCompleted": true,
+        "assetDatabaseRootValid": true,
+        "productFoldersValid": true,
+        "rootGuid": "681f8a4df4a1cea4e9cd839fbdf4f38a",
+        "assetDatabaseProbeUtc": "2026-10-20T11:13:23.8699121Z",
+        "assetCountSelection": "AssetDatabase.FindAssets(empty,ownedRoot)->GUIDToAssetPath->non-folder->Distinct; same selection as ValidateChunk; excludes root/all folders and metadata files",
+        "rootImmediateFolderCount": 84,
+        "actualNonFolderAssetCount": 62904,
+        "rootImmediateFolders": [
+          "Assets/ThirdParty/YamyamAssetLibrary/000-littlenightmare",
+          "Assets/ThirdParty/YamyamAssetLibrary/001-cartoon-city-massive-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/002-analog-memory-80s-90s-crt-vhs-rooms-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/003-medieval-village-town-interior-exterior-mega-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/004-viking-world-stylized-environment",
+          "Assets/ThirdParty/YamyamAssetLibrary/005-natureforge-stylized-woodland-forest-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/006-slavic-medieval-villagers-modular-low-poly-characters",
+          "Assets/ThirdParty/YamyamAssetLibrary/007-kitchen-restaurant-megapack-unity-godot-fbx",
+          "Assets/ThirdParty/YamyamAssetLibrary/008-polyvania-halloween-burton-town-948-spooky-low-poly-town-models-godot-unity-bl",
+          "Assets/ThirdParty/YamyamAssetLibrary/009-cars-2-low-poly-cute-unity-godot-project",
+          "Assets/ThirdParty/YamyamAssetLibrary/010-metro-3d-pixel-art-subway-for-boomer-fps-vr-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/011-cartoon-city-massive-pack-characters-unity-godot-fbx",
+          "Assets/ThirdParty/YamyamAssetLibrary/012-harboria-victorian-art-deco-stylized-low-poly-town-pack-2000-prefabs",
+          "Assets/ThirdParty/YamyamAssetLibrary/013-characters-2-godot-unity-fbx-blender",
+          "Assets/ThirdParty/YamyamAssetLibrary/014-gravefield-halloween-cemetery-mega-pack-800-low-poly-graveyard-assets",
+          "Assets/ThirdParty/YamyamAssetLibrary/015-desert-canyon-stylized-environment",
+          "Assets/ThirdParty/YamyamAssetLibrary/016-natureforge-low-poly-meadow-farm-kit-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/017-modulacraft-haunted-swamp-nature-218-spooky-trees-swamp-props-mega-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/018-smart-editor",
+          "Assets/ThirdParty/YamyamAssetLibrary/019-medieval-megapack-low-poly-unity-godot-gltf-fbx",
+          "Assets/ThirdParty/YamyamAssetLibrary/020-old-town-environment-town-and-courtyards-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/021-time-paradox-engine",
+          "Assets/ThirdParty/YamyamAssetLibrary/022-epicvoxel-low-poly-voxel-winter",
+          "Assets/ThirdParty/YamyamAssetLibrary/023-low-poly-stylized-tiny-forest",
+          "Assets/ThirdParty/YamyamAssetLibrary/024-nature-megapack-low-poly-extended-unity-godot-project-fbx",
+          "Assets/ThirdParty/YamyamAssetLibrary/025-roadside-tales-pro-modular-fence-narrative-pack-spline-tool",
+          "Assets/ThirdParty/YamyamAssetLibrary/026-pirate-island-unity-godot-fbx",
+          "Assets/ThirdParty/YamyamAssetLibrary/027-roadside-tales-iowa-covered-bridges-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/028-cars-low-poly-massive-car-pack-unity-godot-gltf-fbx",
+          "Assets/ThirdParty/YamyamAssetLibrary/029-low-poly-food-packaging-complete-stylized-collection",
+          "Assets/ThirdParty/YamyamAssetLibrary/030-art-deco-victorian-citizens-modular-low-poly-characters",
+          "Assets/ThirdParty/YamyamAssetLibrary/031-roadside-tales-backroad-bridges-stylized-modular",
+          "Assets/ThirdParty/YamyamAssetLibrary/032-cute-dungeon-megapack",
+          "Assets/ThirdParty/YamyamAssetLibrary/033-burton-style-halloween-plants-130-surreal-spooky-trees-sci-fi-foliage-mega-pac",
+          "Assets/ThirdParty/YamyamAssetLibrary/034-sci-fi-arena-pack-v1-unity-urp",
+          "Assets/ThirdParty/YamyamAssetLibrary/035-low-poly-raft-on-the-desert-unity-godot-unreal-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/036-sci-fi-battle-arena-cargo-unity-urp",
+          "Assets/ThirdParty/YamyamAssetLibrary/037-sci-fi-arena-battle-blue-base",
+          "Assets/ThirdParty/YamyamAssetLibrary/038-sci-fi-arena-pack-2",
+          "Assets/ThirdParty/YamyamAssetLibrary/039-halloween-graveyard-grave-kit-low-poly-cemetery-props-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/040-medieval-village-megapack-low-poly-refreshed-urp",
+          "Assets/ThirdParty/YamyamAssetLibrary/041-godot-project-skybox-shader-godot-unity",
+          "Assets/ThirdParty/YamyamAssetLibrary/044-halloween-cemetery-statues-76-low-poly-angel-gravedigger-props-godot-unity-ble",
+          "Assets/ThirdParty/YamyamAssetLibrary/045-terratoon-stylized-tree-pack-low-poly-forest-foliage",
+          "Assets/ThirdParty/YamyamAssetLibrary/046-12-toon-plasticine-pbr-material-substance-texture",
+          "Assets/ThirdParty/YamyamAssetLibrary/047-philipp-stylized-modular-low-poly-character",
+          "Assets/ThirdParty/YamyamAssetLibrary/048-blasters-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/049-stylized-vegetation-wind-shader-urp-2025",
+          "Assets/ThirdParty/YamyamAssetLibrary/050-lumagrove-unity-wonky-woods-low-poly-nature-asset-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/051-aztec-jungle-low-poly",
+          "Assets/ThirdParty/YamyamAssetLibrary/052-unity-atmospherefx-stylized-nature-particles-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/053-food-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/054-cosmokit-low-poly-planet-pack-sun-moon-9-stylized-worlds",
+          "Assets/ThirdParty/YamyamAssetLibrary/055-cute-park-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/056-stylized-rock-pack-100-comic-style-cliffs-stones-boulders",
+          "Assets/ThirdParty/YamyamAssetLibrary/057-asia-megapack-low-poly-refreshed-urp-unity",
+          "Assets/ThirdParty/YamyamAssetLibrary/058-modulacraft-haunted-swamp-builder-spooky-architecture-mega-pack-280-props",
+          "Assets/ThirdParty/YamyamAssetLibrary/059-epicvoxel-low-poly-voxel-summer",
+          "Assets/ThirdParty/YamyamAssetLibrary/060-farmland-unity-godot-gltf-fbx",
+          "Assets/ThirdParty/YamyamAssetLibrary/061-army-pack-cute-series",
+          "Assets/ThirdParty/YamyamAssetLibrary/062-cute-graveyard-halloween-pack-unity-godot-gltf-fbx",
+          "Assets/ThirdParty/YamyamAssetLibrary/063-low-poly-lava-plants-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/064-halloween-crypt-tomb-pack-55-low-poly-cemetery-props-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/065-low-poly-universe",
+          "Assets/ThirdParty/YamyamAssetLibrary/066-free-analog-memory-80s-90s-crt-vhs-rooms-mega-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/067-free-halloween-pumpkin-candle-pack-jack-o-lantern-props-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/068-free-halloween-cemetery-kit-80-spooky-graveyard-props-gravefield-dark-corners",
+          "Assets/ThirdParty/YamyamAssetLibrary/069-roadside-tales-fences-and-wall-bundle-pack-1-3-lods",
+          "Assets/ThirdParty/YamyamAssetLibrary/070-haunted-grounds-halloween-cemetery-props-spooky-scene-for-unity",
+          "Assets/ThirdParty/YamyamAssetLibrary/071-free-fantasy-medieval-houses-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/072-pixeldrift-metro-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/073-free-plasticine-pbr-material-substance-texture-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/074-cartoon-car-megapack",
+          "Assets/ThirdParty/YamyamAssetLibrary/075-roadside-tales-free-modular-bridge-godot-unity-blend",
+          "Assets/ThirdParty/YamyamAssetLibrary/076-free-blaster-pack-mini-edition",
+          "Assets/ThirdParty/YamyamAssetLibrary/077-free-stylized-explosives-aaa",
+          "Assets/ThirdParty/YamyamAssetLibrary/078-free-epicmobile-3d-voxel-forest-and-atolls-winter-set",
+          "Assets/ThirdParty/YamyamAssetLibrary/079-free-psx-alone-in-the-dusk-environment-asset-kit",
+          "Assets/ThirdParty/YamyamAssetLibrary/080-free-medieval-weapons-small-low-poly-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/081-free-medieval-props-small-pack-low-poly",
+          "Assets/ThirdParty/YamyamAssetLibrary/082-free-vintage-retro-stylized-pack",
+          "Assets/ThirdParty/YamyamAssetLibrary/083-free-stylized-medieval-village-unity-urp",
+          "Assets/ThirdParty/YamyamAssetLibrary/084-free-lumagrove-lowpoly-tiny-trees-and-rocks",
+          "Assets/ThirdParty/YamyamAssetLibrary/085-free-stylized-asia-enviroment-megapack-unity-urp"
+        ]
+      },
+      "freshCompilation": {
+        "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-final-native-probe/compiled.json",
+        "sha256": "fd1042b93e2415f7015a9b0b6bad7eb7fa9601daa8aaeb2b86c53d08e5ae563c",
+        "bytes": 1316
+      },
+      "previousRequestState": {
+        "status": "import-in-progress",
+        "fileInstallationComplete": true,
+        "finalNativeAssetCountAndFreshCompilationPending": true,
+        "requestedProbeNonce": "asset-library-main-final-probe-cab7fe2042ac46c18c407c2f7507e7fe"
+      },
+      "finalNativeAssetCountAndFreshCompilationPending": false,
+      "postImportScopedValidation": {
+        "report": {
+          "path": "unity/VideoEditing/Library/YamyamAssetLibrary/scoped-validation/0d9e22acbedf1fb974eabf0bfc5404d5b27b398b7aaf48ec53a9d289becc4c54/report.json",
+          "sha256": "2ae6f20ff4e4c020b335ad26babc4ad361d6a956a1b367cf217ae8af48270b31",
+          "bytes": 522494
+        },
+        "nonce": "asset-library-postprocessing-restored-integrity-9f2f5d128c7748aabb9c26e837da7a09",
+        "inputSha256": "2a166ad94decbfc07a49913d589a1999495dd7e75b486f974c363f85d80f55ce",
+        "assetFiles": 1805,
+        "requestedFiles": 918,
+        "hardCounters": {
+          "missingMonoScripts": 0,
+          "missingTextureReferences": 0,
+          "missingShaders": 0,
+          "unsupportedShaders": 0,
+          "shaderCompileErrors": 0,
+          "unreadableAssets": 0,
+          "externalAssetDependencyCount": 0
+        },
+        "observedUnityErrors": 0,
+        "compiledAck": {
+          "path": "unity/VideoEditing/Library/YamyamAssetLibrary/main-scoped-final-compile-snapshot/compiled.json",
+          "sha256": "f6d949aa0a063b581c3731e20091e4900e3fbbba7bd988a59bec301ecd7cac65",
+          "bytes": 1316
+        },
+        "coreEquivalence": {
+          "report": {
+            "path": "unity/VideoEditing/Library/YamyamAssetLibrary/main-native-inspector-core-equivalence.json",
+            "sha256": "10ac85201d1c1af029c9a6a2c324e1c15889ad15d05843ef496c2dc4c17eb9c7",
+            "bytes": 3752
+          }
+        }
+      },
+      "postNativeDelta": {
+        "report": {
+          "path": "unity/VideoEditing/Library/YamyamAssetLibrary/main-post-native-delta.json",
+          "sha256": "1ad1dec91fd2fc0dbd147c0a2bc5cac0fe67230459878db90181fb9ebd5c2c70",
+          "bytes": 2719
+        },
+        "changedCanonicalFiles": 917,
+        "additionalNativeAssets": 1,
+        "currentFiles": 129627,
+        "currentBytes": 14348032508,
+        "originalPathsMissing": 0
+      },
+      "currentStaticPreviewReconciliation": {
+        "status": "84-static-representatives-covered;82-retained-and-two-current-main-refreshed",
+        "historicalPngsRetained": 84,
+        "unchangedRepresentativeSources": 82,
+        "unchangedRecordedDirectDependencies": 310,
+        "changedRepresentativeSources": [
+          {
+            "productId": "014",
+            "assetPath": "Assets/ThirdParty/YamyamAssetLibrary/014-gravefield-halloween-cemetery-mega-pack-800-low-poly-graveyard-assets/EmaceArt/Necropoly/Prefabs/Add/Grave/EA_Add_Grave_Fence_1a_PRE.prefab",
+            "previousSha256": "21e9c2ca9aaba8b62e4b2408232ff6fb9dde9e0975492f128aab7fad691b6418",
+            "currentSha256": "2c208de62b276bbb8cf3912b900bbeb29024966f2fa1c76e05bafae592f42d86"
+          },
+          {
+            "productId": "079",
+            "assetPath": "Assets/ThirdParty/YamyamAssetLibrary/079-free-psx-alone-in-the-dusk-environment-asset-kit/AloneInTheDusk/Prefabs/Fence/BigFence_prefab.prefab",
+            "previousSha256": "777432960dcdeef0daadf61503f3074f9bdd33b3676c63ae79abffbad66bccd3",
+            "currentSha256": "4cf0115f501d5c6f5782c371104c2337420354bfb1ec7da262f8f98d191731d2"
+          }
+        ],
+        "changedRecordedDirectDependencies": [
+          {
+            "assetPath": "Assets/ThirdParty/YamyamAssetLibrary/014-gravefield-halloween-cemetery-mega-pack-800-low-poly-graveyard-assets/EmaceArt/Necropoly/Prefabs/Add/Grave/EA_Add_Grave_Fence_1a_PRE.prefab",
+            "productIds": [
+              "014"
+            ],
+            "previousSha256": "21e9c2ca9aaba8b62e4b2408232ff6fb9dde9e0975492f128aab7fad691b6418",
+            "currentSha256": "2c208de62b276bbb8cf3912b900bbeb29024966f2fa1c76e05bafae592f42d86"
+          },
+          {
+            "assetPath": "Assets/ThirdParty/YamyamAssetLibrary/079-free-psx-alone-in-the-dusk-environment-asset-kit/AloneInTheDusk/Prefabs/Fence/BigFence_prefab.prefab",
+            "productIds": [
+              "079"
+            ],
+            "previousSha256": "777432960dcdeef0daadf61503f3074f9bdd33b3676c63ae79abffbad66bccd3",
+            "currentSha256": "4cf0115f501d5c6f5782c371104c2337420354bfb1ec7da262f8f98d191731d2"
+          }
+        ],
+        "pendingStaticRepresentativeIds": [],
+        "previousReview": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/final84/final84-visual-review.json",
+          "sha256": "8a998bdab6806213af3f454b5784a6fcff6c109e9798e83388b99dab47a97a8c",
+          "bytes": 442173
+        },
+        "scope": "Recorded direct source/material/texture files only; no complete recursive inventory, visual/GI equivalence, animation/all-prefab or production-scene approval.",
+        "additionalScopedEvidence": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/final84/main-post-native-preview-reconciliation.json",
+          "sha256": "7832f753772c0c6c15a9523597811e63527cad36cafb3550b51e795e6dbbab70",
+          "bytes": 2831
+        },
+        "additionalScopedEvidenceStatus": "explicit-actual-static-review-passed",
+        "refreshedRepresentativeIds": [
+          "014",
+          "079"
+        ],
+        "visualReviewActuallyCompleted": true,
+        "validationScope": "One static representative per product only.82 prior visual reviews reused for exact recorded source/direct-dependency hashes;014/079 new native PNGs actually viewed. No full recursive artistic/lighting equivalence, every-prefab, animation, vendor-scene or production-scene approval.",
+        "newStaticReviews": [
+          {
+            "productId": "014",
+            "sourceAssetPath": "Assets/ThirdParty/YamyamAssetLibrary/014-gravefield-halloween-cemetery-mega-pack-800-low-poly-graveyard-assets/EmaceArt/Necropoly/Prefabs/Add/Grave/EA_Add_Grave_Fence_1a_PRE.prefab",
+            "sourceSha256": "2c208de62b276bbb8cf3912b900bbeb29024966f2fa1c76e05bafae592f42d86",
+            "image": {
+              "path": "unity/VideoEditing/Library/YamyamAssetLibrary/scoped-validation/0fc1258cbd73959aeb6e50234a36668f75e6a11478073a011ff234e5c3296ec8/preview-00.png",
+              "sha256": "9cfcbb399916b3680cfb5744e11ad561fd2947861080be36c3521ed855e6ffb7",
+              "bytes": 66037
+            },
+            "actualPixelsInspected": true,
+            "finding": "014: articulated thin metal grave fence is visible, dark with bright edge highlights, no error-pink or clipping."
+          },
+          {
+            "productId": "079",
+            "sourceAssetPath": "Assets/ThirdParty/YamyamAssetLibrary/079-free-psx-alone-in-the-dusk-environment-asset-kit/AloneInTheDusk/Prefabs/Fence/BigFence_prefab.prefab",
+            "sourceSha256": "4cf0115f501d5c6f5782c371104c2337420354bfb1ec7da262f8f98d191731d2",
+            "image": {
+              "path": "unity/VideoEditing/Library/YamyamAssetLibrary/scoped-validation/0fc1258cbd73959aeb6e50234a36668f75e6a11478073a011ff234e5c3296ec8/preview-01.png",
+              "sha256": "5f750cf50bd9b9968a7335aa706729db133add3fd8a5fbf63a726bf61326df09",
+              "bytes": 27944
+            },
+            "actualPixelsInspected": true,
+            "finding": "079: separate wooden fence posts/rails visible, dark and thin but within frame, no error-pink; detailed texture/animation claims not made."
+          }
+        ],
+        "nativePreviewRun": {
+          "report": {
+            "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/scoped-validation/0fc1258cbd73959aeb6e50234a36668f75e6a11478073a011ff234e5c3296ec8/report.json",
+            "sha256": "be46f84fea45e26fbd93a8f5b622244709434facabea011e36939a018d7fc7a4"
+          },
+          "statusAtStaticCapture": "completed-with-issues",
+          "scope": "Static source renders only; original native validation issues at capture are not converted into an overall pass."
+        }
+      },
+      "evidence": {
+        "mainVerification": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-import-verification.json",
+          "sha256": "67bf0e57506913c825ea67de445d645f9f5d52f21cabb2d46c4835f1218fcf0e",
+          "bytes": 16598
+        },
+        "requiredPackageSettingsVerification": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/postprocessing-package-settings-verification.json",
+          "sha256": "67b340ce0a8f78b6735d035df4cbe91b7e090f4239133af6df151550dea059de",
+          "bytes": 3851
+        },
+        "requiredPostprocessingAddition": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/postprocessing-package-addition.json",
+          "sha256": "536d8b0b7f89709b740dd6b7e52d0d3a89df114f9c78b6625175b0164f0c313a",
+          "bytes": 7821
+        },
+        "nativeSymbolPersistence": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/postprocessing-native-symbol-persistence.json",
+          "sha256": "38ee4a9839ecd1b07e28e25391b5ac2b83f6d260604d3dfd38b2a8c7d1d66329",
+          "bytes": 1665
+        },
+        "nativePackageObserver": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/package-observe/087cbf6ac9fda4cd3643884408e0fa8ae310a3fb09a2839a9c0fc24273849d54/report.json",
+          "sha256": "791910fcc78b1e8e114ae6cc3c8ff57f266ddec9f76e34687a19a3e65cbcebd9",
+          "bytes": 127290
+        },
+        "currentPackage:manifest.json": {
+          "localPath": "unity/VideoEditing/Packages/manifest.json",
+          "sha256": "2b24f02ef131132e9d5fd6c3692e74395334da914cab1646a4e59a8d8c1a49cf",
+          "bytes": 2416
+        },
+        "currentPackage:packages-lock.json": {
+          "localPath": "unity/VideoEditing/Packages/packages-lock.json",
+          "sha256": "dd9dc36a685f05f5d5fbbad514ef90ce0021e625e663508bc0553d5a1ed69a30",
+          "bytes": 16724
+        },
+        "packageListDiagnostic": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/package-observe/087cbf6ac9fda4cd3643884408e0fa8ae310a3fb09a2839a9c0fc24273849d54/report.json",
+          "sha256": "791910fcc78b1e8e114ae6cc3c8ff57f266ddec9f76e34687a19a3e65cbcebd9",
+          "bytes": 127290
+        },
+        "mainCompiledAck": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-final-native-probe/compiled.json",
+          "sha256": "fd1042b93e2415f7015a9b0b6bad7eb7fa9601daa8aaeb2b86c53d08e5ae563c",
+          "bytes": 1316
+        },
+        "probeRequest": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-final-probe-request.json",
+          "sha256": "84e712712b876ceb9a0e2e9ab92e2c9de6dce38b0293303f5843e34bf3b46121",
+          "bytes": 222
+        },
+        "consumedReceipt": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/receipts/eb977692ebe936ab7f74e9875ec64a16a7309c4457d9fcb42ca6efa8abd20f75.json",
+          "sha256": "a188ad30fe0484f09d9ecf6082819cb139d9c6fc1530b8197007070070ebd069",
+          "bytes": 246
+        },
+        "installation": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/installation-report.json",
+          "sha256": "3377d1797a993a865282a34b97cd932c7b35478141965a7ebd51c46535a6ae4c",
+          "bytes": 504728
+        },
+        "logAudit": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-final-log-audit.json",
+          "sha256": "85be10b867015e3ac1b9c4e012a3f74e760cacd06b3cb561e25affa490a95966",
+          "bytes": 9127
+        },
+        "postNativeDelta": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-post-native-delta.json",
+          "sha256": "1ad1dec91fd2fc0dbd147c0a2bc5cac0fe67230459878db90181fb9ebd5c2c70",
+          "bytes": 2719
+        },
+        "canonicalMutationAudit": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-post-import-canonical-mutation-audit.json",
+          "sha256": "34216782240328a7325c5b68b3aced12990b68952973259513d972d081b930b5",
+          "bytes": 907669
+        },
+        "nativeFileSetDelta": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-native-file-set-delta.json",
+          "sha256": "0573fba3c3465d6292d64cbd9fadc699f483c3f88e8d66cd95305c609bb7c4ba",
+          "bytes": 417
+        },
+        "p079SourceSceneProvenance": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/main079-native-upgrade/scene-provenance-report.json",
+          "sha256": "fa2ca861c60f0bd9f9af014a8b86f52890e962d9648ef4852695fabd2a0229cb",
+          "bytes": 661664
+        },
+        "p079OriginalPackageGuidCensus": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/main079-native-upgrade/original-package-guid-census.json",
+          "sha256": "72e5a1d90c9aaf2ac3d7fbb86f73665f1747ff8e6cb0c66372e57de122637933",
+          "bytes": 2544
+        },
+        "scopedMainNativeValidation": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/scoped-validation/0d9e22acbedf1fb974eabf0bfc5404d5b27b398b7aaf48ec53a9d289becc4c54/report.json",
+          "sha256": "2ae6f20ff4e4c020b335ad26babc4ad361d6a956a1b367cf217ae8af48270b31",
+          "bytes": 522494
+        },
+        "scopedValidationCompiledAck": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-scoped-final-compile-snapshot/compiled.json",
+          "sha256": "f6d949aa0a063b581c3731e20091e4900e3fbbba7bd988a59bec301ecd7cac65",
+          "bytes": 1316
+        },
+        "inspectionCoreEquivalence": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-native-inspector-core-equivalence.json",
+          "sha256": "10ac85201d1c1af029c9a6a2c324e1c15889ad15d05843ef496c2dc4c17eb9c7",
+          "bytes": 3752
+        },
+        "previousStatic84Review": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/final84/final84-visual-review.json",
+          "sha256": "8a998bdab6806213af3f454b5784a6fcff6c109e9798e83388b99dab47a97a8c",
+          "bytes": 442173
+        },
+        "previewReconciliation": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/final84/main-post-native-preview-reconciliation.json",
+          "sha256": "7832f753772c0c6c15a9523597811e63527cad36cafb3550b51e795e6dbbab70",
+          "bytes": 2831
+        }
+      },
+      "ordinarySceneValidationScope": "Explicit script references only; no blanket scene TerrainData/reference pass.",
+      "migrationCaller": "unknown; native scene-load/serialization log evidence does not identify the initiating caller",
+      "fullVisualOrGiEquivalenceClaimed": false,
+      "packageListDiagnostic": {
+        "status": "observed-with-list-graph-disagreement",
+        "nativeRegisteredPackages": 72,
+        "offlineMismatches": [
+          {
+            "name": "com.unity.burst",
+            "expected": "2.0.0",
+            "actual": "<missing>",
+            "matchingRows": 0
+          }
+        ],
+        "onlineMismatches": [
+          {
+            "name": "com.unity.burst",
+            "expected": "2.0.0",
+            "actual": "<missing>",
+            "matchingRows": 0
+          }
+        ],
+        "report": {
+          "path": "unity/VideoEditing/Library/YamyamAssetLibrary/package-observe/087cbf6ac9fda4cd3643884408e0fa8ae310a3fb09a2839a9c0fc24273849d54/report.json",
+          "sha256": "791910fcc78b1e8e114ae6cc3c8ff57f266ddec9f76e34687a19a3e65cbcebd9",
+          "bytes": 127290
+        },
+        "scope": "Asset import acceptance uses actual registered-package versions, real serialized types, exact lock graph, successful native compile and918-payload integrity. List API omission of registered built-in Burst is preserved as a metadata-query limitation, not relabeled as a passed List check."
+      },
+      "requiredPackageSettingsDelta": {
+        "sourceSettingsFileCount": 28,
+        "unchangedSettingsFileCount": 27,
+        "changedSettingsFiles": [
+          "ProjectSettings.asset"
+        ],
+        "onlyRequiredScriptingDefineChanged": true,
+        "requiredSymbol": "UNITY_POST_PROCESSING_STACK_V2",
+        "oldSymbolsPreserved": true,
+        "allOtherPlayerSettingsEquivalent": true,
+        "existingPackagesSemanticallyUnchanged": true,
+        "oldPackageCount": 71,
+        "newPackageCount": 72,
+        "addedPackages": {
+          "com.unity.postprocessing": "3.5.4"
+        },
+        "URPRendererSettingsUnchanged": true,
+        "report": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/postprocessing-package-settings-verification.json",
+          "sha256": "67b340ce0a8f78b6735d035df4cbe91b7e090f4239133af6df151550dea059de",
+          "bytes": 3851
+        },
+        "addition": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/postprocessing-package-addition.json",
+          "sha256": "536d8b0b7f89709b740dd6b7e52d0d3a89df114f9c78b6625175b0164f0c313a",
+          "bytes": 7821
+        },
+        "scope": "Official com.unity.postprocessing3.5.4 restores supplied legacy data-profile types. Only its required compile symbol changes; no URP scene-effect activation. Historical isolated package/settings proof remains unchanged."
+      },
+      "authoredAdditionalHelpers": [
+        {
+          "source": {
+            "localPath": "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.Scoped.cs",
+            "sha256": "0a76d6c58418d8d7f9f62ce6bf0960171e5dc0fb770de16fbd449d6d2f5be880"
+          },
+          "metadata": {
+            "localPath": "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.Scoped.cs.meta",
+            "sha256": "5caabdfb3fbc406f88a707476e0ea2bfce6baa2e5c2be1a981b2d5d1f27ba04b"
+          }
+        },
+        {
+          "source": {
+            "localPath": "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.PackageResolve.cs",
+            "sha256": "10ee5349bff947fa5e4208d56166206bcf8e2b4edc60cbc2b5176b3f8efa8242"
+          },
+          "metadata": {
+            "localPath": "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.PackageResolve.cs.meta",
+            "sha256": "51a05bf222fab0966aee5a77c860f12f41423269bb95a63916590b16f641b339"
+          }
+        },
+        {
+          "source": {
+            "localPath": "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.PackageObserve.cs",
+            "sha256": "8088b8d22622f3ea157e121209907e6113da3537d45c17193986871ca005e16f"
+          },
+          "metadata": {
+            "localPath": "unity/VideoEditing/Assets/Editor/YamyamAssetLibraryBridge.PackageObserve.cs.meta",
+            "sha256": "b9739623e732fe3e936c43d8c6778f8260ff8e1c93fc54b458cdecaed6cf3419"
+          }
+        }
+      ]
+    },
+    "currentMainInventory": {
+      "products": 84,
+      "nonFolderAssets": 62904,
+      "filesIncludingMetadata": 129627,
+      "bytesIncludingMetadata": 14348032508,
+      "changedCanonicalFiles": 917,
+      "additionalNativeAssets": 1,
+      "additionalFilesIncludingMetadata": 2,
+      "originalPathsMissing": 0,
+      "immutableFullHashInstallationCountsPreserved": true,
+      "immutableCanonicalManifestSha256": "9c56325aeb93a902b1381abcea89b00a399f85bf9a6ce8314cc1457b3698170d",
+      "report": {
+        "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-import-verification.json",
+        "sha256": "67bf0e57506913c825ea67de445d645f9f5d52f21cabb2d46c4835f1218fcf0e",
+        "bytes": 16598
+      },
+      "scope": "Observed917 native serialization upgrades plus one LightingSettings asset/meta; no original byte or full visual/GI equivalence."
     }
   },
   "products": [
@@ -3638,6 +4189,17 @@
         "rendered": true,
         "completedUtc": "2026-10-19T14:39:53.7683509Z",
         "afterBinaryRepair": true
+      },
+      "currentMainNativeAdaptation": {
+        "changedCanonicalFiles": 825,
+        "additionalFilesIncludingMetadata": 0,
+        "immutableInstalledSourceCountsPreserved": true,
+        "staticRepresentativeRecheckStatus": "passed-static-only",
+        "report": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-import-verification.json",
+          "sha256": "67bf0e57506913c825ea67de445d645f9f5d52f21cabb2d46c4835f1218fcf0e",
+          "bytes": 16598
+        }
       }
     },
     {
@@ -9060,7 +9622,7 @@
       ],
       "localProvenancePath": "D:\\얌얌코딩 에셋\\FREE PSX Alone in the DUSK - environment asset kit\\asset-info.json",
       "licenseStatus": "not-verified-in-this-catalog; consult public product terms and included license",
-      "importStatus": "installed-validated",
+      "importStatus": "installed-validated-with-recorded-limitations",
       "preparedSourceFileCount": 629,
       "actualAssetPath": "Assets/ThirdParty/YamyamAssetLibrary/079-free-psx-alone-in-the-dusk-environment-asset-kit",
       "installedSourceFileCount": 629,
@@ -9086,7 +9648,25 @@
         "recordedIssueKinds": {},
         "fallbackIssueCodes": {},
         "historicalFallbackIssueCodes": {},
-        "knownLimitations": []
+        "knownLimitations": [
+          {
+            "code": "p079-original-optional-scene-terraindata-not-supplied",
+            "status": "original-source-gap-recorded",
+            "terrainDataGuid": "72a46daa0efc16a4cbe3333dd097d619",
+            "sourceArchiveAssetEntriesChecked": 294,
+            "detail": "The supplied original optional scene already references absent TerrainData. No matching GUID occurs in its source package. Ordinary scene validation checks explicit script references; it does not prove all TerrainData or scene references resolve.",
+            "provenance": {
+              "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/main079-native-upgrade/scene-provenance-report.json",
+              "sha256": "fa2ca861c60f0bd9f9af014a8b86f52890e962d9648ef4852695fabd2a0229cb",
+              "bytes": 661664
+            },
+            "sourcePackageCensus": {
+              "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/qa-current/main079-native-upgrade/original-package-guid-census.json",
+              "sha256": "72e5a1d90c9aaf2ac3d7fbb86f73665f1747ff8e6cb0c66372e57de122637933",
+              "bytes": 2544
+            }
+          }
+        ]
       },
       "supplementaryLicenseProvenance": {
         "status": "original-sidecars-preserved; applicability-not-inferred",
@@ -9119,6 +9699,17 @@
         "rendered": true,
         "completedUtc": "2026-10-19T14:39:53.7683509Z",
         "afterBinaryRepair": true
+      },
+      "currentMainNativeAdaptation": {
+        "changedCanonicalFiles": 92,
+        "additionalFilesIncludingMetadata": 2,
+        "immutableInstalledSourceCountsPreserved": true,
+        "staticRepresentativeRecheckStatus": "passed-static-only",
+        "report": {
+          "localPath": "unity/VideoEditing/Library/YamyamAssetLibrary/main-import-verification.json",
+          "sha256": "67bf0e57506913c825ea67de445d645f9f5d52f21cabb2d46c4835f1218fcf0e",
+          "bytes": 16598
+        }
       }
     },
     {

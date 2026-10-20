@@ -18,7 +18,7 @@ using FileStream = YamyamAssetLibraryIO.Stream;
 // File requests only affect the explicitly named local asset-library subtree.
 // No active scene, selection, package manifest or project setting is changed.
 [InitializeOnLoad]
-public static class YamyamAssetLibraryBridge
+public static partial class YamyamAssetLibraryBridge
 {
     const string AssetsRoot = "Assets/ThirdParty/YamyamAssetLibrary";
     static readonly string Project = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
@@ -65,12 +65,12 @@ public static class YamyamAssetLibraryBridge
     [Serializable] public class Request
     {
         public string nonce;
-        public string command;
+        public string command, scopedInputSha256, packageResolveInputSha256, packageObserveInputSha256;
         public bool upgradeMaterials = true;
     }
     [Serializable] public class Job
     {
-        public string nonce, command, phase, startedUtc, updatedUtc, error;
+        public string nonce, command, phase, startedUtc, updatedUtc, error, scopedInputSha256, packageResolveInputSha256, packageObserveInputSha256;
         public bool upgradeMaterials, moved;
         public int upgradedMaterials, examinedMaterials;
         public List<UpgradeRecord> upgrades = new List<UpgradeRecord>();
@@ -79,6 +79,7 @@ public static class YamyamAssetLibraryBridge
     [Serializable] public class Status
     {
         public string status, nonce, command, phase, updatedUtc, unityVersion;
+        public string compiledAckTrigger, compiledAssemblyName, compiledAssemblyMvid, compiledBridgeSourceSha256, compiledScopedSourceSha256, compiledParserSourceSha256;
         public string assetsRoot = AssetsRoot, stagingRoot = Stage;
         public string error;
         public bool rootExists, stagingExists, compiling, updating, playing;
@@ -193,11 +194,31 @@ public static class YamyamAssetLibraryBridge
         // Deferred acknowledgement demonstrates that this script compiled in the running editor.
         EditorApplication.delayCall += () =>
         {
-            Directory.CreateDirectory(Work);
-            WriteJson(Path.Combine(Work, "compiled.json"), new Status
-            { status = "compiled", unityVersion = Application.unityVersion, updatedUtc = Utc() });
+            WriteCompiledAckOnce("deferred-delay-call");
             ResumeHeadless();
         };
+    }
+
+    static bool compiledAckWritten;
+    static string CompiledSourceSha(string filename)
+    {
+        string path = Path.Combine(Project, "Assets/Editor", filename);
+        using (var input = File.OpenRead(path)) using (var sha = SHA256.Create()) return Hex(sha.ComputeHash(input));
+    }
+    static void WriteCompiledAckOnce(string trigger)
+    {
+        // A domain's update callback is a second real native execution path if the
+        // deferred callback was lost during import. Never attest a busy compilation.
+        if (compiledAckWritten || EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode) return;
+        var assembly = typeof(YamyamAssetLibraryBridge).Assembly;
+        var acknowledgement = new Status { status = "compiled", unityVersion = Application.unityVersion, updatedUtc = Utc(),
+            compiling = false, updating = false, playing = false, compiledAckTrigger = trigger,
+            compiledAssemblyName = assembly.GetName().Name, compiledAssemblyMvid = assembly.ManifestModule.ModuleVersionId.ToString("D"),
+            compiledBridgeSourceSha256 = CompiledSourceSha("YamyamAssetLibraryBridge.cs"),
+            compiledScopedSourceSha256 = CompiledSourceSha("YamyamAssetLibraryBridge.Scoped.cs"),
+            compiledParserSourceSha256 = CompiledSourceSha("YamyamAssetLibraryMaterialTextureParser.cs") };
+        Directory.CreateDirectory(Work); WriteJson(Path.Combine(Work, "compiled.json"), acknowledgement);
+        compiledAckWritten = true; // Only a completed durable write consumes this domain's acknowledgement.
     }
 
     // -executeMethod entry point. This refuses both interactive editors and the real project,
@@ -289,6 +310,10 @@ public static class YamyamAssetLibraryBridge
     {
         if (EditorApplication.timeSinceStartup < nextPoll) return;
         nextPoll = EditorApplication.timeSinceStartup + (CanRunHeadless() ? .025 : .25);
+        try { WriteCompiledAckOnce("editor-update"); }
+        catch (Exception exception) { Debug.LogException(exception); return; }
+        if (PollPackageResolve()) return;
+        if (PollPackageObserve()) return;
         if (FinishOwnTerminalHeadlessBeforeBusy()) return;
         if (Busy()) { idleSince = -1; return; }
         if (idleSince < 0) idleSince = EditorApplication.timeSinceStartup;
@@ -322,10 +347,10 @@ public static class YamyamAssetLibraryBridge
             return;
         }
         if (request.command != "probe" && request.command != "status" && request.command != "install" &&
-            request.command != "validate" && request.command != "upgrade" && request.command != "finalize" && request.command != "preview")
-            throw new InvalidDataException("Supported commands: probe, status, install, validate, upgrade, finalize, preview.");
+            request.command != "validate" && request.command != "validateScoped" && request.command != "resolvePackages" && request.command != "observePackages" && request.command != "upgrade" && request.command != "finalize" && request.command != "preview")
+            throw new InvalidDataException("Supported commands: probe, status, install, validate, validateScoped, resolvePackages, observePackages, upgrade, finalize, preview.");
         job = new Job { nonce = request.nonce, command = request.command, phase = "accepted",
-            startedUtc = Utc(), upgradeMaterials = request.upgradeMaterials };
+            startedUtc = Utc(), upgradeMaterials = request.command != "validateScoped" && request.upgradeMaterials, scopedInputSha256 = request.scopedInputSha256, packageResolveInputSha256 = request.packageResolveInputSha256, packageObserveInputSha256 = request.packageObserveInputSha256 };
         SaveJob(); // Persist the nonce before consuming or carrying out any mutation.
         WriteJson(receipt, request);
         File.Delete(RequestPath);
@@ -357,7 +382,7 @@ public static class YamyamAssetLibraryBridge
             else
             {
                 RequireRoot();
-                job.phase = job.command == "preview" ? "previewing" : job.command == "validate" || !job.upgradeMaterials ? "validating" : "upgrading";
+                job.phase = job.command == "observePackages" ? "observing-packages" : job.command == "resolvePackages" ? "resolving-packages" : job.command == "validateScoped" ? "validating-scoped" : job.command == "preview" ? "previewing" : job.command == "validate" || !job.upgradeMaterials ? "validating" : "upgrading";
                 SaveJob(); ResetSession();
             }
             return;
@@ -382,6 +407,7 @@ public static class YamyamAssetLibraryBridge
         if (job.phase == "upgrading") UpgradeChunk();
         else if (job.phase == "building-fallbacks") FallbackChunk();
         else if (job.phase == "validating") ValidateChunk();
+        else if (job.phase == "validating-scoped") ValidateScopedChunk();
         else if (job.phase == "previewing") PreviewChunk();
         else throw new InvalidDataException("Unknown persisted phase: " + job.phase);
     }
@@ -1620,6 +1646,7 @@ public static class YamyamAssetLibraryBridge
     }
     static void ResetSession()
     {
+        ResetScopedValidation();
         paths = null; cursor = 0; report = null; upgraders = null;
         clips.Clear(); materials.Clear(); shaderCounts.Clear(); sceneScriptReferences.Clear(); lastProgress = 0;
         offlineBinaryEvidenceLoaded = false; offlineBinaryEvidenceError = null; offlineBinaryEvidenceSha256 = null;
