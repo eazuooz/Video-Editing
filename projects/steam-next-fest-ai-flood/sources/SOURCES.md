@@ -39,6 +39,15 @@
 | R20 | 80.lv / Mobile Marketing Magazine (itch.io), 2024-11 | https://80.lv/articles/asset-creators-on-itch-io-now-have-to-disclose-the-use-of-generative-ai/ | itch.io 생성형 AI 공개 필드, ‘AI-Generated’/‘No AI’ 태그, 미표기 시 색인 제외 |
 | R21 | Steam 큐레이터 “No AI”, “AI Check” | https://store.steampowered.com/curator/45186708-No-AI/ · https://store.steampowered.com/curator/45255963-AI-Check/ | 플레이어 큐레이션 존재 근거(화면 녹화) |
 
+| R22 | GameDiscoverCo (Simon Carless), 2025-11-21 “Are Steam game prices dropping…” | https://newsletter.gamediscover.co/p/are-steam-game-prices-dropping-and | 월별 상위 50 신작(비F2P) 기준 평균 $21.80(2023-02)→$21.41(2025-10, −2%), 중간값 $19.50→$15.64(−20%); 중간값 하락은 $5–15 저가 히트 증가 때문; “semi-scientific” 주의 |
+| R23 | MP1st (HushCrasher via Game World Observer), 2026-04-22 | https://mp1st.com/news/game-development-costs-on-steam-exceed-27-billion | 2025년 스팀 신작 개발비 추정 총 $27B(기록), 인디 평균 예산 약 $100K(2015 대비 +156%) — 추정치 |
+| R24 | Kotaku (Lewis Parker), 2026-10-18 | https://kotaku.com/devs-behind-needle-in-a-haystack-clone-complain-their-clone-has-been-cloned-by-vibe-coder-2000747284 | 〈Needle In A Haystack Simulator〉(Studio Bitdot) 2026-08 바이럴 → 복제작 14+; 복제작 NoGlyph가 다른 복제작에서 “13 of our classes… exact same names”, 존재하지 않는 셰이더 오류 메시지 복사; AI 디컴파일 추정은 기자 해석; 로블록스 〈Escape the Walls〉 24시간 복제 “Claude did everything for me; I just sat in my chair and watched.” |
+| R25 | games.gg, 2026-07-15 | https://games.gg/news/ai-vibe-coding-clone-bury-games/ | Circana Mat Piscatella(Bluesky): “Good games will get cloned and buried.” / “Players will default to games/franchises they know and trust.”; 〈Peak〉 모작이 수 주 내 PlayStation Store에 등장 |
+| R26 | 게임메카 신재연, 2026-10-20 | https://www.gamemeca.com/en/view.php?gid=1782071 | AI 리버스 엔지니어링 복제가 개발 생태계를 파괴; Dragon's Chronicle 개발자 협박 메일(증거 없음, 사기 추정), Project Solaris 개발 소식 공개 축소, R.E.P.O. 모작 환불 사례 |
+| R27 | Steam Page Analyzer / howtomarketagame (Chris Zukowski), 2026-01 | https://www.steampageanalyzer.com/blog/how-many-games-release-on-steam | 2025년 출시 20,282개, 리뷰 1,000 이상 608개(3%); SteamDB 기준 리뷰 ≤10 9,269개(2025-12 중순) |
+| R28 | Sherwood / VGC 등, 2025–2026 | https://www.sherwood.news/culture/with-an-usd80-mario-kart-title-for-switch-2-nintendo-is-ushering-in-a-new | 〈Mario Kart World〉 $80(2025-06), PS5/Xbox 대작 $70 기본, EA $70 유지 — 가격 ‘하락하지 않음’ 근거 |
+| R29 | PC Gamer “Steam Week in Review”, 2026-10 | https://www.pcgamer.com/gaming-industry/steam-week-in-review-steam-next-fest-has-over-8-000-demos-as-worthless-vibe-coded-slop-levels-up/ | 제목 “worthless vibe coded slop levels up” — 품질 인식 인용(헤드라인) |
+
 ### 데모 수·AI 표기 집계의 기준 차이(카드 각주용)
 
 | 시점 | 데모/참가작 수 | AI 표기 | 집계 주체 |
