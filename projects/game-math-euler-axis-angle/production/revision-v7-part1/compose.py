@@ -5,6 +5,7 @@ wait for an animation. Static states may persist under continuing narration;
 native recorded game actions and controlled model steps play once at1x.
 """
 from pathlib import Path
+from fractions import Fraction
 import argparse, hashlib, importlib.util, json, os, subprocess, time
 from PIL import Image, ImageDraw, ImageFont
 
@@ -88,17 +89,28 @@ def normalize_segment(row):
     assert path(row['file']).exists(),row['file']
     return row
 VIDEO_PROBES={}
-def source_frame_count(row):
+def source_frame_bound(row):
     file=path(row['file']).resolve()
     if file not in VIDEO_PROBES:
         data=probe(file);v=next(s for s in data['streams']if s['codec_type']=='video')
-        assert v['r_frame_rate']=='60/1',(str(file),'Finite source must retain60fps')
-        VIDEO_PROBES[file]=int(v['nb_frames'])
+        assert v['r_frame_rate']=='60/1'and v['avg_frame_rate']=='60/1',(str(file),'Finite source must retain60fps')
+        count=v.get('nb_frames')
+        if count and count!='N/A':
+            evidence=dict(limitFrames=int(count),basis='container-declared nb_frames; whole source not redecoded',exactDecodedTotal=False)
+        else:
+            duration=(Fraction(int(v['duration_ts']))*Fraction(v['time_base']))if v.get('duration_ts')else Fraction(v['duration'])
+            derived=duration*60
+            evidence=dict(limitFrames=derived.numerator//derived.denominator,
+                basis='video duration times declared CFR; range bound, not whole-source decoded frame count',
+                durationTs=v.get('duration_ts'),timeBase=v['time_base'],durationSeconds=float(duration),exactDecodedTotal=False)
+        VIDEO_PROBES[file]=evidence
+        save(E/'source-range-bounds.json',dict(sources={rel(f):value for f,value in VIDEO_PROBES.items()},
+            verification='Source-header bounds only. Each finite output scene is subsequently checked for its exact encoded frame count.'))
     return VIDEO_PROBES[file]
 def validate_source_range(row,n):
     if row['kind']=='video':
-        available=source_frame_count(row)
-        assert row['sourceStartFrame']+n<=available,('Native finite source overflow',row,n,available)
+        evidence=source_frame_bound(row);available=evidence['limitFrames']
+        assert row['sourceStartFrame']+n<=available,('Native finite source overflow',row,n,evidence)
     for layer in row.get('overlayLayers',[]):
         validate_source_range(normalize_segment(dict(layer,startFrame=row['startFrame'],endFrameExclusive=row['endFrameExclusive'])),n)
 def validate_segments(rows,scene):

@@ -38,6 +38,14 @@ def sample_plan(left,right):
                 # Dense still sequence is evidence of progression, not a
                 # claimed continuous human playback/listening approval.
                 for f in range(a,b,15):add(f,f'{side}.{i}.f{f-a}','native-action-quarter-second-sample')
+    early=[]
+    for receipt in sorted((O/'sample').glob('*/samples.json')):
+        proof=read(receipt);source=R/proof['movie']
+        assert sha(source)==proof['movieSha256'],'Early scene proof must bind the exact reused captioned clip'
+        for item in proof['samples']:
+            add(item['globalFrame'],proof['scene']+'.early-proof','reused-early-scene-decoded-pixel-proof')
+            early.append(dict(frame=item['globalFrame'],rgbSha256=item['rgbSha256'],scene=proof['scene'],
+                sourceMovieSha256=proof['movieSha256'],receipt=rel(receipt)))
     merged=[]
     for row in sorted(motions,key=lambda x:x['startFrame']):
         a=max(120,row['startFrame']-30);b=min(timeline['bodyEndFrame'],row['endFrameExclusive']+30)
@@ -47,7 +55,7 @@ def sample_plan(left,right):
     for i,row in enumerate(merged,1):row.update(id=f'motion-{i:02}',start=row['startFrame']/60,end=row['endFrameExclusive']/60)
     return dict(schemaVersion=1,timelineSha256=sha(H/'timeline.json'),captionJsonSha256=sha(O/'captions/captions.json'),implementationSha256=sha(Path(__file__)),
         leftManifestSha256=sha(left),rightManifestSha256=sha(right),totalFrames=timeline['totalFrames'],
-        events=[dict(frame=f,time=f/60,labels=v)for f,v in sorted(events.items())],motionCases=merged,
+        events=[dict(frame=f,time=f/60,labels=v)for f,v in sorted(events.items())],motionCases=merged,earlyScenePixelProofs=early,
         limitation='Dense frame sequences and automatic full decode do not replace continuous human playback or listening.')
 def decode(path,plan,captioned):
     import av
@@ -58,6 +66,8 @@ def decode(path,plan,captioned):
             print('Reused exact successful current-master decode',path.name,flush=True);return cached
         raise RuntimeError('Preserve differing QA receipt before selected repair')
     requested={x['frame']:x for x in plan['events']}if captioned else{}
+    early={x['frame']:x for x in plan.get('earlyScenePixelProofs',[])}if captioned else{}
+    early_checked=0
     folder=Q/'frames';folder.mkdir(parents=True,exist_ok=True);samples=[];pts_errors=[];sizes=set();first_pts=None;last_pts=None;count=0
     with av.open(str(path))as container:
         stream=container.streams.video[0];stream.thread_type='AUTO'
@@ -71,15 +81,19 @@ def decode(path,plan,captioned):
             sizes.add((frame.width,frame.height));last_pts=timestamp;count=index+1
             if index in requested:
                 im=frame.to_image();native=folder/f'{index:07}.jpg';mobile=folder/f'{index:07}.375.png'
+                if index in early:
+                    assert hashlib.sha256(im.tobytes()).hexdigest()==early[index]['rgbSha256'],('Reused scene decoded pixels changed',index,early[index]['scene'])
+                    early_checked+=1
                 im.save(native,quality=92,subsampling=0);im.resize((375,211),Image.Resampling.LANCZOS).save(mobile)
                 samples.append(dict(requested[index],native=rel(native),mobile=rel(mobile),nativeSha256=sha(native),mobileSha256=sha(mobile)))
     assert count==plan['totalFrames']and sizes=={(1920,1080)}and not pts_errors,(path,count,sizes,pts_errors)
     assert not captioned or len(samples)==len(requested)
+    assert not captioned or early_checked==len(early)
     audio=audio_integrity(path)
     result=dict(schemaVersion=1,file=rel(path),sha256=current,bytes=path.stat().st_size,complete=True,
         decodedFrames=count,width=1920,height=1080,fps=60,firstPtsSeconds=first_pts,lastPtsSeconds=last_pts,
         ptsErrorCount=len(pts_errors),ptsErrors=pts_errors,allFramesDecoded=True,audio=audio,
-        samplePlanSha256=sha(Q/'sample-plan.json'),samples=samples,
+        samplePlanSha256=sha(Q/'sample-plan.json'),samples=samples,earlySceneDecodedPixelProofsPassed=early_checked,
         semanticVisualReview='pending direct current-pixel review',continuousHumanPlayback='pending',humanWholeListening='pending')
     save(target,result);print('Decoded full current master',path.name,count,'frames',flush=True);return result
 def audio_integrity(path):
@@ -133,6 +147,7 @@ def main():
     pages=contact_pages(captioned['samples']);review_page(captioned['samples'],pages,plan)
     save(Q/'integrity-summary.json',dict(schemaVersion=1,part=1,completeDecodeBothMasters=True,frames=plan['totalFrames'],
         cleanSha256=clean['sha256'],captionedSha256=captioned['sha256'],decodedAudioIdentical=True,
+        reusedEarlySceneDecodedPixelProofsPassed=captioned['earlySceneDecodedPixelProofsPassed'],
         sampledActualOutputFrames=len(captioned['samples']),contactPages=len(pages),
         noAutomaticHumanApproval=True,currentPixelSemanticReview='pending',finalMixAsr='separate current encoded-mix review',humanWholeListening='pending'))
     print(json.dumps(dict(fullDecode=True,frames=plan['totalFrames'],pairedAudioIdentical=True,pixelSamples=len(captioned['samples']),pages=len(pages))),flush=True)

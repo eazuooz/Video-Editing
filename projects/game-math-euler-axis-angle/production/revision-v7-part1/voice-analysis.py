@@ -14,7 +14,10 @@ def alignment_helpers():
  base=helpers['normalized']
  # Timing-only spelling equivalents. No wrong-word/error repair or numeral
  # replacement is allowed to act as a source-content review.
- aliases=[('엑스트린식 로테이션','extrinsic rotation'),('인트린식 로테이션','intrinsic rotation'),('오리엔테이션','orientation'),('오일러 각','euler angles'),('테이트–브라이언','tait bryan'),('테이트 브라이언','tait bryan'),('짐벌 락','gimbal lock'),('짐벌락','gimbal lock'),('헤딩','heading'),('피치','pitch'),('뱅크','bank'),('슈퍼플라이트','superflight')]
+ # Euler/Tait-Bryan keep the same Korean canonical form whether Whisper
+ # tokenizes the name and its suffix together or into separate word pieces.
+ # English component aliases also compose across ASR word boundaries.
+ aliases=[('엑스트린식 로테이션','extrinsic rotation'),('인트린식 로테이션','intrinsic rotation'),('엑스트린식','extrinsic'),('인트린식','intrinsic'),('로테이션','rotation'),('오리엔테이션','orientation'),('euler','오일러'),('angles','각'),('tait','테이트'),('bryan','브라이언'),('짐벌 락','gimbal lock'),('짐벌락','gimbal lock'),('헤딩','heading'),('피치','pitch'),('뱅크','bank'),('슈퍼플라이트','superflight')]
  def normalized(text):
   text=text.lower()
   for source,target in aliases:text=text.replace(source,target)
@@ -40,7 +43,9 @@ def main():
  align,normalize=alignment_helpers();aligned=[];levels=[];pending=[];all_levels=[]
  for row in source['scenes']:
   sid=row['id'];file=c.R/row['file'];assert c.sha(file)==row['sha256']
-  asr_file=c.O/'asr'/(sid+'.json');cached=c.read(asr_file);assert cached['audio_sha256']==row['sha256']
+  word_file=row.get('alignmentAsrFile')or row.get('asrFile')
+  asr_file=c.R/word_file if word_file else c.O/'asr'/(sid+'.json');cached=c.read(asr_file);assert cached['audio_sha256']==row['sha256']
+  if row.get('alignmentAsrSha256'):assert c.sha(asr_file)==row['alignmentAsrSha256']
   x,rate=sf.read(file,dtype='float32');assert rate==24000 and x.ndim==1 and len(x)==row['samples'];duration=len(x)/rate
   valid=[w for w in cached['words'] if w.get('timestamp') and all(t is not None for t in w['timestamp']) and w['timestamp'][1]>w['timestamp'][0]]
   mask=np.zeros(len(x),bool)
