@@ -49,9 +49,10 @@ def main():
         d['finalRender']=dict(status='complete-local-final-review-pending',revision='v7-part1-simultaneous-comparison',
             width=1920,height=1080,fps=60,frames=timeline['totalFrames'],durationSeconds=timeline['duration'],
             captionedSha256=master_sha,cleanSha256=clean_sha,completedAt=date,reports=reports,
-            knownIssues=[],openItems=['현재 전체 영상의 사용자 최종 검수·청취 및 주관적인 속도·발음 확인'],
+            knownIssues=pixels.get('minorVisualFindings',[]),openItems=['현재 전체 영상의 사용자 최종 검수·청취 및 주관적인 속도·발음 확인'],
             humanWholeListening='pending',humanFinalReview='pending')
         d['audio']['mixStatus']='complete-current-standard-game-audio-no-added-bgm';d['audio']['currentContinuityReview']=rel(a.audio_review);d['audio']['currentFinalAsrReview']=rel(a.asr_review)
+        d['membershipOutro']['truncatedHandlesReview']='Preserved original screenshot/identities without retyping; original display truncation retained.'
         d['delivery']['review'].update(humanReview='pending',reviewedSha256=None,masterSha256=master_sha,deliveredAt=date)
     update(D/'project.json',child)
     # The standard collector verifies both streams/SRTs and exact copy hashes.
