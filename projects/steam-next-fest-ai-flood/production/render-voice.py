@@ -20,15 +20,20 @@ assert 'tts' in plan['approvals']['videoSelection']['authorizedScope']
 assert not LEASE.exists(), 'Preserve existing GPU lease'
 me = psutil.Process()
 family = {p.pid for p in [me, *me.parents()]}
-foreign = [p.pid for p in psutil.process_iter(['name']) if p.pid not in family and (p.info['name'] or '').lower().startswith('python')]
-assert not foreign, ('Other compute remains untouched; wait for its boundary', foreign)
+# Foreign GPU compute (not idle helper interpreters) is what must stay untouched.
+apps = subprocess.check_output(['nvidia-smi', '--query-compute-apps=pid,process_name', '--format=csv,noheader'], text=True)
+foreign = [row for row in apps.splitlines() if 'python' in row.lower() and int(row.split(',')[0]) not in family]
+assert not foreign, ('Other GPU compute remains untouched; wait for its boundary', foreign)
 before = gpu()
-assert before[0] >= 9000, ('Bounded profile needs 9000MiB free', before)
+# User confirmed the GPU is free (2026-10-20 "gpu 지금 비어있어"); editors hold display memory, so run bounded to the free pool.
+MIN_FREE = 8192
+assert before[0] >= MIN_FREE, ('Bounded profile needs at least 8192MiB free', before)
+CAP = min(8192, before[0] - 700)
 token = str(uuid.uuid4())
 state = dict(schemaVersion=1, token=token, project=P.name, state='gpu_granted_to_tts', requestedAt=time.time(),
              coordinator={'pid': me.pid, 'createTime': me.create_time()},
              gpuBeforeTts={'freeMiB': before[0], 'totalMiB': before[1], 'utilization': before[2]},
-             foreignProcessesPaused=[], userEvidence='④로 바꾸고 영상 제작 진행해줘', allocatorLimitMiB=8192,
+             foreignProcessesPaused=[], userEvidence='gpu 지금 비어있어 (2026-10-20)', allocatorLimitMiB=CAP,
              profile='bf16-scene-batch1-bounded-8GiB', generations=[])
 with LEASE.open('x', encoding='utf8') as f: json.dump(state, f, indent=2)
 receipt = L / 'tts-gpu-coordination.json'
@@ -37,7 +42,7 @@ code = 1
 try:
     sys.path.insert(0, str(R / 'qwen3-tts'))
     import torch
-    torch.cuda.set_per_process_memory_fraction(8192 * 1024 * 1024 / torch.cuda.get_device_properties(0).total_memory, 0)
+    torch.cuda.set_per_process_memory_fraction(CAP * 1024 * 1024 / torch.cuda.get_device_properties(0).total_memory, 0)
     import render_narration as worker
     worker.configure_project(P.name)
     worker.load_tts_dependencies()

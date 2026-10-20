@@ -12,7 +12,7 @@ existing = json.loads(OUT.read_text(encoding='utf8')) if OUT.exists() else {'rec
 inv = existing['recordings']
 for webm in sorted(REC.glob('*.webm')):
     meta_path = webm.with_suffix('.json')
-    if not meta_path.exists(): continue
+    if not meta_path.exists() or webm.stat().st_size < 100000: print('skip', webm.name, webm.stat().st_size, 'bytes'); continue
     meta = json.loads(meta_path.read_text(encoding='utf8'))
     mp4 = webm.with_suffix('.mp4'); src_sha = sha(webm)
     rec = inv.get(webm.stem, {})
