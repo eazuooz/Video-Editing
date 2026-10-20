@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "slug": "steam-next-fest-ai-flood",
+  "updatedAt": "2026-10-20T22:34:01.339179+09:00",
+  "stage": "recordings-and-overlay-ready-waiting-gpu-for-tts",
+  "completed": [
+    "script v4 + title ④ approved by user",
+    "20 own browser recordings (Steam search/hub/store, SteamDB blocked, report pages) with AI warning for Steam extension loaded from MIT source",
+    "Motion Canvas overlay project (chips/labels/cards/strokes) compiled and 40 s sample rendered",
+    "production scripts: render-voice, review-voice, prepare-edit, render-edit, build-audio, verify-output, render-overlay"
+  ],
+  "blockers": [
+    "GPU: another session holds ~10 GB (foreign python jobs); bounded TTS needs 9000 MiB free and no foreign python — waiting at that boundary"
+  ],
+  "nextAction": "When the GPU frees: render-voice.py → review-voice.py (ASR+align) → prepare-edit.py → render-overlay.cjs (full) → render-edit.py cuts/overlay → build-audio.py → render-edit.py pair → verify-output.py → collect; then local review links.",
+  "gpuPolicy": "cooperative boundary only; no foreign process termination; no CPU fallback"
+}

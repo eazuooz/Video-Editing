@@ -1,4 +1,4 @@
-# 3년 만에 데모 1,000개가 8,000개 — AI는 게임 개발을 어디로 데려가고 있을까? · 제작 전 한 편 설계 (v4)
+# AI로 데모는 8배 늘었는데, 왜 유저는 더 좋은 게임을 더 싸게 받지 못할까? · 제작 전 한 편 설계 (v4, 제목 ④ 확정·제작 승인)
 
 현재 절차: `docs/VIDEO_WORKFLOW.md`. 사용자 선택/실행 범위는 `planning/production-plan.json`, 검사 결과는 `production/review-ledger.json`에만 기록한다. v4는 2026-10-20 사용자 지시 두 건을 반영했다: **“넥스트 페스트 위주가 아니라 AI 게임 개발의 미래를 논하자”**(v3), **“유저는 저품질 게임을 받는데 가격은 내려가지 않았고, 아이디어 중심 인디 시장은 복제 때문에 난항이며 수익이 더 어려워졌다. AI 사용의 품질 저하와 가격 대비 품질 부담이 유저에게 전가되는 그림을 추가하라”**(v4). TTS·렌더·업로드는 시작하지 않았다.
 
@@ -87,7 +87,7 @@ KO: [narration.ko.json](../script/narration.ko.json) · EN: [narration.en.json](
 | 04 | 인용 | “Nothing in our games will be AI-generated. Ever.” | Digital Extremes, GameSpot 보도 |
 | 04 | 숫자 | **59** 스튜디오 ‘생성형 AI 안 씀’ 목록 | Aftermath 2026-07-29 |
 | 04 | 전망 | ‘만들 수 있느냐 → 증명할 수 있느냐’ | `우리 전망` |
-| 05 | 인용 | AI 캡슐 “immediate turn off” — **X 원문 확인 후** | Pocketpair 퍼블리싱 책임자 |
+| 05 | 인용 | AI 캡슐 “immediate turn off” + 번역 | Pocketpair 퍼블리싱 책임자, X, 2026-02 페스트(2차 보도 확인) |
 | 05 | 인용 | “worthless vibe coded slop levels up” + 번역 | PC Gamer 2026-10 헤드라인 |
 | 05 | 상태 | 플레이어의 체: 확장(팝업·blur) / 큐레이터 / itch.io 태그 / Epic 반대 | P4 · R21 · R20 · R18 |
 | 05 | 숫자 | 대작 **$70** 기본 · 닌텐도 **$80**(2025-06) | R28 |
@@ -128,7 +128,7 @@ KO: [narration.ko.json](../script/narration.ko.json) · EN: [narration.en.json](
 | 04c | 만드는 쪽 ③ | Aftermath 목록 스크롤 | Hooded Horse 인용 → Digital Extremes 인용 → ‘59’ | `스튜디오 선언` · `실제 녹화 · 공개 목록` | “한 번이면” “절대 없다” “59곳” | 전망 |
 | 04d | 전망 ① | 허브 | ‘만들 수 있느냐 → 증명할 수 있느냐’, `우리 전망` | — · `우리 전망` | “증명” | 04→05 |
 | 05a | 유저 — 품질 | 허브 Random·캡슐 격자 | 캡슐에 빨간 원; Pocketpair 인용(확정 시); PC Gamer 헤드라인 카드 | `캡슐 아트` · `실제 녹화` | “캡슐” “슬롭” | 체 |
-| 05b | 플레이어의 체 | 확장 팝업 → 검색 blur; 큐레이터; itch 태그 | 체 픽토그램 완성; 플랫폼별 상태 카드; Sweeney 한 줄(확정 시) | `AI warning for Steam` · `실제 녹화 · 확장` | “팝업” “No AI” “주홍글씨” | 가격 |
+| 05b | 플레이어의 체 | 확장 팝업 → 검색 blur; 큐레이터; itch 태그 | 체 픽토그램 완성; 플랫폼별 상태 카드; Sweeney 한 줄(PC Gamer 2026-06-24 확인) | `AI warning for Steam` · `실제 녹화 · 확장` | “팝업” “No AI” “주홍글씨” | 가격 |
 | 05c | 가격 ① 대작 | 스팀 상점 $69.99/$79.99 가격표 녹화 | ‘$70 기본 · $80’ 손글씨 | `게임 가격` · `실제 녹화 · 상점 페이지` | “70달러” “80달러” | 가격 ② |
 | 05d | 가격 ② 스팀 신작 | GameDiscoverCo 가격 글 페이지 | 두 선 손그림: 평균 21.8→21.4(거의 수평), 중간값 19.5→15.6(하강) + ‘싼 게임이 늘어서’ 라벨 | `신작 가격 추이` · `실제 녹화 · 공개 분석` | “그대로” “중간값” | 예산 |
 | 05e | 예산 | MP1st/GWO 기사 페이지 | $27B · $100K(+156%) 숫자 카드, ‘추정치’ 각주 | `개발비` · `실제 녹화 · 보도` | “270억 달러” “156%” | 전망 |
@@ -175,6 +175,6 @@ KO: [narration.ko.json](../script/narration.ko.json) · EN: [narration.en.json](
 ## 미해결 사항과 사용자에게 요청할 선택
 
 1. **대본 v4 확인** — 유저(품질·가격)·인디(복제·수익)·전가 결론 추가. 제목 ① 유지 또는 ④로 교체.
-2. **인용 확정 전 항목** — Pocketpair(X 원문), Sweeney(PC Gamer 원문), 2022–2024 데모 수(GameDiscoverCo 각 호), 개발비 $27B·인디 $100K(HushCrasher 추정 방법). 확인 불가 시 카드 제거, 발화는 일반 표현.
+2. **인용 확인 결과** — Pocketpair(2026-02 X 발언, 2차 보도 2건 일치) ✓ · Sweeney(PC Gamer 2026-06-24) ✓ · 2023-06 데모 838–950(GameDiscoverCo) ✓ · 개발비 $27B·인디 $100K는 HushCrasher 추정치로 카드에 ‘추정’ 표기.
 3. **복제 사례 화면** — 검색 결과에 나오는 복제작 개발자명은 흐림 처리; 원작 스튜디오명만 표시.
 4. **공유 운영 파일** — 다른 세션 작업 중이라 미수정. 선택 근거는 `production-plan.json`.
