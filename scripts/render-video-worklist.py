@@ -26,5 +26,21 @@ for r in rows:
  if r['notes']:out.append(f"| {r['id']} {cell(r['title'])} | {cell(r['notes'])} |")
 out+=['','## 관리 기준과 근거','','- 기준 파일: [영상별 상태](../shared/publishing/video-worklist.json). 표를 갱신할 때 `python scripts/render-video-worklist.py`를 실행한다. 각 편의 상세 계획·검수 원장은 해당 프로젝트의 기존 파일을 사용한다.','- [실제 Studio 상태 확인](../shared/publishing/video-worklist-studio-observation.json): 최신 100개 행에서 현재 공개/비공개/예약을 확인했다. 오래된 예약표의 날짜를 현재 예약으로 승계하지 않았다. 목록에서 보이지 않은 과거 ID는 삭제로 단정하지 않는다.','- [게임디자인 순서](../production/batches/sakurai-planning-game-design/playlist-inventory.json), [기존 게임수학 순서](../shared/publishing/daily-alternating-schedule.json), [렌더링 시리즈 계획](../production/research/game-lighting-history/series-plan.json)을 연결했다. 과거 길이 제한·자동 작업 지시는 적용하지 않는다.','- 기존 비공개 영상에는 대사 연결, 쉬운 선행 설명, 정식 용어, 독립 게임 자료, 화면 표식, 자연스러운 TTS·국소 음량, 1080p60·모바일 가독성을 선택 시 검수한다. 최신 규칙 때문에 미선택 완성본을 자동 재제작하지 않는다.','- M21 이후는 기존 승인 상한 밖 후속 후보다. 이번 목록 작성으로 착수하지 않는다.','- 별도 완료 영상 「AI 시대 게임개발과 실력」은 현재 Studio에서 2026-10-16 예약 상태를 확인했다. 기존 설정을 유지한다.','']
 out=[line.replace('별도 완료 영상 「AI 시대 게임개발과 실력」은 현재 Studio에서 2026-10-16 예약 상태를 확인했다. 기존 설정을 유지한다.','별도 완료 영상 「AI 시대 게임개발과 실력」은 2026-10-18 Studio에서 공개 상태와 게시일2026-10-16을 확인했다. 기존 설정을 유지한다.') for line in out]
+polish=d.get('privateMathPolish')
+if polish:
+ section=['','## 기존 비공개 게임수학 시각 보강 진행표','',
+  '기존 강의를 유지하며 표식·가독성·필요한 애니메이션만 다듬는다. 대본을 다시 쓰거나 새 음성을 만들지 않는다. 현재는 M04 한 편만 착수하며 나머지는 작업 목록이다.',
+  '',f"Studio 확인: 비공개 {polish['privateUploadCount']}개 = 본편 {polish['mainLessonCount']}편 + 이전 버전 {len(polish['olderVersions'])}개. 공개본과 기존 업로드는 보존한다.",
+  '', '| 순서 | 기존 영상 | 길이 | 보강 작업 | 진행 | 검수 |', '|---:|---|---:|---|---|---|']
+ for r in rows:
+  p=r.get('privatePolish')
+  if not p:continue
+  section.append(f"| {p['order']} | {r['id']} [{cell(p['baselineTitle'])}](https://youtu.be/{p['baselineVideoId']}) | {p['duration']} | {cell(p['task'])} | {cell(p['status'])} | {cell(p['humanReview'])} |")
+ section+=['','이전 버전은 추가 제작 편수에서 제외하고 그대로 보존한다:']
+ for r in polish['olderVersions']:
+  section.append(f"- [{cell(r['title'])}](https://youtu.be/{r['videoId']}) · {r['duration']} · {r['status']}")
+ section+=['',f"근거: [{polish['updatedAt'][:10]} Studio 실제 목록](../{polish['evidence']}). 원본 코드 재렌더 허가를 기록했으며 최신 로컬 V8을 비공개 업로드 원본으로 대체하지 않는다.",'']
+ out+=section
+ (R/'docs/GAME_MATH_PRIVATE_POLISH.md').write_text('# 기존 비공개 게임수학 시각 보강\n'+ '\n'.join(section[3:]),encoding='utf-8')
 (R/'docs/VIDEO_WORKLIST.md').write_text('\n'.join(out),encoding='utf-8')
 print('Rendered VIDEO_WORKLIST.md:',len(rows),'rows')
