@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-10-21T17:20:08.576049+00:00",
+  "updatedAt": "2026-10-21T17:40:27.909889+00:00",
   "stage": "source-restoration-and-baseline-render",
   "active": [
     "M05",
     "M06",
-    "M09"
+    "M15"
   ],
   "ready": [],
   "blocked": [
@@ -18,24 +18,38 @@
     "M13",
     "M14"
   ],
-  "nextAction": "Do not duplicate or kill the three jobs. Once M05 restoration finishes, apply polish-gameplay-overlays.py M05 --apply (after GPU/CPU heavy render queue clears), inspect all changed guides at1080p/375px incl GA06 and remaining scenes, assemble.py M05 then technical-qa.py M05. M06 similar after direct review. All original audio/order preserved. M07-M20 base explanation restoration job continues. Missing polygons modules need restoration. No upload.",
+  "nextAction": "M05 finite technical job11185 waits for the two original rendering processes, then UI-clearance clip, composition repair, full pair and technical QA. Do not duplicate assemble. Direct final encoded moving-output review required afterward before marking ready. Current M05 repairs: missing GA06 guide repaired from observed screen anchors; marker/math font sizes enlarged; crossing subtitle divider moved below the exact original header; QF20 native UI moved above fixed caption band using an aspect-preserving inset. Sources/audio/order/cues unchanged. M06 restore active; direct guide/annotation and code-color QA pending. Normalize M07-M12 source explanations when the heavy queue is free. For M15/M16/M18/M19/M20 original FHD media is fully restored, use restore-gameplay.py after inspecting original cuts, then author property-matched guides before final completion. M13/M14 additions code missing. Source-resolution question remains pending for M07-M12/M17. No upload.",
   "automationId": "16",
   "audioRecovered": 16,
   "jobs": [
     {
-      "sessionId": 21679,
-      "pid": 91868,
-      "job": "restore-quaternion-gameplay.py M05"
-    },
-    {
-      "sessionId": 20412,
-      "pid": 29516,
-      "job": "restore-quaternion-gameplay.py M06"
-    },
-    {
       "sessionId": 24344,
       "pid": 42724,
       "job": "restore-lessons.py M07 M08 M09 M10 M11 M12 M15 M16 M17 M18 M19 M20"
+    },
+    {
+      "sessionId": 11185,
+      "pid": 23732,
+      "job": "finish-M05-technical.py",
+      "stage": "waiting-for-existing-render-jobs",
+      "statusFile": "projects/game-math-quaternion-foundations-v3/production/private-polish-v1/technical-finish-job.json",
+      "dependencies": [
+        29516,
+        42724
+      ],
+      "note": "Finite dependency job waits on process handles; no process killed or duplicated. Encodes existing repaired plan then technical QA; does not mark visual/human review passed."
+    },
+    {
+      "sessionId": 50523,
+      "pid": 85416,
+      "job": "continue-restoration.py",
+      "stage": "waiting-for-existing-render-and-M05-technical",
+      "dependencies": [
+        "23732",
+        "42724"
+      ],
+      "statusFile": "production/batches/private-game-math-polish-20261022/remaining-restoration-job.json",
+      "note": "Finite serialized queue: M06 technical outputs;12 restored explanation normalizations; original FHD gameplay M13/M14/M15/M16/M18/M19/M20. No visual pass/upload granted."
     }
   ],
   "completedJobs": [
@@ -49,7 +63,12 @@
     "M07 and M08 explanation source renders complete; normalization pending",
     "Publisher recovery complete: Tiny Glade2 / shapez2 two / Dorfromantik FHD restored",
     "Big Walk transient download failure repaired; FHD decoded",
-    "M05 all33 explanation scenes sampled with actual captions; 52gameplay samples inspected. GA06 missing guide during spoken cue identified and manual source anchors authored; new larger-label overlay draft created, full repair application/QA pending"
+    "M05 all33 explanation scenes sampled with actual captions; 52gameplay samples inspected. GA06 missing guide during spoken cue identified and manual source anchors authored; new larger-label overlay draft created, full repair application/QA pending",
+    "M05 all17 original FHD gameplay scenes restored",
+    "M09/M10 explanation source renders complete; normalization still pending",
+    "Commit7613620c244d1a36ee4263fadfad4ecb21f6abb8 pushed; foreign Git index preserved, own bookkeeping awaits existing lock",
+    "M06 all14 original FHD gameplay scenes restored; all44 scenes sampled with actual captions. QC20 native control/caption collision repair prepared.",
+    "M11/M12 explanation source renders complete; current M15 source render active"
   ],
   "sourceIssues": {
     "ZFGdubPhasM": "Available formats verified: maximum 1280x720; find original FHD counterpart, no upscale exception assumed",

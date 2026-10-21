@@ -19,6 +19,8 @@ assert box in source
 source=source.replace(box,'')
 source=source.replace('round(15*sy)','round(20*sy)').replace('>880','>748')
 source=source.replace(" words='\\n'.join(wrapped)"," words='\\n'.join(wrapped)\n note_h=66 if len(wrapped)==1 else 90\n polygon(note_start,slot['seconds'],[[note_x,note_y],[note_x+330,note_y],[note_x+330,note_y+note_h],[note_x,note_y+note_h]],'#171717',0)")
+# Wrap at words so a quaternion token or question mark is not split in half.
+source=source.replace("  for char in paragraph:\n   if row and font.getlength(row+char)>748:wrapped.append(row);row=''\n   row+=char", "  for word in paragraph.split(' '):\n   candidate=(row+' '+word).strip()\n   if row and font.getlength(candidate)>748:wrapped.append(row);row=word\n   else:row=candidate")
 source=source.replace("size=13)\n text(note_start", "size=18)\n text(note_start")
 source=source.replace('[note_x+9,note_y+27]','[note_x+9,note_y+36]').replace("words,'#ffe082',size=15)","words,'#ffe082',size=20)")
 m=types.ModuleType('private_polish_overlay');m.__file__=str(old/'create-game-overlay.py');exec(compile(source,m.__file__,'exec'),m.__dict__)

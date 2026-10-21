@@ -6,9 +6,11 @@ from polish_common import *
 e=Episode(sys.argv[1]);kind=sys.argv[2] if len(sys.argv)>2 else 'actual'
 folder=e.O/f'pixel-review-{kind}';folder.mkdir(exist_ok=True)
 records=[];tiles=[];font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',17)
+repair=read(e.H/'composition-polish.json') if (e.H/'composition-polish.json').exists() else None
 for s in e.T['scenes']:
  if s['classification']!=kind:continue
  clip=e.O/f'clips/{s["id"]}.mp4'
+ if repair and s['id'] in repair['inputs']:clip=R/repair['inputs'][s['id']]['path']
  if not clip.exists():continue
  try:e.verify(clip,s['frames'])
  except Exception:continue
@@ -22,8 +24,10 @@ for s in e.T['scenes']:
  for k,t in enumerate(sorted(times)):
   dst=folder/f'{s["id"]}-{k:02d}.png';receipt=dst.with_suffix('.json')
   sig={'clipSha256':digest,'captionSha256':sha(e.O/'captions.ko.ass'),'scene':s['id'],'localSeconds':t,'globalSeconds':s['start']+t}
+  if repair:sig['compositionSha256']=sha(R/repair['globalAss'])
   if not (dst.exists() and receipt.exists() and read(receipt)==sig):
    vf=f"setpts=PTS+{s['start']+t}/TB,ass=captions.ko.ass"
+   if repair:vf=vf.replace('ass=captions.ko.ass','ass=composition-polish.ass,ass=captions.ko.ass')
    e.ff(['-ss',t,'-i',clip,'-vf',vf,'-frames:v','1','-threads','1',dst],f'review-{kind}.log',e.O)
    save(receipt,sig)
   records.append({**sig,'image':rel(dst)})
