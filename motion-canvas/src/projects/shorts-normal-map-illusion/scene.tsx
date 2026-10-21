@@ -11,8 +11,11 @@ const sparse:any={'hero':'02-wall-on','flat-reveal':'06-wall-edge','shared-norma
 export default makeScene2D(function*(view){
  const t=createSignal(0),clamp=(x:number,a=0,b=1)=>Math.max(a,Math.min(b,x));
  const sections=timing.sections as any[];
- const section=()=>sections.find(s=>t()>=s.start&&t()<s.end)??sections[sections.length-1];
- const elapsed=()=>t()-section().start,frame=()=>clamp(Math.floor(t()*60+1e-5),0,timing.frames-1);
+ const frame=()=>clamp(Math.floor(t()*60+1e-5),0,timing.frames-1);
+ // The captured integer frame owns the cut. Floating time can fall one ULP
+ // before a cue and must never request an A/B file outside that native state.
+ const section=()=>!PREFLIGHT?(sections.find(s=>s.id===(data.frames as any[])[frame()]?.id)??sections[sections.length-1]):(sections.find(s=>t()>=s.start&&t()<s.end)??sections[sections.length-1]);
+ const elapsed=()=>t()-section().start;
  const is=(...ids:string[])=>ids.includes(section().id),knight=()=>section().kind.startsWith('knight'),comparison=()=>section().kind==='wall-ab';
  const definition=()=>is('normal-definition','normal-data')&&elapsed()<1.65;
  const record=()=>PREFLIGHT?(data.frames as any[]).find(f=>f.id===sparse[section().id]):(data.frames as any[])[frame()];
@@ -76,7 +79,7 @@ export default makeScene2D(function*(view){
  card.add(<Txt text={()=>is('normal-definition')?'Normal':'Normal Map'} fontFamily={FONT} fontSize={47} fill={C.teal} position={[-30,-320]}/>);
  card.add(<Txt text={()=>is('normal-definition')?'법선':'노멀 맵'} fontFamily={FONT} fontSize={60} fontWeight={700} fill={C.yellow} position={[-30,-245]}/>);
  card.add(<Txt text={()=>is('normal-definition')?'표면에서 수직으로 나가는 방향':'픽셀별 표면 방향을 담은 그림'} fontFamily={FONT} fontSize={36} fill={C.white} position={[-30,-165]}/>);
- view.add(<Txt text={()=>is('silhouette','flat-reveal')?'옆에서 보면, 평면':is('knight-source','knight-light')?'데드셀 방식 · 우리 에셋으로 재현':''} fontFamily={FONT} fontSize={36} fontWeight={700} fill={C.yellow} position={[-30,265]}/>);
+ view.add(<Txt text={()=>is('silhouette')?'옆에서 보면, 평면':is('knight-source','knight-light')?'데드셀 방식 · 우리 에셋으로 재현':''} fontFamily={FONT} fontSize={36} fontWeight={700} fill={C.yellow} position={[-30,265]}/>);
  view.add(createReactionMascot(t));
  // Final clause/keyword ASS is encoded above all nodes and the mascot.
  yield* t(timing.durationSeconds,timing.durationSeconds,linear);
