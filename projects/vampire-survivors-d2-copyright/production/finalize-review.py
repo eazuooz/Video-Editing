@@ -38,21 +38,23 @@ assert direct['masterSha256'] == masters['captioned']['sha256']
 assert direct['status'] == 'passed-scoped-direct-pixel-and-motion-review'
 asr = rd(L / 'whole-final-mix-comparison.json')
 assert asr['directReview'].startswith('complete-whole')
+if L.name == 'local-ai-copyright-v2':
+    assert rd(L/'whole-current-source-native-comparison.json')['directReview'].startswith('complete-whole')
 audio = rd(P / 'production/final-audio.json')
 assert audio['status'] == 'passed-current-encoded-audio-levels-and-continuity'
 
 masters.update(status='local-full-version-ready-for-human-final-review', updatedAt=now,
                humanReview='pending', uploadAuthorized=False)
 wr(P / 'production/master-files.json', masters)
-pixels.update(status='passed-all165-encoded-cue-pixels-and-scoped-direct-review',
+pixels.update(status=f"passed-all{len(rd(L/'timing.json')['cues'])}-encoded-cue-pixels-and-scoped-direct-review",
               directReview='production/visual-direct-review.json', humanListening='pending')
 wr(P / 'production/caption-pixel-audit.json', pixels)
 
 ledger = rd(P / 'production/review-ledger.json')
-ledger['checks'] += [
+current_checks = [
     {'id': 'full-source-and-current-mix-text', 'status': 'pass-text-and-order',
-     'evidence': ['production/audio-review.json', 'production/local/whole-source-asr-aligned.json',
-                  'production/local/independent-source-contexts.json', 'production/local/whole-final-mix-comparison.json'],
+     'evidence': ['production/audio-review.json', f'production/{L.name}/whole-source-asr-aligned.json',
+                  f'production/{L.name}/whole-final-mix-comparison.json'],
      'note': 'Both complete recognized texts directly read. Alias/phonetic ambiguities recorded; human pronunciation remains pending.'},
     {'id': 'local-narration-levels', 'status': 'pass-measured-continuity-and-speech-masking',
      'evidence': ['production/audio-review.json', 'production/final-audio.json'],
@@ -66,6 +68,12 @@ ledger['checks'] += [
     {'id': 'publishing-drafts-only', 'status': 'prepared-not-uploaded', 'evidence': 'publishing/plan.json',
      'note': 'Complete verified sources at absolute bottom of KO/EN descriptions. No platform write.'},
 ]
+current_ids = {x['id'] for x in current_checks}
+ledger['checks'] = [x for x in ledger['checks'] if x['id'] not in current_ids] + current_checks
+if L.name == 'local-ai-copyright-v2':
+    ledger['selectedRevision']='ai-copyright-awareness-v2'
+    ledger['priorVersionPreserved']='production/revision-ai-copyright-v2/baseline/production/review-ledger.json'
+    ledger['revisionVoiceEvidence']=[f'production/{L.name}/pcm-splice-map.json',f'production/{L.name}/whole-current-source-native-comparison.json']
 ledger.update(updatedAt=now, humanWholeListening='pending', humanFinalReview='pending',
               localMaster=masters['captioned'], uploadAuthorized=False,
               reviewBoundary='Complete local captioned MP4 and four-file folder; wait for actual human review of this SHA256.')
@@ -76,11 +84,12 @@ titles = rd(P / 'publishing/plan.json')['selectedTitle']
 manifest['titles'] = {k: titles[k] for k in ('ko', 'en')}
 manifest['status'] = 'local-full-version-ready-for-human-final-review'
 manifest['video']['durationSeconds'] = plan['totalFrames'] / 60
-base = P.relative_to(R).as_posix() + '/production/local/'
+base = L.relative_to(R).as_posix() + '/'
 manifest['paths'].update(videoClean=base+'final.clean.mp4', videoBurnedCaptions=base+'final.captioned.mp4',
                          captionsKo=base+'final.ko.srt', captionsEn=base+'final.en.srt',
                          timeline=P.relative_to(R).as_posix()+'/production/edit-plan.json')
-manifest['tts']['status'] = 'one-continuous-own-voice-sampleB-take; complete-text-and-level-review-recorded'
+manifest['tts']['status'] = ('11changed-paragraphs-sampleB;49unchanged-source-paragraphs-bit-identical;complete-source-and-mix-asr-reviewed' if L.name=='local-ai-copyright-v2' else 'one-continuous-own-voice-sampleB-take; complete-text-and-level-review-recorded')
+manifest['delivery']['captionedMasterSha256']=masters['captioned']['sha256']
 manifest['membershipOutro']['appliedToFinal'] = True
 manifest['finalRender'] = {'status': 'complete-local-review-version', 'internalTechnicalChecks': 'passed',
                          'visualReview': 'production/visual-direct-review.json', 'knownIssues': [],
@@ -110,7 +119,7 @@ row.update(title=titles['ko'], productionComplete=True, productionStatus='1080p6
            reviewStatus='전체 영상·발음·음량 사용자 최종 검수 대기', humanApproval='미검수',
            platformStatus='미업로드', latestRulesPassed=None,
            executionStatus='로컬 전체 완성본 전달 / 사용자 검수 대기', localMasterAvailable=True,
-           notes='약11분11초 · 실제60:설명40 · 내 목소리 ElevenLabs B. D2 공지 재확인, 도입 전투 화면 보정. 사용자 승인 전 업로드 없음.')
+           notes=f"약{int(plan['totalFrames']/3600)}분{round(plan['totalFrames']/60)%60}초 · 실제60:설명40 · 내 목소리 ElevenLabs B. AI 개발·저작권 확인 관점 수정, 기존49문단 PCM 보존. 사용자 승인 전 업로드 없음.")
 for evidence in ['projects/'+P.name+'/production/master-files.json', 'projects/'+P.name+'/production/review-ledger.json']:
     if evidence not in row['evidence']:
         row['evidence'].append(evidence)

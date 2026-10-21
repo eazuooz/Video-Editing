@@ -103,7 +103,7 @@ def pixels():
   sheet.save(Q/f'scenes-{page+1:02}.jpg',quality=94)
  for tag,predicate in [('actual',lambda c:c['kind']=='actual'),('explanation',lambda c:c['kind']=='explanation')]:
   c=next(c for c in plan['cuts'] if predicate(c));target=c['startFrame']+120+round(c['frames']*.75);f=min(mapping,key=lambda n:abs(n-target));Image.open(mapping[f]).resize((375,211),Image.Resampling.LANCZOS).save(Q/(tag+'-mobile.png'))
- wr(P/'production/caption-pixel-audit.json',{'status':'all-cue-presence-and-frame-selection-complete-awaiting-direct-board-review','masterSha256':sha(src),'cueCount':len(checks),'checks':checks,'frameSelection':'production/local/final-qa/frame-selection.json','allCutsAndAnimatedCuesIncluded':True,'directReview':'pending','humanListening':'pending'})
+ wr(P/'production/caption-pixel-audit.json',{'status':'all-cue-presence-and-frame-selection-complete-awaiting-direct-board-review','masterSha256':sha(src),'cueCount':len(checks),'checks':checks,'frameSelection':f'production/{L.name}/final-qa/frame-selection.json','allCutsAndAnimatedCuesIncluded':True,'directReview':'pending','humanListening':'pending'})
  print(json.dumps({'selectedFrames':len(selected),'captionSheets':math.ceil(len(checks)/10),'sceneSheets':math.ceil(len(rows)/12)}),flush=True)
 if __name__=='__main__':
  {'encode':encode,'integrity':integrity,'pixels':pixels}[sys.argv[1]]()
