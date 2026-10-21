@@ -1,0 +1,468 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-21",
+  "reviewer": "v8_matrix_accuracy",
+  "status": "pass-script-technical-review",
+  "scope": "Game Math PART2 / 3D Rotations 8.1 through 8.2.5; script and visual instructions only",
+  "script": {
+    "path": "projects/game-math-euler-axis-angle/script/revision-v8-orientation-matrix/narration.ko.json",
+    "sha256": "2cfce716a62d3b951a81a5022dd216ac4cbaafb7b73ffa20e9d0765798e789c3",
+    "scenes": 13,
+    "paragraphs": 76,
+    "allNarrationAndVisualInstructionsRead": true
+  },
+  "reviewBasis": [
+    "Read the full draft once, then reread final changes in m03, m06, m08 and m12, including the final eight-paragraph m06 ordering and its unchanged visual instructions.",
+    "Read the supplied Notion article's full selected 8.1-8.2.5 scope, including its correction callouts, in the existing local source record.",
+    "Cross-check mathematical convention and technical corrections against primary sources; no source video, new TTS or render was produced.",
+    "Execute direct arithmetic and matrix computations for the small worked examples, not a test that merely mirrors generated output."
+  ],
+  "convention": {
+    "coordinates": "Left-handed pedagogical frame, +X east/right, +Y up, +Z north/forward; positive Y quarter-turn sends forward +Z to +X.",
+    "vectorConvention": "Row vectors multiplied by the matrix on the right.",
+    "RDefinition": "vU = vO * R; rows are object/input axes in upright/output coordinates.",
+    "directionCosines": "R_ij = inputAxis_i dot outputAxis_j, with both geometric axes expressed in one common orthonormal frame.",
+    "upright": "Auxiliary frame with object origin and world-parallel axes, introduced as terminology used here.",
+    "frameInterpretation": "Coordinate re-expression does not cause an additional physical movement.",
+    "matrixStorage": "Row/column vector multiplication convention is distinct from memory row/column-major storage."
+  },
+  "claimsReviewed": [
+    {
+      "scenes": [
+        "m01",
+        "m02"
+      ],
+      "result": "pass",
+      "claim": "Direction versus full orientation, reference/home orientation, state versus angular displacement, attitude, fixed-target camera twist, three orientation degrees of freedom."
+    },
+    {
+      "scenes": [
+        "m03",
+        "m04"
+      ],
+      "result": "pass",
+      "claim": "Unit mutually perpendicular body axes; shared-origin upright frame; object axes in external coordinates; numeric row-matrix construction and fixed-point coordinate conversion."
+    },
+    {
+      "scenes": [
+        "m05",
+        "m06"
+      ],
+      "result": "pass",
+      "claim": "Transpose equals inverse under orthogonality, scale counterexample, explicit source/destination interface, generic versus dedicated transform representation, 3x3/4x4/row-vector 4x3 affine distinctions."
+    },
+    {
+      "scenes": [
+        "m07",
+        "m08"
+      ],
+      "result": "pass",
+      "claim": "Dot product and signed projection, cos60=1/2, corrected DCM row/column direction, shared-frame condition, input-frame then output-frame interpretation, row-vector versus column-vector convention."
+    },
+    {
+      "scenes": [
+        "m09"
+      ],
+      "result": "pass",
+      "claim": "Direct vector conversion, graphics matrices as common practice without mandatory API exclusivity, space-chain composition, same-axis two-quarter-turn example, inverse order."
+    },
+    {
+      "scenes": [
+        "m10"
+      ],
+      "result": "pass",
+      "claim": "15 parts x 15 samples/s; float32=4 bytes; 8100 versus 2700 bytes/s; 162000-byte 30-second difference; uncompressed orientation-only assumptions and distinction from output fps."
+    },
+    {
+      "scenes": [
+        "m11",
+        "m12"
+      ],
+      "result": "pass",
+      "claim": "Six continuous orthonormality constraints plus determinant-sign restriction, reflections, scale/shear counterexamples, external data versus convention errors, rounding/matrix creep, normalization versus orthonormalization."
+    },
+    {
+      "scenes": [
+        "m13"
+      ],
+      "result": "pass",
+      "claim": "Summary remains within 8.2.5; no Euler/gimbal/axis-angle/quaternion lesson added."
+    }
+  ],
+  "sourceCorrectionsVerified": [
+    {
+      "id": "north-east-axis",
+      "correction": "Use vertical Y axis in the chosen Y-up convention rather than the source example's Z."
+    },
+    {
+      "id": "DCM-transposition",
+      "correction": "Use the supplied correction callout's row-vector DCM, consistent with 8.2 and 8.2.5, instead of the transposed 8.2.2 original."
+    },
+    {
+      "id": "memory-units",
+      "correction": "8100 and 2700 are per second, not per animation frame."
+    },
+    {
+      "id": "vector-rotation-exclusivity",
+      "correction": "Do not claim other rotation representations require explicit matrix conversion before rotating a vector."
+    },
+    {
+      "id": "graphics-API-exclusivity",
+      "correction": "Matrices are widely used in conventional graphics transforms; programmable APIs do not require every rotation to be implemented using a matrix."
+    }
+  ],
+  "numericChecks": [
+    {
+      "id": "forward_axis",
+      "actual": [
+        1,
+        0,
+        0
+      ],
+      "expected": [
+        1,
+        0,
+        0
+      ],
+      "pass": true
+    },
+    {
+      "id": "right_axis",
+      "actual": [
+        0,
+        0,
+        -1
+      ],
+      "expected": [
+        0,
+        0,
+        -1
+      ],
+      "pass": true
+    },
+    {
+      "id": "worked_point",
+      "actual": [
+        2,
+        0,
+        -1
+      ],
+      "expected": [
+        2,
+        0,
+        -1
+      ],
+      "pass": true
+    },
+    {
+      "id": "inverse_point",
+      "actual": [
+        1,
+        0,
+        2
+      ],
+      "expected": [
+        1,
+        0,
+        2
+      ],
+      "pass": true
+    },
+    {
+      "id": "orthogonal",
+      "actual": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "id": "det_rotation",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "id": "R_squared",
+      "actual": [
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ]
+      ],
+      "expected": [
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "id": "double_turn_right",
+      "actual": [
+        -1,
+        0,
+        0
+      ],
+      "expected": [
+        -1,
+        0,
+        0
+      ],
+      "pass": true
+    },
+    {
+      "id": "DCM_from_axes",
+      "actual": [
+        [
+          0,
+          0,
+          -1
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "expected": [
+        [
+          0,
+          0,
+          -1
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "id": "first_DCM_entry",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "id": "center_DCM_entry",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "id": "reflection_orthogonal",
+      "actual": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "id": "reflection_det",
+      "actual": -1,
+      "expected": -1,
+      "pass": true
+    },
+    {
+      "id": "scale_counterexample",
+      "actual": [
+        2,
+        0,
+        0
+      ],
+      "expected": [
+        2,
+        0,
+        0
+      ],
+      "pass": true
+    },
+    {
+      "id": "memory_poses_per_second",
+      "actual": 225,
+      "expected": 225,
+      "pass": true
+    },
+    {
+      "id": "memory_matrix_bytes",
+      "actual": 36,
+      "expected": 36,
+      "pass": true
+    },
+    {
+      "id": "memory_matrix_per_second",
+      "actual": 8100,
+      "expected": 8100,
+      "pass": true
+    },
+    {
+      "id": "memory_three_components_per_second",
+      "actual": 2700,
+      "expected": 2700,
+      "pass": true
+    },
+    {
+      "id": "memory_thirty_second_difference",
+      "actual": 162000,
+      "expected": 162000,
+      "pass": true
+    },
+    {
+      "id": "cos_60",
+      "actual": 0.5000000000000001,
+      "expected": 0.5,
+      "tolerance": 1e-15,
+      "pass": true
+    }
+  ],
+  "findings": [],
+  "resolvedNotes": [
+    {
+      "scene": "m12",
+      "paragraph": 3,
+      "initialConcern": "A convention mismatch was placed next to sources of orthogonality damage, which could imply that transposing a valid rotation matrix makes it nonorthogonal.",
+      "resolution": "Final draft explicitly separates measured/file conversion errors that damage axis conditions from convention misreading that can yield an unintended orientation despite valid axis conditions.",
+      "status": "resolved-and-reread"
+    },
+    {
+      "scene": "m03",
+      "paragraph": 3,
+      "resolution": "Upright is explicitly introduced as this lesson's auxiliary frame terminology.",
+      "status": "verified"
+    },
+    {
+      "scene": "m08",
+      "resolution": "Input-frame then output-frame interpretation follows the article order while preserving the corrected formula.",
+      "status": "verified"
+    }
+  ],
+  "primarySources": [
+    {
+      "url": "https://gamemath.com/book/orient.html",
+      "sections": "8.1-8.2.5",
+      "use": "Source teaching logic and source-error locations; the source itself contains the noted DCM and memory-unit errors."
+    },
+    {
+      "url": "https://gamemath.com/book/multiplespaces.html",
+      "sections": "3.2.4",
+      "use": "Definition and limited terminology status of upright space."
+    },
+    {
+      "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-2-1-rotation-matrices-part-1-of-2/",
+      "use": "Orthonormal constraints, determinant +1, transpose inverse and composition. This source uses column vectors; transposed to the selected row-vector convention, with handedness treated consistently."
+    },
+    {
+      "url": "https://docs.unity3d.com/ScriptReference/Quaternion-operator_multiply.html",
+      "use": "Quaternion-vector rotation exists without requiring the user to construct an explicit matrix."
+    },
+    {
+      "url": "https://docs.unity3d.com/6000.0/Documentation/Manual/SL-UnityShaderVariables.html",
+      "use": "Model, view and projection matrices are standard available rendering transforms."
+    },
+    {
+      "url": "https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf",
+      "sections": "11.1.3.10 and 13.8",
+      "use": "Programmable vertex output gl_Position is used by subsequent coordinate processing; the specification does not mandate matrix-based computation of every object rotation."
+    }
+  ],
+  "limitations": [
+    "Script-only review; no rendered motion, actual game footage match, subtitle mobile readability, narration speed, audio pronunciation or final listening approval is claimed.",
+    "The screenshot-selected 8.1-8.2.5 scope is the authority. Old V7 two-part scope is not production authorization for this draft.",
+    "Commercial-game observations must be verified against independently sourced FHD footage before production; illustrative mathematical axes are not claimed as measured engine internals."
+  ]
+}
