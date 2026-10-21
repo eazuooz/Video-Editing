@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 
 P=Path(__file__).resolve().parents[1]
 R=P.parents[1]
-L=P/'production/local/final-v2'
+L=P/'production/local/final-v3'
 A=P/'production/local/audio-v2'
 
 def read(p): return json.loads(Path(p).read_text(encoding='utf-8'))
@@ -22,7 +22,7 @@ def run(args):
 def guard():
     c=read(R/'shared/publishing/video-production-control.json')
     assert c.get('selectedShortVideo')==P.name
-    assert c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v2-grid-rgb-deadcells'
+    assert c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v3-spatial-normals'
     assert c.get('shortsDirectSelection',{}).get('fullProductionAuthorized') is True
 def ass_filter(): return 'ass='+str((A/'captions.ko.ass').relative_to(R)).replace('\\','/')
 def pair(visual):

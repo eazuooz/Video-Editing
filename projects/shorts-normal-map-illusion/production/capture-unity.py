@@ -9,12 +9,12 @@ def save(p,v):
  p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('mode',nargs='?',choices=['preview-grid','full'],default='preview-grid');ap.add_argument('--revision',default='v2-grid-rgb');a=ap.parse_args()
- c=read(R/'shared/publishing/video-production-control.json');assert c.get('selectedShortVideo')==P.name and c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v2-grid-rgb-deadcells','Selected Short changed'
+ ap=argparse.ArgumentParser();ap.add_argument('mode',nargs='?',choices=['preview-grid','full','preview-rotation','patch-grid'],default='preview-grid');ap.add_argument('--revision',default='v2-grid-rgb');a=ap.parse_args()
+ c=read(R/'shared/publishing/video-production-control.json');assert c.get('selectedShortVideo')==P.name and c.get('shortsDirectSelection',{}).get('selectedRevision')==read(P/'project.json')['currentRevision'],'Selected Short changed'
  assert a.mode!='full' or not (L/'capture-hold.flag').exists(),'Own technical capture hold; preserve foreign processes'
  plan=read(P/'planning/production-plan.json');assert plan.get('previewAuthorization',{}).get('allowed') is True,'Preview not authorized'
  timeline=P/'production/visual-timing.json'
- if a.mode=='full':
+ if a.mode in ['full','patch-grid','preview-rotation']:
   assert c.get('shortsDirectSelection',{}).get('fullProductionAuthorized') is True,'Full production not authorized'
   timing=read(timeline);captions=read(P/'script/captions.json');assert timing.get('revision')==c['shortsDirectSelection']['selectedRevision'] and timing['frames']==captions['frames'] and timing.get('voiceDurationSeconds',0)>0,'Current revision final audio timeline missing'
  assert not LEASE.exists(),'Foreign GPU lease preserved'
@@ -31,7 +31,7 @@ def main():
  shutil.copytree(R/'unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers',ISO/'Assets/ThirdParty/KayKitAdventurers',dirs_exist_ok=True)
  save(ISO/'Packages/manifest.json',dict(dependencies={f'com.unity.modules.{x}':'1.0.0' for x in ['imageconversion','animation','particlesystem']}))
  settings=ISO/'ProjectSettings';settings.mkdir(parents=True,exist_ok=True);shutil.copy2(R/'unity/VideoEditing/ProjectSettings/ProjectVersion.txt',settings/'ProjectVersion.txt')
- job=out/'job.json';save(job,dict(mode=a.mode,output=str(out.resolve()),timeline=str(timeline.resolve())))
+ job=out/'job.json';save(job,dict(mode=a.mode,output=str(out.resolve()),timeline=str(timeline.resolve()),firstFrame=194,endFrame=1076,sampleFrames=[194,260,332,400,471,600,750,855,940,1075]))
  raw=subprocess.check_output(['nvidia-smi','--query-gpu=memory.free,memory.total,utilization.gpu','--format=csv,noheader,nounits'],text=True);free,total,util=map(int,raw.splitlines()[0].replace(' ','').split(','));assert free>=2560 and util<30,('Foreign GPU activity preserved',free,util)
  me=psutil.Process();token=str(uuid.uuid4());record=dict(schemaVersion=1,project=P.name,state='capture_running',token=token,coordinator=dict(pid=me.pid,createTime=me.create_time()),requestedAt=time.time(),gpuFreeMiB=free,gpuMiBBudget=2560,foreignProcessesPaused=[],mode=a.mode,allocationBound='Monitored total-memory delta conservatively; own finite capture only')
  with LEASE.open('x') as f:json.dump(record,f)
@@ -47,9 +47,9 @@ def main():
    assert delta<=2560,('Conservative GPU memory budget exceeded; terminating own preview only',delta)
    assert time.time()<deadline,'Own preview timeout'
   assert process.returncode==0,('Unity failed',process.returncode,str(out/'unity.log'))
-  success=read(out/'success.json');assert (success.get('states')==8 and success.get('actualMeshReadback') and success.get('signedSpriteGPUVerified') and success.get('representativeGridSamples')==63 and success.get('frozenSourceAssetsLoaded')) if a.mode=='preview-grid' else (success.get('frames')==timing['frames'] and success.get('frozenSourceAssetsLoaded'))
+  success=read(out/'success.json');assert (success.get('states')==8 and success.get('actualMeshReadback') and success.get('signedSpriteGPUVerified') and success.get('representativeGridSamples')==63 and success.get('frozenSourceAssetsLoaded')) if a.mode=='preview-grid' else (success.get('frames')==({'preview-rotation':10,'patch-grid':882}.get(a.mode,timing['frames'])) and success.get('frozenSourceAssetsLoaded'))
   src=ISO/'Assets/VideoScenes'/P.name
-  if a.mode=='preview-grid':
+  if a.mode in ['preview-grid','preview-rotation','patch-grid']:
    for folder in ['Generated','Materials','Meshes','Scenes']:
     shutil.copytree(src/folder,OWN/folder,dirs_exist_ok=True)
     m=Path(str(src/folder)+'.meta')

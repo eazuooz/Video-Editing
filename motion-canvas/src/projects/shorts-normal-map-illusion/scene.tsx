@@ -1,7 +1,7 @@
 import {makeScene2D,Img,Node,Txt,Rect,Line} from '@motion-canvas/2d';
 import {createSignal,linear,Vector2} from '@motion-canvas/core';
 import timing from '../../../../projects/shorts-normal-map-illusion/production/visual-timing.json';
-import data from '../../../../projects/shorts-normal-map-illusion/production/local/capture-data-v2.json';
+import data from '../../../../projects/shorts-normal-map-illusion/production/local/capture-data-v3.json';
 import frozenSpriteProof from '../../../../projects/shorts-normal-map-illusion/production/local/capture-preview-v3/preview-readback.json';
 import {createReactionMascot,reactionPresence} from './reaction-mascot';
 import {createNormalGrid} from './normal-grid';
@@ -26,12 +26,12 @@ export default makeScene2D(function*(view){
  const sparseRecord=()=>section().kind==='knight-source'?(frozenSpriteProof.frames as any[]).find(f=>f.id==='07-knight-source'):section().kind==='knight-pipeline'?(frozenSpriteProof.frames as any[]).find(f=>f.id==='12-knight-pipeline'):(data.frames as any[]).find(f=>f.id===sparse[section().id]);
  const record=()=>PREFLIGHT||(data as any).mode!=='full'?sparseRecord():(data.frames as any[])[frame()];
  const previewPicture=()=>section().kind==='knight-source'?ROOT+'capture-preview-v3/07-knight-source.png':section().kind==='knight-pipeline'?ROOT+'capture-preview-v3/12-knight-pipeline.png':ROOT+PREVIEW+'/'+(sparse[section().id]??'grid-on')+'.png';
- const probe=()=>record()?.probe,point=(p:any)=>new Vector2(((p?.x??540)-540)*1000/1080,((p?.y??540)-540)*1000/1080);
+ const probe=()=>record()?.probe,spatialScale=()=>record()?.gridRenderedNative ? .78 : 1,point=(p:any)=>new Vector2(((p?.x??540)-540)*1000/1080*spatialScale(),((p?.y??540)-540)*1000/1080*spatialScale());
  const reaction=()=>reactionPresence(t);
  view.fill('#000000');
  const world=new Node({y:()=>is('shared-normal','normal-definition','grid-flat','pixel-normal')?-35:0,x:()=>-30-120*reaction(),scale:()=>1-.19*reaction()});view.add(world);
  const picture=new Rect({width:1000,height:1000,clip:true,y:()=>is('knight-bake')?-160:0,opacity:()=>comparison()||game()?0:(definition()?0.25:1)});world.add(picture);
- picture.add(<Img src={()=>game()?ROOT+PREVIEW+'/grid-on.png':PREFLIGHT||(data as any).mode!=='full'?previewPicture():ROOT+CAPTURE+'/frames/frame-'+String(frame()).padStart(5,'0')+'.png'} width={1000} height={1000}/>);
+ picture.add(<Img src={()=>game()?ROOT+PREVIEW+'/grid-on.png':PREFLIGHT||(data as any).mode!=='full'?previewPicture():ROOT+(record()?.nativeFrameDirectory??CAPTURE)+'/frames/frame-'+String(frame()).padStart(5,'0')+'.png'} width={1000} height={1000} scale={spatialScale}/>);
  world.add(createNormalGrid({record,elapsed,enabled:()=>!definition()&&is('shared-normal','normal-definition','grid-flat','pixel-normal'),point}));
  const rgbPhase=():RGBPhase=>is('rgb-signed')?'signed':is('rgb-encoding')?'packing':is('neutral-purple')?'neutral':'none';
  const rgbStep=()=>Math.max(0,(section().events??[]).filter((event:any)=>frame()>=event.startFrame).length-1);

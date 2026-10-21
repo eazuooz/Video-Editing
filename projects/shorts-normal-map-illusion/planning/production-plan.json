@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "slug": "shorts-normal-map-illusion",
   "revision": "normal-map-v2-grid-rgb-deadcells",
-  "status": "complete-local-final-review-pending",
+  "status": "visual-revision-preproduction",
   "centralQuestion": "How can a flat game surface appear bumpy under moving light while its mesh remains flat?",
   "claim": "Normal Mapping changes per-pixel shading directions without changing mesh geometry/silhouette; RGB normaldata is not the visible base colour.",
   "sourceReference": {
@@ -1247,5 +1247,70 @@
     "visualReview": "production/visual-review.json",
     "audioReview": "production/audio-review.json",
     "humanReview": "pending"
+  },
+  "visualRevisionV3": {
+    "id": "normal-map-v3-spatial-normals",
+    "userEvidence": "좋아 근데 평면위에 그린 법선 이 정면샷에서 보니까 수직으로 뻗어있는게 안보여 그래서 벽을 회전시켜서 법선이 수직으로 3차원적 입체적으로 보이게끔 수정해서 만들어줘",
+    "at": "2026-10-21T10:44:46.148594+00:00",
+    "changedFrameRange": [
+      194,
+      1076
+    ],
+    "changedScenes": [
+      "shared-normal",
+      "normal-definition",
+      "grid-flat",
+      "pixel-normal"
+    ],
+    "before": "Short screen-projected lines on a nearly front-facing static wall.",
+    "after": "Actual wall yaw0→-58deg with fixed elevated camera;63GPU-sampled3Dshaft/cone arrows rotate with the surface, with one actual world-space90degree bracket while normalStrength0. Same oblique view for the normal-map change.",
+    "renderer": "Unity actual transforms, depth-tested3Dguides; Motion Canvas labels/composite",
+    "unchanged": {
+      "voice": "production/local/audio-v2/voice/normal-map-v2.wav",
+      "mix": "production/local/audio-v2/final-mix.m4a",
+      "captions": "script/captions.json",
+      "frames": 4928,
+      "deadCells": true,
+      "rgb": true
+    },
+    "limits": "63representativepixel samples, illustrative arrow length, normal-map directions are shading normals and need not be perpendicular to the flat geometry.",
+    "humanApproval": false,
+    "preflight": {
+      "status": "passed-layout-after-correction",
+      "nativeFramesViewed": [
+        400,
+        750,
+        1075
+      ],
+      "compositeFramesViewed": [
+        260,
+        400,
+        600,
+        940
+      ],
+      "actualCaptionFile": "production/local/audio-v2/captions.ko.ass",
+      "imageScale": 0.78,
+      "captionGeometryUnchanged": true,
+      "clearance": "Wall/arrow extent above actual two-line captions; label area protected.",
+      "preview": "production/local/preflight-v3-spatial-preview-02/index.json"
+    },
+    "geometry": {
+      "wallYawDegrees": -58,
+      "cameraPositionRelative": [
+        0,
+        2.2,
+        -6
+      ],
+      "nativeGrid": "9x7 actual GPU sampled directions; 63 cylinders and cones, depth-tested",
+      "displayArrowLength": 0.58,
+      "rightAngle": "Actual world normal/tangent orthogonal bracket; gold90degree editorial label",
+      "saveScenes": [
+        "Scenes/08-RotatedGridOff.unity",
+        "Scenes/09-RotatedGridOn.unity"
+      ],
+      "sourceRoot": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion",
+      "savedSceneMaterialFix": "Separate persisted per-scene wall materials; validated in patch capture"
+    },
+    "nativeCaptureStatus": "preview10verified; patch882pending"
   }
 }

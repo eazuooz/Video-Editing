@@ -11,7 +11,7 @@ export function createNormalGrid({record,elapsed,enabled,point}:GridOptions){
   const sample=()=>samples()[i];
   const positions=()=>sample()?[point(sample().screenPoint),point(sample().gridNormalScreenEnd)]:[new Vector2(0,0),new Vector2(0,0)];
   const length=()=>positions()[1].sub(positions()[0]).magnitude;
-  const shown=()=>enabled()&&!!sample()&&elapsed()>(Math.floor(i/9)*.07)?1:0;
+  const shown=()=>enabled()&&!record()?.gridRenderedNative&&!!sample()&&elapsed()>(Math.floor(i/9)*.07)?1:0;
   // A near-camera-facing vector really projects to a short mark. Keep that
   // measured projection; show a dot instead of inventing a longer direction.
   root.add(<Line points={positions} stroke="#000000" lineWidth={8} endArrow arrowSize={14} opacity={()=>shown()&&length()>=7?1:0}/>);
@@ -20,5 +20,8 @@ export function createNormalGrid({record,elapsed,enabled,point}:GridOptions){
  }
  root.add(<Txt text="대표 픽셀 63곳의 방향" position={[-190,-390]} fontFamily="Malgun Gothic" fontSize={34} fontWeight={700} fill={colour}/>);
   root.add(<Txt text="일부 지점만 표시 · 화살표 길이는 보기용" position={[-100,-355]} fontFamily="Malgun Gothic" fontSize={28} fill={MUTED}/>);
+ const perpendicular=()=>record()?.gridRenderedNative&&Number(record()?.normalStrength)===0;
+ root.add(<Line points={()=>[new Vector2(-230,-40),point(record()?.rightAngleScreen?.[1])]} stroke="#FFD25A" lineWidth={2} opacity={()=>perpendicular()?1:0}/>);
+ root.add(<Txt text="90°" position={[-290,-40]} fontFamily="Malgun Gothic" fontSize={40} fontWeight={700} fill="#FFD25A" opacity={()=>perpendicular()?1:0}/>);
  return root;
 }

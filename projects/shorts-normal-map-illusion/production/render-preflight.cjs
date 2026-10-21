@@ -5,9 +5,9 @@ const revision=process.argv[2]||'v1';
 const finalInputs=process.argv[4]==='final';
 const root=path.resolve(__dirname,'../../..'),out=path.join(__dirname,'local/preflight-'+revision);
 const control=JSON.parse(fs.readFileSync(path.join(root,'shared/publishing/video-production-control.json'),'utf8'));
-if(control.selectedShortVideo!=='shorts-normal-map-illusion'||control.shortsDirectSelection?.selectedRevision!=='normal-map-v2-grid-rgb-deadcells')throw Error('Selection changed');
+if(control.selectedShortVideo!=='shorts-normal-map-illusion'||control.shortsDirectSelection?.selectedRevision!=='normal-map-v3-spatial-normals')throw Error('Selection changed');
 const timing=JSON.parse(fs.readFileSync(path.join(__dirname,'visual-timing.json'),'utf8'));
-if(timing.revision!=='normal-map-v2-grid-rgb-deadcells')throw Error('Current aligned v2 timeline missing');
+if(timing.revision!=='normal-map-v3-spatial-normals')throw Error('Current aligned v2 timeline missing');
 const ass='projects/shorts-normal-map-illusion/production/local/audio-v2/captions.ko.ass';
 if(!fs.existsSync(path.join(root,ass)))throw Error('Current v2 actual ASS missing');
 fs.mkdirSync(out,{recursive:true});
@@ -18,7 +18,7 @@ try{const page=await browser.newPage();await page.goto('http://127.0.0.1:9251/re
 for(const time of times){const frame=Math.round(time*60),name='shorts-normal-map-illusion-preflight-'+revision+'-'+frame,video=path.join(root,'shared/output/motion-canvas',name+'.mp4'),png=path.join(out,'frame-'+frame+'.png');
  if(!fs.existsSync(video)){await page.evaluate(a=>window.renderVideo(a),{route:'/src/projects/shorts-normal-map-illusion/project.ts',name,firstFrame:frame,frames:1,fps:60,width:1080,height:1920,exactFrameRange:true});const job=await page.evaluate(()=>window.renderJob);if(!job.done||job.result!==0||job.errors.length)throw Error(JSON.stringify(job));}
  if(!fs.existsSync(png)){const result=cp.spawnSync(ff,['-v','error','-n','-i',video,'-vf',`setpts=PTS+${frame/60}/TB,ass=${ass},setpts=PTS-STARTPTS`,'-frames:v','1',png],{cwd:root,encoding:'utf8',windowsHide:true});if(result.status!==0)throw Error(result.stderr);}
- rows.push({time:frame/60,frame,png:path.relative(root,png).replaceAll('\\','/'),kind:finalInputs?'Current continuous full capture input, single-frame composition QA':'preflight-only sparse native Unity states for layout; final uses continuous full capture'});console.log('Preflight '+time);
+ rows.push({time:frame/60,frame,png:path.relative(root,png).replaceAll('\\','/'),kind:finalInputs?'Current frame-indexed native input; may be preview-only partial spatial patch; single-frame composition QA':'preflight-only sparse native Unity states for layout; final uses continuous full capture'});console.log('Preflight '+time);
 }
 fs.writeFileSync(path.join(out,'index.json'),JSON.stringify({status:'layout-preflight-only',rows},null,2)+'\n');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
