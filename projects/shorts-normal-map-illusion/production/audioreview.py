@@ -2,12 +2,12 @@
 from pathlib import Path
 import json,hashlib,re,unicodedata,difflib,argparse
 P=Path(__file__).resolve().parents[1];R=P.parents[1]
-from audio_revision import L, VOICE, REVISION, guard as revision_guard
+from audio_revision import L, VOICE, REVISION, normalize_speech, guard as revision_guard
 def read(p):return json.loads(Path(p).read_text(encoding='utf8'))
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def norm(t):
- for display,speech in sorted(read(P/'script/clauses.json').get('pronunciationAliases',{}).items(),key=lambda x:-len(x[0])):t=re.sub(re.escape(display),lambda match:speech,t,flags=re.I)
- return re.sub(r'[^0-9a-z가-힣]','',unicodedata.normalize('NFC',t).lower())
+ return normalize_speech(t,read(P/'script/clauses.json').get('pronunciationAliases',{}))
+
 def main():
  a=argparse.ArgumentParser();a.add_argument('role',choices=['voice','mix']);args=a.parse_args()
  revision_guard()

@@ -156,6 +156,11 @@ def inputs():
     if abs(float(captions['voiceOffsetSeconds']) - SETTINGS['voiceOffsetSeconds']) > 1e-8:
         raise RuntimeError('Caption/voice0.20s offset differs.')
     voice_hash = sha(voice)
+    paragraph_levels = read(L / 'line-levels.json')
+    if (paragraph_levels.get('voiceSha256') != voice_hash
+            or paragraph_levels.get('policy') != 'line-level-takes-v1'
+            or not paragraph_levels.get('allRawPcmPreserved')):
+        raise RuntimeError('Current narration requires its actual paragraph matching/join evidence.')
     if captions.get('timingInputs', {}).get('voiceSha256') != voice_hash:
         raise RuntimeError('Caption timing does not belong to this voice hash.')
     if sha(MUSIC) != MUSIC_SHA:
@@ -188,7 +193,9 @@ def inputs():
                          'sourceTimeBasis': basis})
     used = sorted({section['source'] for section in sections})
     recipe = {'scriptSha256': sha(__file__), 'settings': SETTINGS,
-              'voice': {'path': relative(voice), 'sha256': voice_hash},
+              'voice': {'path': relative(voice), 'sha256': voice_hash,
+                        'lineLevels': relative(L / 'line-levels.json'),
+                        'lineLevelsSha256': sha(L / 'line-levels.json')},
               'durationSeconds': duration, 'frames': frames, 'gameSections': sections,
               'sources': {key: {'path': relative(SOURCES[key][0]), 'sha256': sha(SOURCES[key][0])}
                           for key in used},
@@ -472,7 +479,10 @@ def report():
         row['neighborSourceMedianDbfs'] = reference
         row['sourceLowLevelCandidate'] = (row['withinCaptionSpeechRange']
                                            and row['sourceRmsDbfs'] < reference - 6)
+    paragraph_levels = read(L / 'line-levels.json')
     joins = sorted({0.20, SETTINGS['musicStartSeconds'],
+                    *[SETTINGS['voiceOffsetSeconds'] + float(item['seconds'])
+                      for item in paragraph_levels['joins']],
                     *[float(item['start']) for item in timing['sections']],
                     *[float(item['end']) for item in timing['sections']],
                     *[float(cue['start']) for i, cue in enumerate(captions['cues'])
@@ -514,6 +524,9 @@ def report():
         'narrationPreparation': build['narrationPreparation'],
         'narrationStemMeasured': loud(L / 'narration-stem.wav'),
         'finalEncodedMeasured': final_levels, 'speechActiveWindows': rows, 'joins': join_rows,
+        'paragraphTakeLevelReport': recipe['voice']['lineLevels'],
+        'paragraphTakeLevelReportSha256': recipe['voice']['lineLevelsSha256'],
+        'paragraphTakeJoins': paragraph_levels['joins'],
         'sustainedEncodedAttenuationCandidates': attenuation,
         'sustainedSourceLowLevelCandidates': low, 'sustainedMaskingCandidates': masking,
         'measurementLimits': 'Source low-level and join differences may be natural prosody. Known-background subtraction afterAAC is approximate. Candidates require aligned contextual playback/listening; never cleared from LUFS or ASR alone.',

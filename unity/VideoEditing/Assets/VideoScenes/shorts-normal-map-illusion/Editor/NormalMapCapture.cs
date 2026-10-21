@@ -6,13 +6,17 @@ public static class NormalMapCapture {
  const string Root="Assets/VideoScenes/shorts-normal-map-illusion",Kay="Assets/ThirdParty/KayKitAdventurers/";
  const int W=1080,H=1080;const float PanelSize=3.6f;
  [Serializable]public class Job{public string output,mode,timeline;}
- [Serializable]public class Section{public string id,kind;public float start,end,normalStrength,lightFrom,lightTo,angleFrom,angleTo,mode;}
+ [Serializable]public class Section{public string id,kind;public bool animateNormals;public int startFrame,endFrame;public float start,end,normalStrength,normalFrom,normalTo,lightFrom,lightTo,angleFrom,angleTo,mode;}
  [Serializable]public class Timeline{public int frames;public float durationSeconds;public Section[]sections;}
- [Serializable]public class Probe {public string state;public Vector2 uv;public Vector3 worldPoint,geometryNormal,tangent,bitangent,lightDirection,gpuShadingNormal,spriteTangentNormal,expectedWorldNormal;public float gpuNDotL,cpuCheckNDotL;public int meshVertexCount,meshTriangleCount;public Vector3 screenPoint,normalScreenEnd,geometryNormalScreenEnd,lightScreenEnd;}
- [Serializable]public class Frame{public string id,kind;public int frame;public float time,normalStrength,lightAngle,cameraAngle;public int panelVertices,panelTriangles,spriteVertices,spriteTriangles;public Vector3 cameraPosition,lightDirection;public Vector3[]meshScreenCorners;public Probe probe,offProbe;}
+ [Serializable]public class Probe {public string state;public Vector2 uv,requestedUV;public Vector3 worldPoint,geometryNormal,tangent,bitangent,lightDirection,gpuShadingNormal,spriteTangentNormal,expectedWorldNormal,tangentSpaceNormal,encodedRGB;public float gpuNDotL,cpuCheckNDotL;public int meshVertexCount,meshTriangleCount,sampleColumn,sampleRow;public Vector3 screenPoint,normalScreenEnd,geometryNormalScreenEnd,lightScreenEnd,gridNormalScreenEnd;}
+ // The planar mesh shares one TBN/light across all samples: keep that once in
+ // Frame.probe instead of repeating it63times per frame in the browser dataset.
+ [Serializable]public class GridSample {public Vector2 uv;public Vector3 worldPoint,gpuShadingNormal,tangentSpaceNormal,encodedRGB,screenPoint,gridNormalScreenEnd;public float gpuNDotL,cpuCheckNDotL;public int sampleColumn,sampleRow;}
+ [Serializable]public class Frame{public string id,kind;public bool nativeCaptured;public int frame;public float time,normalStrength,lightAngle,cameraAngle;public int panelVertices,panelTriangles,spriteVertices,spriteTriangles,gridColumns,gridRows;public Vector3 cameraPosition,lightDirection;public Vector3[]meshScreenCorners;public Probe probe,offProbe;public GridSample[]normalGrid;}
  [Serializable]public class LightingMatch{public float lightAngle,meanAbsoluteSRGBByteDifference,maxSRGBByteDifference;public int foregroundPixels;}
- [Serializable]public class Report{public string unity,renderPipeline="Built-in, our executable Lambert normal-mapping shader",sourceKind="our-implementation",normalConvention="Wall: Unity imported tangent normal+UnpackNormal. Sprite: uncompressed Linear full signed RGB direction in camera.right/camera.up/-camera.forward basis; normalize(2*RGB-1) preserves negative Z.",spriteBake="one128x128pose, no AA, RGBA colour plus Linear full RGB camera-facing normals, matching alpha, point filtering";public List<Frame>frames=new List<Frame>();public string[]savedScenes;public int knightSourceTriangles,spriteNegativeZPixels;public Probe spriteSignedProbe;public List<LightingMatch>spriteLightingMatches=new List<LightingMatch>();}
- static Job job;static Camera cam;static Light lamp;static NormalMapDemonstration demo;static Material wallMat,spriteMat,sourceMat,guideMat;static GameObject wall,knight,sprite;static Mesh panelMesh,spriteMesh;static Texture2D colourBake,normalBake;static RenderTexture rt;static Report report;static GameObject arrows;
+ [Serializable]public class Report{public string unity,renderPipeline="Built-in, our executable Lambert normal-mapping shader",sourceKind="our-implementation",normalConvention="Wall: Unity imported tangent normal+UnpackNormal. Sprite: uncompressed Linear full signed RGB direction in camera.right/camera.up/-camera.forward basis; normalize(2*RGB-1) preserves negative Z.",spriteBake="one128x128pose, no AA, RGBA colour plus Linear full RGB camera-facing normals, matching alpha, point filtering",gridSampling="Representative9x7 actual raster pixels, not all texture pixels. ARGBFloat shader world-normal+NdotL read in one pass; pixel-centre camera ray intersects original plane for exact UV/world anchors. Display arrow length0.34worldunits is for readability only.",encodedRGBMeaning="Re-encoded effective normalized tangent direction (n+1)/2, not a readout of platform-packed imported texture channel bytes.";public List<Frame>frames=new List<Frame>();public string[]savedScenes;public int knightSourceTriangles,spriteNegativeZPixels;public Probe spriteSignedProbe;public List<LightingMatch>spriteLightingMatches=new List<LightingMatch>();}
+ static Job job;static Camera cam;static Light lamp;static NormalMapDemonstration demo;static Material wallMat,spriteMat,sourceMat,guideMat;static GameObject wall,knight,sprite;static Mesh panelMesh,spriteMesh;static Texture2D colourBake,normalBake,floatReadback;static RenderTexture rt,floatTarget;static Report report;static GameObject arrows;static GridSample[]lastNormalGrid;
+ const int GridColumns=9,GridRows=7;const float GridArrowLength=.34f;
  static void Layer(GameObject obj,int layer){foreach(var tr in obj.GetComponentsInChildren<Transform>(true))tr.gameObject.layer=layer;}
  static void Arrow(string name,Vector3 point,Vector3 direction,Color colour){
   var g=new GameObject(name);g.layer=8;g.transform.SetParent(arrows.transform);var lr=g.AddComponent<LineRenderer>();if(!guideMat)guideMat=new Material(Shader.Find("Sprites/Default"));lr.sharedMaterial=guideMat;lr.startColor=colour;lr.endColor=colour;lr.startWidth=.028f;lr.endWidth=.028f;lr.numCapVertices=3;lr.useWorldSpace=true;
@@ -64,29 +68,49 @@ public static class NormalMapCapture {
  }
  static void Place(string kind,float angle){cam.cullingMask=kind.StartsWith("knight")?kind=="knight-source"?1<<9:kind=="knight-pipeline"?(1<<9)|(1<<10):1<<10:1<<8;View(kind.StartsWith("knight")?new Vector3(8,1.15f,0):new Vector3(0,1.9f,0),angle,kind.StartsWith("knight")?1.65f:2.4f);if(kind=="knight-source")View(new Vector3(5,1.15f,0),0,1.65f);if(kind=="knight-pipeline")View(new Vector3(6.5f,1.15f,0),0,2.7f);}
  static void Full(){
-  var timeline=JsonUtility.FromJson<Timeline>(File.ReadAllText(job.timeline));if(timeline.frames<1||timeline.sections.Length<1)throw new Exception("Actual audio frame timeline missing");LoadFrozenTestbed();VerifySignedSprite();
+  var timeline=JsonUtility.FromJson<Timeline>(File.ReadAllText(job.timeline));if(timeline.frames<1||timeline.sections.Length<1)throw new Exception("Actual audio frame timeline missing");if(timeline.sections[0].startFrame!=0||timeline.sections[timeline.sections.Length-1].endFrame!=timeline.frames)throw new Exception("V2 integer frame boundaries missing");for(int i=0;i<timeline.sections.Length;i++)if(timeline.sections[i].endFrame<=timeline.sections[i].startFrame||(i>0&&timeline.sections[i-1].endFrame!=timeline.sections[i].startFrame))throw new Exception("V2 integer timeline has a gap/overlap");LoadFrozenTestbed();VerifySignedSprite();
   foreach(var folder in new[]{"frames","ab-off","ab-on"})Directory.CreateDirectory(Path.Combine(job.output,folder));
   for(int f=0;f<timeline.frames;f++){
-   float time=f/60f;var section=timeline.sections.LastOrDefault(s=>time>=s.start)??timeline.sections[0];float u=Mathf.Clamp01((time-section.start)/Mathf.Max(.0001f,section.end-section.start));float ease=u*u*(3-2*u);float light=Mathf.Lerp(section.lightFrom,section.lightTo,ease),angle=Mathf.Lerp(section.angleFrom,section.angleTo,ease);
-   demo.normalStrength=section.normalStrength;demo.lightAngle=light;demo.Apply();wallMat.SetFloat("_OutputMode",section.mode);spriteMat.SetFloat("_OutputMode",section.mode);Place(section.kind,angle);
-   Probe probe=null,off=null;if(!section.kind.StartsWith("knight")){float saved=wallMat.GetFloat("_OutputMode");probe=ReadProbe(section.id);wallMat.SetFloat("_OutputMode",saved);}
+   float time=f/60f;var section=timeline.sections.FirstOrDefault(s=>f>=s.startFrame&&f<s.endFrame);if(section==null)throw new Exception("No selected section at actual frame "+f);float u=(f-section.startFrame)/(float)(section.endFrame-section.startFrame);float ease=u*u*(3-2*u);float light=Mathf.Lerp(section.lightFrom,section.lightTo,ease),angle=Mathf.Lerp(section.angleFrom,section.angleTo,ease);
+   // Independently sourced commercial footage is never rendered or substituted
+   // by this test bed. Keep its timeline identity but capture no fake game frame.
+   if(section.kind=="game"){report.frames.Add(new Frame{id=section.id,kind=section.kind,frame=f,time=time,nativeCaptured=false});continue;}
+   demo.normalStrength=section.animateNormals?Mathf.Lerp(section.normalFrom,section.normalTo,ease):section.normalStrength;demo.lightAngle=light;demo.Apply();wallMat.SetFloat("_OutputMode",section.mode);spriteMat.SetFloat("_OutputMode",section.mode);Place(section.kind,angle);
+   bool grid=section.kind=="wall-normals"||section.kind=="wall-flatnormals";
+   Probe probe=null,off=null;GridSample[]normalGrid=null;if(!section.kind.StartsWith("knight")){float saved=wallMat.GetFloat("_OutputMode");probe=ReadProbe(section.id,grid);normalGrid=lastNormalGrid;wallMat.SetFloat("_OutputMode",saved);}
    string basename="frame-"+f.ToString("D5");if(section.kind=="wall-ab"){
     demo.normalStrength=0;demo.Apply();off=ReadProbe(section.id+"-off");SavePicture("ab-off/"+basename);demo.normalStrength=1;demo.Apply();SavePicture("ab-on/"+basename);
    }
-   if(section.kind=="wall-normals"||section.kind=="wall-flatnormals")ShowNormals(probe,section.kind=="wall-flatnormals");SavePicture("frames/"+basename);if(arrows){Object.DestroyImmediate(arrows);arrows=null;}
+   // The representative grid is composited from these measured endpoints. Only
+   // the later worked light example needs the large native selected-point arrows.
+   if(section.id=="light-facing"||section.id=="light-sideways")ShowNormals(probe);SavePicture("frames/"+basename);if(arrows){Object.DestroyImmediate(arrows);arrows=null;}
    var corners=panelMesh.vertices.Select(v=>{var p=cam.WorldToScreenPoint(wall.transform.TransformPoint(v));return new Vector3(p.x,H-p.y,p.z);}).ToArray();
-   report.frames.Add(new Frame{id=section.id,kind=section.kind,frame=f,time=time,normalStrength=section.kind=="knight-source"?sourceMat.GetFloat("_NormalStrength"):demo.normalStrength,lightAngle=light,cameraAngle=angle,panelVertices=panelMesh.vertexCount,panelTriangles=panelMesh.triangles.Length/3,spriteVertices=spriteMesh.vertexCount,spriteTriangles=spriteMesh.triangles.Length/3,cameraPosition=cam.transform.position,lightDirection=-lamp.transform.forward,meshScreenCorners=corners,probe=probe,offProbe=off});
+   report.frames.Add(new Frame{id=section.id,kind=section.kind,frame=f,time=time,nativeCaptured=true,normalStrength=section.kind=="knight-source"?sourceMat.GetFloat("_NormalStrength"):demo.normalStrength,lightAngle=light,cameraAngle=angle,panelVertices=panelMesh.vertexCount,panelTriangles=panelMesh.triangles.Length/3,spriteVertices=spriteMesh.vertexCount,spriteTriangles=spriteMesh.triangles.Length/3,cameraPosition=cam.transform.position,lightDirection=-lamp.transform.forward,meshScreenCorners=corners,probe=probe,offProbe=off,normalGrid=normalGrid,gridColumns=normalGrid==null?0:GridColumns,gridRows=normalGrid==null?0:GridRows});
    if(f%300==0)Debug.Log("NORMAL_MAP_FRAME "+f+" / "+timeline.frames);
   }
   File.WriteAllText(Path.Combine(job.output,"full-readback.json"),JsonUtility.ToJson(report,true));File.WriteAllText(Path.Combine(job.output,"success.json"),"{\"frames\":"+timeline.frames+",\"actualNormalShader\":true,\"frozenSourceAssetsLoaded\":true,\"actualSpriteBake\":true}");
  }
- static Probe ReadProbe(string name){
-  var uv=new Vector2(.395f,.44f);var world=wall.transform.TransformPoint(new Vector3((uv.x-.5f)*PanelSize,(uv.y-.5f)*PanelSize,0));var screen=cam.WorldToScreenPoint(world);
-  var target=new RenderTexture(W,H,24,RenderTextureFormat.ARGBFloat,RenderTextureReadWrite.Linear){antiAliasing=1};target.Create();var old=cam.targetTexture;cam.targetTexture=target;wallMat.SetFloat("_OutputMode",2);cam.Render();var previous=RenderTexture.active;RenderTexture.active=target;var tex=new Texture2D(1,1,TextureFormat.RGBAFloat,false,true);tex.ReadPixels(new Rect(Mathf.Floor(screen.x),Mathf.Floor(screen.y),1,1),0,0);tex.Apply();var value=tex.GetPixel(0,0);Object.DestroyImmediate(tex);RenderTexture.active=previous;cam.targetTexture=old;wallMat.SetFloat("_OutputMode",0);target.Release();Object.DestroyImmediate(target);
+ static Probe ReadProbe(string name,bool includeGrid=false){
+  // One float GPU pass/readback for both the worked pixel and all63 grid samples.
+  // Read the actual raster pixel centre, then intersect its camera ray with the
+  // unchanged panel. This keeps UV, world anchor and normal from the SAME pixel.
+  if(!floatTarget){floatTarget=new RenderTexture(W,H,24,RenderTextureFormat.ARGBFloat,RenderTextureReadWrite.Linear){antiAliasing=1};floatTarget.Create();floatReadback=new Texture2D(W,H,TextureFormat.RGBAFloat,false,true);}
+  var old=cam.targetTexture;var previous=RenderTexture.active;float mode=wallMat.GetFloat("_OutputMode");
+  try{cam.targetTexture=floatTarget;wallMat.SetFloat("_OutputMode",2);cam.Render();RenderTexture.active=floatTarget;floatReadback.ReadPixels(new Rect(0,0,W,H),0,0);floatReadback.Apply(false);
+   var selected=SampleWallPixel(name,new Vector2(.395f,.44f),-1,-1);
+   lastNormalGrid=null;if(includeGrid){var samples=new List<GridSample>();for(int row=0;row<GridRows;row++)for(int column=0;column<GridColumns;column++){var uv=new Vector2(Mathf.Lerp(.07f,.93f,column/(float)(GridColumns-1)),Mathf.Lerp(.08f,.92f,row/(float)(GridRows-1)));var p=SampleWallPixel(name+"-representative-grid",uv,column,row);samples.Add(new GridSample{uv=p.uv,worldPoint=p.worldPoint,gpuShadingNormal=p.gpuShadingNormal,tangentSpaceNormal=p.tangentSpaceNormal,encodedRGB=p.encodedRGB,screenPoint=p.screenPoint,gridNormalScreenEnd=p.gridNormalScreenEnd,gpuNDotL=p.gpuNDotL,cpuCheckNDotL=p.cpuCheckNDotL,sampleColumn=column,sampleRow=row});}lastNormalGrid=samples.ToArray();}
+   return selected;
+  }finally{RenderTexture.active=previous;cam.targetTexture=old;wallMat.SetFloat("_OutputMode",mode);}
+ }
+ static Probe SampleWallPixel(string name,Vector2 requestedUV,int column,int row){
+  var requestedWorld=wall.transform.TransformPoint(new Vector3((requestedUV.x-.5f)*PanelSize,(requestedUV.y-.5f)*PanelSize,0));var requestedScreen=cam.WorldToScreenPoint(requestedWorld);int px=Mathf.FloorToInt(requestedScreen.x),py=Mathf.FloorToInt(requestedScreen.y);
+  if(px<0||px>=W||py<0||py>=H)throw new Exception("Requested actual panel pixel is outside capture: "+requestedScreen);
+  var ray=cam.ScreenPointToRay(new Vector3(px+.5f,py+.5f,0));var plane=new Plane(wall.transform.TransformDirection(panelMesh.normals[0]),wall.transform.position);if(!plane.Raycast(ray,out var distance))throw new Exception("Pixel ray did not hit the panel plane");var world=ray.GetPoint(distance);var local=wall.transform.InverseTransformPoint(world);var uv=new Vector2(local.x/PanelSize+.5f,local.y/PanelSize+.5f);var screen=cam.WorldToScreenPoint(world);var value=floatReadback.GetPixel(px,py);
   var n=new Vector3(value.r,value.g,value.b);var light=-lamp.transform.forward;float calculated=Mathf.Max(0,Vector3.Dot(n.normalized,light.normalized));if(n.sqrMagnitude<.9f||Mathf.Abs(calculated-value.a)>.004f)throw new Exception("Actual float normal/light readback failed: "+value+" / "+calculated);
   var meshN=wall.transform.TransformDirection(panelMesh.normals[0]).normalized;var tangent=panelMesh.tangents[0];var meshT=wall.transform.TransformDirection(new Vector3(tangent.x,tangent.y,tangent.z)).normalized;var meshB=Vector3.Cross(meshN,meshT)*tangent.w;
-  var result=new Probe{state=name,uv=uv,worldPoint=world,geometryNormal=meshN,tangent=meshT,bitangent=meshB,lightDirection=light,gpuShadingNormal=n,gpuNDotL=value.a,cpuCheckNDotL=calculated,meshVertexCount=panelMesh.vertexCount,meshTriangleCount=panelMesh.triangles.Length/3,screenPoint=new Vector3(screen.x,H-screen.y,screen.z)};
-  var a=cam.WorldToScreenPoint(world+n*.9f);var b=cam.WorldToScreenPoint(world+Vector3.back*.9f);var c=cam.WorldToScreenPoint(world+light*.9f);result.normalScreenEnd=new Vector3(a.x,H-a.y,a.z);result.geometryNormalScreenEnd=new Vector3(b.x,H-b.y,b.z);result.lightScreenEnd=new Vector3(c.x,H-c.y,c.z);return result;
+  var ts=new Vector3(Vector3.Dot(n,meshT),Vector3.Dot(n,meshB),Vector3.Dot(n,meshN)).normalized;
+  var result=new Probe{state=name,uv=uv,requestedUV=requestedUV,worldPoint=world,geometryNormal=meshN,tangent=meshT,bitangent=meshB,lightDirection=light,gpuShadingNormal=n,tangentSpaceNormal=ts,encodedRGB=ts*.5f+Vector3.one*.5f,gpuNDotL=value.a,cpuCheckNDotL=calculated,meshVertexCount=panelMesh.vertexCount,meshTriangleCount=panelMesh.triangles.Length/3,sampleColumn=column,sampleRow=row,screenPoint=new Vector3(screen.x,H-screen.y,screen.z)};
+  var a=cam.WorldToScreenPoint(world+n*.9f);var b=cam.WorldToScreenPoint(world+meshN*.9f);var c=cam.WorldToScreenPoint(world+light*.9f);var g=cam.WorldToScreenPoint(world+n*GridArrowLength);result.normalScreenEnd=new Vector3(a.x,H-a.y,a.z);result.geometryNormalScreenEnd=new Vector3(b.x,H-b.y,b.z);result.lightScreenEnd=new Vector3(c.x,H-c.y,c.z);result.gridNormalScreenEnd=new Vector3(g.x,H-g.y,g.z);return result;
  }
  static void SavePicture(string name){cam.Render();var old=RenderTexture.active;RenderTexture.active=rt;var picture=new Texture2D(W,H,TextureFormat.RGBA32,false);picture.ReadPixels(new Rect(0,0,W,H),0,0);picture.Apply(false);File.WriteAllBytes(Path.Combine(job.output,name+".png"),picture.EncodeToPNG());Object.DestroyImmediate(picture);RenderTexture.active=old;}
  static void VerifySignedSprite(){
@@ -113,8 +137,8 @@ public static class NormalMapCapture {
   cam.cullingMask=kind.StartsWith("knight")?kind=="knight-source"?1<<9:kind=="knight-pipeline"?(1<<9)|(1<<10):1<<10:1<<8;
   View(kind.StartsWith("knight")?new Vector3(8,1.15f,0):new Vector3(0,1.9f,0),angle,kind.StartsWith("knight")?1.65f:2.4f);
   if(kind=="knight-source")View(new Vector3(5,1.15f,0),0,1.65f);if(kind=="knight-pipeline")View(new Vector3(6.5f,1.15f,0),0,2.7f);
-  Probe probe=null;if(!kind.StartsWith("knight")){float saved=wallMat.GetFloat("_OutputMode");probe=ReadProbe(id);wallMat.SetFloat("_OutputMode",saved);}
-  if(kind=="wall-normals")ShowNormals(probe);SavePicture(id);if(arrows){Object.DestroyImmediate(arrows);arrows=null;}report.frames.Add(new Frame{id=id,kind=kind,normalStrength=strength,lightAngle=lightAngle,cameraAngle=angle,panelVertices=panelMesh.vertexCount,panelTriangles=panelMesh.triangles.Length/3,spriteVertices=spriteMesh.vertexCount,spriteTriangles=spriteMesh.triangles.Length/3,cameraPosition=cam.transform.position,lightDirection=-lamp.transform.forward,probe=probe});
+  bool grid=kind=="wall-normals"||kind=="wall-flatnormals";Probe probe=null;GridSample[]normalGrid=null;if(!kind.StartsWith("knight")){float saved=wallMat.GetFloat("_OutputMode");probe=ReadProbe(id,grid);normalGrid=lastNormalGrid;wallMat.SetFloat("_OutputMode",saved);}
+  SavePicture(id);report.frames.Add(new Frame{id=id,kind=kind,normalStrength=strength,lightAngle=lightAngle,cameraAngle=angle,panelVertices=panelMesh.vertexCount,panelTriangles=panelMesh.triangles.Length/3,spriteVertices=spriteMesh.vertexCount,spriteTriangles=spriteMesh.triangles.Length/3,cameraPosition=cam.transform.position,lightDirection=-lamp.transform.forward,probe=probe,normalGrid=normalGrid,gridColumns=normalGrid==null?0:GridColumns,gridRows=normalGrid==null?0:GridRows});
  }
  static void SaveVariant(string name,float strength,float mode=0,float angle=0){
   var wp=Root+"/Materials/"+name+"-Wall.mat";var sp=Root+"/Materials/"+name+"-Sprite.mat";var wm=AssetDatabase.LoadAssetAtPath<Material>(wp);var sm=AssetDatabase.LoadAssetAtPath<Material>(sp);
@@ -127,7 +151,27 @@ public static class NormalMapCapture {
   cam.targetTexture=null;cam.enabled=true;demo.animateLight=true;EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(),Root+"/Scenes/"+name+".unity");cam.enabled=false;cam.targetTexture=rt;demo.animateLight=false;
   wall.GetComponent<Renderer>().sharedMaterial=wallMat;sprite.GetComponent<Renderer>().sharedMaterial=spriteMat;demo.wallMaterial=wallMat;demo.spriteMaterial=spriteMat;
  }
- public static void Run(){try{var args=Environment.GetCommandLineArgs();job=JsonUtility.FromJson<Job>(File.ReadAllText(args[Array.IndexOf(args,"-normalMapJob")+1]));Directory.CreateDirectory(job.output);report=new Report{unity=Application.unityVersion};if(job.mode=="full"){Full();EditorApplication.Exit(0);return;}if(job.mode!="preview")throw new Exception("Unknown finite capture mode");Build();
+ static void GridPreview(){
+  // V2 reuses the frozen, already verified normal and sprite PNGs. It does not
+  // regenerate texture assets or overwrite any earlier capture directory.
+  LoadFrozenTestbed();
+  Capture("grid-off","wall-flatnormals",0,40,35);var off=lastNormalGrid;
+  Capture("grid-on","wall-normals",1,40,35);var on=lastNormalGrid;
+  Capture("grid-on-light-left","wall-normals",1,-40,35);
+  Capture("normal-rgb","wall",1,40,0,1);
+  Capture("grid-front","wall-normals",1,40,0);
+  Capture("wall-edge","wall-edge",1,40,82);
+  Capture("knight-light-left","knight-lit",1,-55);
+  Capture("knight-light-right","knight-lit",1,55);
+  VerifySignedSprite();CompareSpriteLighting();
+  foreach(var state in new[]{new{samples=off,name="06-NormalGridOff",strength=0f},new{samples=on,name="07-NormalGridOn",strength=1f}}){
+   var snapshot=wall.AddComponent<NormalMapGridSnapshot>();snapshot.sampledNormalStrength=state.strength;snapshot.sampledLightDirection=report.frames.First(f=>f.id==(state.strength==0?"grid-off":"grid-on")).lightDirection;snapshot.worldPoints=state.samples.Select(p=>p.worldPoint).ToArray();snapshot.worldNormals=state.samples.Select(p=>p.gpuShadingNormal).ToArray();SaveVariant(state.name,state.strength,0,35);Object.DestroyImmediate(snapshot);
+  }
+  demo.normalStrength=1;demo.lightAngle=40;demo.Apply(); // Restore frozen Testbed material defaults after the preview's ±55deg proof.
+  report.savedScenes=new[]{"06-NormalGridOff","07-NormalGridOn"}.Select(x=>Root+"/Scenes/"+x+".unity").ToArray();AssetDatabase.SaveAssets();
+  File.WriteAllText(Path.Combine(job.output,"preview-readback.json"),JsonUtility.ToJson(report,true));File.WriteAllText(Path.Combine(job.output,"success.json"),"{\"states\":8,\"actualNormalShader\":true,\"actualMeshReadback\":true,\"signedSpriteGPUVerified\":true,\"representativeGridSamples\":63,\"frozenSourceAssetsLoaded\":true}");
+ }
+ public static void Run(){try{var args=Environment.GetCommandLineArgs();job=JsonUtility.FromJson<Job>(File.ReadAllText(args[Array.IndexOf(args,"-normalMapJob")+1]));Directory.CreateDirectory(job.output);report=new Report{unity=Application.unityVersion};if(job.mode=="full"){Full();EditorApplication.Exit(0);return;}if(job.mode=="preview-grid"){GridPreview();EditorApplication.Exit(0);return;}if(job.mode!="preview")throw new Exception("Unknown finite capture mode");Build();
   Capture("01-wall-off","wall",0,40);Capture("02-wall-on","wall",1,40);Capture("03-wall-light-left","wall",1,-40);Capture("04-wall-normal-rgb","wall",1,40,0,1);Capture("05-wall-normals-oblique","wall-normals",1,40,45);Capture("06-wall-edge","wall-edge",1,40,82);
   Capture("07-knight-source","knight-source",0,40);Capture("08-knight-colour","knight-colour",0,40,0,4);Capture("09-knight-normal-rgb","knight-normal",1,40,0,1);Capture("10-knight-relit-left","knight-lit",1,-55);Capture("11-knight-relit-right","knight-lit",1,55);Capture("12-knight-pipeline","knight-pipeline",1,40);
   Capture("13-knight-source-left","knight-source",0,-55);Capture("14-knight-source-right","knight-source",0,55);VerifySignedSprite();CompareSpriteLighting();

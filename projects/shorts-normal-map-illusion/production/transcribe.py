@@ -18,7 +18,7 @@ import wave
 
 P = Path(__file__).resolve().parents[1]
 R = P.parents[1]
-from audio_revision import L, VOICE, REVISION, guard as revision_guard
+from audio_revision import L, VOICE, REVISION, normalize_speech, guard as revision_guard
 DEFAULT_VOICE = (
     "projects/shorts-normal-map-illusion/production/local/audio-v2/voice/"
     "normal-map-v2.wav"
@@ -38,11 +38,7 @@ def sha(path):
 
 
 def normalized(text):
-    # Explicit approved display→speech aliases, not a recognition-text prompt.
-    aliases = read(P / "script/clauses.json").get("pronunciationAliases", {})
-    for display, speech in sorted(aliases.items(), key=lambda item: -len(item[0])):
-        text = re.sub(re.escape(display), lambda match: speech, text, flags=re.I)
-    return re.sub(r"[^0-9a-z가-힣]", "", unicodedata.normalize("NFC", text).lower())
+    return normalize_speech(text, read(P / "script/clauses.json").get("pronunciationAliases", {}))
 
 
 def repository_path(value):

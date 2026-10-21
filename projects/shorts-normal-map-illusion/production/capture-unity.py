@@ -9,16 +9,17 @@ def save(p,v):
  p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('mode',nargs='?',choices=['preview','full'],default='preview');ap.add_argument('--revision',default='v1');a=ap.parse_args()
- c=read(R/'shared/publishing/video-production-control.json');assert c.get('selectedShortVideo')==P.name and c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v1','Selected Short changed'
+ ap=argparse.ArgumentParser();ap.add_argument('mode',nargs='?',choices=['preview-grid','full'],default='preview-grid');ap.add_argument('--revision',default='v2-grid-rgb');a=ap.parse_args()
+ c=read(R/'shared/publishing/video-production-control.json');assert c.get('selectedShortVideo')==P.name and c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v2-grid-rgb-deadcells','Selected Short changed'
  assert a.mode!='full' or not (L/'capture-hold.flag').exists(),'Own technical capture hold; preserve foreign processes'
  plan=read(P/'planning/production-plan.json');assert plan.get('previewAuthorization',{}).get('allowed') is True,'Preview not authorized'
  timeline=P/'production/visual-timing.json'
  if a.mode=='full':
   assert c.get('shortsDirectSelection',{}).get('fullProductionAuthorized') is True,'Full production not authorized'
-  timing=read(timeline);captions=read(P/'script/captions.json');assert timing['frames']==captions['frames'] and timing.get('voiceDurationSeconds',0)>0,'Final audio timeline missing'
+  timing=read(timeline);captions=read(P/'script/captions.json');assert timing.get('revision')==c['shortsDirectSelection']['selectedRevision'] and timing['frames']==captions['frames'] and timing.get('voiceDurationSeconds',0)>0,'Current revision final audio timeline missing'
  assert not LEASE.exists(),'Foreign GPU lease preserved'
  assert not any((p.info['name'] or '').lower()=='unity.exe' and str(ISO).lower() in ' '.join(p.info['cmdline'] or []).replace('\\','/').lower() for p in psutil.process_iter(['name','cmdline'])),'Owned isolated editor already running'
+ frozen={name:sha(OWN/'Generated'/name) for name in ['BrickNormal.png','KnightColour.png','KnightNormal.png']}
  out=L/f'capture-{a.mode}-{a.revision}';assert not out.exists(),'Preserve prior capture attempts';out.mkdir(parents=True)
  for p in [OWN,*[x for x in OWN.rglob('*') if x.is_dir()]]:
   m=Path(str(p)+'.meta')
@@ -46,9 +47,9 @@ def main():
    assert delta<=2560,('Conservative GPU memory budget exceeded; terminating own preview only',delta)
    assert time.time()<deadline,'Own preview timeout'
   assert process.returncode==0,('Unity failed',process.returncode,str(out/'unity.log'))
-  success=read(out/'success.json');assert (success.get('states')==14 and success.get('actualMeshReadback') and success.get('signedSpriteGPUVerified')) if a.mode=='preview' else (success.get('frames')==timing['frames'] and success.get('frozenSourceAssetsLoaded'))
+  success=read(out/'success.json');assert (success.get('states')==8 and success.get('actualMeshReadback') and success.get('signedSpriteGPUVerified') and success.get('representativeGridSamples')==63 and success.get('frozenSourceAssetsLoaded')) if a.mode=='preview-grid' else (success.get('frames')==timing['frames'] and success.get('frozenSourceAssetsLoaded'))
   src=ISO/'Assets/VideoScenes'/P.name
-  if a.mode=='preview':
+  if a.mode=='preview-grid':
    for folder in ['Generated','Materials','Meshes','Scenes']:
     shutil.copytree(src/folder,OWN/folder,dirs_exist_ok=True)
     m=Path(str(src/folder)+'.meta')
@@ -56,12 +57,13 @@ def main():
   for meta in src.rglob('*.meta'):
    target=OWN/meta.relative_to(src)
    if not target.exists() and Path(str(target)[:-5]).exists():shutil.copy2(meta,target)
+  assert all(sha(OWN/'Generated'/name)==value for name,value in frozen.items()),'Frozen source PNG changed unexpectedly'
   for p in OWN.rglob('*'):
    if p.is_file() and p.suffix in ['.cs','.shader','.unity','.mat','.meta','.asset']:
     data=p.read_bytes()
     if b'\x00' not in data:
      text=data.decode('utf8');p.write_text('\n'.join(x.rstrip() for x in text.splitlines())+'\n',encoding='utf8')
-  record.update(status='captured',peakConservativeGpuMemoryDeltaMiB=peak,sourceHashes=[dict(path=str(p.relative_to(R)).replace('\\','/'),sha256=sha(p)) for p in OWN.rglob('*') if p.is_file()],finishedAt=time.time());save(out/'execution.json',record);print(json.dumps(dict(status='captured',peakConservativeGpuMemoryDeltaMiB=peak,**success)),flush=True)
+  record.update(status='captured',peakConservativeGpuMemoryDeltaMiB=peak,frozenPngsUnchanged=frozen,sourceHashes=[dict(path=str(p.relative_to(R)).replace('\\','/'),sha256=sha(p)) for p in OWN.rglob('*') if p.is_file()],finishedAt=time.time());save(out/'execution.json',record);print(json.dumps(dict(status='captured',peakConservativeGpuMemoryDeltaMiB=peak,**success)),flush=True)
  finally:
   if process and process.poll() is None:process.terminate();process.wait(timeout=30)
   if LEASE.exists() and read(LEASE).get('token')==token:LEASE.unlink()

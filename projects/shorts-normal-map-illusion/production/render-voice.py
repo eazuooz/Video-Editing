@@ -66,6 +66,7 @@ def main():
     args = parser.parse_args()
     control = guard()
     manifest = read(P / 'production/tts-manifest.json')
+    manifest_sha = sha(P / 'production/tts-manifest.json')
     assert manifest['revision'] == REVISION and manifest['tts']['renderMode'] == 'line'
     assert sha(P / 'script/narration.ko.json') == args.release_script_sha256
     assert read(P / 'planning/production-plan.json')['status'] == 'ready-for-narration'
@@ -74,6 +75,7 @@ def main():
         wait_for_gpu(args.wait_for_gpu_seconds)
         control = guard()
         assert sha(P / 'script/narration.ko.json') == args.release_script_sha256
+        assert sha(P / 'production/tts-manifest.json') == manifest_sha, 'Manifest changed during wait; restart with reviewed current settings.'
     assert not LEASE.exists(), 'An existing GPU lease is preserved.'
     assert not VOICE.exists(), 'Reuse existing successful v2 PCM rather than synthesizing again.'
     assert not (L / 'tts-execution.json').exists(), 'Inspect/version the previous finite execution before retry.'
@@ -99,6 +101,7 @@ def main():
               'allocatorLimitMiB': 6144, 'foreignProcessesPaused': [],
               'userEvidence': control['shortsDirectSelection'].get('latestUserEvidence', control['shortsDirectSelection']['userEvidence']),
               'inputs': {key: sha(R / value) for key, value in paths.items()},
+              'launcherSha256': sha(__file__), 'assemblyScriptSha256': sha(P / 'production/assemble-paragraphs.py'),
               'renderMode': 'meaningful-paragraph-line; sequential-batch1; one-model-load', 'speechSpeed': 1}
     L.mkdir(parents=True, exist_ok=True)
     with LEASE.open('x', encoding='utf8') as handle:

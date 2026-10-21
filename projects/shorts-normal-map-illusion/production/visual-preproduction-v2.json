@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "project": "shorts-normal-map-illusion",
+  "revision": "normal-map-v2-grid-rgb-deadcells",
+  "stage": "visual-sources-and-finite-preview-ready-final-audio-pending",
+  "renderer": {
+    "editor": "Unity6000.6.0f1",
+    "pipeline": "Isolated Built-in; our executable Lambert/TBN normal-mapping shader",
+    "nativeSize": [
+      1080,
+      1080
+    ],
+    "finalPortraitSize": [
+      1080,
+      1920
+    ],
+    "fps": 60,
+    "mainURPRuntimeClaimed": false
+  },
+  "grid": {
+    "size": [
+      9,
+      7
+    ],
+    "meaning": "63 representative actual raster pixels, not all texture pixels. One ARGBFloat shader render/readback per frame. Pixel-centre camera rays intersect the unchanged panel to locate actual sampled UV/world anchors.",
+    "directions": "White when normal mapping is off; green when on. Projected arrow endpoints come from actual GPU normals and Unity camera projection. The display length0.34worldunits is for readability. Near-camera short projections remain dots.",
+    "sharedBasis": "The planar wall shares one actual TBN/light per frame; compact grid records refer to Frame.probe for that basis, avoiding63duplicate copies.",
+    "finitePreview": "production/local/capture-preview-grid-v2-grid-rgb",
+    "validation": "production/local/grid-rgb-preview-validation.json",
+    "measuredSamples": 252,
+    "offDistinctDirections": 1,
+    "onDistinctDirections": 20,
+    "sameGeometryCameraLightAndAnchors": true,
+    "maxCPUvsGPUDotError": 0,
+    "maxTBNReconstructionError": 6.007030606269836e-08,
+    "maxLogicalRGBEncodeDecodeError": 6.007030606269836e-08,
+    "previewGpuMemoryBudgetMiB": 2560,
+    "measuredConservativeMemoryDeltaMiB": 23,
+    "ownLeaseReleased": true,
+    "newSavedScenes": [
+      "Assets/VideoScenes/shorts-normal-map-illusion/Scenes/06-NormalGridOff.unity",
+      "Assets/VideoScenes/shorts-normal-map-illusion/Scenes/07-NormalGridOn.unity"
+    ],
+    "sceneSnapshotLimit": "Inspector-visible Scene-view gizmos are stored GPU sample snapshots. Material changes require resampling; they are not labelled live per-pixel detectors."
+  },
+  "rgbTeaching": {
+    "basis": "Surface/tangent-space x horizontal,y vertical,z outward, separately from world axes.",
+    "firstLetters": "R=빨강,G=초록,B=파랑 on the first normal-map picture.",
+    "encode": "stored=(direction+1)/2",
+    "decode": "direction=stored*2-1",
+    "workedExamples": [
+      "-1→0",
+      "0→0.5",
+      "+1→1"
+    ],
+    "neutral": "(0,0,1)→(0.5,0.5,1)≈8bit(128,128,255). Red/green half,blue maximum: blue-purple direction data, not material colour.",
+    "dataHandling": "Linear data. Wall retains UnityNormalMap import+UnpackNormal. Sprite retains uncompressed linear full signed RGB decode, preserving negativeZ. Re-encoded effective direction values are not claimed to be platform-packed imported texture bytes.",
+    "speechEvents": "V2 builder will bind c15/16/17 mappings and c18–23 neutral/color reveals to final measured cue starts."
+  },
+  "deadCells": {
+    "sourceEvidence": "sources/deadcells-v2.json",
+    "sourceSHA256": "518496462bb0a80542ee62861c042ebf21d660701cec587ae5328dc306bb23c0",
+    "actualSourceSize": [
+      1920,
+      1080
+    ],
+    "sourceFPS": 60,
+    "selectedSource": [
+      30,
+      36.6
+    ],
+    "rate": 1,
+    "extractedFrames": 396,
+    "extraction": "production/local/native-gameplay-v2/deadCells/extraction.json",
+    "pictureLabel": "데드셀 · 실제 플레이",
+    "layout": "Full880×49516:9 picture preserves source UI. A240square same-frame character inset uses the15 manually inspected320source-pixel crop anchors and is labelled캐릭터확대/같은프레임.",
+    "fullPanelNativeY": [
+      505.5,
+      1000.5
+    ],
+    "insetAndBorderBottomNativeY": 1247,
+    "fixedCaptionsMoved": false,
+    "preflight": "production/local/grid-rgb-source-preview-v5/game-mobile-contact.jpg",
+    "noGameBufferClaim": true,
+    "sourceAudioAdopted": false,
+    "audioReason": "Documented parent-approved omission: underlying mixed soundtrack rights unverified; own narration and existing rights-cleared BGM remain.",
+    "longNarrationHandling": "Cap actual play at6.6seconds. Continue on our separately labelled executable3D→colour/normal→2D pipeline if the sentence exceeds that duration; no loop,slowdown or held game frame."
+  },
+  "frozenSourcePNGs": {
+    "BrickNormal.png": "332da4a831e1681235e0f8ac6a036de308df9d6cce59adbbdb7b1f0a1dd386a4",
+    "KnightColour.png": "0b065a0902062227eac8c5c88c7c08987cce4f857effcc5f2f85faaf6bfcc6f2",
+    "KnightNormal.png": "86653b524a780e32d8105148393ba964db7796c58782a15735cb158321b9b6cc"
+  },
+  "rootPreflightReview": "Root viewed and accepted five grid/RGB375px tiles and all three rebalancedv5 actual-game inset tiles. Actual final ASS/cue/moving review remains pending.",
+  "fullBoundaryContract": "Unityv2 parses contiguous integerstartFrame/endFrame, selects f>=startFrame&&f<endFrame, and interpolates from integer frame delta. Game frames are identity-only placeholders, nativeCaptured=false; commercial footage is never substituted by the testbed. MotionCanvas full-mode selection uses captured frame.id.",
+  "notYetPerformed": [
+    "Actual40-cue audio-timed preflight with v2 ASS",
+    "New continuous Unity capture and63sample full-trace validation",
+    "Final MotionCanvas render/four-output mux and final QA"
+  ],
+  "preserved": "All v1 captures, outputs, metadata snapshots, sourcePNGs and receipts. No unrelated processes, staging or GPU lease changed. No platform action.",
+  "independentCodeAudit": "Passed raster-centre cameraRay/plane/localUV, sharedTBN, actualoff/onsamples and projectedendpointparenttransform. No substantive bug for current unscaled/unmirrored wall."
+}

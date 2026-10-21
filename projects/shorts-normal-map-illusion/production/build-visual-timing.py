@@ -5,6 +5,7 @@ P=Path(__file__).resolve().parents[1];L=P/'production/local'
 def read(p):return json.loads(p.read_text(encoding='utf8'))
 def save(p,v):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def main():
+ control=read(P.parents[1]/'shared/publishing/video-production-control.json');assert control.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v1','V1 builder is historical; use build-visual-timing-v2.py for selected revision'
  c=read(P/'script/captions.json');q={x['id']:x for x in c['cues']}
  # id, first cue, native mode, normal strength, light from/to, camera yaw from/to, shader output.
  specs=[

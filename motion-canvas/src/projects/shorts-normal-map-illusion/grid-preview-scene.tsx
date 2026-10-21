@@ -1,0 +1,26 @@
+import {Img,Node,Rect,Txt,makeScene2D} from '@motion-canvas/2d';
+import {Vector2,createSignal,linear} from '@motion-canvas/core';
+import data from '../../../../projects/shorts-normal-map-illusion/production/local/capture-preview-grid-v2-grid-rgb/preview-readback.json';
+import {createNormalGrid} from './normal-grid';
+import {createNormalRGB,RGBPhase} from './normal-rgb';
+import {createDeadCellsGameplay} from './dead-cells-gameplay';
+const ROOT='/@fs/D:/Github/VideoEditing/projects/shorts-normal-map-illusion/production/local/capture-preview-grid-v2-grid-rgb/';
+export default makeScene2D(function*(view){
+ const t=createSignal(0);const state=()=>Math.min(5,Math.floor(t()/5+1e-5));
+ const record=()=>data.frames.find(f=>f.id===(state()===0?'grid-off':'grid-on'));
+ const phase=():RGBPhase=>state()<2||state()===5?'none':state()===2?'signed':state()===3?'packing':'neutral';
+ const point=(p:any)=>new Vector2((p.x-540)*1000/1080,(p.y-540)*1000/1080);
+ view.fill('#000000');const world=new Node({position:[-30,0]});view.add(world);
+ world.add(<Img src={()=>ROOT+(state()===0?'grid-off':state()===1?'grid-on':'normal-rgb')+'.png'} width={1000} height={1000} opacity={()=>state()===5?0:1}/>);
+ world.add(createNormalGrid({record,elapsed:()=>t()%5,enabled:()=>state()<2,point}));
+ world.add(createNormalRGB({phase,elapsed:()=>t()%5}));
+ world.add(createDeadCellsGameplay({enabled:()=>state()===5,localFrame:()=>Math.floor(Math.max(0,t()-25)*60+1e-5),sourceSeconds:()=>30+Math.max(0,t()-25)}));
+ view.add(<Rect width={1080} height={490} position={[0,-715]} fill="#000000"/>);
+ view.add(<Txt text="얌얌코딩" fontFamily="Malgun Gothic" fontSize={37} fontWeight={700} fill="#B8C3BC" position={[-340,-845]}/>);
+ view.add(<Txt text="울퉁불퉁한 벽이" fontFamily="Malgun Gothic" fontSize={77} fontWeight={700} fill="#FFFFFF" position={[-30,-730]}/>);
+ view.add(<Txt text="사실 평면이라고?" fontFamily="Malgun Gothic" fontSize={79} fontWeight={700} fill="#FFD25A" position={[-30,-625]}/>);
+ view.add(<Txt text={()=>state()===5?'데드셀 · 실제 플레이':state()<2?(state()===0?'노멀 맵 끔 · 같은 방향':'노멀 맵 켬 · 픽셀마다 다른 방향'):'Normal Map · 노멀 맵'} fontFamily="Malgun Gothic" fontSize={34} fontWeight={700} fill="#73D7CD" position={[-185,-480]}/>);
+ view.add(<Txt text={()=>state()===5?'실제 게임 화면':'우리 Unity 구현'} fontFamily="Malgun Gothic" fontSize={34} fill="#B8C3BC" position={[305,-480]}/>);
+ view.add(<Txt text="내부 시각 확인 · 새 음성/자막 정렬 전" fontFamily="Malgun Gothic" fontSize={29} fill="#B8C3BC" position={[0,470]}/>);
+ yield* t(31.6,31.6,linear);
+});
