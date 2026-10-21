@@ -1,47 +1,62 @@
 {
-  "updatedAt": "2026-10-21T17:00:39.193918+00:00",
+  "updatedAt": "2026-10-21T17:20:08.576049+00:00",
   "stage": "source-restoration-and-baseline-render",
   "active": [
     "M05",
     "M06",
-    "M07"
+    "M09"
   ],
   "ready": [],
-  "blocked": [],
-  "nextAction": "Check jobs without duplicating. M05: review current gameplay + original code outputs, finish missing visual improvements, assemble.py M05 then technical-qa.py M05; manually inspect changing pixels at 1080p and 375px before visual-review.json passed. M06: normalize explanations and restore gameplay after jobs finish. M07-M20: original sources restored in sequential job; inspect and polish as needed. FHD-unavailable source rows are not completed. M13/M14 two addition source files are missing on this checkout and have no exact-path Git history: recover from original retained code/backup or reconstruct their existing visuals using approved content and baseline review pixels; do not rewrite narration. All original private uploads remain untouched.",
+  "blocked": [
+    "M07",
+    "M08",
+    "M09",
+    "M10",
+    "M11",
+    "M12",
+    "M17",
+    "M13",
+    "M14"
+  ],
+  "nextAction": "Do not duplicate or kill the three jobs. Once M05 restoration finishes, apply polish-gameplay-overlays.py M05 --apply (after GPU/CPU heavy render queue clears), inspect all changed guides at1080p/375px incl GA06 and remaining scenes, assemble.py M05 then technical-qa.py M05. M06 similar after direct review. All original audio/order preserved. M07-M20 base explanation restoration job continues. Missing polygons modules need restoration. No upload.",
   "automationId": "16",
   "audioRecovered": 16,
   "jobs": [
     {
-      "sessionId": 74486,
-      "job": "restore-quaternion.py M06",
-      "log": "projects/game-math-quaternion-calculations-v3/production/local/private-polish-v1/manim-*.log"
-    },
-    {
-      "sessionId": 64619,
-      "job": "recover-youtube-sources.py M07..M20",
-      "log": "shared/output/private-game-math-polish-20261022/download-*.log"
-    },
-    {
       "sessionId": 21679,
-      "job": "restore-quaternion-gameplay.py M05",
-      "log": "projects/game-math-quaternion-foundations-v3/production/local/private-polish-v1/gameplay-*.log"
+      "pid": 91868,
+      "job": "restore-quaternion-gameplay.py M05"
+    },
+    {
+      "sessionId": 20412,
+      "pid": 29516,
+      "job": "restore-quaternion-gameplay.py M06"
     },
     {
       "sessionId": 24344,
-      "job": "restore-lessons.py M07 M08 M09 M10 M11 M12 M15 M16 M17 M18 M19 M20",
-      "log": "per-project production/local/private-polish-v1/manim-*.log"
+      "pid": 42724,
+      "job": "restore-lessons.py M07 M08 M09 M10 M11 M12 M15 M16 M17 M18 M19 M20"
     }
   ],
   "completedJobs": [
     "M05 33 explanations rendered and normalized",
     "M05-M20 compressed original audio recovered; no TTS",
-    "M05-M06 all five original FHD-or-higher gameplay sources restored"
+    "M05-M06 all five original FHD-or-higher gameplay sources restored",
+    "M06 32 explanations rendered; normalization active",
+    "M05-M20 all bilingual caption cues/words restored at current fixed geometry",
+    "Scope/restoration committed and remote SHA verified: bd646cc0162b371666853ef05f8f8f73d17c923b",
+    "M06 explanation normalization finished",
+    "M07 and M08 explanation source renders complete; normalization pending",
+    "Publisher recovery complete: Tiny Glade2 / shapez2 two / Dorfromantik FHD restored",
+    "Big Walk transient download failure repaired; FHD decoded",
+    "M05 all33 explanation scenes sampled with actual captions; 52gameplay samples inspected. GA06 missing guide during spoken cue identified and manual source anchors authored; new larger-label overlay draft created, full repair application/QA pending"
   ],
   "sourceIssues": {
     "ZFGdubPhasM": "Available formats verified: maximum 1280x720; find original FHD counterpart, no upscale exception assumed",
     "otherDownloads": "Inspect source-restoration-results.json and exact logs; do not repeat unchanged failures",
-    "nonYoutubeSources": "Resolve original URLs from existing source records and official presskit/Steam metadata"
+    "nonYoutubeSources": "Resolve original URLs from existing source records and official presskit/Steam metadata",
+    "resolutionQuestion": "Pending async user choice for same-game/action FHD replacement versus a one-off legacy-source exception; no answer yet."
   },
-  "reviewBoundary": "All16 may accumulate locally, but none are marked ready until internal checks pass. Do not upload, delete, publish or start beyond M20."
+  "reviewBoundary": "All16 may accumulate locally, but none are marked ready until internal checks pass. Do not upload, delete, publish or start beyond M20.",
+  "gitIndexFollowup": "After other app index.lock disappears, synchronize only syncWhenUnlocked paths in shared/output/private-game-math-polish-20261022/scope-restoration-git-receipt.json using git reset -q HEAD -- <exact paths>. Compare foreign index entries before/after. Do not remove lock or terminate unrelated app git diff. This is index bookkeeping only: commit and push already succeeded."
 }

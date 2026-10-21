@@ -3,16 +3,22 @@ import datetime,html,subprocess
 from polish_common import *
 now=datetime.datetime.now(datetime.timezone.utc).isoformat();q=read(B/'queue.json');w=read(R/'shared/publishing/video-worklist.json');rows={r['id']:r for r in w['rows']}
 table=[]
+blockers=read(B/'source-blockers.json') if (B/'source-blockers.json').exists() else {}
 for entry in q['entries']:
  e=Episode(entry['id']);audio=e.H/'restoration.json';clips=e.H/'explanation-restoration.json';game=e.H/'gameplay-restoration.json';qa=e.H/'technical-qa.json';visual=e.H/'visual-review.json'
  n=len(read(clips)['scenes']) if clips.exists() else 0;ng=len(read(game)['scenes']) if game.exists() else 0
  total=sum(s['classification']=='explanation' for s in e.T['scenes']);actual=len(e.T['scenes'])-total
  # This positive status requires manual, version-bound visual review evidence.
  ready=False
- if qa.exists() and visual.exists():
-  v=read(visual);ready=v.get('status')=='passed' and v.get('captionedSha256')==sha(e.D/f'{e.slug}.captioned.mp4')
+ if qa.exists() and visual.exists() and (e.D/f'{e.slug}.captioned.mp4').exists():
+  v=read(visual);digest=sha(e.D/f'{e.slug}.captioned.mp4')
+  technical=next((x for x in read(qa).get('outputs',[]) if x.get('kind')=='captioned'),{})
+  ready=v.get('status')=='passed' and v.get('captionedSha256')==digest and technical.get('sha256')==digest and technical.get('fullDecode') is True
  status='검수대기' if ready else (f'설명 {n}/{total} · 게임 {ng}/{actual} 복원' if n or ng else ('기존 음성 복구 · 화면 복원 대기' if audio.exists() else '원본 복구 대기'))
+ issue=blockers.get(e.id)
+ if issue and not ready:status+=' · '+issue['shortStatus']
  entry.update(status='ready-for-human-review' if ready else 'production-in-progress',audioRecovered=audio.exists(),explanationsRestored=n,explanationCount=total,gameplayRestored=ng,actualSceneCount=actual,technicalQaComplete=qa.exists(),humanReview='pending')
+ if issue:entry['sourceBlocker']=issue
  row=rows[e.id]['privatePolish'];row.update(status=status,sourceMaster=rel(audio) if audio.exists() else row['sourceMaster'],renderComplete=(e.H/'outputs.json').exists(),technicalQaComplete=qa.exists(),humanReview='수정본 검수 전')
  link=f'<a href="../{e.slug}-private-polish/index.html">검수 영상</a>' if ready else '제작 중'
  table.append(f'<tr><td>{e.id}</td><td>{html.escape(entry["title"])}</td><td>{status}</td><td>{link}</td></tr>')

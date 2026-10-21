@@ -15,7 +15,20 @@ real=Path(git('rev-parse','--git-path','index').decode().strip());real=real if r
 shutil.copy2(real,work/'index-before.bin');before=git('ls-files','--stage','-z')
 staged=set(git('diff','--cached','--name-only').decode().splitlines())
 allowed_shared={'shared/publishing/video-worklist.json','shared/publishing/video-production-control.json','docs/VIDEO_WORKLIST.md'}
-assert not (staged & set(paths) - allowed_shared),'Independent staging on a non-shared owned path'
+def index_entries(data):return {x.split(b'\t',1)[1].decode():x for x in data.split(b'\0') if x}
+# A previous successful private-index commit may still await real-index sync
+# because another application owns index.lock. Accept only byte-identical
+# pre-commit entries for those exact recorded paths; never adopt new staging.
+pending=set();current_entries=index_entries(before)
+for receipt in c.O.glob('*-git-receipt.json'):
+ d=c.read(receipt)
+ if not d.get('syncWhenUnlocked') or not d.get('privateIndexWork'):continue
+ backup=c.R/d['privateIndexWork']/'index-before.bin'
+ if not backup.exists():continue
+ old_entries=index_entries(git('ls-files','--stage','-z',env=dict(os.environ,GIT_INDEX_FILE=str(backup))))
+ for path in d['syncWhenUnlocked']:
+  if current_entries.get(path)==old_entries.get(path):pending.add(path)
+assert not (staged & set(paths) - allowed_shared - pending),'Independent staging on a non-shared owned path'
 env=dict(os.environ,GIT_INDEX_FILE=str(work/'index'));git('read-tree',base,env=env)
 git('add','--',*paths,env=env)
 def head(path):return git('show',base+':'+path).decode('utf8')
@@ -66,11 +79,18 @@ assert git('rev-parse','HEAD').decode().strip()==base,'Concurrent commit; rerun 
 git('commit','-m',c.read(c.O/(unit+'-commit.json'))['message'],env=env)
 commit=git('rev-parse','HEAD').decode().strip()
 # Leave the existing staged shared entries intact. Sync only unstaged owned entries.
-sync=[p for p in paths if p not in staged]
-if sync:git('reset','-q','HEAD','--',*sync)
-def foreign(data):return [x for x in data.split(b'\0') if x and x.split(b'\t',1)[1].decode() not in sync]
+sync=[p for p in paths if p not in staged or p in pending]
+sync_done=[];sync_status='complete'
+if sync:
+ if real.with_name(real.name+'.lock').exists():sync_status='pending: existing index.lock preserved'
+ else:
+  try:git('reset','-q','HEAD','--',*sync);sync_done=sync
+  except RuntimeError as error:
+   if 'index.lock' not in str(error):raise
+   sync_status='pending: concurrent index lock preserved'
+def foreign(data):return [x for x in data.split(b'\0') if x and x.split(b'\t',1)[1].decode() not in sync_done]
 assert foreign(before)==foreign(git('ls-files','--stage','-z'))
 branch=git('branch','--show-current').decode().strip();git('push','origin','HEAD:refs/heads/'+branch)
 remote=git('ls-remote','origin','refs/heads/'+branch).decode().split()[0];assert remote==commit
-c.save(c.O/(unit+'-git-receipt.json'),dict(commit=commit,remote=remote,paths=sorted(changed),foreignIndexPreserved=True))
+c.save(c.O/(unit+'-git-receipt.json'),dict(commit=commit,remote=remote,paths=sorted(changed),foreignIndexPreserved=True,privateIndexWork=work.relative_to(c.R).as_posix(),realIndexSync=sync_status,syncWhenUnlocked=[] if sync_done==sync else sync))
 print(json.dumps({'commit':commit,'remote':remote,'files':len(changed),'foreignIndexPreserved':True}))
