@@ -3,11 +3,14 @@ const root = path.resolve(__dirname, '../../..');
 const puppeteer = require(path.join(root, 'motion-canvas/node_modules/puppeteer'));
 const {spawnSync} = require('node:child_process');
 const slug = 'vampire-survivors-d2-copyright';
-const local = path.join(__dirname, 'local');
+const local = path.join(__dirname, process.env.YAMYAM_D2_LOCAL || 'local');
 const sha = p => crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const sample = process.argv.includes('--sample');
-const jobs = sample ? [{id:'preflight',name:'vs-d2-preflight-v2',frames:480,route:`/src/projects/${slug}/preflight-project.ts`}]
+const allJobs = sample ? [{id:'preflight',name:'vs-d2-preflight-v2',frames:480,route:`/src/projects/${slug}/preflight-project.ts`}]
   : JSON.parse(fs.readFileSync(path.join(local, 'diagrams.json'), 'utf8')).jobs;
+const only = process.argv.find(x=>x.startsWith('--only='))?.slice(7);
+const jobs = allJobs.filter(x=>!only || x.id===only);
+if (!jobs.length) throw Error('No matching owned diagram job');
 const assertSelected = () => {
   const c = JSON.parse(fs.readFileSync(path.join(root, 'shared/publishing/video-production-control.json'), 'utf8').replace(/^\uFEFF/, ''));
   if (c.selectedVideo !== slug || !c.newProductionAuthorization.fullProductionAuthorized) throw Error('Selected production changed');
@@ -23,7 +26,7 @@ async function main() {
       const output = path.join(root,'shared/output/motion-canvas',job.name+'.mp4');
       const receipt = path.join(local,job.name+'.render.json');
       const sceneRoute=job.route.replace(/-project\.ts$/,'.tsx');
-      const signature = {job,visualsSha256:sha(path.join(root,`motion-canvas/src/projects/${slug}/visuals.tsx`)),sceneSha256:sha(path.join(root,'motion-canvas',sceneRoute.slice(1))),entrySha256:sha(path.join(root,'motion-canvas',job.route.slice(1)))};
+      const signature = {job,visualsSha256:sha(path.join(root,`motion-canvas/src/projects/${slug}/${job.visualModule || 'visuals.tsx'}`)),sceneSha256:sha(path.join(root,'motion-canvas',sceneRoute.slice(1))),entrySha256:sha(path.join(root,'motion-canvas',job.route.slice(1)))};
       if (fs.existsSync(output) && fs.existsSync(receipt)) {
         const old=JSON.parse(fs.readFileSync(receipt,'utf8'));
         if (JSON.stringify(old.signature)===JSON.stringify(signature) && old.sha256===sha(output)) {console.log('Reused',job.name);continue;}

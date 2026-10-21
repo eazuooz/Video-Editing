@@ -1,22 +1,23 @@
+import os
 """Local drafts only. This script never calls a platform or uploads media."""
 from pathlib import Path
 import json,hashlib
-R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/'production/local';D=P/'publishing';D.mkdir(exist_ok=True)
+R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/('production/'+os.environ.get('YAMYAM_D2_LOCAL','local'));D=P/'publishing';D.mkdir(exist_ok=True)
 def rd(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def wr(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def tm(s):m,s=divmod(round(s),60);h,m=divmod(m,60);return f'{h}:{m:02}:{s:02}' if h else f'{m:02}:{s:02}'
 t=rd(L/'timing.json');defaults=rd(R/'shared/publishing/youtube-defaults.json')
-titles=[{'ko':'재미있으면 괜찮을까? 뱀파이어 서바이버 vs D2 서바이버','en':'Does Fun Make It Okay? Vampire Survivors vs D2 Survivors','support':'Opening viewer question; gameplay/growth comparison followed by expression/permission distinctions and final creator question.'},{'ko':'규칙을 닮으면 표절일까? 디아블로 팬게임이 던진 질문','en':'Is a Similar Rule Plagiarism? The Question Behind a Diablo Fan Game','support':'Paragraphs31–43 distinguish gameplay rules, expression, creative combination and permissions without declaring a verdict.'},{'ko':'무료 팬게임이라면 괜찮을까? D2 서바이버를 보는 두 기준','en':'Is a Free Fan Game Okay? Two Ways to Look at D2 Survivors','support':'Paragraphs39–50 distinguish free access from permission and enjoyment from rights evaluation.'}]
-chaptersKo=['재미와 권리, 두 질문','뱀파이어 서바이버와 매직 서바이벌','강해지는 경험의 설계','디아블로의 직업과 장비가 만나면','재미와 완성도는 별개','규칙·표현·이용허락 구분','같은 게임, 서로 다른 평가','팬게임의 가능성과 책임','내가 원래 게임의 개발자라면']
-chaptersEn=['Two questions: fun and rights','Vampire Survivors and Magic Survival','Designing the feeling of power','Diablo classes and equipment','Fun versus polish','Rules, expression and permission','Different standards for the same game','Fan games: possibilities and responsibility','If you were the original developer']
-ko='''디아블로 2의 직업과 장비가 서바이버류 전투를 만나면 어떤 재미가 생길까요?
-Vampire Survivors, Magic Survival, 비공식 팬게임 D2 Survivors의 실제 장면을 비교하고, 규칙의 영향·구체적인 표현·자산 이용·이용허락을 나눠 살펴봅니다.
-무료 배포와 정품 보유가 왜 이용허락과 다른 질문인지, 2026년10월21일 확인한 프로젝트 고지와 관련 자료를 바탕으로 설명합니다. 특정 게임의 침해 여부를 확정한 판결로 소개하지 않습니다.
+titles=[{'ko':'AI로 만들면 다 내 게임일까? D2 서바이버와 저작권','en':'Does AI Make It All Yours? D2 Survivors and Copyright','support':'Paragraphs2–4 verify Claude-assisted development;30,38,55,57–59 distinguish working code from third-party asset permission and responsible release.'},{'ko':'게임은 만들었는데, 공개해도 될까? AI 개발과 저작권','en':'You Built a Game. Can You Publish It? AI Development and Copyright','support':'Paragraphs30,38,39–44 and55 explain actual asset origins, permission and the limits of free fan-project notices.'},{'ko':'AI가 코드를 짜줘도 해결되지 않는 것 — 게임과 저작권','en':'What AI-Written Code Does Not Settle: Games and Copyright','support':'Paragraphs38 and55 separate newly written code from existing art/music, followed by the developer/creator perspectives in59.'}]
+chaptersKo=['AI로 만들면 공개해도 괜찮을까?','뱀파이어 서바이버와 매직 서바이벌','강해지는 경험의 설계','디아블로의 직업과 장비가 만나면','재미와 완성도는 별개','규칙·표현·이용허락 구분','같은 게임, 서로 다른 평가','AI 개발의 가능성과 권리 확인','공개하기 전에 답해야 할 질문']
+chaptersEn=['Built with AI: ready to publish?','Vampire Survivors and Magic Survival','Designing the feeling of power','Diablo classes and equipment','Fun versus polish','Rules, expression and permission','Different standards for the same game','AI development and rights checks','Questions before publishing']
+ko='''AI로 코드를 완성했다면, 게임을 공개할 준비도 끝난 걸까요?
+Claude 활용을 공개한 비공식 팬게임 D2 Survivors를 Vampire Survivors·Magic Survival과 비교하며, 재미의 구조와 실제 자산의 출처·이용허락을 구분합니다.
+2026년10월21일 확인한 자료를 바탕으로 AI 개발에서 놓치기 쉬운 저작권 확인을 생각해 봅니다. 정확한 AI 모델·작업 비율은 확인되지 않았으며, AI 사용 자체나 특정 게임의 침해 여부를 단정하지 않습니다.
 
 '''
-en='''What happens when Diablo II classes and loot meet survivors-style combat?
-We compare actual footage of Vampire Survivors, Magic Survival and the unofficial fan game D2 Survivors, then distinguish influence on rules, concrete expression, asset use and permission.
-Free distribution, ownership of a copy and permission are separate questions. Project notices and related sources were checked on October21,2026. This video does not present an infringement verdict on D2 Survivors.
+en='''If AI finishes the code, is your game ready to publish?
+We compare D2 Survivors, whose creator shared Claude-assisted development, with Vampire Survivors and Magic Survival, separating fun from asset origins and permissions.
+Sources were checked on October21,2026. Exact AI model and contribution percentages are not established. The video examines copyright-awareness risks without treating AI use itself as infringement or presenting a verdict on D2 Survivors.
 
 '''
 cks=['00:00 '+chaptersKo[0]];ces=['00:00 '+chaptersEn[0]]
@@ -52,6 +53,11 @@ https://d2survivors.lol/
 https://d2survivors.lol/legal/
 D2 Survivors gameplay — Paco / framara:
 https://x.com/framara/status/2110406793000321224
+Creator's Claude/agent workflow, D2 project image and reply:
+https://x.com/framara/status/2110666711867548028
+https://x.com/framara/status/2110673033950081347
+Anthropic commercial terms (output rights do not grant third-party asset permission):
+https://www.anthropic.com/legal/commercial-terms
 D2 Survivors gameplay — MrLlamaSC, “Diablo2VampireSurvivors”:
 https://www.youtube.com/watch?v=KlxyIREH63M
 Vampire Survivors gameplay — The Game Archivist, “Full Game Walkthrough | No Commentary”:

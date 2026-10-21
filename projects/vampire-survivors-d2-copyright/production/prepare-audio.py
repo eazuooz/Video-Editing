@@ -1,10 +1,11 @@
+import os
 """One continuous own-voice take; one hash-cached complete ASR per audio input."""
 from pathlib import Path
 import sys,json,hashlib,subprocess,difflib,re,math
 import numpy as np
 import soundfile as sf
 from PIL import ImageFont
-R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/'production/local'
+R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/('production/'+os.environ.get('YAMYAM_D2_LOCAL','local'))
 sys.path.insert(0,str(R/'qwen3-tts'))
 from align_project_subtitles import align_characters,normalized,partition_fixed
 def rd(p):return json.loads(p.read_text(encoding='utf-8-sig'))

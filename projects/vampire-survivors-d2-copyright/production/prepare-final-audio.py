@@ -1,9 +1,10 @@
+import os
 """Check the actual AAC before either master is muxed; preserve voice continuity."""
 from pathlib import Path
 import json,hashlib,subprocess,re,importlib.util
 import numpy as np
 import soundfile as sf
-R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/'production/local'
+R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/('production/'+os.environ.get('YAMYAM_D2_LOCAL','local'))
 def rd(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def wr(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -42,7 +43,7 @@ voice_stats=m.measure(L/'narration-final-stem.wav','current-voice-stem-loudness'
 assert -17<=float(voice_stats['input_i'])<=-15,voice_stats
 normalized,rate=sf.read(L/'narration-normalized-v2.wav',dtype='float32',always_2d=True)
 assert rate==48000 and np.max(np.abs(voice[96000:96000+len(normalized)]-normalized*10**(report['programGainDb']/20)))<2e-6
-report.update(sourceToNormalized='Constant+5.05dB gain,48k resampling and latency-compensated short lookahead peak limiting; source PCM preserved. No narration sidechain ducking or speech fade/time stretch.',peakLimiter={'limit':.75,'attackMs':2,'releaseMs':50,'autoLevel':False,'latencyCompensation':True},narrationFinalStemMeasurement=voice_stats,encodedMeasurement=stats,encodedSha256=sha(final),encodedAdditionalGainDb=extra,encodedContinuity='all speech-active400ms windows checked at100ms steps; no encoded level drop exceeding1.5dB',encodedContinuityWindows=len(rows),encodedWorstDropDb=min(x['encodedMinusPcmDb'] for x in rows),encodedBestRiseDb=max(x['encodedMinusPcmDb'] for x in rows),noMixerVoiceModulation=True,gameChestCorrection={'beforeVoiceOverBackgroundDb':4.464946246368651,'afterVoiceOverBackgroundDb':report['speechActiveParagraphs'][13]['voiceOverBackgroundDb'],'gameOnlyGainDb':-8,'voiceUnchanged':True},humanWholeListening='pending',humanPronunciation='pending')
+report.update(sourceToNormalized=f"Constant{report['narrationGainDb']:+.3f}dB gain,48k resampling and latency-compensated short lookahead peak limiting; source PCM preserved. No narration sidechain ducking or speech fade/time stretch.",peakLimiter={'limit':.75,'attackMs':2,'releaseMs':50,'autoLevel':False,'latencyCompensation':True},narrationFinalStemMeasurement=voice_stats,encodedMeasurement=stats,encodedSha256=sha(final),encodedAdditionalGainDb=extra,encodedContinuity='all speech-active400ms windows checked at100ms steps; no encoded level drop exceeding1.5dB',encodedContinuityWindows=len(rows),encodedWorstDropDb=min(x['encodedMinusPcmDb'] for x in rows),encodedBestRiseDb=max(x['encodedMinusPcmDb'] for x in rows),noMixerVoiceModulation=True,gameChestCorrection={'beforeVoiceOverBackgroundDb':4.464946246368651,'afterVoiceOverBackgroundDb':report['speechActiveParagraphs'][13]['voiceOverBackgroundDb'],'gameOnlyGainDb':-8,'voiceUnchanged':True},humanWholeListening='pending',humanPronunciation='pending')
 for x in report['speechActiveParagraphs']:x['encodedCheck']='included in complete speech-active window comparison'
 wr(P/'production/audio-review.json',report);wr(L/'mix-build.json',report)
 wr(L/'encoded-continuity-windows.json',{'sourceSha256':sha(source),'aacSha256':sha(final),'windows':rows,'flags':flags})

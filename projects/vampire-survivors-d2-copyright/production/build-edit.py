@@ -1,8 +1,9 @@
+import os
 """Create one measured, source-separated edit. Never loop or retime gameplay."""
 from pathlib import Path
 import json,sys,subprocess,hashlib,math
 from collections import defaultdict
-R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/'production/local';MC=R/'motion-canvas/src/projects'/P.name
+R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/('production/'+os.environ.get('YAMYAM_D2_LOCAL','local'));MC=R/'motion-canvas/src/projects'/P.name
 def rd(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def wr(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()

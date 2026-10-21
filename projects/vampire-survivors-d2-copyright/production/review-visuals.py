@@ -1,3 +1,4 @@
+import os
 """Arrange already-extracted current final frames in temporal order; no re-decode."""
 from pathlib import Path
 import json, math
@@ -5,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 R = Path(__file__).resolve().parents[3]
 P = R / 'projects/vampire-survivors-d2-copyright'
-L = P / 'production/local'
+L = P / ('production/' + os.environ.get('YAMYAM_D2_LOCAL','local'))
 Q = L / 'final-qa'
 rd = lambda p: json.loads(p.read_text(encoding='utf-8-sig'))
 plan = rd(P / 'production/edit-plan.json')

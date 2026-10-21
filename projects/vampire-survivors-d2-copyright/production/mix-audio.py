@@ -1,9 +1,10 @@
+import os
 """Speech-led mix with retained continuous voice and synchronized game excerpts."""
 from pathlib import Path
 import json,sys,subprocess,hashlib,re,importlib.util
 import numpy as np
 import soundfile as sf
-R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/'production/local'
+R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/('production/'+os.environ.get('YAMYAM_D2_LOCAL','local'))
 def rd(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def wr(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()

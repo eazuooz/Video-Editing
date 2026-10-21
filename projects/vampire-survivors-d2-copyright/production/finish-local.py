@@ -1,10 +1,11 @@
+import os
 """Encode the reviewed edit, and collect integrity/pixel evidence for local review."""
 from pathlib import Path
 import json,sys,hashlib,subprocess,re,math
 import numpy as np
 import soundfile as sf
 from PIL import Image,ImageDraw,ImageFont
-R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/'production/local';Q=L/'final-qa';Q.mkdir(exist_ok=True)
+R=Path(__file__).resolve().parents[3];P=R/'projects/vampire-survivors-d2-copyright';L=P/('production/'+os.environ.get('YAMYAM_D2_LOCAL','local'));Q=L/'final-qa';Q.mkdir(exist_ok=True)
 def rd(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def wr(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 def sha(p):
@@ -21,7 +22,7 @@ def encode():
  guard();plan=rd(L/'edit-plan.json');clean=L/'final.clean.mp4';caption=L/'final.captioned.mp4'
  audio=rd(P/'production/final-audio.json');assert audio['status']=='passed-current-encoded-audio-levels-and-continuity' and sha(L/'final-mix.m4a')==audio['sha256']
  if not clean.exists():ff(['-n','-i',L/'visual.mp4','-i',L/'final-mix.m4a','-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','copy','-movflags','+faststart',clean],'encode-clean')
- if not caption.exists():ff(['-n','-i',clean,'-map','0:v:0','-map','0:a:0','-vf',"ass=filename='projects/vampire-survivors-d2-copyright/production/local/captions.ass':fontsdir='projects/vampire-survivors-d2-copyright/production/local/fonts'",'-c:v','libx264','-preset','fast','-crf','18','-g','120','-pix_fmt','yuv420p','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-c:a','copy','-video_track_timescale','60000','-movflags','+faststart',caption],'encode-captioned')
+ if not caption.exists():ff(['-n','-i',clean,'-map','0:v:0','-map','0:a:0','-vf',f"ass=filename='projects/vampire-survivors-d2-copyright/production/{L.name}/captions.ass':fontsdir='projects/vampire-survivors-d2-copyright/production/{L.name}/fonts'",'-c:v','libx264','-preset','fast','-crf','18','-g','120','-pix_fmt','yuv420p','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709','-c:a','copy','-video_track_timescale','60000','-movflags','+faststart',caption],'encode-captioned')
  wr(P/'production/master-files.json',{'status':'encoded-awaiting-integrity-and-content-review','clean':{'path':clean.relative_to(R).as_posix(),'sha256':sha(clean)},'captioned':{'path':caption.relative_to(R).as_posix(),'sha256':sha(caption)},'totalFrames':plan['totalFrames'],'humanReview':'pending','uploadAuthorized':False})
  print('Encoded final pair',flush=True)
 def integrity():
