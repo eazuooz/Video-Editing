@@ -26,6 +26,15 @@ for entry in q['entries']:
  if not ready and not technical_current:
   guide_preflight=e.H/'observed-guide-preflight.json'
   if guide_preflight.exists() and read(guide_preflight).get('status')=='passed-still-preflight':status+=' · 표식 사전 점검 완료'
+ polish_name='conversions-legibility' if e.id=='M08' else 'interpolation-legibility'
+ source_polish=e.H/(polish_name+'-render.json')
+ if source_polish.exists():
+  source_record=read(source_polish);polished=len(source_record.get('scenes',{}))
+  source_review=e.H/(polish_name+'-review.json')
+  source_review_status=read(source_review).get('status','pending') if source_review.exists() else 'pending'
+  detail={'renderedScenes':polished,'sceneCount':total,'renderManifest':rel(source_polish),'sourceVisualReview':source_review_status,'isFullMaster':False}
+  entry['explanationPolish']=detail;rows[e.id]['privatePolish']['explanationPolish']=detail
+  if not ready:status+=f' · 설명 보강 {polished}/{total}'
  issue=blockers.get(e.id)
  if issue and not ready:status+=' · '+issue['shortStatus']
  entry.update(status='ready-for-human-review' if ready else 'production-in-progress',audioRecovered=audio.exists(),explanationsRestored=n,explanationCount=total,gameplayRestored=ng,actualSceneCount=actual,technicalQaComplete=technical_current,humanReview='pending')
