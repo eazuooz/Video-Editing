@@ -7,6 +7,7 @@ assert guide['timelineSha256']==sha(e.P/'production/timeline.json')
 assert preflight['status']=='passed-still-preflight'
 assert preflight['assSha256']==guide['globalAssSha256']==sha(R/guide['globalAss'])
 assert guide['planSha256']==sha(R/guide['plan'])
+assert preflight['planSha256']==guide['planSha256']
 old=read(e.H/'observed-ui-clearance.json') if (e.H/'observed-ui-clearance.json').exists() else {}
 folder=e.O/'ui-clearance';folder.mkdir(exist_ok=True);inputs={};receipts={}
 vf='scale=1600:900:flags=lanczos,pad=1920:1080:160:0:black,setsar=1'

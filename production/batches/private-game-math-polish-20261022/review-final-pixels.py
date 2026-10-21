@@ -26,6 +26,11 @@ if (e.H/'observed-guides.json').exists():
   for frame in range(round(a*60),round(z*60)+1,6):add(slot['start']+frame/60,'observed-guide-'+guide['scene'])
   for t in [a-1/60,z-1/60,z+1/60]:add(slot['start']+t,'guide-boundary-'+guide['scene'])
 add(.5,'branding');add(e.T['seconds']-8,'membership');add(e.T['seconds']-.2,'ending')
+if (e.H/'restored-polygon-guides.json').exists():
+ for run in read(e.H/'restored-polygon-guides.json')['visibleIntervals']:
+  slot=next(x for x in e.T['scenes'] if x['id']==run['scene'])
+  for frame in range(round(run['start']*60),round(run['end']*60)+1,6):add(slot['start']+frame/60,'restored-polygon-guide-'+slot['id'])
+  for t in [run['start']-1/60,run['end']+1/60]:add(slot['start']+t,'restored-guide-boundary-'+slot['id'])
 font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',15);tiles=[];records=[]
 for i,(t,reasons) in enumerate(sorted(points.items())):
  dst=out/f'{i:04d}.png';receipt=dst.with_suffix('.json');sig={'masterSha256':digest,'seconds':t,'reasons':reasons}

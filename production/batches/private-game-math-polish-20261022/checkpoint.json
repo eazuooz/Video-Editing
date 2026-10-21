@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-21T19:57:38.947002+00:00",
+  "updatedAt": "2026-10-21T20:13:43.860522+00:00",
   "stage": "original-restoration-and-serialized-visual-polish",
   "active": [
     "M05",
@@ -22,7 +22,7 @@
     "M12",
     "M17"
   ],
-  "nextAction": "Do not duplicate or terminate existing finite queues. Original explanation and FHD-game restoration is finished. PID46192 renders/normalizes polygon baselines. PID9600 follows with M05 spacing repair and M15 guides; PID43600 follows with M06; PID60248 M16 camera labels/guides; PID41764 M18; PID29088 M19; PID67440 M20. M19/M20 preserved-module diagram/readability wrappers and actual-source guides passed still preflight, but no final moving visual QA yet. Workers create final encoded samples and never auto-pass visuals. Prepare M13/M14 observed guides while polygon restoration proceeds; then inspect finished encoded outputs. M07-M12/M17 await the existing unanswered FHD-source decision. No upload or work beyondM20.",
+  "nextAction": "Do not duplicate or terminate finite queues. Original explanation and available FHD game restoration, including polygons, is finished. PID9600 encodes M05 spacing repair then M15 guides; PID43600 M06; PID60248 M16; PID41764 M18; PID29088 M19; PID67440 M20; PID34688 M13/M14 original polygon overlays. All guides passed current still preflight. Final encoded moving/pixel QA is still pending; workers only create evidence and never auto-pass visuals. Inspect each completed encode before local-review-ready status. M07-M12/M17 await existing unanswered FHD-source decision. No upload or work beyondM20.",
   "automationId": "16",
   "audioRecovered": 16,
   "jobs": [
@@ -38,20 +38,20 @@
     },
     {
       "pid": 46192,
-      "updatedAt": "2026-10-21T19:57:25.122494+00:00",
-      "stage": "rendering-original-clock",
-      "episode": "M14",
-      "scene": "18",
+      "updatedAt": "2026-10-21T20:01:11.893710+00:00",
+      "stage": "source-restoration-finished-annotation-and-final-review-pending",
       "statusFile": "production/batches/private-game-math-polish-20261022/polygon-restoration-job.json"
     },
     {
       "pid": 9600,
-      "updatedAt": "2026-10-21T18:47:55.256430+00:00",
-      "stage": "waiting-for-existing-render-chain",
+      "updatedAt": "2026-10-21T20:01:19.767773+00:00",
+      "stage": "running",
       "dependencies": {
         "85416": "continue-restoration.py",
         "46192": "restore-polygons.py"
       },
+      "episode": "M05",
+      "script": "assemble.py",
       "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-job.json"
     },
     {
@@ -98,6 +98,15 @@
         "29088": "finish-visual-repairs.py"
       },
       "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M20-job.json"
+    },
+    {
+      "pid": 34688,
+      "updatedAt": "2026-10-21T20:13:04.177937+00:00",
+      "stage": "waiting-for-existing-render-chain",
+      "dependencies": {
+        "67440": "finish-visual-repairs.py"
+      },
+      "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M13-M14-job.json"
     }
   ],
   "completedJobs": [
@@ -132,7 +141,10 @@
     "M18 original7explanation/3game scenes reviewed;6observed guides across3game scenes prepared,9current captioned preflight frames inspected. Full encode/actual moving review pending.",
     "All original explanation sources and available FHD original gameplay cuts have completed restoration; seven legacy low-resolution decisions remain blocked.",
     "M19 all40 explanation/32game-source samples reviewed;30 enlarged diagram/code states and16 guide states passed still preflight. Four source-observed guides; two fast/occluded game scenes deliberately unmarked. PID29088 queues original-clock visual wrapper and full QA afterM18.",
-    "M20 all32 explanation/38game-source samples reviewed;24 current dark UV diagram/formula states and20 guide states passed still preflight. Five source-observed guides and08 UI inset. Correct original dark UV module retained; wrong white draft rejected before production. PID67440 queues original-clock wrapper and full QA afterM19."
+    "M20 all32 explanation/38game-source samples reviewed;24 current dark UV diagram/formula states and20 guide states passed still preflight. Five source-observed guides and08 UI inset. Correct original dark UV module retained; wrong white draft rejected before production. PID67440 queues original-clock wrapper and full QA afterM19.",
+    "M13/M14 original explanation restoration finished:32 scenes rendered/normalized without newTTS; existing game cuts also restored.",
+    "M13 all50 actual-source samples and92 current overlay states directly inspected; M14 all58 actual-source samples and82 overlay states inspected. Original editable red/blue/yellow tracks reused; labels/notes enlarged and bottom UI protected. M13QG08 exact first red gate8.5s retained from original review evidence.",
+    "M13/M14 still preflight passed. PID34688 queues final composition/technicalQA/pixel extraction after existing M20 job; no final visual approval or human approval granted."
   ],
   "sourceIssues": {
     "ZFGdubPhasM": "Available formats verified: maximum 1280x720; find original FHD counterpart, no upscale exception assumed",
@@ -163,6 +175,16 @@
     "M20": {
       "diagram": "projects/game-math-normal-transform-uv/production/private-polish-v1/mesh-legibility-preflight.json",
       "guides": "projects/game-math-normal-transform-uv/production/private-polish-v1/observed-guide-preflight.json"
+    },
+    "M13": {
+      "guides": "projects/game-math-polygon-centers-v2/production/private-polish-v1/observed-guide-preflight.json",
+      "source": "projects/game-math-polygon-centers-v2/production/private-polish-v1/restored-source-review-actual.json",
+      "plan": "projects/game-math-polygon-centers-v2/production/private-polish-v1/restored-polygon-guides.json"
+    },
+    "M14": {
+      "guides": "projects/game-math-polygon-partition-v2/production/private-polish-v1/observed-guide-preflight.json",
+      "source": "projects/game-math-polygon-partition-v2/production/private-polish-v1/restored-source-review-actual.json",
+      "plan": "projects/game-math-polygon-partition-v2/production/private-polish-v1/restored-polygon-guides.json"
     }
   }
 }
