@@ -24,12 +24,12 @@ export default makeScene2D(function*(view){
  picture.add(<Img src={()=>PREFLIGHT?ROOT+'capture-preview-v2/'+sparse[section().id]+'.png':ROOT+'capture-full-v1/frames/frame-'+String(frame()).padStart(5,'0')+'.png'} width={1000} height={1000}/>);
  // These leaders reference our actual GPU probe and the real TBN/light directions.
  const normalLabels=new Node({opacity:()=>is('normal-definition','shared-normal','pixel-normal','light-facing','light-sideways')&&!definition()?1:0});world.add(normalLabels);
- for(const [key,text,colour,x,y] of [['geometryNormalScreenEnd','원래 면의 방향',C.white,-275,210],['normalScreenEnd','빛 계산 방향',C.green,-250,275],['lightScreenEnd','광원 쪽 방향',C.yellow,260,210]] as const){
+ for(const [key,text,colour,x,y] of [['geometryNormalScreenEnd','원래 면의 방향',C.white,-275,175],['normalScreenEnd','빛 계산 방향',C.green,-250,240],['lightScreenEnd','광원 쪽 방향',C.yellow,260,175]] as const){
   const visible=()=>key==='geometryNormalScreenEnd'||!is('shared-normal','normal-definition');
   normalLabels.add(<Line points={()=>[[x,y-22],point(probe()?.[key])]} stroke={colour} lineWidth={3} end={()=>visible()?clamp((elapsed()-.15)/.45):0}/>);
   normalLabels.add(<Txt text={key==='geometryNormalScreenEnd'?'원래 면의 방향':text} position={[x,y]} fontFamily={FONT} fontSize={36} fontWeight={700} fill={colour} opacity={()=>visible()?1:0}/>);
  }
- const lightValue=new Node({position:[260,285],opacity:()=>is('light-facing','light-sideways')?1:0});world.add(lightValue);
+ const lightValue=new Node({position:[260,250],opacity:()=>is('light-facing','light-sideways')?1:0});world.add(lightValue);
  lightValue.add(<Rect width={440} height={112} fill="#000000"/>);
  lightValue.add(<Txt text="이 빛을 받는 정도" fontFamily={FONT} fontSize={34} fill={C.muted} position={[0,-27]}/>);
  lightValue.add(<Txt text={()=>Math.round((probe()?.gpuNDotL??0)*100)+'%'} fontFamily={FONT} fontSize={52} fontWeight={700} fill={()=>is('light-facing')?C.green:C.red} position={[0,27]}/>);
