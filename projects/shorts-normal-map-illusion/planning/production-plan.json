@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 2,
+  "slug": "shorts-normal-map-illusion",
+  "revision": "normal-map-v1",
+  "status": "production",
+  "centralQuestion": "How can a flat game surface appear bumpy under moving light while its mesh remains flat?",
+  "claim": "Normal Mapping changes per-pixel shading directions without changing mesh geometry/silhouette; RGB normaldata is not the visible base colour.",
+  "sourceReference": {
+    "path": "C:/Users/1/Downloads/유니티 로우폴리 에셋/videoplayback (2).mp4",
+    "sha256": "6fd7b526b967f4f11e48180f6b6eb7067b645e282589569781865a782cb7df02",
+    "role": "research-reference-only",
+    "productionReuse": false,
+    "analysis": "sources/reference-analysis.json"
+  },
+  "learningOrder": [
+    "Hero bumpywall hook",
+    "Flatimage sharednormal response",
+    "Define normal as surfaceperpendicular direction",
+    "Encode per-pixel shadingdirections in RGBnormalmap",
+    "Lightalignment produces differentpixelbrightness; sameposition normaloff/on",
+    "3Dcharacter to2Dcolour/normalimage workflow, independently rebuilt; DeadCells developer evidence if adopted",
+    "Applysame normalmapping toflat3Dwall; actual mesh/silhouette unchanged",
+    "Closeon sameherowall and edgeview answeringhook"
+  ],
+  "corrections": [
+    "Do not claim all 2D pixels alwayshave same illumination; distinguish normaldirection fromposition/lightdistance/basecolour.",
+    "Do not imply normalmapping displacesvertices or changes outline.",
+    "Do not claim allDeadCellsbackground normalsare automatically3Dbaked, allversionssame or wholegame3D."
+  ],
+  "tools": {
+    "primary": "Unity6000.6.0f1 isolatedBuilt-in actualshader implementation",
+    "compositing": "MotionCanvas progressiveguides/labels/actualtraceanchors",
+    "excluded": [
+      "Blender"
+    ],
+    "reason": "Actual normaldata sampling,TBN lighting and unchangedgeometry are the content; noUEexclusivefeature required."
+  },
+  "testbedScene": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+  "sceneSaveStatus": "saved-existing-files",
+  "techniqueVariants": [
+    "normal-strength0",
+    "normal-strength1",
+    "normal-RGB-data",
+    "geometry-edge-wireframe",
+    "knight-colour-normal-bake-and-2D-relight"
+  ],
+  "implementationLimits": "OurUnityLambertshader implementation and actual own mesh readbacks, not commercialgamebuffers, URPvalidation or measuredperformanceclaim. No arbitraryframecountchanges or displacement.",
+  "previewAuthorization": {
+    "allowed": true,
+    "scope": "CPU scene/assetprep plus finiteGPUleased previewcapture only; inspectbefore finalnarration. No fullrender untilrootteachingplan/timelinedone.",
+    "preserveForeignProcesses": true
+  },
+  "screenShare": {
+    "profile": "shorts-technical",
+    "fixedRatio": null,
+    "measured": "pending",
+    "classification": "Self-authored actualUnityimplementation remains explanationfootage; do not pretend independentcommercialgameplay."
+  },
+  "scenes": [],
+  "terminology": [
+    {
+      "ko": "노멀 매핑",
+      "en": "Normal Mapping",
+      "meaning": "미세한 굴곡을 실제로 추가하는 대신, 조명 계산에 쓰는 표면 방향을 텍스처로 바꾸는 기법."
+    },
+    {
+      "ko": "노멀 맵 / 법선 맵",
+      "en": "Normal Map",
+      "meaning": "각 텍스처 위치에서 조명에 쓸 방향을 담은 데이터 그림. 표면 색이나 높이 사진과 다르다."
+    },
+    {
+      "ko": "표면 법선",
+      "en": "Surface Normal",
+      "meaning": "기하학적 표면에 수직인 방향. 셰이딩에서는 이 방향을 보간하거나 노멀 맵으로 바꿔 조명을 계산한다."
+    },
+    {
+      "ko": "접선 공간",
+      "en": "Tangent Space",
+      "meaning": "표면의UV방향과법선을기준으로정의한로컬방향기준."
+    }
+  ],
+  "assetRecords": [
+    {
+      "id": "our-procedural-brick-normal",
+      "source": "newUnityNormalMapDemo code",
+      "license": "Originalprojectcode",
+      "purpose": "Oneflatwall, changedshadingnormals only; noheight/displacementruntimegeometry"
+    },
+    {
+      "id": "kaykit-knight",
+      "path": "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/Knight.fbx",
+      "guid": "274e91da352f3104c8313348b836daf7",
+      "sha256": "b25e35cc7eaaa3c7c103f10a4f41fde1cbd81936fede9aa9ae4efbd29d40ba1b",
+      "source": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "creator": "KayLousberg",
+      "license": "CC0",
+      "licensePath": "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/License.txt",
+      "use": "Ownonepose3D→colour/normalRGBA→actualflatSpritequadrelighting; notDeadCellsassetorbuffer",
+      "libraryConsulted": [
+        "shared/assets/unity-asset-library.json",
+        "docs/UNITY_ASSET_LIBRARY.md"
+      ],
+      "notAdoptedLibraryProduct": "073rightsverifiedbutclaytexturedoesnotfitbricktestbed; noforceduse"
+    },
+    {
+      "id": "approved-yamyam-cat",
+      "path": "shared/assets/branding/cat-reactions-v1",
+      "states": [
+        "puzzled",
+        "realize",
+        "relief"
+      ],
+      "rights": "OriginalapprovedYamyamCodingidentity",
+      "purpose": "Briefreveal/principle/closingonly, currenttargetandcaptionsprotected"
+    },
+    {
+      "id": "approved-music",
+      "path": "shared/assets/music/incompetech/Pixel-Peeker-Polka-faster.mp3",
+      "creator": "KevinMacLeod",
+      "license": "CCBY4.0",
+      "requiredCredit": "ExactexistingLICENSEtextatabsolutefooterofKO/ENdescription",
+      "purpose": "Continuousapprovedcheerfulbed,music-onlyspeechduck"
+    }
+  ],
+  "speechVisualOverlap": true,
+  "holdDefault": 0,
+  "captionProfile": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 60,
+    "center": [
+      510,
+      1380
+    ],
+    "fontSize": 60,
+    "maxLines": 2,
+    "style": "boxed-white-forest-v1+caption-clause-keyword-v1"
+  },
+  "publicationBoundary": "Localcomplete4outputs finalreview andselectiveGit only; noDrive/YT/nextvideo.",
+  "sourceReadiness": {
+    "fullReferenceAnalyzed": true,
+    "sourceFramesReviewed": 96,
+    "fullSourceAsrRuns": 1,
+    "referenceMediaUsed": false,
+    "primaryEvidence": "sources/research-primary.json",
+    "independentCommercialGameFootage": false,
+    "reason": "No independently reusableFHDDeadCellsrecording secured. The verifiedcharacterworkflow is rebuilt withCC0ourKnight and labelledourimplementation. No commercialrenderingbuffer or togglefabricated.",
+    "actualImplementationPreview": "production/local/capture-preview-v2/contact.jpg",
+    "previewRootReview": "PASS: all 12 actual V2 states inspected at native and 375px. Off-stage Knight removed from edge view; actual geometry/shading/light arrows and three essential texture assets inspected. Final captioned motion review pending.",
+    "sourceFilesMinimum": "Ownactualnative1080x1080enginecaptures; no360prefscaling/reuse"
+  },
+  "sharedAssetPaths": [
+    "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/Knight.fbx",
+    "shared/assets/branding/cat-reactions-v1",
+    "shared/assets/music/incompetech/Pixel-Peeker-Polka-faster.mp3"
+  ],
+  "savedScenes": [
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/01-NormalOff.unity",
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/02-NormalOn.unity",
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/03-NormalRGB.unity",
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/04-Edge.unity",
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/05-KnightSpriteBake.unity",
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity"
+  ],
+  "actualPreviewFacts": {
+    "wallVertices": 4,
+    "wallTriangles": 2,
+    "sameLightOffDot": 0.734,
+    "sameLightOnDot": 0,
+    "movingLightOnDot": 0.932,
+    "valueBasis": "AgentreportedactualGPU normal/dotreadbackwithCPUdotagreement; fullreceiptwilllink",
+    "limits": "Valuesonlyourcontrolledshader; noGameperformanceormeshcountclaim."
+  },
+  "narrationReadiness": {
+    "lines": 12,
+    "clauses": 27,
+    "wholeNarrationReadWithoutHeadings": true,
+    "sourceOrderRetainedAfterHeroTeaser": true,
+    "boundaries": "Ownhero→flatresponse→surfaceNormal→perpixelvectors→RGBmap→brightness→baked2Dcase→3Dwall→edgeanswer",
+    "noAutomaticObservationSilence": true,
+    "actualListeningPending": true,
+    "spokenAliases": {
+      "3D": "쓰리디",
+      "2D": "투디"
+    },
+    "voice": "ApprovedQwen3-TTS-12Hz-1.7B-Base/reference15-35s",
+    "sourcePcm": {
+      "path": "production/local/voice/normal-map-v1.wav",
+      "durationSeconds": 53.36,
+      "sha256": "1d94cad3ff73054fd87f1b5fd67bfc3c80efae4960fd50d46d4c90c459cbfd24",
+      "successfulTtsRuns": 1,
+      "timeStretch": false,
+      "humanListening": "pending"
+    }
+  }
+}

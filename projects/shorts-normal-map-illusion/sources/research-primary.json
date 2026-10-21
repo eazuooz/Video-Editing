@@ -1,0 +1,392 @@
+{
+  "schemaVersion": 1,
+  "slug": "shorts-normal-map-illusion",
+  "stage": "primary research only; noTTS orGPUproduction authorized in this subtask",
+  "researchedAt": "2026-10-21T04:09:27.296348+00:00",
+  "canonicalTerms": [
+    {
+      "ko": "노멀 매핑",
+      "en": "Normal Mapping",
+      "meaning": "미세한 굴곡을 실제로 추가하는 대신, 조명 계산에 쓰는 표면 방향을 텍스처로 바꾸는 기법."
+    },
+    {
+      "ko": "노멀 맵 / 법선 맵",
+      "en": "Normal Map",
+      "meaning": "각 텍스처 위치에서 조명에 쓸 방향을 담은 데이터 그림. 표면 색이나 높이 사진과 다르다."
+    },
+    {
+      "ko": "표면 법선",
+      "en": "Surface Normal",
+      "meaning": "기하학적 표면에 수직인 방향. 셰이딩에서는 이 방향을 보간하거나 노멀 맵으로 바꿔 조명을 계산한다."
+    },
+    {
+      "ko": "접선 공간",
+      "en": "Tangent Space",
+      "meaning": "표면의UV방향과법선을기준으로정의한로컬방향기준."
+    }
+  ],
+  "sources": [
+    {
+      "id": "unity66-normal-map",
+      "url": "https://docs.unity3d.com/6000.6/Documentation/Manual/StandardShaderMaterialParameterNormalMap.html",
+      "publisher": "Unity Technologies",
+      "kind": "primary-engine-documentation",
+      "readSections": [
+        "complete technical body including normals encoding and stone-wall lighting examples"
+      ],
+      "supports": [
+        "normal map stores direction data rather than surface colour",
+        "fine bumps and grooves can affect lighting without added fine mesh detail",
+        "Unity Y+ convention; neutral uncompressed RGB approximately128,128,255"
+      ],
+      "productionMediaAdopted": false
+    },
+    {
+      "id": "unity66-surface-normal",
+      "url": "https://docs.unity3d.com/6000.6/Documentation/Manual/StandardShaderMaterialParameterNormalMapSurfaceNormals.html",
+      "publisher": "Unity Technologies",
+      "kind": "primary-engine-documentation",
+      "readSections": [
+        "normal definition",
+        "same mesh / different normals",
+        "grazing view reveals real polygons"
+      ],
+      "supports": [
+        "normal means the perpendicular surface direction",
+        "shading normals can vary while mesh vertices stay fixed",
+        "silhouette is still geometry"
+      ],
+      "productionMediaAdopted": false
+    },
+    {
+      "id": "unity66-bump-example",
+      "url": "https://docs.unity3d.com/6000.6/Documentation/Manual/SL-SurfaceShaderExamples-NormalMapping.html",
+      "publisher": "Unity Technologies",
+      "kind": "primary-engine-implementation-example",
+      "readSections": [
+        "entire shader example"
+      ],
+      "supports": [
+        "Built-in surface shader assigns unpacked normal texture to SurfaceOutput.Normal",
+        "Lambert lighting example is an actual implementation, not an image overlay"
+      ],
+      "implementationToken": "o.Normal = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));",
+      "productionMediaAdopted": false
+    },
+    {
+      "id": "unity66-mesh-tangent",
+      "url": "https://docs.unity3d.com/6000.6/Documentation/ScriptReference/Mesh-tangents.html",
+      "publisher": "Unity Technologies",
+      "kind": "primary-engine-API-documentation",
+      "readSections": [
+        "description"
+      ],
+      "supports": [
+        "tangent follows UV-U",
+        "binormal is cross(normal,tangent) times tangent.w",
+        "tangent.w must be1 or-1"
+      ],
+      "productionMediaAdopted": false
+    },
+    {
+      "id": "dead-cells-artist-pipeline",
+      "url": "https://www.gamedeveloper.com/production/art-design-deep-dive-using-a-3d-pipeline-for-2d-animation-in-i-dead-cells-i-",
+      "author": "Thomas Vasseur, Motion Twin artist",
+      "published": "2018-01-25",
+      "kind": "primary-developer-authored-article",
+      "fullRelevantArticleRead": true,
+      "scopeRead": "main article paragraphs52–135, including reason, workflow, retakes, reuse and limitations; biography/history not adopted as ours",
+      "sourceParagraphMap": [
+        {
+          "paragraphs": [
+            52,
+            55
+          ],
+          "fact": "Basic pixel-art sheet guides simple3Dmesh+skeleton in3dsMax; low in-game pixel height makes dense modelling unnecessary."
+        },
+        {
+          "paragraphs": [
+            57,
+            62
+          ],
+          "fact": "In-house tool renders low resolution with no antialiasing; pose-to-pose keys and carefully placed intermediate frames shape attacks."
+        },
+        {
+          "paragraphs": [
+            67,
+            73
+          ],
+          "fact": "Each animation frame exports PNG plus its normal map for a basic toon shader."
+        },
+        {
+          "paragraphs": [
+            76,
+            97
+          ],
+          "fact": "Retiming poses, adding armour and reusing models/animations reduce rework."
+        },
+        {
+          "paragraphs": [
+            125,
+            135
+          ],
+          "fact": "Lighting and pixelation tools addressed hand-drawn shading workload; flickering pixels/detail were explicit tradeoffs."
+        }
+      ],
+      "carefulClaim": "3D is part of authoring; the displayed character is exported2Dframes. Do not call the entire running game3D.",
+      "productionMediaAdopted": false,
+      "rights": "Article facts only. Article images/GIFs not licensed for production here."
+    },
+    {
+      "id": "dead-cells-artist-background",
+      "url": "https://www.gamedeveloper.com/production/art-design-deep-dive-giving-back-colors-to-cryptic-worlds-in-i-dead-cells-i-",
+      "author": "Gwenaël Massé, Motion Twin artist",
+      "published": "2018-04-03",
+      "kind": "primary-developer-authored-article",
+      "fullRelevantArticleRead": true,
+      "scopeRead": "main article body46–154; selected normal-map passage145–152",
+      "supports": [
+        "Background normals were painted by hand inPhotoshop after plugin results were unsatisfactory.",
+        "The technique lets2Ddecor react to dynamic lighting."
+      ],
+      "correction": "Do not claim every DeadCells normal map is automatically generated from3D. Characters and backgrounds use different workflows.",
+      "productionMediaAdopted": false
+    },
+    {
+      "id": "dead-cells-dev-interview",
+      "url": "https://80.lv/articles/interview-with-the-developers-of-dead-cells",
+      "author": "Steve Filby / Motion Twin developer answers, interview byKirillTokarev",
+      "published": "2017-06-08",
+      "kind": "primary-developer-interview",
+      "readSections": [
+        "Pixel Art83–85",
+        "Animations87–89"
+      ],
+      "supports": [
+        "2Dbackgrounds plus hand-drawn normals react to torch direction",
+        "characters and monsters are3Dauthoring models rendered into2Dsprites"
+      ],
+      "productionMediaAdopted": false
+    },
+    {
+      "id": "doom3-primary-toggle",
+      "url": "https://github.com/id-Software/DOOM-3/blob/master/neo/renderer/RenderSystem_init.cpp",
+      "publisher": "id Software",
+      "kind": "primary-game-source-code",
+      "symbol": "r_skipBump",
+      "supports": [
+        "Actual DOOM3 source exposes a flat-normal substitution for its bump map."
+      ],
+      "limits": [
+        "This code does not prove that any downloaded gameplay has that setting toggled.",
+        "GPL engine source is not a blanket license for game assets, music or third-party footage."
+      ],
+      "productionMediaAdopted": false
+    },
+    {
+      "id": "plasticine073-publisher-license",
+      "url": "https://emaceart.itch.io/free-plasticine-pbr-material-substance-texture",
+      "creator": "EmaceArt",
+      "kind": "primary-asset-publisher",
+      "readSections": [
+        "What is inside29–34",
+        "License67–71"
+      ],
+      "licenseSummary": "Own personal/commercial projects allowed; no mandatory attribution; no standalone file redistribution/resale or repackaging into anotherassetpack.",
+      "verbatimExcerpt": "free to use in your own projects, personal and commercial alike.",
+      "productionMediaAdopted": false
+    },
+    {
+      "id": "motiontwin-presskit",
+      "url": "https://motiontwin.com/presskit/",
+      "publisher": "Motion Twin",
+      "kind": "primary-game-publisher-presskit",
+      "linkedBy": "https://dead-cells.com/",
+      "readSections": [
+        "Trailers",
+        "Additional Information",
+        "Contact"
+      ],
+      "finding": "Publisher lists official trailers, offers journalists screens/video on request and provides keyart PSDs forYouTube thumbnails. No explicit blanket gameplay monetization or third-party recorder reuse grant found on this page.",
+      "productionMediaAdopted": false,
+      "rightsApproved": false
+    }
+  ],
+  "installedPrimaryShaderEvidence": [
+    {
+      "path": "C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Data/Resources/CGIncludes/Lighting.cginc",
+      "sha256": "bf79f84a152948bbf42b9ccefd9265a1fbd9b1608d6a1c2e28ef2ab5b1e6b1d0",
+      "role": "actual-installed-Unity6000.6.0f1 primary shader implementation",
+      "symbols": [
+        "UnityLambertLight: max(0,dot(normal,lightDir))"
+      ]
+    },
+    {
+      "path": "C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Data/Resources/CGIncludes/UnityCG.cginc",
+      "sha256": "b3eaeccf5d1ead844abb5c1023367ed06a000882089bb46c38e87e385bd28f5e",
+      "role": "actual-installed-Unity6000.6.0f1 primary shader implementation",
+      "symbols": [
+        "UnpackNormal: platform-dependent RG/AG/RGB unpacking"
+      ]
+    },
+    {
+      "path": "C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Data/Resources/CGIncludes/UnityStandardInput.cginc",
+      "sha256": "e141e94e23a667fc85956662e228a6f744586715fef89c2bdf52f9e64980a974",
+      "role": "actual-installed-Unity6000.6.0f1 primary shader implementation",
+      "symbols": [
+        "NormalInTangentSpace:UnpackScaleNormal"
+      ]
+    }
+  ],
+  "plainLearningLogic": [
+    "돌출된듯한평면을빛에비춘다.",
+    "보통한면은같은표면방향을쓰지만노멀맵은위치마다조명용방향을다르게준다.",
+    "같은모델/카메라/색/빛에서노멀맵만끄고켜서음영차이를보인다.",
+    "빛을옮겨어두운부분이따라바뀌는것을보여주어그림자를미리그린그림과구별한다.",
+    "옆면과wireframe으로실제윤곽/정점은그대로임을확인한다.",
+    "DeadCells의검증된제작방식사실과우리자산의3D→sprite+normal독립시연을명확히구분한다."
+  ],
+  "workedExample": {
+    "role": "simpleLambertillustration/implementation, notfullPBRorcommercialgamemeasurement",
+    "equation": "diffuseFactor = max(0,dot(N,L)) forunitN,L",
+    "flatNormal": [
+      0,
+      0,
+      1
+    ],
+    "lightDirection": [
+      0,
+      0,
+      1
+    ],
+    "flatResult": 1,
+    "tiltedNormal": [
+      0.6,
+      0,
+      0.8
+    ],
+    "tiltedResult": 0.8,
+    "meaning": "같은빛이어도조명용표면방향만바뀌면밝기가바뀐다.",
+    "imageDataCaveat": "Conceptual rawRGBdecodes2*c-1; Unityimportednormaltexturesmayberepacked/compressed. UseengineUnpackNormal/UnpackScaleNormalratherthanassumingruntimeRGBchannels."
+  },
+  "importantLimits": [
+    "노멀매핑만으로정점/실루엣/충돌체가늘거나변형되지않는다.",
+    "굴곡의자체가림/옆면깊이/실제돌출기하의투영그림자를만드는기법과구별한다. 노멀에의한음영을실제ShadowMap증거라고부르지않는다.",
+    "HeightMap/ParallaxMapping/Displacement/Tessellation/AO와같은기능으로혼동하지않는다. 이비교는해당기능들을꺼서격리한다.",
+    "조명용법선은빛의위치/방향그자체가아니다.",
+    "NormalMapping은기하부담을줄이는선택이지만무료연산이아니다. 텍스처메모리/샘플링/셰이더비용이있으며측정없이성능수치를말하지않는다.",
+    "기본normalmap만으로모든시각/모든재질/모든거리에서실제기하를완전히대체한다고말하지않는다.",
+    "특정게임내부의노멀값/폴리곤수/토글상태는겉화면만으로추정하지않는다."
+  ],
+  "assetRecords": [
+    {
+      "productId": "073",
+      "name": "Free Plasticine PBR Material Substance Texture",
+      "path": "unity/VideoEditing/Assets/ThirdParty/YamyamAssetLibrary/073-free-plasticine-pbr-material-substance-texture-godot-unity-blend/EmacEArt/PlasticineMaterial/PlasticineWorld/Textures/8k/Plasticine_08_8K_Normal.png",
+      "guid": "f76bab712bb93e0448a300d46f383c5b",
+      "sha256": "a146a29d251d5e002d29ad045bb5b84eb6afd8d8e304586c38b8be084f144887",
+      "sourceDimensions": [
+        8192,
+        8192
+      ],
+      "sourceMode": "RGB",
+      "unityImport": {
+        "textureType": 1,
+        "sRGBTexture": 0,
+        "flipGreenChannel": 0,
+        "defaultMaxTextureSize": 2048
+      },
+      "licenseEvidence": "plasticine073-publisher-license",
+      "previewInspected": "production/local/research/plasticine-normal-diagnostic-1024.png",
+      "previewObservation": "Purple/cyan/magenta direction texture with clay lumps and fingerprint grooves.",
+      "runtimeBehaviorVerified": false,
+      "materialUse": "Create ownscene/material; onlynormalmaptoggles; keepvendororiginalsunmodified; noheight/parallax/displacement; constantalbedo/smoothness.",
+      "distributionLimit": "Keepvendorrawassetoutofstandalonepublicassetdistribution; projectvideoisalloweduse."
+    },
+    {
+      "name": "KayKit Adventurers CharacterPack1.0 Knight",
+      "creator": "KayLousberg",
+      "source": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+      "license": "CC0",
+      "localRoot": "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers",
+      "provenanceRecord": "projects/shorts-forgiving-hitbox/sources/source-map.json",
+      "reusablePurpose": "Independently bakeour3Dcharacterframes and per-frameview/tangentnormalmapforourillustration oftheworkflow.",
+      "originalDeadCellsAsset": false,
+      "bakeRuntimeVerified": false
+    }
+  ],
+  "footageReview": {
+    "eligibleIndependentGameFootageFound": false,
+    "repoChecked": [
+      "projects/game-lighting-history-01/sources/game-candidates.json",
+      "shared/output/play-first/media-cache"
+    ],
+    "rejected": [
+      {
+        "id": "hl2-wall-2003",
+        "why": "Archiveddeveloperwall.mpegresearchmaterial; third-partyrecordingreuseunresolved andnotverifiedFHD."
+      },
+      {
+        "id": "doom3-macworld-2001",
+        "why": "Keynotearchive/third-partyupload; recordingrightsandFHDunresolved."
+      },
+      {
+        "id": "steam-doom3-original",
+        "why": "Sourceinventorynoteslownativeresolution andrights/finalmotionpending; notnewFHDproof."
+      }
+    ],
+    "pending": "No purchase/contact/send action authorized or performed. Main technical mechanism can be shown in ouractualUnityimplementation; DeadCellspipeline is a verified sourced fact, not a fabricated normal-toggle capture.",
+    "boundedSearchOutcome": "No production-ready independently reusableFHDDeadCellsclip secured in the bounded search. No large video downloaded; do not treat title1080p as decoded dimensions.",
+    "searchCompletedAt": "2026-10-21T04:10:36.160008+00:00",
+    "searchScope": [
+      "officialDeadCells/ MotionTwin site+presskit",
+      "publicpublisher-monetization/video-policy search",
+      "explicit recorderreuse/CCsearch",
+      "existingrepofootageinventory"
+    ],
+    "candidates": [
+      {
+        "url": "https://www.youtube.com/watch?v=2zuYtT7akoM",
+        "title": "Dead Cells Gameplay [1080p60fps] NoCommentary",
+        "creator": "Pii89",
+        "licenseFinding": "Public description inspected in search; no recorder reuse grant found.",
+        "decodedFhdVerified": false,
+        "productionUseApproved": false
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dzDaal-8Rkw",
+        "title": "Dead Cells Gameplay HD(PC)|NoCommentary",
+        "creator": "FullThrough",
+        "licenseFinding": "Uploader states own fair-use theory. That is not a redistribution license to us.",
+        "decodedFhdVerified": false,
+        "productionUseApproved": false
+      },
+      {
+        "url": "https://motiontwin.com/presskit/",
+        "publisher": "Motion Twin",
+        "officialGameplayPlaylist": "https://www.youtube.com/playlist?list=PLeOsr2_tBCyAppgX1Bo6Idm1Xo4tjk_vI",
+        "officialAnimatedTrailerPlaylist": "https://www.youtube.com/playlist?list=PLeOsr2_tBCyDsXe3qv-NVrl43cHmb6rNK",
+        "licenseFinding": "Officialpressresources and trailerembeds; offers mediaonrequest. No explicit generalmonetized reusegrant found. Noanimatedtrailer adopted as gameplay.",
+        "decodedFhdVerified": false,
+        "productionUseApproved": false
+      }
+    ],
+    "rejectedLicenseInference": [
+      "Astreamer claimingMotionTwinpermission does nottransfer theirpermission/recordingrights toourchannel.",
+      "AYouTubevideo titled1080pis not actualdecodedFHDproof.",
+      "Publisherpresskit publicaccessalone is not recorded blanketmonetization approval."
+    ]
+  },
+  "productionConstraints": {
+    "sameTestbed": true,
+    "sameCameraForAB": true,
+    "sameActualLightForAB": true,
+    "changeOnlyNormal": true,
+    "actualImplementationLabel": "우리 구현 / Actual Unity implementation",
+    "commercialFootageLabel": "실제 게임 화면 / Actual game recording, onlyifrights/FHDverified",
+    "noFabricatedMeasurement": true,
+    "noGpuTtsOrRenderRun": true,
+    "noYouTubeDriveAction": true
+  }
+}
