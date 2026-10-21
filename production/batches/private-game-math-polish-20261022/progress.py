@@ -19,6 +19,7 @@ for entry in q['entries']:
  if issue and not ready:status+=' · '+issue['shortStatus']
  entry.update(status='ready-for-human-review' if ready else 'production-in-progress',audioRecovered=audio.exists(),explanationsRestored=n,explanationCount=total,gameplayRestored=ng,actualSceneCount=actual,technicalQaComplete=qa.exists(),humanReview='pending')
  if issue:entry['sourceBlocker']=issue
+ else:entry.pop('sourceBlocker',None)
  row=rows[e.id]['privatePolish'];row.update(status=status,sourceMaster=rel(audio) if audio.exists() else row['sourceMaster'],renderComplete=(e.H/'outputs.json').exists(),technicalQaComplete=qa.exists(),humanReview='수정본 검수 전')
  link=f'<a href="../{e.slug}-private-polish/index.html">검수 영상</a>' if ready else '제작 중'
  table.append(f'<tr><td>{e.id}</td><td>{html.escape(entry["title"])}</td><td>{status}</td><td>{link}</td></tr>')
