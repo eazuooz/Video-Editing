@@ -5,7 +5,8 @@ from PIL import Image, ImageDraw
 
 P=Path(__file__).resolve().parents[1]
 R=P.parents[1]
-L=P/'production/local'
+L=P/'production/local/final-v2'
+A=P/'production/local/audio-v2'
 
 def read(p): return json.loads(Path(p).read_text(encoding='utf-8'))
 def save(p,v): Path(p).write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -21,17 +22,18 @@ def run(args):
 def guard():
     c=read(R/'shared/publishing/video-production-control.json')
     assert c.get('selectedShortVideo')==P.name
-    assert c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v1'
+    assert c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v2-grid-rgb-deadcells'
     assert c.get('shortsDirectSelection',{}).get('fullProductionAuthorized') is True
-def ass_filter(): return 'ass='+str((L/'captions.ko.ass').relative_to(R)).replace('\\','/')
+def ass_filter(): return 'ass='+str((A/'captions.ko.ass').relative_to(R)).replace('\\','/')
 def pair(visual):
     guard(); c=read(P/'script/captions.json'); visual=Path(visual).resolve()
+    L.mkdir(parents=True,exist_ok=True)
     assert visual.is_relative_to(R), 'Use an owned recorded render.'
     assert not (L/'clean.mp4').exists() and not (L/'captioned.mp4').exists()
-    assert (L/'final-mix.m4a').exists() and (L/'captions.ko.ass').exists()
-    run(['ffmpeg','-v','error','-n','-i',str(visual),'-i',str(L/'final-mix.m4a'),'-map','0:v:0','-map','1:a:0','-c','copy','-movflags','+faststart',str(L/'clean.mp4')])
+    assert (A/'final-mix.m4a').exists() and (A/'captions.ko.ass').exists()
+    run(['ffmpeg','-v','error','-n','-i',str(visual),'-i',str(A/'final-mix.m4a'),'-map','0:v:0','-map','1:a:0','-c','copy','-movflags','+faststart',str(L/'clean.mp4')])
     run(['ffmpeg','-v','error','-n','-i',str(L/'clean.mp4'),'-vf',ass_filter(),'-c:v','libx264','-threads','4','-preset','fast','-crf','18','-pix_fmt','yuv420p','-c:a','copy','-movflags','+faststart',str(L/'captioned.mp4')])
-    save(L/'pair-build.json',dict(frames=c['frames'],durationSeconds=c['durationSeconds'],visual=sha(visual),audio=sha(L/'final-mix.m4a'),ass=sha(L/'captions.ko.ass'),clean=sha(L/'clean.mp4'),captioned=sha(L/'captioned.mp4'),speechSpeed=1))
+    save(L/'pair-build.json',dict(frames=c['frames'],durationSeconds=c['durationSeconds'],visual=sha(visual),audio=sha(A/'final-mix.m4a'),ass=sha(A/'captions.ko.ass'),clean=sha(L/'clean.mp4'),captioned=sha(L/'captioned.mp4'),speechSpeed=1))
 def integrity():
     guard(); c=read(P/'script/captions.json'); reports=[]; audio_hashes=[]
     for name in ['clean','captioned']:
@@ -46,7 +48,7 @@ def integrity():
         raw=run(['ffmpeg','-v','error','-i',str(file),'-map','0:a:0','-c','copy','-f','adts','pipe:1'])
         audio_hashes.append(hashlib.sha256(raw).hexdigest())
         reports.append(dict(name=name,sha256=sha(file),bytes=file.stat().st_size,video=v,audio=a,decoded=True,ptsRegular60=True,frames=len(pts)))
-    raw=run(['ffmpeg','-v','error','-i',str(L/'final-mix.m4a'),'-map','0:a:0','-c','copy','-f','adts','pipe:1'])
+    raw=run(['ffmpeg','-v','error','-i',str(A/'final-mix.m4a'),'-map','0:a:0','-c','copy','-f','adts','pipe:1'])
     assert audio_hashes[0]==audio_hashes[1]==hashlib.sha256(raw).hexdigest()
     assert all(0<=q['start']<q['end']<=c['durationSeconds'] for q in c['cues'])
     save(L/'integrity.json',dict(status='pass',outputs=reports,identicalAac=True,aacHash=audio_hashes[0],allCaptionTimesInsideVideo=True))

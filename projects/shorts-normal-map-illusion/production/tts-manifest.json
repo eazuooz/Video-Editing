@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "slug": "shorts-normal-map-illusion",
-  "revision": "normal-map-v1",
+  "revision": "normal-map-v2-grid-rgb-deadcells",
   "paths": {
     "script": "projects/shorts-normal-map-illusion/script/narration.spoken.ko.json"
   },
@@ -15,16 +15,29 @@
     "reference": "shared/voice-reference/reference-15-35s.wav",
     "referenceText": "shared/voice-reference/reference-15-35s.ko.txt",
     "model": "qwen3-tts/models/Qwen3-TTS-12Hz-1.7B-Base",
-    "outputDir": "projects/shorts-normal-map-illusion/production/local/voice",
-    "filenameStem": "normal-map-v1",
-    "renderMode": "scene",
+    "outputDir": "projects/shorts-normal-map-illusion/production/local/audio-v2/voice",
+    "filenameStem": "normal-map-v2",
+    "renderMode": "line",
     "sceneGapSeconds": 0,
     "tailRatioThreshold": 0.07,
     "tailDecayMsThreshold": 70,
     "maxRenderAttempts": 1,
-    "maxNewTokens": 4096,
+    "maxNewTokens": 2048,
     "edgeFadeSeconds": 0,
     "gpuMinimumFreeMiB": 7500,
-    "gpuProfileReason": "Approved1.7B same clone/reference, continuous scene batch1, finite exclusive lease. Cap6144MiB torchallocator, minimum7500MiBcurrentlyfree and utilization<20; about1356MiBsafety. Prior same voice reserved5416MiB. Preserve/fail onOOM; no foreignjobpause/kill, noautomaticCPUfallback."
+    "gpuProfileReason": "Finite local paragraph launcher; approved1.7B clone/reference and sequential batch1.6144MiB torchallocator cap,7500MiB minimumfree, no foreignprocess stop/pause. Shorter paragraph takes reuse one loadedmodel. Shared generic configure scene-only reduced-memory guard is not altered.",
+    "lineGapSeconds": 0.28,
+    "paragraphLevelNormalization": {
+      "policy": "line-level-takes-v1",
+      "frameSeconds": 0.05,
+      "gateMaximumDbfs": -25,
+      "adaptiveGateBelowPeakDb": 25,
+      "targetMedianDbfs": -22,
+      "maximumGainDb": 12,
+      "speechSpeed": 1,
+      "preserveRawPcm": true,
+      "minimumIntendedJoinSeconds": 0.28,
+      "gapPolicy": "Retain all natural lead/tail PCM; add only unmet portion of0.28s, never trim speech/breath."
+    }
   }
 }

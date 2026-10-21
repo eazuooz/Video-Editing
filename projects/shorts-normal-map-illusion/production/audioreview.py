@@ -1,7 +1,8 @@
 """Full-text ASR comparison for this selected Short. No synthesis or media jobs."""
 from pathlib import Path
 import json,hashlib,re,unicodedata,difflib,argparse
-P=Path(__file__).resolve().parents[1];R=P.parents[1];L=P/'production/local'
+P=Path(__file__).resolve().parents[1];R=P.parents[1]
+from audio_revision import L, VOICE, REVISION, guard as revision_guard
 def read(p):return json.loads(Path(p).read_text(encoding='utf8'))
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def norm(t):
@@ -9,9 +10,10 @@ def norm(t):
  return re.sub(r'[^0-9a-z가-힣]','',unicodedata.normalize('NFC',t).lower())
 def main():
  a=argparse.ArgumentParser();a.add_argument('role',choices=['voice','mix']);args=a.parse_args()
+ revision_guard()
  control=read(R/'shared/publishing/video-production-control.json')
- assert control.get('selectedShortVideo')==P.name and control.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v1'
- j=read(P/'project.json');source=R/j['paths']['voiceNarration'] if args.role=='voice' else L/'final-mix.m4a';digest=sha(source)
+ assert control.get('selectedShortVideo')==P.name and control.get('shortsDirectSelection',{}).get('selectedRevision')==REVISION
+ j=read(P/'project.json');source=VOICE if args.role=='voice' else L/'final-mix.m4a';digest=sha(source)
  report=L/f'asr-{args.role}-{digest[:12]}.json';asr=read(report)
  assert asr['sha256']==digest and asr['fullInput'] and asr['rawRecognitionUnmodified'] and not asr['expectedTextPromptUsed']
  lines=[line for scene in read(P/'script/narration.ko.json')['scenes'] for line in scene['lines']];expected=norm(''.join(lines));actual=norm(asr['text']);ops=difflib.SequenceMatcher(None,expected,actual,autojunk=False).get_opcodes()

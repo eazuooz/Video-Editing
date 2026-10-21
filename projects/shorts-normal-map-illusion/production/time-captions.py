@@ -18,13 +18,13 @@ import unicodedata
 
 P = Path(__file__).resolve().parents[1]
 R = P.parents[1]
-L = P / "production/local"
+from audio_revision import L, VOICE, REVISION, guard as revision_guard
 FPS = 60
 VOICE_OFFSET = 0.20
 TAIL_SECONDS = 0.40
 DEFAULT_VOICE = (
-    "projects/shorts-normal-map-illusion/production/local/voice/"
-    "normal-map-v1.wav"
+    "projects/shorts-normal-map-illusion/production/local/audio-v2/voice/"
+    "normal-map-v2.wav"
 )
 ASS_HEADER = """[Script Info]
 ScriptType: v4.00+
@@ -183,12 +183,13 @@ def wrap(text, font):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.parse_args(argv)
+    revision_guard()
     control=read(R/'shared/publishing/video-production-control.json')
-    if control.get('selectedShortVideo')!=P.name or control.get('shortsDirectSelection',{}).get('selectedRevision')!='normal-map-v1':
+    if control.get('selectedShortVideo')!=P.name or control.get('shortsDirectSelection',{}).get('selectedRevision')!=REVISION:
         raise RuntimeError('Selected authorized Short changed; preserve caption outputs.')
     project_path = P / "project.json"
     project = read(project_path)
-    voice = Path(project["paths"].get("voiceNarration", DEFAULT_VOICE))
+    voice = VOICE
     voice = voice if voice.is_absolute() else R / voice
     voice_sha = sha(voice)
     duration = wav_duration(voice)
@@ -375,7 +376,7 @@ def main(argv=None):
         "reconciliationSha256": sha(reconciliation_path) if reconciliation else None,
     }
     output = {
-        "schemaVersion": 1, "status": ("canonical-content-word-timed; raw-variants-and-playback-review-pending"
+        "schemaVersion": 1, "revision": REVISION, "status": ("canonical-content-word-timed; raw-variants-and-playback-review-pending"
             if aliases else "exact-transcript-word-timed; playback-review-pending"),
         "lineIndexBase": 0, "fps": FPS, "frames": frames,
         "durationSeconds": timeline_seconds, "voiceDurationSeconds": duration,
@@ -407,12 +408,18 @@ def main(argv=None):
         L / "captions.ko.srt": "\n\n".join(subtitles["ko"]) + "\n",
         L / "captions.en.srt": "\n\n".join(subtitles["en"]) + "\n",
     }
+    archived_captions = P / 'production/local/revisions/normal-map-v1/metadata/script/captions.json'
+    replace_archived_captions = False
     for path, text in targets.items():
         if path.exists() and path.read_text(encoding="utf8") != text:
-            raise RuntimeError("Preserve/reconcile previous timing output before changing it: " + relative(path))
+            if (path == P / 'script/captions.json' and archived_captions.exists()
+                    and sha(path) == sha(archived_captions)):
+                replace_archived_captions = True
+            else:
+                raise RuntimeError("Preserve/reconcile previous timing output before changing it: " + relative(path))
     for path, text in targets.items():
         path.parent.mkdir(parents=True, exist_ok=True)
-        if not path.exists():
+        if not path.exists() or (path == P / 'script/captions.json' and replace_archived_captions):
             path.write_text(text, encoding="utf8")
     print(encoded({"captions": relative(P / "script/captions.json"), "cueCount": len(timed),
                    "durationSeconds": timeline_seconds, "frames": frames,

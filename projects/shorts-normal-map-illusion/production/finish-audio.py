@@ -21,7 +21,7 @@ import soundfile as sf
 
 R = Path(__file__).resolve().parents[3]
 P = Path(__file__).resolve().parents[1]
-L = P / 'production/local'
+from audio_revision import L, VOICE, REVISION, guard as revision_guard
 S = P.name
 RATE = 48000
 BIN = Path('C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/'
@@ -32,9 +32,9 @@ LICENSE = MUSIC.with_suffix('.LICENSE.md')
 MUSIC_SHA = 'b2609a077fae292679f25b83519f470ed308abb40d11f89bff8c6f896deefed3'
 SOURCES = {}  # Populated only from this selected edit's explicit source registry.
 SETTINGS = {
-    'audioRevision': 'normal-map-v1',
+    'audioRevision': REVISION,
     'voiceOffsetSeconds': 0.20, 'voiceTargetLufs': -16.0,
-    'narrationCompressor': 'acompressor=threshold=0.12:ratio=3:attack=5:release=140:makeup=1,alimiter=limit=0.14:attack=5:release=80:level=false:latency=true',
+    'narrationCompressor': 'anull',
     'voiceSamplePeakCeilingDbfs': -3.0,
     'nativeGameTargetLufs': -23.0, 'nativeGameSamplePeakCeilingDbfs': -6.0,
     'nativeGameMaximumPositiveGainDb': 6.0,
@@ -126,11 +126,12 @@ def fixed_gain(samples, measured, target, peak_ceiling, maximum_positive_db=None
 
 
 def guard():
+    revision_guard()
     control = read(R / 'shared/publishing/video-production-control.json')
     if control.get('selectedShortVideo') != S:
         raise RuntimeError('Selected Short changed; preserve outputs and stop costly work.')
     selected=control.get('shortsDirectSelection',{})
-    if selected.get('selectedRevision') != 'normal-map-v1' or not selected.get('fullProductionAuthorized'):
+    if selected.get('selectedRevision') != REVISION or not selected.get('fullProductionAuthorized'):
         raise RuntimeError('Direct selected revision authorization changed.')
 
 
@@ -139,11 +140,13 @@ def inputs():
     global SOURCES
     project = read(P / 'project.json')
     captions = read(P / 'script/captions.json')
-    timing = read(L / 'visual-timing.json')
+    timing = read(P / 'production/local/visual-timing.json')
+    if timing.get('revision') != REVISION:
+        raise RuntimeError('Visual timing belongs to a previous revision.')
     SOURCES={key: (R/value['path'],float(value.get('originalOffsetSeconds',0))) for key,value in timing['sources'].items()}
     if any(not p.resolve().is_relative_to(R.resolve()) for p,_ in SOURCES.values()):
         raise RuntimeError('Source path escaped repository.')
-    voice = Path(project['paths']['voiceNarration'])
+    voice = VOICE
     voice = voice if voice.is_absolute() else R / voice
     duration = float(captions['durationSeconds'])
     frames = int(captions['frames'])
@@ -352,7 +355,7 @@ def mix():
         'preparedNarrationMeasured': prepared_measured,
         'narrationPreparation': {'filter': SETTINGS['narrationCompressor'],
                                  'originalPcmPreserved': True, 'timingAndSampleCountPreserved': True,
-                                 'compressedPreparedToStemConstantGain': True},
+                                 'preparedToStemConstantGain': True, 'paragraphLevelPolicy': 'line-level-takes-v1; source already matched per meaningful paragraph; no global speech compression'},
         'gameEvents': events, 'addedEffects': [], 'addedMusicDuckedByVoiceOnly': True, 'nativeGameDucked': False,
         'duckGainDbRange': [20 * math.log10(float(duck.min())), 20 * math.log10(float(duck.max()))],
         'encodeAttempts': attempts, 'humanListening': 'pending', 'finalMixAsr': 'pending; separate one-time full-input check',
@@ -503,7 +506,7 @@ def report():
         'voiceOffsetSeconds': 0.20, 'durationSeconds': recipe['durationSeconds'],
         'frames': recipe['frames'], 'aacDecodedSamplesBeforePaddingTrim': decoded_sample_count,
         'preparedToStemConstantSpeechGainVerified': True,
-        'originalToStemPureConstantGainClaimed': False,
+        'originalToStemPureConstantGainClaimed': True,
         'preparedStemMaximumSampleDeviation': deviation,
         'speechDuckingOrSpeechFadesApplied': False, 'windowSeconds': 0.4, 'stepSeconds': 0.1,
         'sourceMeasured': build['originalVoiceMeasured'],

@@ -18,10 +18,10 @@ import wave
 
 P = Path(__file__).resolve().parents[1]
 R = P.parents[1]
-L = P / "production/local"
+from audio_revision import L, VOICE, REVISION, guard as revision_guard
 DEFAULT_VOICE = (
-    "projects/shorts-normal-map-illusion/production/local/voice/"
-    "normal-map-v1.wav"
+    "projects/shorts-normal-map-illusion/production/local/audio-v2/voice/"
+    "normal-map-v2.wav"
 )
 
 
@@ -92,11 +92,12 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("role", choices=["voice", "mix"])
     args = parser.parse_args(argv)
+    revision_guard()
     control=read(R/'shared/publishing/video-production-control.json')
-    if control.get('selectedShortVideo')!=P.name or control.get('shortsDirectSelection',{}).get('selectedRevision')!='normal-map-v1':
+    if control.get('selectedShortVideo')!=P.name or control.get('shortsDirectSelection',{}).get('selectedRevision')!=REVISION:
         raise RuntimeError('Selected authorized Short changed; do not start ASR.')
     project = read(P / "project.json")
-    voice = repository_path(project["paths"].get("voiceNarration", DEFAULT_VOICE))
+    voice = VOICE
     source = voice if args.role == "voice" else L / "final-mix.m4a"
     script_path, expected = narration_input(project)
     digest = sha(source)
