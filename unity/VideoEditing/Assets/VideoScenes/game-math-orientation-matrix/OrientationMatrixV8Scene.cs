@@ -1,0 +1,507 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+namespace YamyamCoding.GameMath.OrientationMatrix.V8
+{
+    [Serializable] public class MatrixShot
+    {
+        public string id,sceneId,mode;
+        public int frames=181;
+        public float angleFrom,angleTo=90;
+        public Vector3 pointObject=new Vector3(1,0,2);
+        public Vector3 originFrom,originTo;
+        public bool axes=true,upright=true,point,plane=true;
+    }
+    [Serializable] public class MatrixCatalog {public MatrixShot[] shots;}
+    [Serializable] public class ScreenAnchor
+    {public string name;public Vector3 world,pixel;public bool inViewport;}
+    [Serializable] public class PartReference
+    {public string name,parent;public float[] rowParentOrientation;}
+    [Serializable] public class MatrixFrame
+    {
+        public int frame,width=1000,height=700;public float t,angle;
+        public string shot,mode,interpretation="controlled authored model; row objectToUpright",angleMeaning;
+        public string guideDepth="editorial projected guides; ZTestAlways/ZWriteOff; object meshes retain ordinary depth";
+        public float[] rowMatrix,rowInverse,rowGram;
+        public Vector3 objectPoint,uprightPoint,offset;
+        public float determinant,projection;
+        public float coordinateDrawingScale=2.2f;
+        public float[] basisLengths,pairDots;
+        public Vector3 cameraPosition,cameraUp,cameraTarget;
+        public Vector4 modelPixelBounds;
+        public ScreenAnchor[] anchors;
+        public float[] swordToHand,handToArm,swordToArm;
+        public PartReference[] orientationReferences;
+    }
+    [ExecuteAlways] public sealed class OrientationMatrixV8Scene:MonoBehaviour
+    {
+        public TextAsset shotCatalog;
+        public string selectedShotId="basis-y90";
+        [Range(0,1)]public float normalizedTime;
+        public bool playInRuntime;
+        public MatrixShot shot;
+        public const int Width=1000,Height=700,Fps=60;
+        public const float CoordinateDrawingScale=2.2f;
+        public Camera SceneCamera=>captureCamera;
+        public Matrix4x4 ColumnMatrix{get;private set;}=Matrix4x4.identity;
+        [SerializeField]private Transform generated;
+        private Transform aircraft,bodyFrame,uprightFrame,forwardVector,pointMarker,projectionMarker,traceCursor,armRoot,personRoot;
+        [SerializeField]private Camera captureCamera;
+        private readonly List<Mesh> ownedMeshes=new List<Mesh>();
+        private readonly List<Material> ownedMaterials=new List<Material>();
+        private readonly Dictionary<string,Material> materialCache=new Dictionary<string,Material>();
+        private readonly List<DeformedMesh> deform=new List<DeformedMesh>();
+        private readonly List<LineRenderer> dynamicLines=new List<LineRenderer>();
+        private readonly List<Transform> orientationParts=new List<Transform>();
+        private Transform[] bodyArrows=new Transform[3];
+        private LineRenderer traceA,traceB,projectionLine,componentLine;
+        private LineRenderer rotationArc;
+        private LineRenderer rotationAxisLine;
+        private Transform rotationArrow;
+        private Vector3 activeArcTip;
+        private Vector3 origin,pointU;
+        private float started,angle;
+        private Matrix4x4 swordHand=Matrix4x4.identity,handArm=Matrix4x4.identity;
+        private Transform upperArm,foreArm,hand,sword;
+        private static readonly Color AxisX=new Color32(239,90,99,255),AxisY=new Color32(108,206,142,255),AxisZ=new Color32(102,185,237,255);
+        private static readonly Color Gold=new Color32(232,207,131,255),Teal=new Color32(115,199,194,255);
+        private static readonly Vector3[] Unit={Vector3.right,Vector3.up,Vector3.forward};
+        private static readonly Color[] AxisColors={AxisX,AxisY,AxisZ};
+        private class DeformedMesh {public Mesh mesh;public Vector3[] vertices,output;public int[] triangles,reflected;}
+        private static Vector3 ToNative(Vector3 p)=>p;
+        private static bool UsesSrp()=>GraphicsSettings.currentRenderPipeline!=null||GraphicsSettings.defaultRenderPipeline!=null||QualitySettings.renderPipeline!=null;
+
+        void Start(){if(Application.isPlaying){started=Time.time;if(shot==null)Load(selectedShotId);Build();}}
+        void Update(){if(playInRuntime&&shot!=null)Evaluate(Mathf.Clamp01((Time.time-started)/(Mathf.Max(2,shot.frames)-1)*60));}
+        public void Load(string id)
+        {if(shotCatalog==null)throw new InvalidOperationException("V8 shot catalog required");shot=Array.Find(JsonUtility.FromJson<MatrixCatalog>(shotCatalog.text).shots,s=>s.id==id);if(shot==null)throw new ArgumentException(id);selectedShotId=id;}
+        [ContextMenu("Build editable orientation-matrix scene")]
+        public void Build()
+        {
+            if(shot==null||shot.id!=selectedShotId)Load(selectedShotId);
+            ClearOwned();generated=NewObject("V8 orientation matrix controlled testbed",transform);
+            captureCamera=NewObject("1000x700 native spatial camera",generated).gameObject.AddComponent<Camera>();
+            captureCamera.clearFlags=CameraClearFlags.SolidColor;captureCamera.backgroundColor=new Color32(8,11,13,255);
+            captureCamera.orthographic=true;captureCamera.orthographicSize=2.95f;captureCamera.aspect=Width/(float)Height;
+            captureCamera.nearClipPlane=.05f;captureCamera.farClipPlane=100;captureCamera.allowHDR=false;captureCamera.allowMSAA=true;
+            captureCamera.transform.position=new Vector3(7,4.8f,-8);captureCamera.transform.LookAt(Vector3.zero,Vector3.up);
+            RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.38f,.41f,.45f);RenderSettings.ambientIntensity=.6f;RenderSettings.reflectionIntensity=0;
+            var key=NewObject("Stable key light",generated).gameObject.AddComponent<Light>();key.type=LightType.Directional;key.intensity=1.05f;key.transform.rotation=Quaternion.Euler(38,-27,0);key.shadows=LightShadows.None;
+            var fill=NewObject("Stable fill light",generated).gameObject.AddComponent<Light>();fill.type=LightType.Directional;fill.intensity=.55f;fill.transform.rotation=Quaternion.Euler(325,145,0);fill.shadows=LightShadows.None;
+            Transform a,b,c,d;
+            if(shot.plane){Transform original=BuildAircraft("Recognizable articulated aircraft",Vector3.zero,out a,out b,out c,out d);aircraft=Flatten(original);}
+            bodyFrame=NewObject("Actual transformed body basis",generated);
+            for(int i=0;i<3;i++)
+            {bodyArrows[i]=NewObject("body "+"XYZ"[i],bodyFrame);BuildArrow(bodyArrows[i],Vector3.zero,Vector3.forward,AxisColors[i],.027f);}
+            uprightFrame=NewObject("World-parallel upright basis; SAME origin",generated);
+            Color referenceGray=new Color32(143,150,156,255);
+            for(int i=0;i<3;i++)
+            {for(int j=0;j<14;j++)Segment("upright dashed "+"XYZ"[i],uprightFrame,Unit[i]*(CoordinateDrawingScale*j/14),Unit[i]*(CoordinateDrawingScale*(j+.55f)/14),referenceGray,.012f);BuildArrow(uprightFrame,Unit[i]*(CoordinateDrawingScale-.23f),Unit[i]*CoordinateDrawingScale,referenceGray,.018f);}
+            OverlayGuides(uprightFrame,4000);OverlayGuides(bodyFrame,4010);
+            forwardVector=NewObject("Direction vector with no independent up or roll",generated);BuildArrow(forwardVector,Vector3.zero,Vector3.forward*2.75f,Gold,.045f);
+            pointMarker=NewObject("Same geometric point P",generated);Ellipsoid("P marker",pointMarker,Vector3.zero,Vector3.one*.16f,Teal);
+            projectionMarker=NewObject("Signed component projection",generated);Ellipsoid("Projection foot",projectionMarker,Vector3.zero,Vector3.one*.12f,Gold);
+            traceCursor=NewObject("Progressive basis contribution cursor; not P",generated);Ellipsoid("Active path cursor",traceCursor,Vector3.zero,Vector3.one*.13f,Gold);OverlayGuides(traceCursor,4040);
+            OverlayGuides(forwardVector,4010);OverlayGuides(pointMarker,4030);OverlayGuides(projectionMarker,4030);
+            traceA=Line("First weighted basis contribution",AxisX,.05f);traceB=Line("Second weighted basis contribution",AxisZ,.05f);
+            projectionLine=Line("Perpendicular projected segment",new Color32(192,197,202,255),.025f);
+            componentLine=Line("Signed component along upright X",Gold,.045f);
+            if(shot.id=="home-y90"||shot.id=="basis-y90"||shot.id=="intro-orientation")
+            {rotationArc=Line("Progressive arc on actual command axis",Gold,.05f);if(shot.id!="intro-orientation")rotationAxisLine=Line("Actual upright Y rotation axis",referenceGray,.025f);rotationArrow=NewObject("Progressive arc arrow",generated);BuildArrow(rotationArrow,Vector3.zero,Vector3.forward*.28f,Gold,.025f);OverlayGuides(rotationArrow,4020);}
+            if(shot.mode=="projection"){var negative=NewObject("Negative upright X editorial extension",generated);Segment("Upright X negative extension for signed projection",negative,Vector3.left*CoordinateDrawingScale,Vector3.zero,referenceGray,.012f);OverlayGuides(negative,4000);}
+            if(shot.mode=="camera")BuildHorizon();
+            if(shot.mode=="arm")BuildArmHandSword();
+            if(shot.mode=="humanoid")BuildMannequin();
+            Evaluate(normalizedTime);
+        }
+        [ContextMenu("Apply current normalized time")]
+        public void ApplyCurrentTime(){if(bodyFrame==null)Build();else Evaluate(normalizedTime);}
+        private Transform Flatten(Transform source)
+        {
+            Transform result=NewObject("Editable deformable aircraft meshes",generated);
+            foreach(var filter in source.GetComponentsInChildren<MeshFilter>())
+            {
+                if(filter.sharedMesh==null)continue;
+                Mesh mesh=Instantiate(filter.sharedMesh);mesh.name=filter.name+" V8 deformable";
+                Vector3[] vertices=mesh.vertices;
+                for(int i=0;i<vertices.Length;i++)vertices[i]=source.InverseTransformPoint(filter.transform.TransformPoint(vertices[i]));
+                mesh.vertices=vertices;mesh.RecalculateNormals();mesh.RecalculateBounds();ownedMeshes.Add(mesh);
+                Transform part=NewObject(filter.name,result);part.gameObject.AddComponent<MeshFilter>().sharedMesh=mesh;
+                var rend=part.gameObject.AddComponent<MeshRenderer>();rend.sharedMaterial=filter.GetComponent<Renderer>().sharedMaterial;rend.shadowCastingMode=ShadowCastingMode.Off;rend.receiveShadows=false;
+                int[] reflected=(int[])mesh.triangles.Clone();for(int i=0;i<reflected.Length;i+=3){int tmp=reflected[i+1];reflected[i+1]=reflected[i+2];reflected[i+2]=tmp;}
+                deform.Add(new DeformedMesh{mesh=mesh,vertices=vertices,output=new Vector3[vertices.Length],triangles=mesh.triangles,reflected=reflected});
+            }
+            DestroyOwnedObject(source.gameObject);return result;
+        }
+        private void AddAsymmetricMark(Transform root)
+        {
+            // An owner-authored F on ONE wing makes a reflection visible.
+            Segment("Asymmetric F stem",root,new Vector3(.85f,.145f,-.40f),new Vector3(.85f,.145f,.04f),Teal,.030f);
+            Segment("Asymmetric F top",root,new Vector3(.85f,.145f,.04f),new Vector3(1.25f,.145f,.04f),Teal,.030f);
+            Segment("Asymmetric F middle",root,new Vector3(.85f,.145f,-.17f),new Vector3(1.12f,.145f,-.17f),Teal,.030f);
+        }
+        private LineRenderer Line(string name,Color color,float width)
+        {var l=NewObject(name,generated).gameObject.AddComponent<LineRenderer>();l.sharedMaterial=GuideMaterial(color,4020);l.useWorldSpace=true;l.positionCount=2;l.widthMultiplier=width;l.numCapVertices=4;dynamicLines.Add(l);return l;}
+        private Material GuideMaterial(Color color,int queue)
+        {
+            string key="editorial-guide-"+ColorUtility.ToHtmlStringRGBA(color)+"-"+queue;
+            if(materialCache.TryGetValue(key,out Material cached))return cached;
+            Shader shader=Shader.Find("Yamyam/DiagramGuideOverlay");if(shader==null)throw new InvalidOperationException("Authored guide shader missing");
+            var material=new Material(shader){name="V8 editorial projected guide "+ColorUtility.ToHtmlStringRGB(color),color=color,renderQueue=queue};
+            ownedMaterials.Add(material);materialCache[key]=material;return material;
+        }
+        private void OverlayGuides(Transform root,int queue)
+        {foreach(var renderer in root.GetComponentsInChildren<Renderer>(true))renderer.sharedMaterial=GuideMaterial(renderer.sharedMaterial.color,queue);}
+        private static float Ease(float t){t=Mathf.Clamp01(t);return t*t*(3-2*t);}
+        private static Matrix4x4 Yaw(float d)=>Matrix4x4.Rotate(Quaternion.AngleAxis(d,Vector3.up));
+        private static Matrix4x4 Bank(float d)=>Matrix4x4.Rotate(Quaternion.AngleAxis(d,Vector3.forward));
+        private static Matrix4x4 Creep()
+        {var m=Matrix4x4.identity;m.m00=1.18f;m.m01=.22f;m.m02=.05f;m.m11=.95f;m.m22=1.08f;return m;}
+        private static Matrix4x4 NormalizeColumns(Matrix4x4 m)
+        {for(int c=0;c<3;c++){Vector3 v=m.GetColumn(c);v.Normalize();m.SetColumn(c,new Vector4(v.x,v.y,v.z,0));}return m;}
+        private static Matrix4x4 Lerp(Matrix4x4 a,Matrix4x4 b,float t)
+        {for(int r=0;r<3;r++)for(int c=0;c<3;c++)a[r,c]=Mathf.Lerp(a[r,c],b[r,c],t);return a;}
+        private Matrix4x4 Program(float t)
+        {
+            float u=Ease(t);angle=Mathf.Lerp(shot.angleFrom,shot.angleTo,u);
+            if(shot.mode=="projection"){angle=Mathf.Lerp(shot.angleFrom,shot.angleTo,t);return Yaw(angle);}
+            if(shot.mode=="bank"||shot.mode=="intro-orientation")return Bank(angle);
+            if(shot.mode=="pitch")return Matrix4x4.Rotate(Quaternion.AngleAxis(angle,Vector3.right));
+            if(shot.mode=="scale"){var m=Matrix4x4.identity;m.m00=1+u;return m;}
+            if(shot.mode=="shear"){var m=Matrix4x4.identity;m.m01=.6f*u;return m;}
+            if(shot.mode=="reflection"){var m=Matrix4x4.identity;m.m00=t<.5f?1:-1;return m;}
+            if(shot.mode=="creep")return Lerp(Matrix4x4.identity,Creep(),u);
+            if(shot.mode=="normalize")return Lerp(Creep(),NormalizeColumns(Creep()),u);
+            if(shot.mode=="orthonormalize")return Lerp(NormalizeColumns(Creep()),Matrix4x4.identity,u);
+            if(shot.mode=="complex")return Matrix4x4.Rotate(Quaternion.AngleAxis(35,Vector3.up)*Quaternion.AngleAxis(20,Vector3.right)*Quaternion.AngleAxis(30,Vector3.forward));
+            if(shot.mode=="camera"||shot.mode=="direction"||shot.mode=="arm"||shot.mode=="intro-translate"||shot.mode=="humanoid")return Matrix4x4.identity;
+            return Yaw(angle);
+        }
+        public void Evaluate(float t)
+        {
+            normalizedTime=Mathf.Clamp01(t);if(shot==null||generated==null)return;
+            ColumnMatrix=Program(normalizedTime);origin=Vector3.Lerp(shot.originFrom,shot.originTo,Ease(t));
+            if(shot.mode=="translate")origin=Vector3.right*(Ease(t)*1.15f);
+            if(shot.mode=="forward")origin=ColumnMatrix.MultiplyVector(Vector3.forward)*(Ease(t)*1.65f);
+            if(aircraft!=null)
+            {
+                aircraft.position=origin;
+                foreach(var part in deform)
+                {for(int i=0;i<part.vertices.Length;i++)part.output[i]=ColumnMatrix.MultiplyPoint3x4(part.vertices[i]);part.mesh.vertices=part.output;part.mesh.triangles=ColumnMatrix.determinant<0?part.reflected:part.triangles;part.mesh.RecalculateNormals();part.mesh.RecalculateBounds();}
+            }
+            bodyFrame.position=uprightFrame.position=origin;bodyFrame.gameObject.SetActive(shot.axes);uprightFrame.gameObject.SetActive(shot.axes&&shot.upright);
+            for(int i=0;i<3;i++){Vector3 v=ColumnMatrix.MultiplyVector(Unit[i]);bodyArrows[i].localRotation=Quaternion.FromToRotation(Vector3.forward,v.normalized);bodyArrows[i].localScale=new Vector3(1,1,v.magnitude*CoordinateDrawingScale);}
+            bool preterm=shot.mode=="bank"||shot.mode=="direction"||shot.mode=="intro-orientation"||shot.mode=="intro-translate";
+            forwardVector.gameObject.SetActive(preterm);forwardVector.position=origin;
+            forwardVector.rotation=Quaternion.FromToRotation(Vector3.forward,ColumnMatrix.MultiplyVector(Vector3.forward).normalized);
+            pointU=ColumnMatrix.MultiplyVector(shot.pointObject)*CoordinateDrawingScale+origin;
+            bool target=shot.mode.StartsWith("target-");
+            if(target)pointU=(shot.mode=="target-right"?new Vector3(1,0,-2):new Vector3(-1,0,2))*CoordinateDrawingScale+origin;
+            pointMarker.gameObject.SetActive(shot.point||target);pointMarker.position=pointU;
+            if(shot.mode=="point")pointMarker.localScale=Vector3.one*Mathf.Clamp01(t*6);
+            else pointMarker.localScale=Vector3.one;
+            bool path=shot.mode=="point-path";traceA.gameObject.SetActive(path);traceB.gameObject.SetActive(path);
+            Vector3 first=origin+ColumnMatrix.MultiplyVector(Vector3.right)*CoordinateDrawingScale;
+            if(path){SetLine(traceA,origin,Vector3.Lerp(origin,first,Mathf.Clamp01(t*2)));SetLine(traceB,first,Vector3.Lerp(first,pointU,Mathf.Clamp01(t*2-1)));}
+            traceCursor.gameObject.SetActive(path);if(path)traceCursor.position=t<=.5f?Vector3.Lerp(origin,first,t*2):Vector3.Lerp(first,pointU,t*2-1);
+            bool project=shot.mode=="projection";
+            projectionLine.gameObject.SetActive(project);componentLine.gameObject.SetActive(project);projectionMarker.gameObject.SetActive(project);
+            if(project)
+            {Vector3 endpoint=ColumnMatrix.MultiplyVector(Vector3.right)*CoordinateDrawingScale;Vector3 foot=Vector3.right*endpoint.x;projectionMarker.position=foot;SetLine(projectionLine,endpoint,foot);SetLine(componentLine,Vector3.zero,foot);}
+            if(rotationArc!=null)
+            {
+                Vector3 normal=shot.id=="intro-orientation"?Vector3.forward:Vector3.up;
+                Vector3 radial=shot.id=="intro-orientation"?Vector3.up:Vector3.forward;
+                const int count=49;const float radius=2.55f;rotationArc.positionCount=count;
+                for(int i=0;i<count;i++)rotationArc.SetPosition(i,origin+(Quaternion.AngleAxis(angle*i/(count-1),normal)*radial)*radius);
+                activeArcTip=origin+(Quaternion.AngleAxis(angle,normal)*radial)*radius;
+                Vector3 tangent=Quaternion.AngleAxis(angle,normal)*Vector3.Cross(normal,radial).normalized;
+                rotationArrow.position=activeArcTip-tangent*.28f;rotationArrow.rotation=Quaternion.FromToRotation(Vector3.forward,tangent);
+                if(rotationAxisLine!=null)SetLine(rotationAxisLine,origin-normal*.45f,origin+normal*2.55f);
+                rotationArc.gameObject.SetActive(angle>.1f);rotationArrow.gameObject.SetActive(angle>3);
+            }
+            if(shot.mode=="camera")
+            {Vector3 forward=(Vector3.zero-captureCamera.transform.position).normalized;Vector3 up=Quaternion.AngleAxis(angle,forward)*Vector3.up;captureCamera.transform.rotation=Quaternion.LookRotation(forward,up);}
+            if(shot.mode=="arm")EvaluateArm(t);
+        }
+        private static void SetLine(LineRenderer l,Vector3 a,Vector3 b){l.SetPosition(0,a);l.SetPosition(1,b);}
+        private void BuildHorizon()
+        {for(int i=-4;i<=4;i++){Segment("Fixed ground line",generated,new Vector3(i,-1.2f,-4),new Vector3(i,-1.2f,4),new Color32(46,55,60,255),.012f);Segment("Fixed ground cross line",generated,new Vector3(-4,-1.2f,i),new Vector3(4,-1.2f,i),new Color32(46,55,60,255),.012f);}}
+        private void BuildArmHandSword()
+        {
+            bodyFrame.gameObject.SetActive(false);uprightFrame.gameObject.SetActive(false);
+            armRoot=NewObject("C body output reference / shoulder origin",generated);armRoot.position=new Vector3(-1.1f,-.55f,0);
+            Color skin=new Color32(166,173,180,255),joint=new Color32(56,67,76,255);
+            Ellipsoid("Shoulder joint",armRoot,Vector3.zero,Vector3.one*.5f,joint);
+            upperArm=NewObject("Upper arm articulated",armRoot);Segment("Upper arm",upperArm,Vector3.zero,new Vector3(1.1f,.05f,0),skin,.17f);
+            foreArm=NewObject("Forearm articulated",upperArm);foreArm.localPosition=new Vector3(1.1f,.05f,0);Ellipsoid("Elbow joint",foreArm,Vector3.zero,Vector3.one*.32f,joint);Segment("Forearm",foreArm,Vector3.zero,new Vector3(.85f,.10f,0),skin,.14f);
+            hand=NewObject("B hand reference",foreArm);hand.localPosition=new Vector3(.85f,.10f,0);Ellipsoid("Palm",hand,Vector3.zero,new Vector3(.35f,.20f,.42f),skin);
+            for(int i=0;i<4;i++)Segment("Curled gripping finger "+i,hand,new Vector3(.03f,.0f,-.16f+i*.10f),new Vector3(.22f,.15f,-.16f+i*.10f),skin,.045f);
+            Segment("Thumb",hand,new Vector3(-.07f,.10f,.21f),new Vector3(.13f,.20f,.14f),skin,.065f);
+            sword=NewObject("A sword input reference",hand);sword.localPosition=new Vector3(.14f,.15f,0);
+            Segment("Sword leather grip",sword,Vector3.zero,new Vector3(0,.42f,0),new Color32(93,62,39,255),.075f);
+            Ellipsoid("Sword pommel",sword,Vector3.zero,Vector3.one*.16f,Gold);
+            Segment("Sword crossguard",sword,new Vector3(-.35f,.44f,0),new Vector3(.35f,.44f,0),Gold,.055f);
+            Fin("Tapered steel sword blade",sword,new[]{new Vector2(.47f,-.08f),new Vector2(2.15f,-.08f),new Vector2(2.52f,0),new Vector2(2.15f,.08f),new Vector2(.47f,.08f)},.06f,new Color32(207,215,223,255));
+        }
+        private void EvaluateArm(float t)
+        {upperArm.localRotation=Quaternion.AngleAxis(20,Vector3.up);foreArm.localRotation=Quaternion.AngleAxis(-20,Vector3.forward);hand.localRotation=Quaternion.AngleAxis(30,Vector3.up);sword.localRotation=Quaternion.AngleAxis(15*Ease(t),Vector3.forward);handArm=Matrix4x4.Rotate(upperArm.localRotation*foreArm.localRotation*hand.localRotation);swordHand=Matrix4x4.Rotate(sword.localRotation);}
+        private Transform Part(string name,Transform parent,Vector3 offset,Quaternion rotation)
+        {Transform t=NewObject(name,parent);t.localPosition=offset;t.localRotation=rotation;orientationParts.Add(t);Ellipsoid("Visible reference joint",t,Vector3.zero,Vector3.one*.13f,Gold);return t;}
+        private void BuildMannequin()
+        {
+            personRoot=NewObject("Model assumption:15 parent-relative orientations, not a humanoid standard",generated);personRoot.localScale=Vector3.one*1.15f;
+            Color shell=new Color32(176,184,192,255),joint=new Color32(50,60,69,255),face=new Color32(36,45,53,255);
+            Transform pelvis=Part("01_pelvis",personRoot,new Vector3(0,-.1f,0),Quaternion.identity);Ellipsoid("Pelvis shell",pelvis,new Vector3(0,.02f,0),new Vector3(.65f,.40f,.40f),shell);
+            Transform torso=Part("02_torso",pelvis,new Vector3(0,.45f,0),Quaternion.identity);Ellipsoid("Recognizable chest and abdomen",torso,new Vector3(0,.26f,0),new Vector3(.85f,.95f,.42f),shell);Segment("Neck",torso,new Vector3(0,.68f,0),new Vector3(0,.88f,0),joint,.10f);
+            Transform head=Part("03_head",torso,new Vector3(0,1.04f,0),Quaternion.AngleAxis(5,Vector3.up));Ellipsoid("Neutral mannequin head",head,new Vector3(0,.10f,0),new Vector3(.43f,.56f,.39f),shell);
+            Ellipsoid("Left eye",head,new Vector3(-.085f,.15f,-.185f),new Vector3(.035f,.045f,.025f),face);Ellipsoid("Right eye",head,new Vector3(.085f,.15f,-.185f),new Vector3(.035f,.045f,.025f),face);Ellipsoid("Nose",head,new Vector3(0,.065f,-.21f),new Vector3(.07f,.09f,.08f),shell);
+            for(int side=-1;side<=1;side+=2)
+            {
+                string lr=side<0?"left":"right";int a=side<0?4:7;
+                Transform upper=Part(a.ToString("00")+"_"+lr+"_upper_arm",torso,new Vector3(side*.55f,.57f,0),Quaternion.AngleAxis(side*20,Vector3.forward));Ellipsoid("Shoulder articulation",upper,Vector3.zero,Vector3.one*.29f,joint);Segment("Upper arm shell",upper,new Vector3(0,-.10f,0),new Vector3(0,-.62f,0),shell,.125f);
+                Transform fore=Part((a+1).ToString("00")+"_"+lr+"_forearm",upper,new Vector3(0,-.68f,0),Quaternion.AngleAxis(20,Vector3.right));Ellipsoid("Elbow articulation",fore,Vector3.zero,Vector3.one*.22f,joint);Segment("Forearm shell",fore,new Vector3(0,-.08f,0),new Vector3(0,-.55f,0),shell,.10f);
+                Transform palm=Part((a+2).ToString("00")+"_"+lr+"_hand",fore,new Vector3(0,-.64f,0),Quaternion.identity);Ellipsoid("Articulated palm",palm,new Vector3(0,-.10f,0),new Vector3(.22f,.28f,.13f),shell);
+                for(int f=0;f<4;f++)Segment("Distinct finger "+f,palm,new Vector3(-.075f+f*.05f,-.20f,0),new Vector3(-.075f+f*.05f,-.34f,0),shell,.018f);
+                Segment("Thumb",palm,new Vector3(side*.10f,-.08f,0),new Vector3(side*.15f,-.23f,-.03f),shell,.025f);
+                int leg=side<0?10:13;
+                Transform thigh=Part(leg.ToString("00")+"_"+lr+"_thigh",pelvis,new Vector3(side*.25f,-.15f,0),Quaternion.AngleAxis(side*-3,Vector3.forward));Ellipsoid("Hip joint",thigh,Vector3.zero,Vector3.one*.27f,joint);Segment("Thigh shell",thigh,new Vector3(0,-.10f,0),new Vector3(0,-.75f,0),shell,.15f);
+                Transform calf=Part((leg+1).ToString("00")+"_"+lr+"_calf",thigh,new Vector3(0,-.85f,0),Quaternion.AngleAxis(-5,Vector3.right));Ellipsoid("Knee joint",calf,Vector3.zero,Vector3.one*.25f,joint);Segment("Calf shell",calf,new Vector3(0,-.09f,0),new Vector3(0,-.67f,0),shell,.115f);
+                Transform foot=Part((leg+2).ToString("00")+"_"+lr+"_foot",calf,new Vector3(0,-.76f,0),Quaternion.identity);Ellipsoid("Recognizable foot and toe",foot,new Vector3(0,-.08f,-.16f),new Vector3(.25f,.20f,.53f),shell);
+            }
+            if(orientationParts.Count!=15)throw new InvalidOperationException("Mannequin must export exactly15 orientation references");
+        }
+        public MatrixFrame State(int frame,float t)
+        {
+            var c=ColumnMatrix;var axes=new[]{c.MultiplyVector(Unit[0]),c.MultiplyVector(Unit[1]),c.MultiplyVector(Unit[2])};
+            var list=new List<ScreenAnchor>();AddAnchor(list,"origin",origin);AddAnchor(list,"point",pointU);
+            for(int i=0;i<3;i++){AddAnchor(list,"object"+"XYZ"[i],origin+axes[i]*CoordinateDrawingScale);AddAnchor(list,"upright"+"XYZ"[i],origin+Unit[i]*CoordinateDrawingScale);AddAnchor(list,"basisUnit"+"XYZ"[i],origin+axes[i]*CoordinateDrawingScale);}
+            AddAnchor(list,"projectionFoot",Vector3.right*(axes[0].x*CoordinateDrawingScale));AddAnchor(list,"weightedXEnd",origin+axes[0]*CoordinateDrawingScale);AddAnchor(list,"nose",origin+c.MultiplyVector(new Vector3(0,0,2.1f)));
+            if(shot.mode=="point-path")AddAnchor(list,"activeContributionCursor",traceCursor.position);
+            if(rotationArc!=null){AddAnchor(list,"activeArcTip",activeArcTip);AddAnchor(list,"activeRotationAxisTip",origin+(shot.id=="intro-orientation"?Vector3.forward:Vector3.up)*2.55f);}
+            if(armRoot!=null)
+            {
+                AddAnchor(list,"armOrigin",armRoot.position);AddAnchor(list,"handOrigin",hand.position);AddAnchor(list,"swordOrigin",sword.position);AddAnchor(list,"swordTip",sword.TransformPoint(new Vector3(0,2.52f,0)));
+                for(int i=0;i<3;i++){AddAnchor(list,"bodyC"+"XYZ"[i],armRoot.TransformPoint(Unit[i]*.8f));AddAnchor(list,"handB"+"XYZ"[i],hand.TransformPoint(Unit[i]*.8f));AddAnchor(list,"toolA"+"XYZ"[i],sword.TransformPoint(Unit[i]*.8f));}
+            }
+            var refs=new List<PartReference>();
+            foreach(var part in orientationParts)
+            {string key="part."+part.name;AddAnchor(list,key+".origin",part.position);refs.Add(new PartReference{name=part.name,parent=part.parent==personRoot?"model_parent":part.parent.name,rowParentOrientation=Row(Matrix4x4.Rotate(part.localRotation))});}
+            bool scalar=shot.mode!="direction"&&shot.mode!="intro-translate"&&shot.mode!="arm"&&shot.mode!="humanoid"&&shot.mode!="complex"&&shot.mode!="scale"&&shot.mode!="shear"&&shot.mode!="reflection"&&shot.mode!="creep"&&shot.mode!="normalize"&&shot.mode!="orthonormalize";
+            var f=new MatrixFrame{frame=frame,t=t,angle=scalar?angle:0,angleMeaning=scalar?(shot.mode=="camera"?"actual authored camera-roll command; object matrix unchanged":"actual authored single-axis command"):"not applicable; zero is placeholder, not a measured orientation angle",shot=shot.id,mode=shot.mode,rowMatrix=Row(c),rowInverse=Row(c.inverse),rowGram=Row(c.transpose*c),determinant=c.determinant,
+                basisLengths=new[]{axes[0].magnitude,axes[1].magnitude,axes[2].magnitude},pairDots=new[]{Vector3.Dot(axes[0],axes[1]),Vector3.Dot(axes[0],axes[2]),Vector3.Dot(axes[1],axes[2])},
+                objectPoint=shot.pointObject,uprightPoint=(pointU-origin)/CoordinateDrawingScale,offset=origin,projection=axes[0].x,modelPixelBounds=ModelBounds(),
+                cameraPosition=captureCamera.transform.position,cameraUp=captureCamera.transform.up,cameraTarget=Vector3.zero,anchors=list.ToArray(),
+                swordToHand=Row(swordHand),handToArm=Row(handArm),swordToArm=Row(handArm*swordHand),orientationReferences=refs.ToArray()};
+            if(shot.mode.StartsWith("target-")){f.objectPoint=c.inverse.MultiplyVector((pointU-origin)/CoordinateDrawingScale);f.uprightPoint=(pointU-origin)/CoordinateDrawingScale;}
+            return f;
+        }
+        private void AddAnchor(List<ScreenAnchor> a,string name,Vector3 p)
+        {Vector3 v=captureCamera.WorldToViewportPoint(p);a.Add(new ScreenAnchor{name=name,world=p,pixel=new Vector3(v.x*Width,(1-v.y)*Height,v.z),inViewport=v.z>0&&v.x>=0&&v.x<=1&&v.y>=0&&v.y<=1});}
+        private static float[] Row(Matrix4x4 column)
+        {var a=new float[9];for(int r=0;r<3;r++)for(int c=0;c<3;c++)a[r*3+c]=column[c,r];return a;}
+        private Vector4 ModelBounds()
+        {
+            float minX=float.PositiveInfinity,minY=minX,maxX=float.NegativeInfinity,maxY=maxX;
+            // Conservative bounds of the actual deformed mesh AABBs, avoiding
+            // a costly per-vertex camera projection on every captured frame.
+            foreach(var part in deform)
+            {Bounds b=part.mesh.bounds;for(int i=0;i<8;i++)
+                {Vector3 v=new Vector3((i&1)==0?b.min.x:b.max.x,(i&2)==0?b.min.y:b.max.y,(i&4)==0?b.min.z:b.max.z)+origin;
+                 Vector3 p=captureCamera.WorldToViewportPoint(v);float x=p.x*Width,y=(1-p.y)*Height;minX=Mathf.Min(minX,x);minY=Mathf.Min(minY,y);maxX=Mathf.Max(maxX,x);maxY=Mathf.Max(maxY,y);}}
+            Transform actor=personRoot!=null?personRoot:armRoot;
+            if(actor!=null)foreach(var r in actor.GetComponentsInChildren<Renderer>())
+            {Bounds b=r.bounds;for(int i=0;i<8;i++){Vector3 v=new Vector3((i&1)==0?b.min.x:b.max.x,(i&2)==0?b.min.y:b.max.y,(i&4)==0?b.min.z:b.max.z);Vector3 p=captureCamera.WorldToViewportPoint(v);float x=p.x*Width,y=(1-p.y)*Height;minX=Mathf.Min(minX,x);minY=Mathf.Min(minY,y);maxX=Mathf.Max(maxX,x);maxY=Mathf.Max(maxY,y);}}
+            if(deform.Count==0&&actor==null)return Vector4.zero;return new Vector4(minX,minY,maxX,maxY);
+        }
+        private void ClearOwned()
+        {if(generated!=null)DestroyOwnedObject(generated.gameObject);foreach(var m in ownedMeshes)if(m!=null)DestroyOwnedObject(m);foreach(var m in ownedMaterials)if(m!=null)DestroyOwnedObject(m);ownedMeshes.Clear();ownedMaterials.Clear();materialCache.Clear();deform.Clear();dynamicLines.Clear();orientationParts.Clear();armRoot=aircraft=personRoot=null;rotationArc=rotationAxisLine=null;rotationArrow=null;}
+
+        private Transform BuildAircraft(string label, Vector3 mathPosition, out Transform leftAileron,
+            out Transform rightAileron, out Transform elevator, out Transform rudder)
+        {
+            Transform root = NewObject(label, generated);
+            root.localPosition = ToNative(mathPosition);
+            Color fuselage = new Color32(244, 188, 51, 255);
+            Color ivory = new Color32(220, 224, 229, 255);
+            Color dark = new Color32(37, 49, 64, 255);
+            Color canopy = new Color32(44, 72, 89, 255);
+            float[] z = { -2.08f, -1.70f, -1.1f, -.5f, .25f, .85f, 1.45f, 1.86f, 2.08f };
+            float[] r = { .04f, .13f, .22f, .28f, .31f, .29f, .21f, .10f, .025f };
+            Lathe("Tapered rounded fuselage", root, z, r, fuselage);
+            Ellipsoid("Dark cockpit canopy", root, new Vector3(0f, .27f, .45f), new Vector3(.43f, .30f, .93f), canopy);
+            Ellipsoid("Cockpit rear frame", root, new Vector3(0f, .28f, .04f), new Vector3(.45f, .32f, .045f), dark);
+            Ellipsoid("Nose cone", root, new Vector3(0f, 0f, 1.84f), new Vector3(.23f, .23f, .42f), dark);
+            // Each wing has a tapered planform and actual thickness, not a cuboid.
+            Wing("Port main wing", root, new[] { new Vector2(-.20f, .52f), new Vector2(-2.22f, -.10f),
+                new Vector2(-2.12f, -.51f), new Vector2(-.21f, -.35f) }, .02f, .09f, ivory);
+            Wing("Starboard main wing", root, new[] { new Vector2(.20f, .52f), new Vector2(.21f, -.35f),
+                new Vector2(2.12f, -.51f), new Vector2(2.22f, -.10f) }, .02f, .09f, ivory);
+            Wing("Port yellow wing-tip", root, new[] { new Vector2(-1.98f, -.03f), new Vector2(-2.22f, -.10f),
+                new Vector2(-2.12f, -.51f), new Vector2(-1.96f, -.49f) }, .078f, .035f, fuselage);
+            Wing("Starboard yellow wing-tip", root, new[] { new Vector2(1.98f, -.03f), new Vector2(1.96f, -.49f),
+                new Vector2(2.12f, -.51f), new Vector2(2.22f, -.10f) }, .078f, .035f, fuselage);
+            leftAileron = NewObject("Port hinged aileron", root);
+            leftAileron.localPosition = ToNative(new Vector3(-1.35f, .03f, -.36f));
+            Wing("Port aileron panel", leftAileron, new[] { new Vector2(-.60f, 0f), new Vector2(.55f, .04f),
+                new Vector2(.55f, -.12f), new Vector2(-.57f, -.15f) }, 0f, .065f, dark);
+            rightAileron = NewObject("Starboard hinged aileron", root);
+            rightAileron.localPosition = ToNative(new Vector3(1.35f, .03f, -.36f));
+            Wing("Starboard aileron panel", rightAileron, new[] { new Vector2(-.55f, .04f), new Vector2(.60f, 0f),
+                new Vector2(.57f, -.15f), new Vector2(-.55f, -.12f) }, 0f, .065f, dark);
+            Wing("Tailplane", root, new[] { new Vector2(-1.00f, -1.62f), new Vector2(-.12f, -1.35f),
+                new Vector2(.12f, -1.35f), new Vector2(1.00f, -1.62f), new Vector2(.89f, -1.88f),
+                new Vector2(-.89f, -1.88f) }, .14f, .065f, ivory);
+            elevator = NewObject("Hinged elevator", root);
+            elevator.localPosition = ToNative(new Vector3(0f, .14f, -1.76f));
+            Wing("Elevator trailing surface", elevator, new[] { new Vector2(-.87f, 0f), new Vector2(.87f, 0f),
+                new Vector2(.81f, -.18f), new Vector2(-.81f, -.18f) }, 0f, .055f, fuselage);
+            Fin("Vertical tail fin", root, new[] { new Vector2(.14f, -1.16f), new Vector2(.93f, -1.58f),
+                new Vector2(.83f, -1.88f), new Vector2(.12f, -1.95f) }, .07f, ivory);
+            rudder = NewObject("Hinged rudder", root);
+            rudder.localPosition = ToNative(new Vector3(0f, .15f, -1.80f));
+            Fin("Rudder trailing surface", rudder, new[] { new Vector2(0f, 0f), new Vector2(.65f, .02f),
+                new Vector2(.57f, -.15f), new Vector2(0f, -.15f) }, .075f, fuselage);
+            Ellipsoid("Engine exhaust port", root, new Vector3(0f, .0f, -2.035f), new Vector3(.105f, .105f, .07f), dark);
+            Ellipsoid("Visible engine intake", root, new Vector3(0f, -.17f, 1.10f), new Vector3(.24f, .11f, .37f), dark);
+            // Seams and cabin frame give readable articulated construction at mobile size.
+            Segment("Canopy center frame", root, new Vector3(0f, .422f, .14f), new Vector3(0f, .422f, .70f), dark, .022f);
+            Segment("Port wing root seam", root, new Vector3(-.30f, .09f, .46f), new Vector3(-.30f, .09f, -.33f), dark, .015f);
+            Segment("Starboard wing root seam", root, new Vector3(.30f, .09f, .46f), new Vector3(.30f, .09f, -.33f), dark, .015f);
+            AddAsymmetricMark(root);
+            return root;
+        }
+
+        private void Lathe(string label, Transform parent, float[] zs, float[] radii, Color color)
+        {
+            const int sides = 32;
+            var verts = new List<Vector3>(); var tris = new List<int>();
+            for (int k = 0; k < zs.Length; k++) for (int j = 0; j < sides; j++)
+            {
+                float a = j * Mathf.PI * 2f / sides;
+                verts.Add(new Vector3(Mathf.Cos(a) * radii[k], Mathf.Sin(a) * radii[k] * .85f, zs[k]));
+            }
+            for (int k = 0; k < zs.Length - 1; k++) for (int j = 0; j < sides; j++)
+            {
+                int i = k * sides + j, n = k * sides + (j + 1) % sides;
+                tris.AddRange(new[] { i, n, i + sides, n, n + sides, i + sides });
+            }
+            CreateMesh(label, parent, verts.ToArray(), tris.ToArray(), color);
+        }
+        private void Wing(string label, Transform parent, Vector2[] xz, float y, float thickness, Color color)
+        {
+            var verts = new Vector3[xz.Length * 2]; var tris = new List<int>(); int n = xz.Length;
+            for (int i = 0; i < n; i++)
+            {
+                verts[i] = new Vector3(xz[i].x, y + thickness * .5f, xz[i].y);
+                verts[i + n] = new Vector3(xz[i].x, y - thickness * .5f, xz[i].y);
+            }
+            for (int i = 1; i < n - 1; i++) tris.AddRange(new[] { 0, i + 1, i, n, n + i, n + i + 1 });
+            for (int i = 0; i < n; i++) { int j = (i + 1) % n; tris.AddRange(new[] { i, i + n, j, j, i + n, j + n }); }
+            CreateMesh(label, parent, verts, tris.ToArray(), color);
+        }
+        private void Fin(string label, Transform parent, Vector2[] yz, float width, Color color)
+        {
+            var v = new Vector3[yz.Length * 2]; var t = new List<int>(); int n = yz.Length;
+            for (int i = 0; i < n; i++) { v[i] = new Vector3(-width * .5f, yz[i].x, yz[i].y); v[i + n] = new Vector3(width * .5f, yz[i].x, yz[i].y); }
+            for (int i = 1; i < n - 1; i++) t.AddRange(new[] { 0, i + 1, i, n, n + i, n + i + 1 });
+            for (int i = 0; i < n; i++) { int j = (i + 1) % n; t.AddRange(new[] { i, j, i + n, j, j + n, i + n }); }
+            CreateMesh(label, parent, v, t.ToArray(), color);
+        }
+        private void CreateMesh(string label, Transform parent, Vector3[] mathVerts, int[] mathTriangles, Color color)
+        {
+            var mesh = new Mesh { name = label + " self-authored mesh" };
+            // Reused owner-authored geometry in native +Z-forward coordinates.
+            for (int i = 0; i < mathVerts.Length; i++) mathVerts[i] = ToNative(mathVerts[i]);
+mesh.vertices = mathVerts; mesh.triangles = mathTriangles; mesh.RecalculateNormals(); mesh.RecalculateBounds();
+            ownedMeshes.Add(mesh);
+            Transform obj = NewObject(label, parent);
+            obj.gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = obj.gameObject.AddComponent<MeshRenderer>(); renderer.sharedMaterial = MakeMaterial(color, false);
+            renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
+        }
+        private void Ellipsoid(string label, Transform parent, Vector3 mathCenter, Vector3 dimensions, Color color)
+        {
+            GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Sphere); obj.name = label;
+            obj.transform.SetParent(parent, false); obj.transform.localPosition = ToNative(mathCenter);
+            obj.transform.localScale = dimensions;
+            var collider = obj.GetComponent<Collider>(); if (collider != null) DestroyOwnedObject(collider);
+            var renderer = obj.GetComponent<MeshRenderer>(); renderer.sharedMaterial = MakeMaterial(color, false);
+            renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
+        }
+        private void BuildAxes(Transform parent, float length, float radius, float strength)
+        {
+            BuildArrow(parent, Vector3.zero, Vector3.right * length, Color.Lerp(Color.white, AxisX, strength), radius);
+            BuildArrow(parent, Vector3.zero, Vector3.up * length, Color.Lerp(Color.white, AxisY, strength), radius);
+            BuildArrow(parent, Vector3.zero, Vector3.forward * length, Color.Lerp(Color.white, AxisZ, strength), radius);
+        }
+        private void BuildArrow(Transform parent, Vector3 start, Vector3 end, Color color, float radius)
+        {
+            Vector3 d = (end - start).normalized;
+            Segment("Axis shaft", parent, start, end - d * .23f, color, radius);
+            const int sides = 20;
+            var verts = new Vector3[sides + 2]; var tris = new List<int>();
+            Vector3 u = Vector3.Cross(d, Mathf.Abs(d.y) < .9f ? Vector3.up : Vector3.right).normalized;
+            Vector3 v = Vector3.Cross(d, u); Vector3 basePoint = end - d * .23f;
+            verts[0] = end; verts[sides + 1] = basePoint;
+            for (int i = 0; i < sides; i++)
+            {
+                float a = i * Mathf.PI * 2f / sides;
+                verts[i + 1] = basePoint + (u * Mathf.Cos(a) + v * Mathf.Sin(a)) * radius * 3.4f;
+            }
+            for (int i = 0; i < sides; i++) { int next = (i + 1) % sides + 1; tris.AddRange(new[] { 0, i + 1, next, sides + 1, next, i + 1 }); }
+            CreateMesh("Arrow head", parent, verts, tris.ToArray(), color);
+        }
+        private void Segment(string label, Transform parent, Vector3 start, Vector3 end, Color color, float radius)
+        {
+            GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder); obj.name = label;
+            obj.transform.SetParent(parent, false);
+            Vector3 a = ToNative(start), b = ToNative(end);
+            obj.transform.localPosition = (a + b) * .5f;
+            obj.transform.localRotation = Quaternion.FromToRotation(Vector3.up, (b - a).normalized);
+            obj.transform.localScale = new Vector3(radius * 2f, Vector3.Distance(a, b) * .5f, radius * 2f);
+            var collider = obj.GetComponent<Collider>(); if (collider != null) DestroyOwnedObject(collider);
+            var renderer = obj.GetComponent<MeshRenderer>(); renderer.sharedMaterial = MakeMaterial(color, true);
+            renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
+        }
+        private void BuildRing(Transform parent, Vector3 normal, float radius, Color color, float tubeRadius)
+        {
+            Vector3 u = Vector3.Cross(normal, Vector3.forward).normalized;
+            if (u.sqrMagnitude < .5f) u = Vector3.right;
+            Vector3 v = Vector3.Cross(normal, u).normalized;
+            const int count = 96;
+            for (int i = 0; i < count; i++)
+            {
+                float a = i * Mathf.PI * 2f / count, b = (i + 1) * Mathf.PI * 2f / count;
+                Segment("Ring arc", parent, (u * Mathf.Cos(a) + v * Mathf.Sin(a)) * radius,
+                    (u * Mathf.Cos(b) + v * Mathf.Sin(b)) * radius, color, tubeRadius);
+            }
+        }
+        private Material MakeMaterial(Color color, bool unlit)
+        {
+            bool srp = UsesSrp();
+            string cacheKey = ColorUtility.ToHtmlStringRGBA(color) + "-" + unlit + "-" + srp;
+            if (materialCache.TryGetValue(cacheKey, out Material existing)) return existing;
+            Shader shader = Shader.Find(srp ? (unlit ? "Universal Render Pipeline/Unlit" : "Universal Render Pipeline/Lit")
+                : (unlit ? "Unlit/Color" : "Standard"));
+            if (shader == null) shader = Shader.Find("Sprites/Default");
+            Material material = new Material(shader) { name = "M04 owned " + ColorUtility.ToHtmlStringRGB(color) };
+            material.color = color;
+            if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
+            if (material.HasProperty("_Smoothness")) material.SetFloat("_Smoothness", .22f);
+            if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", .22f);
+            if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", 0f);
+            // Procedural surfaces are double-sided for stable authoring and interior visibility.
+            if (material.HasProperty("_Cull")) material.SetFloat("_Cull", 0f);
+            ownedMaterials.Add(material); materialCache[cacheKey] = material; return material;
+        }
+        private static Transform NewObject(string name, Transform parent)
+        { var obj = new GameObject(name); obj.transform.SetParent(parent, false); return obj.transform; }
+        private static void DestroyOwnedObject(UnityEngine.Object obj)
+        { if (Application.isPlaying) UnityEngine.Object.Destroy(obj); else UnityEngine.Object.DestroyImmediate(obj); }
+
+
+    }
+}

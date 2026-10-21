@@ -1,0 +1,183 @@
+        private Transform BuildAircraft(string label, Vector3 mathPosition, out Transform leftAileron,
+            out Transform rightAileron, out Transform elevator, out Transform rudder)
+        {
+            Transform root = NewObject(label, generated);
+            root.localPosition = ToNative(mathPosition);
+            Color fuselage = new Color32(244, 188, 51, 255);
+            Color ivory = new Color32(220, 224, 229, 255);
+            Color dark = new Color32(37, 49, 64, 255);
+            Color canopy = new Color32(44, 72, 89, 255);
+            float[] z = { -2.08f, -1.70f, -1.1f, -.5f, .25f, .85f, 1.45f, 1.86f, 2.08f };
+            float[] r = { .04f, .13f, .22f, .28f, .31f, .29f, .21f, .10f, .025f };
+            Lathe("Tapered rounded fuselage", root, z, r, fuselage);
+            Ellipsoid("Dark cockpit canopy", root, new Vector3(0f, .27f, .45f), new Vector3(.43f, .30f, .93f), canopy);
+            Ellipsoid("Cockpit rear frame", root, new Vector3(0f, .28f, .04f), new Vector3(.45f, .32f, .045f), dark);
+            Ellipsoid("Nose cone", root, new Vector3(0f, 0f, 1.84f), new Vector3(.23f, .23f, .42f), dark);
+            // Each wing has a tapered planform and actual thickness, not a cuboid.
+            Wing("Port main wing", root, new[] { new Vector2(-.20f, .52f), new Vector2(-2.22f, -.10f),
+                new Vector2(-2.12f, -.51f), new Vector2(-.21f, -.35f) }, .02f, .09f, ivory);
+            Wing("Starboard main wing", root, new[] { new Vector2(.20f, .52f), new Vector2(.21f, -.35f),
+                new Vector2(2.12f, -.51f), new Vector2(2.22f, -.10f) }, .02f, .09f, ivory);
+            Wing("Port yellow wing-tip", root, new[] { new Vector2(-1.98f, -.03f), new Vector2(-2.22f, -.10f),
+                new Vector2(-2.12f, -.51f), new Vector2(-1.96f, -.49f) }, .078f, .035f, fuselage);
+            Wing("Starboard yellow wing-tip", root, new[] { new Vector2(1.98f, -.03f), new Vector2(1.96f, -.49f),
+                new Vector2(2.12f, -.51f), new Vector2(2.22f, -.10f) }, .078f, .035f, fuselage);
+            leftAileron = NewObject("Port hinged aileron", root);
+            leftAileron.localPosition = ToNative(new Vector3(-1.35f, .03f, -.36f));
+            Wing("Port aileron panel", leftAileron, new[] { new Vector2(-.60f, 0f), new Vector2(.55f, .04f),
+                new Vector2(.55f, -.12f), new Vector2(-.57f, -.15f) }, 0f, .065f, dark);
+            rightAileron = NewObject("Starboard hinged aileron", root);
+            rightAileron.localPosition = ToNative(new Vector3(1.35f, .03f, -.36f));
+            Wing("Starboard aileron panel", rightAileron, new[] { new Vector2(-.55f, .04f), new Vector2(.60f, 0f),
+                new Vector2(.57f, -.15f), new Vector2(-.55f, -.12f) }, 0f, .065f, dark);
+            Wing("Tailplane", root, new[] { new Vector2(-1.00f, -1.62f), new Vector2(-.12f, -1.35f),
+                new Vector2(.12f, -1.35f), new Vector2(1.00f, -1.62f), new Vector2(.89f, -1.88f),
+                new Vector2(-.89f, -1.88f) }, .14f, .065f, ivory);
+            elevator = NewObject("Hinged elevator", root);
+            elevator.localPosition = ToNative(new Vector3(0f, .14f, -1.76f));
+            Wing("Elevator trailing surface", elevator, new[] { new Vector2(-.87f, 0f), new Vector2(.87f, 0f),
+                new Vector2(.81f, -.18f), new Vector2(-.81f, -.18f) }, 0f, .055f, fuselage);
+            Fin("Vertical tail fin", root, new[] { new Vector2(.14f, -1.16f), new Vector2(.93f, -1.58f),
+                new Vector2(.83f, -1.88f), new Vector2(.12f, -1.95f) }, .07f, ivory);
+            rudder = NewObject("Hinged rudder", root);
+            rudder.localPosition = ToNative(new Vector3(0f, .15f, -1.80f));
+            Fin("Rudder trailing surface", rudder, new[] { new Vector2(0f, 0f), new Vector2(.65f, .02f),
+                new Vector2(.57f, -.15f), new Vector2(0f, -.15f) }, .075f, fuselage);
+            Ellipsoid("Engine exhaust port", root, new Vector3(0f, .0f, -2.035f), new Vector3(.105f, .105f, .07f), dark);
+            Ellipsoid("Visible engine intake", root, new Vector3(0f, -.17f, 1.10f), new Vector3(.24f, .11f, .37f), dark);
+            // Seams and cabin frame give readable articulated construction at mobile size.
+            Segment("Canopy center frame", root, new Vector3(0f, .422f, .14f), new Vector3(0f, .422f, .70f), dark, .022f);
+            Segment("Port wing root seam", root, new Vector3(-.30f, .09f, .46f), new Vector3(-.30f, .09f, -.33f), dark, .015f);
+            Segment("Starboard wing root seam", root, new Vector3(.30f, .09f, .46f), new Vector3(.30f, .09f, -.33f), dark, .015f);
+            AddAsymmetricMark(root);
+            return root;
+        }
+
+        private void Lathe(string label, Transform parent, float[] zs, float[] radii, Color color)
+        {
+            const int sides = 32;
+            var verts = new List<Vector3>(); var tris = new List<int>();
+            for (int k = 0; k < zs.Length; k++) for (int j = 0; j < sides; j++)
+            {
+                float a = j * Mathf.PI * 2f / sides;
+                verts.Add(new Vector3(Mathf.Cos(a) * radii[k], Mathf.Sin(a) * radii[k] * .85f, zs[k]));
+            }
+            for (int k = 0; k < zs.Length - 1; k++) for (int j = 0; j < sides; j++)
+            {
+                int i = k * sides + j, n = k * sides + (j + 1) % sides;
+                tris.AddRange(new[] { i, n, i + sides, n, n + sides, i + sides });
+            }
+            CreateMesh(label, parent, verts.ToArray(), tris.ToArray(), color);
+        }
+        private void Wing(string label, Transform parent, Vector2[] xz, float y, float thickness, Color color)
+        {
+            var verts = new Vector3[xz.Length * 2]; var tris = new List<int>(); int n = xz.Length;
+            for (int i = 0; i < n; i++)
+            {
+                verts[i] = new Vector3(xz[i].x, y + thickness * .5f, xz[i].y);
+                verts[i + n] = new Vector3(xz[i].x, y - thickness * .5f, xz[i].y);
+            }
+            for (int i = 1; i < n - 1; i++) tris.AddRange(new[] { 0, i + 1, i, n, n + i, n + i + 1 });
+            for (int i = 0; i < n; i++) { int j = (i + 1) % n; tris.AddRange(new[] { i, i + n, j, j, i + n, j + n }); }
+            CreateMesh(label, parent, verts, tris.ToArray(), color);
+        }
+        private void Fin(string label, Transform parent, Vector2[] yz, float width, Color color)
+        {
+            var v = new Vector3[yz.Length * 2]; var t = new List<int>(); int n = yz.Length;
+            for (int i = 0; i < n; i++) { v[i] = new Vector3(-width * .5f, yz[i].x, yz[i].y); v[i + n] = new Vector3(width * .5f, yz[i].x, yz[i].y); }
+            for (int i = 1; i < n - 1; i++) t.AddRange(new[] { 0, i + 1, i, n, n + i, n + i + 1 });
+            for (int i = 0; i < n; i++) { int j = (i + 1) % n; t.AddRange(new[] { i, j, i + n, j, j + n, i + n }); }
+            CreateMesh(label, parent, v, t.ToArray(), color);
+        }
+        private void CreateMesh(string label, Transform parent, Vector3[] mathVerts, int[] mathTriangles, Color color)
+        {
+            var mesh = new Mesh { name = label + " self-authored mesh" };
+            // Reused owner-authored geometry in native +Z-forward coordinates.
+            for (int i = 0; i < mathVerts.Length; i++) mathVerts[i] = ToNative(mathVerts[i]);
+mesh.vertices = mathVerts; mesh.triangles = mathTriangles; mesh.RecalculateNormals(); mesh.RecalculateBounds();
+            ownedMeshes.Add(mesh);
+            Transform obj = NewObject(label, parent);
+            obj.gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = obj.gameObject.AddComponent<MeshRenderer>(); renderer.sharedMaterial = MakeMaterial(color, false);
+            renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
+        }
+        private void Ellipsoid(string label, Transform parent, Vector3 mathCenter, Vector3 dimensions, Color color)
+        {
+            GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Sphere); obj.name = label;
+            obj.transform.SetParent(parent, false); obj.transform.localPosition = ToNative(mathCenter);
+            obj.transform.localScale = dimensions;
+            var collider = obj.GetComponent<Collider>(); if (collider != null) DestroyOwnedObject(collider);
+            var renderer = obj.GetComponent<MeshRenderer>(); renderer.sharedMaterial = MakeMaterial(color, false);
+            renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
+        }
+        private void BuildAxes(Transform parent, float length, float radius, float strength)
+        {
+            BuildArrow(parent, Vector3.zero, Vector3.right * length, Color.Lerp(Color.white, AxisX, strength), radius);
+            BuildArrow(parent, Vector3.zero, Vector3.up * length, Color.Lerp(Color.white, AxisY, strength), radius);
+            BuildArrow(parent, Vector3.zero, Vector3.forward * length, Color.Lerp(Color.white, AxisZ, strength), radius);
+        }
+        private void BuildArrow(Transform parent, Vector3 start, Vector3 end, Color color, float radius)
+        {
+            Vector3 d = (end - start).normalized;
+            Segment("Axis shaft", parent, start, end - d * .23f, color, radius);
+            const int sides = 20;
+            var verts = new Vector3[sides + 2]; var tris = new List<int>();
+            Vector3 u = Vector3.Cross(d, Mathf.Abs(d.y) < .9f ? Vector3.up : Vector3.right).normalized;
+            Vector3 v = Vector3.Cross(d, u); Vector3 basePoint = end - d * .23f;
+            verts[0] = end; verts[sides + 1] = basePoint;
+            for (int i = 0; i < sides; i++)
+            {
+                float a = i * Mathf.PI * 2f / sides;
+                verts[i + 1] = basePoint + (u * Mathf.Cos(a) + v * Mathf.Sin(a)) * radius * 3.4f;
+            }
+            for (int i = 0; i < sides; i++) { int next = (i + 1) % sides + 1; tris.AddRange(new[] { 0, i + 1, next, sides + 1, next, i + 1 }); }
+            CreateMesh("Arrow head", parent, verts, tris.ToArray(), color);
+        }
+        private void Segment(string label, Transform parent, Vector3 start, Vector3 end, Color color, float radius)
+        {
+            GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder); obj.name = label;
+            obj.transform.SetParent(parent, false);
+            Vector3 a = ToNative(start), b = ToNative(end);
+            obj.transform.localPosition = (a + b) * .5f;
+            obj.transform.localRotation = Quaternion.FromToRotation(Vector3.up, (b - a).normalized);
+            obj.transform.localScale = new Vector3(radius * 2f, Vector3.Distance(a, b) * .5f, radius * 2f);
+            var collider = obj.GetComponent<Collider>(); if (collider != null) DestroyOwnedObject(collider);
+            var renderer = obj.GetComponent<MeshRenderer>(); renderer.sharedMaterial = MakeMaterial(color, true);
+            renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
+        }
+        private void BuildRing(Transform parent, Vector3 normal, float radius, Color color, float tubeRadius)
+        {
+            Vector3 u = Vector3.Cross(normal, Vector3.forward).normalized;
+            if (u.sqrMagnitude < .5f) u = Vector3.right;
+            Vector3 v = Vector3.Cross(normal, u).normalized;
+            const int count = 96;
+            for (int i = 0; i < count; i++)
+            {
+                float a = i * Mathf.PI * 2f / count, b = (i + 1) * Mathf.PI * 2f / count;
+                Segment("Ring arc", parent, (u * Mathf.Cos(a) + v * Mathf.Sin(a)) * radius,
+                    (u * Mathf.Cos(b) + v * Mathf.Sin(b)) * radius, color, tubeRadius);
+            }
+        }
+        private Material MakeMaterial(Color color, bool unlit)
+        {
+            bool srp = UsesSrp();
+            string cacheKey = ColorUtility.ToHtmlStringRGBA(color) + "-" + unlit + "-" + srp;
+            if (materialCache.TryGetValue(cacheKey, out Material existing)) return existing;
+            Shader shader = Shader.Find(srp ? (unlit ? "Universal Render Pipeline/Unlit" : "Universal Render Pipeline/Lit")
+                : (unlit ? "Unlit/Color" : "Standard"));
+            if (shader == null) shader = Shader.Find("Sprites/Default");
+            Material material = new Material(shader) { name = "M04 owned " + ColorUtility.ToHtmlStringRGB(color) };
+            material.color = color;
+            if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
+            if (material.HasProperty("_Smoothness")) material.SetFloat("_Smoothness", .22f);
+            if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", .22f);
+            if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", 0f);
+            // Procedural surfaces are double-sided for stable authoring and interior visibility.
+            if (material.HasProperty("_Cull")) material.SetFloat("_Cull", 0f);
+            ownedMaterials.Add(material); materialCache[cacheKey] = material; return material;
+        }
+        private static Transform NewObject(string name, Transform parent)
+        { var obj = new GameObject(name); obj.transform.SetParent(parent, false); return obj.transform; }
+        private static void DestroyOwnedObject(UnityEngine.Object obj)
+        { if (Application.isPlaying) UnityEngine.Object.Destroy(obj); else UnityEngine.Object.DestroyImmediate(obj); }
+
