@@ -23,6 +23,9 @@ for entry in q['entries']:
   technical_caption=next(x['sha256'] for x in read(qa)['outputs'] if x['kind']=='captioned')
   status='기술 검사 완료 · 최종 화면 검수 중'
   if visual_record.get('status')=='needs-repair' and visual_record.get('captionedSha256')==technical_caption:status='기술 검사 완료 · 화면 오류 수정 중'
+ if not ready and not technical_current:
+  guide_preflight=e.H/'observed-guide-preflight.json'
+  if guide_preflight.exists() and read(guide_preflight).get('status')=='passed-still-preflight':status+=' · 표식 사전 점검 완료'
  issue=blockers.get(e.id)
  if issue and not ready:status+=' · '+issue['shortStatus']
  entry.update(status='ready-for-human-review' if ready else 'production-in-progress',audioRecovered=audio.exists(),explanationsRestored=n,explanationCount=total,gameplayRestored=ng,actualSceneCount=actual,technicalQaComplete=technical_current,humanReview='pending')

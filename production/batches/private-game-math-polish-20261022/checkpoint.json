@@ -1,13 +1,14 @@
 {
-  "updatedAt": "2026-10-21T18:51:01.701662+00:00",
-  "stage": "restored-source-normalization-and-final-visual-repairs",
+  "updatedAt": "2026-10-21T19:33:01.166524+00:00",
+  "stage": "original-restoration-and-serialized-visual-polish",
   "active": [
     "M05",
     "M06",
-    "M08",
     "M13",
     "M14",
-    "M15"
+    "M15",
+    "M16",
+    "M18"
   ],
   "ready": [],
   "blocked": [
@@ -19,41 +20,55 @@
     "M12",
     "M17"
   ],
-  "nextAction": "Do not duplicate or terminate queues. M05/M06 initial complete pairs pass full decode,60fpsPTS and recovered-audio identity but are NOT ready: inspected multiline supplement labels need spacing polish; exact words/times preserved, M05ten and M06nine states pass still preflight. PID85416 is normalizing12 restored explanation lessons (currentlyM08), then restores original FHD game cutsM13/M14/M15/M16/M18/M19/M20. PID46192 waits85416 then renders/normalizes32 polygon scenes. PID9600 waits85416+46192, preserves initialM05 outputs/evidence, re-encodes its reviewed spacing repair, then composesM15 eleven observed guides and3 native-UI insets and runs technical checks. PID43600 waits9600 and performs the equivalentM06 spacing repair. These workers create final pixel samples but NEVER visual-pass. Directly inspect new encoded caption/cut/motion samples before ready; continue other approved source/guide prep meanwhile. M07-M12/M17 FHD-source question still has no answer. No upload or next batch.",
+  "nextAction": "Do not duplicate or terminate existing queues. PID85416 restores remaining original FHD game cuts; PID46192 waits then renders/normalizes32polygon scenes. PID9600 follows with M05 spacing repair and M15 observed guides; PID43600 follows with M06 spacing repair; PID60248 follows with M16 inspected label/stroke wrapper and9 observed guides, preserving original baseline clips. All workers create encoded pixel samples but never mark visual QA passed. M16 current42diagram states and31guide states passed direct still preflight; inspect final encoded moving output before ready. M18 all28explanation source samples inspected; inspect3game scenes then prepare source-anchored guides. M07-M12/M17 FHD question remains unanswered. No upload or advance beyondM20.",
   "automationId": "16",
   "audioRecovered": 16,
   "jobs": [
     {
       "pid": 85416,
-      "job": "continue-restoration.py",
+      "updatedAt": "2026-10-21T19:26:10.533855+00:00",
       "stage": "running",
-      "statusFile": "production/batches/private-game-math-polish-20261022/remaining-restoration-job.json",
-      "episode": "M09",
-      "script": "normalize-explanations.py"
+      "dependencies": {
+        "23732": "finish-M05-technical.py",
+        "42724": "restore-lessons.py M07 M08 M09 M10 M11 M12 M15 M16 M17 M18 M19 M20"
+      },
+      "episode": "M16",
+      "script": "restore-gameplay.py",
+      "statusFile": "production/batches/private-game-math-polish-20261022/remaining-restoration-job.json"
     },
     {
       "pid": 46192,
-      "job": "restore-polygons.py --after-pid85416",
+      "updatedAt": "2026-10-21T18:02:06.219650+00:00",
       "stage": "waiting-for-existing-sequential-queue",
-      "statusFile": "production/batches/private-game-math-polish-20261022/polygon-restoration-job.json",
-      "episode": null,
-      "script": null
+      "statusFile": "production/batches/private-game-math-polish-20261022/polygon-restoration-job.json"
     },
     {
       "pid": 9600,
-      "job": "finish-visual-repairs.py (loaded defaultM05/M15)",
+      "updatedAt": "2026-10-21T18:47:55.256430+00:00",
       "stage": "waiting-for-existing-render-chain",
-      "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-job.json",
-      "episode": null,
-      "script": null
+      "dependencies": {
+        "85416": "continue-restoration.py",
+        "46192": "restore-polygons.py"
+      },
+      "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-job.json"
     },
     {
       "pid": 43600,
-      "job": "finish-visual-repairs.py --episodesM06 --after-pid9600",
+      "updatedAt": "2026-10-21T18:50:09.412800+00:00",
       "stage": "waiting-for-existing-render-chain",
-      "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M06-job.json",
-      "episode": null,
-      "script": null
+      "dependencies": {
+        "9600": "finish-visual-repairs.py"
+      },
+      "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M06-job.json"
+    },
+    {
+      "pid": 60248,
+      "updatedAt": "2026-10-21T19:32:32.802925+00:00",
+      "stage": "waiting-for-existing-render-chain",
+      "dependencies": {
+        "43600": "finish-visual-repairs.py"
+      },
+      "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M16-job.json"
     }
   ],
   "completedJobs": [
@@ -81,7 +96,10 @@
     "M06 initial1080p60 clean/captioned +246KO/EN cues technical checks passed; N06 native multiline layout inspected, not ready.",
     "M05ten/M06nine exact multiline beats:64px advance preview checked at375px; actual re-encode still pending.",
     "M15 all7 explanation and8 game-source sheets viewed;11 actual observed guides across8game scenes and08/14/17 UI insets checked on5current composite sheets. Final movingQA pending.",
-    "M16 all7 explanation source sheets viewed; secondary thin/small details require closer review."
+    "M16 all7 explanation source sheets viewed; secondary thin/small details require closer review.",
+    "All12 restored explanation lessons normalized at original frame counts; original game cuts continue serially.",
+    "M16 all five original-game source sheets plus eight candidate motion windows inspected.9guides across7scenes and42diagram-label states pass current still preflight; native frame checked. Full encoded moving QA pending.",
+    "M18 all seven original explanation scenes sampled (28states/4sheets) and directly inspected; original concept order, diagrams and voice retained. Gameplay guide preparation pending."
   ],
   "sourceIssues": {
     "ZFGdubPhasM": "Available formats verified: maximum 1280x720; find original FHD counterpart, no upscale exception assumed",
@@ -99,6 +117,10 @@
   "newVisualPreflightEvidence": {
     "M05": "projects/game-math-quaternion-foundations-v3/production/private-polish-v1/supplement-spacing-preflight.json",
     "M06": "projects/game-math-quaternion-calculations-v3/production/private-polish-v1/supplement-spacing-preflight.json",
-    "M15": "projects/game-math-rendering-light/production/private-polish-v1/observed-guide-preflight.json"
+    "M15": "projects/game-math-rendering-light/production/private-polish-v1/observed-guide-preflight.json",
+    "M16": {
+      "diagram": "projects/game-math-camera-frustum/production/private-polish-v1/camera-legibility-preflight.json",
+      "guides": "projects/game-math-camera-frustum/production/private-polish-v1/observed-guide-preflight.json"
+    }
   }
 }

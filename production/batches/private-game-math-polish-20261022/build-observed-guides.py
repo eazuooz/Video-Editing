@@ -27,7 +27,15 @@ for g in plan['guides']:
   # Short leader ends outside the ring; it does not paint over the target.
   dx,dy=lx-cx,ly-cy;norm=math.hypot(dx,dy) or 1
   tx,ty=cx+dx/norm*(rx+9),cy+dy/norm*(ry+9)
-  segments=list(zip(pts,pts[1:]))+[((lx,ly+31),(tx,ty))]
+  if g.get('shape')=='corners':
+   # Screen-space output-region brackets, not a claimed camera frustum.
+   segments=[];arm=min(rx,ry)*.24*reveal
+   for sx in [-1,1]:
+    for sy in [-1,1]:
+     x,y=cx+sx*rx,cy+sy*ry
+     segments.extend([((x,y),(x-sx*arm,y)),((x,y),(x,y-sy*arm))])
+  else:segments=list(zip(pts,pts[1:]))
+  if g.get('leader',True):segments.append(((lx,ly-31 if ly>cy else ly+31),(tx,ty)))
   # Filled narrow quads keep the ring genuinely open. ASS outlines otherwise
   # close an open polygon with an unwanted straight chord across the target.
   for layer,width,ink in [(1,8,'&H101010&'),(2,4.5,tint)]:

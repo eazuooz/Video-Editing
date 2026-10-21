@@ -4,8 +4,11 @@ from PIL import Image,ImageDraw,ImageFont
 from polish_common import *
 e=Episode(sys.argv[1]);e.authorized();plan=read(e.H/'guide-windows.json')
 out=e.O/'guide-source-windows';out.mkdir(exist_ok=True)
+selected=set(sys.argv[2:])
 font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',18);hashes={};records=[]
+if selected and (e.H/'guide-source-samples.json').exists():records=[x for x in read(e.H/'guide-source-samples.json')['samples'] if x['scene'] not in selected]
 for w in plan['windows']:
+ if selected and w['scene'] not in selected:continue
  s=next(x for x in e.T['scenes'] if x['id']==w['scene']);tiles=[]
  for k in range(round((w['end']-w['start'])*2)+1):
   t=w['start']+k/2;at=0

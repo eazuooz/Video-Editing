@@ -1,7 +1,7 @@
 """Finite serial queue for inspected text repairs and observed overlays."""
 import argparse,ctypes,ctypes.wintypes as wt,datetime,shutil,time,sys
 from polish_common import *
-parser=argparse.ArgumentParser();parser.add_argument('--episodes',nargs='+',choices=['M05','M06','M15'],default=['M05','M15']);parser.add_argument('--after-pid',type=int)
+parser=argparse.ArgumentParser();parser.add_argument('--episodes',nargs='+',choices=['M05','M06','M15','M16'],default=['M05','M15']);parser.add_argument('--after-pid',type=int)
 options=parser.parse_args();ids=options.episodes
 suffix='-'+'-'.join(ids) if options.after_pid else ''
 status=B/f'visual-repair{suffix}-job.json';output=R/'shared/output/private-game-math-polish-20261022'
@@ -42,6 +42,8 @@ try:
     assert sha(src)==sha(dst);records.append({'path':rel(dst),'sha256':sha(dst)})
    save(e.H/'initial-encoded-preservation.json',{'captionedSha256':digest,'files':records,'pixelDirectory':rel(pixels) if pixels.exists() else None,'reason':'Preserve first encode and its failed spacing review before selective label repair'})
    tasks=[('assemble.py',[ident,'--supplement-spacing']),('technical-qa.py',[ident]),('review-final-pixels.py',[ident])]
+  elif ident=='M16':
+   tasks=[('render-camera-polish.py',[]),('prepare-observed-composition.py',[ident]),('apply-camera-composition.py',[]),('assemble.py',[ident]),('technical-qa.py',[ident]),('review-final-pixels.py',[ident])]
   else:
    tasks=[('prepare-observed-composition.py',['M15']),('assemble.py',['M15']),('technical-qa.py',['M15']),('review-final-pixels.py',['M15'])]
   for script,args in tasks:
