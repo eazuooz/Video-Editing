@@ -61,6 +61,9 @@ def qa():
         if s.get('kind')!='game':
             points.extend(s['start']+u for u in [.4,.9,1.6,2.2,3.5] if s['start']+u<s['end'])
     points.extend([.1,c['durationSeconds']-.15])
+    # Visual-onlyv3: inspect changed882frames and both joins. Unchanged scenes
+    # retain their v2 all-cue/cut review; sample downstream RGB/game/A-B/ending.
+    points=[t for t in points if 3.1<=t<=18.1]+[0.1,2.9,3.2,3.233333,17.916667,17.933333,18.05,23,32,37,56.5,61.3,64.5,74,77,81.9]
     points=sorted(set(round(t,4) for t in points if 0<=t<c['durationSeconds']))
     rows=[]
     for i,t in enumerate(points):
@@ -75,7 +78,7 @@ def qa():
             im=Image.open(R/row['path']).convert('RGB'); im.thumbnail((375,666))
             x=j%4*375; y=j//4*700; sheet.paste(im,(x,y));draw.text((x+5,y+674),str(row['seconds'])+'s',fill='white')
         sheet.save(out/f'sheet-{start//12+1:02}.jpg',quality=92)
-    save(out/'index.json',dict(rows=rows,captionMidpoints=len(c['cues']),scope='Everycue andcut before/after; implementedinput/contact/control motion samples; browserplayback separatelyrecorded.'))
+    save(out/'index.json',dict(rows=rows,scope='Changed3.233333–17.933333s allcue/cut and motion states; adjacent joins; downstream RGB/game/AB/ending regression samples. Unchanged v2all182samples reused, not claimed as newly inspected. Browserplayback separatelyrecorded.'))
     if not (L/'mobile-review.mp4').exists(): run(['ffmpeg','-v','error','-n','-i',str(L/'captioned.mp4'),'-vf','scale=374:666','-c:v','libx264','-threads','3','-preset','fast','-crf','22','-c:a','copy','-movflags','+faststart',str(L/'mobile-review.mp4')])
 if __name__=='__main__':
     parser=argparse.ArgumentParser(); parser.add_argument('command',choices=['pair','integrity','qa']);parser.add_argument('--visual')

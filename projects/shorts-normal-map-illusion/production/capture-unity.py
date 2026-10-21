@@ -49,7 +49,14 @@ def main():
   assert process.returncode==0,('Unity failed',process.returncode,str(out/'unity.log'))
   success=read(out/'success.json');assert (success.get('states')==8 and success.get('actualMeshReadback') and success.get('signedSpriteGPUVerified') and success.get('representativeGridSamples')==63 and success.get('frozenSourceAssetsLoaded')) if a.mode=='preview-grid' else (success.get('frames')==({'preview-rotation':10,'patch-grid':882}.get(a.mode,timing['frames'])) and success.get('frozenSourceAssetsLoaded'))
   src=ISO/'Assets/VideoScenes'/P.name
-  if a.mode in ['preview-grid','preview-rotation','patch-grid']:
+  if a.mode in ['preview-rotation','patch-grid']:
+   # Spatial revisions preserve the frozen test bed and source textures. Copy
+   # only newly authored guide assets and independent scene/material variants.
+   for folder,patterns in {'Materials':['Grid*','08-*','09-*'],'Meshes':['GridArrowCone*'],'Scenes':['08-*','09-*']}.items():
+    for pattern in patterns:
+     for asset in (src/folder).glob(pattern):
+      if asset.is_file():shutil.copy2(asset,OWN/folder/asset.name)
+  elif a.mode=='preview-grid':
    for folder in ['Generated','Materials','Meshes','Scenes']:
     shutil.copytree(src/folder,OWN/folder,dirs_exist_ok=True)
     m=Path(str(src/folder)+'.meta')
