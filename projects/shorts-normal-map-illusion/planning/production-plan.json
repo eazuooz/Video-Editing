@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "slug": "shorts-normal-map-illusion",
-  "revision": "normal-map-v1",
-  "status": "production",
+  "revision": "normal-map-v2-grid-rgb-deadcells",
+  "status": "ready-for-narration",
   "centralQuestion": "How can a flat game surface appear bumpy under moving light while its mesh remains flat?",
   "claim": "Normal Mapping changes per-pixel shading directions without changing mesh geometry/silhouette; RGB normaldata is not the visible base colour.",
   "sourceReference": {
@@ -13,14 +13,15 @@
     "analysis": "sources/reference-analysis.json"
   },
   "learningOrder": [
-    "Hero bumpywall hook",
-    "Flatimage sharednormal response",
-    "Define normal as surfaceperpendicular direction",
-    "Encode per-pixel shadingdirections in RGBnormalmap",
-    "Lightalignment produces differentpixelbrightness; sameposition normaloff/on",
-    "3Dcharacter to2Dcolour/normalimage workflow, independently rebuilt; DeadCells developer evidence if adopted",
-    "Applysame normalmapping toflat3Dwall; actual mesh/silhouette unchanged",
-    "Closeon sameherowall and edgeview answeringhook"
+    "Same wall: apparently raised then true flat silhouette",
+    "Initial common surface normal across representative grid; define surface normal",
+    "Change shading normal per pixel across same grid",
+    "RGB normal data; signed horizontal component and unsigned storage",
+    "Encode−1→0/0→.5/+1→1; neutral tangent(0,0,1)→(.5,.5,1)≈128,128,255 explainsblue-purple",
+    "Same wall lighting response and movinglight",
+    "Actual independent Dead Cells gameplay while verifieddeveloperworkflow is narrated",
+    "Our independently reconstructed3D→colour/normalbake→2DrelitKnight",
+    "Same original wall with2triangles and flat silhouette; closehook"
   ],
   "corrections": [
     "Do not claim all 2D pixels alwayshave same illumination; distinguish normaldirection fromposition/lightdistance/basecolour.",
@@ -53,704 +54,698 @@
   "screenShare": {
     "profile": "shorts-technical",
     "fixedRatio": null,
-    "measured": {
-      "independentCommercialGameplaySeconds": 0,
-      "ourImplementationExplanationSeconds": 53.96666666666667,
-      "explanationPercent": 100,
-      "note": "Technical Short, no gameplay quota. Own executable engine output remains explanation."
-    },
-    "classification": "Self-authored actualUnityimplementation remains explanationfootage; do not pretend independentcommercialgameplay."
+    "measurementStatus": "Pending new audio/video timeline; v1 proportions archived",
+    "classification": "DeadCellsindependentcommercialgameplay; ourUnityimplementation/diagrams/extractedstills explanation. No quota orpadding."
   },
   "scenes": [
     {
       "id": "hero",
-      "start": 0,
-      "end": 1.5833333333333333,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c01",
+      "cueEnd": "c01",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Flat wall appears raised under moving light",
-      "action": "Move only the directional light over the normal-mapped wall",
-      "result": "The same wall looks bumpy",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Sameflatwall",
+      "action": "Movelightonly",
+      "result": "Surfaceappearsraised",
       "speech": [
         {
           "cue": "c01",
-          "start": 0.2,
-          "end": 1.5833333333333333,
           "text": "튀어나와 보이는 이 벽,"
         }
       ],
       "visual": {
-        "captureMode": "wall",
-        "normalStrength": 1,
-        "lightAngles": [
-          25,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "The apparent raised shape motivates a side view."
+      "boundaryLink": "Revealtrueedge"
     },
     {
       "id": "flat-reveal",
-      "start": 1.5833333333333333,
-      "end": 3.0833333333333335,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c02",
+      "cueEnd": "c02",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Wall appears raised",
-      "action": "Orbit the same camera toward the side",
-      "result": "Actual panel is flat",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Apparentlyraisedwall",
+      "action": "Orbitsamecamera",
+      "result": "Flatpanelvisible",
       "speech": [
         {
           "cue": "c02",
-          "start": 1.5833333333333333,
-          "end": 2.8666666666666667,
           "text": "사실은 평면입니다."
         }
       ],
       "visual": {
-        "captureMode": "wall-edge",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
-        ],
-        "cameraYaw": [
-          0,
-          82
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
         "hold": 0,
-        "catClearanceCorrection": "No duplicate yellow footer in this early reveal; fixed caption states the result and stays in front of the cat. Retain side-view footer only for later silhouette."
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
+        ],
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Keep the same panel and explain its initial shared surface direction."
+      "boundaryLink": "Whydoesitlookraised"
     },
     {
       "id": "shared-normal",
-      "start": 3.0833333333333335,
-      "end": 7.5,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c03",
+      "cueEnd": "c04",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "One flat panel uses the same geometric normal everywhere",
-      "action": "Show the actual geometric normal at one tracked sample on the flat wall; the plane shares this direction everywhere.",
-      "result": "The original plane supplies one shared surface direction",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Initialplanecolour",
+      "action": "Revealwhitegrid",
+      "result": "Sharednormalacrosssurface",
       "speech": [
         {
           "cue": "c03",
-          "start": 3.0833333333333335,
-          "end": 4.516666666666667,
           "text": "먼저 우리 평면 그림은,"
         },
         {
           "cue": "c04",
-          "start": 4.516666666666667,
-          "end": 7.283333333333333,
           "text": "빛 계산에 같은 표면 방향을 씁니다."
         }
       ],
       "visual": {
-        "captureMode": "wall-flatnormals",
-        "normalStrength": 0,
-        "lightAngles": [
-          40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          35,
-          35
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Define that visible direction before changing it."
+      "boundaryLink": "Definearrowmeaning"
     },
     {
       "id": "normal-definition",
-      "start": 7.5,
-      "end": 10.933333333333334,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c05",
+      "cueEnd": "c06",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Visible perpendicular arrows on the shared wall",
-      "action": "Show three-line Normal / law of perpendicular surface direction card and return to scene",
-      "result": "Viewer can name the normal before per-pixel variation",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Whiteoutwardgrid",
+      "action": "Defineperpendiculardirection",
+      "result": "Normaltermattachedtosurface",
       "speech": [
         {
           "cue": "c05",
-          "start": 7.5,
-          "end": 9.4,
           "text": "표면에서 수직으로 나가는 방향,"
         },
         {
           "cue": "c06",
-          "start": 9.4,
-          "end": 10.7,
           "text": "이게 법선입니다."
         }
       ],
       "visual": {
-        "captureMode": "wall-flatnormals",
-        "normalStrength": 0,
-        "lightAngles": [
-          40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          35,
-          35
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Keep the same wall and replace only lighting directions."
+      "boundaryLink": "Compareallgridcells"
     },
     {
-      "id": "pixel-normal",
-      "start": 10.933333333333334,
-      "end": 14.266666666666667,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "id": "grid-flat",
+      "cueStart": "c07",
+      "cueEnd": "c07",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "The original mesh normal remains unchanged at the tracked sample",
-      "action": "Enable the actual sampled shading normal, green, and compare it with the white geometric normal; the RGB map in the next beat shows spatially varying directions.",
-      "result": "Lighting directions vary while the mesh stays unchanged",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "63representativesamples",
+      "action": "Revealrowsacrosswholeplane",
+      "result": "Samewhitevectorateachpoint",
       "speech": [
         {
           "cue": "c07",
-          "start": 10.933333333333334,
-          "end": 12.183333333333334,
+          "text": "칸마다 표시하면, 처음에는 모두 같은 방향이죠."
+        }
+      ],
+      "visual": {
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
+        ],
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
+      },
+      "boundaryLink": "Changeperpixelshadingnormals"
+    },
+    {
+      "id": "pixel-normal",
+      "cueStart": "c08",
+      "cueEnd": "c09",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
+      "sourceKind": "our-implementation",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Sharednormaloff",
+      "action": "Turnnormalmapon",
+      "result": "63greenactualdirectionsvaryacrosssurface",
+      "speech": [
+        {
+          "cue": "c08",
           "text": "빛 계산에 쓸 방향을"
         },
         {
-          "cue": "c08",
-          "start": 12.183333333333334,
-          "end": 14.033333333333333,
+          "cue": "c09",
           "text": "픽셀마다 다르게 주면 어떨까요?"
         }
       ],
       "visual": {
-        "captureMode": "wall-normals",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          35,
-          35
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "The different directions now need a texture representation."
+      "boundaryLink": "Storethosevectors"
     },
     {
       "id": "normal-data",
-      "start": 14.266666666666667,
-      "end": 19.283333333333335,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c10",
+      "cueEnd": "c11",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "The per-pixel directions exist",
-      "action": "Show the actual encoded RGB normal texture, separate from albedo",
-      "result": "RGB stores direction data instead of paint colour",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Actualnormals",
+      "action": "ShowactualfrozenRGBmap",
+      "result": "Directiondatavisible",
       "speech": [
         {
-          "cue": "c09",
-          "start": 14.266666666666667,
-          "end": 17.366666666666667,
+          "cue": "c10",
           "text": "방향들을 빨강, 초록, 파랑 값에"
         },
         {
-          "cue": "c10",
-          "start": 17.366666666666667,
-          "end": 19.066666666666666,
+          "cue": "c11",
           "text": "저장한 그림이 노멀 맵입니다."
         }
       ],
       "visual": {
-        "captureMode": "wall",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 1,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Use its neutral area to explain a familiar purple normal map."
+      "boundaryLink": "Whynegativecomponents"
     },
     {
-      "id": "neutral-purple",
-      "start": 19.283333333333335,
-      "end": 23.4,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "id": "rgb-signed",
+      "cueStart": "c12",
+      "cueEnd": "c14",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "RGB direction texture remains on the same panel",
-      "action": "Mark an actual neutral area and explain local perpendicular direction",
-      "result": "Neutral purple represents the outward normal, not a purple material",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "TangentXhorizontalcomponent",
+      "action": "Labelleftnegative/rightpositive",
+      "result": "OrdinaryRGBcannotstoredirectnegative",
       "speech": [
         {
-          "cue": "c11",
-          "start": 19.283333333333335,
-          "end": 21.1,
-          "text": "기본 보라색은 재질의 색이 아니라,"
+          "cue": "c12",
+          "text": "가로 성분을 예로 들면,"
         },
         {
-          "cue": "c12",
-          "start": 21.1,
-          "end": 23.183333333333334,
-          "text": "표면에 수직인 방향 데이터예요."
+          "cue": "c13",
+          "text": "왼쪽은 음수, 오른쪽은 양수입니다."
+        },
+        {
+          "cue": "c14",
+          "text": "일반적인 RGB 그림에는 음수를 그대로 담지 못하죠."
         }
       ],
       "visual": {
-        "captureMode": "wall",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 1,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Use those directions in the same controlled lighting calculation."
+      "boundaryLink": "Shiftcomponentrange"
+    },
+    {
+      "id": "rgb-encoding",
+      "cueStart": "c15",
+      "cueEnd": "c17",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
+      "sourceKind": "our-implementation",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Signed−1..1",
+      "action": "Reveal−1→0then0→.5then+1→1",
+      "result": "Encode(n+1)/2anddecode2rgb−1",
+      "speech": [
+        {
+          "cue": "c15",
+          "text": "그래서 마이너스 일은 영,"
+        },
+        {
+          "cue": "c16",
+          "text": "영은 절반,"
+        },
+        {
+          "cue": "c17",
+          "text": "플러스 일은 최대로 옮겨 저장합니다."
+        }
+      ],
+      "visual": {
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
+        ],
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
+      },
+      "boundaryLink": "Applytoperpendicularvector"
+    },
+    {
+      "id": "neutral-purple",
+      "cueStart": "c18",
+      "cueEnd": "c23",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
+      "sourceKind": "our-implementation",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Tangentnormal0,0,1",
+      "action": "SubstituteRGBvaluesprogressively",
+      "result": "R/GhalfBmaximum→bluepurple",
+      "speech": [
+        {
+          "cue": "c18",
+          "text": "표면에 수직이면"
+        },
+        {
+          "cue": "c19",
+          "text": "가로와 세로는 영, 바깥쪽은 일이에요."
+        },
+        {
+          "cue": "c20",
+          "text": "저장하면 빨강과 초록은 절반,"
+        },
+        {
+          "cue": "c21",
+          "text": "파랑은 최대라서,"
+        },
+        {
+          "cue": "c22",
+          "text": "파랑이 강한 보라색으로 보이는 겁니다."
+        },
+        {
+          "cue": "c23",
+          "text": "재질 색이 아니라 방향 데이터죠."
+        }
+      ],
+      "visual": {
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
+        ],
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
+      },
+      "boundaryLink": "Directiondatanotmaterialcolour"
     },
     {
       "id": "light-facing",
-      "start": 23.4,
-      "end": 24.883333333333333,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c24",
+      "cueEnd": "c24",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Fixed shading-normal sample on the panel",
-      "action": "Aim directional light toward the sampled direction",
-      "result": "Direct diffuse contribution is high in our measured shader",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Samewallandselectedpoint",
+      "action": "Pointnormalatlight",
+      "result": "Actualdiffusefactorrises",
       "speech": [
         {
-          "cue": "c13",
-          "start": 23.4,
-          "end": 24.883333333333333,
+          "cue": "c24",
           "text": "빛을 마주 보면 밝게,"
         }
       ],
       "visual": {
-        "captureMode": "wall-normals",
-        "normalStrength": 1,
-        "lightAngles": [
-          -40,
-          -40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          35,
-          35
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Rotate only the light to change the same sample."
+      "boundaryLink": "Turnaway"
     },
     {
       "id": "light-sideways",
-      "start": 24.883333333333333,
-      "end": 26.816666666666666,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c25",
+      "cueEnd": "c25",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Same sample and camera",
-      "action": "Rotate only the light away from alignment",
-      "result": "Direct diffuse contribution drops; ambient remains",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Samepoint",
+      "action": "Changeonlylightrelativeangle",
+      "result": "Actualfactorfalls",
       "speech": [
         {
-          "cue": "c14",
-          "start": 24.883333333333333,
-          "end": 26.816666666666666,
+          "cue": "c25",
           "text": "옆을 향하면 어둡게 계산합니다."
         }
       ],
       "visual": {
-        "captureMode": "wall-normals",
-        "normalStrength": 1,
-        "lightAngles": [
-          -40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          35,
-          35
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Remove guides and see the same effect over the whole surface."
+      "boundaryLink": "Movelightcontinuously"
     },
     {
       "id": "moving-light",
-      "start": 26.816666666666666,
-      "end": 31.316666666666666,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c26",
+      "cueEnd": "c27",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Same texture, geometry and albedo",
-      "action": "Sweep the light continuously",
-      "result": "Apparent bumps respond across the wall",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Samewalltexture",
+      "action": "Sweepsamelight",
+      "result": "Apparentbumpsfollowlight",
       "speech": [
         {
-          "cue": "c15",
-          "start": 26.816666666666666,
-          "end": 28.016666666666666,
+          "cue": "c26",
           "text": "그래서 같은 그림에서도,"
         },
         {
-          "cue": "c16",
-          "start": 28.016666666666666,
-          "end": 30.783333333333335,
+          "cue": "c27",
           "text": "움직이는 빛에 따라 굴곡이 살아나죠."
         }
       ],
       "visual": {
-        "captureMode": "wall",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          -40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Connect direction texture lighting to a 2D character workflow."
+      "boundaryLink": "Actualgameapplication"
     },
     {
-      "id": "knight-source",
-      "start": 31.316666666666666,
-      "end": 33.38333333333333,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
-      "sourceKind": "our-implementation",
-      "before": "Actual CC0 3D Knight in one fixed pose",
-      "action": "Show the source model for our independent workflow reconstruction",
-      "result": "3D surface directions exist before baking",
+      "id": "dead-cells",
+      "cueStart": "c28",
+      "cueEnd": "c30",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "IndependentDeadCellsrecording + MCeditorialfocus",
+      "sourceKind": "independent-gameplay",
+      "scenePath": null,
+      "before": "ActualDeadCellscharacter",
+      "action": "Observedapproachlift/ride/run",
+      "result": "Gameappearanceisconcretecase; developerarticleestablishespipeline",
       "speech": [
         {
-          "cue": "c17",
-          "start": 31.316666666666666,
-          "end": 33.38333333333333,
-          "text": "데드셀의 캐릭터도 3D 모델에서"
-        }
-      ],
-      "visual": {
-        "captureMode": "knight-source",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
-        ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
-      },
-      "boundaryLink": "Export two images from this same pose."
-    },
-    {
-      "id": "knight-bake",
-      "start": 33.38333333333333,
-      "end": 35.56666666666667,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
-      "sourceKind": "our-implementation",
-      "before": "Same 3D Knight pose",
-      "action": "Show actual saved colour and linear normal image pair",
-      "result": "Both images share alpha and pixel registration",
-      "speech": [
+          "cue": "c28",
+          "text": "데드셀의 캐릭터도"
+        },
         {
-          "cue": "c18",
-          "start": 33.38333333333333,
-          "end": 35.4,
-          "text": "색 그림과 노멀 맵을 뽑아,"
-        }
-      ],
-      "visual": {
-        "captureMode": "knight-pipeline",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
-        ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
-      },
-      "boundaryLink": "Apply those images to a flat sprite and move the light."
-    },
-    {
-      "id": "knight-light",
-      "start": 35.56666666666667,
-      "end": 37.88333333333333,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
-      "sourceKind": "our-implementation",
-      "before": "Actual two-triangle sprite using its baked images",
-      "action": "Sweep the directional light without changing its image or geometry",
-      "result": "2D character responds to light",
-      "speech": [
+          "cue": "c29",
+          "text": "3D 모델에서 색 그림과 노멀 맵을 뽑아,"
+        },
         {
-          "cue": "c19",
-          "start": 35.56666666666667,
-          "end": 37.21666666666667,
+          "cue": "c30",
           "text": "이런 2D 조명에 활용했습니다."
         }
       ],
       "visual": {
-        "captureMode": "knight-lit",
-        "normalStrength": 1,
-        "lightAngles": [
-          -55,
-          55
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "sources/deadcells-v2.json"
       },
-      "boundaryLink": "Return to the opening wall and show the same mechanism in 3D."
+      "boundaryLink": "Rebuildsameworkflowwithourownasset"
+    },
+    {
+      "id": "knight-source",
+      "cueStart": "c31",
+      "cueEnd": "c31",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
+      "sourceKind": "our-implementation",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "CC0Knight3Dmodel",
+      "action": "Showfrozenonepose",
+      "result": "Sourceforourbake",
+      "speech": [
+        {
+          "cue": "c31",
+          "text": "같은 방식으로 만든 우리 캐릭터도,"
+        }
+      ],
+      "visual": {
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
+        ],
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
+      },
+      "boundaryLink": "Extractsameposemaps"
+    },
+    {
+      "id": "knight-bake",
+      "cueStart": "c31",
+      "cueEnd": "c31",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
+      "sourceKind": "our-implementation",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Samepose",
+      "action": "Showactualcolour+signedRGBnormalbakes",
+      "result": "Bothimagesareourasset",
+      "speech": [
+        {
+          "cue": "c31",
+          "text": "같은 방식으로 만든 우리 캐릭터도,"
+        }
+      ],
+      "visual": {
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
+        ],
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
+      },
+      "boundaryLink": "Relight2Dquad"
+    },
+    {
+      "id": "knight-light",
+      "cueStart": "c32",
+      "cueEnd": "c32",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
+      "sourceKind": "our-implementation",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Same2Dcolourandnormal",
+      "action": "Moveonlylight",
+      "result": "Actual2Dquadshadingchanges",
+      "speech": [
+        {
+          "cue": "c32",
+          "text": "빛을 움직이면 명암이 달라지죠."
+        }
+      ],
+      "visual": {
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
+        ],
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
+      },
+      "boundaryLink": "Backtosame3Dwall"
     },
     {
       "id": "wall-detail",
-      "start": 37.88333333333333,
-      "end": 43.46666666666667,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c33",
+      "cueEnd": "c35",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Same flat wall, normal texture enabled",
-      "action": "Sweep the light across small normal-mapped relief",
-      "result": "Small detail appears without subdividing our mesh",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Sameflatwall",
+      "action": "Movelightwithnormalmap",
+      "result": "Smallapparentdetailswithoutsubdivision",
       "speech": [
         {
-          "cue": "c20",
-          "start": 37.88333333333333,
-          "end": 39.93333333333333,
+          "cue": "c33",
           "text": "3D 벽에도 같은 원리를 쓰면,"
         },
         {
-          "cue": "c21",
-          "start": 40.18333333333333,
-          "end": 41.483333333333334,
+          "cue": "c34",
           "text": "면을 잘게 쪼개지 않고"
         },
         {
-          "cue": "c22",
-          "start": 41.483333333333334,
-          "end": 43.13333333333333,
+          "cue": "c35",
           "text": "작은 요철을 표현할 수 있어요."
         }
       ],
       "visual": {
-        "captureMode": "wall",
-        "normalStrength": 1,
-        "lightAngles": [
-          -35,
-          35
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Check the unchanged geometry directly in the same-position A/B."
+      "boundaryLink": "Checkgeometry"
     },
     {
       "id": "same-mesh",
-      "start": 43.46666666666667,
-      "end": 47.416666666666664,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c36",
+      "cueEnd": "c37",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Same frame/camera/light in both panes",
-      "action": "Toggle only normal strength 0/1 with the actual two-triangle mesh",
-      "result": "Shading differs; actual vertex/triangle counts do not",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Sameframesoff/on",
+      "action": "Projectactualtriangleoutline",
+      "result": "Both4vertices2triangles",
       "speech": [
         {
-          "cue": "c23",
-          "start": 43.46666666666667,
-          "end": 44.36666666666667,
+          "cue": "c36",
           "text": "하지만 꺼도 켜도,"
         },
         {
-          "cue": "c24",
-          "start": 44.36666666666667,
-          "end": 47.016666666666666,
+          "cue": "c37",
           "text": "우리 벽은 삼각형 두 개 그대로입니다."
         }
       ],
       "visual": {
-        "captureMode": "wall-ab",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Confirm the silhouette limit from the side."
+      "boundaryLink": "Checksilhouette"
     },
     {
       "id": "silhouette",
-      "start": 47.416666666666664,
-      "end": 49.733333333333334,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c38",
+      "cueEnd": "c38",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Same wall remains normal mapped",
-      "action": "Orbit to a near-edge camera angle",
-      "result": "Its outline remains flat",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Samepanel",
+      "action": "Orbitsideview",
+      "result": "Outlineflat",
       "speech": [
         {
-          "cue": "c25",
-          "start": 47.416666666666664,
-          "end": 49.13333333333333,
+          "cue": "c38",
           "text": "옆에서 보면 윤곽도 평평하죠."
         }
       ],
       "visual": {
-        "captureMode": "wall-edge",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          65,
-          88
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Return to same-position A/B and answer the opening question."
+      "boundaryLink": "Answeroriginalquestion"
     },
     {
       "id": "closing",
-      "start": 49.733333333333334,
-      "end": 53.96666666666667,
-      "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
-      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "cueStart": "c39",
+      "cueEnd": "c40",
+      "timingStatus": "Awaitactualv2PCMclausealignment",
+      "renderer": "Unityactualshader + MotionCanvasguides/dataoverlay",
       "sourceKind": "our-implementation",
-      "before": "Opening bumpy wall versus normal-off result",
-      "action": "Hold the same-frame normal-off/on comparison with brief cat reaction",
-      "result": "The changed quantity is the shading direction, not shape",
+      "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+      "before": "Samewallcomparison",
+      "action": "Compareunchangedgeometryandchangednormals",
+      "result": "Lightingdirectionschangednotgeometry",
       "speech": [
         {
-          "cue": "c26",
-          "start": 49.733333333333334,
-          "end": 50.56666666666667,
+          "cue": "c39",
           "text": "모양 대신,"
         },
         {
-          "cue": "c27",
-          "start": 50.56666666666667,
-          "end": 53.11666666666667,
+          "cue": "c40",
           "text": "조명 계산에 쓰는 표면 방향을 바꾼 겁니다."
         }
       ],
       "visual": {
-        "captureMode": "wall-ab",
-        "normalStrength": 1,
-        "lightAngles": [
-          40,
-          40
+        "hold": 0,
+        "cueSynchronization": "Speechandvisualoverlap; revealrelatedtarget/action/resultwithclause",
+        "fixedCaptionCenter": [
+          510,
+          1380
         ],
-        "cameraYaw": [
-          0,
-          0
-        ],
-        "shaderMode": 0,
-        "frameAnchors": "actual GPU readback and camera.WorldToScreenPoint; not commercial game measurements",
-        "meaning": "Arrows show geometric/shading normals or surface-to-light direction; guides are labelled.",
-        "clearance": "fixed captions at (510,1380), UI protected; cat only brief authored reactions",
-        "hold": 0
+        "gameUiAndCaptionClearance": true,
+        "sourceRecord": "production/capture-verification.json"
       },
-      "boundaryLink": "Closes the same question; no unrelated next topic."
+      "boundaryLink": "Close"
     }
   ],
   "terminology": [
@@ -839,12 +834,16 @@
     "fullSourceAsrRuns": 1,
     "referenceMediaUsed": false,
     "primaryEvidence": "sources/research-primary.json",
-    "independentCommercialGameFootage": false,
-    "reason": "No independently reusableFHDDeadCellsrecording secured. The verifiedcharacterworkflow is rebuilt withCC0ourKnight and labelledourimplementation. No commercialrenderingbuffer or togglefabricated.",
+    "independentCommercialGameFootage": true,
+    "reason": "New explicitrevision securedCCBYindependent1920x1080/60DeadCellsrecording; rootviewednative30sframeand17exact-seekframes29.6–37.2s beforefinalnarration. No reference-lesson footage.",
     "actualImplementationPreview": "production/local/capture-preview-v3/matched-light-native-contact.jpg",
-    "previewRootReview": "V2 all12 wall/character states passed. Corrected signed-RGB sprite V3 actual14-state capture passed, root viewed allfour matched-light source/sprite panels; GPU negative-Z sign/readback and all3715pixel lighting comparisons passed. Finalv3 375px completeplayback and changed encodedlayoutpassed; humanhearingpending.",
+    "previewRootReview": "Rootviewedallfive375pxtiles:grid-off/grid-on/signed/encoding/neutral. AllsamefrozenPNGs;63actualsamples,off1direction/on20distinct; no finalcaption/motionclaim yet.",
     "sourceFilesMinimum": "Ownactualnative1080x1080enginecaptures; no360prefscaling/reuse",
-    "fullNativeCapture": "passed:3238actualframes/491same-frameA-Bpairs/2844shaderprobes; all4vertices/2triangles throughout; frozen sourcePNG hashes unchanged."
+    "fullNativeCapture": "passed:3238actualframes/491same-frameA-Bpairs/2844shaderprobes; all4vertices/2triangles throughout; frozen sourcePNG hashes unchanged.",
+    "deadCellsEvidence": "sources/deadcells-v2.json",
+    "deadCellsMedia": "production/local/sources-v2/deadcells-ycYPtQENrIk-000-120.mp4",
+    "deadCellsSha256": "518496462bb0a80542ee62861c042ebf21d660701cec587ae5328dc306bb23c0",
+    "gridPreview": "production/local/grid-rgb-preview-validation.json"
   },
   "sharedAssetPaths": [
     "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/Knight.fbx",
@@ -857,7 +856,9 @@
     "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/03-NormalRGB.unity",
     "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/04-Edge.unity",
     "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/05-KnightSpriteBake.unity",
-    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity"
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/06-NormalGridOff.unity",
+    "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/07-NormalGridOn.unity"
   ],
   "actualPreviewFacts": {
     "wallVertices": 4,
@@ -869,8 +870,8 @@
     "limits": "Valuesonlyourcontrolledshader; noGameperformanceormeshcountclaim."
   },
   "narrationReadiness": {
-    "lines": 12,
-    "clauses": 27,
+    "lines": 8,
+    "clauses": 40,
     "wholeNarrationReadWithoutHeadings": true,
     "sourceOrderRetainedAfterHeroTeaser": true,
     "boundaries": "Ownhero→flatresponse→surfaceNormal→perpixelvectors→RGBmap→brightness→baked2Dcase→3Dwall→edgeanswer",
@@ -878,7 +879,8 @@
     "actualListeningPending": true,
     "spokenAliases": {
       "3D": "쓰리디",
-      "2D": "투디"
+      "2D": "투디",
+      "RGB": "알지비"
     },
     "voice": "ApprovedQwen3-TTS-12Hz-1.7B-Base/reference15-35s",
     "sourcePcm": {
@@ -891,12 +893,10 @@
     }
   },
   "actualTimeline": {
+    "status": "awaitingnewv2PCM",
     "fps": 60,
-    "frames": 3238,
-    "durationSeconds": 53.96666666666667,
-    "voiceDurationSeconds": 53.36,
-    "voiceOffsetSeconds": 0.2,
-    "captionsSha256": "68d48d9d40db6b609066acd02e1818e4ac44cf6a217841c4969ffb074d677f76"
+    "noFixedRuntime": true,
+    "voiceSpeed": 1
   },
   "engineRecord": {
     "editor": "6000.6.0f1",
@@ -957,5 +957,19 @@
   },
   "actualCaptureVerification": "production/capture-verification.json",
   "finalVisualVerification": "production/visual-review.json",
-  "deliveryVerification": "production/final-verification.json"
+  "deliveryVerification": "production/final-verification.json",
+  "revisionRequirements": {
+    "userRequested": [
+      "Representativepixelgridnormalsacrossimage",
+      "ActualDeadCellsexample",
+      "SignedRGBencodingandblue-purplecause"
+    ],
+    "previousMasterPreserved": "production/revision-history.json",
+    "humanPreviousReview": "changes-requested",
+    "sourceMath": "production/rgb-math-verification.json",
+    "grid": "9×7 representativepixels; actualshaderreadback and projectedworldvectors, notallpixelssimultaneously",
+    "rgb": "OrdinaryunsignedlinearRGBencoding; tangentspaceaxesU,V,outward; neutralcolorapproximate8bitvalues",
+    "actualGameLimits": "Editorialcharactertrackingonly, notactualgameTBNbuffers/normalmapoffon/measurement. Pipelineclaimsupportedbydeveloperarticle.",
+    "audio": "8completeconceptparagraphstakes withsameapprovedvoice, no per-sentencegeneration; constantparagraphgainpercurrentline-level-takes-v1; naturaljoins/noforcedobservationholds."
+  }
 }

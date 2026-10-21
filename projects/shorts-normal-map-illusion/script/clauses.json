@@ -1,9 +1,12 @@
 {
   "policy": "caption-clause-keyword-v1",
+  "revision": "normal-map-v2-grid-rgb-deadcells",
   "pronunciationAliases": {
     "3D": "쓰리디",
-    "2D": "투디"
+    "2D": "투디",
+    "RGB": "알지비"
   },
+  "numericDisplayPolicy": "Speech numbers are Hangul words. Exact signed numeric values/formulas belong to separately validated visual overlays: encode=(n+1)/2,decode=2c-1; neutral(0,0,1)→(.5,.5,1)≈8bit(128,128,255).",
   "clauses": [
     {
       "id": "c01",
@@ -29,14 +32,14 @@
     },
     {
       "id": "c03",
-      "lineIndex": 1,
+      "lineIndex": 0,
       "spoken": "먼저 우리 평면 그림은,",
       "ko": "먼저 우리 평면 그림은,",
       "en": "For our initial flat image,"
     },
     {
       "id": "c04",
-      "lineIndex": 1,
+      "lineIndex": 0,
       "spoken": "빛 계산에 같은 표면 방향을 씁니다.",
       "ko": "빛 계산에 같은 표면 방향을 씁니다.",
       "en": "lighting uses one shared surface direction.",
@@ -47,10 +50,10 @@
     },
     {
       "id": "c05",
-      "lineIndex": 2,
+      "lineIndex": 0,
       "spoken": "표면에서 수직으로 나가는 방향,",
       "ko": "표면에서 수직으로 나가는 방향,",
-      "en": "A direction perpendicular to the surface:",
+      "en": "The direction perpendicular to a surface:",
       "emphasis": {
         "text": "수직",
         "role": "term"
@@ -58,7 +61,7 @@
     },
     {
       "id": "c06",
-      "lineIndex": 2,
+      "lineIndex": 0,
       "spoken": "이게 법선입니다.",
       "ko": "이게 법선입니다.",
       "en": "this is its normal.",
@@ -69,14 +72,25 @@
     },
     {
       "id": "c07",
-      "lineIndex": 3,
-      "spoken": "빛 계산에 쓸 방향을",
-      "ko": "빛 계산에 쓸 방향을",
-      "en": "What if the surface directions used for lighting"
+      "lineIndex": 0,
+      "spoken": "칸마다 표시하면, 처음에는 모두 같은 방향이죠.",
+      "ko": "칸마다 표시하면, 처음에는 모두 같은 방향이죠.",
+      "en": "The grid normals all start aligned.",
+      "emphasis": {
+        "text": "같은 방향",
+        "role": "term"
+      }
     },
     {
       "id": "c08",
-      "lineIndex": 3,
+      "lineIndex": 1,
+      "spoken": "빛 계산에 쓸 방향을",
+      "ko": "빛 계산에 쓸 방향을",
+      "en": "What if the directions used for lighting"
+    },
+    {
+      "id": "c09",
+      "lineIndex": 1,
       "spoken": "픽셀마다 다르게 주면 어떨까요?",
       "ko": "픽셀마다 다르게 주면 어떨까요?",
       "en": "were different for every pixel?",
@@ -86,15 +100,15 @@
       }
     },
     {
-      "id": "c09",
-      "lineIndex": 4,
+      "id": "c10",
+      "lineIndex": 1,
       "spoken": "방향들을 빨강, 초록, 파랑 값에",
       "ko": "방향들을 빨강, 초록, 파랑 값에",
-      "en": "Store the directions as red, green and blue values:"
+      "en": "Store those directions as red, green and blue values:"
     },
     {
-      "id": "c10",
-      "lineIndex": 4,
+      "id": "c11",
+      "lineIndex": 1,
       "spoken": "저장한 그림이 노멀 맵입니다.",
       "ko": "저장한 그림이 노멀 맵입니다.",
       "en": "that image is a normal map.",
@@ -104,117 +118,209 @@
       }
     },
     {
-      "id": "c11",
-      "lineIndex": 5,
-      "spoken": "기본 보라색은 재질의 색이 아니라,",
-      "ko": "기본 보라색은 재질의 색이 아니라,",
-      "en": "The neutral purple is not the material colour;",
+      "id": "c12",
+      "lineIndex": 2,
+      "spoken": "가로 성분을 예로 들면,",
+      "ko": "가로 성분을 예로 들면,",
+      "en": "For the horizontal component,"
+    },
+    {
+      "id": "c13",
+      "lineIndex": 2,
+      "spoken": "왼쪽은 음수, 오른쪽은 양수입니다.",
+      "ko": "왼쪽은 음수, 오른쪽은 양수입니다.",
+      "en": "left is negative and right is positive.",
       "emphasis": {
-        "text": "재질의 색이 아니라",
+        "text": "음수",
         "role": "problem"
       }
     },
     {
-      "id": "c12",
-      "lineIndex": 5,
-      "spoken": "표면에 수직인 방향 데이터예요.",
-      "ko": "표면에 수직인 방향 데이터예요.",
-      "en": "it means a perpendicular direction.",
+      "id": "c14",
+      "lineIndex": 2,
+      "spoken": "일반적인 알지비 그림에는 음수를 그대로 담지 못하죠.",
+      "ko": "일반적인 RGB 그림에는 음수를 그대로 담지 못하죠.",
+      "en": "Ordinary RGB cannot store negatives.",
+      "emphasis": {
+        "text": "음수",
+        "role": "problem"
+      }
+    },
+    {
+      "id": "c15",
+      "lineIndex": 2,
+      "spoken": "그래서 마이너스 일은 영,",
+      "ko": "그래서 마이너스 일은 영,",
+      "en": "So minus one is stored as zero,"
+    },
+    {
+      "id": "c16",
+      "lineIndex": 2,
+      "spoken": "영은 절반,",
+      "ko": "영은 절반,",
+      "en": "zero as one half,"
+    },
+    {
+      "id": "c17",
+      "lineIndex": 2,
+      "spoken": "플러스 일은 최대로 옮겨 저장합니다.",
+      "ko": "플러스 일은 최대로 옮겨 저장합니다.",
+      "en": "and plus one as the maximum."
+    },
+    {
+      "id": "c18",
+      "lineIndex": 3,
+      "spoken": "표면에 수직이면",
+      "ko": "표면에 수직이면",
+      "en": "For an outward surface normal,"
+    },
+    {
+      "id": "c19",
+      "lineIndex": 3,
+      "spoken": "가로와 세로는 영, 바깥쪽은 일이에요.",
+      "ko": "가로와 세로는 영, 바깥쪽은 일이에요.",
+      "en": "horizontal and vertical are zero; outward is one."
+    },
+    {
+      "id": "c20",
+      "lineIndex": 3,
+      "spoken": "저장하면 빨강과 초록은 절반,",
+      "ko": "저장하면 빨강과 초록은 절반,",
+      "en": "Encoded, red and green are at half strength,"
+    },
+    {
+      "id": "c21",
+      "lineIndex": 3,
+      "spoken": "파랑은 최대라서,",
+      "ko": "파랑은 최대라서,",
+      "en": "while blue is at its maximum,"
+    },
+    {
+      "id": "c22",
+      "lineIndex": 3,
+      "spoken": "파랑이 강한 보라색으로 보이는 겁니다.",
+      "ko": "파랑이 강한 보라색으로 보이는 겁니다.",
+      "en": "which makes the map look blue-purple.",
+      "emphasis": {
+        "text": "보라색",
+        "role": "result"
+      }
+    },
+    {
+      "id": "c23",
+      "lineIndex": 3,
+      "spoken": "재질 색이 아니라 방향 데이터죠.",
+      "ko": "재질 색이 아니라 방향 데이터죠.",
+      "en": "It is direction data, not the material colour.",
       "emphasis": {
         "text": "방향 데이터",
         "role": "term"
       }
     },
     {
-      "id": "c13",
-      "lineIndex": 6,
+      "id": "c24",
+      "lineIndex": 4,
       "spoken": "빛을 마주 보면 밝게,",
       "ko": "빛을 마주 보면 밝게,",
-      "en": "Facing the light: brighter.",
+      "en": "Face the light and it becomes brighter;",
       "emphasis": {
         "text": "밝게",
         "role": "result"
       }
     },
     {
-      "id": "c14",
-      "lineIndex": 6,
+      "id": "c25",
+      "lineIndex": 4,
       "spoken": "옆을 향하면 어둡게 계산합니다.",
       "ko": "옆을 향하면 어둡게 계산합니다.",
-      "en": "Facing sideways: calculated darker.",
+      "en": "turn sideways and it becomes darker.",
       "emphasis": {
         "text": "어둡게",
         "role": "problem"
       }
     },
     {
-      "id": "c15",
-      "lineIndex": 7,
+      "id": "c26",
+      "lineIndex": 4,
       "spoken": "그래서 같은 그림에서도,",
       "ko": "그래서 같은 그림에서도,",
-      "en": "So, even with the same image,"
+      "en": "So even in the same image,"
     },
     {
-      "id": "c16",
-      "lineIndex": 7,
+      "id": "c27",
+      "lineIndex": 4,
       "spoken": "움직이는 빛에 따라 굴곡이 살아나죠.",
       "ko": "움직이는 빛에 따라 굴곡이 살아나죠.",
-      "en": "apparent relief follows the moving light.",
+      "en": "moving light brings out the apparent bumps.",
       "emphasis": {
         "text": "굴곡",
         "role": "result"
       }
     },
     {
-      "id": "c17",
-      "lineIndex": 8,
-      "spoken": "데드셀의 캐릭터도 쓰리디 모델에서",
-      "ko": "데드셀의 캐릭터도 3D 모델에서",
-      "en": "Dead Cells also used 3D character models",
+      "id": "c28",
+      "lineIndex": 5,
+      "spoken": "데드셀의 캐릭터도",
+      "ko": "데드셀의 캐릭터도",
+      "en": "Dead Cells characters also",
       "emphasis": {
         "text": "데드셀",
         "role": "term"
       }
     },
     {
-      "id": "c18",
-      "lineIndex": 8,
-      "spoken": "색 그림과 노멀 맵을 뽑아,",
-      "ko": "색 그림과 노멀 맵을 뽑아,",
-      "en": "to render colour sprites and normal maps,",
-      "emphasis": {
-        "text": "노멀 맵",
-        "role": "term"
-      }
+      "id": "c29",
+      "lineIndex": 5,
+      "spoken": "쓰리디 모델에서 색 그림과 노멀 맵을 뽑아,",
+      "ko": "3D 모델에서 색 그림과 노멀 맵을 뽑아,",
+      "en": "bake colour and normals from 3D models,"
     },
     {
-      "id": "c19",
-      "lineIndex": 8,
+      "id": "c30",
+      "lineIndex": 5,
       "spoken": "이런 투디 조명에 활용했습니다.",
       "ko": "이런 2D 조명에 활용했습니다.",
-      "en": "for this kind of 2D lighting.",
+      "en": "to respond to lighting in a 2D scene.",
       "emphasis": {
         "text": "2D 조명",
         "role": "term"
       }
     },
     {
-      "id": "c20",
-      "lineIndex": 9,
+      "id": "c31",
+      "lineIndex": 6,
+      "spoken": "같은 방식으로 만든 우리 캐릭터도,",
+      "ko": "같은 방식으로 만든 우리 캐릭터도,",
+      "en": "Our character, made with the same kind of workflow,"
+    },
+    {
+      "id": "c32",
+      "lineIndex": 6,
+      "spoken": "빛을 움직이면 명암이 달라지죠.",
+      "ko": "빛을 움직이면 명암이 달라지죠.",
+      "en": "also changes shading as the light moves.",
+      "emphasis": {
+        "text": "명암",
+        "role": "result"
+      }
+    },
+    {
+      "id": "c33",
+      "lineIndex": 7,
       "spoken": "쓰리디 벽에도 같은 원리를 쓰면,",
       "ko": "3D 벽에도 같은 원리를 쓰면,",
-      "en": "Apply the same principle to a 3D wall:"
+      "en": "The same principle works on a 3D wall:"
     },
     {
-      "id": "c21",
-      "lineIndex": 9,
+      "id": "c34",
+      "lineIndex": 7,
       "spoken": "면을 잘게 쪼개지 않고",
       "ko": "면을 잘게 쪼개지 않고",
-      "en": "without subdividing its surface,"
+      "en": "without subdividing the mesh,"
     },
     {
-      "id": "c22",
-      "lineIndex": 9,
+      "id": "c35",
+      "lineIndex": 7,
       "spoken": "작은 요철을 표현할 수 있어요.",
       "ko": "작은 요철을 표현할 수 있어요.",
       "en": "we can show small surface details.",
@@ -224,50 +330,50 @@
       }
     },
     {
-      "id": "c23",
-      "lineIndex": 10,
+      "id": "c36",
+      "lineIndex": 7,
       "spoken": "하지만 꺼도 켜도,",
       "ko": "하지만 꺼도 켜도,",
-      "en": "But normal mapping on or off,"
+      "en": "But with the map off or on,"
     },
     {
-      "id": "c24",
-      "lineIndex": 10,
+      "id": "c37",
+      "lineIndex": 7,
       "spoken": "우리 벽은 삼각형 두 개 그대로입니다.",
       "ko": "우리 벽은 삼각형 두 개 그대로입니다.",
       "en": "our wall still has just two triangles.",
       "emphasis": {
         "text": "삼각형 두 개",
-        "role": "result"
+        "role": "term"
       }
     },
     {
-      "id": "c25",
-      "lineIndex": 11,
+      "id": "c38",
+      "lineIndex": 7,
       "spoken": "옆에서 보면 윤곽도 평평하죠.",
       "ko": "옆에서 보면 윤곽도 평평하죠.",
-      "en": "The outline is still flat from the side.",
+      "en": "Seen from the side, its outline is still flat.",
       "emphasis": {
-        "text": "윤곽도 평평",
-        "role": "problem"
+        "text": "윤곽",
+        "role": "term"
       }
     },
     {
-      "id": "c26",
-      "lineIndex": 11,
+      "id": "c39",
+      "lineIndex": 7,
       "spoken": "모양 대신,",
       "ko": "모양 대신,",
-      "en": "We changed not its shape,"
+      "en": "Instead of changing the shape,"
     },
     {
-      "id": "c27",
-      "lineIndex": 11,
+      "id": "c40",
+      "lineIndex": 7,
       "spoken": "조명 계산에 쓰는 표면 방향을 바꾼 겁니다.",
       "ko": "조명 계산에 쓰는 표면 방향을 바꾼 겁니다.",
-      "en": "but the surface directions used for lighting.",
+      "en": "we changed the shading normals.",
       "emphasis": {
         "text": "표면 방향",
-        "role": "result"
+        "role": "term"
       }
     }
   ]

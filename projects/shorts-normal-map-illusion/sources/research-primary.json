@@ -39,7 +39,25 @@
         "fine bumps and grooves can affect lighting without added fine mesh detail",
         "Unity Y+ convention; neutral uncompressed RGB approximately128,128,255"
       ],
-      "productionMediaAdopted": false
+      "productionMediaAdopted": false,
+      "revisionRecheck": {
+        "revision": "normal-map-v2-grid-rgb-deadcells",
+        "sections": [
+          "How normal mapping works",
+          "Colors in a normal map"
+        ],
+        "recheckedAt": "2026-10-21",
+        "facts": [
+          "Each texel stores a direction, not the visible material colour.",
+          "For standard unsigned RGB tangent-space encoding, rgb=(normal+1)/2 and normal=2rgb-1.",
+          "Neutral tangent normal(0,0,1) is encoded(.5,.5,1), approximately8bit(128,128,255); blue-purple is encoded data."
+        ],
+        "limits": [
+          "Tangent-space axes use surfaceU,V,outward, not worldXYZ.",
+          "Ordinary unsigned textures need the mapping; floating-point signed textures are a different storage option.",
+          "8-bit128 is quantized approximation to.5; imported/compressed GPU representations may differ."
+        ]
+      }
     },
     {
       "id": "unity66-surface-normal",
@@ -388,5 +406,6 @@
     "noFabricatedMeasurement": true,
     "noGpuTtsOrRenderRun": true,
     "noYouTubeDriveAction": true
-  }
+  },
+  "revision": "normal-map-v2-grid-rgb-deadcells"
 }

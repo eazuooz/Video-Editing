@@ -1,23 +1,8 @@
-This wall looks raised, but it is actually flat.
-
-For our initial flat image, lighting uses one shared surface direction.
-
-The direction perpendicular to a surface is called its normal.
-
-What if we give each pixel a different direction for lighting?
-
-A normal map stores these directions as red, green and blue values.
-
-The neutral purple is data for a direction perpendicular to the surface, not its paint colour.
-
-Surface directions facing the light are calculated brighter; sideways directions are darker.
-
-So the same image gains apparent relief as the light moves.
-
-Dead Cells also rendered colour sprites and normal maps from its 3D characters for this kind of 2D lighting.
-
-The same principle lets a 3D wall show small surface details without subdividing its mesh.
-
-But normal mapping on or off, our wall still has just two triangles.
-
-Its outline stays flat from the side. We changed the surface directions used for lighting, rather than its shape.
+This wall looks raised, but it is actually flat. For our initial flat image, lighting uses one shared surface direction. The direction perpendicular to a surface: this is its normal. The grid normals all start aligned.
+What if the directions used for lighting were different for every pixel? Store those directions as red, green and blue values: that image is a normal map.
+For the horizontal component, left is negative and right is positive. Ordinary RGB cannot store negatives. So minus one is stored as zero, zero as one half, and plus one as the maximum.
+For an outward surface normal, horizontal and vertical are zero; outward is one. Encoded, red and green are at half strength, while blue is at its maximum, which makes the map look blue-purple. It is direction data, not the material colour.
+Face the light and it becomes brighter; turn sideways and it becomes darker. So even in the same image, moving light brings out the apparent bumps.
+Dead Cells characters also bake colour and normals from 3D models, to respond to lighting in a 2D scene.
+Our character, made with the same kind of workflow, also changes shading as the light moves.
+The same principle works on a 3D wall: without subdividing the mesh, we can show small surface details. But with the map off or on, our wall still has just two triangles. Seen from the side, its outline is still flat. Instead of changing the shape, we changed the shading normals.
