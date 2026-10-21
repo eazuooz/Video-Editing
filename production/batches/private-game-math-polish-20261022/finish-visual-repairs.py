@@ -1,7 +1,7 @@
 """Finite serial queue for inspected text repairs and observed overlays."""
 import argparse,ctypes,ctypes.wintypes as wt,datetime,shutil,time,sys
 from polish_common import *
-parser=argparse.ArgumentParser();parser.add_argument('--episodes',nargs='+',choices=['M05','M06','M15','M16','M18'],default=['M05','M15']);parser.add_argument('--after-pid',type=int)
+parser=argparse.ArgumentParser();parser.add_argument('--episodes',nargs='+',choices=['M05','M06','M15','M16','M18','M19','M20'],default=['M05','M15']);parser.add_argument('--after-pid',type=int)
 options=parser.parse_args();ids=options.episodes
 suffix='-'+'-'.join(ids) if options.after_pid else ''
 status=B/f'visual-repair{suffix}-job.json';output=R/'shared/output/private-game-math-polish-20261022'
@@ -44,6 +44,8 @@ try:
    tasks=[('assemble.py',[ident,'--supplement-spacing']),('technical-qa.py',[ident]),('review-final-pixels.py',[ident])]
   elif ident=='M16':
    tasks=[('render-camera-polish.py',[]),('prepare-observed-composition.py',[ident]),('apply-camera-composition.py',[]),('assemble.py',[ident]),('technical-qa.py',[ident]),('review-final-pixels.py',[ident])]
+  elif ident in ['M19','M20']:
+   tasks=[('render-mesh-polish.py',[ident]),('prepare-observed-composition.py',[ident]),('apply-mesh-composition.py',[ident]),('assemble.py',[ident]),('technical-qa.py',[ident]),('review-final-pixels.py',[ident])]
   else:
    tasks=[('prepare-observed-composition.py',[ident]),('assemble.py',[ident]),('technical-qa.py',[ident]),('review-final-pixels.py',[ident])]
   for script,args in tasks:
