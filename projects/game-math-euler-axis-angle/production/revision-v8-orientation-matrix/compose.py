@@ -25,7 +25,7 @@ def backdrop(p):
   d.text((1080,824),'직접 만든 모형 · 게임 내부 수치 아님',font=ImageFont.truetype(FONT,28),fill='#b8b8b8')
  else:
   d.text((1080,32),'현재 그림 · 직접 구현한 모형과 계산',font=ImageFont.truetype(FONT,32),fill='#b8b8b8')
-  d.text((1080,89),'가로 벡터 · 물체 → 바깥 기준',font=ImageFont.truetype(FONT,32),fill='#b8b8b8')
+  d.text((1080,89),'가로 벡터 약속 · 변환 방향 확인',font=ImageFont.truetype(FONT,32),fill='#b8b8b8')
   d.line((1060,180,1060,880),fill='#383838',width=2)
  im.save(path);return path
 
@@ -37,9 +37,14 @@ def gpu_guard(codec):
  data=c.read(lease);assert data.get('owner')=='game-math-orientation-matrix-v8-render',data
 
 def render(p,codec):
- gpu_guard(codec);caption=c.read(H/'captions-manifest.json')['paragraphASS'][p['id']];ass=c.R/caption['file']
+ gpu_guard(codec);capmanifest=c.read(H/'captions-manifest.json');caption=capmanifest['paragraphASS'][p['id']];ass=c.R/caption['file']
+ assert capmanifest['inputs']['timeline']['sha256']==c.sha(H/'timeline.json')
+ assert capmanifest['inputs']['alignment']['sha256']==c.sha(c.O/'audio/source-alignment.json')
+ assert (caption['startFrame'],caption['endFrame'])==(p['startFrame'],p['endFrame']) and c.sha(ass)==caption['sha256']
  ui=backdrop(p);old.validate_segments(p['left'],p);old.validate_segments(p['right'],p)
- annotation=c.R/c.read(H/'annotations-manifest.json')['paragraphASS'][p['id']]['file']
+ marks=c.read(H/'annotations-manifest.json');mark=marks['paragraphASS'][p['id']];annotation=c.R/mark['file']
+ assert marks['inputs']['editPlan']['sha256']==c.sha(H/'edit-plan.json')
+ assert (mark['startFrame'],mark['endFrame'])==(p['startFrame'],p['endFrame']) and c.sha(annotation)==mark['sha256']
  sig=dict(paragraph=p,media=old.segment_media(p['left']+p['right']),ui=c.sha(ui),captions=c.sha(ass),annotations=c.sha(annotation),source=c.sha(Path(__file__)),legacyPaneImplementation=c.sha(c.P/'production/revision-v7-part1/compose.py'),codec=codec)
  key=digest(sig)[:12];folder=E/'paragraphs'/p['id'];folder.mkdir(parents=True,exist_ok=True)
  clean=folder/(key+'.clean.mp4');burned=folder/(key+'.captioned.mp4');receipt=folder/(key+'.json')

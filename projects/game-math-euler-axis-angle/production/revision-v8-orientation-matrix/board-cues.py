@@ -18,7 +18,7 @@ CUES={
 # pedagogical cue even when the spoken order differs from the display list.
 CUES['m03'][4]=('그 숫자를 한 줄씩','이번 설명에서는')
 CUES['m06'][7]=('어느 방향의 행렬을','그럼 이제')
-CUES['m07'][1]=('화살표가 옆으로','육십 도를')
+CUES['m07'][1]=('직각에서는','육십 도를 벌리면')
 CUES['m08'][3]=('첫째 열을','그래서 회전행렬의 열은')
 CUES['m11'][2]=('각각 길이 일이어야','서로 직각이어야')
 CUES['m13'][4]=('그 질문에 답할 수','오늘은 여기까지')

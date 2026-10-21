@@ -3,9 +3,9 @@ from pathlib import Path
 import importlib.util,json,subprocess,math
 H=Path(__file__).parent
 sp=importlib.util.spec_from_file_location('v8_labels_common',H/'common.py');c=importlib.util.module_from_spec(sp);sp.loader.exec_module(c)
-COLORS=['635AEF','8ECE6C','F5AC73'];N=c.O/'unity/native';D=c.O/'unity/labeled'
+COLORS=['635AEF','8ECE6C','EDB966'];N=c.O/'unity/native';D=c.O/'unity/labeled'
 def at(sec):
- cs=round(sec*100);return f'{cs//360000}:{cs//6000%60:02}:{cs//100%60:02}.{cs%100:02}'
+ cs=math.floor(sec*100+1e-7);return f'{cs//360000}:{cs//6000%60:02}:{cs//100%60:02}.{cs%100:02}'
 HEADER='''[Script Info]
 ScriptType: v4.00+
 PlayResX: 1000
@@ -32,7 +32,7 @@ def labels(row,shot):
  if shot['upright']:
   for k in 'XYZ':add('upright'+k,k+' 기준','BBBBBB',34)
  if shot.get('point'):add('point','P','83CFE8',42)
- if row['mode']=='projection':out.append((18,640,f'cos θ = {row["projection"]:.2f}','C2C773',40))
+ if row['mode']=='projection':out.append((18,640,f'기준 X축의 성분 = {row["projection"]:.2f}','C2C773',40))
  if row['mode']=='arm':
   for n,l in [('armOrigin','C 몸'),('handOrigin','B 손'),('swordOrigin','A 도구')]:add(n,l,'F5F5F5',38)
  if row['mode']in ['creep','normalize','orthonormalize']:

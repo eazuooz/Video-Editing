@@ -40,6 +40,7 @@ def main():
    if action['state']=='motion':
     f0,f1=action.get('sourceWindow',[0,n['frames']-1]);end=cue+f1-f0
     assert end<=b,('Motion cannot fit speech interval without retiming',sid,line,asset,end,b)
+    if action.get('finishBeforeCue'):assert end<=clock.cueframe(sid,line,action['finishBeforeCue']),('Target arrives after spoken result',sid,line,asset)
     out.append(seg(cue,end,n['file'],'video',f0,unityAsset=asset));picture=state(asset,f1);cursor=end
    else:picture=state(asset,n['frames']-1);cursor=cue
   out.append(seg(cursor,b,picture));return out
@@ -55,7 +56,6 @@ def main():
  overrides={
   ('m04',4):('point-sum',0,[('오른쪽 축을 한 번 따라가고',0,90),('새 앞쪽 축은 두 번',90,180)]),
   ('m07',1):('projection',180,[('정확히 같은 방향이면',0,0),('직각이면',180,180),('정반대면',360,360)]),
-  ('m07',2):('projection',0,[('화살표가 옆으로 누울수록',0,180),('육십 도를 벌리면',180,120)]),
   ('m07',3):('projection',120,[]),
   ('m07',4):('projection',0,[('직각의 코사인은 영',0,180),('반대 방향의 코사인은',180,360)])}
  # Reverse source windows are not played backwards: a named angle is an
@@ -84,19 +84,26 @@ def main():
   ('m10',3):('storage',[(0,60,'행렬 하나는'),(60,120,'이것을 이백이십오'),(120,180,'한 프레임에')])}
  for binding in u['paragraphs']:
   sid,line=binding['sceneId'],binding['line'];a,b=clock.paragraph(sid,line);pid=binding['paragraphId'];key=(sid,line)
-  left=visual(sid,line,a,b,binding)
+  left=None
   if key in overrides:
    asset,initial,actions=overrides[key];left=custom(sid,line,a,b,asset,initial,actions)
    adjustments.append(dict(paragraphId=pid,reason='Exact target/property states aligned to spoken order, preserving approved narration',actions=actions))
+  else:left=visual(sid,line,a,b,binding)
   q=boards[key];cuts=[a]+[clock.cueframe(sid,line,x)for x in bc.CUES[sid][line-1]]+[b]
   assert cuts==sorted(cuts),(pid,cuts)
   right=[seg(cuts[i],cuts[i+1],q['states'][i]['file'])for i in range(3)]
   if key in mathbind:
    name,actions=mathbind[key];m=maths[name];out=[];cursor=a;picture=states[(name,0)]
+   if name=='dcm':picture=c.rel(c.O/'boards/dcm-axis-names.png')
+   if name=='storage':picture=q['states'][0]['file']
    for f0,f1,literal in actions:
     cue=clock.cueframe(sid,line,literal);assert cue>=cursor,(pid,name,literal,cursor,cue)
     out.append(seg(cursor,cue,picture));end=cue+f1-f0;assert end<=b
     out.append(seg(cue,end,m['file'],'video',f0));picture=states[(name,f1)];cursor=end
+   if name=='transpose':
+    return_frame=clock.cueframe(sid,line,'이 전치행렬에');result_frame=clock.cueframe(sid,line,'처음의 비행기 좌표')
+    assert cursor<=return_frame<=result_frame<b
+    out.append(seg(cursor,return_frame,picture));out.append(seg(return_frame,result_frame,q['states'][1]['file']));picture=q['states'][2]['file'];cursor=result_frame
    out.append(seg(cursor,b,picture));right=out
   layout='model-math'
   if key==('m01',2):
@@ -109,7 +116,8 @@ def main():
     gamecuts.append(dict(clip,outputStartFrame=cue,outputEndFrame=end,startFrame=cue,endFrame=end))
     picture=exact if clip['id']=='totk-translate'else gs['upright']['file'];cursor=end
    left.append(seg(cursor,b,picture,sourceFrameForGuide=60390,classification='gameplay-derived-analysis'));layout='game-model'
-  paragraphs.append(dict(id=pid,sceneId=sid,line=line,startFrame=a,endFrame=b,frames=b-a,layout=layout,left=check(left,a,b),right=check(right,a,b),narrationContinues=True,observationSilence=0))
+  assets={binding['asset'],*[x['asset']for x in binding.get('secondary',[])]};axis_legend=any(x['axes']for x in u['shots']if x['id']in assets)
+  paragraphs.append(dict(id=pid,sceneId=sid,line=line,startFrame=a,endFrame=b,frames=b-a,layout=layout,left=check(left,a,b),right=check(right,a,b),unityAssets=sorted(assets),axisLegend=axis_legend,narrationContinues=True,observationSilence=0))
  for cut in gamecuts:cut['endFrameExclusive']=cut['endFrame']
  result=dict(schemaVersion=1,revision='orientation-matrix-v8',timelineSha256=c.sha(H/'timeline.json'),unityPlanSha256=c.sha(H/'unity-plan.json'),labeledNativeSha256=c.sha(H/'labeled-native.json'),boardManifestSha256=c.sha(H/'board-manifest.json'),mathManifestSha256=c.sha(H/'math-manifest.json'),paragraphs=paragraphs,gameCuts=gamecuts,liveGameCuts=gamecuts,adjustments=adjustments,sourcePlaybackRate=1,automaticLoops=False,gameFootageSeconds=sum(x['frames']for x in gamecuts)/60,gameQuota='concept-sized lecture; no fixed share')
  c.save(H/'edit-plan.json',result);print('Bound',len(paragraphs),'paragraphs /',len(gamecuts),'native game actions.')

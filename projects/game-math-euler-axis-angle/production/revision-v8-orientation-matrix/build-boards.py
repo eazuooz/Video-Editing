@@ -34,7 +34,7 @@ def matrix(d,kind,y=210,highlight=None):
  for i in range(3):
   for j in range(3):
    x=132+j*200;yy=y+i*92
-   text(d,(x,yy),vals[i][j],52,colors[i],mono=True)
+   text(d,(x,yy),vals[i][j],52,colors[j if kind=='T' else i],mono=True)
  d.line([(90,y+12),(70,y+12),(70,y+274),(90,y+274)],fill=WHITE,width=4)
  d.line([(690,y+12),(710,y+12),(710,y+274),(690,y+274)],fill=WHITE,width=4)
  if highlight is not None:d.rectangle((95,y+highlight*92+2,680,y+highlight*92+82),outline=GOLD,width=4)
@@ -59,6 +59,10 @@ def panel(title,rows,stage):
     text(d,(x,y),part,42,col,mono=True);x+=width(part,42,mono=True)
    continue
   size=48
+  if '\n' in row:
+   lines=row.split('\n');assert len(lines)<=2,(title,row)
+   for j,line in enumerate(lines):text(d,(20,y+j*60),line,size,TEAL if i==2 else WHITE)
+   continue
   # Explicit two-line reflow keeps full wording at48px; never auto-shrink.
   f=font(size)
   if width(row)>760:
@@ -78,6 +82,7 @@ def main():
     file=out/f'{s["id"]}-L{i:02}-{stage}.png';panel(title,rows,stage).save(file);states.append(dict(stage=stage,file=c.rel(file),sha256=c.sha(file)))
    records.append(dict(scene=s['id'],line=i,title=title,rows=rows,states=states,sourceKind='independently authored mathematical readout',dimensions=[800,700]))
  c.save(c.H/'board-manifest.json',dict(renderer='Pillow native typography and tables; Manim finite cell animations bound separately',scriptSha256=c.sha(c.S/'narration.ko.json'),paragraphCount=76,records=records,pixelReview='pending'))
+ panel('두 공간의 축에 이름 붙이기',['p, q, r = 물체의 X, Y, Z','p′, q′, r′ = 바깥의 X, Y, Z','프라임(′): 다른 기준의 축'],3).save(out/'dcm-axis-names.png')
  thumbs=[]
  for r in records:
   im=Image.open(c.R/r['states'][-1]['file']);im.thumbnail((320,280));thumbs.append((r,im))

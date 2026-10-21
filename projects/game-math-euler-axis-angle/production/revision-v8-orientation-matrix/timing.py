@@ -27,7 +27,7 @@ class Clock:
   self.timeline=c.read(H/'timeline.json');self.alignment=c.read(c.O/'audio/source-alignment.json');self.scenes={x['id']:x for x in self.timeline['scenes']};self.raw={x['id']:x for x in self.alignment['scenes']};self.script={s['id']:s for s in c.read(c.S/'narration.ko.json')['scenes']};self.normalize=normalizer()
   assert self.timeline['inputs']['alignmentSha256']==c.sha(c.O/'audio/source-alignment.json')
  def word(self,sid,line,offset,end=False):
-  text=self.script[sid]['paragraphs'][line-1];data=self.raw[sid]['lines'][line-1];n=len(self.normalize(text[:offset]));array=data['characterEnds'] if end else data['characterStarts'];local=array[n-1] if end else array[n];return self.scenes[sid]['start']+local
+  text=self.script[sid]['paragraphs'][line-1];data=self.raw[sid]['lines'][line-1];prefix=self.normalize(text[:offset]);full=self.normalize(text);assert full.startswith(prefix),('Cue splits a context-sensitive spoken label/number',sid,line,offset,text[:offset]);n=len(prefix);array=data['characterEnds'] if end else data['characterStarts'];local=array[n-1] if end else array[n];return self.scenes[sid]['start']+local
  def frame(self,sid,line,offset,end=False):return round(self.word(sid,line,offset,end)*60)
  def literal(self,sid,line,value,end=False,after=0):
   text=self.script[sid]['paragraphs'][line-1];at=text.index(value,after);return self.word(sid,line,at+len(value)if end else at,end)
