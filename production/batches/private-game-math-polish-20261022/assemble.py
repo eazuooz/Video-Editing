@@ -6,6 +6,13 @@ staging=e.O/'assembly-staging';staging.mkdir(exist_ok=True)
 order=[('intro',120)]+[(s['id'],s['frames']) for s in e.T['scenes']]+[('outro',600)];assert sum(n for _,n in order)==e.T['frames']
 records=[]
 repair=read(e.H/'composition-polish.json') if (e.H/'composition-polish.json').exists() else None
+spacing=None
+if '--supplement-spacing' in sys.argv:
+ spacing=read(e.H/'supplement-spacing-repair.json')
+ preflight=read(e.H/'supplement-spacing-preflight.json')
+ assert spacing['timelineSha256']==sha(e.P/'production/timeline.json')
+ assert sha(R/spacing['ass'])==spacing['assSha256']==preflight['assSha256']
+ assert preflight['status']=='passed-still-preflight', 'Direct still preflight required; not final visual approval'
 if repair:
  assert repair['timelineSha256']==sha(e.P/'production/timeline.json')
  assert sha(R/repair['globalAss'])==repair['globalAssSha256']
@@ -16,9 +23,10 @@ for sid,n in order:
  e.verify(path,n);records.append({'id':sid,'path':rel(path),'sha256':sha(path),'frames':n})
 listing=e.O/'concat.txt';listing.write_text('\n'.join("file '"+(R/x['path']).as_posix()+"'" for x in records)+'\n',encoding='utf8')
 audio=e.O/'baseline-audio.m4a';assert sha(audio)==read(e.H/'restoration.json')['audioSha256']
-save(e.H/'assembly.json',{'timelineSha256':sha(e.P/'production/timeline.json'),'scenes':records,'audioSha256':sha(audio),'captionSha256':sha(e.O/'captions.ko.ass'),'compositionPolish':repair,'directVisualReview':'pending'})
+save(e.H/'assembly.json',{'timelineSha256':sha(e.P/'production/timeline.json'),'scenes':records,'audioSha256':sha(audio),'captionSha256':sha(e.O/'captions.ko.ass'),'compositionPolish':repair,'supplementSpacing':spacing,'directVisualReview':'pending'})
 graph='[0:v]settb=expr=1/60,setpts=N,setsar=1,split=2[vclean][vin];[vin]ass=captions.ko.ass[vcaptioned]'
 if repair:graph=graph.replace('setsar=1,split','setsar=1,ass=composition-polish.ass,split')
+if spacing:graph=graph.replace(',split=2',',ass=supplement-spacing.ass,split=2')
 args=['-reinit_filter','0','-f','concat','-safe','0','-i',listing,'-filter_complex',graph]
 for kind in ['clean','captioned']:
  args+=['-map',f'[v{kind}]','-frames:v',e.T['frames'],'-an',*ENC,'-color_range','tv','-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709',staging/f'{e.slug}.{kind}.video-only.mp4']
