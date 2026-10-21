@@ -41,9 +41,13 @@ for path in paths:
   blob(path,json.dumps(data,ensure_ascii=False,indent=2)+'\n')
  elif path=='projects/game-math-euler-axis-angle/planning/production-plan.json':
   data=json.loads(head(path));data['baselineVisualPolish']=c.read(c.R/path)['baselineVisualPolish'];blob(path,json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+ elif path=='projects/game-math-euler-axis-angle/production/review-ledger.json':
+  data=json.loads(head(path));data['activeVisualPolishReview']=c.read(c.R/path)['activeVisualPolishReview'];blob(path,json.dumps(data,ensure_ascii=False,indent=2)+'\n')
  elif path=='docs/VIDEO_WORKFLOW.md':
   previous=head(path);paragraph=next(x for x in (c.R/path).read_text(encoding='utf8').splitlines() if x.startswith('2026-10-22 사용자 선택 `baseline-preserving-visual-polish-v1`'))
-  if paragraph not in previous:previous=previous.replace('## 8. 게시·Git·종료',paragraph+'\n\n## 8. 게시·Git·종료')
+  old=next((x for x in previous.splitlines() if x.startswith('2026-10-22 사용자 선택 `baseline-preserving-visual-polish-v1`')),None)
+  if old:previous=previous.replace(old,paragraph,1)
+  elif paragraph not in previous:previous=previous.replace('## 8. 게시·Git·종료',paragraph+'\n\n## 8. 게시·Git·종료')
   blob(path,previous)
 if worklist is not None:
  root=work/'render';(root/'scripts').mkdir(parents=True);(root/'docs').mkdir();(root/'shared/publishing').mkdir(parents=True)

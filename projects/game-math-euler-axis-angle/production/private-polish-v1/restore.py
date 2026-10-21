@@ -36,8 +36,9 @@ def prepare():
 
 def flat():
  c.authorized();env=dict(os.environ,MATH_RENDER_TIMING=str(c.P/'production/timeline.json'),PYTHONIOENCODING='utf-8')
- folder=c.O/'manim';scenes=['BrandIntro','Scene01','Scene13','Scene16','Scene24','Scene25','Scene26','MemberOutro']
+ scenes=['BrandIntro','Scene01','Scene13','Scene16','Scene24','Scene25','Scene26','MemberOutro']
  for name in scenes:
+  folder=c.O/('angular-corrected' if name=='Scene24' else 'manim')
   target=folder/'videos/flat-scenes/1080p60'/f'{name}.mp4'
   if not target.exists():
    c.run([c.R/'manim/.venv/Scripts/python.exe','-m','manim','--renderer','cairo','--format','mp4','-r','1920,1080','--fps','60','--media_dir',folder,str(c.H/'flat-scenes.py'),name],f'manim-{name}.log',env=env)
