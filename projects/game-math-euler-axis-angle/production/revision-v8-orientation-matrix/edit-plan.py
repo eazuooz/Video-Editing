@@ -84,6 +84,9 @@ def main():
   ('m10',3):('storage',[(0,60,'행렬 하나는'),(60,120,'이것을 이백이십오'),(120,180,'한 프레임에')])}
  for binding in u['paragraphs']:
   sid,line=binding['sceneId'],binding['line'];a,b=clock.paragraph(sid,line);pid=binding['paragraphId'];key=(sid,line)
+  if key==('m01',2):
+   binding=dict(binding,cue='울트라핸드')
+   adjustments.append(dict(paragraphId=pid,reason='The measured gap from 잡아서 옮기고 to 어떤 기울기로 is3.8s, shorter than the intact4.5s game translation. Start both game and authored translation at the spoken tool name; preserve source speed, complete action and32f exact endpoint before rotation.',cue='울트라핸드',cueFrame=clock.cueframe(sid,line,'울트라핸드')))
   left=None
   if key in overrides:
    asset,initial,actions=overrides[key];left=custom(sid,line,a,b,asset,initial,actions)

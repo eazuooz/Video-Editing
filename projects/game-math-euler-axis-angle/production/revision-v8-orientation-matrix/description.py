@@ -8,7 +8,8 @@ def stamp(seconds):
 def main():
  c.authorized();t=c.read(H/'timeline.json');en=c.read(c.S/'narration.en.json');out=c.P/'publishing';out.mkdir(exist_ok=True)
  chaptersKo=['00:00 게임은 물체의 기울기를 어떻게 기억할까?'];chaptersEn=['00:00 How does a game remember an object’s tilt?']
- for s,e in zip(t['scenes'][1:],en['scenes'][1:]):chaptersKo.append(stamp(s['start'])+' '+s['title']);chaptersEn.append(stamp(s['start'])+' '+e['title'])
+ englishTitles=['Direction and orientation','A reference orientation','Coordinate frames and basis axes','Building and using a rotation matrix','The inverse and transpose','Which matrix do we need?','Components, dot products and direction cosines','Reading all nine entries','Transforming points and composing matrices','Storage cost','Constraints on a pure rotation','Invalid matrices and numerical drift','What a rotation matrix records']
+ for s,title in zip(t['scenes'][1:],englishTitles[1:]):chaptersKo.append(stamp(s['start'])+' '+s['title']);chaptersEn.append(stamp(s['start'])+' '+title)
  references='''
 자료·게임 화면 출처
 3D Math Primer — Orientation and Multiple Coordinate Spaces

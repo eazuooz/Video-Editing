@@ -10,6 +10,10 @@ spec=c.module('v8_ui_spec',H/'board-specs.py')
 FONT='C:/Windows/Fonts/malgun.ttf';BOLD='C:/Windows/Fonts/malgunbd.ttf'
 
 def digest(x):return hashlib.sha256(json.dumps(x,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+def encoder(codec):
+ args=old.encoder(codec)
+ if codec=='libx264':args[args.index('-threads')+1]='2'
+ return args
 def check(p,frames):return old.check_video(p,frames)
 def backdrop(p):
  path=E/'ui'/(p['id']+'.png');path.parent.mkdir(exist_ok=True)
@@ -59,7 +63,7 @@ def render(p,codec):
  i,left=old.assemble_pane(p['left'],args,filters,1,'l',tuple(leftrect[2:]));i,right=old.assemble_pane(p['right'],args,filters,i,'r',tuple(rightrect[2:]))
  filters.extend([f'[base][{left}]overlay={leftrect[0]}:{leftrect[1]}:shortest=1:eof_action=endall[left]',f'[left][{right}]overlay={rightrect[0]}:{rightrect[1]}:shortest=1:eof_action=endall[pair]',f'[pair]ass={old.ffescape(annotation)},format=yuv420p,split=2[clean][forcap]',f'[forcap]ass={old.ffescape(ass)}[captioned]'])
  graph=folder/(key+'.filter.txt');graph.write_text(';\n'.join(filters),encoding='utf8');args+=['-/filter_complex',str(graph)]
- for label,dst in [('clean',clean),('captioned',burned)]:args+=['-map',f'[{label}]','-an','-frames:v',str(p['frames']),'-r','60','-fps_mode','cfr',*old.encoder(codec),str(dst)]
+ for label,dst in [('clean',clean),('captioned',burned)]:args+=['-map',f'[{label}]','-an','-frames:v',str(p['frames']),'-r','60','-fps_mode','cfr',*encoder(codec),str(dst)]
  start=time.time();old.run(args,folder/(key+'.log'));outputs=[]
  for kind,file in [('clean',clean),('captioned',burned)]:outputs.append(dict(kind=kind,file=c.rel(file),sha256=c.sha(file),probe=check(file,p['frames'])))
  result=dict(id=p['id'],frames=p['frames'],inputs=sig,outputs=outputs,elapsedSeconds=time.time()-start);c.save(receipt,result);print('Rendered',p['id'],p['frames'],'frames',flush=True);return result

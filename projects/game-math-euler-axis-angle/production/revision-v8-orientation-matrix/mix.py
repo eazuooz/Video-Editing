@@ -1,4 +1,4 @@
-"""V8 unchanged paragraph PCM -> one global voice gain -> standard game mix.
+"""V8 unchanged paragraph PCM -> one global gain -> peak-safe standard game mix.
 
 No added BGM, voice ducking, time stretch, paragraph renormalization or fades.
 """
@@ -35,7 +35,15 @@ def main():
   for s in t['scenes']:
    p=c.R/s['rawVoiceFile'];assert c.sha(p)==s['rawVoiceSha256'];x,sr=sf.read(p,dtype='float32');assert sr==24000 and x.ndim==1
    y=resample_poly(x,2,1);f.seek(s['startFrame']*800);f.write(np.repeat(y[:,None],2,axis=1));rows.append(dict(scene=s['id'],sourceSha256=s['rawVoiceSha256'],samples24k=len(x),startSample48k=s['startFrame']*800,sourceSpeed=1))
- stats=loudness(raw,'narration-placed-measurement');gain=min(-16-float(stats['input_i']),-2.3-float(stats['input_tp']));voice=D/'narration-normalized.wav';scale(raw,voice,gain)
+ stats=loudness(raw,'narration-placed-measurement');gain=-16-float(stats['input_i']);prevoice=D/'narration-global-gain.wav';scale(raw,prevoice,gain)
+ comparison=c.O/'audio/current-source-peak-binding.json';evidence=c.read(comparison)
+ assert evidence['inputs']['sourceReceiptSha256']==c.sha(c.O/'audio/tts-current.json'),'Peak-safety evidence must refer to the current selected source'
+ original=evidence['originalComparison'];assert c.sha(c.R/original['file'])==original['sha256'],'Historical comparison must retain its own source provenance'
+ voice=D/'narration-normalized.wav';limit=10**(-2.3/20)
+ peak_filter=f'aresample=192000,alimiter=limit={limit:.12f}:attack=5:release=80:level=false:latency=true,aresample=48000,apad=whole_len={n},atrim=end_sample={n}'
+ run(['-threads','2','-filter_threads','2','-i',prevoice,'-af',peak_filter,'-c:a','pcm_f32le',voice],'narration-peak-safety')
+ voice_stats=loudness(voice,'narration-peak-safe-measurement')
+ safety=dict(scope='This selected V8 source only; not a new global production rule',decision='Preserve original PCM and paragraph gains, apply one global target gain then a measured peak ceiling',authority='Implementation decision within the approved selected-video production',reason='Median-normalized FLOAT source has sparse peaks above full scale. The bound headroom and ceiling comparison document why whole-program peak attenuation would make the lecture too quiet; narrow peak protection avoids clipping while preserving useful narration level.',comparison=dict(file=c.rel(comparison),sha256=c.sha(comparison)),filter=peak_filter,automaticLevel=False,lookaheadMs=5,releaseMs=80,ceilingDbfs=-2.3,processingRate=192000,outputRate=48000,latencyCompensated=True,sourcePcmChanged=False,paragraphGainChanged=False,subjectiveListening='pending',measurement=voice_stats)
  game=D/'game-normalized.wav';brand=D/'branding-original.wav';init(game,n);init(brand,n);games=[]
  with sf.SoundFile(game,'r+')as f:
   for cut in visual['liveGameCuts']:
@@ -54,6 +62,6 @@ def main():
  for name,p in [('narration',voice),('game',duck),('branding',brand)]:
   dst=D/(name+'-final-stem.wav');scale(p,dst,pg);stems.append(dict(role=name,file=c.rel(dst),sha256=c.sha(dst)))
  aac=D/'final-mix.m4a';run(['-threads','2','-i',final,'-c:a','aac','-b:a','192k','-ar','48000','-ac','2','-movflags','+faststart',aac],'aac-encode');encoded=loudness(aac,'encoded-measurement');assert float(encoded['input_tp'])<=-1.5
- receipt=dict(revision='orientation-matrix-v8',inputs=dict(timelineSha256=c.sha(H/'timeline.json'),ttsCurrentSha256=c.sha(c.O/'audio/tts-current.json'),liveGameCuts=visual['liveGameCuts'],implementationSha256=c.sha(Path(__file__))),sourcePlacements=rows,sourceLineLevelPolicy='line-level-takes-v1 already applied; no additional paragraph gains',voiceGlobalGainDb=gain,voiceMeasurement=stats,programGlobalGainDb=pg,premixMeasurement=pm,encodedMeasurement=encoded,addedBgm=False,voiceDucking=False,voiceFades=False,timeStretch=False,amixNormalize=0,gameDucking=dict(threshold=.08,ratio=2.2,attackMs=15,releaseMs=280),games=games,stems=stems,outputs=[dict(file=c.rel(x),sha256=c.sha(x))for x in [raw,voice,game,brand,duck,final,aac]],audioMix=c.rel(final),encodedAudio=c.rel(aac),sampleRate=48000,channels=2,totalSamples=n,frames=t['totalFrames'],finalAsr='pending one current encoded batch',humanListening='pending')
+ receipt=dict(revision='orientation-matrix-v8',inputs=dict(timelineSha256=c.sha(H/'timeline.json'),ttsCurrentSha256=c.sha(c.O/'audio/tts-current.json'),liveGameCuts=visual['liveGameCuts'],implementationSha256=c.sha(Path(__file__))),sourcePlacements=rows,sourceLineLevelPolicy='line-level-takes-v1 already applied; no additional paragraph gains',voiceGlobalGainDb=gain,voiceMeasurement=stats,peakSafety=safety,programGlobalGainDb=pg,premixMeasurement=pm,encodedMeasurement=encoded,addedBgm=False,voiceDucking=False,voiceFades=False,timeStretch=False,amixNormalize=0,gameDucking=dict(threshold=.08,ratio=2.2,attackMs=15,releaseMs=280),games=games,stems=stems,outputs=[dict(file=c.rel(x),sha256=c.sha(x))for x in [raw,prevoice,voice,game,brand,duck,final,aac]],audioMix=c.rel(final),encodedAudio=c.rel(aac),sampleRate=48000,channels=2,totalSamples=n,frames=t['totalFrames'],finalAsr='pending one current encoded batch',humanListening='pending')
  c.save(D/'mix-report.json',receipt);print(json.dumps(dict(seconds=t['duration'],encodedMeasurement=encoded,voiceGlobalGainDb=gain,programGlobalGainDb=pg)))
 if __name__=='__main__':main()
