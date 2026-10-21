@@ -31,7 +31,7 @@ export default makeScene2D(function*(view){
  }
  const lightValue=new Node({position:[260,285],opacity:()=>is('light-facing','light-sideways')?1:0});world.add(lightValue);
  lightValue.add(<Rect width={440} height={112} fill="#000000"/>);
- lightValue.add(<Txt text="우리 셰이더 · 직접광 기여" fontFamily={FONT} fontSize={34} fill={C.muted} position={[0,-27]}/>);
+ lightValue.add(<Txt text="이 빛을 받는 정도" fontFamily={FONT} fontSize={34} fill={C.muted} position={[0,-27]}/>);
  lightValue.add(<Txt text={()=>Math.round((probe()?.gpuNDotL??0)*100)+'%'} fontFamily={FONT} fontSize={52} fontWeight={700} fill={()=>is('light-facing')?C.green:C.red} position={[0,27]}/>);
  const neutral=new Node({opacity:()=>is('neutral-purple')?1:0});world.add(neutral);
  neutral.add(<Circle position={[94,-94]} width={90} height={90} stroke={C.teal} lineWidth={6}/>);

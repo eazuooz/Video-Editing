@@ -22,6 +22,7 @@ def guard():
     c=read(R/'shared/publishing/video-production-control.json')
     assert c.get('selectedShortVideo')==P.name
     assert c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v1'
+    assert c.get('shortsDirectSelection',{}).get('fullProductionAuthorized') is True
 def ass_filter(): return 'ass='+str((L/'captions.ko.ass').relative_to(R)).replace('\\','/')
 def pair(visual):
     guard(); c=read(P/'script/captions.json'); visual=Path(visual).resolve()

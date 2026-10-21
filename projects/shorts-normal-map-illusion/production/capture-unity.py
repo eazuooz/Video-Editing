@@ -11,6 +11,7 @@ def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser();ap.add_argument('mode',nargs='?',choices=['preview','full'],default='preview');ap.add_argument('--revision',default='v1');a=ap.parse_args()
  c=read(R/'shared/publishing/video-production-control.json');assert c.get('selectedShortVideo')==P.name and c.get('shortsDirectSelection',{}).get('selectedRevision')=='normal-map-v1','Selected Short changed'
+ assert a.mode!='full' or not (L/'capture-hold.flag').exists(),'Own technical capture hold; preserve foreign processes'
  plan=read(P/'planning/production-plan.json');assert plan.get('previewAuthorization',{}).get('allowed') is True,'Preview not authorized'
  timeline=P/'production/visual-timing.json'
  if a.mode=='full':
@@ -45,7 +46,7 @@ def main():
    assert delta<=2560,('Conservative GPU memory budget exceeded; terminating own preview only',delta)
    assert time.time()<deadline,'Own preview timeout'
   assert process.returncode==0,('Unity failed',process.returncode,str(out/'unity.log'))
-  success=read(out/'success.json');assert (success.get('states')==12 and success.get('actualMeshReadback')) if a.mode=='preview' else (success.get('frames')==timing['frames'] and success.get('frozenSourceAssetsLoaded'))
+  success=read(out/'success.json');assert (success.get('states')==14 and success.get('actualMeshReadback') and success.get('signedSpriteGPUVerified')) if a.mode=='preview' else (success.get('frames')==timing['frames'] and success.get('frozenSourceAssetsLoaded'))
   src=ISO/'Assets/VideoScenes'/P.name
   if a.mode=='preview':
    for folder in ['Generated','Materials','Meshes','Scenes']:

@@ -15,11 +15,13 @@ def main():
  ab=[f for f in frames if f['kind']=='wall-ab']
  assert len(list((C/'ab-off').glob('frame-*.png')))==len(ab)==len(list((C/'ab-on').glob('frame-*.png')))
  assert all(abs(f['offProbe']['gpuShadingNormal']['z']+1)<.0001 and abs(f['offProbe']['gpuShadingNormal']['x'])<.0001 for f in ab)
+ signed=data['spriteSignedProbe'];assert data['spriteNegativeZPixels']>0 and signed['spriteTangentNormal']['z']<0 and signed['gpuShadingNormal']['z']>0
+ assert math.sqrt(sum((signed['gpuShadingNormal'][k]-signed['expectedWorldNormal'][k])**2 for k in ['x','y','z']))<.006
  old=read(L/'capture-preview-v2/execution.json');root=R/'unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion'
  frozen=[]
  for name in ['BrickNormal.png','KnightColour.png','KnightNormal.png']:
   file=root/'Generated'/name;key=str(file.relative_to(R)).replace('\\','/');baseline=next(x['sha256'] for x in old['sourceHashes'] if x['path']==key);assert sha(file)==baseline;frozen.append(dict(path=key,sha256=baseline))
  data['mode']='full';(L/'capture-data.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n',encoding='utf8')
- report=dict(status='pass',frames=len(frames),fps=60,nativeSize=[1080,1080],nativeFrameFiles=len(frames),sameFrameABPairs=len(ab),gpuProbeSamples=len(probes),maxCPUvsGPUdotError=max(errors),meshVertices=4,meshTriangles=2,sourceKnightTriangles=data['knightSourceTriangles'],sourceImagesUnchanged=frozen,readback=str(C/'full-readback.json').replace('\\','/'),continuousFrames=True,fullMCStarted=False)
+ report=dict(status='pass',frames=len(frames),fps=60,nativeSize=[1080,1080],nativeFrameFiles=len(frames),sameFrameABPairs=len(ab),gpuProbeSamples=len(probes),maxCPUvsGPUdotError=max(errors),meshVertices=4,meshTriangles=2,sourceKnightTriangles=data['knightSourceTriangles'],sourceImagesUnchanged=frozen,readback=str(C/'full-readback.json').replace('\\','/'),continuousFrames=True,fullMCStarted=False,displayedPercentageMeaning='Our GPU-read max(NdotL,0) diffuse direction factor, rounded to percent; ambient and albedo excluded, not total screen luminance.')
  (L/'visual-capture-validation.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8');print(json.dumps(report))
 if __name__=='__main__':main()

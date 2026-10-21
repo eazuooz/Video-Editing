@@ -144,7 +144,7 @@
       "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
       "sourceKind": "our-implementation",
       "before": "One flat panel uses the same geometric normal everywhere",
-      "action": "Show parallel white geometry-normal arrows",
+      "action": "Show the actual geometric normal at one tracked sample on the flat wall; the plane shares this direction everywhere.",
       "result": "The original plane supplies one shared surface direction",
       "speech": [
         {
@@ -229,8 +229,8 @@
       "renderer": "Unity actual shader capture + Motion Canvas explanatory overlay",
       "scenePath": "unity/VideoEditing/Assets/VideoScenes/shorts-normal-map-illusion/Scenes/Testbed.unity",
       "sourceKind": "our-implementation",
-      "before": "White geometry normals remain parallel",
-      "action": "Enable sampled per-pixel shading normals; green vectors vary",
+      "before": "The original mesh normal remains unchanged at the tracked sample",
+      "action": "Enable the actual sampled shading normal, green, and compare it with the white geometric normal; the RGB map in the next beat shows spatially varying directions.",
       "result": "Lighting directions vary while the mesh stays unchanged",
       "speech": [
         {
@@ -899,7 +899,7 @@
   "engineRecord": {
     "editor": "6000.6.0f1",
     "mainProjectPackage": "URP 17.6 present, not runtime-validated by this isolated capture",
-    "actualCapturePipeline": "Built-in, custom Yamyam/NormalMapLesson shader; linear colour; normal textures linear NormalMap import; no displacement",
+    "actualCapturePipeline": "Built-in custom Yamyam/NormalMapLesson shader, linear colour; wall Unity NormalMap+UnpackNormal; sprite uncompressed linear fullRGB direction decode; no displacement.",
     "nativeCapture": {
       "width": 1080,
       "height": 1080,
@@ -917,7 +917,8 @@
         128
       ],
       "pose": "Idle at 0.9s; one pose only",
-      "colourSpace": "colour sRGB; normals linear; matching alpha; Point filtering"
+      "colourSpace": "colour sRGB; normals linear; matching alpha; Point filtering",
+      "normalImport": "KnightNormal only: Default texture, linear, uncompressed, Point, no alpha dilation; full signed RGB decoded explicitly. Wall retains Unity NormalMap import."
     },
     "gizmos": {
       "normal": "world-space actual sampled shading normal, green",
@@ -925,6 +926,14 @@
       "light": "world-space surface-to-light vector, yellow; not light travel direction",
       "projection": "capturing camera.WorldToScreenPoint; editorial leader labels follow exported anchors",
       "displayLength": ".9 Unity units chosen for readability, not physical measurement"
+    },
+    "spriteDirectionCorrection": {
+      "status": "source-audit-passed-runtime-V3-pending",
+      "reason": "275 of 3715 visible one-pose baked pixels contain negative camera-facing normal Z. Standard Unity RG normal decoding reconstructs positive Z and loses that sign.",
+      "wallPath": "Unity NormalMap import + UnpackNormal unchanged",
+      "spritePath": "Linear uncompressed full RGB directional texture + normalized(2RGB-1), sprite-only material flag",
+      "frozenPngBytesUnchanged": true,
+      "actualV3Proof": "pending"
     }
   }
 }
