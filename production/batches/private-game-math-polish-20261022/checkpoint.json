@@ -1,18 +1,18 @@
 {
-  "updatedAt": "2026-10-21T21:02:29.565479+00:00",
+  "updatedAt": "2026-10-21T22:14:53.021995+00:00",
   "stage": "original-restoration-and-serialized-visual-polish",
   "active": [
     "M13",
     "M14",
-    "M16",
-    "M18",
-    "M19",
-    "M20"
+    "M19"
   ],
   "ready": [
     "M05",
     "M06",
-    "M15"
+    "M15",
+    "M16",
+    "M18",
+    "M20"
   ],
   "blocked": [
     "M07",
@@ -23,7 +23,7 @@
     "M12",
     "M17"
   ],
-  "nextAction": "M05/M06/M15 locally ready for user review. Preserve serialized queue: PID60248 M16, PID41764 M18, PID29088 M19, PID67440 M20, PID34688 M13/M14. Inspect current final encoded masters before marking ready. No duplicate jobs or forced termination. M07-M12/M17 await existing source decision; no upload or work beyondM20.",
+  "nextAction": "Ready: M05/M06/M15/M16/M18/M20. Preserve existing serialized workers and inspect remaining encoded masters. M07-M12/M17 await the existing source decision. No duplicate/forced-killed jobs, upload, deletion or work beyond M20.",
   "automationId": "16",
   "audioRecovered": 16,
   "jobs": [
@@ -164,13 +164,15 @@
     },
     {
       "pid": 60248,
-      "updatedAt": "2026-10-21T20:55:49.787316+00:00",
-      "stage": "running",
+      "updatedAt": "2026-10-21T21:19:34.420063+00:00",
+      "stage": "technical-complete-await-direct-final-visual-review",
       "dependencies": {
         "43600": "finish-visual-repairs.py"
       },
       "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M16-job.json",
-      "results": {},
+      "results": {
+        "M16": "technical-complete-await-direct-final-visual-review"
+      },
       "newTts": false,
       "platformMutation": false,
       "visualApprovalGranted": false,
@@ -179,23 +181,25 @@
     },
     {
       "pid": 41764,
-      "updatedAt": "2026-10-21T19:37:39.788352+00:00",
-      "stage": "waiting-for-existing-render-chain",
+      "updatedAt": "2026-10-21T21:26:05.980969+00:00",
+      "stage": "technical-complete-await-direct-final-visual-review",
       "dependencies": {
         "60248": "finish-visual-repairs.py"
       },
       "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M18-job.json",
-      "results": {},
+      "results": {
+        "M18": "technical-complete-await-direct-final-visual-review"
+      },
       "newTts": false,
       "platformMutation": false,
       "visualApprovalGranted": false
     },
     {
-      "pid": 29088,
-      "updatedAt": "2026-10-21T19:49:14.755006+00:00",
+      "pid": 5828,
+      "updatedAt": "2026-10-21T22:05:58.938909+00:00",
       "stage": "waiting-for-existing-render-chain",
       "dependencies": {
-        "41764": "finish-visual-repairs.py"
+        "34688": "finish-visual-repairs.py"
       },
       "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M19-job.json",
       "results": {},
@@ -205,21 +209,25 @@
     },
     {
       "pid": 67440,
-      "updatedAt": "2026-10-21T19:57:04.352838+00:00",
-      "stage": "waiting-for-existing-render-chain",
+      "updatedAt": "2026-10-21T22:00:58.075314+00:00",
+      "stage": "technical-complete-await-direct-final-visual-review",
       "dependencies": {
         "29088": "finish-visual-repairs.py"
       },
       "statusFile": "production/batches/private-game-math-polish-20261022/visual-repair-M20-job.json",
-      "results": {},
+      "results": {
+        "M20": "technical-complete-await-direct-final-visual-review"
+      },
       "newTts": false,
       "platformMutation": false,
-      "visualApprovalGranted": false
+      "visualApprovalGranted": false,
+      "episode": "M20",
+      "script": "assemble.py"
     },
     {
       "pid": 34688,
-      "updatedAt": "2026-10-21T20:13:04.177937+00:00",
-      "stage": "waiting-for-existing-render-chain",
+      "updatedAt": "2026-10-21T22:08:37.781938+00:00",
+      "stage": "running",
       "dependencies": {
         "67440": "finish-visual-repairs.py"
       },
@@ -227,7 +235,9 @@
       "results": {},
       "newTts": false,
       "platformMutation": false,
-      "visualApprovalGranted": false
+      "visualApprovalGranted": false,
+      "episode": "M13",
+      "script": "assemble.py"
     }
   ],
   "completedJobs": [
@@ -269,7 +279,11 @@
     "M05 repaired master dd5610d372dc: all697 current final samples on59 sheets plus native multiline frame inspected; large/mobile browser playback and seek checked. Technical1080p60/full-decode/frame/audio/caption checks passed; four outputs now locally ready for human review. Human approval remains pending; no upload.",
     "M13/M14 original explanation sources directly inspected:68/60 samples. Numeric wrapper enlarges existing labels/formulas and fixes observed circumcircle/header and L-vertex/header conflicts only. All42 current captioned first/middle/last states on6sheets and3native frames inspected; still preflight passed. Existing PID34688 will render14 numeric replacements through fresh prepare-observed-composition.py; no duplicate worker, no final visual approval.",
     "M15 master a32c846993c0: all568 encoded samples on48 sheets plus3 native frames inspected. Large/mobile browser playback and3 seeks checked. Technical1080p60/full-decode/frame/audio/caption checks passed; four outputs locally ready for human review. Human approval pending; no upload.",
-    "M06 master5f843bb57ed7: all561 final samples on47 sheets and4 native frames inspected. Large/mobile playback and3 seeks passed. Nine multiline beats and QC20 caption clearance repaired. Technical1080p60/full-decode/frame/audio/caption checks passed; four outputs locally ready for human review. Human approval pending; no upload."
+    "M06 master5f843bb57ed7: all561 final samples on47 sheets and4 native frames inspected. Large/mobile playback and3 seeks passed. Nine multiline beats and QC20 caption clearance repaired. Technical1080p60/full-decode/frame/audio/caption checks passed; four outputs locally ready for human review. Human approval pending; no upload.",
+    "M16 master 6f8b38e2ca78: all 551 final samples on 46 sheets, native frames and browser playback inspected. Technical checks passed; four local outputs ready for human review. No new voice or upload.",
+    "M18 master ff037490a8ab: all 295 final samples on 25 sheets, native frames and browser playback inspected. Technical checks passed; four local outputs ready for human review. No new voice or upload.",
+    "M20 master 8d55491afc1b: all 358 final samples on 30 sheets, native frames and browser playback inspected. Technical checks passed; four local outputs ready for human review. No new voice or upload.",
+    "M19 final375 samples/32 sheets exposed scene10 attention-ring drift; not ready. Dense0.1s anchors preflighted on16 source states and28 composites. Failed masters archived locally; PID5828 queues reassembly/technicalQA/final sampling after existing M13/M14 worker34688. Preserve voice/order/duration; final direct review required."
   ],
   "sourceIssues": {
     "ZFGdubPhasM": "Available formats verified: maximum 1280x720; find original FHD counterpart, no upscale exception assumed",
