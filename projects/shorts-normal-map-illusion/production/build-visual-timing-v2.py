@@ -6,7 +6,7 @@ REVISION='normal-map-v2-grid-rgb-deadcells'
 def read(p):return json.loads(p.read_text(encoding='utf-8'))
 def save(p,v):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--captions',type=Path,default=L/'audio-v2/captions.json');a=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--captions',type=Path,default=P/'script/captions.json');a=ap.parse_args()
  control=read(R/'shared/publishing/video-production-control.json');assert control.get('selectedShortVideo')==P.name and control.get('shortsDirectSelection',{}).get('selectedRevision')==REVISION
  c=read(a.captions);q={x['id']:x for x in c['cues']};assert len(q)==40 and 'c40'in q,'Actual aligned v2 voice/captions required'
  def cueframe(id):return int(q[id].get('startFrame',round(q[id]['start']*60)))

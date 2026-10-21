@@ -38,7 +38,8 @@ SETTINGS = {
     'voiceSamplePeakCeilingDbfs': -3.0,
     'nativeGameTargetLufs': -23.0, 'nativeGameSamplePeakCeilingDbfs': -6.0,
     'nativeGameMaximumPositiveGainDb': 6.0,
-    'musicTargetLufs': -29.0, 'musicStartSeconds': 0.0,
+    'audioBalance': 'safe-constant-gain-voice-minus35-bgm-explicit-source-audio-rights-v2',
+    'musicTargetLufs': -35.0, 'musicStartSeconds': 0.0,
     'musicFadeSeconds': 0.45, 'gameFadeInSeconds': 0.12,
     'gameFadeOutSeconds': 0.30,
     'backgroundSpeechDuckDb': 4.0, 'duckAttackMs': 15, 'duckReleaseMs': 280,
@@ -167,7 +168,7 @@ def inputs():
         raise RuntimeError('Pixel Peeker Polka input differs from the registered approved file.')
     if not LICENSE.exists():
         raise RuntimeError('Preserve the existing Pixel Peeker Polka license/credit record.')
-    sections, previous = [], 0.0
+    sections, excluded_audio, previous = [], [], 0.0
     for item in timing['sections']:
         start, end = float(item['start']), float(item['end'])
         if not (math.isfinite(start) and math.isfinite(end)
@@ -177,6 +178,15 @@ def inputs():
         if item['kind'] != 'game':
             continue
         source = item['source']
+        source_info = timing['sources'].get(source, {})
+        if (item.get('nativeAudioAdopted') is False
+                or source_info.get('nativeAudioAdopted') is False
+                or source_info.get('sourceAudioAdopted') is False):
+            excluded_audio.append({'id': item['id'], 'source': source,
+                'start': start, 'end': end, 'sourcePath': source_info.get('path'),
+                'sourceSha256': source_info.get('sourceSHA256'),
+                'reason': 'Source soundtrack explicitly not adopted in this revision rights decision; no native sound or invented substitutes.'})
+            continue
         if source not in SOURCES or float(item.get('rate', 1)) != 1:
             raise RuntimeError('Only the selected registered native sources at1x are allowed.')
         basis = item.get('sourceTimeBasis', timing.get('sourceTimeBasis', 'clip-relative'))
@@ -197,6 +207,7 @@ def inputs():
                         'lineLevels': relative(L / 'line-levels.json'),
                         'lineLevelsSha256': sha(L / 'line-levels.json')},
               'durationSeconds': duration, 'frames': frames, 'gameSections': sections,
+              'excludedSourceAudio': excluded_audio,
               'sources': {key: {'path': relative(SOURCES[key][0]), 'sha256': sha(SOURCES[key][0])}
                           for key in used},
               'music': {'path': relative(MUSIC), 'sha256': MUSIC_SHA,
@@ -367,7 +378,8 @@ def mix():
         'duckGainDbRange': [20 * math.log10(float(duck.min())), 20 * math.log10(float(duck.max()))],
         'encodeAttempts': attempts, 'humanListening': 'pending', 'finalMixAsr': 'pending; separate one-time full-input check',
         'credit': 'Pixel Peeker Polka - faster Kevin MacLeod (incompetech.com); CC BY4.0; exact credit in LICENSE',
-        'nativeAudioLimit': 'Original mixed game audio preserved. No claimed music/voice separation or fabricated effects.',
+        'nativeAudioLimit': ('Original adopted mixed game audio preserved; no claimed separation or fabricated effects.'
+                            if events else 'No native game audio adopted; source soundtrack excluded per rights decision. Game stem is silent; no invented substitutes.'),
     })
     print('Mixed finite timeline: ' + str(recipe['durationSeconds']) + 's')
     report()

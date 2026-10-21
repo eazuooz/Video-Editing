@@ -19,6 +19,6 @@ export function createNormalGrid({record,elapsed,enabled,point}:GridOptions){
   root.add(<Circle position={()=>positions()[0]} width={9} height={9} fill={colour} stroke="#000000" lineWidth={3} opacity={()=>shown()&&length()<7?1:0}/>);
  }
  root.add(<Txt text="대표 픽셀 63곳의 방향" position={[-190,-390]} fontFamily="Malgun Gothic" fontSize={34} fontWeight={700} fill={colour}/>);
- root.add(<Txt text="일부 지점만 표시 · 화살표 길이는 보기용" position={[-100,-345]} fontFamily="Malgun Gothic" fontSize={28} fill={MUTED}/>);
+  root.add(<Txt text="일부 지점만 표시 · 화살표 길이는 보기용" position={[-100,-355]} fontFamily="Malgun Gothic" fontSize={28} fill={MUTED}/>);
  return root;
 }

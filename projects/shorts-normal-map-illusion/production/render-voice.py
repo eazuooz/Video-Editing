@@ -58,6 +58,56 @@ def wait_for_gpu(seconds):
         time.sleep(min(15, max(0, deadline - time.monotonic())))
 
 
+def render_raw_paragraphs(worker, items, inputs):
+    """Same approved generation call, preserving native float samples before gains."""
+    import numpy as np
+    import soundfile as sf
+    receipt = L / 'raw-paragraph-takes.json'
+    done = read(receipt) if receipt.exists() else {
+        'revision': REVISION, 'inputs': inputs, 'status': 'partial', 'takes': []}
+    assert done['inputs'] == inputs, 'Raw paragraph receipt belongs to another input.'
+    previous = {entry['key']: entry for entry in done['takes']}
+    model = prompt = None
+    worker.CHUNK_DIR.mkdir(parents=True, exist_ok=True)
+    for item in items:
+        text_sha = hashlib.sha256(item.text.encode('utf8')).hexdigest()
+        if item.key in previous:
+            entry = previous[item.key]
+            assert entry['textSha256'] == text_sha and entry['sha256'] == sha(item.path)
+            continue
+        assert not item.path.exists(), 'Preserve an unreceipted raw take; inspect before repair.'
+        if model is None:
+            model = worker.Qwen3TTSModel.from_pretrained(str(worker.MODEL_DIR),
+                        device_map=worker.INFERENCE_DEVICE, dtype=worker.torch.bfloat16)
+            prompt = model.create_voice_clone_prompt(ref_audio=str(worker.REFERENCE),
+                        ref_text=worker.REFERENCE_TEXT_PATH.read_text(encoding='utf8').strip(),
+                        x_vector_only_mode=False)
+        print(f'Generating paragraph {item.key} ({len(done["takes"]) + 1}/{len(items)})', flush=True)
+        started = time.time()
+        waves, rate = model.generate_voice_clone(text=[item.text], language=worker.LANGUAGE,
+                        voice_clone_prompt=prompt, non_streaming_mode=True,
+                        max_new_tokens=worker.MAX_NEW_TOKENS)
+        assert len(waves) == 1 and rate == 24000
+        raw = np.asarray(waves[0], dtype=np.float32)
+        assert raw.ndim == 1 and len(raw) and np.isfinite(raw).all()
+        sf.write(item.path, raw, rate, subtype='FLOAT')
+        reread, actual_rate = sf.read(item.path, dtype='float32')
+        assert actual_rate == rate and np.array_equal(raw, reread)
+        entry = {'key': item.key, 'path': item.path.relative_to(R).as_posix(),
+                 'sha256': sha(item.path), 'textSha256': text_sha, 'sampleFormat': 'FLOAT32',
+                 'samples': len(raw), 'sampleRate': rate, 'seconds': len(raw) / rate,
+                 'rawFloatPeak': float(np.max(np.abs(raw))),
+                 'rawSamplesOutsideUnitRange': int(np.sum(np.abs(raw) >= 1)),
+                 'hardClippingOrQuantizationApplied': False, 'attempts': 1,
+                 'elapsedSeconds': time.time() - started, 'generatedAt': time.time()}
+        done['takes'].append(entry)
+        done['takeCount'] = len(done['takes'])
+        receipt.write_text(json.dumps(done, ensure_ascii=False, indent=2) + '\n', encoding='utf8')
+        print(f'Completed paragraph {item.key}: {entry["seconds"]:.3f}s, raw peak{entry["rawFloatPeak"]:.4f}', flush=True)
+    done['status'] = 'complete-raw-floats-preserved; full-ASR-and-listening-pending'
+    receipt.write_text(json.dumps(done, ensure_ascii=False, indent=2) + '\n', encoding='utf8')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--release-script-sha256', required=True,
@@ -140,7 +190,8 @@ def main():
         worker.load_tts_dependencies()
         items = worker.build_render_items(worker.load_jobs())
         assert len(items) == sum(len(scene['lines']) for scene in prepared['scenes'])
-        worker.render_chunks(items, 1)
+        assert worker.MAX_RENDER_ATTEMPTS == 1, 'One current paragraph take per planned input.'
+        render_raw_paragraphs(worker, items, record['inputs'])
         record['takes'] = []
         for item in items:
             samples, rate = worker._read_mono(item.path)
