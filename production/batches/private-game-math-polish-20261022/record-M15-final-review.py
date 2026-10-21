@@ -36,6 +36,10 @@ save(e.H / 'visual-review.json', {
 qa = read(e.H / 'technical-qa.json')
 qa['directVisualReview'] = rel(e.H / 'visual-review.json')
 save(e.H / 'technical-qa.json', qa)
+outputs = read(e.H / 'outputs.json')
+outputs['technicalQa'] = rel(e.H / 'technical-qa.json')
+outputs['visualQa'] = rel(e.H / 'visual-review.json')
+save(e.H / 'outputs.json', outputs)
 cp = read(B / 'checkpoint.json')
 cp['updatedAt'] = now
 cp['ready'] = sorted(set(cp.get('ready', []) + ['M15']))
