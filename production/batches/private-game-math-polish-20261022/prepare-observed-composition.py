@@ -20,5 +20,13 @@ for sid in guide['captionClearanceScenes']:
  e.verify(dst,s['frames']);inputs[sid]={'path':rel(dst),'sha256':sha(dst),'reason':'Observed native controls preserved above fixed captions by aspect-preserving1600x900 inset; guide mapping already matches this transform'}
  receipts[sid]={'source':signature,**inputs[sid]}
 save(e.H/'observed-ui-clearance.json',receipts)
-save(e.H/'composition-polish.json',{**guide,'inputs':inputs,'internalVisualQa':'pending','changes':'Observed editorial region guides and native UI clearance only; original scene sequence, duration and recovered audio unchanged'})
+if e.id in ['M13','M14']:
+ # This module is loaded fresh by the already queued serialized worker. Keep
+ # the same worker and append reviewed numeric replacements to its composition.
+ e.run([sys.executable,B/'render-polygon-legibility.py',e.id],'polygon-legibility-job.log')
+ rendered=read(e.H/'polygon-legibility-render.json')
+ for sid,item in rendered['scenes'].items():
+  assert sid not in inputs and sha(R/item['path'])==item['sha256']
+  inputs[sid]={'path':item['path'],'sha256':item['sha256'],'reason':item['reason']}
+save(e.H/'composition-polish.json',{**guide,'inputs':inputs,'internalVisualQa':'pending','changes':'Observed editorial region guides and native UI clearance; M13/M14 also use reviewed numeric font/header-safe mapping. Original logical scene sequence, duration and recovered audio unchanged'})
 print(e.id,'observed composition registered; final moving QA pending',flush=True)
