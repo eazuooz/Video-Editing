@@ -74,9 +74,10 @@ def join(codec):
  intro=c.R/timeline['branding']['intro']['file'];outro=c.R/timeline['branding']['membership']['file'];check(intro,120);check(outro,600);versions=[]
  for kind in ['clean','captioned']:
   files=[intro,*[c.R/next(o['file']for o in row['outputs']if o['kind']==kind)for row in rows],outro]
-  listing=E/(kind+'-concat.txt');listing.write_text('\n'.join("file '"+str(f.resolve()).replace('\\','/')+"'"for f in files)+'\n',encoding='utf8')
+  counts=[120,*[row['frames']for row in rows],600]
+  listing=E/(kind+'-concat.txt');listing.write_text('ffconcat version 1.0\n'+''.join("file '"+str(f.resolve()).replace('\\','/')+"'\nduration "+f'{count/60:.12f}\n'for f,count in zip(files,counts)),encoding='utf8')
   file=E/(kind+'-visual.mp4');log=E/(kind+'-concat.log')
-  old.run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-f','concat','-safe','0','-i',str(listing),'-map','0:v:0','-an','-c:v','copy','-video_track_timescale','60000','-movflags','+faststart',str(file)],log)
+  old.run(['ffmpeg','-hide_banner','-loglevel','warning','-nostdin','-n','-f','concat','-safe','0','-i',str(listing),'-map','0:v:0','-an','-c:v','copy','-bsf:v','setts=pts=round(PTS/1000)*1000:dts=round(DTS/1000)*1000:duration=1000:time_base=1/60000:prescale=1','-video_track_timescale','60000','-movflags','+faststart',str(file)],log)
   check(file,timeline['totalFrames']);versions.append(dict(kind=kind,file=c.rel(file),sha256=c.sha(file)))
  c.save(E/'visual-build.json',dict(timelineSha256=c.sha(H/'timeline.json'),editPlanSha256=c.sha(H/'edit-plan.json'),paragraphs=rows,versions=versions,frames=timeline['totalFrames'],humanReview='pending'))
 

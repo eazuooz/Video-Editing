@@ -32,7 +32,7 @@ def frame(file,f,out,master_sha=None):
   r=c.read(receipt);assert r['masterSha256']==sig and r['sourceFrame']==f and r['verifiedSourcePts']==target and r['sha256']==c.sha(out)
   return r
  out.parent.mkdir(parents=True,exist_ok=True);seek=max(0,(f-60)//60)
- args=['ffmpeg','-hide_banner','-loglevel','info','-nostdin','-n','-copyts','-threads','1','-filter_threads','1','-ss',str(seek),'-t','2','-i',str(file),'-map','0:v:0','-vf',f'select=eq(pts\\,{target}),showinfo','-frames:v','1','-fps_mode','vfr','-update','1',str(out)]
+ args=['ffmpeg','-hide_banner','-loglevel','info','-nostdin','-n','-copyts','-threads','1','-filter_threads','1','-ss',str(seek),'-t','2','-i',str(file),'-map','0:v:0','-vf',f'select=eq(pts\\,{target}),showinfo','-frames:v','1','-fps_mode','vfr','-threads:v','1','-update','1',str(out)]
  result=subprocess.run(args,capture_output=True,cwd=c.R,creationflags=subprocess.CREATE_NO_WINDOW|subprocess.BELOW_NORMAL_PRIORITY_CLASS)
  log=out.with_suffix('.decode.log');log.write_bytes(result.stderr);assert result.returncode==0,(out,result.stderr.decode(errors='replace')[-1500:])
  pts=[int(x)for x in re.findall(rb'\bn:\s*\d+\s+pts:\s*(-?\d+)\s+pts_time:',result.stderr)]
