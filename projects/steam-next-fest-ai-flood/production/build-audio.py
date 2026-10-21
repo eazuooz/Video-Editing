@@ -37,10 +37,16 @@ for s in plan['scenes']:
         if len(v) >= sr * .25: windows.append({'time': i / sr, 'sourceSpeechDbfs': db(rms(v)), 'afterConstantGainDbfs': db(rms(v * gain))})
     reports.append({'scene': s['id'], 'sourceSha256': q['audio_sha256'], 'sourceSpeechRmsDbfs': level, 'fixedGainDb': db(gain), 'windows': windows, 'noSourcePcmOverwrite': True})
 sf.write(O / 'voice-fixed-gain.wav', voice, sr, subtype='FLOAT')
-logs = run(['-i', str(O / 'voice-fixed-gain.wav'), '-af', 'loudnorm=I=-16:TP=-2:LRA=9:print_format=json', '-f', 'null', '-'], 'voice-measure')
+# Qwen syllable onsets carry 40–110 ms bursts 15–18 dB above the speech median (crest 23–30 dB in
+# every take). Taming only those peaks (threshold 8 dB above the −22 dBFS speech median, peak
+# detection) keeps ordinary speech untouched and stops the −16 LUFS gain from driving the limiter.
+TAME = 'acompressor=threshold=0.2:ratio=4:attack=2:release=80:knee=2:detection=peak:makeup=1'
+run(['-i', str(O / 'voice-fixed-gain.wav'), '-af', TAME, '-c:a', 'pcm_f32le', str(O / 'voice-tamed.wav')], 'voice-tame')
+# Measure the delivered dual-mono image: BS.1770 sums both channels, so a mono file reads 3 LU quieter than the stereo stem it becomes.
+logs = run(['-i', str(O / 'voice-tamed.wav'), '-af', 'pan=stereo|c0=c0|c1=c0,loudnorm=I=-16:TP=-2:LRA=9:print_format=json', '-f', 'null', '-'], 'voice-measure')
 stats = json.loads(logs[logs.rfind('{'):logs.rfind('}') + 1]); gainDb = -16 - float(stats['input_i'])
 norm = f'volume={gainDb}dB:precision=double,alimiter=limit=0.7499:attack=5:release=50:level=false:latency=true'
-run(['-i', str(O / 'voice-fixed-gain.wav'), '-af', norm + ',pan=stereo|c0=c0|c1=c0', '-ar', '48000', '-c:a', 'pcm_s24le', str(O / 'narration-stem.wav')], 'voice-normalize')
+run(['-i', str(O / 'voice-tamed.wav'), '-af', norm + ',pan=stereo|c0=c0|c1=c0', '-ar', '48000', '-c:a', 'pcm_s24le', str(O / 'narration-stem.wav')], 'voice-normalize')
 music = R / 'shared/assets/music/youtube-audio-library/Nimbus-Eveningland.mp3'
 assert hashlib.sha256(music.read_bytes()).hexdigest() == '06ddb8d0f2aa82e499ab2cb398b8a241c626d9d3da82bbaf274d1178435f8c08'
 musicDuration = float(json.loads(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'json', str(music)]))['format']['duration'])
@@ -50,5 +56,5 @@ filters.append(f'[{last}]atrim=duration={duration},loudnorm=I=-28:TP=-4:LRA=7,af
 run([*inputs, '-filter_complex', ';'.join(filters), '-map', '[music]', '-t', str(duration), '-ar', '48000', '-ac', '2', '-c:a', 'pcm_s24le', str(O / 'music-stem.wav')], 'music-level')
 graph = '[0:a]asplit=2[voice][side];[1:a][side]sidechaincompress=threshold=0.025:ratio=3:attack=35:release=400[bg];[voice][bg]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.794:level=false:latency=true[out]'
 run(['-i', str(O / 'narration-stem.wav'), '-i', str(O / 'music-stem.wav'), '-filter_complex', graph, '-map', '[out]', '-t', str(duration), '-ar', '48000', '-c:a', 'pcm_s24le', str(O / 'final-mix.wav')], 'final-mix')
-report = {'scenes': reports, 'gameAudio': 'none (reality-check video; no gameplay)', 'duration': duration, 'normalizationMeasurementOnly': stats, 'voiceGainMode': 'constant-global-gain-with-short-peak-limiter', 'globalGainDb': gainDb, 'musicInitialLufs': -28, 'music': 'Nimbus — Eveningland (YouTube Audio Library, approved license file)', 'voiceDucked': False, 'amixNormalize': False, 'sourcePcmPreserved': True, 'sourceToStemToEncodedContinuity': 'pending', 'fullFinalAsr': 'pending', 'humanWholeListening': 'pending'}
+report = {'scenes': reports, 'gameAudio': 'none (reality-check video; no gameplay)', 'duration': duration, 'normalizationMeasurementOnly': stats, 'voiceGainMode': 'line-level-equalized-takes + onset-peak-taming + constant-global-gain + short-peak-limiter', 'onsetTaming': TAME, 'globalGainDb': gainDb, 'musicInitialLufs': -28, 'music': 'Nimbus — Eveningland (YouTube Audio Library, approved license file)', 'voiceDucked': False, 'amixNormalize': False, 'sourcePcmPreserved': True, 'sourceToStemToEncodedContinuity': 'pending', 'fullFinalAsr': 'pending', 'humanWholeListening': 'pending'}
 (O / 'audio-build.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf8'); print('Mixed', duration, 'seconds')

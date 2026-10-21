@@ -187,18 +187,32 @@
     "reference": "shared/voice-reference/reference-15-35s.wav",
     "referenceText": "shared/voice-reference/reference-15-35s.ko.txt",
     "model": "qwen3-tts/models/Qwen3-TTS-12Hz-1.7B-Base",
-    "outputDir": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1",
-    "filenameStem": "steam-next-fest-ai-flood-qwen3-1.7b-balanced-v1",
-    "renderMode": "scene",
+    "outputDir": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-line-level-v2",
+    "filenameStem": "steam-next-fest-ai-flood-qwen3-1.7b-line-level-v2",
+    "renderMode": "line",
     "sceneGapSeconds": 0.3,
     "tailRatioThreshold": 0.07,
     "tailDecayMsThreshold": 70,
     "maxRenderAttempts": 3,
     "maxNewTokens": 2048,
     "edgeFadeSeconds": 0.006,
-    "status": "waiting-for-free-gpu-boundary",
+    "status": "line-level-regeneration-authorized-by-user-2026-10-21",
     "gpuMinimumFreeMiB": 8192,
-    "gpuProfileReason": "Same approved 1.7B model/reference, bfloat16, scene batch 1, 8192MiB allocator cap with at least 9000MiB free (shared guard minimum). Open Unity/Unreal editors hold display memory; the batch starts automatically once the user frees the GPU. No foreign process termination, no CPU fallback."
+    "gpuProfileReason": "Same approved 1.7B model/reference, bfloat16, line mode batch 1 (shorter chunks than scene mode), 8192MiB allocator cap with at least 8192MiB free. Open editors hold display memory; no foreign process termination, no CPU fallback.",
+    "lineGapSeconds": 0.28,
+    "previousRevision": {
+      "outputDir": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1",
+      "renderMode": "scene",
+      "reason": "User review 2026-10-21: level drifted quieter inside long scene takes (per-word p90-p10 up to 20.7 dB in scene 05), heard as irregular loud/quiet narration; PCM preserved untouched"
+    },
+    "lineLevelEqualization": {
+      "targetSpeechFrameMedianDbfs": -22,
+      "frameMs": 50,
+      "gateBelowPeakDb": 25,
+      "maxGainDb": 12,
+      "record": "line-levels.json",
+      "why": "Each paragraph line is generated separately (no long-take drift) and its speech-active median is matched to one target before the scene file is assembled; build-audio then applies only the global -16 LUFS gain."
+    }
   },
   "audio": {
     "mixStatus": "waiting-for-music-approval",

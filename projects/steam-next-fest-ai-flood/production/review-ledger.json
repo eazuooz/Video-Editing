@@ -4,109 +4,109 @@
   "policyId": "preproduction-first-v1",
   "records": [
     {
-      "checkId": "decode-pts-audio-integrity",
+      "checkId": "line-level-tts-regeneration",
       "inputHashes": {
-        "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
-        "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+        "captioned": "c9b5dc84ce5edf2e7139c36e0b14cf273027660d744f89a5cc06c540df5e9c6f",
+        "clean": "1a249eecf3e15993b34510636514f6fb88a0458e9c7d71b8d3734bc387fb9df3"
       },
-      "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
-      "rangeOrCoverage": "whole clean+captioned",
-      "method": "verify-output.py: full decode, 60fps CFR PTS, AAC stream, frame counts 120+33958+600, loudness I -17.27 / TP -1.95",
+      "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+      "rangeOrCoverage": "7 scenes / 48 lines",
+      "method": "48 paragraph-line takes (scene-mode renderer on a derived one-line-per-scene script, batch 1, bounded GPU), per-line speech-frame median matched to -22 dBFS before assembly; 10 takes kept as best-of-3 after tail checks, all read back correctly by ASR",
       "status": "pass",
-      "evidencePath": "production/local/edit/qa/integrity.json",
-      "observedAt": "2026-10-21T01:06:57+09:00",
+      "evidencePath": "shared\\output\\narration\\steam-next-fest-ai-flood\\qwen3-1.7b-line-level-v2\\line-levels.json",
+      "observedAt": "2026-10-21T14:51:47+09:00",
       "reusedFrom": null,
-      "limitations": "integrated loudness 1.27 LU under the -16 target (limiter-bounded narration stem); peaks safe"
-    },
-    {
-      "checkId": "caption-cut-overlay-review",
-      "inputHashes": {
-        "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
-        "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
-      },
-      "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
-      "rangeOrCoverage": "all 130 cues / 7 scenes",
-      "method": "20 contact sheets (235 pixel samples) inspected for caption placement, emphasis spans, chip/label/card timing against narration lines after spec re-keying",
-      "status": "pass",
-      "evidencePath": "production/local/edit/qa/contact-*.jpg (local)",
-      "observedAt": "2026-10-21T01:06:57+09:00",
-      "reusedFrom": null,
-      "limitations": "sampled frames, not continuous playback; 375px mobile check pending"
+      "limitations": "line median range before 12.0 dB -> after 0.0 dB; scene 04 59곳 spoken as 쉰아홉 곳 and recognized as 59"
     },
     {
       "checkId": "scene-batch-whole-pcm-asr",
       "inputHashes": {
-        "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
-        "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+        "captioned": "c9b5dc84ce5edf2e7139c36e0b14cf273027660d744f89a5cc06c540df5e9c6f",
+        "clean": "1a249eecf3e15993b34510636514f6fb88a0458e9c7d71b8d3734bc387fb9df3"
       },
-      "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+      "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
       "rangeOrCoverage": "7 scenes, 130 cues",
-      "method": "qwen3-tts/review_project_narration.py whole current PCM per scene; script-aligned KO/EN cues",
+      "method": "qwen3-tts/review_project_narration.py on the assembled scene PCM; similarities {'01': 0.971, '02': 0.952, '03': 0.953, '04': 0.984, '05': 0.966, '06': 0.975, '07': 0.986}; differences are number/alias spellings only",
       "status": "pass",
-      "evidencePath": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1/*.asr-review.json",
-      "observedAt": "2026-10-21T01:06:57+09:00",
+      "evidencePath": "shared\\output\\narration\\steam-next-fest-ai-flood\\qwen3-1.7b-line-level-v2\\steam-next-fest-ai-flood-qwen3-1.7b-line-level-v2.asr-review.json",
+      "observedAt": "2026-10-21T14:51:47+09:00",
       "reusedFrom": null,
-      "limitations": "scene 04 word 59곳 heard as 오목곳을 (0.5 s): unclear speech, see retake item"
-    },
-    {
-      "checkId": "final-mix-whole-asr",
-      "inputHashes": {
-        "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
-        "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
-      },
-      "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
-      "rangeOrCoverage": "whole 577.97 s",
-      "method": "whisper-large-v3-turbo on the encoded captioned file audio (one chunked pass) vs full script; similarity 0.9266; differences: alias spellings (AI/SNS), one chunk-stitching duplicate, 59곳",
-      "status": "pass-with-pending",
-      "evidencePath": "production/local/edit/qa/final-mix-asr.json",
-      "observedAt": "2026-10-21T01:06:57+09:00",
-      "reusedFrom": null,
-      "limitations": "chunked recognition duplicated the 04 to 05 join text; cleared by the complete-context window ASR below"
-    },
-    {
-      "checkId": "ambiguous-window-asr",
-      "inputHashes": {
-        "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
-        "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
-      },
-      "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
-      "rangeOrCoverage": "2 windows",
-      "method": "independent complete-context recognition of 268-278 s and 272-296 s (no chunking)",
-      "status": "pass-with-pending",
-      "evidencePath": "production/local/edit/qa/window-asr.json",
-      "observedAt": "2026-10-21T01:06:57+09:00",
-      "reusedFrom": null,
-      "limitations": "04 to 05 join has no duplication; 59곳 still not recognized (스니고무꽃): retake planned, listening pending"
+      "limitations": ""
     },
     {
       "checkId": "narration-level-continuity",
       "inputHashes": {
-        "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
-        "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+        "captioned": "c9b5dc84ce5edf2e7139c36e0b14cf273027660d744f89a5cc06c540df5e9c6f",
+        "clean": "1a249eecf3e15993b34510636514f6fb88a0458e9c7d71b8d3734bc387fb9df3"
       },
-      "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
-      "rangeOrCoverage": "all speech windows + 6 scene joins",
-      "method": "build-audio median-window equalization; verify compares source PCM / stem / encoded speech windows (0.4 s, hop 0.1); scene medians -18.9…-19.8 dBFS, joins <=0.7 dB; 6 flagged voice-transfer windows, 40 sustained-drop candidates",
-      "status": "pending",
-      "evidencePath": "production/local/edit/qa/audio-continuity.json",
-      "observedAt": "2026-10-21T01:06:57+09:00",
+      "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+      "rangeOrCoverage": "all speech windows + 6 joins",
+      "method": "per-word level p90-p10 now 9.0-10.0 dB per scene (was 9.2-20.7), raw scene medians -20.6 to -21.7 dBFS (was -24 to -38); verify: 0 flagged voice-transfer windows (was 6), scene joins 0.0 dB, 25 sustained-drop candidates (sentence-final decays); onset-peak taming acompressor=threshold=0.2:ratio=4:attack=2:release=80:knee=2:detection=peak:makeup=1 then global gain 4.46 dB; limiter trims at most 1.18 dB RMS on a line (mean 0.63), 1.74 s above threshold pre-limiter (was 3.44 s)",
+      "status": "pass-measured-listening-pending",
+      "evidencePath": "projects\\steam-next-fest-ai-flood\\production\\local\\edit\\qa\\audio-continuity.json",
+      "observedAt": "2026-10-21T14:51:47+09:00",
       "reusedFrom": null,
-      "limitations": "flagged ranges need contextual listening (human); measurements alone do not pass"
+      "limitations": "human contextual listening pending"
+    },
+    {
+      "checkId": "decode-pts-audio-integrity",
+      "inputHashes": {
+        "captioned": "c9b5dc84ce5edf2e7139c36e0b14cf273027660d744f89a5cc06c540df5e9c6f",
+        "clean": "1a249eecf3e15993b34510636514f6fb88a0458e9c7d71b8d3734bc387fb9df3"
+      },
+      "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+      "rangeOrCoverage": "whole clean+captioned",
+      "method": "verify-output.py full decode/PTS/AAC; 35,319 frames (120+34,599+600) both files; encoded I -16.12 LUFS, TP -2.03 dBTP, LRA 3.4",
+      "status": "pass",
+      "evidencePath": "projects\\steam-next-fest-ai-flood\\production\\local\\edit\\qa\\integrity.json",
+      "observedAt": "2026-10-21T14:51:47+09:00",
+      "reusedFrom": null,
+      "limitations": ""
+    },
+    {
+      "checkId": "caption-cut-overlay-review",
+      "inputHashes": {
+        "captioned": "c9b5dc84ce5edf2e7139c36e0b14cf273027660d744f89a5cc06c540df5e9c6f",
+        "clean": "1a249eecf3e15993b34510636514f6fb88a0458e9c7d71b8d3734bc387fb9df3"
+      },
+      "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+      "rangeOrCoverage": "130 cues / 7 scenes",
+      "method": "contact sheets 06/11/17 inspected after the new timing: chips, cards and captions follow the narration lines; 20 sheets / 235 samples generated",
+      "status": "pass",
+      "evidencePath": "projects\\steam-next-fest-ai-flood\\production\\local\\edit\\qa/contact-*.jpg (local)",
+      "observedAt": "2026-10-21T14:51:47+09:00",
+      "reusedFrom": null,
+      "limitations": "sampled frames; 375px mobile check pending"
+    },
+    {
+      "checkId": "final-mix-whole-asr",
+      "inputHashes": {
+        "captioned": "c9b5dc84ce5edf2e7139c36e0b14cf273027660d744f89a5cc06c540df5e9c6f",
+        "clean": "1a249eecf3e15993b34510636514f6fb88a0458e9c7d71b8d3734bc387fb9df3"
+      },
+      "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+      "rangeOrCoverage": "whole 588.65 s",
+      "method": "whisper-large-v3-turbo on the encoded captioned audio vs full script: similarity 0.9375; 5 differences, all alias/number spellings (AI, SNS, 13개); no stitching duplicates this time",
+      "status": "pass",
+      "evidencePath": "projects\\steam-next-fest-ai-flood\\production\\local\\edit\\qa\\final-mix-asr.json",
+      "observedAt": "2026-10-21T14:51:47+09:00",
+      "reusedFrom": null,
+      "limitations": ""
     },
     {
       "checkId": "four-output-collection",
       "inputHashes": {
-        "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
-        "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+        "captioned": "c9b5dc84ce5edf2e7139c36e0b14cf273027660d744f89a5cc06c540df5e9c6f",
+        "clean": "1a249eecf3e15993b34510636514f6fb88a0458e9c7d71b8d3734bc387fb9df3"
       },
-      "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+      "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
       "rangeOrCoverage": "output/steam-next-fest-ai-flood",
-      "method": "node scripts/collect-video-output.cjs; 130 KO/EN cues with identical timing; 1920x1080/60fps both files",
+      "method": "node scripts/collect-video-output.cjs; 130 KO/EN cues; 1920x1080/60fps; youtube-upload.json prepared with KO 4536 / EN 4933 description characters, sources last",
       "status": "pass",
-      "evidencePath": "production/delivery-output.json",
-      "observedAt": "2026-10-21T01:06:57+09:00",
+      "evidencePath": "projects/steam-next-fest-ai-flood/publishing/youtube-upload.json",
+      "observedAt": "2026-10-21T14:51:47+09:00",
       "reusedFrom": null,
-      "limitations": "publishReady false until user review"
+      "limitations": "publishReady false until the user hears the new version"
     }
   ],
   "recordFields": [
@@ -128,17 +128,247 @@
     "reused"
   ],
   "reuseRule": "Exact relevant inputs/settings/timing or documented decoded-equivalent retained ranges; changed joins rechecked; new output needs whole decode/PTS/audio integrity.",
-  "humanListening": "pending (user local final review)",
-  "pronunciationListening": "pending: scene 04 59곳 unclear in two ASR passes; retake with the spoken form 쉰아홉 곳 after the foreign GPU lease ends",
+  "humanListening": "pending (user review of the regenerated version)",
+  "pronunciationListening": "pending (ASR passes; 59곳 resolved)",
   "publicRights": "pending (own recordings + MIT extension + Audio Library music recorded in SOURCES.md)",
   "masterHashes": {
-    "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
-    "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4",
-    "koSrt": "77c34866d2fadabce5c997cf140a4071435fc610770de5400b80c60ac8a168dc",
-    "enSrt": "8fe3db95eb8c228d72bfd6f045ff8ead406de5907610ae9db8d85811584bd245",
-    "finalMixWav": "7210dfc1ffc0a84da7486093ff10e7da5e9d8cb20b702da113d66b8cc7142547",
-    "script": "e34401b24a64824e77485f29a953818b40c3140c8c2bbf48d73499c3a0c0a63f",
-    "editPlan": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8"
+    "captioned": "c9b5dc84ce5edf2e7139c36e0b14cf273027660d744f89a5cc06c540df5e9c6f",
+    "clean": "1a249eecf3e15993b34510636514f6fb88a0458e9c7d71b8d3734bc387fb9df3",
+    "koSrt": "738f6701a5500a09a72ed779ea26492ae563e3d237bf0985dfaa7b228d1d8fa3",
+    "enSrt": "29eb929a8506d8171258d48bd5e9af871695488b03fa85301342cad92c295c2b",
+    "finalMixWav": "46eac1d75ef1b415422ac273e29e9d670ebd55dab9105ec2d991064c99922aff",
+    "script": "f7e324b0b63fed9b3585198e1c82e7fba32e17346f81d3ce76366fe743a41f3d",
+    "editPlan": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+    "thumbnail": "bda26bb2cfafcaf21bcfd3c1f02d9e46ac4502f84a7ea753d5e86e0d479b573b"
   },
-  "updatedAt": "2026-10-21T01:06:57+09:00"
+  "updatedAt": "2026-10-21T14:51:47+09:00",
+  "supersededRecords": [
+    {
+      "masterCaptionedSha256": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+      "reason": "user review 2026-10-21: irregular loud/quiet narration (scene-take level drift); replaced by line-level regeneration",
+      "records": [
+        {
+          "checkId": "decode-pts-audio-integrity",
+          "inputHashes": {
+            "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+            "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+          },
+          "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+          "rangeOrCoverage": "whole clean+captioned",
+          "method": "verify-output.py: full decode, 60fps CFR PTS, AAC stream, frame counts 120+33958+600, loudness I -17.27 / TP -1.95",
+          "status": "pass",
+          "evidencePath": "production/local/edit/qa/integrity.json",
+          "observedAt": "2026-10-21T01:06:57+09:00",
+          "reusedFrom": null,
+          "limitations": "integrated loudness 1.27 LU under the -16 target (limiter-bounded narration stem); peaks safe"
+        },
+        {
+          "checkId": "caption-cut-overlay-review",
+          "inputHashes": {
+            "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+            "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+          },
+          "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+          "rangeOrCoverage": "all 130 cues / 7 scenes",
+          "method": "20 contact sheets (235 pixel samples) inspected for caption placement, emphasis spans, chip/label/card timing against narration lines after spec re-keying",
+          "status": "pass",
+          "evidencePath": "production/local/edit/qa/contact-*.jpg (local)",
+          "observedAt": "2026-10-21T01:06:57+09:00",
+          "reusedFrom": null,
+          "limitations": "sampled frames, not continuous playback; 375px mobile check pending"
+        },
+        {
+          "checkId": "scene-batch-whole-pcm-asr",
+          "inputHashes": {
+            "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+            "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+          },
+          "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+          "rangeOrCoverage": "7 scenes, 130 cues",
+          "method": "qwen3-tts/review_project_narration.py whole current PCM per scene; script-aligned KO/EN cues",
+          "status": "pass",
+          "evidencePath": "shared/output/narration/steam-next-fest-ai-flood/qwen3-1.7b-balanced-v1/*.asr-review.json",
+          "observedAt": "2026-10-21T01:06:57+09:00",
+          "reusedFrom": null,
+          "limitations": "scene 04 word 59곳 heard as 오목곳을 (0.5 s): unclear speech, see retake item"
+        },
+        {
+          "checkId": "final-mix-whole-asr",
+          "inputHashes": {
+            "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+            "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+          },
+          "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+          "rangeOrCoverage": "whole 577.97 s",
+          "method": "whisper-large-v3-turbo on the encoded captioned file audio (one chunked pass) vs full script; similarity 0.9266; differences: alias spellings (AI/SNS), one chunk-stitching duplicate, 59곳",
+          "status": "pass-with-pending",
+          "evidencePath": "production/local/edit/qa/final-mix-asr.json",
+          "observedAt": "2026-10-21T01:06:57+09:00",
+          "reusedFrom": null,
+          "limitations": "chunked recognition duplicated the 04 to 05 join text; cleared by the complete-context window ASR below"
+        },
+        {
+          "checkId": "ambiguous-window-asr",
+          "inputHashes": {
+            "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+            "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+          },
+          "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+          "rangeOrCoverage": "2 windows",
+          "method": "independent complete-context recognition of 268-278 s and 272-296 s (no chunking)",
+          "status": "pass-with-pending",
+          "evidencePath": "production/local/edit/qa/window-asr.json",
+          "observedAt": "2026-10-21T01:06:57+09:00",
+          "reusedFrom": null,
+          "limitations": "04 to 05 join has no duplication; 59곳 still not recognized (스니고무꽃): retake planned, listening pending"
+        },
+        {
+          "checkId": "narration-level-continuity",
+          "inputHashes": {
+            "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+            "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+          },
+          "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+          "rangeOrCoverage": "all speech windows + 6 scene joins",
+          "method": "build-audio median-window equalization; verify compares source PCM / stem / encoded speech windows (0.4 s, hop 0.1); scene medians -18.9…-19.8 dBFS, joins <=0.7 dB; 6 flagged voice-transfer windows, 40 sustained-drop candidates",
+          "status": "pending",
+          "evidencePath": "production/local/edit/qa/audio-continuity.json",
+          "observedAt": "2026-10-21T01:06:57+09:00",
+          "reusedFrom": null,
+          "limitations": "flagged ranges need contextual listening (human); measurements alone do not pass"
+        },
+        {
+          "checkId": "four-output-collection",
+          "inputHashes": {
+            "captioned": "e489eac485f11ae53f4b8aecf53c24f6144efdcff46f45dc7e57c5b54942bc4e",
+            "clean": "b66cd55f8edd05ee71aec0982c2b300f34d5ba355f1cfb968a1845b40e25ffa4"
+          },
+          "settingsHash": "cd038f5d94656edb48c5108dd0e5efd2853a2984b370637aa8850220afdf90b8",
+          "rangeOrCoverage": "output/steam-next-fest-ai-flood",
+          "method": "node scripts/collect-video-output.cjs; 130 KO/EN cues with identical timing; 1920x1080/60fps both files",
+          "status": "pass",
+          "evidencePath": "production/delivery-output.json",
+          "observedAt": "2026-10-21T01:06:57+09:00",
+          "reusedFrom": null,
+          "limitations": "publishReady false until user review"
+        }
+      ]
+    },
+    {
+      "masterCaptionedSha256": "9d4c11ccf1bd087942c257b5dcf980d50f60d90fc26a0d3ca64cde238a45325a",
+      "reason": "gain stage measured the mono stem instead of the delivered dual-mono image (+3 LU); encoded -13.7 LUFS replaced by the -16 LUFS build",
+      "records": [
+        {
+          "checkId": "line-level-tts-regeneration",
+          "inputHashes": {
+            "captioned": "9d4c11ccf1bd087942c257b5dcf980d50f60d90fc26a0d3ca64cde238a45325a",
+            "clean": "a234385307efcf113301738dd681765661e5720a8cf3268874fc9cfae819fb32"
+          },
+          "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+          "rangeOrCoverage": "7 scenes / 48 lines",
+          "method": "48 paragraph-line takes (scene-mode renderer on a derived one-line-per-scene script, batch 1, bounded GPU), per-line speech-frame median matched to -22 dBFS before assembly; 10 takes kept as best-of-3 after tail checks, all read back correctly by ASR",
+          "status": "pass",
+          "evidencePath": "shared\\output\\narration\\steam-next-fest-ai-flood\\qwen3-1.7b-line-level-v2\\line-levels.json",
+          "observedAt": "2026-10-21T14:46:09+09:00",
+          "reusedFrom": null,
+          "limitations": "line median range before 12.0 dB -> after 0.0 dB; scene 04 59곳 spoken as 쉰아홉 곳 and recognized as 59"
+        },
+        {
+          "checkId": "scene-batch-whole-pcm-asr",
+          "inputHashes": {
+            "captioned": "9d4c11ccf1bd087942c257b5dcf980d50f60d90fc26a0d3ca64cde238a45325a",
+            "clean": "a234385307efcf113301738dd681765661e5720a8cf3268874fc9cfae819fb32"
+          },
+          "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+          "rangeOrCoverage": "7 scenes, 130 cues",
+          "method": "qwen3-tts/review_project_narration.py on the assembled scene PCM; similarities {'01': 0.971, '02': 0.952, '03': 0.953, '04': 0.984, '05': 0.966, '06': 0.975, '07': 0.986}; differences are number/alias spellings only",
+          "status": "pass",
+          "evidencePath": "shared\\output\\narration\\steam-next-fest-ai-flood\\qwen3-1.7b-line-level-v2\\steam-next-fest-ai-flood-qwen3-1.7b-line-level-v2.asr-review.json",
+          "observedAt": "2026-10-21T14:46:09+09:00",
+          "reusedFrom": null,
+          "limitations": ""
+        },
+        {
+          "checkId": "narration-level-continuity",
+          "inputHashes": {
+            "captioned": "9d4c11ccf1bd087942c257b5dcf980d50f60d90fc26a0d3ca64cde238a45325a",
+            "clean": "a234385307efcf113301738dd681765661e5720a8cf3268874fc9cfae819fb32"
+          },
+          "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+          "rangeOrCoverage": "all speech windows + 6 joins",
+          "method": "per-word level p90-p10 now 9.0-10.0 dB per scene (was 9.2-20.7), raw scene medians -20.6 to -21.7 dBFS (was -24 to -38); verify: 0 flagged voice-transfer windows (was 6), scene joins 0.0 dB, 19 sustained-drop candidates (sentence-final decays); onset-peak taming acompressor=threshold=0.2:ratio=4:attack=2:release=80:knee=2:detection=peak:makeup=1 then global gain 7.47 dB; limiter trims at most 1.18 dB RMS on a line (mean 0.63), 1.74 s above threshold pre-limiter (was 3.44 s)",
+          "status": "pass-measured-listening-pending",
+          "evidencePath": "projects\\steam-next-fest-ai-flood\\production\\local\\edit\\qa\\audio-continuity.json",
+          "observedAt": "2026-10-21T14:46:09+09:00",
+          "reusedFrom": null,
+          "limitations": "human contextual listening pending"
+        },
+        {
+          "checkId": "decode-pts-audio-integrity",
+          "inputHashes": {
+            "captioned": "9d4c11ccf1bd087942c257b5dcf980d50f60d90fc26a0d3ca64cde238a45325a",
+            "clean": "a234385307efcf113301738dd681765661e5720a8cf3268874fc9cfae819fb32"
+          },
+          "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+          "rangeOrCoverage": "whole clean+captioned",
+          "method": "verify-output.py full decode/PTS/AAC; 35,319 frames (120+34,599+600) both files; encoded I -13.72 LUFS, TP -1.88 dBTP, LRA 3.1",
+          "status": "pass",
+          "evidencePath": "projects\\steam-next-fest-ai-flood\\production\\local\\edit\\qa\\integrity.json",
+          "observedAt": "2026-10-21T14:46:09+09:00",
+          "reusedFrom": null,
+          "limitations": ""
+        },
+        {
+          "checkId": "caption-cut-overlay-review",
+          "inputHashes": {
+            "captioned": "9d4c11ccf1bd087942c257b5dcf980d50f60d90fc26a0d3ca64cde238a45325a",
+            "clean": "a234385307efcf113301738dd681765661e5720a8cf3268874fc9cfae819fb32"
+          },
+          "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+          "rangeOrCoverage": "130 cues / 7 scenes",
+          "method": "contact sheets 06/11/17 inspected after the new timing: chips, cards and captions follow the narration lines; 20 sheets / 235 samples generated",
+          "status": "pass",
+          "evidencePath": "projects\\steam-next-fest-ai-flood\\production\\local\\edit\\qa/contact-*.jpg (local)",
+          "observedAt": "2026-10-21T14:46:09+09:00",
+          "reusedFrom": null,
+          "limitations": "sampled frames; 375px mobile check pending"
+        },
+        {
+          "checkId": "final-mix-whole-asr",
+          "inputHashes": {
+            "captioned": "9d4c11ccf1bd087942c257b5dcf980d50f60d90fc26a0d3ca64cde238a45325a",
+            "clean": "a234385307efcf113301738dd681765661e5720a8cf3268874fc9cfae819fb32"
+          },
+          "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+          "rangeOrCoverage": "whole 588.65 s",
+          "method": "whisper-large-v3-turbo on the encoded captioned audio vs full script: similarity 0.9373; 5 differences, all alias/number spellings (AI, SNS, 13개); no stitching duplicates this time",
+          "status": "pass",
+          "evidencePath": "projects\\steam-next-fest-ai-flood\\production\\local\\edit\\qa\\final-mix-asr.json",
+          "observedAt": "2026-10-21T14:46:09+09:00",
+          "reusedFrom": null,
+          "limitations": ""
+        },
+        {
+          "checkId": "four-output-collection",
+          "inputHashes": {
+            "captioned": "9d4c11ccf1bd087942c257b5dcf980d50f60d90fc26a0d3ca64cde238a45325a",
+            "clean": "a234385307efcf113301738dd681765661e5720a8cf3268874fc9cfae819fb32"
+          },
+          "settingsHash": "4cab1f4728e91642c0d8f7eaa1d85c7b7423a30454b6893a599659053befbf29",
+          "rangeOrCoverage": "output/steam-next-fest-ai-flood",
+          "method": "node scripts/collect-video-output.cjs; 130 KO/EN cues; 1920x1080/60fps; youtube-upload.json prepared with KO 4536 / EN 4933 description characters, sources last",
+          "status": "pass",
+          "evidencePath": "projects/steam-next-fest-ai-flood/publishing/youtube-upload.json",
+          "observedAt": "2026-10-21T14:46:09+09:00",
+          "reusedFrom": null,
+          "limitations": "publishReady false until the user hears the new version"
+        }
+      ]
+    }
+  ],
+  "encodedLoudness": {
+    "integratedLufs": -16.12,
+    "truePeakDbtp": -2.03,
+    "lra": 3.4
+  }
 }
