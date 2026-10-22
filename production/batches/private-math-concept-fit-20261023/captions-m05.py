@@ -3,7 +3,7 @@ from common import *
 import difflib,importlib.util,re
 from PIL import ImageFont
 P=R/'projects/game-math-quaternion-foundations-v3';H=P/'production/concept-fit-v2';O=P/'production/local/concept-fit-v2'
-spec=importlib.util.spec_from_file_location('math_caption_geometry',R/'projects/game-math-quaternion-foundations-v3/production/revision-v6/captions.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g);g.O=O
+spec=importlib.util.spec_from_file_location('math_caption_geometry',R/'projects/game-math-euler-axis-angle/production/revision-v6/captions.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g);g.O=O
 font=ImageFont.truetype(str(g.FONT),48);bold=ImageFont.truetype(str(g.BOLD),48)
 old=read(P/'production/timeline.json');T=read(H/'timeline.json');edit=read(B/'m05-narration-edits.json')['edits'];scripts={lang:{s['id']:s for s in read(P/f'script/concept-fit-v2/narration.{lang}.json')['scenes']} for lang in ['ko','en']}
 def norm(s):return re.sub('[^a-z0-9가-힣]','',s.lower())
@@ -35,7 +35,12 @@ for s in T['scenes']:
  for j,(ko,en) in enumerate(zip(scripts['ko'][sid]['lines'],scripts['en'][sid]['lines']),1):
   ksent=g.sentences(ko);esent=g.sentences(en)
   if len(ksent)!=len(esent):ksent,esent=[ko],[en]
-  for z,(k,e) in enumerate(zip(ksent,esent),1):
+  paired=[]
+  for k,e in zip(ksent,esent):
+   if sid=='01' and j==3:
+    kk=g.cut_at(k,['같은 자세를']);ee=g.cut_at(e,['and distinguish']);paired.extend(zip(kk,ee))
+   else:paired.append((k,e))
+  for z,(k,e) in enumerate(paired,1):
    n=len(norm(k));u=mapping[offset][0];v=mapping[offset+n-1][1];offset+=n
    rows.append(dict(id=f'{sid}.L{j:02}.S{z}',scene=sid,line=j,start=s['start']+u,end=s['start']+v,ko=k,en=e,origin='actual blind word ASR mapped to complete source sentences'))
    alignment.append(dict(scene=sid,line=j,sentence=z,start=u,end=v,asr=rel(O/f'audio/asr/{sid}.json')))

@@ -1,0 +1,18 @@
+"""Record observed frame checks and completed native playback; no listening claim."""
+from common import *
+P=R/'projects/game-math-euler-axis-angle';H=P/'production/concept-fit-v2';D=R/f'output/{P.name}-concept-fit-v2'
+out=read(H/'outputs.json');qa=read(H/'qa.json');coverage=read(H/'caption-pixel-coverage.json');master=out['outputs'][1]
+assert master['sha256']=='e5b6e6fd6c4c444ae94d54d433a4d819280d44b74839fce4e9866e0651c889c0'
+assert master['sha256']==qa['technical'][1]['sha256']==coverage['masterSha256']
+assert all(x['decodeErrors']==0 for x in qa['technical'])
+assert coverage['cues']==239 and len(coverage['sheets'])==16 and coverage['addedFrames']==188
+coverage.update(directReview='All16 additional caption contact sheets and10 current-master QA sheets directly inspected;239 cues covered.12 mobile375px images inspected.',reviewedAt=now(),findings='No observed clipping of captions or primary formulas. Tracked hollow marks now align with actual game objects; active target and axis/status colours distinguished.')
+save(H/'caption-pixel-coverage.json',coverage)
+playback=dict(masterSha256=master['sha256'],checkedAt=now(),tool='cua_repl native local browser tab47',segments=[dict(start=0,end=1001.716667,rate=1,ended=True)],evidence='Current internal-review.html visible playback log reports full normal-speed completion. Selected screenshots,112 final frames,188 additional caption frames and12 mobile frames inspected.',continuousHumanViewing=False,actualListening=False)
+save(H/'native-playback-final.json',playback)
+qa.update(directVisualReview='Completed on the sampled final frames, all caption cue coverage and12 mobile images',nativePlayback=rel(H/'native-playback-final.json'));save(H/'qa.json',qa)
+ledger=dict(checkedAt=now(),status='local-review-ready-with-listening-notes',masterSha256=master['sha256'],outputs=out['outputs'],frames=out['frames'],seconds=out['seconds'],technicalQa=rel(H/'qa.json'),captionCoverage=rel(H/'caption-pixel-coverage.json'),nativePlayback=rel(H/'native-playback-final.json'),visualChecks=dict(sceneCount=26,gameIntervals=3,sampledFinalFrames=112,additionalCaptionFrames=188,mobileFrames=12,sourceActionMatch='Hook rotation/attachment, fixed-map tile rotation/placement, assembled object lifted onto a rail. No unrelated character flight padding.',corrections=['rigid own-model rotation','tracked marks use positive ASS drawing coordinates','Dorf narration offset aligned to turning action']),audio=dict(unchangedParagraphs=126,changedGameParagraphs=30,unchangedSource='Recovered original AAC, not original PCM',asr='9 changed scene texts compared; actual-listening pending',actualListening=False,pending=['보간 and 조사 pronunciation','changed paragraph joins','original game sound balance']),humanReview='pending-for-this-hash',uploadAuthorized=False)
+save(H/'review-ledger.json',ledger);out.update(status=ledger['status'],internalVisualQa='completed-with-sampled-and-native-playback-evidence',actualWholeListening=False);save(H/'outputs.json',out)
+page=(D/'index.html').read_text(encoding='utf8').replace('내부 검수 진행 중 · 최종 사용자 시청/청취 대기','화면·자막·파일 검사 완료 · 사용자 시청/청취 대기. 바뀐 문단의 발음과 연결, 게임 소리 균형은 최종 청취 확인이 필요합니다.');(D/'index.html').write_text(page,encoding='utf8')
+project=read(P/'project.json');project['activeConceptFitRevision']=dict(revision='concept-fit-v2',timeline=rel(H/'timeline.json'),outputs=rel(H/'outputs.json'),reviewLedger=rel(H/'review-ledger.json'),status=ledger['status'],humanReview='pending',originalTimelinePreserved=True);save(P/'project.json',project)
+print('M04 visual/technical checks complete; actual listening remains pending')

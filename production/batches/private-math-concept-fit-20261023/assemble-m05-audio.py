@@ -18,7 +18,7 @@ chunks=[x[:2*rate]];cursor=120;mapping=[];(A/'scenes').mkdir(exist_ok=True)
 def level(v):
  m=v.mean(axis=1) if v.ndim==2 else v;n=2400;frames=m[:len(m)//n*n].reshape(-1,n);db=20*np.log10(np.maximum(np.sqrt(np.mean(frames.astype(np.float64)**2,axis=1)),1e-12));return float(np.median(db[db>=db.max()-30]))
 for original in old['scenes']:
- sid=original['id'];scene=copy.deepcopy(original);scene['start']=cursor/60;scene['title']=by_script[sid]['title'];scene['audioOrigins']=[]
+ sid=original['id'];scene=copy.deepcopy(original);scene['start']=cursor/60;scene['title']='부품의 방향과 전체 자세' if sid=='QF20' else by_script[sid]['title'];scene['audioOrigins']=[]
  start=round(original['start']*rate);size=original['frames']*800;raw=x[start:start+size];assert len(raw)==size
  if sid not in edits:
   y=raw.copy();scene['audioPreservation']='Exact decoded baseline scene samples; no new synthesis or time adjustment'
@@ -58,13 +58,20 @@ for original in old['scenes']:
   scene.update(frames=frames,seconds=frames/60,cues=newcues,lineStarts=starts,voiceSeconds=len(y)/rate,observationPauses=[],observationReview={'status':'legacy automatic observation silence removed only in changed game passages','newAutomaticHolds':0})
   scene['audioPreservation']='Unchanged complete paragraphs decoded from original AAC; only game-specific changed paragraphs use new Qwen takes. No time-stretch or fades.'
   for key in ['cuts','cut','rawOrigin','narrationWindowSeconds','voiceSha256']:scene.pop(key,None)
- path=A/'scenes'/f'{sid}-scene.wav';sf.write(path,y,rate,subtype='FLOAT');scene['voice']=rel(path);scene['voiceSha256']=sha(path);scene['voiceSampleRate']=rate
- scene['baselineStart']=original['start'];scene['baselineSeconds']=original['seconds'];scene['gameWindowSeconds']={'02':18.,'GA01':11.,'QF30':9.}.get(sid,0.)
+ path=A/'scenes'/f'{sid}-scene.wav'
+ same=False
+ if path.exists():
+  prior,prior_rate=sf.read(path,dtype='float32',always_2d=True);same=prior_rate==rate and np.array_equal(prior,y)
+ if not same:sf.write(path,y,rate,subtype='FLOAT')
+ scene['voice']=rel(path);scene['voiceSha256']=sha(path);scene['voiceSampleRate']=rate
+ scene['baselineStart']=original['start'];scene['baselineSeconds']=original['seconds'];scene['gameWindowSeconds']={'02':18.,'GA01':11.,'QF30':6.}.get(sid,0.)
  if original['classification']=='actual':scene['classification']='mixed' if scene['gameWindowSeconds'] else 'explanation-implementation'
  out['scenes'].append(scene);chunks.append(y);cursor+=scene['frames'];mapping.append(dict(scene=sid,newStart=scene['start'],oldStart=original['start'],newSeconds=scene['seconds'],oldSeconds=original['seconds'],changedParagraphs=len(edits.get(sid,{})),audioOrigins=scene['audioOrigins']))
-old_outro=round((old['seconds']-10)*rate);chunks.append(x[old_outro:old_outro+10*rate]);cursor+=600
+old_outro=round((old['seconds']-10)*rate);tail=x[old_outro:old_outro+10*rate];tail_pad=10*rate-len(tail)
+assert 0<=tail_pad<800,'Only sub-frame AAC end rounding may be padded'
+chunks.append(np.pad(tail,((0,tail_pad),(0,0))));cursor+=600
 full=np.concatenate(chunks);assert len(full)==cursor*800
 sf.write(A/'narration-full.wav',full,rate,subtype='FLOAT')
 out.update(frames=cursor,seconds=cursor/60,bodyFrames=cursor-720,bodySeconds=(cursor-720)/60,actualFrames=round(sum(s['gameWindowSeconds'] for s in out['scenes'])*60));out['actualShare']=out['actualFrames']/out['bodyFrames'];out['explanationFrames']=out['bodyFrames']-out['actualFrames'];out['explanationShare']=1-out['actualShare']
-save(H/'timeline.json',out);save(H/'audio-restoration-map.json',dict(sourceAudioSha256=sha(baseline),decodedBaselineSha256=sha(pcm),output=rel(A/'narration-full.wav'),outputSha256=sha(A/'narration-full.wav'),sampleRate=rate,seconds=len(full)/rate,floatPeak=float(abs(full).max()),scenes=mapping,review='Source ASR, phrase seams and final moving review pending. Decoded AAC reuse is not original uncompressed PCM recovery.'))
+save(H/'timeline.json',out);save(H/'audio-restoration-map.json',dict(sourceAudioSha256=sha(baseline),decodedBaselineSha256=sha(pcm),output=rel(A/'narration-full.wav'),outputSha256=sha(A/'narration-full.wav'),sampleRate=rate,seconds=len(full)/rate,floatPeak=float(abs(full).max()),outroAacRoundingPadSamples=tail_pad,scenes=mapping,review='Source ASR, phrase seams and final moving review pending. Decoded AAC reuse is not original uncompressed PCM recovery.'))
 print(json.dumps(dict(seconds=out['seconds'],frames=cursor,changed=46,unchanged=125,peak=float(abs(full).max())),ensure_ascii=False))

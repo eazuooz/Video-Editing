@@ -8,7 +8,19 @@ def git(*args,env=None,inp=None):
  return p.stdout
 base=git('rev-parse','HEAD').decode().strip();work=R/'shared/output/private-math-concept-fit-20261023'/f'git-{unit}-{time.time_ns()}';work.mkdir(parents=True)
 index=R/'.git/index';shutil.copy2(index,work/'index-before.bin');before=git('ls-files','--stage','-z')
-staged=set(git('diff','--cached','--name-only').decode().splitlines());shared=set(config.get('sharedPaths',[]));assert not(staged&set(paths)-shared),'Independent staging on owned path'
+staged=set(git('diff','--cached','--name-only').decode().splitlines());shared=set(config.get('sharedPaths',[]))
+# An earlier private-index commit intentionally left the locked real index alone.
+# Accept its resulting reverse diff only when the exact saved index entry is unchanged.
+def entries(data):return {x.split(b'\t',1)[1].decode():x for x in data.split(b'\0') if x}
+current_entries=entries(before);pending_owned=set()
+for old_receipt in work.parent.glob('*-git-receipt.json'):
+ receipt=read(old_receipt);backup=R/receipt.get('privateIndexWork','')/'index-before.bin'
+ if not backup.is_file() or not receipt.get('syncWhenUnlocked'):continue
+ if subprocess.run(['git','merge-base','--is-ancestor',receipt['commit'],base],cwd=R,capture_output=True).returncode:continue
+ old_env=dict(os.environ,GIT_INDEX_FILE=str(backup));saved_entries=entries(git('ls-files','--stage','-z',env=old_env))
+ for path in receipt['syncWhenUnlocked']:
+  if current_entries.get(path)==saved_entries.get(path):pending_owned.add(path)
+assert not(staged&set(paths)-shared-pending_owned),'Independent staging on owned path'
 env=dict(os.environ,GIT_INDEX_FILE=str(work/'index'));git('read-tree',base,env=env);git('add','--',*paths,env=env)
 def head(p):return git('show',base+':'+p).decode('utf-8-sig')
 def blob(p,s):

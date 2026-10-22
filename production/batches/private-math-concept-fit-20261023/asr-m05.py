@@ -3,7 +3,7 @@ from common import *
 import importlib.util,difflib,time,re
 P=R/'projects/game-math-quaternion-foundations-v3';H=P/'production/concept-fit-v2';O=P/'production/local/concept-fit-v2/audio';Q=O/'asr';Q.mkdir(exist_ok=True)
 authorized('M05');T=read(H/'timeline.json');script={s['id']:s for s in read(P/'script/concept-fit-v2/narration.ko.json')['scenes']};edit=read(B/'m05-narration-edits.json')['edits']
-spec=importlib.util.spec_from_file_location('math_asr_util',R/'projects/game-math-quaternion-foundations-v3/production/revision-v7-part1/voice-review.py');u=importlib.util.module_from_spec(spec);spec.loader.exec_module(u)
+spec=importlib.util.spec_from_file_location('math_asr_util',R/'projects/game-math-euler-axis-angle/production/revision-v7-part1/voice-review.py');u=importlib.util.module_from_spec(spec);spec.loader.exec_module(u)
 import psutil
 me=psutil.Process();family={p.pid for p in [me,*me.parents()]};lease=R/'shared/output/GPU_HANDOFF.json';assert not lease.exists()
 gpu=list(map(int,subprocess.check_output(['nvidia-smi','--query-gpu=memory.free,memory.total,utilization.gpu','--format=csv,noheader,nounits'],text=True).splitlines()[0].split(',')))

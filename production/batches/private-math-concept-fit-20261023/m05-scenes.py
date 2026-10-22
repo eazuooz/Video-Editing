@@ -23,8 +23,21 @@ def plane(origin,scale=1):
  # Convert the reused model's Z-front/Y-up to this lesson's X-front/Z-up.
  conv=np.array([[0,0,1],[1,0,0],[0,1,0]])
  g=v.aircraft(np.eye(3),ORIGIN,1);g.apply_matrix(conv@base.P.T);g.scale(scale);g.shift(origin);return g
+def cargo(origin,scale=1):
+ g=VGroup(Cube(side_length=1.35,fill_color='#537F96',fill_opacity=1,stroke_color='#A9BFCA',stroke_width=1.2))
+ for y in [-.47,.47]:g.add(Cube(side_length=1,fill_color='#A9BFCA',fill_opacity=1,stroke_width=.3).stretch(.1,0).stretch(.1,1).stretch(1.4,2).shift([.7,y,0]))
+ g.add(Cube(side_length=1,fill_color='#273C47',fill_opacity=1,stroke_width=.4).stretch(.09,0).stretch(.65,1).stretch(.65,2).shift([.72,0,0]))
+ g.add(Cube(side_length=1,fill_color=YELLOW,fill_opacity=1,stroke_width=.4).stretch(.07,0).stretch(.28,1).stretch(.12,2).shift([.78,0,.05]))
+ g.scale(scale);g.shift(origin);return g
+def tile(origin,scale=1):
+ g=VGroup(RegularPolygon(n=6,radius=1.5,fill_color='#578365',fill_opacity=1,stroke_color='#91B596',stroke_width=2))
+ for x in [-.45,.4]:
+  wall=Cube(side_length=.55,fill_color='#CDB08B',fill_opacity=1,stroke_width=.6).stretch(1.2,2).shift([x,0,.34])
+  roof=VGroup(Polygon([x-.34,-.34,.67],[x+.34,-.34,.67],[x+.34,0,.99],[x-.34,0,.99],fill_color='#578F9F',fill_opacity=1),Polygon([x-.34,0,.99],[x+.34,0,.99],[x+.34,.34,.67],[x-.34,.34,.67],fill_color='#395C73',fill_opacity=1))
+  door=Cube(side_length=1,fill_color='#4A4038',fill_opacity=1,stroke_width=0).stretch(.15,0).stretch(.03,1).stretch(.32,2).shift([x,-.29,.18]);g.add(wall,roof,door)
+ g.scale(scale);g.shift(origin);return g
 def rig(origin,shape='logs',scale=1):
- obj=(plane if shape=='plane' else logs)(origin,scale)
+ obj={'plane':plane,'logs':logs,'cargo':cargo,'tile':tile}[shape](origin,scale)
  axes=VGroup(*[Arrow3D(origin,origin+2*scale*np.eye(3)[:,i],color=c,thickness=.022,height=.16,base_radius=.065) for i,c in enumerate([X,Y,Z])])
  return VGroup(obj,axes)
 TITLES={'01':'네 숫자로 자세를 기록하고 되돌리기','QF00':'물체의 위치와 전체 자세','B02':'위치와 자세를 따로 기록','02':'통나무를 돌려 다리로 배치하기','GA06':'평면 회전에서 삼차원 회전축으로','GA01':'부품의 위치와 각 면의 방향','GA07':'반각 저장 ≠ 절반만 회전','QF10':'앞 방향은 같아도 자세는 다르다','B05':'물체에 붙은 방향은 함께 회전','05':'물체 전체의 자세를 기록','GA09':'같은 축의 회전을 두 번 적용','QF30':'주변 지도에 맞춰 타일 회전','QF31':'같은 회전은 직각을 보존','B06':'90°를 두 번 적용하면?','GA05':'같은 끝 자세 · 서로 다른 경로','08':'자세 한 개는 회전 이력이 아니다','GA04':'항등 회전과 위치 이동','GA02':'이동 속도와 자세값의 길이','11':'같은 자세 · 서로 다른 이동 속도','GA08':'위치는 그대로 · 기울기만 상쇄','QF20':'부품의 방향과 전체 자세','GA03':'역회전은 이동 경로 되감기가 아니다','GA10':'회전의 역원에서 합성으로'}
@@ -58,11 +71,11 @@ class Replacement(ThreeDScene):
   self.camera.background_color=BG;self.set_camera_orientation(phi=64*DEGREES,theta=-48*DEGREES,zoom=.85)
   self.add_fixed_in_frame_mobjects(text(TITLES[self.sid],37,YELLOW).to_corner(UL,buff=.5),text('우리 모형 · 오른손 / 열벡터',20,v.SECOND).to_corner(UR,buff=.5))
   paired=self.sid in ['GA05','GA02','11'];origins=[pos(-4.65,-.15),pos(-1.55,-.15)] if paired else [pos(-3.35,-.15)]
-  shape='plane' if self.sid in ['QF10','GA07','QF31'] else 'logs';size=.62 if paired else .9
+  shape='plane' if self.sid in ['QF10','GA07','QF31'] else 'cargo' if self.sid in ['GA01','QF20'] else 'tile' if self.sid=='QF30' else 'logs';size=.62 if paired else .9
   objects=[rig(o,shape,size) for o in origins]
   for o,obj in zip(origins,objects):
    self.add(VGroup(*[DashedLine(o-1.9*size*np.eye(3)[:,j],o+2.3*size*np.eye(3)[:,j],color=RULE,stroke_width=1.4) for j in range(3)]),obj)
-  self.add_fixed_in_frame_mobjects(VGroup(text('X 앞',25,X),text('Y 날개',25,Y),text('Z 위',25,Z)).arrange(RIGHT,buff=.25).move_to([-3.2,-2.35,0]))
+  self.add_fixed_in_frame_mobjects(VGroup(text('X 앞',25,X),text('Y 날개' if shape=='plane' else 'Y 옆',25,Y),text('Z 위',25,Z)).arrange(RIGHT,buff=.25).move_to([-3.2,-2.35,0]))
   if paired:
    for x,label,c in zip([-4.65,-1.55],['+90°','−270°'] if self.sid=='GA05' else ['1 단위/s','2 단위/s'],[Y,Z]):self.add_fixed_in_frame_mobjects(text(label,24,c).move_to([x,-1.9,0]))
   active=None;metric=None
@@ -78,7 +91,7 @@ class Replacement(ThreeDScene):
   events=[(t,'line',i) for i,t in enumerate(slot['lineStarts'])]
   if self.sid=='02':events += [(1,'lift',0),(6,'carry',0),(13,'game-turn',0),(16,'place',0)]
   if self.sid=='GA01':events +=[(5,'copy-place',0)]
-  if self.sid=='QF30':events +=[(5,'tile-turn',0)]
+  if self.sid=='QF30':events +=[(2,'tile-turn',0)]
   for tm,kind,i in sorted(events,key=lambda x:x[0]):
    if tm>self.renderer.time:self.wait(tm-self.renderer.time)
    if kind=='lift':self.play(objects[0].animate.shift(.3*OUT),run_time=1);origins[0]+=.3*OUT;continue

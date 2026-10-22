@@ -1,0 +1,478 @@
+{
+  "project": "game-math-quaternion-foundations-v3",
+  "language": "en",
+  "status": "local-additive-draft; old scene dictionaries/order preserved",
+  "scenes": [
+    {
+      "id": "F01",
+      "title": "두 편의 지도와 첫 편의 질문",
+      "lines": [
+        "This quaternion lecture has two episodes. After outlining the complete journey, this first episode explains how to construct a stored rotation and undo it."
+      ]
+    },
+    {
+      "id": "01",
+      "title": "이번 강의에서 배울 것",
+      "lines": [
+        "How can four numbers record the orientation of an assembled object in a game?",
+        "We will observe objects being rotated and placed, then visualize the four quaternion components and the half-angle.",
+        "Starting with complex numbers in a plane, we construct rotations from an axis and angle and distinguish two signs representing the same orientation.",
+        "Finally, we check length and normalization conditions and undo an applied rotation using its inverse."
+      ]
+    },
+    {
+      "id": "QF00",
+      "title": "같은 회전을 다른 게임으로 옮겨 보기",
+      "lines": [
+        "Compare joined logs and a part being placed. Separate the changing position from the orientation of the entire object."
+      ]
+    },
+    {
+      "id": "B02",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Our goal is to record the orientation of an object at one instant. First, distinguish position and orientation on screen."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "스키의 이동과 자세를 나누어 보기",
+      "lines": [
+        "In Tears of the Kingdom, joined logs are picked up and placed as a bridge. Position and alignment are adjusted separately. Follow the ends of the logs.",
+        "Read the change in position separately from the change in the direction along its length.",
+        "Even near the target position, the long direction can still be rotated into alignment. Moving and rotating are different controls.",
+        "Remaining near screen center does not imply an unchanged orientation; the camera follows too.",
+        "We are learning a representation that can describe the visible motion, without claiming to have inspected the game code.",
+        "Next, fix the position and rotate the three axes attached to the object to isolate orientation."
+      ]
+    },
+    {
+      "id": "N01",
+      "title": "허수는 왜 등장할까?",
+      "lines": [
+        "To understand this approach to rotation through multiplication, we first extend the number system. The square of a real number is nonnegative, so no real number squares to minus one.",
+        "We define a new rule in which i squared is minus one. The number i defined this way is called the imaginary unit.",
+        "This rule does not make an imaginary number a hidden object inside the game. It provides a useful numerical tool for direction calculations.",
+        "To see why it helps with rotation, we will represent these numbers as point coordinates."
+      ]
+    },
+    {
+      "id": "N02",
+      "title": "아이를 곱하면 왜 90도 돌아갈까?",
+      "lines": [
+        "A complex number a+bi represents a point (a,b) in a plane. Its horizontal coordinate is the real part and its vertical coordinate is the coefficient of i.",
+        "The point with x coordinate two and y coordinate one is 2+i. Multiplying by i gives 2i+i squared, which equals minus one plus 2i.",
+        "The new x coordinate is minus one and the new y coordinate is two. The arrow turns ninety degrees counterclockwise while retaining length square root of five.",
+        "Multiplying a point (a,b) by i changes it to (-b,a), allowing multiplication to represent a planar turn.",
+        "In three dimensions, we also need an axis that defines the rotation plane. We will extend this direction calculation to a quaternion using that axis."
+      ]
+    },
+    {
+      "id": "N09",
+      "title": "구십 도에서 다른 각도로 넓히기",
+      "lines": [
+        "We verified that multiplying by i produces a ninety-degree turn. How can we represent other angles?",
+        "Recall the unit circle from high-school trigonometry. A unit arrow turned by theta has horizontal component cos(theta) and vertical component sin(theta).",
+        "Multiplication by cos(theta)+i sin(theta) therefore rotates the plane by theta. At ninety degrees the cosine is zero and the sine is one, giving i.",
+        "This planar calculation uses the full physical angle theta. When the three-dimensional quaternion later uses a half-angle, we will compare the different operation applied to the vector."
+      ]
+    },
+    {
+      "id": "GA06",
+      "title": "평면의 회전에서 삼차원 축으로",
+      "lines": [
+        "We learned about a planar angle.",
+        "Look at the red reference axis attached to our model.",
+        "Three dimensions require an axis too.",
+        "We now connect it to the three axis components."
+      ]
+    },
+    {
+      "id": "B03",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "In a plane, two numbers and multiplication could turn a direction. Extending that idea to three dimensions requires choosing an axis; let us examine the numbers we need."
+      ]
+    },
+    {
+      "id": "N03",
+      "title": "네 숫자는 세 축과 어떤 관계일까?",
+      "lines": [
+        "A scalar means one number. Here a vector is a three-number group describing a direction, and a component is an individual number in that group.",
+        "The symbols i,j,k belong to the three-dimensional rotation algebra. We do not need to draw a fourth physical direction to store four numbers.",
+        "For a z-axis rotation, x and y are zero while w and z carry angle information. These are not four independent rotation angles.",
+        "Which values produce 90 degrees? We will construct them using a unit axis and familiar trigonometry."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "네 성분은 네 회전 각도가 아니다",
+      "lines": [
+        "A quaternion contains one scalar and a three-component vector. We write components in w,x,y,z order.",
+        "A unit rotation quaternion has squared components summing to one, leaving three continuous degrees of freedom.",
+        "Four numbers are not four rotation angles, and x,y,z are not Euler angles.",
+        "The algebra uses i,j,k, whose squares each equal minus one.",
+        "The product ij is k, whereas ji is minus k: an early hint that order matters.",
+        "A library may store x,y,z,w instead. Check the named components and memory order."
+      ]
+    },
+    {
+      "id": "GA01",
+      "title": "숫자 세 개가 담는 방향을 날개로 관찰하기",
+      "lines": [
+        "In Space Engineers 2, a part is copied and placed. Observe its front and side together.",
+        "The position of the part and the directions its faces point are separate information. One face alone can miss a tilt.",
+        "The camera also moves, so an on-screen line is not automatically a world-space rotation axis.",
+        "How do we construct four components from an axis and angle independent of the camera?"
+      ]
+    },
+    {
+      "id": "B04",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We have separated the roles of the four components. Now we need to construct them from the axis and angle introduced in the preceding lesson."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "축·각에서 반각으로 연결하기",
+      "lines": [
+        "Recall a unit axis and the angle of rotation about it.",
+        "The scalar is cos of the half-angle, and the vector is the unit axis times sin of the half-angle.",
+        "At zero angle, cos is one and sin is zero, giving the identity [1,0,0,0].",
+        "A 90-degree z rotation uses a 45-degree half-angle, so w and z are both sqrt(2)/2.",
+        "The half-angle does not mean half the physical rotation. Multiplication on both sides produces the full angle.",
+        "We retain right-handed column-vector conventions, and use radians in trigonometric calculations."
+      ]
+    },
+    {
+      "id": "N04",
+      "title": "반각으로 저장해도 회전은 90도",
+      "lines": [
+        "A planar rotation used sine and cosine of the full angle, but our quaternion uses 45 degrees for a 90-degree turn. This needs an explanation.",
+        "The difference is how we later apply it: the rotation value multiplies the vector on the left, and its inverse multiplies it on the right.",
+        "The complete two-sided operation produces the 90-degree z rotation. A one-sided intermediate is not a physical 45-degree orientation of the object.",
+        "For now, distinguish the stored half-angle from the physical turn; we will later calculate both products on the same vector to verify the connection."
+      ]
+    },
+    {
+      "id": "GA07",
+      "title": "반각은 화면에서 절반만 도는 뜻이 아니다",
+      "lines": [
+        "The half-angle belongs to the storage formula. Observe the red front axis and blue up axis on the model together.",
+        "The complete two-sided operation produces ninety degrees; it does not rotate the object by half.",
+        "We now connect the four components to the visible orientation."
+      ]
+    },
+    {
+      "id": "QF10",
+      "title": "트레일메이커스: 기수와 날개를 따로 보기",
+      "lines": [
+        "Now use a stationary computational airplane model. Observe the red nose direction and blue up direction. Roll the body while keeping its nose direction fixed.",
+        "The model distinguishes the nose, wing and up directions. Rather than measuring game internals, we define a coordinate system and check the calculation."
+      ]
+    },
+    {
+      "id": "QF11",
+      "title": "같은 각도, 다른 축",
+      "lines": [
+        "For our defined aircraft model, x points forward, y points toward one wing, and z points up. This is not an assumed game coordinate system.",
+        "A ninety-degree turn around the forward axis leaves the nose direction unchanged and moves that wing direction upward. Its wxyz components are square root of two over two, the same value, zero, zero. The angle matches our earlier z-axis turn, but the axis occupies a different component."
+      ]
+    },
+    {
+      "id": "B05",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We defined a90-degree rotation about Z. Returning to an assembled object, observe how its attached directions move together. A moving camera’s screen angle is different from that world-space angle."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "몸에 붙인 축과 공중 회전",
+      "lines": [
+        "Compare the initial and rotated orientations of the elongated assembly.",
+        "Imagine three small axes attached to the object. All three turn together during rotation.",
+        "A single direction does not fully describe both the long direction and the tilt of the upper surface.",
+        "A quaternion is one way to store the full orientation, not position or velocity.",
+        "We are not measuring exact axes and angles from the screen. We will define those explicitly in the next calculation.",
+        "Separate orientation before and after placement from the direction of travel to identify what a rotation representation records."
+      ]
+    },
+    {
+      "id": "GA09",
+      "title": "한 번의 변화에서 두 번의 연산으로",
+      "lines": [
+        "We constructed a rotation from an axis and angle. Observe the red front and blue up axes on our model.",
+        "What happens when we apply that rotation twice about one axis?",
+        "We now compose two ninety-degree turns into one product."
+      ]
+    },
+    {
+      "id": "QF30",
+      "title": "비시지: 선택한 부품에만 회전 적용",
+      "lines": [
+        "Watch the house tile in Dorfromantik. Its orientation changes before placement while the surrounding map stays fixed."
+      ]
+    },
+    {
+      "id": "QF31",
+      "title": "대상은 달라도 회전은 같은 규칙",
+      "lines": [
+        "Applying the same ninety-degree model rotation to two perpendicular directions preserves their right angle. That differs from applying a different rotation to each direction.",
+        "Log bridges, tiles, spacecraft parts and assembled machines differ in shape but all involve orientation. Return to the calculation to apply the same rotation once more."
+      ]
+    },
+    {
+      "id": "B06",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "The whole object changes orientation. What happens when we apply another90-degree rotation about the same axis? We will calculate with a fixed mathematical axis, without measuring a game action."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "구십 도 회전을 두 번 합치면",
+      "lines": [
+        "Multiply the z90 quaternion by itself, applying the same rotation twice.",
+        "The new scalar is the product of scalars minus the vector dot product, which is zero here.",
+        "The two cross scalar-vector terms sum to a z component of one; the other components remain zero.",
+        "The result [0,0,0,1] represents z180.",
+        "After two more such rotations, the result is [-1,0,0,0], with the body back at its initial orientation.",
+        "The scalar changed from one to minus one, yet the orientation matches. Let us examine this double representation."
+      ]
+    },
+    {
+      "id": "B07",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Four turns restored the orientation but changed the signs of its stored components. We must explain that difference to compare orientations correctly."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "q와 -q는 같은 자세",
+      "lines": [
+        "The unit quaternions q and -q produce the same rotation matrix and endpoint orientation.",
+        "All four components change sign. This differs from conjugation, which changes only the vector signs.",
+        "In vector rotation, the signs on both sides cancel.",
+        "Component equality alone is therefore insufficient to test orientation equality.",
+        "Equivalent endpoints do not make every interpolation path between signed representatives equivalent.",
+        "Endpoint orientation does not retain revolution count; store the path and accumulated rotation separately."
+      ]
+    },
+    {
+      "id": "GA05",
+      "title": "같은 끝 자세와 지나온 회전 과정을 구분하기",
+      "lines": [
+        "The equivalence of q and−q concerns the final orientation. Observe the model’s two rotation paths.",
+        "Following the red front and blue up axes reveals how directions change over time.",
+        "One endpoint image cannot recover the intervening turn.",
+        "Our calculation flips all components; it does not reverse rotation or rewind a route.",
+        "Which value applies no extra rotation? We verify the same input in the following explanation."
+      ]
+    },
+    {
+      "id": "B08",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Different component signs represented the same final orientation.",
+        "Can that orientation reveal the preceding motion?",
+        "Let us follow one interval through time."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "같은 자세로 돌아와도 움직임은 남는다",
+      "lines": [
+        "Follow the long direction and up axis as the assembly model rotates.",
+        "A single frame cannot reveal the full movement that preceded it.",
+        "Time reveals the process; endpoint orientation and movement history are different information.",
+        "Connect this distinction to the two signed quaternions representing one orientation.",
+        "One quaternion does not automatically retain the number of visible revolutions.",
+        "To record total rotation, maintain input or accumulated rotation separately from orientation."
+      ]
+    },
+    {
+      "id": "GA04",
+      "title": "변화가 없다는 연산도 입력과 결과로 읽기",
+      "lines": [
+        "An endpoint pose did not store every earlier action.",
+        "Now observe the assembly model and its reference axes.",
+        "The red line is the defined front direction.",
+        "The blue line is the defined up direction.",
+        "When translating the object, its position can change while both directions remain unchanged.",
+        "Identity rotation does not mean that the whole game image stops.",
+        "It applies no extra rotation to an input direction.",
+        "Take the front direction as our input.",
+        "Which four components return it unchanged?"
+      ]
+    },
+    {
+      "id": "B09",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Final orientation and rotation history are different information. We now need a value that adds no rotation, and will check why initializing every component to zero fails."
+      ]
+    },
+    {
+      "id": "09",
+      "title": "항등원과 부호를 구분하기",
+      "lines": [
+        "The multiplication identity is [1,0,0,0]; multiplying q by it leaves q unchanged.",
+        "[-1,0,0,0] is also the identity rotation, but is not the algebraic multiplication identity.",
+        "It changes q to -q: different components representing the same orientation.",
+        "An all-zero quaternion is not no rotation; it is a zero-norm invalid rotation input.",
+        "Initialize with the library identity constructor or correctly ordered unit components.",
+        "Distinguish equality as numbers from equality as rotations before reasoning about signs."
+      ]
+    },
+    {
+      "id": "B10",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "The identity value had length one. Other stored rotations use that same convention, so we need to detect drift caused by repeated calculations."
+      ]
+    },
+    {
+      "id": "10",
+      "title": "길이와 정규화의 조건",
+      "lines": [
+        "The norm is the square root of the sum of all four squared components, not just the vector norm.",
+        "Typical orientation storage and quaternion-to-matrix routines expect unit inputs.",
+        "For small floating-point drift, divide all four components by the norm.",
+        "Guard near-zero and nonfinite norms before division; do not disguise arbitrary invalid data as a valid rotation.",
+        "A nonzero nonunit quaternion can also rotate with its correct general inverse because scale cancels, unlike unit-assuming code.",
+        "Normalization restores the scale convention. It neither scales the rotation angle directly nor fixes wrong axes or multiplication order."
+      ]
+    },
+    {
+      "id": "N05",
+      "title": "정규화는 방향을 고치는 일이 아니다",
+      "lines": [
+        "Normalization means changing the norm to one. For [3,0,0,4], the norm is the square root of three squared plus four squared, which is five.",
+        "Divide all four components by five. The scalar becomes 0.6, both x and y remain zero, and z becomes 0.8. The squared norm is 0.36 plus 0.64, which equals one.",
+        "The numerical magnitude changes while the axis and component ratios remain. This does not correct a wrongly selected axis or multiplication order.",
+        "Similarly, translating an object faster does not increase the length of its orientation value. Use our model to separate speed and orientation."
+      ]
+    },
+    {
+      "id": "GA02",
+      "title": "속도 숫자와 자세값의 길이를 나누기",
+      "lines": [
+        "The rotation value has unit length. Separate translation speed from axis direction in the two models.",
+        "Our simulation translates identically oriented objects at different speeds. Observe the red axes and positions together.",
+        "A larger speed display does not imply a larger unit-rotation norm.",
+        "Their position changes differ, but their stored orientations are identical."
+      ]
+    },
+    {
+      "id": "B11",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "We have checked normalization. To avoid thinking that faster movement needs a longer quaternion, we will observe speed and orientation separately."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "속도 변화와 자세 저장값",
+      "lines": [
+        "Now translate the same assembly at two speeds. Observe speed separately from orientation.",
+        "Faster motion does not mean a longer quaternion; a unit rotation retains norm one.",
+        "Speed and acceleration describe change, whereas orientation describes the current state.",
+        "A model can change position while its axes keep their directions. Translation speed and screen size are not the length of an orientation value.",
+        "Check unit length in code or data; this footage is not a measurement of those values.",
+        "After observing motion, we will calculate how to undo a stored rotation in the next diagram."
+      ]
+    },
+    {
+      "id": "GA08",
+      "title": "기울기를 상쇄할 때 남는 이동",
+      "lines": [
+        "Translation speed and orientation are separate information.",
+        "Keep the translated position and undo only the tilt of the red reference axis.",
+        "Which components change to undo our unit rotation? We now calculate with the conjugate."
+      ]
+    },
+    {
+      "id": "QF20",
+      "title": "스페이스 엔지니어스: 부품 방향과 전체 자세 구분",
+      "lines": [
+        "The component is turned sideways and upright. Inspect its other faces before calling the full orientation identical."
+      ]
+    },
+    {
+      "id": "QF21",
+      "title": "되돌리는 것은 방향 연산입니다",
+      "lines": [
+        "Standing upright alone does not establish an identical full orientation. We verify an exact inverse using the defined model. Define the initial model direction as one, zero, zero. A ninety-degree z-axis turn gives zero, one, zero; the opposite ninety-degree turn restores one, zero, zero.",
+        "The cancelling rotation is the inverse. It does not erase placement or traveled motion. These are defined, checkable model angles, not measurements from the footage."
+      ]
+    },
+    {
+      "id": "B12",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Orientation and speed were separate quantities. Let us now undo a stored rotation; the unit-length condition we maintained makes this calculation simpler."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "켤레로 단위 회전을 되돌리기",
+      "lines": [
+        "Conjugation keeps the scalar and negates the three vector components.",
+        "For a unit rotation quaternion, the conjugate is the inverse and undoes the rotation.",
+        "Conjugating z90 preserves w and negates z, giving z minus90.",
+        "Their product returns [1,0,0,0].",
+        "Negating all four components instead gives the same orientation, not generally the inverse.",
+        "Special cases such as half-turns have matching inverse orientations, but conjugation and full negation remain different operations."
+      ]
+    },
+    {
+      "id": "GA03",
+      "title": "역회전은 주행 경로의 되감기가 아니다",
+      "lines": [
+        "We used the conjugate to undo a unit rotation. Separate the model’s red axis from its translated position.",
+        "Undoing the tilt does not restore the old position. Rotation and translation are different changes.",
+        "An inverse cancels the defined rotation. It does not rewind elapsed time or distance.",
+        "Would conjugation alone invert a tuple whose norm is not one? We verify that condition next."
+      ]
+    },
+    {
+      "id": "B13",
+      "title": "다음 계산으로 연결하기",
+      "lines": [
+        "Conjugation undid a unit quaternion. Does the same formula work when its length is not one? A small numerical example will check whether their product is the identity."
+      ]
+    },
+    {
+      "id": "13",
+      "title": "일반 역원은 길이의 제곱으로 나눈다",
+      "lines": [
+        "The general inverse is the conjugate divided by the squared norm, not the norm itself.",
+        "For [2,0,0,0], the norm is two and its square is four.",
+        "Dividing the conjugate by four gives [0.5,0,0,0].",
+        "Their product is the identity. Dividing by two would leave scalar two in the product and fail the inverse test.",
+        "For unit inputs the squared norm is one, recovering the conjugate rule.",
+        "The inverse requires a nonzero quaternion; reject zero and nonfinite inputs and inspect their origin."
+      ]
+    },
+    {
+      "id": "GA10",
+      "title": "되돌리기에서 두 회전의 합성으로",
+      "lines": [
+        "The inverse cancels only rotation. Observe the model’s red reference axis separately from translation.",
+        "How do we connect two rotations? The next episode verifies their product."
+      ]
+    },
+    {
+      "id": "F02",
+      "title": "첫 편의 결과가 다음 편의 질문으로",
+      "lines": [
+        "We have connected the four components to a computational representation of axis and angle, rather than four spatial directions.",
+        "Starting from a complex planar turn, we constructed a quaternion with a unit axis and half-angle, checked its norm, and verified that an inverse cancels the applied operation.",
+        "A game orientation rarely stops after one turn. The next episode explains why the order of two turns matters and calculates the extra rotation from a current orientation to a target."
+      ]
+    }
+  ]
+}
