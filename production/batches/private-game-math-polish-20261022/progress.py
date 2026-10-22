@@ -42,7 +42,11 @@ for entry in q['entries']:
  entry.update(status='ready-for-human-review' if ready else 'production-in-progress',audioRecovered=audio.exists(),explanationsRestored=n,explanationCount=total,gameplayRestored=ng,actualSceneCount=actual,technicalQaComplete=technical_current,humanReview='pending')
  if issue:entry['sourceBlocker']=issue
  else:entry.pop('sourceBlocker',None)
- row=rows[e.id]['privatePolish'];row.update(status=status,sourceMaster=rel(audio) if audio.exists() else row['sourceMaster'],renderComplete=(e.H/'outputs.json').exists(),technicalQaComplete=technical_current,humanReview='수정본 검수 전')
+ row=rows[e.id]['privatePolish'];row.update(status=status,selected=True,sourceMaster=rel(audio) if audio.exists() else row['sourceMaster'],renderComplete=(e.H/'outputs.json').exists(),technicalQaComplete=technical_current,humanReview='수정본 검수 전',contentReviewed=ready,annotationsComplete=ready,animationPolishComplete=ready or (source_polish.exists() and source_review_status=='passed-source-visual-review'))
+ if ready:
+  row['localReview']={'status':'ready-for-human-local-review','directory':rel(e.D),'index':rel(e.D/'index.html'),'captionedVideo':rel(e.D/f'{e.slug}.captioned.mp4'),'captionedMasterSha256':digest,'technicalQa':rel(qa),'pixelReview':rel(visual),'humanFinalReview':'pending','youtubeUploadAuthorized':False}
+ else:
+  row['localReview']={'status':'not-ready','reason':issue['shortStatus'] if issue else status,'humanFinalReview':'pending','youtubeUploadAuthorized':False}
  link=f'<a href="../{e.slug}-private-polish/index.html">검수 영상</a>' if ready else '제작 중'
  table.append(f'<tr><td>{e.id}</td><td>{html.escape(entry["title"])}</td><td>{status}</td><td>{link}</td></tr>')
 q['updatedAt']=now;save(B/'queue.json',q);w['updatedAt']=now;w['privateMathPolish']['updatedAt']=now

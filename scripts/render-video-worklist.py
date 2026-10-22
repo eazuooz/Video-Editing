@@ -1,6 +1,6 @@
 """Render the human-readable worklist from the maintained state; never changes media or platforms."""
 from pathlib import Path
-import json
+import json,datetime
 R=Path(__file__).resolve().parents[1]
 d=json.loads((R/'shared/publishing/video-worklist.json').read_text(encoding='utf-8'))
 rows=d['rows'];byid={x['id']:x for x in rows}
@@ -31,11 +31,25 @@ if polish:
  section=['','## 기존 비공개 게임수학 시각 보강 진행표','',
   '기존 강의를 유지하며 표식·가독성·필요한 애니메이션만 다듬는다. 대본을 다시 쓰거나 새 음성을 만들지 않는다. '+('사용자 야간 요청으로 M05–M20의16편을 순차 보강해 각각 로컬 검수 대기로 모은다. M04는 검수 완료이며 업로드는 이번 범위에 포함되지 않는다.' if polish.get('batchAuthorization') else '현재는 M04 한 편만 착수하며 나머지는 작업 목록이다.'),
   '',f"Studio 확인: 비공개 {polish['privateUploadCount']}개 = 본편 {polish['mainLessonCount']}편 + 이전 버전 {len(polish['olderVersions'])}개. 공개본과 기존 업로드는 보존한다.",
-  '', '| 순서 | 기존 영상 | 길이 | 보강 작업 | 진행 | 검수 |', '|---:|---|---:|---|---|---|']
+  '']
+ polish_rows=[r for r in rows if r.get('privatePolish')]
+ approved=[r['id'] for r in polish_rows if r['privatePolish'].get('actualHumanReview',{}).get('status')=='accepted']
+ pending=[r['id'] for r in polish_rows if r['id'] not in approved and r['privatePolish'].get('localReview',{}).get('status')=='ready-for-human-local-review']
+ unfinished=[r['id'] for r in polish_rows if r['id'] not in approved+pending]
+ updated_kst=datetime.datetime.fromisoformat(polish['updatedAt']).astimezone(datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M KST')
+ section += [f"갱신: {updated_kst}. **사용자 승인 {len(approved)}편 · 완성본 검수 대기 {len(pending)}편 · 전체 완성본 작업 중 {len(unfinished)}편.**",'',
+  f"- 사용자 승인: {', '.join(approved) or '없음'}.",
+  f"- 내부 QA 완료·사용자 검수 대기: {', '.join(pending) or '없음'}. 각 행의 로컬 검수 링크에서1080p60 clean/captioned 영상과 한영 SRT를 확인한다.",
+  f"- 전체 완성본 작업 중: {', '.join(unfinished) or '없음'}. 설명 화면 검수 완료는 전체 게임 화면·최종 영상 검수 완료와 구분한다."]
+ decision=polish.get('sourceReplacementDecision')
+ if decision:section += [f"- 원본 처리 결정: {decision['summaryKo']}"]
+ section += ['', '**검수 구분:** 내부 화면·기술 QA 통과는 사용자 승인과 다르다. 기존 영상 열은 보존 중인 YouTube 원본이며, 수정본은 로컬 링크로 검수한다.','', '| 순서 | 기존 영상 | 길이 | 보강 작업 | 진행 | 사용자 검수·로컬 링크 |', '|---:|---|---:|---|---|---|']
  for r in rows:
   p=r.get('privatePolish')
   if not p:continue
-  section.append(f"| {p['order']} | {r['id']} [{cell(p['baselineTitle'])}](https://youtu.be/{p['baselineVideoId']}) | {p['duration']} | {cell(p['task'])} | {cell(p['status'])} | {cell(p['humanReview'])} |")
+  local=p.get('localReview',{});review_text=cell(p['humanReview'])
+  if local.get('status')=='ready-for-human-local-review':review_text+=f" · [검수 파일](../{local['index']}) · [전체 자막 영상](../{local['captionedVideo']})"
+  section.append(f"| {p['order']} | {r['id']} [{cell(p['baselineTitle'])}](https://youtu.be/{p['baselineVideoId']}) | {p['duration']} | {cell(p['task'])} | {cell(p['status'])} | {review_text} |")
  section+=['','이전 버전은 추가 제작 편수에서 제외하고 그대로 보존한다:']
  for r in polish['olderVersions']:
   section.append(f"- [{cell(r['title'])}](https://youtu.be/{r['videoId']}) · {r['duration']} · {r['status']}")
