@@ -1,0 +1,27 @@
+from common import *
+authorized('M09')
+edits={
+'02':{
+'2':['연결선이 나타날 때 손 쪽의 출발과 반대쪽 끝을 나누어 생각할 수 있습니다.','When the connection appears, distinguish its starting end at the hand from the opposite endpoint.'],
+'3':['시작점만으로는 선 전체가 정해지지 않습니다. 어느 점까지 연결하는지도 함께 정해야 합니다.','The starting point alone does not define the whole segment. Its other endpoint must also be specified.'],
+'5':['두 끝점을 구분한 채 보이는 연결을 따라가세요. 다음 그림에서는 우리가 정한 좌표로 두 점의 관계를 계산합니다.','Distinguish the two endpoints while following the visible connection. In the next diagram, we calculate their relationship using coordinates that we define.']},
+'LG01':{
+'1':['새티스팩토리의 배선입니다. 케이블을 잇는 두 지점을 보세요.','This is cable placement in Satisfactory. Observe the two connection points.'],
+'2':['이제 모형에서는 두 연결점만 남기겠습니다. 케이블의 휘어진 모양과 두 점을 곧게 잇는 선분은 구분해야 합니다.','Now our model will keep just the two connectors. Distinguish the cable’s curved shape from the straight segment between its endpoints.'],
+'3':['연결 지점을 하나 옮기면 차이 벡터도 바뀝니다. 이 모형에서 정한 좌표로 방향과 길이를 나누어 계산하겠습니다.','Moving one connector changes the difference vector. We will separate direction and length using the coordinates defined in this model.']},
+'05':{
+'1':['두 연결점이 있는 모형입니다. 출발점은 고정하고 다른 끝점만 옮겨 보겠습니다.','Our model contains two connectors. We will fix the starting point and move only the other endpoint.'],
+'3':['같은 쪽을 가리켜도 가까운 점과 먼 점까지의 차이 벡터는 길이가 다릅니다.','Difference vectors to near and far points can point the same way while having different lengths.']},
+'LG02':{
+'1':['두 점을 잇는 선분과 실제 이동 경로를 나누어 보겠습니다. 모형의 출발점과 연결점을 보세요.','Let us distinguish the segment between two points from an actual motion path. Observe the starting point and connector in our model.'],
+'2':['곧은 선은 두 점의 관계를 나타냅니다. 움직인 물체의 경로가 반드시 그 직선과 같지는 않습니다.','The straight segment describes the relationship between the two points. The moving object does not necessarily follow that straight line.'],
+'3':['여기서는 곡선으로 움직이는 점을 함께 그립니다. 연결용 선분과 이동 경로를 서로 다른 선으로 표시하겠습니다.','Here we also draw a point traveling along a curve. The connecting segment and motion path are shown as separate lines.'],
+'4':['이것은 게임 내부 물리의 재현이 아니라 차이를 설명하는 모형입니다. 이제 선분 사이의 점을 비율로 정하는 매개변수식으로 이어가겠습니다.','This model illustrates the distinction; it does not reproduce the game’s internal physics. Next we use a parametric equation to specify a point along the segment by a fraction.']},
+'LG03':{
+'1':['이번에는 모형의 연결점을 다른 곳으로 옮기겠습니다. 끝점이 바뀌면 출발점에서 그 점까지의 차이 벡터도 다시 구해야 합니다.','Now we move the model’s connector elsewhere. When the endpoint changes, we must recalculate the difference vector from the starting point.'],
+'3':['새로운 두 점 사이에서도 같은 티 값으로 위치를 계산하겠습니다. 끝점은 바뀌었지만 비율을 읽는 규칙은 같습니다.','We will calculate positions between the new endpoints using the same t values. The endpoints changed, but the rule for interpreting the fraction did not.'],
+'4':['앞의 숫자는 우리가 정한 좌표의 계산 예시이며 게임 측정값이 아닙니다. 이제 세로선에서도 쓸 수 있는 표현을 찾겠습니다.','The numbers are calculated examples in our defined coordinates, not game measurements. Next we find a representation that also works for vertical lines.']},
+'08':{
+'1':['모형의 출발점은 고정하고 다른 끝점을 위로 옮겨 보세요. 두 점의 엑스 좌표가 같아지면 선이 수직으로 섭니다.','Fix the starting point in our model and move the other endpoint upward. The segment becomes vertical when both points have the same X coordinate.']}}
+save(B/'m09-narration-edits.json',dict(episode='M09',edits=edits,status='source-actions-reviewed',notes=['Retain a single grappling demonstration to identify endpoints; no unrelated repeated traversal.','Replace narrated Portal2 reference/demo with inspected official Satisfactory construction footage. Cable shape is explicitly distinguished from a mathematical segment.','Preserve all original mathematical claims, worked coordinates, line/ray/segment definitions and teaching order; rewrite only source-dependent paragraphs.']))
+print(sum(map(len,edits.values())),'paragraphs revised')

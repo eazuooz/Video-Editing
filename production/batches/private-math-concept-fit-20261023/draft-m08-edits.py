@@ -1,0 +1,39 @@
+from common import *
+authorized('M08')
+edits={
+'17':{
+'1':['비시즈의 조립 장면입니다. 선택한 부품과 주변 구조를 함께 보세요.','This is the construction view in Besiege. Observe the selected part together with the surrounding structure.'],
+'2':['카메라와 선택한 부품의 위치가 바뀝니다. 화면 모습이 달라지는 것과 부품의 자세가 바뀌는 것을 나누어 생각하세요.','The camera and the selected part change position. Distinguish a change in the image from a change in the part’s orientation.'],
+'3':['이제 모형에서는 부품을 제자리에 두고, 그 자세를 적는 형식만 바꾸겠습니다.','In our model, we will keep the part in place and change only the representation used to record its orientation.']},
+'IG03':{'1':['부품 모형에 붙은 빨간 축을 보세요. 고정된 기준에서 이 방향의 성분을 읽겠습니다.','Look at the red axis attached to the part model. We will read its components in a fixed reference frame.']},
+'IG04':{
+'1':['빨간 선은 부품의 엑스축이고, 파란 선은 제트축입니다. 같은 부품에 붙은 서로 다른 두 방향이죠.','The red line is the part’s X axis, and the blue line is its Z axis. They are two different directions attached to the same part.'],
+'2':['같은 회전행렬의 서로 다른 열에서 이 방향들을 읽을 수 있습니다.','These directions can be read from different columns of the same rotation matrix.'],
+'3':['어느 로컬 축을 입력했는지 구분해야, 행렬과 쿼터니언이 같은 방향을 만드는지 비교할 수 있습니다.','Identify the local input axis before comparing whether the matrix and quaternion produce the same direction.']},
+'20':{
+'1':['같은 부품 모형의 앞쪽과 위쪽을 보세요. 이 자세를 행렬이나 쿼터니언으로 바꿔 적어도 부품은 그대로여야 합니다.','Look at the front and up directions of the same part model. Recording this orientation as a matrix or quaternion must leave the part unchanged.'],
+'3':['여기서는 우리가 정한 회전값을 사용합니다. 서로 다른 표현에서 얻은 세 축이 같은 자세를 나타내는지 비교합니다.','Here we use rotation values defined in our model. Compare whether the three axes obtained from different representations describe the same orientation.'],
+'4':['앞쪽만 일치하고 위쪽이 다르면 같은 전체 자세가 아닐 수 있습니다. 부품의 앞쪽과 위쪽을 함께 비교해 보세요.','Matching only the forward direction may not imply the same complete orientation. Compare both the front and up directions of the part.']},
+'IG11':{
+'1':['같은 부품의 빨간 엑스축과 파란 제트축을 비교해 보세요.','Compare the red X axis and the blue Z axis of the same part.'],
+'2':['이 모형의 한 순간 자세를 고정하겠습니다.','We will hold the model at one particular orientation.']},
+'IG05':{
+'1':['모형의 빨간 축을 보세요. 부품의 위치와 자세를 고정하겠습니다.','Look at the model’s red axis. We will hold the part’s position and orientation fixed.'],
+'3':['이번에는 실제로 부품을 더 돌립니다. 물체에 붙은 축도 함께 바뀌는 것을 보세요.','Now we actually rotate the part further. Watch its attached axes change with it.']},
+'IG08':{
+'1':['부품 모형을 고정하고, 카메라만 옮겨 보겠습니다.','We will keep the part model fixed and move only the camera.'],
+'3':['물체의 자세는 그대로인데 화면에서 보이는 축 방향은 달라집니다.','The object’s orientation stays fixed, while the projected axis directions change on screen.']},
+'23':{
+'1':['앞에서 사용한 부품 모형의 앞쪽과 위쪽을 함께 보세요. 하나의 자세를 서로 다른 표현으로 적고 있습니다.','Observe the front and up directions of the same part model. We are recording one orientation in different representations.'],
+'2':['기준축 세 개를 물체에 붙이면 자세를 비교하기 쉬워집니다. 화면의 카메라 기준과도 구분합니다.','Three axes attached to an object make its orientation easier to compare. Distinguish them from the camera’s frame as well.'],
+'5':['게임 조작이 자연스러워 보인다고 변환 공식이 맞다고 단정할 수는 없습니다. 여기서는 정한 입력과 계산 결과를 직접 비교합니다.','Natural-looking game interaction does not prove a conversion formula is correct. Here we directly compare the defined inputs and calculated results.']},
+'IG09':{
+'1':['빨간 축 하나만 보아서는 물체가 그 축 주위로 얼마나 비틀렸는지 알 수 없습니다.','One red axis cannot reveal how far the object has twisted around that axis.'],
+'2':['같은 물체의 파란 축도 함께 보세요.','Observe the blue axis of the same object as well.'],
+'3':['한 방향만으로 부족한 정보는 추측하지 않습니다.','We do not guess information that one direction cannot provide.']},
+'IG06':{
+'1':['마지막으로 같은 부품에 붙은 엑스축과 제트축을 함께 보겠습니다.','Finally, observe the X and Z axes attached to the same part.'],
+'2':['빨간 축과 파란 축은 서로 다른 입력 방향입니다. 각각 같은 입력에서 나온 결과끼리 비교해야 합니다.','The red and blue axes are different input directions. Compare results that were produced from the same input.'],
+'4':['우리가 정한 회전값으로 검산한 결과입니다. 다음에는 움직인 점을 선과 경계로 정의하겠습니다.','These results were checked using our defined rotation values. Next, we will describe points using lines and boundaries.']}}
+save(B/'m08-narration-edits.json',dict(episode='M08',edits=edits,scope='Only mismatched game/object passages; original mathematical steps and order retained',sourceSelection='Inspected Besiege assembly42–47.5s; our fixed object for exact representation comparisons. No game internal values inferred.'))
+print(sum(map(len,edits.values())),'changed paragraphs')

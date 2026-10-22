@@ -1,0 +1,18 @@
+"""Record inspected crop repair and completed native playback without a hearing claim."""
+from common import *
+P=R/'projects/game-math-quaternion-foundations-v3';H=P/'production/concept-fit-v2';D=R/f'output/{P.name}-concept-fit-v2'
+out=read(H/'outputs.json');qa=read(H/'qa.json');coverage=read(H/'caption-pixel-coverage.json');master=out['outputs'][1]
+assert master['sha256']=='02ba8f474545f47da802e2556fccb000820632df336eb42343d49dd3298653b3'
+assert master['sha256']==qa['technical'][1]['sha256']==coverage['masterSha256']
+assert all(x['decodeErrors']==0 for x in qa['technical'])
+assert coverage['cues']==275 and len(coverage['deltaSheets'])==2
+coverage.update(directReview='Prior15 full QA sheets and15 caption sheets directly inspected;47 unchanged composite hashes retain that evidence. All17 caption-midpoint frames in the three changed scenes and both new delta sheets inspected.12 current375px images inspected.',deltaDirectReview='completed',reviewedAt=now(),findings='Crop repair preserves axis labels and model footers in all three game panels. No observed caption clipping. Preserved mathematical scenes retain their approved palette.')
+save(H/'caption-pixel-coverage.json',coverage)
+playback=dict(masterSha256=master['sha256'],checkedAt=now(),tool='cua_repl native local browser tab51',segments=[dict(start=0,end=1192.366667,rate=1,ended=True)],evidence='Visible native playback proof reports full completion; selected screenshots and frame sheets inspected.',continuousHumanViewing=False,actualListening=False)
+save(H/'native-playback-final.json',playback)
+qa.update(directVisualReview='Prior sampled evidence reused for47 unchanged composites; three changed game panels, all their caption cues and12 current mobile frames directly inspected.',nativePlayback=rel(H/'native-playback-final.json'));save(H/'qa.json',qa)
+ledger=dict(checkedAt=now(),status='local-review-ready-with-listening-notes',masterSha256=master['sha256'],outputs=out['outputs'],frames=out['frames'],seconds=out['seconds'],technicalQa=rel(H/'qa.json'),captionCoverage=rel(H/'caption-pixel-coverage.json'),nativePlayback=rel(H/'native-playback-final.json'),visualChecks=dict(sceneCount=50,gameIntervals=3,sampledFinalFrames=173,priorAdditionalCaptionFrames=180,changedPanelCaptionFrames=17,mobileFrames=12,sourceActionMatch='TOTK pickup/carry/rotation/placement, SE2 construction, Dorfromantik tile placement; long character-flight padding removed.',corrections=['B06 two90-degree rotations equal180 degrees','Cropped game-panel model area adjusted to include axis labels']),audio=dict(unchangedParagraphs=125,changedGameParagraphs=46,unchangedSource='Recovered original AAC, not original PCM',asr='23 changed complete scene texts compared; actual-listening pending',actualListening=False,pending=['정규화·쿼터니언·상쇄·끝자세·기울기·역원 pronunciation','changed paragraph joins','original game sound balance']),humanReview='pending-for-this-hash',uploadAuthorized=False)
+save(H/'review-ledger.json',ledger);out.update(status=ledger['status'],internalVisualQa='completed-with-delta-reuse-and-native-playback-evidence',actualWholeListening=False);save(H/'outputs.json',out)
+page=(D/'index.html').read_text(encoding='utf8').replace('내부 검수 진행 중 · 최종 사용자 시청/청취 대기','화면·자막·파일 검사 완료 · 사용자 시청/청취 대기. 바뀐 문단의 발음과 연결, 게임 소리 균형은 최종 청취 확인이 필요합니다.');(D/'index.html').write_text(page,encoding='utf8')
+project=read(P/'project.json');project['activeConceptFitRevision']=dict(revision='concept-fit-v2',timeline=rel(H/'timeline.json'),outputs=rel(H/'outputs.json'),reviewLedger=rel(H/'review-ledger.json'),status=ledger['status'],humanReview='pending',originalTimelinePreserved=True);save(P/'project.json',project)
+print('M05 visual and technical QA complete; hearing and user review remain pending')
