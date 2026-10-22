@@ -1,0 +1,23 @@
+"""Record the actual M12 final-pixel observations made on 2026-10-22."""
+import datetime
+from polish_common import *
+e=Episode('M12')
+v={
+ 'status':'passed',
+ 'captionedSha256':'75034fea49cec340013d08a497585807152e6a0503800e8ed0e355e8234fe361',
+ 'reviewedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ 'sampleManifest':rel(e.H/'final-pixel-samples.json'),
+ 'directlyInspectedSheets':list(range(1,36)),
+ 'directlyInspectedNativeImages':['0207.png','0280.png','0332.png'],
+ 'coverage':'All411 current encoded samples on35 sheets at375px tile width: all190 caption cues, source joins, diagram states and annotation boundaries/midpoints. Three native1920x1080 images inspected. Selected browser start/end observations, not continuous whole-film viewing/listening.',
+ 'findings':[
+  {'scene':'area and barycentric diagrams','status':'passed-sampled','description':'Separate6x4 area12 and3-4-5 area6 examples remain distinct. Heron and half-cross-product areas agree. Weights(.2,.3,.5) yield(1.8,2,0); outside(-.2,.7,.5) yields(4.2,2,0), with signed subarea ratios and vertex order retained.'},
+  {'scene':'plane/projection/colour/closing','status':'passed-sampled','description':'Coplanarity precedes projected containment; q=(1.8,2,7) is rejected despite matching XY. Nondegeneracy, finite-input and tolerance-unit distinctions remain. Affine colour interpolation is distinguished from perspective-correct rendering and actual game shader claims. Closing connects distance, plane, weights and attributes.'},
+  {'scene':'PG04/PG06/PG07 and remaining gameplay','status':'passed-sampled','description':'Portal floor/tile/platform guides follow the sampled visible target and clear at source cuts. Cyan triangles are explicitly editorial projected comparisons, not actual meshes. Noita and grappling target labels avoid engine-data claims. Serious Sam roof circles track the same visible roof and clear before target loss. Fixed captions and game UI remain clear.'}
+ ],
+ 'browserCheck':{'url':'http://127.0.0.1:9248/projects/game-math-triangle-addresses-v2/production/local/private-polish-v1/moving-review.html','source':'current captioned master','decodedDimensions':[1920,1080],'durationSeconds':861.97,'displayWidths':[850,375],'seekStartSeconds':[131,341,572,678],'observedAdvancingSeconds':[155.94,371.02,598.84,693.90],'playbackAndSeek':'passed-selected-start/end-observations; intervening durations not continuously watched','audio':'muted; no listening claim','temporaryTabClosed':True},
+ 'wholeListening':'pending-user; recovered compressed audio preserved by decoded hash, not claimed as original PCM',
+ 'humanReview':'pending','readyForHumanReview':True
+}
+assert sha(e.D/f'{e.slug}.captioned.mp4')==v['captionedSha256']
+save(e.H/'visual-review.json',v)

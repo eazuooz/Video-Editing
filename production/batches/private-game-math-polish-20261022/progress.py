@@ -62,6 +62,7 @@ for entry in q['entries']:
   elif e.id not in finish_job.get('results',{}):
    status='모든 장면 복원·사전 점검 완료 · 순차 렌더 대기'
  entry.update(status='ready-for-human-review' if ready else 'production-in-progress',audioRecovered=audio.exists(),explanationsRestored=n,explanationCount=total,gameplayRestored=ng,actualSceneCount=actual,technicalQaComplete=technical_current,humanReview='pending')
+ if ready:entry['stage']='await-local-human-review'
  if issue:entry['sourceBlocker']=issue
  else:entry.pop('sourceBlocker',None)
  row=rows[e.id]['privatePolish'];row.update(status=status,selected=True,sourceMaster=rel(audio) if audio.exists() else row['sourceMaster'],renderComplete=(e.H/'outputs.json').exists(),technicalQaComplete=technical_current,humanReview='수정본 검수 전',contentReviewed=ready,annotationsComplete=ready,animationPolishComplete=ready or (source_polish.exists() and source_review_status=='passed-source-visual-review'))
@@ -72,7 +73,7 @@ for entry in q['entries']:
  link=f'<a href="../{e.slug}-private-polish/index.html">검수 영상</a>' if ready else '제작 중'
  table.append(f'<tr><td>{e.id}</td><td>{html.escape(entry["title"])}</td><td>{status}</td><td>{link}</td></tr>')
 q['updatedAt']=now;save(B/'queue.json',q);w['updatedAt']=now;w['privateMathPolish']['updatedAt']=now
-p=w['privateMathPolish'];p['reviewSequence']={'policy':'user-authorized-sixteen-local-review-batch','userEvidence':q['authorization']['userEvidence'],'scope':q['authorization']['ids'],'automaticNextVideo':True,'advanceBeyondList':False,'stopAt':'all sixteen ready for local human review','humanReviewStillRequired':True,'publicationAuthorized':False}
+p=w['privateMathPolish'];all_ready=all(x['status']=='ready-for-human-review' for x in q['entries']);p['reviewSequence']={'policy':'user-authorized-sixteen-local-review-batch','userEvidence':q['authorization']['userEvidence'],'scope':q['authorization']['ids'],'automaticNextVideo':not all_ready,'advanceBeyondList':False,'stopAt':'all sixteen ready for local human review','humanReviewStillRequired':True,'publicationAuthorized':False}
 save(R/'shared/publishing/video-worklist.json',w);subprocess.run(['python',str(R/'scripts/render-video-worklist.py')],cwd=R,check=True,capture_output=True)
 out=R/'output/private-game-math-polish';out.mkdir(parents=True,exist_ok=True)
 (out/'index.html').write_text('''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>비공개 게임수학 보강 진행표</title><style>body{max-width:1100px;margin:30px auto;padding:0 18px;background:#121915;color:#f6f8f6;font:17px/1.6 system-ui}h1{color:#ffdf73}table{width:100%;border-collapse:collapse}td,th{padding:12px;border-bottom:1px solid #405147;text-align:left}a{color:#8cdbbc}</style><h1>게임수학 기존 강의 보강</h1><p>M04 검수 완료. 아래 16편은 기존 대본·음성·순서를 유지하여 보강합니다. 내부 검사가 끝난 편부터 검수 링크가 표시됩니다. 업로드·공개는 진행하지 않습니다.</p><table><thead><tr><th>번호</th><th>강의</th><th>상태</th><th>검수</th></tr></thead><tbody>'''+''.join(table)+f'</tbody></table><p>갱신: {now}</p></html>',encoding='utf8')

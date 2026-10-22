@@ -1,0 +1,23 @@
+"""Record actual final-pixel and selected playback observations of M17."""
+import datetime
+from polish_common import *
+e=Episode('M17')
+v={
+ 'status':'passed','captionedSha256':'7811a7af53c1798b4c7d80d9d27dede06d1dc26069cd4ec23618eed293243371',
+ 'reviewedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ 'sampleManifest':rel(e.H/'final-pixel-samples.json'),
+ 'directlyInspectedSheets':list(range(1,42)),
+ 'directlyInspectedNativeImages':['0166.png','0340.png','0469.png'],
+ 'coverage':'All487 final encoded samples on41 sheets at375px tile width, covering191 caption cues, joins, diagram states and dense tracked annotation samples. Three native1920x1080 images inspected. Browser checks observe selected start/end states; not continuous whole-film viewing or listening.',
+ 'findings':[
+  {'scene':'02/05/08/11/14 actual gameplay','status':'passed-sampled','description':'Portal fixed pillar and carried cube guides follow visible targets and clear at cut/occlusion. Townscaper roof guides follow the same roof through orbit/zoom and reset at source edits. Construction changes, camera changes and same-point comparison are distinguished. No inferred engine matrices, world measurements or detector values.'},
+  {'scene':'03/04/06/07 conventions and transforms','status':'passed-sampled','description':'LH,+z-forward,row-vector and top-left viewport conventions retained. Local(1,0,0) translated by(3,2,5) yields world(4,2,5), then camera(2,1,1) yields view(2,1,4). Camera-axis reading, inverse view and orthonormal-only transpose caveat remain distinct; matrix multiplication and homogeneous divide remain separate.'},
+  {'scene':'09/10/12/13 clipping and depth','status':'passed-sampled','description':'Near1/far11 give A1.1/B-1.1 and clip(2,16/9,3.3,4); six homogeneous bounds precede division. Near-plane triangle intersections at x +/-1/3 and resulting quadrilateral retained. Clipping differs from occlusion. Alternative[-1,1] depth .65 maps to .825; RH column convention and orthographic linear depth separately explained.'},
+  {'scene':'15/24 final worked result','status':'passed-sampled','description':'NDC(.5,4/9,.825), viewport(100,50,800,450) and final continuous screen position(700,175) agree; screen-y inversion and subsequent raster coverage distinction remain visible. Fixed captions do not cover primary labels/formulas. Secondary convention lines remain small in the preserved layout; native and375px primary information inspected.'}
+ ],
+ 'browserCheck':{'url':'http://127.0.0.1:9248/projects/game-math-camera-projection/production/local/private-polish-v1/moving-review.html','source':'current captioned master','decodedDimensions':[1920,1080],'durationSeconds':976.77,'displayWidths':[850,375],'seekStartSeconds':[28,366,564,898],'observedAdvancingSeconds':[52.67,392.52,599.89,927.20],'playbackAndSeek':'passed-selected-start/end-observations; intervening durations not continuously watched','audio':'muted; no listening claim','temporaryTabClosed':True},
+ 'wholeListening':'pending-user; recovered compressed audio preserved by decoded hash, not claimed as original PCM',
+ 'humanReview':'pending','readyForHumanReview':True
+}
+assert sha(e.D/f'{e.slug}.captioned.mp4')==v['captionedSha256']
+save(e.H/'visual-review.json',v)
