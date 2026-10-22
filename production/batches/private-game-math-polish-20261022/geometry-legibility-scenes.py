@@ -34,10 +34,10 @@ CONSTRUCT_SOURCE=replace_once(CONSTRUCT_SOURCE,'buff=.21).move_to([-1.55,-.1,0])
 CONSTRUCT_SOURCE=replace_once(CONSTRUCT_SOURCE,
     "txt('입력점 (x,y,z)',18,MUTED).move_to([-1.55,1.08,0])",
     "txt('입력점 (x,y,z)',18,MUTED).move_to([-1.55,.90,0])")
-# The final exercise's legend belongs beside the boxes, below the header rule.
+# Keep the legend outside the full expanded blue AABB and above fixed captions.
 CONSTRUCT_SOURCE=replace_once(CONSTRUCT_SOURCE,
     "fit(txt('초록: 변환한 5점 / 파랑: 변환한 8꼭짓점 AABB',18,MUTED),6).move_to([-3.35,2.28,0])",
-    "fit(txt('초록: 변환한 5점 / 파랑: 변환한 8꼭짓점 AABB',18,MUTED),6).move_to([-3.35,-2.15,0])")
+    "fit(txt('초록: 변환한 5점\\n파랑: 변환한 8꼭짓점 AABB',23,MUTED),6).move_to([3.15,-1.27,0])")
 scope=dict(original.__dict__);exec(compile(CONSTRUCT_SOURCE,__file__,'exec'),scope)
 original.GeometryScene.construct=scope['construct']
 

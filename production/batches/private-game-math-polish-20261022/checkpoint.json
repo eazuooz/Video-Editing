@@ -1,8 +1,11 @@
 {
-  "updatedAt": "2026-10-21T23:59:14.614763+00:00",
+  "updatedAt": "2026-10-22T00:32:25.490510+00:00",
   "stage": "explanation-source-polish-with-FHD-blockers",
   "active": [
-    "M09"
+    "M10",
+    "M11",
+    "M12",
+    "M17"
   ],
   "ready": [
     "M05",
@@ -24,7 +27,7 @@
     "M12",
     "M17"
   ],
-  "nextAction": "M09 PID39344 renders12 explanation-only clips then extracts current captioned samples; do not duplicate or edit shared geometry wrapper during the job. Review all encoded samples and moving excerpts. M08 explanation-only16 clips passed source QA. M10 still preflight found scene22 expanded blue AABB intersects bottom-left legend; after M09 job ends move that existing legend to the right below equation with two lines, re-preflight and render M10 only. Do not rerender unchanged M09 for an M10-only repair; preserve its exact source snapshot/hash. M11/M12/M17 all original source samples audited, typography/label fixes recorded. Nine full deliveries ready; seven FHD source decisions remain pending. No new TTS, full assembly from blocked gameplay or upload.",
+  "nextAction": "Do not duplicate M10 PID20948, M11 PID48048, M12 PID20712 explanation-only render workers or modify their frozen geometry/planes wrappers. They stop after encoded samples, awaiting direct QA. M09 12 clips passed97 captioned samples and four selected playback observations, bound to frozen Git5b746f3. M17 second full preflight is running after label-placement repairs in03/06/07; inspect all33 new states plus native03-5/06-3/07-0 and07-3 before granting still preflight and starting source-only render. Nine full deliveries remain ready; seven FHD source decisions still pending. No newTTS/full assembly from unresolved footage/upload.",
   "automationId": "16",
   "audioRecovered": 16,
   "jobs": [
@@ -277,6 +280,39 @@
       "visualApprovalGranted": false,
       "statusFile": "production/batches/private-game-math-polish-20261022/source-legibility-M09-job.json",
       "updatedAt": "2026-10-21T23:55:12.091622+00:00"
+    },
+    {
+      "pid": 20948,
+      "episode": "M10",
+      "stage": "render-geometry-legibility.py",
+      "newTts": false,
+      "platformMutation": false,
+      "fullMaster": false,
+      "visualApprovalGranted": false,
+      "statusFile": "production/batches/private-game-math-polish-20261022/source-legibility-M10-job.json",
+      "updatedAt": "2026-10-22T00:23:41.313579+00:00"
+    },
+    {
+      "pid": 48048,
+      "episode": "M11",
+      "stage": "render-planes-legibility.py",
+      "newTts": false,
+      "platformMutation": false,
+      "fullMaster": false,
+      "visualApprovalGranted": false,
+      "statusFile": "production/batches/private-game-math-polish-20261022/source-legibility-M11-job.json",
+      "updatedAt": "2026-10-22T00:27:05.017778+00:00"
+    },
+    {
+      "pid": 20712,
+      "episode": "M12",
+      "stage": "render-planes-legibility.py",
+      "newTts": false,
+      "platformMutation": false,
+      "fullMaster": false,
+      "visualApprovalGranted": false,
+      "statusFile": "production/batches/private-game-math-polish-20261022/source-legibility-M12-job.json",
+      "updatedAt": "2026-10-22T00:27:05.020287+00:00"
     }
   ],
   "completedJobs": [
@@ -386,36 +422,39 @@
       "fullMaster": false
     },
     "M09": {
-      "status": "numeric-preflight-pass-explanation-render-running",
-      "evidence": "projects/game-math-lines-circles-v2/production/private-polish-v1/explanation-source-review.json",
-      "newPreflight": "projects/game-math-lines-circles-v2/production/private-polish-v1/geometry-legibility-preflight.json",
-      "preflightSampleCount": 18,
+      "status": "passed-source-visual-review",
+      "evidence": "projects/game-math-lines-circles-v2/production/private-polish-v1/geometry-legibility-review.json",
+      "sampleCount": 97,
       "fullMaster": false
     },
     "M10": {
-      "status": "needs-layout-repair",
-      "evidence": "projects/game-math-bounds-transform-v2/production/private-polish-v1/explanation-source-review.json",
-      "newPreflight": "projects/game-math-bounds-transform-v2/production/private-polish-v1/geometry-legibility-preflight.json",
+      "status": "still-preflight-pass-explanation-render-running",
+      "evidence": "projects/game-math-bounds-transform-v2/production/private-polish-v1/geometry-legibility-preflight.json",
       "preflightSampleCount": 24,
+      "workerPid": 20948,
       "fullMaster": false
     },
     "M11": {
-      "status": "reviewed-needs-legibility-repair",
-      "evidence": "projects/game-math-plane-distances-v2/production/private-polish-v1/explanation-source-review.json",
-      "sampleCount": 52,
+      "status": "still-preflight-pass-explanation-render-running",
+      "evidence": "projects/game-math-plane-distances-v2/production/private-polish-v1/planes-legibility-preflight.json",
+      "preflightSampleCount": 25,
+      "workerPid": 48048,
       "fullMaster": false
     },
     "M12": {
-      "status": "reviewed-needs-legibility-repair",
-      "evidence": "projects/game-math-triangle-addresses-v2/production/private-polish-v1/explanation-source-review.json",
-      "sampleCount": 56,
+      "status": "still-preflight-pass-explanation-render-running",
+      "evidence": "projects/game-math-triangle-addresses-v2/production/private-polish-v1/planes-legibility-preflight.json",
+      "preflightSampleCount": 30,
+      "workerPid": 20712,
       "fullMaster": false
     },
     "M17": {
-      "status": "reviewed-needs-legibility-repair",
-      "evidence": "projects/game-math-camera-projection/production/private-polish-v1/explanation-source-review.json",
+      "status": "label-repair-preflight-running",
+      "evidence": "projects/game-math-camera-projection/production/private-polish-v1/projection-legibility-preflight-rejected-v1.json",
       "sampleCount": 44,
-      "fullMaster": false
+      "fullMaster": false,
+      "pendingPreflight": "projects/game-math-camera-projection/production/private-polish-v1/projection-legibility-preflight.json",
+      "preflightObservation": "All33 initial states inspected. Scene03 reminder, scene06 up/world-y labels and scene07 divided-position label overlapped other existing labels. Their positions were adjusted with leaders while geometry and clock stayed fixed. New full33-state preflight running; no M17 render approval yet."
     }
   },
   "deliverySummary": {
