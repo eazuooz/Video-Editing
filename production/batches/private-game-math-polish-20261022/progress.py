@@ -26,7 +26,7 @@ for entry in q['entries']:
  if not ready and not technical_current:
   guide_preflight=e.H/'observed-guide-preflight.json'
   if guide_preflight.exists() and read(guide_preflight).get('status')=='passed-still-preflight':status+=' · 표식 사전 점검 완료'
- polish_name='conversions-legibility' if e.id=='M08' else 'interpolation-legibility'
+ polish_name='geometry-legibility' if e.id in ['M09','M10'] else ('conversions-legibility' if e.id=='M08' else 'interpolation-legibility')
  source_polish=e.H/(polish_name+'-render.json')
  if source_polish.exists():
   source_record=read(source_polish);polished=len(source_record.get('scenes',{}))
