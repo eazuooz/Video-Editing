@@ -34,7 +34,9 @@ for entry in q['entries']:
   source_review_status=read(source_review).get('status','pending') if source_review.exists() else 'pending'
   detail={'renderedScenes':polished,'sceneCount':total,'renderManifest':rel(source_polish),'sourceVisualReview':source_review_status,'isFullMaster':False}
   entry['explanationPolish']=detail;rows[e.id]['privatePolish']['explanationPolish']=detail
-  if not ready:status+=f' · 설명 보강 {polished}/{total}'
+  if not ready:
+   status+=f' · 설명 보강 {polished}/{total}'
+   if source_review_status=='passed-source-visual-review':status+=' · 설명 화면 검수 완료'
  issue=blockers.get(e.id)
  if issue and not ready:status+=' · '+issue['shortStatus']
  entry.update(status='ready-for-human-review' if ready else 'production-in-progress',audioRecovered=audio.exists(),explanationsRestored=n,explanationCount=total,gameplayRestored=ng,actualSceneCount=actual,technicalQaComplete=technical_current,humanReview='pending')

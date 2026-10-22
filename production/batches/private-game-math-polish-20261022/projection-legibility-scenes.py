@@ -53,6 +53,9 @@ def legible_diagram(mode, i, count):
         elif mode=='view' and value in ['위','y']:
             m.shift([-.75,.35,0] if value=='위' else [-.55,-.42,0])
             obj.add(Line(anchor,m.get_right(),color=original.GREEN,stroke_width=2.2).set_z_index(4))
+        elif mode=='view' and value.startswith('뷰 변위'):
+            m.shift([.30,.50,0])
+            obj.add(Line(anchor,m.get_bottom(),color=original.GREEN,stroke_width=2.2).set_z_index(4))
         elif mode=='conventions' and value=='한 점을 끝까지 추적':
             m.shift([0,.65,0])
         elif mode=='homogeneous' and value in ['나눈 위치','직교: 평행']:
