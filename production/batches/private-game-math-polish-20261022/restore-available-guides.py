@@ -7,9 +7,9 @@ must pass direct composited source/track inspection before full production.
 """
 import copy,datetime,importlib.util,re,sys
 from polish_common import *
-e=Episode(sys.argv[1]);assert e.id in ['M10','M11','M12'];e.authorized()
+e=Episode(sys.argv[1]);assert e.id in ['M09','M10','M11','M12'];e.authorized()
 oldbase=R/'production/batches/game-math-part2-teaching-revision'
-kind='lines' if e.id=='M10' else 'planes'
+kind='lines' if e.id in ['M09','M10'] else 'planes'
 original=oldbase/f'create-{kind}-overlay.py';registry=read(oldbase/f'{kind}-annotation-tracks.json')
 additions=e.H/'cue-guide-additions.json'
 if additions.exists():
@@ -21,7 +21,7 @@ if e.id=='M12':
  # traced terrain boundary or an observed engine mesh.
  registry['scenes']['17'].update(redLabel='빨강: 설명용 삼각형 · 메시 아님')
 out=e.O/'available-game-overlays';out.mkdir(exist_ok=True)
-insets={'M10':['10','LG04','13','16','LG06','LG07','21'],'M11':['02','05'],'M12':['11','17','19','21']}[e.id]
+insets={'M09':[],'M10':['10','LG04','13','16','LG06','LG07','21'],'M11':['02','05'],'M12':['11','17','19','21']}[e.id]
 if additions.exists():
  for sid,changes in read(additions)['scenes'].items():
   if changes.get('useReviewedLocalClip') and sid not in insets:insets.append(sid)

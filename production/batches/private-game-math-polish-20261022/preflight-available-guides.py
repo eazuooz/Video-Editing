@@ -2,7 +2,7 @@
 import sys,math,datetime
 from PIL import Image,ImageDraw,ImageFont
 from polish_common import *
-e=Episode(sys.argv[1]);assert e.id in ['M10','M11','M12'];e.authorized()
+e=Episode(sys.argv[1]);assert e.id in ['M09','M10','M11','M12'];e.authorized()
 p=e.H/'restored-available-guides.json';plan=read(p);out=e.O/'available-guide-preflight';out.mkdir(exist_ok=True)
 points={};records=[];tiles=[];font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',16)
 for run in plan['visibleIntervals']:

@@ -7,7 +7,8 @@ from PIL import Image,ImageDraw,ImageFont
 from polish_common import *
 source=read(B/'uncle-fhd-scene-candidates.json')['source']
 src=R/source['path'];assert sha(src)==source['sha256']
-cases={'M11':('08',[(342,720),(366,840),(402,1680)]),
+cases={'M09':('02',[(402,1260),(374,480),(431,300),(342,660)]),
+       'M11':('08',[(342,720),(366,840),(402,1680)]),
        'M12':('14',[(406,960),(342,840),(366,840),(422,809)])}
 if sys.argv[1:]:cases={k:v for k,v in cases.items() if k in sys.argv[1:]}
 records=[];font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',17)
@@ -16,8 +17,10 @@ for ident,(sid,cuts) in cases.items():
  assert sum(n for _,n in cuts)==slot['frames']
  for j,(a,n) in enumerate(cuts):
   for z,m in cuts[j+1:]:assert a+n/60<=z or z+m/60<=a,'No repeated source frames within one scene'
- out=e.O/'uncle-cut-review-v2';out.mkdir(exist_ok=True);parts=[];offset=0;segments=[]
- previous=read(e.H/'uncle-cut-review-v2.json') if (e.H/'uncle-cut-review-v2.json').exists() else None
+ revision='v3' if ident=='M09' else 'v2'
+ manifest=e.H/f'uncle-cut-review-{revision}.json'
+ out=e.O/f'uncle-cut-review-{revision}';out.mkdir(exist_ok=True);parts=[];offset=0;segments=[]
+ previous=read(manifest) if manifest.exists() else None
  for j,(start,frames) in enumerate(cuts):
   p=out/f'part-{j}.mp4'
   cached=previous and previous['source']['sha256']==source['sha256'] and j<len(previous['segments']) and previous['segments'][j]['in']==start and previous['segments'][j]['frames']==frames and p.exists()
@@ -40,6 +43,6 @@ for ident,(sid,cuts) in cases.items():
   p=out/f'sheet-{i//9+1:02d}.jpg';sheet.save(p,quality=94);sheets.append(rel(p))
  (out/'index.html').write_text('<!doctype html><meta charset="utf-8"><style>body{background:#151515;color:white;font:18px system-ui}video{width:min(96vw,1280px)}</style><p>대체 장면과 기존 대사 대응 검수 · 완성본 아님</p><video controls src="captioned.mp4"></video>',encoding='utf8')
  record={'episode':ident,'scene':sid,'status':'candidate-await-direct-source-and-speech-inspection','originalTimelineSha256':sha(e.P/'production/timeline.json'),'source':source,'segments':segments,'frames':slot['frames'],'rawClip':rel(raw),'rawClipSha256':sha(raw),'preview':rel(dst),'previewSha256':sha(dst),'samples':samples,'sheets':sheets,'internalCutsChanged':True,'originalSceneOrderAndDurationPreserved':True,'reason':'Omit observed fall/reset and unrelated tutorial banner ranges; retain native-speed grapple/triangular-glyph approach and landing at the existing speech clock. Internal source excerpts may change within the same immutable scene slot.','fullMasterReady':False}
- save(e.H/'uncle-cut-review-v2.json',record);records.append(rel(e.H/'uncle-cut-review-v2.json'))
+ save(manifest,record);records.append(rel(manifest))
  print(ident,'candidate preview encoded, awaiting direct review',flush=True)
 save(B/'uncle-cut-review-v2-job.json',{'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'stage':'finished-await-direct-review','records':records,'fullMasterReady':False})

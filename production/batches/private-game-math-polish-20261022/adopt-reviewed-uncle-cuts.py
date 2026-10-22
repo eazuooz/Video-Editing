@@ -7,8 +7,8 @@ import datetime,shutil,sys
 from polish_common import *
 permission=read(B/'uncle-fhd-scene-candidates.json')['permission']
 for ident in sys.argv[1:]:
- assert ident in ['M11','M12']
- e=Episode(ident);e.authorized();p=e.H/'uncle-cut-review-v2.json';d=read(p)
+ assert ident in ['M09','M11','M12']
+ e=Episode(ident);e.authorized();p=e.H/('uncle-cut-review-v3.json' if ident=='M09' else 'uncle-cut-review-v2.json');d=read(p)
  review=read(e.H/'uncle-source-cut-review.json')
  assert review['status']=='passed-source-cut-inspection' and review['candidateSha256']==sha(p)
  assert review['previewSha256']==sha(R/d['preview'])

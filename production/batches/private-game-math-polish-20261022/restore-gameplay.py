@@ -33,7 +33,7 @@ for ident in args.episodes:
     assert replacement['status']=='approved-source-cut'
     assert replacement['frames']==s['frames']
     if replacement.get('reviewedInternalExcerptChanges'):
-     assert ident in ['M11','M12','M17'] and replacement['originalSceneOrderAndDurationPreserved']
+     assert ident in ['M09','M10','M11','M12','M17'] and replacement['originalSceneOrderAndDurationPreserved']
      assert sha(R/replacement['sourceReview'])==replacement['sourceReviewSha256']
      assert read(R/replacement['sourceReview'])['status']=='passed-source-cut-inspection'
      assert sum(x['frames'] for x in replacement['segments'])==s['frames']
