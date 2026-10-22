@@ -58,9 +58,15 @@ def main():
   else:graph=f'[0:v]tpad=stop_mode=clone:stop_duration=0.05,trim=end_frame={n},setpts=N/(60*TB),setsar=1[v]'
   graph=prep+graph.replace('[0:v]','[prepared]')
   print('Compose M06',sid,'game + math' if sid in SHOTS else 'preserved math',flush=True)
-  ff(args+['-filter_complex_threads','2','-filter_complex',graph,'-map','[v]','-frames:v',n,'-an',*ENC,dst],f'composite-{sid}.log')
+  original_video=next(x for x in probe(model)['streams'] if x['codec_type']=='video')
+  passthrough_ok=sid not in SHOTS and int(original_video['nb_frames'])==n and original_video['r_frame_rate']=='60/1' and original_video['width']==1920 and original_video['height']==1080 and float(original_video.get('start_time',0))==0
+  if passthrough_ok:
+   shutil.copy2(model,dst)
+   assert sha(dst)==sha(model)
+  else:
+   ff(args+['-filter_complex_threads','2','-filter_complex',graph,'-map','[v]','-frames:v',n,'-an',*ENC,dst],f'composite-{sid}.log')
   v=next(s for s in probe(dst)['streams'] if s['codec_type']=='video');assert int(v['nb_frames'])==n and v['height']==1080 and v['r_frame_rate']=='60/1'
-  record=dict(id=sid,path=rel(dst),sha256=sha(dst),frames=n,game=SHOTS.get(sid),visualReview='pending encoded captioned review');records.append(record)
+  record=dict(id=sid,path=rel(dst),sha256=sha(dst),frames=n,game=SHOTS.get(sid),visualReview='pending encoded captioned review',bytePreservedScene=passthrough_ok);records.append(record)
   save(receipt,dict(identity=identity,updatedAt=now(),sources=sources,scenes=records,completed=len(records)==44,guideFrame='screen-space editorial; only the own model uses right-handed column-vector coordinates',nativePlayback=True,sourceAspectPreserved=True))
  assert len(records)==44
  save(receipt,dict(identity=identity,updatedAt=now(),sources=sources,scenes=records,completed=True,guideFrame='screen-space editorial; only the own model uses right-handed column-vector coordinates',nativePlayback=True,sourceAspectPreserved=True))

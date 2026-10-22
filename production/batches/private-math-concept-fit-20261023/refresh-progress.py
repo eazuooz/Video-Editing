@@ -21,7 +21,7 @@ for e in c['entries']:
   ledger=read(h/'review-ledger.json')
   if ledger.get('status')=='local-review-ready-with-listening-notes':e['status']=ledger['status']
 c['ready']=[e['id'] for e in c['entries'] if e['status']=='local-review-ready-with-listening-notes']
-c.update(updatedAt=stamp,auditSummary=copy.deepcopy(a['reviewSummary']),status='rendering-and-source-selection',nextAction='Complete M05 changed-narration ASR and matching visuals; continue source-action review and revisions for M06–M20.')
+c.update(updatedAt=stamp,auditSummary=copy.deepcopy(a['reviewSummary']),status='rendering-and-source-selection',nextAction='Finish M05 composites and final-file QA; continue M06 render and M07 audio/visual work, then concept-matched source review for M08–M20.')
 c['auditSummary']['finalReady']=len(c['ready']);c['auditSummary']['finalReadyMeaning']='Local visual/technical review complete; actual listening and human review remain pending'
 save(B/'checkpoint.json',c)
 wpath=R/'shared/publishing/video-worklist.json';w=read(wpath);revision=w['privateMathPolish']['conceptFitRevision'];revision.update(updatedAt=stamp,entries=copy.deepcopy(c['entries']),auditSummary=c['auditSummary'],readyCount=len(c['ready']),status='rendering-and-source-selection' if c['active'] else 'revision-in-progress');save(wpath,w)

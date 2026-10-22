@@ -1,0 +1,17 @@
+from common import *
+P=R/'projects/game-math-interpolation-paths-v2';H=P/'production/concept-fit-v2';count=len(read(P/'production/timeline.json')['scenes'])
+def adapt(s):return s.replace('game-math-quaternion-calculations-v3',P.name).replace('M06','M07').replace('m06','m07')
+SOURCES={'escape':dict(path='shared/output/private-math-concept-fit-20261023/sources/escape-simulator-official/ES_LevelEditor_v3.mp4',url='https://drive.google.com/file/d/1kBroCcuJ24P7dHbf-FvEZDeWOWW1-ln-/view',game='Escape Simulator',minimumHeight=1080)}
+SHOTS={
+ '02':dict(source='escape',start=8,seconds=3.6,title='닫힌 문에서 열린 문으로',note='경첩은 고정 · 손잡이 쪽은 회전',phases=[(0,1.7,'닫힌 문 · 버튼 조작'),(1.7,2.8,'경첩을 중심으로 문이 열림'),(2.8,3.6,'열린 뒤 안쪽이 보임')],track=[(.4,.50,.67,80),(1.4,.50,.71,85),(2.3,.50,.74,120),(3.3,.50,.74,140)],model='경첩 고정 · 중간 자세'),
+ '08':dict(source='escape',start=12.8,seconds=2.7,title='다른 문에서도 중간 자세 확인',note='열쇠 조작 뒤 문이 열리는 과정',phases=[(0,1.3,'열쇠로 닫힌 문 조작'),(1.3,2.3,'경첩 쪽을 남기고 회전'),(2.3,2.7,'열린 자세에 도착')],track=[(.3,.51,.53,115),(1.3,.54,.50,115),(2.1,.61,.54,145)],model='순간 전환 / 연속 중간 자세')}
+s=adapt((B/'compose-m06.py').read_text(encoding='utf8'));a=s.index('SOURCES={');z=s.index('ENC=',a);s=s[:a]+'SOURCES='+repr(SOURCES)+'\nSHOTS='+repr(SHOTS)+'\n'+s[z:];s=s.replace('len(records)==44',f'len(records)=={count}').replace('44 exact-frame',f'{count} exact-frame');(B/'compose-m07.py').write_text(s,encoding='utf8')
+s=adapt((B/'mix-m06.py').read_text(encoding='utf8')).replace('len(levels)==37','len(levels)==36').replace('Matched37','Matched36').replace("['스페이스 엔지니어스 투','역원'","['이스케이프 시뮬레이터','구면 선형 보간'");(B/'mix-m07.py').write_text(s,encoding='utf8')
+s=adapt((B/'assemble-m06.py').read_text(encoding='utf8')).replace('쿼터니언 ② 합성·목표 자세·벡터 회전','회전 보간 ① 두 자세 사이의 경로와 속도').replace('조립 부품의 회전·배치와 고정 모형의 순서 비교로','문 열림과 고정 회전판의 경로·속도 비교로');(B/'assemble-m07.py').write_text(s,encoding='utf8')
+s=adapt((B/'qa-m06.py').read_text(encoding='utf8')).replace("['14','GB01','QC10','17','QC20','GB03','20','GB04','QC31','23']","['02','IG01','05','IG10','08','09','10','11','IG07','14']");(B/'qa-m07.py').write_text(s,encoding='utf8')
+s=adapt((B/'render-m06.py').read_text(encoding='utf8')).replace("sha(B/'m05-scenes.py')","sha(B/'m05-scenes.py')+sha(B/'m06-scenes.py')");(B/'render-m07.py').write_text(s,encoding='utf8')
+(B/'preflight-m07.py').write_text(adapt((B/'preflight-m06.py').read_text(encoding='utf8')),encoding='utf8')
+for n in ['compose','mix','assemble','qa','render','preflight']:
+ p=B/(n+'-m07.py');compile(p.read_text(encoding='utf8'),str(p),'exec')
+save(H/'scene-visual-plan.json',dict(renderer='Reuse mathematical Manim renderer and existing timings; authored hinged door, turntable and previous part model.',coordinates='RH column vector; Z up, active rotations; game overlays are screen-space editorial guides only.',sourceShots=SHOTS,meaning='Observe visible hinge opening. The source does not reveal SLERP/NLERP, game quaternions or measured angles.',models=dict(hinge='Fixed pivot with visibly moving door handle and attached direction.',path='0→90 versus0→450 same final pose; history separate.',speed='Fixed endpoints and camera; linear-time versus squared-time parameter.',state='Angle versus angular speed, distinguish physical size and4D quaternion norm.',twist='Front can stay while up direction changes.'),reuse='All original math clips and unchanged narration; no replacement of derivations or numerical examples.',actualVisualQa='pending render',actualListening=False))
+print('Prepared M07 finishing scripts',count,'scenes; two distinct cuts6.3s')
