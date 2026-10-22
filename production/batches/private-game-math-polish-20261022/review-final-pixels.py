@@ -5,6 +5,10 @@ from polish_common import *
 e=Episode(sys.argv[1]);e.authorized();movie=e.D/f'{e.slug}.captioned.mp4';digest=sha(movie)
 technical=read(e.H/'technical-qa.json');assert next(x for x in technical['outputs'] if x['kind']=='captioned')['sha256']==digest
 out=e.O/'final-pixel-review';out.mkdir(exist_ok=True);points={}
+replacement=read(e.H/'fhd-replacement-cuts.json') if (e.H/'fhd-replacement-cuts.json').exists() else None
+if replacement:
+ assert replacement['status']=='approved-source-cuts'
+ assert replacement['originalTimelineSha256']==sha(e.P/'production/timeline.json')
 def add(t,reason):
  t=round(min(e.T['seconds']-.02,max(.02,t))*60)/60;points.setdefault(t,[]).append(reason)
 for i,cue in enumerate(e.T['koCaptions']):add((cue['start']+cue['end'])/2,f'caption-{i+1}')
@@ -12,7 +16,8 @@ for slot in e.T['scenes']:
  for offset in [-1/60,1/60,.25]:add(slot['start']+offset,'scene-join-'+slot['id'])
  for fraction in [.15,.5,.85]:add(slot['start']+slot['seconds']*fraction,'scene-state-'+slot['id'])
  boundary=slot['start']
- for segment in slot.get('cut',{}).get('segments',[])[:-1]:
+ current_cut=replacement['scenes'].get(slot['id'],slot.get('cut',{})) if replacement else slot.get('cut',{})
+ for segment in current_cut.get('segments',[])[:-1]:
   boundary+=segment['frames']/60
   for offset in [-1/60,1/60,.25]:add(boundary+offset,'source-cut-'+slot['id'])
  if slot['id']=='GA06':

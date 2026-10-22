@@ -28,5 +28,13 @@ if e.id in ['M13','M14']:
  for sid,item in rendered['scenes'].items():
   assert sid not in inputs and sha(R/item['path'])==item['sha256']
   inputs[sid]={'path':item['path'],'sha256':item['sha256'],'reason':item['reason']}
+if e.id in ['M07','M08']:
+ stem='interpolation' if e.id=='M07' else 'conversions'
+ review=read(e.H/(stem+'-legibility-review.json'))
+ assert review['status']=='passed-source-visual-review'
+ rendered=read(e.H/(stem+'-legibility-render.json'))
+ for sid,item in rendered['scenes'].items():
+  assert sid not in inputs and sha(R/item['path'])==item['sha256']
+  inputs[sid]={'path':item['path'],'sha256':item['sha256'],'reason':item['reason']}
 save(e.H/'composition-polish.json',{**guide,'inputs':inputs,'internalVisualQa':'pending','changes':'Observed editorial region guides and native UI clearance; M13/M14 also use reviewed numeric font/header-safe mapping. Original logical scene sequence, duration and recovered audio unchanged'})
 print(e.id,'observed composition registered; final moving QA pending',flush=True)

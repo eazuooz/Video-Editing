@@ -4,6 +4,10 @@ from PIL import Image,ImageDraw,ImageFont
 from polish_common import *
 e=Episode(sys.argv[1]);e.authorized();plan=read(e.H/'observed-guides.json');out=e.O/'observed-guide-preflight';out.mkdir(exist_ok=True)
 font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',16);tiles=[];records=[];samples={};hashes={}
+replacement=read(e.H/'fhd-replacement-cuts.json') if (e.H/'fhd-replacement-cuts.json').exists() else None
+if replacement:
+ assert replacement['status']=='approved-source-cuts'
+ assert replacement['originalTimelineSha256']==sha(e.P/'production/timeline.json')
 for guide in plan['guides']:
  for key in guide['keyframes']:
   # Avoid the exact end frame, when the guide is intentionally cleared.
@@ -11,17 +15,18 @@ for guide in plan['guides']:
   samples.setdefault(guide['scene'],set()).add(round(t,3))
 for sid,times in samples.items():
  slot=next(x for x in e.T['scenes'] if x['id']==sid)
+ cut=replacement['scenes'].get(sid,slot['cut']) if replacement else slot['cut']
  for k,t in enumerate(sorted(times)):
   at=0
-  for segment in slot['cut']['segments']:
+  for segment in cut['segments']:
    duration=segment['frames']/60
    if t<at+duration:
-    src=R/segment.get('sourceFile',slot['cut']['sourceFile']);ss=segment['in']+t-at;break
+    src=R/segment.get('sourceFile',cut['sourceFile']);ss=segment['in']+t-at;break
    at+=duration
   else:raise ValueError('Sample outside cut')
   if src not in hashes:hashes[src]=sha(src)
   vf='scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1'
-  if slot['cut'].get('sourceFraming'):vf+=','+slot['cut']['sourceFraming']['filter']
+  if cut.get('sourceFraming'):vf+=','+cut['sourceFraming']['filter']
   if sid in plan['captionClearanceScenes']:vf+=',scale=1600:900:flags=lanczos,pad=1920:1080:160:0:black'
   vf+=f",setpts=PTS+{slot['start']+t}/TB,ass=composition-polish.ass,ass=captions.ko.ass"
   dst=out/f'{sid}-{k:02d}.png';e.ff(['-ss',ss,'-i',src,'-vf',vf,'-frames:v','1','-threads','1',dst],'observed-guide-preflight.log',e.O)
