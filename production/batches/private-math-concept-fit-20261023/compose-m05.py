@@ -49,12 +49,17 @@ def main():
   old=next((r for r in previous['scenes'] if r['id']==sid),None)
   if old and sha(dst)==old['sha256']:records.append(old);continue
   n=slot['frames'];args=['-i',model]
+  # Enlarging only our authored model viewport improves mobile readability.
+  # Text, axis legend, source game pixels and timing are not enlarged or moved.
+  enlarge=progress['scenes'][sid]['origin']=='concept-matched own model' and sid not in ['GA05','GA02','11','N05']
+  prep='[0:v]split=2[base][modelcrop];[modelcrop]crop=620:450:230:300,scale=868:630:flags=lanczos[big];[base]drawbox=x=80:y=200:w=870:h=620:color=0x090d12:t=fill[clear];[clear][big]overlay=106:190[prepared];' if enlarge else '[0:v]null[prepared];'
   if sid in SHOTS:
    s=SHOTS[sid];src=SOURCES[s['source']];assert slot['gameWindowSeconds']==s['seconds'];annotations(sid,s)
    args+=['-ss',s['start'],'-t',s['seconds'],'-i',R/src['path']]
    offset=s.get('offset',0)
    graph=f'[0:v]tpad=stop_mode=clone:stop_duration=0.05,trim=end_frame={n},setpts=N/(60*TB),split=2[full][model];[model]crop=850:650:80:210,scale=620:474[small];color=c=0x090D12:s=1920x1080:r=60:d={slot["seconds"]}[bg];[1:v]fps=60,scale=1280:720:flags=lanczos,setsar=1,setpts=PTS+{offset}/TB[game];[bg][game]overlay=0:130:eof_action=pass[panel];[panel][small]overlay=1300:240,ass={sid}.guides.ass[split];[full][split]overlay=0:0:enable=\'between(t,{offset},{offset+s["seconds"]-1/60})\',setsar=1[v]'
   else:graph=f'[0:v]tpad=stop_mode=clone:stop_duration=0.05,trim=end_frame={n},setpts=N/(60*TB),setsar=1[v]'
+  graph=prep+graph.replace('[0:v]','[prepared]')
   print('Compose M05',sid,'game + math' if sid in SHOTS else 'preserved math',flush=True)
   ff(args+['-filter_complex_threads','2','-filter_complex',graph,'-map','[v]','-frames:v',n,'-an',*ENC,dst],f'composite-{sid}.log')
   v=next(s for s in probe(dst)['streams'] if s['codec_type']=='video');assert int(v['nb_frames'])==n and v['height']==1080 and v['r_frame_rate']=='60/1'
