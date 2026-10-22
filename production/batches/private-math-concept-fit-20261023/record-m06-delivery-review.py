@@ -1,0 +1,17 @@
+from common import *
+P=R/'projects/game-math-quaternion-calculations-v3';H=P/'production/concept-fit-v2';D=R/f'output/{P.name}-concept-fit-v2'
+out=read(H/'outputs.json');qa=read(H/'qa.json');coverage=read(H/'caption-pixel-coverage.json');master=out['outputs'][1]
+assert len(out['outputs'])==4
+assert master['sha256']==qa['technical'][1]['sha256']==coverage['masterSha256']
+assert all(x['decodeErrors']==0 for x in qa['technical'])
+assert coverage['cues']==240 and len(coverage['deltaFrames'])==9
+coverage.update(directReview='Prior10 full QA sheets and14 caption sheets directly inspected.43 composite hashes unchanged. One tracking delta sheet with9 affected cues, two current QA sheets around occlusion and10 current375px images inspected.',deltaDirectReview='completed',reviewedAt=now(),findings='Assembly-piece guide is hidden during occlusion and reappears on the actual part. Captions and math labels remain visible.')
+save(H/'caption-pixel-coverage.json',coverage)
+playback=dict(masterSha256=master['sha256'],checkedAt=now(),tool='cua_repl native local browser tab59',segments=[dict(start=0,end=1120.883333,rate=1,ended=True)],evidence='Visible native controls report full playback completion; sampled and targeted images directly inspected.',continuousHumanViewing=False,actualListening=False)
+save(H/'native-playback-final.json',playback)
+qa.update(directVisualReview='Prior sampled evidence retained for43 identical composites; corrected assembly guide and all9 affected cue images plus10 current mobile images inspected.',nativePlayback=rel(H/'native-playback-final.json'));save(H/'qa.json',qa)
+ledger=dict(checkedAt=now(),status='local-review-ready-with-listening-notes',masterSha256=master['sha256'],outputs=out['outputs'],frames=out['frames'],seconds=out['seconds'],technicalQa=rel(H/'qa.json'),captionCoverage=rel(H/'caption-pixel-coverage.json'),nativePlayback=rel(H/'native-playback-final.json'),visualChecks=dict(sceneCount=44,gameIntervals=2,sampledFinalFrames=111,priorAdditionalCaptionFrames=158,changedPanelCaptionFrames=9,mobileFrames=10,sourceActionMatch='Two Space Engineers2 construction operations isolate selected parts and alignment; composition, target orientation and vector rotation use our fixed part model.',corrections=['Guides hidden during source occlusion instead of drawing through intervening geometry']),audio=dict(unchangedParagraphs=108,changedGameParagraphs=37,unchangedSource='Recovered original AAC, not original PCM',asr='20 changed full scene texts compared; no actual listening approval inferred',actualListening=False,pending=['상쇄·복원·검산·루트 이 pronunciation','changed paragraph joins','original game sound balance']),humanReview='pending-for-this-hash',uploadAuthorized=False)
+save(H/'review-ledger.json',ledger);out.update(status=ledger['status'],internalVisualQa='completed-with-delta-reuse-and-native-playback-evidence',actualWholeListening=False);save(H/'outputs.json',out)
+page=(D/'index.html').read_text(encoding='utf8').replace('내부 검수 진행 중 · 최종 사용자 시청/청취 대기','화면·자막·파일 검사 완료 · 사용자 시청/청취 대기. 바뀐 문단의 발음과 연결, 게임 소리 균형은 최종 청취 확인이 필요합니다.');(D/'index.html').write_text(page,encoding='utf8')
+project=read(P/'project.json');project['activeConceptFitRevision']=dict(revision='concept-fit-v2',timeline=rel(H/'timeline.json'),outputs=rel(H/'outputs.json'),reviewLedger=rel(H/'review-ledger.json'),status=ledger['status'],humanReview='pending',originalTimelinePreserved=True);save(P/'project.json',project)
+print('M06 visual and technical QA complete; hearing and human review remain pending')

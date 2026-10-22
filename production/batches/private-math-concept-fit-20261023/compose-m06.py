@@ -4,7 +4,7 @@ import sys,math,shutil
 P=R/'projects/game-math-quaternion-calculations-v3';H=P/'production/concept-fit-v2';O=P/'production/local/concept-fit-v2'
 T=read(H/'timeline.json');authorized('M06');C=O/'composite';C.mkdir(exist_ok=True)
 SOURCES={'se2': {'path': 'shared/output/private-math-concept-fit-20261023/sources/se2-official/launch.mp4', 'url': 'https://mirror.keenswh.com/PressKits/SE2%20Press%20Kit.zip', 'game': 'Space Engineers 2', 'minimumHeight': 2160}}
-SHOTS={'14': {'source': 'se2', 'start': 46.7, 'seconds': 6.9, 'title': '부품의 방향을 맞추고 배치하기', 'note': '앞면과 긴 몸체의 방향을 관찰', 'phases': [(0, 1.8, '두 둥근 면의 방향을 관찰'), (1.8, 4.5, '긴 몸체를 붙일 방향과 위치로'), (4.5, 6.9, '붙일 곳에 맞춰 부품 배치')], 'track': [(0.3, 0.5, 0.49, 65), (1.3, 0.49, 0.39, 65)], 'track2': [(2.3, 0.5, 0.66, 145), (3.3, 0.49, 0.66, 145), (4.3, 0.48, 0.62, 145), (5.3, 0.49, 0.62, 145)], 'model': '회전과 이동 · 자체 모형'}, 'QC20': {'source': 'se2', 'start': 95.5, 'seconds': 4.0, 'title': '부품의 앞면을 원하는 방향으로', 'note': '배치 미리보기의 앞면을 관찰', 'phases': [(0, 1.3, '부품 미리보기의 앞면'), (1.3, 2.8, '앞면 방향을 돌려 맞추기'), (2.8, 4.0, '원하는 방향으로 부품 배치')], 'track': [(0.5, 0.53, 0.53, 115), (1.5, 0.51, 0.54, 115), (2.5, 0.5, 0.56, 115)], 'model': '현재 방향 → 목표 방향'}}
+SHOTS={'14': {'source': 'se2', 'start': 46.7, 'seconds': 6.9, 'title': '부품의 방향을 맞추고 배치하기', 'note': '앞면과 긴 몸체의 방향을 관찰', 'phases': [(0, 1.8, '두 둥근 면의 방향을 관찰'), (1.8, 4.5, '긴 몸체를 붙일 방향과 위치로'), (4.5, 6.9, '붙일 곳에 맞춰 부품 배치')], 'track': [(0.3, 0.5, 0.49, 65), (1.3, 0.49, 0.39, 65)], 'track2': [(2.3, 0.5, 0.66, 145), (3.3, 0.49, 0.66, 145), (4.3, 0.48, 0.62, 145), (5.3, 0.49, 0.62, 145)], 'model': '회전과 이동 · 자체 모형', 'hiddenGuideIntervals': [(3.4, 4.0)]}, 'QC20': {'source': 'se2', 'start': 95.5, 'seconds': 4.0, 'title': '부품의 앞면을 원하는 방향으로', 'note': '배치 미리보기의 앞면을 관찰', 'phases': [(0, 1.3, '부품 미리보기의 앞면'), (1.3, 2.8, '앞면 방향을 돌려 맞추기'), (2.8, 4.0, '원하는 방향으로 부품 배치')], 'track': [(0.5, 0.53, 0.53, 115), (1.5, 0.51, 0.54, 115), (2.5, 0.5, 0.56, 115)], 'model': '현재 방향 → 목표 방향'}}
 ENC=['-c:v','libx264','-threads','4','-preset','fast','-crf','18','-pix_fmt','yuv420p','-r','60','-fps_mode','cfr','-video_track_timescale','60000']
 
 
@@ -34,6 +34,7 @@ def annotations(sid,s):
    k=r*.55228475
    # Non-negative drawing coordinates + explicit top-left avoid libass bbox offset.
    shape=f'm 0 {r} b 0 {r-k} {r-k} 0 {r} 0 b {r+k} 0 {2*r} {r-k} {2*r} {r} b {2*r} {r+k} {r+k} {2*r} {r} {2*r} b {r-k} {2*r} 0 {r+k} 0 {r}'
+   if any(a < hi and b > lo for lo,hi in s.get('hiddenGuideIntervals',[])):continue
    event(a,b,'{\\an7\\move('+f'{cx-r:.1f},{cy-r:.1f},{dx-r:.1f},{dy-r:.1f}'+')\\p1\\bord5\\shad0\\1a&HFF&\\3c&HA2D380&}'+shape,1)
  path=C/f'{sid}.guides.ass';path.write_text(HEADER+'\n'.join(lines)+'\n',encoding='utf8');return path
 def main():
