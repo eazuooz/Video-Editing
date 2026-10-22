@@ -8,8 +8,8 @@ plan=read(plan_path)
 windows={
  'M10':{'LG04':(6.6,11.6),'LG06':(19.2,24.2),'LG07':(2.7,5.8)},
  'M11':{'02':(3.9,7.2),'02-recap':(37.4,40.2),'05':(7.7,10),'08':(13.1,15.1),'08-link':(37.8,39.5)},
- 'M12':{'11':(15.8,17.5),'17':(17.8,19.1),'19':(23.8,25.5),'21':(2.4,4.2),'21-recap':(39.4,41.7)},
- 'M17':{'05':(0,4),'08':(3,5.1)},
+ 'M12':{'11':(15.8,17.5),'17':(17.8,19.1),'19':(23.8,25.5),'21':(2.4,4.2),'21-recap':(39.4,41.7),'14-link':(7.8,9.5),'14-perspective':(31.1,33.1)},
+ 'M17':{'05':(0,4),'08':(3,5.1),'14-orbit':(11.8,14.7),'14-zoom':(83.1,85.5)},
 }[e.id]
 selected_names=set(sys.argv[2:])
 if selected_names:
@@ -19,7 +19,7 @@ out=e.O/'moving-available-preflight';out.mkdir(exist_ok=True)
 records=[]
 previous=e.H/'moving-available-guide-preflight.json'
 if selected_names and previous.exists():
- records=[r for r in read(previous)['clips'] if r['name'] not in selected_names]
+ records=[dict(r,name=r.get('name',r['scene'])) for r in read(previous)['clips'] if r.get('name',r['scene']) not in selected_names]
 for name,(start,end) in windows.items():
  sid=name.split('-')[0]
  e.authorized();slot=next(s for s in e.T['scenes'] if s['id']==sid)

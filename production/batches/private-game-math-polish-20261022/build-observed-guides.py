@@ -12,6 +12,8 @@ for g in plan['guides']:
  boundary=0
  for part in s['cut']['segments'][:-1]:
   boundary+=part['frames']/60;assert not a<boundary<z,'Guide must clear at source cuts'
+ for boundary in plan.get('internalCutBoundaries',{}).get(s['id'],[]):
+  assert not a<boundary<z,'Guide must clear at reviewed replacement cuts'
  scale,ox,oy=plan['renderMapping']['inset' if s['id'] in plan['captionClearanceScenes'] else 'full']
  lx,ly=g['labelPosition'];lx=lx*scale+ox;ly=ly*scale+oy
  tint=color({'focus':'#F0D379','body':'#FF6A72','board':'#67B8FF'}.get(g['role'],'#79D7BD'))
