@@ -1,4 +1,4 @@
-"""Reuse original lines/planes tracks on available original FHD slots.
+"""Reuse original lines/planes tracks on restored, explicitly authorized slots.
 
 Original PCM and ASR caches are unavailable. Narration gates therefore use the
 saved sentence cues and original pause map, never a newly generated voice.
@@ -14,14 +14,35 @@ original=oldbase/f'create-{kind}-overlay.py';registry=read(oldbase/f'{kind}-anno
 additions=e.H/'cue-guide-additions.json'
 if additions.exists():
  for sid,changes in read(additions)['scenes'].items():registry['scenes'][sid].update(changes)
+if e.id=='M09':
+ # Current restored Portal pixels: the old top-right summary covers the
+ # receiver/exit indicators. Narration and the short beam label already
+ # explain the relation; keep that actual result visible.
+ registry['scenes']['LG01']['hideMathNote']=True
 if e.id=='M10':
  registry['scenes']['LG04'].update(redLabel='빨강: 머리 윤곽',tealLabel='청록: 둥근 비교 · 판정 구 아님',mathNote='중심·반지름은 다음 그림에서 정의')
+ registry['scenes']['LG05']['hideMathNote']=True
 if e.id=='M12':
  # The original triangle is an editorial comparison over the terrain, not a
  # traced terrain boundary or an observed engine mesh.
  registry['scenes']['17'].update(redLabel='빨강: 설명용 삼각형 · 메시 아님')
+if e.id=='M11':
+ registry['scenes']['PG01'].update(redLabel='빨강: 보이는 바닥·벽 경계선',blueLabel='파랑: 경계의 관찰 기준점')
+for sid in {'M11':['PG01','PG02','PG03'],'M12':['PG04','PG06','PG07']}.get(e.id,[]):
+ # Redundant upper cards obscure gel emitters, panels or the path result.
+ # Retain the narrated lesson, meaningful short labels and actual guides.
+ registry['scenes'][sid]['hideMathNote']=True
 out=e.O/'available-game-overlays';out.mkdir(exist_ok=True)
 insets={'M09':[],'M10':['10','LG04','13','16','LG06','LG07','21'],'M11':['02','05'],'M12':['11','17','19','21']}[e.id]
+exception_path=B/'portal-original-resolution-exception.json'
+if exception_path.exists():
+ for sid in read(exception_path).get('episodes',{}).get(e.id,{}).get('scenes',{}):
+  slot=next(s for s in e.T['scenes'] if s['id']==sid)
+  for segment in slot['cut']['segments']:
+   source=R/segment.get('sourceFile',slot['cut']['sourceFile'])
+   assert approved_original_resolution(e,sid,source)
+  assert (e.O/f'clips/{sid}.mp4').exists(),f'{sid}: restore the approved cut first'
+  if sid not in insets:insets.append(sid)
 if additions.exists():
  for sid,changes in read(additions)['scenes'].items():
   if changes.get('useReviewedLocalClip') and sid not in insets:insets.append(sid)
@@ -46,6 +67,10 @@ for slot in timeline['scenes']:
    # Current source reveals that later blue components select the weapon or
    # unrelated distant pixels. Retain only the directly observed blue torso.
    current['keyframes']=[k for k in current['keyframes'] if 731<=k['t']<=732.14]
+  if e.id=='M10' and slot['id']=='LG05':
+   # Source82.5s is the last clear cube face; later legacy extents also
+   # include the portal below it. End the guide before that ambiguity.
+   current['keyframes']=[k for k in current['keyframes'] if k['t']<=82.5]
   current['sourceSha256']=sha(R/current['sourceFile']);mapped[(R/name).resolve()]=current
   track_records.append({'scene':slot['id'],'track':name,'trackSha256':sha(R/name),'originalSource':track['sourceFile'],'originalSourceSha256':track['sourceSha256'],'restoredSource':current['sourceFile'],'restoredSourceSha256':current['sourceSha256'],'sameBytes':track['sourceSha256']==current['sourceSha256'],'reason':'Original cuts/frame count/framing restored; observed track retained. Changed source hashes require current pixel equivalence review.'})
   local_track=e.H/'available-tracks'/Path(name).name

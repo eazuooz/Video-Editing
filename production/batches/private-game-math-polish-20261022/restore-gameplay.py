@@ -1,4 +1,4 @@
-"""Restore immutable cut slots from original FHD or reviewed FHD replacements."""
+"""Restore immutable cuts; only explicit per-slot exceptions allow original sub-FHD."""
 import sys,shutil,argparse
 from polish_common import *
 parser=argparse.ArgumentParser()
@@ -27,7 +27,7 @@ for ident in args.episodes:
   verified_sources={}
   for s in e.T['scenes']:
    if s['classification']!='actual' or (selected and s['id'] not in selected):continue
-   e.authorized();sid=s['id'];cut=s['cut'];sources=[];parts=[]
+   e.authorized();sid=s['id'];cut=s['cut'];sources=[];parts=[];used_original_exception=False
    replacement=replacements['scenes'].get(sid) if replacements else None
    if replacement:
     assert replacement['status']=='approved-source-cut'
@@ -46,7 +46,10 @@ for ident in args.episodes:
     src=R/seg.get('sourceFile',cut['sourceFile']);v=video(src)
     if src not in verified_sources:verified_sources[src]=sha(src)
     if replacement:assert verified_sources[src]==replacement['sourceSha256']
-    assert v['width']>=1920 and v['height']>=1080,(sid,'FHD original required',str(src))
+    native_fhd=v['width']>=1920 and v['height']>=1080
+    if not native_fhd:
+     assert not replacement and approved_original_resolution(e,sid,src),(sid,'FHD original or explicit exact-slot exception required',str(src))
+     used_original_exception=True
     assert seg['in']+seg['frames']/60<=float(probe(src)['format']['duration'])+.03
     assert cut.get('sourceSpeed',1)==1
     vf='scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1'
@@ -54,14 +57,14 @@ for ident in args.episodes:
      # Retained framing was authored in the original FHD coordinate canvas.
      vf+=','+cut['sourceFraming']['filter']
     vf+=',fps=60'
-    part=folder/f'{sid}-{j+1}.mp4';sig={'sourceSha256':verified_sources[src],'source':rel(src),'sourceIn':seg['in'],'frames':seg['frames'],'vf':vf};receipt=part.with_suffix('.json')
+    part=folder/f'{sid}-{j+1}.mp4';sig={'sourceSha256':verified_sources[src],'source':rel(src),'sourceIn':seg['in'],'frames':seg['frames'],'vf':vf,'decodedSourceDimensions':[v['width'],v['height']],'nativeFhd':native_fhd,'originalResolutionException':not native_fhd};receipt=part.with_suffix('.json')
     if not(part.exists() and receipt.exists() and read(receipt)==sig):
      e.ff(['-ss',seg['in'],'-i',src,'-vf',vf,'-frames:v',seg['frames'],'-an',*ENC,part],f'gameplay-{sid}-{j+1}.log');save(receipt,sig)
     e.verify(part,seg['frames']);parts.append(part);sources.append(sig)
    dst=e.O/f'clips/{sid}.mp4';listing=folder/f'{sid}-concat.txt';listing.write_text('\n'.join("file '"+p.as_posix()+"'" for p in parts)+'\n',encoding='utf8')
    e.ff(['-f','concat','-safe','0','-i',listing,'-c','copy','-an','-video_track_timescale','60000',dst],f'gameplay-{sid}-concat.log');e.verify(dst,s['frames'])
-   records['scenes'][sid]={'path':rel(dst),'sha256':sha(dst),'sources':sources,'frames':s['frames'],'speed':1,'originalCutOrderAndDuration':not bool(replacement and replacement.get('reviewedInternalExcerptChanges')),'originalSceneOrderAndDuration':True,'sourceKind':'reviewed-same-game-FHD-replacement' if replacement else 'original-FHD','currentMovingPixelReview':'pending','annotationPolish':'pending: inspect actual target before authoring or restoring guides','sourceAudio':'unchanged original narration-only upload retained'};save(target,records)
-   print(ident,sid,'FHD cut restored; annotation and current pixels pending',flush=True)
+   records['scenes'][sid]={'path':rel(dst),'sha256':sha(dst),'sources':sources,'frames':s['frames'],'speed':1,'originalCutOrderAndDuration':not bool(replacement and replacement.get('reviewedInternalExcerptChanges')),'originalSceneOrderAndDuration':True,'sourceKind':'approved-original-resolution-exception' if used_original_exception else ('reviewed-same-game-FHD-replacement' if replacement else 'original-FHD'),'currentMovingPixelReview':'pending','annotationPolish':'pending: inspect actual target before authoring or restoring guides','sourceAudio':'unchanged original narration-only upload retained'};save(target,records)
+   print(ident,sid,'cut restored; annotation and current pixels pending; source exception='+str(used_original_exception),flush=True)
   missing=sorted(actual_ids-records['scenes'].keys())
   results[ident]={'status':'partial-gameplay-restored' if missing else 'gameplay-restored',
    'restoredScenes':sorted(records['scenes']),'missingScenes':missing,

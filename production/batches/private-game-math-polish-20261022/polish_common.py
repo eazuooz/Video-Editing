@@ -15,6 +15,19 @@ def module(name,p):
 def probe(p):return json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(p)]))
 def video(p):return next(s for s in probe(p)['streams'] if s['codec_type']=='video')
 def rel(p):return Path(p).resolve().relative_to(R).as_posix()
+def approved_original_resolution(e,sid,source):
+ control=read(R/'shared/publishing/video-production-control.json')['scopedBatchAuthorizations']['private-math-overnight-polish-20261022']
+ exception=control.get('originalResolutionException',{})
+ if exception.get('status')!='approved':return False
+ evidence=R/exception['evidence'];assert sha(evidence)==exception['evidenceSha256']
+ record=read(evidence)
+ if e.id not in record['episodes']:return False
+ episode=record['episodes'][e.id]
+ if sid not in episode['scenes']:return False
+ assert record['status']=='approved' and episode['timelineSha256']==sha(e.P/'production/timeline.json')
+ slot=episode['scenes'][sid]
+ assert slot['frames']==next(s['frames'] for s in e.T['scenes'] if s['id']==sid)
+ return rel(source) in slot['sourcePaths']
 ENC=['-c:v','libx264','-threads','4','-preset','fast','-crf','18','-pix_fmt','yuv420p','-r','60','-fps_mode','cfr','-enc_time_base','1:60','-video_track_timescale','60000','-movflags','+faststart']
 class Episode:
  def __init__(self,ident):

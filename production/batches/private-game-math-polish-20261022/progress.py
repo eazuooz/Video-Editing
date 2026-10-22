@@ -4,6 +4,19 @@ from polish_common import *
 now=datetime.datetime.now(datetime.timezone.utc).isoformat();q=read(B/'queue.json');w=read(R/'shared/publishing/video-worklist.json');rows={r['id']:r for r in w['rows']}
 table=[]
 blockers=read(B/'source-blockers.json') if (B/'source-blockers.json').exists() else {}
+finish_job=read(B/'approved-portal-finish-job.json') if (B/'approved-portal-finish-job.json').exists() else {}
+finish_alive=False
+if os.name=='nt' and finish_job.get('status')=='running':
+ import ctypes
+ kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+ kernel.OpenProcess.restype=ctypes.c_void_p
+ kernel.GetExitCodeProcess.argtypes=[ctypes.c_void_p,ctypes.POINTER(ctypes.c_ulong)]
+ kernel.CloseHandle.argtypes=[ctypes.c_void_p]
+ handle=kernel.OpenProcess(0x1000,False,finish_job['pid'])
+ if handle:
+  exit_code=ctypes.c_ulong()
+  finish_alive=bool(kernel.GetExitCodeProcess(handle,ctypes.byref(exit_code))) and exit_code.value==259
+  kernel.CloseHandle(handle)
 for entry in q['entries']:
  e=Episode(entry['id']);audio=e.H/'restoration.json';clips=e.H/'explanation-restoration.json';game=e.H/'gameplay-restoration.json';qa=e.H/'technical-qa.json';visual=e.H/'visual-review.json'
  n=len(read(clips)['scenes']) if clips.exists() else 0;ng=len(read(game)['scenes']) if game.exists() else 0
@@ -42,6 +55,12 @@ for entry in q['entries']:
    if source_review_status=='passed-source-visual-review':status+=' · 설명 화면 검수 완료'
  issue=blockers.get(e.id)
  if issue and not ready:status+=' · '+issue['shortStatus']
+ if not ready and finish_alive and e.id in finish_job.get('ids',[]):
+  if finish_job.get('episode')==e.id:
+   stage={'prepare-observed-composition.py':'표식 합성 준비 중','register-reviewed-geometry-inputs.py':'설명 장면 연결 중','assemble.py':'전체1080p60 렌더링 중','technical-qa.py':'전체 파일 기술 검사 중','review-final-pixels.py':'최종 화면 검수 이미지 추출 중'}.get(finish_job.get('stage'),'마무리 작업 중')
+   status=stage+' · 원본 해상도 예외 승인 장면만 적용'
+  elif e.id not in finish_job.get('results',{}):
+   status='모든 장면 복원·사전 점검 완료 · 순차 렌더 대기'
  entry.update(status='ready-for-human-review' if ready else 'production-in-progress',audioRecovered=audio.exists(),explanationsRestored=n,explanationCount=total,gameplayRestored=ng,actualSceneCount=actual,technicalQaComplete=technical_current,humanReview='pending')
  if issue:entry['sourceBlocker']=issue
  else:entry.pop('sourceBlocker',None)
