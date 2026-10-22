@@ -4,14 +4,14 @@ from polish_common import *
 
 import sys
 e=Episode(sys.argv[1]);e.authorized()
-assert e.id in ['M10','M11','M12']
-prefix='geometry' if e.id=='M10' else 'planes'
+assert e.id in ['M10','M11','M12','M17']
+prefix={'M10':'geometry','M11':'planes','M12':'planes','M17':'projection'}[e.id]
 selections={'M10':[('15',7,14),('18',7,16),('20',18,13),('22',30,13)],'M11':[('PB02',8,14),('04',16,17),('PB03',8,14),('09',8,14)],'M12':[('PB06',8,14),('16',8,14),('PB08',8,14),('20',8,14)]}
 rendered=read(e.H/(prefix+'-legibility-render.json'))
 audio=read(e.H/'restoration.json');assert sha(R/audio['audioFile'])==audio['audioSha256']
 out=e.O/(prefix+'-legibility-moving');out.mkdir(exist_ok=True)
 records=[]
-for sid,start,seconds in selections[e.id]:
+for sid,start,seconds in ({'M17':[('06',17,19),('07',9,18),('10',15,18),('15',20,23)]}.get(e.id,selections.get(e.id))):
     slot=next(s for s in e.T['scenes'] if s['id']==sid)
     seconds=min(seconds,slot['seconds']-start)
     item=rendered['scenes'][sid];src=R/item['path'];assert sha(src)==item['sha256']
