@@ -11,6 +11,9 @@ e=Episode(sys.argv[1]);assert e.id in ['M10','M11','M12'];e.authorized()
 oldbase=R/'production/batches/game-math-part2-teaching-revision'
 kind='lines' if e.id=='M10' else 'planes'
 original=oldbase/f'create-{kind}-overlay.py';registry=read(oldbase/f'{kind}-annotation-tracks.json')
+additions=e.H/'cue-guide-additions.json'
+if additions.exists():
+ for sid,changes in read(additions)['scenes'].items():registry['scenes'][sid].update(changes)
 if e.id=='M10':
  registry['scenes']['LG04'].update(redLabel='빨강: 머리 윤곽',tealLabel='청록: 둥근 비교 · 판정 구 아님',mathNote='중심·반지름은 다음 그림에서 정의')
 if e.id=='M12':
@@ -19,6 +22,9 @@ if e.id=='M12':
  registry['scenes']['17'].update(redLabel='빨강: 설명용 삼각형 · 메시 아님')
 out=e.O/'available-game-overlays';out.mkdir(exist_ok=True)
 insets={'M10':['10','LG04','13','16','LG06','LG07','21'],'M11':['02','05'],'M12':['11','17','19','21']}[e.id]
+if additions.exists():
+ for sid,changes in read(additions)['scenes'].items():
+  if changes.get('useReviewedLocalClip') and sid not in insets:insets.append(sid)
 if sys.argv[2:]:
  assert set(sys.argv[2:])<=set(insets)
  insets=[sid for sid in insets if sid in sys.argv[2:]]
@@ -26,6 +32,8 @@ selection=set(insets)
 timeline=copy.deepcopy(e.T);track_records=[];mapped={};baseline={}
 for slot in timeline['scenes']:
  if slot['classification']!='actual' or slot['id'] not in selection:continue
+ if registry['scenes'][slot['id']].get('useReviewedLocalClip'):
+  slot['preservedOriginal']=True;slot['baselineClip']=rel(e.O/f'clips/{slot["id"]}.mp4')
  if slot.get('preservedOriginal'):
   baseline[slot['baselineClip']]=rel(e.O/f'clips/{slot["id"]}.mp4');slot['baselineClip']=baseline[slot['baselineClip']]
  for name in registry['scenes'][slot['id']]['landmarkSources']:
@@ -75,6 +83,8 @@ source=source.replace("events=[];sx,sy=2.4,2.4","events=[];sx=sy=2.0 if ident in
 source=source.replace('points=np.asarray(points)*[sx,sy]','points=np.asarray(points)*[sx,sy]+[ox,0]')
 source=source.replace('x,y=np.array(p)*[sx,sy]','x,y=np.array(p)*[sx,sy]+[ox,0]')
 source=source.replace('width=2.6','width=3.3')
+source=source.replace('note_clear.append(clear)',"note_clear.append(clear and not spec.get('hideMathNote',False))")
+source=source.replace('pts[key][:,1]>360',"pts[key][:,1]>(444 if ident in INSETS and track.get('allowInsetLowerSurface') else 360)")
 source=source.replace(',15,True)',',22,True)')
 source=source.replace("좌표',size=12)","좌표',size=18)")
 source=source.replace("spec['mathNote'],'#ffe082',size=14)","spec['mathNote'],'#ffe082',size=20)")

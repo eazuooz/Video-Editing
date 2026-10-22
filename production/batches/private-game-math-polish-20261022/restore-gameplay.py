@@ -32,7 +32,14 @@ for ident in args.episodes:
    if replacement:
     assert replacement['status']=='approved-source-cut'
     assert replacement['frames']==s['frames']
-    assert [x['frames'] for x in replacement['segments']]==[x['frames'] for x in cut['segments']]
+    if replacement.get('reviewedInternalExcerptChanges'):
+     assert ident in ['M11','M12'] and replacement['originalSceneOrderAndDurationPreserved']
+     assert sha(R/replacement['sourceReview'])==replacement['sourceReviewSha256']
+     assert read(R/replacement['sourceReview'])['status']=='passed-source-cut-inspection'
+     assert sum(x['frames'] for x in replacement['segments'])==s['frames']
+     for k,a in enumerate(replacement['segments']):
+      for z in replacement['segments'][k+1:]:assert a['in']+a['frames']/60<=z['in'] or z['in']+z['frames']/60<=a['in']
+    else:assert [x['frames'] for x in replacement['segments']]==[x['frames'] for x in cut['segments']]
     assert sha(R/replacement['permissionMetadata'])==replacement['permissionMetadataSha256']
     cut=replacement
    for j,seg in enumerate(cut['segments']):
@@ -53,7 +60,7 @@ for ident in args.episodes:
     e.verify(part,seg['frames']);parts.append(part);sources.append(sig)
    dst=e.O/f'clips/{sid}.mp4';listing=folder/f'{sid}-concat.txt';listing.write_text('\n'.join("file '"+p.as_posix()+"'" for p in parts)+'\n',encoding='utf8')
    e.ff(['-f','concat','-safe','0','-i',listing,'-c','copy','-an','-video_track_timescale','60000',dst],f'gameplay-{sid}-concat.log');e.verify(dst,s['frames'])
-   records['scenes'][sid]={'path':rel(dst),'sha256':sha(dst),'sources':sources,'frames':s['frames'],'speed':1,'originalCutOrderAndDuration':True,'sourceKind':'reviewed-same-game-FHD-replacement' if replacement else 'original-FHD','currentMovingPixelReview':'pending','annotationPolish':'pending: inspect actual target before authoring or restoring guides','sourceAudio':'unchanged original narration-only upload retained'};save(target,records)
+   records['scenes'][sid]={'path':rel(dst),'sha256':sha(dst),'sources':sources,'frames':s['frames'],'speed':1,'originalCutOrderAndDuration':not bool(replacement and replacement.get('reviewedInternalExcerptChanges')),'originalSceneOrderAndDuration':True,'sourceKind':'reviewed-same-game-FHD-replacement' if replacement else 'original-FHD','currentMovingPixelReview':'pending','annotationPolish':'pending: inspect actual target before authoring or restoring guides','sourceAudio':'unchanged original narration-only upload retained'};save(target,records)
    print(ident,sid,'FHD cut restored; annotation and current pixels pending',flush=True)
   missing=sorted(actual_ids-records['scenes'].keys())
   results[ident]={'status':'partial-gameplay-restored' if missing else 'gameplay-restored',
