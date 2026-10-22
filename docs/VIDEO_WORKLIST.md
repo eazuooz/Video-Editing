@@ -216,7 +216,7 @@
 
 Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과 기존 업로드는 보존한다.
 
-갱신: 2026-10-22 11:24 KST. **사용자 승인 1편 · 완성본 검수 대기 9편 · 전체 완성본 작업 중 7편.**
+갱신: 2026-10-22 11:31 KST. **사용자 승인 1편 · 완성본 검수 대기 9편 · 전체 완성본 작업 중 7편.**
 
 - 사용자 승인: M04.
 - 내부 QA 완료·사용자 검수 대기: M05, M06, M13, M14, M15, M16, M18, M19, M20. 각 행의 로컬 검수 링크에서1080p60 clean/captioned 영상과 한영 SRT를 확인한다.
@@ -230,8 +230,8 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 | 1 | M04 [게임수학 Part 2 · 3D 회전 ② 오일러 각과 축·각](https://youtu.be/iv9esV7vv_g) | 18:52 | 게임 관찰 안내선·중심점 / Unity 축·회전 모형 / 코드 문법 색·현재 줄 | 시각 보강본 사용자 검수 완료 | 사용자 승인 완료 · [검수 파일](../output/game-math-euler-axis-angle-private-polish/index.html) · [전체 자막 영상](../output/game-math-euler-axis-angle-private-polish/game-math-euler-axis-angle.captioned.mp4) |
 | 2 | M05 [게임수학 Part 2 · 쿼터니언 ① 허수에서 회전과 역원까지](https://youtu.be/wreXZkEtLqA) | 22:30 | 단위축·회전각·켤레와 역원 연결 표시 | 검수대기 | 수정본 검수 전 · [검수 파일](../output/game-math-quaternion-foundations-v3-private-polish/index.html) · [전체 자막 영상](../output/game-math-quaternion-foundations-v3-private-polish/game-math-quaternion-foundations-v3.captioned.mp4) |
 | 3 | M06 [게임수학 Part 2 · 쿼터니언 ② 합성·목표 자세·벡터 회전](https://youtu.be/Rck2eL8VtqM) | 21:26 | 곱셈 순서·목표 자세·회전 전후 벡터 비교 | 검수대기 | 수정본 검수 전 · [검수 파일](../output/game-math-quaternion-calculations-v3-private-polish/index.html) · [전체 자막 영상](../output/game-math-quaternion-calculations-v3-private-polish/game-math-quaternion-calculations-v3.captioned.mp4) |
-| 4 | M07 [게임수학 Part 2 · 회전 보간 ① 두 자세 사이의 경로와 속도](https://youtu.be/_SzbJR4R6OI) | 15:18 | 두 자세 사이 경로·진행률·속도 변화 표시 | 설명 21/21 · 게임 0/9 복원 · 설명 보강 21/21 · 설명 화면 검수 완료 · FHD 교체 승인 · 같은 게임·동작 대체 소스 조사 중 | 수정본 검수 전 |
-| 5 | M08 [게임수학 Part 2 · 회전 보간 ② 같은 자세를 다른 표현으로 옮기기](https://youtu.be/n-k7zwaSum0) | 14:02 | 동일 자세를 공유하는 표현과 성분 대응 | 설명 16/16 · 게임 0/10 복원 · 설명 보강 16/16 · 설명 화면 검수 완료 · FHD 교체 승인 · 같은 게임·동작 대체 소스 조사 중 | 수정본 검수 전 |
+| 4 | M07 [게임수학 Part 2 · 회전 보간 ① 두 자세 사이의 경로와 속도](https://youtu.be/_SzbJR4R6OI) | 15:18 | 두 자세 사이 경로·진행률·속도 변화 표시 | 설명 21/21 · 게임 0/9 복원 · 설명 보강 21/21 · 설명 화면 검수 완료 · FHD 후보 2개 확보 · 대사·동작 대응 검수 중 | 수정본 검수 전 |
+| 5 | M08 [게임수학 Part 2 · 회전 보간 ② 같은 자세를 다른 표현으로 옮기기](https://youtu.be/n-k7zwaSum0) | 14:02 | 동일 자세를 공유하는 표현과 성분 대응 | 설명 16/16 · 게임 0/10 복원 · 설명 보강 16/16 · 설명 화면 검수 완료 · FHD 후보 2개 확보 · 대사·동작 대응 검수 중 | 수정본 검수 전 |
 | 6 | M09 [게임수학 Part 2 · 직선과 경계 ① 두 점으로 연결선을 계산하기](https://youtu.be/cOcuxWKHN5g) | 11:08 | 두 끝점·선분 방향·매개변수 t와 결과점 | 설명 12/12 · 게임 0/6 복원 · 설명 보강 12/12 · 설명 화면 검수 완료 · FHD 교체 승인 · 같은 게임·동작 대체 소스 조사 중 | 수정본 검수 전 |
 | 7 | M10 [게임수학 Part 2 · 직선과 경계 ② 물체의 범위와 회전 뒤 경계](https://youtu.be/W5UkJkep7yo) | 16:24 | 경계상자·중심·반지름과 회전 전후 비교 | 설명 16/16 · 게임 0/9 복원 · 설명 보강 16/16 · 설명 화면 검수 완료 · FHD 교체 승인 · 같은 게임·동작 대체 소스 조사 중 | 수정본 검수 전 |
 | 8 | M11 [게임수학 Part 2 · 평면과 삼각형 ① 표면까지의 거리](https://youtu.be/Rzrt47-u4G0) | 12:02 | 표면·법선·수선 발·부호 있는 거리 | 설명 13/13 · 게임 0/6 복원 · 설명 보강 13/13 · 설명 화면 검수 완료 · FHD 교체 승인 · 같은 게임·동작 대체 소스 조사 중 | 수정본 검수 전 |
