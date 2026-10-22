@@ -3,11 +3,13 @@ import sys,math
 from PIL import Image,ImageDraw,ImageFont
 from polish_common import *
 e=Episode(sys.argv[1]);e.authorized();kind=sys.argv[2];assert kind in ['explanation','actual']
+selected=set(sys.argv[3:])
+assert not selected or selected<={s['id'] for s in e.T['scenes'] if s['classification']==kind}
 out=e.O/('restored-source-review-'+kind);out.mkdir(exist_ok=True);records=[];tiles=[];source_hashes={}
 restored=read(e.H/'explanation-restoration.json') if kind=='explanation' else None
 font=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',16)
 for slot in e.T['scenes']:
- if slot['classification']!=kind:continue
+ if slot['classification']!=kind or (selected and slot['id'] not in selected):continue
  times={min(slot['seconds']-.3,max(.2,f*slot['seconds'])) for f in [.12,.38,.64,.88]}
  if kind=='actual':
   at=0
@@ -37,4 +39,4 @@ for i in range(0,len(tiles),8):
  sheet=Image.new('RGB',(1500,480),'#222222')
  for j,tile in enumerate(tiles[i:i+8]):sheet.paste(tile,(j%4*375,j//4*240))
  sheet.save(out/f'sheet-{i//8+1:02d}.jpg',quality=94)
-save(e.H/f'restored-source-review-{kind}.json',{'status':'samples-await-direct-inspection','samples':records,'sheets':math.ceil(len(tiles)/8),'finalMovingPixelReview':'pending','purpose':'Source-level preflight before normalization/final encode; never automatic delivery QA'})
+save(e.H/f'restored-source-review-{kind}.json',{'status':'samples-await-direct-inspection','selectedScenes':sorted(selected) if selected else 'all','partial':bool(selected),'samples':records,'sheets':math.ceil(len(tiles)/8),'finalMovingPixelReview':'pending','purpose':'Source-level preflight before normalization/final encode; never automatic delivery QA'})

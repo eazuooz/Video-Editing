@@ -26,6 +26,9 @@ for entry in q['entries']:
  if not ready and not technical_current:
   guide_preflight=e.H/'observed-guide-preflight.json'
   if guide_preflight.exists() and read(guide_preflight).get('status')=='passed-still-preflight':status+=' · 표식 사전 점검 완료'
+  partial_guides=e.H/'available-guides-review.json'
+  if partial_guides.exists() and read(partial_guides).get('status')=='partial-guides-inspected-full-episode-pending':
+   status+=' · 일부 게임 표식 점검'
  polish_name=({'M08':'conversions-legibility','M09':'geometry-legibility','M10':'geometry-legibility','M11':'planes-legibility','M12':'planes-legibility','M17':'projection-legibility'}).get(e.id,'interpolation-legibility')
  source_polish=e.H/(polish_name+'-render.json')
  if source_polish.exists():
