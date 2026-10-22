@@ -1,0 +1,13 @@
+from common import *
+P=R/'projects/game-math-plane-distances-v2';H=P/'production/concept-fit-v2';T=read(H/'timeline.json');D=P/'publishing/revisions/concept-fit-v2';D.mkdir(parents=True,exist_ok=True)
+en=['From bounding candidates to the actual surface','Distance to a plane and position within a triangle','Bridge surface and a point above it','Directions along and perpendicular to a floor','Move along a surface or along its normal','Separate plane orientation and location','Why does scaling the same plane double the expression?','Distinguish the expression value from distance','An opening bridge changes surface orientation','Above and below the same reference plane','From distance to the projected point','The closest point on a plane','Construct a normal from surface points','A normal from three points','Three connected joints and a triangle','Five ordered vertices of a panel','From three points to a polygon surface','A polygon needs consistent perimeter order','Reaching the plane does not mean being inside the panel']
+assert len(en)==len(T['scenes'])==19
+def stamp(t):n=int(t);return f'{n//60:02}:{n%60:02}'
+for lang in ['ko','en']:
+ old=(P/f'publishing/upload-description.{lang}.txt').read_text(encoding='utf8');footer='🎮'+old.split('🎮',1)[1]
+ intro='다리의 표면까지 얼마나 떨어져 있을까요? 실제 다리의 표면·기울기·삼각형 조립 장면을 수학 모형과 비교하며, 법선과 평면의 식부터 부호 있는 거리, 가장 가까운 점, 여러 꼭짓점의 순서까지 기존 강의 순서대로 설명합니다.' if lang=='ko' else 'How far is a point from a bridge surface? Compare observed surfaces, an opening bridge and triangular construction with mathematical models, then follow normals, plane equations, signed distance, closest points and ordered polygon vertices.'
+ note='게임 화면의 윤곽은 설명용 표식입니다. 실제 게임의 내부 좌표·메시·물리 구현을 측정한 결과로 제시하지 않습니다. 별도 배경음악은 추가하지 않았습니다.' if lang=='ko' else 'Game contours are editorial guides, not measurements of internal coordinates, meshes or physics. No separate background-music track was added.'
+ chapters='\n'.join(stamp(0 if i==0 else s['start'])+' '+(s['title'] if lang=='ko' else en[i]) for i,s in enumerate(T['scenes']))
+ credits='\n\n'+('게임 화면 출처' if lang=='ko' else 'Gameplay sources')+'\nPoly Bridge 3 — Dry Cactus. Publisher release trailer: bridge deck, bridge opening and editor construction.\nhttps://store.steampowered.com/app/1850160/Poly_Bridge_3/\n'
+ (D/f'upload-description.{lang}.txt').write_text(intro+'\n\n'+note+'\n\n'+('챕터' if lang=='ko' else 'Chapters')+'\n'+chapters+'\n'+stamp(T['seconds']-10)+' '+('멤버십 감사와 코칭 안내' if lang=='ko' else 'Membership thanks and programming coaching')+'\n\n'+footer.rstrip()+credits,encoding='utf8')
+save(H/'description-drafts.json',dict(status='local drafts only',files=[dict(path=rel(x),sha256=sha(x)) for x in D.glob('*.txt')],creditsAtBottom=True,uploadAuthorized=False))
