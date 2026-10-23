@@ -1,8 +1,8 @@
 {
   "slug": "shorts-flow-map-river",
-  "revision": "flow-map-gameplay-v2",
-  "updatedAt": "2026-10-23T14:20:58.902196+00:00",
-  "masterSha256": "ab78f07653c293a3367072d687640ff85fd5887fb2dde1cddff55c7b214a97e3",
+  "revision": "flow-map-topview-v3",
+  "updatedAt": "2026-10-23T14:58:12.098941+00:00",
+  "masterSha256": "402af4052a1e1e773952baf11c55ebc47f4f930a2766f075501e41743ce84026",
   "baselineV1": {
     "revision": "flow-map-v1",
     "finalMaster": {
@@ -13,76 +13,79 @@
     "driveFileId": "1Eo3ulWHvj0S758NvRUPXj69jhp4pb25t",
     "gitCommit": "fa9ce4072a82a28907aae38bbb681fdfa8fd8c8d"
   },
+  "baselineV2": {
+    "revision": "flow-map-gameplay-v2",
+    "masterSha256": "ab78f07653c293a3367072d687640ff85fd5887fb2dde1cddff55c7b214a97e3",
+    "videoId": "H7wG7HODyww",
+    "masterPath": "projects/shorts-flow-map-river/production/local/final-gameplay-v2/captioned.mp4",
+    "receipt": "projects/shorts-flow-map-river/publishing/youtube-upload.json"
+  },
   "checks": [
     {
-      "id": "source-and-rights",
+      "id": "native-fhd-source-and-rights",
       "status": "pass",
-      "evidence": "projects/shorts-flow-map-river/sources/sources.json",
-      "summary": "Valve technique source and video policy; SCuprikovCCBY native1920x1080 recording. Original aspect and speed."
+      "evidence": "projects/shorts-flow-map-river/sources/sources.json"
+    },
+    {
+      "id": "frame0-gameplay",
+      "status": "pass",
+      "frames": [
+        0,
+        264
+      ],
+      "evidence": "projects/shorts-flow-map-river/production/local/final-topview-v3/qa/sheet0.jpg"
+    },
+    {
+      "id": "game-observation-vs-own-implementation",
+      "status": "pass",
+      "summary": "Switch at4.4s before declarative own-shader explanation4.6s. No game-specific flow-map implementation assertion."
     },
     {
       "id": "video-integrity",
       "status": "pass",
-      "evidence": "projects/shorts-flow-map-river/production/local/final-gameplay-v2/integrity.json"
+      "evidence": "projects/shorts-flow-map-river/production/local/final-topview-v3/integrity.json"
     },
     {
-      "id": "fixed-header-all-frames",
+      "id": "header-all-frames",
       "status": "pass",
-      "evidence": "projects/shorts-flow-map-river/production/local/final-gameplay-v2/header-integrity.json"
+      "evidence": "projects/shorts-flow-map-river/production/local/final-topview-v3/header-integrity.json"
     },
     {
-      "id": "unchanged-voice-and-caption-input",
+      "id": "voice-bgm-pcm-and-caption-preservation",
       "status": "pass",
-      "voiceSha256": "67716afa6d8a59397d3a9f19eb45733024a3a35836bf565ad60d8011cfab2e4c",
-      "cueCount": 24
+      "evidence": "projects/shorts-flow-map-river/production/local/final-topview-v3/build.json",
+      "pcmHashes": {
+        "baseline": "38b6e00e742aff4055650222c4fd1901566397effe9d12a58e42a1fbabc26a5b",
+        "clean": "38b6e00e742aff4055650222c4fd1901566397effe9d12a58e42a1fbabc26a5b",
+        "captioned": "38b6e00e742aff4055650222c4fd1901566397effe9d12a58e42a1fbabc26a5b"
+      },
+      "cueCount": 24,
+      "summary": "Exact decoded PCM matches approved V1; unchanged voice pronunciation/timing/audio evidence reused."
     },
     {
-      "id": "changed-mix-unprompted-asr",
-      "status": "technical-pass",
-      "evidence": "projects/shorts-flow-map-river/production/local/final-gameplay-v2/mix-asr.json",
-      "similarity": 0.98,
-      "note": "RawASR retained; spacing/particles/쉐이더/되감돼 differ, same approvedvoicePCM. No omitted sentence detected; not a human-listening claim."
-    },
-    {
-      "id": "changed-mix-headroom",
+      "id": "source-commentary-excluded",
       "status": "pass",
-      "evidence": "projects/shorts-flow-map-river/production/local/final-gameplay-v2/audio-stats.log",
-      "peakDbFS": -2.69226,
-      "nan": 0,
-      "inf": 0
+      "evidence": "projects/shorts-flow-map-river/production/local/topview-v3/source-audio-asr.json"
     },
     {
-      "id": "mobile-native-and-transition-review",
+      "id": "native-mobile-and-join-review",
       "status": "pass",
-      "evidence": "projects/shorts-flow-map-river/production/local/final-gameplay-v2/qa",
-      "summary": "Nativeframes and375pxsheet, full browser playback and changedjoins. Header repaired, contours absent during enemy/boat occlusion, no captions/target collision; game labels not credits."
+      "evidence": "projects/shorts-flow-map-river/production/local/final-topview-v3/qa",
+      "summary": "16nativeframes,375pxsheets and actual browser playback. Water enlarged proportionally; game chip/contour/caption clearance checked; cut at4.4s has no black frame."
     },
     {
       "id": "human-final-review",
-      "status": "not-claimed-for-modified-v2",
-      "evidence": "실제 게임영상도 넣어서 만들어줘 기존꺼 업로드 삭제하고 다시 업로드해줘"
-    },
-    {
-      "id": "youtube-private-fhd60",
-      "status": "pass",
-      "evidence": "projects/shorts-flow-map-river/production/local/gameplay-v2/youtube-proof/1080p60.jpg",
-      "summary": "SD/HD complete; actual decoded 1080x1920 and quality menu1080p60; private visibility."
-    },
-    {
-      "id": "youtube-settings-and-subtitles",
-      "status": "pass-with-platform-followups",
-      "evidence": "projects/shorts-flow-map-river/publishing/youtube-upload.json",
-      "summary": "Exact KO/EN metadata; both manual captions published; playlist/category/tags set; copyright clear; Shorts ads enabled. Ad suitability review and consumer CC propagation not yet complete."
+      "status": "pending",
+      "masterSha256": "402af4052a1e1e773952baf11c55ebc47f4f930a2766f075501e41743ce84026"
     }
   ],
   "platform": {
-    "youtube": "replacement-uploaded-private",
-    "oldVideoId": "9cRdnf8wKEI",
-    "drive": "v1-preserved;not-requested-for-v2",
-    "automaticNextVideo": false,
-    "videoId": "H7wG7HODyww",
-    "url": "https://youtube.com/shorts/H7wG7HODyww",
-    "oldDeletion": "awaiting-action-time-confirmation",
-    "receipt": "projects/shorts-flow-map-river/publishing/youtube-upload.json"
+    "youtubeV3": "not-uploaded",
+    "currentUploadedVideoId": "H7wG7HODyww",
+    "currentUploadedRevision": "flow-map-gameplay-v2",
+    "privacy": "private",
+    "oldVideo9cRdnf8wKEI": "permanently-deleted-after-user-confirmation",
+    "drive": "ExistingV1preserved;noV3request",
+    "automaticNextVideo": false
   }
 }
