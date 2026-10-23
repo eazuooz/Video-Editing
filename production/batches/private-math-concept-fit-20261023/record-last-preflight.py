@@ -1,0 +1,6 @@
+from common import *
+import sys
+unit=sys.argv[1];slug={'m19':'game-math-mesh-uv','m20':'game-math-normal-transform-uv'}[unit];H=R/'projects'/slug/'production/concept-fit-v2';Q=R/'projects'/slug/'production/local/concept-fit-v2/preflight'
+notes={'m19':'12 current-model frames/2sheets directly inspected: tower now visible in front of houses; face/vertex normals readable; fixed prism silhouette preserved during lighting-direction interpolation; hole thickness visible after view change. No text overlap observed.', 'm20':'11 current-model frames/2sheets directly inspected: fixed panel versus surface colour, labeled image-region crop, both front windows visible, complete attached roof checker during camera-only orbit, floor-pattern projection and stable roof silhouette under changing illumination. Coplanar base-roof occlusion removed. No text overlap observed.'}
+save(H/'preflight-review.json',dict(checkedAt=now(),renderProgressSha256=sha(H/'render-progress.json'),sourceSha256=sha(B/(unit+'-scenes.py')),sheets=[dict(path=rel(p),sha256=sha(p)) for p in sorted(Q.glob('sheet-*.jpg'))],directVisualReview=notes[unit],actualListening=False,finalEncodedQa='pending'))
+print(unit,'model preflight review recorded')

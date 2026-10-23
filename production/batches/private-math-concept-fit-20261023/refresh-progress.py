@@ -21,10 +21,11 @@ for e in c['entries']:
   ledger=read(h/'review-ledger.json')
   if ledger.get('status')=='local-review-ready-with-listening-notes':e['status']=ledger['status']
 c['ready']=[e['id'] for e in c['entries'] if e['status']=='local-review-ready-with-listening-notes']
-c.update(updatedAt=stamp,auditSummary=copy.deepcopy(a['reviewSummary']),status='rendering-and-source-selection',nextAction='Finish M05 composites and final-file QA; continue M06 render and M07 audio/visual work, then concept-matched source review for M08–M20.')
+c.update(updatedAt=stamp,auditSummary=copy.deepcopy(a['reviewSummary']),status='local-review-ready-with-listening-notes' if len(c['ready'])==len(c['entries']) else 'rendering-and-source-selection',nextAction=('All18 revised episodes are locally available; actual listening and human review remain pending. No upload or further episode advancement.' if len(c['ready'])==len(c['entries']) else 'Complete current revised episodes through actual-file QA, then continue the remaining explicitly authorized episodes: '+', '.join(e['id'] for e in c['entries'] if e['id'] not in c['ready'])+'. Ready entries still require actual listening and human review.'))
 c['auditSummary']['finalReady']=len(c['ready']);c['auditSummary']['finalReadyMeaning']='Local visual/technical review complete; actual listening and human review remain pending'
+c['auditSummary']['movingQA']='See the final per-episode review-ledger and playback evidence. The588-frame initial selection audit is not continuous viewing/listening.'
 save(B/'checkpoint.json',c)
-wpath=R/'shared/publishing/video-worklist.json';w=read(wpath);revision=w['privateMathPolish']['conceptFitRevision'];revision.update(updatedAt=stamp,entries=copy.deepcopy(c['entries']),auditSummary=c['auditSummary'],readyCount=len(c['ready']),status='rendering-and-source-selection' if c['active'] else 'revision-in-progress');save(wpath,w)
+wpath=R/'shared/publishing/video-worklist.json';w=read(wpath);revision=w['privateMathPolish']['conceptFitRevision'];revision.update(updatedAt=stamp,entries=copy.deepcopy(c['entries']),auditSummary=c['auditSummary'],readyCount=len(c['ready']),status=c['status'] if len(c['ready'])==len(c['entries']) else ('rendering-and-source-selection' if c['active'] else 'revision-in-progress'));save(wpath,w)
 labels={'sampled-scene-audit-complete-replacement-selection':'1차 장면 검수 완료 · 교체/재편집 준비','rendering':f'새 음성 연결 완료 · 화면 {len(render.get("scenes",{}))}/24 렌더링','rendered-qa-pending':'화면 렌더 완료 · 게임 합성/전체 QA 진행','failed':'렌더 오류 수정 중','changed-game-narration-generating':'바뀐 게임 설명 음성 생성 중','changed-game-narration-generated':'바뀐 게임 음성 생성 완료 · 연결/검사 중','encoded-internal-qa-pending':'1080p60 4종 출력 · 실제 재생/화면 검수 중','local-review-ready-with-listening-notes':'로컬 검수본 준비 · 발음/연결 청취 확인 필요'}
 rows=[];htmlrows=[]
 for e in c['entries']:
@@ -33,9 +34,9 @@ for e in c['entries']:
  if e['status']=='changed-game-narration-generating':label+=f" ({e['ttsDone']}/{e['ttsTotal']}문단)"
  rows.append(f'| {e["id"]} | {e["title"]} | {count} | {label} | 대기 |')
  previous='기존 15:03 원본·음성 복원 완료' if e['id']=='M03-original' else f'<a href="../{e["slug"]}-private-polish/index.html">이전 보강본</a>'
- new=f'<a href="../{e["slug"]}-concept-fit-v2/index.html">새 수정본 · 검수 중</a>' if e.get('outputFolder') else '새 수정본 대기'
+ new=(f'<a href="../{e["slug"]}-concept-fit-v2/index.html">검수 폴더</a> · <a href="../{e["slug"]}-concept-fit-v2/{e["slug"]}.captioned.mp4">전체 영상</a>' if e.get('outputFolder') else '새 수정본 대기')
  htmlrows.append(f'<tr><td>{e["id"]}</td><td>{html.escape(e["title"])}</td><td>{count}</td><td>{html.escape(label)}</td><td>{new}</td><td>{previous}</td></tr>')
-summary=f'이번 수정 대상 **18편**, 새 수정본 화면·기술검사 후 로컬 검수 대기 **{len(c["ready"])}편**. 전체147개 게임 구간의 1차 분산 프레임 검수(588프레임/53연락판)를 마쳤다. 전체 청취나 사용자 승인을 뜻하지 않는다.'
+summary=f'이번 수정 대상 **18편**, 새 수정본 화면·기술검사 후 로컬 검수 대기 **{len(c["ready"])}편**. 전체147개 기존 게임 구간의 1차 분산 프레임 검수(588프레임/53연락판)에 이어, 완료된 편은 교체 장면·최종 자막·모바일 화면과 실제 파일도 확인했다. 전체 청취나 사용자 승인을 뜻하지 않는다.'
 text=f'''# 기존 비공개 게임수학 · 게임 장면 적합성 재검수
 
 갱신: {stamp}
