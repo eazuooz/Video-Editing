@@ -1,0 +1,38 @@
+from common import *
+import shutil
+P=R/'projects/game-math-normal-transform-uv';H=P/'production/concept-fit-v2';O=P/'production/local/concept-fit-v2';O.mkdir(parents=True,exist_ok=True);authorized('M20')
+edits={'04':{
+ '1':['스페이스 엔지니어스 투에서 우주선의 색을 바꾸는 장면입니다. 먼저 같은 부품의 바깥 윤곽과 그 안의 색을 따로 보세요.','In Space Engineers 2, a spacecraft part changes colour. First separate the outline of the same part from the colour inside it.'],
+ '2':['파랑과 흰색이던 부품이 노란색으로 바뀌어도, 부품의 모서리 위치는 그대로입니다. 형태와 표면 속성은 서로 다른 정보입니다.','The blue and white part becomes yellow while its corners remain in place. Shape and surface properties are different information.'],
+ '3':['오른쪽 모형에서도 판의 위치는 고정하고 색만 바꾸겠습니다. 그다음 무늬를 붙이면, 같은 표면에 이미지의 어느 부분을 연결할지가 새 문제가 됩니다.','Our model also keeps the panel fixed while changing its colour. Adding a pattern introduces a new question: which image region maps onto the same surface?'],
+ '4':['이 게임이 색을 바꿀 때 유브이를 수정했다고 단정하는 것은 아닙니다. 화면에서 관찰한 표면 속성의 변화와, 우리가 계산할 이미지 좌표는 구분합니다.','We are not claiming that this game changes UVs to recolour a part. Separate the observed surface-property change from the image coordinates we will calculate.']},
+ '05':{
+ '1':['타이니 글레이드에서 건물 벽의 색을 고르는 장면입니다. 벽의 바깥 윤곽과 창문 위치를 기준으로, 표면만 달라지는지 살펴보세요.','Tiny Glade shows a wall colour being selected. Use the wall outline and window positions to observe the surface change.'],
+ '3':['벽의 색과 창문 주변의 세부는, 큰 벽 모양과 별도로 살펴볼 수 있습니다. 무늬를 그릴 때에는 이미지의 위치와 표면의 위치를 연결해야 합니다.','Wall colour and details around the windows can be examined separately from the large wall shape. Drawing a pattern requires a mapping between image and surface positions.']},
+ '08':{
+ '1':['타이니 글레이드에서 건물을 덧붙이는 장면입니다. 오른쪽에 먼저 있던 초록 지붕을 기준으로, 새로 생기는 지붕과 구분해 보세요.','Tiny Glade shows buildings being added. Use the existing green roof on the right as a reference, separate from the newly created roofs.'],
+ '2':['주변 건물이 바뀌어도 기존 지붕의 기와 무늬는 그 표면에 붙어 있습니다. 무늬를 화면 위에 고정한 그림처럼 생각하면 안 됩니다.','As surrounding buildings change, the tile pattern stays attached to the original roof. Do not treat it as a picture fixed to the screen.'],
+ '3':['오른쪽 모형에서는 표면을 그대로 두고 관찰 방향만 바꾸겠습니다. 무늬의 화면 위치와 기울기는 달라져도, 표면과 연결된 위치는 유지됩니다.','In our model, keep the surface fixed and change only the viewing direction. The pattern shifts and tilts on screen while its surface mapping stays unchanged.'],
+ '4':['게임의 실제 유브이를 읽은 것은 아닙니다. 눈으로 확인한 표면과 무늬의 관계를 출발점으로, 직접 정한 유브이 예제와 비교합니다.','We have not read the actual game UVs. Use the observed surface-pattern relationship to compare with our explicitly defined UV example.']},
+ '09':{
+ '1':['스페이스 엔지니어스 투의 조립 화면에서 바닥의 격자를 보겠습니다. 손에 든 부품보다 바닥에 반복되는 선과 구멍에 집중해 보세요.','Look at the floor grid in the Space Engineers 2 assembly view. Focus on its repeated lines and openings rather than the held part.'],
+ '2':['관찰 방향이 조금 바뀌면 바닥의 선이 화면에서 기울어집니다. 화면에 놓인 위치와 바닥 위의 위치는 서로 다른 좌표입니다.','As the viewing direction changes slightly, floor lines tilt on screen. Screen positions and positions on the floor belong to different coordinates.'],
+ '3':['주변 부품이 움직여도 기존 바닥의 반복 구조는 같은 표면에 남습니다. 우리 모형은 이 관계를 단순한 무늬 판으로 바꾸어 보여줍니다.','The existing floor pattern stays on the same surface as nearby parts move. Our model shows that relationship on a simpler patterned panel.'],
+ '4':['바닥에 같은 모양이 반복돼도 반복 주소 모드라고 결론낼 수 없습니다. 별도의 기하나 이미지 안의 반복으로도 비슷한 모습을 만들 수 있습니다.','Repeating floor shapes do not prove a repeat addressing mode. Separate geometry or repetition already drawn inside an image can produce similar appearances.'],
+ '5':['보이는 격자를 실제 삼각형의 연결선이라고 확인한 것도 아닙니다. 반복 무늬, 기하의 연결, 텍스처 주소 규칙을 나누어 생각해야 합니다.','The visible grid is not confirmed triangle connectivity either. Distinguish surface repetition, geometric connectivity and texture-addressing rules.']},
+ '12':{
+ '1':['마지막으로 타이니 글레이드의 건물을 살펴보겠습니다. 주변 빛의 색이 바뀌는 동안, 지붕과 벽의 큰 윤곽을 먼저 찾아보세요.','Finally, inspect the Tiny Glade buildings. As the surrounding light colour changes, first identify the main roof and wall outlines.'],
+ '2':['큰 형태의 경계, 면이 밝고 어두워지는 모습, 기와와 창문의 반복을 세 질문으로 나누어 보겠습니다. 눈에 보이는 색 하나에 여러 입력이 함께 영향을 줍니다.','Separate three questions: shape boundaries, light and dark surfaces, and repeating roof tiles and windows. Several inputs contribute to a single visible colour.'],
+ '3':['지붕의 기와와 벽의 창문이 반복되지만, 그 개수만으로 정점 개수나 주소 모드를 알 수는 없습니다. 보이는 결과와 실제 저장 정보를 구분하세요.','Roof tiles and wall windows repeat, but their counts do not reveal vertex counts or addressing modes. Separate visible results from stored data.']}}
+count=sum(map(len,edits.values()));total=sum(len(s['lines']) for s in read(P/'script/narration.ko.json')['scenes']);save(B/'m20-narration-edits.json',dict(edits=edits,visualOnlyScenes=[],reason='Replace character traversal with paint selection, fixed-roof construction, panel grids and lighting/shape inspection. No game-internal UV claims.'))
+src=P/'production/local/private-polish-v1/baseline-audio.m4a';dst=O/'baseline-audio.m4a'
+if not dst.exists():shutil.copy2(src,dst)
+assert sha(src)==sha(dst);save(H/'restoration.json',dict(source=rel(src),path=rel(dst),sha256=sha(dst),kind='Recovered original AAC; original PCM unavailable',oldMastersPreserved=True))
+def adapt(s):return s.replace('M19','M20').replace('m19','m20').replace('game-math-mesh-uv',P.name)
+s=adapt((B/'prepare-m19-voice.py').read_text(encoding='utf8'));a=s.index('titles=');z=s.index('\njobs=[]',a);s=s[:a]+"titles={'04':'같은 부품의 형태와 표면 색','05':'벽의 모양과 표면 속성을 나누기','08':'기존 지붕에 붙어 있는 무늬','09':'바닥의 반복 구조와 이미지 좌표','12':'윤곽·방향·무늬를 나누어 점검'}"+s[z:];(B/'prepare-m20-voice.py').write_text(s,encoding='utf8')
+s=adapt((B/'assemble-m19-audio.py').read_text(encoding='utf8')).replace('newTtsParagraphs=13',f'newTtsParagraphs={count}').replace('unchangedParagraphs=84',f'unchangedParagraphs={total-count}').replace('changed=13,unchanged=84',f'changed={count},unchanged={total-count}').replace("{'02':5,'06':2.1,'07':4,'10':2.4,'11':5.4,'15':4}","{'04':5,'05':3,'08':6,'09':4.5,'12':4}");(B/'assemble-m20-audio.py').write_text(s,encoding='utf8')
+for name in ['asr','render','preflight']:(B/f'{name}-m20.py').write_text(adapt((B/f'{name}-m19.py').read_text(encoding='utf8')),encoding='utf8')
+s=adapt((B/'captions-m19.py').read_text(encoding='utf8')).replace('sourceParagraphs=97',f'sourceParagraphs={total}');(B/'captions-m20.py').write_text(s,encoding='utf8')
+save(H/'narration-text-review.json',dict(status='All original KO/EN paragraphs and eighteen replacement game paragraphs directly read',at=now(),changed=count,unchanged=total-count,total=total,orderPreserved=True,mathPreserved=['Inverse transpose and singular/negative-scale limitations','t=(1,-1), n=(1,1), nonuniform scaleX2 and dot0','Texels versus pixels; declared V-down example','UV mapping independent of position; crop/rotate/flip','Repeat floor versus truncation; clamp/mirror/filter separation','Interpolate unwrapped UV before addressing'],actualListening=False))
+save(H/'resource-choice.json',dict(checkedAt=now(),choice='Same Qwen1.7B/ref on CPU after M19 model completion',reason='Preserve occupied GPU and all other applications; no voice/model substitution.',actualListening=False))
+print(count,'changed;',total-count,'preserved;',total,'paragraphs')

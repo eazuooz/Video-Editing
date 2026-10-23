@@ -20,7 +20,13 @@ for old_receipt in work.parent.glob('*-git-receipt.json'):
  old_env=dict(os.environ,GIT_INDEX_FILE=str(backup));saved_entries=entries(git('ls-files','--stage','-z',env=old_env))
  for path in receipt['syncWhenUnlocked']:
   if current_entries.get(path)==saved_entries.get(path):pending_owned.add(path)
-assert not(staged&set(paths)-shared-pending_owned),'Independent staging on owned path'
+# Explicitly inspected staging may remain untouched while our working-file changes
+# are committed through the private index. Reject any intervening index changes.
+preserved=set(config.get('preservedStaging',{}))
+for path,expected in config.get('preservedStaging',{}).items():
+ actual=current_entries.get(path)
+ assert (actual.decode() if actual is not None else None)==expected,'Reviewed staging changed: '+path
+assert not(staged&set(paths)-shared-pending_owned-preserved),'Independent staging on owned path'
 env=dict(os.environ,GIT_INDEX_FILE=str(work/'index'));git('read-tree',base,env=env);git('add','--',*paths,env=env)
 def head(p):return git('show',base+':'+p).decode('utf-8-sig')
 def blob(p,s):
@@ -41,6 +47,13 @@ for p in shared:
  elif p=='docs/GAME_MATH_PRIVATE_POLISH.md':
   # This generated table is wholly owned by the selected math revision.
   blob(p,current)
+ elif p=='docs/VIDEO_WORKLIST.md':
+  marker='## 이번 게임수학 게임 장면 적합성 수정 (18편)'
+  old=head(p);assert marker in current
+  section=marker+current.split(marker,1)[1]
+  if marker in old:old=old.split(marker,1)[0].rstrip()+'\n\n'+section
+  else:old=old.rstrip()+'\n\n'+section
+  blob(p,old)
  elif p.endswith('/project.json'):
   d=json.loads(head(p));d['activeConceptFitRevision']=current['activeConceptFitRevision'];blob(p,json.dumps(d,ensure_ascii=False,indent=2)+'\n')
  else:raise RuntimeError('No scoped merger for '+p)

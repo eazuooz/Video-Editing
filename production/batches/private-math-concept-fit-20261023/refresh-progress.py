@@ -30,13 +30,17 @@ labels={'sampled-scene-audit-complete-replacement-selection':'1차 장면 검수
 rows=[];htmlrows=[]
 for e in c['entries']:
  label=labels.get(e['status'],e['status']);count=counts[e['id']]
+ duration_seconds=round(e.get('newSeconds',e['seconds']));duration=f'{duration_seconds//60}:{duration_seconds%60:02}'
  if e['status']=='rendering':label=f'화면 {e["renderedScenes"]}/{e["totalScenes"]} 렌더링'
  if e['status']=='changed-game-narration-generating':label+=f" ({e['ttsDone']}/{e['ttsTotal']}문단)"
- rows.append(f'| {e["id"]} | {e["title"]} | {count} | {label} | 대기 |')
+ rows.append(f'| {e["id"]} | {e["title"]} ({duration}) | {count} | {label} | 대기 |')
  previous='기존 15:03 원본·음성 복원 완료' if e['id']=='M03-original' else f'<a href="../{e["slug"]}-private-polish/index.html">이전 보강본</a>'
  new=(f'<a href="../{e["slug"]}-concept-fit-v2/index.html">검수 폴더</a> · <a href="../{e["slug"]}-concept-fit-v2/{e["slug"]}.captioned.mp4">전체 영상</a>' if e.get('outputFolder') else '새 수정본 대기')
- htmlrows.append(f'<tr><td>{e["id"]}</td><td>{html.escape(e["title"])}</td><td>{count}</td><td>{html.escape(label)}</td><td>{new}</td><td>{previous}</td></tr>')
+ htmlrows.append(f'<tr><td>{e["id"]}</td><td>{html.escape(e["title"])}<br><small>{duration}</small></td><td>{count}</td><td>{html.escape(label)}</td><td>{new}</td><td>{previous}</td></tr>')
 summary=f'이번 수정 대상 **18편**, 새 수정본 화면·기술검사 후 로컬 검수 대기 **{len(c["ready"])}편**. 전체147개 기존 게임 구간의 1차 분산 프레임 검수(588프레임/53연락판)에 이어, 완료된 편은 교체 장면·최종 자막·모바일 화면과 실제 파일도 확인했다. 전체 청취나 사용자 승인을 뜻하지 않는다.'
+all_ready=len(c['ready'])==len(c['entries'])
+intro=('첫 편 ‘방향과 회전 행렬’을 포함해18편의 수정·렌더링을 마쳤습니다. 기존 수학 설명과 순서를 유지하며, 각 내용에 맞는 물체 회전·조립·배치·표면 변화 장면과 설명 표식을 보강했습니다.' if all_ready else '첫 편 ‘방향과 회전 행렬’의 원본 음성을 복원했습니다. 수학 설명은 유지하고 비행 예시를 물체 회전·조립 장면으로 바꾸고 있습니다.')
+qa_note=('최종 파일의 화면·자막·모바일 가독성·재생 검사를 기록했습니다. 실제 전체 청취와 사용자 최종 검수는 대기입니다. 각 검수 폴더에서 발음·연결 확인 항목을 볼 수 있습니다.' if all_ready else '수정 후 실제 재생·자막·음성 검수는 별도로 진행합니다.')
 text=f'''# 기존 비공개 게임수학 · 게임 장면 적합성 재검수
 
 갱신: {stamp}
@@ -58,5 +62,5 @@ text=f'''# 기존 비공개 게임수학 · 게임 장면 적합성 재검수
 근거: `production/batches/private-math-concept-fit-20261023/scene-audit.json`, `checkpoint.json`, 각 프로젝트의 `production/concept-fit-v2`.
 '''
 (R/'docs/GAME_MATH_PRIVATE_POLISH.md').write_text(text,encoding='utf8')
-(R/'output/private-game-math-polish/index.html').write_text('''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>게임수학 진행표</title><style>body{font:17px/1.65 system-ui;background:#101512;color:#f2f5f2;max-width:1400px;margin:32px auto;padding:0 20px}h1{color:#ffdf73}a{color:#8cdbbc}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid #405147}.scroll{overflow:auto}p{max-width:1000px}.status{padding:14px;border-left:4px solid #ffdf73;background:#18201b}</style><h1>게임수학 · 개념에 맞는 게임 장면으로 수정</h1><p>'''+html.escape(stamp)+''' 갱신</p><p class="status">18편 대상 · 기존147개 게임 구간 1차 검수 완료 · 화면·기술검사 완료 / 청취 대기 '''+str(len(c['ready']))+'''편</p><p>첫 편 ‘방향과 회전 행렬’의 원본 음성을 복원했습니다. 수학 설명은 유지하고 비행 예시를 물체 회전·조립 장면으로 바꾸고 있습니다. 아래 ‘이전 보강본’은 이번 수정 결과가 아닙니다.</p><div class="scroll"><table><thead><tr><th>번호</th><th>강의</th><th>기존 게임 구간</th><th>이번 제작 상태</th><th>새 수정본</th><th>이전 버전</th></tr></thead><tbody>'''+''.join(htmlrows)+'''</tbody></table></div><p>147구간의 분산 프레임588개를 대본과 대조했습니다. 수정 후 실제 재생·자막·음성 검수는 별도로 진행합니다. 기존 업로드와 파일은 그대로 보존합니다.</p></html>''',encoding='utf8')
+(R/'output/private-game-math-polish/index.html').write_text('''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>게임수학 진행표</title><style>body{font:17px/1.65 system-ui;background:#101512;color:#f2f5f2;max-width:1400px;margin:32px auto;padding:0 20px}h1{color:#ffdf73}a{color:#8cdbbc}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid #405147}.scroll{overflow:auto}p{max-width:1000px}.status{padding:14px;border-left:4px solid #ffdf73;background:#18201b}</style><h1>게임수학 · 개념에 맞는 게임 장면으로 수정</h1><p>'''+html.escape(stamp)+''' 갱신</p><p class="status">18편 대상 · 기존147개 게임 구간 1차 검수 완료 · 화면·기술검사 완료 / 청취 대기 '''+str(len(c['ready']))+'''편</p><p>'''+intro+''' 아래 ‘이전 보강본’은 이번 수정 결과가 아닙니다.</p><div class="scroll"><table><thead><tr><th>번호</th><th>강의</th><th>기존 게임 구간</th><th>이번 제작 상태</th><th>새 수정본</th><th>이전 버전</th></tr></thead><tbody>'''+''.join(htmlrows)+'''</tbody></table></div><p>'''+qa_note+''' 기존 업로드와 파일은 그대로 보존합니다.</p></html>''',encoding='utf8')
 print('Updated 18 rows; ready',len(c['ready']),'M03 rendered',len(render.get('scenes',{})))

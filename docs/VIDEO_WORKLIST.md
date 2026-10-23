@@ -251,3 +251,34 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 - [게임수학 Part 2 · 3D 회전 ① 방향과 회전 행렬](https://youtu.be/6-kP65hrZcI) · 15:03 · 기존 버전 보존·중복 제작 제외
 
 근거: [2026-10-22 Studio 실제 목록](../shared/publishing/game-math-private-polish-studio-observation.json). 원본 코드 재렌더 허가를 기록했으며 최신 로컬 V8을 비공개 업로드 원본으로 대체하지 않는다.
+
+## 이번 게임수학 게임 장면 적합성 수정 (18편)
+
+갱신: 2026-10-23T17:48:41.193206+09:00. **화면·기술검사 완료 / 사용자 시청·청취 대기 18/18편.** 원래 수학 설명과 순서는 유지하고, 실제 장면과 맞지 않는 게임 설명 문단만 수정했다.
+
+이 표는 기존 보강본 이후의 concept-fit-v2 수정 상태다. 처음 목록에서 빠졌던15:03 방향과 회전 행렬 원본도 M03-original로 포함했다. 기존 파일·업로드는 보존하며 이번 완성본은 모두 로컬 검수용이다.
+
+| 번호 | 강의 | 새 수정본 | 사용자 검수 |
+|---|---|---|---|
+| M03-original | 3D 회전 ① 방향과 회전 행렬 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-orientation-matrices-concept-fit-v2/index.html) · [전체 영상](../output/game-math-orientation-matrices-concept-fit-v2/game-math-orientation-matrices.captioned.mp4) | 대기 |
+| M04 | 3D 회전 ② 오일러 각과 축·각 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-euler-axis-angle-concept-fit-v2/index.html) · [전체 영상](../output/game-math-euler-axis-angle-concept-fit-v2/game-math-euler-axis-angle.captioned.mp4) | 대기 |
+| M05 | 쿼터니언 ① 허수에서 회전과 역원까지 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-quaternion-foundations-v3-concept-fit-v2/index.html) · [전체 영상](../output/game-math-quaternion-foundations-v3-concept-fit-v2/game-math-quaternion-foundations-v3.captioned.mp4) | 대기 |
+| M06 | 쿼터니언 ② 합성·목표 자세·벡터 회전 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-quaternion-calculations-v3-concept-fit-v2/index.html) · [전체 영상](../output/game-math-quaternion-calculations-v3-concept-fit-v2/game-math-quaternion-calculations-v3.captioned.mp4) | 대기 |
+| M07 | 회전 보간 ① 두 자세 사이의 경로와 속도 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-interpolation-paths-v2-concept-fit-v2/index.html) · [전체 영상](../output/game-math-interpolation-paths-v2-concept-fit-v2/game-math-interpolation-paths-v2.captioned.mp4) | 대기 |
+| M08 | 회전 보간 ② 같은 자세를 다른 표현으로 옮기기 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-rotation-conversions-v2-concept-fit-v2/index.html) · [전체 영상](../output/game-math-rotation-conversions-v2-concept-fit-v2/game-math-rotation-conversions-v2.captioned.mp4) | 대기 |
+| M09 | 직선과 경계 ① 두 점으로 연결선을 계산하기 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-lines-circles-v2-concept-fit-v2/index.html) · [전체 영상](../output/game-math-lines-circles-v2-concept-fit-v2/game-math-lines-circles-v2.captioned.mp4) | 대기 |
+| M10 | 직선과 경계 ② 물체의 범위와 회전 뒤 경계 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-bounds-transform-v2-concept-fit-v2/index.html) · [전체 영상](../output/game-math-bounds-transform-v2-concept-fit-v2/game-math-bounds-transform-v2.captioned.mp4) | 대기 |
+| M11 | 평면과 삼각형 ① 표면까지의 거리 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-plane-distances-v2-concept-fit-v2/index.html) · [전체 영상](../output/game-math-plane-distances-v2-concept-fit-v2/game-math-plane-distances-v2.captioned.mp4) | 대기 |
+| M12 | 평면과 삼각형 ② 삼각형 안의 주소 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-triangle-addresses-v2-concept-fit-v2/index.html) · [전체 영상](../output/game-math-triangle-addresses-v2-concept-fit-v2/game-math-triangle-addresses-v2.captioned.mp4) | 대기 |
+| M13 | 다각형 ① 목적에 맞는 중심과 경계 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-polygon-centers-v2-concept-fit-v2/index.html) · [전체 영상](../output/game-math-polygon-centers-v2-concept-fit-v2/game-math-polygon-centers-v2.captioned.mp4) | 대기 |
+| M14 | 다각형 ② 빈 공간을 지키는 삼각형 분할 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-polygon-partition-v2-concept-fit-v2/index.html) · [전체 영상](../output/game-math-polygon-partition-v2-concept-fit-v2/game-math-polygon-partition-v2.captioned.mp4) | 대기 |
+| M15 | 렌더링 ① 빛·재질·시선으로 픽셀 계산하기 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-rendering-light-concept-fit-v2/index.html) · [전체 영상](../output/game-math-rendering-light-concept-fit-v2/game-math-rendering-light.captioned.mp4) | 대기 |
+| M16 | 렌더링 ② 카메라의 시야·줌·출력 창 이해하기 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-camera-frustum-concept-fit-v2/index.html) · [전체 영상](../output/game-math-camera-frustum-concept-fit-v2/game-math-camera-frustum.captioned.mp4) | 대기 |
+| M17 | 렌더링 ③ 한 3D 점이 화면의 픽셀이 되는 과정 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-camera-projection-concept-fit-v2/index.html) · [전체 영상](../output/game-math-camera-projection-concept-fit-v2/game-math-camera-projection.captioned.mp4) | 대기 |
+| M18 | 렌더링 ④ 나눈 뒤에도 필요한 깊이와 w | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-projection-depth-concept-fit-v2/index.html) · [전체 영상](../output/game-math-projection-depth-concept-fit-v2/game-math-projection-depth.captioned.mp4) | 대기 |
+| M19 | 렌더링 ⑤ 메시·법선 만들기 | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-mesh-uv-concept-fit-v2/index.html) · [전체 영상](../output/game-math-mesh-uv-concept-fit-v2/game-math-mesh-uv.captioned.mp4) | 대기 |
+| M20 | 렌더링 ⑥ 법선 변환과 UV | 화면·기술검사 완료 · 청취 대기 · [폴더](../output/game-math-normal-transform-uv-concept-fit-v2/index.html) · [전체 영상](../output/game-math-normal-transform-uv-concept-fit-v2/game-math-normal-transform-uv.captioned.mp4) | 대기 |
+
+[장면 검수와 상세 진행표](GAME_MATH_PRIVATE_POLISH.md) · [전체 로컬 검수 페이지](../output/private-game-math-polish/index.html)
+
+각 완성본은1920×1080/60fps clean·captioned 영상과 KO/EN SRT로 제공한다. 실제 전체 청취와 사용자 승인은 별도이며, 업로드·삭제·예약·다음 영상 착수는 하지 않는다.
