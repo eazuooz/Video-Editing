@@ -1,0 +1,13 @@
+from common import *
+specs=[('game-math-camera-frustum','카메라가 잠재적으로 볼 수 있는 공간과 실제로 가려진 표면은 어떻게 다를까요? 건물을 고치는 변화와 관찰 방향의 변화를 나누고, 시야 절두체·화면비·클리핑·뷰포트를 작은 계산으로 확인합니다.','How does a camera\'s potential view differ from actual visibility? Separate editing a building from changing the observer, then calculate the view frustum, aspect ratio, clipping and viewport.', [('Split Fiction — Gameplay – @Candepril','https://www.youtube.com/watch?v=8RZ1nPWzWtg'),('Townscaper — independent gameplay recording','https://www.youtube.com/watch?v=FRfnXAIbA-M'),('Tiny Glade — Pounce Light official trailer','https://pouncelight.games/tiny-glade/')]),('game-math-camera-projection','모형의 한 점은 어떻게 화면의 픽셀이 될까요? 고정된 기둥, 큐브 배치, 새 지붕과 가림을 관찰하며 로컬·세계·뷰·클립·정규화 장치 좌표·뷰포트 변환을 끝까지 계산합니다.','How does a model point become a screen pixel? Follow stationary pillars, cube placement and roof occlusion through local, world, view, clip, normalized device and viewport coordinates.', [('Portal 2 — Valve official 2010 gameplay demonstration','https://www.youtube.com/watch?v=yFRbGppLaUI'),('Townscaper — independent gameplay recording','https://www.youtube.com/watch?v=FRfnXAIbA-M'),('Tiny Glade — Pounce Light official trailer','https://pouncelight.games/tiny-glade/')])]
+def stamp(t):n=int(t);return f'{n//60:02}:{n%60:02}'
+for slug,ko,en,sources in specs:
+ P=R/'projects'/slug;H=P/'production/concept-fit-v2';T=read(H/'timeline.json');D=P/'publishing/revisions/concept-fit-v2';D.mkdir(parents=True,exist_ok=True)
+ ens={s['id']:s['title'] for s in read(P/'script/concept-fit-v2/narration.en.json')['scenes']}
+ for lang in ['ko','en']:
+  old=(R/f'projects/game-math-polygon-partition-v2/publishing/upload-description.{lang}.txt').read_text(encoding='utf8');footer='🎮'+old.split('🎮',1)[1]
+  note='게임 위 표식은 설명용 안내이며 내부 좌표나 물리 측정값이 아닙니다. 별도 배경음악은 추가하지 않았습니다.' if lang=='ko' else 'Game overlays are editorial guides, not measurements of internal coordinates or physics. No separate background music was added.'
+  chapters='\n'.join(stamp(0 if i==0 else s['start'])+' '+(s['title'] if lang=='ko' else ens[s['id']]) for i,s in enumerate(T['scenes']))
+  credits='\n\n'+('게임 화면 출처' if lang=='ko' else 'Gameplay sources')+'\n'+'\n'.join(a+'\n'+b for a,b in sources)+'\n'
+  (D/f'upload-description.{lang}.txt').write_text((ko if lang=='ko' else en)+'\n\n'+note+'\n\n'+chapters+'\n'+stamp(T['seconds']-10)+' '+('멤버십 감사와 코칭 안내' if lang=='ko' else 'Membership thanks and programming coaching')+'\n\n'+footer.rstrip()+credits,encoding='utf8')
+ save(H/'description-drafts.json',dict(status='local drafts only',files=[dict(path=rel(x),sha256=sha(x)) for x in D.glob('*.txt')],creditsAtBottom=True,uploadAuthorized=False))
