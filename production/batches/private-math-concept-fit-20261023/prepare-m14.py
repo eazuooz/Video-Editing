@@ -1,0 +1,19 @@
+from common import *
+import shutil
+P=R/'projects/game-math-polygon-partition-v2';H=P/'production/concept-fit-v2';O=P/'production/local/concept-fit-v2';O.mkdir(parents=True,exist_ok=True);authorized('M14')
+delta=read(B/'m14-narration-edits.json');count=sum(map(len,delta['edits'].values()));total=sum(len(s['lines']) for s in read(P/'script/narration.ko.json')['scenes'])
+inspection=read(R/'shared/output/private-math-concept-fit-20261023/candidates/m14/inspection.json');old=read(P/'production/footage-sources.json')['sources']
+save(H/'source-evidence.json',dict(checkedAt=now(),sources=inspection['sources'],priorRightsEvidence=rel(P/'production/footage-sources.json'),tinyPressKitRights='projects/game-math-bounds-transform-v2/production/concept-fit-v2/source-evidence.json',selected=[dict(scene='QG04',source='tiny',start=32.5,seconds=6,role='Water brush removes visible land region'),dict(scene='QG06',source='shapeB',start=42.8,seconds=4.8,role='Square cutting and subsequent piece rotation; not triangulation'),dict(scene='QG07',source='shapeB',start=30,seconds=2.25,role='Draw bent conveyor; transport path differs from boundary'),dict(scene='QG09',source='dorf',start=94.6,seconds=2.4,role='Add tile; show changed land outline'),dict(scene='21',source='dorf',start=179,seconds=4.8,role='Different final placement; one tile vs complete outline')],rejected=['Repeated Noita movement does not demonstrate triangulation','ShapeA title card at3.5s excluded','Reused Dorf117–121 undo shot not adopted; explicit own model removal instead'],sampleReview=dict(frames=104,sheets=9,directlyViewed=True),actualListening=False))
+src=P/'production/local/private-polish-v1/baseline-audio.m4a';dst=O/'baseline-audio.m4a'
+if not dst.exists():shutil.copy2(src,dst)
+assert sha(src)==sha(dst);save(H/'restoration.json',dict(source=rel(src),path=rel(dst),sha256=sha(dst),kind='Recovered original AAC; original PCM unavailable',oldMastersPreserved=True))
+def adapt(s):return s.replace('M13','M14').replace('m13','m14').replace('game-math-polygon-centers-v2',P.name)
+s=adapt((B/'prepare-m13-voice.py').read_text(encoding='utf8'));a=s.index('titles=');z=s.index('\njobs=[]',a)
+titles={'QG04':'물로 바뀐 부분을 땅에 포함하지 않기','14':'모형의 홈을 가로지르면 생기는 문제','QG05':'저장한 귀와 남은 경계','17':'같은 엘자의 영역 보존','QG06':'도형 가공과 삼각형 분할의 차이','QB13':'남긴 영역을 검사합니다','QG09':'타일 추가와 모형의 경계 갱신','19':'긴 경계와 가까운 꼭짓점','QG07':'이동 경로와 영역 경계의 차이'}
+(B/'prepare-m14-voice.py').write_text(s[:a]+'titles='+repr(titles)+s[z:],encoding='utf8')
+s=adapt((B/'assemble-m13-audio.py').read_text(encoding='utf8')).replace('newTtsParagraphs=12',f'newTtsParagraphs={count}').replace('unchangedParagraphs=77',f'unchangedParagraphs={total-count}').replace('changed=12,unchanged=77',f'changed={count},unchanged={total-count}').replace("{'02':7,'11':4,'QG01':6,'QG02':9.8,'QG03':5}","{'QG04':6,'QG06':1.1,'QG07':2.25,'QG09':2.4,'21':4.8}")
+(B/'assemble-m14-audio.py').write_text(s,encoding='utf8')
+for name in ['asr','render','preflight']:(B/f'{name}-m14.py').write_text(adapt((B/f'{name}-m13.py').read_text(encoding='utf8')),encoding='utf8')
+s=adapt((B/'captions-m13.py').read_text(encoding='utf8')).replace('sourceParagraphs=89',f'sourceParagraphs={total}');(B/'captions-m14.py').write_text(s,encoding='utf8')
+save(H/'narration-text-review.json',dict(status='all-original-KO-EN-paragraphs-and-replacements-read',at=now(),changed=count,unchanged=total-count,total=total,orderPreserved=True,mathPreserved=['Convex6 gives4triangles','L fan from4,1 can cover missing region despite signed area7','This L has valid fan from0,0; no false generalization','Ears012=2,023=1.5,034=1.5,045=2; total7','Original index data retained, adjacency updates','Validity before minimum-angle improvement','Length units vs area units','Holes require additional rules'],actualListening=False))
+print(count,'changed;',total-count,'preserved;',total,'paragraphs')

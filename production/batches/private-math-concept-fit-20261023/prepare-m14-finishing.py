@@ -1,0 +1,25 @@
+from common import *
+P=R/'projects/game-math-polygon-partition-v2';H=P/'production/concept-fit-v2';N=len(read(H/'timeline.json')['scenes'])
+SOURCES={
+ 'tiny':dict(path='shared/output/private-math-concept-fit-20261023/sources/tiny-glade-official/release-date-trailer.mp4',url='https://pouncelight.games/tiny-glade/',game='Tiny Glade',minimumHeight=1080),
+ 'shapeB':dict(path='shared/output/game-math-part2-teaching-revision/polygons-fresh-candidates/shapez2-257312662.mp4',url='https://store.steampowered.com/app/2162800/shapez_2/',game='Shapez 2',minimumHeight=1080,sourceSilent=True),
+ 'dorf':dict(path='shared/output/game-math-part2-full-series/sources/dorfromantik-official/Dorfromantik_Explanation_Trailer.webm',url='https://www.toukana.com/dorfromantik/presskit',game='Dorfromantik',minimumHeight=1080)}
+SHOTS={
+ 'QG04':dict(source='tiny',start=32.5,seconds=6,title='물을 그리면 남은 땅의 경계도 변경',phases=[(0,6,'물로 바뀐 부분은 땅에서 제외')],model='남겨야 할 땅 / 비워 둘 부분',track=[(1.7,.30,.85,77),(2.5,.26,.85,77),(3.5,.24,.84,77),(4.5,.25,.85,77),(5.7,.27,.85,77)]),
+ 'QG06':dict(source='shapeB',start=42.8,seconds=1.1,offset=2.4,title='입력 도형과 가공 뒤 조각 비교',phases=[(0,1.1,'사각형 절단 · 아래 기계에서 조각 회전')],model='잘린 조각 / 방향과 남은 모양',track=[(.1,.31,.65,74),(.95,.31,.65,74)]),
+ 'QG07':dict(source='shapeB',start=30,seconds=2.25,title='벨트를 꺾어 이동 경로 연결',phases=[(0,2.25,'물건의 이동 경로 · 땅의 외곽선 아님')],model='경로의 순서 / 영역 경계는 다른 정보',track=[],contours=[[(.4,[(1340,365),(1340,420),(790,420)]),(1.4,[(1340,365),(1340,420),(730,420)]),(2.1,[(1340,365),(1340,420),(730,420)])]]),
+ 'QG09':dict(source='dorf',start=94.6,seconds=2.4,title='한 타일을 더해 땅의 윤곽 바꾸기',phases=[(0,2.4,'타일 하나의 모양 / 합쳐진 경계')],model='추가한 조각 / 전체 바깥선',track=[(.9,.33,.55,70),(1.55,.33,.55,70)]),
+ '21':dict(source='dorf',start=179,seconds=4.8,title='한 타일과 연결된 전체 땅',phases=[(0,4.8,'빈자리와 새 타일이 만나는 경계')],model='한 조각의 모양 / 전체 영역',track=[(1,.69,.44,68),(2,.69,.44,68),(2.7,.69,.44,68)])}
+def adapt(s):return s.replace('M13','M14').replace('m13','m14').replace('game-math-polygon-centers-v2',P.name)
+s=adapt((B/'compose-m13.py').read_text(encoding='utf8'));a=s.index('SOURCES=');z=s.index('ENC=',a);s=s[:a]+'SOURCES='+repr(SOURCES)+'\nSHOTS='+repr(SHOTS)+'\n'+s[z:];s=s.replace('len(records)==25',f'len(records)=={N}').replace('25 exact-frame',f'{N} exact-frame');(B/'compose-m14.py').write_text(s,encoding='utf8')
+s=adapt((B/'mix-m13.py').read_text(encoding='utf8')).replace('len(levels)==12','len(levels)==13').replace('Matched12','Matched13').replace("['도르프로만틱','타이니 글레이드','경계','내심'","['셰이프즈 투','기계','엘자','네 삼각형'");(B/'mix-m14.py').write_text(s,encoding='utf8')
+s=adapt((B/'assemble-m13.py').read_text(encoding='utf8')).replace('다각형 ① 목적에 맞는 중심과 경계','다각형 ② 빈 공간을 지키는 삼각형 분할').replace('타일 배치·건물 조절·벽의 빈 공간과 중심·경계 모형 비교로','물 그리기·도형 가공·타일 배치와 영역 보존 모형 비교로');(B/'assemble-m14.py').write_text(s,encoding='utf8')
+s=adapt((B/'qa-m13.py').read_text(encoding='utf8')).replace("['02','QG01','03','05','06','QG02','08','QG03','11','QB11','QG08']","['QG04','14','15','16','QG05','17','QG06','QB13','QG09','19','QG07','21']");(B/'qa-m14.py').write_text(s,encoding='utf8')
+save(H/'scene-visual-plan.json',dict(sourceShots=SHOTS,renderer='14 original math clips retained; 10 independently editable Manim scenes preserve the same planar L and mathematical renderer.',coordinateConvention='Own XY model, x right and y up; gameplay marks are verified screen-space guidance, not game telemetry.',models=dict(L= [(0,0),(4,0),(4,1),(1,1),(1,4),(0,4)],ears=[(0,1,2),(0,2,3),(0,3,4),(0,4,5)],areas=[2,1.5,1.5,2],coverage='Triangle union must equal original L, preserve notch and non-overlap; signed area alone insufficient.',quality='Skinny triangle validity separate from numerical quality; preserve narrow U gap.'),sourceTracking='104 source frames on9 sheets plus five actual1x native source ends reviewed. Marks clear at source cuts and camera zooms.',sourceSilent='shapeB contains no audio stream; preserve source silence.',changedParagraphs=13,unchangedParagraphs=66,actualListening=False))
+e=read(H/'source-evidence.json');e['nativePlayback']=dict(tool='cua_repl tab66',segments=[dict(source='tiny',start=32.5,end=38.555588,rate=1),dict(source='shapeB',start=42.8,end=47.854881,rate=1),dict(source='shapeB',start=30,end=32.380593,rate=1),dict(source='dorf',start=94.6,end=97.225908,rate=1),dict(source='dorf',start=179,end=183.97316,rate=1)],actualListening=False);save(H/'source-evidence.json',e)
+for slug in ['game-math-polygon-centers-v2','game-math-polygon-partition-v2']:
+ h=R/'projects'/slug/'production/concept-fit-v2';a=read(h/'changed-scene-asr-review.json')
+ for row in a['scenes']:row['directTextReview']='Expected and recognized full text directly compared; number/term aliases and ambiguous phonemes retained for actual listening.'
+ if slug.endswith('centers-v2'):a['additionalEvidence']=dict(path=rel(h/'targeted-asr-boundary.json'),result='05 chunk-overlap repetition absent in targeted16.62s recognition and original non-overlapping assembly; no listening approval inferred.')
+ a['reviewedAt']=now();save(h/'changed-scene-asr-review.json',a)
+print('M14 finishing prepared',N,'scenes; M13/M14 full ASR text compared')
