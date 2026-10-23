@@ -1,0 +1,29 @@
+from common import *
+authorized('M12')
+edits={
+'11':{
+'1':['타운스케이퍼에서 지붕과 벽이 만들어지는 모습을 보세요.','Watch roofs and walls taking shape in Townscaper.'],
+'2':['지붕 끝에서 세 점을 골랐습니다. 모형에서는 이 세 점 사이로 작은 점을 옮겨 보겠습니다. 어느 꼭짓점에 가까운지가 바뀝니다.','We select three points on a roof edge. In our model, move a point between the three references and observe which vertex it approaches.']},
+'PG04':{
+'1':['삼각형 모양의 판을 놓고, 점을 그 표면과 나란히 옮겨 보겠습니다. 파란 선은 판을 무한히 연장한 기준면이고, 초록 윤곽은 실제 판의 끝입니다.','Place a triangular panel and move a point parallel to its surface. Blue lines extend the reference plane; the green outline marks the finite panel boundary.'],
+'2':['점이 가장자리를 넘었습니다. 여전히 같은 평면 위지만 판 위는 아닙니다. 면의 방향을 아는 것과 허용 범위를 아는 것은 이렇게 다릅니다.','The point crosses the edge. It remains on the same plane but no longer lies on the panel. Plane orientation and finite membership answer different questions.'],
+'3':['이제 점을 안쪽으로 돌려놓고 세 꼭짓점과 연결하겠습니다. 넓이를 이용하면 이 안쪽 위치를 숫자로 나타낼 수 있습니다.','Return the point inside and connect it to the vertices. Area will express this interior location numerically.']},
+'14':{
+'1':['삼각형 판과 그 위의 점을 함께 옮겨 보겠습니다. 세 꼭짓점과 점을 같은 양만큼 이동합니다.','Translate a triangular panel and its point together. All three vertices and the point receive the same displacement.'],
+'5':['이 그림은 좌표를 직접 정한 모형입니다. 게임 화면에서 실제 꼭짓점 좌표를 추출한 것은 아닙니다.','This model uses explicitly defined coordinates, not vertex coordinates extracted from gameplay.']},
+'17':{
+'1':['삼각형 판 앞에 점 하나를 두겠습니다. 정면에서는 판 위에 놓인 점과 겹쳐 보이지만, 옆으로 보면 둘 사이에 간격이 있습니다.','Place a point in front of a triangular panel. From the front it overlaps a point on the panel, but a side view reveals the separation.'],
+'2':['화면에는 두 성분의 위치가 보입니다. 삼차원 공간에서 깊이가 다른 두 점도 같은 화면 위치에 나타날 수 있습니다.','A screen displays two position components. Two points at different depths in three-dimensional space can share that screen location.']},
+'PG06':{
+'1':['면 위의 점은 초록, 면에서 떨어진 점은 파랑으로 구분하겠습니다. 두 점의 그림자가 같은 자리에 보여도 원래 점이 같아지는 것은 아닙니다.','Green marks the point on the plane; blue marks the point away from it. Their projections overlap without making the original points identical.'],
+'2':['보는 방향을 바꾸면 간격이 드러납니다. 먼저 원래 점과 평면 사이의 거리를 확인하고, 그다음 투영한 위치가 삼각형 안인지 검사합니다. 두 검사를 모두 통과해야 표면 안의 점이라고 할 수 있습니다.','Change the viewpoint to reveal the separation. First test the original point’s plane distance, then test the projected location against the triangle. Both must pass for triangle-surface membership.']},
+'19':{
+'1':['모형에서 꼭짓점 하나를 움직여 삼각형을 점점 가늘게 만들겠습니다. 기준이 되는 세 점의 배치부터 보세요.','Move one model vertex to make the triangle increasingly thin. Observe the arrangement of the three references.']},
+'PG07':{
+'1':['점의 위치는 그대로 두고, 꼭짓점에 저장한 색만 바꾸겠습니다. 같은 위치에 어떤 속성이 놓이는지를 따로 확인하는 겁니다.','Keep the point fixed and change only the vertex colors. Inspect the attribute assigned to the same location.'],
+'2':['이번에는 색을 고정하고 점을 옮깁니다. 위치가 달라지면 가중치가 바뀌고, 그 비율로 섞은 색도 바뀝니다.','Now keep the colors fixed and move the point. Its weights change, and so does the color mixed in those proportions.'],
+'3':['여기서는 직접 정한 선형 색 보간만 계산합니다. 실제 게임 화면의 최종 색에는 조명과 재질도 관여합니다.','Here we calculate an explicitly defined linear color interpolation. Lighting and materials also affect a real game’s final color.']},
+'21':{
+'1':['타운스케이퍼의 지붕과 벽도 색이 서로 다릅니다. 같은 건물이라도 어느 표면을 보느냐에 따라 색과 밝기가 달라집니다.','Townscaper’s roofs and walls have different colors. Different surfaces of the same building have different appearances.']}}
+save(B/'m12-narration-edits.json',dict(episode='M12',edits=edits,status='inspected-official-construction-action-and-own-defined-models',notes=['Preserve all triangle lengths/areas, barycentric definitions and signed-area derivations, coplanarity, degeneracy and attribute interpolation in original order.','Townscaper roof construction and differently colored walls are observable references only, not evidence of internal vertex-color interpolation or mesh topology.','Replace repeated Noita traversal, grapple motion and Portal passages with controlled finite-panel, barycentric transform, depth and color models.']))
+print(sum(map(len,edits.values())),'changed complete paragraphs')
