@@ -1,0 +1,13 @@
+from common import *
+P=R/'projects/game-math-polygon-centers-v2';H=P/'production/concept-fit-v2';T=read(H/'timeline.json');D=P/'publishing/revisions/concept-fit-v2';D.mkdir(parents=True,exist_ok=True)
+en=['From located points to reference choices','Which center and which partition?','Scope of this episode and the next','A reference for tile placement','Equal weights give coordinate averages','Three centers answer three questions','What does the centroid average?','Reference point versus outline','Center markers and edge clearance','Angle bisectors and equal edge distances','Incenter and inradius','Why perpendicular bisectors?','A circumcenter may be outside','A wall and an open passage','An ordered model boundary','Edges define the land to retain','Validate the boundary first','Convexity through interior segments','Height changes versus planar notches','One tile versus the entire land','One point is not a complete outline','Follow the notch','The sign of a turn','Turn signs and angle sums','From boundaries to partitioning']
+titles={s['id']:s['title'] for s in read(P/'script/narration.en.json')['scenes']}
+def stamp(t):n=int(t);return f'{n//60:02}:{n%60:02}'
+for lang in ['ko','en']:
+ old=(P/f'publishing/upload-description.{lang}.txt').read_text(encoding='utf8');footer='🎮'+old.split('🎮',1)[1]
+ intro='중심 하나만 알면 물체의 바깥선까지 알 수 있을까요? 타일·건물·벽을 직접 바꾸는 장면과 함께 무게중심·내심·외심, 경계 순서, 볼록함과 오목한 홈을 구분합니다.' if lang=='ko' else 'Can one center describe an entire object? Compare tile, building and wall edits with centroid, incenter, circumcenter, ordered boundaries, convexity and concave notches.'
+ note='게임 위 표식은 설명용 안내이며 내부 좌표나 물리 측정값이 아닙니다. 별도 배경음악은 추가하지 않았습니다.' if lang=='ko' else 'Game overlays are editorial guides, not measurements of internal coordinates or physics. No separate background music was added.'
+ chapters='\n'.join(stamp(0 if i==0 else s['start'])+' '+(s['title'] if lang=='ko' else en[i]) for i,s in enumerate(T['scenes']))
+ credits='\n\n'+('게임 화면 출처' if lang=='ko' else 'Gameplay sources')+'\nDorfromantik — Toukana Interactive, official developer footage.\nhttps://www.toukana.com/dorfromantik/presskit\nTiny Glade — Pounce Light, official release-date trailer and Steam developer footage.\nhttps://pouncelight.games/tiny-glade/\nhttps://store.steampowered.com/app/2198150/Tiny_Glade/\n'
+ (D/f'upload-description.{lang}.txt').write_text(intro+'\n\n'+note+'\n\n'+chapters+'\n'+stamp(T['seconds']-10)+' '+('멤버십 감사와 코칭 안내' if lang=='ko' else 'Membership thanks and programming coaching')+'\n\n'+footer.rstrip()+credits,encoding='utf8')
+save(H/'description-drafts.json',dict(status='local drafts only',files=[dict(path=rel(x),sha256=sha(x)) for x in D.glob('*.txt')],creditsAtBottom=True,uploadAuthorized=False))
