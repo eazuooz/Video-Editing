@@ -1,0 +1,13 @@
+from common import *
+P=R/'projects/game-math-rendering-light';H=P/'production/concept-fit-v2';T=read(H/'timeline.json');D=P/'publishing/revisions/concept-fit-v2';D.mkdir(parents=True,exist_ok=True)
+en=['How does a pixel obtain its color?', 'A character behind an opaque wall', 'Start from pixels or triangles?', 'Comparing depths8 and3', 'A hole versus a translucent surface', 'Forward and deferred shading', 'Material properties beyond color', 'Base surfaces and construction', 'Can a BRDF exceed one?', 'Reflection, transmission and subsurface scattering', 'RGB coordinates and light spectra', 'Joules, watts and watts per square meter', 'Distinguishing area and direction', 'Curved surfaces under forward lights', 'Why a60-degree tilt gives one half', 'Emission plus reflected light', 'Installing a ceiling light', 'Outgoing light becomes incoming light', 'Visible surfaces in shade', 'More samples do not double brightness', 'Visibility before shading', 'Reflectance0.6 with irradiance10']
+titles={s['id']:s['title'] for s in read(P/'script/narration.en.json')['scenes']}
+def stamp(t):n=int(t);return f'{n//60:02}:{n%60:02}'
+for lang in ['ko','en']:
+ old=(R/f'projects/game-math-polygon-partition-v2/publishing/upload-description.{lang}.txt').read_text(encoding='utf8');footer='🎮'+old.split('🎮',1)[1]
+ intro='화면의 한 점은 어떻게 색을 얻을까요? 실제 벽의 가림, 반투명한 상자, 기지 조명 설치를 보며 표면 선택과 밝기 계산을 나누고, BRDF·복사조도·복사휘도와 렌더링 방정식의 의미를 차근차근 계산합니다.' if lang=='ko' else 'How does one pixel obtain its color? Compare observed occlusion, translucent material and installed lights with visibility, shading, BRDF, irradiance, radiance and the rendering equation.'
+ note='게임 위 표식은 설명용 안내이며 내부 좌표나 물리 측정값이 아닙니다. 별도 배경음악은 추가하지 않았습니다.' if lang=='ko' else 'Game overlays are editorial guides, not measurements of internal coordinates or physics. No separate background music was added.'
+ chapters='\n'.join(stamp(0 if i==0 else s['start'])+' '+(s['title'] if lang=='ko' else en[i]) for i,s in enumerate(T['scenes']))
+ credits='\n\n'+('게임 화면 출처' if lang=='ko' else 'Gameplay sources')+'\nBig Walk — NCR Gameplay recording.\nhttps://www.youtube.com/watch?v=wzQLP0Z3zII\nSubnautica 2 — NCR Gameplay recording.\nhttps://www.youtube.com/watch?v=dYyWmhVuc3w\n'
+ (D/f'upload-description.{lang}.txt').write_text(intro+'\n\n'+note+'\n\n'+chapters+'\n'+stamp(T['seconds']-10)+' '+('멤버십 감사와 코칭 안내' if lang=='ko' else 'Membership thanks and programming coaching')+'\n\n'+footer.rstrip()+credits,encoding='utf8')
+save(H/'description-drafts.json',dict(status='local drafts only',files=[dict(path=rel(x),sha256=sha(x)) for x in D.glob('*.txt')],creditsAtBottom=True,uploadAuthorized=False))
