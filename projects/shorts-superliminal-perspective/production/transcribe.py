@@ -20,7 +20,7 @@ P = Path(__file__).resolve().parents[1]
 R = P.parents[1]
 from audio_revision import L, VOICE, REVISION, normalize_speech, guard as revision_guard
 DEFAULT_VOICE = (
-    "projects/shorts-superliminal-perspective/production/local/audio-v1/voice/"
+    "projects/shorts-superliminal-perspective/production/local/audio-v2/voice/"
     "interior.wav"
 )
 

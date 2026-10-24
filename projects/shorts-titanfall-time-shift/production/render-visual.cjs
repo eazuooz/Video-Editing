@@ -6,7 +6,7 @@ const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const control=read(path.join(root,'shared/publishing/video-production-control.json'));
 if(!control.shortsBatchAuthorization?.slugs.includes('shorts-titanfall-time-shift')||control.shortsBatchAuthorization.status!=='active')throw Error('Batch selection changed');
 const timing=read(path.join(__dirname,'visual-timing.json'));
-const capture=read(path.join(local,'capture-full-v1/success.json'));
+const capture=read(path.join(local,'capture-full-v2/success.json'));
 if(!control.shortsBatchAuthorization?.fullProductionAuthorized||capture.frames!==timing.frames)throw Error('Finite native capture incomplete');
 const mode=process.argv[2]||'distinctive-v1-full',firstFrame=Number(process.argv[3]||0),frames=Number(process.argv[4]||timing.frames);
 const name='shorts-titanfall-time-shift-'+mode,output=path.join(root,'shared/output/motion-canvas',name+'.mp4');

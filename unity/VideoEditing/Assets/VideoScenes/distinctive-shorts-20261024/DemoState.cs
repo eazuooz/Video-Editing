@@ -14,14 +14,20 @@ namespace YamyamCoding.DistinctiveShorts {
   }
   public void Apply(){float e=elapsed;
    if(topic=="titanfall"){
-    bool top=(section=="stack"||section=="reveal")?false:((int)(e/2.5f)%2)==1;
+    float action=section=="numbers"?4.15f:section=="transfer"?2.9f:section=="view"?1.2f:2.5f;
+    bool top=(section=="stack"||section=="reveal")?false:e>=action;
     actor.position=new Vector3(-1,top?heightDifference:0,1);player.transform.position=new Vector3(-1,1.6f+actor.position.y,-2.4f);player.transform.rotation=Quaternion.identity;
     observer.transform.position=new Vector3(16,14,-19);observer.transform.LookAt(new Vector3(0,5.5f,1));observer.fieldOfView=48;
     if(section=="view"){observer.transform.position=player.transform.position;observer.transform.rotation=player.transform.rotation;observer.fieldOfView=60;}
    }else if(topic=="superliminal"){
     distance=Mathf.Lerp(2,6,Mathf.SmoothStep(0,1,(e-.7f)/3));scale=distance/baseDistance;pawn.position=new Vector3(0,1.55f,distance);pawn.localScale=Vector3.one*scale;
     player.transform.position=new Vector3(0,1.55f,0);player.transform.rotation=Quaternion.identity;player.fieldOfView=43;
-    if(guideRoot){guideRoot.gameObject.SetActive(section=="rays");int i=0;foreach(var line in guideRoot.GetComponentsInChildren<LineRenderer>(true)){int x=i%5,y=i/5;line.SetPosition(0,player.transform.position);line.SetPosition(1,pawn.position+new Vector3((x-2)*.09f*scale,(y-1.5f)*.18f*scale,-.16f*scale));i++;}}
+    if(guideRoot){guideRoot.gameObject.SetActive(section=="rays");int i=0;foreach(var line in guideRoot.GetComponentsInChildren<LineRenderer>(true)){
+     Vector3 sample;if(i<9){float x=(i%3-1)*.075f,y=(i/3-1)*.075f;sample=new Vector3(x,.27f+y,-Mathf.Sqrt(.14f*.14f-x*x-y*y));}
+     else if(i<15){float x=((i-9)%3-1)*.06f,y=-.20f+((i-9)/3)*.22f;sample=new Vector3(x,y,-Mathf.Sqrt(.11f*.11f-x*x));}
+     else{float x=(i-17)*.08f;sample=new Vector3(x,-.34f,-Mathf.Sqrt(.21f*.21f-x*x));}
+     line.SetPosition(0,player.transform.position);line.SetPosition(1,pawn.position+sample*scale);i++;
+    }}
 
     observer.transform.position=new Vector3(9,6,-6);observer.transform.LookAt(new Vector3(0,1.3f,3));observer.fieldOfView=47;
     if(section=="reveal"){observer.transform.position=player.transform.position;observer.transform.rotation=player.transform.rotation;observer.fieldOfView=43;}
@@ -38,6 +44,7 @@ namespace YamyamCoding.DistinctiveShorts {
     float t=e-1.2f;float before=50-20*t;
     offset=Residual(t,30,-20,1.6f);angle=t<0?before:20+offset;float eps=.001f;velocity=t<0?-20:(Residual(t+eps,30,-20,1.6f)-Residual(t-eps,30,-20,1.6f))/(2*eps);
     armA.localRotation=Quaternion.Euler(0,0,+(t<0?before:20));armB.localRotation=Quaternion.Euler(0,0,+angle);
+    if(section=="difference"){angle=50;offset=30;velocity=0;armA.localRotation=Quaternion.Euler(0,0,20);armB.localRotation=Quaternion.Euler(0,0,50);}
     observer.transform.position=new Vector3(0,2.4f,-9);observer.transform.LookAt(new Vector3(0,1.25f,0));observer.fieldOfView=37;
    }else if(topic=="portal"){
     depth=section=="depth"||section=="close"?e<2?1:3:section=="recursive"?Mathf.Clamp(1+(int)(e/1.4f),1,3):3;

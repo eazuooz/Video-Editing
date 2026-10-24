@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 
 P=Path(__file__).resolve().parents[1]
 R=P.parents[1]
-L=P/'production/local/final-reviewed'
+L=P/json.loads((P/'project.json').read_text(encoding='utf8')).get('currentFinalDirectory','production/local/final-reviewed')
 A=P/'production/local/audio-v1'
 
 def read(p): return json.loads(Path(p).read_text(encoding='utf-8'))

@@ -7,7 +7,7 @@ import unicodedata
 P = Path(__file__).resolve().parents[1]
 R = P.parents[1]
 REVISION = 'distinctive-v1'
-L = P / 'production/local/audio-v1'
+L = P / 'production/local/audio-v2'
 VOICE = L / 'voice/narration.wav'
 
 

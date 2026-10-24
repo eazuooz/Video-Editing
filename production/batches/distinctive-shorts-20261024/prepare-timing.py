@@ -7,11 +7,13 @@ def save(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 slugs=read(B/'batch.json')['authorization']['slugs']
 starts={slugs[0]:222,slugs[1]:38,slugs[2]:10,slugs[3]:34,slugs[4]:92}
-ALIASES={slugs[0]:{'타이탄폴2':'타이탄폴투','10m':'십미터','맵사이에높이':'맵사이의높이'}}
+ALIASES={slugs[0]:{'타이탄폴2':'타이탄폴투','10m':'십미터','맵사이에높이':'맵사이의높이'},slugs[2]:{'스시마':'쓰시마','민드이미터':'윈드이미터','불위에바람':'불위의바람','바람의반응에서':'바람에반응해서'},slugs[3]:{'8의목표':'팔의목표','전8은':'전팔은','20도':'이십도','50도':'오십도','30도':'삼십도','0으로':'영으로','세동작과':'새동작과'}}
 def prepare(slug):
+ if slug==slugs[4]:ALIASES[slug]={'스탠실버퍼':'스텐실버퍼'}
+ if slug==slugs[1]:ALIASES[slug]={'2m':'두미터','6m':'여섯미터','3배':'세배','강제의원근':'강제원근','물체에보이는':'물체의보이는'}
  p=R/'projects'/slug;L=p/('production/local/audio-v2' if (p/'production/local/audio-v2/voice/narration.wav').exists() else 'production/local/audio-v1');voice=L/'voice/narration.wav';asr=next(L.glob('asr-voice-*.json'))
  if slug in ALIASES:
-  save(L/'asr-reconciliation.json',{'voiceSha256':sha(voice),'asrSha256':sha(asr),'aliases':ALIASES[slug], 'basis':'Number/name orthography and Korean 의/에 contextual homophone normalization only; no words added or removed. Raw ASR retained. Human pronunciation review pending.'})
+  save(L/'asr-reconciliation.json',{'voiceSha256':sha(voice),'asrSha256':sha(asr),'aliases':ALIASES[slug], 'basis':'Scoped number/name orthography and contextual phonetic recognition variants; raw ASR retained. Ghost wind-emitter verified by independent raw-take3 recognition. Korean particles remain explicitly flagged for human pronunciation review; no unmeasured missing-word timings inserted.'})
  clauses=read(p/'script/clauses.json')
  if not (p/'script/captions.json').exists():
   for c in clauses['clauses']:

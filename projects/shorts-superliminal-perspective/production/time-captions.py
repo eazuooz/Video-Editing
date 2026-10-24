@@ -23,7 +23,7 @@ FPS = 60
 VOICE_OFFSET = 0.20
 TAIL_SECONDS = 0.40
 DEFAULT_VOICE = (
-    "projects/shorts-superliminal-perspective/production/local/audio-v1/voice/"
+    "projects/shorts-superliminal-perspective/production/local/audio-v2/voice/"
     "interior.wav"
 )
 ASS_HEADER = """[Script Info]

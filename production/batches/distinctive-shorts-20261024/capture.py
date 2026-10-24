@@ -8,6 +8,9 @@ def save(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps
 def capture(slug,mode):
  auth=json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf8'))['shortsBatchAuthorization'];assert auth['status']=='active' and slug in auth['slugs'] and auth['fullProductionAuthorized']
  p=R/'projects'/slug;L=p/'production/local';out=L/('capture-'+mode);assert not out.exists(),out
+ if not mode.startswith('preview'):
+  assert (p/'production/visual-timing.json').exists(),'Aligned finite timeline required before full capture'
+  timeline=json.loads((p/'production/visual-timing.json').read_text(encoding='utf8'));assert timeline['frames']>0 and timeline['sections']
  iso=L/('unity-'+mode);dest=iso/'Assets/VideoScenes/distinctive-shorts-20261024';shutil.copytree(OWN,dest,dirs_exist_ok=True)
  shutil.copytree(R/'unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers',iso/'Assets/ThirdParty/KayKitAdventurers',dirs_exist_ok=True)
  save(iso/'Packages/manifest.json',{'dependencies':{'com.unity.modules.imageconversion':'1.0.0','com.unity.modules.animation':'1.0.0','com.unity.modules.physics':'1.0.0'}})

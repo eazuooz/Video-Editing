@@ -16,7 +16,7 @@ export function composite(topic:string,slug:string,timing:any,native:any){return
  const section=()=>timing.sections.find((s:any)=>frame()>=s.startFrame&&frame()<s.endFrame)??timing.sections.at(-1),id=()=>section().id,e=()=>t()-section().start,is=(...xs:string[])=>xs.includes(id()),game=()=>section().kind==='game';
  const first=timing.sections.find((s:any)=>s.kind!=='game').startFrame;
  const ROOT='/@fs/D:/Github/VideoEditing/projects/'+slug+'/production/local/';
- const nativeImage=(alt=false)=>ROOT+'capture-full-v1/'+(alt?'player':'frames')+'/'+String(game()?first:frame()).padStart(5,'0')+'.jpg';
+ const nativeImage=(alt=false)=>ROOT+'capture-'+(timing.captureMode??'full-v1')+'/'+(alt?'player':'frames')+'/'+String(game()?first:frame()).padStart(5,'0')+'.jpg';
  const cue=()=>timing.reactions.find((c:any)=>t()>=c.start&&t()<c.end),presence=()=>{const c=cue();return c?clamp((t()-c.start)/.15)*clamp((c.end-t())/.15):0;};
  const point=(p:any)=>new Vector2((p.x-540)*1000/1080,(p.y-540)*1000/1080);
  view.fill('#000');
@@ -42,10 +42,9 @@ export function composite(topic:string,slug:string,timing:any,native:any){return
    comparison.add(<Txt text={i===0?'플레이어 시점':'옆에서 본 실제 크기'} position={[x,-370]} fill={i===0?C.white:C.teal} fontFamily={FONT} fontSize={35} fontWeight={700}/>);
   }
   comparison.add(<Txt text={()=>'거리 '+rec().distance.toFixed(1)+'m  /  크기 '+rec().scale.toFixed(1)+'배'} position={[-10,260]} fill={C.yellow} fontFamily={FONT} fontSize={43} fontWeight={700}/>);
-  comparison.add(<Txt text="같은 카메라 · 같은 물체" position={[-10,330]} fill={C.white} fontFamily={FONT} fontSize={36}/>);
  }
  if(topic==='ghost'){
-  subtitle(()=>is('off','problem')?'낙엽이 불 쪽으로 내려온다':is('on','reveal')?'위로 밀어, 불 속 진입을 줄인다':'상승기류는 위로 흐르는 바람');
+  subtitle(()=>is('off','problem')?'낙엽이 불 쪽으로 내려온다':is('reveal')?'Wind Emitter · 바람을 만드는 장치':is('on')?'위로 밀어, 불 속 진입을 줄인다':'상승기류는 위로 흐르는 바람',355,C.white,35);
   const comparison=new Node({opacity:()=>split()?1:0});view.add(comparison);
   for(let i=0;i<2;i++){
    let x=i===0?-265:245;
@@ -58,21 +57,25 @@ export function composite(topic:string,slug:string,timing:any,native:any){return
  if(topic==='gears'){
   world.add(<Txt text="바로 전환" position={[-250,-265]} fill={C.red} fontFamily={FONT} fontSize={39} fontWeight={700}/>);
   world.add(<Txt text="관성화" position={[245,-265]} fill={C.teal} fontFamily={FONT} fontSize={39} fontWeight={700}/>);
-  subtitle(()=>is('difference')?'50° − 20° = 30°':is('decay','velocity')?'새 자세 20° + 남은 차이 '+rec().offset.toFixed(1)+'°':is('compare')?'새 동작 + 저장해 둔 차이':'같은 시작 자세 · 같은 목표 자세');
+  subtitle(()=>is('difference')?'전환 순간: 50° − 20° = 30°':is('decay','velocity')?(e()<1.2?'이전 동작이 움직이는 중':'새 자세 20° + 남은 차이 '+rec().offset.toFixed(1)+'°'):is('compare')?'새 동작 + 저장해 둔 차이':'같은 시작 자세 · 같은 목표 자세');
   world.add(<Line points={()=>[point(rec().focus),point(rec().handB)]} stroke={C.yellow} lineWidth={7} endArrow arrowSize={16} opacity={()=>is('difference','decay','velocity')?1:0}/>);
-  world.add(<Txt text={()=>is('velocity')?'움직이던 방향과 속도도 반영':''} position={[0,415]} fill={C.teal} fontFamily={FONT} fontSize={32}/>);
  }
  if(topic==='portal'){
   subtitle(()=>is('mask')?'표시한 영역 안에 반대편 장면을 그린다':is('depth','close')?'반복 깊이 '+rec().depth+'단계 · 우리 시연의 시점 '+rec().views+'개':is('limit')?'더 깊게 그릴수록 처리할 화면도 늘어난다':'장면 안에 포털이 보이면 한 번 더 그린다',355,C.white,36);
  }
  const gameBox=new Rect({position:[-20,-65],width:1000,height:563,clip:true,opacity:()=>game()?1:0});view.add(gameBox);
  const firstGame=timing.sections.find((s:any)=>s.kind==='game');
- gameBox.add(<Img src={()=>ROOT+'game-frames/'+(game()?id():firstGame.id)+'/'+String(game()?frame()-section().startFrame:0).padStart(5,'0')+'.jpg'} width={1000} height={562.5}/>);
+ gameBox.add(<Img src={()=>ROOT+(timing.gameFramesDirectory??'game-frames')+'/'+(game()?id():firstGame.id)+'/'+String(game()?frame()-section().startFrame:0).padStart(5,'0')+'.jpg'} width={1000} height={562.5}/>);
  gameBox.add(<Rect position={[0,-248]} width={1000} height={67} fill="#000000A8"/>);
  gameBox.add(<Txt text={d.game} position={[-310,-247]} fill={C.white} fontFamily={FONT} fontSize={35} fontWeight={700}/>);
  // Editorial look-here guides are restricted to inspected, stationary on-screen targets.
  if(topic==='superliminal')gameBox.add(<Circle position={[0,40]} size={160} stroke={C.green} lineWidth={6} opacity={()=>id()==='game'&&e()<1.4?clamp(e()/.15):0}/>);
- if(topic==='portal')gameBox.add(<Circle position={[15,65]} size={230} stroke={C.green} lineWidth={6} opacity={()=>e()<1.2?clamp(e()/.15):0}/>);
+ if(topic==='portal'){
+  // Editorial arrow follows the exposed inner opening at source frames 0,30,60.
+  const guide=()=>{const u=clamp(e());return new Vector2(u<.5?100-10*u:95+70*(u-.5),u<.5?-10-110*u:-65-10*(u-.5));};
+  gameBox.add(<Line points={()=>[new Vector2(-230,90),guide()]} stroke={C.green} lineWidth={7} endArrow arrowSize={22} opacity={()=>e()<1.05?clamp(e()/.15):0}/>);
+  gameBox.add(<Txt text="안쪽 포털" position={[-255,135]} fill={C.white} fontFamily={FONT} fontSize={34} fontWeight={700} opacity={()=>e()<1.05?clamp(e()/.15):0}/>);
+ }
  const head=(kind:string)=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="540"><rect width="1080" height="540" fill="black"/><g font-family="Malgun Gothic" font-weight="700"><text x="128" y="128" font-size="37" fill="${C.muted}">얌얌코딩</text><text x="510" y="258" text-anchor="middle" font-size="72" fill="white">${d.head[0]}</text><text x="510" y="361" text-anchor="middle" font-size="74" fill="${C.yellow}">${d.head[1]}</text><text x="90" y="490" font-size="28" fill="${C.teal}">${d.term}</text><text x="855" y="490" text-anchor="middle" font-size="28" font-weight="400" fill="${C.muted}">${kind}</text></g></svg>`);
  const headers=[head('실제 게임'),head('Unity 재현'),head('구조 설명')];
  view.add(<Img src={()=>headers[game()?0:topic==='superliminal'&&is('rays')?2:1]} width={1080} height={540} position={[0,-690]} zIndex={5}/>);
