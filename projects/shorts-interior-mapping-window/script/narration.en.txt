@@ -1,0 +1,17 @@
+All these windows in SimCity— did they build every room inside?
+
+One technique used in this city is interior mapping. It draws the depth of a room onto a flat surface.
+
+Look at our window from the side: the surface itself is just a flat plane. Yet the front view shows a room inside.
+
+A pixel is a tiny point in the image. The key is the line from the camera through each window pixel. We imagine walls, a floor and a ceiling behind it, then calculate which surface that line reaches first.
+
+If it reaches the back wall first, we sample the wall texture at that point and draw that colour in the window pixel.
+
+Move the camera to the right, and the changing ray reveals more of the side wall. Unlike a fixed photograph, the image changes with the viewing angle.
+
+Repeat that calculation for every pixel, and without adding room geometry, the interior gains visible depth.
+
+You cannot walk into this virtual room. In this basic version, furniture is also a flat texture.
+
+Use real geometry for rooms you can explore, and this calculation for windows you pass by. That saves the cost of building every room.

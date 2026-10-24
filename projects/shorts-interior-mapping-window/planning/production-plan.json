@@ -1,0 +1,500 @@
+{
+  "slug": "shorts-interior-mapping-window",
+  "revision": "interior-mapping-v1",
+  "status": "local-final-review-ready",
+  "authorization": {
+    "selectedOn": "2026-10-24T07:11:19.131785+00:00",
+    "userEvidence": "또다른 쇼츠영상 만들어줘 하루 한개씩 만들어줘~ 주제만 나한테 5개정도 던져주고 너가 만들면돼 매일매일",
+    "recurringAuthorization": "daily-five-topics-one-short-v2",
+    "selectionBy": "assistant",
+    "dateKst": "2026-10-24",
+    "selectedRevision": "interior-mapping-v1",
+    "slug": "shorts-interior-mapping-window",
+    "fullProductionAuthorized": true,
+    "scope": "ONE interior-mapping Short through complete local review; no platform mutations.",
+    "finalUserReviewRequired": true,
+    "automaticNextVideo": false
+  },
+  "mainQuestion": "How can a flat window show the depth of a room?",
+  "thesis": "Interior mapping traces viewing rays to virtual room surfaces and samples their textures, creating depth without adding interior mesh geometry.",
+  "duplicateReview": "Current worklist: hitbox, zombie director, normal map and flow map. Distinct geometry-free room parallax mechanism; not a remake. Live Studio has no mutations in scope.",
+  "terminology": [
+    {
+      "ko": "인테리어 매핑",
+      "en": "Interior Mapping",
+      "meaning": "시선과 가상 방 표면의 교차점을 계산해 창문에 방의 모습을 그리는 기법"
+    },
+    {
+      "ko": "픽셀",
+      "en": "Pixel",
+      "meaning": "화면의 작은 한 점"
+    },
+    {
+      "ko": "시선 광선",
+      "en": "View Ray",
+      "meaning": "카메라에서 창문 픽셀을 지나 뻗는 선"
+    }
+  ],
+  "sourceToScript": [
+    {
+      "source": "Joost paragraphs13–19",
+      "retained": "View ray, regular room planes, nearest intersection, texture sampling",
+      "paragraphs": [
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "source": "Joost paragraphs24–26",
+      "retained": "Basic room depth illusion and flat furniture limitation",
+      "paragraphs": [
+        6,
+        7
+      ]
+    },
+    {
+      "source": "Ryan interior paragraph",
+      "retained": "SimCity game example",
+      "paragraphs": [
+        0,
+        1
+      ]
+    }
+  ],
+  "omissions": [
+    {
+      "content": "Author biography and unverified Spider-Man attribution",
+      "reason": "Not necessary to teach this mechanism; no personal experience reassigned."
+    },
+    {
+      "content": "Historical float4 optimization",
+      "reason": "Author explicitly corrected its modern hardware relevance; not part of selected short mechanism."
+    }
+  ],
+  "scenes": [
+    {
+      "id": 1,
+      "narration": "심시티의 이 많은 창문, 안쪽 방까지 전부 만들었을까요?",
+      "renderer": "independent-gameplay",
+      "nextLink": "A city full of windows motivates inspecting one window.",
+      "hold": 0,
+      "narrationParagraphIndices": [
+        0
+      ]
+    },
+    {
+      "id": 2,
+      "narration": "이런 도시에 쓰인 기술이 인테리어 매핑입니다. 평평한 벽에 방의 깊이를 그리는 거죠.",
+      "renderer": "Unity plus Motion Canvas",
+      "nextLink": "The depth illusion raises the question of physical geometry.",
+      "hold": 0,
+      "narrationParagraphIndices": [
+        1
+      ]
+    },
+    {
+      "id": 3,
+      "narration": "우리 창문을 옆으로 돌려 보면, 실제 모양은 이 평면뿐입니다. 그런데 정면에서는 방 안이 보이죠.",
+      "renderer": "Unity plus Motion Canvas",
+      "nextLink": "A flat surface requires a per-pixel explanation; define pixel first.",
+      "hold": 0,
+      "narrationParagraphIndices": [
+        2
+      ]
+    },
+    {
+      "id": 4,
+      "narration": "화면의 작은 점을 픽셀이라고 하죠. 비밀은 카메라에서 창문 픽셀을 지나는 시선입니다. 그 뒤에 벽과 바닥, 천장이 있다고 가정하고, 이 선이 어디에 먼저 닿는지 계산해요.",
+      "renderer": "Unity plus Motion Canvas",
+      "nextLink": "The view ray reaches a virtual wall; next show how its colour is sampled.",
+      "hold": 0,
+      "narrationParagraphIndices": [
+        3
+      ]
+    },
+    {
+      "id": 5,
+      "narration": "예를 들어 뒷벽에 먼저 닿으면, 그 지점의 벽무늬를 읽어서 창문 픽셀에 그립니다.",
+      "renderer": "Unity plus Motion Canvas",
+      "nextLink": "Sampling depends on viewpoint; move only the camera to expose that dependency.",
+      "hold": 0,
+      "narrationParagraphIndices": [
+        4
+      ]
+    },
+    {
+      "id": 6,
+      "narration": "카메라를 오른쪽으로 옮기면 시선이 바뀌고 옆벽이 더 보이죠. 고정된 방 사진과 달리, 보는 각도에 맞춰 그림이 달라집니다.",
+      "renderer": "Unity plus Motion Canvas",
+      "nextLink": "Same-time photo comparison shows why repeating this calculation matters.",
+      "hold": 0,
+      "narrationParagraphIndices": [
+        5
+      ]
+    },
+    {
+      "id": 7,
+      "narration": "이 계산을 픽셀마다 반복하면, 방의 입체 모델을 늘리지 않고도 안쪽에 깊이가 생깁니다.",
+      "renderer": "Unity plus Motion Canvas",
+      "nextLink": "Visible depth without room meshes leads to the practical modeling trade-off.",
+      "hold": 0,
+      "narrationParagraphIndices": [
+        6
+      ]
+    },
+    {
+      "id": 8,
+      "narration": "물론 이 가상 방 안으로 들어갈 수는 없어요. 기본 방식에서는 가구도 평평한 무늬입니다. 가까이서 탐험할 방은 실제 모델로, 지나가며 보는 창문 안은 이런 계산으로. 모든 방을 만드는 비용을 아끼는 겁니다.",
+      "renderer": "Unity plus Motion Canvas",
+      "nextLink": "Close the original question: detailed explorable rooms versus inexpensive viewed windows.",
+      "hold": 0,
+      "narrationParagraphIndices": [
+        7,
+        8
+      ]
+    }
+  ],
+  "unity": {
+    "project": "unity/VideoEditing",
+    "editor": "6000.6.0f1",
+    "pipeline": "Built-in isolated capture using explicit shader; main URP17.6.0 project remains unchanged",
+    "sceneRoot": "Assets/VideoScenes/shorts-interior-mapping-window/Scenes",
+    "capture": "1080×1080 central stage,60fps, composited into1080×1920",
+    "libraryConsulted": [
+      "001-cartoon-city-massive-pack",
+      "003-medieval-village-town-interior-exterior-mega-pack"
+    ],
+    "label": "Our Unity implementation; virtual geometry guides are illustrations, not game telemetry",
+    "scenes": [
+      "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/Scenes/01-WindowHero.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/Scenes/02-PhysicalPlane.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/Scenes/03-RayIntersection.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/Scenes/04-CameraMove.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/Scenes/05-FlatVsMapped.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/Scenes/06-CityWindows.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/Scenes/07-TextureSample.unity",
+      "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/Scenes/08-PixelRepetition.unity"
+    ],
+    "shader": "unity/VideoEditing/Assets/VideoScenes/shorts-interior-mapping-window/InteriorRoom.shader",
+    "nativePreview": {
+      "verified": true,
+      "driver": "Microsoft Basic Render Driver",
+      "device": "CPU WARP",
+      "framesInspected": [
+        "hero",
+        "ray"
+      ],
+      "repairs": [
+        "Camera origin was outside initial ray illustration; widened view to include all three targets.",
+        "Fixed-photo mode freezes the viewpoint while retaining the same perspective room image."
+      ]
+    },
+    "measuredFacts": {
+      "meshVertices": 4,
+      "meshTriangles": 2,
+      "roomMeshCount": 0,
+      "basis": "Our editable mesh and actual shader only; no SimCity telemetry inferred."
+    }
+  },
+  "visualReview": {
+    "source": "68–79s contact frames and72/73s full-size frames inspected; chosen continuous source starts70s and ends with first narration paragraph.",
+    "movingSourceReview": "Local8s playable excerpt opened; moving start/end and context sampled. Continuous human viewing not claimed.",
+    "approved": false
+  },
+  "humanFinalReview": "pending",
+  "platformActionsAuthorized": false,
+  "technicalConditions": [
+    "Basic virtual rectangular room; no traversable room geometry.",
+    "Basic furniture is painted onto room surfaces; deeper multilayer variants are outside this selected short.",
+    "Three candidate exit planes for a forward view ray; nearest positive intersection.",
+    "Camera-linked perspective is compared with a frozen front-view image on the exact same plane."
+  ],
+  "annotations": [
+    {
+      "source": "simcity-city",
+      "sourceSeconds": [
+        72,
+        73.1
+      ],
+      "target": "left rectangular office-tower lit windows",
+      "keyframes": [
+        {
+          "t": 72,
+          "xy": [
+            660,
+            569
+          ]
+        },
+        {
+          "t": 73,
+          "xy": [
+            560,
+            569
+          ]
+        }
+      ],
+      "size": [
+        100,
+        260
+      ],
+      "meaning": "Look at visible windows only",
+      "hide": "outside verified interval; all cuts",
+      "classification": "editorial focus, no internal-geometry inference"
+    }
+  ],
+  "resourceChoice": {
+    "mode": "limited CPU TTS and Unity WARP",
+    "reason": "Foreign GPU batch preserved",
+    "documentation": "https://docs.unity.com/en-us/engine/6000.7/manual/unity-editor/command-line-arguments/player"
+  },
+  "scriptReadThrough": {
+    "koEnWholeText": "completed before TTS",
+    "omittedRedundantHedges": [],
+    "preservedClaim": "Depth from per-pixel view/virtual-room intersection without extra interior mesh; basic limitations retained",
+    "pixelPrerequisiteAdded": true,
+    "humanListening": "pending"
+  },
+  "glossary": [
+    {
+      "en": "Interior Mapping",
+      "ko": "인테리어 매핑",
+      "plain": "평면 창문 뒤에 가상의 방을 두고, 시선이 닿는 벽무늬로 깊이를 그리는 기법",
+      "source": "https://joostdevblog.blogspot.com/2018/09/interior-mapping-real-rooms-without.html",
+      "spoken": "인테리어 매핑",
+      "display": "Interior Mapping · 인테리어 매핑"
+    },
+    {
+      "en": "Pixel",
+      "ko": "픽셀",
+      "plain": "화면을 이루는 작은 점",
+      "introducedBeforeUse": true
+    },
+    {
+      "en": "View ray",
+      "ko": "시선 광선",
+      "plain": "카메라에서 창문 픽셀을 지나가는 선",
+      "narration": "시선",
+      "source": "https://joostdevblog.blogspot.com/2018/09/interior-mapping-real-rooms-without.html"
+    },
+    {
+      "en": "Intersection point",
+      "ko": "교차점",
+      "plain": "시선이 가상 벽에 먼저 닿는 위치",
+      "display": "교차점"
+    }
+  ],
+  "finalMaster": {
+    "path": "projects/shorts-interior-mapping-window/production/local/final-reviewed/captioned.mp4",
+    "sha256": "10b10da9d47ba0a77d0a9e3a256d45f3e1d031c83d1aa4f6a2a87523e0e34ee9",
+    "revision": "interior-mapping-v1"
+  },
+  "realizedTeachingBeats": {
+    "revision": "interior-mapping-v1",
+    "frames": 3648,
+    "durationSeconds": 60.8,
+    "voiceDurationSeconds": 60.185,
+    "sections": [
+      {
+        "id": "game",
+        "kind": "game",
+        "startFrame": 0,
+        "endFrame": 248,
+        "start": 0.0,
+        "end": 4.133333333333334,
+        "hold": 0,
+        "source": "simcity",
+        "sourceStart": 70,
+        "sourceEnd": 74.13333333333334,
+        "rate": 1,
+        "nativeAudioAdopted": false
+      },
+      {
+        "id": "hero",
+        "kind": "implementation",
+        "startFrame": 248,
+        "endFrame": 598,
+        "start": 4.133333333333334,
+        "end": 9.966666666666667,
+        "hold": 0
+      },
+      {
+        "id": "plane",
+        "kind": "implementation",
+        "startFrame": 598,
+        "endFrame": 823,
+        "start": 9.966666666666667,
+        "end": 13.716666666666667,
+        "hold": 0
+      },
+      {
+        "id": "hero",
+        "kind": "implementation",
+        "startFrame": 823,
+        "endFrame": 937,
+        "start": 13.716666666666667,
+        "end": 15.616666666666667,
+        "hold": 0
+      },
+      {
+        "id": "pixelIntro",
+        "kind": "implementation",
+        "startFrame": 937,
+        "endFrame": 1094,
+        "start": 15.616666666666667,
+        "end": 18.233333333333334,
+        "hold": 0
+      },
+      {
+        "id": "ray",
+        "kind": "implementation",
+        "startFrame": 1094,
+        "endFrame": 1310,
+        "start": 18.233333333333334,
+        "end": 21.833333333333332,
+        "hold": 0
+      },
+      {
+        "id": "room",
+        "kind": "implementation",
+        "startFrame": 1310,
+        "endFrame": 1637,
+        "start": 21.833333333333332,
+        "end": 27.283333333333335,
+        "hold": 0
+      },
+      {
+        "id": "sample",
+        "kind": "implementation",
+        "startFrame": 1637,
+        "endFrame": 1968,
+        "start": 27.283333333333335,
+        "end": 32.8,
+        "hold": 0
+      },
+      {
+        "id": "move",
+        "kind": "implementation",
+        "startFrame": 1968,
+        "endFrame": 2212,
+        "start": 32.8,
+        "end": 36.86666666666667,
+        "hold": 0
+      },
+      {
+        "id": "compare",
+        "kind": "implementation",
+        "startFrame": 2212,
+        "endFrame": 2472,
+        "start": 36.86666666666667,
+        "end": 41.2,
+        "hold": 0
+      },
+      {
+        "id": "pixels",
+        "kind": "implementation",
+        "startFrame": 2472,
+        "endFrame": 2842,
+        "start": 41.2,
+        "end": 47.36666666666667,
+        "hold": 0
+      },
+      {
+        "id": "close",
+        "kind": "implementation",
+        "startFrame": 2842,
+        "endFrame": 3648,
+        "start": 47.36666666666667,
+        "end": 60.8,
+        "hold": 0
+      }
+    ],
+    "sources": {
+      "simcity": {
+        "path": "projects/shorts-interior-mapping-window/production/local/research/simcity-city.mp4",
+        "sourceSHA256": "1d5e4a1ad77f0764a5930280868d74575a70739081b5c426565748274c44f97f",
+        "originalOffsetSeconds": 0,
+        "nativeAudioAdopted": false
+      }
+    },
+    "reactions": [
+      {
+        "start": 7.416666666666667,
+        "end": 9.216666666666667,
+        "kind": "realize"
+      },
+      {
+        "start": 57.71666666666667,
+        "end": 60.8,
+        "kind": "understood"
+      }
+    ],
+    "cueStarts": {
+      "p1-1": 0.2,
+      "p1-2": 2.066666666666667,
+      "p2-1": 4.133333333333334,
+      "p2-2": 5.633333333333334,
+      "p2-3": 7.416666666666667,
+      "p3-1": 9.966666666666667,
+      "p3-2": 11.366666666666667,
+      "p3-3": 13.716666666666667,
+      "p4-0": 15.616666666666667,
+      "p4-1": 18.233333333333334,
+      "p4-2": 19.3,
+      "p4-3": 21.833333333333332,
+      "p4-4": 25.033333333333335,
+      "p5-1": 27.283333333333335,
+      "p5-2": 29.083333333333332,
+      "p5-3": 30.933333333333334,
+      "p6-1": 32.8,
+      "p6-2": 34.43333333333333,
+      "p6-3": 36.86666666666667,
+      "p6-4": 38.38333333333333,
+      "p7-1": 41.2,
+      "p7-2": 42.96666666666667,
+      "p7-3": 45.4,
+      "p8-1": 47.36666666666667,
+      "p8-2": 50.11666666666667,
+      "p8-3": 52.71666666666667,
+      "p8-4": 55.166666666666664,
+      "p8-5": 57.71666666666667
+    }
+  },
+  "measuredShares": {
+    "gameSeconds": 4.133333333333334,
+    "totalSeconds": 60.8,
+    "gameFraction": 0.06798245614035088,
+    "contract": "Technical Shorts: one complete demonstrated mechanism; no padded60:40 quota."
+  },
+  "capture": {
+    "editor": "6000.6.0f1",
+    "driver": "Microsoft Basic Render Driver / CPU WARP",
+    "pipeline": "Built-in explicit custom shader in isolated project",
+    "project": "unity/VideoEditing",
+    "mainProjectPipeline": "URP17.6.0 unchanged; live URP runtime not certified",
+    "nativeDimensions": [
+      1080,
+      1080
+    ],
+    "masterDimensions": [
+      1080,
+      1920
+    ],
+    "fps": 60,
+    "frames": 3648,
+    "evidence": "projects/shorts-interior-mapping-window/production/local/capture-full/success.json"
+  },
+  "sceneSaveStatus": "eight-independent-editable-scenes-exist",
+  "audioRepair": {
+    "revision": "audio-r2",
+    "reason": "Initial last paragraph had sustained low source speech level. Split only that paragraph into two meaningful takes in the same approved voice; retain first seven raw takes and natural speed.",
+    "voiceSha256": "46392cf37a50a1e2f9a2aa67a4e68131fb2c86601d5ad566fcb792829337fb13",
+    "mixSha256": "14d70eb04d13048e0510984dcbe64c4b42bfa73e15be3b78e6e4806ee2371d00",
+    "humanListening": "pending"
+  },
+  "resourceDecision": {
+    "choice": "CPU-only Qwen and CPU WARP Unity capture; CPU Motion Canvas composition",
+    "reason": "Other authorized work was using the GPU. No game, editor or foreign render was closed or interrupted.",
+    "gpuUsedByThisRevision": false
+  }
+}
