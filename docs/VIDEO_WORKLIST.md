@@ -1,5 +1,34 @@
 # 전체 영상 작업 순서와 검수 현황
 
+## 최신 게임수학 게임 장면·표식 수정
+
+**시각 검수 18/18 · 수정 렌더 15/15 · 기존 보존 3/3** · 사용자 검수 대기. 기존 설명·음성·길이를 보존한 별도 수정본이다.
+
+| 번호 | 강의 | 현재 상태 | 로컬 검수 |
+|---|---|---|---|
+| M03-original | 3D 회전 ① 방향과 회전 행렬 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-orientation-matrices-gameplay-v3/index.html) |
+| M04 | 3D 회전 ② 오일러 각과 축·각 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-euler-axis-angle-gameplay-v3/index.html) |
+| M05 | 쿼터니언 ① 허수에서 회전과 역원까지 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-quaternion-foundations-v3-gameplay-v3/index.html) |
+| M06 | 쿼터니언 ② 합성·목표 자세·벡터 회전 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-quaternion-calculations-v3-gameplay-v3/index.html) |
+| M07 | 회전 보간 ① 두 자세 사이의 경로와 속도 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-interpolation-paths-v2-gameplay-v3/index.html) |
+| M08 | 회전 보간 ② 같은 자세를 다른 표현으로 옮기기 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-rotation-conversions-v2-gameplay-v3/index.html) |
+| M09 | 직선과 경계 ① 두 점으로 연결선을 계산하기 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-lines-circles-v2-gameplay-v3/index.html) |
+| M10 | 직선과 경계 ② 물체의 범위와 회전 뒤 경계 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-bounds-transform-v2-gameplay-v3/index.html) |
+| M11 | 평면과 삼각형 ① 표면까지의 거리 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-plane-distances-v2-gameplay-v3/index.html) |
+| M12 | 평면과 삼각형 ② 삼각형 안의 주소 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-triangle-addresses-v2-gameplay-v3/index.html) |
+| M13 | 다각형 ① 목적에 맞는 중심과 경계 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-polygon-centers-v2-gameplay-v3/index.html) |
+| M14 | 다각형 ② 빈 공간을 지키는 삼각형 분할 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-polygon-partition-v2-gameplay-v3/index.html) |
+| M15 | 렌더링 ① 빛·재질·시선으로 픽셀 계산하기 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-rendering-light-gameplay-v3/index.html) |
+| M16 | 렌더링 ② 카메라의 시야·줌·출력 창 이해하기 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-camera-frustum-gameplay-v3/index.html) |
+| M17 | 렌더링 ③ 한 3D 점이 화면의 픽셀이 되는 과정 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-camera-projection-gameplay-v3/index.html) |
+| M18 | 렌더링 ④ 나눈 뒤에도 필요한 깊이와 w | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-projection-depth-gameplay-v3/index.html) |
+| M19 | 렌더링 ⑤ 메시·법선 만들기 | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-mesh-uv-gameplay-v3/index.html) |
+| M20 | 렌더링 ⑥ 법선 변환과 UV | 시각 검수 완료 · 사용자 검수 대기 | [영상과 자막](../output/game-math-normal-transform-uv-gameplay-v3/index.html) |
+
+[최신 검수표](../output/private-math-gameplay-20261024/index.html) · 전체 최종 청취와 사용자 승인은 별도다. 아래 이전 버전의 완료 상태와 구분한다.
+
+---
+
 2026-10-16 기준. 게임디자인·렌더링 특별편·게임수학의 제작과 상태 갱신은 이 채팅과 `D:/Github/VideoEditing`에서만 진행한다. 다른 제작 채팅 세 개는 대기 상태로 확인했으며 새 작업을 전달하지 않았다.
 
 현재 선택 영상은 **별도 특별편 「AI로 만든 디아블로 팬게임 D2서바이버, 저작권은 괜찮을까? | AI개발과 저작권 문제」: 비공개 업로드·가능한 설정 완료 / 사용자 광고 평가 후 초안 완료 / 다음 편 중단**. 사용자 승인 완료. 이전 완성본의 사용자 검수와 플랫폼 상태는 각 행에 보존한다. 이후 목록은 제안 순서이며 자동 일괄 착수나 공개 예약 변경을 뜻하지 않는다.

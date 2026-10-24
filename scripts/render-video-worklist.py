@@ -69,5 +69,15 @@ if revision:
  section+=['','[장면 검수와 상세 진행표](GAME_MATH_PRIVATE_POLISH.md) · [전체 로컬 검수 페이지](../output/private-game-math-polish/index.html)','',
   '각 완성본은1920×1080/60fps clean·captioned 영상과 KO/EN SRT로 제공한다. 실제 전체 청취와 사용자 승인은 별도이며, 업로드·삭제·예약·다음 영상 착수는 하지 않는다.','']
  out+=section
+gameplay=(polish or {}).get('gameplayTimingRevision')
+if gameplay:
+ latest=['','## 최신 게임수학 게임 장면·표식 수정','',
+  f"**{gameplay['status']}** · 사용자 검수 대기. 기존 설명·음성·길이를 보존한 별도 수정본이다.",'',
+  '| 번호 | 강의 | 현재 상태 | 로컬 검수 |','|---|---|---|---|']
+ for e in gameplay['entries']:
+  local=e.get('newOutput');target=f"[영상과 자막](../{local}/index.html)" if local else '제작 중'
+  latest.append(f"| {e['id']} | {cell(e['title'])} | {cell(e['status'])} | {target} |")
+ latest+=['','[최신 검수표](../output/private-math-gameplay-20261024/index.html) · 전체 최종 청취와 사용자 승인은 별도다. 아래 이전 버전의 완료 상태와 구분한다.','','---','']
+ out=out[:1]+latest+out[1:]
 (R/'docs/VIDEO_WORKLIST.md').write_text('\n'.join(out),encoding='utf-8')
 print('Rendered VIDEO_WORKLIST.md:',len(rows),'rows')
