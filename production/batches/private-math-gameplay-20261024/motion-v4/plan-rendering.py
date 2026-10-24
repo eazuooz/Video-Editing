@@ -1,0 +1,68 @@
+from pathlib import Path
+import runpy
+u=runpy.run_path(str(Path(__file__).with_name('plan-remaining.py')))
+load,add,save=u['load'],u['add'],u['save']
+
+def finish(d):
+ d['baseMode']='preserved-explanation-scenes'
+ save(d)
+
+d=load('M15')
+add(d,'02','big',514,524,'벽 뒤로 가려졌다 나타나는 캐릭터','Big514–524 continuous maze turn: figure visible517, hidden518, revealed519–522; stop before unrelated close hole.',[(0,3,'벽 너머 캐릭터 찾기'),(3,7,'시선 이동에 따라 달라지는 가림'),(7,10,'다시 드러나는 캐릭터')])
+add(d,'05','big',1591,1602,'벽의 구멍으로 보이는 뒤쪽 풍경','Big1591–1602 shows orange holes, player movement, upper panel seen from below1600; rear trees visible through holes. Native camera movement retained.',[(0,4,'막힌 벽과 뚫린 구멍'),(4,8,'구멍 너머 배경 관찰'),(8,11,'다른 각도에서도 보이는 빈 공간')],key='05-hole')
+add(d,'05','big',1557,1572,'유리 상자를 통해 보이는 물체','Big1557–1572 orbit around translucent cube then inspect red object; characters/hands move, not frozen still. No literal measured alpha claim.',[(0,4,'상자의 앞면과 옆면'),(4,10,'표면 너머 보이는 빨간 물체'),(10,15,'손과 상자가 겹치는 모습')],offset=15.66,key='05-glass')
+add(d,'08','sub',615,625,'기지에 들어가며 달라지는 표면 밝기','Sub615–625 approach airlock, entry620–622, interior623–624; stop before inventory625.',[(0,5,'기지 입구로 접근'),(5,7,'입구를 지나 실내로'),(7,10,'흰 벽과 어두운 수납장 비교')],key='08-entry')
+add(d,'08','sub',745,753,'설치 미리보기와 실제 표면 비교','Sub745–753 green preview, construction747–748, interior camera749–752. Stop before next menu.',[(0,2,'초록색 설치 미리보기'),(2,4,'실제로 생성된 표면'),(4,8,'완성된 방의 색과 밝기')],offset=12.68,key='08-preview')
+add(d,'11','big',796,807,'빨간 구조물 안에서 밝고 어두운 면','Big796–807 approaches red entrance, climbs internal stairs then emergence; select before exterior changes topic.',[(0,2,'구조물의 바깥과 입구'),(2,7,'안쪽 빨간 벽의 명암'),(7,11,'계단을 오르며 다른 면 관찰')])
+add(d,'14','sub',248,260,'조명이 비추는 굽은 바위','Sub248–260 continuous pan across curved ledge and floor relief; light target moves while contours and shaded sides remain visible.',[(0,4,'전방 조명이 닿는 굽은 면'),(4,8,'바위의 밝은 면과 어두운 면'),(8,12,'방향이 다른 바닥 굴곡')])
+add(d,'17','sub',763,777.5,'조명 선택부터 설치 후 벽 밝기까지','Sub763 light menu,764–766 first placement,767–771 second placement,772–777 room comparison. Stop before next menu778.',[(0,3,'조명 선택과 설치 위치'),(3,8,'천장에 조명 설치'),(8,14.5,'설치 후 주변 벽과 바닥')],offset=13.3265)
+add(d,'19','big',1944,1956,'밝은 바닥과 그늘을 지나며 비교','Big1944–1956 moves along same path from shadows to lit patches; visible floor remains in shadow. End before up-to-sky view.',[(0,4,'바닥의 밝은 영역과 그늘'),(4,8,'그늘에서도 남아 있는 표면 정보'),(8,12,'다른 빛 조건의 바닥으로 이동')])
+add(d,'21','big',1708,1718,'캐릭터의 앞뒤 가림과 표면 밝기','Big1708–1718 red head and colored figures occlude while viewing position changes; keeps target area without later walking away.',[(0,4,'앞 캐릭터가 뒤쪽을 가리는 위치'),(4,7,'같은 머리의 밝은 면과 어두운 면'),(7,10,'시점 이동 후 앞뒤 관계')])
+finish(d)
+
+d=load('M16')
+add(d,'02','split',30,45,'두 플레이어가 서로 다르게 보는 공간','Split30–45 left waits then moves, right traverses platforms; same-time split source preserved.',[(0,5,'각 플레이어의 화면과 캐릭터'),(5,10,'오른쪽 플레이어가 다른 곳으로 이동'),(10,15,'서로 다르게 들어오는 배경')])
+add(d,'05','tiny',10.5,17,'화면 비율과 실제 건물 형태 구분','Tiny10.5–17 building creation and width edit; no camera-only substitution.',[(0,2,'기존 탑 앞에 작은 건물 생성'),(2,6.5,'벽과 지붕의 실제 크기 변경')])
+add(d,'08','town',407,414.8,'건물은 그대로 두고 시점 올리기','Town407–414.8 low front then upward camera orbit; stop before building edit415.',[(0,3,'낮은 시점의 벽과 지붕'),(3,7.8,'위로 옮긴 시점과 드러난 안쪽')])
+add(d,'11','split',293,306,'같은 마을을 서로 다른 자리에서 보기','Split293–306 simultaneous two players moving around candy ledges; no invented FOV differences.',[(0,5,'다른 위치의 두 캐릭터'),(5,9,'몸 크기와 주변 길을 함께 비교'),(9,13,'같은 공간의 서로 다른 화면')])
+add(d,'13','town',788,795,'전체 건물에서 가까운 지붕까지','Town788 close,789 wide,790–792 orbit/zoom,793–794 close; records real changing camera, not lens measurement.',[(0,2,'가까운 지붕에서 전체 건물로'),(2,4,'작게 보이는 건물 전체'),(4,7,'지붕 모서리로 가까워지는 화면')])
+add(d,'16','town',1449,1456,'큰 문을 향한 접근과 관찰 방향 변경','Town1449 wide to1450 close doorway,1451–1455 orbit, stop before edit1456.',[(0,2,'큰 문으로 가까이 접근'),(2,5,'같은 문과 뒤쪽 지붕을 다른 각도에서'),(5,7,'가까운 면이 차지하는 화면 범위')])
+add(d,'19','tiny',53.25,58.7,'같은 성 주위를 돌며 다른 면 보기','Tiny53.25–58.7 castle camera orbit and pullback; stop before logo59.',[(0,2,'가까운 벽과 지붕'),(2,5.45,'주변 탑까지 드러나는 시점')])
+add(d,'21','town',788,795,'가까운 화면에서 전체 범위로','Explicit return to camera-only788–795, no new geometry during this view comparison. Same teaching object may recur, not counted another game.',[(0,2,'가까운 정면'),(2,4,'전체 범위로 물러난 시점'),(4,7,'높은 쪽에서 바라본 같은 건물')],key='21-view')
+add(d,'21','town',1107,1114,'블록을 더하면 실제 표면이 바뀜','Town1107–1114 front platform additions with fixed camera; camera rotation starts1114+ excluded.',[(0,3,'기존 건물 앞에 블록 추가'),(3,7,'새로 생긴 표면과 기존 표면')],offset=10.8133333333,key='21-build')
+finish(d)
+
+d=load('M17')
+add(d,'02','portal',15,24,'기둥은 그대로 두고 움직이는 시점','Portal15–24 player moves/pans around central pillar; no cube manipulation until25.',[(0,3,'방 가운데의 고정된 기둥'),(3,6,'이동한 시점에서 달라진 화면 위치'),(6,9,'기둥 뒤 장치의 가림 비교')])
+add(d,'05','tiny',17,22,'처음 고른 지붕과 새로 생긴 부분 구분','Tiny17–22 roof/dormer/tower edit, original roof still visible; stop before color choice.',[(0,2,'기준으로 삼을 지붕 모서리'),(2,5,'새로 생긴 부분과 원래 모서리')])
+add(d,'08','town',532,545,'발판 추가와 카메라 변화 나누어 보기','Town532–545 additions532–535,view536,ground537–540,orbit541–544; stop before next edit545.',[(0,4,'탑 아래의 발판 추가'),(4,9,'물체 변화와 시점 변화 구분'),(9,13,'같은 탑의 다른 면 관찰')])
+add(d,'11','portal',35,42.5,'큐브를 들고 기둥과 비교하기','Portal35–42.5 grab cube36,carry37–38,laser hits39–42. Stop before subsequent unrelated action.',[(0,2,'큐브를 집어 들기'),(2,4,'기둥을 기준으로 옮기는 큐브'),(4,7.5,'새 위치에서 연결된 레이저')],key='11-carry')
+add(d,'11','portal',51,57,'다른 위치에 큐브를 내려놓기','Portal51–57 pickup/laser53–54,release55,move away56; different source event, no loop.',[(0,3,'새 배치 위치로 옮기기'),(3,4.5,'큐브를 내려놓기'),(4.5,6,'배치 후 연결된 레이저')],offset=7.6033333333,key='11-place')
+add(d,'14','town',639,648,'앞쪽 지붕 생성과 뒤 건물의 가림','Town639–648 front terrace roofs created642 and deleted644,rebuilt647; tall background remains. Exact own-camera comparison stays model.',[(0,3,'앞 테라스와 뒤쪽의 높은 건물'),(3,6,'새 지붕이 생겨 가리는 부분'),(6,9,'지붕을 바꾼 뒤 다시 보이는 관계')])
+finish(d)
+
+d=load('M18')
+add(d,'03','town',1203,1212,'앞에 건물이 생기며 달라지는 가림','Town1203–1212 platform then roof/walls1205–1207 occlude back railing; native orbit1208–1211 confirms depth. Stop before deletion.',[(0,3,'난간 앞 발판에 건물 생성'),(3,5,'새 지붕이 뒤쪽 일부를 가림'),(5,9,'다른 각도에서도 앞뒤 관계 확인')])
+add(d,'06','tinyB',12,21,'지붕에 붙은 무늬와 아래 창문','TinyB12–21 path→arches and window edits17–20 while roof tile pattern stays. The exact tilted-plane UV example is right model.',[(0,4,'지붕의 기와 무늬와 아래쪽 벽'),(4,9,'창문이 바뀌어도 표면에 남는 무늬')])
+add(d,'09','town',1505,1512,'같은 테라스 모서리를 따라가는 시점','Town1505–1512 front-to-top-to-back camera view; high terrace and small trees stay geometry-stable.',[(0,3,'테라스와 가장자리 나무'),(3,5,'위에서 본 같은 모서리'),(5,7,'반대쪽 시점에서 보이는 가림')],key='09-view')
+add(d,'09','town',1491,1499,'건물이 생겨 기존 표면을 가리는 과정','Town1491–1499 front platform roof/walls grow1492–1498 then camera1499; avoids later unrelated edits.',[(0,3,'기존 발판 위에 새 건물 추가'),(3,8,'같은 면을 덮는 새 지붕과 벽')],offset=17.96,key='09-build')
+finish(d)
+
+d=load('M19')
+add(d,'02','tinyB',34,40,'지붕을 돌리고 높이를 바꾸기','TinyB34–40 attached building roof rotates/changes height; stop at40 next building montage.',[(0,2,'작은 건물의 지붕 선택'),(2,4,'지붕 방향 바꾸기'),(4,6,'벽과 만나는 높이 변경')])
+add(d,'06','launch',39,53.25,'부품 선택부터 분리·회전·배치까지','SE2launch39–45 region selection,46 detach,47–49rotate,50–53place. Visible red/white seams and changed silhouette, complete action.',[(0,6,'빨강·흰색 판과 부품의 바깥선'),(6,10,'부품을 분리하고 방향 변경'),(10,14.25,'다시 배치된 형태와 이음선')])
+add(d,'07','launch',55.6,58.7,'우주선 옆면의 꺾인 윤곽','SE2launch55.6–58.7 side panel edits and camera movement; interior cut58.8 excluded.',[(0,1.5,'빨강·흰색 면과 각진 모서리'),(1.5,3.1,'관찰 방향이 바뀌어도 남는 윤곽')])
+add(d,'10','tinyB',27,31,'평평한 벽과 둥근 탑의 경계','TinyB27–31 terrain lowers while castle unchanged; walls/roof/tower junctions remain visible; menu31+ excluded.',[(0,2,'지붕·벽·둥근 탑이 만나는 곳'),(2,4,'실제 형태의 경계와 면의 밝기')])
+add(d,'11','big',595,607,'평평한 벽에서 구멍의 깊이까지','Big595–607 move around yellow wall,approach opening602–606 reveals rim and character behind. Stop before new walking view607.',[(0,5,'평평한 벽과 둥근 구멍'),(5,8,'구멍 가장자리로 접근'),(8,12,'벽의 두께와 뒤쪽 캐릭터')],key='11-front')
+add(d,'11','big',607,616,'같은 벽의 다른 면과 그림자','Continuous source continuation607–616 observes another face and shadow while walking; not a freeze or replay.',[(0,4,'시점이 옮겨지며 바뀌는 밝기'),(4,9,'밝기와 별개로 남아 있는 윤곽')],offset=16.5866666667,key='11-depth')
+add(d,'15','big',664,679,'다른 구멍으로 접근해 가장자리 보기','Big664–679 approach opening666,alternating views667–670,close671–678 shows rim and character. All native motion; no generic traversal padding.',[(0,4,'다른 구멍을 향해 접근'),(4,8,'벽과 둥근 가장자리의 방향 비교'),(8,15,'가까운 가장자리와 뒤 캐릭터')])
+finish(d)
+
+d=load('M20')
+add(d,'04','se2',73,84,'같은 부품의 색을 바꾸고 되돌리기','SE2vs73–84 paint selection/recolour and undo on same ship; exact visible operations reviewed1fps.',[(0,4,'원래 부품의 모서리와 색'),(4,8,'노란색으로 바뀐 표면'),(8,11,'모서리는 유지한 채 색 변경')])
+add(d,'05','tinyB',30.8,34.2,'벽 색 선택과 그대로인 형태','TinyB30.8–34.2 colour picker changes wall blue; next roof geometry edit excluded.',[(0,1.5,'벽 색을 고르는 도구'),(1.5,3.4,'창문과 윤곽은 두고 표면 색 변경')])
+add(d,'08','tinyB',40,48,'기존 지붕 옆으로 새 건물 추가','TinyB40–48 house additions beside existing green roof; existing roof remains surface anchor. Stop before time-of-day orbit.',[(0,3,'오른쪽의 기존 초록 지붕'),(3,8,'주변에 새 건물을 덧붙인 결과')])
+add(d,'09','se2',92.7,99.8,'바닥 격자를 기준으로 조립 화면 관찰','SE2vs92.7–99.8 same assembly area,part hovering and selection; floor pattern stays spatially attached. Stop before unrelated selection-camera cut.',[(0,3,'손의 부품보다 바닥의 반복 선'),(3,7.1,'시점이 바뀔 때 기울어 보이는 바닥')])
+add(d,'12','tinyB',48,60.5,'빛의 색이 달라지는 동안 같은 건물 보기','TinyB48–60.5 orbit and time-of-day colour shift over same castle. Original source animation, no inserted freeze; outline remains visible.',[(0,4,'지붕과 벽의 큰 윤곽'),(4,8,'달라지는 주변 빛의 색'),(8,12.5,'형태와 밝기와 무늬를 각각 비교')])
+add(d,'03','tinyWidth',10.5,17,'가로 폭을 바꾼 실제 건물과 계산 모형','TinyA10.5–17 creation then width adjustment. Two-times transform belongs to right model only, not measured game scale.',[(0,2,'실제 건물의 너비'),(2,6.5,'폭이 달라진 표면과 지붕')],offset=9.6666666667,key='03-width')
+finish(d)

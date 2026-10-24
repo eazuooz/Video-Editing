@@ -1,0 +1,16 @@
+from pathlib import Path
+import runpy
+u=runpy.run_path(str(Path(__file__).with_name('plan-remaining.py')))
+load,add,save=u['load'],u['add'],u['save']
+d=load('M14');d['baseMode']='preserved-explanation-scenes'
+d['selectionReason']='Keep continuous source-native actions with visible before/action/result. Never extend short shots using analytical stills, loops or slowdown. QG06 remains explicitly incomplete until a sufficiently clear square-cut/rotation source is secured.'
+if 'preflightRepairs' in d:d['historicalV3PreflightRepairs']=d.pop('preflightRepairs')
+d['sources']['shapeBelt']={'path':'shared/output/private-math-gameplay-20261024/motion-v4/source-review/shapez-candidates/announcement.mp4','game':'Shapez 2','url':'https://www.youtube.com/watch?v=A9MpsOixJsg','classification':'official-gameplay-recording','rightsEvidence':'projects/game-math-polygon-partition-v2/production/footage-sources.json','rightsLimit':'Official publicly distributed trailer; no claim that public availability proves a blanket reuse licence.'}
+add(d,'13','dorf',38,45,'볼록한 육각형의 바깥 변','Dorf38–45 tile selection,rotation and placement: native convex perimeter. Mathematical diagonals are only on our adjacent model.',[(0,2,'육각형 타일의 바깥 변'),(2,4,'방향을 맞춰 돌리기'),(4,7,'타일을 빈자리에 배치')])
+add(d,'QG04','tiny',32.35,38.8,'호수가 생기면 달라지는 땅의 경계','Tiny32.35–38.8 pond drawing,shoreline growth then finish. End before unrelated tree planting. Model inherits shoreline/empty-space distinction.',[(0,2,'땅 안쪽에 물길 그리기'),(2,5,'호수와 남은 땅의 경계'),(5,6.45,'물 영역을 땅과 구분')])
+add(d,'QG09','dorf',116,123.8,'타일 추가와 제거로 바뀌는 땅의 경계','Dorf116–123.8 place117,undo119,newtile120–123, stop before loading124.',[(0,3,'빈 칸에 타일 추가'),(3,5,'타일을 빼고 이전 경계 확인'),(5,7.8,'새 타일을 더한 전체 윤곽')])
+add(d,'QG07','shapeBelt',61,70,'벨트를 연결하는 경로와 면적의 차이','Official announcement61–70 continuous conveyor construction, bends and connected output; ordered1fps source frames inspected. No unrelated machine montage.',[(0,3,'벨트가 시작하는 지점'),(3,6,'꺾어서 다음 벨트에 연결'),(6,9,'물건이 지나는 경로 확인')])
+add(d,'21','dorf',178.2,183.8,'연결된 타일과 전체 윤곽 다시 보기','Dorf178.2–183.8 places two tiles on same map; end before different-map cut184. Own model retains later centre/triangulation explanation.',[(0,2,'기존 땅과 추가할 타일'),(2,4,'타일을 이어 놓기'),(4,5.6,'타일 하나와 전체 외곽 비교')])
+d['blockers']=[{'scene':'QG06','reason':'Unchanged speech specifically requires a square being cut then rotated. Verified existing square sequence is only42.6–43.95s; other inspected longer cutter/rotator scenes process circles, not squares. Do not substitute them or stretch1.35s with freeze/loops. Current render retains the approved explanation model in this passage; not a finished actual-game demonstration.','needed':'Longer native FHD square cut→rotation recording with verified provenance/reuse basis.','reviewStatus':'not-ready'}]
+d['sourceSearch']={'inspected':['existingSteam1.0gameplay109s','officialreveal89s','officialannouncement143s','officialEAlaunch56s','officialClassicMode492s','officialEverythingNew769s','officialVisualChanges558s'],'rejected':'Public unrelated longplay has no recorded reuse permission; official long cutter examples show circles or other mechanisms.','evidenceFolder':'shared/output/private-math-gameplay-20261024/motion-v4/source-review'}
+save(d)

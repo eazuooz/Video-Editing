@@ -46,6 +46,36 @@ def main():
     assert float(levels['input_tp'])<=-1.5
     m.save(H/'audio-mix.json',dict(path=m.rel(mix),sha256=m.sha(mix),narrationSource=m.rel(narr),narrationSourceSha256=m.sha(narr),narrationPcmChanged=False,narrationGainDb=gain,gameTracks=tracks,analyticalStillsHaveNoGameAudio=True,addedBgm=False,levels=levels,actualListening=False))
     prior_outputs=m.read(old/'outputs.json')['outputs'];base=R/next(x['path'] for x in prior_outputs if x['path'].endswith('.clean.mp4'))
+    if plan.get('baseMode')=='preserved-explanation-scenes':
+        # Reuse the exact approved explanation renders. Avoid exposing the end
+        # of an old gameplay insert after a shorter, source-complete new action.
+        models=m.read(old/'render-progress.json')['scenes']
+        selected=[];normal=O/'preserved-scene-cache';normal.mkdir(exist_ok=True);normalizations=[]
+        for name,start,frames in [('intro',0,round(T['introSeconds']*60)),('outro',T['seconds']-T['outroSeconds'],round(T['outroSeconds']*60))]:
+            dest=normal/f'{name}.mp4'
+            m.ff(['-ss',start,'-i',base,'-map','0:v:0','-an','-frames:v',frames,*m.ENC,dest],normal/f'{name}.log',O)
+        selected.append(normal/'intro.mp4')
+        for s in T['scenes']:
+            p=R/models[s['id']]['path'];assert m.sha(p)==models[s['id']]['sha256']
+            info=next(x for x in m.probe(p)['streams'] if x['codec_type']=='video')
+            delta=s['frames']-int(info['nb_frames']);assert abs(delta)<=1,(s['id'],delta)
+            if delta or info['time_base']!='1/60000':
+                dest=normal/f'{s["id"]}.mp4'
+                if delta:
+                    m.ff(['-i',p,'-map','0:v:0','-an','-vf','tpad=stop_mode=clone:stop_duration=0.02','-frames:v',s['frames'],*m.ENC,dest],normal/f'{s["id"]}.log',O)
+                else:
+                    m.ff(['-i',p,'-map','0:v:0','-an','-c:v','copy','-video_track_timescale','60000',dest],normal/f'{s["id"]}.log',O)
+                normalizations.append(dict(scene=s['id'],source=m.rel(p),frameCorrection=delta,reason='Match existing approved timeline rounding; explanation only, never gameplay'))
+                p=dest
+            selected.append(p)
+        selected.append(normal/'outro.mp4')
+        m.save(H/'preserved-explanation-evidence.json',dict(originalSceneHashes=models,normalizations=normalizations,brandingFromUnchangedMaster=True))
+        listing=O/'preserved-explanations.txt'
+        listing.write_text('\n'.join("file '"+p.as_posix()+"'" for p in selected)+'\n',encoding='utf8')
+        base=O/'preserved-explanations.mp4'
+        m.ff(['-f','concat','-safe','0','-i',listing,'-map','0:v:0','-an','-c:v','copy',base],O/'preserved-explanations.log',O)
+        v=next(s for s in m.probe(base)['streams'] if s['codec_type']=='video')
+        assert int(v['nb_frames'])==T['frames'], 'Preserved explanation frame count changed'
     for ext in ['ko.ass','ko.srt','en.srt']:
         shutil.copy2(oldlocal/f'captions.{ext}',O/f'captions.{ext}')
     args=['-i',base];filters=['[0:v]setpts=PTS-STARTPTS,setsar=1[v0]']
