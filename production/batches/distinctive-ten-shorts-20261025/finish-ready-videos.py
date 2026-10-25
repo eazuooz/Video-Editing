@@ -141,6 +141,12 @@ def coordinated_queue_pids(processes, status):
     return accepted
 
 
+def is_python_interpreter(row):
+    # Shell command text can mention our script while the coordinated Python
+    # child does the work. It is not an independent production worker.
+    return (row.get('name') or '').casefold() in {'python.exe', 'pythonw.exe', 'python', 'python3', 'python3.exe'}
+
+
 def mc_entry(slug):
     route = 'diablo-tricks-shorts-20261025/' + DIABLO[slug] if slug in DIABLO else slug
     return ROOT / 'motion-canvas/src/projects' / route / 'project.ts'
@@ -212,6 +218,8 @@ def require_readiness(slug):
 def resources(stage):
     """Read only. Do not stop a game, queue, editor or in-flight child job."""
     import psutil
+    if shutil.disk_usage(ROOT).free < 64 * 2**20:
+        raise Deferred('Workspace storage: D: needs at least 64 MiB for safe script/timing metadata writes. User was asked to free 2 GiB; media remains on C:.')
     queue_status = BATCH / 'local/voice-queue-status.json'
     try:
         queue = read(queue_status) if queue_status.exists() else {}
@@ -235,10 +243,10 @@ def resources(stage):
             executable = (item['exe'] or '').lower().replace('\\', '/')
             if name in GAME_NAMES or ('/steamapps/common/' in executable and name.endswith('.exe') and 'crash' not in name):
                 busy.append(dict(pid=item['pid'], name=item['name']))
-            if 'generate-ready-voices.py' in command:
+            if is_python_interpreter(item) and 'generate-ready-voices.py' in command:
                 if item['pid'] not in coordinated:
                     external.append(dict(pid=item['pid'], kind='uncoordinated-voice-queue'))
-            elif any(token in command for token in ('render-voice.py', '/tts_runner.py', '/transcribe.py', 'finish-ready-videos.py')):
+            elif is_python_interpreter(item) and any(token in command for token in ('render-voice.py', '/tts_runner.py', '/transcribe.py', 'finish-ready-videos.py')):
                 external.append(dict(pid=item['pid'], kind='other-expensive-production-job'))
         except (psutil.NoSuchProcess, psutil.AccessDenied, TypeError):
             continue
@@ -707,6 +715,7 @@ class ProjectRun:
 
 def display_status(row):
     status, category = row['status'], row.get('category', '')
+    if 'workspace storage' in row.get('reason', '').lower(): return 'D드라이브 공간 확보 대기'
     if status == 'review-files-generated-internal-review-pending': return '검수 파일 생성됨'
     if status == 'review-files-generated-technical-issues-pending': return '검수 파일 생성됨 · 확인할 항목 있음'
     if category == 'actual-voice-not-ready': return '음성 생성 대기'
@@ -800,6 +809,8 @@ def failure_category(stage, error):
 
 def self_test():
     # No subprocess, real lock, media, queue or production state is touched.
+    assert not is_python_interpreter({'name':'pwsh.exe', 'cmdline':['-Command','python generate-ready-voices.py']})
+    assert is_python_interpreter({'name':'python.exe', 'cmdline':['python','generate-ready-voices.py']})
     assert set(TRIO | UNITY | ARCH | set(DIABLO)) == SLUGS and len(SLUGS) == 10
     for slug in sorted(SLUGS):
         planned = commands(slug, 3600, slug + '-test')

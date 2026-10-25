@@ -9,7 +9,7 @@ def run(args,env=None,input=None):
     p=subprocess.run(args,cwd=R,env=env,input=input,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     if p.returncode:raise RuntimeError((p.stdout+p.stderr).decode(errors='replace')[-6000:])
     return p.stdout
-def git(*args,env=None,input=None):return run(['git',*args],env,input)
+def git(*args,env=None,input=None):return run(['git','-c','gc.auto=0','-c','maintenance.auto=false',*args],env,input)
 def encoded(v):return (json.dumps(v,ensure_ascii=False,indent=2)+'\n').encode()
 def blob(v):return git('hash-object','-w','--stdin',input=encoded(v)).decode().strip()
 def entries(env=None):
@@ -52,8 +52,7 @@ def main():
     assert index.read_bytes()==original,'Real index changed during isolated commit; inspect before sync.'
     committed_entries=entries(env)
     own=[n for n in staged if n not in [CONTROL,WORK]]
-    payload=b'\0'.join(committed_entries[n] for n in own)+b'\0'
-    git('update-index','-z','--index-info',input=payload)
+    updates=[committed_entries[n] for n in own]
     for name in [CONTROL,WORK]:
         old_oid=original_entries[name].split()[1].decode()
         previous=json.loads(git('cat-file','blob',old_oid))
@@ -61,7 +60,8 @@ def main():
         else:
             previous['rows']=[r for r in previous['rows'] if r.get('slug') not in ours]+[ours[s] for s in selected]
             for key in ['updatedAt','latestUserSteering']:previous[key]=working_work[key]
-        git('update-index','--cacheinfo','100644',blob(previous),name)
+        updates.append(('100644 '+blob(previous)+' 0\t'+name).encode())
+    git('update-index','-z','--index-info',input=b'\0'.join(updates)+b'\0')
     after=entries();unchanged=[n for n in original_entries if n not in staged]
     assert all(after.get(n)==original_entries[n] for n in unchanged),'Foreign index entry changed.'
     report.update(status='committed',commit=committed,foreignEntriesVerified=len(unchanged),realIndexOwnPathsSynchronized=True)
