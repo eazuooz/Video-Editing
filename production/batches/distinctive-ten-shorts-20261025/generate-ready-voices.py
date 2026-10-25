@@ -1,6 +1,6 @@
 """One finite batch, waiting for user game exit; no recurring automation or upload."""
 from pathlib import Path
-import datetime,json,subprocess,time,psutil,hashlib
+import argparse,datetime,json,subprocess,time,psutil,hashlib
 from batch_job_lock import SerialJobLock, JobBusy, LOCK_PROTOCOL
 SERIAL_JOB_LOCK_PROTOCOL = 'distinctive-ten-serial-v1'
 R=Path(__file__).resolve().parents[3];B=Path(__file__).parent;L=B/'local';L.mkdir(exist_ok=True)
@@ -11,15 +11,31 @@ def write(v):
     target=L/'voice-queue-status.json';temp=target.with_suffix('.json.tmp')
     temp.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8');temp.replace(target)
 def resources():
-    busy=[p.info['name'] for p in psutil.process_iter(['name']) if (p.info['name'] or '').lower() in ['monsterhunterwilds.exe','unity.exe','d2r.exe','diablo ii.exe']]
+    busy=[]
+    for process in psutil.process_iter(['name','exe','cmdline']):
+        item=process.info
+        name=(item['name'] or '').lower()
+        executable=(item['exe'] or '').replace('\\','/').lower()
+        args=[str(arg).lower() for arg in (item['cmdline'] or [])]
+        hub_service=(name=='unity.exe' and executable.endswith('/unity hub/resources/unity.exe') and 'serve' in args)
+        if not hub_service and name in ['monsterhunterwilds.exe','unity.exe','d2r.exe','diablo ii.exe','unrealeditor.exe']:
+            busy.append(item['name'])
     free,util=map(int,subprocess.check_output(['nvidia-smi','--query-gpu=memory.free,utilization.gpu','--format=csv,noheader,nounits'],text=True).strip().split(','))
     return busy,free,util
-deadline=time.monotonic()+12*3600
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--slug',action='append')
+parser.add_argument('--wait-minutes',type=float,default=720)
+args=parser.parse_args()
+batch_slugs={row['slug'] for row in read(B/'batch.json')['projects']}
+selected=set(args.slug or batch_slugs)
+if not selected <= batch_slugs:raise SystemExit('Requested project is outside the finite batch')
+deadline=time.monotonic()+max(0,args.wait_minutes)*60
 while time.monotonic()<deadline:
     auth=read(R/'shared/publishing/video-production-control.json').get('scopedBatchAuthorizations',{}).get('explicit-ten-distinctive-shorts-20261025',{})
     if auth.get('status')!='active' or not auth.get('fullProductionAuthorized'):break
     pending=[];ready=[]
     for row in read(B/'batch.json')['projects']:
+        if row['slug'] not in selected:continue
         p=R/'projects'/row['slug']
         audio=p/'production/local/audio-v1';voice=audio/'voice/narration.wav';timing=audio/'voice/narration.timing.json';levels=audio/'line-levels.json'
         if voice.exists():
@@ -29,7 +45,7 @@ while time.monotonic()<deadline:
             if not failure.exists():failure.write_text(json.dumps(dict(reason='Incomplete voice evidence preserved; inspect before retrying',voice=str(voice))),encoding='utf8')
         pending.append(row['slug']);plan=p/'planning/production-plan.json'
         if plan.exists() and read(plan).get('scriptFinalized') and read(plan).get('independentFootageViewed') and not (p/'production/local/voice-queue-failure.json').exists():ready.append(row['slug'])
-    if not pending:write(dict(status='all-ten-voices-generated',finishedAt=datetime.datetime.now(datetime.timezone.utc).isoformat()));print('All ten voice jobs complete',flush=True);break
+    if not pending:write(dict(status='selected-voices-generated',completedSlugs=sorted(selected),finishedAt=datetime.datetime.now(datetime.timezone.utc).isoformat()));print('Selected voice jobs complete',flush=True);break
     busy,free,util=resources();reason='user-game-or-gpu-busy' if busy or free<4800 or util>=35 else 'waiting-for-source-script-preflight'
     write(dict(status='waiting',reason=reason,pending=pending,ready=ready,activeApps=busy,freeMiB=free,gpuPercent=util,updatedAt=datetime.datetime.now(datetime.timezone.utc).isoformat()))
     if not ready or busy or free<4800 or util>=35 or (R/'shared/output/GPU_HANDOFF.json').exists():time.sleep(30);continue

@@ -1,4 +1,4 @@
-"""Cache one complete CPU Whisper transcription per voice/mix file hash.
+"""Cache one complete CPU or explicitly selected CUDA Whisper transcription per voice/mix file hash.
 
 No job runs on import. The model receives no expected-text prompt. Reusing a
 successful cache preserves the raw recognition even if editorial text changes.
@@ -145,16 +145,30 @@ def main(argv=None):
     torch.set_num_interop_threads(1)
     dedicated = R / "qwen3-tts/models/whisper-large-v3-turbo"
     model_id = str(dedicated) if (dedicated / "config.json").exists() else "openai/whisper-large-v3-turbo"
+    device = os.environ.get("YAMYAM_ASR_DEVICE", "cpu")
+    if device not in ("cpu", "cuda"):
+        raise RuntimeError("Unsupported ASR device")
+    if device == "cuda":
+        revision_guard()
+        if not torch.cuda.is_available():
+            raise RuntimeError("Requested CUDA ASR is unavailable")
+        if (R / "shared/output/GPU_HANDOFF.json").exists():
+            raise RuntimeError("Foreign GPU voice lease is active")
+        free, usage = map(int, subprocess.check_output([
+            "nvidia-smi", "--query-gpu=memory.free,utilization.gpu",
+            "--format=csv,noheader,nounits"], text=True).strip().split(","))
+        if free < 4800 or usage >= 35:
+            raise RuntimeError("GPU not available for serial ASR")
     started = time.monotonic()
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
         model_id, dtype=torch.float32, attn_implementation="eager", local_files_only=True,
-    ).to("cpu")
+    ).to(device)
     processor = AutoProcessor.from_pretrained(model_id, local_files_only=True)
     recognize = pipeline(
         "automatic-speech-recognition", model=model, tokenizer=processor.tokenizer,
-        feature_extractor=processor.feature_extractor, dtype=torch.float32, device="cpu",
+        feature_extractor=processor.feature_extractor, dtype=torch.float32, device=device,
     )
-    print("Transcribing complete " + args.role + " on CPU,3threads", flush=True)
+    print("Transcribing complete " + args.role + " on " + device + ",3 CPU threads", flush=True)
     recognized = recognize(
         str(wav), generate_kwargs={"language": "korean", "task": "transcribe"},
         return_timestamps="word",
@@ -165,7 +179,7 @@ def main(argv=None):
         "schemaVersion": 1, "role": args.role, "input": relative(source),
         "sha256": digest, "fullInput": True,
         "inputDurationSeconds": measured_seconds,
-        "model": model_id, "device": "cpu", "cpuThreads": 3,
+        "model": model_id, "device": device, "cpuThreads": 3,
         "expectedTextPromptUsed": False, "rawRecognitionUnmodified": True,
         "normalizationAliases": read(P / "script/clauses.json").get("pronunciationAliases", {}),
         "text": recognized["text"], "chunks": recognized["chunks"],

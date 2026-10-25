@@ -147,6 +147,17 @@ def is_python_interpreter(row):
     return (row.get('name') or '').casefold() in {'python.exe', 'pythonw.exe', 'python', 'python3', 'python3.exe'}
 
 
+def is_unity_hub_server(row):
+    """Exclude only the observed Hub service, never an Editor with the same name."""
+    executable = (row.get('exe') or '').replace('\\', '/').casefold()
+    command = row.get('cmdline') or []
+    return ((row.get('name') or '').casefold() == 'unity.exe'
+            and executable == 'c:/program files/unity hub/resources/unity.exe'
+            and len(command) == 2
+            and str(command[0]).replace('\\', '/').casefold() == executable
+            and str(command[1]).casefold() == 'serve')
+
+
 def mc_entry(slug):
     route = 'diablo-tricks-shorts-20261025/' + DIABLO[slug] if slug in DIABLO else slug
     return ROOT / 'motion-canvas/src/projects' / route / 'project.ts'
@@ -241,7 +252,7 @@ def resources(stage):
             name = (item['name'] or '').lower()
             command = ' '.join(item['cmdline'] or []).lower().replace('\\', '/')
             executable = (item['exe'] or '').lower().replace('\\', '/')
-            if name in GAME_NAMES or ('/steamapps/common/' in executable and name.endswith('.exe') and 'crash' not in name):
+            if (name in GAME_NAMES and not is_unity_hub_server(item)) or ('/steamapps/common/' in executable and name.endswith('.exe') and 'crash' not in name):
                 busy.append(dict(pid=item['pid'], name=item['name']))
             if is_python_interpreter(item) and 'generate-ready-voices.py' in command:
                 if item['pid'] not in coordinated:
@@ -811,6 +822,15 @@ def self_test():
     # No subprocess, real lock, media, queue or production state is touched.
     assert not is_python_interpreter({'name':'pwsh.exe', 'cmdline':['-Command','python generate-ready-voices.py']})
     assert is_python_interpreter({'name':'python.exe', 'cmdline':['python','generate-ready-voices.py']})
+    hub = dict(name='unity.exe', exe='C:/Program Files/Unity Hub/resources/unity.exe',
+               cmdline=['C:/Program Files/Unity Hub/resources/unity.exe', 'serve'])
+    assert is_unity_hub_server(hub)
+    assert is_unity_hub_server({**hub, 'exe': hub['exe'].replace('/', '\\').upper()})
+    assert not is_unity_hub_server({**hub, 'exe': 'C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Unity.exe'})
+    assert not is_unity_hub_server({**hub, 'cmdline': [hub['exe'], '-projectPath', 'D:/Game']})
+    assert not is_unity_hub_server({**hub, 'cmdline': [hub['exe'], 'serve', '-projectPath', 'D:/Game']})
+    assert not is_unity_hub_server({**hub, 'exe': None})
+    assert not is_unity_hub_server({**hub, 'cmdline': None})
     assert set(TRIO | UNITY | ARCH | set(DIABLO)) == SLUGS and len(SLUGS) == 10
     for slug in sorted(SLUGS):
         planned = commands(slug, 3600, slug + '-test')

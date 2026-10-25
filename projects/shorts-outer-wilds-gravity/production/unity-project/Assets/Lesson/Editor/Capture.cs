@@ -6,13 +6,21 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 namespace YamyamCoding.GravityLesson.Editor {
 public static class Capture {
- [Serializable] class FramePlan { public float[] phases; }
- [Serializable] class Receipt { public string device,deviceType,unityVersion; public int frames,width,height; public string kind="CPU/WARP own implementation"; }
+ [Serializable] class FramePlan { public float[] phases; public string voiceSha256; }
+ [Serializable] class Receipt { public string device,deviceType,deviceVendor,deviceVersion,unityVersion,requestedRenderer,voiceSha256; public int frames,width,height; public string kind; public bool hardwareAccelerated; }
  public static void Run(){
   try {
-   var args=Environment.GetCommandLineArgs();string output=args[Array.IndexOf(args,"-lessonOutput")+1];int frames=int.Parse(args[Array.IndexOf(args,"-lessonFrames")+1]);Directory.CreateDirectory(output);
+   var args=Environment.GetCommandLineArgs();string output=args[Array.IndexOf(args,"-lessonOutput")+1];int frames=int.Parse(args[Array.IndexOf(args,"-lessonFrames")+1]);
    int phaseArg=Array.IndexOf(args,"-lessonPhaseFile");var plan=phaseArg>=0?JsonUtility.FromJson<FramePlan>(File.ReadAllText(args[phaseArg+1])):null;if(plan!=null&&plan.phases.Length!=frames)throw new Exception("Phase-plan count mismatch");
-   var device=SystemInfo.graphicsDeviceName;if(!device.Contains("Microsoft"))throw new Exception("Expected WARP CPU rendering, received: "+device);
+   int rendererArg=Array.IndexOf(args,"-lessonRenderer");string requestedRenderer=rendererArg>=0?args[rendererArg+1]:"Warp";
+   var device=SystemInfo.graphicsDeviceName;
+   bool software=device.IndexOf("Microsoft",StringComparison.OrdinalIgnoreCase)>=0||device.IndexOf("WARP",StringComparison.OrdinalIgnoreCase)>=0||device.IndexOf("software",StringComparison.OrdinalIgnoreCase)>=0;
+   bool hardwareAccelerated=!software&&SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;
+   if(!requestedRenderer.Equals("Gpu",StringComparison.OrdinalIgnoreCase)&&!requestedRenderer.Equals("Warp",StringComparison.OrdinalIgnoreCase))throw new Exception("Unknown requested renderer: "+requestedRenderer);
+   if(requestedRenderer.Equals("Gpu",StringComparison.OrdinalIgnoreCase)&&!hardwareAccelerated)throw new Exception("Expected a hardware GPU, received: "+device);
+   if(requestedRenderer.Equals("Warp",StringComparison.OrdinalIgnoreCase)&&!software)throw new Exception("Expected WARP CPU rendering, received: "+device);
+   if(SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Direct3D11)throw new Exception("Expected Direct3D11, received: "+SystemInfo.graphicsDeviceType);
+   Directory.CreateDirectory(output);
    EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);var demo=Demo.Build();
    var target=new RenderTexture(1080,1080,24){antiAliasing=4};target.Create();var pixels=new Texture2D(1080,1080,TextureFormat.RGB24,false);demo.observer.targetTexture=target;
    Directory.CreateDirectory("Assets/Lesson/Scenes");Directory.CreateDirectory("Assets/Lesson/Generated");AssetDatabase.Refresh();
@@ -28,7 +36,7 @@ public static class Capture {
      demo.observer.targetTexture=null;EditorSceneManager.SaveScene(demo.gameObject.scene,"Assets/Lesson/Scenes/Stage-"+f.ToString("D5")+".unity");demo.observer.targetTexture=target;
     }
    }
-   File.WriteAllText(Path.Combine(output,"success.json"),JsonUtility.ToJson(new Receipt{device=device,deviceType=SystemInfo.graphicsDeviceType.ToString(),unityVersion=Application.unityVersion,frames=frames,width=1080,height=1080},true));
+   File.WriteAllText(Path.Combine(output,"success.json"),JsonUtility.ToJson(new Receipt{device=device,deviceType=SystemInfo.graphicsDeviceType.ToString(),deviceVendor=SystemInfo.graphicsDeviceVendor,deviceVersion=SystemInfo.graphicsDeviceVersion,requestedRenderer=requestedRenderer,hardwareAccelerated=hardwareAccelerated,voiceSha256=plan!=null?plan.voiceSha256:null,kind=hardwareAccelerated?"Hardware GPU own implementation":"CPU/WARP own implementation",unityVersion=Application.unityVersion,frames=frames,width=1080,height=1080},true));
    EditorApplication.Exit(0);
   }catch(Exception ex){Debug.LogException(ex);EditorApplication.Exit(1);}
  }

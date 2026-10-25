@@ -60,7 +60,7 @@ export function architecture(slug:string,config:any,timing:any){return makeScene
   const maps=new Node({opacity:()=>mapMode()?1:0});n.add(maps);
   const paths=[[[ -165,80],[-80,80],[-80,-90],[150,-90],[150,80]], [[-165,80],[-67,80]]];
   const progress=(side=0)=>is('original')?motion(side?'p2-3':'p2-2',2):is('commands')?(side?motion('p4-3',1.5):1):is('confirm')?motion(side?'p5-3':'p5-2',1.8):1;
-  function along(points:number[][],t:number){let lengths=points.slice(1).map((p,i)=>Math.hypot(p[0]-points[i][0],p[1]-points[i][1]));let remaining=t*lengths.reduce((a,b)=>a+b,0);for(let i=0;i<lengths.length;i++){if(remaining<=lengths[i]){let a=points[i],b=points[i+1],u=remaining/lengths[i];return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];}remaining-=lengths[i];}return points.at(-1)!;}
+  function along(points:number[][],t:number){let lengths=points.slice(1).map((p,i)=>Math.hypot(p[0]-points[i][0],p[1]-points[i][1]));let remaining=t*lengths.reduce((a,b)=>a+b,0);for(let i=0;i<lengths.length;i++){if(remaining<=lengths[i]){let a=points[i],b=points[i+1],u=remaining/lengths[i];return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];}remaining-=lengths[i];}return points[points.length - 1]!;}
   for(let i=0;i<2;i++){
    const x=i?230:-230;
    maps.add(<Rect position={[x,60]} size={[440,430]} stroke={i?C.teal:C.green} lineWidth={4}/>);
