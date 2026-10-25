@@ -24,6 +24,7 @@ namespace YamyamCoding.PortalTraversal {
   void Traversal(){
    if(walkClip){walkClip.SampleAnimation(body.gameObject,elapsed%walkClip.length);walkClip.SampleAnimation(copy.gameObject,elapsed%walkClip.length);}
    observer.transform.position=new Vector3(0,10,-8);observer.transform.LookAt(new Vector3(0,.2f,.8f));observer.fieldOfView=49;
+   if(section=="camera"||section=="screen"){observer.transform.position=new Vector3(0,14,-9);observer.transform.LookAt(new Vector3(0,.5f,1.6f));observer.fieldOfView=48;}
    float duration=Mathf.Max(sectionDuration,3),u=Mathf.Clamp01((elapsed-.4f)/(duration-1));float z;
    if(section=="camera"||section=="screen")z=Mathf.Lerp(-.8f,1.65f,u);else if(section=="half"||section=="clip")z=2.45f+Mathf.Sin(elapsed*1.0f)*.28f;else z=Mathf.Lerp(-.7f,4.0f,u);
    float side=(section=="camera"?Mathf.Sin(elapsed*.8f)*.45f:0);

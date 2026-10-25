@@ -6,7 +6,7 @@ const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const control=read(path.join(root,'shared/publishing/video-production-control.json'));
 if(!control.portalTraversalShortsAuthorization?.slugs.includes('shorts-portal-seamless-traversal')||control.portalTraversalShortsAuthorization.status!=='active')throw Error('Batch selection changed');
 const timing=read(path.join(__dirname,'visual-timing.json'));
-const capture=read(path.join(local,'capture-full-v2/success.json'));
+const capture=read(path.join(local,'capture-'+timing.captureMode+'/success.json'));
 if(!control.portalTraversalShortsAuthorization?.fullProductionAuthorized||capture.frames!==timing.frames)throw Error('Finite native capture incomplete');
 const mode=process.argv[2]||'portal-traversal-v1-full',firstFrame=Number(process.argv[3]||0),frames=Number(process.argv[4]||timing.frames);
 const name='shorts-portal-seamless-traversal-'+mode,output=path.join(root,'shared/output/motion-canvas',name+'.mp4');

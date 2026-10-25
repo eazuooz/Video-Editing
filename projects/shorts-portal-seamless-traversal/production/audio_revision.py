@@ -6,7 +6,7 @@ import unicodedata
 
 P = Path(__file__).resolve().parents[1]
 R = P.parents[1]
-REVISION = 'portal-traversal-v1'
+REVISION = 'portal-camera-guides-v3'
 L = P / 'production/local/audio-v1'
 VOICE = L / 'voice/narration.wav'
 
