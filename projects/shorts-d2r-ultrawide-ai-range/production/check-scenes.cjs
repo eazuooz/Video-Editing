@@ -1,0 +1,13 @@
+const path=require('node:path'),fs=require('node:fs');
+const root=path.resolve(__dirname,'../../..');
+const ts=require(path.join(root,'motion-canvas/node_modules/typescript'));
+const cfg=ts.readConfigFile(path.join(root,'motion-canvas/tsconfig.json'),ts.sys.readFile);
+const parsed=ts.parseJsonConfigFileContent(cfg.config,ts.sys,path.join(root,'motion-canvas'));
+const base=path.join(root,'motion-canvas/src/projects/diablo-tricks-shorts-20261025');
+const files=[path.join(root,'motion-canvas/src/env.d.ts'),path.join(base,'composite.tsx'),...['ultrawide','grass','sprites'].flatMap(x=>[path.join(base,x,'project.ts'),path.join(base,x,'scene.tsx')])];
+const p=ts.createProgram(files,{...parsed.options,noEmit:true});
+const ds=ts.getPreEmitDiagnostics(p);
+const own=ds.filter(d=>!d.file||d.file.fileName.includes('diablo-tricks-shorts-20261025'));
+for(const d of own)console.log(ts.flattenDiagnosticMessageText(d.messageText,'\n'),d.file?.fileName,d.start);
+console.log(JSON.stringify({ownedDiagnostics:own.length,dependencyDiagnostics:ds.length-own.length,checkedFiles:files.length}));
+process.exitCode=own.length?1:0;
