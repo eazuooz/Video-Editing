@@ -47,6 +47,27 @@ function srt(file) {
   cues.forEach((c,i) => {if (!(c.start>=0 && c.end>c.start) || (i && c.start < cues[i-1].end-.001)) throw Error('Invalid/overlapping SRT');});
   return cues;
 }
+// Path-only opt-in. Existing projects keep their exact output/stage/archive roots.
+function deliveryStorageRoots(baseRoot, currentProject, delivery) {
+  const production = path.join(currentProject, 'production');
+  if (delivery?.localStorageRoot === undefined) {
+    return {storageRoot:null, outputRoot:path.join(baseRoot,'output'),
+      stagingRoot:production, archiveRoot:path.join(production,'delivery-history')};
+  }
+  const value = delivery.localStorageRoot;
+  if (typeof value !== 'string' || !value.trim() || path.isAbsolute(value)
+      || path.win32.isAbsolute(value) || path.posix.isAbsolute(value) || /^[A-Za-z]:/.test(value)) {
+    throw Error('delivery.localStorageRoot must be an explicit repository-relative path.');
+  }
+  const storageRoot = path.resolve(baseRoot, value);
+  const localRoot = path.join(production, 'local');
+  const within = path.relative(localRoot, storageRoot);
+  if (!within || within === '..' || within.startsWith('..'+path.sep) || path.isAbsolute(within)) {
+    throw Error('delivery.localStorageRoot must remain under this project/production/local directory.');
+  }
+  return {storageRoot, outputRoot:path.join(storageRoot,'output'),
+    stagingRoot:path.join(storageRoot,'staging'), archiveRoot:path.join(storageRoot,'delivery-history')};
+}
 async function main() {
   for (const [key, value] of Object.entries(sources)) {
     if (!value) throw Error('Missing manifest path: ' + key);
@@ -84,7 +105,12 @@ async function main() {
     }
     captionAlignment=p.captionAlignmentReview;
   }
-  const outputRoot=path.join(root,'output');
+  const deliveryRoots=deliveryStorageRoots(root,project,manifest.delivery);
+  if (deliveryRoots.storageRoot) {
+    fs.mkdirSync(deliveryRoots.storageRoot,{recursive:true});
+    if (!fs.lstatSync(deliveryRoots.storageRoot).isDirectory() || fs.lstatSync(deliveryRoots.storageRoot).isSymbolicLink()) throw Error('Delivery storage root must be a regular directory, not a link.');
+  }
+  const outputRoot=deliveryRoots.outputRoot;
   fs.mkdirSync(outputRoot,{recursive:true});
   if (fs.lstatSync(outputRoot).isSymbolicLink()) throw Error('Output root must not be a link.');
   const dest=inside(outputRoot,slug);
@@ -101,7 +127,12 @@ async function main() {
     && fs.lstatSync(path.join(dest,'planning')).isDirectory()
     && !fs.lstatSync(path.join(dest,'planning')).isSymbolicLink();
   const production=path.join(project,'production');fs.mkdirSync(production,{recursive:true});
-  const stage=fs.mkdtempSync(path.join(production,'delivery-stage-'));
+  const stagingRoot=deliveryRoots.stagingRoot;
+  if (deliveryRoots.storageRoot) {
+    fs.mkdirSync(stagingRoot,{recursive:true});
+    if (!fs.lstatSync(stagingRoot).isDirectory() || fs.lstatSync(stagingRoot).isSymbolicLink()) throw Error('Delivery staging root must be a regular directory, not a link.');
+  }
+  const stage=fs.mkdtempSync(path.join(stagingRoot,'delivery-stage-'));
   const files=[];
   for (const [key, source] of Object.entries(sources)) {
     const name=`${slug}.${key}`, target=path.join(stage,name);
@@ -120,7 +151,8 @@ async function main() {
   // Preserve previous deliveries outside output, so output only shows the current set.
   let previousDeliveryDirectory = null;
   if (fs.existsSync(dest) && !planningOnly) {
-    const archive=path.join(production,'delivery-history');fs.mkdirSync(archive,{recursive:true});
+    const archive=deliveryRoots.archiveRoot;fs.mkdirSync(archive,{recursive:true});
+    if (deliveryRoots.storageRoot && (!fs.lstatSync(archive).isDirectory() || fs.lstatSync(archive).isSymbolicLink())) throw Error('Delivery archive root must be a regular directory, not a link.');
     const saved=inside(archive,new Date().toISOString().replace(/[:.]/g,'-'));
     if (fs.existsSync(saved)) throw Error('Archive collision');
     if (preservePlanning) {
@@ -141,7 +173,7 @@ async function main() {
     }
     fs.rmdirSync(stage); // Only the now-empty, explicitly created staging folder.
   } else fs.renameSync(stage,dest);
-  const report={slug,createdAt:new Date().toISOString(),directory:`output/${slug}`,previousDeliveryDirectory,planningDirectoryPreserved:preservePlanning,publishReady:!!manifest.publishReady,notices,videos,cues:ko.length,cueCounts:{ko:ko.length,en:en.length},captionAlignment,files};
+  const report={slug,createdAt:new Date().toISOString(),directory:path.relative(root,dest).replaceAll('\\','/'),previousDeliveryDirectory,planningDirectoryPreserved:preservePlanning,publishReady:!!manifest.publishReady,notices,videos,cues:ko.length,cueCounts:{ko:ko.length,en:en.length},captionAlignment,files};
   fs.writeFileSync(path.join(production,'delivery-output.json'),JSON.stringify(report,null,2)+'\n');
   require('./build-rebuild-manifests.cjs').generate(slug);
   const projects=fs.readdirSync(outputRoot,{withFileTypes:true}).filter(e=>e.isDirectory()&&!e.isSymbolicLink()&&fs.existsSync(path.join(outputRoot,e.name,'index.html')));

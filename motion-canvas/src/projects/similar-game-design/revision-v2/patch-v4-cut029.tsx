@@ -1,0 +1,4 @@
+// Selected v4 patch; measured existing narration clock.
+import {makeScene2D} from '@motion-canvas/2d';
+import {lesson} from './visuals';
+export default makeScene2D(function*(view) { yield* lesson(view, "effortExamples", {"cues": [-5.989999999999981, -2.9499999999999886, -0.3299999999999841, 2.0900000000000034], "title": "세 가지 경험에 공들이기", "imagePaths": {"drgs": "/@fs/D:/Github/VideoEditing/projects/similar-game-design/production/local/reference-preserving-v2/visual-assets/drgs.png", "mm2": "/@fs/D:/Github/VideoEditing/projects/similar-game-design/production/local/reference-preserving-v2/visual-assets/mm2.png", "social": "/@fs/D:/Github/VideoEditing/projects/similar-game-design/production/local/reference-preserving-v2/visual-assets/social.png"}, "initialVisible": [0, 1, 2], "duration": 3.6666666666666665}); });
