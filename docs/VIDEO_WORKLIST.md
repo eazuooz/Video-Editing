@@ -2,13 +2,13 @@
 
 <!-- GAMEPLAY-PRESENCE-AUDIT-20261024-START -->
 
-갱신: 2026-10-25T01:30:10.411693+09:00
+갱신: 2026-10-25T15:07:34.445468+09:00
 
-**이번 수정본 렌더 18/18 · 변경 화면 확인 17/18 · 사용자 검수 승인 0/18.**
+**최신 수정본 렌더18/18 · 변경 화면 확인18/18 · 사용자 검수 승인0/18.**
 
-설명·음성·순서·전체 길이는 보존합니다. 게임은 원래 속도로 재생하고 정지 화면·반복·슬로모션으로 길이를 채우지 않습니다. 표의 시간은 실제 게임 재생만 합산한 값입니다. 장면의 시작·동작·결과와 설명으로 돌아오는 최종 프레임, 모바일 화면 및 전체 파일 디코딩을 확인합니다. 전체 연속 시청·청취와 사용자 승인은 별도입니다.
+M14 다각형②의 실제 사각형 절단→회전13초를 보완하고, 실제 게임 Abstract18.15초를 추가했습니다. 기존 본문 설명·음성·순서는 그대로이며, 나머지17편은 이전 검수본을 유지했습니다. 모든 게임 구간은 원래 속도이며 정지·반복·감속으로 길이를 채우지 않습니다. 전체 연속 청취·사용자 승인은 별도입니다.
 
-[현재 검수 페이지](../output/private-math-gameplay-20261024/index.html) · [이전본 문제 조사표](../output/private-math-gameplay-20261024/audit.html)
+[현재 검수 페이지](../output/private-math-gameplay-20261024/index.html) · [이전본 조사 기록](../output/private-math-gameplay-20261024/audit.html)
 
 | 번호 | 강의 | 실제 재생 / 삽입 | 이번 상태 | 검수본 |
 |---|---|---:|---|---|
@@ -23,7 +23,7 @@
 | M11 | 평면과 삼각형 ① 표면까지의 거리 | 19.6초 / 3구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-plane-distances-v2-gameplay-motion-v4/index.html) |
 | M12 | 평면과 삼각형 ② 삼각형 안의 주소 | 22초 / 3구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-triangle-addresses-v2-gameplay-motion-v4/index.html) |
 | M13 | 다각형 ① 목적에 맞는 중심과 경계 | 42초 / 5구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-polygon-centers-v2-gameplay-motion-v4/index.html) |
-| M14 | 다각형 ② 빈 공간을 지키는 삼각형 분할 | 35.85초 / 5구간 | 일부 구간 근거 보완 필요 | [보기](../output/game-math-polygon-partition-v2-gameplay-motion-v4/index.html) |
+| M14 | 다각형 ② 빈 공간을 지키는 삼각형 분할 | 67초 / 9구간 | 실제 절단·회전 + Abstract 추가 · 사용자 검수 대기 | [보기](../output/game-math-polygon-partition-v2-gameplay-abstract-v5/index.html) |
 | M15 | 렌더링 ① 빛·재질·시선으로 픽셀 계산하기 | 113.5초 / 10구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-rendering-light-gameplay-motion-v4/index.html) |
 | M16 | 렌더링 ② 카메라의 시야·줌·출력 창 이해하기 | 75.75초 / 9구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-camera-frustum-gameplay-motion-v4/index.html) |
 | M17 | 렌더링 ③ 한 3D 점이 화면의 픽셀이 되는 과정 | 49.5초 / 6구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-camera-projection-gameplay-motion-v4/index.html) |
@@ -31,7 +31,7 @@
 | M19 | 렌더링 ⑤ 메시·법선 만들기 | 63.35초 / 7구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-mesh-uv-gameplay-motion-v4/index.html) |
 | M20 | 렌더링 ⑥ 법선 변환과 UV | 48.5초 / 6구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-normal-transform-uv-gameplay-motion-v4/index.html) |
 
-이전 버전의18/18 완료 표시는 이번 움직임·개념 대응 검수의 완료를 뜻하지 않습니다. 아래의 이전 제작 기록은 이력이며 현재 상태는 위 표를 따릅니다.
+M14의3구간은 새 도입부,6구간은 본문의 실제 게임 예시입니다. 아래 과거 기록의 원본 부족 표시는 이력이며 최신 상태는 위 표를 따릅니다.
 
 <!-- GAMEPLAY-PRESENCE-AUDIT-20261024-END -->
 
