@@ -66,23 +66,40 @@ export function diabloComposite(slug:string,config:any,timing:any){return makeSc
  const sub=(text:any,y=300,color:any=C.white,size=34)=>labels.add(<Txt text={text} position={[0,y]} opacity={()=>y>0?1-presence():1} fontFamily={FONT} fontSize={size} fill={color} fontWeight={700}/>);
 
  if(topic==='ultrawide'){
-   const wide=()=>is('view')?smooth((elapsed()-.7)/1.7):is('limit')?1-progress()*.45:is('answer')?.55:1;
-   const viewWidth=()=>610+330*wide();
-   const outer=new Rect({width:940,height:460,fill:C.panel,stroke:C.line,lineWidth:3,radius:10,clip:true});teaching.add(outer);
-   for(let i=-5;i<=5;i++)outer.add(<Line points={[[i*85,-230],[i*85,230]]} stroke="#24332A" lineWidth={2}/>);
-   for(let i=-2;i<=2;i++)outer.add(<Line points={[[-470,i*85],[470,i*85]]} stroke="#24332A" lineWidth={2}/>);
-   outer.add(<Circle position={[-230,0]} size={690} stroke={C.green} lineWidth={5} lineDash={[15,14]} opacity={()=>is('range')?(time()>=cue('p3-2',.8)?1:0):is('attack','limit','answer')?1:0}/>);
-   outer.add(<Img src={body('player')} position={[-235,-25]} width={100} height={134}/>);
-   outer.add(<Img src={body('monster')} position={[365,-25]} width={120} height={160}/>);
+   // Exact viewport proportions; these stage coordinates are illustrative, not game measurements.
+   const worldWidth=940, worldHeight=worldWidth*9/21, limitWidth=worldWidth*19/21;
+   const viewWidth=()=>is('view')?worldWidth*(16+5*smooth((elapsed()-.7)/1.7))/21:is('limit')?worldWidth+(limitWidth-worldWidth)*progress():is('answer')?limitWidth:worldWidth;
+   const showRange=()=>is('range')?(time()>=cue('p3-2',.8)?1:0):is('attack','limit','answer')?1:0;
    const shots=()=>is('attack')?((elapsed()*.9)%1):0;
-   outer.add(<Line points={()=>[[-180,-20],[is('attack')?-180+545*shots():-180,-20]]} stroke={C.yellow} lineWidth={7} endArrow arrowSize={18} opacity={()=>is('attack')?1:0}/>);
-   outer.add(<Rect position={[365,-130]} size={[112,15]} fill="#2A2120"/>);
-   outer.add(<Rect position={()=>[365-(1-(is('attack')?Math.max(.15,1-elapsed()*.11):1))*56,-130]} width={()=>112*(is('attack')?Math.max(.15,1-elapsed()*.11):1)} height={15} fill={C.red}/>);
-   outer.add(<Txt text="공격 받음" position={[330,130]} opacity={()=>is('attack')?1:0} fontSize={31} fontFamily={FONT} fill={C.yellow}/>);
-   // Opaque view masks hide regions outside the chosen viewport; no object moves.
-   outer.add(<Rect position={()=>[-470+(940-viewWidth())/4,0]} width={()=>(940-viewWidth())/2} height={460} fill="#000000F2"/>);
-   outer.add(<Rect position={()=>[470-(940-viewWidth())/4,0]} width={()=>(940-viewWidth())/2} height={460} fill="#000000F2"/>);
-   outer.add(<Rect width={viewWidth} height={457} stroke={C.teal} lineWidth={6}/>);
+   const health=()=>is('attack')?Math.max(.15,1-elapsed()*.11):1;
+   const outer=new Rect({width:worldWidth,height:worldHeight,fill:C.panel,stroke:C.line,lineWidth:3,radius:10,clip:true});teaching.add(outer);
+   for(let i=-5;i<=5;i++)outer.add(<Line points={[[i*85,-worldHeight/2],[i*85,worldHeight/2]]} stroke="#24332A" lineWidth={2}/>);
+   for(let i=-2;i<=2;i++)outer.add(<Line points={[[-470,i*85],[470,i*85]]} stroke="#24332A" lineWidth={2}/>);
+   // The horizontal target is just beyond this illustrative response boundary.
+   outer.add(<Circle size={limitWidth} stroke={C.green} lineWidth={5} lineDash={[15,14]} opacity={showRange}/>);
+   outer.add(<Img src={body('player')} position={[0,-25]} width={100} height={134}/>);
+   outer.add(<Img src={body('monster')} position={[450,-25]} width={34} height={46}/>);
+   outer.add(<Line points={()=>[[55,-20],[55+395*shots(),-20]]} stroke={C.yellow} lineWidth={7} endArrow arrowSize={18} opacity={()=>is('attack')?1:0}/>);
+   outer.add(<Rect position={[450,-65]} size={[38,6]} fill="#2A2120"/>);
+   outer.add(<Rect position={()=>[450-(1-health())*19,-65]} width={()=>38*health()} height={6} fill={C.red}/>);
+   // Fully opaque masks keep the same enemy fixed but entirely outside the19:9 viewport.
+   outer.add(<Rect position={()=>[-470+(worldWidth-viewWidth())/4,0]} width={()=>(worldWidth-viewWidth())/2} height={worldHeight} fill="#000000"/>);
+   outer.add(<Rect position={()=>[470-(worldWidth-viewWidth())/4,0]} width={()=>(worldWidth-viewWidth())/2} height={worldHeight} fill="#000000"/>);
+   outer.add(<Rect width={viewWidth} height={worldHeight} stroke={C.teal} lineWidth={6}/>);
+
+   // Magnify the same narrow edge strip so the viewer can see the hide/reveal on mobile.
+   const detailScale=2.2, detailOrigin=440, detailCut=()=>Math.max(-150,Math.min(150,(viewWidth()/2-detailOrigin)*detailScale));
+   const detail=new Rect({position:[-200,122],size:[300,140],fill:C.panel,stroke:C.muted,lineWidth:3,clip:true});outer.add(detail);
+   detail.add(<Line points={[[0,-70],[0,70]]} stroke="#334238" lineWidth={2}/>);
+   detail.add(<Line points={[[ (limitWidth/2-detailOrigin)*detailScale,-70],[(limitWidth/2-detailOrigin)*detailScale,70]]} stroke={C.green} lineDash={[10,8]} lineWidth={4} opacity={showRange}/>);
+   detail.add(<Img src={body('monster')} position={[(450-detailOrigin)*detailScale,0]} size={[34*detailScale,46*detailScale]}/>);
+   detail.add(<Rect position={[(450-detailOrigin)*detailScale,-62]} size={[84,8]} fill="#2A2120"/>);
+   detail.add(<Rect position={()=>[(450-detailOrigin)*detailScale-(1-health())*42,-62]} width={()=>84*health()} height={8} fill={C.red}/>);
+   detail.add(<Line points={()=>[[-150,0],[-150+(150+(450-detailOrigin)*detailScale)*shots(),0]]} stroke={C.yellow} lineWidth={6} endArrow arrowSize={14} opacity={()=>is('attack')?1:0}/>);
+   detail.add(<Rect position={()=>[(150+detailCut())/2,0]} width={()=>150-detailCut()} height={140} fill="#000000"/>);
+   detail.add(<Line points={()=>[[detailCut(),-70],[detailCut(),70]]} stroke={C.teal} lineWidth={4}/>);
+   outer.add(<Txt text="오른쪽 끝 확대" position={[-200,25]} fontSize={27} fontFamily={FONT} fill={C.white} fontWeight={700}/>);
+   outer.add(<Txt text={()=>is('limit','answer')?'같은 적이 화면 밖으로':'위치는 그대로'} position={[205,135]} fontSize={27} fontFamily={FONT} fill={()=>is('limit','answer')?C.teal:C.muted}/>);
    sub(()=>is('limit','answer')?'출시 당시: 19:9 범위로 제한':'화면 폭만 변경 · 캐릭터 위치는 그대로',-285,C.teal,34);
    sub(()=>is('range')?'초록 경계: AI 반응 범위의 설명도':is('attack')?'보이고 공격도 되는데, 반응은 시작되지 않음':is('limit')?'보이는 범위와 전투 규칙을 함께 맞춘다':'2021년 기술 알파에서 발견된 문제',290,is('attack')?C.red:C.white,32);
  }else if(topic==='grass'){

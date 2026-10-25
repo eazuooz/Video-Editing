@@ -23,7 +23,7 @@ export function makeLesson(topic:string,slug:string,timing:any){return makeScene
   world.add(<Rect position={[-10,260]} width={950} height={88} fill="#000000E8" opacity={()=>p()===6?0:1}/>);
   world.add(<Txt text={()=>p()===1?'작은 삼각형들이 하나의 표면이 된다':p()===2?'① 경계 정하기  →  ② 안 / 밖 나누기':p()===3?'③ 메시 절단  →  ④ 새 바닥 삽입':p()===4?'⑤ 충돌 판정  →  공이 통과':'Runtime Mesh Slicing · 런타임 메시 절단'} position={[-15,260]} fontFamily={FONT} fontSize={33} fill={C.white} fontWeight={700} opacity={()=>p()===6?0:1}/>);
   world.add(<Rect position={[-10,-40]} width={800} height={190} fill="#000000DE" opacity={()=>p()===5?1:0}/>);
-  world.add(<Txt text="촬영 · 배치 순간\n메시 수정 + 최적화" position={[-10,-40]} fontFamily={FONT} fontSize={48} fontWeight={700} fill={C.yellow} opacity={()=>p()===5?1:0}/>);
+  world.add(<Txt text={"촬영 · 배치 순간\n메시 수정 + 최적화"} position={[-10,-40]} fontFamily={FONT} fontSize={48} fontWeight={700} fill={C.yellow} opacity={()=>p()===5?1:0}/>);
  }else{
   world.add(<Txt text="같은 행성 · 같은 출발 속도" position={[-10,-400]} fontFamily={FONT} fontSize={42} fill={C.yellow} fontWeight={700}/>);
   world.add(<Txt text="빠르게 약해짐" position={[-250,-340]} fontFamily={FONT} fontSize={34} fill={C.red} fontWeight={700}/>);

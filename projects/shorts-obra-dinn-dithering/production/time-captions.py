@@ -22,6 +22,19 @@ from audio_revision import L, VOICE, REVISION, normalize_speech, guard as revisi
 FPS = 60
 VOICE_OFFSET = 0.20
 TAIL_SECONDS = 0.40
+# Reviewed ASR edge overruns for this exact paragraph-assembled PCM. These
+# corrections constrain a cue to its own take; they do not infer word onsets.
+PCM_EDGE_REVIEW = {
+    "voiceSha256": "031a2905ed8ac69a4f494e6f136a74544504ccfdcf80a3be18e2ab8d5dfa1558",
+    "asrSha256": "60a72014041a9530fe45664b36d917cd1e382ed964b7897ab0a894971eea3c69",
+    "pcmTimingSha256": "d615d669d354539ba754da9c7baa9a8b216f7d33a767a6bf97e7393708f4302d",
+    "edges": {
+        "p1-2": {"edge": "end", "lineIndex": 0, "rawSeconds": 4.98, "sample": 119040, "beforeFrame": 311, "afterFrame": 309},
+        "p3-4": {"edge": "end", "lineIndex": 2, "rawSeconds": 19.94, "sample": 473760, "beforeFrame": 1208, "afterFrame": 1196},
+        "p4-3": {"edge": "end", "lineIndex": 3, "rawSeconds": 26.66, "sample": 638520, "beforeFrame": 1612, "afterFrame": 1608},
+        "p5-1": {"edge": "start", "lineIndex": 4, "rawSeconds": 26.58, "sample": 644160, "beforeFrame": 1612, "afterFrame": 1623},
+    },
+}
 DEFAULT_VOICE = (
     "projects/shorts-obra-dinn-dithering/production/local/audio-v1/voice/"
     "interior.wav"
@@ -144,6 +157,47 @@ def apply_aliases(raw, aliases):
 
 def half_up(value):
     return math.floor(value + 0.5)
+
+
+def reviewed_pcm_edges(voice, asr_path, lines):
+    """Fail closed unless the reviewed PCM, raw ASR, and take ranges match."""
+    timing_path = voice.with_suffix(".timing.json")
+    actual = {"voiceSha256": sha(voice), "asrSha256": sha(asr_path),
+              "pcmTimingSha256": sha(timing_path)}
+    if any(actual[key] != PCM_EDGE_REVIEW[key] for key in actual):
+        raise RuntimeError("PCM edge review belongs to different inputs; review new timestamps.")
+    timing = read(timing_path)
+    from scipy.io import wavfile
+    import numpy as np
+
+    rate, pcm = wavfile.read(voice)
+    if rate != 24000 or rate != timing["sample_rate"] or pcm.ndim != 1:
+        raise RuntimeError("Reviewed mono 24kHz PCM layout changed.")
+    ranges, gaps = [], []
+    for index, entry in enumerate(timing["entries"]):
+        if entry["lineIndex"] != index or entry["text"] != lines[index]:
+            raise RuntimeError("Reviewed paragraph ownership changed.")
+        start, end = (round(entry[key] * rate) for key in ("start", "end"))
+        take = voice.parent / "normalized-takes" / f"main-{index + 1:02}.wav"
+        take_rate, take_pcm = wavfile.read(take)
+        if take_rate != rate or not np.array_equal(pcm[start:end], take_pcm):
+            raise RuntimeError("Recorded PCM range differs from its normalized take.")
+        ranges.append({"lineIndex": index, "sampleRange": [start, end],
+                       "take": relative(take), "takeSha256": sha(take), "sampleExact": True})
+        if index:
+            gap_start = ranges[index - 1]["sampleRange"][1]
+            if np.count_nonzero(pcm[gap_start:start]):
+                raise RuntimeError("Recorded inter-paragraph silence is no longer all zero.")
+            gaps.append({"sampleRange": [gap_start, start], "samples": start - gap_start,
+                         "allSamplesZero": True})
+    for fix in PCM_EDGE_REVIEW["edges"].values():
+        bound = ranges[fix["lineIndex"]]["sampleRange"][0 if fix["edge"] == "start" else 1]
+        if bound != fix["sample"]:
+            raise RuntimeError("Reviewed correction is not an actual paragraph boundary.")
+    return {"fingerprints": actual, "pcmTiming": relative(timing_path),
+            "sampleRate": rate, "paragraphs": ranges, "insertedSilences": gaps,
+            "policy": "Only four reviewed ASR edges outside their own PCM take; start ceil/end floor; other edges retain nearest-frame timing.",
+            "rawAsrPreserved": True, "audioPreserved": True, "actualListeningPerformed": False}
 
 
 def stamp(seconds, ass=False):
@@ -297,7 +351,10 @@ def main(argv=None):
         return value, {"wordIndex": word["index"], "rawCharOffset": position,
                        "fraction": fraction, "interpolatedWithinWord": 0 < fraction < 1}
 
+    pcm_edge_evidence = reviewed_pcm_edges(voice, asr_path, lines)
+    corrections = []
     timed, evidence, position, previous_end = [], [], 0, 0
+    legacy_previous_end = 0
     for clause in clauses:
         length = len(normalized(clause["spoken"]))
         if not length:
@@ -311,6 +368,30 @@ def main(argv=None):
         desired_end = half_up((VOICE_OFFSET + clip_end) * FPS)
         start_frame = max(previous_end, math.ceil(VOICE_OFFSET * FPS), desired_start)
         end_frame = min(frames, desired_end)
+        legacy_start = max(legacy_previous_end, math.ceil(VOICE_OFFSET * FPS), desired_start)
+        legacy_previous_end = min(frames, desired_end)
+        correction = PCM_EDGE_REVIEW["edges"].get(clause["id"])
+        if correction:
+            edge = correction["edge"]
+            raw_edge = raw_start if edge == "start" else raw_end
+            before = legacy_start if edge == "start" else end_frame
+            bound_seconds = correction["sample"] / pcm_edge_evidence["sampleRate"]
+            if (clause["lineIndex"] != correction["lineIndex"]
+                    or abs(raw_edge - correction["rawSeconds"]) > 1e-8
+                    or before != correction["beforeFrame"]
+                    or not (raw_edge < bound_seconds if edge == "start" else raw_edge > bound_seconds)):
+                raise RuntimeError("Reviewed ASR edge changed: " + clause["id"])
+            value = (VOICE_OFFSET + bound_seconds) * FPS
+            after = math.ceil(value - 1e-8) if edge == "start" else math.floor(value + 1e-8)
+            if after != correction["afterFrame"]:
+                raise RuntimeError("Reviewed PCM boundary frame changed: " + clause["id"])
+            if edge == "start":
+                start_frame = max(previous_end, after)
+            else:
+                end_frame = after
+            corrections.append({"id": clause["id"], **correction,
+                                "pcmBoundarySeconds": bound_seconds,
+                                "reason": "ASR edge lies outside its exact PCM paragraph; constrain to verified take boundary, not an inferred word onset."})
         if not 0 <= start_frame < end_frame <= frames:
             raise RuntimeError("Empty/overlapping caption requires timestamp review: " + clause["id"])
         item = copy.deepcopy(clause)
@@ -323,12 +404,15 @@ def main(argv=None):
             "rawWordTimes": [raw_start, raw_end], "firstBoundary": first,
             "lastBoundary": last, "clippedToPcm": raw_end != clip_end or raw_start != clip_start,
             "frameRange": [start_frame, end_frame],
-            "nonOverlapAdjustmentFrames": start_frame - desired_start,
+            "nonOverlapAdjustmentFrames": legacy_start - desired_start,
+            "pcmBoundaryCorrection": corrections[-1] if correction else None,
         })
         position += length
         previous_end = end_frame
     if position != len(expected):
         raise RuntimeError("Caption timing failed complete character coverage.")
+    if len(corrections) != len(PCM_EDGE_REVIEW["edges"]):
+        raise RuntimeError("Reviewed PCM boundary correction coverage changed.")
 
     from PIL import ImageFont
 
@@ -370,6 +454,7 @@ def main(argv=None):
         "pronunciationAliases": read(P / "script/clauses.json").get("pronunciationAliases", {}),
         "narrationSha256": sha(narration_path), "clausesSha256": sha(clauses_path),
         "reconciliationSha256": sha(reconciliation_path) if reconciliation else None,
+        "pcmTimingSha256": pcm_edge_evidence["fingerprints"]["pcmTimingSha256"],
     }
     output = {
         "schemaVersion": 1, "revision": REVISION, "status": ("canonical-content-word-timed; raw-variants-and-playback-review-pending"
@@ -379,6 +464,7 @@ def main(argv=None):
         "voiceOffsetSeconds": VOICE_OFFSET, "tailSecondsMinimum": TAIL_SECONDS,
         "speechSpeed": 1, "target60Applied": frames == 60 * FPS,
         "timingInputs": fingerprints, "cues": timed,
+        "pcmBoundaryCorrections": corrections,
     }
     alignment = {
         "status": ("canonical-character-coverage-after-scoped-variants; pronunciation-and-playback-review-pending"
@@ -387,12 +473,14 @@ def main(argv=None):
         "normalizedNarrationCharacters": len(expected), "normalizedCoverageExact": True,
         "fingerprints": fingerprints, "reviewedAliases": aliases, "aliasApplications": alias_events,
         "reconciliation": relative(reconciliation_path) if reconciliation else None,
-        "timestampPolicy": "Measured word edges; explicit interpolation only inside timestamped words;60fps nearest-frame quantization",
+        "timestampPolicy": "Measured word edges; explicit interpolation only inside timestamped words;60fps nearest-frame quantization except four hash-bound PCM boundary corrections",
+        "pcmBoundaryReview": {**pcm_edge_evidence, "corrections": corrections},
         "durationPolicy": "ceil((voice+0.20start+0.40tail)*60); natural speech speed, no padding to target60",
         "words": words, "cues": evidence,
         "reviewFlags": [item for item in evidence if item["firstBoundary"]["interpolatedWithinWord"]
                         or item["lastBoundary"]["interpolatedWithinWord"]
-                        or item["nonOverlapAdjustmentFrames"] or item["clippedToPcm"]],
+                        or item["nonOverlapAdjustmentFrames"] or item["clippedToPcm"]
+                        or item["pcmBoundaryCorrection"]],
         "humanListening": "pending",
     }
     targets = {
