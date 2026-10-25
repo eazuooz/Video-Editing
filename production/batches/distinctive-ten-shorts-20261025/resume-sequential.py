@@ -34,6 +34,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--from-order', type=int, default=1)
     parser.add_argument('--through-order', type=int, default=10)
+    parser.add_argument('--retry-failed', action='store_true', help='Use only after inspecting and resolving the saved failure')
     args = parser.parse_args()
     rows = read(BATCH / 'batch.json')['projects']
     chosen = [r for r in rows if args.from_order <= r['order'] <= args.through_order]
@@ -58,7 +59,7 @@ def main():
         write(status_path, status)
         for stage, command in (
             ('voice', [str(PYTHON), '-X', 'utf8', str(BATCH / 'generate-ready-voices.py'), '--slug', slug, '--wait-minutes', '180']),
-            ('finalizer', [str(PYTHON), '-X', 'utf8', str(BATCH / 'finish-ready-videos.py'), '--execute', '--slug', slug, '--wait-minutes', '180']),
+            ('finalizer', [str(PYTHON), '-X', 'utf8', str(BATCH / 'finish-ready-videos.py'), '--execute', '--slug', slug, '--wait-minutes', '180'] + (['--retry-failed'] if args.retry_failed else [])),
         ):
             finalizer.authorization(slug)
             log = MEDIA / 'batch-local' / (run_id + '-' + slug + '-' + stage + '.log')

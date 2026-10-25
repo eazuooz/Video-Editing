@@ -3,10 +3,10 @@ $ErrorActionPreference = 'Stop'
 $projectPath = Split-Path $PSScriptRoot -Parent
 $workspacePath = Split-Path (Split-Path $projectPath -Parent) -Parent
 $slug = Split-Path $projectPath -Leaf
-$control = Get-Content -LiteralPath (Join-Path $workspacePath 'shared/publishing/video-production-control.json') -Raw | ConvertFrom-Json
+$control = Get-Content -LiteralPath (Join-Path $workspacePath 'shared/publishing/video-production-control.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 $scope = $control.scopedBatchAuthorizations.'explicit-ten-distinctive-shorts-20261025'
 if ($scope.status -ne 'active' -or -not $scope.fullProductionAuthorized -or $slug -notin $scope.slugs) { throw 'Batch inactive for this project' }
-$captions = Get-Content -LiteralPath (Join-Path $projectPath 'script/captions.json') -Raw | ConvertFrom-Json
+$captions = Get-Content -LiteralPath (Join-Path $projectPath 'script/captions.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 if (-not $captions.timingInputs.voiceSha256) { throw 'Actual voice alignment is required first' }
 $localPath = Join-Path $PSScriptRoot 'local'
 $capturePath = Join-Path $localPath 'unity-capture'

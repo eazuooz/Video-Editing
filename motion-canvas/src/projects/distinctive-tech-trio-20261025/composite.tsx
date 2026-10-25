@@ -19,10 +19,17 @@ export function composite(slug:string,cfg:any,timing:any){return makeScene2D(fun
  const ROOT='/@fs/D:/Github/VideoEditing/projects/'+slug+'/production/local/';
  const reaction=()=>timing.reactions.find((r:any)=>t()>=r.start&&t()<r.end);
  const catPresence=()=>{const r=reaction();return r?cap((t()-r.start)/.18)*cap((r.end-t())/.2):0;};
+ // Noita keeps the grid clear throughout the cat's exit; opacity is not a
+ // safe proxy for its occupied area. Restore the grid only after the cat is gone.
+ const diagramReserve=()=>{
+  if(cfg.topic!=='noita')return catPresence();
+  const r=timing.reactions.find((r:any)=>t()>=r.start-.18&&t()<r.end+.22);
+  return !r?0:t()<r.start?smooth((t()-r.start+.18)/.18):t()<=r.end?1:1-smooth((t()-r.end)/.22);
+ };
  view.fill('#000');
- const diagram=new Node({opacity:()=>footage()?0:1,position:()=>[-25-170*catPresence(),-25-140*catPresence()],scale:()=>1-.22*catPresence()});view.add(diagram);
+ const diagram=new Node({opacity:()=>footage()?0:1,position:()=>[-25-170*diagramReserve(),-25-140*diagramReserve()],scale:()=>1-.22*diagramReserve()});view.add(diagram);
  const labels:any={material:'색 + 물질의 종류',flow:'이웃한 빈칸을 확인한다',compare:'같은 불 · 주변 물질만 변경',rules:'작은 규칙이 이어지는 세계',chunks:'몸의 기본 구조 = 두 덩어리',constraint:'거리 유지 → 몸의 방향 변화',limbs:'계산한 몸 위에 팔다리와 꼬리',term:'입력과 상태로 자세를 계산',reveal:'밝은 점 + 어두운 점',ratio:'새 색 대신, 점의 비율',shade:'작은 점들이 모이면 명암',motion:'카메라 이동과 패턴의 관계',close:cfg.topic==='noita'?'작은 물질 규칙 → 큰 변화':cfg.topic==='rain'?'연결된 두 덩어리 → 다양한 동작':'두 가지 색 → 풍부한 명암',game:'원리를 확대해 보면'};
- diagram.add(<Txt text={()=>labels[id()]??''} position={()=>[0,-345+82*catPresence()]} fill={C.yellow} fontFamily={FONT} fontSize={42} fontWeight={700}/>);
+ diagram.add(<Txt text={()=>labels[id()]??''} position={()=>[0,-345+82*diagramReserve()]} fill={C.yellow} fontFamily={FONT} fontSize={42} fontWeight={700}/>);
 
  if(cfg.topic==='noita'){
   const cols=24,rows=13,size=34;
@@ -67,8 +74,19 @@ export function composite(slug:string,cfg:any,timing:any){return makeScene2D(fun
 
  if(cfg.topic==='rain'){
   const L=192;
-  const angle=()=>id()==='constraint'?.12+smooth(eventElapsed('bodyRotation',e())/3.2)*.92:-.28+Math.sin(e()*1.5)*.28;
-  const front=():[number,number]=>id()==='constraint'?[145,-50]:[90+Math.sin(e()*.7)*80,-45-Math.sin(e()*1.2)*30];
+  // p3-1: lift the front first, advance over the ledge, then let the rear
+  // catch up. p3-2 starts only after that pose, at the real caption anchor.
+  const rotationAt=()=>timing.events?.bodyRotation?(timing.events.bodyRotation.startFrame-sec().startFrame)/60:1.85;
+  const climb=()=>smooth((e()-2/60)/Math.max(.01,rotationAt()-2/60));
+  const climbingFront=():[number,number]=>[145*smooth((climb()-.35)/.30),74-124*smooth(climb()/.35)];
+  const climbingRearY=()=>126-52*smooth((climb()-.35)/.30)+( -50-Math.sin(.12)*L-74)*smooth((climb()-.65)/.35);
+  const angle=()=>{
+   if(id()!=='constraint')return-.28+Math.sin(e()*1.5)*.28;
+   if(e()<rotationAt())return Math.asin((climbingFront()[1]-climbingRearY())/L);
+   const duration=timing.events?.bodyRotation?(timing.events.bodyRotation.endFrame-timing.events.bodyRotation.startFrame)/60:2.4667;
+   return .12+smooth(eventElapsed('bodyRotation',e()-rotationAt())/duration)*.92;
+  };
+  const front=():[number,number]=>id()==='constraint'?climbingFront():[90+Math.sin(e()*.7)*80,-45-Math.sin(e()*1.2)*30];
   const rear=():[number,number]=>{const f=front();return[f[0]-Math.cos(angle())*L,f[1]-Math.sin(angle())*L];};
   const skin=()=>['limbs','term','close'].includes(id())&&(id()!=='limbs'||eventElapsed('limbsAdded',e())>=0);
   diagram.add(<Line points={[[-430,190],[-20,190],[-20,145],[240,145],[240,190],[430,190]]} stroke="#6D777E" lineWidth={11}/>);
@@ -83,7 +101,7 @@ export function composite(slug:string,cfg:any,timing:any){return makeScene2D(fun
   for(const dx of [-25,25])diagram.add(<Circle position={()=>{const f=front();return[f[0]+dx,f[1]-8];}} size={16} fill="#12202B" opacity={()=>skin()?1:0}/>);
   diagram.add(<Line points={()=>{const f=front(),b=rear(),dx=Math.sin(angle())*145,dy=-Math.cos(angle())*145;return[[b[0]+dx,b[1]+dy],[f[0]+dx,f[1]+dy]];}} stroke={C.green} lineWidth={5} startArrow endArrow arrowSize={17}/>);
   diagram.add(<Txt text="중심 사이 거리 유지" position={[0,220]} fill={C.green} fontFamily={FONT} fontSize={34} fontWeight={700}/>);
-  diagram.add(<Txt text={()=>id()==='constraint'?'앞쪽이 걸려도 → 뒤쪽이 회전':skin()?'몸의 상태 → 팔다리 자세 계산':'앞 몸체 + 뒤 몸체'} position={[0,270]} fill={C.white} fontFamily={FONT} fontSize={36} fontWeight={700}/>);
+  diagram.add(<Txt text={()=>id()==='constraint'?(e()<rotationAt()?'앞쪽 상승 → 뒤쪽이 따라옴':'앞쪽이 걸려도 → 뒤쪽이 회전'):skin()?'몸의 상태 → 팔다리 자세 계산':'앞 몸체 + 뒤 몸체'} position={[0,270]} fill={C.white} fontFamily={FONT} fontSize={36} fontWeight={700}/>);
   diagram.add(<Txt text="우리의 두 점 연결 시연" position={[0,325]} fill={C.muted} fontFamily={FONT} fontSize={28}/>);
  }
 
@@ -108,15 +126,33 @@ export function composite(slug:string,cfg:any,timing:any){return makeScene2D(fun
   diagram.add(<Txt text="우리의 디더링 시연" position={[0,325]} fill={C.muted} fontFamily={FONT} fontSize={28}/>);
  }
 
- const rainCrop=()=>cfg.topic==='rain'&&id()==='game';
+ const rainCrop=()=>cfg.topic==='rain'&&['game','close'].includes(id());
  const gameHeight=()=>rainCrop()?700:563;
  const game=new Rect({position:[-20,-35],width:1000,height:gameHeight,clip:true,opacity:()=>footage()?1:0});view.add(game);
- game.add(<Img src={()=>ROOT+'game-frames/'+gameId()+'/'+String(gameFrame()).padStart(5,'0')+'.jpg'} width={()=>rainCrop()?2000:1000} height={()=>rainCrop()?1125:562.5} position={()=>rainCrop()?[375,-94]:[0,0]}/>);
+ game.add(<Img src={()=>ROOT+'game-frames/'+gameId()+'/'+String(gameFrame()).padStart(5,'0')+'.jpg'} width={()=>rainCrop()?2000:1000} height={()=>rainCrop()?1125:562.5} position={()=>rainCrop()?(id()==='game'?[375,-94]:[62.5,-212.5]):[0,0]}/>);
  game.add(<Rect position={()=>[0,-gameHeight()/2+36]} width={1000} height={70} fill="#000000A0"/>);
  game.add(<Txt text={cfg.game} position={()=>[-455,-gameHeight()/2+36]} offset={[-1,0]} fill={C.white} fontFamily={FONT} fontSize={33} fontWeight={700}/>);
  // Editorial focus marks are restricted to the directly inspected source interval.
- game.add(<Circle position={[-110,40]} size={[310,260]} stroke={C.green} lineWidth={7} opacity={()=>cfg.topic==='noita'&&id()==='game'&&e()>2.5&&e()<3.1?1:0}/>);
- game.add(<Txt text="사라지는 발판" position={[-240,-170]} fill={C.green} fontFamily={FONT} fontSize={30} fontWeight={700} stroke="#000" lineWidth={5} strokeFirst opacity={()=>cfg.topic==='noita'&&id()==='game'&&e()>2.5&&e()<3.1?1:0}/>);
+ if(cfg.topic==='noita'){
+  // Hand-checked source coordinates, 1920x1080, source430s + local seconds.
+  // The explosion obscures the platform at2.16–2.90s: clear guides then.
+  const point=(keys:number[][]):[number,number]=>{
+   const next=keys.findIndex(k=>k[0]>e());
+   const a=keys[Math.max(0,next<0?keys.length-1:next-1)],b=keys[next<0?keys.length-1:next];
+   const u=a===b?0:cap((e()-a[0])/(b[0]-a[0]));
+   return[(a[1]+(b[1]-a[1])*u-960)*1000/1920,(a[2]+(b[2]-a[2])*u-540)*1000/1920];
+  };
+  const cue=(start:number,end:number)=>id()==='game'&&footage()?smooth((e()-start)/.10)*smooth((end-e())/.10):0;
+  const fire=()=>point([[.2,1270,353],[.5,1290,353],[1.2,1330,351],[1.45,1360,337]]);
+  const fireGuide=new Node({opacity:()=>cue(.2,1.45)});game.add(fireGuide);
+  fireGuide.add(<Txt text="타는 나무" position={[50,-187]} fill={C.red} fontFamily={FONT} fontSize={36} fontWeight={700} stroke="#000" lineWidth={6} strokeFirst/>);
+  fireGuide.add(<Line points={()=>[[75,-162],fire()]} stroke={C.red} lineWidth={8} endArrow arrowSize={22} end={()=>smooth((e()-.2)/.18)}/>);
+  const platform=()=>point([[1.55,795,633],[2,850,625],[2.16,850,625],[2.9,845,625],[3.2,830,630],[3.55,800,625]]);
+  const platformGuide=new Node({opacity:()=>Math.max(cue(1.55,2.16),cue(2.9,3.55))});game.add(platformGuide);
+  platformGuide.add(<Rect position={platform} size={[180,58]} radius={9} stroke={C.green} lineWidth={8}/>);
+  platformGuide.add(<Txt text={()=>e()<2.16?'나무 발판':'발판이 사라진 자리'} position={[-220,-112]} fill={C.green} fontFamily={FONT} fontSize={35} fontWeight={700} stroke="#000" lineWidth={6} strokeFirst/>);
+  platformGuide.add(<Line points={()=>{const p=platform();return[[-205,-87],[p[0]-12,p[1]-39]];}} stroke={C.green} lineWidth={8} endArrow arrowSize={22} end={()=>smooth((e()-(e()<2.16?1.55:2.9))/.16)}/>);
+ }
  game.add(<Circle position={[-10,0]} size={[130,210]} stroke={C.green} lineWidth={6} opacity={()=>cfg.topic==='rain'&&id()==='game'&&e()>1.5&&e()<2.5?1:0}/>);
  game.add(<Txt text="몸의 움직임" position={[200,90]} fill={C.green} fontFamily={FONT} fontSize={30} fontWeight={700} stroke="#000" lineWidth={5} strokeFirst opacity={()=>cfg.topic==='rain'&&id()==='game'&&e()>1.5&&e()<2.5?1:0}/>);
   const head=(kind:string)=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="540"><rect width="1080" height="540" fill="black"/><g font-family="Malgun Gothic" font-weight="700"><text x="105" y="128" font-size="37" fill="${C.muted}">얌얌코딩</text><text x="510" y="260" text-anchor="middle" font-size="${cfg.topic==='obra'?64:68}" fill="white">${cfg.head[0]}</text><text x="510" y="363" text-anchor="middle" font-size="${cfg.topic==='obra'?62:71}" fill="${C.yellow}">${cfg.head[1]}</text><text x="75" y="478" font-size="29" fill="${C.teal}">${cfg.term}</text><text x="75" y="520" font-size="23" fill="${C.muted}">${cfg.english}</text><text x="880" y="478" text-anchor="middle" font-size="27" fill="${C.muted}">${kind}</text></g></svg>`);
