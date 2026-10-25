@@ -106,7 +106,7 @@ export function composite(slug:string,cfg:any,timing:any){return makeScene2D(fun
  }
 
  if(cfg.topic==='obra'){
-  const big=new Node({opacity:()=>['reveal','ratio'].includes(id())?1:0});diagram.add(big);
+  const big=new Node({position:()=>[0,45*diagramReserve()],opacity:()=>['reveal','ratio'].includes(id())?1:0});diagram.add(big);
   const order=[0,10,2,8,5,15,7,13,1,11,3,9,4,14,6,12];
   const bright=()=>id()==='ratio'?(timing.events?(eventElapsed('twelveCells',e())<0?4:12):(phase()<.48?4:12)):8;
   for(let y=0;y<4;y++)for(let x=0;x<4;x++)big.add(<Rect position={[(x-1.5)*118,(y-1.5)*118-30]} size={111} fill={()=>order.indexOf(y*4+x)<bright()?'#EFF3D1':'#19251D'} stroke="#637064" lineWidth={2}/>);
@@ -123,7 +123,7 @@ export function composite(slug:string,cfg:any,timing:any){return makeScene2D(fun
   };
   for(let y=0;y<nY;y++)for(let x=0;x<nX;x++)fine.add(<Rect position={[(x-(nX-1)/2)*size,(y-(nY-1)/2)*size-30]} size={size+.15} fill={()=>pixel(x,y)?'#EFF3D1':'#19251D'}/>);
   fine.add(<Txt text={()=>id()==='motion'?(unstable()?'패턴이 흔들리는 예시':'패턴을 안정시킨 예시'):'점의 밀도 → 눈에 보이는 밝기'} position={[0,270]} fill={()=>id()==='motion'&&unstable()?C.red:C.teal} fontFamily={FONT} fontSize={38} fontWeight={700}/>);
-  diagram.add(<Txt text="우리의 디더링 시연" position={[0,325]} fill={C.muted} fontFamily={FONT} fontSize={28}/>);
+  diagram.add(<Txt text="우리의 디더링 시연" position={()=>[0,325+45*diagramReserve()]} fill={C.muted} fontFamily={FONT} fontSize={28}/>);
  }
 
  const rainCrop=()=>cfg.topic==='rain'&&['game','close'].includes(id());
