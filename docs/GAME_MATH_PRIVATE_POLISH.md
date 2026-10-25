@@ -1,35 +1,33 @@
 <!-- GAMEPLAY-20261024-START -->
 
-갱신: 2026-10-25T15:07:34.445468+09:00
+갱신: 2026-10-25T17:20:34.109644+09:00
 
-**최신 수정본 렌더18/18 · 변경 화면 확인18/18 · 사용자 검수 승인0/18.**
+**실제 게임 Abstract 적용·내부 검사 18/18 · 사용자 승인0/18.**
 
-M14 다각형②의 실제 사각형 절단→회전13초를 보완하고, 실제 게임 Abstract18.15초를 추가했습니다. 기존 본문 설명·음성·순서는 그대로이며, 나머지17편은 이전 검수본을 유지했습니다. 모든 게임 구간은 원래 속도이며 정지·반복·감속으로 길이를 채우지 않습니다. 전체 연속 청취·사용자 승인은 별도입니다.
+M14는 완성본을 유지하고 다른17편은 기존 개요 음성과 실제 게임 장면을 통합합니다. 본문 설명·음성·순서·길이는 보존합니다. 전체 연속 청취·사용자 승인은 별도입니다.
 
-[현재 검수 페이지](../output/private-math-gameplay-20261024/index.html) · [이전본 조사 기록](../output/private-math-gameplay-20261024/audit.html)
+[최신18편 검수표](../output/private-math-abstracts-20261025/index.html)
 
-| 번호 | 강의 | 실제 재생 / 삽입 | 이번 상태 | 검수본 |
+| 번호 | 강의 | 실제 게임 도입 | 이번 상태 | 검수본 |
 |---|---|---:|---|---|
-| M03-original | 3D 회전 ① 방향과 회전 행렬 | 75초 / 5구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-orientation-matrices-gameplay-motion-v4/index.html) |
-| M04 | 3D 회전 ② 오일러 각과 축·각 | 47.5초 / 3구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-euler-axis-angle-gameplay-motion-v4/index.html) |
-| M05 | 쿼터니언 ① 허수에서 회전과 역원까지 | 54.18초 / 4구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-quaternion-foundations-v3-gameplay-motion-v4/index.html) |
-| M06 | 쿼터니언 ② 합성·목표 자세·벡터 회전 | 32.9초 / 4구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-quaternion-calculations-v3-gameplay-motion-v4/index.html) |
-| M07 | 회전 보간 ① 두 자세 사이의 경로와 속도 | 15.5초 / 3구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-interpolation-paths-v2-gameplay-motion-v4/index.html) |
-| M08 | 회전 보간 ② 같은 자세를 다른 표현으로 옮기기 | 30.7초 / 3구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-rotation-conversions-v2-gameplay-motion-v4/index.html) |
-| M09 | 직선과 경계 ① 두 점으로 연결선을 계산하기 | 42.1초 / 4구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-lines-circles-v2-gameplay-motion-v4/index.html) |
-| M10 | 직선과 경계 ② 물체의 범위와 회전 뒤 경계 | 35.95초 / 5구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-bounds-transform-v2-gameplay-motion-v4/index.html) |
-| M11 | 평면과 삼각형 ① 표면까지의 거리 | 19.6초 / 3구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-plane-distances-v2-gameplay-motion-v4/index.html) |
-| M12 | 평면과 삼각형 ② 삼각형 안의 주소 | 22초 / 3구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-triangle-addresses-v2-gameplay-motion-v4/index.html) |
-| M13 | 다각형 ① 목적에 맞는 중심과 경계 | 42초 / 5구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-polygon-centers-v2-gameplay-motion-v4/index.html) |
-| M14 | 다각형 ② 빈 공간을 지키는 삼각형 분할 | 67초 / 9구간 | 실제 절단·회전 + Abstract 추가 · 사용자 검수 대기 | [보기](../output/game-math-polygon-partition-v2-gameplay-abstract-v5/index.html) |
-| M15 | 렌더링 ① 빛·재질·시선으로 픽셀 계산하기 | 113.5초 / 10구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-rendering-light-gameplay-motion-v4/index.html) |
-| M16 | 렌더링 ② 카메라의 시야·줌·출력 창 이해하기 | 75.75초 / 9구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-camera-frustum-gameplay-motion-v4/index.html) |
-| M17 | 렌더링 ③ 한 3D 점이 화면의 픽셀이 되는 과정 | 49.5초 / 6구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-camera-projection-gameplay-motion-v4/index.html) |
-| M18 | 렌더링 ④ 나눈 뒤에도 필요한 깊이와 w | 31.5초 / 4구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-projection-depth-gameplay-motion-v4/index.html) |
-| M19 | 렌더링 ⑤ 메시·법선 만들기 | 63.35초 / 7구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-mesh-uv-gameplay-motion-v4/index.html) |
-| M20 | 렌더링 ⑥ 법선 변환과 UV | 48.5초 / 6구간 | 변경 화면 확인 · 사용자 검수 대기 | [보기](../output/game-math-normal-transform-uv-gameplay-motion-v4/index.html) |
-
-M14의3구간은 새 도입부,6구간은 본문의 실제 게임 예시입니다. 아래 과거 기록의 원본 부족 표시는 이력이며 최신 상태는 위 표를 따릅니다.
+| M03-original | 3D 회전 ① 방향과 회전 행렬 | 20.83초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-orientation-matrices-actual-abstract-v6/index.html) |
+| M04 | 3D 회전 ② 오일러 각과 축·각 | 24.58초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-euler-axis-angle-actual-abstract-v6/index.html) |
+| M05 | 쿼터니언 ① 허수에서 회전과 역원까지 | 34.33초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-quaternion-foundations-v3-actual-abstract-v6/index.html) |
+| M06 | 쿼터니언 ② 합성·목표 자세·벡터 회전 | 28.95초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-quaternion-calculations-v3-actual-abstract-v6/index.html) |
+| M07 | 회전 보간 ① 두 자세 사이의 경로와 속도 | 31.08초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-interpolation-paths-v2-actual-abstract-v6/index.html) |
+| M08 | 회전 보간 ② 같은 자세를 다른 표현으로 옮기기 | 16.18초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-rotation-conversions-v2-actual-abstract-v6/index.html) |
+| M09 | 직선과 경계 ① 두 점으로 연결선을 계산하기 | 41.05초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-lines-circles-v2-actual-abstract-v6/index.html) |
+| M10 | 직선과 경계 ② 물체의 범위와 회전 뒤 경계 | 20.17초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-bounds-transform-v2-actual-abstract-v6/index.html) |
+| M11 | 평면과 삼각형 ① 표면까지의 거리 | 20.25초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-plane-distances-v2-actual-abstract-v6/index.html) |
+| M12 | 평면과 삼각형 ② 삼각형 안의 주소 | 20.98초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-triangle-addresses-v2-actual-abstract-v6/index.html) |
+| M13 | 다각형 ① 목적에 맞는 중심과 경계 | 21.30초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-polygon-centers-v2-actual-abstract-v6/index.html) |
+| M14 | 다각형 ② 빈 공간을 지키는 삼각형 분할 | 18.15초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-polygon-partition-v2-gameplay-abstract-v5/index.html) |
+| M15 | 렌더링 ① 빛·재질·시선으로 픽셀 계산하기 | 25.18초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-rendering-light-actual-abstract-v6/index.html) |
+| M16 | 렌더링 ② 카메라의 시야·줌·출력 창 이해하기 | 22.70초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-camera-frustum-actual-abstract-v6/index.html) |
+| M17 | 렌더링 ③ 한 3D 점이 화면의 픽셀이 되는 과정 | 24.37초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-camera-projection-actual-abstract-v6/index.html) |
+| M18 | 렌더링 ④ 나눈 뒤에도 필요한 깊이와 w | 24.38초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-projection-depth-actual-abstract-v6/index.html) |
+| M19 | 렌더링 ⑤ 메시·법선 만들기 | 25.10초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-mesh-uv-actual-abstract-v6/index.html) |
+| M20 | 렌더링 ⑥ 법선 변환과 UV | 23.98초 | 도입부 적용 · 사용자 검수 대기 | [보기](../output/game-math-normal-transform-uv-actual-abstract-v6/index.html) |
 
 <!-- GAMEPLAY-20261024-END -->
 
