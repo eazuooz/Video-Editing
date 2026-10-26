@@ -1,0 +1,3 @@
+import {makeScene2D} from '@motion-canvas/2d';
+import {lesson} from './visuals';
+export default makeScene2D(function*(view){yield* lesson(view,{"mode": "compareChecks", "title": "검사는 서로 다른 질문", "labels": ["색각 시뮬레이션", "흑백 확인", "서로 다른 질문"], "summary": "색 정보와 명도 위계를 나누어 검사합니다", "images": ["/@fs/D:/Github/VideoEditing/projects/limited-color-world/production/local/batch-v1/visual-assets/puyo.jpg", "/@fs/D:/Github/VideoEditing/projects/limited-color-world/production/local/batch-v1/visual-assets/mario-gray.jpg"], "duration": 4.366666666666666, "cues": [-6.26666666666668, -2.986666666666679, 1.0533333333333417]});});

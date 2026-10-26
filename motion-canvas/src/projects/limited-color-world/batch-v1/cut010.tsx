@@ -1,0 +1,3 @@
+import {makeScene2D} from '@motion-canvas/2d';
+import {lesson} from './visuals';
+export default makeScene2D(function*(view){yield* lesson(view,{"mode": "setting", "title": "시뮬레이션으로 찾는 문제", "labels": ["색 조정 설정", "색각별 필터", "플레이어의 선택"], "summary": "뿌요뿌요 테트리스 2 · 실제 색 조정 설정", "images": ["/@fs/D:/Github/VideoEditing/projects/limited-color-world/production/local/batch-v1/visual-assets/puyo-filter-11.jpg", "/@fs/D:/Github/VideoEditing/projects/limited-color-world/production/local/batch-v1/visual-assets/puyo-filter-12.jpg"], "duration": 11.466666666666667, "cues": [-0.006666666666660603, 2.9933333333333394, 6.533333333333331, 7.973333333333329]});});

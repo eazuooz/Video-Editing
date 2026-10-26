@@ -1,0 +1,15 @@
+import {makeProject} from '@motion-canvas/core';
+import cut001 from './cut001?scene';
+import cut007 from './cut007?scene';
+import cut009 from './cut009?scene';
+import cut014 from './cut014?scene';
+import cut017 from './cut017?scene';
+import cut021 from './cut021?scene';
+import cut023 from './cut023?scene';
+import cut024 from './cut024?scene';
+import cut026 from './cut026?scene';
+import cut029 from './cut029?scene';
+import cut030 from './cut030?scene';
+import cut032 from './cut032?scene';
+import cut033 from './cut033?scene';
+export default makeProject({scenes:[cut001,cut007,cut009,cut014,cut017,cut021,cut023,cut024,cut026,cut029,cut030,cut032,cut033]});

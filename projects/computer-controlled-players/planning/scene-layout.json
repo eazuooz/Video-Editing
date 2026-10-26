@@ -1,0 +1,401 @@
+{
+  "schemaVersion": 1,
+  "slug": "computer-controlled-players",
+  "revision": "batch-v1",
+  "note": "Fractions are semantic placement preferences. Final clocks must be actual paid voice timings;60:40 measured globally. No source interval repeats.",
+  "paragraphs": {
+    "01-p01": {
+      "pool": "moves",
+      "preferredActualShare": 0.9,
+      "minActualShare": 0.7,
+      "maxActualShare": 1,
+      "mode": "flow",
+      "labels": [
+        "공격 거리",
+        "상대 위치",
+        "대응할 여지"
+      ],
+      "summary": "움직임을 읽을 시간과 빈틈이 필요합니다"
+    },
+    "01-p02": {
+      "pool": "cpu",
+      "preferredActualShare": 0.9,
+      "minActualShare": 0.6,
+      "maxActualShare": 1,
+      "mode": "flow",
+      "labels": [
+        "정보와 판단",
+        "공정함의 느낌",
+        "공략할 상대"
+      ],
+      "summary": "판단 → 공정함 → 공략의 순서로 살펴봅니다"
+    },
+    "02-p01": {
+      "pool": null,
+      "preferredActualShare": 0,
+      "minActualShare": 0,
+      "maxActualShare": 0,
+      "mode": "priority",
+      "labels": [
+        "상황 없는 공격",
+        "위험으로 이동",
+        "상황을 읽는 판단"
+      ],
+      "summary": "움직이는 것과, 상황을 읽는 것은 다릅니다"
+    },
+    "02-p02": {
+      "pool": "cpu",
+      "preferredActualShare": 0.8,
+      "minActualShare": 0.8,
+      "maxActualShare": 0.8,
+      "mode": "flow",
+      "labels": [
+        "CP / CPU",
+        "행동의 자유",
+        "반응 시간"
+      ],
+      "summary": "컴퓨터가 조작하는 플레이어"
+    },
+    "03-p01": {
+      "pool": "dice",
+      "preferredActualShare": 0.45,
+      "minActualShare": 0.3,
+      "maxActualShare": 0.5,
+      "mode": "photo",
+      "labels": [
+        "주사위 눈",
+        "사용할 장비",
+        "상대의 행동"
+      ],
+      "summary": "좋은 눈이 나왔다는 사실과 조작했다는 주장은 다릅니다"
+    },
+    "03-p02": {
+      "pool": "dice",
+      "preferredActualShare": 0.3,
+      "minActualShare": 0.1,
+      "maxActualShare": 0.45,
+      "mode": "flow",
+      "labels": [
+        "주사위 처리",
+        "행동 선택",
+        "공정함의 느낌"
+      ],
+      "summary": "규칙의 공정함 + 체감하는 공정함"
+    },
+    "04-p01": {
+      "pool": "cpu",
+      "preferredActualShare": 1,
+      "minActualShare": 0.9,
+      "maxActualShare": 1,
+      "mode": "photo",
+      "labels": [
+        "이동",
+        "공격",
+        "혼자 하는 대전"
+      ],
+      "summary": "스매시브라더스 얼티밋 · 실제 CP 대전"
+    },
+    "04-p02": {
+      "pool": "cpu",
+      "preferredActualShare": 1,
+      "minActualShare": 0.95,
+      "maxActualShare": 1,
+      "mode": "flow",
+      "labels": [
+        "공격",
+        "누적 대미지 %",
+        "멀리 날리기"
+      ],
+      "summary": "퍼센트는 남은 체력이 아니라 쌓인 대미지입니다"
+    },
+    "04-p03": {
+      "pool": "cpu",
+      "preferredActualShare": 0.6,
+      "minActualShare": 0.6,
+      "maxActualShare": 0.6,
+      "mode": "flow",
+      "labels": [
+        "위치·상태 데이터",
+        "행동 판단",
+        "다음 움직임"
+      ],
+      "summary": "컴퓨터는 전달된 정보를 바탕으로 행동을 고릅니다"
+    },
+    "04-p04": {
+      "pool": "cpu",
+      "preferredActualShare": 0.7,
+      "minActualShare": 0.7,
+      "maxActualShare": 0.7,
+      "mode": "flow",
+      "labels": [
+        "기술의 거리",
+        "발생 시점",
+        "이동 범위"
+      ],
+      "summary": "내 기술과 상대 기술의 조건을 함께 비교합니다"
+    },
+    "05-p01": {
+      "pool": null,
+      "preferredActualShare": 0,
+      "minActualShare": 0,
+      "maxActualShare": 0,
+      "mode": "range",
+      "labels": [
+        "공격 2칸",
+        "상대 3칸",
+        "한 칸 접근"
+      ],
+      "summary": "한 칸 접근 → 공격이 닿는 거리"
+    },
+    "05-p02": {
+      "pool": "cpu",
+      "preferredActualShare": 0.7,
+      "minActualShare": 0.7,
+      "maxActualShare": 0.7,
+      "mode": "flow",
+      "labels": [
+        "다가오는 상대",
+        "기술 사용 중",
+        "조건에 맞는 선택"
+      ],
+      "summary": "상대의 현재 상태가 선택을 바꿉니다",
+      "fixedActualFrames": 367
+    },
+    "06-p01": {
+      "pool": "cpu",
+      "preferredActualShare": 0.95,
+      "minActualShare": 0.8,
+      "maxActualShare": 1,
+      "mode": "flow",
+      "labels": [
+        "경기 흐름",
+        "유리한 거리",
+        "이동 특성"
+      ],
+      "summary": "상태에 따른 행동 경향 · 일반 설계 원리",
+      "fixedActualFrames": 694
+    },
+    "06-p02": {
+      "pool": "cpu",
+      "preferredActualShare": 0.5,
+      "minActualShare": 0.4,
+      "maxActualShare": 0.5,
+      "mode": "flow",
+      "labels": [
+        "경기 조건",
+        "강도 조절",
+        "판단 충돌"
+      ],
+      "summary": "조건이 많아질수록 판단의 연결이 중요해집니다"
+    },
+    "06-p03": {
+      "pool": null,
+      "preferredActualShare": 0,
+      "minActualShare": 0,
+      "maxActualShare": 0,
+      "mode": "priority",
+      "labels": [
+        "다가가 공격",
+        "위험해 후퇴",
+        "우선순위 선택"
+      ],
+      "summary": "언제 행동을 바꿀지도 정합니다"
+    },
+    "07-p01": {
+      "pool": "cpu",
+      "preferredActualShare": 1,
+      "minActualShare": 0.85,
+      "maxActualShare": 1,
+      "mode": "flow",
+      "labels": [
+        "상황을 알아챔",
+        "반응 간격",
+        "행동 시작"
+      ],
+      "summary": "얼티밋 CP · 즉시 반응을 피하는 설계"
+    },
+    "07-p02": {
+      "pool": null,
+      "preferredActualShare": 0,
+      "minActualShare": 0,
+      "maxActualShare": 0,
+      "mode": "delay",
+      "labels": [
+        "알아챈 시점",
+        "행동 시점",
+        "12 ÷ 60 = 0.2초"
+      ],
+      "summary": "설명 모형의 수치 · 실제 CP 지연 측정값이 아닙니다"
+    },
+    "07-p03": {
+      "pool": null,
+      "preferredActualShare": 0,
+      "minActualShare": 0,
+      "maxActualShare": 0,
+      "mode": "controls",
+      "labels": [
+        "조작 방향 반전",
+        "잠깐의 혼란",
+        "상태에 적응"
+      ],
+      "summary": "짧은 혼란 뒤 회복 · 끝없는 추락으로 이어지지 않게"
+    },
+    "08-p01": {
+      "pool": "cpu",
+      "preferredActualShare": 1,
+      "minActualShare": 0.95,
+      "maxActualShare": 1,
+      "mode": "flow",
+      "labels": [
+        "공격에 나섬",
+        "행동이 드러남",
+        "대응할 기회"
+      ],
+      "summary": "공격적인 상대는 읽고 대응할 기회도 줍니다"
+    },
+    "08-p02": {
+      "pool": "cpu",
+      "preferredActualShare": 1,
+      "minActualShare": 0.95,
+      "maxActualShare": 1,
+      "mode": "flow",
+      "labels": [
+        "상대의 공격",
+        "헛친 뒤 빈틈",
+        "다가가 반격"
+      ],
+      "summary": "공격의 전후를 보고 공략합니다"
+    },
+    "09-p01": {
+      "pool": "cpu",
+      "preferredActualShare": 1,
+      "minActualShare": 0.85,
+      "maxActualShare": 1,
+      "mode": "photo",
+      "labels": [
+        "완벽한 방어?",
+        "공략할 여지",
+        "좋은 대결"
+      ],
+      "summary": "완벽하게 막는 상대만으로 재미가 완성되지는 않습니다"
+    },
+    "09-p02": {
+      "pool": "cpu",
+      "preferredActualShare": 0.95,
+      "minActualShare": 0.85,
+      "maxActualShare": 1,
+      "mode": "flow",
+      "labels": [
+        "정보",
+        "일관된 판단",
+        "시간·빈틈"
+      ],
+      "summary": "컴퓨터 상대의 목적은 좋은 대결입니다",
+      "fixedActualFrames": 779
+    }
+  },
+  "pools": {
+    "moves": [
+      {
+        "source": "smash-mario",
+        "in": 3.85385,
+        "out": 6.006
+      },
+      {
+        "source": "smash-mario",
+        "in": 6.006,
+        "out": 7.691017
+      },
+      {
+        "source": "smash-samus",
+        "in": 3.520183,
+        "out": 6.006
+      },
+      {
+        "source": "smash-samus",
+        "in": 10.7,
+        "out": 12.629283
+      },
+      {
+        "source": "smash-samus",
+        "in": 12.629283,
+        "out": 14.531183
+      }
+    ],
+    "cpu": [
+      {
+        "source": "smash-cpu",
+        "in": 118.4,
+        "out": 305.2
+      }
+    ],
+    "dice": [
+      {
+        "source": "dicey-reunion",
+        "in": 3.15,
+        "out": 5.138467
+      },
+      {
+        "source": "dicey-reunion",
+        "in": 5.7,
+        "out": 7.007
+      },
+      {
+        "source": "dicey-reunion",
+        "in": 9.0,
+        "out": 10.6106
+      },
+      {
+        "source": "dicey-reunion",
+        "in": 10.6106,
+        "out": 11.4114
+      },
+      {
+        "source": "dicey-reunion",
+        "in": 11.4114,
+        "out": 12.4124
+      },
+      {
+        "source": "dicey-reunion",
+        "in": 12.4124,
+        "out": 13.95
+      },
+      {
+        "source": "dicey-reunion",
+        "in": 25.025,
+        "out": 26.95
+      }
+    ]
+  },
+  "nativeCutEvidence": {
+    "method": "scale384 scene candidates then direct before/after native stills; flash candidates retained as one event when background/actors remain continuous",
+    "dicey-board": "projects/computer-controlled-players/production/local/batch-v1/sources/dicey-native-boundaries.jpg",
+    "mario-board": "projects/computer-controlled-players/production/local/batch-v1/sources/mario-native-boundaries.jpg",
+    "samus-board": "projects/computer-controlled-players/production/local/batch-v1/sources/samus-native-boundaries.jpg",
+    "retainedFlashNotCut": [
+      {
+        "source": "smash-mario",
+        "t": 5.35535,
+        "reason": "same lava stage, Mario/DK and uninterrupted hit→launch; direct5.30/5.40stills show hit flash"
+      },
+      {
+        "source": "smash-samus",
+        "t": 4.9049,
+        "reason": "same electric stage and grab/throw action, not a shot change"
+      }
+    ],
+    "excluded": [
+      "Mario wedding/Pauline pose7.691–10.527",
+      "Dicey SIX ALL-NEW EPISODES promo14.0–15.98",
+      "Dicey title/curtain/dialogue/win/packshot screens",
+      "Minecraft-stage first CP match",
+      "CPU menus/character selection/results"
+    ]
+  },
+  "explanationPreservation": "Core one-variable models are guaranteed explanation-only; abstract conditions retain meaningful diagram windows. Actual share is balanced globally within bounds, never by replacing the essential model.",
+  "measuredQualityEdits": {
+    "timingSha256": "fromcurrentrootreviewedsplit",
+    "reason": "Remove0.6s closing/flow flashes; end on actualgame and reassign same74frames to meaningful condition diagram. No voice or totalframechange.",
+    "opening": "punch129f→resultfreeze70f→FLUDD101f→projectile115f→ice114f→CPU149f; question and first/second clause anchors use actualcaption clock."
+  }
+}

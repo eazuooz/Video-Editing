@@ -1,0 +1,3 @@
+import {makeScene2D} from '@motion-canvas/2d';
+import {lesson} from './visuals';
+export default makeScene2D(function*(view){yield* lesson(view,{"mode": "overview", "title": "같은 색을 찾는 순간", "labels": ["구분할 단서", "중요 대상", "흑백 확인"], "summary": "정보 → 대상 → 시선의 순서로 살펴봅니다", "images": ["/@fs/D:/Github/VideoEditing/projects/limited-color-world/production/local/batch-v1/visual-assets/puyo.jpg", "/@fs/D:/Github/VideoEditing/projects/limited-color-world/production/local/batch-v1/visual-assets/flower.jpg", "/@fs/D:/Github/VideoEditing/projects/limited-color-world/production/local/batch-v1/visual-assets/mario-gray.jpg"], "duration": 10.0, "cues": [0.0, 2.539999999999999, 5.98]});});
