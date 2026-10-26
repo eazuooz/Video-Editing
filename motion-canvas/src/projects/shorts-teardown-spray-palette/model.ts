@@ -13,14 +13,22 @@ export const YELLOW_RGB: RGB = [255, 213, 43];
 export const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 export const smooth = (n: number) => {const t = clamp01(n); return t * t * (3 - 2 * t);};
 export const hex = (rgb: RGB) => '#' + rgb.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+export const luminance = (rgb: RGB) => rgb.map(n => {
+  const c = n / 255; return c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4;
+}).reduce((sum,n,i) => sum + n * [.2126,.7152,.0722][i], 0);
+export const materialTextColor = (rgb: RGB) => luminance(rgb) > .179 ? '#000000' : '#ffffff';
 export const blend = (a: RGB, b: RGB, t: number): RGB => a.map((v, i) => v + (b[i] - v) * clamp01(t)) as unknown as RGB;
 export const ORIGINAL_MATERIAL: Material = {index: ORIGINAL, name: '벽돌', rgb: ORIGINAL_RGB, tint: 0};
 export const VARIANTS: Material[] = VARIANT_IDS.map((index, i) => ({
-  index, name: `노랑 ${i + 1}`, rgb: blend(ORIGINAL_RGB, YELLOW_RGB, (i + 1) / 4), tint: i + 1,
+  // Illustration-only spacing: make the first yellow change readable on mobile.
+  // These blends are not measured game tint values or equal simulation steps.
+  index, name: `노랑 ${i + 1}`, rgb: blend(ORIGINAL_RGB, YELLOW_RGB, [.45, .65, .82, 1][i]), tint: i + 1,
 }));
 export const FULL_PALETTE = [ORIGINAL_MATERIAL, ...VARIANTS];
 // Same silhouette for every tint. Only the stored index changes.
-export const CELLS: readonly (readonly [number, number])[] = Array.from({length: 48}, (_, i) => [i % 8, Math.floor(i / 8)] as const);
+export const GRID_COLUMNS = 4;
+export const GRID_ROWS = 3;
+export const CELLS: readonly (readonly [number, number])[] = Array.from({length: GRID_COLUMNS * GRID_ROWS}, (_, i) => [i % GRID_COLUMNS, Math.floor(i / GRID_COLUMNS)] as const);
 export const targetForStep = (step: number): Material => FULL_PALETTE[Math.max(0, Math.min(4, Math.round(step)))];
 export function squaredDistance(a: RGB, b: RGB): number {
   return a.reduce((sum, value, i) => sum + (value - b[i]) ** 2, 0);
@@ -37,7 +45,8 @@ export function yellowVariant(original: number, step: number, available: readonl
 }
 export function gridIndices(step: number, sweep: number): number[] {
   const target = yellowVariant(ORIGINAL, step);
-  return CELLS.map(([x]) => (x + .5) / 8 <= clamp01(sweep) ? target : ORIGINAL);
+  // Begin with the cell beside the lookup arrow, then include its neighbours.
+  return CELLS.map(([x]) => (GRID_COLUMNS - x - .5) / GRID_COLUMNS <= clamp01(sweep) ? target : ORIGINAL);
 }
 export const BROWN_FALLBACK: Material = {index: 7, name: '기존 갈색', rgb: [171, 128, 62], tint: 0};
 export const LIMITED_PALETTE = [ORIGINAL_MATERIAL, BROWN_FALLBACK];

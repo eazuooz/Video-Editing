@@ -10,6 +10,8 @@ def sha(p):
     with Path(p).open('rb') as f: return hashlib.file_digest(f,'sha256').hexdigest()
 
 batch=read(B/'batch.json'); cp=read(B/'checkpoint.json'); rows=[]
+clarityPath=B/'clarity-revision.json';clarity=read(clarityPath) if clarityPath.exists() else {}
+privateAuthorized=clarity.get('privateUploadRequested') is True
 for item in batch['projects']:
     p=R/'projects'/item['slug']; local=p/'production/local'
     plan=read(p/'planning/production-plan.json')
@@ -22,6 +24,7 @@ for item in batch['projects']:
             file=Path(evidence['path'])
             assert file.is_file() and sha(file)==evidence['sha256'], 'Current review file changed: '+str(file)
         row.update(status='local-final-review-pending',finalOutputs=d['outputs'],humanReview=d['humanReview'],reviewRecord=str(review.relative_to(R)).replace('\\','/'))
+        if d.get('clarityRevision'):row.update(clarityRevision=d['clarityRevision'],privateUploadAuthorized=d.get('privateUploadAuthorized',False))
     else:
         state='source-and-code-ready'
         audio=read(p/'project.json').get('audioRevision','audio-v1')
@@ -41,6 +44,16 @@ if cp['localFinalCompleted']==len(rows):
     cp.update(status='four-local-final-versions-ready-for-human-review',
               notDone=['Full actual listening/continuous playback and human final review'],
               next=['Review the exact four local versions. No platform action is authorized by this delivery.'])
+    if privateAuthorized:
+        cp.update(status='four-clarity-versions-internally-verified; explicit-private-upload-handled-by-parent',
+                  clarityRevision=clarity['id'],privateUploadAuthorized=True,
+                  next=['Deliver the exact local clarity review gallery. Parent records separately authorized private upload results; no public/schedule/delete/replace.'])
+        cp.setdefault('publication',{})['YouTube']='private-upload-authorized-by-latest-direct-request; actual-platform-receipts-owned-by-parent'
+if privateAuthorized:
+    auth=batch.setdefault('authorization',{});auth.setdefault('initialScope',auth.get('scope'))
+    auth.update(youtubeAuthorized=True,privateUploadOnly=True,
+                scope='Latest2026-10-27 direct request authorizes four clarity revisions through local delivery and private upload after internal QA. No public/schedule/delete/replace.',
+                latestUploadAuthorization='production/batches/cuphead-teardown-splatoon-20261026/clarity-revision.json#uploadAuthorization')
 save(B/'batch.json',batch);save(B/'checkpoint.json',cp)
 work=R/'shared/publishing/shorts-worklist.json'
 doc=read(work)

@@ -4,21 +4,20 @@ import puzzled from '../../../../shared/assets/branding/cat-reactions-v1/puzzled
 import realize from '../../../../shared/assets/branding/cat-reactions-v1/realize.png';
 import relief from '../../../../shared/assets/branding/cat-reactions-v1/relief.png';
 import {DARK as C} from '../../styles/research-dark';
-import {clamp01, displayedNumber, recentThreeFrames, sampleAt, smooth, type Rate} from './model';
+import {clamp01, expandedFrame, expandedState, sampleAt, smooth, type PoseKey, type Rate} from './model';
 import {requireProductionInput, type SectionId} from './production-input';
 
 const FONT = 'Malgun Gothic';
-const X = [-300, 0, 300];
-const ROUTE_LEFT = -420;
-const ROUTE_RIGHT = 420;
-const routeX = (units: number) => ROUTE_LEFT + (ROUTE_RIGHT - ROUTE_LEFT) * units / 240;
+const ROUTE_LEFT = -350;
+const ROUTE_RIGHT = 350;
+const routeX = (progress: number) => ROUTE_LEFT + (ROUTE_RIGHT - ROUTE_LEFT) * progress;
 const images = {puzzled, realize, relief};
 
 /**
- * Portrait1080×1920. Finishing owns header y0..440 and the fixed captions.
- * Samples/values stay above y1110. Only the position24 comparison uses the
- * second marker row down to y1270; the cat is absent for that whole beat.
- * The moving markers are an authored sample diagram, not a game simulation.
+ * Own expanded diagram only: six consecutive60Hz samples occupy the available
+ * actual speech cue, so a held pose and a changed position can be read together.
+ * No time remapping, hold, loop or slowdown is applied to independent gameplay.
+ * Header0..440, caption1290..1470 and the existing large-cat reserve stay fixed.
  */
 export default makeScene2D(function* (view) {
   const {timing, config} = requireProductionInput();
@@ -36,26 +35,32 @@ export default makeScene2D(function* (view) {
   );
   const cut = () => config.cuts[id()];
   const footage = () => !section().forceDiagram && Boolean(cut()) && elapsed() < (cut()?.maxDuration ?? 0);
-  const sourceKind = () => footage() ? '실제 게임 영상' : '우리 표본화 도식';
-  const modelFrame = () => {
-    if (id() === 'frames') return Math.floor(5 * rangeProgress('p2-1', 'p2-4'));
-    if (id() === 'pose24') return Math.floor(60 * rangeProgress('p4-2', 'p4-3'));
-    if (id() === 'position24') return Math.floor(60 * rangeProgress('p5-1', 'p5-4'));
-    if (id() === 'close') return 5;
-    return 0;
-  };
-  const poseRate = (): Rate => id() === 'frames' ? 60 : 24;
-  const positionRate = (): Rate => id() === 'position24' ? 24 : 60;
-  const selected = () => sampleAt(modelFrame(), poseRate(), positionRate());
-  const three = () => recentThreeFrames(modelFrame());
+  const sourceKind = () => footage() ? '실제 게임 영상' : '우리 확대 도식';
+  const comparing = () => id() === 'position24';
+  const diagramProgress = () => id() === 'position24' ? rangeProgress('p5-2', 'p5-4')
+    : id() === 'pose24' ? rangeProgress('p4-2', 'p4-3')
+    : id() === 'frames' ? rangeProgress('p2-4', 'p2-4')
+    : id() === 'source-rates' ? rangeProgress('p3-2', 'p3-2') : 0;
+  const step = () => expandedFrame(diagramProgress());
+  const state = (rate: Rate = 60) => expandedState(diagramProgress(), rate);
+  const justDrawings = () => id() === 'frames' && frame() < timing.events['p2-3'].startFrame;
+  const splitting = () => id() === 'frames' && frame() >= timing.events['p2-3'].startFrame;
+  const pose = (): PoseKey => justDrawings()
+    ? sampleAt(expandedFrame(rangeProgress('p2-2', 'p2-2')), 60, 60).poseKey
+    : splitting() ? 'A' : state().current.poseKey;
+  const singleX = () => id() === 'close' ? -230 : justDrawings() ? 0
+    : splitting() && frame() < timing.events['p2-4'].startFrame ? 0 : routeX(state().routeProgress);
+  const definition = () => id() === 'source-rates' && frame() < timing.events['p3-2'].startFrame;
+  const showAxis = () => !justDrawings() && id() !== 'close' &&
+    !(splitting() && frame() < timing.events['p2-4'].startFrame);
 
   const reaction = () => {
-    // Two full-width sampling rows are more important than a reaction overlay.
-    if (id() === 'position24') return undefined;
+    if (comparing()) return undefined;
     if (timing.reactions) return timing.reactions.find(r => time() >= r.start && time() < r.end);
     const definitions = [
       {cue: 'p1-2', kind: 'puzzled' as const},
-      {cue: 'p4-3', kind: 'realize' as const},
+      // Let the expanded position changes finish before the large realization.
+      {cue: 'p4-4', kind: 'realize' as const},
       {cue: 'p6-3', kind: 'relief' as const},
     ];
     for (const d of definitions) {
@@ -79,93 +84,106 @@ export default makeScene2D(function* (view) {
   const diagram = new Node({opacity: () => footage() ? 0 : 1});
   view.add(diagram);
   const titles: Record<SectionId, string> = {
-    game: '그림과 위치는 따로 바뀐다',
-    frames: '그림 한 장 · 놓이는 위치',
-    'source-rates': '그림24fps · 게임60fps',
-    pose24: '같은 그림이어도 위치는 앞으로',
-    position24: '위치까지 줄이면 중간 점이 줄어든다',
-    close: '만화의 질감과 매끄러운 이동을 함께',
+    game: '그림의 모양과 놓이는 위치는 별개',
+    frames: '그림을 바꾸기 → 위치를 옮기기',
+    'source-rates': '그림은24장 · 게임은60프레임',
+    pose24: '같은 그림을 유지한 채 앞으로',
+    position24: '같은 순간 · 위치 갱신만 바꾸기',
+    close: '만화의 질감 + 매끄러운 움직임',
   };
-  const definition = () => id() === 'source-rates' && frame() < timing.events['p3-2'].startFrame;
-  diagram.add(<Txt text={() => titles[id()]} position={[0, -402]}
-    fill={C.title} fontFamily={FONT} fontSize={41} fontWeight={700}
+  diagram.add(<Txt text={() => titles[id()]} position={[0, -406]}
+    fill={C.title} fontFamily={FONT} fontSize={42} fontWeight={700}
     opacity={() => definition() ? 0 : 1}/>);
-  diagram.add(<Txt text="표본 확대 · A/B/C는 그림 예시 · 숫자는 도식값" position={[0, -340]}
-    fill={C.muted} fontFamily={FONT} fontSize={28}
+  diagram.add(<Txt text={() => justDrawings() ? '그림 예시를 한 장씩 바꿉니다'
+    : comparing() ? `같은 화면 ${step() + 1} / 6 · 그림은 동일`
+    : id() === 'close' ? '두 속도를 따로 정할 수 있습니다'
+    : splitting() ? '그림 A는 그대로 · 화면 위치만 이동'
+    : '연속된6개 화면을 천천히 확대한 도식'} position={[0, -343]}
+    fill={C.ink} fontFamily={FONT} fontSize={33}
     opacity={() => definition() ? 0 : 1}/>);
 
-  // Three-line canonical definition, collapsing to the persistent term chip.
   const definitionCard = new Node({opacity: () => definition() ? 1 : 0});
   diagram.add(definitionCard);
-  definitionCard.add(<Txt text="Frame rate · fps" position={[0, -444]}
-    fill={C.title} fontFamily={FONT} fontSize={34} fontWeight={700}/>);
-  definitionCard.add(<Txt text="프레임 레이트" position={[0, -402]}
-    fill={C.ink} fontFamily={FONT} fontSize={34} fontWeight={700}/>);
-  definitionCard.add(<Txt text="일 초에 재생하거나 표시하는 프레임 수" position={[0, -358]}
-    fill={C.ink} fontFamily={FONT} fontSize={29}/>);
+  definitionCard.add(<Txt text="Frame rate · fps" position={[0, -433]}
+    fill={C.title} fontFamily={FONT} fontSize={39} fontWeight={700}/>);
+  definitionCard.add(<Txt text="프레임 레이트" position={[0, -382]}
+    fill={C.ink} fontFamily={FONT} fontSize={39} fontWeight={700}/>);
+  definitionCard.add(<Txt text="일 초에 표시하는 프레임 수" position={[0, -331]}
+    fill={C.ink} fontFamily={FONT} fontSize={33}/>);
 
-  const samples = new Node({opacity: () => definition() ? .22 : 1});
-  diagram.add(samples);
-  for (let i = 0; i < 3; i++) {
-    const sampledFrame = () => three()[i];
-    const state = () => sampleAt(sampledFrame(), poseRate(), positionRate());
-    const current = () => sampledFrame() === modelFrame();
-    const known = () => sampledFrame() <= modelFrame();
-    const card = new Rect({position: [X[i], -165], size: [250, 240], radius: 12,
-      fill: C.panel, stroke: () => current() ? C.title : C.line,
-      lineWidth: () => current() ? 5 : 2, opacity: () => known() ? 1 : .22});
-    samples.add(card);
-    card.add(<Img src={() => config.poseImages[state().poseKey]} size={[172, 172]} position={[0, -15]}/>);
-    card.add(<Txt text={() => `그림 ${state().poseKey}`} position={[0, 94]}
-      fill={C.title} fontFamily={FONT} fontSize={33} fontWeight={700}/>);
-    samples.add(<Txt text={() => `${state().timeSeconds.toFixed(3)}초`}
-      position={[X[i], -298]} fill={C.ink} fontFamily={FONT} fontSize={31} fontWeight={700}
-      opacity={() => known() ? 1 : .22}/>);
-    samples.add(<Line points={[[X[i], -42], [X[i], -20]]} stroke={C.teal} lineWidth={4}
-      endArrow arrowSize={11} opacity={() => known() ? 1 : .22}/>);
-    samples.add(<Txt text={() => `위치 ${displayedNumber(state().position)}`}
-      position={[X[i], 17]} fill={C.teal} fontFamily={FONT} fontSize={38} fontWeight={700}
-      opacity={() => known() ? 1 : .22}/>);
+  // One big, recognizable subject replaces three small screenshots and tables.
+  const single = new Node({opacity: () => comparing() ? 0 : definition() ? .2 : 1});
+  diagram.add(single);
+  single.add(<Txt text={() => id() === 'close' ? '그림24장/초'
+    : justDrawings() ? `그림 ${pose()}`
+    : splitting() ? '① 그림 A 그대로'
+    : state().poseChanged ? `① 그림 ${pose()}로 교체` : `① 그림 ${pose()} 유지`}
+    position={() => id() === 'close' ? [-230, -285] : [0, -263]}
+    fill={C.title} fontFamily={FONT} fontSize={43} fontWeight={700}/>);
+  single.add(<Img src={() => config.poseImages[pose()]} size={[250, 250]}
+    position={() => [singleX(), -90]}/>);
+
+  // Previous/current anchors and the arrow use the SAME scale as the subject.
+  // A hollow marker denotes the old position; it does not invent a game hitbox.
+  single.add(<Circle position={() => [routeX(state().previousRouteProgress), 89]}
+    size={28} stroke={C.muted} lineWidth={4}
+    opacity={() => showAxis() && state().positionChanged ? .7 : 0}/>);
+  single.add(<Line points={() => [[routeX(state().previousRouteProgress), 48], [singleX(), 48]]}
+    stroke={C.teal} lineWidth={7} endArrow arrowSize={17}
+    opacity={() => showAxis() && state().positionChanged ? 1 : 0}/>);
+  single.add(<Line points={[[ROUTE_LEFT, 90], [ROUTE_RIGHT, 90]]}
+    stroke={C.line} lineWidth={4} opacity={() => showAxis() ? 1 : 0}/>);
+  for (let n = 0; n < 6; n++) {
+    single.add(<Circle position={[routeX(n / 5), 90]} size={() => n === step() ? 23 : 12}
+      fill={() => n <= step() ? C.teal : C.line} opacity={() => showAxis() ? 1 : 0}/>);
+    single.add(<Txt text={String(n + 1)} position={[routeX(n / 5), 133]}
+      fill={() => n === step() ? C.teal : C.muted}
+      fontFamily={FONT} fontSize={32} fontWeight={700} opacity={() => showAxis() ? 1 : 0}/>);
   }
+  single.add(<Txt text={() => id() === 'close' ? '게임60프레임/초'
+    : justDrawings() ? '모양이 바뀌면 애니메이션'
+    : splitting() ? '② 위치만 앞으로'
+    : '② 위치는 계속 앞으로'} position={[-435, 219]} offset={[-1, 0]}
+    fill={C.teal} fontFamily={FONT} fontSize={38} fontWeight={700}/>);
+  single.add(<Txt text={() => id() === 'close' ? '위치 갱신은 별도'
+    : justDrawings() ? '이동 속도는 따로 정할 수 있어요'
+    : '작은 원=직전 위치 · 숫자=연속 화면 순서'}
+    position={[-435, 284]} offset={[-1, 0]}
+    fill={C.muted} fontFamily={FONT} fontSize={29}
+    opacity={() => catOpacity() > .05 && id() !== 'close' ? 0 : 1}/>);
 
-  // A common model-time cursor drives BOTH schedules; a separate axis shows
-  // held drawing versus advancing position. The expanded timeline is labeled
-  // as a diagram and is not a slowed/counterfeit real-game recording.
-  const comparison = () => id() === 'position24';
-  const firstY = () => comparison() ? 132 : 120;
-  const addRoute = (row: 0 | 1, rate: Rate, label: string, color: string) => {
-    const y = () => row === 0 ? firstY() : 255;
-    const show = () => row === 0 || comparison();
-    const value = () => sampleAt(modelFrame(), poseRate(), rate).position;
-    const group = new Node({opacity: () => show() ? 1 : 0});
-    samples.add(group);
-    group.add(<Txt text={label} position={() => [-440, y() - (row === 0 ? 60 : 38)]} offset={[-1, 0]}
-      fill={color} fontFamily={FONT} fontSize={29} fontWeight={700}/>);
-    group.add(<Line points={() => [[ROUTE_LEFT, y()], [ROUTE_RIGHT, y()]]}
+  // Same pose, path, camera, time cursor and endpoints. ONLY position rate changes.
+  // Six60Hz presentation samples cover0..1/12s of model time, not a game capture.
+  const comparison = new Node({opacity: () => comparing() ? 1 : 0});
+  diagram.add(comparison);
+  for (const [row, rate, label, color] of [
+    [0, 60, '위치60회/초 · 매 화면 앞으로', C.teal],
+    [1, 24, '위치24회/초 · 멈췄다가 이동', C.red],
+  ] as const) {
+    const y = row === 0 ? -159 : 122;
+    const s = () => state(rate);
+    comparison.add(<Txt text={label} position={[-440, y - 105]} offset={[-1, 0]}
+      fill={color} fontFamily={FONT} fontSize={36} fontWeight={700}/>);
+    comparison.add(<Line points={[[ROUTE_LEFT, y + 115], [ROUTE_RIGHT, y + 115]]}
       stroke={C.line} lineWidth={4}/>);
-    for (let tick = 0; tick <= 6; tick++) group.add(<Circle
-      position={() => [routeX(tick * 40), y()]} size={9} fill={C.line}/>);
-    group.add(<Circle position={() => [routeX(value()), y()]} size={32}
-      fill={C.background} stroke={color} lineWidth={7}/>);
-    group.add(<Txt text={() => displayedNumber(value())}
-      position={() => [routeX(value()), y() + (row === 0 ? -24 : 42)]} fill={color}
-      fontFamily={FONT} fontSize={32} fontWeight={700}/>);
-  };
-  addRoute(0, 60, '위치60회 · 같은 시간', C.teal);
-  addRoute(1, 24, '위치24회 · 중간 위치가 적다', C.red);
+    const positions = rate === 60 ? [0, .2, .4, .6, .8, 1] : [0, .5, 1];
+    for (const p of positions) comparison.add(<Circle position={[routeX(p), y + 115]}
+      size={13} fill={color} opacity={.5}/>);
+    comparison.add(<Circle position={() => [routeX(s().previousRouteProgress), y + 115]}
+      size={29} stroke={C.muted} lineWidth={4}
+      opacity={() => s().positionChanged ? .7 : 0}/>);
+    comparison.add(<Line points={() => [[routeX(s().previousRouteProgress), y + 99], [routeX(s().routeProgress), y + 99]]}
+      stroke={color} lineWidth={6} endArrow arrowSize={14}
+      opacity={() => s().positionChanged ? 1 : 0}/>);
+    comparison.add(<Img src={() => config.poseImages[s().current.poseKey]} size={[174, 174]}
+      position={() => [routeX(s().routeProgress), y + 8]}/>);
+    comparison.add(<Circle position={() => [routeX(s().routeProgress), y + 115]} size={25}
+      fill={C.background} stroke={color} lineWidth={6}/>);
+  }
+  comparison.add(<Txt text="같은 그림 · 같은 길 · 같은 시간" position={[0, 292]}
+    fill={C.ink} fontFamily={FONT} fontSize={32} fontWeight={700}/>);
 
-  // Notes stay left of the approved large lower-right cat reserve.
-  const notes = new Node({opacity: () => comparison() ? 0 : 1});
-  diagram.add(notes);
-  notes.add(<Txt text={() => `도식 시간 ${(selected().timeSeconds).toFixed(3)}초`}
-    position={[-435, 250]} offset={[-1, 0]} fill={C.ink}
-    fontFamily={FONT} fontSize={31} fontWeight={700}/>);
-  notes.add(<Txt text={() => id() === 'pose24' ? '그림은 유지 · 위치는 갱신'
-    : id() === 'frames' ? '그림의 모양 ≠ 화면의 위치'
-    : id() === 'close' ? '그림24fps + 위치60회 도식'
-    : '24는 그림 · 60은 게임'} position={[-435, 309]} offset={[-1, 0]}
-    fill={C.title} fontFamily={FONT} fontSize={31} fontWeight={700}/>);
-
+  // Independent native gameplay routing and inspected focus marks are unchanged.
   const game = new Node({opacity: () => footage() ? 1 : 0});
   view.add(game);
   game.add(<Img src={() => {

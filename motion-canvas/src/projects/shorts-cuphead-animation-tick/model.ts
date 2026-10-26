@@ -49,3 +49,24 @@ export function poseHoldLengths(poseRate: Rate = 24, seconds = 1): number[] {
 
 export const displayedNumber = (value: number) => Number.isInteger(value)
   ? String(value) : value.toFixed(1);
+
+/** Six consecutive60Hz display samples, expanded for reading only in our diagram. */
+export const EXPANDED_LAST_FRAME = 5;
+export function expandedFrame(progress: number): number {
+  return Math.min(EXPANDED_LAST_FRAME, Math.floor(clamp01(progress) * (EXPANDED_LAST_FRAME + 1)));
+}
+
+export function expandedState(progress: number, positionRate: Rate = 60) {
+  const displayFrame = expandedFrame(progress);
+  const current = sampleAt(displayFrame, 24, positionRate);
+  const previous = sampleAt(Math.max(0, displayFrame - 1), 24, positionRate);
+  return {
+    current, previous,
+    poseChanged: displayFrame === 0 || current.poseSample !== previous.poseSample,
+    positionChanged: displayFrame > 0 && current.position !== previous.position,
+    // These enlarged0..5-frame positions are not observed Cuphead pixels,
+    // physics or input ticks. Both rows share the exact same route scale.
+    routeProgress: current.position / sampleAt(EXPANDED_LAST_FRAME, 24, 60).position,
+    previousRouteProgress: previous.position / sampleAt(EXPANDED_LAST_FRAME, 24, 60).position,
+  };
+}

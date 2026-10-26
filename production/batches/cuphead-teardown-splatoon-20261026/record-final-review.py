@@ -11,6 +11,22 @@ assert args.samples_reviewed,'Do not infer actual pixel review from successful e
 batch=read(B/'batch.json');assert args.slug in [p['slug'] for p in batch['projects']]
 P=R/'projects'/args.slug;sys.path.insert(0,str(P/'production'));import audio_revision as a
 a.guard();project=read(P/'project.json');F=P/project.get('currentFinalDirectory','production/local/final-reviewed')
+clarityPath=B/'clarity-revision.json';clarity=read(clarityPath) if clarityPath.exists() else {}
+control=read(R/'shared/publishing/video-production-control.json')
+finite=control.get('finiteBatchAuthorizations',{}).get('cuphead-teardown-splatoon-20261026',{})
+privateAuthorized=(F.name.startswith('final-clarity-') and clarity.get('privateUploadRequested') is True
+                   and finite.get('youtubeAuthorized') is True and finite.get('privateUploadRequested') is True
+                   and args.slug in [p['slug'] for p in clarity.get('selectedProjects',[])])
+publishing=('private-upload-authorized-by-direct-request; actual-platform-receipt-owned-by-parent'
+            if privateAuthorized else 'not-authorized')
+humanReview=('actual-new-version-human-viewing-not-performed; explicit-private-upload-request-recorded'
+             if privateAuthorized else 'pending-not-yet-delivered')
+previousReview=P/'production/local-review.json'
+if previousReview.exists():
+    old=read(previousReview);oldSha=old.get('outputs',{}).get('captioned.mp4',{}).get('sha256')
+    if oldSha:
+        archive=P/'production'/('local-review-before-clarity-'+oldSha[:12]+'.json')
+        if not archive.exists():save(archive,old)
 integrity=read(F/'integrity.json');assert integrity['status']=='pass'
 captions=read(P/'script/captions.json');timing=read(P/'production/visual-timing.json')
 outputs={}
@@ -30,11 +46,27 @@ d=dict(revision=a.REVISION,status='local-final-review-pending',outputDirectory=s
        observedQa=['Full clean/captioned decode, exact60fps frame timing and identicalAAC streams','All caption midpoint, join and motion-state contact sheets actually inspected at mobile scale',
                    'Actual source/Unity captures and tracked target pixels reviewed; technical illustrations distinguished from commercial implementation'],
        asrEvidence=asrs,captionAlignmentEvidence=str((a.L/'caption-alignment.json').resolve()),audioContinuityEvidence=str((a.L/'audio-continuity.json').resolve()),
-       notClaimed=['Full human listening','Continuous real-time moving playback','Actual human approval'],music='Pixel Peeker Polka - faster; CC BY4 credit included',humanReview='pending-not-yet-delivered',publishing='not-authorized')
+       notClaimed=['Full human listening','Continuous real-time moving playback','Actual human approval'],music='Pixel Peeker Polka - faster; CC BY4 credit included',humanReview=humanReview,publishing=publishing)
+if privateAuthorized:
+    d.update(clarityRevision=clarity['id'],privateUploadAuthorized=True,
+             uploadAuthorization=clarity['uploadAuthorization'],actualHumanViewing=False,
+             visualReviewEvidence='planning/clarity-visual-review.json')
 save(P/'production/local-review.json',d)
 project.update(status=d['status'],publishReady=False);save(P/'project.json',project)
+if privateAuthorized:
+    auth=project.setdefault('authorization',{})
+    auth.setdefault('initialScope',auth.get('scope'))
+    auth.update(youtubeAuthorized=True,privateUploadOnly=True,
+                scope='Latest2026-10-27 direct request authorizes these four clarity revisions, rendering, internal QA, local delivery and private upload only. No public/schedule/delete/replace.',
+                latestUploadAuthorization='production/batches/cuphead-teardown-splatoon-20261026/clarity-revision.json#uploadAuthorization')
+    save(P/'project.json',project)
 cp=read(P/'production/checkpoint.json');cp.update(updatedAt=datetime.datetime.now(datetime.timezone.utc).isoformat(),status=d['status'],localReview='production/local-review.json',captionedSha256=outputs['captioned.mp4']['sha256'],humanReview=d['humanReview'],notCompleted=d['notClaimed'],next=['Deliver exact local outputs for human final review.'])
+if privateAuthorized:
+    cp.update(clarityRevision=clarity['id'],privateUploadAuthorized=True,actualHumanViewing=False,
+              next=['Parent completes the explicitly requested private upload using this exact captioned hash; actual platform evidence is recorded separately. No public/schedule/delete/replace.'])
 save(P/'production/checkpoint.json',cp)
-ledger=read(P/'production/review-ledger.json');ledger.setdefault('entries',[]).append(dict(id='actual-local-final-'+outputs['captioned.mp4']['sha256'][:12],status='technical-and-sampled-visual-pass; full-listening/moving-review-pending',evidence='production/local-review.json',captionedSha256=outputs['captioned.mp4']['sha256']))
+ledger=read(P/'production/review-ledger.json');entry=dict(id='actual-local-final-'+outputs['captioned.mp4']['sha256'][:12],status='technical-and-sampled-visual-pass; full-listening/moving-review-pending',evidence='production/local-review.json',captionedSha256=outputs['captioned.mp4']['sha256'])
+if privateAuthorized:entry.update(privateUploadAuthorized=True,uploadAuthorization=d['uploadAuthorization'],actualHumanViewing=False)
+if not any(e.get('id')==entry['id'] for e in ledger.setdefault('entries',[])):ledger['entries'].append(entry)
 ledger.update(actualUserReview=False,pending=d['notClaimed']);save(P/'production/review-ledger.json',ledger)
 print(json.dumps(dict(slug=args.slug,seconds=d['seconds'],captioned=outputs['captioned.mp4']),ensure_ascii=False))
