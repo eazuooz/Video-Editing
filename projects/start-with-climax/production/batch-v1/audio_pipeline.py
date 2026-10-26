@@ -383,6 +383,7 @@ def _full_asr(audio_path, cache_path, *, final=False, device="cpu"):
     inputs = {"audio": current_audio, "model": relative(local_model) if model_id != "openai/whisper-large-v3-turbo" else model_id,
               "modelConfigSha256": sha(config_path) if config_path and config_path.is_file() else None, "device": device,
               "threads": 4, "language": "korean", "task": "transcribe",
+              "attentionImplementation": "sdpa" if final else "eager",
               "timestampGranularity": "segment" if final else "word", "expectedPrompt": None,
               "boundedRecognition": {"chunkSeconds":30,"strideSeconds":[5,5],"batchSize":1,"numBeams":1}}
     signature = canonical_signature(inputs)
@@ -399,7 +400,7 @@ def _full_asr(audio_path, cache_path, *, final=False, device="cpu"):
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
     torch.set_num_threads(4)
     model = AutoModelForSpeechSeq2Seq.from_pretrained(model_id, dtype=torch.float16 if device=="cuda" else torch.float32,
-                                                    attn_implementation="eager", local_files_only=True)
+                                                    attn_implementation="sdpa" if final else "eager", local_files_only=True)
     processor = AutoProcessor.from_pretrained(model_id, local_files_only=True)
     recognizer = pipeline("automatic-speech-recognition", model=model, tokenizer=processor.tokenizer,
                           feature_extractor=processor.feature_extractor, dtype=torch.float16 if device=="cuda" else torch.float32, device=0 if device=="cuda" else "cpu")
@@ -445,7 +446,7 @@ def rms(audio):
     return float(np.sqrt(np.mean(np.square(audio, dtype=np.float64)))) if len(audio) else 0.0
 
 
-def safe_boundary(audio, rate, previous_end, next_start, *, override=None, silence_dbfs=-42, minimum_pause=.05):
+def safe_boundary(audio, rate, previous_end, next_start, *, override=None, review_window=None, silence_dbfs=-42, minimum_pause=.05):
     """Check a low-energy pause near aligned sentence ends, never split by text length.
 
     Word timestamps are estimates. A narrow +/-120ms tolerance permits their
@@ -455,6 +456,13 @@ def safe_boundary(audio, rate, previous_end, next_start, *, override=None, silen
     target = (previous_end + next_start) / 2
     lo = max(0, round((min(previous_end, next_start) - .12) * rate))
     hi = min(len(audio), round((max(previous_end, next_start) + .12) * rate))
+    if review_window is not None:
+        if (override is None or len(review_window) != 2 or not review_window[0] < review_window[1]
+                or review_window[1] - review_window[0] > 1.5
+                or abs(float(override) - target) > 1):
+            raise ValueError('A bounded reviewed waveform window and nearby explicit cut are required')
+        lo=max(0,round(float(review_window[0])*rate))
+        hi=min(len(audio),round(float(review_window[1])*rate))
     hop = max(1, round(rate * .005))
     width = max(hop, round(rate * .01))
     threshold = 10 ** (silence_dbfs / 20)
@@ -489,6 +497,7 @@ def safe_boundary(audio, rate, previous_end, next_start, *, override=None, silen
                  "pauseEnd": (selected[-1][0] + width) / rate, "minimumPauseSeconds": minimum_pause,
                  "maximumWindowRmsDbfs": db(max(point[1] for point in selected)),
                  "silenceThresholdDbfs": silence_dbfs, "analysisWindowMs": 10, "analysisHopMs": 5,
+                 "reviewedWaveformWindow": review_window,
                  "signalPauseCheckPassed": True, "semanticBoundaryListening": "pending",
                  "contextForListening": [max(0, target - 1.5), min(len(audio) / rate, target + 1.5)]}
 
@@ -521,6 +530,8 @@ def split(review_path, overrides_path=None):
     if review.get("audioSha256") != digest or review.get("comparisonSha256") != sha(comparison_path) or review.get("fullTextDirectlyCompared") is not True:
         raise ValueError("Record direct comparison of the complete current source ASR before scene splitting")
     overrides = read(overrides_path) if overrides_path else {}
+    if overrides.get('boundaries') and (overrides.get('sourceAudioSha256') != digest or overrides.get('sourceAsrSha256') != sha(cache)):
+        raise ValueError('Boundary review must match the exact source audio and original ASR')
     override_rows = {row["afterScene"]: row for row in overrides.get("boundaries", [])}
     selected_words,selection_artifact=reviewed_alignment_words(recognition,cache,digest)
     inputs = {"sourceSha256": digest, "asrSha256": sha(cache), "alignmentSelection":selection_artifact, "scripts": script_files,
@@ -546,7 +557,8 @@ def split(review_path, overrides_path=None):
         if override and (not override.get("fullContextReviewed") or not override.get("reason")):
             raise ValueError("Boundary overrides need an actual contextual review and reason")
         boundary, evidence = safe_boundary(audio, rate, float(ends[cursor - 1]), float(starts[cursor]),
-                                          override=override["cutSeconds"] if override else None)
+                                          override=override["cutSeconds"] if override else None,
+                                          review_window=override.get('waveformWindow') if override else None)
         if boundary <= bounds[-1] or boundary >= len(audio):
             raise ValueError("Scene boundaries must be strictly increasing inside the audio")
         bounds.append(boundary)
@@ -585,13 +597,17 @@ def split(review_path, overrides_path=None):
             if not length:
                 raise ValueError("Pronunciation paragraph has no alignable characters")
             start, end = float(starts[cursor]), float(ends[cursor + length - 1])
-            if start < lo / rate - .12 or end > hi / rate + .12:
+            boundary_exception = (paragraph == 1 and lo > 0 and any(
+                row.get('waveformWindow') and abs(float(row['cutSeconds']) - lo / rate) < 1 / rate
+                and row['waveformWindow'][0] <= start <= row['waveformWindow'][1]
+                for row in override_rows.values()))
+            if (start < lo / rate - .12 and not boundary_exception) or end > hi / rate + .12:
                 raise ValueError("Aligned paragraph exceeds the verified source scene boundary")
             local_begin = max(0, start - lo / rate)
             local_end = min((hi - lo) / rate, end - lo / rate)
             entry = {"index": len(entries) + 1, "scene_id": scene["id"], "scene_title": scene["title"], "paragraph": paragraph,
                      "text": line, "english": english, "spokenText": pronounced,
-                     "start": lo / rate if paragraph == 1 else start, "voice_start": start, "end": end,
+                     "start": lo / rate if paragraph == 1 else start, "voice_start": max(lo / rate,start), "rawAlignedStart": start, "end": end,
                      "sourceSceneOrigin": lo / rate, "sceneLocalStart": local_begin, "sceneLocalEnd": local_end,
                      "alignment": "complete-source-word-timestamps-matched-to-pronunciation-script"}
             entries.append(entry)

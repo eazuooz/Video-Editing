@@ -383,6 +383,7 @@ def _full_asr(audio_path, cache_path, *, final=False, device="cpu"):
     inputs = {"audio": current_audio, "model": relative(local_model) if model_id != "openai/whisper-large-v3-turbo" else model_id,
               "modelConfigSha256": sha(config_path) if config_path and config_path.is_file() else None, "device": device,
               "threads": 4, "language": "korean", "task": "transcribe",
+              "attentionImplementation": "sdpa" if final else "eager",
               "timestampGranularity": "segment" if final else "word", "expectedPrompt": None,
               "boundedRecognition": {"chunkSeconds":30,"strideSeconds":[5,5],"batchSize":1,"numBeams":1}}
     signature = canonical_signature(inputs)
@@ -399,7 +400,7 @@ def _full_asr(audio_path, cache_path, *, final=False, device="cpu"):
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
     torch.set_num_threads(4)
     model = AutoModelForSpeechSeq2Seq.from_pretrained(model_id, dtype=torch.float16 if device=="cuda" else torch.float32,
-                                                    attn_implementation="eager", local_files_only=True)
+                                                    attn_implementation="sdpa" if final else "eager", local_files_only=True)
     processor = AutoProcessor.from_pretrained(model_id, local_files_only=True)
     recognizer = pipeline("automatic-speech-recognition", model=model, tokenizer=processor.tokenizer,
                           feature_extractor=processor.feature_extractor, dtype=torch.float16 if device=="cuda" else torch.float32, device=0 if device=="cuda" else "cpu")
