@@ -2,7 +2,7 @@
 from pathlib import Path
 import argparse,json,os,sys
 ROOT=Path(__file__).resolve().parents[3]
-ap=argparse.ArgumentParser();ap.add_argument('slug');ap.add_argument('start',type=float);ap.add_argument('end',type=float);ap.add_argument('--reason',required=True)
+ap=argparse.ArgumentParser();ap.add_argument('slug');ap.add_argument('start',type=float);ap.add_argument('end',type=float);ap.add_argument('--reason',required=True);ap.add_argument('--asr-dir')
 args=ap.parse_args()
 allowed={'limited-color-world','computer-controlled-players','in-game-cutscenes','start-with-climax','kind-to-beginners','respect-player-time'}
 assert args.slug in allowed and 0<=args.start<args.end and args.end-args.start<=30
@@ -10,7 +10,8 @@ sys.path.insert(0,str(ROOT/f'projects/{args.slug}/production/batch-v1'))
 import audio_pipeline as base
 base.require_authorized('bounded diagnosis of observed final encoded ASR discrepancy')
 plan=base.read(ROOT/f'projects/{args.slug}/production/batch-v1/edit-plan.json')
-source=ROOT/plan['outputDir']/'encoded-audio-for-asr.wav'
+source=ROOT/(args.asr_dir or plan['outputDir'])/'encoded-audio-for-asr.wav'
+assert source.resolve().is_relative_to((ROOT/f'projects/{args.slug}/production/local/batch-v1').resolve())
 full=source.parent/'final-mix-asr.json'
 digest=base.sha(source);assert base.read(full)['audio_sha256']==digest
 out=Path('C:/Users/1/.codex/video-production/design-finish-six-20261026/review/final-asr-diagnostics')

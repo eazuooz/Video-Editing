@@ -22,17 +22,33 @@ assert auth['localProductionAuthorized'] and auth['slugs']==SLUGS
 now=datetime.now(timezone.utc).isoformat();verified=[]
 for episode,slug in zip(IDS,SLUGS):
  project=R/'projects'/slug;rev=project/'production/batch-v1'
- q=read(rev/'review-status.json')
+ q_path=rev/'review-status.json'
+ if not q_path.exists():q_path=project/'production/review-status.json'
+ q=read(q_path)
  assert q['status']=='local-review-ready' and q['fourOutputsVerified'] is True,(slug,'review incomplete')
- manifest=read(project/'project.json');delivery=R/manifest['delivery']['localStorageRoot']/manifest['delivery']['directory']
+ manifest=read(project/'project.json');receipt=read(project/'production/delivery-output.json')
+ delivery=R/receipt['directory']
+ assert delivery==R/manifest['delivery']['localStorageRoot']/'output'/slug
  assert delivery.resolve().is_relative_to(Path('C:/Users/1/.codex/video-production')/BATCH/slug)
  paths={};hashes={}
  for kind in ['captioned.mp4','clean.mp4','ko.srt','en.srt']:
   p=delivery/(slug+'.'+kind);assert p.is_file() and p.stat().st_size>0
   paths[kind]=p.relative_to(R).as_posix();hashes[kind]=sha(p)
+  record=next(f for f in receipt['files'] if f['name']==p.name)
+  assert record['sha256']==hashes[kind] and record['bytes']==p.stat().st_size
  assert (delivery/'index.html').is_file()
+ assert q['captionedSha256']==hashes['captioned.mp4'],'Pixel QA is for another master'
  review=read(rev/'final-comparison-review.json');assert review['fullTextDirectlyCompared'] is True
  plan=read(rev/'edit-plan.json');edit=R/plan['outputDir'];technical=read(edit/'structural-verification.json')
+ asr_dir=R/review.get('artifactDirectory',plan['outputDir'])
+ assert asr_dir.resolve().is_relative_to((project/'production/local/batch-v1').resolve())
+ for filename,key in [('final-mix-asr.json','asrSha256'),('final-mix-text-comparison.json','comparisonSha256'),('encoded-audio-for-asr.wav','audioSha256')]:
+  assert sha(asr_dir/filename)==review[key],(slug,'Final ASR artifact changed',filename)
+ for script in read(asr_dir/'final-mix-text-comparison.json')['scriptInputs']:
+  assert sha(R/script['path'])==script['sha256'],(slug,'Narration changed after comparison')
+ decoded=read(asr_dir/'encoded-asr-input.json');encoded=decoded['inputs']['encodedFile']
+ assert encoded['sha256']==review['encodedMasterSha256'] and sha(R/encoded['path'])==review['encodedMasterSha256']
+ assert decoded['outputs'][0]['sha256']==review['audioSha256']
  assert technical['status']=='pass'
  for language in ['ko','en']:assert hashes[language+'.srt']==sha(edit/f'captions.{language}.srt')
  for kind,key in [('captioned.mp4','captioned'),('clean.mp4','clean')]:
@@ -40,7 +56,7 @@ for episode,slug in zip(IDS,SLUGS):
   assert output['video']['width']==1920 and output['video']['height']==1080 and output['video']['avg_frame_rate']=='60/1'
   assert output['audioPacketsSha256']==review['encodedAudioPacketsSha256']
  assert 0.599<=technical['ratio']['gameplayShare']<=0.601
- verified.append({'id':episode,'slug':slug,'q':q,'manifest':manifest,'paths':paths,'hashes':hashes,'index':(delivery/'index.html').relative_to(R).as_posix(),'seconds':technical['outputs']['captioned']['durationSeconds']})
+ verified.append({'id':episode,'slug':slug,'q':q,'reviewRecord':q_path.relative_to(R).as_posix(),'manifest':manifest,'paths':paths,'hashes':hashes,'index':(delivery/'index.html').relative_to(R).as_posix(),'seconds':technical['outputs']['captioned']['durationSeconds']})
 
 # Only after all six current output hashes and audio evidence pass, update state.
 assert sha(control_path)==control_before,'Concurrent control update; rerun against latest state'
@@ -52,7 +68,7 @@ for v in verified:
  row.update(productionComplete=True,productionStatus='1080p60 완성본·한영 자막 완료',reviewStatus='로컬 완성본 사용자 검수 대기',humanApproval='pending',executionStatus='D25–D30 일괄 제작 완료 · 사용자 검수 대기',localMasterAvailable=True,activeRevision='batch-v1',selectedBatch=BATCH)
  row['internalQaStatus']='complete; actual human viewing/listening pending'
  row['localReview']={'status':'ready-for-human-local-review','index':v['index'],'captionedVideo':v['paths']['captioned.mp4'],'cleanVideo':v['paths']['clean.mp4'],'captionsKo':v['paths']['ko.srt'],'captionsEn':v['paths']['en.srt'],'captionedSha256':v['hashes']['captioned.mp4'],'durationSeconds':v['seconds'],'actualUserViewed':False,'humanWholeListening':'pending','updatedAt':now}
- evidence=f'projects/{slug}/production/batch-v1/review-status.json'
+ evidence=v['reviewRecord']
  row.setdefault('evidence',[])
  if evidence not in row['evidence']:row['evidence'].append(evidence)
  row['notes']='전체 영상·한영 자막 로컬 검수 대기. 기술/대본 대조/화면 검사는 내부 근거이며 실제 사용자 시청·청취 승인과 구분. YouTube 업로드·예약 미실행.'

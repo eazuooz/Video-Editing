@@ -47,9 +47,9 @@ def overlay(p,b):
  if p==D:
   new=work[D].decode('utf-8-sig').splitlines();out=[]
   for line in b.decode('utf-8-sig').splitlines(keepends=True):
-   own=next((e for e in IDS if line.startswith('| '+e+' ') or '| 게임디자인 | '+e+' [' in line),None)
+   own=next((e for e in IDS if line.startswith('| '+e+' ') or '| 게임디자인 | '+e+' ' in line),None)
    if own:
-    candidates=[x for x in new if x.startswith('| '+own+' ') and (x.startswith('| '+own+' |')==line.startswith('| '+own+' |'))] if line.startswith('| '+own+' ') else [x for x in new if '| 게임디자인 | '+own+' [' in x]
+    candidates=[x for x in new if x.startswith('| '+own+' ') and (x.startswith('| '+own+' |')==line.startswith('| '+own+' |'))] if line.startswith('| '+own+' ') else [x for x in new if '| 게임디자인 | '+own+' ' in x]
     if len(candidates)!=1:raise ValueError('Ambiguous rendered row '+own)
     line=candidates[0]+('\r\n' if line.endswith('\r\n') else '\n')
    out.append(line)
