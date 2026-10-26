@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "slug": "shorts-teardown-spray-palette",
+  "revision": "spray-palette-v1",
+  "preparedAt": "2026-10-26T10:14:21.700493+00:00",
+  "state": "repair-staged; actual first-paragraph voice, whole-ASR and all delivery QA pending",
+  "sourceCut": {
+    "id": "teardown-official-spray-2019",
+    "inSeconds": 125.625,
+    "outSeconds": 129.625,
+    "maximumFrames": 240,
+    "fps": 60,
+    "speed": 1,
+    "sourceAudioAdopted": false,
+    "restOfOpening": "index diagram; seven spoken sections unchanged"
+  },
+  "timingContract": {
+    "sections": [
+      "game",
+      "index",
+      "variants",
+      "lookup",
+      "capacity",
+      "limits",
+      "close"
+    ],
+    "nativeSegments": "Separate one240frame interval, not sevenfakegameclips",
+    "canonicalClauses": 23,
+    "derivedClauses": 24,
+    "conclusionCueIds": [
+      "p7-1",
+      "p7-2",
+      "p7-2b"
+    ],
+    "cueAnchors": "Actual strict ASR-word/PCM measured edges only",
+    "syntheticTimesUsedForProduction": false
+  },
+  "frozenFiles": [
+    {
+      "path": "projects/shorts-teardown-spray-palette/production/finish-audio.py",
+      "sha256": "e87c7dac72fd51451b3d1a90baed5596737b845640473df9264049e46cd81b45"
+    },
+    {
+      "path": "projects/shorts-teardown-spray-palette/production/finish-video.py",
+      "sha256": "23b38aa97cdcaa185e2ea5987f5e2b4b37d4ff5352cecc876426a7b1eda81842"
+    },
+    {
+      "path": "projects/shorts-teardown-spray-palette/production/prepare-header.py",
+      "sha256": "91a0ac6260ff4906e83f2eba6211d17b83757c980064c46b69e43dd94b613f7c"
+    },
+    {
+      "path": "projects/shorts-teardown-spray-palette/production/render-visual.cjs",
+      "sha256": "7e4ded50f358a81247765cc8ded8ad738fcbb54e0fc5a37b3242c388640c5328"
+    },
+    {
+      "path": "projects/shorts-teardown-spray-palette/production/prepare-actual-visuals.py",
+      "sha256": "649adc06913334ca34a02f2c21f22fc4ca3b5fb9090843340220d067a3b8b48a"
+    },
+    {
+      "path": "projects/shorts-teardown-spray-palette/production/visual_revision.py",
+      "sha256": "720ba46f98375d9001305544a6b6ed12aadc75b91e42799bb16b05d453f00d00"
+    },
+    {
+      "path": "projects/shorts-teardown-spray-palette/production/video-source-inputs.json",
+      "sha256": "259d6b1f1f66883aec64d9d2129438a55b9dbca47f25f9bcc8f0c54c930eaeea"
+    },
+    {
+      "path": "motion-canvas/vite.teardown.config.ts",
+      "sha256": "1ab1972d86cfe98419215b953bb3a9123100aba309fff124e62c74261f2bbf64"
+    },
+    {
+      "path": "motion-canvas/src/projects/shorts-teardown-spray-palette/scene.tsx",
+      "sha256": "a8385ec5d3c34da03a9015cacc47d43768f282ec7d6642841ba215fbd2e2d1af"
+    }
+  ],
+  "validation": [
+    {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\cuphead-teardown-splatoon-20261026\\shorts-teardown-spray-palette\\local\\qa\\video-helper-preflight.json",
+      "sha256": "a0acfc20f137ea21d0c1a13cd90801bc305677baa6417c759f278dd441d85b3c"
+    },
+    {
+      "path": "C:\\Users\\1\\Videos\\YamyamProduction\\cuphead-teardown-splatoon-20261026\\shorts-teardown-spray-palette\\local\\qa\\mc-finishing-preflight.json",
+      "sha256": "26d46a84e0075028d22cf7739811bda83bd38c1e648ba87986d6080907163bd4"
+    }
+  ],
+  "commands": [
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "qwen3-tts/.venv/Scripts/python.exe -B -X utf8 projects/shorts-teardown-spray-palette/production/prepare-actual-visuals.py",
+      "requires": "Exact active project/revision, complete strict actual captions and no game/editor/foreign GPU lease."
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "qwen3-tts/.venv/Scripts/python.exe -B -X utf8 projects/shorts-teardown-spray-palette/production/prepare-header.py"
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing\\motion-canvas",
+      "command": "node node_modules/vite/bin/vite.js --config vite.teardown.config.ts",
+      "requires": "Parent checks port9277 free; strictPort and scope endpoint protect existing servers."
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "node projects/shorts-teardown-spray-palette/production/render-visual.cjs spray-palette-v1-render-01",
+      "requires": "Prepared actual frames/timing and matching isolated server."
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "qwen3-tts/.venv/Scripts/python.exe -B -X utf8 projects/shorts-teardown-spray-palette/production/finish-audio.py mix"
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "qwen3-tts/.venv/Scripts/python.exe -B -X utf8 projects/shorts-teardown-spray-palette/production/finish-audio.py report"
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "qwen3-tts/.venv/Scripts/python.exe -B -X utf8 projects/shorts-teardown-spray-palette/production/transcribe.py mix"
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "qwen3-tts/.venv/Scripts/python.exe -B -X utf8 projects/shorts-teardown-spray-palette/production/finish-video.py pair --visual C:/Users/1/Videos/YamyamProduction/cuphead-teardown-splatoon-20261026/shorts-teardown-spray-palette/local/motion-canvas-output/spray-palette-v1-render-01.mp4"
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "qwen3-tts/.venv/Scripts/python.exe -B -X utf8 projects/shorts-teardown-spray-palette/production/finish-video.py integrity"
+    },
+    {
+      "cwd": "D:\\Github\\VideoEditing",
+      "command": "qwen3-tts/.venv/Scripts/python.exe -B -X utf8 projects/shorts-teardown-spray-palette/production/finish-video.py qa"
+    }
+  ],
+  "outputsRoot": "C:\\Users\\1\\Videos\\YamyamProduction\\cuphead-teardown-splatoon-20261026\\shorts-teardown-spray-palette\\local\\final-reviewed-v1",
+  "pending": [
+    "Actual current strict captions",
+    "Source240frameextraction",
+    "Header generation andactualrender",
+    "Voice/BGMmixandcompleteASR",
+    "Encoded4outputs/integrity",
+    "Native/mobileactualmovingvisualQA",
+    "Completeaudioandhumanreview"
+  ],
+  "jobsStartedByPreparationAgent": {
+    "gpu": 0,
+    "tts": 0,
+    "asr": 0,
+    "server": 0,
+    "render": 0,
+    "media": 0
+  },
+  "voiceHelpersUnmodified": true,
+  "repairAttempt": "audio-v2",
+  "oldPreparationEvidencePreserved": true,
+  "repairProof": "production/local/repairs/first-paragraph-ti-v2/package.json",
+  "repairExecuted": false,
+  "asrSelectionPreparedAt": "2026-10-26T10:37:45.789590+00:00",
+  "actualASRSelectionApplied": false,
+  "actualListening": "pending",
+  "renderStabilityRevision": {
+    "id": "frozen-watch-chunks-v2",
+    "runtimeReview": "pending",
+    "changes": [
+      "diagnostic/failure receipts and bounded progress timeout",
+      "fresh-browser bounded chunk runner available",
+      "approvedlargecatandleftnotes",
+      "frozenfilewatchwithencoderwebsocketpreserved"
+    ],
+    "chunkRunner": "production/batches/cuphead-teardown-splatoon-20261026/render-chunks.py",
+    "chunkRunnerSha256": "f462c1df648eb7b391deced7af35eacf1b35a1eeef010c32418fb89d233c6f4f"
+  }
+}

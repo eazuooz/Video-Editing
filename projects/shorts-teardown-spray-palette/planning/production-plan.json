@@ -1,0 +1,389 @@
+{
+  "slug": "shorts-teardown-spray-palette",
+  "revision": "spray-palette-v1",
+  "updatedAt": "2026-10-26T09:50:56.650125+00:00",
+  "status": "preproduction-source-ready-waiting-for-parent-production",
+  "scriptFinalized": true,
+  "independentFootageViewed": true,
+  "technicalResearchComplete": true,
+  "sourceRightsReady": true,
+  "narrationScope": "2020 spray-palette method and its capacity trade-off; the current game is not claimed to retain every historical implementation detail.",
+  "targetDurationSeconds": [
+    45,
+    60
+  ],
+  "durationEvidence": "Writing target only; natural Qwen duration and pacing not yet measured. Keep understanding; do not speed voice toforce60s.",
+  "primarySource": {
+    "url": "https://blog.voxagon.se/2020/12/03/spraycan.html",
+    "fullScopeRead": true
+  },
+  "claims": [
+    {
+      "id": "material-index",
+      "sourceParagraphs": [
+        1
+      ],
+      "cueIds": [
+        "p2-1",
+        "p2-2",
+        "p2-3",
+        "p2-4"
+      ],
+      "claim": "Per voxel one-byte material index referencing object palette; material includes appearance and physical properties, not just RGB.",
+      "visual": "Same cells point to an explicit material list; byte means per voxel, not total game memory."
+    },
+    {
+      "id": "precompute",
+      "sourceParagraphs": [
+        3,
+        4
+      ],
+      "cueIds": [
+        "p3-1",
+        "p3-2"
+      ],
+      "claim": "At load, precompute yellow/black material variations in available palette slots.",
+      "visual": "Original material plus four increasingly yellow slots; source knows foursteps, not continuous shades."
+    },
+    {
+      "id": "translate",
+      "sourceParagraphs": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "cueIds": [
+        "p3-3",
+        "p3-4",
+        "p4-1",
+        "p4-2",
+        "p4-3"
+      ],
+      "claim": "Table lookup maps current material index to tint variant.",
+      "visual": "Illustrative3→9→11; same occupied voxel cells retained. Allindices explicitly toyvalues."
+    },
+    {
+      "id": "capacity",
+      "sourceParagraphs": [
+        4,
+        5,
+        12
+      ],
+      "cueIds": [
+        "p5-1",
+        "p5-2",
+        "p5-3",
+        "p5-4"
+      ],
+      "claim": "255 material entries; two tints times foursteps plus original costs9slots before mixed yellow/black variants.",
+      "visual": "1+4+4=9; show mixed tints need additional entries in small note, no exhaustiveCartesiancount claim."
+    },
+    {
+      "id": "limits",
+      "sourceParagraphs": [
+        6,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "cueIds": [
+        "p6-1",
+        "p6-2",
+        "p6-3",
+        "p6-4",
+        "p7-1",
+        "p7-2"
+      ],
+      "claim": "Merge visually similar colors, stopadding whenfull; construct lookup from all available materials. Early Castle singlepalette sometimesbrownorunchanged.",
+      "visual": "Only palette capacity changes; same desiredyellow and same target. Caption2020Castle; no present-dayallwallsclaim."
+    }
+  ],
+  "sourceOrder": [
+    "representation",
+    "precompute-variants",
+    "table-lookup",
+    "capacity",
+    "best-match-limits"
+  ],
+  "omissions": [
+    {
+      "item": "GPU palette texture packing and fragment palette inheritance",
+      "reason": "Background storage layout not needed for selected spray-index mechanism; not contradicted."
+    },
+    {
+      "item": "DOOM comparison",
+      "reason": "Historical analogy not needed; avoids another game or invented source clips."
+    },
+    {
+      "item": "Exact C declaration and transparency priority",
+      "reason": "Specialist implementation details beyond this selected short; preserve key constraints in internal notes."
+    },
+    {
+      "item": "Future optimization wish",
+      "reason": "Nonimplemented future plan, not evidence ofcurrentalgorithm."
+    }
+  ],
+  "glossary": [
+    {
+      "ko": "복셀",
+      "en": "Voxel",
+      "meaning": "작은 입체 칸"
+    },
+    {
+      "ko": "재질 인덱스",
+      "en": "Material index",
+      "meaning": "재질표의 한 항목을 가리키는 번호"
+    },
+    {
+      "ko": "팔레트",
+      "en": "Palette",
+      "meaning": "색과 표면·물리 속성을 담은 재질표"
+    },
+    {
+      "ko": "팔레트 변환표",
+      "en": "Palette translation table",
+      "meaning": "원래 번호에 대응하는 색칠된 재질 번호를 찾아 주는 표"
+    }
+  ],
+  "rendererChoice": {
+    "renderer": "Motion Canvas",
+    "reason": "This explains a data lookup and resource-capacity relation, not a self-authored playablegame or3Dscene. One persistent2D cell grid and palette makeindex changes visible without building a duplicate engine.",
+    "paths": [
+      "motion-canvas/src/projects/shorts-teardown-spray-palette/project.ts",
+      "motion-canvas/src/projects/shorts-teardown-spray-palette/scene.tsx",
+      "motion-canvas/src/projects/shorts-teardown-spray-palette/model.ts"
+    ]
+  },
+  "continuity": [
+    {
+      "boundary": "game→index",
+      "link": "Painted patch becomes same labelled cell grid"
+    },
+    {
+      "boundary": "index→variants",
+      "link": "Keep materialtable andadd precomputed slots"
+    },
+    {
+      "boundary": "variants→lookup",
+      "link": "Keep originalindex andtargetslot;showarrow"
+    },
+    {
+      "boundary": "lookup→capacity",
+      "link": "Keep table, count occupiedslots"
+    },
+    {
+      "boundary": "capacity→limits",
+      "link": "Same target, removeavailablevariants only"
+    },
+    {
+      "boundary": "limits→close",
+      "link": "Keep memoryandcolortradeoff alongside finalpaintresult"
+    }
+  ],
+  "teachingBeats": [
+    {
+      "section": "game",
+      "paragraph": 0,
+      "speech": "p1-*",
+      "hold": 0,
+      "visual": "Existing stage carries across scene; current sentence reveals the relevant object/action/result."
+    },
+    {
+      "section": "index",
+      "paragraph": 1,
+      "speech": "p2-*",
+      "hold": 0,
+      "visual": "Existing stage carries across scene; current sentence reveals the relevant object/action/result."
+    },
+    {
+      "section": "variants",
+      "paragraph": 2,
+      "speech": "p3-*",
+      "hold": 0,
+      "visual": "Existing stage carries across scene; current sentence reveals the relevant object/action/result."
+    },
+    {
+      "section": "lookup",
+      "paragraph": 3,
+      "speech": "p4-*",
+      "hold": 0,
+      "visual": "Existing stage carries across scene; current sentence reveals the relevant object/action/result."
+    },
+    {
+      "section": "capacity",
+      "paragraph": 4,
+      "speech": "p5-*",
+      "hold": 0,
+      "visual": "Existing stage carries across scene; current sentence reveals the relevant object/action/result."
+    },
+    {
+      "section": "limits",
+      "paragraph": 5,
+      "speech": "p6-*",
+      "hold": 0,
+      "visual": "Existing stage carries across scene; current sentence reveals the relevant object/action/result."
+    },
+    {
+      "section": "close",
+      "paragraph": 6,
+      "speech": "p7-*",
+      "hold": 0,
+      "visual": "Existing stage carries across scene; current sentence reveals the relevant object/action/result."
+    }
+  ],
+  "layout": {
+    "canvas": [
+      1080,
+      1920
+    ],
+    "staticHeader": [
+      0,
+      0,
+      1080,
+      440
+    ],
+    "diagramY": [
+      460,
+      1250
+    ],
+    "fixedCaptionCenter": [
+      510,
+      1380
+    ],
+    "captionReservedY": [
+      1290,
+      1470
+    ],
+    "cat": {
+      "region": [
+        760,
+        1480,
+        280,
+        420
+      ],
+      "beats": [
+        "lookup-reveal",
+        "closing"
+      ],
+      "occlusion": "Never coverlookupdestination orsubtitles"
+    },
+    "credits": "description only"
+  },
+  "sourceBlocker": null,
+  "gpuBlocker": "Parent observedOverwatch.exe82620. Do notrunTTS/GPU/render/devserver whilegameactive.",
+  "reviewState": {
+    "voice": "not-generated",
+    "visualRender": "not-generated",
+    "fullMoving": "not-reviewed",
+    "human": "not-reviewed"
+  },
+  "sourceAudioAdopted": false,
+  "selectedFootage": {
+    "record": "projects/shorts-teardown-spray-palette/sources/selected-footage.json",
+    "id": "teardown-official-spray-2019",
+    "inSeconds": 125.625,
+    "outSeconds": 129.625,
+    "maximumAdoptedSeconds": 4,
+    "rate": 1,
+    "fullFrameAspect": true,
+    "gamePanelRecommended": [
+      0,
+      611,
+      1080,
+      608
+    ],
+    "sourceAudioAdopted": false,
+    "remainingIntro": "When actual speech exceeds4seconds, transition to self-authored index diagram within sameparagraph; no source freeze,loop,slowdown or additionaltrailer cut.",
+    "closing": "Keep self-authored memory-versus-color comparison; no extra official source adopted."
+  },
+  "sourceObservation": {
+    "reviewedAt": "2026-10-26T09:50:56.650125+00:00",
+    "sourceSHA256": "99943e1f9c7bfba173aeaedc67c4702f3f957a45dea75f8390951ff88675620c",
+    "sourceFhd": {
+      "codec": "av1",
+      "width": 1920,
+      "height": 1080,
+      "fps": "60/1",
+      "durationSeconds": 139.95,
+      "bytes": 25008681,
+      "formatId": "399",
+      "probe": "projects/shorts-teardown-spray-palette/production/local/qa/retry-GCuCQSyqeXM/probe.json"
+    },
+    "method": "Direct visual inspection of chronological source samples plus native-resolution stills; no claim of real-time playback or final encoded QA.",
+    "fullSourceSampling": "140 approximately 1-fps samples across three contact sheets",
+    "actionSampling": {
+      "start": 124.5,
+      "endExclusive": 131.5,
+      "fps": 8,
+      "frames": 56,
+      "contactSheets": [
+        "projects/shorts-teardown-spray-palette/production/local/qa/retry-GCuCQSyqeXM/spray-close/contact-1.jpg",
+        "projects/shorts-teardown-spray-palette/production/local/qa/retry-GCuCQSyqeXM/spray-close/contact-2.jpg",
+        "projects/shorts-teardown-spray-palette/production/local/qa/retry-GCuCQSyqeXM/spray-close/contact-3.jpg"
+      ],
+      "nativeFramesActuallyOpened": [
+        126.5,
+        128.5,
+        129.75
+      ]
+    },
+    "observedBefore": "Red-brown brick wall has existing yellow letters; unpainted bricks remain immediately under the center aim point. This is not an entirely blank wall.",
+    "observedAction": "While SPRAY CAN is selected, aiming draws new yellow strokes to finish the .com lettering. Changes are visible across consecutive samples.",
+    "observedResult": "New yellow lettering remains on the same brick surface; then the camera backs away.",
+    "selectedInSeconds": 125.625,
+    "selectedOutSeconds": 129.625,
+    "durationSeconds": 4,
+    "speed": 1,
+    "nativeAspectPreserved": true,
+    "wholeRealtimePlaybackClaimed": false,
+    "internalIndexValuesObserved": false,
+    "sourceBuildDate": "2019-10-01 in-development demonstration; not a verification of current 2026 internals or the exact later 2020 palette implementation."
+  },
+  "sourceCallout": {
+    "target": "Current crosshair / freshly painted brick surface",
+    "sourcePixelAnchor": [
+      960,
+      540
+    ],
+    "kind": "Editorial hollow circle or short leader, not detector output",
+    "meaning": "지금 색이 바뀌는 곳",
+    "protected": [
+      "New yellow strokes",
+      "SPRAY CAN HUD",
+      "Any source-internal markings"
+    ],
+    "clearOnSourceCut": true,
+    "actualEncodedMobileChecked": false
+  },
+  "preTtsReadthrough": {
+    "checkedAt": "2026-10-26T09:50:56.650125+00:00",
+    "koEnEntireTextRead": true,
+    "clausesRead": true,
+    "coreTextChanged": false,
+    "scriptSHA256": "6a0d5822c1773bf57e8abc03bb6905852098bba91d409dc8c05fcd9f39a84f08",
+    "clausesSHA256": "60c84592fab011f6e24c50c8d586280859fe328e6d1ddbf5875b89e96cc423b8",
+    "retainedConditions": [
+      "Technical mechanism and255limit are the2020article account.2019footage is visiblebehavior only, not internalalgorithmproof.",
+      "Index3→9 is an illustration.",
+      "9slots excludes additionalmixedtintcombinations.",
+      "HistoricCastle limitation is not an all-current-walls claim."
+    ],
+    "actualVoiceTimingReviewed": false,
+    "headingFreeContinuity": "Paint phenomenon→voxel materialindex→precomputed variants→number lookup→capacity→bestmatch limits→tradeoff."
+  },
+  "integrationPending": [
+    "Parent must connect selected source to visual-config and actual frame extraction after permitted production resumption.",
+    "Actual PCM timing and caption metrics remain unmeasured; previews are not final."
+  ],
+  "productionCompletion": {
+    "currentLocalReview": "production/local-review.json",
+    "captionedSha256": "5865e0cc42e776026f4878022b285c8833223d1ae2296a495a59d03b402a0c3a",
+    "state": "local-final-version-ready; full-listening/continuous-playback/human-review-pending",
+    "frozenInputMetadataNote": "Prior source/script drafting-status fields are historical; successful hashed script/PCM inputs were preserved."
+  }
+}

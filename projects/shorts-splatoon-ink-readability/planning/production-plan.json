@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "slug": "shorts-splatoon-ink-readability",
+  "revision": "ink-readability-v1",
+  "productionDateKst": "2026-10-26",
+  "scriptFinalized": true,
+  "independentFootageViewed": true,
+  "selectedScope": "Splatoon2 developer-documented ink-material readability: physically based shading, loss of color boundaries, loss of geometry when shading is removed, and specular masking of enemy submerge splashes.",
+  "primarySource": {
+    "url": "https://www.nintendo.co.jp/jobs/keyword/51.html",
+    "readScope": "Full article and all linked research images",
+    "historicalGame": "Splatoon2 (2017)",
+    "sourceRole": "research-reference-only",
+    "omissions": [
+      {
+        "content": "Programmer biography, recruitment navigation and personal student-research experience",
+        "reason": "Noninstructional personal history; keep authorship internally, do not narrate as our experience."
+      },
+      {
+        "content": "Staff meeting chronology and continuation into demo distribution",
+        "reason": "Scheduling detail is unnecessary for the selected technical comparisons; retain the decision and iterative adjustment."
+      }
+    ],
+    "preservedLogic": [
+      "Original ink too shiny or flat.",
+      "Introduce physically based shading to improve realism.",
+      "Raised-ink dark shading obscures two-team boundary.",
+      "Remove shading: lose wall/floor shape cues.",
+      "Increase specular: lose enemy submerge splash cues.",
+      "Adjust material for simultaneous visibility of gameplay information."
+    ],
+    "exactFinalShaderFormulaKnown": false
+  },
+  "thesis": "Ink shading carries team-color boundaries, geometric shape and enemy-submerge information; adjusting shade and specular visibility preserves those separate signals.",
+  "glossary": [
+    {
+      "ko": "물리 기반 셰이딩",
+      "en": "Physically Based Shading",
+      "abbreviation": "PBS",
+      "meaning": "빛과 재질의 상호작용을 물리 원리에 맞춰 근사하는 계산",
+      "firstSection": "pbs",
+      "displayAndSpeechSeparate": true
+    },
+    {
+      "ko": "정반사",
+      "en": "Specular reflection",
+      "meaning": "표면에서 반사된 빛이 특정 방향에서 밝은 광택으로 보이는 성분",
+      "firstSection": "specular"
+    },
+    {
+      "ko": "명암",
+      "en": "Shading",
+      "meaning": "빛과 표면 방향에 따라 달라지는 밝고 어두운 모습",
+      "firstSection": "boundary"
+    }
+  ],
+  "sourceToScreen": [
+    {
+      "section": "game",
+      "paragraph": 0,
+      "sourceParagraph": "Article specular/splash passage, previewed as the thesis abstract before the body follows original order.",
+      "retain": "Observed glossy ink and own-character submerge introduce the question; historically documented Splatoon2 specular/splash problem follows over our model.",
+      "screen": "Actual Splatoon3 charger66.0–68.2 then70.0–72.8 local seconds for p1-1/p1-2; label actual3. At p1-3 switch to original Unity model and label development case2. Exact speed/caption fit pending final audio; no loop/slowdown.",
+      "classification": "independent-gameplay then authored-explanation",
+      "carryForward": "Carry the same ink boundary and splash target into material setup; no second introduction."
+    },
+    {
+      "section": "pbs",
+      "paragraph": 1,
+      "sourceParagraph": "Opening paragraph and physically-based-shading adoption paragraph.",
+      "retain": "Original overly shiny/flat ink motivated more realistic material rendering.",
+      "addedExplanation": "Define Physically Based Shading in plain Korean before showing its name/abbreviation.",
+      "screen": "Same original Unity floor, wall and raised ink patches; one lighting setup and one camera. Show the same material under normal shading.",
+      "classification": "our-implementation; not Nintendo engine output",
+      "carryForward": "Keep surface geometry and lighting fixed; move focus to the colored boundary."
+    },
+    {
+      "section": "boundary",
+      "paragraph": 2,
+      "sourceParagraph": "Dark shading on raised ink obscured team-color boundaries.",
+      "retain": "Two differently colored ink regions can become hard to distinguish in darker portions.",
+      "screen": "Same geometry/camera; vary only the illustrative shading contribution. Mark the actual boundary and darker patches with speech.",
+      "oneVariable": "Our model shading contribution only; no claimed Nintendo coefficient.",
+      "carryForward": "The hard-to-read boundary motivates reducing that same shading term."
+    },
+    {
+      "section": "flat",
+      "paragraph": 3,
+      "sourceParagraph": "Removing shading made walls/floors hard to distinguish.",
+      "retain": "Removing one cue solves one problem while losing shape information.",
+      "screen": "Hold same ink colors, topology and camera; remove shaded shape cues, then reveal wall/floor labels connected to the existing surfaces.",
+      "oneVariable": "Our model shading contribution approaches0.",
+      "carryForward": "Keep same scene while focusing on the other light component, bright specular highlights."
+    },
+    {
+      "section": "specular",
+      "paragraph": 4,
+      "sourceParagraph": "Raising specular-reflection intensity hid enemy squid submerge splashes.",
+      "retain": "Stronger sheen competes with a small gameplay motion signal.",
+      "addedExplanation": "Define specular reflection as bright reflected-light sheen; separate its intensity from shade, paint placement and splash geometry.",
+      "screen": "Replay the same original character submerge/splash state with locked light/camera/timing; vary specular intensity only. Hold the splash motion/size/colors identical between A/B.",
+      "oneVariable": "Our shader specular intensity only.",
+      "carryForward": "The same scene preserves all three targets for the final comparison."
+    },
+    {
+      "section": "close",
+      "paragraph": 5,
+      "sourceParagraph": "Cross-section discussion, priorities and final adjustment paragraphs.",
+      "retain": "Readability of ink information is the technical target of material adjustment.",
+      "screen": "Same original Unity scene comparison identifies color boundary / floor-wall shape / submerge splash. Close on our controlled comparisons, without repeating the limited actual-game opening excerpts.",
+      "conclusion": "Balance shading and sheen so the three gameplay cues remain visible.",
+      "carryForward": "Close on the specific material behavior rather than general advice about graphics."
+    }
+  ],
+  "rendererDecision": {
+    "renderer": "Unity primary for material/lighting demonstration; Motion Canvas labels/compositing only",
+    "project": "unity/VideoEditing",
+    "sceneExists": false,
+    "versionAndPipeline": {
+      "editor": "6000.6.0f1",
+      "installedUrp": "17.6.0",
+      "activePipeline": "URP, selected by current PC quality override even with null global default",
+      "currentQualityIndex": 1,
+      "qualityOverrideGuid": "4b83569d67af61e458304325a23e5dfd",
+      "qualityOverrideAsset": "Assets/Settings/PC_RPAsset.asset",
+      "globalSettingsChanged": false,
+      "editorStarted": false
+    },
+    "reason": "Three-dimensional floor/wall orientation, real material-light interaction and splash visibility require a persistent spatial test scene. Do not simulate final Nintendo buffers or build the same demo in two engines.",
+    "classification": "our-implementation / illustrative demonstration, never actual Splatoon renderer output",
+    "oneTestbed": [
+      "same floor+wall geometry",
+      "same two ink regions",
+      "same light and camera",
+      "same original character/splash animation"
+    ],
+    "changeOnlyOneVariablePerComparison": true,
+    "sourceAssetPolicy": "First consult shared Unity asset library. Use original or appropriately licensed recognizable scene objects; no extracted Nintendo characters or proprietary shader/assets.",
+    "noNewShaderImplementationClaim": "Our shader is a controlled teaching model. Values, formulas and render results do not recover Nintendo code.",
+    "sourceFiles": [
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/InkReadabilityLesson.shader",
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/InkReadabilityDemo.cs",
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/Editor/InkReadabilityBuilder.cs",
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/README.md",
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/Editor/InkReadabilityCapture.cs"
+    ],
+    "sourceWritten": true,
+    "sourceCompiled": true,
+    "builderExecuted": false,
+    "savedScenePaths": [],
+    "proposedScenePaths": [
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/Scenes/02-PBSBoundary.unity",
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/Scenes/03-NoShading.unity",
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/Scenes/04-SpecularBaseline.unity",
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/Scenes/05-StrongSpecular.unity",
+      "Assets/VideoScenes/shorts-splatoon-ink-readability/Scenes/06-BalancedIllustration.unity"
+    ],
+    "modelDetails": "Original direct-light GGX teaching shader with artistic shade/specular controls, raised geometry, two ink colors, neutral articulated diver and deterministic ring/droplets; no Nintendo formula or copied asset. Shade A/B:1→0 with specular0.3. Specular A/B:0.3→3.5 with shade0.55. Roughness0.23, light/camera/geometry/phase fixed within each comparison. Values are our parameters, not game measurements.",
+    "capturePlan": {
+      "rendererOutputSize": [
+        1920,
+        1080
+      ],
+      "fps": 60,
+      "compositeSize": [
+        1080,
+        1920
+      ],
+      "outputRoot": "C:/Users/1/Videos/YamyamProduction/cuphead-teardown-splatoon-20261026/shorts-splatoon-ink-readability/local",
+      "status": "not captured; actual camera layout and comparison readability must be visually verified",
+      "mode": "JPG absolute timeline frames, optional silent ffmpeg raw pipe, per-frame readback.ndjson",
+      "isolatedProject": "Parent prepares an exact C: project with current URP Settings/Packages/source; capture verifies expectedProjectPath and uses outside-project C output.",
+      "pending": "Actual Unity import/shader compilation/build/runtime/still validation; source preparation and CPU compilation are not render evidence."
+    },
+    "sourceCompilationScope": "Controller and editor builder only, CPU Roslyn with installed Unity6000.6 modules + URP17.6 runtime; shader/Editor build/runtime unverified.",
+    "shaderPasses": [
+      "UniversalForwardOnly",
+      "DepthOnly",
+      "DepthNormalsOnly"
+    ],
+    "builderSafety": {
+      "generatedTargetCount": 13,
+      "checksEveryAssetAndMetaBeforeMutation": true,
+      "rejectsOrphanMetas": true,
+      "checksScopedAbsolutePaths": true,
+      "rechecksBeforeEverySave": true,
+      "additiveScene": true,
+      "restoresPriorActiveScene": true,
+      "doesNotSaveOrCloseUnrelatedScenes": true,
+      "savesOnlyOwnAssets": true,
+      "globalPipelineOrQualityMutated": false
+    },
+    "validationEvidence": "production/unity-code-validation.json",
+    "captureContract": "planning/capture-contract.md",
+    "captureEntryPoint": "YamyamCoding.Shorts.SplatoonInkReadability.Editor.InkReadabilityCapture.Run",
+    "captureSourceCompiled": true,
+    "captureExecuted": false,
+    "captureSourceValidation": "production/unity-capture-code-validation.json"
+  },
+  "visualConstraints": {
+    "palette": "research-black-v1; white body/warm yellow headings; semantic colors and labels, no pure decoration.",
+    "fixedHeader": "one viewer question, own brand; no source/creator credit line",
+    "pictureLabel": "실제 게임: 스플래툰 3 / 우리 Unity 모형; historical comparison chip 개발 사례: 스플래툰 2",
+    "termChip": "English/Korean term and plain definition on first mention, then compact chip.",
+    "caption": "existing fixed portrait boxed-white-forest geometry; actual final caption file used at QA",
+    "cat": "existing Yamyam reactions only for realization and closing; no mascot cover hero",
+    "cover": "Actual inspected Splatoon3 game frame or our verified comparison after render; never label it as the historical Splatoon2 prototype.",
+    "gameFootage": "Native speed/aspect, no looping or upscaling, no invented measurement overlays.",
+    "QA": "1080×1920 and approx375px moving output required before any delivery claim"
+  },
+  "evidenceLinks": {
+    "technical": "sources/selected-sources.json",
+    "footageAndRights": "sources/selected-footage.json"
+  },
+  "duplicateReview": {
+    "inventoryRowsSeen": 26,
+    "relatedFullScriptsRead": [
+      "shorts-normal-map-illusion",
+      "shorts-flow-map-river",
+      "shorts-d2r-loot-grass-clearance"
+    ],
+    "decision": "Distinct. Not encoding normals or flow vectors and not moving occluding grass; selected content compares ink shading components and three concrete signal losses. Keep conclusion technical, not the generic graphics-versus-fun slogan.",
+    "separateRequestedSurfaceInkShort": "Not combined. Paint-to-surface storage/attachment is a different requested mechanism."
+  },
+  "titleCandidates": [
+    {
+      "title": "반짝이는 잉크 때문에 적을 놓친다? | 스플래툰 2",
+      "selected": true,
+      "support": "Specular reflection experiment masked enemy submerge splash."
+    },
+    {
+      "title": "스플래툰 2는 왜 잉크의 빛까지 조절했을까?",
+      "support": "All three material adjustments in official programmer account."
+    },
+    {
+      "title": "잉크가 진짜처럼 보이는데, 팀 색은 흐려졌다",
+      "support": "Physically based shading prototype reduced team-boundary readability."
+    }
+  ],
+  "gameExampleMix": {
+    "games": [
+      "Splatoon3 retail recording as observed phenomenon; Splatoon2 development article as historical technical basis"
+    ],
+    "nintendoNumerator": 1,
+    "denominator": 1,
+    "basis": "Nintendo official game sites and programmer article",
+    "countRule": "One adopted actual game recording (3); historical2 source is not a second adopted footage example.",
+    "reason": "Smallest sufficient concept-matched example; no unrelated games or padding."
+  },
+  "authorization": {
+    "id": "explicit-cuphead-teardown-splatoon-20261026",
+    "userEvidence": "컵헤드 만들어줘~ 티어다운이랑 스플래툰도 하나 찾아서 추가해주고",
+    "productionDateKst": "2026-10-26",
+    "fullProductionAuthorized": true,
+    "currentDelegatedStage": "research-and-preproduction-only",
+    "scope": "One explicitly selected Splatoon 2 ink-readability Short. Separate from the subsequently requested surface-ink Short. Production continues only inside the parent finite selected batch.",
+    "localFinalReviewRequired": true,
+    "youtubeAuthorized": false,
+    "driveAuthorized": false,
+    "automaticNextVideo": false
+  },
+  "noCostlyJobsStarted": true,
+  "blockers": [],
+  "pendingBeforeProduction": [
+    "Wait for actual user game and Unity Editor to be absent before GPU/TTS/render.",
+    "Finish independent nativeFHD footage acquisition, rights/audio review and target-specific inspection.",
+    "Finalize script against actual viewed footage and planned testbed.",
+    "Read Unity asset library and actual version/pipeline; create and verify saved editable scene.",
+    "Only then generate approved voice and exact cue timing; no invented source timing or hidden shader coefficients.",
+    "Final clean/captioned/KO/EN + local review links/master SHA256; no platform upload before actual user review."
+  ],
+  "assetRecords": [
+    {
+      "productId": null,
+      "assetPath": "Assets/VideoScenes/shorts-splatoon-ink-readability",
+      "provenance": "Original code-generated raised floor/wall, articulated neutral mannequin, ring and droplets. No Nintendo assets or vendor textures/rigs.",
+      "libraryConsulted": [
+        "shared/assets/unity-asset-library.json",
+        "docs/UNITY_ASSET_LIBRARY.md",
+        "unity/VideoEditing/Assets/ThirdParty/YamyamAssetLibrary"
+      ],
+      "selectionReason": "The teaching objects are plain floor/wall and surface shading; own geometry isolates the narrated variables. Library scene art or fluid effects would obscure the controlled comparison.",
+      "runtimeInspected": false,
+      "sourceOnly": true
+    }
+  ],
+  "sharedAssetPaths": [],
+  "headingFreeReadThrough": {
+    "ko": "Passed textual full read: observed ink/submerge→explicit historical2 transition→first-game issue→PBS→boundary problem→flat geometry problem→specular splash problem→three-cue conclusion.",
+    "en": "Passed semantic counterpart; final English paragraph text equals its ordered clause text.",
+    "pending": "Actual voice, exact subtitle/audio timing, native-speed final source cut and our rendered A/B are not reviewed.",
+    "redundantHedgesOmitted": "No repeated disclaimers in speech; historical/game/source-kind distinctions remain explicit in narration, picture labels and evidence records."
+  },
+  "pendingProductionChecks": [
+    "Run Unity shader import/compilation and builder only after parent resource checks; create and verify actual saved scenes. C# CPU compile has already passed.",
+    "Verify floor/wall geometry, shading/specular comparison, visible splash signal and camera crop in real rendered output; adjust authored parameters if needed without claiming Nintendo values.",
+    "Check exact native-speed gameplay selection and final caption/speech fit.",
+    "TTS/ASR/1080x1920 and375px moving QA plus actual human final review remain undone."
+  ],
+  "productionSequencing": "Parent reported user game exited; this delegated turn permits CPU C# compilation only. Parent will serialize Editor/scene generation/GPU jobs.",
+  "finishingPipeline": {
+    "status": "source-written-code-checked",
+    "guide": "production/FINISHING.md",
+    "compositor": "motion-canvas/src/projects/shorts-splatoon-ink-readability/project.ts",
+    "vite": "motion-canvas/vite.ink-readability.config.ts",
+    "port": 9278,
+    "validation": "production/finishing-code-validation.json",
+    "timingSource": "actualPCM +29displayclauses; sixsource-ordersections",
+    "voiceOffsetSeconds": 0.2,
+    "tailSecondsMinimum": 0.4,
+    "unityCaptureResolution": [
+      1920,
+      1080
+    ],
+    "compositeResolution": [
+      1080,
+      1920
+    ],
+    "fps": 60,
+    "actualUnityFrames": "absolutePCMtimelineindex",
+    "headerReservedY": [
+      0,
+      440
+    ],
+    "captionReservedY": [
+      1290,
+      1470
+    ],
+    "frameAndParameterHashesRequired": true,
+    "focusReview": "production/native-focus-review.json",
+    "focusInterpolationMovingReview": "pending",
+    "humanReview": false
+  },
+  "sourceInspectionFollowup": {
+    "nativeSamples": 25,
+    "evidence": "production/local/qa/native-focus-v1/samples.json",
+    "allSamplesDirectlyViewed": true,
+    "sourceGlintAnnotationSeconds": [
+      66.25,
+      67.5
+    ],
+    "sourceSplashAnnotationSeconds": [
+      70.0,
+      70.25
+    ],
+    "nativeRealtimePlaybackReviewed": false,
+    "reason": "Hide annotations when splash disappears; do not track later jump/aim or weapon-emission as surface specular."
+  },
+  "audioRevision": {
+    "current": "audio-v2",
+    "original": "audio-v1",
+    "record": "production/audio-v2-preparation.json",
+    "sourceScript": "script/narration.ko.json",
+    "currentSpokenScript": "script/narration.spoken.ko.json",
+    "changedParagraphs": [
+      1,
+      2,
+      5
+    ],
+    "unchangedRawPcmReuse": [
+      3,
+      4,
+      6
+    ],
+    "claimOrderAndMeaningPreserved": true,
+    "actualListening": "pending",
+    "executionOwnedBy": "parent serial scheduler"
+  },
+  "productionCompletion": {
+    "currentLocalReview": "production/local-review.json",
+    "captionedSha256": "3281f1c26d46413fedb16d85e6898ea863b77755b80d0dc0054ab59f7e67a1c4",
+    "state": "local-final-version-ready; full-listening/continuous-playback/human-review-pending",
+    "frozenInputMetadataNote": "Prior source/script drafting-status fields are historical; successful hashed script/PCM inputs were preserved."
+  }
+}

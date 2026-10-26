@@ -1,0 +1,13 @@
+This spray changes a number to paint. That is Teardown's trick.
+
+Each voxel is a tiny 3D cell. It stores a one-byte material number. This number is the material index; the material table is called a palette.
+
+At load time, prepare the original and progressively yellower variants. Spraying consults a translation table and changes the voxel's index.
+
+For example, replace brick index 3 with yellow-brick index 9. Its shape stays; its color changes.
+
+The palette has limited space. There are up to 255 material slots. Add four yellow and four black shades: one original now needs nine slots.
+
+When space runs out, merge similar colors and choose the closest available match. In the early Castle example, some surfaces turned brown or stayed unchanged.
+
+Even a spray can hides a trade-off: less memory versus more color choices.

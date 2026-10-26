@@ -1,0 +1,13 @@
+Splatoon ink stays on floors and walls. How does color remain where a shot lands?
+
+A method disclosed in a Nintendo patent links the surface to a transparent painting sheet. This color image is a texture.
+
+First, detect where the ink hits. Convert that three-dimensional point into coordinates on a virtual plane associated with the surface.
+
+Find the address to paint in the image: its UV coordinates. Halfway across and halfway up means the horizontal address is 0.5, and the vertical address is 0.5.
+
+Stamp an ink shape around that address and combine it with the original wall image. Floors and walls use their corresponding surface coordinates.
+
+A mark could break at a boundary between image patches. The neighboring virtual surfaces are connected for this processing.
+
+Turn the camera and the ink stays in place. Color is recorded in the surface texture, rather than the screen.
