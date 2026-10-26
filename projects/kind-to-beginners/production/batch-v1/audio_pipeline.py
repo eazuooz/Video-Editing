@@ -358,7 +358,7 @@ def full_asr(audio_path,cache_path,*,final=False):
     with batch_asr_lease(device):return _full_asr(audio_path,cache_path,final=final,device=device)
 
 
-def _full_asr(audio_path, cache_path, *, final=False, device=0 if device=="cuda" else "cpu"):
+def _full_asr(audio_path, cache_path, *, final=False, device="cpu"):
     local_model = ROOT / "qwen3-tts" / "models" / "whisper-large-v3-turbo"
     current_audio = artifact(audio_path)
     if Path(cache_path).exists():
@@ -493,6 +493,21 @@ def safe_boundary(audio, rate, previous_end, next_start, *, override=None, silen
                  "contextForListening": [max(0, target - 1.5), min(len(audio) / rate, target + 1.5)]}
 
 
+def reviewed_alignment_words(recognition,cache_path,audio_digest):
+    selection=NARRATION/'alignment-selection-review.json'
+    if not selection.exists():return recognition['words'],None
+    review=read(selection)
+    if review.get('sourceAsrSha256')!=sha(cache_path) or review.get('sourceAudioSha256')!=audio_digest or review.get('fullRawTextCompared') is not True or not review.get('reason'):
+        raise ValueError('Reviewed alignment selection is stale or incomplete')
+    indices=review.get('keepWordIndices')
+    if not isinstance(indices,list) or not indices or indices!=sorted(set(indices)) or any(not isinstance(i,int) or i<0 or i>=len(recognition['words']) for i in indices):
+        raise ValueError('Selection must preserve source index order; no invented words or timestamps')
+    kept=[recognition['words'][i] for i in indices]
+    starts=[w['timestamp'][0] for w in kept]
+    if any(t is None for t in starts) or starts!=sorted(starts):raise ValueError('Selected source word starts must be monotonic')
+    return kept,artifact(selection)
+
+
 def split(review_path, overrides_path=None):
     ko, en, spoken, script_files = scripts()
     raw, cache = NARRATION / "narration-source.wav", NARRATION / "whole-source-asr.json"
@@ -507,7 +522,8 @@ def split(review_path, overrides_path=None):
         raise ValueError("Record direct comparison of the complete current source ASR before scene splitting")
     overrides = read(overrides_path) if overrides_path else {}
     override_rows = {row["afterScene"]: row for row in overrides.get("boundaries", [])}
-    inputs = {"sourceSha256": digest, "asrSha256": sha(cache), "scripts": script_files,
+    selected_words,selection_artifact=reviewed_alignment_words(recognition,cache,digest)
+    inputs = {"sourceSha256": digest, "asrSha256": sha(cache), "alignmentSelection":selection_artifact, "scripts": script_files,
               "comparisonReview": artifact(review_path), "boundaryOverrides": overrides,
               "boundaryPolicy": "word-aligned plus >=50ms waveform low-energy pause; no time stretch",
               "alignmentAliases": artifact(SCRIPT / "caption-aliases.json")}
@@ -521,7 +537,7 @@ def split(review_path, overrides_path=None):
     if rate != RATE or audio.ndim != 1:
         raise ValueError("Expected mono float source at 48kHz")
     expected = " ".join(line for scene in spoken["scenes"] for line in scene["lines"])
-    aligned_words = pronunciation_words(recognition["words"])
+    aligned_words = pronunciation_words(selected_words)
     starts, ends, coverage = align_characters(expected, aligned_words, len(audio) / rate)
     bounds, boundaries, cursor = [0], [], 0
     for scene in spoken["scenes"][:-1]:
