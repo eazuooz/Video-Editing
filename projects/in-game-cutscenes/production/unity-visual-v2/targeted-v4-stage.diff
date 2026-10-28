@@ -1,0 +1,47 @@
+--- frozen-v3
++++ targeted-v4
+@@ -158,10 +158,10 @@
+             else if(mode=="control")
+             {
+                 Title(cutId=="cut012"?"시작한 사람에게 조작을":"조작 → 반응 → 목표");Hero(-3.8f,false);
+-                prop=Asset("barrel",new Vector3(3.2f,0,0),2.2f);
++                prop=cutId=="cut005"?Actor("approaching-opponent",new Vector3(3.2f,0,0),true,3.1f,180):Asset("barrel",new Vector3(3.2f,0,0),2.2f);
+                 if(cutId=="cut005")prop2=Asset("blaster",new Vector3(-2.7f,1.4f,-.2f),.65f,90);
+                 Line("action-line",new[]{new Vector3(-1.8f,1.5f,-.4f),new Vector3(2.4f,1.5f,-.4f)},Teal,.07f);
+-                T(cutId=="cut012"?"내가 움직인다":"조작",490,260,46,Teal,650);T("화면이 반응한다",1430,260,44,Yellow,720);
++                T(cutId=="cut012"?"내가 움직인다":"조작",490,260,46,Teal,650);T(cutId=="cut005"?"다가오는 적":"화면이 반응한다",1430,260,44,Yellow,720);
+             }
+             else if(mode=="information-order"||mode=="information-order-return"||mode=="participation")
+             {
+@@ -245,12 +245,13 @@
+             {Show(text[2],u>.28f);Walk(a,t,a0,new Vector3(2.4f,0,-.5f),Ease(Length*.5f,Length,t));}
+             else if(mode=="qte")
+             {
+-                // Actual cue 6.09s defines QTE; 14.07s begins the input-risk passage.
++                // The missed-input state stays visible during 14.07–17.83s risk narration.
++                // Advice begins at17.97s; show a clearly signaled retry, then act at21.8s.
+                 bool alert=t>=3.2f;Show(text[1],alert);Show(text[2],alert);Show(ui[0],alert);Show(ui[1],alert);
+-                float phase=t<14.07f?Mathf.InverseLerp(6.09f,9.0f,t):Mathf.InverseLerp(14.07f,20.4f,t);
++                float phase=t<17.97f?Mathf.InverseLerp(6.09f,9.0f,t):Mathf.InverseLerp(17.97f,21.8f,t);
+                 ui[1].rectTransform.localScale=new Vector3(Mathf.Clamp01(1-phase),1,1);
+-                Show(text[3],t>=9&&t<14.07f);Show(text[4],t>=14.07f);
+-                if(t>=20.4f){Walk(a,t,a0,new Vector3(-2.1f,0,0),Ease(20.4f,21.0f,t));Pose(a,"Fight_Punch_A",t-20.4f);prop.transform.position=new Vector3(-.7f+Ease(21.0f,21.6f,t),0,.4f);}
++                Show(text[3],t>=9&&t<17.97f);Show(text[4],t>=19.93f);
++                if(t>=21.8f){Walk(a,t,a0,new Vector3(-2.1f,0,0),Ease(21.8f,22.4f,t));Pose(a,"Fight_Punch_A",t-21.8f);prop.transform.position=new Vector3(-.7f+Ease(22.4f,23.0f,t),0,.4f);}
+             }
+             else if(mode=="opening-overview"||mode=="closing-actions")
+             {
+@@ -270,7 +271,12 @@
+             else if(mode=="control")
+             {
+                 if(cutId=="cut012")Walk(a,t,a0,new Vector3(-1.3f,0,0),Ease(.15f,Length*.85f,t));
+-                else{Pose(a,"Pistol_Idle",t);prop.transform.rotation=Quaternion.Euler(0,0,-22*Ease(.7f,1.1f,t));}
++                else
++                {
++                    Pose(a,"Pistol_Idle",t);
++                    prop.transform.position=new Vector3(Mathf.Lerp(3.2f,.7f,Ease(0,1.8f,t))+Mathf.Lerp(0,.65f,Ease(1.85f,2.3f,t)),0,0);
++                    Pose(prop,t<1.85f?"Walk_A":"Fight_Hit_A",t<1.85f?t:t-1.85f);
++                }
+             }
+             else if(mode=="information-order")
+             {

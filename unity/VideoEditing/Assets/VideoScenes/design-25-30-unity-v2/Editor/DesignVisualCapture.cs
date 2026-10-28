@@ -1,0 +1,69 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using Object=UnityEngine.Object;
+namespace Yamyam.DesignVisualV2 {
+[InitializeOnLoad]
+public static class DesignVisualCapture {
+ static string Req=>Path.GetFullPath(Application.dataPath+"/../Library/DesignVisualV2.request.json");
+ static string Status=>Path.GetFullPath(Application.dataPath+"/../Library/DesignVisualV2.status.json");
+ [Serializable]public class Job {public string command="preflight",slug,cutId,stageClass,output,expectedFingerprint;public int frames;public int[] sampleFrames;}
+ [Serializable]class State {public string status,slug,cutId,output,scene,error,unity=Application.unityVersion,compiledSourceFingerprint,stageAssemblyMvid;public int completed,frames;public string[] assets,animations;}
+ static Job job;static State state;static Scene scene,prior;static DesignLessonStage stage;
+ static RenderTexture target;static Texture2D pixels;static System.Diagnostics.Process encoder;static Stream stream;
+ static int cursor;static bool prepared,locked;static string stderr="";
+ static DesignVisualCapture(){EditorApplication.update+=Poll;}
+ static void Poll(){if(job!=null||EditorApplication.isCompiling||EditorApplication.isUpdating||EditorApplication.isPlayingOrWillChangePlaymode||!File.Exists(Req))return;
+  try{var parsed=JsonUtility.FromJson<Job>(File.ReadAllText(Req));if(parsed.expectedFingerprint!=DesignBuildVersion.For(parsed.stageClass))return;File.Move(Req,Req+".consumed-"+DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));Start(parsed);}catch(Exception e){Finish(e);}}
+ static void Start(Job j){
+  if(j.command!="preflight"&&j.command!="render")throw new Exception("Unsupported scoped capture command");
+  if(!j.output.StartsWith("C:/Users/1/.codex/video-production/design-25-30-unity-v2-20261028/",StringComparison.OrdinalIgnoreCase))throw new Exception("Output outside scoped media folder");
+  if(j.frames<1||j.frames>36000)throw new Exception("Invalid frame count");
+  Directory.CreateDirectory(j.output);if(File.Exists(Path.Combine(j.output,j.command+"-success.json")))throw new Exception("Preserving prior successful capture");
+  job=j;state=new State{status="building",slug=j.slug,cutId=j.cutId,frames=j.frames,output=j.output,compiledSourceFingerprint=DesignBuildVersion.For(j.stageClass)};Write();
+  prior=SceneManager.GetActiveScene();scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);SceneManager.SetActiveScene(scene);
+  var go=new GameObject("Editable lesson — "+j.slug+" / "+j.cutId);SceneManager.MoveGameObjectToScene(go,scene);
+  var type=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("Yamyam.DesignVisualV2."+j.stageClass)).FirstOrDefault(t=>t!=null);if(type==null)throw new Exception("Stage class not compiled "+j.stageClass);
+  target=new RenderTexture(1920,1080,24,RenderTextureFormat.ARGB32){antiAliasing=4};target.Create();pixels=new Texture2D(1920,1080,TextureFormat.RGBA32,false);
+  state.stageAssemblyMvid=type.Assembly.ManifestModule.ModuleVersionId.ToString();stage=(DesignLessonStage)go.AddComponent(type);stage.slug=j.slug;stage.cutId=j.cutId;stage.frames=j.frames;stage.Initialize();stage.camera.targetTexture=target;Canvas.ForceUpdateCanvases();stage.Build();stage.Apply(0);stage.FlushPoses();
+  var saved="Assets/VideoScenes/"+j.slug+"/unity-visual-v2/"+j.cutId+".unity";Directory.CreateDirectory(Path.GetDirectoryName(saved));
+  state.scene=saved;
+  // Keep each scene editable; save generated objects and their shared vendor references.
+  if(!EditorSceneManager.SaveScene(scene,saved))throw new Exception("Scene save failed");
+  state.assets=stage.usedAssetPaths.ToArray();state.animations=stage.usedAnimationPaths.ToArray();
+  cursor=0;prepared=false;
+  if(j.command=="render"){
+   string movie=Path.Combine(j.output,"unity.mp4");if(File.Exists(movie))throw new Exception("Existing render preserved");
+   var p=new System.Diagnostics.ProcessStartInfo("ffmpeg",$"-hide_banner -loglevel error -n -f rawvideo -pixel_format rgba -video_size 1920x1080 -framerate 60 -i pipe:0 -vf vflip,scale=in_range=full:out_range=tv:out_color_matrix=bt709,format=yuv420p -an -c:v h264_nvenc -preset p4 -rc constqp -qp 18 -bf 2 -g 60 -pix_fmt yuv420p -color_primaries bt709 -color_trc bt709 -colorspace bt709 -movflags +faststart \"{movie}\""){UseShellExecute=false,CreateNoWindow=true,RedirectStandardInput=true,RedirectStandardError=true};
+   encoder=new System.Diagnostics.Process{StartInfo=p};encoder.ErrorDataReceived+=(sender,args)=>{if(args.Data!=null)stderr+=args.Data+"\n";};encoder.Start();encoder.BeginErrorReadLine();stream=encoder.StandardInput.BaseStream;
+  }
+  EditorApplication.LockReloadAssemblies();AssetDatabase.DisallowAutoRefresh();locked=true;state.status="capturing";Write();EditorApplication.update+=Tick;
+ }
+ static void Tick(){try{
+  int f=job.command=="preflight"?job.sampleFrames[cursor]:cursor;
+  if(!prepared){stage.Apply(f/60f);stage.FlushPoses();Canvas.ForceUpdateCanvases();EditorApplication.QueuePlayerLoopUpdate();prepared=true;return;}
+  RenderPipeline.SubmitRenderRequest(stage.camera,new UniversalRenderPipeline.SingleCameraRequest{destination=target});var old=RenderTexture.active;RenderTexture.active=target;pixels.ReadPixels(new Rect(0,0,1920,1080),0,0);pixels.Apply(false);RenderTexture.active=old;
+  if(encoder!=null){var bytes=pixels.GetRawTextureData<byte>();stream.Write(bytes.ToArray(),0,bytes.Length);}
+  if(job.command=="preflight")File.WriteAllBytes(Path.Combine(job.output,$"frame-{f:D5}.png"),pixels.EncodeToPNG());
+  cursor++;prepared=false;state.completed=cursor;
+  if(cursor%120==0)Write();if(cursor>=(job.command=="preflight"?job.sampleFrames.Length:job.frames))Finish(null);
+ }catch(Exception e){Finish(e);}}
+ static void Write(){File.WriteAllText(Status,JsonUtility.ToJson(state,true));if(job!=null)File.WriteAllText(Path.Combine(job.output,"progress.json"),JsonUtility.ToJson(state,true));}
+ static void Finish(Exception e){
+  EditorApplication.update-=Tick;
+  try{if(encoder!=null){stream.Close();encoder.WaitForExit();if(encoder.ExitCode!=0)e=new Exception(stderr);encoder.Dispose();encoder=null;}}catch(Exception err){e=err;}
+  if(state==null)state=new State();if(stage){state.assets=stage.usedAssetPaths.ToArray();state.animations=stage.usedAnimationPaths.ToArray();}state.status=e==null?"complete":"failed";state.error=e?.ToString();
+  try{Write();if(job!=null)File.WriteAllText(Path.Combine(job.output,job.command+(e==null?"-success":"-failure")+".json"),JsonUtility.ToJson(state,true));}catch{}
+  if(target){target.Release();Object.DestroyImmediate(target);}if(pixels)Object.DestroyImmediate(pixels);stage=null;
+  if(scene.IsValid()&&scene.isLoaded)EditorSceneManager.CloseScene(scene,true);if(prior.IsValid()&&prior.isLoaded)SceneManager.SetActiveScene(prior);
+  if(locked){AssetDatabase.AllowAutoRefresh();EditorApplication.UnlockReloadAssemblies();locked=false;}job=null;stderr="";
+ }
+}
+}
