@@ -1,0 +1,1 @@
+namespace Yamyam.DesignVisualV2 { public static class DesignClarityBuildVersion { public static string For(string stage) { switch(stage) { case "D25ColorClarityStage":return "901f9abb389d62a7d198ac983febc4c980023af43e2498ebb52a1c3ea3c23bd1";case "D29ClarityStage":return "4b24d3843ce9882d5e4158e3fe028af7249845c255ef2133c47678c73b5566fc";default:return "unknown";} } } }

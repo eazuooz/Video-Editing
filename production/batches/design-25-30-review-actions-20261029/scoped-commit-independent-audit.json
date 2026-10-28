@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-28T18:38:25.657915+00:00",
+  "reviewer": "d29_d30_unity_revision",
+  "status": "read-only-review-complete-no-current-scope-blocker",
+  "scope": "Independent static review of exact-path commit, shared JSON overlays, preservation of unrelated staged/working changes, HEAD CAS and push.",
+  "reviewedSources": [
+    {
+      "path": "production/batches/design-25-30-review-actions-20261029/commit_scope.py",
+      "sha256": "98a27a2d5964d36f83d2acda608ecb728c9606e6846af29ddd3527f7f8e66243"
+    },
+    {
+      "path": "production/batches/design-25-30-review-actions-20261029/scoped_json.py",
+      "sha256": "e205f9232775dbae2fa73515da8f0b12a3467c926fb1ccfed9600c2ce15bbb4f"
+    },
+    {
+      "path": "production/batches/design-25-30-review-actions-20261029/prepare_scoped_git.py",
+      "sha256": "c2a73fbd53d10c36d5382b3294587167c9fc47513bc3676b9a392c90159852ce"
+    }
+  ],
+  "repositoryAtReview": {
+    "head": "37d5882527bf87e219836ef62c8f47efea9b7dff",
+    "branch": "refs/heads/codex/rendering-special-01-20261015",
+    "stagedChangedPathCount": 1583
+  },
+  "executionBoundary": {
+    "auditedScriptsExecuted": false,
+    "gitMutationPerformed": false,
+    "uiUsed": false,
+    "otherSourcesModified": false,
+    "onlyWrittenArtifact": "production/batches/design-25-30-review-actions-20261029/scoped-commit-independent-audit.json"
+  },
+  "validatedByInspection": [
+    {
+      "claim": "Commit tree starts from HEAD and overlays only exact validated paths; foreign staged trees are not used as the commit base.",
+      "lines": "commit_scope.py:139-152,169-170,189-203"
+    },
+    {
+      "claim": "A separate sync index starts from the original real index. Non-owned paths must retain their stage/mode/object and ls-files -v flags.",
+      "lines": "commit_scope.py:167,171-177,192-193,222"
+    },
+    {
+      "claim": "Shared files are overlaid separately on HEAD and existing-index blobs; unrelated rows/keys remain in their own prior state. The worklist changes only listed fields for D25-D30, history/evidence are append-merged, markdown changes only selected owned-row columns.",
+      "lines": "commit_scope.py:67-132,148-152"
+    },
+    {
+      "claim": "Lexical JSON replacement preserves bytes outside the targeted value and validates the semantic result; actual current worklist nested parents required by selected changed dictionaries were present in the index.",
+      "lines": "scoped_json.py:31-64; read-only current HEAD/index/worktree data inspection"
+    },
+    {
+      "claim": "Real index is locked with exclusive-create before final checks. Original index bytes, original HEAD, symbolic branch and input bytes are rechecked. Branch update uses update-ref expected old SHA rather than a blind move.",
+      "lines": "commit_scope.py:204-216"
+    },
+    {
+      "claim": "Push targets the exact newly created commit SHA to the captured branch without --force or force-with-lease; upstream divergence is rejected normally.",
+      "lines": "commit_scope.py:230-234"
+    },
+    {
+      "claim": "The reviewed commit code does not rewrite working-tree sources. Thumbnail apply is a separate optional preparatory mutation, not part of the scoped commit.",
+      "lines": "commit_scope.py:143-234; prepare_scoped_git.py:44-50"
+    },
+    {
+      "claim": "Prepare inventory now disables optional Git index refresh for git status.",
+      "lines": "prepare_scoped_git.py:82-83"
+    }
+  ],
+  "findings": [
+    {
+      "id": "index-refresh-in-advisory-status",
+      "severity": "low",
+      "status": "fixed-by-parent-and-reread",
+      "detail": "Earlier prepare git status inherited optional index locks and could refresh the actual index stat cache. Parent added GIT_OPTIONAL_LOCKS=0; confirmed in the final reviewed source."
+    },
+    {
+      "id": "thumbnail-apply-reformats-shared-files",
+      "severity": "low",
+      "status": "not-on-current-execution-path",
+      "lines": "prepare_scoped_git.py:44-50",
+      "detail": "--apply-thumbnails serializes the whole registry and read_text/write_text normalizes ignore newlines/trailing whitespace. It preserves unrelated semantic entries but not their exact bytes. Parent states this optional application already happened once and will not be repeated; commit_scope overlays only the four owned entries and exact exceptions into HEAD and index."
+    },
+    {
+      "id": "ref-index-publication-is-not-one-transaction",
+      "severity": "medium",
+      "status": "recoverable-residual-failure-boundary",
+      "lines": "commit_scope.py:207-220",
+      "detail": "If update-ref succeeds but os.replace(index.lock,index) fails, the new commit remains on the branch while the original real index remains. The exception path removes its lock and writes interrupted.json with refUpdated=true; it does not install sync-index or roll back the ref. Foreign staged entries are not lost, but owned paths can appear reversed/staged against the new HEAD. A blind rerun is not a recovery procedure.",
+      "recovery": [
+        "Pause other index/ref writers and inspect the saved run plan, interrupted.json when present, original index backup and sync-index. Confirm the branch is still the recorded new commit and the current real index is byte-identical to the recorded original before replacing anything.",
+        "Preferred completion: under a newly acquired exclusive index lock, install the already prepared sync-index only after those equality checks and source checks. Recheck foreign stage/mode/flags and intended shared overlays, then write the completion receipt. Do not push before recovery verification.",
+        "Alternative rollback only if the branch still equals the recorded new commit and real index still equals the original: compare-and-swap the branch back to the recorded base. The original index is already present; do not overwrite it unnecessarily. Keep the new commit and saved run recoverable.",
+        "If either HEAD or index has advanced since the failure, do not restore the full backup and do not force-move the branch. Preserve the new current index/ref and reconcile the owned overlays against that state explicitly.",
+        "A hard process termination after ref update may leave index.lock without interrupted.json. Preserve the lock and run files as evidence first; do not blindly delete a possibly active process lock."
+      ]
+    }
+  ],
+  "limitations": [
+    "No dry-run or execute mode of the reviewed scripts was run, no synthetic repository was created, and no fault injection was performed; this is static review plus bounded read-only current-state inspection.",
+    "Future foreign edits within the same explicitly owned scalar or newly added dictionary are not protected as distinct ownership: those values are selected wholesale. Parent must continue selecting only this batch-owned current deltas.",
+    "Current review is not proof that runtime media-policy checks, every final selected path, or future race conditions pass; execute-mode assertions remain the runtime gate."
+  ],
+  "recommendation": "Proceed with parent-reviewed exact owned paths after all selected production files are stable. Retain the saved original/sync indexes and receipts. No current evidence of unrelated staged-path inclusion or working-file loss was found."
+}

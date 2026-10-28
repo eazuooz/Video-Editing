@@ -1,0 +1,280 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+namespace Yamyam.DesignVisualV2 {
+// New revision only. Geometry is shared across each comparison; no vendor asset is edited.
+// Unity captures only the graded world. Measured brand labels and photographs
+// are composited afterward from the same cue JSON, outside the color operation.
+public sealed class D25ColorClarityStage : DesignClarityLessonStage {
+ public const string OwnRoot="Assets/VideoScenes/limited-color-world/clarity-v3";
+ [Serializable] public sealed class Cue { public string key; public float start,end; }
+ [Serializable] public sealed class CutCues { public string cutId,variant; public Cue[] cues; }
+ [Serializable] public sealed class CueFile { public bool timingLocked; public CutCues[] cuts; }
+ public Cue[] cues=new Cue[0];
+ public string variant;
+ public Camera uiCamera;
+ public Volume grayscaleVolume;
+ public ColorAdjustments colorAdjustments;
+ public GameObject actor,chest,ground,pathSurface,tokenBackground;
+ public List<GameObject> trees=new List<GameObject>(),pieces=new List<GameObject>();
+ public List<GameObject> symbols=new List<GameObject>(),stripes=new List<GameObject>(),edges=new List<GameObject>();
+ public List<GameObject> pathEdges=new List<GameObject>();
+ public Text stateLabel,detailLabel,countLabel;
+ public Text optionA,optionB;
+ public List<Image> photos=new List<Image>();
+ readonly List<MaterialState> treeMats=new List<MaterialState>(),chestMats=new List<MaterialState>();
+ readonly Dictionary<GameObject,List<MaterialState>> animatedMats=new Dictionary<GameObject,List<MaterialState>>();
+ Vector3[] piecePositions;
+ Texture2D greenTreePalette;
+ sealed class MaterialState {public Material material;public Color original;}
+ bool forest,photo;
+ bool ContrastRepair=>variant=="forest-background-repair"||variant=="forest-path-repair"||variant=="forest-color-restored"||variant=="inspection-comparison";
+ string GeneratedRoot=>OwnRoot+"/Generated"+(ContrastRepair?"/ContrastV2":"");
+ static readonly Color RedPiece=Hex("CC5656"),GreenPiece=Hex("53A26B"),Muted=Hex("7C827A");
+ public override void Build(){
+  var cuePath=Path.GetFullPath(Path.Combine(Application.dataPath,"../../../projects/limited-color-world/production/clarity-v3/unity-cues.json"));
+  if(File.Exists(cuePath)){
+   var config=JsonUtility.FromJson<CueFile>(File.ReadAllText(cuePath));
+   if(config.cuts!=null)foreach(var cut in config.cuts)if(cut.cutId==cutId){variant=cut.variant;cues=cut.cues??new Cue[0];break;}
+  }
+  if(String.IsNullOrEmpty(variant))variant=cutId;
+  photo=variant=="proof-options"||variant=="puyo-official-filters"||variant=="mirror-still";
+  forest=variant.StartsWith("forest-")||variant=="inspection-comparison";
+  if(photo)BuildPhotos();else if(forest)BuildForest();else BuildTokens();
+  if(tokenBackground)PrepareAnimatedMaterials(tokenBackground,"board");
+  for(int i=0;i<pieces.Count;i++)PrepareAnimatedMaterials(pieces[i],"piece"+i);
+  if(ground)PrepareAnimatedMaterials(ground,"ground");
+  if(pathSurface)PrepareAnimatedMaterials(pathSurface,"path");
+  SetupWorldGrayscale();
+ }
+ string PhotoPath(string name){return Path.GetFullPath(Path.Combine(Application.dataPath,"../../../projects/limited-color-world/production/local/batch-v1/visual-assets/"+name));}
+ void BuildPhotos(){
+  foreach(var label in canvas.GetComponentsInChildren<Text>())if(label.text=="해설용 시연")label.text="자료 그림 · 해설";
+  if(variant=="proof-options"){
+   Title("서로 다른 색각 조건에서 같은 정보를 확인");
+   stateLabel=Label("조각과 배경을 구분할 수 있는가?",960,205,46,White,1600,70);
+   photos.Add(Picture(PhotoPath("puyo.jpg"),490,520,870,489));
+   Label("→",995,425,76,Yellow,120,100);Label("→",995,635,76,Yellow,120,100);
+   optionA=Label("Protanopia-type",1430,425,46,White,730,90);
+   optionB=Label("Deuteranopia-type",1430,635,46,Grey,730,90);
+   detailLabel=Label("색각 시뮬레이션의 검사 항목을 설명한 도식",960,830,44,Grey,1650,65);
+  }else{
+   Title(variant=="mirror-still"?"익숙한 그림을 다른 방향으로 확인":"플레이어가 구분하기 좋은 필터를 선택");
+   stateLabel=Label(variant=="mirror-still"?"같은 스크린샷":"필터 OFF",960,190,46,White,1550,65);
+   photos.Add(Picture(PhotoPath(variant=="mirror-still"?"mario.jpg":"puyo-filter-10.jpg"),960,520,1024,576));
+   if(variant=="puyo-official-filters")photos.Add(Picture(PhotoPath("puyo-filter-11.jpg"),960,520,1024,576));
+   detailLabel=Label(variant=="mirror-still"?"설명용 좌우반전 · 실제 게임 진행 아님":"뿌요뿌요 테트리스 2 · 색 조정 메뉴",960,855,40,Grey,1650,60);
+  }
+ }
+ void SetupWorldGrayscale(){
+  var worldData=camera.GetUniversalAdditionalCameraData();worldData.renderPostProcessing=true;
+  camera.cullingMask&=~(1<<28);
+  worldData.volumeLayerMask=1<<29;worldData.antialiasing=AntialiasingMode.None;
+  var vo=new GameObject("World-only real saturation control");vo.transform.SetParent(transform,false);vo.layer=29;
+  grayscaleVolume=vo.AddComponent<Volume>();grayscaleVolume.isGlobal=true;grayscaleVolume.priority=200;grayscaleVolume.weight=1;
+  var profile=ScriptableObject.CreateInstance<VolumeProfile>();profile.name="D25 grayscale "+cutId;
+  colorAdjustments=profile.Add<ColorAdjustments>(true);colorAdjustments.saturation.Override(0);
+  #if UNITY_EDITOR
+  Directory.CreateDirectory(GeneratedRoot+"/Profiles");
+  var profilePath=GeneratedRoot+"/Profiles/"+cutId+".asset";
+  var priorProfile=AssetDatabase.LoadAssetAtPath<VolumeProfile>(profilePath);
+  if(priorProfile){DestroyImmediate(profile);profile=priorProfile;if(!profile.TryGet<ColorAdjustments>(out colorAdjustments))throw new InvalidOperationException("Unexpected profile schema");colorAdjustments.saturation.Override(0);}
+  else {AssetDatabase.CreateAsset(profile,profilePath);AssetDatabase.AddObjectToAsset(colorAdjustments,profile);}
+  #endif
+  grayscaleVolume.sharedProfile=profile;
+  worldData.cameraStack.Clear();
+  // Retain the editable scene's authored text objects as planning references,
+  // but never draw them through the graded world camera.
+  canvas.gameObject.SetActive(false);
+ }
+ void BuildTokens(){
+  // This vertical diagram needs no ground plane; the common floor otherwise
+  // intersects and hides the bottom row's type marks.
+  var commonFloor=transform.Find("Dark stage");if(commonFloor)commonFloor.gameObject.SetActive(false);
+  camera.transform.position=new Vector3(0,4,-15);camera.transform.LookAt(new Vector3(0,1.9f,0));camera.orthographicSize=5.1f;
+  Title("색이 전하던 정보, 다른 단서로 확인하기");
+  stateLabel=Label("같은 종류 찾기",960,205,46,White,1500,70);
+  detailLabel=Label("모양과 위치는 그대로",960,820,44,Grey,1550,65);
+  countLabel=Label("",960,270,50,Yellow,1500,70);
+  tokenBackground=Box("Same board background",new Vector3(0,1.65f,.55f),new Vector3(12.9f,4.6f,.15f),Hex("242A28"));
+  var positions=new[]{new Vector3(-4,2.3f,-.05f),new Vector3(-2.2f,2.3f,-.05f),new Vector3(-4,.5f,-.05f),new Vector3(4,2.3f,-.05f),new Vector3(.4f,2.3f,-.05f),new Vector3(2.2f,2.3f,-.05f),new Vector3(.4f,.5f,-.05f),new Vector3(2.2f,.5f,-.05f)};piecePositions=positions;
+  for(int i=0;i<positions.Length;i++){
+   var p=Sphere("Abstract game piece "+i,positions[i],1.65f,i<4?RedPiece:GreenPiece);pieces.Add(p);
+   var symbol=new GameObject("Type "+(i<4?"circle":"triangle"));symbol.transform.SetParent(transform,false);symbols.Add(symbol);
+   Vector3 center=positions[i]+new Vector3(0,0,-.92f);
+   var pts=new List<Vector3>();int n=i<4?36:3;
+   for(int j=0;j<=n;j++){float a=(i<4?0:90)*Mathf.Deg2Rad+j*Mathf.PI*2/n;pts.Add(center+new Vector3(Mathf.Cos(a)*.38f,Mathf.Sin(a)*.38f,0));}
+   Line("Persistent type symbol",pts.ToArray(),i<4?Hex("111711"):Color.white,.10f).transform.SetParent(symbol.transform,true);
+   var stripe=new GameObject("Optional redundant stripes");stripe.transform.SetParent(transform,false);stripes.Add(stripe);
+   for(int j=-1;j<=1;j++)Line("Stripe "+j,new[]{center+new Vector3(j*.20f-.08f,-.57f,0),center+new Vector3(j*.20f+.08f,-.43f,0)},Color.white,.065f).transform.SetParent(stripe.transform,true);
+   var ring=new List<Vector3>();for(int j=0;j<=48;j++){float a=j*Mathf.PI*2/48;ring.Add(positions[i]+new Vector3(Mathf.Cos(a)*.89f,Mathf.Sin(a)*.89f,-.25f));}
+   edges.Add(Line("Actual visible outline "+i,ring.ToArray(),Color.white,.085f));
+  }
+ }
+ void BuildForest(){
+  camera.transform.position=new Vector3(0,8.3f,-14);camera.transform.LookAt(new Vector3(0,1.15f,0));camera.orthographicSize=5.35f;
+  Title("같은 장면에서 색만 빼면 무엇이 남을까?");
+  stateLabel=Label("컬러",960,202,46,White,1500,70);detailLabel=Label("같은 카메라 · 같은 물체 · 같은 위치",960,825,44,Grey,1600,65);
+  ground=Box("Ground same layout",new Vector3(0,-.02f,1),new Vector3(14,.12f,7),Hex("47694C"));
+  pathSurface=Box("Walkable brown path",new Vector3(-.15f,.08f,-.4f),new Vector3(11.8f,.11f,1.65f),Hex("806148"));
+  actor=Actor("Player",new Vector3(-4.8f,.17f,-.6f),false,2.15f,0);Pose(actor,"Idle_A",0);
+  chest=Asset("chest",new Vector3(4.35f,.17f,-.4f),1.65f,220);
+  CloneMaterials(chest,chestMats,"chest");
+  var treePositions=new[]{new Vector3(-5.5f,.05f,2.5f),new Vector3(-2.6f,.05f,3),new Vector3(.7f,.05f,2.6f),new Vector3(4.5f,.05f,3)};
+  for(int i=0;i<treePositions.Length;i++){var tree=Asset("tree",treePositions[i],2.85f+i%2*.35f,30+i*44);trees.Add(tree);CloneMaterials(tree,treeMats,"tree"+i);}
+  pathEdges.Add(Line("Near path boundary",new[]{new Vector3(-6.05f,.2f,-1.25f),new Vector3(5.8f,.2f,-1.25f)},Hex("C0B799"),.11f));
+  pathEdges.Add(Line("Far path boundary",new[]{new Vector3(-6.05f,.2f,.45f),new Vector3(5.8f,.2f,.45f)},Hex("C0B799"),.11f));
+  Label("플레이어",430,740,44,White,300,65);Label("목표",1430,740,44,White,300,65);
+ }
+ void CloneMaterials(GameObject obj,List<MaterialState> dest,string prefix){
+  int index=0;
+  foreach(var renderer in obj.GetComponentsInChildren<Renderer>(true)){
+   var old=renderer.sharedMaterials;var copy=new Material[old.Length];
+   for(int i=0;i<old.Length;i++){
+    if(!old[i])continue;var mat=new Material(old[i]);mat.name="D25 "+prefix+" "+index;
+    var color=mat.HasProperty("_BaseColor")?mat.GetColor("_BaseColor"):mat.color;
+    #if UNITY_EDITOR
+    Directory.CreateDirectory(GeneratedRoot+"/Materials");var p=GeneratedRoot+"/Materials/"+cutId+"-"+prefix+"-"+index+".mat";
+    var prior=AssetDatabase.LoadAssetAtPath<Material>(p);if(prior){DestroyImmediate(mat);mat=prior;mat.CopyPropertiesFromMaterial(old[i]);}else AssetDatabase.CreateAsset(mat,p);
+    #endif
+    if(prefix.StartsWith("tree")){
+     if(ContrastRepair){
+      var shader=Shader.Find("Yamyam/D25/BackgroundContrast");
+      if(!shader)throw new InvalidOperationException("D25 contrast shader is not imported");
+      mat.shader=shader;mat.SetFloat("_D25ContrastMix",0);mat.SetFloat("_D25LumaMid",.07f);mat.SetFloat("_D25LumaSpan",.002f);
+     }
+     var palette=TreePalette(old[i]);
+     if(palette){if(mat.HasProperty("_BaseMap"))mat.SetTexture("_BaseMap",palette);if(mat.HasProperty("_MainTex"))mat.SetTexture("_MainTex",palette);}
+    }
+    copy[i]=mat;dest.Add(new MaterialState{material=mat,original=color});index++;
+   }
+   renderer.sharedMaterials=copy;
+  }
+ }
+ void PrepareAnimatedMaterials(GameObject obj,string name){
+  // Build once. Continuous color interpolation must never ask the shared base
+  // for a new color-keyed AssetDatabase material on every animation frame.
+  var states=new List<MaterialState>();CloneMaterials(obj,states,"animated-"+name);animatedMats.Add(obj,states);
+ }
+ void TintAnimated(GameObject obj,Color color){
+  if(!animatedMats.TryGetValue(obj,out var states))throw new InvalidOperationException("Animated material was not prepared");
+  foreach(var state in states)SetColor(state.material,color);
+ }
+ Texture2D TreePalette(Material source){
+  // The source palette gives this tree blue leaves and brown wood in one mesh.
+  // Remap only cyan/blue palette texels in a private copy: keep the source mesh,
+  // trunk texels, UVs, shadows and the material's ordinary URP lighting intact.
+  // Every forest comparison uses this same baseline, including color restoration.
+  #if UNITY_EDITOR
+  if(greenTreePalette)return greenTreePalette;
+  var sourceMap=source.GetTexture(source.HasProperty("_BaseMap")?"_BaseMap":"_MainTex") as Texture2D;
+  var sourcePath=AssetDatabase.GetAssetPath(sourceMap);
+  if(!sourceMap||!sourcePath.EndsWith("EA04_LPNP-Artefacts_Colorsheet_v1.psd"))throw new InvalidOperationException("Unexpected tree palette: "+sourcePath);
+  var texture=new Texture2D(2,2,TextureFormat.RGBA32,true,false);texture.name="D25 tree green leaves; original brown wood";
+  // The existing sibling PNG is a different palette. This own-revision PNG is
+  // a lossless extraction of the actual PSD merged RGBA, verified before freeze.
+  var palettePath=Path.GetFullPath(Path.Combine(Application.dataPath,"../../../projects/limited-color-world/production/local/clarity-v3/derived-inputs/tree-source-psd-merged.png"));
+  if(!texture.LoadImage(File.ReadAllBytes(palettePath)))throw new InvalidOperationException("Verified PSD palette pixels could not be decoded");
+  var pixels=texture.GetPixels();int changed=0;
+  for(int i=0;i<pixels.Length;i++){
+   var c=pixels[i];float h,s,v;Color.RGBToHSV(c,out h,out s,out v);
+   if(h>=.45f&&h<=.72f&&s>.15f){var green=Color.HSVToRGB(.30f,s,v);green.a=c.a;pixels[i]=green;changed++;}
+  }
+  if(changed==0)throw new InvalidOperationException("Tree leaf palette range was not found");
+  texture.SetPixels(pixels);texture.Apply(true,false);texture.filterMode=sourceMap.filterMode;texture.wrapMode=sourceMap.wrapMode;
+  Directory.CreateDirectory(GeneratedRoot+"/Textures");
+  var p=GeneratedRoot+"/Textures/tree-green-leaves.asset";
+  var prior=AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+  if(prior){EditorUtility.CopySerialized(texture,prior);DestroyImmediate(texture);texture=prior;EditorUtility.SetDirty(prior);}
+  else AssetDatabase.CreateAsset(texture,p);
+  greenTreePalette=texture;return texture;
+  #else
+  return null;
+  #endif
+ }
+ static void SetColor(Material mat,Color c){if(mat.HasProperty("_BaseColor"))mat.SetColor("_BaseColor",c);else mat.color=c;}
+ float Progress(string key,float t,float defaultStart=.28f,float defaultEnd=.62f){
+  foreach(var cue in cues)if(cue.key==key)return Mathf.SmoothStep(0,1,Mathf.InverseLerp(cue.start,cue.end,t));
+  var duration=Mathf.Max(1,frames/60f);return Mathf.SmoothStep(0,1,Mathf.InverseLerp(duration*defaultStart,duration*defaultEnd,t));
+ }
+ public override void Apply(float t){
+  if(photo)ApplyPhotos(t);else if(forest)ApplyForest(t);else ApplyTokens(t);
+ }
+ void ApplyPhotos(float t){
+  var p=Progress("change",t);colorAdjustments.saturation.value=0;
+  if(variant=="proof-options"){
+   optionA.color=p<.5f?Yellow:Grey;optionB.color=p>=.5f?Yellow:Grey;
+  }else if(variant=="puyo-official-filters"){
+   photos[0].color=Color.white;photos[1].color=new Color(1,1,1,p);
+   stateLabel.text=p<.5f?"필터 OFF":"필터 ON · 색과 무늬의 선택지";
+  }else{
+   photos[0].rectTransform.localScale=new Vector3(p<.5f?1:-1,1,1);
+   stateLabel.text=p<.5f?"같은 스크린샷":"같은 스크린샷 · 좌우반전";
+  }
+ }
+ void ApplyTokens(float t){
+  float p=Progress("change",t),hue=0,lightness=0,background=0,outline=0,marks=0,restore=0;
+  string state="색으로 같은 종류 찾기";
+  switch(variant){
+   case "token-color":break;
+   case "token-hue-loss":hue=p;state="색 차이만 줄이기";break;
+   case "token-theme":hue=1;background=p;state="조각과 배경을 함께 확인";break;
+   case "token-brightness":hue=1;lightness=p;state="한쪽은 밝게, 한쪽은 어둡게";break;
+   case "token-background-problem":hue=lightness=1;background=p;state="어두운 조각이 배경에 묻힙니다";break;
+   case "token-edge-repair":hue=lightness=background=1;outline=p;state="맞닿는 경계를 분리";break;
+   case "token-symbols":hue=lightness=background=outline=1;marks=p;state="모양을 읽어도 같은 종류";break;
+   case "token-color-restored":lightness=background=outline=marks=1;hue=1-p;restore=p;state="색 + 명도 + 모양";break;
+   case "inspection-comparison":break;
+  }
+  stateLabel.text=state;
+  TintAnimated(tokenBackground,Color.Lerp(Hex("343B36"),Hex("161B19"),background));
+  for(int i=0;i<pieces.Count;i++){
+   Color distinct=i<4?RedPiece:GreenPiece;var equal=Color.Lerp(distinct,Muted,hue);
+   var value=i<4?Hex("D6DDD3"):Hex("202820");
+   var result=Color.Lerp(equal,value,lightness*(1-restore*.58f));TintAnimated(pieces[i],result);
+   float travel=variant=="token-color-restored"?1:variant=="token-symbols"?Progress("fourth-piece",t,.60f,.82f):0;
+   Vector3 delta=i==3?Vector3.Lerp(Vector3.zero,new Vector3(-6.2f,-1.8f,0),travel):Vector3.zero;
+   pieces[i].transform.localPosition=piecePositions[i]+delta;symbols[i].transform.localPosition=delta;stripes[i].transform.localPosition=delta;edges[i].transform.localPosition=delta;
+   edges[i].SetActive(outline>.01f);edges[i].transform.localScale=Vector3.one;
+   symbols[i].SetActive(marks>.1f);stripes[i].SetActive(marks>.72f&&i>=4);
+  }
+  countLabel.text=variant=="token-symbols"&&Progress("fourth-piece",t,.60f,.82f)>.99f?"○  ○  ○  +  ○  =  4":"";
+  detailLabel.text=(variant=="token-hue-loss"||variant=="token-theme")?"구분 단서를 줄인 모형 · 색각 재현 아님":
+    variant=="token-symbols"?"같은 종류에는 같은 표시":variant=="token-edge-repair"?"밝은 윤곽이 배경과 조각을 나눕니다":"모양과 위치는 그대로";
+  colorAdjustments.saturation.value=0;
+ }
+ void ApplyForest(float t){
+  float p=Progress("change",t),gray=0,treeRepair=0,pathRepair=0;
+  switch(variant){
+   case "forest-color":break;
+   case "forest-gray":gray=p;break;
+   case "forest-background-repair":gray=1;treeRepair=p;break;
+   case "forest-path-repair":gray=treeRepair=1;pathRepair=p;break;
+   case "forest-color-restored":gray=1-p;treeRepair=pathRepair=1;break;
+   case "forest-mirror":gray=0;treeRepair=pathRepair=1;break;
+   case "inspection-comparison":gray=p;treeRepair=pathRepair=1;break;
+  }
+  colorAdjustments.saturation.value=-100*gray;
+  TintAnimated(ground,Hex("47694C"));TintAnimated(pathSurface,Color.Lerp(Hex("806148"),Hex("C3A36B"),pathRepair));
+  foreach(var m in treeMats){var c=m.original;float mid=(c.r+c.g+c.b)/3;
+   var bright=new Color(Mathf.Clamp01(c.r*1.45f+.12f),Mathf.Clamp01(c.g*1.45f+.12f),Mathf.Clamp01(c.b*1.45f+.12f),c.a);
+   var compressed=new Color(.16f+c.r*.27f,.19f+c.g*.27f,.17f+c.b*.27f,c.a);
+   if(ContrastRepair){SetColor(m.material,bright);m.material.SetFloat("_D25ContrastMix",treeRepair);}
+   else SetColor(m.material,Color.Lerp(bright,compressed,treeRepair));
+  }
+  foreach(var m in chestMats)SetColor(m.material,Color.Lerp(m.original,new Color(Mathf.Clamp01(m.original.r*1.2f+.12f),Mathf.Clamp01(m.original.g*1.15f+.11f),Mathf.Clamp01(m.original.b+.08f),m.original.a),pathRepair));
+  foreach(var e in pathEdges)e.SetActive(pathRepair>.01f);
+  Pose(actor,"Idle_A",0);
+  stateLabel.text=variant=="forest-background-repair"?"1. 뒤쪽 나무의 대비 줄이기":variant=="forest-path-repair"?"2. 길과 목표의 경계 살리기":variant=="forest-color-restored"?"3. 색을 돌려놓고 다시 확인":gray>.99f?"흑백: 밝기 관계 검사":gray<.01f?"컬러: 같은 장면":"컬러 → 흑백";
+  detailLabel.text="밝기 관계 검사 · 같은 물체와 카메라";
+ }
+}
+}

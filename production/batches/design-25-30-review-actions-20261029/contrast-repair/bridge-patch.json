@@ -1,0 +1,20 @@
+{
+  "status": "staged-only-no-Unity-write",
+  "sourceBeforeSha256": "e20d8ce43c56bd24cd9664ba816ec7914539812300cef290315bf9c404278424",
+  "sourceAfterSha256": "57e30ae2d03ac1d9026f512120d79580506c37a9644c1d8bf9e0169e81882032",
+  "diff": "--- \n\n+++ \n\n@@ -146,9 +146,14 @@\n\n   // Provisional speech timing must not occupy the final editable scene path.\n   // Each preflight revision is retained; only full render saves the canonical cut.\n   var sceneRoot=\"Assets/VideoScenes/\"+j.slug+\"/clarity-v3/\";\n   var preflightRevision=Path.GetFileName(Path.GetDirectoryName(j.output));\n-  var saved=sceneRoot+(j.command==\"preflight\"?\"Preflight/\"+preflightRevision+\"/\":\"\")+j.cutId+\".unity\";\n+  // Preserve the first complete native revision. Only the five approved D25\n+  // contrast repairs save a separately editable scene in a new owned revision.\n+  var contrastRepair=j.command==\"render\" && j.slug==\"limited-color-world\" && preflightRevision==\"contrast-v2\" &&\n+   new[]{\"c025\",\"c026\",\"c027\",\"c030\",\"c032\"}.Contains(j.cutId);\n+  var saved=sceneRoot+(j.command==\"preflight\"?\"Preflight/\"+preflightRevision+\"/\":\n+   contrastRepair?\"RenderRevisions/contrast-v2/\":\"\")+j.cutId+\".unity\";\n   var stampPath=saved+\".capture-source.json\";\n   var stamp=new SceneStamp{slug=j.slug,cutId=j.cutId,stageClass=j.stageClass,fingerprint=j.expectedFingerprint,frames=j.frames};\n   Directory.CreateDirectory(Path.GetDirectoryName(saved)); state.scene=saved;\n   if(File.Exists(saved)) {",
+  "scope": {
+    "slug": "limited-color-world",
+    "phase": "render",
+    "revision": "contrast-v2",
+    "cuts": [
+      "c025",
+      "c026",
+      "c027",
+      "c030",
+      "c032"
+    ]
+  },
+  "allOtherScenePathBehaviorUnchanged": true,
+  "renderingAndPoseCodeUnchanged": true
+}
