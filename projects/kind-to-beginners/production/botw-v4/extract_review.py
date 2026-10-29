@@ -13,7 +13,7 @@ def main():
   frames={min(cut['endFrame']-1,cut['startFrame']+round(cut['frames']*q)) for q in states}
   if cut['kind']=='independent-gameplay':
    frames.add(min(cut['endFrame']-1,cut['startFrame']+45)) # visible speech-led annotation interval
-  if cut['id'] in ['05-01','05-02','06-02','06-06','07-02','07-04','07-06']:
+  if cut['id'] in ['04-06','05-01','05-02','06-02','06-06','07-02','07-04','07-06']:
    for t in cue[cut['id']]['phaseSeconds']:
     for delta in [-3,9]:
      frames.add(max(cut['startFrame'],min(cut['endFrame']-1,cut['startFrame']+round(t*60)+delta)))

@@ -1,1 +1,1 @@
-namespace Yamyam.DesignVisualV2 { public static class DesignBotwBuildVersion { public static string For(string stage) { return stage=="D29BotwStage"?"c9c7b371761cda4f7f09b9e55ecad4672945ce1b410376dfeab558a470cf7f95":"unknown"; } } }
+namespace Yamyam.DesignVisualV2 { public static class DesignBotwBuildVersion { public static string For(string stage) { return stage=="D29BotwStage"?"21c6d9d445a9a265047581211293cb6fa3a4faaeae21e34e6267600b618ca103":"unknown"; } } }

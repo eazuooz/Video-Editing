@@ -20,6 +20,7 @@ import uuid
 sys.dont_write_bytecode = True
 from freeze_sources import records_for, fingerprint
 from native_scene_evidence import local_path, require, verify as verify_scene
+from audio_pipeline import tool
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
@@ -145,7 +146,7 @@ def check():
         for path_key, digest_key in [("scene", "sceneSha256"), ("sceneMeta", "sceneMetaSha256"), ("sceneStamp", "sceneStampSha256")]:
             tracked[local_path(evidence[path_key])] = evidence[digest_key]
         require(evidence["compiledFingerprint"] == fp and evidence["frames"] == cut["frames"], "Saved scene evidence mismatch")
-        stream_doc = json.loads(subprocess.check_output(["ffprobe", "-v", "error", "-show_streams", "-of", "json", str(movie)], text=True))
+        stream_doc = json.loads(subprocess.check_output([tool("ffprobe"), "-v", "error", "-show_streams", "-of", "json", str(movie)], text=True))
         streams = stream_doc["streams"]
         require(len(streams) == 1 and streams[0]["codec_type"] == "video", "Unity movie must have one silent video stream")
         v = streams[0]

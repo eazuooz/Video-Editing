@@ -174,6 +174,9 @@ def lock():
                        "phaseSeconds": phases, "speechCueEvidence": row["speechCueEvidence"]}
                 if concept.get("variant"):
                     cue["variant"] = concept["variant"]
+                if concept.get("canonicalTerm"):
+                    cue["canonicalTerm"] = concept["canonicalTerm"]
+                    cut["canonicalTerm"] = concept["canonicalTerm"]
                 cues.append(cue)
                 boundaries = [0] + [round(t * 60) for t in phases] + [cut["frames"] - 1]
                 samples = {max(0, min(cut["frames"] - 1, value + offset)) for value in boundaries for offset in [-1, 0, 1]}

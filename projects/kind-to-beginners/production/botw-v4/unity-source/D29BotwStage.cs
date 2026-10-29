@@ -42,6 +42,11 @@ public class D29BotwStage : DesignBotwLessonStage {
    case "summary":BuildSummary();break;
    default:throw new Exception("Unsupported botw-v4 mode: "+mode);
   }
+  // This isolated editor render request uses ordinary draw submission. Keep
+  // only these newly instantiated meshes out of the asynchronous resident set.
+  var optOutType=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("UnityEngine.Rendering.DisallowGPUDrivenRendering")).FirstOrDefault(t=>t!=null);
+  if(optOutType==null)throw new Exception("Installed URP per-object GPU-driven opt-out component unavailable.");
+  foreach(var renderer in GetComponentsInChildren<MeshRenderer>(true))if(!renderer.GetComponent(optOutType))renderer.gameObject.AddComponent(optOutType);
  }
  float Phase(float t,int n){return Mathf.SmoothStep(0,1,Mathf.InverseLerp(n==0?0:spec.phaseSeconds[n-1],spec.phaseSeconds[n],t));}
  int Step(float t){return t<spec.phaseSeconds[0]?0:t<spec.phaseSeconds[1]?1:2;}
@@ -255,7 +260,8 @@ public class D29BotwStage : DesignBotwLessonStage {
   }else if(mode=="cold-goal"){
    temperatureUi.SetActive(step>=1);healthUi.SetActive(step>=1);guide.SetActive(step==1);status.text=step==0?"먼 목적지만 말하면":step==1?"눈앞의 추위와 체력부터":"이유를 알면 다음 행동을 고를 수 있음";
   }else if(mode=="cold-information"){
-   temperatureUi.SetActive(step>=1);healthUi.SetActive(step>=2);Meter(step==0?p0:1,step>=2?p2:0,false);guide.SetActive(step==2);status.text=step==0?"추운 영역으로 들어감":step==1?"온도 표시에서 추위를 확인":"추위와 체력 감소를 연결";
+   bool signalsFirst=spec.variant=="signals-then-loss";
+   temperatureUi.SetActive(signalsFirst||step>=1);healthUi.SetActive(signalsFirst?step>=1:step>=2);Meter(step==0?p0:1,step>=2?p2:0,false);guide.SetActive(step==2);status.text=step==0?(signalsFirst?"온도 표시에서 추위를 확인":"추운 영역으로 들어감"):step==1?(signalsFirst?"하트는 남아 있는 체력":"온도 표시에서 추위를 확인"):"추위와 체력 감소를 연결";
   }else if(mode=="cold-food"||mode=="cold-overview"){
    protectionUi.SetActive(step==2);protectionLabel.text="추위 가드 · 음식";durationLabel.text="남은 시간 있음";healthLabel.text=step==2?"추가 감소 없음":"체력이 줄어듦";
    if(mode=="cold-overview"){healthUi.SetActive(false);shivering=false;}
