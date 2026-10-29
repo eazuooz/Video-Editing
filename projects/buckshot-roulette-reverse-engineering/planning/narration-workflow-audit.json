@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "project": "buckshot-roulette-reverse-engineering",
+  "inspectedOn": "2026-10-29",
+  "status": "read-only-workflow-audit; no synthesis performed",
+  "decision": {
+    "recommendedProvider": "local Qwen3-TTS",
+    "reasonKo": "이 편 전용 승인에는 목소리 변경이 없으며 현재 공통 규격의 Qwen3 승인 레퍼런스, 모델과 실행 환경이 모두 로컬에 존재한다. 별도 편에 승인된 유료 ElevenLabs 설정을 이 편의 결제로 확대하지 않는다.",
+    "defaultIsNotAClaimOfCurrentGpuAvailability": true,
+    "ttsStarted": false,
+    "paidApiCalled": false,
+    "gpuModelLoaded": false,
+    "globalsModified": false,
+    "parentAcceptedRecommendedQwen": true
+  },
+  "authorizationEvidence": {
+    "path": "shared/publishing/video-production-control.json",
+    "pointer": "/scopedSetupAuthorizations/buckshot-roulette-reverse-engineering",
+    "userEvidence": "응 진행해줘~",
+    "scope": "One local reverse-engineering experiment and documentary video through local review",
+    "voiceOverride": null,
+    "platformMutationsAuthorized": false,
+    "scopeBoundary": "No upload/publication/scheduling, original installation/save changes, unrelated work or automatic next video."
+  },
+  "localVoice": {
+    "model": "Qwen3-TTS-12Hz-1.7B-Base",
+    "modelPath": "qwen3-tts/models/Qwen3-TTS-12Hz-1.7B-Base",
+    "modelWeightsPresentBytes": 3857413744,
+    "python": "qwen3-tts/.venv/Scripts/python.exe",
+    "pythonExists": true,
+    "moduleDiscovery": {
+      "torch": true,
+      "qwen_tts": true,
+      "soundfile": true,
+      "numpy": true,
+      "psutil": true,
+      "method": "importlib.util.find_spec only; no model load or GPU allocation"
+    },
+    "language": "Korean",
+    "reference": "shared/voice-reference/reference-15-35s.wav",
+    "referenceSha256": "f0d59e79530ffc06bf0eb1541d31040042c6f108f2222e4991669748624ee089",
+    "referenceText": "shared/voice-reference/reference-15-35s.ko.txt",
+    "referenceTextSha256": "a22dbc1cc8a7d5bcaa8a412b5212439b86b51035bcaf692622374db48cffec20",
+    "privacy": "Own-voice reference is private and Git-ignored; do not copy into delivery or a public page.",
+    "voiceId": null,
+    "voiceIdentityMethod": "Reference WAV plus exact ref_text, not a cloud voice ID",
+    "incrementalProviderCharge": "No cloud synthesis API charge; local compute cost remains."
+  },
+  "runnableExistingComponents": {
+    "standardWrapper": "scripts/build-project-narration.ps1",
+    "coreRenderer": "qwen3-tts/render_narration.py",
+    "lineLevelReferenceImplementation": "projects/steam-next-fest-ai-flood/production/render-voice.py",
+    "lineLevelReferenceManifest": "projects/steam-next-fest-ai-flood/production/tts-manifest-lines.json",
+    "importantScope": "The reference wrapper is hard-coded to another project and its historical GPU permission. Do not run it directly for Buckshot or copy its authorization claims.",
+    "buckshotManifestReady": true,
+    "missingSelectedProjectConfiguration": [],
+    "safePreparation": "Selected project paragraph input, EN counterpart, manifest and wrapper prepared. Actual no-GPU preflight passed for8scenes/17paragraphs/2674Korean source characters. Root coordinates GPU before --synthesize.",
+    "coreDryRunExampleNotExecuted": "qwen3-tts/.venv/Scripts/python.exe -X utf8 qwen3-tts/render_narration.py --project buckshot-roulette-reverse-engineering --manifest projects/buckshot-roulette-reverse-engineering/production/tts-manifest.json --batch-size 1 --dry-run",
+    "coreRenderingAloneDoesNotImplementLatestLeveling": true,
+    "wrapperCaution": "The standard build wrapper also synchronizes project timing. Validate its Motion Canvas/project assumptions before treating it as a documentary export pipeline.",
+    "selectedProjectWrapper": "production/render-voice.py",
+    "selectedProjectManifest": "production/tts-manifest.json"
+  },
+  "requiredVoiceTreatment": {
+    "takeUnit": "paragraph/script line; preserve complete natural phrasing, not one request per sentence",
+    "speechActiveFrameMs": 50,
+    "gateBelowPeakDb": 25,
+    "targetSpeechFrameMedianDbfs": -22,
+    "maxAbsoluteGainDb": 12,
+    "lineGapSecondsDefault": 0.28,
+    "sceneGapSecondsDefault": 0.72,
+    "gapCaution": "Measure existing breaths; no automatic observation silence and no duplicate pause padding.",
+    "edgeFadeSecondsDefault": 0.006,
+    "levelEvidence": "line-levels.json plus exact paragraph timing, source hashes and original PCM preservation",
+    "maxActualFailedRetakes": 3,
+    "pace": "Natural playback speed; no speed increase to hit the approximate draft duration."
+  },
+  "resourceBoundary": {
+    "checkImmediatelyBeforeNewJob": [
+      "Current selected-project authorization",
+      "Actual game/editor processes, GPU free memory/utilization and foreign compute command lines",
+      "shared/output/GPU_HANDOFF.json and actual job ownership/state"
+    ],
+    "coreDefaultMinimumFreeMiB": 18000,
+    "historicalBoundedReference": "The steam-next-fest wrapper uses paragraph-as-one-line-scene jobs, batch1, an 8192MiB allocator cap and a documented lower-memory profile. This is implementation evidence, not current Buckshot GPU permission or a universal safe threshold.",
+    "doNot": [
+      "Load TTS alongside the parent's active GPU rendering/capture without coordination",
+      "Kill or suspend foreign jobs/apps",
+      "Use a stale historical GPU grant",
+      "Claim CPU synthesis was selected by the user",
+      "Automatically retry failing jobs without inspecting the real failure"
+    ],
+    "selectedProjectRootChoice": {
+      "flag": "--allow-idle-editors",
+      "minimumFreeMiB": 10240,
+      "maximumGpuUtilization": 40,
+      "allocatorCapMiB": 7680,
+      "samples": 3,
+      "sampleIntervalSeconds": 1,
+      "preserveExistingGuiEditors": true,
+      "actualGameOrBackgroundRenderAllowed": false,
+      "foreignPythonOrFfmpegAllowed": false,
+      "globalPolicyChanged": false
+    },
+    "latestActualReadOnlyPreflight": "production/local/audio-v1/resource-preflight.json",
+    "unityImportWorkerException": "Exact AssetImportWorkerHW role, -batchmode/-adb2/-noUpm, same executable/project, live nonbatch Unity parent verified; no raw license metadata logged"
+  },
+  "elevenLabsExistingButDifferentScope": {
+    "voiceId": "jIRSnF8OWAsWEChVwCuK",
+    "voice": "Yamyam Coding own-voice Instant Voice Clone, Sample B",
+    "modelRecordedUiLabel": "Eleven v4",
+    "modelLabelIsNotVerifiedCurrentApiModelId": true,
+    "settings": {
+      "stability": 0.5,
+      "similarity": 0.75,
+      "speed": 1,
+      "audioTags": false
+    },
+    "sourceEvidence": [
+      "projects/ai-games-showcase-2026/production/elevenlabs-tts-manifest.json#/tts",
+      "projects/similar-game-design/production/reference-preserving-v2/authorization.json#/voice",
+      "projects/similar-game-design/production/reference-preserving-v2/voice-generation.json"
+    ],
+    "observedMethod": "Authenticated ElevenLabs UI, not a verified API synthesis adapter",
+    "costBoundary": "D22 and the separately authorized six-video batch use existing paid-account credits only; no purchase or plan change.",
+    "historicalD22CreditObservation": {
+      "before": 112800,
+      "after": 110486,
+      "difference": 2314
+    },
+    "currentBalanceChecked": false,
+    "buckshotPaidVoiceOverrideFound": false,
+    "credentialsRead": false
+  },
+  "finalQa": {
+    "sourceAudio": "One full ASR comparison of the actual current TTS plus omissions, repetition, names/numbers and join/level checks.",
+    "finalMix": "One separate full ASR comparison and audio integrity/true-peak/local voice-level inspection for the actual encoded mix.",
+    "mixStartingPoints": {
+      "narrationLufs": -16,
+      "gameAudioLufs": -23,
+      "finalTruePeakMaximumDbtp": -1.5,
+      "aacKbps": 192,
+      "sampleRate": 48000,
+      "channels": 2
+    },
+    "ducking": {
+      "target": "game/background track, never narration",
+      "threshold": 0.08,
+      "ratio": 2.2,
+      "attackMs": 15,
+      "releaseMs": 280,
+      "makeup": 1
+    },
+    "actualListening": "Pending; ASR, level metrics and text estimates are not evidence of human listening or final pace approval."
+  },
+  "primaryOperationalEvidence": [
+    {
+      "path": "docs/NARRATION_AUDIO_STANDARD.md",
+      "sha256AtInspection": "b484b809560bc88ffa1c7eb562c9db91b7917c6ecf2ade77d8a38cf0f6010a76",
+      "sections": [
+        "TTS와 발화 설계",
+        "GPU 인계",
+        "내레이션 음량 급락 예방과 검수"
+      ]
+    },
+    {
+      "path": "docs/VIDEO_WORKFLOW.md",
+      "sha256AtInspection": "0eaa3f2ff819e79b1e951c6ab42f05d4825e8a7b0452bfa0fde0432faf86b236",
+      "relevantLineAtInspection": 115
+    },
+    {
+      "path": "qwen3-tts/render_narration.py",
+      "sha256AtInspection": "cde46536ba7f4050b2677c3d8d12379d447675b353cf7b843441049abd7489dc"
+    },
+    {
+      "path": "projects/steam-next-fest-ai-flood/production/render-voice.py",
+      "sha256AtInspection": "9bee46ba5ed174332ea04a17665882b7ecf9751cfc19d1915ec021d170e475fa"
+    }
+  ],
+  "commands": {
+    "cwd": "D:/Github/VideoEditing",
+    "prepare": "C:/Python/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/prepare-narration.py",
+    "validateOnly": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/render-voice.py",
+    "generateAfterRootGreenlightOnly": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/render-voice.py --synthesize --allow-idle-editors",
+    "sourceAsrAfterTtsExit": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/review-voice.py --kind source --run --allow-idle-editors",
+    "buildClauseSubtitlesAfterAsr": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/build-clause-subtitles.py",
+    "finalMixAsrAfterEncode": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/review-voice.py --kind mix --audio <actual-encoded-final-audio.wav> --run --allow-idle-editors"
+  },
+  "preparedInputs": {
+    "ko": "script/narration.ko.json",
+    "en": "script/narration.en.json",
+    "scenes": 8,
+    "paragraphs": 17,
+    "charactersKo": 2829,
+    "ttsGenerated": false,
+    "dryRunPassed": true,
+    "outputWhenGenerated": "production/local/audio-v1/narration.wav",
+    "timingWhenGenerated": "production/local/audio-v1/narration.timing.json",
+    "levelEvidenceWhenGenerated": "production/local/audio-v1/line-levels.json",
+    "captionCaution": "Generated SRT is paragraph timing evidence. Final captions require clause segmentation. displayLines retain canonical technical display spelling separate from spoken aliases.",
+    "draftSha256": "d0e1f089ba2e11634082663e2c25263a8f9d212a649461ac24d75bf4b5f321b9",
+    "koSha256": "ba2be33a84dffc5eb4f7e8f6347ce669658e6e52aeaa75bc0e122a9f473037ed",
+    "enSha256": "37d5b0f3846ca52e79f074dee5d4cfed3c7f557fe7e36eb8f34b0131660a9e6c",
+    "latestFixes": [
+      "REA first-use name, spoken/display separated",
+      "Actual selected prop animation, not invented hand reach",
+      "374 rules and32 integration checks with actual fixes",
+      "Original saw dealerHP4to2 observation; no3to1 narration existed"
+    ]
+  },
+  "asrPreparation": {
+    "existingPipeline": "qwen3-tts/transcribe_reference.py",
+    "model": "C:/Users/1/.cache/huggingface/hub/models--openai--whisper-large-v3-turbo/snapshots/41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+    "language": "korean",
+    "timestamps": "word",
+    "offlineOnly": true,
+    "cachedByCurrentAudioHash": true,
+    "ttsOrAsrRunByThisSubtask": false,
+    "captionWordAlignment": "Reuses align_project_subtitles.align_characters on cached whole-current-source word timestamps, with exact paragraph PCM boundaries",
+    "englishSubtitlePolicy": "Semantic paragraph mapping; independent cue counts retained; within-paragraph clause boundaries estimated and clearly marked for direct review",
+    "noAutomaticListeningApproval": true,
+    "localModelBytes": 1617824864,
+    "localModelReadOnly": true,
+    "sourceAsrExecutedBySubtask": true,
+    "clausePreflightCounts": {
+      "ko": 95,
+      "en": 114
+    },
+    "sourceAsrResult": "review/source-asr-direct-review.json",
+    "currentAudioSha256": "cde1c69a5bf1f841f52f1195a288c563e258f53f21fc3b5528a9a7aeb2c8c520",
+    "humanListening": false,
+    "localListeningClips": "production/local/audio-v1/review/listening/index.html"
+  },
+  "cpuNarrativeReview": {
+    "completed": true,
+    "scope": "Complete KO/EN script read and fact/term correction, not audio listening",
+    "charactersKo": 2829,
+    "corrected": [
+      "REA named and role described",
+      "Tool prop moves forward; no invented hand reach",
+      "Actual integration guard/message bug and32 checks",
+      "No original dealer HP3to1 statement; source observation4to2 remains shot record"
+    ],
+    "sourceHashes": {
+      "ko": "ba2be33a84dffc5eb4f7e8f6347ce669658e6e52aeaa75bc0e122a9f473037ed",
+      "en": "37d5b0f3846ca52e79f074dee5d4cfed3c7f557fe7e36eb8f34b0131660a9e6c"
+    }
+  }
+}

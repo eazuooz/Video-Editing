@@ -1,0 +1,708 @@
+{
+  "schemaVersion": 1,
+  "createdAtUtc": "2026-10-29T00:45:41.017880+00:00",
+  "scope": "Read-only local media audit of two closed original OBS recordings. No game/desktop UI control, no movie assembly, no original source changes.",
+  "sources": [
+    {
+      "id": "first",
+      "path": "captures/recordings/buckshot-process-2026-10-29_09-15-02.mkv",
+      "sha256": "a0924adc3d6023a09bf3dea2c5e132025e9554cd8efa880412a665ea050e4035",
+      "bytes": 290852520,
+      "durationSeconds": 425.77,
+      "width": 1920,
+      "height": 1080,
+      "videoCodec": "h264",
+      "frameRate": "60/1",
+      "timeBase": "1/1000",
+      "startTimeSeconds": 0,
+      "captureKind": "user-owned-original-game-recording",
+      "recordingClosedBeforeRead": true,
+      "exactPtsEvidence": "production/local/test-evidence/original-footage-audit/first-pts-evidence.json"
+    },
+    {
+      "id": "second",
+      "path": "captures/recordings/buckshot-process-2026-10-29_09-22-48.mkv",
+      "sha256": "f235eaf52c3c8cdc7cc804f13fc63f7312b8521791ba5970d42b0bffa02dc6a5",
+      "bytes": 278194118,
+      "durationSeconds": 491.541,
+      "width": 1920,
+      "height": 1080,
+      "videoCodec": "h264",
+      "frameRate": "60/1",
+      "timeBase": "1/1000",
+      "startTimeSeconds": 0,
+      "captureKind": "user-owned-original-game-recording",
+      "recordingClosedBeforeRead": true,
+      "exactPtsEvidence": "production/local/test-evidence/original-footage-audit/second-pts-evidence.json"
+    }
+  ],
+  "method": {
+    "overview": "Sparse contact sheets across each file; one decoded frame per second around chosen actions; selected full-resolution keyframes actually viewed.",
+    "exactPts": "Every chosen source-in/out boundary was confirmed by ffprobe best_effort_timestamp; 1/1000 time base. Out point is exclusive.",
+    "audioReviewed": false,
+    "continuousNativePlaybackReviewedByThisAgent": false,
+    "finalEditMovingReviewRequired": true,
+    "privacy": "All inspected selected frames show only game content; no private desktop, notifications, editor or performance overlay observed. Source YAMYAM is the intentionally entered in-game name.",
+    "nativeMotion": "Use original moving clips at 1x. Contact sheets are evidence only and must not be substituted for motion or looped to fill duration."
+  },
+  "verifiedFacts": [
+    {
+      "claim": "Opening observed load is one live round and two blanks.",
+      "evidence": "first@404.000 s: visible tray and in-game text \"1 LIVE ROUND. 2 BLANKS.\"",
+      "numbers": {
+        "live": 1,
+        "blank": 2
+      },
+      "notUniversal": true
+    },
+    {
+      "claim": "Opening observed round shows two charge symbols per side.",
+      "evidence": "first@404.000 s, second@14.000 s and18.000 s"
+    },
+    {
+      "claim": "Later item-round saw shot reduces dealer charge symbols from four to two while player remains four.",
+      "evidence": "second@439.000/445.000 before update and446.000 after update",
+      "numbers": {
+        "dealerBefore": 4,
+        "dealerAfter": 2,
+        "player": 4
+      },
+      "correction": "Do not narrate this shot as 3→1."
+    },
+    {
+      "claim": "Self-shot blank is followed by another player target-selection screen.",
+      "evidence": "second@13–20s then37–42s; the idle gap was also sampled."
+    },
+    {
+      "claim": "Cuffs use and visible release precede another player target-selection screen.",
+      "evidence": "second@392–398s,439–455s,477–482s."
+    }
+  ],
+  "clips": [
+    {
+      "id": "original-bathroom-exit",
+      "sourceId": "first",
+      "title": "화장실에서 복도로 이동",
+      "sourceInSeconds": 51,
+      "sourceOutSecondsExclusive": 57,
+      "sourceInPts": 51000,
+      "sourceOutPtsExclusive": 57000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 6,
+      "speed": 1.0,
+      "before": "51초: 세면대와 닫힌 출입문이 보임.",
+      "action": "52–54초: 시점이 문으로 접근하고 문을 지나감.",
+      "result": "55–57초: 복도 난간과 문 앞 인물이 보임.",
+      "observedKeyframes": [
+        {
+          "seconds": 51,
+          "path": "production/local/test-evidence/original-footage-audit/frame-051.00.png"
+        },
+        {
+          "seconds": 53,
+          "path": "production/local/test-evidence/original-footage-audit/frame-053.00.png"
+        },
+        {
+          "seconds": 54,
+          "path": "production/local/test-evidence/original-footage-audit/frame-054.00.png"
+        },
+        {
+          "seconds": 55,
+          "path": "production/local/test-evidence/original-footage-audit/frame-055.00.png"
+        },
+        {
+          "seconds": 56,
+          "path": "production/local/test-evidence/original-footage-audit/frame-056.00.png"
+        }
+      ],
+      "recommendedUse": "원작의 공간·분위기 소개. 실제 카메라 이동을 보존.",
+      "limits": "게임 규칙·사격을 증명하는 구간은 아님.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-table-entry",
+      "sourceId": "first",
+      "title": "복도에서 테이블과 딜러로 이동",
+      "sourceInSeconds": 85,
+      "sourceOutSecondsExclusive": 95,
+      "sourceInPts": 85000,
+      "sourceOutPtsExclusive": 95000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 10,
+      "speed": 1.0,
+      "before": "85초: 난간과 문 앞에서 대기.",
+      "action": "86–90초: 문으로 다가가 안쪽 테이블로 시점이 이동.",
+      "result": "91–94초: 딜러가 모습을 드러내고 서명 안내가 표시됨.",
+      "observedKeyframes": [
+        {
+          "seconds": 85,
+          "path": "production/local/test-evidence/original-footage-audit/frame-085.00.png"
+        },
+        {
+          "seconds": 87,
+          "path": "production/local/test-evidence/original-footage-audit/frame-087.00.png"
+        },
+        {
+          "seconds": 89,
+          "path": "production/local/test-evidence/original-footage-audit/frame-089.00.png"
+        },
+        {
+          "seconds": 90,
+          "path": "production/local/test-evidence/original-footage-audit/frame-090.00.png"
+        },
+        {
+          "seconds": 91,
+          "path": "production/local/test-evidence/original-footage-audit/frame-091.00.png"
+        },
+        {
+          "seconds": 94,
+          "path": "production/local/test-evidence/original-footage-audit/frame-094.00.png"
+        }
+      ],
+      "recommendedUse": "원작과 재구현의 테이블·딜러 배치 비교.",
+      "limits": "서명 절차 이후 긴 조작 대기는 제외. 원작 모델 추출이나 복원을 보여주는 장면으로 오인시키지 않음.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-round-display",
+      "sourceId": "first",
+      "title": "참가자 표시에 이어지는 라운드 준비",
+      "sourceInSeconds": 396,
+      "sourceOutSecondsExclusive": 402,
+      "sourceInPts": 396000,
+      "sourceOutPtsExclusive": 402000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 6,
+      "speed": 1.0,
+      "before": "396초: 서명이 끝난 종이가 치워짐.",
+      "action": "397–400초: 화면이 장치로 이동하고 라운드 기호가 켜짐.",
+      "result": "401초: DEALER와 YAMYAM 이름이 표시됨.",
+      "observedKeyframes": [
+        {
+          "seconds": 396,
+          "path": "production/local/test-evidence/original-footage-audit/frame-396.00.png"
+        },
+        {
+          "seconds": 398,
+          "path": "production/local/test-evidence/original-footage-audit/frame-398.00.png"
+        },
+        {
+          "seconds": 400,
+          "path": "production/local/test-evidence/original-footage-audit/frame-400.00.png"
+        },
+        {
+          "seconds": 401,
+          "path": "production/local/test-evidence/original-footage-audit/frame-401.00.png"
+        }
+      ],
+      "recommendedUse": "이름·라운드 UI가 있는 실제 원작의 준비 흐름.",
+      "limits": "이 구간 종료 시점만으로 체력 숫자를 추론하지 않음. 체력 두 칸은 404초 화면에서 별도 확인.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-ammo-reveal",
+      "sourceId": "first",
+      "title": "실탄 1발·공포탄 2발 공개",
+      "sourceInSeconds": 402,
+      "sourceOutSecondsExclusive": 407,
+      "sourceInPts": 402000,
+      "sourceOutPtsExclusive": 407000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 5,
+      "speed": 1.0,
+      "before": "402초: 총 옆 탄환 트레이로 카메라가 이동.",
+      "action": "403–405초: 붉은 탄환 하나와 어두운 탄환 둘이 보이고 개수 자막이 나타남.",
+      "result": "406초: 트레이가 닫히고 다음 장전 단계로 넘어감.",
+      "observedKeyframes": [
+        {
+          "seconds": 402,
+          "path": "production/local/test-evidence/original-footage-audit/frame-402.00.png"
+        },
+        {
+          "seconds": 403,
+          "path": "production/local/test-evidence/original-footage-audit/frame-403.00.png"
+        },
+        {
+          "seconds": 404,
+          "path": "production/local/test-evidence/original-footage-audit/frame-404.00.png"
+        },
+        {
+          "seconds": 405,
+          "path": "production/local/test-evidence/original-footage-audit/frame-405.00.png"
+        },
+        {
+          "seconds": 406,
+          "path": "production/local/test-evidence/original-footage-audit/frame-406.00.png"
+        }
+      ],
+      "recommendedUse": "전체 주제 도입 및 탄환 개수·순서 분리 설명.",
+      "limits": "이 세션에서 관찰한 첫 장전은 1+2다. 모든 장전이 같은 개수라는 근거는 아니다.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-loading-unknown-order",
+      "sourceId": "first",
+      "title": "딜러의 장전과 숨겨진 탄환 순서",
+      "sourceInSeconds": 407,
+      "sourceOutSecondsExclusive": 415,
+      "sourceInPts": 407000,
+      "sourceOutPtsExclusive": 415000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 8,
+      "speed": 1.0,
+      "before": "407초: 총이 테이블에 놓여 있음.",
+      "action": "408–412초: 딜러가 총을 들고 다루며 순서를 알 수 없다는 안내를 표시.",
+      "result": "413–414초: 총을 테이블에 돌려놓고 플레이어 선택을 기다림.",
+      "observedKeyframes": [
+        {
+          "seconds": 407,
+          "path": "production/local/test-evidence/original-footage-audit/frame-407.00.png"
+        },
+        {
+          "seconds": 408,
+          "path": "production/local/test-evidence/original-footage-audit/frame-408.00.png"
+        },
+        {
+          "seconds": 410,
+          "path": "production/local/test-evidence/original-footage-audit/frame-410.00.png"
+        },
+        {
+          "seconds": 412,
+          "path": "production/local/test-evidence/original-footage-audit/frame-412.00.png"
+        },
+        {
+          "seconds": 414,
+          "path": "production/local/test-evidence/original-footage-audit/frame-414.00.png"
+        }
+      ],
+      "recommendedUse": "402–415초를 이어서 사용하면 개수 공개→숨긴 순서→선택 시작이 자연스럽게 연결됨.",
+      "limits": "순서가 무작위라는 알고리즘 자체는 영상만으로 입증하지 않으며 별도의 코드 근거와 연결.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-self-blank",
+      "sourceId": "second",
+      "title": "자기 대상 공포탄과 피해 없는 복귀",
+      "sourceInSeconds": 13,
+      "sourceOutSecondsExclusive": 20,
+      "sourceInPts": 13000,
+      "sourceOutPtsExclusive": 20000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 7,
+      "speed": 1.0,
+      "before": "13초: YOU/DEALER 선택 화면에서 총을 든 상태.",
+      "action": "14–17초: 총구를 카메라 쪽으로 돌려 자기 대상을 선택하고 사격 동작.",
+      "result": "18–19초: 탄피를 배출하고 테이블로 복귀. 양쪽 두 칸 체력이 유지됨.",
+      "observedKeyframes": [
+        {
+          "seconds": 13,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-013.00.png"
+        },
+        {
+          "seconds": 14,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-014.00.png"
+        },
+        {
+          "seconds": 16,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-016.00.png"
+        },
+        {
+          "seconds": 18,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-018.00.png"
+        },
+        {
+          "seconds": 19,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-019.00.png"
+        }
+      ],
+      "recommendedUse": "자기 대상 공포탄의 관찰. 차례 유지 결과는 original-self-blank-next-choice와 연결.",
+      "limits": "21–37초의 대기 화면으로 시간을 채우지 않음. 이 감사는 프레임 검수이며 클릭음 청취 검수는 별도.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-self-blank-next-choice",
+      "sourceId": "second",
+      "title": "공포탄 이후 플레이어가 다시 선택",
+      "sourceInSeconds": 37,
+      "sourceOutSecondsExclusive": 42,
+      "sourceInPts": 37000,
+      "sourceOutPtsExclusive": 42000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 5,
+      "speed": 1.0,
+      "before": "37초: 사용한 탄피가 남은 테이블.",
+      "action": "38초: 플레이어가 다시 총을 집어 듦.",
+      "result": "39–41초: YOU/DEALER 선택지가 다시 보임.",
+      "observedKeyframes": [
+        {
+          "seconds": 37,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-037.00.png"
+        },
+        {
+          "seconds": 38,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-038.00.png"
+        },
+        {
+          "seconds": 39,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-039.00.png"
+        },
+        {
+          "seconds": 41,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-041.00.png"
+        }
+      ],
+      "recommendedUse": "앞선 공포탄 결과를 확인하는 후속 컷. 중간 대기를 제거한 컷 전환임을 편집 기록에 유지.",
+      "limits": "원본 20–37초 대기를 삭제하는 것이며, 두 컷을 끊김 없는 한 동작으로 설명하지 않음.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-cuffs-use",
+      "sourceId": "second",
+      "title": "수갑을 집어 딜러에게 사용",
+      "sourceInSeconds": 392,
+      "sourceOutSecondsExclusive": 398,
+      "sourceInPts": 392000,
+      "sourceOutPtsExclusive": 398000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 6,
+      "speed": 1.0,
+      "before": "392초: 플레이어 쪽 수갑과 톱이 테이블에 놓여 있음.",
+      "action": "393–396초: 수갑이 사라지고 딜러 손목을 묶는 가까운 화면으로 전환.",
+      "result": "397초: 수갑이 소비된 테이블로 복귀.",
+      "observedKeyframes": [
+        {
+          "seconds": 392,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-392.00.png"
+        },
+        {
+          "seconds": 393,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-393.00.png"
+        },
+        {
+          "seconds": 394,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-394.00.png"
+        },
+        {
+          "seconds": 396,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-396.00.png"
+        },
+        {
+          "seconds": 397,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-397.00.png"
+        }
+      ],
+      "recommendedUse": "아이템이 다음 차례의 상태를 바꾸는 실제 동작.",
+      "limits": "차례 건너뛰기 결과는 439–455초 사격/해제와 477–482초 다음 선택에서 확인.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-saw-use",
+      "sourceId": "second",
+      "title": "톱으로 총열을 자르는 동작",
+      "sourceInSeconds": 413,
+      "sourceOutSecondsExclusive": 419,
+      "sourceInPts": 413000,
+      "sourceOutPtsExclusive": 419000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 6,
+      "speed": 1.0,
+      "before": "413초: 톱과 긴 총이 플레이어 쪽에 남아 있음.",
+      "action": "414–417초: 톱을 집어 총열을 자르는 동작과 잘린 부분이 보임.",
+      "result": "418초: 톱을 소비하고 짧아진 총이 테이블에 놓임.",
+      "observedKeyframes": [
+        {
+          "seconds": 413,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-413.00.png"
+        },
+        {
+          "seconds": 414,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-414.00.png"
+        },
+        {
+          "seconds": 415,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-415.00.png"
+        },
+        {
+          "seconds": 416,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-416.00.png"
+        },
+        {
+          "seconds": 417,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-417.00.png"
+        },
+        {
+          "seconds": 418,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-418.00.png"
+        }
+      ],
+      "recommendedUse": "외형 변화와 다음 사격 피해 강화의 연결.",
+      "limits": "이 동작만으로 피해 2를 측정하지 않으며 후속 실제 HUD 변화와 연결.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-saw-live-cuff-result",
+      "sourceId": "second",
+      "title": "실탄 사격·체력 4→2·수갑 해제",
+      "sourceInSeconds": 439,
+      "sourceOutSecondsExclusive": 455,
+      "sourceInPts": 439000,
+      "sourceOutPtsExclusive": 455000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 16,
+      "speed": 1.0,
+      "before": "439초: 짧아진 총과 선택지, 양쪽 체력 네 칸. 딜러는 수갑 상태.",
+      "action": "440–444초: 딜러를 겨냥해 발사하고 명중·반동·붉은 탄피 배출이 보임.",
+      "result": "445초 HUD에는 네 칸이 잠시 남지만 446초에는 딜러 두 칸/플레이어 네 칸. 447–454초 딜러 손목 수갑이 해제되고 테이블로 복귀.",
+      "observedKeyframes": [
+        {
+          "seconds": 439,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-439.00.png"
+        },
+        {
+          "seconds": 440,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-440.00.png"
+        },
+        {
+          "seconds": 441,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-441.00.png"
+        },
+        {
+          "seconds": 443,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-443.00.png"
+        },
+        {
+          "seconds": 444,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-444.00.png"
+        },
+        {
+          "seconds": 445,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-445.00.png"
+        },
+        {
+          "seconds": 446,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-446.00.png"
+        },
+        {
+          "seconds": 448,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-448.00.png"
+        },
+        {
+          "seconds": 449,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-449.00.png"
+        },
+        {
+          "seconds": 454,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-454.00.png"
+        }
+      ],
+      "recommendedUse": "톱의 피해 강화와 수갑의 차례 상태를 실제 결과와 연결.",
+      "limits": "수치는 4→2다. 3→1은 이번 원작 녹화에 맞지 않음. 피격 순간은 442–443초 사이로만 관찰했으며 프레임 단위 정확한 발사 순간은 주장하지 않음.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    },
+    {
+      "id": "original-cuffs-next-player-choice",
+      "sourceId": "second",
+      "title": "딜러 사격 없이 플레이어 선택으로 복귀",
+      "sourceInSeconds": 477,
+      "sourceOutSecondsExclusive": 482,
+      "sourceInPts": 477000,
+      "sourceOutPtsExclusive": 482000,
+      "sourceTimeBase": "1/1000",
+      "durationSeconds": 5,
+      "speed": 1.0,
+      "before": "477초: 붉은 탄피가 남은 테이블.",
+      "action": "478초: 플레이어가 총을 집어 듦.",
+      "result": "479–481초: YOU/DEALER 선택지가 다시 표시됨.",
+      "observedKeyframes": [
+        {
+          "seconds": 477,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-477.00.png"
+        },
+        {
+          "seconds": 478,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-478.00.png"
+        },
+        {
+          "seconds": 479,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-479.00.png"
+        },
+        {
+          "seconds": 481,
+          "path": "production/local/test-evidence/original-footage-audit/second/frame-481.00.png"
+        }
+      ],
+      "recommendedUse": "수갑으로 상대 차례를 건너뛴 결과를 확정하는 후속 컷.",
+      "limits": "455–477초 실제 조작 대기를 편집에서 제거. 원본에는 그 사이 대기 시간이 있음.",
+      "inspectedFramesGameOnly": true,
+      "desktopOrPrivateUiObserved": false,
+      "requiresFinalMovingAudioReview": true
+    }
+  ],
+  "excludedRanges": [
+    {
+      "sourceId": "first",
+      "rangeSeconds": [
+        35,
+        46
+      ],
+      "reason": "Black loading interval."
+    },
+    {
+      "sourceId": "first",
+      "rangeSeconds": [
+        57,
+        85
+      ],
+      "reason": "Long corridor idle."
+    },
+    {
+      "sourceId": "first",
+      "rangeSeconds": [
+        95,
+        395
+      ],
+      "reason": "Table/waiver interaction and extended idle; not useful as native-motion filler."
+    },
+    {
+      "sourceId": "first",
+      "rangeSeconds": [
+        415,
+        425.77
+      ],
+      "reason": "Post-load idle; no original shots in this recording."
+    },
+    {
+      "sourceId": "second",
+      "rangeSeconds": [
+        20,
+        37
+      ],
+      "reason": "Wait before next player action; keep as an editorial gap, not padding."
+    },
+    {
+      "sourceId": "second",
+      "rangeSeconds": [
+        140,
+        330
+      ],
+      "reason": "Extended item-box interaction/idle; extracted only sparse context, not a recommended motion clip."
+    },
+    {
+      "sourceId": "second",
+      "rangeSeconds": [
+        398,
+        413
+      ],
+      "reason": "Idle between cuffs and saw."
+    },
+    {
+      "sourceId": "second",
+      "rangeSeconds": [
+        419,
+        439
+      ],
+      "reason": "Pause before shot; start at the already raised shortened gun."
+    },
+    {
+      "sourceId": "second",
+      "rangeSeconds": [
+        455,
+        477
+      ],
+      "reason": "Wait before next player action."
+    }
+  ],
+  "limitations": [
+    "Original magnifier, drink and heal use were not established by these selected clips; keep their evidence level at static script/prototype tests unless additional original runtime footage is reviewed.",
+    "The independently authored prototype starts at3HP and2live+2blank; these are deliberate fixture values and must not be presented as this original opening round.",
+    "Local footage selection does not constitute final soundtrack, caption or moving-composite QA."
+  ],
+  "criticalFrameEvidence": [
+    {
+      "sourceId": "first",
+      "seconds": 404,
+      "path": "production/local/test-evidence/original-footage-audit/frame-404.00.png",
+      "sha256": "ec781bb1520ca3bc7544b60c887c03362af953dbc0c23dc2af4f99c548e44d27"
+    },
+    {
+      "sourceId": "first",
+      "seconds": 410,
+      "path": "production/local/test-evidence/original-footage-audit/frame-410.00.png",
+      "sha256": "d0a91ff60d80ca1f5e5c3740cfbe955397a7c78e1bf282edccfc629fa6e23a17"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 14,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-014.00.png",
+      "sha256": "20b5d067d2e5cc9eacceb14054b2024cb647c3a8b83553083e2aa371985f0969"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 18,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-018.00.png",
+      "sha256": "6b811c982f9140a327b5e7b144307e4c42e3bea6954b7cffd56954088ede5296"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 38,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-038.00.png",
+      "sha256": "d97fdf0e5dcf0795b0e9385b3bd618612c59ef795e98a63662f7f1235ea39160"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 396,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-396.00.png",
+      "sha256": "a01a5c55b23df11c1d60122b7daf2521e315610f38a05c416b021ee7ebdeb550"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 415,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-415.00.png",
+      "sha256": "0add686910033b0f53923289c1ca1b83ec636f597809e4981e5b220470ef0cca"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 439,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-439.00.png",
+      "sha256": "377e22295446316eb254aa275a4d737a17746af9a6c1d385a950e8bc53ed38d4"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 445,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-445.00.png",
+      "sha256": "f02a8d3ee9f51fefc59e8bf3dd5b5647d4ba23ab803e1c1c27fb98caff5e716c"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 446,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-446.00.png",
+      "sha256": "9e76206dc18de4e0a2543488de4a51157024aed722f623844a9fdd2480aa02c3"
+    },
+    {
+      "sourceId": "second",
+      "seconds": 478,
+      "path": "production/local/test-evidence/original-footage-audit/second/frame-478.00.png",
+      "sha256": "8c3d6c101aadb92966f82fbef3f821cccc886fa956c07372d881ec3b4b7e6d6c"
+    }
+  ]
+}

@@ -1,0 +1,627 @@
+{
+  "schemaVersion": 1,
+  "auditedOn": "2026-10-29",
+  "buildId": "16736575",
+  "sourceExeSha256": "df2f8a31bd469438a1a29f831945ccea7b26963ab735f73b32936792207b1663",
+  "scope": "Installed single-player Buckshot Roulette script semantics; story/endless distinctions retained. No multiplayer reconstruction.",
+  "status": "static-script-verified; original runtime comparison pending",
+  "provenance": {
+    "reaInventory": "planning/package-inventory.json",
+    "ignoredReadReport": "production/local/analysis/script-read-report.json",
+    "evidenceKind": "REA-verified archive byte ranges; SHA256 matched and strict UTF8 checked",
+    "decompilerUsed": false,
+    "reaDidNotDecompile": true,
+    "scriptContent": "Plain UTF8 .gd payloads were already shipped in this build.",
+    "originalCodeIncludedInTrackedFiles": false
+  },
+  "findings": [
+    {
+      "id": "ammo-sequence",
+      "claimKo": "탄환의 결과는 발사 순간 새로 뽑는 것이 아니라, 장전 때 만들어 둔 실탄·공포탄 배열의 맨 앞에서 가져온다. 발사·배출이 처리되면 그 첫 칸과 딜러의 대응 기억 칸을 함께 지운다.",
+      "rules": {
+        "currentIndex": 0,
+        "consumedPerShot": 1
+      },
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/ShellSpawner.gd",
+          "function": "SpawnShells",
+          "lines": [
+            104,
+            123
+          ],
+          "sha256": "3831575fdfcbd30cea2158d2ca40ad88293f4771eec297f8356b2b491bf78f3c"
+        },
+        {
+          "sourcePath": "res://scripts/ShotgunShooting.gd",
+          "function": "Shoot",
+          "lines": [
+            87,
+            140
+          ],
+          "sha256": "a012544896f90bca99637d13d07cdaa800e606a5e2b7e6072f0a648b4a44094b"
+        },
+        {
+          "sourcePath": "res://scripts/ShellEjectManager.gd",
+          "function": "EjectShell",
+          "lines": [
+            21,
+            34
+          ],
+          "sha256": "3dd90e264ec43fb806bc4e9e5351c894f29c6bebee6dbaf590081f1596f4df95"
+        }
+      ],
+      "limits": [
+        "Animation event wiring that invokes ejection is not decoded yet; actual timing must be checked in recorded play."
+      ]
+    },
+    {
+      "id": "ammo-shuffle",
+      "claimKo": "라운드에 지정된 실탄 수와 공포탄 수로 배열을 만든다. 진열 배열 섞기 설정과 장전 순서 섞기 설정은 별도다. 장전 순서 무작위 설정이 켜져 있으면 진열을 닫은 뒤 두 번 shuffle을 호출한다.",
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/ShellSpawner.gd",
+          "function": "MainShellRoutine",
+          "lines": [
+            49,
+            92
+          ],
+          "sha256": "3831575fdfcbd30cea2158d2ca40ad88293f4771eec297f8356b2b491bf78f3c"
+        },
+        {
+          "sourcePath": "res://scripts/ShellSpawner.gd",
+          "function": "SpawnShells",
+          "lines": [
+            110,
+            122
+          ],
+          "sha256": "3831575fdfcbd30cea2158d2ca40ad88293f4771eec297f8356b2b491bf78f3c"
+        }
+      ],
+      "limits": [
+        "Story-mode exact per-round counts and exported shuffle booleans live in scene/resource data and are not established by these script defaults alone.",
+        "Two shuffle calls are an implementation fact, not a claim of doubled randomness."
+      ]
+    },
+    {
+      "id": "endless-generation",
+      "claimKo": "무한 모드의 라운드 생성은 시작 체력 2~4, 전체 탄환 2~8, 아이템 지급 수 2~5를 뽑는다. 실탄은 전체 수의 정수 절반(최소 1), 나머지는 공포탄으로 설정한다. 이 수치를 일반 스토리 라운드 전체의 고정 규칙처럼 말하면 안 된다.",
+      "rules": {
+        "mode": "endless",
+        "startingHealthRange": [
+          2,
+          4
+        ],
+        "totalShellRange": [
+          2,
+          8
+        ],
+        "liveRule": "max(1, integer half of total)",
+        "blankRule": "total minus live",
+        "itemsPerDistributionRange": [
+          2,
+          5
+        ]
+      },
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "GenerateRandomBatches",
+          "lines": [
+            142,
+            157
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "SetupRoundArray",
+          "lines": [
+            160,
+            167
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        }
+      ]
+    },
+    {
+      "id": "self-blank-extra-turn",
+      "claimKo": "자신을 향해 공포탄을 쏘면 피해 없이 다시 행동할 수 있다. 상대에게 공포탄을 쏘면 같은 보너스가 없다. 자기 자신을 실탄으로 쏘아도 보너스가 없다. 다만 마지막 탄환까지 소모했거나 수갑·사망 상태가 있으면 후속 상태 전이가 먼저 적용된다.",
+      "rules": {
+        "selfBlank": "keep actor if shells remain and actor not blocked",
+        "opponentBlank": "pass to opponent unless cuff restriction",
+        "selfLive": "damage self and no extra-turn flag"
+      },
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/ShotgunShooting.gd",
+          "function": "Shoot",
+          "lines": [
+            87,
+            156
+          ],
+          "sha256": "a012544896f90bca99637d13d07cdaa800e606a5e2b7e6072f0a648b4a44094b"
+        },
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "EndTurn",
+          "lines": [
+            264,
+            295
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "BeginPlayerTurn",
+          "lines": [
+            308,
+            325
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "Shoot",
+          "lines": [
+            350,
+            394
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        }
+      ]
+    },
+    {
+      "id": "damage-and-saw",
+      "claimKo": "기본 피해는 1이다. 톱을 사용하면 현재 피해 값이 2가 된다. 실탄일 때만 선택한 쪽의 체력이 줄고, 체력은 0 아래로 내려가지 않게 처리한다. 사격 종료 처리에서 잘린 총열을 복원하면 피해는 다시 1로 돌아간다. 공포탄에 톱을 써도 피해가 생기지는 않는다.",
+      "rules": {
+        "defaultDamage": 1,
+        "sawDamage": 2,
+        "blankDamage": 0,
+        "healthFloor": 0
+      },
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "field initialization",
+          "lines": [
+            47,
+            57
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/ItemInteraction.gd",
+          "function": "InteractWith",
+          "lines": [
+            153,
+            158
+          ],
+          "sha256": "45f1fe95c0941eb09308db49d30542055a0b628842c4ccee073e946b8e29fc42"
+        },
+        {
+          "sourcePath": "res://scripts/ShotgunShooting.gd",
+          "function": "Shoot",
+          "lines": [
+            119,
+            143
+          ],
+          "sha256": "a012544896f90bca99637d13d07cdaa800e606a5e2b7e6072f0a648b4a44094b"
+        },
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "EndTurn",
+          "lines": [
+            269,
+            274
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/SegmentManager.gd",
+          "function": "GrowBarrel",
+          "lines": [
+            14,
+            17
+          ],
+          "sha256": "0c58eb5e66f8d6cd91484caf0ecc8765624c787929af993a3ec37ba426485de7"
+        }
+      ],
+      "limits": [
+        "Do not infer an unconditional saw reset on every item action; beer does not directly call EndTurn in the observed item branch.",
+        "Verify last-shell/special death handling in runtime before broader claim."
+      ]
+    },
+    {
+      "id": "beer",
+      "claimKo": "맥주에 연결된 배출 함수는 맨 앞 탄환 한 발을 제거하고 그 종류를 탄피 표시로 드러낸다. 피해 계산은 하지 않는다. 플레이어 맥주 처리에서는 탄환이 남아 있으면 다시 상호작용을 허용하고, 마지막 한 발이었다면 다음 장전 라운드로 넘어간다.",
+      "rules": {
+        "consumedShells": 1,
+        "damage": 0,
+        "remainingShells": "same actor resumes",
+        "lastShell": "next loading round"
+      },
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/ShellEjectManager.gd",
+          "function": "BeerEjection_player",
+          "lines": [
+            36,
+            46
+          ],
+          "sha256": "3dd90e264ec43fb806bc4e9e5351c894f29c6bebee6dbaf590081f1596f4df95"
+        },
+        {
+          "sourcePath": "res://scripts/ShellEjectManager.gd",
+          "function": "BeerEjection_dealer",
+          "lines": [
+            48,
+            58
+          ],
+          "sha256": "3dd90e264ec43fb806bc4e9e5351c894f29c6bebee6dbaf590081f1596f4df95"
+        },
+        {
+          "sourcePath": "res://scripts/ItemInteraction.gd",
+          "function": "InteractWith",
+          "lines": [
+            130,
+            141
+          ],
+          "sha256": "45f1fe95c0941eb09308db49d30542055a0b628842c4ccee073e946b8e29fc42"
+        }
+      ],
+      "limits": [
+        "Beer animation-to-function method tracks have not been decoded; runtime footage should confirm binding."
+      ]
+    },
+    {
+      "id": "magnifier",
+      "claimKo": "돋보기용 탄환 표시 함수는 배열의 첫 탄환 종류를 읽어 실탄·공포탄 재질로 보여 준다. 읽기만 하고 배열에서 제거하지 않는다. 사용 애니메이션 뒤 상호작용을 다시 허용한다.",
+      "rules": {
+        "revealedIndex": 0,
+        "consumedShells": 0,
+        "turnPassed": false
+      },
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/ShellExamine.gd",
+          "function": "SetupShell",
+          "lines": [
+            13,
+            22
+          ],
+          "sha256": "4e75c5933489501db656c6f8d90d2afff7ee759f75fd3dcb971db47d4a5ee74f"
+        },
+        {
+          "sourcePath": "res://scripts/ItemInteraction.gd",
+          "function": "InteractWith",
+          "lines": [
+            142,
+            146
+          ],
+          "sha256": "45f1fe95c0941eb09308db49d30542055a0b628842c4ccee073e946b8e29fc42"
+        }
+      ],
+      "limits": [
+        "SetupShell connection to the magnifier animation is a scene wiring detail still awaiting runtime confirmation."
+      ]
+    },
+    {
+      "id": "cuffs",
+      "claimKo": "수갑을 사용하면 상대의 수갑 상태가 켜진다. 상대 차례가 처음 돌아왔을 때는 행동이 건너뛰어지고, 다음 차례에는 수갑을 풀고 행동한다. 단순한 시간을 재는 효과가 아니라 차례 진입에 따라 바뀌는 상태다. 새 장전 라운드를 시작할 때는 남은 수갑 상태를 정리한다.",
+      "rules": {
+        "skippedTurnEntries": 1,
+        "nextEntry": "release and act",
+        "newRound": "clear both cuffs"
+      },
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/ItemInteraction.gd",
+          "function": "InteractWith",
+          "lines": [
+            118,
+            129
+          ],
+          "sha256": "45f1fe95c0941eb09308db49d30542055a0b628842c4ccee073e946b8e29fc42"
+        },
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "EndTurn",
+          "lines": [
+            274,
+            289
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "DealerCheckHandCuffs",
+          "lines": [
+            39,
+            57
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        },
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "ReturnFromCuffCheck",
+          "lines": [
+            297,
+            305
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "BeginPlayerTurn",
+          "lines": [
+            308,
+            325
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/RoundManager.gd",
+          "function": "StartRound",
+          "lines": [
+            196,
+            200
+          ],
+          "sha256": "694318f10cd089b5d9abf1fcaf8df9e895dd8e560991b5212cea69126c5c3bee"
+        },
+        {
+          "sourcePath": "res://scripts/HandcuffManager.gd",
+          "function": "RemoveAllCuffsRoutine",
+          "lines": [
+            40,
+            55
+          ],
+          "sha256": "c37f332eedd5186d4eafdf0c4d5afc96da0aedd595fb396390441f06dd6abb4d"
+        }
+      ]
+    },
+    {
+      "id": "dealer-target-choice",
+      "claimKo": "딜러의 선택은 학습 모델이 아니라 조건문과 난수로 구성된다. 탄환을 알고 있으면 실탄은 플레이어, 공포탄은 자신을 선택한다. 한 발만 남았을 때도 종류를 아는 것으로 처리한다. 일반 모드에서 확정 정보가 없으면 0과 1의 난수로 대상을 고른다. 무한 모드에서는 남은 실탄이 더 많으면 플레이어, 공포탄이 더 많으면 자신을 고르고 동수일 때 난수를 쓴다.",
+      "rules": {
+        "knownLive": "player",
+        "knownBlank": "self",
+        "lastShell": "known",
+        "storyUnknown": "randi_range(0,1)",
+        "endlessUnknown": "majority shell type; random on equal counts"
+      },
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "DealerChoice",
+          "lines": [
+            96,
+            112
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "DealerChoice",
+          "lines": [
+            151,
+            159
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "DealerChoice",
+          "lines": [
+            268,
+            279
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "ChooseWhoToShootRandomly",
+          "lines": [
+            326,
+            329
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "CoinFlip",
+          "lines": [
+            421,
+            431
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        }
+      ]
+    },
+    {
+      "id": "dealer-inference-and-items",
+      "claimKo": "무한 모드에서는 기억한 탄환 위치와 남은 실탄·공포탄 수를 함께 보고 현재 탄환을 확정할 수 있는지 판단한다. 아이템은 보유 목록을 순회하며 조건이 맞는 것을 고른 뒤 다시 판단한다. 돋보기로 현재 탄환을 확인하고, 알려진 실탄에는 톱을 조합하는 등의 분기가 있다. 실제 선택 순서는 보유 목록 순서의 영향도 받으므로 고정된 최적 전략이라고 설명하지 않는다.",
+      "evidence": [
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "FigureOutShell",
+          "lines": [
+            282,
+            303
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "DealerChoice",
+          "lines": [
+            151,
+            201
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "DealerChoice",
+          "lines": [
+            203,
+            215
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        },
+        {
+          "sourcePath": "res://scripts/DealerIntelligence.gd",
+          "function": "DealerChoice",
+          "lines": [
+            258,
+            279
+          ],
+          "sha256": "f75bda6cc1b65c689ee412bcf5cc3e39578426302093110376f6f7003e03fb7a"
+        }
+      ],
+      "limits": [
+        "This is static branch analysis, not proof of optimality or all reachable states.",
+        "Dealer does have direct state access in code; player-facing fairness must be described using actual decision conditions rather than claiming it never reads hidden state."
+      ]
+    }
+  ],
+  "proposedIndependentTests": [
+    {
+      "name": "blank to self",
+      "before": "actor A HP3; queue blank,live",
+      "action": "A chooses self",
+      "expected": "HP3; one live remains; A retains action"
+    },
+    {
+      "name": "blank to opponent",
+      "before": "A/B HP3; queue blank,live; no cuffs",
+      "action": "A chooses B",
+      "expected": "B HP3; one live remains; B acts"
+    },
+    {
+      "name": "live damage",
+      "before": "B HP3; queue live,blank; default damage",
+      "action": "A chooses B",
+      "expected": "B HP2; one blank remains; B acts"
+    },
+    {
+      "name": "saw and live",
+      "before": "B HP3; queue live,blank",
+      "action": "A uses saw then chooses B",
+      "expected": "B HP1; subsequent shot damage restored to1"
+    },
+    {
+      "name": "saw and blank",
+      "before": "A HP3; queue blank,live",
+      "action": "A uses saw then chooses self",
+      "expected": "A HP3; A acts again; saw effect consumed by shot-end reset"
+    },
+    {
+      "name": "beer",
+      "before": "A HP3; queue live,blank",
+      "action": "A uses beer",
+      "expected": "A HP3; one blank remains; A can act"
+    },
+    {
+      "name": "magnifier",
+      "before": "queue live,blank",
+      "action": "A inspects",
+      "expected": "first live revealed; queue unchanged; A can act"
+    },
+    {
+      "name": "cuffs",
+      "before": "B uncuffed; nonempty queue",
+      "action": "A cuffs B then ends shooting turn",
+      "expected": "first B entry skipped; later B entry releases and acts"
+    },
+    {
+      "name": "dealer mode distinction",
+      "before": "unknown chamber; live3 blank1",
+      "action": "dealer chooses without other decisive item",
+      "expected": "story uses random branch; endless chooses player"
+    }
+  ],
+  "saveIsolation": {
+    "paths": [
+      "user://buckshotroulette_main_12.shell",
+      "user://buckshotroulette_pills.shell",
+      "user://buckshotroulette_playerstats.shell",
+      "user://buckshotroulette_options_12.shell"
+    ],
+    "clearSaveOnNewGame": {
+      "source": "scripts/MenuManager.gd",
+      "lines": [
+        203,
+        224
+      ],
+      "effect": "calls SaveFileManager.ClearSave which removes existing main save"
+    },
+    "fileScan": "All195 .gd members were hash-checked and searched in memory; scan evidence stored only production/local/analysis/save-api-scan.json.",
+    "steamWrites": [
+      "AchievementManager setAchievement/clearAchievement/storeStats",
+      "LeaderboardManager uploadLeaderboardScore"
+    ],
+    "remoteStorage": "No direct Steam remote-storage/fileWrite call matched the scan; this is not proof that native SteamAutoCloud never writes.",
+    "upstreamGodotWindows": {
+      "version": "4.1.1-stable",
+      "source": "https://raw.githubusercontent.com/godotengine/godot/4.1.1-stable/platform/windows/os_windows.cpp",
+      "dataPathLines": [
+        1427,
+        1435
+      ],
+      "cachePathLines": [
+        1437,
+        1450
+      ],
+      "userDirLines": [
+        1492,
+        1506
+      ],
+      "result": "get_config_path reads APPDATA environment; get_data_path returns it; user:// joins that root with Godot/app_userdata/appname unless a custom directory is configured. LOCALAPPDATA selects cache. SHGetKnownFolderPath belongs to get_system_dir, not get_user_data_dir.",
+      "boundary": "This proves upstream behavior, not absence of vendor engine changes. Verify a new isolated log/file and original-save hashes before beginning the match."
+    },
+    "packageProjectMetadata": {
+      "path": "project.binary",
+      "sha256": "9c2d6d6a5bcfac1b7c80b7d2a56720269939e86e9a2c4a7d7ec4e9a7a4c2b59e",
+      "observedStringName": "Buckshot Roulette",
+      "customUserDirStringObserved": false,
+      "method": "ASCII string scan, not full Variant decoding"
+    },
+    "sourceEvidence": [
+      {
+        "sourcePath": "res://scripts/SaveFileManager.gd",
+        "function": "SaveGame / LoadGame / ClearSave",
+        "lines": [
+          3,
+          79
+        ],
+        "sha256": "44768ec9f086d3c42d79aba6fece70f1967b353ab20d53726690db2986cb0127"
+      },
+      {
+        "sourcePath": "res://scripts/Steam.gd",
+        "function": "InitializeSteam",
+        "lines": [
+          35,
+          42
+        ],
+        "sha256": "a2617f00771b59bf04b1cea53e538bece7607bf5771379d8e0a3a1077249af75"
+      },
+      {
+        "sourcePath": "res://scripts/AchievementManager.gd",
+        "function": "UnlockAchievement / ClearAchievement",
+        "lines": [
+          3,
+          11
+        ],
+        "sha256": "7131204fd2738b3ffe8618cdbcd6cdc459ebc0a2676cdcc66a4016ef22bba346"
+      }
+    ]
+  },
+  "pendingValidation": [
+    "Actual play comparison of queue/blank/turn/items",
+    "Animation method-track wiring for ejection and inspection",
+    "Scene/resource story-mode round presets",
+    "Native Steam cloud behavior and actual isolated-save runtime evidence"
+  ],
+  "recordingStatement": "Forensic extraction and source review are timestamped local log evidence, not a claim that all analysis was screen-recorded."
+}

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "slug": "buckshot-roulette-reverse-engineering",
+  "status": "prepared-for-selected-documentary; source capture in/out review pending",
+  "draftSource": "planning/narration-draft.md",
+  "draftSha256": "d0e1f089ba2e11634082663e2c25263a8f9d212a649461ac24d75bf4b5f321b9",
+  "actualDurationSeconds": null,
+  "language": "English",
+  "translationPurpose": "Semantic subtitle counterpart, not an English voice request",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "보이는 선택, 숨어 있는 규칙",
+      "lines": [
+        "In Buckshot Roulette, you aim at yourself and fire a blank. You take no damage, and you can choose again. The same weapon leads to a different next step depending on whom you choose. What rules connect those decisions? Today, we will find those rules in the installed game's structure and implement a small game with a new look. We will go from reading files to checking behavior, then connect the result to a moving scene."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "무엇을 읽을 수 있었나",
+      "lines": [
+        "First, I checked what the game contains. Using REA, a package-structure analysis tool, to inspect the executable revealed 3,572 internal files. Among them were 195 GDScript files describing game behavior.",
+        "The script files in this build were readable text. Rather than turning machine code back into source, the important task was following which functions change which values. I connected the parts that handle shots, hand over turns, and use items to organize the rules."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "탄환은 언제 정해질까",
+      "lines": [
+        "The first question was about the ammunition. Does the game pick a live round or a blank each time you pull the trigger? In the code I inspected, it builds the ammunition sequence when loading, then uses one round at a time from the front.",
+        "Think of a row of cards. If the first card is a blank, the next result is a blank. Once it is used, that slot disappears and the second card moves to the front. The magnifying glass checks that front slot. Looking does not consume the round. Beer ejects the front round, moving the sequence forward without dealing damage.",
+        "Picking a fresh result each time and consuming a prepared sequence may look similar on screen, but they are different rules. That distinction also connects the rounds already used to the next decision."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "한 발 뒤에 바뀌는 것",
+      "lines": [
+        "Is an ammunition sequence enough to make the game? We still have to decide whose turn comes next. Shooting a blank at yourself lets you act again without damage, but shooting it at your opponent gives you no such benefit. The round is still a blank, yet the next state depends on your target.",
+        "Handcuffs add another condition: the opponent skips the next turn entry. But using the last round also requires a transition to reloading. If health reaches zero, the game must not accept another ordinary action. Ammunition count, health, turn ownership, and handcuff state all have to work together to produce the flow we see on screen.",
+        "The saw changes a different value. A live round's base damage is one, and using the saw raises it to two. That does not turn a blank into a damaging round. Separating changes to ammunition, damage, and information makes the item combinations easier to understand."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "상대는 무엇을 보고 판단할까",
+      "lines": [
+        "The opponent also needs to read the state. Here, the dealer's decisions were built from conditions and random choices, rather than a trained model. When the current round is known, the dealer chooses the player for a live round and itself for a blank.",
+        "The branch for uncertain information differs by mode. The ordinary mode chooses a target at random. Endless mode compares the remaining live rounds and blanks, choosing randomly if their counts are equal. Item conditions connect to that decision too: for example, the magnifying glass reveals information, and a saw can then be combined with a known live round. Breaking the decision down into available information and actions made the structure visible."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "규칙을 따로 만들어 검사하기",
+      "lines": [
+        "Using that structure, I wrote separate code for ammunition and turns in a new project. For example, set up a blank at the front and choose yourself. Does the ammunition count decrease, does health stay the same, and does the turn remain yours? The same input should produce the expected result before we move on.",
+        "The independently written rules code passed 374 checks. Connecting the screen revealed additional issues to check. Another input had to be blocked while an item animation was still running, and a message that attributed a handcuff-driven repeat turn to a self-targeted blank needed to distinguish those causes. After those fixes, 32 integration checks passed for the rules and scene working together. Instead of looking only at a count, we also checked which input was blocked and which message changed."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "규칙에 새로운 모습을 입히기",
+      "lines": [
+        "Now it is time to show the rules with a different appearance. I created a new table, robot dealer, ammunition, and tools in Blender. After setting up the hands and head as separately movable parts, I brought them into a Godot scene. Instead of taking models and textures from the original game, I created shapes and materials for this experiment.",
+        "The head moves while thinking, and the selected tool moves forward into view. I connected the sound and result message to the moment of firing. When inspecting or ejecting a round, the viewer should be able to follow the selected action and what changed. This step goes beyond replacing the picture: it connects rule changes with movement in the scene."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "이번에 확인한 것",
+      "lines": [
+        "The self-targeted blank and next selection we saw at the start led us to rules for ammunition order and turn handling. We moved core behaviors into independent code and new graphics. The 374 checks cover our own rules model; they do not establish that every part of the original game behaves identically. The result is a prototype that implements the core rules we examined.",
+        "AI and tools can help connect file investigation with implementation. To trust the result, though, we need to connect what we read, which inputs we tested, and which changes appeared on screen. This small game is the result of tracing those connections."
+      ]
+    }
+  ]
+}

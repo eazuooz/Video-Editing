@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-10-29T01:51:27.848897+00:00",
+  "status": "local-review-ready-user-review-pending",
+  "captionedSha256": "75dd9914af58ab4ac28f4489a76c197ccb6a84f4038837acb487cf01fbd213ec",
+  "durationSeconds": 343.083333,
+  "width": 1920,
+  "height": 1080,
+  "fps": 60,
+  "pairedAudioIdentical": true,
+  "encodedTruePeakDbtp": -1.8,
+  "captionCues": {
+    "ko": 95,
+    "en": 114
+  },
+  "visualReviewStatus": "passed-inspected-encoded-frames",
+  "wholeFinalMixAsrCompared": true,
+  "evidence": {
+    "technical": {
+      "path": "production/local/documentary-v3/technical-qa.json",
+      "sha256": "2b518fab357dbb410404427970f0c7b783ba1e6ff2e6ce61d3a7b41a0f65edb8"
+    },
+    "visual": {
+      "path": "production/local/final-qa/visual-review.json",
+      "sha256": "c95a5d9ee7e51f540bbc6b8213023db7833debb85b20691eb8690e1016fd6d5d"
+    },
+    "audio": {
+      "path": "production/local/final-qa/audio-review.json",
+      "sha256": "e3dc90dff55341819a89e22efd72328dd2639397ffce4ac6d030eef04430d1c6"
+    }
+  },
+  "humanViewing": false,
+  "humanListening": false,
+  "platformMutationPerformed": false,
+  "remaining": [
+    "User full local viewing/listening, including four marked pronunciation candidates",
+    "Any platform action requires a separate explicit request"
+  ],
+  "limits": [
+    "374rule/32integration/26capture checks cover our implementation, not full original-game equivalence",
+    "Final visual review covers documented encoded frames/transitions; full human playback and listening remain pending",
+    "Four suspected ASR pronunciation differences have context clips; not declared proven synthesis faults",
+    "REA inspected shipped readable scripts; Ghidra/Tripo were not used; no original recovered source/assets redistributed"
+  ],
+  "corrections": [
+    {
+      "issue": "Mixed S16/FLOAT concat demuxer corrupted audio and doubled body duration in never-delivered v1",
+      "fix": "Decode each input separately into float before filter concat; exact sample comparison and all stream durations verified"
+    },
+    {
+      "issue": "v2 AAC reconstructed peak -1.2dBTP exceeded -1.5dBTP limit",
+      "fix": "Final limiter ceiling -2.0dB; v3 encoded peak remeasured; video packets and narration PCM unchanged"
+    }
+  ]
+}
