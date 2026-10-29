@@ -1,12 +1,22 @@
-# Buckshot Roulette 분석과 NEON CHAMBER 실험
+# REA와 AI로 만드는 게임 기반 프로토타입
 
 소유한 설치본에서 확인한 규칙을 별도로 설명하고, 독립적으로 작성한 코드와 새 외형으로 작은 플레이 실험을 만드는 프로젝트입니다. `prototype/`은 원작 실행 파일·복원 스크립트·원작 모델을 불러오지 않습니다. 원작 관찰 자료와 분석 원문은 Git에서 제외한 `production/local/`, `captures/`에 구분해 둡니다.
 
-## 현재 결과 · 2026-10-29
+## v4 수정 · 전체 제작 흐름부터 소개
+
+사용자 요청에 따라 **기존 게임 분석 → 규칙·리소스 구조 파악 → 새 코드·새 외형 제작 → 엔진에서 실행**을 중심 주제로 잡았다. 원작과 자체 프로토타입을 먼저 비교하고 REA(Reverse Engineer Anything), AI 에이전트, MCP의 역할을 설명한 뒤 실제 제작 사례로 이어진다.
+
+실제 사용한 경로는 **REA 6.8.0 CLI → 읽을 수 있는 GDScript 분석 → AI와 독립 구현·Blender Python 모델 → Godot 4.7.2**다. Ghidra와 Tripo MCP, Unity·Unreal은 가능한 도구 선택지로 소개하며 이번에 실행한 것으로 표시하지 않는다. 분석 결과 도표는 실제 도구 UI 녹화가 아니다. 시간 단축 수치는 측정하지 않았다.
+
+새 도입·설명·마무리 다섯 문단만 같은 참조 목소리로 생성하고 본문 열네 문단의 PCM 및 기존 컷은 보존한다. 계획은 `planning/revision-v4-workflow.json`, 현재 완료 상태와 검수 근거는 `production/checkpoint.json`을 따른다. 이전 v3는 보존한다.
+
+v4 출력은 **6분 51.966667초 · 24,718프레임 · 1920×1080/60fps**다. 자막/무자막 MP4와 한국어115·영어135구절 SRT가 `output/buckshot-roulette-reverse-engineering-v4`에 있다. 두 영상의 전 구간 디코딩과 동일 음성 검사를 통과했고, 음량은 −17.1LUFS/−1.8dBTP다. 32개 컷과115개 자막에서 추출한189프레임 전부 및 주요 FHD/375px 화면을 직접 확인했다. 원작/자체 구현의 좌우 비교, REA 도구 역할, 선택 가능한 도구와 이번 실제 경로가 구분된다. 최종 상태는 현재 마스터 해시의 `production/final-review-v4.json`을 따른다. 사용자의 전체 시청·청취는 대기이며, 발음 확인 후보는 검수 페이지의 청취 클립에 모아 둔다.
+
+## 이전 v3 결과 · 2026-10-29
 
 [로컬 영상 검수 페이지](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/index.html) · [전체 자막 영상](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/buckshot-roulette-reverse-engineering.captioned.mp4) · [시제품 실행 스크립트](D:/Github/VideoEditing/projects/buckshot-roulette-reverse-engineering/production/launch-prototype.ps1)
 
-v3 완성 파일의 기술 검사와 표본 화면·전체 ASR 검수를 마치고 위 폴더에 전달했습니다. 전체 길이는 **5분 43.083333초 · 20,585프레임 · 1920×1080/60fps**이며, 기존 2초 브랜딩과 10초 회원 안내를 포함합니다. 최종 음량은 −17.0 LUFS, 최대 피크는 −1.8 dBTP입니다. 95개 자막과 32개 컷을 포함한 173프레임을 확인했고 주요 6프레임은 실제 FHD와375px에서 확인했습니다. clean/captioned MP4와 한·영 SRT를 같은 검수 폴더에 두었습니다. 네 발음 후보의 문맥 청취와 **사용자의 전체 영상 시청·청취는 대기 상태**입니다. 세부 범위와 수정 이력은 `production/final-review.json`에 기록했습니다.
+v3 완성 파일은 이전 검수본으로 `output/buckshot-roulette-reverse-engineering-v3`에 보존합니다. 전체 길이는 **5분 43.083333초 · 20,585프레임 · 1920×1080/60fps**이며, 기존 2초 브랜딩과 10초 회원 안내를 포함합니다. 당시 최종 음량은 −17.0 LUFS, 최대 피크는 −1.8 dBTP입니다. 95개 자막과 32개 컷을 포함한173프레임 및 주요 FHD/375px 화면을 확인했습니다. 당시 검수 범위는 `production/final-review-v3.json`에 보존했습니다.
 
 | 확인 대상 | 실제 결과 | 근거 |
 |---|---|---|

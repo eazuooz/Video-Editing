@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "revision": "v4",
+  "auditedAt": "2026-10-29T02:49:12.505854+00:00",
+  "scope": "Additive v4 voice implementation and root-authorized execution: only five new paragraphs; preserve the original fourteen-paragraph PCM block and every other project/app.",
+  "inputHashes": {
+    "production/render-voice.py": "1f4a5be35ae7cb44793b549ac24d9efbe5b444998c5f7a692d079ea68e31f6a2",
+    "production/prepare-narration.py": "354ddfadadb9de82f47c4f39749b9f28c397f7b420e3eaec6da994d6c1e5325f",
+    "production/build-clause-subtitles.py": "3cda5dad6f4a1d7c281dba1988928a4c8a21255a574d03f767cf1c2c6eb3909f",
+    "production/build-edit-plan.py": "a7d41d708d2d70d61dcc02c92fcc4a8ef63799a95d177bd71101bd9d4785013c",
+    "production/review-voice.py": "38b916668199f214a4c1107e69ecd830dab482b914cc7ce5bfa70d38c10ea57d",
+    "production/align_evidence_diagram_cues.py": "31c9f85af91f28b74f81e282ae86cf0a948993d7d7830d9d7b44184519369d89",
+    "production/render_evidence_diagrams.py": "32de2bf95926320a3dfdd402b4954d0f0b55663d2c7335f8ce373e3ed2e2534d",
+    "production/render-voice-v4.py": "9139f4fe4fe1d7576a908d3e284cdbc3af67471de1ed83eb80709a24bd4131f9"
+  },
+  "baseline": {
+    "audio": "production/local/audio-v1/narration.wav",
+    "sha256": "cde1c69a5bf1f841f52f1195a288c563e258f53f21fc3b5528a9a7aeb2c8c520",
+    "sampleRate": 24000,
+    "channels": 1,
+    "subtype": "FLOAT",
+    "samples": 7945921,
+    "seconds": 331.08004166666666,
+    "paragraphs": 17,
+    "technicalAsr": "Whole source and final mix evidence exists; human viewing/listening still false."
+  },
+  "selectedReuse": {
+    "totalParagraphs": 19,
+    "newTtsParagraphs": [
+      "01-01",
+      "01-02",
+      "02-01",
+      "02-02",
+      "08-01"
+    ],
+    "retainedParagraphs": 14,
+    "mapping": "planning/revision-v4-workflow.json#audioReuseMapping",
+    "baselineOld02p1ToOld08p1": {
+      "startSample": 597120,
+      "endSampleExclusive": 6996481,
+      "samples": 6399361,
+      "seconds": 266.64004166666666,
+      "pcmSha256": "c236381c845b1210debd6753d636362a1dc6f1d6ef0cd5b7b7613ff5458c047e"
+    },
+    "proof": "Read original PCM and timing; contiguous old02..07block includes the original breathing gaps. No normalize, gain, fade, resample, stretch or final-AAC extraction on retained PCM. New prefix length must be measured after synthesis."
+  },
+  "newRunner": {
+    "file": "production/render-voice-v4.py",
+    "inputs": [
+      "planning/revision-v4-workflow.json",
+      "script/revision-v4/narration.ko.json",
+      "script/revision-v4/narration.en.json",
+      "production/local/audio-v1/narration.wav",
+      "production/local/audio-v1/narration.timing.json",
+      "production/tts-manifest.json"
+    ],
+    "outputs": [
+      "production/local/audio-v4/new-takes/chunks/<scene>-<paragraph>-scene.wav",
+      "production/local/audio-v4/narration.wav",
+      "production/local/audio-v4/narration.timing.json",
+      "production/local/audio-v4/pcm-reuse-proof.json",
+      "production/local/audio-v4/line-levels-new-only.json",
+      "production/local/audio-v4/narration.srt",
+      "production/local/audio-v4/narration.en.srt"
+    ],
+    "default": "--dry-run: validates text identity, exact sample slices, reference identity, plan, hashes; no writes, model load or GPU lease.",
+    "actualGeneration": "Only5missingnewtakes; existing valid raw takes are excluded from tail heuristic rerender. New takes use same active speech level target -22dBFS and6msedgefade; output remainsFLOAT.",
+    "resourceGuard": "Explicit v4 guard; same voice previous 17 successful takes maximum 4816 MiB, allocator cap 7680 MiB, required current free 8380 MiB and three utilization samples. Signed exact-path GUI verification.",
+    "proofContract": "narration.timing entries keep speech start/end plus segmentEndSample, baseline sample ranges and hash; pcm-reuse-proof verifies whole middle in memory and written WAV samples, exact baseline hash before/after."
+  },
+  "commands": {
+    "validatedDryRun": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/render-voice-v4.py --dry-run",
+    "resourceOnly": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/render-voice-v4.py --check-resources --allow-idle-editors",
+    "afterRootSignalOnly": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/render-voice-v4.py --synthesize --allow-idle-editors",
+    "cpuAssemblyIfAll5TakesExist": "qwen3-tts/.venv/Scripts/python.exe -X utf8 projects/buckshot-roulette-reverse-engineering/production/render-voice-v4.py --assemble-only"
+  },
+  "pipelineHazards": [
+    {
+      "file": "production/prepare-narration.py",
+      "finding": "Hardcoded EN text, eight scenes and audio-v1 output. Running it would overwrite current ordinary KO/EN scripts and manifest.",
+      "choice": "Do not run forv4; selected revision scripts/workflow are separate."
+    },
+    {
+      "file": "production/render-voice.py",
+      "finding": "Hardcoded audio-v1 derived script/render manifest, changed-input hash guard, and whole-scene normalization/fade/reassembly. Raw-chunk names alone are not exact final-PCM preservation.",
+      "choice": "Use dedicatedv4runner; never change baselineinputguard orcopy changed text onto oldchunkname."
+    },
+    {
+      "file": "production/review-voice.py",
+      "finding": "Reads ordinary manifest and resource_state writes/reads audio-v1; passing --audio alone does not change expectedscript/reviewfolder.",
+      "choice": "Parameterize manifest/output/resourceguard or use a new v4reviewwrapper before running. Whole v4source/finalmixASR is new evidence; do not relabel oldASR hash."
+    },
+    {
+      "file": "production/build-clause-subtitles.py",
+      "finding": "Reads ordinary manifest; requires matching actualwholecurrentaudioASRhash and paragraph count. New KO/EN semanticgroups need review.",
+      "choice": "Route newmanifest/revisionpaths beforeuse; retain oldbody cues by exact sample delta only with recorded baseline provenance, orrun one currentwholeASR andregenerateclause mapping. Keep SRT plain, canonicaldisplay names, no PCM edits."
+    },
+    {
+      "file": "production/build-edit-plan.py",
+      "finding": "Hardcoded oldaudio-v1, old01p1 intro allocation and old02p1/p2positions; would rebuildoldlesson layout andoverwrite timeline.",
+      "choice": "Newv4editbuilder should retain oldb04..b30visual cuts and native motion with constantoffset; addnewprefix/end beats. New02p3/p4maptoold02p1/p2diagramfiles. Frame-boundaryoffset must stay<1frame; no stretching/freezepadding."
+    },
+    {
+      "file": "production/align_evidence_diagram_cues.py / render_evidence_diagrams.py",
+      "finding": "Hardcoded oldaudio/scriptpaths and oldparagraphIDs. Fullscript hash changes do not imply every unchanged diagram needs rerender.",
+      "choice": "Reuse unchangedencodedbodydiagrams byexistinghash/localcues. Create only newworkflow/REA/closing visuals with distinct paths. Do not mislabel a rendered evidence diagram as recordedtoolUI."
+    }
+  ],
+  "currentResourceCheck": {
+    "dryRun": "passed latest corrected Korean and English inputs; 19 = 5 new + 14 exact retained",
+    "resourceOnly": "resource-preflight-passed-no-synthesis",
+    "resourceReceipt": "production/local/audio-v4/resource-preflight.json",
+    "guard": "Explicit v4 check with original process-classification helpers; signed exact-path Visual Studio and Notion GUI allowed, foreign games/compute/batch render blocked. No process changes.",
+    "gpuSamples": [
+      {
+        "freeMiB": 10252,
+        "totalMiB": 16303,
+        "utilization": 22
+      },
+      {
+        "freeMiB": 10086,
+        "totalMiB": 16303,
+        "utilization": 17
+      },
+      {
+        "freeMiB": 10096,
+        "totalMiB": 16303,
+        "utilization": 12
+      }
+    ],
+    "selectedProjectDecision": {
+      "previousSuccessfulTakes": 17,
+      "previousMaxAllocatedMiB": 4816,
+      "previousReceiptSha256": "a40600c4e95940512f60f3208cc88ab2c0bbadf55c501f107442f7d1c292e540",
+      "minimumFreeMiB": 8380,
+      "maxUtilization": 40,
+      "basis": "Root-authorized v4 measured-capacity choice: same1.7Bvoice/reference; max7.5GiBallocator+700MiBfree margin, plus actual3samplecheck; no foreign process changes."
+    },
+    "synthesisAuthorization": "Root explicitly requested immediate execution after verified capacity; GPU lease required and held only by this selected process."
+  },
+  "actualToolEvidence": {
+    "confirmedReaUiCaptureFound": false,
+    "records": [
+      {
+        "path": "production/local/analysis/rea-inspect-20261029.json",
+        "sha256": "6fd8b3de27149e8cbba1c0a2c8e12bf03d703f0c162dc36f25c507480473ffe1",
+        "kind": "actual saved REA machine-readable execution evidence",
+        "use": "Show selected measured fields or record an honest current evidence redisplay; not historical terminal footage."
+      },
+      {
+        "path": "production/local/analysis/rea-inspect-20261029.stdout.json",
+        "sha256": "1be728c10c4f99d3a840c00a0493c677aab6538c2a0328143d05a2822d242a26",
+        "kind": "actual REA stdout summary",
+        "use": "Readable current output display; label actual analysis result, avoid fabricated typing/elapsed execution claims."
+      },
+      {
+        "path": "planning/package-inventory.json",
+        "sha256": "5670f68e7f0fc66a80070f87a09aefadc12d640074077840ff54c5f3dad903ee",
+        "kind": "summary linked to exact REA evidence",
+        "use": "3572members/195readableGDScripts/Godot4.1.1package are supported; rules require separatecode andruntimeevidence."
+      }
+    ],
+    "mediaCandidates": [
+      {
+        "path": "captures/setup/recording-check.png",
+        "kind": "authored recording test card",
+        "actualViewed": true,
+        "notReaUi": true
+      },
+      {
+        "path": "captures/recordings/buckshot-process-2026-10-29_00-57-24.mkv",
+        "duration": 18.184,
+        "dimensions": [
+          1920,
+          1080
+        ],
+        "fps": "60/1",
+        "actualInspectedFrameSeconds": [
+          1
+        ],
+        "observed": "recording test card",
+        "selection": "not suitable as REA execution evidence; entiremotionnotreviewed"
+      },
+      {
+        "path": "captures/recordings/buckshot-process-2026-10-29_11-05-09.mkv",
+        "duration": 43.784,
+        "dimensions": [
+          1920,
+          1080
+        ],
+        "fps": "60/1",
+        "actualInspectedFrameSeconds": [
+          1
+        ],
+        "observed": "blackframe",
+        "selection": "unverifiedcandidate, cannot claim REA UI fromfilename"
+      },
+      {
+        "path": "captures/recordings/buckshot-process-2026-10-29_09-15-02.mkv",
+        "kind": "actual originalgame-onlycapture",
+        "provenance": "planning/original-footage-audit.json"
+      },
+      {
+        "path": "captures/recordings/buckshot-process-2026-10-29_09-22-48.mkv",
+        "kind": "actual originalgame-onlycapture",
+        "provenance": "planning/original-footage-audit.json"
+      },
+      {
+        "path": "production/local/documentary-capture/all-v1.avi",
+        "kind": "actual independentlyauthoredGodotruntime",
+        "seconds": 121.183333,
+        "provenance": "all-v1-events.json/all-v1-qa.json; notREAUI"
+      },
+      {
+        "path": "captures/prototype-demo-fhd.avi",
+        "kind": "actual independentlyauthoredGodotruntime",
+        "seconds": 33.166667,
+        "provenance": "production/local/test-evidence/prototype-demo-fhd-capture.json; notREAUI"
+      }
+    ],
+    "notCapturedClaims": [
+      "No evidence of Ghidra or Tripo being used in this experiment.",
+      "Blender background execution logs are actual records, not screen recordings.",
+      "REA diagrams or metadata summaries must retain analysis-visualization classification unless a new actual display is recorded."
+    ],
+    "suggestedActualDemonstration": "Record the existing real stdout/evidence fields being opened and inspected, or rerun read-only inspect-artifact to a NEW ignored evidence file while capturing the visible terminal. State that this is a current evidence demonstration; no fake typing, fabricated progress, or claims of past capture."
+  },
+  "stillPending": [
+    "Whole v4 ASR, captions, diagram timing and encoded mix inspection",
+    "Final 1080p60 and 375px visual review; encoded true peak <= -1.5 dBTP",
+    "Human final viewing/listening"
+  ],
+  "humanFinalReview": false,
+  "ttsExecuted": true,
+  "rendererExecuted": false,
+  "globalSettingsChanged": false,
+  "ttsStatus": "completed five new takes and additive PCM assembly; current ASR and final listening pending",
+  "generationResult": {
+    "proof": "production/local/audio-v4/pcm-reuse-proof.json",
+    "timing": "production/local/audio-v4/narration.timing.json",
+    "newVoiceSha256": "6eb0f483642fc4a99b102abb54ea710fc0f8cb21d7a2b8c78f824b769d8e9835",
+    "newVoiceDurationSeconds": 399.96008333333333,
+    "newPrefixSeconds": 104.52004166666667,
+    "closingStartSeconds": 371.1600833333333,
+    "retainedBodyBitExact": true,
+    "retainedBodyShiftSeconds": 79.64004166666668,
+    "generations": 5,
+    "maximumAllocatedMiB": 4816,
+    "processExited": true,
+    "leaseReleased": true,
+    "baselineAudioUnchanged": true,
+    "humanListening": false
+  }
+}

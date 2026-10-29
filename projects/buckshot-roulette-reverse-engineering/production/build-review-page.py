@@ -17,11 +17,11 @@ ROOT = PROJECT.parents[1]
 OUTPUT = ROOT / "output" / PROJECT.name
 LOCAL = PROJECT / "production" / "local"
 EVIDENCE_PAGE = LOCAL / "analysis" / "evidence-view.html"
-FINAL_OUTPUT = ROOT / "output" / "buckshot-roulette-reverse-engineering-v3"
+FINAL_OUTPUT = ROOT / "output" / "buckshot-roulette-reverse-engineering-v4"
 # assemble_documentary.py writes this receipt only after both masters decode.
-FINAL_QA = LOCAL / "documentary-v3" / "technical-qa.json"
-FINAL_AUDIO_QA = LOCAL / "final-qa" / "audio-review.json"
-LISTENING_PAGE = LOCAL / "audio-v1" / "review" / "listening" / "index.html"
+FINAL_QA = LOCAL / "documentary-v4" / "technical-qa.json"
+FINAL_AUDIO_QA = LOCAL / "final-qa-v4" / "audio-review.json"
+LISTENING_PAGE = LOCAL / "audio-v4" / "review" / "listening" / "index.html"
 
 
 def read_json(path: Path) -> dict:
@@ -138,14 +138,14 @@ def final_review_html(state: dict) -> str:
         (PROJECT / "planning/original-footage-audit.json", "원작 촬영 검수 근거"),
         (state["report"], "현재 파일의 기술 검사 결과"),
         (FINAL_AUDIO_QA, "현재 영상의 음성 검사 결과")))
-    audition = (f'<p class="subtle">발음 확인이 남은 네 구간과 평소 도입부를 따로 들을 수 있습니다. '
-                f'{link(LISTENING_PAGE, "청취용 클립 5개 열기", OUTPUT)}</p>') if LISTENING_PAGE.exists() else ""
+    audition = (f'<p class="subtle">새 도입·REA 설명과 기존 발음 확인 후보를 문맥과 함께 들을 수 있습니다. '
+                f'{link(LISTENING_PAGE, "문단별 청취 클립 열기", OUTPUT)}</p>') if LISTENING_PAGE.exists() else ""
     total = round(state["durationSeconds"])
     duration = f' · {total // 60}분 {total % 60:02d}초' if total else ""
     return f'''<section class="section" id="final-review"><h2>완성본 검수</h2>
 <p>1920×1080 · 60fps{duration} · 두 영상의 전체 디코딩과 동일 음성 검사를 통과한 현재 파일입니다.</p>
 <span class="status">렌더링·기술 검사 완료</span><span class="status pending">사용자 검수 대기</span>
-<p class="subtle" style="margin-top:12px">기술 검사는 실제 시청·청취를 대신하지 않습니다. 화면·자막 연결과 발음 확인, 최종 사용자 검수가 남아 있습니다.</p>
+<p class="subtle" style="margin-top:12px">기술 검사는 실제 시청·청취를 대신하지 않습니다. 표본 화면·자막 연결은 확인했으며, 전체 사용자 시청·청취와 최종 검수가 남아 있습니다.</p>
 <video class="review-video" controls playsinline preload="metadata" aria-label="벅샷 룰렛 분석·독립 재구현 전체 자막 검수 영상" src="{url(files['captioned'], OUTPUT)}"></video>
 <div class="links">{downloads}</div>{audition}<div class="links">{support}</div>
 <p class="evidence" style="margin-top:14px">자막 영상 SHA256: {esc(state['captionedSha256'])}<br>기술 검사 기록: {esc(state['checkedAt'])}</p></section>'''
@@ -247,9 +247,9 @@ def main() -> None:
     original_row = ('<tr><td>원작 플레이 대조</td><td class="good">선택 장면의 관찰 근거 확보</td><td>직접 녹화한 게임에서 자기 공포탄·수갑·톱의 선택과 결과를 확인한 기록입니다. 전체 동작 동일성이나 최종 편집본 시청 완료를 뜻하지 않습니다.</td></tr>'
                     if original_audit.get('verifiedFacts') else '<tr><td>원작 플레이 대조</td><td class="pending">실행 비교·촬영 확인 필요</td><td>원작의 실제 동작·시간과 프로토타입을 대조해야 합니다.</td></tr>')
     content = f'''
-<div class="brand">YAMYAM CODING / 얌얌코딩</div><p class="eyebrow">벅샷 룰렛 · 분석과 독립 재구현 실험</p>
-<h1>게임의 규칙을 읽고,<br>새로운 모습으로 움직이게 하기.</h1>
-<p class="lead">설치된 게임의 파일 구조와 규칙을 살펴보고, 새 모델과 독립 코드로 작은 실험 장면을 만드는 과정입니다. 아래는 실제로 확인된 분석·실행 결과와 현재 제작 상태입니다.</p>
+<div class="brand">YAMYAM CODING / 얌얌코딩</div><p class="eyebrow">REA와 AI · 분석에서 기반 프로토타입까지</p>
+<h1>기존 게임을 분석해,<br>새 프로토타입의 출발점으로.</h1>
+<p class="lead">REA가 AI의 분석 작업을 어떻게 돕는지부터 살펴보고, 규칙 분석 → 새 코드와 외형 제작 → 게임 엔진 실행으로 이어집니다. v4는 원작·자체 구현 비교와 전체 제작 흐름을 도입에 넣고, 검증한 본문은 보존한 수정본입니다.</p>
 {top_status}{final_section}
 {hero}{metrics()}
 <div class="links">{link(PROJECT / 'prototype/project.godot', 'Godot 프로젝트 열기', OUTPUT, 'button')}{link(PROJECT / 'production/launch-prototype.ps1', '실행 스크립트 보기', OUTPUT, 'button')}<a href="#progress">진행표</a><a href="#findings">확인한 규칙</a><a href="#files">파일·증거</a></div>

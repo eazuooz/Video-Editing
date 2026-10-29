@@ -1,5 +1,13 @@
 # 벅샷 룰렛 다큐멘터리 합성기
 
+## v4 선택 수정 경로
+
+새 입력은 `../script/revision-v4/`와 `../planning/revision-v4-workflow.json`이다. `render-voice-v4.py`가 새 다섯 문단과 원본 PCM 열네 문단을 조립하며 원본 `local/audio-v1`은 변경하지 않는다. `review-voice-v4.py`와 `build-subtitles-v4.py`는 현재 음성과 의미 대응을 검수한다.
+
+`build-intro-v4.py`는 직접 녹화한 원작과 자체 프로토타입의 정상 속도 비교를 만든다. `render_workflow_v4.py`는 실제 음성 시점에 맞춰 일반 제작 흐름·REA 도구 역할·이번 실제 경로를 보여준다. `build-edit-v4.py`는 기존 본문 b04–b30의 27컷과 해시·인아웃·표식을 확인해 재사용한다. 새 타임라인은 `timeline-v4.json`, 새 마스터는 `output/buckshot-roulette-reverse-engineering-v4`이며 아래 v3 기록은 기준본 이력이다.
+
+최종 검수는 `local/documentary-v4/technical-qa.json`, `local/final-qa-v4/` 및 `caption-alignment-v4.json`에 현재 마스터 해시로 연결한다. `finalize-delivery-v4.py`가 실제 완료 증거가 모두 있을 때만 로컬 검수 대기로 갱신한다. 플랫폼 업로드는 수행하지 않는다.
+
 `assemble_documentary.py`는 실제로 선택한 클립·음성·자막을 받아 한 편을 조립한다. 실제 영상 인아웃이나 발화 시간을 자동으로 추정하지 않는다. **현재 편집 입력은 `timeline.json`**이며, 실제 원작 촬영·자체 구현·음성에 맞춘 분석 그림의 인아웃과 대사 대응을 기록했다. `timeline.template.json`은 별도의 미완성 예시이므로 제작 입력으로 쓰지 않는다.
 
 2026-10-29 **v3 완성본의 기술 검사·표본 화면·전체 ASR 검수를 마치고 로컬 검수 폴더에 전달했다.** v2에서 혼합 PCM 연결을 수정했고, v3는 리미터 상한 -2.0dB를 적용했다. 실제 최종 AAC는 −17.0LUFS/−1.8dBTP이며 H.264 영상 패킷과 원래 음성 PCM은 보존했다. 영상·음성 길이 모두343.083333초(5분43.083333초), 20,585프레임이며 2초 브랜딩과10초 회원 안내를 포함한다. [현재 로컬 검수 페이지](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/index.html)와 [전체 자막 MP4](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/buckshot-roulette-reverse-engineering.captioned.mp4)를 사용한다. 최종 검수 범위는 `final-review.json`과 `checkpoint.json`에 기록했다. 네 발음 후보의 문맥 청취와 사용자 전체 시청은 대기 상태이며 기술 검사를 사용자 승인으로 간주하지 않는다.

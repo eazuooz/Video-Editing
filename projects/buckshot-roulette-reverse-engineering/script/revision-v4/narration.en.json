@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "slug": "buckshot-roulette-reverse-engineering",
+  "status": "user-selected-workflow-first-v4",
+  "draftSource": "planning/revision-v4-workflow.json",
+  "actualDurationSeconds": null,
+  "language": "English",
+  "translationPurpose": "Semantic subtitle counterpart, not an English voice request",
+  "scenes": [
+    {
+      "id": "01",
+      "title": "분석에서 플레이 가능한 기반 프로토타입까지",
+      "lines": [
+        "Can we analyze how an existing game works and quickly build a game with a new look? Buckshot Roulette is on the left; our prototype is on the right. Today, we will connect the REA analysis tool, an AI agent, and 3D production tools to build this kind of foundation for a new game.",
+        "Let us start with the whole workflow. It begins with an existing game’s executable and data. One branch examines code to identify rules; another examines how models and animations are organized. Using that analysis, an AI agent writes new code and prepares a new visual design. Finally, we bring them together in a game engine to make a playable prototype."
+      ],
+      "displayLines": [
+        "Can we analyze how an existing game works and quickly build a game with a new look? Buckshot Roulette is on the left; our prototype is on the right. Today, we will connect the REA analysis tool, an AI agent, and 3D production tools to build this kind of foundation for a new game.",
+        "Let us start with the whole workflow. It begins with an existing game’s executable and data. One branch examines code to identify rules; another examines how models and animations are organized. Using that analysis, an AI agent writes new code and prepares a new visual design. Finally, we bring them together in a game engine to make a playable prototype."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "REA의 역할과 전체 도구 연결",
+      "lines": [
+        "First, what is REA? Its name is Reverse Engineer Anything. It is an analysis tool that lets an AI agent investigate a program’s files and code structure. An AI agent calls tools toward a goal, reads their results, and continues with the next task. For example, the agent requests a file inventory, REA returns the list, and the agent uses it to inspect the relevant files. The resulting evidence guides the next analysis and implementation steps.",
+        "REA can be used directly from a command line or connected to an AI agent through MCP. MCP is a standard for connecting AI to external tools. When machine-code analysis is needed, Ghidra can help; models and animations are examined with resource tools appropriate to the engine. For a new visual design, an agent can use Tripo MCP to connect to 3D generation tools, or work with Blender. The rules and visuals then come together in an engine such as Unity, Unreal, or Godot. Now let us follow the route we actually used in this experiment.",
+        "First, I checked what the game contains. Using REA, a package-structure analysis tool, to inspect the executable revealed 3,572 internal files. Among them were 195 GDScript files describing game behavior.",
+        "The script files in this build were readable text. Rather than turning machine code back into source, the important task was following which functions change which values. I connected the parts that handle shots, hand over turns, and use items to organize the rules."
+      ],
+      "displayLines": [
+        "First, what is REA? Its name is Reverse Engineer Anything. It is an analysis tool that lets an AI agent investigate a program’s files and code structure. An AI agent calls tools toward a goal, reads their results, and continues with the next task. For example, the agent requests a file inventory, REA returns the list, and the agent uses it to inspect the relevant files. The resulting evidence guides the next analysis and implementation steps.",
+        "REA can be used directly from a command line or connected to an AI agent through MCP. MCP is a standard for connecting AI to external tools. When machine-code analysis is needed, Ghidra can help; models and animations are examined with resource tools appropriate to the engine. For a new visual design, an agent can use Tripo MCP to connect to 3D generation tools, or work with Blender. The rules and visuals then come together in an engine such as Unity, Unreal, or Godot. Now let us follow the route we actually used in this experiment.",
+        "First, I checked what the game contains. Using REA, a package-structure analysis tool, to inspect the executable revealed 3,572 internal files. Among them were 195 GDScript files describing game behavior.",
+        "The script files in this build were readable text. Rather than turning machine code back into source, the important task was following which functions change which values. I connected the parts that handle shots, hand over turns, and use items to organize the rules."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "탄환은 언제 정해질까",
+      "lines": [
+        "The first question was about the ammunition. Does the game pick a live round or a blank each time you pull the trigger? In the code I inspected, it builds the ammunition sequence when loading, then uses one round at a time from the front.",
+        "Think of a row of cards. If the first card is a blank, the next result is a blank. Once it is used, that slot disappears and the second card moves to the front. The magnifying glass checks that front slot. Looking does not consume the round. Beer ejects the front round, moving the sequence forward without dealing damage.",
+        "Picking a fresh result each time and consuming a prepared sequence may look similar on screen, but they are different rules. That distinction also connects the rounds already used to the next decision."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "한 발 뒤에 바뀌는 것",
+      "lines": [
+        "Is an ammunition sequence enough to make the game? We still have to decide whose turn comes next. Shooting a blank at yourself lets you act again without damage, but shooting it at your opponent gives you no such benefit. The round is still a blank, yet the next state depends on your target.",
+        "Handcuffs add another condition: the opponent skips the next turn entry. But using the last round also requires a transition to reloading. If health reaches zero, the game must not accept another ordinary action. Ammunition count, health, turn ownership, and handcuff state all have to work together to produce the flow we see on screen.",
+        "The saw changes a different value. A live round's base damage is one, and using the saw raises it to two. That does not turn a blank into a damaging round. Separating changes to ammunition, damage, and information makes the item combinations easier to understand."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "상대는 무엇을 보고 판단할까",
+      "lines": [
+        "The opponent also needs to read the state. Here, the dealer's decisions were built from conditions and random choices, rather than a trained model. When the current round is known, the dealer chooses the player for a live round and itself for a blank.",
+        "The branch for uncertain information differs by mode. The ordinary mode chooses a target at random. Endless mode compares the remaining live rounds and blanks, choosing randomly if their counts are equal. Item conditions connect to that decision too: for example, the magnifying glass reveals information, and a saw can then be combined with a known live round. Breaking the decision down into available information and actions made the structure visible."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "규칙을 따로 만들어 검사하기",
+      "lines": [
+        "Using that structure, I wrote separate code for ammunition and turns in a new project. For example, set up a blank at the front and choose yourself. Does the ammunition count decrease, does health stay the same, and does the turn remain yours? The same input should produce the expected result before we move on.",
+        "The independently written rules code passed 374 checks. Connecting the screen revealed additional issues to check. Another input had to be blocked while an item animation was still running, and a message that attributed a handcuff-driven repeat turn to a self-targeted blank needed to distinguish those causes. After those fixes, 32 integration checks passed for the rules and scene working together. Instead of looking only at a count, we also checked which input was blocked and which message changed."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "규칙에 새로운 모습을 입히기",
+      "lines": [
+        "Now it is time to show the rules with a different appearance. I created a new table, robot dealer, ammunition, and tools in Blender. After setting up the hands and head as separately movable parts, I brought them into a Godot scene. Instead of taking models and textures from the original game, I created shapes and materials for this experiment.",
+        "The head moves while thinking, and the selected tool moves forward into view. I connected the sound and result message to the moment of firing. When inspecting or ejecting a round, the viewer should be able to follow the selected action and what changed. This step goes beyond replacing the picture: it connects rule changes with movement in the scene."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "같은 제작 흐름으로 아이디어를 시험하기",
+      "lines": [
+        "Let us return to the workflow. REA helped us locate the game’s structure, and readable code let us identify its core rules. We wrote new code for those rules, connected our Blender-made visuals in Godot, and produced a playable prototype. Using an existing game as a starting point for understanding behavior reduces what we have to guess and helps us reach the stage of testing our own ideas sooner. This prototype is our practical test of that production workflow."
+      ],
+      "displayLines": [
+        "Let us return to the workflow. REA helped us locate the game’s structure, and readable code let us identify its core rules. We wrote new code for those rules, connected our Blender-made visuals in Godot, and produced a playable prototype. Using an existing game as a starting point for understanding behavior reduces what we have to guess and helps us reach the stage of testing our own ideas sooner. This prototype is our practical test of that production workflow."
+      ]
+    }
+  ],
+  "revision": "v4"
+}

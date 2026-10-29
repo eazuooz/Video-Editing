@@ -160,7 +160,7 @@ def main():
         backup=gd/('index-before-buckshot-'+stamp)
         backup.write_bytes(original_bytes)
         tree=git('write-tree',env=env).decode().strip()
-        commit=git('commit-tree',tree,'-p',head,data=b'Create Buckshot rule analysis, original playable prototype and local documentary review\n').decode().strip()
+        commit=git('commit-tree',tree,'-p',head,data=b'Explain REA and lead the prototype video with the reverse-engineering workflow\n').decode().strip()
         publish_index_and_ref(index_path,prepared_bytes,original_bytes,ref,head,commit)
     finally:
         # These unique private indexes are ours; the real index and its lock
