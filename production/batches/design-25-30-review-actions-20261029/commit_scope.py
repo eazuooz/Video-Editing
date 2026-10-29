@@ -20,6 +20,9 @@ D='docs/VIDEO_WORKLIST.md';G='.gitignore';I='shared/git-essential-images.json'
 SHARED={C,W,D,G,I}
 UNITY='unity/VideoEditing/Assets/VideoScenes/'
 ROOTS=[B,UNITY+'design-25-29-clarity-v3/']
+ROOTS += ['projects/kind-to-beginners/production/botw-v4/',
+          'projects/kind-to-beginners/script/botw-v4/',
+          UNITY+'design-d29-botw-v4/',UNITY+'kind-to-beginners/botw-v4/']
 for id in UPLOAD_IDS:
     ROOTS += ['projects/'+SLUGS[id]+'/production/upload-20261029/',
               'projects/'+SLUGS[id]+'/publishing/upload-20261029/']
@@ -27,6 +30,7 @@ for id in REVISION_IDS:
     ROOTS += ['projects/'+SLUGS[id]+'/production/clarity-v3/',
               'projects/'+SLUGS[id]+'/script/clarity-v3/',UNITY+SLUGS[id]+'/clarity-v3/']
 EXACT=set(SHARED)|{UNITY+'design-25-29-clarity-v3.meta','output/game-design-25-29-clarity-v3-20261029/index.html'}
+EXACT.update({UNITY+'design-d29-botw-v4.meta',UNITY+'kind-to-beginners/botw-v4.meta'})
 for id in REVISION_IDS:
     EXACT.add(UNITY+SLUGS[id]+'/clarity-v3.meta')
     EXACT.update('projects/'+SLUGS[id]+'/'+p for p in ['project.json','rebuild.json','production/delivery-output.json',
@@ -108,7 +112,7 @@ def make_overlays(work,heads):
                     current=current_rows[id][field]
                     if field=='evidence':
                         value=copy.deepcopy(load(raw)['rows'][i].get(field,[]))
-                        own=[x for x in current if x.startswith(B) or '/production/upload-20261029/' in x or '/production/clarity-v3/' in x]
+                        own=[x for x in current if x.startswith(B) or '/production/upload-20261029/' in x or '/production/clarity-v3/' in x or x.startswith('projects/kind-to-beginners/production/botw-v4/')]
                         for x in own:
                             if x not in value:value.append(x)
                     elif field=='localReviewHistory':
