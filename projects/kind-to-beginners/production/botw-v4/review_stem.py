@@ -21,7 +21,10 @@ def main():
    end=min(len(a),start+rate);active=mask[start:end]
    if active.sum()<rate//4:continue
    x=expected[start:end][active];y=b[start:end][active]
-   correlation=float(np.dot(x.astype('float64'),y)/(max(1e-18,np.sqrt(np.sum(x.astype('float64')**2)*np.sum(y.astype('float64')**2)))))
+   # Elementwise reduction avoids this host's unavailable optional BLAS DLL;
+   # it computes the same normalized inner product for the same speech samples.
+   xd=x.astype('float64');yd=y.astype('float64')
+   correlation=float(np.sum(xd*yd)/(max(1e-18,np.sqrt(np.sum(xd*xd)*np.sum(yd*yd)))))
    delta=db(y)-db(x)
    row={'scene':scene['scene'],'sceneLocalStart':start/rate,'timelineStart':(offset+start)/rate,'speechActiveSamples':int(active.sum()),
         'expectedAfterConstantGainDbfs':db(x),'actualMatchedStemDbfs':db(y),'differenceDb':delta,'correlation':correlation,
