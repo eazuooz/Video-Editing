@@ -36,6 +36,18 @@ for id in REVISION_IDS:
     EXACT.update('projects/'+SLUGS[id]+'/'+p for p in ['project.json','rebuild.json','production/delivery-output.json',
         'production/checkpoint.json','production/review-ledger.json'])
 THUMBNAILS={'projects/'+SLUGS[id]+'/publishing/upload-20261029/thumbnail.png' for id in UPLOAD_IDS}
+SCENE_IMAGES=set()
+scene_image_manifest=R/'projects/kind-to-beginners/production/botw-v4/essential-label-images.json'
+if scene_image_manifest.is_file():
+    scene_images=load(scene_image_manifest.read_bytes())
+    assert scene_images['revision']=='botw-v4' and scene_images['status']=='reviewed-final-scene-assets'
+    for item in scene_images['entries']:
+        name=item['path']
+        assert name.startswith(UNITY+'design-d29-botw-v4/Generated/ReferenceImages/') and name.endswith('.png')
+        assert item['purpose']=='required-scene-asset'
+        assert re.fullmatch(r'[a-f0-9]{64}',item['sha256']) and item.get('reviewedAt')
+        SCENE_IMAGES.add(name)
+OWN_IMAGES=THUMBNAILS|SCENE_IMAGES
 TEXT_EXT={'.py','.cs','.json','.txt','.md','.cjs','.js','.ts','.tsx','.css','.html','.srt','.ass','.unity','.meta','.mat','.asset','.shader','.hlsl'}
 ROW_FIELDS={'productionComplete','productionStatus','reviewStatus','humanApproval','platformStatus','videoId','url','latestRulesPassed',
     'executionStatus','localMasterAvailable','activeRevision','selectedBatch','internalQaStatus','localReview',
@@ -54,8 +66,8 @@ def check_path(path):
     assert path in EXACT or any(path.startswith(prefix) for prefix in ROOTS),('Outside exact owned roots',path)
     assert '/production/local/' not in path and '__pycache__' not in pure.parts
     assert (R/path).is_file() and (R/path).resolve().is_relative_to(R.resolve()),('External/junction file refused',path)
-    assert path in SHARED or Path(path).suffix.lower() in TEXT_EXT or path in THUMBNAILS,('Media/QA image refused',path)
-    if Path(path).suffix.lower()=='.png':assert path in THUMBNAILS
+    assert path in SHARED or Path(path).suffix.lower() in TEXT_EXT or path in OWN_IMAGES,('Media/QA image refused',path)
+    if Path(path).suffix.lower()=='.png':assert path in OWN_IMAGES
 
 def markdown_rows(raw):
     found={}
@@ -99,13 +111,13 @@ def make_overlays(work,heads):
     def overlay(path,raw):
         if path==G:
             lines=raw.decode('utf-8-sig').splitlines();newline=b'\r\n' if b'\r\n' in raw else b'\n'
-            for thumb in sorted(THUMBNAILS):
+            for thumb in sorted(OWN_IMAGES):
                 exact='!'+thumb
                 assert exact in work[G].decode('utf-8-sig').splitlines() or '!/'+thumb in work[G].decode('utf-8-sig').splitlines()
                 if exact not in lines and '!/'+thumb not in lines:raw+=(b'' if raw.endswith(b'\n') else newline)+exact.encode()+newline
             return raw
         if path==I:
-            for thumb in sorted(THUMBNAILS):raw=upsert(raw,'entries','path',entries[thumb])
+            for thumb in sorted(OWN_IMAGES):raw=upsert(raw,'entries','path',entries[thumb])
             return raw
         if path==C:
             if 'finiteBatchAuthorizations' not in load(raw):raw=patch(raw,['finiteBatchAuthorizations'],{})

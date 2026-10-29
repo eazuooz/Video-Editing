@@ -441,6 +441,18 @@ def editorial_guide_ass(cut: dict, plan: dict) -> tuple[Path | None, dict | None
                "finalMovingAnd375pxPixels": "pending"}
 
 
+def explanation_kind_label(cut: dict, plan: dict):
+    """Stable editorial source-kind chip; native animation remains unchanged."""
+    text = r"{\an5\pos(1740,73)\fs36\b0\bord0\shad0\1c&HB8B8B8&}해설용 시연"
+    return ass_header() + event(0, cut["frames"] / FPS, text, 4), {
+        "captionProtectedRect": plan.get("captionProtectedRect", CAPTION_RECT),
+        "sourceKind": "self-authored Unity explanation",
+        "fixedLabel": {"text": "해설용 시연", "center": [1740, 73], "fontSize": 36,
+                       "reason": "Render outside Unity canvas to prevent intermittent small-chip omission"},
+        "editorAddedSourceCreditsRendered": False,
+        "coordinates": "output1920x1080 pixels; cut-relative times"}
+
+
 def render_cuts(plan: dict, output: Path, only_ids=None):
     ratio = validate_plan(plan)
     selected = set(only_ids or [])
@@ -497,7 +509,7 @@ def render_cuts(plan: dict, output: Path, only_ids=None):
         if guide_geometry:
             annotation_cut = {**cut, "protectedRects": [*cut.get("protectedRects", []),
                               *[row["bounds"] for row in guide_geometry["events"]]]}
-        ass, geometry = annotations(annotation_cut, plan) if gameplay else (None, None)
+        ass, geometry = annotations(annotation_cut, plan) if gameplay else explanation_kind_label(cut, plan)
         mark_file, destination = output / (cut["id"] + "-marks.ass"), output / (cut["id"] + ".mp4")
         signature = {"cut": cut, "sourceSha256": source_hashes[str(source)], "sourceDecoded": decoded,
                      "codeSha256": code_hash, "encoder": ENCODER, "markGeometry": geometry,

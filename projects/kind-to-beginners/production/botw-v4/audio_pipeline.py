@@ -361,6 +361,8 @@ def full_asr(audio_path,cache_path,*,final=False):
 
 
 def _full_asr(audio_path, cache_path, *, final=False, device="cpu"):
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
     local_model = ROOT / "qwen3-tts" / "models" / "whisper-large-v3-turbo"
     current_audio = artifact(audio_path)
     if Path(cache_path).exists():
@@ -401,13 +403,25 @@ def _full_asr(audio_path, cache_path, *, final=False, device="cpu"):
     import torch
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
     torch.set_num_threads(4)
-    model = AutoModelForSpeechSeq2Seq.from_pretrained(model_id, dtype=torch.float16 if device=="cuda" else torch.float32,
+    if config_path is None or not config_path.is_file():
+        raise ValueError("The preinstalled ASR model is unavailable; no model download attempted")
+    load_root = str(config_path.parent)
+    model = AutoModelForSpeechSeq2Seq.from_pretrained(load_root, dtype=torch.float16 if device=="cuda" else torch.float32,
                                                     attn_implementation="sdpa" if final else "eager", local_files_only=True)
-    processor = AutoProcessor.from_pretrained(model_id, local_files_only=True)
+    processor = AutoProcessor.from_pretrained(load_root, local_files_only=True)
     recognizer = pipeline("automatic-speech-recognition", model=model, tokenizer=processor.tokenizer,
                           feature_extractor=processor.feature_extractor, dtype=torch.float16 if device=="cuda" else torch.float32, device=0 if device=="cuda" else "cpu")
     print(f"Recognizing the complete current audio once on {device}, without a supplied prompt", flush=True)
-    result = recognizer(str(audio_path), generate_kwargs={"language": "korean", "task": "transcribe", "num_beams":1},
+    # The installed ffmpeg has an explicit path in this project. Avoid the
+    # pipeline's PATH-only subprocess lookup; decode the existing PCM directly.
+    from scipy.signal import resample_poly
+    samples, sample_rate = sf.read(audio_path, dtype="float32", always_2d=True)
+    samples = samples.mean(axis=1)
+    model_rate = processor.feature_extractor.sampling_rate
+    if sample_rate != model_rate:
+        divisor = math.gcd(sample_rate, model_rate)
+        samples = resample_poly(samples, model_rate // divisor, sample_rate // divisor).astype(np.float32)
+    result = recognizer({"array":samples,"sampling_rate":model_rate}, generate_kwargs={"language": "korean", "task": "transcribe", "num_beams":1},
                         chunk_length_s=30, stride_length_s=(5,5), batch_size=1,
                         return_timestamps=True if final else "word")
     record = {"inputSignature": signature, "createdAt": now(), "inputs": inputs,

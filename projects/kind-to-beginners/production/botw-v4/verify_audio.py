@@ -4,6 +4,7 @@ import datetime, hashlib, json, re, subprocess
 import numpy as np
 import soundfile as sf
 from storage_paths import ROOT, HERE, LOCAL, relative, repo_path
+from audio_pipeline import tool
 
 def read(p): return json.loads(p.read_text('utf-8-sig'))
 def save(p,d): p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n','utf-8')
@@ -31,7 +32,7 @@ def main():
     out=LOCAL/'qa/final-audio-v1';out.mkdir(parents=True,exist_ok=True)
     decoded=out/'encoded-mix.wav'
     if not decoded.exists():
-        subprocess.run(['ffmpeg','-v','error','-threads','2','-i',str(aac),'-vn','-ac','2','-ar','48000','-c:a','pcm_f32le','-threads','2',str(decoded)],check=True)
+        subprocess.run([tool('ffmpeg'),'-v','error','-threads','2','-i',str(aac),'-vn','-ac','2','-ar','48000','-c:a','pcm_f32le','-threads','2',str(decoded)],check=True)
     expected_samples=plan['totalFrames']*800;rows=[]
     with sf.SoundFile(pcm) as f, sf.SoundFile(decoded) as g, sf.SoundFile(edit/'music-stem.wav') as m:
         assert f.samplerate==g.samplerate==m.samplerate==48000
@@ -48,7 +49,7 @@ def main():
                 assert corr>.94 and abs(row['rmsDeltaDb'])<1.0,row
     log=out/'final-loudness.log'
     if not log.exists():
-        r=subprocess.run(['ffmpeg','-v','info','-threads','2','-filter_threads','2','-i',str(aac),'-af','loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json','-f','null','-'],capture_output=True,text=True,check=True)
+        r=subprocess.run([tool('ffmpeg'),'-v','info','-threads','2','-filter_threads','2','-i',str(aac),'-af','loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json','-f','null','-'],capture_output=True,text=True,check=True)
         log.write_text(r.stderr,'utf-8')
     stats=json.loads(re.findall(r'\{\s*"input_i".*?\}',log.read_text('utf-8'),re.S)[-1])
     assert -17<=float(stats['input_i'])<=-15 and float(stats['input_tp'])<=-1.5,stats

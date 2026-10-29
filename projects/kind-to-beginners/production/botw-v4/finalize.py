@@ -25,6 +25,7 @@ def main():
  # Save the exact manifest we supersede; previous media and prior revision files stay intact.
  if not(HERE/'prior-project-manifest.json').exists():save(HERE/'prior-project-manifest.json',manifest)
  manifest.update(revision='botw-v4',status='local-review-ready',updatedAt=now,publishReady=False)
+ manifest.pop('pendingRevision',None)
  manifest['delivery']['localStorageRoot']=rel(LOCAL/'delivery');manifest['paths'].update({k:rel(v)for k,v in files.items()})
  manifest['paths'].update(narrationKo=rel(P/'script/botw-v4/narration.ko.json'),narrationEn=rel(P/'script/botw-v4/narration.en.json'),scenePlan=rel(HERE/'production-plan.json'))
  manifest['plan']=rel(HERE/'production-plan.json');manifest['paths']['visualRevisionPlan']=rel(HERE/'production-plan.json');manifest['visualRevisionPlan']=rel(HERE/'production-plan.json');manifest['latestCheckpoint']=rel(HERE/'checkpoint.json')
@@ -37,5 +38,9 @@ def main():
  save(HERE/'review-status.json',review);save(HERE/'checkpoint.json',{'slug':SLUG,'revision':'botw-v4','status':'local-review-ready','updatedAt':now,'outputIndex':delivery['directory']+'/index.html','captionedSha256':hashes['videoBurnedCaptions'],'humanWholeReview':'pending','platformMutation':False,'priorOutputsPreserved':True})
  production=read(HERE/'production-plan.json');production['status']='local-review-ready';production['quality'].update(technicalReview='complete; native, final pixels, caption clocks, full stream decode, source and final-mix text comparison verified',humanWholeReview='pending');production['finalDeliveryReview']=rel(HERE/'review-status.json');save(HERE/'production-plan.json',production)
  manifest['localFinalReview']={'index':delivery['directory']+'/index.html','durationSeconds':seconds,'captionedSha256':hashes['videoBurnedCaptions'],'actualUserViewed':False,'humanWholeListening':'pending','internalQa':'complete','reviewRecord':rel(HERE/'review-status.json')};save(P/'project.json',manifest)
+ # Collection generated rebuild.json before the final localFinalReview fields.
+ # Refresh only this project's metadata after the last authoritative save.
+ subprocess.run(['node','scripts/build-rebuild-manifests.cjs',SLUG],cwd=ROOT,check=True)
+ assert read(P/'rebuild.json')['projectSettings']==read(P/'project.json'),'Final rebuild settings are stale'
  print('Local botw-v4 delivery ready',hashes['videoBurnedCaptions'])
 if __name__=='__main__':main()
