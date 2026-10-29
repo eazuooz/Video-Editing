@@ -16,6 +16,7 @@ dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dest);assert s
 text=script.read_text('utf8').strip()
 record={'createdAt':datetime.now(timezone.utc).isoformat(),'provider':'ElevenLabs','approvedSample':'B',
     'voiceId':'jIRSnF8OWAsWEChVwCuK','model':'Eleven v4','settings':{'stability':.5,'similarity':.75,'speed':1,'audioTags':False},
+    'settingsVerification':{'voiceModelStabilitySimilarity':'direct current UI readback','speed':'unchanged Sample B default; no separate speed control exposed in current v4 UI','audioEffects':'none added'},
     'format':'MP3 44.1kHz 192kbps','script':{'path':script.relative_to(R).as_posix(),'sha256':sha(script),
     'submittedTextSha256':hashlib.sha256(text.encode()).hexdigest(),'submittedCharacters':len(text)},
     'source':{'path':dest.relative_to(R).as_posix(),'sha256':sha(dest),'bytes':dest.stat().st_size},

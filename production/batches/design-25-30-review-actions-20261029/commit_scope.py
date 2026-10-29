@@ -75,6 +75,11 @@ def make_overlays(work,heads):
     # Keep histories/evidence merged, not copied wholesale over foreign entries.
     auth=load((R/B/'authorization.json').read_bytes())
     approved_hashes={x.get('sha256',x.get('baseMasterSha256')) for x in auth['privateUploads']+auth['revisions']}
+    d29_auth_path=R/'projects/kind-to-beginners/production/botw-v4/authorization.json'
+    if d29_auth_path.is_file():
+        d29_auth=load(d29_auth_path.read_bytes())
+        assert d29_auth['slug']=='kind-to-beginners' and d29_auth['revision']=='botw-v4'
+        approved_hashes.add(d29_auth['priorCaptionedSha256'])
     entries={x['path']:x for x in load(work[I])['entries']};new_md=markdown_rows(work[D]);old_md=markdown_rows(heads[D])
     changed_columns={}
     for key,line in new_md.items():
