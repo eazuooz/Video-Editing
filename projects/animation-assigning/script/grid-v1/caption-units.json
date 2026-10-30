@@ -1,0 +1,822 @@
+{
+  "schemaVersion": 1,
+  "slug": "animation-assigning",
+  "revision": "grid-v1",
+  "sourceKoSha256": "4f837efccd7832b0fbf9ca7ea6aaf3a09de1255ac5ec1715efae05a05a33df07",
+  "sourceKo": "narration.ko.json",
+  "sourceEn": "narration.en.json",
+  "paragraphIndexBase": 0,
+  "timingLocked": false,
+  "layoutIntent": {
+    "fontSize": 48,
+    "maximumTextWidth": 1580,
+    "preferredLines": 1,
+    "maximumLines": 2,
+    "approximateKoreanCharactersPerUnit": 34
+  },
+  "schemaNote": "byScene[sceneId][zeroBasedParagraphIndex] contains ordered paired units. Whitespace-normalized concatenation reproduces the complete KO/EN paragraph.",
+  "byScene": {
+    "01": {
+      "0": [
+        {
+          "ko": "높은 발차기를 피하려고 몸을 낮추고,",
+          "en": "The fighter ducks under a high kick,"
+        },
+        {
+          "ko": "곧바로 다음 공격으로 이어갑니다.",
+          "en": "then immediately follows with another attack."
+        },
+        {
+          "ko": "버추어 파이터의 이 짧은 움직임에도",
+          "en": "Even this brief movement in Virtua Fighter"
+        },
+        {
+          "ko": "몸의 방향, 발의 위치, 상대와의 거리가",
+          "en": "involves body orientation, foot placement,"
+        },
+        {
+          "ko": "함께 들어 있습니다.",
+          "en": "and distance from the opponent."
+        },
+        {
+          "ko": "이런 동작을 만들 사람에게",
+          "en": "If you ask the person making this animation"
+        },
+        {
+          "ko": "멋지게 움직여 달라고만 하면,",
+          "en": "simply to make it look cool,"
+        },
+        {
+          "ko": "같은 결과를 떠올릴 수 있을까요?",
+          "en": "will you both imagine the same result?"
+        },
+        {
+          "ko": "오늘은 동작 목록으로 필요한 일을 정하고,",
+          "en": "Today, we will define the work with an animation list,"
+        },
+        {
+          "ko": "포즈와 시간 조건으로 의도를 전달한 뒤,",
+          "en": "communicate intent through poses and timing,"
+        },
+        {
+          "ko": "완성된 움직임을 함께 고쳐 가는 과정을",
+          "en": "and explore how a team refines"
+        },
+        {
+          "ko": "살펴보겠습니다.",
+          "en": "the resulting movement together."
+        }
+      ],
+      "1": [
+        {
+          "ko": "캐릭터의 한 순간 자세를 포즈라고 합니다.",
+          "en": "A character's posture at one instant is called a pose."
+        },
+        {
+          "ko": "그 자세가 시간에 따라 이어지는 것이",
+          "en": "A sequence of those poses over time"
+        },
+        {
+          "ko": "애니메이션입니다.",
+          "en": "is animation."
+        },
+        {
+          "ko": "같은 걷기라도 어깨를 펴고 힘차게 걷는 모습과,",
+          "en": "Walking boldly with the shoulders back"
+        },
+        {
+          "ko": "고개를 숙인 채 조심스럽게 걷는 모습은",
+          "en": "and walking cautiously with the head lowered"
+        },
+        {
+          "ko": "전혀 다른 인상을 줍니다.",
+          "en": "create very different impressions."
+        },
+        {
+          "ko": "제작 지시에는 무슨 행동인지뿐 아니라",
+          "en": "An animation brief should describe the action"
+        },
+        {
+          "ko": "어떤 느낌으로 보여야 하는지도 담겨야 합니다.",
+          "en": "and the feeling it needs to convey."
+        }
+      ]
+    },
+    "02": {
+      "0": [
+        {
+          "ko": "그 의도를 빠뜨리지 않고 전달하려면",
+          "en": "To communicate that intent completely,"
+        },
+        {
+          "ko": "먼저 동작 목록이 필요합니다.",
+          "en": "start with an animation list."
+        },
+        {
+          "ko": "가만히 서 있기, 걷기, 공격하기처럼",
+          "en": "List the animations you need,"
+        },
+        {
+          "ko": "만들 애니메이션을 한 줄씩 적고,",
+          "en": "such as standing idle, walking, and attacking,"
+        },
+        {
+          "ko": "각 동작이 무엇을 하는지 설명합니다.",
+          "en": "and describe what each one does."
+        },
+        {
+          "ko": "공격이라면 어느 쪽으로 몸과 손을 움직이는지,",
+          "en": "For an attack, specify where the body and hands move,"
+        },
+        {
+          "ko": "얼마나 이어지는지,",
+          "en": "how long the action lasts,"
+        },
+        {
+          "ko": "그중 언제 공격 판정이 켜지고 꺼지는지도",
+          "en": "and when its hit detection becomes active"
+        },
+        {
+          "ko": "구분해서 정합니다.",
+          "en": "and stops being active."
+        }
+      ],
+      "1": [
+        {
+          "ko": "공격 판정은 맞았는지를 검사하는 조건입니다.",
+          "en": "Hit detection determines whether an attack connects."
+        },
+        {
+          "ko": "팔이 움직이는 전체 시간과",
+          "en": "The entire time the arm is moving"
+        },
+        {
+          "ko": "실제로 상대를 맞힐 수 있는 시간은",
+          "en": "and the time it can actually hit an opponent"
+        },
+        {
+          "ko": "같지 않을 수 있습니다.",
+          "en": "may be different."
+        },
+        {
+          "ko": "화면의 예시는 우리가 정한 시간표입니다.",
+          "en": "The example on screen uses timing we have chosen."
+        },
+        {
+          "ko": "초당 예순 프레임이라면",
+          "en": "At sixty frames per second,"
+        },
+        {
+          "ko": "일 초를 예순 구간으로 나눈 셈이죠.",
+          "en": "one second is divided into sixty intervals."
+        },
+        {
+          "ko": "열두 프레임 동안 판정이 켜지도록 정했다면,",
+          "en": "If hit detection is active for twelve frames,"
+        },
+        {
+          "ko": "열둘을 예순으로 나눈 영 점 이 초입니다.",
+          "en": "twelve divided by sixty gives zero point two seconds."
+        },
+        {
+          "ko": "전체 동작 길이와 이 구간을 따로 적어야,",
+          "en": "Specify this interval separately from the full animation"
+        },
+        {
+          "ko": "보기 좋은 동작과 필요한 게임 규칙을",
+          "en": "so the visual movement and the required game rules"
+        },
+        {
+          "ko": "함께 맞출 수 있습니다.",
+          "en": "can work together."
+        }
+      ],
+      "2": [
+        {
+          "ko": "이 길이는 혼자 결정되는 숫자도 아닙니다.",
+          "en": "That duration is not chosen in isolation."
+        },
+        {
+          "ko": "상대가 보고 대응할 여유,",
+          "en": "Consider the opponent's time to notice and respond,"
+        },
+        {
+          "ko": "다음 행동으로 이어지는 흐름과",
+          "en": "along with the flow into the next action,"
+        },
+        {
+          "ko": "함께 정해야 합니다.",
+          "en": "when deciding it."
+        },
+        {
+          "ko": "반면 대기나 걷기는",
+          "en": "Idle and walking animations,"
+        },
+        {
+          "ko": "한 번 끝나면 멈추는 동작이 아닙니다.",
+          "en": "meanwhile, need to continue beyond one playback."
+        },
+        {
+          "ko": "끝에서 처음으로 자연스럽게 이어지는",
+          "en": "They need a smooth return from the end to the start:"
+        },
+        {
+          "ko": "반복 재생, 루프가 필요합니다.",
+          "en": "repeated playback, or a loop."
+        },
+        {
+          "ko": "목록에는 한 번 실행할 동작인지,",
+          "en": "Record whether an animation plays once"
+        },
+        {
+          "ko": "조건이 유지되는 동안 반복할 동작인지까지",
+          "en": "or repeats while its condition remains true"
+        },
+        {
+          "ko": "적어 둡니다.",
+          "en": "in the list as well."
+        }
+      ]
+    },
+    "03": {
+      "0": [
+        {
+          "ko": "이제 무엇을 언제 할지는 정했습니다.",
+          "en": "We have now defined what happens and when."
+        },
+        {
+          "ko": "그런데 몸이 어떤 모양이어야 하는지는",
+          "en": "But the shape the body should make"
+        },
+        {
+          "ko": "아직 말로만 남아 있습니다.",
+          "en": "is still described only in words."
+        },
+        {
+          "ko": "오른팔을 앞으로 내민다는 문장도",
+          "en": "Even an instruction to extend the right arm forward"
+        },
+        {
+          "ko": "어깨 높이, 팔꿈치 방향,",
+          "en": "can look different depending on shoulder height,"
+        },
+        {
+          "ko": "허리를 기울이는 정도에 따라",
+          "en": "elbow direction, and the body's lean."
+        },
+        {
+          "ko": "여러 모습이 됩니다.",
+          "en": "There are many possible poses."
+        },
+        {
+          "ko": "이 차이는 자세를 직접 보여 주면",
+          "en": "Showing the pose directly"
+        },
+        {
+          "ko": "훨씬 분명해집니다.",
+          "en": "makes those differences much clearer."
+        }
+      ],
+      "1": [
+        {
+          "ko": "관절이 움직이는 피규어를",
+          "en": "One method is to take an articulated figure,"
+        },
+        {
+          "ko": "원하는 자세로 세우고 사진을 찍는 방법이 있습니다.",
+          "en": "put it in the desired pose, and photograph it."
+        },
+        {
+          "ko": "사진에서 배경을 덜어 내고 명암을 정리한 뒤,",
+          "en": "Remove the background and adjust the contrast,"
+        },
+        {
+          "ko": "중요한 손발의 위치와 의도를",
+          "en": "then add the important hand and foot positions"
+        },
+        {
+          "ko": "문서에 붙이는 것입니다.",
+          "en": "and their intended purpose to the document."
+        },
+        {
+          "ko": "여기서는 같은 과정을",
+          "en": "Here, we will demonstrate that process"
+        },
+        {
+          "ko": "유니티의 캐릭터로 보여 주겠습니다.",
+          "en": "with a character in Unity."
+        },
+        {
+          "ko": "먼저 자세를 정하고,",
+          "en": "First, set the pose,"
+        },
+        {
+          "ko": "보는 방향을 맞춰 찍고,",
+          "en": "capture it from the right viewing angle,"
+        },
+        {
+          "ko": "실루엣을 확인하고,",
+          "en": "check the silhouette,"
+        },
+        {
+          "ko": "그 옆에 짧은 설명을 붙입니다.",
+          "en": "and add a short explanation beside it."
+        },
+        {
+          "ko": "눈여겨볼 부분이 무엇인지",
+          "en": "The aim is to make the important details"
+        },
+        {
+          "ko": "한 장에서 보이게 만드는 거죠.",
+          "en": "clear in a single image."
+        }
+      ]
+    },
+    "04": {
+      "0": [
+        {
+          "ko": "그렇게 만든 자료는",
+          "en": "You can place that reference"
+        },
+        {
+          "ko": "움직이는 결과와 나란히 놓고 볼 수 있습니다.",
+          "en": "beside the resulting animation for comparison."
+        },
+        {
+          "ko": "주먹을 뻗는 자세라면",
+          "en": "For a punching pose,"
+        },
+        {
+          "ko": "손끝만 맞추는 것으로 끝나지 않습니다.",
+          "en": "matching the hand position is only part of the task."
+        },
+        {
+          "ko": "어느 발에 체중을 싣고,",
+          "en": "Which foot carries the weight,"
+        },
+        {
+          "ko": "몸통을 어느 쪽으로 돌리며,",
+          "en": "which way the torso turns,"
+        },
+        {
+          "ko": "다음 자세로 어떻게 돌아오는지가",
+          "en": "and how the body moves into the next pose"
+        },
+        {
+          "ko": "함께 읽혀야 합니다.",
+          "en": "should all be readable together."
+        },
+        {
+          "ko": "한 장의 기준 자세를 두고 앞뒤 동작을 비교하면,",
+          "en": "Comparing the motion around a single reference pose"
+        },
+        {
+          "ko": "원하는 느낌이 어디에서 달라지는지",
+          "en": "helps reveal where the intended feeling"
+        },
+        {
+          "ko": "찾기 쉬워집니다.",
+          "en": "starts to change."
+        }
+      ],
+      "1": [
+        {
+          "ko": "두 캐릭터가 맞닿는 동작은",
+          "en": "When two characters make contact,"
+        },
+        {
+          "ko": "서로의 위치도 조건이 됩니다.",
+          "en": "their relative positions also become a requirement."
+        },
+        {
+          "ko": "대난투 스매시브라더스 얼티밋은",
+          "en": "Super Smash Bros. Ultimate"
+        },
+        {
+          "ko": "여러 캐릭터가 공격과 이동으로 겨루는 게임입니다.",
+          "en": "has different characters compete through attacks and movement."
+        },
+        {
+          "ko": "사무스가 상대를 붙잡아 들어 올리고",
+          "en": "Watch Samus grab and lift her opponent,"
+        },
+        {
+          "ko": "위로 던지는 모습을 보세요.",
+          "en": "then throw them upward."
+        },
+        {
+          "ko": "잡는 쪽의 손과 잡히는 쪽의 몸이",
+          "en": "The grabbing hand and the opponent's body"
+        },
+        {
+          "ko": "함께 움직여야 합니다.",
+          "en": "need to move together."
+        },
+        {
+          "ko": "각자만 보면 자연스러워도",
+          "en": "Each animation may look natural on its own,"
+        },
+        {
+          "ko": "두 사람을 합쳤을 때",
+          "en": "yet when the characters are brought together,"
+        },
+        {
+          "ko": "위치나 타이밍이 어긋날 수 있죠.",
+          "en": "their positions or timing can be out of step."
+        },
+        {
+          "ko": "이런 동작은 상대를 포함한 모습으로",
+          "en": "For these actions, include the other character"
+        },
+        {
+          "ko": "참고 자료를 만들어야 합니다.",
+          "en": "in the reference."
+        }
+      ],
+      "2": [
+        {
+          "ko": "무기가 있으면 확인할 대상이 더 늘어납니다.",
+          "en": "A weapon adds more things to check."
+        },
+        {
+          "ko": "같은 게임의 잉클링은",
+          "en": "Inkling, from the same game,"
+        },
+        {
+          "ko": "잉크를 사용하는 캐릭터입니다.",
+          "en": "is a character who uses ink."
+        },
+        {
+          "ko": "몸이 향하는 쪽과 무기가 지나가는 쪽을",
+          "en": "Watch both the body's direction"
+        },
+        {
+          "ko": "함께 보세요.",
+          "en": "and the path of the weapon."
+        },
+        {
+          "ko": "팔의 모양만 그려 놓으면",
+          "en": "A drawing that shows only the arm's pose"
+        },
+        {
+          "ko": "무기의 크기와 지나갈 공간이 빠질 수 있습니다.",
+          "en": "can miss the weapon's size and the space it needs."
+        },
+        {
+          "ko": "공격 방향과 무기의 궤적까지 보여 주어야",
+          "en": "Show the attack direction and the weapon's trajectory"
+        },
+        {
+          "ko": "필요한 동작이 분명해집니다.",
+          "en": "to make the required movement clear."
+        }
+      ],
+      "3": [
+        {
+          "ko": "회피는 무엇을 피하고",
+          "en": "For a dodge, consider what is being avoided"
+        },
+        {
+          "ko": "어느 쪽으로 몸을 빼는지,",
+          "en": "and which way the body moves away."
+        },
+        {
+          "ko": "대기 자세는 가만히 있어도",
+          "en": "For an idle pose, consider how personality comes through"
+        },
+        {
+          "ko": "어떤 성격이 드러나는지 봅니다.",
+          "en": "even while the character is standing still."
+        },
+        {
+          "ko": "인사나 기뻐하는 몸짓도 마찬가지입니다.",
+          "en": "The same applies to greetings and celebratory gestures."
+        },
+        {
+          "ko": "동작의 종류가 바뀌면",
+          "en": "Different kinds of movement"
+        },
+        {
+          "ko": "자료에서 강조할 부분도 달라집니다.",
+          "en": "call for different emphasis in the reference."
+        },
+        {
+          "ko": "모든 장면에 같은 자세 한 장을 붙이는 대신,",
+          "en": "Rather than attaching the same pose to every scene,"
+        },
+        {
+          "ko": "그 움직임을 알아보게 만드는 조건을",
+          "en": "preserve the conditions that make each movement"
+        },
+        {
+          "ko": "남기는 것입니다.",
+          "en": "recognizable."
+        }
+      ]
+    },
+    "05": {
+      "0": [
+        {
+          "ko": "이미 익숙한 동작을 이어받는 캐릭터라면",
+          "en": "If a character inherits an already familiar movement,"
+        },
+        {
+          "ko": "그 모습 자체가 기준이 될 수 있습니다.",
+          "en": "that movement itself can serve as the reference."
+        },
+        {
+          "ko": "특징적인 몸짓을 장면별로 잡아 두고,",
+          "en": "Capture its distinctive gestures at key moments,"
+        },
+        {
+          "ko": "새 동작에서 어떤 자세와 리듬을 살릴지",
+          "en": "and explain which poses and rhythms"
+        },
+        {
+          "ko": "설명하는 것입니다.",
+          "en": "the new animation should retain."
+        },
+        {
+          "ko": "피규어 사진을 새로 만드는 것보다",
+          "en": "In some cases, an existing scene communicates the intent"
+        },
+        {
+          "ko": "기존 장면이 의도를 정확히 보여 주는 경우죠.",
+          "en": "more accurately than a new figure photograph."
+        },
+        {
+          "ko": "같은 몸짓을 두 캐릭터에 적용한 이 시연에서도,",
+          "en": "In this demonstration of one gesture on two characters,"
+        },
+        {
+          "ko": "기준이 되는 자세를 옆에 두면",
+          "en": "keeping the reference pose beside them"
+        },
+        {
+          "ko": "어느 특징을 유지할지 비교할 수 있습니다.",
+          "en": "lets us compare which features to preserve."
+        }
+      ],
+      "1": [
+        {
+          "ko": "몸의 구조가 달라지면 방법도 바꿔야 합니다.",
+          "en": "A different body structure may call for a different method."
+        },
+        {
+          "ko": "언타이틀드 구스 게임은",
+          "en": "In Untitled Goose Game,"
+        },
+        {
+          "ko": "거위를 움직여 물건을 옮기고",
+          "en": "you control a goose, move objects around,"
+        },
+        {
+          "ko": "사람들을 곤란하게 만드는 게임입니다.",
+          "en": "and cause trouble for people."
+        },
+        {
+          "ko": "거위는 손으로 물건을 잡지 않습니다.",
+          "en": "A goose does not pick things up with hands."
+        },
+        {
+          "ko": "목을 낮춰 부리로 집고,",
+          "en": "It lowers its neck to grasp them with its beak,"
+        },
+        {
+          "ko": "목과 몸의 위치를 바꾸며 운반합니다.",
+          "en": "then carries them by moving its neck and body."
+        },
+        {
+          "ko": "사람 모양 피규어에 억지로 맞추기보다,",
+          "en": "Rather than forcing this into a human-shaped figure,"
+        },
+        {
+          "ko": "부리를 어디로 옮기고",
+          "en": "describe where the beak should move"
+        },
+        {
+          "ko": "언제 물건을 붙잡는지",
+          "en": "and when it should grasp the object"
+        },
+        {
+          "ko": "글과 경로로 설명하는 편이 분명합니다.",
+          "en": "using text and a path."
+        },
+        {
+          "ko": "참고 자료의 목적은",
+          "en": "The purpose of reference material"
+        },
+        {
+          "ko": "정해진 양식을 채우는 것이 아니라",
+          "en": "is not to fill out a fixed template,"
+        },
+        {
+          "ko": "그 몸이 할 일을 정확히 보여 주는 데 있습니다.",
+          "en": "but to show exactly what that body needs to do."
+        }
+      ]
+    },
+    "06": {
+      "0": [
+        {
+          "ko": "여기까지 준비해도",
+          "en": "Even with all this preparation,"
+        },
+        {
+          "ko": "애니메이션이 완성된 것은 아닙니다.",
+          "en": "the animation is not yet complete."
+        },
+        {
+          "ko": "사진에는 한 순간만 있지만,",
+          "en": "A photograph shows a single instant,"
+        },
+        {
+          "ko": "게임에서는 그 자세로 들어가고",
+          "en": "while a game shows the continuous movement"
+        },
+        {
+          "ko": "빠져나오는 과정이 계속 보입니다.",
+          "en": "into and out of that pose."
+        },
+        {
+          "ko": "몸의 중심을 옮기고,",
+          "en": "Shifting the body's balance,"
+        },
+        {
+          "ko": "발을 디디고,",
+          "en": "placing the feet,"
+        },
+        {
+          "ko": "다음 동작으로 연결하는 판단은",
+          "en": "and connecting to the next movement require decisions"
+        },
+        {
+          "ko": "실제 움직임을 만드는 과정에서 채워야 합니다.",
+          "en": "that are made while building the actual animation."
+        }
+      ],
+      "1": [
+        {
+          "ko": "참고한 피규어와 게임 캐릭터의 몸도",
+          "en": "The reference figure and the game character"
+        },
+        {
+          "ko": "똑같지 않습니다.",
+          "en": "do not have identical bodies, either."
+        },
+        {
+          "ko": "팔을 얼마나 들어 올릴 수 있는지처럼",
+          "en": "How far a joint can move,"
+        },
+        {
+          "ko": "관절이 움직이는 범위를",
+          "en": "such as how high an arm can lift,"
+        },
+        {
+          "ko": "가동 범위라고 합니다.",
+          "en": "is called its range of motion."
+        },
+        {
+          "ko": "피규어에서는 가능한 자세가",
+          "en": "A pose that works on the figure"
+        },
+        {
+          "ko": "모델에서는 어깨를 찌그러뜨리거나",
+          "en": "may deform the model's shoulder"
+        },
+        {
+          "ko": "소품과 겹치게 할 수 있습니다.",
+          "en": "or cause it to intersect a prop."
+        },
+        {
+          "ko": "그런 때에는 사진의 모양을 그대로 강요하기보다,",
+          "en": "Instead of forcing the model to match the photograph,"
+        },
+        {
+          "ko": "그 자세로 전달하려던 힘과 방향을",
+          "en": "preserve the intended force and direction"
+        },
+        {
+          "ko": "다른 방법으로 살려야 합니다.",
+          "en": "through a different solution."
+        }
+      ]
+    },
+    "07": {
+      "0": [
+        {
+          "ko": "그래서 검수할 때는",
+          "en": "That is why reviewing the result"
+        },
+        {
+          "ko": "처음 문서와 똑같은지만 보지 않습니다.",
+          "en": "involves more than checking it against the first document."
+        },
+        {
+          "ko": "실제 속도로 움직일 때 행동이 잘 읽히는지,",
+          "en": "Check whether the action reads at its actual speed,"
+        },
+        {
+          "ko": "캐릭터다운 인상이 남는지,",
+          "en": "whether it retains the character's identity,"
+        },
+        {
+          "ko": "조작과 맞물렸을 때 기분 좋은지를",
+          "en": "and whether it feels good"
+        },
+        {
+          "ko": "함께 봅니다.",
+          "en": "when combined with the controls."
+        },
+        {
+          "ko": "어떤 아이디어는 수정하고,",
+          "en": "Some ideas need revision,"
+        },
+        {
+          "ko": "더 나은 결과를 위해 내려놓을 수도 있습니다.",
+          "en": "and others may need to be dropped for a better result."
+        },
+        {
+          "ko": "문서는 모두가 같은 목표를 바라보게 하고,",
+          "en": "The document gives everyone a shared target,"
+        },
+        {
+          "ko": "움직이는 결과는 그 목표를 다시 점검하게 합니다.",
+          "en": "and the moving result lets the team reassess that target."
+        }
+      ],
+      "1": [
+        {
+          "ko": "그 과정에서 얻은 수정 방향은",
+          "en": "The lessons learned from those revisions"
+        },
+        {
+          "ko": "담당자 한 사람에게만 남겨 두지 않는 편이 좋습니다.",
+          "en": "are worth sharing beyond the person responsible."
+        },
+        {
+          "ko": "왜 발의 위치를 바꿨는지,",
+          "en": "Explain why a foot position changed,"
+        },
+        {
+          "ko": "어떤 자세가 무기와 겹쳤는지 함께 공유하면",
+          "en": "or which pose intersected a weapon,"
+        },
+        {
+          "ko": "다른 동작에서도 같은 실수를 줄일 수 있습니다.",
+          "en": "to reduce the same mistakes in other animations."
+        },
+        {
+          "ko": "동작 목록으로 필요한 일을 정하고,",
+          "en": "Define the work with an animation list,"
+        },
+        {
+          "ko": "포즈와 시간으로 의도를 보여 주고,",
+          "en": "communicate intent through poses and timing,"
+        },
+        {
+          "ko": "완성된 움직임을 함께 다듬는 것.",
+          "en": "and refine the resulting movement together."
+        },
+        {
+          "ko": "좋은 애니메이션 제작 지시는",
+          "en": "A good animation brief"
+        },
+        {
+          "ko": "원하는 결과를 한 번에 맞히라는 주문이 아니라,",
+          "en": "does not demand that someone get it right on the first try."
+        },
+        {
+          "ko": "팀이 그 결과에 함께 도달할 수 있게 만드는",
+          "en": "It provides concrete guidance that helps the team"
+        },
+        {
+          "ko": "구체적인 설명입니다.",
+          "en": "reach the intended result together."
+        }
+      ]
+    }
+  },
+  "verification": {
+    "sceneCount": 7,
+    "paragraphCount": 17,
+    "unitCount": 183,
+    "koReconstructionExactAfterWhitespaceNormalization": true,
+    "enReconstructionExactAfterWhitespaceNormalization": true,
+    "koreanLengthWarnings": [],
+    "layoutMeasuredAt48px": true,
+    "audioTimingAligned": false,
+    "measurementFont": "D:/Github/VideoEditing/projects/vampire-survivors-d2-copyright/production/local/fonts/YamyamCaption-500.ttf",
+    "measurementFontName": [
+      "Yamyam Caption",
+      "Medium"
+    ],
+    "maximumMeasuredTextWidthPx": {
+      "ko": 1014.0,
+      "en": 1509.0
+    },
+    "within1570pxWithMeasuredFont": true,
+    "finalEncodedCaptionPixelsVerified": false,
+    "measurementScope": "Static glyph advance measurement with an existing Yamyam Caption Medium font; final production font/outline/box and timing still require encoded-frame verification."
+  }
+}

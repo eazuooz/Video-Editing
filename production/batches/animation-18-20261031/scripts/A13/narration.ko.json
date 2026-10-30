@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "episode": "A13",
+  "slug": "animation-mirroring",
+  "revision": "grid-v1",
+  "title": "좌우 반전 애니메이션 | 방향이 바뀌어도 캐릭터의 포즈가 잘 보이는 비밀",
+  "status": "working-draft-awaiting-exact-footage-binding",
+  "timingLocked": false,
+  "ttsReady": false,
+  "language": "ko",
+  "sourceMap": "production/batches/animation-18-20261031/research/A13/research-map.json",
+  "productionNotes": [
+    "Flipped Animation은 원본 팀의 내부 명칭. 보편적 공식 기술명이라고 낭독하지 않으며 구현 시 Unity의 Animation Mirroring 용어 확인.",
+    "독립 FHD 게임 구간 미확정. 아래 특정 사례 역할은 notes에서 후보로 보존하며 시연을 상용 게임 내부 구현이라고 주장하지 않는다.",
+    "원본 격자·캐릭터·최대토마토 도트 추출 금지."
+  ],
+  "scenes": [
+    {
+      "id": "01",
+      "title": "마주 섰는데 둘 다 앞모습이 보인다",
+      "referenceSections": [
+        "A13-B01"
+      ],
+      "lines": [
+        "옆에서 보는 게임에서 두 캐릭터가 서로 마주 보면, 한쪽은 얼굴이 잘 보이고 다른 쪽은 등을 보이기 쉽습니다. 그런데 방향이 바뀌어도 양쪽 모두 중요한 포즈가 잘 보이는 경우가 있습니다. 오늘은 좌우 반전으로 이 차이를 만드는 방법을 보고, 손과 장비의 문제를 거쳐 실제 카메라에서 잘 읽히는 동작을 살펴보겠습니다.",
+        "먼저 회전과 반전을 구별하겠습니다. 같은 사람을 돌아서게 하면 오른손은 여전히 그 사람의 오른손입니다. 거울처럼 좌우를 바꾼 모습에서는 화면에 나타나는 손과 자세의 관계가 뒤집힙니다. 캐릭터의 진행 방향을 바꾸는 것과 동작 자체를 좌우로 바꾸는 것은 서로 다른 작업입니다.",
+        "우리 시연에서는 같은 캐릭터 둘을 마주 세우겠습니다. 한쪽은 몸의 방향만 돌리고, 다른 비교에서는 포즈도 좌우로 바꾸겠습니다. 배와 얼굴, 주먹이 어느 쪽에서 더 잘 보이는지 같은 카메라로 확인하면, 왜 반전 동작을 따로 고려하는지 이해할 수 있습니다."
+      ],
+      "notes": [
+        "원본 역할: Smash Link쌍은 앞/뒤, Mario쌍은 양쪽 전면. 독립 동일조건 구간 확보 후 게임명을 결합.",
+        "두Unity카메라의 하나는 플레이 시점, 하나는 관찰 시점. 실제 회전/반사 처리를 분리 구현."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "그림의 좌우 반전을 입체 동작으로 옮기기",
+      "referenceSections": [
+        "A13-B02"
+      ],
+      "lines": [
+        "평면 이미지로 캐릭터를 보여 주는 스프라이트에서는 한 방향의 그림을 좌우로 뒤집어 반대 방향에 사용할 수 있습니다. 양쪽을 모두 새로 그리지 않아도 방향이 바뀌는 것입니다. 삼차원 캐릭터에서도 이런 보이는 느낌을 이어받을 수 있지만, 그림 한 장을 뒤집는 것보다 확인할 것이 많습니다.",
+        "오른손으로 때리던 포즈를 뒤집으면 반대쪽 손이 그 역할을 맡습니다. 손에 물건을 들고 있었다면 물건을 붙이는 위치도 함께 옮겨야 합니다. 몸만 뒤집고 물건은 원래 손에 남겨 두면 동작의 의미가 달라집니다. 우리 시연에서는 한 손과 손잡이에 표시를 붙여, 어느 부분이 함께 바뀌어야 하는지 보겠습니다.",
+        "양쪽 장비가 다른 캐릭터는 더 어렵습니다. 검과 방패가 정해진 손에 있거나 한쪽 어깨에만 큰 장식이 있다면, 반전 후에도 캐릭터의 설정과 동작이 맞아야 합니다. 모든 캐릭터에 같은 처리를 일괄 적용하기보다 어떤 포즈를 뒤집고 어떤 경우를 예외로 둘지 정해야 합니다."
+      ],
+      "notes": [
+        "원본 StreetFighterII→IV 전환 역할, Bowser 공격·Wario 물건 들기·검 캐릭터 예외 보존.",
+        "음수 스케일 하나만으로 손 역할·장비·루트 이동까지 해결된다고 설명하지 않음."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "플레이 화면에 맞춘 실제 몸의 방향",
+      "referenceSections": [
+        "A13-B03"
+      ],
+      "lines": [
+        "이런 수고를 들이는 이유는 플레이어가 실제로 보는 화면 때문입니다. 한쪽 방향으로 달릴 때마다 뒷모습만 보이면 얼굴과 몸 앞쪽의 정보가 사라집니다. 양쪽 방향에서도 필요한 부분을 보여 주면 같은 동작을 더 쉽게 읽을 수 있습니다.",
+        "그래서 실제 몸의 방향이 진행 방향과 정확히 일치하지 않는 선택도 가능합니다. 옆에서 보는 플레이 카메라에서는 자연스럽게 달리지만, 정면의 관찰 카메라로 보면 몸이 조금 비스듬할 수 있습니다. 화면에서 잘 보이도록 조정한 결과입니다.",
+        "우리 격자 시연에서는 같은 움직임을 두 카메라로 동시에 보겠습니다. 바닥 화살표는 캐릭터가 이동하는 방향, 몸의 선은 실제로 향하는 방향입니다. 이 둘을 구분하면 단순히 잘못 돌아간 모델인지, 플레이 화면의 가독성을 위한 포즈인지 판단할 수 있습니다. 얼굴이 절반의 시간 동안 가려지는 버전과 잘 보이는 버전을 실제 속도로 비교하는 것이 중요합니다."
+      ],
+      "notes": [
+        "원본 Kirby 비반전/출시 비교, 측면/정면 카메라 및 구작 달리기 역할. 개발 버전은 자체 시연으로만 구현.",
+        "독립 상용 장면의 내부 방향 수치는 모르는 경우 표시하지 않음."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "반전을 생각하면 무늬와 글자도 달라진다",
+      "referenceSections": [
+        "A13-B04"
+      ],
+      "lines": [
+        "좌우 반전을 고려하는 설계는 동작 밖에서도 나타납니다. 옷에 글자가 있다면 그림을 뒤집을 때 글자도 뒤집힙니다. 이때 좌우로 대칭인 모양을 고르면 반전 뒤에도 읽기 쉬운 형태를 유지할 수 있습니다.",
+        "예를 들어 대문자 엠과 에이는 좌우를 뒤집어도 기본 모양이 유지됩니다. 반대로 알은 방향이 달라집니다. 세로로 놓인 글자는 글자 순서를 거꾸로 읽는 문제가 아니라, 각 글자의 좌우 모양이 뒤집히는 문제입니다. 우리 화면에서는 같은 반전선을 기준으로 대칭 글자와 비대칭 글자를 나란히 확인하겠습니다.",
+        "이처럼 방향이 바뀌는 게임에서는 포즈, 손과 소품, 카메라, 캐릭터의 무늬가 서로 연결됩니다. 반전은 작업의 효율과 화면의 전달력을 함께 고려하는 표현 설계입니다. 어느 쪽을 향해도 플레이어가 중요한 정보를 읽을 수 있도록 만드는 것입니다."
+      ],
+      "notes": [
+        "원본 SuperStreetFighterII DeeJay의 세로MAXIMUM과 MaximTomato의M 역할. 독립 화면 확보 전 해당 게임을 현재 관찰한 것처럼 낭독하지 않음.",
+        "자체 글자 M/A/X/I/U/R로 거울 대칭을 구현. 타인 스프라이트/디자인 스케치 추출 금지."
+      ]
+    }
+  ],
+  "displayGlossary": [
+    {
+      "en": "Flipped Animation",
+      "ko": "좌우 반전 애니메이션",
+      "note": "The source explicitly identifies this as its team's internal label, not an established universal official term."
+    },
+    {
+      "en": "Animation Mirroring",
+      "ko": "애니메이션 미러링",
+      "note": "Verify final implementation terminology against the selected engine's primary documentation before production."
+    },
+    {
+      "en": "Sprite",
+      "ko": "스프라이트"
+    },
+    {
+      "en": "Reflection",
+      "ko": "반사 / 거울 변환"
+    }
+  ],
+  "preTtsChecks": {
+    "referenceOrderCoverage": "all mapped beats retained in order",
+    "headingFreeReadThrough": "draft read for sentence continuity; final footage-aligned read-through pending",
+    "exactIndependentFootageBound": false,
+    "actualUnityDemoVerified": false,
+    "voiceGenerated": false,
+    "fullAudioVisualReviewPerformed": false
+  }
+}
