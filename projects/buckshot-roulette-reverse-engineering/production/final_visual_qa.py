@@ -91,6 +91,9 @@ def build_plan(timeline,timeline_path,out):
                      'beat':beat,'source':timeline['sources'][beat['source']]})
         add(position-1,{'kind':'cut-boundary-before','cut':beat['id']})
         add(min(end-1,position+1),{'kind':'cut-boundary-after','cut':beat['id']})
+        if beat['id'].startswith('intro-'):
+            for frame in range(position, end, 30):
+                add(frame,{'kind':'intro-motion-sequence-2fps','cut':beat['id']})
         position=end
     add(position-1,{'kind':'body-end-before-membership'})
     add(position+1,{'kind':'membership-start'})
@@ -136,7 +139,7 @@ def build_plan(timeline,timeline_path,out):
         else:
             local=(item['frameIndex']-cut['startFrame'])/FPS;beat=cut['beat'];marks=[]
             item.update({'cutId':cut['id'],'cutIndex':cut['index'],'sourceId':beat['source'],
-                         'sourceKind':cut['source']['kind'],'sourceSeconds':beat['sourceInSeconds']+local,
+                         'sourceKind':cut['source']['kind'],'sourceSeconds':beat['sourceInSeconds']+local*beat.get('speed',1),
                          'observedAction':beat['observedAction'],'narrationConnection':beat['narrationConnection']})
             for i,m in enumerate(beat.get('overlays',[])):
                 if m.get('start',0)<=local<m.get('end',beat['frames']/FPS):

@@ -17,11 +17,11 @@ ROOT = PROJECT.parents[1]
 OUTPUT = ROOT / "output" / PROJECT.name
 LOCAL = PROJECT / "production" / "local"
 EVIDENCE_PAGE = LOCAL / "analysis" / "evidence-view.html"
-FINAL_OUTPUT = ROOT / "output" / "buckshot-roulette-reverse-engineering-v5"
+FINAL_OUTPUT = ROOT / "output" / "buckshot-roulette-reverse-engineering-v6"
 # assemble_documentary.py writes this receipt only after both masters decode.
-FINAL_QA = LOCAL / "documentary-v5" / "technical-qa.json"
-FINAL_AUDIO_QA = LOCAL / "final-qa-v5" / "audio-review.json"
-LISTENING_PAGE = LOCAL / "audio-v4" / "review" / "listening" / "index.html"
+FINAL_QA = LOCAL / "documentary-v6" / "technical-qa.json"
+FINAL_AUDIO_QA = LOCAL / "final-qa-v6" / "audio-review.json"
+LISTENING_PAGE = LOCAL / "final-qa-v6" / "listening" / "index.html"
 
 
 def read_json(path: Path) -> dict:
@@ -138,14 +138,14 @@ def final_review_html(state: dict) -> str:
         (PROJECT / "planning/original-footage-audit.json", "원작 촬영 검수 근거"),
         (state["report"], "현재 파일의 기술 검사 결과"),
         (FINAL_AUDIO_QA, "현재 영상의 음성 검사 결과"),
-        (LOCAL / "documentary-v5/preservation-proof.json", "기존 음성·게임 장면 보존 검사"),
+        (LOCAL / "documentary-v6/preservation-proof.json", "기존 음성·게임 장면 보존 검사"),
         (ROOT / "unity/VideoEditing/Assets/VideoScenes/buckshot-workflow-v5", "Unity 설명 씬 소스")))
-    audition = (f'<p class="subtle">새 도입·REA 설명과 기존 발음 확인 후보를 문맥과 함께 들을 수 있습니다. '
+    audition = (f'<p class="subtle">배경음악이 추가된 현재 완성본을 문단별로 들을 수 있습니다. '
                 f'{link(LISTENING_PAGE, "문단별 청취 클립 열기", OUTPUT)}</p>') if LISTENING_PAGE.exists() else ""
     total = round(state["durationSeconds"])
     duration = f' · {total // 60}분 {total % 60:02d}초' if total else ""
     return f'''<section class="section" id="final-review"><h2>완성본 검수</h2>
-<p>1920×1080 · 60fps{duration} · 두 영상의 전체 디코딩과 동일 음성 검사를 통과한 현재 파일입니다.</p>
+<p>1920×1080 · 60fps{duration} · 30초 실제 플레이 2배속 도입부와 배경음악을 추가했습니다. 두 출력의 디코딩·오디오 일치와 현재 믹스를 검사한 파일입니다.</p>
 <span class="status">렌더링·기술 검사 완료</span><span class="status pending">사용자 검수 대기</span>
 <p class="subtle" style="margin-top:12px">기술 검사는 실제 시청·청취를 대신하지 않습니다. 표본 화면·자막 연결은 확인했으며, 전체 사용자 시청·청취와 최종 검수가 남아 있습니다.</p>
 <video class="review-video" controls playsinline preload="metadata" aria-label="벅샷 룰렛 분석·독립 재구현 전체 자막 검수 영상" src="{url(files['captioned'], OUTPUT)}"></video>
@@ -251,7 +251,7 @@ def main() -> None:
     content = f'''
 <div class="brand">YAMYAM CODING / 얌얌코딩</div><p class="eyebrow">REA와 AI · 분석에서 기반 프로토타입까지</p>
 <h1>기존 게임을 분석해,<br>새 프로토타입의 출발점으로.</h1>
-<p class="lead">REA가 AI의 분석 작업을 어떻게 돕는지부터 살펴보고, 규칙 분석 → 새 코드와 외형 제작 → 게임 엔진 실행으로 이어집니다. v5는 분석 도구와 개발 과정을 Unity 애니메이션 8장면으로 풀어낸 수정본입니다. 기존 내레이션과 실제 게임·프로토타입 장면은 유지했습니다.</p>
+<p class="lead">실제 벅샷 룰렛 플레이를 2배속으로 30초 보여준 뒤, 규칙 분석 → 새 코드와 외형 제작 → 게임 엔진 실행으로 이어집니다. v6는 기존 Unity 설명 8장면과 내레이션을 유지하면서, 영상용 배경음악 Nimbus를 추가한 수정본입니다.</p>
 {top_status}{final_section}
 {hero}{metrics()}
 <div class="links">{link(PROJECT / 'prototype/project.godot', 'Godot 프로젝트 열기', OUTPUT, 'button')}{link(PROJECT / 'production/launch-prototype.ps1', '실행 스크립트 보기', OUTPUT, 'button')}<a href="#progress">진행표</a><a href="#findings">확인한 규칙</a><a href="#files">파일·증거</a></div>

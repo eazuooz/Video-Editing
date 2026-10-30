@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "revision": "v6",
+  "status": "audio-inputs-verified-mix-and-current-output-qa-pending",
+  "createdAt": "2026-10-30",
+  "scope": "User-selected 30-second sped-up actual gameplay opening plus established video BGM; preserve existing v5 body voice, source-audio gains and timing. Research only: no new TTS, ASR, render or platform action performed for this report.",
+  "decision": {
+    "track": "Nimbus — Eveningland",
+    "reason": "Reuse the established channel BGM, whose local asset hash matches the existing license ledger and previous loudness measurement; no additional preference approval is needed.",
+    "userDelegation": "recommended-production-choice-v1",
+    "musicAddedByExplicitCurrentUserRequest": true,
+    "musicContinuousAcrossScenes": true,
+    "newTtsRequired": false
+  },
+  "authorities": [
+    "docs/VIDEO_WORKFLOW.md",
+    "docs/NARRATION_AUDIO_STANDARD.md",
+    "shared/publishing/video-production-control.json",
+    "projects/buckshot-roulette-reverse-engineering/production/timeline-v5.json",
+    "projects/buckshot-roulette-reverse-engineering/production/assemble_documentary.py"
+  ],
+  "music": {
+    "absolutePath": "D:/Github/VideoEditing/shared/assets/music/youtube-audio-library/Nimbus-Eveningland.mp3",
+    "sha256": "06ddb8d0f2aa82e499ab2cb398b8a241c626d9d3da82bbaf274d1178435f8c08",
+    "hashVerifiedFromActualFile": true,
+    "licenseRecord": "D:/Github/VideoEditing/shared/assets/music/youtube-audio-library/Nimbus-Eveningland.LICENSE.md",
+    "provenance": "Existing repository ledger identifies the actual matching file as YouTube Audio Library, reused by already approved productions.",
+    "trackReference": "https://www.youtube.com/watch?v=ZOc84gXN-lg",
+    "library": "https://www.youtube.com/audiolibrary",
+    "officialUsageGuidanceChecked": "https://support.google.com/youtube/answer/3376882?hl=en",
+    "descriptionCreditKoAndEn": "Music: Nimbus — Eveningland (YouTube Audio Library)",
+    "rightsLimits": [
+      "Retain the existing license file and the credit at the bottom of both description drafts.",
+      "This audit verifies the local file against the existing approved source/license record; it does not claim a fresh per-track Studio license inspection or a newly identified Creative Commons subtype.",
+      "Do not distribute this track as a standalone output."
+    ],
+    "codec": "mp3",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationSeconds": 280.613167,
+    "bytes": 9255663,
+    "reusedMeasurement": {
+      "path": "D:/Github/VideoEditing/projects/vampire-survivors-d2-copyright/production/local/music-source-loudness.json",
+      "sourceSha256Matches": true,
+      "integratedLufs": -12.33,
+      "truePeakDbtp": -3.58,
+      "lraLu": 2.3,
+      "notANewMeasurement": true
+    },
+    "recommendedInitialIntegratedLufs": -28,
+    "initialStaticGainDb": -15.67,
+    "gainReason": "-28 - (-12.33) = -15.67 dB. Static source gain preserves the musical dynamics; final repeated/ducked mix requires actual measurement.",
+    "loopCrossfadeSeconds": 1,
+    "loopNote": "One second overlap between two decoded occurrences covers the estimated 441.966667-second v6; trim the bed to exact video samples, do not concatenate a hard musical edge.",
+    "fadeInSeconds": 0.45,
+    "fadeOutSeconds": 0.45,
+    "additionalGainWhileOriginalGameAudioActiveDb": -3,
+    "gameAudioPresenceTransitionSeconds": 0.45,
+    "extraMusicDuckIntervalsFinalSeconds": [[2,50.366666667],[169.266666667,175.266666667],[221.166666667,228.1],[233.8,239.8],[251.75,258.15],[277.416666667,282.916666667],[357.6,403.15]],
+    "extraMusicDuckIntervalsEvidence": "timeline-v5.json sequential beat frames/60, sourceAudio=true, shifted to body start32s; merged adjacent intervals plus actual gameplay intro2–32s. Original body mix is unchanged. These are known source-presence spans, not fabricated per-sample sound detections.",
+    "sidechain": {
+      "source": "Approved narration WAV with its existing +3.5 dB gain, resampled to 48 kHz and delayed to the new body start; pad silence before and after it to exact master duration.",
+      "threshold": 0.08,
+      "ratio": 2.2,
+      "attackMs": 15,
+      "releaseMs": 280,
+      "makeup": 1,
+      "duckTarget": "music only; the existing body mix already contains the approved source-audio ducking",
+      "neverDuckNarrationBecauseGameOrMusicStarts": true
+    }
+  },
+  "verifiedExistingStems": [
+    {
+      "role": "approved-narration-source",
+      "path": "production/local/audio-v4/narration.wav",
+      "sha256": "6eb0f483642fc4a99b102abb54ea710fc0f8cb21d7a2b8c78f824b769d8e9835",
+      "codec": "pcm_f32le",
+      "sampleRate": 24000,
+      "channels": 1,
+      "durationSeconds": 399.960083,
+      "existingGainDb": 3.5,
+      "note": "Do not modify or synthesize again. Existing assembler resamples, pads and trims to the 399.966667-second body."
+    },
+    {
+      "role": "source-audio-before-narration-sidechain",
+      "path": "production/local/documentary-v4/body-source.wav",
+      "sha256": "034f98c77735d455f8b7b9c6da3579960ea08573566cc334c1c4fdecf4f183a0",
+      "codec": "pcm_f32le",
+      "sampleRate": 48000,
+      "channels": 2,
+      "durationSeconds": 399.966667
+    },
+    {
+      "role": "preferred-unchanged-body-base",
+      "path": "production/local/documentary-v4/body-mix.wav",
+      "sha256": "f8cd23d4f6b7b33447aa7460f188ae323e1958b5463a2578c1fee57735611d98",
+      "codec": "pcm_f32le",
+      "sampleRate": 48000,
+      "channels": 2,
+      "durationSeconds": 399.966667,
+      "note": "Narration plus already-ducked original/prototype sounds, before final limiter/AAC. Use directly to avoid changing approved speech/source balance or lossy base re-encoding."
+    },
+    {
+      "role": "existing-pre-limiter-complete-base",
+      "path": "production/local/documentary-v4/complete-mix.wav",
+      "sha256": "3636303d9d0c1c1c9c0af5c1cf6f1fa021e7a9728a1b885d683024b2573aa0bb",
+      "codec": "pcm_f32le",
+      "sampleRate": 48000,
+      "channels": 2,
+      "durationSeconds": 411.966667,
+      "note": "Alternative exact base: split at 2 seconds, insert new 30-second intro, rejoin. Do not overlap or cut the body speech."
+    },
+    {
+      "role": "branding",
+      "path": "production/local/documentary-v4/bookend-brand.wav",
+      "sha256": "094396f81ad9ffedc8cb21dba65c1dca52ab2ce6530183827a4da77bea030919",
+      "codec": "pcm_s16le",
+      "sampleRate": 48000,
+      "channels": 2,
+      "durationSeconds": 2
+    },
+    {
+      "role": "membership",
+      "path": "production/local/documentary-v4/bookend-member.wav",
+      "sha256": "796320f8ac8fbb7392374cd78c69846d7283d7e87af851b224e21b025705aa96",
+      "codec": "pcm_s16le",
+      "sampleRate": 48000,
+      "channels": 2,
+      "durationSeconds": 10
+    },
+    {
+      "role": "v4-v5-identical-final-AAC-reference-only",
+      "path": "production/local/documentary-v4/approved-pair-audio.m4a",
+      "sha256": "bc2c5ea8413755ae45ec3b6457fe7b0dde49e2c6f1a71fb3e4bb95b1a0fcf9d4",
+      "codec": "aac",
+      "sampleRate": 48000,
+      "channels": 2,
+      "durationSeconds": 411.966667
+    }
+  ],
+  "timelineProposal": {
+    "fps": 60,
+    "brandingSeconds": 2,
+    "newActualGameplayIntroSeconds": 30,
+    "bodyStartSeconds": 32,
+    "bodyFrames": 23998,
+    "bodySeconds": 399.966667,
+    "membershipSeconds": 10,
+    "totalFramesIfIntroExactlyThirtySeconds": 26518,
+    "totalSecondsIfIntroExactlyThirtySeconds": 441.966667,
+    "existingBodyCaptionOffsetDeltaSeconds": 30,
+    "narrationOffsetFromSourceSeconds": 32,
+    "introVoice": "No invented or newly synthesized speech. Preserve the existing body voice at its new start. Any reused voice in the intro would need explicit integration without duplicate narration; default is actual gameplay audio plus BGM."
+  },
+  "introAudioPlan": {
+    "sourceSelection": "Use the same source intervals and speed factors selected by the v6 actual-footage audit; no stock or prototype recording substituted for original Buckshot gameplay.",
+    "speedHandling": "Apply pitch-preserving atempo to each source-audio interval using the same factor as the picture: 4x => atempo=2,atempo=2; 3x => atempo=1.5,atempo=2. Never accelerate only picture while leaving its sounds on the old timeline; do not use asetrate pitch shifting.",
+    "loudness": "Measure the exact accelerated edit. Begin toward the established original-audio -23 LUFS profile with per-cut transient headroom; inspect shots and impacts so the first seconds do not jump in volume.",
+    "fadeInSeconds": 0.12,
+    "fadeOutSeconds": 0.3,
+    "sourceMusicLimitation": "Original Buckshot game mix may contain its own music; it is not an isolated effects stem. Preserve identifiable original effects, lower added Nimbus by the established -3 dB overlap rule, and document the actual source mix rather than claiming a clean music removal.",
+    "looping": false,
+    "slowdown": false,
+    "currentListeningPerformed": false
+  },
+  "recommendedAssembly": [
+    "Independently decode all segments to float 48 kHz stereo. Concatenate branding -> 30-second accelerated actual-game audio -> unchanged body-mix.wav -> membership; sample-count the output.",
+    "Build one continuous Nimbus bed using static -15.67 dB source gain, one-second crossfade repeat, exact trim and overall 0.45-second fades. Smooth additional -3 dB attenuation across actual/prototype source-audio spans, including the intro.",
+    "Derive only the sidechain from unchanged narration.wav with its +3.5 dB gain, 48 kHz resample, original exact body pad/trim and 32-second delay. Duck the music, not the base mix; no second source-audio ducking.",
+    "Sum base + ducked music with amix normalize=0 and no extra narration normalization, preserving float headroom.",
+    "Use the existing single final limiter/encoder pattern: aresample=192000,alimiter=limit=0.794328:level=false:latency=true,aresample=48000, then one AAC 192 kbps stereo encode. Lower only if actual encoded true peak exceeds -1.5 dBTP.",
+    "Packet-copy the same final AAC into clean and captioned masters and verify identical decoded audio/timestamps and exact total duration."
+  ],
+  "baselineAudioEvidence": {
+    "path": "production/local/final-qa-v5/audio-review.json",
+    "integratedLufs": -17.1,
+    "truePeakDbtp": -1.8,
+    "lraLu": 7.3,
+    "mode": "v5 exact v4 AAC/PCM reuse",
+    "sourceAudit": "production/local/audio-source-audit.json",
+    "limitation": "New music/intro changes the final mix. Existing v5 whole-mix ASR and loudness cannot alone establish v6 mixed-output pass."
+  },
+  "requiredCurrentOutputQa": [
+    "Verify exact 30-second offset of every existing body speech/caption cue and retain body PCM hash before added-music summation.",
+    "Measure final encoded AAC integrated LUFS, LRA and true peak; require <= -1.5 dBTP. Initial source layer targets are not claims about final master loudness.",
+    "Run the current final-mix whole ASR once using the existing repository reviewer, compare against unchanged expected narration with the new offset, and investigate missing or newly confused words. No such ASR was run by this research task.",
+    "Review narration continuity at music entry, source-sound entry, music loop and all joins; no >6 dB unexplained half-second speech drops or >3 dB unexplained adjacent passage jumps may be waved through on average LUFS alone.",
+    "Review the intro at full motion/audio speed, body-entry transition, representative narration plus strong game effects and end fade; distinguish actual tool listening scope from human whole-version review.",
+    "Keep natural-pronunciation candidates from v5 visible with +30-second final time offsets unless an actual later listening decision resolves them. Do not regenerate their TTS as part of this request.",
+    "Retain local-final-review-before-youtube boundary; no upload is authorized by this audio plan."
+  ],
+  "performedByThisAudit": {
+    "actualFileSha256": true,
+    "ffprobeOfEveryListedStem": true,
+    "matchingPreviousBgmSourceMeasurementRead": true,
+    "officialGeneralAudioLibraryGuidanceRead": true,
+    "newMixCreated": false,
+    "newTts": false,
+    "newAsr": false,
+    "newAudioListening": false,
+    "humanWholeListening": false,
+    "platformMutation": false
+  }
+}

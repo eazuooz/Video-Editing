@@ -165,7 +165,7 @@ def main():
         backup=gd/('index-before-buckshot-'+stamp)
         backup.write_bytes(original_bytes)
         tree=git('write-tree',env=env).decode().strip()
-        commit=git('commit-tree',tree,'-p',head,data=b'Animate REA analysis and prototype development with editable Unity scenes\n').decode().strip()
+        commit=git('commit-tree',tree,'-p',head,data=b'Add actual gameplay opening and reviewed background music mix to REA documentary\n').decode().strip()
         publish_index_and_ref(index_path,prepared_bytes,original_bytes,ref,head,commit)
     finally:
         # These unique private indexes are ours; the real index and its lock

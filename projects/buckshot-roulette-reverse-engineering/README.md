@@ -2,11 +2,19 @@
 
 소유한 설치본에서 확인한 규칙을 별도로 설명하고, 독립적으로 작성한 코드와 새 외형으로 작은 플레이 실험을 만드는 프로젝트입니다. `prototype/`은 원작 실행 파일·복원 스크립트·원작 모델을 불러오지 않습니다. 원작 관찰 자료와 분석 원문은 Git에서 제외한 `production/local/`, `captures/`에 구분해 둡니다.
 
-## v5 수정 · Unity 분석·개발 설명 완성
+## v6 수정 · 실제 플레이 도입부와 배경음악
+
+브랜딩 뒤에 **실제 벅샷 룰렛 플레이 30초를 2배속으로 추가**했습니다. 원래 녹화의 장전·자기 공포탄·상대 사격·수갑·톱·강화 사격 6컷을 이어 붙였으며, 정지 화면이나 반복으로 시간을 늘리지 않았습니다. 이 도입부의 배속은 사용자가 직접 요청한 편집입니다. 기존 34컷과 본문 내레이션은 보존하고 자막 시점만 30초 옮겼습니다.
+
+영상용 음악 **Nimbus — Eveningland**를 낮게 깔고, 내레이션과 실제 게임 소리가 나올 때 음악만 더 낮췄습니다. 최종 출력은 **7분 21.966667초 · 26,518프레임 · 1920×1080/60fps**입니다. [전체 자막 영상](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering-v6/buckshot-roulette-reverse-engineering.captioned.mp4)과 [검수 폴더](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/index.html)에서 확인합니다. 현재 완료 상태와 실제 검수 범위는 `production/checkpoint.json` 및 `production/final-review-v6.json`을 따르며, 사용자 전체 시청·청취 승인은 별도입니다. v5 출력도 보존합니다.
+
+음악의 기존 사용권 기록과 파일 해시는 `planning/audio-v6-plan.json`, 6컷의 원본·시점·선정 근거는 `planning/intro-gameplay-v6.json`에 있습니다. 향후 설명란 하단 크레딧: `Music: Nimbus — Eveningland (YouTube Audio Library)`.
+
+## v5 기준본 · Unity 분석·개발 설명 완성
 
 분석 도구와 개발환경 설명 **8컷을 Unity 애니메이션으로 보강**했습니다. 파일 구조 열기, REA 요청·반환, 도구 연결, 함수와 공유 상태, 코드·모델 결합, 입력 잠금과 검사 결과, 전체 제작 경로를 기존 발화 시점에 맞춰 보여줍니다. 편집 가능한 씬 8개는 `unity/VideoEditing/Assets/VideoScenes/buckshot-workflow-v5/Scenes/6dfee02db3d5/render/`에 저장했습니다.
 
-최신 검수본은 **6분 52초 · 1920×1080/60fps**, 자막·무자막 MP4와 한영 SRT입니다. [영상과 검수 폴더](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/index.html)에서 확인합니다. 기존 대본·AAC·자막·길이를 보존했고, 24,718 clean 프레임 전체가 각 원래 화면 또는 선택한 Unity 화면과 일치합니다. 새 Unity 클립의 284개 발화 전후 표본과 최종 영상의 189개 표본(115개 한국어 자막·32컷·24페이지)을 FHD/375px에서 검수했습니다. 전체 연속 시청과 청취를 대신하는 검사는 아니며 사용자 최종 검수를 기다립니다. 상세 근거는 `production/final-review-v5.json`입니다.
+v5 검수본은 **6분 52초 · 1920×1080/60fps**, 자막·무자막 MP4와 한영 SRT입니다. [영상과 검수 폴더](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/index.html)에서 확인합니다. 기존 대본·AAC·자막·길이를 보존했고, 24,718 clean 프레임 전체가 각 원래 화면 또는 선택한 Unity 화면과 일치합니다. 새 Unity 클립의 284개 발화 전후 표본과 최종 영상의 189개 표본(115개 한국어 자막·32컷·24페이지)을 FHD/375px에서 검수했습니다. 전체 연속 시청과 청취를 대신하는 검사는 아니며 사용자 최종 검수를 기다립니다. 상세 근거는 `production/final-review-v5.json`입니다.
 
 Unity는 설명 화면의 렌더러이고 실제 플레이 가능한 프로토타입은 기존 Godot 구현입니다. v4 출력과 검수 자료도 보존합니다.
 
