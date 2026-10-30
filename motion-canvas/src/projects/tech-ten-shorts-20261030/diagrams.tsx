@@ -28,11 +28,13 @@ export function gridDiagram(parent: Node, clock: DiagramClock) {
         fill={open ? '#315c50' : '#301f24'} opacity={.82} stroke={open ? C.green : C.red} lineWidth={cells === 4 ? 3 : 1.5}/>);
     }
   }
+  world.add(<Rect position={[-74, -74]} size={148} fill="#00000000"
+    stroke={C.title} lineWidth={5} opacity={() => fine() ? 1 : 0}/>);
   world.add(<Line points={[[-239, -239], [-93, -93], [55, 55], [239, 239]]}
     stroke={C.title} lineWidth={7} endArrow arrowSize={17} end={() => clock.event('path-trace', [.15, .70])}/>);
   world.add(<Circle size={35} position={() => {const p = clock.event('path-trace', [.15, .70]); return [-239 + 478 * p, -239 + 478 * p];}}
     fill={C.title} stroke="#000000" lineWidth={4}/>);
-  parent.add(<Txt text={() => fine() ? '32 ÷ 8 = 4  →  4 × 4 = 16칸' : '길찾기 한 칸 32 × 32픽셀'}
+  parent.add(<Txt text={() => fine() ? '기존 1칸: 32 ÷ 8 = 4  →  4 × 4 = 16칸' : '길찾기 한 칸 32 × 32픽셀'}
     position={[0, 338]} fill={fine() ? C.teal : C.ink} fontFamily={FONT} fontSize={34} fontWeight={700}/>);
   parent.add(label('초록: 통행 가능   붉은색: 통행 불가', [0, -350], C.muted, 27));
 }
@@ -62,7 +64,7 @@ export function eudDiagram(parent: Node, clock: DiagramClock) {
   }
   for (let x of [-170, 170]) parent.add(<Line points={[[x - 34, -155], [x + 34, -155]]}
     stroke={() => translated() ? C.teal : C.red} lineWidth={6} endArrow arrowSize={14}/>);
-  parent.add(<Rect size={[58, 42]} radius={5} position={() => [-340 + (translated() ? 680 : 166) * travel(), -155]}
+  parent.add(<Rect size={[58, 20]} radius={5} position={() => [-340 + (translated() ? 680 : 166) * travel(), -155]}
     fill={C.title} stroke={C.background} lineWidth={3}/>);
   const block = new Node({opacity: () => translated() ? 0 : 1, position: [-170, -155]}); parent.add(block);
   block.add(<Line points={[[-16, -22], [16, 22]]} stroke={C.red} lineWidth={8}/>);
@@ -74,7 +76,7 @@ export function eudDiagram(parent: Node, clock: DiagramClock) {
     position={[0, 116]} fill={C.muted} fontFamily={FONT} fontSize={30}/>);
   parent.add(<Txt text={() => trigger() ? otherRead() ? '기능의 쓰임이 확장됨' : '원래 정해 둔 기능' : arrived() ? 'YAMYAM' : '?'}
     position={[0, 192]} fill={() => arrived() ? C.green : C.muted} fontFamily={FONT} fontSize={45} fontWeight={700}/>);
-  parent.add(<Txt text={() => trigger() ? '원리 도식 · 내부 주소는 표시하지 않음' : arrived() ? '새 데이터에서 이름 값을 찾아 반환' : '요청한 이름 값 · 응답 대기'} position={[0, 303]}
+  parent.add(<Txt text={() => trigger() ? '' : arrived() ? '새 데이터에서 이름 값을 찾아 반환' : '요청한 이름 값 · 응답 대기'} position={[0, 303]}
     fill={() => arrived() ? C.green : C.muted} fontFamily={FONT} fontSize={31} fontWeight={700}/>);
   parent.add(<Txt text={() => trigger() ? 'EUD · Extended Unit Death' : stage() === 2 ? '패치 1.21.0 · 일부 옛 EUD 맵 호환' : 'YAMYAM은 설명용 이름 예시'}
     position={[0, 343]} fill={C.muted} fontFamily={FONT} fontSize={26}/>);
@@ -89,7 +91,8 @@ export function replayDiagram(parent: Node, clock: DiagramClock) {
     }
     return Math.floor(clock.event('replay-run', [.10, .88]) * 330);
   };
-  const mismatch = () => (clock.section().unityStage ?? 0) >= 2;
+  const mismatch = () => (clock.section().unityStage ?? 0) >= 2
+    && clock.event('restore-rules', [.90, .99]) <= .1;
   parent.add(label('화면 대신, 입력을 다시 실행', [0, -375], C.title, 39));
   const positions: Point[] = [[-250, -103], [250, -103]];
   for (let i = 0; i < 2; i++) {
@@ -119,5 +122,6 @@ export function replayDiagram(parent: Node, clock: DiagramClock) {
   }
   parent.add(<Txt text={() => mismatch() ? '규칙이 달라지면, 결과도 달라짐' : '같은 시작 · 같은 입력 · 같은 규칙'}
     position={[0, 300]} fill={() => mismatch() ? C.red : C.green} fontFamily={FONT} fontSize={32} fontWeight={700}/>);
-  parent.add(label('같은 맵 · 같은 버전 · 같은 시드 7  |  자체 모형', [0, 335], C.muted, 23));
+  parent.add(<Txt text={() => mismatch() ? '같은 맵 · 다른 규칙 · 같은 시드 7  |  자체 모형' : '같은 맵 · 같은 버전 · 같은 시드 7  |  자체 모형'}
+    position={[0, 335]} fill={C.muted} fontFamily={FONT} fontSize={23} fontWeight={700}/>);
 }

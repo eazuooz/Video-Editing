@@ -5,7 +5,10 @@ from scoped_context import authorization,assert_no_game_apps,ROOT,MEDIA
 from batch_job_lock import SerialJobLock
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('topic');p.add_argument('--version',default='v1');a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('topic');p.add_argument('--version',default='v1')
+ p.add_argument('--snow-render-comparison',action='store_true',help='Batman-only stage2 preview: actual relief at1.8s, actual geometry at2.2s, switch at2s')
+ a=p.parse_args()
+ if a.snow_render_comparison and a.topic!='batman-origins-snow-below-camera':p.error('--snow-render-comparison is Batman-only')
  slug='shorts-'+a.topic
  batch=json.loads((Path(__file__).parent/'batch.json').read_text(encoding='utf-8-sig'))
  if slug not in {r['slug'] for r in batch['projects']}:raise RuntimeError('Outside selected ten')
@@ -24,7 +27,7 @@ def main():
   shutil.copytree(source,dest,dirs_exist_ok=True)
   jobs=MEDIA/'capture-jobs';jobs.mkdir(exist_ok=True)
   job=jobs/(a.topic+'-preview-'+a.version+'.json')
-  job.write_text(json.dumps(dict(topic=a.topic,mode='preview',output=out.as_posix(),stages=[0,1,2],sceneVersion='source-'+treehash[:12],sourceCode=hashes),indent=2))
+  job.write_text(json.dumps(dict(topic=a.topic,mode='preview',output=out.as_posix(),stages=[2] if a.snow_render_comparison else [0,1,2],snowRenderComparison=a.snow_render_comparison,sceneVersion='source-'+treehash[:12],sourceCode=hashes),indent=2))
   log=jobs/(a.topic+'-preview-'+a.version+'.log')
   exe='C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Unity.exe'
   cmd=[exe,'-batchmode','-projectPath',str(capture),'-executeMethod','Yamyam.TechTen.Editor.TechTenCapture.Run','-techTenJob',str(job),'-logFile',str(log)]

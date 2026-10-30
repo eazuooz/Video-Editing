@@ -37,7 +37,7 @@ namespace Yamyam.TechTen {
    bool show=stage==2;
    if(planeCameraMarker){planeCameraMarker.gameObject.SetActive(show);planeCameraMarker.SetPositionAndRotation(planeOnboardCamera.transform.position,planeOnboardCamera.transform.rotation);}
    if(planeViewDirection){planeViewDirection.enabled=show;Vector3 eye=planeOnboardCamera.transform.position,forward=planeOnboardCamera.transform.forward,tip=eye+forward*3,right=planeOnboardCamera.transform.right*.24f;planeViewDirection.SetPositions(new[]{eye,tip,tip-forward*.45f+right,tip,tip-forward*.45f-right});}
-   if(planeCameraLabel){planeCameraLabel.gameObject.SetActive(show);planeCameraLabel.transform.position=planeOnboardCamera.transform.position+Vector3.up*.85f;planeCameraLabel.transform.rotation=shot.transform.rotation;}
+   if(planeCameraLabel){planeCameraLabel.gameObject.SetActive(show);planeCameraLabel.transform.position=planeOnboardCamera.transform.position+Vector3.up*.85f-shot.transform.right*2.5f;planeCameraLabel.transform.rotation=shot.transform.rotation;}
    if(planeOnboardLabel){planeOnboardLabel.gameObject.SetActive(show);planeOnboardLabel.transform.position=planeOnboardCamera.ViewportToWorldPoint(new Vector3(.04f,.94f,2));planeOnboardLabel.transform.rotation=planeOnboardCamera.transform.rotation;}
   }
  }

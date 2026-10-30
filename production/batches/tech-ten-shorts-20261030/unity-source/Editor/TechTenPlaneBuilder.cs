@@ -23,9 +23,9 @@ namespace Yamyam.TechTen.Editor {
    foreach(var t in marker.GetComponentsInChildren<Transform>())t.gameObject.layer=PlaneMarkerLayer;
    d.planeCameraMarker=marker;
    d.planeViewDirection=Line("Fixed onboard camera view direction",teal,.055f);d.planeViewDirection.positionCount=5;d.planeViewDirection.gameObject.layer=PlaneMarkerLayer;
-   d.planeCameraLabel=PlaneLabel("Onboard camera position label","ONBOARD CAMERA",.11f,teal,PlaneMarkerLayer);
+   d.planeCameraLabel=PlaneLabel("Onboard camera position label","CAMERA",.075f,teal,PlaneMarkerLayer);
    d.planeCameraLabel.anchor=TextAnchor.MiddleCenter;
-   d.planeOnboardLabel=PlaneLabel("Inset view label","ONBOARD VIEW",.18f,Color.white,PlaneInsetLabelLayer);
+   d.planeOnboardLabel=PlaneLabel("Inset view label","ONBOARD VIEW",.035f,Color.white,PlaneInsetLabelLayer);
    // Save concrete fixed camera transforms as well as updating them per sample.
    onboard.transform.position=new Vector3(0,2.18f,2.75f);
    onboard.transform.rotation=Quaternion.LookRotation(new Vector3(0,-1,1),Vector3.up);

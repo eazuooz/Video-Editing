@@ -39,38 +39,11 @@ namespace Yamyam.TechTen {
     effects[i*2].SetVector("_Plane",new Vector4(normal.x,normal.y,normal.z,-Vector3.Dot(normal,b.position)));
     props[i].position=b.position;props[i].rotation=Quaternion.FromToRotation(Vector3.forward,normal);
     effects[i*2+1].SetMatrix("_WorldToBottle",b.worldToLocalMatrix);
-    if(lines.Length>i){var l=lines[i];l.enabled=stage>0;l.SetPositions(new[]{b.position-Vector3.right*.8f,b.position+Vector3.right*.8f});}
+    if(lines.Length>i){var l=lines[i];l.enabled=stage>0;Vector3 tangent=new Vector3(normal.y,-normal.x,0).normalized;l.SetPositions(new[]{b.position-tangent*.8f,b.position+tangent*.8f});}
     lastFillNormalY=normal.y;
    }
   }
-  void Snow() {
-   var mesh=dynamicSurface.mesh;
-   if(baseVertices==null){baseVertices=mesh.vertices;snow=new float[baseVertices.Length];}
-   if(!contactTarget){contactTarget=new RenderTexture(194,98,24,RenderTextureFormat.ARGB32);contactTarget.Create();contactPixels=new Texture2D(194,98,TextureFormat.RGB24,false);contactCamera.targetTexture=contactTarget;contactCamera.SetReplacementShader(Shader.Find("Yamyam/TechTen/ContactCapture"),"");}
-   // Only the thin slice at the surface is captured, not the whole boot.
-   contactCamera.transform.position=new Vector3(0,-.8f,0);contactCamera.nearClipPlane=.915f;contactCamera.farClipPlane=.97f;
-   int now=Mathf.FloorToInt(elapsed*60);
-   if(now<snowFrame){Array.Clear(snow,0,snow.Length);snowFrame=-1;}
-   for(int f=snowFrame+1;f<=now;f++) {
-    float t=f/60f;float travel=Mathf.Repeat(t*1.1f,12);float x=Mathf.PingPong(t*1.1f,6)-3;actors[0].position=new Vector3(x,.12f,0);if(walk)walk.SampleAnimation(actors[0].gameObject,t%walk.length);actors[0].rotation=Quaternion.Euler(0,travel<6?90:-90,0);
-    contactCamera.Render();var previous=RenderTexture.active;RenderTexture.active=contactTarget;contactPixels.ReadPixels(new Rect(0,0,194,98),0,0);contactPixels.Apply();RenderTexture.active=previous;
-    // Looking upward with +Z as screen-up makes screen-right point toward -X.
-    bool accumulate=stage>0 && !(actionKind=="accumulation-toggle"&&t>=actionStartSeconds&&t<actionResumeSeconds);
-    for(int n=0;n<snow.Length;n++){Vector3 v=baseVertices[n];float u=(4-v.x)/8,uv=(v.z+2)/4;float mask=contactPixels.GetPixelBilinear(u,uv).r;snow[n]=accumulate?Mathf.Max(snow[n],mask*.12f):mask*.12f;}
-   }
-   snowFrame=now;
-   Vector3[] vertices=new Vector3[baseVertices.Length];
-   for(int i=0;i<vertices.Length;i++){vertices[i]=baseVertices[i];vertices[i].y-=snow[i];}
-   mesh.vertices=vertices;mesh.RecalculateNormals();mesh.RecalculateBounds();
-   float px=Mathf.PingPong(elapsed*1.1f,6)-3;actors[0].position=new Vector3(px,.12f,0);
-   if(walk)walk.SampleAnimation(actors[0].gameObject,elapsed%walk.length);actors[0].rotation=Quaternion.Euler(0,Mathf.Repeat(elapsed*1.1f,12)<6?90:-90,0);
-   // Real isolated orthographic ankle-slab camera; accumulate its contact mask.
-   if(props.Length>0)props[0].gameObject.SetActive(stage==1);
-   if(effects!=null&&effects.Length==2)dynamicSurface.GetComponent<Renderer>().sharedMaterial=effects[stage==1?1:0];
-   if(stage==1){foreach(var r in FindObjectsByType<Renderer>(FindObjectsSortMode.None))if(r.name=="Dark teaching stage"||r.name.StartsWith("GridX")||r.name.StartsWith("GridZ"))r.enabled=false;shot.transform.position=new Vector3(7,3,-8);shot.transform.LookAt(new Vector3(0,.2f,0));}
-   foreach(var line in lines)line.enabled=stage==1;
-   lastGap=Max(snow);
-  }
+  void Snow() { SampleSnow(); }
   static float Max(float[] a){float r=0;foreach(float x in a)r=Mathf.Max(r,x);return r;}
   void Water() {
    float actionTime=elapsed-actionStartSeconds;
@@ -113,7 +86,7 @@ namespace Yamyam.TechTen {
   Vector3 RopeEnd(float seconds){
    // The disclosed parallel system preserves a collision-safe wrapped route.
    // It is not evidence of an endpoint-distance clamp in the commercial game.
-   return new Vector3(3,2,Mathf.Lerp(-.75f,1.7f,.5f+.5f*Mathf.Sin(seconds*.7f)));
+   return new Vector3(3,2+.28f*Mathf.Sin(seconds*1.1f),Mathf.Lerp(-.75f,1.7f,.5f+.5f*Mathf.Sin(seconds*.7f)));
   }
   static List<Vector3> WrappedPath(Vector3 a,Vector3 b,float radius) {
    // This testbed has endpoints on opposite sides of one square pillar. Keep
@@ -123,7 +96,13 @@ namespace Yamyam.TechTen {
    float leftZ=Mathf.Lerp(a.z,b.z,(-radius-a.x)/(b.x-a.x));
    float rightZ=Mathf.Lerp(a.z,b.z,(radius-a.x)/(b.x-a.x));
    if(Mathf.Max(leftZ,rightZ)<=-radius||Mathf.Min(leftZ,rightZ)>=radius)return new List<Vector3>{a,b};
-   return new List<Vector3>{a,new Vector3(-radius,2,-radius),new Vector3(radius,2,-radius),b};
+   // Unfold the three horizontal route segments and distribute height along
+   // their total length. The two contacts then slide on the pillar's real
+   // vertical edges as the endpoint rises/falls, without penetrating the box.
+   float first=Vector2.Distance(new Vector2(a.x,a.z),new Vector2(-radius,-radius));
+   float middle=radius*2,last=Vector2.Distance(new Vector2(radius,-radius),new Vector2(b.x,b.z));
+   float total=Mathf.Max(first+middle+last,.0001f);
+   return new List<Vector3>{a,new Vector3(-radius,Mathf.Lerp(a.y,b.y,first/total),-radius),new Vector3(radius,Mathf.Lerp(a.y,b.y,(first+middle)/total),-radius),b};
   }
   static Vector3 Along(List<Vector3> p,float u){float len=0;for(int i=1;i<p.Count;i++)len+=Vector3.Distance(p[i-1],p[i]);float d=u*len;for(int i=1;i<p.Count;i++){float l=Vector3.Distance(p[i-1],p[i]);if(d<=l)return Vector3.Lerp(p[i-1],p[i],d/Mathf.Max(l,.0001f));d-=l;}return p[p.Count-1];}
   void Workers() {
@@ -143,7 +122,12 @@ namespace Yamyam.TechTen {
   void Marines() {
    int frame=Mathf.FloorToInt(elapsed*60);
    if(nextShot==null||frame<marineFrame){marineFrame=-1;nextShot=new float[actors.Length];lastShot=new float[actors.Length];shotRandom=new System.Random[actors.Length];for(int i=0;i<actors.Length;i++){lastShot[i]=-10;shotRandom[i]=new System.Random(1000+i);}}
-   for(int f=marineFrame+1;f<=frame;f++)for(int i=0;i<actors.Length;i++)if(f/60f>=nextShot[i]){bool vary=stage!=0&&(stage!=2||i%4>=2);lastShot[i]=nextShot[i];float jitter=(float)(shotRandom[i].NextDouble()*2-1)*.02f;if(f==0&&i==2)jitter=-.02f;if(f==0&&i==3)jitter=.02f;nextShot[i]=lastShot[i]+1f+(vary?jitter:0);}
+   for(int f=marineFrame+1;f<=frame;f++){
+    for(int i=0;i<actors.Length;i++)if(f/60f>=nextShot[i]){bool vary=stage!=0&&(stage!=2||i%4>=2);lastShot[i]=nextShot[i];float jitter=(float)(shotRandom[i].NextDouble()*2-1)*.02f;if(f==0&&i==2)jitter=-.02f;if(f==0&&i==3)jitter=.02f;nextShot[i]=lastShot[i]+1f+(vary?jitter:0);}
+    // Preserve the actual first wait intervals for the spoken numeric example.
+    // The scheduler keeps drawing new jitter; these labels are not live timers.
+    if(f==0&&valueLabels!=null)for(int j=0;j<valueLabels.Length;j++){int actorIndex=new[]{0,2,3}[j];valueLabels[j].text=(nextShot[actorIndex]-lastShot[actorIndex]).ToString("F2",System.Globalization.CultureInfo.InvariantCulture)+" s";}
+   }
    marineFrame=frame;
    firedCount=0;
    for(int i=0;i<actors.Length;i++) {
@@ -153,7 +137,7 @@ namespace Yamyam.TechTen {
     float recoil=flash?-.04f:0;actors[i].localPosition=new Vector3((i%4-1.5f)*1.15f,0,(i/4-1)*1.25f+recoil);
     if(lines.Length>i){lines[i].enabled=stage>0;lines[i].SetPositions(new[]{actors[i].position+Vector3.up*1.3f,actors[i].position+Vector3.up*(1.3f+local/period*.65f)});}
    }
-   if(valueLabels!=null)for(int i=0;i<valueLabels.Length;i++){int actorIndex=new[]{0,2,3}[i];var label=valueLabels[i];label.gameObject.SetActive(stage==2);label.text=(nextShot[actorIndex]-lastShot[actorIndex]).ToString("F2",System.Globalization.CultureInfo.InvariantCulture)+" s";label.transform.position=actors[actorIndex].position+Vector3.up*2.1f;label.transform.rotation=shot.transform.rotation;}
+   if(valueLabels!=null)for(int i=0;i<valueLabels.Length;i++){int actorIndex=new[]{0,2,3}[i];var label=valueLabels[i];label.gameObject.SetActive(stage==2);label.characterSize=.09f;label.transform.position=actors[actorIndex].position+Vector3.up*2.1f+(i==1?shot.transform.up*.85f:Vector3.zero)+(i==2?shot.transform.right*.35f:Vector3.zero);label.transform.rotation=shot.transform.rotation;}
    // Seeded per-shot jitter demonstrates desynchronization; these are illustrative parameters, not measured SC2 values.
   }
  }

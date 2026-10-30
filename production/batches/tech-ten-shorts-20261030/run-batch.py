@@ -10,13 +10,15 @@ import hashlib
 import html
 import json
 import os
+import re
+import struct
 import subprocess
 import sys
 import uuid
 
 from batch_job_lock import SerialJobLock, JobBusy, inspect_lock
 from scoped_context import (BATCH, ROOT, MEDIA, REVISION, Deferred, authorization,
-                            inventory, make_context, now, process_snapshot, read, sha)
+                            inventory, make_context, now, normalize_speech, process_snapshot, read, sha)
 
 PYTHON = ROOT / 'qwen3-tts/.venv/Scripts/python.exe'
 STAGES = ['voice', 'voice-asr', 'captions', 'visual-preparation', 'native-capture',
@@ -48,6 +50,192 @@ def verify(rows):
         path = Path(row['path'])
         if not path.is_file() or path.stat().st_size != row['bytes'] or sha(path) != row['sha256']:
             raise RuntimeError('Previous successful artifact changed; preserve and inspect: ' + str(path))
+
+
+def reconciliation_file(audio, role):
+    return Path(audio) / ('asr-reconciliation.json' if role == 'voice' else 'asr-mix-reconciliation.json')
+
+
+def evidence_path(record):
+    path = Path(record['path'])
+    return path if path.is_absolute() else ROOT / path
+
+
+def reconciliation_dependencies(path):
+    """Declared files are dependencies as well as verified acceptance artifacts."""
+    path = Path(path)
+    if not path.exists():
+        return []
+    files = [path]
+    for item in read(path).get('independentEvidence', []):
+        files.append(evidence_path(item))
+        for key in ['sourceVoice', 'priorLineLevels', 'currentLineLevels']:
+            if key in item:
+                files.append(evidence_path(item[key]))
+        for selection in item.get('unchangedParagraphs', []):
+            if 'priorNormalizedTake' in selection:
+                files.append(evidence_path(selection['priorNormalizedTake']))
+    return files
+
+
+def float32_mono_wav_data(path):
+    """Return exact IEEE FLOAT32 samples; PEAK creation time is not audio."""
+    data = Path(path).read_bytes()
+    if len(data) < 12 or data[:4] != b'RIFF' or data[8:12] != b'WAVE' or struct.unpack_from('<I', data, 4)[0] + 8 != len(data):
+        raise RuntimeError('ASR reuse requires a complete RIFF/WAVE container')
+    position, chunks = 12, {}
+    while position < len(data):
+        if position + 8 > len(data):
+            raise RuntimeError('ASR reuse encountered a truncated WAV chunk')
+        name, size = data[position:position + 4], struct.unpack_from('<I', data, position + 4)[0]
+        position += 8
+        if position + size > len(data) or (name in {b'fmt ', b'data'} and name in chunks):
+            raise RuntimeError('ASR reuse requires complete unique WAV format/data chunks')
+        chunks[name] = data[position:position + size]
+        position += size + size % 2
+    fmt, samples = chunks.get(b'fmt ', b''), chunks.get(b'data', b'')
+    if len(fmt) < 16:
+        raise RuntimeError('ASR reuse WAV format is missing')
+    code, channels, rate, byte_rate, align, bits = struct.unpack_from('<HHIIHH', fmt)
+    if (code, channels, rate, byte_rate, align, bits) != (3, 1, 24000, 96000, 4, 32) or not samples or len(samples) % 4:
+        raise RuntimeError('ASR reuse requires exact mono24kHz IEEE FLOAT32 data')
+    return fmt, samples
+
+
+def validate_asr_reconciliation(path, report_path, source, voice, script, expected, pronunciation_aliases):
+    """Accept only complete, evidence-bound orthographic reconciliation.
+
+    The original recognizer report and its false normalizedMatch remain intact.
+    This is machine-content evidence, never a claim of actual human listening.
+    """
+    path, report_path, source, voice, script = map(Path, [path, report_path, source, voice, script])
+    review, report = read(path), read(report_path)
+    def require(condition, message):
+        if not condition:
+            raise RuntimeError('ASR reconciliation rejected: ' + message)
+    require(review.get('status') == 'reviewed-orthography-only', 'explicit bounded review is missing')
+    require(review.get('role') == report.get('role'), 'role differs')
+    for key, file in [('inputSha256', source), ('voiceSha256', voice), ('asrSha256', report_path), ('scriptSha256', script)]:
+        require(review.get(key) == sha(file), key + ' differs')
+    require(report.get('sha256') == sha(source) and report.get('expectedSourceSha256') == sha(script), 'raw input/script binding differs')
+    require(report.get('fullInput') is True and report.get('expectedTextPromptUsed') is False
+            and report.get('rawRecognitionUnmodified') is True, 'raw unprompted full-input evidence is missing')
+    require(type(review.get('unresolvedCount')) is int and review['unresolvedCount'] == 0
+            and review.get('unresolved') == [], 'unresolved differences remain')
+    require(review.get('rawAsrPreserved') is True and review.get('actualListening') == 'pending'
+            and review.get('humanListening') == 'pending', 'raw preservation/listening boundary differs')
+    aliases = review.get('aliases')
+    require(isinstance(aliases, dict) and bool(aliases), 'nonempty explicit mappings are required')
+    norm = lambda value: normalize_speech(value, pronunciation_aliases)
+    paths, evidence_text = [path, report_path], {}
+    def checked_file(record):
+        file = evidence_path(record)
+        require(file.is_file() and record.get('sha256') == sha(file), 'independent evidence file changed: ' + str(file))
+        paths.append(file)
+        return file
+    evidence_rows = review.get('independentEvidence', [])
+    require(isinstance(evidence_rows, list) and bool(evidence_rows), 'independent recognition evidence is required')
+    for item in evidence_rows:
+        identifier = item.get('id')
+        require(isinstance(identifier, str) and identifier and identifier not in evidence_text, 'evidence IDs must be unique')
+        evidence = read(checked_file(item))
+        require(evidence.get('expectedTextPromptUsed') is False and evidence.get('rawRecognitionUnmodified') is True,
+                'independent recognition was prompted or modified')
+        evidence_voice = evidence.get('voiceSha256', evidence.get('sha256'))
+        if evidence_voice == sha(voice):
+            texts = [evidence.get('text', '')] + [row.get('raw', {}).get('text', '') for row in evidence.get('paragraphs', [])]
+        else:
+            # A prior report remains useful only for PCM paragraphs proven unchanged
+            # through the preserved assembly receipts, never for the repaired line.
+            for key in ['sourceVoice', 'priorLineLevels', 'currentLineLevels']:
+                require(isinstance(item.get(key), dict), 'prior-voice evidence requires ' + key)
+            prior_voice = checked_file(item['sourceVoice'])
+            prior = read(checked_file(item['priorLineLevels']))
+            current = read(checked_file(item['currentLineLevels']))
+            require(sha(prior_voice) == evidence_voice == prior.get('voiceSha256')
+                    and current.get('voiceSha256') == sha(voice), 'prior/current assembly binding differs')
+            reused = item.get('unchangedParagraphs', [])
+            require(isinstance(reused, list) and bool(reused), 'prior evidence requires exact unchanged paragraphs')
+            texts = []
+            for selection in reused:
+                index = selection.get('lineIndex')
+                require(type(index) is int, 'paragraph index must be an integer')
+                previous = [row for row in prior['paragraphs'] if row['lineIndex'] == index]
+                present = [row for row in current['paragraphs'] if row['lineIndex'] == index]
+                observed = [row for row in evidence.get('paragraphs', []) if row.get('id') == selection.get('evidenceParagraphId')]
+                require(len(previous) == len(present) == len(observed) == 1, 'paragraph evidence is missing or ambiguous')
+                old, new, observed = previous[0], present[0], observed[0]
+                require(all(old.get(key) == new.get(key) for key in ['text', 'rawTakeSha256', 'samples', 'rate']),
+                        'reused paragraph text/PCM changed')
+                require(old.get('destinationSampleRange') == [observed.get('startSample'), observed.get('endSample')]
+                        and old.get('rate') == observed.get('sampleRate'), 'independent crop does not identify the prior paragraph')
+                for key in ['rawTake', 'normalizedTake']:
+                    checked_file({'path': new[key], 'sha256': new[key + 'Sha256']})
+                if old.get('normalizedTakeSha256') != new.get('normalizedTakeSha256'):
+                    previous_take = selection.get('priorNormalizedTake')
+                    require(isinstance(previous_take, dict) and previous_take.get('sha256') == old.get('normalizedTakeSha256'),
+                            'different normalized containers need the preserved prior take')
+                    previous_file = checked_file(previous_take)
+                    old_fmt, old_pcm = float32_mono_wav_data(previous_file)
+                    new_fmt, new_pcm = float32_mono_wav_data(evidence_path({'path': new['normalizedTake']}))
+                    require(old_fmt == new_fmt and old_pcm == new_pcm and len(new_pcm) // 4 == new['samples']
+                            and hashlib.sha256(old_pcm).hexdigest() == observed.get('decodedFloat32LeSha256'),
+                            'normalized audio samples changed; metadata-only reuse is not proven')
+                texts.append(observed.get('raw', {}).get('text', ''))
+        evidence_text[identifier] = norm(' '.join(texts))
+        require(bool(evidence_text[identifier]), 'independent report contains no recognized text')
+    changes = review.get('changes', [])
+    require(isinstance(changes, list) and len(changes) == len(aliases), 'every mapping requires one documented change')
+    normalized_aliases, seen = {}, set()
+    raw, target = norm(report['text']), norm(expected)
+    for change in changes:
+        before, after = change.get('source'), change.get('target')
+        require(isinstance(before, str) and isinstance(after, str) and aliases.get(before) == after and before not in seen,
+                'documented mapping differs from aliases')
+        seen.add(before)
+        a, b = norm(before), norm(after)
+        require(a and b and a != b and a not in normalized_aliases, 'empty, duplicate or no-op normalized mapping')
+        kind = change.get('kind')
+        if kind == 'mesh-loanword-orthography':
+            require(a.count('메쉬') == 1 and a.replace('메쉬', '메시') == b, 'not a bounded Mesh spelling variant')
+        elif kind == 'contextual-possessive-pronunciation':
+            differing = [i for i, pair in enumerate(zip(a, b)) if pair[0] != pair[1]]
+            require(len(a) == len(b) and len(differing) == 1, 'not one contextual possessive variant')
+            at = differing[0]
+            require(2 <= at < len(a) - 2 and a[at] == '에' and b[at] == '의', 'possessive variant needs both surrounding contexts')
+        elif kind == 'contextual-bridge-liaison-orthography':
+            # Korean 달이 and 다리 both surface as /다리/. Only this exact
+            # inspected bridge sentence is admitted; not a general noun alias.
+            require((a, b) == ('이스타크래프트달이대각선으로놓여있죠',
+                               '이스타크래프트다리대각선으로놓여있죠'),
+                    'not the exact bridge liaison context')
+        elif kind == 'contextual-locative-pronunciation':
+            # 의 can be pronounced 에. The authored locative is established by
+            # the complete same-area grid sentence, not by a global reversal.
+            require((a, b) in {('같은넓이의가로네칸', '같은넓이에가로네칸'),
+                              ('새게임사이의통역기를둔다면어떨까요', '새게임사이에통역기를둔다면어떨까요')},
+                    'not an exact reviewed locative context')
+        elif kind == 'contextual-method-liaison-orthography':
+            require((a, b) == ('그값을찾아주는시기죠', '그값을찾아주는식이죠'),
+                    'not the exact value-lookup method liaison context')
+        else:
+            raise RuntimeError('ASR reconciliation rejected: unsupported orthographic kind; names and semantic replacements are forbidden')
+        require(isinstance(change.get('reason'), str) and bool(change['reason'].strip()), 'review rationale is missing')
+        refs = change.get('evidenceIds', [])
+        require(isinstance(refs, list) and bool(refs) and all(ref in evidence_text and
+                (a in evidence_text[ref] or (kind in ['contextual-bridge-liaison-orthography',
+                 'contextual-locative-pronunciation', 'contextual-method-liaison-orthography'] and b in evidence_text[ref])) for ref in refs),
+                'documented variant is not present in its independent evidence')
+        require(type(change.get('occurrences')) is int and change['occurrences'] > 0
+                and raw.count(a) == change['occurrences'] and b in target, 'mapping count/context differs')
+        normalized_aliases[a] = b
+    expression = re.compile('|'.join(re.escape(key) for key in sorted(normalized_aliases, key=lambda key: (-len(key), key))))
+    require(expression.sub(lambda match: normalized_aliases[match.group()], raw) == target,
+            'complete canonical content still differs; no partial acceptance')
+    require(norm(''.join(chunk['text'] for chunk in report.get('chunks', []))) == raw, 'raw full text and chunks differ')
+    return {'rawNormalizedMatch': report.get('normalizedMatch'), 'reconciledContentMatch': True,
+            'orthographicChanges': len(changes), 'actualListening': 'pending',
+            'reconciliationSha256': sha(path)}, sorted(set(paths), key=str)
 
 
 def code_paths(project):
@@ -147,6 +335,8 @@ class Pipeline:
             files += [self.ctx['VOICE'], self.project / 'script/caption-clauses.json']
         if stage == 'captions':
             files += [self.audio / ('asr-voice-' + sha(self.ctx['VOICE'])[:12] + '.json')]
+        if stage in {'voice-asr', 'captions'}:
+            files += reconciliation_dependencies(reconciliation_file(self.audio, 'voice'))
         return {'slug': self.slug, 'revision': REVISION, 'algorithmStage': stage,
                 'files': [artifact(p) for p in sorted(set(files), key=str)]}
 
@@ -225,9 +415,16 @@ class Pipeline:
             or data.get('rawRecognitionUnmodified') is not True
             or data.get('expectedSourceSha256') != sha(self.project / 'script/narration.spoken.ko.json')):
             raise RuntimeError('ASR requires exact current full-input unprompted evidence.')
-        if data.get('normalizedMatch') is not True:
+        script = self.project / 'script/narration.spoken.ko.json'
+        expected = ' '.join(line for scene in read(script)['scenes'] for line in scene['lines'])
+        aliases = read(self.project / 'script/caption-clauses.json').get('pronunciationAliases', {})
+        raw_match = normalize_speech(data['text'], aliases) == normalize_speech(expected, aliases)
+        if data.get('normalizedMatch') is True and raw_match:
+            return {'normalizedMatch': True, 'rawNormalizedMatch': True, 'actualListening': 'pending'}, [path]
+        receipt = reconciliation_file(self.audio, role)
+        if not receipt.exists():
             raise RuntimeError('Raw ASR differs from narration; inspect actual PCM. Do not silently create aliases.')
-        return {'normalizedMatch': True, 'actualListening': 'pending'}, [path]
+        return validate_asr_reconciliation(receipt, path, source, self.ctx['VOICE'], script, expected, aliases)
 
     def captions(self):
         self.command(self.py('time-captions')); c = read(self.project / 'script/captions.json')

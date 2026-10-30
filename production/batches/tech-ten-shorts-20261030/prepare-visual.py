@@ -118,6 +118,42 @@ def remap_source_annotations(sections, config, sources):
     return result
 
 
+def apply_native_sequences(sections, config):
+    """Continue the absolute-time boat simulation across a spoken paragraph join.
+
+    This carries its analytic wave/flood clock, not arbitrary stateful scene data.
+    Unconfigured sections retain the existing zero-based sampling behavior.
+    """
+    sequences = config.get('nativeSequences', {})
+    if not sequences: return
+    if config.get('slug') != 'shorts-sea-of-thieves-water-masking':
+        raise RuntimeError('Native elapsed continuity is currently verified only for the analytic boat scene.')
+    if not isinstance(sequences, dict): raise RuntimeError('nativeSequences must map exact section IDs.')
+    indices = {row['id']: index for index, row in enumerate(sections)}
+    if len(indices) != len(sections): raise RuntimeError('Native continuity requires unique section IDs.')
+    if set(sequences) - set(indices): raise RuntimeError('Native continuity names an absent destination section.')
+    for index, row in enumerate(sections):
+        if row['id'] not in sequences: continue
+        instruction = sequences[row['id']]
+        if not isinstance(instruction, dict) or set(instruction) != {'inheritFrom'}:
+            raise RuntimeError('Native continuity requires only an explicit inheritFrom section ID.')
+        source_id = instruction['inheritFrom']
+        if index == 0 or indices.get(source_id) != index - 1:
+            raise RuntimeError('Native continuity must inherit the immediately preceding section.')
+        source = sections[index - 1]
+        if (source['kind'] != 'unity' or row['kind'] != 'unity' or
+                source['endFrame'] != row['startFrame'] or source['unityStage'] != row['unityStage']):
+            raise RuntimeError('Native continuity requires adjacent Unity sections of the same saved stage.')
+        if row['id'] in config.get('nativeActionCues', {}) or row.get('actionKind'):
+            raise RuntimeError('Inherited native sequence cannot also reset its own action cue.')
+        offset = (row['startFrame'] - source['startFrame']) / 60 + source.get('elapsedOffsetSeconds', 0)
+        if not math.isfinite(offset) or offset <= 0:
+            raise RuntimeError('Native continuity offset must be finite and strictly positive.')
+        row.update(elapsedOffsetSeconds=offset, nativeSequenceInheritFrom=source_id)
+        for key in ('actionKind', 'actionStartSeconds', 'actionCueId', 'actionResumeSeconds', 'actionResumeCueId'):
+            if key in source: row[key] = source[key]
+
+
 def build(ctx, spec, config, sources, captions, pcm):
     lines = [x for s in read(ctx['P'] / 'script/narration.spoken.ko.json')['scenes'] for x in s['lines']]
     entries = {e['lineIndex']: e for e in pcm['entries'] if e['scene_id'] == 'main'}
@@ -199,6 +235,7 @@ def build(ctx, spec, config, sources, captions, pcm):
         elif row['kind'] == 'diagram':
             row['diagramType'] = row.get('diagramType', config.get('diagramType'))
             if row['diagramType'] not in {'grid', 'eud', 'replay'}: raise RuntimeError('Select the authored diagram mechanism.')
+    apply_native_sequences(sections, config)
     if sections[0]['kind'] != 'game': raise RuntimeError('Open with actual independent gameplay.')
     events = {name: cue_event(captions['cues'], ids) for name, ids in config.get('speechEvents', {}).items()}
     if config.get('definitionCue'):

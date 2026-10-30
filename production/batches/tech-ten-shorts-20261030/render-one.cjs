@@ -53,10 +53,24 @@ async function main() {
     const puppeteer = require(path.join(root, 'motion-canvas/node_modules/puppeteer'));
     browser = await puppeteer.launch({headless: true, args: ['--disable-gpu'], protocolTimeout: 900000});
     const page = await browser.newPage();
-    await page.goto('http://127.0.0.1:9284/render-worker.html');
+    await page.goto('http://127.0.0.1:9284/render-worker.html', {waitUntil: 'networkidle0', timeout: 60000});
     await page.waitForFunction(() => typeof renderVideo === 'function');
+    const route = '/src/projects/' + batchId + '/entries/' + slug + '/project.ts';
+    // Warm the exact dynamic project import and exporter before any encoder can
+    // start. Dependency errors abort here; never retry an in-flight render.
+    await page.evaluate(async route => {
+      const module = await import(/* @vite-ignore */ `${route}?project`);
+      if (!module.default) throw Error('Selected project module did not load.');
+      await document.fonts.ready;
+      window.__yamyamWarmProject = route;
+    }, route);
+    await page.waitForNetworkIdle({idleTime: 750, timeout: 60000});
+    const warmed = await page.evaluate(route => window.__yamyamWarmProject === route
+      && typeof window.renderVideo === 'function' && window.renderJob === undefined, route);
+    if (!warmed || fs.existsSync(output)) throw Error('Project warm-up did not stay stable before encoding.');
+    console.log(JSON.stringify({stage: 'render-bootstrap-ready', route, encodingStarted: false}));
     const pulse = setInterval(() => page.evaluate(() => window.renderJob?.frame).then(frame => console.log('Frame ' + frame)).catch(() => {}), 15000);
-    try {await page.evaluate(args => window.renderVideo(args), {route: '/src/projects/' + batchId + '/entries/' + slug + '/project.ts', name, firstFrame, frames, fps: 60, width: 1080, height: 1920, exactFrameRange: true});}
+    try {await page.evaluate(args => window.renderVideo(args), {route, name, firstFrame, frames, fps: 60, width: 1080, height: 1920, exactFrameRange: true});}
     finally {clearInterval(pulse);}
     const result = await page.evaluate(() => window.renderJob);
     const record = {...result, batchId, slug, revision, output, firstFrame, frames, fullCurrentTimeline: firstFrame === 0 && frames === timing.frames,
@@ -73,4 +87,7 @@ async function main() {
   }
 }
 
-if (require.main === module) main().catch(error => {console.error(error);process.exitCode = 1;});
+// Await owned cleanup, then finish this finite worker despite library timers.
+if (require.main === module) main().then(() => process.exit(0), error => {
+  console.error(error); process.exit(1);
+});
