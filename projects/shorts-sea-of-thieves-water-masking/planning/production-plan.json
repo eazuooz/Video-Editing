@@ -1,0 +1,326 @@
+{
+  "revision": "tech-ten-v1",
+  "researchCandidateId": "sea-of-thieves-water-masking",
+  "researchRecord": "shared/publishing/shorts-research-20261030-ten.json",
+  "researchSha256": "bd53b4984c62a4ab9a75170b626f2da96093e51fe33c9495f676bc5f7d47403d",
+  "game": "Sea of Thieves",
+  "centralQuestion": "배 안에 물이 없는 이유? 바다에 구멍을 뚫었다",
+  "canonicalTerms": [
+    {
+      "en": "Water Masking",
+      "ko": "물 표면 마스킹"
+    },
+    {
+      "en": "Mask Mesh",
+      "ko": "마스크 메시"
+    }
+  ],
+  "claims": [
+    "선체 내부 모양의 마스크 메시로 배 안에 걸친 바다 표면을 숨긴다. 마스크의 앞뒷면 깊이를 저장하고 정렬해 가릴 영역을 판별한다. 반대 마스크 조건은 별도의 단순 수면을 선체 내부에만 보이게 하며 개발자는 이것을 실제 침수 표현에 사용했다고 설명한다."
+  ],
+  "limits": [
+    "선박의 부력·충돌·침몰 물리 전체가 없다는 뜻이 아니다. 이 설명은 바다 표면을 선체 내부에서 숨기는 렌더링에 한정한다.",
+    "마스크로 숨기는 것과 물이 실제로 밀려나는 유체 시뮬레이션을 구별한다.",
+    "공개된 재현 데모의 세부 코드와 제품의 모든 버전이 완전히 동일하다고 단정하지 않는다.",
+    "Source610–617s visibly shows cabin floor and a leak jet. Do not assert a measured internal water level or perfectly dry cabin; separate flooding mechanism is illustrated by our Unity implementation and supported by the primary developer article."
+  ],
+  "primarySources": [
+    {
+      "url": "https://speps.fr/articles/water-masking-sea-of-thieves/",
+      "kind": "first-person-developer-technical-article",
+      "title": "Water Masking in Sea of Thieves",
+      "author": "Rémi Gillig",
+      "developerRoleEvidence": "Article states the author worked on the Rare rendering team from 2015 to 2019 and was tasked with holes in the ocean mesh.",
+      "publishedOn": "2026-07-08",
+      "reviewedEvidence": "Complete article text read, including mask-depth, sort, usage and extension sections.",
+      "supportingSections": [
+        "Algorithm",
+        "Mask depth",
+        "Sort pass",
+        "Usage",
+        "Extensions"
+      ]
+    }
+  ],
+  "suggestedScreens": [
+    "독립 실제 게임 화면에서 해수면보다 낮은 마른 선실을 보여 준다.",
+    "Unity 설명에서 선체를 투명하게 바꿔 바다 표면이 내부를 관통하는 구조를 공개한다.",
+    "같은 장면에 선체 내부 마스크만 켜 바다가 배 안에서 사라지는 것을 보여 준다.",
+    "별도 침수 수면을 올려 외부 바다와 내부 물이 따로 표현되는 결과를 연결한다."
+  ],
+  "oneVariableComparison": {
+    "variable": "Water mask enabled or disabled",
+    "fixed": [
+      "ship position",
+      "ocean plane",
+      "camera",
+      "wave animation"
+    ],
+    "observedResultToDemonstrate": "With the mask enabled, ocean fragments intersecting the hull interior disappear while exterior water remains.",
+    "classification": "our explanatory reconstruction"
+  },
+  "scriptFinalized": true,
+  "independentFootageViewed": true,
+  "scenePlan": [
+    {
+      "id": "game",
+      "paragraph": 0,
+      "firstCue": "p1-1",
+      "purpose": "Actual source600–606s outside waves then source610–617s visible cabin floor and hull repair. No claim of a completely dry cabin or measured flooding level."
+    },
+    {
+      "id": "unmasked",
+      "paragraph": 1,
+      "firstCue": "p2-1",
+      "purpose": "Unity stage0: transparent/cutaway ship and continuous ocean crossing hull."
+    },
+    {
+      "id": "mask",
+      "paragraph": 2,
+      "firstCue": "p3-1",
+      "purpose": "Reveal interior rectangular mask volume with labels; shader clips ocean inside."
+    },
+    {
+      "id": "compare",
+      "paragraph": 3,
+      "firstCue": "p4-1",
+      "purpose": "Same camera/boat/waves; toggle mask only. Outside ocean unchanged."
+    },
+    {
+      "id": "flood",
+      "paragraph": 4,
+      "firstCue": "p5-1",
+      "purpose": "Separate interior water rises only within hull mask; ocean remains unchanged."
+    },
+    {
+      "id": "result",
+      "paragraph": 5,
+      "firstCue": "p6-1",
+      "purpose": "Unity stage2 separately rising interior water for the first closing clause, then actual deck/ocean source618–624s. No actual-game water-height measurement claimed."
+    }
+  ],
+  "chapterLinks": [
+    {
+      "from": 0,
+      "to": 1,
+      "bridge": [
+        "시브즈는",
+        "선실에",
+        "겹친",
+        "바다",
+        "표면을",
+        "숨깁니다.",
+        "원리를",
+        "단순한",
+        "배로",
+        "볼게요.",
+        "넓은",
+        "바다"
+      ]
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "bridge": [
+        "그리면,",
+        "선체를",
+        "뚫고",
+        "내부까지",
+        "들어옵니다.",
+        "그래서",
+        "배",
+        "안쪽에",
+        "맞춘",
+        "보이지"
+      ]
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "bridge": [
+        "바다",
+        "픽셀은",
+        "화면에",
+        "그리지",
+        "않아요.",
+        "이것이",
+        "물",
+        "표면",
+        "마스킹입니다.",
+        "마스크만"
+      ]
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "bridge": [
+        "그대로인데",
+        "배",
+        "안의",
+        "바다는",
+        "사라졌죠.",
+        "그런데",
+        "침수된",
+        "물은",
+        "보여야",
+        "하잖아요."
+      ]
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "bridge": [
+        "보이는",
+        "수면을",
+        "따로",
+        "두고",
+        "높이를",
+        "올립니다.",
+        "배",
+        "밖에는",
+        "거친",
+        "바다,",
+        "안에는",
+        "따로"
+      ]
+    }
+  ],
+  "rendererPolicy": "Unity implementation/behavior explanations with Motion Canvas compositing; choose per teaching need, preserve independently editable Unity scenes.",
+  "footageRightsConfirmed": true,
+  "sourceFhdVerified": true,
+  "actualHumanListening": "pending",
+  "scriptRevision": "tech-ten-v1",
+  "independentFootageReviewScope": "Decoded source-range contact sheets and denser selected sequence samples viewed. Full real-time playback pending.",
+  "footageAudit": "production/batches/tech-ten-shorts-20261030/preproduction/first-five.json",
+  "selectedFootage": {
+    "order": 3,
+    "id": "sea-of-thieves-water-masking",
+    "game": "Sea of Thieves",
+    "status": "footage-source-and-policy-ready; selected-range-motion-review-still-required",
+    "sourceUrl": "https://www.youtube.com/watch?v=t_jO8ExXYH4",
+    "sourceTitle": "Sea Of Thieves: Ultimate Brig Ship Duel",
+    "author": "SSGoatanks",
+    "uploadDate": "2024-07-18",
+    "recordingLicense": "Creative Commons Attribution license (reuse allowed)",
+    "publisherPolicy": "microsoft",
+    "recordingProvenance": "Uploader describes their team's first PvP victory and own gameplay, including bailing and repairs. No third-party tutorial frames detected in sampled range.",
+    "localFile": "C:/Users/1/Videos/YamyamProduction/tech-ten-shorts-20261030/footage-first-five/t_jO8ExXYH4.s480-660.mp4",
+    "sha256": "6297c1ead78148e04a8604c6f1bbef7e6342efdb50985cb8b58998de69fcc078",
+    "decoded": {
+      "width": 1920,
+      "height": 1080,
+      "fps": "60/1",
+      "codec": "h264",
+      "duration": 180.026033,
+      "sourceInterval": [
+        480,
+        660
+      ]
+    },
+    "proposedSourceCuts": [
+      {
+        "start": 600,
+        "end": 606,
+        "role": "Large ocean waves around ship exterior."
+      },
+      {
+        "start": 607,
+        "end": 617,
+        "role": "Player descends below deck, shallow interior water and leaking hull shown; repair closes hole."
+      },
+      {
+        "start": 618,
+        "end": 624,
+        "role": "Return to deck and high surrounding ocean after repair."
+      }
+    ],
+    "viewedEvidence": [
+      "sot-brig-contact.jpg",
+      "sot-interior.jpg"
+    ],
+    "observed": "The ocean outside rises visibly around the hull. Below deck the interior water surface is much lower, a local stream leaks through a hull hole, and a repair plank closes it. This supports exterior/interior water being visibly treated differently.",
+    "claimLimit": "The selected repair view supports visible cabin floor, not a measured interior water height. Do not call this damaged ship perfectly dry. Separate interior water masking is supported by the developer article and our labeled Unity implementation.",
+    "captionAndCrop": "Keep high outside wave line, stairs transition, interior water surface and repair hole visible. Use same-role teal ocean line/yellow hull mask in our Unity cut, no invented water-height numbers.",
+    "rejectedAttempt": {
+      "url": "https://www.youtube.com/watch?v=vfq8KwLlcD8",
+      "author": "Er Cian",
+      "file": "vfq8KwLlcD8.mp4",
+      "sha256": "8ee72b200b0a243da6cd8708b2f629de0ea7e3ac7e1b177f69c3727bd3350149",
+      "reason": "CC BY and1920x1080, but mostly beach/PvP action. Insufficient sustained interior water example; not selected."
+    }
+  },
+  "scopeAndOmissions": [
+    "Selected short focuses on outside ocean masking and separate interior flooding, not ship buoyancy or full ocean simulation.",
+    "Full original article read including depth/sort/inside-volume/extension cases. Per-pixel front/back signed depth and sorting details remain in source notes and description; no claim the rectangular Unity clip is Rare production code.",
+    "Real gameplay source is a damaged brig with shallow flooding and a local hull leak, so narration deliberately says separate water rather than dry cabin.",
+    "Show our simplified implementation label throughout Unity footage. Actual game footage and self-authored implementation remain distinct."
+  ],
+  "scriptReadThrough": {
+    "headingFreeTextReviewed": true,
+    "sameVoicePcmGenerated": false,
+    "actualListening": "pending",
+    "durationSeconds": "not measured; target40–60, natural pace not accelerated"
+  },
+  "glossary": [
+    {
+      "en": "Water Masking",
+      "ko": "물 표면 마스킹",
+      "meaning": "지정된 영역에 겹친 물 표면을 화면에 그리지 않는 처리"
+    },
+    {
+      "en": "Mask Mesh",
+      "ko": "마스크 메시",
+      "meaning": "가릴 영역을 나타내는 입체 모양"
+    }
+  ],
+  "finalReviewPending": [
+    "native-speed chosen-cut playback",
+    "realized source/caption clearance",
+    "final encoded captions",
+    "whole narration actual listening",
+    "mobile375px legibility",
+    "human final review"
+  ],
+  "rightsAndFhdReady": true,
+  "sourceFileAndDecodedDimensionsVerified": true,
+  "productionSourceFitStatus": "sampled moving sequence supports exterior waves and distinct interior flood; full real-time review pending",
+  "renderer": {
+    "default": "Unity",
+    "sceneSource": "production/batches/tech-ten-shorts-20261030/unity-source",
+    "captureProject": "C:/Users/1/Videos/YamyamProduction/tech-ten-shorts-20261030/unity-capture",
+    "frameDimensions": [
+      1080,
+      1080
+    ],
+    "fps": 60,
+    "compositor": "Motion Canvas"
+  },
+  "captionEditNote": "Split p1-1 at the existing comma into p1-1/p1-1b to bind exterior/interior shots to actual speech. Whole narration unchanged.",
+  "finalWholeMotionAndListening": "pending",
+  "sourceFitCorrection": {
+    "reason": "Full-resolution recheck: repair shot clearly shows wooden floor and leak jet. Green translucent barrel-area appearance is insufficient to claim a measured visible flooding level in every adopted cut. Root selected more directly observed floor statement.",
+    "changedParagraphs": [
+      0,
+      5
+    ],
+    "preservedParagraphs": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "previousInputSHA256": {
+      "script/narration.spoken.ko.json": "194a43f9c12b9f48f7f455f2145fdbc3481eea29a703f733295acc790b521aab",
+      "script/narration.ko.txt": "f6e8a0b1831546e6edca533897ad5d8651f2d572053114acc0818e9edd9b3c28",
+      "script/caption-clauses.json": "4040c02ec51eac87226be6c4a3ae7eb7d8f96851570f6b9be7370d9033dea06b",
+      "production/section-plan.json": "0a2ec45d66f70e34693edba99864787f4c59e196f7584f22d24137448b88702d",
+      "planning/production-plan.json": "c3c259d86a395942b9b3523e3fa7a579cd4453bef0e433b145c088049392b046",
+      "publishing/metadata.json": "c8d067241cf3ce8e4a90067eade9a805d349da03fde667060d04e2f3e5c24a39"
+    },
+    "previousInputsPreservedAt": "C:/Users/1/Videos/YamyamProduction/tech-ten-shorts-20261030/footage-first-five/sot-script-before-visible-floor-correction",
+    "proof": "sot-local130.png; sot-local128p8.png; sot-interior-recheck.jpg",
+    "actualFloorClaimOnly": true,
+    "floodImplementationEvidence": "Rémi Gillig primary article plus explicitly labeled simplified Unity interior-water implementation.",
+    "priorPCM": "Preserve prior attempt separately; reuse unchanged paragraphs only if pipeline input/hash checks validate. Do not overwrite prior PCM."
+  }
+}

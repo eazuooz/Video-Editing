@@ -1,0 +1,152 @@
+{
+  "revision": "tech-ten-v1",
+  "researchCandidateId": "starcraft-worker-mineral-walk",
+  "researchRecord": "shared/publishing/shorts-research-20261030-ten.json",
+  "researchSha256": "bd53b4984c62a4ab9a75170b626f2da96093e51fe33c9495f676bc5f7d47403d",
+  "game": "StarCraft / Brood War",
+  "centralQuestion": "미네랄을 찍으면 길막 유닛을 뚫는 이유?",
+  "canonicalTerms": [
+    {
+      "en": "Inter-unit collision",
+      "ko": "유닛 간 충돌 판정"
+    },
+    {
+      "en": "Mineral walking",
+      "ko": "미네랄 워킹",
+      "note": "Community technique name; developer article explains the underlying harvesting collision exception."
+    }
+  ],
+  "claims": [
+    "채집하러 가거나 자원을 싣고 돌아오는 일꾼의 유닛 간 충돌을 생략해 채집 교통 체증을 해결했다. 개발자는 겹친 채집 일꾼에게 정지를 명령하면 빈자리로 흩어지는 관찰법도 설명한다."
+  ],
+  "limits": [
+    "지형이나 건물까지 통과하거나 무적이 된다는 뜻이 아니다.",
+    "직접 제작한 충돌 디버그 표시는 상용 게임 내부의 측정값으로 제시하지 않는다."
+  ],
+  "primarySources": [
+    {
+      "url": "https://www.codeofhonor.com/blog/the-starcraft-path-finding-hack/",
+      "kind": "first-person-original-developer-article",
+      "author": "Patrick Wyatt",
+      "publishedOn": "2013-02-20",
+      "reviewedEvidence": "Article body read, including the development-history, square terrain, harvest congestion, collision exception and conclusion sections. Historical original StarCraft implementation; not a current-version runtime test.",
+      "supportingSections": [
+        "Rush hour",
+        "How do we get out of here?"
+      ]
+    }
+  ],
+  "suggestedScreens": [
+    "실제 게임에서 일반 이동으로 막힌 일꾼과 미네랄을 지정해 통과하는 일꾼을 같은 배치로 비교한다.",
+    "Unity에서 채집 상태만 바꾸고 유닛 간 충돌 검사 적용 여부를 표시한다.",
+    "정지 명령 후 다시 흩어지는 장면으로 예외가 적용되는 조건을 마무리한다."
+  ],
+  "oneVariableComparison": {
+    "variable": "일반 이동 / 채집 명령",
+    "fixed": [
+      "일꾼 위치",
+      "다른 유닛 배치",
+      "목표 방향",
+      "카메라"
+    ],
+    "classification": "actual-game comparison to acquire, plus our explanatory reconstruction"
+  },
+  "scriptFinalized": true,
+  "independentFootageViewed": true,
+  "scenePlan": [
+    {
+      "id": "game",
+      "paragraph": 0,
+      "firstCue": "p1-1",
+      "kind": "actual-gameplay",
+      "purpose": "Source5400–5416s natural drone mineral traffic; annotate one moving worker and mineral/base endpoints. Do not claim an observed controlled collision experiment."
+    },
+    {
+      "id": "blocked",
+      "paragraph": 1,
+      "firstCue": "p2-1",
+      "kind": "unity",
+      "purpose": "Stage0: owned recognizable workers in a narrow lane; inter-unit blocking produces queue while terrain remains solid."
+    },
+    {
+      "id": "rule",
+      "paragraph": 2,
+      "firstCue": "p3-1",
+      "kind": "unity",
+      "purpose": "Stage1: same positions and lane, harvesting-state toggle allows workers through units; persistent label inter-unit collision."
+    },
+    {
+      "id": "compare",
+      "paragraph": 3,
+      "firstCue": "p4-1",
+      "kind": "unity",
+      "purpose": "Fixed camera comparison normal move versus gather state; all geometry and speed fixed. Color/labels identify the one variable."
+    },
+    {
+      "id": "stop",
+      "paragraph": 4,
+      "firstCue": "p5-1",
+      "kind": "unity",
+      "purpose": "Stage2: stop command restores separation; unchanging wall/building boundary remains blocking. Only show implemented behavior actually captured."
+    },
+    {
+      "id": "result",
+      "paragraph": 5,
+      "firstCue": "p6-1",
+      "kind": "actual-plus-unity",
+      "purpose": "Return actual source5450–5465s resource gathering; trace mine->base path once, close on keeping resource flow moving."
+    }
+  ],
+  "chapterLinks": [
+    {
+      "from": 0,
+      "to": 1,
+      "bridge": "이 일꾼들은 광물과 기지를 계속 왕복하죠. 서로 길을 막으면 돈벌이까지 멈추니, 개발자는 특별한 규칙을 넣었습니다. → 보통 유닛은 다른 유닛의 몸을 피해 움직입니다. 좁은 곳에서 일꾼들이 마주 오면, 서로 막혀 움직이지 못할 수 있죠."
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "bridge": "보통 유닛은 다른 유닛의 몸을 피해 움직입니다. 좁은 곳에서 일꾼들이 마주 오면, 서로 막혀 움직이지 못할 수 있죠. → 그래서 자원을 캐러 가거나, 자원을 들고 돌아오는 동안에는, 다른 유닛과의 충돌을 무시하도록 했습니다."
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "bridge": "그래서 자원을 캐러 가거나, 자원을 들고 돌아오는 동안에는, 다른 유닛과의 충돌을 무시하도록 했습니다. → 우리 시연에선 유닛과 길은 그대로 두고, 이동 상태만 바꿔 볼게요. 일반 이동에선 막히지만, 채집 상태에선 겹쳐서 지나갑니다."
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "bridge": "우리 시연에선 유닛과 길은 그대로 두고, 이동 상태만 바꿔 볼게요. 일반 이동에선 막히지만, 채집 상태에선 겹쳐서 지나갑니다. → 채집 중인 일꾼들에게 정지를 명령하면, 서로 겹치지 않도록 흩어지죠. 이 예외는 유닛 사이의 충돌에 적용됩니다. 벽과 건물을 뚫는 능력은 아니에요."
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "bridge": "채집 중인 일꾼들에게 정지를 명령하면, 서로 겹치지 않도록 흩어지죠. 이 예외는 유닛 사이의 충돌에 적용됩니다. 벽과 건물을 뚫는 능력은 아니에요. → 이렇게 채집에 꼭 필요한 이동만 막힘없이 만든 겁니다. 길찾기를 전부 뜯어고치지 않고도, 기지의 돈줄을 지킨 작은 예외였죠."
+    }
+  ],
+  "rendererPolicy": "Unity behavior demonstration for worker collision states; Motion Canvas for square-grid subdivision and passability map. Actual gameplay is independent.",
+  "footageRightsConfirmed": true,
+  "sourceFhdVerified": true,
+  "actualHumanListening": "pending",
+  "sourceSelection": "sources/selected-footage.json",
+  "actualRealtimeVideoReview": "pending",
+  "sourceViewingEvidence": "Decoded contact sheets and chronological dense frame samples viewed directly by agent. No full real-time playback or listening claimed.",
+  "scriptReadthrough": {
+    "headingFreeKOENReadthrough": true,
+    "essentialConditions": "Observed actual footage demonstrates mining traffic only; conditional collision and stop/separation behavior are developer-sourced and demonstrated by our Unity implementation. Terrain/building exception is preserved.",
+    "audioPaceVerified": false
+  },
+  "provenanceNotes": "Observed actual footage demonstrates mining traffic only; conditional collision and stop/separation behavior are developer-sourced and demonstrated by our Unity implementation. Terrain/building exception is preserved.",
+  "rightsAndFhdReady": true,
+  "sourceFileAndDecodedDimensionsVerified": true,
+  "finalWholeMotionAndListening": "pending",
+  "renderer": {
+    "selected": "Unity",
+    "compositor": "Motion Canvas",
+    "source": "production/batches/tech-ten-shorts-20261030/unity-source",
+    "nativeUnityClaimed": true,
+    "nativeLatestCodePreflight": "pending-after-user-game-exit"
+  },
+  "captionEditNote": "Caption clauses split at natural phrases without changing complete spoken paragraphs. Display-only numerals preserve exact spoken values.",
+  "productionReady": false
+}

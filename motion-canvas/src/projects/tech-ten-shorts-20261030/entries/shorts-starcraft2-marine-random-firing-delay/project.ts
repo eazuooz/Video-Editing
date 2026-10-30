@@ -1,0 +1,3 @@
+import {makeProject} from '@motion-canvas/core';
+import scene from './scene?scene';
+export default makeProject({name: 'shorts-starcraft2-marine-random-firing-delay', scenes: [scene]});

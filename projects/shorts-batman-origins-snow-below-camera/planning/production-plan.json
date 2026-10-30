@@ -1,0 +1,218 @@
+{
+  "revision": "tech-ten-v1-provisional",
+  "researchCandidateId": "batman-origins-snow-below-camera",
+  "researchRecord": "shared/publishing/shorts-research-20261030-ten.json",
+  "researchSha256": "bd53b4984c62a4ab9a75170b626f2da96093e51fe33c9495f676bc5f7d47403d",
+  "game": "Batman: Arkham Origins",
+  "centralQuestion": "배트맨의 발자국은 땅 밑에서 촬영했다?",
+  "canonicalTerms": [
+    {
+      "en": "Deformable Snow",
+      "ko": "변형 가능한 눈"
+    },
+    {
+      "en": "Orthographic Capture",
+      "ko": "직교 투영 캡처"
+    },
+    {
+      "en": "Height Map",
+      "ko": "높이맵"
+    },
+    {
+      "en": "Relief Mapping",
+      "ko": "릴리프 매핑"
+    },
+    {
+      "en": "Tessellation",
+      "ko": "테셀레이션"
+    }
+  ],
+  "claims": [
+    "눈 표면 아래에서 발목 높이의 직교 투영 영역을 바라보며 눈에 닿는 물체를 흰색으로 그린다. 이를 필터링하고 높이맵에 누적해 발·손·몸이 만드는 자국을 기록한다. 콘솔판은 릴리프 매핑으로 깊이를 표현하고 PC DX11판은 테셀레이션으로 실제 표면도 변형한다."
+  ],
+  "limits": [
+    "콘솔판의 가상 깊이 표현과 PC DX11판의 실제 기하 변형을 구분한다. 모든 버전의 눈이 평면이라는 설명은 틀리다.",
+    "레드 데드 리뎀션 2 등 다른 게임도 같은 구현이라는 주장은 하지 않는다.",
+    "원 발표의 성능 수치를 우리 구현의 측정값으로 표시하지 않는다.",
+    "Opening is an intended shot, not a claim that the existing subtle GCPD rooftop sample passed mobile visual-fit QA.",
+    "Unity capture, accumulation and rendering are explanatory reconstruction; production shader code, resolution and timings are not measured.",
+    "Do not present ordinary mesh subdivision as verified DirectX11 tessellation or infer all console snow is displaced geometry."
+  ],
+  "primarySources": [
+    {
+      "url": "https://colinbarrebrisebois.com/wp-content/uploads/2022/06/gdc2014-deformable_snow_rendering.pdf",
+      "kind": "developer-gdc-presentation",
+      "title": "Deformable Snow Rendering in Batman: Arkham Origins",
+      "author": "Colin Barré-Brisebois",
+      "role": "Lead Rendering Programmer",
+      "event": "GDC 2014",
+      "reviewedEvidence": "Extracted PDF text read. Relevant PDF pages: 12 capture under the surface; 19 accumulation; 29–34 DirectX 11 tessellation.",
+      "pageNumbering": "One-based PDF pages; no full presentation-video viewing claim."
+    }
+  ],
+  "suggestedScreens": [
+    "독립 실제 게임 화면에서 눈에 남는 발자국이나 미끄러진 몸의 흔적을 먼저 보여 준다.",
+    "Unity 설명에서 바닥을 옆으로 돌려 아래쪽 카메라와 발목 높이 촬영 영역을 공개한다.",
+    "발이 이동하면서 흑백 높이맵에 흔적이 누적되고 최종 눈 표현에 반영되는 과정을 연결한다.",
+    "동일한 발걸음에 누적 기능만 켜고 꺼 자국 유지 차이를 비교한다."
+  ],
+  "oneVariableComparison": {
+    "variable": "Accumulation of the contact capture into the height map",
+    "fixed": [
+      "walking path",
+      "snow surface",
+      "camera",
+      "light"
+    ],
+    "observedResultToDemonstrate": "Accumulation preserves the trail behind the foot; without accumulation the earlier contact marks are not retained.",
+    "classification": "our explanatory reconstruction"
+  },
+  "scriptFinalized": false,
+  "independentFootageViewed": true,
+  "scenePlan": [
+    {
+      "id": "game",
+      "paragraph": 0,
+      "firstCue": "p1-1",
+      "purpose": "Intended genuine gameplay footprint/deformation phenomenon. Existing GCPD roof sample is not unmistakable; source gate remains false."
+    },
+    {
+      "id": "capture",
+      "paragraph": 1,
+      "firstCue": "p2-1",
+      "purpose": "Unity side view reveals bottom-up orthographic camera and ankle-height capture slab, then camera output. No perspective shrink."
+    },
+    {
+      "id": "record",
+      "paragraph": 2,
+      "firstCue": "p3-1",
+      "purpose": "Show actual captured white foot/body silhouette on black, small filter, then progressive accumulation into a retained texture."
+    },
+    {
+      "id": "compare",
+      "paragraph": 3,
+      "firstCue": "p4-1",
+      "purpose": "Identical path/model/camera. Toggle only accumulation: old marks disappear versus trail persists. Explain height-map role with image visible."
+    },
+    {
+      "id": "render",
+      "paragraph": 4,
+      "firstCue": "p5-1",
+      "purpose": "Same scene differentiates virtual depth / relief mapping from actual surface displacement. Labels must distinguish console and PC DX11; never label simple Unity mesh displacement measured commercial tessellation."
+    },
+    {
+      "id": "result",
+      "paragraph": 5,
+      "firstCue": "p6-1",
+      "purpose": "Return to verified real snow deformation only once a stronger clip is acquired; otherwise draft remains blocked. Hand/body capability supported by developer source, not assumed from current gameplay sample."
+    }
+  ],
+  "chapterLinks": [
+    {
+      "from": 0,
+      "to": 1,
+      "previousResult": "배트맨이 눈밭을 지나가면 발자국이 남죠. 아캄 오리진은 이 흔적을 바닥 아래에서 찍어 기록합니다.",
+      "nextQuestionOrAction": "옆에서 보면, 눈 아래의 카메라가 발목 높이의 얇은 영역을 바라봐요. 거리 때문에 크기가 변하지 않는 직교 투영을 씁니다."
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "previousResult": "옆에서 보면, 눈 아래의 카메라가 발목 높이의 얇은 영역을 바라봐요. 거리 때문에 크기가 변하지 않는 직교 투영을 씁니다.",
+      "nextQuestionOrAction": "이 영역에 들어온 발이나 몸을 검은 바탕에 흰색으로 그립니다. 가장자리를 부드럽게 하고, 이전 흔적에 계속 더해요."
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "previousResult": "이 영역에 들어온 발이나 몸을 검은 바탕에 흰색으로 그립니다. 가장자리를 부드럽게 하고, 이전 흔적에 계속 더해요.",
+      "nextQuestionOrAction": "이 그림이 눈의 눌린 정도를 기록하는 높이맵입니다. 누적을 끄면 발이 떠난 자국은 없어지고, 켜면 지나간 길이 남죠."
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "previousResult": "이 그림이 눈의 눌린 정도를 기록하는 높이맵입니다. 누적을 끄면 발이 떠난 자국은 없어지고, 켜면 지나간 길이 남죠.",
+      "nextQuestionOrAction": "콘솔판은 릴리프 매핑으로 파인 깊이를 표현합니다. 피시의 다이렉트 엑스 일레븐판은 테셀레이션으로 표면을 잘게 나누고 실제 모양도 바꿔요."
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "previousResult": "콘솔판은 릴리프 매핑으로 파인 깊이를 표현합니다. 피시의 다이렉트 엑스 일레븐판은 테셀레이션으로 표면을 잘게 나누고 실제 모양도 바꿔요.",
+      "nextQuestionOrAction": "그래서 발뿐 아니라 손이나 넘어진 몸의 흔적도 만들 수 있어요. 닿은 모양을 기록하고, 그 기록으로 눈을 그리는 겁니다."
+    }
+  ],
+  "rendererPolicy": "Unity implementation/behavior explanations with Motion Canvas compositing; choose per teaching need, preserve independently editable Unity scenes.",
+  "footageRightsConfirmed": false,
+  "sourceFhdVerified": true,
+  "actualHumanListening": false,
+  "scriptStatus": "provisional-source-gated-do-not-tts",
+  "footageGate": false,
+  "sourceVisualFitConfirmed": false,
+  "footageAudit": "production/batches/tech-ten-shorts-20261030/preproduction/first-five.json",
+  "sourceCandidate": {
+    "order": 2,
+    "id": "batman-origins-snow-below-camera",
+    "game": "Batman: Arkham Origins",
+    "status": "FHD-CC-recording-acquired; publisher-rights-and-unmistakable-deformation-shot-pending",
+    "sourceUrl": "https://www.youtube.com/watch?v=c438BMjnrBc",
+    "sourceTitle": "Batman: Arkham Origins - Walkthrough - Part 7 : The GCPD [PC 4K 60 FPS]",
+    "author": "DewdGaming",
+    "uploadDate": "2025-01-31",
+    "recordingLicense": "Creative Commons Attribution license (reuse allowed)",
+    "publisherPolicy": "wbAndSony.not-confirmed",
+    "recordingProvenance": "Uploader describes their own PC walkthrough and rooftop approach to GCPD, no commentary. Independently recorded gameplay.",
+    "localFile": "C:/Users/1/Videos/YamyamProduction/tech-ten-shorts-20261030/footage-first-five/c438BMjnrBc.s120-240.webm",
+    "sha256": "ff83babf2c4a49c9d5095ebf43b870db73cf02a07d8209f1a2619a4dee772f6e",
+    "decoded": {
+      "width": 1920,
+      "height": 1080,
+      "fps": "60/1",
+      "codec": "vp9",
+      "duration": 119.999,
+      "sourceHighestFormat": "3840x2160",
+      "sourceInterval": [
+        120,
+        240
+      ]
+    },
+    "proposedSourceCuts": [
+      {
+        "start": 187,
+        "end": 198,
+        "role": "Batman walks/crouches across snowy roof and performs a takedown."
+      }
+    ],
+    "viewedEvidence": [
+      "batman-contact.jpg",
+      "batman-start.jpg",
+      "batman-gcpd-contact.jpg",
+      "batman-snow-detail.jpg"
+    ],
+    "observed": "Snow-covered GCPD rooftop, character feet crossing it, and takedown visible. Surface marks are subtle in these frames; this is not yet a strong enough before/action/result proving deformable footprints on mobile.",
+    "claimLimit": "Do not label this sampled footage proof of the accumulation-map algorithm or assert PhysX snow. GDC developer material establishes the mechanism; console relief mapping and PC DX11 tessellation must be distinguished.",
+    "next": "Find a closer snow footprint/body drag sequence with recorder and publisher permission, or verify a clearer part of this CC recording. Current exterior-only opening is insufficient as final phenomenon evidence.",
+    "additionalLocalAttempt": "c438BMjnrBc.first120.webm (0–120s; snow at opening, then menus/Batcave; preserved but not selected)"
+  },
+  "provisionalGateReason": "WB/Sony publisher reuse grant remains unconfirmed. Current snow candidate does not clearly show deformation on mobile.",
+  "narrationValidation": {
+    "paragraphCount": 6,
+    "clauseCount": 20,
+    "exactSpokenCoverage": true,
+    "headingFreeReadThrough": true,
+    "timingStatus": "No PCM; duration and pace are not verified",
+    "ttsStarted": false,
+    "captionGeometry": {
+      "font": "malgunbd.ttf",
+      "size": 60,
+      "maxWidth": 796,
+      "maxLines": 2,
+      "result": "all clauses pass fixed geometry"
+    }
+  },
+  "productionReady": false,
+  "nativeLatestCodePreflight": "pending-after-user-game-exit",
+  "provisionalSceneBindings": true,
+  "nativeImplementationLimits": [
+    "No clear rights-cleared commercial snow-contact shot adopted yet.",
+    "Current Unity mesh displacement is explanatory, not measured Batman tessellation or a claim that relief mapping changes actual geometry.",
+    "Console relief mapping versus PC tessellation visual differentiation remains unresolved; latest native implementation still needs compilation/preflight."
+  ]
+}

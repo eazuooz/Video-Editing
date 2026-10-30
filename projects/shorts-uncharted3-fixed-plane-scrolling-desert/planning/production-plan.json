@@ -1,0 +1,197 @@
+{
+  "revision": "tech-ten-v1-provisional",
+  "researchCandidateId": "uncharted3-fixed-plane-scrolling-desert",
+  "researchRecord": "shared/publishing/shorts-research-20261030-ten.json",
+  "researchSha256": "bd53b4984c62a4ab9a75170b626f2da96093e51fe33c9495f676bc5f7d47403d",
+  "game": "Uncharted 3: Drake's Deception",
+  "centralQuestion": "날아가는 비행기, 사실 제자리에 있었다?",
+  "canonicalTerms": [
+    {
+      "en": "Infinitely Scrolling Background",
+      "ko": "무한 스크롤 배경",
+      "note": "The developer describes the technique this way; this is not a claim about a proprietary algorithm name."
+    }
+  ],
+  "claims": [
+    "화물기 장면에서 비행기는 제자리에 둔 채, 완벽하게 이어지는 사막 배경을 아래로 무한히 이동시켜 비행의 시각적 효과를 만들었다고 당시 개발자 Kurt Margenau가 설명한다."
+  ],
+  "limits": [
+    "확인된 사실은 화물기 비행의 배경 이동이다. 장면 전체에서 비행기가 한 번도 회전하지 않거나 물리 계산이 없었다고 확대하지 않는다.",
+    "개발자가 밝히지 않은 좌표 원점, 부동소수점 정밀도 문제 또는 구체적인 타일 관리 코드를 실제 구현으로 단정하지 않는다.",
+    "제목의 추락 표현은 범위를 오해시킬 수 있어 최종 제목은 날아가는 비행기로 권장한다.",
+    "Do not expand stationary background-flight arrangement into a claim that the whole sequence never rotates the plane or has no physics.",
+    "No claim that a floating-origin precision problem motivated the choice; the developer does not say that.",
+    "Recycling desert tiles is our clear teaching implementation, not evidence of the shipped tile-management code."
+  ],
+  "primarySources": [
+    {
+      "url": "https://www.naughtydog.com/blog/uncharted_3_drakes_deception_10_year_anniversary",
+      "kind": "official-studio-developer-interview",
+      "title": "UNCHARTED 3: Drake's Deception 10-Year Anniversary",
+      "publisher": "Naughty Dog",
+      "developer": "Kurt Margenau",
+      "publishedOn": "2021-11-01",
+      "reviewedEvidence": "Official article read; supporting paragraph is Kurt Margenau's answer about the Cargo Plane sequence, explicitly describing a stationary plane and an infinitely scrolling desert."
+    }
+  ],
+  "suggestedScreens": [
+    "독립 실제 게임 장면에서 화물기와 흐르는 사막을 보여 주고 움직이는 대상을 묻는다.",
+    "Unity 설명에서 플레이어 카메라와 바깥 관찰 카메라를 동시에 보여 준다.",
+    "고정된 비행기 아래로 사막 조각을 이어 이동시키고 끝난 조각을 앞쪽에 연결한다.",
+    "배경 이동만 꺼 비행하는 느낌이 어떻게 사라지는지 비교하고 실제 장면으로 돌아간다."
+  ],
+  "oneVariableComparison": {
+    "variable": "Desert-background translation enabled or disabled",
+    "fixed": [
+      "plane position",
+      "camera framing",
+      "character pose",
+      "lighting"
+    ],
+    "observedResultToDemonstrate": "A stationary plane appears to travel when the background moves relative to it.",
+    "classification": "our explanatory reconstruction; tile-management implementation is illustrative"
+  },
+  "scriptFinalized": false,
+  "independentFootageViewed": true,
+  "scenePlan": [
+    {
+      "id": "game",
+      "paragraph": 0,
+      "firstCue": "p1-1",
+      "purpose": "Actual source108–124s cargo-hanging airplane and desert below. Claim about stationary structure comes from Kurt Margenau, not visual reverse engineering."
+    },
+    {
+      "id": "observer",
+      "paragraph": 1,
+      "firstCue": "p2-1",
+      "purpose": "Unity dual view: player camera attached to stationary plane plus observer camera showing plane/world reference. Both cameras visible as labeled gizmos only in observer view."
+    },
+    {
+      "id": "relative",
+      "paragraph": 2,
+      "firstCue": "p3-1",
+      "purpose": "Maintain the same plane and cameras. Move desert backward and connect player-view motion to observer view with shared timing."
+    },
+    {
+      "id": "repeat",
+      "paragraph": 3,
+      "firstCue": "p4-1",
+      "purpose": "Show seamless looping background. Recycled tiles are our illustrative implementation; actual NaughtyDog tile-manager method is not disclosed."
+    },
+    {
+      "id": "compare",
+      "paragraph": 4,
+      "firstCue": "p5-1",
+      "purpose": "Toggle only background translation off/on; keep plane position, camera, path and lighting fixed."
+    },
+    {
+      "id": "result",
+      "paragraph": 5,
+      "firstCue": "p6-1",
+      "purpose": "Return to a non-overlapping real plane/desert excerpt after the Unity comparison; preserve original speed and aspect. No assertion about origin coordinates or zero physics."
+    }
+  ],
+  "chapterLinks": [
+    {
+      "from": 0,
+      "to": 1,
+      "previousResult": "언차티드 쓰리의 화물기가 사막 위를 날아갑니다. 그런데 비행기는 제자리에 두고, 사막을 움직였어요.",
+      "nextQuestionOrAction": "원리를 바깥 카메라로 볼게요. 설명 속 비행기와 탑승 카메라는 고정하고, 아래의 배경만 뒤로 보냅니다."
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "previousResult": "원리를 바깥 카메라로 볼게요. 설명 속 비행기와 탑승 카메라는 고정하고, 아래의 배경만 뒤로 보냅니다.",
+      "nextQuestionOrAction": "탑승 카메라에는 땅이 계속 뒤로 흐르죠. 비행기와 배경의 상대적인 움직임이 비행하는 느낌을 줍니다."
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "previousResult": "탑승 카메라에는 땅이 계속 뒤로 흐르죠. 비행기와 배경의 상대적인 움직임이 비행하는 느낌을 줍니다.",
+      "nextQuestionOrAction": "이동시킨 배경이 끝나면 안 되니까, 이음새 없이 계속 이어지게 만듭니다. 이것이 무한 스크롤 배경입니다."
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "previousResult": "이동시킨 배경이 끝나면 안 되니까, 이음새 없이 계속 이어지게 만듭니다. 이것이 무한 스크롤 배경입니다.",
+      "nextQuestionOrAction": "같은 장면에서 배경 이동만 꺼 볼까요. 금세 비행하는 느낌이 약해지죠. 다시 켜면 비행기는 그대로인데 속도감이 돌아옵니다."
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "previousResult": "같은 장면에서 배경 이동만 꺼 볼까요. 금세 비행하는 느낌이 약해지죠. 다시 켜면 비행기는 그대로인데 속도감이 돌아옵니다.",
+      "nextQuestionOrAction": "이렇게 무대를 움직여서, 제자리에 있는 비행기 안에서도 사막을 가로지르는 장면을 만들어 낸 겁니다."
+    }
+  ],
+  "rendererPolicy": "Unity implementation/behavior explanations with Motion Canvas compositing; choose per teaching need, preserve independently editable Unity scenes.",
+  "footageRightsConfirmed": false,
+  "sourceFhdVerified": true,
+  "actualHumanListening": false,
+  "scriptStatus": "provisional-source-gated-do-not-tts",
+  "footageGate": false,
+  "sourceVisualFitConfirmed": true,
+  "footageAudit": "production/batches/tech-ten-shorts-20261030/preproduction/first-five.json",
+  "sourceCandidate": {
+    "order": 4,
+    "id": "uncharted3-fixed-plane-scrolling-desert",
+    "game": "Uncharted 3: Drake's Deception",
+    "status": "FHD-CC-recording-and-scene-fit-ready; publisher-rights-unresolved",
+    "sourceUrl": "https://www.youtube.com/watch?v=iGUv83rb3GA",
+    "sourceTitle": "Plane Crash - Uncharted 3: Drake's Deception (Chapter 17 - Stowaway)",
+    "author": "crankyshark",
+    "uploadDate": "2020-09-26",
+    "recordingLicense": "Creative Commons Attribution license (reuse allowed)",
+    "publisherPolicy": "wbAndSony.not-confirmed",
+    "recordingProvenance": "Independent chapter gameplay upload, sampled source shows original game camera and UI; no tutorial narration/graphics in image.",
+    "localFile": "C:/Users/1/Videos/YamyamProduction/tech-ten-shorts-20261030/footage-first-five/iGUv83rb3GA.mp4",
+    "sha256": "95eba357fddfc6259b1697704d0a33613d13de1bc0fbfea3a41ae573c9bb5f7b",
+    "decoded": {
+      "width": 1920,
+      "height": 1080,
+      "fps": "24000/1001",
+      "codec": "h264",
+      "duration": 444.19375,
+      "sourceInterval": [
+        0,
+        444.19375
+      ]
+    },
+    "proposedSourceCuts": [
+      {
+        "start": 108,
+        "end": 124,
+        "role": "Drake and cargo hanging outside open plane; aircraft and desert are visible together."
+      }
+    ],
+    "viewedEvidence": [
+      "uc3-contact.jpg",
+      "uc3-cargo-detail.jpg"
+    ],
+    "observed": "The apparent moving aircraft remains close to the viewpoint/cargo while desert terrain is visible below and changes along the sequence. This is the perceptual result, not direct evidence of world-coordinate motion.",
+    "claimLimit": "Internal stationary-plane implementation is attributed to Naughty Dog's original anniversary interview. Do not imply the entire crash sequence cannot rotate, translate, or use scripted changes. Preserve native23.976fps motion on a60fps output timeline with frame duplication, not fabricated interpolation.",
+    "next": "Resolve publisher rights before adopting into final cut. No YouTube publication based on uploader CC BY alone."
+  },
+  "provisionalGateReason": "WB/Sony publisher reuse grant remains unconfirmed.",
+  "narrationValidation": {
+    "paragraphCount": 6,
+    "clauseCount": 18,
+    "exactSpokenCoverage": true,
+    "headingFreeReadThrough": true,
+    "timingStatus": "No PCM; duration and pace are not verified",
+    "ttsStarted": false,
+    "captionGeometry": {
+      "font": "malgunbd.ttf",
+      "size": 60,
+      "maxWidth": 796,
+      "maxLines": 2,
+      "result": "all clauses pass fixed geometry"
+    }
+  },
+  "productionReady": false,
+  "nativeLatestCodePreflight": "pending-after-user-game-exit",
+  "provisionalSceneBindings": true,
+  "nativeImplementationLimits": [
+    "Independent gameplay publisher-rights gate unresolved; no adopted cut.",
+    "Recycled background tiles are our illustration. The original engine tile-manager algorithm and zero-physics/origin-coordinate claims are not asserted."
+  ]
+}

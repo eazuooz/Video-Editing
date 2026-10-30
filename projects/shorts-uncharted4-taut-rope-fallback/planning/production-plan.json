@@ -1,0 +1,231 @@
+{
+  "revision": "tech-ten-v1-provisional",
+  "researchCandidateId": "uncharted4-taut-rope-fallback",
+  "researchRecord": "shared/publishing/shorts-research-20261030-ten.json",
+  "researchSha256": "bd53b4984c62a4ab9a75170b626f2da96093e51fe33c9495f676bc5f7d47403d",
+  "game": "Uncharted 4: A Thief's End",
+  "centralQuestion": "흔들리는 로프 속에 보이지 않는 줄이 하나 더 있다?",
+  "canonicalTerms": [
+    {
+      "en": "Rope Simulation",
+      "ko": "로프 시뮬레이션"
+    },
+    {
+      "en": "Taut-rope Collision Wrapping",
+      "ko": "팽팽한 로프의 충돌 감싸기",
+      "note": "Descriptive rendering of the developer's taut-rope geometric system, not a proprietary algorithm name."
+    }
+  ],
+  "claims": [
+    "느슨한 로프는 입자와 거리·충돌 제약으로 계산한다. 별도로 양 끝점을 연결해 장애물 모서리를 감싸고 미끄러지는 팽팽한 경로도 유지한다. 언차티드 4는 느슨한 로프가 보일 때도 이 보이지 않는 경로를 fallback으로 사용해 느슨한 로프 계산의 안정성 요구를 줄였다."
+  ],
+  "limits": [
+    "언차티드 4의 로프가 물리 계산 없이 직선 하나로만 이루어진다는 설명은 틀리다.",
+    "라스트 오브 어스 2의 던지는 로프는 안전한 경로를 유지할 수 없어 느슨한 로프 구현을 개선했다고 개발자가 구분한다. 이 사례를 같은 구현으로 합치지 않는다.",
+    "직선이라는 말을 장애물을 관통하는 단일 선분으로 그리지 않는다. 경로는 충돌 모서리를 감싸야 한다.",
+    "언차티드 3 후보와 같은 시리즈이므로 최종 공개 순서에서는 다른 게임 사이에 배치하는 편을 추천한다.",
+    "The interview establishes a collision-wrapping safe-path fallback, not an arbitrary8-unit endpoint or rope-length clamp.",
+    "The exact detection threshold, particle reset or production fallback recovery algorithm is not disclosed. Any recovery shown is our simplified reconstruction.",
+    "The Last of Us PartII thrown rope loses that safe line and uses a revised slack simulation; do not merge the two cases."
+  ],
+  "primarySources": [
+    {
+      "url": "https://80.lv/articles/how-naughty-dog-created-the-immersive-world-of-the-last-of-us-part-ii",
+      "kind": "original-developer-interview",
+      "publisher": "80 Level",
+      "developer": "Jaroslav Sinecky",
+      "role": "Naughty Dog Programmer",
+      "reviewedEvidence": "Interactive Ropes System section read, including the Uncharted 4 versus The Last of Us Part II distinction."
+    },
+    {
+      "url": "https://www.gdcvault.com/play/1027351",
+      "kind": "official-gdc-talk-metadata",
+      "title": "Rope Simulation in Uncharted 4 and The Last of Us 2",
+      "speaker": "Jaroslav Sinecky",
+      "event": "GDC 2021",
+      "reviewedEvidence": "Indexed title and abstract only; direct page access showed maintenance.",
+      "fullVideoWatched": false,
+      "supports": "Talk identity and the two-system topic; detailed mechanism relies on the original interview."
+    }
+  ],
+  "suggestedScreens": [
+    "독립 실제 게임 화면에서 그래플 로프나 지프 윈치가 물체를 감싸는 장면을 보여 준다.",
+    "Unity 설명에서 느슨한 입자 로프와 숨은 팽팽한 충돌 경로를 두 색으로 공개한다.",
+    "기둥 주변에서 한 끝점만 이동해 두 경로가 어떻게 움직이는지 비교한다.",
+    "두 시스템이 맡은 역할을 짧게 정리하고 실제 로프 장면으로 돌아간다."
+  ],
+  "oneVariableComparison": {
+    "variable": "One rope endpoint's position around a fixed obstacle",
+    "fixed": [
+      "other endpoint",
+      "obstacle geometry",
+      "rope parameters",
+      "camera"
+    ],
+    "observedResultToDemonstrate": "The taut collision path wraps the obstacle while the visible simulated rope can sag.",
+    "classification": "our explanatory reconstruction"
+  },
+  "scriptFinalized": false,
+  "independentFootageViewed": true,
+  "scenePlan": [
+    {
+      "id": "game",
+      "paragraph": 0,
+      "firstCue": "p1-1",
+      "purpose": "Actual source3–10 tree wrapping plus27–38 hanging jeep if speech timing permits; do not imply a visible debug fallback exists in retail footage."
+    },
+    {
+      "id": "particles",
+      "paragraph": 1,
+      "firstCue": "p2-1",
+      "purpose": "Unity marks particles and distance/collision constraints on the same detailed rope testbed. Show movement rather than static lines."
+    },
+    {
+      "id": "risk",
+      "paragraph": 2,
+      "firstCue": "p3-1",
+      "purpose": "Clearly labeled illustrative weak slack solver/failure injection crosses pillar; do not present as actual Uncharted bug footage."
+    },
+    {
+      "id": "safe",
+      "paragraph": 3,
+      "firstCue": "p4-1",
+      "purpose": "Independent taut path connects endpoints via collision-edge wrapping and sliding. Never draw the line through the obstacle or substitute an arbitrary length clamp."
+    },
+    {
+      "id": "fallback",
+      "paragraph": 4,
+      "firstCue": "p5-1",
+      "purpose": "Same endpoint motion shows loose rope alongside maintained safe path. If root uses particle restoration, label our simplified fallback reconstruction; exact production restoration algorithm is not disclosed."
+    },
+    {
+      "id": "result",
+      "paragraph": 5,
+      "firstCue": "p6-1",
+      "purpose": "Actual source67–80 winch pull or non-overlapping inspected rope motion closes the two-role explanation; no claim of a fixed numerical rope length."
+    }
+  ],
+  "chapterLinks": [
+    {
+      "from": 0,
+      "to": 1,
+      "previousResult": "이 로프는 나무를 감싼 채 지프를 버팁니다. 언차티드 포는 이런 로프를 두 가지 계산으로 다뤘어요.",
+      "nextQuestionOrAction": "느슨한 로프는 작은 점들을 이어서 계산해요. 이웃한 점의 거리와 물체에 부딪히는 조건을 맞추면, 줄이 흔들리고 늘어진 모양이 나옵니다."
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "previousResult": "느슨한 로프는 작은 점들을 이어서 계산해요. 이웃한 점의 거리와 물체에 부딪히는 조건을 맞추면, 줄이 흔들리고 늘어진 모양이 나옵니다.",
+      "nextQuestionOrAction": "그런데 빠르게 움직일 때는 이 계산만으로 물체를 뚫지 않게 만들기가 어렵습니다."
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "previousResult": "그런데 빠르게 움직일 때는 이 계산만으로 물체를 뚫지 않게 만들기가 어렵습니다.",
+      "nextQuestionOrAction": "그래서 양 끝을 잇는 팽팽한 경로도 따로 유지해요. 장애물을 만나면 관통하는 대신, 모서리를 감싸고 따라 미끄러집니다."
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "previousResult": "그래서 양 끝을 잇는 팽팽한 경로도 따로 유지해요. 장애물을 만나면 관통하는 대신, 모서리를 감싸고 따라 미끄러집니다.",
+      "nextQuestionOrAction": "같은 끝점을 움직여 보면, 느슨한 줄이 흔들려도 이 안전한 경로는 계속 유지되죠. 계산이 불안정해질 때 대비하는 폴백입니다."
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "previousResult": "같은 끝점을 움직여 보면, 느슨한 줄이 흔들려도 이 안전한 경로는 계속 유지되죠. 계산이 불안정해질 때 대비하는 폴백입니다.",
+      "nextQuestionOrAction": "보이는 로프의 자연스러움과, 장애물을 감싸는 안정적인 경로를 나눠 계산한 거예요. 흔들리는 로프 뒤에, 보이지 않는 안전장치를 둔 셈입니다."
+    }
+  ],
+  "rendererPolicy": "Unity implementation/behavior explanations with Motion Canvas compositing; choose per teaching need, preserve independently editable Unity scenes.",
+  "footageRightsConfirmed": false,
+  "sourceFhdVerified": true,
+  "actualHumanListening": false,
+  "scriptStatus": "provisional-source-gated-do-not-tts",
+  "footageGate": false,
+  "sourceVisualFitConfirmed": true,
+  "footageAudit": "production/batches/tech-ten-shorts-20261030/preproduction/first-five.json",
+  "sourceCandidate": {
+    "order": 5,
+    "id": "uncharted4-taut-rope-fallback",
+    "game": "Uncharted 4: A Thief's End",
+    "status": "FHD-CC-recording-and-scene-fit-ready; publisher-rights-unresolved",
+    "sourceUrl": "https://www.youtube.com/watch?v=1HqnsqgdsDE",
+    "sourceTitle": "Uncharted 4: A Thief's End - Winches Save Lives",
+    "author": "calloftreyarch",
+    "uploadDate": "2016-05-13",
+    "recordingLicense": "Creative Commons Attribution license (reuse allowed)",
+    "publisherPolicy": "wbAndSony.not-confirmed",
+    "recordingProvenance": "Independent gameplay clip, no explainer/narrator graphics in inspected gameplay. Final subscribe card is excluded.",
+    "localFile": "C:/Users/1/Videos/YamyamProduction/tech-ten-shorts-20261030/footage-first-five/1HqnsqgdsDE.mp4",
+    "sha256": "e4139d63245ba1f686055c91e16c3bfc4769a04a411a00389a07f590459a1746",
+    "decoded": {
+      "width": 1920,
+      "height": 1080,
+      "fps": "30000/1001",
+      "codec": "h264",
+      "duration": 120.0199,
+      "sourceInterval": [
+        0,
+        120.0199
+      ]
+    },
+    "proposedSourceCuts": [
+      {
+        "start": 3,
+        "end": 10,
+        "role": "Drake runs a winch rope around a tree; line path visibly bends around obstacle."
+      },
+      {
+        "start": 27,
+        "end": 38,
+        "role": "Jeep pulls upward on rope then falls/hangs, demonstrating why the taut path must remain reliable."
+      },
+      {
+        "start": 67,
+        "end": 80,
+        "role": "Winch hauls jeep up the slope; real-game confirmation."
+      }
+    ],
+    "viewedEvidence": [
+      "uc4-contact.jpg",
+      "uc4-rope.jpg"
+    ],
+    "observed": "A character carries the line around a tree; rope extends down to jeep; vehicle hangs and is winched up. The visible line/obstacle relationship fits the taut-rope fallback teaching example.",
+    "claimLimit": "The invisible taut fallback comes from Jaroslav Sinecky's original interview. Do not label an editorial drawn line as an actual engine debug display or claim the whole visible rope is rigid. Do not imply the implementation is unchanged in The Last of Us Part II.",
+    "captionAndCrop": "Keep rope's tree contact and jeep visible using source-aspect inset. Do not crop away the obstacle while explaining wrapping. Preserve native29.97fps motion in60fps delivery. Exclude source endcard from approximately110s onward.",
+    "next": "Resolve publisher rights before adopting into final cut. No YouTube publication based on uploader CC BY alone.",
+    "mechanismClarification": {
+      "source": "https://80.lv/articles/how-naughty-dog-created-the-immersive-world-of-the-last-of-us-part-ii",
+      "section": "Interactive Ropes System; Jaroslav Sinecky paragraphs after 2011/Uncharted4 introduction",
+      "checkedNow": true,
+      "confirmed": "Slack particle constraints become costly and can clip collisions when moving fast. A second geometric taut path wraps/slides collision edges and serves as invisible fallback in Uncharted4.",
+      "notConfirmed": "An 8-unit maximum length, endpoint clamp, or exact algorithm that snaps all particles onto the safe path is not disclosed.",
+      "demoRecommendation": "Show separately maintained wrapped path and a labeled illustrative collision-failure recovery. Any particle reset is our simplified reconstruction, not asserted production code."
+    }
+  },
+  "provisionalGateReason": "WB/Sony publisher reuse grant remains unconfirmed.",
+  "narrationValidation": {
+    "paragraphCount": 6,
+    "clauseCount": 18,
+    "exactSpokenCoverage": true,
+    "headingFreeReadThrough": true,
+    "timingStatus": "No PCM; duration and pace are not verified",
+    "ttsStarted": false,
+    "captionGeometry": {
+      "font": "malgunbd.ttf",
+      "size": 60,
+      "maxWidth": 796,
+      "maxLines": 2,
+      "result": "all clauses pass fixed geometry"
+    }
+  },
+  "productionReady": false,
+  "nativeLatestCodePreflight": "pending-after-user-game-exit",
+  "provisionalSceneBindings": true,
+  "nativeImplementationLimits": [
+    "Independent gameplay publisher-rights gate unresolved; no adopted cut.",
+    "Particle restoration onto maintained taut path is our simplified fallback demonstration. Exact commercial fallback restoration is undisclosed.",
+    "Artificial weak-solver risk is not actual Uncharted bug footage."
+  ]
+}

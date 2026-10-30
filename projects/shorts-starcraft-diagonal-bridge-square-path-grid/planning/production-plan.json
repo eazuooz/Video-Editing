@@ -1,0 +1,160 @@
+{
+  "revision": "tech-ten-v1",
+  "researchCandidateId": "starcraft-diagonal-bridge-square-path-grid",
+  "researchRecord": "shared/publishing/shorts-research-20261030-ten.json",
+  "researchSha256": "bd53b4984c62a4ab9a75170b626f2da96093e51fe33c9495f676bc5f7d47403d",
+  "game": "StarCraft / Brood War",
+  "centralQuestion": "스타의 비스듬한 다리, 컴퓨터에겐 계단이었다?",
+  "canonicalTerms": [
+    {
+      "en": "Pathfinding grid",
+      "ko": "경로 탐색 격자"
+    },
+    {
+      "en": "Walkability",
+      "ko": "통행 가능 여부"
+    }
+  ],
+  "claims": [
+    "스타크래프트는 비스듬한 그림으로 바꾼 뒤에도 정사각 타일 기반 지형 엔진을 유지했다. 통행 판정은 32×32에서 8×8로 세분해 셀 수가 16배가 되었고, 다리의 대각선 가장자리는 통행 격자에서 계단형 경계가 된다."
+  ],
+  "limits": [
+    "16배는 동일 면적의 셀 수 변화이며 실행 시간이 정확히 16배라는 뜻이 아니다.",
+    "이 구조가 모든 드라군 이동 문제의 유일한 원인이라고 단정하지 않는다.",
+    "리마스터 확대 화면의 픽셀과 원작 논리 좌표 8단위를 혼동하지 않는다."
+  ],
+  "primarySources": [
+    {
+      "url": "https://www.codeofhonor.com/blog/the-starcraft-path-finding-hack/",
+      "kind": "first-person-original-developer-article",
+      "author": "Patrick Wyatt",
+      "publishedOn": "2013-02-20",
+      "reviewedEvidence": "Article body read, including the development-history, square terrain, harvest congestion, collision exception and conclusion sections. Historical original StarCraft implementation; not a current-version runtime test.",
+      "supportingSections": [
+        "How did we get here?"
+      ]
+    }
+  ],
+  "suggestedScreens": [
+    "실제 다리 위 이동에서 그림의 가장자리를 먼저 짚는다.",
+    "Unity 설명에서 동일한 비스듬한 다리 그림 위에 정사각 통행 격자를 겹쳐 공개한다.",
+    "32칸 폭 표시를 8단위 격자로 세분하고 같은 영역에 4×4개가 들어감을 보여 준다."
+  ],
+  "oneVariableComparison": {
+    "variable": "통행 격자의 해상도",
+    "fixed": [
+      "다리 그림",
+      "출발과 목표",
+      "유닛 크기",
+      "관찰 방향"
+    ],
+    "classification": "our explanatory reconstruction; not a captured proprietary pathfinding buffer"
+  },
+  "scriptFinalized": true,
+  "independentFootageViewed": true,
+  "scenePlan": [
+    {
+      "id": "game",
+      "paragraph": 0,
+      "firstCue": "p1-1",
+      "kind": "actual-gameplay",
+      "purpose": "Source890–897s diagonal bridge. Gameplay crop x300y140w1320h620 avoids facecam/top banners. Keep aspect; highlight diagonal sides."
+    },
+    {
+      "id": "coarse",
+      "paragraph": 1,
+      "firstCue": "p2-1",
+      "kind": "motion-canvas",
+      "purpose": "Persistent diagonal bridge illustration. Overlay32x32 square passability cells; canonical label pathfinding grid."
+    },
+    {
+      "id": "diagonal",
+      "paragraph": 2,
+      "firstCue": "p3-1",
+      "kind": "motion-canvas",
+      "purpose": "Same bridge/camera. Compare diagonal artwork edge with axis-aligned coarse cells; emphasize partly cut cells."
+    },
+    {
+      "id": "subdivide",
+      "paragraph": 3,
+      "firstCue": "p4-1",
+      "kind": "motion-canvas",
+      "purpose": "One32x32 tile splits into4x4 eight-pixel cells. Work32/8=4 then4x4=16 visually. Numbers are original logical pixel scale, not remaster screenshot pixels."
+    },
+    {
+      "id": "compare",
+      "paragraph": 4,
+      "firstCue": "p5-1",
+      "kind": "motion-canvas",
+      "purpose": "Toggle only grid cell size32->8; bridge unchanged, passability stair-edge becomes finer. Display cell-count change, never runtime16x."
+    },
+    {
+      "id": "result",
+      "paragraph": 5,
+      "firstCue": "p6-1",
+      "kind": "actual-plus-motion-canvas",
+      "purpose": "Close with diagram stair-edge beside actual bridge detail. An overlay is illustrative, not a recovered/measured game grid."
+    }
+  ],
+  "chapterLinks": [
+    {
+      "from": 0,
+      "to": 1,
+      "bridge": "이 스타크래프트 다리, 대각선으로 놓여 있죠. 그런데 유닛이 지나갈 길은 네모난 격자로 계산했습니다. → 예전 엔진은 지형을 가로 세로 삼십이 픽셀짜리 칸으로 나눴습니다. 칸마다 지나갈 수 있는지 정하는 방식이었죠."
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "bridge": "예전 엔진은 지형을 가로 세로 삼십이 픽셀짜리 칸으로 나눴습니다. 칸마다 지나갈 수 있는지 정하는 방식이었죠. → 스타크래프트에서 그림은 비스듬한 시점으로 바뀌었지만, 바탕의 네모 격자는 남았습니다. 대각선 가장자리가 칸을 어중간하게 잘라 버리죠."
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "bridge": "스타크래프트에서 그림은 비스듬한 시점으로 바뀌었지만, 바탕의 네모 격자는 남았습니다. 대각선 가장자리가 칸을 어중간하게 잘라 버리죠. → 그래서 길찾기 칸을 가로 세로 팔 픽셀로 더 잘게 나눴습니다. 같은 넓이에 가로 네 칸, 세로 네 칸. 한 칸이 열여섯 칸이 된 겁니다."
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "bridge": "그래서 길찾기 칸을 가로 세로 팔 픽셀로 더 잘게 나눴습니다. 같은 넓이에 가로 네 칸, 세로 네 칸. 한 칸이 열여섯 칸이 된 겁니다. → 우리 그림에서도 칸을 줄이자, 통과 가능한 경계가 다리를 더 촘촘히 따라가죠. 대신 찾아야 할 칸이 늘어나, 길찾기 계산 부담도 커졌습니다."
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "bridge": "우리 그림에서도 칸을 줄이자, 통과 가능한 경계가 다리를 더 촘촘히 따라가죠. 대신 찾아야 할 칸이 늘어나, 길찾기 계산 부담도 커졌습니다. → 매끈해 보이는 대각선 다리 아래에는, 계단 모양의 통행 지도가 숨어 있던 거예요. 보이는 그림과, 게임이 길을 판단하는 지도는 달랐습니다."
+    }
+  ],
+  "rendererPolicy": "Unity behavior demonstration for worker collision states; Motion Canvas for square-grid subdivision and passability map. Actual gameplay is independent.",
+  "footageRightsConfirmed": true,
+  "sourceFhdVerified": true,
+  "actualHumanListening": "pending",
+  "sourceSelection": "sources/selected-footage.json",
+  "actualRealtimeVideoReview": "pending",
+  "sourceViewingEvidence": "Decoded contact sheets and chronological dense frame samples viewed directly by agent. No full real-time playback or listening claimed.",
+  "scriptReadthrough": {
+    "headingFreeKOENReadthrough": true,
+    "essentialConditions": "32/8 pixel values refer to original logical terrain/pathfinding representation, not remastered output pixels.16x is cell count for equal area, not measured runtime. Native gameplay crop excludes facecam; CC attribution retained.",
+    "audioPaceVerified": false
+  },
+  "provenanceNotes": "32/8 pixel values refer to original logical terrain/pathfinding representation, not remastered output pixels.16x is cell count for equal area, not measured runtime. Native gameplay crop excludes facecam; CC attribution retained.",
+  "rightsAndFhdReady": true,
+  "sourceFileAndDecodedDimensionsVerified": true,
+  "finalWholeMotionAndListening": "pending",
+  "renderer": {
+    "selected": "Motion Canvas",
+    "compositor": "Motion Canvas",
+    "source": "motion-canvas/src/projects/tech-ten-shorts-20261030",
+    "nativeUnityClaimed": false,
+    "nativeLatestCodePreflight": "not-required"
+  },
+  "captionEditNote": "Caption clauses split at natural phrases without changing complete spoken paragraphs. Display-only numerals preserve exact spoken values.",
+  "productionReady": true,
+  "sourceCropDecision": {
+    "choice": "full-original-frame",
+    "reason": "Inspected dense source frames show top-right recorder/sponsor mark and facecam. Preserve complete original frame and aspect; do not remove branding with suggested crop.",
+    "sourceIntervalOriginalSeconds": [
+      890,
+      897
+    ],
+    "repeatSource": false
+  }
+}

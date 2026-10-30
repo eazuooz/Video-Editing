@@ -1,0 +1,148 @@
+{
+  "revision": "tech-ten-v1",
+  "researchCandidateId": "starcraft2-marine-random-firing-delay",
+  "researchRecord": "shared/publishing/shorts-research-20261030-ten.json",
+  "researchSha256": "bd53b4984c62a4ab9a75170b626f2da96093e51fe33c9495f676bc5f7d47403d",
+  "game": "StarCraft II",
+  "centralQuestion": "해병이 너무 똑같이 쏘면 어색해서, 타이밍을 일부러 틀렸다?",
+  "canonicalTerms": [
+    {
+      "en": "Random firing delay",
+      "ko": "발사 간격의 무작위 지연",
+      "note": "Descriptive term for the documented behavior, not a proprietary algorithm name."
+    }
+  ],
+  "claims": [
+    "블리자드 문서는 해병의 발사 간격에 작은 무작위 지연을 넣어 동시에 사격을 시작한 부대도 점차 타이밍이 엇갈리며 덜 기계적으로 보이도록 한다고 설명한다."
+  ],
+  "limits": [
+    "근거는 스타크래프트 II이며 스타1의 모든 사격 구현으로 확대하지 않는다.",
+    "정확한 지연 범위나 분포는 확인하지 않았으므로 상용 게임의 수치처럼 표시하지 않는다.",
+    "게임 시뮬레이션의 난수는 같은 시드에서 결정적으로 재현될 수 있다."
+  ],
+  "primarySources": [
+    {
+      "url": "https://github.com/Blizzard/s2client-proto/blob/master/docs/protocol.md#randomness",
+      "kind": "official-blizzard-protocol-documentation",
+      "publisher": "Blizzard",
+      "reviewedEvidence": "Randomness and Game Versions sections directly read. No replay file or actual gameplay experiment performed.",
+      "supportingSections": [
+        "Randomness"
+      ]
+    }
+  ],
+  "suggestedScreens": [
+    "실제 스타2 해병 집단 사격을 보여 준다.",
+    "Unity에서 동일 주기로 사격하는 부대와 작은 무작위 지연을 적용한 부대를 같은 위치에서 비교한다.",
+    "머리 위 발사 박자 표시로 무엇이 달라지는지 짚고 실제 전투로 돌아간다."
+  ],
+  "oneVariableComparison": {
+    "variable": "발사 간격의 작은 무작위 지연",
+    "fixed": [
+      "부대 배치",
+      "사격 시작 명령",
+      "표적",
+      "카메라",
+      "기본 사격 주기"
+    ],
+    "classification": "our explanatory reconstruction; numeric delay ranges must be illustrative unless independently measured"
+  },
+  "scriptFinalized": true,
+  "independentFootageViewed": true,
+  "scenePlan": [
+    {
+      "id": "game",
+      "paragraph": 0,
+      "firstCue": "p1-1",
+      "kind": "actual-gameplay",
+      "purpose": "Source184–191s Marine group reaches combat and begins firing. Follow actual Marines; no invented delay numbers over game footage."
+    },
+    {
+      "id": "uniform",
+      "paragraph": 1,
+      "firstCue": "p2-1",
+      "kind": "unity",
+      "purpose": "Stage0: same soldiers/target fire on exact uniform intervals; visible muzzle flash and per-soldier next-shot bars remain synchronized."
+    },
+    {
+      "id": "change",
+      "paragraph": 2,
+      "firstCue": "p3-1",
+      "kind": "unity",
+      "purpose": "Stage1: toggle interval jitter only, fixed positions,target,animation; current-picture label our implementation."
+    },
+    {
+      "id": "numbers",
+      "paragraph": 3,
+      "firstCue": "p4-1",
+      "kind": "unity-plus-motion-canvas",
+      "purpose": "Show illustrative1.00s,0.98s,1.02s next-shot wait labels attached to units. Clearly display example values, not measured SC2 statistics."
+    },
+    {
+      "id": "compare",
+      "paragraph": 4,
+      "firstCue": "p5-1",
+      "kind": "unity",
+      "purpose": "Same-position A/B: uniform vs tiny jitter. Pulse timelines progressively lose alignment, one parameter changed."
+    },
+    {
+      "id": "result",
+      "paragraph": 5,
+      "firstCue": "p6-1",
+      "kind": "actual-plus-unity",
+      "purpose": "Actual source191–198s Marine combat confirms recognizable group, then close same Unity comparison. Official mechanic cited in description, no timing measurement claim."
+    }
+  ],
+  "chapterLinks": [
+    {
+      "from": 0,
+      "to": 1,
+      "bridge": "스타크래프트 투 해병이 여럿 모여 총을 쏩니다. 이걸 더 자연스럽게 보이게 하는 장치 중 하나가, 발사 간격의 작은 무작위 차이예요. → 모두 정확히 같은 간격으로 쏘면 어떻게 될까요? 같은 순간에 시작한 총성이 계속 겹쳐서, 로봇처럼 딱딱해 보이죠."
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "bridge": "모두 정확히 같은 간격으로 쏘면 어떻게 될까요? 같은 순간에 시작한 총성이 계속 겹쳐서, 로봇처럼 딱딱해 보이죠. → 우리 시연에서는 다음 발사까지 기다리는 시간만 조금 바꿔 봅니다. 병사의 위치와 목표, 애니메이션은 그대로예요."
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "bridge": "우리 시연에서는 다음 발사까지 기다리는 시간만 조금 바꿔 봅니다. 병사의 위치와 목표, 애니메이션은 그대로예요. → 예를 들어 일 초를 기다리는 대신, 어떤 병사는 영 점 구팔 초, 다른 병사는 일 점 영이 초를 기다리는 식입니다. 숫자는 원리를 보여 주기 위한 예시예요."
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "bridge": "예를 들어 일 초를 기다리는 대신, 어떤 병사는 영 점 구팔 초, 다른 병사는 일 점 영이 초를 기다리는 식입니다. 숫자는 원리를 보여 주기 위한 예시예요. → 처음엔 함께 쐈어도, 여러 번 반복하면 총 쏘는 박자가 조금씩 어긋나죠. 발사 간격의 작은 무작위성이, 부대 전체의 움직임을 자연스럽게 만듭니다."
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "bridge": "처음엔 함께 쐈어도, 여러 번 반복하면 총 쏘는 박자가 조금씩 어긋나죠. 발사 간격의 작은 무작위성이, 부대 전체의 움직임을 자연스럽게 만듭니다. → 스타크래프트 투는 실제로 해병의 발사 간격에 이런 작은 차이를 둡니다. 똑같은 유닛을 복제해도, 모두 한 박자에 움직이는 느낌을 줄이는 거죠."
+    }
+  ],
+  "rendererPolicy": "Unity controls shot interval and shows actual simulated muzzle/timer behavior; Motion Canvas provides labels and compositing. Independent custom-game footage supplies the real Marine example.",
+  "footageRightsConfirmed": true,
+  "sourceFhdVerified": true,
+  "actualHumanListening": "pending",
+  "sourceSelection": "sources/selected-footage.json",
+  "actualRealtimeVideoReview": "pending",
+  "sourceViewingEvidence": "Decoded contact sheets and chronological dense frame samples viewed directly by agent. No full real-time playback or listening claimed.",
+  "scriptReadthrough": {
+    "headingFreeKOENReadthrough": true,
+    "essentialConditions": "Official Blizzard documentation supports tiny random Marine shot intervals but gives no distribution/range.1.00/0.98/1.02s are explicitly illustrative. Actual footage is a named custom scenario and is not used to derive stock values.",
+    "audioPaceVerified": false
+  },
+  "provenanceNotes": "Official Blizzard documentation supports tiny random Marine shot intervals but gives no distribution/range.1.00/0.98/1.02s are explicitly illustrative. Actual footage is a named custom scenario and is not used to derive stock values.",
+  "rightsAndFhdReady": true,
+  "sourceFileAndDecodedDimensionsVerified": true,
+  "finalWholeMotionAndListening": "pending",
+  "renderer": {
+    "selected": "Unity",
+    "compositor": "Motion Canvas",
+    "source": "production/batches/tech-ten-shorts-20261030/unity-source",
+    "nativeUnityClaimed": true,
+    "nativeLatestCodePreflight": "pending-after-user-game-exit"
+  },
+  "captionEditNote": "Caption clauses split at natural phrases without changing complete spoken paragraphs. Display-only numerals preserve exact spoken values.",
+  "productionReady": false
+}
