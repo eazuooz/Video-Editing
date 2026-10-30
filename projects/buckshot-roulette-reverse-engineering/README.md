@@ -2,7 +2,15 @@
 
 소유한 설치본에서 확인한 규칙을 별도로 설명하고, 독립적으로 작성한 코드와 새 외형으로 작은 플레이 실험을 만드는 프로젝트입니다. `prototype/`은 원작 실행 파일·복원 스크립트·원작 모델을 불러오지 않습니다. 원작 관찰 자료와 분석 원문은 Git에서 제외한 `production/local/`, `captures/`에 구분해 둡니다.
 
-## v4 수정 · 전체 제작 흐름부터 소개
+## v5 수정 · Unity 분석·개발 설명 완성
+
+분석 도구와 개발환경 설명 **8컷을 Unity 애니메이션으로 보강**했습니다. 파일 구조 열기, REA 요청·반환, 도구 연결, 함수와 공유 상태, 코드·모델 결합, 입력 잠금과 검사 결과, 전체 제작 경로를 기존 발화 시점에 맞춰 보여줍니다. 편집 가능한 씬 8개는 `unity/VideoEditing/Assets/VideoScenes/buckshot-workflow-v5/Scenes/6dfee02db3d5/render/`에 저장했습니다.
+
+최신 검수본은 **6분 52초 · 1920×1080/60fps**, 자막·무자막 MP4와 한영 SRT입니다. [영상과 검수 폴더](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/index.html)에서 확인합니다. 기존 대본·AAC·자막·길이를 보존했고, 24,718 clean 프레임 전체가 각 원래 화면 또는 선택한 Unity 화면과 일치합니다. 새 Unity 클립의 284개 발화 전후 표본과 최종 영상의 189개 표본(115개 한국어 자막·32컷·24페이지)을 FHD/375px에서 검수했습니다. 전체 연속 시청과 청취를 대신하는 검사는 아니며 사용자 최종 검수를 기다립니다. 상세 근거는 `production/final-review-v5.json`입니다.
+
+Unity는 설명 화면의 렌더러이고 실제 플레이 가능한 프로토타입은 기존 Godot 구현입니다. v4 출력과 검수 자료도 보존합니다.
+
+## v4 기준본 · 전체 제작 흐름부터 소개
 
 사용자 요청에 따라 **기존 게임 분석 → 규칙·리소스 구조 파악 → 새 코드·새 외형 제작 → 엔진에서 실행**을 중심 주제로 잡았다. 원작과 자체 프로토타입을 먼저 비교하고 REA(Reverse Engineer Anything), AI 에이전트, MCP의 역할을 설명한 뒤 실제 제작 사례로 이어진다.
 
@@ -51,6 +59,12 @@ Godot 설치 위치가 다르면 `-GodotExecutable 'C:/path/to/Godot.exe'`를 �
 | `F2` | 규칙 근거 화면 열기 / 닫기 |
 
 동일한 버튼을 마우스로 눌러도 됩니다. 애니메이션 중에는 새 동작과 재시작을 받지 않습니다. 고정 시연은 실행 명령에 `-Demo`를 붙입니다. 고정 시연 동안 직접 조작은 차단되고 마지막 근거 화면 뒤에 자동 종료됩니다.
+
+## Unity로 만든 분석·개발 과정 설명
+
+v5의 분석 도구·개발환경 설명은 `unity/VideoEditing/Assets/VideoScenes/buckshot-workflow-v5/`의 별도 Unity 씬으로 제작합니다. 파일 구조 열기 → REA 요청·결과 확인 → 함수와 공유 상태 추적 → 코드·모델 연결 → 입력·결과 검사 순서로 움직이는 도형과 라벨을 보여줍니다. 씬의 `BuckshotWorkflowStage`에서 `PreviewTime`을 지정하고 `Apply PreviewTime (seconds)`를 실행해 설명 시점을 확인할 수 있습니다.
+
+Unity는 이 설명 화면의 제작 도구이며, 아래의 실제 플레이 가능한 프로토타입은 Godot 프로젝트입니다. v5는 기존 대본·음성·전체 길이와 원작/프로토타입 촬영 컷을 유지한 시각 보강입니다. 현재 완료 여부와 실제 검수본 링크는 `production/checkpoint.json`과 로컬 출력 페이지를 기준으로 확인합니다.
 
 ## 구현 범위
 

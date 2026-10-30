@@ -17,10 +17,10 @@ ROOT = PROJECT.parents[1]
 OUTPUT = ROOT / "output" / PROJECT.name
 LOCAL = PROJECT / "production" / "local"
 EVIDENCE_PAGE = LOCAL / "analysis" / "evidence-view.html"
-FINAL_OUTPUT = ROOT / "output" / "buckshot-roulette-reverse-engineering-v4"
+FINAL_OUTPUT = ROOT / "output" / "buckshot-roulette-reverse-engineering-v5"
 # assemble_documentary.py writes this receipt only after both masters decode.
-FINAL_QA = LOCAL / "documentary-v4" / "technical-qa.json"
-FINAL_AUDIO_QA = LOCAL / "final-qa-v4" / "audio-review.json"
+FINAL_QA = LOCAL / "documentary-v5" / "technical-qa.json"
+FINAL_AUDIO_QA = LOCAL / "final-qa-v5" / "audio-review.json"
 LISTENING_PAGE = LOCAL / "audio-v4" / "review" / "listening" / "index.html"
 
 
@@ -137,7 +137,9 @@ def final_review_html(state: dict) -> str:
         (PROJECT / "planning/mechanics-findings.json", "규칙 분석 근거"),
         (PROJECT / "planning/original-footage-audit.json", "원작 촬영 검수 근거"),
         (state["report"], "현재 파일의 기술 검사 결과"),
-        (FINAL_AUDIO_QA, "현재 영상의 음성 검사 결과")))
+        (FINAL_AUDIO_QA, "현재 영상의 음성 검사 결과"),
+        (LOCAL / "documentary-v5/preservation-proof.json", "기존 음성·게임 장면 보존 검사"),
+        (ROOT / "unity/VideoEditing/Assets/VideoScenes/buckshot-workflow-v5", "Unity 설명 씬 소스")))
     audition = (f'<p class="subtle">새 도입·REA 설명과 기존 발음 확인 후보를 문맥과 함께 들을 수 있습니다. '
                 f'{link(LISTENING_PAGE, "문단별 청취 클립 열기", OUTPUT)}</p>') if LISTENING_PAGE.exists() else ""
     total = round(state["durationSeconds"])
@@ -249,7 +251,7 @@ def main() -> None:
     content = f'''
 <div class="brand">YAMYAM CODING / 얌얌코딩</div><p class="eyebrow">REA와 AI · 분석에서 기반 프로토타입까지</p>
 <h1>기존 게임을 분석해,<br>새 프로토타입의 출발점으로.</h1>
-<p class="lead">REA가 AI의 분석 작업을 어떻게 돕는지부터 살펴보고, 규칙 분석 → 새 코드와 외형 제작 → 게임 엔진 실행으로 이어집니다. v4는 원작·자체 구현 비교와 전체 제작 흐름을 도입에 넣고, 검증한 본문은 보존한 수정본입니다.</p>
+<p class="lead">REA가 AI의 분석 작업을 어떻게 돕는지부터 살펴보고, 규칙 분석 → 새 코드와 외형 제작 → 게임 엔진 실행으로 이어집니다. v5는 분석 도구와 개발 과정을 Unity 애니메이션 8장면으로 풀어낸 수정본입니다. 기존 내레이션과 실제 게임·프로토타입 장면은 유지했습니다.</p>
 {top_status}{final_section}
 {hero}{metrics()}
 <div class="links">{link(PROJECT / 'prototype/project.godot', 'Godot 프로젝트 열기', OUTPUT, 'button')}{link(PROJECT / 'production/launch-prototype.ps1', '실행 스크립트 보기', OUTPUT, 'button')}<a href="#progress">진행표</a><a href="#findings">확인한 규칙</a><a href="#files">파일·증거</a></div>

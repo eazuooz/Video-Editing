@@ -1,5 +1,13 @@
 # 벅샷 룰렛 다큐멘터리 합성기
 
+## v5 Unity 시각 보강
+
+사용자가 선택한 분석 도구·개발환경 설명 8컷만 Unity 6.6 / URP 17.6.0으로 다시 그린다. `unity-workflow-v5-cues.json`의 54개 발화 시점에 맞춰 파일 열기, REA 요청·응답, 코드의 공유 상태, 모델 조립, 공포탄 상태 변화, 입력 차단·검사를 보여준다. REA의 정식 명칭은 Reverse Engineer Anything이며, Unity는 이 설명의 렌더러이다. 실제 프로토타입 제작 경로인 REA CLI → 독립 코드·Blender 모델 → Godot는 그대로 표시한다. Ghidra·Tripo는 사용 가능한 경로의 예시로 구별한다.
+
+`capture-unity-v5.py --capture preflight`는 열린 Unity 편집기에 해당 프로젝트의 파일 요청을 전달하고, 별도 씬·카메라·culling mask로 표본을 촬영한다. 코드 지문에 연결된 실제 표본 검수 뒤 `--capture render`로 1080p60을 촬영한다. 기존 작업 씬이나 URP 에셋을 변경하지 않는다. 생성 씬·재질·링 메시와 OS 폰트 참조는 `unity/VideoEditing/Assets/VideoScenes/buckshot-workflow-v5/`에 보관하며 영상·표본 이미지는 프로젝트의 무시된 `production/local/unity-v5/`에 둔다.
+
+`review-unity-encoded-v5.py`는 실제 인코딩된 8개 파일의 해상도·프레임 수를 검사하고 발화 전후 연속 표본을 추출한다. 추출은 시청 승인이 아니며 별도 해시 연결 검수 기록이 있어야 `build-edit-v5.py --render --verify`가 진행된다. 합성기는 24,718프레임을 유지하고 v4 AAC·자막을 그대로 복사한다. 전체 clean 프레임을 비교하여 8개 교체 구간은 Unity 소스와, 나머지는 v4와 픽셀 단위로 일치하는지 확인한다. 기존 음성 검수는 실제 AAC 패킷·PCM 동일성 검증 이후에만 재사용한다. 새 TTS·ASR·업로드는 실행하지 않는다.
+
 ## v4 선택 수정 경로
 
 새 입력은 `../script/revision-v4/`와 `../planning/revision-v4-workflow.json`이다. `render-voice-v4.py`가 새 다섯 문단과 원본 PCM 열네 문단을 조립하며 원본 `local/audio-v1`은 변경하지 않는다. `review-voice-v4.py`와 `build-subtitles-v4.py`는 현재 음성과 의미 대응을 검수한다.
@@ -8,11 +16,11 @@
 
 최종 검수는 `local/documentary-v4/technical-qa.json`, `local/final-qa-v4/` 및 `caption-alignment-v4.json`에 현재 마스터 해시로 연결한다. `finalize-delivery-v4.py`가 실제 완료 증거가 모두 있을 때만 로컬 검수 대기로 갱신한다. 플랫폼 업로드는 수행하지 않는다.
 
-`assemble_documentary.py`는 실제로 선택한 클립·음성·자막을 받아 한 편을 조립한다. 실제 영상 인아웃이나 발화 시간을 자동으로 추정하지 않는다. **현재 편집 입력은 `timeline.json`**이며, 실제 원작 촬영·자체 구현·음성에 맞춘 분석 그림의 인아웃과 대사 대응을 기록했다. `timeline.template.json`은 별도의 미완성 예시이므로 제작 입력으로 쓰지 않는다.
+`assemble_documentary.py`는 실제로 선택한 클립·음성·자막을 받아 한 편을 조립한다. 실제 영상 인아웃이나 발화 시간을 자동으로 추정하지 않는다. **v3 기준 편집 입력은 `timeline.json`**이며, 실제 원작 촬영·자체 구현·음성에 맞춘 분석 그림의 인아웃과 대사 대응을 기록했다. `timeline.template.json`은 별도의 미완성 예시이므로 제작 입력으로 쓰지 않는다.
 
 2026-10-29 **v3 완성본의 기술 검사·표본 화면·전체 ASR 검수를 마치고 로컬 검수 폴더에 전달했다.** v2에서 혼합 PCM 연결을 수정했고, v3는 리미터 상한 -2.0dB를 적용했다. 실제 최종 AAC는 −17.0LUFS/−1.8dBTP이며 H.264 영상 패킷과 원래 음성 PCM은 보존했다. 영상·음성 길이 모두343.083333초(5분43.083333초), 20,585프레임이며 2초 브랜딩과10초 회원 안내를 포함한다. [현재 로컬 검수 페이지](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/index.html)와 [전체 자막 MP4](D:/Github/VideoEditing/output/buckshot-roulette-reverse-engineering/buckshot-roulette-reverse-engineering.captioned.mp4)를 사용한다. 최종 검수 범위는 `final-review.json`과 `checkpoint.json`에 기록했다. 네 발음 후보의 문맥 청취와 사용자 전체 시청은 대기 상태이며 기술 검사를 사용자 승인으로 간주하지 않는다.
 
-- 모든 상대 경로의 기준은 이 프로젝트 폴더다. 현재 전달 폴더는 `../../output/buckshot-roulette-reverse-engineering-v3`다. 다음 수정은 검증된 기존 전달 파일을 덮어쓰지 않고 새 revision 폴더를 사용한다.
+- 모든 상대 경로의 기준은 이 프로젝트 폴더다. v3 기준 전달 폴더는 `../../output/buckshot-roulette-reverse-engineering-v3`다. 최신 전달 경로는 `project.json`과 `final-review.json`을 따른다. 다음 수정은 검증된 기존 전달 파일을 덮어쓰지 않고 새 revision 폴더를 사용한다.
 - `sources`: 실제 파일·SHA256·자료 유형·동작 검토 기록. 자료 유형은 `actual-gameplay`, `actual-development`, `prototype`, `analysis-visualization`, `explanation`이다. 연구 참고 영상과 정지 이미지 길이 채우기는 입력할 수 없다. 모든 입력 영상은 실제 디코딩 크기가 최소1920×1080이어야 한다.
 - `beats`: 선택한 원본 시작 초·출력 정수 프레임 수·실제로 본 동작·대사 연결·원음 사용/게인. 각 컷은 원래 속도로 이어지며 원본 끝이 부족하면 오류로 멈춘다. 반복·감속·끝 프레임 복제를 하지 않는다. 기존 화면비는 검은 여백으로 보존한다.
 - `narration`: 본문 전체 WAV, SHA256, 실제 발화에 맞춘 KO/EN SRT. 원래 WAV를 수정하지 않고 내레이션을 원음 덕킹의 기준으로 사용한다. 자막 시각은 본문 시작0초 기준이며 최종 출력에서는 브랜딩2초를 더한다. 자동 문단 무음은 넣지 않는다.

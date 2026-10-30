@@ -6,6 +6,8 @@ ROOT=Path(__file__).resolve().parents[3]
 PROJECT=Path(__file__).resolve().parents[1]
 SLUG=PROJECT.name
 PREFIX=PROJECT.relative_to(ROOT).as_posix()+'/'
+UNITY_PREFIX='unity/VideoEditing/Assets/VideoScenes/buckshot-workflow-v5/'
+UNITY_ROOT_META=UNITY_PREFIX.rstrip('/')+'.meta'
 CONTROL='shared/publishing/video-production-control.json'
 WORKLIST='shared/publishing/video-worklist.json'
 DOC='docs/VIDEO_WORKLIST.md'
@@ -13,7 +15,7 @@ START='<!-- BUCKSHOT-RE-SETUP-20261028-START -->'
 END='<!-- BUCKSHOT-RE-SETUP-20261028-END -->'
 
 def git(*args, data=None, env=None):
-    return subprocess.check_output(['git',*args],cwd=ROOT,input=data,env=env)
+    return subprocess.check_output(['git','-c','core.safecrlf=false',*args],cwd=ROOT,input=data,env=env)
 def json_bytes(value):return (json.dumps(value,ensure_ascii=False,indent=2)+'\n').encode('utf-8')
 def read_json(value):return json.loads(value.decode('utf-8-sig'))
 def index_map(raw):
@@ -106,7 +108,7 @@ def main():
     checkpoint=read_json((PROJECT/'production/checkpoint.json').read_bytes())
     assert checkpoint.get('stage')=='local-final-review-ready', 'Finish local deliverables before saving final commit.'
     head=git('rev-parse','HEAD').decode().strip();ref=git('symbolic-ref','HEAD').decode().strip()
-    paths=set(git('ls-files','--cached','--others','--exclude-standard','-z','--',PREFIX).decode().split('\0'))-{''}
+    paths=set(git('ls-files','--cached','--others','--exclude-standard','-z','--',PREFIX,UNITY_PREFIX,UNITY_ROOT_META).decode().split('\0'))-{''}
     assert paths and all((ROOT/p).is_file() for p in paths)
     forbidden={'.mp4','.mkv','.avi','.wav','.mp3','.zip','.png','.jpg','.jpeg','.blend','.pyc'}
     assert not any(Path(p).suffix.lower() in forbidden or '/local/' in p or '/captures/' in p for p in paths)
@@ -144,7 +146,10 @@ def main():
             git('update-index','--add','--cacheinfo','100644',blob,p,env=env)
         # Preserve the byte-verified Godot source, including its harmless final
         # blank line. Still reject line-end spaces and spaces before indentation tabs.
-        try:git('-c','core.whitespace=blank-at-eol,space-before-tab,-blank-at-eof','diff','--cached','--check',env=env)
+        # Unity's serializer writes empty YAML fields as "name: ". Keep its
+        # native serialized data; still check all hand-authored code and docs.
+        serialized_excludes=[':(exclude,glob)'+UNITY_PREFIX+'**/*'+ext for ext in ['.unity','.meta','.asset','.mat','.fontsettings']]
+        try:git('-c','core.whitespace=blank-at-eol,space-before-tab,-blank-at-eof','diff','--cached','--check','--','.',*serialized_excludes,':(exclude)'+UNITY_ROOT_META,env=env)
         except subprocess.CalledProcessError as error:
             raise RuntimeError('Selected diff whitespace check failed:\n'+error.output.decode('utf-8',errors='replace')) from error
         subprocess.run(['node','scripts/media-policy.cjs'],cwd=ROOT,env=env,check=True)
@@ -160,7 +165,7 @@ def main():
         backup=gd/('index-before-buckshot-'+stamp)
         backup.write_bytes(original_bytes)
         tree=git('write-tree',env=env).decode().strip()
-        commit=git('commit-tree',tree,'-p',head,data=b'Explain REA and lead the prototype video with the reverse-engineering workflow\n').decode().strip()
+        commit=git('commit-tree',tree,'-p',head,data=b'Animate REA analysis and prototype development with editable Unity scenes\n').decode().strip()
         publish_index_and_ref(index_path,prepared_bytes,original_bytes,ref,head,commit)
     finally:
         # These unique private indexes are ours; the real index and its lock
