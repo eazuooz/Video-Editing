@@ -23,17 +23,39 @@ type Timing = {
   reactions?: {start: number; end: number; kind: 'realize' | 'relief'}[];
 };
 type Cut = {
+  in: number;
   frameDirectory?: string; firstFrame?: number; maxDuration: number;
   pattern?: string; digits?: number;
+  crop?: {center: Point; width: number};
+};
+type FootageMark = {
+  start: number; end: number; label: string;
+  keyframes: {at: number; center: Point; size: Point}[];
 };
 type Config = {
   game?: string; frameRoot?: string; cuts?: Partial<Record<SectionId, Cut>>;
+  footageAnnotations?: Partial<Record<SectionId, FootageMark[]>>;
   /** Local section fractions, provisional until exact speech cues are supplied. */
   phaseAt?: Record<string, [number, number]>;
 };
 
 const timing = timingInput as Timing;
-const config = configInput as Config;
+// JSON imports infer number[] rather than two-element tuples. Validate source
+// coordinate tuples before using the typed crop/annotation configuration.
+const config = configInput as unknown as Config;
+const validPoint = (p: Point) => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite);
+for (const c of Object.values(config.cuts ?? {})) {
+  if (c?.crop && (!validPoint(c.crop.center) || c.crop.width <= 0 || c.crop.width > 1920))
+    throw new Error('Invalid inspected gameplay crop.');
+}
+for (const marks of Object.values(config.footageAnnotations ?? {})) {
+  for (const m of marks ?? []) {
+    if (!(m.end > m.start) || !m.keyframes.length || m.keyframes.some((k, i) =>
+      !Number.isFinite(k.at) || !validPoint(k.center) || !validPoint(k.size)
+      || (i > 0 && k.at <= m.keyframes[i - 1].at)))
+      throw new Error('Invalid inspected footage annotation keyframes.');
+  }
+}
 const C = {...DARK, metal: '#71838b', metalLight: '#b9cbd0', rail: '#4b555a'};
 const FONT = 'Malgun Gothic';
 const FPS = timing.fps || 60;
@@ -246,12 +268,13 @@ export default makeScene2D(function* (view) {
   stage.add(cache);
   cache.add(<Line points={() => {
     const x = -356 + Math.max(1, lastGap()) * 178;
-    return [[x, 173], [x, 136]];
-  }} stroke={C.red} lineWidth={7} endArrow arrowSize={18}/>);
-  cache.add(<Txt text={() => `기억한 위치: ${GAP_NAMES[Math.max(1, lastGap())]}`}
-    position={[0, 334]} fill={C.red} fontFamily={FONT} fontSize={32} fontWeight={700}
+    return [[x, 156], [x, 132]];
+  }} stroke={C.red} lineWidth={5} endArrow arrowSize={12}
     opacity={() => cueStarted('cacheExceptions', .70) ? 0 : 1}/>);
-  cache.add(<Txt text="넣기 · 빼기 · 라인 경계 → 별도 처리" position={[0, 334]}
+  cache.add(<Txt text={() => `기억한 위치: ${GAP_NAMES[Math.max(1, lastGap())]}`}
+    position={[0, 178]} fill={C.red} fontFamily={FONT} fontSize={32} fontWeight={700}
+    opacity={() => cueStarted('cacheExceptions', .70) ? 0 : 1}/>);
+  cache.add(<Txt text="넣기 · 빼기 · 라인 경계 → 별도 처리" position={[0, 178]}
     fill={C.muted} fontFamily={FONT} fontSize={29}
     opacity={() => cueStarted('cacheExceptions', .70) ? 1 : 0}/>);
 
@@ -272,16 +295,41 @@ export default makeScene2D(function* (view) {
     recap.add(<Txt text={row === 0 ? '갱신: 좌표 4개' : '갱신: 양 끝 간격 2개'} position={[434, y + 81]}
       offset={[1, 0]} fill={row === 0 ? C.ink : C.teal} fontFamily={FONT} fontSize={31} fontWeight={700}/>);
   }
-  recap.add(<Txt text="같은 속도 · 막힘 없음" position={[-435, 230]} offset={[-1, 0]}
-    fill={C.muted} fontFamily={FONT} fontSize={29}/>);
-  recap.add(<Txt text="움직임은 같게\n바뀌는 정보만" position={[-435, 310]} offset={[-1, 0]}
-    fill={C.title} fontFamily={FONT} fontSize={39} lineHeight={54} fontWeight={700}/>);
+  // Keep the recap conclusion above y=1250 and left of the cat reserve;
+  // the final fixed caption starts near y=1284 and must never be moved.
+  recap.add(<Txt text="같은 속도 · 막힘 없음" position={[-435, 174]} offset={[-1, 0]}
+    fill={C.muted} fontFamily={FONT} fontSize={27}/>);
+  recap.add(<Txt text={'움직임은 같게\n바뀌는 정보만'} position={[-435, 244]} offset={[-1, 0]}
+    fill={C.title} fontFamily={FONT} fontSize={34} lineHeight={42} fontWeight={700}/>);
 
-  // Exact native-aspect gameplay. Frames are section-local and pre-extracted at
-  // 60 fps; crop/target tracking must be grounded by the parent footage review.
+  // Original 60 fps gameplay, with a fixed 16:9 crop chosen from inspected FHD
+  // source frames. The crop, marks and camera-pan keyframes share source pixels.
   const game = new Node({opacity: () => footage() ? 1 : 0});
   view.add(game);
-  game.add(<Img src={() => {
+  const viewport = new Rect({size: [1000, 562.5], position: [0, -140], clip: true});
+  game.add(viewport);
+  const cropScale = () => 1000 / (cut()?.crop?.width ?? 1920);
+  const cropCenter = (): Point => cut()?.crop?.center ?? [960, 540];
+  const sourcePoint = (point: Point): Point => [
+    (point[0] - cropCenter()[0]) * cropScale(),
+    (point[1] - cropCenter()[1]) * cropScale(),
+  ];
+  const sourceTime = () => (cut()?.in ?? 0) + elapsed();
+  const mark = () => config.footageAnnotations?.[id()]?.find(m =>
+    sourceTime() >= m.start && sourceTime() < m.end);
+  const markGeometry = () => {
+    const keys = mark()?.keyframes;
+    if (!keys?.length) return {center: [0, 0] as Point, size: [0, 0] as Point};
+    const next = keys.findIndex(k => k.at >= sourceTime());
+    if (next <= 0) return keys[next < 0 ? keys.length - 1 : 0];
+    const a = keys[next - 1], b = keys[next];
+    const t = clamp01((sourceTime() - a.at) / (b.at - a.at));
+    const mix = (u: Point, v: Point): Point => [u[0] + (v[0] - u[0]) * t, u[1] + (v[1] - u[1]) * t];
+    return {center: mix(a.center, b.center), size: mix(a.size, b.size)};
+  };
+  const markReveal = () => mark() ? smooth((sourceTime() - mark()!.start) / .18) : 0;
+  const markOpacity = () => mark() ? smooth((mark()!.end - sourceTime()) / .12) : 0;
+  viewport.add(<Img src={() => {
     const c = cut() ?? config.cuts?.game;
     if (!c) return '';
     const dir = section().frameDirectory ?? c.frameDirectory ?? id();
@@ -291,16 +339,36 @@ export default makeScene2D(function* (view) {
     ));
     const name = (c.pattern ?? '{frame}.jpg').replace('{frame}', String(n).padStart(c.digits ?? 6, '0'));
     return ROOT + (dir ? dir.replace(/\/$/, '') + '/' : '') + name;
-  }} size={[1000, 562.5]} position={[0, -140]}/>);
+  }} size={() => [1920 * cropScale(), 1080 * cropScale()]}
+    position={() => sourcePoint([960, 540])}/>);
+  // Hollow editor-drawn guide: no detector scores, invented speed or hidden
+  // engine measurement. Every guide disappears before the inspected source cut.
+  const marker = new Node({opacity: markOpacity});
+  viewport.add(marker);
+  marker.add(<Line points={() => {
+    const g = markGeometry(), [x, y] = sourcePoint(g.center);
+    const w = g.size[0] * cropScale() / 2, h = g.size[1] * cropScale() / 2;
+    return [[x - w, y - h], [x + w, y - h], [x + w, y + h], [x - w, y + h], [x - w, y - h]];
+  }} end={markReveal} stroke={C.teal} lineWidth={7} lineJoin="round"/>);
+  marker.add(<Line points={() => {
+    const g = markGeometry(), [x, y] = sourcePoint(g.center);
+    return [[x, y + g.size[1] * cropScale() / 2 + 2], [x, y + 72]];
+  }} end={markReveal} stroke={C.teal} lineWidth={5}/>);
+  marker.add(<Rect size={[300, 52]} position={() => {
+    const [x, y] = sourcePoint(markGeometry().center); return [x, y + 98];
+  }} fill={C.background} radius={8} opacity={markReveal}>
+    <Txt text={() => mark()?.label ?? ''} fill={C.teal} fontFamily={FONT} fontSize={31} fontWeight={700}/>
+  </Rect>);
   game.add(<Txt text={config.game ?? 'Factorio'} position={[-445, -448]} offset={[-1, 0]}
     fill={C.ink} fontFamily={FONT} fontSize={34} fontWeight={700}/>);
 
-  // The full cat reserve is x600..1060, y1110..1670. No data cell, conveyor,
-  // active-gap pointer or gameplay image enters that region while it is visible.
-  const cat = new Rect({size: [460, 560], position: [290, 430], clip: true, opacity: catOpacity});
+  // The full cat reserve is x600..1060, y1320..1880. Keep both eyes, nose and
+  // mouth below the two-line fixed caption (bottom around1475). Ears may pass
+  // behind that box; no data cell or conveyor enters the face's reserved area.
+  const cat = new Rect({size: [460, 560], position: [290, 640], clip: true, opacity: catOpacity});
   view.add(cat);
   cat.add(<Img src={() => reaction()?.kind === 'relief' ? relief : realize}
-    size={650} position={() => [55 + 24 * (1 - catOpacity()), 0]}/>);
+    size={560} position={() => [55 + 24 * (1 - catOpacity()), 0]}/>);
 
   yield view.toPromise();
   const duration = timing.durationSeconds ?? timing.frames / FPS;

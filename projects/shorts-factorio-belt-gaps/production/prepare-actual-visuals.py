@@ -26,7 +26,9 @@ SEMANTIC_EVENTS = {
     'conclusion': ('p7-3',),
     # Scene aliases retain the exact spoken cue edges; legacy semantic names above stay stable.
     'costMove': ('p2-1',), 'costGapReveal': ('p2-3',),
-    'endMove': ('p4-2',), 'blockReachEnd': ('p5-2',),
+    # Both terminal gaps change in the same movement; retain that movement
+    # through the left-gap AND right-gap clauses rather than finishing it early.
+    'endMove': ('p4-2', 'p4-3'), 'blockReachEnd': ('p5-2',),
     'blockPackFront': ('p5-3', 'p5-4'),
     'cachePackNext': ('p6-1', 'p6-2'), 'cacheExceptions': ('p6-3',),
     'closeMove': ('p7-2',),
@@ -128,6 +130,14 @@ def build_timing(lines, clauses, spec, config, pcm, captions):
             if available < 1:
                 raise ValueError('Selected source cut contains no complete frame.')
             game_end = min(end, start + available)
+            if s['id'] == 'close':
+                # p7-1 confirms the visible result in the real factory. At
+                # p7-2 the speech returns to the representation, so expose
+                # the A/B recap before its closeMove animation starts.
+                recap_start = by_id['p7-2']['startFrame']
+                if not start < recap_start < end:
+                    raise ValueError('Closing gameplay and recap each require at least one actual frame.')
+                game_end = min(game_end, max(start + 1, recap_start))
             source_start = float(cut['in'])
             sections.append(dict(base, kind='game', startFrame=start, endFrame=game_end,
                                  source='game-master', sourceStart=source_start,

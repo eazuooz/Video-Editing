@@ -1,0 +1,2056 @@
+{
+  "schemaVersion": 1,
+  "slug": "shorts-factorio-belt-gaps",
+  "policy": "metadata-only-v1",
+  "notes": [
+    "Media binaries are not in Git, including archives. Keep originals in external storage.",
+    "The complete project settings below preserve approval/rights/outro warnings. This file does not grant publication approval.",
+    "Native timeline units and source-offset semantics are preserved; consult the named producer script before editing.",
+    "TTS regeneration is not byte-identical: revalidate duration, cuts, mix and BOTH SRTs."
+  ],
+  "projectSettings": {
+    "slug": "shorts-factorio-belt-gaps",
+    "title": "수만 개 물건의 위치를 매번 안 고친다? | 팩토리오 #게임개발 #팩토리오 #최적화",
+    "format": {
+      "type": "youtube-shorts",
+      "width": 1080,
+      "height": 1920,
+      "fps": 60
+    },
+    "status": "complete-local-final-review-ready",
+    "currentRevision": "belt-gaps-v1",
+    "authorization": {
+      "id": "daily-five-topics-one-short-v2",
+      "userEvidence": "또다른 쇼츠영상 만들어줘 하루 한개씩 만들어줘~ 주제만 나한테 5개정도 던져주고 너가 만들면돼 매일매일",
+      "productionDateKst": "2026-10-26",
+      "scope": "One selected daily Short through local final review; resume this unfinished Short before choosing another.",
+      "fullProductionAuthorized": true,
+      "humanFinalReviewRequired": true,
+      "driveAuthorized": false,
+      "youtubeAuthorized": false
+    },
+    "paths": {
+      "script": "projects/shorts-factorio-belt-gaps/script/narration.spoken.ko.json",
+      "checkpoint": "projects/shorts-factorio-belt-gaps/production/checkpoint.json",
+      "productionPlan": "projects/shorts-factorio-belt-gaps/planning/production-plan.json",
+      "timeline": "projects/shorts-factorio-belt-gaps/production/visual-timing.json",
+      "videoBurnedCaptions": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captioned.mp4",
+      "videoClean": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/clean.mp4",
+      "captionsKo": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captions.ko.srt",
+      "captionsEn": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captions.en.srt",
+      "localReview": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/index.html"
+    },
+    "mediaRoot": "C:/Users/1/Videos/YamyamProduction/daily-shorts-20261026/shorts-factorio-belt-gaps",
+    "currentFinalDirectory": "production/local/final-reviewed-v1-master03",
+    "publishReady": false,
+    "resourcePermission": {
+      "id": "current-production-editor-resume-20261030",
+      "userEvidence": "그럼진행해 — after clarifying that the open Unity project is our video-production project",
+      "recordedAt": "2026-10-30T07:36:05.770869+00:00",
+      "scope": "This selected Factorio Short only; allow the identified production editor to remain open, never close or reconfigure it. Continue to block games, foreign editors, new unmatched editors, busy GPU and foreign leases.",
+      "editorPid": 96640,
+      "editorCreateTime": 1793345387.3520396,
+      "editorExe": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.0f1\\Editor\\Unity.exe",
+      "projectPath": "D:\\Github\\VideoEditing\\unity\\VideoEditing"
+    },
+    "titles": {
+      "ko": "수만 개 물건의 위치를 매번 안 고친다? | 팩토리오 #게임개발 #팩토리오 #최적화",
+      "en": "Factorio moves items by updating gaps | Belt optimization"
+    },
+    "delivery": {
+      "localStorageRoot": "projects/shorts-factorio-belt-gaps/production/local/delivery-storage-v1-master03"
+    },
+    "finalRender": {
+      "artifactVersion": "belt-gaps-v1-master03",
+      "openItems": [
+        "실제 전체 청취와 사용자 최종검수 대기. 자동 음성 대조와 표본 화면 검수를 사람 검수로 간주하지 않습니다."
+      ]
+    }
+  },
+  "counts": {
+    "scriptScenes": 1,
+    "timelineScenes": 0,
+    "clipRecords": 0,
+    "selectedEditRecords": 0,
+    "referencedMediaFiles": 25,
+    "formerlyTrackedMediaFiles": 0
+  },
+  "sceneScript": {
+    "file": "projects/shorts-factorio-belt-gaps/script/narration.spoken.ko.json",
+    "data": {
+      "slug": "shorts-factorio-belt-gaps",
+      "revision": "belt-gaps-v1",
+      "scenes": [
+        {
+          "id": "main",
+          "lines": [
+            "벨트에 물건이 이렇게 많아도, 팩토리오에서는 위치를 하나씩 전부 고치지 않습니다. 비밀은 빈틈이에요.",
+            "물건 네 개가 함께 한 칸씩 움직이면, 좌표 네 개가 모두 바뀌죠. 그런데 물건 사이의 간격은 그대로입니다.",
+            "그래서 이어진 벨트를 운송 라인으로 묶고, 물건의 위치 대신 간격을 저장합니다.",
+            "같은 속도로 흐를 때는 왼쪽 끝 간격을 하나 늘리고, 오른쪽은 하나 줄이면 됩니다. 가운데 간격은 건드리지 않아요.",
+            "앞이 막히면 어떨까요? 맨 앞의 빈틈이 없어지고, 뒤따르던 물건들이 붙으면서 내부 간격이 줄어듭니다.",
+            "이때는 진행 방향에서 가장 앞에 남은 빈틈을 기억해, 매번 처음부터 찾지 않죠. 물건을 넣거나 빼는 동작은 따로 처리합니다.",
+            "화면에는 같은 물건이 움직입니다. 바뀌는 정보만 고쳐서, 큰 공장의 계산을 줄이는 거예요."
+          ]
+        }
+      ]
+    }
+  },
+  "editRecords": [],
+  "sceneLayout": [],
+  "clipRecords": [],
+  "literalSettings": [],
+  "structuredRecords": [
+    {
+      "file": "projects/shorts-factorio-belt-gaps/planning/production-plan.json",
+      "sha256": "f46136d3a3988c733ef7adc06dd46bee5990c45bc9fbac31633a7ac3ab452765",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "schemaVersion": 1,
+        "slug": "shorts-factorio-belt-gaps",
+        "revision": "belt-gaps-v1",
+        "productionDateKst": "2026-10-26",
+        "scriptFinalized": true,
+        "independentFootageViewed": true,
+        "selectedScope": "Factorio's developer-documented 2017 v0.15 belt item-position representation, including unobstructed flow, blockage and insertion caveat.",
+        "primarySource": {
+          "url": "https://www.factorio.com/blog/post/fff-176",
+          "title": "Friday Facts #176 - Belts optimization for 0.15",
+          "date": "2017-02-03",
+          "author": "Harkonnen / Wube Software",
+          "readScope": "Full Belts optimization section through curves, underground belts, splitters and transport-line size limits.",
+          "researchOnly": true,
+          "sourceProseOrIllustrationsUsedInVideo": false,
+          "omissions": [
+            "Personal biography, recruitment and separate multiplayer issue: not instructional for this Short.",
+            "Historical performance benchmark and exact engine implementation constants: not needed to show the selected data representation.",
+            "Binary-search/random-access tradeoff and release-planning detail: specialist implementation beyond the selected one-question Short; no claim of eliminating all costs."
+          ],
+          "preservedLogic": [
+            "Individual position updates cost work.",
+            "Equally moving items keep their relative free gaps.",
+            "Connected belts form transport lines; store gaps.",
+            "Unobstructed flow changes only the two terminal gaps.",
+            "Blocking consumes the last positive gap inside the line.",
+            "Remember its index rather than rescanning every item.",
+            "Inserting/removing items and crossing line boundaries need extra handling."
+          ]
+        },
+        "thesis": "The same visible belt flow can require fewer position-state updates when unchanged internal distances are stored explicitly.",
+        "glossary": [
+          {
+            "ko": "운송 라인",
+            "en": "Transport line",
+            "meaning": "함께 처리하는 이어진 벨트 구간",
+            "displayFirst": "gaps",
+            "speech": "운송 라인"
+          },
+          {
+            "ko": "간격",
+            "en": "Gap",
+            "meaning": "물건과 물건, 또는 끝 경계 사이의 빈 공간",
+            "displayFirst": "cost"
+          },
+          {
+            "ko": "좌표",
+            "en": "Coordinate",
+            "meaning": "이 도식에서 왼쪽 시작점부터 잰 물건 왼쪽 끝의 위치",
+            "displayFirst": "cost"
+          }
+        ],
+        "rendererDecision": {
+          "renderer": "Motion Canvas 3.17",
+          "reason": "The hidden mechanism is a data representation. A single animated belt diagram can expose coordinates, free gaps and the cached gap index directly. It is an explanatory model, not a self-authored game demonstration; do not create a redundant Unity simulation.",
+          "scene": "motion-canvas/src/projects/shorts-factorio-belt-gaps/scene.tsx",
+          "authoredModel": true,
+          "actualGameImplementationMeasured": false
+        },
+        "toyModel": {
+          "length": 13,
+          "itemWidth": 1,
+          "initialLeftEdges": [
+            1,
+            4,
+            7,
+            10
+          ],
+          "initialFreeGaps": [
+            1,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oneVariable": "All four items advance one model unit at the same speed.",
+          "resultLeftEdges": [
+            2,
+            5,
+            8,
+            11
+          ],
+          "resultFreeGaps": [
+            2,
+            2,
+            2,
+            2,
+            1
+          ],
+          "counts": "4 changed coordinate fields versus 2 changed terminal-gap fields in this small example. Not a Factorio timing benchmark or total CPU-operation count.",
+          "blockedRule": "With right boundary fixed, clamp the first item at12 and each following item's left edge to the next left edge minus1. The last positive gap shrinks; already compressed pairs remain packed until insertion/removal changes the model."
+        },
+        "sourceToScreen": [
+          {
+            "section": "game",
+            "paragraph": 0,
+            "sourceClaim": "A large factory motivates item-position-update cost.",
+            "screen": "Actual official FHD factory belt close-ups, source70.00–74.75s; continue the same speech over the gap diagram if its real duration exceeds the inspected clip.",
+            "observed": "Many ores move along red/blue belt lanes. Native camera/cut changes are preserved.",
+            "annotation": {
+              "guides": [
+                {
+                  "start": 70.55,
+                  "end": 72.4,
+                  "label": "움직이는 광물",
+                  "keyframes": [
+                    {
+                      "at": 70.4,
+                      "center": [
+                        1450,
+                        395
+                      ],
+                      "size": [
+                        280,
+                        90
+                      ]
+                    },
+                    {
+                      "at": 70.6,
+                      "center": [
+                        1422,
+                        395
+                      ],
+                      "size": [
+                        280,
+                        90
+                      ]
+                    },
+                    {
+                      "at": 71,
+                      "center": [
+                        1366,
+                        395
+                      ],
+                      "size": [
+                        280,
+                        90
+                      ]
+                    },
+                    {
+                      "at": 72,
+                      "center": [
+                        1226,
+                        395
+                      ],
+                      "size": [
+                        280,
+                        90
+                      ]
+                    },
+                    {
+                      "at": 72.4,
+                      "center": [
+                        1170,
+                        395
+                      ],
+                      "size": [
+                        280,
+                        90
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "crop": {
+                "center": [
+                  960,
+                  470
+                ],
+                "width": 1440
+              },
+              "outputViewport": {
+                "size": [
+                  1000,
+                  562.5
+                ],
+                "center": [
+                  540,
+                  820
+                ]
+              },
+              "cue": "Only during the matching real-game paragraph; reveal starts after the source shot is stable and clears before transition.",
+              "target": "Ore-bearing horizontal belt lane",
+              "meaning": "Editorial look-here guide, not a measurement of engine transport lines or item coordinates.",
+              "clearance": "Inside source viewport538.75-1101.25; clear of header, game-name chip and fixedcaptions. Revised catreserve x600-1060,y1320-1880; cat is absent on actualgame."
+            },
+            "carryForward": "The visible moving items become four identifiable ore blocks in the diagram."
+          },
+          {
+            "section": "cost",
+            "paragraph": 1,
+            "sourceClaim": "Absolute positions change while relative gaps are unchanged during equal-speed flow.",
+            "screen": "Same four width-1 blocks slide +1 on a13-unit ruler. Show four coordinate values changing and three interior gap values staying2.",
+            "cueIds": [
+              "p2-1",
+              "p2-2",
+              "p2-3"
+            ],
+            "carryForward": "The unchanged gap arrows remain as the next representation is revealed."
+          },
+          {
+            "section": "gaps",
+            "paragraph": 2,
+            "sourceClaim": "Transport lines store gaps instead of every absolute item coordinate.",
+            "screen": "Canonical three-line term reveal, then a small persistent term chip. Bracket the same line and connect each of the five gap values to its actual interval.",
+            "cueIds": [
+              "p3-1",
+              "p3-2"
+            ],
+            "carryForward": "The same line and gap array continue into the numerical comparison."
+          },
+          {
+            "section": "ends",
+            "paragraph": 3,
+            "sourceClaim": "Only terminal gaps change during unobstructed motion.",
+            "screen": "Same model movement: left gap1→2, right gap2→1; internal2/2/2 unchanged. Animate with the relevant clauses, not unrelated looping.",
+            "cueIds": [
+              "p4-1",
+              "p4-2",
+              "p4-3",
+              "p4-4"
+            ],
+            "carryForward": "The right edge becomes the blocking obstacle; no scene reset."
+          },
+          {
+            "section": "blocked",
+            "paragraph": 4,
+            "sourceClaim": "Blocked output closes the end gap then progressively compresses interior gaps.",
+            "screen": "Introduce the sole changed condition: a stop at the same right edge. Front block stops; following blocks close gaps sequentially.",
+            "cueIds": [
+              "p5-1",
+              "p5-2",
+              "p5-3",
+              "p5-4"
+            ],
+            "carryForward": "Keep the currently shrinking gap highlighted for the cached-index explanation."
+          },
+          {
+            "section": "cache",
+            "paragraph": 5,
+            "sourceClaim": "Cache the last positive gap index; insertion/removal still need handling.",
+            "screen": "Pointer follows the closest-to-output positive gap; already packed pairs stay together. A separate small insertion/removal arrow demonstrates the exception without inventing real engine measurements.",
+            "cueIds": [
+              "p6-1",
+              "p6-2",
+              "p6-3"
+            ],
+            "carryForward": "The unchanged visible behavior reconnects to the real factory.",
+            "layoutCorrection": "Measured preflight36s showed the remembered-gap label atoutputy1294 partly behind fixedcaptions. Move both cached-index/exception labels tooutputy1138, pointer to1092–1116 and hide pointer for exception. Fixedcaptions unchanged; finalencoded review pending."
+          },
+          {
+            "section": "close",
+            "paragraph": 6,
+            "sourceClaim": "Optimize changing information rather than removing visible items.",
+            "screen": "Actual source103.00–105.016667s confirms the same moving items during p7-1. At p7-2/frame2593 return to the same A/B diagram for3.6s so the paired movement and four-fields/two-fields comparison are visible with the speech. Native1x footage; no loop, freeze, speech edit or total-runtime change.",
+            "cueIds": [
+              "p7-1",
+              "p7-2",
+              "p7-3"
+            ],
+            "carryForward": "Finish on the mechanism rather than an unrelated slogan.",
+            "annotation": {
+              "guides": [
+                {
+                  "start": 103.25,
+                  "end": 106.8,
+                  "label": "물건은 계속 이동",
+                  "keyframes": [
+                    {
+                      "at": 103,
+                      "center": [
+                        850,
+                        360
+                      ],
+                      "size": [
+                        360,
+                        48
+                      ]
+                    },
+                    {
+                      "at": 104,
+                      "center": [
+                        760,
+                        360
+                      ],
+                      "size": [
+                        360,
+                        48
+                      ]
+                    },
+                    {
+                      "at": 105,
+                      "center": [
+                        670,
+                        360
+                      ],
+                      "size": [
+                        360,
+                        48
+                      ]
+                    },
+                    {
+                      "at": 106,
+                      "center": [
+                        580,
+                        360
+                      ],
+                      "size": [
+                        360,
+                        48
+                      ]
+                    },
+                    {
+                      "at": 107.5,
+                      "center": [
+                        445,
+                        360
+                      ],
+                      "size": [
+                        360,
+                        48
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "crop": {
+                "center": [
+                  960,
+                  540
+                ],
+                "width": 1600
+              },
+              "outputViewport": {
+                "size": [
+                  1000,
+                  562.5
+                ],
+                "center": [
+                  540,
+                  820
+                ]
+              },
+              "cue": "Source103.25s until the actual p7-2 diagram cut at105.016667s. Parent gameplay opacity clears the guide at the cut; no guide enters the diagram.",
+              "target": "Moving plate-bearing horizontal belt lane",
+              "meaning": "Editorial look-here guide, not a measurement of engine transport lines or item coordinates.",
+              "clearance": "Inside source viewport538.75-1101.25; clear of header, game-name chip and fixedcaptions. Revised catreserve x600-1060,y1320-1880; cat is absent on actualgame."
+            },
+            "timingCorrection": {
+              "reason": "Measured preflight left only0.866667s for the final diagram; its closeMove event43.216667–44.616667s was hidden by gameplay.",
+              "policy": "Cap closing gameplay at the actual canonical p7-2 start, retaining at least1frame in each section. Preserve all other PCM/cue times.",
+              "previousGameplayFrames": [
+                2472,
+                2757
+              ],
+              "newGameplayFrames": [
+                2472,
+                2593
+              ],
+              "newRecapFrames": [
+                2593,
+                2809
+              ],
+              "closeMoveFrames": [
+                2593,
+                2677
+              ],
+              "recapSeconds": 3.6000000000000014,
+              "reliefReaction": {
+                "kind": "relief",
+                "start": 44.11666666666667,
+                "end": 46.41666666666667
+              },
+              "inputCaptionPath": "projects/shorts-factorio-belt-gaps/script/captions.json",
+              "captionSha256": "2097a5825c0e46ce05eeecb0d1c071490ad6e48f4f89a4222a92e55987e77b25",
+              "verification": "Pure build_timing validated all actual PCM/caption inputs; root must preserve old media and regenerate actual timing/extraction/render."
+            },
+            "layoutCorrection": "A/B condition at outputy1134; two-line conclusion centeredoutputy1204 with42px line-height and34px type, ending byy1246. Left-alignedx105; clear of catreservex600+ and fixedcaptiontop1284. Verify final rendered frames44–46s.",
+            "postEncodeCorrection": {
+              "observedMaster": "05356beb00b29c5066d0c21e574c8763585d9924e7b222d8b91b930231105105",
+              "observation": "Nativeframe-079 and exact375pxsheet-07 reveal JSX literal backslash-n and caption hiding cat left eye. Same face overlap observed atframe-031(realize).",
+              "fix": "Use a JS expression for the two-line conclusion. Keep right460px catregion, move center to output830,1600 with560px image so eyes,nose,mouth sit below two-line fixedcaption; unchanged speech/cues/captions.",
+              "sceneSha256": "fcf3ca4f3eda39bce0a38233961a538bc5dd6b0db991afffa5312e6c10c3aab8",
+              "verification": "Scoped TypeScript passed. Master03 b29735a7a3ee native17s/45.4167s and original375pxsheets03/07 directly inspected: both faces clear and actual two-line conclusion; sampledvisual pass, no audio/fullhumanplayback claim."
+            }
+          }
+        ],
+        "footageEvidence": {
+          "record": "projects/shorts-factorio-belt-gaps/sources/selected-footage.json",
+          "inspection": "142s source overview sampled every6s; 66–78s sequential samples at2fps; 100–112s at1fps; full native1920x1080 frame70.5s directly viewed.",
+          "fullRealtimeSourcePlayback": "not performed; sampled visual inspection is not a whole-video real-time playback claim",
+          "observedImplementationLimit": "The recording demonstrates belt item flow, not how the source code stores positions. Internal representation is supported by the developer's primary explanation.",
+          "actualSourceDimensions": [
+            1920,
+            1080
+          ],
+          "actualSourceRate": "60/1",
+          "sourceDecode": "Full ffmpeg -xerror decode completed with no errors.",
+          "nativeSourceAudioAdopted": false,
+          "gameNameChip": "Factorio",
+          "sourceCredits": "description-only; preserve any native required source markings",
+          "actualFootageShare": "Measure after actual PCM timing; do not pad a fixed longform quota into this technique Short.",
+          "annotationPreflight": {
+            "method": "ffmpeg software-only single-frame extraction, at most2decoderthreads; directly inspected original1920x1080 JPEG frames.",
+            "directory": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1",
+            "frames": [
+              {
+                "seconds": 103,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-103.jpg",
+                "sha256": "78d6becf934bfb6c27a81e6d051fcead72ac782bb621b81b983311b12c87e3f4"
+              },
+              {
+                "seconds": 104,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-104.jpg",
+                "sha256": "c5a2bc3d501ba160d5a0536b9697e8baffff44d7800d8648616ba46938a62ab1"
+              },
+              {
+                "seconds": 105,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-105.jpg",
+                "sha256": "8e57de3dddb274ce4f96e0645ad857b464e29a33754f5dadf8c989805ab656df"
+              },
+              {
+                "seconds": 106,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-106.jpg",
+                "sha256": "9468615564b35396297ce4f657068e87bdb8dd351dac931bee8bc966903ce392"
+              },
+              {
+                "seconds": 107.5,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-107.5.jpg",
+                "sha256": "07255f549c66b09877862d2b3fa20ac5e2f487a4343cfadb4e3cff07fa6428ee"
+              },
+              {
+                "seconds": 107.7,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-107.7.jpg",
+                "sha256": "3da173b68fb8641e69cc2827a9f4bf74268b0691264210b4ae27ee5ffcc19a4c"
+              },
+              {
+                "seconds": 70.4,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-70.4.jpg",
+                "sha256": "202704e994a3a408b6e1d3b410ab68a594445237df924e49af3d58f3c2fb31ab"
+              },
+              {
+                "seconds": 70.6,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-70.6.jpg",
+                "sha256": "5ffa662b9f1e4449b972dae45bace59dc5632080cec371ae81b9eed55c2c22e5"
+              },
+              {
+                "seconds": 70,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-70.jpg",
+                "sha256": "21c0e241edd7870a8746e8617a6ab10ea90f09435d810b83667029a96627458e"
+              },
+              {
+                "seconds": 71,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-71.jpg",
+                "sha256": "9c3bc978a4a78b936f28f0bce2e80d203ac06c2f462d4df7eaddb7e0e062bb02"
+              },
+              {
+                "seconds": 72.4,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-72.4.jpg",
+                "sha256": "9e71701d9aea589ec4a3a48a18445fffa4f22a8d2d1dcaf98c3efbdaeb1db290"
+              },
+              {
+                "seconds": 72.6,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-72.6.jpg",
+                "sha256": "b420c478351070fbfb0c8f533047d47edc4ac65abcfe5635d3dfce5533fedaf5"
+              },
+              {
+                "seconds": 72,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-72.jpg",
+                "sha256": "005450be87b44066e0dbb8947d8b904972c08033cc08295ce16ec2a41172b672"
+              },
+              {
+                "seconds": 74.5,
+                "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\annotation-preflight-v1\\source-74.5.jpg",
+                "sha256": "4a3e4d123bcc9dcf5f82e277d04d055b54b2b4a003d1928f000ebef6e96e0752"
+              }
+            ],
+            "basis": {
+              "coordinateSpace": "original 1920x1080 source pixels; local source time = cut.in + section elapsed",
+              "meaning": "Editorial outlines around observed ore/plate-bearing belt lanes, not recovered transport-line or detector output.",
+              "transform": "Fixed aspect-preserving16:9 viewport crop. Source points, image and guide use identical center/scale. No speed or interval changes.",
+              "nativeCuts": "Opening70.00 overview preserved; ore close-up established by70.4. Guide begins70.55 and ends72.40, before visible dissolve at72.6. Closing observed103.0–107.7continuous; guide fades out at106.80.",
+              "review": "Native sampled frames directly viewed; exact rendered moving/mobile review remains pending."
+            },
+            "mobileCropReason": "1.333x opening and1.2xclosing enlarge observable belt items at375px while retaining neighboring lanes and machine context; same16:9 source aspect retained.",
+            "encodedReview": "pending; sampled source inspection is not final video or real-time mobile QA."
+          },
+          "postEncodeVisualReview": {
+            "record": "projects/shorts-factorio-belt-gaps/production/local/annotation-preflight-v1/visual-review-master02.json",
+            "nativeFramesViewed": [
+              "frame-003.jpg",
+              "frame-031.jpg",
+              "frame-065.jpg",
+              "frame-071.jpg",
+              "frame-079.jpg"
+            ],
+            "mobileSheets": [
+              "sheet-06.jpg (tool resized, about336px)",
+              "sheet-07.jpg (original375pxpanels)"
+            ],
+            "masterSha256": "05356beb00b29c5066d0c21e574c8763585d9924e7b222d8b91b930231105105",
+            "passed": "Actualore/plateguides, clear sourcecut, cachelabelclearance, A/B3.6svisiblemotion.",
+            "corrections": "Two visual defects sent to master03; no claims of audio listening/fullhumanplayback.",
+            "master03CorrectionRecord": "projects/shorts-factorio-belt-gaps/production/local/annotation-preflight-v1/visual-review-master03.json"
+          }
+        },
+        "assets": {
+          "catProvenance": "shared/assets/branding/cat-reactions-v1/provenance.json",
+          "catFiles": [
+            "shared/assets/branding/cat-reactions-v1/realize.png",
+            "shared/assets/branding/cat-reactions-v1/relief.png"
+          ],
+          "catDirection": "Right-lower large reaction at gap insight and closing only, leaving numbers, arrows, eyes and fixed captions clear. Inspect actual375px output before accepting.",
+          "diagramArt": "Original code-authored ore-like shapes, belt, ruler and arrows; no competitor character or proprietary game sprite extraction.",
+          "music": "shared/assets/music/incompetech/Pixel-Peeker-Polka-faster.mp3",
+          "musicSha256": "b2609a077fae292679f25b83519f470ed308abb40d11f89bff8c6f896deefed3",
+          "musicLicense": "shared/assets/music/incompetech/Pixel-Peeker-Polka-faster.LICENSE.md",
+          "musicUse": "One continuous light mechanical bed, -35LUFS target and music-only speech ducking; verify the actual mix before accepting."
+        },
+        "scopeConditions": [
+          "Historical2017v0.15 optimization, not an assertion of the latest entire engine implementation.",
+          "Equal-speed internal-gap invariance applies to unobstructed flow, not all blocked or inserter states.",
+          "Items still exist, move, render and transfer. This does not eliminate all simulation/render costs.",
+          "No invented FPS, CPU percentage, benchmark or performance multiplier.",
+          "Branch and line-boundary handling remain; narration includes insertion/removal and visual note may name boundary transfers."
+        ],
+        "headingFreeReadThrough": {
+          "ko": "Reviewed: visible motion→coordinate cost→unchanged gaps→storage→end updates→blocked exception→cached index→result.",
+          "en": "Clause meanings preserve conditions and have no creator/reference framing.",
+          "redundantHedgesOmitted": "No generic AI disclaimer or invented total-simulation claim."
+        },
+        "pendingBeforeDelivery": [
+          "Wait for user game/actual Unity Editor to exit; no GPU work while active.",
+          "Generate same approved Qwen voice, retain paragraph PCM, strict ASR alignment; do not conceal word differences with aliases.",
+          "Replace preview timing with actual PCM/cue timing and inspect exact gameplay endpoints/marks.",
+          "Render and inspect every changed visual/caption state and375px playback.",
+          "Technical audio continuity and full mix ASR; distinguish any unperformed real listening.",
+          "Local clean/captioned/KO/EN, exact title/description/version/SHA256 and actual user final review."
+        ]
+      }
+    },
+    {
+      "file": "projects/shorts-factorio-belt-gaps/production/checkpoint.json",
+      "sha256": "389c589d13a2cc36fec618df064d71860ea040551048f7f620298803ed1e531e",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "schemaVersion": 1,
+        "slug": "shorts-factorio-belt-gaps",
+        "revision": "belt-gaps-v1",
+        "productionDateKst": "2026-10-26",
+        "updatedAt": "2026-10-30T08:15:01.788142+00:00",
+        "status": "complete-local-final-review-ready",
+        "authorization": "daily-five-topics-one-short-v2",
+        "completed": [
+          "five distinct candidates researched",
+          "selected one Factorio belt-gap Short",
+          "official nativeFHD source downloaded and fully decoded",
+          "source sampled visually and native frame inspected",
+          "primary mechanism and blockage conditions checked",
+          "seven-paragraph KO script and EN clauses",
+          "editable Motion Canvas/model and isolated guarded pipeline prepared",
+          "fixed header generated and viewed",
+          "Qwen narration PCM: first paragraph clarified; six original raw PCM paragraphs preserved",
+          "Exact source callout tracking and fixed aspect-preserving crops prepared",
+          "Full unprompted voice and final-mix ASR reconciled without hiding a word error",
+          "Actual PCM-aligned22 KO/EN cues and2809-frame timeline",
+          "Source target tracking and speech-synchronized gap/blockage/cache animations",
+          "Master03 cat-face/recap fixes, native/mobile sample QA and full automated real-time playback",
+          "Four collected outputs and final SHA256; full decode/PTS/AAC/audio-level checks"
+        ],
+        "notCompleted": [
+          "Actual full human listening and naturalness check",
+          "Full human visual review and exact-version approval before any upload"
+        ],
+        "blocker": null,
+        "costlyJobsStarted": 2,
+        "newQueueStarted": false,
+        "foreignProcessesStopped": false,
+        "nextActions": [
+          "Deliver the current complete captioned MP4 and four-output folder for actual user final review. No upload, next production or platform mutation is inferred."
+        ],
+        "inputHashes": {
+          "projects/shorts-factorio-belt-gaps/project.json": "082399a8a3282afe868c546805e4fc970f5b4f3c4c35d9a4dfebf5c7d81fd777",
+          "projects/shorts-factorio-belt-gaps/planning/production-plan.json": "fe8ebd20fcfd250f39ab716ec9ccd95e165d50d77e8971778f8709cccb6f10de",
+          "projects/shorts-factorio-belt-gaps/sources/selected-footage.json": "e87d5aa1f37c32f1734b441c37ee723d34fb624aca711f97274dba92e3473f56",
+          "projects/shorts-factorio-belt-gaps/script/narration.spoken.ko.json": "0dfb460acde8e820c57725024df7fa00512a5dc7d2256cdd0c185f45e40d96a1",
+          "projects/shorts-factorio-belt-gaps/script/narration.ko.txt": "70ed2738e8760f31c18912ec16ea2e6526f450dc29bd1de22cf14d1354b5dd2f",
+          "projects/shorts-factorio-belt-gaps/script/clauses.json": "971a341f41f78c47a8da9504a8e99312a6ee39056e28e1411d169ad5412b117c",
+          "projects/shorts-factorio-belt-gaps/production/section-plan.json": "6252ba66925f0e5d8d13140515561638ff3a0de73c4b3b169cd3a0b1987b0e08",
+          "projects/shorts-factorio-belt-gaps/production/visual-config.json": "4434e44588ccce185fa277f09899fb51fc586c326a4395b76b149349ae993776"
+        },
+        "mediaRoot": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local",
+        "storage": "Media/temp remain on C. D disk-space blocker is resolved; no files removed in this heartbeat.",
+        "humanReview": "awaiting-actual-user-local-review",
+        "youtube": "not-started",
+        "drive": "outside-default-workflow",
+        "decisionLog": [
+          {
+            "choice": "Motion Canvas data-model explanation",
+            "reason": "Gap representation and pointer changes are clearer in a direct2D value diagram; actual gameplay demonstrates visible flow."
+          },
+          {
+            "choice": "Historical2017 scope and blocked exception kept",
+            "reason": "Do not imply current entireFactorio CPU behavior or constant internalgaps duringblockage."
+          },
+          {
+            "choice": "Wait forOverwatchexit",
+            "reason": "Latest explicit user GPU-useboundary remains inforce; continue inexpensive preproduction only."
+          },
+          {
+            "choice": "Resume with current production editor open",
+            "reason": "그럼진행해 — after clarifying that the open Unity project is our video-production project",
+            "permission": {
+              "id": "current-production-editor-resume-20261030",
+              "userEvidence": "그럼진행해 — after clarifying that the open Unity project is our video-production project",
+              "recordedAt": "2026-10-30T07:36:05.770869+00:00",
+              "scope": "This selected Factorio Short only; allow the identified production editor to remain open, never close or reconfigure it. Continue to block games, foreign editors, new unmatched editors, busy GPU and foreign leases.",
+              "editorPid": 96640,
+              "editorCreateTime": 1793345387.3520396,
+              "editorExe": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.0f1\\Editor\\Unity.exe",
+              "projectPath": "D:\\Github\\VideoEditing\\unity\\VideoEditing"
+            }
+          }
+        ],
+        "currentVoiceSha256": "a8f734490eb8d05b7491be47e613e008aa06883e21b08f42eed7f0299a781a9a",
+        "previousVoicePreserved": "production/local/audio-history/take01-600b2804180a",
+        "resourcePermission": "project.json resourcePermission; exact current production editor exception from direct resume request",
+        "previousInputHashes": {
+          "projects/shorts-factorio-belt-gaps/project.json": "67ebeba3b6bc7430da65b9c1d09b3d2569df244f3239a96c3d8cbe3b1efdbdd1",
+          "projects/shorts-factorio-belt-gaps/planning/production-plan.json": "ffd294e5cfad51c20c6ab40cc2555cfcbb93f812c9b2b3cb121a687e5968a42e",
+          "projects/shorts-factorio-belt-gaps/sources/selected-footage.json": "e87d5aa1f37c32f1734b441c37ee723d34fb624aca711f97274dba92e3473f56",
+          "projects/shorts-factorio-belt-gaps/script/narration.spoken.ko.json": "fc545f00146aef54fbfc2c08f99f9bb8db9fd833e1f47b40c67bc94a224ac083",
+          "projects/shorts-factorio-belt-gaps/script/narration.ko.txt": "d572c2afab37a327b2920306d0965bf89345bdd7f5dffe54ebc3641d44171d80",
+          "projects/shorts-factorio-belt-gaps/script/clauses.json": "586ecf5902f99e74da399843baee1273ac33ff77a29eee743cd2d71c3393cfd7",
+          "projects/shorts-factorio-belt-gaps/production/section-plan.json": "6252ba66925f0e5d8d13140515561638ff3a0de73c4b3b169cd3a0b1987b0e08",
+          "projects/shorts-factorio-belt-gaps/production/visual-config.json": "673a6d7db62e96de018355f1cf5151ff53b26e0a57ba2a5743b1b347d51fa901"
+        },
+        "masterSha256": "b29735a7a3ee067c62cc0e06d442a201a5e00e1a6e2affd3d334920299944d72",
+        "artifactVersion": "belt-gaps-v1-master03",
+        "currentFinalDirectory": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\final-reviewed-v1-master03",
+        "localReview": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\final-reviewed-v1-master03\\index.html",
+        "finalReview": "projects/shorts-factorio-belt-gaps/production/final-review.json",
+        "currentSceneSha256": "fcf3ca4f3eda39bce0a38233961a538bc5dd6b0db991afffa5312e6c10c3aab8"
+      }
+    },
+    {
+      "file": "projects/shorts-factorio-belt-gaps/production/delivery-output.json",
+      "sha256": "3c397bf5e8c7062579d9d291fc1b9dc2200e50c4ffd2d1028b16d746d18cc674",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "slug": "shorts-factorio-belt-gaps",
+        "createdAt": "2026-10-30T08:11:11.820Z",
+        "directory": "projects/shorts-factorio-belt-gaps/production/local/delivery-storage-v1-master03/output/shorts-factorio-belt-gaps",
+        "previousDeliveryDirectory": null,
+        "planningDirectoryPreserved": false,
+        "publishReady": false,
+        "notices": [
+          "최신 완성 파일 모음입니다. 게시 승인 완료 상태는 아니며 최종 청취·잔여 검수를 확인하세요.",
+          "실제 전체 청취와 사용자 최종검수 대기. 자동 음성 대조와 표본 화면 검수를 사람 검수로 간주하지 않습니다."
+        ],
+        "videos": [
+          {
+            "duration": 46.816667,
+            "width": 1080,
+            "height": 1920,
+            "fps": "60/1"
+          },
+          {
+            "duration": 46.816667,
+            "width": 1080,
+            "height": 1920,
+            "fps": "60/1"
+          }
+        ],
+        "cues": 22,
+        "cueCounts": {
+          "ko": 22,
+          "en": 22
+        },
+        "captionAlignment": "identical-cue-timing",
+        "files": [
+          {
+            "name": "shorts-factorio-belt-gaps.captioned.mp4",
+            "source": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captioned.mp4",
+            "bytes": 8465014,
+            "sha256": "b29735a7a3ee067c62cc0e06d442a201a5e00e1a6e2affd3d334920299944d72"
+          },
+          {
+            "name": "shorts-factorio-belt-gaps.clean.mp4",
+            "source": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/clean.mp4",
+            "bytes": 9188633,
+            "sha256": "2e92c3a67ce6231ebc574df641ed23ff5dcb89bdc4fd2984415f46fc83ecf79d"
+          },
+          {
+            "name": "shorts-factorio-belt-gaps.ko.srt",
+            "source": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captions.ko.srt",
+            "bytes": 1795,
+            "sha256": "1ed2e1e2dbc8b4e58900c9166343c44c80315a383e26310d3dba8641b95f8502"
+          },
+          {
+            "name": "shorts-factorio-belt-gaps.en.srt",
+            "source": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captions.en.srt",
+            "bytes": 1527,
+            "sha256": "36f1f559594f0f901f713be42cc8f455e5eeadc4f16c6ce4685e04fba7e51a5f"
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/shorts-factorio-belt-gaps/production/section-plan.json",
+      "sha256": "6252ba66925f0e5d8d13140515561638ff3a0de73c4b3b169cd3a0b1987b0e08",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": [
+        {
+          "id": "game",
+          "paragraph": 0,
+          "firstCue": "p1-1",
+          "purpose": "game"
+        },
+        {
+          "id": "cost",
+          "paragraph": 1,
+          "firstCue": "p2-1",
+          "purpose": "position-update"
+        },
+        {
+          "id": "gaps",
+          "paragraph": 2,
+          "firstCue": "p3-1",
+          "purpose": "transport-line-gap-storage"
+        },
+        {
+          "id": "ends",
+          "paragraph": 3,
+          "firstCue": "p4-1",
+          "purpose": "end-gap-update"
+        },
+        {
+          "id": "blocked",
+          "paragraph": 4,
+          "firstCue": "p5-1",
+          "purpose": "blocked-compression"
+        },
+        {
+          "id": "cache",
+          "paragraph": 5,
+          "firstCue": "p6-1",
+          "purpose": "last-positive-gap-index"
+        },
+        {
+          "id": "close",
+          "paragraph": 6,
+          "firstCue": "p7-1",
+          "purpose": "game-confirmation"
+        }
+      ]
+    },
+    {
+      "file": "projects/shorts-factorio-belt-gaps/production/visual-timing.json",
+      "sha256": "624a34f0f229d4dc0f4de7e9715a957b6d50c9296303e228bb868fa9fe14c97b",
+      "purpose": "selected-timeline-or-source-record",
+      "data": {
+        "revision": "belt-gaps-v1",
+        "previewOnly": false,
+        "fps": 60,
+        "frames": 2809,
+        "durationSeconds": 46.81666666666667,
+        "voiceOffsetSeconds": 0.2,
+        "sections": [
+          {
+            "id": "game",
+            "paragraph": 0,
+            "firstCue": "p1-1",
+            "purpose": "game",
+            "visualId": "game",
+            "firstCueFrame": 12,
+            "pcmParagraphStart": 0.2,
+            "pcmParagraphEnd": 6.36,
+            "kind": "game",
+            "startFrame": 0,
+            "endFrame": 285,
+            "source": "game-master",
+            "sourceStart": 70,
+            "sourceEnd": 74.75,
+            "sourceTimeBasis": "original-seconds",
+            "rate": 1,
+            "nativeAudioAdopted": false,
+            "frameDirectory": "game",
+            "firstFrame": 0,
+            "digits": 6,
+            "framePattern": "{frame}.jpg",
+            "start": 0,
+            "end": 4.75,
+            "cueIds": [
+              "p1-1",
+              "p1-2"
+            ]
+          },
+          {
+            "id": "game-explain",
+            "paragraph": 0,
+            "firstCue": "p1-1",
+            "purpose": "game",
+            "visualId": "gaps",
+            "firstCueFrame": 12,
+            "pcmParagraphStart": 0.2,
+            "pcmParagraphEnd": 6.36,
+            "kind": "diagram",
+            "forceDiagram": true,
+            "startFrame": 285,
+            "endFrame": 392,
+            "continuity": "Same paragraph continues over its principle diagram; gameplay is not looped, frozen or slowed.",
+            "start": 4.75,
+            "end": 6.533333333333333,
+            "cueIds": [
+              "p1-2",
+              "p1-3"
+            ]
+          },
+          {
+            "id": "cost",
+            "paragraph": 1,
+            "firstCue": "p2-1",
+            "purpose": "position-update",
+            "visualId": "cost",
+            "firstCueFrame": 401,
+            "pcmParagraphStart": 6.54,
+            "pcmParagraphEnd": 13.26,
+            "kind": "diagram",
+            "forceDiagram": true,
+            "startFrame": 392,
+            "endFrame": 810,
+            "start": 6.533333333333333,
+            "end": 13.5,
+            "cueIds": [
+              "p2-1",
+              "p2-2",
+              "p2-3"
+            ]
+          },
+          {
+            "id": "gaps",
+            "paragraph": 2,
+            "firstCue": "p3-1",
+            "purpose": "transport-line-gap-storage",
+            "visualId": "gaps",
+            "firstCueFrame": 812,
+            "pcmParagraphStart": 13.495,
+            "pcmParagraphEnd": 18.775,
+            "kind": "diagram",
+            "forceDiagram": true,
+            "startFrame": 810,
+            "endFrame": 1136,
+            "start": 13.5,
+            "end": 18.933333333333334,
+            "cueIds": [
+              "p3-1",
+              "p3-2"
+            ]
+          },
+          {
+            "id": "ends",
+            "paragraph": 3,
+            "firstCue": "p4-1",
+            "purpose": "end-gap-update",
+            "visualId": "ends",
+            "firstCueFrame": 1138,
+            "pcmParagraphStart": 18.93,
+            "pcmParagraphEnd": 26.21,
+            "kind": "diagram",
+            "forceDiagram": true,
+            "startFrame": 1136,
+            "endFrame": 1587,
+            "start": 18.933333333333334,
+            "end": 26.45,
+            "cueIds": [
+              "p4-1",
+              "p4-2",
+              "p4-3",
+              "p4-4"
+            ]
+          },
+          {
+            "id": "blocked",
+            "paragraph": 4,
+            "firstCue": "p5-1",
+            "purpose": "blocked-compression",
+            "visualId": "blocked",
+            "firstCueFrame": 1588,
+            "pcmParagraphStart": 26.455,
+            "pcmParagraphEnd": 32.535000000000004,
+            "kind": "diagram",
+            "forceDiagram": true,
+            "startFrame": 1587,
+            "endFrame": 1965,
+            "start": 26.45,
+            "end": 32.75,
+            "cueIds": [
+              "p5-1",
+              "p5-2",
+              "p5-3",
+              "p5-4"
+            ]
+          },
+          {
+            "id": "cache",
+            "paragraph": 5,
+            "firstCue": "p6-1",
+            "purpose": "last-positive-gap-index",
+            "visualId": "cache",
+            "firstCueFrame": 1968,
+            "pcmParagraphStart": 32.755,
+            "pcmParagraphEnd": 40.995000000000005,
+            "kind": "diagram",
+            "forceDiagram": true,
+            "startFrame": 1965,
+            "endFrame": 2472,
+            "start": 32.75,
+            "end": 41.2,
+            "cueIds": [
+              "p6-1",
+              "p6-2",
+              "p6-3",
+              "p7-1"
+            ]
+          },
+          {
+            "id": "close",
+            "paragraph": 6,
+            "firstCue": "p7-1",
+            "purpose": "game-confirmation",
+            "visualId": "close",
+            "firstCueFrame": 2471,
+            "pcmParagraphStart": 41.205000000000005,
+            "pcmParagraphEnd": 46.405,
+            "kind": "game",
+            "startFrame": 2472,
+            "endFrame": 2593,
+            "source": "game-master",
+            "sourceStart": 103,
+            "sourceEnd": 105.01666666666667,
+            "sourceTimeBasis": "original-seconds",
+            "rate": 1,
+            "nativeAudioAdopted": false,
+            "frameDirectory": "close",
+            "firstFrame": 0,
+            "digits": 6,
+            "framePattern": "{frame}.jpg",
+            "start": 41.2,
+            "end": 43.21666666666667,
+            "cueIds": [
+              "p7-1"
+            ]
+          },
+          {
+            "id": "close-explain",
+            "paragraph": 6,
+            "firstCue": "p7-1",
+            "purpose": "game-confirmation",
+            "visualId": "close",
+            "firstCueFrame": 2471,
+            "pcmParagraphStart": 41.205000000000005,
+            "pcmParagraphEnd": 46.405,
+            "kind": "diagram",
+            "forceDiagram": true,
+            "startFrame": 2593,
+            "endFrame": 2809,
+            "continuity": "Same paragraph continues over its principle diagram; gameplay is not looped, frozen or slowed.",
+            "start": 43.21666666666667,
+            "end": 46.81666666666667,
+            "cueIds": [
+              "p7-2",
+              "p7-3"
+            ]
+          }
+        ],
+        "sourceTimeBasis": "original-seconds",
+        "sources": {
+          "game-master": {
+            "path": "projects/shorts-factorio-belt-gaps/production/local/sources/factorio-gameplay-trailer.mp4",
+            "sourceSHA256": "8ac0d31851e4135105dbf2cd838035ea225c769b9c3e08e850bd6a8e89af093e",
+            "originalOffsetSeconds": 0,
+            "nativeAudioAdopted": false,
+            "sourceAudioAdopted": false,
+            "audioPolicy": "Official trailer music excluded; no replacement game sounds fabricated.",
+            "nativeDimensions": [
+              1920,
+              1080
+            ],
+            "nativeFrameRate": "60/1",
+            "sourceDuration": 142.357333
+          }
+        },
+        "events": {
+          "positionMove": {
+            "startFrame": 401,
+            "endFrame": 527,
+            "start": 6.683333333333334,
+            "end": 8.783333333333333,
+            "cueIds": [
+              "p2-1"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "positionsChanged": {
+            "startFrame": 527,
+            "endFrame": 636,
+            "start": 8.783333333333333,
+            "end": 10.6,
+            "cueIds": [
+              "p2-2"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "gapsUnchanged": {
+            "startFrame": 655,
+            "endFrame": 797,
+            "start": 10.916666666666666,
+            "end": 13.283333333333333,
+            "cueIds": [
+              "p2-3"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "transportLine": {
+            "startFrame": 812,
+            "endFrame": 965,
+            "start": 13.533333333333333,
+            "end": 16.083333333333332,
+            "cueIds": [
+              "p3-1"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "storeGaps": {
+            "startFrame": 965,
+            "endFrame": 1135,
+            "start": 16.083333333333332,
+            "end": 18.916666666666668,
+            "cueIds": [
+              "p3-2"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "sharedSpeed": {
+            "startFrame": 1138,
+            "endFrame": 1204,
+            "start": 18.966666666666665,
+            "end": 20.066666666666666,
+            "cueIds": [
+              "p4-1"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "leftEndGrow": {
+            "startFrame": 1204,
+            "endFrame": 1312,
+            "start": 20.066666666666666,
+            "end": 21.866666666666667,
+            "cueIds": [
+              "p4-2"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "rightEndShrink": {
+            "startFrame": 1312,
+            "endFrame": 1436,
+            "start": 21.866666666666667,
+            "end": 23.933333333333334,
+            "cueIds": [
+              "p4-3"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "internalGapsStable": {
+            "startFrame": 1472,
+            "endFrame": 1578,
+            "start": 24.533333333333335,
+            "end": 26.3,
+            "cueIds": [
+              "p4-4"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "blockOutput": {
+            "startFrame": 1588,
+            "endFrame": 1667,
+            "start": 26.466666666666665,
+            "end": 27.783333333333335,
+            "cueIds": [
+              "p5-1"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "endGapCloses": {
+            "startFrame": 1667,
+            "endFrame": 1763,
+            "start": 27.783333333333335,
+            "end": 29.383333333333333,
+            "cueIds": [
+              "p5-2"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "followersPack": {
+            "startFrame": 1763,
+            "endFrame": 1862,
+            "start": 29.383333333333333,
+            "end": 31.033333333333335,
+            "cueIds": [
+              "p5-3"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "internalGapShrinks": {
+            "startFrame": 1862,
+            "endFrame": 1957,
+            "start": 31.033333333333335,
+            "end": 32.61666666666667,
+            "cueIds": [
+              "p5-4"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "cacheLastGap": {
+            "startFrame": 1968,
+            "endFrame": 2162,
+            "start": 32.8,
+            "end": 36.03333333333333,
+            "cueIds": [
+              "p6-1"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "skipSearch": {
+            "startFrame": 2162,
+            "endFrame": 2290,
+            "start": 36.03333333333333,
+            "end": 38.166666666666664,
+            "cueIds": [
+              "p6-2"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "insertRemove": {
+            "startFrame": 2304,
+            "endFrame": 2465,
+            "start": 38.4,
+            "end": 41.083333333333336,
+            "cueIds": [
+              "p6-3"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "sameResult": {
+            "startFrame": 2471,
+            "endFrame": 2584,
+            "start": 41.18333333333333,
+            "end": 43.06666666666667,
+            "cueIds": [
+              "p7-1"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "changeOnlyChangedData": {
+            "startFrame": 2593,
+            "endFrame": 2677,
+            "start": 43.21666666666667,
+            "end": 44.61666666666667,
+            "cueIds": [
+              "p7-2"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "conclusion": {
+            "startFrame": 2677,
+            "endFrame": 2783,
+            "start": 44.61666666666667,
+            "end": 46.38333333333333,
+            "cueIds": [
+              "p7-3"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "costMove": {
+            "startFrame": 401,
+            "endFrame": 527,
+            "start": 6.683333333333334,
+            "end": 8.783333333333333,
+            "cueIds": [
+              "p2-1"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "costGapReveal": {
+            "startFrame": 655,
+            "endFrame": 797,
+            "start": 10.916666666666666,
+            "end": 13.283333333333333,
+            "cueIds": [
+              "p2-3"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "endMove": {
+            "startFrame": 1204,
+            "endFrame": 1436,
+            "start": 20.066666666666666,
+            "end": 23.933333333333334,
+            "cueIds": [
+              "p4-2",
+              "p4-3"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "blockReachEnd": {
+            "startFrame": 1667,
+            "endFrame": 1763,
+            "start": 27.783333333333335,
+            "end": 29.383333333333333,
+            "cueIds": [
+              "p5-2"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "blockPackFront": {
+            "startFrame": 1763,
+            "endFrame": 1957,
+            "start": 29.383333333333333,
+            "end": 32.61666666666667,
+            "cueIds": [
+              "p5-3",
+              "p5-4"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "cachePackNext": {
+            "startFrame": 1968,
+            "endFrame": 2290,
+            "start": 32.8,
+            "end": 38.166666666666664,
+            "cueIds": [
+              "p6-1",
+              "p6-2"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "cacheExceptions": {
+            "startFrame": 2304,
+            "endFrame": 2465,
+            "start": 38.4,
+            "end": 41.083333333333336,
+            "cueIds": [
+              "p6-3"
+            ],
+            "method": "actual-caption-edges"
+          },
+          "closeMove": {
+            "startFrame": 2593,
+            "endFrame": 2677,
+            "start": 43.21666666666667,
+            "end": 44.61666666666667,
+            "cueIds": [
+              "p7-2"
+            ],
+            "method": "actual-caption-edges"
+          }
+        },
+        "reactions": [
+          {
+            "kind": "realize",
+            "start": 16.083333333333332,
+            "end": 17.683333333333334
+          },
+          {
+            "kind": "relief",
+            "start": 44.11666666666667,
+            "end": 46.41666666666667
+          }
+        ],
+        "cueAnchors": {
+          "p1-1": {
+            "lineIndex": 0,
+            "startFrame": 12,
+            "endFrame": 107,
+            "start": 0.2,
+            "end": 1.7833333333333334
+          },
+          "p1-2": {
+            "lineIndex": 0,
+            "startFrame": 107,
+            "endFrame": 299,
+            "start": 1.7833333333333334,
+            "end": 4.983333333333333
+          },
+          "p1-3": {
+            "lineIndex": 0,
+            "startFrame": 308,
+            "endFrame": 384,
+            "start": 5.133333333333334,
+            "end": 6.4
+          },
+          "p2-1": {
+            "lineIndex": 1,
+            "startFrame": 401,
+            "endFrame": 527,
+            "start": 6.683333333333334,
+            "end": 8.783333333333333
+          },
+          "p2-2": {
+            "lineIndex": 1,
+            "startFrame": 527,
+            "endFrame": 636,
+            "start": 8.783333333333333,
+            "end": 10.6
+          },
+          "p2-3": {
+            "lineIndex": 1,
+            "startFrame": 655,
+            "endFrame": 797,
+            "start": 10.916666666666666,
+            "end": 13.283333333333333
+          },
+          "p3-1": {
+            "lineIndex": 2,
+            "startFrame": 812,
+            "endFrame": 965,
+            "start": 13.533333333333333,
+            "end": 16.083333333333332
+          },
+          "p3-2": {
+            "lineIndex": 2,
+            "startFrame": 965,
+            "endFrame": 1135,
+            "start": 16.083333333333332,
+            "end": 18.916666666666668
+          },
+          "p4-1": {
+            "lineIndex": 3,
+            "startFrame": 1138,
+            "endFrame": 1204,
+            "start": 18.966666666666665,
+            "end": 20.066666666666666
+          },
+          "p4-2": {
+            "lineIndex": 3,
+            "startFrame": 1204,
+            "endFrame": 1312,
+            "start": 20.066666666666666,
+            "end": 21.866666666666667
+          },
+          "p4-3": {
+            "lineIndex": 3,
+            "startFrame": 1312,
+            "endFrame": 1436,
+            "start": 21.866666666666667,
+            "end": 23.933333333333334
+          },
+          "p4-4": {
+            "lineIndex": 3,
+            "startFrame": 1472,
+            "endFrame": 1578,
+            "start": 24.533333333333335,
+            "end": 26.3
+          },
+          "p5-1": {
+            "lineIndex": 4,
+            "startFrame": 1588,
+            "endFrame": 1667,
+            "start": 26.466666666666665,
+            "end": 27.783333333333335
+          },
+          "p5-2": {
+            "lineIndex": 4,
+            "startFrame": 1667,
+            "endFrame": 1763,
+            "start": 27.783333333333335,
+            "end": 29.383333333333333
+          },
+          "p5-3": {
+            "lineIndex": 4,
+            "startFrame": 1763,
+            "endFrame": 1862,
+            "start": 29.383333333333333,
+            "end": 31.033333333333335
+          },
+          "p5-4": {
+            "lineIndex": 4,
+            "startFrame": 1862,
+            "endFrame": 1957,
+            "start": 31.033333333333335,
+            "end": 32.61666666666667
+          },
+          "p6-1": {
+            "lineIndex": 5,
+            "startFrame": 1968,
+            "endFrame": 2162,
+            "start": 32.8,
+            "end": 36.03333333333333
+          },
+          "p6-2": {
+            "lineIndex": 5,
+            "startFrame": 2162,
+            "endFrame": 2290,
+            "start": 36.03333333333333,
+            "end": 38.166666666666664
+          },
+          "p6-3": {
+            "lineIndex": 5,
+            "startFrame": 2304,
+            "endFrame": 2465,
+            "start": 38.4,
+            "end": 41.083333333333336
+          },
+          "p7-1": {
+            "lineIndex": 6,
+            "startFrame": 2471,
+            "endFrame": 2584,
+            "start": 41.18333333333333,
+            "end": 43.06666666666667
+          },
+          "p7-2": {
+            "lineIndex": 6,
+            "startFrame": 2593,
+            "endFrame": 2677,
+            "start": 43.21666666666667,
+            "end": 44.61666666666667
+          },
+          "p7-3": {
+            "lineIndex": 6,
+            "startFrame": 2677,
+            "endFrame": 2783,
+            "start": 44.61666666666667,
+            "end": 46.38333333333333
+          }
+        },
+        "actualTimingMethod": "Measured paragraph PCM boundaries and actual caption edges; no estimated narration durations.",
+        "actualAudioListening": "pending",
+        "fullMovingReview": "pending",
+        "timingInputs": {
+          "script": "0dfb460acde8e820c57725024df7fa00512a5dc7d2256cdd0c185f45e40d96a1",
+          "clauses": "971a341f41f78c47a8da9504a8e99312a6ee39056e28e1411d169ad5412b117c",
+          "captions": "2097a5825c0e46ce05eeecb0d1c071490ad6e48f4f89a4222a92e55987e77b25",
+          "pcmTiming": "68f3c76138e430c031583210275f2bc80235fa76114cc34ae1f2c63348be2c64",
+          "voice": "a8f734490eb8d05b7491be47e613e008aa06883e21b08f42eed7f0299a781a9a",
+          "config": "4434e44588ccce185fa277f09899fb51fc586c326a4395b76b149349ae993776",
+          "sections": "6252ba66925f0e5d8d13140515561638ff3a0de73c4b3b169cd3a0b1987b0e08",
+          "sourceRecord": "e87d5aa1f37c32f1734b441c37ee723d34fb624aca711f97274dba92e3473f56",
+          "voiceSha256": "a8f734490eb8d05b7491be47e613e008aa06883e21b08f42eed7f0299a781a9a"
+        },
+        "preparationFingerprint": "b462e126b1149bb180592857135310d5a2131d3410ae6ce0661dd3065b0fbb8b",
+        "preparedFrames": [
+          {
+            "id": "game",
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\frames\\game",
+            "frames": 285,
+            "sourceStart": 70,
+            "sourceEnd": 74.75,
+            "rate": 1,
+            "dimensions": [
+              1920,
+              1080
+            ],
+            "firstSha256": "10a693371505a544fbbb879e770b947d13e033f2df54661be7700b1710ad3280",
+            "lastSha256": "87bddc0bf986db979de70551962c0948d77a026d7e35c70737cd2fd71376a7ed"
+          },
+          {
+            "id": "close",
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\frames\\close",
+            "frames": 121,
+            "sourceStart": 103,
+            "sourceEnd": 105.01666666666667,
+            "rate": 1,
+            "dimensions": [
+              1920,
+              1080
+            ],
+            "firstSha256": "f3616283a594446a25d65467a04cb2c3ba2578275fbb35e1921e3c000ed0ef26",
+            "lastSha256": "62d3c6836a9d6fbf8492e0742d091d8edd019976d44cddc499065fe6da5b6b3d"
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/shorts-factorio-belt-gaps/script/narration.spoken.ko.json",
+      "sha256": "0dfb460acde8e820c57725024df7fa00512a5dc7d2256cdd0c185f45e40d96a1",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "slug": "shorts-factorio-belt-gaps",
+        "revision": "belt-gaps-v1",
+        "scenes": [
+          {
+            "id": "main",
+            "lines": [
+              "벨트에 물건이 이렇게 많아도, 팩토리오에서는 위치를 하나씩 전부 고치지 않습니다. 비밀은 빈틈이에요.",
+              "물건 네 개가 함께 한 칸씩 움직이면, 좌표 네 개가 모두 바뀌죠. 그런데 물건 사이의 간격은 그대로입니다.",
+              "그래서 이어진 벨트를 운송 라인으로 묶고, 물건의 위치 대신 간격을 저장합니다.",
+              "같은 속도로 흐를 때는 왼쪽 끝 간격을 하나 늘리고, 오른쪽은 하나 줄이면 됩니다. 가운데 간격은 건드리지 않아요.",
+              "앞이 막히면 어떨까요? 맨 앞의 빈틈이 없어지고, 뒤따르던 물건들이 붙으면서 내부 간격이 줄어듭니다.",
+              "이때는 진행 방향에서 가장 앞에 남은 빈틈을 기억해, 매번 처음부터 찾지 않죠. 물건을 넣거나 빼는 동작은 따로 처리합니다.",
+              "화면에는 같은 물건이 움직입니다. 바뀌는 정보만 고쳐서, 큰 공장의 계산을 줄이는 거예요."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "projects/shorts-factorio-belt-gaps/sources/selected-footage.json",
+      "sha256": "b0e98091430355d31904c50cdb848b8dcd26bc4a468c72b699ed06e61a2a9ce1",
+      "purpose": "supporting-record-not-necessarily-current",
+      "data": {
+        "id": "factorio-official-gameplay-trailer",
+        "classification": "independent-gameplay",
+        "publisher": "Wube Software",
+        "game": "Factorio",
+        "sourceURL": "https://store.steampowered.com/app/427520/Factorio/",
+        "discovery": "Official public Steam appdetails427520 movie256660593 Gameplay Trailer",
+        "assetURL": "https://video.akamai.steamstatic.com/store_trailers/427520/51955/69c15fc9a9f17f659effe7747375e96322b34eae/1750529735/dash_h264.mpd?t=1456427081",
+        "path": "projects/shorts-factorio-belt-gaps/production/local/sources/factorio-gameplay-trailer.mp4",
+        "sourceSHA256": "8ac0d31851e4135105dbf2cd838035ea225c769b9c3e08e850bd6a8e89af093e",
+        "bytes": 101798580,
+        "nativeDimensions": [
+          1920,
+          1080
+        ],
+        "nativeFrameRate": "60/1",
+        "nativeFrames": 8540,
+        "durationSeconds": 142.357333,
+        "downloadNote": "ffmpeg reported404 on the terminal DASH fragment after reading142.33s of video; the preserved file fully decodes without errors. All selected intervals end before108s, not at the terminal boundary.",
+        "decodeCheck": {
+          "method": "ffmpeg -v error -xerror -i source -f null -",
+          "result": "exit0, no errors"
+        },
+        "rights": {
+          "basis": "Wube official press kit invites website asset use and monetized video, with a factorio.com link. Official publisher-distributed trailer, not another creator's lesson/gameplay.",
+          "url": "https://www.factorio.com/support/press-kit",
+          "requiredLink": "https://www.factorio.com/",
+          "attributionDestination": "KO/EN description bottom",
+          "thirdPartyUserFootagePermissionClaimed": false
+        },
+        "sourceAudioAdopted": false,
+        "audioReason": "Official trailer music not separately adopted; licensed existing BGM and own voice only.",
+        "inspectedAt": "2026-10-26T08:24:46.228721+00:00",
+        "inspection": {
+          "sourceOverview": "24 ordered source samples across142s",
+          "closeup": "66–78s ordered2fps samples, native70.5s frame",
+          "closing": "100–112s ordered1fps samples",
+          "actuallyViewed": true,
+          "fullRealtimePlaybackClaimed": false,
+          "observed": "Ores flow along continuous belt lanes; factory machines and insertion arms operate. Recording supports visible behavior only; internal storage supported separately by FFF176."
+        },
+        "selectedCuts": {
+          "game": {
+            "in": 70,
+            "maxDuration": 4.75,
+            "frameDirectory": "game",
+            "firstFrame": 0,
+            "pattern": "{frame}.jpg",
+            "digits": 6
+          },
+          "close": {
+            "in": 103,
+            "maxDuration": 4.75,
+            "frameDirectory": "close",
+            "firstFrame": 0,
+            "pattern": "{frame}.jpg",
+            "digits": 6
+          }
+        },
+        "rate": 1,
+        "loopOrSlowdown": false,
+        "cropping": "Preserve16:9; actual final layout and callout motion still pending render review.",
+        "primaryClaimSource": "https://www.factorio.com/blog/post/fff-176",
+        "evidenceFiles": [
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\fff-176.html",
+            "sha256": "4e29b33330fa80c4b667f228008fd5790c2d94899ee781bdfda803bdc1bffc3f"
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\press-kit.html",
+            "sha256": "c7a14fb0c1e1f644fa474865f17d36c918ecfcdf13490e621604fdd46f5d908c"
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\steam-appdetails.json",
+            "sha256": "d313812b15c0bf8bc52a3b81f4e3e9f677b940bb1730315ef72ee744a12f9241"
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\gameplay-trailer.mpd",
+            "sha256": "a0476375d4d9d0cfe699c79ccfce59ce3f0637b00c5cf0f1ae9f9f9fda24cef6"
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\ffprobe.json",
+            "sha256": "9773ccb2c3e31ec5031559f1e09d51ebf2e65bb330db02058d67156bfd18d3cc"
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\inspect\\contact.jpg",
+            "sha256": "9c55cd4805e08fe29bd108a62b1aa19020b3c20e1085486f62005306bba30536"
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\inspect\\belts-66-78.jpg",
+            "sha256": "12375dd9beb1bca2c61997a76c7a4d4960a2945962f6d0620af3ba90496e4cde"
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\inspect\\belts-70-5.png",
+            "sha256": "2f6d4f4f2c7557d5c4cf17cf4d8e32c477b63aeb539dcedc580b7406eb8cef12"
+          },
+          {
+            "path": "C:\\Users\\1\\Videos\\YamyamProduction\\daily-shorts-20261026\\shorts-factorio-belt-gaps\\local\\sources\\inspect\\factory-100-112.jpg",
+            "sha256": "98ac1dab5bb79ac4b9ce1795da17ce88395fdfb95e16b5331cf74fb443846bb3"
+          }
+        ]
+      }
+    }
+  ],
+  "editableSourceFiles": [
+    "motion-canvas/src/projects/shorts-factorio-belt-gaps/model.ts",
+    "motion-canvas/src/projects/shorts-factorio-belt-gaps/project.ts",
+    "motion-canvas/src/projects/shorts-factorio-belt-gaps/scene.tsx",
+    "projects/shorts-factorio-belt-gaps/production/assemble-paragraphs.py",
+    "projects/shorts-factorio-belt-gaps/production/audio_revision.py",
+    "projects/shorts-factorio-belt-gaps/production/build-review.py",
+    "projects/shorts-factorio-belt-gaps/production/check-playback.cjs",
+    "projects/shorts-factorio-belt-gaps/production/finish-audio.py",
+    "projects/shorts-factorio-belt-gaps/production/finish-video.py",
+    "projects/shorts-factorio-belt-gaps/production/prepare-actual-visuals.py",
+    "projects/shorts-factorio-belt-gaps/production/prepare-header.py",
+    "projects/shorts-factorio-belt-gaps/production/render-visual.cjs",
+    "projects/shorts-factorio-belt-gaps/production/render-voice.py",
+    "projects/shorts-factorio-belt-gaps/production/time-captions.py",
+    "projects/shorts-factorio-belt-gaps/production/transcribe.py"
+  ],
+  "sourceAndRightsDocuments": [],
+  "referenceUrls": [],
+  "subtitles": {
+    "captionsKo": {
+      "file": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captions.ko.srt",
+      "sha256": "25bb265c3e20ebe27e73ff5f51d9f33075060961431e12636fe63fd0d4b7e5d0",
+      "cueCount": 22
+    },
+    "captionsEn": {
+      "file": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captions.en.srt",
+      "sha256": "2b0b67d8fa514eba3f9b6f0f81ce0f1701d99eaa0cf7bae797f51c8c810e8c62",
+      "cueCount": 22
+    }
+  },
+  "mediaAssets": [
+    {
+      "path": "]}-{i:02}.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/render-voice.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "]}-{index:02}.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/assemble-paragraphs.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "asr-{args.role}-{digest[:12]}-16k.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/transcribe.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "attempt-{attempt}.m4a",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "attempt-{attempt}.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "background-stem.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "captioned.mp4",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/build-review.py",
+        "projects/shorts-factorio-belt-gaps/production/check-playback.cjs",
+        "projects/shorts-factorio-belt-gaps/production/finish-video.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "clean.mp4",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/build-review.py",
+        "projects/shorts-factorio-belt-gaps/production/finish-video.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "final-mix.m4a",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py",
+        "projects/shorts-factorio-belt-gaps/production/finish-video.py",
+        "projects/shorts-factorio-belt-gaps/production/transcribe.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "final-mix.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "game-stem.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "mobile-review.mp4",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-video.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "music-stem.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "narration-prepared-stem.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "narration-source-timeline.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "narration-stem.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "narration.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/time-captions.py",
+        "projects/shorts-factorio-belt-gaps/production/transcribe.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/shorts-factorio-belt-gaps/production/.partial.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/assemble-paragraphs.py",
+        "projects/shorts-factorio-belt-gaps/production/transcribe.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/captioned.mp4",
+      "references": [
+        "project.json$.paths.videoBurnedCaptions",
+        "projects/shorts-factorio-belt-gaps/production/delivery-output.json$.files.0.source"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/shorts-factorio-belt-gaps/production/local/final-reviewed-v1-master03/clean.mp4",
+      "references": [
+        "project.json$.paths.videoClean",
+        "projects/shorts-factorio-belt-gaps/production/delivery-output.json$.files.1.source"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "projects/shorts-factorio-belt-gaps/production/local/sources/factorio-gameplay-trailer.mp4",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/visual-timing.json$.sources.game-master.path",
+        "projects/shorts-factorio-belt-gaps/sources/selected-footage.json$.path"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shared/assets/music/incompetech/Pixel-Peeker-Polka-faster.mp3",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/planning/production-plan.json$.assets.music",
+        "projects/shorts-factorio-belt-gaps/production/finish-audio.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shorts-factorio-belt-gaps.captioned.mp4",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/delivery-output.json$.files.0.name"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "shorts-factorio-belt-gaps.clean.mp4",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/delivery-output.json$.files.1.name"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    },
+    {
+      "path": "voice/narration.wav",
+      "references": [
+        "projects/shorts-factorio-belt-gaps/production/audio_revision.py"
+      ],
+      "storage": "external-or-regenerate; never Git"
+    }
+  ],
+  "formerlyTrackedMedia": [],
+  "rebuild": {
+    "automatic": false,
+    "prerequisites": [
+      "Node dependencies: npm ci --prefix motion-canvas",
+      "FFmpeg/ffprobe; Python/Manim where used; Qwen3 model/runtime for fresh TTS",
+      "Acquire original footage/music at the recorded paths with valid rights, or restore personal external backup",
+      "Private voice reference and original membership identity images must be transferred privately; never fabricate substitutes"
+    ],
+    "productionScripts": [
+      "projects/shorts-factorio-belt-gaps/production/assemble-paragraphs.py",
+      "projects/shorts-factorio-belt-gaps/production/audio_revision.py",
+      "projects/shorts-factorio-belt-gaps/production/build-review.py",
+      "projects/shorts-factorio-belt-gaps/production/check-playback.cjs",
+      "projects/shorts-factorio-belt-gaps/production/finish-audio.py",
+      "projects/shorts-factorio-belt-gaps/production/finish-video.py",
+      "projects/shorts-factorio-belt-gaps/production/prepare-actual-visuals.py",
+      "projects/shorts-factorio-belt-gaps/production/prepare-header.py",
+      "projects/shorts-factorio-belt-gaps/production/render-visual.cjs",
+      "projects/shorts-factorio-belt-gaps/production/render-voice.py",
+      "projects/shorts-factorio-belt-gaps/production/time-captions.py",
+      "projects/shorts-factorio-belt-gaps/production/transcribe.py"
+    ],
+    "scriptRecords": [
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/assemble-paragraphs.py",
+        "sha256": "48c70947f347e7dad9ec724ec3aa54d0644c9334ceedbb8eb803bf980df4cc36",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/audio_revision.py",
+        "sha256": "6a06b358e2d1ec6302fd85390f9dbb98505b730a2f7e0da5e47cd95558922b62",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/build-review.py",
+        "sha256": "e4d437066e470bb5941ae4ab207f51b61a9d556cbd5bff1cad61677b7954835c",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/check-playback.cjs",
+        "sha256": "ed592fac40eb869f1913560aeee2cfc83885ff0f8518536478621964dbb584a5",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/finish-audio.py",
+        "sha256": "20451fe34bec03ddaab11fcf56a9239d98a8da6395113cdb9eb59449dd194604",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/finish-video.py",
+        "sha256": "c6657c9fdef7dd4c1951784ac86201b7180e51a3e1305281d6114d108af3bd0f",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/prepare-actual-visuals.py",
+        "sha256": "4cae2fb2bac4300535bfbcb0236306054a3d0621635547aa53fe40783f47b23d",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/prepare-header.py",
+        "sha256": "40c4d36c58c5394ec9c88370f6fd8eb9e8527ba0b3a941197a80e29992fc4925",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/render-visual.cjs",
+        "sha256": "189807c837df965be3b8bd078eb1a03ce78e02f5f190917c943e11a2c6e96b43",
+        "usageHints": [
+          "  const [name, firstArg='0', countArg] = process.argv.slice(2);"
+        ]
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/render-voice.py",
+        "sha256": "d3c5b876e560a50ee2e0d496bda04991a87196517fa4ffd6f561fa4c3a679d13",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/time-captions.py",
+        "sha256": "37fefba30103259728077e96c5417bcc87d72d7e1ea6a2bc301a3de10d15fdb8",
+        "usageHints": []
+      },
+      {
+        "file": "projects/shorts-factorio-belt-gaps/production/transcribe.py",
+        "sha256": "a33d35b95a3819040fe114a5801db44a5e318cb29dc434b73bad6e5a16c38a12",
+        "usageHints": []
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "action": "Read source/rights documents, project settings and selected edit records; restore inputs without changing filenames."
+      },
+      {
+        "order": 2,
+        "action": "Review the CLI/header of the project production scripts listed here. Run their prepare, narration, mix and render stages as documented, not every historical script."
+      },
+      {
+        "order": 3,
+        "action": "If generating new narration: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-project-narration.ps1 -Project shorts-factorio-belt-gaps"
+      },
+      {
+        "order": 4,
+        "action": "Validate timeline and current clean/captioned pair, KO/EN SRT, loudness, source rights and membership outro."
+      },
+      {
+        "order": 5,
+        "action": "node scripts/collect-video-output.cjs shorts-factorio-belt-gaps"
+      }
+    ],
+    "gaps": [
+      "External backup location is not configured. URLs can disappear; Git cannot recover absent media.",
+      "Project-specific render commands are retained in production scripts/README; not all legacy projects have a one-command rebuild."
+    ]
+  }
+}

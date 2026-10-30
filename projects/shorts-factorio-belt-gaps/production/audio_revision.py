@@ -86,7 +86,21 @@ def assert_no_game_apps():
                    and len(args) == 2
                    and str(args[0]).replace('\\', '/').casefold() == executable
                    and str(args[1]).casefold() == 'serve')
-            if not hub:
+            allowed_editor = False
+            permission = read(P / 'project.json').get('resourcePermission', {})
+            # The user resumed this one Short after the exact open production
+            # editor was identified. PID creation time prevents PID-reuse leaks.
+            if name == 'unity.exe' and permission.get('id') == 'current-production-editor-resume-20261030':
+                pid = permission.get('editorPid')
+                root = psutil.Process(pid) if pid and psutil.pid_exists(pid) else None
+                if root and abs(root.create_time() - permission.get('editorCreateTime', 0)) < .01:
+                    project_args = [str(a).replace('\\', '/').casefold() for a in args]
+                    project = str(permission.get('projectPath', '')).replace('\\', '/').casefold()
+                    same_project = any(project_args[j].strip('"') == project for j in range(1,len(project_args)) if project_args[j-1].casefold() == '-projectpath')
+                    approved_exe = str(permission.get('editorExe', '')).replace('\\', '/').casefold()
+                    own_process = proc.pid == pid or (proc.ppid() == pid and any('assetimportworker' in a for a in project_args))
+                    allowed_editor = same_project and executable == approved_exe and own_process
+            if not hub and not allowed_editor:
                 busy.append({'pid': proc.pid, 'name': info.get('name'), 'exe': info.get('exe')})
         except (psutil.NoSuchProcess, psutil.ZombieProcess):
             continue
