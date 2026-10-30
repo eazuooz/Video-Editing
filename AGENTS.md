@@ -62,3 +62,8 @@ Current policy: 2026-10-19, `preproduction-first-v1` with `local-final-review-be
 - Video-based wiki articles: verified published channel video embed at top, self-contained explanation with actual screenshots/captions; preserve user-changed titles/locations. AI-era developer-learning article stays under `게임 업계 이야기, 프로그래밍 이야기`.
 
 - User-directed 2026-10-25 `shorts-real-frame-covers-v1`: use the actual game or relevant actual subject/work screen as the Shorts cover hero, not the Yamyam mascot. Preserve truthful content, mobile legibility, and existing video/metadata/schedule. See docs/VIDEO_WORKFLOW.md.
+
+
+<!-- ANIMATION-18-20261031 -->
+- User explicitly selected all A01–A18 animation episodes on 2026-10-31 for sequential production through local final review. See `production/batches/animation-18-20261031/batch.json`; this finite exception does not resume unrelated batches or authorize YouTube/Drive publication.
+- For this series, title format is original Korean topic + ` | ` + our topic-faithful draft. Follow `animation-grid-presentation-v1` in docs/VIDEO_VISUAL_STYLE.md: test actual independent-footage character separation; otherwise source verified native grid/tool footage; reference-lesson extractions remain prohibited. Preserve original lesson flow after reviewing full narration and relevant visuals.

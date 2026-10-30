@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "dateKst": "2026-10-31",
+  "scope": "Animation 18 selected production: short character-isolation feasibility and native-grid alternative. No shared rule, worklist, Unity vendor asset, Git or platform mutation.",
+  "decision": "Do not make automatic background isolation from ordinary busy gameplay the default. Prefer independently sourced native training-grid footage when concept-matched; render licensed rigged assets directly in Unity for controllable explanation shots.",
+  "proofTest": {
+    "nameKo": "배경 분리·해설 합성",
+    "sourceUrl": "https://www.youtube.com/watch?v=nkmtV54XsJo",
+    "sourceFile": "projects/kind-to-beginners/production/local/batch-v1/sources/sf6-match.mp4",
+    "sourceEvidence": "projects/kind-to-beginners/planning/sources.json",
+    "sourceRole": "Independent official normal developer match, not Sakurai/reference lesson or event-stage presentation",
+    "sourceDimensions": [1920, 1080],
+    "sourceFps": "60000/1001",
+    "sourceIntervalSeconds": [12, 16],
+    "output": "background-isolation-baseline.mp4",
+    "comparison": "background-isolation-comparison.mp4",
+    "outputSha256": "4734df22e89258765e6eca72a76b9027383bc1ad41695ef13f3d001c4bc15aee",
+    "method": "OpenCV GrabCut with manually seeded foreground and per-frame backward optical-flow mask propagation. 960x540 analysis, 1920x1080 composition at source frame rate; no neural model.",
+    "software": "opencv-python-headless 5.0.0.93 installed only into local-deps; existing Python, NumPy and FFmpeg",
+    "gpuUsed": false,
+    "runtimeSeconds": 166.31,
+    "decodedFrames": 239,
+    "acceptance": "FAILED; internal experiment only, do not place in production cut list",
+    "observedFailures": [
+      "At the opening pose, feet remain joined to a patch of floor; arm gaps retain busy background.",
+      "As Manon rises and attacks, the selected region expands into crowd, lighting structures and stage floor.",
+      "Impact particles and the opponent entering the region contaminate the matte; occlusion is not semantically resolved.",
+      "The far-right lower meter/HUD becomes part of the foreground near the end.",
+      "The background fragments and silhouette change visibly across adjacent sampled frames. Hair and hands are not reliably isolated. No weapon is present, so weapon quality was not tested."
+    ],
+    "review": {
+      "method": "Decoded moving MP4, 48 chronological comparison frames at 12 fps over the complete four-second interval, plus selected larger comparison frames. This is sequence inspection, not a claimed real-time human playback review.",
+      "evidence": ["motion-check-01.jpg", "motion-check-02.jpg", "motion-check-03.jpg", "compare-000.jpg", "compare-210.jpg"],
+      "fullDecodeErrors": 0,
+      "humanReview": false,
+      "conclusionLimit": "Failure applies to this lightweight baseline/source. It does not establish that modern video matting with tracked masks and manual cleanup is impossible."
+    },
+    "rights": {
+      "policyUrl": "https://www.capcomusa.com/video-policy/",
+      "status": "Existing independent source record and official commentary policy; internal feasibility output only",
+      "limit": "Do not publish extracted game characters as standalone assets. Recheck exact editorial use and third-party audio before a production selection."
+    }
+  },
+  "nativeGridCandidate": {
+    "title": "New VIRTUA FIGHTER Project | Combat Gameplay First Look - Training Stage",
+    "sourceUrl": "https://www.youtube.com/watch?v=KkGmeofGSw0",
+    "creator": "SEGA",
+    "published": "2025-08-03",
+    "sourceRole": "independent-gameplay / official-development-preview",
+    "notAnEditorOutput": true,
+    "notReferenceLesson": true,
+    "file": "vf-training.mp4",
+    "metadata": "vf-training.info.json",
+    "sha256": "385fb1806223541cea00c19a93008bbf679ba7667d5d48b55381e4dbfd2274a5",
+    "downloadedVideoFormat": "399",
+    "decodedDimensions": [1920, 1080],
+    "fps": "60/1",
+    "codec": "av1",
+    "durationSeconds": 68.014,
+    "sample": "native-training-grid-sample.mp4",
+    "sampleIntervalSeconds": [24, 28],
+    "sampleSha256": "14bc11efe065d0aa5506989dcf17417653201af4c3a2bc7efe6298e5fc195b6d",
+    "sampleAudio": "omitted in this visual-only feasibility sample; original source audio remains preserved in vf-training.mp4. Production audio/third-party music clearance must be decided separately.",
+    "observed": "Two fighters exchange parries, strikes, a low evasion and knockback in a native white grid training room. Hair, coat, feet, contact and foreground occlusion remain intact. Camera angle changes are part of the source; not a fixed orthographic editor preview.",
+    "usefulFor": ["anticipation/action/recovery comparison", "weight shift and readable poses", "contact and hit reaction", "requirements for animation consistency"],
+    "notEvidenceFor": ["authoring software timeline", "actual rig controls or keyframes", "internal animation state values", "Nintendo example quota"],
+    "review": {
+      "wholeSourceContact": "vf-training-contact.jpg",
+      "fourSecondMotionContact": "native-motion-check.jpg",
+      "method": "Whole source at five-second intervals, selected four seconds at four frames per second, FFmpeg full decode of the four-second MP4",
+      "fullDecodeErrors": 0,
+      "humanPlaybackReviewed": false,
+      "visualSuitability": "Good native-grid candidate; verify the exact concept and every final selected interval before adopting."
+    },
+    "rights": {
+      "status": "policy-checked conditional candidate, not an individual license or blanket clearance",
+      "officialPolicy": "https://www.sega.co.jp/streaming_guideline/",
+      "policyDate": "2026-10-19",
+      "policyBasis": "The policy permits commentary on officially released promotional material for unreleased games (section 8), subject to its other requirements. Platform partner monetization is permitted. No isolated-asset redistribution, misleading edits or unchanged reposts.",
+      "titleSpecificListChecked": "https://www.sega.jp/fankits/",
+      "titleSpecificResult": "Official individual-guideline list has no New VIRTUA FIGHTER Project entry. The official series portal was inspected; the old linked project landing page returned 403/inaccessible. Recheck any new title-specific conditions at final production selection.",
+      "officialSeriesPortal": "https://virtua-fighter.com/en/",
+      "sourceLicenseMetadata": null,
+      "audioCleared": false,
+      "plannedCredit": "New VIRTUA FIGHTER Project — SEGA / Ryu Ga Gotoku Studio; official Training Stage gameplay, 2025-08-03. Source URL in description-bottom sources."
+    }
+  },
+  "unityLibraryCandidate": {
+    "productId": "047",
+    "title": "PHILIPP | Stylized modular low poly character",
+    "sourceUrl": "https://emaceart.itch.io/philipp-stylized-modular-low-poly-character",
+    "existingLibraryRecord": "shared/assets/unity-asset-library.json",
+    "localPurchaseDownloadRecord": "D:/얌얌코딩 에셋/PHILIPP - Stylized modular low poly character/asset-info.json",
+    "assetRoot": "Assets/ThirdParty/YamyamAssetLibrary/047-philipp-stylized-modular-low-poly-character/EmaceArt/Character#1 PHILIPP",
+    "prefab": "Tourists/Prefabs/EA_C_Tourist_walk_01.prefab",
+    "prefabGuid": "489817d4721ac4846bbf324cc4569c83",
+    "avatarGuid": "c5e80ba8acef9874e846c2424cf2ed5f",
+    "controllerGuid": "bbd21a0ce141f9a4889d874e671330bb",
+    "animationExamples": [
+      {"path": "Tourists/Animations_Humanoid/Tourist_walk_01.anim", "guid": "0dae00dafbf585d4db259ab09be9ca0e", "sampleRate": 60, "durationSeconds": 4, "loop": true},
+      {"path": "Tourists/Animations_Humanoid/Tourist_run_01.anim", "guid": "9025e06a0f050b34ba6a6b623397f4a8"}
+    ],
+    "license": {
+      "status": "verified publisher terms for this exact product page on 2026-10-31",
+      "name": "EmacEArt Asset License",
+      "terms": "Personal and commercial project use permitted; credit optional. No reselling or distributing standalone assets or asset packs.",
+      "creditSuggestion": "PHILIPP character assets — EmacEArt (description-bottom asset credits)",
+      "importantProvenanceCorrection": "extra-provenance/documents/047_6204f536dd7b_LICENSE.txt is for Roadside Tales Iowa Covered Bridges, not product 047 PHILIPP. Do not treat its numeric prefix as a library product ID. Exact PHILIPP product-page terms are the basis here."
+    },
+    "verification": "Installed prefab, humanoid Avatar/Animator references, animation files, GUIDs and animation sample metadata inspected. Existing whole-library validation reports no known limitations for product 047. No new Unity runtime/render performed; runtime/material/rig behaviour still requires scene QA.",
+    "recommendedUse": "Self-authored Unity explanations and actual authoring-tool demonstrations with a grey grid/red ground/blue reference-line stage, direct rendered alpha if compositing is necessary. Keep black brand text/label regions. Save per-script-scene .unity files without changing vendor originals.",
+    "classification": "explanation; not independent commercial gameplay"
+  },
+  "sourceSeparation": "User image is style reference only. No Sakurai/reference lesson material or extracted reference characters were included in either MP4.",
+  "resourcePreservation": "CPU-only bounded job. No Unity/game process stopped, no shared environment changed, no external ML model or paid API used.",
+  "remaining": ["Match candidate intervals to individual source-teaching roles and Nintendo/genre mix", "Review actual final selected moving footage with narration and captions", "Unity runtime/material test before choosing PHILIPP for production", "Resolve source audio policy per final cut", "Human final review remains unclaimed"]
+}
