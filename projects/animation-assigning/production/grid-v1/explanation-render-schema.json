@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "scope": "A01 animation-assigning/grid-v1 only",
+  "pipeline": "projects/animation-assigning/production/grid-v1/video_pipeline.py",
+  "stillCut": {
+    "kind": "explanation",
+    "frames": 120,
+    "renderedSource": "repository-relative generated FHD60 MP4 path",
+    "renderedSourceSha256": "actual lowercase SHA256",
+    "renderedStartFrame": 0,
+    "explanationRender": {
+      "kind": "annotated-still",
+      "receipt": "repository-relative complete receipt JSON path",
+      "receiptSha256": "actual lowercase SHA256"
+    },
+    "marks": "The existing cut-relative annotations schema; no nativeCapture on this cut."
+  },
+  "receipt": {
+    "episode": "A01",
+    "slug": "animation-assigning",
+    "revision": "grid-v1",
+    "kind": "annotated-still",
+    "status": "complete",
+    "frames": 120,
+    "completed": 120,
+    "fps": 60,
+    "width": 1920,
+    "height": 1080,
+    "movie": {
+      "path": "same file as cut.renderedSource",
+      "sha256": "same hash as cut.renderedSourceSha256"
+    },
+    "sourceImage": {
+      "path": "uncropped original extracted frame, at its decoded source dimensions",
+      "sha256": "actual original image file SHA256"
+    },
+    "sourceVideo": {
+      "path": "independently acquired original gameplay MP4",
+      "sha256": "actual source video SHA256",
+      "frameTimeSeconds": 3.85,
+      "decodedWidth": 1920,
+      "decodedHeight": 1080
+    },
+    "imageOutput": {
+      "optional": true,
+      "path": "composed 1920x1080 image",
+      "sha256": "actual composed image SHA256"
+    },
+    "layout": {
+      "crop": null,
+      "viewport": [0, 0, 1920, 1080],
+      "background": "animation-grid",
+      "captionProtectedRect": [150, 892, 1784, 1060]
+    },
+    "detectorOutput": false,
+    "measuredGameData": false
+  },
+  "requirements": [
+    "Receipt, movie, source image, original video and optional composed image hashes are checked against actual files.",
+    "Receipt frames and completed must equal the whole cut frame count; generated movie must be exactly 1920x1080, 60fps with that frame count and square pixels.",
+    "Original-video timestamp must be finite, nonnegative and before its duration. An actual decoded frame near that timestamp must have genuine FHD-or-higher dimensions, equal the receipt and uncropped source image dimensions.",
+    "The image hash and timestamp are extraction provenance bound by the receipt, not an independently verified pixel-to-video match. The helper must record the true extraction timestamp; no human viewing claim is inferred.",
+    "layout.crop, when used, is integer x,y,width,height within the original image. layout.viewport is positive in-frame evenpixel x,y,width,height. Optional imageOutput must be 1920x1080; omit the entire imageOutput field when absent.",
+    "Original gameplay rights and source selection remain separate required evidence. A complete technical receipt does not establish permission or human visual/listening approval.",
+    "Keep the existing nativeCapture schema unchanged for Unity. Missing, stale, incomplete or ambiguous dual receipts fail; the native source/request/success hashes and compiled fingerprints remain mandatory.",
+    "Stills and Unity demonstrations are explanation, never independent-gameplay. No gameplay FHD, source hash, speed, source-cut or native provenance check has been relaxed."
+  ],
+  "annotations": {
+    "stillPictureKind": "장면 해설",
+    "nativePictureKind": "해설용 시연",
+    "chipCenter": [1740, 73],
+    "chipProtectedRect": [1540, 30, 1900, 116],
+    "captionProtectedRect": [150, 892, 1784, 1060],
+    "coordinates": "output1920x1080; cut-relative seconds",
+    "behavior": "Both kinds use annotations(cut,plan). Marks must remain outside fixed captions, source-kind chip and cut.protectedRects, clear at each cut and represent editorial guidance."
+  },
+  "ratioChoice": {
+    "planRequiredScope": {"episode": "A01", "slug": "animation-assigning", "revision": "grid-v1"},
+    "planBinding": {
+      "path": "projects/animation-assigning/production/grid-v1/editorial-ratio-choice.json",
+      "sha256": "actual current choice JSON hash"
+    },
+    "choiceRequired": "Same episode/slug/revision, basis recommended-production-choice-v1, defaultContractAcknowledged actual60:explanation40, nonempty local scope/decision/reasons; choice JSON must be inside this revision.",
+    "expectedGameplayShare": "Required numeric exact gameplayFrames/bodyFrames, within floating point tolerance 1e-12; not a desired quota.",
+    "withoutChoice": "Default actual60:explanation40 enforced with ratioToleranceFrames at most1.",
+    "withChoice": "Report measured share and verified choice hash; no global bypass, other-episode permission or actual human approval is inferred."
+  },
+  "validation": {
+    "syntax": "pass",
+    "targetedChecks": 39,
+    "coverage": [
+      "default and local-choice ratio paths; wrong scope/basis/hash, invented share and tolerance bypass rejected",
+      "still and Unity chip plus annotations; chip/caption collisions rejected",
+      "native complete success path and incomplete/status/fingerprint/request/hash failures",
+      "still complete success path and incomplete/fps/scope/movie/source hash/timestamp/dimensions/layout/crop/dual-receipt/partial-cut failures"
+    ],
+    "limits": "Inline CPU tests mocked audio_pipeline import and media/image/probe/receipt branches. The actual current choice file/hash and installed annotation font were used. No encoded media or human visual/audio quality pass is claimed.",
+    "gpuOrRenderJobsRun": false,
+    "sharedOrGitMutation": false
+  }
+}

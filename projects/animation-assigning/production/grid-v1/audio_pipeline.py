@@ -260,9 +260,9 @@ def pronunciation_words(words):
     while index < len(words):
         original = dict(words[index])
         index += 1
-        # Whisper can split a decimal into 0 and .5초. Keep the union of its
-        # measured intervals before mapping the approved 0.5 pronunciation.
-        if original["text"].strip() == "0" and index < len(words) and words[index]["text"].lstrip().startswith(".5"):
+        # Whisper can split a decimal into 0 and .2초. Preserve the union of
+        # adjacent measured intervals; numeral aliases only affect alignment.
+        if re.fullmatch(r"\d+", original["text"].strip()) and index < len(words) and re.match(r"\.\d", words[index]["text"].lstrip()):
             following = words[index]
             if abs(float(original["timestamp"][1]) - float(following["timestamp"][0])) <= .02:
                 original["text"] += following["text"].lstrip()

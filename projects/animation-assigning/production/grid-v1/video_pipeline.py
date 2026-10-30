@@ -11,7 +11,10 @@ Paths in the plan are repository-relative (absolute paths are also accepted).
 starts at frame120 and ends600 frames before ``totalFrames``. Every cut carries
 ``id, scene, startFrame, endFrame, frames, kind``. Gameplay adds ``sourceFile``
 and ``sourceStart`` (seconds); explanations add ``renderedSource`` and optional
-``renderedStartFrame``. No looping, holding, speed changes or cropping is done.
+``renderedStartFrame``. An explanation uses either the existing ``nativeCapture``
+receipt or ``explanationRender`` with kind ``annotated-still`` and a hash-pinned
+completed receipt. A source freeze counts as explanation, never gameplay.
+No gameplay looping, holding or speed changes are done.
 
 Gameplay is contained, preserving display aspect ratio, in ``viewport``
 ``[x,y,width,height]`` (default full1920x1080). ``sourceAttribution`` (or legacy
@@ -47,7 +50,11 @@ the same guide. Its source/cut binding, times and protected bounds are checked
 before rendering; it is never a game HUD, detector output or measured statistic.
 
 Optional plan keys: brandingFile, membershipFile, mixFile, captionsAss, outputDir,
-outputStem, expectedGameplayShare (default0.6), ratioToleranceFrames (default1).
+outputStem, expectedGameplayShare, ratioToleranceFrames (at most1).
+``expectedGameplayShare`` records the exact measured cut share. The default
+contract remains60:40; a hash-pinned ``ratioChoice: {path, sha256}`` may select
+concept-sized footage only for this A01/grid-v1 revision, with the explicit
+recommended-production-choice-v1 scope and reasons in that choice file.
 The first two default to the byte-preserved approved reward-project clips.
 ``pair`` encodes ONE continuous AAC stream and copies it into both masters.
 ``verify`` is structural evidence only; visual/listening QA remains separate.
@@ -80,6 +87,7 @@ ENCODER = ["-c:v", "libx264", "-threads", "4", "-preset", "veryfast",
 COLORS = {"red": "EF8585", "blue": "73C7C2", "green": "A4C6A0",
           "yellow": "E8CF83", "orange": "F39A4B"}
 CAPTION_RECT = [150, 892, 1784, 1060]  # x0,y0,x1,y1; two lines+outline+shadow
+EXPLANATION_CHIP_RECT = [1540, 30, 1900, 116]
 
 
 def path(value: str | Path) -> Path:
@@ -151,7 +159,46 @@ def assert_video(p: Path, frames: int, count: bool = False) -> dict:
     return s
 
 
+def fixed_caption_rect(plan: dict) -> list:
+    if plan.get("captionProtectedRect", CAPTION_RECT) != CAPTION_RECT:
+        raise ValueError("The fixed two-line caption geometry cannot be moved or reduced")
+    return list(CAPTION_RECT)
+
+
+def ratio_choice(plan: dict) -> dict | None:
+    """Read a recorded local editorial choice, never a generic ratio bypass."""
+    item = plan.get("ratioChoice")
+    if item is None:
+        return None
+    if (not isinstance(item, dict) or not isinstance(item.get("sha256"), str)
+            or not re.fullmatch(r"[0-9a-f]{64}", item["sha256"])):
+        raise ValueError("ratioChoice requires a local choice file and its actual SHA256")
+    choice_path = path(item["path"])
+    if not choice_path.resolve().is_relative_to(HERE.resolve()) or choice_path.suffix.lower() != ".json":
+        raise ValueError("ratioChoice must be recorded inside this revision, not a global override")
+    if sha(choice_path) != item["sha256"]:
+        raise ValueError("Recorded ratio choice changed; bind the current choice explicitly")
+    choice = load(choice_path)
+    expected = ("A01", "animation-assigning", "grid-v1")
+    if (PROJECT.name, HERE.name) != expected[1:]:
+        raise ValueError("Episode-specific ratio choice cannot be reused by another pipeline")
+    for value in (plan, choice):
+        if tuple(value.get(k) for k in ("episode", "slug", "revision")) != expected:
+            raise ValueError("ratioChoice is restricted to episode A01, animation-assigning, grid-v1")
+    if (choice.get("basis") != "recommended-production-choice-v1"
+            or choice.get("defaultContractAcknowledged") != "actual60:explanation40"
+            or not isinstance(choice.get("scope"), str) or not choice["scope"].strip()
+            or not isinstance(choice.get("decision"), str) or not choice["decision"].strip()
+            or not isinstance(choice.get("reasons"), list) or not choice["reasons"]
+            or any(not isinstance(reason, str) or not reason.strip() for reason in choice["reasons"])):
+        raise ValueError("ratioChoice needs the delegated basis, local scope, decision and evidence-based reasons")
+    return {"path": routed_relative(choice_path), "sha256": item["sha256"],
+            "basis": choice["basis"], "episode": "A01", "revision": "grid-v1",
+            "scope": choice["scope"], "defaultContractAcknowledged": "actual60:explanation40"}
+
+
 def validate_plan(plan: dict):
+    fixed_caption_rect(plan)
     if (plan.get("fps"), plan.get("width"), plan.get("height")) != (FPS, WIDTH, HEIGHT):
         raise ValueError("Plan must explicitly specify fps60,width1920,height1080")
     if plan["totalFrames"] != plan["bodyFrames"] + 720:
@@ -170,6 +217,8 @@ def validate_plan(plan: dict):
         if cut.get("loop") or cut.get("playbackSpeed", 1) != 1 or cut.get("holdAfterFrames"):
             raise ValueError(f"Only native-speed unlooped cuts are supported: {cid}")
         if cut["kind"] == "independent-gameplay":
+            if cut.get("explanationRender") is not None or cut.get("nativeCapture") is not None:
+                raise ValueError("Source freezes and native demonstrations must be classified as explanation")
             gameplay += cut["frames"]
             if not cut.get("sourceFile") or cut.get("sourceStart", 0) < 0:
                 raise ValueError(f"Missing gameplay source: {cid}")
@@ -181,11 +230,23 @@ def validate_plan(plan: dict):
             raise ValueError(f"Explanation requires actually renderedSource: {cid}")
     if cursor != plan["totalFrames"] - 600:
         raise ValueError("Body must end immediately before exact600-frame membership")
-    target = plan.get("expectedGameplayShare", .6) * plan["bodyFrames"]
-    if abs(gameplay - target) > plan.get("ratioToleranceFrames", 1):
-        raise ValueError(f"Gameplay ratio outside one-frame tolerance: {gameplay}/{plan['bodyFrames']}")
+    if plan["bodyFrames"] <= 0:
+        raise ValueError("A body must contain a positive number of frames")
+    measured_share = gameplay / plan["bodyFrames"]
+    expected_share = plan.get("expectedGameplayShare")
+    if (not isinstance(expected_share, (int, float)) or isinstance(expected_share, bool)
+            or not math.isfinite(expected_share) or not 0 <= expected_share <= 1
+            or not math.isclose(expected_share, measured_share, rel_tol=0, abs_tol=1e-12)):
+        raise ValueError("expectedGameplayShare must equal the actual gameplayFrames/bodyFrames, not a quota")
+    tolerance = plan.get("ratioToleranceFrames", 1)
+    if not isinstance(tolerance, (int, float)) or not math.isfinite(tolerance) or not 0 <= tolerance <= 1:
+        raise ValueError("Ratio tolerance cannot exceed one frame")
+    choice = ratio_choice(plan)
+    if choice is None and abs(gameplay - .6 * plan["bodyFrames"]) > tolerance:
+        raise ValueError(f"Default60:40 contract outside one-frame tolerance: {gameplay}/{plan['bodyFrames']}")
     return {"gameplayFrames": gameplay, "explanationFrames": plan["bodyFrames"] - gameplay,
-            "bodyFrames": plan["bodyFrames"], "gameplayShare": gameplay / plan["bodyFrames"]}
+            "bodyFrames": plan["bodyFrames"], "gameplayShare": measured_share,
+            "ratioChoice": choice}
 
 
 def stamp(seconds: float) -> str:
@@ -294,7 +355,9 @@ def check_bounds(bounds: list, protected: list, label: str):
 def annotations(cut: dict, plan: dict) -> tuple[str, dict]:
     from PIL import ImageFont
     duration, result, geometry_log = cut["frames"] / FPS, ass_header(), []
-    protected = [plan.get("captionProtectedRect", CAPTION_RECT), *cut.get("protectedRects", [])]
+    protected = [fixed_caption_rect(plan), *cut.get("protectedRects", [])]
+    if cut["kind"] == "explanation":
+        protected.append(EXPLANATION_CHIP_RECT)
     font_value = plan.get("annotationFontFile", "C:/Windows/Fonts/malgun.ttf")
     font_file = (Path(font_value).resolve() if str(font_value).replace("\\", "/").lower()
                  == "c:/windows/fonts/malgun.ttf" else path(font_value))
@@ -442,15 +505,150 @@ def editorial_guide_ass(cut: dict, plan: dict) -> tuple[Path | None, dict | None
 
 
 def explanation_kind_label(cut: dict, plan: dict):
-    """Stable editorial source-kind chip; native animation remains unchanged."""
-    text = r"{\an5\pos(1740,73)\fs36\b0\bord0\shad0\1c&HB8B8B8&}해설용 시연"
-    return ass_header() + event(0, cut["frames"] / FPS, text, 4), {
-        "captionProtectedRect": plan.get("captionProtectedRect", CAPTION_RECT),
-        "sourceKind": "self-authored Unity explanation",
-        "fixedLabel": {"text": "해설용 시연", "center": [1740, 73], "fontSize": 36,
-                       "reason": "Render outside Unity canvas to prevent intermittent small-chip omission"},
-        "editorAddedSourceCreditsRendered": False,
-        "coordinates": "output1920x1080 pixels; cut-relative times"}
+    """Apply the same editorial marks plus an explicit, protected source-kind chip."""
+    still = cut.get("explanationRender", {}).get("kind") == "annotated-still"
+    label = "장면 해설" if still else "해설용 시연"
+    script, geometry = annotations(cut, plan)
+    text = r"{\an5\pos(1740,73)\fs36\b0\bord0\shad0\1c&HB8B8B8&}" + label
+    geometry.update({
+        "sourceKind": "inspected source-frame explanation" if still else "self-authored Unity explanation",
+        "fixedLabel": {"text": label, "center": [1740, 73], "fontSize": 36,
+                       "protectedRect": EXPLANATION_CHIP_RECT,
+                       "reason": "Explicit editorial picture kind; not an animation-editor recording or measured game data"}})
+    return script + event(0, cut["frames"] / FPS, text, 4), geometry
+
+
+def gameplay_labels(cut: dict, plan: dict):
+    """Game identity and honest footage kind, separate from description credits."""
+    from PIL import ImageFont
+    title = cut.get("gameLabel")
+    picture = cut.get("pictureLabel", "실제 게임 영상")
+    if not title:
+        raise ValueError("Selected actual gameplay requires a concise game-name label")
+    font = ImageFont.truetype("C:/Windows/Fonts/malgun.ttf", 36)
+    left_width = math.ceil(font.getlength(title)) + 40
+    right_width = math.ceil(font.getlength(picture)) + 40
+    if left_width > 900 or right_width > 600:
+        raise ValueError("Game identity label is too wide")
+    boxes = [[24, 18, 24 + left_width, 78], [1896-right_width, 18, 1896, 78]]
+    marked = {**cut, "protectedRects": [*cut.get("protectedRects", []), *boxes]}
+    script, geometry = annotations(marked, plan)
+    duration = cut["frames"] / FPS
+    for label, box in zip((title, picture), boxes):
+        x0,y0,x1,y1 = box
+        fill = r"{\an7\pos(0,0)\p1\bord0\shad0\1c&H15150B&\1a&H20&}" + polygon([[x0,y0],[x1,y0],[x1,y1],[x0,y1]])
+        text = f"{{\\an7\\pos({x0+20},{y0+5})\\fs36\\b0\\bord0\\shad0\\1c&HF0F0F0&}}" + ass_text(label)
+        script += event(0,duration,fill,4) + event(0,duration,text,5)
+    geometry["identityLabels"] = [{"text":label,"bounds":box,"fontSize":36} for label,box in zip((title,picture),boxes)]
+    return script, geometry
+
+
+def pinned_file(item: dict, label: str) -> Path:
+    if (not isinstance(item, dict) or not item.get("path")
+            or not isinstance(item.get("sha256"), str)
+            or not re.fullmatch(r"[0-9a-f]{64}", item["sha256"])):
+        raise ValueError(f"{label} requires its source path and actual SHA256")
+    p = path(item["path"])
+    if sha(p) != item["sha256"]:
+        raise ValueError(f"{label} bytes changed after the receipt was created")
+    return p
+
+
+def validate_explanation_source(cut: dict, source: Path, source_hash: str) -> dict:
+    """Validate complete native capture or complete source-frame explanation, separately."""
+    if source_hash != cut.get("renderedSourceSha256"):
+        raise ValueError(f"Explanation source differs from the hash-pinned edit: {cut['id']}")
+    if cut.get("renderedStartFrame", 0) != 0:
+        raise ValueError("An explanation receipt must cover this complete cut, starting at frame0")
+    item = cut.get("explanationRender")
+    if item is None:
+        # Preserve every native fingerprint/request/success check. A still receipt
+        # is never accepted as a substitute for a missing native capture.
+        native = cut.get("nativeCapture", {})
+        if native.get("movieSha256") != source_hash:
+            raise ValueError(f"Native source bytes differ from the frozen completed capture: {cut['id']}")
+        receipt_path, request_path = path(native["successReceipt"]), path(native["request"])
+        receipt, request = load(receipt_path), load(request_path)
+        if (sha(receipt_path) != native["successSha256"] or sha(request_path) != native["requestSha256"]
+                or receipt.get("status") != "complete" or receipt.get("completed") != cut["frames"]
+                or receipt.get("compiledSourceFingerprint") != native["compiledFingerprint"]
+                or request.get("expectedFingerprint") != native["compiledFingerprint"]
+                or request.get("command") != "render"):
+            raise ValueError(f"Native receipt is not the locked completed full capture: {cut['id']}")
+        assert_video(source, cut["frames"])
+        return {"kind": "native-unity", "successReceipt": native["successReceipt"],
+                "successSha256": native["successSha256"], "movieSha256": source_hash}
+    if (not isinstance(item, dict) or item.get("kind") != "annotated-still"
+            or cut.get("nativeCapture") is not None):
+        raise ValueError("Use exactly one nativeCapture or annotated-still explanationRender")
+    receipt_path = pinned_file({"path": item.get("receipt"), "sha256": item.get("receiptSha256")},
+                               "Annotated-still receipt")
+    receipt = load(receipt_path)
+    if (tuple(receipt.get(k) for k in ("episode", "slug", "revision"))
+            != ("A01", "animation-assigning", "grid-v1")
+            or receipt.get("status") != "complete" or receipt.get("kind") != "annotated-still"
+            or receipt.get("frames") != cut["frames"] or receipt.get("completed") != cut["frames"]
+            or (receipt.get("fps"), receipt.get("width"), receipt.get("height")) != (FPS, WIDTH, HEIGHT)):
+        raise ValueError("Annotated-still receipt must record a complete A01/grid-v1 FHD60 cut")
+    if receipt.get("detectorOutput", False) is not False or receipt.get("measuredGameData", False) is not False:
+        raise ValueError("Source-frame annotations are editorial guides, never detector output or measured game data")
+    movie = pinned_file(receipt.get("movie"), "Annotated-still movie")
+    if movie.resolve() != source.resolve() or receipt["movie"]["sha256"] != source_hash:
+        raise ValueError("Annotated-still receipt refers to a different generated movie")
+    assert_video(source, cut["frames"])
+    from PIL import Image
+    source_image = pinned_file(receipt.get("sourceImage"), "Original extracted source image")
+    with Image.open(source_image) as image:
+        image_width, image_height = image.size
+        image.verify()
+    if min(image_width, image_height) < 1080 or max(image_width, image_height) < 1920:
+        raise ValueError("Extract the genuine FHD source frame before composing/cropping it")
+    if receipt.get("imageOutput") is not None:
+        composed_image = pinned_file(receipt["imageOutput"], "Composed still image")
+        with Image.open(composed_image) as image:
+            if image.size != (WIDTH, HEIGHT):
+                raise ValueError("Composed still image must be1920x1080")
+            image.verify()
+    video_item = receipt.get("sourceVideo")
+    original = pinned_file(video_item, "Original gameplay video for the extracted frame")
+    frame_time = video_item.get("frameTimeSeconds")
+    if (not isinstance(frame_time, (int, float)) or isinstance(frame_time, bool)
+            or not math.isfinite(frame_time) or frame_time < 0):
+        raise ValueError("An extracted frame requires its finite nonnegative original-video timestamp")
+    original_info = probe(original)
+    original_duration = float(original_info["format"]["duration"])
+    if not math.isfinite(original_duration) or frame_time >= original_duration:
+        raise ValueError("Extracted source-frame timestamp is outside the original video")
+    decoded = json.loads(subprocess.check_output([
+        binary("ffprobe"), "-v", "error", "-select_streams", "v:0",
+        "-read_intervals", f"{frame_time:.9f}%+3", "-show_frames", "-show_entries",
+        "frame=width,height", "-of", "json", str(original)], cwd=ROOT)).get("frames", [])
+    if not decoded:
+        raise ValueError("No decodable original frame near the recorded still timestamp")
+    dimensions = (decoded[0]["width"], decoded[0]["height"])
+    if (min(dimensions) < 1080 or max(dimensions) < 1920
+            or dimensions != (video_item.get("decodedWidth"), video_item.get("decodedHeight"))
+            or dimensions != (image_width, image_height)):
+        raise ValueError("Original-video decoded FHD dimensions must match the receipt and uncropped source image")
+    layout = receipt.get("layout", {})
+    if layout.get("captionProtectedRect") != CAPTION_RECT or layout.get("background") != "animation-grid":
+        raise ValueError("Annotated-still layout must retain the animation grid and fixed caption geometry")
+    viewport = layout.get("viewport")
+    if (not isinstance(viewport, list) or len(viewport) != 4
+            or any(type(v) is not int or v % 2 for v in viewport)
+            or min(viewport[:2]) < 0 or min(viewport[2:]) <= 0
+            or viewport[0] + viewport[2] > WIDTH or viewport[1] + viewport[3] > HEIGHT):
+        raise ValueError("Annotated-still receipt requires a finite, in-frame evenpixel viewport")
+    crop = layout.get("crop")
+    if crop is not None and (not isinstance(crop, list) or len(crop) != 4
+            or any(type(v) is not int for v in crop) or min(crop[:2]) < 0 or min(crop[2:]) <= 0
+            or crop[0] + crop[2] > image_width or crop[1] + crop[3] > image_height):
+        raise ValueError("Annotated-still crop must refer to the inspected original source image")
+    return {"kind": "annotated-still", "receipt": item["receipt"],
+            "receiptSha256": item["receiptSha256"], "movieSha256": source_hash,
+            "sourceImage": receipt["sourceImage"], "sourceVideo": video_item,
+            "layout": layout, "detectorOutput": False, "measuredGameData": False,
+            "pixelToTimestampIdentity": "extraction provenance bound by receipt; not independently image-matched"}
 
 
 def render_cuts(plan: dict, output: Path, only_ids=None):
@@ -483,7 +681,9 @@ def render_cuts(plan: dict, output: Path, only_ids=None):
                          max(decoded["width"], decoded["height"]) < 1920):
             raise ValueError(f"Source is not genuine FHD-or-higher decoded media: {source}: {decoded}")
         if not gameplay:
-            if (source_info["width"], source_info["height"]) != (WIDTH, HEIGHT) or Fraction(source_info["avg_frame_rate"]) != FPS:
+            if ((source_info["width"], source_info["height"]) != (WIDTH, HEIGHT)
+                    or (decoded["width"], decoded["height"]) != (WIDTH, HEIGHT)
+                    or Fraction(source_info["avg_frame_rate"]) != FPS):
                 raise ValueError(f"Explanation render must be1920x1080/60: {source}")
         source_duration = float(source_info.get("duration", probe(source)["format"]["duration"]))
         if start + cut["frames"] / FPS > source_duration + 1 / FPS:
@@ -492,29 +692,18 @@ def render_cuts(plan: dict, output: Path, only_ids=None):
             source_hashes[str(source)] = sha(source)
         if gameplay and source_hashes[str(source)] != cut.get("sourceSha256"):
             raise ValueError(f"Actual source bytes differ from the hash-pinned edit: {cut['id']}")
-        if not gameplay:
-            native = cut.get("nativeCapture", {})
-            if source_hashes[str(source)] != cut.get("renderedSourceSha256") or native.get("movieSha256") != source_hashes[str(source)]:
-                raise ValueError(f"Native source bytes differ from the frozen completed capture: {cut['id']}")
-            receipt_path = path(native["successReceipt"])
-            request_path = path(native["request"])
-            receipt, request = load(receipt_path), load(request_path)
-            if (sha(receipt_path) != native["successSha256"] or sha(request_path) != native["requestSha256"]
-                    or receipt.get("status") != "complete" or receipt.get("completed") != cut["frames"]
-                    or receipt.get("compiledSourceFingerprint") != native["compiledFingerprint"]
-                    or request.get("expectedFingerprint") != native["compiledFingerprint"]
-                    or request.get("command") != "render"):
-                raise ValueError(f"Native receipt is not the locked completed full capture: {cut['id']}")
+        explanation_evidence = (None if gameplay else validate_explanation_source(
+            cut, source, source_hashes[str(source)]))
         annotation_cut = cut
         if guide_geometry:
             annotation_cut = {**cut, "protectedRects": [*cut.get("protectedRects", []),
                               *[row["bounds"] for row in guide_geometry["events"]]]}
-        ass, geometry = annotations(annotation_cut, plan) if gameplay else explanation_kind_label(cut, plan)
+        ass, geometry = gameplay_labels(annotation_cut, plan) if gameplay else explanation_kind_label(annotation_cut, plan)
         mark_file, destination = output / (cut["id"] + "-marks.ass"), output / (cut["id"] + ".mp4")
         signature = {"cut": cut, "sourceSha256": source_hashes[str(source)], "sourceDecoded": decoded,
                      "codeSha256": code_hash, "encoder": ENCODER, "markGeometry": geometry,
                      "assSha256": hashlib.sha256(ass.encode()).hexdigest() if ass else None,
-                     "editorialGuideAss": guide_geometry}
+                     "editorialGuideAss": guide_geometry, "explanationRenderEvidence": explanation_evidence}
         receipt = output / (cut["id"] + "-render.json")
         if destination.exists() and receipt.exists():
             old = load(receipt)

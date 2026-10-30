@@ -24,6 +24,7 @@ def validate(spec):
     assert paths and len(paths) == len(set(paths))
     prefixes = ['production/batches/animation-18-20261031/',
                 'projects/animation-assigning/',
+                'projects/animation-exaggeration/',
                 'unity/VideoEditing/Assets/VideoScenes/animation-series-v1/']
     prohibited = ['/local/', '/ocr-deps/', '/local-deps/', '/exports/', '/evidence/',
                   '/Generated/', '/source-snapshots/']
