@@ -13,6 +13,12 @@ WORKLIST='shared/publishing/video-worklist.json'
 DOC='docs/VIDEO_WORKLIST.md'
 START='<!-- BUCKSHOT-RE-SETUP-20261028-START -->'
 END='<!-- BUCKSHOT-RE-SETUP-20261028-END -->'
+COMPLETED_STAGES={
+    'local-final-review-ready',
+    'uploaded-draft-awaiting-user-ad-review',
+    'scheduled',
+}
+DEFAULT_COMMIT_MESSAGE='Save reviewed REA documentary and publishing state'
 
 def git(*args, data=None, env=None):
     return subprocess.check_output(['git','-c','core.safecrlf=false',*args],cwd=ROOT,input=data,env=env)
@@ -49,6 +55,44 @@ def without_owned(path,payload):
         if value.get('scopedSetupAuthorizations')=={}:value.pop('scopedSetupAuthorizations',None)
     else:value['rows']=[r for r in value['rows'] if r.get('id')!='S-BUCKSHOT-RE']
     return value
+
+def validate_completed_state(checkpoint, review, project, upload=None):
+    """Later publishing states still require the same completed local QA."""
+    stage=checkpoint.get('stage')
+    if stage not in COMPLETED_STAGES:
+        raise RuntimeError('Finish local deliverables before saving final commit; unsupported stage: '+str(stage))
+    master=checkpoint.get('captionedSha256')
+    if not isinstance(master,str) or len(master)!=64 or any(c not in '0123456789abcdef' for c in master):
+        raise RuntimeError('Missing valid reviewed master SHA256.')
+    if not (
+        review.get('revision')=='v6'
+        and review.get('captionedSha256')==master
+        and review.get('outputs',{}).get('captioned',{}).get('sha256')==master
+        and project.get('delivery',{}).get('captionedSha256')==master
+        and (review.get('width'),review.get('height'),review.get('fps'))==(1920,1080,60)
+        and review.get('totalFrames')==26518
+        and review.get('wholeFinalMixAsrCompared') is True
+        and review.get('pairedAudioIdentical') is True
+        and review.get('bodyPicturesPreserved') is True
+        and review.get('originalNarrationPcmPreserved') is True
+        and review.get('visualReviewStatus')=='passed-inspected-encoded-frames'
+    ):
+        raise RuntimeError('Current v6 master does not match completed local QA; publishing stage cannot bypass QA.')
+    if stage!='local-final-review-ready':
+        if not (
+            checkpoint.get('humanFinalReview') is True
+            and checkpoint.get('userUploadAuthorization',{}).get('captionedSha256')==master
+            and isinstance(upload,dict)
+            and upload.get('video',{}).get('sha256')==master
+            and isinstance(upload.get('actualVideoId'),str)
+            and len(upload['actualVideoId'])==11
+        ):
+            raise RuntimeError('Publishing stage requires user approval and the matching actual uploaded video receipt.')
+        if stage=='scheduled' and not (
+            upload.get('scheduled') is True
+            and checkpoint.get('scheduleAuthorization',{}).get('userMessage')
+        ):
+            raise RuntimeError('Scheduled stage requires recorded user authorization and an actual scheduled receipt.')
 
 def publish_index_and_ref(index_path, prepared_bytes, original_bytes, ref, head, commit, run_git=git):
     """Hold Git's real index lock only for final revalidation, ref CAS and replace.
@@ -103,10 +147,20 @@ def publish_index_and_ref(index_path, prepared_bytes, original_bytes, ref, head,
             pass
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--commit',action='store_true');ap.add_argument('--push',action='store_true');args=ap.parse_args()
+    ap=argparse.ArgumentParser()
+    ap.add_argument('--commit',action='store_true')
+    ap.add_argument('--push',action='store_true')
+    ap.add_argument('--message',default=DEFAULT_COMMIT_MESSAGE,help='Commit message for this scoped project save; does not change file ownership or QA requirements.')
+    args=ap.parse_args()
+    message=args.message.strip()
+    if not message or '\0' in message:ap.error('--message must be nonempty and contain no NUL characters')
     assert not args.push or args.commit
     checkpoint=read_json((PROJECT/'production/checkpoint.json').read_bytes())
-    assert checkpoint.get('stage')=='local-final-review-ready', 'Finish local deliverables before saving final commit.'
+    review=read_json((PROJECT/'production/final-review-v6.json').read_bytes())
+    project=read_json((PROJECT/'project.json').read_bytes())
+    upload_path=PROJECT/'publishing/youtube-upload.json'
+    upload=read_json(upload_path.read_bytes()) if upload_path.is_file() else None
+    validate_completed_state(checkpoint,review,project,upload)
     head=git('rev-parse','HEAD').decode().strip();ref=git('symbolic-ref','HEAD').decode().strip()
     paths=set(git('ls-files','--cached','--others','--exclude-standard','-z','--',PREFIX,UNITY_PREFIX,UNITY_ROOT_META).decode().split('\0'))-{''}
     assert paths and all((ROOT/p).is_file() for p in paths)
@@ -120,7 +174,7 @@ def main():
         assert without_owned(p,base)==without_owned(p,projected)
         owned[p]=projected
     if not args.commit:
-        print(json.dumps({'status':'prepared-no-git-write','paths':list(owned),'baseHead':head}));return
+        print(json.dumps({'status':'prepared-no-git-write','paths':list(owned),'baseHead':head,'message':message}));return
     gd=Path(git('rev-parse','--absolute-git-dir').decode().strip())
     stamp=datetime.datetime.now().strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:12]
     temporary=gd/('index-buckshot-commit-'+stamp)
@@ -165,7 +219,7 @@ def main():
         backup=gd/('index-before-buckshot-'+stamp)
         backup.write_bytes(original_bytes)
         tree=git('write-tree',env=env).decode().strip()
-        commit=git('commit-tree',tree,'-p',head,data=b'Add actual gameplay opening and reviewed background music mix to REA documentary\n').decode().strip()
+        commit=git('commit-tree',tree,'-p',head,data=(message+'\n').encode('utf-8')).decode().strip()
         publish_index_and_ref(index_path,prepared_bytes,original_bytes,ref,head,commit)
     finally:
         # These unique private indexes are ours; the real index and its lock
@@ -173,7 +227,7 @@ def main():
         for path in (temporary,replacement):
             try:path.unlink()
             except FileNotFoundError:pass
-    receipt={'baseHead':head,'commit':commit,'branchRef':ref,'paths':list(owned),'nonOwnedStagingPreserved':True,'ledgerOtherFieldsPreserved':True,'indexBackup':str(backup),'indexOriginalSha256':hashlib.sha256(original_bytes).hexdigest(),'indexInstalledSha256':hashlib.sha256(prepared_bytes).hexdigest(),'indexPublication':'exclusive real index.lock; revalidated original bytes and branch/HEAD; ref CAS then atomic replacement','push':'not-requested'}
+    receipt={'baseHead':head,'commit':commit,'message':message,'branchRef':ref,'paths':list(owned),'nonOwnedStagingPreserved':True,'ledgerOtherFieldsPreserved':True,'indexBackup':str(backup),'indexOriginalSha256':hashlib.sha256(original_bytes).hexdigest(),'indexInstalledSha256':hashlib.sha256(prepared_bytes).hexdigest(),'indexPublication':'exclusive real index.lock; revalidated original bytes and branch/HEAD; ref CAS then atomic replacement','push':'not-requested'}
     output=PROJECT/'production/local/git-save-receipt.json';output.write_bytes(json_bytes(receipt))
     if args.push:
         subprocess.run(['git','push','origin',ref],cwd=ROOT,check=True)

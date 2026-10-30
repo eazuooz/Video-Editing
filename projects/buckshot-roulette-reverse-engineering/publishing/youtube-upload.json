@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "slug": "buckshot-roulette-reverse-engineering",
+  "status": "scheduled",
+  "updatedAt": "2026-10-30T14:42:24+00:00",
+  "preparedAt": "2026-10-30T14:15:42.485196+00:00",
+  "video": {
+    "name": "buckshot-roulette-reverse-engineering.captioned.mp4",
+    "path": "output/buckshot-roulette-reverse-engineering/buckshot-roulette-reverse-engineering.captioned.mp4",
+    "sha256": "2dbf6b3dae05f43fff9c8a33e35498abeea9981e374d4f968c0a5e4fdf6ec77b",
+    "bytes": 121492351,
+    "seconds": 441.96666666666664,
+    "frames": 26518,
+    "width": 1920,
+    "height": 1080,
+    "fps": 60
+  },
+  "qa": "projects/buckshot-roulette-reverse-engineering/production/final-review-v6.json",
+  "metadata": {
+    "title": "AI에게 기존 프로그램을 분석시키면 어디까지 만들 수 있을까?｜REA",
+    "description": "AI가 기존 프로그램을 분석하면, 새로운 결과물을 어디까지 만들 수 있을까요?\nREA(Reverse Engineer Anything)로 벅샷 룰렛의 파일 구조와 규칙을 조사하고, 새 코드와 3D 모델로 플레이 가능한 프로토타입을 만드는 과정을 보여드립니다.\n\n탄환 순서, 차례 전환, 아이템 효과, 딜러의 판단을 하나씩 확인한 뒤 직접 구현한 결과와 비교합니다. 실제로 사용한 제작 경로는 REA CLI → 규칙 분석과 새 코드 작성 → Blender 모델 제작 → Godot 프로토타입입니다. 도구 연결과 개발 환경은 Unity 애니메이션으로 풀어 설명합니다.\n\n이번 대상에는 읽을 수 있는 GDScript가 포함되어 있었습니다. Ghidra와 Tripo MCP는 가능한 도구 연결로 소개하며, 이번 프로토타입 제작에는 사용하지 않았습니다.\n\n#AI개발 #리버스엔지니어링 #REA\n\n챕터\n00:00 벅샷 룰렛 실제 플레이 · 2배속\n00:32 분석에서 플레이 가능한 프로토타입까지\n01:13 REA와 AI 에이전트는 무엇을 할까?\n01:43 MCP와 분석·제작 도구 연결\n02:16 실제 파일을 열어 규칙 찾기\n02:49 탄환 순서와 아이템의 동작\n03:35 차례·수갑·피해량을 상태로 나누기\n04:30 딜러의 판단 구조\n05:09 새 코드로 구현하고 검사하기\n05:57 Blender 모델을 Godot에 연결하기\n06:43 분석을 내 아이디어의 출발점으로\n\n🎮 게임 개발은 '따라 치기'가 아니라 직접 만드는 실력입니다.\r\n\r\n얌얌코딩은 DirectX, Unity, Unreal, Computer Graphics를 기반으로\r\n실무에서 통하는 개발 역량을 기르는 게임 프로그래밍 채널입니다.\r\n\r\n━━━━━━━━━━━━━━━━━━\r\n\r\n🚀 프리미엄 1:1 코칭\r\n\r\n실무 과제 중심으로 직접 설계하고 구현하는 개발 습관을 만들어드립니다.\r\n\r\n• DirectX11 / DirectX12\r\n• Unity / Unreal Engine\r\n• Computer Graphics & PBR\r\n• Shader / Rendering\r\n• 게임 엔진 개발\r\n• 최신 Graphics 논문 리뷰 및 구현\r\n\r\n👉 프리미엄 코칭\r\nhttps://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328\r\n\r\n━━━━━━━━━━━━━━━━━━\r\n\r\n💬 얌얌코딩 커뮤니티\r\n\r\n질문, 코드 리뷰, 피드백, 수업 자료를 함께 공유합니다.\r\n\r\nDiscord\r\nhttps://discord.gg/wZuqe7fqkR\r\n\r\nYouTube 멤버십\r\nhttps://www.youtube.com/channel/UCOgtkPoyC0VXhCs7Xk3jvjQ/join\r\n\r\n━━━━━━━━━━━━━━━━━━\n\n출처·자료 및 제작 도구\n실제 게임·게임 음악: Buckshot Roulette — Mike Klubnika / CRITICAL REFLEX. 설치된 Steam 버전을 직접 녹화했습니다.\nhttps://store.steampowered.com/app/2835570/Buckshot_Roulette/\n원작 OST 제작: Mike Klubnika. 개발자 답변: https://steamcommunity.com/app/2835570/discussions/0/4364626769116524112/\n\n실제로 사용한 분석·제작 도구\nREA 6.8.0 CLI — morluto: https://github.com/morluto/rea\nREA의 Godot PCK 분석 문서: https://github.com/morluto/rea/blob/main/docs/godot-pck.md\nBlender 5.2.3 LTS — 독자적인 모델·재질 제작: https://www.blender.org/\nGodot 4.7.2 — 실제 프로토타입: https://godotengine.org/\nUnity — 설명용 애니메이션: https://unity.com/\nOBS Studio — 직접 플레이 녹화: https://obsproject.com/\nQwen3-TTS — 내레이션: https://github.com/QwenLM/Qwen3-TTS\nFFmpeg — 영상·오디오 편집: https://ffmpeg.org/\n프로토타입의 코드·모델·재질은 이번 실험을 위해 직접 작성·제작했습니다.\n\n도구 개념을 설명할 때 참고한 공식 자료\nMCP: https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro\nGhidra: https://github.com/NationalSecurityAgency/ghidra\nTripo MCP: https://github.com/Tripo-Developer/tripo-mcp\n제작 흐름 참고 — Stefan 3D AI, I Reverse Engineered Mario 64 to Make My Own Game: https://www.youtube.com/watch?v=6MpHBHw30OE\n\nMusic: Nimbus — Eveningland (YouTube Audio Library)\nhttps://www.youtube.com/watch?v=ZOc84gXN-lg",
+    "privacyStatus": "private",
+    "category": "Education",
+    "language": "ko",
+    "madeForKids": false,
+    "tags": [
+      "AI 개발",
+      "REA",
+      "Reverse Engineer Anything",
+      "리버스 엔지니어링",
+      "역공학",
+      "벅샷 룰렛",
+      "Buckshot Roulette",
+      "프로토타입",
+      "AI 코딩",
+      "Godot",
+      "Blender",
+      "Unity"
+    ]
+  },
+  "englishMetadata": {
+    "title": "What Can AI Build by Analyzing Existing Software? | REA",
+    "description": "What can AI build by analyzing an existing program?\nWe use REA (Reverse Engineer Anything) to inspect Buckshot Roulette's file structure and rules, then build a playable prototype with new code and original 3D models.\n\nFollow the ammunition queue, turn changes, item effects and dealer decisions, then compare them with our implementation. The actual workflow is REA CLI → rule analysis and new code → Blender models → a Godot prototype. Unity animations explain the tools and development environment.\n\nThis particular game package contained readable GDScript. Ghidra and Tripo MCP are introduced as possible tool connections; they were not used to build this prototype.\n\n#AIDevelopment #ReverseEngineering #REA\n\nChapters\n00:00 Buckshot Roulette gameplay at 2x speed\n00:32 From analysis to a playable prototype\n01:13 What do REA and an AI agent do?\n01:43 MCP and the analysis-to-development workflow\n02:16 Inspecting real files and tracing the rules\n02:49 The ammunition queue and item behavior\n03:35 Turns, handcuffs and damage as state changes\n04:30 How the dealer makes decisions\n05:09 Implementing and testing new code\n05:57 Bringing original Blender models into Godot\n06:43 Using analysis to test your own ideas\n\n🎮 Build games with real programming skills.\n\nYamYamCoding is a Korean game-programming channel covering DirectX, Unity, Unreal Engine and computer graphics.\n\n━━━━━━━━━━━━━━━━━━\n\n🚀 Premium 1:1 programming coaching\n\nLearn to design and implement real projects with guided feedback.\nDirectX11 / DirectX12 · Unity / Unreal Engine · Computer Graphics & PBR · Shaders / Rendering · Game engines · Graphics papers and implementation\n\nProgramming coaching\nhttps://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328\n\n━━━━━━━━━━━━━━━━━━\n\n💬 YamYamCoding community\n\nQuestions, code reviews, feedback and course materials.\n\nDiscord\nhttps://discord.gg/wZuqe7fqkR\n\nYouTube channel membership\nhttps://www.youtube.com/channel/UCOgtkPoyC0VXhCs7Xk3jvjQ/join\n\n━━━━━━━━━━━━━━━━━━\n\nSources, assets and production tools\nRecorded game and in-game music: Buckshot Roulette — Mike Klubnika / CRITICAL REFLEX. We recorded our installed Steam copy.\nhttps://store.steampowered.com/app/2835570/Buckshot_Roulette/\nOriginal soundtrack by Mike Klubnika. Developer reply: https://steamcommunity.com/app/2835570/discussions/0/4364626769116524112/\n\nTools actually used\nREA 6.8.0 CLI — morluto: https://github.com/morluto/rea\nGodot PCK documentation: https://github.com/morluto/rea/blob/main/docs/godot-pck.md\nBlender 5.2.3 LTS — original models/materials: https://www.blender.org/\nGodot 4.7.2 — playable prototype: https://godotengine.org/\nUnity — explanatory animations: https://unity.com/\nOBS Studio — original gameplay capture: https://obsproject.com/\nQwen3-TTS — narration: https://github.com/QwenLM/Qwen3-TTS\nFFmpeg — video/audio editing: https://ffmpeg.org/\nThe prototype code, models and materials were independently created for this experiment.\n\nOfficial references for the tool overview\nMCP: https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro\nGhidra: https://github.com/NationalSecurityAgency/ghidra\nTripo MCP: https://github.com/Tripo-Developer/tripo-mcp\nWorkflow reference — Stefan 3D AI, I Reverse Engineered Mario 64 to Make My Own Game: https://www.youtube.com/watch?v=6MpHBHw30OE\n\nMusic: Nimbus — Eveningland (YouTube Audio Library)\nhttps://www.youtube.com/watch?v=ZOc84gXN-lg",
+    "language": "en",
+    "status": "published-table-readback-verified",
+    "savedVerified": true
+  },
+  "descriptionBody": {
+    "ko": "AI가 기존 프로그램을 분석하면, 새로운 결과물을 어디까지 만들 수 있을까요?\nREA(Reverse Engineer Anything)로 벅샷 룰렛의 파일 구조와 규칙을 조사하고, 새 코드와 3D 모델로 플레이 가능한 프로토타입을 만드는 과정을 보여드립니다.\n\n탄환 순서, 차례 전환, 아이템 효과, 딜러의 판단을 하나씩 확인한 뒤 직접 구현한 결과와 비교합니다. 실제로 사용한 제작 경로는 REA CLI → 규칙 분석과 새 코드 작성 → Blender 모델 제작 → Godot 프로토타입입니다. 도구 연결과 개발 환경은 Unity 애니메이션으로 풀어 설명합니다.\n\n이번 대상에는 읽을 수 있는 GDScript가 포함되어 있었습니다. Ghidra와 Tripo MCP는 가능한 도구 연결로 소개하며, 이번 프로토타입 제작에는 사용하지 않았습니다.\n\n#AI개발 #리버스엔지니어링 #REA\n\n챕터\n00:00 벅샷 룰렛 실제 플레이 · 2배속\n00:32 분석에서 플레이 가능한 프로토타입까지\n01:13 REA와 AI 에이전트는 무엇을 할까?\n01:43 MCP와 분석·제작 도구 연결\n02:16 실제 파일을 열어 규칙 찾기\n02:49 탄환 순서와 아이템의 동작\n03:35 차례·수갑·피해량을 상태로 나누기\n04:30 딜러의 판단 구조\n05:09 새 코드로 구현하고 검사하기\n05:57 Blender 모델을 Godot에 연결하기\n06:43 분석을 내 아이디어의 출발점으로",
+    "en": "What can AI build by analyzing an existing program?\nWe use REA (Reverse Engineer Anything) to inspect Buckshot Roulette's file structure and rules, then build a playable prototype with new code and original 3D models.\n\nFollow the ammunition queue, turn changes, item effects and dealer decisions, then compare them with our implementation. The actual workflow is REA CLI → rule analysis and new code → Blender models → a Godot prototype. Unity animations explain the tools and development environment.\n\nThis particular game package contained readable GDScript. Ghidra and Tripo MCP are introduced as possible tool connections; they were not used to build this prototype.\n\n#AIDevelopment #ReverseEngineering #REA\n\nChapters\n00:00 Buckshot Roulette gameplay at 2x speed\n00:32 From analysis to a playable prototype\n01:13 What do REA and an AI agent do?\n01:43 MCP and the analysis-to-development workflow\n02:16 Inspecting real files and tracing the rules\n02:49 The ammunition queue and item behavior\n03:35 Turns, handcuffs and damage as state changes\n04:30 How the dealer makes decisions\n05:09 Implementing and testing new code\n05:57 Bringing original Blender models into Godot\n06:43 Using analysis to test your own ideas"
+  },
+  "sourceCredits": {
+    "ko": "실제 게임·게임 음악: Buckshot Roulette — Mike Klubnika / CRITICAL REFLEX. 설치된 Steam 버전을 직접 녹화했습니다.\nhttps://store.steampowered.com/app/2835570/Buckshot_Roulette/\n원작 OST 제작: Mike Klubnika. 개발자 답변: https://steamcommunity.com/app/2835570/discussions/0/4364626769116524112/\n\n실제로 사용한 분석·제작 도구\nREA 6.8.0 CLI — morluto: https://github.com/morluto/rea\nREA의 Godot PCK 분석 문서: https://github.com/morluto/rea/blob/main/docs/godot-pck.md\nBlender 5.2.3 LTS — 독자적인 모델·재질 제작: https://www.blender.org/\nGodot 4.7.2 — 실제 프로토타입: https://godotengine.org/\nUnity — 설명용 애니메이션: https://unity.com/\nOBS Studio — 직접 플레이 녹화: https://obsproject.com/\nQwen3-TTS — 내레이션: https://github.com/QwenLM/Qwen3-TTS\nFFmpeg — 영상·오디오 편집: https://ffmpeg.org/\n프로토타입의 코드·모델·재질은 이번 실험을 위해 직접 작성·제작했습니다.\n\n도구 개념을 설명할 때 참고한 공식 자료\nMCP: https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro\nGhidra: https://github.com/NationalSecurityAgency/ghidra\nTripo MCP: https://github.com/Tripo-Developer/tripo-mcp\n제작 흐름 참고 — Stefan 3D AI, I Reverse Engineered Mario 64 to Make My Own Game: https://www.youtube.com/watch?v=6MpHBHw30OE\n\nMusic: Nimbus — Eveningland (YouTube Audio Library)\nhttps://www.youtube.com/watch?v=ZOc84gXN-lg",
+    "en": "Recorded game and in-game music: Buckshot Roulette — Mike Klubnika / CRITICAL REFLEX. We recorded our installed Steam copy.\nhttps://store.steampowered.com/app/2835570/Buckshot_Roulette/\nOriginal soundtrack by Mike Klubnika. Developer reply: https://steamcommunity.com/app/2835570/discussions/0/4364626769116524112/\n\nTools actually used\nREA 6.8.0 CLI — morluto: https://github.com/morluto/rea\nGodot PCK documentation: https://github.com/morluto/rea/blob/main/docs/godot-pck.md\nBlender 5.2.3 LTS — original models/materials: https://www.blender.org/\nGodot 4.7.2 — playable prototype: https://godotengine.org/\nUnity — explanatory animations: https://unity.com/\nOBS Studio — original gameplay capture: https://obsproject.com/\nQwen3-TTS — narration: https://github.com/QwenLM/Qwen3-TTS\nFFmpeg — video/audio editing: https://ffmpeg.org/\nThe prototype code, models and materials were independently created for this experiment.\n\nOfficial references for the tool overview\nMCP: https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro\nGhidra: https://github.com/NationalSecurityAgency/ghidra\nTripo MCP: https://github.com/Tripo-Developer/tripo-mcp\nWorkflow reference — Stefan 3D AI, I Reverse Engineered Mario 64 to Make My Own Game: https://www.youtube.com/watch?v=6MpHBHw30OE\n\nMusic: Nimbus — Eveningland (YouTube Audio Library)\nhttps://www.youtube.com/watch?v=ZOc84gXN-lg"
+  },
+  "chapters": [
+    {
+      "beatId": "opening",
+      "frame": 0,
+      "exactSeconds": 0,
+      "time": "00:00",
+      "ko": "벅샷 룰렛 실제 플레이 · 2배속",
+      "en": "Buckshot Roulette gameplay at 2x speed"
+    },
+    {
+      "beatId": "v4-01-01",
+      "frame": 1920,
+      "exactSeconds": 32,
+      "time": "00:32",
+      "ko": "분석에서 플레이 가능한 프로토타입까지",
+      "en": "From analysis to a playable prototype"
+    },
+    {
+      "beatId": "v4-02-01",
+      "frame": 4423,
+      "exactSeconds": 73.71666666666667,
+      "time": "01:13",
+      "ko": "REA와 AI 에이전트는 무엇을 할까?",
+      "en": "What do REA and an AI agent do?"
+    },
+    {
+      "beatId": "v4-02-02",
+      "frame": 6211,
+      "exactSeconds": 103.51666666666667,
+      "time": "01:43",
+      "ko": "MCP와 분석·제작 도구 연결",
+      "en": "MCP and the analysis-to-development workflow"
+    },
+    {
+      "beatId": "b04-02-p01",
+      "frame": 8191,
+      "exactSeconds": 136.51666666666668,
+      "time": "02:16",
+      "ko": "실제 파일을 열어 규칙 찾기",
+      "en": "Inspecting real files and tracing the rules"
+    },
+    {
+      "beatId": "b06-03-p01",
+      "frame": 10156,
+      "exactSeconds": 169.26666666666668,
+      "time": "02:49",
+      "ko": "탄환 순서와 아이템의 동작",
+      "en": "The ammunition queue and item behavior"
+    },
+    {
+      "beatId": "b10-04-p01",
+      "frame": 12912,
+      "exactSeconds": 215.2,
+      "time": "03:35",
+      "ko": "차례·수갑·피해량을 상태로 나누기",
+      "en": "Turns, handcuffs and damage as state changes"
+    },
+    {
+      "beatId": "b19-05-p01",
+      "frame": 16209,
+      "exactSeconds": 270.15,
+      "time": "04:30",
+      "ko": "딜러의 판단 구조",
+      "en": "How the dealer makes decisions"
+    },
+    {
+      "beatId": "b23-06-p01",
+      "frame": 18564,
+      "exactSeconds": 309.4,
+      "time": "05:09",
+      "ko": "새 코드로 구현하고 검사하기",
+      "en": "Implementing and testing new code"
+    },
+    {
+      "beatId": "b25-07-p01",
+      "frame": 21456,
+      "exactSeconds": 357.6,
+      "time": "05:57",
+      "ko": "Blender 모델을 Godot에 연결하기",
+      "en": "Bringing original Blender models into Godot"
+    },
+    {
+      "beatId": "v4-08-01",
+      "frame": 24189,
+      "exactSeconds": 403.15,
+      "time": "06:43",
+      "ko": "분석을 내 아이디어의 출발점으로",
+      "en": "Using analysis to test your own ideas"
+    }
+  ],
+  "chapterEvidence": {
+    "timeline": "projects/buckshot-roulette-reverse-engineering/production/timeline-v6.json",
+    "method": "Sequential beat frames after the verified 120-frame branding. Public timestamps floor exact frame starts to whole seconds. Opening includes 2-second branding and the requested 30-second gameplay sequence.",
+    "endingStartFrame": 25918,
+    "endingStartSeconds": 431.96666666666664
+  },
+  "subtitles": [
+    {
+      "language": "ko",
+      "path": "output/buckshot-roulette-reverse-engineering/buckshot-roulette-reverse-engineering.ko.srt",
+      "sha256": "f0a519056ff41da2820fd95f362dd5e6650490982b02f4dff92889f0da8e984c",
+      "cues": 115,
+      "status": "manual-srt-saved-reopened-verified",
+      "method": "manual-file-upload-with-timing",
+      "savedVerified": true,
+      "evidenceMethod": "Root read Studio Korean source subtitle editor and manual-upload label; selected exact prepared SRT."
+    },
+    {
+      "language": "en",
+      "path": "output/buckshot-roulette-reverse-engineering/buckshot-roulette-reverse-engineering.en.srt",
+      "sha256": "8af6ad0f0f35fd6d5c150cf2e9344535a6e000f19711dabebdcd9dcf0a06c21b",
+      "cues": 135,
+      "status": "manual-srt-published-table-readback-verified",
+      "method": "manual-file-upload-with-timing",
+      "savedVerified": true,
+      "evidenceMethod": "Root read Studio English row: one subtitle published and localized metadata published."
+    }
+  ],
+  "thumbnail": {
+    "path": "projects/buckshot-roulette-reverse-engineering/publishing/thumbnail-v6.jpg",
+    "sha256": "d53b5c26a824fdabc52bfb304bcd53d20c51d00267ff5d891776787b4ab5fd80",
+    "bytes": 272005,
+    "width": 1280,
+    "height": 720,
+    "status": "saved-in-studio",
+    "savedVerified": true,
+    "review": "projects/buckshot-roulette-reverse-engineering/publishing/thumbnail-v6-review.json"
+  },
+  "actualVideoId": "RF8SEtWz0WM",
+  "scheduled": true,
+  "url": "https://www.youtube.com/watch?v=RF8SEtWz0WM",
+  "studioUrl": "https://studio.youtube.com/video/RF8SEtWz0WM/edit",
+  "uploadWizardCompleted": true,
+  "privateUploadSaved": true,
+  "privateDraftSaved": true,
+  "fullSettingsVerified": true,
+  "automaticChecks": {
+    "status": "completed-no-issues-observed",
+    "copyright": "발견된 문제 없음",
+    "adSuitabilityScan": "발견된 문제 없음",
+    "distinction": "Automatic scan results are separate from creator self-certification and final upload-wizard completion.",
+    "evidence": "projects/buckshot-roulette-reverse-engineering/production/local/youtube-ad-review-required-v6.jpg"
+  },
+  "rightsEvidence": [
+    "projects/buckshot-roulette-reverse-engineering/planning/primary-sources.json",
+    "projects/buckshot-roulette-reverse-engineering/prototype/assets/provenance.json",
+    "shared/assets/music/youtube-audio-library/Nimbus-Eveningland.LICENSE.md"
+  ],
+  "preparationEvidence": {
+    "script": "projects/buckshot-roulette-reverse-engineering/script/revision-v4/narration.ko.json",
+    "toolFacts": "projects/buckshot-roulette-reverse-engineering/planning/rea-explainer-v4.json",
+    "titleChosenByUser": true,
+    "titleUserEvidence": "AI에게 기존 프로그램을 분석시키면 어디까지 만들 수 있을까?｜REA 이걸로 업로드해줘~",
+    "platformActionPerformedByPreparer": false,
+    "thumbnailNeeded": false
+  },
+  "burnedCaptionVerification": {
+    "required": true,
+    "position": [
+      960,
+      970
+    ],
+    "playerCaptionsOff": true,
+    "status": "verified-uploaded-1080p60-pixels",
+    "quality": "1080p60",
+    "seconds": 45,
+    "actualBurnedKoreanVisible": true,
+    "evidence": "projects/buckshot-roulette-reverse-engineering/production/local/youtube-watch-v6.jpg",
+    "selectablePlayerSubtitles": "Not yet available in watch player; propagation pending. Studio manual-track publication and visible burned captions are separately verified."
+  },
+  "descriptionSourceCredits": {
+    "policy": "description-sources-last-v1",
+    "position": "absolute-bottom",
+    "languages": [
+      "ko",
+      "en"
+    ],
+    "sha256": {
+      "ko": "fc895fc9abbc36625fd3da0126ee26a95ae0137e4a84d374db13c50895f3fbd2",
+      "en": "8149cbcd5af3c68f8a9e5c46f3926d0e0c16510b2299ec2ae544f6b4034e9ef1"
+    },
+    "actualUseAndRightsEvidence": "existing production source/rights records; not inferred from a URL or this text assembler"
+  },
+  "defaults": "shared/publishing/youtube-defaults.json",
+  "coachingCard": {
+    "url": "https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328",
+    "title": "프로그래밍 과외",
+    "teaser": "프로그래밍 과외",
+    "startSeconds": 0,
+    "status": "saved-reopened-verified",
+    "customMessage": "프로그래밍 과외",
+    "image": "channel cat circular image",
+    "savedVerified": true,
+    "requestedAvailability": "description-and-ending-plus-pinned-comment",
+    "platformConstraint": "Card teasers are hidden during end screens. Use an external-link end-screen element when available; record actual account/platform limitations."
+  },
+  "endScreen": {
+    "startSeconds": 431.96666666666664,
+    "endSeconds": 441.96666666666664,
+    "elements": [
+      "relevant-channel-playlist",
+      "subscribe-own-channel",
+      "programming-coaching-external-link"
+    ],
+    "status": "saved-reopened-verified",
+    "timecodeStart": "7:11:58",
+    "timecodeEnd": "7:21:58",
+    "timecodeFps": 60,
+    "savedVerified": true,
+    "actualElements": [
+      {"type": "subscribe", "channelId": "UCOgtkPoyC0VXhCs7Xk3jvjQ"},
+      {"type": "playlist", "playlistId": "PLUU7_j2ihric"},
+      {"type": "link", "url": "https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328", "title": "프로그래밍 과외", "callToAction": "방문하기", "image": "YAMYAM logo"}
+    ],
+    "layoutEvidence": "Root reopened Studio: all three elements read back, Save disabled. Lower-row elements keep member identity/title clear."
+  },
+  "coachingEndingLink": {
+    "url": "https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328",
+    "title": "프로그래밍 과외",
+    "type": "external-link-end-screen",
+    "startSeconds": 431.96666666666664,
+    "endSeconds": 441.96666666666664,
+    "status": "saved-reopened-verified",
+    "preserveMemberIdentity": true,
+    "callToAction": "방문하기",
+    "image": "YAMYAM logo",
+    "savedVerified": true
+  },
+  "pinnedComment": {
+    "path": "projects/buckshot-roulette-reverse-engineering/publishing/pinned-comment.ko.txt",
+    "url": "https://www.yamyamcoding.com/1430b1ff-a61e-8040-a542-d672d5d25328",
+    "status": "pending-video-publication",
+    "reason": "Private YouTube videos do not support comments. Keep private; post and pin only after comments become available.",
+    "commentId": null,
+    "pinnedVerified": false
+  },
+  "platformEvidence": {
+    "videoIdReportedByRoot": true,
+    "source": "Root directly observed YouTube Studio/player: private draft, HD1080p60 processing/playback, saved metadata/thumbnail, KO/EN manual subtitle settings, English metadata, reopened coaching card and end screen.",
+    "independentlyObservedByMetadataPreparer": false,
+    "observer": "root",
+    "recorder": "upload_metadata_v6 from root direct-observation handoff"
+  },
+  "alteredOrSyntheticContent": {
+    "selectedValue": true,
+    "status": "saved",
+    "basis": "Conservative synthetic narration and AI-assisted assets disclosure; root verified Yes saved. No specific AI model version claimed."
+  },
+  "processing": {"status": "HD-complete", "width": 1920, "height": 1080, "fps": 60, "watchPlayerQualitySelected": "1080p60", "verifiedBy": "root"},
+  "metadataSave": {"titleSavedExact": true, "descriptionSavedExact": true, "chaptersSaved": true, "paidPromotion": false, "madeForKids": false, "language": "ko", "category": "Education", "status": "saved-in-private-draft", "observer": "root"},
+  "playlist": {"id": "PLUU7_j2ihric", "name": "Planning & Game Design & Tech", "status": "saved", "actualUiObserved": true},
+  "automaticDubbing": {"status": "processing-not-reviewed", "languages": ["English (United States)", "Indonesian"], "playbackReviewed": false},
+  "adSelfCertificationAuthorization": {
+    "userMessage": "이번 영상은 네가 평가해줘",
+    "scope": "This REA video only; supersedes the prior user-owned ad-rating boundary for this upload.",
+    "laterUserMessage": "내가했어",
+    "submitted": true,
+    "submittedBy": "user",
+    "agentSubmitted": false,
+    "evidence": "Root observed locked Studio survey: 이미 평가를 제출하여 광고 적합성 설문지가 잠겼습니다. 해당사항없음 checked/disabled; ad-suitable result."
+  },
+  "monetization": {
+    "selectedSetting": "On",
+    "monetizationOnVerified": true,
+    "creatorSelfCertificationSubmitted": true,
+    "selfCertificationSubmittedBy": "user",
+    "agentSubmitted": false,
+    "adSuitability": "suitable",
+    "midrollEligible": false,
+    "evidence": "Root reopened Studio monetization: 수익창출방법 / 보기페이지광고및YouTubePremium / 사용, Save disabled. 7:22 video is not eligible for midroll. User-completed locked self-certification and automatic scans were verified separately."
+  },
+  "schedule": {
+    "authorized": true,
+    "active": true,
+    "saved": true,
+    "status": "saved-reopened-verified",
+    "publishAt": "2026-11-02T19:00:00+09:00",
+    "publishAtUtc": "2026-11-02T10:00:00Z",
+    "timezone": "Asia/Seoul",
+    "observedTimezoneLabel": "현지 GMT+0900",
+    "observedDate": "2026. 11. 2.",
+    "observedTime": "오후 7:00",
+    "observedVisibilityTransition": "비공개 → 공개",
+    "premiere": false,
+    "userEvidence": "예약도 다음영상 다음에 맞춰서 알아서 걸어줘 시간도 잘나오게",
+    "successDialog": "2026년 11월 2일 19:00에 동영상이 공개 상태로 설정됩니다.",
+    "readback": "Root closed the success dialog, reopened video details and the visibility editor: 예약됨, exact date/time/GMT+0900, Premiere unchecked, 완료 disabled.",
+    "evidence": [
+      {"path": "projects/buckshot-roulette-reverse-engineering/production/local/youtube-scheduled-v6.jpg", "sha256": "206045b153317cd46fb65e0a20e0ee1eb25c7706f42f9c30a856bff40c1fdde5"},
+      {"path": "projects/buckshot-roulette-reverse-engineering/production/local/youtube-schedule-readback-v6.jpg", "sha256": "2878d1d83a158cfed80e12cbee83afb13e2ddf8f2db7663f5006d93682f4cd4b"}
+    ],
+    "existingSchedulePreserved": [
+      {"videoId": "BXvC_LhdxjI", "date": "2026-10-31", "kind": "long-form"},
+      {"videoId": "w-MJVk5Cs2E", "date": "2026-11-01", "kind": "long-form"},
+      {"videoId": "ADm34SvWOak", "date": "2026-11-02", "time": "15:00", "kind": "Shorts"},
+      {"videoId": "5Mh41XkbGME", "date": "2026-11-04", "kind": "game-math-long-form"}
+    ],
+    "audienceEvidence": {"periodStart": "2026-10-02", "periodEnd": "2026-10-29", "observedWindow": "Monday 18:00–23:00 highest viewer-activity category", "chosenTime": "19:00", "performanceGuaranteed": false}
+  },
+  "openReviewItems": [
+    "Optional watch-player CC tracks were not yet available in the observed player; Studio manual KO/EN publication is verified and burned KO captions are visible.",
+    "Automatic English (US)/Indonesian dubbing is processing and has not been reviewed.",
+    "Prepared pinned comment remains pending publication and comment availability."
+  ]
+}
