@@ -390,3 +390,35 @@ Studio 확인: 비공개 20개 = 본편 17편 + 이전 버전 3개. 공개본과
 
 기존 10/31·11/1 롱폼 뒤, 11/4 수학 강의 앞의 11/2 19:00으로 예약했고 같은 날15:00 쇼츠를 포함한 다른 일정은 변경하지 않았다. Studio 시청자 활동(10/2–10/29)의 월요일18–23시 구간을 참고했으며 성과를 보장하지 않는다. 자동 저작권·광고 적합성 검사 문제 없음, 사용자가 직접 제출한 광고 자가평가와 수익창출 사용 상태를 별도 확인했다. 선택형 CC는 플레이어 전파 대기, 자동 영어(미국)·인도네시아어 더빙은 처리 중·미검수, 고정댓글은 공개 후 등록 대기다. [실제 설정·증거 원장](../projects/buckshot-roulette-reverse-engineering/publishing/youtube-upload.json).
 <!-- BUCKSHOT-RE-SETUP-20261028-END -->
+
+<!-- ANIMATION-PLAN-20261031-START -->
+## 게임 애니메이션 18편 기획 · 제작 미선택
+
+2026-10-31: 원본 [G: Animation]의 18개 주제를 원래 순서로 정리했습니다. 아래 제목은 초안이며 **18편 모두 제작·검수·업로드 미시작, 제작 승인 없음**입니다. 기존 통합 작업 순서·실행 승인·예약은 유지합니다.
+
+우리 채널 재생목록: [게임 애니메이션  /  움직임과 타격감의 비밀](https://www.youtube.com/playlist?list=PLCyia-2FS2wE) · 비공개 · 0편 · 수동 정렬. 원본 영상은 넣지 않았습니다.
+
+| 번호 | 주제·원본 참고 | 우리 영상 제목 초안 | 제작·검수·업로드 |
+|---|---|---|---|
+| A01 | [애니메이션 제작 지시](https://www.youtube.com/watch?v=fV8xIP480qk) | “멋지게 움직여 주세요”로는 원하는 동작이 안 나오는 이유 | 미시작 · 제작 미선택 |
+| A02 | [동작의 과장](https://www.youtube.com/watch?v=zNBKzLzDKtM) | 게임 캐릭터는 왜 현실보다 과장되게 움직일까? | 미시작 · 제작 미선택 |
+| A03 | [공격 동작의 단계](https://www.youtube.com/watch?v=LewXWM7HDd8) | 칼 한 번 휘두르는 동작에 세 단계가 필요한 이유 | 미시작 · 제작 미선택 |
+| A04 | [빠르고 강한 준비 동작](https://www.youtube.com/watch?v=E8DKndKkHw8) | 빠른 공격인데, 왜 준비 동작이 필요할까? | 미시작 · 제작 미선택 |
+| A05 | [공격 자세](https://www.youtube.com/watch?v=99gdMDF7V2E) | 같은 공격인데 왜 어떤 자세가 더 세게 느껴질까? | 미시작 · 제작 미선택 |
+| A06 | [공격 이후의 후속 동작](https://www.youtube.com/watch?v=cIB0BUe6Ihk) | 공격이 끝난 뒤의 동작이 타격감을 만드는 이유 | 미시작 · 제작 미선택 |
+| A07 | [정보 손실을 보완하는 과장](https://www.youtube.com/watch?v=Ivwt37x-2EU) | 잘 만든 동작이 화면에선 안 보이는 이유 | 미시작 · 제작 미선택 |
+| A08 | [포즈 만들기](https://www.youtube.com/watch?v=LsSF_H-W-w8) | 캐릭터 포즈가 어색할 때, 피규어를 꺼내는 이유 | 미시작 · 제작 미선택 |
+| A09 | [압축·크기 변화](https://www.youtube.com/watch?v=Sm0LAm4sJKc) | 캐릭터를 눌렀다 늘리면 왜 더 생동감이 날까? | 미시작 · 제작 미선택 |
+| A10 | [피격 애니메이션](https://www.youtube.com/watch?v=0xHE3ypX96U) | 맞는 순간의 반응이 타격감을 결정하는 이유 | 미시작 · 제작 미선택 |
+| A11 | [보간의 함정](https://www.youtube.com/watch?v=oFwamE6Hy04) | 자세도 타이밍도 맞는데, 동작이 느려 보이는 이유 | 미시작 · 제작 미선택 |
+| A12 | [표정 애니메이션](https://www.youtube.com/watch?v=TUHL7Ex-RH8) | 같은 캐릭터가 표정 하나로 달라지는 이유 | 미시작 · 제작 미선택 |
+| A13 | [좌우 반전 애니메이션](https://www.youtube.com/watch?v=TJDMDxnWU5g) | 방향을 바꿔도 캐릭터 얼굴이 잘 보이는 비밀 | 미시작 · 제작 미선택 |
+| A14 | [애니메이션 블렌딩](https://www.youtube.com/watch?v=HYHajZ0wBfU) | 서로 다른 두 동작을 자연스럽게 잇는 방법 | 미시작 · 제작 미선택 |
+| A15 | [손가락 표현](https://www.youtube.com/watch?v=nCvdmQKrjf8) | 게임 속 손가락은 작지만 만들기 어려운 이유 | 미시작 · 제작 미선택 |
+| A16 | [공격 판정과 동작 설계](https://www.youtube.com/watch?v=rwwF_4blK-o) | 칼이 닿았는데 왜 안 맞을까? — 공격 판정과 애니메이션 | 미시작 · 제작 미선택 |
+| A17 | [스켈레톤의 표현 한계](https://www.youtube.com/watch?v=q77TZaISg1Y) | 캐릭터의 뼈대만으로는 만들 수 없는 움직임 | 미시작 · 제작 미선택 |
+| A18 | [두 축 회전](https://www.youtube.com/watch?v=Mh7nTn9_r40) | 회전축 하나만 더하면 움직임이 달라지는 이유 | 미시작 · 제작 미선택 |
+
+근거: [18편 기획·제목 범위](../production/planning/sakurai-animation-20261031/plan.json), [원본 목록 확인](../production/planning/sakurai-animation-20261031/evidence/source-playlist-observed.json). 전체 강의 내용과 독립 게임 자료를 확인한 뒤 선택된 편의 제목을 확정합니다. 원본 강의는 연구 참고용입니다.
+
+<!-- ANIMATION-PLAN-20261031-END -->
