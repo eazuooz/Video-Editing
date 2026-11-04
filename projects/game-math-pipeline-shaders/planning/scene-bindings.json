@@ -1,0 +1,3068 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-04T20:32:55.251542+00:00",
+  "status": "complete-design-awaiting-actual-speech-and-visual-QA",
+  "sourceNarrationSha256": "3427ea2dc9d140fc95ba6065ad860647309a8efb31205d9df100ac7f048e3b76",
+  "allBodyParagraphsRetained": true,
+  "pendingImplementationBeatCount": 0,
+  "actualNativeGameParts": 4,
+  "humanViewed": false,
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M23-001",
+      "speech": "타운스케이퍼에서 건물을 더하고 화면을 돌리면, 지붕의 위치와 서로 가리는 모양이 계속 달라집니다. 컴퓨터는 이 삼차원 변화를 어떻게 한 장의 화면으로 만들까요? 정점이 화면에 놓이는 길을 따라가며, 앞뒤를 가르는 깊이와 표면의 색을 만드는 셰이더를 연결해 보겠습니다. 먼저 건물과 카메라의 정보가 화면까지 전달되는 전체 흐름부터 보죠.",
+      "sourceParagraphs": [
+        "S110-P002",
+        "S110-P003",
+        "S110-P004"
+      ],
+      "renderer": "Unity",
+      "classification": "actual-game-thesis-abstract-with-explanation-handoff",
+      "shot": {
+        "beatId": "M23-001",
+        "beatIndex": 2,
+        "englishTerm": "Graphics Pipeline",
+        "koreanTerm": "그래픽스 파이프라인",
+        "meaning": "정점과 재질이 화면의 색이 되는 흐름",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses",
+      "actualGamePart": {
+        "beat": "M23-001",
+        "sceneId": "000",
+        "candidate": "M23-G01-building-to-picture",
+        "sourceId": "FRfnXAIbA-M",
+        "game": "Townscaper",
+        "sourceIn": 100,
+        "sourceOut": 124,
+        "sourceFile": "shared/output/game-math-part2-full-series/sources/FRfnXAIbA-M.mp4",
+        "sourceSha256": "9b9c5dfb4a9eb129407b2b5e55968f6b36bc1cbf7b35be471c448a8982ae31cd",
+        "recordingUrl": "https://www.youtube.com/watch?v=FRfnXAIbA-M",
+        "decodedSize": [
+          2560,
+          1440
+        ],
+        "nativeFps": "60000/1001",
+        "playbackRate": 1,
+        "hold": 0,
+        "loop": false,
+        "freezePadding": false,
+        "role": "Actual-game thesis abstract:3Dconstruction/viewpoint to changing2Dimage",
+        "observed": {
+          "before": "Small coloured town viewed from above.",
+          "action": "Player adds/removes architectural pieces, rotates view and zooms.",
+          "result": "Roof/arch positions, overlapping silhouettes and visible colours change on screen."
+        },
+        "claimLimits": [
+          "This is a visible application example, not evidence of CPU draw-call order, HLSL implementation or GPU timings.",
+          "Brief pointer travel and construction are native actions; no loops/holds."
+        ],
+        "annotationPlan": {
+          "target": "Pick one newly raised roof and its2Doutline; no claimed actual triangle mesh/wireframe.",
+          "style": "Short open contours / paired labels on real observed objects; progressive reveal with narration",
+          "tracking": "Track visible edges; hide at occlusion/out-of-frame; clear on cut. Do not draw made-up GPU buffers over the game.",
+          "captionClearance": "Preserve native game HUD/menus and fixed bottom-centre captions. Inspect at1080p and375px after compositing."
+        },
+        "reviewEvidence": "projects/game-math-pipeline-shaders/production/local/footage-review/town-pipeline-fine/sampling.json",
+        "nativeDecodeEvidence": {
+          "segment": "M23-G01-building-to-picture",
+          "source": "FRfnXAIbA-M",
+          "sourceIn": 100,
+          "sourceOut": 124,
+          "decodeExitCode": 0,
+          "decodeErrors": "",
+          "nativeFrameExitCode": 0,
+          "nativeFrameSeconds": 112.0,
+          "nativeFrame": "projects/game-math-pipeline-shaders/production/local/footage-review/native-decode/M23-G01-building-to-picture.png",
+          "decodedImageSize": [
+            2560,
+            1440
+          ],
+          "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+        },
+        "speechTarget": {
+          "prefixKo": "타운스케이퍼에서 건물을 더하고 화면을 돌리면",
+          "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+        },
+        "handoffToExplanation": "Our fixed scene shows conceptual pipeline; actual internal Townscaper buffers remain unknown.",
+        "audio": {
+          "originalVideoHasAudio": false,
+          "listenStatus": "original AAC recovered; actual listening and music identification pending",
+          "plan": "Do not synthesize fake game sounds. Retain verified original game audio after music check; no added lecture BGM.",
+          "recoveredOriginalAudio": "projects/game-math-shading-lights/production/local/footage-review/townscaper-original-audio.m4a"
+        },
+        "fullOriginalAudioIn": 100,
+        "fullOriginalAudioOut": 124,
+        "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+      }
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M23-002",
+      "speech": "이 과정을 그래픽스 파이프라인이라고 부릅니다. 공장에서 재료가 공정을 거치듯, 정점과 텍스처가 여러 계산을 거쳐 이미지가 되는 거예요. 여기서는 삼각형을 화면에 채우는 기본 래스터화 흐름을 따라갑니다. 실제 엔진은 여러 작업을 병렬로 하거나 순서를 바꾸지만, 각 단계가 어떤 데이터를 필요로 하는지는 이 흐름으로 이해할 수 있습니다.",
+      "sourceParagraphs": [
+        "S110-P003",
+        "S110-P004"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-002",
+        "beatIndex": 2,
+        "englishTerm": "Graphics Pipeline",
+        "koreanTerm": "그래픽스 파이프라인",
+        "meaning": "정점과 재질이 화면의 색이 되는 흐름",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "정점과 텍스처가",
+          "position": 0,
+          "character": 44
+        },
+        {
+          "phrase": "삼각형을 화면에",
+          "position": 0.3333333333333333,
+          "character": 81
+        },
+        {
+          "phrase": "각 단계가",
+          "position": 0.6666666666666666,
+          "character": 145
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M23-003",
+      "speech": "먼저 카메라의 위치와 방향, 화면에서 그릴 영역을 정합니다. 조명과 안개 같은 장면 설정도 준비하죠. 다음에는 카메라에 보일 가능성이 있는 물체만 추립니다. 방 밖에 있어 보이지 않는 물체까지 모두 세밀하게 그리면, 화면에 아무 변화도 주지 못하는 계산이 늘어나기 때문입니다.",
+      "sourceParagraphs": [
+        "S110-P006",
+        "S110-P007",
+        "S110-P009",
+        "S110-P010",
+        "S110-P011",
+        "S110-P012",
+        "S110-P013"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-003",
+        "beatIndex": 3,
+        "englishTerm": "Potential Visibility",
+        "koreanTerm": "잠재적 가시성",
+        "meaning": "카메라에 보일 수 있는 물체를 추립니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "카메라의 위치와 방향",
+          "position": 0,
+          "character": 3
+        },
+        {
+          "phrase": "보일 가능성이 있는",
+          "position": 1,
+          "character": 67
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M23-004",
+      "speech": "그릴 후보가 정해지면 물체의 재질을 고릅니다. 어떤 텍스처와 셰이더로 표면을 표현할지 정하는 단계예요. 이어서 정점과 삼각형을 그래픽스 API에 전달합니다. 멀리 있는 물체라면 더 단순한 메시를 고를 수도 있습니다. 이것이 상세 수준, 엘오디를 선택하는 일이죠. 이제 무엇을 어디에 그릴지 계산할 재료가 갖춰졌습니다.",
+      "sourceParagraphs": [
+        "S110-P007",
+        "S110-P014",
+        "S110-P015"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-004",
+        "beatIndex": 4,
+        "englishTerm": "Material / Level of Detail",
+        "koreanTerm": "재질과 상세 수준",
+        "meaning": "그릴 표면과 기하의 정밀도를 선택합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "재질을 고릅니다",
+          "position": 0,
+          "character": 16
+        },
+        {
+          "phrase": "이어서 정점과 삼각형",
+          "position": 0.3333333333333333,
+          "character": 58
+        },
+        {
+          "phrase": "더 단순한 메시를",
+          "position": 0.6666666666666666,
+          "character": 99
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M23-005",
+      "speech": "정점 셰이더는 각 꼭짓점의 위치를 바꾸고, 색 계산에 필요한 정보도 준비합니다. 다음에는 화면 밖으로 나간 부분을 자르고, 그릴 필요 없는 뒷면을 걸러냅니다. 남은 삼각형이 화면의 어느 픽셀을 덮는지 찾는 과정이 래스터화입니다. 픽셀 셰이더는 이렇게 전달받은 위치와 재질, 조명으로 색을 계산합니다.",
+      "sourceParagraphs": [
+        "S110-P007",
+        "S110-P016",
+        "S110-P017",
+        "S110-P018",
+        "S110-P019",
+        "S110-P020",
+        "S110-P021",
+        "S110-P022",
+        "S110-P023"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-005",
+        "beatIndex": 5,
+        "englishTerm": "Vertex / Triangle / Pixel",
+        "koreanTerm": "정점·삼각형·픽셀",
+        "meaning": "계산의 단위가 차례로 바뀝니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "정점 셰이더는",
+          "position": 0,
+          "character": 0
+        },
+        {
+          "phrase": "다음에는 화면 밖",
+          "position": 0.3333333333333333,
+          "character": 45
+        },
+        {
+          "phrase": "픽셀 셰이더는",
+          "position": 0.6666666666666666,
+          "character": 128
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M23-006",
+      "speech": "색을 계산했다고 바로 화면에 남는 것은 아닙니다. 같은 위치에 더 가까운 물체가 있으면 가려지고, 잎사귀 텍스처의 빈 부분처럼 버려야 할 영역도 있습니다. 살아남은 결과를 기존 색과 섞거나 덮어쓴 뒤 저장합니다. 물체, 정점, 삼각형, 픽셀로 처리 단위가 바뀐다는 점을 기억해 두세요. 이어서 이 과정이 사용하는 저장 공간부터 살펴보겠습니다.",
+      "sourceParagraphs": [
+        "S110-P007",
+        "S110-P024",
+        "S110-P025",
+        "S110-P026",
+        "S110-P027",
+        "S110-P028",
+        "S110-P029",
+        "S110-P030",
+        "S110-P054",
+        "S110-P055",
+        "S110-P056",
+        "S110-P008"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-006",
+        "beatIndex": 6,
+        "englishTerm": "Output Merger",
+        "koreanTerm": "출력 병합",
+        "meaning": "깊이와 알파 조건을 통과한 색을 저장합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "색을 계산했다고",
+          "position": 0.6666666666666666,
+          "character": 0
+        },
+        {
+          "phrase": "살아남은 결과를",
+          "position": 0.95,
+          "character": 87
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M23-007",
+      "speech": "이 모든 단계를 게임 코드가 직접 픽셀마다 반복하는 것은 아닙니다. 게임은 데이터와 설정을 준비하고, API를 통해 GPU에 작업을 전달합니다. 개발자는 셰이더로 정점과 픽셀의 계산을 지정하죠. 어떤 부분을 하드웨어에 맡길지는 환경마다 달라도, 보이지 않는 계산을 줄이고 CPU와 GPU가 서로 기다리는 시간을 줄이는 원칙은 같습니다.",
+      "sourceParagraphs": [
+        "S110-P031",
+        "S110-P032",
+        "S110-P033",
+        "S110-P034",
+        "S110-P035",
+        "S110-P036",
+        "S110-P037",
+        "S110-P038",
+        "S110-P039",
+        "S110-P040",
+        "S110-P041"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-007",
+        "beatIndex": 7,
+        "englishTerm": "Graphics API",
+        "koreanTerm": "그래픽스 API",
+        "meaning": "게임이 GPU에 데이터와 작업을 전달하는 약속",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "게임은 데이터와",
+          "position": 0,
+          "character": 38
+        },
+        {
+          "phrase": "API를 통해",
+          "position": 0.3333333333333333,
+          "character": 57
+        },
+        {
+          "phrase": "개발자는 셰이더로",
+          "position": 0.6666666666666666,
+          "character": 81
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M23-008",
+      "speech": "이렇게 만들어지는 색은 프레임 버퍼에 저장됩니다. 화면의 각 위치에 빨강, 초록, 파랑 같은 값을 적어 놓는 메모리라고 생각하면 됩니다. 색의 저장 형식은 여러 가지지만, 여기서는 완성할 그림을 적는 공간이라는 점이 중요합니다. 그런데 모니터가 읽는 그림에 동시에 새 그림을 덧그리면 어떤 일이 생길까요?",
+      "sourceParagraphs": [
+        "S110-P042",
+        "S110-P043",
+        "S110-P044",
+        "S110-P045"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-008",
+        "beatIndex": 8,
+        "englishTerm": "Frame Buffer",
+        "koreanTerm": "프레임 버퍼",
+        "meaning": "완성할 화면의 색을 적는 공간",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M23-009",
+      "speech": "그래서 표시할 그림과 만드는 그림을 나눕니다. 프런트 버퍼에는 보여 주는 그림을, 백 버퍼에는 다음 그림을 준비하죠. 다 그린 뒤 두 버퍼의 역할을 바꾸거나, 완성된 내용을 복사해 표시합니다. 이처럼 결과를 표시하도록 넘기는 동작을 프레젠트라고 합니다. 실제 시스템에는 더 많은 버퍼와 표시 동기화가 있지만, 핵심은 완성되지 않은 그림을 만드는 작업과 보여 주는 작업을 분리하는 것입니다.",
+      "sourceParagraphs": [
+        "S110-P046",
+        "S110-P047",
+        "S110-P048",
+        "S110-P049",
+        "S110-P050"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-009",
+        "beatIndex": 9,
+        "englishTerm": "Front / Back Buffer",
+        "koreanTerm": "앞 버퍼와 뒤 버퍼",
+        "meaning": "읽는 그림과 만드는 그림의 역할을 나눕니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "프런트 버퍼에는",
+          "position": 0,
+          "character": 26
+        },
+        {
+          "phrase": "다 그린 뒤",
+          "position": 0.5,
+          "character": 66
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M23-010",
+      "speech": "포털에서 큐브를 들어 옮기면, 가까운 큐브가 뒤쪽 발판과 벽의 일부를 가립니다. 같은 화면 자리에 여러 표면이 겹칠 때, 어느 표면을 남겨야 할지 결정해야 하는 거죠. 색 옆에는 깊이 버퍼도 있습니다. 같은 화면 위치에 여러 삼각형이 겹칠 때 어느 것이 앞인지 기억하는 공간이에요. 가까울수록 작은 값을 쓰는 예를 들어 보죠. 기존 깊이가 영 점 칠이고 새 값이 영 점 삼이면 새 표면이 더 가깝습니다. 색과 깊이를 갱신합니다. 그다음 영 점 팔이 들어오면 뒤에 있으므로 버립니다.",
+      "sourceParagraphs": [
+        "S110-P051",
+        "S110-P052"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-010",
+        "beatIndex": 10,
+        "englishTerm": "Depth Buffer",
+        "koreanTerm": "깊이 버퍼",
+        "meaning": "같은 화면 위치에서 가까운 표면을 남깁니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "기존 깊이가",
+          "position": 0,
+          "character": 183
+        },
+        {
+          "phrase": "새 값이 영 점 삼이면",
+          "position": 0.3333333333333333,
+          "character": 198
+        },
+        {
+          "phrase": "영 점 팔이 들어오면",
+          "position": 0.6666666666666666,
+          "character": 244
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses",
+      "actualGamePart": {
+        "beat": "M23-010",
+        "sceneId": "009",
+        "candidate": "M23-G02-opaque-depth",
+        "sourceId": "AmJ4orxVpss",
+        "game": "Portal",
+        "sourceIn": 445,
+        "sourceOut": 461,
+        "sourceFile": "projects/shorts-portal-teleport-momentum/production/local/gameplay.mp4",
+        "sourceSha256": "6330517c76705fb9b48ff093a78a660ade728d2d50faf4f06a8e3a4ebe409d81",
+        "recordingUrl": "https://www.youtube.com/watch?v=AmJ4orxVpss",
+        "decodedSize": [
+          1920,
+          1080
+        ],
+        "nativeFps": "60/1",
+        "playbackRate": 1,
+        "hold": 0,
+        "loop": false,
+        "freezePadding": false,
+        "role": "Occlusion before numeric depth test",
+        "observed": {
+          "before": "Cube lies in the test chamber before the player.",
+          "action": "Player picks it up and carries it across moving platforms.",
+          "result": "The nearer cube covers portions of farther platforms and walls while those remain visible around its edges."
+        },
+        "claimLimits": [
+          "Pixels demonstrate occlusion, not the exact depth-buffer format, early-Z order or triangle submission order.",
+          "Portal window rendering itself is not the lesson here; do not claim portals are alpha blending."
+        ],
+        "annotationPlan": {
+          "target": "Cube contour and one farther platform edge; use near/far text without fabricated depth numbers.",
+          "style": "Short open contours / paired labels on real observed objects; progressive reveal with narration",
+          "tracking": "Track visible edges; hide at occlusion/out-of-frame; clear on cut. Do not draw made-up GPU buffers over the game.",
+          "captionClearance": "Preserve native game HUD/menus and fixed bottom-centre captions. Inspect at1080p and375px after compositing."
+        },
+        "reviewEvidence": "projects/game-math-pipeline-shaders/production/local/footage-review/portal-carry-fine/sampling.json",
+        "nativeDecodeEvidence": {
+          "segment": "M23-G02-opaque-depth",
+          "source": "AmJ4orxVpss",
+          "sourceIn": 445,
+          "sourceOut": 461,
+          "decodeExitCode": 0,
+          "decodeErrors": "",
+          "nativeFrameExitCode": 0,
+          "nativeFrameSeconds": 453.0,
+          "nativeFrame": "projects/game-math-pipeline-shaders/production/local/footage-review/native-decode/M23-G02-opaque-depth.png",
+          "decodedImageSize": [
+            1920,
+            1080
+          ],
+          "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+        },
+        "speechTarget": {
+          "prefixKo": "포털에서 큐브를 들어 옮기면",
+          "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+        },
+        "handoffToExplanation": "Move to our0.7/0.3/0.8depth calculation; never draw those numbers as measured Portal values.",
+        "audio": {
+          "nativeAudioPresent": false,
+          "separateFullOriginalAudio": "projects/game-math-pipeline-shaders/production/local/footage-review/portal-original-audio.m4a",
+          "fullOriginalAudioOffsetForLocalVideo": 450,
+          "separateFileExists": true,
+          "actualListening": "pending",
+          "newLectureBgm": false,
+          "sha256": "2fcbd174b168a64b4c6091f579a6640fbfb993a9a10a87bc72ee0b3250783189"
+        },
+        "fullOriginalAudioIn": 895,
+        "fullOriginalAudioOut": 911,
+        "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+      }
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M23-011",
+      "speech": "이 숫자를 미터 단위 거리나 클립 좌표의 제트 그대로라고 생각하면 안 됩니다. 원근 나눗셈의 제트 나누기 더블유를 거쳐 깊이 범위에 매핑한 값이 쓰입니다. 가까운 곳이 영, 먼 곳이 일인 방식에서는 일로 지우고 작은 쪽을 통과시키는 구성이 흔합니다. 반대로 먼 곳을 영으로 두는 리버스 제트도 있습니다. 초기값과 비교 방향은 반드시 한 쌍으로 맞춰야 합니다.",
+      "sourceParagraphs": [
+        "S110-P053",
+        "S110-P057",
+        "S110-P058"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-011",
+        "beatIndex": 11,
+        "englishTerm": "Depth Convention",
+        "koreanTerm": "깊이 범위와 비교",
+        "meaning": "z / w를 저장 규칙에 맞춰 비교합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "가까운 곳이 영",
+          "position": 0,
+          "character": 87
+        },
+        {
+          "phrase": "반대로 먼 곳을",
+          "position": 0.5,
+          "character": 140
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M23-012",
+      "speech": "이제 저장 공간이 준비됐으니 입력을 채워 보겠습니다. 먼저 사용할 셰이더, 텍스처, 변환 행렬, 광원 값을 설정합니다. 이것이 렌더링 상태 또는 문맥입니다. 같은 물체의 모든 정점에 공통인 행렬은 상수로 전달하고, 정점마다 다른 위치는 정점 데이터로 전달합니다. 같은 값을 정점마다 복사하지 않아도 되는 이유가 여기 있습니다.",
+      "sourceParagraphs": [
+        "S110-P059",
+        "S110-P060",
+        "S110-P061",
+        "S110-P062",
+        "S110-P063",
+        "S110-P064",
+        "S110-P065"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-012",
+        "beatIndex": 12,
+        "englishTerm": "Rendering Context",
+        "koreanTerm": "렌더링 상태",
+        "meaning": "이번 그리기의 공통 계산 조건",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M23-013",
+      "speech": "정점에 무엇을 넣을지는 그리려는 표면에 달려 있습니다. 위치는 어디에 놓을지, 유브이는 텍스처의 어디를 읽을지 알려 줍니다. 법선은 표면이 향하는 방향이고, 정점 색은 색이나 혼합 비율을 줄 수 있죠. 접선 기저는 노멀 맵 속 방향을 해석할 좌표축입니다. 뼈로 움직이는 물체에는 본 번호와 가중치도 필요합니다.",
+      "sourceParagraphs": [
+        "S110-P066",
+        "S110-P067",
+        "S110-P068"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-013",
+        "beatIndex": 13,
+        "englishTerm": "Vertex Attributes",
+        "koreanTerm": "정점 속성",
+        "meaning": "꼭짓점의 위치와 표면 정보를 함께 저장합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M23-014",
+      "speech": "기본 메시에는 위치, 법선, 유브이를 넣어 봅시다. 여기에 접선 공간 노멀 매핑을 더하려면 접선과 좌우 방향을 나타내는 부호도 전달할 수 있습니다. 법선과 접선의 외적에 그 부호를 곱하면 나머지 축을 만들 수 있었죠. 이 예제는 그 방법을 쓰는 형식입니다. 다른 방식으로 접선을 계산하는 구현도 있으므로, 이 저장 형식만 가능한 것은 아닙니다.",
+      "sourceParagraphs": [
+        "S110-P069",
+        "S110-P070",
+        "S110-P071",
+        "S110-P072"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-014",
+        "beatIndex": 14,
+        "englishTerm": "Tangent Frame",
+        "koreanTerm": "접선 기저",
+        "meaning": "표면의 두 방향과 바깥 방향을 연결합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M23-015",
+      "speech": "반대로 체력 표시나 글자처럼 조명을 계산하지 않는 화면 요소는 법선이 필요하지 않을 수 있습니다. 화면 위치와 색, 유브이만으로도 충분하죠. 불꽃이나 디버그 표식도 위치는 삼차원이지만, 조명 계산 없이 지정한 색을 출력할 수 있습니다. 정점 형식은 물체가 삼차원인지보다 어떤 계산에 쓸지를 따라 정하는 겁니다.",
+      "sourceParagraphs": [
+        "S110-P073",
+        "S110-P074",
+        "S110-P075",
+        "S110-P076"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-015",
+        "beatIndex": 15,
+        "englishTerm": "Vertex Format",
+        "koreanTerm": "정점 형식",
+        "meaning": "실제로 필요한 속성만 구성합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M23-016",
+      "speech": "라이트맵을 읽는 표면에는 텍스처용 유브이와 구워 놓은 조명용 유브이를 따로 둘 수 있습니다. 이때 접선 기저는 라이트맵 자체 때문이 아니라 함께 사용하는 노멀 매핑에 필요합니다. 스키닝 형식에는 본 번호와 가중치를 더합니다. 네 개를 저장하는 예제를 쓰겠지만, 네 개가 모든 엔진의 고정 한계라는 뜻은 아닙니다.",
+      "sourceParagraphs": [
+        "S110-P077",
+        "S110-P078",
+        "S110-P079",
+        "S110-P080",
+        "S110-P085",
+        "S110-P086"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-016",
+        "beatIndex": 16,
+        "englishTerm": "Texture Coordinates / Skin Weights",
+        "koreanTerm": "텍스처 좌표와 본 가중치",
+        "meaning": "서로 다른 계산을 위한 입력을 구분합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M23-017",
+      "speech": "이제 데이터가 많아졌습니다. 한 정점의 속성을 묶어 차례로 저장하면 구조체의 배열, 에이오에스입니다. 위치끼리, 법선끼리 모으면 배열의 구조체, 에스오에이죠. 없는 속성의 배열은 생략할 수 있습니다. 하나의 메모리 덩어리를 쓸 때는 다음 정점까지의 간격인 스트라이드와 필드의 시작 위치인 오프셋으로 값을 찾습니다. 어느 배치가 빠른지는 실제 접근 방식과 하드웨어에서 확인해야 합니다.",
+      "sourceParagraphs": [
+        "S110-P081",
+        "S110-P082",
+        "S110-P083",
+        "S110-P084"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-017",
+        "beatIndex": 17,
+        "englishTerm": "Array of Structures / Structure of Arrays",
+        "koreanTerm": "AoS와 SoA",
+        "meaning": "같은 데이터를 묶는 순서를 바꿉니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "구조체의 배열",
+          "position": 0,
+          "character": 38
+        },
+        {
+          "phrase": "배열의 구조체",
+          "position": 0.5,
+          "character": 72
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M23-018",
+      "speech": "입력을 받은 정점 셰이더는 두 가지 결과를 준비합니다. 화면으로 보낼 클립 위치와, 픽셀 셰이더가 사용할 정보입니다. 위치 변환과 스키닝뿐 아니라 법선을 다른 공간으로 옮기거나, 광원 방향과 안개 값, 투영 텍스처 좌표를 계산할 수 있습니다. 이미 올바른 값은 그대로 전달하면 됩니다. 구로 셰이딩이라면 조명 결과 자체를 여기서 계산합니다.",
+      "sourceParagraphs": [
+        "S110-P087",
+        "S110-P088",
+        "S110-P089",
+        "S110-P090",
+        "S110-P091",
+        "S110-P092"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-018",
+        "beatIndex": 18,
+        "englishTerm": "Vertex Shader",
+        "koreanTerm": "정점 셰이더",
+        "meaning": "정점 위치와 다음 단계의 속성을 준비합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "클립 위치와",
+          "position": 0,
+          "character": 39
+        },
+        {
+          "phrase": "위치 변환과",
+          "position": 0.25,
+          "character": 66
+        },
+        {
+          "phrase": "법선을 다른 공간으로",
+          "position": 0.5,
+          "character": 82
+        },
+        {
+          "phrase": "그대로 전달하면",
+          "position": 0.75,
+          "character": 146
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M23-019",
+      "speech": "위치 변환을 한 정점으로 따라가 보죠. 모델 좌표의 점을 월드에 놓고, 카메라 기준으로 바꾼 뒤, 투영에 사용할 클립 좌표로 옮깁니다. 행벡터 표기에서는 점 오른쪽에 모델, 뷰, 투영 행렬을 순서대로 곱합니다. 이 세 행렬의 곱을 미리 만들면 정점마다 합성 행렬 한 번만 곱할 수 있습니다. 곱셈 순서와 메모리 저장 순서는 서로 다른 개념입니다.",
+      "sourceParagraphs": [
+        "S110-P093",
+        "S110-P094",
+        "S110-P095",
+        "S110-P096",
+        "S110-P097"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-019",
+        "beatIndex": 19,
+        "englishTerm": "Model / View / Projection",
+        "koreanTerm": "모델·뷰·투영 변환",
+        "meaning": "물체 좌표를 화면 계산의 좌표로 옮깁니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "모델 좌표의 점을",
+          "position": 0,
+          "character": 22
+        },
+        {
+          "phrase": "월드에 놓고",
+          "position": 0.25,
+          "character": 32
+        },
+        {
+          "phrase": "카메라 기준으로",
+          "position": 0.5,
+          "character": 40
+        },
+        {
+          "phrase": "클립 좌표로",
+          "position": 0.75,
+          "character": 63
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M23-020",
+      "speech": "클립 좌표를 얻으면 바로 더블유로 나누기 전에 시야 바깥 부분을 처리합니다. 화면을 가로지르는 삼각형을 통째로 버리면 보이는 부분까지 사라지니까, 경계에서 잘라 남깁니다. 다이렉트삼디의 기본 규약에서는 가로와 세로가 마이너스 더블유부터 더블유, 깊이는 영부터 더블유 사이인지 검사합니다. 오픈지엘의 기본 깊이 규약은 다르므로 구분해야 합니다.",
+      "sourceParagraphs": [
+        "S110-P098",
+        "S110-P099",
+        "S110-P100",
+        "S110-P101"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-020",
+        "beatIndex": 20,
+        "englishTerm": "Homogeneous Clipping",
+        "koreanTerm": "동차좌표 클리핑",
+        "meaning": "원근 나눗셈 전에 경계 밖을 자릅니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M23-021",
+      "speech": "서덜랜드–호지먼 알고리즘은 여러 경계를 한꺼번에 풀지 않고 평면 하나씩 처리합니다. 변의 시작점과 끝점이 안에 있는지 보세요. 둘 다 안이면 시작점을 남기고, 둘 다 밖이면 남기지 않습니다. 밖에서 안으로 들어오면 교점을, 안에서 밖으로 나가면 시작점과 교점을 남깁니다. 이 규칙으로 둘레를 한 바퀴 돌면 잘린 다각형의 새 정점 목록이 됩니다.",
+      "sourceParagraphs": [
+        "S110-P101",
+        "S110-P102",
+        "S110-P103",
+        "S110-P104"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-021",
+        "beatIndex": 21,
+        "englishTerm": "Sutherland–Hodgman",
+        "koreanTerm": "서덜랜드–호지먼 클리핑",
+        "meaning": "변마다 안과 밖을 판별해 새 다각형을 만듭니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "둘 다 안이면",
+          "position": 0,
+          "character": 71
+        },
+        {
+          "phrase": "둘 다 밖이면",
+          "position": 0.25,
+          "character": 89
+        },
+        {
+          "phrase": "밖에서 안으로",
+          "position": 0.5,
+          "character": 107
+        },
+        {
+          "phrase": "안에서 밖으로",
+          "position": 0.75,
+          "character": 125
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M23-022",
+      "speech": "경계가 엑스는 일 이하라고 해 봅시다. 변이 영에서 이로 가면 경계를 절반 지점에서 만나므로 교점은 일입니다. 각 변을 처리해 정점을 차례로 모으면, 마지막 점과 첫 점은 자동으로 이어집니다. 변을 따로 출력하는 게 아니라 정점 목록을 만드는 거예요. 실제 구현은 중복 점과 경계에 딱 닿는 경우도 처리해야 하며, 유효한 면적이 사라진 결과는 그리지 않습니다.",
+      "sourceParagraphs": [
+        "S110-P105",
+        "S110-P106",
+        "S110-P109",
+        "S110-P110"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-022",
+        "beatIndex": 22,
+        "englishTerm": "Edge Intersection",
+        "koreanTerm": "변의 교차점",
+        "meaning": "위치와 속성을 같은 비율로 나눕니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M23-023",
+      "speech": "다만 화면 밖 부분을 모두 삼차원에서 자르는 것이 항상 효율적인 것은 아닙니다. 화면의 사각 영역 밖 샘플을 버리는 시저 테스트도 쓸 수 있습니다. 가드 밴드는 화면보다 넓은 허용 영역을 두어 일부 기하 클리핑을 줄이는 방법입니다. 이것은 근평면이나 더블유 조건을 무시해도 된다는 뜻이 아니라, 어떤 경계 처리를 어느 단계에서 할지 선택하는 최적화입니다.",
+      "sourceParagraphs": [
+        "S110-P107",
+        "S110-P108"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-023",
+        "beatIndex": 23,
+        "englishTerm": "Scissor / Guard Band",
+        "koreanTerm": "가위 영역과 가드 밴드",
+        "meaning": "화면의 기록 영역과 클립 여유를 구분합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M23-024",
+      "speech": "시야 안에 남은 면도 모두 그릴 필요는 없습니다. 닫힌 불투명 물체의 뒷면은 앞면에 가려지기 쉬우므로 걸러낼 수 있습니다. 이것이 뒷면 컬링입니다. 하지만 언제나 삼각형 절반이 사라지는 것은 아닙니다. 지면처럼 한쪽 면을 주로 보는 메시와, 사방에서 보는 물체는 결과가 다릅니다. 얇은 잎이나 안쪽도 보여야 하는 표면은 설정도 달라져야 합니다.",
+      "sourceParagraphs": [
+        "S110-P111",
+        "S110-P112",
+        "S110-P113",
+        "S110-P114"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-024",
+        "beatIndex": 24,
+        "englishTerm": "Backface Culling",
+        "koreanTerm": "뒷면 제거",
+        "meaning": "재질 조건에 맞게 보이지 않는 면을 거릅니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M23-025",
+      "speech": "하드웨어는 보통 화면에 투영된 정점의 시계 방향, 반시계 방향 순서로 앞뒤를 구분합니다. 어느 쪽을 앞면으로 삼는지는 설정입니다. 왼손 좌표계이면 무조건 시계 방향이라는 법칙은 아니에요. 물체를 거울처럼 반사하면 정점 순서가 뒤집힐 수 있으니 컬링도 함께 확인해야 합니다. 어떤 효과는 의도적으로 앞면과 뒷면을 다른 패스로 그리기도 합니다.",
+      "sourceParagraphs": [
+        "S110-P115",
+        "S110-P116",
+        "S110-P117",
+        "S110-P118"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-025",
+        "beatIndex": 25,
+        "englishTerm": "Winding Order",
+        "koreanTerm": "정점 순서",
+        "meaning": "꼭짓점을 도는 순서로 앞뒤를 정의합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "시계 방향, 반시계 방향",
+          "position": 0,
+          "character": 21
+        },
+        {
+          "phrase": "물체를 거울처럼",
+          "position": 0.5,
+          "character": 105
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M23-026",
+      "speech": "삼차원에서 판단한다면 면의 법선과 카메라에서 면으로 향하는 벡터를 비교합니다. 바깥쪽 법선을 쓰고 이 둘의 내적이 양수이면 뒷면입니다. 예를 들어 법선이 오른쪽을 가리킬 때 카메라도 오른쪽에 있으면, 카메라에서 면으로 향하는 벡터는 왼쪽이어서 내적은 음수가 됩니다. 카메라가 그 면의 앞쪽에 있는 거죠. 단지 법선의 제트 성분만 보면 원근 카메라의 옆쪽 면을 잘못 판단할 수 있습니다.",
+      "sourceParagraphs": [
+        "S110-P119",
+        "S110-P120",
+        "S110-P121",
+        "S110-P122",
+        "S110-P123",
+        "S110-P124"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-026",
+        "beatIndex": 26,
+        "englishTerm": "Eye-relative Face Direction",
+        "koreanTerm": "시점에 대한 면 방향",
+        "meaning": "법선과 시점을 같은 공간에서 비교합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "카메라도 오른쪽에",
+          "position": 0,
+          "character": 97
+        },
+        {
+          "phrase": "법선의 제트 성분만",
+          "position": 0.5,
+          "character": 173
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M23-027",
+      "speech": "이제 남은 삼각형을 더블유로 나누고 화면 좌표에 놓습니다. 좌표는 소수일 수 있지만 화면의 표본은 격자로 놓여 있죠. 어떤 표본이 삼각형 안에 있는지 정하는 것이 래스터화의 핵심입니다. 공유하는 변을 두 삼각형이 모두 차지하거나 모두 비워 두면 이음새가 생깁니다. 그래서 같은 경계를 일관된 포함 규칙으로 처리합니다.",
+      "sourceParagraphs": [
+        "S110-P125",
+        "S110-P126",
+        "S110-P127",
+        "S110-P128",
+        "S110-P129"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-027",
+        "beatIndex": 27,
+        "englishTerm": "Rasterization",
+        "koreanTerm": "래스터화",
+        "meaning": "삼각형이 덮는 화면 샘플을 찾습니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M23-028",
+      "speech": "삼각형이 덮는 위치를 찾으면 유브이와 법선 같은 값을 정점 사이에서 보간합니다. 원근 장면에서는 화면 위의 단순 평균과 원근 보정 보간이 다를 수 있습니다. 법선처럼 길이가 중요한 값은 보간 뒤 다시 정규화해야 하죠. 이미 가까운 표면에 가린 샘플은 가능하다면 비싼 셰이딩 전에 깊이 검사로 걸러냅니다. 셰이더가 깊이를 바꾸는 등 조건에 따라 처리 방식은 달라집니다.",
+      "sourceParagraphs": [
+        "S110-P130"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-028",
+        "beatIndex": 28,
+        "englishTerm": "Perspective-correct Interpolation",
+        "koreanTerm": "원근 보정 보간",
+        "meaning": "화면에서 다른 깊이의 속성을 바르게 잇습니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "단순 평균과",
+          "position": 0,
+          "character": 60
+        },
+        {
+          "phrase": "원근 보정 보간이",
+          "position": 0.5,
+          "character": 67
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M23-029",
+      "speech": "같은 포털에서도 유리 너머의 방은 보이지만, 그 둘레의 불투명한 틀 뒤는 가려집니다. 앞뒤만 정하는 데서 한 걸음 더 나아가, 어떤 표면의 색을 얼마나 보여 줄지도 정해야 합니다. 픽셀 셰이더는 이 정보로 조명과 재질, 필요한 안개를 계산해 색과 알파를 만듭니다. 알파를 기준으로 구멍을 도려내는 알파 테스트는 해당 샘플을 버리는 것이고, 반투명한 색을 섞는 알파 블렌딩은 남겨서 합성하는 것입니다. 빨강을 불투명도 사분의 일로 파랑 위에 섞는 단순 예에서는 빨강 영 점 이오, 파랑 영 점 칠오가 됩니다. 깊이 쓰기와 정렬도 재질에 맞춰 설정해야 합니다.",
+      "sourceParagraphs": [
+        "S110-P130"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-029",
+        "beatIndex": 29,
+        "englishTerm": "Alpha Test / Alpha Blend",
+        "koreanTerm": "알파 검사와 알파 혼합",
+        "meaning": "버릴 영역과 섞을 색을 구분합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "알파 테스트는",
+          "position": 0,
+          "character": 166
+        },
+        {
+          "phrase": "알파 블렌딩은",
+          "position": 0.3333333333333333,
+          "character": 201
+        },
+        {
+          "phrase": "깊이 쓰기와 정렬도",
+          "position": 0.6666666666666666,
+          "character": 284
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses",
+      "actualGamePart": {
+        "beat": "M23-029",
+        "sceneId": "028",
+        "candidate": "M23-G03-glass-versus-frame",
+        "sourceId": "AmJ4orxVpss",
+        "game": "Portal",
+        "sourceIn": 194,
+        "sourceOut": 214,
+        "sourceFile": "projects/shorts-portal-teleport-momentum/production/local/gameplay.mp4",
+        "sourceSha256": "6330517c76705fb9b48ff093a78a660ade728d2d50faf4f06a8e3a4ebe409d81",
+        "recordingUrl": "https://www.youtube.com/watch?v=AmJ4orxVpss",
+        "decodedSize": [
+          1920,
+          1080
+        ],
+        "nativeFps": "60/1",
+        "playbackRate": 1,
+        "hold": 0,
+        "loop": false,
+        "freezePadding": false,
+        "role": "Visible glass versus opaque frame before alpha concepts",
+        "observed": {
+          "before": "Player approaches a framed glass pane overlooking the test chamber.",
+          "action": "Moves past the pane/frame, presses a nearby button and turns back.",
+          "result": "Room remains visible through the glass while the opaque frame blocks it; moving platform changes view."
+        },
+        "claimLimits": [
+          "No alpha value or blend mode is exposed. Explain actual blend equations in our Unity implementation.",
+          "Preserve button action as real context; narration does not need to explain the entire puzzle."
+        ],
+        "annotationPlan": {
+          "target": "Short separate contours for pane and opaque border; do not outline the whole room.",
+          "style": "Short open contours / paired labels on real observed objects; progressive reveal with narration",
+          "tracking": "Track visible edges; hide at occlusion/out-of-frame; clear on cut. Do not draw made-up GPU buffers over the game.",
+          "captionClearance": "Preserve native game HUD/menus and fixed bottom-centre captions. Inspect at1080p and375px after compositing."
+        },
+        "reviewEvidence": "projects/game-math-pipeline-shaders/production/local/footage-review/portal-depth-glass/sampling.json",
+        "nativeDecodeEvidence": {
+          "segment": "M23-G03-glass-versus-frame",
+          "source": "AmJ4orxVpss",
+          "sourceIn": 194,
+          "sourceOut": 214,
+          "decodeExitCode": 0,
+          "decodeErrors": "",
+          "nativeFrameExitCode": 0,
+          "nativeFrameSeconds": 204.0,
+          "nativeFrame": "projects/game-math-pipeline-shaders/production/local/footage-review/native-decode/M23-G03-glass-versus-frame.png",
+          "decodedImageSize": [
+            1920,
+            1080
+          ],
+          "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+        },
+        "speechTarget": {
+          "prefixKo": "같은 포털에서도 유리 너머의 방은 보이지만",
+          "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+        },
+        "handoffToExplanation": "Our cutout/blend test distinguishes mechanisms using explicit chosen values.",
+        "audio": {
+          "nativeAudioPresent": false,
+          "separateFullOriginalAudio": "projects/game-math-pipeline-shaders/production/local/footage-review/portal-original-audio.m4a",
+          "fullOriginalAudioOffsetForLocalVideo": 450,
+          "separateFileExists": true,
+          "actualListening": "pending",
+          "newLectureBgm": false,
+          "sha256": "2fcbd174b168a64b4c6091f579a6640fbfb993a9a10a87bc72ee0b3250783189"
+        },
+        "fullOriginalAudioIn": 644,
+        "fullOriginalAudioOut": 664,
+        "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+      }
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M23-030",
+      "speech": "슈퍼 마리오 오디세이에서는 물속으로 들어간 몸이 수면 너머로 보이다가, 뛰어나오면서 모습이 달라집니다. 방금 본 유리나 물처럼 표면에 따라 달라지는 색을, 지금까지 따라온 파이프라인에서 계산하는 겁니다. 이제 그 길에서 우리가 작성하는 두 계산, 정점 셰이더와 픽셀 셰이더를 코드로 연결해 보죠. 에이치엘에스엘은 이를 작성하는 언어입니다. 예제는 단순한 셰이더에서 출발해 조명, 노멀 매핑, 스키닝을 차례로 더합니다. 오래된 셰이더 모델의 표기와 현재 표기는 구분하되, 데이터가 어느 단계로 흐르는지에 집중하겠습니다.",
+      "sourceParagraphs": [
+        "S111-P002",
+        "S111-P003",
+        "S111-P004",
+        "S111-P005",
+        "S111-P006",
+        "S111-P007"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-030",
+        "beatIndex": 30,
+        "englishTerm": "HLSL",
+        "koreanTerm": "고수준 셰이더 언어",
+        "meaning": "정점과 픽셀 계산을 프로그램으로 지정합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses",
+      "actualGamePart": {
+        "beat": "M23-030",
+        "sceneId": "029",
+        "candidate": "M23-G04-water-and-character",
+        "sourceId": "_wH_-1saHnw",
+        "game": "Super Mario Odyssey",
+        "sourceIn": 730,
+        "sourceOut": 743,
+        "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v3/sources/_wH_-1saHnw-hls.mp4",
+        "sourceSha256": "60eb85000ef25c483e3b28a351173e9631cd0a322a97ac9c82145f2ac925e2b6",
+        "recordingUrl": "https://www.youtube.com/watch?v=_wH_-1saHnw",
+        "decodedSize": [
+          1920,
+          1080
+        ],
+        "nativeFps": "60/1",
+        "playbackRate": 1,
+        "hold": 0,
+        "loop": false,
+        "freezePadding": false,
+        "role": "Cross-genre material example bridges pipeline overview to programmable shader stages",
+        "observed": {
+          "before": "Mario stands above a shallow pool.",
+          "action": "Falls/swims beneath the surface, jumps out and lands.",
+          "result": "The body remains partly visible through water and changes appearance below versus above the surface."
+        },
+        "claimLimits": [
+          "Native13s already contains before/action/result. Do not stretch into20s or include the unrelated frog-capture cinematic starting~744s.",
+          "No claimed measured alpha, refraction coefficients, or exact shader code; water appearance may combine several effects."
+        ],
+        "annotationPlan": {
+          "target": "Water boundary and submerged body region; clear when body emerges.",
+          "style": "Short open contours / paired labels on real observed objects; progressive reveal with narration",
+          "tracking": "Track visible edges; hide at occlusion/out-of-frame; clear on cut. Do not draw made-up GPU buffers over the game.",
+          "captionClearance": "Preserve native game HUD/menus and fixed bottom-centre captions. Inspect at1080p and375px after compositing."
+        },
+        "reviewEvidence": "projects/game-math-pipeline-shaders/production/local/footage-review/mario-water/sampling.json",
+        "nativeDecodeEvidence": {
+          "segment": "M23-G04-water-and-character",
+          "source": "_wH_-1saHnw",
+          "sourceIn": 730,
+          "sourceOut": 743,
+          "decodeExitCode": 0,
+          "decodeErrors": "",
+          "nativeFrameExitCode": 0,
+          "nativeFrameSeconds": 736.5,
+          "nativeFrame": "projects/game-math-pipeline-shaders/production/local/footage-review/native-decode/M23-G04-water-and-character.png",
+          "decodedImageSize": [
+            1920,
+            1080
+          ],
+          "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+        },
+        "speechTarget": {
+          "prefixKo": "슈퍼 마리오 오디세이에서는 물속으로 들어간 몸이",
+          "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+        },
+        "handoffToExplanation": "Begin our deliberately simpler unlit material; add light, normals and skinning in original teaching order.",
+        "audio": {
+          "nativeAudioPresent": true,
+          "actualListening": "pending",
+          "addedLectureBgm": false
+        },
+        "fullOriginalAudioIn": 730,
+        "fullOriginalAudioOut": 743,
+        "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+      }
+    },
+    {
+      "id": "030",
+      "sourceBeatId": "M23-031",
+      "speech": "입력 구조체의 플로트 포는 숫자 네 개, 플로트 투는 숫자 두 개를 묶은 형식입니다. 위치에는 엑스, 와이, 제트, 더블유를, 유브이에는 두 좌표를 넣습니다. 콜론 뒤의 시맨틱은 데이터의 용도를 연결하는 이름표예요. 정점 셰이더가 출력한 유브이가 픽셀 셰이더의 유브이 입력으로 이어지는 식입니다. 현재 다이렉트삼디에서 클립 위치 출력은 에스브이 포지션으로 표시합니다.",
+      "sourceParagraphs": [
+        "S111-P008",
+        "S111-P009",
+        "S111-P010",
+        "S111-P011"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-031",
+        "beatIndex": 31,
+        "englishTerm": "Shader Semantics",
+        "koreanTerm": "셰이더 시맨틱",
+        "meaning": "입출력 데이터의 역할을 표시합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "031",
+      "sourceBeatId": "M23-032",
+      "speech": "가장 단순한 정점 셰이더는 위치를 클립 공간으로 바꾸고 유브이를 그대로 전달합니다. 멀 함수에 벡터를 먼저 넣으면 행벡터 곱으로 해석합니다. 그래서 여기서는 위치 다음에 모델 투 클립 행렬을 넣죠. 행렬을 먼저 쓰는 열벡터 방식과 섞으면 안 됩니다. 행렬을 바꾸는 게임 코드와 이 셰이더가 같은 약속을 사용하는지도 확인해야 합니다.",
+      "sourceParagraphs": [
+        "S111-P012",
+        "S111-P013",
+        "S111-P014",
+        "S111-P015",
+        "S111-P016",
+        "S111-P017"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-032",
+        "beatIndex": 32,
+        "englishTerm": "Vertex Transformation",
+        "koreanTerm": "정점 변환",
+        "meaning": "위치를 바꾸고 UV는 다음 단계로 보냅니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "032",
+      "sourceBeatId": "M23-033",
+      "speech": "픽셀 셰이더는 보간된 유브이로 텍스처를 읽고 상수 색을 곱해 출력합니다. 텍스처 색이 영 점 팔, 영 점 사, 영 점 이이고 상수 색이 일, 영 점 오, 일이면 결과는 영 점 팔, 영 점 이, 영 점 이입니다. 이 곱하기는 행렬 곱이 아니라 같은 위치의 성분끼리 곱하는 연산입니다. 알파에도 상수를 곱할 수 있지만, 실제 투명 합성은 앞서 본 블렌딩 설정이 결정합니다.",
+      "sourceParagraphs": [
+        "S111-P018",
+        "S111-P019",
+        "S111-P020",
+        "S111-P021",
+        "S111-P022",
+        "S111-P023",
+        "S111-P024",
+        "S111-P025",
+        "S111-P026"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-033",
+        "beatIndex": 33,
+        "englishTerm": "Texture Sampling",
+        "koreanTerm": "텍스처 샘플링",
+        "meaning": "UV로 읽은 색에 재질색을 곱합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "033",
+      "sourceBeatId": "M23-034",
+      "speech": "여기서 용어를 정리하겠습니다. 오래된 예제의 위치 출력 포지션과 색 출력 컬러는, 현재 예제에서는 에스브이 포지션과 에스브이 타깃으로 연결합니다. 텍스처와 샘플러를 선언하는 방식도 실행 환경에 맞춥니다. 중요한 것은 이름만 바꾸는 일이 아니라, 게임 쪽 입력 형식과 셰이더의 자료형, 좌표 공간이 서로 맞는지 확인하는 것입니다.",
+      "sourceParagraphs": [
+        "S111-P027",
+        "S111-P028"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-034",
+        "beatIndex": 34,
+        "englishTerm": "System-value Semantics",
+        "koreanTerm": "시스템 값 시맨틱",
+        "meaning": "래스터 위치와 출력 색을 명확히 구분합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "034",
+      "sourceBeatId": "M23-035",
+      "speech": "텍스처만 보이던 표면에 이제 빛을 더해 봅시다. 비교가 쉽도록 광원 하나와 일정한 환경광을 유지하겠습니다. 정점 셰이더는 클립 위치 외에 모델 공간 위치, 법선, 유브이를 전달합니다. 픽셀 셰이더는 이들을 보간해서 받고, 난반사 색과 정반사 색을 별도 텍스처에서 읽습니다. 같은 유브이를 써도 두 텍스처의 역할은 다릅니다.",
+      "sourceParagraphs": [
+        "S111-P029",
+        "S111-P030",
+        "S111-P031",
+        "S111-P032",
+        "S111-P033",
+        "S111-P034",
+        "S111-P035",
+        "S111-P036",
+        "S111-P037",
+        "S111-P038",
+        "S111-P039",
+        "S111-P040",
+        "S111-P041"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-035",
+        "beatIndex": 35,
+        "englishTerm": "Unlit / Lit",
+        "koreanTerm": "비조명과 조명 셰이딩",
+        "meaning": "같은 표면에 빛의 계산을 더합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "텍스처만 보이던",
+          "position": 0,
+          "character": 0
+        },
+        {
+          "phrase": "이제 빛을 더해",
+          "position": 0.5,
+          "character": 13
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "035",
+      "sourceBeatId": "M23-036",
+      "speech": "먼저 법선을 정규화합니다. 광원 위치에서 표면 위치를 빼면 광원을 향하는 벡터가 되고, 그 길이가 거리입니다. 길이는 감쇠에 남겨 두고 방향은 단위 길이로 바꿉니다. 시점 방향과 광원 방향을 더해 정규화하면 하프웨이 벡터죠. 반지름이 사이고 거리가 일이면 선형 감쇠는 일에서 사분의 일을 뺀 영 점 칠오입니다. 이 예제의 감쇠 규칙이지 물리적 역제곱 법칙은 아닙니다.",
+      "sourceParagraphs": [
+        "S111-P042",
+        "S111-P043",
+        "S111-P044",
+        "S111-P045",
+        "S111-P046",
+        "S111-P047",
+        "S111-P048",
+        "S111-P049",
+        "S111-P050",
+        "S111-P051",
+        "S111-P052",
+        "S111-P053",
+        "S111-P054",
+        "S111-P055",
+        "S111-P056",
+        "S111-P057"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-036",
+        "beatIndex": 36,
+        "englishTerm": "Light / View / Halfway Vector",
+        "koreanTerm": "광원·시선·하프웨이 벡터",
+        "meaning": "빛과 보는 방향을 같은 공간에서 맞춥니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "036",
+      "sourceBeatId": "M23-037",
+      "speech": "난반사 계수는 법선과 광원 방향의 내적을 영 이상으로 제한해서 구합니다. 정반사 계수는 법선과 하프웨이 벡터의 내적을 제한한 뒤 지수만큼 거듭제곱합니다. 난반사에는 환경광을 더하고 재질의 난반사 색을 곱합니다. 정반사에는 정반사 색을 곱해 따로 더하죠. 불투명한 단면 표면에서는 빛이 뒷면에 있을 때 정반사도 꺼야 자연스럽습니다. 색의 곱셈은 선형 색 공간에서 처리합니다.",
+      "sourceParagraphs": [
+        "S111-P058",
+        "S111-P059",
+        "S111-P060",
+        "S111-P061",
+        "S111-P062"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-037",
+        "beatIndex": 37,
+        "englishTerm": "Blinn–Phong",
+        "koreanTerm": "블린–퐁 조명",
+        "meaning": "난반사와 정반사 성분을 따로 계산합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "037",
+      "sourceBeatId": "M23-038",
+      "speech": "한 색 채널만 숫자로 확인해 보겠습니다. 감쇠된 빛이 영 점 칠오, 난반사 계수가 영 점 팔, 환경광이 영 점 일, 재질색이 영 점 오라면 난반사 결과는 영 점 삼오입니다. 정반사 계수가 영 점 이, 정반사 재질값이 영 점 사라면 영 점 영육을 더합니다. 합은 영 점 사일입니다. 이렇게 각 항이 무엇을 바꾸는지 알면 화면이 너무 밝거나 어두운 원인도 찾아갈 수 있습니다.",
+      "sourceParagraphs": [
+        "S111-P058",
+        "S111-P059",
+        "S111-P060",
+        "S111-P061"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-038",
+        "beatIndex": 38,
+        "englishTerm": "Lighting Sum",
+        "koreanTerm": "조명 성분 합산",
+        "meaning": "각 항에 숫자를 넣어 최종 색을 확인합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "038",
+      "sourceBeatId": "M23-039",
+      "speech": "같은 계산을 모든 픽셀에서 반복하면 비용이 커집니다. 그래서 광원 방향이나 하프웨이 벡터, 감쇠를 정점에서 계산한 뒤 보간하는 방법도 생각할 수 있습니다. 픽셀 쪽 일은 줄어들지만 전달할 값은 늘고, 비선형 계산을 보간하므로 결과도 완전히 같지는 않습니다. 정점 수와 화면에서 차지하는 면적, 보간 데이터의 양을 함께 보고 선택해야 합니다.",
+      "sourceParagraphs": [
+        "S111-P063",
+        "S111-P064",
+        "S111-P065",
+        "S111-P066",
+        "S111-P067",
+        "S111-P068",
+        "S111-P069",
+        "S111-P070",
+        "S111-P071",
+        "S111-P072",
+        "S111-P073",
+        "S111-P074",
+        "S111-P075",
+        "S111-P076",
+        "S111-P077",
+        "S111-P078",
+        "S111-P079",
+        "S111-P080",
+        "S111-P081"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-039",
+        "beatIndex": 39,
+        "englishTerm": "Vertex / Pixel Work Distribution",
+        "koreanTerm": "정점과 픽셀의 작업 배분",
+        "meaning": "계산 위치를 바꾸면 보간되는 값도 달라집니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "정점에서 계산한 뒤",
+          "position": 0,
+          "character": 55
+        },
+        {
+          "phrase": "결과도 완전히 같지는",
+          "position": 0.5,
+          "character": 126
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "039",
+      "sourceBeatId": "M23-040",
+      "speech": "감쇠를 보간할 때는 영으로 제한하는 시점도 중요합니다. 양 끝의 값이 영 점 오와 마이너스 영 점 오라고 합시다. 먼저 보간한 가운데 값은 영이고, 그 뒤 제한해도 영입니다. 반면 끝점을 먼저 영 이상으로 만들면 영 점 오와 영이 되어 가운데가 영 점 이오가 됩니다. 보간과 제한은 바꾸어도 되는 연산이 아닙니다. 이 방법 자체가 거리 계산의 근사라는 점도 유지해야 합니다.",
+      "sourceParagraphs": [
+        "S111-P078",
+        "S111-P082",
+        "S111-P083",
+        "S111-P084",
+        "S111-P085",
+        "S111-P086",
+        "S111-P087",
+        "S111-P088",
+        "S111-P089",
+        "S111-P090",
+        "S111-P091",
+        "S111-P092",
+        "S111-P093",
+        "S111-P094",
+        "S111-P095",
+        "S111-P096",
+        "S111-P173",
+        "S111-P174"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-040",
+        "beatIndex": 40,
+        "englishTerm": "Clamp after Interpolation",
+        "koreanTerm": "보간 뒤 범위 제한",
+        "meaning": "비선형 연산의 순서가 결과를 바꿉니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "먼저 보간한 가운데",
+          "position": 0,
+          "character": 64
+        },
+        {
+          "phrase": "반면 끝점을 먼저",
+          "position": 0.5,
+          "character": 98
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "040",
+      "sourceBeatId": "M23-041",
+      "speech": "같은 픽셀 셰이더를 카메라 공간에서도 사용할 수 있습니다. 표면과 광원, 법선이 모두 같은 공간에 있으면 내적 계산은 이어집니다. 카메라 공간에서는 시점이 원점이므로 시선 방향은 표면 위치의 반대입니다. 여기서 위치의 엑스 와이 제트만 정규화해야 합니다. 더블유까지 들어간 네 숫자의 길이로 나누면 삼차원 단위 방향이 아니게 됩니다. 방향에 더블유 영을 붙이는 이유도 평행이동을 받지 않게 하기 위해서입니다.",
+      "sourceParagraphs": [
+        "S111-P097",
+        "S111-P098",
+        "S111-P099",
+        "S111-P100",
+        "S111-P101",
+        "S111-P102",
+        "S111-P103",
+        "S111-P104",
+        "S111-P105",
+        "S111-P106",
+        "S111-P107",
+        "S111-P108",
+        "S111-P109",
+        "S111-P110",
+        "S111-P111",
+        "S111-P112",
+        "S111-P113",
+        "S111-P114",
+        "S111-P115",
+        "S111-P116",
+        "S111-P117",
+        "S111-P120",
+        "S111-P121"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-041",
+        "beatIndex": 41,
+        "englishTerm": "View Space",
+        "koreanTerm": "뷰 공간",
+        "meaning": "시점을 원점으로 두고 방향을 계산합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "041",
+      "sourceBeatId": "M23-042",
+      "speech": "월드 공간이나 카메라 공간을 함께 쓰면 물체마다 광원 위치를 다른 모델 좌표로 다시 준비하는 일을 줄일 수 있습니다. 다만 법선은 비균일 크기 변화가 있으면 위치처럼 변환해서는 안 됩니다. 역행렬의 전치를 사용해야 하죠. 월드와 축만 같은 공간도 원점까지 같은 것은 아닙니다. 공간 이름보다 모든 값의 기준과 변환 조건이 맞는지가 핵심입니다.",
+      "sourceParagraphs": [
+        "S111-P107",
+        "S111-P115",
+        "S111-P121"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-042",
+        "beatIndex": 42,
+        "englishTerm": "Inverse-transpose Normal",
+        "koreanTerm": "역전치 법선 변환",
+        "meaning": "비균일 확대에서도 표면과 수직을 유지합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "042",
+      "sourceBeatId": "M23-043",
+      "speech": "이번에는 조명 결과 자체를 정점에서 계산해 봅시다. 앞서 픽셀마다 하던 난반사와 정반사 계산을 정점 셰이더로 옮기면 구로 셰이딩이 됩니다. 전달하는 것은 법선 대신 조명 색입니다. 광원 방향은 세 성분의 플로트 쓰리로 선언해야 합니다. 이 방식은 픽셀 계산이 단순하지만, 정점 사이에 생기는 작은 하이라이트를 놓칠 수 있습니다.",
+      "sourceParagraphs": [
+        "S111-P118",
+        "S111-P119",
+        "S111-P122",
+        "S111-P123",
+        "S111-P124",
+        "S111-P125",
+        "S111-P126",
+        "S111-P127",
+        "S111-P128",
+        "S111-P129",
+        "S111-P130",
+        "S111-P131",
+        "S111-P132",
+        "S111-P133",
+        "S111-P134",
+        "S111-P135",
+        "S111-P136",
+        "S111-P137",
+        "S111-P138",
+        "S111-P139",
+        "S111-P140",
+        "S111-P141",
+        "S111-P142",
+        "S111-P143"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-043",
+        "beatIndex": 43,
+        "englishTerm": "Gouraud / Phong Shading",
+        "koreanTerm": "구로와 퐁 셰이딩",
+        "meaning": "정점의 색을 잇거나 픽셀마다 빛을 계산합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "구로 셰이딩이 됩니다",
+          "position": 0,
+          "character": 65
+        },
+        {
+          "phrase": "작은 하이라이트를",
+          "position": 0.5,
+          "character": 163
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "043",
+      "sourceBeatId": "M23-044",
+      "speech": "픽셀 셰이더는 난반사 텍스처에 보간된 난반사 조명을 곱하고, 정반사 텍스처에 보간된 정반사 조명을 곱해 더합니다. 이 셰이더는 앞 단계에서 광원을 한 개 계산했는지 세 개 계산했는지 알 필요가 없습니다. 필요한 형태의 조명 결과만 받으면 되기 때문입니다. 단계 사이의 입력과 출력을 잘 정하면 한 셰이더를 다른 설정과 재사용할 수 있습니다.",
+      "sourceParagraphs": [
+        "S111-P144",
+        "S111-P145",
+        "S111-P146",
+        "S111-P147",
+        "S111-P148",
+        "S111-P149",
+        "S111-P150",
+        "S111-P151",
+        "S111-P152",
+        "S111-P153"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-044",
+        "beatIndex": 44,
+        "englishTerm": "Shared Pixel Shader",
+        "koreanTerm": "공유 픽셀 셰이더",
+        "meaning": "준비된 조명색을 공통 표면 계산으로 사용합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "한 개 계산했는지",
+          "position": 0,
+          "character": 82
+        },
+        {
+          "phrase": "세 개 계산했는지",
+          "position": 0.5,
+          "character": 92
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "044",
+      "sourceBeatId": "M23-045",
+      "speech": "예를 들어 방향광 세 개를 쓰면, 난반사 누적값은 환경광으로 시작하고 정반사는 영으로 시작합니다. 각 광원 방향과 색을 이용해 기여분을 계산하고 차례로 더하면 됩니다. 편집기에서 물체 모양을 살펴보는 조명 구성에도 쓸 수 있죠. 반복문을 직접 펼치면 무조건 빠르다고 가정하지 말고, 컴파일된 코드와 실제 실행 시간을 확인해야 합니다.",
+      "sourceParagraphs": [
+        "S111-P154",
+        "S111-P155",
+        "S111-P156",
+        "S111-P157",
+        "S111-P158",
+        "S111-P159",
+        "S111-P160",
+        "S111-P161",
+        "S111-P162",
+        "S111-P163",
+        "S111-P164",
+        "S111-P165",
+        "S111-P166",
+        "S111-P167",
+        "S111-P168",
+        "S111-P169",
+        "S111-P170",
+        "S111-P171",
+        "S111-P172"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-045",
+        "beatIndex": 45,
+        "englishTerm": "Multiple-light Accumulation",
+        "koreanTerm": "여러 광원 합산",
+        "meaning": "환경광은 한 번, 직접광은 광원마다 더합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "방향광 세 개를",
+          "position": 0.5,
+          "character": 6
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "045",
+      "sourceBeatId": "M23-046",
+      "speech": "빛 계산의 구조를 유지하면서 표면의 작은 굴곡을 더해 보죠. 노멀 맵을 쓰려면 그 법선이 저장된 접선 공간에서 방향을 비교할 수 있어야 합니다. 법선과 접선으로 비탄젠트를 복원하고, 광원 방향과 하프웨이 벡터를 세 기저와 각각 내적합니다. 이렇게 얻은 세 숫자가 접선 공간 좌표입니다. 이 전치 변환을 역변환으로 쓰려면 기저가 정규직교해야 합니다.",
+      "sourceParagraphs": [
+        "S111-P175",
+        "S111-P176",
+        "S111-P177",
+        "S111-P178",
+        "S111-P179",
+        "S111-P180",
+        "S111-P181",
+        "S111-P182",
+        "S111-P183",
+        "S111-P184",
+        "S111-P185",
+        "S111-P186",
+        "S111-P187",
+        "S111-P188",
+        "S111-P189",
+        "S111-P190",
+        "S111-P191",
+        "S111-P192",
+        "S111-P193",
+        "S111-P194",
+        "S111-P195"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-046",
+        "beatIndex": 46,
+        "englishTerm": "Tangent-space Lighting",
+        "koreanTerm": "접선 공간 조명",
+        "meaning": "표면의 기준축으로 빛을 해석합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "046",
+      "sourceBeatId": "M23-047",
+      "speech": "픽셀 셰이더는 노멀 맵의 빨강, 초록, 파랑을 두 배 한 뒤 일을 빼서 방향으로 복원합니다. 필터링과 양자화로 길이가 달라질 수 있으니 다시 정규화합니다. 보간된 광원 방향도 정규화하고, 앞서 사용한 같은 블린–퐁 식에 넣으면 됩니다. 빛과 표면 위치가 일치하거나 하프웨이 벡터가 영이 되는 경우에는 나눗셈을 강행하지 않고 정해 둔 예외 처리를 적용합니다.",
+      "sourceParagraphs": [
+        "S111-P196",
+        "S111-P197",
+        "S111-P198",
+        "S111-P199",
+        "S111-P200",
+        "S111-P201",
+        "S111-P202",
+        "S111-P203",
+        "S111-P204",
+        "S111-P205",
+        "S111-P206",
+        "S111-P207",
+        "S111-P208",
+        "S111-P209",
+        "S111-P210",
+        "S111-P211",
+        "S111-P212",
+        "S111-P213"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-047",
+        "beatIndex": 47,
+        "englishTerm": "Normal Map Decoding",
+        "koreanTerm": "노멀 맵 디코딩",
+        "meaning": "저장된 선형 데이터에서 단위 방향을 복원합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "047",
+      "sourceBeatId": "M23-048",
+      "speech": "이제 표면 계산은 그대로 두고 물체를 움직여 봅시다. 스키닝 정점에는 바인드 포즈의 위치와 법선, 본 번호와 가중치가 들어갑니다. 각 본의 바인드 포즈에서 현재 포즈로 가는 행렬을 준비하고, 해당 정점의 가중치로 섞습니다. 본 행렬 배열을 전달하는 것이지 정점 배열을 상수로 넣는 것은 아닙니다. 본 개수와 인덱스 자료형은 실제 입력 형식에 맞춰 정합니다.",
+      "sourceParagraphs": [
+        "S111-P214",
+        "S111-P215",
+        "S111-P216",
+        "S111-P217",
+        "S111-P218",
+        "S111-P219",
+        "S111-P220",
+        "S111-P221",
+        "S111-P222",
+        "S111-P223",
+        "S111-P252",
+        "S111-P253",
+        "S111-P254",
+        "S111-P255"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-048",
+        "beatIndex": 48,
+        "englishTerm": "Blend Indices / Weights",
+        "koreanTerm": "본 인덱스와 가중치",
+        "meaning": "각 정점이 따라갈 변환을 고릅니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "048",
+      "sourceBeatId": "M23-049",
+      "speech": "행벡터 예제의 네 행 세 열 행렬은 위치의 네 성분을 받아 삼차원 결과를 만듭니다. 위치에는 더블유 일을, 방향에는 영을 붙이는 차이를 유지하세요. 변형한 위치를 다시 클립 공간으로 보내면, 픽셀 셰이더는 움직인 표면을 평소처럼 처리할 수 있습니다. 본 행렬 전송 비용이나 분기와 고정 연산의 비용은 대상 환경에서 확인해야 합니다.",
+      "sourceParagraphs": [
+        "S111-P224",
+        "S111-P225",
+        "S111-P226",
+        "S111-P227",
+        "S111-P228",
+        "S111-P229"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-049",
+        "beatIndex": 49,
+        "englishTerm": "Linear Blend Skinning",
+        "koreanTerm": "선형 혼합 스키닝",
+        "meaning": "본의 변환을 가중치로 합쳐 정점을 움직입니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "049",
+      "sourceBeatId": "M23-050",
+      "speech": "움직이는 표면에 노멀 맵까지 붙이려면 위치뿐 아니라 법선과 접선도 현재 자세로 옮깁니다. 여러 행렬을 섞으면 축의 길이와 직각 관계가 틀어질 수 있으므로 정규화와 직교화를 확인합니다. 비균일 크기 변화에는 법선 처리도 별도로 고려해야 합니다. 그다음 비탄젠트를 복원하고 광원 방향을 접선 공간으로 옮기면, 앞서 만든 노멀 매핑 픽셀 셰이더를 그대로 연결할 수 있습니다.",
+      "sourceParagraphs": [
+        "S111-P230",
+        "S111-P231",
+        "S111-P232",
+        "S111-P233",
+        "S111-P234",
+        "S111-P235",
+        "S111-P236",
+        "S111-P237",
+        "S111-P238",
+        "S111-P239",
+        "S111-P240",
+        "S111-P241",
+        "S111-P242",
+        "S111-P243",
+        "S111-P244",
+        "S111-P245",
+        "S111-P246",
+        "S111-P247",
+        "S111-P248",
+        "S111-P249",
+        "S111-P250",
+        "S111-P251",
+        "S111-P256",
+        "S111-P257"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-050",
+        "beatIndex": 50,
+        "englishTerm": "Skinned Tangent Frame",
+        "koreanTerm": "스키닝한 접선 기저",
+        "meaning": "움직인 표면의 기준축을 다시 정리합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "050",
+      "sourceBeatId": "M23-051",
+      "speech": "처음의 텍스처 한 장에서 출발해 빛을 더하고, 노멀 맵을 더하고, 마지막으로 뼈의 움직임까지 연결했습니다. 표면을 움직이는 계산과 그 표면의 색을 구하는 계산은 서로 다른 단계에 놓일 수 있습니다. 각 단계가 무엇을 받으며 어떤 공간의 값을 내보내는지 알면, 기능을 붙이거나 오류를 찾을 때 길을 잃지 않게 됩니다.",
+      "sourceParagraphs": [
+        "S111-P215",
+        "S111-P216",
+        "S111-P230"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-051",
+        "beatIndex": 51,
+        "englishTerm": "Combined Shader Pipeline",
+        "koreanTerm": "셰이더 단계 결합",
+        "meaning": "같은 모델에 필요한 계산을 차례로 연결합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "텍스처 한 장에서",
+          "position": 0,
+          "character": 4
+        },
+        {
+          "phrase": "빛을 더하고",
+          "position": 0.25,
+          "character": 18
+        },
+        {
+          "phrase": "노멀 맵을 더하고",
+          "position": 0.5,
+          "character": 26
+        },
+        {
+          "phrase": "뼈의 움직임까지",
+          "position": 0.75,
+          "character": 43
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "051",
+      "sourceBeatId": "M23-052",
+      "speech": "더 깊이 공부할 때도 이 두 방향을 함께 보세요. 왜 이런 계산을 하는지 알려 주는 이론과, 실제 환경에서 어떻게 실행하는지 알려 주는 코드와 API 문서입니다. 기초는 펀더멘털스 오브 컴퓨터 그래픽스, 빛과 영상 형성은 프린서플스 오브 디지털 이미지 신서시스와 피비알티, 실시간 렌더링의 구현과 성능은 리얼타임 렌더링으로 이어 갈 수 있습니다. 현재 문법과 제한은 사용하는 API의 공식 문서에서 확인합니다.",
+      "sourceParagraphs": [
+        "S112-P001",
+        "S112-P002",
+        "S112-P003",
+        "S112-P004",
+        "S112-P005",
+        "S112-P006",
+        "S112-P007",
+        "S112-P008",
+        "S112-P010"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-052",
+        "beatIndex": 52,
+        "englishTerm": "Further Reading",
+        "koreanTerm": "더 읽을거리",
+        "meaning": "이론과 실제 구현을 함께 공부합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "펀더멘털스",
+          "position": 0,
+          "character": 95
+        },
+        {
+          "phrase": "프린서플스",
+          "position": 0.2,
+          "character": 124
+        },
+        {
+          "phrase": "피비알티",
+          "position": 0.4,
+          "character": 147
+        },
+        {
+          "phrase": "리얼타임 렌더링",
+          "position": 0.6,
+          "character": 170
+        },
+        {
+          "phrase": "API의 공식 문서",
+          "position": 0.8,
+          "character": 210
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "052",
+      "sourceBeatId": "M23-053",
+      "speech": "이제 계산을 직접 연결해 보겠습니다. 가로 육백사십, 세로 사백팔십 표본으로 된 화면이 있다고 합시다. 이것을 사 대 삼 화면에 채우면 픽셀의 가로세로 비는 일입니다. 같은 표본 수를 십육 대 구 화면에 늘려 표시하면 어떨까요? 표시 화면의 비율을 표본 배열의 비율로 나누면 삼분의 사입니다. 각 픽셀이 세로보다 가로로 더 넓게 표시되는 겁니다.",
+      "sourceParagraphs": [
+        "S113-P002",
+        "S113-P003",
+        "S113-P004"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-053",
+        "beatIndex": 53,
+        "englishTerm": "Pixel Aspect Ratio",
+        "koreanTerm": "픽셀 종횡비",
+        "meaning": "저장 격자와 표시 비율의 차이를 계산합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "사 대 삼 화면에",
+          "position": 0,
+          "character": 62
+        },
+        {
+          "phrase": "십육 대 구 화면에",
+          "position": 0.5,
+          "character": 103
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "053",
+      "sourceBeatId": "M23-054",
+      "speech": "그 사 대 삼 화면을 좌우 둘로 나누면 한 사람은 삼백이십 곱하기 사백팔십 영역을 봅니다. 이 창의 종횡비는 삼분의 이입니다. 수평 시야각을 육십 도로 고정하면 수평 줌은 삼십 도 탄젠트의 역수, 약 일 점 칠삼이 됩니다. 수직 줌은 여기에 창의 종횡비를 곱한 약 일 점 일오오입니다. 같은 수평 시야를 좁은 창에 넣었으니 세로로 더 많이 보이는 구성이 됩니다.",
+      "sourceParagraphs": [
+        "S113-P005",
+        "S113-P006",
+        "S113-P007"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-054",
+        "beatIndex": 54,
+        "englishTerm": "Split-screen Projection",
+        "koreanTerm": "화면 분할 투영",
+        "meaning": "좁아진 창에서도 정해진 시야를 유지합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "054",
+      "sourceBeatId": "M23-055",
+      "speech": "수직 시야각도 구해 보죠. 수직 줌의 역수에 아크탄젠트를 취한 다음 두 배 하면 됩니다. 일 점 일오오를 넣으면 약 팔십일 점 팔 도입니다. 수평 육십 도보다 넓죠. 좁고 긴 화면에 수평 시야를 유지하면서 영상을 넣었기 때문에 세로로 더 넓은 범위를 담게 된 것입니다. 화면 비율, 줌, 시야각이 이렇게 연결됩니다.",
+      "sourceParagraphs": [
+        "S113-P007"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-055",
+        "beatIndex": 55,
+        "englishTerm": "Vertical Field of View",
+        "koreanTerm": "수직 시야각",
+        "meaning": "창 비율과 확대값에서 위아래 범위를 구합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "055",
+      "sourceBeatId": "M23-056",
+      "speech": "이번에는 사 대 삼 분할 창으로 돌아와 근평면을 일, 원평면을 이백오십육에 놓겠습니다. 투영 행렬의 가로와 세로 항은 방금 구한 줌 값입니다. 나머지 깊이 항은 어떤 카메라 방향과 깊이 범위를 쓰는지로 정합니다. 기본 오픈지엘 방식의 오른손 카메라는 앞쪽 제트가 음수이고, 깊이를 마이너스 일에서 일로 보냅니다. 전통적인 다이렉트삼디 왼손 예제는 앞쪽 제트가 양수이며 영에서 일로 보냅니다.",
+      "sourceParagraphs": [
+        "S113-P007"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-056",
+        "beatIndex": 56,
+        "englishTerm": "Clip-space Projection Matrix",
+        "koreanTerm": "클립 공간 투영행렬",
+        "meaning": "좌표와 깊이의 약속을 행렬에 넣습니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "기본 오픈지엘",
+          "position": 0,
+          "character": 119
+        },
+        {
+          "phrase": "전통적인 다이렉트삼디",
+          "position": 0.5,
+          "character": 175
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "056",
+      "sourceBeatId": "M23-057",
+      "speech": "행렬을 외우기보다 양 끝을 넣어 확인해 봅시다. 오픈지엘 쪽에 제트 마이너스 일을 넣고 더블유로 나누면 깊이는 마이너스 일, 마이너스 이백오십육을 넣으면 일입니다. 다이렉트삼디 쪽은 제트 일이 영, 이백오십육이 일로 갑니다. 여기 화면의 행렬은 열벡터 표기이므로 앞서 행벡터 코드에 쓸 때는 전치해야 합니다. 어느 API든 지원하는 설정에 따라 다른 관례도 쓸 수 있습니다.",
+      "sourceParagraphs": [
+        "S113-P007"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-057",
+        "beatIndex": 57,
+        "englishTerm": "Near / Far Validation",
+        "koreanTerm": "근평면과 원평면 검산",
+        "meaning": "양 끝을 대입해 깊이 범위를 확인합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "오픈지엘 쪽에",
+          "position": 0,
+          "character": 27
+        },
+        {
+          "phrase": "다이렉트삼디 쪽은",
+          "position": 0.5,
+          "character": 92
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "057",
+      "sourceBeatId": "M23-058",
+      "speech": "이제 같은 분할을 십육 대 구 화면에서 다시 해 보죠. 픽셀은 가로로 늘어나므로 각 창의 실제 비율은 단순한 삼백이십 대 사백팔십이 아니라 구분의 팔입니다. 수평 줌은 여전히 루트 삼입니다. 수직 줌은 구분의 팔을 곱한 약 일 점 오사, 수직 시야각은 약 육십육 도가 됩니다. 표본 개수와 표시되는 모양을 함께 고려해야 하는 이유가 드러납니다.",
+      "sourceParagraphs": [
+        "S113-P008",
+        "S113-P009"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-058",
+        "beatIndex": 58,
+        "englishTerm": "Widescreen Split-screen",
+        "koreanTerm": "와이드 화면 분할",
+        "meaning": "표시 픽셀의 비율도 창 계산에 반영합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "058",
+      "sourceBeatId": "M23-059",
+      "speech": "다음은 유브이를 보고 무늬가 어떻게 놓일지 예측하는 연습입니다. 같은 무늬를 반복하는 설정에서, 좌표에 정수를 더해도 반복되는 위치는 같습니다. 그래서 오부터 육, 마이너스 일부터 영까지의 사각형은 한 번의 무늬와 같은 배치입니다. 반면 범위를 넓히면 반복이 많아지고, 꼭짓점을 따라 유브이가 향하는 방향을 바꾸면 무늬가 돌아가거나 기울어집니다.",
+      "sourceParagraphs": [
+        "S113-P010",
+        "S113-P011",
+        "S113-P012",
+        "S113-P013",
+        "S113-P014"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-059",
+        "beatIndex": 59,
+        "englishTerm": "Texture Repeat",
+        "koreanTerm": "텍스처 반복",
+        "meaning": "정수만큼 옮긴 UV는 같은 무늬를 읽습니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "059",
+      "sourceBeatId": "M23-060",
+      "speech": "여섯 경우를 같은 사각형에 차례로 적용해 보세요. 에이는 가로 일 점 일, 세로 일 점 오만큼 범위를 읽고, 비는 정수만큼 이동한 한 번의 반복입니다. 씨는 축이 기울어진 배치이고, 디는 사선으로 밀린 배치입니다. 이는 가로 진행이 유브이의 세로 방향으로 바뀌어 무늬가 돌아갑니다. 에프는 훨씬 넓은 범위를 비스듬히 읽어서 작은 무늬가 여러 번 반복됩니다. 숫자를 외우기보다 두 모서리의 유브이 차이를 그려 보세요.",
+      "sourceParagraphs": [
+        "S113-P011",
+        "S113-P012",
+        "S113-P013",
+        "S113-P014"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-060",
+        "beatIndex": 60,
+        "englishTerm": "UV Mapping",
+        "koreanTerm": "UV 매핑",
+        "meaning": "같은 꼭짓점에 다른 좌표를 연결합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "에이는 가로",
+          "position": 0,
+          "character": 28
+        },
+        {
+          "phrase": "비는 정수만큼",
+          "position": 0.16666666666666666,
+          "character": 61
+        },
+        {
+          "phrase": "씨는 축이",
+          "position": 0.3333333333333333,
+          "character": 85
+        },
+        {
+          "phrase": "디는 사선으로",
+          "position": 0.5,
+          "character": 102
+        },
+        {
+          "phrase": "이는 가로 진행이",
+          "position": 0.6666666666666666,
+          "character": 120
+        },
+        {
+          "phrase": "에프는 훨씬",
+          "position": 0.8333333333333334,
+          "character": 158
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "060",
+      "sourceBeatId": "M23-061",
+      "speech": "이번에는 같은 모양, 같은 흰빛 아래에서 재질만 바꾸겠습니다. 바탕색은 난반사 색이, 번쩍이는 부분의 색은 정반사 색이 좌우합니다. 정반사 색이 영이면 지수를 바꿔도 하이라이트는 없습니다. 지수가 작으면 넓게 퍼지고, 크면 좁게 모이죠. 빨간 바탕에 하얀 반짝임과 파란 바탕에 빨간 반짝임을 따로 구분할 수 있어야 합니다.",
+      "sourceParagraphs": [
+        "S113-P015",
+        "S113-P016",
+        "S113-P017",
+        "S113-P018",
+        "S113-P019"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-061",
+        "beatIndex": 61,
+        "englishTerm": "Diffuse / Specular / Exponent",
+        "koreanTerm": "난반사·정반사·광택 지수",
+        "meaning": "표면색과 반사색과 하이라이트 폭을 나눕니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": [],
+        "stepOrder": [
+          0,
+          8,
+          7
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "정반사 색이 영이면",
+          "position": 0,
+          "character": 74
+        },
+        {
+          "phrase": "지수가 작으면",
+          "position": 0.3333333333333333,
+          "character": 106
+        },
+        {
+          "phrase": "크면 좁게",
+          "position": 0.6666666666666666,
+          "character": 122
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "061",
+      "sourceBeatId": "M23-062",
+      "speech": "먼저 에이와 에프는 정반사 색이 영이어서 빨간 바탕과 파란 바탕만 남습니다. 에이치는 작은 밝은 점, 아이는 넓은 흰 반짝임이 빨간 바탕에 생깁니다. 제이는 그 빨간 바탕 위 반짝임이 푸른색입니다. 파란 바탕에서는 비의 붉은 반짝임이 씨와 이보다 좁습니다. 디는 더 어두운 바탕을, 지는 난반사 영으로 반짝임만 남긴 결과를 확인하세요. 같은 계산식의 항을 바꿨을 뿐인데 서로 다른 재질처럼 보입니다.",
+      "sourceParagraphs": [
+        "S113-P016",
+        "S113-P017",
+        "S113-P018",
+        "S113-P019"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-062",
+        "beatIndex": 62,
+        "englishTerm": "Material Comparison",
+        "koreanTerm": "재질 비교",
+        "meaning": "같은 빛 아래에서 한 재질표를 실제로 적용합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": [],
+        "stepOrder": [
+          0,
+          5,
+          7,
+          8,
+          9,
+          1,
+          2,
+          4,
+          3,
+          6
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "에이와",
+          "position": 0,
+          "character": 3
+        },
+        {
+          "phrase": "에프는",
+          "position": 0.1,
+          "character": 7
+        },
+        {
+          "phrase": "에이치는",
+          "position": 0.2,
+          "character": 43
+        },
+        {
+          "phrase": "아이는",
+          "position": 0.3,
+          "character": 57
+        },
+        {
+          "phrase": "제이는",
+          "position": 0.4,
+          "character": 84
+        },
+        {
+          "phrase": "비의 붉은",
+          "position": 0.5,
+          "character": 120
+        },
+        {
+          "phrase": "씨와 이보다",
+          "position": 0.6,
+          "character": 131
+        },
+        {
+          "phrase": "디는 더",
+          "position": 0.8,
+          "character": 144
+        },
+        {
+          "phrase": "지는 난반사",
+          "position": 0.9,
+          "character": 158
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "062",
+      "sourceBeatId": "M23-063",
+      "speech": "법선도 숫자와 그림을 이어서 확인해 보죠. 각 성분에 일을 더하고 절반으로 만든 뒤 이백오십오를 곱하면 영부터 이백오십오 범위에 들어갑니다. 가장 가까운 정수로 반올림하겠습니다. 마이너스 일, 영, 영은 영, 백이십팔, 백이십팔이 되고, 영, 영, 일은 백이십팔, 백이십팔, 이백오십오가 됩니다. 가운데 값 영을 정확히 저장하는 정수가 없다는 점도 기억해 두세요.",
+      "sourceParagraphs": [
+        "S113-P020",
+        "S113-P021",
+        "S113-P022"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-063",
+        "beatIndex": 63,
+        "englishTerm": "Normal Encoding",
+        "koreanTerm": "법선 인코딩",
+        "meaning": "음수 방향을 포함한 값을 채널에 저장합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "마이너스 일, 영, 영은",
+          "position": 0,
+          "character": 100
+        },
+        {
+          "phrase": "영, 영, 일은",
+          "position": 0.5,
+          "character": 133
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "063",
+      "sourceBeatId": "M23-064",
+      "speech": "나머지 두 방향에도 같은 계산을 합니다. 영 점 이육칠, 마이너스 영 점 오삼오, 영 점 팔공오는 백육십이, 오십구, 이백삼십으로 저장됩니다. 영, 영 점 팔오칠, 영 점 오일사는 백이십팔, 이백삼십칠, 백구십삼입니다. 이 숫자는 색 자체를 감상하려고 만든 값이 아니라 방향을 보관하는 데이터입니다. 그래서 노멀 맵을 색 텍스처처럼 감마 변환하면 안 됩니다.",
+      "sourceParagraphs": [
+        "S113-P022"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-064",
+        "beatIndex": 64,
+        "englishTerm": "8-bit Quantization",
+        "koreanTerm": "8비트 양자화",
+        "meaning": "실수를 정수 채널로 반올림해 저장합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "영 점 이육칠",
+          "position": 0,
+          "character": 23
+        },
+        {
+          "phrase": "영, 영 점 팔오칠",
+          "position": 0.5,
+          "character": 80
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "064",
+      "sourceBeatId": "M23-065",
+      "speech": "마지막으로 저장한 방향을 실제 물체의 방향으로 복원하겠습니다. 먼저 색을 이백오십오로 나누고 두 배 한 뒤 일을 빼면 접선 공간 법선이 나옵니다. 메시의 법선과 접선을 정규직교 기저로 정리하고, 외적에 거울 대칭 부호를 곱해 비탄젠트를 만듭니다. 복원한 세 성분을 각각 접선, 비탄젠트, 법선에 곱해 더하면 모델 공간 방향이 됩니다.",
+      "sourceParagraphs": [
+        "S113-P023",
+        "S113-P024",
+        "S113-P025"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-065",
+        "beatIndex": 65,
+        "englishTerm": "TBN Reconstruction",
+        "koreanTerm": "TBN 방향 복원",
+        "meaning": "세 기준축의 가중 합으로 방향을 옮깁니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "065",
+      "sourceBeatId": "M23-066",
+      "speech": "비의 경우를 보죠. 기본 법선이 위쪽이고 접선이 오른쪽이면, 법선 외적 접선은 뒤쪽을 향합니다. 그런데 거울 부호가 마이너스 일이어서 비탄젠트는 다시 앞쪽이 됩니다. 텍셀 백육, 백오십오, 이백오십을 복원하면 대략 마이너스 영 점 일육구, 영 점 이일육, 영 점 구육이입니다. 이 성분을 세 축에 얹으면 모델 방향은 대략 마이너스 영 점 일육구, 영 점 구육이, 영 점 이일육이 됩니다.",
+      "sourceParagraphs": [
+        "S113-P025"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-066",
+        "beatIndex": 66,
+        "englishTerm": "Mirrored Tangent Basis",
+        "koreanTerm": "거울 대칭 접선 기저",
+        "meaning": "부호를 적용해 올바른 세 번째 축을 만듭니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "066",
+      "sourceBeatId": "M23-067",
+      "speech": "나머지 에이, 씨, 디도 순서는 같습니다. 색을 방향으로 풀고, 그 정점의 기저를 만들고, 세 축의 가중합을 구합니다. 화면의 네 화살표를 비교해 보세요. 같은 계열의 보라색 텍셀이라도 정점의 기저가 다르면 물체 위에서는 다른 방향이 됩니다. 입력 법선과 접선이 소수 셋째 자리까지 주어졌으므로, 결과도 근삿값으로 비교합니다.",
+      "sourceParagraphs": [
+        "S113-P025"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-067",
+        "beatIndex": 67,
+        "englishTerm": "Normal Reconstruction Exercises",
+        "koreanTerm": "법선 복원 예제",
+        "meaning": "각 기저에서 같은 절차를 수치로 확인합니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": [],
+        "stepOrder": [
+          0,
+          2,
+          3
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "나머지 에이",
+          "position": 0,
+          "character": 0
+        },
+        {
+          "phrase": "씨, 디도",
+          "position": 0.3333333333333333,
+          "character": 8
+        },
+        {
+          "phrase": "화면의 네 화살표를",
+          "position": 0.6666666666666666,
+          "character": 67
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    },
+    {
+      "id": "067",
+      "sourceBeatId": "M23-068",
+      "speech": "처음에는 화면에 보이는 물체 하나였지만, 이제 그 안에서 정점, 좌표 공간, 텍스처, 법선, 깊이가 어떤 일을 하는지 연결할 수 있습니다. 정점 셰이더가 위치와 정보를 준비하고, 래스터화가 그 사이를 채우며, 픽셀 셰이더와 출력 단계가 보일 색을 결정합니다. 어떤 화면이 잘못 나왔을 때도 이 순서를 따라가 보세요. 어디에 놓였는지, 어떤 방향인지, 어떤 색을 계산했는지를 차례로 확인할 수 있습니다.",
+      "sourceParagraphs": [
+        "S110-P007",
+        "S111-P215",
+        "S111-P216",
+        "S113-P024",
+        "S113-P025"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M23-068",
+        "beatIndex": 68,
+        "englishTerm": "The Complete Pipeline",
+        "koreanTerm": "화면이 완성되는 흐름",
+        "meaning": "위치와 앞뒤와 표면색을 하나의 결과로 잇습니다",
+        "expandedTerm": true,
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "phaseSeconds": [],
+        "phasePositions": []
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "정점 셰이더가",
+          "position": 0,
+          "character": 78
+        },
+        {
+          "phrase": "래스터화가",
+          "position": 0.3333333333333333,
+          "character": 100
+        },
+        {
+          "phrase": "픽셀 셰이더와",
+          "position": 0.6666666666666666,
+          "character": 117
+        }
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-final-audio-and-layout-QA-pending",
+      "timing": "Actual word timestamps pending; no guessed observation pauses"
+    }
+  ]
+}

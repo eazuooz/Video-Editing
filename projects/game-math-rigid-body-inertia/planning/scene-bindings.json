@@ -1,0 +1,4349 @@
+{
+  "schemaVersion": 1,
+  "project": "game-math-rigid-body-inertia",
+  "updatedAt": "2026-11-04T20:45:03.031125+00:00",
+  "sourceNarrationSha256": "8ad08494c9c4a3f89a42695039d6b8fbaab31309f5f61c71d117548f54f68ede",
+  "sourceModelsSha256": "bcc33d7b35a21692ea98400a6ac478424d53e936bd305c5b2a338d90116a649e",
+  "sourceModels": "projects\\game-math-rigid-body-inertia\\production\\unity-staging\\rigid-shots.json",
+  "status": "complete-design-awaiting-runtime-and-speech-QA",
+  "allBodyParagraphsRetained": true,
+  "pendingImplementationBeatCount": 0,
+  "actualNativeGameParts": 3,
+  "humanViewed": false,
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M30-000-abstract",
+      "speech": "비시지에서 대포를 쏘자, 차체가 뒤로 밀리면서 동시에 들려 넘어갑니다. 물체가 이동하는 것과 돌아가는 것을 함께 계산하려면 무엇이 더 필요할까요? 힘을 가하는 위치와 질량 분포를 살펴보고, 회전 속도와 토크에서 충돌, 물리 엔진의 시간 갱신까지 연결하겠습니다. 먼저 하나의 물체에 이동과 회전이 함께 있다는 사실부터 정리해 보죠.",
+      "sourceParagraphs": [
+        "S125-P002",
+        "S125-P003",
+        "S125-P004",
+        "S125-P005"
+      ],
+      "renderer": "Unity",
+      "classification": "actual-game-thesis-abstract-with-explanation-handoff",
+      "shot": {
+        "beatId": "M30-000-abstract",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "위치에 대응하는 회전의 상태는 자세입니다",
+            "formula": "ω: 축 방향 × 회전율\n자세와 각속도는 다른 상태",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-001-orientation",
+              "englishTerm": "Angular Velocity",
+              "koreanTerm": "각속도",
+              "meaning": "자세와 각속도",
+              "picture": 29,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence",
+      "actualGamePart": {
+        "beat": "M30-000-abstract",
+        "sceneId": "000",
+        "candidate": "M30-G01-recoil-rotation",
+        "sourceId": "T3ncWUwKUns",
+        "game": "Besiege",
+        "sourceIn": 176,
+        "sourceOut": 188,
+        "sourceFile": "projects/game-math-rigid-body-inertia/production/local/footage-review/besiege-T3ncWUwKUns.mp4",
+        "sourceSha256": "04ec7450d387f48c034dc675a95c24e9ca17ad39cc708a30f31eb1dcd363cab7",
+        "recordingUrl": "https://www.youtube.com/watch?v=T3ncWUwKUns",
+        "decodedSize": [
+          1920,
+          1080
+        ],
+        "nativeFps": "30000/1001",
+        "playbackRate": 1,
+        "hold": 0,
+        "loop": false,
+        "freezePadding": false,
+        "role": "Observed translation plus rotation motivates angular state and torque",
+        "observed": {
+          "before": "Vehicle rests facing wall with barrel above wheelbase.",
+          "action": "Firing is followed by rearing, backward rolling and overturning.",
+          "result": "Vehicle position and orientation both change."
+        },
+        "claimLimits": [
+          "Reuse of M27 same source is deliberate return to interaction after adding rotational state, not unrelated montage.",
+          "Do not infer center of mass, force magnitude, exact lever arm or one torque cause from pixels.",
+          "Ground contacts and gravity also act; isolate one force application only in own model."
+        ],
+        "annotationPlan": {
+          "target": "Vehicle body contour and rotation arc; label observed turn, not hidden measured torque.",
+          "style": "Progressive open contour/short leader/path with labels. No invented game measurements or internal force/skeleton data.",
+          "tracking": "These inspected sample frames are planning evidence, not per-frame tracking. Follow actual target; hide at occlusion/out-of-frame; clear at cut.",
+          "captionClearance": "Fixed bottom-centre captions and game UI protected; foreground callout should not cover the action."
+        },
+        "reviewEvidence": "projects/game-math-rigid-body-inertia/production/local/footage-review/besiege-recoil-fine/sampling.json",
+        "nativeDecodeEvidence": {
+          "id": "M30-G01-recoil-rotation",
+          "sourceIn": 176,
+          "sourceOut": 188,
+          "sourceSha256": "04ec7450d387f48c034dc675a95c24e9ca17ad39cc708a30f31eb1dcd363cab7",
+          "mode": "software-video-decode-entire-native-interval-no-hwaccel",
+          "returnCode": 0,
+          "stderr": "",
+          "log": "projects/game-math-rigid-body-inertia/production/local/footage-native-qa/M30-G01-recoil-rotation-decode.log",
+          "nativeFrame": "projects/game-math-rigid-body-inertia/production/local/footage-native-qa/M30-G01-recoil-rotation-native.jpg",
+          "nativeFrameTime": 182.0,
+          "nativeFrameSize": [
+            1920,
+            1080
+          ],
+          "frameViewed": false,
+          "audioListeningCompleted": false,
+          "movingCompositeApproved": false
+        },
+        "speechTarget": {
+          "prefixKo": "비시지에서 대포를 쏘자",
+          "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+        },
+        "handoffToExplanation": "Same neutral cannon/lever-arm model preserves original force-location question and derivation.",
+        "audio": {
+          "nativeAudioPresent": true,
+          "actualListening": "pending",
+          "addedLectureBgm": false,
+          "mix": "Preserve verified synchronized original game audio under normal narration ducking; identify mixed music before final use."
+        },
+        "fullOriginalAudioIn": 176,
+        "fullOriginalAudioOut": 188,
+        "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending",
+        "duration": 12
+      }
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M30-001-orientation",
+      "speech": "위치에 대응하는 회전의 상태는 자세입니다. 회전행렬과 쿼터니언은 같은 자세를 다른 형식으로 저장합니다. 각속도는 얼마나 빠르게 어느 축으로 도는지, 각가속도는 그 각속도가 얼마나 변하는지를 나타냅니다. 다만 삼차원 각속도 벡터는 오일러각이나 쿼터니언 성분을 그대로 미분한 값이 아닙니다. 자세를 갱신할 때 이 차이를 다시 확인하겠습니다.",
+      "sourceParagraphs": [
+        "S125-P007",
+        "S125-P008",
+        "S125-P009",
+        "S125-P010",
+        "S125-P011"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-001-orientation",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "위치에 대응하는 회전의 상태는 자세입니다",
+            "formula": "ω: 축 방향 × 회전율\n자세와 각속도는 다른 상태",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-001-orientation",
+              "englishTerm": "Angular Velocity",
+              "koreanTerm": "각속도",
+              "meaning": "자세와 각속도",
+              "picture": 29,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "위치에 대응하는 회전의 상태는 자세입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M30-002-spin-orbit",
+      "speech": "자전은 물체의 자세 변화이고, 공전은 다른 점 주위를 도는 위치 변화입니다. 로봇을 제자리에서 돌리면 머리와 손은 서로 다른 크기의 원을 그립니다. 각 점의 원 중심은 회전축에서 그 점과 가장 가까운 곳입니다. 축의 단위 방향에 초당 회전하는 라디안 수를 곱하면 각속도 벡터가 됩니다. 축에서 떨어진 점들은 같은 각속도로 돌아도 선속력은 서로 다릅니다.",
+      "sourceParagraphs": [
+        "S125-P012",
+        "S125-P013",
+        "S125-P014",
+        "S125-P015",
+        "S125-P016",
+        "S125-P017",
+        "S125-P018",
+        "S125-P019",
+        "S125-P020",
+        "S125-P021",
+        "S125-P022",
+        "S125-P023"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-002-spin-orbit",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "자전은 물체의 자세 변화이고, 공전은 다른 점 주위를 도는 위치 변화입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-002-spin-orbit",
+              "englishTerm": "Spin and Revolution",
+              "koreanTerm": "자전과 공전",
+              "meaning": "자전과 공전",
+              "picture": 29,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          },
+          {
+            "anchor": "각속도 벡터가",
+            "formula": "ω = ω크기 × 단위 회전축",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-002-spin-orbit",
+              "englishTerm": "Spin and Revolution",
+              "koreanTerm": "자전과 공전",
+              "meaning": "자전과 공전",
+              "picture": 29,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          },
+          {
+            "anchor": "선속력은 서로",
+            "formula": "같은 ω · 다른 r → 다른 |v|",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-002-spin-orbit",
+              "englishTerm": "Spin and Revolution",
+              "koreanTerm": "자전과 공전",
+              "meaning": "자전과 공전",
+              "picture": 29,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "자전은 물체의 자세 변화이고, 공전은 다른 점 주위를 도는 위치 변화입니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "각속도 벡터가",
+          "position": 0.3333333333333333,
+          "character": 147
+        },
+        {
+          "phrase": "선속력은 서로",
+          "position": 0.6666666666666666,
+          "character": 184
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M30-003-instant-axis",
+      "speech": "왕국의 눈물에서는 통나무와 돛대를 붙인 뗏목을 한 번에 들어 옮깁니다. 붙어 있는 단단한 부분들은 서로의 배치를 유지한 채 같이 움직이죠. 이런 물체의 움직임을 이동과 회전으로 나누어 보겠습니다. 물체가 이동하면 각 점의 속도에서 질량중심의 속도를 먼저 뺍니다. 남은 회전 성분을 각속도로 설명합니다. 회전축 위 점은 반지름이 영이라 그 점의 속도만으로 각속도를 알아낼 수 없습니다. 각가속도는 각속도의 시간 미분입니다. 외부 토크가 없을 때 보존되는 것은 각운동량이며, 비대칭 물체의 각속도가 항상 일정한 것은 아닙니다. 그 이유는 관성을 삼차원으로 확장할 때 드러납니다.",
+      "sourceParagraphs": [
+        "S125-P024",
+        "S125-P025",
+        "S125-P026",
+        "S125-P027",
+        "S125-P028",
+        "S125-P029",
+        "S125-P030",
+        "S125-P031",
+        "S125-P032",
+        "S125-P033"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-003-instant-axis",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "왕국의 눈물에서는 통나무와 돛대를 붙인 뗏목을 한 번에 들어 옮깁니다",
+            "formula": "vpoint = vcm + ω × r",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-003-instant-axis",
+              "englishTerm": "Rigid-Body Point Velocity",
+              "koreanTerm": "이동과 회전의 분리",
+              "meaning": "이동과 회전의 분리",
+              "picture": 37,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 0,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "왕국의 눈물에서는 통나무와 돛대를 붙인 뗏목을 한 번에 들어 옮깁니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence",
+      "actualGamePart": {
+        "beat": "M30-003-instant-axis",
+        "sceneId": "003",
+        "candidate": "M30-G02-linked-assembly",
+        "sourceId": "YNQ20CKbY8U",
+        "game": "The Legend of Zelda: Tears of the Kingdom",
+        "sourceIn": 1010,
+        "sourceOut": 1020,
+        "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v3/sources/YNQ20CKbY8U-hls.mp4",
+        "sourceSha256": "2f415500919c69dc8525bacf728d355bf10bf28de7a854dd3032c67ab1a29cc2",
+        "recordingUrl": "https://www.youtube.com/watch?v=YNQ20CKbY8U",
+        "decodedSize": [
+          1920,
+          1080
+        ],
+        "nativeFps": "60/1",
+        "playbackRate": 1,
+        "hold": 0,
+        "loop": false,
+        "freezePadding": false,
+        "role": "Joined solid parts motivate translation/rotation split",
+        "observed": {
+          "before": "Finished raft sits by shore.",
+          "action": "Ultrahand lifts joined logs and sail, moves assembly to water and releases.",
+          "result": "Parts retain visible relative arrangement during manipulation; water then supports raft."
+        },
+        "claimLimits": [
+          "Cloth can deform; identify rigid logs/mast, not whole sailcloth as rigid.",
+          "No claim that Nintendo uses one particular rigid body, joint type or compound collider."
+        ],
+        "annotationPlan": {
+          "target": "Contour logs and mast with fixed-part markers, hide at occlusion; move relative-reference leaders with assembly.",
+          "style": "Progressive open contour/short leader/path with labels. No invented game measurements or internal force/skeleton data.",
+          "tracking": "These inspected sample frames are planning evidence, not per-frame tracking. Follow actual target; hide at occlusion/out-of-frame; clear at cut.",
+          "captionClearance": "Fixed bottom-centre captions and game UI protected; foreground callout should not cover the action."
+        },
+        "reviewEvidence": "projects/game-math-rigid-body-inertia/production/local/footage-review/totk-rigid-assembly-fine/sampling.json",
+        "nativeDecodeEvidence": {
+          "id": "M30-G02-linked-assembly",
+          "sourceIn": 1010,
+          "sourceOut": 1020,
+          "sourceSha256": "2f415500919c69dc8525bacf728d355bf10bf28de7a854dd3032c67ab1a29cc2",
+          "mode": "software-video-decode-entire-native-interval-no-hwaccel",
+          "returnCode": 0,
+          "stderr": "",
+          "log": "projects/game-math-rigid-body-inertia/production/local/footage-native-qa/M30-G02-linked-assembly-decode.log",
+          "nativeFrame": "projects/game-math-rigid-body-inertia/production/local/footage-native-qa/M30-G02-linked-assembly-native.jpg",
+          "nativeFrameTime": 1015.0,
+          "nativeFrameSize": [
+            1920,
+            1080
+          ],
+          "frameViewed": false,
+          "audioListeningCompleted": false,
+          "movingCompositeApproved": false
+        },
+        "speechTarget": {
+          "prefixKo": "왕국의 눈물에서는 통나무와 돛대를",
+          "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+        },
+        "handoffToExplanation": "Original centre-of-mass subtraction, angular acceleration and inertia tensors retain source order.",
+        "audio": {
+          "nativeAudioPresent": true,
+          "actualListening": "pending",
+          "addedLectureBgm": false,
+          "mix": "Preserve verified synchronized original game audio under normal narration ducking; identify mixed music before final use."
+        },
+        "fullOriginalAudioIn": 1010,
+        "fullOriginalAudioOut": 1020,
+        "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending",
+        "duration": 10
+      }
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M30-004-disk",
+      "speech": "먼저 평면 안에서만 도는 장치를 만들겠습니다. 원판 자체의 질량은 무시하고, 중심에서 떨어진 곳에 질점 하나를 붙입니다. 질점에서 바깥으로 미는 힘은 지지 구조가 막고, 원에 접하는 힘이 회전 속도를 바꿉니다. 원판의 크기가 아니라 질점의 질량과 위치만 관성에 기여하는 사고실험입니다.",
+      "sourceParagraphs": [
+        "S125-P034",
+        "S125-P035",
+        "S125-P036",
+        "S125-P037",
+        "S125-P038",
+        "S125-P039",
+        "S125-P040",
+        "S125-P041",
+        "S125-P042"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-004-disk",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "먼저 평면 안에서만 도는 장치를 만들겠습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-004-disk",
+              "englishTerm": "Fixed-Axis Rotation",
+              "koreanTerm": "고정축 회전",
+              "meaning": "고정축부터 시작하기",
+              "picture": 30,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "먼저 평면 안에서만 도는 장치를 만들겠습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M30-005-tangent",
+      "speech": "힘을 반지름과 평행한 성분과 수직인 성분으로 나눕니다. 수직 성분은 힘의 크기에 두 방향 사이 각의 사인을 곱한 값입니다. 질량으로 나누면 접선 가속도이고, 다시 반지름으로 나누면 각가속도입니다. 접선 가속도는 회전율을 바꾸고, 구심가속도는 속도 방향을 안쪽으로 바꿔 원 궤도를 유지합니다. 서로 다른 역할입니다.",
+      "sourceParagraphs": [
+        "S125-P043",
+        "S125-P044",
+        "S125-P045",
+        "S125-P046",
+        "S125-P047",
+        "S125-P048",
+        "S125-P049",
+        "S125-P050"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-005-tangent",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "힘을 반지름과 평행한 성분과 수직인 성분으로 나눕니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-005-tangent",
+              "englishTerm": "Tangential Acceleration",
+              "koreanTerm": "접선 가속도",
+              "meaning": "접선 가속도와 각가속도",
+              "picture": 30,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 45,
+              "platformSpeed": 0
+            }
+          },
+          {
+            "anchor": "구심가속도는",
+            "formula": "접선: 속력 변화\n구심: 속도 방향 변화",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-005-tangent",
+              "englishTerm": "Tangential Acceleration",
+              "koreanTerm": "접선 가속도",
+              "meaning": "접선 가속도와 각가속도",
+              "picture": 30,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 0,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "힘을 반지름과 평행한 성분과 수직인 성분으로 나눕니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "구심가속도는",
+          "position": 0.5,
+          "character": 128
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M30-006-lever",
+      "speech": "이번에는 질점은 그대로 두고 다른 곳의 손잡이를 밀겠습니다. 중심에서 힘을 가하는 곳까지의 벡터가 지렛팔입니다. 질점까지의 거리와는 다릅니다. 같은 방향의 힘을 두 배 멀리 가하면 회전시키는 효과도 두 배가 됩니다. 힘을 가하는 곳을 옮긴 것이지, 질량 분포를 옮긴 것은 아닙니다. 이 구분이 뒤의 관성모멘트와 연결됩니다.",
+      "sourceParagraphs": [
+        "S125-P051",
+        "S125-P052",
+        "S125-P053",
+        "S125-P054",
+        "S125-P055",
+        "S125-P056",
+        "S125-P057"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-006-lever",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "이번에는 질점은 그대로 두고 다른 곳의 손잡이를 밀겠습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-006-lever",
+              "englishTerm": "Lever Arm",
+              "koreanTerm": "지렛팔",
+              "meaning": "힘의 위치와 질량의 위치",
+              "picture": 4,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 2,
+              "pointMassRadius": 1
+            }
+          },
+          {
+            "anchor": "두 배 멀리",
+            "formula": "힘의 지렛팔만 2배\n질량 반지름은 그대로",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-006-lever",
+              "englishTerm": "Lever Arm",
+              "koreanTerm": "지렛팔",
+              "meaning": "힘의 위치와 질량의 위치",
+              "picture": 4,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 4,
+              "pointMassRadius": 1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "이번에는 질점은 그대로 두고 다른 곳의 손잡이를 밀겠습니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "두 배 멀리",
+          "position": 0.5,
+          "character": 90
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M30-007-torque",
+      "speech": "힘의 회전 효과가 토크입니다. 힘, 지렛팔 길이, 그 사이 각의 사인을 곱합니다. 단위는 뉴턴미터이며 에너지를 뜻하는 줄과 구분합니다. 문을 같은 힘으로 밀 때 경첩 가까이보다 손잡이 가까이를 미는 편이 쉽습니다. 힘이 문을 따라 경첩 쪽으로 향하면 토크가 영이고, 지렛팔에 직각이면 가장 큽니다.",
+      "sourceParagraphs": [
+        "S125-P058",
+        "S125-P059",
+        "S125-P060",
+        "S125-P061",
+        "S125-P062",
+        "S125-P063",
+        "S125-P064",
+        "S125-P065",
+        "S125-P066"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-007-torque",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "힘의 회전 효과가 토크입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-007-torque",
+              "englishTerm": "Torque",
+              "koreanTerm": "토크",
+              "meaning": "토크와 문손잡이",
+              "picture": 31,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 3.2
+            }
+          },
+          {
+            "anchor": "경첩 쪽으로",
+            "formula": "θ=0° → τ=0",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-007-torque",
+              "englishTerm": "Torque",
+              "koreanTerm": "토크",
+              "meaning": "토크와 문손잡이",
+              "picture": 31,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 0,
+              "platformSpeed": 0,
+              "leverArm": 3.2
+            }
+          },
+          {
+            "anchor": "직각이면",
+            "formula": "θ=90° → |τ|=rF",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-007-torque",
+              "englishTerm": "Torque",
+              "koreanTerm": "토크",
+              "meaning": "토크와 문손잡이",
+              "picture": 31,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 3.2
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "힘의 회전 효과가 토크입니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "경첩 쪽으로",
+          "position": 0.3333333333333333,
+          "character": 129
+        },
+        {
+          "phrase": "직각이면",
+          "position": 0.6666666666666666,
+          "character": 154
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M30-008-couple",
+      "speech": "자유 물체의 질량중심을 지나는 작용선으로 밀면 이동은 생겨도 그 중심 주위 토크는 없습니다. 반대로 서로 떨어진 두 곳에 같은 크기의 반대 힘을 주면, 힘의 합은 영인데 토크는 남습니다. 이런 힘의 쌍을 우력이라고 합니다. 렌치나 회전 모터를 이해하는 단서입니다. 충돌에서 짧게 받은 토크는 각충격량으로 각운동량을 바꿉니다.",
+      "sourceParagraphs": [
+        "S125-P067",
+        "S125-P068",
+        "S125-P069",
+        "S125-P070",
+        "S125-P071",
+        "S125-P072",
+        "S125-P073"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-008-couple",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "자유 물체의 질량중심을 지나는 작용선으로 밀면 이동은 생겨도 그 중심 주위 토크는 없습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-008-couple",
+              "englishTerm": "Couple",
+              "koreanTerm": "우력",
+              "meaning": "힘 없이 도는 경우",
+              "picture": 32,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          },
+          {
+            "anchor": "반대로 서로",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-008-couple",
+              "englishTerm": "Couple",
+              "koreanTerm": "우력",
+              "meaning": "힘 없이 도는 경우",
+              "picture": 32,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "자유 물체의 질량중심을 지나는 작용선으로 밀면 이동은 생겨도 그 중심 주위 토크는 없습니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "반대로 서로",
+          "position": 0.5,
+          "character": 52
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M30-009-inertia",
+      "speech": "이번에는 지렛팔을 고정하고 질점을 바깥으로 옮깁니다. 같은 토크에 대한 각가속도는 작아집니다. 회전에 대한 저항인 관성모멘트는 질량 곱하기 축까지 거리의 제곱입니다. 질량을 두 배 멀리 옮기면 네 배가 되죠. 여러 질점이면 각각의 질량과 거리 제곱을 곱해 더합니다. 힘을 가한 위치가 아니라 질량의 분포로 정하는 값입니다.",
+      "sourceParagraphs": [
+        "S125-P074",
+        "S125-P075",
+        "S125-P076",
+        "S125-P077",
+        "S125-P078",
+        "S125-P079",
+        "S125-P080",
+        "S125-P081",
+        "S125-P082"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-009-inertia",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "이번에는 지렛팔을 고정하고 질점을 바깥으로 옮깁니다",
+            "formula": "I = mr²\n같은 τ: α = τ/I",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-009-inertia",
+              "englishTerm": "Moment of Inertia",
+              "koreanTerm": "관성모멘트",
+              "meaning": "질량을 바깥으로 옮기기",
+              "picture": 4,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 2,
+              "pointMassRadius": 1
+            }
+          },
+          {
+            "anchor": "두 배 멀리",
+            "formula": "r → 2r\nI → 4I",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-009-inertia",
+              "englishTerm": "Moment of Inertia",
+              "koreanTerm": "관성모멘트",
+              "meaning": "질량을 바깥으로 옮기기",
+              "picture": 4,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 2,
+              "pointMassRadius": 2
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "이번에는 지렛팔을 고정하고 질점을 바깥으로 옮깁니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "두 배 멀리",
+          "position": 0.5,
+          "character": 97
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M30-010-four-distributions",
+      "speech": "총질량이 모두 육인 네 배치를 비교하겠습니다. 질량 이씩을 거리 삼, 이, 일에 두면 관성모멘트는 이십팔입니다. 셋을 모두 거리 삼에 두면 오십사입니다. 무거운 질량을 바깥에 놓은 배치는 삼십육, 안쪽에 모은 배치는 이십입니다. 이동하기 어려운 정도는 같은 총질량으로 정해지지만, 돌리기 어려운 정도는 크게 달라집니다. 연속적인 물체라면 이 합이 적분이 됩니다.",
+      "sourceParagraphs": [
+        "S125-P083",
+        "S125-P084",
+        "S125-P085",
+        "S125-P086",
+        "S125-P087",
+        "S125-P088",
+        "S125-P089",
+        "S125-P090"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-010-four-distributions",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "총질량이 모두 육인 네 배치를 비교하겠습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-010-four-distributions",
+              "englishTerm": "Mass Distribution",
+              "koreanTerm": "같은 질량 네 가지 배치",
+              "meaning": "같은 질량 네 가지 배치",
+              "picture": 5,
+              "duration": 3,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "총질량이 모두 육인 네 배치를 비교하겠습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M30-011-angular-momentum",
+      "speech": "고정축에서는 토크가 관성모멘트 곱하기 각가속도이고, 각운동량은 관성모멘트 곱하기 각속도입니다. 질점 하나는 반지름과 선운동량의 접선 성분을 곱해 같은 양을 구할 수 있습니다. 모든 질점의 기여를 더하면 강체 전체의 각운동량이 됩니다. 토크를 시간에 대해 적분하면 각운동량의 변화이고, 초기 각운동량에 더해야 합니다. 알짜 외부 토크가 영이면 각운동량이 보존됩니다.",
+      "sourceParagraphs": [
+        "S125-P091",
+        "S125-P092",
+        "S125-P093",
+        "S125-P094",
+        "S125-P095",
+        "S125-P096",
+        "S125-P097",
+        "S125-P098",
+        "S125-P099",
+        "S125-P100",
+        "S125-P101",
+        "S125-P102",
+        "S125-P103",
+        "S125-P104",
+        "S125-P105",
+        "S125-P106",
+        "S125-P107",
+        "S125-P108",
+        "S125-P109",
+        "S125-P110",
+        "S125-P111"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-011-angular-momentum",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "고정축에서는 토크가 관성모멘트 곱하기 각가속도이고, 각운동량은 관성모멘트 곱하기 각속도입니다",
+            "formula": "고정축: L=Iω\nτ=dL/dt\nL(t)=L₀+∫τdt",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-011-angular-momentum",
+              "englishTerm": "Angular Momentum",
+              "koreanTerm": "각운동량",
+              "meaning": "회전의 운동량",
+              "picture": 4,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 2,
+              "pointMassRadius": 1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "고정축에서는 토크가 관성모멘트 곱하기 각가속도이고, 각운동량은 관성모멘트 곱하기 각속도입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M30-012-distance-recap",
+      "speech": "문손잡이를 멀리 두면 토크가 커집니다. 하지만 문의 질량을 경첩에서 멀리 옮기면 관성모멘트가 커집니다. 앞의 변화는 같은 힘으로 더 잘 돌게 하고, 뒤의 변화는 같은 토크에 덜 반응하게 합니다. 이제 이 한 축의 관계를 삼차원으로 넓혀 보겠습니다.",
+      "sourceParagraphs": [
+        "S125-P112",
+        "S125-P114",
+        "S125-P115",
+        "S125-P116"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-012-distance-recap",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "문손잡이를 멀리 두면 토크가 커집니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-012-distance-recap",
+              "englishTerm": "Lever Arm versus Mass Radius",
+              "koreanTerm": "두 거리의 차이",
+              "meaning": "두 거리의 차이",
+              "picture": 4,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 2,
+              "pointMassRadius": 1
+            }
+          },
+          {
+            "anchor": "문의 질량을",
+            "formula": "질량 반지름 증가\nI 증가 → 같은 토크에 α 감소",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-012-distance-recap",
+              "englishTerm": "Lever Arm versus Mass Radius",
+              "koreanTerm": "두 거리의 차이",
+              "meaning": "두 거리의 차이",
+              "picture": 4,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 2,
+              "pointMassRadius": 2
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "문손잡이를 멀리 두면 토크가 커집니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "문의 질량을",
+          "position": 0.5,
+          "character": 26
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M30-013-cross",
+      "speech": "삼차원 토크는 지렛팔과 힘의 외적으로 구합니다. 외적에 두 벡터의 길이와 사인이 이미 들어 있고, 결과 방향은 회전 효과의 축을 나타냅니다. 질점의 각운동량도 위치 벡터와 선운동량의 외적입니다. 이제 남은 질문은, 고정축에서 숫자 하나였던 관성모멘트를 삼차원에서 무엇으로 바꾸느냐입니다.",
+      "sourceParagraphs": [
+        "S125-P117",
+        "S125-P118",
+        "S125-P119",
+        "S125-P120",
+        "S125-P121",
+        "S125-P122",
+        "S125-P123",
+        "S125-P124",
+        "S125-P125",
+        "S125-P126",
+        "S125-P127"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-013-cross",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "삼차원 토크는 지렛팔과 힘의 외적으로 구합니다",
+            "formula": "τ = r × F\nL = r × p",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-013-cross",
+              "englishTerm": "Torque as a Cross Product",
+              "koreanTerm": "외적으로 표현한 토크",
+              "meaning": "삼차원의 외적",
+              "picture": 30,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "삼차원 토크는 지렛팔과 힘의 외적으로 구합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M30-014-tensor-derive",
+      "speech": "선운동량에 질량 곱하기 속도를 넣고, 회전하는 점의 속도에는 각속도와 위치의 외적을 넣겠습니다. 그러면 위치와, 각속도 외적 위치의 외적이 됩니다. 엑스 성분부터 펼치면 와이 제곱 더하기 제트 제곱이 오메가 엑스에 붙습니다. 나머지 각속도 성분에도 계수를 모읍니다. 세 줄을 행렬로 묶으면, 각운동량은 그 행렬 곱하기 각속도가 됩니다.",
+      "sourceParagraphs": [
+        "S125-P128",
+        "S125-P129",
+        "S125-P130"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-014-tensor-derive",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "선운동량에 질량 곱하기 속도를 넣고, 회전하는 점의 속도에는 각속도와 위치의 외적을 넣겠습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-014-tensor-derive",
+              "englishTerm": "Inertia Tensor Derivation",
+              "koreanTerm": "관성 텐서 유도",
+              "meaning": "각속도 앞의 계수 찾기",
+              "picture": 34,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "선운동량에 질량 곱하기 속도를 넣고, 회전하는 점의 속도에는 각속도와 위치의 외적을 넣겠습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M30-015-anisotropy",
+      "speech": "이 행렬이 관성 텐서입니다. 축에 따라 회전 저항이 다르다는 뜻을 담습니다. 긴 막대를 길이 방향으로 굴리는 것과 헬리콥터 날개처럼 돌리는 것은 다르죠. 대각 성분은 각 축의 관성, 대각 밖의 성분은 축 사이 결합을 나타냅니다. 대칭행렬이지만 회전행렬은 아닙니다. 대칭이라는 이유로 행벡터와 열벡터의 곱 순서를 마음대로 섞어서도 안 됩니다.",
+      "sourceParagraphs": [
+        "S125-P131",
+        "S125-P132",
+        "S125-P133",
+        "S125-P134",
+        "S125-P135",
+        "S125-P136"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-015-anisotropy",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "이 행렬이 관성 텐서입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-015-anisotropy",
+              "englishTerm": "Inertia Tensor",
+              "koreanTerm": "관성 텐서",
+              "meaning": "관성 텐서",
+              "picture": 33,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          },
+          {
+            "anchor": "헬리콥터 날개처럼",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-015-anisotropy",
+              "englishTerm": "Inertia Tensor",
+              "koreanTerm": "관성 텐서",
+              "meaning": "관성 텐서",
+              "picture": 33,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "이 행렬이 관성 텐서입니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "헬리콥터 날개처럼",
+          "position": 0.5,
+          "character": 64
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M30-016-general-dynamics",
+      "speech": "평면의 토크는 관성 곱하기 각가속도였지만, 삼차원에서는 한 항이 더 필요합니다. 열벡터로 쓰면 토크는 관성 텐서 곱하기 각가속도에, 각속도 외적 각운동량을 더한 값입니다. 비대칭 물체는 각속도와 각운동량이 평행하지 않을 수 있습니다. 그래서 토크가 영이어도 각운동량을 유지하며 각속도가 변할 수 있죠. 구처럼 모든 방향의 관성이 같거나 외적 항이 영인 조건에서 단순식으로 줄어듭니다.",
+      "sourceParagraphs": [
+        "S125-P137",
+        "S125-P138",
+        "S125-P139",
+        "S125-P140",
+        "S125-P141",
+        "S125-P142",
+        "S125-P152",
+        "S125-P153",
+        "S125-P154",
+        "S125-P155",
+        "S125-P156"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-016-general-dynamics",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "평면의 토크는 관성 곱하기 각가속도였지만, 삼차원에서는 한 항이 더 필요합니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-016-general-dynamics",
+              "englishTerm": "Gyroscopic Term",
+              "koreanTerm": "자이로 항",
+              "meaning": "토크가 영이어도 축은 바뀐다",
+              "picture": 35,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "평면의 토크는 관성 곱하기 각가속도였지만, 삼차원에서는 한 항이 더 필요합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M30-017-shapes",
+      "speech": "복잡한 물체도 작은 질량 요소들의 관성 텐서를 합해 계산할 수 있습니다. 연속 분포라면 적분입니다. 실무에서는 상자, 구, 원기둥처럼 공식이 알려진 도형으로 근사하기도 합니다. 사람의 머리를 구로 다루더라도 구 중심과 몸 전체의 질량중심은 다릅니다. 각 도형의 값을 그냥 더하기 전에 기준점을 맞춰야 합니다.",
+      "sourceParagraphs": [
+        "S125-P143",
+        "S125-P144",
+        "S125-P145",
+        "S125-P146",
+        "S125-P147"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-017-shapes",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "복잡한 물체도 작은 질량 요소들의 관성 텐서를 합해 계산할 수 있습니다",
+            "formula": "각 부분의 질량·형상·중심\n→ 같은 기준점으로 변환 후 합산",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-017-shapes",
+              "englishTerm": "Composite Inertia",
+              "koreanTerm": "복잡한 물체의 근사",
+              "meaning": "복잡한 물체의 근사",
+              "picture": 9,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "복잡한 물체도 작은 질량 요소들의 관성 텐서를 합해 계산할 수 있습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M30-018-parallel-axis",
+      "speech": "질량중심 기준 관성에, 기준점까지 떨어진 거리로 생기는 추가 관성을 더하는 것이 평행축 정리입니다. 삼차원에서는 변위 벡터의 길이 제곱을 단위행렬에 곱한 뒤, 변위 벡터의 바깥곱을 빼고 질량을 곱합니다. 예를 들어 질량 이, 중심 관성 영점이인 물체의 축을 한 미터 옮기면 해당 축 관성은 이점이가 됩니다. 각 도형의 중심에서 전체 중심으로 옮긴 값을 더하면 됩니다.",
+      "sourceParagraphs": [
+        "S125-P148",
+        "S125-P149",
+        "S125-P150",
+        "S125-P151"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-018-parallel-axis",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "질량중심 기준 관성에, 기준점까지 떨어진 거리로 생기는 추가 관성을 더하는 것이 평행축 정리입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-018-parallel-axis",
+              "englishTerm": "Parallel-Axis Theorem",
+              "koreanTerm": "평행축 정리",
+              "meaning": "평행축 정리",
+              "picture": 36,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "질량중심 기준 관성에, 기준점까지 떨어진 거리로 생기는 추가 관성을 더하는 것이 평행축 정리입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M30-019-contact-speed",
+      "speech": "회전까지 알았으니 충돌로 돌아가겠습니다. 필요한 것은 질량중심 속도만이 아니라 접촉점의 속도입니다. 질량중심 이동 속도에 각속도 외적 접촉점의 상대 위치를 더합니다. 긴 막대의 중심이 멈춰 있어도 끝은 빠르게 벽으로 다가갈 수 있죠. 두 물체의 접촉점 속도를 뺀 뒤, 법선 방향 접근 성분을 구해야 합니다.",
+      "sourceParagraphs": [
+        "S125-P157",
+        "S125-P158",
+        "S125-P159",
+        "S125-P160",
+        "S125-P161",
+        "S125-P162",
+        "S125-P163",
+        "S125-P164",
+        "S125-P165",
+        "S125-P166",
+        "S125-P167",
+        "S125-P168",
+        "S125-P169",
+        "S125-P170"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-019-contact-speed",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "회전까지 알았으니 충돌로 돌아가겠습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-019-contact-speed",
+              "englishTerm": "Contact-Point Velocity",
+              "koreanTerm": "접촉점 속도",
+              "meaning": "접촉점이 얼마나 움직이나",
+              "picture": 37,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 0,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          },
+          {
+            "anchor": "중심이 멈춰",
+            "formula": "vcm=0이어도\nω×r ≠ 0이면 접촉점 이동",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-019-contact-speed",
+              "englishTerm": "Contact-Point Velocity",
+              "koreanTerm": "접촉점 속도",
+              "meaning": "접촉점이 얼마나 움직이나",
+              "picture": 37,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 0,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "회전까지 알았으니 충돌로 돌아가겠습니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "중심이 멈춰",
+          "position": 0.5,
+          "character": 99
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M30-020-angular-impulse",
+      "speech": "접촉점에 충격량을 주면 질량중심의 속도가 바뀌고, 위치 벡터 외적 충격량만큼 각운동량도 바뀝니다. 역관성 텐서를 곱하면 각속도 변화가 됩니다. 따라서 새 접촉점 속도에는 이동의 변화와 회전의 변화가 모두 들어갑니다. 물체가 돌 수 있으면, 중심의 접근을 전부 멈추지 않아도 접촉한 부분이 서로 떨어질 수 있습니다.",
+      "sourceParagraphs": [
+        "S125-P171",
+        "S125-P172",
+        "S125-P173",
+        "S125-P174",
+        "S125-P175",
+        "S125-P176"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-020-angular-impulse",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "접촉점에 충격량을 주면 질량중심의 속도가 바뀌고, 위치 벡터 외적 충격량만큼 각운동량도 바뀝니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-020-angular-impulse",
+              "englishTerm": "Off-Center Impulse",
+              "koreanTerm": "질량중심을 비껴 작용한 충격량",
+              "meaning": "충격이 이동과 회전을 함께 바꾼다",
+              "picture": 6,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 1.5
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "접촉점에 충격량을 주면 질량중심의 속도가 바뀌고, 위치 벡터 외적 충격량만큼 각운동량도 바뀝니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M30-021-rotational-denominator",
+      "speech": "충돌 뒤 법선 상대속도가 충돌 전의 마이너스 반발계수 배가 되게 맞춥니다. 새 접촉점 속도 식을 넣고 충격량 배율을 모으면, 앞서의 역질량 합에 회전으로 움직이기 쉬운 정도가 더해집니다. 같은 충돌에서 회전이 허용되면 이 분모가 커져 더 작은 충격량으로 접촉을 해결할 수 있습니다. 회전을 잠그면 추가 항이 사라져 앞의 선운동 공식으로 돌아갑니다.",
+      "sourceParagraphs": [
+        "S125-P177",
+        "S125-P178",
+        "S125-P179",
+        "S125-P180",
+        "S125-P181",
+        "S125-P182"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-021-rotational-denominator",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "충돌 뒤 법선 상대속도가 충돌 전의 마이너스 반발계수 배가 되게 맞춥니다",
+            "formula": "분모 = 역질량 합 + 회전 항\n회전 잠금 → 선운동 공식",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-021-rotational-denominator",
+              "englishTerm": "Rotational Effective Mass",
+              "koreanTerm": "반발 조건에 대입하기",
+              "meaning": "반발 조건에 대입하기",
+              "picture": 6,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 1.5
+            }
+          },
+          {
+            "anchor": "회전을 잠그면",
+            "formula": "회전 항이 없는 선운동 한계",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-021-rotational-denominator",
+              "englishTerm": "Rotational Effective Mass",
+              "koreanTerm": "반발 조건에 대입하기",
+              "meaning": "반발 조건에 대입하기",
+              "picture": 6,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "leverArm": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "충돌 뒤 법선 상대속도가 충돌 전의 마이너스 반발계수 배가 되게 맞춥니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "회전을 잠그면",
+          "position": 0.5,
+          "character": 158
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M30-022-same-space",
+      "speech": "이 계산의 위치, 속도, 법선, 관성 텐서는 같은 좌표계여야 합니다. 몸체 기준 역관성은 고정돼도 월드 기준 값은 자세에 따라 바뀝니다. 열벡터 관례에서는 회전행렬, 몸체 역관성, 회전행렬의 전치 순서로 곱합니다. 행벡터 관례는 전치의 자리가 바뀝니다. 또 지금 법선 약속에서는 내적이 양수일 때만 새 반발을 계산합니다. 이미 멀어지는 물체를 다시 끌어당기면 안 됩니다.",
+      "sourceParagraphs": [
+        "S125-P183",
+        "S125-P184",
+        "S125-P185",
+        "S125-P186",
+        "S125-P187"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-022-same-space",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "이 계산의 위치, 속도, 법선, 관성 텐서는 같은 좌표계여야 합니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-022-same-space",
+              "englishTerm": "World-Space Inertia",
+              "koreanTerm": "월드 공간 관성",
+              "meaning": "좌표계를 맞추는 마지막 확인",
+              "picture": 38,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "이 계산의 위치, 속도, 법선, 관성 텐서는 같은 좌표계여야 합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M30-023-engine-objects",
+      "speech": "이제 이 계산을 물리 엔진의 데이터와 연결하겠습니다. 핵심은 움직임을 가진 바디, 닿는 모양을 정하는 충돌 형상, 관계를 유지하는 제약입니다. 나무상자는 바디 하나로 충분할 수 있지만, 관절이 움직이는 사람은 여러 강체를 연결합니다. 화면의 그래픽 모델과 충돌 형상도 꼭 같을 필요는 없습니다.",
+      "sourceParagraphs": [
+        "S126-P002",
+        "S126-P003",
+        "S126-P004",
+        "S126-P005",
+        "S126-P006",
+        "S126-P008",
+        "S126-P009",
+        "S126-P010",
+        "S126-P011",
+        "S126-P012"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-023-engine-objects",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "이제 이 계산을 물리 엔진의 데이터와 연결하겠습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-023-engine-objects",
+              "englishTerm": "Body, Shape and Constraint",
+              "koreanTerm": "바디·형상·제약",
+              "meaning": "물리 엔진이 보관하는 것",
+              "picture": 39,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "이제 이 계산을 물리 엔진의 데이터와 연결하겠습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M30-024-persistent-state",
+      "speech": "질량, 몸체 관성, 질량중심 오프셋과 연결된 형상은 보통 생성할 때 정합니다. 위치, 자세, 선속도, 각속도는 다음 시간 단계로 이어지는 상태입니다. 속도 대신 운동량을 저장하고 나머지를 유도할 수도 있습니다. 연료처럼 질량이 변하는 경우에는 나간 물질과 운동량 전달까지 모델에 포함해야 합니다. 변수 하나만 바꾸면 모든 보존 문제가 자동 해결되는 것은 아닙니다.",
+      "sourceParagraphs": [
+        "S126-P013",
+        "S126-P014",
+        "S126-P015",
+        "S126-P016",
+        "S126-P017"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-024-persistent-state",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "질량, 몸체 관성, 질량중심 오프셋과 연결된 형상은 보통 생성할 때 정합니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-024-persistent-state",
+              "englishTerm": "Persistent Body State",
+              "koreanTerm": "오래 보관하는 상태",
+              "meaning": "오래 보관하는 상태",
+              "picture": 40,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "질량, 몸체 관성, 질량중심 오프셋과 연결된 형상은 보통 생성할 때 정합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M30-025-accumulators",
+      "speech": "힘과 토크 누산기는 단계 시작에 비우고 여러 원인의 기여를 더하는 작업 공간입니다. 충격량과 접촉 목록도 따로 관리할 수 있습니다. 구조체를 보면 질량중심 위치와 쿼터니언, 속도가 상태이고, 회전행렬과 역질량은 유도값입니다. 실제 저장·재개에서는 솔버가 재사용하는 접촉 정보나 이전 단계 값도 필요할 수 있으므로, 이 교육용 목록만으로 모든 엔진을 복원한다고 생각하면 안 됩니다.",
+      "sourceParagraphs": [
+        "S126-P018",
+        "S126-P019",
+        "S126-P020",
+        "S126-P021",
+        "S126-P022",
+        "S126-P023",
+        "S126-P024",
+        "S126-P025",
+        "S126-P026",
+        "S126-P027",
+        "S126-P028",
+        "S126-P029",
+        "S126-P030",
+        "S126-P031",
+        "S126-P032",
+        "S126-P033",
+        "S126-P034"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-025-accumulators",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "힘과 토크 누산기는 단계 시작에 비우고 여러 원인의 기여를 더하는 작업 공간입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-025-accumulators",
+              "englishTerm": "Force and Torque Accumulators",
+              "koreanTerm": "힘·토크 누산기",
+              "meaning": "한 단계의 작업 공간",
+              "picture": 41,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "힘과 토크 누산기는 단계 시작에 비우고 여러 원인의 기여를 더하는 작업 공간입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M30-026-shapes-filter",
+      "speech": "충돌 형상은 구나 상자 같은 기본 도형, 볼록 다면체, 삼각형 메시로 만들 수 있습니다. 복잡한 오목 모양을 작은 볼록 조각으로 나누면 계산에 도움이 됩니다. 같은 바디에 붙인 형상끼리는 스스로 충돌시키지 않고 합쳐진 모양으로 봅니다. 허벅지와 정강이처럼 연결된 부분의 충돌을 끄거나, 특정 캐릭터만 막는 장벽을 만드는 필터도 필요합니다.",
+      "sourceParagraphs": [
+        "S126-P035",
+        "S126-P036",
+        "S126-P037",
+        "S126-P038",
+        "S126-P039"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-026-shapes-filter",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "충돌 형상은 구나 상자 같은 기본 도형, 볼록 다면체, 삼각형 메시로 만들 수 있습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-026-shapes-filter",
+              "englishTerm": "Collision Shapes",
+              "koreanTerm": "충돌 형상",
+              "meaning": "모양을 단순하게 다루기",
+              "picture": 42,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "충돌 형상은 구나 상자 같은 기본 도형, 볼록 다면체, 삼각형 메시로 만들 수 있습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M30-027-joint-types",
+      "speech": "비이엠엔지 드라이브의 바퀴는 차체에 연결된 채 돌고, 요철을 넘으며 위아래로 움직입니다. 연결됐다고 해서 모든 움직임이 사라지는 것은 아니죠. 이 관계를 강체 모형으로 단순화하면, 어떤 움직임을 남기고 어떤 움직임을 막을지 정해야 합니다. 볼 소켓 관절은 두 점을 같은 위치에 붙들고 회전을 허용합니다. 힌지는 축까지 맞춰 문처럼 한 방향 회전만 남깁니다. 프리즘 관절은 회전 없이 축을 따라 미끄러집니다. 축 회전도 허용하는 결합은 별도로 구분합니다. 유니버설 관절은 서로 직교한 두 축의 회전을 허용하고, 어깨 같은 관절에는 원뿔 모양의 스윙 한계와 비틀림 한계를 줄 수 있습니다. 이름보다 실제 남은 자유도를 확인해야 합니다.",
+      "sourceParagraphs": [
+        "S126-P040",
+        "S126-P041",
+        "S126-P042",
+        "S126-P043"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-027-joint-types",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "비이엠엔지 드라이브의 바퀴는 차체에 연결된 채 돌고, 요철을 넘으며 위아래로 움직입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-027-joint-types",
+              "englishTerm": "Joint Degrees of Freedom",
+              "koreanTerm": "관절 자유도",
+              "meaning": "관절이 남겨 두는 자유도",
+              "picture": 43,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          },
+          {
+            "anchor": "힌지는",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-027-joint-types",
+              "englishTerm": "Joint Degrees of Freedom",
+              "koreanTerm": "관절 자유도",
+              "meaning": "관절이 남겨 두는 자유도",
+              "picture": 43,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 1
+            }
+          },
+          {
+            "anchor": "프리즘 관절은",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-027-joint-types",
+              "englishTerm": "Joint Degrees of Freedom",
+              "koreanTerm": "관절 자유도",
+              "meaning": "관절이 남겨 두는 자유도",
+              "picture": 43,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 2
+            }
+          },
+          {
+            "anchor": "축 회전도",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-027-joint-types",
+              "englishTerm": "Joint Degrees of Freedom",
+              "koreanTerm": "관절 자유도",
+              "meaning": "관절이 남겨 두는 자유도",
+              "picture": 43,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 3
+            }
+          },
+          {
+            "anchor": "유니버설 관절은",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-027-joint-types",
+              "englishTerm": "Joint Degrees of Freedom",
+              "koreanTerm": "관절 자유도",
+              "meaning": "관절이 남겨 두는 자유도",
+              "picture": 43,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 4
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "비이엠엔지 드라이브의 바퀴는 차체에 연결된 채 돌고, 요철을 넘으며 위아래로 움직입니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "힌지는",
+          "position": 0.2,
+          "character": 170
+        },
+        {
+          "phrase": "프리즘 관절은",
+          "position": 0.4,
+          "character": 200
+        },
+        {
+          "phrase": "축 회전도",
+          "position": 0.6,
+          "character": 228
+        },
+        {
+          "phrase": "유니버설 관절은",
+          "position": 0.8,
+          "character": 254
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence",
+      "actualGamePart": {
+        "beat": "M30-027-joint-types",
+        "sceneId": "027",
+        "candidate": "M30-G03-connected-wheel-motion",
+        "sourceId": "d5fiou39Htc",
+        "game": "BeamNG.drive",
+        "sourceIn": 55,
+        "sourceOut": 73,
+        "sourceFile": "projects/game-math-springs-damping/production/local/footage-review/beamng-stock-suspension-d5fiou39Htc-744-850.mp4",
+        "sourceSha256": "e700c29ea51c2fce573d7144d4d675f3cc6d2a0f5d5532f3d876ae893f956ca9",
+        "recordingUrl": "https://www.youtube.com/watch?v=d5fiou39Htc",
+        "decodedSize": [
+          1920,
+          1080
+        ],
+        "nativeFps": "30/1",
+        "playbackRate": 1,
+        "hold": 0,
+        "loop": false,
+        "freezePadding": false,
+        "role": "Connected motion motivates permitted degrees of freedom",
+        "observed": {
+          "before": "Second in-game buggy reaches repeated humps.",
+          "action": "Wheels extend/compress and rotate relative to chassis while attached.",
+          "result": "Parts do not move independently in arbitrary directions."
+        },
+        "claimLimits": [
+          "BeamNG uses deformable physics; footage does not establish hinge/prismatic/rigidbody solver types.",
+          "Own rigid-body joint illustration explains ideal constraints, not a diagram of BeamNG internals.",
+          "Different vehicle/window from M28 orange vehicle5–27; source chapter explicitly in-game cars."
+        ],
+        "annotationPlan": {
+          "target": "Wheel/chassis endpoints, one relative-motion arrow; never fabricate joint constraints or hidden sensors.",
+          "style": "Progressive open contour/short leader/path with labels. No invented game measurements or internal force/skeleton data.",
+          "tracking": "These inspected sample frames are planning evidence, not per-frame tracking. Follow actual target; hide at occlusion/out-of-frame; clear at cut.",
+          "captionClearance": "Fixed bottom-centre captions and game UI protected; foreground callout should not cover the action."
+        },
+        "reviewEvidence": "projects/game-math-rigid-body-inertia/production/local/footage-review/beamng-joints-second-car/sampling.json",
+        "nativeDecodeEvidence": {
+          "id": "M30-G03-connected-wheel-motion",
+          "sourceIn": 55,
+          "sourceOut": 73,
+          "sourceSha256": "e700c29ea51c2fce573d7144d4d675f3cc6d2a0f5d5532f3d876ae893f956ca9",
+          "mode": "software-video-decode-entire-native-interval-no-hwaccel",
+          "returnCode": 0,
+          "stderr": "",
+          "log": "projects/game-math-rigid-body-inertia/production/local/footage-native-qa/M30-G03-connected-wheel-motion-decode.log",
+          "nativeFrame": "projects/game-math-rigid-body-inertia/production/local/footage-native-qa/M30-G03-connected-wheel-motion-native.jpg",
+          "nativeFrameTime": 64.0,
+          "nativeFrameSize": [
+            1920,
+            1080
+          ],
+          "frameViewed": false,
+          "audioListeningCompleted": false,
+          "movingCompositeApproved": false
+        },
+        "speechTarget": {
+          "prefixKo": "비이엠엔지 드라이브의 바퀴는",
+          "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+        },
+        "handoffToExplanation": "Own ideal joint definitions, constraints, integration and all12 worked exercises retained.",
+        "audio": {
+          "nativeAudioPresent": true,
+          "actualListening": "pending",
+          "addedLectureBgm": false,
+          "mix": "Preserve verified synchronized original game audio under normal narration ducking; identify mixed music before final use."
+        },
+        "fullOriginalAudioIn": 55,
+        "fullOriginalAudioOut": 73,
+        "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending",
+        "duration": 18
+      }
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M30-028-motors",
+      "speech": "관절이 위치 관계를 유지한다면, 모터는 목표 상대속도를 유지하도록 힘이나 토크를 가합니다. 힘의 한도를 두면 무거운 물체를 끝없이 밀지 못하게 할 수 있습니다. 필요한 힘이 커질 때 모터 소리를 바꾸거나 관절을 끊는 반응도 만들 수 있죠. 제약을 용수철·댐퍼처럼 부드럽게 만드는 설정도 있습니다. 단단히 고정할지 탄성을 남길지는 설계 선택입니다.",
+      "sourceParagraphs": [
+        "S126-P044",
+        "S126-P045",
+        "S126-P046"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-028-motors",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "관절이 위치 관계를 유지한다면, 모터는 목표 상대속도를 유지하도록 힘이나 토크를 가합니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-028-motors",
+              "englishTerm": "Motor and Soft Constraints",
+              "koreanTerm": "모터와 부드러운 제약",
+              "meaning": "모터와 부드러운 제약",
+              "picture": 44,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "관절이 위치 관계를 유지한다면, 모터는 목표 상대속도를 유지하도록 힘이나 토크를 가합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M30-029-contact-lifetime",
+      "speech": "사용자가 만든 관절은 여러 단계 동안 유지되지만, 접촉 제약은 검출된 접촉을 따라 생기고 바뀝니다. 성능과 안정성을 위해 접촉 정보를 재사용할 수도 있습니다. 게임은 접촉 알림을 받아 소리나 체력 변화를 연결하고, 허용된 방식으로 특정 접촉을 조절합니다. 그리고 관성 텐서는 질량 분포를 나타내는 행렬이지 자세를 돌리는 회전행렬이 아니라는 점을 다시 구분하겠습니다.",
+      "sourceParagraphs": [
+        "S126-P047",
+        "S126-P048",
+        "S126-P049",
+        "S126-P050",
+        "S126-P051",
+        "S126-P052",
+        "S126-P053"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-029-contact-lifetime",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "사용자가 만든 관절은 여러 단계 동안 유지되지만, 접촉 제약은 검출된 접촉을 따라 생기고 바뀝니다",
+            "formula": "접촉 검출 → 제약 생성/갱신\n반복해서 연결 관계 해결",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-029-contact-lifetime",
+              "englishTerm": "Contact Constraints",
+              "koreanTerm": "엔진이 만드는 제약",
+              "meaning": "엔진이 만드는 제약",
+              "picture": 47,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "사용자가 만든 관절은 여러 단계 동안 유지되지만, 접촉 제약은 검출된 접촉을 따라 생기고 바뀝니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "030",
+      "sourceBeatId": "M30-030-loop",
+      "speech": "처음에 바디와 형상과 관절을 만듭니다. 매 단계의 물리 처리 전에는 입력, 목표 제약, 운동학적 물체의 위치와 속도를 준비합니다. 네트워크로 받은 목표나 새 물체도 이 단계에 연결할 수 있습니다. 물리 엔진이 진행한 뒤에는 새 위치와 자세, 충돌과 제약 결과를 게임에 반영합니다. 그 움직임을 따라 카메라를 갱신하고 화면을 그립니다. 물리 전 입력과 물리 후 결과를 섞지 않는 것이 핵심입니다.",
+      "sourceParagraphs": [
+        "S126-P054",
+        "S126-P055",
+        "S126-P056",
+        "S126-P057",
+        "S126-P058",
+        "S126-P059",
+        "S126-P060",
+        "S126-P061",
+        "S126-P062",
+        "S126-P063",
+        "S126-P064",
+        "S126-P065",
+        "S126-P066"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-030-loop",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "처음에 바디와 형상과 관절을 만듭니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-030-loop",
+              "englishTerm": "Game and Physics Loop",
+              "koreanTerm": "게임·물리 루프",
+              "meaning": "게임 루프의 앞뒤",
+              "picture": 45,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "처음에 바디와 형상과 관절을 만듭니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "031",
+      "sourceBeatId": "M30-031-penalty",
+      "speech": "엔진 안의 접근법 하나는 페널티 방법입니다. 물체가 파고든 깊이에 비례한 반발력을 넣어 용수철처럼 밀어냅니다. 외력을 모으고, 접촉을 찾고, 두 바디에 반대 힘을 더한 뒤 적분합니다. 쌓인 물체는 조금 눌린 상태에서 반발력과 중력이 균형을 이룰 수 있습니다. 목표는 무조건 침투 영이 아니라, 안정적으로 허용 범위 안에 두는 것입니다.",
+      "sourceParagraphs": [
+        "S126-P067",
+        "S126-P068",
+        "S126-P069",
+        "S126-P070",
+        "S126-P071",
+        "S126-P072",
+        "S126-P073",
+        "S126-P074"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-031-penalty",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "엔진 안의 접근법 하나는 페널티 방법입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-031-penalty",
+              "englishTerm": "Penalty Method",
+              "koreanTerm": "페널티 방법",
+              "meaning": "침투를 밀어내는 힘",
+              "picture": 46,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "엔진 안의 접근법 하나는 페널티 방법입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "032",
+      "sourceBeatId": "M30-032-sequential",
+      "speech": "다른 접근은 접촉마다 충격량을 차례로 적용하는 것입니다. 먼저 힘으로 속도를 갱신하고, 아직 위치는 움직이지 않습니다. 한 접촉을 해결하면 연결된 다른 접촉이 다시 변할 수 있으므로 반복합니다. 마지막에 구한 속도로 위치를 옮깁니다. 처리 순서가 결과에 영향을 줄 수 있고 끝없이 반복할 수도 있어서, 실제 구현에는 반복 횟수와 오차 한도가 필요합니다.",
+      "sourceParagraphs": [
+        "S126-P075",
+        "S126-P076",
+        "S126-P077",
+        "S126-P078",
+        "S126-P079",
+        "S126-P080",
+        "S126-P081",
+        "S126-P082",
+        "S126-P083",
+        "S126-P084",
+        "S126-P085"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-032-sequential",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "다른 접근은 접촉마다 충격량을 차례로 적용하는 것입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-032-sequential",
+              "englishTerm": "Sequential Impulses",
+              "koreanTerm": "순차 충격량",
+              "meaning": "충격량을 차례로 적용하기",
+              "picture": 47,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "다른 접근은 접촉마다 충격량을 차례로 적용하는 것입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "033",
+      "sourceBeatId": "M30-033-constraint-solve",
+      "speech": "속도 기반 관점에서는 접촉, 관절, 모터를 함께 제약으로 씁니다. 속도가 조금 바뀌면 제약의 변화율이 얼마나 달라지는지 연결하는 행렬이 야코비 행렬입니다. 접촉은 더 빨리 떨어져도 괜찮지만 서로 파고들면 안 되므로, 항상 등식만 생기는 것은 아닙니다. 접촉력이 음수가 되어 끌어당기지 않는 조건까지 묶으면 선형 상보성 문제로 표현할 수 있습니다. 실제 솔버는 이런 접근들을 섞을 수 있습니다.",
+      "sourceParagraphs": [
+        "S126-P086",
+        "S126-P087",
+        "S126-P088",
+        "S126-P089",
+        "S126-P090",
+        "S126-P091",
+        "S126-P092",
+        "S126-P093",
+        "S126-P094",
+        "S126-P095",
+        "S126-P096"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-033-constraint-solve",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "속도 기반 관점에서는 접촉, 관절, 모터를 함께 제약으로 씁니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-033-constraint-solve",
+              "englishTerm": "Constraint Jacobian",
+              "koreanTerm": "제약 야코비 행렬",
+              "meaning": "속도로 관계를 만족시키기",
+              "picture": 48,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "속도 기반 관점에서는 접촉, 관절, 모터를 함께 제약으로 씁니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "034",
+      "sourceBeatId": "M30-034-numerical",
+      "speech": "어떤 솔버를 써도 다음 시각의 위치와 속도를 구해야 합니다. 힘은 위치나 속도에 따라 달라지고, 여러 물체가 서로 연결돼 있을 수도 있습니다. 용수철 네 개가 얽힌 장치의 한 부분만 물속에 들어가면 힘의 변화가 더 복잡해집니다. 매 순간의 힘을 계산할 수 있어도 전체 시간 함수를 한 번에 풀기 어려워, 떨어진 시각의 값으로 진행하는 수치 적분을 사용합니다.",
+      "sourceParagraphs": [
+        "S126-P097",
+        "S126-P098",
+        "S126-P099",
+        "S126-P100",
+        "S126-P101",
+        "S126-P102",
+        "S126-P103"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-034-numerical",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "어떤 솔버를 써도 다음 시각의 위치와 속도를 구해야 합니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-034-numerical",
+              "englishTerm": "Numerical Integration",
+              "koreanTerm": "수치 적분",
+              "meaning": "짧은 시간 뒤를 예측하기",
+              "picture": 49,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "어떤 솔버를 써도 다음 시각의 위치와 속도를 구해야 합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "035",
+      "sourceBeatId": "M30-035-explicit",
+      "speech": "시간 간격을 에이치라고 하겠습니다. 육십 헤르츠라면 육십분의 일 초입니다. 가장 단순한 방법은 현재 속도에 시간을 곱해 위치에 더하는 것입니다. 현재의 도함수가 한 단계 동안 일정하다고 보는 명시적 오일러 방법입니다. 실제로 속도가 변한다면 곡선 경로 대신 접선 방향으로 진행하므로 오차가 생깁니다. 간격을 줄이면 그 짧은 구간의 근사가 나아집니다.",
+      "sourceParagraphs": [
+        "S126-P104",
+        "S126-P105",
+        "S126-P106",
+        "S126-P107",
+        "S126-P108",
+        "S126-P109"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-035-explicit",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "시간 간격을 에이치라고 하겠습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-035-explicit",
+              "englishTerm": "Explicit Euler",
+              "koreanTerm": "명시적 오일러",
+              "meaning": "현재 속도로 한 걸음",
+              "picture": 50,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "stepSize": 0.4
+            }
+          },
+          {
+            "anchor": "간격을 줄이면",
+            "formula": "h 감소 → 접선 근사 오차 감소",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-035-explicit",
+              "englishTerm": "Explicit Euler",
+              "koreanTerm": "명시적 오일러",
+              "meaning": "현재 속도로 한 걸음",
+              "picture": 50,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "stepSize": 0.1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "시간 간격을 에이치라고 하겠습니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "간격을 줄이면",
+          "position": 0.5,
+          "character": 168
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "036",
+      "sourceBeatId": "M30-036-cloth-taylor",
+      "speech": "천을 정점과 용수철로 나누면 각 정점의 힘은 이웃들의 위치와 속도에도 달라집니다. 속도의 테일러 전개에는 현재 값, 시간에 비례한 항, 시간 제곱과 세제곱 항이 이어집니다. 오일러는 일차항까지 맞추고 뒤를 버립니다. 가속도가 일정하면 속도는 정확히 구하지만, 힘이 계속 변하면 버린 항도 영이 아닙니다. 간격의 제곱이 작다는 이유만으로 계수까지 작다고 보장할 수는 없습니다.",
+      "sourceParagraphs": [
+        "S126-P110",
+        "S126-P111",
+        "S126-P112",
+        "S126-P113",
+        "S126-P114",
+        "S126-P115"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-036-cloth-taylor",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "천을 정점과 용수철로 나누면 각 정점의 힘은 이웃들의 위치와 속도에도 달라집니다",
+            "formula": "v(t+h)=v(t)+hv′(t)\n+½h²v″(t)+…\nEuler는 일차항까지 사용",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-036-cloth-taylor",
+              "englishTerm": "Taylor Expansion",
+              "koreanTerm": "테일러 전개",
+              "meaning": "생략한 항을 보기",
+              "picture": 51,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "stepSize": 0.1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "천을 정점과 용수철로 나누면 각 정점의 힘은 이웃들의 위치와 속도에도 달라집니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "037",
+      "sourceBeatId": "M30-037-higher-order",
+      "speech": "룽게–쿠타 계열은 시험 상태에서 힘을 여러 번 계산해 조합합니다. 매끄럽게 변하는 힘에는 더 높은 차수의 근사가 유리할 수 있습니다. 반면 충돌처럼 속도가 갑자기 바뀌거나 아주 뻣뻣한 용수철이 있으면, 차수를 높이는 것만으로 해결되지 않습니다. 암시적 방법, 더 작은 시간 간격, 제약 솔버를 어떻게 결합할지 따져야 합니다. 정확도, 안정성, 계산비를 함께 비교하는 문제입니다.",
+      "sourceParagraphs": [
+        "S126-P116",
+        "S126-P117",
+        "S126-P118",
+        "S126-P119",
+        "S126-P120",
+        "S126-P121",
+        "S126-P122",
+        "S126-P123",
+        "S126-P124"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-037-higher-order",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "룽게–쿠타 계열은 시험 상태에서 힘을 여러 번 계산해 조합합니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-037-higher-order",
+              "englishTerm": "Integrator Tradeoffs",
+              "koreanTerm": "정확도와 제약의 절충",
+              "meaning": "정확도와 제약의 절충",
+              "picture": 51,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "stepSize": 0.1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "룽게–쿠타 계열은 시험 상태에서 힘을 여러 번 계산해 조합합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "038",
+      "sourceBeatId": "M30-038-semi-implicit",
+      "speech": "속도를 먼저 갱신한 뒤 그 새 속도로 위치를 옮기면 반암시적 오일러입니다. 이전 속도를 쓰는 명시적 방식과 이름을 구분해야 합니다. 처음 위치와 속도 영, 가속도 이, 간격 영점일 초라면 두 방법의 새 속도는 영점이입니다. 명시적 위치는 영, 반암시적 위치는 영점영이, 정확한 등가속도 위치는 영점영일입니다. 둘 다 일차 방법이어도 오차와 안정성은 같지 않습니다.",
+      "sourceParagraphs": [
+        "S126-P125",
+        "S126-P126",
+        "S126-P127",
+        "S126-P128",
+        "S126-P129",
+        "S126-P130",
+        "S126-P131",
+        "S126-P132",
+        "S126-P133",
+        "S126-P134",
+        "S126-P135",
+        "S126-P136",
+        "S126-P137",
+        "S126-P138",
+        "S126-P139",
+        "S126-P140"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-038-semi-implicit",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "속도를 먼저 갱신한 뒤 그 새 속도로 위치를 옮기면 반암시적 오일러입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-038-semi-implicit",
+              "englishTerm": "Semi-Implicit Euler",
+              "koreanTerm": "반암시적 오일러",
+              "meaning": "두 줄의 순서",
+              "picture": 7,
+              "duration": 0.1,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "stepSize": 0.1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "속도를 먼저 갱신한 뒤 그 새 속도로 위치를 옮기면 반암시적 오일러입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "039",
+      "sourceBeatId": "M30-039-rotating-point",
+      "speech": "회전하는 점의 순간 속도는 각속도 외적 위치입니다. 이 속도에 시간을 곱해 위치에 더하면 원의 접선으로 한 걸음 나갑니다. 작은 각도에서는 근사할 수 있지만, 원 위의 정확한 회전과는 다릅니다. 각속도가 일정해도 점의 선속도 방향은 계속 바뀌기 때문입니다. 같은 관계를 물체의 세 축에 적용하면 자세 행렬의 미분으로 이어집니다.",
+      "sourceParagraphs": [
+        "S126-P141",
+        "S126-P142",
+        "S126-P143",
+        "S126-P144",
+        "S126-P145",
+        "S126-P146"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-039-rotating-point",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "회전하는 점의 순간 속도는 각속도 외적 위치입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-039-rotating-point",
+              "englishTerm": "Angular Velocity and a Tangent Step",
+              "koreanTerm": "회전에는 무엇을 더할까",
+              "meaning": "회전에는 무엇을 더할까",
+              "picture": 50,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "stepSize": 0.4
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "회전하는 점의 순간 속도는 각속도 외적 위치입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "040",
+      "sourceBeatId": "M30-040-matrix-derivative",
+      "speech": "외적을 행렬 곱으로 쓰면 각속도의 성분으로 만든 반대칭 행렬이 나타납니다. 열벡터와 월드 각속도 관례에서는 이 행렬을 자세 행렬 앞에 곱합니다. 그 미분에 시간을 곱해 더할 수 있지만, 각 성분을 따로 바꾸므로 축 길이와 직각 조건이 조금씩 깨집니다. 회전행렬을 계속 쓸 때는 다시 정규직교화해야 합니다. 곱 순서는 행벡터 식과 구분합니다.",
+      "sourceParagraphs": [
+        "S126-P147",
+        "S126-P148",
+        "S126-P149",
+        "S126-P150",
+        "S126-P151",
+        "S126-P152",
+        "S126-P153"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-040-matrix-derivative",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "외적을 행렬 곱으로 쓰면 각속도의 성분으로 만든 반대칭 행렬이 나타납니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-040-matrix-derivative",
+              "englishTerm": "Derivative of a Rotation Matrix",
+              "koreanTerm": "회전행렬의 미분",
+              "meaning": "회전행렬의 미분",
+              "picture": 52,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 0,
+              "stepSize": 0.1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "외적을 행렬 곱으로 쓰면 각속도의 성분으로 만든 반대칭 행렬이 나타납니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "041",
+      "sourceBeatId": "M30-041-quaternion-derivative",
+      "speech": "쿼터니언도 성분별 미분으로 한 걸음 진행할 수 있습니다. 각속도에 스칼라 영을 붙여 순수 쿼터니언으로 만들고, 현재 자세와 곱한 뒤 절반을 취합니다. 미분값 자체는 단위 쿼터니언이 아니며, 갱신한 자세도 길이 일이 보장되지 않아 정규화합니다. 각속도가 월드 기준인지 몸체 기준인지에 따라 곱 순서가 달라집니다. 축 하나를 구십 도 돌리는 간단한 예로 방향을 검증해야 합니다.",
+      "sourceParagraphs": [
+        "S126-P154",
+        "S126-P155",
+        "S126-P156",
+        "S126-P157",
+        "S126-P158",
+        "S126-P159"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-041-quaternion-derivative",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "쿼터니언도 성분별 미분으로 한 걸음 진행할 수 있습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-041-quaternion-derivative",
+              "englishTerm": "Quaternion Derivative",
+              "koreanTerm": "쿼터니언 미분",
+              "meaning": "쿼터니언의 미분",
+              "picture": 52,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 1,
+              "stepSize": 0.1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "쿼터니언도 성분별 미분으로 한 걸음 진행할 수 있습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "042",
+      "sourceBeatId": "M30-042-finite-rotation",
+      "speech": "각속도가 한 단계 동안 일정하다면 더 직접적인 방법이 있습니다. 축은 각속도 방향, 회전각은 각속도 크기 곱하기 시간입니다. 이 축·각 회전을 행렬이나 쿼터니언으로 만든 뒤 현재 자세에 합성합니다. 일정한 각속도에서는 성분별 접선 근사 오차를 없앨 수 있습니다. 다만 각속도 자체가 변한다면 그 시간 변화의 근사는 여전히 남습니다. 정규화만으로 그 오차까지 사라지지는 않습니다.",
+      "sourceParagraphs": [
+        "S126-P160",
+        "S126-P161",
+        "S126-P162",
+        "S126-P163",
+        "S126-P164",
+        "S126-P165",
+        "S126-P166"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-042-finite-rotation",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "각속도가 한 단계 동안 일정하다면 더 직접적인 방법이 있습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-042-finite-rotation",
+              "englishTerm": "Exponential Rotation Update",
+              "koreanTerm": "축·각 회전 갱신",
+              "meaning": "한 단계의 회전을 직접 만들기",
+              "picture": 52,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 2,
+              "stepSize": 0.1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "각속도가 한 단계 동안 일정하다면 더 직접적인 방법이 있습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "043",
+      "sourceBeatId": "M30-043-study-physics",
+      "speech": "여기서 사용한 식을 더 깊이 이해하려면 역학과 미분방정식을 함께 공부하면 좋습니다. 힘을 다루는 교과서만 읽기보다 실제 시연과 계산을 나란히 보는 것이 도움이 됩니다. 게임 물리 입문, 물리 기반 애니메이션, 더 수학적인 게임 물리 자료는 각각 다른 깊이를 제공합니다. 어떤 장면을 만들고 싶은지 정한 뒤 필요한 단계로 이어가면 됩니다.",
+      "sourceParagraphs": [
+        "S127-P001",
+        "S127-P002",
+        "S127-P003",
+        "S127-P004",
+        "S127-P005",
+        "S127-P006"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-043-study-physics",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "여기서 사용한 식을 더 깊이 이해하려면 역학과 미분방정식을 함께 공부하면 좋습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-043-study-physics",
+              "englishTerm": "Further Study",
+              "koreanTerm": "더 깊이 공부하는 경로",
+              "meaning": "더 깊이 공부하는 경로",
+              "picture": 63,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "여기서 사용한 식을 더 깊이 이해하려면 역학과 미분방정식을 함께 공부하면 좋습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "044",
+      "sourceBeatId": "M30-044-study-code",
+      "speech": "직접 코드를 읽는 것도 방법입니다. 오픈 다이내믹스 엔진과 불릿 같은 구현에서 바디, 형상, 제약이 어떻게 연결되는지 찾아보세요. 충돌 검출은 별도 학습량이 큰 주제입니다. 실시간 충돌 검출과 게임용 기하학 자료로 경계 상자, 볼록체, 접촉 생성 과정을 더 살펴볼 수 있습니다. 오늘의 반응 공식은 그 검출 결과를 받는 쪽이었습니다.",
+      "sourceParagraphs": [
+        "S127-P007",
+        "S127-P008",
+        "S127-P009",
+        "S127-P010",
+        "S127-P011"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-044-study-code",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "직접 코드를 읽는 것도 방법입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-044-study-code",
+              "englishTerm": "Physics Engine Implementations",
+              "koreanTerm": "실제 코드와 충돌 검출",
+              "meaning": "실제 코드와 충돌 검출",
+              "picture": 63,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "직접 코드를 읽는 것도 방법입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "045",
+      "sourceBeatId": "M30-045-study-numerical",
+      "speech": "적분법과 오차를 더 알고 싶다면 과학 계산과 수치해석으로 이어집니다. 뉴머리컬 레시피스, 히스와 스트랭의 관련 교재처럼 계산 방법을 다루는 자료가 연결됩니다. 중요한 것은 원리를 읽고, 작은 예제를 구현하고, 계산과 움직임을 함께 검산하는 습관입니다.",
+      "sourceParagraphs": [
+        "S127-P012",
+        "S127-P013",
+        "S127-P014",
+        "S127-P015",
+        "S127-P016"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-045-study-numerical",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "적분법과 오차를 더 알고 싶다면 과학 계산과 수치해석으로 이어집니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-045-study-numerical",
+              "englishTerm": "Scientific Computing",
+              "koreanTerm": "과학 계산으로 연결하기",
+              "meaning": "과학 계산으로 연결하기",
+              "picture": 63,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 2
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "적분법과 오차를 더 알고 싶다면 과학 계산과 수치해석으로 이어집니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "046",
+      "sourceBeatId": "M30-046-fan",
+      "speech": "배 안의 선풍기가 같은 배의 돛을 향해 바람을 보낸다고 해 보죠. 공기에 준 앞쪽 운동량을 돛이 모두 받아들이는 이상적인 정면 배치에서는, 선풍기의 반작용과 돛이 받는 힘이 상쇄됩니다. 배 전체에 공짜 추진력이 생기지 않습니다. 실제로 공기가 다른 방향으로 빠져나가는 배치는 그 공기의 운동량까지 계산해야 하므로, 모든 선풍기와 돛 배치가 무조건 같다고 결론 내리면 안 됩니다.",
+      "sourceParagraphs": [
+        "S128-P002"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-046-fan",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "배 안의 선풍기가 같은 배의 돛을 향해 바람을 보낸다고 해 보죠",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-046-fan",
+              "englishTerm": "Fan and Sail",
+              "koreanTerm": "연습 1: 배 안의 선풍기",
+              "meaning": "연습 1: 배 안의 선풍기",
+              "picture": 53,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "배 안의 선풍기가 같은 배의 돛을 향해 바람을 보낸다고 해 보죠",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "047",
+      "sourceBeatId": "M30-047-tug",
+      "speech": "줄다리기에서 이기는 사람은 상대에게 더 큰 작용 힘을 주는 사람일까요? 줄이 서로에게 전달하는 힘은 짝을 이루지만, 각 사람은 땅에서도 힘을 받습니다. 앞으로 움직이기 시작한 사람에게는 발과 땅의 정지 마찰이 줄이 뒤로 당기는 힘보다 커야 합니다. 두 사람과 줄을 한 계로 보면, 땅에서 받은 외력의 불균형이 전체 움직임을 바꿉니다.",
+      "sourceParagraphs": [
+        "S128-P003"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-047-tug",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "줄다리기에서 이기는 사람은 상대에게 더 큰 작용 힘을 주는 사람일까요? 줄이 서로에게 전달하는 힘은 짝을 이루지만, 각 사람은 땅에서도 힘을 받습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-047-tug",
+              "englishTerm": "Tug of War",
+              "koreanTerm": "연습 2: 줄다리기",
+              "meaning": "연습 2: 줄다리기",
+              "picture": 54,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "줄다리기에서 이기는 사람은 상대에게 더 큰 작용 힘을 주는 사람일까요? 줄이 서로에게 전달하는 힘은 짝을 이루지만, 각 사람은 땅에서도 힘을 받습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "048",
+      "sourceBeatId": "M30-048-gravity-check",
+      "speech": "가벼운 물체가 더 빨리 떨어진다는 문장은 공기 저항을 뺀 일정 중력 모델에서는 거짓입니다. 질량이 약분되기 때문이죠. 우주정거장도 중력이 사라진 곳에 있는 것이 아닙니다. 문제의 고도 삼백사십 킬로미터와 속력을 원 궤도 식에 넣으면 구심가속도는 약 팔점팔오 미터 매초 제곱입니다. 정거장과 사람이 함께 자유 낙하하므로 바닥이 몸을 받치는 힘이 작아져 무게가 없는 것처럼 느낍니다.",
+      "sourceParagraphs": [
+        "S128-P004",
+        "S128-P005"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-048-gravity-check",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "가벼운 물체가 더 빨리 떨어진다는 문장은 공기 저항을 뺀 일정 중력 모델에서는 거짓입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-048-gravity-check",
+              "englishTerm": "Free Fall and Weightlessness",
+              "koreanTerm": "자유 낙하와 무중량",
+              "meaning": "연습 3·4: 낙하와 무중력",
+              "picture": 55,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          },
+          {
+            "anchor": "우주정거장도",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-048-gravity-check",
+              "englishTerm": "Free Fall and Weightlessness",
+              "koreanTerm": "자유 낙하와 무중량",
+              "meaning": "연습 3·4: 낙하와 무중력",
+              "picture": 55,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "가벼운 물체가 더 빨리 떨어진다는 문장은 공기 저항을 뺀 일정 중력 모델에서는 거짓입니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "우주정거장도",
+          "position": 0.5,
+          "character": 66
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "049",
+      "sourceBeatId": "M30-049-slope-check",
+      "speech": "나무와 콘크리트의 정지 마찰 계수 영점육이를 쓰면, 미끄러지기 시작하는 각은 역탄젠트 영점육이, 약 삼십일점팔 도입니다. 중력이 작은 달에서도 같은 계수와 같은 이상적인 조건이라면 각은 같습니다. 아래로 끄는 성분과 수직항력에 중력이 함께 들어가 약분되기 때문입니다.",
+      "sourceParagraphs": [
+        "S128-P006"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-049-slope-check",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "나무와 콘크리트의 정지 마찰 계수 영점육이를 쓰면, 미끄러지기 시작하는 각은 역탄젠트 영점육이, 약 삼십일점팔 도입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-049-slope-check",
+              "englishTerm": "Critical Incline Angle",
+              "koreanTerm": "임계 경사각",
+              "meaning": "연습 5: 달의 경사면",
+              "picture": 56,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "나무와 콘크리트의 정지 마찰 계수 영점육이를 쓰면, 미끄러지기 시작하는 각은 역탄젠트 영점육이, 약 삼십일점팔 도입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "050",
+      "sourceBeatId": "M30-050-spring-check",
+      "speech": "정지한 추에서는 용수철 힘과 무게가 같아 케이 곱하기 늘어난 길이가 엠 지입니다. 오 킬로그램이 십 센티미터 늘렸다면 표준 중력을 쓸 때 케이는 약 사백구십 뉴턴 매 미터입니다. 같은 곳에서 십칠 센티미터 늘어난 추는 팔점오 킬로그램입니다. 같은 용수철에 일 킬로그램을 달았는데 팔 센티미터 늘었다면, 유효 중력은 처음의 네 배입니다. 다른 중력장이나 가속하는 환경을 생각할 수 있습니다.",
+      "sourceParagraphs": [
+        "S128-P007",
+        "S128-P008",
+        "S128-P009",
+        "S128-P010",
+        "S128-P011"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-050-spring-check",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "정지한 추에서는 용수철 힘과 무게가 같아 케이 곱하기 늘어난 길이가 엠 지입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-050-spring-check",
+              "englishTerm": "Static Spring Extension",
+              "koreanTerm": "용수철의 정적 변형",
+              "meaning": "연습 6: 매달린 용수철",
+              "picture": 57,
+              "duration": 4,
+              "massA": 5,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "force": 9.8
+            }
+          },
+          {
+            "anchor": "십칠 센티미터",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-050-spring-check",
+              "englishTerm": "Static Spring Extension",
+              "koreanTerm": "용수철의 정적 변형",
+              "meaning": "연습 6: 매달린 용수철",
+              "picture": 57,
+              "duration": 4,
+              "massA": 8.5,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "force": 9.8
+            }
+          },
+          {
+            "anchor": "일 킬로그램을",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-050-spring-check",
+              "englishTerm": "Static Spring Extension",
+              "koreanTerm": "용수철의 정적 변형",
+              "meaning": "연습 6: 매달린 용수철",
+              "picture": 57,
+              "duration": 4,
+              "massA": 1,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "force": 39.2
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "정지한 추에서는 용수철 힘과 무게가 같아 케이 곱하기 늘어난 길이가 엠 지입니다",
+          "position": 0.0,
+          "character": 0
+        },
+        {
+          "phrase": "십칠 센티미터",
+          "position": 0.3333333333333333,
+          "character": 107
+        },
+        {
+          "phrase": "일 킬로그램을",
+          "position": 0.6666666666666666,
+          "character": 143
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "051",
+      "sourceBeatId": "M30-051-oscillation-check",
+      "speech": "강성 백 뉴턴 매 미터, 질량 오 킬로그램이면 각진동수는 루트 이십입니다. 이 파이로 나누면 약 영점칠일이 헤르츠입니다. 십사점칠 센티미터 당긴 곳에서 정지 상태로 놓았다면 진폭은 영점일사칠 미터입니다. 평형점에서는 속력이 최대여서 진폭 곱하기 각진동수, 약 초속 영점육오칠 미터가 됩니다.",
+      "sourceParagraphs": [
+        "S128-P012",
+        "S128-P013",
+        "S128-P014",
+        "S128-P015"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-051-oscillation-check",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "강성 백 뉴턴 매 미터, 질량 오 킬로그램이면 각진동수는 루트 이십입니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-051-oscillation-check",
+              "englishTerm": "Simple Harmonic Motion",
+              "koreanTerm": "단순 조화 운동",
+              "meaning": "연습 7: 수평 진동",
+              "picture": 58,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "강성 백 뉴턴 매 미터, 질량 오 킬로그램이면 각진동수는 루트 이십입니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "052",
+      "sourceBeatId": "M30-052-train-rest",
+      "speech": "마찰 없는 천 킬로그램 객차에서 칠십오 킬로그램 사람이 앞쪽으로 걷습니다. 초속 일점이오 미터는 객차에 대한 속도로 정하겠습니다. 전체 운동량은 영이고, 사람 속도에서 객차 속도를 뺀 값은 일점이오입니다. 두 식을 풀면 객차는 뒤로 약 영점영팔칠, 사람은 앞으로 약 일점일육삼 미터 매초입니다. 객차 안 이십 미터를 걷는 데 십육 초이므로 객차는 약 일점사 미터 뒤로, 사람은 약 십팔점육 미터 앞으로 갑니다.",
+      "sourceParagraphs": [
+        "S128-P016",
+        "S128-P017",
+        "S128-P018",
+        "S128-P019"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-052-train-rest",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "마찰 없는 천 킬로그램 객차에서 칠십오 킬로그램 사람이 앞쪽으로 걷습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-052-train-rest",
+              "englishTerm": "Walking in a Carriage",
+              "koreanTerm": "연습 8: 객차 안에서 걷기",
+              "meaning": "연습 8: 객차 안에서 걷기",
+              "picture": 59,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "마찰 없는 천 킬로그램 객차에서 칠십오 킬로그램 사람이 앞쪽으로 걷습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "053",
+      "sourceBeatId": "M30-053-train-moving",
+      "speech": "처음부터 둘 다 초속 오 미터로 가고 있었다면 방금 구한 각 속도에 오를 더합니다. 객차는 약 사점구일삼, 사람은 육점일육삼 미터 매초입니다. 십육 초 동안 함께 갈 팔십 미터를 각 변위에 더하면 객차는 약 칠십팔점육, 사람은 구십팔점육 미터 이동합니다. 사람이 중간에 빨리 걷거나 멈추면 시간별 속도는 바뀌지만, 같은 상대 위치에 도착했을 때 질량중심에 대한 배치 관계는 유지됩니다.",
+      "sourceParagraphs": [
+        "S128-P020",
+        "S128-P021",
+        "S128-P022"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-053-train-moving",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "처음부터 둘 다 초속 오 미터로 가고 있었다면 방금 구한 각 속도에 오를 더합니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-053-train-moving",
+              "englishTerm": "Galilean Velocity Addition",
+              "koreanTerm": "갈릴레이 속도 합성",
+              "meaning": "움직이는 객차에서 반복하기",
+              "picture": 59,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 5
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "처음부터 둘 다 초속 오 미터로 가고 있었다면 방금 구한 각 속도에 오를 더합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "054",
+      "sourceBeatId": "M30-054-car-restitution",
+      "speech": "앞의 두 차량을 다시 보되 이번에는 반발계수 영점일을 쓰겠습니다. 법선은 남쪽에서 서쪽으로 이십 도, 두 속도의 차이와 내적하면 접근 성분은 시속 약 오십칠점구삼입니다. 두 역질량의 합으로 나눈 충격량 크기는 약 만육천오백구십오 뉴턴 초입니다. 이를 서로 반대로 적용하면 첫 차 속도는 동서 성분 마이너스 이십일점삼팔, 남북 성분 삼십칠점사삼이 됩니다. 둘째 차는 마이너스 삼십오점육사와 삼십육점사오입니다.",
+      "sourceParagraphs": [
+        "S128-P023"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-054-car-restitution",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "앞의 두 차량을 다시 보되 이번에는 반발계수 영점일을 쓰겠습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-054-car-restitution",
+              "englishTerm": "Vehicle Restitution Example",
+              "koreanTerm": "연습 9: 붙지 않는 차량",
+              "meaning": "연습 9: 붙지 않는 차량",
+              "picture": 60,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "앞의 두 차량을 다시 보되 이번에는 반발계수 영점일을 쓰겠습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "055",
+      "sourceBeatId": "M30-055-balance-monkey",
+      "speech": "줄 위의 장난감은 양쪽 막대 끝에 무거운 부분이 낮게 달려 있습니다. 몸만 보지 말고 막대와 추를 모두 합친 질량중심을 보세요. 그 중심이 지지점 아래에 있으면 조금 기울었을 때 중력이 원래 자세로 되돌리는 토크를 만듭니다. 양쪽으로 질량을 벌리면 관성도 커져 급하게 기울기 어려워집니다. 낮은 중심의 복원 효과와 큰 관성의 느린 반응은 구분해야 합니다.",
+      "sourceParagraphs": [
+        "S128-P024",
+        "S128-P025",
+        "S128-P026"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-055-balance-monkey",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "줄 위의 장난감은 양쪽 막대 끝에 무거운 부분이 낮게 달려 있습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-055-balance-monkey",
+              "englishTerm": "Stable Balance",
+              "koreanTerm": "연습 10: 줄 위의 균형",
+              "meaning": "연습 10: 줄 위의 균형",
+              "picture": 61,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "줄 위의 장난감은 양쪽 막대 끝에 무거운 부분이 낮게 달려 있습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "056",
+      "sourceBeatId": "M30-056-cylinders",
+      "speech": "질량과 바깥 크기가 같은 두 원통이라도 속이 빈 쪽은 질량이 바깥으로 몰립니다. 길이 축 주위 관성모멘트는 균일한 꽉 찬 원통이 질량 곱하기 반지름 제곱의 절반입니다. 얇은 고리는 그 두 배입니다. 같은 토크로 회전을 바꾼다면 속이 빈 쪽이 더 어렵습니다. 경사면에서 미끄러짐 없이 굴릴 때도 회전에 더 많은 에너지가 배분되어 더 천천히 가속합니다.",
+      "sourceParagraphs": [
+        "S128-P027"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-056-cylinders",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "질량과 바깥 크기가 같은 두 원통이라도 속이 빈 쪽은 질량이 바깥으로 몰립니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-056-cylinders",
+              "englishTerm": "Solid Cylinder and Thin Ring",
+              "koreanTerm": "연습 11: 속이 빈 원통",
+              "meaning": "연습 11: 속이 빈 원통",
+              "picture": 62,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "질량과 바깥 크기가 같은 두 원통이라도 속이 빈 쪽은 질량이 바깥으로 몰립니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "057",
+      "sourceBeatId": "M30-057-truck-com",
+      "speech": "마지막으로 트럭을 상자 세 개와 원기둥 바퀴 네 개로 근사하겠습니다. 표의 센티미터를 먼저 미터로 바꾸고, 질량은 모두 더합니다. 총질량은 이천이백 킬로그램입니다. 각 중심 위치에 질량을 곱해 평균을 내면 전체 중심은 엑스 영, 높이 약 일점영영구, 앞뒤 좌표 약 일점영사오 미터입니다. 이제 모든 부품의 관성을 이 한 점으로 모아야 합니다.",
+      "sourceParagraphs": [
+        "S128-P028",
+        "S128-P029",
+        "S128-P030",
+        "S128-P031",
+        "S128-P032",
+        "S128-P033",
+        "S128-P034"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-057-truck-com",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "마지막으로 트럭을 상자 세 개와 원기둥 바퀴 네 개로 근사하겠습니다",
+            "formula": "총질량 = 2,200 kg\nc = (0,1.009,1.045) m",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-057-truck-com",
+              "englishTerm": "Composite Truck Center of Mass",
+              "koreanTerm": "연습 12: 트럭을 나눠 계산하기",
+              "meaning": "연습 12: 트럭을 나눠 계산하기",
+              "picture": 9,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "마지막으로 트럭을 상자 세 개와 원기둥 바퀴 네 개로 근사하겠습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "058",
+      "sourceBeatId": "M30-058-truck-tensors",
+      "speech": "상자의 엑스 축 관성은 질량에 높이 제곱과 깊이 제곱을 더한 값을 곱해 십이로 나눕니다. 다른 두 축은 해당 두 길이를 바꿉니다. 앞 상자에서는 대각 성분이 약 이백사십점팔, 오백이십점팔, 삼백팔십육점칠입니다. 바퀴는 축이 엑스 방향이고 반지름 영점삼오, 폭 영점이 미터입니다. 축 관성은 약 삼점영육, 나머지 두 축은 약 일점칠영입니다.",
+      "sourceParagraphs": [
+        "S128-P035"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-058-truck-tensors",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "상자의 엑스 축 관성은 질량에 높이 제곱과 깊이 제곱을 더한 값을 곱해 십이로 나눕니다",
+            "formula": "상자 Ixx = m(h²+d²)/12\n바퀴 Ixx = ½mR²\n바퀴 Iyy = m(3R²+L²)/12",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-058-truck-tensors",
+              "englishTerm": "Component Inertia",
+              "koreanTerm": "부품의 중심 관성",
+              "meaning": "부품의 중심 관성",
+              "picture": 9,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 1
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "상자의 엑스 축 관성은 질량에 높이 제곱과 깊이 제곱을 더한 값을 곱해 십이로 나눕니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "059",
+      "sourceBeatId": "M30-059-truck-sum",
+      "speech": "각 부품의 중심에서 트럭 전체 중심까지의 변위를 구합니다. 부품의 중심 관성에 평행축 항을 더한 뒤 일곱 행렬을 합합니다. 결과의 대각 성분은 약 오천백십점칠, 오천육백구십점구, 천백오십사점사입니다. 와이와 제트 사이 성분은 약 마이너스 삼십구점육이 남습니다. 좌우 대칭이라 엑스와 다른 축의 결합은 지워져도, 높이와 앞뒤 분포의 결합은 남을 수 있습니다.",
+      "sourceParagraphs": [
+        "S128-P036"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-059-truck-sum",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "각 부품의 중심에서 트럭 전체 중심까지의 변위를 구합니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-059-truck-sum",
+              "englishTerm": "Composite Inertia Tensor",
+              "koreanTerm": "합성 관성 텐서",
+              "meaning": "평행축으로 합치기",
+              "picture": 9,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0,
+              "spokenStep": 2
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "각 부품의 중심에서 트럭 전체 중심까지의 변위를 구합니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    },
+    {
+      "id": "060",
+      "sourceBeatId": "M30-060-closing",
+      "speech": "처음에 차체가 밀려가면서 동시에 돌아갔던 모습을 이제 연결할 수 있습니다. 힘을 어디에 가하는지도 중요했죠. 알짜힘은 질량중심의 움직임을, 토크는 각운동량을 바꿉니다. 접촉점에서는 이동과 회전이 합쳐지고, 물리 엔진은 제약을 맞추며 짧은 시간씩 진행합니다. 힘의 위치나 반발계수 하나를 바꿔 결과를 비교하면, 단순히 그럴듯한 움직임을 넘어 왜 그렇게 움직이는지 설명할 수 있습니다.",
+      "sourceParagraphs": [
+        "S12C-P001",
+        "S12C-P008",
+        "S12C-P009"
+      ],
+      "renderer": "Unity",
+      "classification": "our-implementation",
+      "shot": {
+        "beatId": "M30-060-closing",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "stepPositions": [],
+        "steps": [
+          {
+            "anchor": "처음에 차체가 밀려가면서 동시에 돌아갔던 모습을 이제 연결할 수 있습니다",
+            "formula": "",
+            "meaning": "",
+            "model": {
+              "beatId": "M30-060-closing",
+              "englishTerm": "Force, Impulse and Rotation",
+              "koreanTerm": "힘·충격·회전의 하나의 흐름",
+              "meaning": "힘·충격·회전의 하나의 흐름",
+              "picture": 64,
+              "duration": 4,
+              "massA": 2,
+              "massB": 1,
+              "velocityA": 2,
+              "velocityB": -1,
+              "angularSpeed": 1,
+              "forceAngle": 90,
+              "platformSpeed": 0
+            }
+          }
+        ]
+      },
+      "speechPhaseAnchors": [
+        {
+          "phrase": "처음에 차체가 밀려가면서 동시에 돌아갔던 모습을 이제 연결할 수 있습니다",
+          "position": 0.0,
+          "character": 0
+        }
+      ],
+      "clockFields": [
+        "stepSeconds",
+        "stepPositions"
+      ],
+      "hold": 0,
+      "independentEditableSceneRequired": true,
+      "status": "source-implemented-runtime-and-speech-QA-pending",
+      "timing": "Actual words required; no automatic observation silence"
+    }
+  ]
+}

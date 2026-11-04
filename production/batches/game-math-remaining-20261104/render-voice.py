@@ -51,6 +51,47 @@ def verified_cpu_research(arguments):
 def command_output(command):
     return subprocess.check_output(command, text=True, creationflags=CREATE_NO_WINDOW)
 
+
+def verified_waiting_math_worker(process, arguments):
+    """Admit this finite batch's idle coordinators, never their render children.
+
+    Exact workspace entrypoint + output scope + PID/start-time + waiting state
+    are required. The exclusive lease and independent GPU inventory still apply.
+    """
+    try:
+        scripts = [Path(x).resolve() for x in arguments if x.lower().endswith('.py')]
+        if len(scripts) != 1:
+            return False
+        selected = scripts[0]
+        batch = ROOT / 'production/batches/game-math-remaining-20261104'
+        m21 = ROOT / 'projects/game-math-shading-lights/production'
+        def value(flag):
+            return arguments[arguments.index(flag)+1] if flag in arguments else None
+        statefile = None
+        if selected in [(batch/'finish-selected-voice.py').resolve(), (batch/'finish-word-review.py').resolve()]:
+            slug = value('--project')
+            if slug not in read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']['projectSlugs']:
+                return False
+            statefile = ROOT/'projects'/slug/'production/local/audio-v1'/('finite-worker.json' if selected.name=='finish-selected-voice.py' else 'finite-word-review.json')
+        elif selected in [(m21/'run-capture-queue.py').resolve(), (m21/'compose-lecture.py').resolve(), (batch/'run-module-preflight.py').resolve()]:
+            queue = Path(value('--queue')).resolve()
+            if not queue.is_relative_to(ROOT/'projects'):
+                return False
+            statefile = queue.parent/('composite/worker.json' if selected.name=='compose-lecture.py' else 'progress.json')
+        elif selected == (m21/'unity-staging/run-preflight.py').resolve():
+            folder = Path(value('--job-folder')).resolve()
+            if not folder.is_relative_to(m21/'unity-staging'):
+                return False
+            statefile = folder/'progress.json'
+        if statefile is None or not statefile.is_file():
+            return False
+        state = read(statefile)
+        return (state.get('pid') == process.pid
+                and abs(state.get('createTime',0)-process.create_time()) < .1
+                and state.get('status') in {'waiting','waiting-for-idle-resources','waiting-for-current-voice','waiting-for-resource-boundary'})
+    except (ValueError,TypeError,IndexError,KeyError,OSError):
+        return False
+
 def shared_capture_idle():
     library = ROOT / 'unity/VideoEditing/Library'
     status = library / 'AnimationGridV1.status.json'
@@ -181,6 +222,9 @@ def main():
         if cpu_research:
             compute=False
             baseline.append({'pid':info['pid'],'name':info['name'],'disposition':'preserved-verified-CPU-only-research','sourceSha256':'bf9ab30630f0a7e054b444779123ad3f7e25648bec2af77f66bd3b69f79a3f06'})
+        if name.startswith('python') and verified_waiting_math_worker(proc, info.get('cmdline') or []):
+            compute=False
+            baseline.append({'pid':info['pid'],'name':info['name'],'disposition':'preserved-verified-waiting-finite-math-coordinator'})
         reason = 'actual-game' if actual_game else 'foreign-compute-process' if compute else 'editor-background-render' if editor and batch_flags and not import_worker and not idle_capture_server else 'editor-not-explicitly-allowed' if editor and not args.allow_idle_editors else None
         if reason:
             blocked.append({'pid': info['pid'], 'name': info['name'], 'reason': reason, 'batchFlags': batch_flags})

@@ -90,6 +90,8 @@ for item in batch['items']:
         vf=project/'production/local/audio-v1/finite-worker.json'
         if vf.exists():
             v=load(vf);stage+=' · '+{'synthesizing':'Qwen 음성 생성 중','voice-generated-review-pending':'음성 생성 완료·청취 검수 전'}.get(v['status'],'음성 생성 대기')
+    if item['id']=='M23' and load(project/'planning/production-plan.json').get('narrationFinal'):
+        stage='68문단·게임 4구간·발화 전환 100개 연결 · 수정 화면·음성 제작 대기'
     if item['id'] in {'M29','M30'}:
         name='dynamics-shots.json' if item['id']=='M29' else 'rigid-shots.json'
         shots=project/'production/unity-staging'/name
@@ -103,6 +105,19 @@ for item in batch['items']:
     row['notes']='2026-11-04 승인된 M21–M33 로컬 제작 범위. '+stage+'. 업로드·예약 미승인.'
     item['evidence']={'sourceAudit':str(project/'planning/source-audit.json') if (project/'planning/source-audit.json').exists() else None,
                       'footageAudit':str(project/'planning/footage-audit.json') if (project/'planning/footage-audit.json').exists() else None}
+    # Project-level checkpoints must not remain at an obsolete source-pending
+    # stage while the batch ledger reports authored scenes and active media jobs.
+    cp=project/'production/checkpoint.json';existing=load(cp) if cp.exists() else {}
+    binding=project/'planning/scene-bindings.json';source_bindings=load(binding) if binding.exists() else None
+    existing.update(updatedAt=datetime.now(timezone.utc).isoformat(),stage=stage,batch='production/batches/game-math-remaining-20261104/batch.json',localReviewReady=False,humanReview=False,outputsReady=False)
+    existing['evidence']=dict(item['evidence'],sceneBindings=str(binding) if source_bindings else None)
+    existing['nextAction']='Finish actual speech, source-matched runtime checks, integrated edit and internal audiovisual/mobile QA; only then deliver four local files.'
+    if source_bindings:existing['boundSourceParagraphs']=len(source_bindings['scenes'])
+    vf=project/'production/local/audio-v1/finite-worker.json'
+    existing['voiceWorker']=load(vf) if vf.exists() else None
+    existing['runningCostlyJobs']=[]
+    if existing['voiceWorker'] and existing['voiceWorker']['status']=='synthesizing':existing['runningCostlyJobs'].append('approved Qwen narration')
+    save(cp,existing)
 batch['updatedAt']=datetime.now(timezone.utc).isoformat()
 save(BATCH/'batch.json',batch);save(ROOT/'shared/publishing/video-worklist.json',work)
 checkpoint=load(BATCH/'checkpoint.json')
@@ -162,14 +177,14 @@ import psutil
 active=[];checkpoint['episodeVoiceWorkers']={}
 for item in batch['items']:
     project=ROOT/'projects'/item['slug']
-    paths=[project/'production/local/audio-v1/finite-worker.json',latest_preview(project),latest_render(project)/'progress.json']
+    paths=[project/'production/local/audio-v1/finite-worker.json',project/'production/local/audio-v1/finite-word-review.json',latest_preview(project),latest_render(project)/'progress.json',latest_render(project)/'composite/worker.json']
     for path in paths:
         if not path.is_file():continue
         state=load(path)
         if path.name=='finite-worker.json':checkpoint['episodeVoiceWorkers'][item['id']]=state
         try:alive=abs(psutil.Process(state['pid']).create_time()-state['createTime'])<.1
         except (KeyError,psutil.NoSuchProcess):alive=False
-        if alive and state['status'] in {'synthesizing','running-preflight','capturing','transcribing-word-timestamps'}:active.append({'episode':item['id'],'status':state['status'],'pid':state['pid'],'evidence':path.relative_to(ROOT).as_posix()})
+        if alive and state['status'] in {'synthesizing','running-preflight','capturing','transcribing-word-timestamps','compositing'}:active.append({'episode':item['id'],'status':state['status'],'pid':state['pid'],'evidence':path.relative_to(ROOT).as_posix()})
 checkpoint['runningCostlyJobs']=active
 if active:checkpoint['resourceGate']={'status':'active-owned-work','jobs':active}
 checkpoint['nextAction']='Complete M22 approved-voice generation; recapture 17 image-approved M21 repairs with 61 structurally verified captures reused, then final compose/QA and source-matched module runtime QA. No final video is marked ready before integrated review.'
