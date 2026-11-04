@@ -12,6 +12,7 @@ assert __import__('re').fullmatch(r'audio-v\d+',a.audio_revision) and __import__
 audio=P/'production/local'/a.audio_revision;edit=P/'production/local'/a.audio_revision.replace('audio-','edit-');timeline=edit/'word-aligned-timeline.json';t=read(timeline)
 assert not t['flags'],'Resolve actual speech, caption and phase differences first'
 assert t['bindingsSha256']==sha(P/'planning/scene-bindings.json') and t['narrationSha256']==sha(audio/'narration.wav')
+assert t['timingSha256']==sha(audio/'narration.timing.json') and t['captionReadingAdjustmentsSha256']==sha(P/'planning/caption-reading-adjustments.json'),'Caption wording or measured speech changed; align this revision again'
 marker=read(sandbox/'MATH_CAPTURE_SANDBOX.json')
 # Some families share their implementation plan at the first episode. The
 # actual episode/slug pair always belongs to the selected production plan.
@@ -41,6 +42,7 @@ for row in t['scenes']:
   assert game['sourceIn']+gameframes/60+.017>=required_out, f'{sid}: native action/result would be truncated; inspect a shorter complete source window or adjust its speech handoff, never freeze/slow/pad'
   cuts.append(dict(scene=sid,kind='actual-gameplay',sourceId=game['sourceId'],sourceIn=game['sourceIn'],sourceOut=game['sourceIn']+gameframes/60,originalAudioIn=game.get('fullOriginalAudioIn',game['sourceIn']),frames=gameframes,globalStartFrame=row['startFrame']+game_start,nativeSpeed=True,freeze=False,loop=False,originalSelectedOut=game['sourceOut'],minimumObservedResultOut=required_out,speechStartEvidence=row.get('actualGameStartEvidence'),speechEndEvidence=row.get('actualGameEndEvidence'),review='Confirm observed before/action/result and the source-to-Unity spoken handoff in final encoded output'))
   if 'sourceSoundDecision' in game:cuts[-1]['sourceSoundDecision']=game['sourceSoundDecision']
+  if 'nativeDetailInset' in game:cuts[-1]['nativeDetailInset']=game['nativeDetailInset']
  if frames==gameframes:continue
  shotfile=out/'shots'/(sid+'.json');pending_files.append((shotfile,shot))
  job=dict(id=episode.lower()+'-body-'+sid,projectSlug=P.name,command='render',expectedFingerprint=marker['fingerprint'],shotFile=str(shotfile),factoryType=factory,output=str(out/'unity'/sid),frames=frames,sampleFrames=[0,frames//2,frames-1],speechTimingVerified=True,sceneId=sid,ffmpeg='C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe')

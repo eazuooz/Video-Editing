@@ -61,6 +61,19 @@ def normalize_owned(s,owners):
     # Korean particles are attached to Latin symbols (e.g. BRDF가, N과).
     # Latin-only boundaries preserve words such as "normal" while matching those.
     replace(r'(?<=\d),(?=\d{3}(?:\D|$))','')
+    # Recognizers often print exact English product names even in a Korean
+    # sentence. Normalize these verified names only; e.g. an unrelated "BCG"
+    # is not an alias for Besiege. Keep raw evidence and display spelling intact.
+    for pattern,name in [
+        (r'beam\s*ng\s*[.]?\s*drive','비이엠엔지드라이브'),
+        (r'besiege','비시지'),(r'riders\s+republic','라이더스리퍼블릭'),
+        (r'forza\s+horizon\s*(?:5|five)','포르자호라이즌파이브'),
+        (r'super\s+mario\s+odyssey','슈퍼마리오오디세이'),
+        (r'super\s+mario\s+maker\s*(?:2|two)','슈퍼마리오메이커투'),
+        (r'satisfactory','새티스팩토리'),(r'townscaper','타운스케이퍼')]:
+        replace(r'(?<![a-z])'+pattern+r'(?![a-z0-9])',name)
+    replace(r'포르자\s*호라이즌\s*5(?!\d)','포르자호라이즌파이브')
+    replace(r'슈퍼\s*마리오\s*메이커\s*2(?!\d)','슈퍼마리오메이커투')
     for symbol,pronunciation in [('θ','세타'),('ω','오메가'),('π','파이')]:replace(symbol,pronunciation)
     replace(r'(?<![a-z])([a-z])(?=(?:cos|sin|tan)(?![a-z]))',lambda m:m.group(1)+' ')
     replace(r'(?<![a-z])(?:ix|it|at|bt|et|nt|rt|vt|xy|xz|yz|zt|xt|yt)(?![a-z])',lambda m:' '.join(m.group()))
@@ -72,7 +85,7 @@ def normalize_owned(s,owners):
     replace(r'절대값','절댓값')
     replace(r'%','퍼센트')
     replace(r'[−–-](?=\s*(?:[0-9a-z]|오메가|세타|파이))','마이너스')
-    replace(r'\bbump\s+mapping\b','범프매핑')
+    replace(r'(?<![a-z])bump\s+mapping(?![a-z])','범프매핑')
     for a,b in sorted(ALIASES.items(),key=lambda p:-len(p[0])):replace(r'(?<![a-z])'+re.escape(a)+r'(?![a-z])',b)
     replace(r'\d+(?:\.\d+)?',lambda m:number_ko(m.group()))
     keep=[i for i,c in enumerate(s) if c.isalnum()]

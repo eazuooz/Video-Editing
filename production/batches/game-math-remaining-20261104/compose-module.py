@@ -51,6 +51,23 @@ def encoder():return ['-c:v','h264_nvenc','-preset','p5','-tune','hq','-rc','vbr
 def video_check(path,frames):
     stream=next(s for s in probe(path)['streams'] if s['codec_type']=='video')
     assert (stream['width'],stream['height'],stream['r_frame_rate'],int(stream['nb_frames']))==(1920,1080,'60/1',frames),str(path)
+def game_filters(cut,annotation):
+    x,y,w,h=VIEW
+    base=f'scale={w}:{h}:force_original_aspect_ratio=decrease:flags=lanczos,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:black,pad=1920:1080:{x}:{y}:black,setsar=1,fps=60'
+    inset=cut.get('nativeDetailInset')
+    if not inset:return base+',ass='+annotation
+    assert inset['kind']=='same-instant-native-crop' and cut['sourceIn']<=inset['start']<inset['end']<=cut['sourceOut']
+    k=inset['centers'];cw,ch=inset['cropSize'];dw,dh=inset['displaySize'];dx,dy=inset['displayAt']
+    assert dw*ch==dh*cw and dx>=x and dx+dw+8<=x+w and dy>=y and dy+dh+8<=y+h and len(k)>=2
+    assert all(k[i][0]<k[i+1][0] for i in range(len(k)-1))
+    def position(axis,half):
+        vals=[(t-cut['sourceIn'],p[axis]-half) for t,*p in k]
+        expr=f'{vals[-1][1]:.3f}'
+        for (ta,va),(tb,vb) in reversed(list(zip(vals,vals[1:]))):
+            expr=f'if(lt(t,{tb:.5f}),{va:.3f}+({vb-va:.3f})*max(0,t-{ta:.5f})/{tb-ta:.5f},{expr})'
+        return expr
+    # The two branches share source PTS; no secondary clip, freeze or respeed.
+    return f"split=2[whole][detail];[whole]{base}[field];[detail]crop={cw}:{ch}:x='{position(0,cw/2)}':y='{position(1,ch/2)}',scale={dw}:{dh}:flags=lanczos,setsar=1,pad={dw+8}:{dh+8}:4:4:0x73c7c2[zoom];[field][zoom]overlay={dx}:{dy}:enable='between(t,{inset['start']-cut['sourceIn']:.5f},{inset['end']-cut['sourceIn']:.5f})',ass={annotation}"
 def points(frame):
     if 'points' in frame:return frame['points']
     x,y,w,h=frame['bbox']
@@ -168,7 +185,7 @@ def render(queue,work,sources,receipt,dest):
         G.authorized();stem=f'{i:03}-{cut["scene"]}';v=segments/(stem+'.mp4');a=segments/(stem+'.wav');n=cut['frames'];duration=n/60
         if cut['kind']=='actual-gameplay':
             src=sources[cut['sourceId']];source=R/src['file'];x,y,w,h=VIEW
-            vf=f'scale={w}:{h}:force_original_aspect_ratio=decrease:flags=lanczos,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:black,pad=1920:1080:{x}:{y}:black,setsar=1,fps=60,ass=game-{i:03}.ass'
+            vf=game_filters(cut,f'game-{i:03}.ass')
         else:source=Path(cut['file']);vf='setsar=1,fps=60'
         ff(['-ss',cut['sourceIn'],'-i',source,'-an','-vf',vf,'-frames:v',n,*encoder(),'-movflags','+faststart',v],work/'logs'/(stem+'-video.log'),work)
         video_check(v,n)
@@ -202,7 +219,8 @@ def render(queue,work,sources,receipt,dest):
     ff(['-i',clean,'-vf','ass=captions.ko.ass','-map','0:v:0','-map','0:a:0',*encoder(),'-c:a','copy','-map_metadata','-1','-movflags','+faststart',cap],work/'logs/captioned.log',work)
     for lang in ['ko','en']:shutil.copy2(Path(queue['editDirectory'])/('narration.'+lang+'.srt'),dest/(P.name+'.'+lang+'.srt'))
     for path in [clean,cap]:video_check(path,queue['bodyFrames']+720)
-    title=html.escape(read(P/'project.json').get('title',P.name)+' — 로컬 검수본')
+    meta=read(P/'project.json')
+    title=html.escape(meta['titles']['ko']+' · '+meta.get('localReviewHeading','로컬 검수본'))
     (dest/'index.html').write_text(f'<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title><style>body{{max-width:1100px;margin:24px auto;padding:20px;background:#080808;color:white;font:18px/1.6 system-ui}}a{{color:#73c7c2}}video{{width:100%}}h1{{color:#e8cf83}}</style><h1>{title}</h1><p>1920×1080 · 60fps · 사용자 시청/청취 검수 전</p><video controls preload="metadata" src="{P.name}.captioned.mp4"></video><p><a href="{P.name}.clean.mp4">자막 없는 영상</a> · <a href="{P.name}.ko.srt">한국어 자막</a> · <a href="{P.name}.en.srt">영어 자막</a></p>',encoding='utf-8')
     save(work/'progress.json',{'status':'encoded-internal-QA-pending','output':str(dest),'files':[{'path':str(p),'sha256':sha(p)} for p in dest.glob('*')],'originalPcmUnchanged':sha(voice)==receipt['narrationSha256'],'humanReview':False,'finalReviewReady':False,'finishedAt':now()})
 def main():

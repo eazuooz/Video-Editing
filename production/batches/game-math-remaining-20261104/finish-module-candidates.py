@@ -19,7 +19,15 @@ def read(p):
    if n==11:raise
    time.sleep(.1)
 def write(p,d):
- t=p.with_suffix('.tmp');t.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf8');os.replace(t,p)
+ # Windows readers can briefly open the destination without delete sharing.
+ # Keep the previous complete snapshot visible until the replacement succeeds.
+ t=p.with_name(p.name+'.'+str(os.getpid())+'.tmp')
+ t.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+ for attempt in range(80):
+  try:os.replace(t,p);return
+  except PermissionError:
+   if attempt==79:raise
+   time.sleep(min(.5,.025*(attempt+1)))
 def live(d):
  try:return abs(psutil.Process(d['pid']).create_time()-d['createTime'])<.1
  except (KeyError,psutil.NoSuchProcess):return False
@@ -37,8 +45,12 @@ def main():
    q=read(s/f'local-preflight-v{pv}/queue.json');assert q['project']==row['slug'] and all(read(Path(j))['command']=='preflight' for j in q['jobs'])
  if not a.run:print('Validated exact twelve capture dependencies; no job started');return
  statefile=B/'local/finish-module-candidates.json';statefile.parent.mkdir(exist_ok=True)
- if statefile.is_file():assert not live(read(statefile)) and read(statefile)['status']!='finished','Existing finite finishing job preserved'
+ old=read(statefile) if statefile.is_file() else {}
+ if old:
+  assert not live(old) and old['status']!='finished','Existing finite finishing job preserved'
+  assert not old.get('childPid') or not psutil.pid_exists(old['childPid']),'Preserve existing child until its status has been inspected'
  state=dict(pid=os.getpid(),createTime=psutil.Process().create_time(),status='waiting',startedAt=now(),selected=[r['id'] for r in rows],results={},pending={},automation=False,publishing=False,humanListening=False)
+ if old:state.update(results=old.get('results',{}),resumedFrom=dict(startedAt=old.get('startedAt'),status=old.get('status'),error=old.get('error')))
  def setstate(**kw):state.update(kw,checkedAt=now());write(statefile,state)
  spec=importlib.util.spec_from_file_location('guard',R/'projects/game-math-shading-lights/production/run-capture-queue.py')
  guard=importlib.util.module_from_spec(spec);spec.loader.exec_module(guard)
@@ -110,7 +122,7 @@ def main():
    for row in rows:
     sid=row['id']
     if sid in state['results']:continue
-    setstate(status='waiting',current=sid,step='Inspect actual dependencies',childPid=None)
+    state.update(status='waiting',current=sid,step='Inspect actual dependencies',childPid=None)
     try:result,reason=consider(row)
     except Exception as e:result,reason=dict(status='production-attention-required',reason=repr(e),finalReviewReady=False),None
     if result is not None:
