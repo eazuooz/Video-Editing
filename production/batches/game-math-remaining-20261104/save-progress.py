@@ -68,7 +68,7 @@ def main():
             for pattern in ('*audit.json','*numeric-qa.json','worked-calculations.json'):
                 files+=list((project/'research').glob(pattern))
     if include_drafts:
-        for ready_module in ('game-math-shading-lights','game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives'):
+        for ready_module in ('game-math-shading-lights','game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives','game-math-forces-friction'):
             unity_staging=ROOT/'projects'/ready_module/'production/unity-staging'
             files+=[p for p in unity_staging.glob('*') if p.is_file() and (p.suffix in ('.cs','.shader','.py','.json') or p.name=='.gitignore') and p.name!='receipt.json' and not p.name.startswith('local-')]
     files=list(dict.fromkeys(files))
