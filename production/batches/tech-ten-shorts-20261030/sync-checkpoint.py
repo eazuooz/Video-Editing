@@ -5,7 +5,7 @@ import json
 import os
 import uuid
 from batch_job_lock import inspect_lock
-from scoped_context import BATCH, ROOT, MEDIA, REVISION, inventory, read, sha, now, process_snapshot
+from scoped_context import BATCH, ROOT, MEDIA, REVISION, inventory, read, sha, now, process_snapshot, assert_no_game_apps, Deferred
 
 STAGES = ('voice','voice-asr','captions','visual-preparation','native-capture','header',
           'visual-render','audio-mix','audio-report','mix-asr','video-pair','integrity','qa','review')
@@ -137,11 +137,12 @@ def final_snapshot(project, manifest, passed, evidence):
     return result
 
 
-def classify(source_ready, code_ready, state, passed, final, issues, active, games, occupied):
+def classify(source_ready, code_ready, state, passed, final, issues, active, games, occupied, resource_hold=None):
     if active: return 'running-'+active.get('stage','owned-job')
     if issues or final['issues']: return 'evidence-needs-inspection'
     if final['reviewFilesGenerated']: return 'review-files-generated-internal-review-pending'
     if not source_ready: return 'source-review-and-scene-preparation'
+    if resource_hold: return 'waiting-for-game-or-editor-exit'
     if state.get('status') == 'failed': return 'production-failed-needs-inspection'
     if state.get('status') == 'running': return 'interrupted-job-needs-inspection'
     if games: return 'waiting-for-game-exit'
@@ -154,6 +155,9 @@ def classify(source_ready, code_ready, state, passed, final, issues, active, gam
 def collect():
     batch, selected = inventory(); evidence = Evidence(); readiness = optional(BATCH/'readiness.json')
     processes = process_snapshot(); games = [p for p in processes if p['name'].lower() != 'unity.exe']
+    resource_hold = None
+    try: assert_no_game_apps()
+    except Deferred as error: resource_hold = str(error)
     lock = inspect_lock(); selected_slugs = {row['slug'] for row in selected}
     live = lock if lock and lock.get('ownerLive') and lock.get('slug') in selected_slugs else None
     rows, previews, attempts = [], [], set()
@@ -173,11 +177,11 @@ def collect():
             except (OSError,KeyError,RuntimeError) as error:
                 code_ready=False; issues.append(dict(stage='readiness',error=str(error)))
         active=live if live and live['slug']==slug else None; ledger=optional(project/'production/review-ledger.json')
-        rows.append({**item,'title':metadata['title'],'status':classify(source_ready,code_ready,state,passed,final,issues,active,games,bool(lock)),
+        rows.append({**item,'title':metadata['title'],'status':classify(source_ready,code_ready,state,passed,final,issues,active,games,bool(lock),resource_hold),
             'scriptFinalized':plan.get('scriptFinalized') is True,'sourceAndFhdReady':source_ready,
             'codeReadyRecorded':ready.get('codeReadyForActualProduction') is True,'codeReadinessEvidenceCurrent':code_ready,
             'verifiedStages':passed,'stageEvidenceIssues':issues,'pipelineStatus':state.get('status','not-started'),
-            'currentStage':active.get('stage') if active else state.get('currentStage'),'actualVoiceGenerated':'voice' in passed,
+            'currentStage':active.get('stage') if active else state.get('currentStage'),'resourceHold':resource_hold,'actualVoiceGenerated':'voice' in passed,
             'captionArtifactsAvailable':captions['available'],'captionEvidence':captions,
             'fourOutputsVerified':final['fourOutputsVerified'],'generatedReviewVideo':final['reviewFilesGenerated'],'finalOutputs':final,
             'humanFinalReview':ledger.get('humanFinalReview','pending'),'actualFullListeningRecorded':ledger.get('actualCompleteHumanListening') is True,
@@ -196,7 +200,7 @@ def collect():
     if live: status='running-'+live.get('stage','owned-job')
     elif complete==len(rows): status='local-review-files-generated'
     elif any('needs-inspection' in row['status'] for row in rows): status='production-evidence-needs-inspection'
-    elif games: status='waiting-for-game-exit'
+    elif resource_hold: status='waiting-for-game-or-editor-exit'
     else: status='ready-to-continue-with-source-and-runtime-holds'
     return dict(recordedAt=now(),status=status,projects=rows,generatedReviewVideos=complete,
         verifiedFourOutputSets=sum(r['fourOutputsVerified'] for r in rows),actualVoiceGeneratedCount=sum(r['actualVoiceGenerated'] for r in rows),
@@ -205,7 +209,7 @@ def collect():
         sourceReadyCount=sum(r['sourceAndFhdReady'] for r in rows),productionJobsStarted=len(attempts),
         productionJobCountScope='Unique (slug,stage,startedAt) attempts, including deferred/failed. Native previews listed separately.',
         nativePreflightReceipts=previews,activeOwnedJob=live,finiteQueueRunning=bool(live and live.get('stage')!='native-preflight'),
-        activeGameProcesses=games,observedApps=processes,serialLock=lock,platformActionsPerformedBySnapshot=False,humanReviewInferred=False)
+        activeGameProcesses=games,observedApps=processes,resourceHold=resource_hold,serialLock=lock,platformActionsPerformedBySnapshot=False,humanReviewInferred=False)
 
 
 def persist(snapshot):
@@ -235,6 +239,7 @@ def persist(snapshot):
         if item['visualPlaybackReviewRecorded'] not in ('pass','complete','completed'): pending.append('real-time-visual-and-mobile-review')
         if item['humanFinalReview'] in (False,None,'pending','not-reviewed'): pending.append('human-final-review')
         cp.update(recordedAt=snapshot['recordedAt'],status=item['status'],completed=completed,pending=pending,
+            resourceHold=item['resourceHold'],
             sourceAndFhdReady=item['sourceAndFhdReady'],scriptFinalized=item['scriptFinalized'],
             verifiedPipelineStages=item['verifiedStages'],pipelineEvidenceIssues=item['stageEvidenceIssues'],
             priorNativeDraftPreviews=[r for r in snapshot['nativePreflightReceipts'] if r['slug']==item['slug']],
@@ -259,6 +264,11 @@ def persist(snapshot):
         for r in snapshot['projects'] if not r['generatedReviewVideo'] or r['humanFinalReview'] in (False,None,'pending','not-reviewed')]
     cp.setdefault('automaticBackgroundContinuationStarted',False); save(path,cp)
     # Do not reactivate a paused/disabled authorization; do not grant platform authority.
+    # Other chats share these files. Re-read immediately before changing our
+    # exact authorization/rows so their intervening unrelated edits survive.
+    control=read(control_path); worklist=read(worklist_path)
+    if control['explicitTechTenBatch20261030'].get('id') != 'explicit-tech-ten-shorts-20261030': raise RuntimeError('Authorization changed before persistence.')
+    if any(sum(r.get('slug')==item['slug'] for r in worklist['rows'])>1 for item in snapshot['projects']): raise RuntimeError('Selected worklist rows changed before persistence.')
     control['explicitTechTenBatch20261030'].update(currentStage=snapshot['status'],activeGameProcesses=snapshot['activeGameProcesses'],
         localReviewVideosCompleted=snapshot['generatedReviewVideos'],checkpoint='production/batches/tech-ten-shorts-20261030/checkpoint.json')
     save(control_path,control)

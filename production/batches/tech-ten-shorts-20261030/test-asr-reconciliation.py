@@ -69,6 +69,44 @@ class ReconciliationTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'voiceSha256 differs'):
             self.validate()
 
+    def cached_normalization(self, text):
+        script_dir = self.root / 'script'
+        script_dir.mkdir(exist_ok=True)
+        script = script_dir / 'narration.spoken.ko.json'
+        self.write(script, {'scenes': [{'lines': ['언차티드 포에서 줄을 잡습니다.']} ]})
+        clauses = script_dir / 'caption-clauses.json'
+        self.write(clauses, {'pronunciationAliases': {'Uncharted 4': '언차티드 포'}})
+        report = self.root / f'asr-voice-{runner.sha(self.voice)[:12]}.json'
+        self.write(report, {'role': 'voice', 'sha256': runner.sha(self.voice),
+            'expectedSourceSha256': runner.sha(script), 'fullInput': True,
+            'expectedTextPromptUsed': False, 'rawRecognitionUnmodified': True,
+            'normalizedMatch': False, 'text': text, 'chunks': [{'text': text, 'timestamp': [0, 1]}]})
+        obj = runner.Pipeline.__new__(runner.Pipeline)
+        obj.project = self.root
+        obj.audio = self.root
+        obj.ctx = {'VOICE': self.voice}
+        obj.py = lambda *args: args
+        obj.command = lambda *args: None  # Cached recognizer fixture, no model.
+        before = runner.sha(report)
+        result, files = obj.asr('voice')
+        self.assertEqual(runner.sha(report), before)
+        self.assertEqual(result['normalizationAliasesSha256'], runner.sha(clauses))
+        return result
+
+    def test_current_aliases_accept_exact_cached_name_without_rewriting_raw(self):
+        result = self.cached_normalization('Uncharted 4에서 줄을 잡습니다.')
+        self.assertFalse(result['rawNormalizedMatch'])
+        self.assertTrue(result['currentNormalizationMatch'])
+        self.assertEqual(result['actualListening'], 'pending')
+
+    def test_current_aliases_reject_different_name(self):
+        with self.assertRaisesRegex(RuntimeError, 'Raw ASR differs'):
+            self.cached_normalization('Uncharted 3에서 줄을 잡습니다.')
+
+    def test_current_aliases_reject_missing_word(self):
+        with self.assertRaisesRegex(RuntimeError, 'Raw ASR differs'):
+            self.cached_normalization('Uncharted 4에서 잡습니다.')
+
     def test_raw_tamper_is_rejected(self):
         self.report.write_text('{}', encoding='utf8')
         with self.assertRaisesRegex(RuntimeError, 'role differs|asrSha256 differs'):
@@ -190,6 +228,26 @@ class ReconciliationTests(unittest.TestCase):
         new.write_bytes(wav(2, .50001))
         self.assertNotEqual(runner.float32_mono_wav_data(old), runner.float32_mono_wav_data(new))
 
+
+    def test_new_contexts_reject_names_and_unbound_replacements(self):
+        allowed = [
+            ('쉐이더', '셰이더', 'shader-loanword-orthography'),
+            ('물보다는 붓박이 그림처럼 보이죠.', '물보다는 붙박이 그림처럼 보이죠.', 'contextual-built-in-spelling'),
+            ('릴리프 맵핑으로 파인 깊이를 표현합니다.', '릴리프 매핑으로 파인 깊이를 표현합니다.', 'contextual-relief-mapping-spelling'),
+            ('병의 액체 무늬를 고정하면', '병에 액체 무늬를 고정하면', 'contextual-locative-pronunciation'),
+            ('검은 바탕의 흰색으로 그립니다.', '검은 바탕에 흰색으로 그립니다.', 'contextual-locative-pronunciation'),
+            ('모두 한 박자의 움직이는 느낌을 줄이는 거죠.', '모두 한 박자에 움직이는 느낌을 줄이는 거죠.', 'contextual-locative-pronunciation'),
+            ('이 초의 이동, 사 초의 공격을 기록해 볼게요.', '이 초에 이동, 사 초에 공격을 기록해 볼게요.', 'contextual-locative-pronunciation')]
+        for source, target, kind in allowed:
+            self.contextual_fixture(source, target, kind, independent=target)
+            self.assertTrue(self.validate()[0]['reconciledContentMatch'])
+            self.contextual_fixture(source, target + ' 아캄 오리진', kind)
+            with self.assertRaises(RuntimeError): self.validate()
+        for source, target, kind in [('붓박이', '붙박이', 'contextual-built-in-spelling'),
+                                      ('투형', '투영', 'shader-loanword-orthography'),
+                                      ('의', '에', 'contextual-locative-pronunciation')]:
+            self.contextual_fixture(source, target, kind)
+            with self.assertRaises(RuntimeError): self.validate()
 
 if __name__ == '__main__':
     unittest.main()

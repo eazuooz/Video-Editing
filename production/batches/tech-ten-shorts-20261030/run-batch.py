@@ -213,8 +213,20 @@ def validate_asr_reconciliation(path, report_path, source, voice, script, expect
             # 의 can be pronounced 에. The authored locative is established by
             # the complete same-area grid sentence, not by a global reversal.
             require((a, b) in {('같은넓이의가로네칸', '같은넓이에가로네칸'),
-                              ('새게임사이의통역기를둔다면어떨까요', '새게임사이에통역기를둔다면어떨까요')},
+                              ('새게임사이의통역기를둔다면어떨까요', '새게임사이에통역기를둔다면어떨까요'),
+                              ('병의액체무늬를고정하면', '병에액체무늬를고정하면'),
+                              ('검은바탕의흰색으로그립니다', '검은바탕에흰색으로그립니다'),
+                              ('모두한박자의움직이는느낌을줄이는거죠', '모두한박자에움직이는느낌을줄이는거죠'),
+                              ('이초의이동사초의공격을기록해볼게요', '이초에이동사초에공격을기록해볼게요')},
                     'not an exact reviewed locative context')
+        elif kind == 'shader-loanword-orthography':
+            require((a, b) == ('쉐이더', '셰이더'), 'not the canonical Shader spelling variant')
+        elif kind == 'contextual-built-in-spelling':
+            require((a, b) == ('물보다는붓박이그림처럼보이죠', '물보다는붙박이그림처럼보이죠'),
+                    'not the exact built-in picture context')
+        elif kind == 'contextual-relief-mapping-spelling':
+            require((a, b) == ('릴리프맵핑으로파인깊이를표현합니다', '릴리프매핑으로파인깊이를표현합니다'),
+                    'not the canonical Relief Mapping context')
         elif kind == 'contextual-method-liaison-orthography':
             require((a, b) == ('그값을찾아주는시기죠', '그값을찾아주는식이죠'),
                     'not the exact value-lookup method liaison context')
@@ -224,7 +236,8 @@ def validate_asr_reconciliation(path, report_path, source, voice, script, expect
         refs = change.get('evidenceIds', [])
         require(isinstance(refs, list) and bool(refs) and all(ref in evidence_text and
                 (a in evidence_text[ref] or (kind in ['contextual-bridge-liaison-orthography',
-                 'contextual-locative-pronunciation', 'contextual-method-liaison-orthography'] and b in evidence_text[ref])) for ref in refs),
+                 'contextual-locative-pronunciation', 'contextual-method-liaison-orthography',
+                 'contextual-built-in-spelling', 'contextual-relief-mapping-spelling', 'shader-loanword-orthography'] and b in evidence_text[ref])) for ref in refs),
                 'documented variant is not present in its independent evidence')
         require(type(change.get('occurrences')) is int and change['occurrences'] > 0
                 and raw.count(a) == change['occurrences'] and b in target, 'mapping count/context differs')
@@ -419,8 +432,13 @@ class Pipeline:
         expected = ' '.join(line for scene in read(script)['scenes'] for line in scene['lines'])
         aliases = read(self.project / 'script/caption-clauses.json').get('pronunciationAliases', {})
         raw_match = normalize_speech(data['text'], aliases) == normalize_speech(expected, aliases)
-        if data.get('normalizedMatch') is True and raw_match:
-            return {'normalizedMatch': True, 'rawNormalizedMatch': True, 'actualListening': 'pending'}, [path]
+        if raw_match:
+            # Cached recognition is immutable; its earlier normalization may use
+            # an older, explicitly reviewed pronunciation/display alias set.
+            return {'normalizedMatch': True, 'rawNormalizedMatch': data.get('normalizedMatch'),
+                'currentNormalizationMatch': True,
+                'normalizationAliasesSha256': sha(self.project / 'script/caption-clauses.json'),
+                'actualListening': 'pending'}, [path]
         receipt = reconciliation_file(self.audio, role)
         if not receipt.exists():
             raise RuntimeError('Raw ASR differs from narration; inspect actual PCM. Do not silently create aliases.')

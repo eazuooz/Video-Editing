@@ -60,6 +60,11 @@ for e in m.read(job)['captures']:
  assert (output/'git-text-projection'/(tex+'.meta')).exists()
  report=m.read(output/'editable-export.json')
  assert report['sceneBindings'][0]['sourceTreeSha256']==tree and report['runtimeReopenVerified'] is False
+ assert report['playbackContract']['automaticPlayModeAnimation'] is False
+ assert len(report['preservedTimingFiles'])==2
+ for timing_file in report['preservedTimingFiles']:
+  m.verify(timing_file['path'],timing_file['sha256'])
+  assert m.read(timing_file['path'])==m.read(m.MEDIA/e['slug']/'local/visual-timing.json')
 assert (m.OWNED/codepath).read_bytes()==current
 with contextlib.redirect_stdout(io.StringIO()):m.collect(job)  # exact idempotent reuse
 for unsafe in ['../escape','C:/outside','Assets\\escape','/absolute']:
@@ -72,4 +77,49 @@ try:m.capture(first['slug'])
 except ValueError:pass
 else:raise AssertionError('Altered successful artifact accepted')
 frame.write_bytes(original)
-print(json.dumps({'passed':True,'cases':['all-seven-successful-receipt-gate','exact-captured-source-restored-not-current-code','scene-sourceTree-binding','local-binary-preserved-git-excluded','meta-preserved','idempotent-copy','path-traversal-rejected','altered-receipt-artifact-rejected'],'fixtureRoot':str(base),'liveProjectMutated':False,'unityLaunched':False},indent=2))
+projection_spec=importlib.util.spec_from_file_location('projection',HERE/'preserve-git-projection.py')
+projection=importlib.util.module_from_spec(projection_spec);projection_spec.loader.exec_module(projection)
+projection.export.ROOT=m.ROOT;projection.export.MEDIA=m.MEDIA
+dry=projection.preserve(False)
+assert dry['count']==7 and dry['copied'] is False
+copied=projection.preserve(True)
+assert copied['count']==7 and copied['copied'] is True
+for row in copied['projects']:
+ destination=Path(row['destination'])
+ assert (destination/'scene-source-record.json').is_file()
+ assert (destination/'evidence/visual-timing-captured.json').is_file()
+ assert not (destination/tex).exists()
+ assert (destination/(tex+'.meta')).is_file()
+projection.preserve(True)  # verified idempotent immutable projection
+projected=Path(copied['projects'][0]['destination'])/codepath
+saved_projection=projected.read_bytes();projected.write_bytes(b'changed')
+try:projection.preserve(False)
+except ValueError:pass
+else:raise AssertionError('Changed existing Git projection accepted')
+projected.write_bytes(saved_projection)
+for slug, revision in m.DEFINITION_ONLY_REUSE.items():
+ local=m.MEDIA/slug/'local';path=local/'visual-timing.json';prior=m.read(path)
+ prior.update(frames=120,events={'term-definition':{'startFrame':12,'endFrame':40,'cueIds':['p1']},'action':{'startFrame':60,'endFrame':90,'cueIds':['p2']}})
+ old=save(local/'finite-pipeline-v1/adoption-history'/revision/'production/visual-timing.json',prior)
+ inputs=m.read(local/'unity-capture/input-receipt.json');inputs['timingSha256']=m.sha(old)
+ new=json.loads(json.dumps(prior));new['events']['term-definition']={'startFrame':15,'endFrame':50,'cueIds':['p1b']};save(path,new)
+ _,evidence=m.verified_timing(slug,local,inputs)
+ assert evidence['onlyChangedField']=='events.term-definition' and evidence['nativeSectionsActionsSourcesAndTimingInputsExactlyEqual']
+ for changed in ['section','action','voice']:
+  bad=json.loads(json.dumps(new))
+  if changed=='section':bad['sections'][0]['endFrame']=2
+  elif changed=='action':bad['events']['action']['startFrame']=61
+  else:bad['timingInputs']['voiceSha256']='b'*64
+  save(path,bad)
+  try:m.verified_timing(slug,local,inputs)
+  except ValueError:pass
+  else:raise AssertionError('Changed native '+changed+' accepted')
+ save(path,new)
+ try:m.verified_timing('shorts-alyx-liquid-shader',local,inputs)
+ except ValueError:pass
+ else:raise AssertionError('Unselected reuse exception accepted')
+ old.write_text('{}',encoding='utf8')
+ try:m.verified_timing(slug,local,inputs)
+ except ValueError:pass
+ else:raise AssertionError('Altered captured timing accepted')
+print(json.dumps({'passed':True,'cases':['all-seven-successful-receipt-gate','exact-captured-source-restored-not-current-code','scene-sourceTree-binding','local-binary-preserved-git-excluded','meta-preserved','idempotent-copy','path-traversal-rejected','altered-receipt-artifact-rejected','two-reviewed-definition-only-reuses','changed-native-section-action-voice-rejected','unreviewed-slug-timing-reuse-rejected','altered-original-timing-rejected'],'fixtureRoot':str(base),'liveProjectMutated':False,'unityLaunched':False},indent=2))

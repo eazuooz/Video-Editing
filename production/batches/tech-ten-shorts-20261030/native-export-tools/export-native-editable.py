@@ -27,6 +27,10 @@ NATIVE = (
 )
 CODE_EXT = {'.cs', '.shader', '.hlsl', '.cginc', '.asmdef', '.asmref'}
 TEXT_ASSETS = CODE_EXT | {'.unity', '.meta', '.mat', '.asset', '.prefab', '.anim', '.controller', '.overridecontroller'}
+DEFINITION_ONLY_REUSE = {
+ 'shorts-sea-of-thieves-water-masking': 'definition-overlay-v3',
+ 'shorts-starcraft-worker-mineral-walk': 'definition-overlay-v2',
+}
 
 def read(path):
  return json.loads(Path(path).read_text(encoding='utf-8-sig'))
@@ -69,6 +73,32 @@ def write_new(path, data):
  else:
   with path.open('xb') as stream: stream.write(encoded)
 
+def verified_timing(slug, local, inputs):
+ current_path = local / 'visual-timing.json'
+ current = read(current_path); current_sha = sha(current_path)
+ evidence = {'currentPath':current_path.as_posix(), 'currentSha256':current_sha,
+  'capturedSha256':inputs['timingSha256']}
+ if current_sha == inputs['timingSha256']:
+  evidence.update(mode='exact-capture-timing', capturedPath=current_path.as_posix())
+  return current, evidence
+ # The two reviewed revisions changed only the compositor's definition card.
+ # Native frames retain their original receipt; no general stale-timing bypass.
+ if slug not in DEFINITION_ONLY_REUSE: raise ValueError('Unreviewed native timing change: '+slug)
+ original_path = inside(local / 'finite-pipeline-v1/adoption-history' / DEFINITION_ONLY_REUSE[slug] / 'production/visual-timing.json', local)
+ verify(original_path, inputs['timingSha256']); original = read(original_path)
+ before = original['events'].pop('term-definition')
+ after = current['events'].pop('term-definition')
+ if original != current: raise ValueError('Native sections or non-definition event changed: '+slug)
+ for event in (before,after):
+  if set(event) != {'startFrame','endFrame','cueIds'} or not 0 <= event['startFrame'] < event['endFrame'] <= current['frames']:
+   raise ValueError('Invalid bounded definition timing')
+ if before == after: raise ValueError('Timing hash differs without reviewed definition change')
+ current['events']['term-definition'] = after
+ evidence.update(mode='reviewed-compositor-definition-only', capturedPath=original_path.as_posix(),
+  onlyChangedField='events.term-definition', before=before, after=after,
+  nativeSectionsActionsSourcesAndTimingInputsExactlyEqual=True)
+ return current,evidence
+
 def capture(slug):
  if slug not in NATIVE: raise ValueError('Unselected native slug')
  local = MEDIA / slug / 'local'
@@ -79,9 +109,7 @@ def capture(slug):
   raise ValueError('Native capture is incomplete: ' + slug)
  if receipt.get('voiceSha256') != inputs.get('voiceSha256') or not re.fullmatch('[a-f0-9]{64}', receipt.get('voiceSha256', '')):
   raise ValueError('Not a full voice-bound capture: ' + slug)
- timing_path = local / 'visual-timing.json'
- verify(timing_path, inputs['timingSha256'])
- timing = read(timing_path)
+ timing, timing_evidence = verified_timing(slug, local, inputs)
  if timing['timingInputs']['voiceSha256'] != receipt['voiceSha256'] or timing['fps'] != 60:
   raise ValueError('Timing differs: ' + slug)
  code = inputs['sourceCode']
@@ -119,8 +147,10 @@ def prepare(job_path):
  for slug in NATIVE:
   r, i, receipt, inputs, snapshot = capture(slug)
   digest = sha(r)
+  _, timing_evidence = verified_timing(slug, MEDIA / slug / 'local', inputs)
   entries.append({'slug': slug, 'receiptPath': r.as_posix(), 'receiptSha256': digest,
    'inputPath': i.as_posix(), 'inputSha256': sha(i),
+   'timingEvidence':timing_evidence,
    'manifestPath': (MEDIA / 'native-dependency-manifests' / job_path.stem / (slug + '-' + digest + '.json')).as_posix()})
  write_new(job_path, {'schemaVersion': 1, 'captures': entries})
  exe = read(ROOT / 'production/batches/tech-ten-shorts-20261030/gpu-authorization.json')['allowedExistingEditor']['executable']
@@ -157,6 +187,8 @@ def collect(job_path):
  outputs=[]
  for entry in job['captures']:
   slug = entry['slug']; rp, ip, receipt, inputs, snapshot = capture(slug)
+  _, timing_evidence = verified_timing(slug, MEDIA / slug / 'local', inputs)
+  if timing_evidence != entry['timingEvidence']: raise ValueError('Timing evidence changed after export preparation')
   verify(rp, entry['receiptSha256']); verify(ip, entry['inputSha256'])
   mp = inside(entry['manifestPath'], MEDIA / 'native-dependency-manifests'); manifest = read(mp)
   for key in ('slug', 'receiptSha256', 'inputSha256'):
@@ -212,10 +244,23 @@ def collect(job_path):
   if missing: raise ValueError('Unresolved serialized GUIDs; preserved partial export: '+','.join(sorted(missing)))
   # Receipt/snapshot provenance is copied separately, never into Assets or Git.
   copy_exact(rp,base/'evidence/native-receipt.json',sha(rp));copy_exact(ip,base/'evidence/input-receipt.json',sha(ip));copy_exact(mp,base/'evidence/dependency-manifest.json',sha(mp))
+  # The saved scene holds editable objects; Sample(seconds) is driven by the
+  # capture runner rather than Update(). Preserve the exact external timeline
+  # as well, so section actions and elapsed offsets can be reconstructed.
+  timing_files=[]
+  for role,path_key,hash_key in [('captured','capturedPath','capturedSha256'),('current','currentPath','currentSha256')]:
+   source=Path(timing_evidence[path_key]); target=base/'evidence'/('visual-timing-'+role+'.json')
+   copy_exact(source,target,timing_evidence[hash_key])
+   timing_files.append({'role':role,'path':target.as_posix(),'sha256':timing_evidence[hash_key]})
   record={'schemaVersion':1,'slug':slug,'success':True,'receiptSha256':entry['receiptSha256'],'dependencyManifestSha256':sha(mp),
-   'sourceTreeSha256':inputs['sourceTreeSha256'],'sceneBindings':[{'scene':s,'sceneSha256':scene_hashes[s],'sourceTreeSha256':inputs['sourceTreeSha256']} for s in receipt['savedScenes']],
+   'sourceTreeSha256':inputs['sourceTreeSha256'],'timingEvidence':timing_evidence,'sceneBindings':[{'scene':s,'sceneSha256':scene_hashes[s],'sourceTreeSha256':inputs['sourceTreeSha256']} for s in receipt['savedScenes']],
    'editableProject':full.as_posix(),'gitTextProjection':git.as_posix(),'projectFiles':records,'gitTextAllowlist':projection,
    'localOnlyFiles':omitted,'externalPackageAndEngineReferences':external,
+   'preservedTimingFiles':timing_files,
+   'playbackContract':{'automaticPlayModeAnimation':False,
+    'entryPoint':'Yamyam.TechTen.TechTenDemo.Sample(seconds)',
+    'sectionSettings':['unityStage','actionKind','actionStartSeconds','actionResumeSeconds','elapsedOffsetSeconds'],
+    'instructions':'Open the matching stage scene. Apply the captured section action settings and call Sample((globalFrame - section.startFrame)/60 + elapsedOffsetSeconds), equivalently Sample(sectionLocalFrame/60 + elapsedOffsetSeconds). The original capture runner is bounded to the owned capture project and is preserved unchanged; it is not a portable one-click render command.'},
    'currentProjectSettingsAreNotCaptureReceiptBound':True,'dependencyHashesObservedAtExport':True,
    'thirdPartyProvenance':'Assets/ThirdParty/KayKitAdventurers/provenance.json when referenced; preserve license and exact FBX/texture hashes. No new vendor binary Git exception.',
    'runtimeReopenVerified':False,'gpuOrUnityLaunchedByCopier':False,'gitActions':False}

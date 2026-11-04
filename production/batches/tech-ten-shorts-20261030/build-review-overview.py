@@ -41,6 +41,8 @@ def collect():
     if batch['batchId'] != EXPECTED_BATCH or len(batch['projects']) != 10:
         raise RuntimeError('Expected the exact ten selected projects.')
     media = Path(batch['mediaRoot']).resolve()
+    cover_index = media / 'delivery/covers/covers.json'
+    covers = {entry['slug']: entry for entry in read(cover_index)['covers']} if cover_index.exists() else {}
     rows = []
     for item in batch['projects']:
         project = ROOT / 'projects' / item['slug']
@@ -77,6 +79,12 @@ def collect():
                 row['files'].append(dict(name=name, path=str(file), sha256=digest, bytes=file.stat().st_size))
             row.update(generated=True, seconds=delivery['durationSeconds'], frames=delivery['frames'],
                        review=str(final / 'index.html'), masterSha256=records['captioned.mp4']['sha256'])
+            cover = covers.get(item['slug'])
+            if cover and cover['masterSha256'] == row['masterSha256']:
+                image = Path(cover['path']).resolve()
+                if not image.is_relative_to(media / 'delivery/covers') or sha(image) != cover['sha256']:
+                    raise RuntimeError('Cover changed or escaped the selected delivery directory.')
+                row['coverCandidate'] = cover
         rows.append(row)
     return media, dict(batchId=EXPECTED_BATCH, generatedAt=dt.datetime.now(dt.timezone.utc).isoformat(),
                        completeCount=sum(row['generated'] for row in rows), total=10, projects=rows,
@@ -91,11 +99,15 @@ def render(record):
     for row in record['projects']:
         if row['generated']:
             final = Path(row['finalDirectory'])
-            player = f'<video controls playsinline preload="none" src="{href(final / "captioned.mp4")}"></video>'
+            cover = row.get('coverCandidate')
+            poster = f' poster="{href(cover["path"])}"' if cover else ''
+            player = f'<video controls playsinline preload="none"{poster} src="{href(final / "captioned.mp4")}"></video>'
             links = ' · '.join(f'<a href="{href(final / name)}">{escaped(name)}</a>' for name in FILES)
             detail = f'<p>{row["seconds"]:.2f}초 · 1080×1920 · 60fps · {escaped(row["visualVersion"] or row["revision"])}</p>'
             detail += f'<p class="status">네 출력·해시·기술 검사 확인 / 사용자 검수 대기</p>{player}<p>{links}</p>'
             detail += f'<p><a href="{href(row["review"])}">개별 대본·검수 모음</a> · <a href="{href(final / "mobile-review.mp4")}">모바일 크기 영상</a></p>'
+            if cover:
+                detail += f'<p><a href="{href(cover["path"])}">실제 게임 프레임 썸네일 후보</a> · 플랫폼 적용 전</p>'
             detail += f'<details><summary>정확한 버전 SHA256</summary><code>{row["masterSha256"]}</code></details>'
         else:
             detail = '<p class="status">제작 중 · 완성본 없음</p>'
