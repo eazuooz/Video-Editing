@@ -40,6 +40,7 @@ for row in t['scenes']:
   required_out=game.get('minimumObservedResultOut',game['sourceOut'])
   assert game['sourceIn']+gameframes/60+.017>=required_out, f'{sid}: native action/result would be truncated; inspect a shorter complete source window or adjust its speech handoff, never freeze/slow/pad'
   cuts.append(dict(scene=sid,kind='actual-gameplay',sourceId=game['sourceId'],sourceIn=game['sourceIn'],sourceOut=game['sourceIn']+gameframes/60,originalAudioIn=game.get('fullOriginalAudioIn',game['sourceIn']),frames=gameframes,globalStartFrame=row['startFrame']+game_start,nativeSpeed=True,freeze=False,loop=False,originalSelectedOut=game['sourceOut'],minimumObservedResultOut=required_out,speechStartEvidence=row.get('actualGameStartEvidence'),speechEndEvidence=row.get('actualGameEndEvidence'),review='Confirm observed before/action/result and the source-to-Unity spoken handoff in final encoded output'))
+  if 'sourceSoundDecision' in game:cuts[-1]['sourceSoundDecision']=game['sourceSoundDecision']
  if frames==gameframes:continue
  shotfile=out/'shots'/(sid+'.json');pending_files.append((shotfile,shot))
  job=dict(id=episode.lower()+'-body-'+sid,projectSlug=P.name,command='render',expectedFingerprint=marker['fingerprint'],shotFile=str(shotfile),factoryType=factory,output=str(out/'unity'/sid),frames=frames,sampleFrames=[0,frames//2,frames-1],speechTimingVerified=True,sceneId=sid,ffmpeg='C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe')

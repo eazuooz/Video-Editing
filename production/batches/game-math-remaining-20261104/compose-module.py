@@ -135,7 +135,7 @@ def prepare(queue,work):
             receipts.append(annotation_ass(cut,s,work/f'game-{i:03}.ass'))
     record={'createdAt':now(),'queueSha256':sha(work.parent/'queue.json'),'narrationSha256':t['narrationSha256'],'captionLayout':layout,'gameAnnotations':receipts,'addedBackgroundMusic':False,'audioChoice':'Original synchronized game audio retained and ducked; source-specific exceptions must be recorded per source. No added lecture BGM.','humanListening':False,'finalVisualQa':False}
     save(work/'preflight.json',record);return sources,record
-def normalized_audio(source,start,frames,target,target_lufs,work,stem):
+def normalized_audio(source,start,frames,target,target_lufs,work,stem,source_decision=None):
     n=frames*800;duration=frames/60
     analysis=work/'logs'/(stem+'-loudness.log')
     base=['-ss',str(start),'-t',str(duration),'-i',str(source),'-vn']
@@ -143,6 +143,10 @@ def normalized_audio(source,start,frames,target,target_lufs,work,stem):
     matches=re.findall(r'\{\s*"input_i"[\s\S]+?\}',analysis.read_text(encoding='utf-8'))
     assert matches,'Missing actual source loudness measurement';m=json.loads(matches[-1]);save(work/(stem+'-loudness.json'),m)
     if not math.isfinite(float(m['input_i'])):gain='anull'
+    elif source_decision and target_lufs-float(m['input_i'])>source_decision['maxUpwardGainDb']:
+        assert stem!='narration' and source_decision['policy']=='preserve-quiet-original' and 0<=source_decision['maxUpwardGainDb']<=6
+        gain=f"volume={source_decision['maxUpwardGainDb']}dB"
+        save(work/(stem+'-preserved-quiet-original.json'),dict(source=source_decision,actualLufs=m['input_i'],gain=gain,nominalTarget=target_lufs,muted=False))
     else:gain=f"loudnorm=I={target_lufs}:TP=-2:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true"
     fades='' if stem=='narration' else f',afade=t=in:d=0.06,afade=t=out:st={max(0,duration-.08):.6f}:d=0.08'
     ff([*base,'-af',gain+f',aresample=48000,asetpts=N/SR/TB,apad,atrim=end_sample={n}'+fades,'-ac','2','-c:a','pcm_f32le',target],work/'logs'/(stem+'-audio.log'))
@@ -173,7 +177,7 @@ def render(queue,work,sources,receipt,dest):
             audio=R/sound.get('separateFullOriginalAudio',sound.get('separateOriginalAudio',sound.get('recoveredOriginalAudio',src['file'])))
             assert any(s['codec_type']=='audio' for s in probe(audio)['streams']),'Original game audio missing; record evidence rather than inventing silence'
             offset=cut.get('originalAudioIn',cut['sourceIn']) if audio!=source else cut['sourceIn']
-            normalized_audio(audio,offset,n,a,-23,work,stem)
+            normalized_audio(audio,offset,n,a,-23,work,stem,cut.get('sourceSoundDecision'))
         else:silence(a,n,work,stem)
         videos.append(v);audios.append(a)
         save(work/'progress.json',{'status':'compositing','completedCuts':i+1,'totalCuts':len(queue['cuts']),'updatedAt':now(),'finalReviewReady':False})

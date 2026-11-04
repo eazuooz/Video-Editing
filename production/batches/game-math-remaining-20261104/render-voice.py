@@ -90,6 +90,8 @@ def verified_waiting_math_worker(process, arguments):
             statefile=batch/'module-queue-worker.json'
         elif selected == (batch/'finish-remaining-speech.py').resolve() and '--run' in arguments:
             statefile=batch/'local/remaining-speech-worker.json'
+        elif selected == (batch/'finish-module-candidates.py').resolve() and '--run' in arguments:
+            statefile=batch/'local/finish-module-candidates.json'
         elif selected == (batch/'finish-m21-media-qa.py').resolve():
             revision=value('--revision') or 'render-v3'
             if not __import__('re').fullmatch(r'render-v\d+',revision):return False
@@ -115,7 +117,7 @@ def verified_waiting_math_worker(process, arguments):
             import psutil
             child=psutil.Process(state['childPid'])
             waiting=child.ppid()==process.pid and verified_waiting_math_worker(child,child.cmdline())
-        if selected == (batch/'finish-remaining-speech.py').resolve() and state.get('status')=='waiting-for-finite-child':
+        if selected in [(batch/'finish-remaining-speech.py').resolve(),(batch/'finish-module-candidates.py').resolve()] and state.get('status')=='waiting-for-finite-child':
             import psutil
             try:
                 child=psutil.Process(state['childPid'])

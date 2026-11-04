@@ -143,7 +143,9 @@ def main():
     bilingual_rows={s['id']:s['groups'] for s in bilingual['scenes']}
     adjustments_file=P/'planning/caption-reading-adjustments.json'
     if not adjustments_file.exists():save(adjustments_file,{'groups':[],'status':'No English caption compression selected; measured reading review follows actual speech.'})
-    adjustments={(x['scene'],x['koStart']):x for x in read(adjustments_file)['groups']}
+    reading=read(adjustments_file)
+    adjustments={(x['scene'],x['koStart']):x for x in reading['groups']}
+    ko_literal_forms=reading.get('koPrintedForms',{})
     scenes=[];ko_cues=[];en_cues=[];flags=[];entries=timing['entries']
     for i,e in enumerate(entries):
         sid=e['scene_id'];row=next(r for r in bindings['scenes'] if r['id']==sid);speech=e['text'];display=e['display_text']
@@ -193,6 +195,15 @@ def main():
             if x['end']<=x['start']:flags.append({'scene':sid,'type':'zero-caption','text':x['text']})
         if re.sub(r'\s','',''.join(x['text'] for x in local))!=re.sub(r'\s','',display):
             flags.append({'scene':sid,'type':'display-text-not-preserved'})
+        # Display-only, per-lecture reviewed spellings. Never change recognition,
+        # hear a different sign/value by substitution, or split an equation
+        # between cues to force canonical print into a small interval.
+        for x in local:
+            before=x['text']; printed=before
+            for literal,form in sorted(ko_literal_forms.items(),key=lambda pair:-len(pair[0])):
+                printed=re.sub(r'(?<![가-힣])'+re.escape(literal),lambda _:form,printed)
+            if printed!=before:
+                x.update(sourceDisplay=before,text=printed)
         ko_cues+=local
         # Directly reviewed meaning groups may join or split sentence boundaries.
         # Group endpoints use the corresponding actual Korean word timestamps.
