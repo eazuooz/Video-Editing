@@ -53,6 +53,7 @@ class RigidDynamicsChecks {
         double[] masses={1000,600,400,50,50,50,50};D3[] centers={new D3(0,1,2.25),new D3(0,1.25,.75),new D3(0,1,-1.2),new D3(-1,.35,2.3),new D3(1,.35,2.3),new D3(-1,.35,-1.5),new D3(1,.35,-1.5)};
         var parts=new MassPoint[7];for(int i=0;i<7;i++)parts[i]=new MassPoint(masses[i],centers[i]);D3 com=Dynamics.Center(parts);Near(com,new D3(0,1.009090909090909,1.0454545454545454));
         var ii=new[]{DMatrix.Diagonal(240.83333333333334,520.8333333333334,386.66666666666674),DMatrix.Diagonal(197,312.5,284.5),DMatrix.Diagonal(213.33333333333334,325.3333333333333,154.66666666666669)};
+        Near(Dynamics.BoxInertia(1000,new D3(2,.8,1.5)),ii[0]);Near(Dynamics.BoxInertia(600,new D3(2,1.3,1.5)),ii[1]);Near(Dynamics.BoxInertia(400,new D3(2,.8,2.4)),ii[2]);
         var truck=new DMatrix();for(int i=0;i<7;i++)truck+=Dynamics.ParallelAxis(i<3?ii[i]:Dynamics.CylinderXInertia(50,.35,.2),masses[i],centers[i]-com);
         Near(truck.c0.x,5110.689393939394);Near(truck.c1.y,5690.912878787878);Near(truck.c2.z,1154.4431818181822);Near(truck.c1.z,-39.59090909090912);Near(truck,truck.Transpose());
         Console.WriteLine(count+" independent dynamics invariants passed; no Unity/runtime/media approval");

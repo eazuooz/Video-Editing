@@ -85,6 +85,20 @@ namespace Yamyam.RemainingMathCapture {
     AssetDatabase.CreateAsset(obj,assets+"/"+Guid.NewGuid().ToString("N")+(obj is Material?".mat":".asset"));
    }
   }
+  static void PersistGuideColors(){
+   // MaterialPropertyBlock is not serialized into .unity files. Preserve the
+   // last inspected guide colours in local material instances for editable scenes.
+   foreach(var r in stage.GetComponentsInChildren<Renderer>(true)){
+    var properties=new MaterialPropertyBlock();r.GetPropertyBlock(properties);
+    if(properties.isEmpty||!r.sharedMaterial)continue;
+    int baseColor=Shader.PropertyToID("_BaseColor"),color=Shader.PropertyToID("_Color");
+    if(!properties.HasColor(baseColor)&&!properties.HasColor(color))continue;
+    var material=new Material(r.sharedMaterial){name=r.name+"_SavedGuide"};
+    if(properties.HasColor(baseColor)&&material.HasProperty(baseColor))material.SetColor(baseColor,properties.GetColor(baseColor));
+    if(properties.HasColor(color)&&material.HasProperty(color))material.SetColor(color,properties.GetColor(color));
+    AssetDatabase.CreateAsset(material,assets+"/"+Guid.NewGuid().ToString("N")+".mat");r.sharedMaterial=material;
+   }
+  }
   static void RefreshText(){var labels=stage.GetComponentsInChildren<UnityEngine.UI.Text>(true);foreach(var t in labels)if(t.isActiveAndEnabled&&t.font)t.font.RequestCharactersInTexture(t.text,t.fontSize,t.fontStyle);foreach(var t in labels)if(t.isActiveAndEnabled){t.cachedTextGenerator.Invalidate();t.SetAllDirty();}Canvas.ForceUpdateCanvases();}
   static void Tick(){try{
    int frame=job.command=="preflight"?job.sampleFrames[cursor]:cursor;
@@ -99,7 +113,7 @@ namespace Yamyam.RemainingMathCapture {
   static void Finish(Exception error){EditorApplication.update-=Tick;
    try{if(encoder!=null){pipe.Close();encoder.WaitForExit();if(encoder.ExitCode!=0)error=new IOException(encoderErrors);encoder.Dispose();}}catch(Exception e){error=e;}
    if(camera)camera.targetTexture=null;
-   if(error==null&&stage){try{PersistOwnedAssets();EditorSceneManager.SaveScene(stage.gameObject.scene,state.scene);AssetDatabase.SaveAssets();}catch(Exception e){error=e;}}
+   if(error==null&&stage){try{PersistOwnedAssets();PersistGuideColors();EditorSceneManager.SaveScene(stage.gameObject.scene,state.scene);AssetDatabase.SaveAssets();}catch(Exception e){error=e;}}
    if(state!=null){state.status=error==null?"complete":"failed";state.error=error?.ToString();Write();File.WriteAllText(Path.Combine(state.output,error==null?"capture-success.json":"capture-failure.json"),JsonUtility.ToJson(state,true));}
    if(error!=null)Debug.LogException(error);if(target){target.Release();Object.DestroyImmediate(target);}if(pixels)Object.DestroyImmediate(pixels);if(locked){AssetDatabase.AllowAutoRefresh();EditorApplication.UnlockReloadAssemblies();}EditorApplication.Exit(error==null?0:1);
   }

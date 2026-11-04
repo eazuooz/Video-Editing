@@ -87,7 +87,7 @@ namespace Yamyam.GameMath.LightLab {
     pixels=new Texture2D(1920,1080,TextureFormat.RGBA32,false);stage.RenderCamera.targetTexture=target;
     if(job.command=="render") {
       if(!File.Exists(job.ffmpeg))throw new FileNotFoundException("An explicit FFmpeg path is required");
-      var args="-hide_banner -loglevel error -n -f rawvideo -pixel_format rgba -video_size 1920x1080 -framerate 60 -i pipe:0 -vf vflip,scale=in_range=full:out_range=tv:out_color_matrix=bt709,format=yuv420p -an -c:v libx264 -preset fast -crf 17 -g 60 -pix_fmt yuv420p -color_primaries bt709 -color_trc bt709 -colorspace bt709 -movflags +faststart \""+Path.Combine(job.output,"unity.mp4")+"\"";
+      var args="-hide_banner -loglevel error -n -f rawvideo -pixel_format rgba -video_size 1920x1080 -framerate 60 -i pipe:0 -vf vflip,scale=in_range=full:out_range=tv:out_color_matrix=bt709,format=yuv420p -an -c:v h264_nvenc -preset p5 -tune hq -rc vbr -cq 17 -b:v 0 -g 60 -pix_fmt yuv420p -color_primaries bt709 -color_trc bt709 -colorspace bt709 -movflags +faststart \""+Path.Combine(job.output,"unity.mp4")+"\"";
       encoder=new System.Diagnostics.Process{StartInfo=new System.Diagnostics.ProcessStartInfo(job.ffmpeg,args){UseShellExecute=false,CreateNoWindow=true,RedirectStandardInput=true,RedirectStandardError=true}};
       encoder.ErrorDataReceived+=(s,e)=>{if(e.Data!=null)stderr+=e.Data+"\n";};encoder.Start();encoder.BeginErrorReadLine();pipe=encoder.StandardInput.BaseStream;
     }

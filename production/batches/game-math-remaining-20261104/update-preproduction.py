@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 import json
 import subprocess
+import re
 
 ROOT=Path(__file__).resolve().parents[3]
 BATCH=Path(__file__).parent
@@ -24,13 +25,18 @@ for item in batch['items']:
         assert all((project/p).exists() for p in ('planning/source-audit.json','script/draft-narration.ko.json','script/draft-narration.en.json'))
         stage='원문 검수·한영 초안 완료 · 장면 제작 전'
         item['status']='source-audit-bilingual-draft-ready'
-    if item['id']=='M21':stage='대본·게임 연결 확정 · Qwen 음성 생성·발화 큐 준비'
+    if item['id']=='M21':
+        audio=project/'production/local/audio-v1';worker=load(audio/'finite-worker.json') if (audio/'finite-worker.json').exists() else {}
+        log=(audio/'finite-synthesis.stdout.log').read_text(encoding='utf-8',errors='replace') if (audio/'finite-synthesis.stdout.log').exists() else ''
+        finished=set(re.findall(r'^Rendered (\d{3})-',log,re.M))
+        stage=f'게임·대본 확정 · Qwen 음성 {len(finished)}/79구간 생성 · 화면 검수 중'
+        if worker.get('status')=='voice-generated-review-pending':stage='79구간 음성 생성 완료 · 실제 발화·자막 시각 검수 중'
     if item['id']=='M22':stage='게임 연결·통합 대본·관절/법선 계산 모듈 완료 · Unity 실행 검수 전'
     if item['id']=='M23':stage='게임 연결·통합 대본·파이프라인 계산 모듈 완료 · Unity 실행 검수 전'
     if item['id'] in {'M24','M25','M26'}:stage='게임 3역할 연결·통합 대본·물리 계산 모듈 준비 · Unity 실행 검수 전'
     if item['id'] in {f'M{i}' for i in range(27,31)}:stage='원문·게임 연결·한영 통합 대본 완료 · 힘/충돌 씬 제작 전'
     if item['id'] in {'M27','M28'}:stage='통합 대본·힘/마찰/감쇠 계산 검사 완료 · 설명 씬 구현 중'
-    if item['id'] in {'M29','M30'}:stage='통합 대본·충돌/관성 수치 검사 완료 · 설명 씬 구현 전'
+    if item['id'] in {'M29','M30'}:stage='통합 대본·충돌/관성 수치 검사 완료 · 설명 씬 구현 중'
     if item['id'] in {f'M{i}' for i in range(31,34)}:stage='통합 대본·곡선 계산 검사 완료 · 애니메이션 실행 검수 전'
     row['productionStatus']=stage
     row['productionComplete']=False
@@ -44,7 +50,7 @@ checkpoint=load(BATCH/'checkpoint.json')
 checkpoint['updatedAt']=batch['updatedAt']
 checkpoint['currentWork']=['Complete source audit and bilingual draft: '+', '.join(sorted(reported_complete)),
                          'M21 v4 grid/vertex/mixed directly inspected; approved voice production and cue preparation',
-                         'All 13 integrated bilingual scripts and gameplay bindings exist; M22–M28 and M31–M33 staged math/renderer modules compile; M29/M30 numeric model passes 2234 invariants, visual stage not yet implemented',
+                         'All 13 integrated bilingual scripts and gameplay bindings exist; M22–M33 staged math/renderer modules compile; M29/M30 numeric model passes 2261 invariants, 10 visual modes implemented but remaining source-beat coverage/runtime QA are pending',
                          'M21 seven annotation layouts revised and directly inspected at 1080p / 375px; final speech-aligned motion QA remains pending; M22 isolated capture transport compiles, not runtime-tested']
 checkpoint['localReviewReady']=[]
 preflight=ROOT/'projects/game-math-shading-lights/production/unity-staging/local-preflight-v4/progress.json'
@@ -60,6 +66,6 @@ if voice.exists():
     checkpoint['resourceGate']={'status':actual['status'],'lastCheckedAt':actual.get('checkedAt')}
 checkpoint['nextAction']='Complete M21 voice and actual word alignment, then final visual/audio rendering and QA; continue exact M21–M33 scope.'
 checkpoint['lastPlanningCommit']='01f08cc92f3ea5ba6e2234e4c99377edbf9021c6'
-checkpoint['lastProductionCommit']='019f4ffb14c03e52cfb8607396ca427f652cd63b'
+checkpoint['lastProductionCommit']='c5b493124f49c71d1b12f74af2779c24ea4a8ced'
 save(BATCH/'checkpoint.json',checkpoint)
 subprocess.run(['python','-X','utf8',str(BATCH/'progress.py')],cwd=ROOT,check=True)
