@@ -3,7 +3,7 @@ import subprocess,json,hashlib
 P=Path(__file__).resolve().parent;ROOT=P.parents[3]
 E=Path('C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Data');SDK=E/'DotNetSdk'
 CSC=[str(SDK/'dotnet.exe'),str(SDK/'sdk/8.0.318/Roslyn/bincore/csc.dll')]
-sources=[P/'MotionMathModel.cs',P/'MotionTeachingStage.cs']
+sources=[P/'MotionMathModel.cs',P/'MotionTeachingStage.cs',P/'MotionLessonStage.cs']
 refs=list((E/'Managed/UnityEngine').glob('*.dll'))+[E/'NetStandard/ref/2.1.0/netstandard.dll',ROOT/'unity/VideoEditing/Library/ScriptAssemblies/UnityEngine.UI.dll']
 compile=subprocess.run(CSC+['-nologo','-target:library','-langversion:latest','-out:'+str(P/'local-module.dll')]+['-r:'+str(r) for r in refs]+list(map(str,sources)),capture_output=True,text=True)
 result={'csharpCompilation':{'exitCode':compile.returncode,'stdout':compile.stdout,'stderr':compile.stderr},'files':{s.name:hashlib.sha256(s.read_bytes()).hexdigest() for s in sources},'scope':'CPU C# compile and pure mathematical checks only. No Unity process, GPU, media rendering, scene save, runtime lighting, font or layout QA.'}

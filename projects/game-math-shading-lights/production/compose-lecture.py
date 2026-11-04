@@ -186,15 +186,39 @@ def render(queue,work,sources,receipt,dest):
     (dest/'index.html').write_text(f'<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title><style>body{{max-width:1100px;margin:24px auto;padding:20px;background:#080808;color:white;font:18px/1.6 system-ui}}a{{color:#73c7c2}}video{{width:100%}}h1{{color:#e8cf83}}</style><h1>{title}</h1><p>1920×1080 · 60fps · 사용자 시청/청취 검수 전</p><video controls preload="metadata" src="{P.name}.captioned.mp4"></video><p><a href="{P.name}.clean.mp4">자막 없는 영상</a> · <a href="{P.name}.ko.srt">한국어 자막</a> · <a href="{P.name}.en.srt">영어 자막</a></p>',encoding='utf-8')
     save(work/'progress.json',{'status':'encoded-internal-QA-pending','output':str(dest),'files':[{'path':str(p),'sha256':sha(p)} for p in dest.glob('*')],'originalPcmUnchanged':sha(voice)==receipt['narrationSha256'],'humanReview':False,'finalReviewReady':False,'finishedAt':now()})
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--queue',required=True);ap.add_argument('--render',action='store_true');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--queue',required=True);ap.add_argument('--render',action='store_true');ap.add_argument('--wait-hours',type=float,default=0);a=ap.parse_args()
     q=Path(a.queue).resolve();assert q.is_relative_to(P/'production/local');G.authorized();queue=read(q)
     work=q.parent/'composite';work.mkdir(exist_ok=True);sources,receipt=prepare(queue,work)
     if not a.render:print(json.dumps({'prepared':True,'cuts':len(queue['cuts']),'rendered':False}));return
-    assert read(q.parent/'progress.json')['status']=='body-captures-complete-compositing-and-QA-pending'
-    reason=G.idle_reason();assert reason is None,reason
-    owned=str(uuid.uuid4())
-    with LEASE.open('x',encoding='utf-8') as f:json.dump({'owner':P.name+'-composite','id':owned,'pid':os.getpid(),'createdAt':now()},f)
-    try:render(queue,work,sources,receipt,R/'output'/(P.name+'-'+q.parent.name))
+    worker=work/'worker.json'
+    if worker.exists():
+        old=read(worker)
+        try:assert abs(psutil.Process(old['pid']).create_time()-old['createTime'])>.1,'Existing compositor is active'
+        except psutil.NoSuchProcess:pass
+        assert old.get('status')!='encoded','Unchanged encoded work must not be repeated'
+    state={'pid':os.getpid(),'createTime':psutil.Process().create_time(),'status':'waiting','startedAt':now(),'automation':False,'nextVideo':False}
+    deadline=time.monotonic()+a.wait_hours*3600;owned=None
+    while owned is None:
+        G.authorized();capture=read(q.parent/'progress.json');reason=None
+        if capture['status']=='failed-or-blocked':raise RuntimeError('Capture failed; inspect original log before composing')
+        if capture['status']!='body-captures-complete-compositing-and-QA-pending':reason='Waiting for the current finite body capture'
+        if reason is None:reason=G.idle_reason()
+        state.update(reason=reason,checkedAt=now());save(worker,state)
+        if reason is None:
+            candidate=str(uuid.uuid4())
+            try:
+                with LEASE.open('x',encoding='utf-8') as f:json.dump({'owner':P.name+'-composite','id':candidate,'pid':os.getpid(),'createdAt':now()},f)
+                owned=candidate
+            except FileExistsError:reason='Another scoped job acquired the lease'
+        if owned is None:
+            if time.monotonic()>=deadline:raise RuntimeError(reason+'; bounded wait ended, other jobs preserved')
+            time.sleep(5)
+    try:
+        state.update(status='compositing',reason=None);save(worker,state)
+        render(queue,work,sources,receipt,R/'output'/(P.name+'-'+q.parent.name))
+        state.update(status='encoded',finishedAt=now());save(worker,state)
+    except BaseException as exc:
+        state.update(status='failed',error=repr(exc),finishedAt=now());save(worker,state);raise
     finally:
-        if LEASE.exists() and read(LEASE).get('id')==owned:LEASE.unlink()
+        G.release_lease(owned)
 if __name__=='__main__':main()

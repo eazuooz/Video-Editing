@@ -14,7 +14,7 @@ namespace Yamyam.MathMotion {
         public static DVec Cross(DVec a,DVec b)=>new DVec(a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x);
         public static DVec Normalize(DVec v) { if(v.Length<1e-12)throw new ArgumentException("A zero vector has no unit direction.");return v/v.Length; }
     }
-    public enum MotionKind { Polynomial, ConstantVelocity, ConstantAcceleration, DesignedJump, Circle, PiecewiseExercise, ChainSlope }
+    public enum MotionKind { Polynomial, ConstantVelocity, ConstantAcceleration, DesignedJump, Circle, PiecewiseExercise, ChainSlope, RoundTrip, Sine, Cosine, Exponential, Power, SineSquared, ExpCosLinear, ExpSineSum, PowerSum, RacePath, AccelerationStep, LogAbsolute }
     [Serializable] public class MotionParameters {
         public MotionKind kind=MotionKind.Polynomial;
         public DVec origin=new DVec(0,0),velocity=new DVec(3,0),acceleration=new DVec(0,-4);
@@ -23,6 +23,8 @@ namespace Yamyam.MathMotion {
         public DVec axis=new DVec(0,0,1),radiusDirection=new DVec(1,0,0);
         public double jumpHeight=2,timeToApex=1,horizontalSpeed=3;
         public double chainSlope=.25,pathSpeed=4;
+        public double amplitude=1,frequency=1,power=3,rate=1;
+        public double[] powers=Array.Empty<double>(),coefficients=Array.Empty<double>();
     }
     public struct MotionState {
         public double time;
@@ -76,9 +78,53 @@ namespace Yamyam.MathMotion {
                     double slope=p.chainSlope;
                     DVec tangent=new DVec(Math.Sqrt(Math.Max(0,1-slope*slope)),slope);
                     return new MotionState(t,p.origin+tangent*(p.pathSpeed*t),tangent*p.pathSpeed,new DVec());
+                case MotionKind.RoundTrip:
+                    if(t<0||t>4)throw new ArgumentOutOfRangeException(nameof(t),"Round trip is the finite 0..4 second example.");
+                    return new MotionState(t,p.origin+new DVec(t<=2?3*t:12-3*t,0),new DVec(t<2?3:-3,0),new DVec(),Math.Abs(t-2)>1e-10);
+                case MotionKind.Sine:
+                    return Scalar(p,t,p.amplitude*Math.Sin(p.frequency*t),p.amplitude*p.frequency*Math.Cos(p.frequency*t),-p.amplitude*p.frequency*p.frequency*Math.Sin(p.frequency*t));
+                case MotionKind.Cosine:
+                    return Scalar(p,t,p.amplitude*Math.Cos(p.frequency*t),-p.amplitude*p.frequency*Math.Sin(p.frequency*t),-p.amplitude*p.frequency*p.frequency*Math.Cos(p.frequency*t));
+                case MotionKind.Exponential:
+                    double e=p.amplitude*Math.Exp(p.rate*t);return Scalar(p,t,e,p.rate*e,p.rate*p.rate*e);
+                case MotionKind.Power:
+                    if(t==0&&p.power<2)throw new ArgumentOutOfRangeException(nameof(t),"This displayed power derivative model requires a nonzero input for exponents below two.");
+                    return Scalar(p,t,p.amplitude*Math.Pow(t,p.power),p.amplitude*p.power*Math.Pow(t,p.power-1),p.amplitude*p.power*(p.power-1)*Math.Pow(t,p.power-2));
+                case MotionKind.SineSquared:
+                    return Scalar(p,t,Math.Sin(t*t),2*t*Math.Cos(t*t),2*Math.Cos(t*t)-4*t*t*Math.Sin(t*t));
+                case MotionKind.ExpCosLinear:
+                    double z=Math.Cos(t)+3*t,dz=-Math.Sin(t)+3,ddz=-Math.Cos(t),f=Math.Exp(z);
+                    return Scalar(p,t,f,f*dz,f*(dz*dz+ddz));
+                case MotionKind.ExpSineSum:
+                    double h=Math.Sin(3*t)+Math.Sin(t*t),dh=3*Math.Cos(3*t)+2*t*Math.Cos(t*t),ddh=-9*Math.Sin(3*t)+2*Math.Cos(t*t)-4*t*t*Math.Sin(t*t),g2=Math.Exp(h);
+                    return Scalar(p,t,g2,g2*dh,g2*(dh*dh+ddh));
+                case MotionKind.PowerSum:
+                    if(p.powers.Length!=p.coefficients.Length)throw new ArgumentException("Each power requires its coefficient.");
+                    double sum=0,first=0,second=0;
+                    for(int i=0;i<p.powers.Length;i++){
+                        double k=p.powers[i],c=p.coefficients[i];
+                        if(t==0&&k<0)throw new ArgumentOutOfRangeException(nameof(t),"Negative powers are undefined at zero.");
+                        sum+=c*Math.Pow(t,k);
+                        if(k!=0)first+=c*k*Math.Pow(t,k-1);
+                        if(k!=0&&k!=1)second+=c*k*(k-1)*Math.Pow(t,k-2);
+                    }
+                    return Scalar(p,t,sum,first,second);
+                case MotionKind.RacePath:
+                    if(t<0||t>6)throw new ArgumentOutOfRangeException(nameof(t));
+                    double raceX=t<1?4*t:t<2?4-2*(t-1):t<4?2:2+5*(t-4);
+                    double raceV=t<1?4:t<2?-2:t<4?0:5;
+                    return new MotionState(t,p.origin+new DVec(raceX,0),new DVec(raceV,0),new DVec(),Math.Abs(t-1)>1e-10&&Math.Abs(t-2)>1e-10&&Math.Abs(t-4)>1e-10);
+                case MotionKind.AccelerationStep:
+                    double after=Math.Max(0,t-1);
+                    var stepState=new MotionState(t,p.origin+new DVec(2*t+after*after,0),new DVec(2+2*after,0),new DVec(t<1?0:2,0));
+                    stepState.accelerationDefined=Math.Abs(t-1)>1e-10;return stepState;
+                case MotionKind.LogAbsolute:
+                    if(t==0)throw new ArgumentOutOfRangeException(nameof(t),"Logarithmic antiderivative excludes zero.");
+                    return Scalar(p,t,Math.Log(Math.Abs(t)),1/t,-1/(t*t));
                 default:throw new ArgumentOutOfRangeException();
             }
         }
+        static MotionState Scalar(MotionParameters p,double t,double value,double first,double second)=>new MotionState(t,p.origin+new DVec(value,0),new DVec(first,0),new DVec(second,0));
         public static DVec SecantVelocity(MotionParameters p,double t,double h) {
             if(h==0)throw new ArgumentException("Secant interval must be nonzero; h=0 is not an evaluation of the derivative.");
             return (Sample(p,t+h).position-Sample(p,t).position)/h;
@@ -88,6 +134,12 @@ namespace Yamyam.MathMotion {
             double dt=duration/count,total=0;
             for(int k=0;k<count;k++)total+=(v0+a*k*dt)*dt;
             return total;
+        }
+        public static double RiemannDisplacement(MotionParameters p,double start,double end,int count,double sample=0,bool y=false){
+            if(count<=0||end<=start||sample<0||sample>1)throw new ArgumentOutOfRangeException();
+            double dt=(end-start)/count,sum=0;
+            for(int i=0;i<count;i++){var state=Sample(p,start+(i+sample)*dt);sum+=(y?state.velocity.y:state.velocity.x)*dt;}
+            return sum;
         }
         public static double[] ProjectedArrivalTimes(DVec displacement,DVec velocity,DVec acceleration) {
             double A=DVec.Dot(acceleration,acceleration),B=DVec.Dot(velocity,acceleration),D=DVec.Dot(displacement,acceleration);

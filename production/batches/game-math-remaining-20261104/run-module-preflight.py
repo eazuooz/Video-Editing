@@ -17,7 +17,7 @@ G=importlib.util.module_from_spec(spec);spec.loader.exec_module(G)
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--queue',required=True);ap.add_argument('--run',action='store_true');ap.add_argument('--wait-hours',type=float,default=6);a=ap.parse_args()
     qpath=Path(a.queue).resolve();q=read(qpath);slug=q['project']
-    assert slug in {'game-math-skinning-normal-map','game-math-pipeline-shaders'}
+    assert slug in {'game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives','game-math-acceleration-integration','game-math-circular-motion'}
     project=R/'projects'/slug;assert qpath.is_relative_to(project/'production/unity-staging')
     sandbox=Path(q['sandbox']);marker=sandbox/'MATH_CAPTURE_SANDBOX.json'
     def authorized():
@@ -58,7 +58,7 @@ def main():
             owned=candidate;return
     def release():
         nonlocal owned
-        if owned and LEASE.exists() and read(LEASE).get('id')==owned:LEASE.unlink()
+        G.release_lease(owned)
         owned=None
     def run_unity(method,log,env=None,quit_after=False):
         command=[q['unity'],'-batchmode','-job-worker-count','2','-projectPath',str(sandbox),'-executeMethod',method,'-logFile',str(log)]
@@ -87,7 +87,8 @@ def main():
                 assert not folder.exists() or not any(folder.iterdir()),'Prior partial preview preserved; inspect before resuming'
                 state['current']=job['id'];acquire()
                 env=os.environ.copy();env['YAMYAM_MATH_CAPTURE_JOB']=str(jp)
-                run_unity('Yamyam.RemainingMathCapture.UnityLectureCapture.Run',qpath.parent/(job['id']+'.unity.log'),env)
+                entry='Yamyam.MotionMathCapture.UnityLectureCapture.Run' if slug in {'game-math-velocity-derivatives','game-math-acceleration-integration','game-math-circular-motion'} else 'Yamyam.RemainingMathCapture.UnityLectureCapture.Run'
+                run_unity(entry,qpath.parent/(job['id']+'.unity.log'),env)
                 done=read(success);assert done['fingerprint']==q['fingerprint'] and done['completed']==len(job['sampleFrames'])
                 release()
             frames=[]

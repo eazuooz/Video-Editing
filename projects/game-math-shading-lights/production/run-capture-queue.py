@@ -9,11 +9,25 @@ def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def now():return datetime.now(timezone.utc).isoformat()
+def release_lease(owned):
+    if not owned:return
+    for attempt in range(50):
+        try:
+            if not LEASE.exists():return
+            if read(LEASE).get('id')!=owned:return
+            LEASE.unlink();return
+        except FileNotFoundError:return
+        except (PermissionError,json.JSONDecodeError):
+            if attempt==49:raise
+            time.sleep(.1)
 def authorized():
     c=read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
     assert c['productionAllowedNow'] and P.name in c['projectSlugs']
 def idle_reason(own=None):
-    if LEASE.exists() and read(LEASE).get('id')!=own:return 'Another scoped GPU job holds the lease'
+    try:
+        if LEASE.exists() and read(LEASE).get('id')!=own:return 'Another scoped GPU job holds the lease'
+    except FileNotFoundError:pass
+    except (PermissionError,json.JSONDecodeError):return 'Shared lease is being updated; retry without changing ownership'
     for p in psutil.process_iter(['pid','name','exe','cmdline']):
         i=p.info;name=(i['name'] or '').lower();exe=(i['exe'] or '').replace('\\','/').lower();args=[a.lower() for a in i['cmdline'] or []]
         if '/steamapps/common/' in exe or name in ('overwatch.exe','d2r.exe'):return 'Game process still running'
@@ -87,10 +101,10 @@ def main():
             state.update(status='capturing',unityPid=p.pid,current=job['id']);save(statefile,state)
             code=p.wait()
             if code or not verify(job,folder):raise RuntimeError('Capture failed; inspect preserved output/log before resuming')
-            if LEASE.exists() and read(LEASE).get('id')==owned:LEASE.unlink()
+            release_lease(owned)
             owned=None;state['completed'].append(job['id']);save(statefile,state)
         state.update(status='body-captures-complete-compositing-and-QA-pending',finishedAt=now());save(statefile,state)
     except BaseException as exc:state.update(status='failed-or-blocked',error=repr(exc),finishedAt=now());save(statefile,state);raise
     finally:
-        if owned and LEASE.exists() and read(LEASE).get('id')==owned:LEASE.unlink()
+        release_lease(owned)
 if __name__=='__main__':main()
