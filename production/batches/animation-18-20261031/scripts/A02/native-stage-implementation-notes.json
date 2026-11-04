@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "episode": "A02",
+  "revision": "grid-v1",
+  "status": "full-stage-proposal-ready-for-root-integration-and-runtime-preflight",
+  "stageFile": "production/batches/animation-18-20261031/scripts/A02/AnimationExaggerationStage.proposal.cs",
+  "stageSha256": "cb355e183e77f12e5932c49585a3e3a3750ddaf66e7ad4cc6a448d38c4ccb4e5",
+  "stageLines": 612,
+  "scope": {
+    "writes": "This batch A02 proposal and offline-validation only",
+    "UnityAssetsModified": false,
+    "GPUInvoked": false,
+    "UnityImportOrEditorCompilationPerformed": false,
+    "sceneSaved": false,
+    "runtimeReviewed": false
+  },
+  "baseInspected": "unity/VideoEditing/Assets/VideoScenes/animation-series-v1/AnimationLessonStage.cs",
+  "gridShellInspected": "unity/VideoEditing/Assets/VideoScenes/animation-series-v1/AnimationGridStage.cs",
+  "asset": "Owned existing product011 hero Generic rig, same prefab for controlled comparison. FightM_Punch_A loaded by actual clip length. Asset/rights links in native-stage-proposal.json; no new download.",
+  "modePhases": {
+    "normal-and-pause": {
+      "0": "Both original clips once at native speed.",
+      "1": "Both freeze at inspected freezeSeconds; actual-bone posture guides.",
+      "2": "Original versus torso local angular excursion ×0.55; same clip seconds, not identical hand path."
+    },
+    "size-amplitude": {
+      "0": "Same model/clip/time; left reference height440px, right180px via orthographic size only.",
+      "1": "Both cameras locked at180px; same native clip/amplitude.",
+      "2": "Both180px same time; right Torso and Shoulder.R local angular excursion ×1.35."
+    },
+    "shoulder-control": {
+      "0": "Sample punch0; show actual right-arm bone chain.",
+      "1": "Right Arm.R rotation0→55deg about measured anatomical-right; pivot unchanged.",
+      "2": "Right Shoulder.R position translates forward0→0.12 total arm reach.",
+      "3": "Both hands solve same panel-local target0.88reach forward+0.18reach up; right shoulder moves0→0.12reach. Analytic triangle and child-axis-aligned quaternions; reject unreachable target or endpoint error>0.002reach."
+    },
+    "paused-pose-context": {
+      "0": "Both complete normal-speed clips.",
+      "1": "Same inspected freezeSeconds; shoulders/hips and torso/Foot.L projected editorial bone guides.",
+      "2": "Resume from freezeSeconds at native speed to clip end; no jump to clip zero."
+    },
+    "linear-overshoot": {
+      "0": "Axes/start/goal only; own units1Unity unit=1metre.",
+      "1": "Baseline0→1m one time.",
+      "2": "Same normalized time: baseline0→1m and authored overshoot0→1.1→1m.",
+      "3": "Explicit frozen comparison at normalized0.72: baseline0.808704m, overshoot1.1m;100/110/10cm labels match real coordinates.",
+      "4": "Both final positions1m."
+    },
+    "shape-overshoot": {
+      "0": "Original12-tip radial meshes, radius0.42 normalized; no borrowed character sprite.",
+      "1": "Same time: baseline0.42→1; comparison0.42→1.1→1.",
+      "2": "Explicit freeze at normalized0.72; left0.88904832, right1.1.",
+      "3": "Resume both from that same phase: baseline original progress0.72→1, comparison1.1→1; no left radius jump."
+    }
+  },
+  "profileContract": {
+    "schemaVersion": 1,
+    "path": "presentationProfilePath supplied by root; no implicit A01/default timing",
+    "rootObject": {
+      "schemaVersion": 1,
+      "presentations": [
+        {
+          "id": "measured-cut-id",
+          "episode": "A02",
+          "revision": "grid-v1",
+          "mode": "one listed mode",
+          "duration": "frames/60 as numeric seconds",
+          "freezeSeconds": "actually inspected animation time; numeric, not supplied by this proposal",
+          "phases": [
+            {
+              "phase": "integer from modePhases",
+              "start": "first0 or exact prior.end",
+              "end": "next boundary; final exactlyduration",
+              "motionStart": "offset relative to phase start; >=0",
+              "motionDuration": "positive for authored motions;0 for native sampled clips"
+            }
+          ]
+        }
+      ]
+    },
+    "phaseSubset": "A cut may contain an ordered subset of phases. Strictly increasing phase IDs prohibit hidden repetitions; editor must retain full lesson sequence across cuts.",
+    "nativeDuration": "Play phases must contain the actual whole clip, or remaining clip when resuming. Sample time uses seconds directly; no speed or loop change.",
+    "afterPlayback": "Automatic label marks prepared pose before action and end pose after native one-shot.",
+    "timingStatus": "No invented ASR timestamps. Root supplies measured phases."
+  },
+  "geometry": {
+    "output": [
+      1920,
+      1080,
+      60
+    ],
+    "actorPanels": [
+      [
+        105,
+        250,
+        800,
+        570
+      ],
+      [
+        1015,
+        250,
+        800,
+        570
+      ]
+    ],
+    "panelRenderTextures": [
+      800,
+      570,
+      24
+    ],
+    "captionProtectedRect": [
+      0,
+      900,
+      1920,
+      180
+    ],
+    "topRightPictureChip": "Owned by compositor; no overlapping header text beyond x1395",
+    "phaseLabelRect": [
+      80,
+      816,
+      1760,
+      54
+    ],
+    "fontSizes": {
+      "titles": 54,
+      "panelHeaders": 42,
+      "phaseLabels": 38
+    },
+    "sourceKind": "self-authored explanation; not commercial gameplay or extracted real-game animation",
+    "twoPanelIsolation": "Separate layers27/28; each copies root camera scene mask before URP SingleCameraRequest. Base output remains layer29.",
+    "labels": "All known Text objects created in Build before PrepareKnownGlyphs; Apply toggles active GameObjects only."
+  },
+  "determinism": {
+    "poseRestore": "Capture original local position/rotation/scale for every actor transform before first sample. Restore each frame before base.FlushPoses to avoid sparse-channel and previous-offset leakage.",
+    "ground": "BakeMesh vertices in world space, align actual minimumY to0.02. Shoulder IK runs after grounding; do not shift solved target afterward.",
+    "IKDiagnostics": "lastArmEvidence contains actual evaluated lengths, target/wrist coordinates and endpoint error; future capture must persist these values with sampled frames.",
+    "noFakeMetrics": "Numbers belong only to this authored curve/rig, never commercial game internals."
+  },
+  "offlineValidation": "offline-validation/validation.json",
+  "independentStaticReview": {
+    "reviewer": "/root/animation_visual_feasibility/a02_proposal_static_review",
+    "fixed": [
+      "Rejected phase gaps and removed arbitrary last-phase fallback.",
+      "Shape left radius now resumes original0.72→1 progress instead of jumping to1."
+    ],
+    "scope": "Read-only source review; no runtime assertion."
+  },
+  "rootIntegrationRequired": [
+    "Wait for A01 capture completion, preserve fingerprint/receipts; no active source replacement.",
+    "Integrate class under a new A02-owned source path and snapshot its exact bytes.",
+    "Capture router StageFor, slug/media/scene roots and stage-specific presentation path/id must explicitly support A02. Current AnimationGridCapture only permits A01.",
+    "Base PrepareKnownGlyphs currently hardcodes A01 production/rasterizer/cache paths. Scope cache for A02 or adapt via a parameter; labels themselves are preregistered by Build. Do not reroute active A01.",
+    "RenderTexture panels are runtime-created. Verify saved editable scene rehydration: persist scoped RT definitions or add a documented rebuild/refresh path; do not claim reopened-scene panel persistence yet. Same issue needs checking for generated 2D mesh.",
+    "Persist lastArmEvidence/actual sampled time with QA frame diagnostics. Existing base PoseDiagnostic only contains skin/bone evidence.",
+    "Hash measured profile and source classes with scene/capture receipts.",
+    "Do runtime preflight with actual captions at1920 and375px, especially right-arm pivot movement, hand target equality, conservative versus original torso, freeze moment, arm and foot occlusion, small-screen amplitude and 100/110 labels.",
+    "Review imported clip actually shows intended torso/leg relation before using it as evidence; static code is not visual confirmation."
+  ],
+  "doNotClaim": [
+    "Unity compilation/import succeeded",
+    "actual stage or RenderTexture output viewed",
+    "saved editable scenes exist",
+    "voice listening or fullvideo approval"
+  ],
+  "gitNote": "offline-validation DLL is an ignored/temporary compiler artifact; select source+JSON evidence only."
+}

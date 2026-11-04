@@ -1,0 +1,92 @@
+{
+  "episode": "A02",
+  "reviewKind": "headless-mesh-visibility-correction",
+  "observedFailure": "E022 MeshRenderer spheres and E024 procedural shapes absent in headless output; lines, captions and SkinnedMesh actors remained visible.",
+  "verifiedScope": "Only A02-owned instantiated MeshRenderers use the installed Unity DisallowGPUDrivenRendering component. Shared render pipeline and imported vendor originals were not edited.",
+  "directlyProven": "At the same E024 frame and identical generated geometry/radii, opting these MeshRenderer instances out of the GPU-driven path restores the shape pixels.",
+  "unprovenInternalCause": "Stale GPU Resident Drawer registration after disabled-camera explicit rendering and scene reconstruction is a hypothesis; internal engine cause is not asserted.",
+  "before": {
+    "image": {
+      "path": "projects/animation-exaggeration/production/local/grid-v1/preflight/measured-A02-E024-20261104-v1/shape-overshoot/frame-00300.png",
+      "sha256": "64c5153e6f022b49fe2b36d5a723aae971d127fa374f5d991728db99702ffa6c"
+    },
+    "diagnostic": {
+      "mode": "shape-overshoot",
+      "profileId": "A02-E024",
+      "sourceFingerprint": "3eca3b16095f7f5c754a196675dbf8882643df98274927858d85d3b8705f550f",
+      "sourceKind": "self-authored-explanation",
+      "holdNativeAt": "",
+      "replayReason": "",
+      "time": 5.0,
+      "clipSeconds": 0.0,
+      "clipLength": 0.0,
+      "baselineMetres": 0.0,
+      "overshootMetres": 0.0,
+      "baselineRadius": 0.8881701827049255,
+      "overshootRadius": 1.0999938249588013,
+      "phase": 1,
+      "createdPanelTextures": 0,
+      "generatedMeshCount": 2,
+      "orthographicSizes": [],
+      "minimumSkinY": [],
+      "arms": [],
+      "reconstructedFromSavedProfile": true
+    },
+    "roleColorPixels": {
+      "teal": 0,
+      "green": 0
+    }
+  },
+  "after": {
+    "image": {
+      "path": "projects/animation-exaggeration/production/local/grid-v1/preflight/mesh-repair-E024-20261104-v2/shape-overshoot/frame-00300.png",
+      "sha256": "8efe3cfe6115534c63c0faed1c284a87c8f8b948c9c223ba9867072922edc478"
+    },
+    "diagnostic": {
+      "mode": "shape-overshoot",
+      "profileId": "A02-E024",
+      "sourceFingerprint": "29c59c23152c6e2a07aa040ad21d2bda0ea6fdedb252692a5fc3a47b98a873c1",
+      "sourceKind": "self-authored-explanation",
+      "holdNativeAt": "",
+      "replayReason": "",
+      "activeRenderPipeline": "PC_RPAsset",
+      "time": 5.0,
+      "clipSeconds": 0.0,
+      "clipLength": 0.0,
+      "baselineMetres": 0.0,
+      "overshootMetres": 0.0,
+      "baselineRadius": 0.8881701827049255,
+      "overshootRadius": 1.0999938249588013,
+      "phase": 1,
+      "createdPanelTextures": 0,
+      "generatedMeshCount": 2,
+      "meshRendererCount": 3,
+      "directMeshRendererCount": 3,
+      "orthographicSizes": [],
+      "minimumSkinY": [],
+      "arms": [],
+      "reconstructedFromSavedProfile": true
+    },
+    "roleColorPixels": {
+      "teal": 46654,
+      "green": 57625
+    }
+  },
+  "apiEvidence": [
+    {
+      "path": "unity/VideoEditing/Library/PackageCache/com.unity.render-pipelines.core@2d66c71e606e/Runtime/GPUDriven/Components/DisallowGPUDrivenRendering.cs",
+      "sha256": "02afd0a1fe0412930488f56130932a239e03297b21c19a4bdf124b4dc8b9f786"
+    },
+    {
+      "path": "unity/VideoEditing/Library/PackageCache/com.unity.render-pipelines.core@2d66c71e606e/Runtime/GPUDriven/Unity.RenderPipelines.GPUDriven.Runtime.asmdef",
+      "sha256": "07acfdc476993de035013fc360072779615681e55f587ecad02eef0e8bc8f48b"
+    }
+  ],
+  "engine": "Unity6000.6.0f1 / URP17.6.0 / PC_RPAsset",
+  "directMeshInstances": 3,
+  "currentStage": "Final measured v3:8profiles/296frames captured;23profile book; E002B view160 added,other276frames exactly match correctedv2.",
+  "humanReview": false,
+  "sourceAudioChanged": false,
+  "fullRenderStarted": false,
+  "finalReadinessReceipt": "projects/animation-exaggeration/production/grid-v1/native-stage-readiness-20261104.json"
+}
