@@ -65,8 +65,12 @@ def preserve(copy=False):
             'textFiles': [{'path': str(t.relative_to(destination)).replace('\\', '/'), 'sha256': h} for _, t, h in files],
             'requiredLocalOnlyDependencies': manifest['localOnlyFiles'],
             'externalPackageAndEngineReferences': manifest['externalPackageAndEngineReferences'],
+            'unresolvedSettingsReferences': manifest.get('unresolvedSettingsReferences', []),
+            'unresolvedSerializedReferences': manifest.get('unresolvedSerializedReferences', []),
+            'dependencyCompletenessVerified': False,
             'timingEvidence': manifest['timingEvidence'], 'playbackContract': manifest['playbackContract'],
-            'runtimeReopenVerified': False, 'platformActions': False, 'gitStagingPerformed': False,
+            'runtimeReopenVerified': False, 'playerBuildVerified': False,
+            'platformActions': False, 'gitStagingPerformed': False,
         }
         plans.append((destination, files, record))
     if copy:

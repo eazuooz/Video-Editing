@@ -16,12 +16,19 @@ namespace Yamyam.TechTen.Archive {
   const string Media="C:/Users/1/Videos/YamyamProduction/tech-ten-shorts-20261030";
   const string Owned=Media+"/unity-capture";
   const string SceneRoot="Assets/VideoScenes/tech-ten-shorts-20261030/";
+  const string BuildSettingsPath="ProjectSettings/EditorBuildSettings.asset";
+  const string BuildSettingsSha="746171162169ec7b3f70ac4a8c2fd7c3c94d982ff2cf1da6d10986fd56757a95";
   [Serializable] public class Job { public Entry[] captures; }
   [Serializable] public class Entry { public string slug,receiptPath,receiptSha256,inputPath,inputSha256,manifestPath; }
   [Serializable] public class Artifact { public string path,sha256; public long bytes; }
   [Serializable] public class Receipt { public bool success; public string topic,voiceSha256; public string[] savedScenes; public Artifact[] artifacts; }
   [Serializable] public class Input { public string voiceSha256,timingSha256,sourceTreeSha256; }
   [Serializable] public class Item { public string assetPath,physicalPath,kind,guid,sha256; public long bytes; }
+  [Serializable] public class UnresolvedSettingsReference {
+   public string assetPath,physicalPath,settingsSha256,key,guid,serializedLine,reason;
+   public string scope="Only the seven receipt-bound Sample(seconds)/Camera.Render captures; not general Play Mode or player builds";
+   public bool runtimeReopenVerified=false,playerBuildVerified=false;
+  }
   [Serializable] public class Manifest {
    public int schemaVersion=1;
    public string slug,project,unityVersion,receiptPath,receiptSha256,inputPath,inputSha256,voiceSha256,sourceTreeSha256,sourceSnapshot;
@@ -31,6 +38,7 @@ namespace Yamyam.TechTen.Archive {
    public string sourceBinding="CPU copier must restore every sourceCode file from the input-bound immutable source snapshot, never from the current shared capture code.";
    public string[] savedScenes;
    public List<Item> files=new List<Item>();
+   public List<UnresolvedSettingsReference> unresolvedSettingsReferences=new List<UnresolvedSettingsReference>();
   }
   static string Full(string p) { return Path.GetFullPath(p).Replace('\\','/').TrimEnd('/'); }
   static void Within(string path,string root) { var p=Full(path);var r=Full(root);if(!p.StartsWith(r+"/",StringComparison.OrdinalIgnoreCase))throw new IOException("Outside allowed root: "+path); }
@@ -84,15 +92,50 @@ namespace Yamyam.TechTen.Archive {
     // with missing settings dependencies despite a complete scene graph.
     foreach(System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(settings),@"guid:\s*([0-9a-f]{32})")) {
      string guid=match.Groups[1].Value;if(guid.StartsWith("0000000000000000",StringComparison.Ordinal))continue;
-     string asset=AssetDatabase.GUIDToAssetPath(guid);if(string.IsNullOrEmpty(asset))throw new IOException("Unresolved ProjectSettings GUID: "+guid);
+     string asset=AssetDatabase.GUIDToAssetPath(guid);
+     if(string.IsNullOrEmpty(asset)) {
+      var known=CaptureUnusedSetting(settings,guid,input.sourceTreeSha256);
+      if(known==null)throw new IOException("Unresolved ProjectSettings GUID: "+guid);
+      m.unresolvedSettingsReferences.Add(known);continue;
+     }
      settingsRoots.Add(asset);
     }
    }
    if(settingsRoots.Count>0)foreach(string dep in AssetDatabase.GetDependencies(settingsRoots.ToArray(),true))AddAsset(dep,inventory);
+   // This is not a general missing-GUID exemption. Preserve the exact default
+   // settings bytes, record their three unresolved references, and fail if any
+   // such GUID is referenced by an actual scene/render/source dependency.
+   if(m.unresolvedSettingsReferences.Count>0) {
+    if(m.unresolvedSettingsReferences.Count!=3||m.unresolvedSettingsReferences.Select(x=>x.guid).Distinct().Count()!=3)throw new IOException("Unexpected partial settings exception");
+    foreach(var item in inventory.Values) {
+     if(item.assetPath==BuildSettingsPath||string.IsNullOrEmpty(item.physicalPath))continue;
+     if(!new[]{".unity",".prefab",".mat",".asset",".controller",".anim",".cs",".shader",".hlsl"}.Contains(Path.GetExtension(item.assetPath).ToLowerInvariant()))continue;
+     string content=File.ReadAllText(item.physicalPath);
+     if(m.unresolvedSettingsReferences.Any(x=>content.Contains(x.guid)))throw new IOException("Capture dependency uses unresolved settings GUID: "+item.assetPath);
+    }
+   }
    m.files=inventory.Values.ToList();
    Verify(e.receiptPath,e.receiptSha256);Verify(e.inputPath,e.inputSha256);
    Directory.CreateDirectory(Path.GetDirectoryName(e.manifestPath));
    using(var stream=new FileStream(e.manifestPath,FileMode.CreateNew,FileAccess.Write,FileShare.None))using(var writer=new StreamWriter(stream,new UTF8Encoding(false)))writer.Write(JsonUtility.ToJson(m,true)+"\n");
+  }
+  static UnresolvedSettingsReference CaptureUnusedSetting(string settings,string guid,string sourceTree) {
+   if(Full(settings)!=Owned+"/"+BuildSettingsPath||Hash(settings)!=BuildSettingsSha)return null;
+   if(sourceTree!="ae3b2fd85f8fad48b6e51fc20d5d673868c1aba8aaa5dad8fb81ac58e3f4a661"&&sourceTree!="f16754c26af604fd8a69414a83dcc5d5de968ba602d57e050bdef005a2401939")return null;
+   string key,line,reason;
+   if(guid=="99c9720ab356a0642a771bea13969a05") {
+    key="m_Scenes[0].guid (Assets/Scenes/SampleScene.unity)";line="    guid: "+guid;
+    reason="Pre-existing enabled SampleScene build-list entry is absent in the isolated capture project. The successful capture runner opens only receipt-listed scenes explicitly and does not run BuildPipeline.";
+   }else if(guid=="1b1c20d82303e4b5781c3ef50ac1449f") {
+    key="m_configObjects.com.unity.dt.app-ui";line="    com.unity.dt.app-ui: {fileID: 11400000, guid: "+guid+", type: 2}";
+    reason="Pre-existing App UI config reference; App UI package is absent from this isolated project's manifest and lock. Receipt scenes and captured source have no App UI component or API use.";
+   }else if(guid=="052faaac586de48259a63d0c4782560b") {
+    key="m_configObjects.com.unity.input.settings.actions";line="    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: "+guid+", type: 3}";
+    reason="Pre-existing project-wide InputActionAsset/player-build preload reference is unresolved. Selected captures use explicit Sample(seconds), not PlayerInput/InputSystem actions or builds. This exception does not certify input, Play Mode, or player-build validity.";
+   }else return null;
+   if(File.ReadAllLines(settings).Count(x=>x==line)!=1)return null;
+   foreach(string packages in new[]{Owned+"/Packages/manifest.json",Owned+"/Packages/packages-lock.json"})if(File.ReadAllText(packages).Contains("\"com.unity.dt.app-ui\""))throw new IOException("App UI package changed; settings exception requires renewed analysis");
+   return new UnresolvedSettingsReference {assetPath=BuildSettingsPath,physicalPath=Full(settings),settingsSha256=BuildSettingsSha,key=key,guid=guid,serializedLine=line,reason=reason};
   }
   static void AddAsset(string p,SortedDictionary<string,Item> all) {
    p=p.Replace('\\','/');if(p.Contains(".."))throw new IOException("Unsafe asset path");

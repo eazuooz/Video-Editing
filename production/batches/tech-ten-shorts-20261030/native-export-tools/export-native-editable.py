@@ -31,6 +31,116 @@ DEFINITION_ONLY_REUSE = {
  'shorts-sea-of-thieves-water-masking': 'definition-overlay-v3',
  'shorts-starcraft-worker-mineral-walk': 'definition-overlay-v2',
 }
+SETTINGS_PATH = 'ProjectSettings/EditorBuildSettings.asset'
+SETTINGS_SHA = '746171162169ec7b3f70ac4a8c2fd7c3c94d982ff2cf1da6d10986fd56757a95'
+SETTINGS_SOURCE_TREES = {
+ 'ae3b2fd85f8fad48b6e51fc20d5d673868c1aba8aaa5dad8fb81ac58e3f4a661',
+ 'f16754c26af604fd8a69414a83dcc5d5de968ba602d57e050bdef005a2401939',
+}
+SETTINGS_SCOPE = 'Only the seven receipt-bound Sample(seconds)/Camera.Render captures; not general Play Mode or player builds'
+SETTINGS_REFS = {
+ '99c9720ab356a0642a771bea13969a05': (
+  'm_Scenes[0].guid (Assets/Scenes/SampleScene.unity)',
+  '    guid: 99c9720ab356a0642a771bea13969a05'),
+ '1b1c20d82303e4b5781c3ef50ac1449f': (
+  'm_configObjects.com.unity.dt.app-ui',
+  '    com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}'),
+ '052faaac586de48259a63d0c4782560b': (
+  'm_configObjects.com.unity.input.settings.actions',
+  '    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}'),
+}
+PROFILE_PATH='Assets/Settings/DefaultVolumeProfile.asset'
+PROFILE_PACKAGE_PATH='Packages/com.unity.render-pipelines.universal/Editor/Volume/DefaultVolumeProfile.asset'
+PROFILE_SHA='6698bfacfad479acfd9766d00aba81ab52527d3b15c8b133d03ed7a2401499d6'
+PROFILE_CORE_PATH='Packages/com.unity.render-pipelines.core/Runtime/Volume/VolumeProfile.cs'
+PROFILE_CORE_SHA='d163fd2cd62551c27b536d112c4affd10d96fdaae463f9cb7fb1b35fee146fbb'
+PROFILE_REFS={
+ '60f3b30c03e6ba64d9a27dc9dba8f28d':('OutlineVolumeComponent','-7750755424749557576',78),
+ '0fd9ee276a1023e439cf7a9c393195fa':('TestAnimationCurveVolumeComponent','-7274224791359825572',119),
+ '5a00a63fdd6bd2a45ab1f2d869305ffd':('OasisFogVolumeComponent','-5139089513906902183',264),
+ '74955a4b0b4243bc87231e8b59ed9140':('TestVolume','4251301726029935498',833),
+}
+BUILDER_SHAS={
+ 'ae3b2fd85f8fad48b6e51fc20d5d673868c1aba8aaa5dad8fb81ac58e3f4a661':'446f6cf96dc30fc3acd5e27c8400f58517c1b9da854246fce25e6af16903fb49',
+ 'f16754c26af604fd8a69414a83dcc5d5de968ba602d57e050bdef005a2401939':'6747816f4f82b83585c6b87bc1be812674e3b92ed67791bc11aa2fda0cf45977',
+}
+
+def preserved_profile_references(inputs, files, external, guids, snapshot):
+ # These are pre-existing missing scripts in the package-shipped profile,
+ # not dependencies lost by the copier. No asset is fixed or reserialized.
+ f=files.get(PROFILE_PATH)
+ if not f: return [], {}
+ tree=inputs['sourceTreeSha256']; builder_sha=BUILDER_SHAS.get(tree)
+ if not builder_sha or inputs['sourceCode'].get('Editor/TechTenBuilder.cs')!=builder_sha:
+  raise ValueError('Unreviewed source for package-profile exception')
+ builder=Path(snapshot)/'Editor/TechTenBuilder.cs'; verify(builder,builder_sha)
+ override='GraphicsSettings.defaultRenderPipeline=null;QualitySettings.renderPipeline=null;'
+ if override not in builder.read_text(encoding='utf-8-sig'):
+  raise ValueError('Captured builtin-pipeline setup differs')
+ if f['sha256']!=PROFILE_SHA or Path(f['physical']).resolve()!=(OWNED/PROFILE_PATH).resolve():
+  raise ValueError('Local default profile differs from reviewed package template')
+ verify(f['physical'],PROFILE_SHA); data=Path(f['physical']).read_bytes()
+ matches={name:[v for v in external if v['assetPath']==name] for name in (PROFILE_PACKAGE_PATH,PROFILE_CORE_PATH)}
+ if any(len(v)!=1 for v in matches.values()):raise ValueError('Missing unique package profile/runtime provenance')
+ template=matches[PROFILE_PACKAGE_PATH][0]; core=matches[PROFILE_CORE_PATH][0]
+ for entry,expected in ((template,PROFILE_SHA),(core,PROFILE_CORE_SHA)):
+  if entry['kind']!='package-reference' or entry['sha256']!=expected:
+   raise ValueError('Package profile/runtime provenance differs')
+  inside(entry['physicalPath'],OWNED/'Library/PackageCache');verify(entry['physicalPath'],expected)
+ if Path(template['physicalPath']).read_bytes()!=data:raise ValueError('Local/package profile bytes differ')
+ if 'components.RemoveAll(x => x == null);' not in Path(core['physicalPath']).read_text(encoding='utf-8-sig'):
+  raise ValueError('Package missing-component handling differs')
+ if set(PROFILE_REFS)&guids:raise ValueError('Previously missing volume script now resolves; renew analysis')
+ text=data.decode('utf-8-sig'); lines=text.splitlines(); refs=[]
+ for guid,(component,subid,line_number) in PROFILE_REFS.items():
+  line='  m_Script: {fileID: 11500000, guid: '+guid+', type: 3}'
+  if lines[line_number-1]!=line or lines.count(line)!=1:raise ValueError('Volume script occurrence differs')
+  block=re.search(r'^--- !u!114 &'+re.escape(subid)+r'\n(.*?)(?=^--- |\Z)',text,re.M|re.S)
+  if not block or line not in block[1] or '\n  m_Name: '+component+'\n' not in block[1]:
+   raise ValueError('Volume script component context differs')
+  refs.append({'assetPath':PROFILE_PATH,'physicalPath':str(f['physical']),'assetSha256':PROFILE_SHA,
+   'field':'m_Script','guid':guid,'componentName':component,'subAssetFileID':subid,'lineNumber':line_number,'serializedLine':line,
+   'packageTemplate':{'assetPath':PROFILE_PACKAGE_PATH,'physicalPath':template['physicalPath'],'sha256':PROFILE_SHA},
+   'packageRuntimeEvidence':{'assetPath':PROFILE_CORE_PATH,'physicalPath':core['physicalPath'],'sha256':PROFILE_CORE_SHA,'handling':'VolumeProfile.OnEnable removes null components for missing scripts'},
+   'sourceTreeSha256':tree,'reason':'Unresolved script already present in byte-identical installed URP template. Captured builder selects builtin rendering; no Volume or URP additional-camera component occurs in the receipt scenes. Preserved defect, not a resolved dependency.',
+   'dependencyCompletenessVerified':False,'runtimeReopenVerified':False,'playerBuildVerified':False})
+ return refs,{'sourceTreeSha256':tree,'sourcePath':str(builder),'sourceSHA256':builder_sha,
+  'setupCode':override,'defaultRenderPipeline':'null (builtin)','qualityRenderPipeline':'null (builtin)',
+  'automaticExportReopenApplication':False,
+  'instruction':'Apply these capture-time pipeline overrides before replaying the saved scene. Copied project defaults and a plain Play Mode start are not certified equivalent.'}
+
+def validate_settings_exceptions(manifest, inputs, files):
+ refs=manifest.get('unresolvedSettingsReferences', [])
+ if not refs: return []
+ if len(refs)!=3 or {r.get('guid') for r in refs}!=set(SETTINGS_REFS):
+  raise ValueError('Only all three exact preserved settings references are recognized')
+ if inputs['sourceTreeSha256'] not in SETTINGS_SOURCE_TREES:
+  raise ValueError('Settings exception is not reviewed for this captured source')
+ f=files.get(SETTINGS_PATH)
+ if not f or f['sha256']!=SETTINGS_SHA or Path(f['physical']).resolve()!=(OWNED/SETTINGS_PATH).resolve():
+  raise ValueError('Exception settings file binding differs')
+ verify(f['physical'], SETTINGS_SHA)
+ lines=Path(f['physical']).read_text(encoding='utf-8-sig').splitlines()
+ for r in refs:
+  key,line=SETTINGS_REFS[r['guid']]
+  if (r.get('assetPath')!=SETTINGS_PATH or Path(r.get('physicalPath','')).resolve()!=(OWNED/SETTINGS_PATH).resolve()
+      or r.get('settingsSha256')!=SETTINGS_SHA or r.get('key')!=key or r.get('serializedLine')!=line
+      or lines.count(line)!=1 or not r.get('reason') or r.get('scope')!=SETTINGS_SCOPE
+      or r.get('runtimeReopenVerified') is not False or r.get('playerBuildVerified') is not False):
+   raise ValueError('Settings exception occurrence or limitation differs')
+ for packages in ('Packages/manifest.json','Packages/packages-lock.json'):
+  if 'com.unity.dt.app-ui' in read(OWNED/packages).get('dependencies',{}):
+   raise ValueError('App UI package changed; renew capture-scoped analysis')
+ return refs
+
+def unresolved_guids(logical, data, known_guids, settings_exceptions, serialized_exceptions=()):
+ if Path(logical).suffix.lower() not in {'.unity','.prefab','.mat','.asset','.controller','.anim'} or not data.startswith(b'%YAML'):
+  return set()
+ exceptions={r['guid'] for r in settings_exceptions} if logical==SETTINGS_PATH and hashlib.sha256(data).hexdigest()==SETTINGS_SHA else set()
+ if logical==PROFILE_PATH and hashlib.sha256(data).hexdigest()==PROFILE_SHA:
+  exceptions.update(r['guid'] for r in serialized_exceptions if r['assetPath']==PROFILE_PATH and r['assetSha256']==PROFILE_SHA)
+ return {raw.decode() for raw in re.findall(rb'guid:\s*([0-9a-f]{32})',data)
+         if not raw.startswith(b'0000000000000000') and raw.decode() not in known_guids and raw.decode() not in exceptions}
 
 def read(path):
  return json.loads(Path(path).read_text(encoding='utf-8-sig'))
@@ -227,15 +337,20 @@ def collect(job_path):
    if logical not in files or files[logical]['sha256'] != expected: raise ValueError('Scene bytes differ from receipt')
    files[logical]['binding'] = 'native-receipt'
   guids = {f['guid'] for f in files.values() if f['guid']} | {f.get('guid') for f in external if f.get('guid')}
+  settings_exceptions=validate_settings_exceptions(manifest, inputs, files)
+  serialized_exceptions,pipeline_overrides=preserved_profile_references(inputs,files,external,guids,snapshot)
+  if serialized_exceptions:
+   for scene in scene_hashes:
+    scene_text=Path(files[scene]['physical']).read_text(encoding='utf-8-sig')
+    scripts=set(re.findall(r'm_Script:.*?guid: ([0-9a-f]{32})',scene_text))
+    if scripts!={'4105a6e6acd6bf04895d8ff3ab832d4b'} or 'm_RenderPostProcessing:' in scene_text:
+     raise ValueError('Receipt scene component set changed; renew volume-profile analysis')
   missing = set(); projection=[]; omitted=[]; records=[]
   for logical,f in files.items():
    src=f['physical']; data=src.read_bytes(); verify(src,f['sha256'])
    # Unity's builtin resources use reserved all-zero-prefix GUIDs. All other
    # serialized references must resolve to an inventoried asset/package GUID.
-   if Path(logical).suffix.lower() in {'.unity','.prefab','.mat','.asset','.controller','.anim'} and data.startswith(b'%YAML'):
-    for raw in re.findall(rb'guid:\s*([0-9a-f]{32})',data):
-     guid=raw.decode()
-     if not guid.startswith('0000000000000000') and guid not in guids: missing.add(guid)
+   missing.update(unresolved_guids(logical,data,guids,settings_exceptions,serialized_exceptions))
    copy_exact(src,full/logical,f['sha256'])
    record={'path':logical,'sha256':f['sha256'],'bytes':len(data),'guid':f['guid'],'binding':f['binding']}
    if eligible_text(logical,data): copy_exact(src,git/logical,f['sha256']); projection.append(record)
@@ -256,14 +371,17 @@ def collect(job_path):
    'sourceTreeSha256':inputs['sourceTreeSha256'],'timingEvidence':timing_evidence,'sceneBindings':[{'scene':s,'sceneSha256':scene_hashes[s],'sourceTreeSha256':inputs['sourceTreeSha256']} for s in receipt['savedScenes']],
    'editableProject':full.as_posix(),'gitTextProjection':git.as_posix(),'projectFiles':records,'gitTextAllowlist':projection,
    'localOnlyFiles':omitted,'externalPackageAndEngineReferences':external,
+   'unresolvedSettingsReferences':settings_exceptions,
+   'unresolvedSerializedReferences':serialized_exceptions,'dependencyCompletenessVerified':False,
    'preservedTimingFiles':timing_files,
    'playbackContract':{'automaticPlayModeAnimation':False,
+    'capturePipelineOverrides':pipeline_overrides,
     'entryPoint':'Yamyam.TechTen.TechTenDemo.Sample(seconds)',
     'sectionSettings':['unityStage','actionKind','actionStartSeconds','actionResumeSeconds','elapsedOffsetSeconds'],
     'instructions':'Open the matching stage scene. Apply the captured section action settings and call Sample((globalFrame - section.startFrame)/60 + elapsedOffsetSeconds), equivalently Sample(sectionLocalFrame/60 + elapsedOffsetSeconds). The original capture runner is bounded to the owned capture project and is preserved unchanged; it is not a portable one-click render command.'},
    'currentProjectSettingsAreNotCaptureReceiptBound':True,'dependencyHashesObservedAtExport':True,
    'thirdPartyProvenance':'Assets/ThirdParty/KayKitAdventurers/provenance.json when referenced; preserve license and exact FBX/texture hashes. No new vendor binary Git exception.',
-   'runtimeReopenVerified':False,'gpuOrUnityLaunchedByCopier':False,'gitActions':False}
+   'runtimeReopenVerified':False,'playerBuildVerified':False,'gpuOrUnityLaunchedByCopier':False,'gitActions':False}
   write_new(base/'editable-export.json',record)
   outputs.append({'slug':slug,'path':str(base/'editable-export.json'),'sha256':sha(base/'editable-export.json')})
  print(json.dumps({'exports':outputs,'count':len(outputs)},ensure_ascii=False,indent=2))
