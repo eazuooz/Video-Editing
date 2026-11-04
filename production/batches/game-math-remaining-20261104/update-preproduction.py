@@ -21,6 +21,8 @@ at=datetime.now(timezone.utc).isoformat();batch=read(B/'batch.json');work=read(R
 active=[];voices={};previews={};evidence={}
 finisher=state(B/'local/finish-module-candidates.json')
 remaining=state(B/'local/remaining-speech-worker.json')
+repairfiles=sorted((B/'local').glob('finish-m*-audio-v*.json'))
+repairs=[(f,state(f)) for f in repairfiles]
 for item in batch['items']:
  P=R/'projects'/item['slug'];plan=read(P/'planning/production-plan.json');bindings=read(P/'planning/scene-bindings.json')
  audio=latest(P/'production/local','audio-v*');preview=latest(P/'production/unity-staging','local-preflight-v*');render=latest(P/'production/local','render-v*')
@@ -55,6 +57,9 @@ for item in batch['items']:
  if ready:stage='1080p60 네 파일 · 내부 검수 완료 · 사용자 검수 대기'
  elif content.get('status')=='four-files-available-integrated-listening-pending':stage='1080p60 네 파일 · 전체 디코딩·79문단 ASR·544프레임 검사 완료 · 연속 재생/청취 전'
  detail=finisher.get('results',{}).get(item['id'],{})
+ for rp,worker in repairs:
+  if item['id'] in worker.get('selected',[]) and audio and rp.stem.endswith(audio.name):
+   detail=worker.get('results',{}).get(item['id'],{})
  if detail.get('status')=='production-attention-required' and not ready:stage+=' · 현재 제작 오류 점검 필요'
  outputs={}
  if qa:
@@ -77,6 +82,6 @@ for item in batch['items']:
  if pv:previews[item['slug']]=dict(pv,progressPath=(preview/'progress.json').relative_to(R).as_posix())
 batch['updatedAt']=at;save(B/'batch.json',batch);save(R/'shared/publishing/video-worklist.json',work)
 c=read(B/'checkpoint.json');c.update(updatedAt=at,status='active-production',currentWorkingEpisodes=sorted({x['episode'] for x in active}),currentWork=[k+': '+v['stage'] for k,v in evidence.items()],localReviewReady=[x['id'] for x in batch['items'] if x['localReviewReady']],outputCandidatesAvailable=[x['id'] for x in batch['items'] if x['outputCandidatesAvailable']],episodeVoiceWorkers=voices,modulePreflights=previews,runningCostlyJobs=active,resourceGate=dict(status='active-owned-work' if active else 'waiting-or-idle',jobs=active),nextAction='Finish exact M21–M33 local productions. Latest revisions and evidence above supersede historical snapshots. No platform mutation.',lastProductionCommit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip())
-c.update(currentEpisode=active[0]['episode'] if active else None,finiteProductionJobs=[{'file':file,'status':s.get('status'),'alive':live(s),'current':s.get('current'),'step':s.get('step'),'results':s.get('results',{})} for file,s in [('local/finish-module-candidates.json',finisher),('local/remaining-speech-worker.json',remaining)]])
+c.update(currentEpisode=active[0]['episode'] if active else None,finiteProductionJobs=[{'file':file,'status':s.get('status'),'alive':live(s),'current':s.get('current'),'step':s.get('step'),'results':s.get('results',{})} for file,s in [('local/finish-module-candidates.json',finisher),('local/remaining-speech-worker.json',remaining)]+[(f.relative_to(B).as_posix(),s) for f,s in repairs]])
 save(B/'checkpoint.json',c)
 subprocess.run(['python','-X','utf8',str(B/'progress.py')],cwd=R,check=True)

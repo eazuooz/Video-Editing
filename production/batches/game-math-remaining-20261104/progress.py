@@ -28,6 +28,7 @@ out=ROOT/'output/game-math-remaining-20261104'
 out.mkdir(parents=True,exist_ok=True)
 def link_for(x):
     examples='<br><a href="gameplay.html#'+x['id']+'-000">선정된 게임 장면 보기</a>' if x['id']!='M21' and (out/'gameplay.html').is_file() else ''
+    if x['id']=='M25' and (out/'M25-opening-action-7s.mp4').is_file():examples+='<br><a href="M25-opening-action-7s.mp4">도입부 7초 · 해설과 게임 함께 보기</a>'
     if not x.get('outputCandidatesAvailable'):return examples
     path=Path(x['outputs']['index']).relative_to(ROOT/'output').as_posix()
     return '<br><a href="../'+html.escape(path)+'">'+('검수본 보기' if x['localReviewReady'] else '생성된 영상 보기 — 내부 검수 중')+'</a>'+examples

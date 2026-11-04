@@ -37,14 +37,25 @@ def authorized():
  assert c['productionAllowedNow'] and c['advanceWithinExactBatch'] and not any(c[k] for k in ['upload','publish','schedule','deleteOrReplace','drive','automationOrHeartbeat'])
  return c
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--run',action='store_true');a=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--run',action='store_true');ap.add_argument('--repaired-episode',choices=['M'+str(i) for i in GATES]);ap.add_argument('--audio-revision',type=int);a=ap.parse_args()
  rows=read(B/'batch.json')['items'][1:];c=authorized();assert [r['id'] for r in rows]==['M'+str(i) for i in GATES] and all(r['slug'] in c['projectSlugs'] for r in rows)
+ assert bool(a.repaired_episode)==bool(a.audio_revision)
+ if a.repaired_episode:
+  orig=read(B/'local/finish-module-candidates.json')['results'].get(a.repaired_episode,{})
+  num=int(a.repaired_episode[1:]);prior,pvs=GATES[num]
+  rows=[r for r in rows if r['id']==a.repaired_episode];assert len(rows)==1
+  failed_word_file=R/'projects'/rows[0]['slug']/f'production/local/audio-v{prior}/finite-word-review.json'
+  word_recovered=(orig.get('status')=='production-attention-required' and str(failed_word_file) in orig.get('reason','').replace('\\\\','\\') and (failed_word_file.parent/'review/reused-pcm-evidence.json').is_file() and a.audio_revision==prior)
+  assert word_recovered or (orig.get('status')=='spoken-timing-or-content-needs-review' and prior<a.audio_revision<=12),'Resume only a released speech version with actual recovery evidence'
+  backup=R/'projects'/rows[0]['slug']/f'production/local/audio-v{a.audio_revision}/retake-plan.json'
+  saved=read(backup);assert saved.get('originalPreserved') or saved.get('sourceAudioPreserved');GATES[num]=(a.audio_revision,pvs)
  for row in rows:
   _,pvs=GATES[int(row['id'][1:])];s=R/'projects'/row['slug']/'production/unity-staging'
   for pv in pvs:
    q=read(s/f'local-preflight-v{pv}/queue.json');assert q['project']==row['slug'] and all(read(Path(j))['command']=='preflight' for j in q['jobs'])
  if not a.run:print('Validated exact twelve capture dependencies; no job started');return
  statefile=B/'local/finish-module-candidates.json';statefile.parent.mkdir(exist_ok=True)
+ if a.repaired_episode:statefile=statefile.with_name('finish-'+a.repaired_episode.lower()+'-audio-v'+str(a.audio_revision)+'.json')
  old=read(statefile) if statefile.is_file() else {}
  if old:
   assert not live(old) and old['status']!='finished','Existing finite finishing job preserved'
@@ -95,7 +106,7 @@ def main():
   if not (a/'finite-word-review.json').is_file() or read(a/'finite-word-review.json')['status']!='word-evidence-ready-content-review-pending':
    return None,'Waiting for actual voice and word times'
   if not measured.is_file():
-   if num>=27:return None,'Waiting for alignment by existing seven-episode speech job'
+   if num>=27 and not a.repaired_episode:return None,'Waiting for alignment by existing seven-episode speech job'
    child(slug,'align-module-speech.py',['--project',slug,'--audio-revision',a.name])
   t=read(measured)
   if t['flags']:return dict(status='spoken-timing-or-content-needs-review',flags=len(t['flags']),file=str(measured)),None

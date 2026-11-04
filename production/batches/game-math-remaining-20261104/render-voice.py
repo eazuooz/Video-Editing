@@ -92,6 +92,10 @@ def verified_waiting_math_worker(process, arguments):
             statefile=batch/'local/remaining-speech-worker.json'
         elif selected == (batch/'finish-module-candidates.py').resolve() and '--run' in arguments:
             statefile=batch/'local/finish-module-candidates.json'
+            if '--repaired-episode' in arguments:
+                ep=value('--repaired-episode');rev=value('--audio-revision')
+                if not __import__('re').fullmatch(r'[mM](?:2[2-9]|3[0-3])',ep or '') or not __import__('re').fullmatch(r'(?:[2-9]|1[0-2])',rev or ''):return False
+                statefile=statefile.with_name('finish-'+ep.lower()+'-audio-v'+rev+'.json')
         elif selected == (batch/'finish-m21-media-qa.py').resolve():
             revision=value('--revision') or 'render-v3'
             if not __import__('re').fullmatch(r'render-v\d+',revision):return False

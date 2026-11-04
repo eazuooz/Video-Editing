@@ -22,13 +22,19 @@ lookup={(e['scene_id'],e['paragraph']):e for e in old['entries']};proof=[];folde
 for e in new['entries']:
  k=(e['scene_id'],e['paragraph']);o=lookup[k];name=f'{k[0]}-{k[1]:02}.json';previous=src/'review/paragraphs'/name
  if not previous.exists():continue
- assert e['text']==o['text'] and e['display_text']==o['display_text']
+ if e['text']!=o['text'] or e['display_text']!=o['display_text']:continue
  xp=x[round(o['start']*sx):round(o['end']*sx)];yp=y[round(e['start']*sy):round(e['end']*sy)]
  if not np.array_equal(xp,yp):continue
  d=read(previous);assert d['audio_sha256']==oldhash and d['entry']==o
  delta=e['start']-o['start'];d.update(audio_sha256=newhash,entry=e,reusedUnchangedParagraph=dict(source=str(previous.relative_to(R)),sourceRecordSha256=sha(previous),decodedPcmSha256=hashlib.sha256(xp.tobytes()).hexdigest(),samples=len(xp),timeShiftSeconds=delta,method='Exact float32 decoded PCM equality; word times shifted only',at=datetime.now(timezone.utc).isoformat()))
  for w in d['chunks']:w['timestamp']=[None if t is None else t+delta for t in w['timestamp']]
- target=folder/name;assert not target.exists(),'Preserve existing target evidence'
- target.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');proof.append(dict(scene=k[0],paragraph=k[1],samples=len(xp),shift=delta))
+ target=folder/name
+ if target.exists():
+  kept=read(target)
+  assert kept['audio_sha256']==newhash and kept['entry']==e and kept['chunks']==d['chunks'],'An earlier result differs; preserve and inspect it'
+  for field in ['sourceRecordSha256','decodedPcmSha256','samples','timeShiftSeconds']:
+   assert kept['reusedUnchangedParagraph'][field]==d['reusedUnchangedParagraph'][field],field
+ else:target.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+ proof.append(dict(scene=k[0],paragraph=k[1],samples=len(xp),shift=delta))
 (dst/'review/reused-pcm-evidence.json').write_text(json.dumps(dict(sourceAudioSha256=oldhash,targetAudioSha256=newhash,reused=proof,humanListening=False),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(f'{len(proof)} exactly unchanged paragraph transcripts reused; changed paragraphs still need actual ASR')

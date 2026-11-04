@@ -28,6 +28,7 @@ ALIASES={'tbn':'티비엔','srgb':'에스알지비','bitangent':'비탄젠트','
          'sx':'에스엑스','sy':'에스와이','sz':'에스제트','psi':'피에스아이','km':'킬로미터','kg':'킬로그램','ft':'피트','cos':'코사인','sin':'사인','tan':'탄젠트','m':'미터','doom':'둠',
          'n':'엔','l':'엘','r':'알','v':'브이','h':'에이치','x':'엑스','y':'와이','z':'제트','t':'티','s':'에스','p':'피','d':'디','a':'에이','b':'비','c':'씨','e':'이','k':'케이','i':'아이','j':'제이','w':'더블유','u':'유'}
 DIGITS='영일이삼사오육칠팔구'
+ALIASES.update({'f':'에프','g':'지'})
 def integer_ko(n):
     n=int(n)
     if n==0:return '영'
@@ -61,6 +62,8 @@ def normalize_owned(s,owners):
     # Korean particles are attached to Latin symbols (e.g. BRDF가, N과).
     # Latin-only boundaries preserve words such as "normal" while matching those.
     replace(r'(?<=\d),(?=\d{3}(?:\D|$))','')
+    for native,cardinal in [('스물네','이십사'),('열두','십이'),('여섯','육')]:
+        replace(r'(?<![가-힣])'+native+r'(?=\s*(?:구간|직사각형))',cardinal)
     # Recognizers often print exact English product names even in a Korean
     # sentence. Normalize these verified names only; e.g. an unrelated "BCG"
     # is not an alias for Besiege. Keep raw evidence and display spelling intact.
@@ -92,6 +95,25 @@ def normalize_owned(s,owners):
     return ''.join(s[i] for i in keep),[owners[i] for i in keep]
 
 def normalized(s):return normalize_owned(s,[None]*len(s))[0]
+def same_audio_overlap(words):
+    # Sliding-window ASR sometimes returns the *same PCM time span* twice.
+    # Keep repeats occurring at different times; never delete a repeated take.
+    kept=[];proof=[];i=0
+    while i<len(words):
+        w=words[i];a,b=w['timestamp']
+        if kept and a<kept[-1]['timestamp'][0]-.4:
+            last=kept[-1]['timestamp'][1]
+            starts=[j for j,prior in enumerate(kept) if abs(prior['timestamp'][0]-a)<=.25]
+            end=i
+            while end<len(words) and words[end]['timestamp'][0]<last and (end==i or words[end]['timestamp'][0]>=words[end-1]['timestamp'][0]-.05):end+=1
+            for j in starts:
+                old=normalized(''.join(x['text'] for x in kept[j:]));new=normalized(''.join(x['text'] for x in words[i:end]))
+                if len(new)>=18 and old==new and abs(words[end-1]['timestamp'][1]-last)<.32:
+                    proof.append(dict(original=[kept[j]['timestamp'][0],last],duplicate=[a,words[end-1]['timestamp'][1]],sameNormalizedText=new,rawSourceUnchanged=True))
+                    i=end;break
+            else:kept.append(w);i+=1
+        else:kept.append(w);i+=1
+    return kept,proof
 def map_chars(expected,words):
     observed='';owners=[]
     for w in words:
@@ -159,10 +181,12 @@ def main():
     reading=read(adjustments_file)
     adjustments={(x['scene'],x['koStart']):x for x in reading['groups']}
     ko_literal_forms=reading.get('koPrintedForms',{})
-    scenes=[];ko_cues=[];en_cues=[];flags=[];entries=timing['entries']
+    scenes=[];ko_cues=[];en_cues=[];flags=[];overlaps=[];entries=timing['entries']
     for i,e in enumerate(entries):
         sid=e['scene_id'];row=next(r for r in bindings['scenes'] if r['id']==sid);speech=e['text'];display=e['display_text']
         words=[w for w in asr['chunks'] if None not in w['timestamp'] and e['start']<=w['timestamp'][0]<e['end']+.01]
+        words,overlap=same_audio_overlap(words)
+        if overlap:overlaps.append(dict(scene=sid,proof=overlap))
         expected,observed,mapping,owners,match=map_chars(speech,words)
         coverage=len(mapping)/max(1,len(expected))
         expansion=len(observed)/max(1,len(expected))
@@ -269,6 +293,7 @@ def main():
                 except (AssertionError,ValueError) as exc:flags.append({'scene':sid,'type':'unresolved-gameplay-explanation-handoff','detail':repr(exc)})
         scenes.append({'id':sid,'startFrame':start_frame,'endFrame':end_frame,'shot':cue,'cueEvidence':proof,'valueEvidence':value_evidence,'spokenEnd':e['end'],'sourceAsrCoverage':coverage,'actualGamePart':game,'actualGameStartFrame':game_start,'actualGameStartEvidence':game_evidence,'actualGameEndFrame':game_end,'actualGameEndEvidence':handoff_evidence})
     report={'createdAt':datetime.now(timezone.utc).isoformat(),'narrationSha256':asr['audio_sha256'],'bindingsSha256':sha(P/'planning/scene-bindings.json'),'timingSha256':sha(A/'narration.timing.json'),'captionReadingAdjustmentsSha256':sha(adjustments_file),'project':P.name,'status':'needs-targeted-review' if flags else 'word-aligned-requires-integrated-review','flags':flags,'scenes':scenes,'ko':ko_cues,'en':en_cues,'humanListening':False,'finalCompositeQa':False}
+    report['identicalOverlappingAsrTimeSpans']=overlaps
     OUT.mkdir(parents=True,exist_ok=True);save(OUT/'word-aligned-timeline.json',report)
     if not flags:srt(OUT/'narration.ko.srt',ko_cues);srt(OUT/'narration.en.srt',en_cues)
     print(json.dumps({'scenes':len(scenes),'koCues':len(ko_cues),'enCues':len(en_cues),'requiresReview':len(flags)},ensure_ascii=False))

@@ -113,11 +113,19 @@ def annotation_ass(cut,source,out):
     for window in windows:
         data=read(R/window['trackFile']);assert data['sourceSha256']==source['sha256']
         assert window['visualQa']['status']=='temporal-samples-reviewed-final-encoded-pending'
-        focus_width=header_font.getlength(data['label'])
-        assert 192+header_font.getlength(game)+24 < 960-focus_width/2, 'Game title overlaps narrated focus label'
-        assert 960+focus_width/2+24 < 1728-header_font.getlength('실제 게임 녹화'), 'Focus label overlaps picture-source kind'
         kfs=data['keyframes'];start=max(cut['sourceIn'],data['start']);end=min(cut['sourceOut'],data['end'])
-        C.event(lines,start-cut['sourceIn'],end-cut['sourceIn'],'{\\an8\\pos(960,4)\\fs36\\1c&HC2C773&}'+data['label'],5)
+        phases=window.get('observedPhases') or [dict(start=start,end=end,label=data['label'])]
+        for pi,phase in enumerate(phases):
+            assert phase['end']>phase['start'] and (pi==0 or phase['start']>=phases[pi-1]['end'])
+            left,right=max(cut['sourceIn'],phase['start']),min(cut['sourceOut'],phase['end'])
+            if right<=left:continue
+            focus_width=header_font.getlength(phase['label'])
+            assert 192+header_font.getlength(game)+24 < 960-focus_width/2, 'Game title overlaps narrated focus label'
+            assert 960+focus_width/2+24 < 1728-header_font.getlength('실제 게임 녹화'), 'Focus label overlaps picture-source kind'
+            C.event(lines,left-cut['sourceIn'],right-cut['sourceIn'],'{\\an8\\pos(960,4)\\fs36\\1c&HC2C773&}'+phase['label'],5)
+            if phase.get('sideLabel'):
+                small=phase['sideLabel'];assert len(small)<=2 and C.ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',72).getlength(small)<x-24
+                C.event(lines,left-cut['sourceIn'],right-cut['sourceIn'],'{\\an5\\pos(96,450)\\fs72\\b1\\1c&HFFFFFF&}'+small,5)
         for a,b in zip(kfs,kfs[1:]):
             lo=max(start,a['time']);hi=min(end,b['time'])
             if hi<=lo or not a.get('visible',True) or not b.get('visible',True):continue
@@ -131,7 +139,7 @@ def annotation_ass(cut,source,out):
                 for stroke,color,layer in [(8,'101010',2),(5,'C2C773',3)]:
                     path=stroke_path(ps,stroke)
                     C.event(lines,t-cut['sourceIn'],lo+(hi-lo)*(i+1)/count-cut['sourceIn'],f'{{\\an7\\pos(0,0)\\p1\\bord0\\shad0\\1a&H00&\\1c&H{color}&}}'+path,layer)
-        proofs.append(dict(id=data['id'],trackFile=window['trackFile'],trackSha256=sha(R/window['trackFile']),sourceSha256=source['sha256']))
+        proofs.append(dict(id=data['id'],trackFile=window['trackFile'],trackSha256=sha(R/window['trackFile']),sourceSha256=source['sha256'],labelPhases=phases))
     Path(out).write_text('\n'.join(lines)+'\n',encoding='utf-8')
     return dict(scene=cut['scene'],viewport=VIEW,tracks=proofs,finalMotionQa=False)
 

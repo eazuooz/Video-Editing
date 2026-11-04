@@ -5,14 +5,17 @@ Silence, missing timestamps and insufficient native audio must remain visible.
 """
 from pathlib import Path
 from datetime import datetime,timezone
-import array,hashlib,json,math,shutil,subprocess
+import argparse,array,hashlib,json,math,shutil,subprocess
 
 B=Path(__file__).resolve().parent;R=B.parents[2]
 FF=shutil.which('ffmpeg');assert FF
 read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'))
 c=read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow']
 sr=12000;cached={};allrows=[]
+ap=argparse.ArgumentParser();ap.add_argument('--episode');args=ap.parse_args()
+if args.episode:assert args.episode in c['itemIds'][1:]
 for ep in read(B/'batch.json')['items'][1:]:
+ if args.episode and ep['id']!=args.episode:continue
  p=R/'projects'/ep['slug'];assert p.name in c['projectSlugs']
  sources={s['id']:s for s in read(p/'planning/footage-audit.json')['sources']}
  cuts=[s['actualGamePart'] for s in read(p/'planning/scene-bindings.json')['scenes'] if s.get('actualGamePart')]
