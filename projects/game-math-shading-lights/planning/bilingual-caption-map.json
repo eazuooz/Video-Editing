@@ -1,0 +1,2868 @@
+{
+  "status": "complete-semantic-map",
+  "koSha256": "5b2cf9e7ff0f989e54fef3de50edf68fcc4ed51c62a8672b7846c83eff3144d0",
+  "enSha256": "6bed066dc0e2b5e31a48b5a403b15a6c39ff57b8d0aeaec416effcfffbff2387",
+  "basis": "Direct side-by-side sentence meaning review. Actual-word timing required next. English subdivisions use reading-length allocation within each corresponding group.",
+  "scenes": [
+    {
+      "id": "000",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "서브노티카 투의 어두운 물속입니다. 장비의 전조등이 움직이자 빛을 받는 바위도 달라지고, 숨어 있던 굴곡이 드러납니다.",
+          "en": "In the dark waters of Subnautica 2, the equipment’s headlights move across the rocks, revealing their shape."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "게임은 어느 면을 얼마나 밝게 만들지 어떻게 정할까요?",
+          "en": "How does a game decide which surfaces to brighten, and by how much?"
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "오늘은 한 지점의 반사 계산에서 출발해 물체 전체의 셰이딩, 광원의 모양, 조명을 미리 저장하는 방법까지 연결하며 화면이 만들어지는 과정을 따라가 보겠습니다.",
+          "en": "We will follow the picture from reflection at one point to shading the whole object, shaping light sources, and storing lighting in advance."
+        }
+      ]
+    },
+    {
+      "id": "001",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "우선 색이 입혀진 물체와 빛이 계산된 물체를 구분해 볼게요.",
+          "en": "First distinguish a colored object from a shaded object."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "재질은 표면이 빛을 얼마나, 어떤 색으로 돌려보내는지 정하는 설정입니다.",
+          "en": "A material supplies properties describing how the surface reflects light, including its strength and color."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "조명 모델은 그 설정과 빛의 방향, 보는 방향을 받아 화면에 보일 색을 계산하는 규칙이고요.",
+          "en": "A lighting model combines those properties with the lighting and viewing directions to compute the displayed result."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "같은 계산식을 쓰더라도 재질의 숫자가 다르면 플라스틱이나 금속처럼 서로 다른 모습이 나올 수 있습니다.",
+          "en": "Different parameter values can produce different appearances even when the calculation is shared."
+        }
+      ]
+    },
+    {
+      "id": "002",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "좀 더 정확한 말로는 양방향 반사 분포 함수, 비알디에프가 있습니다. 한 방향에서 들어온 빛을 다른 방향으로 얼마나 반사하는지 나타내는 함수예요.",
+          "en": "More precisely, the bidirectional reflectance distribution function, or BRDF, describes reflection from an incoming direction into an outgoing direction."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "오늘은 모든 빛의 경로를 한꺼번에 계산하기보다, 직접 들어오는 빛부터 빠르게 근사하는 전통적인 국소 조명 모델을 따라가겠습니다.",
+          "en": "Here we will follow a traditional local illumination model that efficiently approximates direct lighting rather than solving every light path at once."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "그중 난반사는 나중에 이 비알디에프와도 연결해 볼 거예요.",
+          "en": "We will later connect its diffuse term back to the BRDF."
+        }
+      ]
+    },
+    {
+      "id": "003",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "표면의 한 점을 확대해 보죠.",
+          "en": "Zoom in on one surface point."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "현실에서는 주위의 여러 방향에서 빛이 들어오고, 다른 물체에 튕긴 빛도 도착합니다.",
+          "en": "Light may arrive from many directions, including after bouncing off other objects."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "지금의 모델은 우선 광원에서 바로 오는 빛을 고릅니다. 그리고 그 빛이 표면에서 반사되어 카메라로 향하는 양을 계산해요.",
+          "en": "Our model first selects light arriving directly from designated sources and calculates what is reflected toward the camera."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "광원이 세 개라면 세 방향의 기여를 구하는 식입니다.",
+          "en": "Three sources give three directional contributions."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "점마다 반구 전체를 조사하는 문제를, 정해진 광원 수만큼 계산하는 문제로 줄이는 거죠.",
+          "en": "This reduces a hemisphere-wide transport problem to a finite set of light evaluations."
+        }
+      ]
+    },
+    {
+      "id": "004",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기서 광원은 전구 모양의 메시와 같은 뜻은 아닙니다.",
+          "en": "A light source here need not be the visible mesh of a bulb."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "화면에 보이는 모양 없이, 이 지점으로 어떤 방향의 빛을 얼마나 보낼지만 알려 주는 계산용 객체일 수 있어요.",
+          "en": "It can be an abstract object that supplies a direction and an amount of light at the shading point."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "전구의 외형을 그리는 일과 주변 물체를 밝히는 일을 나누는 겁니다.",
+          "en": "Drawing the bulb and illuminating its surroundings are separate tasks."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이렇게 광원이 제공하는 방향과 색을 받아서, 이제 표면 쪽 계산을 시작하겠습니다.",
+          "en": "With direction and color supplied by the light, we can now calculate the surface response."
+        }
+      ]
+    },
+    {
+      "id": "005",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "눈에 들어올 색을 네 부분으로 나눠 보겠습니다.",
+          "en": "We divide the result into four contributions."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 2,
+          "ko": "표면이 스스로 밝아 보이는 부분은 발광, 특정 방향에서 반짝이는 부분은 정반사입니다.",
+          "en": "Emission makes the surface itself luminous. Specular reflection creates a directional highlight."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "넓게 퍼져 물체의 기본적인 색과 굴곡을 보여 주는 부분은 난반사이고요.",
+          "en": "Diffuse reflection produces a broad response that reveals surface color and form."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "여러 번 반사되어 들어오는 간접광을 아주 거칠게 대신하는 부분이 환경광입니다.",
+          "en": "Ambient light is a coarse substitute for indirect illumination."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "네 가지를 각각 계산한 뒤 더하면 이 모델의 최종 색이 됩니다.",
+          "en": "The model adds these four contributions."
+        }
+      ]
+    },
+    {
+      "id": "006",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기서 색은 숫자 하나가 아니라 빨강, 초록, 파랑의 세 값으로 다룹니다.",
+          "en": "Color is represented by red, green, and blue values rather than a single number."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "예를 들어 광원의 색이 일, 영점오, 영점이이고 재질의 색이 영점팔, 영점사, 영점일이라면, 같은 채널끼리 곱해 영점팔, 영점이, 영점영이가 됩니다.",
+          "en": "Multiplying light color (1, 0.5, 0.2) by material color (0.8, 0.4, 0.1) component by component gives (0.8, 0.2, 0.02)."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "화면의 동그라미 곱 기호는 이런 성분별 곱입니다.",
+          "en": "The circled multiplication symbol denotes this operation."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "벡터의 방향을 비교하는 내적과는 용도가 다르다는 점을 기억해 두세요.",
+          "en": "It is different from the dot product used to compare directions."
+        }
+      ]
+    },
+    {
+      "id": "007",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "포르자 모터스포츠 식스에서 정지한 자동차를 둘러보면, 보닛 위에 비친 밝은 창문 무늬가 보는 방향을 따라 달라집니다.",
+          "en": "As the camera moves around a stationary car in Forza Motorsport 6, bright window reflections move across its hood."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이런 방향 의존성을 이해하려고, 우선 광원 하나가 만드는 간단한 반짝임부터 계산해 볼게요.",
+          "en": "To understand this dependence on viewing direction, let us first calculate a simple highlight from one light."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "네 부분 중에서 먼저 정반사를 보겠습니다.",
+          "en": "Start with specular reflection."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "빛과 물체는 그대로 두고 카메라만 움직여 볼게요.",
+          "en": "Keep the light and object fixed and move only the camera."
+        },
+        {
+          "koStart": 4,
+          "koCount": 2,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "밝은 반짝임이 나타났다 사라지죠. 빛이 잘 반사되는 방향과 카메라 방향이 가까울 때 강하게 보이기 때문입니다.",
+          "en": "A bright highlight appears and fades because the camera approaches or leaves a preferred reflection direction."
+        },
+        {
+          "koStart": 6,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "이 관계를 계산하려면 표면에 붙은 방향 세 개부터 정해야 합니다.",
+          "en": "To calculate that relationship, we first need three directions at the surface point."
+        }
+      ]
+    },
+    {
+      "id": "008",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "표면에서 수직으로 솟는 화살표가 법선 엔입니다.",
+          "en": "The outward surface normal is n."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "표면에서 카메라를 향하는 화살표는 브이, 표면에서 광원을 향하는 화살표는 엘이라고 하겠습니다.",
+          "en": "The direction from the point to the camera is v, and the direction from the point to the light is l."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "셋 다 길이를 일로 맞춘 단위 벡터로 사용해요.",
+          "en": "We normalize each to unit length."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "특히 엘은 빛이 날아오는 화살표와 반대입니다. 빛은 광원에서 표면으로 오지만, 엘은 표면에서 광원을 가리킵니다.",
+          "en": "Notice that l points opposite to the incoming ray: light travels toward the surface, while l points back toward its source."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "이 약속이 뒤의 부호를 결정합니다.",
+          "en": "This convention determines the signs in the formula."
+        }
+      ]
+    },
+    {
+      "id": "009",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "거울처럼 튕겨 나갈 방향을 알이라고 해 보죠.",
+          "en": "Call the mirror reflection direction r."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "먼저 엘을 법선 쪽으로 투영합니다. 단위 법선을 썼으니 내적 엔 닷 엘에 엔을 곱하면 그 성분이 나와요.",
+          "en": "First project l onto the unit normal: dot(n,l) times n gives its normal component."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 2,
+          "ko": "이 법선 성분을 두 배로 만든 뒤 원래 엘을 빼면, 법선의 반대편에 대칭인 알이 됩니다. 그래서 반사 방향은 이 곱하기 엔 닷 엘, 다시 엔을 곱한 값에서 엘을 빼는 식입니다.",
+          "en": "Double this projection and subtract l. The result is the direction mirrored across the normal, so r equals 2 dot(n,l) n minus l."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "엔과 엘이 단위 벡터라면 이렇게 구한 알도 단위 벡터입니다.",
+          "en": "When n and l are unit vectors, the resulting r is also unit length."
+        }
+      ]
+    },
+    {
+      "id": "010",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "숫자로도 확인해 볼까요? 법선이 영, 일, 영이고 광원 방향이 영점육, 영점팔, 영이면 내적은 영점팔입니다.",
+          "en": "For n=(0,1,0) and l=(0.6,0.8,0), the dot product is 0.8."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "법선 성분의 두 배는 영, 일점육, 영이죠.",
+          "en": "Twice the normal projection is (0,1.6,0)."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "여기서 광원 방향을 빼면 마이너스 영점육, 영점팔, 영이 됩니다. 위쪽 성분은 같고 옆쪽 부호만 바뀌었어요.",
+          "en": "Subtracting l produces r=(-0.6,0.8,0): the vertical component stays the same and the horizontal component changes sign."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "셰이더의 리플렉트 함수에는 입사 방향을 넣으므로, 이 약속에서는 마이너스 엘과 엔을 전달합니다.",
+          "en": "A shader reflect function expects an incoming direction, so with our convention its arguments are -l and n."
+        }
+      ]
+    },
+    {
+      "id": "011",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 알과 카메라 방향 브이를 비교하면 됩니다.",
+          "en": "Next compare r with the viewing direction v."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "두 단위 벡터의 내적은 사이각의 코사인이죠.",
+          "en": "Their dot product is the cosine of the angle between them."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "정확히 같은 방향이면 일, 멀어질수록 작아집니다.",
+          "en": "It is one when they align and decreases as they separate."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 2,
+          "ko": "음수는 영으로 막고, 그 값을 광택 지수만큼 거듭제곱합니다. 여기에 광원의 색과 재질의 정반사 색을 채널별로 곱하면 퐁 모델의 정반사 기여분이 됩니다.",
+          "en": "Clamp negative values to zero, raise the result to the shininess exponent, and multiply by the light and material specular colors. This gives the Phong specular contribution."
+        }
+      ]
+    },
+    {
+      "id": "012",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기서 지수는 단순히 밝기를 올리는 손잡이가 아닙니다. 반짝임의 폭을 조절해요.",
+          "en": "The exponent mainly controls highlight width."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "내적이 영점팔일 때 제곱하면 영점육사, 여덟 제곱하면 약 영점일칠이 됩니다.",
+          "en": "At a dot product of 0.8, squaring gives 0.64, while raising it to the eighth power gives about 0.17."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "딱 맞는 방향에서는 일의 거듭제곱이라 계속 일이지만, 조금 빗나간 방향은 지수가 커질수록 빠르게 어두워집니다.",
+          "en": "Perfect alignment stays at one, but off-axis directions darken rapidly as the exponent rises."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "그래서 지수가 클수록 반짝임이 좁고, 작을수록 넓게 퍼집니다.",
+          "en": "Large exponents produce narrow highlights; small exponents produce broad ones."
+        }
+      ]
+    },
+    {
+      "id": "013",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "반짝임의 세기와 색은 정반사 색이라는 별도 값이 정합니다.",
+          "en": "Specular color is a separate control for strength and tint."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "지수를 그대로 두고 이 값을 올리면 폭의 기준은 같지만 하이라이트가 강해져요.",
+          "en": "Holding the exponent fixed while increasing this value strengthens the highlight."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "표면의 어느 부분만 다르게 만들고 싶다면 텍스처에서 값을 읽을 수도 있습니다.",
+          "en": "A texture can vary material properties across the surface."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "정반사 맵이 색과 세기를 저장하는지, 광택이나 거칠기를 저장하는지는 입력의 뜻을 확인해야 해요. 맵 이름만 비슷하다고 같은 값으로 쓰면 결과가 달라집니다.",
+          "en": "Check whether a map stores specular color, glossiness, or roughness; similar names do not mean the values are interchangeable."
+        }
+      ]
+    },
+    {
+      "id": "014",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "빛 쪽에도 색과 세기가 있습니다.",
+          "en": "The light also supplies color and intensity."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "지금 식에서는 거리에 따른 약해짐까지 광원 색에 포함해 두겠습니다. 뒤에서 그 감쇠를 따로 풀어볼 거예요.",
+          "en": "For now, its color includes distance attenuation, which we will examine later."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "방향마다 다른 색을 주고 싶으면 쿠키, 또는 고보라는 투사 무늬를 사용할 수 있습니다. 색유리나 흔들리는 나뭇잎 무늬처럼 보이는 빛을 만들 수 있죠.",
+          "en": "A projected pattern called a cookie or gobo can vary illumination by direction, creating effects such as stained glass or moving foliage."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이것은 투사된 조명 무늬이며, 실제 물체가 가려 만든 그림자와는 구분해야 합니다.",
+          "en": "Such a pattern is not the same as a shadow computed from an actual occluding object."
+        },
+        {
+          "koStart": 6,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "전통적인 모델에서는 정반사용 광원색과 난반사용 광원색을 다르게 지정할 수도 있지만, 이는 연출용 조절이며 같은 물리적 빛을 나눈 양이라고 보지는 않습니다.",
+          "en": "Traditional implementations may expose separate diffuse and specular light colors as artistic controls, rather than distinct physical supplies of light."
+        }
+      ]
+    },
+    {
+      "id": "015",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "두 손잡이를 함께 비교해 보겠습니다.",
+          "en": "Compare both controls in a grid."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "가로로 갈수록 정반사 세기를 올리고, 세로로 갈수록 지수를 낮췄습니다.",
+          "en": "Specular strength increases horizontally, while the exponent decreases vertically."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "오른쪽은 더 강하게 빛나고, 아래쪽은 더 넓게 퍼집니다.",
+          "en": "Highlights become stronger to the right and broader downward."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "왼쪽처럼 정반사 색이 영이면 지수를 아무리 바꿔도 반짝임은 생기지 않아요. 영에 무엇을 곱해도 영이기 때문입니다.",
+          "en": "When the specular color is zero, changing the exponent creates no highlight."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "아직 보이는 형태는 다른 조명 성분이 만든 것입니다.",
+          "en": "Any remaining visible form comes from other lighting contributions."
+        }
+      ]
+    },
+    {
+      "id": "016",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이 반짝임을 조금 다른 방향 비교로 계산하는 방법도 있습니다.",
+          "en": "Another approach compares a different pair of directions."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "광원 방향 엘과 카메라 방향 브이를 더한 뒤 길이를 일로 맞추면, 두 방향의 가운데를 가리키는 하프웨이 벡터 에이치가 나옵니다.",
+          "en": "Add l and v, then normalize the result to obtain the halfway vector h."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "거울 반사가 카메라에 정확히 들어오는 상황에서는 법선이 이 가운데 방향을 향합니다.",
+          "en": "When the mirror reflection aligns with the camera, the normal points along this halfway direction."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "그래서 이번에는 알과 브이를 비교하는 대신 엔과 에이치를 비교합니다.",
+          "en": "We can therefore compare n with h instead of comparing r with v."
+        }
+      ]
+    },
+    {
+      "id": "017",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이것이 블린–퐁 모델에서 사용하는 정반사 계산입니다. 엔과 에이치의 내적을 영 이상으로 제한하고 거듭제곱하죠.",
+          "en": "Blinn–Phong raises the clamped dot product of n and h to an exponent."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "두 방식은 닮았지만 같은 지수를 넣어도 하이라이트 폭이 정확히 같지는 않습니다.",
+          "en": "Its result resembles Phong reflection, but equal exponents do not guarantee equal highlight widths."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "광원과 카메라 방향을 물체 전체에서 일정하다고 볼 수 있으면 에이치를 재사용할 수 있지만, 어떤 방식이 더 빠른지는 실제 구현에 달려 있어요.",
+          "en": "A shared h can be reused when light and view directions are effectively constant over the object; performance depends on the implementation."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "또 두 방향이 정확히 반대면 합이 영이므로 그대로 정규화하지 않도록 처리해야 합니다.",
+          "en": "If l and v cancel, their zero sum must not be normalized."
+        }
+      ]
+    },
+    {
+      "id": "018",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "타운스케이퍼의 둥근 탑을 둘러보면 넓은 벽면의 밝기 변화만으로도 형태가 읽힙니다.",
+          "en": "As we look around the round tower in Townscaper, broad changes in brightness make its shape readable."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "지금까지는 보는 방향에 따라 움직이는 반짝임을 구했습니다.",
+          "en": "We have calculated view-dependent highlights."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "그런데 무광 표면은 카메라를 조금 옮겨도 기본 밝기가 크게 바뀌지 않죠.",
+          "en": "A matte surface behaves differently: its basic brightness need not change when the camera moves."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이상적인 램버트 난반사 모델은 이런 성질을, 나가는 방향에 관계없이 같은 복사휘도를 내는 표면으로 나타냅니다.",
+          "en": "Ideal Lambertian reflection models equal outgoing radiance in all viewing directions."
+        },
+        {
+          "koStart": 4,
+          "koCount": 2,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "이 모델에서도 빛이 어느 방향에서 들어오는지는 중요합니다. 카메라 방향 대신 표면과 광원의 각도를 살펴보겠습니다.",
+          "en": "The incoming light direction still matters, so we now compare the surface orientation with the light rather than with the camera."
+        }
+      ]
+    },
+    {
+      "id": "019",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "같은 양의 빛이 종이에 닿는다고 생각해 보세요.",
+          "en": "Imagine the same bundle of light striking a sheet of paper."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "종이가 빛을 정면으로 받으면 작은 면적에 모입니다.",
+          "en": "When the sheet faces the light, the bundle covers a smaller area."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "종이를 기울이면 같은 빛이 더 넓은 면적에 퍼지죠. 그래서 같은 넓이의 작은 칸 하나가 받는 빛은 줄어듭니다.",
+          "en": "Tilt the sheet and the same light spreads over a larger area, reducing the amount received by each equal-sized patch."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "여기서 쓰는 각도는 표면 자체와의 각도가 아니라, 표면에 수직인 법선과 광원 방향 사이의 각도입니다.",
+          "en": "The angle is measured between the surface normal and the light direction, not between the surface plane and the light."
+        },
+        {
+          "koStart": 5,
+          "koCount": 2,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "지구에서도 같은 면적이 햇빛을 얼마나 비스듬히 받는지에 따라 입사량이 달라집니다. 위도에 따른 일사량 차이를 이해하는 데도 이 기하학이 쓰이죠.",
+          "en": "The same geometry helps explain how sunlight received by an equal area varies with its angle of incidence on Earth."
+        }
+      ]
+    },
+    {
+      "id": "020",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이 차이가 코사인으로 나타납니다. 법선과 광원 방향이 같으면 코사인은 일, 육십 도 벌어지면 영점오, 구십 도면 영입니다.",
+          "en": "The factor is a cosine: one for alignment, one half at sixty degrees, and zero at ninety degrees."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "두 벡터를 정규화했으니 내적으로 바로 구할 수 있어요.",
+          "en": "With unit vectors, their dot product gives this value directly."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "광원의 색과 재질의 난반사 색을 곱하고, 여기에 이 값을 곱하면 됩니다.",
+          "en": "Multiply it by the light color and diffuse material color."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "내적이 음수인 뒷면에서는 영으로 제한해서 빛이 뒤에서 새어 들어오는 계산을 막습니다.",
+          "en": "Clamp negative values to zero so an opaque surface is not illuminated by a light behind it."
+        }
+      ]
+    },
+    {
+      "id": "021",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 2,
+          "ko": "예를 들어 흰빛의 세기를 일, 재질의 색을 영점팔, 영점사, 영점이로 두겠습니다. 정면에서는 이 값이 그대로 남고, 육십 도에서는 영점사, 영점이, 영점일로 줄어듭니다.",
+          "en": "For unit white illumination and diffuse color (0.8,0.4,0.2), the frontal result keeps those values. At sixty degrees, the contribution becomes (0.4,0.2,0.1)."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "색의 비율은 유지하면서 전체 기여가 절반이 되는 거죠.",
+          "en": "The proportions remain while the magnitude halves."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "여기서 표면의 단위 면적이 받는 빛의 양은 복사조도라고 합니다. 색 계산과 빛의 물리량을 연결하는 첫 번째 고리입니다.",
+          "en": "The incoming power per unit surface area is called irradiance, linking this color calculation to a physical quantity."
+        }
+      ]
+    },
+    {
+      "id": "022",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "처음 말한 비알디에프로 돌아가 보겠습니다. 이상적인 램버트 표면은 이 함수가 방향에 대해 일정합니다.",
+          "en": "Returning to the BRDF, an ideal Lambertian surface uses a directional constant."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "그렇다고 반사율을 그대로 함수 값에 넣는 것은 아니에요.",
+          "en": "That constant is not simply the reflectance."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "표면이 들어온 빛의 몇 퍼센트를 돌려보내는지를 로라고 하면, 물리적인 램버트 비알디에프는 로 나누기 파이입니다.",
+          "en": "If rho is the fraction reflected, the Lambertian BRDF is rho divided by pi."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "모든 나가는 방향에 코사인 가중치를 붙여 합친 값이 파이가 되므로, 이렇게 나눠야 전체 반사량이 로에 맞습니다.",
+          "en": "The cosine-weighted integral over the outgoing hemisphere equals pi, so this normalization makes the total reflected fraction equal rho."
+        }
+      ]
+    },
+    {
+      "id": "023",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "전통적인 색 기반 식에서는 재질 계수와 광원 세기에 이런 배율이 이미 섞여 있을 수 있습니다.",
+          "en": "In an older color-based formula, scale factors may already be absorbed into material or light parameters."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "반면 물리적인 단위를 사용하는 식에서는 입사광, 비알디에프, 코사인 항의 뜻을 각각 맞춰야 해요.",
+          "en": "A physical formulation must keep the meanings of incoming illumination, BRDF, and cosine factor consistent."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "화면의 세 칸을 보면 빛이 얼마나 오는지, 재질이 어떻게 반사하는지, 얼마나 정면으로 받는지가 나뉘어 있습니다.",
+          "en": "These answer how much light arrives, how the material reflects it, and how directly it strikes the surface."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "구현에서 파이를 무조건 한 번 더 나누기보다, 어떤 약속의 값을 쓰는지 먼저 확인해야 합니다.",
+          "en": "Do not add another division by pi without checking the convention."
+        }
+      ]
+    },
+    {
+      "id": "024",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "직접광을 계산하니 빛을 등진 면이 완전히 검게 남습니다.",
+          "en": "Direct lighting leaves surfaces facing away from the light completely dark."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "실제 방에서는 벽이나 바닥에 튕긴 빛이 그런 면까지 도달하죠.",
+          "en": "In a room, light bounced from walls and floors can still reach them."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "밤에 냉장고 문을 열면 전구가 직접 보이지 않는 주방도 조금 밝아지는 것처럼요.",
+          "en": "An open refrigerator can faintly illuminate parts of a kitchen even when its bulb is hidden."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이 여러 번의 이동을 모두 추적하기 어렵다면, 간접광을 하나의 환경광 값으로 대신할 수 있습니다.",
+          "en": "Instead of tracing all those paths, a simple model substitutes an ambient value."
+        }
+      ]
+    },
+    {
+      "id": "025",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 3,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "계산은 간단합니다. 장면의 환경광 색과 재질의 환경광 색을 같은 채널끼리 곱합니다. 재질 쪽 색은 난반사 색과 같게 두는 경우가 많아요.",
+          "en": "Multiply the scene ambient color by the material ambient color, often chosen to match the diffuse color."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "하지만 모든 면에 같은 값을 주면 어느 쪽에서 빛이 오는지 드러나지 않습니다. 어두운 면은 보이게 되지만 굴곡까지 정확해지는 것은 아니죠.",
+          "en": "A constant value makes dark surfaces visible but does not describe where light comes from, so it cannot accurately reveal their form."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "뒤에서 라이트 프로브를 살펴볼 때 이 방향 정보를 다시 저장해 보겠습니다.",
+          "en": "Later, light probes will let us retain some directional information."
+        }
+      ]
+    },
+    {
+      "id": "026",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "환경광은 밖에서 받은 빛을 대신했지만, 발광은 표면 자체에서 나오는 성분입니다.",
+          "en": "Ambient light substitutes for illumination arriving from outside; emission belongs to the surface itself."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "조명을 꺼도 켜진 전광판이나 전구가 밝게 보이는 부분이죠.",
+          "en": "It keeps a sign or bulb visibly luminous even when other lights are off."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 모델에서는 재질에 저장한 발광 색을 그대로 더합니다. 발광하지 않는 표면은 영으로 두면 되고요.",
+          "en": "In this model, we add the material emission color directly, using zero for non-emissive surfaces."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다른 세 성분을 꺼도 이 부분만 남는 모습을 보면 역할이 분명해집니다.",
+          "en": "Turning off the other terms makes its role clear."
+        }
+      ]
+    },
+    {
+      "id": "027",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "왕국의 눈물에서는 어두운 바위에 조명꽃 씨앗을 쏘자 식물뿐 아니라 주변 바위도 밝아집니다.",
+          "en": "In Tears of the Kingdom, firing a Brightbloom Seed at dark rock makes both the plant and the surrounding rock visible."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "물체가 스스로 빛나 보이는 것과, 다른 표면을 밝히는 것은 이렇게 나누어 볼 수 있어요.",
+          "en": "Looking bright itself and illuminating another surface are two effects we can distinguish."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "발광 값을 올렸다고 주변 벽까지 자동으로 밝아지는 것은 아닙니다. 지금의 국소 조명 식은 각 표면을 따로 계산하기 때문이에요.",
+          "en": "In this local model, increasing emission does not automatically brighten nearby walls, because surfaces are evaluated separately."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "주변까지 밝히려면 별도 광원을 놓거나, 발광이 다른 표면에 도달하는 전역 조명 계산을 사용해야 합니다.",
+          "en": "That requires another light or a global illumination method that transports emission to other surfaces."
+        },
+        {
+          "koStart": 5,
+          "koCount": 2,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "또 화면에 보이는 발광 표면을 카메라에서 멀어진다는 이유만으로 점 광원처럼 역제곱으로 어둡게 만들지는 않습니다. 그 차이는 광원의 감쇠에서 이어서 보겠습니다.",
+          "en": "A visible emissive surface also should not simply be darkened by inverse-square camera distance; we will clarify that distinction when discussing attenuation."
+        }
+      ]
+    },
+    {
+      "id": "028",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 네 성분을 같은 모델 위에 다시 합쳐 보겠습니다.",
+          "en": "Now combine the terms on the same model."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "난반사가 넓은 굴곡을 만들고, 정반사가 반짝임을 더합니다. 환경광이 완전히 검던 부분을 조금 채우고, 빛을 내는 재질이라면 발광이 더해지죠.",
+          "en": "Diffuse lighting reveals broad form, specular adds highlights, ambient fills otherwise black areas, and emission adds a material's own light."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "복잡해 보이는 최종 식도 이 네 계산의 덧셈입니다.",
+          "en": "The long final equation is the sum of these four contributions."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "같은 카메라에서 한 항씩 켜 보면 어떤 값이 어떤 부분을 바꿨는지 분리해서 볼 수 있습니다.",
+          "en": "Toggle one at a time without changing the camera to identify each effect."
+        }
+      ]
+    },
+    {
+      "id": "029",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "그런데 귀처럼 머리 뒤에 가려진 부분이 밝아지는 문제가 보일 수 있습니다.",
+          "en": "A hidden part of the model can still appear lit."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "표면이 광원을 향한다는 계산과, 그 사이가 뚫려 있다는 확인은 별개이기 때문입니다.",
+          "en": "Facing the light and having an unobstructed path to it are separate conditions."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 식에는 다른 물체가 빛을 막았는지 아직 들어 있지 않아요.",
+          "en": "The local reflection formula alone does not test other geometry."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "그림자를 만들려면 해당 지점에서 광원이 보이는지를 확인하고, 가려진 광원의 직접 기여를 줄여야 합니다.",
+          "en": "Shadows need a visibility test that reduces the contribution of an occluded light."
+        }
+      ]
+    },
+    {
+      "id": "030",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "빛 반대쪽의 형태를 더 읽기 쉽게 하려고 난반사 공식을 바꾸기도 합니다.",
+          "en": "Half Lambert deliberately modifies the diffuse response to retain form on the darker side."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "하프 램버트는 내적에 영점오를 곱하고 영점오를 더해, 마이너스 일부터 일까지를 영부터 일까지로 옮깁니다. 이를 제곱하는 형태도 쓰죠.",
+          "en": "Multiplying the dot product by 0.5 and adding 0.5 remaps [-1,1] to [0,1]; a common form then squares it."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "내적이 영인 옆면은 원래 영이었지만, 바꾼 뒤 제곱하면 영점이오가 됩니다.",
+          "en": "At a dot product of zero, ordinary Lambert gives zero while the squared modification gives 0.25."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "빛이 실제로 돌아 들어온 계산은 아니지만, 어두운 쪽의 굴곡을 의도적으로 살리는 조절입니다.",
+          "en": "It is an artistic response adjustment rather than transported bounce light."
+        }
+      ]
+    },
+    {
+      "id": "031",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "서브노티카 투에서는 천장등을 설치하자 방 안의 표면이 더 밝아집니다.",
+          "en": "In Subnautica 2, installing a ceiling light makes the room’s surfaces brighter."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "한 광원의 결과를 이해했으니 광원을 하나 더 켜 보겠습니다. 각 광원이 만드는 난반사와 정반사를 구해 더하면 됩니다.",
+          "en": "With a second light, calculate and add each source's diffuse and specular contributions."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "화면에서 빨간빛과 파란빛의 기여를 따로 계산한 다음 합치는 거예요.",
+          "en": "Separate red and blue contributions make this visible."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다만 환경광과 발광은 지금 식에서 표면당 한 번만 더합니다.",
+          "en": "In this formulation, ambient and emission are added only once per surface evaluation."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "이것까지 광원 반복문 안에 넣으면 광원이 늘 때마다 스스로 빛나는 표면도 덩달아 밝아지는 오류가 생깁니다.",
+          "en": "Putting them inside the light loop would incorrectly make a self-emissive surface brighten whenever another light is added."
+        }
+      ]
+    },
+    {
+      "id": "032",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이렇게 각 항을 분리하면 결과를 조절하기 쉽고 계산량도 비교적 작습니다.",
+          "en": "Separate terms are easy to control and relatively inexpensive."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "한 픽셀을 더 정확하게 계산할지, 같은 시간에 더 많은 픽셀과 광원을 다룰지는 렌더러가 선택해야 하는 문제죠.",
+          "en": "A renderer must decide how to balance accuracy per pixel against the number of pixels and lights it handles."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "재질 입력과 결과의 관계를 사람이 이해하기 쉽다는 장점도 있습니다.",
+          "en": "Understandable material controls are another advantage."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다만 이 편리함 때문에 네 성분이 현실의 모든 빛을 정확히 나눈 것이라고 받아들이면 곤란합니다.",
+          "en": "However, this convenient decomposition is not an exact partition of every physical lighting phenomenon."
+        }
+      ]
+    },
+    {
+      "id": "033",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 2,
+          "ko": "난반사와 정반사는 서로 다른 반사 분포를 다루기 위한 실용적인 모델입니다. 넓게 퍼지는 부분과 한 방향에 몰리는 부분을 조합해 여러 표면을 그럴듯하게 나타내는 거예요.",
+          "en": "Diffuse and specular terms are practical models for different reflection distributions: one broad, the other concentrated. Combining them approximates many surfaces."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "오늘처럼 램버트 난반사와 하프웨이 벡터를 사용하는 정반사를 합친 구성을 블린–퐁 조명 모델이라고 부르겠습니다.",
+          "en": "We will call the combination of Lambertian diffuse reflection and halfway-vector specular reflection the Blinn–Phong lighting model."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이 이름을 분명히 해 두면 곧 나올 퐁 셰이딩과도 구분할 수 있습니다.",
+          "en": "Naming it clearly will help distinguish it from Phong shading."
+        }
+      ]
+    },
+    {
+      "id": "034",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "먼저 그림자부터 떠올려 보세요.",
+          "en": "Consider shadows again."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "표면의 반사 성질이 같아도 앞에 벽이 끼면 도착하는 빛이 달라집니다.",
+          "en": "Even with unchanged material properties, inserting a wall changes the light that can arrive."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "그래서 그림자는 반사식 자체보다는 빛이 그 지점까지 올 수 있는지의 문제입니다.",
+          "en": "Shadows are therefore a visibility problem rather than merely a reflection-formula problem."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "직접광뿐 아니라 벽에 튕겨 오는 간접광도 중간에서 막힐 수 있어요. 반사 모델을 정교하게 만드는 일과 빛의 경로를 확인하는 일은 함께 필요합니다.",
+          "en": "Both direct and bounced light can be blocked, so better material models and light-path visibility solve different parts of rendering."
+        }
+      ]
+    },
+    {
+      "id": "035",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "블린–퐁의 간단한 식에 빠진 현상도 있습니다.",
+          "en": "A simple Blinn–Phong formula omits several effects."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "물이나 유리 같은 비금속 표면은 비스듬히 볼 때 반사가 강해지는 프레넬 효과를 보입니다.",
+          "en": "Dielectric surfaces such as water and glass show stronger reflection toward grazing angles, described by Fresnel reflectance."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "또 재귀반사는 거울처럼 반대편으로 보내는 대신, 빛이 온 쪽으로 더 많이 돌려보내는 성질이에요.",
+          "en": "Retroreflection preferentially returns light toward its source rather than the mirror direction."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "두 현상은 하이라이트의 세기만 일괄적으로 바꾸는 것과 다릅니다. 방향에 따라 반사하는 규칙 자체가 달라져야 합니다.",
+          "en": "These require directional behavior beyond globally turning a highlight up or down."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "벨벳처럼 이런 되돌림 성향을 보이는 재질도 있습니다.",
+          "en": "Velvet is one material with a retroreflective tendency."
+        }
+      ]
+    },
+    {
+      "id": "036",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "표면의 결도 영향을 줍니다.",
+          "en": "Surface orientation within its own plane can also matter."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "등방성 재질은 표면의 법선 축을 중심으로 결 방향을 돌려도 반사 분포가 달라지지 않습니다.",
+          "en": "An isotropic material has the same reflection distribution when rotated about its normal."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "여기서 물체를 아무 축으로 돌린다는 뜻은 아니에요. 법선은 유지하고 표면 안의 방향만 바꾸는 것입니다.",
+          "en": "This does not mean arbitrary rotation of the whole surface: the normal stays fixed while the in-plane direction changes."
+        },
+        {
+          "koStart": 4,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "결이 있는 금속이나 머리카락은 이 회전에 따라 반짝임이 달라질 수 있죠. 이런 성질이 비등방성 반사입니다.",
+          "en": "Brushed metal or hair may respond differently to this rotation, which is anisotropy."
+        }
+      ]
+    },
+    {
+      "id": "037",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "지금까지는 한 지점에서 어떤 식을 계산할지 보았습니다.",
+          "en": "So far we have chosen the equation evaluated at a point."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "다음 문제는 그 식을 얼마나 촘촘히 계산할지입니다. 삼각형마다 한 번, 꼭짓점마다 한 번, 아니면 화면의 픽셀마다 계산할 수 있어요.",
+          "en": "Now decide how densely to evaluate it: once per triangle, once per vertex, or per pixel."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "같은 반사식을 써도 계산 위치와 보간 방법이 다르면 모양이 달라집니다.",
+          "en": "The same reflection equation can give different results depending on evaluation and interpolation."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이제 재질과 광원을 고정하고 이 선택만 바꿔 보겠습니다.",
+          "en": "Keep material and lighting fixed and change only that choice."
+        }
+      ]
+    },
+    {
+      "id": "038",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "플랫 셰이딩은 한 면을 대표하는 값 하나로 그 면을 칠하는 방식입니다.",
+          "en": "Flat shading uses one representative value for a face."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "예를 들어 삼각형의 중심과 면 법선으로 조명을 한 번 계산하면, 그 삼각형 안에서는 밝기가 같습니다.",
+          "en": "If lighting is evaluated at a triangle's center with its face normal, the result remains constant across that triangle."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "옆 삼각형의 법선이 달라지면 경계에서 밝기도 갑자기 바뀌죠. 그래서 각진 면 구조가 잘 드러납니다.",
+          "en": "Neighboring faces may have different normals and therefore abrupt brightness changes."
+        }
+      ]
+    },
+    {
+      "id": "039",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 3,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "면 경계를 부드럽게 하고 싶다면 꼭짓점에서 먼저 조명을 계산할 수 있습니다. 그리고 삼각형 안의 색을 꼭짓점 색들 사이에서 보간합니다. 이것이 구로 셰이딩입니다.",
+          "en": "Gouraud shading first calculates lighting at vertices, then interpolates their colors across each triangle."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "꼭짓점 밝기가 영점이, 영점사, 영점육일 때 삼각형 중심의 같은 비중 평균은 영점사예요.",
+          "en": "For vertex values 0.2, 0.4, and 0.6, equal weights at the centroid give 0.4."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "색이 완만하게 변하는 경우에는 적은 계산으로 매끄러운 모습을 얻습니다.",
+          "en": "When the response varies gradually, this produces a smooth result with relatively few lighting evaluations."
+        }
+      ]
+    },
+    {
+      "id": "040",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "그런데 반짝임은 좁은 영역에서 급격하게 커질 수 있습니다.",
+          "en": "A narrow highlight exposes the limitation."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "세 꼭짓점은 모두 어두운데 진짜 하이라이트가 삼각형 한가운데에 있다면 어떻게 될까요?",
+          "en": "All three vertices may be dark while the correct highlight lies inside the triangle."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "어두운 세 값을 보간해도 가운데에 새 밝은 값이 생기지 않습니다. 삼각형 내부의 보간값은 꼭짓점의 최댓값을 넘을 수 없기 때문이에요.",
+          "en": "Interpolating the dark values cannot invent a bright peak: the interpolated value cannot exceed the largest vertex value."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "꼭짓점을 더 촘촘히 늘리면 덜 놓치지만, 계산과 데이터도 늘어납니다.",
+          "en": "Adding vertices reduces the chance of missing it, at the cost of more geometry and calculations."
+        }
+      ]
+    },
+    {
+      "id": "041",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "퐁 셰이딩은 순서를 바꿉니다. 꼭짓점에서 색을 계산해 섞는 대신, 법선을 면 안쪽으로 보간하고 길이를 다시 일로 맞춘 뒤, 각 픽셀에서 조명 식을 계산합니다.",
+          "en": "Phong shading changes the order: interpolate normals, renormalize them, then evaluate lighting at each pixel."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "그래서 꼭짓점 사이에 있던 반짝임도 잡을 수 있죠.",
+          "en": "A highlight between vertices can now be captured."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "다만 삼각형의 실제 외곽 모양까지 둥글게 만드는 것은 아닙니다. 표면의 음영은 매끄러워져도 실루엣은 원래 메시를 따릅니다.",
+          "en": "This smooths shading, not the actual boundary of the mesh; the silhouette still follows the original geometry."
+        }
+      ]
+    },
+    {
+      "id": "042",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이름이 비슷하니 한 번 정리하겠습니다. 퐁 조명 모델은 반짝임을 구하는 식이고, 퐁 셰이딩은 법선을 보간해 픽셀에서 계산하는 방식입니다.",
+          "en": "Phong lighting names a reflection formula; Phong shading names an interpolation and evaluation method."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이 둘은 서로 다른 선택이에요.",
+          "en": "They are separate choices."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "계산 순서도 바꿔 쓸 수 없습니다. 영과 일을 먼저 평균 낸 뒤 제곱하면 영점이오지만, 각각 제곱한 뒤 평균 내면 영점오입니다.",
+          "en": "Operation order also matters: averaging zero and one and then squaring gives 0.25, while squaring each first and averaging gives 0.5."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "정규화와 거듭제곱이 들어가는 조명도 이런 차이가 생깁니다.",
+          "en": "Lighting functions containing normalization and powers have similar nonlinear differences."
+        }
+      ]
+    },
+    {
+      "id": "043",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "그렇다면 색이 텍스처에 들어 있을 때는 어떻게 할까요?",
+          "en": "What if the material color comes from a detailed texture?"
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "정점 몇 개에서만 조명을 계산하면 삼각형 안쪽의 세밀한 무늬를 모두 읽을 수는 없겠죠.",
+          "en": "Evaluating only a few vertices cannot read every interior texel."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "여기서는 조명과 재질 색을 식에서 분리해 보겠습니다.",
+          "en": "We can factor material color out of the lighting sum."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "표면의 한 지점에서 재질 색은 어떤 광원을 계산하든 공통이므로, 광원들의 합 바깥으로 묶을 수 있습니다.",
+          "en": "At a given surface point, that material color is common to all light contributions, allowing the lighting factors and texture values to be handled separately."
+        }
+      ]
+    },
+    {
+      "id": "044",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "숫자 하나로 먼저 보면 쉽습니다. 두 광원의 기여가 영점이와 영점삼이고 재질 계수가 영점팔이라면, 각각 곱해 더한 값은 영점사입니다.",
+          "en": "With light factors 0.2 and 0.3 and material coefficient 0.8, separate products sum to 0.4."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "두 광원을 먼저 더한 영점오에 영점팔을 곱해도 영점사죠.",
+          "en": "Adding the light factors first gives 0.5, and multiplying by 0.8 again gives 0.4."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "같은 분배법칙을 정반사 합과 난반사 합에 각각 적용합니다.",
+          "en": "Apply this distributive rule separately to diffuse and specular sums."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "환경광 재질색을 난반사색과 같게 두면 환경광도 난반사 쪽 묶음에 넣을 수 있습니다.",
+          "en": "If ambient and diffuse material colors match, ambient can join the diffuse lighting factor."
+        }
+      ]
+    },
+    {
+      "id": "045",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 정점에서는 재질색을 제외한 정반사 조명값과, 환경광을 포함한 난반사 조명값 두 개를 계산합니다.",
+          "en": "At each vertex, compute two lighting factors: specular without its material color, and diffuse including ambient."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이 두 값을 삼각형 안으로 보간한 뒤, 픽셀에서 읽은 정반사색과 난반사색을 각각 곱해 더합니다. 마지막으로 발광을 더하고요.",
+          "en": "Interpolate these factors across the triangle, multiply them by the per-pixel specular and diffuse texture values, and add emission."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "무늬는 픽셀마다 살아 있지만 조명은 정점 기반 근사입니다. 그래서 앞에서 본 하이라이트 보간의 한계까지 사라진 것은 아닙니다.",
+          "en": "Texture detail remains per pixel, but lighting still has the vertex-based approximation and its highlight limitations."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "정반사색이 물체 전체에서 일정하다면 그 곱셈을 정점 쪽으로 옮길 수도 있지만, 정반사 맵으로 픽셀마다 다르면 뒤에서 곱해야 합니다.",
+          "en": "A constant specular color may be multiplied at the vertex stage, while a varying per-pixel specular map must be applied where it is sampled."
+        }
+      ]
+    },
+    {
+      "id": "046",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이 계산을 월드 공간에서 할지, 물체 공간에서 할지, 카메라 공간에서 할지는 구현에 맞게 정할 수 있습니다.",
+          "en": "Lighting can be calculated in world, object, or camera space."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "중요한 것은 비교하는 벡터들을 같은 공간으로 맞추는 거예요.",
+          "en": "What matters is expressing compared vectors in the same space."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "월드 법선과 물체 공간 광원 방향을 그대로 내적하면 숫자는 나오지만 같은 방향끼리 비교한 것이 아닙니다.",
+          "en": "A dot product between a world-space normal and an object-space light direction produces a number without the intended geometric meaning."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "크기 변환이 비균일하면 법선 변환도 주의하고, 변환과 보간 뒤에는 필요한 정규화를 확인해야 합니다.",
+          "en": "Nonuniform scaling requires correct normal transformation, and transformed or interpolated directions may need normalization."
+        }
+      ]
+    },
+    {
+      "id": "047",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기까지는 빛의 방향과 세기가 주어졌다고 놓고 표면을 계산했습니다.",
+          "en": "So far, light direction and strength were supplied inputs."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이제 그 입력을 누가 정하는지로 이어가 보죠.",
+          "en": "Now consider what generates them."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "게임에서 쓰는 광원은 실제 전구를 완벽하게 복제한 물체라기보다, 빛의 분포를 조절하는 도구입니다.",
+          "en": "A game light is often a controllable illumination tool rather than a perfect physical bulb."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "먼저 점, 스폿, 방향성 광원으로 빛이 어디에 닿는지 정하고, 거리 감쇠와 텍스처로 분포를 다듬은 다음, 계산을 미리 저장하는 방법까지 연결하겠습니다.",
+          "en": "We will shape its reach with point, spot, and directional sources, refine the distribution through attenuation and textures, then examine precomputing the result."
+        }
+      ]
+    },
+    {
+      "id": "048",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "점 광원은 하나의 위치에서 모든 방향으로 빛이 나간다고 가정합니다. 전방향 광원, 옴니 라이트라고도 부릅니다.",
+          "en": "A point light emits from one position in every direction, hence the name omnidirectional or omni light."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "표면의 위치를 광원 위치에서 빼면 광원을 향하는 방향을 얻고, 그 길이로 거리를 알 수 있어요.",
+          "en": "Subtract the surface position from the light position to obtain the direction toward it; the vector length gives distance."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "전구나 불을 간단히 나타낼 때 유용합니다.",
+          "en": "It is useful for simple bulbs or flames."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "편집기에 보이는 구는 실제 발광 구체가 아니라, 빛이 영향을 주는 범위를 보여 주는 기즈모일 수 있습니다.",
+          "en": "An editor sphere may indicate influence range rather than a physical emitting sphere."
+        }
+      ]
+    },
+    {
+      "id": "049",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "앞에서 본 장비가 다시 바위 사이를 지나갑니다.",
+          "en": "The same equipment now travels between the rocks."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "장비 앞쪽의 빛은 이동과 방향 전환을 따라 바위와 바닥으로 옮겨 가고, 빛이 닿지 않는 물속은 어둡게 남습니다.",
+          "en": "As its position and heading change, the light in front moves across rock and ground, while the surrounding water stays dark."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "손전등처럼 한쪽만 비추려면 위치에 방향을 더합니다. 스폿 광원은 그 방향을 중심으로 원뿔 모양의 영역에 빛을 보내죠.",
+          "en": "A spotlight adds an orientation to its position, illuminating a cone like a flashlight."
+        },
+        {
+          "koStart": 4,
+          "koCount": 2,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "안쪽 각도는 충분히 밝은 중심부, 바깥쪽 각도는 빛이 끝나는 경계를 정합니다. 둘 사이에서는 서서히 약해질 수 있어요.",
+          "en": "An inner angle defines the bright center, and an outer angle defines the edge; intensity can fade between them."
+        },
+        {
+          "koStart": 6,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "원뿔의 폭을 바꾸는 각도와, 얼마나 멀리 가는지를 정하는 거리는 다른 손잡이입니다.",
+          "en": "Cone width and illumination range are separate controls."
+        }
+      ]
+    },
+    {
+      "id": "050",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "원뿔 대신 사각뿔로 투영하면 사각형 스폿 광원을 만들 수 있습니다. 영화 영사기처럼 한 장의 그림을 벽에 비추는 모습을 떠올리면 됩니다.",
+          "en": "A rectangular spotlight projects a pyramid-shaped region, like a film projector casting an image onto a wall."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이때 그림이 바로 앞에서 본 고보나 쿠키예요.",
+          "en": "That image is the gobo or cookie introduced earlier."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "원형 무늬를 넣으면 원형 빛처럼, 창틀 무늬를 넣으면 창을 통과한 빛처럼 보이게 할 수 있습니다.",
+          "en": "A circular mask creates a circular footprint, while a window pattern suggests light through a frame."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "투영 모양을 바꾸는 것이지, 실제 창틀의 가림을 자동으로 계산한 것은 아닙니다.",
+          "en": "The projected pattern does not itself test occlusion by a real window."
+        }
+      ]
+    },
+    {
+      "id": "051",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "태양처럼 아주 먼 광원은 작은 게임 장면 안에서는 빛들이 거의 평행하다고 볼 수 있습니다.",
+          "en": "A very distant source such as the sun can be approximated by parallel rays across a scene."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "방향성 광원은 이 공통 방향을 사용하므로 보통 위치나 거리 감쇠가 필요하지 않습니다.",
+          "en": "A directional light therefore usually needs neither a position nor distance attenuation."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "편집기의 아이콘을 옮겨도 조명은 같고, 회전시키면 방향이 바뀌죠.",
+          "en": "Moving its editor icon leaves illumination unchanged, while rotating it changes the direction."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "쿠키를 적용할 때도 점에서 퍼지는 원근 투영 대신 평행한 직교 투영을 사용할 수 있습니다.",
+          "en": "Its cookie can use orthographic rather than perspective projection."
+        }
+      ]
+    },
+    {
+      "id": "052",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "그런데 점 광원은 면적이 없는데 어떻게 빛을 낼까요?",
+          "en": "How can a light with zero area emit energy?"
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "수학적인 이상화입니다.",
+          "en": "It is a mathematical idealization."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "빛을 내는 작은 원판의 면적을 줄이되 전체 출력은 일정하게 유지한다고 생각해 보세요. 면적이 작아질수록 단위 면적의 출력은 커집니다.",
+          "en": "Shrink an emitting disk while keeping its total power fixed; its output per unit area rises."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "극한에서는 한 위치에 유한한 전체 양이 모인 디랙 델타로 다루게 됩니다.",
+          "en": "The limit concentrates a finite total amount at one location, represented by a Dirac delta."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "그래서 반구에서 아무 방향이나 뽑는 방법만으로 찾으려 하지 않고, 이런 광원은 그 위치나 방향을 따로 선택해 계산합니다.",
+          "en": "Rather than expecting random hemisphere directions to find it, a renderer samples that light's designated position or direction explicitly."
+        }
+      ]
+    },
+    {
+      "id": "053",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 점 광원에서 멀어지는 표면을 생각해 보겠습니다. 같은 순간에 나온 빛이 바깥으로 퍼지면 더 큰 구면에 나뉘어 담깁니다.",
+          "en": "Light leaving a point source spreads across increasingly large spherical surfaces."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "구의 넓이는 반지름의 제곱에 비례하죠.",
+          "en": "Sphere area grows with the square of radius."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "거리가 두 배면 넓이는 네 배가 되므로, 같은 넓이의 표면이 받는 빛은 사분의 일이 됩니다.",
+          "en": "Doubling distance quadruples that area, so an equally sized receiving patch gets one quarter as much illumination."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이것이 점 광원에 대한 역제곱 감쇠입니다.",
+          "en": "This is inverse-square falloff for a point source."
+        }
+      ]
+    },
+    {
+      "id": "054",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기서는 용어도 나눠 두겠습니다.",
+          "en": "Keep the quantities distinct."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "전체 빛의 출력은 복사속이며 단위는 와트입니다.",
+          "en": "Radiant flux is total power, measured in watts."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "표면의 단위 면적에 들어오는 출력은 복사조도이고 단위는 제곱미터당 와트예요.",
+          "en": "Irradiance is incoming power per unit surface area, measured in watts per square meter."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "방금 거리의 제곱에 따라 줄어든 것은 같은 방향과 입사각 조건에서 표면이 받는 복사조도입니다.",
+          "en": "Under the same directional and incidence conditions, it is the receiving irradiance that falls with squared distance."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "광원이 방출하는 전체 출력 자체가 거리에 따라 사라진다는 뜻은 아닙니다.",
+          "en": "The light source's total emitted power does not disappear as it spreads."
+        }
+      ]
+    },
+    {
+      "id": "055",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기서 광원과 표면의 거리, 카메라와 표면의 거리를 섞으면 안 됩니다.",
+          "en": "Do not confuse light-to-surface distance with camera-to-surface distance."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "조명을 그대로 둔 물체에서 카메라만 멀어지면 물체는 화면에서 작아지죠.",
+          "en": "Pulling the camera away makes an unchanged illuminated object smaller on screen."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "하지만 안개나 노출 변화가 없고 표면이 충분히 보인다면, 그 표면의 복사휘도를 카메라 거리의 제곱으로 다시 줄이지는 않습니다.",
+          "en": "Without atmospheric loss or exposure changes, a resolved surface does not require another inverse-square reduction in radiance due to camera distance."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "복사휘도는 면적뿐 아니라 보이는 방향의 크기, 입체각까지 고려한 양이기 때문입니다.",
+          "en": "Radiance accounts for projected area and solid angle as well as power."
+        }
+      ]
+    },
+    {
+      "id": "056",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "넓이가 있는 발광 면을 표면에서 바라보면, 멀어질수록 그 면이 차지하는 방향의 범위가 작아집니다.",
+          "en": "An emitting surface occupies a smaller solid angle as it moves farther from the receiver."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "각 방향의 복사휘도는 같아도 빛이 들어오는 방향의 수가 줄어드는 거예요.",
+          "en": "Its radiance in each direction can remain unchanged while fewer directions carry its light."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "렌더링 방정식은 이 입체각 변화를 통해 거리 효과를 포함합니다.",
+          "en": "Integrating over that solid angle accounts for the distance effect."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "반면 면적이 없는 추상 점 광원은 그 분포를 직접 적분하는 대신, 광원의 기여에 거리 감쇠를 넣어 계산합니다.",
+          "en": "An abstract point source instead includes distance falloff explicitly in its evaluated contribution."
+        }
+      ]
+    },
+    {
+      "id": "057",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "역제곱 식을 그대로 쓰면 구현에서 두 문제가 생깁니다. 거리가 영에 가까워지면 값이 너무 커지고, 아무리 멀어도 정확히 영이 되지는 않아요.",
+          "en": "Direct inverse-square evaluation has two practical issues: it grows without bound near zero distance, and it never becomes exactly zero far away."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "실제 발광체의 크기를 무시한 점이라는 이상화가 첫 번째 문제를 만듭니다.",
+          "en": "The point-source idealization ignores the physical emitter's size."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "게임에서는 중심 부근의 최대값을 제한하거나, 영향 범위 밖에서는 계산하지 않도록 부드럽게 끊는 방법을 사용할 수 있습니다.",
+          "en": "Games may limit the near-source value and smoothly cut off the contribution outside an influence range."
+        }
+      ]
+    },
+    {
+      "id": "058",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 3,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "간단한 대안으로 두 거리를 정해 보겠습니다. 안쪽 거리까지는 세기를 일로 유지하고, 바깥 거리부터는 영으로 둡니다. 그 사이만 직선으로 줄이는 겁니다.",
+          "en": "One simple alternative uses two distances: full strength up to the inner distance, zero beyond the outer distance, and a linear fade between them."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "안쪽을 이 미터, 바깥쪽을 육 미터로 두면 사 미터에서 남은 비율은 육 빼기 사를 육 빼기 이로 나눈 영점오입니다.",
+          "en": "With an inner distance of two meters and outer distance of six, the factor at four meters is (6-4)/(6-2)=0.5."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "물리 법칙 그대로는 아니지만 어디까지 비추고 계산할지 명확하게 제어할 수 있습니다.",
+          "en": "This is an artistic and practical range control rather than exact physical falloff."
+        }
+      ]
+    },
+    {
+      "id": "059",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "스폿 광원에는 거리 말고도 원뿔 가장자리로 갈 때의 감쇠가 있습니다.",
+          "en": "A spotlight can fade toward its cone edge in addition to fading with distance."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "광원에서 같은 거리에 있어도 중심 방향에서는 밝고 가장자리에서는 약할 수 있죠.",
+          "en": "Points at the same distance may receive different strengths depending on their angle."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "그래서 거리 감쇠와 각도 감쇠를 구분해야 합니다. 방향성 광원은 보통 거리 감쇠가 없고요.",
+          "en": "Keep angular and distance attenuation separate; directional lights usually omit distance falloff."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이렇게 어떤 지점에서의 방향과 세기만 정할 수 있다면, 꼭 원이나 원뿔만으로 광원을 만들 필요도 없습니다.",
+          "en": "Once we can provide direction and strength at a point, we can also build distributions beyond simple circles and cones."
+        }
+      ]
+    },
+    {
+      "id": "060",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "둠 쓰리에서는 손전등으로 통로와 난간, 문을 차례로 비춥니다.",
+          "en": "In Doom 3, a flashlight sweeps across a corridor, railing and door."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "원형 무늬가 표면을 따라 움직이는 모습을 이제 광원의 좌표와 연결해 보겠습니다.",
+          "en": "We can now connect this moving circular footprint to the light’s coordinates."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 아이디어를 더 자유롭게 만든 예가 둠 쓰리의 광원입니다.",
+          "en": "Doom 3 provides a flexible example."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "여기서 체적 광원이라는 말은 빛이 영향을 주는 공간의 부피를 정한다는 뜻이에요.",
+          "en": "Here, a light volume defines the region influenced by a light."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "안개 속 빛줄기의 산란을 계산하는 볼류메트릭 라이팅과는 구분하겠습니다.",
+          "en": "It is distinct from volumetric lighting that integrates scattering through fog."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "목적은 여전히 표면의 한 지점에서 빛이 어느 방향으로, 얼마나 들어오는지 알아내는 것입니다.",
+          "en": "The task is still to determine light direction and strength at a surface point."
+        }
+      ]
+    },
+    {
+      "id": "061",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "세기를 정할 때 텍스처 두 장을 사용합니다. 한 장은 가로와 세로의 무늬를 정하는 이차원 고보, 다른 한 장은 깊이에 따라 세기를 조절하는 일차원 감쇠 맵입니다.",
+          "en": "Intensity is controlled by two textures: a two-dimensional gobo for the projected pattern and a one-dimensional falloff map for variation along depth."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "표면 지점을 광원의 좌표로 바꾼 다음 각각의 값을 읽고 곱해요.",
+          "en": "Transform the surface point into light coordinates, sample both, and multiply."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "가령 고보에서 영점팔, 감쇠 맵에서 영점오를 읽었다면 그 지점의 비율은 영점사입니다.",
+          "en": "A gobo value of 0.8 and falloff value of 0.5 give a factor of 0.4."
+        }
+      ]
+    },
+    {
+      "id": "062",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 3,
+          "enStart": 0,
+          "enCount": 2,
+          "ko": "이 조회 위치는 사 차원 동차 좌표와 행렬로 만듭니다. 행렬을 곱한 결과를 엑스, 와이, 제트, 더블유라고 하면, 고보는 엑스 나누기 더블유와 와이 나누기 더블유에서 읽습니다. 감쇠 맵은 따로 준비한 제트 좌표로 읽고요.",
+          "en": "A homogeneous transformation produces coordinates x, y, z, and w. The gobo is sampled at x/w and y/w, while the falloff map uses its separately prepared z coordinate."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "앞서 배운 투영이 이번에는 물체를 화면에 놓는 대신, 표면 지점을 빛의 그림 위에 놓는 데 쓰이는 겁니다.",
+          "en": "Projection is now locating a surface point on a light pattern instead of locating geometry on the camera image."
+        }
+      ]
+    },
+    {
+      "id": "063",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "먼저 상자 중심에 광원을 놓고 원형 고보를 평행하게 투영해 보겠습니다.",
+          "en": "Place the source at a box center and project a circular gobo orthographically."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "깊이 방향의 감쇠는 중심에서 밝고 양쪽 끝으로 갈수록 어두운 맵으로 정합니다.",
+          "en": "A depth falloff map is brightest at the center and darkens toward both ends."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "상자의 가로, 세로, 깊이 크기를 각각 에스 엑스, 에스 와이, 에스 제트라고 하면, 중심 기준 좌표를 각 크기로 나눈 뒤 영점오씩 옮겨 텍스처의 영부터 일 범위로 맞춥니다.",
+          "en": "Divide centered coordinates by box dimensions sx, sy, and sz, then shift them by 0.5 to map the box into the texture's zero-to-one range."
+        }
+      ]
+    },
+    {
+      "id": "064",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "가로 길이가 사인 상자라면 중심의 엑스 영은 유 영점오가 됩니다. 왼쪽 끝 마이너스 이는 영, 오른쪽 끝 이는 일이 되죠.",
+          "en": "For a box width of four, x=0 maps to u=0.5; x=-2 maps to zero and x=2 to one."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "세로 좌표에 마이너스가 있는 것은 여기서 쓰는 삼차원 위쪽과 텍스처의 아래쪽 약속을 맞추기 위해서입니다.",
+          "en": "The negative vertical scale matches this example's upward 3D axis with its downward texture axis."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 뒤집기는 모든 엔진에 무조건 넣는 법칙이 아니라, 좌표 약속에 맞춰 결정합니다.",
+          "en": "It is a coordinate convention, not a flip required by every engine."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "월드 좌표라면 먼저 광원의 로컬 공간으로 옮긴 뒤 이 행렬을 적용합니다.",
+          "en": "World-space points must first be transformed into the light's local space."
+        }
+      ]
+    },
+    {
+      "id": "065",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이번에는 같은 원형 고보를 한 점에서 퍼지도록 원근 투영해 보겠습니다. 투영 중심은 상자의 한쪽 끝에 있습니다.",
+          "en": "Project the same circular gobo perspectively from one end of the volume."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "가까운 단면은 작고 먼 단면은 커지니 원뿔 모양의 빛이 됩니다.",
+          "en": "Near cross-sections are small and distant ones are larger, producing a cone."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 행렬에서는 동차 좌표 더블유가 깊이 제트가 되므로, 가로세로 좌표를 제트로 나누는 효과가 생깁니다.",
+          "en": "The homogeneous w becomes depth z, so dividing the horizontal and vertical coordinates produces perspective."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "감쇠 맵은 깊이에 따라 밝기를 낮추지만, 그 조회 좌표까지 같은 방식으로 나누는 것은 아닙니다.",
+          "en": "The falloff map still uses its separately defined depth coordinate rather than applying that same division again."
+        }
+      ]
+    },
+    {
+      "id": "066",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "빛이 뒤쪽이나 상자 밖에서 다시 나타나면 안 되겠죠.",
+          "en": "Light should not repeat outside the volume or appear behind the projector."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "그래서 예제의 고보와 감쇠 맵은 가장자리를 검게 만들고, 범위를 벗어난 좌표가 반복되지 않도록 클램프 주소 모드를 사용합니다.",
+          "en": "The example uses black texture borders and clamped addressing rather than repeating coordinates."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "스폿의 투영 중심 뒤쪽도 제외해야 합니다. 특히 더블유가 영인 지점에서는 나눗셈을 먼저 수행하지 않도록 범위 검사를 해 두어야 합니다.",
+          "en": "Points behind the spotlight are excluded, and the projection must avoid dividing at w=0."
+        }
+      ]
+    },
+    {
+      "id": "067",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "세 번째 방법은 더 흥미롭습니다. 원뿔의 옆모습과 어두워지는 무늬를 고보에 그려 넣고, 그것을 옆에서 평행하게 투영합니다.",
+          "en": "The third construction puts a cone's side profile and brightness falloff directly into a gobo, projected from the side."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "깊이 방향의 감쇠 맵은 앞의 옴니 광원과 같습니다. 좌표 변환도 같은 직교 투영을 재사용하고, 무늬와 광원 방향만 바꿉니다.",
+          "en": "It reuses the omni-style depth falloff and orthographic coordinate transform, changing the pattern and orientation."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "같은 두 텍스처 조회 구조로 전혀 다른 형태의 영향 영역을 만든 것이죠.",
+          "en": "The same two-texture framework produces a different shaped influence volume."
+        }
+      ]
+    },
+    {
+      "id": "068",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 2,
+          "ko": "이 방법의 장점은 여러 광원을 같은 계산 구조로 다룰 수 있다는 것입니다. 텍스처 안에 원하는 감쇠 곡선을 담을 수 있고, 실제로 의미 있는 빛이 있는 영역에 경계 상자를 더 맞출 수도 있어요.",
+          "en": "This framework handles varied lights with shared calculations and allows custom falloff patterns. Tighter bounds can better enclose the region with meaningful illumination."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "둠 쓰리의 렌더러는 광원과 물체의 상호작용을 그려 기여를 더하는 구조를 사용합니다. 광원 영향 밖의 물체와 그림자 계산을 줄이면, 모양만 바뀌는 것이 아니라 처리할 작업도 줄어듭니다.",
+          "en": "Doom 3 renders light-surface interactions and adds their contributions, so excluding unaffected geometry reduces lighting and shadow work as well as shaping the image."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "광원 종류마다 별도 계산을 늘리지 않으면, 재질과 조명 방식의 조합으로 늘어나는 셰이더 종류와 상태 전환도 관리하기 쉬워집니다.",
+          "en": "Sharing the evaluation also helps manage combinations of light types and materials rather than creating a separate shader path for every combination."
+        }
+      ]
+    },
+    {
+      "id": "069",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이렇게 직접광의 계산 범위를 줄일 수 있었습니다. 하지만 벽에 한 번 튕겨 다른 벽으로 가는 빛까지 매 프레임 추적하면 문제가 훨씬 커집니다.",
+          "en": "We have reduced direct-light work, but tracing bounced light each frame is more involved."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "표면을 작은 조각으로 나누고 어떤 조각끼리 서로 보이는지 알아야 하며, 물체가 움직이면 그 관계도 달라지죠.",
+          "en": "Surface patches must exchange illumination based on mutual visibility, and moving geometry changes those relationships."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "반대로 움직이지 않는 벽과 광원이라면, 이 어려운 계산을 미리 해 두고 결과를 저장할 수 있습니다.",
+          "en": "For stationary lights and surfaces, that expensive calculation can instead be performed ahead of time and stored."
+        }
+      ]
+    },
+    {
+      "id": "070",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "라이트매핑은 이 결과를 텍스처에 저장하는 방법입니다.",
+          "en": "Lightmapping stores this result in a texture."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "벽과 바닥의 표면을 추가 유브이 좌표로 펼쳐서, 조명 값을 담는 라이트맵 안에 놓습니다.",
+          "en": "Additional UV coordinates map walls and floors into a lightmap containing precomputed illumination."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "여러 조각을 겹치지 않도록 배치하는 과정이 아틀라싱입니다. 표면의 위치와 라이트맵의 작은 칸, 텍셀이 연결되므로, 실행 중에는 그 칸을 읽어 미리 계산한 조명을 가져올 수 있습니다.",
+          "en": "Packing those surface charts into an atlas connects each surface location to texels that can be read at runtime."
+        }
+      ]
+    },
+    {
+      "id": "071",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "넓은 벽처럼 단순한 표면은 이런 펼치기가 비교적 쉽습니다.",
+          "en": "Large simple surfaces are comparatively easy to unwrap."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "조각상이나 기계처럼 잘게 나뉜 구조는 조각 수와 빈 공간이 늘 수 있죠.",
+          "en": "Complex geometry can require many charts and leave unused atlas space."
+        },
+        {
+          "koStart": 2,
+          "koCount": 3,
+          "enStart": 2,
+          "enCount": 2,
+          "ko": "다른 선택은 정점에 조명 값을 저장하는 것입니다. 정점이 충분히 촘촘한 메시라면 그 값을 보간해 사용할 수 있어요. 이번에도 얼마나 촘촘하게 저장할지와, 그 사이에서 잃는 세부가 무엇인지가 선택의 기준입니다.",
+          "en": "Another choice stores precomputed lighting at vertices and interpolates it. A sufficiently dense mesh may suit this representation; sampling density determines which detail can be retained."
+        }
+      ]
+    },
+    {
+      "id": "072",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기서 라이트맵에 무엇을 저장했는지도 중요합니다.",
+          "en": "What is stored matters."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "한 지점에 색 하나만 저장했다면 여러 방향에서 들어오는 빛을 합친 값만 알 수 있습니다. 어느 쪽에서 강한 빛이 왔는지는 사라지죠.",
+          "en": "A single color per point can summarize illumination from many directions while losing where the light came from."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 2,
+          "ko": "입사한 단위 면적당 출력은 복사조도라고 부릅니다. 라디오시티는 표면에서 나가는 양을 가리키는 용어이므로, 라이트맵을 만드는 알고리즘의 역사적 이름과 물리량을 섞지 않겠습니다.",
+          "en": "Incoming power per unit area is irradiance; radiosity describes outgoing power per unit area. Keep that physical distinction separate from historical names for lightmap-solving methods."
+        }
+      ]
+    },
+    {
+      "id": "073",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "방향 차이를 남기려면 색을 여러 개 저장하거나, 방향 분포를 몇 개의 기본 모양으로 나눠 저장할 수 있습니다.",
+          "en": "To retain direction, store multiple values or decompose the distribution into basis functions."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "음악을 여러 주파수의 성분으로 표현하듯, 구 전체의 부드러운 분포를 기본 함수들의 조합으로 나타내는 방법이 구면 조화 함수, 에스에이치입니다.",
+          "en": "Spherical harmonics, or SH, represent a smooth distribution over a sphere as a weighted combination of such functions, analogous to frequency components in a signal."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "계수를 적게 쓰면 저장과 계산은 가벼워지지만 날카로운 방향 변화까지 모두 남길 수는 없습니다.",
+          "en": "A compact coefficient set saves storage and computation but cannot preserve arbitrarily sharp directional detail."
+        }
+      ]
+    },
+    {
+      "id": "074",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "무엇을 미리 계산할지도 고를 수 있습니다. 직접광과 그림자를 저장하면 실행 중에 그 그림자를 다시 만들 필요가 줄어듭니다.",
+          "en": "Precomputation can include direct light and shadows, reducing runtime work."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "하지만 베이크한 뒤 광원이나 가리는 물체를 움직이면 저장된 결과는 옛 배치에 남아 있죠.",
+          "en": "But moving a baked light or occluder leaves the stored result tied to the old arrangement."
+        },
+        {
+          "koStart": 3,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "카메라를 움직이는 것과 조명 관계를 바꾸는 것은 다릅니다. 시점은 자유롭게 바꿔도, 베이크한 그림자의 원인까지 자동으로 갱신되는 것은 아닙니다.",
+          "en": "Moving the camera is different from changing the lighting configuration: a new viewpoint does not automatically update a baked shadow's cause."
+        }
+      ]
+    },
+    {
+      "id": "075",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "그래서 간접광은 미리 저장하고 직접광은 실행 중에 계산하는 조합도 사용합니다.",
+          "en": "A mixed approach can store indirect light while calculating direct light at runtime."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이렇게 하면 직접광의 방향을 계속 활용해 정반사와 세밀한 그림자를 계산할 수 있어요.",
+          "en": "Live directions support specular response and detailed shadows."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "대신 광원을 바꾸었을 때 저장된 간접광까지 따라 바뀌는 것은 아닙니다. 빛을 껐는데 벽에 남은 반사광이 어색한지 살펴야 하죠.",
+          "en": "The stored indirect component, however, does not automatically update when the source changes; a switched-off lamp may leave stale bounced light."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "서로 다른 광원에 완전 실시간 방식과 베이크 방식을 함께 쓸 수도 있습니다.",
+          "en": "Different lights can also use fully dynamic or baked methods within the same scene."
+        }
+      ]
+    },
+    {
+      "id": "076",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 방은 잘 비췄는데 그 안을 움직이는 캐릭터는 어떻게 할까요? 캐릭터의 표면을 방의 고정 라이트맵에 붙여 둘 수는 없습니다.",
+          "en": "A moving character cannot simply remain attached to the room's static lightmap."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "대신 공간의 여러 위치에 라이트 프로브를 놓고 그 자리의 조명 정보를 저장할 수 있어요.",
+          "en": "Instead, light probes store illumination at sampled positions in space."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "물체가 이동할 때 주변 프로브의 값을 읽거나 섞어 사용하면, 밝은 창가에서 어두운 구석으로 들어가는 동안 간접광도 함께 달라집니다.",
+          "en": "Reading or interpolating nearby probe values as the object moves lets its indirect lighting change from a bright window area to a darker corner."
+        }
+      ]
+    },
+    {
+      "id": "077",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "프로브의 조명은 주변을 찍은 큐브맵이나 압축된 방향 정보로 표현할 수 있습니다.",
+          "en": "Probe data may use a cubemap or a compressed directional representation."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "난반사용 정보는 법선 방향을 기준으로 주변 반구의 빛을 코사인 가중치로 모아 둡니다.",
+          "en": "Diffuse irradiance gathers light over a hemisphere with cosine weighting around the normal."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "반면 정반사는 특정 방향의 환경이 중요하므로 별도 정보가 필요하죠. 날카로운 반사에는 선명한 환경을, 거친 반사에는 그에 맞게 필터링한 환경을 씁니다.",
+          "en": "Specular reflection needs separate directional information: sharp reflections use a sharper environment, while rougher reflection uses suitable filtering."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "프로브라는 말이 항상 똑같은 저장 형식을 뜻하는 것은 아닙니다.",
+          "en": "The word probe does not imply one universal storage format."
+        }
+      ]
+    },
+    {
+      "id": "078",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "처음에는 물체가 왜 밝고 반짝이는지에서 시작했습니다.",
+          "en": "We began with a bright, shiny surface."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "표면의 방향과 재질로 빛의 반사를 계산하고, 계산하는 위치를 정점이나 픽셀로 선택했습니다. 광원은 그 계산에 들어갈 방향과 세기를 공급했고, 라이트맵과 프로브는 비싼 계산 일부를 저장해 두었죠.",
+          "en": "We used orientation and material to calculate reflection, chose whether to evaluate it at vertices or pixels, supplied direction and strength through lights, and stored expensive work with lightmaps and probes."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이제 게임의 밝은 면을 볼 때, 어떤 빛을 받았는지, 어떤 방식으로 반사했는지, 무엇을 실시간으로 계산하고 무엇을 저장했는지를 나눠서 생각할 수 있습니다.",
+          "en": "These questions now connect: what light arrives, how the surface reflects it, and which parts are computed live or stored."
+        }
+      ]
+    }
+  ],
+  "humanListening": false
+}

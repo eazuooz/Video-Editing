@@ -77,6 +77,10 @@ def main():
     assert asr['audio_sha256']==sha(A/'narration.wav')
     scripts={s['id']:s for s in read(P/'script/narration.ko.json')['scenes']}
     en={s['id']:s for s in read(P/'script/narration.en.json')['scenes']}
+    bilingual=read(P/'planning/bilingual-caption-map.json')
+    assert bilingual['status']=='complete-semantic-map'
+    assert bilingual['koSha256']==sha(P/'script/narration.ko.json') and bilingual['enSha256']==sha(P/'script/narration.en.json')
+    bilingual_rows={s['id']:s['groups'] for s in bilingual['scenes']}
     scenes=[];ko_cues=[];en_cues=[];flags=[];entries=timing['entries']
     for i,e in enumerate(entries):
         sid=e['scene_id'];row=next(r for r in bindings['scenes'] if r['id']==sid);speech=e['text'];display=e['display_text']
@@ -111,21 +115,26 @@ def main():
         for x in local:
             if x['end']<=x['start']:flags.append({'scene':sid,'type':'zero-caption','text':x['text']})
         ko_cues+=local
-        # English sentence groups inherit the corresponding Korean sentence
-        # interval; smaller EN reading cues retain all translation text.
+        # Directly reviewed meaning groups may join or split sentence boundaries.
+        # Group endpoints use the corresponding actual Korean word timestamps.
         ks=[m for m in re.finditer(r'.+?(?:[.!?](?=\s|$)|$)',speech) if m.group().strip()]
         es=[x.strip() for x in re.split(r'(?<=[.!?])\s+',en[sid]['lines'][e['paragraph']-1]) if x.strip()]
-        if len(ks)!=len(es):flags.append({'scene':sid,'type':'bilingual-sentence-mapping-required','koSentences':len(ks),'enSentences':len(es)})
-        else:
-            for j,(km,et) in enumerate(zip(ks,es)):
-                try:
-                    begin,_=phrase_time(speech,km.group().strip(),mapping,owners)
-                    end=phrase_time(speech,ks[j+1].group().strip(),mapping,owners)[0] if j+1<len(ks) else e['end']
-                except ValueError:continue
-                parts=chunks(et,68);size=sum(len(x) for x in parts);t=begin
-                for part in parts:
-                    finish=t+(end-begin)*len(part)/size
-                    en_cues.append({'scene':sid,'start':t,'end':finish,'text':part,'timingBasis':'mapped-KO-sentence / English reading proportions','listeningVerified':False});t=finish
+        groups=bilingual_rows[sid]
+        assert sum(g['koCount'] for g in groups)==len(ks) and sum(g['enCount'] for g in groups)==len(es)
+        for group in groups:
+            j=group['koStart'];after=j+group['koCount'];km=ks[j]
+            et=' '.join(es[group['enStart']:group['enStart']+group['enCount']]);assert et==group['en']
+            try:
+                phrase=km.group().strip();begin,_=phrase_time(speech,phrase,mapping,owners,speech.find(phrase,km.start()))
+                if after<len(ks):
+                    nm=ks[after];np=nm.group().strip();end=phrase_time(speech,np,mapping,owners,speech.find(np,nm.start()))[0]
+                else:end=e['end']
+            except ValueError as exc:
+                flags.append({'scene':sid,'type':'unresolved-bilingual-group','detail':repr(exc)});continue
+            parts=chunks(et,68);size=sum(len(x) for x in parts);t=begin
+            for part in parts:
+                finish=t+(end-begin)*len(part)/size
+                en_cues.append({'scene':sid,'start':t,'end':finish,'text':part,'timingBasis':'reviewed meaning group / actual KO words / English reading proportions','listeningVerified':False});t=finish
         scenes.append({'id':sid,'startFrame':start_frame,'endFrame':end_frame,'cue':cue,'cueEvidence':proof,'valueEvidence':value_evidence,'spokenEnd':e['end'],'sourceAsrCoverage':coverage,'actualGamePart':row.get('actualGamePart')})
     report={'createdAt':datetime.now(timezone.utc).isoformat(),'narrationSha256':asr['audio_sha256'],'bindingsSha256':sha(P/'planning/scene-bindings.json'),'timingSha256':sha(A/'narration.timing.json'),'status':'needs-targeted-review' if flags else 'word-aligned-requires-integrated-review','flags':flags,'scenes':scenes,'ko':ko_cues,'en':en_cues,'humanListening':False,'finalCompositeQa':False}
     OUT.mkdir(parents=True,exist_ok=True);save(OUT/'word-aligned-timeline.json',report)

@@ -32,7 +32,16 @@ def now():return datetime.now(timezone.utc).isoformat()
 def probe(p):return json.loads(subprocess.check_output([str(FF.with_name('ffprobe.exe')),'-v','error','-show_streams','-show_format','-of','json',str(p)],creationflags=CREATE))
 def ff(args,log,cwd=None):
     G.authorized();log=Path(log);log.parent.mkdir(parents=True,exist_ok=True)
+    args=list(map(str,args));signature=hashlib.sha256(json.dumps([args,str(cwd)],ensure_ascii=False).encode()).hexdigest()
+    receipt=log.with_suffix('.success.json');target=Path(args[-1]) if args[-1]!='-' else None
+    if target is not None and not target.is_absolute():target=Path(cwd or Path.cwd())/target
+    if target is not None and target.is_file():
+        assert receipt.is_file(),'Preserve partial output without success receipt: '+str(target)
+        prior=read(receipt)
+        assert prior['commandSha256']==signature and prior['outputSha256']==sha(target),'Cached output changed; preserve and use a new revision: '+str(target)
+        return
     with log.open('w',encoding='utf-8') as f:subprocess.run([str(FF),'-hide_banner','-nostdin','-n','-threads','2',*map(str,args)],stdout=f,stderr=f,check=True,cwd=cwd,creationflags=CREATE)
+    if target is not None:save(receipt,{'commandSha256':signature,'outputSha256':sha(target),'finishedAt':now()})
 def encoder():return ['-c:v','h264_nvenc','-preset','p5','-tune','hq','-rc','vbr','-cq','18','-b:v','0','-g','120','-pix_fmt','yuv420p','-video_track_timescale','90000']
 def video_check(path,frames):
     stream=next(s for s in probe(path)['streams'] if s['codec_type']=='video')
@@ -43,6 +52,32 @@ def points(frame):
     # Hollow perimeter leaves the actual surface detail visible. ASS paths close;
     # use a full ellipse rather than drawing an accidental chord across the gap.
     return [[x+w/2+w/2*math.cos(t),y+h/2+h/2*math.sin(t)] for t in [math.radians(i*360/48) for i in range(49)]]
+def reveal_polyline(ps,portion):
+    lengths=[math.dist(a,b) for a,b in zip(ps,ps[1:])]
+    left=sum(lengths)*max(0,min(1,portion));out=[ps[0]]
+    for a,b,d in zip(ps,ps[1:],lengths):
+        if d<1e-9:continue
+        if left>=d:out.append(b);left-=d
+        else:
+            out.append([a[j]+(b[j]-a[j])*left/d for j in (0,1)])
+            break
+    return out
+def stroke_path(ps,radius):
+    # ASS fills every subpath, so a conventional open contour creates a closing
+    # chord during its reveal. Explicit segment quads and round joints draw
+    # only the observed contour, including its genuinely open intermediate state.
+    paths=[]
+    def polygon(v):
+        paths.append('m '+f'{v[0][0]:.2f} {v[0][1]:.2f} '+'l '+' '.join(f'{x:.2f} {y:.2f}' for x,y in v[1:]+v[:1]))
+    for a,b in zip(ps,ps[1:]):
+        d=math.dist(a,b)
+        if d<1e-6:continue
+        nx=-(b[1]-a[1])*radius/d;ny=(b[0]-a[0])*radius/d
+        polygon([[a[0]+nx,a[1]+ny],[b[0]+nx,b[1]+ny],[b[0]-nx,b[1]-ny],[a[0]-nx,a[1]-ny]])
+    # Keep joints and quads at the same winding. Opposite windings create
+    # dot-shaped holes where the circles overlap the strip in libass.
+    for x,y in ps:polygon([[x+radius*math.cos(-i*math.tau/12),y+radius*math.sin(-i*math.tau/12)] for i in range(12)])
+    return ' '.join(paths)
 def annotation_ass(cut,source,out):
     lines=C.ass_header();dur=cut['frames']/60;sid=cut['scene'];x,y,w,h=VIEW
     C.event(lines,0,dur,'{\\an7\\pos(192,4)\\fs36\\1c&HFFFFFF&}'+GAME_LABELS[source['id']],4)
@@ -62,17 +97,25 @@ def annotation_ass(cut,source,out):
             for i in range(count):
                 t=lo+(hi-lo)*i/count;u=(t-a['time'])/max(1e-8,b['time']-a['time'])
                 ps=[[x+(p[0]+(q[0]-p[0])*u)*w/1920,y+(p[1]+(q[1]-p[1])*u)*h/1080] for p,q in zip(pa,pb)]
-                mark={'type':'contour','points':ps,'_reveal':min(1,(t-start+.0167)/.18)}
-                path,rect=C.shape(mark)
-                assert rect[1]>=0 and rect[3]<928,'Annotation conflicts with caption'
+                if sid=='031':
+                    cy=(min(p[1] for p in ps)+max(p[1] for p in ps))/2
+                    ps=[[px,cy-18+(py-cy)*.76] for px,py in ps] # Inset the lamp contour above its construction-cost UI.
+                ps=reveal_polyline(ps,min(1,(t-start+.0167)/.18))
+                assert min(p[1] for p in ps)>=8 and max(p[1] for p in ps)<920,'Annotation conflicts with caption'
                 for stroke,color,layer in [(8,'101010',2),(5,'C2C773',3)]:
-                    C.event(lines,t-cut['sourceIn'],lo+(hi-lo)*(i+1)/count-cut['sourceIn'],f'{{\\an7\\pos(0,0)\\p1\\bord{stroke}\\shad0\\1a&HFF&\\3a&H00&\\3c&H{color}&}}'+path,layer)
+                    path=stroke_path(ps,stroke)
+                    C.event(lines,t-cut['sourceIn'],lo+(hi-lo)*(i+1)/count-cut['sourceIn'],f'{{\\an7\\pos(0,0)\\p1\\bord0\\shad0\\1a&H00&\\1c&H{color}&}}'+path,layer)
     Path(out).write_text('\n'.join(lines)+'\n',encoding='utf-8')
     return {'scene':sid,'sourceSha256':source['sha256'],'viewport':VIEW,'annotation':name,'finalMotionQa':False}
 def prepare(queue,work):
     t=read(queue['wordAlignment']);assert not t['flags'];assert sha(queue['wordAlignment'])==queue['wordAlignmentSha256']
     audit=read(P/'planning/footage-audit.json');sources={s['id']:s for s in audit['sources']}
-    layout=C.caption_ass(work/'captions.ko.ass',[dict(c,id=i+1) for i,c in enumerate(t['ko'])],2,{})
+    terms=['양방향 반사 분포 함수','하프웨이 벡터','표면 법선','라이트 프로브','구면 조화 함수','라이트맵','복사조도','복사휘도','정반사','난반사','환경광','발광','정점','픽셀']
+    emphasis={}
+    for i,cue in enumerate(t['ko']):
+        matches=[term for term in terms if cue['text'].count(term)==1]
+        if matches:emphasis[str(i+1)]={'text':matches[0],'role':'term'}
+    layout=C.caption_ass(work/'captions.ko.ass',[dict(c,id=i+1) for i,c in enumerate(t['ko'])],2,emphasis)
     assert all(len(x['lines'])==1 for x in layout),'Chosen viewport requires one-line final clauses; revise layout rather than move captions'
     receipts=[]
     for i,cut in enumerate(queue['cuts']):
@@ -100,7 +143,9 @@ def concat(paths,target,work,name,audio=False):
     args+=['-c:a','pcm_f32le','-ar','48000','-ac','2'] if audio else ['-an','-c:v','copy','-video_track_timescale','90000']
     ff([*args,target],work/'logs'/(name+'.log'))
 def render(queue,work,sources,receipt,dest):
-    assert not dest.exists(),'Preserve existing output revision';dest.mkdir(parents=True)
+    owner=work/'render-owner.json';identity={'queueSha256':receipt['queueSha256'],'compositorSha256':sha(Path(__file__)),'narrationSha256':receipt['narrationSha256'],'destination':str(dest)}
+    if dest.exists():assert owner.is_file() and read(owner)==identity,'Preserve existing output revision'
+    else:dest.mkdir(parents=True);save(owner,identity)
     segments=work/'segments';segments.mkdir(exist_ok=True);videos=[];audios=[]
     for i,cut in enumerate(queue['cuts']):
         G.authorized();stem=f'{i:03}-{cut["scene"]}';v=segments/(stem+'.mp4');a=segments/(stem+'.wav');n=cut['frames'];duration=n/60

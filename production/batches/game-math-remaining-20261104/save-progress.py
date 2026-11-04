@@ -55,7 +55,7 @@ def main():
     reconcile=os.environ.copy();reconcile['GIT_INDEX_FILE']=str(staging/'reconcile.index')
     Path(reconcile['GIT_INDEX_FILE']).write_bytes(original)
     batch=json.loads((BATCH/'batch.json').read_text(encoding='utf-8'))
-    files=[p for p in BATCH.glob('*') if p.is_file() and p.suffix in ['.py','.json','.md']]
+    files=[p for p in BATCH.glob('*') if p.is_file() and p.suffix in ['.py','.json','.md','.cs']]
     files+=[BATCH/'.gitignore',BATCH/'sources/index.json']
     for item in batch['items']:
         project=ROOT/'projects'/item['slug']
@@ -68,7 +68,7 @@ def main():
             for pattern in ('*audit.json','*numeric-qa.json','worked-calculations.json'):
                 files+=list((project/'research').glob(pattern))
     if include_drafts:
-        for ready_module in ('game-math-shading-lights','game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives','game-math-forces-friction'):
+        for ready_module in ('game-math-shading-lights','game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives','game-math-forces-friction','game-math-momentum-collisions','game-math-parametric-hermite'):
             unity_staging=ROOT/'projects'/ready_module/'production/unity-staging'
             files+=[p for p in unity_staging.glob('*') if p.is_file() and (p.suffix in ('.cs','.shader','.py','.json') or p.name=='.gitignore') and p.name!='receipt.json' and not p.name.startswith('local-')]
     files=list(dict.fromkeys(files))
