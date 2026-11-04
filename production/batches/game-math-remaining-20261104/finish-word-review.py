@@ -1,14 +1,19 @@
 """One finite follow-on: existing voice -> word alignment evidence. No next video."""
 from pathlib import Path
 from datetime import datetime,timezone
-import importlib.util,json,os,subprocess,time,uuid,shutil
+import importlib.util,json,os,subprocess,time,uuid,shutil,argparse
 import psutil
-R=Path(__file__).resolve().parents[3];B=Path(__file__).parent;P=R/'projects/game-math-shading-lights';A=P/'production/local/audio-v1'
+R=Path(__file__).resolve().parents[3];B=Path(__file__).parent
+ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--wait-hours',type=float,default=6);args=ap.parse_args()
+c=json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf-8-sig'))['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow'] and args.project in c['projectSlugs']
+P=R/'projects'/args.project;A=P/'production/local/audio-v1'
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def now():return datetime.now(timezone.utc).isoformat()
 statefile=A/'finite-word-review.json';lease=R/'shared/output/GPU_HANDOFF.json';owned=None
 if statefile.exists():
     old=read(statefile)
+    if old.get('status')=='word-evidence-ready-content-review-pending':
+        print('Existing word-alignment evidence preserved; no repeated transcription.');raise SystemExit(0)
     try:assert abs(psutil.Process(old['pid']).create_time()-old['createTime'])>.1,'Same finite follow-on already active'
     except psutil.NoSuchProcess:pass
     archive=A/'review-attempts';archive.mkdir(exist_ok=True)
@@ -16,13 +21,13 @@ if statefile.exists():
     for name in ('finite-word-review.json','word-review.stdout.log','word-review.stderr.log'):
         p=A/name
         if p.exists():shutil.copy2(p,attempt/name)
-s={'pid':os.getpid(),'createTime':psutil.Process().create_time(),'status':'waiting-for-current-voice','startedAt':now(),'scope':'M21 word timestamps only','nextVideo':False,'automationCreated':False}
+s={'pid':os.getpid(),'createTime':psutil.Process().create_time(),'status':'waiting-for-current-voice','startedAt':now(),'scope':args.project+' word timestamps only','nextVideo':False,'automationCreated':False}
 def save():statefile.write_text(json.dumps(s,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-spec=importlib.util.spec_from_file_location('guard',P/'production/run-capture-queue.py');G=importlib.util.module_from_spec(spec);spec.loader.exec_module(G)
-deadline=time.monotonic()+6*3600
+spec=importlib.util.spec_from_file_location('guard',R/'projects/game-math-shading-lights/production/run-capture-queue.py');G=importlib.util.module_from_spec(spec);spec.loader.exec_module(G)
+deadline=time.monotonic()+args.wait_hours*3600
 try:
     while True:
-        G.authorized();voice=read(A/'finite-worker.json')
+        c=read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow'] and args.project in c['projectSlugs'];voice=read(A/'finite-worker.json')
         if voice['status']=='failed-or-blocked':raise RuntimeError('Voice did not finish; no replacement synthesis started')
         reason='Existing narration generation is still active'
         if voice['status']=='voice-generated-review-pending':reason=G.idle_reason()
@@ -48,4 +53,4 @@ try:
     s.update(status='word-evidence-ready-content-review-pending',finishedAt=now());save()
 except BaseException as exc:s.update(status='failed-or-blocked',error=repr(exc),finishedAt=now());save();raise
 finally:
-    if owned and lease.exists() and read(lease).get('id')==owned:lease.unlink()
+    G.release_lease(owned)

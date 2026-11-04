@@ -36,6 +36,18 @@ def save(path, payload):
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
+def verified_cpu_research(arguments):
+    """Allow only the inspected CPU Whisper job, never arbitrary Python work.
+
+    Its exact source uses pipeline(device=-1), float32, four CPU threads and
+    no CUDA calls. The separate NVIDIA inventory below must still be empty
+    of this PID before a synthesis job can start.
+    """
+    path = ROOT / 'projects/unreal-engine-6-verse-gameplay/production/research_source.py'
+    if not path.is_file() or digest(path) != 'bf9ab30630f0a7e054b444779123ad3f7e25648bec2af77f66bd3b69f79a3f06':
+        return False
+    return any(Path(a).resolve() == path.resolve() for a in arguments if a.lower().endswith('.py'))
+
 def command_output(command):
     return subprocess.check_output(command, text=True, creationflags=CREATE_NO_WINDOW)
 
@@ -129,6 +141,8 @@ def main():
             'epicgameslauncher.exe': '/epic games/launcher/portal/binaries/win64/epicgameslauncher.exe',
             'epicwebhelper.exe': '/epic games/launcher/engine/binaries/win64/epicwebhelper.exe',
         }
+        if name == 'lockapp.exe' and exe == 'c:/windows/systemapps/microsoft.lockapp_cw5n1h2txyewy/lockapp.exe':
+            gui_allow.add(name)
         if (name in epic_gui and exe.endswith(epic_gui[name])) or (name == 'eosoverlayrenderer-win64-shipping.exe' and '/epic games/epic online services/managedartifacts/' in exe):
             gui_allow.add(name)
         process_names[info['pid']] = name
@@ -163,6 +177,10 @@ def main():
             module_at=arguments.index('-m')+1
             if module_at<len(arguments) and arguments[module_at] in ('yt_dlp','http.server'):
                 compute=False
+        cpu_research = name.startswith('python') and verified_cpu_research(arguments)
+        if cpu_research:
+            compute=False
+            baseline.append({'pid':info['pid'],'name':info['name'],'disposition':'preserved-verified-CPU-only-research','sourceSha256':'bf9ab30630f0a7e054b444779123ad3f7e25648bec2af77f66bd3b69f79a3f06'})
         reason = 'actual-game' if actual_game else 'foreign-compute-process' if compute else 'editor-background-render' if editor and batch_flags and not import_worker and not idle_capture_server else 'editor-not-explicitly-allowed' if editor and not args.allow_idle_editors else None
         if reason:
             blocked.append({'pid': info['pid'], 'name': info['name'], 'reason': reason, 'batchFlags': batch_flags})

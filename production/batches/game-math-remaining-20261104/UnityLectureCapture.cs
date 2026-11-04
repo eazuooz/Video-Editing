@@ -80,7 +80,8 @@ namespace Yamyam.RemainingMathCapture {
   }catch(Exception e){Finish(e);}}
   static void PersistOwnedAssets(){
    var f=stage.GetType().GetField("owned",BindingFlags.NonPublic|BindingFlags.Instance);
-   if(f?.GetValue(stage) is System.Collections.IEnumerable list)foreach(var o in list){
+   // Referenced textures must be assets before their materials are imported.
+   if(f?.GetValue(stage) is System.Collections.IEnumerable list)foreach(var o in list.Cast<object>().OrderBy(o=>o is Texture2D?0:o is Mesh?1:2)){
     if(!(o is Object obj)||!obj||AssetDatabase.Contains(obj)||(!(obj is Mesh)&&!(obj is Material)&&!(obj is Texture2D)))continue;
     AssetDatabase.CreateAsset(obj,assets+"/"+Guid.NewGuid().ToString("N")+(obj is Material?".mat":".asset"));
    }
@@ -99,7 +100,15 @@ namespace Yamyam.RemainingMathCapture {
     AssetDatabase.CreateAsset(material,assets+"/"+Guid.NewGuid().ToString("N")+".mat");r.sharedMaterial=material;
    }
   }
-  static void RefreshText(){var labels=stage.GetComponentsInChildren<UnityEngine.UI.Text>(true);foreach(var t in labels)if(t.isActiveAndEnabled&&t.font)t.font.RequestCharactersInTexture(t.text,t.fontSize,t.fontStyle);foreach(var t in labels)if(t.isActiveAndEnabled){t.cachedTextGenerator.Invalidate();t.SetAllDirty();}Canvas.ForceUpdateCanvases();}
+  static void RefreshText(){
+   var labels=stage.GetComponentsInChildren<UnityEngine.UI.Text>(true);
+   // Request the complete set for a font/size together before rebuilding any
+   // mesh. Separate requests can invalidate earlier glyph UVs during an atlas resize.
+   foreach(var group in labels.Where(t=>t.font).GroupBy(t=>new {t.font,t.fontSize,t.fontStyle}))
+    group.Key.font.RequestCharactersInTexture(string.Concat(group.Select(t=>t.text))+"0123456789.,−+-=()",group.Key.fontSize,group.Key.fontStyle);
+   foreach(var t in labels)if(t.isActiveAndEnabled){t.cachedTextGenerator.Invalidate();t.SetAllDirty();}
+   Canvas.ForceUpdateCanvases();
+  }
   static void Tick(){try{
    int frame=job.command=="preflight"?job.sampleFrames[cursor]:cursor;
    if(!prepared){evaluate.Invoke(stage,new object[]{frame/60.0});RefreshText();EditorApplication.QueuePlayerLoopUpdate();prepared=true;warmup=job.command=="preflight"||cursor==0?2:0;return;}

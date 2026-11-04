@@ -29,7 +29,7 @@ namespace Yamyam.GameMath.LightLab {
   }
   void SetPath(LineRenderer line,params Vector3[] points){line.positionCount=points.Length;line.SetPositions(points);}
   RawImage VolumeMap(Font font,string label,float x,float y,float w,float h){
-   Text(font,label,30,x,y-45,w+60,44,Color.white);
+   Text(font,label,30,x,y-45,400,44,Color.white);
    Panel(new Color(.25f,.25f,.25f),x-2,y-2,w+4,h+4);
    var go=new GameObject(label,typeof(RectTransform));go.transform.SetParent(canvas.transform,false);
    var image=go.AddComponent<RawImage>();var rt=image.rectTransform;rt.anchorMin=rt.anchorMax=rt.pivot=new Vector2(0,1);rt.anchoredPosition=new Vector2(x,-y);rt.sizeDelta=new Vector2(w,h);return image;

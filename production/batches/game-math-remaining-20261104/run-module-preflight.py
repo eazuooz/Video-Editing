@@ -17,7 +17,7 @@ G=importlib.util.module_from_spec(spec);spec.loader.exec_module(G)
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--queue',required=True);ap.add_argument('--run',action='store_true');ap.add_argument('--wait-hours',type=float,default=6);a=ap.parse_args()
     qpath=Path(a.queue).resolve();q=read(qpath);slug=q['project']
-    assert slug in {'game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives','game-math-acceleration-integration','game-math-circular-motion','game-math-forces-friction','game-math-springs-damping'}
+    assert slug in {'game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives','game-math-acceleration-integration','game-math-circular-motion','game-math-forces-friction','game-math-springs-damping','game-math-momentum-collisions','game-math-rigid-body-inertia','game-math-parametric-hermite','game-math-bezier-subdivision','game-math-splines-continuity'}
     project=R/'projects'/slug;assert qpath.is_relative_to(project/'production/unity-staging')
     sandbox=Path(q['sandbox']);marker=sandbox/'MATH_CAPTURE_SANDBOX.json'
     def authorized():
@@ -61,7 +61,7 @@ def main():
         G.release_lease(owned)
         owned=None
     def run_unity(method,log,env=None,quit_after=False):
-        command=[q['unity'],'-batchmode','-job-worker-count','2','-projectPath',str(sandbox),'-executeMethod',method,'-logFile',str(log)]
+        command=[q['unity'],'-batchmode',*q.get('graphicsArgs',[]),'-job-worker-count','2','-projectPath',str(sandbox),'-executeMethod',method,'-logFile',str(log)]
         if quit_after:command.append('-quit')
         child=subprocess.Popen(command,env=env,creationflags=CREATE)
         state.update(status='running-preflight',unityPid=child.pid);save(statefile,state)
@@ -89,6 +89,8 @@ def main():
                 env=os.environ.copy();env['YAMYAM_MATH_CAPTURE_JOB']=str(jp)
                 entry='Yamyam.MotionMathCapture.UnityLectureCapture.Run' if slug in {'game-math-velocity-derivatives','game-math-acceleration-integration','game-math-circular-motion'} else 'Yamyam.RemainingMathCapture.UnityLectureCapture.Run'
                 if slug in {'game-math-forces-friction','game-math-springs-damping'}:entry='Yamyam.MechanicsCapture.UnityLectureCapture.Run'
+                if slug in {'game-math-momentum-collisions','game-math-rigid-body-inertia'}:entry='Yamyam.DynamicsCapture.UnityLectureCapture.Run'
+                if slug in {'game-math-parametric-hermite','game-math-bezier-subdivision','game-math-splines-continuity'}:entry='Yamyam.CurveCapture.UnityLectureCapture.Run'
                 run_unity(entry,qpath.parent/(job['id']+'.unity.log'),env)
                 done=read(success);assert done['fingerprint']==q['fingerprint'] and done['completed']==len(job['sampleFrames'])
                 release()

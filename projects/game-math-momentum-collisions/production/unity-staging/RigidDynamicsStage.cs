@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Object=UnityEngine.Object;
 
 namespace Yamyam.RigidTeaching {
- public enum DynamicsPicture {ImpulseHistory,MassCenter,LinearCollision,InclinedContact,Torque,InertiaComparison,OffCenterCollision,IntegratorComparison,DeltaRectangle,TruckComposite}
+ public enum DynamicsPicture {ImpulseHistory,MassCenter,LinearCollision,InclinedContact,Torque,InertiaComparison,OffCenterCollision,IntegratorComparison,DeltaRectangle,TruckComposite,MomentumVector,VariableImpulse,EqualArea,EarthTransfer,HangingPlate,HammerFlight,ModelOrigin,InternalMass,Barycentre,StickingImpact,CarImpact,ContactDetection,ContactBasis,RestitutionBounce,Penetration,Kinematic,ApplyOnce,VelocityJump,Summary,AngularVelocity,TangentialForce,TorqueLever,Couple,TensorAxes,TensorExpansion,GyroscopicTerm,ParallelAxis,PointVelocity,WorldInertia,EngineComponents,BodyState,Accumulators,CollisionShapes,Joints,Motor,GameLoop,Penalty,SequentialImpulse,ConstraintJacobian,ConnectedSprings,EulerTangent,IntegratorGraph,RotationStep,FanSail,TugOfWar,FreeFallOrbit,Incline,HangingSpring,Oscillator,WalkingCarriage,VehicleRestitution,Balance,CylinderInertia,StudyLinks,TotalSummary}
  [Serializable] public class DynamicsShot {
   public string beatId="UNBOUND",englishTerm="Impulse",koreanTerm="충격량",meaning="힘을 시간에 대해 더한 운동량 변화";
   public DynamicsPicture picture;
@@ -14,10 +14,11 @@ namespace Yamyam.RigidTeaching {
   public double rectangleWidth=.4,rectangleArea=1;
   public bool showWholeSystem=false,expandedTerm=true;
   public int spokenStep; // Supplied by the speech cue controller, not wall-clock time.
+  public double velocityA=2,velocityB=-1,angularSpeed=1,forceAngle=90,platformSpeed=0;
  }
  // Deterministic numerical teaching scenes. Commercial gameplay is composited separately.
  // No Update/FixedUpdate or automatic looping: the renderer supplies the reviewed cue progress.
- public sealed class RigidDynamicsStage:MonoBehaviour {
+ public sealed partial class RigidDynamicsStage:MonoBehaviour {
   public DynamicsShot shot=new DynamicsShot();public GameObject cratePrefab;public Font koreanFont;public Camera stageCamera;
   bool built;Canvas canvas;Text term,kind,formula,values,note;Material guides,surface;GameObject crate,truckModel;
   readonly List<GameObject> truckParts=new List<GameObject>();
@@ -28,6 +29,8 @@ namespace Yamyam.RigidTeaching {
   static Vector3 P(D3 p)=>new Vector3((float)p.x,(float)p.y,(float)-p.z);
   GameObject GO(string n){var g=new GameObject(n);g.transform.SetParent(transform,false);owned.Add(g);return g;}
   T Own<T>(T o) where T:Object{owned.Add(o);return o;}
+  public Material GuideMaterial=>guides;
+  public void SetSourceStep(string calculation,string explanation){if(!string.IsNullOrEmpty(calculation))formula.text=calculation;if(!string.IsNullOrEmpty(explanation))note.text=explanation;}
   public void Build(){
    if(built)return;if(koreanFont==null)throw new InvalidOperationException("Local OS Korean font required");
    var unlit=Shader.Find("Universal Render Pipeline/Unlit");if(!unlit)throw new InvalidOperationException("URP Unlit required");guides=Own(new Material(unlit));guides.SetColor("_BaseColor",Color.white);surface=Own(new Material(Shader.Find("Universal Render Pipeline/Lit")));surface.SetColor("_BaseColor",new Color(.6f,.63f,.65f));
@@ -48,7 +51,7 @@ namespace Yamyam.RigidTeaching {
   void Grid(float y=-1.6f){Path(Muted,new Vector3(-8,y,0),new Vector3(.6f,y,0));for(int i=-7;i<=0;i++)Path(Muted,new Vector3(i,y-.06f,0),new Vector3(i,y+.06f,0));}
   void Plot(Func<double,double> f,double maxT,double scaleY,Color c,Vector3 origin,float width=7.8f){var p=new Vector3[121];for(int i=0;i<p.Length;i++){double t=maxT*i/(p.Length-1);p[i]=origin+new Vector3(width*i/(p.Length-1),(float)(f(t)*scaleY),0);}Path(c,p);}
   public void Evaluate(double progress){
-   Build();progress=Math.Max(0,Math.Min(1,progress));double t=progress*shot.duration;lineIndex=ballIndex=labelIndex=0;if(crate)crate.SetActive(false);if(truckModel)truckModel.SetActive(false);
+   Build();progress=Math.Max(0,Math.Min(1,progress));double t=progress*shot.duration;lineIndex=ballIndex=labelIndex=0;if(crate)crate.SetActive(false);if(truckModel)truckModel.SetActive(false);foreach(var obj in sourceObjects)obj.SetActive(false);
    term.text=shot.expandedTerm?shot.englishTerm+"\n"+shot.koreanTerm+"\n"+shot.meaning:shot.koreanTerm+" · "+shot.englishTerm;kind.text="현재 화면\n우리 수학 구현 · Unity";formula.text=values.text=note.text="";
    switch(shot.picture){
     case DynamicsPicture.ImpulseHistory:ImpulseHistory(t);break;
@@ -61,7 +64,7 @@ namespace Yamyam.RigidTeaching {
     case DynamicsPicture.IntegratorComparison:IntegratorComparison(t);break;
     case DynamicsPicture.DeltaRectangle:DeltaRectangle(progress);break;
     case DynamicsPicture.TruckComposite:TruckComposite(progress);break;
-    default:throw new ArgumentOutOfRangeException();
+    default:if((int)shot.picture>=29)RigidPicture(progress);else SourcePicture(progress);break;
    }
    for(int i=lineIndex;i<lines.Count;i++)lines[i].enabled=false;for(int i=ballIndex;i<balls.Count;i++)balls[i].SetActive(false);for(int i=labelIndex;i<labels.Count;i++)labels[i].gameObject.SetActive(false);
   }
@@ -83,7 +86,7 @@ namespace Yamyam.RigidTeaching {
    formula.text="x₍cm₎ = Σ(mᵢxᵢ) / Σmᵢ\n\n= ("+N(shot.massA)+" × 0\n + "+N(shot.massB)+" × "+N(xb)+") / "+N(shot.massA+shot.massB)+"\n\n= "+N(c.x)+" m";values.text="질량으로 가중한 평균 위치";note.text="기하학적 가운데와 질량중심은 다를 수 있습니다.";
   }
   void LinearCollision(double t){
-   double contact=shot.duration*.45;Body a=new Body{inverseMass=1/shot.massA,velocity=new D3(2,0)},b=new Body{inverseMass=1/shot.massB,velocity=new D3(-1,0)};
+   double contact=shot.duration*.45;Body a=new Body{inverseMass=1/shot.massA,velocity=new D3(shot.velocityA,0)},b=new Body{inverseMass=1/shot.massB,velocity=new D3(shot.velocityB,0)};
    var result=Dynamics.Resolve(a,b,new D3(),new D3(),new D3(1,0),shot.restitution);double dt=t-contact;bool after=dt>=0;
    D3 va=after?result.a.velocity:a.velocity,vb=after?result.b.velocity:b.velocity;
    Vector3 pa=new Vector3(-5.2f+(float)(va.x*dt*.65),0,0),pb=new Vector3(-4f+(float)(vb.x*dt*.65),0,0);Dot(pa,.6f,Blue);Dot(pb,.6f,Red);Arrow(pa+Vector3.up*.9f,pa+new Vector3((float)va.x*.6f,.9f,0),Blue);Arrow(pb+Vector3.up*1.4f,pb+new Vector3((float)vb.x*.6f,1.4f,0),Red);

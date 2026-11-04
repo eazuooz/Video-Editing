@@ -86,9 +86,17 @@ for item in batch['items']:
         shots=project/'production/unity-staging/spring-shots.json'
         if shots.exists():stage=f'원문 순서 {len(load(shots)["shots"])}개 용수철·감쇠 장면 작성 · 실행 검수 대기'
     if item['id']=='M22' and load(project/'planning/production-plan.json').get('narrationFinal'):
-        stage='36문단·게임 3예시·장면 연결 확정 · Qwen 음성 제작 준비 · 표식 수정 검수 중'
-    if item['id'] in {'M29','M30'}:stage='통합 대본·충돌/관성 수치 검사 완료 · 설명 씬 구현 중'
-    if item['id'] in {f'M{i}' for i in range(31,34)}:stage='통합 대본·곡선 계산 검사 완료 · 애니메이션 실행 검수 전'
+        stage='36문단·게임 3예시·장면 연결 확정 · 표식 수정 검수 중'
+        vf=project/'production/local/audio-v1/finite-worker.json'
+        if vf.exists():
+            v=load(vf);stage+=' · '+{'synthesizing':'Qwen 음성 생성 중','voice-generated-review-pending':'음성 생성 완료·청취 검수 전'}.get(v['status'],'음성 생성 대기')
+    if item['id'] in {'M29','M30'}:
+        name='dynamics-shots.json' if item['id']=='M29' else 'rigid-shots.json'
+        shots=project/'production/unity-staging'/name
+        stage=f'원문 순서 {len(load(shots)["shots"])}개 설명 장면 작성 · 실행 검수 전' if shots.exists() else '통합 대본·충돌/관성 수치 검사 완료 · 설명 씬 구현 중'
+    if item['id'] in {f'M{i}' for i in range(31,34)}:
+        path=project/'production/unity-staging/curve-shots.json'
+        stage=f'원문 순서 {len(load(path)["shots"])}개 곡선 설명 장면 작성 · 실행 검수 전' if path.exists() else '통합 대본·곡선 계산 검사 완료 · 애니메이션 실행 검수 전'
     row['productionStatus']=stage
     row['productionComplete']=False
     row['reviewStatus']='완성 영상 대기 · 실제 음성/합성 검수 전'
@@ -101,10 +109,11 @@ checkpoint=load(BATCH/'checkpoint.json')
 checkpoint['updatedAt']=batch['updatedAt']
 checkpoint['currentWork']=['Complete source audit and bilingual draft: '+', '.join(sorted(reported_complete)),
                          'M21 narration complete (79 paragraphs, 1917.9200833333307 seconds); original PCM preserved. Full ASR aligned, 715 KO / 606 EN cues, zero alignment flags. Final media and integrated QA pending.',
-                         'All 13 integrated bilingual scripts and gameplay bindings exist; M22–M33 staged math/renderer modules compile; M29/M30 numeric model passes 2261 invariants, 10 visual modes implemented but remaining source-beat coverage/runtime QA are pending',
-                         'M21 77 captured scenes sampled at three times; last comparison scene crop serialization repaired. Targeted specular/grid runtime revision pending. All seven gameplay annotation layouts inspected at 1080p/375px; final integrated review pending.',
+                         'All 13 integrated bilingual scripts and gameplay bindings exist; M22–M33 staged math/renderer modules compile; M29/M30 shared numerical model passes 2261 invariants; 37/60 source-ordered scene configurations prepared; visual/runtime QA pending',
+                         'M21 original raster crops disprove apparent UI/render corruption in tool previews; labels match pixel-for-pixel across V15/V16/V17. V15 17 material/volume/grid repairs are image-approved; production recaptures and integrated final QA pending. All seven gameplay annotation layouts inspected at 1080p/375px; final integrated review pending.',
                          'M22 36 unchanged bilingual paragraphs and35 Unity modes bound; nine V2 runtime samples inspected, eight targeted V3 checks prepared. Voice design frozen, final speech and media QA pending.',
                          'M24–M26 runtime samples inspected; repaired explicit override serialization, hidden motion guides, formula/object overlap and reverse-motion graph ranges. V3 runtime queues prepared.',
+                         'M31/M32/M33 now have 36/29/42 source-ordered configurations with 130 checked speech anchors; 1387 curve-model assertions pass. Runtime/visual/speech QA pending.',
                          'M27 31 source-ordered force/friction scenes; M28 24 source-ordered spring/damping scenes. Corrected capture camera interface and out-of-range graph clipping; revised runtime checks pending.']
 checkpoint['localReviewReady']=[]
 preflights=list((ROOT/'projects/game-math-shading-lights/production/unity-staging').glob('local-preflight-v*/progress.json'))
@@ -147,6 +156,22 @@ for item in batch['items'][1:]:
 compositor=latest_render(ROOT/'projects/game-math-shading-lights')/'composite/worker.json'
 if compositor.exists():checkpoint['compositorWorker']=load(compositor)
 checkpoint['lastPlanningCommit']='01f08cc92f3ea5ba6e2234e4c99377edbf9021c6'
-checkpoint['lastProductionCommit']='8e8b986a3e3d1029b90d966a9af8569a82f88e48'
+checkpoint['lastProductionCommit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+# Derive running state from live owned workers; historical failures must not erase it.
+import psutil
+active=[];checkpoint['episodeVoiceWorkers']={}
+for item in batch['items']:
+    project=ROOT/'projects'/item['slug']
+    paths=[project/'production/local/audio-v1/finite-worker.json',latest_preview(project),latest_render(project)/'progress.json']
+    for path in paths:
+        if not path.is_file():continue
+        state=load(path)
+        if path.name=='finite-worker.json':checkpoint['episodeVoiceWorkers'][item['id']]=state
+        try:alive=abs(psutil.Process(state['pid']).create_time()-state['createTime'])<.1
+        except (KeyError,psutil.NoSuchProcess):alive=False
+        if alive and state['status'] in {'synthesizing','running-preflight','capturing','transcribing-word-timestamps'}:active.append({'episode':item['id'],'status':state['status'],'pid':state['pid'],'evidence':path.relative_to(ROOT).as_posix()})
+checkpoint['runningCostlyJobs']=active
+if active:checkpoint['resourceGate']={'status':'active-owned-work','jobs':active}
+checkpoint['nextAction']='Complete M22 approved-voice generation; recapture 17 image-approved M21 repairs with 61 structurally verified captures reused, then final compose/QA and source-matched module runtime QA. No final video is marked ready before integrated review.'
 save(BATCH/'checkpoint.json',checkpoint)
 subprocess.run(['python','-X','utf8',str(BATCH/'progress.py')],cwd=ROOT,check=True)

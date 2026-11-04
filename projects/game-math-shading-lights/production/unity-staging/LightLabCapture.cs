@@ -54,12 +54,21 @@ namespace Yamyam.GameMath.LightLab {
     var teachingShader=Shader.Find("Yamyam/Teaching/LocalIllumination");
     var shaderMessages=ShaderUtil.GetShaderMessages(teachingShader);
     if(shaderMessages.Any(m=>m.severity.ToString()=="Error"))throw new InvalidOperationException("Teaching shader import failed: "+string.Join("; ",shaderMessages.Select(m=>m.message)));
-    var maps=CreateMaps(cue);stage.SetMaps(maps[0],maps[1]);stage.SetMaterialMaps(maps[2],maps[3]);
-    foreach(var asset in stage.GeneratedObjects.Concat(maps.Cast<Object>())) {
+    // Persist dependencies before materials. Importing a material with transient
+    // textures can replace its references with null and silently sample white.
+    var maps=CreateMaps(cue);
+    foreach(var map in maps)AssetDatabase.CreateAsset(map,assets+"/"+Guid.NewGuid().ToString("N")+".asset");
+    stage.SetMaps(maps[0],maps[1]);stage.SetMaterialMaps(maps[2],maps[3]);
+    foreach(var asset in stage.GeneratedObjects) {
       if(!asset||AssetDatabase.Contains(asset))continue;
       string extension=asset is Material?".mat":".asset";
       AssetDatabase.CreateAsset(asset,assets+"/"+Guid.NewGuid().ToString("N")+extension);
     }
+    stage.SetMaps(maps[0],maps[1]);stage.SetMaterialMaps(maps[2],maps[3]);
+    foreach(var material in stage.GeneratedObjects.OfType<Material>())EditorUtility.SetDirty(material);
+    AssetDatabase.SaveAssets();
+    if(stage.CookieTexture!=maps[0]||stage.FalloffTexture!=maps[1])throw new InvalidOperationException("Persisted teaching texture references were lost");
+    stage.Apply(0);
     state.scene=Root+"/Scenes/"+LightLabBuildVersion.Value.Substring(0,12)+"/"+job.command+"/"+job.id+".unity";
     Directory.CreateDirectory(Path.GetDirectoryName(state.scene));
     if(File.Exists(state.scene))throw new IOException("Prior editable scene preserved");
