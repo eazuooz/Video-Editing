@@ -73,6 +73,7 @@ for i,scene in enumerate(script['scenes']):
     if 36<=i<=38:model.update(parameters={'kind':8,'amplitude':1,'frequency':1},startTime=-1,endTime=1,positionMin=-1.1,positionMax=1.1,velocityMin=-.1,velocityMax=1.1)
     if i in {39,40}:model.update(parameters={'kind':10,'amplitude':1,'rate':1},startTime=0,endTime=2,positionMin=0,positionMax=8,velocityMin=0,velocityMax=8)
     if 41<=i<=43:model=copy.deepcopy(profiles[1]);model.pop('id');model.pop('bindingStatus');model.update(beatId=scene['sourceBeatId'],englishTerm=en,koreanTerm=ko,meaning=scene['title'])
+    if i==43:model.update(positionMin=-3,positionMax=3,velocityMin=-5,velocityMax=5)
     if i==44:model.update(parameters={'kind':12},startTime=0,endTime=2,positionMin=-1.1,positionMax=1.1,velocityMin=-4,velocityMax=3)
     if i==45:model.update(parameters={'kind':14},startTime=0,endTime=1.5,positionMin=0,positionMax=5,velocityMin=-6,velocityMax=7)
     if 34<=i<=40 or i in {44,45}:model.update(scalarFunction=True,inputLabel='입력 x',valueLabel='함수',derivativeLabel='도함수',secondDerivativeLabel='이계도함수',timeUnit='rad' if i in range(36,39) else '입력',positionUnit='값',showVelocity=False)

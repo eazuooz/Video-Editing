@@ -39,6 +39,7 @@ namespace Yamyam.MathMotion {
             guides.Clear();owned.Clear();guideCursor=0;
             var child=new GameObject("SharedAnalyticMotionStage");child.transform.SetParent(transform,false);
             movement=child.AddComponent<MotionTeachingStage>();movement.shot=shot.motion;movement.subjectPrefab=subjectPrefab;movement.koreanFont=koreanFont;movement.Build();stageCamera=movement.stageCamera;
+            var models=new List<MotionShot>{shot.motion};foreach(var step in shot.steps)if(step.useMotionOverride&&step.motionOverride!=null)models.Add(step.motionOverride);movement.FitMotionSubjects(models);
             owned.Add(movement.GuideMaterial);
             guideMaterial=new Material(Shader.Find("Universal Render Pipeline/Unlit"));guideMaterial.SetColor("_BaseColor",Color.white);owned.Add(guideMaterial);
             var canvas=movement.GetComponentInChildren<Canvas>();var label=new GameObject("DiagramCaption");label.transform.SetParent(canvas.transform,false);var rt=label.AddComponent<RectTransform>();rt.anchorMin=rt.anchorMax=rt.pivot=new Vector2(0,1);rt.anchoredPosition=new Vector2(1120,-665);rt.sizeDelta=new Vector2(700,145);diagramLabel=label.AddComponent<Text>();diagramLabel.font=koreanFont;diagramLabel.fontSize=40;diagramLabel.color=new Color(.96f,.96f,.96f);diagramLabel.horizontalOverflow=HorizontalWrapMode.Wrap;diagramLabel.verticalOverflow=VerticalWrapMode.Truncate;

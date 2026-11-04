@@ -18,17 +18,18 @@ namespace Yamyam.MathMechanics {
   public GameObject objectPrefab,secondaryPrefab;
   public Font koreanFont;
   [NonSerialized] public MechanicsTeachingStage stage;
-  public Camera observer;
+  public Camera observer,stageCamera;
   public double previewSeconds;
   readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
   public void RememberMaterial(Material m){owned.Add(m);}
+  void OnEnable(){koreanFont=Font.CreateDynamicFontFromOSFont("Malgun Gothic",42);foreach(var label in GetComponentsInChildren<Text>(true))label.font=koreanFont;}
   [ContextMenu("Preview teaching time")] public void Preview(){Evaluate(previewSeconds);}
   public void Build(){
    if(stage!=null)return;
    if(shot.steps.Length==0)throw new InvalidOperationException("Source teaching steps required");
    while(transform.childCount>0)DestroyImmediate(transform.GetChild(0).gameObject);
    var go=new GameObject("Mechanics source experiment");go.transform.SetParent(transform,false);stage=go.AddComponent<MechanicsTeachingStage>();
-   stage.shot=shot.steps[0].model;stage.objectPrefab=objectPrefab;stage.secondaryPrefab=secondaryPrefab;stage.koreanFont=koreanFont;stage.Build();observer=stage.observer;
+   stage.shot=shot.steps[0].model;stage.objectPrefab=objectPrefab;stage.secondaryPrefab=secondaryPrefab;stage.koreanFont=koreanFont;stage.Build();observer=stage.observer;stageCamera=observer;RememberMaterial(stage.GuideMaterial);
   }
   public void Evaluate(double seconds){
    if(shot.durationSeconds<=0)throw new InvalidOperationException("Explicit cue duration required");if(stage==null)Build();

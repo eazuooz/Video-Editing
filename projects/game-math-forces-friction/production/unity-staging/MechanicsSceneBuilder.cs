@@ -7,8 +7,8 @@ using Yamyam.MathMechanics;
 public static class MechanicsSceneBuilder {
  public static MechanicsLessonStage BuildStage(MechanicsLessonShot shot){
   string root=Path.GetFullPath(Application.dataPath).Replace('\\','/');
-  if(!root.Contains("/game-math-forces-friction/production/unity-staging/LocalUnity-"))throw new InvalidOperationException("Dedicated M27 capture project required");
-  var stage=new GameObject("M27_"+shot.beatId).AddComponent<MechanicsLessonStage>();stage.shot=shot;
+  if(!root.Contains("/game-math-forces-friction/production/unity-staging/LocalUnity-")&&!root.Contains("/game-math-springs-damping/production/unity-staging/LocalUnity-"))throw new InvalidOperationException("Dedicated M27/M28 capture project required");
+  var stage=new GameObject("Mechanics_"+shot.beatId).AddComponent<MechanicsLessonStage>();stage.shot=shot;
   stage.objectPrefab=Asset(shot.steps[0].model.subjectKind);stage.secondaryPrefab=Asset(shot.steps[0].model.secondaryKind);stage.koreanFont=Font.CreateDynamicFontFromOSFont("Malgun Gothic",42);stage.Build();
   foreach(var r in stage.GetComponentsInChildren<Renderer>(true)){
    var mats=r.sharedMaterials;

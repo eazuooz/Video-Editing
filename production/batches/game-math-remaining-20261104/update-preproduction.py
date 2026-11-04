@@ -82,6 +82,11 @@ for item in batch['items']:
         if preview.exists():
             run=load(preview);stage+=f' · 실행 샘플 {len(run.get("completed",[]))}개 생성'
             if run['status']=='failed-or-blocked':stage+=' · 실행 오류 복구 중'
+    if item['id']=='M28':
+        shots=project/'production/unity-staging/spring-shots.json'
+        if shots.exists():stage=f'원문 순서 {len(load(shots)["shots"])}개 용수철·감쇠 장면 작성 · 실행 검수 대기'
+    if item['id']=='M22' and load(project/'planning/production-plan.json').get('narrationFinal'):
+        stage='36문단·게임 3예시·장면 연결 확정 · Qwen 음성 제작 준비 · 표식 수정 검수 중'
     if item['id'] in {'M29','M30'}:stage='통합 대본·충돌/관성 수치 검사 완료 · 설명 씬 구현 중'
     if item['id'] in {f'M{i}' for i in range(31,34)}:stage='통합 대본·곡선 계산 검사 완료 · 애니메이션 실행 검수 전'
     row['productionStatus']=stage
@@ -98,7 +103,9 @@ checkpoint['currentWork']=['Complete source audit and bilingual draft: '+', '.jo
                          'M21 narration complete (79 paragraphs, 1917.9200833333307 seconds); original PCM preserved. Full ASR aligned, 715 KO / 606 EN cues, zero alignment flags. Final media and integrated QA pending.',
                          'All 13 integrated bilingual scripts and gameplay bindings exist; M22–M33 staged math/renderer modules compile; M29/M30 numeric model passes 2261 invariants, 10 visual modes implemented but remaining source-beat coverage/runtime QA are pending',
                          'M21 77 captured scenes sampled at three times; last comparison scene crop serialization repaired. Targeted specular/grid runtime revision pending. All seven gameplay annotation layouts inspected at 1080p/375px; final integrated review pending.',
-                         'M22 twelve runtime samples reviewed; nine targeted label/arm-axis repairs queued. M24–M26 explicit motion override fixes prepared after actual Unity serialization failure. M27 31 source-ordered force/friction scenes and fifteen runtime samples queued; no final media approval.']
+                         'M22 36 unchanged bilingual paragraphs and35 Unity modes bound; nine V2 runtime samples inspected, eight targeted V3 checks prepared. Voice design frozen, final speech and media QA pending.',
+                         'M24–M26 runtime samples inspected; repaired explicit override serialization, hidden motion guides, formula/object overlap and reverse-motion graph ranges. V3 runtime queues prepared.',
+                         'M27 31 source-ordered force/friction scenes; M28 24 source-ordered spring/damping scenes. Corrected capture camera interface and out-of-range graph clipping; revised runtime checks pending.']
 checkpoint['localReviewReady']=[]
 preflights=list((ROOT/'projects/game-math-shading-lights/production/unity-staging').glob('local-preflight-v*/progress.json'))
 preflight=max(preflights,key=lambda p:p.stat().st_mtime) if preflights else ROOT/'missing-preflight'
@@ -140,6 +147,6 @@ for item in batch['items'][1:]:
 compositor=latest_render(ROOT/'projects/game-math-shading-lights')/'composite/worker.json'
 if compositor.exists():checkpoint['compositorWorker']=load(compositor)
 checkpoint['lastPlanningCommit']='01f08cc92f3ea5ba6e2234e4c99377edbf9021c6'
-checkpoint['lastProductionCommit']='be0cfac9330f4057776f066c75b71463a6214486'
+checkpoint['lastProductionCommit']='8e8b986a3e3d1029b90d966a9af8569a82f88e48'
 save(BATCH/'checkpoint.json',checkpoint)
 subprocess.run(['python','-X','utf8',str(BATCH/'progress.py')],cwd=ROOT,check=True)

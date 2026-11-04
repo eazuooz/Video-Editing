@@ -23,6 +23,11 @@ def main():
     folder=Path(args.job_folder).resolve();assert folder.parent==S and folder.name.startswith('local-preflight-')
     manifest=read(folder/'queue.json');marker=read(Path(manifest['sandbox'])/'M21_SANDBOX.json')
     assert marker['fingerprint']==manifest['fingerprint']
+    # Reject a copied cue with an old identity before acquiring costly resources.
+    for entry in manifest['jobs']:
+        job=read(Path(entry));cue=read(Path(job['cueFile']))
+        assert job['id']==cue['id'],f"Cue/job ID differs: {entry}"
+        assert job['expectedFingerprint']==manifest['fingerprint']
     if (folder/'progress.json').exists():
         old=read(folder/'progress.json')
         if old.get('createTime'):

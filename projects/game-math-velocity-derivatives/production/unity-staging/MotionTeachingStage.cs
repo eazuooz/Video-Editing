@@ -41,7 +41,9 @@ namespace Yamyam.MathMotion {
         public bool built;
         readonly List<GameObject> generated=new List<GameObject>();
         readonly List<LineRenderer> lines=new List<LineRenderer>();
-        int lineCursor;
+        int lineCursor,motionGuideCount;
+        float motionFitScale=1;
+        Vector3 motionFitOffset;
         Text term,kind,values,details,coordinateLabel,positionTitle,velocityTitle,accelerationTitle,velocityCallout,accelerationCallout,radiusCallout;
         Text timeStart,timeEnd,timeAxis;
         Text formulaBoard,formulaMeaning,comparisonLegend;
@@ -73,7 +75,7 @@ namespace Yamyam.MathMotion {
             Bounds bounds=new Bounds(subject.transform.position,Vector3.zero);bool first=true;
             foreach(var renderer in subject.GetComponentsInChildren<Renderer>()) { if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds); }
             if(first||bounds.size.magnitude<1e-6f)throw new InvalidOperationException("The selected prefab has no visible renderer bounds.");
-            float scale=.95f/Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z);subject.transform.localScale*=scale;
+            float scale=1.4f/Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z);subject.transform.localScale*=scale;
             // Its tracked point is the visible bounds centre; a labelled marker makes this explicit.
             subject.transform.localPosition-=bounds.center*scale;
             var light=Own(new GameObject("MotionLabKey")).AddComponent<Light>();light.type=LightType.Directional;light.intensity=1.3f;light.transform.rotation=Quaternion.Euler(35,-25,0);
@@ -81,7 +83,7 @@ namespace Yamyam.MathMotion {
             var scaler=ui.AddComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);
             term=Label("Term",new Rect(88,45,1050,145),40,Yellow);
             kind=Label("SourceKind",new Rect(1200,55,620,100),32,Muted);
-            values=Label("ModelValues",new Rect(92,772,945,142),40,White);
+            values=Label("ModelValues",new Rect(92,797,945,120),36,White);
             details=Label("LiveCalculation",new Rect(1090,795,750,112),36,White);
             coordinateLabel=Label("CoordinateConvention",new Rect(92,195,930,88),34,Muted);
             positionTitle=Label("GraphPosition",new Rect(1130,225,665,46),36,Yellow);
@@ -95,8 +97,8 @@ namespace Yamyam.MathMotion {
             velocityCallout=Label("VelocityArrowLabel",new Rect(0,0,430,48),36,Teal);
             accelerationCallout=Label("AccelerationArrowLabel",new Rect(0,0,430,48),36,Red);
             radiusCallout=Label("RadiusArrowLabel",new Rect(0,0,350,48),36,Yellow);
-            formulaBoard=Label("SpeechBoundCalculation",new Rect(92,298,930,362),42,White);formulaBoard.supportRichText=true;
-            formulaMeaning=Label("CalculationMeaning",new Rect(92,666,930,94),38,White);
+            formulaBoard=Label("SpeechBoundCalculation",new Rect(92,290,930,180),38,White);formulaBoard.supportRichText=true;
+            formulaMeaning=Label("CalculationMeaning",new Rect(92,475,930,90),34,White);
             comparisonLegend=Label("ComparisonLegend",new Rect(1130,400,720,90),36,White);
             built=true;
         }
@@ -107,8 +109,27 @@ namespace Yamyam.MathMotion {
         }
         // Reflection from mathematical RH coordinates to the Unity display's z direction.
         public static Vector3 ToUnity(DVec v)=>new Vector3((float)v.x,(float)v.y,(float)-v.z);
-        Vector3 DisplayVector(DVec p){Vector3 v=ToUnity(p);if(shot.positiveYIsDown)v.y=-v.y;return Quaternion.Euler(shot.displayEuler)*v;}
-        Vector3 Position(DVec p)=>shot.worldOrigin+DisplayVector(p)*shot.worldUnitsPerModelUnit;
+        static Vector3 RawVector(MotionShot s,DVec p){Vector3 v=ToUnity(p);if(s.positiveYIsDown)v.y=-v.y;return Quaternion.Euler(s.displayEuler)*v;}
+        Vector3 DisplayVector(DVec p)=>RawVector(shot,p)*motionFitScale;
+        Vector3 Position(DVec p)=>(shot.worldOrigin+RawVector(shot,p)*shot.worldUnitsPerModelUnit)*motionFitScale+motionFitOffset;
+        public void FitMotionSubjects(IEnumerable<MotionShot> models){
+            // One uniform scale for the whole paragraph, including all changed
+            // parameters. Formula, moving object and values own separate regions.
+            Bounds bounds=default;bool first=true;
+            foreach(var model in models)for(int i=0;i<=160;i++){
+                double t=model.startTime+(model.endTime-model.startTime)*i/160.0;
+                var state=MotionMathModel.Sample(model.parameters,t);
+                var at=model.worldOrigin+RawVector(model,state.position)*model.worldUnitsPerModelUnit;
+                var points=new List<Vector3>{at};
+                if(model.showVelocity&&state.velocityDefined)points.Add(at+RawVector(model,state.velocity)*model.velocityArrowScale);
+                if(model.showAcceleration&&state.accelerationDefined)points.Add(at+RawVector(model,state.acceleration)*model.accelerationArrowScale);
+                if(model.showRadius)points.Add(model.worldOrigin+RawVector(model,model.parameters.origin)*model.worldUnitsPerModelUnit);
+                foreach(var p in points){if(first){bounds=new Bounds(p,Vector3.zero);first=false;}else bounds.Encapsulate(p);}
+            }
+            if(first)return;
+            motionFitScale=Mathf.Min(1,Mathf.Min(6.8f/Mathf.Max(.001f,bounds.size.x),1.1f/Mathf.Max(.001f,bounds.size.y)));
+            motionFitOffset=new Vector3(-4.55f,.75f,0)-bounds.center*motionFitScale;
+        }
         LineRenderer Line(Color color,float width) {
             LineRenderer r;
             if(lineCursor<lines.Count)r=lines[lineCursor];else {var go=Own(new GameObject("MotionGuide_"+lines.Count));r=go.AddComponent<LineRenderer>();r.useWorldSpace=true;r.sharedMaterial=lineMaterial;r.numCapVertices=4;r.numCornerVertices=4;lines.Add(r);}
@@ -156,6 +177,9 @@ namespace Yamyam.MathMotion {
         public void Evaluate(double normalizedCue) {
             if(!built)Build();
             if(normalizedCue<0||normalizedCue>1)throw new ArgumentOutOfRangeException(nameof(normalizedCue),"No modulo looping or silent clamping.");
+            subjectAnchor.gameObject.SetActive(true);
+            foreach(var label in new[]{positionTitle,timeStart,timeEnd,timeAxis,values,details})label.gameObject.SetActive(true);
+            formulaMeaning.rectTransform.anchoredPosition=new Vector2(92,-475);
             lineCursor=0;double t=shot.startTime+(shot.endTime-shot.startTime)*normalizedCue;var state=MotionMathModel.Sample(shot.parameters,t);Vector3 at=Position(state.position);subjectAnchor.position=at;
             term.fontSize=shot.termExpanded?40:34;
             term.text=shot.termExpanded?shot.englishTerm+"\n"+shot.koreanTerm+"\n"+shot.meaning:shot.englishTerm+" · "+shot.koreanTerm+"\n"+shot.meaning;
@@ -172,6 +196,7 @@ namespace Yamyam.MathMotion {
             PlaceCallout(accelerationCallout,at+DisplayVector(state.acceleration)*shot.accelerationArrowScale,"a  |a|="+state.acceleration.Length.ToString("0.00"),shot.showAcceleration&&state.accelerationDefined);
             PlaceCallout(radiusCallout,Vector3.Lerp(Position(shot.parameters.origin),at,.5f),"r = "+(state.position-shot.parameters.origin).Length.ToString("0.00"),shot.showRadius);
             if(shot.showSecant){var q=MotionMathModel.Sample(shot.parameters,t+shot.secantH);Poly(new[]{at,Position(q.position)},Green,.035f);}
+            motionGuideCount=lineCursor;
             Func<MotionState,double> p=s=>shot.graphY?s.position.y:s.position.x,v=s=>shot.graphY?s.velocity.y:s.velocity.x,a=s=>shot.graphY?s.acceleration.y:s.acceleration.x;
             Graph(p,shot.positionMin,shot.positionMax,PositionBase,Yellow,t,false);
             comparisonLegend.gameObject.SetActive(shot.showComparison);comparisonLegend.text=shot.comparisonLabel;
@@ -203,13 +228,16 @@ namespace Yamyam.MathMotion {
             formulaBoard.text=formula??"";formulaMeaning.text=meaning??"";
             bool board=!string.IsNullOrEmpty(formula);formulaBoard.gameObject.SetActive(board);formulaMeaning.gameObject.SetActive(!string.IsNullOrEmpty(meaning));
             foreach(var r in subjectAnchor.GetComponentsInChildren<Renderer>()){
-                var block=new MaterialPropertyBlock();r.GetPropertyBlock(block);block.SetColor("_BaseColor",Color.white*(board?.13f:1));r.SetPropertyBlock(block);
+                var block=new MaterialPropertyBlock();r.GetPropertyBlock(block);block.SetColor("_BaseColor",Color.white*(board?.75f:1));r.SetPropertyBlock(block);
             }
             if(!shot.showGraphs){
-                foreach(var t in new[]{positionTitle,velocityTitle,accelerationTitle,timeStart,timeEnd,timeAxis,values,details,velocityCallout,accelerationCallout,radiusCallout,comparisonLegend})t.gameObject.SetActive(false);
+                foreach(var t in new[]{positionTitle,velocityTitle,accelerationTitle,timeStart,timeEnd,timeAxis,values,details,comparisonLegend})t.gameObject.SetActive(false);
                 foreach(var t in graphRangeLabels)t.gameObject.SetActive(false);
-                foreach(var line in lines)line.gameObject.SetActive(false);
+                for(int i=motionGuideCount;i<lines.Count;i++)lines[i].gameObject.SetActive(false);
+                bool meaningful=shot.showVelocity||shot.showAcceleration||shot.showRadius||shot.showSecant;
+                subjectAnchor.gameObject.SetActive(meaningful);if(!meaningful)for(int i=0;i<motionGuideCount;i++)lines[i].gameObject.SetActive(false);
             }
+            if(shot.scalarFunction){subjectAnchor.gameObject.SetActive(false);for(int i=0;i<motionGuideCount;i++)lines[i].gameObject.SetActive(false);foreach(var t in new[]{velocityCallout,accelerationCallout,radiusCallout})t.gameObject.SetActive(false);}
         }
         void RiemannOverlay(double currentTime) {
             if(shot.riemannFromModel){

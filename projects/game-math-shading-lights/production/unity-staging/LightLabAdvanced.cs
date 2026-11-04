@@ -254,6 +254,7 @@ namespace Yamyam.GameMath.LightLab {
    if(records==null||records.Length!=4)throw new InvalidOperationException("Final comparison requires four verified finished same-scene captures; no placeholder grid is accepted.");
    advancedImages=new RawImage[4];advancedLabels=new Text[4];advancedBorders=new Image[4];
    advancedHeading.gameObject.SetActive(false);advancedInfo.gameObject.SetActive(false);
+   Panel(new Color(0,0,0,.82f),96,220,1728,690);
    for(int i=0;i<4;i++){
     var rec=records[i];if(rec==null||string.IsNullOrWhiteSpace(rec.label)||string.IsNullOrWhiteSpace(rec.sourceKind)||string.IsNullOrWhiteSpace(rec.imagePath)||string.IsNullOrWhiteSpace(rec.sha256))throw new InvalidOperationException("Each comparison capture needs path, label, source kind and SHA256.");
     string path=System.IO.Path.GetFullPath(rec.imagePath);string normalized=path.Replace('\\','/');
@@ -264,11 +265,12 @@ namespace Yamyam.GameMath.LightLab {
     if(rec.crop==null)throw new ArgumentException("Missing comparison crop");
     Rect crop=rec.crop.ToRect();
     if(crop.width<=0||crop.height<=0||crop.xMin<0||crop.yMin<0||crop.xMax>1||crop.yMax>1)throw new ArgumentException("Comparison crop must be normalized and positive.");
-    float x=150+(i%2)*870,y=300+(i/2)*300;float aspect=tex.width*rec.crop.width/(tex.height*rec.crop.height),w=Mathf.Min(720,240*aspect),h=w/aspect;
-    advancedBorders[i]=Panel(new Color(.18f,.18f,.18f),x-4,y-4,728,248);
-    advancedImages[i]=AdvancedImage(new Rect(x+(720-w)/2,y+(240-h)/2,w,h));advancedImages[i].texture=tex;advancedImages[i].uvRect=crop;
-    advancedLabels[i]=Text(font,rec.label,40,x,y-48,730,48,Color.white);
-    Text(font,rec.sourceKind,40,x,y+244,730,48,Color.white);
+    float x=150+(i%2)*870,y=280+(i/2)*340;float aspect=tex.width*rec.crop.width/(tex.height*rec.crop.height),w=Mathf.Min(720,240*aspect),h=w/aspect;
+    float left=x+(720-w)/2,top=y+(240-h)/2;
+    advancedBorders[i]=Panel(new Color(.18f,.18f,.18f),left-4,top-4,w+8,h+8);
+    advancedImages[i]=AdvancedImage(new Rect(left,top,w,h));advancedImages[i].texture=tex;advancedImages[i].uvRect=crop;
+    advancedLabels[i]=Text(font,rec.label,40,x,y-48,730,48,Color.white);advancedLabels[i].alignment=TextAnchor.MiddleCenter;
+    var sourceLabel=Text(font,rec.sourceKind,30,x,y+248,730,42,Color.white);sourceLabel.alignment=TextAnchor.UpperCenter;
    }
    advancedStatus.gameObject.SetActive(false);
   }

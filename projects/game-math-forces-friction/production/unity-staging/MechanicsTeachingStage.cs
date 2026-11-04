@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Yamyam.MathMechanics {
-    public enum MechanicsPicture {FreeBody,FreeSlide,Incline,GravityPair,Jump,FreeFall,Spring,SpringComparison,ControlStep,FirstOrder,HorizontalForce,ForcePair,ReferenceFrames,ContactArea}
+    public enum MechanicsPicture {FreeBody,FreeSlide,Incline,GravityPair,Jump,FreeFall,Spring,SpringComparison,ControlStep,FirstOrder,HorizontalForce,ForcePair,ReferenceFrames,ContactArea,SpringDerivatives,SpringPhase,ControllerCode,StabilityComparison,ResponseComparison}
     [Serializable] public class MechanicsShot {
         public string id="UNBOUND",english="Newton's Second Law",korean="뉴턴의 제2법칙",meaning="받는 힘을 모아 가속도를 구한다";
         public MechanicsPicture picture=MechanicsPicture.FreeBody;
@@ -15,6 +15,7 @@ namespace Yamyam.MathMechanics {
         public double secondaryMass=4,frameVelocity=0,frameAcceleration=0,contactArea=1;
         public bool showObserverFrame=false,showReaction=false,kineticContact=false;
         public string subjectKind="box",secondaryKind="box",bodyLabel="선택한 물체",otherLabel="비교 물체";
+        public int codeStage=0;
         public bool showSupport=true,showFriction=false,showNet=true,showVelocity=true,showAcceleration=true,showEquation=true;
         public float worldScale=1,forceScale=.10f,velocityScale=.23f,accelerationScale=.06f;
         public string equation="ΣF = m a",condition="일정한 질량 · 관성 기준계";
@@ -34,6 +35,7 @@ namespace Yamyam.MathMechanics {
         readonly List<Text> tags=new List<Text>();
         int lineCount,tagCount;
         Material guideMaterial;
+        public Material GuideMaterial=>guideMaterial;
         static readonly Color White=new Color(.96f,.96f,.96f),Yellow=new Color(.91f,.812f,.514f),Teal=new Color(.451f,.78f,.761f),Red=new Color(.937f,.522f,.522f),Green=new Color(.643f,.776f,.627f),Muted=new Color(.68f,.72f,.72f);
         GameObject Own(string name){var go=new GameObject(name);go.transform.SetParent(transform,false);return go;}
         Transform Subject(GameObject prefab,string name) {
@@ -95,7 +97,7 @@ namespace Yamyam.MathMechanics {
         public void Evaluate(double normalizedTime) {
             if(!built)Build();if(normalizedTime<0||normalizedTime>1||double.IsNaN(normalizedTime))throw new ArgumentOutOfRangeException(nameof(normalizedTime));
             if(shot.timeEnd<=shot.timeStart)throw new InvalidOperationException("Increasing model time required");
-            lineCount=tagCount=0;other.gameObject.SetActive(false);third.gameObject.SetActive(false);body.rotation=Quaternion.identity;body.position=Origin;
+            lineCount=tagCount=0;body.gameObject.SetActive(true);other.gameObject.SetActive(false);third.gameObject.SetActive(false);body.rotation=Quaternion.identity;body.position=Origin;
             double t=shot.timeStart+(shot.timeEnd-shot.timeStart)*normalizedTime;
             term.text=shot.english+"\n"+shot.korean+"\n"+shot.meaning;kind.text="현재 화면: 우리 구현\n해설용 역학 모형 · 게임 실측 아님";
             caption.text="오른쪽 +x · 위쪽 +y · 시간 s · 거리 m\n화살표는 표시한 물체가 받는 힘";
@@ -156,10 +158,14 @@ namespace Yamyam.MathMechanics {
                     double value=MechanicsMathModel.FirstOrderLag(shot.x0,shot.target,shot.lambda,t);body.position=Origin+Vector3.right*(float)value*shot.worldScale;
                     Line(new[]{Origin+new Vector3((float)shot.target*shot.worldScale,-1,0),Origin+new Vector3((float)shot.target*shot.worldScale,1,0)},Green,.035f);numbers.text+="\nλ = "+N(shot.lambda)+"\n현재 = "+N(value)+"\n목표 = "+N(shot.target);break;
                 }
-                default: ApplyAdditionalPicture(t);break;
+                default: if((int)shot.picture>=14)ApplySpringPicture(t);else ApplyAdditionalPicture(t);break;
             }
             for(int i=lineCount;i<guides.Count;i++)guides[i].gameObject.SetActive(false);for(int i=tagCount;i<tags.Count;i++)tags[i].gameObject.SetActive(false);
         }
-        public void SetSourceStep(string equation,string meaning){formula.text=equation;conditions.text=meaning;}
+        public void SetSourceStep(string equation,string meaning){
+            formula.supportRichText=shot.picture==MechanicsPicture.ControllerCode;
+            formula.fontSize=shot.picture==MechanicsPicture.ControllerCode?30:39;
+            formula.text=shot.picture==MechanicsPicture.ControllerCode?ControllerCode(shot.codeStage):equation;conditions.text=meaning;
+        }
     }
 }
