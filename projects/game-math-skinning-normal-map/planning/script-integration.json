@@ -1,0 +1,154 @@
+{
+  "updatedAt": "2026-11-04T14:59:31.189818+00:00",
+  "episode": "M22",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "f54afbc56c489449aaabdd0febbbf73870b8d99ebca83981f7e5d266a2d2d2de",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "0e3cade5ec00305f73eb234c9c16ee4d57870e773a29ffd3c841119e5cf0ae06",
+  "changes": [
+    {
+      "sourceBeatId": "M22-000-abstract",
+      "mode": "replace",
+      "beforeKo": "게임 캐릭터가 팔을 구부리면 피부와 옷이 함께 변형됩니다. 그런데 갑옷의 작은 흠집은 실제 모양을 그만큼 잘게 만들지 않아도 빛에 반응하죠. 이번에는 큰 형태를 움직이는 스키닝부터 시작해, 작은 표면 방향을 저장하는 노멀 맵으로 이어가겠습니다. 두 과정에서 좌표를 어떻게 맞추는지 알면, 캐릭터의 움직임과 질감을 같은 흐름으로 이해할 수 있습니다.",
+      "afterKo": "슈퍼 마리오 오디세이에서 마리오가 뛰어올라 착지할 때, 몸 전체가 움직이는 동안 팔과 다리의 자세도 함께 바뀝니다. 컴퓨터는 한 캐릭터의 여러 부분을 어떻게 함께 움직일까요? 오늘은 관절을 따라 큰 형태를 바꾸는 스키닝부터, 표면의 작은 요철을 빛으로 표현하는 노멀 맵까지 이어서 살펴보겠습니다. 먼저 캐릭터를 통째로 움직이는 것과 관절을 굽히는 것의 차이부터 보죠.",
+      "beforeEn": "A character's skin and clothing deform when an arm bends, while small armor scratches can respond to light without equally detailed geometry. We will follow skinning for large-scale shape, then normal maps for fine surface directions. Both depend on consistent coordinate transformations.",
+      "afterEn": "In Super Mario Odyssey, Mario jumps and lands: his whole body moves while his arms and legs change pose. How can a computer coordinate these different parts of one character? We will follow skinning, which changes the large shape, then normal mapping, which uses surface directions to shade fine detail. First, let us distinguish moving the whole character from bending its joints.",
+      "reason": "Replace the unresolved introductory example with observed Mario710–730 at native speed; preserve large shape→fine shading and coordinate-transform thesis. Do not identify Nintendo's internal skinning method."
+    },
+    {
+      "sourceBeatId": "M22-002-bones",
+      "mode": "prepend",
+      "beforeKo": "스켈레탈 애니메이션, 즉 골격 애니메이션에서는 이런 계층을 가상의 본으로 만듭니다. 본은 화면에 보이는 막대기 자체가 아니라, 위치와 방향을 가진 움직이는 좌표계예요. 메시의 꼭짓점인 정점을 본에 연결해 두면 본이 바뀔 때 정점도 따라 움직입니다. 한 본에만 연결되면 단단한 부품처럼 움직이고, 여러 본에 연결되면 그 영향이 섞입니다.",
+      "afterKo": "라이더스 리퍼블릭에서 자전거가 점프할 때, 프레임은 모양을 유지하지만 타는 사람의 팔과 무릎은 접혔다 펴집니다. 이 차이를 직접 만들어 보려고, 관절마다 작은 좌표계를 붙여 보겠습니다. 스켈레탈 애니메이션, 즉 골격 애니메이션에서는 이런 계층을 가상의 본으로 만듭니다. 본은 화면에 보이는 막대기 자체가 아니라, 위치와 방향을 가진 움직이는 좌표계예요. 메시의 꼭짓점인 정점을 본에 연결해 두면 본이 바뀔 때 정점도 따라 움직입니다. 한 본에만 연결되면 단단한 부품처럼 움직이고, 여러 본에 연결되면 그 영향이 섞입니다.",
+      "beforeEn": "Skeletal animation replaces the part hierarchy with virtual bones. A bone is a moving coordinate frame, not the stick used to visualize it. Mesh vertices are associated with bones and respond to their transforms. A single influence behaves rigidly; multiple influences blend their effects.",
+      "afterEn": "When a bicycle jumps in Riders Republic, its frame retains its shape while the rider bends and extends arms and knees. To build this distinction ourselves, we will attach a small coordinate frame to each joint. Skeletal animation replaces the part hierarchy with virtual bones. A bone is a moving coordinate frame, not the stick used to visualize it. Mesh vertices are associated with bones and respond to their transforms. A single influence behaves rigidly; multiple influences blend their effects.",
+      "reason": "Observed rigid bicycle versus articulated rider motivates virtual bone coordinates; clothing is not evidence of smooth skinning."
+    },
+    {
+      "sourceBeatId": "M22-015-bump-height",
+      "mode": "prepend",
+      "beforeKo": "텍스처는 색뿐 아니라 표면의 여러 성질을 저장할 수 있습니다. 범프 매핑은 작은 요철이 빛에 반응하는 모습을 표면 방향의 변화로 나타내는 방법입니다. 높이 맵은 밝기를 높낮이로 저장하고 그 기울기에서 법선을 구합니다. 노멀 맵은 그 법선 방향 자체를 저장하죠. 여기서는 노멀 맵을 따라가겠습니다. 이 계산만으로 실제 정점이나 외곽선이 돌출되는 것은 아닙니다.",
+      "afterKo": "둠 쓰리의 금속 벽을 손전등으로 비추면, 작은 홈이 밝아졌다 어두워지며 드러납니다. 이런 표면 디테일을 표현하는 한 가지 방법을, 이제 우리가 만든 같은 면에서 직접 비교해 보겠습니다. 텍스처는 색뿐 아니라 표면의 여러 성질을 저장할 수 있습니다. 범프 매핑은 작은 요철이 빛에 반응하는 모습을 표면 방향의 변화로 나타내는 방법입니다. 높이 맵은 밝기를 높낮이로 저장하고 그 기울기에서 법선을 구합니다. 노멀 맵은 그 법선 방향 자체를 저장하죠. 여기서는 노멀 맵을 따라가겠습니다. 이 계산만으로 실제 정점이나 외곽선이 돌출되는 것은 아닙니다.",
+      "beforeEn": "Textures can store more than color. Bump mapping represents small relief through changes in shading direction. A height map stores height and derives normals from its slope; a normal map stores the directions directly. We will focus on normal maps, which alone do not displace vertices or change the silhouette.",
+      "afterEn": "As a flashlight sweeps over a metal wall in Doom 3, small grooves emerge through changes in brightness. We will now compare one way to create this kind of surface detail on a fixed surface in our own implementation. Textures can store more than color. Bump mapping represents small relief through changes in shading direction. A height map stores height and derives normals from its slope; a normal map stores the directions directly. We will focus on normal maps, which alone do not displace vertices or change the silhouette.",
+      "reason": "Observed small surface light response motivates normal mapping without asserting that each visible groove is mapped rather than geometric."
+    },
+    {
+      "sourceBeatId": "M22-019-tangent-frame",
+      "mode": "readthrough-correction",
+      "beforeKo": "그 기준이 접선 공간입니다. 표면 바깥쪽 법선이 엔, 텍스처의 유가 늘어나는 방향이 접선 티, 브이가 늘어나는 쪽이 바이탄젠트 비입니다. 자료에 따라 비를 바이노멀이라고도 부르지만 여기서는 바이탄젠트로 통일하겠습니다. 이 세 방향을 묶어 티비엔 기저라고 해요. 이미지의 위아래와 브이의 증가 방향은 도구마다 약속이 다를 수 있으므로 함께 맞춰야 합니다.",
+      "afterKo": "그 기준이 접선 공간입니다. 표면 바깥쪽 법선이 엔, 텍스처의 유가 늘어나는 방향이 접선 티, 브이가 늘어나는 쪽이 비탄젠트 비입니다. 자료에 따라 비를 바이노멀이라고도 부르지만 여기서는 비탄젠트로 통일하겠습니다. 이 세 방향을 묶어 티비엔 기저라고 해요. 이미지의 위아래와 브이의 증가 방향은 도구마다 약속이 다를 수 있으므로 함께 맞춰야 합니다.",
+      "beforeEn": "Tangent space supplies the local frame: normal N points outward, tangent T follows increasing texture u, and bitangent B follows increasing v. Some references call B the binormal; we will consistently use bitangent. Together they form the TBN basis. Image-up and increasing-v conventions must agree across tools.",
+      "afterEn": "Tangent space supplies the local frame: normal N points outward, tangent T follows increasing texture u, and bitangent B follows increasing v. Some references call B the binormal; we will consistently use bitangent. Together they form the TBN basis. Image-up and increasing-v conventions must agree across tools.",
+      "reason": "Consistent Korean rendering of bitangent across M22/M23; display canonical English bitangent beside first definition."
+    },
+    {
+      "sourceBeatId": "M22-025-triangle-input",
+      "mode": "readthrough-correction",
+      "beforeKo": "이제 접선 티와 바이탄젠트 비를 실제 메시에서 구해 보겠습니다. 필요한 것은 삼각형의 세 정점 위치와 각각의 유브이입니다. 첫 정점을 원점처럼 놓고, 나머지 두 정점으로 가는 변을 큐 일과 큐 이라고 하죠. 유의 차이는 에스 일과 에스 이, 브이의 차이는 티 일과 티 이로 두겠습니다. 절대 위치보다 두 좌표에서 얼마나 이동했는지에 집중하는 겁니다.",
+      "afterKo": "이제 접선 티와 비탄젠트 비를 실제 메시에서 구해 보겠습니다. 필요한 것은 삼각형의 세 정점 위치와 각각의 유브이입니다. 첫 정점을 원점처럼 놓고, 나머지 두 정점으로 가는 변을 큐 일과 큐 이라고 하죠. 유의 차이는 에스 일과 에스 이, 브이의 차이는 티 일과 티 이로 두겠습니다. 절대 위치보다 두 좌표에서 얼마나 이동했는지에 집중하는 겁니다.",
+      "beforeEn": "To calculate T and B, start with three triangle positions and their UV coordinates. Relative to the first vertex, define the two geometric edges q1 and q2. Let s1 and s2 be the corresponding changes in u, and t1 and t2 the changes in v. We compare displacement in the surface and texture coordinate systems.",
+      "afterEn": "To calculate T and B, start with three triangle positions and their UV coordinates. Relative to the first vertex, define the two geometric edges q1 and q2. Let s1 and s2 be the corresponding changes in u, and t1 and t2 the changes in v. We compare displacement in the surface and texture coordinate systems.",
+      "reason": "Consistent Korean rendering of bitangent across M22/M23; display canonical English bitangent beside first definition."
+    },
+    {
+      "sourceBeatId": "M22-027-invert-system",
+      "mode": "readthrough-correction",
+      "beforeKo": "이차 행렬의 역행렬을 쓰면 분모에 에스 일 티 이, 빼기 에스 이 티 일이 나옵니다. 이것이 유브이 삼각형의 방향과 넓이 정보를 담은 행렬식입니다. 접선은 티 이 큐 일에서 티 일 큐 이를 뺀 값을 이 행렬식으로 나누고, 바이탄젠트는 마이너스 에스 이 큐 일에 에스 일 큐 이를 더해 같은 값으로 나눕니다. 아직 길이가 일인 벡터는 아닙니다.",
+      "afterKo": "이차 행렬의 역행렬을 쓰면 분모에 에스 일 티 이, 빼기 에스 이 티 일이 나옵니다. 이것이 유브이 삼각형의 방향과 넓이 정보를 담은 행렬식입니다. 접선은 티 이 큐 일에서 티 일 큐 이를 뺀 값을 이 행렬식으로 나누고, 비탄젠트는 마이너스 에스 이 큐 일에 에스 일 큐 이를 더해 같은 값으로 나눕니다. 아직 길이가 일인 벡터는 아닙니다.",
+      "beforeEn": "The two-by-two inverse introduces the UV determinant D=s1*t2-s2*t1. It encodes oriented UV area. The tangent is (t2*q1-t1*q2)/D, and the bitangent is (-s2*q1+s1*q2)/D. These vectors are not yet normalized.",
+      "afterEn": "The two-by-two inverse introduces the UV determinant D=s1*t2-s2*t1. It encodes oriented UV area. The tangent is (t2*q1-t1*q2)/D, and the bitangent is (-s2*q1+s1*q2)/D. These vectors are not yet normalized.",
+      "reason": "Consistent Korean rendering of bitangent across M22/M23; display canonical English bitangent beside first definition."
+    },
+    {
+      "sourceBeatId": "M22-028-tangent-worked",
+      "mode": "readthrough-correction",
+      "beforeKo": "숫자로 확인해 보겠습니다. 삼차원 변을 이, 영, 영과 영, 일, 영으로 두고, 유브이 변을 일, 영과 영, 일로 두죠. 행렬식은 일입니다. 그러면 접선은 이, 영, 영, 바이탄젠트는 영, 일, 영이 됩니다. 접선의 길이를 일로 맞추면 일, 영, 영이죠. 텍스처에서 오른쪽으로 가는 움직임이 모델에서도 오른쪽 방향과 연결되었습니다.",
+      "afterKo": "숫자로 확인해 보겠습니다. 삼차원 변을 이, 영, 영과 영, 일, 영으로 두고, 유브이 변을 일, 영과 영, 일로 두죠. 행렬식은 일입니다. 그러면 접선은 이, 영, 영, 비탄젠트는 영, 일, 영이 됩니다. 접선의 길이를 일로 맞추면 일, 영, 영이죠. 텍스처에서 오른쪽으로 가는 움직임이 모델에서도 오른쪽 방향과 연결되었습니다.",
+      "beforeEn": "Take geometric edges (2,0,0) and (0,1,0), with UV edges (1,0) and (0,1). The determinant is one. We obtain T=(2,0,0) and B=(0,1,0), then normalize T to (1,0,0). Moving right in texture coordinates now corresponds to the model's rightward direction.",
+      "afterEn": "Take geometric edges (2,0,0) and (0,1,0), with UV edges (1,0) and (0,1). The determinant is one. We obtain T=(2,0,0) and B=(0,1,0), then normalize T to (1,0,0). Moving right in texture coordinates now corresponds to the model's rightward direction.",
+      "reason": "Consistent Korean rendering of bitangent across M22/M23; display canonical English bitangent beside first definition."
+    },
+    {
+      "sourceBeatId": "M22-031-average-tangents",
+      "mode": "readthrough-correction",
+      "beforeKo": "지금은 삼각형 하나의 기저를 구했습니다. 정점 단위 값을 만들려면 그 정점을 공유하는 면들의 접선과 바이탄젠트를 모읍니다. 누적값을 영으로 시작하고, 각 삼각형을 계산해 세 꼭짓점의 목록에 더해 가는 방식이에요. 여기서 평균내는 것은 법선이 아니라 방금 구한 접선 계열 벡터입니다. 법선은 별도로 준비된 입력이며, 그다음 직교화에 사용합니다.",
+      "afterKo": "지금은 삼각형 하나의 기저를 구했습니다. 정점 단위 값을 만들려면 그 정점을 공유하는 면들의 접선과 비탄젠트를 모읍니다. 누적값을 영으로 시작하고, 각 삼각형을 계산해 세 꼭짓점의 목록에 더해 가는 방식이에요. 여기서 평균내는 것은 법선이 아니라 방금 구한 접선 계열 벡터입니다. 법선은 별도로 준비된 입력이며, 그다음 직교화에 사용합니다.",
+      "beforeEn": "We have a frame for one triangle. To obtain vertex data, accumulate the tangents and bitangents of adjacent compatible triangles, starting the accumulators at zero. These are tangent vectors, not triangle normals. The normal is a separately prepared input used in the following orthogonalization.",
+      "afterEn": "We have a frame for one triangle. To obtain vertex data, accumulate the tangents and bitangents of adjacent compatible triangles, starting the accumulators at zero. These are tangent vectors, not triangle normals. The normal is a separately prepared input used in the following orthogonalization.",
+      "reason": "Consistent Korean rendering of bitangent across M22/M23; display canonical English bitangent beside first definition."
+    },
+    {
+      "sourceBeatId": "M22-032-gram-schmidt",
+      "mode": "readthrough-correction",
+      "beforeKo": "모인 접선에 법선 방향 성분이 섞여 있다면 빼 주겠습니다. 단위 법선과 접선의 내적에 법선을 곱하면 그 성분이 나오죠. 이를 빼고 정규화하면 법선에 수직인 접선이 됩니다. 그다음 엔 크로스 티와 모아 둔 바이탄젠트의 내적 부호를 보고 손잡이를 저장합니다. 이렇게 접선의 세 성분과 부호 하나로 기저를 다시 만들 준비가 끝납니다.",
+      "afterKo": "모인 접선에 법선 방향 성분이 섞여 있다면 빼 주겠습니다. 단위 법선과 접선의 내적에 법선을 곱하면 그 성분이 나오죠. 이를 빼고 정규화하면 법선에 수직인 접선이 됩니다. 그다음 엔 크로스 티와 모아 둔 비탄젠트의 내적 부호를 보고 손잡이를 저장합니다. 이렇게 접선의 세 성분과 부호 하나로 기저를 다시 만들 준비가 끝납니다.",
+      "beforeEn": "Remove the accumulated tangent's component along the unit normal: T'=T-dot(N,T)*N, then normalize. Determine handedness from the sign of dot(cross(N,T'),Baccum). Storing the tangent plus this sign prepares us to reconstruct the frame.",
+      "afterEn": "Remove the accumulated tangent's component along the unit normal: T'=T-dot(N,T)*N, then normalize. Determine handedness from the sign of dot(cross(N,T'),Baccum). Storing the tangent plus this sign prepares us to reconstruct the frame.",
+      "reason": "Consistent Korean rendering of bitangent across M22/M23; display canonical English bitangent beside first definition."
+    },
+    {
+      "sourceBeatId": "M22-024-reconstruct-bitangent",
+      "mode": "readthrough-correction",
+      "beforeKo": "기저를 직각으로 정리했다면 세 축을 모두 저장하지 않을 수도 있습니다. 법선 엔과 접선 티의 외적으로 남은 축을 만들 수 있죠. 그런데 텍스처를 거울 대칭하면 이 축의 방향이 뒤집혀야 할 수 있습니다. 그래서 플러스 일 또는 마이너스 일의 손잡이 부호를 함께 저장합니다. 비는 그 부호에 엔 크로스 티를 곱해 복원합니다. 접선의 더블유 성분에 이 부호를 넣는 형식도 쓰입니다.",
+      "afterKo": "기저를 직각으로 정리했다면 세 축을 모두 저장하지 않을 수도 있습니다. 법선 엔과 접선 티의 외적으로 남은 축을 만들 수 있죠. 그런데 텍스처를 거울 대칭하면 이 축의 방향이 뒤집혀야 할 수 있습니다. 그래서 좌표계의 좌우 방향을 구분하는 부호, 핸디드니스를 함께 저장합니다. 값은 플러스 일 또는 마이너스 일이에요. 비는 그 부호에 엔 크로스 티를 곱해 복원합니다. 접선의 더블유 성분에 이 부호를 넣는 형식도 쓰입니다.",
+      "beforeEn": "An orthogonal frame need not store all three axes: a cross product of N and T can reconstruct the third. Mirrored UV mapping may require that axis to reverse, so store a handedness sign of +1 or -1. Reconstruct B as sign times cross(N,T); formats may store this sign in tangent.w.",
+      "afterEn": "An orthogonal frame need not store all three axes: a cross product of N and T can reconstruct the third. Mirrored UV mapping may require that axis to reverse, so store a handedness sign that distinguishes the frame's orientation: +1 or -1. Reconstruct B as sign times cross(N,T); formats may store this sign in tangent.w.",
+      "reason": "Define handedness in plain words beside canonical term; retain sign and cross-product algorithm."
+    },
+    {
+      "sourceBeatId": "M22-032-gram-schmidt",
+      "mode": "readthrough-correction",
+      "beforeKo": "모인 접선에 법선 방향 성분이 섞여 있다면 빼 주겠습니다. 단위 법선과 접선의 내적에 법선을 곱하면 그 성분이 나오죠. 이를 빼고 정규화하면 법선에 수직인 접선이 됩니다. 그다음 엔 크로스 티와 모아 둔 비탄젠트의 내적 부호를 보고 손잡이를 저장합니다. 이렇게 접선의 세 성분과 부호 하나로 기저를 다시 만들 준비가 끝납니다.",
+      "afterKo": "모인 접선에 법선 방향 성분이 섞여 있다면 빼 주겠습니다. 단위 법선과 접선의 내적에 법선을 곱하면 그 성분이 나오죠. 이를 빼고 정규화하면 법선에 수직인 접선이 됩니다. 그다음 엔 크로스 티와 모아 둔 비탄젠트의 내적 부호를 보고 앞서 정의한 핸디드니스 부호를 저장합니다. 이렇게 접선의 세 성분과 부호 하나로 기저를 다시 만들 준비가 끝납니다.",
+      "beforeEn": "Remove the accumulated tangent's component along the unit normal: T'=T-dot(N,T)*N, then normalize. Determine handedness from the sign of dot(cross(N,T'),Baccum). Storing the tangent plus this sign prepares us to reconstruct the frame.",
+      "afterEn": "Remove the accumulated tangent's component along the unit normal: T'=T-dot(N,T)*N, then normalize. Determine handedness from the sign of dot(cross(N,T'),Baccum). Storing the tangent plus this sign prepares us to reconstruct the frame.",
+      "reason": "Use established handedness term rather than an unexplained literal handle translation."
+    }
+  ],
+  "readThrough": {
+    "status": "complete-text-review-only",
+    "source": "planning/source-audit.json",
+    "beats": 36,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "All36KO and all36EN source-faithful teaching beats read; keep every source paragraph mapping and calculation.",
+      "Original source images3 now visually inspected as recorded in research/figure-audit.json; old draft metadata about unviewed images is superseded, not rewritten.",
+      "New gameplay text says only what root's time-indexed source observations support; no assertion of Nintendo/Ubisoft skinning algorithm or per-groove Doom geometry."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "0522e215543afea9136182ce10609c399fe8d9fcbc57f3e1e42ef055b9374a12",
+    "enSha256": "bb4a9c0e56de54013f8e3bfd93b7e1cfe24af078f34f26953a7b0360c1d5f0a4",
+    "reviewedAt": "2026-11-04T14:59:31.189818+00:00",
+    "reviewer": "Codex /root/remaining_math_curriculum",
+    "method": "Read complete heading-free integrated Korean and English texts, then reread all changed paragraphs after terminology, flow and numeric corrections. Compared original ordered source mappings and verified observed gameplay role limitations. This is agent text review, not human approval or audio listening.",
+    "languages": [
+      "ko",
+      "en"
+    ],
+    "allBeatsRead": true,
+    "sourceAuditSha256": "f54afbc56c489449aaabdd0febbbf73870b8d99ebca83981f7e5d266a2d2d2de",
+    "fullSourceReadingEvidence": "planning/source-audit.json",
+    "validation": {
+      "pairedIdsAndOrder": true,
+      "allOriginalSourceParagraphMappingsPreserved": true,
+      "allSectionOrderPreserved": true,
+      "defaultHoldZero": true,
+      "sourceResolutionMinimum": true,
+      "allGameBindingsNativeNoFreezeNoLoop": true,
+      "threeObservedGames": true,
+      "portalOriginalAudioOffset450Seconds": null
+    }
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ]
+}

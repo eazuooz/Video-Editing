@@ -11,7 +11,7 @@ using Object=UnityEngine.Object;
 
 namespace Yamyam.GameMath.LightLab {
  public static class LightLabCapture {
-  [Serializable] public class Job {public string id,command="preflight",output,ffmpeg,expectedFingerprint,cueFile;public int frames=480;public int[] sampleFrames=new[]{0,120,240,479};}
+  [Serializable] public class Job {public string id,command="preflight",output,ffmpeg,expectedFingerprint,cueFile;public int frames=480;public int[] sampleFrames=new[]{0,120,240,479};public AdvancedComparisonFrame[] comparisonFrames;}
   [Serializable] public class State {public string status,id,error,scene,output,compiledFingerprint,unity,sourceKind;public int completed,total;public string dimensions="1920x1080",frameRate="60/1";public bool actualGameplay=false;}
   [Serializable] public class BakeEvidence {public string backend,mode;public int lightmapCount,lightmappedRenderers;public bool engineReturnedSuccess,lightIsBaked;}
   static Job job;static State state;static LightLabStage stage;static RenderTexture target;static Texture2D pixels;
@@ -38,7 +38,7 @@ namespace Yamyam.GameMath.LightLab {
     Directory.CreateDirectory(job.output);
     var cue=JsonUtility.FromJson<LabCue>(File.ReadAllText(job.cueFile));
     if(cue.id!=job.id)throw new InvalidDataException("Cue/job ID differs");
-    if(job.command=="render" && cue.diagram!=null && cue.diagram.StartsWith("math:") && (cue.stepTimes==null||cue.stepTimes.Length==0))throw new InvalidDataException("Production math cues require actual speech-aligned stepTimes");
+    if(job.command=="render" && cue.diagram!=null && (cue.diagram.StartsWith("math:")||cue.diagram.StartsWith("advanced:")) && (cue.stepTimes==null||cue.stepTimes.Length==0))throw new InvalidDataException("Production explanatory cues require actual speech-aligned stepTimes");
     state=new State{status="building",id=job.id,output=job.output,compiledFingerprint=LightLabBuildVersion.Value,unity=Application.unityVersion,total=job.frames,sourceKind=cue.sourceKind};Write();
     string assets=Root+"/Generated/"+LightLabBuildVersion.Value.Substring(0,12)+"/"+job.command+"/"+job.id;
     Directory.CreateDirectory(assets);AssetDatabase.Refresh();
@@ -48,7 +48,7 @@ namespace Yamyam.GameMath.LightLab {
     PlayerSettings.colorSpace=ColorSpace.Linear;QualitySettings.vSyncCount=0;
     var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
     RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.09f,.09f,.09f);RenderSettings.ambientIntensity=1;
-    var go=new GameObject("M21 · "+job.id);stage=go.AddComponent<LightLabStage>();
+    var go=new GameObject("M21 · "+job.id);stage=go.AddComponent<LightLabStage>();stage.AdvancedComparisonFrames=job.comparisonFrames;
     // A local OS font is used only in this workstation render; no font binary is redistributed.
     var font=Font.CreateDynamicFontFromOSFont("Malgun Gothic",48);stage.Build(cue,font);
     var teachingShader=Shader.Find("Yamyam/Teaching/LocalIllumination");
@@ -123,6 +123,9 @@ namespace Yamyam.GameMath.LightLab {
   static void Write(){if(state!=null&&Directory.Exists(state.output))File.WriteAllText(Path.Combine(state.output,"progress.json"),JsonUtility.ToJson(state,true));}
   static void Finish(Exception e){EditorApplication.update-=Tick;
     try{if(encoder!=null){pipe.Close();encoder.WaitForExit();if(encoder.ExitCode!=0)e=new Exception(stderr);encoder.Dispose();}}catch(Exception x){e=x;}
+    if(e==null&&stage&&state!=null&&!string.IsNullOrEmpty(state.scene)){
+      try{stage.RenderCamera.targetTexture=null;EditorSceneManager.SaveScene(stage.gameObject.scene,state.scene);AssetDatabase.SaveAssets();}catch(Exception x){e=x;}
+    }
     if(state!=null){state.status=e==null?"complete":"failed";state.error=e?.ToString();Write();File.WriteAllText(Path.Combine(state.output,e==null?"capture-success.json":"capture-failure.json"),JsonUtility.ToJson(state,true));}
     if(e!=null)Debug.LogException(e);if(stage&&stage.RenderCamera)stage.RenderCamera.targetTexture=null;
     if(target){target.Release();Object.DestroyImmediate(target);}if(pixels)Object.DestroyImmediate(pixels);

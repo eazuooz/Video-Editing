@@ -49,7 +49,7 @@ namespace Yamyam.GameMath.LightLab {
    float start=Cue.stepTimes!=null&&Cue.stepTimes.Length>0?Cue.stepTimes[0]:Cue.duration*.4f;
    float u=Mathf.SmoothStep(0,1,Mathf.Clamp01((seconds-start)/3));
    if(Cue.bakeAction=="moveOccluder")occluder.position=originalOccluder+Vector3.right*(u*1.8f);
-   if(Cue.bakeAction=="switchOff")MainLight.intensity=2*(1-u);
+   if(Cue.bakeAction=="switchOff")MainLight.intensity=Cue.engineIntensity*(1-u);
    if(Cue.bakeAction=="walk")subject.position=originalSubject+Vector3.right*Mathf.Lerp(-.8f,1.8f,u);
   }
  }

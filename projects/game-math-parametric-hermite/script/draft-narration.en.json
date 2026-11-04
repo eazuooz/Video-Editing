@@ -1,0 +1,678 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M31",
+  "language": "en",
+  "status": "source-faithful-content-draft-awaiting-footage-integration",
+  "finalNarrationLocked": false,
+  "sourceAudit": "planning/source-audit.json",
+  "segments": [
+    {
+      "id": "M31-001",
+      "section": "13.1",
+      "title": "M31-001",
+      "text": "Imagine a moving platform traveling between two places. Two endpoints define a straight route, but how do we bend it around an obstacle and make it depart gently? We will represent a curve with numbers, make it pass through chosen points, and finally control its departure and arrival directions.",
+      "sourceParagraphs": [
+        "M31-P003",
+        "M31-P004",
+        "M31-P005",
+        "M31-P006",
+        "M31-P007",
+        "M31-P008",
+        "M31-P009"
+      ],
+      "screenPlan": "독립 실제 게임의 움직이는 발판/편집 경로 예시 미확정. 제작 전 관찰과 권리/FHD 확인. 이후 동일 경로 실험실로 연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "Actual-game thesis abstract after 2-second brand; verified footage integration pending."
+    },
+    {
+      "id": "M31-002",
+      "section": "13.1",
+      "title": "M31-002",
+      "text": "Write the moving point as p of t. The parameter t describes progress along the curve. One input gives an x, y, and z coordinate together. We often use zero to one, but that interval does not automatically mean one physical second.",
+      "sourceParagraphs": [
+        "M31-P011",
+        "M31-P012",
+        "M31-P013",
+        "M31-P014",
+        "M31-P015",
+        "M31-P016",
+        "M31-P017"
+      ],
+      "screenPlan": "t 슬라이더→p(t) 좌표→경로 위 점 동시 강조. 실제 시간과 매개변수 진행 구분.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 천천히 움직이려면 경로를 어떻게 적어야 할까요? 먼저 곡선을 숫자로 표현하고, 원하는 점을 지나는 방법을 거쳐, 출발과 도착 방향까지 잡아 보겠습니다."
+    },
+    {
+      "id": "M31-003",
+      "section": "13.1",
+      "title": "M31-003",
+      "text": "For a unit circle, let x be cosine of two pi t and y be sine of two pi t. At one quarter we reach the top; at one half, the left. The implicit equation x squared plus y squared equals one describes the same circle. Parametric form directly produces positions, while y equals the square root of one minus x squared gives only the upper semicircle.",
+      "sourceParagraphs": [
+        "M31-P014",
+        "M31-P015",
+        "M31-P016",
+        "M31-P017"
+      ],
+      "screenPlan": "원의 세 표현과 사분점 확인. x,y 각각이 t의 함수임을 연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "숫자 하나를 넣으면 엑스, 와이, 제트 좌표가 함께 나옵니다. 보통 티를 영에서 일까지 움직이지만, 이 범위 자체가 물리적인 일 초를 뜻하지는 않습니다."
+    },
+    {
+      "id": "M31-004",
+      "section": "13.1",
+      "title": "M31-004",
+      "text": "Now make each coordinate a polynomial in t. Take coefficient vectors c zero through c three, multiply them by one, t, t squared, and t cubed, and add them. This is the power, or monomial, form of a cubic polynomial curve. Higher degree is possible, but it does not automatically make a shape easier to control.",
+      "sourceParagraphs": [
+        "M31-P018",
+        "M31-P019",
+        "M31-P020",
+        "M31-P021",
+        "M31-P022",
+        "M31-P023",
+        "M31-P024",
+        "M31-P025",
+        "M31-P026"
+      ],
+      "screenPlan": "p=c0+c1t+c2t²+c3t³ 순차 누적. 좌표별 같은 계산.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "수도 있지만, 매개변수 표현은 다음 위치를 바로 계산하기 편합니다. 와이를 루트 일 빼기 엑스 제곱으로만 적으면 위쪽 반원만 표현한다는 차이도 있습니다."
+    },
+    {
+      "id": "M31-005",
+      "section": "13.1",
+      "title": "M31-005",
+      "text": "Keep parametric curves separate from polynomial curves. The sine and cosine used for the circle are not polynomials. A nonconstant circular arc cannot be represented exactly by finite polynomial coordinates. Ratios of polynomials offer rational curves, but here we follow polynomial curves built from additions and multiplications.",
+      "sourceParagraphs": [
+        "M31-P019",
+        "M31-P020",
+        "M31-P021",
+        "M31-P022",
+        "M31-P023"
+      ],
+      "screenPlan": "원과 다항식 근사 구분. 차수 올려도 정확한 원이 되는 것은 아니라는 최소 조건.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "세제곱을 곱해 더합니다. 이것이 삼차 다항식 곡선의 단항식 표현입니다. 차수는 더 높일 수 있지만, 높인다고 원하는 모양을 더 쉽게 얻는 것은 아닙니다."
+    },
+    {
+      "id": "M31-006",
+      "section": "13.1",
+      "title": "M31-006",
+      "text": "A game can store the current parameter, update it with time, and evaluate the platform position. To display the path, sample successive parameter values and connect the points with segments. Smaller intervals, or extra samples in curved regions, improve the approximation. Yet editing four coefficient vectors is not a convenient way to design a route.",
+      "sourceParagraphs": [
+        "M31-P027",
+        "M31-P028",
+        "M31-P029"
+      ],
+      "screenPlan": "점10개선분 근사→곡률 큰 부분 세분; 계수 핸들 직관 부족 다음절 연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "호를 정확히 표현할 수는 없어요. 다항식의 비를 쓰는 유리 곡선이라는 방법도 있지만, 지금은 더하고 곱해서 계산할 수 있는 다항식 곡선을 따라가겠습니다."
+    },
+    {
+      "id": "M31-007",
+      "section": "13.1",
+      "title": "M31-007",
+      "text": "The same calculation fits into matrix form. Place the four coefficient vectors in columns of C, then multiply by the column containing one, t, t squared, and t cubed. For a 3D curve, C has three rows and four columns. It stores polynomial coefficients; it is not a spatial transformation matrix. The four entries on the right are not a homogeneous 3D point.",
+      "sourceParagraphs": [
+        "M31-P031",
+        "M31-P032",
+        "M31-P033",
+        "M31-P034",
+        "M31-P035",
+        "M31-P036",
+        "M31-P037",
+        "M31-P038",
+        "M31-P039",
+        "M31-P040",
+        "M31-P041"
+      ],
+      "screenPlan": "C 각 열과 다항식 항 연결. 크기 d×4 표시, 공간변환 그림 사용 금지.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "작게 잡거나 많이 휘어진 부분을 더 촘촘히 나누면 모양이 잘 드러납니다. 다만 계수 네 개를 숫자로 직접 고치는 것만으로 원하는 길을 설계하기는 어렵죠."
+    },
+    {
+      "id": "M31-008",
+      "section": "13.1",
+      "title": "M31-008",
+      "text": "Return to a simple case. With endpoints p zero and p one, define d as their difference. p zero plus t d gives the straight path. In cubic notation, c zero is the start, c one is d, and the remaining coefficients are zero. If d is also zero, the curve stays at a single point.",
+      "sourceParagraphs": [
+        "M31-P042",
+        "M31-P043",
+        "M31-P044",
+        "M31-P045",
+        "M31-P046",
+        "M31-P047"
+      ],
+      "screenPlan": "직선→고차계수0→정지점. 차수는 최대차수와 실제차수 분리.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "니다. 이 행렬은 물체를 옮기는 공간 변환 행렬이 아니라, 다항식의 계수를 정리한 표입니다. 오른쪽 네 숫자도 삼차원 위치와 동차좌표를 뜻하지 않습니다."
+    },
+    {
+      "id": "M31-009",
+      "section": "13.1",
+      "title": "M31-009",
+      "text": "Endpoints follow by substitution. At t equal to zero, every term containing t disappears, leaving c zero. At one, all powers are one, so the endpoint is the sum of the four coefficients. These are the first constraints a designed curve must satisfy.",
+      "sourceParagraphs": [
+        "M31-P048",
+        "M31-P049",
+        "M31-P050",
+        "M31-P051",
+        "M31-P052",
+        "M31-P053"
+      ],
+      "screenPlan": "t0/t1 치환 전개. 계수의 합과 p1 연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "디는 직선 경로가 됩니다. 삼차 표현에 넣어도 씨 영은 시작점, 씨 일은 디, 나머지 두 계수는 영이면 충분합니다. 디까지 영이면 점 하나에 머무릅니다."
+    },
+    {
+      "id": "M31-010",
+      "section": "13.1",
+      "title": "M31-010",
+      "text": "A curve can be a fixed shape or the path of a moving object. In the second view, differentiating position describes its direction and rate of change. For a cubic, the first derivative is c one plus two c two t plus three c three t squared. Differentiating again gives two c two plus six c three t.",
+      "sourceParagraphs": [
+        "M31-P054",
+        "M31-P055",
+        "M31-P056",
+        "M31-P057",
+        "M31-P058",
+        "M31-P059",
+        "M31-P060",
+        "M31-P061",
+        "M31-P062",
+        "M31-P063",
+        "M31-P064",
+        "M31-P065",
+        "M31-P066"
+      ],
+      "screenPlan": "단항식 항의 미분 과정을 한항씩 보여주며 접선/가속 벡터 연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 사라져 씨 영만 남습니다. 티가 일이면 거듭제곱이 모두 일이므로 네 계수의 합이 도착점입니다. 곡선을 설계할 때는 이 끝점 조건부터 만족시켜야 합니다."
+    },
+    {
+      "id": "M31-011",
+      "section": "13.1",
+      "title": "M31-011",
+      "text": "If t is physical time, those derivatives are velocity and acceleration. If t is only progress, its change with physical time must also be included. Calling physical time tau, velocity is the derivative of p with respect to t multiplied by the derivative of t with respect to tau. For the following demonstrations we first advance t like time.",
+      "sourceParagraphs": [
+        "M31-P055",
+        "M31-P056",
+        "M31-P057",
+        "M31-P058",
+        "M31-P059",
+        "M31-P060",
+        "M31-P061",
+        "M31-P062",
+        "M31-P063",
+        "M31-P064",
+        "M31-P065",
+        "M31-P066"
+      ],
+      "screenPlan": "dp/dτ=p'(t)t'(τ); 필요시 a=p''(t)(t')²+p'(t)t'' 보조표시. 변수의 의미 먼저.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "차 곡선의 일차 도함수는 씨 일 더하기 이 씨 이 티 더하기 삼 씨 삼 티 제곱입니다. 다시 미분한 이차 도함수는 이 씨 이 더하기 육 씨 삼 티입니다."
+    },
+    {
+      "id": "M31-012",
+      "section": "13.1",
+      "title": "M31-012",
+      "text": "For the line p zero plus t d, velocity is constant d and acceleration is zero. Replace t with t squared, and the geometric line stays the same while the motion starts slowly and accelerates. Equal-time markers spread farther apart. The route's shape and the speed along it are separate design choices.",
+      "sourceParagraphs": [
+        "M31-P067",
+        "M31-P068",
+        "M31-P069",
+        "M31-P070",
+        "M31-P071",
+        "M31-P072",
+        "M31-P073",
+        "M31-P074"
+      ],
+      "screenPlan": "원문 그림 역할 재구성: 같은 선 두 개, 동일 t표본 균등/제곱 간격. 실제 게임 동일 경로 속도 변화 후보.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 속도는 피의 티에 대한 도함수에 티의 타우에 대한 도함수를 곱합니다. 앞으로 그림에서는 우선 티를 시간처럼 증가시켜, 곡선과 움직임을 함께 보겠습니다."
+    },
+    {
+      "id": "M31-013",
+      "section": "13.1",
+      "title": "M31-013",
+      "text": "The first derivative points along the tangent to the curve. If only direction is needed, divide it by its length to obtain a unit tangent. At a point where the derivative is zero, that division cannot determine a direction and needs separate handling.",
+      "sourceParagraphs": [
+        "M31-P075",
+        "M31-P076"
+      ],
+      "screenPlan": "움직이는 접선과 길이 변화, normalize0 경고는 해당 순간만.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 나중에는 빨라집니다. 같은 시간 간격으로 표시한 점의 간격이 벌어지는 것이 보이죠. 경로의 모양과 그 위를 움직이는 속도는 서로 다른 설계 대상입니다."
+    },
+    {
+      "id": "M31-014",
+      "section": "13.1",
+      "title": "M31-014",
+      "text": "Curvature measures how sharply a path bends. Kappa is the length of the cross product of velocity and acceleration divided by speed cubed, on a regular portion with nonzero speed. A line has zero curvature; a circle of radius r has curvature one over r. Smaller circles bend more sharply.",
+      "sourceParagraphs": [
+        "M31-P077",
+        "M31-P078"
+      ],
+      "screenPlan": "원반경2→κ.5,반경1→κ1. v×a와 실제공간 휘어짐 연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 필요하면 도함수를 그 길이로 나누어 단위 접선 벡터를 만듭니다. 도함수가 영인 지점에서는 이 나눗셈으로 방향을 정할 수 없으니 별도 처리가 필요합니다."
+    },
+    {
+      "id": "M31-015",
+      "section": "13.2",
+      "title": "M31-015",
+      "text": "Now decide how to specify the route we want. Interpolation constructs a curve that passes through prescribed points. Approximation uses control points without necessarily passing through them. Let us build an S-shaped path through the four points shown.",
+      "sourceParagraphs": [
+        "M31-P080",
+        "M31-P081",
+        "M31-P082",
+        "M31-P083",
+        "M31-P084",
+        "M31-P085",
+        "M31-P086",
+        "M31-P087"
+      ],
+      "screenPlan": "원문 S desired와네점. 보간/근사 비교 동일판.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": ". 속도가 영이 아닌 매끄러운 부분에서 사용하는 식이에요. 직선은 영이고, 반지름 알인 원은 알의 역수입니다. 작게 도는 원일수록 곡률이 크다는 뜻이죠."
+    },
+    {
+      "id": "M31-016",
+      "section": "13.2",
+      "title": "M31-016",
+      "text": "Assign parameter values zero, one third, two thirds, and one, with heights two, three, two, and three. We have specified not only which points to visit, but also at which parameter values. Here this list of values is the knot vector. We can space them uniformly or use distances between neighboring points to choose spacing.",
+      "sourceParagraphs": [
+        "M31-P084",
+        "M31-P085",
+        "M31-P086",
+        "M31-P087",
+        "M31-P088",
+        "M31-P089",
+        "M31-P090",
+        "M31-P091",
+        "M31-P092",
+        "M31-P093",
+        "M31-P094"
+      ],
+      "screenPlan": "표 t/y를한행씩연결. 용어 주의: 매개변수값과 공간상의점 분리.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "을 보간이라고 합니다. 제어점을 참고하되 반드시 지나지는 않는 근사 방식과 구분하죠. 화면의 네 점을 순서대로 지나는 에스 자 경로를 만들어 보겠습니다."
+    },
+    {
+      "id": "M31-017",
+      "section": "13.2",
+      "title": "M31-017",
+      "text": "Even in three dimensions, solve the coordinate problems separately. Use the same parameter values to interpolate x, y, and z. Changing those parameter spacings can change the curve through the same spatial points. Point positions alone do not uniquely specify the polynomial.",
+      "sourceParagraphs": [
+        "M31-P088",
+        "M31-P089",
+        "M31-P090",
+        "M31-P091",
+        "M31-P092",
+        "M31-P093",
+        "M31-P094"
+      ],
+      "screenPlan": "동일점·다른시각배정 곡선비교; t목록x/y/z공유.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 겁니다. 이런 매개변수 값의 목록을 여기서는 매듭 벡터라고 부릅니다. 간격을 균등하게 정할 수도 있고, 이웃 점 사이 거리 비율로 정할 수도 있습니다."
+    },
+    {
+      "id": "M31-018",
+      "section": "13.2",
+      "title": "M31-018",
+      "text": "The first method is Aitken interpolation. Start with straight interpolants through pairs of points. To fit three points, blend the line through the first pair with the line through the second pair. Both already agree at the middle point, while the weights select the correct line at each outer endpoint.",
+      "sourceParagraphs": [
+        "M31-P095",
+        "M31-P096",
+        "M31-P097",
+        "M31-P098",
+        "M31-P099",
+        "M31-P100",
+        "M31-P101",
+        "M31-P102",
+        "M31-P103"
+      ],
+      "screenPlan": "2선→공통점→blend→2차곡선; 왜맞는지점별색.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "됩니다. 다만 매개변수 간격을 바꾸면 같은 공간의 점들을 지나는 곡선도 달라질 수 있습니다. 점의 위치만으로 곡선이 저절로 하나 정해지는 것은 아닙니다."
+    },
+    {
+      "id": "M31-019",
+      "section": "13.2",
+      "title": "M31-019",
+      "text": "In the formula, multiply the earlier interpolant by the last parameter minus t, and the later one by t minus the first parameter, then divide by the full parameter interval. Each level fits one additional point. Blending two quadratic interpolants this way produces the cubic through four points.",
+      "sourceParagraphs": [
+        "M31-P104",
+        "M31-P105",
+        "M31-P106",
+        "M31-P107",
+        "M31-P108",
+        "M31-P109",
+        "M31-P110"
+      ],
+      "screenPlan": "y_i^j=((t_i+j−t)y_i^j−1+(t−ti)y_i+1^j−1)/(t_i+j−ti), 인덱스와기준t먼저정의. j0=yi.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 다시 섞습니다. 두 직선이 공통으로 지나는 가운데 점에서는 어떤 비율로 섞어도 그 점에 머무르고, 양 끝에서는 해당 직선만 선택되도록 비율을 정합니다."
+    },
+    {
+      "id": "M31-020",
+      "section": "13.2",
+      "title": "M31-020",
+      "text": "Apply this process to the heights two, three, two, and three. The curve passes through all four points, but rises a little above three and falls below two. It overshoots our desired S shape. Passing exactly through the data does not guarantee the shape we want between samples.",
+      "sourceParagraphs": [
+        "M31-P111",
+        "M31-P112",
+        "M31-P113",
+        "M31-P114",
+        "M31-P115",
+        "M31-P116",
+        "M31-P117",
+        "M31-P118"
+      ],
+      "screenPlan": "원문 Aitken S단계와결과를독립제작;오버슈트영역굵은경계.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "나눕니다. 한 단계 올라갈 때마다 보간하는 점이 하나 늘어납니다. 세 점의 이차 곡선 두 개를 같은 방식으로 섞으면 네 점을 지나는 삼차 곡선이 됩니다."
+    },
+    {
+      "id": "M31-021",
+      "section": "13.2",
+      "title": "M31-021",
+      "text": "A different view helps explain why this happens. Lagrange interpolation gives each sample its own weight function. We could solve a linear system for all polynomial coefficients, but instead we will construct the required weight functions directly.",
+      "sourceParagraphs": [
+        "M31-P118",
+        "M31-P119",
+        "M31-P120",
+        "M31-P121",
+        "M31-P122",
+        "M31-P123",
+        "M31-P124"
+      ],
+      "screenPlan": "연립방정식/Vandermonde한눈전제후가중치로연결. 일반밀집가우스O(n³)선택적표시, 보편하한아님.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "보다 낮아지죠. 원하는 에스 자보다 불필요하게 튀어나온 겁니다. 점을 정확히 지나는 조건과, 점 사이에서 마음에 드는 모양이 되는 조건은 같지 않습니다."
+    },
+    {
+      "id": "M31-022",
+      "section": "13.2",
+      "title": "M31-022",
+      "text": "The first weight must equal one at the first sample time and zero at the other three. The second weight is one only at the second sample, and so on. Multiply each weight by its sample height and add them. At any sample time, only the desired value remains. The same weights work for the other coordinates.",
+      "sourceParagraphs": [
+        "M31-P125",
+        "M31-P126",
+        "M31-P127",
+        "M31-P128",
+        "M31-P129",
+        "M31-P130",
+        "M31-P131"
+      ],
+      "screenPlan": "onehot4×4표,원문L2(t1)=0교정. y=sumyiLi. x/z재사용.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 점에 전용 가중치 함수를 붙입니다. 모든 계수를 미지수로 놓고 연립방정식을 풀 수도 있지만, 이번에는 각 가중치가 가져야 할 모양을 직접 만들겠습니다."
+    },
+    {
+      "id": "M31-023",
+      "section": "13.2",
+      "title": "M31-023",
+      "text": "To make a weight zero at the other sample times, multiply the factors t minus each of those times. Divide by the same product evaluated at its own sample time, so its value there is one. The sample parameter values must be distinct to keep these denominators nonzero.",
+      "sourceParagraphs": [
+        "M31-P132",
+        "M31-P133",
+        "M31-P134",
+        "M31-P135",
+        "M31-P136"
+      ],
+      "screenPlan": "Li=∏j≠i(t−tj)/(ti−tj),4점L1분자분모실제대입. 인덱스1..4고정.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 만든 함수들에 실제 높이를 곱해 더하면, 각 지정 시각에는 원하는 높이 하나만 남습니다. 같은 가중치 함수는 다른 좌표에도 그대로 사용할 수 있습니다."
+    },
+    {
+      "id": "M31-024",
+      "section": "13.2",
+      "title": "M31-024",
+      "text": "Substituting zero, one third, two thirds, and one gives the four cubic basis functions shown. The first starts at one, and the middle functions reach one at their assigned samples. Between those samples, weights can become negative or exceed one.",
+      "sourceParagraphs": [
+        "M31-P137",
+        "M31-P138",
+        "M31-P139",
+        "M31-P140",
+        "M31-P141",
+        "M31-P142",
+        "M31-P143",
+        "M31-P144",
+        "M31-P145"
+      ],
+      "screenPlan": "L1..4확장계수전부화면에단계별표시. 원문4그래프 재현.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "자기 시각에서는 일이 되어야 하니, 같은 곱을 자기 시각에 대입한 값으로 나눕니다. 분모가 영이 되지 않도록 서로 다른 매개변수 값들을 사용해야 합니다."
+    },
+    {
+      "id": "M31-025",
+      "section": "13.2",
+      "title": "M31-025",
+      "text": "Multiply those four functions by two, three, two, and three. The resulting height is eighteen t cubed minus twenty-seven t squared plus ten t plus two. At one half it equals two point five. It is the same curve produced by Aitken interpolation, with the same overshoot.",
+      "sourceParagraphs": [
+        "M31-P146",
+        "M31-P147",
+        "M31-P148",
+        "M31-P149",
+        "M31-P150",
+        "M31-P151",
+        "M31-P152"
+      ],
+      "screenPlan": "가중그래프4개→합그래프; t=.5네가중치[-1/16,9/16,9/16,-1/16],합2.5 수치검증.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "고, 두 번째와 세 번째는 가운데 자기 차례에 일이 됩니다. 중요한 것은 지정된 네 순간 사이에서 가중치가 음수가 되거나 일을 넘을 수 있다는 점입니다."
+    },
+    {
+      "id": "M31-026",
+      "section": "13.2",
+      "title": "M31-026",
+      "text": "Read this in two ways: a combination of polynomial basis functions, or a blend of points with weights that change with t. The weights sum to one but may be negative. Nonnegative weights summing to one keep a result inside the points' convex hull. These weights do not provide that guarantee.",
+      "sourceParagraphs": [
+        "M31-P153",
+        "M31-P154",
+        "M31-P155",
+        "M31-P156",
+        "M31-P157"
+      ],
+      "screenPlan": "볼록껍질정의 고무줄경계, 음수가중치와밖으로나옴. 합1조건반드시함께.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 티 제곱 더하기 십 티 더하기 이입니다. 티가 이분의 일이면 높이는 이점오가 됩니다. 에이트켄으로 구한 곡선과 같은 곡선이고, 같은 지나침도 남습니다."
+    },
+    {
+      "id": "M31-027",
+      "section": "13.2",
+      "title": "M31-027",
+      "text": "Four samples at distinct parameter values determine one polynomial of degree at most three. If there were two, their difference would have degree at most three but four roots, so it would have to be identically zero. Merely changing the evaluation algorithm cannot remove the overshoot. We need a different way to specify the curve.",
+      "sourceParagraphs": [
+        "M31-P159",
+        "M31-P160",
+        "M31-P161",
+        "M31-P162",
+        "M31-P163",
+        "M31-P164",
+        "M31-P165"
+      ],
+      "screenPlan": "유일성짧은증명,원문summary유지;마지막문장Hermite조건으로연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": ". 가중치의 합은 일이지만 음수가 허용됩니다. 모든 가중치가 영 이상이고 합이 일이면 점들의 볼록 껍질 안에 머무르는데, 여기서는 그 보장이 사라집니다."
+    },
+    {
+      "id": "M31-028",
+      "section": "13.3",
+      "title": "M31-028",
+      "text": "A Hermite curve replaces the two intermediate point constraints with endpoint derivatives. The four conditions are starting position p zero, starting derivative v zero, ending derivative v one, and ending position p one. Rotate a handle to change direction; lengthen it to change the endpoint rate of travel. These are full derivative vectors, not unit directions.",
+      "sourceParagraphs": [
+        "M31-P167",
+        "M31-P168",
+        "M31-P169",
+        "M31-P170",
+        "M31-P171",
+        "M31-P172",
+        "M31-P173"
+      ],
+      "screenPlan": "같은끝점/늘어나는핸들 비교. 실제벡터길이와화면화살표축척명시;원문그림1/3은내부출처기록.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "그러려면 차이가 전부 영이어야 합니다. 그래서 계산법을 바꾸는 것만으로는 지나침을 고칠 수 없습니다. 이제 곡선에 요구하는 조건 자체를 바꿔 보겠습니다."
+    },
+    {
+      "id": "M31-029",
+      "section": "13.3",
+      "title": "M31-029",
+      "text": "Substitute the four conditions into a cubic. The start position gives c zero equal to p zero, and the start derivative gives c one equal to v zero. At the end, the coefficient sum equals p one, while c one plus two c two plus three c three equals v one. Only c two and c three remain unknown.",
+      "sourceParagraphs": [
+        "M31-P174",
+        "M31-P175",
+        "M31-P176",
+        "M31-P177",
+        "M31-P178",
+        "M31-P179"
+      ],
+      "screenPlan": "위치식t0/1,도함수식t0/1 차례대입. 각계수색일관.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "일이 네 조건입니다. 손잡이 화살표를 돌리면 방향이, 길게 늘리면 출발하거나 도착하는 변화량이 바뀝니다. 이 화살표는 방향만 가진 단위 벡터가 아닙니다."
+    },
+    {
+      "id": "M31-030",
+      "section": "13.3",
+      "title": "M31-030",
+      "text": "The position condition gives c two plus c three equal to p one minus p zero minus v zero. The derivative condition gives two c two plus three c three equal to v one minus v zero. Subtract twice the first equation to obtain c three, then substitute back for c two. These coefficients are the solution to our four constraints.",
+      "sourceParagraphs": [
+        "M31-P180",
+        "M31-P181",
+        "M31-P182",
+        "M31-P183",
+        "M31-P184"
+      ],
+      "screenPlan": "c2=−3p0−2v0−v1+3p1,c3=2p0+v0+v1−2p1 소거중간단계보존.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "서는 계수 네 개의 합이 피 일이고, 씨 일 더하기 이 씨 이 더하기 삼 씨 삼이 브이 일이 되어야 합니다. 남은 미지수는 씨 이와 씨 삼 두 개입니다."
+    },
+    {
+      "id": "M31-031",
+      "section": "13.3",
+      "title": "M31-031",
+      "text": "Put p zero, v zero, v one, and p one in columns. Multiplying by the fixed Hermite basis matrix produces the power-form coefficients. Repeated evaluations can reuse those coefficients. Or multiply the basis matrix by the powers of t first to obtain four input weights. The grouping changes, not the result.",
+      "sourceParagraphs": [
+        "M31-P185",
+        "M31-P186",
+        "M31-P187",
+        "M31-P188",
+        "M31-P189",
+        "M31-P190"
+      ],
+      "screenPlan": "P=[p0,v0,v1,p1],H=[[1,0,-3,2],[0,1,-2,1],[0,0,-1,1],[0,0,3,-2]],p=(PH)T=P(HT).",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": ". 첫 식을 두 배 해서 빼면 씨 삼을 얻고, 다시 대입하면 씨 이를 얻습니다. 화면의 결과는 외울 공식이라기보다 네 조건을 맞춘 연립방정식의 해입니다."
+    },
+    {
+      "id": "M31-032",
+      "section": "13.3",
+      "title": "M31-032",
+      "text": "These weights are the Hermite basis functions. The two position weights share the start and end contributions and sum to one. The derivative weights vanish at the endpoints but adjust the departure and arrival slopes. Positions are points and derivatives are vectors, so all four weights should not be read as proportions of positions.",
+      "sourceParagraphs": [
+        "M31-P191",
+        "M31-P192",
+        "M31-P193",
+        "M31-P194",
+        "M31-P195",
+        "M31-P196",
+        "M31-P197",
+        "M31-P198",
+        "M31-P199",
+        "M31-P200",
+        "M31-P201"
+      ],
+      "screenPlan": "H0=1−3t²+2t³,H1=t−2t²+t³,H2=−t²+t³,H3=3t²−2t³. 그래프및기울기값.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "들어 놓을 수 있죠. 반대로 기저 행렬을 티의 거듭제곱 벡터에 먼저 곱하면, 네 입력의 가중치를 바로 얻습니다. 곱하는 묶음만 달라지고 결과는 같습니다."
+    },
+    {
+      "id": "M31-033",
+      "section": "13.3",
+      "title": "M31-033",
+      "text": "For a numerical check, start at zero, zero and end at two, zero. Choose endpoint derivatives zero, three and zero, minus three. At t equal to one half, the position weights are both one half, while the derivative weights are one eighth and minus one eighth. Their sum gives one, zero point seven five, the middle of an upward arch.",
+      "sourceParagraphs": [
+        "M31-P192",
+        "M31-P193",
+        "M31-P194",
+        "M31-P195",
+        "M31-P196",
+        "M31-P197",
+        "M31-P198",
+        "M31-P199",
+        "M31-P200",
+        "M31-P201"
+      ],
+      "screenPlan": "(0,0)*.5+(0,3)*.125+(0,-3)*-.125+(2,0)*.5=(1,.75);각항사물위리더라인.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "지만, 출발과 도착 기울기를 조절합니다. 위치는 점이고 속도는 변위 방향의 벡터라는 차이 때문에, 네 가중치를 전부 위치의 비율처럼 해석하면 안 됩니다."
+    },
+    {
+      "id": "M31-034",
+      "section": "13.3",
+      "title": "M31-034",
+      "text": "The same cubic can be written with power coefficients or with Hermite endpoint positions and derivatives. We have changed the controls, not invented a different class of cubic trajectories. That is why setting departure and arrival directions in a path editor is more intuitive than editing four coefficient vectors.",
+      "sourceParagraphs": [
+        "M31-P191",
+        "M31-P192",
+        "M31-P193",
+        "M31-P194",
+        "M31-P195",
+        "M31-P196",
+        "M31-P197",
+        "M31-P198",
+        "M31-P199",
+        "M31-P200",
+        "M31-P201"
+      ],
+      "screenPlan": "같은곡선상태유지 좌측계수/우측위치속도입력전환.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "치 가중치는 각각 이분의 일, 도함수 가중치는 팔분의 일과 마이너스 팔분의 일입니다. 더하면 일, 영점칠오가 되어 위로 휘어진 길의 가운데에 도착합니다."
+    },
+    {
+      "id": "M31-035",
+      "section": "13.3",
+      "title": "M31-035",
+      "text": "The ending-position weight, three t squared minus two t cubed, is useful beyond path design. It rises from zero to one with zero slope at both ends, softening the start and stop. This is smoothstep: Hermite interpolation between two values with zero endpoint derivatives.",
+      "sourceParagraphs": [
+        "M31-P202",
+        "M31-P203",
+        "M31-P204",
+        "M31-P205",
+        "M31-P206"
+      ],
+      "screenPlan": "linear vs smoothstep동일변위표본. 카메라/색/밝기전환 설명도식.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 아니라, 사람이 다루기 편한 입력을 바꾼 것입니다. 경로 편집기에서 출발과 도착 방향을 잡는 일이 계수 네 개를 직접 조절하는 것보다 직관적인 이유죠."
+    },
+    {
+      "id": "M31-036",
+      "section": "13.3",
+      "title": "M31-036",
+      "text": "In practice, normalize the input interval to zero through one, clamp it, and apply smoothstep. Outside the interval it stays at zero or one. Its first derivative joins smoothly, but the second derivative need not match the constant regions. Controlling endpoint acceleration requires more constraints.",
+      "sourceParagraphs": [
+        "M31-P202",
+        "M31-P203",
+        "M31-P204",
+        "M31-P205",
+        "M31-P206"
+      ],
+      "screenPlan": "saturate((x-min)/(max-min));t²(3−2t),min<max. C1/C2단어미리정의필요없이값/속도/가속도그래프.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "서, 갑자기 출발하고 멈추는 느낌을 줄일 수 있죠. 이것이 스무스스텝입니다. 양 끝 속도를 영으로 둔 두 위치 사이의 에르미트 보간으로 볼 수 있습니다."
+    },
+    {
+      "id": "M31-037",
+      "section": "13.3",
+      "title": "M31-037",
+      "text": "Specifying position, velocity, and acceleration at both ends gives six conditions and can be handled by a quintic. The central issue today was which quantities we choose to control. Prescribed samples lead to interpolation; endpoint directions and rates lead naturally to Hermite form. Next we will turn those controls into the handle points of Bézier curves.",
+      "sourceParagraphs": [
+        "M31-P207",
+        "M31-P208",
+        "M31-P209"
+      ],
+      "screenPlan": "동일경로정리표:계수/통과점/끝점도함수. quintic오차다항식표기는5차이며display명확.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "럽게 이어지지만, 바깥의 일정한 값과 연결할 때 이차 도함수까지 이어지는 것은 아닙니다. 가속도까지 설계하고 싶다면 한 단계 더 많은 조건이 필요합니다."
+    }
+  ]
+}

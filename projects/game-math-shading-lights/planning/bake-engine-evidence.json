@@ -1,0 +1,34 @@
+{
+  "engine": "Unity 6000.6.0f1",
+  "pipeline": "URP 17.6.0",
+  "reviewDate": "2026-11-04",
+  "primaryReferences": [
+    {
+      "url": "https://docs.unity.com/en-us/engine/6000.6/script-reference/unityengine/lightingsettings/lightmapper",
+      "finding": "Unity 6.6 lists ProgressiveGPU and UnityComputeGPU. Do not schedule the old ProgressiveCPU setting from earlier Unity versions."
+    },
+    {
+      "url": "https://docs.unity.com/en-us/engine/6000.6/script-reference/unityeditor/lightmapping/bake",
+      "finding": "Synchronous Bake returns a success flag and requires OnDemand workflow. Success additionally requires actual mapped lightmaps and baked light output in our capture checks."
+    },
+    {
+      "url": "https://docs.unity.com/en-us/engine/6000.6/script-reference/unityengine/lightingsettings",
+      "finding": "LightingSettings supplies baked GI, lightmapper, resolution, sample and bounce settings for the scene."
+    },
+    {
+      "url": "https://docs.unity3d.com/ja/current/ScriptReference/LightmapBakeType.Mixed.html",
+      "finding": "A Mixed light can change runtime direct illumination while its baked indirect illumination remains unchanged."
+    }
+  ],
+  "actualSceneImplementation": "production/unity-staging/LightLabBakedRoom.cs",
+  "captureImplementation": "production/unity-staging/LightLabCapture.cs",
+  "cpuAuthoringPassed": true,
+  "gpuBakeExecuted": false,
+  "runtimeVisualQaPassed": false,
+  "resourceDecision": "GPU bake and captures wait for active game use to end; no unrelated process is closed.",
+  "sourceKinds": {
+    "bake": "Actual Unity engine output only after valid bake artifacts exist",
+    "vertexStorage": "Our explicitly labelled direct-plus-ambient vertex colour implementation",
+    "atlasChart": "Actual generated UV2 and renderer lightmapScaleOffset; not an invented brightness map"
+  }
+}

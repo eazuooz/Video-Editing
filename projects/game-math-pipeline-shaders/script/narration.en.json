@@ -1,0 +1,628 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-pipeline-shaders",
+  "episodeId": "M23",
+  "status": "integrated-draft-text-readthrough-complete-runtime-binding-pending",
+  "isFinalNarration": false,
+  "chapterOrderPreserved": true,
+  "actualDurationSeconds": null,
+  "sourceDraftSha256": "c6b599a07c62bd06c821c4d4574455687dce6cba034c680cd4a6fa442e86cd57",
+  "englishDraftSha256": "7f53e55276abc5b6154c128d900f5b6a6d9e25f10a57d3be0e3cc978eb1d801a",
+  "speechAndVisualOverlap": true,
+  "defaultHoldSeconds": 0,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M23-001",
+      "title": "opening",
+      "section": "10.10",
+      "lines": [
+        "In Townscaper, adding buildings and turning the view changes where roofs appear and how they overlap. How does a computer turn these three-dimensional changes into one image? We will follow vertices toward the screen, connect depth to visibility, and use shaders to calculate surface color. First, let us trace the route from the buildings and camera to the resulting picture."
+      ]
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M23-002",
+      "title": "pipeline-scope",
+      "section": "10.10",
+      "lines": [
+        "This is the graphics pipeline: a sequence that transforms vertices and textures into an image. We will use a basic triangle rasterization pipeline. Engines can run stages in parallel or rearrange work, but this conceptual order reveals what information each stage needs."
+      ]
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M23-003",
+      "title": "scene-visibility",
+      "section": "10.10",
+      "lines": [
+        "First we set the camera, its viewing direction, and the output region, along with lighting and fog. Then we find objects that could be visible. Detailed work on an object hidden outside the room may contribute nothing to the image."
+      ]
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M23-004",
+      "title": "material-geometry",
+      "section": "10.10",
+      "lines": [
+        "For each candidate we choose a material, including textures and shaders, and submit its vertices and triangles to the graphics API. A distant object may use a simpler mesh, called a level of detail, or LOD. The pipeline now has the data needed to decide where to draw it."
+      ]
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M23-005",
+      "title": "vertex-triangle-pixel",
+      "section": "10.10",
+      "lines": [
+        "The vertex shader transforms each vertex and prepares shading data. The pipeline clips parts outside the view and culls unwanted faces. Rasterization finds which screen samples a remaining triangle covers. The pixel shader then evaluates color from the interpolated data, materials, and lighting."
+      ]
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M23-006",
+      "title": "visibility-output-overview",
+      "section": "10.10",
+      "lines": [
+        "A computed color does not necessarily survive. A nearer surface can hide it, and empty areas of a leaf texture may be discarded. Surviving results replace or blend with existing color. Notice how processing moves from objects to vertices, triangles, and pixels. We will now examine the memory those operations use."
+      ]
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M23-007",
+      "title": "api-shader-division",
+      "section": "10.10",
+      "lines": [
+        "The game does not have to run a software loop over every pixel. It prepares data and state, submits work through the API, and supplies shaders for vertex and pixel calculations. The division varies by platform, while avoiding invisible work and unnecessary CPU–GPU waiting remains useful."
+      ]
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M23-008",
+      "title": "frame-buffer",
+      "section": "10.10.1",
+      "lines": [
+        "The frame buffer stores the resulting colors. Think of it as memory containing a color for each image location. Formats vary; its purpose here is to hold the image being constructed. What happens if we redraw the same image while the display is reading it?"
+      ]
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M23-009",
+      "title": "double-buffer",
+      "section": "10.10.1",
+      "lines": [
+        "Double buffering separates the displayed image from the image under construction. The front buffer represents the displayed frame, while rendering prepares a back buffer. A completed image can be presented through a role change or copying. Real systems may use more buffers and display synchronization; the key is separating construction from presentation."
+      ]
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M23-010",
+      "title": "depth-buffer",
+      "section": "10.10.1",
+      "lines": [
+        "In Portal, carrying a cube makes it cover parts of the platforms and walls behind it. When several surfaces project onto the same place in the image, the renderer needs a way to decide which surface remains visible. A depth buffer records which surface is in front at each sample. Consider a convention where smaller values are nearer. If the stored value is 0.7 and a new value is 0.3, the new surface wins and updates color and depth. A later value of 0.8 fails because it is farther away."
+      ]
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M23-011",
+      "title": "depth-convention",
+      "section": "10.10.1",
+      "lines": [
+        "Depth is not necessarily distance in meters or the raw clip-space z. It is mapped from the depth after perspective division. A conventional near-zero, far-one setup commonly clears to one and accepts smaller values. Reverse Z uses the opposite ordering. The clear value and comparison function must agree."
+      ]
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M23-012",
+      "title": "render-context",
+      "section": "10.10.2",
+      "lines": [
+        "With output storage ready, we prepare the input. Rendering state selects shaders, textures, matrices, and light parameters. A matrix shared by an object's vertices can be supplied as a constant, while positions vary per vertex. We do not need to duplicate every shared value in each vertex."
+      ]
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M23-013",
+      "title": "vertex-attributes",
+      "section": "10.10.2",
+      "lines": [
+        "Vertex attributes depend on the surface. Position locates it; UV selects texture locations; the normal describes surface orientation. Vertex color can control color or blending. A tangent basis interprets normal-map directions, and a skinned mesh also needs joint indices and weights."
+      ]
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M23-014",
+      "title": "vertex-basic-tangent",
+      "section": "10.10.2",
+      "lines": [
+        "A basic mesh can provide position, normal, and UV. For our tangent-space normal-mapping path, add a tangent and handedness sign. The remaining axis comes from their cross product and that sign. This is one practical data format, not a claim that tangents can never be reconstructed another way."
+      ]
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M23-015",
+      "title": "vertex-ui-effects",
+      "section": "10.10.2",
+      "lines": [
+        "UI elements such as text may need only screen position, color, and UV, with no lighting normal. A flame or debug marker can have a 3D position while outputting an assigned unlit color. Vertex layout follows the calculations required, not simply whether an object is three-dimensional."
+      ]
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M23-016",
+      "title": "vertex-lightmap-skin",
+      "section": "10.10.2",
+      "lines": [
+        "A lightmapped surface can have separate UV sets for material textures and baked lighting. Its tangent basis supports the accompanying normal mapping, not ordinary lightmap lookup itself. Skinning adds joint indices and weights. Our four-influence example is a chosen layout, not a universal engine limit."
+      ]
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M23-017",
+      "title": "aos-soa-stride",
+      "section": "10.10.2",
+      "lines": [
+        "We can group all attributes of each vertex in an array of structures, or group positions, normals, and other attributes separately in a structure of arrays. Unused streams can be omitted. In a packed block, stride locates the next vertex and offset locates an attribute. Performance depends on how the data is accessed and on the hardware."
+      ]
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M23-018",
+      "title": "vertex-work",
+      "section": "10.10.3",
+      "lines": [
+        "The vertex shader prepares clip-space position and the values used downstream. It can skin vertices, transform normals, calculate light vectors, fog factors, or projected texture coordinates. Correctly prepared inputs can pass through unchanged. Gouraud shading evaluates lighting here as well."
+      ]
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M23-019",
+      "title": "model-view-projection",
+      "section": "10.10.3",
+      "lines": [
+        "Follow one position from model coordinates into the world, then into camera coordinates and finally clip space. With row vectors, the model, view, and projection matrices multiply on the right in that order. Precombining them lets each vertex use one matrix multiplication. Mathematical multiplication order and memory storage order are separate choices."
+      ]
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M23-020",
+      "title": "homogeneous-clipping",
+      "section": "10.10.4",
+      "lines": [
+        "Before perspective division, clipping removes parts outside the viewing volume. A triangle crossing the boundary must be cut, not discarded entirely. In the basic Direct3D convention, x and y lie between minus w and w, while z lies between zero and w. OpenGL's default depth convention differs."
+      ]
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M23-021",
+      "title": "clip-four-cases",
+      "section": "10.10.4",
+      "lines": [
+        "Sutherland–Hodgman clipping handles one boundary plane at a time. In the start-vertex output convention, an inside-to-inside edge emits its start; outside-to-outside emits nothing; outside-to-inside emits the intersection; inside-to-outside emits the start and intersection. One circuit produces the clipped polygon's vertices."
+      ]
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M23-022",
+      "title": "clip-worked",
+      "section": "10.10.4",
+      "lines": [
+        "For a boundary x at most one, an edge from zero to two crosses halfway, at x equals one. Collect the emitted vertices in order, then close the polygon by connecting the last to the first. The algorithm outputs a vertex list. Robust implementations also handle duplicate points and boundary contact, rejecting results with no drawable area."
+      ]
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M23-023",
+      "title": "scissor-guard-band",
+      "section": "10.10.4",
+      "lines": [
+        "Not every off-screen portion has to be clipped geometrically in the same way. Scissoring rejects samples outside a screen rectangle. A guard band extends the permitted region to reduce some geometric clipping. This optimization does not remove the need to handle the near plane or valid homogeneous coordinates."
+      ]
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M23-024",
+      "title": "backface-purpose",
+      "section": "10.10.5",
+      "lines": [
+        "Backface culling can skip the rear faces of a closed opaque object, which are normally covered by its front surfaces. It does not guarantee that half the triangles disappear. Terrain and freely viewed objects differ, while thin leaves or visible interiors may require different settings."
+      ]
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M23-025",
+      "title": "winding-reflection",
+      "section": "10.10.5",
+      "lines": [
+        "Hardware commonly distinguishes faces by projected clockwise or counterclockwise winding. Which winding is front-facing is a configurable convention, not an automatic consequence of coordinate handedness. A mirrored transform can reverse it. Some effects deliberately render front and back faces in separate passes."
+      ]
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M23-026",
+      "title": "backface-dot",
+      "section": "10.10.5",
+      "lines": [
+        "In 3D, compare the outward normal with a vector from the eye to the surface. A positive dot product indicates a back face. For a right-facing normal and an eye on the right, the eye-to-surface vector points left, producing a negative dot product: the eye is on the front side. Checking only the normal's z component fails for off-axis perspective geometry."
+      ]
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M23-027",
+      "title": "raster-samples",
+      "section": "10.10.6",
+      "lines": [
+        "The remaining triangles undergo perspective division and viewport mapping. Their coordinates can be fractional, while screen samples occupy defined locations. Rasterization decides which samples belong to each triangle. Shared-edge rules prevent adjacent triangles from both claiming or both missing the same boundary sample."
+      ]
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M23-028",
+      "title": "interpolation-depth",
+      "section": "10.10.6",
+      "lines": [
+        "Covered samples receive interpolated UVs, normals, and other attributes. Perspective-correct interpolation can differ from a simple screen-space average. Directions such as normals may need renormalization afterward. Hidden samples can sometimes fail an early depth test before expensive shading; shader behavior determines when that is valid."
+      ]
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M23-029",
+      "title": "shading-alpha",
+      "section": "10.10.6",
+      "lines": [
+        "In the same game, the room remains visible through a glass pane while its opaque frame blocks the view. Beyond resolving what is in front, we also need to determine how each surface contributes to the visible color. The pixel shader evaluates material, lighting, and any fog to produce color and alpha. Alpha testing discards cutout samples; alpha blending combines surviving color with the background. With straight alpha, quarter-opacity red over blue yields 0.25 red and 0.75 blue. Depth writes and ordering must also suit the material."
+      ]
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M23-030",
+      "title": "pipeline-to-code",
+      "section": "10.11",
+      "lines": [
+        "In Super Mario Odyssey, Mario remains partly visible through the water, then changes appearance as he jumps out. The pipeline we have followed calculates the visible color of surfaces such as this water and the glass we just saw. We will now implement its programmable stages in HLSL: the vertex and pixel shaders. We begin with an unlit texture, then add lighting, normal mapping, and skinning. We will distinguish legacy shader-model notation from modern syntax while following the same data flow."
+      ]
+    },
+    {
+      "id": "030",
+      "sourceBeatId": "M23-031",
+      "title": "semantics-types",
+      "section": "10.11.1",
+      "lines": [
+        "A float4 groups four numbers, such as x, y, z, and w; a float2 can hold UV coordinates. A semantic after the colon labels how data connects between stages. The vertex shader's UV output supplies the pixel shader's UV input. Modern Direct3D uses SV_Position for clip-position output."
+      ]
+    },
+    {
+      "id": "031",
+      "sourceBeatId": "M23-032",
+      "title": "unlit-vertex",
+      "section": "10.11.1",
+      "lines": [
+        "The simplest vertex shader transforms position to clip space and passes UV unchanged. HLSL mul treats a vector in its first argument as a row vector, so this example places modelToClip second. Do not mix this with the matrix-first column-vector convention. The host code must supply matrices under the same convention."
+      ]
+    },
+    {
+      "id": "032",
+      "sourceBeatId": "M23-033",
+      "title": "unlit-pixel",
+      "section": "10.11.1",
+      "lines": [
+        "The pixel shader samples the texture and multiplies by a constant color. A texel of (0.8, 0.4, 0.2) multiplied by (1, 0.5, 1) becomes (0.8, 0.2, 0.2). This is componentwise multiplication, not a matrix product. Alpha can also be scaled, but the blend state decides how transparency is composited."
+      ]
+    },
+    {
+      "id": "033",
+      "sourceBeatId": "M23-034",
+      "title": "shader-era",
+      "section": "10.11.1",
+      "lines": [
+        "Legacy POSITION and COLOR outputs correspond to SV_Position and SV_Target in our modern example. Texture and sampler declarations must also match the target environment. Updating a shader requires checking input formats, data types, and coordinate spaces, not merely replacing a few names."
+      ]
+    },
+    {
+      "id": "034",
+      "sourceBeatId": "M23-035",
+      "title": "lighting-inputs",
+      "section": "10.11.2",
+      "lines": [
+        "Now add light while keeping one local light and constant ambient illumination. The vertex shader supplies model-space position, normal, and UV alongside clip position. The pixel shader receives their interpolated values and reads separate diffuse and specular material textures. Shared UV coordinates do not make their roles identical."
+      ]
+    },
+    {
+      "id": "035",
+      "sourceBeatId": "M23-036",
+      "title": "light-vector-distance",
+      "section": "10.11.2",
+      "lines": [
+        "Normalize the surface normal. Light position minus surface position gives the vector to the light; its length supplies distance, while its normalized value supplies direction. Normalize the sum of view and light directions for the halfway vector. With radius four and distance one, linear attenuation is 1 minus one quarter, or 0.75. This is our example's falloff, not the physical inverse-square law."
+      ]
+    },
+    {
+      "id": "036",
+      "sourceBeatId": "M23-037",
+      "title": "blinn-phong-color",
+      "section": "10.11.2",
+      "lines": [
+        "Diffuse uses the nonnegative normal–light dot product. Specular raises the nonnegative normal–halfway dot product to an exponent. Ambient joins the diffuse illumination before multiplying by diffuse material color; specular material color scales the separate highlight. For an opaque one-sided surface, suppress the highlight when the light is behind it. Perform these color calculations in linear space."
+      ]
+    },
+    {
+      "id": "037",
+      "sourceBeatId": "M23-038",
+      "title": "lighting-numeric",
+      "section": "10.11.2",
+      "lines": [
+        "Check one color channel. With attenuated light 0.75, diffuse factor 0.8, ambient 0.1, and diffuse material 0.5, the diffuse result is 0.35. A specular factor of 0.2 and material value 0.4 add 0.06, giving 0.41. Following each contribution helps explain an unexpectedly bright or dark result."
+      ]
+    },
+    {
+      "id": "038",
+      "sourceBeatId": "M23-039",
+      "title": "shift-work-vertex",
+      "section": "10.11.2",
+      "lines": [
+        "Repeating all work per pixel can be costly. An alternative computes light directions, halfway vectors, or falloff at vertices and interpolates them. Pixel work decreases, but interpolated data grows and nonlinear calculations are approximated. The tradeoff depends on vertex count, screen coverage, and data transfer as well as arithmetic."
+      ]
+    },
+    {
+      "id": "039",
+      "sourceBeatId": "M23-040",
+      "title": "clamp-after-interpolation",
+      "section": "10.11.2",
+      "lines": [
+        "The placement of a clamp matters. Endpoints of 0.5 and minus 0.5 interpolate to zero at the midpoint, which remains zero after clamping. Clamp the endpoints first, and they become 0.5 and zero; their midpoint is 0.25. Interpolation and clamping do not commute. Interpolated distance falloff is still an approximation."
+      ]
+    },
+    {
+      "id": "040",
+      "sourceBeatId": "M23-041",
+      "title": "view-space",
+      "section": "10.11.2",
+      "lines": [
+        "The same pixel shader can work in view space if all positions and directions agree on that space. The eye is at the origin, so the view direction is the negative surface position. Normalize its xyz components, not a four-component position containing w. Giving a direction w equal to zero excludes translation."
+      ]
+    },
+    {
+      "id": "041",
+      "sourceBeatId": "M23-042",
+      "title": "space-normal-limits",
+      "section": "10.11.2",
+      "lines": [
+        "Shared world or view space can reduce per-object preparation of lighting coordinates. Normals require an inverse-transpose transform under nonuniform scaling. A space whose axes align with the world can still have a different origin. Consistent reference frames and transform conditions matter more than the space's name."
+      ]
+    },
+    {
+      "id": "042",
+      "sourceBeatId": "M23-043",
+      "title": "gouraud-vertex",
+      "section": "10.11.3",
+      "lines": [
+        "Now move the lighting result itself into the vertex shader. That produces Gouraud shading: interpolate diffuse and specular illumination instead of computing them from a normal at every pixel. The light direction must be a float3. Pixel work becomes simpler, but a small highlight between vertices can be missed."
+      ]
+    },
+    {
+      "id": "043",
+      "sourceBeatId": "M23-044",
+      "title": "gouraud-pixel",
+      "section": "10.11.3",
+      "lines": [
+        "The pixel shader multiplies each material texture by its interpolated illumination and adds the results. It need not know whether one light or three produced those values. Defining the interface between stages lets the same shader serve multiple lighting setups."
+      ]
+    },
+    {
+      "id": "044",
+      "sourceBeatId": "M23-045",
+      "title": "three-directional-lights",
+      "section": "10.11.3",
+      "lines": [
+        "For three directional lights, initialize diffuse illumination with ambient and specular with zero, then accumulate each light's contribution. This can form a useful object-inspection lighting setup. Manually unrolling a loop is not automatically faster; inspect compiled code and measure actual performance."
+      ]
+    },
+    {
+      "id": "045",
+      "sourceBeatId": "M23-046",
+      "title": "normal-mapping-vertex",
+      "section": "10.11.4",
+      "lines": [
+        "Keep the lighting model and add normal-map detail. Reconstruct the bitangent from the normal, tangent, and handedness sign. Dot light and halfway vectors with each basis axis to express them in tangent space. Treating this transpose as an inverse requires an orthonormal basis."
+      ]
+    },
+    {
+      "id": "046",
+      "sourceBeatId": "M23-047",
+      "title": "normal-mapping-pixel",
+      "section": "10.11.4",
+      "lines": [
+        "Decode a normal by doubling its RGB values and subtracting one, then renormalize because filtering and quantization can change its length. Normalize interpolated lighting directions and apply the same Blinn–Phong calculation. Handle zero-length vectors, including coincident light and surface positions or a degenerate halfway vector, explicitly."
+      ]
+    },
+    {
+      "id": "047",
+      "sourceBeatId": "M23-048",
+      "title": "skinned-input",
+      "section": "10.11.5",
+      "lines": [
+        "Keep surface shading and animate the geometry. A skinned vertex supplies bind-pose position and normal, joint indices, and weights. Blend the bind-to-current joint matrices using those weights. The constant array contains joint matrices, not vertices. Its size and the index type must match the actual input format."
+      ]
+    },
+    {
+      "id": "048",
+      "sourceBeatId": "M23-049",
+      "title": "skinning-transform",
+      "section": "10.11.5",
+      "lines": [
+        "In the row-vector example, a four-by-three matrix maps a four-component position to three coordinates. Keep w equal to one for positions and zero for directions. Send the skinned position to clip space, and the existing pixel shader shades the animated surface. Matrix transfer and branching costs need target-specific measurement."
+      ]
+    },
+    {
+      "id": "049",
+      "sourceBeatId": "M23-050",
+      "title": "skinned-normal-map",
+      "section": "10.11.5",
+      "lines": [
+        "A skinned normal-mapped surface also transforms its normal and tangent. Blending matrices can disturb length and orthogonality, so verify normalization and reorthogonalization, with separate care for nonuniform scaling. Reconstruct the bitangent and tangent-space lighting vectors, then reuse the normal-mapping pixel shader."
+      ]
+    },
+    {
+      "id": "050",
+      "sourceBeatId": "M23-051",
+      "title": "code-summary",
+      "section": "10.11.5",
+      "lines": [
+        "We began with one texture, then added lighting, normal mapping, and skeletal motion. Geometry deformation and surface color can belong to different stages. Knowing each stage's inputs, outputs, and coordinate spaces gives us a reliable way to combine features and diagnose errors."
+      ]
+    },
+    {
+      "id": "051",
+      "sourceBeatId": "M23-052",
+      "title": "further-reading",
+      "section": "10.12",
+      "lines": [
+        "Study both the theory behind the calculation and the code that runs it. Fundamentals of Computer Graphics develops foundations; Principles of Digital Image Synthesis and PBRT explore image formation; Real-Time Rendering covers real-time implementation and performance. Consult the chosen API's official documentation for current syntax and limits."
+      ]
+    },
+    {
+      "id": "052",
+      "sourceBeatId": "M23-053",
+      "title": "exercises-entry",
+      "section": "10.13",
+      "lines": [
+        "Consider a 640-by-480 sample image. Filling a 4:3 display gives square pixels. Filling a 16:9 display with the same sample count gives a pixel aspect ratio equal to display aspect divided by sample aspect: four thirds. Each displayed pixel is wider than it is tall."
+      ]
+    },
+    {
+      "id": "053",
+      "sourceBeatId": "M23-054",
+      "title": "split-view-aspect",
+      "section": "10.13",
+      "lines": [
+        "Split that 4:3 image vertically into two 320-by-480 viewports. Each has aspect ratio two thirds. A horizontal field of view of 60 degrees gives horizontal scale cotangent 30 degrees, about 1.732. Vertical scale is aspect times that value, about 1.155. The narrow viewport therefore shows more vertically while retaining the horizontal field of view."
+      ]
+    },
+    {
+      "id": "054",
+      "sourceBeatId": "M23-055",
+      "title": "split-view-fov",
+      "section": "10.13",
+      "lines": [
+        "Vertical field of view is twice the arctangent of the reciprocal vertical scale. With 1.155 it is about 81.8 degrees, wider than the 60-degree horizontal view. Preserving that horizontal field in a tall, narrow viewport requires showing a larger vertical range. This connects aspect ratio, scale, and field of view."
+      ]
+    },
+    {
+      "id": "055",
+      "sourceBeatId": "M23-056",
+      "title": "clip-matrix-exercise",
+      "section": "10.13",
+      "lines": [
+        "Return to the 4:3 split viewport, with near distance one and far distance 256. The horizontal and vertical matrix terms are our scales. Depth terms depend on the camera convention and target range. Default OpenGL-style right-handed viewing uses negative forward z and a minus-one-to-one depth range; the traditional Direct3D left-handed example uses positive forward z and zero-to-one depth."
+      ]
+    },
+    {
+      "id": "056",
+      "sourceBeatId": "M23-057",
+      "title": "matrix-endpoints",
+      "section": "10.13",
+      "lines": [
+        "Verify the matrices by substituting their endpoints. In the OpenGL-style example, z of minus one becomes depth minus one, and minus 256 becomes one. The Direct3D-style example maps z of one to zero and 256 to one. The displayed matrices use column vectors, so transpose them for our earlier row-vector code. These are selected conventions, not immutable API restrictions."
+      ]
+    },
+    {
+      "id": "057",
+      "sourceBeatId": "M23-058",
+      "title": "wide-split",
+      "section": "10.13",
+      "lines": [
+        "Repeat the split on a 16:9 display. Because the pixels are wider, each viewport's displayed aspect is eight ninths, not merely 320 divided by 480. Horizontal scale stays square root three; vertical scale becomes about 1.540 and vertical field of view about 66 degrees. Sample count and displayed shape both matter."
+      ]
+    },
+    {
+      "id": "058",
+      "sourceBeatId": "M23-059",
+      "title": "uv-exercise",
+      "section": "10.13",
+      "lines": [
+        "Next, predict texture placement from UVs. Under repeat addressing, adding an integer preserves the repeated sample location. A rectangle from five to six and minus one to zero covers one repeat. Wider ranges add repetitions, while changing the directions of UV edges rotates or shears the pattern."
+      ]
+    },
+    {
+      "id": "059",
+      "sourceBeatId": "M23-060",
+      "title": "uv-six-cases",
+      "section": "10.13",
+      "lines": [
+        "Apply all six sets to the same quad. A spans 1.1 by 1.5 repeats; B is one integer-shifted repeat. C has tilted UV axes, and D shears the pattern. E sends a horizontal screen edge along the vertical UV direction, rotating the image. F covers a larger tilted region, producing many smaller repeats. Inspect the UV differences along two edges."
+      ]
+    },
+    {
+      "id": "060",
+      "sourceBeatId": "M23-061",
+      "title": "material-exercise",
+      "section": "10.13",
+      "lines": [
+        "Keep the shape and white light fixed, then vary only material. Diffuse color controls the body; specular color controls the highlight. With zero specular color there is no highlight regardless of exponent. Smaller exponents spread the highlight, while larger ones tighten it. Distinguish a red body with a white highlight from a blue body with a red highlight."
+      ]
+    },
+    {
+      "id": "061",
+      "sourceBeatId": "M23-062",
+      "title": "material-ten-cases",
+      "section": "10.13",
+      "lines": [
+        "A and F have zero specular color, leaving red and blue diffuse bodies. H adds a tight pale highlight to red; I adds a broad white highlight; J uses a blue highlight. On a blue body, B has a tighter red highlight than C or E. D uses a darker body, while G removes diffuse reflection entirely. Changing individual terms creates distinct appearances."
+      ]
+    },
+    {
+      "id": "062",
+      "sourceBeatId": "M23-063",
+      "title": "encode-normal",
+      "section": "10.13",
+      "lines": [
+        "Add one to each normal component, halve that result, multiply by 255, then round to the nearest integer. Minus one, zero, zero becomes (0, 128, 128); zero, zero, one becomes (128, 128, 255). An eight-bit channel has no exact integer representation for the midpoint corresponding to zero."
+      ]
+    },
+    {
+      "id": "063",
+      "sourceBeatId": "M23-064",
+      "title": "encode-other-vectors",
+      "section": "10.13",
+      "lines": [
+        "Applying the same rounding gives (162, 59, 230) for (0.267, -0.535, 0.805), and (128, 237, 193) for (0, 0.857, 0.514). These colors store direction data rather than visible surface color, so normal maps must not receive ordinary color-texture gamma conversion."
+      ]
+    },
+    {
+      "id": "064",
+      "sourceBeatId": "M23-065",
+      "title": "decode-basis-example",
+      "section": "10.13",
+      "lines": [
+        "Finally, recover a model-space direction. Divide RGB by 255, double it, and subtract one to decode the tangent-space normal. Prepare an orthonormal vertex basis, then reconstruct the bitangent using the cross product and handedness sign. Multiply the decoded components by tangent, bitangent, and normal respectively, then add them."
+      ]
+    },
+    {
+      "id": "065",
+      "sourceBeatId": "M23-066",
+      "title": "decode-sign-example",
+      "section": "10.13",
+      "lines": [
+        "Use case B. Its normal points up and tangent right, so their cross product points backward. The minus-one handedness sign flips the bitangent forward. Decoding RGB (106, 155, 250) and normalizing gives roughly (-0.169, 0.216, 0.962). Applying the basis gives a model direction of roughly (-0.169, 0.962, 0.216)."
+      ]
+    },
+    {
+      "id": "066",
+      "sourceBeatId": "M23-067",
+      "title": "decode-all-four",
+      "section": "10.13",
+      "lines": [
+        "Cases A, C, and D follow the same procedure: decode the texel, prepare that vertex's basis, and combine the three axes. The four arrows show why similar normal-map colors can point in different model-space directions. The supplied basis values are rounded, so compare approximate results rather than expecting exact equality."
+      ]
+    },
+    {
+      "id": "067",
+      "sourceBeatId": "M23-068",
+      "title": "closing",
+      "section": "10.13",
+      "lines": [
+        "The object we began with now connects to vertices, coordinate spaces, textures, normals, and depth. The vertex shader prepares positions and attributes; rasterization fills the surface; pixel shading and output operations determine what remains visible. To diagnose an image, follow the same route: where the surface is, which way it faces, and how its color was computed."
+      ]
+    }
+  ]
+}

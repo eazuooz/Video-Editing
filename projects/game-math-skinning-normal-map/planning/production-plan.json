@@ -11,12 +11,1231 @@
   "sourceAudit": "planning/source-audit.json",
   "footageAudit": "planning/footage-audit.json",
   "unityPlan": "planning/unity-plan.json",
-  "stage": "source-acquired-full-audit-pending",
-  "sourceFinal": false,
+  "stage": "full-draft-gameplay-integration",
+  "sourceFinal": true,
   "narrationFinal": false,
   "sceneBindingsFinal": false,
-  "learningSteps": [],
-  "teachingBeats": [],
-  "boundaryLinks": [],
-  "terminology": []
+  "learningSteps": [
+    {
+      "id": "M22-000-abstract",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P002",
+        "S108-P003",
+        "S108-P004",
+        "S108-P005",
+        "S108-P006",
+        "S108-P007",
+        "S108-P008",
+        "S108-P009"
+      ],
+      "retainedExplanation": "슈퍼 마리오 오디세이에서 마리오가 뛰어올라 착지할 때, 몸 전체가 움직이는 동안 팔과 다리의 자세도 함께 바뀝니다. 컴퓨터는 한 캐릭터의 여러 부분을 어떻게 함께 움직일까요? 오늘은 관절을 따라 큰 형태를 바꾸는 스키닝부터, 표면의 작은 요철을 빛으로 표현하는 노멀 맵까지 이어서 살펴보겠습니다. 먼저 캐릭터를 통째로 움직이는 것과 관절을 굽히는 것의 차이부터 보죠.",
+      "screenIntent": "After2sbranding, nativeMario710–730with readable joint arcs. Observe whole motion and limb pose, then match-cut to our shared articulated-model stage while the overview continues. No static hold or gameplay stretch."
+    },
+    {
+      "id": "M22-001-articulation",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P002",
+        "S108-P003",
+        "S108-P004",
+        "S108-P005"
+      ],
+      "retainedExplanation": "캐릭터 전체에 행렬 하나를 적용하면 위치와 방향은 바꿀 수 있습니다. 하지만 그 상태로는 조각상처럼 통째로 움직이기만 하죠. 팔꿈치를 굽히려면 몸통, 위팔, 아래팔처럼 연결된 부분들이 각각 움직여야 합니다. 단단한 부품을 계층으로 묶으면 로봇 같은 동작은 만들 수 있어요. 다만 부품 자체가 휘지는 않으므로 관절 사이의 살과 옷까지 자연스럽게 이어지지는 않습니다.",
+      "screenIntent": "Unity같은관절마네킹 rigidwhole→segmentedhierarchy→continuousmesh. 최초TombRaider/PS2혼합원문채택안함."
+    },
+    {
+      "id": "M22-002-bones",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P006",
+        "S108-P007"
+      ],
+      "retainedExplanation": "라이더스 리퍼블릭에서 자전거가 점프할 때, 프레임은 모양을 유지하지만 타는 사람의 팔과 무릎은 접혔다 펴집니다. 이 차이를 직접 만들어 보려고, 관절마다 작은 좌표계를 붙여 보겠습니다. 스켈레탈 애니메이션, 즉 골격 애니메이션에서는 이런 계층을 가상의 본으로 만듭니다. 본은 화면에 보이는 막대기 자체가 아니라, 위치와 방향을 가진 움직이는 좌표계예요. 메시의 꼭짓점인 정점을 본에 연결해 두면 본이 바뀔 때 정점도 따라 움직입니다. 한 본에만 연결되면 단단한 부품처럼 움직이고, 여러 본에 연결되면 그 영향이 섞입니다.",
+      "screenIntent": "NativeRiders734–758: frame contour versus brief elbow/knee arcs. Continue speech over source then our same jointed model; introduce labelled local-axis bone gizmos only in our implementation."
+    },
+    {
+      "id": "M22-003-weights-rigging",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P007",
+        "S108-P008",
+        "S108-P009",
+        "S108-P010"
+      ],
+      "retainedExplanation": "어떤 정점이 어떤 본의 영향을 얼마나 받는지 정하는 작업을 스키닝이라고 합니다. 그 비율이 스킨 가중치예요. 팔꿈치 부근에서는 위팔과 아래팔의 영향을 함께 받도록 할 수 있습니다. 리깅은 이런 연결뿐 아니라 애니메이터가 다루는 조작 장치까지 포함하는 더 넓은 작업을 뜻하기도 해요. 자동으로 초안을 만들 수 있어도 극단적인 자세에서 형태가 자연스러운지는 직접 확인해야 합니다.",
+      "screenIntent": "weightcolor+numeric twochannels. sameelbowbends slow native animation simultaneousnarration."
+    },
+    {
+      "id": "M22-004-lbs",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P009",
+        "S108-P010",
+        "S108-P011",
+        "S108-P012",
+        "S108-P013",
+        "S108-P014",
+        "S108-P062",
+        "S108-P063"
+      ],
+      "retainedExplanation": "두 본의 영향을 받는 정점 하나를 따라가 보겠습니다. 먼저 위팔에 완전히 붙어 있다고 가정한 위치를 만들고, 다음에는 아래팔에 완전히 붙었다고 가정한 위치를 만듭니다. 실제 정점은 그 두 위치를 가중평균한 곳에 둡니다. 이것이 선형 블렌드 스키닝입니다. 회전각 자체를 육십 퍼센트와 사십 퍼센트로 섞는 것이 아니라, 각 본으로 옮긴 위치들을 섞는 겁니다.",
+      "screenIntent": "two ghostvertex +finalvertex segment. `.6*p_upper+.4*p_lower`. sourceglossary LBS."
+    },
+    {
+      "id": "M22-005-lbs-numbers",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P013",
+        "S108-P014"
+      ],
+      "retainedExplanation": "위팔이 제안한 위치를 영, 이, 아래팔이 제안한 위치를 이, 영이라고 해 볼까요? 위팔 육십 퍼센트, 아래팔 사십 퍼센트라면 결과는 영점팔, 일점이입니다. 위팔 쪽 위치에 더 가깝죠. 손 쪽 정점처럼 위팔 이십 퍼센트, 아래팔 팔십 퍼센트로 바꾸면 일점육, 영점사가 됩니다. 같은 본 움직임이라도 정점마다 가중치가 달라 팔꿈치 주변이 이어지는 것입니다.",
+      "screenIntent": "2D수치plane+3D팔pointleaderline. 두예값은자체선택계산원문approxweights보존."
+    },
+    {
+      "id": "M22-006-vertex-data",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P015",
+        "S108-P016",
+        "S108-P020",
+        "S108-P021",
+        "S108-P022",
+        "S108-P023",
+        "S108-P024",
+        "S108-P025",
+        "S108-P026"
+      ],
+      "retainedExplanation": "구현하려면 정점마다 영향을 주는 본 번호와 각 가중치를 저장합니다. 단순한 예제에서는 본마다 그 본의 공간에서 표현한 정점 위치도 저장해요. 가중치는 보통 음수가 없고 합이 일이 되도록 맞춥니다. 모두 같은 위치를 제안할 때도 원래 위치가 유지되기 위해서죠. 한 정점에 본 네 개처럼 제한을 둘 수 있지만, 네 개가 수학적인 한계는 아니며 형식과 구현의 선택입니다.",
+      "screenIntent": "`boneIndex`, `boneWeight`, `posInBoneSpace` rowhighlight. sum1example .6+.4. MAX4 configurednotuniversal."
+    },
+    {
+      "id": "M22-007-simple-algorithm",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P027",
+        "S108-P028",
+        "S108-P029",
+        "S108-P030",
+        "S108-P033",
+        "S108-P034"
+      ],
+      "retainedExplanation": "계산 순서는 한 정점의 결과를 영으로 비우는 것부터 시작합니다. 본 목록을 순회하면서 그 본의 현재 변환 행렬을 찾고, 본 공간의 위치를 모델 공간으로 옮깁니다. 그 위치에 가중치를 곱해 결과에 더하죠. 모든 본을 처리하면 다음 정점으로 넘어갑니다. 화면의 반복문은 방금 두 점을 만들고 섞었던 그림을 정점 전체에 반복한 것입니다.",
+      "screenIntent": "sourcecode10.7독립축약implementationpseudocode5line, sourceallalgorithmsteps유지. executionmarkerseparatesyntax."
+    },
+    {
+      "id": "M22-008-skinned-normal",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P017",
+        "S108-P018",
+        "S108-P019",
+        "S108-P031",
+        "S108-P032"
+      ],
+      "retainedExplanation": "위치만 바뀌고 법선은 그대로면 조명이 움직임을 따라가지 못합니다. 법선도 본의 방향 변화에 맞춰 처리해야 해요. 다만 법선은 점이 아니므로 평행이동은 적용하지 않습니다. 방향 성분을 변환해 가중합한 뒤 길이를 일로 맞춥니다. 이 단순한 처리는 회전 중심의 스키닝에서 쓰는 근사이며, 비균일 크기 변환이나 전단이 있으면 법선용 역전치 변환 등 별도 검토가 필요합니다.",
+      "screenIntent": "positionpoint w1 vsnormalvectorw0, nskinrenormalization. weightedmatrixnonorthogonalwarningactual."
+    },
+    {
+      "id": "M22-009-bind-question",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P035",
+        "S108-P036",
+        "S108-P037",
+        "S108-P038",
+        "S108-P039"
+      ],
+      "retainedExplanation": "이제 본 공간의 정점 위치가 어디서 왔는지 살펴보죠. 기준이 되는 자세가 바인드 포즈입니다. 메시와 골격을 연결할 때의 원래 배치예요. 화면에 본을 덧그리더라도 그 막대가 메시를 밀어내는 물리 물체인 것은 아닙니다. 바인드 포즈에서 정점이 어디 있었는지, 각 본의 좌표계가 어디 있었는지를 알면 정점을 그 본의 공간으로 바꿀 수 있습니다.",
+      "screenIntent": "bindposefixedghost currentarmalongside samecamera. bindinversearrows."
+    },
+    {
+      "id": "M22-010-bind-conversion",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P040",
+        "S108-P041",
+        "S108-P042",
+        "S108-P043"
+      ],
+      "retainedExplanation": "본이 모델 공간의 어디에 있는지를 나타내는 바인드 행렬이 있다면, 그 역행렬은 모델 공간의 정점을 본 공간으로 데려갑니다. 그다음 현재 본의 행렬을 적용하면 지금 자세의 모델 공간으로 돌아오죠. 원래 위치를 매 프레임 덮어쓰며 또 움직이는 것이 아니라, 원래 바인드 위치에서 현재 자세를 다시 구해야 오차가 누적되지 않습니다.",
+      "screenIntent": "`p_current=J_current B_bind^-1 p_bind` columnvectorconsistent code root. source rowvector note inversionorder."
+    },
+    {
+      "id": "M22-011-bind-example",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P043",
+        "S108-P044",
+        "S108-P045"
+      ],
+      "retainedExplanation": "아주 간단히, 바인드 자세에서 본의 원점이 가로 일에 있고 정점이 가로 이에 있다고 해 보겠습니다. 본 공간에서는 정점이 원점에서 일만큼 떨어져 있죠. 본을 가로 삼으로 옮기면 정점은 사로 갑니다. 기준 자세에서의 본 위치를 먼저 빼지 않으면 원래 배치까지 다시 더하게 됩니다. 그래서 바인드 역행렬을 거치는 단계가 필요합니다.",
+      "screenIntent": "`2−1=1→1+3=4`, skipinversewrong5. bind=current→identityverification."
+    },
+    {
+      "id": "M22-012-matrix-blend",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P044",
+        "S108-P045",
+        "S108-P047",
+        "S108-P048",
+        "S108-P049",
+        "S108-P050",
+        "S108-P051",
+        "S108-P052",
+        "S108-P053",
+        "S108-P054",
+        "S108-P055"
+      ],
+      "retainedExplanation": "이 흐름을 합치면 저장량을 줄일 수 있습니다. 본마다 정점 위치를 여러 벌 저장하는 대신, 정점은 바인드 자세의 위치 하나만 갖습니다. 각 본에서는 바인드 역변환과 현재 변환을 미리 합쳐 둡니다. 정점에 필요한 행렬들을 가중합한 뒤, 그 혼합 행렬로 정점을 한 번 옮기는 방식입니다.",
+      "screenIntent": "`p'=Σw_j(M_j p)= (Σw_jM_j)p`; indexweightsretained positions1vs4 footprintnonnumericclaim."
+    },
+    {
+      "id": "M22-013-matrix-equivalence",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P055",
+        "S108-P056",
+        "S108-P057",
+        "S108-P058",
+        "S108-P059"
+      ],
+      "retainedExplanation": "같은 원래 정점에 행렬을 각각 곱해 더하는 것과, 행렬을 먼저 더한 뒤 곱하는 것은 분배법칙으로 같습니다. 위치뿐 아니라 처리할 방향 벡터가 많을 때 공통 계산을 재사용할 수 있죠. 하지만 회전 행렬끼리 선형으로 섞었다고 결과가 다시 완벽한 회전 행렬이 되는 것은 아닙니다. 관절이 찌그러지거나 비틀린 부분의 부피가 줄어드는 문제가 생길 수 있어요.",
+      "screenIntent": "sourcecode10.8steps all preserved. rotationblend0/180shrinkscontrast mathematical demo notgameinternalclaim."
+    },
+    {
+      "id": "M22-014-deformation-limit",
+      "section": "10.8",
+      "sourceParagraphs": [
+        "S108-P040",
+        "S108-P041",
+        "S108-P046",
+        "S108-P060",
+        "S108-P061",
+        "S108-P062",
+        "S108-P063",
+        "S108-P064"
+      ],
+      "retainedExplanation": "그래서 스키닝은 본을 만들었다고 끝나는 작업이 아닙니다. 관절을 여러 각도로 시험하면서 가중치와 메시를 조정해야 합니다. 팔을 굽힐 때 근육이 부풀거나 발이 눌리며 퍼지는 모습까지 원한다면 추가 변형도 필요하고요. 여기까지는 정점 위치를 바꾸어 큰 형태를 만들었습니다. 이제 그 형태 위에 있는 작은 요철은 정점을 모두 늘리지 않고 어떻게 표현하는지 살펴보겠습니다.",
+      "screenIntent": "articulatedarmmuscleillustration optionalnotnewmethodlecture; currentmeshfixed→armarmorpatchzoom."
+    },
+    {
+      "id": "M22-015-bump-height",
+      "section": "10.9",
+      "sourceParagraphs": [
+        "S109-P002",
+        "S109-P003"
+      ],
+      "retainedExplanation": "둠 쓰리의 금속 벽을 손전등으로 비추면, 작은 홈이 밝아졌다 어두워지며 드러납니다. 이런 표면 디테일을 표현하는 한 가지 방법을, 이제 우리가 만든 같은 면에서 직접 비교해 보겠습니다. 텍스처는 색뿐 아니라 표면의 여러 성질을 저장할 수 있습니다. 범프 매핑은 작은 요철이 빛에 반응하는 모습을 표면 방향의 변화로 나타내는 방법입니다. 높이 맵은 밝기를 높낮이로 저장하고 그 기울기에서 법선을 구합니다. 노멀 맵은 그 법선 방향 자체를 저장하죠. 여기서는 노멀 맵을 따라가겠습니다. 이 계산만으로 실제 정점이나 외곽선이 돌출되는 것은 아닙니다.",
+      "screenIntent": "NativeDoom3original111–128open contour on lit plate/grooves. Then fixed same geometry in our Unity stage: grayscaleheight→slopeN versusRGBnormal→N, unchanged silhouette and wireframe."
+    },
+    {
+      "id": "M22-016-encode-normal",
+      "section": "10.9",
+      "sourceParagraphs": [
+        "S109-P004",
+        "S109-P005"
+      ],
+      "retainedExplanation": "기본적인 노멀 맵은 법선의 엑스, 와이, 제트 성분을 빨강, 초록, 파랑에 대응시킵니다. 방향 성분은 마이너스 일부터 일까지지만 색 채널은 보통 영부터 일까지이므로, 절반을 곱하고 영점오를 더해 저장합니다. 다시 읽을 때는 두 배로 만든 뒤 일을 빼면 됩니다. 바깥쪽을 곧게 향하는 영, 영, 일은 영점오, 영점오, 일이라서 푸른색 계열로 보이는 것입니다.",
+      "screenIntent": "`encode=.5*n+.5`, decode; individualXYZRGBlabels notaxiscolorambiguity. flatnormalcolor127/128quantization."
+    },
+    {
+      "id": "M22-017-normal-data",
+      "section": "10.9",
+      "sourceParagraphs": [
+        "S109-P004",
+        "S109-P005",
+        "S109-P006",
+        "S109-P007"
+      ],
+      "retainedExplanation": "이 색은 예쁜 색을 칠하라는 뜻이 아니라 방향 숫자를 담은 포장입니다. 색상 보정을 하듯 마음대로 밝기를 바꾸면 방향도 달라지죠. 엔진에는 일반 색 텍스처가 아니라 노멀 데이터로 가져와야 합니다. 필터링이나 압축을 거친 값은 길이가 정확히 일이 아닐 수 있으니 복원 후 정규화를 확인합니다. 세밀한 고해상도 모델의 법선을 낮은 해상도 모델용 텍스처에 구워 넣는 제작 방식도 사용합니다.",
+      "screenIntent": "highpoly→bake→lowpoly+map; sourceartisttoolcostgeneralnotPhotoshopclaim. normalimportlinear, actualsettingslaterverify."
+    },
+    {
+      "id": "M22-018-reuse-problem",
+      "section": "10.9",
+      "sourceParagraphs": [
+        "S109-P008",
+        "S109-P009",
+        "S109-P010",
+        "S109-P011"
+      ],
+      "retainedExplanation": "텍스처를 여러 곳에서 재사용하면 메모리와 제작 작업을 아낄 수 있습니다. 그런데 법선은 방향이라 문제가 생겨요. 상자의 윗면과 아랫면에 같은 무늬를 쓴다고 해 보죠. 텍스처 속 숫자를 모두 물체 공간의 위쪽으로 읽으면, 아랫면까지 위쪽을 바라보게 됩니다. 각 면에서 바깥쪽이 어느 방향인지 알려 주는 기준축이 함께 있어야 합니다.",
+      "screenIntent": "sameRGBtexeltopbottom→wrongparallelN→localframecorrectoppositeN. cubesallowedbecauseexplicitboxexample."
+    },
+    {
+      "id": "M22-019-tangent-frame",
+      "section": "10.9.1",
+      "sourceParagraphs": [
+        "S109-P015",
+        "S109-P016",
+        "S109-P017",
+        "S109-P018",
+        "S109-P034"
+      ],
+      "retainedExplanation": "그 기준이 접선 공간입니다. 표면 바깥쪽 법선이 엔, 텍스처의 유가 늘어나는 방향이 접선 티, 브이가 늘어나는 쪽이 비탄젠트 비입니다. 자료에 따라 비를 바이노멀이라고도 부르지만 여기서는 비탄젠트로 통일하겠습니다. 이 세 방향을 묶어 티비엔 기저라고 해요. 이미지의 위아래와 브이의 증가 방향은 도구마다 약속이 다를 수 있으므로 함께 맞춰야 합니다.",
+      "screenIntent": "surfaceattachedTBN canonicalterm card; UVincrementpaired arrows. normalmapyflipconvention."
+    },
+    {
+      "id": "M22-020-decode-example",
+      "section": "10.9.1",
+      "sourceParagraphs": [
+        "S109-P019",
+        "S109-P074"
+      ],
+      "retainedExplanation": "예를 들어 여덟 비트 색이 삼십칠, 백이십팔, 이백십팔이면 각 값을 이백오십오로 나눈 뒤 두 배하고 일을 뺍니다. 결과는 대략 마이너스 영점칠일, 영점영영사, 영점칠일입니다. 이를 정규화하면 거의 마이너스 영점칠영칠, 영, 영점칠영칠 방향이 되죠. 약 사십오 도 기울었다는 뜻이며, 아주 작은 차이는 여덟 비트로 저장한 양자화 오차입니다.",
+      "screenIntent": "`2c/255−1=(-.709804,.003922,.709804)`, normalizedcalc exact. smallYnotclaim0exact. rendererstrengthdefault1."
+    },
+    {
+      "id": "M22-021-local-left",
+      "section": "10.9.1",
+      "sourceParagraphs": [
+        "S109-P019",
+        "S109-P020",
+        "S109-P021",
+        "S109-P022",
+        "S109-P023"
+      ],
+      "retainedExplanation": "마이너스 엑스는 화면 왼쪽이라는 뜻이 아닙니다. 그 표면에서 유가 줄어드는 방향이에요. 접선 공간의 법선이 마이너스 영점칠영칠, 영, 영점칠영칠이라면, 접선 티를 마이너스 영점칠영칠 배 하고 법선 엔을 영점칠영칠 배 해서 더합니다. 이렇게 각 성분에 해당 축을 곱해 합치면 모델 공간의 방향을 얻습니다. 면이 돌아가도 같은 요철이 그 면에 붙어 있게 되는 이유입니다.",
+      "screenIntent": "`n_m=xT+yB+zN` +matrixTBN. rowvectorbasisrowssource vscolumnbasiscolumnsdisplay explicit. orthonormalcondition."
+    },
+    {
+      "id": "M22-022-frame-varying",
+      "section": "10.9.1",
+      "sourceParagraphs": [
+        "S109-P024",
+        "S109-P025",
+        "S109-P026",
+        "S109-P027"
+      ],
+      "retainedExplanation": "곡면에서는 법선이 위치마다 달라지므로 티와 비도 표면을 따라 달라집니다. 평평한 면이라도 유브이를 비틀면 텍스처의 유 방향과 브이 방향이 달라질 수 있어요. 두 방향이 반드시 서로 직각인 것도 아닙니다. 정점의 기저를 면 안쪽으로 보간해 사용하되, 원하는 조명 계산에서는 정규직교 기저로 정리하는 과정을 둘 수 있습니다.",
+      "screenIntent": "curvedsamearmorpatch+UVsheargrid; T/Bangle non90. ordinarystretchdataidentifiable."
+    },
+    {
+      "id": "M22-023-space-choice",
+      "section": "10.9.1",
+      "sourceParagraphs": [
+        "S109-P028",
+        "S109-P029",
+        "S109-P030"
+      ],
+      "retainedExplanation": "노멀 맵의 법선을 모델 공간으로 옮겨 조명할 수도 있고, 반대로 빛과 카메라 방향을 접선 공간으로 옮길 수도 있습니다. 어느 쪽이든 내적하는 방향끼리 같은 좌표계를 써야 해요. 기저가 정규직교라면 역행렬이 전치행렬이므로 축과의 내적으로 좌표를 구할 수 있습니다. 하지만 축들이 비스듬한데도 전치를 역행렬처럼 쓰면 같은 변환이 아닙니다.",
+      "screenIntent": "TBNinverse/transposeonlyiforthonormal. interpolatedlightdirectionnormalize notassumelinearperfect."
+    },
+    {
+      "id": "M22-024-reconstruct-bitangent",
+      "section": "10.9.1",
+      "sourceParagraphs": [
+        "S109-P031",
+        "S109-P032",
+        "S109-P033"
+      ],
+      "retainedExplanation": "기저를 직각으로 정리했다면 세 축을 모두 저장하지 않을 수도 있습니다. 법선 엔과 접선 티의 외적으로 남은 축을 만들 수 있죠. 그런데 텍스처를 거울 대칭하면 이 축의 방향이 뒤집혀야 할 수 있습니다. 그래서 좌표계의 좌우 방향을 구분하는 부호, 핸디드니스를 함께 저장합니다. 값은 플러스 일 또는 마이너스 일이에요. 비는 그 부호에 엔 크로스 티를 곱해 복원합니다. 접선의 더블유 성분에 이 부호를 넣는 형식도 쓰입니다.",
+      "screenIntent": "`B=h(N×T)`, `h=sign((N×T)·Bstored)`; mirroredtextureonevariable. note negativeobjectscalehandledpipeline."
+    },
+    {
+      "id": "M22-025-triangle-input",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P036",
+        "S109-P037",
+        "S109-P038"
+      ],
+      "retainedExplanation": "이제 접선 티와 비탄젠트 비를 실제 메시에서 구해 보겠습니다. 필요한 것은 삼각형의 세 정점 위치와 각각의 유브이입니다. 첫 정점을 원점처럼 놓고, 나머지 두 정점으로 가는 변을 큐 일과 큐 이라고 하죠. 유의 차이는 에스 일과 에스 이, 브이의 차이는 티 일과 티 이로 두겠습니다. 절대 위치보다 두 좌표에서 얼마나 이동했는지에 집중하는 겁니다.",
+      "screenIntent": "`q1=p1−p0 q2=p2−p0; s1=u1−u0 t1=v1−v0 ...` separateTtangentvs tUV carefullabels."
+    },
+    {
+      "id": "M22-026-linear-system",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P039",
+        "S109-P040",
+        "S109-P041",
+        "S109-P042"
+      ],
+      "retainedExplanation": "첫 번째 변은 유 방향으로 에스 일만큼, 브이 방향으로 티 일만큼 이동한 결과입니다. 따라서 큐 일은 에스 일 곱하기 티, 더하기 티 일 곱하기 비로 쓸 수 있습니다. 두 번째 변도 같은 방식이죠. 변과 유브이 차이는 이미 알고 있으니, 모르는 티와 비를 두 식에서 풀어내면 됩니다. 두 개의 좌표계를 연결하는 연립방정식인 셈입니다.",
+      "screenIntent": "twoedgeanimationu/vsteps→q. matrix2×2step notwallformula."
+    },
+    {
+      "id": "M22-027-invert-system",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P043",
+        "S109-P044"
+      ],
+      "retainedExplanation": "이차 행렬의 역행렬을 쓰면 분모에 에스 일 티 이, 빼기 에스 이 티 일이 나옵니다. 이것이 유브이 삼각형의 방향과 넓이 정보를 담은 행렬식입니다. 접선은 티 이 큐 일에서 티 일 큐 이를 뺀 값을 이 행렬식으로 나누고, 비탄젠트는 마이너스 에스 이 큐 일에 에스 일 큐 이를 더해 같은 값으로 나눕니다. 아직 길이가 일인 벡터는 아닙니다.",
+      "screenIntent": "sourceeqinversefullmatrix thenT/Bcollapse. `D` namedfirst, nochildderivationomitted."
+    },
+    {
+      "id": "M22-028-tangent-worked",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P036",
+        "S109-P037",
+        "S109-P038",
+        "S109-P039",
+        "S109-P040",
+        "S109-P041",
+        "S109-P042",
+        "S109-P043",
+        "S109-P044"
+      ],
+      "retainedExplanation": "숫자로 확인해 보겠습니다. 삼차원 변을 이, 영, 영과 영, 일, 영으로 두고, 유브이 변을 일, 영과 영, 일로 두죠. 행렬식은 일입니다. 그러면 접선은 이, 영, 영, 비탄젠트는 영, 일, 영이 됩니다. 접선의 길이를 일로 맞추면 일, 영, 영이죠. 텍스처에서 오른쪽으로 가는 움직임이 모델에서도 오른쪽 방향과 연결되었습니다.",
+      "screenIntent": "same2D/3Dtriangleworkednumbers, sourceaddedworkedexample preservesformula."
+    },
+    {
+      "id": "M22-029-determinant-sign",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P045",
+        "S109-P046",
+        "S109-P069",
+        "S109-P070"
+      ],
+      "retainedExplanation": "주의할 점이 있습니다. 나중에 정규화하니 분모를 버려도 된다고 생각하기 쉽지만, 음수 부호는 버리면 안 됩니다. 방금 유브이의 유 방향만 반대로 놓으면 행렬식이 마이너스 일이 되고, 접선도 반대쪽이어야 하죠. 길이를 일로 만드는 정규화는 길이만 바꿀 뿐 방향을 뒤집지 않습니다. 따라서 일반적인 구현에서는 행렬식의 부호를 보존합니다.",
+      "screenIntent": "correctmirrorD−1 T−x vsdropdenominatorwrong+x. explicitsourcecorrectionon-screenformula notcreatorframing."
+    },
+    {
+      "id": "M22-030-degenerate-uv",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P070"
+      ],
+      "retainedExplanation": "유브이 세 점이 한 줄로 겹쳐 행렬식이 영이라면 역행렬 자체가 없습니다. 이때는 영으로 나누기 전에 해당 삼각형을 처리할 정책이 필요합니다. 잘못된 유브이를 수정하거나, 검증한 대체 기저를 사용하는 식이죠. 아주 작은 값도 수치적으로 불안정할 수 있습니다. 법선이나 평균 접선이 영에 가까울 때도 그대로 정규화하지 않아야 합니다.",
+      "screenIntent": "UVtrianglearea→0 D→0, guardhighlight `if abs(D)<eps...` fallbacknotinventexactengine."
+    },
+    {
+      "id": "M22-031-average-tangents",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P047",
+        "S109-P048",
+        "S109-P049",
+        "S109-P050",
+        "S109-P051",
+        "S109-P052",
+        "S109-P053",
+        "S109-P054",
+        "S109-P055",
+        "S109-P056",
+        "S109-P057",
+        "S109-P058",
+        "S109-P059",
+        "S109-P060",
+        "S109-P071",
+        "S109-P072",
+        "S109-P064"
+      ],
+      "retainedExplanation": "지금은 삼각형 하나의 기저를 구했습니다. 정점 단위 값을 만들려면 그 정점을 공유하는 면들의 접선과 비탄젠트를 모읍니다. 누적값을 영으로 시작하고, 각 삼각형을 계산해 세 꼭짓점의 목록에 더해 가는 방식이에요. 여기서 평균내는 것은 법선이 아니라 방금 구한 접선 계열 벡터입니다. 법선은 별도로 준비된 입력이며, 그다음 직교화에 사용합니다.",
+      "screenIntent": "sourcecode10.9step input/allocateclear/triangleloop/accumulate preserving,memorycleanupafter. Captioncorrectionexplicitinternal."
+    },
+    {
+      "id": "M22-032-gram-schmidt",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P048",
+        "S109-P060",
+        "S109-P061",
+        "S109-P062",
+        "S109-P063"
+      ],
+      "retainedExplanation": "모인 접선에 법선 방향 성분이 섞여 있다면 빼 주겠습니다. 단위 법선과 접선의 내적에 법선을 곱하면 그 성분이 나오죠. 이를 빼고 정규화하면 법선에 수직인 접선이 됩니다. 그다음 엔 크로스 티와 모아 둔 비탄젠트의 내적 부호를 보고 앞서 정의한 핸디드니스 부호를 저장합니다. 이렇게 접선의 세 성분과 부호 하나로 기저를 다시 만들 준비가 끝납니다.",
+      "screenIntent": "`T'=normalize(T−N dot(N,T))` geometryprojectiontrace, determinantvs unit signseparate."
+    },
+    {
+      "id": "M22-033-seams",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P065",
+        "S109-P066",
+        "S109-P067"
+      ],
+      "retainedExplanation": "하지만 이웃한 모든 면을 무조건 평균내면 안 됩니다. 유브이가 끊기거나 법선 방향이 달라지는 경계에서는 서로 다른 기저가 필요할 수 있어요. 특히 좌우 대칭 모델의 가운데처럼 같은 위치와 같은 유브이를 공유해도, 한쪽이 거울 대칭이면 접선 방향은 반대일 수 있습니다. 둘을 더하면 상쇄되겠죠. 이런 이음선에서는 정점을 분리해 각 쪽의 방향을 보존합니다.",
+      "screenIntent": "charactercenterseam normalhighlightbad→split2verticescorrect; countsactualillustrationnotgame."
+    },
+    {
+      "id": "M22-034-data-pipeline",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P068"
+      ],
+      "retainedExplanation": "이렇게 유브이, 접선, 부호를 미리 맞춰 놓으면 실행 중에는 노멀 맵을 읽고 좌표를 바꿔 조명하는 과정으로 이어집니다. 실행 코드를 짧게 만드는 준비 작업이 데이터 쪽에 들어 있는 셈이에요. 노멀 맵을 만든 도구와 게임 엔진이 서로 다른 기저 약속을 쓰면 경계나 반사에서 오류가 드러날 수 있으므로, 같은 약속으로 만들고 해석해야 합니다.",
+      "screenIntent": "authoring→validatedmeshattributes→shader3steps. 원문75/25비율현재사실로사용안함."
+    },
+    {
+      "id": "M22-035-close",
+      "section": "10.9.2",
+      "sourceParagraphs": [
+        "S109-P068",
+        "S109-P069",
+        "S109-P070",
+        "S109-P071",
+        "S109-P072",
+        "S109-P073",
+        "S109-P074"
+      ],
+      "retainedExplanation": "큰 움직임과 작은 요철은 서로 다른 작업처럼 보였지만, 둘 다 어느 좌표계의 값을 어떻게 옮길지에 달려 있었습니다. 스키닝은 바인드 자세의 정점을 여러 본으로 옮겨 섞고, 노멀 매핑은 텍스처의 작은 방향을 표면의 기저로 옮깁니다. 이제 캐릭터가 관절을 굽혀도 형태가 이어지고, 그 위의 요철이 빛에 맞게 반응하려면 위치와 방향의 약속이 함께 맞아야 한다는 것을 알 수 있습니다.",
+      "screenIntent": "Close on the same independently authored articulated model used throughout: bone transform and surface TBN axes update with its bend. Actual game examples were observational motivation, not measured internal skeletons. No unverified gameplay return, added BGM, loop or hold."
+    }
+  ],
+  "teachingBeats": [
+    {
+      "id": "M22-000-abstract",
+      "speech": "슈퍼 마리오 오디세이에서 마리오가 뛰어올라 착지할 때, 몸 전체가 움직이는 동안 팔과 다리의 자세도 함께 바뀝니다. 컴퓨터는 한 캐릭터의 여러 부분을 어떻게 함께 움직일까요? 오늘은 관절을 따라 큰 형태를 바꾸는 스키닝부터, 표면의 작은 요철을 빛으로 표현하는 노멀 맵까지 이어서 살펴보겠습니다. 먼저 캐릭터를 통째로 움직이는 것과 관절을 굽히는 것의 차이부터 보죠.",
+      "visual": "After2sbranding, nativeMario710–730with readable joint arcs. Observe whole motion and limb pose, then match-cut to our shared articulated-model stage while the overview continues. No static hold or gameplay stretch.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-001-articulation",
+      "speech": "캐릭터 전체에 행렬 하나를 적용하면 위치와 방향은 바꿀 수 있습니다. 하지만 그 상태로는 조각상처럼 통째로 움직이기만 하죠. 팔꿈치를 굽히려면 몸통, 위팔, 아래팔처럼 연결된 부분들이 각각 움직여야 합니다. 단단한 부품을 계층으로 묶으면 로봇 같은 동작은 만들 수 있어요. 다만 부품 자체가 휘지는 않으므로 관절 사이의 살과 옷까지 자연스럽게 이어지지는 않습니다.",
+      "visual": "Unity같은관절마네킹 rigidwhole→segmentedhierarchy→continuousmesh. 최초TombRaider/PS2혼합원문채택안함.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-002-bones",
+      "speech": "라이더스 리퍼블릭에서 자전거가 점프할 때, 프레임은 모양을 유지하지만 타는 사람의 팔과 무릎은 접혔다 펴집니다. 이 차이를 직접 만들어 보려고, 관절마다 작은 좌표계를 붙여 보겠습니다. 스켈레탈 애니메이션, 즉 골격 애니메이션에서는 이런 계층을 가상의 본으로 만듭니다. 본은 화면에 보이는 막대기 자체가 아니라, 위치와 방향을 가진 움직이는 좌표계예요. 메시의 꼭짓점인 정점을 본에 연결해 두면 본이 바뀔 때 정점도 따라 움직입니다. 한 본에만 연결되면 단단한 부품처럼 움직이고, 여러 본에 연결되면 그 영향이 섞입니다.",
+      "visual": "NativeRiders734–758: frame contour versus brief elbow/knee arcs. Continue speech over source then our same jointed model; introduce labelled local-axis bone gizmos only in our implementation.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-003-weights-rigging",
+      "speech": "어떤 정점이 어떤 본의 영향을 얼마나 받는지 정하는 작업을 스키닝이라고 합니다. 그 비율이 스킨 가중치예요. 팔꿈치 부근에서는 위팔과 아래팔의 영향을 함께 받도록 할 수 있습니다. 리깅은 이런 연결뿐 아니라 애니메이터가 다루는 조작 장치까지 포함하는 더 넓은 작업을 뜻하기도 해요. 자동으로 초안을 만들 수 있어도 극단적인 자세에서 형태가 자연스러운지는 직접 확인해야 합니다.",
+      "visual": "weightcolor+numeric twochannels. sameelbowbends slow native animation simultaneousnarration.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-004-lbs",
+      "speech": "두 본의 영향을 받는 정점 하나를 따라가 보겠습니다. 먼저 위팔에 완전히 붙어 있다고 가정한 위치를 만들고, 다음에는 아래팔에 완전히 붙었다고 가정한 위치를 만듭니다. 실제 정점은 그 두 위치를 가중평균한 곳에 둡니다. 이것이 선형 블렌드 스키닝입니다. 회전각 자체를 육십 퍼센트와 사십 퍼센트로 섞는 것이 아니라, 각 본으로 옮긴 위치들을 섞는 겁니다.",
+      "visual": "two ghostvertex +finalvertex segment. `.6*p_upper+.4*p_lower`. sourceglossary LBS.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-005-lbs-numbers",
+      "speech": "위팔이 제안한 위치를 영, 이, 아래팔이 제안한 위치를 이, 영이라고 해 볼까요? 위팔 육십 퍼센트, 아래팔 사십 퍼센트라면 결과는 영점팔, 일점이입니다. 위팔 쪽 위치에 더 가깝죠. 손 쪽 정점처럼 위팔 이십 퍼센트, 아래팔 팔십 퍼센트로 바꾸면 일점육, 영점사가 됩니다. 같은 본 움직임이라도 정점마다 가중치가 달라 팔꿈치 주변이 이어지는 것입니다.",
+      "visual": "2D수치plane+3D팔pointleaderline. 두예값은자체선택계산원문approxweights보존.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-006-vertex-data",
+      "speech": "구현하려면 정점마다 영향을 주는 본 번호와 각 가중치를 저장합니다. 단순한 예제에서는 본마다 그 본의 공간에서 표현한 정점 위치도 저장해요. 가중치는 보통 음수가 없고 합이 일이 되도록 맞춥니다. 모두 같은 위치를 제안할 때도 원래 위치가 유지되기 위해서죠. 한 정점에 본 네 개처럼 제한을 둘 수 있지만, 네 개가 수학적인 한계는 아니며 형식과 구현의 선택입니다.",
+      "visual": "`boneIndex`, `boneWeight`, `posInBoneSpace` rowhighlight. sum1example .6+.4. MAX4 configurednotuniversal.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-007-simple-algorithm",
+      "speech": "계산 순서는 한 정점의 결과를 영으로 비우는 것부터 시작합니다. 본 목록을 순회하면서 그 본의 현재 변환 행렬을 찾고, 본 공간의 위치를 모델 공간으로 옮깁니다. 그 위치에 가중치를 곱해 결과에 더하죠. 모든 본을 처리하면 다음 정점으로 넘어갑니다. 화면의 반복문은 방금 두 점을 만들고 섞었던 그림을 정점 전체에 반복한 것입니다.",
+      "visual": "sourcecode10.7독립축약implementationpseudocode5line, sourceallalgorithmsteps유지. executionmarkerseparatesyntax.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-008-skinned-normal",
+      "speech": "위치만 바뀌고 법선은 그대로면 조명이 움직임을 따라가지 못합니다. 법선도 본의 방향 변화에 맞춰 처리해야 해요. 다만 법선은 점이 아니므로 평행이동은 적용하지 않습니다. 방향 성분을 변환해 가중합한 뒤 길이를 일로 맞춥니다. 이 단순한 처리는 회전 중심의 스키닝에서 쓰는 근사이며, 비균일 크기 변환이나 전단이 있으면 법선용 역전치 변환 등 별도 검토가 필요합니다.",
+      "visual": "positionpoint w1 vsnormalvectorw0, nskinrenormalization. weightedmatrixnonorthogonalwarningactual.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-009-bind-question",
+      "speech": "이제 본 공간의 정점 위치가 어디서 왔는지 살펴보죠. 기준이 되는 자세가 바인드 포즈입니다. 메시와 골격을 연결할 때의 원래 배치예요. 화면에 본을 덧그리더라도 그 막대가 메시를 밀어내는 물리 물체인 것은 아닙니다. 바인드 포즈에서 정점이 어디 있었는지, 각 본의 좌표계가 어디 있었는지를 알면 정점을 그 본의 공간으로 바꿀 수 있습니다.",
+      "visual": "bindposefixedghost currentarmalongside samecamera. bindinversearrows.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-010-bind-conversion",
+      "speech": "본이 모델 공간의 어디에 있는지를 나타내는 바인드 행렬이 있다면, 그 역행렬은 모델 공간의 정점을 본 공간으로 데려갑니다. 그다음 현재 본의 행렬을 적용하면 지금 자세의 모델 공간으로 돌아오죠. 원래 위치를 매 프레임 덮어쓰며 또 움직이는 것이 아니라, 원래 바인드 위치에서 현재 자세를 다시 구해야 오차가 누적되지 않습니다.",
+      "visual": "`p_current=J_current B_bind^-1 p_bind` columnvectorconsistent code root. source rowvector note inversionorder.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-011-bind-example",
+      "speech": "아주 간단히, 바인드 자세에서 본의 원점이 가로 일에 있고 정점이 가로 이에 있다고 해 보겠습니다. 본 공간에서는 정점이 원점에서 일만큼 떨어져 있죠. 본을 가로 삼으로 옮기면 정점은 사로 갑니다. 기준 자세에서의 본 위치를 먼저 빼지 않으면 원래 배치까지 다시 더하게 됩니다. 그래서 바인드 역행렬을 거치는 단계가 필요합니다.",
+      "visual": "`2−1=1→1+3=4`, skipinversewrong5. bind=current→identityverification.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-012-matrix-blend",
+      "speech": "이 흐름을 합치면 저장량을 줄일 수 있습니다. 본마다 정점 위치를 여러 벌 저장하는 대신, 정점은 바인드 자세의 위치 하나만 갖습니다. 각 본에서는 바인드 역변환과 현재 변환을 미리 합쳐 둡니다. 정점에 필요한 행렬들을 가중합한 뒤, 그 혼합 행렬로 정점을 한 번 옮기는 방식입니다.",
+      "visual": "`p'=Σw_j(M_j p)= (Σw_jM_j)p`; indexweightsretained positions1vs4 footprintnonnumericclaim.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-013-matrix-equivalence",
+      "speech": "같은 원래 정점에 행렬을 각각 곱해 더하는 것과, 행렬을 먼저 더한 뒤 곱하는 것은 분배법칙으로 같습니다. 위치뿐 아니라 처리할 방향 벡터가 많을 때 공통 계산을 재사용할 수 있죠. 하지만 회전 행렬끼리 선형으로 섞었다고 결과가 다시 완벽한 회전 행렬이 되는 것은 아닙니다. 관절이 찌그러지거나 비틀린 부분의 부피가 줄어드는 문제가 생길 수 있어요.",
+      "visual": "sourcecode10.8steps all preserved. rotationblend0/180shrinkscontrast mathematical demo notgameinternalclaim.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-014-deformation-limit",
+      "speech": "그래서 스키닝은 본을 만들었다고 끝나는 작업이 아닙니다. 관절을 여러 각도로 시험하면서 가중치와 메시를 조정해야 합니다. 팔을 굽힐 때 근육이 부풀거나 발이 눌리며 퍼지는 모습까지 원한다면 추가 변형도 필요하고요. 여기까지는 정점 위치를 바꾸어 큰 형태를 만들었습니다. 이제 그 형태 위에 있는 작은 요철은 정점을 모두 늘리지 않고 어떻게 표현하는지 살펴보겠습니다.",
+      "visual": "articulatedarmmuscleillustration optionalnotnewmethodlecture; currentmeshfixed→armarmorpatchzoom.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-015-bump-height",
+      "speech": "둠 쓰리의 금속 벽을 손전등으로 비추면, 작은 홈이 밝아졌다 어두워지며 드러납니다. 이런 표면 디테일을 표현하는 한 가지 방법을, 이제 우리가 만든 같은 면에서 직접 비교해 보겠습니다. 텍스처는 색뿐 아니라 표면의 여러 성질을 저장할 수 있습니다. 범프 매핑은 작은 요철이 빛에 반응하는 모습을 표면 방향의 변화로 나타내는 방법입니다. 높이 맵은 밝기를 높낮이로 저장하고 그 기울기에서 법선을 구합니다. 노멀 맵은 그 법선 방향 자체를 저장하죠. 여기서는 노멀 맵을 따라가겠습니다. 이 계산만으로 실제 정점이나 외곽선이 돌출되는 것은 아닙니다.",
+      "visual": "NativeDoom3original111–128open contour on lit plate/grooves. Then fixed same geometry in our Unity stage: grayscaleheight→slopeN versusRGBnormal→N, unchanged silhouette and wireframe.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-016-encode-normal",
+      "speech": "기본적인 노멀 맵은 법선의 엑스, 와이, 제트 성분을 빨강, 초록, 파랑에 대응시킵니다. 방향 성분은 마이너스 일부터 일까지지만 색 채널은 보통 영부터 일까지이므로, 절반을 곱하고 영점오를 더해 저장합니다. 다시 읽을 때는 두 배로 만든 뒤 일을 빼면 됩니다. 바깥쪽을 곧게 향하는 영, 영, 일은 영점오, 영점오, 일이라서 푸른색 계열로 보이는 것입니다.",
+      "visual": "`encode=.5*n+.5`, decode; individualXYZRGBlabels notaxiscolorambiguity. flatnormalcolor127/128quantization.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-017-normal-data",
+      "speech": "이 색은 예쁜 색을 칠하라는 뜻이 아니라 방향 숫자를 담은 포장입니다. 색상 보정을 하듯 마음대로 밝기를 바꾸면 방향도 달라지죠. 엔진에는 일반 색 텍스처가 아니라 노멀 데이터로 가져와야 합니다. 필터링이나 압축을 거친 값은 길이가 정확히 일이 아닐 수 있으니 복원 후 정규화를 확인합니다. 세밀한 고해상도 모델의 법선을 낮은 해상도 모델용 텍스처에 구워 넣는 제작 방식도 사용합니다.",
+      "visual": "highpoly→bake→lowpoly+map; sourceartisttoolcostgeneralnotPhotoshopclaim. normalimportlinear, actualsettingslaterverify.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-018-reuse-problem",
+      "speech": "텍스처를 여러 곳에서 재사용하면 메모리와 제작 작업을 아낄 수 있습니다. 그런데 법선은 방향이라 문제가 생겨요. 상자의 윗면과 아랫면에 같은 무늬를 쓴다고 해 보죠. 텍스처 속 숫자를 모두 물체 공간의 위쪽으로 읽으면, 아랫면까지 위쪽을 바라보게 됩니다. 각 면에서 바깥쪽이 어느 방향인지 알려 주는 기준축이 함께 있어야 합니다.",
+      "visual": "sameRGBtexeltopbottom→wrongparallelN→localframecorrectoppositeN. cubesallowedbecauseexplicitboxexample.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-019-tangent-frame",
+      "speech": "그 기준이 접선 공간입니다. 표면 바깥쪽 법선이 엔, 텍스처의 유가 늘어나는 방향이 접선 티, 브이가 늘어나는 쪽이 비탄젠트 비입니다. 자료에 따라 비를 바이노멀이라고도 부르지만 여기서는 비탄젠트로 통일하겠습니다. 이 세 방향을 묶어 티비엔 기저라고 해요. 이미지의 위아래와 브이의 증가 방향은 도구마다 약속이 다를 수 있으므로 함께 맞춰야 합니다.",
+      "visual": "surfaceattachedTBN canonicalterm card; UVincrementpaired arrows. normalmapyflipconvention.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-020-decode-example",
+      "speech": "예를 들어 여덟 비트 색이 삼십칠, 백이십팔, 이백십팔이면 각 값을 이백오십오로 나눈 뒤 두 배하고 일을 뺍니다. 결과는 대략 마이너스 영점칠일, 영점영영사, 영점칠일입니다. 이를 정규화하면 거의 마이너스 영점칠영칠, 영, 영점칠영칠 방향이 되죠. 약 사십오 도 기울었다는 뜻이며, 아주 작은 차이는 여덟 비트로 저장한 양자화 오차입니다.",
+      "visual": "`2c/255−1=(-.709804,.003922,.709804)`, normalizedcalc exact. smallYnotclaim0exact. rendererstrengthdefault1.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-021-local-left",
+      "speech": "마이너스 엑스는 화면 왼쪽이라는 뜻이 아닙니다. 그 표면에서 유가 줄어드는 방향이에요. 접선 공간의 법선이 마이너스 영점칠영칠, 영, 영점칠영칠이라면, 접선 티를 마이너스 영점칠영칠 배 하고 법선 엔을 영점칠영칠 배 해서 더합니다. 이렇게 각 성분에 해당 축을 곱해 합치면 모델 공간의 방향을 얻습니다. 면이 돌아가도 같은 요철이 그 면에 붙어 있게 되는 이유입니다.",
+      "visual": "`n_m=xT+yB+zN` +matrixTBN. rowvectorbasisrowssource vscolumnbasiscolumnsdisplay explicit. orthonormalcondition.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-022-frame-varying",
+      "speech": "곡면에서는 법선이 위치마다 달라지므로 티와 비도 표면을 따라 달라집니다. 평평한 면이라도 유브이를 비틀면 텍스처의 유 방향과 브이 방향이 달라질 수 있어요. 두 방향이 반드시 서로 직각인 것도 아닙니다. 정점의 기저를 면 안쪽으로 보간해 사용하되, 원하는 조명 계산에서는 정규직교 기저로 정리하는 과정을 둘 수 있습니다.",
+      "visual": "curvedsamearmorpatch+UVsheargrid; T/Bangle non90. ordinarystretchdataidentifiable.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-023-space-choice",
+      "speech": "노멀 맵의 법선을 모델 공간으로 옮겨 조명할 수도 있고, 반대로 빛과 카메라 방향을 접선 공간으로 옮길 수도 있습니다. 어느 쪽이든 내적하는 방향끼리 같은 좌표계를 써야 해요. 기저가 정규직교라면 역행렬이 전치행렬이므로 축과의 내적으로 좌표를 구할 수 있습니다. 하지만 축들이 비스듬한데도 전치를 역행렬처럼 쓰면 같은 변환이 아닙니다.",
+      "visual": "TBNinverse/transposeonlyiforthonormal. interpolatedlightdirectionnormalize notassumelinearperfect.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-024-reconstruct-bitangent",
+      "speech": "기저를 직각으로 정리했다면 세 축을 모두 저장하지 않을 수도 있습니다. 법선 엔과 접선 티의 외적으로 남은 축을 만들 수 있죠. 그런데 텍스처를 거울 대칭하면 이 축의 방향이 뒤집혀야 할 수 있습니다. 그래서 좌표계의 좌우 방향을 구분하는 부호, 핸디드니스를 함께 저장합니다. 값은 플러스 일 또는 마이너스 일이에요. 비는 그 부호에 엔 크로스 티를 곱해 복원합니다. 접선의 더블유 성분에 이 부호를 넣는 형식도 쓰입니다.",
+      "visual": "`B=h(N×T)`, `h=sign((N×T)·Bstored)`; mirroredtextureonevariable. note negativeobjectscalehandledpipeline.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-025-triangle-input",
+      "speech": "이제 접선 티와 비탄젠트 비를 실제 메시에서 구해 보겠습니다. 필요한 것은 삼각형의 세 정점 위치와 각각의 유브이입니다. 첫 정점을 원점처럼 놓고, 나머지 두 정점으로 가는 변을 큐 일과 큐 이라고 하죠. 유의 차이는 에스 일과 에스 이, 브이의 차이는 티 일과 티 이로 두겠습니다. 절대 위치보다 두 좌표에서 얼마나 이동했는지에 집중하는 겁니다.",
+      "visual": "`q1=p1−p0 q2=p2−p0; s1=u1−u0 t1=v1−v0 ...` separateTtangentvs tUV carefullabels.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-026-linear-system",
+      "speech": "첫 번째 변은 유 방향으로 에스 일만큼, 브이 방향으로 티 일만큼 이동한 결과입니다. 따라서 큐 일은 에스 일 곱하기 티, 더하기 티 일 곱하기 비로 쓸 수 있습니다. 두 번째 변도 같은 방식이죠. 변과 유브이 차이는 이미 알고 있으니, 모르는 티와 비를 두 식에서 풀어내면 됩니다. 두 개의 좌표계를 연결하는 연립방정식인 셈입니다.",
+      "visual": "twoedgeanimationu/vsteps→q. matrix2×2step notwallformula.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-027-invert-system",
+      "speech": "이차 행렬의 역행렬을 쓰면 분모에 에스 일 티 이, 빼기 에스 이 티 일이 나옵니다. 이것이 유브이 삼각형의 방향과 넓이 정보를 담은 행렬식입니다. 접선은 티 이 큐 일에서 티 일 큐 이를 뺀 값을 이 행렬식으로 나누고, 비탄젠트는 마이너스 에스 이 큐 일에 에스 일 큐 이를 더해 같은 값으로 나눕니다. 아직 길이가 일인 벡터는 아닙니다.",
+      "visual": "sourceeqinversefullmatrix thenT/Bcollapse. `D` namedfirst, nochildderivationomitted.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-028-tangent-worked",
+      "speech": "숫자로 확인해 보겠습니다. 삼차원 변을 이, 영, 영과 영, 일, 영으로 두고, 유브이 변을 일, 영과 영, 일로 두죠. 행렬식은 일입니다. 그러면 접선은 이, 영, 영, 비탄젠트는 영, 일, 영이 됩니다. 접선의 길이를 일로 맞추면 일, 영, 영이죠. 텍스처에서 오른쪽으로 가는 움직임이 모델에서도 오른쪽 방향과 연결되었습니다.",
+      "visual": "same2D/3Dtriangleworkednumbers, sourceaddedworkedexample preservesformula.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-029-determinant-sign",
+      "speech": "주의할 점이 있습니다. 나중에 정규화하니 분모를 버려도 된다고 생각하기 쉽지만, 음수 부호는 버리면 안 됩니다. 방금 유브이의 유 방향만 반대로 놓으면 행렬식이 마이너스 일이 되고, 접선도 반대쪽이어야 하죠. 길이를 일로 만드는 정규화는 길이만 바꿀 뿐 방향을 뒤집지 않습니다. 따라서 일반적인 구현에서는 행렬식의 부호를 보존합니다.",
+      "visual": "correctmirrorD−1 T−x vsdropdenominatorwrong+x. explicitsourcecorrectionon-screenformula notcreatorframing.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-030-degenerate-uv",
+      "speech": "유브이 세 점이 한 줄로 겹쳐 행렬식이 영이라면 역행렬 자체가 없습니다. 이때는 영으로 나누기 전에 해당 삼각형을 처리할 정책이 필요합니다. 잘못된 유브이를 수정하거나, 검증한 대체 기저를 사용하는 식이죠. 아주 작은 값도 수치적으로 불안정할 수 있습니다. 법선이나 평균 접선이 영에 가까울 때도 그대로 정규화하지 않아야 합니다.",
+      "visual": "UVtrianglearea→0 D→0, guardhighlight `if abs(D)<eps...` fallbacknotinventexactengine.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-031-average-tangents",
+      "speech": "지금은 삼각형 하나의 기저를 구했습니다. 정점 단위 값을 만들려면 그 정점을 공유하는 면들의 접선과 비탄젠트를 모읍니다. 누적값을 영으로 시작하고, 각 삼각형을 계산해 세 꼭짓점의 목록에 더해 가는 방식이에요. 여기서 평균내는 것은 법선이 아니라 방금 구한 접선 계열 벡터입니다. 법선은 별도로 준비된 입력이며, 그다음 직교화에 사용합니다.",
+      "visual": "sourcecode10.9step input/allocateclear/triangleloop/accumulate preserving,memorycleanupafter. Captioncorrectionexplicitinternal.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-032-gram-schmidt",
+      "speech": "모인 접선에 법선 방향 성분이 섞여 있다면 빼 주겠습니다. 단위 법선과 접선의 내적에 법선을 곱하면 그 성분이 나오죠. 이를 빼고 정규화하면 법선에 수직인 접선이 됩니다. 그다음 엔 크로스 티와 모아 둔 비탄젠트의 내적 부호를 보고 앞서 정의한 핸디드니스 부호를 저장합니다. 이렇게 접선의 세 성분과 부호 하나로 기저를 다시 만들 준비가 끝납니다.",
+      "visual": "`T'=normalize(T−N dot(N,T))` geometryprojectiontrace, determinantvs unit signseparate.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-033-seams",
+      "speech": "하지만 이웃한 모든 면을 무조건 평균내면 안 됩니다. 유브이가 끊기거나 법선 방향이 달라지는 경계에서는 서로 다른 기저가 필요할 수 있어요. 특히 좌우 대칭 모델의 가운데처럼 같은 위치와 같은 유브이를 공유해도, 한쪽이 거울 대칭이면 접선 방향은 반대일 수 있습니다. 둘을 더하면 상쇄되겠죠. 이런 이음선에서는 정점을 분리해 각 쪽의 방향을 보존합니다.",
+      "visual": "charactercenterseam normalhighlightbad→split2verticescorrect; countsactualillustrationnotgame.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-034-data-pipeline",
+      "speech": "이렇게 유브이, 접선, 부호를 미리 맞춰 놓으면 실행 중에는 노멀 맵을 읽고 좌표를 바꿔 조명하는 과정으로 이어집니다. 실행 코드를 짧게 만드는 준비 작업이 데이터 쪽에 들어 있는 셈이에요. 노멀 맵을 만든 도구와 게임 엔진이 서로 다른 기저 약속을 쓰면 경계나 반사에서 오류가 드러날 수 있으므로, 같은 약속으로 만들고 해석해야 합니다.",
+      "visual": "authoring→validatedmeshattributes→shader3steps. 원문75/25비율현재사실로사용안함.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M22-035-close",
+      "speech": "큰 움직임과 작은 요철은 서로 다른 작업처럼 보였지만, 둘 다 어느 좌표계의 값을 어떻게 옮길지에 달려 있었습니다. 스키닝은 바인드 자세의 정점을 여러 본으로 옮겨 섞고, 노멀 매핑은 텍스처의 작은 방향을 표면의 기저로 옮깁니다. 이제 캐릭터가 관절을 굽혀도 형태가 이어지고, 그 위의 요철이 빛에 맞게 반응하려면 위치와 방향의 약속이 함께 맞아야 한다는 것을 알 수 있습니다.",
+      "visual": "Close on the same independently authored articulated model used throughout: bone transform and surface TBN axes update with its bend. Actual game examples were observational motivation, not measured internal skeletons. No unverified gameplay return, added BGM, loop or hold.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    }
+  ],
+  "boundaryLinks": [
+    {
+      "from": "M22-000-abstract",
+      "to": "M22-001-articulation",
+      "carriedResult": "먼저 캐릭터를 통째로 움직이는 것과 관절을 굽히는 것의 차이부터 보죠.",
+      "nextOpening": "캐릭터 전체에 행렬 하나를 적용하면 위치와 방향은 바꿀 수 있습니다.",
+      "sourceBoundary": "M22-000-abstract",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-001-articulation",
+      "to": "M22-002-bones",
+      "carriedResult": "다만 부품 자체가 휘지는 않으므로 관절 사이의 살과 옷까지 자연스럽게 이어지지는 않습니다.",
+      "nextOpening": "라이더스 리퍼블릭에서 자전거가 점프할 때, 프레임은 모양을 유지하지만 타는 사람의 팔과 무릎은 접혔다 펴집니다.",
+      "sourceBoundary": "M22-001-articulation",
+      "actualGameBridge": "Rigid frame versus articulated rider, then coordinate-frame bones"
+    },
+    {
+      "from": "M22-002-bones",
+      "to": "M22-003-weights-rigging",
+      "carriedResult": "한 본에만 연결되면 단단한 부품처럼 움직이고, 여러 본에 연결되면 그 영향이 섞입니다.",
+      "nextOpening": "어떤 정점이 어떤 본의 영향을 얼마나 받는지 정하는 작업을 스키닝이라고 합니다.",
+      "sourceBoundary": "M22-002-bones",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-003-weights-rigging",
+      "to": "M22-004-lbs",
+      "carriedResult": "자동으로 초안을 만들 수 있어도 극단적인 자세에서 형태가 자연스러운지는 직접 확인해야 합니다.",
+      "nextOpening": "두 본의 영향을 받는 정점 하나를 따라가 보겠습니다.",
+      "sourceBoundary": "M22-003-weights-rigging",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-004-lbs",
+      "to": "M22-005-lbs-numbers",
+      "carriedResult": "회전각 자체를 육십 퍼센트와 사십 퍼센트로 섞는 것이 아니라, 각 본으로 옮긴 위치들을 섞는 겁니다.",
+      "nextOpening": "위팔이 제안한 위치를 영, 이, 아래팔이 제안한 위치를 이, 영이라고 해 볼까요?",
+      "sourceBoundary": "M22-004-lbs",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-005-lbs-numbers",
+      "to": "M22-006-vertex-data",
+      "carriedResult": "같은 본 움직임이라도 정점마다 가중치가 달라 팔꿈치 주변이 이어지는 것입니다.",
+      "nextOpening": "구현하려면 정점마다 영향을 주는 본 번호와 각 가중치를 저장합니다.",
+      "sourceBoundary": "M22-005-lbs-numbers",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-006-vertex-data",
+      "to": "M22-007-simple-algorithm",
+      "carriedResult": "한 정점에 본 네 개처럼 제한을 둘 수 있지만, 네 개가 수학적인 한계는 아니며 형식과 구현의 선택입니다.",
+      "nextOpening": "계산 순서는 한 정점의 결과를 영으로 비우는 것부터 시작합니다.",
+      "sourceBoundary": "M22-006-vertex-data",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-007-simple-algorithm",
+      "to": "M22-008-skinned-normal",
+      "carriedResult": "화면의 반복문은 방금 두 점을 만들고 섞었던 그림을 정점 전체에 반복한 것입니다.",
+      "nextOpening": "위치만 바뀌고 법선은 그대로면 조명이 움직임을 따라가지 못합니다.",
+      "sourceBoundary": "M22-007-simple-algorithm",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-008-skinned-normal",
+      "to": "M22-009-bind-question",
+      "carriedResult": "이 단순한 처리는 회전 중심의 스키닝에서 쓰는 근사이며, 비균일 크기 변환이나 전단이 있으면 법선용 역전치 변환 등 별도 검토가 필요합니다.",
+      "nextOpening": "이제 본 공간의 정점 위치가 어디서 왔는지 살펴보죠.",
+      "sourceBoundary": "M22-008-skinned-normal",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-009-bind-question",
+      "to": "M22-010-bind-conversion",
+      "carriedResult": "바인드 포즈에서 정점이 어디 있었는지, 각 본의 좌표계가 어디 있었는지를 알면 정점을 그 본의 공간으로 바꿀 수 있습니다.",
+      "nextOpening": "본이 모델 공간의 어디에 있는지를 나타내는 바인드 행렬이 있다면, 그 역행렬은 모델 공간의 정점을 본 공간으로 데려갑니다.",
+      "sourceBoundary": "M22-009-bind-question",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-010-bind-conversion",
+      "to": "M22-011-bind-example",
+      "carriedResult": "원래 위치를 매 프레임 덮어쓰며 또 움직이는 것이 아니라, 원래 바인드 위치에서 현재 자세를 다시 구해야 오차가 누적되지 않습니다.",
+      "nextOpening": "아주 간단히, 바인드 자세에서 본의 원점이 가로 일에 있고 정점이 가로 이에 있다고 해 보겠습니다.",
+      "sourceBoundary": "M22-010-bind-conversion",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-011-bind-example",
+      "to": "M22-012-matrix-blend",
+      "carriedResult": "그래서 바인드 역행렬을 거치는 단계가 필요합니다.",
+      "nextOpening": "이 흐름을 합치면 저장량을 줄일 수 있습니다.",
+      "sourceBoundary": "M22-011-bind-example",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-012-matrix-blend",
+      "to": "M22-013-matrix-equivalence",
+      "carriedResult": "정점에 필요한 행렬들을 가중합한 뒤, 그 혼합 행렬로 정점을 한 번 옮기는 방식입니다.",
+      "nextOpening": "같은 원래 정점에 행렬을 각각 곱해 더하는 것과, 행렬을 먼저 더한 뒤 곱하는 것은 분배법칙으로 같습니다.",
+      "sourceBoundary": "M22-012-matrix-blend",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-013-matrix-equivalence",
+      "to": "M22-014-deformation-limit",
+      "carriedResult": "관절이 찌그러지거나 비틀린 부분의 부피가 줄어드는 문제가 생길 수 있어요.",
+      "nextOpening": "그래서 스키닝은 본을 만들었다고 끝나는 작업이 아닙니다.",
+      "sourceBoundary": "M22-013-matrix-equivalence",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-014-deformation-limit",
+      "to": "M22-015-bump-height",
+      "carriedResult": "이제 그 형태 위에 있는 작은 요철은 정점을 모두 늘리지 않고 어떻게 표현하는지 살펴보겠습니다.",
+      "nextOpening": "둠 쓰리의 금속 벽을 손전등으로 비추면, 작은 홈이 밝아졌다 어두워지며 드러납니다.",
+      "sourceBoundary": "M22-014-deformation-limit",
+      "actualGameBridge": "Fine surface brightness motivates height/normal representation"
+    },
+    {
+      "from": "M22-015-bump-height",
+      "to": "M22-016-encode-normal",
+      "carriedResult": "이 계산만으로 실제 정점이나 외곽선이 돌출되는 것은 아닙니다.",
+      "nextOpening": "기본적인 노멀 맵은 법선의 엑스, 와이, 제트 성분을 빨강, 초록, 파랑에 대응시킵니다.",
+      "sourceBoundary": "M22-015-bump-height",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-016-encode-normal",
+      "to": "M22-017-normal-data",
+      "carriedResult": "바깥쪽을 곧게 향하는 영, 영, 일은 영점오, 영점오, 일이라서 푸른색 계열로 보이는 것입니다.",
+      "nextOpening": "이 색은 예쁜 색을 칠하라는 뜻이 아니라 방향 숫자를 담은 포장입니다.",
+      "sourceBoundary": "M22-016-encode-normal",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-017-normal-data",
+      "to": "M22-018-reuse-problem",
+      "carriedResult": "세밀한 고해상도 모델의 법선을 낮은 해상도 모델용 텍스처에 구워 넣는 제작 방식도 사용합니다.",
+      "nextOpening": "텍스처를 여러 곳에서 재사용하면 메모리와 제작 작업을 아낄 수 있습니다.",
+      "sourceBoundary": "M22-017-normal-data",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-018-reuse-problem",
+      "to": "M22-019-tangent-frame",
+      "carriedResult": "각 면에서 바깥쪽이 어느 방향인지 알려 주는 기준축이 함께 있어야 합니다.",
+      "nextOpening": "그 기준이 접선 공간입니다.",
+      "sourceBoundary": "M22-018-reuse-problem",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-019-tangent-frame",
+      "to": "M22-020-decode-example",
+      "carriedResult": "이미지의 위아래와 브이의 증가 방향은 도구마다 약속이 다를 수 있으므로 함께 맞춰야 합니다.",
+      "nextOpening": "예를 들어 여덟 비트 색이 삼십칠, 백이십팔, 이백십팔이면 각 값을 이백오십오로 나눈 뒤 두 배하고 일을 뺍니다.",
+      "sourceBoundary": "M22-019-tangent-frame",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-020-decode-example",
+      "to": "M22-021-local-left",
+      "carriedResult": "약 사십오 도 기울었다는 뜻이며, 아주 작은 차이는 여덟 비트로 저장한 양자화 오차입니다.",
+      "nextOpening": "마이너스 엑스는 화면 왼쪽이라는 뜻이 아닙니다.",
+      "sourceBoundary": "M22-020-decode-example",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-021-local-left",
+      "to": "M22-022-frame-varying",
+      "carriedResult": "면이 돌아가도 같은 요철이 그 면에 붙어 있게 되는 이유입니다.",
+      "nextOpening": "곡면에서는 법선이 위치마다 달라지므로 티와 비도 표면을 따라 달라집니다.",
+      "sourceBoundary": "M22-021-local-left",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-022-frame-varying",
+      "to": "M22-023-space-choice",
+      "carriedResult": "정점의 기저를 면 안쪽으로 보간해 사용하되, 원하는 조명 계산에서는 정규직교 기저로 정리하는 과정을 둘 수 있습니다.",
+      "nextOpening": "노멀 맵의 법선을 모델 공간으로 옮겨 조명할 수도 있고, 반대로 빛과 카메라 방향을 접선 공간으로 옮길 수도 있습니다.",
+      "sourceBoundary": "M22-022-frame-varying",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-023-space-choice",
+      "to": "M22-024-reconstruct-bitangent",
+      "carriedResult": "하지만 축들이 비스듬한데도 전치를 역행렬처럼 쓰면 같은 변환이 아닙니다.",
+      "nextOpening": "기저를 직각으로 정리했다면 세 축을 모두 저장하지 않을 수도 있습니다.",
+      "sourceBoundary": "M22-023-space-choice",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-024-reconstruct-bitangent",
+      "to": "M22-025-triangle-input",
+      "carriedResult": "접선의 더블유 성분에 이 부호를 넣는 형식도 쓰입니다.",
+      "nextOpening": "이제 접선 티와 비탄젠트 비를 실제 메시에서 구해 보겠습니다.",
+      "sourceBoundary": "M22-024-reconstruct-bitangent",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-025-triangle-input",
+      "to": "M22-026-linear-system",
+      "carriedResult": "절대 위치보다 두 좌표에서 얼마나 이동했는지에 집중하는 겁니다.",
+      "nextOpening": "첫 번째 변은 유 방향으로 에스 일만큼, 브이 방향으로 티 일만큼 이동한 결과입니다.",
+      "sourceBoundary": "M22-025-triangle-input",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-026-linear-system",
+      "to": "M22-027-invert-system",
+      "carriedResult": "두 개의 좌표계를 연결하는 연립방정식인 셈입니다.",
+      "nextOpening": "이차 행렬의 역행렬을 쓰면 분모에 에스 일 티 이, 빼기 에스 이 티 일이 나옵니다.",
+      "sourceBoundary": "M22-026-linear-system",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-027-invert-system",
+      "to": "M22-028-tangent-worked",
+      "carriedResult": "아직 길이가 일인 벡터는 아닙니다.",
+      "nextOpening": "숫자로 확인해 보겠습니다.",
+      "sourceBoundary": "M22-027-invert-system",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-028-tangent-worked",
+      "to": "M22-029-determinant-sign",
+      "carriedResult": "텍스처에서 오른쪽으로 가는 움직임이 모델에서도 오른쪽 방향과 연결되었습니다.",
+      "nextOpening": "주의할 점이 있습니다.",
+      "sourceBoundary": "M22-028-tangent-worked",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-029-determinant-sign",
+      "to": "M22-030-degenerate-uv",
+      "carriedResult": "따라서 일반적인 구현에서는 행렬식의 부호를 보존합니다.",
+      "nextOpening": "유브이 세 점이 한 줄로 겹쳐 행렬식이 영이라면 역행렬 자체가 없습니다.",
+      "sourceBoundary": "M22-029-determinant-sign",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-030-degenerate-uv",
+      "to": "M22-031-average-tangents",
+      "carriedResult": "법선이나 평균 접선이 영에 가까울 때도 그대로 정규화하지 않아야 합니다.",
+      "nextOpening": "지금은 삼각형 하나의 기저를 구했습니다.",
+      "sourceBoundary": "M22-030-degenerate-uv",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-031-average-tangents",
+      "to": "M22-032-gram-schmidt",
+      "carriedResult": "법선은 별도로 준비된 입력이며, 그다음 직교화에 사용합니다.",
+      "nextOpening": "모인 접선에 법선 방향 성분이 섞여 있다면 빼 주겠습니다.",
+      "sourceBoundary": "M22-031-average-tangents",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-032-gram-schmidt",
+      "to": "M22-033-seams",
+      "carriedResult": "이렇게 접선의 세 성분과 부호 하나로 기저를 다시 만들 준비가 끝납니다.",
+      "nextOpening": "하지만 이웃한 모든 면을 무조건 평균내면 안 됩니다.",
+      "sourceBoundary": "M22-032-gram-schmidt",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-033-seams",
+      "to": "M22-034-data-pipeline",
+      "carriedResult": "이런 이음선에서는 정점을 분리해 각 쪽의 방향을 보존합니다.",
+      "nextOpening": "이렇게 유브이, 접선, 부호를 미리 맞춰 놓으면 실행 중에는 노멀 맵을 읽고 좌표를 바꿔 조명하는 과정으로 이어집니다.",
+      "sourceBoundary": "M22-033-seams",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M22-034-data-pipeline",
+      "to": "M22-035-close",
+      "carriedResult": "노멀 맵을 만든 도구와 게임 엔진이 서로 다른 기저 약속을 쓰면 경계나 반사에서 오류가 드러날 수 있으므로, 같은 약속으로 만들고 해석해야 합니다.",
+      "nextOpening": "큰 움직임과 작은 요철은 서로 다른 작업처럼 보였지만, 둘 다 어느 좌표계의 값을 어떻게 옮길지에 달려 있었습니다.",
+      "sourceBoundary": "M22-034-data-pipeline",
+      "actualGameBridge": null
+    }
+  ],
+  "terminology": [],
+  "nativeGameCueBindings": [
+    {
+      "beat": "M22-000-abstract",
+      "sceneId": "000",
+      "candidate": "M22-G01-mario-articulation",
+      "sourceId": "_wH_-1saHnw",
+      "game": "Super Mario Odyssey",
+      "sourceIn": 710,
+      "sourceOut": 730,
+      "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v3/sources/_wH_-1saHnw-hls.mp4",
+      "sourceSha256": "60eb85000ef25c483e3b28a351173e9631cd0a322a97ac9c82145f2ac925e2b6",
+      "recordingUrl": "https://www.youtube.com/watch?v=_wH_-1saHnw",
+      "decodedSize": [
+        1920,
+        1080
+      ],
+      "nativeFps": "60/1",
+      "playbackRate": 1,
+      "hold": 0,
+      "loop": false,
+      "freezePadding": false,
+      "role": "Actual-game thesis abstract: whole-body movement versus limb configuration",
+      "observed": {
+        "before": "Mario stands, then runs toward blocks.",
+        "action": "He jumps, bends/extends limbs, lands and jumps over a row of blocks.",
+        "result": "The whole character changes position while arms and legs also change pose."
+      },
+      "claimLimits": [
+        "Gameplay does not reveal bone matrices, vertex weights, runtime skinning method or bone counts.",
+        "Exclude long idle620–710, photo-mode471–477 and story capture sequence~760."
+      ],
+      "annotationPlan": {
+        "target": "Elbow/knee outlines only while visible; character is small, so use a same-time inset if needed, no freeze/slowdown.",
+        "style": "Short joint arcs / open surface contours and leader labels. No filled covering or invented engine bone/normal data.",
+        "tracking": "Follow verified screen motion; hide at occlusion/out-of-frame and clear at cut. Fine sample evidence is not per-frame tracking.",
+        "captionClearance": "Preserve source HUD and fixed lower-centre captions; use only meaningful focus, not constant full-body boxes."
+      },
+      "reviewEvidence": "projects/game-math-skinning-normal-map/production/local/footage-review/mario-jump/sampling.json",
+      "nativeDecodeEvidence": {
+        "segment": "M22-G01-mario-articulation",
+        "source": "_wH_-1saHnw",
+        "sourceIn": 710,
+        "sourceOut": 730,
+        "decodeExitCode": 0,
+        "decodeErrors": "",
+        "nativeFrameExitCode": 0,
+        "nativeFrameSeconds": 720.0,
+        "nativeFrame": "projects/game-math-skinning-normal-map/production/local/footage-review/native-decode/M22-G01-mario-articulation.png",
+        "decodedImageSize": [
+          1920,
+          1080
+        ],
+        "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+      },
+      "speechTarget": {
+        "prefixKo": "슈퍼 마리오 오디세이에서 마리오가 뛰어올라 착지할 때",
+        "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+      },
+      "handoffToExplanation": "Our articulated model begins with rigid whole-body transform, then part hierarchy. The remaining abstract may overlap this transition.",
+      "audio": {
+        "nativeAudioPresent": true,
+        "actualListening": "pending",
+        "addedLectureBgm": false
+      },
+      "fullOriginalAudioIn": 710,
+      "fullOriginalAudioOut": 730,
+      "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+    },
+    {
+      "beat": "M22-002-bones",
+      "sceneId": "002",
+      "candidate": "M22-G02-rider-joints",
+      "sourceId": "4Odvp_TIeQU",
+      "game": "Riders Republic",
+      "sourceIn": 734,
+      "sourceOut": 758,
+      "sourceFile": "shared/output/game-math-part2-full-series/sources/4Odvp_TIeQU.mp4",
+      "sourceSha256": "2dddd8036bcaf113ce1b2794c55c8f203f73df62a200af5025836aef9d7014b7",
+      "recordingUrl": "https://www.youtube.com/watch?v=4Odvp_TIeQU",
+      "decodedSize": [
+        1920,
+        1080
+      ],
+      "nativeFps": "60/1",
+      "playbackRate": 1,
+      "hold": 0,
+      "loop": false,
+      "freezePadding": false,
+      "role": "Rigid frame versus articulated rider, then coordinate-frame bones",
+      "observed": {
+        "before": "Rider approaches a snowy jump on a bicycle.",
+        "action": "He bends over handlebars, takes off, performs a trick, lands and turns.",
+        "result": "Rigid wheels/frame preserve their shape while the rider changes arm/leg/body configuration."
+      },
+      "claimLimits": [
+        "Rider clothing hides skin; this demonstrates articulated body behaviour, not measured smooth-skin deformation.",
+        "No measured weights or joint angles; numeric weights belong to our Unity implementation.",
+        "Camera moves quickly: final mobile playback must confirm labels remain legible."
+      ],
+      "annotationPlan": {
+        "target": "Bicycle frame outline versus elbow/knee arcs; never draw a claimed actual game skeleton.",
+        "style": "Short joint arcs / open surface contours and leader labels. No filled covering or invented engine bone/normal data.",
+        "tracking": "Follow verified screen motion; hide at occlusion/out-of-frame and clear at cut. Fine sample evidence is not per-frame tracking.",
+        "captionClearance": "Preserve source HUD and fixed lower-centre captions; use only meaningful focus, not constant full-body boxes."
+      },
+      "reviewEvidence": "projects/game-math-skinning-normal-map/production/local/footage-review/riders-fine/sampling.json",
+      "nativeDecodeEvidence": {
+        "segment": "M22-G02-rider-joints",
+        "source": "4Odvp_TIeQU",
+        "sourceIn": 734,
+        "sourceOut": 758,
+        "decodeExitCode": 0,
+        "decodeErrors": "",
+        "nativeFrameExitCode": 0,
+        "nativeFrameSeconds": 746.0,
+        "nativeFrame": "projects/game-math-skinning-normal-map/production/local/footage-review/native-decode/M22-G02-rider-joints.png",
+        "decodedImageSize": [
+          1920,
+          1080
+        ],
+        "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+      },
+      "speechTarget": {
+        "prefixKo": "라이더스 리퍼블릭에서 자전거가 점프할 때",
+        "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+      },
+      "handoffToExplanation": "Our model alone shows actual implementation bone axes and vertex weights.",
+      "audio": {
+        "nativeAudioPresent": false,
+        "actualListening": "pending",
+        "addedLectureBgm": false,
+        "separateOriginalAudio": "projects/game-math-skinning-normal-map/production/local/footage-review/riders-original-audio.m4a",
+        "separateAudioExists": true,
+        "separateAudioSha256": "0a807396cc617e4570a92a4525b1bb1b162b5028ff8c81c0db66355d52358001"
+      },
+      "fullOriginalAudioIn": 734,
+      "fullOriginalAudioOut": 758,
+      "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+    },
+    {
+      "beat": "M22-015-bump-height",
+      "sceneId": "015",
+      "candidate": "M22-G03-doom3-surface-response",
+      "sourceId": "Hu94MHBQCis",
+      "game": "Doom 3",
+      "sourceIn": 111,
+      "sourceOut": 128,
+      "sourceFile": "projects/game-math-shading-lights/production/local/footage-review/doom3-Hu94MHBQCis.mp4",
+      "sourceSha256": "d8cdce39f53727a2e422160e6ccf6e697fccd5c6b3d483f5d3def59c12dc281f",
+      "recordingUrl": "https://www.youtube.com/watch?v=Hu94MHBQCis",
+      "decodedSize": [
+        1920,
+        1080
+      ],
+      "nativeFps": "60/1",
+      "playbackRate": 1,
+      "hold": 0,
+      "loop": false,
+      "freezePadding": false,
+      "role": "Fine surface brightness motivates height/normal representation",
+      "observed": {
+        "before": "Dark industrial corridor with metal plates and pipes.",
+        "action": "Player sweeps flashlight while walking and turns across near surfaces.",
+        "result": "Small surface details brighten and darken within the moving beam."
+      },
+      "claimLimits": [
+        "Pixels alone cannot distinguish a particular groove made by geometry from a normal map.",
+        "Engine support for tangent-space normal mapping is independently documented in idSoftware source; no per-pixel renderer capture here.",
+        "Do not say turning normal mapping off in this clip: no such toggle is recorded."
+      ],
+      "annotationPlan": {
+        "target": "Open contour around a lit wall plate and a short leader to visible grooves; avoid the flashlight itself.",
+        "style": "Short joint arcs / open surface contours and leader labels. No filled covering or invented engine bone/normal data.",
+        "tracking": "Follow verified screen motion; hide at occlusion/out-of-frame and clear at cut. Fine sample evidence is not per-frame tracking.",
+        "captionClearance": "Preserve source HUD and fixed lower-centre captions; use only meaningful focus, not constant full-body boxes."
+      },
+      "reviewEvidence": "projects/game-math-skinning-normal-map/production/local/footage-review/doom3-normal-surfaces/sampling.json",
+      "nativeDecodeEvidence": {
+        "segment": "M22-G03-doom3-surface-response",
+        "source": "Hu94MHBQCis",
+        "sourceIn": 111,
+        "sourceOut": 128,
+        "decodeExitCode": 0,
+        "decodeErrors": "",
+        "nativeFrameExitCode": 0,
+        "nativeFrameSeconds": 119.5,
+        "nativeFrame": "projects/game-math-skinning-normal-map/production/local/footage-review/native-decode/M22-G03-doom3-surface-response.png",
+        "decodedImageSize": [
+          1920,
+          1080
+        ],
+        "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+      },
+      "speechTarget": {
+        "prefixKo": "둠 쓰리의 금속 벽을 손전등으로 비추면",
+        "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+      },
+      "handoffToExplanation": "Isolate height/normal map changes on our unchanged mesh; actual Doom footage is not a toggle comparison.",
+      "audio": {
+        "nativeAudioPresent": true,
+        "actualListening": "pending",
+        "addedLectureBgm": false
+      },
+      "fullOriginalAudioIn": 111,
+      "fullOriginalAudioOut": 128,
+      "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+    }
+  ],
+  "gameMix": {
+    "adoptedGames": 3,
+    "nintendoGames": 1,
+    "nintendoGame": "Super Mario Odyssey",
+    "selectionReason": "Three distinct concept-matched games; one Nintendo game among three. Each shows an observed action/result, without assigning hidden engine internals."
+  },
+  "scriptReadthrough": {
+    "record": "planning/script-integration.json",
+    "status": "complete-text-review-only",
+    "koSha256": "0522e215543afea9136182ce10609c399fe8d9fcbc57f3e1e42ef055b9374a12",
+    "enSha256": "bb4a9c0e56de54013f8e3bfd93b7e1cfe24af078f34f26953a7b0360c1d5f0a4",
+    "audioListeningCompleted": false,
+    "actualUserReview": false
+  }
 }

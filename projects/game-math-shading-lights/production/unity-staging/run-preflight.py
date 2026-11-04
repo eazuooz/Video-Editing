@@ -17,7 +17,12 @@ def resource_reason():
     for proc in psutil.process_iter(['pid','name','exe','cmdline']):
         i=proc.info;name=(i.get('name') or '').lower();exe=(i.get('exe') or '').replace('\\','/').lower()
         if name in ('overwatch.exe','overwatch launcher.exe') or '/steamapps/common/' in exe:return 'game use has not ended'
-        if name in ('ffmpeg.exe','blender.exe','unrealeditor.exe'):return 'another render or engine process is present'
+        if name=='ffmpeg.exe':
+            args=[str(a).lower() for a in (i.get('cmdline') or [])]
+            codecs=[args[j+1] for j,a in enumerate(args[:-1]) if a in ('-c','-codec','-c:v','-c:a','-vcodec','-acodec')]
+            stream_copy=bool(codecs and all(c=='copy' for c in codecs) and '-hwaccel' not in args)
+            if not stream_copy:return 'another render or encode process is present'
+        if name in ('blender.exe','unrealeditor.exe'):return 'another engine process is present'
         if name in ('python.exe','pythonw.exe') and proc.pid!=os.getpid():
             command=' '.join(i.get('cmdline') or []).lower()
             if any(x in command for x in ('--synthesize','render_narration','whisper','faster_whisper','torchrun')):return 'another GPU inference job is present'

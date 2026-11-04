@@ -58,7 +58,7 @@ Shader "Yamyam/Teaching/LocalIllumination"
    TEXTURE2D(_Falloff); SAMPLER(sampler_Falloff);
    TEXTURE2D(_MaterialMap); SAMPLER(sampler_MaterialMap);
    TEXTURE2D(_SpecularMap); SAMPLER(sampler_SpecularMap);
-   struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float2 uv:TEXCOORD0;float3 faceCentreOS:TEXCOORD2;float3 faceNormalOS:TEXCOORD3;};
+   struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 color:COLOR;float2 uv:TEXCOORD0;float3 faceCentreOS:TEXCOORD2;float3 faceNormalOS:TEXCOORD3;};
    struct Varyings {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;float3 normalWS:TEXCOORD1;float3 vertexColour:TEXCOORD2;nointerpolation float3 faceColour:TEXCOORD3;float2 uv:TEXCOORD4;float3 diffuseFactor:TEXCOORD5;float3 specularFactor:TEXCOORD6;};
 
    // This is the explicitly labelled pedagogical local model, not URP Lit/PBR.
@@ -137,6 +137,7 @@ Shader "Yamyam/Teaching/LocalIllumination"
     o.uv=i.uv;
     EvaluateFactors(o.positionWS,o.normalWS,o.diffuseFactor,o.specularFactor);
     o.vertexColour=Evaluate(o.positionWS,o.normalWS);
+    if(_ShadingMode>3.5)o.vertexColour=i.color.rgb;
     float3 centre=TransformObjectToWorld(i.faceCentreOS);
     float3 faceNormal=TransformObjectToWorldNormal(i.faceNormalOS);
     o.faceColour=Evaluate(centre,faceNormal);
@@ -145,7 +146,8 @@ Shader "Yamyam/Teaching/LocalIllumination"
    float4 frag(Varyings i):SV_Target
    {
     float3 c;
-    if(_ShadingMode>2.5){
+    if(_ShadingMode>3.5)c=i.vertexColour;
+    else if(_ShadingMode>2.5){
      float3 diffuseMaterial=_BaseColor.rgb*SAMPLE_TEXTURE2D(_MaterialMap,sampler_MaterialMap,i.uv).rgb;
      float3 specularMaterial=_SpecColor.rgb*SAMPLE_TEXTURE2D(_SpecularMap,sampler_SpecularMap,i.uv).rgb;
      c=diffuseMaterial*i.diffuseFactor+specularMaterial*i.specularFactor+_Components.w*_EmissionColor.rgb;

@@ -1,0 +1,85 @@
+Imagine liking the first part of a path, then bending it unintentionally while editing a later part. A single polynomial has this global influence. Joining smaller pieces lets us control neighborhoods separately. We will connect those pieces, distinguish smooth shape from smooth motion, and finally calculate their tangents automatically.
+
+One option is degree elevation. In power form, adding a zero higher-order coefficient preserves the curve. In Bézier form, keep the endpoints and blend neighboring controls at prescribed ratios to obtain new ones. Elevation itself preserves the shape while adding controls for later editing. Symmetric Hermite constraints naturally use odd degrees: linear for endpoint positions, cubic when adding first derivatives, and quintic when adding second derivatives.
+
+Elevating a cubic to a quartic blends neighboring controls with one quarter and three quarters, then halves, then three quarters and one quarter. Repeated elevation makes evaluation and editing more complex, while influence remains global. High-degree interpolation can also oscillate between samples. This motivates splines made from lower-degree pieces.
+
+Give each piece a local parameter from zero through one. A global parameter of two point three selects segment two—the third segment—and local progress point three. At the final endpoint, handle the boundary explicitly: with n segments and s equal to n, choose segment n minus one at local parameter one rather than a nonexistent segment n.
+
+For animation, map physical time to the global parameter first. Then select a segment and local progress, and evaluate that curve. Changing the time mapping changes motion along the same route. Advancing the parameter uniformly does not guarantee equal distances in space.
+
+Call the shared endpoints knots in this interpolating construction. The previous segment must end where the next begins. With n segments there are n plus one such points. A knot k is one position; a segment function q takes local progress and returns a position.
+
+Each knot has an incoming derivative and an outgoing derivative: how the preceding segment arrives and how the following segment departs. Store the position and these vectors to evaluate Hermite pieces. For direct graphical editing, the same information can be displayed as Bézier handles.
+
+Name the incoming handle f and outgoing handle a. The incoming derivative is three times k minus f, and the outgoing derivative is three times a minus k. Handle distances therefore equal one third of the derivative magnitude. Storing connected cubic controls in one sequence places shared knots at indices zero, three, six, and so on.
+
+What must agree for a smooth join? Matching both direction and magnitude connects the derivatives. If directions agree but lengths differ, the shape may look smooth while motion jumps in speed under a uniform parameter clock. Setting both derivatives to zero can instead stop at a corner before departing in another direction.
+
+Parametric continuity distinguishes these cases. C zero joins positions. C one also joins first derivatives. C two additionally joins second derivatives. When the parameter is physical time, these correspond to position, velocity, and acceleration. Higher-order continuity includes all lower-order requirements.
+
+C one does not mean constant velocity. Velocity may change, but without an instantaneous jump over intermediate values. A physical mechanism cannot make such a jump with finite acceleration; an animation may look jerky. Inside each polynomial piece, derivatives remain continuous, so our main concern is the joins.
+
+For cubic segments with equal parameter intervals, C one is straightforward: match the incoming and outgoing derivatives. In handle form, k minus f equals a minus k. Rearranging makes k the midpoint of the two handles. The handles lie on opposite sides of the knot at equal distances along one line.
+
+C two involves one more neighboring control. Equate the preceding ending acceleration and the following starting acceleration, then cancel the common factor six. This requires the two extended points shown to coincide. Extend each next-to-adjacent control-polygon edge once beyond its handle. If their ends meet, the existing C-one join is also C two.
+
+What if the left segment takes two seconds and the right takes one? Equal handles no longer match physical velocity. Divide each local derivative by its segment duration. Here the left handle must be twice the right to match actual velocity at the join. Acceleration scales by the square of duration.
+
+Geometric continuity describes the shape. For regular G-one joins, nonzero tangents point in the same forward direction; their magnitudes may differ. A time reparameterization can compensate for the speed difference by changing its derivative. We adjust travel speed, not jump the position mapping.
+
+G two also matches bending. In three dimensions, equal curvature magnitudes alone are insufficient: the curvature vectors, including the bending direction, must agree. A path turning sideways and then upward is not a G-two join merely because both bends have the same radius.
+
+Every additional continuity condition consumes freedom. Fix one cubic, then matching the next position fixes its first control, matching velocity fixes the second, and matching acceleration fixes the third. Matching the third derivative fixes the fourth as well: it is the continuation of the same polynomial. C two is the highest generic continuity that leaves cubic pieces free to differ.
+
+We now know how to join the pieces, but adjusting every tangent by hand can be tedious. Can we specify only the knots and calculate the tangents automatically? The following methods choose the derivatives for Hermite pieces rather than creating a new evaluation formula.
+
+Use the vector from the previous knot to the next as the middle tangent direction. Giving both incoming and outgoing tangents half that vector produces the uniform Catmull–Rom construction used here. Algebraically, this is the average of the incoming and outgoing control-polygon edges.
+
+For knots zero zero, one two, and four zero, the tangent is two zero. It points right, and sharing it on both sides gives C-one continuity. The local neighbor rule limits the effects of edits to nearby pieces. This uniform parameterization can still overshoot or form loops for some point arrangements, so inspect the resulting route.
+
+You may want the automatic curve tighter or biased toward one side. Kochanek–Bartels, or TCB, splines offer three controls: tension, continuity, and bias. Setting all three to zero returns the uniform Catmull–Rom construction just used.
+
+Change tension alone first. It multiplies the baseline tangents by one minus tension. At one, both become zero, giving straight-shaped pieces that stop at every knot. At minus one the tangents double. Values above one reverse the tangents and can introduce loops.
+
+Next is the continuity control. At zero, incoming and outgoing tangents match, giving C one. Set it to minus one with the other controls zero, and each segment becomes a constant-speed straight line to the next knot. Its shape matches the tension-one case, but its motion does not.
+
+Continuity changes the edge weights in opposite ways. The incoming tangent uses half of one minus C for the preceding edge and half of one plus C for the next. The outgoing tangent swaps those weights. The two tangents can therefore differ and create a corner.
+
+Bias tilts both tangents toward one side together. The preceding edge gets half of one plus B, and the following edge half of one minus B. Positive bias follows the preceding direction more; negative bias anticipates the following direction. The curve visits the same knots with a different turning behavior.
+
+Combine the controls by multiplying the tension, continuity, and bias factors into each edge weight. The formula looks long, but it combines the three roles we just observed. Values need not be identical at every knot; adjust the knot near a particular corner when local control is needed.
+
+Endpoints lack one neighbor, so they need a policy. Set the derivatives to zero when the motion should begin and end at rest, or add phantom points used only for tangent calculation. Since the first tangent is half the next point minus the phantom, a zero tangent requires copying the next point—not the start point.
+
+Users can place phantom points to control departure. Another choice fits a quadratic through the first three knots and uses its endpoint derivative. With unit parameter spacing, the first derivative is minus three k zero plus four k one minus k two, divided by two. Select the boundary rule to match the intended start and finish. Cardinal spline usually names a family of interpolating curves with a common tangent-scale control, not this one endpoint policy.
+
+Now connect the calculations. For Lagrange nodes zero, one, and two, the first basis is t minus one times t minus two divided by two. The middle is minus t times t minus two. The last is t times t minus one divided by two. Substitute each node to check that only its own basis equals one.
+
+Next launch from the origin, reaching height h at one second and forward distance d at two seconds. With no sideways movement, x is zero. Constant forward speed gives z equal to d t over two. Substitute the height conditions into initial vertical velocity times t plus half acceleration times t squared; the result is y equal to two h t minus h t squared.
+
+The third example uses controls three five, six one, zero three, and five five. At t equal to point four, blend neighboring points with weights point six and point four. The first row is four point two three point four, three point six one point eight, and two three point eight. Two more blend levels yield three point five six, two point six nine six.
+
+The same curve in Hermite form keeps its endpoints, with starting derivative nine minus twelve and ending derivative fifteen six. Its power form is x equal to three plus nine t minus twenty-seven t squared plus twenty t cubed, and y equal to five minus twelve t plus eighteen t squared minus six t cubed.
+
+Substituting point four reproduces the de Casteljau position. Differentiate to check velocity: x is nine minus fifty-four t plus sixty t squared; y is minus twelve plus thirty-six t minus eighteen t squared. At point four it is minus three, minus point four eight, pointing left and slightly downward.
+
+The fourth check sums the quadratic Bernstein weights. Expand the first into one minus two t plus t squared. Add two t minus two t squared, then t squared. Both the linear and quadratic terms cancel, leaving one—the partition-of-unity condition used for the convex hull property.
+
+For the next checks, choose controls from the desired motion. Keep every control at one point for a constant curve. Space them equally from start to end for a constant-speed line. For a smooth start and stop along that line, cubic controls are start, start, end, end. Handle placement changes timing even when the line is unchanged.
+
+The eighth case alternates controls start, end, start, end. It may look as though the particle should reverse, but it moves monotonically toward the end. The derivative of its blend factor is three times two t minus one squared, which is nonnegative. It stops only at the midpoint, then accelerates in the same direction.
+
+The ninth problem represents the earlier projectile using a cubic Bézier tool. Map its two seconds to u from zero to one. Height becomes four h u times one minus u, and forward position d u. The cubic coefficient is zero. Conversion gives both internal handles height four h over three, with forward positions d over three and two d over three.
+
+The tenth problem transfers an already fitted parabola into a graphical curve tool. Its y function is minus point three six four x squared plus one point one four five x plus two point one one. Map the given starting and ending x values to u zero and one, substitute that x expression into y, and use the same power-to-Bézier conversion.
+
+Rounded to four decimal places, the controls are shown. The endpoints lie on the parabola, while the interior controls are tangent handles rather than samples of it. Evaluating them reproduces the prescribed interval. Once a path is expressed as a polynomial, the same conversion works whether it came from fitted observations or a physical formula.
+
+Finally extract point two through point five from the curve starting at three five. With new parameter u, the original t is point two plus point three u. Substitute into the position and derivatives to obtain the new endpoints and handles. Remember that derivatives scale by the interval width, point three.
+
+To split the same curve in half, collect the de Casteljau midpoints. The left endpoint and right start coincide at three point two five, two point seven five. Different control colors still produce pieces on the original path. When each piece is replayed from zero to one, check the time mapping too.
+
+Elevating this curve to quartic degree gives five controls. The endpoints stay, and the new interior controls are five point two five two, three two, and one point two five three point five. The control polygon changes while the curve overlays exactly. Changing representation degree is not the same as changing the actual path.
+
+A long path did not require one enormous formula. It required manageable pieces and explicit rules for joining their positions, directions, and rates of change. The needed continuity depends on whether smooth shape is enough or velocity and acceleration must also connect. With those criteria, manual handles and automatic tangents become understandable design tools.

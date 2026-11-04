@@ -1,0 +1,581 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M32",
+  "language": "en",
+  "status": "source-faithful-content-draft-awaiting-footage-integration",
+  "finalNarrationLocked": false,
+  "sourceAudit": "planning/source-audit.json",
+  "segments": [
+    {
+      "id": "M32-001",
+      "section": "13.4",
+      "title": "M32-001",
+      "text": "A path editor may let you shape a curve by moving handles outside it. Why does a point the path never visits change its shape? A Bézier curve is built by repeatedly blending those controls. We will follow that construction, control its endpoint directions, then extract smaller pieces without changing the path.",
+      "sourceParagraphs": [
+        "M32-P002",
+        "M32-P003",
+        "M32-P004",
+        "M32-P005",
+        "M32-P006",
+        "M32-P007"
+      ],
+      "screenPlan": "독립 실제 게임의 경로편집/손잡이 조작 예시 미확정. 엔진알고리즘단정안함. 검증후abstract통합.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "Actual gameplay abstract pending."
+    },
+    {
+      "id": "M32-002",
+      "section": "13.4",
+      "title": "M32-002",
+      "text": "A cubic Bézier curve has four control points. The curve passes through the first and last; it generally does not pass through the two interior controls. Those are shape handles. This is approximation rather than a requirement to interpolate every control point.",
+      "sourceParagraphs": [
+        "M32-P002",
+        "M32-P003",
+        "M32-P004",
+        "M32-P005",
+        "M32-P006",
+        "M32-P007"
+      ],
+      "screenPlan": "b0..b3동일모델, 끝점/내부핸들분리;우연히내부점통과가능해절대금지아님.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "에 곡선은 이 손잡이들을 반복해서 섞어 만들어집니다. 그 과정을 눈으로 따라가고, 출발 방향을 조절한 뒤, 같은 곡선을 필요한 구간으로 잘라 보겠습니다."
+    },
+    {
+      "id": "M32-003",
+      "section": "13.4.1",
+      "title": "M32-003",
+      "text": "The construction begins with linear interpolation. To move a fraction t between two points, multiply the first by one minus t, the next by t, and add. Applying the same fraction to adjacent pairs of four controls produces three points, then two, then one.",
+      "sourceParagraphs": [
+        "M32-P009",
+        "M32-P010",
+        "M32-P011",
+        "M32-P012",
+        "M32-P013",
+        "M32-P014",
+        "M32-P015",
+        "M32-P016",
+        "M32-P017",
+        "M32-P018",
+        "M32-P019",
+        "M32-P020"
+      ],
+      "screenPlan": "deCasteljau4→3→2→1,모든단계같은t, t=.25/.5/.75원문그림역할독립재현.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "다. 이 내부 제어점들은 모양을 잡는 손잡이입니다. 모든 점을 반드시 통과시키는 보간과 달리, 이렇게 모양에 영향을 주도록 쓰는 것을 근사라고 부릅니다."
+    },
+    {
+      "id": "M32-004",
+      "section": "13.4.1",
+      "title": "M32-004",
+      "text": "The last point is the curve position at t. As t moves from zero to one, that point traces the curve. Arrange the computation in a triangle: original controls on top, with each lower entry blending the two immediately above. This is de Casteljau's algorithm.",
+      "sourceParagraphs": [
+        "M32-P013",
+        "M32-P014",
+        "M32-P015",
+        "M32-P016",
+        "M32-P017",
+        "M32-P018",
+        "M32-P019",
+        "M32-P020"
+      ],
+      "screenPlan": "계층도4→3→2→1과공간구성같은색동시. b_i^0=bi;b_i^j=(1−t)b_i^{j−1}+tb_{i+1}^{j−1}.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 곱해 더하죠. 네 점의 이웃한 쌍에 똑같이 적용하면 점 세 개가 나옵니다. 다시 같은 비율로 섞으면 두 개, 한 번 더 하면 마지막 점 하나가 됩니다."
+    },
+    {
+      "id": "M32-005",
+      "section": "13.4.1",
+      "title": "M32-005",
+      "text": "The code can overwrite a single array with each row of the triangle. Blend each point with the next, working from left to right, then reduce the active count by one. Repeat until one remains. Here n means the number of points, not the degree. Use a copy if the original controls are needed, and reject an empty array.",
+      "sourceParagraphs": [
+        "M32-P021",
+        "M32-P022",
+        "M32-P023",
+        "M32-P024"
+      ],
+      "screenPlan": "코드13.1 의미보존 n>=1;for count>1,for i<count−1 pts[i]=lerp;count--;returnpts0. syntax/현재실행행분리. O(n²).",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "로도 정리할 수 있습니다. 맨 윗줄이 원래 제어점이고, 아래의 각 점은 바로 위 두 점을 섞은 결과입니다. 이 방법을 드 카스텔조 알고리즘이라고 합니다."
+    },
+    {
+      "id": "M32-006",
+      "section": "13.4.1",
+      "title": "M32-006",
+      "text": "Expanding the blends gives a polynomial. With two controls it is the first point plus t times their difference. With three, the constant is the first point, the linear coefficient is twice the second minus twice the first, and the quadratic coefficient is first minus twice second plus third. We have grouped the same geometric calculation by powers of t.",
+      "sourceParagraphs": [
+        "M32-P025",
+        "M32-P026",
+        "M32-P027",
+        "M32-P028",
+        "M32-P029",
+        "M32-P030",
+        "M32-P031",
+        "M32-P032",
+        "M32-P033",
+        "M32-P034",
+        "M32-P035"
+      ],
+      "screenPlan": "1차확장→2차두선형식대입→항모으기, c0=b0,c1=2(b1−b0),c2=b0−2b1+b2. 3×3변환M전체.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 한 점이 남을 때까지 반복하죠. 이 예제의 엔은 차수가 아니라 점의 개수입니다. 원래 제어점이 필요하면 복사본으로 계산하고, 빈 배열은 먼저 거릅니다."
+    },
+    {
+      "id": "M32-007",
+      "section": "13.4.1",
+      "title": "M32-007",
+      "text": "Put the controls in columns of B. Multiplying by the basis-conversion matrix M gives the power coefficients. Compute those once for repeated evaluations, or multiply M by the powers of t first to obtain control-point weights. Both evaluate the same curve.",
+      "sourceParagraphs": [
+        "M32-P032",
+        "M32-P033",
+        "M32-P034",
+        "M32-P035"
+      ],
+      "screenPlan": "(BM)T vs B(MT),M2=[[1,-2,1],[0,2,-2],[0,0,1]].속도는구현따라벤치마크필요.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "빼기 첫 점의 두 배, 티 제곱의 계수가 첫 점 빼기 둘째 점의 두 배 더하기 셋째 점이 됩니다. 기하적으로 섞던 계산을 티의 거듭제곱별로 모은 겁니다."
+    },
+    {
+      "id": "M32-008",
+      "section": "13.4.1",
+      "title": "M32-008",
+      "text": "One more blend yields four cubic coefficients. The constant is b zero. The linear term is three times the difference b one minus b zero. The quadratic term is three b zero minus six b one plus three b two. The cubic term is minus b zero plus three b one minus three b two plus b three. Follow each coefficient back to the contributing controls.",
+      "sourceParagraphs": [
+        "M32-P036",
+        "M32-P037",
+        "M32-P038",
+        "M32-P039",
+        "M32-P040",
+        "M32-P041",
+        "M32-P042",
+        "M32-P043"
+      ],
+      "screenPlan": "중간2차식두개→3차전개, c1=3(b1−b0)괄호음성오해방지. M4=[[1,-3,3,-1],[0,3,-6,3],[0,0,3,-3],[0,0,0,1]].",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 만들어 여러 티에서 평가할 수도 있고, 엠을 티의 거듭제곱 벡터에 먼저 곱해 각 제어점의 가중치를 구할 수도 있죠. 두 계산은 같은 곡선을 나타냅니다."
+    },
+    {
+      "id": "M32-009",
+      "section": "13.4.1",
+      "title": "M32-009",
+      "text": "The conversion also works backward. The first control is c zero; the next is c zero plus one third c one. The second interior control adds two thirds c one and one third c two to c zero. The endpoint sums all coefficients. For a fixed degree representation, these controls are uniquely determined.",
+      "sourceParagraphs": [
+        "M32-P044",
+        "M32-P045",
+        "M32-P046",
+        "M32-P047",
+        "M32-P048",
+        "M32-P049",
+        "M32-P050"
+      ],
+      "screenPlan": "b0=c0;b1=c0+c1/3;b2=c0+2c1/3+c2/3;b3=sumc;역행렬전부와왕복동일곡선.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "더하기 삼 비 이, 마지막은 마이너스 비 영 더하기 삼 비 일 빼기 삼 비 이 더하기 비 삼입니다. 각 줄이 화면의 제어점들과 어떻게 연결되는지 보세요."
+    },
+    {
+      "id": "M32-010",
+      "section": "13.4.1",
+      "title": "M32-010",
+      "text": "Try controls zero zero, one two, three two, and four zero, at t equal to one half. The first row is point five one, two two, and three point five one. The next is one point two five one point five and two point seven five one point five. The final point is two, one point five. The handles are at height two, but the curve midpoint is at one point five.",
+      "sourceParagraphs": [
+        "M32-P055",
+        "M32-P056",
+        "M32-P057",
+        "M32-P058",
+        "M32-P059",
+        "M32-P060",
+        "M32-P061",
+        "M32-P062"
+      ],
+      "screenPlan": "수치표나열낭독속도늘리지말고한점계산씩화면대입. 원문동일수치.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 번째 내부점에는 씨 일의 삼분의 이와 씨 이의 삼분의 일을 더하고, 끝점은 모든 계수의 합입니다. 같은 차수 표현을 정하면 제어점도 하나로 정해집니다."
+    },
+    {
+      "id": "M32-011",
+      "section": "13.4.1",
+      "title": "M32-011",
+      "text": "Hold t at one half and move only the first interior handle upward. The endpoints remain fixed, while the departure direction and the interior change. To quantify that influence, regroup the polynomial by control point rather than by powers of t.",
+      "sourceParagraphs": [
+        "M32-P058",
+        "M32-P059",
+        "M32-P060",
+        "M32-P061",
+        "M32-P062"
+      ],
+      "screenPlan": "고정t .5,b1.y변화 원인결과. 다음Bernstein재그룹이유.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": ". 다시 중간을 구하면 일점이오 일점오와 이점칠오 일점오, 마지막은 이 일점오입니다. 손잡이의 높이는 이지만 곡선의 가운데 높이는 일점오인 것이 보이죠."
+    },
+    {
+      "id": "M32-012",
+      "section": "13.4.2",
+      "title": "M32-012",
+      "text": "For two controls, the weights are one minus t and t. With three they become the square of one minus t, two t times one minus t, and t squared. The middle control has two contributing paths, creating the factor two. At cubic degree the coefficients similarly become one, three, three, one.",
+      "sourceParagraphs": [
+        "M32-P064",
+        "M32-P065",
+        "M32-P066",
+        "M32-P067",
+        "M32-P068",
+        "M32-P069",
+        "M32-P070",
+        "M32-P071",
+        "M32-P072",
+        "M32-P073",
+        "M32-P074",
+        "M32-P075",
+        "M32-P076",
+        "M32-P077",
+        "M32-P078",
+        "M32-P079"
+      ],
+      "screenPlan": "완전식(1−t)²,2t(1−t),t² 표시;deCasteljau경로수와항모음. 4차1,4,6,4,1/5차1,5,10,10,5,1전체.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "은 그대로인데, 출발 방향과 곡선 내부가 달라집니다. 손잡이의 영향을 숫자로 설명하려면, 아까 다항식을 거듭제곱이 아니라 제어점별로 다시 모으면 됩니다."
+    },
+    {
+      "id": "M32-013",
+      "section": "13.4.2",
+      "title": "M32-013",
+      "text": "Higher degrees produce Pascal's triangle: ones on the edges, and each interior number the sum of the two above. The fourth row, one four six four one, supplies quartic coefficients. These binomial coefficients count selections of i items from n, and equal n factorial divided by i factorial times n minus i factorial.",
+      "sourceParagraphs": [
+        "M32-P075",
+        "M32-P076",
+        "M32-P077",
+        "M32-P078",
+        "M32-P079",
+        "M32-P080",
+        "M32-P081",
+        "M32-P082",
+        "M32-P083",
+        "M32-P084",
+        "M32-P085",
+        "M32-P086",
+        "M32-P087",
+        "M32-P088",
+        "M32-P089",
+        "M32-P090"
+      ],
+      "screenPlan": "0..7줄원문삼각형,6choose2=15를6×5/2계산;0!=1. 식13.27 (1−t)부호교정.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 티, 티 제곱이 됩니다. 가운데 점으로 가는 길이 두 번 겹치기 때문에 계수 이가 생기죠. 삼차에서는 같은 이유로 계수가 일, 삼, 삼, 일이 됩니다."
+    },
+    {
+      "id": "M32-014",
+      "section": "13.4.2",
+      "title": "M32-014",
+      "text": "Each weight is a binomial coefficient times t to the i times one minus t to the n minus i. These are Bernstein basis functions. Multiply every control by its corresponding weight and sum them to evaluate the Bézier curve. At one half, cubic weights are one eighth, three eighths, three eighths, and one eighth.",
+      "sourceParagraphs": [
+        "M32-P087",
+        "M32-P088",
+        "M32-P089",
+        "M32-P090",
+        "M32-P091",
+        "M32-P092",
+        "M32-P093",
+        "M32-P094",
+        "M32-P095",
+        "M32-P096",
+        "M32-P097",
+        "M32-P098",
+        "M32-P099",
+        "M32-P100",
+        "M32-P101",
+        "M32-P102",
+        "M32-P103"
+      ],
+      "screenPlan": "B_i^n=choose(n,i)t^i(1−t)^(n−i); p=sumBi*bi. n1..4그래프전부단계적,이전수치(2,1.5)재확인.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "항계수라고 합니다. 엔 개 중 아이 개를 고르는 경우의 수이며, 엔 팩토리얼을 아이 팩토리얼과 엔 빼기 아이 팩토리얼의 곱으로 나눠 계산할 수 있습니다."
+    },
+    {
+      "id": "M32-015",
+      "section": "13.4.2",
+      "title": "M32-015",
+      "text": "The Bernstein weights sum to one: the binomial theorem makes their sum t plus one minus t, raised to n. On zero through one they are also nonnegative, keeping the curve inside the controls' convex hull. At either end, only the corresponding endpoint weight is one, so the curve interpolates its endpoints.",
+      "sourceParagraphs": [
+        "M32-P104",
+        "M32-P105",
+        "M32-P106",
+        "M32-P107"
+      ],
+      "screenPlan": "partitionunity증명→convexhull고무줄경계. 라그랑주음수가중치비교. 내부점은일반적으로근사.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "점에 이 가중치를 곱해 모두 더하면 베지에 곡선이 됩니다. 티가 이분의 일인 삼차 곡선의 가중치는 팔분의 일, 팔분의 삼, 팔분의 삼, 팔분의 일입니다."
+    },
+    {
+      "id": "M32-016",
+      "section": "13.4.2",
+      "title": "M32-016",
+      "text": "Inside the parameter interval, every weight is positive, so moving one control affects the whole segment. That is global support. Editing only a neighborhood requires local support. A single polynomial cannot vanish throughout an open interval and remain nonzero elsewhere. This motivates joining polynomial pieces into a spline.",
+      "sourceParagraphs": [
+        "M32-P108",
+        "M32-P109",
+        "M32-P110",
+        "M32-P111"
+      ],
+      "screenPlan": "하나핸들전역움직임→미래piecewise부분하이라이트. 스플라인모두자동국소라는과장금지.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "이상입니다. 그래서 곡선은 제어점들을 둘러싼 볼록 껍질 밖으로 나가지 않습니다. 처음과 끝에서는 해당 끝점의 가중치만 일이 되어 끝점을 정확히 지납니다."
+    },
+    {
+      "id": "M32-017",
+      "section": "13.4.2",
+      "title": "M32-017",
+      "text": "The weight for control i reaches its maximum at t equal to i over n. For the first interior control of a cubic, its influence peaks at one third. This is closeness in parameter order, not a rule that the spatially nearest control must have the greatest weight.",
+      "sourceParagraphs": [
+        "M32-P112",
+        "M32-P113",
+        "M32-P114",
+        "M32-P115"
+      ],
+      "screenPlan": "B1³ peak1/3;handlemovefarawayweightsunchanged. n>0조건.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "하죠. 하나의 다항식은 어떤 열린 구간에서 완전히 영이면서 다른 곳에서는 살아 있을 수 없습니다. 여러 다항식 구간을 잇는 스플라인이 필요한 이유입니다."
+    },
+    {
+      "id": "M32-018",
+      "section": "13.4.3",
+      "title": "M32-018",
+      "text": "Now calculate departure direction. Differentiate the power form and substitute zero: the starting derivative is three times the difference b one minus b zero. At the end it is three times b three minus b two. The curve departs toward the first interior control and arrives in the direction from the last interior control toward the endpoint.",
+      "sourceParagraphs": [
+        "M32-P120",
+        "M32-P121",
+        "M32-P122",
+        "M32-P123",
+        "M32-P124",
+        "M32-P125",
+        "M32-P126",
+        "M32-P127",
+        "M32-P128",
+        "M32-P129",
+        "M32-P130",
+        "M32-P131",
+        "M32-P132"
+      ],
+      "screenPlan": "도함수치환중간식→3(b1−b0),3(b3−b2). 끝화살표내부점쪽역방향금지. 비영도함수일때접선.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "에서 영향이 가장 강하죠. 여기서 가까움은 매개변수 순서에 대한 말입니다. 공간에서 가장 가까운 제어점이 항상 가장 큰 가중치를 가진다는 뜻은 아닙니다."
+    },
+    {
+      "id": "M32-019",
+      "section": "13.4.3",
+      "title": "M32-019",
+      "text": "This directly converts Bézier to Hermite form: keep the endpoints and use the derivatives just calculated. In reverse, add one third of the starting derivative to the start for the first handle, and subtract one third of the ending derivative from the end for the last handle. The curve stays unchanged; only its controls are represented differently.",
+      "sourceParagraphs": [
+        "M32-P133",
+        "M32-P134",
+        "M32-P135",
+        "M32-P136",
+        "M32-P137",
+        "M32-P138",
+        "M32-P139",
+        "M32-P140",
+        "M32-P141",
+        "M32-P142",
+        "M32-P143",
+        "M32-P144"
+      ],
+      "screenPlan": "p0=b0,v0=3(b1−b0),v1=3(b3−b2),p1=b3;역변환전체. 원문v0오자수정.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 영입니다. 끝 도함수는 삼 곱하기 비 삼 빼기 비 이입니다. 시작에서는 첫 내부점 쪽으로 나아가고, 끝에서는 마지막 내부점에서 끝점 쪽으로 나아갑니다."
+    },
+    {
+      "id": "M32-020",
+      "section": "13.4.3",
+      "title": "M32-020",
+      "text": "Endpoint acceleration uses the nearest three controls. At the start it is six times b zero minus two b one plus b two. If consecutive control-polygon edges are d zero and d one, this is six times d one minus d zero. The endpoint uses the final two edges likewise. Position needs one point, the first derivative two, and the second derivative three.",
+      "sourceParagraphs": [
+        "M32-P145",
+        "M32-P146",
+        "M32-P147",
+        "M32-P148",
+        "M32-P149",
+        "M32-P150",
+        "M32-P151",
+        "M32-P152",
+        "M32-P153",
+        "M32-P154",
+        "M32-P155"
+      ],
+      "screenPlan": "a0=6(b0−2b1+b2)=6(d1−d0);a1=6(b1−2b2+b3)=6(d2−d1),중간전개. higherk nearestk+1 for k≤degree;above zero.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "반대로 에르미트 속도 벡터를 삼으로 나눠 시작점에 더하면 첫 손잡이, 끝점에서 빼면 마지막 손잡이입니다. 곡선을 바꾸지 않고 입력 방식만 바꾼 것입니다."
+    },
+    {
+      "id": "M32-021",
+      "section": "13.4.3",
+      "title": "M32-021",
+      "text": "Moving a nearby handle changes an endpoint derivative without moving the endpoint. Controls farther inward preserve lower-order endpoint conditions while affecting higher derivatives. Four equally spaced collinear controls give constant-speed travel along a line. Place the inner controls on their adjacent endpoints instead, and the same line gets smoothstep motion: start at rest and finish at rest.",
+      "sourceParagraphs": [
+        "M32-P154",
+        "M32-P155",
+        "M32-P156",
+        "M32-P157",
+        "M32-P158",
+        "M32-P159"
+      ],
+      "screenPlan": "A,A+d/3,A+2d/3,B vsA,A,B,B 동시운행/equaltimedots. t는동일실시간mapping.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "디 일 빼기 디 영이죠. 끝에서도 마지막 두 변의 차이를 씁니다. 위치에는 한 점, 일차 도함수에는 두 점, 이차 도함수에는 세 점이 필요한 구조입니다."
+    },
+    {
+      "id": "M32-022",
+      "section": "13.4.3",
+      "title": "M32-022",
+      "text": "Acceleration is not the same as curvature. Speeding up along a straight line produces acceleration but zero curvature. Traveling around a circle at constant speed produces acceleration because direction changes. Curvature uses the cross-product magnitude divided by speed cubed; the formula is not directly evaluated at zero-speed endpoints.",
+      "sourceParagraphs": [
+        "M32-P160",
+        "M32-P161",
+        "M32-P162",
+        "M32-P163"
+      ],
+      "screenPlan": "직선가속/원등속비교,κ=||v×a||/||v||³조건.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "로 놓으면 등속 직선이 됩니다. 가운데 두 점을 양 끝점에 겹치게 놓으면, 같은 직선이지만 멈춘 상태에서 출발해 다시 멈추는 스무스스텝 움직임이 됩니다."
+    },
+    {
+      "id": "M32-023",
+      "section": "13.5",
+      "title": "M32-023",
+      "text": "Suppose the path is almost right but one region needs finer control. Splitting it gives extra handles where needed. Subdivision also supports adaptive line approximation, using more pieces in curved regions. The goal is not merely to hide part of the old curve, but to produce independent controls describing the same portion.",
+      "sourceParagraphs": [
+        "M32-P165",
+        "M32-P166",
+        "M32-P167",
+        "M32-P168",
+        "M32-P169",
+        "M32-P170",
+        "M32-P171",
+        "M32-P172",
+        "M32-P173",
+        "M32-P174"
+      ],
+      "screenPlan": "전체곡선a..b강조→독립Q, 같은위치유지;편집/적응세분의두목적.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "변하므로 가속도가 있죠. 곡률은 속도와 가속도의 외적 길이를 속도 길이의 세제곱으로 나눠 구합니다. 속도가 영인 끝점에는 이 식을 그대로 넣지 않습니다."
+    },
+    {
+      "id": "M32-024",
+      "section": "13.5.1",
+      "title": "M32-024",
+      "text": "Map the original interval a through b to a new parameter s from zero through one. Set t to a plus s times b minus a. Zero maps to a and one to b. Substitute this expression into the original polynomial and regroup by powers of s to obtain an independent polynomial for that section. This is reparameterization.",
+      "sourceParagraphs": [
+        "M32-P176",
+        "M32-P177",
+        "M32-P178",
+        "M32-P179",
+        "M32-P180",
+        "M32-P181",
+        "M32-P182",
+        "M32-P183",
+        "M32-P184"
+      ],
+      "screenPlan": "t=a+(b−a)s;h=b−a;d0=p(a),d1=h p'(a),d2=h²(c2+3ac3),d3=h³c3. 대입전개역할유지.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "으로 그리는 적응적 근사에도 유용합니다. 목표는 원래 곡선을 단순히 가리는 것이 아니라, 같은 부분을 독립적으로 표현하는 새 제어점들을 구하는 것입니다."
+    },
+    {
+      "id": "M32-025",
+      "section": "13.5.1",
+      "title": "M32-025",
+      "text": "For p of t equal to t squared, extract point two through point five. The new expression is point two plus point three s, squared: point zero four plus point one two s plus point zero nine s squared. Hermite form can also be obtained directly from the new endpoint values and derivatives scaled by the interval width.",
+      "sourceParagraphs": [
+        "M32-P173",
+        "M32-P174",
+        "M32-P175",
+        "M32-P176",
+        "M32-P177",
+        "M32-P178",
+        "M32-P179",
+        "M32-P180",
+        "M32-P181",
+        "M32-P182",
+        "M32-P183",
+        "M32-P184"
+      ],
+      "screenPlan": "q=.04+.12s+.09s², q0=.04,q1=.25. HermiteQ=[p(a),h p'(a),h p'(b),p(b)];다른형식필수변환이라는원문과장교정.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 비가 되죠. 이 식을 원래 다항식의 티 자리에 넣고 에스의 거듭제곱별로 정리하면, 그 구간만 표현하는 새 다항식을 얻습니다. 이것이 재매개변수화입니다."
+    },
+    {
+      "id": "M32-026",
+      "section": "13.5.2",
+      "title": "M32-026",
+      "text": "For Bézier curves, reuse the intermediate points already computed. Extract the portion from the start to t equal to point seven five. During de Casteljau evaluation, collect the first point at each level: original start, first point of the first blend, first point of the second blend, and the final point. Those are the new four controls.",
+      "sourceParagraphs": [
+        "M32-P186",
+        "M32-P187",
+        "M32-P188",
+        "M32-P189",
+        "M32-P190",
+        "M32-P191",
+        "M32-P192"
+      ],
+      "screenPlan": "원문.75구성독립재현,최좌경계4개굵게,나머지희미.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 영점일이 에스 더하기 영점영구 에스 제곱이 됩니다. 에르미트 형식도 양 끝 위치와, 구간 폭만큼 조절한 양 끝 도함수를 구하면 직접 만들 수 있습니다."
+    },
+    {
+      "id": "M32-027",
+      "section": "13.5.2",
+      "title": "M32-027",
+      "text": "The geometry is unchanged, but the parameter interval differs. With t equal to point seven five s, the derivative with respect to s is point seven five times the original derivative. Its direction stays the same while its magnitude scales. The opposite portion comes from collecting the other edge of the computation triangle in the proper order.",
+      "sourceParagraphs": [
+        "M32-P193",
+        "M32-P194",
+        "M32-P195",
+        "M32-P196",
+        "M32-P197"
+      ],
+      "screenPlan": "q'=b p', 오른쪽제어점순서final→last2→last1→end.기하접선과매개미분구분.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "텔조로 그 위치를 계산하는 동안, 각 단계의 첫 점을 모읍니다. 원래 시작점, 첫 보간의 첫 점, 둘째 보간의 첫 점, 마지막 점이 새 네 제어점입니다."
+    },
+    {
+      "id": "M32-028",
+      "section": "13.5.2",
+      "title": "M32-028",
+      "text": "Splitting at one half uses only midpoints. For our controls zero zero, one two, three two, four zero, the left controls are zero zero, point five one, one point two five one point five, and two one point five. The right continues with two point seven five one point five, three point five one, and four zero. Joining the pieces preserves the original shape.",
+      "sourceParagraphs": [
+        "M32-P198",
+        "M32-P199"
+      ],
+      "screenPlan": "원문7개half공식전부+숫자와함께. 반=매개범위반,호길이반보장X. 재귀flatness+depthlimit.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 배입니다. 방향은 같고 손잡이 길이는 그 비율만큼 줄어드는 이유죠. 반대쪽 부분도 계산 삼각형의 반대 가장자리 점들을 순서대로 모아 얻을 수 있습니다."
+    },
+    {
+      "id": "M32-029",
+      "section": "13.5.2",
+      "title": "M32-029",
+      "text": "For a general interval a through b, use the same construction with different fractions at each level. The new cubic controls use a three times; a twice and b once; a once and b twice; then b three times. Their order does not matter in exact arithmetic—only their multiplicities. This symmetric extension is called blossoming.",
+      "sourceParagraphs": [
+        "M32-P200",
+        "M32-P201",
+        "M32-P202",
+        "M32-P203",
+        "M32-P204"
+      ],
+      "screenPlan": "q0=blossom(a,a,a),q1=(a,a,b),q2=(a,b,b),q3=(b,b,b). 원본b와출력q이름분리. 부동소수점미세차가능.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": ", 이 일점오입니다. 오른쪽은 이 일점오에서 시작해 이점칠오 일점오, 삼점오 일, 사 영으로 이어집니다. 두 조각을 이어도 원래 모양과 정확히 같습니다."
+    },
+    {
+      "id": "M32-030",
+      "section": "13.5.2",
+      "title": "M32-030",
+      "text": "We began by asking why a handle changes a curve. Repeated interpolation produced the point; weights and derivatives explained the handles. Collecting the same intermediate points let us split the curve without changing its shape. The remaining question is how to join multiple pieces smoothly.",
+      "sourceParagraphs": [
+        "M32-P200",
+        "M32-P201",
+        "M32-P202",
+        "M32-P203",
+        "M32-P204"
+      ],
+      "screenPlan": "동일무대4단계누적비교;스플라인다음편연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 번과 비 두 번, 마지막은 비 세 번을 사용합니다. 어떤 순서로 쓰느냐보다 각각 몇 번 쓰느냐가 중요합니다. 이 대칭적인 확장을 블로서밍이라고 합니다."
+    }
+  ]
+}

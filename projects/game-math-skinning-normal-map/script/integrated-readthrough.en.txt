@@ -1,0 +1,71 @@
+In Super Mario Odyssey, Mario jumps and lands: his whole body moves while his arms and legs change pose. How can a computer coordinate these different parts of one character? We will follow skinning, which changes the large shape, then normal mapping, which uses surface directions to shade fine detail. First, let us distinguish moving the whole character from bending its joints.
+
+One matrix moves and orients an entire character like a statue. An elbow needs connected parts such as torso, upper arm, and forearm to move relative to each other. A hierarchy of rigid parts can animate a robot, but each part remains rigid and does not produce continuous deformation through skin or clothing.
+
+When a bicycle jumps in Riders Republic, its frame retains its shape while the rider bends and extends arms and knees. To build this distinction ourselves, we will attach a small coordinate frame to each joint. Skeletal animation replaces the part hierarchy with virtual bones. A bone is a moving coordinate frame, not the stick used to visualize it. Mesh vertices are associated with bones and respond to their transforms. A single influence behaves rigidly; multiple influences blend their effects.
+
+Skinning assigns which bones affect each vertex and by how much. Those proportions are skin weights. An elbow vertex may be influenced by both arm bones. Rigging can also include animator controls beyond these assignments. Automatic weights are a starting point, but extreme poses still need inspection.
+
+Track a vertex influenced by two bones. Compute where it would be if rigidly attached to the upper arm, then where it would be if attached to the forearm. Place the final vertex at the weighted average of those positions. This is linear blend skinning: it blends transformed positions, not rotation angles.
+
+If the upper arm proposes (0,2) and the forearm proposes (2,0), weights of 0.6 and 0.4 produce (0.8,1.2), closer to the upper-arm position. Weights of 0.2 and 0.8 produce (1.6,0.4). Different vertices use different weights, producing a connected deformation around the same moving joint.
+
+A vertex stores influencing bone indices and weights. In the simple method, it also stores a position in each influencing bone's space. Nonnegative weights sum to one so identical proposed positions remain unchanged. Four influences may be an implementation limit, but it is not a mathematical maximum.
+
+Begin by zeroing one vertex's output. For each influencing bone, fetch its current matrix, transform the bone-space position into model space, multiply by the weight, and accumulate. Then proceed to the next vertex. The loop repeats the two-proposal diagram across the mesh.
+
+Unchanged normals would make lighting fail to follow the deformation. Transform their directional components without translation, blend them, and renormalize. This common simple treatment is an approximation used with rotation-focused skinning. Nonuniform scale or shear requires separate normal-transformation handling, including inverse-transpose considerations.
+
+The bone-space positions come from a reference configuration called the bind pose: the original mesh and skeleton arrangement used for binding. Visualized bones are not physical rods pushing the mesh. Knowing each vertex and bone frame in the bind pose lets us express the vertex in that bone's coordinates.
+
+The bind matrix locates the bone in model space; its inverse takes a model-space vertex into that bone's space. Applying the bone's current matrix then returns it to the current model pose. Recompute from the original bind position rather than repeatedly deforming last frame's output.
+
+Suppose a bind-pose bone origin is at x=1 and the vertex at x=2. In bone space, the vertex is one unit from the origin. Moving the bone origin to x=3 places the vertex at x=4. Without first removing the bind transform, the original offset would be applied incorrectly.
+
+We can reduce storage by keeping one bind-pose position per vertex instead of one per bone. Precombine each bone's inverse bind transform with its current transform. For a vertex, blend the required matrices using its weights, then apply that blended matrix once.
+
+The equivalence follows from distributivity: transform the same input with several matrices and sum, or sum the weighted matrices first and transform once. This can reuse work across attributes. However, a linear blend of rotation matrices is not generally another pure rotation, so joints can collapse or lose volume during twisting.
+
+Skinning therefore involves more than creating bones. Test joint extremes and adjust the weights and mesh. Muscle bulging or flesh spreading under load may require additional deformation methods. We have changed vertices to shape the large form; next we will represent small surface details without adding a vertex for every bump.
+
+As a flashlight sweeps over a metal wall in Doom 3, small grooves emerge through changes in brightness. We will now compare one way to create this kind of surface detail on a fixed surface in our own implementation. Textures can store more than color. Bump mapping represents small relief through changes in shading direction. A height map stores height and derives normals from its slope; a normal map stores the directions directly. We will focus on normal maps, which alone do not displace vertices or change the silhouette.
+
+A basic normal map encodes x, y, and z into red, green, and blue. Direction components in [-1,1] are mapped to [0,1] using 0.5*n+0.5, and decoded using 2*c-1. The straight outward normal (0,0,1) becomes (0.5,0.5,1), explaining the familiar bluish color.
+
+These colors package direction data rather than decorative color. Altering brightness changes the encoded direction. Import them as normal data, not ordinary sRGB color, and handle renormalization after sampling or compression. A common workflow bakes surface directions from detailed geometry into a texture for a lower-resolution mesh.
+
+Reusing a texture saves memory and authoring work, but normals are directions. If the same values on a box's top and bottom are interpreted as object-space upward directions, both surfaces would point upward. Each patch needs a local frame telling us what outward means there.
+
+Tangent space supplies the local frame: normal N points outward, tangent T follows increasing texture u, and bitangent B follows increasing v. Some references call B the binormal; we will consistently use bitangent. Together they form the TBN basis. Image-up and increasing-v conventions must agree across tools.
+
+For the eight-bit values (37,128,218), divide by 255, multiply by two, and subtract one. The result is approximately (-0.710,0.0039,0.710). Renormalizing gives nearly (-0.707,0,0.707): about a forty-five-degree tilt. The small discrepancy comes from quantization.
+
+Negative x means decreasing u on the surface, not screen-left. For tangent-space normal (-0.707,0,0.707), multiply T by -0.707 and N by 0.707, then add. This weighted combination of basis vectors produces the object-space direction, keeping the same apparent detail attached as the surface rotates.
+
+Across a curved surface, N, T, and B change with position. Even on a flat surface, distorted UV mapping can alter the u and v directions, which need not be perpendicular. Vertex frames can be interpolated across the surface and then adjusted into an orthonormal frame for the intended shading convention.
+
+Either transform the mapped normal into object space or transform lighting and viewing vectors into tangent space. Compared vectors must share a coordinate system. For an orthonormal basis, inverse equals transpose and dot products with the axes recover coordinates. A skewed basis does not generally have that property.
+
+An orthogonal frame need not store all three axes: a cross product of N and T can reconstruct the third. Mirrored UV mapping may require that axis to reverse, so store a handedness sign that distinguishes the frame's orientation: +1 or -1. Reconstruct B as sign times cross(N,T); formats may store this sign in tangent.w.
+
+To calculate T and B, start with three triangle positions and their UV coordinates. Relative to the first vertex, define the two geometric edges q1 and q2. Let s1 and s2 be the corresponding changes in u, and t1 and t2 the changes in v. We compare displacement in the surface and texture coordinate systems.
+
+The first edge results from moving s1 along T and t1 along B, so q1=s1*T+t1*B. The second edge gives q2=s2*T+t2*B. Since the edges and UV differences are known, solve these two vector equations for T and B. This connects the two coordinate systems.
+
+The two-by-two inverse introduces the UV determinant D=s1*t2-s2*t1. It encodes oriented UV area. The tangent is (t2*q1-t1*q2)/D, and the bitangent is (-s2*q1+s1*q2)/D. These vectors are not yet normalized.
+
+Take geometric edges (2,0,0) and (0,1,0), with UV edges (1,0) and (0,1). The determinant is one. We obtain T=(2,0,0) and B=(0,1,0), then normalize T to (1,0,0). Moving right in texture coordinates now corresponds to the model's rightward direction.
+
+Do not discard the denominator merely because you will normalize. A negative sign survives normalization. Mirroring the u direction changes the determinant to -1 and requires T to reverse. Normalization changes length, not orientation, so the determinant's sign must be preserved.
+
+If UV vertices collapse onto a line, the determinant is zero and the inverse does not exist. Handle the degenerate case before division, for example by repairing the UVs or using a validated fallback frame. Very small determinants can be unstable, and near-zero normals or accumulated tangents also need protected normalization.
+
+We have a frame for one triangle. To obtain vertex data, accumulate the tangents and bitangents of adjacent compatible triangles, starting the accumulators at zero. These are tangent vectors, not triangle normals. The normal is a separately prepared input used in the following orthogonalization.
+
+Remove the accumulated tangent's component along the unit normal: T'=T-dot(N,T)*N, then normalize. Determine handedness from the sign of dot(cross(N,T'),Baccum). Storing the tangent plus this sign prepares us to reconstruct the frame.
+
+Do not average across every adjacent face indiscriminately. UV or normal discontinuities may require separate frames. A mirrored seam can even share position and UV values while needing opposite tangent directions. Averaging them can cancel the vectors, so split the vertices where necessary to preserve each side's frame.
+
+Once UVs, tangents, and handedness are prepared, runtime work can sample the normal, transform it, and evaluate lighting. Much of the preparation resides in asset processing. The map baker and renderer must agree on the tangent-frame convention, or seams and lighting errors can appear.
+
+Large motion and small detail both depend on transforming values between coordinate frames. Skinning blends bind-pose vertices transformed by bones; normal mapping transforms encoded directions through the surface frame. A bending character needs both its positions and its shading directions to remain consistent.

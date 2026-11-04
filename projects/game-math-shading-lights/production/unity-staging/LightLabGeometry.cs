@@ -10,7 +10,7 @@ namespace Yamyam.GameMath.LightLab {
   void BuildGeometry(LightLabStage stage,Font font){
    geometryStage=stage;geometryMode=Cue.diagram.Substring(9);
    geometryHeading=Text(font,"",46,1040,310,790,120,Yellow);
-   int count=geometryMode=="cosineRays"?7:geometryMode=="volumeBounds"?12:geometryMode=="rangeShells"?6:4;
+   int count=geometryMode=="cosineRays"?7:geometryMode=="volumeBounds"?12:geometryMode=="rangeShells"?6:geometryMode=="solidAngle"?5:4;
    geometryLines=new LineRenderer[count];
    for(int i=0;i<count;i++)geometryLines[i]=Path("Explanatory "+geometryMode+" "+i,i==count-1?Cyan:Yellow,Vector3.zero,Vector3.zero);
    if(geometryMode=="cosineRays")geometryHeading.text="같은 빛 → 기울어진 표면의 더 넓은 영역";
@@ -18,12 +18,23 @@ namespace Yamyam.GameMath.LightLab {
    if(geometryMode=="rangeShells")geometryHeading.text="r이 2배이면, 구면 넓이는 4배";
    if(geometryMode=="volumeBounds")geometryHeading.text="광원 로컬 공간의 영향 영역";
    if(geometryMode=="reflectConstruction")geometryHeading.text="L의 법선 성분 p → 두 배 → L 빼기";
+   if(geometryMode=="solidAngle")geometryHeading.text="같은 광원도 가까우면 더 넓은 방향을 차지";
    detail.text="화살표·경계는 설명용 표식";
   }
   void SetPath(LineRenderer line,params Vector3[] points){line.positionCount=points.Length;line.SetPositions(points);}
   void ApplyGeometry(float seconds){
    if(geometryStage==null||geometryLines==null)return;
    Vector3 p=geometryStage.TeachingProbe.position+geometryStage.TeachingProbe.up*.035f;
+   if(geometryMode=="solidAngle"){
+    float u=Mathf.SmoothStep(0,1,Mathf.Clamp01(seconds/Mathf.Max(.001f,Cue.duration)));
+    float distance=Mathf.Lerp(1.2f,3.2f,u);
+    Vector3 c=p+Vector3.up*distance;
+    var corners=new[]{c+new Vector3(-.5f,0,-.5f),c+new Vector3(.5f,0,-.5f),c+new Vector3(.5f,0,.5f),c+new Vector3(-.5f,0,.5f)};
+    for(int i=0;i<4;i++)SetPath(geometryLines[i],p,corners[i]);
+    SetPath(geometryLines[4],corners[0],corners[1],corners[2],corners[3],corners[0]);
+    float omega=4*Mathf.Atan(.25f/(distance*Mathf.Sqrt(distance*distance+.5f)));
+    result.text="폭 1 m · 높이 1 m · 정면의 직사각형\n거리 "+distance.ToString("0.00")+" m → Ω = "+omega.ToString("0.000")+" sr";
+   }
    if(geometryMode=="reflectConstruction"){
     Vector3 n=geometryStage.TeachingProbe.up;
     Vector3 l=Cue.lightType==0?-geometryStage.CurrentLightDirection:(geometryStage.CurrentLightPosition-p).normalized;
@@ -61,7 +72,7 @@ namespace Yamyam.GameMath.LightLab {
     for(int i=0;i<6;i++){
      float radius=i<3?.6f:1.2f;int axis=i%3;var points=new Vector3[65];
      for(int k=0;k<65;k++){float a=k*Mathf.PI*2/64;Vector3 v=axis==0?new Vector3(Mathf.Cos(a),Mathf.Sin(a),0):axis==1?new Vector3(0,Mathf.Cos(a),Mathf.Sin(a)):new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));points[k]=origin+radius*v;}
-     SetPath(geometryLines[i],points);geometryLines[i].startColor=geometryLines[i].endColor=i<3?Yellow:Cyan;
+     SetPath(geometryLines[i],points);geometryLines[i].sharedMaterial.SetColor("_BaseColor",i<3?Yellow:Cyan);
     }
     result.text="같은 전체 복사속 Φ\n같은 면적에 들어오는 양은 1/4";
    }

@@ -12,12 +12,13 @@ namespace Yamyam.GameMath.LightLab {
   public string variable="none";
   public float from, to, duration=8, cardSeconds=2.5f;
   public int model=0, diffuseModel=0, shading=0, lightType=0, attenuation=0, volumeMode=0;
-  public float exponent=24, referenceDistance=2, innerRange=0, range=6, innerAngle=28, outerAngle=50;
+  public float exponent=24, referenceDistance=2, innerRange=0, range=6, innerAngle=28, outerAngle=50, engineIntensity=8;
   public Vector4 components=new Vector4(1,1,1,0);
   public bool normalArrow=true, lightArrow=true, reflectionArrow=false, viewArrow=false, halfArrow=false;
   public bool urpLit=false, cookie=false, aimAtSubject=true;
   public bool brdfNormalizedDiffuse=false;
   public bool materialMap=false;
+  public bool perspectiveCamera=false;
   public float secondLightStrength=0;
   public Vector3 secondLightDirection=new Vector3(1,-1,0);
   public Color secondLightColor=new Color(.3f,.4f,.6f);
@@ -47,6 +48,7 @@ namespace Yamyam.GameMath.LightLab {
   public Vector3 CurrentLightPosition {get;private set;}
   public Vector3 CurrentLightDirection {get;private set;}
   public LabCue Cue;
+  public float PreviewSeconds;
   public List<UnityEngine.Object> GeneratedObjects=new List<UnityEngine.Object>();
   [SerializeField] Material teaching, lit, neutral, lines;
   [SerializeField] Transform objectRoot, lampRoot;
@@ -61,6 +63,8 @@ namespace Yamyam.GameMath.LightLab {
   [SerializeField] MeshRenderer[] subjectRenderers;
   [SerializeField] LightLabBakedRoom bakedRoom;
   static readonly Color Yellow=new Color(1,.83f,.25f), Cyan=new Color(.27f,.87f,.9f), Green=new Color(.40f,.9f,.58f), Pink=new Color(1,.42f,.57f);
+  [ContextMenu("Apply editable teaching time")]
+  public void PreviewAtTime(){Apply(PreviewSeconds);}
   void OnEnable(){if(canvas){var font=Font.CreateDynamicFontFromOSFont("Malgun Gothic",48);foreach(var label in canvas.GetComponentsInChildren<Text>(true))label.font=font;}}
   public void Build(LabCue cue, Font font) {
    Cue=cue;
@@ -75,7 +79,8 @@ namespace Yamyam.GameMath.LightLab {
    var cameraObject=NewObject("Locked teaching camera");
    RenderCamera=cameraObject.AddComponent<Camera>(); RenderCamera.enabled=false;
    RenderCamera.transform.position=cue.cameraPosition; RenderCamera.transform.LookAt(new Vector3(0,1.35f,0));
-   RenderCamera.orthographic=true;RenderCamera.orthographicSize=3.8f; RenderCamera.aspect=16f/9f;
+   RenderCamera.orthographic=!cue.perspectiveCamera;RenderCamera.orthographicSize=3.8f; RenderCamera.aspect=16f/9f;
+   RenderCamera.fieldOfView=42;
    RenderCamera.clearFlags=CameraClearFlags.SolidColor;RenderCamera.backgroundColor=Color.black;
    RenderCamera.allowHDR=false; RenderCamera.allowMSAA=true;
    RenderCamera.nearClipPlane=.1f;RenderCamera.farClipPlane=50;
@@ -97,11 +102,19 @@ namespace Yamyam.GameMath.LightLab {
    var probe=GameObject.CreatePrimitive(PrimitiveType.Cylinder);probe.name="Visible horizontal teaching probe · known N";probe.transform.SetParent(transform,false);probe.transform.position=new Vector3(1.4f,1.26f,0);probe.transform.localScale=new Vector3(.7f,.035f,.7f);probe.gameObject.layer=29;probe.GetComponent<Renderer>().sharedMaterial=cue.urpLit?lit:teaching;var probeMesh=TeachingMesh(probe.GetComponent<MeshFilter>().sharedMesh);GeneratedObjects.Add(probeMesh);probe.GetComponent<MeshFilter>().sharedMesh=probeMesh;surfaceProbe=probe.transform;
    cone=new LineRenderer[4];for(int i=0;i<4;i++)cone[i]=Arrow("Spot boundary "+i,Yellow);
    BuildUI(font);
+   // Move the observer, not the tested geometry/light. The left half remains
+   // the same experiment; the right half is reserved for its calculation.
+   if(cue.diagram.StartsWith("math:")||cue.diagram.StartsWith("geometry:")){
+    RenderCamera.transform.position+=RenderCamera.transform.right*3.5f;
+    RenderCamera.orthographicSize=4.6f;
+   }
+   if(cue.diagram=="specularGrid"||cue.diagram=="shadingComparison"||cue.diagram=="triangle-highlight")floor.SetActive(false);
    if(!string.IsNullOrEmpty(cue.bakeMode)){
     if(!cue.urpLit)throw new InvalidOperationException("Real baking requires the engine Lit material, not the teaching shader");
     bakedRoom=gameObject.AddComponent<LightLabBakedRoom>();bakedRoom.Build(this,cue,physicalLight,objectRoot,neutral);
    }
-   if(cue.diagram=="specularGrid")BuildComparison(font);
+   if(cue.diagram=="specularGrid"||cue.diagram=="shadingComparison")BuildComparison(font);
+   else if(cue.diagram=="triangle-highlight")BuildTriangleHighlight(font);
    else if(!string.IsNullOrEmpty(cue.diagram)){var illustrationObject=NewObject("Source-matched explanatory diagrams");illustrations=illustrationObject.AddComponent<LightLabIllustrations>();illustrations.Build(this,cue,font,objectRoot);}
    Apply(0);
   }
@@ -138,12 +151,19 @@ namespace Yamyam.GameMath.LightLab {
    float exponent=Cue.exponent;
    if(Cue.variable=="lightAzimuth") {pos=Quaternion.AngleAxis(change,Vector3.up)*Cue.lightPosition;direction=(new Vector3(-.7f,1.3f,0)-pos).normalized;}
    if(Cue.variable=="lightDistance") pos=surfaceProbe.position+surfaceProbe.up*.035f+Cue.lightPosition.normalized*change;
+   if(Cue.variable=="lightTranslationX")pos=Cue.lightPosition+Vector3.right*change;
+   if(Cue.variable=="cameraDistance"){
+    Vector3 target=new Vector3(-.7f,1.35f,0);
+    RenderCamera.transform.position=target+(Cue.cameraPosition-target).normalized*change;
+    RenderCamera.transform.LookAt(target);
+   }
    if(Cue.variable=="exponent")exponent=change;
    if(Cue.variable=="objectYaw")objectRoot.localRotation=Quaternion.Euler(0,change,0);
    if(Cue.variable=="normalTilt"){surfaceProbe.rotation=Quaternion.Euler(0,0,change);objectRoot.localRotation=Quaternion.Euler(0,0,change);}
    if(Cue.variable=="viewAzimuth") {RenderCamera.transform.position=Quaternion.AngleAxis(change,Vector3.up)*Cue.cameraPosition;RenderCamera.transform.LookAt(new Vector3(0,1.35f,0));}
    CurrentLightPosition=pos;CurrentLightDirection=direction;
    physicalLight.enabled=true;physicalLight.cullingMask=Cue.urpLit?~0:~(1<<29);physicalLight.type=Cue.lightType==0?LightType.Directional:(Cue.lightType==1?LightType.Point:LightType.Spot);
+   physicalLight.intensity=Cue.urpLit?Cue.engineIntensity:2;
    physicalLight.transform.position=pos;physicalLight.transform.rotation=Quaternion.LookRotation(direction);
    physicalLight.spotAngle=Cue.outerAngle;physicalLight.innerSpotAngle=Cue.innerAngle;
    // Props are visible context, not a fabricated camera-visible light beam.
@@ -187,10 +207,13 @@ namespace Yamyam.GameMath.LightLab {
    if(Cue.normalArrow){float d=Mathf.Max(0,Vector3.Dot(n,l));value.text="해설용 표면 지점   N · L = "+d.ToString("0.00")+(Cue.brdfNormalizedDiffuse?"\nBRDF: ρ / π":"\n고전적 재질 계수 · 수업용 단위");}
    if(Cue.variable=="exponent")value.text="광택 지수 n = "+exponent.ToString("0");
    if(Cue.variable=="lightDistance")value.text="우리 씬의 거리 d = "+change.ToString("0.0")+" m";
+   if(Cue.variable=="lightTranslationX")value.text="광원 위치만 이동 · 방향 유지\n평행광의 표면 조명값은 동일";
+   if(Cue.variable=="cameraDistance")value.text="카메라 거리 = "+change.ToString("0.0")+" m\n물체의 화면 크기 변화 · 난반사 표면값 유지";
    bool card=seconds<Cue.cardSeconds;english.gameObject.SetActive(card);meaning.gameObject.SetActive(card);
    korean.rectTransform.anchoredPosition=new Vector2(96,card?-106:-64);kind.text=Cue.urpLit?"Unity URP Lit · 엔진 출력":Cue.sourceKind;
    if(illustrations){kind.text="우리 씬 + 해설용 도식";value.gameObject.SetActive(false);formula.gameObject.SetActive(false);illustrations.Apply(seconds);}
-   if(Cue.diagram=="specularGrid")ApplyComparison(seconds);
+   if(Cue.diagram=="specularGrid"||Cue.diagram=="shadingComparison")ApplyComparison(seconds);
+   if(Cue.diagram=="triangle-highlight")ApplyTriangleHighlight(seconds);
    if(bakedRoom)bakedRoom.Apply(seconds);
   }
   public void SetMaps(Texture2D gobo,Texture2D falloff){teaching.SetTexture("_Cookie",gobo);teaching.SetTexture("_Falloff",falloff);}
@@ -203,7 +226,7 @@ namespace Yamyam.GameMath.LightLab {
    else {m.m00=s.z/s.x;m.m11=-s.z/s.y;m.m02=.5f;m.m12=.5f;m.m22=1/s.z;m.m32=1;}
    return m;
   }
-  LineRenderer Arrow(string name,Color c){var g=NewObject(name);var lr=g.AddComponent<LineRenderer>();lr.useWorldSpace=true;lr.sharedMaterial=lines;lr.startColor=lr.endColor=c;lr.widthMultiplier=.023f;lr.numCapVertices=5;lr.positionCount=5;return lr;}
+  LineRenderer Arrow(string name,Color c){var g=NewObject(name);var lr=g.AddComponent<LineRenderer>();lr.useWorldSpace=true;var mat=new Material(lines);mat.SetColor("_BaseColor",c);GeneratedObjects.Add(mat);lr.sharedMaterial=mat;lr.startColor=lr.endColor=Color.white;lr.widthMultiplier=.04f;lr.numCapVertices=5;lr.positionCount=5;return lr;}
   void SetArrow(LineRenderer line,Vector3 p,Vector3 d,bool enabled,bool normalize=true){line.enabled=enabled;if(!enabled)return;Vector3 delta=normalize?d.normalized*1.1f:d;Vector3 q=p+delta;Vector3 side=Vector3.Cross(delta,RenderCamera.transform.forward).normalized*.09f;Vector3 back=q-delta.normalized*.2f;line.SetPositions(new[]{p,q,back+side,q,back-side});}
   void BuildUI(Font font){
    var g=NewObject("Overlay · caption area reserved");canvas=g.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=RenderCamera;canvas.planeDistance=1;canvas.sortingOrder=100;
@@ -212,7 +235,7 @@ namespace Yamyam.GameMath.LightLab {
    korean=Label(font,Cue.termKorean,52,96,106,1400,66,Yellow);
    meaning=Label(font,Cue.plainMeaning,36,96,176,1450,64,Color.white);
    kind=Label(font,Cue.sourceKind,30,1360,64,480,90,Color.white);
-   value=Label(font,"",36,1100,620,720,64,Green);
+   value=Label(font,"",36,1100,600,720,100,Green);
    formula=Label(font,Cue.formula,40,1100,700,720,128,Color.white);
    vectorLabels=new[]{Label(font,"법선 N",34,0,0,200,48,Green),Label(font,"빛 L",34,0,0,200,48,Yellow),Label(font,"반사 R",34,0,0,200,48,Pink),Label(font,"시선 V",34,0,0,200,48,Cyan),Label(font,"중간 H",34,0,0,200,48,new Color(.85f,.65f,1))};
   }

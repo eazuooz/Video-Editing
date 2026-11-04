@@ -35,12 +35,14 @@ namespace Yamyam.GameMath.LightLab {
    if(cue.diagram=="sh")BuildDirectionalBasis(font);
    if(cue.diagram.StartsWith("math:"))BuildMath(font);
    if(cue.diagram.StartsWith("geometry:"))BuildGeometry(stage,font);
+   if(cue.diagram.StartsWith("surface:"))BuildSurfaceStorage(stage,font);
+   if(cue.diagram.StartsWith("advanced:"))BuildAdvanced(stage,font);
    Apply(0);
   }
   void OnEnable(){if(canvas){var f=Font.CreateDynamicFontFromOSFont("Malgun Gothic",48);foreach(var t in canvas.GetComponentsInChildren<Text>(true))t.font=f;}}
   GameObject Node(string name){var g=new GameObject(name);g.transform.SetParent(transform,false);return g;}
   Transform Primitive(LightLabStage stage,PrimitiveType type,string name,Vector3 p,Vector3 s,Color c){var g=GameObject.CreatePrimitive(type);g.name=name;g.transform.SetParent(transform,false);g.transform.position=p;g.transform.localScale=s;var mat=new Material(ink);mat.SetColor("_BaseColor",c);stage.GeneratedObjects.Add(mat);g.GetComponent<Renderer>().sharedMaterial=mat;return g.transform;}
-  LineRenderer Path(string name,Color c,params Vector3[] points){var g=Node(name);var lr=g.AddComponent<LineRenderer>();lr.sharedMaterial=ink;lr.startColor=lr.endColor=c;lr.widthMultiplier=.025f;lr.useWorldSpace=true;lr.numCapVertices=4;lr.positionCount=points.Length;lr.SetPositions(points);return lr;}
+  LineRenderer Path(string name,Color c,params Vector3[] points){var g=Node(name);var lr=g.AddComponent<LineRenderer>();var mat=new Material(ink);mat.SetColor("_BaseColor",c);GetComponentInParent<LightLabStage>().GeneratedObjects.Add(mat);lr.sharedMaterial=mat;lr.startColor=lr.endColor=Color.white;lr.widthMultiplier=.04f;lr.useWorldSpace=true;lr.numCapVertices=4;lr.positionCount=points.Length;lr.SetPositions(points);return lr;}
   Image Panel(Color c,float x,float y,float w,float h){var g=new GameObject("Diagram panel",typeof(RectTransform));g.transform.SetParent(canvas.transform,false);var im=g.AddComponent<Image>();im.color=c;var r=im.rectTransform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(0,1);r.anchoredPosition=new Vector2(x,-y);r.sizeDelta=new Vector2(w,h);return im;}
   Text Text(Font f,string s,int size,float x,float y,float w,float h,Color c){var g=new GameObject(s,typeof(RectTransform));g.transform.SetParent(canvas.transform,false);var t=g.AddComponent<Text>();t.font=f;t.text=s;t.fontSize=size;t.color=c;t.horizontalOverflow=HorizontalWrapMode.Wrap;t.verticalOverflow=VerticalWrapMode.Truncate;var r=t.rectTransform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(0,1);r.anchoredPosition=new Vector2(x,-y);r.sizeDelta=new Vector2(w,h);return t;}
   void BuildDelta(LightLabStage stage,Font f){
@@ -99,6 +101,8 @@ namespace Yamyam.GameMath.LightLab {
    if(Cue.diagram=="sh"&&cells!=null){int basis=Mathf.Clamp(Cue.diagramVariant,0,3);for(int y=0;y<8;y++)for(int x=0;x<24;x++){float az=(x+.5f)/24*Mathf.PI*2,polar=(y+.5f)/8*Mathf.PI;float nx=Mathf.Sin(polar)*Mathf.Cos(az),ny=Mathf.Cos(polar),nz=Mathf.Sin(polar)*Mathf.Sin(az);float b=basis==0?.282095f:.488603f*(basis==1?ny:basis==2?nz:nx);float a=Mathf.Clamp01(.5f+b*u);cells[y*24+x].color=b>=0?new Color(a,a*.83f,a*.25f):new Color(a*.27f,a*.87f,a*.9f);}result.text=basis==0?"0차 기저: 전체 평균 성분":"1차 기저: 넓은 방향 차이의 성분";}
    if(Cue.diagram.StartsWith("math:"))ApplyMath(seconds);
    if(Cue.diagram.StartsWith("geometry:"))ApplyGeometry(seconds);
+   if(Cue.diagram.StartsWith("surface:"))ApplySurfaceStorage(seconds);
+   if(Cue.diagram.StartsWith("advanced:"))ApplyAdvanced(seconds);
   }
  }
 }

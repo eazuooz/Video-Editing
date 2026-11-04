@@ -66,35 +66,43 @@ patches={
  3:{'diagram':'geometry:directPaths'},
  4:{'diagram':'geometry:directPaths','showLamp':False},
  5:{'components':{'x':0,'y':0,'z':0,'w':1},'emission':{'r':.15,'g':.04,'b':.01,'a':1},'componentSteps':[{'x':0,'y':0,'z':0,'w':1},{'x':0,'y':1,'z':0,'w':0},{'x':1,'y':0,'z':0,'w':0},{'x':0,'y':0,'z':1,'w':0},{'x':1,'y':1,'z':1,'w':1}]},
- 6:{'diagram':'math:rgb'},9:{'diagram':'geometry:reflectConstruction'},10:{'diagram':'math:reflect','reflectionArrow':True},
+ 6:{'diagram':'math:rgb'},9:{'diagram':'geometry:reflectConstruction'},10:{'diagram':'math:reflect','normalArrow':True,'lightArrow':True,'reflectionArrow':True,'viewArrow':False,'aimAtSubject':False,'lightType':0,'lightEuler':{'x':90,'y':0,'z':-36.8698976}},
  12:{'diagram':'math:gloss'},13:{'materialMap':True},15:{'diagram':'specularGrid','normalArrow':False,'lightArrow':False,'showLamp':False},
  19:{'diagram':'geometry:cosineRays','lightType':0,'aimAtSubject':False,'lightEuler':{'x':90,'y':0,'z':0}},
  21:{'diagram':'math:diffuse','diffuse':{'r':.8,'g':.4,'b':.2,'a':1}},
  22:{'diagram':'math:lambert-brdf'},23:{'diagram':'math:lambert-brdf'},
- 24:{'variable':'ambientStrength','from':0,'to':1},
+ 24:{'variable':'ambientStrength','from':0,'to':1,'diagram':'advanced:ambient-bounce'},
  27:{'components':{'x':0,'y':0,'z':0,'w':1},'emission':{'r':.6,'g':.3,'b':.1,'a':1}},
  28:{'emission':{'r':.1,'g':.025,'b':.01,'a':1},'componentSteps':[{'x':1,'y':0,'z':0,'w':0},{'x':1,'y':1,'z':0,'w':0},{'x':1,'y':1,'z':1,'w':0},{'x':1,'y':1,'z':1,'w':1}]},
  30:{'diagram':'math:half-lambert'},
  31:{'variable':'secondLightStrength','from':0,'to':1,'lightColor':{'r':.8,'g':.12,'b':.08,'a':1},'secondLightColor':{'r':.05,'g':.3,'b':.9,'a':1},'emission':{'r':.06,'g':.02,'b':0,'a':1}},
  32:{'diagram':'math:custom','explanationSteps':['계산할 픽셀 수','광원 수와 표면 반사 계산','정확도 · 처리할 양 · 제어성']},
  33:{'model':1,'halfArrow':True,'viewArrow':True},
- 37:{'shading':1},39:{'diagram':'math:gouraud'},42:{'diagram':'math:nonlinear'},
+ 35:{'diagram':'advanced:fresnel-retro'},36:{'diagram':'advanced:anisotropy'},
+ 37:{'diagram':'shadingComparison','normalArrow':False,'lightArrow':False,'showLamp':False,'lightType':0},39:{'diagram':'math:gouraud'},
+ 40:{'diagram':'triangle-highlight','variable':'none','normalArrow':False,'lightArrow':False,'showLamp':False,'urpLit':False,'perspectiveCamera':False},42:{'diagram':'math:nonlinear'},
  43:{'materialMap':True,'diagram':'math:factor'},44:{'diagram':'math:factor'},
  45:{'shading':3,'materialMap':True,'secondLightStrength':1,'formula':'보간한 조명값 × 픽셀의 재질값 + 발광'},
  46:{'diagram':'math:spaces'},47:{'lightType':1,'diagram':'geometry:directPaths'},48:{'diagram':'math:point'},
+ 51:{'variable':'lightTranslationX','from':-1,'to':2,'aimAtSubject':False,'lightType':0,'diagram':''},
  53:{'diagram':'geometry:rangeShells'},54:{'diagram':'math:units'},
- 55:{'diagram':'math:custom','explanationSteps':['광원 → 표면: 입사량에 영향','표면 → 카메라: 화면 크기 변화','노출·안개 변화 없이 비교','카메라 거리로 1/r² 추가하지 않음']},
+ 55:{'variable':'cameraDistance','from':7,'to':12,'perspectiveCamera':True,'diagram':'','components':{'x':1,'y':0,'z':1,'w':0}},
+ 56:{'diagram':'geometry:solidAngle'},
  57:{'diagram':'math:custom','explanationSteps':['거리 r → 0: 1/r²가 커짐','멀리 가도 정확히 0은 아님','발광체 크기의 근사를 확인','가까운 값 제한 · 먼 범위 종료']},
  58:{'diagram':'math:falloff'},60:{'lightType':2,'volumeMode':2,'diagram':'geometry:volumeBounds'},
  61:{'diagram':'math:gobo-product'},62:{'diagram':'math:gobo-product'},
  63:{'diagram':'geometry:volumeBounds'},64:{'diagram':'math:uv'},65:{'diagram':'geometry:volumeBounds'},
  66:{'diagram':'geometry:volumeBounds'},67:{'diagram':'geometry:volumeBounds'},
  68:{'lightType':1,'volumeMode':1,'diagram':'geometry:volumeBounds'},
- 69:{'diagram':'geometry:directPaths'},72:{'diagram':'math:radiometry'},
+ 69:{'diagram':'advanced:bake-paths'},
+ 70:{'urpLit':True,'bakeMode':'all','bakeAction':'','lightType':1,'range':8,'diagram':'surface:lightmap'},
+ 71:{'diagram':'surface:vertex','shading':4,'lightType':0,'normalArrow':False,'lightArrow':False},
+ 72:{'diagram':'math:radiometry'},
+ 73:{'diagram':'advanced:sh-sum'},77:{'diagram':'advanced:environment-filter'},
  74:{'urpLit':True,'bakeMode':'all','bakeAction':'moveOccluder','lightType':1,'range':8,'sourceKind':'Unity URP · 실제 베이크 결과'},
  75:{'urpLit':True,'bakeMode':'indirect','bakeAction':'switchOff','lightType':1,'range':8,'sourceKind':'Unity URP · 간접광 베이크 + 실시간 직접광'},
  76:{'urpLit':True,'bakeMode':'indirect','bakeAction':'walk','diagram':'','lightType':1,'range':8,'sourceKind':'Unity URP · 실제 라이트 프로브 보간'},
- 78:{'diagram':'specularGrid','normalArrow':False,'lightArrow':False,'showLamp':False},
+ 78:{'diagram':'advanced:final-grid','normalArrow':False,'lightArrow':False,'showLamp':False},
 }
 anchors={
  5:['스스로 밝아','특정 방향에서','넓게 퍼져','환경광입니다','각각 계산한 뒤'],
@@ -119,20 +127,7 @@ anchors={
 }
 game_map={0:'S01-headlamp-abstract',7:'S08-optional-forzavista-specular',18:'S02-matte-faces',27:'S06-brightbloom-emission-light',31:'S05-add-light',49:'S04-spot-sweep',60:'S07-doom3-projector'}
 # These still need geometry/engine behavior beyond the staged general renderer.
-remaining={24:'Add indirect bounce path beside the ambient-value comparison.',
- 35:'Schedule both Fresnel and retroreflection states at actual utterance boundary.',
- 36:'Draw grain orientation and an anisotropic response that changes with in-plane rotation.',
- 37:'Save same-framing face/vertex/pixel comparison before final capture.',
- 40:'Verify triangle-interior highlight really differs on this mesh; use an isolated true triangle if the licensed model is too dense.',
- 51:'Directional position-invariance and orientation-only change need matching poses.',
- 55:'Add real camera-distance comparison with perspective view and unchanged exposure.',
- 56:'Finite emitter solid-angle geometry, no decorative unmeasured distance labels.',
- 69:'Add bounce relation and static-lock before moving to actual bake.',
- 70:'Map actual room lightmap UV chart to its corresponding surface; current abstract grid is insufficient.',
- 71:'Display per-vertex stored values on the same recognizable model, not an unrelated grid.',
- 73:'Show weighted SH basis combination and its loss of sharp detail.',
- 77:'Diffuse hemispherical filter versus roughness-dependent environment filter needs a concrete scene.',
- 78:'Replace temporary specular-only grid with four body-result comparison images from the finished same scene.'}
+remaining={78:'Supply four hash-verified finished same-scene body captures to the implemented final comparison; no placeholders accepted.'}
 rows=[];current_term=('Local Illumination','국소 조명','표면과 광원이 함께 만드는 색')
 for i,(source,speech,base) in enumerate(zip(draft,narration,coverage)):
     if i in terms:current_term=terms[i]
@@ -150,6 +145,8 @@ for i,(source,speech,base) in enumerate(zip(draft,narration,coverage)):
         row['actualGamePart']={k:c[k] for k in ('id','sourceId','sourceIn','sourceOut','duration','teachingRole','annotationPlan','claimLimits')}
         row['actualGamePart'].update({'speed':1,'freezePadding':False,'loop':False,'cutToExplanation':'At concept handoff; keep useful native before/action/result; never stretch to fit longer calculation.'})
         row['classification']='actual-game-then-explanation' if i else 'actual-game-thesis-abstract'
+        row['visibleTeachingPurpose']=c['teachingRole']+' → '+source['screenPlan'] if i else c['teachingRole']
+        row['renderer']='Independent native gameplay with tracked editorial guides'+(' → Unity lesson scene' if i else '')
     rows.append(row)
 assert len(rows)==79 and all(r['sourceParagraphs']==s['sourceParagraphs'] for r,s in zip(rows,draft))
 save(PROJECT/'planning/scene-bindings.json',{'schemaVersion':1,'updatedAt':datetime.now(timezone.utc).isoformat(),

@@ -1,0 +1,724 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M33",
+  "language": "en",
+  "status": "source-faithful-content-draft-awaiting-footage-integration",
+  "finalNarrationLocked": false,
+  "sourceAudit": "planning/source-audit.json",
+  "segments": [
+    {
+      "id": "M33-001",
+      "section": "13.6",
+      "title": "M33-001",
+      "text": "Imagine liking the first part of a path, then bending it unintentionally while editing a later part. A single polynomial has this global influence. Joining smaller pieces lets us control neighborhoods separately. We will connect those pieces, distinguish smooth shape from smooth motion, and finally calculate their tangents automatically.",
+      "sourceParagraphs": [
+        "M33-P002",
+        "M33-P003",
+        "M33-P004",
+        "M33-P005",
+        "M33-P006",
+        "M33-P007",
+        "M33-P008",
+        "M33-P009",
+        "M33-P010",
+        "M33-P011",
+        "M33-P012",
+        "M33-P013",
+        "M33-P014",
+        "M33-P015"
+      ],
+      "screenPlan": "실제 게임 경로/트랙편집국소수정 또는카메라이음 동작확인후abstract통합;알고리즘내부단정X.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "Actual gameplayabstractpending."
+    },
+    {
+      "id": "M33-002",
+      "section": "13.6",
+      "title": "M33-002",
+      "text": "One option is degree elevation. In power form, adding a zero higher-order coefficient preserves the curve. In Bézier form, keep the endpoints and blend neighboring controls at prescribed ratios to obtain new ones. Elevation itself preserves the shape while adding controls for later editing. Symmetric Hermite constraints naturally use odd degrees: linear for endpoint positions, cubic when adding first derivatives, and quintic when adding second derivatives.",
+      "sourceParagraphs": [
+        "M33-P002",
+        "M33-P003",
+        "M33-P004",
+        "M33-P005",
+        "M33-P006",
+        "M33-P007",
+        "M33-P008",
+        "M33-P009"
+      ],
+      "screenPlan": "q0=b0,qn+1=bn,qj=j/(n+1)b_j−1+(1−j/(n+1))bj, j1..n만. 원문없는index읽기금지;Hermite짝수조건논점보조.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 따로 다룰 수 있어요. 오늘은 조각을 잇는 방법에서 시작해, 모양과 움직임이 모두 자연스럽게 이어지는 조건을 찾고, 접선까지 자동으로 정해 보겠습니다."
+    },
+    {
+      "id": "M33-003",
+      "section": "13.6",
+      "title": "M33-003",
+      "text": "Elevating a cubic to a quartic blends neighboring controls with one quarter and three quarters, then halves, then three quarters and one quarter. Repeated elevation makes evaluation and editing more complex, while influence remains global. High-degree interpolation can also oscillate between samples. This motivates splines made from lower-degree pieces.",
+      "sourceParagraphs": [
+        "M33-P004",
+        "M33-P005",
+        "M33-P006",
+        "M33-P007",
+        "M33-P008",
+        "M33-P009",
+        "M33-P010",
+        "M33-P011",
+        "M33-P012"
+      ],
+      "screenPlan": "3→4동일형태유지;긴curveglobal vssegmentslocal 비교. 모든스플라인완전오버슈트제거라는원문과장교정.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "서 같은 수의 도함수를 지정하는 에르미트 표현은 위치만 지정하는 일차, 속도까지 지정하는 삼차, 가속도까지 지정하는 5차처럼 홀수 차수가 자연스럽습니다."
+    },
+    {
+      "id": "M33-004",
+      "section": "13.6.1",
+      "title": "M33-004",
+      "text": "Give each piece a local parameter from zero through one. A global parameter of two point three selects segment two—the third segment—and local progress point three. At the final endpoint, handle the boundary explicitly: with n segments and s equal to n, choose segment n minus one at local parameter one rather than a nonexistent segment n.",
+      "sourceParagraphs": [
+        "M33-P017",
+        "M33-P018",
+        "M33-P019",
+        "M33-P020",
+        "M33-P021",
+        "M33-P022",
+        "M33-P023",
+        "M33-P024"
+      ],
+      "screenPlan": "i=floor(s),u=s−i;clamps0..n;endbranch. q_i(u)현재구간라벨.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "의 많은 표본을 높은 차수 하나로 보간할 때는 룽게 현상처럼 불필요한 흔들림이 커질 수도 있죠. 그래서 낮은 차수의 조각을 잇는 스플라인으로 넘어갑니다."
+    },
+    {
+      "id": "M33-005",
+      "section": "13.6.1",
+      "title": "M33-005",
+      "text": "For animation, map physical time to the global parameter first. Then select a segment and local progress, and evaluate that curve. Changing the time mapping changes motion along the same route. Advancing the parameter uniformly does not guarantee equal distances in space.",
+      "sourceParagraphs": [
+        "M33-P025",
+        "M33-P026",
+        "M33-P027",
+        "M33-P028",
+        "M33-P029",
+        "M33-P030",
+        "M33-P031",
+        "M33-P032"
+      ],
+      "screenPlan": "timeτ→s(τ)→i/u→position. 이후동일간격s=τ기준,등속보장X.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "됩니다. 마지막 끝점에서는 예외가 필요합니다. 구간이 엔 개일 때 에스가 엔이면 없는 엔 번 구간을 고르지 않고, 마지막 구간의 진행도 일을 사용합니다."
+    },
+    {
+      "id": "M33-006",
+      "section": "13.6.2",
+      "title": "M33-006",
+      "text": "Call the shared endpoints knots in this interpolating construction. The previous segment must end where the next begins. With n segments there are n plus one such points. A knot k is one position; a segment function q takes local progress and returns a position.",
+      "sourceParagraphs": [
+        "M33-P034",
+        "M33-P035",
+        "M33-P036",
+        "M33-P037",
+        "M33-P038",
+        "M33-P039",
+        "M33-P040",
+        "M33-P041"
+      ],
+      "screenPlan": "k_i=q_i(0)=q_i−1(1),ki+1=q_i1. 애니메이션key/inbetween비유 유지,노동자개인사생략.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "입니다. 이 시간 배치를 바꾸면 같은 길에서도 출발과 정지 속도를 바꿀 수 있죠. 에스를 일정하게 늘린다고 실제 이동 거리까지 일정해지는 것은 아닙니다."
+    },
+    {
+      "id": "M33-007",
+      "section": "13.7",
+      "title": "M33-007",
+      "text": "Each knot has an incoming derivative and an outgoing derivative: how the preceding segment arrives and how the following segment departs. Store the position and these vectors to evaluate Hermite pieces. For direct graphical editing, the same information can be displayed as Bézier handles.",
+      "sourceParagraphs": [
+        "M33-P044",
+        "M33-P045",
+        "M33-P046",
+        "M33-P047",
+        "M33-P048",
+        "M33-P049",
+        "M33-P050"
+      ],
+      "screenPlan": "vin/vout actualtravel화살표;inputpersegment[k_i,vout_i,vin_i+1,k_i+1].",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 엔 개면 이런 점은 엔 더하기 하나입니다. 매듭점 케이는 위치 하나이고, 구간 함수 큐는 진행도를 받아 위치를 계산하는 함수라는 차이를 기억해 주세요."
+    },
+    {
+      "id": "M33-008",
+      "section": "13.7",
+      "title": "M33-008",
+      "text": "Name the incoming handle f and outgoing handle a. The incoming derivative is three times k minus f, and the outgoing derivative is three times a minus k. Handle distances therefore equal one third of the derivative magnitude. Storing connected cubic controls in one sequence places shared knots at indices zero, three, six, and so on.",
+      "sourceParagraphs": [
+        "M33-P051",
+        "M33-P052",
+        "M33-P053",
+        "M33-P054",
+        "M33-P055",
+        "M33-P056",
+        "M33-P057",
+        "M33-P058",
+        "M33-P059",
+        "M33-P060",
+        "M33-P061",
+        "M33-P062"
+      ],
+      "screenPlan": "vin=3(k−f),vout=3(a−k);f=k−vin/3,a=k+vout/3. 원문Photoshop화면대신우리편집UI,출처픽셀미사용.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 이 두 벡터를 저장하면 각 조각을 에르미트 형식으로 계산할 수 있습니다. 화면에서 직접 편집할 때는 같은 정보를 베지에 손잡이로 보여 줄 수 있습니다."
+    },
+    {
+      "id": "M33-009",
+      "section": "13.8",
+      "title": "M33-009",
+      "text": "What must agree for a smooth join? Matching both direction and magnitude connects the derivatives. If directions agree but lengths differ, the shape may look smooth while motion jumps in speed under a uniform parameter clock. Setting both derivatives to zero can instead stop at a corner before departing in another direction.",
+      "sourceParagraphs": [
+        "M33-P064",
+        "M33-P065",
+        "M33-P066",
+        "M33-P067",
+        "M33-P068",
+        "M33-P069",
+        "M33-P070"
+      ],
+      "screenPlan": "samepositiondifferent3states;경로모양 vsmovingobject동시에비교. shapevsanimation정의.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "서 손잡이는 도함수 길이의 삼분의 일에 놓입니다. 한 끝점을 공유하는 삼차 조각들을 일렬로 저장하면 매듭점은 영, 삼, 육 번처럼 세 칸마다 나타납니다."
+    },
+    {
+      "id": "M33-010",
+      "section": "13.8.1",
+      "title": "M33-010",
+      "text": "Parametric continuity distinguishes these cases. C zero joins positions. C one also joins first derivatives. C two additionally joins second derivatives. When the parameter is physical time, these correspond to position, velocity, and acceleration. Higher-order continuity includes all lower-order requirements.",
+      "sourceParagraphs": [
+        "M33-P072",
+        "M33-P073",
+        "M33-P074",
+        "M33-P075",
+        "M33-P076",
+        "M33-P077",
+        "M33-P078"
+      ],
+      "screenPlan": "C0/C1/C2three-linecanonicalcard→persistentchip;position/velocity/accelerationplots.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "를 진행할 때 물체의 속력이 갑자기 바뀝니다. 반대로 양쪽 도함수를 모두 영으로 만들면 모서리에서 완전히 멈춘 다음 다른 방향으로 출발할 수도 있습니다."
+    },
+    {
+      "id": "M33-011",
+      "section": "13.8.1",
+      "title": "M33-011",
+      "text": "C one does not mean constant velocity. Velocity may change, but without an instantaneous jump over intermediate values. A physical mechanism cannot make such a jump with finite acceleration; an animation may look jerky. Inside each polynomial piece, derivatives remain continuous, so our main concern is the joins.",
+      "sourceParagraphs": [
+        "M33-P073",
+        "M33-P074",
+        "M33-P075",
+        "M33-P076",
+        "M33-P077",
+        "M33-P078",
+        "M33-P079",
+        "M33-P080"
+      ],
+      "screenPlan": "속도rampvsstep,source'가속도불연속항상괜찮음'대신용도별선택조건. k+1controls교정.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "입니다. 실제 시간을 매개변수로 쓴다면 각각 위치, 속도, 가속도를 연결하는 조건이 됩니다. 높은 차수의 연속성에는 낮은 차수의 조건도 함께 포함됩니다."
+    },
+    {
+      "id": "M33-012",
+      "section": "13.8.1",
+      "title": "M33-012",
+      "text": "For cubic segments with equal parameter intervals, C one is straightforward: match the incoming and outgoing derivatives. In handle form, k minus f equals a minus k. Rearranging makes k the midpoint of the two handles. The handles lie on opposite sides of the knot at equal distances along one line.",
+      "sourceParagraphs": [
+        "M33-P081",
+        "M33-P082",
+        "M33-P083",
+        "M33-P084",
+        "M33-P085",
+        "M33-P086",
+        "M33-P087"
+      ],
+      "screenPlan": "v in=v out→k−f=a−k→2k=f+a→k=(f+a)/2. 대칭handleUI 실제동작.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "만들 수 없습니다. 게임에서도 덜컥거림으로 보일 수 있죠. 다항식 한 조각 안은 계속 미분해도 매끄러우므로, 주로 확인할 곳은 조각 사이의 연결점입니다."
+    },
+    {
+      "id": "M33-013",
+      "section": "13.8.1",
+      "title": "M33-013",
+      "text": "C two involves one more neighboring control. Equate the preceding ending acceleration and the following starting acceleration, then cancel the common factor six. This requires the two extended points shown to coincide. Extend each next-to-adjacent control-polygon edge once beyond its handle. If their ends meet, the existing C-one join is also C two.",
+      "sourceParagraphs": [
+        "M33-P088",
+        "M33-P089",
+        "M33-P090",
+        "M33-P091",
+        "M33-P092",
+        "M33-P093"
+      ],
+      "screenPlan": "6a_prev−12f+6k=6k−12a+6f_next→2f−a_prev=2a−f_next. C1선행 필수;13.22A/Bsamecamera.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 에프가 에이 빼기 케이와 같아야 하죠. 정리하면 케이는 두 손잡이의 중점입니다. 양쪽 손잡이를 같은 방향의 한 직선 위에서 같은 길이로 잡으면 됩니다."
+    },
+    {
+      "id": "M33-014",
+      "section": "13.8.1",
+      "title": "M33-014",
+      "text": "What if the left segment takes two seconds and the right takes one? Equal handles no longer match physical velocity. Divide each local derivative by its segment duration. Here the left handle must be twice the right to match actual velocity at the join. Acceleration scales by the square of duration.",
+      "sourceParagraphs": [
+        "M33-P094",
+        "M33-P095",
+        "M33-P096",
+        "M33-P097",
+        "M33-P098",
+        "M33-P099",
+        "M33-P100"
+      ],
+      "screenPlan": "3(k−f)/DL=3(a−k)/DR;DL2DR1worked; a/D². equaldtpointsdistancenotconstant.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "옵니다. 직접 닿은 손잡이보다 한 변 바깥의 제어 다각형 변을 한 번 더 연장해 보세요. 두 끝이 만나면, 이미 맞춘 씨 일에 더해 씨 이도 만족합니다."
+    },
+    {
+      "id": "M33-015",
+      "section": "13.8.2",
+      "title": "M33-015",
+      "text": "Geometric continuity describes the shape. For regular G-one joins, nonzero tangents point in the same forward direction; their magnitudes may differ. A time reparameterization can compensate for the speed difference by changing its derivative. We adjust travel speed, not jump the position mapping.",
+      "sourceParagraphs": [
+        "M33-P102",
+        "M33-P103",
+        "M33-P104",
+        "M33-P105",
+        "M33-P106"
+      ],
+      "screenPlan": "C1두길이같음/G1positiveparallel비교;opposite방향X. ds/dτ조절,stopcornerexception.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 속도가 되기 때문이죠. 이 경우 왼쪽 손잡이를 오른쪽의 두 배 길이로 두면 연결점의 실제 속도를 맞출 수 있습니다. 가속도는 시간의 제곱으로 나눕니다."
+    },
+    {
+      "id": "M33-016",
+      "section": "13.8.2",
+      "title": "M33-016",
+      "text": "G two also matches bending. In three dimensions, equal curvature magnitudes alone are insufficient: the curvature vectors, including the bending direction, must agree. A path turning sideways and then upward is not a G-two join merely because both bends have the same radius.",
+      "sourceParagraphs": [
+        "M33-P104",
+        "M33-P105",
+        "M33-P106"
+      ],
+      "screenPlan": "동일κdifferentnormal3Dcounterexample→curvaturevectorsmatch. canonicalG2regular조건.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "는 시간에서 매개변수로 가는 함수의 변화율을 조절해 보상할 수 있습니다. 위치를 순간이동시키는 것이 아니라, 같은 곳을 통과하는 속도를 바꾸는 것입니다."
+    },
+    {
+      "id": "M33-017",
+      "section": "13.8.3",
+      "title": "M33-017",
+      "text": "Every additional continuity condition consumes freedom. Fix one cubic, then matching the next position fixes its first control, matching velocity fixes the second, and matching acceleration fixes the third. Matching the third derivative fixes the fourth as well: it is the continuation of the same polynomial. C two is the highest generic continuity that leaves cubic pieces free to differ.",
+      "sourceParagraphs": [
+        "M33-P108",
+        "M33-P109",
+        "M33-P110",
+        "M33-P111",
+        "M33-P112",
+        "M33-P113",
+        "M33-P114"
+      ],
+      "screenPlan": "C0→C1→C2→C3 controlpins1→4. 원문C4경계교정C3;linearC0quadraticC1cubicC2. sharedparameter필수.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 휘는지 담은 곡률 벡터까지 맞춰야 합니다. 그래서 옆으로 휘던 길이 갑자기 위로 휘는 경우를 같은 반지름이라는 이유만으로 매끄럽다고 판단하지 않습니다."
+    },
+    {
+      "id": "M33-018",
+      "section": "13.9",
+      "title": "M33-018",
+      "text": "We now know how to join the pieces, but adjusting every tangent by hand can be tedious. Can we specify only the knots and calculate the tangents automatically? The following methods choose the derivatives for Hermite pieces rather than creating a new evaluation formula.",
+      "sourceParagraphs": [
+        "M33-P117",
+        "M33-P118",
+        "M33-P119",
+        "M33-P120",
+        "M33-P121",
+        "M33-P122",
+        "M33-P123"
+      ],
+      "screenPlan": "same3knotsdifferenttangentsfigure역할;handleautotoggle.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "네 점이 전부 정해져, 같은 다항식을 그대로 이어 간 것이 됩니다. 다른 모양으로 편집할 여지를 남기면서 삼차 조각을 잇는 기준은 보통 씨 이까지입니다."
+    },
+    {
+      "id": "M33-019",
+      "section": "13.9.1",
+      "title": "M33-019",
+      "text": "Use the vector from the previous knot to the next as the middle tangent direction. Giving both incoming and outgoing tangents half that vector produces the uniform Catmull–Rom construction used here. Algebraically, this is the average of the incoming and outgoing control-polygon edges.",
+      "sourceParagraphs": [
+        "M33-P125",
+        "M33-P126",
+        "M33-P127",
+        "M33-P128",
+        "M33-P129",
+        "M33-P130",
+        "M33-P131",
+        "M33-P132",
+        "M33-P133",
+        "M33-P134",
+        "M33-P135",
+        "M33-P136",
+        "M33-P137"
+      ],
+      "screenPlan": "v=(k_next−k_prev)/2=((k−k_prev)+(k_next−k))/2,closedcurvefigureeqspacing.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "하고 접선을 자동으로 만들 수는 없을까요? 앞으로 살펴볼 방법들은 새 곡선 공식을 만드는 것이 아니라, 에르미트 곡선에 넣을 접선들을 고르는 방법입니다."
+    },
+    {
+      "id": "M33-020",
+      "section": "13.9.1",
+      "title": "M33-020",
+      "text": "For knots zero zero, one two, and four zero, the tangent is two zero. It points right, and sharing it on both sides gives C-one continuity. The local neighbor rule limits the effects of edits to nearby pieces. This uniform parameterization can still overshoot or form loops for some point arrangements, so inspect the resulting route.",
+      "sourceParagraphs": [
+        "M33-P125",
+        "M33-P126",
+        "M33-P127",
+        "M33-P128",
+        "M33-P129",
+        "M33-P130",
+        "M33-P131",
+        "M33-P132",
+        "M33-P133",
+        "M33-P134",
+        "M33-P135",
+        "M33-P136",
+        "M33-P137"
+      ],
+      "screenPlan": "workedv(4,0)/2;moveoneknothighlightaffectedneighbors,uniformvscentripetal별도장추가X검증조건만.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "나가는 쪽에 똑같이 쓰면, 이 장에서 다루는 균일 캐트멀–롬 스플라인이 됩니다. 식을 나누어 보면 이전 변 벡터와 다음 변 벡터를 평균한 것과 같습니다."
+    },
+    {
+      "id": "M33-021",
+      "section": "13.9.2",
+      "title": "M33-021",
+      "text": "You may want the automatic curve tighter or biased toward one side. Kochanek–Bartels, or TCB, splines offer three controls: tension, continuity, and bias. Setting all three to zero returns the uniform Catmull–Rom construction just used.",
+      "sourceParagraphs": [
+        "M33-P139",
+        "M33-P140"
+      ],
+      "screenPlan": "TCB영문/한글정의;T,C,B슬라이더/u진행이름분리.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "조절도 주변 구간에 제한됩니다. 다만 매개변수를 균일하게 배정한 이 방식은 점 간격에 따라 고리나 지나침을 만들 수 있어, 결과 경로를 확인해야 합니다."
+    },
+    {
+      "id": "M33-022",
+      "section": "13.9.2",
+      "title": "M33-022",
+      "text": "Change tension alone first. It multiplies the baseline tangents by one minus tension. At one, both become zero, giving straight-shaped pieces that stop at every knot. At minus one the tangents double. Values above one reverse the tangents and can introduce loops.",
+      "sourceParagraphs": [
+        "M33-P141",
+        "M33-P142",
+        "M33-P143",
+        "M33-P144",
+        "M33-P145",
+        "M33-P146"
+      ],
+      "screenPlan": "vin=vout=(1−T)(dprev+dnext)/2. T−2,−1,−.5,.5,1,2원문시각역할;점간격설명.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "라는 세 값으로 제공하는 것이 코차넥–바텔스 스플라인, 줄여서 티씨비 스플라인입니다. 세 값을 모두 영으로 놓으면 방금의 균일 캐트멀–롬으로 돌아옵니다."
+    },
+    {
+      "id": "M33-023",
+      "section": "13.9.2",
+      "title": "M33-023",
+      "text": "Next is the continuity control. At zero, incoming and outgoing tangents match, giving C one. Set it to minus one with the other controls zero, and each segment becomes a constant-speed straight line to the next knot. Its shape matches the tension-one case, but its motion does not.",
+      "sourceParagraphs": [
+        "M33-P147",
+        "M33-P148",
+        "M33-P149",
+        "M33-P150",
+        "M33-P151",
+        "M33-P152",
+        "M33-P153",
+        "M33-P154"
+      ],
+      "screenPlan": "C−1,T=B0:vin=dprev,vout=dnext. T1stopmidfast vsC−1constantsegment;joinvelocityjumpmayremain.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 다음 점으로 출발하는 직선 모양의 구간이 되죠. 장력이 마이너스 일이면 기본 접선의 두 배입니다. 일을 넘기면 접선이 뒤집혀 고리가 생길 수 있습니다."
+    },
+    {
+      "id": "M33-024",
+      "section": "13.9.2",
+      "title": "M33-024",
+      "text": "Continuity changes the edge weights in opposite ways. The incoming tangent uses half of one minus C for the preceding edge and half of one plus C for the next. The outgoing tangent swaps those weights. The two tangents can therefore differ and create a corner.",
+      "sourceParagraphs": [
+        "M33-P153",
+        "M33-P154"
+      ],
+      "screenPlan": "vin=(1−C)/2dprev+(1+C)/2dnext;vout=(1+C)/2dprev+(1−C)/2dnext;C1아님C2교정.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 두면, 각 구간은 이웃 매듭점을 잇는 직선이 되고 그 구간 안에서는 등속으로 움직입니다. 장력을 일로 만들었던 경우와 모양은 같아도 움직임은 다릅니다."
+    },
+    {
+      "id": "M33-025",
+      "section": "13.9.2",
+      "title": "M33-025",
+      "text": "Bias tilts both tangents toward one side together. The preceding edge gets half of one plus B, and the following edge half of one minus B. Positive bias follows the preceding direction more; negative bias anticipates the following direction. The curve visits the same knots with a different turning behavior.",
+      "sourceParagraphs": [
+        "M33-P155",
+        "M33-P156",
+        "M33-P157",
+        "M33-P158",
+        "M33-P159"
+      ],
+      "screenPlan": "vin=vout=(1+B)/2dprev+(1−B)/2dnext;positive/negative그림해당진행방향표시.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": ", 다음 변을 일 더하기 씨의 절반만큼 넣습니다. 나가는 접선에서는 이 두 비율을 맞바꿉니다. 그래서 두 접선이 서로 달라져 모서리를 만들 수 있습니다."
+    },
+    {
+      "id": "M33-026",
+      "section": "13.9.2",
+      "title": "M33-026",
+      "text": "Combine the controls by multiplying the tension, continuity, and bias factors into each edge weight. The formula looks long, but it combines the three roles we just observed. Values need not be identical at every knot; adjust the knot near a particular corner when local control is needed.",
+      "sourceParagraphs": [
+        "M33-P160",
+        "M33-P161",
+        "M33-P162",
+        "M33-P163",
+        "M33-P164",
+        "M33-P165",
+        "M33-P166"
+      ],
+      "screenPlan": "vin=(1−T)(1+B)(1−C)/2 dprev+(1−T)(1−B)(1+C)/2dnext;vout Csignswap. T,C,B정식전체/onefactorhighlight,범위대개−1..1밖허용butartifact.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 구간의 방향을 더 따르고, 음수로 내리면 다음 구간의 방향을 더 빨리 반영합니다. 동일한 매듭점을 지나면서도 방향을 바꾸기 시작하는 느낌이 달라집니다."
+    },
+    {
+      "id": "M33-027",
+      "section": "13.9.3",
+      "title": "M33-027",
+      "text": "Endpoints lack one neighbor, so they need a policy. Set the derivatives to zero when the motion should begin and end at rest, or add phantom points used only for tangent calculation. Since the first tangent is half the next point minus the phantom, a zero tangent requires copying the next point—not the start point.",
+      "sourceParagraphs": [
+        "M33-P168",
+        "M33-P169",
+        "M33-P170",
+        "M33-P171",
+        "M33-P172"
+      ],
+      "screenPlan": "v0=(k1−k−1)/2;phantom=k0normallynonzero;phantom=k1zero. endphantom=kn−1. Cardinal용어폭넓어잘못등치X.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "역할을 곱으로 묶은 것입니다. 모든 매듭점에 같은 값을 쓸 필요도 없습니다. 한 구간의 코너만 바꾸고 싶다면 그 매듭점의 값부터 조절해 볼 수 있습니다."
+    },
+    {
+      "id": "M33-028",
+      "section": "13.9.3",
+      "title": "M33-028",
+      "text": "Users can place phantom points to control departure. Another choice fits a quadratic through the first three knots and uses its endpoint derivative. With unit parameter spacing, the first derivative is minus three k zero plus four k one minus k two, divided by two. Select the boundary rule to match the intended start and finish. Cardinal spline usually names a family of interpolating curves with a common tangent-scale control, not this one endpoint policy.",
+      "sourceParagraphs": [
+        "M33-P170",
+        "M33-P171",
+        "M33-P172"
+      ],
+      "screenPlan": "quadraticendpointv=(-3k0+4k1−k2)/2, last=(3kn−4kn−1+kn−2)/2;원문Aitken연결.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "선 계산에만 쓰는 가상점을 추가합니다. 첫 접선이 다음 점 빼기 가상점의 절반이므로, 영으로 만들려면 가상점을 시작점이 아니라 다음 점에 겹쳐야 합니다."
+    },
+    {
+      "id": "M33-029",
+      "section": "13.10",
+      "title": "M33-029",
+      "text": "Now connect the calculations. For Lagrange nodes zero, one, and two, the first basis is t minus one times t minus two divided by two. The middle is minus t times t minus two. The last is t times t minus one divided by two. Substitute each node to check that only its own basis equals one.",
+      "sourceParagraphs": [
+        "M33-P176",
+        "M33-P177"
+      ],
+      "screenPlan": "Ex1productformula→L0=(t−1)(t−2)/2,L1=−t(t−2),L2=t(t−1)/2;3×3값표.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 조건을 선택하면 됩니다. 카디널 스플라인이라는 이름은 보통 이런 끝점 처리 하나가 아니라, 공통 장력으로 접선을 조절하는 보간 곡선 계열을 가리킵니다."
+    },
+    {
+      "id": "M33-030",
+      "section": "13.10",
+      "title": "M33-030",
+      "text": "Next launch from the origin, reaching height h at one second and forward distance d at two seconds. With no sideways movement, x is zero. Constant forward speed gives z equal to d t over two. Substitute the height conditions into initial vertical velocity times t plus half acceleration times t squared; the result is y equal to two h t minus h t squared.",
+      "sourceParagraphs": [
+        "M33-P179",
+        "M33-P180",
+        "M33-P181",
+        "M33-P182"
+      ],
+      "screenPlan": "Ex2y1=h,y2=0→vy+a/2=h,2vy+2a=0→vy2h,a−2h. fullp(0,2ht−ht²,dt/2). 샌드위치농담제거.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "마이너스 티 곱하기 티 빼기 이, 마지막은 티 곱하기 티 빼기 일을 둘로 나눈 값입니다. 세 시각을 각각 넣어 자기 차례에만 일이 되는지 확인해 보세요."
+    },
+    {
+      "id": "M33-031",
+      "section": "13.10",
+      "title": "M33-031",
+      "text": "The third example uses controls three five, six one, zero three, and five five. At t equal to point four, blend neighboring points with weights point six and point four. The first row is four point two three point four, three point six one point eight, and two three point eight. Two more blend levels yield three point five six, two point six nine six.",
+      "sourceParagraphs": [
+        "M33-P184",
+        "M33-P185",
+        "M33-P186",
+        "M33-P187"
+      ],
+      "screenPlan": "Ex3a실제그림좌표재구성;2nd(3.96,2.76),(2.96,2.6);final(3.56,2.696);강제로빠른나열X한계산씩.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "초기 속도 곱하기 티 더하기 가속도의 절반 곱하기 티 제곱으로 쓰고, 일 초와 이 초 조건을 넣으면 와이는 이 에이치 티 빼기 에이치 티 제곱이 됩니다."
+    },
+    {
+      "id": "M33-032",
+      "section": "13.10",
+      "title": "M33-032",
+      "text": "The same curve in Hermite form keeps its endpoints, with starting derivative nine minus twelve and ending derivative fifteen six. Its power form is x equal to three plus nine t minus twenty-seven t squared plus twenty t cubed, and y equal to five minus twelve t plus eighteen t squared minus six t cubed.",
+      "sourceParagraphs": [
+        "M33-P188",
+        "M33-P189",
+        "M33-P190"
+      ],
+      "screenPlan": "Ex3b,c,d계수벡터c0(3,5)c1(9,−12)c2(−27,18)c3(20,−6);t.4대입각항→same3.56,2.696.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "비율로 섞습니다. 첫 줄은 사점이 삼점사, 삼점육 일점팔, 이 삼점팔입니다. 그 결과를 다시 섞고 또 섞으면 최종 위치는 삼점오육, 이점육구육이 됩니다."
+    },
+    {
+      "id": "M33-033",
+      "section": "13.10",
+      "title": "M33-033",
+      "text": "Substituting point four reproduces the de Casteljau position. Differentiate to check velocity: x is nine minus fifty-four t plus sixty t squared; y is minus twelve plus thirty-six t minus eighteen t squared. At point four it is minus three, minus point four eight, pointing left and slightly downward.",
+      "sourceParagraphs": [
+        "M33-P190",
+        "M33-P191",
+        "M33-P192"
+      ],
+      "screenPlan": "Ex3e,f v.4=(-3,-.48),v0(9,-12),v1(15,6)표와움직이는접선;함수+점0/1check.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 바꾸면 엑스는 삼 더하기 구 티 빼기 이십칠 티 제곱 더하기 이십 티 세제곱, 와이는 오 빼기 십이 티 더하기 십팔 티 제곱 빼기 육 티 세제곱입니다."
+    },
+    {
+      "id": "M33-034",
+      "section": "13.10",
+      "title": "M33-034",
+      "text": "The fourth check sums the quadratic Bernstein weights. Expand the first into one minus two t plus t squared. Add two t minus two t squared, then t squared. Both the linear and quadratic terms cancel, leaving one—the partition-of-unity condition used for the convex hull property.",
+      "sourceParagraphs": [
+        "M33-P193",
+        "M33-P194"
+      ],
+      "screenPlan": "Ex4(1−t)²+2t(1−t)+t²=1항상쇄애니메이션.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 삼십육 티 빼기 십팔 티 제곱입니다. 티가 영점사일 때 마이너스 삼, 마이너스 영점사팔이 되어, 그 지점에서 왼쪽으로 조금 내려가는 방향을 가리킵니다."
+    },
+    {
+      "id": "M33-035",
+      "section": "13.10",
+      "title": "M33-035",
+      "text": "For the next checks, choose controls from the desired motion. Keep every control at one point for a constant curve. Space them equally from start to end for a constant-speed line. For a smooth start and stop along that line, cubic controls are start, start, end, end. Handle placement changes timing even when the line is unchanged.",
+      "sourceParagraphs": [
+        "M33-P195",
+        "M33-P196",
+        "M33-P197",
+        "M33-P198",
+        "M33-P199",
+        "M33-P200"
+      ],
+      "screenPlan": "Ex5allA,Ex6bi=A+i/n(B−A),Ex7A,A,B,B. 세casesoneatatime유지발화동작.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 티 제곱과 티 제곱을 더하면 티 항과 티 제곱 항이 모두 없어져 일만 남습니다. 볼록 껍질 성질에 필요했던 합이 일이라는 조건을 직접 확인한 것입니다."
+    },
+    {
+      "id": "M33-036",
+      "section": "13.10",
+      "title": "M33-036",
+      "text": "The eighth case alternates controls start, end, start, end. It may look as though the particle should reverse, but it moves monotonically toward the end. The derivative of its blend factor is three times two t minus one squared, which is nonnegative. It stops only at the midpoint, then accelerates in the same direction.",
+      "sourceParagraphs": [
+        "M33-P201",
+        "M33-P202"
+      ],
+      "screenPlan": "Ex8p=A+(3t−6t²+4t³)(B−A),f'=3(2t−1)²≥0;dtconstantmotion,midstopnohold.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "간격으로 배치합니다. 부드럽게 출발하고 멈추는 직선을 원하면 삼차 제어점은 시작, 시작, 끝, 끝입니다. 같은 직선이라도 손잡이 배치가 시간을 바꿉니다."
+    },
+    {
+      "id": "M33-037",
+      "section": "13.10",
+      "title": "M33-037",
+      "text": "The ninth problem represents the earlier projectile using a cubic Bézier tool. Map its two seconds to u from zero to one. Height becomes four h u times one minus u, and forward position d u. The cubic coefficient is zero. Conversion gives both internal handles height four h over three, with forward positions d over three and two d over three.",
+      "sourceParagraphs": [
+        "M33-P203",
+        "M33-P204"
+      ],
+      "screenPlan": "Ex9b0(0,0,0)b1(0,4h/3,d/3)b2(0,4h/3,2d/3)b3(0,0,d). t=2u powerconversionsteps.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "갑니다. 진행 비율의 도함수는 삼 곱하기 이 티 빼기 일의 제곱이라 음수가 되지 않아요. 가운데에서만 속도가 영이 됐다가 다시 같은 방향으로 빨라집니다."
+    },
+    {
+      "id": "M33-038",
+      "section": "13.10",
+      "title": "M33-038",
+      "text": "The tenth problem transfers an already fitted parabola into a graphical curve tool. Its y function is minus point three six four x squared plus one point one four five x plus two point one one. Map the given starting and ending x values to u zero and one, substitute that x expression into y, and use the same power-to-Bézier conversion.",
+      "sourceParagraphs": [
+        "M33-P205",
+        "M33-P206"
+      ],
+      "screenPlan": "Ex10a−.9683,b4.2253,x=a+5.1936u;fitdataoriginalattributioninternalonly,notourmeasurement.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "수는 영인 이차 곡선이죠. 변환 공식을 쓰면 양쪽 내부 손잡이의 높이는 모두 사 에이치의 삼분의 일, 앞쪽 위치는 디의 삼분의 일과 삼분의 이가 됩니다."
+    },
+    {
+      "id": "M33-039",
+      "section": "13.10",
+      "title": "M33-039",
+      "text": "Rounded to four decimal places, the controls are shown. The endpoints lie on the parabola, while the interior controls are tangent handles rather than samples of it. Evaluating them reproduces the prescribed interval. Once a path is expressed as a polynomial, the same conversion works whether it came from fitted observations or a physical formula.",
+      "sourceParagraphs": [
+        "M33-P205",
+        "M33-P206"
+      ],
+      "screenPlan": "Ex10controls(-.9683,.6600),(.7629,3.8626),(2.4941,3.7924),(4.2253,.4494);유도정확값researchJSON.사람낭독전부숫자빠르게강요X.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "의 시작값과 끝값을 유의 영과 일로 바꾸고, 그 엑스 식을 와이에 대입합니다. 이제 각 좌표가 유의 다항식이 되었으니 같은 계수 변환을 쓸 수 있습니다."
+    },
+    {
+      "id": "M33-040",
+      "section": "13.10",
+      "title": "M33-040",
+      "text": "Finally extract point two through point five from the curve starting at three five. With new parameter u, the original t is point two plus point three u. Substitute into the position and derivatives to obtain the new endpoints and handles. Remember that derivatives scale by the interval width, point three.",
+      "sourceParagraphs": [
+        "M33-P207",
+        "M33-P208",
+        "M33-P209"
+      ],
+      "screenPlan": "Ex11a qcontrols(3.88,3.272),(3.94,2.72),(3.55,2.6),(3.25,2.75). q1=p(.2)+.3p'(.2)/3 etc. samecurveoverlay.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 직접 그려 보면 주어진 구간의 포물선과 겹칩니다. 사진에서 얻은 경로든 물리식으로 얻은 경로든, 다항식으로 정리되면 같은 도구로 옮길 수 있는 것이죠."
+    },
+    {
+      "id": "M33-041",
+      "section": "13.10",
+      "title": "M33-041",
+      "text": "To split the same curve in half, collect the de Casteljau midpoints. The left endpoint and right start coincide at three point two five, two point seven five. Different control colors still produce pieces on the original path. When each piece is replayed from zero to one, check the time mapping too.",
+      "sourceParagraphs": [
+        "M33-P210"
+      ],
+      "screenPlan": "Ex11bL(3,5),(4.5,3),(3.75,2.5),(3.25,2.75);R(3.25,2.75),(2.75,3),(2.5,4),(5,5);7pointssequential.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "더하기 영점삼 유입니다. 이 식을 위치와 도함수에 넣으면 새 끝점과 손잡이가 나옵니다. 도함수에는 구간 폭 영점삼을 곱해야 한다는 점을 다시 확인하세요."
+    },
+    {
+      "id": "M33-042",
+      "section": "13.10",
+      "title": "M33-042",
+      "text": "Elevating this curve to quartic degree gives five controls. The endpoints stay, and the new interior controls are five point two five two, three two, and one point two five three point five. The control polygon changes while the curve overlays exactly. Changing representation degree is not the same as changing the actual path.",
+      "sourceParagraphs": [
+        "M33-P211"
+      ],
+      "screenPlan": "Ex11c[3,5],[5.25,2],[3,2],[1.25,3.5],[5,5];elevationratios1/4,1/2,3/4.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": " 제어점들을 서로 다른 색으로 표시해도 두 곡선은 원래 경로 위에 놓입니다. 조각별로 다시 영부터 일까지 재생할 때는 시간 배치도 함께 확인해야 합니다."
+    },
+    {
+      "id": "M33-043",
+      "section": "13.10",
+      "title": "M33-043",
+      "text": "A long path did not require one enormous formula. It required manageable pieces and explicit rules for joining their positions, directions, and rates of change. The needed continuity depends on whether smooth shape is enough or velocity and acceleration must also connect. With those criteria, manual handles and automatic tangents become understandable design tools.",
+      "sourceParagraphs": [
+        "M33-P217",
+        "M33-P218"
+      ],
+      "screenPlan": "samecurveeditfinalloopparametersinteractiveillustration;sourceembeddedHTMLreadnotexecuted미사용,우리scene동일학습역할. 실게임마무리확인후통합.",
+      "holdSeconds": 0,
+      "boundaryFromPrevious": "일점이오 삼점오입니다. 제어 다각형은 달라져도 곡선은 그대로 겹칩니다. 차수와 제어점 개수가 달라지는 것과, 실제 경로가 달라지는 것은 별개의 일입니다."
+    }
+  ]
+}

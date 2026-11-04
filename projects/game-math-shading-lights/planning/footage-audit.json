@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "project": "game-math-shading-lights",
   "episode": "M21",
-  "updatedAt": "2026-11-04T13:57:02.629374+00:00",
+  "updatedAt": "2026-11-04T14:55:43.252773+00:00",
   "status": "Four-game base plus optional Forzavista specular candidate visually inspected; final selection/audio/native playback/composite QA pending",
   "sourceScope": [
     "10.6",
@@ -406,48 +406,47 @@
     {
       "id": "S04-spot-sweep",
       "sourceId": "dYyWmhVuc3w",
-      "sourceIn": 343,
-      "sourceOut": 363,
-      "duration": 20,
+      "sourceIn": 378,
+      "sourceOut": 392,
+      "duration": 14,
       "nativeSpeed": 1,
       "loop": false,
       "freezePadding": false,
       "sourceSection": "10.7.2 spotlight / 10.7.5 attenuation bridge",
-      "teachingRole": "Different source interval continues observable light footprint movement.",
+      "teachingRole": "A continuous mounted headlight sweep across cavern rock, separate from the abstract. No tool swap, dismount, menu or light-switch event in this selected interval.",
       "observed": {
-        "before": "Player is beside the movable equipment, with its front lights illuminating nearby rock.",
-        "action": "Player mounts the equipment and sweeps its lit view over a pillar, ceiling and floor, turns toward distant dark water, then returns to the nearer floor.",
-        "result": "The light footprint follows the facing direction; nearby surfaces enter and leave the bright region."
+        "before": "Already mounted, both hands remain on the same vehicle controls. A near cavern wall and floor are illuminated at378s.",
+        "action": "379s close rock fills the bright area;380–383s the view turns toward a ledge;384–385s faces open water;386–390s the forward light illuminates the pink-rimmed floor;391–392s the ledge exits the beam. Vehicle translation and viewing direction both change.",
+        "result": "The bright receiving region moves between surfaces with the forward-facing equipment. The same mounted UI and Turn Lights Off prompt persist; no observed switch/dismount event in378–392s."
       },
       "claimLimits": [
-        "Not a measured falloff graph; surface angle and distance both change.",
-        "Do not estimate cone half-angle or distance numerically from this view."
+        "An observed headlight-like footprint; not proof of the game internal spotlight class.",
+        "Position, distance, surface angle and facing direction change together: do not say direction is the ONLY changed variable or infer a numeric falloff/cone angle.",
+        "Dark open water is absence of a nearby receiving surface, not evidence of switching the lamp off."
       ],
       "annotationPlan": {
-        "target": "Rock pillar/ceiling/floor within the equipment-light footprint",
-        "shape": "Short open curves on the visible bright boundary; one leader identifying the current receiving rock",
-        "timing": "343–345 equipment context,346–353 moving illuminated rock,354–359 distant dark direction,360–363 relit floor. Never depict the middle turn as switching the light off.",
-        "avoid": "Top depth/compass, bottom equipment prompts and fixed captions; preserve bright surface details.",
-        "tracking": "Sampled at1s; final per-frame composition must track the actual moving footprint and clear at cuts."
+        "target": "Lit cavern rock surface at379s and pink-rimmed ledge at386–390s.",
+        "shape": "Short hollow surface contours and a brief forward-direction arrow; protect the actual light gradients.",
+        "timing": "378–383 first rock/ledge sweep;384–385 no surface contour over empty water;386–390 second lit ledge;391–392 clear annotation as ledge exits.",
+        "avoid": "Top depth/compass, bottom control prompts, fixed captions; no fake cone measurement.",
+        "tracking": "Use these inspected1fps anchors; verify full per-frame tracking at compositing, clear at occlusion/source cuts."
       },
-      "suggestedSpeechScope": "장비를 돌리면 앞을 비추던 빛도 함께 돌아갑니다. 빛 안으로 들어온 바위는 밝아지고, 밖으로 벗어난 바위는 다시 어두워지죠. 이처럼 위치뿐 아니라 비추는 방향과 퍼지는 각도도 광원의 성질입니다.",
-      "status": "visually-reviewed-candidate; full native playback/audio and captioned composite QA pending",
-      "reviewEvidence": "projects/game-math-shading-lights/production/local/footage-review/subnautica2-spot2/sampling.json",
+      "suggestedSpeechScope": "장비가 향하는 앞쪽으로 빛이 뻗습니다. 바위 쪽으로 움직이면 표면이 드러나고, 몸을 돌리면 밝은 영역도 다른 바위로 옮겨 가죠. 이런 광원은 위치에 더해 비추는 방향과 퍼지는 각도까지 정해야 합니다.",
+      "status": "1fps actual-frame sequence inspected;14s native decode verified; full continuous audiovisual playback and final captioned composite pending",
+      "reviewEvidence": "projects/game-math-shading-lights/production/local/footage-review/subnautica-spotlight-378-395-fine/sampling.json",
       "nativeDecodeEvidence": {
-        "segment": "S04-spot-sweep",
-        "source": "dYyWmhVuc3w",
-        "sourceIn": 343,
-        "sourceOut": 363,
+        "sourceIn": 378,
+        "sourceOut": 392,
         "decodeExitCode": 0,
         "decodeErrors": "",
         "nativeFrameExitCode": 0,
-        "nativeFrameSeconds": 353.0,
-        "nativeFrame": "projects/game-math-shading-lights/production/local/footage-review/native-decode/S04-spot-sweep.png",
+        "nativeFrameSeconds": 387,
+        "nativeFrame": "projects/game-math-shading-lights/production/local/footage-review/native-decode/S04-spot-sweep-378-392.png",
         "decodedImageSize": [
           1920,
           1080
         ],
-        "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+        "method": "CPU full interval decode and native frame. No source encode/retime; not human full-audio review."
       }
     },
     {
@@ -657,6 +656,37 @@
     {
       "id": "doom3-macworld-2001",
       "reason": "720p keynote/tech-demo context and third-party recording reuse unresolved; excluded."
+    },
+    {
+      "sourceId": "dYyWmhVuc3w",
+      "sourceIn": 343,
+      "sourceOut": 363,
+      "reason": "Superseded after root caught equipment/hand state change around354s. Direction-only brightness inference unsupported. Replacement378–392 retains mounted state.",
+      "priorEvidence": {
+        "sourceIn": 343,
+        "sourceOut": 363,
+        "observed": {
+          "before": "Player is beside the movable equipment, with its front lights illuminating nearby rock.",
+          "action": "Player mounts the equipment and sweeps its lit view over a pillar, ceiling and floor, turns toward distant dark water, then returns to the nearer floor.",
+          "result": "The light footprint follows the facing direction; nearby surfaces enter and leave the bright region."
+        },
+        "nativeDecodeEvidence": {
+          "segment": "S04-spot-sweep",
+          "source": "dYyWmhVuc3w",
+          "sourceIn": 343,
+          "sourceOut": 363,
+          "decodeExitCode": 0,
+          "decodeErrors": "",
+          "nativeFrameExitCode": 0,
+          "nativeFrameSeconds": 353.0,
+          "nativeFrame": "projects/game-math-shading-lights/production/local/footage-review/native-decode/S04-spot-sweep.png",
+          "decodedImageSize": [
+            1920,
+            1080
+          ],
+          "method": "Full selected interval software decode to null plus native-size midpoint image; no encode, GPU render, retime or source mutation. Not full human audiovisual playback."
+        }
+      }
     }
   ],
   "openQa": [
@@ -664,5 +694,27 @@
     "Inspect final annotated 1080p and375px mobile with actual captions.",
     "Finalize precise source subcuts from approved speech duration without loops/freeze/slowdown."
   ],
-  "optionalSelectionNote": "Current adopted minimum is4games with1Nintendo. Forza is an optional fifth, not automatically counted until root chooses. Do not add unrelated games to force a ratio."
+  "optionalSelectionNote": "Current adopted minimum is4games with1Nintendo. Forza is an optional fifth, not automatically counted until root chooses. Do not add unrelated games to force a ratio.",
+  "spotlightReaudit": {
+    "searchWindows": [
+      [
+        270,
+        300
+      ],
+      [
+        300,
+        340
+      ],
+      [
+        360,
+        414
+      ]
+    ],
+    "chosen": [
+      378,
+      392
+    ],
+    "reason": "Only this additional reviewed14s interval offers a continuous mounted headlight sweep without equipment transitions, separate from240–268 abstract.",
+    "inspection": "All1-secondframes378–395 visually inspected; coarser2–3secondsearchcontact sheets reviewed. Audio listening and continuous playback remain pending."
+  }
 }

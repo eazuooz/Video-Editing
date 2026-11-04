@@ -1,0 +1,2232 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M32",
+  "status": "source-faithful-content-draft-awaiting-footage-integration",
+  "sourceScope": "13.4–13.5",
+  "sourceRead": {
+    "allScopeTextRead": true,
+    "allScopeTextCharacters": 28769,
+    "paragraphs": 204,
+    "sourceVisualsInspected": true,
+    "figuresInspected": 11,
+    "sourcePixelsAdoptedForProduction": false,
+    "figureAudit": "research/figure-audit.json"
+  },
+  "sources": [
+    {
+      "url": "https://app.notion.com/p/3e10b1ffa61e81778126c72175a4bdb9",
+      "lastEdited": "2026-10-09T04:35:25.255Z",
+      "snapshot": "production/batches/game-math-remaining-20261104/sources/3e10b1ffa61e81778126c72175a4bdb9.json",
+      "scopeExcerpt": "research/source-134-135.notion.txt",
+      "excerptSha256": "e2cdd37968830ac16bd8461294521cb54be14ff008812806110a59e2fea24c19",
+      "excerptBytes": 49032
+    }
+  ],
+  "draft": {
+    "beats": 30,
+    "koCharacters": 5036,
+    "enWords": 1611,
+    "finalNarrationLocked": false,
+    "automaticObservationSilenceSeconds": 0,
+    "duration": "Not measured; preserve full flow, no length target"
+  },
+  "teachingOrder": [
+    "Handles/approximation",
+    "deCasteljau recursion, triangular structure and in-place code",
+    "Linear→quadratic→cubic power forms, forward/inverse matrices",
+    "Numeric worked handles and midpoint",
+    "Bernstein derivation→Pascal/binomial→basis properties",
+    "Derivatives and Hermite conversion→acceleration→same line different timing",
+    "Subdivision purpose→reparameterization algebra→deCasteljau boundaries→half split→blossoming"
+  ],
+  "sourceToScript": [
+    {
+      "id": "M32-P001",
+      "section": "13.4",
+      "anchor": "## 13.4 베지에 곡선 (Bézier Curves)",
+      "decision": "structural-heading",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": []
+    },
+    {
+      "id": "M32-P002",
+      "section": "13.4",
+      "anchor": "이 장에서는 지금까지 곡선에 관한 여러 유익한 개념을 다루었지만, 곡선을 설계하는 완전히 실용적인 방법은 아직 설명하지 않았습니다. 이번 절에서 그것이 달라집니다.\\[원주 10\\] 베지에 곡선(Bézier curve",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-001",
+        "M32-002"
+      ]
+    },
+    {
+      "id": "M32-P003",
+      "section": "13.4",
+      "anchor": "곡선 설계에 잘 맞는 여러 바람직한 성질을 갖습니다. 특히 베지에 곡선은 <b>보간 대신 근사</b>를 합니다. 처음과 마지막 제어점은 지나지만 내부 제어점은 그 근처를 지나갈 뿐입니다. 그래서 이 점들을 “매듭점”",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-001",
+        "M32-002"
+      ]
+    },
+    {
+      "id": "M32-P004",
+      "section": "13.4",
+      "anchor": "![그림 13.10](https://gamemath.com/book/figs/curves/bezier_curves_examples.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-001",
+        "M32-002"
+      ]
+    },
+    {
+      "id": "M32-P005",
+      "section": "13.4",
+      "anchor": "<i>그림 13.10. 여러 가지 3차 베지에 곡선.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-001",
+        "M32-002"
+      ]
+    },
+    {
+      "id": "M32-P006",
+      "section": "13.4",
+      "anchor": "13.2절의 다항식 보간 문제에는 같은 결과를 내는 두 가지 해법이 있었습니다. 에이트켄 알고리즘은 기하학적 직관에 호소하는 재귀적 구성 방법이고, 더 추상적인 접근법에서는 라그랑주 기저 다항식이 나왔습니다. 베지에",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-001",
+        "M32-002"
+      ]
+    },
+    {
+      "id": "M32-P007",
+      "section": "13.4",
+      "anchor": "이 책에서는 수학과 기하가 아름답게 협력하는 사례를 여러 번 보았지만, 베지에 곡선에서 두 분야가 만나는 방식은 특히 우아합니다. 베지에 곡선의 중요한 성질은 거의 모두 서로 다른 분야의 연구자들이 여러 번 독립적으",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-001",
+        "M32-002"
+      ]
+    },
+    {
+      "id": "M32-P008",
+      "section": "13.4.1",
+      "anchor": "### 13.4.1 드 카스텔조 알고리즘",
+      "decision": "structural-heading",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": []
+    },
+    {
+      "id": "M32-P009",
+      "section": "13.4.1",
+      "anchor": "드 카스텔조 알고리즘은 반복적인 선형 보간으로 베지에 곡선을 구성하는 방법입니다. 물리학자이자 수학자인 폴 드 카스텔조(Paul de Casteljau)가 1959년에 만들었습니다.\\[원주 13\\] 원문에는 그의 생",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003"
+      ]
+    },
+    {
+      "id": "M32-P010",
+      "section": "13.4.1",
+      "anchor": "중요한 3차 곡선을 예로 알고리즘의 작동 방식을 살펴보겠습니다. 먼저 표기를 조금 정해야 합니다. 3차 곡선은 네 제어점 $\\mathbf b_0,\\ldots,\\mathbf b_3$으로 정의합니다. 베지에 제어점의 첨",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003"
+      ]
+    },
+    {
+      "id": "M32-P011",
+      "section": "13.4.1",
+      "anchor": "이제 0에서 1 사이의 특정 매개변수 $t$를 생각하겠습니다. 드 카스텔조 알고리즘은 이에 대응하는 곡선 위의 점 $\\mathbf p(t)$를 다음과 같이 기하학적으로 구성합니다. 연속한 제어점의 각 쌍 사이에서 비",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003"
+      ]
+    },
+    {
+      "id": "M32-P012",
+      "section": "13.4.1",
+      "anchor": "이 세 점의 연속한 쌍을 다시 보간하면 $\\mathbf b_0^2,\\mathbf b_1^2$ 두 개가 나오며, 마지막으로 한 번 더 보간하면 찾던 점 $\\mathbf b_0^3=\\mathbf p(t)$를 얻습니다. ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003"
+      ]
+    },
+    {
+      "id": "M32-P013",
+      "section": "13.4.1",
+      "anchor": "<image source=\"notion-file-block://0e755062-8136-4565-9209-b4a84c7dcad6/b44e8c6c-38b1-44e8-ae99-3875272d5a14?space_id=cc",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003",
+        "M32-004"
+      ]
+    },
+    {
+      "id": "M32-P014",
+      "section": "13.4.1",
+      "anchor": "<i>그림 13.11. 3차 곡선에 적용한 드 카스텔조 알고리즘.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003",
+        "M32-004"
+      ]
+    },
+    {
+      "id": "M32-P015",
+      "section": "13.4.1",
+      "anchor": "그림 13.12처럼 모든 $\\mathbf b$를 삼각형 모양으로 배열하면 이해하기 쉽습니다. 각각의 중간점은 바로 윗줄에 있는 두 점을 선형 보간한 결과입니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003",
+        "M32-004"
+      ]
+    },
+    {
+      "id": "M32-P016",
+      "section": "13.4.1",
+      "anchor": "<image source=\"notion-file-block://f37a65c4-d9f8-4f84-ad52-c29a58df0ebc/64f8d96b-ebd5-4c78-8aaf-f216bd0fd4a0?space_id=cc",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003",
+        "M32-004"
+      ]
+    },
+    {
+      "id": "M32-P017",
+      "section": "13.4.1",
+      "anchor": "<i>그림 13.12. 3차 곡선에 대한 드 카스텔조 알고리즘의 계층 관계.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003",
+        "M32-004"
+      ]
+    },
+    {
+      "id": "M32-P018",
+      "section": "13.4.1",
+      "anchor": "이 재귀 관계와 기본 선형 보간 공식을 합치면 다음 점화식을 얻습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003",
+        "M32-004"
+      ]
+    },
+    {
+      "id": "M32-P019",
+      "section": "13.4.1",
+      "anchor": "> <b>드 카스텔조 점화식</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003",
+        "M32-004"
+      ]
+    },
+    {
+      "id": "M32-P020",
+      "section": "13.4.1",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_i^0(t)&=\\mathbf b_i,\\\\\n\\mathbf b_i^n(t)&=(1-t)\\mathbf b_i^{n-1}(t)+t\\mathbf b_{i+1}^{n-1}(t",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-003",
+        "M32-004"
+      ]
+    },
+    {
+      "id": "M32-P021",
+      "section": "13.4.1",
+      "anchor": "코드 13.1은 특정 $t$에서 베지에 곡선을 평가하도록 드 카스텔조 알고리즘을 C++로 구현한 예입니다. 호출자는 원래 제어점들을 배열로 전달합니다. 연산은 배열 자체를 덮어쓰므로 이 배열은 임시 작업 공간 역할도",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-005"
+      ]
+    },
+    {
+      "id": "M32-P022",
+      "section": "13.4.1",
+      "anchor": "원하는 결과 $\\mathbf p(t)$ 하나가 남을 때까지 계속합니다. 이 코드는 알고리즘의 작동 원리를 보여 주려는 예이며, 특별히 빠른 구현이나 깔끔한 인터페이스를 제시하려는 것은 아닙니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-005"
+      ]
+    },
+    {
+      "id": "M32-P023",
+      "section": "13.4.1",
+      "anchor": "```c++\nVector3 deCasteljau(\n    int n,             // 곡선의 계수(order), 즉 점의 개수\n    Vector3 points[],  // 점 배열. 제자리에서 연산하므로",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-005"
+      ]
+    },
+    {
+      "id": "M32-P024",
+      "section": "13.4.1",
+      "anchor": "<i>코드 13.1. 드 카스텔조 알고리즘으로 베지에 곡선 위의 점 평가하기.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-005"
+      ]
+    },
+    {
+      "id": "M32-P025",
+      "section": "13.4.1",
+      "anchor": "이 방법으로 임의의 $t$에 대한 점을 반복 보간하여 찾을 수 있지만, 제어점으로부터 그 점을 곧바로 계산하는 닫힌 형태의 식은 아직 얻지 못했습니다. 그런 식이 필요 없는 경우도 많다는 점을 강조하고 싶습니다. 그",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006"
+      ]
+    },
+    {
+      "id": "M32-P026",
+      "section": "13.4.1",
+      "anchor": "1차의 경우는 점화식에서 거의 아무 수고 없이 바로 나옵니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006"
+      ]
+    },
+    {
+      "id": "M32-P027",
+      "section": "13.4.1",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_i^0(t)&=\\mathbf b_i,\\\\\n\\mathbf b_i^1(t)&=(1-t)\\mathbf b_i^0(t)+t\\mathbf b_{i+1}^0(t)\\\\\n&=(1",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006"
+      ]
+    },
+    {
+      "id": "M32-P028",
+      "section": "13.4.1",
+      "anchor": "한 단계를 더 적용하면 2차 다항식이 됩니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006"
+      ]
+    },
+    {
+      "id": "M32-P029",
+      "section": "13.4.1",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_i^2(t)&=(1-t)\\mathbf b_i^1(t)+t\\mathbf b_{i+1}^1(t)\\\\\n&=(1-t)[\\mathbf b_i+t(\\mathbf b_{i+1}",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006"
+      ]
+    },
+    {
+      "id": "M32-P030",
+      "section": "13.4.1",
+      "anchor": "즉 제어점이 세 개인 2차 베지에 곡선은 단항식 형식으로 다음과 같습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006"
+      ]
+    },
+    {
+      "id": "M32-P031",
+      "section": "13.4.1",
+      "anchor": "$$\n\\mathbf p(t)=\\mathbf b_0^2(t)=\\mathbf b_0+t(2\\mathbf b_1-2\\mathbf b_0)+t^2(\\mathbf b_0-2\\mathbf b_1+\\mathbf b_2).\\tag",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006"
+      ]
+    },
+    {
+      "id": "M32-P032",
+      "section": "13.4.1",
+      "anchor": "마지막 보간으로 3차 곡선을 구하기 전에 식 (13.17)의 2차 표현을 더 살펴보겠습니다. 베지에 형식에서 단항식 기저로의 이 변환은 앞에서 도입한 행렬 형식으로 간결하게 쓸 수 있습니다. 제어점 $\\mathbf ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006",
+        "M32-007"
+      ]
+    },
+    {
+      "id": "M32-P033",
+      "section": "13.4.1",
+      "anchor": "$$\n\\mathbf p(t)=C\\mathbf t=BM\\mathbf t=\n\\begin{bmatrix}|&|&|\\\\\\mathbf b_0&\\mathbf b_1&\\mathbf b_2\\\\|&|&|\\end{bmatrix}\n\\b",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006",
+        "M32-007"
+      ]
+    },
+    {
+      "id": "M32-P034",
+      "section": "13.4.1",
+      "anchor": "13.3절의 에르미트 곡선에서 보았듯, 곱 $BM\\mathbf t$를 묶는 두 방식은 두 해석으로 이어집니다. $BM$을 먼저 계산하면 단항식 계수 행렬 $C$를 얻습니다. 따라서 $M$은 베지에 형식을 단항식 형식",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006",
+        "M32-007"
+      ]
+    },
+    {
+      "id": "M32-P035",
+      "section": "13.4.1",
+      "anchor": "다른 묶음 방식은 오른쪽 곱을 먼저 수행하는 $B(M\\mathbf t)$입니다. 특정 $t$ 값을 대입하면 $M\\mathbf t$는 무게중심 좌표의 열벡터입니다. $t$를 변수로 남긴 채 곱하면 기저로 해석할 수 있",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-006",
+        "M32-007"
+      ]
+    },
+    {
+      "id": "M32-P036",
+      "section": "13.4.1",
+      "anchor": "반복 보간으로 돌아가겠습니다. 한 번 더 반복하면 3차 다항식이 나옵니다. 이렇게 모두 전개하고 나면 꽤 진이 빠집니다!",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-008"
+      ]
+    },
+    {
+      "id": "M32-P037",
+      "section": "13.4.1",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_i^3(t)&=(1-t)\\mathbf b_i^2(t)+t\\mathbf b_{i+1}^2(t)\\\\\n&=(1-t)[\\mathbf b_i+t(2\\mathbf b_{i+1",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-008"
+      ]
+    },
+    {
+      "id": "M32-P038",
+      "section": "13.4.1",
+      "anchor": "이번에는 3차 단계가 마지막 재귀 단계라고 가정하여 마지막 줄을 다시 쓰겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-008"
+      ]
+    },
+    {
+      "id": "M32-P039",
+      "section": "13.4.1",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf p(t)=\\mathbf b_0^3(t)&=\\mathbf b_0+t(3\\mathbf b_1-3\\mathbf b_0)+t^2(3\\mathbf b_0-6\\mathbf b_1",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-008"
+      ]
+    },
+    {
+      "id": "M32-P040",
+      "section": "13.4.1",
+      "anchor": "놓치지 않도록 강조하자면, 식 (13.19)는 3차 베지에 곡선을 단항식 형식으로 변환하는 방법을 알려 줍니다. 중요한 결과이므로 계수를 명시적으로 다시 적겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-008"
+      ]
+    },
+    {
+      "id": "M32-P041",
+      "section": "13.4.1",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf c_0&=\\mathbf b_0,\\\\\n\\mathbf c_1&=-3\\mathbf b_0+3\\mathbf b_1,\\\\\n\\mathbf c_2&=3\\mathbf b_0-6\\ma",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-008"
+      ]
+    },
+    {
+      "id": "M32-P042",
+      "section": "13.4.1",
+      "anchor": "이 변환도 식 (13.18)의 2차 경우처럼 행렬에 넣을 수 있습니다. 곡선 위의 특정 점 $\\mathbf p(t)$를 구하는 3차 식은 행렬 표기로 다음과 같습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-008"
+      ]
+    },
+    {
+      "id": "M32-P043",
+      "section": "13.4.1",
+      "anchor": "$$\n\\mathbf p(t)=C\\mathbf t=BM\\mathbf t=\n\\begin{bmatrix}|&|&|&|\\\\\\mathbf b_0&\\mathbf b_1&\\mathbf b_2&\\mathbf b_3\\\\|&|&|&|",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-008"
+      ]
+    },
+    {
+      "id": "M32-P044",
+      "section": "13.4.1",
+      "anchor": "이 과정의 역도 가능합니다. 즉 어떤 다항식 곡선이든 단항식 형식에서 베지에 형식으로 바꿀 수 있습니다. 다항식 곡선이 주어지면 그것을 기술하는 베지에 제어점은 유일하게 정해집니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-009"
+      ]
+    },
+    {
+      "id": "M32-P045",
+      "section": "13.4.1",
+      "anchor": "$$\n\\mathbf b_0=\\mathbf c_0.\\tag{13.20}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-009"
+      ]
+    },
+    {
+      "id": "M32-P046",
+      "section": "13.4.1",
+      "anchor": "$$\n\\mathbf b_1=\\mathbf c_0+\\tfrac13\\mathbf c_1.\\tag{13.21}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-009"
+      ]
+    },
+    {
+      "id": "M32-P047",
+      "section": "13.4.1",
+      "anchor": "$$\n\\mathbf b_2=\\mathbf c_0+\\tfrac23\\mathbf c_1+\\tfrac13\\mathbf c_2.\\tag{13.22}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-009"
+      ]
+    },
+    {
+      "id": "M32-P048",
+      "section": "13.4.1",
+      "anchor": "$$\n\\mathbf b_3=\\mathbf c_0+\\mathbf c_1+\\mathbf c_2+\\mathbf c_3.\\tag{13.23}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-009"
+      ]
+    },
+    {
+      "id": "M32-P049",
+      "section": "13.4.1",
+      "anchor": "물론 이것도 행렬 형식으로 쓸 수 있습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-009"
+      ]
+    },
+    {
+      "id": "M32-P050",
+      "section": "13.4.1",
+      "anchor": "$$\n\\begin{bmatrix}|&|&|&|\\\\\\mathbf b_0&\\mathbf b_1&\\mathbf b_2&\\mathbf b_3\\\\|&|&|&|\\end{bmatrix}\n=\\begin{bmatrix}|&|&|&|",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-009"
+      ]
+    },
+    {
+      "id": "M32-P051",
+      "section": "13.4.1",
+      "anchor": "<b>\\[원주 10\\]</b> 정확히는 그중 일부만 달라질 것입니다. 이번 절도 여전히 유익한 읽을거리이기를 바랍니다. 무슨 뜻인지 알겠지요.",
+      "decision": "omit-noninstructional",
+      "reason": "Biography/pronunciation jokes or personal historical aside; mathematical claims retained nearby.",
+      "beats": []
+    },
+    {
+      "id": "M32-P052",
+      "section": "13.4.1",
+      "anchor": "<b>\\[원주 11\\]</b> 이런 분들 중 프랑스인이 많다고 말씀드렸지요! 참고로 이름은 “베지에(BEZ-ee-ay)”라고 발음합니다.",
+      "decision": "omit-noninstructional",
+      "reason": "Biography/pronunciation jokes or personal historical aside; mathematical claims retained nearby.",
+      "beats": []
+    },
+    {
+      "id": "M32-P053",
+      "section": "13.4.1",
+      "anchor": "<b>\\[원주 12\\]</b> 동전 이야기에 이어 “교환 비율(rate of exchange)”이라고 해 두겠습니다. 말장난을 용서해 주시길. \\[옮긴이 설명: rate는 변화율을, exchange는 금융 거래를 연",
+      "decision": "omit-noninstructional",
+      "reason": "Biography/pronunciation jokes or personal historical aside; mathematical claims retained nearby.",
+      "beats": []
+    },
+    {
+      "id": "M32-P054",
+      "section": "13.4.1",
+      "anchor": "<b>\\[원주 13\\]</b> 그렇습니다. 이 사람도 프랑스인입니다. 그러니 이름을 제대로 발음하는 편이 좋겠습니다. “드 카스텔조(duh CAS-tul-jho)”입니다. 그는 르노의 경쟁사인 시트로엥에서 일했습니다",
+      "decision": "omit-noninstructional",
+      "reason": "Biography/pronunciation jokes or personal historical aside; mathematical claims retained nearby.",
+      "beats": []
+    },
+    {
+      "id": "M32-P055",
+      "section": "13.4.1",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\">\n<b>손잡이를 움직이면 무엇이 바뀔까요?</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-010"
+      ]
+    },
+    {
+      "id": "M32-P056",
+      "section": "13.4.1",
+      "anchor": "3차 베지에 곡선의 네 제어점을 다음과 같이 두겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-010"
+      ]
+    },
+    {
+      "id": "M32-P057",
+      "section": "13.4.1",
+      "anchor": "$$\n\\mathbf b_0=(0,0),\\quad\\mathbf b_1=(1,2),\\quad\\mathbf b_2=(3,2),\\quad\\mathbf b_3=(4,0).\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-010"
+      ]
+    },
+    {
+      "id": "M32-P058",
+      "section": "13.4.1",
+      "anchor": "시작과 끝은 $(0,0)$, $(4,0)$입니다. 처음 속도는 $3(\\mathbf b_1-\\mathbf b_0)=(3,6)$이고 마지막 속도는 $3(\\mathbf b_3-\\mathbf b_2)=(3,-6)$입니다. ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-010",
+        "M32-011"
+      ]
+    },
+    {
+      "id": "M32-P059",
+      "section": "13.4.1",
+      "anchor": "$t=1/2$에서 드 카스텔조를 손으로 해 보겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-010",
+        "M32-011"
+      ]
+    },
+    {
+      "id": "M32-P060",
+      "section": "13.4.1",
+      "anchor": "1. 첫 보간은 $(0.5,1)$, $(2,2)$, $(3.5,1)$ 세 점을 만듭니다.\n2. 그 점들을 다시 보간하면 $(1.25,1.5)$, $(2.75,1.5)$가 됩니다.\n3. 마지막 보간 결과는 $(2,1.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-010",
+        "M32-011"
+      ]
+    },
+    {
+      "id": "M32-P061",
+      "section": "13.4.1",
+      "anchor": "따라서 이 곡선은 중간에 높이 2인 제어점을 지나지 않고, 높이 1.5인 점을 지납니다. 같은 값을 베른슈타인 가중치 $(1/8,3/8,3/8,1/8)$로 계산해도 결과는 $(2,1.5)$입니다. 기하적 보간과 기저",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-010",
+        "M32-011"
+      ]
+    },
+    {
+      "id": "M32-P062",
+      "section": "13.4.1",
+      "anchor": "시각 실험에서는 먼저 $t$를 0에서 1까지 움직이며 <b>네 점 → 세 점 → 두 점 → 한 점</b>의 흐름을 보겠습니다. 다음으로 $t=0.5$를 유지하고 제어점 $P_1$의 높이를 바꾸겠습니다. 시작점은 고정",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-010",
+        "M32-011"
+      ]
+    },
+    {
+      "id": "M32-P063",
+      "section": "13.4.2",
+      "anchor": "### 13.4.2 베른슈타인 기저",
+      "decision": "structural-heading",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": []
+    },
+    {
+      "id": "M32-P064",
+      "section": "13.4.2",
+      "anchor": "13.4.1절의 마지막에서는 베지에 제어점으로부터 곡선의 다항식을 계산하는 대수 작업을 했습니다. 그 다항식은 $t$의 거듭제곱별 계수를 쓰는 단항식 형식이었습니다. 거듭제곱 대신 제어점별로 항을 모으면 다항식을 베",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P065",
+      "section": "13.4.2",
+      "anchor": "13.4.1절의 대수 계산을 반복해 보겠습니다. 이번에는 몇 가지 관찰로 이어지도록 식을 조금 다른 방식으로 씁니다. 앞에서처럼 1차의 경우부터 시작합니다. $\\mathbf b_i^0=\\mathbf b_i$임을 기억",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P066",
+      "section": "13.4.2",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_i^1(t)&=(1-t)\\mathbf b_i^0(t)+t\\mathbf b_{i+1}^0(t)\\\\\n&=(1-t)\\mathbf b_i+t\\mathbf b_{i+1}.\n",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P067",
+      "section": "13.4.2",
+      "anchor": "그다음은 2차입니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P068",
+      "section": "13.4.2",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_i^2(t)&=(1-t)\\mathbf b_i^1(t)+t\\mathbf b_{i+1}^1(t)\\\\\n&=(1-t)[(1-t)\\mathbf b_i+t\\mathbf b_{",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P069",
+      "section": "13.4.2",
+      "anchor": "마지막으로 3차입니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P070",
+      "section": "13.4.2",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_i^3(t)&=(1-t)\\mathbf b_i^2(t)+t\\mathbf b_{i+1}^2(t)\\\\\n&=(1-t)[(1-t)^2\\mathbf b_i+2t(1-t)\\ma",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P071",
+      "section": "13.4.2",
+      "anchor": "어떤 패턴이 보일 것입니다. 더 분명히 드러나도록 5차까지 적어 보겠습니다. 대수 전개는 위와 비슷하므로 생략합니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P072",
+      "section": "13.4.2",
+      "anchor": "$$\n\\mathbf b_0^1(t)=(1-t)\\mathbf b_0+t\\mathbf b_1.\\tag{13.24}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P073",
+      "section": "13.4.2",
+      "anchor": "$$\n\\mathbf b_0^2(t)=(1-t)^2\\mathbf b_0+2t(1-t)\\mathbf b_1+t^2\\mathbf b_2.\\tag{13.25}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P074",
+      "section": "13.4.2",
+      "anchor": "$$\n\\mathbf b_0^3(t)=(1-t)^3\\mathbf b_0+3t(1-t)^2\\mathbf b_1+3t^2(1-t)\\mathbf b_2+t^3\\mathbf b_3.\\tag{13.26}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012"
+      ]
+    },
+    {
+      "id": "M32-P075",
+      "section": "13.4.2",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_0^4(t)&=(1-t)^4\\mathbf b_0+4t(1-t)^3\\mathbf b_1+6t^2(1-t)^2\\mathbf b_2\\\\\n&\\quad+4t^3(1-t)\\m",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012",
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P076",
+      "section": "13.4.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\">\n<b>원문 수식 교정</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012",
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P077",
+      "section": "13.4.2",
+      "anchor": "제공 PDF의 식 (13.27)은 넷째 항을 $4t^3(t-1)\\mathbf b_3$로 인쇄했습니다. 이는 부호 오자입니다. 위에서는 베른슈타인 기저 및 그림 13.13과 일치하는 $4t^3(1-t)\\mathbf b",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012",
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P078",
+      "section": "13.4.2",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_0^5(t)&=(1-t)^5\\mathbf b_0+5t(1-t)^4\\mathbf b_1+10t^2(1-t)^3\\mathbf b_2\\\\\n&\\quad+10t^3(1-t)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012",
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P079",
+      "section": "13.4.2",
+      "anchor": "이제 패턴이 더 선명합니다. 각 항에는 상수 계수, $(1-t)$의 거듭제곱, $t$의 거듭제곱이 있습니다. $t$의 지수는 증가하므로 $\\mathbf b_i$에는 $t^i$가 붙습니다. $(1-t)$의 지수는 반대",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-012",
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P080",
+      "section": "13.4.2",
+      "anchor": "상수 계수의 패턴은 조금 더 복잡합니다. 잠깐 조합론으로 돌아가는 것을 양해해 주세요. 흥미로운 우회가 되기를 바랍니다. 패턴이 잘 보이도록 처음 여덟 줄을 삼각형 모양으로 적겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P081",
+      "section": "13.4.2",
+      "anchor": "```txt\n줄 번호                 파스칼의 삼각형\n   0                           1\n   1                         1   1\n   2           ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P082",
+      "section": "13.4.2",
+      "anchor": "삼각형 바깥 경계의 1들을 제외하면 모든 수는 바로 위의 두 수를 더한 값입니다. 이것은 수백 년 동안 연구된 매우 유명한 수 패턴이며 <b>이항계수(binomial coefficients)</b>라고 합니다. $n",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P083",
+      "section": "13.4.2",
+      "anchor": "이런 수들을 삼각형으로 정리하고 싶다는 충동을 느낀 사람은 많았습니다. 수학자이자 물리학자인 블레즈 파스칼(Blaise Pascal, 1623–1662)도 그중 하나입니다.\\[원주 14\\] 이항계수를 이렇게 삼각형으",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P084",
+      "section": "13.4.2",
+      "anchor": "이항계수에는 특별한 표기가 있습니다. 파스칼의 삼각형에서 $n$번째 줄의 $k$번째 수는 다음처럼 씁니다. $n$과 $k$ 모두 0부터 셉니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P085",
+      "section": "13.4.2",
+      "anchor": "$$\n\\binom nk.\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P086",
+      "section": "13.4.2",
+      "anchor": "예를 들어 $\\binom62=15$입니다. $\\binom nk$는 “$n$ choose $k$”, 즉 “$n$개 중 $k$개 선택”이라고 읽습니다. 이 값은 $n$개의 물체가 있는 집합에서 순서를 무시하고 $k$개를",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013"
+      ]
+    },
+    {
+      "id": "M32-P087",
+      "section": "13.4.2",
+      "anchor": "이제 이항계수를 계산하는 일반 공식을 살펴보겠습니다. 다만 이 공식은 주로 흥미를 위한 것임을 강조합니다. 이 장에서 곡선을 다루는 데 쓰는 이항계수는 파스칼 삼각형의 처음 몇 줄로 제한되기 때문입니다. 11.4.6",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013",
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P088",
+      "section": "13.4.2",
+      "anchor": "$$\nn!=\\prod_{i=1}^n i=1\\times2\\times3\\times\\cdots\\times n.\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013",
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P089",
+      "section": "13.4.2",
+      "anchor": "팩토리얼을 사용하고 $0!\\equiv1$로 정의하면 이항계수는 다음과 같습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013",
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P090",
+      "section": "13.4.2",
+      "anchor": "$$\n\\binom nk=\\frac{n!}{k!(n-k)!}.\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-013",
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P091",
+      "section": "13.4.2",
+      "anchor": "이항계수는 확률이나 알고리즘 분석처럼 조합과 순열을 다루는 응용에서 자주 등장합니다. 중요하기도 하고 그 안에서 찾을 수 있는 패턴이 놀랄 만큼 많기도 해서 많은 연구가 이루어졌습니다. 크누스 \\[39\\]는 이항계수",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P092",
+      "section": "13.4.2",
+      "anchor": "곡선으로 돌아가겠습니다. 무게중심 가중치의 패턴을 분석했으니, 각 제어점의 가중치를 함수 $B_i^n(t)$로 바꾸어 베지에 곡선을 다시 쓰겠습니다. 3차 곡선 식 (13.26)을 예로 들면 다음과 같습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P093",
+      "section": "13.4.2",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_0^3(t)&=(1-t)^3\\mathbf b_0+3t(1-t)^2\\mathbf b_1+3t^2(1-t)\\mathbf b_2+t^3\\mathbf b_3\\\\\n&=B_0",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P094",
+      "section": "13.4.2",
+      "anchor": "일반적으로 제어점이 $n+1$개인 $n$차 베지에 곡선은 다음과 같습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P095",
+      "section": "13.4.2",
+      "anchor": "$$\n\\mathbf b_0^n(t)=\\sum_{i=0}^{n}B_i^n(t)\\mathbf b_i.\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P096",
+      "section": "13.4.2",
+      "anchor": "함수 $B_i^n(t)$는 세르게이 베른슈타인(Sergei Bernstein, 1880–1968)의 이름을 딴 <b>베른슈타인 다항식</b>입니다.\\[원주 16\\] 이미 그 패턴은 알아냈지만 정확한 공식도 적어 두겠",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P097",
+      "section": "13.4.2",
+      "anchor": "$$\nB_i^n(t)=\\binom ni t^i(1-t)^{n-i},\\qquad0\\le i\\le n.\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P098",
+      "section": "13.4.2",
+      "anchor": "그림 13.13은 4차까지의 베른슈타인 다항식 그래프입니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P099",
+      "section": "13.4.2",
+      "anchor": "![그림 13.13 — 구성 이미지 1](https://gamemath.com/book/figs/curves/bernstein_1.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P100",
+      "section": "13.4.2",
+      "anchor": "![그림 13.13 — 구성 이미지 2](https://gamemath.com/book/figs/curves/bernstein_2.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P101",
+      "section": "13.4.2",
+      "anchor": "![그림 13.13 — 구성 이미지 3](https://gamemath.com/book/figs/curves/bernstein_3.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P102",
+      "section": "13.4.2",
+      "anchor": "![그림 13.13 — 구성 이미지 4](https://gamemath.com/book/figs/curves/bernstein_4.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P103",
+      "section": "13.4.2",
+      "anchor": "<i>그림 13.13. 1차부터 4차까지의 베른슈타인 다항식.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-014"
+      ]
+    },
+    {
+      "id": "M32-P104",
+      "section": "13.4.2",
+      "anchor": "베른슈타인 다항식의 성질을 보면 베지에 곡선이 어떻게 행동하는지 많이 알 수 있습니다. 몇 가지 성질을 자세히 살펴보겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-015"
+      ]
+    },
+    {
+      "id": "M32-P105",
+      "section": "13.4.2",
+      "anchor": "<b>합이 1입니다.</b> 베른슈타인 다항식은 모든 $t$에서 합이 1입니다. 그렇지 않으면 올바른 무게중심 좌표가 되지 않으므로 반가운 성질입니다. 그림 13.13을 눈으로 보거나 식을 대충 훑는 것만으로는 바로",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-015"
+      ]
+    },
+    {
+      "id": "M32-P106",
+      "section": "13.4.2",
+      "anchor": "<b>볼록 껍질 성질.</b> 베른슈타인 다항식의 값은 곡선 전체 구간 $0\\le t\\le1$에서 0부터 1 사이에 있습니다. 앞의 성질과 결합하면 베지에 곡선이 <b>볼록 껍질 성질</b>을 따른다는 뜻입니다. 즉",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-015"
+      ]
+    },
+    {
+      "id": "M32-P107",
+      "section": "13.4.2",
+      "anchor": "<b>끝점을 보간합니다.</b> 처음과 마지막 다항식은 우리가 필요한 곳에서 1에 도달합니다. $B_0^n(0)=1$, $B_n^n(1)=1$이므로 곡선은 양 끝점을 지납니다. 기저 다항식 중 어느 것이든 1에 도달",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-015"
+      ]
+    },
+    {
+      "id": "M32-P108",
+      "section": "13.4.2",
+      "anchor": "<b>전역 지지(global support).</b> 모든 다항식은 열린 구간 $(0,1)$, 즉 양 끝점을 제외한 곡선 전체에서 0이 아닙니다. 제어점의 혼합 가중치가 0이 아닌 영역을 그 제어점의 <b>지지 영역",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-016"
+      ]
+    },
+    {
+      "id": "M32-P109",
+      "section": "13.4.2",
+      "anchor": "베른슈타인 다항식은 양 끝점을 제외한 모든 곳에서 0이 아니므로 베지에 제어점은 전역 지지를 갖습니다. 실용적으로는 어떤 제어점 하나를 움직여도 곡선 전체가 영향을 받는다는 뜻입니다. 곡선 설계에 바람직한 성질은 아",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-016"
+      ]
+    },
+    {
+      "id": "M32-P110",
+      "section": "13.4.2",
+      "anchor": "이런 부러운 상황을 <b>국소 지지(local support)</b>라고 합니다. 특정 제어점을 움직일 때 그 점의 “가까운” 부분만 영향을 받는다는 뜻입니다. 여기서 가까움의 정의는 방식에 따라 달라질 수 있습니다",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-016"
+      ]
+    },
+    {
+      "id": "M32-P111",
+      "section": "13.4.2",
+      "anchor": "국소 지지란 기저 함수가 어떤 구간 안에서만 0이 아니고, 그 구간 밖에서는 0이라는 뜻입니다. 안타깝게도 그런 기저 함수는 하나의 다항식으로 표현할 수 없습니다. 따라서 하나의 다항식 곡선으로는 국소 제어를 얻을 ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-016"
+      ]
+    },
+    {
+      "id": "M32-P112",
+      "section": "13.4.2",
+      "anchor": "<b>극댓값이 하나입니다.</b> 각 제어점은 곡선 전체에 영향을 주지만, 가장 큰 영향을 주는 곳은 곡선 위의 특정한 한 지점입니다. 제어점 $\\mathbf b_i$의 혼합 가중치인 베른슈타인 다항식 $B_i^n(",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-017"
+      ]
+    },
+    {
+      "id": "M32-P113",
+      "section": "13.4.2",
+      "anchor": "따라서 베지에 제어점의 지지가 전역적이어서 곡선 내부의 모든 점이 모든 제어점의 영향을 어느 정도 받기는 하지만, 가장 가까운 제어점의 영향이 가장 큽니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-017"
+      ]
+    },
+    {
+      "id": "M32-P114",
+      "section": "13.4.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\">\n<b>추가 설명 — 여기서 “가깝다”의 뜻</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-017"
+      ]
+    },
+    {
+      "id": "M32-P115",
+      "section": "13.4.2",
+      "anchor": "마지막 문장은 $t=i/n$이라는 매개변수상의 대응을 가리킵니다. 공간에서 유클리드 거리가 가장 짧은 제어점이 언제나 최대 가중치를 갖는다는 뜻은 아닙니다. 제어점을 어디로 옮기든 $B_i^n(t)$ 자체는 제어점의",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-017"
+      ]
+    },
+    {
+      "id": "M32-P116",
+      "section": "13.4.2",
+      "anchor": "<b>\\[원주 14\\]</b> 그렇습니다. 그도 프랑스인이었습니다. 이언 파베리의 박사 지도교수 계보를 16대 거슬러 올라가 약간 왼쪽으로 가면 그가 나타납니다.",
+      "decision": "omit-noninstructional",
+      "reason": "Biography/pronunciation jokes or personal historical aside; mathematical claims retained nearby.",
+      "beats": []
+    },
+    {
+      "id": "M32-P117",
+      "section": "13.4.2",
+      "anchor": "<b>\\[원주 15\\]</b> 파스칼에게는 삼각형 외에도 압력의 SI 단위, 법칙, 프로그래밍 언어, 내기가 그의 이름으로 붙어 있습니다. 다만 마지막 두 가지는 이제 진지하게 사용되지 않습니다. \\[옮긴이 설명: ",
+      "decision": "omit-noninstructional",
+      "reason": "Biography/pronunciation jokes or personal historical aside; mathematical claims retained nearby.",
+      "beats": []
+    },
+    {
+      "id": "M32-P118",
+      "section": "13.4.2",
+      "anchor": "<b>\\[원주 16\\]</b> 프랑스인이 아니라 러시아인입니다.",
+      "decision": "omit-noninstructional",
+      "reason": "Biography/pronunciation jokes or personal historical aside; mathematical claims retained nearby.",
+      "beats": []
+    },
+    {
+      "id": "M32-P119",
+      "section": "13.4.3",
+      "anchor": "### 13.4.3 베지에 곡선의 도함수와 에르미트 형식의 관계",
+      "decision": "structural-heading",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": []
+    },
+    {
+      "id": "M32-P120",
+      "section": "13.4.3",
+      "anchor": "베지에 곡선의 도함수를 살펴보겠습니다. 여기서도 3차 곡선을 예로 들 것이므로 속도와 가속도를 이야기하게 됩니다. 속도는 곡선의 접선, 즉 방향과 관계가 있고, 가속도는 곡률과 관계가 있다는 것을 기억하겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P121",
+      "section": "13.4.3",
+      "anchor": "13.1.6절에서는 단항식 계수로부터 곡선의 속도 함수를 얻는 방법을 보았습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P122",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf p(t)&=\\mathbf c_0+\\mathbf c_1t+\\mathbf c_2t^2+\\mathbf c_3t^3,\\\\\n\\mathbf v(t)=\\dot{\\mathbf p}(",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P123",
+      "section": "13.4.3",
+      "anchor": "13.4.1절에서는 3차 베지에 곡선으로부터 단항식 계수를 구했습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P124",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf c_0&=\\mathbf b_0,\\\\\n\\mathbf c_1&=3\\mathbf b_1-3\\mathbf b_0,\\\\\n\\mathbf c_2&=3\\mathbf b_0-6\\mat",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P125",
+      "section": "13.4.3",
+      "anchor": "이 계수들을 속도 식 (13.29)에 대입하면 베지에 제어점으로 곡선의 순간 속도를 나타내는 공식을 얻습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P126",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf v(t)&=\\mathbf c_1+2\\mathbf c_2t+3\\mathbf c_3t^2\\\\\n&=(3\\mathbf b_1-3\\mathbf b_0)+2(3\\mathbf b_",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P127",
+      "section": "13.4.3",
+      "anchor": "양 끝점 $t=0,1$에서의 속도를 생각해 보겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P128",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf v(0)&=(3\\mathbf b_1-3\\mathbf b_0)+2(3\\mathbf b_0-6\\mathbf b_1+3\\mathbf b_2)(0)\\\\\n&\\quad+3(-\\m",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P129",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf v(1)&=(3\\mathbf b_1-3\\mathbf b_0)+2(3\\mathbf b_0-6\\mathbf b_1+3\\mathbf b_2)(1)\\\\\n&\\quad+3(-\\m",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P130",
+      "section": "13.4.3",
+      "anchor": "흥미로운 결과입니다. $\\mathbf b_1-\\mathbf b_0$는 첫 번째 제어점에서 두 번째 제어점으로 향하는 벡터이고, $\\mathbf b_3-\\mathbf b_2$는 세 번째 제어점에서 마지막 제어점으로 향",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P131",
+      "section": "13.4.3",
+      "anchor": "실제로 $t$가 증가하는 방향으로 곡선을 따라 움직인다고 생각하면 $t=1$의 접선은 세 번째 제어점에서 곧바로 <b>멀어지는</b> 방향입니다. 이것은 핵심적인 관찰입니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P132",
+      "section": "13.4.3",
+      "anchor": "> 베지에 제어 다각형의 첫 번째 변은 곡선 시작점의 1차 도함수를 완전히 결정하고, 마지막 변은 끝점의 1차 도함수를 완전히 결정합니다. 이 도함수가 0이 아니라면 접선 방향도 정해집니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-018"
+      ]
+    },
+    {
+      "id": "M32-P133",
+      "section": "13.4.3",
+      "anchor": "3차 베지에 곡선의 중간 제어점이 하는 일을 보는 또 다른 방법은 베지에 형식과 에르미트 형식의 관계를 살펴보는 것입니다. 3차 에르미트 형식은 초기 위치 $\\mathbf p_0$와 속도 $\\mathbf v_0$, ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P134",
+      "section": "13.4.3",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\">\n<b>원문 표기 교정</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P135",
+      "section": "13.4.3",
+      "anchor": "이 대목의 제공 PDF에는 초기 속도가 $\\mathbf p_1$로 인쇄되어 있습니다. $\\mathbf v_0$의 오자입니다. 또한 앞 문단의 “첫 제어점”은 시작점 자체가 아니라 첫 내부 제어점 $\\mathbf b_",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P136",
+      "section": "13.4.3",
+      "anchor": "$$\n\\mathbf p_0=\\mathbf b_0.\\tag{13.32}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P137",
+      "section": "13.4.3",
+      "anchor": "$$\n\\mathbf v_0=3(\\mathbf b_1-\\mathbf b_0).\\tag{13.33}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P138",
+      "section": "13.4.3",
+      "anchor": "$$\n\\mathbf v_1=3(\\mathbf b_3-\\mathbf b_2).\\tag{13.34}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P139",
+      "section": "13.4.3",
+      "anchor": "$$\n\\mathbf p_1=\\mathbf b_3.\\tag{13.35}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P140",
+      "section": "13.4.3",
+      "anchor": "반대로 에르미트에서 베지에로 변환할 수도 있습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P141",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf b_0&=\\mathbf p_0,\\\\\n\\mathbf b_1&=\\mathbf p_0+\\tfrac13\\mathbf v_0,\\\\\n\\mathbf b_2&=\\mathbf p_1-",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P142",
+      "section": "13.4.3",
+      "anchor": "이처럼 에르미트와 베지에 형식은 밀접히 연결되어 있으며 서로 매우 쉽게 변환할 수 있습니다. 그림 13.14는 그 관계를 기하학적으로 보여 줍니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P143",
+      "section": "13.4.3",
+      "anchor": "![그림 13.14](https://gamemath.com/book/figs/curves/bezier_and_hermite_forms.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P144",
+      "section": "13.4.3",
+      "anchor": "<i>그림 13.14. 베지에 형식과 에르미트 형식의 관계.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-019"
+      ]
+    },
+    {
+      "id": "M32-P145",
+      "section": "13.4.3",
+      "anchor": "양 끝점의 1차 도함수는 각각 가장 가까운 베지에 제어점 두 개로 완전히 결정된다고 했습니다. 이를 더 일반화할 수 있습니다. <b>양 끝점의 </b>$n$<b>차 도함수는 각각 가장 가까운 </b>$n+1$<b>개",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P146",
+      "section": "13.4.3",
+      "anchor": "끝점의 2차 도함수, 즉 가속도는 가장 가까운 세 제어점으로 정해집니다. 실제로 3차 곡선의 가속도가 베지에 제어점으로 어떻게 표현되는지 살펴보겠습니다. 가속도 식 (13.6)을 단항식 형식에서 베지에 형식으로 바꾸",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P147",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf a(t)&=2\\mathbf c_2+6\\mathbf c_3t\\\\\n&=2(3\\mathbf b_0-6\\mathbf b_1+3\\mathbf b_2)+6(-\\mathbf b_0",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P148",
+      "section": "13.4.3",
+      "anchor": "양 끝점의 가속도는 다음과 같습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P149",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf a(0)&=(6\\mathbf b_0-12\\mathbf b_1+6\\mathbf b_2)+(-6\\mathbf b_0+18\\mathbf b_1-18\\mathbf b_2+6\\",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P150",
+      "section": "13.4.3",
+      "anchor": "예상대로 시작 가속도는 처음 세 제어점으로, 끝 가속도는 마지막 세 제어점으로 완전히 결정됩니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P151",
+      "section": "13.4.3",
+      "anchor": "연속한 제어점 사이의 차이, 즉 베지에 제어 다각형의 $i$번째 변 벡터를 간단히 $\\mathbf d_i=\\mathbf b_{i+1}-\\mathbf b_i$로 쓰겠습니다. 이 표기를 사용하면 가속도 공식이 속도 공식",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P152",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf a(0)&=6\\mathbf b_0-12\\mathbf b_1+6\\mathbf b_2\n=6\\mathbf b_0-6\\mathbf b_1-6\\mathbf b_1+6\\mathb",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P153",
+      "section": "13.4.3",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf a(1)&=6\\mathbf b_1-12\\mathbf b_2+6\\mathbf b_3\n=6\\mathbf b_1-6\\mathbf b_2-6\\mathbf b_2+6\\mathb",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020"
+      ]
+    },
+    {
+      "id": "M32-P154",
+      "section": "13.4.3",
+      "anchor": "위 논의는 어떤 차수의 베지에 곡선에도 적용됩니다. 일반적인 패턴은 이렇습니다. 제어점 $\\mathbf b_i$를 움직이면 곡선 시작점의 $i$차 이상 도함수에 영향을 주지만, 그보다 낮은 차수의 도함수에는 영향을 ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020",
+        "M32-021"
+      ]
+    },
+    {
+      "id": "M32-P155",
+      "section": "13.4.3",
+      "anchor": "여기서는 3차 곡선 구간 하나를 기준으로 읽어야 합니다. 그 구간의 제어점을 바꾸면 구간 전체의 3차 도함수가 바뀔 수 있습니다. 3차 다항식의 3차 도함수는 상수이고 그보다 높은 도함수는 모두 0이기 때문입니다. ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-020",
+        "M32-021"
+      ]
+    },
+    {
+      "id": "M32-P156",
+      "section": "13.4.3",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\">\n<b>같은 직선, 다른 움직임</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-021"
+      ]
+    },
+    {
+      "id": "M32-P157",
+      "section": "13.4.3",
+      "anchor": "시작점 $A$, 끝점 $B$를 잇는 곡선에도 여러 시간 배치가 가능합니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-021"
+      ]
+    },
+    {
+      "id": "M32-P158",
+      "section": "13.4.3",
+      "anchor": "| 의도 | 3차 베지에 제어점 | 움직임 |\n| --- | --- | --- |\n| 일정한 속도 | $A,\\ A+(B-A)/3,\\ A+2(B-A)/3,\\ B$ | $\\mathbf p(t)=A+t(B-A)$ |\n| ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-021"
+      ]
+    },
+    {
+      "id": "M32-P159",
+      "section": "13.4.3",
+      "anchor": "두 곡선의 공간상 모양은 같습니다. 두 번째는 양 끝에서 속도가 0이고 중간에서 가장 빠릅니다. 카메라가 고정된 두 위치 사이를 이동할 때 출발과 정지를 부드럽게 만들고 싶다면 이 차이가 중요합니다.\n</callou",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-021"
+      ]
+    },
+    {
+      "id": "M32-P160",
+      "section": "13.4.3",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\">\n<b>곡률은 가속도의 크기와 같지 않다</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-022"
+      ]
+    },
+    {
+      "id": "M32-P161",
+      "section": "13.4.3",
+      "anchor": "원문의 곡률 공식은 속도가 0이 아닌 곳에 적용합니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-022"
+      ]
+    },
+    {
+      "id": "M32-P162",
+      "section": "13.4.3",
+      "anchor": "$$\n\\kappa=\\frac{\\|\\mathbf v\\times\\mathbf a\\|}{\\|\\mathbf v\\|^3}.\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-022"
+      ]
+    },
+    {
+      "id": "M32-P163",
+      "section": "13.4.3",
+      "anchor": "직선에서 속력을 높이는 경우에도 가속도는 있지만 $\\mathbf v$와 $\\mathbf a$가 평행이므로 곡률은 0입니다. 반대로 일정한 속력으로 원을 돌아도 속도의 방향이 바뀌므로 가속도가 있습니다. 곡률은 경로의",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-022"
+      ]
+    },
+    {
+      "id": "M32-P164",
+      "section": "13.5",
+      "anchor": "## 13.5 세분화 (Subdivision)",
+      "decision": "structural-heading",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": []
+    },
+    {
+      "id": "M32-P165",
+      "section": "13.5",
+      "anchor": "13.6절부터는 곡선들을 이어 원하는 만큼 길고 복잡한 스플라인을 만드는 문제를 다룹니다. 그 전에 이번 절에서는 반대 문제, 즉 곡선을 더 작은 조각으로 나누는 방법을 살펴보겠습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023"
+      ]
+    },
+    {
+      "id": "M32-P166",
+      "section": "13.5",
+      "anchor": "왜 이런 일을 할까요? 몇 가지 이유가 있습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023"
+      ]
+    },
+    {
+      "id": "M32-P167",
+      "section": "13.5",
+      "anchor": "- <b>곡선 세밀화.</b> 곡선을 대화식으로 설계하다 보면 거의 원하는 모양에 도달했지만, 곡선 하나만으로는 필요한 유연성이 조금 모자랄 수 있습니다. 이때 곡선을 둘로 잘라 스플라인으로 만들면 더 자유롭게 조절",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023"
+      ]
+    },
+    {
+      "id": "M32-P168",
+      "section": "13.5",
+      "anchor": "이것이 곡선 세분화를 하는 “이유”입니다. “방법”을 배우기 전에 “무엇을” 하려는지 조금 더 정확히 정하겠습니다. 함수 $\\mathbf p(t)$로 정의되는 매개변수 다항식 곡선 $P$를 생각하겠습니다. 늘 그렇듯",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023"
+      ]
+    },
+    {
+      "id": "M32-P169",
+      "section": "13.5",
+      "anchor": "![그림 13.15](https://gamemath.com/book/figs/curves/subdivision_intro.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023"
+      ]
+    },
+    {
+      "id": "M32-P170",
+      "section": "13.5",
+      "anchor": "<i>그림 13.15. 세분화로 곡선의 일부 구간 추출하기.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023"
+      ]
+    },
+    {
+      "id": "M32-P171",
+      "section": "13.5",
+      "anchor": "세분화의 목표는 $Q$를 단항식·에르미트·베지에 중 어떤 형식으로든 수학적으로 기술하는 것입니다. 그런데 이미 그 기술이 있지 않을까요? 애초에 $P$의 수학적 기술이 어떤 형식으로든 주어졌다고 가정했으므로 “$P$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023"
+      ]
+    },
+    {
+      "id": "M32-P172",
+      "section": "13.5",
+      "anchor": "하지만 그것은 우리가 정말 원하는 것이 아닙니다. $Q$가 $P$를 참조하지 않는 완전히 독립적인 “보통의” 곡선이기를 원합니다. 다른 곡선에 종속되거나 추가 조건이 붙은 형태를 원하는 것이 아닙니다. 예를 들어 베",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023"
+      ]
+    },
+    {
+      "id": "M32-P173",
+      "section": "13.5",
+      "anchor": "다음 두 절은 곡선을 세분화하는 서로 다른 방법을 제시합니다. 13.5.1절은 단항식 형식에 대한 직접적인 대수 접근법입니다. 13.5.2절은 기하학에 바탕을 두어 우아하고 효율적인 구현으로 이어지는 베지에 곡선 세",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P174",
+      "section": "13.5",
+      "anchor": "에르미트 형식은 세분화에 자연스럽게 들어맞지 않습니다. 에르미트 곡선을 세분화하려면 먼저 다른 형식, 아마도 베지에로 바꾼 다음 그 형식에서 세분화합니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-023",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P175",
+      "section": "13.5.1",
+      "anchor": "### 13.5.1 단항식 형식의 곡선 세분화",
+      "decision": "structural-heading",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P176",
+      "section": "13.5.1",
+      "anchor": "단항식 형식에서 곡선의 일부 구간을 추출하는 것은 직접적인 대수 작업입니다. 단항식 형식은 단지 $t$에 대한 명시적인 다항식이라는 것을 기억하겠습니다. 대개 $0\\le t\\le1$ 부분에만 관심이 있지만, 다항식은",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P177",
+      "section": "13.5.1",
+      "anchor": "이를 생각하면 세분화 문제를 간단한 <b>재매개변수화(reparameterization)</b> 문제로 볼 수 있습니다. 단항식 계수를 직접 이리저리 조작하는 대신 매개변수에 대수를 적용합니다. $\\mathbf q(",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P178",
+      "section": "13.5.1",
+      "anchor": "$$\n\\begin{aligned}\nt&=F(s),\\\\\n\\mathbf q(s)&=\\mathbf p(t)=\\mathbf p(F(s)).\n\\end{aligned}\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P179",
+      "section": "13.5.1",
+      "anchor": "$F(s)$는 국소 매개변수 $s$에 대응하는 전역 매개변수 $t$를 돌려주는 재매개변수화 함수입니다. 끝점 조건 $F(0)=a$, $F(1)=b$를 만족해야 하므로 $F$의 형태를 찾기는 어렵지 않습니다. $t$와",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P180",
+      "section": "13.5.1",
+      "anchor": "$$\nt=F(s)=a+s(b-a).\n$$",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P181",
+      "section": "13.5.1",
+      "anchor": "양 끝점에서 정말 올바르게 작동하는지 확인해 보아도 좋습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P182",
+      "section": "13.5.1",
+      "anchor": "물론 지금까지 한 일은 $Q$를 $P$로 정의한 것뿐입니다. 이번 절 시작에서 바로 그런 정의만으로는 부족하다고 말했습니다. 차이는 여기서 수학을 계속 전개하고 $\\mathbf p(t)$의 식을 대입한 뒤 $t$를 ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P183",
+      "section": "13.5.1",
+      "anchor": "그러나 이어지는 대수 노동은 특별한 통찰 없이 지저분한 결과만 만듭니다. 여기서 전달하려는 핵심은 단항식 곡선의 세분화가 대수로 해결할 수 있는 간단한 재매개변수화 문제라는 점입니다. 또한 단항식 형식과 다른 형식 ",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P184",
+      "section": "13.5.1",
+      "anchor": "하지만 이런 “무식한” 접근법에 만족할 필요는 없습니다. 베지에 형식에서는 더 나은 방법이 있습니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-024",
+        "M32-025"
+      ]
+    },
+    {
+      "id": "M32-P185",
+      "section": "13.5.2",
+      "anchor": "### 13.5.2 베지에 형식의 곡선 세분화",
+      "decision": "structural-heading",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": []
+    },
+    {
+      "id": "M32-P186",
+      "section": "13.5.2",
+      "anchor": "베지에 곡선은 드 카스텔조 알고리즘의 변형을 통해 기하학적으로 세분화할 수 있습니다. 임의의 끝 매개변수 $a,b$에 대한 구간을 추출하는 전체 알고리즘은 한 번에 이해하기 어려우므로, 파린 \\[20, 7.2절 이후",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-026"
+      ]
+    },
+    {
+      "id": "M32-P187",
+      "section": "13.5.2",
+      "anchor": "먼저 곡선의 “왼쪽 부분”만 추출한다고 제한하겠습니다. 즉 $a=0$으로 고정합니다. 작은 곡선의 첫 베지에 제어점 $s=0$은 큰 곡선의 첫 제어점 $t=0$과 같음이 분명합니다. 끝점 $t=b$ 역시 13.4.1",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-026"
+      ]
+    },
+    {
+      "id": "M32-P188",
+      "section": "13.5.2",
+      "anchor": "![그림 13.16](https://gamemath.com/book/figs/curves/subdivision_decasteljau_endpoint.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-026"
+      ]
+    },
+    {
+      "id": "M32-P189",
+      "section": "13.5.2",
+      "anchor": "<i>그림 13.16. 드 카스텔조 알고리즘으로 내부 끝점 찾기.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-026"
+      ]
+    },
+    {
+      "id": "M32-P190",
+      "section": "13.5.2",
+      "anchor": "양 끝점은 얻었습니다. 이제 까다로운 내부 제어점들 차례입니다. 놀랍게도 그림 13.16을 자세히 보면 이미 그 점들도 구성했다는 것을 알 수 있습니다! 드 카스텔조 보간을 한 단계 수행할 때마다 필요한 베지에 제어",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-026"
+      ]
+    },
+    {
+      "id": "M32-P191",
+      "section": "13.5.2",
+      "anchor": "![그림 13.17](https://gamemath.com/book/figs/curves/subdivision_decasteljau_allpoints.png)",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-026"
+      ]
+    },
+    {
+      "id": "M32-P192",
+      "section": "13.5.2",
+      "anchor": "<i>그림 13.17. 드 카스텔조 알고리즘으로 추출한 곡선 구간의 모든 베지에 제어점을 얻습니다.</i>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-026"
+      ]
+    },
+    {
+      "id": "M32-P193",
+      "section": "13.5.2",
+      "anchor": "왜 작동할까요? 13.4.3절의 베지에와 에르미트 관계를 떠올려 보겠습니다. 첫 내부 제어점 $\\mathbf b_1$은 $t=0$에서 1차 도함수, 즉 속도를 완전히 결정합니다. 추출한 부분 곡선은 같은 무한 곡선의",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-027"
+      ]
+    },
+    {
+      "id": "M32-P194",
+      "section": "13.5.2",
+      "anchor": "하지만 도함수는 매개변수의 변화에 대한 변화율입니다. 세분화하면 더 작은 공간 구간에서 매개변수가 0부터 1까지 가므로 매개변수를 “더 빨리” 움직이게 한 셈입니다. 따라서 부분 곡선의 도함수는 같은 방향이지만, 추",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-027"
+      ]
+    },
+    {
+      "id": "M32-P195",
+      "section": "13.5.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\">\n<b>추가 설명 — 매개변수 구분</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-027"
+      ]
+    },
+    {
+      "id": "M32-P196",
+      "section": "13.5.2",
+      "anchor": "위 문장의 “0부터 1”은 부분 곡선의 국소 매개변수 $s$를 말합니다. 원래 매개변수는 $t=bs$이므로 $d\\mathbf q/ds=b\\,d\\mathbf p/dt$입니다. 공간상 접선 방향은 같지만 속도 벡터의 크",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-027"
+      ]
+    },
+    {
+      "id": "M32-P197",
+      "section": "13.5.2",
+      "anchor": "지금까지 알아낸 내용을 정리하겠습니다. 왼쪽 부분 $0\\le t\\le b$를 추출하려면 끝점 $t=b$를 찾듯이 드 카스텔조 세분화를 수행합니다. 매 보간 단계의 첫 제어점을 모으면 세분화된 곡선의 제어점들이 됩니다",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-027"
+      ]
+    },
+    {
+      "id": "M32-P198",
+      "section": "13.5.2",
+      "anchor": "지금까지의 지식만으로 처리할 수 있는 중요한 특수 경우가 있습니다. 곡선을 $t=1/2$에서 “반으로” 나누는 것입니다. 이 계산을 이용하면 적응적 세분화에 대한 우아한 재귀 알고리즘을 만들 수 있습니다. 원래 베지",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-028"
+      ]
+    },
+    {
+      "id": "M32-P199",
+      "section": "13.5.2",
+      "anchor": "$$\n\\begin{aligned}\n\\mathbf q_0&=\\mathbf b_0,\\\\\n\\mathbf q_1&=\\mathbf b_0/2+\\mathbf b_1/2,\\\\\n\\mathbf q_2&=\\mathbf b_0/4+\\m",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-028"
+      ]
+    },
+    {
+      "id": "M32-P200",
+      "section": "13.5.2",
+      "anchor": "일반적인 경우는 <b>블로서밍(blossoming)</b>으로 얻습니다. 이는 서로 다른 보간 비율로 드 카스텔조 단계를 반복하는 여러 기법을 가리키는 일반 용어입니다. 각 제어점을 결정하려면 적어도 3차 곡선에서는",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-029",
+        "M32-030"
+      ]
+    },
+    {
+      "id": "M32-P201",
+      "section": "13.5.2",
+      "anchor": "어느 단계에서 $a$를 쓰고 어느 단계에서 $b$를 쓰는지는 중요하지 않습니다. 중요한 것은 각각을 쓰는 횟수입니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-029",
+        "M32-030"
+      ]
+    },
+    {
+      "id": "M32-P202",
+      "section": "13.5.2",
+      "anchor": "3차 곡선의 각 점을 생각하면 명확해집니다. $\\mathbf b_0$를 계산할 때는 세 단계 모두 보간 비율 $t=a$를 씁니다. $\\mathbf b_1$에서는 두 단계에 $t=a$, 한 단계에 $t=b$를 씁니다.",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-029",
+        "M32-030"
+      ]
+    },
+    {
+      "id": "M32-P203",
+      "section": "13.5.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\">\n<b>추가 설명 — 마지막 문단의 첨자</b>",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-029",
+        "M32-030"
+      ]
+    },
+    {
+      "id": "M32-P204",
+      "section": "13.5.2",
+      "anchor": "여기서 계산한다고 말한 $\\mathbf b_0,\\ldots,\\mathbf b_3$는 추출 결과의 새 제어점들입니다. 구현에서는 원래 제어점 배열과 구분하여 $\\mathbf q_0,\\ldots,\\mathbf q_3$처",
+      "decision": "retain-learning-role",
+      "reason": "Independent wording with full formula/algorithm/diagram role retained.",
+      "beats": [
+        "M32-029",
+        "M32-030"
+      ]
+    }
+  ],
+  "corrections": [
+    {
+      "id": "C01",
+      "issue": "Bézier internal points",
+      "resolution": "Generally approximated, may incidentally be interpolated; not never."
+    },
+    {
+      "id": "C02",
+      "issue": "Degree and order",
+      "resolution": "n in original C++ code is point count/order; represented degree at most n−1. Reject zero points and preserve controls with working copy."
+    },
+    {
+      "id": "C03",
+      "issue": "Bernstein fourth-degree sign",
+      "resolution": "Equation13.27 uses4t³(1−t), not4t³(t−1)."
+    },
+    {
+      "id": "C04",
+      "issue": "Global support and nearest",
+      "resolution": "All basis weights positive only in open(0,1); peak at i/n is parameter-index correspondence, not spatial nearest."
+    },
+    {
+      "id": "C05",
+      "issue": "Endpoint derivative direction",
+      "resolution": "End derivative3(b3−b2) points away from last inner control toward end. Zero derivative has no normalize-defined tangent."
+    },
+    {
+      "id": "C06",
+      "issue": "Hermite notation",
+      "resolution": "Initial velocity v0 not p1; input order fixed [p0,v0,v1,p1]."
+    },
+    {
+      "id": "C07",
+      "issue": "Derivative order limitation",
+      "resolution": "Nearest k+1 controls for k≤n; beyond n polynomial derivatives are zero. Single segment influence not whole spline."
+    },
+    {
+      "id": "C08",
+      "issue": "Acceleration versus curvature",
+      "resolution": "Parameter derivatives physical only under chosen time mapping; straight acceleration can have zero curvature; guard speed0."
+    },
+    {
+      "id": "C09",
+      "issue": "Hermite subdivision directly possible",
+      "resolution": "Contrary to suggestion conversion required, Q=[p(a),h p'(a),h p'(b),p(b)] directly defines cubic subcurve, h=b−a; algebra checked."
+    },
+    {
+      "id": "C10",
+      "issue": "Reparameterization speed",
+      "resolution": "q'(s)=h p'(t), not same-magnitude derivative; half parameter interval is not necessarily half arc length."
+    },
+    {
+      "id": "C11",
+      "issue": "Blossom identities",
+      "resolution": "New output controls namedq distinct from originalb; permutation invariant mathematically, floating rounding may differ."
+    },
+    {
+      "id": "C12",
+      "issue": "Performance/stability",
+      "resolution": "No unconditional faster/exact claim for polynomial vsdeCasteljau; measure implementation and protect degenerate/nonfinite inputs."
+    }
+  ],
+  "primaryEvidence": [
+    {
+      "id": "E01",
+      "url": "https://dlmf.nist.gov/3.3",
+      "authority": "NIST DLMF",
+      "supports": "Distinct-node polynomial interpolation, uniqueness, product Lagrange basis and partition of unity."
+    },
+    {
+      "id": "E02",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-smoothstep",
+      "authority": "Microsoft HLSL",
+      "supports": "Clamped normalized input and t*t*(3-2*t) smoothstep definition."
+    },
+    {
+      "id": "E03",
+      "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.CubicHermiteSpline.html",
+      "authority": "SciPy official reference",
+      "supports": "Endpoint value and derivative Hermite interpolation, piecewise C1."
+    },
+    {
+      "id": "E04",
+      "url": "https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-construct.html",
+      "authority": "C. K. Shene / Michigan Technological University",
+      "supports": "Polynomial/Bernstein forms, convex hull conditions and endpoint control; source contains degree wording which is bounded here by at most degree n."
+    },
+    {
+      "id": "E05",
+      "url": "https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-sub.html",
+      "supports": "Subdivision as boundary sequences in deCasteljau triangle."
+    },
+    {
+      "id": "E06",
+      "url": "https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html",
+      "supports": "Derivative curve/endpoint tangents; finite differences and adjoining pieces."
+    }
+  ],
+  "glossary": [
+    "베지에 곡선 / Bézier Curve",
+    "드 카스텔조 알고리즘 / de Casteljau Algorithm",
+    "베른슈타인 기저 / Bernstein Basis",
+    "이항계수 / Binomial Coefficient",
+    "파스칼의 삼각형 / Pascal’s Triangle",
+    "전역 지지 / Global Support",
+    "국소 지지 / Local Support",
+    "세분화 / Subdivision",
+    "재매개변수화 / Reparameterization",
+    "블로서밍 / Blossoming"
+  ],
+  "verification": {
+    "paragraphMappingGaps": 0,
+    "koEnIdsMatch": true,
+    "headingFreeDraftReadthrough": true,
+    "narrationPaceAudition": false,
+    "gameplaySelected": false,
+    "unityRuntimeChecked": false
+  },
+  "pending": [
+    "Independent observed gameplay thesis abstract and concept examples with source/rights/FHD checks",
+    "Unity source-matched editable scenes and runtime captures",
+    "Full audio/visual timing, natural pacing, actual final 1080p and mobile QA",
+    "Draft must not be treated as measured final runtime or human review"
+  ]
+}

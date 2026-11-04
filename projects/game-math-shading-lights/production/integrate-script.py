@@ -33,9 +33,9 @@ prepend(27,'왕국의 눈물에서는 어두운 바위에 조명꽃 씨앗을 �
 prepend(31,'서브노티카 투에서는 천장등을 설치하자 방 안의 표면이 더 밝아집니다.',
     'In Subnautica 2, installing a ceiling light makes the room’s surfaces brighter.',
     'Inspected764.5–778.25s installation and result; fixture shape is not used as proof of point/area type.')
-prepend(49,'앞에서 본 장비의 전조등을 다시 보면, 바위 기둥에서 먼 어둠으로 방향을 돌릴 때 밝아지는 위치도 따라 바뀝니다.',
-    'In another pass with the equipment’s headlights, turning away from the rock column toward the distant darkness changes which surfaces are illuminated.',
-    'Independent non-overlapping Subnautica2 interval343–363s. The light is redirected, not switched off.')
+prepend(49,'앞에서 본 장비가 다시 바위 사이를 지나갑니다. 장비 앞쪽의 빛은 이동과 방향 전환을 따라 바위와 바닥으로 옮겨 가고, 빛이 닿지 않는 물속은 어둡게 남습니다.',
+    'The same equipment now travels between the rocks. As its position and heading change, the light in front moves across rock and ground, while the surrounding water stays dark.',
+    'Independently inspected non-overlapping Subnautica2 interval378–392s. Equipment/hand/UI remain continuous; no dismount or tool change. Position and heading both change, so this is not a controlled direction-only experiment. Replaces rejected343–363s.')
 prepend(60,'둠 쓰리에서는 손전등으로 통로와 난간, 문을 차례로 비춥니다. 원형 무늬가 표면을 따라 움직이는 모습을 이제 광원의 좌표와 연결해 보겠습니다.',
     'In Doom 3, a flashlight sweeps across a corridor, railing and door. We can now connect this moving circular footprint to the light’s coordinates.',
     'Independent original Doom3 FHD60 interval82–108s supports the observed footprint; internal gobo/falloff structure is supported separately by primary renderer source and our labelled implementation.')
