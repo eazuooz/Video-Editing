@@ -18,6 +18,7 @@ namespace Yamyam.GameMath.LightLab {
   public bool urpLit=false, cookie=false, aimAtSubject=true;
   public bool brdfNormalizedDiffuse=false;
   public bool materialMap=false;
+  public bool glossReference=false;
   public bool perspectiveCamera=false;
   public float secondLightStrength=0;
   public Vector3 secondLightDirection=new Vector3(1,-1,0);
@@ -102,6 +103,12 @@ namespace Yamyam.GameMath.LightLab {
    var probe=GameObject.CreatePrimitive(PrimitiveType.Cylinder);probe.name="Visible horizontal teaching probe · known N";probe.transform.SetParent(transform,false);probe.transform.position=new Vector3(1.4f,1.26f,0);probe.transform.localScale=new Vector3(.7f,.035f,.7f);probe.gameObject.layer=29;probe.GetComponent<Renderer>().sharedMaterial=cue.urpLit?lit:teaching;var probeMesh=TeachingMesh(probe.GetComponent<MeshFilter>().sharedMesh);GeneratedObjects.Add(probeMesh);probe.GetComponent<MeshFilter>().sharedMesh=probeMesh;surfaceProbe=probe.transform;
    cone=new LineRenderer[4];for(int i=0;i<4;i++)cone[i]=Arrow("Spot boundary "+i,Yellow);
    BuildUI(font);
+   if(cue.glossReference){
+    Vector3 centre=new Vector3(0,1.35f,0)+RenderCamera.transform.right*2.25f+RenderCamera.transform.up*.4f;
+    BuildGlossReference(centre,1.5f,teaching);
+    var screen=RenderCamera.WorldToViewportPoint(centre-RenderCamera.transform.up*.95f);
+    Label(font,"같은 재질 · 곡면",38,screen.x*1920-210,(1-screen.y)*1080,460,70,Color.white);
+   }
    // Move the observer, not the tested geometry/light. The left half remains
    // the same experiment; the right half is reserved for its calculation.
    if(cue.diagram.StartsWith("math:")||cue.diagram.StartsWith("geometry:")||cue.diagram.StartsWith("surface:")||(cue.diagram.StartsWith("advanced:")&&cue.diagram!="advanced:final-grid")){
@@ -229,6 +236,8 @@ namespace Yamyam.GameMath.LightLab {
    }
   }
   public void SetMaps(Texture2D gobo,Texture2D falloff){teaching.SetTexture("_Cookie",gobo);teaching.SetTexture("_Falloff",falloff);}
+  public Texture CookieTexture {get{return teaching.GetTexture("_Cookie");}}
+  public Texture FalloffTexture {get{return teaching.GetTexture("_Falloff");}}
   public void SetMaterialMaps(Texture2D diffuseMap,Texture2D specularMap){teaching.SetTexture("_MaterialMap",diffuseMap);teaching.SetTexture("_SpecularMap",specularMap);}
   // Column-vector equivalents of the source article's row-vector matrices.
   public static Matrix4x4 Projection(Vector3 s,bool perspective) {

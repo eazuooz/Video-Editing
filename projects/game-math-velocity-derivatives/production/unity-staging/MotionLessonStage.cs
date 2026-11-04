@@ -8,6 +8,7 @@ namespace Yamyam.MathMotion {
         public string anchor,formula,meaning;
         public double modelFrom,modelTo,secantH=.5;
         public bool showSecant,showTangent;
+        public bool useMotionOverride;
         public MotionShot motionOverride;
     }
     [Serializable] public class MotionLessonShot {
@@ -59,7 +60,12 @@ namespace Yamyam.MathMotion {
             if(movement==null)Build();
             if(u<0||u>1||double.IsNaN(u))throw new ArgumentOutOfRangeException(nameof(u));
             int index=Math.Min(shot.steps.Length-1,(int)(u*shot.steps.Length));double fraction=Math.Min(1,u*shot.steps.Length-index);
-            var step=shot.steps[index];movement.shot=step.motionOverride??shot.motion;double time=step.modelFrom+(step.modelTo-step.modelFrom)*fraction;
+            var step=shot.steps[index];
+            // Unity inline serialization reconstructs null classes as default
+            // objects. The explicit discriminator survives a saved-scene reload.
+            if(step.useMotionOverride&&step.motionOverride==null)throw new InvalidOperationException("Missing selected motion override.");
+            movement.shot=step.useMotionOverride?step.motionOverride:shot.motion;
+            double time=step.modelFrom+(step.modelTo-step.modelFrom)*fraction;
             if(time<movement.shot.startTime-1e-8||time>movement.shot.endTime+1e-8)throw new InvalidOperationException("Model cue outside plotted domain.");
             movement.shot.termExpanded=expanded;movement.shot.secantH=step.secantH;movement.shot.showSecant=step.showSecant;movement.shot.showTangent=step.showTangent;
             movement.Evaluate((time-movement.shot.startTime)/(movement.shot.endTime-movement.shot.startTime));

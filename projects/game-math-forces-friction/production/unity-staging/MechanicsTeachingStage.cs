@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Yamyam.MathMechanics {
-    public enum MechanicsPicture {FreeBody,FreeSlide,Incline,GravityPair,Jump,FreeFall,Spring,SpringComparison,ControlStep,FirstOrder}
+    public enum MechanicsPicture {FreeBody,FreeSlide,Incline,GravityPair,Jump,FreeFall,Spring,SpringComparison,ControlStep,FirstOrder,HorizontalForce,ForcePair,ReferenceFrames,ContactArea}
     [Serializable] public class MechanicsShot {
         public string id="UNBOUND",english="Newton's Second Law",korean="뉴턴의 제2법칙",meaning="받는 힘을 모아 가속도를 구한다";
         public MechanicsPicture picture=MechanicsPicture.FreeBody;
@@ -12,13 +12,16 @@ namespace Yamyam.MathMechanics {
         public double angleRadians=0,initialVelocity=4,slideDeceleration=2,jumpHeight=2,apexSeconds=.4;
         public double k=16,c=4,x0=1,v0=0,target=0,dt=.1,lambda=2,timeStart=0,timeEnd=3;
         public double gravityMassA=3,gravityMassB=5,gravityDistance=2;
+        public double secondaryMass=4,frameVelocity=0,frameAcceleration=0,contactArea=1;
+        public bool showObserverFrame=false,showReaction=false,kineticContact=false;
+        public string subjectKind="box",secondaryKind="box",bodyLabel="선택한 물체",otherLabel="비교 물체";
         public bool showSupport=true,showFriction=false,showNet=true,showVelocity=true,showAcceleration=true,showEquation=true;
         public float worldScale=1,forceScale=.10f,velocityScale=.23f,accelerationScale=.06f;
         public string equation="ΣF = m a",condition="일정한 질량 · 관성 기준계";
     }
     // Deterministic teaching renderer. Values are computed by our analytic model,
     // never labelled as measurements of any commercial game or Unity solver.
-    public sealed class MechanicsTeachingStage:MonoBehaviour {
+    public sealed partial class MechanicsTeachingStage:MonoBehaviour {
         public MechanicsShot shot=new MechanicsShot();
         public GameObject objectPrefab,secondaryPrefab;
         public Font koreanFont;
@@ -101,13 +104,16 @@ namespace Yamyam.MathMechanics {
                 case MechanicsPicture.FreeBody:case MechanicsPicture.Incline: {
                     double angle=shot.picture==MechanicsPicture.Incline?shot.angleRadians:0;Floor((float)angle);body.rotation=Quaternion.Euler(0,0,(float)(angle*180/Math.PI));
                     MVec gravity=new MVec(0,-shot.mass*shot.gravity),external=gravity+new MVec(shot.forceX-shot.opposingForce),normal=new MVec(-Math.Sin(angle),Math.Cos(angle));
-                    var f=MechanicsMathModel.SupportedFriction(external,normal,new MVec(),shot.showFriction?shot.muStatic:0,shot.showFriction?shot.muKinetic:0);MVec net=shot.showSupport?f.net:external;
+                    MVec slip=shot.kineticContact?new MVec(Math.Cos(angle),Math.Sin(angle))*shot.initialVelocity:new MVec();
+                    var f=MechanicsMathModel.SupportedFriction(external,normal,slip,shot.showFriction?shot.muStatic:0,shot.showFriction?shot.muKinetic:0);MVec net=shot.showSupport?f.net:external;
                     Vector3 at=body.position+new Vector3(0,0,-1);Arrow(at,U(gravity)*shot.forceScale,Red,"중력 m g");
                     if(shot.showSupport)Arrow(at,U(normal*f.normal)*shot.forceScale,Green,"수직항력 N");
                     Arrow(at+Vector3.up*.2f,Vector3.right*(float)shot.forceX*shot.forceScale,Teal,"미는 힘");Arrow(at-Vector3.up*.2f,Vector3.left*(float)shot.opposingForce*shot.forceScale,Yellow,"반대쪽 힘");
                     if(shot.showFriction)Arrow(at+Vector3.down*.35f,U(f.friction)*shot.forceScale,Yellow,f.sticking?"정지 마찰":"운동 마찰");
                     if(shot.showNet)Arrow(at+Vector3.down*1.2f,U(net)*shot.forceScale,White,"알짜힘 ΣF");
-                    numbers.text+="\nm = "+N(shot.mass)+" kg\nN = "+N(f.normal)+" N\n|F마찰|max = "+N(f.maximumStatic)+" N\n|ΣF| = "+N(net.Length)+" N";
+                    numbers.text+="\nm = "+N(shot.mass)+" kg\nN = "+N(f.normal)+" N";
+                    if(shot.showFriction)numbers.text+="\n정지 한도 = "+N(f.maximumStatic)+" N\n현재 마찰 = "+N(f.friction.Length)+" N";
+                    numbers.text+="\n|ΣF| = "+N(net.Length)+" N";
                     break;
                 }
                 case MechanicsPicture.FreeSlide: {
@@ -150,8 +156,10 @@ namespace Yamyam.MathMechanics {
                     double value=MechanicsMathModel.FirstOrderLag(shot.x0,shot.target,shot.lambda,t);body.position=Origin+Vector3.right*(float)value*shot.worldScale;
                     Line(new[]{Origin+new Vector3((float)shot.target*shot.worldScale,-1,0),Origin+new Vector3((float)shot.target*shot.worldScale,1,0)},Green,.035f);numbers.text+="\nλ = "+N(shot.lambda)+"\n현재 = "+N(value)+"\n목표 = "+N(shot.target);break;
                 }
+                default: ApplyAdditionalPicture(t);break;
             }
             for(int i=lineCount;i<guides.Count;i++)guides[i].gameObject.SetActive(false);for(int i=tagCount;i<tags.Count;i++)tags[i].gameObject.SetActive(false);
         }
+        public void SetSourceStep(string equation,string meaning){formula.text=equation;conditions.text=meaning;}
     }
 }

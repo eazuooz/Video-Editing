@@ -7,6 +7,8 @@ namespace Yamyam.GameMath.LightLab {
   [SerializeField] LineRenderer[] geometryLines;
   [SerializeField] string geometryMode;
   [SerializeField] Text geometryHeading;
+  [SerializeField] RawImage volumeCookie,volumeFalloff;
+  [SerializeField] bool volumeCameraFitted;
   void BuildGeometry(LightLabStage stage,Font font){
    geometryStage=stage;geometryMode=Cue.diagram.Substring(9);
    geometryHeading=Text(font,"",46,1040,310,790,120,Yellow);
@@ -16,12 +18,47 @@ namespace Yamyam.GameMath.LightLab {
    if(geometryMode=="cosineRays")geometryHeading.text="같은 빛 → 기울어진 표면의 더 넓은 영역";
    if(geometryMode=="directPaths")geometryHeading.text="광원 → 표면의 한 점 → 카메라";
    if(geometryMode=="rangeShells")geometryHeading.text="r이 2배이면, 구면 넓이는 4배";
-   if(geometryMode=="volumeBounds")geometryHeading.text="광원 로컬 공간의 영향 영역";
+   if(geometryMode=="volumeBounds"){
+    geometryHeading.text="광원 로컬 공간의 영향 영역";
+    volumeCookie=VolumeMap(font,"고보: 가로·세로 무늬",1040,430,190,190);
+    volumeFalloff=VolumeMap(font,"감쇠: 깊이 방향",1470,430,300,170);
+   }
    if(geometryMode=="reflectConstruction")geometryHeading.text="L의 법선 성분 p → 두 배 → L 빼기";
    if(geometryMode=="solidAngle")geometryHeading.text="같은 광원도 가까우면 더 넓은 방향을 차지";
    detail.text="화살표·경계는 설명용 표식";
   }
   void SetPath(LineRenderer line,params Vector3[] points){line.positionCount=points.Length;line.SetPositions(points);}
+  RawImage VolumeMap(Font font,string label,float x,float y,float w,float h){
+   Text(font,label,30,x,y-45,w+60,44,Color.white);
+   Panel(new Color(.25f,.25f,.25f),x-2,y-2,w+4,h+4);
+   var go=new GameObject(label,typeof(RectTransform));go.transform.SetParent(canvas.transform,false);
+   var image=go.AddComponent<RawImage>();var rt=image.rectTransform;rt.anchorMin=rt.anchorMax=rt.pivot=new Vector2(0,1);rt.anchoredPosition=new Vector2(x,-y);rt.sizeDelta=new Vector2(w,h);return image;
+  }
+  Vector3[] VolumeCorners(bool perspective){
+   var corners=new Vector3[8];var q=Quaternion.LookRotation(geometryStage.CurrentLightDirection);
+   for(int i=0;i<8;i++){
+    float depth=(i&4)==0?(perspective?.15f:-Cue.volumeSize.z*.5f):(perspective?Cue.volumeSize.z:Cue.volumeSize.z*.5f);
+    float width=perspective?depth/Cue.volumeSize.z:1;
+    var local=new Vector3(((i&1)==0?-.5f:.5f)*Cue.volumeSize.x*width,((i&2)==0?-.5f:.5f)*Cue.volumeSize.y*width,depth);
+    corners[i]=geometryStage.CurrentLightPosition+q*local;
+   }return corners;
+  }
+  void FitVolumeCamera(){
+   // Identical camera basis and framing for both projection constructions.
+   // Fit their union so the comparison does not change the apparent scale.
+   var points=new System.Collections.Generic.List<Vector3>(VolumeCorners(false));points.AddRange(VolumeCorners(true));
+   foreach(var mesh in geometryStage.GetComponentsInChildren<MeshRenderer>()){
+    Bounds b=mesh.bounds;for(int i=0;i<8;i++)points.Add(b.center+Vector3.Scale(b.extents,new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1)));
+   }
+   var tr=cameraRef.transform;float loX=float.PositiveInfinity,hiX=float.NegativeInfinity,loY=loX,hiY=hiX;
+   foreach(var p in points){float x=Vector3.Dot(p,tr.right),y=Vector3.Dot(p,tr.up);loX=Mathf.Min(loX,x);hiX=Mathf.Max(hiX,x);loY=Mathf.Min(loY,y);hiY=Mathf.Max(hiY,y);}
+   float size=Mathf.Max((hiY-loY)/(2*.43f),(hiX-loX)/(2*cameraRef.aspect*.46f))*1.06f;
+   cameraRef.orthographicSize=size;
+   float xCamera=(loX+hiX)*.5f-(.275f-.5f)*2*size*cameraRef.aspect;
+   float yCamera=(loY+hiY)*.5f-(.5f-.5f)*2*size;
+   tr.position+=tr.right*(xCamera-Vector3.Dot(tr.position,tr.right))+tr.up*(yCamera-Vector3.Dot(tr.position,tr.up));
+   volumeCameraFitted=true;
+  }
   void ApplyGeometry(float seconds){
    if(geometryStage==null||geometryLines==null)return;
    Vector3 p=geometryStage.TeachingProbe.position+geometryStage.TeachingProbe.up*.035f;
@@ -77,13 +114,10 @@ namespace Yamyam.GameMath.LightLab {
     result.text="같은 전체 복사속 Φ\n같은 면적에 들어오는 양은 1/4";
    }
    if(geometryMode=="volumeBounds"){
-    var corners=new Vector3[8];var q=Quaternion.LookRotation(geometryStage.CurrentLightDirection);bool perspective=Cue.volumeMode==2;
-    for(int i=0;i<8;i++){
-     float depth=(i&4)==0?(perspective?.15f:-Cue.volumeSize.z*.5f):(perspective?Cue.volumeSize.z:Cue.volumeSize.z*.5f);
-     float width=perspective?depth/Cue.volumeSize.z:1;
-     var local=new Vector3(((i&1)==0?-.5f:.5f)*Cue.volumeSize.x*width,((i&2)==0?-.5f:.5f)*Cue.volumeSize.y*width,depth);
-     corners[i]=geometryStage.CurrentLightPosition+q*local;
-    }
+    if(geometryStage.CurrentLightDirection.sqrMagnitude<.001f)return;
+    bool perspective=Cue.volumeMode==2;var corners=VolumeCorners(perspective);
+    if(!volumeCameraFitted)FitVolumeCamera();
+    volumeCookie.texture=geometryStage.CookieTexture;volumeFalloff.texture=geometryStage.FalloffTexture;
     int line=0;for(int i=0;i<8;i++)for(int bit=1;bit<=4;bit*=2)if((i&bit)==0)SetPath(geometryLines[line++],corners[i],corners[i|bit]);
     result.text=perspective?"원근 투영 · 멀수록 단면이 커짐":"직교 투영 · 같은 크기의 단면";
    }

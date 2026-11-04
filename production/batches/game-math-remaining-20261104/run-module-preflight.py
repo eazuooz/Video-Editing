@@ -17,7 +17,7 @@ G=importlib.util.module_from_spec(spec);spec.loader.exec_module(G)
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--queue',required=True);ap.add_argument('--run',action='store_true');ap.add_argument('--wait-hours',type=float,default=6);a=ap.parse_args()
     qpath=Path(a.queue).resolve();q=read(qpath);slug=q['project']
-    assert slug in {'game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives','game-math-acceleration-integration','game-math-circular-motion'}
+    assert slug in {'game-math-skinning-normal-map','game-math-pipeline-shaders','game-math-velocity-derivatives','game-math-acceleration-integration','game-math-circular-motion','game-math-forces-friction'}
     project=R/'projects'/slug;assert qpath.is_relative_to(project/'production/unity-staging')
     sandbox=Path(q['sandbox']);marker=sandbox/'MATH_CAPTURE_SANDBOX.json'
     def authorized():
@@ -88,6 +88,7 @@ def main():
                 state['current']=job['id'];acquire()
                 env=os.environ.copy();env['YAMYAM_MATH_CAPTURE_JOB']=str(jp)
                 entry='Yamyam.MotionMathCapture.UnityLectureCapture.Run' if slug in {'game-math-velocity-derivatives','game-math-acceleration-integration','game-math-circular-motion'} else 'Yamyam.RemainingMathCapture.UnityLectureCapture.Run'
+                if slug=='game-math-forces-friction':entry='Yamyam.MechanicsCapture.UnityLectureCapture.Run'
                 run_unity(entry,qpath.parent/(job['id']+'.unity.log'),env)
                 done=read(success);assert done['fingerprint']==q['fingerprint'] and done['completed']==len(job['sampleFrames'])
                 release()

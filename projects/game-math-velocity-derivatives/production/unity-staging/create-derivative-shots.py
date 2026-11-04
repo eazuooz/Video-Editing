@@ -97,7 +97,10 @@ for i,scene in enumerate(script['scenes']):
                 if j==2:item['meaning']='그래프: t⁻¹ + 4t⁻³의 합과 도함수'
             elif i==44:override['parameters']={'kind':8,'frequency':3} if j==0 else {'kind':12}
             elif i==45:override.update(parameters={'kind':13 if j==0 else 14},startTime=0,endTime=.6 if j==0 else 1.5,positionMin=0,positionMax=15 if j==0 else 5,velocityMin=0 if j==0 else -6,velocityMax=40 if j==0 else 7)
-            item.update(motionOverride=override,modelFrom=override['startTime'],modelTo=override['endTime'])
+            item.update(motionOverride=override,useMotionOverride=True,modelFrom=override['startTime'],modelTo=override['endTime'])
+        if i==43 and j==1:
+            override=copy.deepcopy(model);override['parameters']['pathSpeed']=-4
+            item.update(motionOverride=override,useMotionOverride=True)
         steps.append(item)
     diagrams={1:'point-coordinate',2:'point-coordinate',3:'sampled-path',4:'point-coordinate',5:'mass-weight',6:'units',7:'frequency',8:'unit-dimensions',9:'length-conversion',10:'speed-conversion',21:'accumulation',22:'slope',23:'signed-slope',30:'function-flow',32:'relative-motion',33:'function-flow'}
     rows.append({'sourceBeatId':scene['sourceBeatId'],'sceneId':scene['id'],'sourceSection':scene['section'],'sourceScreenPlan':draft['segments'][i]['screenPlan'],'shot':{'beatId':scene['sourceBeatId'],'motion':model,'diagramMode':diagrams.get(i,''),'steps':steps,'durationSeconds':0,'stepSeconds':[],'stepPositions':[]},'status':'source-ordered-calculations-authored-runtime-pending','remainingVisuals':('Complete and inspect concept-specific measurement diagram; generic motion graph deliberately hidden.' if not model.get('showGraphs',True) else 'Inspect plotted numeric range, moving target and actual caption layout.'),'sceneSaved':False})

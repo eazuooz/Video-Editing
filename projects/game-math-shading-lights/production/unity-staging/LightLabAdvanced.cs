@@ -66,9 +66,15 @@ namespace Yamyam.GameMath.LightLab {
  }
 
 #if !M21_ADVANCED_MATH_ONLY
+ [Serializable] public class AdvancedNormalizedCrop {
+  // JsonUtility serializes Rect's private m_ fields, not x/width properties.
+  // Keep the external capture manifest explicit and validate before conversion.
+  public float x,y,width=1,height=1;
+  public Rect ToRect(){return new Rect(x,y,width,height);}
+ }
  [Serializable] public class AdvancedComparisonFrame {
   public string imagePath,sha256,label,sourceKind;
-  public Rect crop=new Rect(0,0,1,1);
+  public AdvancedNormalizedCrop crop=new AdvancedNormalizedCrop();
  }
  public sealed partial class LightLabStage {
   // Supply before Build for advanced:final-grid. Only verified existing captures.
@@ -255,10 +261,12 @@ namespace Yamyam.GameMath.LightLab {
     byte[] bytes=File.ReadAllBytes(path);string hash;using(var sha=SHA256.Create())hash=BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-","").ToLowerInvariant();
     if(hash!=rec.sha256.ToLowerInvariant())throw new InvalidOperationException("Comparison capture hash mismatch: "+path);
     var tex=new Texture2D(2,2,TextureFormat.RGBA32,false,true);if(!ImageConversion.LoadImage(tex,bytes,false)||tex.width<1920||tex.height<1080)throw new InvalidOperationException("Comparison requires original FHD-or-larger frame: "+path);stage.GeneratedObjects.Add(tex);
-    if(rec.crop.width<=0||rec.crop.height<=0||rec.crop.xMin<0||rec.crop.yMin<0||rec.crop.xMax>1||rec.crop.yMax>1)throw new ArgumentException("Comparison crop must be normalized and positive.");
+    if(rec.crop==null)throw new ArgumentException("Missing comparison crop");
+    Rect crop=rec.crop.ToRect();
+    if(crop.width<=0||crop.height<=0||crop.xMin<0||crop.yMin<0||crop.xMax>1||crop.yMax>1)throw new ArgumentException("Comparison crop must be normalized and positive.");
     float x=150+(i%2)*870,y=300+(i/2)*300;float aspect=tex.width*rec.crop.width/(tex.height*rec.crop.height),w=Mathf.Min(720,240*aspect),h=w/aspect;
     advancedBorders[i]=Panel(new Color(.18f,.18f,.18f),x-4,y-4,728,248);
-    advancedImages[i]=AdvancedImage(new Rect(x+(720-w)/2,y+(240-h)/2,w,h));advancedImages[i].texture=tex;advancedImages[i].uvRect=rec.crop;
+    advancedImages[i]=AdvancedImage(new Rect(x+(720-w)/2,y+(240-h)/2,w,h));advancedImages[i].texture=tex;advancedImages[i].uvRect=crop;
     advancedLabels[i]=Text(font,rec.label,40,x,y-48,730,48,Color.white);
     Text(font,rec.sourceKind,40,x,y+244,730,48,Color.white);
    }
