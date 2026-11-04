@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M28",
+  "slug": "game-math-springs-damping",
+  "status": "source-faithful-content-draft-awaiting-footage-integration",
+  "isFinalNarration": false,
+  "language": "ko",
+  "sourceScope": "12.2.3 spring/damping/control: S122-P081–188",
+  "gameplayStatus": "Independent FHD observed actions pending; no unverified game-internal claims.",
+  "timingPolicy": {
+    "speechAndVisualOverlap": true,
+    "defaultHoldSeconds": 0,
+    "noAutomaticSilence": true
+  },
+  "visualPolicy": {
+    "noAddedLectureBgm": true,
+    "background": "research-black-v1",
+    "sourceFigures": "research-reference-only; own redraw",
+    "captionSafeArea": "boxed-white-forest-v1 fixed 960,970"
+  },
+  "segments": [
+    {
+      "id": "M28-000-abstract",
+      "section": "되돌아오고 멈추기",
+      "title": "되돌아오고 멈추기",
+      "sourceParagraphs": [
+        "S122-P082",
+        "S122-P083"
+      ],
+      "screenPlan": "Branding then independently verified game target-change action; no game chosen or algorithm asserted yet.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "목표가 바뀔 때 카메라나 선택 표시가 곧바로 튀면 움직임이 딱딱해집니다. 조금 늦게 따라오고, 필요하면 살짝 넘어갔다가 멈추게 만들 수는 없을까요? 용수철이 제자리로 돌아오는 힘에서 시작해, 흔들림을 줄이는 감쇠를 더하고, 마지막에는 게임의 값을 부드럽게 움직이는 코드로 연결하겠습니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Branding → independent actual-game thesis abstract."
+    },
+    {
+      "id": "M28-001-rest-length",
+      "section": "늘리고 누르기",
+      "title": "늘리고 누르기",
+      "sourceParagraphs": [
+        "S122-P084"
+      ],
+      "screenPlan": "Unity shared spring/weight testbed, rest ruler remains visible as length changes.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "한쪽 끝을 고정하고 다른 끝에 물체를 연결해 보죠. 잡아 늘리면 당기고, 눌러 짧게 만들면 밀어냅니다. 외력 없이 놓았을 때의 길이가 정지 길이입니다. 가상 용수철도 이런 성질을 이용합니다. 눈에 보이는 금속 용수철뿐 아니라, 두 대상의 거리를 유지하거나 움직임을 제어하는 데 사용할 수 있습니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-002-hooke",
+      "section": "훅의 법칙",
+      "title": "훅의 법칙",
+      "sourceParagraphs": [
+        "S122-P085",
+        "S122-P086",
+        "S122-P087",
+        "S122-P088",
+        "S122-P089"
+      ],
+      "screenPlan": "F=k(l_rest−l); k20,extension.1→F−2N. Signed force versus magnitude k|extension|.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C01"
+      ],
+      "text": "훅의 법칙은 원래 길이에서 벗어난 만큼 복원력이 커진다는 관계입니다. 현재 길이가 정지 길이보다 길면 식의 값은 음수가 되어 반대로 당깁니다. 용수철 상수 케이의 단위는 뉴턴 매 미터입니다. 일 미터 늘릴 때 이십 뉴턴이 생기는 용수철을 영점일 미터 늘리면 이 뉴턴입니다. 다만 탄성 한계를 넘으면 이 단순한 비례 관계가 깨집니다.",
+      "sourceFormulaBlocks": [
+        "$$\nf_r=k(l_{\\mathrm{rest}}-l).\n\\tag{12.7}\n$$",
+        "$$\n\\begin{aligned}\n[ML/T^2]&=k[L],\\\\\n[ML/T^2]/[L]&=k,\\\\\n[M/T^2]&=k.\n\\end{aligned}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-003-acceleration",
+      "section": "위치에서 가속도로",
+      "title": "위치에서 가속도로",
+      "sourceParagraphs": [
+        "S122-P090",
+        "S122-P091",
+        "S122-P092",
+        "S122-P093"
+      ],
+      "screenPlan": "F=−kx→a=−(k/m)x=−Kx; k20,m2,x.1→a−1. Show symbols with labels.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "힘이 없는 위치를 엑스 영으로 잡겠습니다. 오른쪽으로 벗어나면 엑스가 양수이고, 힘은 마이너스 케이 엑스입니다. 이를 질량으로 나누면 가속도는 마이너스 케이 나누기 엠, 곱하기 엑스입니다. 같은 용수철이라도 무거운 물체는 덜 가속됩니다. 대문자 케이는 용수철 상수를 질량으로 나눈 값으로 구분해 두겠습니다.",
+      "sourceFormulaBlocks": [
+        "$$\na(t)=-Kx(t).\n\\tag{12.8}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-004-differential",
+      "section": "시간 함수를 찾기",
+      "title": "시간 함수를 찾기",
+      "sourceParagraphs": [
+        "S122-P094",
+        "S122-P095"
+      ],
+      "screenPlan": "Persistent position/velocity/acceleration labels on moving weight and derivative plots.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "이 식은 현재 위치를 알면 가속도를 알려 줍니다. 하지만 나중의 위치 자체는 아직 없습니다. 위치와 그 미분인 속도, 두 번째 미분인 가속도를 연결한 식을 미분방정식이라고 합니다. 우리가 찾을 것은 이 관계를 만족하는 위치 함수입니다. 복잡한 풀이법 대신 움직임에서 후보를 만든 뒤, 두 번 미분해 맞는지 확인하겠습니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-005-cosine",
+      "section": "코사인 검산",
+      "title": "코사인 검산",
+      "sourceParagraphs": [
+        "S122-P096",
+        "S122-P097",
+        "S122-P098",
+        "S122-P099",
+        "S122-P100"
+      ],
+      "screenPlan": "Own graph and three derivative rows reveal together; source image not adopted.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "위치를 시간에 따라 기록하면 코사인 모양이 나타납니다. 우선 위치를 코사인 티라고 해 보죠. 한 번 미분하면 마이너스 사인 티, 두 번이면 마이너스 코사인 티입니다. 가속도가 위치의 반대가 되는 것은 맞지만, 필요한 비율인 대문자 케이가 빠졌습니다. 이 후보는 그 비율이 일인 특별한 경우만 설명합니다.",
+      "sourceFormulaBlocks": [
+        "$$\n\\begin{aligned}\nx(t)&=\\cos t,\\\\\n\\dot x(t)&=-\\sin t,\\\\\n\\ddot x(t)&=-\\cos t.\n\\end{aligned}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-006-frequency",
+      "section": "시간축의 배율",
+      "title": "시간축의 배율",
+      "sourceParagraphs": [
+        "S122-P101",
+        "S122-P102",
+        "S122-P103",
+        "S122-P104",
+        "S122-P105",
+        "S122-P106",
+        "S122-P107",
+        "S122-P108",
+        "S122-P109",
+        "S122-P110"
+      ],
+      "screenPlan": "Show chain rule factors and substitution, ω=√K=√(k/m), rad/s; parentheses unambiguous.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "더 뻣뻣한 용수철이나 더 가벼운 물체는 빠르게 왕복합니다. 따라서 그래프의 높이보다 시간축을 바꿉니다. 코사인 안에 루트 케이 곱하기 티를 넣고 미분하면, 루트 케이가 두 번 나와 케이가 됩니다. 이제 가속도가 정확히 마이너스 케이 엑스입니다. 대문자 케이의 제곱근, 즉 용수철 상수를 질량으로 나눈 값의 제곱근을 각진동수 오메가라고 부릅니다.",
+      "sourceFormulaBlocks": [
+        "$$\n\\begin{aligned}\nx(t)&=\\cos(\\sqrt K\\,t),\\\\\n\\dot x(t)&=-\\sqrt K\\sin(\\sqrt K\\,t),\\\\\n\\ddot x(t)&=-K\\cos(\\sqrt K\\,t).\n\\end{aligned}\n$$",
+        "$$\n\\begin{aligned}\na(t)&=-Kx(t),\\\\\n-K\\cos(\\sqrt K\\,t)&=-K\\bigl(\\cos(\\sqrt K\\,t)\\bigr).\n\\end{aligned}\n$$",
+        "$$\n\\omega=\\sqrt K=\\sqrt{k/m}.\n$$",
+        "$$\nx(t)=\\cos(\\omega t).\n\\tag{12.9}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-007-initial-state",
+      "section": "진폭과 위상",
+      "title": "진폭과 위상",
+      "sourceParagraphs": [
+        "S122-P111",
+        "S122-P112",
+        "S122-P113",
+        "S122-P114",
+        "S122-P115"
+      ],
+      "screenPlan": "Three general solution rows x,v,a. Change amplitude, then phase separately; scale fixed.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "얼마나 멀리 흔들릴지 정하는 진폭과, 주기의 어디서 시작할지 정하는 위상도 필요합니다. 최대한 당긴 곳에서 가만히 놓을 수도 있고, 중간에서 이미 움직이게 시작할 수도 있죠. 위치는 에이 곱하기 코사인, 괄호 안에는 오메가 티 더하기 초기 위상을 넣습니다. 미분하면 속도에는 오메가가, 가속도에는 오메가 제곱이 붙습니다.",
+      "sourceFormulaBlocks": [
+        "$$\n\\begin{aligned}\nx(t)&=A\\cos(\\omega t+\\theta_0),\\\\\n\\dot x(t)&=-A\\omega\\sin(\\omega t+\\theta_0),\\\\\n\\ddot x(t)&=-A\\omega^2\\cos(\\omega t+\\theta_0).\n\\end{aligned}\n\\tag{12.10}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-008-phase-conditions",
+      "section": "초기 속도의 방향",
+      "title": "초기 속도의 방향",
+      "sourceParagraphs": [
+        "S122-P135",
+        "S122-P136",
+        "S122-P137",
+        "S122-P138",
+        "S122-P139"
+      ],
+      "screenPlan": "A=√(x0²+(v0/ω)²),θ0=atan2(−v0/ω,x0). Explain atan2 quadrant with two velocity signs.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C02"
+      ],
+      "text": "초기 위치와 속도로 진폭과 위상을 계산합니다. 각진동수 이, 시작 위치 영, 시작 속도 초속 이 미터라면 진폭은 일 미터입니다. 위상은 마이너스 파이의 절반이어서 처음에 오른쪽으로 갑니다. 속도를 반대로 바꾸면 진폭은 같아도 출발 방향이 바뀝니다. 진폭과 위치만으로는 이 방향을 정할 수 없습니다. 위치와 속도가 모두 영이면 정지 상태이므로 위상도 의미가 없습니다.",
+      "sourceFormulaBlocks": [
+        "$$\n\tA=\\sqrt{x_0^2+(v_0/\\omega)^2},\\qquad\n\\theta_0=\\operatorname{atan2}(-v_0/\\omega,x_0).\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-009-hertz",
+      "section": "헤르츠와 각진동수",
+      "title": "헤르츠와 각진동수",
+      "sourceParagraphs": [
+        "S122-P116",
+        "S122-P117",
+        "S122-P118",
+        "S122-P119",
+        "S122-P120",
+        "S122-P121"
+      ],
+      "screenPlan": "sin(t+π/2)=cos(t);F=ω/2π;x=Acos(2πFt+θ0). Compare4×k,4×m,2×A one at time.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "사인으로 써도 위상을 조절하면 같은 움직임입니다. 이런 모양을 정현파라고 부릅니다. 한 왕복이 이 파이 라디안이므로 헤르츠는 각진동수를 이 파이로 나눈 값입니다. 용수철 상수를 네 배로 하면 진동수는 두 배, 질량을 네 배로 하면 절반입니다. 더 멀리 당기면 진폭만 커집니다. 탄성 범위의 이 이상적인 모델에서는 그것만으로 진동수가 달라지지 않습니다.",
+      "sourceFormulaBlocks": [
+        "$$\nF=\\frac{\\omega}{2\\pi}=\\frac{\\sqrt K}{2\\pi}\n=\\frac1{2\\pi}\\sqrt{\\frac{k}{m}}.\n$$",
+        "$$\nx(t)=A\\cos(2\\pi Ft+\\theta_0).\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-010-damping",
+      "section": "에너지를 줄이는 감쇠",
+      "title": "에너지를 줄이는 감쇠",
+      "sourceParagraphs": [
+        "S122-P122",
+        "S122-P123",
+        "S122-P124",
+        "S122-P125",
+        "S122-P126",
+        "S122-P127",
+        "S122-P128"
+      ],
+      "screenPlan": "Fd=−cv; matched initialstate c0/positivec; force arrows, energy loss not fabricated measuredgamevalue.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C03"
+      ],
+      "text": "복원력만 있으면 영원히 왕복합니다. 움직임을 시작하거나 유지하는 외력은 구동력이고, 에너지를 줄여 움직임을 가라앉히는 효과는 감쇠입니다. 여기서는 속도에 비례하고 방향은 반대인 점성 감쇠를 더합니다. 두 배 빠르면 제동하는 힘도 두 배입니다. 크기를 일정하게 잡는 쿨롱 마찰과는 다른 모델입니다. 감쇠가 생기면 흔들리는 폭이 줄고, 진동하는 경우에는 진동수도 낮아집니다.",
+      "sourceFormulaBlocks": [
+        "$$\nf_d=-c\\dot x.\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-011-combined",
+      "section": "힘의 합",
+      "title": "힘의 합",
+      "sourceParagraphs": [
+        "S122-P129",
+        "S122-P130",
+        "S122-P131",
+        "S122-P132"
+      ],
+      "screenPlan": "F=−kx−cv→a=−(k/m)x−(c/m)v; live force components.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "용수철은 평형점으로 당기고, 댐퍼는 지금 움직이는 방향을 거슬러 작용합니다. 알짜힘은 마이너스 케이 엑스, 마이너스 씨 속도입니다. 질량으로 나누면 가속도입니다. 평형점을 지날 때 용수철 힘은 영이지만 속도는 남아 있어 감쇠력이 작용합니다. 두 힘이 늘 같은 방향인 것은 아닙니다. 위치와 속도에 따라 서로 돕거나 반대합니다.",
+      "sourceFormulaBlocks": [
+        "$$\nf_{\\mathrm{net}}=f_r+f_d=-kx-c\\dot x.\n$$",
+        "$$\n\\ddot x=\\frac{f_{\\mathrm{net}}}{m}\n=-\\frac{k}{m}x-\\frac{c}{m}\\dot x.\n\\tag{12.11}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-012-ratio",
+      "section": "감쇠비",
+      "title": "감쇠비",
+      "sourceParagraphs": [
+        "S122-P140",
+        "S122-P141",
+        "S122-P142",
+        "S122-P143",
+        "S122-P144",
+        "S122-P145",
+        "S122-P146"
+      ],
+      "screenPlan": "ζ=c/(2√mk)=c/(2mω0),a=−ω0²x−2ζω0v; numericvalues attached spring.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "감쇠가 없을 때의 각진동수를 오메가 영이라고 하겠습니다. 감쇠 계수 씨를 이 곱하기 질량 곱하기 오메가 영으로 나눈 값이 감쇠비 제타입니다. 계수 씨와 비율 제타는 다른 값이죠. 식은 가속도가 마이너스 오메가 영 제곱 곱하기 위치, 마이너스 이 제타 오메가 영 곱하기 속도가 됩니다. 질량 일, 용수철 상수 십육, 감쇠 계수 사라면 각진동수 사, 감쇠비 영점오입니다.",
+      "sourceFormulaBlocks": [
+        "$$\n\\zeta=\\frac{c}{2\\sqrt{mk}}=\\frac{c}{2m\\omega_0}.\n$$",
+        "$$\n\\ddot x=-\\omega_0^2x-2\\zeta\\omega_0\\dot x.\n\\tag{12.12}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-013-underdamped",
+      "section": "부족 감쇠",
+      "title": "부족 감쇠",
+      "sourceParagraphs": [
+        "S122-P147",
+        "S122-P148",
+        "S122-P149",
+        "S122-P150",
+        "S122-P151",
+        "S122-P152",
+        "S122-P153",
+        "S122-P154"
+      ],
+      "screenPlan": "x=(k1cosωdt+k2sinωdt)e^(−ζω0t),ωd=ω0√(1−ζ²);k1=x0;k2=(ζω0x0+v0)/ωd. x01,v00,ω04,ζ.5→ωd√12,k2.577.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C03"
+      ],
+      "text": "감쇠비가 영보다 크고 일보다 작으면 부족 감쇠입니다. 목표를 지나 왕복하지만 점점 작은 범위로 모입니다. 해에서 사인과 코사인은 왕복을 만들고, 감소하는 지수 함수는 그 폭을 감쌉니다. 실제 각진동수는 오메가 영에 루트 일 마이너스 제타 제곱을 곱합니다. 두 상수는 처음 위치와 속도로 정합니다. 감쇠비를 영으로 놓으면 지수 부분이 일이 되어, 감쇠 없는 진동으로 돌아갑니다.",
+      "sourceFormulaBlocks": [
+        "$$\nx(t)=\\bigl(k_1\\cos(\\omega_dt)+k_2\\sin(\\omega_dt)\\bigr)e^{-\\zeta\\omega_0t}.\n\\tag{12.13}\n$$",
+        "$$\n\\omega_d=\\omega_0\\sqrt{1-\\zeta^2}.\n\\tag{12.14}\n$$",
+        "$$\nk_1=x(0),\\qquad\nk_2=\\frac{\\zeta\\omega_0x(0)+\\dot x(0)}{\\omega_d}.\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-014-critical",
+      "section": "임계 감쇠와 과감쇠",
+      "title": "임계 감쇠와 과감쇠",
+      "sourceParagraphs": [
+        "S122-P155",
+        "S122-P156",
+        "S122-P157",
+        "S122-P158",
+        "S122-P159",
+        "S122-P160"
+      ],
+      "screenPlan": "x=(k1+k2t)e^(−ω0t);k1=x0,k2=ω0x0+v0. compareζ0,.5,1,2 samex01,v00. Own redraw of graph role.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C04"
+      ],
+      "text": "감쇠비가 일이 되면 반복 진동이 사라집니다. 이 경계가 임계 감쇠입니다. 해는 일차식에 감소하는 지수 함수를 곱한 모양입니다. 두 상수는 다시 초기 위치와 속도로 정합니다. 더 큰 감쇠비는 과감쇠입니다. 같은 위치에서 정지 상태로 놓는 비교에서는, 너무 큰 제동 때문에 돌아오는 시간이 더 길어집니다. 빨리 돌아오게 하려고 감쇠만 계속 올리면 오히려 둔해질 수 있습니다.",
+      "sourceFormulaBlocks": [
+        "$$\nx(t)=(k_1+k_2t)e^{-\\omega_0t}.\n\\tag{12.15}\n$$",
+        "$$\nk_1=x(0),\\qquad k_2=\\omega_0x(0)+\\dot x(0).\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-015-critical-limit",
+      "section": "임계 감쇠의 조건",
+      "title": "임계 감쇠의 조건",
+      "sourceParagraphs": [
+        "S122-P188"
+      ],
+      "screenPlan": "x=(1−6t)e^(−4t); markcrossingt1/6 adjacentcriticalcomparison.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C04"
+      ],
+      "text": "진동하지 않는다는 말이 어떤 초기 속도에서도 목표를 한 번도 넘지 않는다는 뜻은 아닙니다. 위치 일, 각진동수 사에서 초기 속도를 마이너스 십으로 주면 식 앞부분은 일 마이너스 육 티입니다. 육분의 일 초 뒤에 부호가 바뀌어 목표를 통과합니다. 반복 진동은 없지만 한 번의 통과는 있는 셈입니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-016-setpoint",
+      "section": "설정값과 출력",
+      "title": "설정값과 출력",
+      "sourceParagraphs": [
+        "S122-P161",
+        "S122-P162",
+        "S122-P163",
+        "S122-P164",
+        "S122-P165"
+      ],
+      "screenPlan": "qcurrent,rsetpoint,e=q−r. Own Unitycamera/menu demonstrations; verifiedcommercialexamples later, nointernalalgorithmclaims.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "이번에는 용수철의 목표를 움직여 보겠습니다. 카메라가 따라갈 위치, 적이 조준할 각도, 스틱이 요구하는 속도, 메뉴 표시가 가야 할 위치가 목표값이 될 수 있습니다. 제어에서는 설정값이라고 부릅니다. 입력은 원하는 값이고 출력은 실제 사용할 값입니다. 둘의 차이가 오차입니다. 입력은 힘 자체보다는 용수철의 반대쪽 끝을 옮기는 것에 가깝습니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-017-pd",
+      "section": "비례·미분 제어",
+      "title": "비례·미분 제어",
+      "sourceParagraphs": [
+        "S122-P166",
+        "S122-P167",
+        "S122-P168"
+      ],
+      "screenPlan": "P=−kp(q−r),D=−kdv; derivativeonoutput not necessarily derivativeoferror for movingtarget. Ibrief roleonly.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C05"
+      ],
+      "text": "원하는 값을 바로 대입하면 간단하지만 목표가 바뀔 때 덜컥거립니다. 자동차 서스펜션처럼 변화가 부드럽게 전달되도록, 오차에 비례한 복원과 속도에 비례한 감쇠를 사용합니다. 피디 제어기의 한 형태입니다. 피는 비례, 디는 미분입니다. 오차를 시간에 따라 모으는 적분 항까지 더하면 피아이디 제어기가 되며, 지속적인 오차를 줄이는 데 쓸 수 있습니다. 여기서는 두 항으로 움직임을 만들겠습니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-018-code-state",
+      "section": "코드의 상태",
+      "title": "코드의 상태",
+      "sourceParagraphs": [
+        "S122-P169",
+        "S122-P170",
+        "S122-P171",
+        "S122-P172"
+      ],
+      "screenPlan": "Own SpringDamper fields value,setPoint,velocity,k,c;accel=−k*(value−setPoint)−c*velocity. Source SprintDamper typo corrected.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C05",
+        "C06"
+      ],
+      "text": "코드는 현재 값, 목표값, 현재 변화 속도를 기억합니다. 질량은 계수에 흡수합니다. 현재 값에서 목표값을 빼고, 오차에 비례한 항과 속도에 비례한 항을 더해 가속도를 만듭니다. 목표보다 오른쪽이면 오차가 양수라서 복원 항은 왼쪽을 가리킵니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-019-code-step",
+      "section": "반암시적 오일러",
+      "title": "반암시적 오일러",
+      "sourceParagraphs": [
+        "S122-P173",
+        "S122-P184"
+      ],
+      "screenPlan": "velocity+=accel*dt;value+=velocity*dt; syntaxcolors separate executionline. Worknumbers sequentially.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C06"
+      ],
+      "text": "가속도에 시간 간격을 곱해 속도를 바꾸고, 그 새 속도로 위치를 바꿉니다. 목표 일, 현재 값과 속도 영, 케이 십육, 씨 사, 시간 간격 영점일 초를 넣어 보죠. 오차 마이너스 일에서 가속도 십육, 새 속도 일점육, 새 위치 영점일육을 얻습니다. 새 속도를 먼저 썼으므로 정확한 이름은 반암시적 오일러 방법입니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-020-tuning",
+      "section": "설계용 조절 값",
+      "title": "설계용 조절 값",
+      "sourceParagraphs": [
+        "S122-P174",
+        "S122-P175",
+        "S122-P176",
+        "S122-P177",
+        "S122-P183"
+      ],
+      "screenPlan": "ζ1,ω04→k16,c8;ω08→k64,c16. rad/s vsHz explicit, physicalk=mω²,c=2mζω.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C07"
+      ],
+      "text": "제작 화면에는 케이와 씨 대신 감쇠비와 비감쇠 각진동수를 보여 주면 편리합니다. 질량을 흡수한 코드에서는 케이가 오메가 영의 제곱이고, 씨는 이 제타 오메가 영입니다. 감쇠비를 일로 고정하면 반복 진동 없이 반응의 빠르기를 조절할 수 있습니다. 각진동수라는 이름이 있어도 실제로 왕복한다는 뜻은 아닙니다. 큰 값은 빠르게, 작은 값은 느긋하게 따라갑니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-021-discrete-limit",
+      "section": "계산 간격의 한계",
+      "title": "계산 간격의 한계",
+      "sourceParagraphs": [
+        "S122-P177",
+        "S122-P184"
+      ],
+      "screenPlan": "Analyticreference vsdt curves, no unconditionalstabilityclaim.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C06"
+      ],
+      "text": "같은 두 줄로 진행하므로 감쇠 상태마다 별도 공식으로 나눌 필요는 없습니다. 그러나 연속 시간의 식이 안정적이라고 해서 어떤 계산 간격에서도 안정적인 것은 아닙니다. 큰 시간 간격이나 지나치게 큰 용수철 상수는 수치적으로 흔들림을 키울 수 있습니다. 같은 조건을 여러 시간 간격으로 비교해야 합니다. 적분법의 선택은 뒤에서 더 살펴보겠습니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-022-first-order",
+      "section": "일차 지연",
+      "title": "일차 지연",
+      "sourceParagraphs": [
+        "S122-P178",
+        "S122-P185",
+        "S122-P186",
+        "S122-P187"
+      ],
+      "screenPlan": "e′=−λe; qnew=r+(q−r)e^(−λdt),λ>0. Exactpiecewiseconstanttarget. positivekxwouldgrow.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C08"
+      ],
+      "text": "왕복하거나 속도를 기억할 필요가 없으면 일차 지연을 쓸 수 있습니다. 오차의 변화율을 마이너스 람다 곱하기 오차로 두고, 람다는 양수로 잡습니다. 목표가 계산 구간 동안 고정돼 있다면, 남은 거리에 지수 감쇠 비율을 곱해 새 값을 직접 구합니다. 목표 일, 현재 영, 람다 이에서 반 초 뒤에는 약 영점육삼입니다. 용수철의 이계 운동과는 다른 모델입니다.",
+      "sourceFormulaBlocks": [
+        "$$\nq_{\\mathrm{new}}=r+(q-r)e^{-\\lambda\\Delta t},\\qquad\\lambda>0.\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-023-alternatives",
+      "section": "움직임의 선택",
+      "title": "움직임의 선택",
+      "sourceParagraphs": [
+        "S122-P179",
+        "S122-P180"
+      ],
+      "screenPlan": "Sameinput fixedspeed/firstorder/secondorder plots; avoid unrelatednewchapter.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "목표를 일정한 속도로 쫓는 방법도 있고, 이전 값들을 가중해 섞는 필터도 있습니다. 목표가 바뀌자마자 속도가 바뀌어도 되는지, 관성을 남겨야 하는지에 따라 선택은 다릅니다. 용수철과 감쇠는 반응의 빠르기와 흔들림을 따로 조절하기 좋은 도구입니다. 물리적인 비유를 이해하면 위치뿐 아니라 게임의 여러 값에도 같은 구조를 적용할 수 있습니다.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-024-closing",
+      "section": "다음 질문",
+      "title": "다음 질문",
+      "sourceParagraphs": [],
+      "screenPlan": "Returnsameverifiedaction; no reset music/title. Transition into momentum.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "부드러운 움직임을 두 역할로 나눴습니다. 멀어질수록 되돌리는 힘, 그리고 속도를 줄이는 힘입니다. 합쳐서 시간에 따라 갱신하면 숫자가 게임의 반응으로 바뀝니다. 다음에는 힘이 아주 짧게 작용하는 충돌로 가겠습니다. 계속 누르는 힘과 한 번의 충격은 어떻게 연결될까요?",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    }
+  ]
+}

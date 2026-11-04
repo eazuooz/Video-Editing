@@ -1,0 +1,778 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M22",
+  "slug": "game-math-skinning-normal-map",
+  "status": "source-faithful-content-draft-awaiting-footage-integration",
+  "sourceScope": [
+    "10.8",
+    "10.9"
+  ],
+  "isFinalNarration": false,
+  "gameplayStatus": "Actual independent game examples remain explicit placeholders until observed footage is integrated by root.",
+  "timingPolicy": {
+    "speechAndVisualOverlap": true,
+    "defaultHoldSeconds": 0,
+    "noAutomaticSilence": true
+  },
+  "visualPolicy": {
+    "sharedRecognizableArticulatedModel": true,
+    "background": "research-black-v1",
+    "captionSafeArea": "boxed-white-forest-v1 fixed 960,970",
+    "sourceFigures": "research-reference-only; captions read, actual images not viewed in this subtask."
+  },
+  "language": "en",
+  "segments": [
+    {
+      "id": "M22-000-abstract",
+      "section": "10.8",
+      "title": "관절 움직임과 표면 디테일",
+      "text": "A character's skin and clothing deform when an arm bends, while small armor scratches can respond to light without equally detailed geometry. We will follow skinning for large-scale shape, then normal maps for fine surface directions. Both depend on consistent coordinate transformations.",
+      "sourceParagraphs": [
+        "S108-P002",
+        "S108-P003",
+        "S108-P004",
+        "S108-P005",
+        "S108-P006",
+        "S108-P007",
+        "S108-P008",
+        "S108-P009"
+      ],
+      "screenPlan": "실제게임관절굽힘→고정갑옷빛이동 placeholder. 관찰전게임명/엔진기법단정금지.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C01"
+      ],
+      "boundaryFromPrevious": null
+    },
+    {
+      "id": "M22-001-articulation",
+      "section": "10.8",
+      "title": "통째 이동과 관절 계층",
+      "text": "One matrix moves and orients an entire character like a statue. An elbow needs connected parts such as torso, upper arm, and forearm to move relative to each other. A hierarchy of rigid parts can animate a robot, but each part remains rigid and does not produce continuous deformation through skin or clothing.",
+      "sourceParagraphs": [
+        "S108-P002",
+        "S108-P003",
+        "S108-P004",
+        "S108-P005"
+      ],
+      "screenPlan": "Unity같은관절마네킹 rigidwhole→segmentedhierarchy→continuousmesh. 최초TombRaider/PS2혼합원문채택안함.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C01"
+      ],
+      "boundaryFromPrevious": "M22-000-abstract"
+    },
+    {
+      "id": "M22-002-bones",
+      "section": "10.8",
+      "title": "본은 좌표계",
+      "text": "Skeletal animation replaces the part hierarchy with virtual bones. A bone is a moving coordinate frame, not the stick used to visualize it. Mesh vertices are associated with bones and respond to their transforms. A single influence behaves rigidly; multiple influences blend their effects.",
+      "sourceParagraphs": [
+        "S108-P006",
+        "S108-P007"
+      ],
+      "screenPlan": "bonegizmo에서localaxis표시. 막대hide여전히meshdeform. verticesanchored notdecorative.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C01"
+      ],
+      "boundaryFromPrevious": "M22-001-articulation"
+    },
+    {
+      "id": "M22-003-weights-rigging",
+      "section": "10.8",
+      "title": "스키닝 가중치와 리깅",
+      "text": "Skinning assigns which bones affect each vertex and by how much. Those proportions are skin weights. An elbow vertex may be influenced by both arm bones. Rigging can also include animator controls beyond these assignments. Automatic weights are a starting point, but extreme poses still need inspection.",
+      "sourceParagraphs": [
+        "S108-P007",
+        "S108-P008",
+        "S108-P009",
+        "S108-P010"
+      ],
+      "screenPlan": "weightcolor+numeric twochannels. sameelbowbends slow native animation simultaneousnarration.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C01"
+      ],
+      "boundaryFromPrevious": "M22-002-bones"
+    },
+    {
+      "id": "M22-004-lbs",
+      "section": "10.8",
+      "title": "정점 위치 가중평균",
+      "text": "Track a vertex influenced by two bones. Compute where it would be if rigidly attached to the upper arm, then where it would be if attached to the forearm. Place the final vertex at the weighted average of those positions. This is linear blend skinning: it blends transformed positions, not rotation angles.",
+      "sourceParagraphs": [
+        "S108-P009",
+        "S108-P010",
+        "S108-P011",
+        "S108-P012",
+        "S108-P013",
+        "S108-P014",
+        "S108-P062",
+        "S108-P063"
+      ],
+      "screenPlan": "two ghostvertex +finalvertex segment. `.6*p_upper+.4*p_lower`. sourceglossary LBS.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-003-weights-rigging"
+    },
+    {
+      "id": "M22-005-lbs-numbers",
+      "section": "10.8",
+      "title": "60/40과20/80 계산",
+      "text": "If the upper arm proposes (0,2) and the forearm proposes (2,0), weights of 0.6 and 0.4 produce (0.8,1.2), closer to the upper-arm position. Weights of 0.2 and 0.8 produce (1.6,0.4). Different vertices use different weights, producing a connected deformation around the same moving joint.",
+      "sourceParagraphs": [
+        "S108-P013",
+        "S108-P014"
+      ],
+      "screenPlan": "2D수치plane+3D팔pointleaderline. 두예값은자체선택계산원문approxweights보존.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-004-lbs"
+    },
+    {
+      "id": "M22-006-vertex-data",
+      "section": "10.8",
+      "title": "정점 입력 목록과 합1",
+      "text": "A vertex stores influencing bone indices and weights. In the simple method, it also stores a position in each influencing bone's space. Nonnegative weights sum to one so identical proposed positions remain unchanged. Four influences may be an implementation limit, but it is not a mathematical maximum.",
+      "sourceParagraphs": [
+        "S108-P015",
+        "S108-P016",
+        "S108-P020",
+        "S108-P021",
+        "S108-P022",
+        "S108-P023",
+        "S108-P024",
+        "S108-P025",
+        "S108-P026"
+      ],
+      "screenPlan": "`boneIndex`, `boneWeight`, `posInBoneSpace` rowhighlight. sum1example .6+.4. MAX4 configurednotuniversal.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C02"
+      ],
+      "boundaryFromPrevious": "M22-005-lbs-numbers"
+    },
+    {
+      "id": "M22-007-simple-algorithm",
+      "section": "10.8",
+      "title": "원시 스키닝 순회",
+      "text": "Begin by zeroing one vertex's output. For each influencing bone, fetch its current matrix, transform the bone-space position into model space, multiply by the weight, and accumulate. Then proceed to the next vertex. The loop repeats the two-proposal diagram across the mesh.",
+      "sourceParagraphs": [
+        "S108-P027",
+        "S108-P028",
+        "S108-P029",
+        "S108-P030",
+        "S108-P033",
+        "S108-P034"
+      ],
+      "screenPlan": "sourcecode10.7독립축약implementationpseudocode5line, sourceallalgorithmsteps유지. executionmarkerseparatesyntax.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-006-vertex-data"
+    },
+    {
+      "id": "M22-008-skinned-normal",
+      "section": "10.8",
+      "title": "법선 변환",
+      "text": "Unchanged normals would make lighting fail to follow the deformation. Transform their directional components without translation, blend them, and renormalize. This common simple treatment is an approximation used with rotation-focused skinning. Nonuniform scale or shear requires separate normal-transformation handling, including inverse-transpose considerations.",
+      "sourceParagraphs": [
+        "S108-P017",
+        "S108-P018",
+        "S108-P019",
+        "S108-P031",
+        "S108-P032"
+      ],
+      "screenPlan": "positionpoint w1 vsnormalvectorw0, nskinrenormalization. weightedmatrixnonorthogonalwarningactual.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C03"
+      ],
+      "boundaryFromPrevious": "M22-007-simple-algorithm"
+    },
+    {
+      "id": "M22-009-bind-question",
+      "section": "10.8",
+      "title": "바인드 포즈의 기준",
+      "text": "The bone-space positions come from a reference configuration called the bind pose: the original mesh and skeleton arrangement used for binding. Visualized bones are not physical rods pushing the mesh. Knowing each vertex and bone frame in the bind pose lets us express the vertex in that bone's coordinates.",
+      "sourceParagraphs": [
+        "S108-P035",
+        "S108-P036",
+        "S108-P037",
+        "S108-P038",
+        "S108-P039"
+      ],
+      "screenPlan": "bindposefixedghost currentarmalongside samecamera. bindinversearrows.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-008-skinned-normal"
+    },
+    {
+      "id": "M22-010-bind-conversion",
+      "section": "10.8",
+      "title": "모델→본→현재 모델",
+      "text": "The bind matrix locates the bone in model space; its inverse takes a model-space vertex into that bone's space. Applying the bone's current matrix then returns it to the current model pose. Recompute from the original bind position rather than repeatedly deforming last frame's output.",
+      "sourceParagraphs": [
+        "S108-P040",
+        "S108-P041",
+        "S108-P042",
+        "S108-P043"
+      ],
+      "screenPlan": "`p_current=J_current B_bind^-1 p_bind` columnvectorconsistent code root. source rowvector note inversionorder.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C04"
+      ],
+      "boundaryFromPrevious": "M22-009-bind-question"
+    },
+    {
+      "id": "M22-011-bind-example",
+      "section": "10.8",
+      "title": "바인드 행렬 숫자 예",
+      "text": "Suppose a bind-pose bone origin is at x=1 and the vertex at x=2. In bone space, the vertex is one unit from the origin. Moving the bone origin to x=3 places the vertex at x=4. Without first removing the bind transform, the original offset would be applied incorrectly.",
+      "sourceParagraphs": [
+        "S108-P043",
+        "S108-P044",
+        "S108-P045"
+      ],
+      "screenPlan": "`2−1=1→1+3=4`, skipinversewrong5. bind=current→identityverification.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C04"
+      ],
+      "boundaryFromPrevious": "M22-010-bind-conversion"
+    },
+    {
+      "id": "M22-012-matrix-blend",
+      "section": "10.8",
+      "title": "바인드 위치 하나와 행렬 블렌드",
+      "text": "We can reduce storage by keeping one bind-pose position per vertex instead of one per bone. Precombine each bone's inverse bind transform with its current transform. For a vertex, blend the required matrices using its weights, then apply that blended matrix once.",
+      "sourceParagraphs": [
+        "S108-P044",
+        "S108-P045",
+        "S108-P047",
+        "S108-P048",
+        "S108-P049",
+        "S108-P050",
+        "S108-P051",
+        "S108-P052",
+        "S108-P053",
+        "S108-P054",
+        "S108-P055"
+      ],
+      "screenPlan": "`p'=Σw_j(M_j p)= (Σw_jM_j)p`; indexweightsretained positions1vs4 footprintnonnumericclaim.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C02",
+        "C04"
+      ],
+      "boundaryFromPrevious": "M22-011-bind-example"
+    },
+    {
+      "id": "M22-013-matrix-equivalence",
+      "section": "10.8",
+      "title": "행렬 가중합과 한계",
+      "text": "The equivalence follows from distributivity: transform the same input with several matrices and sum, or sum the weighted matrices first and transform once. This can reuse work across attributes. However, a linear blend of rotation matrices is not generally another pure rotation, so joints can collapse or lose volume during twisting.",
+      "sourceParagraphs": [
+        "S108-P055",
+        "S108-P056",
+        "S108-P057",
+        "S108-P058",
+        "S108-P059"
+      ],
+      "screenPlan": "sourcecode10.8steps all preserved. rotationblend0/180shrinkscontrast mathematical demo notgameinternalclaim.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C03",
+        "C04"
+      ],
+      "boundaryFromPrevious": "M22-012-matrix-blend"
+    },
+    {
+      "id": "M22-014-deformation-limit",
+      "section": "10.8",
+      "title": "고급 변형 필요와 연결",
+      "text": "Skinning therefore involves more than creating bones. Test joint extremes and adjust the weights and mesh. Muscle bulging or flesh spreading under load may require additional deformation methods. We have changed vertices to shape the large form; next we will represent small surface details without adding a vertex for every bump.",
+      "sourceParagraphs": [
+        "S108-P040",
+        "S108-P041",
+        "S108-P046",
+        "S108-P060",
+        "S108-P061",
+        "S108-P062",
+        "S108-P063",
+        "S108-P064"
+      ],
+      "screenPlan": "articulatedarmmuscleillustration optionalnotnewmethodlecture; currentmeshfixed→armarmorpatchzoom.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C01"
+      ],
+      "boundaryFromPrevious": "M22-013-matrix-equivalence"
+    },
+    {
+      "id": "M22-015-bump-height",
+      "section": "10.9",
+      "title": "높이 맵과 노멀 맵",
+      "text": "Textures can store more than color. Bump mapping represents small relief through changes in shading direction. A height map stores height and derives normals from its slope; a normal map stores the directions directly. We will focus on normal maps, which alone do not displace vertices or change the silhouette.",
+      "sourceParagraphs": [
+        "S109-P002",
+        "S109-P003"
+      ],
+      "screenPlan": "heightgrayscale→slopeN vsnormalRGB→N. fixedgeometrywireframe+lightrotation. actualgamebumpobservableplaceholder.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C05"
+      ],
+      "boundaryFromPrevious": "M22-014-deformation-limit"
+    },
+    {
+      "id": "M22-016-encode-normal",
+      "section": "10.9",
+      "title": "법선 RGB 인코딩",
+      "text": "A basic normal map encodes x, y, and z into red, green, and blue. Direction components in [-1,1] are mapped to [0,1] using 0.5*n+0.5, and decoded using 2*c-1. The straight outward normal (0,0,1) becomes (0.5,0.5,1), explaining the familiar bluish color.",
+      "sourceParagraphs": [
+        "S109-P004",
+        "S109-P005"
+      ],
+      "screenPlan": "`encode=.5*n+.5`, decode; individualXYZRGBlabels notaxiscolorambiguity. flatnormalcolor127/128quantization.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C05"
+      ],
+      "boundaryFromPrevious": "M22-015-bump-height"
+    },
+    {
+      "id": "M22-017-normal-data",
+      "section": "10.9",
+      "title": "숫자 데이터와 제작",
+      "text": "These colors package direction data rather than decorative color. Altering brightness changes the encoded direction. Import them as normal data, not ordinary sRGB color, and handle renormalization after sampling or compression. A common workflow bakes surface directions from detailed geometry into a texture for a lower-resolution mesh.",
+      "sourceParagraphs": [
+        "S109-P004",
+        "S109-P005",
+        "S109-P006",
+        "S109-P007"
+      ],
+      "screenPlan": "highpoly→bake→lowpoly+map; sourceartisttoolcostgeneralnotPhotoshopclaim. normalimportlinear, actualsettingslaterverify.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C05"
+      ],
+      "boundaryFromPrevious": "M22-016-encode-normal"
+    },
+    {
+      "id": "M22-018-reuse-problem",
+      "section": "10.9",
+      "title": "같은 무늬와 다른 면 방향",
+      "text": "Reusing a texture saves memory and authoring work, but normals are directions. If the same values on a box's top and bottom are interpreted as object-space upward directions, both surfaces would point upward. Each patch needs a local frame telling us what outward means there.",
+      "sourceParagraphs": [
+        "S109-P008",
+        "S109-P009",
+        "S109-P010",
+        "S109-P011"
+      ],
+      "screenPlan": "sameRGBtexeltopbottom→wrongparallelN→localframecorrectoppositeN. cubesallowedbecauseexplicitboxexample.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-017-normal-data"
+    },
+    {
+      "id": "M22-019-tangent-frame",
+      "section": "10.9.1",
+      "title": "TBN 세 축 정의",
+      "text": "Tangent space supplies the local frame: normal N points outward, tangent T follows increasing texture u, and bitangent B follows increasing v. Some references call B the binormal; we will consistently use bitangent. Together they form the TBN basis. Image-up and increasing-v conventions must agree across tools.",
+      "sourceParagraphs": [
+        "S109-P015",
+        "S109-P016",
+        "S109-P017",
+        "S109-P018",
+        "S109-P034"
+      ],
+      "screenPlan": "surfaceattachedTBN canonicalterm card; UVincrementpaired arrows. normalmapyflipconvention.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C06"
+      ],
+      "boundaryFromPrevious": "M22-018-reuse-problem"
+    },
+    {
+      "id": "M22-020-decode-example",
+      "section": "10.9.1",
+      "title": "RGB37,128,218 정확 복원",
+      "text": "For the eight-bit values (37,128,218), divide by 255, multiply by two, and subtract one. The result is approximately (-0.710,0.0039,0.710). Renormalizing gives nearly (-0.707,0,0.707): about a forty-five-degree tilt. The small discrepancy comes from quantization.",
+      "sourceParagraphs": [
+        "S109-P019",
+        "S109-P074"
+      ],
+      "screenPlan": "`2c/255−1=(-.709804,.003922,.709804)`, normalizedcalc exact. smallYnotclaim0exact. rendererstrengthdefault1.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C05"
+      ],
+      "boundaryFromPrevious": "M22-019-tangent-frame"
+    },
+    {
+      "id": "M22-021-local-left",
+      "section": "10.9.1",
+      "title": "좌표 합으로 모델 법선",
+      "text": "Negative x means decreasing u on the surface, not screen-left. For tangent-space normal (-0.707,0,0.707), multiply T by -0.707 and N by 0.707, then add. This weighted combination of basis vectors produces the object-space direction, keeping the same apparent detail attached as the surface rotates.",
+      "sourceParagraphs": [
+        "S109-P019",
+        "S109-P020",
+        "S109-P021",
+        "S109-P022",
+        "S109-P023"
+      ],
+      "screenPlan": "`n_m=xT+yB+zN` +matrixTBN. rowvectorbasisrowssource vscolumnbasiscolumnsdisplay explicit. orthonormalcondition.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [
+        {
+          "paragraphId": "S109-P021",
+          "formula": "$$\n\\mathbf s_m=s_{tx}\\hat{\\mathbf u}+s_{ty}\\hat{\\mathbf v}+s_{tz}\\hat{\\mathbf n}.\n$$"
+        },
+        {
+          "paragraphId": "S109-P023",
+          "formula": "$$\n\\mathbf s_m=\\mathbf s_t\n\\begin{bmatrix}\n-\\hat{\\mathbf u}-\\\\\n-\\hat{\\mathbf v}-\\\\\n-\\hat{\\mathbf n}-\n\\end{bmatrix}.\n\\tag{10.18}\n$$"
+        }
+      ],
+      "correctionIds": [
+        "C05"
+      ],
+      "boundaryFromPrevious": "M22-020-decode-example"
+    },
+    {
+      "id": "M22-022-frame-varying",
+      "section": "10.9.1",
+      "title": "표면과 UV를 따라 변하는 기저",
+      "text": "Across a curved surface, N, T, and B change with position. Even on a flat surface, distorted UV mapping can alter the u and v directions, which need not be perpendicular. Vertex frames can be interpolated across the surface and then adjusted into an orthonormal frame for the intended shading convention.",
+      "sourceParagraphs": [
+        "S109-P024",
+        "S109-P025",
+        "S109-P026",
+        "S109-P027"
+      ],
+      "screenPlan": "curvedsamearmorpatch+UVsheargrid; T/Bangle non90. ordinarystretchdataidentifiable.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-021-local-left"
+    },
+    {
+      "id": "M22-023-space-choice",
+      "section": "10.9.1",
+      "title": "어느 공간에서 조명 계산",
+      "text": "Either transform the mapped normal into object space or transform lighting and viewing vectors into tangent space. Compared vectors must share a coordinate system. For an orthonormal basis, inverse equals transpose and dot products with the axes recover coordinates. A skewed basis does not generally have that property.",
+      "sourceParagraphs": [
+        "S109-P028",
+        "S109-P029",
+        "S109-P030"
+      ],
+      "screenPlan": "TBNinverse/transposeonlyiforthonormal. interpolatedlightdirectionnormalize notassumelinearperfect.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C07"
+      ],
+      "boundaryFromPrevious": "M22-022-frame-varying"
+    },
+    {
+      "id": "M22-024-reconstruct-bitangent",
+      "section": "10.9.1",
+      "title": "외적과 handedness",
+      "text": "An orthogonal frame need not store all three axes: a cross product of N and T can reconstruct the third. Mirrored UV mapping may require that axis to reverse, so store a handedness sign of +1 or -1. Reconstruct B as sign times cross(N,T); formats may store this sign in tangent.w.",
+      "sourceParagraphs": [
+        "S109-P031",
+        "S109-P032",
+        "S109-P033"
+      ],
+      "screenPlan": "`B=h(N×T)`, `h=sign((N×T)·Bstored)`; mirroredtextureonevariable. note negativeobjectscalehandledpipeline.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C06"
+      ],
+      "boundaryFromPrevious": "M22-023-space-choice"
+    },
+    {
+      "id": "M22-025-triangle-input",
+      "section": "10.9.2",
+      "title": "삼각형 위치와 UV 차",
+      "text": "To calculate T and B, start with three triangle positions and their UV coordinates. Relative to the first vertex, define the two geometric edges q1 and q2. Let s1 and s2 be the corresponding changes in u, and t1 and t2 the changes in v. We compare displacement in the surface and texture coordinate systems.",
+      "sourceParagraphs": [
+        "S109-P036",
+        "S109-P037",
+        "S109-P038"
+      ],
+      "screenPlan": "`q1=p1−p0 q2=p2−p0; s1=u1−u0 t1=v1−v0 ...` separateTtangentvs tUV carefullabels.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [
+        {
+          "paragraphId": "S109-P038",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf q_1&=\\mathbf p_1-\\mathbf p_0,& s_1&=u_1-u_0,&t_1&=v_1-v_0,\\\\\n\\mathbf q_2&=\\mathbf p_2-\\mathbf p_0,& s_2&=u_2-u_0,&t_2&=v_2-v_0.\n\\end{aligned}\n$$"
+        }
+      ],
+      "correctionIds": [
+        "C07"
+      ],
+      "boundaryFromPrevious": "M22-024-reconstruct-bitangent"
+    },
+    {
+      "id": "M22-026-linear-system",
+      "section": "10.9.2",
+      "title": "UV 이동량으로 기저 선형결합",
+      "text": "The first edge results from moving s1 along T and t1 along B, so q1=s1*T+t1*B. The second edge gives q2=s2*T+t2*B. Since the edges and UV differences are known, solve these two vector equations for T and B. This connects the two coordinate systems.",
+      "sourceParagraphs": [
+        "S109-P039",
+        "S109-P040",
+        "S109-P041",
+        "S109-P042"
+      ],
+      "screenPlan": "twoedgeanimationu/vsteps→q. matrix2×2step notwallformula.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [
+        {
+          "paragraphId": "S109-P040",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf u s_1+\\mathbf v t_1&=\\mathbf q_1,\\\\\n\\mathbf u s_2+\\mathbf v t_2&=\\mathbf q_2.\n\\end{aligned}\n$$"
+        },
+        {
+          "paragraphId": "S109-P042",
+          "formula": "$$\n\\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix}\n\\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}\n=\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}.\n$$"
+        }
+      ],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-025-triangle-input"
+    },
+    {
+      "id": "M22-027-invert-system",
+      "section": "10.9.2",
+      "title": "역행렬과 UV 행렬식",
+      "text": "The two-by-two inverse introduces the UV determinant D=s1*t2-s2*t1. It encodes oriented UV area. The tangent is (t2*q1-t1*q2)/D, and the bitangent is (-s2*q1+s1*q2)/D. These vectors are not yet normalized.",
+      "sourceParagraphs": [
+        "S109-P043",
+        "S109-P044"
+      ],
+      "screenPlan": "sourceeqinversefullmatrix thenT/Bcollapse. `D` namedfirst, nochildderivationomitted.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [
+        {
+          "paragraphId": "S109-P044",
+          "formula": "$$\n\\begin{aligned}\n\\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}\n&=\\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix}^{-1}\n\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}\\\\\n&=\\frac{1}{s_1t_2-s_2t_1}\n\\begin{bmatrix}t_2&-t_1\\\\-s_2&s_1\\end{bmatrix}\n\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}.\n\\end{aligned}\n$$"
+        }
+      ],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-026-linear-system"
+    },
+    {
+      "id": "M22-028-tangent-worked",
+      "section": "10.9.2",
+      "title": "한 삼각형 수치 대입",
+      "text": "Take geometric edges (2,0,0) and (0,1,0), with UV edges (1,0) and (0,1). The determinant is one. We obtain T=(2,0,0) and B=(0,1,0), then normalize T to (1,0,0). Moving right in texture coordinates now corresponds to the model's rightward direction.",
+      "sourceParagraphs": [
+        "S109-P036",
+        "S109-P037",
+        "S109-P038",
+        "S109-P039",
+        "S109-P040",
+        "S109-P041",
+        "S109-P042",
+        "S109-P043",
+        "S109-P044"
+      ],
+      "screenPlan": "same2D/3Dtriangleworkednumbers, sourceaddedworkedexample preservesformula.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [
+        {
+          "paragraphId": "S109-P038",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf q_1&=\\mathbf p_1-\\mathbf p_0,& s_1&=u_1-u_0,&t_1&=v_1-v_0,\\\\\n\\mathbf q_2&=\\mathbf p_2-\\mathbf p_0,& s_2&=u_2-u_0,&t_2&=v_2-v_0.\n\\end{aligned}\n$$"
+        },
+        {
+          "paragraphId": "S109-P040",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf u s_1+\\mathbf v t_1&=\\mathbf q_1,\\\\\n\\mathbf u s_2+\\mathbf v t_2&=\\mathbf q_2.\n\\end{aligned}\n$$"
+        },
+        {
+          "paragraphId": "S109-P042",
+          "formula": "$$\n\\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix}\n\\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}\n=\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}.\n$$"
+        },
+        {
+          "paragraphId": "S109-P044",
+          "formula": "$$\n\\begin{aligned}\n\\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}\n&=\\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix}^{-1}\n\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}\\\\\n&=\\frac{1}{s_1t_2-s_2t_1}\n\\begin{bmatrix}t_2&-t_1\\\\-s_2&s_1\\end{bmatrix}\n\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}.\n\\end{aligned}\n$$"
+        }
+      ],
+      "correctionIds": [
+        "C07"
+      ],
+      "boundaryFromPrevious": "M22-027-invert-system"
+    },
+    {
+      "id": "M22-029-determinant-sign",
+      "section": "10.9.2",
+      "title": "음수 배율은 정규화로 없어지지 않음",
+      "text": "Do not discard the denominator merely because you will normalize. A negative sign survives normalization. Mirroring the u direction changes the determinant to -1 and requires T to reverse. Normalization changes length, not orientation, so the determinant's sign must be preserved.",
+      "sourceParagraphs": [
+        "S109-P045",
+        "S109-P046",
+        "S109-P069",
+        "S109-P070"
+      ],
+      "screenPlan": "correctmirrorD−1 T−x vsdropdenominatorwrong+x. explicitsourcecorrectionon-screenformula notcreatorframing.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [
+        {
+          "paragraphId": "S109-P046",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf u&=t_2\\mathbf q_1-t_1\\mathbf q_2,\\\\\n\\mathbf v&=-s_2\\mathbf q_1+s_1\\mathbf q_2.\n\\end{aligned}\n$$"
+        }
+      ],
+      "correctionIds": [
+        "C07"
+      ],
+      "boundaryFromPrevious": "M22-028-tangent-worked"
+    },
+    {
+      "id": "M22-030-degenerate-uv",
+      "section": "10.9.2",
+      "title": "행렬식0과 정규화 보호",
+      "text": "If UV vertices collapse onto a line, the determinant is zero and the inverse does not exist. Handle the degenerate case before division, for example by repairing the UVs or using a validated fallback frame. Very small determinants can be unstable, and near-zero normals or accumulated tangents also need protected normalization.",
+      "sourceParagraphs": [
+        "S109-P070"
+      ],
+      "screenPlan": "UVtrianglearea→0 D→0, guardhighlight `if abs(D)<eps...` fallbacknotinventexactengine.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C07"
+      ],
+      "boundaryFromPrevious": "M22-029-determinant-sign"
+    },
+    {
+      "id": "M22-031-average-tangents",
+      "section": "10.9.2",
+      "title": "인접 면의 접선 누적",
+      "text": "We have a frame for one triangle. To obtain vertex data, accumulate the tangents and bitangents of adjacent compatible triangles, starting the accumulators at zero. These are tangent vectors, not triangle normals. The normal is a separately prepared input used in the following orthogonalization.",
+      "sourceParagraphs": [
+        "S109-P047",
+        "S109-P048",
+        "S109-P049",
+        "S109-P050",
+        "S109-P051",
+        "S109-P052",
+        "S109-P053",
+        "S109-P054",
+        "S109-P055",
+        "S109-P056",
+        "S109-P057",
+        "S109-P058",
+        "S109-P059",
+        "S109-P060",
+        "S109-P071",
+        "S109-P072",
+        "S109-P064"
+      ],
+      "screenPlan": "sourcecode10.9step input/allocateclear/triangleloop/accumulate preserving,memorycleanupafter. Captioncorrectionexplicitinternal.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C07",
+        "C08"
+      ],
+      "boundaryFromPrevious": "M22-030-degenerate-uv"
+    },
+    {
+      "id": "M22-032-gram-schmidt",
+      "section": "10.9.2",
+      "title": "그람-슈미트와 부호 저장",
+      "text": "Remove the accumulated tangent's component along the unit normal: T'=T-dot(N,T)*N, then normalize. Determine handedness from the sign of dot(cross(N,T'),Baccum). Storing the tangent plus this sign prepares us to reconstruct the frame.",
+      "sourceParagraphs": [
+        "S109-P048",
+        "S109-P060",
+        "S109-P061",
+        "S109-P062",
+        "S109-P063"
+      ],
+      "screenPlan": "`T'=normalize(T−N dot(N,T))` geometryprojectiontrace, determinantvs unit signseparate.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [],
+      "boundaryFromPrevious": "M22-031-average-tangents"
+    },
+    {
+      "id": "M22-033-seams",
+      "section": "10.9.2",
+      "title": "불연속과 정점 분리",
+      "text": "Do not average across every adjacent face indiscriminately. UV or normal discontinuities may require separate frames. A mirrored seam can even share position and UV values while needing opposite tangent directions. Averaging them can cancel the vectors, so split the vertices where necessary to preserve each side's frame.",
+      "sourceParagraphs": [
+        "S109-P065",
+        "S109-P066",
+        "S109-P067"
+      ],
+      "screenPlan": "charactercenterseam normalhighlightbad→split2verticescorrect; countsactualillustrationnotgame.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C09"
+      ],
+      "boundaryFromPrevious": "M22-032-gram-schmidt"
+    },
+    {
+      "id": "M22-034-data-pipeline",
+      "section": "10.9.2",
+      "title": "사전 가공과 런타임의 연결",
+      "text": "Once UVs, tangents, and handedness are prepared, runtime work can sample the normal, transform it, and evaluate lighting. Much of the preparation resides in asset processing. The map baker and renderer must agree on the tangent-frame convention, or seams and lighting errors can appear.",
+      "sourceParagraphs": [
+        "S109-P068"
+      ],
+      "screenPlan": "authoring→validatedmeshattributes→shader3steps. 원문75/25비율현재사실로사용안함.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C10"
+      ],
+      "boundaryFromPrevious": "M22-033-seams"
+    },
+    {
+      "id": "M22-035-close",
+      "section": "10.9.2",
+      "title": "움직이는 좌표계라는 공통점",
+      "text": "Large motion and small detail both depend on transforming values between coordinate frames. Skinning blends bind-pose vertices transformed by bones; normal mapping transforms encoded directions through the surface frame. A bending character needs both its positions and its shading directions to remain consistent.",
+      "sourceParagraphs": [
+        "S109-P068",
+        "S109-P069",
+        "S109-P070",
+        "S109-P071",
+        "S109-P072",
+        "S109-P073",
+        "S109-P074"
+      ],
+      "screenPlan": "intro실제gameplaceholder복귀 +samecharacterbone/TBNoverlays properannotation notinternalmeasured. noextraBGM.",
+      "holdSeconds": 0,
+      "sourceFormulaBlocks": [],
+      "correctionIds": [
+        "C05",
+        "C07",
+        "C08",
+        "C10"
+      ],
+      "boundaryFromPrevious": "M22-034-data-pipeline"
+    }
+  ]
+}

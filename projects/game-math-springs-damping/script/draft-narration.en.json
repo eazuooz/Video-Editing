@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M28",
+  "slug": "game-math-springs-damping",
+  "status": "source-faithful-content-draft-awaiting-footage-integration",
+  "isFinalNarration": false,
+  "language": "en",
+  "sourceScope": "12.2.3 spring/damping/control: S122-P081–188",
+  "gameplayStatus": "Independent FHD observed actions pending; no unverified game-internal claims.",
+  "timingPolicy": {
+    "speechAndVisualOverlap": true,
+    "defaultHoldSeconds": 0,
+    "noAutomaticSilence": true
+  },
+  "visualPolicy": {
+    "noAddedLectureBgm": true,
+    "background": "research-black-v1",
+    "sourceFigures": "research-reference-only; own redraw",
+    "captionSafeArea": "boxed-white-forest-v1 fixed 960,970"
+  },
+  "segments": [
+    {
+      "id": "M28-000-abstract",
+      "section": "되돌아오고 멈추기",
+      "title": "되돌아오고 멈추기",
+      "sourceParagraphs": [
+        "S122-P082",
+        "S122-P083"
+      ],
+      "screenPlan": "Branding then independently verified game target-change action; no game chosen or algorithm asserted yet.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "A camera or selection marker can feel abrupt when it snaps to a new target. Could it follow with a little delay, perhaps overshoot, and then settle? We will start with spring restoration, add damping, and turn the relationship into code for smoothly changing game values.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Branding → independent actual-game thesis abstract."
+    },
+    {
+      "id": "M28-001-rest-length",
+      "section": "늘리고 누르기",
+      "title": "늘리고 누르기",
+      "sourceParagraphs": [
+        "S122-P084"
+      ],
+      "screenPlan": "Unity shared spring/weight testbed, rest ruler remains visible as length changes.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "Fix one spring end and attach a body to the other. Stretch it and it pulls back; compress it and it pushes outward. Its rest length is the length at equilibrium without external force. Virtual springs can maintain object relationships or control movement without any visible metal spring.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-002-hooke",
+      "section": "훅의 법칙",
+      "title": "훅의 법칙",
+      "sourceParagraphs": [
+        "S122-P085",
+        "S122-P086",
+        "S122-P087",
+        "S122-P088",
+        "S122-P089"
+      ],
+      "screenPlan": "F=k(l_rest−l); k20,extension.1→F−2N. Signed force versus magnitude k|extension|.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C01"
+      ],
+      "text": "Hooke’s law makes restoring force proportional to extension. When current length exceeds rest length, signed force points back toward rest. Spring constant k is measured in newtons per meter. A twenty-newton-per-meter spring produces two newtons at a tenth-meter extension, within its elastic range. Beyond that range, the linear relationship fails.",
+      "sourceFormulaBlocks": [
+        "$$\nf_r=k(l_{\\mathrm{rest}}-l).\n\\tag{12.7}\n$$",
+        "$$\n\\begin{aligned}\n[ML/T^2]&=k[L],\\\\\n[ML/T^2]/[L]&=k,\\\\\n[M/T^2]&=k.\n\\end{aligned}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-003-acceleration",
+      "section": "위치에서 가속도로",
+      "title": "위치에서 가속도로",
+      "sourceParagraphs": [
+        "S122-P090",
+        "S122-P091",
+        "S122-P092",
+        "S122-P093"
+      ],
+      "screenPlan": "F=−kx→a=−(k/m)x=−Kx; k20,m2,x.1→a−1. Show symbols with labels.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "Choose x zero at equilibrium. Positive displacement produces force minus k x. Divide by mass to obtain acceleration minus k over m times x. The same spring accelerates a heavier body less. Capital K denotes the ratio k over m, distinct from physical stiffness.",
+      "sourceFormulaBlocks": [
+        "$$\na(t)=-Kx(t).\n\\tag{12.8}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-004-differential",
+      "section": "시간 함수를 찾기",
+      "title": "시간 함수를 찾기",
+      "sourceParagraphs": [
+        "S122-P094",
+        "S122-P095"
+      ],
+      "screenPlan": "Persistent position/velocity/acceleration labels on moving weight and derivative plots.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "The relation gives acceleration from position, but not future position itself. A differential equation connects an unknown function with derivatives: position, velocity, and acceleration here. We need a position function satisfying it. We will propose one from observed motion and differentiate twice to check it.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-005-cosine",
+      "section": "코사인 검산",
+      "title": "코사인 검산",
+      "sourceParagraphs": [
+        "S122-P096",
+        "S122-P097",
+        "S122-P098",
+        "S122-P099",
+        "S122-P100"
+      ],
+      "screenPlan": "Own graph and three derivative rows reveal together; source image not adopted.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "Recording position gives a cosine-shaped curve. Try cosine t. The first derivative is minus sine t and the second is minus cosine t. Acceleration opposes position, but the required factor K is missing. This candidate handles only the special case K equals one.",
+      "sourceFormulaBlocks": [
+        "$$\n\\begin{aligned}\nx(t)&=\\cos t,\\\\\n\\dot x(t)&=-\\sin t,\\\\\n\\ddot x(t)&=-\\cos t.\n\\end{aligned}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-006-frequency",
+      "section": "시간축의 배율",
+      "title": "시간축의 배율",
+      "sourceParagraphs": [
+        "S122-P101",
+        "S122-P102",
+        "S122-P103",
+        "S122-P104",
+        "S122-P105",
+        "S122-P106",
+        "S122-P107",
+        "S122-P108",
+        "S122-P109",
+        "S122-P110"
+      ],
+      "screenPlan": "Show chain rule factors and substitution, ω=√K=√(k/m), rad/s; parentheses unambiguous.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "Stiffer springs or lighter bodies oscillate faster, so change the time scale rather than graph height. Put square root of K times t inside cosine. Two derivatives bring out square root of K twice, producing K. Acceleration now equals minus K x. Square root of K, also square root of k over m, is angular frequency omega.",
+      "sourceFormulaBlocks": [
+        "$$\n\\begin{aligned}\nx(t)&=\\cos(\\sqrt K\\,t),\\\\\n\\dot x(t)&=-\\sqrt K\\sin(\\sqrt K\\,t),\\\\\n\\ddot x(t)&=-K\\cos(\\sqrt K\\,t).\n\\end{aligned}\n$$",
+        "$$\n\\begin{aligned}\na(t)&=-Kx(t),\\\\\n-K\\cos(\\sqrt K\\,t)&=-K\\bigl(\\cos(\\sqrt K\\,t)\\bigr).\n\\end{aligned}\n$$",
+        "$$\n\\omega=\\sqrt K=\\sqrt{k/m}.\n$$",
+        "$$\nx(t)=\\cos(\\omega t).\n\\tag{12.9}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-007-initial-state",
+      "section": "진폭과 위상",
+      "title": "진폭과 위상",
+      "sourceParagraphs": [
+        "S122-P111",
+        "S122-P112",
+        "S122-P113",
+        "S122-P114",
+        "S122-P115"
+      ],
+      "screenPlan": "Three general solution rows x,v,a. Change amplitude, then phase separately; scale fixed.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "Amplitude sets the maximum displacement; phase sets where in the cycle motion begins. Release from an extreme or begin in the middle with velocity. Position is A times cosine of omega t plus initial phase. Velocity gains a factor of omega; acceleration gains omega squared.",
+      "sourceFormulaBlocks": [
+        "$$\n\\begin{aligned}\nx(t)&=A\\cos(\\omega t+\\theta_0),\\\\\n\\dot x(t)&=-A\\omega\\sin(\\omega t+\\theta_0),\\\\\n\\ddot x(t)&=-A\\omega^2\\cos(\\omega t+\\theta_0).\n\\end{aligned}\n\\tag{12.10}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-008-phase-conditions",
+      "section": "초기 속도의 방향",
+      "title": "초기 속도의 방향",
+      "sourceParagraphs": [
+        "S122-P135",
+        "S122-P136",
+        "S122-P137",
+        "S122-P138",
+        "S122-P139"
+      ],
+      "screenPlan": "A=√(x0²+(v0/ω)²),θ0=atan2(−v0/ω,x0). Explain atan2 quadrant with two velocity signs.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C02"
+      ],
+      "text": "Initial position and velocity determine amplitude and phase. With angular frequency two, initial position zero, and initial velocity two, amplitude is one and phase minus pi over two. Reversing initial velocity preserves amplitude but reverses starting direction. Amplitude and position alone cannot determine that sign. When both initial position and velocity are zero, phase is irrelevant.",
+      "sourceFormulaBlocks": [
+        "$$\n\tA=\\sqrt{x_0^2+(v_0/\\omega)^2},\\qquad\n\\theta_0=\\operatorname{atan2}(-v_0/\\omega,x_0).\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-009-hertz",
+      "section": "헤르츠와 각진동수",
+      "title": "헤르츠와 각진동수",
+      "sourceParagraphs": [
+        "S122-P116",
+        "S122-P117",
+        "S122-P118",
+        "S122-P119",
+        "S122-P120",
+        "S122-P121"
+      ],
+      "screenPlan": "sin(t+π/2)=cos(t);F=ω/2π;x=Acos(2πFt+θ0). Compare4×k,4×m,2×A one at time.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "A shifted sine describes the same motion; both are sinusoidal. One cycle spans two pi radians, so frequency in hertz is angular frequency divided by two pi. Quadrupling stiffness doubles frequency; quadrupling mass halves it. Pulling farther changes amplitude, but not frequency in the ideal linear model.",
+      "sourceFormulaBlocks": [
+        "$$\nF=\\frac{\\omega}{2\\pi}=\\frac{\\sqrt K}{2\\pi}\n=\\frac1{2\\pi}\\sqrt{\\frac{k}{m}}.\n$$",
+        "$$\nx(t)=A\\cos(2\\pi Ft+\\theta_0).\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-010-damping",
+      "section": "에너지를 줄이는 감쇠",
+      "title": "에너지를 줄이는 감쇠",
+      "sourceParagraphs": [
+        "S122-P122",
+        "S122-P123",
+        "S122-P124",
+        "S122-P125",
+        "S122-P126",
+        "S122-P127",
+        "S122-P128"
+      ],
+      "screenPlan": "Fd=−cv; matched initialstate c0/positivec; force arrows, energy loss not fabricated measuredgamevalue.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C03"
+      ],
+      "text": "Restoring force alone produces perpetual oscillation. Driving force can start or sustain it; damping removes energy. Add viscous damping, proportional and opposite to velocity. Twice the speed produces twice the opposing force, unlike ideal constant-magnitude Coulomb friction. Damping reduces amplitude and, where oscillation remains, its frequency.",
+      "sourceFormulaBlocks": [
+        "$$\nf_d=-c\\dot x.\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-011-combined",
+      "section": "힘의 합",
+      "title": "힘의 합",
+      "sourceParagraphs": [
+        "S122-P129",
+        "S122-P130",
+        "S122-P131",
+        "S122-P132"
+      ],
+      "screenPlan": "F=−kx−cv→a=−(k/m)x−(c/m)v; live force components.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "The spring pulls toward equilibrium; the damper opposes current velocity. Net force is minus k x minus c velocity; dividing by mass gives acceleration. At equilibrium the spring force is zero, while remaining velocity still produces damping. These forces can reinforce or oppose each other depending on position and velocity.",
+      "sourceFormulaBlocks": [
+        "$$\nf_{\\mathrm{net}}=f_r+f_d=-kx-c\\dot x.\n$$",
+        "$$\n\\ddot x=\\frac{f_{\\mathrm{net}}}{m}\n=-\\frac{k}{m}x-\\frac{c}{m}\\dot x.\n\\tag{12.11}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-012-ratio",
+      "section": "감쇠비",
+      "title": "감쇠비",
+      "sourceParagraphs": [
+        "S122-P140",
+        "S122-P141",
+        "S122-P142",
+        "S122-P143",
+        "S122-P144",
+        "S122-P145",
+        "S122-P146"
+      ],
+      "screenPlan": "ζ=c/(2√mk)=c/(2mω0),a=−ω0²x−2ζω0v; numericvalues attached spring.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "Call the undamped angular frequency omega zero. Damping ratio zeta is coefficient c divided by two times mass times omega zero. The coefficient and the ratio are different. Acceleration becomes minus omega zero squared times position, minus two zeta omega zero times velocity. Mass one, stiffness sixteen, and damping coefficient four give angular frequency four and ratio one half.",
+      "sourceFormulaBlocks": [
+        "$$\n\\zeta=\\frac{c}{2\\sqrt{mk}}=\\frac{c}{2m\\omega_0}.\n$$",
+        "$$\n\\ddot x=-\\omega_0^2x-2\\zeta\\omega_0\\dot x.\n\\tag{12.12}\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-013-underdamped",
+      "section": "부족 감쇠",
+      "title": "부족 감쇠",
+      "sourceParagraphs": [
+        "S122-P147",
+        "S122-P148",
+        "S122-P149",
+        "S122-P150",
+        "S122-P151",
+        "S122-P152",
+        "S122-P153",
+        "S122-P154"
+      ],
+      "screenPlan": "x=(k1cosωdt+k2sinωdt)e^(−ζω0t),ωd=ω0√(1−ζ²);k1=x0;k2=(ζω0x0+v0)/ωd. x01,v00,ω04,ζ.5→ωd√12,k2.577.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C03"
+      ],
+      "text": "For a ratio between zero and one, the system is underdamped: it crosses the target with decreasing amplitude. Sine and cosine create oscillation while a decaying exponential forms the envelope. Actual angular frequency is omega zero times square root of one minus zeta squared. Two constants match initial position and velocity. At ratio zero, the envelope is one and motion is undamped.",
+      "sourceFormulaBlocks": [
+        "$$\nx(t)=\\bigl(k_1\\cos(\\omega_dt)+k_2\\sin(\\omega_dt)\\bigr)e^{-\\zeta\\omega_0t}.\n\\tag{12.13}\n$$",
+        "$$\n\\omega_d=\\omega_0\\sqrt{1-\\zeta^2}.\n\\tag{12.14}\n$$",
+        "$$\nk_1=x(0),\\qquad\nk_2=\\frac{\\zeta\\omega_0x(0)+\\dot x(0)}{\\omega_d}.\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-014-critical",
+      "section": "임계 감쇠와 과감쇠",
+      "title": "임계 감쇠와 과감쇠",
+      "sourceParagraphs": [
+        "S122-P155",
+        "S122-P156",
+        "S122-P157",
+        "S122-P158",
+        "S122-P159",
+        "S122-P160"
+      ],
+      "screenPlan": "x=(k1+k2t)e^(−ω0t);k1=x0,k2=ω0x0+v0. compareζ0,.5,1,2 samex01,v00. Own redraw of graph role.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C04"
+      ],
+      "text": "At ratio one, repeated oscillation disappears: critical damping. Its solution is a linear expression times a decaying exponential, with constants set by the initial state. Larger ratios give overdamping. Releasing from the same position at rest, excessive damping slows the return. Increasing damping indefinitely does not make the response faster.",
+      "sourceFormulaBlocks": [
+        "$$\nx(t)=(k_1+k_2t)e^{-\\omega_0t}.\n\\tag{12.15}\n$$",
+        "$$\nk_1=x(0),\\qquad k_2=\\omega_0x(0)+\\dot x(0).\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-015-critical-limit",
+      "section": "임계 감쇠의 조건",
+      "title": "임계 감쇠의 조건",
+      "sourceParagraphs": [
+        "S122-P188"
+      ],
+      "screenPlan": "x=(1−6t)e^(−4t); markcrossingt1/6 adjacentcriticalcomparison.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C04"
+      ],
+      "text": "Nonoscillatory does not mean that every initial velocity prevents all target crossings. Starting at position one with angular frequency four and velocity minus ten gives the factor one minus six t. Its sign changes after one sixth of a second. There is no repeated oscillation, but the target is crossed once.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-016-setpoint",
+      "section": "설정값과 출력",
+      "title": "설정값과 출력",
+      "sourceParagraphs": [
+        "S122-P161",
+        "S122-P162",
+        "S122-P163",
+        "S122-P164",
+        "S122-P165"
+      ],
+      "screenPlan": "qcurrent,rsetpoint,e=q−r. Own Unitycamera/menu demonstrations; verifiedcommercialexamples later, nointernalalgorithmclaims.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "Move the target: desired camera position, aiming angle, movement speed, or menu-highlight position can all be setpoints. Input specifies the desired value; output is the actual value used; their difference is error. This usually specifies a target quantity rather than force, like moving the spring’s other end.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-017-pd",
+      "section": "비례·미분 제어",
+      "title": "비례·미분 제어",
+      "sourceParagraphs": [
+        "S122-P166",
+        "S122-P167",
+        "S122-P168"
+      ],
+      "screenPlan": "P=−kp(q−r),D=−kdv; derivativeonoutput not necessarily derivativeoferror for movingtarget. Ibrief roleonly.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C05"
+      ],
+      "text": "Direct assignment is simple but can jump when the target changes. Like suspension smoothing road changes, combine error-proportional restoration with velocity-proportional damping. This is a form of PD control: proportional and derivative. PID adds accumulated error through an integral term, useful for reducing persistent error under suitable conditions. Here we use two terms.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-018-code-state",
+      "section": "코드의 상태",
+      "title": "코드의 상태",
+      "sourceParagraphs": [
+        "S122-P169",
+        "S122-P170",
+        "S122-P171",
+        "S122-P172"
+      ],
+      "screenPlan": "Own SpringDamper fields value,setPoint,velocity,k,c;accel=−k*(value−setPoint)−c*velocity. Source SprintDamper typo corrected.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C05",
+        "C06"
+      ],
+      "text": "Store current value, setpoint, and current rate of change. Absorb mass into the coefficients. Subtract target from value, then combine the error and velocity terms for acceleration. To the right of the target, positive error makes the restoring term point left.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-019-code-step",
+      "section": "반암시적 오일러",
+      "title": "반암시적 오일러",
+      "sourceParagraphs": [
+        "S122-P173",
+        "S122-P184"
+      ],
+      "screenPlan": "velocity+=accel*dt;value+=velocity*dt; syntaxcolors separate executionline. Worknumbers sequentially.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C06"
+      ],
+      "text": "Update velocity by acceleration times the step, then update position using that new velocity. Target one, value and velocity zero, k sixteen, c four, and a tenth-second step give error minus one, acceleration sixteen, velocity one point six, and position zero point one six. New-velocity-first ordering makes this semi-implicit Euler.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-020-tuning",
+      "section": "설계용 조절 값",
+      "title": "설계용 조절 값",
+      "sourceParagraphs": [
+        "S122-P174",
+        "S122-P175",
+        "S122-P176",
+        "S122-P177",
+        "S122-P183"
+      ],
+      "screenPlan": "ζ1,ω04→k16,c8;ω08→k64,c16. rad/s vsHz explicit, physicalk=mω²,c=2mζω.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C07"
+      ],
+      "text": "Expose damping ratio and undamped angular frequency rather than raw coefficients. Mass-normalized k is omega zero squared; c is two zeta omega zero. Fixing ratio one controls response speed without repeated oscillation. The frequency parameter still describes the undamped system, not actual cycles. Larger values react faster, smaller ones more gently.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-021-discrete-limit",
+      "section": "계산 간격의 한계",
+      "title": "계산 간격의 한계",
+      "sourceParagraphs": [
+        "S122-P177",
+        "S122-P184"
+      ],
+      "screenPlan": "Analyticreference vsdt curves, no unconditionalstabilityclaim.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C06"
+      ],
+      "text": "The update need not branch by damping regime. But continuous stability does not imply stability at arbitrary numerical step sizes. Large steps or excessive stiffness can produce growing numerical oscillations. Compare equal conditions at different steps; integration choices follow later.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-022-first-order",
+      "section": "일차 지연",
+      "title": "일차 지연",
+      "sourceParagraphs": [
+        "S122-P178",
+        "S122-P185",
+        "S122-P186",
+        "S122-P187"
+      ],
+      "screenPlan": "e′=−λe; qnew=r+(q−r)e^(−λdt),λ>0. Exactpiecewiseconstanttarget. positivekxwouldgrow.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C08"
+      ],
+      "text": "Without oscillation or a velocity state, use first-order lag. Error changes at minus positive lambda times error. For a fixed target during the interval, an exponential decay factor gives the next value directly. Target one, current zero, lambda two, and half a second give about zero point six three. This is different from second-order spring motion.",
+      "sourceFormulaBlocks": [
+        "$$\nq_{\\mathrm{new}}=r+(q-r)e^{-\\lambda\\Delta t},\\qquad\\lambda>0.\n$$"
+      ],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-023-alternatives",
+      "section": "움직임의 선택",
+      "title": "움직임의 선택",
+      "sourceParagraphs": [
+        "S122-P179",
+        "S122-P180"
+      ],
+      "screenPlan": "Sameinput fixedspeed/firstorder/secondorder plots; avoid unrelatednewchapter.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "Other approaches chase the target at constant speed or filter weighted previous values. Choose according to whether velocity may jump or motion should retain inertia. Springs and damping separately control response speed and oscillation. The structure can control many game quantities, not only physical positions.",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    },
+    {
+      "id": "M28-024-closing",
+      "section": "다음 질문",
+      "title": "다음 질문",
+      "sourceParagraphs": [],
+      "screenPlan": "Returnsameverifiedaction; no reset music/title. Transition into momentum.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "text": "We separated smooth response into restoration with distance and damping with velocity. Combine and advance them through time to turn parameters into game behavior. Next comes collision, where force acts briefly: how does a continuous push connect to one impulse?",
+      "sourceFormulaBlocks": [],
+      "boundaryFromPrevious": "Previous result carries into this problem/tool/result; read adjacent narration as one passage."
+    }
+  ]
+}

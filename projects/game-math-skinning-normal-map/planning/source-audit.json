@@ -1,0 +1,1854 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M22",
+  "status": "source-read-and-bilingual-draft-complete-footage-and-realized-qa-pending",
+  "sources": [
+    {
+      "id": "S108",
+      "url": "https://app.notion.com/p/3e10b1ffa61e8152a895c0dc5c84dce5?pvs=204",
+      "lastEditedAt": "2026-10-09T04:16:52.579Z",
+      "title": "10.8 스켈레탈 애니메이션",
+      "path": "research/source-108.notion.txt",
+      "sha256": "4fca3030b1595e0afb5591f56e1affce18c549c7555f5d2ee56bb1d7cf24ee5e"
+    },
+    {
+      "id": "S109",
+      "url": "https://app.notion.com/p/3e10b1ffa61e81e78763ecf6583c03b9?pvs=204",
+      "lastEditedAt": "2026-10-09T04:16:53.898Z",
+      "title": "10.9 범프 매핑 (Bump Mapping)",
+      "path": "research/source-109.notion.txt",
+      "sha256": "17cd7976070bcecfece6e6a6685e4c74ac7ee2c391acfb21f81b114b507a3df"
+    }
+  ],
+  "readEvidence": {
+    "fullTextRead": true,
+    "method": "Entire two source snapshots sequentially read, including code10.7/10.8/10.9 and all embedded corrections.",
+    "sourceImageVisualReview": false,
+    "sourceParagraphCount": 138
+  },
+  "coverage": {
+    "sourceBlockCount": 138,
+    "draftBeatCount": 36,
+    "unmappedIds": [],
+    "ordering": "10.8 original progression retained, then10.9→10.9.1→10.9.2. Embedded correction callouts inserted at applicable formulas."
+  },
+  "primaryEvidence": [
+    {
+      "id": "GLTF-SKIN",
+      "url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html",
+      "claim": "Linear blend skinning, inverse bind transforms, joint/weight attributes; four influences is an implementation allowance, not an absolute mathematical limit."
+    },
+    {
+      "id": "GLTF-TUTORIAL",
+      "url": "https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_020_Skins.md",
+      "claim": "Current joint transform multiplied by inverse bind maps bind-pose vertex into the current pose under column-vector convention."
+    },
+    {
+      "id": "LENGYEL-TBN",
+      "url": "https://terathon.com/blog/tangent-space.html",
+      "claim": "Original author derivation retains reciprocal UV determinant, uses Gram–Schmidt, stores handedness and avoids averaging across UV discontinuities."
+    },
+    {
+      "id": "UNITY-TANGENTS",
+      "url": "https://docs.unity.com/en-us/engine/6000.7/script-reference/unityengine/mesh/tangents",
+      "claim": "tangent.w stores +/-1; reconstruct bitangent from normal cross tangent times this sign."
+    },
+    {
+      "id": "UNITY-NORMALDATA",
+      "url": "https://docs.unity.cn/6000.3/Documentation/ScriptReference/TextureImporter-sRGBTexture.html",
+      "claim": "Normal maps are linear data; sRGB transfer conversion is inappropriate for directional values."
+    },
+    {
+      "id": "UNITY-NORMALMAP",
+      "url": "https://docs.unity.com/en-us/engine/6000.7/manual/materials-and-shaders/built-in/shader-built-in-configure-properties/standard-shader-texture-maps/material-parameter-normal-map/map",
+      "claim": "Normal maps represent apparent surface detail through pixel normals instead of geometry displacement."
+    }
+  ],
+  "corrections": [
+    {
+      "id": "C01",
+      "sourceParagraphs": [
+        "S108-P005",
+        "S108-P007",
+        "S108-P064"
+      ],
+      "decision": "Remove mixed PS2/first Tomb Raider historical attribution; preserve rigid hierarchy vs blended mesh comparison using independently made mannequin.",
+      "evidenceIds": [],
+      "verification": "Source's explicit correction callout; no unsupported platform claim remains."
+    },
+    {
+      "id": "C02",
+      "sourceParagraphs": [
+        "S108-P015",
+        "S108-P020",
+        "S108-P047"
+      ],
+      "decision": "Four bones per vertex is configured example limit, not universal.",
+      "evidenceIds": [
+        "GLTF-SKIN"
+      ]
+    },
+    {
+      "id": "C03",
+      "sourceParagraphs": [
+        "S108-P017",
+        "S108-P018",
+        "S108-P031",
+        "S108-P056"
+      ],
+      "decision": "No translation for normal vectors; normalization plus weighted direction transform is a common approximation. Nonuniform scale/shear requires appropriate normal handling, and blended rotations need not remain orthogonal.",
+      "evidenceIds": [],
+      "verification": "Linear algebra plus source's normal-transform caveat; final implementation requires numerical QA."
+    },
+    {
+      "id": "C04",
+      "sourceParagraphs": [
+        "S108-P043",
+        "S108-P044",
+        "S108-P045",
+        "S108-P055"
+      ],
+      "decision": "Make bind inverse and current matrix order explicit in one convention. Draft screen column-vector form J_current * B_bind^-1; transpose/reverse order if using source row-vector form.",
+      "evidenceIds": [
+        "GLTF-TUTORIAL"
+      ]
+    },
+    {
+      "id": "C05",
+      "sourceParagraphs": [
+        "S109-P003",
+        "S109-P004",
+        "S109-P019",
+        "S109-P074"
+      ],
+      "decision": "No blanket modern claim that height maps are unsuitable. Basic XYZ packing is one format; normal maps use linear data. Exact 8-bit decode and renormalization shown, not pretending quantized tuple equals ideal (-.707,0,.707).",
+      "evidenceIds": [
+        "UNITY-NORMALDATA",
+        "UNITY-NORMALMAP"
+      ]
+    },
+    {
+      "id": "C06",
+      "sourceParagraphs": [
+        "S109-P017",
+        "S109-P033",
+        "S109-P034"
+      ],
+      "decision": "Use canonical bitangent term with binormal as alias; handedness sign reconstructs missing axis and renderer conventions must agree.",
+      "evidenceIds": [
+        "UNITY-TANGENTS",
+        "LENGYEL-TBN"
+      ]
+    },
+    {
+      "id": "C07",
+      "sourceParagraphs": [
+        "S109-P029",
+        "S109-P030",
+        "S109-P036",
+        "S109-P045",
+        "S109-P046",
+        "S109-P058",
+        "S109-P070"
+      ],
+      "decision": "Transpose is inverse only for orthonormal basis; preserve determinant denominator/sign. Guard degenerate UVs and near-zero normalization. Plane mapping is not uniquely invertible for degenerate UV triangles.",
+      "evidenceIds": [
+        "LENGYEL-TBN"
+      ]
+    },
+    {
+      "id": "C08",
+      "sourceParagraphs": [
+        "S109-P064",
+        "S109-P072"
+      ],
+      "decision": "Source code caption says averaged triangle normals, but algorithm averages tangents/bitangents. Narration and display corrected.",
+      "evidenceIds": [
+        "LENGYEL-TBN"
+      ]
+    },
+    {
+      "id": "C09",
+      "sourceParagraphs": [
+        "S109-P065",
+        "S109-P066",
+        "S109-P067"
+      ],
+      "decision": "Split incompatible mirrored-UV seam vertices rather than averaging opposite tangent frames.",
+      "evidenceIds": [
+        "LENGYEL-TBN"
+      ]
+    },
+    {
+      "id": "C10",
+      "sourceParagraphs": [
+        "S109-P068"
+      ],
+      "decision": "Retain preprocessed-data/runtime relationship; omit unverified universal 75/25 code-share claim.",
+      "evidenceIds": []
+    }
+  ],
+  "paragraphMapping": [
+    {
+      "id": "S108-P001",
+      "section": "10.8",
+      "anchor": "<table-of-contents />",
+      "decision": "omitted-noninstructional",
+      "reason": "Navigation only.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P002",
+      "section": "10.8",
+      "anchor": "사람 같은 생명체의 애니메이션은 비디오 게임뿐 아니라 컴퓨터 그래픽스 전반에서 매우 중요합니다. 캐릭터를 움직이는 핵심 기법 중 하나가 <b>스켈레탈 애니메이션(skeletal a",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-000-abstract",
+        "M22-001-articulation"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P003",
+      "section": "10.8",
+      "anchor": "로봇처럼 사람 형태의 생명체 모델을 만들었다고 하겠습니다. 어떻게 움직일까요? 체스 말처럼 취급해서 전자레인지용 청어 샌드위치 상자나 다른 단단한 물체를 옮기듯 통째로 이동시킬 수",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-000-abstract",
+        "M22-001-articulation"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P004",
+      "section": "10.8",
+      "anchor": "서로 연결되어 움직일 수 있는 여러 부분으로 이루어졌다는 뜻입니다. 이런 생명체를 애니메이션하는 가장 단순한 방법은 모델을 왼쪽 아래팔, 왼쪽 위팔, 왼쪽 넓적다리, 왼쪽 정강이,",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-000-abstract",
+        "M22-001-articulation"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P005",
+      "section": "10.8",
+      "anchor": "더 최근 사례로는 최초의 《Tomb Raider》 같은 거의 모든 PlayStation 2 게임을 들 수 있습니다. 여기서 공통점은 각 부분이 여전히 강체라는 것입니다. 각 부분 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-000-abstract",
+        "M22-001-articulation"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S108-P006",
+      "section": "10.8",
+      "anchor": "스켈레탈 애니메이션의 아이디어는 실제 부품의 계층을 가상의 <b>본(bone, 뼈)</b> 계층으로 바꾸는 것입니다. 모델의 각 정점을 하나 이상의 본과 연결합니다. 각 본은 정점",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-000-abstract",
+        "M22-002-bones"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P007",
+      "section": "10.8",
+      "anchor": "이런 정점을 <b>강체 정점(rigid vertex)</b>이라고 하며, 최초의 라라 크로프트 모델에 있는 정점과 똑같이 동작합니다. 그러나 일반적인 경우에는 여러 본이 한 정점에",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-000-abstract",
+        "M22-002-bones",
+        "M22-003-weights-rigging"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S108-P008",
+      "section": "10.8",
+      "anchor": "본 여러 개가 한 정점에 영향을 주면 애니메이터는 정점마다 각 본의 영향력을 서로 다르게 배분할 수 있습니다. 짐작할 수 있듯이 상당히 손이 많이 가는 작업입니다. 스킨 가중치의 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-000-abstract",
+        "M22-003-weights-rigging"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P009",
+      "section": "10.8",
+      "anchor": "> 애니메이션된 정점의 위치를 구하려면 그 정점에 영향을 주는 모든 본을 순회한다. 각 본에 대해, 정점이 그 본에 강체로 붙어 있다고 가정했을 때의 위치를 계산한다. 그런 다음 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-000-abstract",
+        "M22-003-weights-rigging",
+        "M22-004-lbs"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P010",
+      "section": "10.8",
+      "anchor": "<b>원주 10-18:</b> <i>리깅(rigging)</i>이라는 말도 들어 보았을 것입니다. 다만 이 말은 더 넓은 작업 범위를 가리킬 수 있습니다. 예를 들어 리거는 애니메",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-003-weights-rigging",
+        "M22-004-lbs"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P011",
+      "section": "10.8",
+      "anchor": "![그림 10.34 — 스키닝된 두 정점](https://gamemath.com/book/figs/graphics/skinned_robot_bend_elbow.png)",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-004-lbs"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P012",
+      "section": "10.8",
+      "anchor": "<b>그림 10.34. 스키닝된 두 정점.</b>",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-004-lbs"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P013",
+      "section": "10.8",
+      "anchor": "예를 보겠습니다. 그림 10.34는 로봇의 팔꿈치 근처에 있는 스키닝된 정점 두 개를 보여 줍니다. 파란 점과 초록 점은 정점이 해당 본에 강체로 붙어 있다면 놓일 위치입니다. 청",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-004-lbs",
+        "M22-005-lbs-numbers"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P014",
+      "section": "10.8",
+      "anchor": "오른쪽, 즉 어깨에 더 가까운 정점에는 위팔 본이 약 60%, 아래팔 본이 약 40%의 영향을 줍니다. 팔을 구부리면 이 정점이 파란색 강체 정점에 더 가깝게 머무르는 것을 볼 수",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-004-lbs",
+        "M22-005-lbs-numbers"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P015",
+      "section": "10.8",
+      "anchor": "따라서 스켈레탈 애니메이션을 구현하는 단순한 전략은 다음과 같습니다. 각 정점에 영향을 주는 본의 목록을 유지합니다. 보통 한 정점에 영향을 줄 수 있는 본의 수에 제한을 두며, ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": [
+        "C02"
+      ]
+    },
+    {
+      "id": "S108-P016",
+      "section": "10.8",
+      "anchor": "임의의 자세를 취한 모델의 스키닝된 정점 위치를 계산하려면, 각 본마다 본 좌표 공간에서 모델링 좌표 공간으로 변환하는 행렬이 필요합니다. 이 변환 행렬들을 시간에 따라 바꾸면 캐",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P017",
+      "section": "10.8",
+      "anchor": "코드 10.7은 이 기본 기법을 보여 줍니다. 뒤에 필요할 것을 고려하여 정점 법선도 포함했습니다. 법선도 정점 위치와 같은 방식으로 처리하지만 행렬의 평행이동 부분은 버립니다. ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-008-skinned-normal"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S108-P018",
+      "section": "10.8",
+      "anchor": "하지만 실제로는 행렬 두 벌을 계산하여 GPU로 보내는 비용이 너무 크므로, 효율을 위해 이 오차를 무시하거나 애초에 비균일 확대·축소을 피합니다. 균일 크기 변환은 대체로 괜찮습",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-008-skinned-normal"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S108-P019",
+      "section": "10.8",
+      "anchor": "그러나 법선과 매우 비슷하게 처리하므로 여기서는 생략합니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-008-skinned-normal"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P020",
+      "section": "10.8",
+      "anchor": "```c++ // 한 정점에 영향을 줄 수 있는 본의 최대 개수를 제한한다. const int kMaxBonesPerVertex = 4;",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": [
+        "C02"
+      ]
+    },
+    {
+      "id": "S108-P021",
+      "section": "10.8",
+      "anchor": "// 골격 모델의 정점을 나타낸다. struct SkinnedVertex {",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P022",
+      "section": "10.8",
+      "anchor": "    // 이 정점에 영향을 주는 본의 수     int boneCount;",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P023",
+      "section": "10.8",
+      "anchor": "    // 어떤 본들이 이 정점에 영향을 주는가?     // 본 목록을 가리키는 인덱스들이다.     int boneIndex[kMaxBonesPerVertex];",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P024",
+      "section": "10.8",
+      "anchor": "    // 본 가중치. 합은 반드시 1이어야 한다.     float boneWeight[kMaxBonesPerVertex];",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P025",
+      "section": "10.8",
+      "anchor": "    // 본 공간에서 표현한 정점의 위치와 법선     Vector3 posInBoneSpace[kMaxBonesPerVertex];     Vector3 normalInBon",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P026",
+      "section": "10.8",
+      "anchor": "// 렌더링에 사용할 형태의 정점을 나타낸다. struct Vertex {     Vector3 pos;     Vector3 normal; };",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-006-vertex-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P027",
+      "section": "10.8",
+      "anchor": "// 스키닝된 정점의 위치와 법선을 계산한다. void computeSkinnedVertices(     int vertexCount,                       //",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-007-simple-algorithm"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P028",
+      "section": "10.8",
+      "anchor": "        // 이 정점에 영향을 주는 모든 본을 순회하여 가중평균을 구한다.         d.pos.zero();         d.normal.zero();        ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-007-simple-algorithm"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P029",
+      "section": "10.8",
+      "anchor": "            // 변환 행렬을 찾는다.             const Matrix4x3 &boneToModel                 = boneToModelLis",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-007-simple-algorithm"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P030",
+      "section": "10.8",
+      "anchor": "            // 본 공간에서 모델 공간으로 변환하고             // 이 본의 기여분을 더한다.             // 행렬 곱셈을 수행하는 오버로드된 벡터",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-007-simple-algorithm"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P031",
+      "section": "10.8",
+      "anchor": "            // 아핀 변환의 평행이동 부분을 무시하고 정점을             // 물체 공간으로 '회전'시킨다. 법선은 '점'이 아니라             // ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-008-skinned-normal"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S108-P032",
+      "section": "10.8",
+      "anchor": "        // 법선을 반드시 정규화한다.         d.normal.normalize();     } } ```",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-008-skinned-normal"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P033",
+      "section": "10.8",
+      "anchor": "<b>코드 10.7. 정점 스키닝을 위한 단순한 전략.</b>",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-007-simple-algorithm"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P034",
+      "section": "10.8",
+      "anchor": "이 책의 다른 코드 예제와 마찬가지로, 이 코드의 목적은 원리를 설명하는 것이지 실제 최적화 방법을 보여 주는 것이 아닙니다. 실제로 위의 스키닝 계산은 대개 하드웨어의 정점 셰이",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-007-simple-algorithm"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P035",
+      "section": "10.8",
+      "anchor": "그 최적화는 잠시 뒤 살펴보기로 하고, 우선 한 걸음 물러나 본 공간 좌표, 즉 코드 10.7의 <code>posInBoneSpace</code>와 <code>normalInBon",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-009-bind-question"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P036",
+      "section": "10.8",
+      "anchor": "답은 <b>바인딩 포즈(binding pose)</b>입니다. <i>홈 포즈(home pose)</i>라고도 하는 바인딩 포즈는 본들을 어떤 기본 위치에 배치한 자세를 말합니다. ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-009-bind-question"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P037",
+      "section": "10.8",
+      "anchor": "이 과정에서 캐릭터가 바인딩 포즈를 취하도록 제작합니다. 그림 10.35는 바인딩 포즈를 취한 스키닝 모델과 그 모델의 애니메이션에 사용되는 골격을 함께 보여 줍니다. 본은 실제로",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-009-bind-question"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P038",
+      "section": "10.8",
+      "anchor": "<columns> <column> ![그림 10.35 왼쪽 — 바인딩 포즈의 로봇 모델](https://gamemath.com/book/figs/graphics/robot_bind",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-009-bind-question"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P039",
+      "section": "10.8",
+      "anchor": "<b>그림 10.35. 바인딩 포즈의 로봇 모델(왼쪽)과 모델을 움직이는 본(오른쪽).</b>",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-009-bind-question"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P040",
+      "section": "10.8",
+      "anchor": "메시가 완성되면(원주 10-19) 리깅합니다. 즉 본의 계층인 <b>골격(skeleton)</b>을 만들고, 정점이 적절한 본과 연결되도록 스키닝 데이터를 편집합니다. 이 과정에서",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-010-bind-conversion",
+        "M22-014-deformation-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P041",
+      "section": "10.8",
+      "anchor": "관절이 찌그러지지 않도록 가중치를 적절히 설정했는가? 여기서 캐릭터 모델러와 리거 양쪽의 실력과 경험이 드러납니다. 우리에게 중요한 점은 Maya가 본 조작에 반응하여 새로운 정점",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-010-bind-conversion",
+        "M22-014-deformation-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P042",
+      "section": "10.8",
+      "anchor": "모든 것은 그 원래 정점 위치에서 출발합니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-010-bind-conversion"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P043",
+      "section": "10.8",
+      "anchor": "따라서 정점의 본 공간 좌표를 구하려면, 바인딩 포즈에서 그 정점이 가진 모델링 공간 좌표부터 시작합니다. 바인딩 포즈에서 각 본의 위치와 방향도 알고 있습니다. 이 위치와 방향을",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-010-bind-conversion",
+        "M22-011-bind-example"
+      ],
+      "correctionIds": [
+        "C04"
+      ]
+    },
+    {
+      "id": "S108-P044",
+      "section": "10.8",
+      "anchor": "지금까지가 메시 스키닝의 원리적인 큰 그림입니다. 이제 최적화를 살펴보겠습니다. 핵심 아이디어는 정점에 영향을 주는 각 본을 기준으로 위치를 모두 저장하는 대신, 각 정점의 바인딩",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-011-bind-example",
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": [
+        "C04"
+      ]
+    },
+    {
+      "id": "S108-P045",
+      "section": "10.8",
+      "anchor": "다시 말해 이 행렬은 바인딩 포즈에서 현재 포즈로 본의 위치와 방향이 바뀌는 효과를 정점에 적용합니다. 코드 10.8이 이 방법을 보여 줍니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-011-bind-example",
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": [
+        "C04"
+      ]
+    },
+    {
+      "id": "S108-P046",
+      "section": "10.8",
+      "anchor": "<b>원주 10-19:</b> 물론 이것은 이상적인 작업 순서입니다. 실제로는 리깅 뒤에도 메시를 수정해야 하는 경우가 많습니다. 경험 많은 캐릭터 모델러는 리깅에 필요한 사항을 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-014-deformation-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P047",
+      "section": "10.8",
+      "anchor": "```c++ // 한 정점에 영향을 줄 수 있는 본의 최대 개수를 제한한다. const int kMaxBonesPerVertex = 4;",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": [
+        "C02"
+      ]
+    },
+    {
+      "id": "S108-P048",
+      "section": "10.8",
+      "anchor": "// 골격 모델의 정점을 나타낸다. struct SkinnedVertex {",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P049",
+      "section": "10.8",
+      "anchor": "    // 이 정점에 영향을 주는 본의 수     int boneCount;",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P050",
+      "section": "10.8",
+      "anchor": "    // 어떤 본들이 이 정점에 영향을 주는가?     // 본 목록을 가리키는 인덱스들이다.     int boneIndex[kMaxBonesPerVertex];",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P051",
+      "section": "10.8",
+      "anchor": "    // 본 가중치. 합은 반드시 1이어야 한다.     float boneWeight[kMaxBonesPerVertex];",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P052",
+      "section": "10.8",
+      "anchor": "    // 모델 공간에서 표현한 바인딩 포즈의 정점 위치와 법선     Vector3 pos;     Vector3 normal; };",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P053",
+      "section": "10.8",
+      "anchor": "// 렌더링에 사용할 형태의 정점을 나타낸다. struct Vertex {     Vector3 pos;     Vector3 normal; };",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P054",
+      "section": "10.8",
+      "anchor": "// 스키닝된 정점의 위치와 법선을 계산한다. void computeSkinnedVertices(     int vertexCount,                       //",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P055",
+      "section": "10.8",
+      "anchor": "        // 이 정점에 영향을 주는 모든 본을 순회하여         // 이 정점을 위한 혼합 '행렬'을 구한다.         Matrix4x3 blendedMat;  ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-012-matrix-blend",
+        "M22-013-matrix-equivalence"
+      ],
+      "correctionIds": [
+        "C04"
+      ]
+    },
+    {
+      "id": "S108-P056",
+      "section": "10.8",
+      "anchor": "        // 혼합 행렬로 위치와 법선을 변환한다.         d.pos = s.pos * blendedMat;         d.normal = blendedMat.ro",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-013-matrix-equivalence"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S108-P057",
+      "section": "10.8",
+      "anchor": "        // 법선을 반드시 정규화한다.         d.normal.normalize();     } } ```",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-013-matrix-equivalence"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P058",
+      "section": "10.8",
+      "anchor": "<b>코드 10.8. 더 최적화된 정점 스키닝 전략.</b>",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-013-matrix-equivalence"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P059",
+      "section": "10.8",
+      "anchor": "이 방법은 <code>sizeof(SkinnedVertex)</code>가 줄어들어 GPU로 보내야 하는 데이터의 양을 크게 줄입니다. 정점마다 수행할 계산도 줄어들며, 특히 기저",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-013-matrix-equivalence"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P060",
+      "section": "10.8",
+      "anchor": "지금까지 단순한 스키닝의 기본 아이디어를 설명했습니다. 물론 격투 게임이나 스포츠 게임처럼 가능한 한 충실하게 캐릭터를 표현할 가치가 있고, 이를 위해 사용할 계산 자원과 인적 자",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-014-deformation-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P061",
+      "section": "10.8",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>스키닝을 좌표 변환으로 이해하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Represented in metadata, not spoken as a heading.",
+      "draftBeatIds": [
+        "M22-014-deformation-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P062",
+      "section": "10.8",
+      "anchor": "본은 메시 내부의 막대기 모양 그 자체가 아니라 움직이는 좌표계입니다. 한 정점이 두 본의 영향을 받는다면, 각 본에 완전히 붙어 있다고 가정한 위치를 먼저 만든 뒤 가중평균합니다",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-004-lbs",
+        "M22-014-deformation-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P063",
+      "section": "10.8",
+      "anchor": "```mermaid flowchart LR  A[\"바인딩 포즈의 정점\"] --> B[\"위팔 본 변환\"]  A --> C[\"아래팔 본 변환\"]  B --> D[\"위치에 0.6 곱하기",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-004-lbs",
+        "M22-014-deformation-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S108-P064",
+      "section": "10.8",
+      "anchor": "원문의 PlayStation 2와 최초 Tomb Raider를 연결하는 예시는 그대로 번역했지만, 플랫폼 세대가 섞인 서술입니다. 알고리즘의 비교는 ‘각 부품이 강체로 따로 움직이",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-014-deformation-limit"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S109-P001",
+      "section": "10.9",
+      "anchor": "<table-of-contents />",
+      "decision": "omitted-noninstructional",
+      "reason": "Navigation only.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P002",
+      "section": "10.9",
+      "anchor": "컴퓨터 그래픽스에서 텍스처 매핑을 처음 사용한 목적은 물체의 색을 정하는 것이었습니다. 그러나 정점 단위보다 세밀하게 표면의 어떤 성질을 지정하고 싶을 때라면 텍스처 매핑을 사용할",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-015-bump-height"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P003",
+      "section": "10.9",
+      "anchor": "<b>범프 매핑(bump mapping)</b>은 텍셀마다 표면 법선을 제어하는 적어도 두 가지 서로 다른 방법을 가리킬 수 있는 포괄적인 용어입니다. <b>높이 맵(height ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-015-bump-height"
+      ],
+      "correctionIds": [
+        "C05"
+      ]
+    },
+    {
+      "id": "S109-P004",
+      "section": "10.9",
+      "anchor": "노멀 맵에는 표면 법선의 좌표가 직접 인코딩됩니다. 가장 기본적인 방법은 $x,y,z$를 각각 빨강, 초록, 파랑 채널에 넣는 것입니다. 일부 하드웨어는 더 최적화된 형식을 지원하",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-016-encode-normal",
+        "M22-017-normal-data"
+      ],
+      "correctionIds": [
+        "C05"
+      ]
+    },
+    {
+      "id": "S109-P005",
+      "section": "10.9",
+      "anchor": "원리상 노멀 맵을 쓰는 방법은 간단합니다. 조명 계산에서 정점 법선을 보간한 결과를 사용하는 대신, 노멀 맵에서 법선 하나를 읽어 그 값을 쓰면 됩니다. 짠! 아, 그렇게 쉽기만 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-016-encode-normal",
+        "M22-017-normal-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P006",
+      "section": "10.9",
+      "anchor": "문제가 복잡해지는 주된 이유는 두 가지입니다. 첫째, 노멀 맵은 직관적으로 편집하기 어렵습니다. 높이 맵이나 실제 변위 맵은 Photoshop에서 쉽게 그릴 수 있지만, 노멀 맵은",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-017-normal-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P007",
+      "section": "10.9",
+      "anchor": "보통 아티스트가 저해상도와 고해상도 메시를 실제로 각각 모델링하여 노멀 맵을 만듭니다. 저해상도 메시는 실행 시 실제로 사용하는 것이고, 고해상도 메시는 범프 맵을 만드는 데만 씁",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-017-normal-data"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P008",
+      "section": "10.9",
+      "anchor": "더 까다로운 문제는 텍스처 메모리가 귀한 자원이라는 것입니다(원주 10-21). 일부 단순한 경우에는 노멀 맵의 각 텍셀이 메시 표면에 많아야 한 번만 사용됩니다. 이런 경우 법선",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-018-reuse-problem"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P009",
+      "section": "10.9",
+      "anchor": "예를 들어 상자 여러 면에 비슷한 돌출부와 홈이 있을 수 있습니다. 따라서 같은 메모리와 아티스트 작업 시간을 사용한다면, 맵의 해상도를 높이고 같은 노멀 맵 전체 또는 일부를 여",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-018-reuse-problem"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P010",
+      "section": "10.9",
+      "anchor": "하지만 노멀 맵은 벡터를 인코딩하므로 마음대로 회전하거나 거울 대칭시킬 수 없다는 차이가 있습니다. 정육면체 여섯 면에 같은 노멀 맵을 쓴다고 상상해 보겠습니다. 정육면체 표면의 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-018-reuse-problem"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P011",
+      "section": "10.9",
+      "anchor": "두 방향은 서로 반대여야 하는데 말입니다! 따라서 텍스처에서 가져온 법선을 어떻게 해석할지 알려 주는 다른 정보가 필요합니다. 그 추가 정보가 <b>기저 벡터(basis vecto",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-018-reuse-problem"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P012",
+      "section": "10.9",
+      "anchor": "<b>원주 10-20:</b> 그리고 제품 상자 그림에 쓸 고해상도 렌더링에도 사용합니다. 고해상도 모델로 실제 게임 화면인 것처럼 오해하게 만드는 스크린샷을 만드는 사람들도 있습",
+      "decision": "omitted-noninstructional",
+      "reason": "Noninstructional joke about advertising imagery; high-to-low bake role retained.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P013",
+      "section": "10.9",
+      "anchor": "<b>원주 10-21:</b> 모두가 id Tech 5의 MegaTexturing을 가지고 있는 것은 아니기 때문입니다.",
+      "decision": "omitted-noninstructional",
+      "reason": "Historical MegaTexture joke; memory-reuse principle retained.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P014",
+      "section": "10.9.1",
+      "anchor": "## 10.9.1 접선 공간",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Represented in metadata, not spoken as a heading.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P015",
+      "section": "10.9.1",
+      "anchor": "당시 가장 흔한 기법은 맵에 저장하는 법선을 <b>접선 공간(tangent space)</b> 좌표로 표현하는 것이었습니다. 접선 공간에서 +z는 표면 바깥을 가리킵니다. +z 기",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-019-tangent-frame"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P016",
+      "section": "10.9.1",
+      "anchor": "이 벡터는 텍스처 공간에서 u가 증가하는 방향을 가리킵니다. 다시 말해 3차원에서 접선 벡터 방향으로 움직이는 것은 2차원 노멀 맵에서 오른쪽으로 움직이는 것에 대응합니다. 범프 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-019-tangent-frame"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P017",
+      "section": "10.9.1",
+      "anchor": "마찬가지로 y 기저 벡터는 <b>바이노멀(binormal)</b>이라고 하며(원주 10-22), 여기서는 $\\hat{\\mathbf v}$로 표기합니다. 이는 v가 증가하는 방향에 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-019-tangent-frame"
+      ],
+      "correctionIds": [
+        "C06"
+      ]
+    },
+    {
+      "id": "S109-P018",
+      "section": "10.9.1",
+      "anchor": "물론 접선과 바이노멀의 좌표는 표면 법선과 마찬가지로 모델 공간으로 표현됩니다. 변수 위의 모자 기호가 나타내듯이 기저 벡터는 보통 단위벡터로 저장합니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-019-tangent-frame"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P019",
+      "section": "10.9.1",
+      "anchor": "예를 들어 노멀 맵의 어떤 텍셀이 RGB 값 \\[37, 128, 218\\]을 갖는다고 하겠습니다. 이 값은 단위벡터 \\[−0.707, 0, 0.707\\]로 디코딩됩니다. 이것은 국",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-020-decode-example",
+        "M22-021-local-left"
+      ],
+      "correctionIds": [
+        "C05"
+      ]
+    },
+    {
+      "id": "S109-P020",
+      "section": "10.9.1",
+      "anchor": "정리하면 접선, 바이노멀, 법선은 접선 공간이라는 좌표 공간의 축입니다. 텍셀별 법선의 좌표는 이 좌표 공간을 기준으로 해석합니다. 접선 공간 법선으로부터 모델 공간 법선을 얻으려",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-021-local-left"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P021",
+      "section": "10.9.1",
+      "anchor": "$$ \\mathbf s_m=s_{tx}\\hat{\\mathbf u}+s_{ty}\\hat{\\mathbf v}+s_{tz}\\hat{\\mathbf n}. $$",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-021-local-left"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P022",
+      "section": "10.9.1",
+      "anchor": "이제 우리는 이것이 기저 벡터를 행으로 가지는 행렬에 $\\mathbf s_t$를 곱하는 것과 같다는 것을 압니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-021-local-left"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P023",
+      "section": "10.9.1",
+      "anchor": "$$ \\mathbf s_m=\\mathbf s_t \\begin{bmatrix} -\\hat{\\mathbf u}-\\\\ -\\hat{\\mathbf v}-\\\\ -\\hat{\\mathbf n}-",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-021-local-left"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P024",
+      "section": "10.9.1",
+      "anchor": "다각형 메시는 곡면일 수도 있는 표면의 근사일 뿐이라는 점을 기억하겠습니다. 따라서 조명에 사용하는 표면 법선은 실제 표면 법선을 근사하기 위해 각 면 위에서 연속적으로 변합니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-022-frame-varying"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P025",
+      "section": "10.9.1",
+      "anchor": "그러나 평평한 표면에서도 텍스처를 압축하거나 찌그러뜨리거나 비틀면 기저 벡터가 표면에 따라 달라질 수 있습니다. 인쇄본 396쪽의 그림 10.19에 도움이 되는 두 가지 예가 있습",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-022-frame-varying"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P026",
+      "section": "10.9.1",
+      "anchor": "반면 바이노멀 $\\hat{\\mathbf v}$는 각 정점에서 수직 방향의 휘어진 다각형 변과 국소적으로 평행합니다. 면 내부의 임의의 점에서 기저 벡터를 구하려면, 표면 법선과 마",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-022-frame-varying"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P027",
+      "section": "10.9.1",
+      "anchor": "그림 왼쪽의 텍스처 매핑에서는 접선과 바이노멀이 서로 수직이 아니라는 점에 주목하겠습니다. 이런 일이 가능함에도, 텍스처를 상당히 거칠게 변형한 경우에도 기저 벡터들이 정규직교 기",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-022-frame-varying"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P028",
+      "section": "10.9.1",
+      "anchor": "첫 번째 최적화는 모델 공간 대신 접선 공간에서 조명을 계산하는 것입니다. 모델 공간에서 조명을 계산하면 면 전체에 걸쳐 세 기저 벡터를 보간하고, 픽셀 셰이더에서 접선 공간 법선",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-023-space-choice"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P029",
+      "section": "10.9.1",
+      "anchor": "여러 상황에서 이 방법이 더 빠릅니다. 정규직교 기저라면 변환 행렬의 역행렬이 바로 전치행렬이므로, 내적만으로 모델 공간에서 접선 공간으로 변환할 수 있습니다. 이해가 잘되지 않는",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-023-space-choice"
+      ],
+      "correctionIds": [
+        "C07"
+      ]
+    },
+    {
+      "id": "S109-P030",
+      "section": "10.9.1",
+      "anchor": "실제로 기저 벡터를 보간하고 다시 정규화하면 직교성이 조금 흐트러질 가능성이 큽니다. 이 경우 변환은 완전히 정확하지 않지만, 대개 문제를 일으키지 않습니다. 표면 법선과 기저 벡",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-023-space-choice"
+      ],
+      "correctionIds": [
+        "C07"
+      ]
+    },
+    {
+      "id": "S109-P031",
+      "section": "10.9.1",
+      "anchor": "기저 벡터의 수직성을 가정하여 할 수 있는 두 번째 최적화는 두 기저 벡터 중 하나를 아예 저장하지 않고 필요할 때 계산하는 것입니다. 보통 바이노멀을 생략합니다. 성능 병목이 정",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-024-reconstruct-bitangent"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P032",
+      "section": "10.9.1",
+      "anchor": "거울 대칭된 범프 맵입니다. 대칭적인 물체에는 범프 맵을 포함한 텍스처 맵을 두 번 사용하는 경우가 매우 흔합니다. 한쪽에서는 ‘정상적인’ 방향으로 사용하고 다른 쪽에서는 거울 대",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-024-reconstruct-bitangent"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P033",
+      "section": "10.9.1",
+      "anchor": "보통 이 플래그를 저장해 두는 기저 벡터의 w 성분에 편리하게 끼워 넣습니다. 이제 생략한 기저 벡터를 구하려면 적절한 외적, 예를 들어 $\\hat{\\mathbf v}=\\hat{\\",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-024-reconstruct-bitangent"
+      ],
+      "correctionIds": [
+        "C06"
+      ]
+    },
+    {
+      "id": "S109-P034",
+      "section": "10.9.1",
+      "anchor": "<b>원주 10-22:</b> 아마 ‘바이탄젠트(bitangent)’라는 용어가 더 정확하겠지만, 덜 흔히 사용됩니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-019-tangent-frame"
+      ],
+      "correctionIds": [
+        "C06"
+      ]
+    },
+    {
+      "id": "S109-P035",
+      "section": "10.9.2",
+      "anchor": "## 10.9.2 접선 공간 기저 벡터 계산",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Represented in metadata, not spoken as a heading.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P036",
+      "section": "10.9.2",
+      "anchor": "마지막으로 기저 벡터를 어떻게 계산하는지 살펴보겠습니다. 여기서는 Lengyel \\[42\\]의 전개를 따릅니다. 정점 위치가 $\\mathbf p_0=(x_0,y_0,z_0)$, $",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-025-triangle-input",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": [
+        "C07"
+      ]
+    },
+    {
+      "id": "S109-P037",
+      "section": "10.9.2",
+      "anchor": "앞으로의 수식을 단순하게 만들기 위해 다음과 같이 정의하여 원점을 $\\mathbf p_0$로 옮기겠습니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-025-triangle-input",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P038",
+      "section": "10.9.2",
+      "anchor": "$$ \\begin{aligned} \\mathbf q_1&=\\mathbf p_1-\\mathbf p_0,& s_1&=u_1-u_0,&t_1&=v_1-v_0,\\\\ \\mathbf q_2&",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-025-triangle-input",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P039",
+      "section": "10.9.2",
+      "anchor": "우리가 찾는 기저 벡터는 삼각형 평면 위에 놓입니다. 따라서 삼각형의 변 벡터 $\\mathbf q_1,\\mathbf q_2$를 기저 벡터의 선형결합으로 표현할 수 있습니다. 각 변",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-026-linear-system",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P040",
+      "section": "10.9.2",
+      "anchor": "$$ \\begin{aligned} \\mathbf u s_1+\\mathbf v t_1&=\\mathbf q_1,\\\\ \\mathbf u s_2+\\mathbf v t_2&=\\mathbf ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-026-linear-system",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P041",
+      "section": "10.9.2",
+      "anchor": "$\\mathbf u,\\mathbf v$를 정규화하면 원하는 단위벡터를 얻습니다. 이 식들을 행렬 표기로 더 간결하게 쓸 수 있습니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-026-linear-system",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P042",
+      "section": "10.9.2",
+      "anchor": "$$ \\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix} \\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-026-linear-system",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P043",
+      "section": "10.9.2",
+      "anchor": "그러면 우아한 풀이가 눈앞에 나타납니다. 양변 왼쪽에 s,t 행렬의 역행렬을 곱하면 다음을 얻습니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-027-invert-system",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P044",
+      "section": "10.9.2",
+      "anchor": "$$ \\begin{aligned} \\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix} &=\\begin{bmatrix}s_1&t_1\\\\s_",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-027-invert-system",
+        "M22-028-tangent-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P045",
+      "section": "10.9.2",
+      "anchor": "기저 벡터를 정규화할 예정이므로 앞에 곱해진 상수인 분수를 버릴 수 있습니다. 그러면 다음이 남습니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-029-determinant-sign"
+      ],
+      "correctionIds": [
+        "C07"
+      ]
+    },
+    {
+      "id": "S109-P046",
+      "section": "10.9.2",
+      "anchor": "$$ \\begin{aligned} \\mathbf u&=t_2\\mathbf q_1-t_1\\mathbf q_2,\\\\ \\mathbf v&=-s_2\\mathbf q_1+s_1\\mathbf",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-029-determinant-sign"
+      ],
+      "correctionIds": [
+        "C07"
+      ]
+    },
+    {
+      "id": "S109-P047",
+      "section": "10.9.2",
+      "anchor": "이렇게 하면 각 삼각형의 기저 벡터를 얻습니다. 서로 수직이라는 보장은 없지만, 우리의 주목적인 정점 단위의 기저 벡터를 구하는 데 사용할 수 있습니다. 정점 법선을 계산할 때와 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P048",
+      "section": "10.9.2",
+      "anchor": "보통 정규직교 기저가 되도록 강제하기도 합니다. 가장 간단한 방법은 그람–슈미트 직교화입니다(6.3.3절). 또한 기저 벡터 하나를 생략할 계획이라면 이 단계에서 기저의 행렬식을 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents",
+        "M22-032-gram-schmidt"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P049",
+      "section": "10.9.2",
+      "anchor": "```c++ struct Vertex {     Vector3 pos;     float u, v;     Vector3 normal;     Vector3 tangent;    ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P050",
+      "section": "10.9.2",
+      "anchor": "struct Triangle {     int vertexIndex[3]; };",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P051",
+      "section": "10.9.2",
+      "anchor": "struct TriangleMesh {     int vertexCount;     Vertex *vertexList;     int triangleCount;     Triang",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P052",
+      "section": "10.9.2",
+      "anchor": "    void computeBasisVectors() {",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P053",
+      "section": "10.9.2",
+      "anchor": "        // 주의: 정점 법선은 유효하다고 가정한다.         Vector3 *tempTangent = new Vector3[vertexCount];         V",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P054",
+      "section": "10.9.2",
+      "anchor": "        // 먼저 누적값을 비운다.         for (int i = 0; i < vertexCount; ++i) {             tempTangent[i].z",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P055",
+      "section": "10.9.2",
+      "anchor": "        // 각 면의 기저 벡터를 그 면에 인접한 정점들의 평균에 반영한다.         for (int i = 0; i < triangleCount; ++i) {",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P056",
+      "section": "10.9.2",
+      "anchor": "            // 간단하게 접근할 수 있는 참조를 구한다.             const Triangle &tri = triangleList[i];            ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P057",
+      "section": "10.9.2",
+      "anchor": "            // 중간값을 계산한다.             Vector3 q1 = v1.pos - v0.pos;             Vector3 q2 = v2.pos ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P058",
+      "section": "10.9.2",
+      "anchor": "            // 이 삼각형의 기저 벡터를 계산한다.             Vector3 tangent = t2*q1 - t1*q2;             tangent.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": [
+        "C07"
+      ]
+    },
+    {
+      "id": "S109-P059",
+      "section": "10.9.2",
+      "anchor": "            // 인접 정점들의 누적합에 더한다.             for (int j = 0; j < 3; ++j) {                 tempTange",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P060",
+      "section": "10.9.2",
+      "anchor": "        // 이제 정점에 값을 채운다.         for (int i = 0; i < vertexCount; ++i) {             Vertex &v = ve",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents",
+        "M22-032-gram-schmidt"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P061",
+      "section": "10.9.2",
+      "anchor": "            // 접선이 법선에 수직이 되게 한다(그람–슈미트).             // 그런 다음 정규화한 결과를 보관한다.             t -= v.nor",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-032-gram-schmidt"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P062",
+      "section": "10.9.2",
+      "anchor": "            // 거울 대칭인지 판별한다.             if (dot(cross(v.normal, t), tempBinormal[i]) < 0.0f) {     ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-032-gram-schmidt"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P063",
+      "section": "10.9.2",
+      "anchor": "        // 정리한다.         delete[] tempTangent;         delete[] tempBinormal;     } }; ```",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-032-gram-schmidt"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P064",
+      "section": "10.9.2",
+      "anchor": "<b>코드 10.9. 인접한 삼각형 법선의 평균으로 기저 벡터를 계산하는 단순한 방법.</b>",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents"
+      ],
+      "correctionIds": [
+        "C08"
+      ]
+    },
+    {
+      "id": "S109-P065",
+      "section": "10.9.2",
+      "anchor": "코드 10.9가 다루지 않는 성가신 문제 하나는 매핑에 불연속이 있을 수 있다는 것입니다. 이런 곳에서는 기저 벡터들을 함께 평균내면 안 되며, 공유하는 변의 양쪽에서 기저 벡터가",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-033-seams"
+      ],
+      "correctionIds": [
+        "C09"
+      ]
+    },
+    {
+      "id": "S109-P066",
+      "section": "10.9.2",
+      "anchor": "즉 정점이 복제되어 있습니다. 그러나 안타깝게도 이렇지 않은 매우 흔한 경우가 하나 있습니다. 대칭 물체에 거울 대칭 텍스처를 사용하는 경우입니다. 예를 들어 캐릭터 모델 등 대칭",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-033-seams"
+      ],
+      "correctionIds": [
+        "C09"
+      ]
+    },
+    {
+      "id": "S109-P067",
+      "section": "10.9.2",
+      "anchor": "이음선을 따라 잘못된 기저 벡터가 생기는 일을 막으려면 이러한 정점들을 분리해야 합니다.",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-033-seams"
+      ],
+      "correctionIds": [
+        "C09"
+      ]
+    },
+    {
+      "id": "S109-P068",
+      "section": "10.9.2",
+      "anchor": "10.11.4절에서는 기저 벡터를 실제로 사용하여 범프 매핑을 수행하는 셰이더 예제를 보여 줍니다. 모든 데이터를 올바른 형식으로 가공해 두면 실행 시 코드는 놀랄 만큼 단순합니다",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-034-data-pipeline",
+        "M22-035-close"
+      ],
+      "correctionIds": [
+        "C10"
+      ]
+    },
+    {
+      "id": "S109-P069",
+      "section": "10.9.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>노멀 맵 구현에서 확인할 조건</b>",
+      "decision": "retained-learning-content",
+      "reason": "Represented in metadata, not spoken as a heading.",
+      "draftBeatIds": [
+        "M22-029-determinant-sign",
+        "M22-035-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P070",
+      "section": "10.9.2",
+      "anchor": "식 유도에서 1/(s1 t2 − s2 t1)을 정규화할 예정이므로 생략한다는 원문 설명은 분모가 음수일 때의 부호까지 버립니다. 양의 배율만 정규화로 없어지므로, 일반적인 구현에서",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-029-determinant-sign",
+        "M22-030-degenerate-uv",
+        "M22-035-close"
+      ],
+      "correctionIds": [
+        "C07"
+      ]
+    },
+    {
+      "id": "S109-P071",
+      "section": "10.9.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>노멀 맵 구현에서 확인할 조건</b>",
+      "decision": "retained-learning-content",
+      "reason": "Represented in metadata, not spoken as a heading.",
+      "draftBeatIds": [
+        "M22-031-average-tangents",
+        "M22-035-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P072",
+      "section": "10.9.2",
+      "anchor": "코드 10.9의 원문 캡션은 ‘인접한 삼각형 법선의 평균’이라고 쓰지만, 코드에서 실제로 평균내는 것은 삼각형의 접선과 바이노멀입니다. 원문 캡션을 보존한 뒤 여기서 구분합니다. ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-031-average-tangents",
+        "M22-035-close"
+      ],
+      "correctionIds": [
+        "C08"
+      ]
+    },
+    {
+      "id": "S109-P073",
+      "section": "10.9.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>노멀 맵 구현에서 확인할 조건</b>",
+      "decision": "retained-learning-content",
+      "reason": "Represented in metadata, not spoken as a heading.",
+      "draftBeatIds": [
+        "M22-035-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S109-P074",
+      "section": "10.9.2",
+      "anchor": "RGB \\[37,128,218\\]을 \\[−0.707,0,0.707\\]로 디코딩하는 예시는 양자화 오차를 무시한 근사입니다. 8비트 값을 2c/255−1로 복원하면 정확히 그 수가 ",
+      "decision": "retained-learning-content",
+      "reason": null,
+      "draftBeatIds": [
+        "M22-020-decode-example",
+        "M22-035-close"
+      ],
+      "correctionIds": [
+        "C05"
+      ]
+    }
+  ],
+  "contentMeasures": {
+    "koCharacters": 6956,
+    "enWords": 1621,
+    "duration": "Not measured; no runtime target. Actual speech, demonstrations and footage determine length."
+  },
+  "checkedCalculations": [
+    {
+      "input": ".6*(0,2)+.4*(2,0)",
+      "output": "(.8,1.2)"
+    },
+    {
+      "input": ".2*(0,2)+.8*(2,0)",
+      "output": "(1.6,.4)"
+    },
+    {
+      "input": "bindBoneX=1,vertexX=2,currentBoneX=3",
+      "output": "2-1+3=4; bind=current recovers input"
+    },
+    {
+      "input": "2*[37,128,218]/255-1",
+      "output": [
+        -0.7098039215686274,
+        0.0039215686274509665,
+        0.7098039215686274
+      ]
+    },
+    {
+      "input": "normalize(previous)",
+      "output": [
+        -0.7071013852990031,
+        0.0039066374878397965,
+        0.7071013852990031
+      ]
+    },
+    {
+      "input": "q1=(2,0,0),q2=(0,1,0),UVedges=(-1,0),(0,1)",
+      "output": "D=-1,T=(-2,0,0),B=(0,1,0); dropping denominator reverses both axes"
+    }
+  ],
+  "pending": [
+    "Inspect and integrate independent gameplay, including per-example rules/UI and visible before/action/result.",
+    "Verify source visual roles and editable Unity rendering using same model and canonical coordinate conventions.",
+    "Final heading-free KO/EN narration, TTS pronunciation and pacing, actual moving visual QA remain pending.",
+    "No GPU job, TTS, final media, upload, scheduling or Git performed by this draft task."
+  ]
+}

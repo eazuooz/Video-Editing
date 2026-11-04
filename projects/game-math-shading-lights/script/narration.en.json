@@ -1,0 +1,644 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-shading-lights",
+  "status": "integrated-draft-runtime-and-final-readthrough-pending",
+  "isFinalNarration": false,
+  "sourceDraftSha256": "271299228bd8769ad50ad099ee516155b825cdfb9f5ec7b51e19ffa95d48ce94",
+  "chapterOrderPreserved": true,
+  "actualDurationSeconds": null,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M21-000-abstract",
+      "title": "같은 물체가 조명과 시점에 따라 달라지는 이유",
+      "lines": [
+        "In the dark waters of Subnautica 2, the equipment’s headlights move across the rocks, revealing their shape. How does a game decide which surfaces to brighten, and by how much? We will follow the picture from reflection at one point to shading the whole object, shaping light sources, and storing lighting in advance."
+      ]
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M21-001-model",
+      "title": "조명 모델과 재질 매개변수",
+      "lines": [
+        "First distinguish a colored object from a shaded object. A material supplies properties describing how the surface reflects light, including its strength and color. A lighting model combines those properties with the lighting and viewing directions to compute the displayed result. Different parameter values can produce different appearances even when the calculation is shared."
+      ]
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M21-002-brdf",
+      "title": "BRDF와 전통 모델의 범위",
+      "lines": [
+        "More precisely, the bidirectional reflectance distribution function, or BRDF, describes reflection from an incoming direction into an outgoing direction. Here we will follow a traditional local illumination model that efficiently approximates direct lighting rather than solving every light path at once. We will later connect its diffuse term back to the BRDF."
+      ]
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M21-003-direct-path",
+      "title": "광원→표면→카메라로 단순화",
+      "lines": [
+        "Zoom in on one surface point. Light may arrive from many directions, including after bouncing off other objects. Our model first selects light arriving directly from designated sources and calculates what is reflected toward the camera. Three sources give three directional contributions. This reduces a hemisphere-wide transport problem to a finite set of light evaluations."
+      ]
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M21-004-abstract-light",
+      "title": "추상 광원과 보이는 발광 물체의 차이",
+      "lines": [
+        "A light source here need not be the visible mesh of a bulb. It can be an abstract object that supplies a direction and an amount of light at the shading point. Drawing the bulb and illuminating its surroundings are separate tasks. With direction and color supplied by the light, we can now calculate the surface response."
+      ]
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M21-005-four-terms",
+      "title": "네 성분 구분",
+      "lines": [
+        "We divide the result into four contributions. Emission makes the surface itself luminous. Specular reflection creates a directional highlight. Diffuse reflection produces a broad response that reveals surface color and form. Ambient light is a coarse substitute for indirect illumination. The model adds these four contributions."
+      ]
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M21-006-rgb",
+      "title": "RGB 색 벡터와 색 곱",
+      "lines": [
+        "Color is represented by red, green, and blue values rather than a single number. Multiplying light color (1, 0.5, 0.2) by material color (0.8, 0.4, 0.1) component by component gives (0.8, 0.2, 0.02). The circled multiplication symbol denotes this operation. It is different from the dot product used to compare directions."
+      ]
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M21-007-spec-observe",
+      "title": "시점 의존 반짝임",
+      "lines": [
+        "As the camera moves around a stationary car in Forza Motorsport 6, bright window reflections move across its hood. To understand this dependence on viewing direction, let us first calculate a simple highlight from one light. Start with specular reflection. Keep the light and object fixed and move only the camera. A bright highlight appears and fades because the camera approaches or leaves a preferred reflection direction. To calculate that relationship, we first need three directions at the surface point."
+      ]
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M21-008-vectors",
+      "title": "n v l과 단위 벡터",
+      "lines": [
+        "The outward surface normal is n. The direction from the point to the camera is v, and the direction from the point to the light is l. We normalize each to unit length. Notice that l points opposite to the incoming ray: light travels toward the surface, while l points back toward its source. This convention determines the signs in the formula."
+      ]
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M21-009-reflection-build",
+      "title": "반사 벡터 유도",
+      "lines": [
+        "Call the mirror reflection direction r. First project l onto the unit normal: dot(n,l) times n gives its normal component. Double this projection and subtract l. The result is the direction mirrored across the normal, so r equals 2 dot(n,l) n minus l. When n and l are unit vectors, the resulting r is also unit length."
+      ]
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M21-010-reflection-example",
+      "title": "반사 수치와 reflect API",
+      "lines": [
+        "For n=(0,1,0) and l=(0.6,0.8,0), the dot product is 0.8. Twice the normal projection is (0,1.6,0). Subtracting l produces r=(-0.6,0.8,0): the vertical component stays the same and the horizontal component changes sign. A shader reflect function expects an incoming direction, so with our convention its arguments are -l and n."
+      ]
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M21-011-phong",
+      "title": "Phong 정반사",
+      "lines": [
+        "Next compare r with the viewing direction v. Their dot product is the cosine of the angle between them. It is one when they align and decreases as they separate. Clamp negative values to zero, raise the result to the shininess exponent, and multiply by the light and material specular colors. This gives the Phong specular contribution."
+      ]
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M21-012-exponent",
+      "title": "광택 지수는 폭",
+      "lines": [
+        "The exponent mainly controls highlight width. At a dot product of 0.8, squaring gives 0.64, while raising it to the eighth power gives about 0.17. Perfect alignment stays at one, but off-axis directions darken rapidly as the exponent rises. Large exponents produce narrow highlights; small exponents produce broad ones."
+      ]
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M21-013-spec-color-map",
+      "title": "폭과 세기/색 분리",
+      "lines": [
+        "Specular color is a separate control for strength and tint. Holding the exponent fixed while increasing this value strengthens the highlight. A texture can vary material properties across the surface. Check whether a map stores specular color, glossiness, or roughness; similar names do not mean the values are interchangeable."
+      ]
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M21-014-light-color",
+      "title": "광원색·감쇠·cookie",
+      "lines": [
+        "The light also supplies color and intensity. For now, its color includes distance attenuation, which we will examine later. A projected pattern called a cookie or gobo can vary illumination by direction, creating effects such as stained glass or moving foliage. Such a pattern is not the same as a shadow computed from an actual occluding object. Traditional implementations may expose separate diffuse and specular light colors as artistic controls, rather than distinct physical supplies of light."
+      ]
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M21-015-spec-grid",
+      "title": "광택과 정반사색 2차원 비교",
+      "lines": [
+        "Compare both controls in a grid. Specular strength increases horizontally, while the exponent decreases vertically. Highlights become stronger to the right and broader downward. When the specular color is zero, changing the exponent creates no highlight. Any remaining visible form comes from other lighting contributions."
+      ]
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M21-016-halfway",
+      "title": "하프웨이 벡터",
+      "lines": [
+        "Another approach compares a different pair of directions. Add l and v, then normalize the result to obtain the halfway vector h. When the mirror reflection aligns with the camera, the normal points along this halfway direction. We can therefore compare n with h instead of comparing r with v."
+      ]
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M21-017-blinn",
+      "title": "Blinn-Phong 차이와 경계",
+      "lines": [
+        "Blinn–Phong raises the clamped dot product of n and h to an exponent. Its result resembles Phong reflection, but equal exponents do not guarantee equal highlight widths. A shared h can be reused when light and view directions are effectively constant over the object; performance depends on the implementation. If l and v cancel, their zero sum must not be normalized."
+      ]
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M21-018-diffuse-start",
+      "title": "정반사와 Lambert 난반사",
+      "lines": [
+        "As we look around the round tower in Townscaper, broad changes in brightness make its shape readable. We have calculated view-dependent highlights. A matte surface behaves differently: its basic brightness need not change when the camera moves. Ideal Lambertian reflection models equal outgoing radiance in all viewing directions. The incoming light direction still matters, so we now compare the surface orientation with the light rather than with the camera."
+      ]
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M21-019-lambert-area",
+      "title": "기울면 빛이 넓게 퍼짐",
+      "lines": [
+        "Imagine the same bundle of light striking a sheet of paper. When the sheet faces the light, the bundle covers a smaller area. Tilt the sheet and the same light spreads over a larger area, reducing the amount received by each equal-sized patch. The angle is measured between the surface normal and the light direction, not between the surface plane and the light. The same geometry helps explain how sunlight received by an equal area varies with its angle of incidence on Earth."
+      ]
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M21-020-lambert-calc",
+      "title": "내적과 작은 숫자",
+      "lines": [
+        "The factor is a cosine: one for alignment, one half at sixty degrees, and zero at ninety degrees. With unit vectors, their dot product gives this value directly. Multiply it by the light color and diffuse material color. Clamp negative values to zero so an opaque surface is not illuminated by a light behind it."
+      ]
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M21-021-diffuse-rgb",
+      "title": "색과 입사량 결합",
+      "lines": [
+        "For unit white illumination and diffuse color (0.8,0.4,0.2), the frontal result keeps those values. At sixty degrees, the contribution becomes (0.4,0.2,0.1). The proportions remain while the magnitude halves. The incoming power per unit surface area is called irradiance, linking this color calculation to a physical quantity."
+      ]
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M21-022-brdf-return",
+      "title": "전통 색 계수와 rho/pi",
+      "lines": [
+        "Returning to the BRDF, an ideal Lambertian surface uses a directional constant. That constant is not simply the reflectance. If rho is the fraction reflected, the Lambertian BRDF is rho divided by pi. The cosine-weighted integral over the outgoing hemisphere equals pi, so this normalization makes the total reflected fraction equal rho."
+      ]
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M21-023-brdf-normalization",
+      "title": "1/pi를 혼용하지 않기",
+      "lines": [
+        "In an older color-based formula, scale factors may already be absorbed into material or light parameters. A physical formulation must keep the meanings of incoming illumination, BRDF, and cosine factor consistent. These answer how much light arrives, how the material reflects it, and how directly it strikes the surface. Do not add another division by pi without checking the convention."
+      ]
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M21-024-ambient-path",
+      "title": "간접광과 환경광 근사",
+      "lines": [
+        "Direct lighting leaves surfaces facing away from the light completely dark. In a room, light bounced from walls and floors can still reach them. An open refrigerator can faintly illuminate parts of a kitchen even when its bulb is hidden. Instead of tracing all those paths, a simple model substitutes an ambient value."
+      ]
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M21-025-ambient-equation",
+      "title": "환경광은 방향 정보 잃음",
+      "lines": [
+        "Multiply the scene ambient color by the material ambient color, often chosen to match the diffuse color. A constant value makes dark surfaces visible but does not describe where light comes from, so it cannot accurately reveal their form. Later, light probes will let us retain some directional information."
+      ]
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M21-026-emission",
+      "title": "발광은 표면 자체의 값",
+      "lines": [
+        "Ambient light substitutes for illumination arriving from outside; emission belongs to the surface itself. It keeps a sign or bulb visibly luminous even when other lights are off. In this model, we add the material emission color directly, using zero for non-emissive surfaces. Turning off the other terms makes its role clear."
+      ]
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M21-027-emission-gi",
+      "title": "발광과 주변 조명 구분",
+      "lines": [
+        "In Tears of the Kingdom, firing a Brightbloom Seed at dark rock makes both the plant and the surrounding rock visible. Looking bright itself and illuminating another surface are two effects we can distinguish. In this local model, increasing emission does not automatically brighten nearby walls, because surfaces are evaluated separately. That requires another light or a global illumination method that transports emission to other surfaces. A visible emissive surface also should not simply be darkened by inverse-square camera distance; we will clarify that distinction when discussing attenuation."
+      ]
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M21-028-sum-one",
+      "title": "네 성분 합산",
+      "lines": [
+        "Now combine the terms on the same model. Diffuse lighting reveals broad form, specular adds highlights, ambient fills otherwise black areas, and emission adds a material's own light. The long final equation is the sum of these four contributions. Toggle one at a time without changing the camera to identify each effect."
+      ]
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M21-029-visibility",
+      "title": "반사 방향과 그림자 분리",
+      "lines": [
+        "A hidden part of the model can still appear lit. Facing the light and having an unobstructed path to it are separate conditions. The local reflection formula alone does not test other geometry. Shadows need a visibility test that reduces the contribution of an occluded light."
+      ]
+    },
+    {
+      "id": "030",
+      "sourceBeatId": "M21-030-half-lambert",
+      "title": "Half Lambert 의도적 비물리 조절",
+      "lines": [
+        "Half Lambert deliberately modifies the diffuse response to retain form on the darker side. Multiplying the dot product by 0.5 and adding 0.5 remaps [-1,1] to [0,1]; a common form then squares it. At a dot product of zero, ordinary Lambert gives zero while the squared modification gives 0.25. It is an artistic response adjustment rather than transported bounce light."
+      ]
+    },
+    {
+      "id": "031",
+      "sourceBeatId": "M21-031-many-lights",
+      "title": "광원 여러 개 합과 공통항",
+      "lines": [
+        "In Subnautica 2, installing a ceiling light makes the room’s surfaces brighter. With a second light, calculate and add each source's diffuse and specular contributions. Separate red and blue contributions make this visible. In this formulation, ambient and emission are added only once per surface evaluation. Putting them inside the light loop would incorrectly make a self-emissive surface brighten whenever another light is added."
+      ]
+    },
+    {
+      "id": "032",
+      "sourceBeatId": "M21-032-why-learn",
+      "title": "계산 비용·설명 가능한 제어",
+      "lines": [
+        "Separate terms are easy to control and relatively inexpensive. A renderer must decide how to balance accuracy per pixel against the number of pixels and lights it handles. Understandable material controls are another advantage. However, this convenient decomposition is not an exact partition of every physical lighting phenomenon."
+      ]
+    },
+    {
+      "id": "033",
+      "sourceBeatId": "M21-033-model-limits",
+      "title": "경험적 모델과 정식 명칭",
+      "lines": [
+        "Diffuse and specular terms are practical models for different reflection distributions: one broad, the other concentrated. Combining them approximates many surfaces. We will call the combination of Lambertian diffuse reflection and halfway-vector specular reflection the Blinn–Phong lighting model. Naming it clearly will help distinguish it from Phong shading."
+      ]
+    },
+    {
+      "id": "034",
+      "sourceBeatId": "M21-034-shadow-limit",
+      "title": "가시성은 반사 모델 밖 문제",
+      "lines": [
+        "Consider shadows again. Even with unchanged material properties, inserting a wall changes the light that can arrive. Shadows are therefore a visibility problem rather than merely a reflection-formula problem. Both direct and bounced light can be blocked, so better material models and light-path visibility solve different parts of rendering."
+      ]
+    },
+    {
+      "id": "035",
+      "sourceBeatId": "M21-035-fresnel-retro",
+      "title": "Fresnel과 재귀반사",
+      "lines": [
+        "A simple Blinn–Phong formula omits several effects. Dielectric surfaces such as water and glass show stronger reflection toward grazing angles, described by Fresnel reflectance. Retroreflection preferentially returns light toward its source rather than the mirror direction. These require directional behavior beyond globally turning a highlight up or down. Velvet is one material with a retroreflective tendency."
+      ]
+    },
+    {
+      "id": "036",
+      "sourceBeatId": "M21-036-anisotropy",
+      "title": "법선축 회전과 비등방성",
+      "lines": [
+        "Surface orientation within its own plane can also matter. An isotropic material has the same reflection distribution when rotated about its normal. This does not mean arbitrary rotation of the whole surface: the normal stays fixed while the in-plane direction changes. Brushed metal or hair may respond differently to this rotation, which is anisotropy."
+      ]
+    },
+    {
+      "id": "037",
+      "sourceBeatId": "M21-037-where-shade",
+      "title": "반사식과 계산 위치는 다른 선택",
+      "lines": [
+        "So far we have chosen the equation evaluated at a point. Now decide how densely to evaluate it: once per triangle, once per vertex, or per pixel. The same reflection equation can give different results depending on evaluation and interpolation. Keep material and lighting fixed and change only that choice."
+      ]
+    },
+    {
+      "id": "038",
+      "sourceBeatId": "M21-038-flat",
+      "title": "Flat shading",
+      "lines": [
+        "Flat shading uses one representative value for a face. If lighting is evaluated at a triangle's center with its face normal, the result remains constant across that triangle. Neighboring faces may have different normals and therefore abrupt brightness changes."
+      ]
+    },
+    {
+      "id": "039",
+      "sourceBeatId": "M21-039-gouraud",
+      "title": "Gouraud vertex colors interpolate",
+      "lines": [
+        "Gouraud shading first calculates lighting at vertices, then interpolates their colors across each triangle. For vertex values 0.2, 0.4, and 0.6, equal weights at the centroid give 0.4. When the response varies gradually, this produces a smooth result with relatively few lighting evaluations."
+      ]
+    },
+    {
+      "id": "040",
+      "sourceBeatId": "M21-040-gouraud-highlight",
+      "title": "정점이 놓친 내부 하이라이트",
+      "lines": [
+        "A narrow highlight exposes the limitation. All three vertices may be dark while the correct highlight lies inside the triangle. Interpolating the dark values cannot invent a bright peak: the interpolated value cannot exceed the largest vertex value. Adding vertices reduces the chance of missing it, at the cost of more geometry and calculations."
+      ]
+    },
+    {
+      "id": "041",
+      "sourceBeatId": "M21-041-phong-shading",
+      "title": "법선 보간 후 매 픽셀 계산",
+      "lines": [
+        "Phong shading changes the order: interpolate normals, renormalize them, then evaluate lighting at each pixel. A highlight between vertices can now be captured. This smooths shading, not the actual boundary of the mesh; the silhouette still follows the original geometry."
+      ]
+    },
+    {
+      "id": "042",
+      "sourceBeatId": "M21-042-nonlinear",
+      "title": "계산 후 평균과 평균 후 계산",
+      "lines": [
+        "Phong lighting names a reflection formula; Phong shading names an interpolation and evaluation method. They are separate choices. Operation order also matters: averaging zero and one and then squaring gives 0.25, while squaring each first and averaging gives 0.5. Lighting functions containing normalization and powers have similar nonlinear differences."
+      ]
+    },
+    {
+      "id": "043",
+      "sourceBeatId": "M21-043-material-factor-question",
+      "title": "정점 계산과 픽셀 재질 텍스처",
+      "lines": [
+        "What if the material color comes from a detailed texture? Evaluating only a few vertices cannot read every interior texel. We can factor material color out of the lighting sum. At a given surface point, that material color is common to all light contributions, allowing the lighting factors and texture values to be handled separately."
+      ]
+    },
+    {
+      "id": "044",
+      "sourceBeatId": "M21-044-factor-worked",
+      "title": "분배법칙으로 두 합 분리",
+      "lines": [
+        "With light factors 0.2 and 0.3 and material coefficient 0.8, separate products sum to 0.4. Adding the light factors first gives 0.5, and multiplying by 0.8 again gives 0.4. Apply this distributive rule separately to diffuse and specular sums. If ambient and diffuse material colors match, ambient can join the diffuse lighting factor."
+      ]
+    },
+    {
+      "id": "045",
+      "sourceBeatId": "M21-045-vertex-factors",
+      "title": "보간 조명과 픽셀 텍스처 재조합",
+      "lines": [
+        "At each vertex, compute two lighting factors: specular without its material color, and diffuse including ambient. Interpolate these factors across the triangle, multiply them by the per-pixel specular and diffuse texture values, and add emission. Texture detail remains per pixel, but lighting still has the vertex-based approximation and its highlight limitations. A constant specular color may be multiplied at the vertex stage, while a varying per-pixel specular map must be applied where it is sampled."
+      ]
+    },
+    {
+      "id": "046",
+      "sourceBeatId": "M21-046-coordinate-space",
+      "title": "모든 방향 같은 좌표계",
+      "lines": [
+        "Lighting can be calculated in world, object, or camera space. What matters is expressing compared vectors in the same space. A dot product between a world-space normal and an object-space light direction produces a number without the intended geometric meaning. Nonuniform scaling requires correct normal transformation, and transformed or interpolated directions may need normalization."
+      ]
+    },
+    {
+      "id": "047",
+      "sourceBeatId": "M21-047-lights-transition",
+      "title": "표면 계산에서 입력 광원으로",
+      "lines": [
+        "So far, light direction and strength were supplied inputs. Now consider what generates them. A game light is often a controllable illumination tool rather than a perfect physical bulb. We will shape its reach with point, spot, and directional sources, refine the distribution through attenuation and textures, then examine precomputing the result."
+      ]
+    },
+    {
+      "id": "048",
+      "sourceBeatId": "M21-048-point",
+      "title": "점 광원 위치와 모든 방향",
+      "lines": [
+        "A point light emits from one position in every direction, hence the name omnidirectional or omni light. Subtract the surface position from the light position to obtain the direction toward it; the vector length gives distance. It is useful for simple bulbs or flames. An editor sphere may indicate influence range rather than a physical emitting sphere."
+      ]
+    },
+    {
+      "id": "049",
+      "sourceBeatId": "M21-049-spot",
+      "title": "스폿 위치 방향 내외각",
+      "lines": [
+        "In another pass with the equipment’s headlights, turning away from the rock column toward the distant darkness changes which surfaces are illuminated. A spotlight adds an orientation to its position, illuminating a cone like a flashlight. An inner angle defines the bright center, and an outer angle defines the edge; intensity can fade between them. Cone width and illumination range are separate controls."
+      ]
+    },
+    {
+      "id": "050",
+      "sourceBeatId": "M21-050-projector",
+      "title": "사각형 스폿과 쿠키",
+      "lines": [
+        "A rectangular spotlight projects a pyramid-shaped region, like a film projector casting an image onto a wall. That image is the gobo or cookie introduced earlier. A circular mask creates a circular footprint, while a window pattern suggests light through a frame. The projected pattern does not itself test occlusion by a real window."
+      ]
+    },
+    {
+      "id": "051",
+      "sourceBeatId": "M21-051-directional",
+      "title": "방향성 광원 평행과 위치 무관",
+      "lines": [
+        "A very distant source such as the sun can be approximated by parallel rays across a scene. A directional light therefore usually needs neither a position nor distance attenuation. Moving its editor icon leaves illumination unchanged, while rotating it changes the direction. Its cookie can use orthographic rather than perspective projection."
+      ]
+    },
+    {
+      "id": "052",
+      "sourceBeatId": "M21-052-delta",
+      "title": "면적 0 추상 광원의 적분",
+      "lines": [
+        "How can a light with zero area emit energy? It is a mathematical idealization. Shrink an emitting disk while keeping its total power fixed; its output per unit area rises. The limit concentrates a finite total amount at one location, represented by a Dirac delta. Rather than expecting random hemisphere directions to find it, a renderer samples that light's designated position or direction explicitly."
+      ]
+    },
+    {
+      "id": "053",
+      "sourceBeatId": "M21-053-attenuation-start",
+      "title": "역제곱 감쇠와 구면 면적",
+      "lines": [
+        "Light leaving a point source spreads across increasingly large spherical surfaces. Sphere area grows with the square of radius. Doubling distance quadruples that area, so an equally sized receiving patch gets one quarter as much illumination. This is inverse-square falloff for a point source."
+      ]
+    },
+    {
+      "id": "054",
+      "sourceBeatId": "M21-054-radiometry",
+      "title": "복사속/복사조도 단위",
+      "lines": [
+        "Keep the quantities distinct. Radiant flux is total power, measured in watts. Irradiance is incoming power per unit surface area, measured in watts per square meter. Under the same directional and incidence conditions, it is the receiving irradiance that falls with squared distance. The light source's total emitted power does not disappear as it spreads."
+      ]
+    },
+    {
+      "id": "055",
+      "sourceBeatId": "M21-055-radiance-distance",
+      "title": "광원-표면 거리와 카메라 거리",
+      "lines": [
+        "Do not confuse light-to-surface distance with camera-to-surface distance. Pulling the camera away makes an unchanged illuminated object smaller on screen. Without atmospheric loss or exposure changes, a resolved surface does not require another inverse-square reduction in radiance due to camera distance. Radiance accounts for projected area and solid angle as well as power."
+      ]
+    },
+    {
+      "id": "056",
+      "sourceBeatId": "M21-056-finite-source",
+      "title": "면광원의 입체각과 감쇠",
+      "lines": [
+        "An emitting surface occupies a smaller solid angle as it moves farther from the receiver. Its radiance in each direction can remain unchanged while fewer directions carry its light. Integrating over that solid angle accounts for the distance effect. An abstract point source instead includes distance falloff explicitly in its evaluated contribution."
+      ]
+    },
+    {
+      "id": "057",
+      "sourceBeatId": "M21-057-falloff-problem",
+      "title": "무한대와 무한 범위",
+      "lines": [
+        "Direct inverse-square evaluation has two practical issues: it grows without bound near zero distance, and it never becomes exactly zero far away. The point-source idealization ignores the physical emitter's size. Games may limit the near-source value and smoothly cut off the contribution outside an influence range."
+      ]
+    },
+    {
+      "id": "058",
+      "sourceBeatId": "M21-058-linear-falloff",
+      "title": "선형 감쇠 분기와 예제",
+      "lines": [
+        "One simple alternative uses two distances: full strength up to the inner distance, zero beyond the outer distance, and a linear fade between them. With an inner distance of two meters and outer distance of six, the factor at four meters is (6-4)/(6-2)=0.5. This is an artistic and practical range control rather than exact physical falloff."
+      ]
+    },
+    {
+      "id": "059",
+      "sourceBeatId": "M21-059-spot-falloff",
+      "title": "거리 감쇠와 각도 감쇠",
+      "lines": [
+        "A spotlight can fade toward its cone edge in addition to fading with distance. Points at the same distance may receive different strengths depending on their angle. Keep angular and distance attenuation separate; directional lights usually omit distance falloff. Once we can provide direction and strength at a point, we can also build distributions beyond simple circles and cones."
+      ]
+    },
+    {
+      "id": "060",
+      "sourceBeatId": "M21-060-doom-scope",
+      "title": "Doom3 빛 영향 부피",
+      "lines": [
+        "In Doom 3, a flashlight sweeps across a corridor, railing and door. We can now connect this moving circular footprint to the light’s coordinates. Doom 3 provides a flexible example. Here, a light volume defines the region influenced by a light. It is distinct from volumetric lighting that integrates scattering through fog. The task is still to determine light direction and strength at a surface point."
+      ]
+    },
+    {
+      "id": "061",
+      "sourceBeatId": "M21-061-doom-textures",
+      "title": "두 텍스처 곱",
+      "lines": [
+        "Intensity is controlled by two textures: a two-dimensional gobo for the projected pattern and a one-dimensional falloff map for variation along depth. Transform the surface point into light coordinates, sample both, and multiply. A gobo value of 0.8 and falloff value of 0.5 give a factor of 0.4."
+      ]
+    },
+    {
+      "id": "062",
+      "sourceBeatId": "M21-062-doom-coordinate",
+      "title": "좌표 변환과 투영 나눗셈",
+      "lines": [
+        "A homogeneous transformation produces coordinates x, y, z, and w. The gobo is sampled at x/w and y/w, while the falloff map uses its separately prepared z coordinate. Projection is now locating a surface point on a light pattern instead of locating geometry on the camera image."
+      ]
+    },
+    {
+      "id": "063",
+      "sourceBeatId": "M21-063-doom-omni",
+      "title": "Omni 직교 투영 행렬",
+      "lines": [
+        "Place the source at a box center and project a circular gobo orthographically. A depth falloff map is brightest at the center and darkens toward both ends. Divide centered coordinates by box dimensions sx, sy, and sz, then shift them by 0.5 to map the box into the texture's zero-to-one range."
+      ]
+    },
+    {
+      "id": "064",
+      "sourceBeatId": "M21-064-doom-omni-worked",
+      "title": "실제 UV 수치와 y 뒤집기",
+      "lines": [
+        "For a box width of four, x=0 maps to u=0.5; x=-2 maps to zero and x=2 to one. The negative vertical scale matches this example's upward 3D axis with its downward texture axis. It is a coordinate convention, not a flip required by every engine. World-space points must first be transformed into the light's local space."
+      ]
+    },
+    {
+      "id": "065",
+      "sourceBeatId": "M21-065-doom-spot",
+      "title": "Spot 원근 행렬",
+      "lines": [
+        "Project the same circular gobo perspectively from one end of the volume. Near cross-sections are small and distant ones are larger, producing a cone. The homogeneous w becomes depth z, so dividing the horizontal and vertical coordinates produces perspective. The falloff map still uses its separately defined depth coordinate rather than applying that same division again."
+      ]
+    },
+    {
+      "id": "066",
+      "sourceBeatId": "M21-066-doom-borders",
+      "title": "범위 밖 clamp와 검은 경계",
+      "lines": [
+        "Light should not repeat outside the volume or appear behind the projector. The example uses black texture borders and clamped addressing rather than repeating coordinates. Points behind the spotlight are excluded, and the projection must avoid dividing at w=0."
+      ]
+    },
+    {
+      "id": "067",
+      "sourceBeatId": "M21-067-doom-fake-spot",
+      "title": "측면 고보로 가짜 스폿",
+      "lines": [
+        "The third construction puts a cone's side profile and brightness falloff directly into a gobo, projected from the side. It reuses the omni-style depth falloff and orthographic coordinate transform, changing the pattern and orientation. The same two-texture framework produces a different shaped influence volume."
+      ]
+    },
+    {
+      "id": "068",
+      "sourceBeatId": "M21-068-doom-advantages",
+      "title": "공통 틀과 영향 영역 최적화",
+      "lines": [
+        "This framework handles varied lights with shared calculations and allows custom falloff patterns. Tighter bounds can better enclose the region with meaningful illumination. Doom 3 renders light-surface interactions and adds their contributions, so excluding unaffected geometry reduces lighting and shadow work as well as shaping the image. Sharing the evaluation also helps manage combinations of light types and materials rather than creating a separate shader path for every combination."
+      ]
+    },
+    {
+      "id": "069",
+      "sourceBeatId": "M21-069-bake-bridge",
+      "title": "간접광 비용과 정적 부분 저장",
+      "lines": [
+        "We have reduced direct-light work, but tracing bounced light each frame is more involved. Surface patches must exchange illumination based on mutual visibility, and moving geometry changes those relationships. For stationary lights and surfaces, that expensive calculation can instead be performed ahead of time and stored."
+      ]
+    },
+    {
+      "id": "070",
+      "sourceBeatId": "M21-070-lightmap",
+      "title": "추가 UV와 라이트맵 아틀라스",
+      "lines": [
+        "Lightmapping stores this result in a texture. Additional UV coordinates map walls and floors into a lightmap containing precomputed illumination. Packing those surface charts into an atlas connects each surface location to texels that can be read at runtime."
+      ]
+    },
+    {
+      "id": "071",
+      "sourceBeatId": "M21-071-vertex-bake",
+      "title": "조밀한 메시 정점 저장",
+      "lines": [
+        "Large simple surfaces are comparatively easy to unwrap. Complex geometry can require many charts and leave unused atlas space. Another choice stores precomputed lighting at vertices and interpolates it. A sufficiently dense mesh may suit this representation; sampling density determines which detail can be retained."
+      ]
+    },
+    {
+      "id": "072",
+      "sourceBeatId": "M21-072-baked-quantity",
+      "title": "저장되는 양과 방향 정보",
+      "lines": [
+        "What is stored matters. A single color per point can summarize illumination from many directions while losing where the light came from. Incoming power per unit area is irradiance; radiosity describes outgoing power per unit area. Keep that physical distinction separate from historical names for lightmap-solving methods."
+      ]
+    },
+    {
+      "id": "073",
+      "sourceBeatId": "M21-073-direction-basis",
+      "title": "방향 분포를 기저로 압축",
+      "lines": [
+        "To retain direction, store multiple values or decompose the distribution into basis functions. Spherical harmonics, or SH, represent a smooth distribution over a sphere as a weighted combination of such functions, analogous to frequency components in a signal. A compact coefficient set saves storage and computation but cannot preserve arbitrarily sharp directional detail."
+      ]
+    },
+    {
+      "id": "074",
+      "sourceBeatId": "M21-074-bake-selection",
+      "title": "직접광과 간접광 선택",
+      "lines": [
+        "Precomputation can include direct light and shadows, reducing runtime work. But moving a baked light or occluder leaves the stored result tied to the old arrangement. Moving the camera is different from changing the lighting configuration: a new viewpoint does not automatically update a baked shadow's cause."
+      ]
+    },
+    {
+      "id": "075",
+      "sourceBeatId": "M21-075-mixed-lighting",
+      "title": "간접광만 저장하고 직접광 실시간",
+      "lines": [
+        "A mixed approach can store indirect light while calculating direct light at runtime. Live directions support specular response and detailed shadows. The stored indirect component, however, does not automatically update when the source changes; a switched-off lamp may leave stale bounced light. Different lights can also use fully dynamic or baked methods within the same scene."
+      ]
+    },
+    {
+      "id": "076",
+      "sourceBeatId": "M21-076-probes",
+      "title": "움직이는 물체와 프로브",
+      "lines": [
+        "A moving character cannot simply remain attached to the room's static lightmap. Instead, light probes store illumination at sampled positions in space. Reading or interpolating nearby probe values as the object moves lets its indirect lighting change from a bright window area to a darker corner."
+      ]
+    },
+    {
+      "id": "077",
+      "sourceBeatId": "M21-077-probe-direction",
+      "title": "난반사와 정반사의 서로 다른 필터",
+      "lines": [
+        "Probe data may use a cubemap or a compressed directional representation. Diffuse irradiance gathers light over a hemisphere with cosine weighting around the normal. Specular reflection needs separate directional information: sharp reflections use a sharper environment, while rougher reflection uses suitable filtering. The word probe does not imply one universal storage format."
+      ]
+    },
+    {
+      "id": "078",
+      "sourceBeatId": "M21-078-close",
+      "title": "논지 회수와 전체 연결",
+      "lines": [
+        "We began with a bright, shiny surface. We used orientation and material to calculate reflection, chose whether to evaluate it at vertices or pixels, supplied direction and strength through lights, and stored expensive work with lightmaps and probes. These questions now connect: what light arrives, how the surface reflects it, and which parts are computed live or stored."
+      ]
+    }
+  ]
+}

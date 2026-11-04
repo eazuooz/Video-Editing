@@ -1,0 +1,1376 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M23",
+  "language": "en",
+  "status": "source-faithful-content-draft-awaiting-footage-integration",
+  "finalNarrationLocked": false,
+  "sourceAudit": "planning/source-audit.json",
+  "segments": [
+    {
+      "id": "M23-001",
+      "section": "10.10",
+      "title": "opening",
+      "text": "An object grows as it approaches, disappears behind another object, and brightens on its lit surfaces. How does a computer turn all of that into one image? We will follow vertices toward the screen, then connect that journey to the shaders that determine their color.",
+      "sourceParagraphs": [
+        "S110-P002",
+        "S110-P003",
+        "S110-P004"
+      ],
+      "screenPlan": "검증된 독립 실제 게임의 접근·가림·밝기 변화 예시 자리. 각 관찰의 출처 및 연속 동작 확보 후 문구 확정.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C01"
+      ],
+      "boundaryFromPrevious": "Actual-game thesis abstract after existing 2-second brand."
+    },
+    {
+      "id": "M23-002",
+      "section": "10.10",
+      "title": "pipeline-scope",
+      "text": "This is the graphics pipeline: a sequence that transforms vertices and textures into an image. We will use a basic triangle rasterization pipeline. Engines can run stages in parallel or rearrange work, but this conceptual order reveals what information each stage needs.",
+      "sourceParagraphs": [
+        "S110-P003",
+        "S110-P004"
+      ],
+      "screenPlan": "Unity 검은 테스트 무대 동일 물체→정점→삼각형→픽셀 토큰. 광선 추적·전역 조명은 이번 범위 밖으로 내부 기록.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C01"
+      ],
+      "boundaryFromPrevious": "게임 화면 한 장은 기하·가시성·조명·출력의 연결 결과다."
+    },
+    {
+      "id": "M23-003",
+      "section": "10.10",
+      "title": "scene-visibility",
+      "text": "First we set the camera, its viewing direction, and the output region, along with lighting and fog. Then we find objects that could be visible. Detailed work on an object hidden outside the room may contribute nothing to the image.",
+      "sourceParagraphs": [
+        "S110-P006",
+        "S110-P007",
+        "S110-P009",
+        "S110-P010",
+        "S110-P011",
+        "S110-P012",
+        "S110-P013"
+      ],
+      "screenPlan": "관찰자 카메라와 플레이어 카메라, 뷰 프러스텀·경계 부피. 후보 표시와 실제 보임 구분; 엔진 측정값 아님.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "삼각형 기반 기본 래스터화 파이프라인의 개념 순서를 설명한다."
+    },
+    {
+      "id": "M23-004",
+      "section": "10.10",
+      "title": "material-geometry",
+      "text": "For each candidate we choose a material, including textures and shaders, and submit its vertices and triangles to the graphics API. A distant object may use a simpler mesh, called a level of detail, or LOD. The pipeline now has the data needed to decide where to draw it.",
+      "sourceParagraphs": [
+        "S110-P007",
+        "S110-P014",
+        "S110-P015"
+      ],
+      "screenPlan": "재질·정점·인덱스 세 입력 연결; LOD 동일 모델 비교. 예제 메시 저작물 출처 확인 필요.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "카메라·환경과 가시성 후보를 먼저 정한다."
+    },
+    {
+      "id": "M23-005",
+      "section": "10.10",
+      "title": "vertex-triangle-pixel",
+      "text": "The vertex shader transforms each vertex and prepares shading data. The pipeline clips parts outside the view and culls unwanted faces. Rasterization finds which screen samples a remaining triangle covers. The pixel shader then evaluates color from the interpolated data, materials, and lighting.",
+      "sourceParagraphs": [
+        "S110-P007",
+        "S110-P016",
+        "S110-P017",
+        "S110-P018",
+        "S110-P019",
+        "S110-P020",
+        "S110-P021",
+        "S110-P022",
+        "S110-P023"
+      ],
+      "screenPlan": "동일 삼각형 상태 유지하며 클리핑→격자 커버리지→색을 순차 공개.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "물체별 재질 상태와 삼각형 데이터를 제출한다."
+    },
+    {
+      "id": "M23-006",
+      "section": "10.10",
+      "title": "visibility-output-overview",
+      "text": "A computed color does not necessarily survive. A nearer surface can hide it, and empty areas of a leaf texture may be discarded. Surviving results replace or blend with existing color. Notice how processing moves from objects to vertices, triangles, and pixels. We will now examine the memory those operations use.",
+      "sourceParagraphs": [
+        "S110-P007",
+        "S110-P024",
+        "S110-P025",
+        "S110-P026",
+        "S110-P027",
+        "S110-P028",
+        "S110-P029",
+        "S110-P030",
+        "S110-P054",
+        "S110-P055",
+        "S110-P056",
+        "S110-P008"
+      ],
+      "screenPlan": "코드 10.10 대응 자체 의사코드 전체 스크롤 아닌 활성 3–5행 공개; 객체→정점→면→샘플 역할.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "정점→삼각형→화면 샘플 순서로 처리 단위가 달라진다."
+    },
+    {
+      "id": "M23-007",
+      "section": "10.10",
+      "title": "api-shader-division",
+      "text": "The game does not have to run a software loop over every pixel. It prepares data and state, submits work through the API, and supplies shaders for vertex and pixel calculations. The division varies by platform, while avoiding invisible work and unnecessary CPU–GPU waiting remains useful.",
+      "sourceParagraphs": [
+        "S110-P031",
+        "S110-P032",
+        "S110-P033",
+        "S110-P034",
+        "S110-P035",
+        "S110-P036",
+        "S110-P037",
+        "S110-P038",
+        "S110-P039",
+        "S110-P040",
+        "S110-P041"
+      ],
+      "screenPlan": "도식10.36–37 의미 재구성; 역사 PS2·PC 두꺼운 API 일괄 일반화 생략, 현대 명령제출 구체 형태 단정 없음.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "깊이·알파·블렌딩을 거쳐 결과를 저장한다."
+    },
+    {
+      "id": "M23-008",
+      "section": "10.10.1",
+      "title": "frame-buffer",
+      "text": "The frame buffer stores the resulting colors. Think of it as memory containing a color for each image location. Formats vary; its purpose here is to hold the image being constructed. What happens if we redraw the same image while the display is reading it?",
+      "sourceParagraphs": [
+        "S110-P042",
+        "S110-P043",
+        "S110-P044",
+        "S110-P045"
+      ],
+      "screenPlan": "동일 장면의 확대 픽셀 격자→색 배열. 버퍼 전체가 항상 2D픽셀배열이라고 일반화하지 않음.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C02"
+      ],
+      "boundaryFromPrevious": "응용 코드·API/GPU·셰이더의 협업과 보이지 않는 작업 제거가 중요하다."
+    },
+    {
+      "id": "M23-009",
+      "section": "10.10.1",
+      "title": "double-buffer",
+      "text": "Double buffering separates the displayed image from the image under construction. The front buffer represents the displayed frame, while rendering prepares a back buffer. A completed image can be presented through a role change or copying. Real systems may use more buffers and display synchronization; the key is separating construction from presentation.",
+      "sourceParagraphs": [
+        "S110-P046",
+        "S110-P047",
+        "S110-P048",
+        "S110-P049",
+        "S110-P050"
+      ],
+      "screenPlan": "자체 도식 두 버퍼 역할 교대, 복사/참조교환 분기. double buffer alone=no-tearing 보장이라고 말하지 않음.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C02"
+      ],
+      "boundaryFromPrevious": "프레임 버퍼는 렌더링된 색을 저장한다."
+    },
+    {
+      "id": "M23-010",
+      "section": "10.10.1",
+      "title": "depth-buffer",
+      "text": "A depth buffer records which surface is in front at each sample. Consider a convention where smaller values are nearer. If the stored value is 0.7 and a new value is 0.3, the new surface wins and updates color and depth. A later value of 0.8 fails because it is farther away.",
+      "sourceParagraphs": [
+        "S110-P051",
+        "S110-P052"
+      ],
+      "screenPlan": "동일 픽셀 깊이0.7→0.3→0.8 연산 직접 표시. 실제 게임 거리 측정 아님.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C03"
+      ],
+      "boundaryFromPrevious": "더블 버퍼링은 표시와 제작 역할을 나누고 present한다."
+    },
+    {
+      "id": "M23-011",
+      "section": "10.10.1",
+      "title": "depth-convention",
+      "text": "Depth is not necessarily distance in meters or the raw clip-space z. It is mapped from the depth after perspective division. A conventional near-zero, far-one setup commonly clears to one and accepts smaller values. Reverse Z uses the opposite ordering. The clear value and comparison function must agree.",
+      "sourceParagraphs": [
+        "S110-P053",
+        "S110-P057",
+        "S110-P058"
+      ],
+      "screenPlan": "clip(x,y,z,w)→z/w→depth range; conventional/reverse 두 눈금. far boundary LESS vs LEQUAL 조건 주석.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C03"
+      ],
+      "boundaryFromPrevious": "깊이 버퍼는 같은 화면 위치의 앞뒤를 판정한다."
+    },
+    {
+      "id": "M23-012",
+      "section": "10.10.2",
+      "title": "render-context",
+      "text": "With output storage ready, we prepare the input. Rendering state selects shaders, textures, matrices, and light parameters. A matrix shared by an object's vertices can be supplied as a constant, while positions vary per vertex. We do not need to duplicate every shared value in each vertex.",
+      "sourceParagraphs": [
+        "S110-P059",
+        "S110-P060",
+        "S110-P061",
+        "S110-P062",
+        "S110-P063",
+        "S110-P064",
+        "S110-P065"
+      ],
+      "screenPlan": "상수버퍼/텍스처/정점스트림 분류. 색 출력이 모든 패스의 필수라고 하지 않고 기본 컬러패스 범위 유지.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "클립 z와 z/w, 깊이 매핑·초기화·비교 함수는 구분한다."
+    },
+    {
+      "id": "M23-013",
+      "section": "10.10.2",
+      "title": "vertex-attributes",
+      "text": "Vertex attributes depend on the surface. Position locates it; UV selects texture locations; the normal describes surface orientation. Vertex color can control color or blending. A tangent basis interprets normal-map directions, and a skinned mesh also needs joint indices and weights.",
+      "sourceParagraphs": [
+        "S110-P066",
+        "S110-P067",
+        "S110-P068"
+      ],
+      "screenPlan": "정점 하나의 필드→물체의 대응 부분 리더라인, 코드 토큰색.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "렌더 상태와 정점 데이터를 분리하여 전달한다."
+    },
+    {
+      "id": "M23-014",
+      "section": "10.10.2",
+      "title": "vertex-basic-tangent",
+      "text": "A basic mesh can provide position, normal, and UV. For our tangent-space normal-mapping path, add a tangent and handedness sign. The remaining axis comes from their cross product and that sign. This is one practical data format, not a claim that tangents can never be reconstructed another way.",
+      "sourceParagraphs": [
+        "S110-P069",
+        "S110-P070",
+        "S110-P071",
+        "S110-P072"
+      ],
+      "screenPlan": "RenderVertex→RenderVertexBasis 변경 필드만 강조; tangent.w 부호와 B 복원.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C04"
+      ],
+      "boundaryFromPrevious": "위치·UV·법선·색·접선 기저는 다른 역할이다."
+    },
+    {
+      "id": "M23-015",
+      "section": "10.10.2",
+      "title": "vertex-ui-effects",
+      "text": "UI elements such as text may need only screen position, color, and UV, with no lighting normal. A flame or debug marker can have a 3D position while outputting an assigned unlit color. Vertex layout follows the calculations required, not simply whether an object is three-dimensional.",
+      "sourceParagraphs": [
+        "S110-P073",
+        "S110-P074",
+        "S110-P075",
+        "S110-P076"
+      ],
+      "screenPlan": "RenderVertex2D/RenderVertexL 표시, UI·3D표식 두 실제자체 결과 병렬.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "기본 메시와 접선 공간 노멀맵 메시의 입력 차이를 보인다."
+    },
+    {
+      "id": "M23-016",
+      "section": "10.10.2",
+      "title": "vertex-lightmap-skin",
+      "text": "A lightmapped surface can have separate UV sets for material textures and baked lighting. Its tangent basis supports the accompanying normal mapping, not ordinary lightmap lookup itself. Skinning adds joint indices and weights. Our four-influence example is a chosen layout, not a universal engine limit.",
+      "sourceParagraphs": [
+        "S110-P077",
+        "S110-P078",
+        "S110-P079",
+        "S110-P080",
+        "S110-P085",
+        "S110-P086"
+      ],
+      "screenPlan": "라이트맵+범프 메시/스키닝메시 필드비교. 원문 잘못된 skinned 주석 교정.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C04"
+      ],
+      "boundaryFromPrevious": "조명을 계산하지 않는 UI·효과는 법선을 생략할 수 있다."
+    },
+    {
+      "id": "M23-017",
+      "section": "10.10.2",
+      "title": "aos-soa-stride",
+      "text": "We can group all attributes of each vertex in an array of structures, or group positions, normals, and other attributes separately in a structure of arrays. Unused streams can be omitted. In a packed block, stride locates the next vertex and offset locates an attribute. Performance depends on how the data is accessed and on the hardware.",
+      "sourceParagraphs": [
+        "S110-P081",
+        "S110-P082",
+        "S110-P083",
+        "S110-P084"
+      ],
+      "screenPlan": "3정점 AoS/SoA 스트립, base+i*stride+offset 자체 수치예.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "라이트맵 UV와 접선 기저, 본 입력을 혼동하지 않는다."
+    },
+    {
+      "id": "M23-018",
+      "section": "10.10.3",
+      "title": "vertex-work",
+      "text": "The vertex shader prepares clip-space position and the values used downstream. It can skin vertices, transform normals, calculate light vectors, fog factors, or projected texture coordinates. Correctly prepared inputs can pass through unchanged. Gouraud shading evaluates lighting here as well.",
+      "sourceParagraphs": [
+        "S110-P087",
+        "S110-P088",
+        "S110-P089",
+        "S110-P090",
+        "S110-P091",
+        "S110-P092"
+      ],
+      "screenPlan": "입력→정점 작업→출력 두 갈래; 작업 목록은 해당객체 시각과 연결.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "AoS·SoA·stride/offset는 같은 속성의 배치 선택이다."
+    },
+    {
+      "id": "M23-019",
+      "section": "10.10.3",
+      "title": "model-view-projection",
+      "text": "Follow one position from model coordinates into the world, then into camera coordinates and finally clip space. With row vectors, the model, view, and projection matrices multiply on the right in that order. Precombining them lets each vertex use one matrix multiplication. Mathematical multiplication order and memory storage order are separate choices.",
+      "sourceParagraphs": [
+        "S110-P093",
+        "S110-P094",
+        "S110-P095",
+        "S110-P096",
+        "S110-P097"
+      ],
+      "screenPlan": "행벡터 vMVP; 합성전후같은점, column버전은 전치/역순 설명주석만.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "정점 셰이더는 위치와 후속 셰이딩 입력을 준비한다."
+    },
+    {
+      "id": "M23-020",
+      "section": "10.10.4",
+      "title": "homogeneous-clipping",
+      "text": "Before perspective division, clipping removes parts outside the viewing volume. A triangle crossing the boundary must be cut, not discarded entirely. In the basic Direct3D convention, x and y lie between minus w and w, while z lies between zero and w. OpenGL's default depth convention differs.",
+      "sourceParagraphs": [
+        "S110-P098",
+        "S110-P099",
+        "S110-P100",
+        "S110-P101"
+      ],
+      "screenPlan": "동차clipplanes -w≤x,y≤w,0≤z≤w→나눗셈→viewport. near교차 정상잘림 예.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C05"
+      ],
+      "boundaryFromPrevious": "모델→월드→카메라→클립 행렬은 결합 가능하다."
+    },
+    {
+      "id": "M23-021",
+      "section": "10.10.4",
+      "title": "clip-four-cases",
+      "text": "Sutherland–Hodgman clipping handles one boundary plane at a time. In the start-vertex output convention, an inside-to-inside edge emits its start; outside-to-outside emits nothing; outside-to-inside emits the intersection; inside-to-outside emits the start and intersection. One circuit produces the clipped polygon's vertices.",
+      "sourceParagraphs": [
+        "S110-P101",
+        "S110-P102",
+        "S110-P103",
+        "S110-P104"
+      ],
+      "screenPlan": "원문figure규칙직접확인; start-output관례 유지. 자체4케이스 animated; output end관례와 혼합금지.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C05"
+      ],
+      "boundaryFromPrevious": "원근 나눗셈 전 동차 클립 공간에서 시야 밖 부분을 자른다."
+    },
+    {
+      "id": "M23-022",
+      "section": "10.10.4",
+      "title": "clip-worked",
+      "text": "For a boundary x at most one, an edge from zero to two crosses halfway, at x equals one. Collect the emitted vertices in order, then close the polygon by connecting the last to the first. The algorithm outputs a vertex list. Robust implementations also handle duplicate points and boundary contact, rejecting results with no drawable area.",
+      "sourceParagraphs": [
+        "S110-P105",
+        "S110-P106",
+        "S110-P109",
+        "S110-P110"
+      ],
+      "screenPlan": "x0→2,t=(1−0)/(2−0)=0.5; figure10.40사각형 절단; 원문1/2정점불가능 절대주장교정.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C05"
+      ],
+      "boundaryFromPrevious": "서덜랜드–호지먼은 한 평면씩 변의 출입을 처리한다."
+    },
+    {
+      "id": "M23-023",
+      "section": "10.10.4",
+      "title": "scissor-guard-band",
+      "text": "Not every off-screen portion has to be clipped geometrically in the same way. Scissoring rejects samples outside a screen rectangle. A guard band extends the permitted region to reduce some geometric clipping. This optimization does not remove the need to handle the near plane or valid homogeneous coordinates.",
+      "sourceParagraphs": [
+        "S110-P107",
+        "S110-P108"
+      ],
+      "screenPlan": "frustum옆화면범위와guardband별색, 실제드라이버측정아닌기능설명.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "교점과 닫힌 정점목록을 계산하고 퇴화 입력을 처리한다."
+    },
+    {
+      "id": "M23-024",
+      "section": "10.10.5",
+      "title": "backface-purpose",
+      "text": "Backface culling can skip the rear faces of a closed opaque object, which are normally covered by its front surfaces. It does not guarantee that half the triangles disappear. Terrain and freely viewed objects differ, while thin leaves or visible interiors may require different settings.",
+      "sourceParagraphs": [
+        "S110-P111",
+        "S110-P112",
+        "S110-P113",
+        "S110-P114"
+      ],
+      "screenPlan": "같은모델 앞/뒤 면 + 평면비교. 정확한프레임측정없으므로 절감퍼센트표시금지.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "기하 클리핑과 화면 scissor,guard band는 구분한다."
+    },
+    {
+      "id": "M23-025",
+      "section": "10.10.5",
+      "title": "winding-reflection",
+      "text": "Hardware commonly distinguishes faces by projected clockwise or counterclockwise winding. Which winding is front-facing is a configurable convention, not an automatic consequence of coordinate handedness. A mirrored transform can reverse it. Some effects deliberately render front and back faces in separate passes.",
+      "sourceParagraphs": [
+        "S110-P115",
+        "S110-P116",
+        "S110-P117",
+        "S110-P118"
+      ],
+      "screenPlan": "0,1,2번호삼각형 회전/반사 비교, FrontCounterClockwise boolean; stencilshadow역할한줄.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C06"
+      ],
+      "boundaryFromPrevious": "닫힌 불투명 물체의 뒷면을 생략하되 제거율은 고정이 아니다."
+    },
+    {
+      "id": "M23-026",
+      "section": "10.10.5",
+      "title": "backface-dot",
+      "text": "In 3D, compare the outward normal with a vector from the eye to the surface. A positive dot product indicates a back face. For a right-facing normal and an eye on the right, the eye-to-surface vector points left, producing a negative dot product: the eye is on the front side. Checking only the normal's z component fails for off-axis perspective geometry.",
+      "sourceParagraphs": [
+        "S110-P119",
+        "S110-P120",
+        "S110-P121",
+        "S110-P122",
+        "S110-P123",
+        "S110-P124"
+      ],
+      "screenPlan": "면x=0,n=(1,0,0),eye=(2,0,0)→dot−2,eye−2→+2; figure10.42반례재구성.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "앞면 winding은 API 설정이며 좌표계 손잡이로 자동 결정되지 않는다."
+    },
+    {
+      "id": "M23-027",
+      "section": "10.10.6",
+      "title": "raster-samples",
+      "text": "The remaining triangles undergo perspective division and viewport mapping. Their coordinates can be fractional, while screen samples occupy defined locations. Rasterization decides which samples belong to each triangle. Shared-edge rules prevent adjacent triangles from both claiming or both missing the same boundary sample.",
+      "sourceParagraphs": [
+        "S110-P125",
+        "S110-P126",
+        "S110-P127",
+        "S110-P128",
+        "S110-P129"
+      ],
+      "screenPlan": "움직이는 두 삼각형 공유변과samplegrid; top-leftrule간단기호. MSAA는 sample개념조건만.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C07"
+      ],
+      "boundaryFromPrevious": "3D 앞뒤는 카메라 상대 위치와 면 법선의 내적으로 판정한다."
+    },
+    {
+      "id": "M23-028",
+      "section": "10.10.6",
+      "title": "interpolation-depth",
+      "text": "Covered samples receive interpolated UVs, normals, and other attributes. Perspective-correct interpolation can differ from a simple screen-space average. Directions such as normals may need renormalization afterward. Hidden samples can sometimes fail an early depth test before expensive shading; shader behavior determines when that is valid.",
+      "sourceParagraphs": [
+        "S110-P130"
+      ],
+      "screenPlan": "3정점→내부UV/N; 보간단위벡터길이0.707예를 M21재사용; early/late깊이조건칩.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C07"
+      ],
+      "boundaryFromPrevious": "연속 삼각형을 샘플로 바꿀 때 공유 경계를 일관되게 처리한다."
+    },
+    {
+      "id": "M23-029",
+      "section": "10.10.6",
+      "title": "shading-alpha",
+      "text": "The pixel shader evaluates material, lighting, and any fog to produce color and alpha. Alpha testing discards cutout samples; alpha blending combines surviving color with the background. With straight alpha, quarter-opacity red over blue yields 0.25 red and 0.75 blue. Depth writes and ordering must also suit the material.",
+      "sourceParagraphs": [
+        "S110-P130"
+      ],
+      "screenPlan": "같은quad cutout/blend분리, C=αCs+(1−α)Cd수치; 깊이쓰기옵션 명시.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C07"
+      ],
+      "boundaryFromPrevious": "면 안의 값을 보간하고 조건에 따라 조기 깊이검사를 할 수 있다."
+    },
+    {
+      "id": "M23-030",
+      "section": "10.11",
+      "title": "pipeline-to-code",
+      "text": "That was the data's route. Now we will implement its programmable stages in HLSL: the vertex and pixel shaders. We begin with an unlit texture, then add lighting, normal mapping, and skinning. We will distinguish legacy shader-model notation from modern syntax while following the same data flow.",
+      "sourceParagraphs": [
+        "S111-P002",
+        "S111-P003",
+        "S111-P004",
+        "S111-P005",
+        "S111-P006",
+        "S111-P007"
+      ],
+      "screenPlan": "같은무대위codepanel만열기; SM2legacyreference vs 현대독립예제라벨; HLSL=Cg동일현재주장생략.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C01",
+        "C08"
+      ],
+      "boundaryFromPrevious": "픽셀 셰이딩·알파 제거·블렌딩·쓰기의 역할을 분리한다."
+    },
+    {
+      "id": "M23-031",
+      "section": "10.11.1",
+      "title": "semantics-types",
+      "text": "A float4 groups four numbers, such as x, y, z, and w; a float2 can hold UV coordinates. A semantic after the colon labels how data connects between stages. The vertex shader's UV output supplies the pixel shader's UV input. Modern Direct3D uses SV_Position for clip-position output.",
+      "sourceParagraphs": [
+        "S111-P008",
+        "S111-P009",
+        "S111-P010",
+        "S111-P011"
+      ],
+      "screenPlan": "간결 Input/Output교정HLSL + 같은색연결선; inputPOSITION vs outputSV_Position.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C08"
+      ],
+      "boundaryFromPrevious": "HLSL은 앞 흐름의 프로그래밍 부분을 구현한다."
+    },
+    {
+      "id": "M23-032",
+      "section": "10.11.1",
+      "title": "unlit-vertex",
+      "text": "The simplest vertex shader transforms position to clip space and passes UV unchanged. HLSL mul treats a vector in its first argument as a row vector, so this example places modelToClip second. Do not mix this with the matrix-first column-vector convention. The host code must supply matrices under the same convention.",
+      "sourceParagraphs": [
+        "S111-P012",
+        "S111-P013",
+        "S111-P014",
+        "S111-P015",
+        "S111-P016",
+        "S111-P017"
+      ],
+      "screenPlan": "output.position=mul(input.position,modelToClip);output.uv=input.uv; 변하는정점확인.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C08"
+      ],
+      "boundaryFromPrevious": "입출력 구조체와 semantic은 단계 간 데이터 계약이다."
+    },
+    {
+      "id": "M23-033",
+      "section": "10.11.1",
+      "title": "unlit-pixel",
+      "text": "The pixel shader samples the texture and multiplies by a constant color. A texel of (0.8, 0.4, 0.2) multiplied by (1, 0.5, 1) becomes (0.8, 0.2, 0.2). This is componentwise multiplication, not a matrix product. Alpha can also be scaled, but the blend state decides how transparency is composited.",
+      "sourceParagraphs": [
+        "S111-P018",
+        "S111-P019",
+        "S111-P020",
+        "S111-P021",
+        "S111-P022",
+        "S111-P023",
+        "S111-P024",
+        "S111-P025",
+        "S111-P026"
+      ],
+      "screenPlan": "Texture2D.Sample+SamplerState→texel*tint;decal여기unlit색입히기,프로젝터데칼과구분.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C08"
+      ],
+      "boundaryFromPrevious": "mul의 피연산자 순서와 UV 전달을 확인한다."
+    },
+    {
+      "id": "M23-034",
+      "section": "10.11.1",
+      "title": "shader-era",
+      "text": "Legacy POSITION and COLOR outputs correspond to SV_Position and SV_Target in our modern example. Texture and sampler declarations must also match the target environment. Updating a shader requires checking input formats, data types, and coordinate spaces, not merely replacing a few names.",
+      "sourceParagraphs": [
+        "S111-P027",
+        "S111-P028"
+      ],
+      "screenPlan": "legacy/current 2열 3개라인 전환; byte4후반교정예고 없음.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C01",
+        "C08"
+      ],
+      "boundaryFromPrevious": "텍스처 표본과 상수색의 성분별 곱을 출력한다."
+    },
+    {
+      "id": "M23-035",
+      "section": "10.11.2",
+      "title": "lighting-inputs",
+      "text": "Now add light while keeping one local light and constant ambient illumination. The vertex shader supplies model-space position, normal, and UV alongside clip position. The pixel shader receives their interpolated values and reads separate diffuse and specular material textures. Shared UV coordinates do not make their roles identical.",
+      "sourceParagraphs": [
+        "S111-P029",
+        "S111-P030",
+        "S111-P031",
+        "S111-P032",
+        "S111-P033",
+        "S111-P034",
+        "S111-P035",
+        "S111-P036",
+        "S111-P037",
+        "S111-P038",
+        "S111-P039",
+        "S111-P040",
+        "S111-P041"
+      ],
+      "screenPlan": "sameunlitmesh→lighton, 2materialmaps, VS→PS연결;상용게임실제shader단정X.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "구형 POSITION/COLOR/tex2D와 현대 입출력·샘플링을 혼용하지 않는다."
+    },
+    {
+      "id": "M23-036",
+      "section": "10.11.2",
+      "title": "light-vector-distance",
+      "text": "Normalize the surface normal. Light position minus surface position gives the vector to the light; its length supplies distance, while its normalized value supplies direction. Normalize the sum of view and light directions for the halfway vector. With radius four and distance one, linear attenuation is 1 minus one quarter, or 0.75. This is our example's falloff, not the physical inverse-square law.",
+      "sourceParagraphs": [
+        "S111-P042",
+        "S111-P043",
+        "S111-P044",
+        "S111-P045",
+        "S111-P046",
+        "S111-P047",
+        "S111-P048",
+        "S111-P049",
+        "S111-P050",
+        "S111-P051",
+        "S111-P052",
+        "S111-P053",
+        "S111-P054",
+        "S111-P055",
+        "S111-P056",
+        "S111-P057"
+      ],
+      "screenPlan": "N,L,V,H색별축,att=max(1−d/R,0),R4d1. 광원=표면일때zero guard.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C09"
+      ],
+      "boundaryFromPrevious": "기본 픽셀 조명은 N·UV·모델위치와 단일광원+환경광으로 시작한다."
+    },
+    {
+      "id": "M23-037",
+      "section": "10.11.2",
+      "title": "blinn-phong-color",
+      "text": "Diffuse uses the nonnegative normal–light dot product. Specular raises the nonnegative normal–halfway dot product to an exponent. Ambient joins the diffuse illumination before multiplying by diffuse material color; specular material color scales the separate highlight. For an opaque one-sided surface, suppress the highlight when the light is behind it. Perform these color calculations in linear space.",
+      "sourceParagraphs": [
+        "S111-P058",
+        "S111-P059",
+        "S111-P060",
+        "S111-P061",
+        "S111-P062"
+      ],
+      "screenPlan": "Cd*(La+light*ndotl)+Cs*light*pow(ndoth,p);n·l>0gate,RGB/alpha선택.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C09"
+      ],
+      "boundaryFromPrevious": "L·V·H와 거리 감쇠를 픽셀 위치에서 계산한다."
+    },
+    {
+      "id": "M23-038",
+      "section": "10.11.2",
+      "title": "lighting-numeric",
+      "text": "Check one color channel. With attenuated light 0.75, diffuse factor 0.8, ambient 0.1, and diffuse material 0.5, the diffuse result is 0.35. A specular factor of 0.2 and material value 0.4 add 0.06, giving 0.41. Following each contribution helps explain an unexpectedly bright or dark result.",
+      "sourceParagraphs": [
+        "S111-P058",
+        "S111-P059",
+        "S111-P060",
+        "S111-P061"
+      ],
+      "screenPlan": "0.5*(.75*.8+.1)=.35;.4*.75*.2=.06;sum.41 숫자변화와물체밝기동시.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C09"
+      ],
+      "boundaryFromPrevious": "난반사·정반사·환경광과 재질색을 올바르게 결합한다."
+    },
+    {
+      "id": "M23-039",
+      "section": "10.11.2",
+      "title": "shift-work-vertex",
+      "text": "Repeating all work per pixel can be costly. An alternative computes light directions, halfway vectors, or falloff at vertices and interpolates them. Pixel work decreases, but interpolated data grows and nonlinear calculations are approximated. The tradeoff depends on vertex count, screen coverage, and data transfer as well as arithmetic.",
+      "sourceParagraphs": [
+        "S111-P063",
+        "S111-P064",
+        "S111-P065",
+        "S111-P066",
+        "S111-P067",
+        "S111-P068",
+        "S111-P069",
+        "S111-P070",
+        "S111-P071",
+        "S111-P072",
+        "S111-P073",
+        "S111-P074",
+        "S111-P075",
+        "S111-P076",
+        "S111-P077",
+        "S111-P078",
+        "S111-P079",
+        "S111-P080",
+        "S111-P081"
+      ],
+      "screenPlan": "VS/PS분업code10.15/16역할비교;고정GPU성능수치표시안함.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C10"
+      ],
+      "boundaryFromPrevious": "한 채널의 수치로 조명 합성 흐름을 확인한다."
+    },
+    {
+      "id": "M23-040",
+      "section": "10.11.2",
+      "title": "clamp-after-interpolation",
+      "text": "The placement of a clamp matters. Endpoints of 0.5 and minus 0.5 interpolate to zero at the midpoint, which remains zero after clamping. Clamp the endpoints first, and they become 0.5 and zero; their midpoint is 0.25. Interpolation and clamping do not commute. Interpolated distance falloff is still an approximation.",
+      "sourceParagraphs": [
+        "S111-P078",
+        "S111-P082",
+        "S111-P083",
+        "S111-P084",
+        "S111-P085",
+        "S111-P086",
+        "S111-P087",
+        "S111-P088",
+        "S111-P089",
+        "S111-P090",
+        "S111-P091",
+        "S111-P092",
+        "S111-P093",
+        "S111-P094",
+        "S111-P095",
+        "S111-P096",
+        "S111-P173",
+        "S111-P174"
+      ],
+      "screenPlan": "동일edge2방식수치;보간L/N/H재정규화;25vs33legacy instruction count source historical only.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C10"
+      ],
+      "boundaryFromPrevious": "일부 광원 계산을 정점에 옮기고 보간하는 것은 근사와 성능의 선택이다."
+    },
+    {
+      "id": "M23-041",
+      "section": "10.11.2",
+      "title": "view-space",
+      "text": "The same pixel shader can work in view space if all positions and directions agree on that space. The eye is at the origin, so the view direction is the negative surface position. Normalize its xyz components, not a four-component position containing w. Giving a direction w equal to zero excludes translation.",
+      "sourceParagraphs": [
+        "S111-P097",
+        "S111-P098",
+        "S111-P099",
+        "S111-P100",
+        "S111-P101",
+        "S111-P102",
+        "S111-P103",
+        "S111-P104",
+        "S111-P105",
+        "S111-P106",
+        "S111-P107",
+        "S111-P108",
+        "S111-P109",
+        "S111-P110",
+        "S111-P111",
+        "S111-P112",
+        "S111-P113",
+        "S111-P114",
+        "S111-P115",
+        "S111-P116",
+        "S111-P117",
+        "S111-P120",
+        "S111-P121"
+      ],
+      "screenPlan": "normalize(-vPos.xyz),float4(N,0);nonuniformnormal은inverse transpose;model/view/world절환동일결과.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C09"
+      ],
+      "boundaryFromPrevious": "보간과 clamp의 순서도 결과를 바꾼다."
+    },
+    {
+      "id": "M23-042",
+      "section": "10.11.2",
+      "title": "space-normal-limits",
+      "text": "Shared world or view space can reduce per-object preparation of lighting coordinates. Normals require an inverse-transpose transform under nonuniform scaling. A space whose axes align with the world can still have a different origin. Consistent reference frames and transform conditions matter more than the space's name.",
+      "sourceParagraphs": [
+        "S111-P107",
+        "S111-P115",
+        "S111-P121"
+      ],
+      "screenPlan": "좌표기준칩·inverse transpose한줄;upright space=alignedaxesnotidenticalorigin.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C09"
+      ],
+      "boundaryFromPrevious": "조명 공간은 통일해야 하며 w=0과 xyz 정규화를 구분한다."
+    },
+    {
+      "id": "M23-043",
+      "section": "10.11.3",
+      "title": "gouraud-vertex",
+      "text": "Now move the lighting result itself into the vertex shader. That produces Gouraud shading: interpolate diffuse and specular illumination instead of computing them from a normal at every pixel. The light direction must be a float3. Pixel work becomes simpler, but a small highlight between vertices can be missed.",
+      "sourceParagraphs": [
+        "S111-P118",
+        "S111-P119",
+        "S111-P122",
+        "S111-P123",
+        "S111-P124",
+        "S111-P125",
+        "S111-P126",
+        "S111-P127",
+        "S111-P128",
+        "S111-P129",
+        "S111-P130",
+        "S111-P131",
+        "S111-P132",
+        "S111-P133",
+        "S111-P134",
+        "S111-P135",
+        "S111-P136",
+        "S111-P137",
+        "S111-P138",
+        "S111-P139",
+        "S111-P140",
+        "S111-P141",
+        "S111-P142",
+        "S111-P143"
+      ],
+      "screenPlan": "same mesh Gouraud/Phong switch;float L→float3 L교정, N입력단위길이조건.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C09"
+      ],
+      "boundaryFromPrevious": "공간 공유의 장점과 법선 변환·축과 원점의 차이를 유지한다."
+    },
+    {
+      "id": "M23-044",
+      "section": "10.11.3",
+      "title": "gouraud-pixel",
+      "text": "The pixel shader multiplies each material texture by its interpolated illumination and adds the results. It need not know whether one light or three produced those values. Defining the interface between stages lets the same shader serve multiple lighting setups.",
+      "sourceParagraphs": [
+        "S111-P144",
+        "S111-P145",
+        "S111-P146",
+        "S111-P147",
+        "S111-P148",
+        "S111-P149",
+        "S111-P150",
+        "S111-P151",
+        "S111-P152",
+        "S111-P153"
+      ],
+      "screenPlan": "samePSkept, VSlightconfigurationonlychanges. RGBdiff/spec andalpha역할 유지.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "구로는 조명 결과를 정점에서 계산해 보간한다."
+    },
+    {
+      "id": "M23-045",
+      "section": "10.11.3",
+      "title": "three-directional-lights",
+      "text": "For three directional lights, initialize diffuse illumination with ambient and specular with zero, then accumulate each light's contribution. This can form a useful object-inspection lighting setup. Manually unrolling a loop is not automatically faster; inspect compiled code and measure actual performance.",
+      "sourceParagraphs": [
+        "S111-P154",
+        "S111-P155",
+        "S111-P156",
+        "S111-P157",
+        "S111-P158",
+        "S111-P159",
+        "S111-P160",
+        "S111-P161",
+        "S111-P162",
+        "S111-P163",
+        "S111-P164",
+        "S111-P165",
+        "S111-P166",
+        "S111-P167",
+        "S111-P168",
+        "S111-P169",
+        "S111-P170",
+        "S111-P171",
+        "S111-P172"
+      ],
+      "screenPlan": "same3Dheadlight1/2/3켜기,accumulate숫자;loopunroll notguarantee.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C11"
+      ],
+      "boundaryFromPrevious": "픽셀 셰이더는 보간된 조명과 재질 텍스처를 결합한다."
+    },
+    {
+      "id": "M23-046",
+      "section": "10.11.4",
+      "title": "normal-mapping-vertex",
+      "text": "Keep the lighting model and add normal-map detail. Reconstruct the bitangent from the normal, tangent, and handedness sign. Dot light and halfway vectors with each basis axis to express them in tangent space. Treating this transpose as an inverse requires an orthonormal basis.",
+      "sourceParagraphs": [
+        "S111-P175",
+        "S111-P176",
+        "S111-P177",
+        "S111-P178",
+        "S111-P179",
+        "S111-P180",
+        "S111-P181",
+        "S111-P182",
+        "S111-P183",
+        "S111-P184",
+        "S111-P185",
+        "S111-P186",
+        "S111-P187",
+        "S111-P188",
+        "S111-P189",
+        "S111-P190",
+        "S111-P191",
+        "S111-P192",
+        "S111-P193",
+        "S111-P194",
+        "S111-P195"
+      ],
+      "screenPlan": "B=cross(N,T)*s;Ltan=(dot(L,T),dot(L,B),dot(L,N));samepattern surface.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C12"
+      ],
+      "boundaryFromPrevious": "환경광으로 시작해 방향광 세 기여를 누적한다."
+    },
+    {
+      "id": "M23-047",
+      "section": "10.11.4",
+      "title": "normal-mapping-pixel",
+      "text": "Decode a normal by doubling its RGB values and subtracting one, then renormalize because filtering and quantization can change its length. Normalize interpolated lighting directions and apply the same Blinn–Phong calculation. Handle zero-length vectors, including coincident light and surface positions or a degenerate halfway vector, explicitly.",
+      "sourceParagraphs": [
+        "S111-P196",
+        "S111-P197",
+        "S111-P198",
+        "S111-P199",
+        "S111-P200",
+        "S111-P201",
+        "S111-P202",
+        "S111-P203",
+        "S111-P204",
+        "S111-P205",
+        "S111-P206",
+        "S111-P207",
+        "S111-P208",
+        "S111-P209",
+        "S111-P210",
+        "S111-P211",
+        "S111-P212",
+        "S111-P213"
+      ],
+      "screenPlan": "linear texture,normalize(2rgb−1),zeroGuard;samePS색합귀환.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C12"
+      ],
+      "boundaryFromPrevious": "TBN으로 L/H를 접선 공간에 옮긴다."
+    },
+    {
+      "id": "M23-048",
+      "section": "10.11.5",
+      "title": "skinned-input",
+      "text": "Keep surface shading and animate the geometry. A skinned vertex supplies bind-pose position and normal, joint indices, and weights. Blend the bind-to-current joint matrices using those weights. The constant array contains joint matrices, not vertices. Its size and the index type must match the actual input format.",
+      "sourceParagraphs": [
+        "S111-P214",
+        "S111-P215",
+        "S111-P216",
+        "S111-P217",
+        "S111-P218",
+        "S111-P219",
+        "S111-P220",
+        "S111-P221",
+        "S111-P222",
+        "S111-P223",
+        "S111-P252",
+        "S111-P253",
+        "S111-P254",
+        "S111-P255"
+      ],
+      "screenPlan": "uint4 BLENDINDICES modern;4influencesexample;MAX_BONES40arbitrary;bindinvcomposition연결.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C13"
+      ],
+      "boundaryFromPrevious": "노멀 디코딩·재정규화 후 같은 Blinn–Phong 식을 사용한다."
+    },
+    {
+      "id": "M23-049",
+      "section": "10.11.5",
+      "title": "skinning-transform",
+      "text": "In the row-vector example, a four-by-three matrix maps a four-component position to three coordinates. Keep w equal to one for positions and zero for directions. Send the skinned position to clip space, and the existing pixel shader shades the animated surface. Matrix transfer and branching costs need target-specific measurement.",
+      "sourceParagraphs": [
+        "S111-P224",
+        "S111-P225",
+        "S111-P226",
+        "S111-P227",
+        "S111-P228",
+        "S111-P229"
+      ],
+      "screenPlan": "1×4*4×3=1×3;normalrotationblendapprox라벨;clip path.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C13"
+      ],
+      "boundaryFromPrevious": "바인드→현재 본 행렬을 가중합하여 정점 위치를 바꾼다."
+    },
+    {
+      "id": "M23-050",
+      "section": "10.11.5",
+      "title": "skinned-normal-map",
+      "text": "A skinned normal-mapped surface also transforms its normal and tangent. Blending matrices can disturb length and orthogonality, so verify normalization and reorthogonalization, with separate care for nonuniform scaling. Reconstruct the bitangent and tangent-space lighting vectors, then reuse the normal-mapping pixel shader.",
+      "sourceParagraphs": [
+        "S111-P230",
+        "S111-P231",
+        "S111-P232",
+        "S111-P233",
+        "S111-P234",
+        "S111-P235",
+        "S111-P236",
+        "S111-P237",
+        "S111-P238",
+        "S111-P239",
+        "S111-P240",
+        "S111-P241",
+        "S111-P242",
+        "S111-P243",
+        "S111-P244",
+        "S111-P245",
+        "S111-P246",
+        "S111-P247",
+        "S111-P248",
+        "S111-P249",
+        "S111-P250",
+        "S111-P251",
+        "S111-P256",
+        "S111-P257"
+      ],
+      "screenPlan": "skin→GramSchmidt→TBN→normalmap, sameposebeforeafter. 원문근사보완.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C12"
+      ],
+      "boundaryFromPrevious": "4×3행렬의 위치/방향과 클립 변환을 구분한다."
+    },
+    {
+      "id": "M23-051",
+      "section": "10.11.5",
+      "title": "code-summary",
+      "text": "We began with one texture, then added lighting, normal mapping, and skeletal motion. Geometry deformation and surface color can belong to different stages. Knowing each stage's inputs, outputs, and coordinate spaces gives us a reliable way to combine features and diagnose errors.",
+      "sourceParagraphs": [
+        "S111-P215",
+        "S111-P216",
+        "S111-P230"
+      ],
+      "screenPlan": "첫opening동일object재현;unlit/lit/normal/skinnedprogressivecomparison.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "변형된 N/T를 정규직교화하고 노멀매핑을 이어 붙인다."
+    },
+    {
+      "id": "M23-052",
+      "section": "10.12",
+      "title": "further-reading",
+      "text": "Study both the theory behind the calculation and the code that runs it. Fundamentals of Computer Graphics develops foundations; Principles of Digital Image Synthesis and PBRT explore image formation; Real-Time Rendering covers real-time implementation and performance. Consult the chosen API's official documentation for current syntax and limits.",
+      "sourceParagraphs": [
+        "S112-P001",
+        "S112-P002",
+        "S112-P003",
+        "S112-P004",
+        "S112-P005",
+        "S112-P006",
+        "S112-P007",
+        "S112-P008",
+        "S112-P010"
+      ],
+      "screenPlan": "책 제목텍스트+학습연결 지도;표지재배포없음;authorfreepdf/currentPBRTRTRlinks research에. 제작자프레이밍아닌문헌명.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C14"
+      ],
+      "boundaryFromPrevious": "위치 변형과 표면 색 계산은 인터페이스로 결합한다."
+    },
+    {
+      "id": "M23-053",
+      "section": "10.13",
+      "title": "exercises-entry",
+      "text": "Consider a 640-by-480 sample image. Filling a 4:3 display gives square pixels. Filling a 16:9 display with the same sample count gives a pixel aspect ratio equal to display aspect divided by sample aspect: four thirds. Each displayed pixel is wider than it is tall.",
+      "sourceParagraphs": [
+        "S113-P002",
+        "S113-P003",
+        "S113-P004"
+      ],
+      "screenPlan": "PAR=DAR/(W/H);4/3÷4/3=1;16/9÷4/3=4/3. Wii역사실행주장없이가정숫자유지.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C15"
+      ],
+      "boundaryFromPrevious": "이론서·실행 코드·API 문서를 상호 연결한다."
+    },
+    {
+      "id": "M23-054",
+      "section": "10.13",
+      "title": "split-view-aspect",
+      "text": "Split that 4:3 image vertically into two 320-by-480 viewports. Each has aspect ratio two thirds. A horizontal field of view of 60 degrees gives horizontal scale cotangent 30 degrees, about 1.732. Vertical scale is aspect times that value, about 1.155. The narrow viewport therefore shows more vertically while retaining the horizontal field of view.",
+      "sourceParagraphs": [
+        "S113-P005",
+        "S113-P006",
+        "S113-P007"
+      ],
+      "screenPlan": "A=2/3;sx=√3;sy=2√3/3;fv=2atan(1/sy)≈81.7868°.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C15"
+      ],
+      "boundaryFromPrevious": "640×480을4:3·16:9로 표시할 때 픽셀종횡비를 계산한다."
+    },
+    {
+      "id": "M23-055",
+      "section": "10.13",
+      "title": "split-view-fov",
+      "text": "Vertical field of view is twice the arctangent of the reciprocal vertical scale. With 1.155 it is about 81.8 degrees, wider than the 60-degree horizontal view. Preserving that horizontal field in a tall, narrow viewport requires showing a larger vertical range. This connects aspect ratio, scale, and field of view.",
+      "sourceParagraphs": [
+        "S113-P007"
+      ],
+      "screenPlan": "Q2 d: fv=2atan(1/(2√3/3))≈81.7868°. Q3 wide calculation stays after Q2 e/f matrices.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C15"
+      ],
+      "boundaryFromPrevious": "분할 viewport의 종횡비와 수평·수직줌을 구한다."
+    },
+    {
+      "id": "M23-056",
+      "section": "10.13",
+      "title": "clip-matrix-exercise",
+      "text": "Return to the 4:3 split viewport, with near distance one and far distance 256. The horizontal and vertical matrix terms are our scales. Depth terms depend on the camera convention and target range. Default OpenGL-style right-handed viewing uses negative forward z and a minus-one-to-one depth range; the traditional Direct3D left-handed example uses positive forward z and zero-to-one depth.",
+      "sourceParagraphs": [
+        "S113-P007"
+      ],
+      "screenPlan": "displaycolumnmatrixGLdiag(sx,sy),row3[0,0,-257/255,-512/255],row4[0,0,-1,0];DXrow3[0,0,256/255,-256/255],row4[0,0,1,0]. Explicitcolumnconvention.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C15"
+      ],
+      "boundaryFromPrevious": "수직시야각은 줌의 역삼각함수로 계산한다."
+    },
+    {
+      "id": "M23-057",
+      "section": "10.13",
+      "title": "matrix-endpoints",
+      "text": "Verify the matrices by substituting their endpoints. In the OpenGL-style example, z of minus one becomes depth minus one, and minus 256 becomes one. The Direct3D-style example maps z of one to zero and 256 to one. The displayed matrices use column vectors, so transpose them for our earlier row-vector code. These are selected conventions, not immutable API restrictions.",
+      "sourceParagraphs": [
+        "S113-P007"
+      ],
+      "screenPlan": "2near/far표실시간대입. Matricesdisplaymustlabelcolumn;APIhandednessconfigpossible.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C15"
+      ],
+      "boundaryFromPrevious": "근1원256에서GLRH/-1..1과DXLH/0..1투영행렬을 비교한다."
+    },
+    {
+      "id": "M23-058",
+      "section": "10.13",
+      "title": "wide-split",
+      "text": "Repeat the split on a 16:9 display. Because the pixels are wider, each viewport's displayed aspect is eight ninths, not merely 320 divided by 480. Horizontal scale stays square root three; vertical scale becomes about 1.540 and vertical field of view about 66 degrees. Sample count and displayed shape both matter.",
+      "sourceParagraphs": [
+        "S113-P008",
+        "S113-P009"
+      ],
+      "screenPlan": "Q3원문순서유지;앞beatwide중복제거할것.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C15"
+      ],
+      "boundaryFromPrevious": "행렬 이름 암기 대신near/far대입으로 검증한다."
+    },
+    {
+      "id": "M23-059",
+      "section": "10.13",
+      "title": "uv-exercise",
+      "text": "Next, predict texture placement from UVs. Under repeat addressing, adding an integer preserves the repeated sample location. A rectangle from five to six and minus one to zero covers one repeat. Wider ranges add repetitions, while changing the directions of UV edges rotates or shears the pattern.",
+      "sourceParagraphs": [
+        "S113-P010",
+        "S113-P011",
+        "S113-P012",
+        "S113-P013",
+        "S113-P014"
+      ],
+      "screenPlan": "독립그림자산6개재구성;sourcefigure10.43researchonly;all6UV값내부원문표보존.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "와이드 화면에서표시종횡비를 반영해 다시 계산한다."
+    },
+    {
+      "id": "M23-060",
+      "section": "10.13",
+      "title": "uv-six-cases",
+      "text": "Apply all six sets to the same quad. A spans 1.1 by 1.5 repeats; B is one integer-shifted repeat. C has tilted UV axes, and D shears the pattern. E sends a horizontal screen edge along the vertical UV direction, rotating the image. F covers a larger tilted region, producing many smaller repeats. Inspect the UV differences along two edges.",
+      "sourceParagraphs": [
+        "S113-P011",
+        "S113-P012",
+        "S113-P013",
+        "S113-P014"
+      ],
+      "screenPlan": "a→2,b→1,c→4,d→6,e→3,f→5 reviewedsourcevisual;ourlabelsA-Fnotsourceart.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "UV범위·방향·차이로반복·회전·기울기를판정한다."
+    },
+    {
+      "id": "M23-061",
+      "section": "10.13",
+      "title": "material-exercise",
+      "text": "Keep the shape and white light fixed, then vary only material. Diffuse color controls the body; specular color controls the highlight. With zero specular color there is no highlight regardless of exponent. Smaller exponents spread the highlight, while larger ones tighten it. Distinguish a red body with a white highlight from a blue body with a red highlight.",
+      "sourceParagraphs": [
+        "S113-P015",
+        "S113-P016",
+        "S113-P017",
+        "S113-P018",
+        "S113-P019"
+      ],
+      "screenPlan": "독립licensedhead/recognizableprop,10재질값보존. Unitysamecamera/light. 문제자료0–255숫자는교육선형상대계수로명시.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "여섯 UV 집합의 역할을 모두 보존한다."
+    },
+    {
+      "id": "M23-062",
+      "section": "10.13",
+      "title": "material-ten-cases",
+      "text": "A and F have zero specular color, leaving red and blue diffuse bodies. H adds a tight pale highlight to red; I adds a broad white highlight; J uses a blue highlight. On a blue body, B has a tighter red highlight than C or E. D uses a darker body, while G removes diffuse reflection entirely. Changing individual terms creates distinct appearances.",
+      "sourceParagraphs": [
+        "S113-P016",
+        "S113-P017",
+        "S113-P018",
+        "S113-P019"
+      ],
+      "screenPlan": "a7,b3,c1,d10,e4,f2,g9,h6,i8,j5sourcevisualmapping;all10numberscarryexacttable;CwhitevsEred확인.",
+      "holdSeconds": 0,
+      "correctionIds": [],
+      "boundaryFromPrevious": "난반사색·정반사색·지수의 역할로열재질을분류한다."
+    },
+    {
+      "id": "M23-063",
+      "section": "10.13",
+      "title": "encode-normal",
+      "text": "Encode each normal component with 255 times one half of the component plus one, then round to the nearest integer. Minus one, zero, zero becomes (0, 128, 128); zero, zero, one becomes (128, 128, 255). An eight-bit channel has no exact integer representation for the midpoint corresponding to zero.",
+      "sourceParagraphs": [
+        "S113-P020",
+        "S113-P021",
+        "S113-P022"
+      ],
+      "screenPlan": "round(255*(n+1)/2)각채널. signed-zeroquantization.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C16"
+      ],
+      "boundaryFromPrevious": "10가지재질을0정반사·폭·색 순으로검사한다."
+    },
+    {
+      "id": "M23-064",
+      "section": "10.13",
+      "title": "encode-other-vectors",
+      "text": "Applying the same rounding gives (162, 59, 230) for (0.267, -0.535, 0.805), and (128, 237, 193) for (0, 0.857, 0.514). These colors store direction data rather than visible surface color, so normal maps must not receive ordinary color-texture gamma conversion.",
+      "sourceParagraphs": [
+        "S113-P022"
+      ],
+      "screenPlan": "4rowsallcomputed;inputroundedunitapproxnote;linearimport.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C16"
+      ],
+      "boundaryFromPrevious": "[-1,1]법선을0..255RGB로인코딩하고반올림한다."
+    },
+    {
+      "id": "M23-065",
+      "section": "10.13",
+      "title": "decode-basis-example",
+      "text": "Finally, recover a model-space direction. Divide RGB by 255, double it, and subtract one to decode the tangent-space normal. Prepare an orthonormal vertex basis, then reconstruct the bitangent using the cross product and handedness sign. Multiply the decoded components by tangent, bitangent, and normal respectively, then add them.",
+      "sourceParagraphs": [
+        "S113-P023",
+        "S113-P024",
+        "S113-P025"
+      ],
+      "screenPlan": "Nmodel=normalize(nxT+nyB+nzN),B=s cross(N,T);roundedinputbasisreorthonormdefined.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C16"
+      ],
+      "boundaryFromPrevious": "네입력법선을모두계산한다."
+    },
+    {
+      "id": "M23-066",
+      "section": "10.13",
+      "title": "decode-sign-example",
+      "text": "Use case B. Its normal points up and tangent right, so their cross product points backward. The minus-one handedness sign flips the bitangent forward. Decoding RGB (106, 155, 250) and normalizing gives roughly (-0.169, 0.216, 0.962). Applying the basis gives a model direction of roughly (-0.169, 0.962, 0.216).",
+      "sourceParagraphs": [
+        "S113-P025"
+      ],
+      "screenPlan": "B: RGB(106,155,250) normalized decode≈(-.1688,.2159,.9617); N=(0,1,0),T=(1,0,0),s=-1,B=(0,0,1); world=(-.1688,.9617,.2159). Exact calculation file authoritative.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C16"
+      ],
+      "boundaryFromPrevious": "텍셀→접선법선→bitangent→모델법선순서로복원한다."
+    },
+    {
+      "id": "M23-067",
+      "section": "10.13",
+      "title": "decode-all-four",
+      "text": "Cases A, C, and D follow the same procedure: decode the texel, prepare that vertex's basis, and combine the three axes. The four arrows show why similar normal-map colors can point in different model-space directions. The supplied basis values are rounded, so compare approximate results rather than expecting exact equality.",
+      "sourceParagraphs": [
+        "S113-P025"
+      ],
+      "screenPlan": "all4normalnumericfromresearch/worked-calculations.json,animationtargetfixed.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C16"
+      ],
+      "boundaryFromPrevious": "거울부호−1이B와표면노멀을뒤집는과정을수치로확인한다."
+    },
+    {
+      "id": "M23-068",
+      "section": "10.13",
+      "title": "closing",
+      "text": "The object we began with now connects to vertices, coordinate spaces, textures, normals, and depth. The vertex shader prepares positions and attributes; rasterization fills the surface; pixel shading and output operations determine what remains visible. To diagnose an image, follow the same route: where the surface is, which way it faces, and how its color was computed.",
+      "sourceParagraphs": [
+        "S110-P007",
+        "S111-P215",
+        "S111-P216",
+        "S113-P024",
+        "S113-P025"
+      ],
+      "screenPlan": "도입실제예시복귀후동일설명stagepipeline3요약. 실제예시미확정.",
+      "holdSeconds": 0,
+      "correctionIds": [
+        "C16"
+      ],
+      "boundaryFromPrevious": "네표행전체를같은알고리즘으로복원하며양자화오차를명시한다."
+    }
+  ]
+}

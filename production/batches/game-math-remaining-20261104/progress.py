@@ -21,7 +21,7 @@ text=doc.read_text(encoding='utf-8-sig')
 for item in data['items']:
     r=rows[item['id']]
     text=re.sub(r'^\| '+r['id']+r' \|.*$',f"| {r['id']} | {r['title']} | {'☑' if r['productionComplete'] else '☐'} {r['productionStatus']} | ☐ {r['reviewStatus']} | {r['platformStatus']} |",text,flags=re.M)
-    text=re.sub(r'^\| '+r['id']+r' '+re.escape(r['title'])+r' \|.*$',f"| {r['id']} {r['title']} | {r['notes']} |",text,flags=re.M)
+    text=re.sub(r'^\| '+r['id']+r' [^|]+ \|.*$',f"| {r['id']} {r['title']} | {r['notes']} |",text,flags=re.M)
 text=text.replace('- M21 이후는 기존 승인 상한 밖 후속 후보다. 이번 목록 작성으로 착수하지 않는다.','- 2026-11-04 사용자가 M21~M33 남은 13편 전체를 명시 승인했다. [해당 제작·검수표](../production/batches/game-math-remaining-20261104/progress.md)를 기준으로 로컬 검수본까지 진행한다. 다른 영상 자동 착수·업로드·예약은 포함하지 않는다.')
 doc.write_text(text,encoding='utf-8')
 out=ROOT/'output/game-math-remaining-20261104'

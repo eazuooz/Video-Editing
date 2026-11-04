@@ -1,0 +1,59 @@
+{
+  "updatedAt": "2026-11-04T13:59:20.054172+00:00",
+  "changes": [
+    {
+      "segment": "M21-000-abstract",
+      "before": "같은 물체인데 빛을 옮기면 모양이 또렷해지고, 보는 위치를 옮기면 반짝이는 부분이 따라 움직입니다. 게임은 이 차이를 어떻게 계산할까요? 먼저 한 지점이 밝아지는 이유를 네 가지로 나누고, 그 계산을 물체 전체로 넓힌 뒤, 광원을 만들고 조명을 미리 저장하는 방법까지 이어가 보겠습니다.",
+      "after": "서브노티카 투의 어두운 물속입니다. 장비의 전조등이 움직이자 빛을 받는 바위도 달라지고, 숨어 있던 굴곡이 드러납니다. 게임은 어느 면을 얼마나 밝게 만들지 어떻게 정할까요? 오늘은 한 지점의 반사 계산에서 출발해 물체 전체의 셰이딩, 광원의 모양, 조명을 미리 저장하는 방법까지 연결하며 화면이 만들어지는 과정을 따라가 보겠습니다.",
+      "reason": "Actual-game thesis abstract uses inspected Subnautica 2 source240–268s at native speed. No claim of an isolated view-only experiment or proprietary BRDF."
+    },
+    {
+      "segment": "M21-018-diffuse-start",
+      "before": "지금까지는 보는 방향에 따라 움직이는 반짝임을 구했습니다. 그런데 무광 표면은 카메라를 조금 옮겨도 기본 밝기가 크게 바뀌지 않죠. 이상적인 램버트 난반사 모델은 이런 성질을, 나가는 방향에 관계없이 같은 복사휘도를 내는 표면으로 나타냅니다. 이 모델에서도 빛이 어느 방향에서 들어오는지는 중요합니다. 카메라 방향 대신 표면과 광원의 각도를 살펴보겠습니다.",
+      "after": "타운스케이퍼의 둥근 탑을 둘러보면 넓은 벽면의 밝기 변화만으로도 형태가 읽힙니다. 지금까지는 보는 방향에 따라 움직이는 반짝임을 구했습니다. 그런데 무광 표면은 카메라를 조금 옮겨도 기본 밝기가 크게 바뀌지 않죠. 이상적인 램버트 난반사 모델은 이런 성질을, 나가는 방향에 관계없이 같은 복사휘도를 내는 표면으로 나타냅니다. 이 모델에서도 빛이 어느 방향에서 들어오는지는 중요합니다. 카메라 방향 대신 표면과 광원의 각도를 살펴보겠습니다.",
+      "reason": "Inspected independent Townscaper405–435s demonstrates broad visible shading; mathematical Lambert model follows in our own test bed."
+    },
+    {
+      "segment": "M21-007-spec-observe",
+      "before": "네 부분 중에서 먼저 정반사를 보겠습니다. 빛과 물체는 그대로 두고 카메라만 움직여 볼게요. 밝은 반짝임이 나타났다 사라지죠. 빛이 잘 반사되는 방향과 카메라 방향이 가까울 때 강하게 보이기 때문입니다. 이 관계를 계산하려면 표면에 붙은 방향 세 개부터 정해야 합니다.",
+      "after": "포르자 모터스포츠 식스에서 정지한 자동차를 둘러보면, 보닛 위에 비친 밝은 창문 무늬가 보는 방향을 따라 달라집니다. 이런 방향 의존성을 이해하려고, 우선 광원 하나가 만드는 간단한 반짝임부터 계산해 볼게요. 네 부분 중에서 먼저 정반사를 보겠습니다. 빛과 물체는 그대로 두고 카메라만 움직여 볼게요. 밝은 반짝임이 나타났다 사라지죠. 빛이 잘 반사되는 방향과 카메라 방향이 가까울 때 강하게 보이기 때문입니다. 이 관계를 계산하려면 표면에 붙은 방향 세 개부터 정해야 합니다.",
+      "reason": "Adopt inspected19-second native Forzavista interval; observed environment reflection introduces view dependence, without attributing the teaching Phong model to this game. Keep the moving door outside the annotated bonnet target."
+    },
+    {
+      "segment": "M21-027-emission-gi",
+      "before": "발광 값을 올렸다고 주변 벽까지 자동으로 밝아지는 것은 아닙니다. 지금의 국소 조명 식은 각 표면을 따로 계산하기 때문이에요. 주변까지 밝히려면 별도 광원을 놓거나, 발광이 다른 표면에 도달하는 전역 조명 계산을 사용해야 합니다. 또 화면에 보이는 발광 표면을 카메라에서 멀어진다는 이유만으로 점 광원처럼 역제곱으로 어둡게 만들지는 않습니다. 그 차이는 광원의 감쇠에서 이어서 보겠습니다.",
+      "after": "왕국의 눈물에서는 어두운 바위에 조명꽃 씨앗을 쏘자 식물뿐 아니라 주변 바위도 밝아집니다. 물체가 스스로 빛나 보이는 것과, 다른 표면을 밝히는 것은 이렇게 나누어 볼 수 있어요. 발광 값을 올렸다고 주변 벽까지 자동으로 밝아지는 것은 아닙니다. 지금의 국소 조명 식은 각 표면을 따로 계산하기 때문이에요. 주변까지 밝히려면 별도 광원을 놓거나, 발광이 다른 표면에 도달하는 전역 조명 계산을 사용해야 합니다. 또 화면에 보이는 발광 표면을 카메라에서 멀어진다는 이유만으로 점 광원처럼 역제곱으로 어둡게 만들지는 않습니다. 그 차이는 광원의 감쇠에서 이어서 보겠습니다.",
+      "reason": "Inspected481–499s selection is ordinary Brightbloom Seed, not Giant Brightbloom Seed; no claim about Nintendo internal light type."
+    },
+    {
+      "segment": "M21-031-many-lights",
+      "before": "한 광원의 결과를 이해했으니 광원을 하나 더 켜 보겠습니다. 각 광원이 만드는 난반사와 정반사를 구해 더하면 됩니다. 화면에서 빨간빛과 파란빛의 기여를 따로 계산한 다음 합치는 거예요. 다만 환경광과 발광은 지금 식에서 표면당 한 번만 더합니다. 이것까지 광원 반복문 안에 넣으면 광원이 늘 때마다 스스로 빛나는 표면도 덩달아 밝아지는 오류가 생깁니다.",
+      "after": "서브노티카 투에서는 천장등을 설치하자 방 안의 표면이 더 밝아집니다. 한 광원의 결과를 이해했으니 광원을 하나 더 켜 보겠습니다. 각 광원이 만드는 난반사와 정반사를 구해 더하면 됩니다. 화면에서 빨간빛과 파란빛의 기여를 따로 계산한 다음 합치는 거예요. 다만 환경광과 발광은 지금 식에서 표면당 한 번만 더합니다. 이것까지 광원 반복문 안에 넣으면 광원이 늘 때마다 스스로 빛나는 표면도 덩달아 밝아지는 오류가 생깁니다.",
+      "reason": "Inspected764.5–778.25s installation and result; fixture shape is not used as proof of point/area type."
+    },
+    {
+      "segment": "M21-049-spot",
+      "before": "손전등처럼 한쪽만 비추려면 위치에 방향을 더합니다. 스폿 광원은 그 방향을 중심으로 원뿔 모양의 영역에 빛을 보내죠. 안쪽 각도는 충분히 밝은 중심부, 바깥쪽 각도는 빛이 끝나는 경계를 정합니다. 둘 사이에서는 서서히 약해질 수 있어요. 원뿔의 폭을 바꾸는 각도와, 얼마나 멀리 가는지를 정하는 거리는 다른 손잡이입니다.",
+      "after": "앞에서 본 장비의 전조등을 다시 보면, 바위 기둥에서 먼 어둠으로 방향을 돌릴 때 밝아지는 위치도 따라 바뀝니다. 손전등처럼 한쪽만 비추려면 위치에 방향을 더합니다. 스폿 광원은 그 방향을 중심으로 원뿔 모양의 영역에 빛을 보내죠. 안쪽 각도는 충분히 밝은 중심부, 바깥쪽 각도는 빛이 끝나는 경계를 정합니다. 둘 사이에서는 서서히 약해질 수 있어요. 원뿔의 폭을 바꾸는 각도와, 얼마나 멀리 가는지를 정하는 거리는 다른 손잡이입니다.",
+      "reason": "Independent non-overlapping Subnautica2 interval343–363s. The light is redirected, not switched off."
+    },
+    {
+      "segment": "M21-060-doom-scope",
+      "before": "이 아이디어를 더 자유롭게 만든 예가 둠 쓰리의 광원입니다. 여기서 체적 광원이라는 말은 빛이 영향을 주는 공간의 부피를 정한다는 뜻이에요. 안개 속 빛줄기의 산란을 계산하는 볼류메트릭 라이팅과는 구분하겠습니다. 목적은 여전히 표면의 한 지점에서 빛이 어느 방향으로, 얼마나 들어오는지 알아내는 것입니다.",
+      "after": "둠 쓰리에서는 손전등으로 통로와 난간, 문을 차례로 비춥니다. 원형 무늬가 표면을 따라 움직이는 모습을 이제 광원의 좌표와 연결해 보겠습니다. 이 아이디어를 더 자유롭게 만든 예가 둠 쓰리의 광원입니다. 여기서 체적 광원이라는 말은 빛이 영향을 주는 공간의 부피를 정한다는 뜻이에요. 안개 속 빛줄기의 산란을 계산하는 볼류메트릭 라이팅과는 구분하겠습니다. 목적은 여전히 표면의 한 지점에서 빛이 어느 방향으로, 얼마나 들어오는지 알아내는 것입니다.",
+      "reason": "Independent original Doom3 FHD60 interval82–108s supports the observed footprint; internal gobo/falloff structure is supported separately by primary renderer source and our labelled implementation."
+    },
+    {
+      "segment": "M21-038-flat",
+      "before": "플랫 셰이딩은 한 면을 대표하는 값 하나로 그 면을 칠하는 방식입니다. 예를 들어 삼각형의 중심과 면 법선으로 조명을 한 번 계산하면, 그 삼각형 안에서는 밝기가 같습니다. 옆 삼각형의 법선이 달라지면 경계에서 밝기도 갑자기 바뀌죠. 그래서 각진 면 구조가 잘 드러납니다. 이런 표현은 현재의 셰이더에서도 만들 수 있으며, 무조건 지원되지 않는 옛 방식은 아닙니다.",
+      "after": "플랫 셰이딩은 한 면을 대표하는 값 하나로 그 면을 칠하는 방식입니다. 예를 들어 삼각형의 중심과 면 법선으로 조명을 한 번 계산하면, 그 삼각형 안에서는 밝기가 같습니다. 옆 삼각형의 법선이 달라지면 경계에서 밝기도 갑자기 바뀌죠. 그래서 각진 면 구조가 잘 드러납니다.",
+      "reason": "Omit a redundant historical rebuttal from KO and EN narration; current flat-shading implementation and source correction evidence retain the accurate lesson."
+    }
+  ],
+  "remaining": [
+    "Full integrated KO/EN readthrough",
+    "Unity runtime sample and all79 beat bindings",
+    "Actual TTS duration and word-aligned cues"
+  ],
+  "ttsStarted": false
+}

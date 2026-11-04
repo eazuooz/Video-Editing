@@ -1,0 +1,63 @@
+Consider pushing an object, releasing it, and placing it on a slope in a game. To explain changes in motion, we need more than its velocity: we need the forces acting now. We will first assemble those forces using Newton's laws, then apply the method to gravity and friction. Finally, the same calculations become tools for designing jumps and sliding.
+
+Previously we described how position and velocity change with time. Now we ask what causes that change. Newtonian mechanics is a useful starting point for objects at everyday sizes and speeds. We assume constant mass and an inertial reference frame, which we will define shortly. This model is not intended to cover near-light-speed motion or the microscopic world.
+
+Mass describes an object's resistance to acceleration: its inertia. Acceleration includes changes of direction as well as speed. With no net force, a resting object remains at rest, and a moving object continues along a straight line at constant velocity. Continuous motion does not itself require a continuous supply of force.
+
+A box pushed across a desk stops after your hand leaves it. That can make motion seem to require continuous pushing. Start the same box at the same speed and change only the floor: a smoother floor lets it travel farther, while a rougher floor stops it sooner. Motion is not lost because a sustaining force is missing; friction changes the velocity.
+
+Newton's second law relates net force to mass times acceleration. F is force, m is mass, and a is acceleration. For the same mass, doubling net force doubles acceleration. For the same force, doubling mass halves acceleration. The acceleration points in the direction of the net force.
+
+The important word is net. Add every force on the object, including direction. A beam can support a large load without accelerating downward because its support pushes the other way. Having a force present is different from having an unbalanced force. Six newtons right and two newtons left leave four newtons to the right.
+
+The force unit follows from the same equation: kilograms multiplied by metres per second squared give newtons. One newton accelerates one kilogram by one metre per second each second. Force and acceleration are vectors; mass is a scalar. The same relation applies to each direction in a two-dimensional or three-dimensional world.
+
+A target speed alone does not determine the required force. Take a stationary two-kilogram object to four metres per second. Doing so over two seconds requires an acceleration of two metres per second squared and four newtons. Doing it in one second requires twice that acceleration and eight newtons. A collision involves a large force acting over a short interval; we will handle that through impulse.
+
+Simulation usually starts with forces and predicts motion. Isolate one object in a free-body diagram and label each force and direction. Sum them, divide by mass to obtain acceleration, then update velocity and position over time. Forces may depend on position or velocity, so a program repeats this process over small time steps.
+
+Zero net force gives zero acceleration, which resembles the first law. But we first need to choose the frame in which motion is measured. Describing motion from an accelerating or rotating frame can change the apparent acceleration. An inertial reference frame lets us use Newton's laws without introducing fictitious forces.
+
+Imagine a robot holding a sandwich inside an elevator. Release it while both are freely falling, and it appears to float beside the robot. Gravity has not vanished. The cabin and sandwich accelerate downward together, so their relative positions barely change. Equations written in the accelerating cabin frame must also account for that frame's acceleration.
+
+From the ground, the sandwich falls downward. From a car or spacecraft moving at constant velocity, it can also move sideways and trace a parabola, while obeying the same laws. Inertial frames move uniformly relative to one another without relative rotation. Earth's rotation and curved orbit make a ground-fixed frame only approximately inertial; whether the approximation is adequate depends on the experiment.
+
+With a frame established, return to objects pushing each other. If A pushes B, B pushes A with an equal and opposite force. These are action and reaction. The second force is not a delayed reply to the first: they are simultaneous parts of one interaction, acting on different objects.
+
+For a book on a table, collect forces on the book alone: gravity from Earth and the table's support force. The force the book applies to the table belongs in the table's diagram, not the book's. Do not cancel an action-reaction pair inside one object's diagram. Decide which object's acceleration you want, then sum only forces acting on it.
+
+Suppose a low-friction cart carries a box twice as massive as the person pushing it. The box pushes the person backward with equal force. But the person also pushes on the ground, and the ground pushes forward. Forward acceleration requires that forward force to exceed the box's backward force. On ice, weaker traction allows the person to slide backward. Earth also experiences a force, but its enormous mass makes its acceleration tiny.
+
+Two bolted sections of a beam exert forces on each other. Treat the whole beam as one system and those internal force pairs cancel, so external forces determine its centre-of-mass motion. Being rigid does not mean that all points share the same acceleration during rotation. Rotation needs its own treatment, and large deformation or breaking requires more than a single rigid-body model.
+
+We know how to combine forces, but still need a model for each one. Games use approximations of real forces such as gravity and friction, as well as control forces designed for a desired motion. Contact forces also prevent a box from falling through the floor. We distinguish the surface-normal component, the normal force, then add gravity and friction to the diagram.
+
+Universal gravitation is proportional to the product of two masses and inversely proportional to squared distance. Here F denotes magnitude, with each force directed toward the other mass. Doubling the separation reduces the force to one quarter. G is the proportionality constant. This simple form applies directly to point masses or suitable spherical distributions; arbitrary nearby extended shapes require their mass distribution.
+
+In a small world near Earth's surface, we can neglect curvature and small changes of altitude. Down is then a fixed direction, and gravity is mass times a constant vector g. Divide by mass and acceleration is simply g. A heavier object feels a larger gravitational force but also has more inertia, so without air resistance different masses share the same gravitational acceleration.
+
+Using an approximate Earth mass of5.98 times10 to the24 kilograms and a mean radius of6,371kilometres gives about9.83metres per second squared in a simple spherical model. Subtracting roughly0.034 for rotation at the equator gives9.796. That is not the exact equatorial value: Earth's shape also matters. Actual values are about9.78 at the equator and9.83 at the poles. Standard gravity,9.80665, is a separately defined conventional value.
+
+Knowing the real value does not mean every game should use it unchanged. An upward initial velocity with constant gravity produces a parabola. But a high jump with a short airtime may feel floaty under Earth gravity. Rapid ascent, hanging near the apex, or faster descent are different design choices for the motion.
+
+Faster descent can return a vehicle to the ground and restore control sooner; lower gravity can create longer jumps. Even non-player objects communicate scale through fall time and sound. If excessive damping makes objects feel weightless, changing gravity alone does not address the cause. The criterion is whether motion communicates the intended behaviour and supports play, not realism for its own sake.
+
+Design a jump that rises two metres in0.4seconds. With upward positive and zero velocity at the apex, initial velocity is twice the height divided by ascent time: ten metres per second here. Acceleration is minus twice the height divided by the square of that time, giving minus25metres per second squared. These values meet the designed height and ascent time even though they differ from Earth gravity.
+
+A flowerpot does not necessarily slide down a slightly tilted surface, yet a pot pushed across a level table eventually stops. Friction connects these observations. It does more than hinder motion: walking and tyre traction depend on it. We will distinguish the two regimes in a Coulomb dry-friction model.
+
+Static friction acts when contacting surfaces do not slide relative to each other. It opposes a tendency to slip, up to a limit. Once slipping begins, we use kinetic friction, directed against relative sliding. Static does not mean stationary in the world; it means no slipping between the contacting surfaces.
+
+Maximum static friction is the coefficient of static friction times the normal-force magnitude. Maximum is crucial. With a ten-newton normal force and a coefficient of0.5, it can resist up to five newtons. A two-newton push needs only two newtons of opposing friction. Applying five immediately would wrongly accelerate the resting pot backward.
+
+A friction coefficient is dimensionless and depends on a pair of contacting surfaces, not one material alone. Rubber on dry asphalt does not tell us rubber on ice. The supplied examples range from0.61 for static aluminium-on-steel to0.04 for steel-on-Teflon. Such values depend on surface state and measurement conditions; production parameters need appropriate evidence.
+
+Before using the coefficient, determine the normal force. On a level, non-accelerating table it can equal the weight. On a slope, split gravity into components normal and parallel to the surface. The support force prevents penetration in the normal direction. A known surface normal lets us obtain the perpendicular gravity component using a dot product.
+
+Tilting farther increases the downslope component while reducing the normal component, so the maximum friction also falls. Downslope force is m g sine theta; the normal force is m g cosine theta. No sliding requires the former not to exceed the static-friction limit. Cancel the common mass and gravity terms and the condition becomes tangent theta no greater than the static coefficient.
+
+After the limit is exceeded, use the kinetic coefficient. Its magnitude is that coefficient times the normal force, directed against relative sliding. In the ideal Coulomb model, a higher sliding speed does not proportionally increase the friction magnitude. The kinetic coefficient is commonly below the maximum static coefficient, making continued sliding easier than starting it, though this is not a universal statement about every material and condition.
+
+Apparent contact area does not appear directly in this model. With the same normal force and coefficient, a smaller base has the same sliding threshold. Supporting the same force over a smaller area increases average pressure, because pressure is force divided by area. A tall, narrow pot may instead tip over before sliding; that leads us to rotation and torque.
+
+Return to the box and the method becomes one continuous chain. Identify the body, add gravity, contact and friction with direction, divide by mass, and use the acceleration to update velocity and position. Understanding the model helps us choose deliberately what to change for a game. Next, a restoring spring force will let us connect this to motion that bounces, settles and follows a target smoothly.

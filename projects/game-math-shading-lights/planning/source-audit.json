@@ -1,0 +1,3504 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M21",
+  "status": "source-read-and-bilingual-draft-complete-footage-and-realized-qa-pending",
+  "sourceScope": [
+    "10.6",
+    "10.7"
+  ],
+  "sourceRead": {
+    "completeTextRead": true,
+    "blocks": 275,
+    "readMethod": "Entire fetched content read sequentially in bounded text windows, then paragraph inventory checked against draft references.",
+    "sourceVisualsInspected": true,
+    "sourceVisualLimit": "All 25 referenced figures directly inspected on 2026-11-04; hashes and teaching-role findings are in research/figure-audit.json. Research-only pixels are not production assets. Unity runtime and integrated gameplay still need separate actual viewing."
+  },
+  "sources": [
+    {
+      "id": "S106",
+      "url": "https://app.notion.com/p/3e10b1ffa61e818dbd19d4e6710ce6b1",
+      "title": "10.6 표준 국소 조명 모델",
+      "lastEditedAt": "2026-10-09T04:38:34.449Z",
+      "path": "research/source-106.notion.txt",
+      "sha256": "4f5a3221092de84d1183a931c4b4e44cc4da6e8503fa423f984affcb077594d8",
+      "blocks": 161
+    },
+    {
+      "id": "S107",
+      "url": "https://app.notion.com/p/3e10b1ffa61e81f3a491c4964afbfb01",
+      "title": "10.7 광원",
+      "lastEditedAt": "2026-10-09T04:16:51.094Z",
+      "path": "research/source-107.notion.txt",
+      "sha256": "8007954a89b997154db178a15efe654ba688fcd61db087c96a93b1dca6c672da",
+      "blocks": 114
+    },
+    {
+      "id": "CORRECTION-INDEX",
+      "url": "https://app.notion.com/p/3e10b1ffa61e815f9edcf2eb633065b7",
+      "path": "../../production/batches/game-math-remaining-20261104/sources/3e10b1ffa61e815f9edcf2eb633065b7.json",
+      "note": "Read; index directs to embedded correction callouts already read in source106/107."
+    }
+  ],
+  "sourceIndexComparison": "Current fetched October 9 revision differs from old September source-index; current hashes above, no false hash-match claim.",
+  "coverage": {
+    "sourceBlockCount": 275,
+    "draftBeatCount": 79,
+    "unmappedIds": [],
+    "sectionOrderPreserved": true,
+    "localInsertion": "10.6.7 final normalization/nonlinearity callouts are inserted immediately beside the Gouraud/Phong comparison before returning to source paragraph142; all core claims retain original progression."
+  },
+  "corrections": [
+    {
+      "id": "C01",
+      "sourceParagraphs": [
+        "S106-P004",
+        "S106-P005",
+        "S106-P006",
+        "S106-P022",
+        "S106-P044",
+        "S106-P114",
+        "S106-P115",
+        "S106-P116",
+        "S106-P133",
+        "S106-P141",
+        "S107-P007"
+      ],
+      "decision": "Historical popularity/hardware and artist-familiarity statements are dated; retain computation tradeoffs, omit current-market extrapolation. Correct flat-shading support explicitly.",
+      "evidenceIds": [
+        "KHR-INTERPOLATION"
+      ]
+    },
+    {
+      "id": "C02",
+      "sourceParagraphs": [
+        "S106-P024",
+        "S106-P068",
+        "S106-P069",
+        "S106-P083"
+      ],
+      "decision": "Roughness is not identical to diffuse reflection. Use ideal Lambertian constant outgoing radiance rather than equal emitted power/probability in every direction.",
+      "evidenceIds": [
+        "PBRT-LAMBERT"
+      ]
+    },
+    {
+      "id": "C03",
+      "sourceParagraphs": [
+        "S106-P026",
+        "S106-P033",
+        "S106-P037",
+        "S106-P061",
+        "S106-P064",
+        "S106-P066"
+      ],
+      "decision": "Use l toward source, reflect(-l,n); clamp powers; reject invalid halfway normalization. Single-sided opaque direct response additionally needs n·l>0. No unsupported Phong=Blinn exponent equivalence.",
+      "evidenceIds": [
+        "MS-REFLECT"
+      ],
+      "implementationVerification": "algebra checked; final shader behavior not yet verified"
+    },
+    {
+      "id": "C04",
+      "sourceParagraphs": [
+        "S106-P078",
+        "S106-P088"
+      ],
+      "decision": "Keep conventional color coefficient separate from physical reflectance/pi; do not apply pi twice.",
+      "evidenceIds": [
+        "PBRT-LAMBERT"
+      ]
+    },
+    {
+      "id": "C05",
+      "sourceParagraphs": [
+        "S106-P100",
+        "S107-P002"
+      ],
+      "decision": "Scope emission not lighting neighbors to the demonstrated local model. Modern configured GI can transport emissive light.",
+      "evidenceIds": [
+        "UNITY-EMISSION"
+      ]
+    },
+    {
+      "id": "C06",
+      "sourceParagraphs": [
+        "S106-P108"
+      ],
+      "decision": "Half Lambert is an artistic response modification, not measured indirect transport. Use Valve's stated squared form as example, preserve general alpha shift as on-screen relation.",
+      "evidenceIds": [
+        "VALVE-HALFLAMBERT"
+      ]
+    },
+    {
+      "id": "C07",
+      "sourceParagraphs": [
+        "S106-P127"
+      ],
+      "decision": "State rotation about the fixed surface normal for isotropy.",
+      "evidenceIds": [
+        "PBRT-ANISOTROPY"
+      ]
+    },
+    {
+      "id": "C08",
+      "sourceParagraphs": [
+        "S106-P136",
+        "S106-P141",
+        "S106-P155"
+      ],
+      "decision": "Gouraud interpolation cannot exceed vertex maximum; perspective correction belongs in implementation. Coordinate spaces must match; normal handling under nonuniform scale requires care.",
+      "evidenceIds": [
+        "KHR-INTERPOLATION"
+      ]
+    },
+    {
+      "id": "C09",
+      "sourceParagraphs": [
+        "S107-P017",
+        "S107-P018",
+        "S107-P019"
+      ],
+      "decision": "Explain delta sampling as singular-source treatment, not an instruction to arbitrarily delete dω.",
+      "evidenceIds": [
+        "PBRT-POINT"
+      ]
+    },
+    {
+      "id": "C10",
+      "sourceParagraphs": [
+        "S107-P023",
+        "S107-P026",
+        "S107-P027",
+        "S107-P028",
+        "S107-P041",
+        "S107-P101",
+        "S107-P114"
+      ],
+      "decision": "Use irradiance, not flux, for received W/m². Scope inverse square to point/far-field sources and fixed incidence. Camera-distance radiance statement assumes resolved surfaces, lossless medium and unchanged exposure. Distinguish outgoing radiosity.",
+      "evidenceIds": [
+        "PBRT-RADIOMETRY",
+        "PBRT-POINT"
+      ]
+    },
+    {
+      "id": "C11",
+      "sourceParagraphs": [
+        "S107-P043",
+        "S107-P046",
+        "S107-P076",
+        "S107-P077",
+        "S107-P078",
+        "S107-P083",
+        "S107-P092"
+      ],
+      "decision": "Doom 3 light influence volume, not Doom sector lighting or participating-media scattering. Preserve row-vector matrix convention; projected xy divided by w, falloff z sampled separately. Handle z/w singularity and backend texture orientation.",
+      "evidenceIds": [
+        "ID-DOOM3"
+      ],
+      "implementationVerification": "source matrix multiplication independently derived; test cases below"
+    },
+    {
+      "id": "C12",
+      "sourceParagraphs": [
+        "S107-P110",
+        "S107-P111",
+        "S107-P112"
+      ],
+      "decision": "Distinguish light-probe diffuse SH from reflection-probe environment data. Historical unfiltered specular cubemap is not universal; rough specular may use prefiltered environment.",
+      "evidenceIds": [
+        "UNITY-PROBE"
+      ],
+      "limits": "Generic probe architecture is from supplied source; do not assign unverified commercial-game implementation."
+    }
+  ],
+  "primaryEvidence": [
+    {
+      "id": "MS-REFLECT",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-reflect",
+      "claim": "HLSL reflect uses incoming i; with l toward the light use reflect(-l,n).",
+      "checked": "official-reference-opened",
+      "application": "reflection-example"
+    },
+    {
+      "id": "KHR-INTERPOLATION",
+      "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.html",
+      "claim": "GLSL flat provides no interpolation; smooth is perspective-correct. Modern hardware support invalidates blanket obsolete claim.",
+      "checked": "official-spec-opened",
+      "application": "flat"
+    },
+    {
+      "id": "PBRT-RADIOMETRY",
+      "url": "https://pbr-book.org/4ed/Radiometry%2C_Spectra%2C_and_Color/Radiometry",
+      "claim": "Flux W differs from incoming irradiance W/m² and directional radiance; use proper conditions for distance discussion.",
+      "checked": "primary-textbook-opened",
+      "application": "radiometry"
+    },
+    {
+      "id": "PBRT-LAMBERT",
+      "url": "https://www.pbr-book.org/4ed/Reflection_Models/Diffuse_Reflection",
+      "claim": "Lambertian BRDF is reflectance/pi, with constant outgoing radiance; cosine weighting still occurs in transport.",
+      "checked": "primary-textbook-opened",
+      "application": "brdf-return"
+    },
+    {
+      "id": "PBRT-ANISOTROPY",
+      "url": "https://www.pbr-book.org/4ed/Reflection_Models",
+      "claim": "Isotropy means rotating about the surface normal, not arbitrary orientation; velvet can show retroreflection.",
+      "checked": "primary-textbook-opened",
+      "application": "anisotropy"
+    },
+    {
+      "id": "PBRT-FRESNEL",
+      "url": "https://pbr-book.org/4ed/Reflection_Models/Specular_Reflection_and_Transmission",
+      "claim": "Material reflection follows dielectric/conductor and directional Fresnel behavior.",
+      "checked": "primary-textbook-opened",
+      "application": "fresnel-retro"
+    },
+    {
+      "id": "PBRT-POINT",
+      "url": "https://pbr-book.org/4ed/Light_Sources/Point_Lights",
+      "claim": "Point lights use a positional delta and intensity/distance²; spots and projection lights are variants.",
+      "checked": "primary-textbook-opened",
+      "application": "delta"
+    },
+    {
+      "id": "VALVE-HALFLAMBERT",
+      "url": "https://raw.githubusercontent.com/ValveSoftware/source-sdk-2013/master/src/materialsystem/stdshaders/common_vertexlitgeneric_dx9.h",
+      "claim": "DiffuseTerm computes saturate(.5*NdotL+.5), squaring when light-warp is not used; ordinary Lambert saturates NdotL.",
+      "checked": "official-source-opened-lines-77-96",
+      "application": "half-lambert"
+    },
+    {
+      "id": "ID-DOOM3",
+      "url": "https://raw.githubusercontent.com/id-Software/DOOM-3/master/neo/renderer/draw_arb2.cpp",
+      "claim": "Official renderer separately binds light falloff and projected light textures and uses additive light interactions.",
+      "checked": "official-source-opened-lines-59-111-and-137",
+      "application": "doom-textures"
+    },
+    {
+      "id": "UNITY-EMISSION",
+      "url": "https://docs.unity.com/en-us/engine/6000.0/manual/materials-and-shaders/built-in/shader-built-in-configure-properties/standard-shader-texture-maps/material-parameter-emission",
+      "claim": "Emission affects material appearance and may contribute through configured GI; not universally unable to light surroundings.",
+      "checked": "official-doc-opened",
+      "application": "emission-gi"
+    },
+    {
+      "id": "UNITY-LIGHTMAPUV",
+      "url": "https://docs.unity.com/en-us/engine/6000.0/manual/lighting-overview/direct-and-indirect-lighting/lightmapping/lighting-gi-uvs/uvs",
+      "claim": "Lightmaps use additional UVs and atlas charts; baked UV data stored in Mesh.uv2/TEXCOORD1.",
+      "checked": "official-doc-opened",
+      "application": "lightmap"
+    },
+    {
+      "id": "UNITY-PROBE",
+      "url": "https://docs.unity.com/en-us/engine/6000.0/manual/lighting-overview/direct-and-indirect-lighting/lightmap-data/light-probes-technical-information",
+      "claim": "Unity light probes use L2 SH with nine coefficients per channel; probes are not universally raw cubemaps.",
+      "checked": "official-doc-opened",
+      "application": "direction-basis"
+    }
+  ],
+  "paragraphMapping": [
+    {
+      "id": "S106-P001",
+      "section": "10.6",
+      "anchor": "<table-of-contents />",
+      "decision": "omitted-noninstructional",
+      "reason": "Navigation only; no spoken teaching content.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P002",
+      "section": "10.6",
+      "anchor": "렌더링 방정식에서 BRDF는 주어진 주파수와 입사 방향의 빛이 어떻게 산란하는지 그 분포를 나타냅니다. 표면마다 이 분포가 다르기 때문에 서로 다른 표면은 물론, 같은 물체의 서로",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-000-abstract",
+        "M21-001-model",
+        "M21-002-brdf"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P003",
+      "section": "10.6",
+      "anchor": "수식 자체를 흔히 <b>조명 모델(lighting model)</b>이라고 부르며, 수식에 대입하는 구체적인 값은 표면에 지정한 재질에서 얻습니다. 장면에 매우 다양한 재질과 수천",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-000-abstract",
+        "M21-001-model",
+        "M21-002-brdf"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P004",
+      "section": "10.6",
+      "anchor": "원서 집필 무렵만 해도 거의 모든 실시간 렌더링을 단 하나의 조명 모델로 처리했습니다. 당시에는 여전히 드물지 않은 방식이었습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-002-brdf"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P005",
+      "section": "10.6",
+      "anchor": "이 조명 모델은 워낙 널리 쓰였기 때문에 OpenGL과 DirectX의 렌더링 API 자체에 고정 기능으로 들어갔습니다. 프로그래머블 셰이더를 갖춘 하드웨어에서는 이러한 오래된 A",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-002-brdf"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P006",
+      "section": "10.6",
+      "anchor": "프로그래머블 셰이더가 제공하는 다양한 기능과 유연성은 다른 모델을 선택하기보다, 기존 모델에 필요한 매개변수를 더 효율적으로 공급하는 데 쓰이는 경우가 많았습니다. 예를 들어 여러",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-002-brdf"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P007",
+      "section": "10.6",
+      "anchor": "이 절에서는 오랫동안 사용되어 온 표준 조명 모델을 다룹니다. 이 모델은 BRDF와 렌더링 방정식이라는 틀보다 적어도 10년 먼저 개발되었으므로, 먼저 모델이 만들어질 당시의 단순",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-002-brdf"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P008",
+      "section": "10.6",
+      "anchor": "설명하는 도중에 모델의 한 성분인 난반사 성분을 BRDF로 표현하는 방법도 보여 주겠습니다. 표준 모델은 현재에도 중요하지만, 미래에 대비하려면 렌더링 방정식을 이해해야 합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-002-brdf"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P009",
+      "section": "10.6",
+      "anchor": "<b>원주 10-13:</b> 이것은 매우 중요한 교훈입니다. 사실적인 그래픽은 하드코어 게이머에게 중요할지 몰라도, 더 폭넓은 이용자층에서는 우리가 예전에 생각했던 만큼 중요하지",
+      "decision": "omitted-noninstructional",
+      "reason": "Dated Wii/social-game market anecdote; unrelated to lighting mechanism.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P010",
+      "section": "10.6.1",
+      "anchor": "## 10.6.1 표준 조명 방정식: 개요",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P011",
+      "section": "10.6.1",
+      "anchor": "부이 뜨엉 퐁(Bui Tuong Phong) \\[54\\]은 1975년에 표준 조명 모델의 기본 개념을 제시했습니다. 당시에는 직접 반사를 빠르게 모델링하는 방법에 관심이 집중되어 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-003-direct-path"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P012",
+      "section": "10.6.1",
+      "anchor": "따라서 앞에서 설명했듯이 표준 모델이 제안된 뒤 약 10년이 지나서야 명확한 형태를 갖춘 렌더링 방정식은 한 점에서 임의의 방향으로 나가는 복사휘도를 나타내는 방정식인 반면, 당시",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-003-direct-path"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P013",
+      "section": "10.6.1",
+      "anchor": "마찬가지로 렌더링 방정식은 표면 법선을 둘러싼 반구 전체에서 들어오는 입사광을 고려하지만, 간접광을 무시하면 모든 입사 방향을 살펴볼 필요가 없습니다. 광원을 향하는 방향만 고려하",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-003-direct-path",
+        "M21-004-abstract-light"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P014",
+      "section": "10.6.1",
+      "anchor": "대신 광원은 그에 대응하는 기하 형상이 없는 특별한 개체이며, 빛이 하나의 점에서 나오는 것처럼 시뮬레이션합니다. 그러므로 각 광원의 발광 표면을 $\\mathbf{x}$ 주변 반구",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-003-direct-path",
+        "M21-004-abstract-light"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P015",
+      "section": "10.6.1",
+      "anchor": "정리하면, 표준 모델의 원래 목적은 유한한 수의 방향, 즉 광원마다 하나의 방향에서 입사하는 빛의 직접 반사만 고려하여 카메라 방향으로 되돌아오는 빛을 구하는 것이었습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-003-direct-path",
+        "M21-004-abstract-light"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P016",
+      "section": "10.6.1",
+      "anchor": "이제 모델 자체를 살펴보겠습니다. 기본 아이디어는 눈에 들어오는 빛을 네 가지 범주로 구분하고, 각 범주의 기여분을 서로 다른 방법으로 계산하는 것입니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-005-four-terms"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P017",
+      "section": "10.6.1",
+      "anchor": "- <b>발광 기여분(emissive contribution)</b> $\\mathbf{c}_{\\mathrm{emis}}$는 렌더링 방정식의 발광 항과 같습니다. 주어진 방향으로 표",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-005-four-terms"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P018",
+      "section": "10.6.1",
+      "anchor": "문자 $c$는 contribution, 즉 ‘기여분’의 머리글자입니다. 굵은 글씨로 표기했다는 점에 주목하겠습니다. 이 기여분들은 특정 파장의 빛의 양을 나타내는 스칼라가 아니라,",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-006-rgb"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P019",
+      "section": "10.6.1",
+      "anchor": "어떤 세 기저 함수를 사용할지는 그보다 덜 근본적인 선택이지만, 실시간 그래픽스에서는 빨강·파랑·초록에 채널 하나씩을 배정하는 방식이 압도적으로 흔합니다. 구현 세부 사항을 떠나 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-006-rgb"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P020",
+      "section": "10.6.1",
+      "anchor": "발광 항은 렌더링 방정식에서의 발광 항과 같으므로 더 자세히 설명할 내용이 많지 않습니다. 실제로는 주어진 표면 지점 $\\mathbf{x}$에서의 발광 기여분을 단순한 상수 색으로",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-006-rgb"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P021",
+      "section": "10.6.1",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>조명 모델을 코드에 적용하기</b>",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P022",
+      "section": "10.6.1",
+      "anchor": "원문의 ‘지금’, ‘현대적인 하드웨어’, Wii의 보급률, 금속성 입력에 대한 아티스트의 익숙함 등은 원서 집필 당시의 설명입니다. 번역에서는 이를 현재 시장 현황으로 갱신하지 않",
+      "decision": "omitted-noninstructional",
+      "reason": "Historical-currentness warning applied through C01; no source meta-framing in viewer narration.",
+      "draftBeatIds": [],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P023",
+      "section": "10.6.2",
+      "anchor": "## 10.6.2 정반사 성분",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P024",
+      "section": "10.6.2",
+      "anchor": "표준 조명 모델의 정반사 성분은 표면에서 대체로 ‘완벽한 거울 반사’ 방향으로 반사되는 빛을 나타냅니다. 표면에 ‘반짝이는’ 모습을 부여하는 것이 정반사 성분입니다. 더 거친 표면",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-007-spec-observe"
+      ],
+      "correctionIds": [
+        "C02"
+      ]
+    },
+    {
+      "id": "S106-P025",
+      "section": "10.6.2",
+      "anchor": "이제 표준 모델에서 정반사 기여분을 어떻게 계산하는지 보겠습니다. 중요한 벡터들은 그림 10.20에 표시되어 있습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-007-spec-observe"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P026",
+      "section": "10.6.2",
+      "anchor": "- $\\mathbf{n}$은 해당 지점에서 표면 바깥쪽을 향하는 국소 표면 법선입니다. - $\\mathbf{v}$는 관찰자를 향합니다. 이 벡터를 눈(eye)을 뜻하는 $\\math",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-008-vectors"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S106-P027",
+      "section": "10.6.2",
+      "anchor": "![그림 10.20. 정반사를 위한 퐁 모델](https://gamemath.com/book/figs/graphics/lighting_specular_phong.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-008-vectors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P028",
+      "section": "10.6.2",
+      "anchor": "편의상 이 벡터들을 모두 단위 벡터라고 가정하겠습니다. 이 책에서는 단위 벡터 위에 모자 기호를 붙이는 것이 원칙이지만, 방정식이 지나치게 복잡해 보이지 않도록 여기서는 생략합니다",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-008-vectors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P029",
+      "section": "10.6.2",
+      "anchor": "계속하기 전에 $\\mathbf{l}$ 벡터에 관해 한 가지 짚고 넘어가겠습니다. 광원은 추상적인 개체이므로 반드시 ‘위치’를 가질 필요는 없습니다. 방향성 광원이나 Doom 방식의",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-008-vectors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P030",
+      "section": "10.6.2",
+      "anchor": "![그림 10.21. 반사 벡터 r의 구성](https://gamemath.com/book/figs/graphics/lighting_specular_r.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-009-reflection-build"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P031",
+      "section": "10.6.2",
+      "anchor": "네 벡터 중 처음 세 벡터는 문제에 본래 주어지는 자유도이며, 반사 벡터 $\\mathbf{r}$은 이들로부터 유도하여 계산해야 하는 양입니다. 기하학적 관계는 그림 10.21과 같",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-009-reflection-build",
+        "M21-010-reflection-example"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P032",
+      "section": "10.6.2",
+      "anchor": "<b>반사 벡터 계산 — 게임 업계 면접에 자주 등장하는 질문</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-009-reflection-build",
+        "M21-010-reflection-example"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P033",
+      "section": "10.6.2",
+      "anchor": "$$ \\mathbf{r}=2(\\mathbf{n}\\cdot\\mathbf{l})\\mathbf{n}-\\mathbf{l}.\\tag{10.10} $$",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-009-reflection-build",
+        "M21-010-reflection-example"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S106-P034",
+      "section": "10.6.2",
+      "anchor": "이 방정식을 즐겨 묻는 면접관이 많기 때문에, 문단 안에 넣어도 충분했을 식을 일부러 독립된 줄로 표시했습니다. 비디오 게임 업계에 취업하려는 독자라면 압박을 받는 상황에서도 식 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-009-reflection-build",
+        "M21-010-reflection-example"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P035",
+      "section": "10.6.2",
+      "anchor": "이제 $\\mathbf{r}$을 알았으므로 정반사용 퐁 모델, 식 (10.11)을 사용해 정반사 기여분을 계산할 수 있습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-011-phong"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P036",
+      "section": "10.6.2",
+      "anchor": "<b>정반사를 위한 퐁 모델</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-011-phong"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P037",
+      "section": "10.6.2",
+      "anchor": "$$ \\mathbf{c}_{\\mathrm{spec}} =(\\mathbf{s}_{\\mathrm{spec}}\\otimes\\mathbf{m}_{\\mathrm{spec}})(\\cos\\th",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-011-phong"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S106-P038",
+      "section": "10.6.2",
+      "anchor": "이 식을 비롯하여 이 책에서 기호 $\\otimes$는 색의 성분별 곱을 뜻합니다. 이제 식에 들어가는 값들을 더 자세히 살펴보겠습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-011-phong"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P039",
+      "section": "10.6.2",
+      "anchor": "먼저 $m_{\\mathrm{gls}}$는 재질의 광택도(glossiness)이며, 퐁 지수(Phong exponent), 정반사 지수(specular exponent), 또는 재질",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-012-exponent"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P040",
+      "section": "10.6.2",
+      "anchor": "$m_{\\mathrm{gls}}$가 작으면 핫스폿이 넓고 주변으로 완만하게 어두워지며, 값이 크면 핫스폿이 매우 좁고 급격하게 어두워집니다. 여기서 말하는 핫스폿은 반사의 밝은 부",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-012-exponent"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P041",
+      "section": "10.6.2",
+      "anchor": "크롬처럼 완벽하게 반사하는 표면은 $m_{\\mathrm{gls}}$가 매우 큽니다. 입사 방향 $\\mathbf{l}$에서 광선이 표면에 닿으면, 반사된 방향 사이의 편차가 매우 작",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-012-exponent"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P042",
+      "section": "10.6.2",
+      "anchor": "작은 정반사 지수는 광선의 반사가 덜 완벽한 상황을 모델링합니다. 광선들이 같은 입사 방향 $\\mathbf{l}$에서 표면에 닿아도 반사 방향의 편차가 더 큽니다. 분포는 반사 방",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-012-exponent"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P043",
+      "section": "10.6.2",
+      "anchor": "잠시 뒤에 이 차이를 그림으로 보여 주겠습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-012-exponent"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P044",
+      "section": "10.6.2",
+      "anchor": "조명 방정식에 입력하는 다른 재질 특성들과 마찬가지로, $m_{\\mathrm{gls}}$도 표면 위에서 달라질 수 있으며, 특정 위치의 값은 원하는 방법으로 결정할 수 있습니다. ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-013-spec-color-map"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P045",
+      "section": "10.6.2",
+      "anchor": "식 (10.11)에서 ‘반짝임’과 관련된 또 다른 값은 재질의 <b>정반사 색</b> $\\mathbf{m}_{\\mathrm{spec}}$입니다. $m_{\\mathrm{gls}}$가",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-013-spec-color-map"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P046",
+      "section": "10.6.2",
+      "anchor": "<b>원주 10-14:</b> 안타깝게도 이 맵을 gloss map이라고 부르는 사람도 있어서, 정확히 어떤 재질 특성을 텍셀별로 지정하는 것인지 혼동을 일으킵니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-013-spec-color-map"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P047",
+      "section": "10.6.2",
+      "anchor": "광원의 정반사 색 $\\mathbf{s}_{\\mathrm{spec}}$는 기본적으로 광원의 ‘색’이며, 색상과 세기를 모두 담고 있습니다. 많은 광원이 하나의 일정한 색을 갖지만, ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-014-light-color"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P048",
+      "section": "10.6.2",
+      "anchor": "사각형 스폿 광원에서는 투사되는 비트맵 영상인 <b>고보(gobo)</b>에서 색을 구할 수 있습니다. 색이 있는 고보는 스테인드글라스 창을 통과하는 빛을 흉내 내는 데 쓸 수 있",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-014-light-color"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P049",
+      "section": "10.6.2",
+      "anchor": "여기서는 광원(source)을 뜻하는 문자 $s$를 사용합니다. 아래첨자 spec은 이 색을 정반사 계산에 사용한다는 뜻입니다. 난반사 계산에는 다른 광원 색을 사용할 수 있습니다",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-014-light-color"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P050",
+      "section": "10.6.2",
+      "anchor": "![그림 10.22. m\\_gls와 m\\_spec의 값에 따른 차이](https://gamemath.com/book/figs/graphics/lighting_specular_hea",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-015-spec-grid"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P051",
+      "section": "10.6.2",
+      "anchor": "그림 10.22는 $m_{\\mathrm{gls}}$와 $\\mathbf{m}_{\\mathrm{spec}}$를 바꾸었을 때 정반사를 하는 물체의 모습이 어떻게 달라지는지 보여 줍니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-015-spec-grid"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P052",
+      "section": "10.6.2",
+      "anchor": "맨 왼쪽 열의 머리들이 모두 똑같아 보인다는 점에 주목하겠습니다. 정반사의 세기가 0이므로 지수는 아무런 의미가 없고, 어떤 경우에도 정반사 기여분이 없습니다. 이때의 밝기는 각각",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-015-spec-grid"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P053",
+      "section": "10.6.2",
+      "anchor": "블린(Blinn) \\[6\\]은 퐁 모델을 조금 수정하여 시각적으로 매우 비슷한 결과를 얻으면서도 당시에는 상당한 최적화가 되었던 방법을 널리 알렸습니다. 지금도 많은 경우 더 빨리",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-016-halfway"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P054",
+      "section": "10.6.2",
+      "anchor": "기본 아이디어는 이렇습니다. 물체 크기에 비해 관찰자까지의 거리가 충분히 멀다면 $\\mathbf{v}$를 한 번만 계산하고 물체 전체에 대한 상수로 볼 수 있습니다. 광원과 $\\m",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-016-halfway"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P055",
+      "section": "10.6.2",
+      "anchor": "가능하면 이 계산을 피하고 싶습니다. 블린 모델은 새로운 벡터 $\\mathbf{h}$를 도입합니다. 이 이름은 <b>하프웨이 벡터(halfway vector)</b>를 뜻하며, $",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-016-halfway"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P056",
+      "section": "10.6.2",
+      "anchor": "$$ \\mathbf{h}=\\frac{\\mathbf{v}+\\mathbf{l}}{\\|\\mathbf{v}+\\mathbf{l}\\|}. $$",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-016-halfway"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P057",
+      "section": "10.6.2",
+      "anchor": "그다음에는 퐁 모델처럼 $\\mathbf{v}$와 $\\mathbf{r}$ 사이의 각도를 사용하는 대신, $\\mathbf{n}$과 $\\mathbf{h}$ 사이 각도의 코사인을 사용합니",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-016-halfway"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P058",
+      "section": "10.6.2",
+      "anchor": "![그림 10.23. 정반사를 위한 블린 모델](https://gamemath.com/book/figs/graphics/lighting_specular_blinn.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-016-halfway"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P059",
+      "section": "10.6.2",
+      "anchor": "블린 모델의 공식은 원래 퐁 모델과 매우 비슷합니다. 내적 부분만 달라집니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-017-blinn"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P060",
+      "section": "10.6.2",
+      "anchor": "<b>정반사를 위한 블린 모델</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-017-blinn"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P061",
+      "section": "10.6.2",
+      "anchor": "$$ \\mathbf{c}_{\\mathrm{spec}} =(\\mathbf{s}_{\\mathrm{spec}}\\otimes\\mathbf{m}_{\\mathrm{spec}})(\\cos\\th",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-017-blinn"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S106-P062",
+      "section": "10.6.2",
+      "anchor": "관찰자와 광원이 물체에서 충분히 멀리 떨어져 있어 그 방향들을 상수로 볼 수 있다면, 블린 모델을 하드웨어로 구현하는 편이 퐁 모델보다 빠를 수 있습니다. 이 경우 $\\mathbf",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-017-blinn"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P063",
+      "section": "10.6.2",
+      "anchor": "앞서 말했듯이 두 모델은 비슷하지만 동일하지 않은 결과를 만듭니다. 비교는 Fisher와 Woo \\[21\\]을 참고해 보세요. 둘 다 경험적인 모델이며, 블린 모델을 ‘올바른’ 퐁",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-017-blinn"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P064",
+      "section": "10.6.2",
+      "anchor": "지금까지 생략한 세부 사항이 하나 있습니다. 어느 모델에서든 $\\cos\\theta$가 음수가 될 수 있습니다. 이때는 보통 정반사 기여분을 0으로 제한합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-017-blinn"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S106-P065",
+      "section": "10.6.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>조명 모델을 코드에 적용하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [
+        "M21-017-blinn"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P066",
+      "section": "10.6.2",
+      "anchor": "하프웨이 벡터 h를 계산할 때 v+l이 영벡터가 되는 특수 경우에는 정규화가 정의되지 않습니다. 실제 구현에서는 이런 경계 조건과 정규화 오차를 처리해야 합니다. </callout",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-017-blinn"
+      ],
+      "correctionIds": [
+        "C03"
+      ]
+    },
+    {
+      "id": "S106-P067",
+      "section": "10.6.3",
+      "anchor": "## 10.6.3 난반사 성분",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P068",
+      "section": "10.6.3",
+      "anchor": "표준 조명 모델의 다음 성분은 난반사 성분입니다. 정반사 성분과 마찬가지로, 난반사 성분도 광원에서 셰이딩 지점까지 직접 이동한 빛을 모델링합니다. 하지만 정반사광이 특정 방향으로",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-018-diffuse-start"
+      ],
+      "correctionIds": [
+        "C02"
+      ]
+    },
+    {
+      "id": "S106-P069",
+      "section": "10.6.3",
+      "anchor": "정반사 조명을 계산할 때는 눈이 완벽한 거울 반사 방향에 얼마나 가까운지 알아야 하므로 관찰자의 위치가 필요했습니다. 반면 난반사 조명에서는 관찰자의 위치가 중요하지 않습니다. 반",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-018-diffuse-start"
+      ],
+      "correctionIds": [
+        "C02"
+      ]
+    },
+    {
+      "id": "S106-P070",
+      "section": "10.6.3",
+      "anchor": "그러나 표면에 대한 광원의 상대 위치가 정하는 입사 방향 $\\mathbf{l}$은 중요합니다. 램버트 법칙을 앞에서도 언급했지만 여기서 다시 살펴보겠습니다. 실시간 그래픽스에서 이",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-018-diffuse-start"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P071",
+      "section": "10.6.3",
+      "anchor": "그림 10.25가 이를 보여 줍니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-018-diffuse-start"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P072",
+      "section": "10.6.3",
+      "anchor": "![그림 10.24. 난반사 조명은 흩어지는 반사를 모델링한다](https://gamemath.com/book/figs/graphics/lighting_diffuse_reflect",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-018-diffuse-start"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P073",
+      "section": "10.6.3",
+      "anchor": "![그림 10.25. 광선에 더 수직인 표면일수록 단위 면적당 더 많은 빛을 받는다](https://gamemath.com/book/figs/graphics/lighting_lam",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-018-diffuse-start"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P074",
+      "section": "10.6.3",
+      "anchor": "두 경우 모두 광선 사이의 수직 거리가 같다는 점에 주목하겠습니다. 그림의 착시 때문에 오른쪽 광선 사이가 더 멀어 보일 수 있지만 실제로는 같습니다. 광선 사이의 수직 거리는 같",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-019-lambert-area"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P075",
+      "section": "10.6.3",
+      "anchor": "따라서 단위 면적당 광자 수(원주 10-15)는 왼쪽이 더 많고, 다른 조건이 같다면 왼쪽이 더 밝게 보입니다. 적도 부근의 기후가 극지방보다 따뜻한 것도 같은 현상 때문입니다. ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-019-lambert-area"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P076",
+      "section": "10.6.3",
+      "anchor": "난반사 조명은 램버트 법칙을 따릅니다. 반사광의 세기는 표면 법선과 광선 사이 각도의 코사인에 비례합니다. 이 코사인은 내적으로 계산합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-019-lambert-area",
+        "M21-020-lambert-calc"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P077",
+      "section": "10.6.3",
+      "anchor": "<b>램버트 법칙에 따른 난반사 성분 계산</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-020-lambert-calc"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P078",
+      "section": "10.6.3",
+      "anchor": "$$ \\mathbf{c}_{\\mathrm{diff}}=(\\mathbf{s}_{\\mathrm{diff}}\\otimes\\mathbf{m}_{\\mathrm{diff}})(\\mathbf{",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-020-lambert-calc",
+        "M21-021-diffuse-rgb"
+      ],
+      "correctionIds": [
+        "C04"
+      ]
+    },
+    {
+      "id": "S106-P079",
+      "section": "10.6.3",
+      "anchor": "앞에서와 같이 $\\mathbf{n}$은 표면 법선이며 $\\mathbf{l}$은 광원을 향하는 단위 벡터입니다. $\\mathbf{m}_{\\mathrm{diff}}$는 재질의 난반사 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-020-lambert-calc",
+        "M21-021-diffuse-rgb"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P080",
+      "section": "10.6.3",
+      "anchor": "<b>원주 10-15:</b> 정확한 복사측정학 용어는 복사조도(irradiance)이며, 단위 면적에 도달하는 복사속을 측정합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-020-lambert-calc",
+        "M21-021-diffuse-rgb"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P081",
+      "section": "10.6.3",
+      "anchor": "정반사 조명에서와 마찬가지로 내적이 음수가 되지 않도록 0으로 제한해야 합니다. 이렇게 하면 물체가 뒷면에서 들어오는 빛으로 밝혀지는 것을 막을 수 있습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-020-lambert-calc",
+        "M21-021-diffuse-rgb"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P082",
+      "section": "10.6.3",
+      "anchor": "렌더링 방정식의 틀 안에서 난반사 표면을 어떻게 표현하는지 살펴보면 매우 유익합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-022-brdf-return"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P083",
+      "section": "10.6.3",
+      "anchor": "> 난반사는 빛이 완전히 무작위로 산란하는 상황을 모델링한다. 들어오는 빛의 방향과 관계없이 모든 출사 방향의 가능성이 같다. 따라서 완전한 난반사 표면의 BRDF는 상수이다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-022-brdf-return"
+      ],
+      "correctionIds": [
+        "C02"
+      ]
+    },
+    {
+      "id": "S106-P084",
+      "section": "10.6.3",
+      "anchor": "식 (10.12)가 렌더링 방정식의 적분 안에 있는 다음 항과 닮았다는 점에 주목하겠습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-022-brdf-return",
+        "M21-023-brdf-normalization"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P085",
+      "section": "10.6.3",
+      "anchor": "$$ L_{\\mathrm{in}}(\\mathbf{x},\\hat{\\boldsymbol{\\omega}}_{\\mathrm{in}},\\lambda) f(\\mathbf{x},\\hat{\\bo",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-022-brdf-return",
+        "M21-023-brdf-normalization"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P086",
+      "section": "10.6.3",
+      "anchor": "첫 번째 인자는 입사광의 색입니다. 재질 색 $\\mathbf{m}_{\\mathrm{diff}}$는 그다음에 오는 상수 BRDF 값에 해당합니다. 마지막에는 램버트 인자가 있습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-022-brdf-return",
+        "M21-023-brdf-normalization"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P087",
+      "section": "10.6.3",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>조명 모델을 코드에 적용하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [
+        "M21-022-brdf-return",
+        "M21-023-brdf-normalization"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P088",
+      "section": "10.6.3",
+      "anchor": "본문의 m\\_diff는 전통적인 색 기반 모델 안에서 사용하는 계수입니다. 물리적인 램버트 BRDF를 반사율 rho로 정의하면 f\\_r = rho / pi가 되며, 이를 에너지 보",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-022-brdf-return",
+        "M21-023-brdf-normalization"
+      ],
+      "correctionIds": [
+        "C04"
+      ]
+    },
+    {
+      "id": "S106-P089",
+      "section": "10.6.4",
+      "anchor": "## 10.6.4 환경광과 발광 성분",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P090",
+      "section": "10.6.4",
+      "anchor": "정반사와 난반사 조명은 모두 광원에서 물체 표면까지 직접 이동한 뒤 한 번 ‘튕겨’ 눈에 도달하는 광선을 나타냅니다. 그러나 현실에서 빛은 하나 이상의 중간 물체에서 반사된 뒤 다",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-024-ambient-path"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P091",
+      "section": "10.6.4",
+      "anchor": "눈에 들어오기 전에 두 번 이상 반사된 빛은 ‘환경광’이라는 매우 거친 근사로 모델링할 수 있습니다. 조명 방정식의 환경광 부분은 재질 특성과 환경광 값에만 의존합니다. 환경광 값",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-024-ambient-path"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P092",
+      "section": "10.6.4",
+      "anchor": "<b>조명 방정식의 환경광 기여분</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-025-ambient-equation"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P093",
+      "section": "10.6.4",
+      "anchor": "$$ \\mathbf{c}_{\\mathrm{amb}}=\\mathbf{g}_{\\mathrm{amb}}\\otimes\\mathbf{m}_{\\mathrm{amb}}.\\tag{10.13} $",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-025-ambient-equation"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P094",
+      "section": "10.6.4",
+      "anchor": "$\\mathbf{m}_{\\mathrm{amb}}$는 재질의 ‘환경광 색’입니다. 이 값은 거의 항상 난반사 색과 같고, 그 난반사 색은 흔히 텍스처 맵으로 정의합니다. 다른 인자인",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-025-ambient-equation"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P095",
+      "section": "10.6.4",
+      "anchor": "때로는 광선이 중간의 어떤 표면에도 닿지 않고 광원에서 눈으로 곧바로 이동합니다. 표준 조명 방정식은 재질에 발광 색을 지정하여 이런 광선을 나타냅니다. 예를 들어 전구의 표면을 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-026-emission"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P096",
+      "section": "10.6.4",
+      "anchor": "많은 상황에서 발광 기여분은 환경 요인에 의존하지 않으며, 단순히 재질의 발광 색과 같습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-026-emission"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P097",
+      "section": "10.6.4",
+      "anchor": "<b>발광 기여분은 재질에만 의존한다</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-026-emission"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P098",
+      "section": "10.6.4",
+      "anchor": "$$ \\mathbf{c}_{\\mathrm{emis}}=\\mathbf{m}_{\\mathrm{emis}}. $$",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-026-emission"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P099",
+      "section": "10.6.4",
+      "anchor": "대부분의 표면은 빛을 내지 않으므로 발광 성분이 0입니다. 발광 성분이 0이 아닌 표면을 ‘자체 발광(self-illuminated)’ 표면이라고 합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-026-emission"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P100",
+      "section": "10.6.4",
+      "anchor": "실시간 그래픽스에서는 자체 발광 표면이 다른 표면을 밝히지 않는다는 점을 이해하는 것이 중요합니다. 다른 표면을 밝히려면 광원이 필요합니다. 다시 말해 우리는 실제로 광원 자체를 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-027-emission-gi"
+      ],
+      "correctionIds": [
+        "C05"
+      ]
+    },
+    {
+      "id": "S106-P101",
+      "section": "10.6.4",
+      "anchor": "안개와 같은 대기 조건 때문에 발광 기여분을 감쇠시키기로 할 수도 있고, 성능상의 이유로 멀리 있는 물체를 서서히 흐리게 하다가 사라지게 할 수도 있습니다. 그러나 10.7.2절에",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-027-emission-gi"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P102",
+      "section": "10.6.5",
+      "anchor": "## 10.6.5 조명 방정식: 모든 성분 합치기",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P103",
+      "section": "10.6.5",
+      "anchor": "조명 방정식의 각 성분을 자세히 살펴보았습니다. 이제 표준 조명 모델의 완전한 방정식을 제시할 차례입니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-028-sum-one"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P104",
+      "section": "10.6.5",
+      "anchor": "<b>광원이 하나일 때의 표준 조명 방정식</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-028-sum-one"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P105",
+      "section": "10.6.5",
+      "anchor": "$$ \\begin{aligned} \\mathbf{c}_{\\mathrm{lit}} &=\\mathbf{c}_{\\mathrm{spec}}+\\mathbf{c}_{\\mathrm{diff}}",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-028-sum-one"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P106",
+      "section": "10.6.5",
+      "anchor": "그림 10.26은 환경광·난반사·정반사 조명 성분을 다른 성분과 분리했을 때 실제로 어떻게 보이는지 보여 줍니다. 이 떠 있는 머리는 빛을 내지 않는다고 가정하여 발광 성분은 무시",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-028-sum-one"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P107",
+      "section": "10.6.5",
+      "anchor": "![그림 10.26. 조명 방정식의 각 성분이 시각적으로 기여하는 모습](https://gamemath.com/book/figs/graphics/lighting_equation_h",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-028-sum-one"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P108",
+      "section": "10.6.5",
+      "anchor": "- 귀는 실제로 머리의 그림자 안에 있지만 코만큼 밝게 비칩니다. 그림자를 표현하려면 섀도 매핑 같은 기법으로 광원이 셰이딩 중인 지점을 실제로 ‘볼’ 수 있는지 판단해야 합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-029-visibility",
+        "M21-030-half-lambert"
+      ],
+      "correctionIds": [
+        "C06"
+      ]
+    },
+    {
+      "id": "S106-P109",
+      "section": "10.6.5",
+      "anchor": "여러 광원을 이야기했으니, 조명 방정식에서는 여러 광원을 어떻게 다루는지도 보겠습니다. 모든 광원의 조명 값을 더해야 합니다. 표기를 간단히 하기 위해 거의 보편적인 가정인 $\\m",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-031-many-lights"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P110",
+      "section": "10.6.5",
+      "anchor": "<b>여러 광원에 대한 표준 조명 방정식</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-031-many-lights"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P111",
+      "section": "10.6.5",
+      "anchor": "$$ \\mathbf{c}_{\\mathrm{lit}} =\\sum_{j=1}^{n}\\left[ (\\mathbf{s}_j\\otimes\\mathbf{m}_{\\mathrm{spec}})\\m",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-031-many-lights"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P112",
+      "section": "10.6.5",
+      "anchor": "주어진 표면에서 환경광 값과 발광 성분은 각각 하나뿐이므로, 이 성분들은 광원마다 합산하지 않습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-031-many-lights"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P113",
+      "section": "10.6.6",
+      "anchor": "## 10.6.6 표준 모델의 한계",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P114",
+      "section": "10.6.6",
+      "anchor": "오늘날에는 프로그래머블 셰이더 덕분에 원하는 어떤 조명 모델도 선택할 수 있습니다. 표준 모델에는 상당히 심각한 단점이 있으므로 ‘왜 이런 옛날 역사를 배워야 하지?’라고 물을 만",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-032-why-learn"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P115",
+      "section": "10.6.6",
+      "anchor": "처리 능력이 늘어난 것은 맞지만, 더 많은 픽셀과 더 많은 광원을 렌더링하고 싶다는 요구도 함께 커졌습니다. 프로그래머가 계산 자원을 더 많은 픽셀, 즉 높은 해상도에 쓸지, 더 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-032-why-learn"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P116",
+      "section": "10.6.6",
+      "anchor": "둘째, 현재의 국소 조명 모델은 콘텐츠 제작자가 이해하고 사용할 수 있습니다. 이 장점을 가볍게 보아서는 안 됩니다. 아티스트들은 난반사 맵과 정반사 맵을 수십 년 동안 사용해 왔",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-032-why-learn"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P117",
+      "section": "10.6.6",
+      "anchor": "마지막으로 표준 조명 모델을 배워야 하는 이유는 많은 새로운 모델이 표준 모델과 비슷한 면을 가지고 있기 때문입니다. 오래된 표준을 이해하지 못하면 언제 더 고급 조명 모델을 사용",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-032-why-learn"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P118",
+      "section": "10.6.6",
+      "anchor": "OpenGL이나 DirectX의 재질 매개변수 설정 문서를 읽고 환경광·난반사·정반사가 ‘빛이 작동하는 방식’이라고 생각했더라도 이해할 만합니다. 이 장의 시작에서 했던 경고를 떠",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-033-model-limits"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P119",
+      "section": "10.6.6",
+      "anchor": "실용적인 고려에서 생겨났고, 같은 이유로 계속 사용되고 있습니다. 두 용어는 양극단에 해당하는 두 산란 분포를 묘사합니다. 이 두 분포를 임의로 조합하면 많은 현상을 꽤 그럴듯하게",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-033-model-limits"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P120",
+      "section": "10.6.6",
+      "anchor": "거의 모든 사람이 이 모델을 받아들였기 때문에 이름을 붙이지 않고 사용하는 경우가 많으며, 정확히 무엇이라고 불러야 하는지에도 여전히 혼동이 있습니다. 퐁은 반사를 난반사와 정반사",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-033-model-limits"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P121",
+      "section": "10.6.6",
+      "anchor": "난반사용 램버트 모델은 이미 알려져 있었습니다. 앞에서 보았듯이 블린의 정반사 계산은 비슷하지만 때로는 더 빠릅니다. 가장 자주 사용하는 구체적인 계산법이 이것이라면 ‘블린 모델’",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-033-model-limits"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P122",
+      "section": "10.6.6",
+      "anchor": "그 모델에서는 난반사와 정반사가 서로 독립적인 ‘직교’ 성분으로 섞이는 것이 아니라 하나의 연속적인 스펙트럼의 양끝에 놓입니다. 대부분의 구현이 퐁의 기본 아이디어에 블린의 최적화",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-033-model-limits"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P123",
+      "section": "10.6.6",
+      "anchor": "사실적인 조명에서 물론 큰 비중을 차지하는 것은 사실적인 그림자입니다. 그림자를 만드는 기법은 흥미롭고 중요하지만, 안타깝게도 여기서는 다룰 시간이 없습니다. 렌더링 방정식의 이론",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-034-shadow-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P124",
+      "section": "10.6.6",
+      "anchor": "그러나 그 방향을 보았을 때 다른 표면이 광원을 가리고 있으면, 그 지점은 해당 광원에 대해 그림자 안에 있습니다. 더 일반적으로 그림자는 발광 표면에서 온 빛에만 생기는 것이 아",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-034-shadow-limit"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P125",
+      "section": "10.6.6",
+      "anchor": "마지막으로 블린–퐁 모델이 제대로 표현하지 못하는 몇 가지 중요한 물리 현상을 언급하겠습니다. 첫째는 <b>프레넬 반사(Fresnel reflectance)</b>입니다(원주 10",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-035-fresnel-retro"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P126",
+      "section": "10.6.6",
+      "anchor": "벨벳 같은 일부 표면은 <b>재귀반사(retroreflection)</b>를 보입니다. 이름만 보고 표면이 마돈나의 귀걸이처럼 복고풍으로 보인다는 뜻이라고 짐작할지 모르지만, 실제",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-035-fresnel-retro"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P127",
+      "section": "10.6.6",
+      "anchor": "또한 블린–퐁은 <b>등방성(isotropic)</b>입니다. 관찰자와 광원을 고정한 채 표면을 회전시켜도 반사율이 달라지지 않는다는 뜻입니다. 일부 표면은 표면의 홈이나 다른 무",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-036-anisotropy"
+      ],
+      "correctionIds": [
+        "C07"
+      ]
+    },
+    {
+      "id": "S106-P128",
+      "section": "10.6.6",
+      "anchor": "홈의 방향을 스크래치 방향(scratch direction)이라고도 합니다. 비등방성 재질의 대표적인 예는 결이 있는 금속, 머리카락, 반짝이는 섬유로 만든 작은 크리스마스 장식입",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-036-anisotropy"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P129",
+      "section": "10.6.6",
+      "anchor": "<b>원주 10-16:</b> ‘fre-NELL’로 발음합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-036-anisotropy"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P130",
+      "section": "10.6.7",
+      "anchor": "## 10.6.7 플랫 셰이딩과 구로 셰이딩",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P131",
+      "section": "10.6.7",
+      "anchor": "현대적인 셰이더 기반 하드웨어에서는 보통 픽셀마다 조명 계산을 합니다. 즉 각 픽셀에서 정점 법선을 면 위로 보간하거나 범프 맵에서 값을 가져와 표면 법선을 결정한 뒤, 그 법선으",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-037-where-shade"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P132",
+      "section": "10.6.7",
+      "anchor": "정점 법선을 면 위로 보간하는 기법을 <b>퐁 셰이딩(Phong shading)</b>이라고도 하는데, 정반사용 퐁 계산식과 혼동하지 말아 주세요. 퐁 셰이딩의 대안은 면마다 또는",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-037-where-shade"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P133",
+      "section": "10.6.7",
+      "anchor": "플랫 셰이딩은 소프트웨어 렌더링을 제외하면 실제로는 거의 사용하지 않습니다. 기하 데이터를 하드웨어에 효율적으로 전달하는 대부분의 현대적 방법이 면 단위 데이터를 아예 제공하지 않",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-037-where-shade",
+        "M21-038-flat"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S106-P134",
+      "section": "10.6.7",
+      "anchor": "플랫 셰이딩에서는 삼각형 전체에 대해 하나의 조명 값을 계산합니다. 보통 조명 계산에 사용하는 ‘위치’는 삼각형의 무게중심이며, 표면 법선은 삼각형의 법선입니다. 그림 10.27에",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-038-flat"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P135",
+      "section": "10.6.7",
+      "anchor": "![그림 10.27. 플랫 셰이딩한 찻주전자](https://gamemath.com/book/figs/graphics/shading_teapot_flat.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-038-flat"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P136",
+      "section": "10.6.7",
+      "anchor": "구로 셰이딩은 정점 셰이딩(vertex shading), 정점 조명(vertex lighting), 보간 셰이딩(interpolated shading)이라고도 합니다. 조명이나 안",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-039-gouraud"
+      ],
+      "correctionIds": [
+        "C08"
+      ]
+    },
+    {
+      "id": "S106-P137",
+      "section": "10.6.7",
+      "anchor": "![그림 10.28. 구로 셰이딩한 찻주전자](https://gamemath.com/book/figs/graphics/shading_teapot_gouraud.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-039-gouraud"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P138",
+      "section": "10.6.7",
+      "anchor": "그림에서 보듯이 구로 셰이딩은 물체의 매끄러운 느낌을 꽤 잘 되살립니다. 근사하려는 값이 삼각형 전체에서 대체로 선형으로 변한다면, 구로 셰이딩에 사용하는 선형 보간은 당연히 잘 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-039-gouraud",
+        "M21-040-gouraud-highlight"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P139",
+      "section": "10.6.7",
+      "anchor": "구로 셰이딩한 찻주전자의 정반사 하이라이트를 그림 10.29의 퐁, 즉 픽셀별 셰이딩을 적용한 찻주전자의 하이라이트와 비교해 보겠습니다. 하이라이트가 얼마나 더 매끄러운지 주목해 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-040-gouraud-highlight",
+        "M21-041-phong-shading"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P140",
+      "section": "10.6.7",
+      "anchor": "![그림 10.29. 퐁 셰이딩한 찻주전자](https://gamemath.com/book/figs/graphics/shading_teapot_phong.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-040-gouraud-highlight",
+        "M21-041-phong-shading"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P141",
+      "section": "10.6.7",
+      "anchor": "보간 셰이딩의 근본적인 문제는 삼각형 내부의 어떤 값도 정점에서의 최댓값보다 클 수 없다는 것입니다. 따라서 하이라이트는 정점에서만 생길 수 있습니다. 테셀레이션을 충분히 하면 이",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-040-gouraud-highlight",
+        "M21-041-phong-shading"
+      ],
+      "correctionIds": [
+        "C01",
+        "C08"
+      ]
+    },
+    {
+      "id": "S106-P142",
+      "section": "10.6.7",
+      "anchor": "여기서 독자가 물어야 할 질문은 조명 방정식의 입력을 제어하는 데 맵을 사용한다면 정점 단계에서 조명을 어떻게 계산할 수 있느냐는 것입니다. 식 (10.14)를 그대로 사용할 수는",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-043-material-factor-question"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P143",
+      "section": "10.6.7",
+      "anchor": "식 (10.14)를 보간 조명 방식에 더 적합하게 만들려면 $\\mathbf{m}_{\\mathrm{diff}}$를 분리하도록 식을 변형해야 합니다. 먼저 합을 나누고 상수인 재질 색",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-043-material-factor-question",
+        "M21-044-factor-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P144",
+      "section": "10.6.7",
+      "anchor": "$$ \\begin{aligned} \\mathbf{c}_{\\mathrm{lit}} &=\\sum_{j=1}^{n}\\left[(\\mathbf{s}_j\\otimes\\mathbf{m}_{\\",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-044-factor-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P145",
+      "section": "10.6.7",
+      "anchor": "마지막으로 아주 합리적인 가정인 $\\mathbf{m}_{\\mathrm{amb}}=\\mathbf{m}_{\\mathrm{diff}}$를 적용합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-044-factor-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P146",
+      "section": "10.6.7",
+      "anchor": "<b>정점 단계의 조명 계산에 더 적합한 표준 조명 방정식</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-044-factor-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P147",
+      "section": "10.6.7",
+      "anchor": "$$ \\begin{aligned} \\mathbf{c}_{\\mathrm{lit}} &=\\left[\\sum_{j=1}^{n}\\mathbf{s}_j\\max(\\mathbf{n}\\cdot\\",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-044-factor-worked"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P148",
+      "section": "10.6.7",
+      "anchor": "식 (10.15)의 형태로 쓰면 정점 단계에서 계산한 조명 값을 보간하여 사용하는 방법이 보입니다. 각 정점에서 두 값을 계산하겠습니다. $\\mathbf{v}_{\\mathrm{sp",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-045-vertex-factors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P149",
+      "section": "10.6.7",
+      "anchor": "<b>정점 단위의 정반사 및 난반사 조명 값</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-045-vertex-factors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P150",
+      "section": "10.6.7",
+      "anchor": "$$ \\mathbf{v}_{\\mathrm{spec}}=\\sum_{j=1}^{n}\\mathbf{s}_j\\max(\\mathbf{n}\\cdot\\mathbf{h}_j,0)^{m_{\\mat",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-045-vertex-factors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P151",
+      "section": "10.6.7",
+      "anchor": "이 값들을 정점마다 계산하고 삼각형 면 전체에 걸쳐 보간합니다. 그런 다음 픽셀마다 각 조명 기여분에 대응하는 재질 색을 곱하고 더합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-045-vertex-factors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P152",
+      "section": "10.6.7",
+      "anchor": "<b>보간한 조명 값으로 픽셀 셰이딩하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-045-vertex-factors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P153",
+      "section": "10.6.7",
+      "anchor": "$$ \\mathbf{c}_{\\mathrm{lit}}=\\mathbf{v}_{\\mathrm{spec}}\\otimes\\mathbf{m}_{\\mathrm{spec}}+\\mathbf{v}_",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-045-vertex-factors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P154",
+      "section": "10.6.7",
+      "anchor": "앞서 언급했듯이 $\\mathbf{m}_{\\mathrm{spec}}$는 때로 상수 색입니다. 그런 경우 이 곱셈을 정점 셰이더로 옮길 수 있습니다. 그러나 스페큘러 맵에서 값을 가져",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-045-vertex-factors"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P155",
+      "section": "10.6.7",
+      "anchor": "조명 계산에는 어느 좌표 공간을 사용해야 할까요? 월드 공간에서 계산할 수도 있습니다. 정점 위치와 법선을 월드 공간으로 변환한 뒤 조명을 계산하고, 그다음 정점 위치를 클립 공간",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-046-coordinate-space"
+      ],
+      "correctionIds": [
+        "C08"
+      ]
+    },
+    {
+      "id": "S106-P156",
+      "section": "10.6.7",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>조명 모델을 코드에 적용하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [
+        "M21-042-nonlinear"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P157",
+      "section": "10.6.7",
+      "anchor": "퐁 조명 모델은 반사광을 계산하는 식입니다. 퐁 셰이딩은 법선을 픽셀까지 보간한 뒤 조명을 계산하는 방식입니다. 같은 이름이지만 구분해야 합니다. </callout>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-042-nonlinear"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P158",
+      "section": "10.6.7",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>조명 모델을 코드에 적용하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [
+        "M21-042-nonlinear"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P159",
+      "section": "10.6.7",
+      "anchor": "정점에서 밝기를 먼저 계산한 뒤 보간하는 것과, 법선을 보간한 뒤 밝기를 계산하는 것은 같지 않습니다. 제곱·정규화·거듭제곱이 포함된 함수에서는 일반적으로 ‘계산 후 평균’과 ‘평",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-042-nonlinear"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P160",
+      "section": "10.6.7",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>법선 보간과 색 보간의 차이</b>",
+      "decision": "retained-learning-content",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [
+        "M21-042-nonlinear"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S106-P161",
+      "section": "10.6.7",
+      "anchor": "```mermaid flowchart LR  A[\"정점 법선\"] --> B[\"면 내부에서 법선 보간\"]  B --> C[\"보간한 법선 정규화\"]  C --> D[\"픽셀에서 비선형 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-042-nonlinear"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P001",
+      "section": "10.7",
+      "anchor": "<table-of-contents />",
+      "decision": "omitted-noninstructional",
+      "reason": "Navigation only; no spoken teaching content.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P002",
+      "section": "10.7",
+      "anchor": "렌더링 방정식에서는 표면의 발광 성분을 고려할 때 광원의 효과가 나타납니다. 앞서 언급했듯이 실시간 그래픽스에서 발광 표면을 사용해 이를 ‘제대로’ 처리하는 것은 보통 감당하기 어",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-047-lights-transition"
+      ],
+      "correctionIds": [
+        "C05"
+      ]
+    },
+    {
+      "id": "S107-P003",
+      "section": "10.7",
+      "anchor": "극적인 조명을 위해 장면의 모습을 더 쉽게 제어하거나, 카메라 밖에 있어 기하 형상을 모델링하는 데 시간을 쓰지 않은 표면에서 반사되어 올 빛을 흉내 내기 위해서입니다. 따라서 우",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-047-lights-transition"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P004",
+      "section": "10.7",
+      "anchor": "이 절에서는 가장 흔한 광원 유형 몇 가지를 설명합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-047-lights-transition"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P005",
+      "section": "10.7",
+      "anchor": "10.7.1절은 전통적인 점 광원·방향성 광원·스폿 광원을 다룹니다. 10.7.2절에서는 현실의 빛이 어떻게 감쇠하는지, 그리고 실용적인 이유로 현실과 다른 방식을 사용하는 일이 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-047-lights-transition"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P006",
+      "section": "10.7.1",
+      "anchor": "## 10.7.1 표준 추상 광원 유형",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P007",
+      "section": "10.7.1",
+      "anchor": "이 소절에서는 대부분의 렌더링 시스템이 지원하는 가장 기본적인 광원 유형 몇 가지를 나열합니다. 여기에는 OpenGL과 DirectX의 고정 기능 조명 파이프라인이나 닌텐도 Wii",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-048-point"
+      ],
+      "correctionIds": [
+        "C01"
+      ]
+    },
+    {
+      "id": "S107-P008",
+      "section": "10.7.1",
+      "anchor": "<b>점 광원(point light source)</b>은 한 점에서 바깥의 모든 방향으로 퍼져 나가는 빛을 나타냅니다. 점 광원을 전방향(omnidirectional)의 줄임말인",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-048-point"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P009",
+      "section": "10.7.1",
+      "anchor": "![그림 10.30. 점 광원](https://gamemath.com/book/figs/graphics/point_light.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-048-point"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P010",
+      "section": "10.7.1",
+      "anchor": "그림 10.30에서 보듯이 점 광원에는 빛이 비추는 구의 크기를 제어하는 감쇠 반경(falloff radius)이 있을 수 있습니다. 보통 광원 중심에서 멀어질수록 빛의 세기는 줄",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-048-point"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P011",
+      "section": "10.7.1",
+      "anchor": "점 광원으로는 전구·램프·불 등 흔한 광원들을 표현할 수 있습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-048-point"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P012",
+      "section": "10.7.1",
+      "anchor": "<b>스폿 광원(spot light)</b>은 특정 위치에서 특정 방향으로 나오는 빛을 나타냅니다. 손전등·전조등, 그리고 당연히 스포트라이트를 표현하는 데 사용합니다. 스폿 광원",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-049-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P013",
+      "section": "10.7.1",
+      "anchor": "<b>원뿔형 스폿 광원(conical spot light)</b>은 원형 ‘밑면’을 갖습니다. 원뿔의 너비는 감쇠 각도(falloff angle)로 정의하며, 감쇠 거리와 혼동하지",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-049-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P014",
+      "section": "10.7.1",
+      "anchor": "![그림 10.31. 원뿔형 스폿 광원](https://gamemath.com/book/figs/graphics/spot_light_conical.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-049-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P015",
+      "section": "10.7.1",
+      "anchor": "<b>사각형 스폿 광원(rectangular spot light)</b>은 원뿔 대신 각뿔을 만듭니다. 사각형 스폿 광원은 영상을 투사하는 데 사용되므로 특히 흥미롭습니다. 예를 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-050-projector"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P016",
+      "section": "10.7.1",
+      "anchor": "<b>방향성 광원(directional light)</b>은 공간상의 아주 먼 점에서 나오는 빛을 나타냅니다. 거리가 충분히 멀어서 장면, 또는 적어도 현재 고려하는 물체에 조명을",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-051-directional"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P017",
+      "section": "10.7.1",
+      "anchor": "앞에서 말했듯이 렌더링 방정식과 현실 세계의 광원은 유한한 면적을 갖는 발광 표면입니다. 추상 광원 유형에는 표면적이 전혀 없으므로 적분할 때 특별하게 처리해야 합니다. 몬테카를로",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-052-delta"
+      ],
+      "correctionIds": [
+        "C09"
+      ]
+    },
+    {
+      "id": "S107-P018",
+      "section": "10.7.1",
+      "anchor": "빛이 하나의 점에서 나오는 대신, 빛을 받는 지점을 향하고 있는 0이 아닌 면적의 원판에서 나온다고 상상해 보겠습니다. 이제 원판의 면적을 0으로 줄이면서 복사속, 즉 전체 에너지",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-052-delta"
+      ],
+      "correctionIds": [
+        "C09"
+      ]
+    },
+    {
+      "id": "S107-P019",
+      "section": "10.7.1",
+      "anchor": "추상 광원은 디랙 델타(12.4.3절 참조)와 매우 비슷한 방식으로 이 극한 과정의 결과라고 볼 수 있습니다. 라디오시티는 무한대이지만 복사속은 유한합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-052-delta"
+      ],
+      "correctionIds": [
+        "C09"
+      ]
+    },
+    {
+      "id": "S107-P020",
+      "section": "10.7.1",
+      "anchor": "지금까지 설명한 광원은 고정 기능 실시간 파이프라인에서 지원하는 전통적인 유형이지만, 물론 필요에 맞게 광원의 공간 범위를 어떤 방식으로든 정의할 자유가 있습니다. 10.7.3절의",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-052-delta"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P021",
+      "section": "10.7.1",
+      "anchor": "<b>원주 10-17:</b> gobo는 ‘go between’의 줄임말이고, cookie는 ‘cucoloris’의 줄임말입니다. 연극 분야에서 두 용어 사이에 존재하는 미묘한 기",
+      "decision": "omitted-noninstructional",
+      "reason": "Gobo/cookie etymology; canonical terms retained without an unverified etymology detour.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P022",
+      "section": "10.7.2",
+      "anchor": "## 10.7.2 빛의 감쇠",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P023",
+      "section": "10.7.2",
+      "anchor": "빛은 거리에 따라 감쇠합니다. 즉 광원과 물체 사이의 거리가 증가할수록 물체가 그 광원에서 받는 조명은 줄어듭니다. 현실 세계에서 빛의 세기는 광원과 물체 사이 거리의 제곱에 반비",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-053-attenuation-start"
+      ],
+      "correctionIds": [
+        "C10"
+      ]
+    },
+    {
+      "id": "S107-P024",
+      "section": "10.7.2",
+      "anchor": "<b>현실 세계의 빛 감쇠</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-053-attenuation-start"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P025",
+      "section": "10.7.2",
+      "anchor": "$$ \\frac{i_1}{i_2}=\\left(\\frac{d_2}{d_1}\\right)^2.\\tag{10.16} $$",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-053-attenuation-start",
+        "M21-054-radiometry"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P026",
+      "section": "10.7.2",
+      "anchor": "여기서 $i$는 복사속, 즉 단위 면적당 복사 출력이며, $d$는 거리입니다. 현실의 감쇠에서 제곱이 등장하는 이유를 이해하려면, 점 광원에서 같은 순간에 방출된 모든 광자가 만드",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-053-attenuation-start",
+        "M21-054-radiometry"
+      ],
+      "correctionIds": [
+        "C10"
+      ]
+    },
+    {
+      "id": "S107-P027",
+      "section": "10.7.2",
+      "anchor": "여기서 잠시 멈추고 더 미묘한 점을 살펴보겠습니다. 대기 효과를 무시하면 물체나 광원의 <b>지각되는 밝기는 관찰자에게서 멀어져도 감소하지 않습니다</b>. 광원이나 물체가 관찰자",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-055-radiance-distance"
+      ],
+      "correctionIds": [
+        "C10"
+      ]
+    },
+    {
+      "id": "S107-P028",
+      "section": "10.7.2",
+      "anchor": "복사휘도는 단위 투영 면적·단위 입체각당 출력을 측정한다는 점을 떠올려 보겠습니다. 물체가 멀어질수록 물체가 차지하는 입체각도 줄어들어 복사조도의 감소를 보상합니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-055-radiance-distance"
+      ],
+      "correctionIds": [
+        "C10"
+      ]
+    },
+    {
+      "id": "S107-P029",
+      "section": "10.7.2",
+      "anchor": "렌더링 방정식이 빛의 감쇠를 어떻게 자연스럽게 반영하는지 이해하면 특히 유익합니다. 적분 안에서는 셰이딩 지점 $\\mathbf{x}$를 둘러싼 반구의 각 방향에 대해, 그 방향의 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-056-finite-source"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P030",
+      "section": "10.7.2",
+      "anchor": "그러나 광원이 $\\mathbf{x}$에서 멀어지면 반구에서 차지하는 입체각이 작아집니다. 따라서 광원의 면적이 유한하면 렌더링 방정식 안에서 감쇠가 자동으로 일어납니다. 반면 한 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-056-finite-source"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P031",
+      "section": "10.7.2",
+      "anchor": "조금 혼란스러우므로 실시간 렌더링의 일반적인 규칙을 정리하겠습니다. 렌더링되는 유한 면적의 발광 표면에는 보통 거리 감쇠를 적용하지 않지만, 안개 같은 대기 효과의 영향을 받을 수",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-056-finite-source"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P032",
+      "section": "10.7.2",
+      "anchor": "실제로 식 (10.16)을 사용하기 까다로운 이유는 두 가지입니다. 첫째, 이론적으로 $d=0$에서 빛의 세기가 무한대로 커집니다. 앞서 말했듯이 광원이 디랙 델타이기 때문입니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-057-falloff-problem"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P033",
+      "section": "10.7.2",
+      "anchor": "현실 모델 대신 감쇠 거리에 기반한 더 간단한 모델을 자주 사용합니다. 10.7절에서 감쇠 거리는 그보다 멀리 있는 곳에는 광원이 영향을 주지 않도록 제어한다고 설명했습니다. 거리",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-057-falloff-problem"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P034",
+      "section": "10.7.2",
+      "anchor": "<b>전형적인 선형 감쇠 모델</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-058-linear-falloff"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P035",
+      "section": "10.7.2",
+      "anchor": "$$ i(d)=\\begin{cases} 1,&d\\le d_{\\min},\\\\ \\dfrac{d_{\\max}-d}{d_{\\max}-d_{\\min}},&d_{\\min}<d<d_{\\max}",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-058-linear-falloff"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P036",
+      "section": "10.7.2",
+      "anchor": "식 (10.17)에서 보듯이 감쇠를 제어하는 데는 실제로 두 거리를 사용합니다. $d_{\\min}$ 안쪽에서는 빛이 최대 세기, 즉 100%입니다. 거리가 $d_{\\min}$에서 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-058-linear-falloff"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P037",
+      "section": "10.7.2",
+      "anchor": "따라서 $d_{\\min}$은 기본적으로 빛이 약해지기 시작하는 거리입니다. 이 값은 0인 경우가 많으며, 이는 빛이 처음부터 곧바로 약해진다는 뜻입니다. $d_{\\max}$는 실제",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-058-linear-falloff"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P038",
+      "section": "10.7.2",
+      "anchor": "![그림 10.32. 현실 세계의 빛 감쇠와 단순한 선형 감쇠 비교](https://gamemath.com/book/figs/graphics/light_attenuation_cur",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-058-linear-falloff"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P039",
+      "section": "10.7.2",
+      "anchor": "거리 감쇠는 점 광원과 스폿 광원에 적용할 수 있으며, 방향성 광원에는 보통 적용하지 않습니다. 스폿 광원에는 추가적인 감쇠 인자가 있습니다. <b>핫스폿 감쇠(hotspot fa",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-059-spot-falloff"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P040",
+      "section": "10.7.2",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>빛의 양과 방향을 구분하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [
+        "M21-054-radiometry"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P041",
+      "section": "10.7.2",
+      "anchor": "원문 10.7.2의 식(10.16) 설명은 i를 ‘radiant flux (radiant power per unit area)’라고 부릅니다. 그러나 복사속은 전체 복사 출력(W)",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-054-radiometry"
+      ],
+      "correctionIds": [
+        "C10"
+      ]
+    },
+    {
+      "id": "S107-P042",
+      "section": "10.7.3",
+      "anchor": "## 10.7.3 Doom 방식의 체적 광원",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P043",
+      "section": "10.7.3",
+      "anchor": "렌더링 방정식의 이론적 틀에서든, 표준 블린–퐁 모델의 조명 방정식을 계산하는 HLSL 셰이더에서든, 특정 지점 $\\mathbf{x}$의 셰이딩 계산에 광원을 사용하기 위해 필요한",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-060-doom-scope"
+      ],
+      "correctionIds": [
+        "C11"
+      ]
+    },
+    {
+      "id": "S107-P044",
+      "section": "10.7.3",
+      "anchor": "이 광원들은 실제 활용 관점에서 이해할 가치가 있으며 지금도 유용합니다. 또한 우아하고 빠른 근사를 보여 준다는 점에서 이론적으로도 흥미롭습니다. 이러한 근사는 실시간 렌더링이라는",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-060-doom-scope"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P045",
+      "section": "10.7.3",
+      "anchor": "Doom 방식 체적 광원에서 가장 창의적인 부분은 주어진 지점의 세기를 정하는 방법입니다. 두 텍스처 맵으로 이를 제어합니다. 한 맵은 사실상 고보이며, 스폿 광원이나 방향성 광원",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-060-doom-scope",
+        "M21-061-doom-textures"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P046",
+      "section": "10.7.3",
+      "anchor": "지점 $\\mathbf{x}$의 빛 세기를 정하는 절차는 다음과 같습니다. $\\mathbf{x}$에 $4\\times4$ 행렬을 곱하고, 결과 좌표로 두 맵을 조회합니다. 2차원 고보",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-061-doom-textures",
+        "M21-062-doom-coordinate"
+      ],
+      "correctionIds": [
+        "C11"
+      ]
+    },
+    {
+      "id": "S107-P047",
+      "section": "10.7.3",
+      "anchor": "그림 10.33의 예들을 보면 분명해질 것입니다. 각 예를 자세히 살펴보겠습니다. 옴니 광원은 원형 고보를 상자 전체에 직교 투영하고, $\\mathbf{l}$ 벡터 계산에 사용하는",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-062-doom-coordinate",
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P048",
+      "section": "10.7.3",
+      "anchor": "<b>그림 10.33. Doom 방식 체적 광원의 예</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P049",
+      "section": "10.7.3",
+      "anchor": "<columns> <column ratio=\"33\"> <b>옴니 광원 — Omni</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P050",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 옴니 광원의 조명 예](https://gamemath.com/book/figs/graphics/doom_light_omni_room.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P051",
+      "section": "10.7.3",
+      "anchor": "<b>고보</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P052",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 옴니 광원의 고보](https://gamemath.com/book/figs/graphics/doom_light_omni_gobo.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P053",
+      "section": "10.7.3",
+      "anchor": "<b>감쇠 맵</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P054",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 옴니 광원의 감쇠 맵](https://gamemath.com/book/figs/graphics/doom_light_omni_falloff.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P055",
+      "section": "10.7.3",
+      "anchor": "<b>투영: 직교 투영</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P056",
+      "section": "10.7.3",
+      "anchor": "<b>경계 상자</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P057",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 옴니 광원의 경계 상자](https://gamemath.com/book/figs/graphics/doom_light_omni_box.png) </column>",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P058",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 스폿 광원의 조명 예](https://gamemath.com/book/figs/graphics/doom_light_spot_room.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P059",
+      "section": "10.7.3",
+      "anchor": "<b>고보</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P060",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 스폿 광원의 고보](https://gamemath.com/book/figs/graphics/doom_light_spot_gobo.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P061",
+      "section": "10.7.3",
+      "anchor": "<b>감쇠 맵</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P062",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 스폿 광원의 감쇠 맵](https://gamemath.com/book/figs/graphics/doom_light_spot_falloff.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P063",
+      "section": "10.7.3",
+      "anchor": "<b>투영: 원근 투영</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P064",
+      "section": "10.7.3",
+      "anchor": "<b>경계 상자</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P065",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 스폿 광원의 경계 상자](https://gamemath.com/book/figs/graphics/doom_light_spot_box.png) </column>",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P066",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 가짜 스폿 광원의 조명 예](https://gamemath.com/book/figs/graphics/doom_light_fake_spot_room.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P067",
+      "section": "10.7.3",
+      "anchor": "<b>고보</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P068",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 가짜 스폿 광원의 고보](https://gamemath.com/book/figs/graphics/doom_light_fake_spot_gobo.png)",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P069",
+      "section": "10.7.3",
+      "anchor": "<b>감쇠 맵</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P070",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 가짜 스폿 광원의 감쇠 맵](https://gamemath.com/book/figs/graphics/doom_light_fake_spot_falloff.png",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P071",
+      "section": "10.7.3",
+      "anchor": "<b>투영: 직교 투영</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P072",
+      "section": "10.7.3",
+      "anchor": "<b>경계 상자</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P073",
+      "section": "10.7.3",
+      "anchor": "![그림 10.33. 가짜 스폿 광원의 경계 상자](https://gamemath.com/book/figs/graphics/doom_light_fake_spot_box.png) <",
+      "decision": "visual-teaching-role-retained-independent-recreation",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P074",
+      "section": "10.7.3",
+      "anchor": "이 옴니 광원의 텍스처 좌표를 만드는 $4\\times4$ 행렬은 다음과 같습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P075",
+      "section": "10.7.3",
+      "anchor": "<b>Doom 방식 옴니 광원의 텍스처 좌표 생성 행렬</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P076",
+      "section": "10.7.3",
+      "anchor": "$$ \\begin{bmatrix} 1/s_x&0&0&0\\\\ 0&-1/s_y&0&0\\\\ 0&0&1/s_z&0\\\\ 1/2&1/2&1/2&1 \\end{bmatrix}. $$",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni",
+        "M21-064-doom-omni-worked"
+      ],
+      "correctionIds": [
+        "C11"
+      ]
+    },
+    {
+      "id": "S107-P077",
+      "section": "10.7.3",
+      "anchor": "여기서 $s_x,s_y,s_z$는 각 축 방향의 상자 크기입니다. 이 행렬은 광원의 오브젝트 공간에 있는 점에 적용하며, 이 공간에서 광원 위치는 상자 중심에 있습니다. 따라서 월",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni",
+        "M21-064-doom-omni-worked"
+      ],
+      "correctionIds": [
+        "C11"
+      ]
+    },
+    {
+      "id": "S107-P078",
+      "section": "10.7.3",
+      "anchor": "고보에 직교 투영하므로 맨 오른쪽 열이 $[0,0,0,1]^T$라는 점에 주목하겠습니다. $1/2$만큼의 평행이동은 좌표 범위를 $[-1/2,+1/2]$에서 텍스처의 $[0,1]$",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-063-doom-omni",
+        "M21-064-doom-omni-worked"
+      ],
+      "correctionIds": [
+        "C11"
+      ]
+    },
+    {
+      "id": "S107-P079",
+      "section": "10.7.3",
+      "anchor": "이제 스폿 광원을 보겠습니다. 원근 투영을 사용하며 투영 중심은 상자의 한쪽 끝에 있습니다. $\\mathbf{l}$ 벡터 계산에 쓰는 광원 위치도 같은 지점에 두지만, 언제나 그래",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P080",
+      "section": "10.7.3",
+      "anchor": "감쇠 맵은 투영 중심에 가장 가까운 상자 끝에서 가장 밝고 $+z$축을 따라 선형으로 약해집니다. 모든 경우에 $+z$축이 고보 투영 방향입니다. 광원 ‘뒤’에 있는 물체가 조명을",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot",
+        "M21-066-doom-borders"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P081",
+      "section": "10.7.3",
+      "anchor": "상자 밖 기하 형상에는 이 픽셀들을 사용하기 때문입니다. 고보와 감쇠 맵이 3차원 공간 전체에 반복되지 않도록 주소 지정 모드는 clamp로 설정해야 합니다. 원근 스폿의 텍스처 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot",
+        "M21-066-doom-borders"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P082",
+      "section": "10.7.3",
+      "anchor": "<b>Doom 방식 스폿 광원의 텍스처 좌표 생성 행렬</b>",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot",
+        "M21-066-doom-borders"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P083",
+      "section": "10.7.3",
+      "anchor": "$$ \\begin{bmatrix} s_z/s_x&0&0&0\\\\ 0&-s_z/s_y&0&0\\\\ 1/2&1/2&1/s_z&1\\\\ 0&0&0&0 \\end{bmatrix}. $$",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-065-doom-spot",
+        "M21-066-doom-borders"
+      ],
+      "correctionIds": [
+        "C11"
+      ]
+    },
+    {
+      "id": "S107-P084",
+      "section": "10.7.3",
+      "anchor": "오른쪽의 ‘가짜 스폿’이 어쩌면 가장 흥미롭습니다. 여기서는 직교 투영을 사용하며, 투영 방향은 옆쪽입니다. 빛의 원뿔 모양과 감쇠, 즉 우리가 보통 생각하는 의미의 감쇠가 모두 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P085",
+      "section": "10.7.3",
+      "anchor": "이때의 텍스처 좌표 행렬은 실제로 옴니 광원의 행렬과 같습니다. 모든 차이는 다른 고보를 사용하고 광원의 방향을 적절하게 맞추는 데서 나옵니다!",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P086",
+      "section": "10.7.3",
+      "anchor": "이 예들이 어떻게 작동하는지 확실히 이해할 때까지 살펴보기 바랍니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-067-doom-fake-spot"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P087",
+      "section": "10.7.3",
+      "anchor": "Doom 방식 체적 광원은 여러 이유로 실시간 그래픽스에서 매력적입니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-068-doom-advantages"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P088",
+      "section": "10.7.3",
+      "anchor": "- 단순하고 효율적입니다. 기본적인 텍스처 좌표 생성 기능과 텍스처 조회 두 번만 필요합니다. 이 연산들은 유연하며 닌텐도 Wii 같은 고정 기능 하드웨어에도 쉽게 내장할 수 있습",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-068-doom-advantages"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P089",
+      "section": "10.7.3",
+      "anchor": "마지막 특성은 Doom 3가 이런 광원을 도입한 가장 중요한 이유일지도 모릅니다. 이 게임은 라이트 맵이나 사전 계산 조명 없이 누적 렌더링 기법을 사용했고, 모든 물체에 완전히 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-068-doom-advantages"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P090",
+      "section": "10.7.3",
+      "anchor": "다시 그려야 하는 기하 형상뿐 아니라 스텐실 그림자를 위해 처리해야 하는 기하 형상의 양도 제한할 수 있었으므로 성능상 이점이 매우 컸습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-068-doom-advantages"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P091",
+      "section": "10.7.3",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>빛의 양과 방향을 구분하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [
+        "M21-060-doom-scope"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P092",
+      "section": "10.7.3",
+      "anchor": "이 책의 Doom 방식 ‘체적 광원’은 광원이 영향을 미치는 공간 부피를 정한다는 뜻입니다. 이 절의 계산은 표면 지점에 들어오는 빛의 세기와 방향을 구합니다. 안개 같은 참여 매",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-060-doom-scope"
+      ],
+      "correctionIds": [
+        "C11"
+      ]
+    },
+    {
+      "id": "S107-P093",
+      "section": "10.7.4",
+      "anchor": "## 10.7.4 사전 계산 조명",
+      "decision": "structure-without-spoken-heading",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P094",
+      "section": "10.7.4",
+      "anchor": "실시간으로 생성하는 영상에서 오차가 가장 크게 발생하는 원인 중 하나는 간접 조명입니다. 긍정적인 독자라면 가장 크게 개선할 기회라고 말할지도 모르겠습니다. 간접 조명이란 렌더링되",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-069-bake-bridge"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P095",
+      "section": "10.7.4",
+      "anchor": "그러나 패치 수가 비교적 적더라도 어떤 패치들이 서로를 ‘볼’ 수 있어 복사휘도가 흐르는 통로를 만들고, 어떤 패치들은 서로 볼 수 없어 복사휘도를 교환하지 않는지 여전히 판단해야",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-069-bake-bridge"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P096",
+      "section": "10.7.4",
+      "anchor": "다시 말해 사실상 어떤 변화도 장면 전체의 빛 분포를 바꿉니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-069-bake-bridge"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P097",
+      "section": "10.7.4",
+      "anchor": "그러나 보통 장면의 일부 광원과 기하 형상은 움직이지 않습니다. 이 경우 더 자세한 조명 계산, 즉 렌더링 방정식을 더 완전하게 푸는 계산을 수행한 뒤 그 결과를 사용할 수 있습니",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-069-bake-bridge"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P098",
+      "section": "10.7.4",
+      "anchor": "한 기법은 <b>라이트매핑(lightmapping)</b>입니다. 추가 UV 채널을 사용하여 장면의 다각형을 사전 계산 조명 정보가 들어 있는 특별한 텍스처 맵 안에 배치합니다. ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-070-lightmap"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P099",
+      "section": "10.7.4",
+      "anchor": "이 경우 앞에서 언급한 이산 ‘패치’는 라이트 맵의 텍셀입니다. 라이트매핑은 바닥과 천장처럼 큰 평면에서 잘 작동합니다. 이런 표면은 라이트 맵 안에 효율적으로 배치하기가 비교적 ",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-070-lightmap",
+        "M21-071-vertex-bake"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P100",
+      "section": "10.7.4",
+      "anchor": "다행히 사전 계산한 조명 값을 정점에도 똑같이 저장할 수 있으며, 비교적 조밀한 메시에서는 이 편이 더 잘 맞는 경우가 많습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-071-vertex-bake"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P101",
+      "section": "10.7.4",
+      "anchor": "라이트 맵이나 정점에 저장하는 사전 계산 정보는 정확히 무엇일까요? 기본적으로는 입사 조명을 저장하지만 선택지는 많습니다. 한 가지 선택 사항은 패치마다 저장할 표본 수입니다. 라",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-072-baked-quantity"
+      ],
+      "correctionIds": [
+        "C10"
+      ]
+    },
+    {
+      "id": "S107-P102",
+      "section": "10.7.4",
+      "anchor": "역사적인 이유로 라이트 맵 계산 알고리즘을 라디오시티 기법이라고 부르기도 합니다. 라이트 맵이 방향 성분을 포함하는 경우에도 그런 이름을 사용하므로 혼란스러울 수 있습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-072-baked-quantity"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P103",
+      "section": "10.7.4",
+      "anchor": "라이트 맵이나 정점 색을 둘 이상 저장할 수 있으면 분포를 더 정확히 담을 수 있습니다. 이 방향 정보는 특정한 기저에 투영합니다. 각 기저가 하나의 방향에 대응하도록 할 수도 있",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-073-direction-basis",
+        "M21-078-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P104",
+      "section": "10.7.4",
+      "anchor": "어느 경우든 핵심은 입사광의 방향별 분포가 중요하다는 점입니다. 그러나 사전 계산한 입사광 정보를 저장할 때는 보통 이 정보를 버리거나 압축할 수밖에 없습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-073-direction-basis",
+        "M21-078-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P105",
+      "section": "10.7.4",
+      "anchor": "또 다른 선택 사항은 사전 계산 조명에 직접광·간접광·둘 모두 중 무엇을 포함할 것인가입니다. 이 결정은 흔히 광원별로 내릴 수 있습니다. 최초의 라이트매핑 사례들은 장면의 각 광",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-074-bake-selection",
+        "M21-078-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P106",
+      "section": "10.7.4",
+      "anchor": "같은 기본 아이디어는 지금도 유용하지만, 오늘날의 목적은 보통 생성해야 할 실시간 그림자의 전체 수를 줄이는 것입니다. 그런 다음 시점을 실시간으로 움직일 수는 있지만, 라이트 맵",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-074-bake-selection",
+        "M21-078-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P107",
+      "section": "10.7.4",
+      "anchor": "실행 시점의 시스템은 그대로 두고 간접광까지 포함한 라이트 맵을 렌더링할 수도 있습니다. 다만 오프라인 계산에는 훨씬 정교한 처리가 필요합니다. 어떤 광원은 직접광과 간접광을 모두",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-075-mixed-lighting",
+        "M21-078-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P108",
+      "section": "10.7.4",
+      "anchor": "그러면 라이트 맵의 텍셀 밀도보다 더 정밀한 그림자를 얻거나, 입사 방향을 올바르게 모델링하여 정반사 하이라이트를 개선할 수 있습니다. 입사 방향은 빛을 라이트 맵에 구워 넣을 때",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-075-mixed-lighting",
+        "M21-078-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P109",
+      "section": "10.7.4",
+      "anchor": "물론 일부 광원에 사전 계산 조명을 쓴다고 해서 다른 광원에 완전히 동적인 기법을 쓰지 못하는 것은 아닙니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-075-mixed-lighting",
+        "M21-078-close"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P110",
+      "section": "10.7.4",
+      "anchor": "방금 설명한 라이트매핑 기법은 정적인 기하 형상에는 잘 작동합니다. 그렇다면 캐릭터·차량·발판·아이템 같은 동적인 물체는 어떨까요? 이런 물체에는 동적으로 조명을 주어야 하므로 간",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-076-probes",
+        "M21-078-close"
+      ],
+      "correctionIds": [
+        "C12"
+      ]
+    },
+    {
+      "id": "S107-P111",
+      "section": "10.7.4",
+      "anchor": "각 프로브에서 큐브 환경 맵을 오프라인으로 렌더링합니다. 동적 물체를 렌더링할 때 가까운 프로브를 찾아, 그 프로브에서 해당 위치의 간접 조명을 얻습니다.",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-076-probes",
+        "M21-077-probe-direction",
+        "M21-078-close"
+      ],
+      "correctionIds": [
+        "C12"
+      ]
+    },
+    {
+      "id": "S107-P112",
+      "section": "10.7.4",
+      "anchor": "이 기법에는 여러 변형이 있습니다. 예를 들어 간접광의 난반사용 환경 맵 하나를 사용할 수 있습니다. 이 맵의 각 표본에는 해당 방향을 둘러싼 반구 전체를 코사인 가중치로 합친 값",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-077-probe-direction",
+        "M21-078-close"
+      ],
+      "correctionIds": [
+        "C12"
+      ]
+    },
+    {
+      "id": "S107-P113",
+      "section": "10.7.4",
+      "anchor": "<callout icon=\"💡\" color=\"gray_bg\"> <b>빛의 양과 방향을 구분하기</b>",
+      "decision": "retained-learning-content",
+      "reason": "Section/callout organization is represented by beat metadata, not read aloud.",
+      "draftBeatIds": [
+        "M21-072-baked-quantity"
+      ],
+      "correctionIds": []
+    },
+    {
+      "id": "S107-P114",
+      "section": "10.7.4",
+      "anchor": "원문 10.7.4도 ‘단위 면적당 입사 복사 출력’을 radiosity라고 부릅니다. 엄밀히는 입사량이 irradiance(복사조도), 표면에서 나가는 양이 radiosity(라디",
+      "decision": "retained-learning-content",
+      "reason": "Learning claim/example/formula mapped; independently phrased and visually staged.",
+      "draftBeatIds": [
+        "M21-072-baked-quantity"
+      ],
+      "correctionIds": [
+        "C10"
+      ]
+    }
+  ],
+  "contentMeasures": {
+    "koCharacters": 15554,
+    "enWords": 4135,
+    "duration": "Not measured; text-only estimate approximately 38–50 minutes at deliberate explanatory cadence. This is not a target or a split instruction; actual PCM and footage determine duration."
+  },
+  "numericalExamples": [
+    {
+      "id": "reflection",
+      "input": "n=(0,1,0),l=(.6,.8,0)",
+      "result": "r=(-.6,.8,0)",
+      "test": "manual vector arithmetic; unit norms all1"
+    },
+    {
+      "id": "power",
+      "input": ".8^2,.8^8",
+      "result": ".64,.16777216"
+    },
+    {
+      "id": "rgb",
+      "input": "(1,.5,.2)⊗(.8,.4,.1)",
+      "result": "(.8,.2,.02)"
+    },
+    {
+      "id": "lambert",
+      "input": "cos(0°),cos(60°),cos(90°)",
+      "result": "1,.5,0"
+    },
+    {
+      "id": "halfLambert",
+      "input": "NdotL=0",
+      "result": "(.5*0+.5)^2=.25"
+    },
+    {
+      "id": "nonlinear",
+      "input": "average(0,1)^2 vs average(0²,1²)",
+      "result": ".25 vs .5"
+    },
+    {
+      "id": "factor",
+      "input": ".2*.8+.3*.8",
+      "result": ".4=(.2+.3)*.8"
+    },
+    {
+      "id": "linearFalloff",
+      "input": "dmin2,dmax6,d4",
+      "result": ".5"
+    },
+    {
+      "id": "omniUV",
+      "input": "sx4,x[-2,0,2]",
+      "result": "u[0,.5,1]"
+    }
+  ],
+  "pending": [
+    "Root integrate actually inspected independent gameplay with canonical game/UI names and observed before/action/result.",
+    "Use research/figure-audit.json observed roles when checking own Unity geometry/shader comparisons; do not adopt source-figure pixels as production assets.",
+    "Validate same-model Unity renders, matrix coordinate conventions and all displayed numeric results.",
+    "Heading-free full KO/EN read-through after footage integration; natural TTS and synchronization remain unverified.",
+    "No TTS, media, render, human review or platform completion claimed by this draft."
+  ]
+}

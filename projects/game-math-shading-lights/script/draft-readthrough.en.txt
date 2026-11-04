@@ -1,0 +1,157 @@
+The same object gains shape when the light moves, while its highlight changes when the camera moves. How does a game calculate these differences? We will separate the light at one surface point into four contributions, extend the calculation across an object, and then examine light sources and precomputed lighting.
+
+First distinguish a colored object from a shaded object. A material supplies properties describing how the surface reflects light, including its strength and color. A lighting model combines those properties with the lighting and viewing directions to compute the displayed result. Different parameter values can produce different appearances even when the calculation is shared.
+
+More precisely, the bidirectional reflectance distribution function, or BRDF, describes reflection from an incoming direction into an outgoing direction. Here we will follow a traditional local illumination model that efficiently approximates direct lighting rather than solving every light path at once. We will later connect its diffuse term back to the BRDF.
+
+Zoom in on one surface point. Light may arrive from many directions, including after bouncing off other objects. Our model first selects light arriving directly from designated sources and calculates what is reflected toward the camera. Three sources give three directional contributions. This reduces a hemisphere-wide transport problem to a finite set of light evaluations.
+
+A light source here need not be the visible mesh of a bulb. It can be an abstract object that supplies a direction and an amount of light at the shading point. Drawing the bulb and illuminating its surroundings are separate tasks. With direction and color supplied by the light, we can now calculate the surface response.
+
+We divide the result into four contributions. Emission makes the surface itself luminous. Specular reflection creates a directional highlight. Diffuse reflection produces a broad response that reveals surface color and form. Ambient light is a coarse substitute for indirect illumination. The model adds these four contributions.
+
+Color is represented by red, green, and blue values rather than a single number. Multiplying light color (1, 0.5, 0.2) by material color (0.8, 0.4, 0.1) component by component gives (0.8, 0.2, 0.02). The circled multiplication symbol denotes this operation. It is different from the dot product used to compare directions.
+
+Start with specular reflection. Keep the light and object fixed and move only the camera. A bright highlight appears and fades because the camera approaches or leaves a preferred reflection direction. To calculate that relationship, we first need three directions at the surface point.
+
+The outward surface normal is n. The direction from the point to the camera is v, and the direction from the point to the light is l. We normalize each to unit length. Notice that l points opposite to the incoming ray: light travels toward the surface, while l points back toward its source. This convention determines the signs in the formula.
+
+Call the mirror reflection direction r. First project l onto the unit normal: dot(n,l) times n gives its normal component. Double this projection and subtract l. The result is the direction mirrored across the normal, so r equals 2 dot(n,l) n minus l. When n and l are unit vectors, the resulting r is also unit length.
+
+For n=(0,1,0) and l=(0.6,0.8,0), the dot product is 0.8. Twice the normal projection is (0,1.6,0). Subtracting l produces r=(-0.6,0.8,0): the vertical component stays the same and the horizontal component changes sign. A shader reflect function expects an incoming direction, so with our convention its arguments are -l and n.
+
+Next compare r with the viewing direction v. Their dot product is the cosine of the angle between them. It is one when they align and decreases as they separate. Clamp negative values to zero, raise the result to the shininess exponent, and multiply by the light and material specular colors. This gives the Phong specular contribution.
+
+The exponent mainly controls highlight width. At a dot product of 0.8, squaring gives 0.64, while raising it to the eighth power gives about 0.17. Perfect alignment stays at one, but off-axis directions darken rapidly as the exponent rises. Large exponents produce narrow highlights; small exponents produce broad ones.
+
+Specular color is a separate control for strength and tint. Holding the exponent fixed while increasing this value strengthens the highlight. A texture can vary material properties across the surface. Check whether a map stores specular color, glossiness, or roughness; similar names do not mean the values are interchangeable.
+
+The light also supplies color and intensity. For now, its color includes distance attenuation, which we will examine later. A projected pattern called a cookie or gobo can vary illumination by direction, creating effects such as stained glass or moving foliage. Such a pattern is not the same as a shadow computed from an actual occluding object. Traditional implementations may expose separate diffuse and specular light colors as artistic controls, rather than distinct physical supplies of light.
+
+Compare both controls in a grid. Specular strength increases horizontally, while the exponent decreases vertically. Highlights become stronger to the right and broader downward. When the specular color is zero, changing the exponent creates no highlight. Any remaining visible form comes from other lighting contributions.
+
+Another approach compares a different pair of directions. Add l and v, then normalize the result to obtain the halfway vector h. When the mirror reflection aligns with the camera, the normal points along this halfway direction. We can therefore compare n with h instead of comparing r with v.
+
+Blinn–Phong raises the clamped dot product of n and h to an exponent. Its result resembles Phong reflection, but equal exponents do not guarantee equal highlight widths. A shared h can be reused when light and view directions are effectively constant over the object; performance depends on the implementation. If l and v cancel, their zero sum must not be normalized.
+
+We have calculated view-dependent highlights. A matte surface behaves differently: its basic brightness need not change when the camera moves. Ideal Lambertian reflection models equal outgoing radiance in all viewing directions. The incoming light direction still matters, so we now compare the surface orientation with the light rather than with the camera.
+
+Imagine the same bundle of light striking a sheet of paper. When the sheet faces the light, the bundle covers a smaller area. Tilt the sheet and the same light spreads over a larger area, reducing the amount received by each equal-sized patch. The angle is measured between the surface normal and the light direction, not between the surface plane and the light. The same geometry helps explain how sunlight received by an equal area varies with its angle of incidence on Earth.
+
+The factor is a cosine: one for alignment, one half at sixty degrees, and zero at ninety degrees. With unit vectors, their dot product gives this value directly. Multiply it by the light color and diffuse material color. Clamp negative values to zero so an opaque surface is not illuminated by a light behind it.
+
+For unit white illumination and diffuse color (0.8,0.4,0.2), the frontal result keeps those values. At sixty degrees, the contribution becomes (0.4,0.2,0.1). The proportions remain while the magnitude halves. The incoming power per unit surface area is called irradiance, linking this color calculation to a physical quantity.
+
+Returning to the BRDF, an ideal Lambertian surface uses a directional constant. That constant is not simply the reflectance. If rho is the fraction reflected, the Lambertian BRDF is rho divided by pi. The cosine-weighted integral over the outgoing hemisphere equals pi, so this normalization makes the total reflected fraction equal rho.
+
+In an older color-based formula, scale factors may already be absorbed into material or light parameters. A physical formulation must keep the meanings of incoming illumination, BRDF, and cosine factor consistent. These answer how much light arrives, how the material reflects it, and how directly it strikes the surface. Do not add another division by pi without checking the convention.
+
+Direct lighting leaves surfaces facing away from the light completely dark. In a room, light bounced from walls and floors can still reach them. An open refrigerator can faintly illuminate parts of a kitchen even when its bulb is hidden. Instead of tracing all those paths, a simple model substitutes an ambient value.
+
+Multiply the scene ambient color by the material ambient color, often chosen to match the diffuse color. A constant value makes dark surfaces visible but does not describe where light comes from, so it cannot accurately reveal their form. Later, light probes will let us retain some directional information.
+
+Ambient light substitutes for illumination arriving from outside; emission belongs to the surface itself. It keeps a sign or bulb visibly luminous even when other lights are off. In this model, we add the material emission color directly, using zero for non-emissive surfaces. Turning off the other terms makes its role clear.
+
+In this local model, increasing emission does not automatically brighten nearby walls, because surfaces are evaluated separately. That requires another light or a global illumination method that transports emission to other surfaces. A visible emissive surface also should not simply be darkened by inverse-square camera distance; we will clarify that distinction when discussing attenuation.
+
+Now combine the terms on the same model. Diffuse lighting reveals broad form, specular adds highlights, ambient fills otherwise black areas, and emission adds a material's own light. The long final equation is the sum of these four contributions. Toggle one at a time without changing the camera to identify each effect.
+
+A hidden part of the model can still appear lit. Facing the light and having an unobstructed path to it are separate conditions. The local reflection formula alone does not test other geometry. Shadows need a visibility test that reduces the contribution of an occluded light.
+
+Half Lambert deliberately modifies the diffuse response to retain form on the darker side. Multiplying the dot product by 0.5 and adding 0.5 remaps [-1,1] to [0,1]; a common form then squares it. At a dot product of zero, ordinary Lambert gives zero while the squared modification gives 0.25. It is an artistic response adjustment rather than transported bounce light.
+
+With a second light, calculate and add each source's diffuse and specular contributions. Separate red and blue contributions make this visible. In this formulation, ambient and emission are added only once per surface evaluation. Putting them inside the light loop would incorrectly make a self-emissive surface brighten whenever another light is added.
+
+Separate terms are easy to control and relatively inexpensive. A renderer must decide how to balance accuracy per pixel against the number of pixels and lights it handles. Understandable material controls are another advantage. However, this convenient decomposition is not an exact partition of every physical lighting phenomenon.
+
+Diffuse and specular terms are practical models for different reflection distributions: one broad, the other concentrated. Combining them approximates many surfaces. We will call the combination of Lambertian diffuse reflection and halfway-vector specular reflection the Blinn–Phong lighting model. Naming it clearly will help distinguish it from Phong shading.
+
+Consider shadows again. Even with unchanged material properties, inserting a wall changes the light that can arrive. Shadows are therefore a visibility problem rather than merely a reflection-formula problem. Both direct and bounced light can be blocked, so better material models and light-path visibility solve different parts of rendering.
+
+A simple Blinn–Phong formula omits several effects. Dielectric surfaces such as water and glass show stronger reflection toward grazing angles, described by Fresnel reflectance. Retroreflection preferentially returns light toward its source rather than the mirror direction. These require directional behavior beyond globally turning a highlight up or down. Velvet is one material with a retroreflective tendency.
+
+Surface orientation within its own plane can also matter. An isotropic material has the same reflection distribution when rotated about its normal. This does not mean arbitrary rotation of the whole surface: the normal stays fixed while the in-plane direction changes. Brushed metal or hair may respond differently to this rotation, which is anisotropy.
+
+So far we have chosen the equation evaluated at a point. Now decide how densely to evaluate it: once per triangle, once per vertex, or per pixel. The same reflection equation can give different results depending on evaluation and interpolation. Keep material and lighting fixed and change only that choice.
+
+Flat shading uses one representative value for a face. If lighting is evaluated at a triangle's center with its face normal, the result remains constant across that triangle. Neighboring faces may have different normals and therefore abrupt brightness changes. Modern shaders can also produce this appearance; it is not inherently unsupported.
+
+Gouraud shading first calculates lighting at vertices, then interpolates their colors across each triangle. For vertex values 0.2, 0.4, and 0.6, equal weights at the centroid give 0.4. When the response varies gradually, this produces a smooth result with relatively few lighting evaluations.
+
+A narrow highlight exposes the limitation. All three vertices may be dark while the correct highlight lies inside the triangle. Interpolating the dark values cannot invent a bright peak: the interpolated value cannot exceed the largest vertex value. Adding vertices reduces the chance of missing it, at the cost of more geometry and calculations.
+
+Phong shading changes the order: interpolate normals, renormalize them, then evaluate lighting at each pixel. A highlight between vertices can now be captured. This smooths shading, not the actual boundary of the mesh; the silhouette still follows the original geometry.
+
+Phong lighting names a reflection formula; Phong shading names an interpolation and evaluation method. They are separate choices. Operation order also matters: averaging zero and one and then squaring gives 0.25, while squaring each first and averaging gives 0.5. Lighting functions containing normalization and powers have similar nonlinear differences.
+
+What if the material color comes from a detailed texture? Evaluating only a few vertices cannot read every interior texel. We can factor material color out of the lighting sum. At a given surface point, that material color is common to all light contributions, allowing the lighting factors and texture values to be handled separately.
+
+With light factors 0.2 and 0.3 and material coefficient 0.8, separate products sum to 0.4. Adding the light factors first gives 0.5, and multiplying by 0.8 again gives 0.4. Apply this distributive rule separately to diffuse and specular sums. If ambient and diffuse material colors match, ambient can join the diffuse lighting factor.
+
+At each vertex, compute two lighting factors: specular without its material color, and diffuse including ambient. Interpolate these factors across the triangle, multiply them by the per-pixel specular and diffuse texture values, and add emission. Texture detail remains per pixel, but lighting still has the vertex-based approximation and its highlight limitations. A constant specular color may be multiplied at the vertex stage, while a varying per-pixel specular map must be applied where it is sampled.
+
+Lighting can be calculated in world, object, or camera space. What matters is expressing compared vectors in the same space. A dot product between a world-space normal and an object-space light direction produces a number without the intended geometric meaning. Nonuniform scaling requires correct normal transformation, and transformed or interpolated directions may need normalization.
+
+So far, light direction and strength were supplied inputs. Now consider what generates them. A game light is often a controllable illumination tool rather than a perfect physical bulb. We will shape its reach with point, spot, and directional sources, refine the distribution through attenuation and textures, then examine precomputing the result.
+
+A point light emits from one position in every direction, hence the name omnidirectional or omni light. Subtract the surface position from the light position to obtain the direction toward it; the vector length gives distance. It is useful for simple bulbs or flames. An editor sphere may indicate influence range rather than a physical emitting sphere.
+
+A spotlight adds an orientation to its position, illuminating a cone like a flashlight. An inner angle defines the bright center, and an outer angle defines the edge; intensity can fade between them. Cone width and illumination range are separate controls.
+
+A rectangular spotlight projects a pyramid-shaped region, like a film projector casting an image onto a wall. That image is the gobo or cookie introduced earlier. A circular mask creates a circular footprint, while a window pattern suggests light through a frame. The projected pattern does not itself test occlusion by a real window.
+
+A very distant source such as the sun can be approximated by parallel rays across a scene. A directional light therefore usually needs neither a position nor distance attenuation. Moving its editor icon leaves illumination unchanged, while rotating it changes the direction. Its cookie can use orthographic rather than perspective projection.
+
+How can a light with zero area emit energy? It is a mathematical idealization. Shrink an emitting disk while keeping its total power fixed; its output per unit area rises. The limit concentrates a finite total amount at one location, represented by a Dirac delta. Rather than expecting random hemisphere directions to find it, a renderer samples that light's designated position or direction explicitly.
+
+Light leaving a point source spreads across increasingly large spherical surfaces. Sphere area grows with the square of radius. Doubling distance quadruples that area, so an equally sized receiving patch gets one quarter as much illumination. This is inverse-square falloff for a point source.
+
+Keep the quantities distinct. Radiant flux is total power, measured in watts. Irradiance is incoming power per unit surface area, measured in watts per square meter. Under the same directional and incidence conditions, it is the receiving irradiance that falls with squared distance. The light source's total emitted power does not disappear as it spreads.
+
+Do not confuse light-to-surface distance with camera-to-surface distance. Pulling the camera away makes an unchanged illuminated object smaller on screen. Without atmospheric loss or exposure changes, a resolved surface does not require another inverse-square reduction in radiance due to camera distance. Radiance accounts for projected area and solid angle as well as power.
+
+An emitting surface occupies a smaller solid angle as it moves farther from the receiver. Its radiance in each direction can remain unchanged while fewer directions carry its light. Integrating over that solid angle accounts for the distance effect. An abstract point source instead includes distance falloff explicitly in its evaluated contribution.
+
+Direct inverse-square evaluation has two practical issues: it grows without bound near zero distance, and it never becomes exactly zero far away. The point-source idealization ignores the physical emitter's size. Games may limit the near-source value and smoothly cut off the contribution outside an influence range.
+
+One simple alternative uses two distances: full strength up to the inner distance, zero beyond the outer distance, and a linear fade between them. With an inner distance of two meters and outer distance of six, the factor at four meters is (6-4)/(6-2)=0.5. This is an artistic and practical range control rather than exact physical falloff.
+
+A spotlight can fade toward its cone edge in addition to fading with distance. Points at the same distance may receive different strengths depending on their angle. Keep angular and distance attenuation separate; directional lights usually omit distance falloff. Once we can provide direction and strength at a point, we can also build distributions beyond simple circles and cones.
+
+Doom 3 provides a flexible example. Here, a light volume defines the region influenced by a light. It is distinct from volumetric lighting that integrates scattering through fog. The task is still to determine light direction and strength at a surface point.
+
+Intensity is controlled by two textures: a two-dimensional gobo for the projected pattern and a one-dimensional falloff map for variation along depth. Transform the surface point into light coordinates, sample both, and multiply. A gobo value of 0.8 and falloff value of 0.5 give a factor of 0.4.
+
+A homogeneous transformation produces coordinates x, y, z, and w. The gobo is sampled at x/w and y/w, while the falloff map uses its separately prepared z coordinate. Projection is now locating a surface point on a light pattern instead of locating geometry on the camera image.
+
+Place the source at a box center and project a circular gobo orthographically. A depth falloff map is brightest at the center and darkens toward both ends. Divide centered coordinates by box dimensions sx, sy, and sz, then shift them by 0.5 to map the box into the texture's zero-to-one range.
+
+For a box width of four, x=0 maps to u=0.5; x=-2 maps to zero and x=2 to one. The negative vertical scale matches this example's upward 3D axis with its downward texture axis. It is a coordinate convention, not a flip required by every engine. World-space points must first be transformed into the light's local space.
+
+Project the same circular gobo perspectively from one end of the volume. Near cross-sections are small and distant ones are larger, producing a cone. The homogeneous w becomes depth z, so dividing the horizontal and vertical coordinates produces perspective. The falloff map still uses its separately defined depth coordinate rather than applying that same division again.
+
+Light should not repeat outside the volume or appear behind the projector. The example uses black texture borders and clamped addressing rather than repeating coordinates. Points behind the spotlight are excluded, and the projection must avoid dividing at w=0.
+
+The third construction puts a cone's side profile and brightness falloff directly into a gobo, projected from the side. It reuses the omni-style depth falloff and orthographic coordinate transform, changing the pattern and orientation. The same two-texture framework produces a different shaped influence volume.
+
+This framework handles varied lights with shared calculations and allows custom falloff patterns. Tighter bounds can better enclose the region with meaningful illumination. Doom 3 renders light-surface interactions and adds their contributions, so excluding unaffected geometry reduces lighting and shadow work as well as shaping the image. Sharing the evaluation also helps manage combinations of light types and materials rather than creating a separate shader path for every combination.
+
+We have reduced direct-light work, but tracing bounced light each frame is more involved. Surface patches must exchange illumination based on mutual visibility, and moving geometry changes those relationships. For stationary lights and surfaces, that expensive calculation can instead be performed ahead of time and stored.
+
+Lightmapping stores this result in a texture. Additional UV coordinates map walls and floors into a lightmap containing precomputed illumination. Packing those surface charts into an atlas connects each surface location to texels that can be read at runtime.
+
+Large simple surfaces are comparatively easy to unwrap. Complex geometry can require many charts and leave unused atlas space. Another choice stores precomputed lighting at vertices and interpolates it. A sufficiently dense mesh may suit this representation; sampling density determines which detail can be retained.
+
+What is stored matters. A single color per point can summarize illumination from many directions while losing where the light came from. Incoming power per unit area is irradiance; radiosity describes outgoing power per unit area. Keep that physical distinction separate from historical names for lightmap-solving methods.
+
+To retain direction, store multiple values or decompose the distribution into basis functions. Spherical harmonics, or SH, represent a smooth distribution over a sphere as a weighted combination of such functions, analogous to frequency components in a signal. A compact coefficient set saves storage and computation but cannot preserve arbitrarily sharp directional detail.
+
+Precomputation can include direct light and shadows, reducing runtime work. But moving a baked light or occluder leaves the stored result tied to the old arrangement. Moving the camera is different from changing the lighting configuration: a new viewpoint does not automatically update a baked shadow's cause.
+
+A mixed approach can store indirect light while calculating direct light at runtime. Live directions support specular response and detailed shadows. The stored indirect component, however, does not automatically update when the source changes; a switched-off lamp may leave stale bounced light. Different lights can also use fully dynamic or baked methods within the same scene.
+
+A moving character cannot simply remain attached to the room's static lightmap. Instead, light probes store illumination at sampled positions in space. Reading or interpolating nearby probe values as the object moves lets its indirect lighting change from a bright window area to a darker corner.
+
+Probe data may use a cubemap or a compressed directional representation. Diffuse irradiance gathers light over a hemisphere with cosine weighting around the normal. Specular reflection needs separate directional information: sharp reflections use a sharper environment, while rougher reflection uses suitable filtering. The word probe does not imply one universal storage format.
+
+We began with a bright, shiny surface. We used orientation and material to calculate reflection, chose whether to evaluate it at vertices or pixels, supplied direction and strength through lights, and stored expensive work with lightmaps and probes. These questions now connect: what light arrives, how the surface reflects it, and which parts are computed live or stored.
