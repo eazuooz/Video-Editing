@@ -1,9 +1,156 @@
 {
   "schemaVersion": 1,
   "project": "game-math-shading-lights",
-  "checks": [],
+  "checks": [
+    {
+      "id": "source-script-text",
+      "status": "text-reviewed-frozen-for-voice",
+      "evidence": [
+        {
+          "path": "planning/source-audit.json",
+          "sha256": "34b056e1603f7e87790f0bcd034d4ac600990a59f0d7f9f042371c440d089774"
+        },
+        {
+          "path": "planning/readthrough-review.json",
+          "sha256": "367f419628a06531b88aeef0e02c8ad68e17c077a6b3717eaf216cc7b7ba8c65"
+        }
+      ],
+      "limits": "Text review is not audio listening or final integrated review."
+    },
+    {
+      "id": "unity-cpu-implementation",
+      "status": "compile-and-numeric-checks-passed",
+      "evidence": [
+        {
+          "path": "production/unity-staging/compile-check.json",
+          "sha256": "ba7ba3fd459c4c339bee8ae1926df6d19b3bc346c18ed1ccb81df5cba15ceae1"
+        },
+        {
+          "path": "production/unity-staging/advanced-math-evidence.json",
+          "sha256": "50026c43a35b23cd5dc81a653b8d8406a759a5d22795c3a770a9fdee9c97452d"
+        },
+        {
+          "path": "production/unity-staging/triangle-math-evidence.json",
+          "sha256": "dd16603dc243f79ab5766ea686ade865034cbad9647c1effadb1c481f1caff0e"
+        }
+      ],
+      "limits": "Runtime visual checks remain separate."
+    },
+    {
+      "id": "unity-preflight-v1",
+      "status": "needs-revision",
+      "fingerprint": "3965baf4ff7f53cf6403f792db9982f6f18cbb3fdcb308022ab2dbea6af136e3",
+      "evidence": [
+        {
+          "path": "production/unity-staging/local-preflight-v1/progress.json",
+          "sha256": "46cc85a3b622ecfbaa5d9b49fcf4ac95f7fe6f81e61f91cca785355090345239"
+        }
+      ],
+      "directlyInspected": [
+        "vectors/frame-000300.png",
+        "math/frame-000300.png",
+        "grid/frame-000300.png",
+        "cosine/frame-000300.png",
+        "factor/frame-000300.png",
+        "gobo/frame-000300.png",
+        "baked/frame-000300.png",
+        "mixed/frame-000300.png"
+      ],
+      "findings": [
+        "Math and geometry arrows overlap right-hand explanation text",
+        "Grid turntable obscures bottom model",
+        "Line renderers show white despite semantic vertex colors",
+        "Real baked room succeeds but lighting too dark for mobile"
+      ],
+      "corrections": [
+        "Move only observer framing for diagram/calculation split",
+        "Hide turntable in comparison layouts",
+        "Material BaseColor matches labelled arrows",
+        "Raise actual engine light intensity consistently before bake and during light switch"
+      ],
+      "actualAudioReviewed": false
+    },
+    {
+      "id": "gameplay-annotations-v2",
+      "status": "contact-sheet-reviewed",
+      "evidence": [
+        {
+          "path": "planning/game-annotation-revision-v2.json",
+          "sha256": "063736639002d80c69e86e731ea87a2c0e5718e3cf9ed9053c22922f48ffc0c4"
+        }
+      ],
+      "directlyInspected": [
+        "bonnet",
+        "bloom",
+        "abstract-rock",
+        "matte-wall",
+        "ceiling",
+        "doom-surface",
+        "spot-surface"
+      ],
+      "observations": [
+        "Bonnet uses manually verified contour after CSRT drift",
+        "Plant and rock false visibility toggles resolved by caption-safe fit",
+        "Ceiling marks actual construction before camera turn",
+        "Doom marks lit surface region, not fabricated engine light-volume data",
+        "Spot guide encloses illuminated rock/ground region as view changes"
+      ],
+      "limits": "4fps sampled composites inspected; final continuous motion and actual speech/captions still pending."
+    },
+    {
+      "id": "unity-preflight-v3",
+      "status": "layout-corrections-reviewed-text-refresh-followup-needed",
+      "evidence": [
+        {
+          "path": "production/unity-staging/local-preflight-v3/progress.json",
+          "sha256": "5fc7ab2daca46c8133ef46acf05c2e0b64e3df597278d546e98e2d1afa92f667"
+        }
+      ],
+      "directlyInspected": [
+        "math-reflect/frame-000420.png",
+        "grid/frame-000420.png",
+        "fresnel/frame-000420.png",
+        "baked-uv/frame-000420.png",
+        "vertex/frame-000420.png",
+        "anisotropy/frame-000420.png",
+        "baked/frame-000420.png",
+        "mixed/frame-000420.png",
+        "sh/frame-000420.png",
+        "environment/frame-000420.png"
+      ],
+      "findings": [
+        "Correct reflection vector and readable left object/right formula layout",
+        "Actual lightmap atlas and UV2 wires displayed together",
+        "Sparse batch rendering showed missing text and partial model in environment view; v4 adds repeated render warmup and text mesh invalidation"
+      ],
+      "actualAudioReviewed": false
+    },
+    {
+      "id": "unity-preflight-v4",
+      "status": "three-targeted-frame-checks-passed",
+      "evidence": [
+        {
+          "path": "production/unity-staging/local-preflight-v4/progress.json",
+          "sha256": "696ee3632b474a308900b59bc63636c007e4f76d62b8caa081f5ac7369a9bad0"
+        }
+      ],
+      "directlyInspected": [
+        "grid/frame-000420.png",
+        "vertex/frame-000420.png",
+        "mixed/frame-000420.png"
+      ],
+      "findings": [
+        "Full Korean heading and picture-kind label present in all three directly inspected frames",
+        "No missing first glyph in vertex frame on direct reinspection",
+        "Specular grid no obstructing turntable; labels clear",
+        "Actual direct-light-off frame retains baked indirect light as intended"
+      ],
+      "limits": "Three targeted frames only. Full moving capture, all other scene labels, final captions/mobile and audiovisual synchronization remain pending. SH/environment must be checked again under current renderer."
+    }
+  ],
   "localReviewReady": false,
   "humanReview": {
     "status": "not-requested-no-master"
-  }
+  },
+  "updatedAt": "2026-11-04T15:59:09.148962+00:00"
 }

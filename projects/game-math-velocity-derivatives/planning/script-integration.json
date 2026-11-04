@@ -1,0 +1,71 @@
+{
+  "updatedAt": "2026-11-04T15:22:27.965055+00:00",
+  "episode": "M24",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "bbb4c6a16934b2cfe274b027b70f94028d2b78c99da2a6dfb5e9c56c08acd7c7",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "43ba36a82416250924fe1662118702eea9def6d45b5e290020c2a2dbff85c15d",
+  "changes": [
+    {
+      "sourceBeatId": "M24-000",
+      "mode": "replace",
+      "beforeKo": "캐릭터가 앞으로 달리다가 멈추고, 다시 뒤로 돌아옵니다. 출발점과 도착점만 보면 그 사이의 움직임을 얼마나 알 수 있을까요? 먼저 위치와 시간을 같은 기준으로 기록하고, 구간 전체의 평균에서 바로 지금의 변화율로 들어가 보겠습니다. 마지막에는 길의 기울기와 이동 속도를 연결해서, 언덕 위로 얼마나 빠르게 올라가는지도 직접 계산해 볼 거예요.",
+      "afterKo": "슈퍼 마리오 오디세이에서 마리오가 방을 가로질러 갔다가, 벽을 따라 다시 가운데로 돌아옵니다. 출발점과 도착점만 보면 그 사이에 얼마나, 어떻게 움직였는지 알 수 있을까요? 오늘은 위치와 시간을 같은 기준으로 기록하고, 구간 전체의 평균에서 바로 지금의 변화율로 들어가 보겠습니다. 마지막에는 길의 기울기와 이동 속도를 연결해서, 언덕 위로 얼마나 빠르게 올라가는지도 계산해 볼 거예요. 먼저 방금 움직임에서 무엇을 기록해야 하는지부터 보죠.",
+      "beforeEn": "A character runs forward, stops, and comes back. How much of that motion can we learn from only the starting and finishing positions? We will first record position and time with consistent units, then move from an average over an interval to the rate of change at one instant. Finally, we will combine the slope of a path with travel speed to calculate how quickly the character gains height.",
+      "afterEn": "In Super Mario Odyssey, Mario crosses a room, follows the wall, and returns toward its middle. Can the starting and finishing positions alone tell us how far he traveled or how his motion changed? We will record position and time with consistent units, move from an interval average to the rate of change at one instant, then combine path slope and travel speed to calculate the rate of gaining height. First, let us decide what to record from the motion we just saw.",
+      "reason": "Replace unseen forward-stop-reverse placeholder with observed Mario2480–2498. Preserve thesis and full source order; not an exactly closed loop."
+    },
+    {
+      "sourceBeatId": "M24-015",
+      "mode": "prepend",
+      "beforeKo": "평균값이 중간의 움직임을 놓친다면, 바로 지금의 속도는 어떻게 구할까요? 한 순간만 고르면 위치 변화도 시간 변화도 영이라서, 평균속도 식에 그대로 넣으면 영 나누기 영이 됩니다. 대신 그 순간에서 시작하는 짧은 구간을 잡겠습니다. 직선 위치 그래프에서는 구간을 어디서 잘라도 기울기가 같습니다. 하지만 감속하는 곡선에서는 구간을 짧게 잡을수록 그 순간의 움직임을 더 가깝게 살펴볼 수 있습니다.",
+      "afterKo": "포르자 호라이즌 파이브에서 차가 출발하면, 도로 위 위치와 함께 계기판의 속력도 계속 바뀝니다. 방금 지나온 구간의 평균과, 계기판이 알려주는 지금의 빠르기는 다른 질문에 답하죠. 평균값이 중간의 움직임을 놓친다면, 바로 지금의 속도는 어떻게 구할까요? 한 순간만 고르면 위치 변화도 시간 변화도 영이라서, 평균속도 식에 그대로 넣으면 영 나누기 영이 됩니다. 대신 그 순간에서 시작하는 짧은 구간을 잡겠습니다. 직선 위치 그래프에서는 구간을 어디서 잘라도 기울기가 같습니다. 하지만 감속하는 곡선에서는 구간을 짧게 잡을수록 그 순간의 움직임을 더 가깝게 살펴볼 수 있습니다.",
+      "beforeEn": "If an average hides the motion inside an interval, how can we obtain the velocity right now? At a single instant both changes are zero, so direct substitution gives zero divided by zero. Instead, choose a short interval starting at that instant. A straight position graph has the same slope over every interval. On a curved graph, shortening the interval lets us examine the motion increasingly close to the chosen instant.",
+      "afterEn": "As a car starts in Forza Horizon 5, its position along the road and the speedometer reading keep changing. The average over the section just traveled and the displayed speed right now answer different questions. If an average hides the motion inside an interval, how can we obtain the velocity right now? At a single instant both changes are zero, so direct substitution gives zero divided by zero. Instead, choose a short interval starting at that instant. A straight position graph has the same slope over every interval. On a curved graph, shortening the interval lets us examine the motion increasingly close to the chosen instant.",
+      "reason": "Observed speed readout supports motivation for instantaneous rate, without claiming internal derivative algorithm or constant acceleration."
+    },
+    {
+      "sourceBeatId": "M24-032",
+      "mode": "prepend",
+      "beforeKo": "함수 두 개를 더했다면 각각 미분한 뒤 더할 수 있습니다. 일직선으로 움직이는 기차 안에서 사람이 같은 방향으로 걸어가는 경우를 떠올려 보죠. 지면에서 본 사람의 위치는 기차의 위치와 기차 안에서의 상대 위치를 합한 것입니다. 그래서 지면에서 본 속도도 두 속도의 합이 됩니다. 기차가 초속 십 미터, 사람이 기차 안에서 초속 이 미터로 걸으면 합쳐서 초속 십이 미터예요. 여기서는 기준축이 돌지 않는 일직선 운동으로 비교합니다.",
+      "afterKo": "왕국의 눈물에서는 링크가 뗏목의 돛대 옆에 서 있는데도 강가의 풍경이 지나갑니다. 뗏목을 기준으로 보면 거의 제자리지만, 강가를 기준으로 보면 함께 이동하는 거죠. 이처럼 무엇을 기준으로 위치를 적는지가 중요합니다. 함수 두 개를 더했다면 각각 미분한 뒤 더할 수 있습니다. 일직선으로 움직이는 기차 안에서 사람이 같은 방향으로 걸어가는 경우를 떠올려 보죠. 지면에서 본 사람의 위치는 기차의 위치와 기차 안에서의 상대 위치를 합한 것입니다. 그래서 지면에서 본 속도도 두 속도의 합이 됩니다. 기차가 초속 십 미터, 사람이 기차 안에서 초속 이 미터로 걸으면 합쳐서 초속 십이 미터예요. 여기서는 기준축이 돌지 않는 일직선 운동으로 비교합니다.",
+      "beforeEn": "The derivative of a sum equals the sum of the derivatives. Imagine a person walking forward inside a train traveling along a straight line. Relative to the ground, the person’s position is the train’s position plus their position inside the train. Their ground velocity is therefore the sum of the two velocities: ten meters per second for the train plus two inside it gives twelve. Here we use aligned, nonrotating axes along a straight track.",
+      "afterEn": "In Tears of the Kingdom, Link stands beside the raft’s mast while the riverbank passes by. He is nearly still relative to the raft but moving relative to the shore. The reference used to record position matters. The derivative of a sum equals the sum of the derivatives. Imagine a person walking forward inside a train traveling along a straight line. Relative to the ground, the person’s position is the train’s position plus their position inside the train. Their ground velocity is therefore the sum of the two velocities: ten meters per second for the train plus two inside it gives twelve. Here we use aligned, nonrotating axes along a straight track.",
+      "reason": "Observed raft-frame relation motivates original straight train/walking example; do not claim Link walks or camera/world axes fixed."
+    },
+    {
+      "sourceBeatId": "M24-033",
+      "mode": "readthrough-correction",
+      "beforeKo": "함수에 일정한 수를 곱했다면 도함수에도 같은 수를 곱합니다. 퍼롱으로 나타낸 위치를 미터로 바꾸려면 이백일 점 일육팔을 곱하죠. 미분해서 얻은 속도에도 같은 환산 계수가 붙습니다. 합과 상수배를 보존하는 성질을 선형성이라고 합니다. 덕분에 여러 항으로 이루어진 다항식도 항별로 미분한 뒤 더하면 됩니다.",
+      "afterKo": "함수에 일정한 수를 곱했다면 도함수에도 같은 수를 곱합니다. 펄롱으로 나타낸 위치를 미터로 바꾸려면 이백일 점 일육팔을 곱하죠. 미분해서 얻은 속도에도 같은 환산 계수가 붙습니다. 합과 상수배를 보존하는 성질을 선형성이라고 합니다. 덕분에 여러 항으로 이루어진 다항식도 항별로 미분한 뒤 더하면 됩니다.",
+      "beforeEn": "If a function is multiplied by a constant, its derivative is multiplied by the same constant. Converting a position from furlongs to meters multiplies it by two hundred one point one six eight. The derived velocity gets the same conversion factor. Preserving sums and constant multiples is called linearity. It lets us differentiate a polynomial one term at a time and then add the results.",
+      "afterEn": "If a function is multiplied by a constant, its derivative is multiplied by the same constant. Converting a position from furlongs to meters multiplies it by two hundred one point one six eight. The derived velocity gets the same conversion factor. Preserving sums and constant multiples is called linearity. It lets us differentiate a polynomial one term at a time and then add the results.",
+      "reason": "Consistent Korean furlong spelling with prior definition."
+    }
+  ],
+  "readThrough": {
+    "status": "full bilingual draft and integrated changes text-reviewed; realized audiovisual review pending",
+    "source": "planning/source-audit.json",
+    "beats": 47,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "All47KO and47EN draft beats read in full. Full instructional order, examples, calculations and source mapping retained.",
+      "Three inspected gameplay roles integrated beside the relevant explanations. No exact in-game metrics or hidden implementation inferred.",
+      "Three bridges and heading-free flow reviewed in text; actual narration listening, native playback and rendered timing remain pending."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "02c61348855a28b1b1cfa642107cad25d1c81f3924754077df12dfb09040c666",
+    "enSha256": "c0cfa54c0d3db5d4e3b6f33d505566775a1e5a05f46eae7f66f26b0ce5ef0dd1"
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ]
+}

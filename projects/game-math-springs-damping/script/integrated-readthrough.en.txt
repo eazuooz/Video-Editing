@@ -1,0 +1,49 @@
+On a bumpy road in BeamNG.drive, the wheels and body move to different heights. What lets a displaced object return while also reducing its oscillation? We will start with a spring’s restoring force, add damping, then connect those ideas to code that smoothly tracks a camera or menu value. First, look at displacement followed by return.
+
+In Super Mario Odyssey, a captured Chain Chomp can be pulled back and released toward a wall. Use that pull-and-return motion as a starting point for a spring model whose force we can calculate. Fix one spring end and attach a body to the other. Stretch it and it pulls back; compress it and it pushes outward. Its rest length is the length at equilibrium without external force. Virtual springs can maintain object relationships or control movement without any visible metal spring.
+
+Hooke’s law makes restoring force proportional to extension. When current length exceeds rest length, signed force points back toward rest. Spring constant k is measured in newtons per meter. A twenty-newton-per-meter spring produces two newtons at a tenth-meter extension, within its elastic range. Beyond that range, the linear relationship fails.
+
+Choose x zero at equilibrium. Positive displacement produces force minus k x. Divide by mass to obtain acceleration minus k over m times x. The same spring accelerates a heavier body less. Capital K denotes the ratio k over m, distinct from physical stiffness.
+
+The relation gives acceleration from position, but not future position itself. A differential equation connects an unknown function with derivatives: position, velocity, and acceleration here. We need a position function satisfying it. We will propose one from observed motion and differentiate twice to check it.
+
+Recording position gives a cosine-shaped curve. Try cosine t. The first derivative is minus sine t and the second is minus cosine t. Acceleration opposes position, but the required factor K is missing. This candidate handles only the special case K equals one.
+
+Stiffer springs or lighter bodies oscillate faster, so change the time scale rather than graph height. Put square root of K times t inside cosine. Two derivatives bring out square root of K twice, producing K. Acceleration now equals minus K x. Square root of K, also square root of k over m, is angular frequency omega.
+
+Amplitude sets the maximum displacement; phase sets where in the cycle motion begins. Release from an extreme or begin in the middle with velocity. Position is A times cosine of omega t plus initial phase. Velocity gains a factor of omega; acceleration gains omega squared.
+
+Initial position and velocity determine amplitude and phase. With angular frequency two, initial position zero, and initial velocity two, amplitude is one and phase minus pi over two. Reversing initial velocity preserves amplitude but reverses starting direction. Amplitude and position alone cannot determine that sign. When both initial position and velocity are zero, phase is irrelevant.
+
+A shifted sine describes the same motion; both are sinusoidal. One cycle spans two pi radians, so frequency in hertz is angular frequency divided by two pi. Quadrupling stiffness doubles frequency; quadrupling mass halves it. Pulling farther changes amplitude, but not frequency in the ideal linear model.
+
+Restoring force alone produces perpetual oscillation. Driving force can start or sustain it; damping removes energy. Add viscous damping, proportional and opposite to velocity. Twice the speed produces twice the opposing force, unlike ideal constant-magnitude Coulomb friction. Damping reduces amplitude and, where oscillation remains, its frequency.
+
+The spring pulls toward equilibrium; the damper opposes current velocity. Net force is minus k x minus c velocity; dividing by mass gives acceleration. At equilibrium the spring force is zero, while remaining velocity still produces damping. These forces can reinforce or oppose each other depending on position and velocity.
+
+Call the undamped angular frequency omega zero. Damping ratio zeta is coefficient c divided by two times mass times omega zero. The coefficient and the ratio are different. Acceleration becomes minus omega zero squared times position, minus two zeta omega zero times velocity. Mass one, stiffness sixteen, and damping coefficient four give angular frequency four and ratio one half.
+
+For a ratio between zero and one, the system is underdamped: it crosses the target with decreasing amplitude. Sine and cosine create oscillation while a decaying exponential forms the envelope. Actual angular frequency is omega zero times square root of one minus zeta squared. Two constants match initial position and velocity. At ratio zero, the envelope is one and motion is undamped.
+
+At ratio one, repeated oscillation disappears: critical damping. Its solution is a linear expression times a decaying exponential, with constants set by the initial state. Larger ratios give overdamping. Releasing from the same position at rest, excessive damping slows the return. Increasing damping indefinitely does not make the response faster.
+
+Nonoscillatory does not mean that every initial velocity prevents all target crossings. Starting at position one with angular frequency four and velocity minus ten gives the factor one minus six t. Its sign changes after one sixth of a second. There is no repeated oscillation, but the target is crossed once.
+
+In Riders Republic, the camera follows behind the cyclist through turns and keeps the rider in view. To build this kind of tracking in our own model, we first need to specify where it should follow. Move the target: desired camera position, aiming angle, movement speed, or menu-highlight position can all be setpoints. Input specifies the desired value; output is the actual value used; their difference is error. This usually specifies a target quantity rather than force, like moving the spring’s other end.
+
+Direct assignment is simple but can jump when the target changes. Like suspension smoothing road changes, combine error-proportional restoration with velocity-proportional damping. This is a form of PD control: proportional and derivative. PID adds accumulated error through an integral term, useful for reducing persistent error under suitable conditions. Here we use two terms.
+
+Store current value, setpoint, and current rate of change. Absorb mass into the coefficients. Subtract target from value, then combine the error and velocity terms for acceleration. To the right of the target, positive error makes the restoring term point left.
+
+Update velocity by acceleration times the step, then update position using that new velocity. Target one, value and velocity zero, k sixteen, c four, and a tenth-second step give error minus one, acceleration sixteen, velocity one point six, and position zero point one six. New-velocity-first ordering makes this semi-implicit Euler.
+
+Expose damping ratio and undamped angular frequency rather than raw coefficients. Mass-normalized k is omega zero squared; c is two zeta omega zero. Fixing ratio one controls response speed without repeated oscillation. The frequency parameter still describes the undamped system, not actual cycles. Larger values react faster, smaller ones more gently.
+
+The update need not branch by damping regime. But continuous stability does not imply stability at arbitrary numerical step sizes. Large steps or excessive stiffness can produce growing numerical oscillations. Compare equal conditions at different steps; integration choices follow later.
+
+Without oscillation or a velocity state, use first-order lag. Error changes at minus positive lambda times error. For a fixed target during the interval, an exponential decay factor gives the next value directly. Target one, current zero, lambda two, and half a second give about zero point six three. This is different from second-order spring motion.
+
+Other approaches chase the target at constant speed or filter weighted previous values. Choose according to whether velocity may jump or motion should retain inertia. Springs and damping separately control response speed and oscillation. The structure can control many game quantities, not only physical positions.
+
+We separated smooth response into restoration with distance and damping with velocity. Combine and advance them through time to turn parameters into game behavior. Next comes collision, where force acts briefly: how does a continuous push connect to one impulse?

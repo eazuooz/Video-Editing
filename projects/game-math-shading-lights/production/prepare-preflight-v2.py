@@ -16,7 +16,7 @@ for name,index in [('math-reflect',10),('grid',15),('cosine',19),('fresnel',35),
     # Preview timings are explicitly not final spoken-word alignment.
     cue['stepTimes']=[0,1.5,3,4.5,6]
     save(R/(name+'.cue.json'),cue)
-    job={'id':cue['id'],'command':'preflight','cueFile':str(R/(name+'.cue.json')),'output':str(R/name),'frames':480,'sampleFrames':[120,420]}
+    job={'id':cue['id'],'command':'preflight','expectedFingerprint':marker['fingerprint'],'cueFile':str(R/(name+'.cue.json')),'output':str(R/name),'frames':480,'sampleFrames':[120,420]}
     save(R/(name+'.job.json'),job);jobs.append(str(R/(name+'.job.json')))
 save(R/'queue.json',{'sandbox':str(S/'LocalUnity-v5'),'fingerprint':marker['fingerprint'],'unity':'C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Unity.exe','jobs':jobs,'purpose':'Finite twelve image preflights after observed layout fixes; no final media or next-video job'})
 print(str(R))

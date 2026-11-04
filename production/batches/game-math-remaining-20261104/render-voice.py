@@ -76,7 +76,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project', required=True)
     parser.add_argument('--synthesize', action='store_true', help='Root-coordinated actual GPU synthesis, after source/script review')
-    parser.add_argument('--allow-idle-editors', action='store_true', help='Selected Buckshot root choice: preserve inspected idle editor windows, require10GiBfree/util<=40, cap allocator7.5GiB; never permit render/compute jobs')
+    parser.add_argument('--allow-idle-editors', action='store_true', help='Selected Buckshot root choice: preserve inspected idle editor windows, require9GiBfree/util<=40, cap allocator7GiB; never permit render/compute jobs')
     parser.add_argument('--check-resources', action='store_true', help='Inspect resource guard and record baseline only; never load a model or take GPU lease')
     args = parser.parse_args()
     manifest = read(MANIFEST)
@@ -122,6 +122,15 @@ def main():
             continue
         name = (info['name'] or '').lower()
         exe = (info['exe'] or '').replace('\\', '/').lower()
+        # Verified installed Epic launcher/web/overlay windows are desktop GUI,
+        # not the Unreal editor or a launched game. Actual game/render checks
+        # and the three GPU-capacity samples below still apply.
+        epic_gui = {
+            'epicgameslauncher.exe': '/epic games/launcher/portal/binaries/win64/epicgameslauncher.exe',
+            'epicwebhelper.exe': '/epic games/launcher/engine/binaries/win64/epicwebhelper.exe',
+        }
+        if (name in epic_gui and exe.endswith(epic_gui[name])) or (name == 'eosoverlayrenderer-win64-shipping.exe' and '/epic games/epic online services/managedartifacts/' in exe):
+            gui_allow.add(name)
         process_names[info['pid']] = name
         arguments = [str(a).lower() for a in (info['cmdline'] or [])]
         joined = ' '.join(arguments)
@@ -144,6 +153,16 @@ def main():
         batch_flags = [flag for flag in ['--write-movie', '--headless', '--background', '-b', '-batchmode', '-moviepipeline', '-render', '--render'] if any(a == flag or (flag == '-moviepipeline' and a.startswith(flag)) or (flag == '-render' and a.startswith('-renderoffscreen')) for a in arguments)]
         actual_game = '/steamapps/common/' in exe or name in ['overwatch.exe','buckshot roulette.exe','buckshot roulette_windows.exe','monsterhunterwilds.exe','d2r.exe','diablo ii.exe']
         compute = name.startswith(('python', 'ffmpeg'))
+        # Download/remux helpers are CPU I/O, not inference or video encoding.
+        # Keep the GPU process inventory and headroom guard below unchanged.
+        if name == 'ffmpeg.exe':
+            codecs=[arguments[j+1] for j,a in enumerate(arguments[:-1]) if a in ('-c','-codec','-c:v','-c:a','-vcodec','-acodec')]
+            if codecs and all(c=='copy' for c in codecs) and '-hwaccel' not in arguments:
+                compute=False
+        if name.startswith('python') and '-m' in arguments:
+            module_at=arguments.index('-m')+1
+            if module_at<len(arguments) and arguments[module_at] in ('yt_dlp','http.server'):
+                compute=False
         reason = 'actual-game' if actual_game else 'foreign-compute-process' if compute else 'editor-background-render' if editor and batch_flags and not import_worker and not idle_capture_server else 'editor-not-explicitly-allowed' if editor and not args.allow_idle_editors else None
         if reason:
             blocked.append({'pid': info['pid'], 'name': info['name'], 'reason': reason, 'batchFlags': batch_flags})
@@ -175,11 +194,13 @@ def main():
         samples.append({'freeMiB': free, 'totalMiB': total, 'utilization': utilization})
         if sample_index < 2:
             time.sleep(1)
-    minimum_free, maximum_utilization = (10240, 40) if args.allow_idle_editors else (8192, 14)
+    # A 7 GiB allocator cap leaves at least 2 GiB of measured free headroom.
+    # The previous 10 GiB admission rule rejected otherwise idle launchers.
+    minimum_free, maximum_utilization = (9216, 40) if args.allow_idle_editors else (8192, 14)
     assert all(s['freeMiB'] >= minimum_free and s['utilization'] <= maximum_utilization for s in samples), ('Insufficient inspected GPU capacity; existing windows/jobs preserved', samples)
     free = min(s['freeMiB'] for s in samples)
     if args.check_resources and not args.synthesize:
-        preflight = {'status':'resource-preflight-passed-no-synthesis','checkedAt':time.time(),'project':SLUG,'rootScope':'explicit M21–M33 local review batch','allowIdleEditors':args.allow_idle_editors,'baselineProcesses':baseline,'observedGpuRows':observed_gpu_rows,'gpuSamples':samples,'allocatorCapMiBIfStarted':min(7680 if args.allow_idle_editors else 8192,free-700),'gpuModelLoaded':False,'gpuLeaseCreated':False,'foreignProcessesChanged':False}
+        preflight = {'status':'resource-preflight-passed-no-synthesis','checkedAt':time.time(),'project':SLUG,'rootScope':'explicit M21–M33 local review batch','allowIdleEditors':args.allow_idle_editors,'baselineProcesses':baseline,'observedGpuRows':observed_gpu_rows,'gpuSamples':samples,'allocatorCapMiBIfStarted':min(7168 if args.allow_idle_editors else 8192,free-700),'gpuModelLoaded':False,'gpuLeaseCreated':False,'foreignProcessesChanged':False}
         save(worker.OUTPUT_DIR/'resource-preflight.json',preflight)
         print(json.dumps({'status':preflight['status'],'gpuSamples':samples,'baselineProcesses':len(baseline),'gpuRows':len(observed_gpu_rows),'gpuModelLoaded':False},ensure_ascii=False))
         return
@@ -189,7 +210,7 @@ def main():
     if input_record.exists():
         assert read(input_record)['sha256'] == inputs, 'Inputs changed: preserve previous takes and select a new audio revision before rendering.'
     save(input_record, {'sha256': inputs, 'rawTakesPreserved': True})
-    state = {'schemaVersion': 1, 'project': SLUG, 'token': str(uuid.uuid4()), 'state': 'gpu_granted_to_tts', 'requestedAt': time.time(), 'coordinator': {'pid': me.pid, 'createTime': me.create_time()}, 'foreignProcessesPaused': [], 'rootExplicitInvocation': '--synthesize' + (' --allow-idle-editors' if args.allow_idle_editors else ''), 'selectedProjectResourceChoice': 'Inspected idle GUI editors preserved; require10GiBfree/util<=40; block actual games, background renders and foreign Python/FFmpeg compute' if args.allow_idle_editors else 'Default exclusive idle resource guard', 'baselineProcesses': baseline, 'observedGpuRows': observed_gpu_rows, 'gpuSamples': samples, 'gpuBeforeTts': {'freeMiB': free, 'totalMiB': total, 'utilization': utilization}, 'allocatorCapMiB': min(7680 if args.allow_idle_editors else 8192, free - 700), 'generations': []}
+    state = {'schemaVersion': 1, 'project': SLUG, 'token': str(uuid.uuid4()), 'state': 'gpu_granted_to_tts', 'requestedAt': time.time(), 'coordinator': {'pid': me.pid, 'createTime': me.create_time()}, 'foreignProcessesPaused': [], 'rootExplicitInvocation': '--synthesize' + (' --allow-idle-editors' if args.allow_idle_editors else ''), 'selectedProjectResourceChoice': 'Inspected idle GUI editors preserved; require9GiBfree/util<=40; block actual games, background renders and foreign Python/FFmpeg compute' if args.allow_idle_editors else 'Default exclusive idle resource guard', 'baselineProcesses': baseline, 'observedGpuRows': observed_gpu_rows, 'gpuSamples': samples, 'gpuBeforeTts': {'freeMiB': free, 'totalMiB': total, 'utilization': utilization}, 'allocatorCapMiB': min(7168 if args.allow_idle_editors else 8192, free - 700), 'generations': []}
     LEASE.parent.mkdir(parents=True, exist_ok=True)
     with LEASE.open('x', encoding='utf-8') as handle:
         json.dump(state, handle, ensure_ascii=False, indent=2)

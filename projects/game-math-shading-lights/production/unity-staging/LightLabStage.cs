@@ -104,7 +104,7 @@ namespace Yamyam.GameMath.LightLab {
    BuildUI(font);
    // Move the observer, not the tested geometry/light. The left half remains
    // the same experiment; the right half is reserved for its calculation.
-   if(cue.diagram.StartsWith("math:")||cue.diagram.StartsWith("geometry:")){
+   if(cue.diagram.StartsWith("math:")||cue.diagram.StartsWith("geometry:")||cue.diagram.StartsWith("surface:")||(cue.diagram.StartsWith("advanced:")&&cue.diagram!="advanced:final-grid")){
     RenderCamera.transform.position+=RenderCamera.transform.right*3.5f;
     RenderCamera.orthographicSize=4.6f;
    }
@@ -201,7 +201,12 @@ namespace Yamyam.GameMath.LightLab {
    SetArrow(normal,p,n,Cue.normalArrow);SetArrow(towardLight,p,l,Cue.lightArrow);SetArrow(reflection,p,r,Cue.reflectionArrow);
    SetArrow(towardViewer,p,v,Cue.viewArrow);SetArrow(halfway,p,h,Cue.halfArrow);
    var directions=new[]{n,l,r,v,h};var enabled=new[]{Cue.normalArrow,Cue.lightArrow,Cue.reflectionArrow,Cue.viewArrow,Cue.halfArrow};
-   for(int i=0;i<5;i++){vectorLabels[i].gameObject.SetActive(enabled[i]);if(enabled[i]){var q=RenderCamera.WorldToViewportPoint(p+directions[i].normalized*1.28f);vectorLabels[i].rectTransform.anchoredPosition=new Vector2(q.x*1920,(q.y-1)*1080);}}
+   for(int i=0;i<5;i++){vectorLabels[i].gameObject.SetActive(enabled[i]);if(enabled[i]){
+    var q=RenderCamera.WorldToViewportPoint(p+directions[i].normalized*1.28f);var origin=RenderCamera.WorldToViewportPoint(p);
+    float dx=(q.x-origin.x)*1920;
+    float offsetX=Mathf.Abs(dx)<25?-75:dx<0?-160:12;
+    vectorLabels[i].rectTransform.anchoredPosition=new Vector2(q.x*1920+offsetX,(q.y-1)*1080+(Mathf.Abs(dx)<25?46:10));
+   }}
    for(int i=0;i<4;i++){float a=i*Mathf.PI*.5f;Vector3 local=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0)*Mathf.Tan(Cue.outerAngle*Mathf.Deg2Rad*.5f)*2+Vector3.forward*2;SetArrow(cone[i],pos,Quaternion.LookRotation(direction)*local,Cue.lightType>=2,false);}
    value.text="";
    if(Cue.normalArrow){float d=Mathf.Max(0,Vector3.Dot(n,l));value.text="해설용 표면 지점   N · L = "+d.ToString("0.00")+(Cue.brdfNormalizedDiffuse?"\nBRDF: ρ / π":"\n고전적 재질 계수 · 수업용 단위");}
@@ -214,7 +219,14 @@ namespace Yamyam.GameMath.LightLab {
    if(illustrations){kind.text="우리 씬 + 해설용 도식";value.gameObject.SetActive(false);formula.gameObject.SetActive(false);illustrations.Apply(seconds);}
    if(Cue.diagram=="specularGrid"||Cue.diagram=="shadingComparison")ApplyComparison(seconds);
    if(Cue.diagram=="triangle-highlight")ApplyTriangleHighlight(seconds);
-   if(bakedRoom)bakedRoom.Apply(seconds);
+   if(bakedRoom){
+    bakedRoom.Apply(seconds);
+    formula.rectTransform.anchoredPosition=new Vector2(96,-810);
+    formula.rectTransform.sizeDelta=new Vector2(1720,90);formula.fontSize=38;
+    if(Cue.bakeAction=="moveOccluder")formula.text="가림판을 이동해도, 미리 저장한 그림자는 원래 위치에 남습니다";
+    if(Cue.bakeAction=="switchOff")formula.text=physicalLight.intensity<.05f?"실시간 직접광 꺼짐 · 베이크한 간접광은 그대로 남음":"실시간 직접광 + 베이크한 간접광";
+    if(Cue.bakeAction=="walk")formula.text="움직이는 로봇: 주변 라이트 프로브에 저장된 조명을 보간";
+   }
   }
   public void SetMaps(Texture2D gobo,Texture2D falloff){teaching.SetTexture("_Cookie",gobo);teaching.SetTexture("_Falloff",falloff);}
   public void SetMaterialMaps(Texture2D diffuseMap,Texture2D specularMap){teaching.SetTexture("_MaterialMap",diffuseMap);teaching.SetTexture("_SpecularMap",specularMap);}

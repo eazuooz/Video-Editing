@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-springs-damping",
+  "episodeId": "M28",
+  "status": "integrated-draft-text-readthrough-complete-runtime-binding-pending",
+  "isFinalNarration": false,
+  "chapterOrderPreserved": true,
+  "actualDurationSeconds": null,
+  "sourceDraftSha256": "ff11ed9ba125f778d59d3227c66b98536d93a6b4c5bd5874e7963fc75b213159",
+  "englishDraftSha256": "391fddae32f5ebb7376d5570930f1ab65dee333d92b9c10a116ac191bd44ac7e",
+  "speechAndVisualOverlap": true,
+  "defaultHoldSeconds": 0,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M28-000-abstract",
+      "title": "되돌아오고 멈추기",
+      "section": "되돌아오고 멈추기",
+      "lines": [
+        "On a bumpy road in BeamNG.drive, the wheels and body move to different heights. What lets a displaced object return while also reducing its oscillation? We will start with a spring’s restoring force, add damping, then connect those ideas to code that smoothly tracks a camera or menu value. First, look at displacement followed by return."
+      ]
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M28-001-rest-length",
+      "title": "늘리고 누르기",
+      "section": "늘리고 누르기",
+      "lines": [
+        "In Super Mario Odyssey, a captured Chain Chomp can be pulled back and released toward a wall. Use that pull-and-return motion as a starting point for a spring model whose force we can calculate. Fix one spring end and attach a body to the other. Stretch it and it pulls back; compress it and it pushes outward. Its rest length is the length at equilibrium without external force. Virtual springs can maintain object relationships or control movement without any visible metal spring."
+      ]
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M28-002-hooke",
+      "title": "훅의 법칙",
+      "section": "훅의 법칙",
+      "lines": [
+        "Hooke’s law makes restoring force proportional to extension. When current length exceeds rest length, signed force points back toward rest. Spring constant k is measured in newtons per meter. A twenty-newton-per-meter spring produces two newtons at a tenth-meter extension, within its elastic range. Beyond that range, the linear relationship fails."
+      ]
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M28-003-acceleration",
+      "title": "위치에서 가속도로",
+      "section": "위치에서 가속도로",
+      "lines": [
+        "Choose x zero at equilibrium. Positive displacement produces force minus k x. Divide by mass to obtain acceleration minus k over m times x. The same spring accelerates a heavier body less. Capital K denotes the ratio k over m, distinct from physical stiffness."
+      ]
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M28-004-differential",
+      "title": "시간 함수를 찾기",
+      "section": "시간 함수를 찾기",
+      "lines": [
+        "The relation gives acceleration from position, but not future position itself. A differential equation connects an unknown function with derivatives: position, velocity, and acceleration here. We need a position function satisfying it. We will propose one from observed motion and differentiate twice to check it."
+      ]
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M28-005-cosine",
+      "title": "코사인 검산",
+      "section": "코사인 검산",
+      "lines": [
+        "Recording position gives a cosine-shaped curve. Try cosine t. The first derivative is minus sine t and the second is minus cosine t. Acceleration opposes position, but the required factor K is missing. This candidate handles only the special case K equals one."
+      ]
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M28-006-frequency",
+      "title": "시간축의 배율",
+      "section": "시간축의 배율",
+      "lines": [
+        "Stiffer springs or lighter bodies oscillate faster, so change the time scale rather than graph height. Put square root of K times t inside cosine. Two derivatives bring out square root of K twice, producing K. Acceleration now equals minus K x. Square root of K, also square root of k over m, is angular frequency omega."
+      ]
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M28-007-initial-state",
+      "title": "진폭과 위상",
+      "section": "진폭과 위상",
+      "lines": [
+        "Amplitude sets the maximum displacement; phase sets where in the cycle motion begins. Release from an extreme or begin in the middle with velocity. Position is A times cosine of omega t plus initial phase. Velocity gains a factor of omega; acceleration gains omega squared."
+      ]
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M28-008-phase-conditions",
+      "title": "초기 속도의 방향",
+      "section": "초기 속도의 방향",
+      "lines": [
+        "Initial position and velocity determine amplitude and phase. With angular frequency two, initial position zero, and initial velocity two, amplitude is one and phase minus pi over two. Reversing initial velocity preserves amplitude but reverses starting direction. Amplitude and position alone cannot determine that sign. When both initial position and velocity are zero, phase is irrelevant."
+      ]
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M28-009-hertz",
+      "title": "헤르츠와 각진동수",
+      "section": "헤르츠와 각진동수",
+      "lines": [
+        "A shifted sine describes the same motion; both are sinusoidal. One cycle spans two pi radians, so frequency in hertz is angular frequency divided by two pi. Quadrupling stiffness doubles frequency; quadrupling mass halves it. Pulling farther changes amplitude, but not frequency in the ideal linear model."
+      ]
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M28-010-damping",
+      "title": "에너지를 줄이는 감쇠",
+      "section": "에너지를 줄이는 감쇠",
+      "lines": [
+        "Restoring force alone produces perpetual oscillation. Driving force can start or sustain it; damping removes energy. Add viscous damping, proportional and opposite to velocity. Twice the speed produces twice the opposing force, unlike ideal constant-magnitude Coulomb friction. Damping reduces amplitude and, where oscillation remains, its frequency."
+      ]
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M28-011-combined",
+      "title": "힘의 합",
+      "section": "힘의 합",
+      "lines": [
+        "The spring pulls toward equilibrium; the damper opposes current velocity. Net force is minus k x minus c velocity; dividing by mass gives acceleration. At equilibrium the spring force is zero, while remaining velocity still produces damping. These forces can reinforce or oppose each other depending on position and velocity."
+      ]
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M28-012-ratio",
+      "title": "감쇠비",
+      "section": "감쇠비",
+      "lines": [
+        "Call the undamped angular frequency omega zero. Damping ratio zeta is coefficient c divided by two times mass times omega zero. The coefficient and the ratio are different. Acceleration becomes minus omega zero squared times position, minus two zeta omega zero times velocity. Mass one, stiffness sixteen, and damping coefficient four give angular frequency four and ratio one half."
+      ]
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M28-013-underdamped",
+      "title": "부족 감쇠",
+      "section": "부족 감쇠",
+      "lines": [
+        "For a ratio between zero and one, the system is underdamped: it crosses the target with decreasing amplitude. Sine and cosine create oscillation while a decaying exponential forms the envelope. Actual angular frequency is omega zero times square root of one minus zeta squared. Two constants match initial position and velocity. At ratio zero, the envelope is one and motion is undamped."
+      ]
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M28-014-critical",
+      "title": "임계 감쇠와 과감쇠",
+      "section": "임계 감쇠와 과감쇠",
+      "lines": [
+        "At ratio one, repeated oscillation disappears: critical damping. Its solution is a linear expression times a decaying exponential, with constants set by the initial state. Larger ratios give overdamping. Releasing from the same position at rest, excessive damping slows the return. Increasing damping indefinitely does not make the response faster."
+      ]
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M28-015-critical-limit",
+      "title": "임계 감쇠의 조건",
+      "section": "임계 감쇠의 조건",
+      "lines": [
+        "Nonoscillatory does not mean that every initial velocity prevents all target crossings. Starting at position one with angular frequency four and velocity minus ten gives the factor one minus six t. Its sign changes after one sixth of a second. There is no repeated oscillation, but the target is crossed once."
+      ]
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M28-016-setpoint",
+      "title": "설정값과 출력",
+      "section": "설정값과 출력",
+      "lines": [
+        "In Riders Republic, the camera follows behind the cyclist through turns and keeps the rider in view. To build this kind of tracking in our own model, we first need to specify where it should follow. Move the target: desired camera position, aiming angle, movement speed, or menu-highlight position can all be setpoints. Input specifies the desired value; output is the actual value used; their difference is error. This usually specifies a target quantity rather than force, like moving the spring’s other end."
+      ]
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M28-017-pd",
+      "title": "비례·미분 제어",
+      "section": "비례·미분 제어",
+      "lines": [
+        "Direct assignment is simple but can jump when the target changes. Like suspension smoothing road changes, combine error-proportional restoration with velocity-proportional damping. This is a form of PD control: proportional and derivative. PID adds accumulated error through an integral term, useful for reducing persistent error under suitable conditions. Here we use two terms."
+      ]
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M28-018-code-state",
+      "title": "코드의 상태",
+      "section": "코드의 상태",
+      "lines": [
+        "Store current value, setpoint, and current rate of change. Absorb mass into the coefficients. Subtract target from value, then combine the error and velocity terms for acceleration. To the right of the target, positive error makes the restoring term point left."
+      ]
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M28-019-code-step",
+      "title": "반암시적 오일러",
+      "section": "반암시적 오일러",
+      "lines": [
+        "Update velocity by acceleration times the step, then update position using that new velocity. Target one, value and velocity zero, k sixteen, c four, and a tenth-second step give error minus one, acceleration sixteen, velocity one point six, and position zero point one six. New-velocity-first ordering makes this semi-implicit Euler."
+      ]
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M28-020-tuning",
+      "title": "설계용 조절 값",
+      "section": "설계용 조절 값",
+      "lines": [
+        "Expose damping ratio and undamped angular frequency rather than raw coefficients. Mass-normalized k is omega zero squared; c is two zeta omega zero. Fixing ratio one controls response speed without repeated oscillation. The frequency parameter still describes the undamped system, not actual cycles. Larger values react faster, smaller ones more gently."
+      ]
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M28-021-discrete-limit",
+      "title": "계산 간격의 한계",
+      "section": "계산 간격의 한계",
+      "lines": [
+        "The update need not branch by damping regime. But continuous stability does not imply stability at arbitrary numerical step sizes. Large steps or excessive stiffness can produce growing numerical oscillations. Compare equal conditions at different steps; integration choices follow later."
+      ]
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M28-022-first-order",
+      "title": "일차 지연",
+      "section": "일차 지연",
+      "lines": [
+        "Without oscillation or a velocity state, use first-order lag. Error changes at minus positive lambda times error. For a fixed target during the interval, an exponential decay factor gives the next value directly. Target one, current zero, lambda two, and half a second give about zero point six three. This is different from second-order spring motion."
+      ]
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M28-023-alternatives",
+      "title": "움직임의 선택",
+      "section": "움직임의 선택",
+      "lines": [
+        "Other approaches chase the target at constant speed or filter weighted previous values. Choose according to whether velocity may jump or motion should retain inertia. Springs and damping separately control response speed and oscillation. The structure can control many game quantities, not only physical positions."
+      ]
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M28-024-closing",
+      "title": "다음 질문",
+      "section": "다음 질문",
+      "lines": [
+        "We separated smooth response into restoration with distance and damping with velocity. Combine and advance them through time to turn parameters into game behavior. Next comes collision, where force acts briefly: how does a continuous push connect to one impulse?"
+      ]
+    }
+  ]
+}

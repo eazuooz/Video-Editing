@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-acceleration-integration",
+  "episodeId": "M25",
+  "status": "integrated-draft-text-readthrough-complete-runtime-binding-pending",
+  "isFinalNarration": false,
+  "chapterOrderPreserved": true,
+  "actualDurationSeconds": null,
+  "sourceDraftSha256": "ffc20a0197ef549a2865941b06216d5fa5829c3b4dd1ad7c3d1f6e5f130125c7",
+  "englishDraftSha256": "aa5eeb3bf7e23a22093709f3ced069a4ec2eff6fbb9cac75d94657723149fb5d",
+  "speechAndVisualOverlap": true,
+  "defaultHoldSeconds": 0,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M25-000",
+      "title": "같은 속도로 달려도 가속하고 있을까",
+      "section": "11.5",
+      "lines": [
+        "In Forza Horizon 5, a car climbs a hill, becomes airborne, then touches the ground again. How do its position and velocity change along the way? We will read velocity change as acceleration, then accumulate that change to calculate position. Solving the relationship backward also lets us design a jump for a chosen height and timing. First, follow the velocity arrow rather than position alone."
+      ]
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M25-001",
+      "title": "속도의 변화율: 가속도",
+      "section": "11.5",
+      "lines": [
+        "Acceleration is the rate of change of velocity with time. Differentiate position once to get velocity, and differentiate velocity again to get acceleration. Velocity is a vector, so changing its direction counts even if its magnitude stays constant. An object moving around a curve at constant speed is therefore accelerating. We will study that geometry next time; first calculate changing velocity along one axis."
+      ]
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M25-002",
+      "title": "초마다 초속이 얼마나 변할까",
+      "section": "11.5",
+      "lines": [
+        "If velocity is measured in meters per second, acceleration is meters per second squared: velocity change per second. With acceleration four meters per second squared from rest, velocity is four meters per second after one second and eight after two. Near Earth’s surface we often approximate gravitational acceleration as nine point eight meters per second squared. Our next worked example uses feet and the approximation thirty-two feet per second squared to preserve one consistent calculation."
+      ]
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M25-003",
+      "title": "일정한 가속도에서 속도 만들기",
+      "section": "11.5",
+      "lines": [
+        "Choose downward as positive and release an object from rest. At a constant acceleration of thirty-two feet per second squared, velocity after t seconds is thirty-two t. At two point four seconds it is seventy-six point eight feet per second. If it already has an initial velocity, start from that value: initial velocity plus acceleration times elapsed time. This linear relation assumes constant acceleration."
+      ]
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M25-004",
+      "title": "위치·속도·가속도 그래프 연결",
+      "section": "11.5",
+      "lines": [
+        "Place position, velocity, and acceleration on one timeline. Zero acceleration makes velocity horizontal and position linear. Positive acceleration makes velocity rise and the position graph’s slope increase; negative acceleration does the opposite. Zero acceleration alone does not prove that velocity has a maximum or minimum. A sign change, such as positive acceleration becoming negative, is what identifies a local maximum of velocity."
+      ]
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M25-005",
+      "title": "순간 변화가 생기는 모형의 한계",
+      "section": "11.5",
+      "lines": [
+        "Games sometimes change velocity instantaneously. A vertical jump in the velocity graph has no ordinary derivative at that instant. An impulse model can represent a collision, but a finite constant-acceleration formula cannot simply describe the jump. If acceleration changes in a step, velocity can remain continuous while its slope changes. The rate of change of acceleration is called jerk, useful when discussing smooth motion."
+      ]
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M25-006",
+      "title": "속도를 알면 위치도 알 수 있을까",
+      "section": "11.6",
+      "lines": [
+        "With constant velocity, position is initial position plus velocity times time. Our falling object, however, gets faster at every instant. Multiplying the final velocity by the full elapsed time would pretend it had that speed from the beginning and overestimate the fall. Instead, divide the space beneath the velocity graph into small pieces and accumulate the displacement actually covered."
+      ]
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M25-007",
+      "title": "여섯 구간으로 나누어 어림하기",
+      "section": "11.6",
+      "lines": [
+        "Divide the two point four seconds into six intervals of zero point four seconds. Within each interval, temporarily use its starting velocity. The first interval contributes zero displacement. The next contributes twelve point eight feet per second times zero point four seconds. Summing the six rectangles gives seventy-six point eight feet. Since velocity actually rises inside each interval, this left-endpoint estimate is too small."
+      ]
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M25-008",
+      "title": "조각을 작게 만들면",
+      "section": "11.6",
+      "lines": [
+        "Using twelve intervals of zero point two seconds gives eighty-four point four eight feet. Twenty-four intervals of zero point one seconds give eighty-eight point three two. Smaller intervals reduce the gaps between the rectangle tops and the velocity line. The velocity at each starting instant was exact; holding it constant across the interval was the approximation. Shrinking those gaps approaches the area of the triangle beneath the line."
+      ]
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M25-009",
+      "title": "삼각형 넓이에서 낙하 거리로",
+      "section": "11.6",
+      "lines": [
+        "The triangle has a base of two point four seconds and a height of seventy-six point eight feet per second. Half their product is ninety-two point one six feet. Seconds multiplied by feet per second leave feet, confirming that this area is displacement. For a general time t, the height is a t, giving displacement one half a t squared. Starting from rest at constant acceleration, doubling time therefore quadruples displacement."
+      ]
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M25-010",
+      "title": "초기 속도와 초기 위치 되살리기",
+      "section": "11.6",
+      "lines": [
+        "An initial velocity v zero adds a rectangle beneath the line. Its area is initial velocity times time, while the acceleration contributes the same triangle. Displacement is therefore v zero t plus one half a t squared. Add the initial position to obtain the final position. Knowing the rate of velocity change does not determine either the initial velocity or the initial position; both must be supplied."
+      ]
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M25-011",
+      "title": "도착 시간을 역으로 계산하기",
+      "section": "11.6",
+      "lines": [
+        "Now suppose the displacement is known and arrival time is unknown. Rearrange the position equation as a quadratic in t and use the quadratic formula. This version divides by acceleration, so acceleration must be nonzero. A negative discriminant means the target coordinate is unreachable in this model. If two real roots exist, check whether they are in the future and whether they satisfy the actual target position."
+      ]
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M25-012",
+      "title": "높이 1353피트에서 떨어뜨리기",
+      "section": "11.6",
+      "lines": [
+        "Keep downward positive and drop an object from rest to a point one thousand three hundred fifty-three feet below. Initial velocity is zero and acceleration is thirty-two. The positive time is the square root of two times thirteen fifty-three divided by thirty-two, about nine point one nine six seconds. Multiplying that time by thirty-two gives an impact velocity of about two hundred ninety-four point two seven feet per second. This simplified model omits air resistance and intervening collisions."
+      ]
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M25-013",
+      "title": "같은 거리를 12초에 도착시키기",
+      "section": "11.6",
+      "lines": [
+        "Now make the object reach the same point exactly twelve seconds later. Solve for initial velocity: displacement divided by time minus half acceleration times time. Thirteen fifty-three divided by twelve is one hundred twelve point seven five; half of thirty-two times twelve is one hundred ninety-two. Their difference is minus seventy-nine point two five. Because downward is positive, the negative result means throwing upward at seventy-nine point two five feet per second to delay arrival."
+      ]
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M25-014",
+      "title": "정점과 출발 높이로 돌아오는 때",
+      "section": "11.6",
+      "lines": [
+        "The highest point occurs when vertical velocity reaches zero. Setting minus seventy-nine point two five plus thirty-two t to zero gives about two point four seven seven seconds. Returning to the starting height means zero displacement. Factor t out of the position equation to obtain two times: zero, the launch instant, and about four point nine five three seconds. Without air resistance, returning to the same height gives the original vertical speed with the opposite sign."
+      ]
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M25-015",
+      "title": "필요한 가속도를 구할 때",
+      "section": "11.6",
+      "lines": [
+        "You can also design the acceleration from a target displacement, time, and initial velocity. Subtract the displacement supplied by the initial velocity, multiply the remaining difference by two, then divide by time squared. To travel fifteen meters in three seconds from two meters per second, the initial velocity contributes six meters. Acceleration must supply the remaining nine, giving two meters per second squared. The factor two multiplies the entire difference in the numerator."
+      ]
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M25-016",
+      "title": "벡터로 넓히면 좌표마다 같은 계산",
+      "section": "11.6",
+      "lines": [
+        "The same equations extend to three dimensions by making position, velocity, and acceleration vectors while keeping time scalar. Each x, y, and z component uses the same time and the same equation. Acceleration must remain constant in a fixed, nonrotating coordinate system. This does not mean dividing vectors or taking a vector square root. In particular, a candidate arrival time from one axis must also satisfy the other coordinates."
+      ]
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M25-017",
+      "title": "같은 높이에 도착해도 같은 점은 아니다",
+      "section": "11.6",
+      "lines": [
+        "An object may pass the target’s height twice, once while rising and once while falling. Neither is a hit if the horizontal position differs from the target. For each time obtained from the vertical equation, calculate the full position and compare it with the target. Likewise, intersecting infinite lines do not guarantee that forward rays intersect or that two moving objects meet simultaneously. Position, direction, and timing conditions must all agree."
+      ]
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M25-018",
+      "title": "포물선에는 위쪽 양수 좌표를 쓰겠습니다",
+      "section": "11.6",
+      "lines": [
+        "Mario jumps from a platform, rises, comes down, and reaches a platform again. Let us read that motion as horizontal and vertical components. For jumping, switch to the more convenient convention that upward is positive. The gravity magnitude g is positive, so vertical acceleration is minus g. Horizontal velocity stays constant, while vertical velocity is initial vertical velocity minus g t. From an origin at launch, horizontal position is initial horizontal velocity times t, and height is initial vertical velocity times t minus one half g t squared. The two components are calculated independently but share the same time."
+      ]
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M25-019",
+      "title": "정점 높이와 같은 높이로 돌아오는 시간",
+      "section": "11.6",
+      "lines": [
+        "At the apex, vertical velocity is zero, so apex time is initial vertical velocity divided by g. Substituting it into the height equation gives maximum height equal to the square of initial vertical velocity divided by two g. Returning to the launch height takes twice the apex time. Multiply that duration by horizontal velocity to get the horizontal range. These return-time and range formulas assume equal launch and landing heights."
+      ]
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M25-020",
+      "title": "발사 속력과 각도로 바꾸기",
+      "section": "11.6",
+      "lines": [
+        "Initial velocity is often specified by speed and launch angle. For angle theta measured above horizontal and initial speed s zero, the horizontal component is s zero cosine theta and the vertical component is s zero sine theta. This converts speed and direction to Cartesian components. Substitute them into the time and range formulas; using the double-angle identity, same-height range becomes speed squared times sine of twice the angle, divided by g."
+      ]
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M25-021",
+      "title": "속력을 두 배로 하면 거리 네 배",
+      "section": "11.6",
+      "lines": [
+        "Hold launch angle and gravity fixed and double only the initial speed. Horizontal velocity doubles, and doubled vertical velocity doubles the flight time as well. Twice the horizontal speed for twice the duration gives four times the range. That explains the squared speed in the formula. Unequal landing heights, air resistance, or changing gravity require different calculations; the simple factor of four is conditional. In this Riders Republic jump, the skier leaves a snowy rise and lands farther down the slope. Here, use the actual landing height in the position equation rather than the equal-height return formula."
+      ]
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M25-022",
+      "title": "중력이 임의 방향일 때",
+      "section": "11.6",
+      "lines": [
+        "The same approach works when acceleration points in an arbitrary direction. Normalize the acceleration vector and project the target displacement and initial velocity onto that direction. This gives a one-dimensional quadratic along the acceleration axis. Substitute each candidate time back into the original vector equation to verify the full target position. If acceleration is zero, its direction cannot be normalized; handle constant-velocity motion separately."
+      ]
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M25-023",
+      "title": "원하는 높이와 시간으로 점프 설계하기",
+      "section": "11.6",
+      "lines": [
+        "Now design a game jump from desired behavior. Choose a maximum height of two meters and one second to the apex. Solving the height and apex-time equations together gives gravity magnitude two H over T squared and initial vertical velocity two H over T. They become four meters per second squared and four meters per second. Return to the same height takes two seconds, so a horizontal speed of three meters per second crosses six meters. These parameters design the jump’s feel rather than reproduce Earth’s gravity."
+      ]
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M25-024",
+      "title": "삼각형이 아닌 곡선 아래의 양",
+      "section": "11.7.1",
+      "lines": [
+        "Our jump formula was easy to obtain because a straight velocity line enclosed a triangle. For a more complicated velocity curve, the same principle still works: multiply the rate in each short interval by the interval width, then add the contributions. The limit as those intervals shrink is an integral, a continuous accumulation. Differentiation asks how fast something changes now; integration asks how much change accumulates across an interval."
+      ]
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M25-025",
+      "title": "리만 합의 기호를 하나씩 만들기",
+      "section": "11.7.1",
+      "lines": [
+        "Let the interval run from a to b. Dividing it into n equal pieces gives width delta x equal to b minus a over n. Evaluate the function at each left endpoint and multiply by the width to obtain one rectangle. If the index i starts at one, the first left endpoint is a and the next is a plus one width. Thus the i-th left endpoint is a plus i minus one times delta x."
+      ]
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M25-026",
+      "title": "합 기호가 적분 기호로 이어질 때",
+      "section": "11.7.1",
+      "lines": [
+        "The sum of those areas is a Riemann sum. As the subdivision is refined so that the largest interval width approaches zero, a limiting sum defines the definite integral. The elongated integral symbol denotes accumulation; the lower and upper bounds identify the interval. The d x indicates integration with respect to x. For fixed bounds, the result is the accumulated value over that interval, though it may still depend on other parameters."
+      ]
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M25-027",
+      "title": "샘플 위치와 부호 있는 넓이",
+      "section": "11.7.1",
+      "lines": [
+        "With finitely many pieces, left, right, and midpoint samples give different approximations. For suitable functions, refined partitions approach the same integral. The widths need not all be equal. Contributions below the axis are negative, so integrating velocity gives signed displacement with forward and backward motion canceling. To obtain total distance traveled, integrate speed, the magnitude of velocity."
+      ]
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M25-028",
+      "title": "전력에서 사용 에너지로",
+      "section": "11.7.1",
+      "lines": [
+        "The same operation applies beyond movement. Power is the rate of energy use, so integrating power over time gives energy. Watts multiplied by seconds give joules. A constant one hundred watts for two seconds uses two hundred joules; changing power requires accumulating the area under its graph. If price per energy unit also varies with time, integrate power times the matching energy-unit price to model cost."
+      ]
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M25-029",
+      "title": "페달·물·연료의 누적량",
+      "section": "11.7.1",
+      "lines": [
+        "If a sewing-machine pedal controls fabric feed speed, integrating that speed gives the length fed through. Integrating water flow per second gives collected volume; integrating fuel consumption per second gives fuel used. A speedometer displays an instantaneous rate, while an odometer accumulates speed into distance. Choose the rate according to the accumulated quantity and its units."
+      ]
+    },
+    {
+      "id": "030",
+      "sourceBeatId": "M25-030",
+      "title": "미분한 식을 거꾸로 찾기",
+      "section": "11.7.2",
+      "lines": [
+        "So far integration has meant accumulating small contributions. But position differentiates to velocity and then acceleration. We can reverse that process by seeking a function whose derivative equals the given velocity: an antiderivative. Integrating constant acceleration a gives a t plus a constant. Integrating again gives one half a t squared, an initial-velocity term, and an initial-position constant."
+      ]
+    },
+    {
+      "id": "031",
+      "sourceBeatId": "M25-031",
+      "title": "거듭제곱의 적분과 예외",
+      "section": "11.7.2",
+      "lines": [
+        "For a power, raise the exponent by one and divide by the new exponent. An antiderivative of t squared is t cubed over three; differentiating verifies it. The exception is exponent minus one, because the new exponent would be zero. For one over t on a nonzero interval, an antiderivative is the natural logarithm of absolute t. A rule and its domain restrictions belong together."
+      ]
+    },
+    {
+      "id": "032",
+      "sourceBeatId": "M25-032",
+      "title": "상수는 왜 끝까지 따라올까",
+      "section": "11.7.2",
+      "lines": [
+        "Differentiation removed constants. Adding three or ten to t squared gives the same derivative, two t. Its indefinite integral is therefore a family, t squared plus C, rather than one unique function. A position at an initial time determines C. The integration constant expresses the fact that velocity alone cannot reveal the starting position."
+      ]
+    },
+    {
+      "id": "033",
+      "sourceBeatId": "M25-033",
+      "title": "미적분학의 기본 정리",
+      "section": "11.7.2",
+      "lines": [
+        "The Fundamental Theorem of Calculus connects accumulation with antiderivatives. If f is continuous on the interval and capital F is an antiderivative, the definite integral from a to b equals F at b minus F at a: final value minus initial value. Since velocity is the derivative of position, integrating velocity over a time interval gives final position minus initial position, the displacement."
+      ]
+    },
+    {
+      "id": "034",
+      "sourceBeatId": "M25-034",
+      "title": "한 번 계산해 정리를 확인하기",
+      "section": "11.7.2",
+      "lines": [
+        "Take a model with velocity two t meters per second and integrate from one to three seconds. The antiderivative is t squared, so nine minus one gives eight meters. Starting at position thirty meters would not change that displacement. Any integration constant appears at both endpoints and cancels. An odometer instead accumulates speed, which must remain distinct from signed coordinate displacement when reversal is possible."
+      ]
+    },
+    {
+      "id": "035",
+      "sourceBeatId": "M25-035",
+      "title": "끝점을 움직이면 순간 변화율이 돌아온다",
+      "section": "11.7.2",
+      "lines": [
+        "Now fix the start time and move the upper endpoint. Define F as the accumulated amount so far. Advancing time slightly adds a thin area approximately equal to the current function value times the time increment. Divide the added amount by the increment and take the limit: the current function value returns. Differentiating the accumulation recovers the original rate. Use a separate variable, such as u, inside the integral to distinguish it from the moving endpoint t."
+      ]
+    },
+    {
+      "id": "036",
+      "sourceBeatId": "M25-036",
+      "title": "정적분과 부정적분을 구별하기",
+      "section": "11.7.2",
+      "lines": [
+        "A definite integral measures accumulation over a specified interval. An indefinite integral represents all antiderivatives and needs an arbitrary constant C. Moving the lower endpoint can generate different accumulation functions, but it does not always produce every possible constant. For example, integrating zero gives zero regardless of the endpoints, while every constant function is an antiderivative of zero. That is why the arbitrary constant must be stated independently."
+      ]
+    },
+    {
+      "id": "037",
+      "sourceBeatId": "M25-037",
+      "title": "변화율과 누적량을 함께 쓰기",
+      "section": "11.7.3",
+      "lines": [
+        "We can now read the opening jump in both directions. Differentiate position to get velocity and velocity to get acceleration. Accumulate acceleration from an initial velocity to obtain velocity, then accumulate velocity from an initial position to obtain position. Linearity, power and trigonometric rules, and the chain rule calculate rates. Integration and initial conditions turn those rates into complete motion. The same relationships can be solved backward when a desired apex and timing come first."
+      ]
+    },
+    {
+      "id": "038",
+      "sourceBeatId": "M25-038",
+      "title": "방향 변화도 계산할 준비",
+      "section": "11.7.3",
+      "lines": [
+        "We focused on changes along axes, using straight-line motion and parabolas. But a car corner gives another case: unchanged speed with continually changing direction. The same definition, the derivative of the velocity vector, still gives acceleration. Next we will use circular motion to see why that acceleration points inward and how speed, radius, and angular velocity connect."
+      ]
+    }
+  ]
+}

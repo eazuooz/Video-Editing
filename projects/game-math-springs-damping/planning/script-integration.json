@@ -1,0 +1,62 @@
+{
+  "updatedAt": "2026-11-04T15:43:08.966700+00:00",
+  "episode": "M28",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "6469574c0156bf9056b83b20fd0e97acdb263a883ffc4326ed14eb64ad2c7943",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "f05fc4c9d2ace42c37dd18767275dacdc2c3a823d8b3104e219bc7319a26efcc",
+  "changes": [
+    {
+      "sourceBeatId": "M28-000-abstract",
+      "mode": "replace",
+      "beforeKo": "목표가 바뀔 때 카메라나 선택 표시가 곧바로 튀면 움직임이 딱딱해집니다. 조금 늦게 따라오고, 필요하면 살짝 넘어갔다가 멈추게 만들 수는 없을까요? 용수철이 제자리로 돌아오는 힘에서 시작해, 흔들림을 줄이는 감쇠를 더하고, 마지막에는 게임의 값을 부드럽게 움직이는 코드로 연결하겠습니다.",
+      "afterKo": "비이엠엔지 드라이브에서 울퉁불퉁한 길을 지날 때, 바퀴와 차체가 서로 다른 높이로 움직입니다. 흔들리는 물체를 제자리로 되돌리면서, 흔들림도 줄이려면 무엇이 필요할까요? 용수철의 복원력에서 시작해 감쇠를 더하고, 마지막에는 카메라나 메뉴 값을 부드럽게 따라가게 만드는 코드로 연결하겠습니다. 먼저 늘어났다가 돌아오는 움직임부터 보죠.",
+      "beforeEn": "A camera or selection marker can feel abrupt when it snaps to a new target. Could it follow with a little delay, perhaps overshoot, and then settle? We will start with spring restoration, add damping, and turn the relationship into code for smoothly changing game values.",
+      "afterEn": "On a bumpy road in BeamNG.drive, the wheels and body move to different heights. What lets a displaced object return while also reducing its oscillation? We will start with a spring’s restoring force, add damping, then connect those ideas to code that smoothly tracks a camera or menu value. First, look at displacement followed by return.",
+      "reason": "Observed suspension motivates spring/damping without claiming free-decay or exact coefficients."
+    },
+    {
+      "sourceBeatId": "M28-001-rest-length",
+      "mode": "prepend",
+      "beforeKo": "한쪽 끝을 고정하고 다른 끝에 물체를 연결해 보죠. 잡아 늘리면 당기고, 눌러 짧게 만들면 밀어냅니다. 외력 없이 놓았을 때의 길이가 정지 길이입니다. 가상 용수철도 이런 성질을 이용합니다. 눈에 보이는 금속 용수철뿐 아니라, 두 대상의 거리를 유지하거나 움직임을 제어하는 데 사용할 수 있습니다.",
+      "afterKo": "슈퍼 마리오 오디세이에서는 멍멍이를 붙잡아 뒤로 당겼다가 놓으면, 반대쪽 벽으로 튀어나갑니다. 당긴 뒤 되돌아가는 이 모습을 발판 삼아, 힘을 계산하는 용수철 모형을 만들어 보겠습니다. 한쪽 끝을 고정하고 다른 끝에 물체를 연결해 보죠. 잡아 늘리면 당기고, 눌러 짧게 만들면 밀어냅니다. 외력 없이 놓았을 때의 길이가 정지 길이입니다. 가상 용수철도 이런 성질을 이용합니다. 눈에 보이는 금속 용수철뿐 아니라, 두 대상의 거리를 유지하거나 움직임을 제어하는 데 사용할 수 있습니다.",
+      "beforeEn": "Fix one spring end and attach a body to the other. Stretch it and it pulls back; compress it and it pushes outward. Its rest length is the length at equilibrium without external force. Virtual springs can maintain object relationships or control movement without any visible metal spring.",
+      "afterEn": "In Super Mario Odyssey, a captured Chain Chomp can be pulled back and released toward a wall. Use that pull-and-return motion as a starting point for a spring model whose force we can calculate. Fix one spring end and attach a body to the other. Stretch it and it pulls back; compress it and it pushes outward. Its rest length is the length at equilibrium without external force. Virtual springs can maintain object relationships or control movement without any visible metal spring.",
+      "reason": "Observed capture/pull/release, not a claim Nintendo uses Hooke law."
+    },
+    {
+      "sourceBeatId": "M28-016-setpoint",
+      "mode": "prepend",
+      "beforeKo": "이번에는 용수철의 목표를 움직여 보겠습니다. 카메라가 따라갈 위치, 적이 조준할 각도, 스틱이 요구하는 속도, 메뉴 표시가 가야 할 위치가 목표값이 될 수 있습니다. 제어에서는 설정값이라고 부릅니다. 입력은 원하는 값이고 출력은 실제 사용할 값입니다. 둘의 차이가 오차입니다. 입력은 힘 자체보다는 용수철의 반대쪽 끝을 옮기는 것에 가깝습니다.",
+      "afterKo": "라이더스 리퍼블릭에서는 자전거가 길을 돌아도 카메라가 뒤에서 따라오며 선수를 화면에 붙잡아 둡니다. 이런 따라가기 동작을 우리 모형에서 만든다면, 어디까지 따라갈지를 먼저 정해야겠죠. 이번에는 용수철의 목표를 움직여 보겠습니다. 카메라가 따라갈 위치, 적이 조준할 각도, 스틱이 요구하는 속도, 메뉴 표시가 가야 할 위치가 목표값이 될 수 있습니다. 제어에서는 설정값이라고 부릅니다. 입력은 원하는 값이고 출력은 실제 사용할 값입니다. 둘의 차이가 오차입니다. 입력은 힘 자체보다는 용수철의 반대쪽 끝을 옮기는 것에 가깝습니다.",
+      "beforeEn": "Move the target: desired camera position, aiming angle, movement speed, or menu-highlight position can all be setpoints. Input specifies the desired value; output is the actual value used; their difference is error. This usually specifies a target quantity rather than force, like moving the spring’s other end.",
+      "afterEn": "In Riders Republic, the camera follows behind the cyclist through turns and keeps the rider in view. To build this kind of tracking in our own model, we first need to specify where it should follow. Move the target: desired camera position, aiming angle, movement speed, or menu-highlight position can all be setpoints. Input specifies the desired value; output is the actual value used; their difference is error. This usually specifies a target quantity rather than force, like moving the spring’s other end.",
+      "reason": "Actual follow behavior motivates setpoint; do not identify game controller as PD or spring."
+    }
+  ],
+  "readThrough": {
+    "status": "full bilingual draft and integrated changes text-reviewed; realized audiovisual review pending",
+    "source": "planning/source-audit.json",
+    "beats": 25,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "All 25 bilingual source-faithful draft beats were authored and read during full primary lesson audit; unchanged derivations/examples/corrections remain.",
+      "All integration changes and adjacent bridges read in Korean and English. No unseen game mechanics, exact engine algorithms or measured parameters claimed.",
+      "Native gameplay observations, source hashes and publisher/recorder evidence are in footage-audit. Actual audio listening, continuous playback and final composite timing still pending."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "8c080256b4a084fefc2b72926241f8f2095c9cb7d407ec77d5bdf9a1a072ea07",
+    "enSha256": "cf0ceb4acdeefab8b95432b4fa8b32d75746ea05ab7af4c374d154693705c9e9"
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ]
+}

@@ -15,7 +15,7 @@ namespace Yamyam.GameMath.LightLab {
   [Serializable] public class State {public string status,id,error,scene,output,compiledFingerprint,unity,sourceKind;public int completed,total;public string dimensions="1920x1080",frameRate="60/1";public bool actualGameplay=false;}
   [Serializable] public class BakeEvidence {public string backend,mode;public int lightmapCount,lightmappedRenderers;public bool engineReturnedSuccess,lightIsBaked;}
   static Job job;static State state;static LightLabStage stage;static RenderTexture target;static Texture2D pixels;
-  static int cursor;static bool prepared,locked;static System.Diagnostics.Process encoder;static Stream pipe;static string stderr="";
+  static int cursor,warmup;static bool prepared,locked;static System.Diagnostics.Process encoder;static Stream pipe;static string stderr="";
   const string Root="Assets/VideoScenes/game-math-shading-lights";
   public static void Run() {
    try {
@@ -110,16 +110,30 @@ namespace Yamyam.GameMath.LightLab {
   }
   static void Tick(){try{
     int frame=job.command=="preflight"?job.sampleFrames[cursor]:cursor;
-    if(!prepared){stage.Apply(frame/60f);Canvas.ForceUpdateCanvases();EditorApplication.QueuePlayerLoopUpdate();prepared=true;return;}
+    if(!prepared){stage.Apply(frame/60f);RefreshText();Canvas.ForceUpdateCanvases();EditorApplication.QueuePlayerLoopUpdate();warmup=job.command=="preflight"||cursor==0?2:0;prepared=true;return;}
+    // Dynamic OS font atlases can rebuild between sparse batch-mode frames.
+    // Refresh every active UI mesh after that editor update, not only on a
+    // changed string; otherwise unchanged headings may disappear at frame 2.
+    RefreshText();Canvas.ForceUpdateCanvases();
     var request=new RenderPipeline.StandardRequest{destination=target};
     if(!RenderPipeline.SupportsRenderRequest(stage.RenderCamera,request))throw new Exception("URP full camera-stack render request unavailable");
     RenderPipeline.SubmitRenderRequest(stage.RenderCamera,request);
+    if(warmup>0){warmup--;EditorApplication.QueuePlayerLoopUpdate();return;}
     var old=RenderTexture.active;RenderTexture.active=target;pixels.ReadPixels(new Rect(0,0,1920,1080),0,0);pixels.Apply(false);RenderTexture.active=old;
     if(job.command=="preflight")File.WriteAllBytes(Path.Combine(job.output,"frame-"+frame.ToString("D6")+".png"),pixels.EncodeToPNG());
     else {var bytes=pixels.GetRawTextureData<byte>().ToArray();pipe.Write(bytes,0,bytes.Length);}
     cursor++;prepared=false;state.completed=cursor;if(cursor%60==0)Write();
     if(cursor>=(job.command=="preflight"?job.sampleFrames.Length:job.frames))Finish(null);
    }catch(Exception e){Finish(e);}}
+  static void RefreshText(){
+    var labels=stage.GetComponentsInChildren<UnityEngine.UI.Text>(true);
+    foreach(var label in labels)if(label.font && label.isActiveAndEnabled)
+      label.font.RequestCharactersInTexture(label.text,label.fontSize,label.fontStyle);
+    foreach(var label in labels)if(label.isActiveAndEnabled){
+      label.cachedTextGenerator.Invalidate();
+      label.SetAllDirty();
+    }
+  }
   static void Write(){if(state!=null&&Directory.Exists(state.output))File.WriteAllText(Path.Combine(state.output,"progress.json"),JsonUtility.ToJson(state,true));}
   static void Finish(Exception e){EditorApplication.update-=Tick;
     try{if(encoder!=null){pipe.Close();encoder.WaitForExit();if(encoder.ExitCode!=0)e=new Exception(stderr);encoder.Dispose();}}catch(Exception x){e=x;}

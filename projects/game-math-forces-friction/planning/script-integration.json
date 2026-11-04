@@ -1,0 +1,62 @@
+{
+  "updatedAt": "2026-11-04T15:43:08.867408+00:00",
+  "episode": "M27",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "476de9dcefd20c1b9b2b4117d9bd3a4718281eb1c979c5a201af271ecbc8cb27",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "c98e7d9dc483b6a1a56a1b3acfceec03743fbbc56f4b937cc9b5132b93249a11",
+  "changes": [
+    {
+      "sourceBeatId": "M27-000-abstract",
+      "mode": "replace",
+      "beforeKo": "게임에서 물체를 밀고, 놓고, 경사면에 올리는 행동을 생각해 보겠습니다. 움직임이 바뀌는 이유를 알려면 속도만 보는 대신, 지금 어떤 힘들이 작용하는지 알아야 합니다. 먼저 뉴턴의 법칙으로 힘을 모아 계산하고, 그 방법을 중력과 마찰에 차례로 적용하겠습니다. 마지막에는 같은 계산을 게임의 점프와 미끄러짐을 설계하는 도구로 연결해 보죠.",
+      "afterKo": "비이엠엔지 드라이브에서 차가 바위를 넘으면, 바퀴가 올라가고 차체도 기울어집니다. 이런 움직임은 무엇이 만들까요? 지금 어떤 물체가 어떤 방향으로 밀고 당기는지부터 살펴봐야 합니다. 먼저 뉴턴의 법칙으로 힘을 모아 계산하고, 그 방법을 중력과 마찰에 차례로 적용하겠습니다. 마지막에는 같은 계산을 게임의 점프와 미끄러짐을 설계하는 도구로 연결해 보죠.",
+      "beforeEn": "Consider pushing an object, releasing it, and placing it on a slope in a game. To explain changes in motion, we need more than its velocity: we need the forces acting now. We will first assemble those forces using Newton's laws, then apply the method to gravity and friction. Finally, the same calculations become tools for designing jumps and sliding.",
+      "afterEn": "In BeamNG.drive, a vehicle crosses rocks: its wheels rise and its body tilts. What produces this motion? Start by identifying which objects push or pull, and in which directions. We will combine forces through Newton’s laws, apply the method to gravity and friction, then use the same calculations to design jumping and sliding in a game.",
+      "reason": "Observed tire/contact motion replaces unseen push-and-release opening. Preserve Newton→gravity→friction order."
+    },
+    {
+      "sourceBeatId": "M27-012-third-law",
+      "mode": "prepend",
+      "beforeKo": "이제 기준계를 정했으니 물체들이 서로 미는 상황으로 돌아가겠습니다. 물체 에이가 비를 밀면, 비도 에이를 같은 크기와 반대 방향의 힘으로 밉니다. 이것이 작용·반작용입니다. 한 힘이 먼저 생기고 나중에 답장처럼 반작용이 생기는 뜻은 아닙니다. 같은 상호작용의 두 힘이 동시에 서로 다른 물체에 작용합니다.",
+      "afterKo": "비시지에서는 대포를 쏘자 포탄은 앞으로 나가고, 발사한 차체는 뒤로 들려 넘어갑니다. 서로 영향을 주는 대포와 포탄을 먼저 나누어 보면, 힘의 짝을 이해하기 쉬워집니다. 이제 기준계를 정했으니 물체들이 서로 미는 상황으로 돌아가겠습니다. 물체 에이가 비를 밀면, 비도 에이를 같은 크기와 반대 방향의 힘으로 밉니다. 이것이 작용·반작용입니다. 한 힘이 먼저 생기고 나중에 답장처럼 반작용이 생기는 뜻은 아닙니다. 같은 상호작용의 두 힘이 동시에 서로 다른 물체에 작용합니다.",
+      "beforeEn": "With a frame established, return to objects pushing each other. If A pushes B, B pushes A with an equal and opposite force. These are action and reaction. The second force is not a delayed reply to the first: they are simultaneous parts of one interaction, acting on different objects.",
+      "afterEn": "In Besiege, firing sends the shot forward while the firing vehicle rears backward and overturns. Separating the cannon and projectile helps us identify the pair of interacting forces. With a frame established, return to objects pushing each other. If A pushes B, B pushes A with an equal and opposite force. These are action and reaction. The second force is not a delayed reply to the first: they are simultaneous parts of one interaction, acting on different objects.",
+      "reason": "Observed recoil motivates simultaneous interaction; equal force proof and ground forces explained in own model."
+    },
+    {
+      "sourceBeatId": "M27-018-local-gravity",
+      "mode": "prepend",
+      "beforeKo": "하지만 지표 근처의 작은 게임 월드에서는 지구의 곡률과 고도 차이를 생략할 수 있습니다. 그러면 아래 방향이 일정하고, 중력은 질량에 일정한 벡터 지를 곱한 값이 됩니다. 이를 질량으로 나누면 가속도는 지 자체입니다. 무거운 물체는 더 큰 중력을 받지만 가속시키기도 더 어렵기 때문에, 공기 저항을 빼면 질량이 달라도 같은 중력 가속도로 떨어집니다.",
+      "afterKo": "왕국의 눈물에서 링크가 절벽 아래 물로 뛰어내립니다. 발밑의 지지가 사라진 뒤 아래로 내려가는 모습을 보면서, 이제 중력을 단순한 게임 월드의 식으로 옮겨 보죠. 하지만 지표 근처의 작은 게임 월드에서는 지구의 곡률과 고도 차이를 생략할 수 있습니다. 그러면 아래 방향이 일정하고, 중력은 질량에 일정한 벡터 지를 곱한 값이 됩니다. 이를 질량으로 나누면 가속도는 지 자체입니다. 무거운 물체는 더 큰 중력을 받지만 가속시키기도 더 어렵기 때문에, 공기 저항을 빼면 질량이 달라도 같은 중력 가속도로 떨어집니다.",
+      "beforeEn": "In a small world near Earth's surface, we can neglect curvature and small changes of altitude. Down is then a fixed direction, and gravity is mass times a constant vector g. Divide by mass and acceleration is simply g. A heavier object feels a larger gravitational force but also has more inertia, so without air resistance different masses share the same gravitational acceleration.",
+      "afterEn": "In Tears of the Kingdom, Link dives from a ledge into the water below. As he descends after leaving ground support, let us translate gravity into a simple game-world equation. In a small world near Earth's surface, we can neglect curvature and small changes of altitude. Down is then a fixed direction, and gravity is mass times a constant vector g. Divide by mass and acceleration is simply g. A heavier object feels a larger gravitational force but also has more inertia, so without air resistance different masses share the same gravitational acceleration.",
+      "reason": "Concrete fall motivates gravity; dive animation and water are not treated as exact free-fall measurements."
+    }
+  ],
+  "readThrough": {
+    "status": "full bilingual draft and integrated changes text-reviewed; realized audiovisual review pending",
+    "source": "planning/source-audit.json",
+    "beats": 32,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "All 32 bilingual source-faithful draft beats were authored and read during full primary lesson audit; unchanged derivations/examples/corrections remain.",
+      "All integration changes and adjacent bridges read in Korean and English. No unseen game mechanics, exact engine algorithms or measured parameters claimed.",
+      "Native gameplay observations, source hashes and publisher/recorder evidence are in footage-audit. Actual audio listening, continuous playback and final composite timing still pending."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "ba42c13b67f9f4fa445cce380a3e1285b5380fe5702ebf65b171711caf192201",
+    "enSha256": "3d3a7e746e66e53293962bb10bf7dd8d066facf240deadbd0b479d3c6a044cec"
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ]
+}

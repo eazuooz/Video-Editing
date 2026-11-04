@@ -1,0 +1,62 @@
+{
+  "updatedAt": "2026-11-04T15:43:09.149617+00:00",
+  "episode": "M29",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "38e770183f54cae15590d5b0e6601e8ebd66e6ef79ba7b44b81966ca7a5b365c",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "6cf7eed29c07a71c4d96f4c2ed2719d57ce3760ded3f89d45e109e11d4f9fbaf",
+  "changes": [
+    {
+      "sourceBeatId": "M29-000-abstract",
+      "mode": "replace",
+      "beforeKo": "물체가 부딪히면 한쪽은 느려지고 다른 쪽은 밀려납니다. 어떤 것은 함께 움직이고, 어떤 것은 반대로 튀어 나오죠. 이 차이를 계산하려면 힘의 크기뿐 아니라 그 힘이 만든 운동량 변화를 봐야 합니다. 운동량에서 시작해 질량중심을 찾고, 두 물체가 부딪힌 뒤의 속도를 직접 계산해 보겠습니다.",
+      "afterKo": "비이엠엔지 드라이브에서 달리던 차가 바위에 부딪히자, 차체가 찌그러지고 다른 방향으로 구릅니다. 충돌 전후의 움직임은 어떻게 연결할 수 있을까요? 힘이 만든 운동량 변화부터 살펴보고, 질량중심과 두 물체의 충돌 조건을 차례로 더해 보겠습니다. 복잡한 실제 충돌을 이해하기 위해, 먼저 한 방향으로 움직이는 물체의 운동량부터 계산하죠.",
+      "beforeEn": "At impact one body may slow while another moves away. Some stick together; others rebound. To calculate the difference, track the change in momentum produced by force. We will connect momentum and center of mass, then calculate post-collision velocities.",
+      "afterEn": "In BeamNG.drive, a car hits rocks, crumples, and tumbles in a different direction. How can we connect the motion before and after contact? We will begin with the momentum change produced by force, then add center of mass and two-object contact conditions. To understand the complex collision, first calculate momentum for one object moving along one direction.",
+      "reason": "Observed impact replaces unsupported generic collision opening while preserving source progression."
+    },
+    {
+      "sourceBeatId": "M29-014-collision-model",
+      "mode": "prepend",
+      "beforeKo": "짧은 충돌을 순간적인 운동량 변화로 근사하겠습니다. 충돌 전 속도 두 개를 알고, 충돌 뒤 속도에는 프라임을 붙입니다. 질량 곱하기 속도를 두 물체에 대해 더하면 충돌 전후 합이 같아야 합니다. 그런데 이것은 식 하나이고 새 속도는 두 개입니다. 운동량 보존만으로는 답이 하나로 정해지지 않습니다. 튕기는 정도나 서로 붙는지 같은 조건이 더 필요합니다.",
+      "afterKo": "비시지에서는 날아간 포탄이 성벽을 맞히고, 벽의 조각들이 움직이기 시작합니다. 이제 발사체 하나만 볼 것이 아니라, 부딪힌 대상까지 함께 놓고 충돌 뒤 상태를 찾아야 합니다. 짧은 충돌을 순간적인 운동량 변화로 근사하겠습니다. 충돌 전 속도 두 개를 알고, 충돌 뒤 속도에는 프라임을 붙입니다. 질량 곱하기 속도를 두 물체에 대해 더하면 충돌 전후 합이 같아야 합니다. 그런데 이것은 식 하나이고 새 속도는 두 개입니다. 운동량 보존만으로는 답이 하나로 정해지지 않습니다. 튕기는 정도나 서로 붙는지 같은 조건이 더 필요합니다.",
+      "beforeEn": "Approximate a brief collision as an instantaneous momentum change. Prime marks post-impact velocities. Sum mass times velocity for both bodies before and after; the totals match. But one equation cannot uniquely determine two new velocities. We need an additional condition, such as sticking or rebound behavior.",
+      "afterEn": "In Besiege, a fired shot hits a wall and its fragments begin moving. We now need to include the struck object as well as the projectile when finding the state after contact. Approximate a brief collision as an instantaneous momentum change. Prime marks post-impact velocities. Sum mass times velocity for both bodies before and after; the totals match. But one equation cannot uniquely determine two new velocities. We need an additional condition, such as sticking or rebound behavior.",
+      "reason": "Actual target result motivates momentum accounting; subsequent two-body bullet/block worked example is explicitly own simplified model."
+    },
+    {
+      "sourceBeatId": "M29-018-detection",
+      "mode": "prepend",
+      "beforeKo": "붙지 않는 충돌을 풀려면 먼저 충돌 처리의 두 일을 나눕니다. 언제 어디서 닿았는지 찾는 충돌 검출, 그리고 그 뒤 움직임을 바꾸는 충돌 반응입니다. 실제 접촉은 면 전체나 여러 점에서 일어날 수 있습니다. 여기서는 접촉점 하나의 원리를 먼저 다룹니다. 여러 접촉점을 묶는 접촉 매니폴드로 확장할 수 있지만, 지금의 식을 아무 물체에나 한 번 적용하면 모든 접촉이 해결되는 것은 아닙니다.",
+      "afterKo": "슈퍼 마리오 오디세이에서는 당겨 놓은 멍멍이가 벽에 닿는 순간, 벽이 부서져 길이 열립니다. 어느 곳에 닿았는지 알아내는 일과, 그 뒤 어떤 결과를 낼지 정하는 일을 나누어 보겠습니다. 붙지 않는 충돌을 풀려면 먼저 충돌 처리의 두 일을 나눕니다. 언제 어디서 닿았는지 찾는 충돌 검출, 그리고 그 뒤 움직임을 바꾸는 충돌 반응입니다. 실제 접촉은 면 전체나 여러 점에서 일어날 수 있습니다. 여기서는 접촉점 하나의 원리를 먼저 다룹니다. 여러 접촉점을 묶는 접촉 매니폴드로 확장할 수 있지만, 지금의 식을 아무 물체에나 한 번 적용하면 모든 접촉이 해결되는 것은 아닙니다.",
+      "beforeEn": "Separate collision detection—finding when and where contact occurs—from response, which changes motion. Contact may cover a region or multiple points. We begin with one point; contact manifolds extend the representation. A single application of this formula does not resolve every possible contact.",
+      "afterEn": "In Super Mario Odyssey, a released Chain Chomp reaches the wall, which breaks and opens a path. Separate finding where contact occurs from deciding what should happen afterward. Separate collision detection—finding when and where contact occurs—from response, which changes motion. Contact may cover a region or multiple points. We begin with one point; contact manifolds extend the representation. A single application of this formula does not resolve every possible contact.",
+      "reason": "Observable contact/result motivates detection versus response; no hidden algorithm claim."
+    }
+  ],
+  "readThrough": {
+    "status": "full bilingual draft and integrated changes text-reviewed; realized audiovisual review pending",
+    "source": "planning/source-audit.json",
+    "beats": 38,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "All 38 bilingual source-faithful draft beats were authored and read during full primary lesson audit; unchanged derivations/examples/corrections remain.",
+      "All integration changes and adjacent bridges read in Korean and English. No unseen game mechanics, exact engine algorithms or measured parameters claimed.",
+      "Native gameplay observations, source hashes and publisher/recorder evidence are in footage-audit. Actual audio listening, continuous playback and final composite timing still pending."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "84af01da4d350e054adc4ba88d82c6d20eef82e0731483fb5a4cb8cf8d8a1c2b",
+    "enSha256": "a169bd66124cb9843c3d7c6cff94cfa10133a2aad709873d6b2c48a365f0623d"
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ]
+}

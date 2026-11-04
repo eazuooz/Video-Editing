@@ -7,8 +7,8 @@
   "unityPlan": "planning/unity-plan.json",
   "stage": "full-draft-gameplay-integration",
   "sourceFinal": true,
-  "narrationFinal": false,
-  "sceneBindingsFinal": false,
+  "narrationFinal": true,
+  "sceneBindingsFinal": true,
   "choices": [
     {
       "choice": "Complete all13 as one finite local-review batch",
@@ -1637,6 +1637,12 @@
       "meaning": "빛에 붙여 투영하는 무늬"
     },
     {
+      "firstBeat": "015",
+      "english": "Specular Strength and Shininess",
+      "korean": "정반사 세기 · 광택 지수",
+      "meaning": "밝기와 반짝임의 폭을 따로 비교"
+    },
+    {
       "firstBeat": "016",
       "english": "Halfway Vector",
       "korean": "하프웨이 벡터",
@@ -1695,6 +1701,12 @@
       "english": "Anisotropic Reflection",
       "korean": "비등방성 반사",
       "meaning": "표면의 결 방향에 따라 달라지는 반사"
+    },
+    {
+      "firstBeat": "037",
+      "english": "Shading Frequency",
+      "korean": "셰이딩 계산 위치",
+      "meaning": "면 · 정점 · 픽셀에서 계산한 결과 비교"
     },
     {
       "firstBeat": "038",
@@ -1811,10 +1823,34 @@
       "meaning": "표면 위치와 조명 텍셀을 연결"
     },
     {
+      "firstBeat": "071",
+      "english": "Baked Vertex Lighting",
+      "korean": "정점에 저장한 조명",
+      "meaning": "정점 색에 계산 결과를 저장하고 보간"
+    },
+    {
+      "firstBeat": "072",
+      "english": "Directional Irradiance",
+      "korean": "방향별 복사조도",
+      "meaning": "표면이 향하는 방향에 따른 입사량"
+    },
+    {
       "firstBeat": "073",
       "english": "Spherical Harmonics",
       "korean": "구면 조화 함수 · SH",
       "meaning": "구면의 방향 분포를 기저의 합으로 압축"
+    },
+    {
+      "firstBeat": "074",
+      "english": "Baked Lighting: Static Configuration",
+      "korean": "베이크 조명의 고정 조건",
+      "meaning": "물체를 옮겨도 저장된 그림자는 남음"
+    },
+    {
+      "firstBeat": "075",
+      "english": "Mixed Lighting",
+      "korean": "혼합 조명",
+      "meaning": "실시간 직접광과 저장된 간접광의 결합"
     },
     {
       "firstBeat": "076",
@@ -1883,5 +1919,28 @@
   },
   "sceneBindings": "planning/scene-bindings.json",
   "readthroughReview": "planning/readthrough-review.json",
-  "sourceFigures": "research/figure-audit.json"
+  "sourceFigures": "research/figure-audit.json",
+  "productionReadinessMeaning": "All 79 source paragraphs and seven inspected native-game roles bound; implementation exists. Actual PCM timing, final visual/audio QA and human review remain pending.",
+  "finalComparisonDependency": {
+    "scene": "078",
+    "renderer": "advanced:final-grid",
+    "fromFinishedBodyScenes": [
+      "001",
+      "037",
+      "074",
+      "076"
+    ],
+    "labels": [
+      "표면 한 점의 반사",
+      "물체 전체의 셰이딩",
+      "고정된 배치의 베이크",
+      "움직이는 물체의 조명"
+    ],
+    "requirements": [
+      "Extract genuine FHD frames after body render",
+      "SHA256 and same-project paths required by renderer",
+      "Keep source-kind labels and measured crop/aspect",
+      "Final comparison must not use placeholders or claim commercial game internals"
+    ]
+  }
 }

@@ -23,6 +23,12 @@ d=read(original/'bonnet.json');d['start']=56;d['end']=57
 d['shape']='contour';d['method']='Manual image-verified bonnet contour; rejected drifting CSRT preserved in prior revision.'
 points=[(56,[(360,215),(535,213),(561,301),(353,302)]),(56.25,[(337,184),(548,193),(477,264),(300,261)]),(56.5,[(352,165),(540,176),(475,233),(300,229)]),(56.75,[(360,166),(540,174),(480,235),(295,228)]),(57,[(375,169),(560,180),(430,243),(290,227)])]
 d['keyframes']=[{'time':t,'points':[[x*2,y*2] for x,y in p],'visible':True} for t,p in points];d['visualQa']='manual correction needs composite review';tracks.append(d)
+for name,sid,label,keys in [
+ ('ceiling','dYyWmhVuc3w','천장등 추가',[(768,[510,420,850,270]),(768.5,[550,465,800,225]),(769,[535,390,820,270]),(769.25,[535,390,820,270])]),
+ ('doom-surface','Hu94MHBQCis','빛이 닿는 표면',[(91,[900,370,360,350]),(92,[930,435,330,300]),(93,[900,395,360,315]),(94,[900,410,360,320])]),
+ ('spot-surface','dYyWmhVuc3w','빛이 닿는 앞쪽 바닥',[(386,[110,560,1320,145]),(387,[100,630,1430,165]),(388,[160,595,1260,250])]),
+]:
+ tracks.append(dict(id=name,sourceId=sid,start=keys[0][0],end=keys[-1][0],shape='corner-bracket',label=label,method='Manual visible-region keyframes inspected in original native frames; editorial guide, not exact detector/measurement',sourceSha256=sources[sid]['sha256'],keyframes=[dict(time=t,bbox=b,visible=True) for t,b in keys],visualQa='manual region guide needs composite review'))
 font=ImageFont.truetype('C:/Windows/Fonts/malgunbd.ttf',45)
 smallfont=ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',24)
 def sample(track,t):
@@ -54,5 +60,5 @@ for d in tracks:
  board=Image.new('RGB',(1920,math.ceil(len(frames)/4)*270))
  for j,f in enumerate(frames):board.paste(f,((j%4)*480,(j//4)*270))
  board.save(out/(d['id']+'.jpg'),quality=95);save(out/(d['id']+'.json'),d)
-save(P/'planning/game-annotation-revision-v2.json',{'status':'revised-four-tracks-awaiting-review','frameFit':{'width':1632,'height':918,'x':144,'y':0,'aspectPreserved':True},'captionCenter':[960,970],'captionTextInSamples':'target label for clearance check only, not final timed narration','tracks':[{'id':d['id'],'path':str(out/(d['id']+'.json'))} for d in tracks],'unresolved':['ceiling fast turn: select a new slower visible window','Doom footprint: replace wandering wall guide','spotlight sweep: new source interval requires target review'],'finalCompositeViewed':False})
-print('Four corrected annotation contact sheets; no final QA claim')
+save(P/'planning/game-annotation-revision-v2.json',{'status':'seven-tracks-awaiting-complete-composite-review','frameFit':{'width':1632,'height':918,'x':144,'y':0,'aspectPreserved':True},'captionCenter':[960,970],'captionTextInSamples':'target label for clearance check only, not final timed narration','tracks':[{'id':d['id'],'path':str(out/(d['id']+'.json'))} for d in tracks],'unresolved':['verify new manually placed regions at all sampled frames and final moving overlay'], 'finalCompositeViewed':False})
+print('Seven annotation contact sheets; no final QA claim')

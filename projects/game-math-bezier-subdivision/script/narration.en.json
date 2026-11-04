@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-bezier-subdivision",
+  "episodeId": "M32",
+  "status": "integrated-text-reviewed-runtime-and-audio-pending",
+  "isFinalNarration": false,
+  "chapterOrderPreserved": true,
+  "actualDurationSeconds": null,
+  "sourceDraftSha256": "6f4a8f43dccd5360fa4b248f973c88e4fa68ec3356b5495dd3461c9c7a765c51",
+  "englishDraftSha256": "9dc8d31e2905b7e6e78bc87e22a5bcf62a30c95bcdd5b8dadb123b5e25766d52",
+  "speechAndVisualOverlap": true,
+  "defaultHoldSeconds": 0,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M32-001",
+      "title": "M32-001",
+      "section": "13.4",
+      "lines": [
+        "Watch track editing in Super Mario Maker 2. Angular sections become rounded corners and join into a loop. What numbers would make a curved shape easy to control? We will build our own Bezier curve using control points outside the path, then split the same curve into the portions we need."
+      ]
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M32-002",
+      "title": "M32-002",
+      "section": "13.4",
+      "lines": [
+        "A cubic Bézier curve has four control points. The curve passes through the first and last; it generally does not pass through the two interior controls. Those are shape handles. This is approximation rather than a requirement to interpolate every control point."
+      ]
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M32-003",
+      "title": "M32-003",
+      "section": "13.4.1",
+      "lines": [
+        "The construction begins with linear interpolation. To move a fraction t between two points, multiply the first by one minus t, the next by t, and add. Applying the same fraction to adjacent pairs of four controls produces three points, then two, then one."
+      ]
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M32-004",
+      "title": "M32-004",
+      "section": "13.4.1",
+      "lines": [
+        "The last point is the curve position at t. As t moves from zero to one, that point traces the curve. Arrange the computation in a triangle: original controls on top, with each lower entry blending the two immediately above. This is de Casteljau's algorithm."
+      ]
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M32-005",
+      "title": "M32-005",
+      "section": "13.4.1",
+      "lines": [
+        "The code can overwrite a single array with each row of the triangle. Blend each point with the next, working from left to right, then reduce the active count by one. Repeat until one remains. Here n means the number of points, not the degree. Use a copy if the original controls are needed, and reject an empty array."
+      ]
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M32-006",
+      "title": "M32-006",
+      "section": "13.4.1",
+      "lines": [
+        "Expanding the blends gives a polynomial. With two controls it is the first point plus t times their difference. With three, the constant is the first point, the linear coefficient is twice the second minus twice the first, and the quadratic coefficient is first minus twice second plus third. We have grouped the same geometric calculation by powers of t."
+      ]
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M32-007",
+      "title": "M32-007",
+      "section": "13.4.1",
+      "lines": [
+        "Put the controls in columns of B. Multiplying by the basis-conversion matrix M gives the power coefficients. Compute those once for repeated evaluations, or multiply M by the powers of t first to obtain control-point weights. Both evaluate the same curve."
+      ]
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M32-008",
+      "title": "M32-008",
+      "section": "13.4.1",
+      "lines": [
+        "One more blend yields four cubic coefficients. The constant is b zero. The linear term is three times the difference b one minus b zero. The quadratic term is three b zero minus six b one plus three b two. The cubic term is minus b zero plus three b one minus three b two plus b three. Follow each coefficient back to the contributing controls."
+      ]
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M32-009",
+      "title": "M32-009",
+      "section": "13.4.1",
+      "lines": [
+        "The conversion also works backward. The first control is c zero; the next is c zero plus one third c one. The second interior control adds two thirds c one and one third c two to c zero. The endpoint sums all coefficients. For a fixed degree representation, these controls are uniquely determined."
+      ]
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M32-010",
+      "title": "M32-010",
+      "section": "13.4.1",
+      "lines": [
+        "Try controls zero zero, one two, three two, and four zero, at t equal to one half. The first row is point five one, two two, and three point five one. The next is one point two five one point five and two point seven five one point five. The final point is two, one point five. The handles are at height two, but the curve midpoint is at one point five."
+      ]
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M32-011",
+      "title": "M32-011",
+      "section": "13.4.1",
+      "lines": [
+        "Hold t at one half and move only the first interior handle upward. The endpoints remain fixed, while the departure direction and the interior change. To quantify that influence, regroup the polynomial by control point rather than by powers of t."
+      ]
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M32-012",
+      "title": "M32-012",
+      "section": "13.4.2",
+      "lines": [
+        "For two controls, the weights are one minus t and t. With three they become the square of one minus t, two t times one minus t, and t squared. The middle control has two contributing paths, creating the factor two. At cubic degree the coefficients similarly become one, three, three, one."
+      ]
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M32-013",
+      "title": "M32-013",
+      "section": "13.4.2",
+      "lines": [
+        "Higher degrees produce Pascal's triangle: ones on the edges, and each interior number the sum of the two above. The degree-four row, one four six four one, supplies quartic coefficients. These binomial coefficients count selections of i items from n, and are computed using factorials. A factorial multiplies all positive integers up to that number; zero factorial is one. Divide n factorial by the product of i factorial and the factorial of n minus i."
+      ]
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M32-014",
+      "title": "M32-014",
+      "section": "13.4.2",
+      "lines": [
+        "Each weight is a binomial coefficient times t to the i times one minus t to the n minus i. These are Bernstein basis functions. Multiply every control by its corresponding weight and sum them to evaluate the Bézier curve. At one half, cubic weights are one eighth, three eighths, three eighths, and one eighth."
+      ]
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M32-015",
+      "title": "M32-015",
+      "section": "13.4.2",
+      "lines": [
+        "The Bernstein weights sum to one: the binomial theorem makes their sum the nth power of the quantity t plus one minus t. The quantity inside is one, so the result is one. On zero through one they are also nonnegative, keeping the curve inside the controls' convex hull, like a taut rubber band around planar control points. At either end, only the corresponding endpoint weight is one, so the curve interpolates its endpoints."
+      ]
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M32-016",
+      "title": "M32-016",
+      "section": "13.4.2",
+      "lines": [
+        "Inside the parameter interval, every weight is positive, so moving one control affects the whole segment. That is global support. Editing only a neighborhood requires local support. A single polynomial cannot vanish throughout an open interval and remain nonzero elsewhere. This motivates joining polynomial pieces into a spline."
+      ]
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M32-017",
+      "title": "M32-017",
+      "section": "13.4.2",
+      "lines": [
+        "The weight for control i reaches its maximum at t equal to i over n. For the first interior control of a cubic, its influence peaks at one third. This is closeness in parameter order, not a rule that the spatially nearest control must have the greatest weight."
+      ]
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M32-018",
+      "title": "M32-018",
+      "section": "13.4.3",
+      "lines": [
+        "Recall Mario launching toward another planet in Super Mario Galaxy. A path is shaped not only by its destination, but also by the direction in which it begins. In our Bezier construction, the handles let us specify that direction. Now calculate departure direction. Differentiate the power form and substitute zero: the starting derivative is three times the difference b one minus b zero. At the end it is three times the difference between b three and b two. The curve departs toward the first interior control and arrives in the direction from the last interior control toward the endpoint."
+      ]
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M32-019",
+      "title": "M32-019",
+      "section": "13.4.3",
+      "lines": [
+        "This directly converts Bézier to Hermite form: keep the endpoints and use the derivatives just calculated. In reverse, add one third of the starting derivative to the start for the first handle, and subtract one third of the ending derivative from the end for the last handle. The curve stays unchanged; only its controls are represented differently."
+      ]
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M32-020",
+      "title": "M32-020",
+      "section": "13.4.3",
+      "lines": [
+        "Endpoint acceleration uses the nearest three controls. At the start, subtract twice b one from b zero, add b two, then multiply that whole result by six. If consecutive control-polygon edges are d zero and d one, this is six times the difference between d one and d zero. The endpoint uses the final two edges likewise. Position needs one point, the first derivative two, and the second derivative three."
+      ]
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M32-021",
+      "title": "M32-021",
+      "section": "13.4.3",
+      "lines": [
+        "Moving a nearby handle changes an endpoint derivative without moving the endpoint. Controls farther inward preserve lower-order endpoint conditions while affecting higher derivatives. Four equally spaced collinear controls give constant-speed travel along a line. Place the inner controls on their adjacent endpoints instead, and the same line gets smoothstep motion: start at rest and finish at rest."
+      ]
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M32-022",
+      "title": "M32-022",
+      "section": "13.4.3",
+      "lines": [
+        "Acceleration is not the same as curvature. Speeding up along a straight line produces acceleration but zero curvature. Traveling around a circle at constant speed produces acceleration because direction changes. Curvature uses the cross-product magnitude divided by speed cubed; the formula is not directly evaluated at zero-speed endpoints."
+      ]
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M32-023",
+      "title": "M32-023",
+      "section": "13.5",
+      "lines": [
+        "In Satisfactory, rail sections are previewed and connected one at a time. If we want to work on just part of our long curve, we first need to represent that portion as a curve in its own right. Suppose the path is almost right but one region needs finer control. Splitting it gives extra handles where needed. Subdivision also supports adaptive line approximation, using more pieces in curved regions. The goal is not merely to hide part of the old curve, but to produce independent controls describing the same portion."
+      ]
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M32-024",
+      "title": "M32-024",
+      "section": "13.5.1",
+      "lines": [
+        "Map the original interval a through b to a new parameter s from zero through one. First find the interval width, b minus a. Multiply that width by s, then add a to obtain t. Zero maps to a and one to b. Substitute this expression into the original polynomial and regroup by powers of s to obtain an independent polynomial for that section. This is reparameterization."
+      ]
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M32-025",
+      "title": "M32-025",
+      "section": "13.5.1",
+      "lines": [
+        "For p of t equal to t squared, extract point two through point five. Square the entire sum of point two and point three s: point zero four plus point one two s plus point zero nine s squared. Hermite form can also be obtained directly from the new endpoint values and derivatives scaled by the interval width."
+      ]
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M32-026",
+      "title": "M32-026",
+      "section": "13.5.2",
+      "lines": [
+        "For Bézier curves, reuse the intermediate points already computed. Extract the portion from the start to t equal to point seven five. During de Casteljau evaluation, collect the first point at each level: original start, first point of the first blend, first point of the second blend, and the final point. Those are the new four controls."
+      ]
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M32-027",
+      "title": "M32-027",
+      "section": "13.5.2",
+      "lines": [
+        "The geometry is unchanged, but the parameter interval differs. With t equal to point seven five s, the derivative with respect to s is point seven five times the original derivative. Its direction stays the same while its magnitude scales. The opposite portion comes from collecting the other edge of the computation triangle in the proper order."
+      ]
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M32-028",
+      "title": "M32-028",
+      "section": "13.5.2",
+      "lines": [
+        "Splitting at one half uses only midpoints. For our controls zero zero, one two, three two, four zero, the left controls are zero zero, point five one, one point two five one point five, and two one point five. The right continues with two point seven five one point five, three point five one, and four zero. Joining the pieces preserves the original shape."
+      ]
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M32-029",
+      "title": "M32-029",
+      "section": "13.5.2",
+      "lines": [
+        "For a general interval a through b, use the same construction with different fractions at each level. The new cubic controls use a three times; a twice and b once; a once and b twice; then b three times. Their order does not matter in exact arithmetic—only their multiplicities. This symmetric extension is called blossoming."
+      ]
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M32-030",
+      "title": "M32-030",
+      "section": "13.5.2",
+      "lines": [
+        "We began by looking for inputs that make a curve easy to control. Repeated interpolation produced the point; weights and derivatives explained the handles. Collecting the same intermediate points let us split the curve without changing its shape. The remaining question is how to join multiple pieces smoothly."
+      ]
+    }
+  ]
+}

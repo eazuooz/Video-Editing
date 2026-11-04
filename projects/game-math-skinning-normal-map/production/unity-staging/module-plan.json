@@ -1,0 +1,1182 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "M22",
+  "scope": "CPU module/staging only; no Unity editor launched, shared project changed, GPU capture or final playback QA",
+  "readInputs": {
+    "D:\\Github\\VideoEditing\\projects\\game-math-skinning-normal-map\\script\\narration.ko.json": "0522e215543afea9136182ce10609c399fe8d9fcbc57f3e1e42ef055b9374a12",
+    "D:\\Github\\VideoEditing\\projects\\game-math-skinning-normal-map\\planning\\source-audit.json": "f54afbc56c489449aaabdd0febbbf73870b8d99ebca83981f7e5d266a2d2d2de"
+  },
+  "engine": {
+    "editor": "6000.6.0f1",
+    "pipeline": "URP 17.6.0",
+    "finalResolution": [
+      1920,
+      1080
+    ],
+    "fps": 60
+  },
+  "assetRecord": {
+    "catalogConsulted": "shared/assets/unity-asset-library.json",
+    "selectionReason": "The main imported catalog has no Knight entry; use the existing proven CC0 KayKit rig already used by AiCraftSampleBuilder. It includes recognisable articulated geometry, actual arm blend weights and finite motion clips.",
+    "assetPath": "Assets/ThirdParty/KayKitAdventurers/Knight.fbx",
+    "guid": "274e91da352f3104c8313348b836daf7",
+    "source": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+    "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+    "license": "CC0",
+    "licenseEvidence": "unity/VideoEditing/Assets/ThirdParty/KayKitAdventurers/LICENSE.txt",
+    "requiredCredits": false,
+    "descriptionOptionalCredit": "KayKit Adventurers by Kay Lousberg (CC0)",
+    "verifiedSourceHash": "b25e35cc7eaaa3c7c103f10a4f41fde1cbd81936fede9aa9ae4efbd29d40ba1b",
+    "boneCount": 41,
+    "animationStackCount": 76,
+    "runtimeInspection": false,
+    "reimportPolicy": "Only isolated copy may set ModelImporter.isReadable. Original FBX, materials, source .meta and shared Unity are unchanged. Keep copied binaries/Library/recordings local."
+  },
+  "coordinateAndAccuracy": {
+    "math": "Right-handed vectors and column-vector transforms J_current × B_bind^-1 × p_bind. Display maps (x,y,z) to Unity (x,y,-z).",
+    "unityProbe": "Actual weighted world point = sum w_i * (bone.localToWorldMatrix * mesh.bindposes[i]) * bindVertex. Uses all four imported influences; actual weights are not replaced with worked 60/40 numbers.",
+    "normalShader": "Independent XYZ data decoder and TBN directional-response shader. Not Unity Lit/PBR or actual game internals. Knight itself uses actual URP Lit.",
+    "normalMap": "Procedural analytic grooves and separately RGB(37,128,218) constant texture are generated as Texture2D(...linear:true). No artistic sRGB conversion.",
+    "normalNumeric": "Raw=(-.7098039216,.0039215686,.7098039216), normalized=(-.7071013853,.0039066375,.7071013853).",
+    "mirror": "Preserve signed UV determinant, then Gram–Schmidt and h=sign(dot(cross(N,T),B)). Split incompatible seam vertices.",
+    "units": "Sleeve numeric points are dimensionless teaching coordinates. No unverified game measurement."
+  },
+  "entryPoints": {
+    "cpuVerification": "python -X utf8 production/unity-staging/verify-source.py",
+    "readOnlyFbxInspection": "python -X utf8 production/unity-staging/inspect-knight.py",
+    "rootOnlyUnityCPUValidation": "SkinNormalSceneBuilder.ValidateRigOnly",
+    "rootOnlyBuild": "SkinNormalSceneBuilder.BuildStage(shot)",
+    "evaluate": "stage.Evaluate(cueSeconds) after durationSeconds/stepSeconds binding; EvaluateNormalized is preview-only",
+    "capture": "Root URP capture pipeline, actual captions and source-kind label required"
+  },
+  "pending": [
+    "Root creates isolated project under this staging/LocalUnity* and copies exact engine packages and licensed FBX/texture/provenance; no huge Library copy.",
+    "Run ValidateRigOnly in owned isolated instance; compare CPU LBS versus BakeMesh for 15 sampled finite poses.",
+    "Set up shared 1080p60 capture with generated mesh/material assets persisted for independently editable per-beat scene files. No .unity scene has been saved by this module.",
+    "Bind all animation/step times to approved narration. Observe one finite action; do not loop or stretch a clip to fill narration.",
+    "Visually inspect rig elbow axis, surface facing, correct shader/culling, glyphs, label/diagram overlap and caption zone at 1080p and 375px.",
+    "Ensure three-axis arrows remain visible in front of targets but respect occlusion; exact layout is not visually approved.",
+    "017 baked-data transfer is a labelled analytic illustration, not a performed GPU bake. 022 curve and 033 seam views are explanatory diagrams, not production retopology.",
+    "Independent gameplay and its callouts remain parent-owned; 000 deliberately refuses to render from this module."
+  ],
+  "shots": [
+    {
+      "sourceBeatId": "M22-000-abstract",
+      "sceneId": "000",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "실제게임관절굽힘→고정갑옷빛이동 placeholder. 관찰전게임명/엔진기법단정금지.",
+      "correctionIds": [
+        "C01"
+      ],
+      "status": "independent-gameplay-parent-timeline-required",
+      "renderer": "independent-gameplay",
+      "sourceKind": "actual-recording",
+      "module": null,
+      "shot": {
+        "beatId": "M22-000-abstract",
+        "beatIndex": 0,
+        "englishTerm": "Actual Game Abstract",
+        "koreanTerm": "실제 게임 도입",
+        "meaning": "실제 움직임에서 두 좌표 변환을 소개합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": null,
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-001-articulation",
+      "sceneId": "001",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "Unity같은관절마네킹 rigidwhole→segmentedhierarchy→continuousmesh. 최초TombRaider/PS2혼합원문채택안함.",
+      "correctionIds": [
+        "C01"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-001-articulation",
+        "beatIndex": 1,
+        "englishTerm": "Articulation",
+        "koreanTerm": "관절 구조",
+        "meaning": "전체 이동과 관절별 움직임을 구분합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/001.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-002-bones",
+      "sceneId": "002",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "bonegizmo에서localaxis표시. 막대hide여전히meshdeform. verticesanchored notdecorative.",
+      "correctionIds": [
+        "C01"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-002-bones",
+        "beatIndex": 2,
+        "englishTerm": "Skeletal Animation",
+        "koreanTerm": "골격 애니메이션",
+        "meaning": "본은 움직이는 좌표계입니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/002.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-003-weights-rigging",
+      "sceneId": "003",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "weightcolor+numeric twochannels. sameelbowbends slow native animation simultaneousnarration.",
+      "correctionIds": [
+        "C01"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-003-weights-rigging",
+        "beatIndex": 3,
+        "englishTerm": "Skin Weights",
+        "koreanTerm": "스킨 가중치",
+        "meaning": "각 본이 정점에 미치는 비율입니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/003.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-004-lbs",
+      "sceneId": "004",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "two ghostvertex +finalvertex segment. `.6*p_upper+.4*p_lower`. sourceglossary LBS.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-004-lbs",
+        "beatIndex": 4,
+        "englishTerm": "Linear Blend Skinning",
+        "koreanTerm": "선형 블렌드 스키닝",
+        "meaning": "본으로 옮긴 위치를 가중평균합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/004.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-005-lbs-numbers",
+      "sceneId": "005",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "2D수치plane+3D팔pointleaderline. 두예값은자체선택계산원문approxweights보존.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-005-lbs-numbers",
+        "beatIndex": 5,
+        "englishTerm": "Weighted Position",
+        "koreanTerm": "위치의 가중평균",
+        "meaning": "가중치를 바꾸면 결과점이 옮겨집니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/005.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-006-vertex-data",
+      "sceneId": "006",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "`boneIndex`, `boneWeight`, `posInBoneSpace` rowhighlight. sum1example .6+.4. MAX4 configurednotuniversal.",
+      "correctionIds": [
+        "C02"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-006-vertex-data",
+        "beatIndex": 6,
+        "englishTerm": "Skin Vertex Data",
+        "koreanTerm": "스키닝 정점 데이터",
+        "meaning": "본 번호와 가중치, 기준 위치를 저장합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/006.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-007-simple-algorithm",
+      "sceneId": "007",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "sourcecode10.7독립축약implementationpseudocode5line, sourceallalgorithmsteps유지. executionmarkerseparatesyntax.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-007-simple-algorithm",
+        "beatIndex": 7,
+        "englishTerm": "Skinning Loop",
+        "koreanTerm": "스키닝 계산 순서",
+        "meaning": "각 본의 기여를 더합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/007.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-008-skinned-normal",
+      "sceneId": "008",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "positionpoint w1 vsnormalvectorw0, nskinrenormalization. weightedmatrixnonorthogonalwarningactual.",
+      "correctionIds": [
+        "C03"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-008-skinned-normal",
+        "beatIndex": 8,
+        "englishTerm": "Normal Transformation",
+        "koreanTerm": "법선 변환",
+        "meaning": "방향에는 평행이동을 더하지 않습니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/008.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-009-bind-question",
+      "sceneId": "009",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "bindposefixedghost currentarmalongside samecamera. bindinversearrows.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-009-bind-question",
+        "beatIndex": 9,
+        "englishTerm": "Bind Pose",
+        "koreanTerm": "바인드 포즈",
+        "meaning": "메시와 골격을 연결한 기준 자세입니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/009.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-010-bind-conversion",
+      "sceneId": "010",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "`p_current=J_current B_bind^-1 p_bind` columnvectorconsistent code root. source rowvector note inversionorder.",
+      "correctionIds": [
+        "C04"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-010-bind-conversion",
+        "beatIndex": 10,
+        "englishTerm": "Inverse Bind Matrix",
+        "koreanTerm": "바인드 역행렬",
+        "meaning": "기준 정점을 먼저 본의 공간으로 옮깁니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/010.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-011-bind-example",
+      "sceneId": "011",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "`2−1=1→1+3=4`, skipinversewrong5. bind=current→identityverification.",
+      "correctionIds": [
+        "C04"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-011-bind-example",
+        "beatIndex": 11,
+        "englishTerm": "Bind-to-Current Transform",
+        "koreanTerm": "기준에서 현재로",
+        "meaning": "2 − 1 + 3 = 4를 확인합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/011.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-012-matrix-blend",
+      "sceneId": "012",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "`p'=Σw_j(M_j p)= (Σw_jM_j)p`; indexweightsretained positions1vs4 footprintnonnumericclaim.",
+      "correctionIds": [
+        "C02",
+        "C04"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-012-matrix-blend",
+        "beatIndex": 12,
+        "englishTerm": "Matrix Blending",
+        "koreanTerm": "행렬 블렌딩",
+        "meaning": "변환을 미리 합쳐 공통 계산을 줄입니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/012.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-013-matrix-equivalence",
+      "sceneId": "013",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "sourcecode10.8steps all preserved. rotationblend0/180shrinkscontrast mathematical demo notgameinternalclaim.",
+      "correctionIds": [
+        "C03",
+        "C04"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-013-matrix-equivalence",
+        "beatIndex": 13,
+        "englishTerm": "Linear Blend Limitation",
+        "koreanTerm": "선형 혼합의 한계",
+        "meaning": "회전을 섞어도 순수 회전이 되지는 않습니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/013.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-014-deformation-limit",
+      "sceneId": "014",
+      "sourceSection": "10.8",
+      "sourceScreenPlan": "articulatedarmmuscleillustration optionalnotnewmethodlecture; currentmeshfixed→armarmorpatchzoom.",
+      "correctionIds": [
+        "C01"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-014-deformation-limit",
+        "beatIndex": 14,
+        "englishTerm": "Deformation Validation",
+        "koreanTerm": "변형 검토",
+        "meaning": "극단적인 자세에서 형태를 확인합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/014.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-015-bump-height",
+      "sceneId": "015",
+      "sourceSection": "10.9",
+      "sourceScreenPlan": "heightgrayscale→slopeN vsnormalRGB→N. fixedgeometrywireframe+lightrotation. actualgamebumpobservableplaceholder.",
+      "correctionIds": [
+        "C05"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-015-bump-height",
+        "beatIndex": 15,
+        "englishTerm": "Bump Mapping",
+        "koreanTerm": "범프 매핑",
+        "meaning": "표면 방향의 변화로 요철을 표현합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/015.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-016-encode-normal",
+      "sceneId": "016",
+      "sourceSection": "10.9",
+      "sourceScreenPlan": "`encode=.5*n+.5`, decode; individualXYZRGBlabels notaxiscolorambiguity. flatnormalcolor127/128quantization.",
+      "correctionIds": [
+        "C05"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-016-encode-normal",
+        "beatIndex": 16,
+        "englishTerm": "Normal Encoding",
+        "koreanTerm": "법선 인코딩",
+        "meaning": "방향을 색 채널 숫자로 저장합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/016.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-017-normal-data",
+      "sceneId": "017",
+      "sourceSection": "10.9",
+      "sourceScreenPlan": "highpoly→bake→lowpoly+map; sourceartisttoolcostgeneralnotPhotoshopclaim. normalimportlinear, actualsettingslaterverify.",
+      "correctionIds": [
+        "C05"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-017-normal-data",
+        "beatIndex": 17,
+        "englishTerm": "Normal Data Pipeline",
+        "koreanTerm": "노멀 데이터 흐름",
+        "meaning": "선형 데이터로 읽고 방향을 복원합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/017.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-018-reuse-problem",
+      "sceneId": "018",
+      "sourceSection": "10.9",
+      "sourceScreenPlan": "sameRGBtexeltopbottom→wrongparallelN→localframecorrectoppositeN. cubesallowedbecauseexplicitboxexample.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-018-reuse-problem",
+        "beatIndex": 18,
+        "englishTerm": "Tangent-Space Reuse",
+        "koreanTerm": "접선 공간의 재사용",
+        "meaning": "같은 무늬도 각 표면의 바깥을 향해야 합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/018.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-019-tangent-frame",
+      "sceneId": "019",
+      "sourceSection": "10.9.1",
+      "sourceScreenPlan": "surfaceattachedTBN canonicalterm card; UVincrementpaired arrows. normalmapyflipconvention.",
+      "correctionIds": [
+        "C06"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-019-tangent-frame",
+        "beatIndex": 19,
+        "englishTerm": "Tangent Frame",
+        "koreanTerm": "접선 공간 기저",
+        "meaning": "T·B·N으로 표면의 기준축을 만듭니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/019.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-020-decode-example",
+      "sceneId": "020",
+      "sourceSection": "10.9.1",
+      "sourceScreenPlan": "`2c/255−1=(-.709804,.003922,.709804)`, normalizedcalc exact. smallYnotclaim0exact. rendererstrengthdefault1.",
+      "correctionIds": [
+        "C05"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-020-decode-example",
+        "beatIndex": 20,
+        "englishTerm": "Normal Decoding",
+        "koreanTerm": "노멀 디코딩",
+        "meaning": "8비트 값을 복원하고 정규화합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/020.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-021-local-left",
+      "sceneId": "021",
+      "sourceSection": "10.9.1",
+      "sourceScreenPlan": "`n_m=xT+yB+zN` +matrixTBN. rowvectorbasisrowssource vscolumnbasiscolumnsdisplay explicit. orthonormalcondition.",
+      "correctionIds": [
+        "C05"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-021-local-left",
+        "beatIndex": 21,
+        "englishTerm": "TBN Transformation",
+        "koreanTerm": "TBN 변환",
+        "meaning": "각 성분에 해당 축을 곱해 더합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/021.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": [
+        {
+          "paragraphId": "S109-P021",
+          "formula": "$$\n\\mathbf s_m=s_{tx}\\hat{\\mathbf u}+s_{ty}\\hat{\\mathbf v}+s_{tz}\\hat{\\mathbf n}.\n$$"
+        },
+        {
+          "paragraphId": "S109-P023",
+          "formula": "$$\n\\mathbf s_m=\\mathbf s_t\n\\begin{bmatrix}\n-\\hat{\\mathbf u}-\\\\\n-\\hat{\\mathbf v}-\\\\\n-\\hat{\\mathbf n}-\n\\end{bmatrix}.\n\\tag{10.18}\n$$"
+        }
+      ]
+    },
+    {
+      "sourceBeatId": "M22-022-frame-varying",
+      "sceneId": "022",
+      "sourceSection": "10.9.1",
+      "sourceScreenPlan": "curvedsamearmorpatch+UVsheargrid; T/Bangle non90. ordinarystretchdataidentifiable.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-022-frame-varying",
+        "beatIndex": 22,
+        "englishTerm": "Interpolated Frame",
+        "koreanTerm": "보간한 기저",
+        "meaning": "곡면과 UV 배치에 따라 축이 달라집니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/022.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-023-space-choice",
+      "sceneId": "023",
+      "sourceSection": "10.9.1",
+      "sourceScreenPlan": "TBNinverse/transposeonlyiforthonormal. interpolatedlightdirectionnormalize notassumelinearperfect.",
+      "correctionIds": [
+        "C07"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-023-space-choice",
+        "beatIndex": 23,
+        "englishTerm": "Coordinate-Space Agreement",
+        "koreanTerm": "좌표 공간 일치",
+        "meaning": "내적하는 방향은 같은 공간에 있어야 합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/023.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-024-reconstruct-bitangent",
+      "sceneId": "024",
+      "sourceSection": "10.9.1",
+      "sourceScreenPlan": "`B=h(N×T)`, `h=sign((N×T)·Bstored)`; mirroredtextureonevariable. note negativeobjectscalehandledpipeline.",
+      "correctionIds": [
+        "C06"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-024-reconstruct-bitangent",
+        "beatIndex": 24,
+        "englishTerm": "Tangent Handedness",
+        "koreanTerm": "접선 기저의 핸디드니스",
+        "meaning": "외적으로 만든 축의 방향 부호를 저장합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/024.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-025-triangle-input",
+      "sceneId": "025",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "`q1=p1−p0 q2=p2−p0; s1=u1−u0 t1=v1−v0 ...` separateTtangentvs tUV carefullabels.",
+      "correctionIds": [
+        "C07"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-025-triangle-input",
+        "beatIndex": 25,
+        "englishTerm": "Triangle and UV Edges",
+        "koreanTerm": "삼각형과 UV의 변",
+        "meaning": "두 공간에서 이동한 차이를 연결합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/025.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": [
+        {
+          "paragraphId": "S109-P038",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf q_1&=\\mathbf p_1-\\mathbf p_0,& s_1&=u_1-u_0,&t_1&=v_1-v_0,\\\\\n\\mathbf q_2&=\\mathbf p_2-\\mathbf p_0,& s_2&=u_2-u_0,&t_2&=v_2-v_0.\n\\end{aligned}\n$$"
+        }
+      ]
+    },
+    {
+      "sourceBeatId": "M22-026-linear-system",
+      "sceneId": "026",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "twoedgeanimationu/vsteps→q. matrix2×2step notwallformula.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-026-linear-system",
+        "beatIndex": 26,
+        "englishTerm": "Tangent Linear System",
+        "koreanTerm": "접선 연립방정식",
+        "meaning": "변을 T와 B의 선형결합으로 씁니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/026.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": [
+        {
+          "paragraphId": "S109-P040",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf u s_1+\\mathbf v t_1&=\\mathbf q_1,\\\\\n\\mathbf u s_2+\\mathbf v t_2&=\\mathbf q_2.\n\\end{aligned}\n$$"
+        },
+        {
+          "paragraphId": "S109-P042",
+          "formula": "$$\n\\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix}\n\\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}\n=\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}.\n$$"
+        }
+      ]
+    },
+    {
+      "sourceBeatId": "M22-027-invert-system",
+      "sceneId": "027",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "sourceeqinversefullmatrix thenT/Bcollapse. `D` namedfirst, nochildderivationomitted.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-027-invert-system",
+        "beatIndex": 27,
+        "englishTerm": "UV Determinant",
+        "koreanTerm": "UV 행렬식",
+        "meaning": "부호를 보존하며 역행렬을 구합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/027.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": [
+        {
+          "paragraphId": "S109-P044",
+          "formula": "$$\n\\begin{aligned}\n\\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}\n&=\\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix}^{-1}\n\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}\\\\\n&=\\frac{1}{s_1t_2-s_2t_1}\n\\begin{bmatrix}t_2&-t_1\\\\-s_2&s_1\\end{bmatrix}\n\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}.\n\\end{aligned}\n$$"
+        }
+      ]
+    },
+    {
+      "sourceBeatId": "M22-028-tangent-worked",
+      "sceneId": "028",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "same2D/3Dtriangleworkednumbers, sourceaddedworkedexample preservesformula.",
+      "correctionIds": [
+        "C07"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-028-tangent-worked",
+        "beatIndex": 28,
+        "englishTerm": "Worked Tangent Basis",
+        "koreanTerm": "접선 기저 계산 예",
+        "meaning": "같은 삼각형에 숫자를 대입합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/028.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": [
+        {
+          "paragraphId": "S109-P038",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf q_1&=\\mathbf p_1-\\mathbf p_0,& s_1&=u_1-u_0,&t_1&=v_1-v_0,\\\\\n\\mathbf q_2&=\\mathbf p_2-\\mathbf p_0,& s_2&=u_2-u_0,&t_2&=v_2-v_0.\n\\end{aligned}\n$$"
+        },
+        {
+          "paragraphId": "S109-P040",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf u s_1+\\mathbf v t_1&=\\mathbf q_1,\\\\\n\\mathbf u s_2+\\mathbf v t_2&=\\mathbf q_2.\n\\end{aligned}\n$$"
+        },
+        {
+          "paragraphId": "S109-P042",
+          "formula": "$$\n\\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix}\n\\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}\n=\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}.\n$$"
+        },
+        {
+          "paragraphId": "S109-P044",
+          "formula": "$$\n\\begin{aligned}\n\\begin{bmatrix}-\\mathbf u-\\\\-\\mathbf v-\\end{bmatrix}\n&=\\begin{bmatrix}s_1&t_1\\\\s_2&t_2\\end{bmatrix}^{-1}\n\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}\\\\\n&=\\frac{1}{s_1t_2-s_2t_1}\n\\begin{bmatrix}t_2&-t_1\\\\-s_2&s_1\\end{bmatrix}\n\\begin{bmatrix}-\\mathbf q_1-\\\\-\\mathbf q_2-\\end{bmatrix}.\n\\end{aligned}\n$$"
+        }
+      ]
+    },
+    {
+      "sourceBeatId": "M22-029-determinant-sign",
+      "sceneId": "029",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "correctmirrorD−1 T−x vsdropdenominatorwrong+x. explicitsourcecorrectionon-screenformula notcreatorframing.",
+      "correctionIds": [
+        "C07"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-029-determinant-sign",
+        "beatIndex": 29,
+        "englishTerm": "Signed Determinant",
+        "koreanTerm": "부호 있는 행렬식",
+        "meaning": "거울 UV에서는 접선 방향이 뒤집힙니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/029.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": [
+        {
+          "paragraphId": "S109-P046",
+          "formula": "$$\n\\begin{aligned}\n\\mathbf u&=t_2\\mathbf q_1-t_1\\mathbf q_2,\\\\\n\\mathbf v&=-s_2\\mathbf q_1+s_1\\mathbf q_2.\n\\end{aligned}\n$$"
+        }
+      ]
+    },
+    {
+      "sourceBeatId": "M22-030-degenerate-uv",
+      "sceneId": "030",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "UVtrianglearea→0 D→0, guardhighlight `if abs(D)<eps...` fallbacknotinventexactengine.",
+      "correctionIds": [
+        "C07"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-030-degenerate-uv",
+        "beatIndex": 30,
+        "englishTerm": "Degenerate UV",
+        "koreanTerm": "퇴화한 UV",
+        "meaning": "행렬식이 0이면 역행렬이 없습니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/030.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-031-average-tangents",
+      "sceneId": "031",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "sourcecode10.9step input/allocateclear/triangleloop/accumulate preserving,memorycleanupafter. Captioncorrectionexplicitinternal.",
+      "correctionIds": [
+        "C07",
+        "C08"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-031-average-tangents",
+        "beatIndex": 31,
+        "englishTerm": "Tangent Accumulation",
+        "koreanTerm": "접선 누적",
+        "meaning": "면의 접선과 비탄젠트를 정점에 모읍니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/031.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-032-gram-schmidt",
+      "sceneId": "032",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "`T'=normalize(T−N dot(N,T))` geometryprojectiontrace, determinantvs unit signseparate.",
+      "correctionIds": [],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-032-gram-schmidt",
+        "beatIndex": 32,
+        "englishTerm": "Gram–Schmidt Orthogonalization",
+        "koreanTerm": "그람–슈미트 직교화",
+        "meaning": "법선 방향 성분을 빼고 정규화합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/032.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-033-seams",
+      "sceneId": "033",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "charactercenterseam normalhighlightbad→split2verticescorrect; countsactualillustrationnotgame.",
+      "correctionIds": [
+        "C09"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-033-seams",
+        "beatIndex": 33,
+        "englishTerm": "Mirrored UV Seams",
+        "koreanTerm": "거울 UV 이음선",
+        "meaning": "서로 다른 기저는 정점을 분리합니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/033.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-034-data-pipeline",
+      "sceneId": "034",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "authoring→validatedmeshattributes→shader3steps. 원문75/25비율현재사실로사용안함.",
+      "correctionIds": [
+        "C10"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "illustration",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-034-data-pipeline",
+        "beatIndex": 34,
+        "englishTerm": "Authoring to Runtime",
+        "koreanTerm": "제작 데이터에서 실행까지",
+        "meaning": "미리 맞춘 약속으로 런타임을 단순하게 만듭니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/034.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    },
+    {
+      "sourceBeatId": "M22-035-close",
+      "sceneId": "035",
+      "sourceSection": "10.9.2",
+      "sourceScreenPlan": "intro실제gameplaceholder복귀 +samecharacterbone/TBNoverlays properannotation notinternalmeasured. noextraBGM.",
+      "correctionIds": [
+        "C05",
+        "C07",
+        "C08",
+        "C10"
+      ],
+      "status": "source-implemented-CPU-compiled-runtime-and-visual-QA-pending",
+      "renderer": "Unity",
+      "sourceKind": "our-implementation",
+      "module": "SkinNormalTeachingStage.Evaluate",
+      "shot": {
+        "beatId": "M22-035-close",
+        "beatIndex": 35,
+        "englishTerm": "Moving Coordinate Frames",
+        "koreanTerm": "움직이는 좌표계",
+        "meaning": "큰 형태와 작은 요철을 같은 약속으로 옮깁니다",
+        "durationSeconds": 0,
+        "stepSeconds": [],
+        "expandedTerm": true,
+        "useObservedClip": false,
+        "bendFrom": 0,
+        "bendTo": 105
+      },
+      "scenePathPlanned": "Assets/Yamyam/M22/Scenes/035.unity",
+      "sceneSaved": false,
+      "speechAndMotion": "Overlap; root must bind phase cue boundaries to approved speech. Normalized preview phases are not final timings.",
+      "formulas": []
+    }
+  ]
+}

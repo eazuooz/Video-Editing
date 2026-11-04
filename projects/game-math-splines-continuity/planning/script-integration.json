@@ -1,0 +1,139 @@
+{
+  "updatedAt": "2026-11-04T15:39:41.847264+00:00",
+  "episode": "M33",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "1816faaddbdecc0a422c43f510a8bc67b5420194451008d8701f2ccf9bad94c7",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "2ae927ae41b95036036abacc45caa1ac516d31bc022d8bab90cd9f5e5403a514",
+  "changes": [
+    {
+      "sourceBeatId": "M33-001",
+      "mode": "replace",
+      "beforeKo": "경로의 첫 구간은 마음에 드는데 다음 구간을 고치자 앞부분까지 휘어 버린다고 해 보죠. 긴 경로 전체를 다항식 하나로 설계하면 이런 일이 생깁니다. 작은 곡선들을 연결하면 필요한 부분을 따로 다룰 수 있어요. 오늘은 조각을 잇는 방법에서 시작해, 모양과 움직임이 모두 자연스럽게 이어지는 조건을 찾고, 접선까지 자동으로 정해 보겠습니다.",
+      "afterKo": "새티스팩토리에서 선로의 끝을 움직여 다음 구간에 연결하면, 휘어진 길이 이어집니다. 긴 경로를 다항식 하나로 만들면 한 부분을 고칠 때 다른 부분까지 영향을 받을 수 있죠. 작은 곡선들을 연결하면 필요한 부분을 따로 다룰 수 있습니다. 오늘은 조각을 잇는 방법에서 시작해, 모양과 움직임이 모두 자연스럽게 이어지는 조건을 찾고, 접선까지 자동으로 정해 보겠습니다.",
+      "beforeEn": "Imagine liking the first part of a path, then bending it unintentionally while editing a later part. A single polynomial has this global influence. Joining smaller pieces lets us control neighborhoods separately. We will connect those pieces, distinguish smooth shape from smooth motion, and finally calculate their tangents automatically.",
+      "afterEn": "In Satisfactory, adjusting a rail endpoint and joining it to the next section creates a continuing curved route. If we design a long path with one polynomial, editing one part can affect distant parts. Connecting smaller curves lets us work on the pieces. We will begin with those joins, find conditions for both shape and motion to continue smoothly, and then generate tangents automatically.",
+      "reason": "Observed joined-rail construction opens spline thesis; retain original global-support issue, local segments and automated tangent plan."
+    },
+    {
+      "sourceBeatId": "M33-009",
+      "mode": "prepend",
+      "beforeKo": "그럼 두 벡터가 어느 정도 같아야 매끄러울까요? 방향과 길이가 모두 같으면 움직임이 자연스럽게 이어집니다. 방향은 같은데 길이만 다르면 선의 모양은 매끈해 보여도, 같은 속도로 매개변수를 진행할 때 물체의 속력이 갑자기 바뀝니다. 반대로 양쪽 도함수를 모두 영으로 만들면 모서리에서 완전히 멈춘 다음 다른 방향으로 출발할 수도 있습니다.",
+      "afterKo": "슈퍼 마리오 메이커 투의 트랙에서는 직각으로 꺾인 모서리를 둥근 구간으로 바꿀 수 있습니다. 위치가 이어지는 것과 나아갈 방향까지 매끈하게 이어지는 것은 다르다는 걸 눈으로 볼 수 있죠. 그럼 두 벡터가 어느 정도 같아야 매끄러울까요? 방향과 길이가 모두 같으면 움직임이 자연스럽게 이어집니다. 방향은 같은데 길이만 다르면 선의 모양은 매끈해 보여도, 같은 속도로 매개변수를 진행할 때 물체의 속력이 갑자기 바뀝니다. 반대로 양쪽 도함수를 모두 영으로 만들면 모서리에서 완전히 멈춘 다음 다른 방향으로 출발할 수도 있습니다.",
+      "beforeEn": "What must agree for a smooth join? Matching both direction and magnitude connects the derivatives. If directions agree but lengths differ, the shape may look smooth while motion jumps in speed under a uniform parameter clock. Setting both derivatives to zero can instead stop at a corner before departing in another direction.",
+      "afterEn": "In Super Mario Maker 2, a right-angle track corner can be changed into a rounded section. We can see why connecting positions and joining travel directions smoothly are different requirements. What must agree for a smooth join? Matching both direction and magnitude connects the derivatives. If directions agree but lengths differ, the shape may look smooth while motion jumps in speed under a uniform parameter clock. Setting both derivatives to zero can instead stop at a corner before departing in another direction.",
+      "reason": "Actual corner edit visually motivates continuity conditions; no numerical C/G classification asserted for game."
+    },
+    {
+      "sourceBeatId": "M33-018",
+      "mode": "prepend",
+      "beforeKo": "이제 구간을 잇는 조건은 알았습니다. 하지만 길을 만들 때 모든 접선을 직접 조절하는 것은 번거롭죠. 지나야 할 매듭점만 정하고 접선을 자동으로 만들 수는 없을까요? 앞으로 살펴볼 방법들은 새 곡선 공식을 만드는 것이 아니라, 에르미트 곡선에 넣을 접선들을 고르는 방법입니다.",
+      "afterKo": "마리오 갤럭시의 스타는 다음 행성으로 향하는 휘어진 비행을 만들어 줍니다. 이런 움직임을 여러 지점을 잇는 우리 경로로 만들려면, 모든 손잡이를 직접 움직이는 방법만 있는 것은 아닙니다. 이제 구간을 잇는 조건은 알았습니다. 하지만 길을 만들 때 모든 접선을 직접 조절하는 것은 번거롭죠. 지나야 할 매듭점만 정하고 접선을 자동으로 만들 수는 없을까요? 앞으로 살펴볼 방법들은 새 곡선 공식을 만드는 것이 아니라, 에르미트 곡선에 넣을 접선들을 고르는 방법입니다.",
+      "beforeEn": "We now know how to join the pieces, but adjusting every tangent by hand can be tedious. Can we specify only the knots and calculate the tangents automatically? The following methods choose the derivatives for Hermite pieces rather than creating a new evaluation formula.",
+      "afterEn": "A Launch Star in Super Mario Galaxy sends Mario along a curved flight toward the next planet. When building this kind of motion along several points in our own path, adjusting every handle manually is not our only option. We now know how to join the pieces, but adjusting every tangent by hand can be tedious. Can we specify only the knots and calculate the tangents automatically? The following methods choose the derivatives for Hermite pieces rather than creating a new evaluation formula.",
+      "reason": "Observed goal-directed3D flight motivates authoring an analogous path with automatic tangents; no claim game uses Catmull-Rom orTCB."
+    },
+    {
+      "sourceBeatId": "M33-043",
+      "mode": "prepend",
+      "beforeKo": "긴 경로를 만들 때 필요한 것은 큰 공식 하나가 아니었습니다. 다루기 쉬운 조각을 만들고, 위치와 방향과 변화량을 어떻게 연결할지 정하는 일이었죠. 모양만 매끈하면 되는지, 속도와 가속도까지 이어져야 하는지에 따라 조건은 달라집니다. 이 기준을 알고 나면 손잡이를 직접 움직이든 자동 접선을 쓰든, 왜 그 움직임이 나오는지 확인하며 설계할 수 있습니다.",
+      "afterKo": "이제 완성된 선로를 따라가는 열차를 보세요. 긴 길의 여러 굽이를 지나가죠. 이런 움직임을 직접 만들 때 어느 값을 확인해야 하는지 말할 수 있겠죠. 긴 경로를 만들 때 필요한 것은 큰 공식 하나가 아니었습니다. 다루기 쉬운 조각을 만들고, 위치와 방향과 변화량을 어떻게 연결할지 정하는 일이었죠. 모양만 매끈하면 되는지, 속도와 가속도까지 이어져야 하는지에 따라 조건은 달라집니다. 이 기준을 알고 나면 손잡이를 직접 움직이든 자동 접선을 쓰든, 왜 그 움직임이 나오는지 확인하며 설계할 수 있습니다.",
+      "beforeEn": "A long path did not require one enormous formula. It required manageable pieces and explicit rules for joining their positions, directions, and rates of change. The needed continuity depends on whether smooth shape is enough or velocity and acceleration must also connect. With those criteria, manual handles and automatic tangents become understandable design tools.",
+      "afterEn": "Now watch the train following the completed rails through the bends of a long route. We can say which quantities to check when building motion like this ourselves. A long path did not require one enormous formula. It required manageable pieces and explicit rules for joining their positions, directions, and rates of change. The needed continuity depends on whether smooth shape is enough or velocity and acceleration must also connect. With those criteria, manual handles and automatic tangents become understandable design tools.",
+      "reason": "Return to actual route traversal while preserving complete original conclusion, no redundant chapter reset."
+    },
+    {
+      "sourceBeatId": "M33-008",
+      "mode": "readthrough-correction",
+      "beforeKo": "들어오는 쪽 손잡이를 에프, 나가는 쪽을 에이라고 하겠습니다. 들어오는 도함수는 케이 빼기 에프의 삼 배, 나가는 도함수는 에이 빼기 케이의 삼 배입니다. 따라서 손잡이는 도함수 길이의 삼분의 일에 놓입니다. 한 끝점을 공유하는 삼차 조각들을 일렬로 저장하면 매듭점은 영, 삼, 육 번처럼 세 칸마다 나타납니다.",
+      "afterKo": "들어오는 쪽 손잡이를 에프, 나가는 쪽을 에이라고 하겠습니다. 들어오는 도함수는 케이 빼기 에프의 삼 배, 나가는 도함수는 에이 빼기 케이의 삼 배입니다. 따라서 손잡이는 도함수 길이의 삼분의 일에 놓입니다. 한 끝점을 공유하는 삼차 조각들을 일렬로 저장하면 매듭점은 영, 삼, 육 번처럼 세 칸마다 나타납니다.",
+      "beforeEn": "Name the incoming handle f and outgoing handle a. The incoming derivative is three times k minus f, and the outgoing derivative is three times a minus k. Handle distances therefore equal one third of the derivative magnitude. Storing connected cubic controls in one sequence places shared knots at indices zero, three, six, and so on.",
+      "afterEn": "Name the incoming handle f and outgoing handle a. The incoming derivative is three times the vector from f to k, and the outgoing derivative is three times the vector from k to a. Handle distances therefore equal one third of the derivative magnitude. Storing connected cubic controls in one sequence places shared knots at indices zero, three, six, and so on.",
+      "reason": "Use directed endpoints to remove spoken parenthesis ambiguity."
+    },
+    {
+      "sourceBeatId": "M33-012",
+      "mode": "readthrough-correction",
+      "beforeKo": "같은 매개변수 간격의 삼차 구간에서는 씨 일을 만들기 쉽습니다. 들어오는 벡터와 나가는 벡터를 같게 두면 됩니다. 베지에 손잡이로는 케이 빼기 에프가 에이 빼기 케이와 같아야 하죠. 정리하면 케이는 두 손잡이의 중점입니다. 양쪽 손잡이를 같은 방향의 한 직선 위에서 같은 길이로 잡으면 됩니다.",
+      "afterKo": "같은 매개변수 간격의 삼차 구간에서는 씨 일을 만들기 쉽습니다. 들어오는 벡터와 나가는 벡터를 같게 두면 됩니다. 베지에 손잡이로는 케이 빼기 에프가 에이 빼기 케이와 같아야 하죠. 정리하면 케이는 두 손잡이의 중점입니다. 양쪽 손잡이를 매듭점 기준으로 서로 반대쪽의 한 직선 위에, 같은 거리로 놓으면 됩니다.",
+      "beforeEn": "For cubic segments with equal parameter intervals, C one is straightforward: match the incoming and outgoing derivatives. In handle form, k minus f equals a minus k. Rearranging makes k the midpoint of the two handles. The handles lie on opposite sides of the knot at equal distances along one line.",
+      "afterEn": "For cubic segments with equal parameter intervals, C one is straightforward: match the incoming and outgoing derivatives. In handle form, k minus f equals a minus k. Rearranging makes k the midpoint of the two handles. The handles lie on opposite sides of the knot at equal distances along one line.",
+      "reason": "Handle positions are on opposite sides of a knot although derivative directions agree."
+    },
+    {
+      "sourceBeatId": "M33-018",
+      "mode": "readthrough-correction",
+      "beforeKo": "마리오 갤럭시의 스타는 다음 행성으로 향하는 휘어진 비행을 만들어 줍니다. 이런 움직임을 여러 지점을 잇는 우리 경로로 만들려면, 모든 손잡이를 직접 움직이는 방법만 있는 것은 아닙니다. 이제 구간을 잇는 조건은 알았습니다. 하지만 길을 만들 때 모든 접선을 직접 조절하는 것은 번거롭죠. 지나야 할 매듭점만 정하고 접선을 자동으로 만들 수는 없을까요? 앞으로 살펴볼 방법들은 새 곡선 공식을 만드는 것이 아니라, 에르미트 곡선에 넣을 접선들을 고르는 방법입니다.",
+      "afterKo": "마리오 갤럭시의 스타는 다음 행성으로 향하는 휘어진 비행을 만들어 줍니다. 이런 움직임을 여러 지점을 잇는 우리 경로로 만들어 보겠습니다. 구간을 잇는 조건은 알았지만, 모든 접선을 직접 조절하는 것은 번거롭죠. 지나야 할 매듭점만 정하고 접선을 자동으로 만들 수는 없을까요? 앞으로 살펴볼 방법들은 새 곡선 공식을 만드는 것이 아니라, 에르미트 곡선에 넣을 접선들을 고르는 방법입니다.",
+      "beforeEn": "A Launch Star in Super Mario Galaxy sends Mario along a curved flight toward the next planet. When building this kind of motion along several points in our own path, adjusting every handle manually is not our only option. We now know how to join the pieces, but adjusting every tangent by hand can be tedious. Can we specify only the knots and calculate the tangents automatically? The following methods choose the derivatives for Hermite pieces rather than creating a new evaluation formula.",
+      "afterEn": "A Launch Star in Super Mario Galaxy sends Mario along a curved flight toward the next planet. Let us build this kind of motion through several points in our own path. We know how to join the pieces, but adjusting every tangent by hand can be tedious. Can we specify only the knots and calculate the tangents automatically? The following methods choose the derivatives for Hermite pieces rather than creating a new evaluation formula.",
+      "reason": "Remove repeated manual-handle premise at the game-to-automatic-tangent bridge while retaining the question and method."
+    },
+    {
+      "sourceBeatId": "M33-027",
+      "mode": "readthrough-correction",
+      "beforeKo": "끝점에서는 한쪽 이웃이 없으니 규칙을 정해야 합니다. 시작과 끝에서 쉬게 하고 싶다면 접선을 영으로 둘 수 있습니다. 또는 접선 계산에만 쓰는 가상점을 추가합니다. 첫 접선이 다음 점 빼기 가상점의 절반이므로, 영으로 만들려면 가상점을 시작점이 아니라 다음 점에 겹쳐야 합니다.",
+      "afterKo": "끝점에서는 한쪽 이웃이 없으니 규칙을 정해야 합니다. 시작과 끝에서 쉬게 하고 싶다면 접선을 영으로 둘 수 있습니다. 또는 접선 계산에만 쓰는 가상점을 추가합니다. 첫 접선이 다음 점 빼기 가상점의 절반이므로, 영으로 만들려면 가상점을 시작점이 아니라 다음 점에 겹쳐야 합니다.",
+      "beforeEn": "Endpoints lack one neighbor, so they need a policy. Set the derivatives to zero when the motion should begin and end at rest, or add phantom points used only for tangent calculation. Since the first tangent is half the next point minus the phantom, a zero tangent requires copying the next point—not the start point.",
+      "afterEn": "Endpoints lack one neighbor, so they need a policy. Set the derivatives to zero when the motion should begin and end at rest, or add phantom points used only for tangent calculation. Since the first tangent is half the vector from the phantom to the next point, a zero tangent requires copying the next point—not the start point.",
+      "reason": "Tangent is half of the full point difference."
+    },
+    {
+      "sourceBeatId": "M33-030",
+      "mode": "readthrough-correction",
+      "beforeKo": "다음은 원점에서 출발해 일 초에 높이 에이치, 이 초에 앞쪽 거리 디에 도착하는 포물선입니다. 좌우 이동이 없다면 엑스는 영입니다. 앞쪽은 등속이므로 제트는 디 티의 절반입니다. 높이를 초기 속도 곱하기 티 더하기 가속도의 절반 곱하기 티 제곱으로 쓰고, 일 초와 이 초 조건을 넣으면 와이는 이 에이치 티 빼기 에이치 티 제곱이 됩니다.",
+      "afterKo": "다음은 원점에서 출발해 일 초에 높이 에이치, 이 초에 앞쪽 거리 디, 높이 영에 도착하는 포물선입니다. 좌우 이동이 없다면 엑스는 영입니다. 앞쪽은 등속이므로 제트는 디 티의 절반입니다. 높이를 초기 속도 곱하기 티 더하기 가속도의 절반 곱하기 티 제곱으로 쓰고, 일 초와 이 초 조건을 넣으면 와이는 이 에이치 티 빼기 에이치 티 제곱이 됩니다.",
+      "beforeEn": "Next launch from the origin, reaching height h at one second and forward distance d at two seconds. With no sideways movement, x is zero. Constant forward speed gives z equal to d t over two. Substitute the height conditions into initial vertical velocity times t plus half acceleration times t squared; the result is y equal to two h t minus h t squared.",
+      "afterEn": "Next launch from the origin, reaching height h at one second, then forward distance d at height zero at two seconds. With no sideways movement, x is zero. Constant forward speed gives z equal to d t over two. Substitute the height conditions into initial vertical velocity times t plus half acceleration times t squared; the result is y equal to two h t minus h t squared.",
+      "reason": "State the y(2)=0 endpoint condition required by the vertical polynomial."
+    },
+    {
+      "sourceBeatId": "M33-036",
+      "mode": "readthrough-correction",
+      "beforeKo": "여덟 번째는 제어점을 시작, 끝, 시작, 끝 순서로 놓는 경우입니다. 이러면 왕복할 것 같지만, 계산하면 시작에서 끝으로 계속 나아갑니다. 진행 비율의 도함수는 삼 곱하기 이 티 빼기 일의 제곱이라 음수가 되지 않아요. 가운데에서만 속도가 영이 됐다가 다시 같은 방향으로 빨라집니다.",
+      "afterKo": "여덟 번째는 제어점을 시작, 끝, 시작, 끝 순서로 놓는 경우입니다. 이러면 왕복할 것 같지만, 계산하면 시작에서 끝으로 계속 나아갑니다. 진행 비율의 도함수는 이 티에서 일을 뺀 값을 제곱하고 삼을 곱한 것이라 음수가 되지 않아요. 가운데에서만 속도가 영이 됐다가 다시 같은 방향으로 빨라집니다.",
+      "beforeEn": "The eighth case alternates controls start, end, start, end. It may look as though the particle should reverse, but it moves monotonically toward the end. The derivative of its blend factor is three times two t minus one squared, which is nonnegative. It stops only at the midpoint, then accelerates in the same direction.",
+      "afterEn": "The eighth case alternates controls start, end, start, end. It may look as though the particle should reverse, but it moves monotonically toward the end. Its blend derivative is three times the square of the quantity two t minus one, so it is nonnegative. It stops only at the midpoint, then accelerates in the same direction.",
+      "reason": "Make 3(2t-1)^2 audible as a complete squared quantity."
+    }
+  ],
+  "readThrough": {
+    "status": "complete-text-review-only",
+    "source": "planning/source-audit.json",
+    "beats": 43,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "Full original teaching content remains in source order; only hypothetical abstract and observed-game bridges edited.",
+      "All game claims are visible actions/results, never proof of commercial curve algorithms.",
+      "Final audio, runtime and final caption composite QA remain pending."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "f311a4835e5a5f95af5bb3b233d912bacc6b061917c4b2e77ac26d922fc6f989",
+    "enSha256": "8d109c1f53868524f04477cb7290dc8e73172ca62b9f8ffb9f98a9642ca16f67",
+    "completedAt": "2026-11-04T15:39:41.847264+00:00",
+    "method": "Every integrated KO/EN beat read in bounded sequential chunks without relying on truncated output; corrections then regenerated and all changed passages reread. Source mathematics and mapped visual intents compared.",
+    "allKoBeatsRead": true,
+    "allEnBeatsRead": true,
+    "beatCount": 43
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ],
+  "validation": {
+    "beatCount": 43,
+    "allIdsOrderSectionsPreserved": true,
+    "paragraphMappingPreserved": true,
+    "allHoldsZero": true,
+    "sourceFinal": true,
+    "narrationFinal": false,
+    "sceneBindingsFinal": false
+  }
+}

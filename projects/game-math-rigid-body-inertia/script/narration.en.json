@@ -1,0 +1,565 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-rigid-body-inertia",
+  "episodeId": "M30",
+  "status": "integrated-draft-text-readthrough-complete-runtime-binding-pending",
+  "isFinalNarration": false,
+  "chapterOrderPreserved": true,
+  "actualDurationSeconds": null,
+  "sourceDraftSha256": "37a723947f9f3b80a93caea5f7165a6f5550efa6f526b2ae558a2531b56ab566",
+  "englishDraftSha256": "4e22e33151b6bb8f28922687997389951053f209ffefb752d08ba11c9079ec48",
+  "speechAndVisualOverlap": true,
+  "defaultHoldSeconds": 0,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M30-000-abstract",
+      "title": "미는 위치가 바꾸는 움직임",
+      "section": "미는 위치가 바꾸는 움직임",
+      "lines": [
+        "When a cannon fires in Besiege, its vehicle moves backward and also rears up and overturns. What else is needed to calculate translation and rotation together? We will examine where forces act and how mass is distributed, then connect angular velocity and torque to collisions and a physics engine’s time update. First, separate translation from rotation on a single object."
+      ]
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M30-001-orientation",
+      "title": "자세와 각속도",
+      "section": "자세와 각속도",
+      "lines": [
+        "Orientation is rotation’s counterpart to position. Matrices and quaternions encode the same orientation in different forms. Angular velocity describes spin axis and rate; angular acceleration describes its change. Angular velocity is not simply the componentwise derivative of Euler angles or a quaternion. That distinction matters when updating orientation."
+      ]
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M30-002-spin-orbit",
+      "title": "자전과 공전",
+      "section": "자전과 공전",
+      "lines": [
+        "Spin changes orientation; orbital motion changes position around another point. On a spinning robot, head and hand trace circles of different radii, each centered at the nearest point on the rotation axis. Multiply the axis unit direction by radians per second for angular velocity. Off-axis points share angular rate but not linear speed."
+      ]
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M30-003-instant-axis",
+      "title": "이동과 회전의 분리",
+      "section": "이동과 회전의 분리",
+      "lines": [
+        "In Tears of the Kingdom, a raft made from joined logs and a mast is lifted and moved as an assembly. Its connected solid parts retain their relative arrangement. Let us separate that object’s motion into translation and rotation. For a translating body, subtract center-of-mass velocity from each point’s velocity to isolate rotation. A point on the axis has zero radius and cannot reveal angular rate by its own velocity. Angular acceleration is the time derivative of angular velocity. Without external torque, angular momentum is conserved; an asymmetric body’s angular velocity need not remain constant. Three-dimensional inertia will explain why."
+      ]
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M30-004-disk",
+      "title": "고정축부터 시작하기",
+      "section": "고정축부터 시작하기",
+      "lines": [
+        "Start with planar rotation: a massless disk carries one point mass around a fixed pivot. The constraint opposes radial displacement, while tangential force changes spin rate. Disk size contributes no inertia in this thought experiment; only the point mass and its radius do."
+      ]
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M30-005-tangent",
+      "title": "접선 가속도와 각가속도",
+      "section": "접선 가속도와 각가속도",
+      "lines": [
+        "Resolve force into radial and tangential parts. Tangential magnitude is force times sine of the angle. Divide by mass for tangential acceleration, then by radius for angular acceleration. Tangential acceleration changes spin rate; centripetal acceleration changes velocity direction to maintain the circular path."
+      ]
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M30-006-lever",
+      "title": "힘의 위치와 질량의 위치",
+      "section": "힘의 위치와 질량의 위치",
+      "lines": [
+        "Keep the point mass fixed but push at a different handle. The lever-arm vector runs from pivot to force application point, distinct from the mass radius. Applying equal perpendicular force twice as far doubles rotational effect. Moving the application point has not changed the mass distribution; that distinction matters for inertia."
+      ]
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M30-007-torque",
+      "title": "토크와 문손잡이",
+      "section": "토크와 문손잡이",
+      "lines": [
+        "Torque measures rotational effect: force times lever length times sine of their angle. Its unit is newton meter, distinguished from energy in joules. The same push opens a door more easily near the handle than the hinge. A force along the lever produces zero torque; a perpendicular one maximizes it."
+      ]
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M30-008-couple",
+      "title": "힘 없이 도는 경우",
+      "section": "힘 없이 도는 경우",
+      "lines": [
+        "A force through a free body’s center of mass translates it without torque about that center. Equal opposite forces at separated points can cancel net force while leaving torque: a couple. Wrenches and motors illustrate the idea. Brief torque during impact produces angular impulse, changing angular momentum."
+      ]
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M30-009-inertia",
+      "title": "질량을 바깥으로 옮기기",
+      "section": "질량을 바깥으로 옮기기",
+      "lines": [
+        "Now hold the lever fixed and move the mass outward. Equal torque produces less angular acceleration. Point-mass moment of inertia is mass times squared distance from the axis. Doubling that distance quadruples inertia. Sum each contribution for multiple masses. Inertia comes from mass distribution, not the force application point."
+      ]
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M30-010-four-distributions",
+      "title": "같은 질량 네 가지 배치",
+      "section": "같은 질량 네 가지 배치",
+      "lines": [
+        "Compare four arrangements of total mass six. Three masses of two at radii three, two, one give inertia 28; all at radius three give 54. Weighting the outer positions gives 36; concentrating weight inward gives 20. Equal total mass gives equal translational inertia but different rotational inertia. For continuous bodies the sum becomes an integral."
+      ]
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M30-011-angular-momentum",
+      "title": "회전의 운동량",
+      "section": "회전의 운동량",
+      "lines": [
+        "For a fixed axis, torque equals inertia times angular acceleration, and angular momentum equals inertia times angular velocity. A particle’s radius times tangential momentum gives the same quantity; summing particles gives the rigid body’s total. Integrating torque gives the change, added to initial angular momentum. Zero net external torque conserves angular momentum."
+      ]
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M30-012-distance-recap",
+      "title": "두 거리의 차이",
+      "section": "두 거리의 차이",
+      "lines": [
+        "A farther handle increases torque, while moving the door’s mass farther from the hinge increases inertia. The first change strengthens the same force’s effect; the second reduces response to the same torque. Now extend the fixed-axis relationship to three dimensions."
+      ]
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M30-013-cross",
+      "title": "삼차원의 외적",
+      "section": "삼차원의 외적",
+      "lines": [
+        "Three-dimensional torque is lever arm cross force. The cross product includes both lengths and their angle’s sine, with direction identifying rotational effect. Particle angular momentum is position cross linear momentum. What replaces the single fixed-axis inertia value in three dimensions?"
+      ]
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M30-014-tensor-derive",
+      "title": "각속도 앞의 계수 찾기",
+      "section": "각속도 앞의 계수 찾기",
+      "lines": [
+        "Substitute mass times velocity for momentum, then omega cross position for rotational point velocity. Expanding position cross that expression, the x component has y squared plus z squared multiplying omega x. Collect the coefficients of all angular-velocity components in three rows. Angular momentum becomes that matrix times angular velocity."
+      ]
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M30-015-anisotropy",
+      "title": "관성 텐서",
+      "section": "관성 텐서",
+      "lines": [
+        "This matrix is the inertia tensor, representing direction-dependent rotational resistance. Rolling a rod around its length differs from spinning it like a rotor. Diagonal entries describe axis inertias; off-diagonal entries couple components. It is symmetric, but not a rotation matrix, and symmetry does not justify mixing row and column conventions."
+      ]
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M30-016-general-dynamics",
+      "title": "토크가 영이어도 축은 바뀐다",
+      "section": "토크가 영이어도 축은 바뀐다",
+      "lines": [
+        "The planar formula gains another term in general 3D motion. With column vectors, torque equals inertia times angular acceleration plus angular velocity cross angular momentum. In an asymmetric body these vectors need not be parallel. Angular velocity can therefore change while conserving angular momentum even with zero torque. Isotropic inertia or a zero cross term reduces to the simpler formula."
+      ]
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M30-017-shapes",
+      "title": "복잡한 물체의 근사",
+      "section": "복잡한 물체의 근사",
+      "lines": [
+        "Sum element tensors for a complex body, or integrate a continuous distribution. Common shapes such as boxes, spheres, and cylinders provide useful approximations. A spherical head’s center is not the body’s overall center of mass. Align reference points before adding the shape tensors."
+      ]
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M30-018-parallel-axis",
+      "title": "평행축 정리",
+      "section": "평행축 정리",
+      "lines": [
+        "The parallel-axis theorem adds the inertia caused by shifting the reference point away from the center of mass. In 3D, multiply displacement squared by identity, subtract its outer product, and multiply by mass. A two-kilogram body with axis inertia 0.2, shifted one meter perpendicular to that axis, gives 2.2. Shift each component to the shared reference before summing."
+      ]
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M30-019-contact-speed",
+      "title": "접촉점이 얼마나 움직이나",
+      "section": "접촉점이 얼마나 움직이나",
+      "lines": [
+        "Return to collision with rotation included. Use contact-point velocity, not only center-of-mass velocity: add omega cross the contact offset to center velocity. A rod’s stationary center does not prevent its tip moving rapidly toward a wall. Subtract contact-point velocities and project their approach onto the normal."
+      ]
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M30-020-angular-impulse",
+      "title": "충격이 이동과 회전을 함께 바꾼다",
+      "section": "충격이 이동과 회전을 함께 바꾼다",
+      "lines": [
+        "A contact impulse changes center velocity and angular momentum by contact offset cross impulse. Multiply by inverse inertia for angular-velocity change. Updated contact velocity includes both translational and rotational changes. Rotation can separate the contacting regions without fully stopping the centers from approaching."
+      ]
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M30-021-rotational-denominator",
+      "title": "반발 조건에 대입하기",
+      "section": "반발 조건에 대입하기",
+      "lines": [
+        "Require outgoing normal relative speed to equal minus restitution times the incoming speed. Substitute updated contact velocities and collect the impulse scale. The denominator adds rotational response to inverse masses. Allowing rotation can increase that response and reduce the needed impulse. Lock rotation and the formula returns to the translation-only case."
+      ]
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M30-022-same-space",
+      "title": "좌표계를 맞추는 마지막 확인",
+      "section": "좌표계를 맞추는 마지막 확인",
+      "lines": [
+        "All positions, velocities, normals, and tensors must use the same frame. Body-space inverse inertia stays fixed, but its world form rotates with orientation. With columns, use R times body inverse inertia times R transpose; row conventions reverse the transpose placement. Under our normal convention only positive approach gets a fresh restitution impulse. Do not pull separating bodies back together."
+      ]
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M30-023-engine-objects",
+      "title": "물리 엔진이 보관하는 것",
+      "section": "물리 엔진이 보관하는 것",
+      "lines": [
+        "Connect the calculations to engine data: bodies store motion, collision shapes define contact geometry, and constraints maintain relationships. A crate may use one body; an articulated person uses connected rigid parts. Rendered geometry and collision shape need not be identical."
+      ]
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M30-024-persistent-state",
+      "title": "오래 보관하는 상태",
+      "section": "오래 보관하는 상태",
+      "lines": [
+        "Mass, body inertia, center offset, and attached shapes are usually initialized when created. Position, orientation, linear velocity, and angular velocity persist between steps. Momentum can replace velocity as primary state. With changing mass such as fuel, model departing material and momentum transfer too; changing one stored variable does not automatically solve conservation."
+      ]
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M30-025-accumulators",
+      "title": "한 단계의 작업 공간",
+      "section": "한 단계의 작업 공간",
+      "lines": [
+        "Force and torque accumulators are working space cleared and filled with contributions. Impulses and contacts can be tracked separately. In the structure, center position, quaternion, and velocities are state; rotation matrix and inverse mass are derived. Exact engine restoration may also need cached contacts or prior-step data beyond this teaching list."
+      ]
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M30-026-shapes-filter",
+      "title": "모양을 단순하게 다루기",
+      "section": "모양을 단순하게 다루기",
+      "lines": [
+        "Shapes range from primitives to convex polyhedra and triangle meshes. Convex pieces can make complex concave objects easier to handle. Shapes attached to one body represent a compound shape rather than self-colliding parts. Filters can ignore connected limbs or create barriers blocking only selected character categories."
+      ]
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M30-027-joint-types",
+      "title": "관절이 남겨 두는 자유도",
+      "section": "관절이 남겨 두는 자유도",
+      "lines": [
+        "In BeamNG.drive, wheels rotate while connected to the body and move vertically over bumps. Being connected does not eliminate every motion. In an ideal rigid-body model, we must decide which motions to allow and which to constrain. A ball joint holds two anchor points together while allowing rotation. A hinge also aligns axes, leaving one rotation. A prismatic joint permits translation along an axis without rotation; combined sliding and twisting is a different joint. A universal joint permits rotations about two perpendicular axes. Shoulder-like joints may use cone-shaped swing and twist limits. Check actual degrees of freedom, not names alone."
+      ]
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M30-028-motors",
+      "title": "모터와 부드러운 제약",
+      "section": "모터와 부드러운 제약",
+      "lines": [
+        "A joint maintains geometry; a motor drives a desired relative velocity with force or torque limits. Limits prevent unlimited pushing. Required effort can trigger motor sounds or break a joint. Compliance can make constraints behave like springs and dampers. Rigidity versus flexibility is a design choice."
+      ]
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M30-029-contact-lifetime",
+      "title": "엔진이 만드는 제약",
+      "section": "엔진이 만드는 제약",
+      "lines": [
+        "User joints usually persist, while contact constraints follow detected contacts; engines may cache them for performance and stability. Games use notifications for sound or damage and supported hooks to modify interactions. Keep inertia tensors distinct from orientation matrices: one describes mass distribution, the other rotates coordinates."
+      ]
+    },
+    {
+      "id": "030",
+      "sourceBeatId": "M30-030-loop",
+      "title": "게임 루프의 앞뒤",
+      "section": "게임 루프의 앞뒤",
+      "lines": [
+        "Create bodies, shapes, and joints initially. Before simulation, prepare input, constraint targets, and kinematic transforms and velocities; network targets or new bodies can enter here. After simulation, apply transforms, contacts, and constraint results to game objects, update following cameras, and render. Keep pre-physics input distinct from post-physics results."
+      ]
+    },
+    {
+      "id": "031",
+      "sourceBeatId": "M30-031-penalty",
+      "title": "침투를 밀어내는 힘",
+      "section": "침투를 밀어내는 힘",
+      "lines": [
+        "One approach is a penalty method: penetration generates a spring-like force. Accumulate external forces, detect contacts, add opposite contact forces, then integrate. A stack may rest with slight compression balancing gravity. The practical goal can be stable bounded penetration rather than exactly zero overlap."
+      ]
+    },
+    {
+      "id": "032",
+      "sourceBeatId": "M30-032-sequential",
+      "title": "충격량을 차례로 적용하기",
+      "section": "충격량을 차례로 적용하기",
+      "lines": [
+        "Another approach applies contact impulses sequentially. Update velocities from forces first, without yet moving positions. Resolving one contact can alter another, so iterate, then advance positions. Order can affect the result; practical implementations require iteration and tolerance limits rather than an unbounded loop."
+      ]
+    },
+    {
+      "id": "033",
+      "sourceBeatId": "M30-033-constraint-solve",
+      "title": "속도로 관계를 만족시키기",
+      "section": "속도로 관계를 만족시키기",
+      "lines": [
+        "A velocity-based view treats contacts, joints, and motors as constraints. A Jacobian maps changes in velocities to constraint rates. Contact can allow faster separation but forbid penetration, creating inequalities rather than only equations. Nonnegative contact impulses and complementary contact conditions can form an LCP. Practical solvers combine these approaches."
+      ]
+    },
+    {
+      "id": "034",
+      "sourceBeatId": "M30-034-numerical",
+      "title": "짧은 시간 뒤를 예측하기",
+      "section": "짧은 시간 뒤를 예측하기",
+      "lines": [
+        "Every solver must advance position and velocity. Forces can depend on state and interactions; a spring-connected structure partly immersed in water couples them further. We may evaluate forces at any state without solving the whole time function analytically, so numerical integration advances using discrete samples."
+      ]
+    },
+    {
+      "id": "035",
+      "sourceBeatId": "M30-035-explicit",
+      "title": "현재 속도로 한 걸음",
+      "section": "현재 속도로 한 걸음",
+      "lines": [
+        "Let the step be h; at sixty hertz it is one sixtieth of a second. Explicit Euler adds current velocity times h to position, treating the derivative as constant over the step. Changing velocity makes the straight tangent step differ from the curved trajectory. Smaller intervals improve this local approximation."
+      ]
+    },
+    {
+      "id": "036",
+      "sourceBeatId": "M30-036-cloth-taylor",
+      "title": "생략한 항을 보기",
+      "section": "생략한 항을 보기",
+      "lines": [
+        "Discretizing cloth into spring-connected vertices makes force depend on neighbors. A Taylor expansion contains the current value, a linear-time term, and higher powers. Euler matches through first order and drops the rest. Constant acceleration gives exact velocity, but changing force leaves nonzero omitted terms. A small squared step alone does not guarantee small coefficients."
+      ]
+    },
+    {
+      "id": "037",
+      "sourceBeatId": "M30-037-higher-order",
+      "title": "정확도와 제약의 절충",
+      "section": "정확도와 제약의 절충",
+      "lines": [
+        "Runge–Kutta methods sample forces at trial states and combine them. Higher order can help smooth forces, but discontinuous collisions or stiff springs are not solved simply by increasing order. Consider implicit methods, smaller steps, and constraint solvers together. Compare accuracy, stability, and computation cost."
+      ]
+    },
+    {
+      "id": "038",
+      "sourceBeatId": "M30-038-semi-implicit",
+      "title": "두 줄의 순서",
+      "section": "두 줄의 순서",
+      "lines": [
+        "Updating velocity first and then using that new velocity for position is semi-implicit Euler. Starting at zero position and velocity with acceleration two and step 0.1 gives velocity 0.2 in both methods. Explicit position is zero; semi-implicit is 0.02; the exact constant-acceleration position is 0.01. Both are first order but have different error and stability properties."
+      ]
+    },
+    {
+      "id": "039",
+      "sourceBeatId": "M30-039-rotating-point",
+      "title": "회전에는 무엇을 더할까",
+      "section": "회전에는 무엇을 더할까",
+      "lines": [
+        "A rotating point’s instantaneous velocity is omega cross its relative position. Adding velocity times the step moves along the circle’s tangent, not its exact arc. This can approximate a small angle, but even constant angular velocity changes linear velocity direction. Apply that relation to the three body axes to differentiate orientation."
+      ]
+    },
+    {
+      "id": "040",
+      "sourceBeatId": "M30-040-matrix-derivative",
+      "title": "회전행렬의 미분",
+      "section": "회전행렬의 미분",
+      "lines": [
+        "Write the cross product as multiplication by a skew-symmetric matrix. With column vectors and world angular velocity, it multiplies orientation on the left. An Euler update can change entries independently, gradually losing unit axes and orthogonality. Reorthonormalize a matrix maintained this way, and distinguish the row-vector multiplication order."
+      ]
+    },
+    {
+      "id": "041",
+      "sourceBeatId": "M30-041-quaternion-derivative",
+      "title": "쿼터니언의 미분",
+      "section": "쿼터니언의 미분",
+      "lines": [
+        "Quaternion derivatives also permit componentwise stepping. Extend angular velocity with scalar zero, multiply with orientation, and halve. The derivative is not a unit quaternion; the stepped orientation requires normalization. Multiplication order depends on world versus body angular velocity. Verify conventions with a simple ninety-degree axis rotation."
+      ]
+    },
+    {
+      "id": "042",
+      "sourceBeatId": "M30-042-finite-rotation",
+      "title": "한 단계의 회전을 직접 만들기",
+      "section": "한 단계의 회전을 직접 만들기",
+      "lines": [
+        "If angular velocity is constant over a step, form the finite rotation directly: axis from omega and angle from its magnitude times h. Convert it to a matrix or quaternion and compose with orientation. This removes the componentwise tangent approximation for constant angular velocity, but does not remove errors from changing omega. Normalization alone cannot fix that time approximation."
+      ]
+    },
+    {
+      "id": "043",
+      "sourceBeatId": "M30-043-study-physics",
+      "title": "더 깊이 공부하는 경로",
+      "section": "더 깊이 공부하는 경로",
+      "lines": [
+        "For deeper understanding, connect mechanics with differential equations and study demonstrations alongside calculation. Introductory game physics, physics-based animation, and more mathematical game-physics texts address different depths. Start from the phenomenon you want to build and follow the needed prerequisites."
+      ]
+    },
+    {
+      "id": "044",
+      "sourceBeatId": "M30-044-study-code",
+      "title": "실제 코드와 충돌 검출",
+      "section": "실제 코드와 충돌 검출",
+      "lines": [
+        "Read implementations such as ODE and Bullet to connect bodies, shapes, and constraints. Collision detection deserves separate study through real-time collision-detection and game-geometry references. Today’s response equations begin after detection supplies contact information."
+      ]
+    },
+    {
+      "id": "045",
+      "sourceBeatId": "M30-045-study-numerical",
+      "title": "과학 계산으로 연결하기",
+      "section": "과학 계산으로 연결하기",
+      "lines": [
+        "For integration and numerical error, continue into scientific computing and numerical analysis: references include Numerical Recipes and texts by Heath and Strang. The useful path is to read a principle, implement a small example, and compare calculations with visible motion."
+      ]
+    },
+    {
+      "id": "046",
+      "sourceBeatId": "M30-046-fan",
+      "title": "연습 1: 배 안의 선풍기",
+      "section": "연습 1: 배 안의 선풍기",
+      "lines": [
+        "An onboard fan blows toward its own sail. In an ideal perpendicular arrangement where the sail receives the imparted forward momentum, fan reaction and sail force balance. There is no free net thrust. If air exits in another direction, include its momentum; not every real fan-and-sail geometry has the same outcome."
+      ]
+    },
+    {
+      "id": "047",
+      "sourceBeatId": "M30-047-tug",
+      "title": "연습 2: 줄다리기",
+      "section": "연습 2: 줄다리기",
+      "lines": [
+        "In tug-of-war, winning is not explained by one end somehow violating equal interaction forces. Each person also receives ground force. Forward acceleration requires static friction from the ground to exceed the rope’s backward pull for that person. For the whole people-and-rope system, unequal ground forces change total motion."
+      ]
+    },
+    {
+      "id": "048",
+      "sourceBeatId": "M30-048-gravity-check",
+      "title": "연습 3·4: 낙하와 무중력",
+      "section": "연습 3·4: 낙하와 무중력",
+      "lines": [
+        "In constant gravity without air resistance, lighter objects do not fall faster: mass cancels. A space station is not beyond gravity. Using the exercise’s 340-kilometer altitude and circular-orbit speed gives about 8.85 meters per second squared. Station and occupants fall together, reducing the support force experienced as weight."
+      ]
+    },
+    {
+      "id": "049",
+      "sourceBeatId": "M30-049-slope-check",
+      "title": "연습 5: 달의 경사면",
+      "section": "연습 5: 달의 경사면",
+      "lines": [
+        "Using static friction coefficient 0.62 for wood and concrete, the threshold is arctangent 0.62, about 31.8 degrees. Under the same ideal conditions and coefficient, it is unchanged on the Moon: gravity cancels from downslope force and friction capacity."
+      ]
+    },
+    {
+      "id": "050",
+      "sourceBeatId": "M30-050-spring-check",
+      "title": "연습 6: 매달린 용수철",
+      "section": "연습 6: 매달린 용수철",
+      "lines": [
+        "At rest, spring force balances weight: k extension equals mg. Five kilograms stretching ten centimeters gives roughly 490 newtons per meter with standard gravity. Seventeen centimeters in the same environment means 8.5 kilograms. One kilogram stretching eight centimeters with the same spring implies four times the original effective gravity, possibly a different gravitational or accelerating environment."
+      ]
+    },
+    {
+      "id": "051",
+      "sourceBeatId": "M30-051-oscillation-check",
+      "title": "연습 7: 수평 진동",
+      "section": "연습 7: 수평 진동",
+      "lines": [
+        "Stiffness one hundred and mass five give angular frequency square root of twenty, or about 0.712 hertz. Releasing from rest at 14.7 centimeters extension gives amplitude 0.147 meters. At equilibrium speed is maximal: amplitude times angular frequency, about 0.657 meters per second."
+      ]
+    },
+    {
+      "id": "052",
+      "sourceBeatId": "M30-052-train-rest",
+      "title": "연습 8: 객차 안에서 걷기",
+      "section": "연습 8: 객차 안에서 걷기",
+      "lines": [
+        "A 75-kilogram person walks in a frictionless 1,000-kilogram carriage. Interpret 1.25 meters per second relative to the carriage. Total momentum stays zero and person velocity minus carriage velocity is 1.25. Solving gives carriage velocity about minus 0.087 and person velocity 1.163 meters per second. Traversing twenty carriage meters takes sixteen seconds: carriage moves back about 1.4 meters and person forward about 18.6."
+      ]
+    },
+    {
+      "id": "053",
+      "sourceBeatId": "M30-053-train-moving",
+      "title": "움직이는 객차에서 반복하기",
+      "section": "움직이는 객차에서 반복하기",
+      "lines": [
+        "If both initially move at five meters per second, add five to both previous velocities: approximately 4.913 and 6.163. Add eighty meters of common travel during sixteen seconds to the displacements: about 78.6 and 98.6 meters. Changing the walking speed changes the velocity history, but the same final relative placement preserves the corresponding center-of-mass relation."
+      ]
+    },
+    {
+      "id": "054",
+      "sourceBeatId": "M30-054-car-restitution",
+      "title": "연습 9: 붙지 않는 차량",
+      "section": "연습 9: 붙지 않는 차량",
+      "lines": [
+        "Revisit the two cars with restitution 0.1. A normal twenty degrees west of south gives incoming normal relative speed about 57.93 kilometers per hour. The impulse magnitude is about 16,595 newton seconds. Opposite application gives car one velocity components roughly minus 21.38 and 37.43 kilometers per hour, and car two minus 35.64 and 36.45."
+      ]
+    },
+    {
+      "id": "055",
+      "sourceBeatId": "M30-055-balance-monkey",
+      "title": "연습 10: 줄 위의 균형",
+      "section": "연습 10: 줄 위의 균형",
+      "lines": [
+        "The balancing toy carries heavy ends below its support. Consider the whole toy, bar, and weights. If their combined center of mass is below the support, a small tilt produces a restoring gravitational torque. Spreading mass also increases rotational inertia and slows rapid tipping. Distinguish restoring stability from merely slower response."
+      ]
+    },
+    {
+      "id": "056",
+      "sourceBeatId": "M30-056-cylinders",
+      "title": "연습 11: 속이 빈 원통",
+      "section": "연습 11: 속이 빈 원통",
+      "lines": [
+        "Equal mass and outer dimensions do not imply equal inertia. A solid cylinder has axial inertia one half m R squared; a thin hoop has m R squared. Hollow mass farther outward resists the same torque more. Rolling without slipping down a slope, greater inertia also gives lower acceleration."
+      ]
+    },
+    {
+      "id": "057",
+      "sourceBeatId": "M30-057-truck-com",
+      "title": "연습 12: 트럭을 나눠 계산하기",
+      "section": "연습 12: 트럭을 나눠 계산하기",
+      "lines": [
+        "Approximate a truck with three boxes and four cylindrical wheels. Convert centimeters to meters first, then sum mass: 2,200 kilograms. The mass-weighted centers give overall coordinates zero, about 1.009 meters high and 1.045 along the vehicle. Next express every component’s inertia about this common center."
+      ]
+    },
+    {
+      "id": "058",
+      "sourceBeatId": "M30-058-truck-tensors",
+      "title": "부품의 중심 관성",
+      "section": "부품의 중심 관성",
+      "lines": [
+        "For a box, x-axis inertia is mass times height squared plus depth squared, divided by twelve; cycle the lengths for other axes. The front box’s diagonal entries are about 240.8, 520.8, and 386.7. Wheels have x-aligned axes, radius 0.35 and width 0.2 meters, giving axial inertia about 3.06 and transverse inertias about 1.70."
+      ]
+    },
+    {
+      "id": "059",
+      "sourceBeatId": "M30-059-truck-sum",
+      "title": "평행축으로 합치기",
+      "section": "평행축으로 합치기",
+      "lines": [
+        "Shift each part’s central tensor to the truck center and sum seven matrices. Diagonal entries are about 5110.7, 5690.9, and 1154.4 kilogram meters squared. The yz entries remain about minus 39.6. Left-right symmetry cancels x couplings, but height and longitudinal distribution can retain a coupling."
+      ]
+    },
+    {
+      "id": "060",
+      "sourceBeatId": "M30-060-closing",
+      "title": "힘·충격·회전의 하나의 흐름",
+      "section": "힘·충격·회전의 하나의 흐름",
+      "lines": [
+        "The opening vehicle’s translation and rotation now connect: net force changes center-of-mass motion, torque changes angular momentum, and contact-point motion combines translation and rotation. An engine satisfies constraints while stepping through time. Changing one lever position or restitution value makes the resulting behavior understandable, beyond merely looking plausible."
+      ]
+    }
+  ]
+}

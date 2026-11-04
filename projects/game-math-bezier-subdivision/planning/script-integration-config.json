@@ -1,0 +1,165 @@
+{
+  "episode": "M32",
+  "slug": "game-math-bezier-subdivision",
+  "edits": [
+    {
+      "index": 0,
+      "mode": "replace",
+      "ko": "슈퍼 마리오 메이커 투의 트랙 편집을 보세요. 각진 경로를 구부리고, 구간들을 이어 둥근 고리를 만듭니다. 이렇게 곡선의 모양을 쉽게 조절하려면 어떤 숫자를 사용하면 좋을까요? 이번에는 곡선 밖의 제어점으로 형태를 잡는 베지에 곡선을 만들고, 같은 경로를 원하는 구간으로 나눠 보겠습니다.",
+      "en": "Watch track editing in Super Mario Maker 2. Angular sections become rounded corners and join into a loop. What numbers would make a curved shape easy to control? We will build our own Bezier curve using control points outside the path, then split the same curve into the portions we need.",
+      "reason": "Actual path editing opens thesis; do not identify Nintendo's internal curve representation. Outside control-point role remains taught immediately in002 and iterative blending in003.",
+      "screen": "Maker2 local202–247 native editing. Track active corner→rounded joins→closed loop, speech overlaps. Transition to our four-control-point model; game does not display our Bezier handles."
+    },
+    {
+      "index": 17,
+      "mode": "prepend",
+      "ko": "마리오 갤럭시에서 스타를 타고 출발할 때를 떠올려 보세요. 도착할 곳뿐 아니라 어떤 방향으로 나아가기 시작하는지도 경로의 모양에 영향을 줍니다. 우리가 만든 베지에 곡선에서는 그 방향을 손잡이로 정할 수 있어요.",
+      "en": "Recall Mario launching toward another planet in Super Mario Galaxy. A path is shaped not only by its destination, but also by the direction in which it begins. In our Bezier construction, the handles let us specify that direction.",
+      "reason": "Real departure and curved flight motivate endpoint tangent; do not attribute Bezier implementation to Mario.",
+      "screen": "NativeGalaxy90–104 action, then our fixed curve b0..b3 and derivative arrows; retain all endpoint differentiation."
+    },
+    {
+      "index": 22,
+      "mode": "prepend",
+      "ko": "새티스팩토리에서는 선로를 한 구간씩 미리 보고 이어 놓습니다. 우리도 긴 곡선 가운데 필요한 부분을 따로 다루고 싶다면, 먼저 그 부분을 독립적인 곡선으로 표현할 수 있어야 하죠.",
+      "en": "In Satisfactory, rail sections are previewed and connected one at a time. If we want to work on just part of our long curve, we first need to represent that portion as a curve in its own right.",
+      "reason": "Observed segment construction motivates subdivision goal; no claim commercial game performs exact deCasteljau subdivision.",
+      "screen": "NativeSatisfactory258–285 preview/build sequence, short outline of completed segment. Move to our original unchanged Bezier, isolate interval and compute new control points while explaining."
+    }
+  ],
+  "bindings": [
+    {
+      "index": 0,
+      "candidate": "M32-G01-corner",
+      "speechPrefix": "슈퍼 마리오 메이커 투의 트랙 편집을 보세요",
+      "role": "Actual-game abstract: authoring a curved route",
+      "after": "Our Bezier handles and recursive interpolation give one implementation."
+    },
+    {
+      "index": 17,
+      "candidate": "M32-G02-flight",
+      "speechPrefix": "마리오 갤럭시에서 스타를 타고 출발할 때를",
+      "role": "Departure direction then endpoint derivative",
+      "after": "Our handles are mapped to3(b1-b0) and3(b3-b2)."
+    },
+    {
+      "index": 22,
+      "candidate": "M32-G03-build",
+      "speechPrefix": "새티스팩토리에서는 선로를 한 구간씩",
+      "role": "Manage a route in independently editable sections",
+      "after": "Our exact subdivision preserves the original curve shape."
+    }
+  ],
+  "screenOverrides": {},
+  "aliases": {
+    "새티스팩토리": "Satisfactory",
+    "슈퍼 마리오 메이커 투": "슈퍼 마리오 메이커 2",
+    "마리오 갤럭시": "슈퍼 마리오 갤럭시",
+    "베지에": "베지에"
+  },
+  "corrections": [
+    {
+      "index": 29,
+      "koFrom": "처음에는 손잡이 하나가 왜 곡선을 바꾸는지 물었습니다.",
+      "koTo": "처음에는 곡선의 모양을 쉽게 조절할 입력을 찾았습니다.",
+      "enFrom": "We began by asking why a handle changes a curve.",
+      "enTo": "We began by looking for inputs that make a curve easy to control.",
+      "reason": "Connect conclusion to the integrated actual-game abstract; retain all subsequent blending/weight/derivative/subdivision summary."
+    },
+    {
+      "index": 5,
+      "reason": "Spoken grouping must mean 2(b1-b0), not b1-2b0.",
+      "koFrom": "티의 계수가 둘째 점 빼기 첫 점의 두 배,",
+      "koTo": "티의 계수가 둘째 점에서 첫 점을 뺀 벡터의 두 배,"
+    },
+    {
+      "index": 8,
+      "reason": "Make the retained c0 offset explicit for inverse coefficient conversion.",
+      "koFrom": "두 번째 내부점에는 씨 일의 삼분의 이와 씨 이의 삼분의 일을 더하고,",
+      "koTo": "두 번째 내부점은 씨 영에 씨 일의 삼분의 이와 씨 이의 삼분의 일을 더한 값이고,"
+    },
+    {
+      "index": 12,
+      "reason": "Avoid an unstated zero-based row convention in Pascal triangle.",
+      "koFrom": "네 번째 줄의 일, 사, 육, 사, 일이 사차 곡선에 쓰이죠.",
+      "koTo": "차수가 사인 줄의 일, 사, 육, 사, 일이 사차 곡선에 쓰이죠.",
+      "enFrom": "The fourth row, one four six four one, supplies quartic coefficients.",
+      "enTo": "The degree-four row, one four six four one, supplies quartic coefficients."
+    },
+    {
+      "index": 12,
+      "reason": "Define factorial and make denominator grouping audible for first-time learners.",
+      "koFrom": "엔 팩토리얼을 아이 팩토리얼과 엔 빼기 아이 팩토리얼의 곱으로 나눠 계산할 수 있습니다.",
+      "koTo": "팩토리얼은 일부터 그 수까지의 정수를 곱한 값이고, 영 팩토리얼은 일로 약속합니다. 엔 팩토리얼을 분자로 놓고, 분모에는 아이의 팩토리얼과 엔에서 아이를 뺀 수의 팩토리얼을 곱합니다.",
+      "enFrom": "and equal n factorial divided by i factorial times n minus i factorial.",
+      "enTo": "and are computed using factorials. A factorial multiplies all positive integers up to that number; zero factorial is one. Divide n factorial by the product of i factorial and the factorial of n minus i."
+    },
+    {
+      "index": 14,
+      "reason": "Concrete reminder of convex hull before its geometric guarantee.",
+      "koFrom": "제어점들을 둘러싼 볼록 껍질 밖으로 나가지 않습니다.",
+      "koTo": "제어점들을 고무줄로 팽팽하게 둘러싼 모양인 볼록 껍질 밖으로 나가지 않습니다.",
+      "enFrom": "keeping the curve inside the controls' convex hull.",
+      "enTo": "keeping the curve inside the controls' convex hull, like a taut rubber band around planar control points."
+    },
+    {
+      "index": 17,
+      "reason": "Make entire endpoint differences the operands of multiplication by three.",
+      "koFrom": "시작 도함수는 삼 곱하기 비 일 빼기 비 영입니다. 끝 도함수는 삼 곱하기 비 삼 빼기 비 이입니다.",
+      "koTo": "시작 도함수는 비 일에서 비 영을 뺀 벡터의 삼 배입니다. 끝 도함수는 비 삼에서 비 이를 뺀 벡터의 삼 배입니다.",
+      "enFrom": "At the end it is three times b three minus b two.",
+      "enTo": "At the end it is three times the difference between b three and b two."
+    },
+    {
+      "index": 19,
+      "reason": "Second derivative is 6(b0-2b1+b2); spoken order must preserve parentheses.",
+      "koFrom": "시작은 육 곱하기 비 영 빼기 이 비 일 더하기 비 이입니다.",
+      "koTo": "시작에서는 비 영에서 비 일의 두 배를 빼고 비 이를 더한 다음, 그 결과 전체에 육을 곱합니다.",
+      "enFrom": "At the start it is six times b zero minus two b one plus b two.",
+      "enTo": "At the start, subtract twice b one from b zero, add b two, then multiply that whole result by six."
+    },
+    {
+      "index": 19,
+      "reason": "Preserve parentheses in the equivalent control-edge derivative.",
+      "koFrom": "육 곱하기 디 일 빼기 디 영이죠.",
+      "koTo": "디 일에서 디 영을 뺀 벡터의 육 배이죠.",
+      "enFrom": "this is six times d one minus d zero.",
+      "enTo": "this is six times the difference between d one and d zero."
+    },
+    {
+      "index": 23,
+      "reason": "Work t=a+s(b-a) in unambiguous spoken steps.",
+      "koFrom": "티는 에이 더하기 에스 곱하기 비 빼기 에이입니다.",
+      "koTo": "먼저 비에서 에이를 빼서 구간 폭을 구합니다. 그 폭에 에스를 곱하고 에이를 더한 값이 티입니다.",
+      "enFrom": "Set t to a plus s times b minus a.",
+      "enTo": "First find the interval width, b minus a. Multiply that width by s, then add a to obtain t."
+    },
+    {
+      "index": 24,
+      "reason": "Square applies to the full affine reparameterization.",
+      "koFrom": "새 식은 영점이 더하기 영점삼 에스의 제곱입니다.",
+      "koTo": "새 식은 영점이에 영점삼 에스를 더한 값 전체를 제곱한 것입니다.",
+      "enFrom": "The new expression is point two plus point three s, squared:",
+      "enTo": "Square the entire sum of point two and point three s:"
+    },
+    {
+      "index": 12,
+      "koFrom": "엔 개 중 아이 개를 고르는 경우의 수이며, 팩토리얼은",
+      "koTo": "엔 개 중 아이 개를 고르는 경우의 수입니다. 계산에 쓰이는 팩토리얼은",
+      "reason": "Separate the binomial-count definition from the factorial prerequisite naturally."
+    },
+    {
+      "index": 14,
+      "koFrom": "이항정리를 쓰면 티 더하기 일 빼기 티의 엔 제곱이기 때문이죠.",
+      "koTo": "이항정리를 쓰면, 티와 일 빼기 티를 먼저 더한 뒤 그 합을 엔 제곱한 것이 됩니다. 괄호 안의 합이 일이니 전체도 일이죠.",
+      "enFrom": "the binomial theorem makes their sum t plus one minus t, raised to n.",
+      "enTo": "the binomial theorem makes their sum the nth power of the quantity t plus one minus t. The quantity inside is one, so the result is one.",
+      "reason": "Make the entire binomial sum grouping explicit rather than quickly reading an ambiguous expression."
+    }
+  ],
+  "reviewNotes": [
+    "Full original teaching content remains in source order; only hypothetical abstract and observed-game bridges edited.",
+    "All game claims are visible actions/results, never proof of commercial curve algorithms.",
+    "Final audio, runtime and final caption composite QA remain pending."
+  ]
+}

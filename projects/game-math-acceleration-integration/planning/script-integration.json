@@ -1,0 +1,71 @@
+{
+  "updatedAt": "2026-11-04T15:29:21.420728+00:00",
+  "episode": "M25",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "f48f8b715b5aa13087d28052a0de66fc40d1daec1a3c33ebb6fd91fb92f0f821",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "2e34b56eab0a0e07e29c0acf77de1b12e301015de10529af35ef158b3408c237",
+  "changes": [
+    {
+      "sourceBeatId": "M25-000",
+      "mode": "replace",
+      "beforeKo": "게임에서 점프한 물체는 올라갈수록 느려졌다가 다시 떨어집니다. 자동차는 속도계의 숫자가 같아도 코너에서 움직임의 방향이 바뀌죠. 오늘은 이렇게 속도가 바뀌는 것을 가속도로 읽고, 가속도를 따라 속도와 위치가 어떻게 쌓이는지 살펴보겠습니다. 마지막에는 원하는 높이와 도착 시간으로 점프를 설계하는 계산까지 이어집니다. 먼저 눈앞의 점프에서, 위치가 아니라 속도 화살표가 어떻게 달라지는지 보겠습니다.",
+      "afterKo": "포르자 호라이즌 파이브에서 차가 언덕을 타고 공중으로 올라갔다가, 다시 땅에 닿습니다. 이 사이에 차의 위치와 속도는 어떻게 달라질까요? 오늘은 속도의 변화를 가속도로 읽고, 그 변화를 쌓아 위치까지 구해 보겠습니다. 이 관계를 거꾸로 풀면 원하는 높이와 시간에 맞춘 점프도 설계할 수 있어요. 먼저 눈앞의 움직임에서 위치가 아니라 속도 화살표를 따라가 보죠.",
+      "beforeEn": "A jumping object in a game slows while rising and then falls again. A car can keep the same speedometer reading while changing direction through a corner. We will read these velocity changes as acceleration, then see how velocity and position accumulate from acceleration. This leads to calculating a jump from a desired height and arrival time. Start with the visible jump and watch its velocity arrow rather than just its position.",
+      "afterEn": "In Forza Horizon 5, a car climbs a hill, becomes airborne, then touches the ground again. How do its position and velocity change along the way? We will read velocity change as acceleration, then accumulate that change to calculate position. Solving the relationship backward also lets us design a jump for a chosen height and timing. First, follow the velocity arrow rather than position alone.",
+      "reason": "Observed approach, takeoff, flight and landing replace unseen generic jump/corner opening. Full source learning order retained."
+    },
+    {
+      "sourceBeatId": "M25-018",
+      "mode": "prepend",
+      "beforeKo": "이제 점프를 보기 편하게 위쪽을 양수로 바꾸겠습니다. 중력의 크기 지는 양수이고, 수직 가속도는 마이너스 지입니다. 이 부호 약속에서 수평 속도는 일정하고 수직 속도는 브이 영 와이 빼기 지 티입니다. 출발점을 원점으로 두면 수평 위치는 브이 영 엑스 티, 높이는 브이 영 와이 티 빼기 이분의 일 지 티 제곱이 됩니다. 수평 운동과 수직 운동은 같은 시간을 공유하면서 독립적으로 계산됩니다.",
+      "afterKo": "마리오가 발판에서 뛰면, 위로 올라갔다가 내려와 다시 발판에 닿습니다. 이 움직임을 수평과 수직으로 나누어 읽어 보죠. 이제 점프를 보기 편하게 위쪽을 양수로 바꾸겠습니다. 중력의 크기 지는 양수이고, 수직 가속도는 마이너스 지입니다. 이 부호 약속에서 수평 속도는 일정하고 수직 속도는 브이 영 와이 빼기 지 티입니다. 출발점을 원점으로 두면 수평 위치는 브이 영 엑스 티, 높이는 브이 영 와이 티 빼기 이분의 일 지 티 제곱이 됩니다. 수평 운동과 수직 운동은 같은 시간을 공유하면서 독립적으로 계산됩니다.",
+      "beforeEn": "For jumping, switch to the more convenient convention that upward is positive. The gravity magnitude g is positive, so vertical acceleration is minus g. Horizontal velocity stays constant, while vertical velocity is initial vertical velocity minus g t. From an origin at launch, horizontal position is initial horizontal velocity times t, and height is initial vertical velocity times t minus one half g t squared. The two components are calculated independently but share the same time.",
+      "afterEn": "Mario jumps from a platform, rises, comes down, and reaches a platform again. Let us read that motion as horizontal and vertical components. For jumping, switch to the more convenient convention that upward is positive. The gravity magnitude g is positive, so vertical acceleration is minus g. Horizontal velocity stays constant, while vertical velocity is initial vertical velocity minus g t. From an origin at launch, horizontal position is initial horizontal velocity times t, and height is initial vertical velocity times t minus one half g t squared. The two components are calculated independently but share the same time.",
+      "reason": "Short complete side-view jump introduces axes; no fitted game gravity or equal-height claim."
+    },
+    {
+      "sourceBeatId": "M25-021",
+      "mode": "replace",
+      "beforeKo": "각도와 중력을 고정하고 초기 속력만 두 배로 올려 보죠. 수평 속도가 두 배가 되고, 수직 속도도 두 배라 공중에 머무는 시간까지 두 배가 됩니다. 두 배의 속도로 두 배 오래 가니 수평 거리는 네 배예요. 그래서 도달 거리에 속력의 제곱이 들어 있습니다. 다만 높이가 다른 곳에 착지하거나 공기 저항이 있거나 중력이 달라지면 이 단순한 네 배 관계를 그대로 적용할 수는 없습니다.",
+      "afterKo": "각도와 중력을 고정하고 초기 속력만 두 배로 올려 보죠. 수평 속도가 두 배가 되고, 수직 속도도 두 배라 공중에 머무는 시간까지 두 배가 됩니다. 두 배의 속도로 두 배 오래 가니 수평 거리는 네 배예요. 그래서 도달 거리에 속력의 제곱이 들어 있습니다. 다만 높이가 다른 곳에 착지하거나 공기 저항이 있거나 중력이 달라지면 이 단순한 네 배 관계를 그대로 적용할 수는 없습니다. 라이더스 리퍼블릭의 이 점프에서는 눈 언덕에서 떠오른 뒤 더 낮은 경사면에 내려앉습니다. 이런 경우에는 같은 높이로 돌아오는 공식 대신, 실제 착지 높이를 위치 식에 넣어 시간을 구해야 합니다.",
+      "beforeEn": "Hold launch angle and gravity fixed and double only the initial speed. Horizontal velocity doubles, and doubled vertical velocity doubles the flight time as well. Twice the horizontal speed for twice the duration gives four times the range. That explains the squared speed in the formula. Unequal landing heights, air resistance, or changing gravity require different calculations; the simple factor of four is conditional.",
+      "afterEn": "Hold launch angle and gravity fixed and double only the initial speed. Horizontal velocity doubles, and doubled vertical velocity doubles the flight time as well. Twice the horizontal speed for twice the duration gives four times the range. That explains the squared speed in the formula. Unequal landing heights, air resistance, or changing gravity require different calculations; the simple factor of four is conditional. In this Riders Republic jump, the skier leaves a snowy rise and lands farther down the slope. Here, use the actual landing height in the position equation rather than the equal-height return formula.",
+      "reason": "Observe actual unequal launch and landing heights as the explicit limit of the just-derived range formula."
+    },
+    {
+      "sourceBeatId": "M25-038",
+      "mode": "replace",
+      "beforeKo": "이번에는 직선과 포물선처럼 각 축의 변화를 중심으로 살펴봤습니다. 그런데 처음 자동차의 코너처럼, 빠르기는 그대로인데 방향만 계속 바뀌는 움직임도 있죠. 속도 벡터의 변화율이라는 정의를 그대로 적용하면 그것도 가속도입니다. 다음에는 원을 도는 물체를 놓고, 왜 가속도가 중심을 향하는지와 속력·반지름·회전 속도가 어떻게 연결되는지 이어서 살펴보겠습니다.",
+      "afterKo": "이번에는 직선과 포물선처럼 각 축의 변화를 중심으로 살펴봤습니다. 그런데 자동차가 코너를 도는 경우처럼, 빠르기는 그대로인데 방향만 계속 바뀌는 움직임도 있죠. 속도 벡터의 변화율이라는 정의를 그대로 적용하면 그것도 가속도입니다. 다음에는 원을 도는 물체를 놓고, 왜 가속도가 중심을 향하는지와 속력·반지름·회전 속도가 어떻게 연결되는지 이어서 살펴보겠습니다.",
+      "beforeEn": "We focused on changes along axes, using straight-line motion and parabolas. But the opening car corner showed another case: unchanged speed with continually changing direction. The same definition, the derivative of the velocity vector, still gives acceleration. Next we will use circular motion to see why that acceleration points inward and how speed, radius, and angular velocity connect.",
+      "afterEn": "We focused on changes along axes, using straight-line motion and parabolas. But a car corner gives another case: unchanged speed with continually changing direction. The same definition, the derivative of the velocity vector, still gives acceleration. Next we will use circular motion to see why that acceleration points inward and how speed, radius, and angular velocity connect.",
+      "reason": "Remove false reference to an opening corner after adopting verified jump opening. Preserve next-episode circular-motion bridge."
+    }
+  ],
+  "readThrough": {
+    "status": "full bilingual draft and integrated changes text-reviewed; realized audiovisual review pending",
+    "source": "planning/source-audit.json",
+    "beats": 39,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "Read all39KO and39EN full draft beats, including derivations, worked examples and integral source sequence.",
+      "Three native gameplay before/action/result roles inserted beside the corresponding explanation. No engine algorithm or numerical game parameters inferred.",
+      "Text joins reviewed without section resets. Audio, native source playback, final annotations and timed composite remain pending."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "0b64b54828576c7b0399ac13e1f557dc38c3d4db7e67ad2c77c203994d5005f7",
+    "enSha256": "b66d3e878c5df3a8df5db7826af02bfe95059bfce29f9115697cd7c33d04fed6"
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ]
+}

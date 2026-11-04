@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-forces-friction",
+  "episodeId": "M27",
+  "status": "integrated-draft-text-readthrough-complete-runtime-binding-pending",
+  "isFinalNarration": false,
+  "chapterOrderPreserved": true,
+  "actualDurationSeconds": null,
+  "sourceDraftSha256": "4eba303221df010b71bf619343fb7017205c2e466273cc1245ea7c67307e22b1",
+  "englishDraftSha256": "75ddf481e32bb9b0d2ae3ed0e94203c52dc7b29bac8e55f850d61b65072f88fb",
+  "speechAndVisualOverlap": true,
+  "defaultHoldSeconds": 0,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M27-000-abstract",
+      "title": "밀었는데 왜 멈출까",
+      "section": "12.1",
+      "lines": [
+        "In BeamNG.drive, a vehicle crosses rocks: its wheels rise and its body tilts. What produces this motion? Start by identifying which objects push or pull, and in which directions. We will combine forces through Newton’s laws, apply the method to gravity and friction, then use the same calculations to design jumping and sliding in a game."
+      ]
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M27-001-scope",
+      "title": "운동의 원인으로 들어가기",
+      "section": "12.1",
+      "lines": [
+        "Previously we described how position and velocity change with time. Now we ask what causes that change. Newtonian mechanics is a useful starting point for objects at everyday sizes and speeds. We assume constant mass and an inertial reference frame, which we will define shortly. This model is not intended to cover near-light-speed motion or the microscopic world."
+      ]
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M27-002-inertia",
+      "title": "관성과 제1법칙",
+      "section": "12.1.1",
+      "lines": [
+        "Mass describes an object's resistance to acceleration: its inertia. Acceleration includes changes of direction as well as speed. With no net force, a resting object remains at rest, and a moving object continues along a straight line at constant velocity. Continuous motion does not itself require a continuous supply of force."
+      ]
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M27-003-friction-thought",
+      "title": "멈추는 데도 힘이 필요하다",
+      "section": "12.1.1",
+      "lines": [
+        "A box pushed across a desk stops after your hand leaves it. That can make motion seem to require continuous pushing. Start the same box at the same speed and change only the floor: a smoother floor lets it travel farther, while a rougher floor stops it sooner. Motion is not lost because a sustaining force is missing; friction changes the velocity."
+      ]
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M27-004-second-law",
+      "title": "알짜힘과 가속도",
+      "section": "12.1.1",
+      "lines": [
+        "Newton's second law relates net force to mass times acceleration. F is force, m is mass, and a is acceleration. For the same mass, doubling net force doubles acceleration. For the same force, doubling mass halves acceleration. The acceleration points in the direction of the net force."
+      ]
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M27-005-net-force",
+      "title": "힘이 있어도 정지할 수 있다",
+      "section": "12.1.1",
+      "lines": [
+        "The important word is net. Add every force on the object, including direction. A beam can support a large load without accelerating downward because its support pushes the other way. Having a force present is different from having an unbalanced force. Six newtons right and two newtons left leave four newtons to the right."
+      ]
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M27-006-units",
+      "title": "뉴턴의 단위",
+      "section": "12.1.1",
+      "lines": [
+        "The force unit follows from the same equation: kilograms multiplied by metres per second squared give newtons. One newton accelerates one kilogram by one metre per second each second. Force and acceleration are vectors; mass is a scalar. The same relation applies to each direction in a two-dimensional or three-dimensional world."
+      ]
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M27-007-force-time",
+      "title": "힘은 속도가 아니라 속도 변화를 만든다",
+      "section": "12.1.1",
+      "lines": [
+        "A target speed alone does not determine the required force. Take a stationary two-kilogram object to four metres per second. Doing so over two seconds requires an acceleration of two metres per second squared and four newtons. Doing it in one second requires twice that acceleration and eight newtons. A collision involves a large force acting over a short interval; we will handle that through impulse."
+      ]
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M27-008-free-body",
+      "title": "자유 물체도 네 단계",
+      "section": "12.1.1",
+      "lines": [
+        "Simulation usually starts with forces and predicts motion. Isolate one object in a free-body diagram and label each force and direction. Sum them, divide by mass to obtain acceleration, then update velocity and position over time. Forces may depend on position or velocity, so a program repeats this process over small time steps."
+      ]
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M27-009-frame-question",
+      "title": "어느 관찰자 기준일까",
+      "section": "12.1.2",
+      "lines": [
+        "Zero net force gives zero acceleration, which resembles the first law. But we first need to choose the frame in which motion is measured. Describing motion from an accelerating or rotating frame can change the apparent acceleration. An inertial reference frame lets us use Newton's laws without introducing fictitious forces."
+      ]
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M27-010-elevator",
+      "title": "같이 떨어지면 떠 보인다",
+      "section": "12.1.2",
+      "lines": [
+        "Imagine a robot holding a sandwich inside an elevator. Release it while both are freely falling, and it appears to float beside the robot. Gravity has not vanished. The cabin and sandwich accelerate downward together, so their relative positions barely change. Equations written in the accelerating cabin frame must also account for that frame's acceleration."
+      ]
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M27-011-observers",
+      "title": "등속 관찰자와 가속 관찰자",
+      "section": "12.1.2",
+      "lines": [
+        "From the ground, the sandwich falls downward. From a car or spacecraft moving at constant velocity, it can also move sideways and trace a parabola, while obeying the same laws. Inertial frames move uniformly relative to one another without relative rotation. Earth's rotation and curved orbit make a ground-fixed frame only approximately inertial; whether the approximation is adequate depends on the experiment."
+      ]
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M27-012-third-law",
+      "title": "한 상호작용의 두 힘",
+      "section": "12.1.3",
+      "lines": [
+        "In Besiege, firing sends the shot forward while the firing vehicle rears backward and overturns. Separating the cannon and projectile helps us identify the pair of interacting forces. With a frame established, return to objects pushing each other. If A pushes B, B pushes A with an equal and opposite force. These are action and reaction. The second force is not a delayed reply to the first: they are simultaneous parts of one interaction, acting on different objects."
+      ]
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M27-013-book",
+      "title": "작용과 반작용을 한 물체에서 지우지 않기",
+      "section": "12.1.3",
+      "lines": [
+        "For a book on a table, collect forces on the book alone: gravity from Earth and the table's support force. The force the book applies to the table belongs in the table's diagram, not the book's. Do not cancel an action-reaction pair inside one object's diagram. Decide which object's acceleration you want, then sum only forces acting on it."
+      ]
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M27-014-push-box",
+      "title": "사람은 왜 함께 뒤로 가지 않을까",
+      "section": "12.1.3",
+      "lines": [
+        "Suppose a low-friction cart carries a box twice as massive as the person pushing it. The box pushes the person backward with equal force. But the person also pushes on the ground, and the ground pushes forward. Forward acceleration requires that forward force to exceed the box's backward force. On ice, weaker traction allows the person to slide backward. Earth also experiences a force, but its enormous mass makes its acceleration tiny."
+      ]
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M27-015-rigid-body",
+      "title": "내부 힘을 묶어서 생략하기",
+      "section": "12.1.3",
+      "lines": [
+        "Two bolted sections of a beam exert forces on each other. Treat the whole beam as one system and those internal force pairs cancel, so external forces determine its centre-of-mass motion. Being rigid does not mean that all points share the same acceleration during rotation. Rotation needs its own treatment, and large deformation or breaking requires more than a single rigid-body model."
+      ]
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M27-016-force-laws",
+      "title": "이제 힘을 실제로 구하기",
+      "section": "12.2",
+      "lines": [
+        "We know how to combine forces, but still need a model for each one. Games use approximations of real forces such as gravity and friction, as well as control forces designed for a desired motion. Contact forces also prevent a box from falling through the floor. We distinguish the surface-normal component, the normal force, then add gravity and friction to the diagram."
+      ]
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M27-017-gravitation",
+      "title": "두 질량이 끌어당기는 힘",
+      "section": "12.2.1",
+      "lines": [
+        "Universal gravitation is proportional to the product of two masses and inversely proportional to squared distance. Here F denotes magnitude, with each force directed toward the other mass. Doubling the separation reduces the force to one quarter. G is the proportionality constant. This simple form applies directly to point masses or suitable spherical distributions; arbitrary nearby extended shapes require their mass distribution."
+      ]
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M27-018-local-gravity",
+      "title": "작은 게임 월드에서는 일정한 중력",
+      "section": "12.2.1",
+      "lines": [
+        "In Tears of the Kingdom, Link dives from a ledge into the water below. As he descends after leaving ground support, let us translate gravity into a simple game-world equation. In a small world near Earth's surface, we can neglect curvature and small changes of altitude. Down is then a fixed direction, and gravity is mass times a constant vector g. Divide by mass and acceleration is simply g. A heavier object feels a larger gravitational force but also has more inertia, so without air resistance different masses share the same gravitational acceleration."
+      ]
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M27-019-earth-number",
+      "title": "9.8이라는 수치의 의미",
+      "section": "12.2.1",
+      "lines": [
+        "Using an approximate Earth mass of5.98 times10 to the24 kilograms and a mean radius of6,371kilometres gives about9.83metres per second squared in a simple spherical model. Subtracting roughly0.034 for rotation at the equator gives9.796. That is not the exact equatorial value: Earth's shape also matters. Actual values are about9.78 at the equator and9.83 at the poles. Standard gravity,9.80665, is a separately defined conventional value."
+      ]
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M27-020-feel",
+      "title": "현실의 값과 조작감",
+      "section": "12.2.1",
+      "lines": [
+        "Knowing the real value does not mean every game should use it unchanged. An upward initial velocity with constant gravity produces a parabola. But a high jump with a short airtime may feel floaty under Earth gravity. Rapid ascent, hanging near the apex, or faster descent are different design choices for the motion."
+      ]
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M27-021-player-control",
+      "title": "착지와 크기감도 설계 결과",
+      "section": "12.2.1",
+      "lines": [
+        "Faster descent can return a vehicle to the ground and restore control sooner; lower gravity can create longer jumps. Even non-player objects communicate scale through fall time and sound. If excessive damping makes objects feel weightless, changing gravity alone does not address the cause. The criterion is whether motion communicates the intended behaviour and supports play, not realism for its own sake."
+      ]
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M27-022-jump-design",
+      "title": "높이와 시간에서 거꾸로 계산하기",
+      "section": "12.2.1",
+      "lines": [
+        "Design a jump that rises two metres in0.4seconds. With upward positive and zero velocity at the apex, initial velocity is twice the height divided by ascent time: ten metres per second here. Acceleration is minus twice the height divided by the square of that time, giving minus25metres per second squared. These values meet the designed height and ascent time even though they differ from Earth gravity."
+      ]
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M27-023-friction-purpose",
+      "title": "미끄러짐을 막고 움직임을 돕는 마찰",
+      "section": "12.2.2",
+      "lines": [
+        "A flowerpot does not necessarily slide down a slightly tilted surface, yet a pot pushed across a level table eventually stops. Friction connects these observations. It does more than hinder motion: walking and tyre traction depend on it. We will distinguish the two regimes in a Coulomb dry-friction model."
+      ]
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M27-024-static-kinetic",
+      "title": "붙어 있을 때와 미끄러질 때",
+      "section": "12.2.2",
+      "lines": [
+        "Static friction acts when contacting surfaces do not slide relative to each other. It opposes a tendency to slip, up to a limit. Once slipping begins, we use kinetic friction, directed against relative sliding. Static does not mean stationary in the world; it means no slipping between the contacting surfaces."
+      ]
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M27-025-static-cap",
+      "title": "최대값과 실제 힘",
+      "section": "12.2.2",
+      "lines": [
+        "Maximum static friction is the coefficient of static friction times the normal-force magnitude. Maximum is crucial. With a ten-newton normal force and a coefficient of0.5, it can resist up to five newtons. A two-newton push needs only two newtons of opposing friction. Applying five immediately would wrongly accelerate the resting pot backward."
+      ]
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M27-026-coefficient-pairs",
+      "title": "재료 두 개를 함께 봐야 한다",
+      "section": "12.2.2",
+      "lines": [
+        "A friction coefficient is dimensionless and depends on a pair of contacting surfaces, not one material alone. Rubber on dry asphalt does not tell us rubber on ice. The supplied examples range from0.61 for static aluminium-on-steel to0.04 for steel-on-Teflon. Such values depend on surface state and measurement conditions; production parameters need appropriate evidence."
+      ]
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M27-027-normal-force",
+      "title": "수직항력은 항상 무게와 같을까",
+      "section": "12.2.2",
+      "lines": [
+        "Before using the coefficient, determine the normal force. On a level, non-accelerating table it can equal the weight. On a slope, split gravity into components normal and parallel to the surface. The support force prevents penetration in the normal direction. A known surface normal lets us obtain the perpendicular gravity component using a dot product."
+      ]
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M27-028-slope-threshold",
+      "title": "경사를 키우면 두 가지가 함께 변한다",
+      "section": "12.2.2",
+      "lines": [
+        "Tilting farther increases the downslope component while reducing the normal component, so the maximum friction also falls. Downslope force is m g sine theta; the normal force is m g cosine theta. No sliding requires the former not to exceed the static-friction limit. Cancel the common mass and gravity terms and the condition becomes tangent theta no greater than the static coefficient."
+      ]
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M27-029-kinetic-law",
+      "title": "미끄러진 다음의 힘",
+      "section": "12.2.2",
+      "lines": [
+        "After the limit is exceeded, use the kinetic coefficient. Its magnitude is that coefficient times the normal force, directed against relative sliding. In the ideal Coulomb model, a higher sliding speed does not proportionally increase the friction magnitude. The kinetic coefficient is commonly below the maximum static coefficient, making continued sliding easier than starting it, though this is not a universal statement about every material and condition."
+      ]
+    },
+    {
+      "id": "030",
+      "sourceBeatId": "M27-030-area-pressure",
+      "title": "면적이 식에 없는 이유와 한계",
+      "section": "12.2.2",
+      "lines": [
+        "Apparent contact area does not appear directly in this model. With the same normal force and coefficient, a smaller base has the same sliding threshold. Supporting the same force over a smaller area increases average pressure, because pressure is force divided by area. A tall, narrow pot may instead tip over before sliding; that leads us to rotation and torque."
+      ]
+    },
+    {
+      "id": "031",
+      "sourceBeatId": "M27-031-closing",
+      "title": "힘을 모으면 움직임이 이어진다",
+      "section": "12.2.2",
+      "lines": [
+        "Return to the box and the method becomes one continuous chain. Identify the body, add gravity, contact and friction with direction, divide by mass, and use the acceleration to update velocity and position. Understanding the model helps us choose deliberately what to change for a game. Next, a restoring spring force will let us connect this to motion that bounces, settles and follows a target smoothly."
+      ]
+    }
+  ]
+}

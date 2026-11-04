@@ -11,12 +11,1112 @@
   "sourceAudit": "planning/source-audit.json",
   "footageAudit": "planning/footage-audit.json",
   "unityPlan": "planning/unity-plan.json",
-  "stage": "source-acquired-full-audit-pending",
-  "sourceFinal": false,
+  "stage": "full-draft-gameplay-integration",
+  "sourceFinal": true,
   "narrationFinal": false,
   "sceneBindingsFinal": false,
-  "learningSteps": [],
-  "teachingBeats": [],
-  "boundaryLinks": [],
-  "terminology": []
+  "learningSteps": [
+    {
+      "id": "M27-000-abstract",
+      "section": "12.1",
+      "sourceParagraphs": [
+        "S121-P009",
+        "S121-P010",
+        "S122-P022",
+        "S122-P023",
+        "S122-P024",
+        "S122-P025",
+        "S122-P026",
+        "S122-P027",
+        "S122-P028",
+        "S122-P029",
+        "S122-P030",
+        "S122-P031",
+        "S122-P032"
+      ],
+      "retainedExplanation": "비이엠엔지 드라이브에서 차가 바위를 넘으면, 바퀴가 올라가고 차체도 기울어집니다. 이런 움직임은 무엇이 만들까요? 지금 어떤 물체가 어떤 방향으로 밀고 당기는지부터 살펴봐야 합니다. 먼저 뉴턴의 법칙으로 힘을 모아 계산하고, 그 방법을 중력과 마찰에 차례로 적용하겠습니다. 마지막에는 같은 계산을 게임의 점프와 미끄러짐을 설계하는 도구로 연결해 보죠.",
+      "screenIntent": "Native BeamNG local35–51, wheel-ground contours with body tilt. After full crossing use same neutral vehicle/contact model; show only labelled illustrative force arrows, not measured game data."
+    },
+    {
+      "id": "M27-001-scope",
+      "section": "12.1",
+      "sourceParagraphs": [
+        "S121-P012",
+        "S121-P013",
+        "S121-P014",
+        "S121-P015",
+        "S121-P081"
+      ],
+      "retainedExplanation": "앞에서는 위치와 속도가 시간에 따라 어떻게 변하는지를 다뤘습니다. 이제는 무엇이 그 변화를 만드는지 살펴봅니다. 뉴턴 역학은 일상적인 크기와 속도의 물체를 설명하는 좋은 출발점입니다. 여기서는 질량이 일정하고, 뒤에서 설명할 관성 기준계를 사용합니다. 빛에 가까운 속도나 아주 작은 세계까지 이 식 하나로 설명하려는 것은 아닙니다.",
+      "screenIntent": "Same recognizable cart and floor; position/velocity traces transition into labelled force arrows. Essential scope only."
+    },
+    {
+      "id": "M27-002-inertia",
+      "section": "12.1.1",
+      "sourceParagraphs": [
+        "S121-P017",
+        "S121-P018",
+        "S121-P019"
+      ],
+      "retainedExplanation": "질량은 물체가 가속되는 데 얼마나 저항하는지를 나타냅니다. 이것이 관성입니다. 가속도는 속력만이 아니라 움직이는 방향의 변화도 포함하죠. 알짜힘이 없으면, 정지한 물체는 그대로 있고 움직이던 물체는 같은 속도로 곧게 움직입니다. 계속 움직이게 하려고 힘을 계속 공급해야 하는 것은 아닙니다.",
+      "screenIntent": "Unity cart; zero-force velocity arrow constant; canonical Inertia/관성, Newton's First Law/제1법칙."
+    },
+    {
+      "id": "M27-003-friction-thought",
+      "section": "12.1.1",
+      "sourceParagraphs": [
+        "S121-P020",
+        "S121-P021",
+        "S121-P022",
+        "S121-P023"
+      ],
+      "retainedExplanation": "그런데 책상 위에서 상자를 밀다가 손을 떼면 멈춥니다. 계속 밀지 않아서 멈춘 것처럼 보이죠. 같은 상자를 같은 속도로 출발시키고 바닥만 더 매끄럽게 바꾸면 더 멀리 갑니다. 거친 바닥에서는 빨리 멈춥니다. 움직임이 사라지는 이유는 유지할 힘이 부족해서가 아니라, 마찰이 반대쪽으로 작용하기 때문입니다.",
+      "screenIntent": "Verified game slide comparison placeholder plus identical Unity cart test. No claimed measured commercial friction coefficient."
+    },
+    {
+      "id": "M27-004-second-law",
+      "section": "12.1.1",
+      "sourceParagraphs": [
+        "S121-P024",
+        "S121-P025",
+        "S121-P026",
+        "S121-P027"
+      ],
+      "retainedExplanation": "이제 힘의 크기를 계산해 보겠습니다. 뉴턴의 제2법칙은 알짜힘이 질량과 가속도를 곱한 값이라는 관계입니다. 에프는 힘, 엠은 질량, 에이는 가속도입니다. 같은 질량에서는 알짜힘이 두 배면 가속도도 두 배입니다. 같은 힘이라면 질량이 두 배인 물체의 가속도는 절반이 됩니다. 힘과 가속도의 방향도 같습니다.",
+      "screenIntent": "F_net=m*a and a=F_net/m; 2kg with6N gives3m/s²,4kg with6N gives1.5m/s². All values our implementation."
+    },
+    {
+      "id": "M27-005-net-force",
+      "section": "12.1.1",
+      "sourceParagraphs": [
+        "S121-P028",
+        "S121-P029"
+      ],
+      "retainedExplanation": "여기서 중요한 말은 알짜힘입니다. 물체에 작용하는 힘을 방향까지 고려해 모두 더한 값이죠. 건물의 들보에는 무게를 누르는 큰 힘이 있어도, 받침이 반대 방향으로 지탱하면 아래로 가속되지 않습니다. 힘 하나가 존재한다는 사실과 알짜힘이 남는다는 사실은 다릅니다. 오른쪽 육 뉴턴과 왼쪽 이 뉴턴이라면 남는 힘은 오른쪽 사 뉴턴입니다.",
+      "screenIntent": "Free-body diagram of supported beam then2kg cart;6−2=4N→a=2m/s². Vector sign and axis defined before substitution."
+    },
+    {
+      "id": "M27-006-units",
+      "section": "12.1.1",
+      "sourceParagraphs": [
+        "S121-P030",
+        "S121-P031",
+        "S121-P032",
+        "S121-P033",
+        "S121-P034"
+      ],
+      "retainedExplanation": "힘의 단위도 같은 식에서 나옵니다. 질량의 킬로그램에 가속도의 미터 매초 제곱을 곱한 것이 일 뉴턴입니다. 즉 일 킬로그램 물체를 매초 일 미터씩 더 빠르게 만드는 힘이 일 뉴턴이에요. 힘과 가속도는 방향을 가진 벡터이고, 질량은 방향 없는 스칼라입니다. 이차원 게임이든 삼차원 게임이든 같은 관계를 각 방향에 적용합니다.",
+      "screenIntent": "Units M L/T²→kg m/s²=N, single cart value update; avoid rapid formula readout."
+    },
+    {
+      "id": "M27-007-force-time",
+      "section": "12.1.1",
+      "sourceParagraphs": [
+        "S121-P035",
+        "S121-P036",
+        "S121-P037"
+      ],
+      "retainedExplanation": "목표 속도만으로 필요한 힘을 정할 수는 없습니다. 정지한 이 킬로그램 물체를 초속 사 미터로 만들더라도, 이 초에 걸쳐 바꿀지 한 초 만에 바꿀지에 따라 가속도가 다릅니다. 이 초라면 가속도는 이, 힘은 사 뉴턴입니다. 한 초라면 가속도 사, 힘 팔 뉴턴이 필요하죠. 공이 튀는 충돌은 이런 큰 힘이 아주 짧게 작용하는 경우이고, 충격량에서 따로 다룹니다.",
+      "screenIntent": "Shared velocity-time graph;2s/1s comparison, same final4m/s. Define constant-force/no-other-force conditions."
+    },
+    {
+      "id": "M27-008-free-body",
+      "section": "12.1.1",
+      "sourceParagraphs": [
+        "S121-P038",
+        "S121-P039",
+        "S121-P040",
+        "S121-P041",
+        "S121-P042",
+        "S121-P043",
+        "S121-P080"
+      ],
+      "retainedExplanation": "시뮬레이션에서는 보통 힘을 먼저 알고 움직임을 구합니다. 물체 하나를 떼어 그린 자유 물체도에서, 힘마다 이름과 방향을 붙입니다. 모두 합쳐 알짜힘을 구하고, 질량으로 나누어 가속도를 얻습니다. 그다음 시간에 따라 속도와 위치를 갱신합니다. 힘은 위치나 속도에 따라 계속 달라질 수 있어서, 실제 프로그램은 이 과정을 작은 시간 간격마다 반복합니다.",
+      "screenIntent": "Four-step persistent diagram: forces→sum→a→integrate; distinguish force computation from later collision solver/integrator chapter."
+    },
+    {
+      "id": "M27-009-frame-question",
+      "section": "12.1.2",
+      "sourceParagraphs": [
+        "S121-P045",
+        "S121-P046",
+        "S121-P047"
+      ],
+      "retainedExplanation": "힘의 합이 영이면 가속도도 영이라는 말은 제1법칙과 닮았습니다. 그런데 두 법칙을 쓰려면 먼저 어느 기준으로 움직임을 재는지 정해야 합니다. 가속하거나 회전하는 카메라에서 보이는 운동을 그대로 넣으면 문제가 생길 수 있어요. 관성 기준계는 가상의 힘을 추가하지 않고 뉴턴의 법칙을 사용할 수 있는 기준계입니다.",
+      "screenIntent": "Same elevator object from ground and cabin cameras; term card Inertial Reference Frame/관성 기준계."
+    },
+    {
+      "id": "M27-010-elevator",
+      "section": "12.1.2",
+      "sourceParagraphs": [
+        "S121-P048",
+        "S121-P049",
+        "S121-P050"
+      ],
+      "retainedExplanation": "로봇이 엘리베이터 안에서 샌드위치를 들고 있다고 해 보죠. 둘이 함께 자유 낙하하는 순간 샌드위치를 놓으면, 로봇 눈에는 옆에 떠 있는 것처럼 보입니다. 중력이 사라진 것은 아닙니다. 엘리베이터와 샌드위치가 함께 아래로 가속하므로 서로의 위치가 크게 달라지지 않는 겁니다. 내려가는 엘리베이터 좌표계에서 식을 쓰려면, 그 좌표계의 가속도 효과를 함께 반영해야 합니다.",
+      "screenIntent": "Own Unity robot/elevator/sandwich scene; same timestamp split ground/cabin; g and a_frame cancellation shown only as frame term."
+    },
+    {
+      "id": "M27-011-observers",
+      "section": "12.1.2",
+      "sourceParagraphs": [
+        "S121-P051",
+        "S121-P052",
+        "S121-P053",
+        "S121-P054",
+        "S121-P055"
+      ],
+      "retainedExplanation": "지면에서 보면 샌드위치는 아래로 떨어집니다. 일정한 속도로 지나가는 차나 우주선에서 보면 옆으로도 움직여 포물선처럼 보일 수 있지만, 같은 법칙으로 설명됩니다. 관성 기준계끼리는 서로 회전하지 않고 일정한 속도로 직선 운동합니다. 지구에 붙은 좌표계도 자전과 공전 때문에 완벽한 관성계는 아닙니다. 다만 짧고 작은 실험에서는 그 효과를 무시할 수 있는지 판단해 사용합니다.",
+      "screenIntent": "Three synchronized observer paths; no fake different forces. Earth rotation optionalsmall inset, Foucault pendulum mentioned visually as detectableexample."
+    },
+    {
+      "id": "M27-012-third-law",
+      "section": "12.1.3",
+      "sourceParagraphs": [
+        "S121-P057",
+        "S121-P058",
+        "S121-P059",
+        "S121-P060",
+        "S121-P061"
+      ],
+      "retainedExplanation": "비시지에서는 대포를 쏘자 포탄은 앞으로 나가고, 발사한 차체는 뒤로 들려 넘어갑니다. 서로 영향을 주는 대포와 포탄을 먼저 나누어 보면, 힘의 짝을 이해하기 쉬워집니다. 이제 기준계를 정했으니 물체들이 서로 미는 상황으로 돌아가겠습니다. 물체 에이가 비를 밀면, 비도 에이를 같은 크기와 반대 방향의 힘으로 밉니다. 이것이 작용·반작용입니다. 한 힘이 먼저 생기고 나중에 답장처럼 반작용이 생기는 뜻은 아닙니다. 같은 상호작용의 두 힘이 동시에 서로 다른 물체에 작용합니다.",
+      "screenIntent": "Native Besiege176–187; barrel/shot direction and body turn marks. Hand off to separate cannon/projectile free-body drawings, with gravity/ground forces shown separately."
+    },
+    {
+      "id": "M27-013-book",
+      "section": "12.1.3",
+      "sourceParagraphs": [
+        "S121-P078",
+        "S121-P079"
+      ],
+      "retainedExplanation": "책이 책상 위에 놓여 있다면 책의 힘만 먼저 모아 보세요. 책에는 지구가 당기는 중력과 책상이 미는 수직항력이 작용합니다. 책이 책상을 아래로 미는 힘은 책이 아니라 책상 쪽 그림에 그립니다. 이 둘을 책의 그림 안에서 지워 버리면 안 됩니다. 어떤 물체의 가속도를 구하는지 정한 뒤, 그 물체가 받는 힘만 더하는 것이 핵심입니다.",
+      "screenIntent": "Book/table two separated diagrams; force pair dottedlink versus same-object equilibrium; annotation labels supplement colour."
+    },
+    {
+      "id": "M27-014-push-box",
+      "section": "12.1.3",
+      "sourceParagraphs": [
+        "S121-P062",
+        "S121-P063",
+        "S121-P064",
+        "S121-P065",
+        "S121-P066"
+      ],
+      "retainedExplanation": "사람보다 두 배 무거운 상자가 마찰이 작은 수레에 실려 있다고 해 보죠. 사람이 밀면 상자는 사람을 같은 힘으로 뒤로 밉니다. 그런데 사람은 땅도 뒤로 밀고, 땅은 사람을 앞으로 밀어 줍니다. 사람이 앞으로 가속하려면 땅에서 받는 힘이 상자에서 받는 힘보다 커야 합니다. 얼음 위라면 이 버팀이 약해져 사람도 뒤로 움직이겠죠. 지구도 힘을 받지만 질량이 워낙 커서 가속도가 아주 작습니다.",
+      "screenIntent": "Articulated person/cart/ground; four contact-force arrows with separate body labels; preserve mass ratio2 not claim equal accelerations."
+    },
+    {
+      "id": "M27-015-rigid-body",
+      "section": "12.1.3",
+      "sourceParagraphs": [
+        "S121-P067",
+        "S121-P068",
+        "S121-P069",
+        "S121-P070",
+        "S121-P071",
+        "S121-P082"
+      ],
+      "retainedExplanation": "이 원리는 큰 물체를 하나로 다룰 때도 유용합니다. 볼트로 연결한 들보의 두 조각은 서로 힘을 주고받지만, 들보 전체를 한 계로 보면 그 내부 힘은 쌍으로 상쇄됩니다. 그래서 전체 질량중심의 이동은 외력으로 계산할 수 있습니다. 강체라고 해서 회전 중인 모든 점의 가속도가 같다는 뜻은 아닙니다. 회전은 별도로 다루고, 물체가 크게 휘거나 부서진다면 하나의 강체라는 가정부터 바꿔야 합니다.",
+      "screenIntent": "Two-piece beam internalforcesfade onlyinwhole-systemsum; rotatebar points have centripetal arrows. No assertion relativeaccelerationzero."
+    },
+    {
+      "id": "M27-016-force-laws",
+      "section": "12.2",
+      "sourceParagraphs": [
+        "S122-P003",
+        "S122-P004",
+        "S122-P005",
+        "S122-P006",
+        "S122-P033"
+      ],
+      "retainedExplanation": "힘을 합치는 방법은 알았지만, 각 힘을 어디서 구할지는 아직 남았습니다. 게임에서는 중력과 마찰처럼 현실을 근사한 힘도 쓰고, 원하는 움직임을 만드는 제어용 힘도 씁니다. 상자가 바닥을 뚫고 내려가지 않게 받치는 접촉력도 필요합니다. 여기서는 접촉면의 수직 성분인 수직항력부터 구분하고, 중력과 마찰을 차례로 자유 물체도에 넣어 보겠습니다.",
+      "screenIntent": "Samecartfloor forcecollector; normal is normalcomponentofcontact, friction tangentialcomponent. Avoid equating allcontactforcewithnormal."
+    },
+    {
+      "id": "M27-017-gravitation",
+      "section": "12.2.1",
+      "sourceParagraphs": [
+        "S122-P008",
+        "S122-P009",
+        "S122-P010",
+        "S122-P043"
+      ],
+      "retainedExplanation": "만유인력은 두 질량의 곱에 비례하고 거리의 제곱에 반비례합니다. 여기서 식의 에프는 힘의 크기이고, 방향은 서로를 향합니다. 거리를 두 배로 늘리면 힘은 사분의 일이 됩니다. 지는 비례상수입니다. 두 물체를 점질량이나 구대칭 분포로 다룰 수 있을 때 이 간단한 식을 직접 쓰며, 가까이 놓인 복잡한 모양까지 질량중심 거리 하나로 정확히 계산하는 식은 아닙니다.",
+      "screenIntent": "G*m1*m2/d²; d→2d, F→F/4. Mass centres and radialarrows, originalG6.673e-11labelhistoricalapprox notcurrentCODATA."
+    },
+    {
+      "id": "M27-018-local-gravity",
+      "section": "12.2.1",
+      "sourceParagraphs": [
+        "S122-P011",
+        "S122-P012",
+        "S122-P013",
+        "S122-P014",
+        "S122-P015"
+      ],
+      "retainedExplanation": "왕국의 눈물에서 링크가 절벽 아래 물로 뛰어내립니다. 발밑의 지지가 사라진 뒤 아래로 내려가는 모습을 보면서, 이제 중력을 단순한 게임 월드의 식으로 옮겨 보죠. 하지만 지표 근처의 작은 게임 월드에서는 지구의 곡률과 고도 차이를 생략할 수 있습니다. 그러면 아래 방향이 일정하고, 중력은 질량에 일정한 벡터 지를 곱한 값이 됩니다. 이를 질량으로 나누면 가속도는 지 자체입니다. 무거운 물체는 더 큰 중력을 받지만 가속시키기도 더 어렵기 때문에, 공기 저항을 빼면 질량이 달라도 같은 중력 가속도로 떨어집니다.",
+      "screenIntent": "Native TOTK943–953, ledge→descent→splash/resurface. Guide only visible descending body, hide in splash. Continue unchanged gravity equation in fixed-axis particle model."
+    },
+    {
+      "id": "M27-019-earth-number",
+      "section": "12.2.1",
+      "sourceParagraphs": [
+        "S122-P016",
+        "S122-P017",
+        "S122-P018",
+        "S122-P019",
+        "S122-P020",
+        "S122-P021",
+        "S122-P043",
+        "S122-P044"
+      ],
+      "retainedExplanation": "지구 질량 약 오점구팔 곱하기 십의 이십사 제곱 킬로그램과 평균 반지름 육천삼백칠십일 킬로미터를 넣으면, 단순한 구형 모델에서는 약 구점팔삼이라는 가속도가 나옵니다. 적도에서 자전 효과 약 영점영삼사 를 빼면 약 구점칠구육입니다. 하지만 이것이 실제 적도의 정확한 값은 아닙니다. 지구는 완전한 구가 아니며, 실제 값은 적도 약 구점칠팔, 극 약 구점팔삼입니다. 표준 중력 구점팔공육육오는 따로 정해 놓은 관례적인 기준값입니다.",
+      "screenIntent": "On-scenecalculation units+km→m; originalapprox numbers distinctlylabelled, NASAactualcolumn, NISTstandardcolumn; nofastrecitationwithoutvisualsupport."
+    },
+    {
+      "id": "M27-020-feel",
+      "section": "12.2.1",
+      "sourceParagraphs": [
+        "S122-P022",
+        "S122-P023",
+        "S122-P024",
+        "S122-P025",
+        "S122-P026",
+        "S122-P027"
+      ],
+      "retainedExplanation": "현실의 값을 알았다고 모든 게임에 그대로 넣으면 되는 것은 아닙니다. 점프에 위쪽 초기 속도 하나를 주고 일정한 중력을 적용하면 포물선이 됩니다. 하지만 원하는 점프 높이가 크면서 공중에 머무는 시간은 짧다면, 지구 중력만으로는 둥둥 뜨는 느낌이 날 수 있습니다. 빠르게 솟구치기, 최고점에서 버티기, 내려올 때 더 빨라지기는 서로 다른 움직임을 설계하는 선택입니다.",
+      "screenIntent": "Verifiedgamejumpplaceholder; Unityonevariableheight/time demonstration. Avoid broadunsupportedFPSbadjumpclaim or game-specificforceinference."
+    },
+    {
+      "id": "M27-021-player-control",
+      "section": "12.2.1",
+      "sourceParagraphs": [
+        "S122-P028",
+        "S122-P029",
+        "S122-P030",
+        "S122-P031",
+        "S122-P032",
+        "S122-P036",
+        "S122-P037"
+      ],
+      "retainedExplanation": "자동차를 빨리 지면으로 돌려보내 조작권을 되찾게 하려면 낙하를 빠르게 만들 수 있습니다. 반대로 낮은 중력으로 더 긴 도약을 만들 수도 있죠. 플레이어가 조작하지 않는 물체도 낙하 시간과 소리가 크기감을 바꿉니다. 다만 물체가 가볍게 느껴지는 원인이 지나친 감쇠라면 중력만 고치는 것이 답은 아닙니다. 기준은 무조건 현실과 같게 만드는지가 아니라, 플레이어가 의도한 움직임을 이해하고 즐길 수 있는지입니다.",
+      "screenIntent": "Vehiclejumporfallingprop actualcandidateplaceholder, verifiednativebefore/action/result; ourmodel parameterchanges labelled."
+    },
+    {
+      "id": "M27-022-jump-design",
+      "section": "12.2.1",
+      "sourceParagraphs": [
+        "S122-P039",
+        "S122-P040",
+        "S122-P041",
+        "S122-P042"
+      ],
+      "retainedExplanation": "높이 이 미터에 영점사 초 만에 도달하는 점프를 만들어 보죠. 위를 양수로 두고 최고점의 속도가 영이라는 조건을 쓰면, 처음 속도는 높이의 두 배를 시간으로 나눈 값입니다. 이 예에서는 초속 십 미터입니다. 가속도는 높이의 마이너스 두 배를 시간 제곱으로 나누어 마이너스 이십오가 됩니다. 실제 중력과 달라도 원하는 높이와 상승 시간을 함께 맞출 수 있습니다.",
+      "screenIntent": "Derive0=v0+aT, h=v0T+.5aT²→a=-2h/T²,v0=2h/T; substitute2,.4slowly; falling accelerationchange isdifferentmodel."
+    },
+    {
+      "id": "M27-023-friction-purpose",
+      "section": "12.2.2",
+      "sourceParagraphs": [
+        "S122-P046",
+        "S122-P047",
+        "S122-P048"
+      ],
+      "retainedExplanation": "중력이 물체를 아래로 끌어당겨도, 조금 기울어진 바닥 위의 화분은 바로 미끄러지지 않습니다. 평평한 바닥에서 밀어 놓은 화분은 움직이다 멈춥니다. 두 현상을 연결하는 것이 마찰입니다. 마찰은 이동을 방해하기만 하는 힘이 아닙니다. 발로 땅을 밀고 앞으로 걷거나 타이어가 노면을 붙잡는 데도 필요합니다. 먼저 건조 마찰을 근사하는 쿨롱 마찰 모델의 두 상태를 구분하겠습니다.",
+      "screenIntent": "Recognizableplantpot+adjustabletable persistentstage, walkingfoot/tyrebriefdiagram; CoulombFrictionterm."
+    },
+    {
+      "id": "M27-024-static-kinetic",
+      "section": "12.2.2",
+      "sourceParagraphs": [
+        "S122-P049",
+        "S122-P050",
+        "S122-P051",
+        "S122-P052"
+      ],
+      "retainedExplanation": "서로 닿은 두 표면이 상대적으로 미끄러지지 않을 때는 정지 마찰이 작용합니다. 옆으로 밀려는 힘을 일정 한도까지 맞받아 버팁니다. 그 한도를 넘어 미끄러지기 시작하면 운동 마찰로 다룹니다. 운동 마찰은 두 표면의 상대적인 미끄럼 방향과 반대입니다. 정지라는 말은 세계에서 움직이지 않는다는 뜻이 아니라, 접촉한 표면끼리 미끄러지지 않는다는 뜻입니다.",
+      "screenIntent": "Moveconveyorbeltandpot together to clarifyrelativevelocity; no extraunrelatedchapter; static/kineticlabels."
+    },
+    {
+      "id": "M27-025-static-cap",
+      "section": "12.2.2",
+      "sourceParagraphs": [
+        "S122-P053",
+        "S122-P054",
+        "S122-P055",
+        "S122-P060",
+        "S122-P074",
+        "S122-P075"
+      ],
+      "retainedExplanation": "정지 마찰의 최대 크기는 정지 마찰 계수와 수직항력의 크기를 곱한 값입니다. 최대값이라는 점이 중요합니다. 수직항력이 십 뉴턴이고 계수가 영점오라면 최대 오 뉴턴까지 버팁니다. 하지만 옆으로 이 뉴턴만 밀 때는 마찰도 반대로 이 뉴턴입니다. 처음부터 오 뉴턴을 적용하면, 가만히 있어야 할 화분이 오히려 뒤로 가속하는 잘못된 결과가 나옵니다.",
+      "screenIntent": "|Fs|≤μs N; pushslider0→2→5→6N, actualfsresponsive, capacitydottedseparate. Numbersours."
+    },
+    {
+      "id": "M27-026-coefficient-pairs",
+      "section": "12.2.2",
+      "sourceParagraphs": [
+        "S122-P056",
+        "S122-P057",
+        "S122-P058",
+        "S122-P059",
+        "S122-P079"
+      ],
+      "retainedExplanation": "마찰 계수는 단위 없는 수이고, 한 재료만의 속성이 아니라 맞닿는 두 표면의 조합에 따라 달라집니다. 고무와 마른 아스팔트의 값을 안다고 고무와 얼음의 값을 알 수는 없습니다. 표에는 알루미늄과 강철의 정지 계수 영점육일, 강철과 테플론의 영점영사처럼 큰 차이가 나옵니다. 이런 값은 표면 상태와 측정 조건에 따른 예시이므로 실제 제작에서는 조건이 확인된 값을 써야 합니다.",
+      "screenIntent": "Full suppliedtable asreferencewithtwohighlightedrows; conflictingwet-concrete rowflaggeduncertain, notruntimeconstant. Table need notreadallrowsaloudbutallretainedscreen/notes."
+    },
+    {
+      "id": "M27-027-normal-force",
+      "section": "12.2.2",
+      "sourceParagraphs": [
+        "S122-P061",
+        "S122-P062",
+        "S122-P063",
+        "S122-P064"
+      ],
+      "retainedExplanation": "이제 표의 계수보다 먼저 구해야 할 수직항력을 보겠습니다. 평평하고 가속하지 않는 탁자 위에서는 중력과 크기가 같을 수 있습니다. 그러나 경사면에서는 중력을 표면에 수직인 성분과 평행한 성분으로 나눠야 합니다. 법선 방향으로 서로 파고들지 않게 받치는 힘이 수직항력입니다. 법선 벡터를 알면 내적을 이용해 중력의 수직 성분을 구할 수 있습니다.",
+      "screenIntent": "mgconstantvertical, unitn rotateswithtable; forcecomponentdotproject; N=mgcosθ onlyspecifiedconditionsnotuniversal."
+    },
+    {
+      "id": "M27-028-slope-threshold",
+      "section": "12.2.2",
+      "sourceParagraphs": [
+        "S122-P065",
+        "S122-P066",
+        "S122-P076",
+        "S122-P077",
+        "S122-P078"
+      ],
+      "retainedExplanation": "탁자를 더 기울이면 아래로 미끄러뜨리는 성분은 커지고, 면을 누르는 수직 성분은 작아집니다. 따라서 버틸 수 있는 최대 마찰도 줄어듭니다. 경사 방향 힘은 엠 지 사인 세타, 수직항력은 엠 지 코사인 세타입니다. 미끄러지지 않으려면 앞의 값이 정지 마찰 한도보다 작아야 합니다. 공통인 질량과 중력을 나누면, 탄젠트 세타가 정지 마찰 계수 이하라는 조건이 남습니다.",
+      "screenIntent": "Samepot low/critical/steep continuously; mg sinθ≤μs mg cosθ→tanθ≤μs. μs=.5 criticalatan(.5)≈26.565°, exampleowncalculation."
+    },
+    {
+      "id": "M27-029-kinetic-law",
+      "section": "12.2.2",
+      "sourceParagraphs": [
+        "S122-P067",
+        "S122-P068",
+        "S122-P069",
+        "S122-P070"
+      ],
+      "retainedExplanation": "한도를 넘으면 운동 마찰 계수로 바꿔 계산합니다. 크기는 운동 마찰 계수 곱하기 수직항력이고, 방향은 상대 미끄럼을 거슬러 갑니다. 이 이상적인 쿨롱 모델에서는 미끄러지는 속력이 달라도 마찰 크기가 속력에 비례해 커지지 않습니다. 보통 운동 마찰 계수가 최대 정지 마찰 계수보다 작아, 막 움직이기 시작한 뒤에는 더 쉽게 미끄러집니다. 실제 재료마다 모든 조건에서 보장되는 순서는 아닙니다.",
+      "screenIntent": "Fk=μk N withunitdirectionv_rel/|v_rel|onlynonzero; N10,μk.3→3N; compareat1m/sand2m/s nofakesourcevalues."
+    },
+    {
+      "id": "M27-030-area-pressure",
+      "section": "12.2.2",
+      "sourceParagraphs": [
+        "S122-P071",
+        "S122-P072",
+        "S122-P080"
+      ],
+      "retainedExplanation": "마찰 식에는 겉보기 접촉 면적이 직접 들어가지 않습니다. 같은 무게의 화분을 더 작은 받침에 올려도, 이 모델에서는 수직항력과 계수가 같으면 미끄럼 한도도 같습니다. 같은 힘을 더 작은 면적으로 받치면 평균 압력은 더 커집니다. 압력은 힘을 면적으로 나눈 값이기 때문이죠. 하지만 높고 가느다란 화분은 미끄러지기 전에 넘어질 수도 있습니다. 그것은 회전과 토크의 문제로 이어집니다.",
+      "screenIntent": "Sameweightwide/narrowbase, P=N/A correctdirection, nouniversalrealfrictionclaim; tippingonlypreviewnextscope."
+    },
+    {
+      "id": "M27-031-closing",
+      "section": "12.2.2",
+      "sourceParagraphs": [],
+      "retainedExplanation": "처음의 상자로 돌아오면, 해야 할 일은 하나의 흐름으로 정리됩니다. 누구에게 작용하는 힘인지 정하고, 중력과 접촉력과 마찰을 방향까지 합친 뒤, 질량으로 나누어 가속도를 구합니다. 그리고 그 가속도로 다음 순간의 속도와 위치를 만듭니다. 현실의 법칙을 이해하면 게임에서 바꿀 값을 더 정확히 고를 수 있습니다. 다음에는 목표 위치로 되돌아오려는 용수철의 힘을 더해, 튀고 흔들리다가 부드럽게 멈추는 움직임으로 이어가겠습니다.",
+      "screenIntent": "Returntoopeningactualgameconfirmationonlyafterfootageverified; persistentforceflow then springattachedsamecart. NoaddedBGM."
+    }
+  ],
+  "teachingBeats": [
+    {
+      "id": "M27-000-abstract",
+      "speech": "비이엠엔지 드라이브에서 차가 바위를 넘으면, 바퀴가 올라가고 차체도 기울어집니다. 이런 움직임은 무엇이 만들까요? 지금 어떤 물체가 어떤 방향으로 밀고 당기는지부터 살펴봐야 합니다. 먼저 뉴턴의 법칙으로 힘을 모아 계산하고, 그 방법을 중력과 마찰에 차례로 적용하겠습니다. 마지막에는 같은 계산을 게임의 점프와 미끄러짐을 설계하는 도구로 연결해 보죠.",
+      "visual": "Native BeamNG local35–51, wheel-ground contours with body tilt. After full crossing use same neutral vehicle/contact model; show only labelled illustrative force arrows, not measured game data.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-001-scope",
+      "speech": "앞에서는 위치와 속도가 시간에 따라 어떻게 변하는지를 다뤘습니다. 이제는 무엇이 그 변화를 만드는지 살펴봅니다. 뉴턴 역학은 일상적인 크기와 속도의 물체를 설명하는 좋은 출발점입니다. 여기서는 질량이 일정하고, 뒤에서 설명할 관성 기준계를 사용합니다. 빛에 가까운 속도나 아주 작은 세계까지 이 식 하나로 설명하려는 것은 아닙니다.",
+      "visual": "Same recognizable cart and floor; position/velocity traces transition into labelled force arrows. Essential scope only.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-002-inertia",
+      "speech": "질량은 물체가 가속되는 데 얼마나 저항하는지를 나타냅니다. 이것이 관성입니다. 가속도는 속력만이 아니라 움직이는 방향의 변화도 포함하죠. 알짜힘이 없으면, 정지한 물체는 그대로 있고 움직이던 물체는 같은 속도로 곧게 움직입니다. 계속 움직이게 하려고 힘을 계속 공급해야 하는 것은 아닙니다.",
+      "visual": "Unity cart; zero-force velocity arrow constant; canonical Inertia/관성, Newton's First Law/제1법칙.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-003-friction-thought",
+      "speech": "그런데 책상 위에서 상자를 밀다가 손을 떼면 멈춥니다. 계속 밀지 않아서 멈춘 것처럼 보이죠. 같은 상자를 같은 속도로 출발시키고 바닥만 더 매끄럽게 바꾸면 더 멀리 갑니다. 거친 바닥에서는 빨리 멈춥니다. 움직임이 사라지는 이유는 유지할 힘이 부족해서가 아니라, 마찰이 반대쪽으로 작용하기 때문입니다.",
+      "visual": "Verified game slide comparison placeholder plus identical Unity cart test. No claimed measured commercial friction coefficient.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-004-second-law",
+      "speech": "이제 힘의 크기를 계산해 보겠습니다. 뉴턴의 제2법칙은 알짜힘이 질량과 가속도를 곱한 값이라는 관계입니다. 에프는 힘, 엠은 질량, 에이는 가속도입니다. 같은 질량에서는 알짜힘이 두 배면 가속도도 두 배입니다. 같은 힘이라면 질량이 두 배인 물체의 가속도는 절반이 됩니다. 힘과 가속도의 방향도 같습니다.",
+      "visual": "F_net=m*a and a=F_net/m; 2kg with6N gives3m/s²,4kg with6N gives1.5m/s². All values our implementation.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-005-net-force",
+      "speech": "여기서 중요한 말은 알짜힘입니다. 물체에 작용하는 힘을 방향까지 고려해 모두 더한 값이죠. 건물의 들보에는 무게를 누르는 큰 힘이 있어도, 받침이 반대 방향으로 지탱하면 아래로 가속되지 않습니다. 힘 하나가 존재한다는 사실과 알짜힘이 남는다는 사실은 다릅니다. 오른쪽 육 뉴턴과 왼쪽 이 뉴턴이라면 남는 힘은 오른쪽 사 뉴턴입니다.",
+      "visual": "Free-body diagram of supported beam then2kg cart;6−2=4N→a=2m/s². Vector sign and axis defined before substitution.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-006-units",
+      "speech": "힘의 단위도 같은 식에서 나옵니다. 질량의 킬로그램에 가속도의 미터 매초 제곱을 곱한 것이 일 뉴턴입니다. 즉 일 킬로그램 물체를 매초 일 미터씩 더 빠르게 만드는 힘이 일 뉴턴이에요. 힘과 가속도는 방향을 가진 벡터이고, 질량은 방향 없는 스칼라입니다. 이차원 게임이든 삼차원 게임이든 같은 관계를 각 방향에 적용합니다.",
+      "visual": "Units M L/T²→kg m/s²=N, single cart value update; avoid rapid formula readout.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-007-force-time",
+      "speech": "목표 속도만으로 필요한 힘을 정할 수는 없습니다. 정지한 이 킬로그램 물체를 초속 사 미터로 만들더라도, 이 초에 걸쳐 바꿀지 한 초 만에 바꿀지에 따라 가속도가 다릅니다. 이 초라면 가속도는 이, 힘은 사 뉴턴입니다. 한 초라면 가속도 사, 힘 팔 뉴턴이 필요하죠. 공이 튀는 충돌은 이런 큰 힘이 아주 짧게 작용하는 경우이고, 충격량에서 따로 다룹니다.",
+      "visual": "Shared velocity-time graph;2s/1s comparison, same final4m/s. Define constant-force/no-other-force conditions.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-008-free-body",
+      "speech": "시뮬레이션에서는 보통 힘을 먼저 알고 움직임을 구합니다. 물체 하나를 떼어 그린 자유 물체도에서, 힘마다 이름과 방향을 붙입니다. 모두 합쳐 알짜힘을 구하고, 질량으로 나누어 가속도를 얻습니다. 그다음 시간에 따라 속도와 위치를 갱신합니다. 힘은 위치나 속도에 따라 계속 달라질 수 있어서, 실제 프로그램은 이 과정을 작은 시간 간격마다 반복합니다.",
+      "visual": "Four-step persistent diagram: forces→sum→a→integrate; distinguish force computation from later collision solver/integrator chapter.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-009-frame-question",
+      "speech": "힘의 합이 영이면 가속도도 영이라는 말은 제1법칙과 닮았습니다. 그런데 두 법칙을 쓰려면 먼저 어느 기준으로 움직임을 재는지 정해야 합니다. 가속하거나 회전하는 카메라에서 보이는 운동을 그대로 넣으면 문제가 생길 수 있어요. 관성 기준계는 가상의 힘을 추가하지 않고 뉴턴의 법칙을 사용할 수 있는 기준계입니다.",
+      "visual": "Same elevator object from ground and cabin cameras; term card Inertial Reference Frame/관성 기준계.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-010-elevator",
+      "speech": "로봇이 엘리베이터 안에서 샌드위치를 들고 있다고 해 보죠. 둘이 함께 자유 낙하하는 순간 샌드위치를 놓으면, 로봇 눈에는 옆에 떠 있는 것처럼 보입니다. 중력이 사라진 것은 아닙니다. 엘리베이터와 샌드위치가 함께 아래로 가속하므로 서로의 위치가 크게 달라지지 않는 겁니다. 내려가는 엘리베이터 좌표계에서 식을 쓰려면, 그 좌표계의 가속도 효과를 함께 반영해야 합니다.",
+      "visual": "Own Unity robot/elevator/sandwich scene; same timestamp split ground/cabin; g and a_frame cancellation shown only as frame term.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-011-observers",
+      "speech": "지면에서 보면 샌드위치는 아래로 떨어집니다. 일정한 속도로 지나가는 차나 우주선에서 보면 옆으로도 움직여 포물선처럼 보일 수 있지만, 같은 법칙으로 설명됩니다. 관성 기준계끼리는 서로 회전하지 않고 일정한 속도로 직선 운동합니다. 지구에 붙은 좌표계도 자전과 공전 때문에 완벽한 관성계는 아닙니다. 다만 짧고 작은 실험에서는 그 효과를 무시할 수 있는지 판단해 사용합니다.",
+      "visual": "Three synchronized observer paths; no fake different forces. Earth rotation optionalsmall inset, Foucault pendulum mentioned visually as detectableexample.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-012-third-law",
+      "speech": "비시지에서는 대포를 쏘자 포탄은 앞으로 나가고, 발사한 차체는 뒤로 들려 넘어갑니다. 서로 영향을 주는 대포와 포탄을 먼저 나누어 보면, 힘의 짝을 이해하기 쉬워집니다. 이제 기준계를 정했으니 물체들이 서로 미는 상황으로 돌아가겠습니다. 물체 에이가 비를 밀면, 비도 에이를 같은 크기와 반대 방향의 힘으로 밉니다. 이것이 작용·반작용입니다. 한 힘이 먼저 생기고 나중에 답장처럼 반작용이 생기는 뜻은 아닙니다. 같은 상호작용의 두 힘이 동시에 서로 다른 물체에 작용합니다.",
+      "visual": "Native Besiege176–187; barrel/shot direction and body turn marks. Hand off to separate cannon/projectile free-body drawings, with gravity/ground forces shown separately.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-013-book",
+      "speech": "책이 책상 위에 놓여 있다면 책의 힘만 먼저 모아 보세요. 책에는 지구가 당기는 중력과 책상이 미는 수직항력이 작용합니다. 책이 책상을 아래로 미는 힘은 책이 아니라 책상 쪽 그림에 그립니다. 이 둘을 책의 그림 안에서 지워 버리면 안 됩니다. 어떤 물체의 가속도를 구하는지 정한 뒤, 그 물체가 받는 힘만 더하는 것이 핵심입니다.",
+      "visual": "Book/table two separated diagrams; force pair dottedlink versus same-object equilibrium; annotation labels supplement colour.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-014-push-box",
+      "speech": "사람보다 두 배 무거운 상자가 마찰이 작은 수레에 실려 있다고 해 보죠. 사람이 밀면 상자는 사람을 같은 힘으로 뒤로 밉니다. 그런데 사람은 땅도 뒤로 밀고, 땅은 사람을 앞으로 밀어 줍니다. 사람이 앞으로 가속하려면 땅에서 받는 힘이 상자에서 받는 힘보다 커야 합니다. 얼음 위라면 이 버팀이 약해져 사람도 뒤로 움직이겠죠. 지구도 힘을 받지만 질량이 워낙 커서 가속도가 아주 작습니다.",
+      "visual": "Articulated person/cart/ground; four contact-force arrows with separate body labels; preserve mass ratio2 not claim equal accelerations.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-015-rigid-body",
+      "speech": "이 원리는 큰 물체를 하나로 다룰 때도 유용합니다. 볼트로 연결한 들보의 두 조각은 서로 힘을 주고받지만, 들보 전체를 한 계로 보면 그 내부 힘은 쌍으로 상쇄됩니다. 그래서 전체 질량중심의 이동은 외력으로 계산할 수 있습니다. 강체라고 해서 회전 중인 모든 점의 가속도가 같다는 뜻은 아닙니다. 회전은 별도로 다루고, 물체가 크게 휘거나 부서진다면 하나의 강체라는 가정부터 바꿔야 합니다.",
+      "visual": "Two-piece beam internalforcesfade onlyinwhole-systemsum; rotatebar points have centripetal arrows. No assertion relativeaccelerationzero.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-016-force-laws",
+      "speech": "힘을 합치는 방법은 알았지만, 각 힘을 어디서 구할지는 아직 남았습니다. 게임에서는 중력과 마찰처럼 현실을 근사한 힘도 쓰고, 원하는 움직임을 만드는 제어용 힘도 씁니다. 상자가 바닥을 뚫고 내려가지 않게 받치는 접촉력도 필요합니다. 여기서는 접촉면의 수직 성분인 수직항력부터 구분하고, 중력과 마찰을 차례로 자유 물체도에 넣어 보겠습니다.",
+      "visual": "Samecartfloor forcecollector; normal is normalcomponentofcontact, friction tangentialcomponent. Avoid equating allcontactforcewithnormal.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-017-gravitation",
+      "speech": "만유인력은 두 질량의 곱에 비례하고 거리의 제곱에 반비례합니다. 여기서 식의 에프는 힘의 크기이고, 방향은 서로를 향합니다. 거리를 두 배로 늘리면 힘은 사분의 일이 됩니다. 지는 비례상수입니다. 두 물체를 점질량이나 구대칭 분포로 다룰 수 있을 때 이 간단한 식을 직접 쓰며, 가까이 놓인 복잡한 모양까지 질량중심 거리 하나로 정확히 계산하는 식은 아닙니다.",
+      "visual": "G*m1*m2/d²; d→2d, F→F/4. Mass centres and radialarrows, originalG6.673e-11labelhistoricalapprox notcurrentCODATA.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-018-local-gravity",
+      "speech": "왕국의 눈물에서 링크가 절벽 아래 물로 뛰어내립니다. 발밑의 지지가 사라진 뒤 아래로 내려가는 모습을 보면서, 이제 중력을 단순한 게임 월드의 식으로 옮겨 보죠. 하지만 지표 근처의 작은 게임 월드에서는 지구의 곡률과 고도 차이를 생략할 수 있습니다. 그러면 아래 방향이 일정하고, 중력은 질량에 일정한 벡터 지를 곱한 값이 됩니다. 이를 질량으로 나누면 가속도는 지 자체입니다. 무거운 물체는 더 큰 중력을 받지만 가속시키기도 더 어렵기 때문에, 공기 저항을 빼면 질량이 달라도 같은 중력 가속도로 떨어집니다.",
+      "visual": "Native TOTK943–953, ledge→descent→splash/resurface. Guide only visible descending body, hide in splash. Continue unchanged gravity equation in fixed-axis particle model.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-019-earth-number",
+      "speech": "지구 질량 약 오점구팔 곱하기 십의 이십사 제곱 킬로그램과 평균 반지름 육천삼백칠십일 킬로미터를 넣으면, 단순한 구형 모델에서는 약 구점팔삼이라는 가속도가 나옵니다. 적도에서 자전 효과 약 영점영삼사 를 빼면 약 구점칠구육입니다. 하지만 이것이 실제 적도의 정확한 값은 아닙니다. 지구는 완전한 구가 아니며, 실제 값은 적도 약 구점칠팔, 극 약 구점팔삼입니다. 표준 중력 구점팔공육육오는 따로 정해 놓은 관례적인 기준값입니다.",
+      "visual": "On-scenecalculation units+km→m; originalapprox numbers distinctlylabelled, NASAactualcolumn, NISTstandardcolumn; nofastrecitationwithoutvisualsupport.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-020-feel",
+      "speech": "현실의 값을 알았다고 모든 게임에 그대로 넣으면 되는 것은 아닙니다. 점프에 위쪽 초기 속도 하나를 주고 일정한 중력을 적용하면 포물선이 됩니다. 하지만 원하는 점프 높이가 크면서 공중에 머무는 시간은 짧다면, 지구 중력만으로는 둥둥 뜨는 느낌이 날 수 있습니다. 빠르게 솟구치기, 최고점에서 버티기, 내려올 때 더 빨라지기는 서로 다른 움직임을 설계하는 선택입니다.",
+      "visual": "Verifiedgamejumpplaceholder; Unityonevariableheight/time demonstration. Avoid broadunsupportedFPSbadjumpclaim or game-specificforceinference.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-021-player-control",
+      "speech": "자동차를 빨리 지면으로 돌려보내 조작권을 되찾게 하려면 낙하를 빠르게 만들 수 있습니다. 반대로 낮은 중력으로 더 긴 도약을 만들 수도 있죠. 플레이어가 조작하지 않는 물체도 낙하 시간과 소리가 크기감을 바꿉니다. 다만 물체가 가볍게 느껴지는 원인이 지나친 감쇠라면 중력만 고치는 것이 답은 아닙니다. 기준은 무조건 현실과 같게 만드는지가 아니라, 플레이어가 의도한 움직임을 이해하고 즐길 수 있는지입니다.",
+      "visual": "Vehiclejumporfallingprop actualcandidateplaceholder, verifiednativebefore/action/result; ourmodel parameterchanges labelled.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-022-jump-design",
+      "speech": "높이 이 미터에 영점사 초 만에 도달하는 점프를 만들어 보죠. 위를 양수로 두고 최고점의 속도가 영이라는 조건을 쓰면, 처음 속도는 높이의 두 배를 시간으로 나눈 값입니다. 이 예에서는 초속 십 미터입니다. 가속도는 높이의 마이너스 두 배를 시간 제곱으로 나누어 마이너스 이십오가 됩니다. 실제 중력과 달라도 원하는 높이와 상승 시간을 함께 맞출 수 있습니다.",
+      "visual": "Derive0=v0+aT, h=v0T+.5aT²→a=-2h/T²,v0=2h/T; substitute2,.4slowly; falling accelerationchange isdifferentmodel.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-023-friction-purpose",
+      "speech": "중력이 물체를 아래로 끌어당겨도, 조금 기울어진 바닥 위의 화분은 바로 미끄러지지 않습니다. 평평한 바닥에서 밀어 놓은 화분은 움직이다 멈춥니다. 두 현상을 연결하는 것이 마찰입니다. 마찰은 이동을 방해하기만 하는 힘이 아닙니다. 발로 땅을 밀고 앞으로 걷거나 타이어가 노면을 붙잡는 데도 필요합니다. 먼저 건조 마찰을 근사하는 쿨롱 마찰 모델의 두 상태를 구분하겠습니다.",
+      "visual": "Recognizableplantpot+adjustabletable persistentstage, walkingfoot/tyrebriefdiagram; CoulombFrictionterm.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-024-static-kinetic",
+      "speech": "서로 닿은 두 표면이 상대적으로 미끄러지지 않을 때는 정지 마찰이 작용합니다. 옆으로 밀려는 힘을 일정 한도까지 맞받아 버팁니다. 그 한도를 넘어 미끄러지기 시작하면 운동 마찰로 다룹니다. 운동 마찰은 두 표면의 상대적인 미끄럼 방향과 반대입니다. 정지라는 말은 세계에서 움직이지 않는다는 뜻이 아니라, 접촉한 표면끼리 미끄러지지 않는다는 뜻입니다.",
+      "visual": "Moveconveyorbeltandpot together to clarifyrelativevelocity; no extraunrelatedchapter; static/kineticlabels.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-025-static-cap",
+      "speech": "정지 마찰의 최대 크기는 정지 마찰 계수와 수직항력의 크기를 곱한 값입니다. 최대값이라는 점이 중요합니다. 수직항력이 십 뉴턴이고 계수가 영점오라면 최대 오 뉴턴까지 버팁니다. 하지만 옆으로 이 뉴턴만 밀 때는 마찰도 반대로 이 뉴턴입니다. 처음부터 오 뉴턴을 적용하면, 가만히 있어야 할 화분이 오히려 뒤로 가속하는 잘못된 결과가 나옵니다.",
+      "visual": "|Fs|≤μs N; pushslider0→2→5→6N, actualfsresponsive, capacitydottedseparate. Numbersours.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-026-coefficient-pairs",
+      "speech": "마찰 계수는 단위 없는 수이고, 한 재료만의 속성이 아니라 맞닿는 두 표면의 조합에 따라 달라집니다. 고무와 마른 아스팔트의 값을 안다고 고무와 얼음의 값을 알 수는 없습니다. 표에는 알루미늄과 강철의 정지 계수 영점육일, 강철과 테플론의 영점영사처럼 큰 차이가 나옵니다. 이런 값은 표면 상태와 측정 조건에 따른 예시이므로 실제 제작에서는 조건이 확인된 값을 써야 합니다.",
+      "visual": "Full suppliedtable asreferencewithtwohighlightedrows; conflictingwet-concrete rowflaggeduncertain, notruntimeconstant. Table need notreadallrowsaloudbutallretainedscreen/notes.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-027-normal-force",
+      "speech": "이제 표의 계수보다 먼저 구해야 할 수직항력을 보겠습니다. 평평하고 가속하지 않는 탁자 위에서는 중력과 크기가 같을 수 있습니다. 그러나 경사면에서는 중력을 표면에 수직인 성분과 평행한 성분으로 나눠야 합니다. 법선 방향으로 서로 파고들지 않게 받치는 힘이 수직항력입니다. 법선 벡터를 알면 내적을 이용해 중력의 수직 성분을 구할 수 있습니다.",
+      "visual": "mgconstantvertical, unitn rotateswithtable; forcecomponentdotproject; N=mgcosθ onlyspecifiedconditionsnotuniversal.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-028-slope-threshold",
+      "speech": "탁자를 더 기울이면 아래로 미끄러뜨리는 성분은 커지고, 면을 누르는 수직 성분은 작아집니다. 따라서 버틸 수 있는 최대 마찰도 줄어듭니다. 경사 방향 힘은 엠 지 사인 세타, 수직항력은 엠 지 코사인 세타입니다. 미끄러지지 않으려면 앞의 값이 정지 마찰 한도보다 작아야 합니다. 공통인 질량과 중력을 나누면, 탄젠트 세타가 정지 마찰 계수 이하라는 조건이 남습니다.",
+      "visual": "Samepot low/critical/steep continuously; mg sinθ≤μs mg cosθ→tanθ≤μs. μs=.5 criticalatan(.5)≈26.565°, exampleowncalculation.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-029-kinetic-law",
+      "speech": "한도를 넘으면 운동 마찰 계수로 바꿔 계산합니다. 크기는 운동 마찰 계수 곱하기 수직항력이고, 방향은 상대 미끄럼을 거슬러 갑니다. 이 이상적인 쿨롱 모델에서는 미끄러지는 속력이 달라도 마찰 크기가 속력에 비례해 커지지 않습니다. 보통 운동 마찰 계수가 최대 정지 마찰 계수보다 작아, 막 움직이기 시작한 뒤에는 더 쉽게 미끄러집니다. 실제 재료마다 모든 조건에서 보장되는 순서는 아닙니다.",
+      "visual": "Fk=μk N withunitdirectionv_rel/|v_rel|onlynonzero; N10,μk.3→3N; compareat1m/sand2m/s nofakesourcevalues.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-030-area-pressure",
+      "speech": "마찰 식에는 겉보기 접촉 면적이 직접 들어가지 않습니다. 같은 무게의 화분을 더 작은 받침에 올려도, 이 모델에서는 수직항력과 계수가 같으면 미끄럼 한도도 같습니다. 같은 힘을 더 작은 면적으로 받치면 평균 압력은 더 커집니다. 압력은 힘을 면적으로 나눈 값이기 때문이죠. 하지만 높고 가느다란 화분은 미끄러지기 전에 넘어질 수도 있습니다. 그것은 회전과 토크의 문제로 이어집니다.",
+      "visual": "Sameweightwide/narrowbase, P=N/A correctdirection, nouniversalrealfrictionclaim; tippingonlypreviewnextscope.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    },
+    {
+      "id": "M27-031-closing",
+      "speech": "처음의 상자로 돌아오면, 해야 할 일은 하나의 흐름으로 정리됩니다. 누구에게 작용하는 힘인지 정하고, 중력과 접촉력과 마찰을 방향까지 합친 뒤, 질량으로 나누어 가속도를 구합니다. 그리고 그 가속도로 다음 순간의 속도와 위치를 만듭니다. 현실의 법칙을 이해하면 게임에서 바꿀 값을 더 정확히 고를 수 있습니다. 다음에는 목표 위치로 되돌아오려는 용수철의 힘을 더해, 튀고 흔들리다가 부드럽게 멈추는 움직임으로 이어가겠습니다.",
+      "visual": "Returntoopeningactualgameconfirmationonlyafterfootageverified; persistentforceflow then springattachedsamecart. NoaddedBGM.",
+      "hold": 0,
+      "timing": "pending actual PCM and realized motion; no automatic observation silence"
+    }
+  ],
+  "boundaryLinks": [
+    {
+      "from": "M27-000-abstract",
+      "to": "M27-001-scope",
+      "carriedResult": "마지막에는 같은 계산을 게임의 점프와 미끄러짐을 설계하는 도구로 연결해 보죠.",
+      "nextOpening": "앞에서는 위치와 속도가 시간에 따라 어떻게 변하는지를 다뤘습니다.",
+      "sourceBoundary": "M27-000-abstract",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-001-scope",
+      "to": "M27-002-inertia",
+      "carriedResult": "빛에 가까운 속도나 아주 작은 세계까지 이 식 하나로 설명하려는 것은 아닙니다.",
+      "nextOpening": "질량은 물체가 가속되는 데 얼마나 저항하는지를 나타냅니다.",
+      "sourceBoundary": "M27-001-scope",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-002-inertia",
+      "to": "M27-003-friction-thought",
+      "carriedResult": "계속 움직이게 하려고 힘을 계속 공급해야 하는 것은 아닙니다.",
+      "nextOpening": "그런데 책상 위에서 상자를 밀다가 손을 떼면 멈춥니다.",
+      "sourceBoundary": "M27-002-inertia",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-003-friction-thought",
+      "to": "M27-004-second-law",
+      "carriedResult": "움직임이 사라지는 이유는 유지할 힘이 부족해서가 아니라, 마찰이 반대쪽으로 작용하기 때문입니다.",
+      "nextOpening": "이제 힘의 크기를 계산해 보겠습니다.",
+      "sourceBoundary": "M27-003-friction-thought",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-004-second-law",
+      "to": "M27-005-net-force",
+      "carriedResult": "힘과 가속도의 방향도 같습니다.",
+      "nextOpening": "여기서 중요한 말은 알짜힘입니다.",
+      "sourceBoundary": "M27-004-second-law",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-005-net-force",
+      "to": "M27-006-units",
+      "carriedResult": "오른쪽 육 뉴턴과 왼쪽 이 뉴턴이라면 남는 힘은 오른쪽 사 뉴턴입니다.",
+      "nextOpening": "힘의 단위도 같은 식에서 나옵니다.",
+      "sourceBoundary": "M27-005-net-force",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-006-units",
+      "to": "M27-007-force-time",
+      "carriedResult": "이차원 게임이든 삼차원 게임이든 같은 관계를 각 방향에 적용합니다.",
+      "nextOpening": "목표 속도만으로 필요한 힘을 정할 수는 없습니다.",
+      "sourceBoundary": "M27-006-units",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-007-force-time",
+      "to": "M27-008-free-body",
+      "carriedResult": "공이 튀는 충돌은 이런 큰 힘이 아주 짧게 작용하는 경우이고, 충격량에서 따로 다룹니다.",
+      "nextOpening": "시뮬레이션에서는 보통 힘을 먼저 알고 움직임을 구합니다.",
+      "sourceBoundary": "M27-007-force-time",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-008-free-body",
+      "to": "M27-009-frame-question",
+      "carriedResult": "힘은 위치나 속도에 따라 계속 달라질 수 있어서, 실제 프로그램은 이 과정을 작은 시간 간격마다 반복합니다.",
+      "nextOpening": "힘의 합이 영이면 가속도도 영이라는 말은 제1법칙과 닮았습니다.",
+      "sourceBoundary": "M27-008-free-body",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-009-frame-question",
+      "to": "M27-010-elevator",
+      "carriedResult": "관성 기준계는 가상의 힘을 추가하지 않고 뉴턴의 법칙을 사용할 수 있는 기준계입니다.",
+      "nextOpening": "로봇이 엘리베이터 안에서 샌드위치를 들고 있다고 해 보죠.",
+      "sourceBoundary": "M27-009-frame-question",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-010-elevator",
+      "to": "M27-011-observers",
+      "carriedResult": "내려가는 엘리베이터 좌표계에서 식을 쓰려면, 그 좌표계의 가속도 효과를 함께 반영해야 합니다.",
+      "nextOpening": "지면에서 보면 샌드위치는 아래로 떨어집니다.",
+      "sourceBoundary": "M27-010-elevator",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-011-observers",
+      "to": "M27-012-third-law",
+      "carriedResult": "다만 짧고 작은 실험에서는 그 효과를 무시할 수 있는지 판단해 사용합니다.",
+      "nextOpening": "비시지에서는 대포를 쏘자 포탄은 앞으로 나가고, 발사한 차체는 뒤로 들려 넘어갑니다.",
+      "sourceBoundary": "M27-011-observers",
+      "actualGameBridge": "Separate interacting objects rather than canceling forces on one object"
+    },
+    {
+      "from": "M27-012-third-law",
+      "to": "M27-013-book",
+      "carriedResult": "같은 상호작용의 두 힘이 동시에 서로 다른 물체에 작용합니다.",
+      "nextOpening": "책이 책상 위에 놓여 있다면 책의 힘만 먼저 모아 보세요.",
+      "sourceBoundary": "M27-012-third-law",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-013-book",
+      "to": "M27-014-push-box",
+      "carriedResult": "어떤 물체의 가속도를 구하는지 정한 뒤, 그 물체가 받는 힘만 더하는 것이 핵심입니다.",
+      "nextOpening": "사람보다 두 배 무거운 상자가 마찰이 작은 수레에 실려 있다고 해 보죠.",
+      "sourceBoundary": "M27-013-book",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-014-push-box",
+      "to": "M27-015-rigid-body",
+      "carriedResult": "지구도 힘을 받지만 질량이 워낙 커서 가속도가 아주 작습니다.",
+      "nextOpening": "이 원리는 큰 물체를 하나로 다룰 때도 유용합니다.",
+      "sourceBoundary": "M27-014-push-box",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-015-rigid-body",
+      "to": "M27-016-force-laws",
+      "carriedResult": "회전은 별도로 다루고, 물체가 크게 휘거나 부서진다면 하나의 강체라는 가정부터 바꿔야 합니다.",
+      "nextOpening": "힘을 합치는 방법은 알았지만, 각 힘을 어디서 구할지는 아직 남았습니다.",
+      "sourceBoundary": "M27-015-rigid-body",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-016-force-laws",
+      "to": "M27-017-gravitation",
+      "carriedResult": "여기서는 접촉면의 수직 성분인 수직항력부터 구분하고, 중력과 마찰을 차례로 자유 물체도에 넣어 보겠습니다.",
+      "nextOpening": "만유인력은 두 질량의 곱에 비례하고 거리의 제곱에 반비례합니다.",
+      "sourceBoundary": "M27-016-force-laws",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-017-gravitation",
+      "to": "M27-018-local-gravity",
+      "carriedResult": "두 물체를 점질량이나 구대칭 분포로 다룰 수 있을 때 이 간단한 식을 직접 쓰며, 가까이 놓인 복잡한 모양까지 질량중심 거리 하나로 정확히 계산하는 식은 아닙니다.",
+      "nextOpening": "왕국의 눈물에서 링크가 절벽 아래 물로 뛰어내립니다.",
+      "sourceBoundary": "M27-017-gravitation",
+      "actualGameBridge": "Leaving support and falling before gravity simplification"
+    },
+    {
+      "from": "M27-018-local-gravity",
+      "to": "M27-019-earth-number",
+      "carriedResult": "무거운 물체는 더 큰 중력을 받지만 가속시키기도 더 어렵기 때문에, 공기 저항을 빼면 질량이 달라도 같은 중력 가속도로 떨어집니다.",
+      "nextOpening": "지구 질량 약 오점구팔 곱하기 십의 이십사 제곱 킬로그램과 평균 반지름 육천삼백칠십일 킬로미터를 넣으면, 단순한 구형 모델에서는 약 구점팔삼이라는 가속도가 나옵니다.",
+      "sourceBoundary": "M27-018-local-gravity",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-019-earth-number",
+      "to": "M27-020-feel",
+      "carriedResult": "표준 중력 구점팔공육육오는 따로 정해 놓은 관례적인 기준값입니다.",
+      "nextOpening": "현실의 값을 알았다고 모든 게임에 그대로 넣으면 되는 것은 아닙니다.",
+      "sourceBoundary": "M27-019-earth-number",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-020-feel",
+      "to": "M27-021-player-control",
+      "carriedResult": "빠르게 솟구치기, 최고점에서 버티기, 내려올 때 더 빨라지기는 서로 다른 움직임을 설계하는 선택입니다.",
+      "nextOpening": "자동차를 빨리 지면으로 돌려보내 조작권을 되찾게 하려면 낙하를 빠르게 만들 수 있습니다.",
+      "sourceBoundary": "M27-020-feel",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-021-player-control",
+      "to": "M27-022-jump-design",
+      "carriedResult": "기준은 무조건 현실과 같게 만드는지가 아니라, 플레이어가 의도한 움직임을 이해하고 즐길 수 있는지입니다.",
+      "nextOpening": "높이 이 미터에 영점사 초 만에 도달하는 점프를 만들어 보죠.",
+      "sourceBoundary": "M27-021-player-control",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-022-jump-design",
+      "to": "M27-023-friction-purpose",
+      "carriedResult": "실제 중력과 달라도 원하는 높이와 상승 시간을 함께 맞출 수 있습니다.",
+      "nextOpening": "중력이 물체를 아래로 끌어당겨도, 조금 기울어진 바닥 위의 화분은 바로 미끄러지지 않습니다.",
+      "sourceBoundary": "M27-022-jump-design",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-023-friction-purpose",
+      "to": "M27-024-static-kinetic",
+      "carriedResult": "먼저 건조 마찰을 근사하는 쿨롱 마찰 모델의 두 상태를 구분하겠습니다.",
+      "nextOpening": "서로 닿은 두 표면이 상대적으로 미끄러지지 않을 때는 정지 마찰이 작용합니다.",
+      "sourceBoundary": "M27-023-friction-purpose",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-024-static-kinetic",
+      "to": "M27-025-static-cap",
+      "carriedResult": "정지라는 말은 세계에서 움직이지 않는다는 뜻이 아니라, 접촉한 표면끼리 미끄러지지 않는다는 뜻입니다.",
+      "nextOpening": "정지 마찰의 최대 크기는 정지 마찰 계수와 수직항력의 크기를 곱한 값입니다.",
+      "sourceBoundary": "M27-024-static-kinetic",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-025-static-cap",
+      "to": "M27-026-coefficient-pairs",
+      "carriedResult": "처음부터 오 뉴턴을 적용하면, 가만히 있어야 할 화분이 오히려 뒤로 가속하는 잘못된 결과가 나옵니다.",
+      "nextOpening": "마찰 계수는 단위 없는 수이고, 한 재료만의 속성이 아니라 맞닿는 두 표면의 조합에 따라 달라집니다.",
+      "sourceBoundary": "M27-025-static-cap",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-026-coefficient-pairs",
+      "to": "M27-027-normal-force",
+      "carriedResult": "이런 값은 표면 상태와 측정 조건에 따른 예시이므로 실제 제작에서는 조건이 확인된 값을 써야 합니다.",
+      "nextOpening": "이제 표의 계수보다 먼저 구해야 할 수직항력을 보겠습니다.",
+      "sourceBoundary": "M27-026-coefficient-pairs",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-027-normal-force",
+      "to": "M27-028-slope-threshold",
+      "carriedResult": "법선 벡터를 알면 내적을 이용해 중력의 수직 성분을 구할 수 있습니다.",
+      "nextOpening": "탁자를 더 기울이면 아래로 미끄러뜨리는 성분은 커지고, 면을 누르는 수직 성분은 작아집니다.",
+      "sourceBoundary": "M27-027-normal-force",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-028-slope-threshold",
+      "to": "M27-029-kinetic-law",
+      "carriedResult": "공통인 질량과 중력을 나누면, 탄젠트 세타가 정지 마찰 계수 이하라는 조건이 남습니다.",
+      "nextOpening": "한도를 넘으면 운동 마찰 계수로 바꿔 계산합니다.",
+      "sourceBoundary": "M27-028-slope-threshold",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-029-kinetic-law",
+      "to": "M27-030-area-pressure",
+      "carriedResult": "실제 재료마다 모든 조건에서 보장되는 순서는 아닙니다.",
+      "nextOpening": "마찰 식에는 겉보기 접촉 면적이 직접 들어가지 않습니다.",
+      "sourceBoundary": "M27-029-kinetic-law",
+      "actualGameBridge": null
+    },
+    {
+      "from": "M27-030-area-pressure",
+      "to": "M27-031-closing",
+      "carriedResult": "그것은 회전과 토크의 문제로 이어집니다.",
+      "nextOpening": "처음의 상자로 돌아오면, 해야 할 일은 하나의 흐름으로 정리됩니다.",
+      "sourceBoundary": "M27-030-area-pressure",
+      "actualGameBridge": null
+    }
+  ],
+  "terminology": [],
+  "nativeGameCueBindings": [
+    {
+      "beat": "M27-000-abstract",
+      "sceneId": "000",
+      "candidate": "M27-G01-contact-traction",
+      "sourceId": "d5fiou39Htc",
+      "game": "BeamNG.drive",
+      "sourceIn": 35,
+      "sourceOut": 51,
+      "sourceFile": "projects/game-math-springs-damping/production/local/footage-review/beamng-stock-suspension-d5fiou39Htc-744-850.mp4",
+      "sourceSha256": "e700c29ea51c2fce573d7144d4d675f3cc6d2a0f5d5532f3d876ae893f956ca9",
+      "recordingUrl": "https://www.youtube.com/watch?v=d5fiou39Htc",
+      "decodedSize": [
+        1920,
+        1080
+      ],
+      "nativeFps": "30/1",
+      "playbackRate": 1,
+      "hold": 0,
+      "loop": false,
+      "freezePadding": false,
+      "role": "Contact motion motivates summing forces",
+      "observed": {
+        "before": "Off-road vehicle reaches uneven rocks.",
+        "action": "Wheels climb and drop across rocks; body tilts, vehicle continues forward.",
+        "result": "Contact constrains motion and changes body height/orientation."
+      },
+      "claimLimits": [
+        "No exact tire friction coefficient or force magnitude observed.",
+        "BeamNG soft-body model is not proof of our simple rigid particle equations.",
+        "Do not claim absence of slip or a constant normal force."
+      ],
+      "annotationPlan": {
+        "target": "Wheel-ground contact contours; track visible tire, hide behindbody/rocks, no fake sensor output.",
+        "style": "Progressive open contour/short leader/path with labels. No invented game measurements or internal force/skeleton data.",
+        "tracking": "These inspected sample frames are planning evidence, not per-frame tracking. Follow actual target; hide at occlusion/out-of-frame; clear at cut.",
+        "captionClearance": "Fixed bottom-centre captions and game UI protected; foreground callout should not cover the action."
+      },
+      "reviewEvidence": "projects/game-math-springs-damping/production/local/footage-review/stock-suspension-fine/sampling.json",
+      "nativeDecodeEvidence": {
+        "id": "M27-G01-contact-traction",
+        "sourceIn": 35,
+        "sourceOut": 51,
+        "sourceSha256": "e700c29ea51c2fce573d7144d4d675f3cc6d2a0f5d5532f3d876ae893f956ca9",
+        "mode": "software-video-decode-entire-native-interval-no-hwaccel",
+        "returnCode": 0,
+        "stderr": "",
+        "log": "projects/game-math-forces-friction/production/local/footage-native-qa/M27-G01-contact-traction-decode.log",
+        "nativeFrame": "projects/game-math-forces-friction/production/local/footage-native-qa/M27-G01-contact-traction-native.jpg",
+        "nativeFrameTime": 43.0,
+        "nativeFrameSize": [
+          1920,
+          1080
+        ],
+        "frameViewed": false,
+        "audioListeningCompleted": false,
+        "movingCompositeApproved": false
+      },
+      "speechTarget": {
+        "prefixKo": "비이엠엔지 드라이브에서 차가 바위를 넘으면",
+        "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+      },
+      "handoffToExplanation": "Same own force-diagram stage introduces Newton laws and all original examples.",
+      "audio": {
+        "nativeAudioPresent": true,
+        "actualListening": "pending",
+        "addedLectureBgm": false,
+        "mix": "Preserve verified synchronized original game audio under normal narration ducking; identify mixed music before final use."
+      },
+      "fullOriginalAudioIn": 35,
+      "fullOriginalAudioOut": 51,
+      "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+    },
+    {
+      "beat": "M27-012-third-law",
+      "sceneId": "012",
+      "candidate": "M27-G02-cannon-reaction",
+      "sourceId": "T3ncWUwKUns",
+      "game": "Besiege",
+      "sourceIn": 176,
+      "sourceOut": 187,
+      "sourceFile": "projects/game-math-rigid-body-inertia/production/local/footage-review/besiege-T3ncWUwKUns.mp4",
+      "sourceSha256": "04ec7450d387f48c034dc675a95c24e9ca17ad39cc708a30f31eb1dcd363cab7",
+      "recordingUrl": "https://www.youtube.com/watch?v=T3ncWUwKUns",
+      "decodedSize": [
+        1920,
+        1080
+      ],
+      "nativeFps": "30000/1001",
+      "playbackRate": 1,
+      "hold": 0,
+      "loop": false,
+      "freezePadding": false,
+      "role": "Separate interacting objects rather than canceling forces on one object",
+      "observed": {
+        "before": "Cannon vehicle rests on wheels facing wall.",
+        "action": "Cannon fires; vehicle rears up and rolls backward as wall is struck.",
+        "result": "Projectile/target direction and vehicle response are visibly different."
+      },
+      "claimLimits": [
+        "No equal numerical force or isolated total momentum measured.",
+        "Ground contact, gravity and rotation are present; apply equal-opposite pair in our labelled cannon/projectile model, not all forces as one pair."
+      ],
+      "annotationPlan": {
+        "target": "Barrel and vehicle response direction; label only observed motion, force-pair vectors in model.",
+        "style": "Progressive open contour/short leader/path with labels. No invented game measurements or internal force/skeleton data.",
+        "tracking": "These inspected sample frames are planning evidence, not per-frame tracking. Follow actual target; hide at occlusion/out-of-frame; clear at cut.",
+        "captionClearance": "Fixed bottom-centre captions and game UI protected; foreground callout should not cover the action."
+      },
+      "reviewEvidence": "projects/game-math-rigid-body-inertia/production/local/footage-review/besiege-recoil-fine/sampling.json",
+      "nativeDecodeEvidence": {
+        "id": "M27-G02-cannon-reaction",
+        "sourceIn": 176,
+        "sourceOut": 187,
+        "sourceSha256": "04ec7450d387f48c034dc675a95c24e9ca17ad39cc708a30f31eb1dcd363cab7",
+        "mode": "software-video-decode-entire-native-interval-no-hwaccel",
+        "returnCode": 0,
+        "stderr": "",
+        "log": "projects/game-math-forces-friction/production/local/footage-native-qa/M27-G02-cannon-reaction-decode.log",
+        "nativeFrame": "projects/game-math-forces-friction/production/local/footage-native-qa/M27-G02-cannon-reaction-native.jpg",
+        "nativeFrameTime": 181.5,
+        "nativeFrameSize": [
+          1920,
+          1080
+        ],
+        "frameViewed": false,
+        "audioListeningCompleted": false,
+        "movingCompositeApproved": false
+      },
+      "speechTarget": {
+        "prefixKo": "비시지에서는 대포를 쏘자",
+        "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+      },
+      "handoffToExplanation": "Original action/reaction/book-table demonstration retains independent force sets.",
+      "audio": {
+        "nativeAudioPresent": true,
+        "actualListening": "pending",
+        "addedLectureBgm": false,
+        "mix": "Preserve verified synchronized original game audio under normal narration ducking; identify mixed music before final use."
+      },
+      "fullOriginalAudioIn": 176,
+      "fullOriginalAudioOut": 187,
+      "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+    },
+    {
+      "beat": "M27-018-local-gravity",
+      "sceneId": "018",
+      "candidate": "M27-G03-fall-support",
+      "sourceId": "YNQ20CKbY8U",
+      "game": "The Legend of Zelda: Tears of the Kingdom",
+      "sourceIn": 943,
+      "sourceOut": 953,
+      "sourceFile": "projects/game-math-euler-axis-angle/production/local/revision-v3/sources/YNQ20CKbY8U-hls.mp4",
+      "sourceSha256": "2f415500919c69dc8525bacf728d355bf10bf28de7a854dd3032c67ab1a29cc2",
+      "recordingUrl": "https://www.youtube.com/watch?v=YNQ20CKbY8U",
+      "decodedSize": [
+        1920,
+        1080
+      ],
+      "nativeFps": "60/1",
+      "playbackRate": 1,
+      "hold": 0,
+      "loop": false,
+      "freezePadding": false,
+      "role": "Leaving support and falling before gravity simplification",
+      "observed": {
+        "before": "Link runs to the ledge above water.",
+        "action": "He jumps/dives off; descends, splashes and resurfaces.",
+        "result": "Loss of ground support is followed by downward movement and a new water interaction."
+      },
+      "claimLimits": [
+        "Actual dive animation, air control and buoyancy are not a pure free-fall experiment.",
+        "No exact g, initial speed or equal-fall-mass claim."
+      ],
+      "annotationPlan": {
+        "target": "Ledge and Link contour/downward motion guide only before splash; hide at occlusion and clear once submerged.",
+        "style": "Progressive open contour/short leader/path with labels. No invented game measurements or internal force/skeleton data.",
+        "tracking": "These inspected sample frames are planning evidence, not per-frame tracking. Follow actual target; hide at occlusion/out-of-frame; clear at cut.",
+        "captionClearance": "Fixed bottom-centre captions and game UI protected; foreground callout should not cover the action."
+      },
+      "reviewEvidence": "projects/game-math-forces-friction/production/local/footage-review/totk-drop-water/sampling.json",
+      "nativeDecodeEvidence": {
+        "id": "M27-G03-fall-support",
+        "sourceIn": 943,
+        "sourceOut": 953,
+        "sourceSha256": "2f415500919c69dc8525bacf728d355bf10bf28de7a854dd3032c67ab1a29cc2",
+        "mode": "software-video-decode-entire-native-interval-no-hwaccel",
+        "returnCode": 0,
+        "stderr": "",
+        "log": "projects/game-math-forces-friction/production/local/footage-native-qa/M27-G03-fall-support-decode.log",
+        "nativeFrame": "projects/game-math-forces-friction/production/local/footage-native-qa/M27-G03-fall-support-native.jpg",
+        "nativeFrameTime": 948.0,
+        "nativeFrameSize": [
+          1920,
+          1080
+        ],
+        "frameViewed": false,
+        "audioListeningCompleted": false,
+        "movingCompositeApproved": false
+      },
+      "speechTarget": {
+        "prefixKo": "왕국의 눈물에서 링크가 절벽 아래 물로",
+        "timing": "Phrase placement to follow actual PCM; speak target, action and result while visible."
+      },
+      "handoffToExplanation": "Original constant-g mass cancellation, gravity values and jump design follow without omissions.",
+      "audio": {
+        "nativeAudioPresent": true,
+        "actualListening": "pending",
+        "addedLectureBgm": false,
+        "mix": "Preserve verified synchronized original game audio under normal narration ducking; identify mixed music before final use."
+      },
+      "fullOriginalAudioIn": 943,
+      "fullOriginalAudioOut": 953,
+      "status": "observed-source-bound-to-text; native playback, audio, annotation and exact timing QA pending"
+    }
+  ],
+  "gameMix": {
+    "adoptedGames": 3,
+    "nintendoGames": 1,
+    "nintendoGame": "The Legend of Zelda: Tears of the Kingdom",
+    "selectionReason": "Three inspected meaningful observations selected by source lesson role, 1/3 Nintendo; no ratio-padding or slow/static footage."
+  }
 }

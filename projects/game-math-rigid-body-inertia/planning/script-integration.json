@@ -1,0 +1,71 @@
+{
+  "updatedAt": "2026-11-04T15:43:29.600839+00:00",
+  "episode": "M30",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "c48ba382fe5cae03eb0e10eb4227541a57c69cee4332ba21637e074b855b94d6",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "c09d2f738209b5c6ac3ddb17e1ca2cac4075e4883b6f7178d70eb019c5a06f71",
+  "changes": [
+    {
+      "sourceBeatId": "M30-000-abstract",
+      "mode": "replace",
+      "beforeKo": "같은 물체를 같은 힘으로 밀어도 가운데를 미는지 가장자리를 미는지에 따라 움직임이 달라집니다. 물체가 밀려가는 것과 돌아가는 것을 함께 계산하려면 무엇이 더 필요할까요? 회전 속도와 토크에서 시작해 질량 분포의 영향을 알아보고, 충돌과 물리 엔진의 시간 갱신까지 연결하겠습니다.",
+      "afterKo": "비시지에서 대포를 쏘자, 차체가 뒤로 밀리면서 동시에 들려 넘어갑니다. 물체가 이동하는 것과 돌아가는 것을 함께 계산하려면 무엇이 더 필요할까요? 힘을 가하는 위치와 질량 분포를 살펴보고, 회전 속도와 토크에서 충돌, 물리 엔진의 시간 갱신까지 연결하겠습니다. 먼저 하나의 물체에 이동과 회전이 함께 있다는 사실부터 정리해 보죠.",
+      "beforeEn": "The same push produces different motion depending on whether it passes through an object’s center or acts near its edge. What do we need to calculate translation and rotation together? We will connect angular velocity, torque, mass distribution, collisions, and the engine’s time update.",
+      "afterEn": "When a cannon fires in Besiege, its vehicle moves backward and also rears up and overturns. What else is needed to calculate translation and rotation together? We will examine where forces act and how mass is distributed, then connect angular velocity and torque to collisions and a physics engine’s time update. First, separate translation from rotation on a single object.",
+      "reason": "Observed rotation plus translation motivates torque; no actual same-force/lever-arm values inferred. The source same-force/different-point comparison remains in the following own model."
+    },
+    {
+      "sourceBeatId": "M30-003-instant-axis",
+      "mode": "prepend",
+      "beforeKo": "물체가 이동하면 각 점의 속도에서 질량중심의 속도를 먼저 뺍니다. 남은 회전 성분을 각속도로 설명합니다. 회전축 위 점은 반지름이 영이라 그 점의 속도만으로 각속도를 알아낼 수 없습니다. 각가속도는 각속도의 시간 미분입니다. 외부 토크가 없을 때 보존되는 것은 각운동량이며, 비대칭 물체의 각속도가 항상 일정한 것은 아닙니다. 그 이유는 관성을 삼차원으로 확장할 때 드러납니다.",
+      "afterKo": "왕국의 눈물에서는 통나무와 돛대를 붙인 뗏목을 한 번에 들어 옮깁니다. 붙어 있는 단단한 부분들은 서로의 배치를 유지한 채 같이 움직이죠. 이런 물체의 움직임을 이동과 회전으로 나누어 보겠습니다. 물체가 이동하면 각 점의 속도에서 질량중심의 속도를 먼저 뺍니다. 남은 회전 성분을 각속도로 설명합니다. 회전축 위 점은 반지름이 영이라 그 점의 속도만으로 각속도를 알아낼 수 없습니다. 각가속도는 각속도의 시간 미분입니다. 외부 토크가 없을 때 보존되는 것은 각운동량이며, 비대칭 물체의 각속도가 항상 일정한 것은 아닙니다. 그 이유는 관성을 삼차원으로 확장할 때 드러납니다.",
+      "beforeEn": "For a translating body, subtract center-of-mass velocity from each point’s velocity to isolate rotation. A point on the axis has zero radius and cannot reveal angular rate by its own velocity. Angular acceleration is the time derivative of angular velocity. Without external torque, angular momentum is conserved; an asymmetric body’s angular velocity need not remain constant. Three-dimensional inertia will explain why.",
+      "afterEn": "In Tears of the Kingdom, a raft made from joined logs and a mast is lifted and moved as an assembly. Its connected solid parts retain their relative arrangement. Let us separate that object’s motion into translation and rotation. For a translating body, subtract center-of-mass velocity from each point’s velocity to isolate rotation. A point on the axis has zero radius and cannot reveal angular rate by its own velocity. Angular acceleration is the time derivative of angular velocity. Without external torque, angular momentum is conserved; an asymmetric body’s angular velocity need not remain constant. Three-dimensional inertia will explain why.",
+      "reason": "Visible assembly motivates rigid motion; exclude cloth deformation and no engine-body implementation assertion."
+    },
+    {
+      "sourceBeatId": "M30-027-joint-types",
+      "mode": "prepend",
+      "beforeKo": "볼 소켓 관절은 두 점을 같은 위치에 붙들고 회전을 허용합니다. 힌지는 축까지 맞춰 문처럼 한 방향 회전만 남깁니다. 프리즘 관절은 회전 없이 축을 따라 미끄러집니다. 축 회전도 허용하는 결합은 별도로 구분합니다. 유니버설 관절은 서로 직교한 두 축의 회전을 허용하고, 어깨 같은 관절에는 원뿔 모양의 스윙 한계와 비틀림 한계를 줄 수 있습니다. 이름보다 실제 남은 자유도를 확인해야 합니다.",
+      "afterKo": "비이엠엔지 드라이브의 바퀴는 차체에 연결된 채 돌고, 요철을 넘으며 위아래로 움직입니다. 연결됐다고 해서 모든 움직임이 사라지는 것은 아니죠. 이 관계를 강체 모형으로 단순화하면, 어떤 움직임을 남기고 어떤 움직임을 막을지 정해야 합니다. 볼 소켓 관절은 두 점을 같은 위치에 붙들고 회전을 허용합니다. 힌지는 축까지 맞춰 문처럼 한 방향 회전만 남깁니다. 프리즘 관절은 회전 없이 축을 따라 미끄러집니다. 축 회전도 허용하는 결합은 별도로 구분합니다. 유니버설 관절은 서로 직교한 두 축의 회전을 허용하고, 어깨 같은 관절에는 원뿔 모양의 스윙 한계와 비틀림 한계를 줄 수 있습니다. 이름보다 실제 남은 자유도를 확인해야 합니다.",
+      "beforeEn": "A ball joint holds two anchor points together while allowing rotation. A hinge also aligns axes, leaving one rotation. A prismatic joint permits translation along an axis without rotation; combined sliding and twisting is a different joint. A universal joint permits rotations about two perpendicular axes. Shoulder-like joints may use cone-shaped swing and twist limits. Check actual degrees of freedom, not names alone.",
+      "afterEn": "In BeamNG.drive, wheels rotate while connected to the body and move vertically over bumps. Being connected does not eliminate every motion. In an ideal rigid-body model, we must decide which motions to allow and which to constrain. A ball joint holds two anchor points together while allowing rotation. A hinge also aligns axes, leaving one rotation. A prismatic joint permits translation along an axis without rotation; combined sliding and twisting is a different joint. A universal joint permits rotations about two perpendicular axes. Shoulder-like joints may use cone-shaped swing and twist limits. Check actual degrees of freedom, not names alone.",
+      "reason": "Observed connected motion motivates ideal constraints without identifying BeamNG soft-body solver as a hinge/prismatic system."
+    },
+    {
+      "sourceBeatId": "M30-060-closing",
+      "mode": "readthrough-correction",
+      "beforeKo": "처음에 같은 힘을 어디에 가하는지가 왜 중요했는지 이제 연결됩니다. 알짜힘은 질량중심의 움직임을, 토크는 각운동량을 바꿉니다. 접촉점에서는 이동과 회전이 합쳐지고, 물리 엔진은 제약을 맞추며 짧은 시간씩 진행합니다. 힘의 위치나 반발계수 하나를 바꿔 결과를 비교하면, 단순히 그럴듯한 움직임을 넘어 왜 그렇게 움직이는지 설명할 수 있습니다.",
+      "afterKo": "처음에 차체가 밀려가면서 동시에 돌아갔던 모습을 이제 연결할 수 있습니다. 힘을 어디에 가하는지도 중요했죠. 알짜힘은 질량중심의 움직임을, 토크는 각운동량을 바꿉니다. 접촉점에서는 이동과 회전이 합쳐지고, 물리 엔진은 제약을 맞추며 짧은 시간씩 진행합니다. 힘의 위치나 반발계수 하나를 바꿔 결과를 비교하면, 단순히 그럴듯한 움직임을 넘어 왜 그렇게 움직이는지 설명할 수 있습니다.",
+      "beforeEn": "The opening question now connects: net force changes center-of-mass motion, torque changes angular momentum, and contact-point motion combines translation and rotation. An engine satisfies constraints while stepping through time. Changing one lever position or restitution value makes the resulting behavior understandable, beyond merely looking plausible.",
+      "afterEn": "The opening vehicle’s translation and rotation now connect: net force changes center-of-mass motion, torque changes angular momentum, and contact-point motion combines translation and rotation. An engine satisfies constraints while stepping through time. Changing one lever position or restitution value makes the resulting behavior understandable, beyond merely looking plausible.",
+      "reason": "Match observed opening while retaining source force-location conclusion."
+    }
+  ],
+  "readThrough": {
+    "status": "full bilingual draft and integrated changes text-reviewed; realized audiovisual review pending",
+    "source": "planning/source-audit.json",
+    "beats": 61,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "All 61 bilingual source-faithful draft beats were authored and read during full primary lesson audit; unchanged derivations/examples/corrections remain.",
+      "All integration changes and adjacent bridges read in Korean and English. No unseen game mechanics, exact engine algorithms or measured parameters claimed.",
+      "Native gameplay observations, source hashes and publisher/recorder evidence are in footage-audit. Actual audio listening, continuous playback and final composite timing still pending."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "8ad08494c9c4a3f89a42695039d6b8fbaab31309f5f61c71d117548f54f68ede",
+    "enSha256": "177b630f382ad8aa5206f87fa735d4108881955cd80187dbb11e8f53563d27e0"
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ]
+}

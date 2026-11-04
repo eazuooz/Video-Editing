@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 1,
+  "slug": "game-math-parametric-hermite",
+  "episodeId": "M31",
+  "status": "integrated-text-reviewed-runtime-and-audio-pending",
+  "isFinalNarration": false,
+  "chapterOrderPreserved": true,
+  "actualDurationSeconds": null,
+  "sourceDraftSha256": "b21fe3caeba315f813fd5c074be46a630546c1ad15db4be5a9db04bcd2715984",
+  "englishDraftSha256": "c42e0afd770de0b276cfc1739e5d6a5ecc7119ebcc025fa78994e632b7e141a4",
+  "speechAndVisualOverlap": true,
+  "defaultHoldSeconds": 0,
+  "language": "English",
+  "scenes": [
+    {
+      "id": "000",
+      "sourceBeatId": "M31-001",
+      "title": "M31-001",
+      "section": "13.1",
+      "lines": [
+        "Watch the train in Satisfactory. As the track bends, the train changes both position and travel direction. How can we describe such a path numerically and find the next position on it? We will start with curve representations, then make a curve pass through chosen points, and finally control its departure and arrival directions."
+      ]
+    },
+    {
+      "id": "001",
+      "sourceBeatId": "M31-002",
+      "title": "M31-002",
+      "section": "13.1",
+      "lines": [
+        "Write the moving point as p of t. The parameter t describes progress along the curve. One input gives an x, y, and z coordinate together. We often use zero to one, but that interval does not automatically mean one physical second. Curve values can also represent properties such as color or intensity rather than spatial coordinates. Here we will follow moving paths."
+      ]
+    },
+    {
+      "id": "002",
+      "sourceBeatId": "M31-003",
+      "title": "M31-003",
+      "section": "13.1",
+      "lines": [
+        "For a unit circle, let x be cosine of two pi t and y be sine of two pi t. At one quarter we reach the top; at one half, the left. The implicit equation x squared plus y squared equals one describes the same circle. Parametric form directly produces positions, while y equals the square root of one minus x squared gives only the upper semicircle."
+      ]
+    },
+    {
+      "id": "003",
+      "sourceBeatId": "M31-004",
+      "title": "M31-004",
+      "section": "13.1",
+      "lines": [
+        "Now make each coordinate a polynomial in t. Take coefficient vectors c zero through c three, multiply them by one, t, t squared, and t cubed, and add them. This is the power, or monomial, form of a cubic polynomial curve. Higher degree is possible, but it does not automatically make a shape easier to control."
+      ]
+    },
+    {
+      "id": "004",
+      "sourceBeatId": "M31-005",
+      "title": "M31-005",
+      "section": "13.1",
+      "lines": [
+        "Keep parametric curves separate from polynomial curves. The sine and cosine used for the circle are not polynomials. A nonconstant circular arc cannot be represented exactly by finite polynomial coordinates. Ratios of polynomials offer rational curves, but here we follow polynomial curves built from additions and multiplications."
+      ]
+    },
+    {
+      "id": "005",
+      "sourceBeatId": "M31-006",
+      "title": "M31-006",
+      "section": "13.1",
+      "lines": [
+        "In Super Mario Maker 2, a green platform carries the character upward along a vertical track. The shape of the route and the object's current position on it can be treated separately. Let us build that distinction in our own example. A game can store the current parameter, update it with time, and evaluate the platform position. To display the path, sample successive parameter values and connect the points with segments. Smaller intervals, or extra samples in curved regions, improve the approximation. Yet editing four coefficient vectors is not a convenient way to design a route."
+      ]
+    },
+    {
+      "id": "006",
+      "sourceBeatId": "M31-007",
+      "title": "M31-007",
+      "section": "13.1",
+      "lines": [
+        "The same calculation fits into matrix form. Place the four coefficient vectors in columns of C, then multiply by the column containing one, t, t squared, and t cubed. For a 3D curve, C has three rows and four columns. It stores polynomial coefficients; it is not a spatial transformation matrix. The four entries on the right are not a homogeneous 3D point."
+      ]
+    },
+    {
+      "id": "007",
+      "sourceBeatId": "M31-008",
+      "title": "M31-008",
+      "section": "13.1",
+      "lines": [
+        "Return to a simple case. With endpoints p zero and p one, define d as their difference. p zero plus t d gives the straight path. In cubic notation, c zero is the start, c one is d, and the remaining coefficients are zero. If d is also zero, the curve stays at a single point."
+      ]
+    },
+    {
+      "id": "008",
+      "sourceBeatId": "M31-009",
+      "title": "M31-009",
+      "section": "13.1",
+      "lines": [
+        "Endpoints follow by substitution. At t equal to zero, every term containing t disappears, leaving c zero. At one, all powers are one, so the endpoint is the sum of the four coefficients. These are the first constraints a designed curve must satisfy."
+      ]
+    },
+    {
+      "id": "009",
+      "sourceBeatId": "M31-010",
+      "title": "M31-010",
+      "section": "13.1",
+      "lines": [
+        "A curve can be a fixed shape or the path of a moving object. In the second view, differentiating position describes its direction and rate of change. For a cubic, the first derivative is c one plus two c two t plus three c three t squared. Differentiating again gives two c two plus six c three t."
+      ]
+    },
+    {
+      "id": "010",
+      "sourceBeatId": "M31-011",
+      "title": "M31-011",
+      "section": "13.1",
+      "lines": [
+        "If t is physical time, those derivatives are velocity and acceleration. If t is only progress, its change with physical time must also be included. Calling physical time tau, velocity is the derivative of p with respect to t multiplied by the derivative of t with respect to tau. For the following demonstrations we first advance t like time."
+      ]
+    },
+    {
+      "id": "011",
+      "sourceBeatId": "M31-012",
+      "title": "M31-012",
+      "section": "13.1",
+      "lines": [
+        "For the line p zero plus t d, velocity is constant d and acceleration is zero. Replace t with t squared, and the geometric line stays the same while the motion starts slowly and accelerates. Equal-time markers spread farther apart. The route's shape and the speed along it are separate design choices."
+      ]
+    },
+    {
+      "id": "012",
+      "sourceBeatId": "M31-013",
+      "title": "M31-013",
+      "section": "13.1",
+      "lines": [
+        "In Super Mario Galaxy, a Launch Star sends Mario toward the next planet. His travel direction changes along the curved flight. Now let us calculate the instantaneous direction on the curve we are building. The first derivative points along the tangent to the curve. If only direction is needed, divide it by its length to obtain a unit tangent. At a point where the derivative is zero, that division cannot determine a direction and needs separate handling."
+      ]
+    },
+    {
+      "id": "013",
+      "sourceBeatId": "M31-014",
+      "title": "M31-014",
+      "section": "13.1",
+      "lines": [
+        "Curvature measures how sharply a path bends. Kappa is the length of the cross product of velocity and acceleration divided by speed cubed, on a regular portion with nonzero speed. A line has zero curvature; a circle of radius r has curvature one over r. Smaller circles bend more sharply."
+      ]
+    },
+    {
+      "id": "014",
+      "sourceBeatId": "M31-015",
+      "title": "M31-015",
+      "section": "13.2",
+      "lines": [
+        "Now decide how to specify the route we want. Interpolation constructs a curve that passes through prescribed points. Approximation uses control points without necessarily passing through them. Let us build an S-shaped path through the four points shown."
+      ]
+    },
+    {
+      "id": "015",
+      "sourceBeatId": "M31-016",
+      "title": "M31-016",
+      "section": "13.2",
+      "lines": [
+        "Assign parameter values zero, one third, two thirds, and one, with heights two, three, two, and three. We have specified not only which points to visit, but also at which parameter values. Here this list of values is the knot vector. We can space them uniformly or use distances between neighboring points to choose spacing."
+      ]
+    },
+    {
+      "id": "016",
+      "sourceBeatId": "M31-017",
+      "title": "M31-017",
+      "section": "13.2",
+      "lines": [
+        "Even in three dimensions, solve the coordinate problems separately. Use the same parameter values to interpolate x, y, and z. Changing those parameter spacings can change the curve through the same spatial points. Point positions alone do not uniquely specify the polynomial."
+      ]
+    },
+    {
+      "id": "017",
+      "sourceBeatId": "M31-018",
+      "title": "M31-018",
+      "section": "13.2",
+      "lines": [
+        "The first method is Aitken interpolation. Start with straight interpolants through pairs of points. To fit three points, blend the line through the first pair with the line through the second pair. Both already agree at the middle point, while the weights select the correct line at each outer endpoint."
+      ]
+    },
+    {
+      "id": "018",
+      "sourceBeatId": "M31-019",
+      "title": "M31-019",
+      "section": "13.2",
+      "lines": [
+        "In the formula, multiply the earlier interpolant by the last parameter minus t, and the later one by t minus the first parameter, then divide by the full parameter interval. Each level fits one additional point. Blending two quadratic interpolants this way produces the cubic through four points."
+      ]
+    },
+    {
+      "id": "019",
+      "sourceBeatId": "M31-020",
+      "title": "M31-020",
+      "section": "13.2",
+      "lines": [
+        "Apply this process to the heights two, three, two, and three. The curve passes through all four points, but rises a little above three and falls below two. It overshoots our desired S shape. Passing exactly through the data does not guarantee the shape we want between samples."
+      ]
+    },
+    {
+      "id": "020",
+      "sourceBeatId": "M31-021",
+      "title": "M31-021",
+      "section": "13.2",
+      "lines": [
+        "A different view helps explain why this happens. Lagrange interpolation gives each sample its own weight function. We could solve a linear system for all polynomial coefficients, but instead we will construct the required weight functions directly."
+      ]
+    },
+    {
+      "id": "021",
+      "sourceBeatId": "M31-022",
+      "title": "M31-022",
+      "section": "13.2",
+      "lines": [
+        "The first weight must equal one at the first sample time and zero at the other three. The second weight is one only at the second sample, and so on. Multiply each weight by its sample height and add them. At any sample time, only the desired value remains. The same weights work for the other coordinates."
+      ]
+    },
+    {
+      "id": "022",
+      "sourceBeatId": "M31-023",
+      "title": "M31-023",
+      "section": "13.2",
+      "lines": [
+        "To make a weight zero at the other sample times, multiply the factors t minus each of those times. Divide by the same product evaluated at its own sample time, so its value there is one. The sample parameter values must be distinct to keep these denominators nonzero."
+      ]
+    },
+    {
+      "id": "023",
+      "sourceBeatId": "M31-024",
+      "title": "M31-024",
+      "section": "13.2",
+      "lines": [
+        "Substituting zero, one third, two thirds, and one gives the four cubic basis functions shown. The first starts at one, and the middle functions reach one at their assigned samples. Between those samples, weights can become negative or exceed one."
+      ]
+    },
+    {
+      "id": "024",
+      "sourceBeatId": "M31-025",
+      "title": "M31-025",
+      "section": "13.2",
+      "lines": [
+        "Multiply those four functions by two, three, two, and three. The resulting height is eighteen t cubed minus twenty-seven t squared plus ten t plus two. At one half it equals two point five. It is the same curve produced by Aitken interpolation, with the same overshoot."
+      ]
+    },
+    {
+      "id": "025",
+      "sourceBeatId": "M31-026",
+      "title": "M31-026",
+      "section": "13.2",
+      "lines": [
+        "Read this in two ways: a combination of polynomial basis functions, or a blend of points with weights that change with t. The weights sum to one but may be negative. Nonnegative weights summing to one keep a result inside the points' convex hull—the smallest convex enclosure, like a taut rubber band around planar points. These weights do not provide that guarantee."
+      ]
+    },
+    {
+      "id": "026",
+      "sourceBeatId": "M31-027",
+      "title": "M31-027",
+      "section": "13.2",
+      "lines": [
+        "Four samples at distinct parameter values determine one polynomial of degree at most three. If there were two, their difference would have degree at most three but four roots, so it would have to be identically zero. Merely changing the evaluation algorithm cannot remove the overshoot. We need a different way to specify the curve."
+      ]
+    },
+    {
+      "id": "027",
+      "sourceBeatId": "M31-028",
+      "title": "M31-028",
+      "section": "13.3",
+      "lines": [
+        "When connecting rails in Satisfactory, moving the proposed endpoint changes the bend of the preview. For our own path, let us go beyond matching destination positions and specify how the curve leaves and reaches its endpoints. A Hermite curve replaces the two intermediate point constraints with endpoint derivatives. The four conditions are starting position p zero, starting derivative v zero, ending derivative v one, and ending position p one. Rotate a handle to change direction; lengthen it to change the endpoint rate of travel. These are full derivative vectors, not unit directions."
+      ]
+    },
+    {
+      "id": "028",
+      "sourceBeatId": "M31-029",
+      "title": "M31-029",
+      "section": "13.3",
+      "lines": [
+        "Substitute the four conditions into a cubic. The start position gives c zero equal to p zero, and the start derivative gives c one equal to v zero. At the end, the coefficient sum equals p one, while c one plus two c two plus three c three equals v one. Only c two and c three remain unknown."
+      ]
+    },
+    {
+      "id": "029",
+      "sourceBeatId": "M31-030",
+      "title": "M31-030",
+      "section": "13.3",
+      "lines": [
+        "The position condition gives c two plus c three equal to p one minus p zero minus v zero. The derivative condition gives two c two plus three c three equal to v one minus v zero. Subtract twice the first equation to obtain c three, then substitute back for c two. These coefficients are the solution to our four constraints."
+      ]
+    },
+    {
+      "id": "030",
+      "sourceBeatId": "M31-031",
+      "title": "M31-031",
+      "section": "13.3",
+      "lines": [
+        "Put p zero, v zero, v one, and p one in columns. Multiplying by the fixed Hermite basis matrix produces the power-form coefficients. Repeated evaluations can reuse those coefficients. Or multiply the basis matrix by the powers of t first to obtain four input weights. The grouping changes, not the result."
+      ]
+    },
+    {
+      "id": "031",
+      "sourceBeatId": "M31-032",
+      "title": "M31-032",
+      "section": "13.3",
+      "lines": [
+        "These weights are the Hermite basis functions. The two position weights share the start and end contributions and sum to one. The derivative weights vanish at the endpoints but adjust the departure and arrival slopes. Positions are points and derivatives are vectors, so all four weights should not be read as proportions of positions."
+      ]
+    },
+    {
+      "id": "032",
+      "sourceBeatId": "M31-033",
+      "title": "M31-033",
+      "section": "13.3",
+      "lines": [
+        "For a numerical check, start at zero, zero and end at two, zero. Choose endpoint derivatives zero, three and zero, minus three. At t equal to one half, the position weights are both one half, while the derivative weights are one eighth and minus one eighth. Their sum gives one, zero point seven five, the middle of an upward arch."
+      ]
+    },
+    {
+      "id": "033",
+      "sourceBeatId": "M31-034",
+      "title": "M31-034",
+      "section": "13.3",
+      "lines": [
+        "The same cubic can be written with power coefficients or with Hermite endpoint positions and derivatives. We have changed the controls, not invented a different class of cubic trajectories. That is why setting departure and arrival directions in a path editor is more intuitive than editing four coefficient vectors."
+      ]
+    },
+    {
+      "id": "034",
+      "sourceBeatId": "M31-035",
+      "title": "M31-035",
+      "section": "13.3",
+      "lines": [
+        "The ending-position weight, three t squared minus two t cubed, is useful beyond path design. It rises from zero to one with zero slope at both ends, softening the start and stop. This is smoothstep: Hermite interpolation between two values with zero endpoint derivatives."
+      ]
+    },
+    {
+      "id": "035",
+      "sourceBeatId": "M31-036",
+      "title": "M31-036",
+      "section": "13.3",
+      "lines": [
+        "In practice, normalize the input interval to zero through one, clamp it, and apply smoothstep. Outside the interval it stays at zero or one. Its first derivative joins smoothly, but the second derivative need not match the constant regions. Controlling endpoint acceleration requires more constraints."
+      ]
+    },
+    {
+      "id": "036",
+      "sourceBeatId": "M31-037",
+      "title": "M31-037",
+      "section": "13.3",
+      "lines": [
+        "Specifying position, velocity, and acceleration at both ends gives six conditions and can be handled by a quintic. The central issue today was which quantities we choose to control. Prescribed samples lead to interpolation; endpoint directions and rates lead naturally to Hermite form. Next we will turn those controls into the handle points of Bézier curves."
+      ]
+    }
+  ]
+}

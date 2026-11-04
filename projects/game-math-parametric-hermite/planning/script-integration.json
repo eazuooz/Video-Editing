@@ -1,0 +1,103 @@
+{
+  "updatedAt": "2026-11-04T15:39:41.847264+00:00",
+  "episode": "M31",
+  "sourceAudit": "planning/source-audit.json",
+  "sourceAuditSha256": "464734aaf2b6c2c13313272b20fa5a277503c7b51ce6c08c13dcafef14926e49",
+  "footageAudit": "planning/footage-audit.json",
+  "footageAuditSha256": "387cc4ca922b86e93cfe5b865a729d0f2fd4a29dc325e8681d7b5d8434f5f90f",
+  "changes": [
+    {
+      "sourceBeatId": "M31-001",
+      "mode": "replace",
+      "beforeKo": "움직이는 발판이 두 지점 사이를 지나가게 만들고 싶다고 해 보죠. 시작과 끝만 정하면 직선은 만들 수 있습니다. 그런데 장애물을 돌아가고, 출발할 때는 천천히 움직이려면 경로를 어떻게 적어야 할까요? 먼저 곡선을 숫자로 표현하고, 원하는 점을 지나는 방법을 거쳐, 출발과 도착 방향까지 잡아 보겠습니다.",
+      "afterKo": "새티스팩토리의 열차를 보세요. 선로가 휘어지는 동안 열차의 위치와 나아가는 방향이 함께 바뀝니다. 이런 길을 숫자로 적고, 그 위의 다음 위치를 구하려면 어떻게 해야 할까요? 먼저 곡선의 표현에서 시작해, 원하는 점을 지나게 만들고, 출발과 도착 방향까지 잡아 보겠습니다.",
+      "beforeEn": "Imagine a moving platform traveling between two places. Two endpoints define a straight route, but how do we bend it around an obstacle and make it depart gently? We will represent a curve with numbers, make it pass through chosen points, and finally control its departure and arrival directions.",
+      "afterEn": "Watch the train in Satisfactory. As the track bends, the train changes both position and travel direction. How can we describe such a path numerically and find the next position on it? We will start with curve representations, then make a curve pass through chosen points, and finally control its departure and arrival directions.",
+      "reason": "Resolve the hypothetical opening with observed moving train; preserve the complete parametric representation→interpolation→Hermite scope."
+    },
+    {
+      "sourceBeatId": "M31-006",
+      "mode": "prepend",
+      "beforeKo": "게임에서는 현재 티 값을 보관하고, 시간이 흐를 때 티를 갱신해서 발판의 위치를 계산할 수 있습니다. 경로를 화면에 그릴 때는 티를 조금씩 바꾸며 얻은 점을 선분으로 연결하면 됩니다. 간격을 작게 잡거나 많이 휘어진 부분을 더 촘촘히 나누면 모양이 잘 드러납니다. 다만 계수 네 개를 숫자로 직접 고치는 것만으로 원하는 길을 설계하기는 어렵죠.",
+      "afterKo": "슈퍼 마리오 메이커 투에서는 캐릭터가 올라탄 초록 발판이 세로 트랙을 따라 올라갑니다. 길의 모양과 그 길 위의 현재 위치는 서로 나눠 생각할 수 있죠. 같은 움직임을 우리 예제로 만들어 보겠습니다. 게임에서는 현재 티 값을 보관하고, 시간이 흐를 때 티를 갱신해서 발판의 위치를 계산할 수 있습니다. 경로를 화면에 그릴 때는 티를 조금씩 바꾸며 얻은 점을 선분으로 연결하면 됩니다. 간격을 작게 잡거나 많이 휘어진 부분을 더 촘촘히 나누면 모양이 잘 드러납니다. 다만 계수 네 개를 숫자로 직접 고치는 것만으로 원하는 길을 설계하기는 어렵죠.",
+      "beforeEn": "A game can store the current parameter, update it with time, and evaluate the platform position. To display the path, sample successive parameter values and connect the points with segments. Smaller intervals, or extra samples in curved regions, improve the approximation. Yet editing four coefficient vectors is not a convenient way to design a route.",
+      "afterEn": "In Super Mario Maker 2, a green platform carries the character upward along a vertical track. The shape of the route and the object's current position on it can be treated separately. Let us build that distinction in our own example. A game can store the current parameter, update it with time, and evaluate the platform position. To display the path, sample successive parameter values and connect the points with segments. Smaller intervals, or extra samples in curved regions, improve the approximation. Yet editing four coefficient vectors is not a convenient way to design a route.",
+      "reason": "Observed platform on fixed route motivates t update without claiming Nintendo uses polynomial evaluation."
+    },
+    {
+      "sourceBeatId": "M31-013",
+      "mode": "prepend",
+      "beforeKo": "일차 도함수는 곡선에 닿아 나아가는 접선 방향을 가리킵니다. 길이가 다른 화살표 중에서 방향만 필요하면 도함수를 그 길이로 나누어 단위 접선 벡터를 만듭니다. 도함수가 영인 지점에서는 이 나눗셈으로 방향을 정할 수 없으니 별도 처리가 필요합니다.",
+      "afterKo": "마리오 갤럭시에서는 스타를 타고 다음 행성으로 날아갑니다. 휘어진 길을 지나는 동안 나아가는 방향도 달라지죠. 이제 우리가 만드는 곡선에서 그 순간의 방향을 구해 보겠습니다. 일차 도함수는 곡선에 닿아 나아가는 접선 방향을 가리킵니다. 길이가 다른 화살표 중에서 방향만 필요하면 도함수를 그 길이로 나누어 단위 접선 벡터를 만듭니다. 도함수가 영인 지점에서는 이 나눗셈으로 방향을 정할 수 없으니 별도 처리가 필요합니다.",
+      "beforeEn": "The first derivative points along the tangent to the curve. If only direction is needed, divide it by its length to obtain a unit tangent. At a point where the derivative is zero, that division cannot determine a direction and needs separate handling.",
+      "afterEn": "In Super Mario Galaxy, a Launch Star sends Mario toward the next planet. His travel direction changes along the curved flight. Now let us calculate the instantaneous direction on the curve we are building. The first derivative points along the tangent to the curve. If only direction is needed, divide it by its length to obtain a unit tangent. At a point where the derivative is zero, that division cannot determine a direction and needs separate handling.",
+      "reason": "Actual launch→curved flight→arrival supplies a3D direction example before tangent definition; no hidden interpolator or ballistic claim."
+    },
+    {
+      "sourceBeatId": "M31-028",
+      "mode": "prepend",
+      "beforeKo": "에르미트 곡선은 중간에 지나야 할 점 두 개 대신, 출발점과 도착점에서의 도함수를 지정합니다. 시작 위치 피 영, 시작 속도 브이 영, 도착 속도 브이 일, 끝 위치 피 일이 네 조건입니다. 손잡이 화살표를 돌리면 방향이, 길게 늘리면 출발하거나 도착하는 변화량이 바뀝니다. 이 화살표는 방향만 가진 단위 벡터가 아닙니다.",
+      "afterKo": "새티스팩토리에서 선로를 이을 때는 연결할 끝을 움직이면 미리 보이는 선로의 굽은 모양도 달라집니다. 우리 경로도 도착 위치만 맞추는 데서 한 걸음 더 나아가, 양 끝에서 나아갈 방향까지 정해 보겠습니다. 에르미트 곡선은 중간에 지나야 할 점 두 개 대신, 출발점과 도착점에서의 도함수를 지정합니다. 시작 위치 피 영, 시작 속도 브이 영, 도착 속도 브이 일, 끝 위치 피 일이 네 조건입니다. 손잡이 화살표를 돌리면 방향이, 길게 늘리면 출발하거나 도착하는 변화량이 바뀝니다. 이 화살표는 방향만 가진 단위 벡터가 아닙니다.",
+      "beforeEn": "A Hermite curve replaces the two intermediate point constraints with endpoint derivatives. The four conditions are starting position p zero, starting derivative v zero, ending derivative v one, and ending position p one. Rotate a handle to change direction; lengthen it to change the endpoint rate of travel. These are full derivative vectors, not unit directions.",
+      "afterEn": "When connecting rails in Satisfactory, moving the proposed endpoint changes the bend of the preview. For our own path, let us go beyond matching destination positions and specify how the curve leaves and reaches its endpoints. A Hermite curve replaces the two intermediate point constraints with endpoint derivatives. The four conditions are starting position p zero, starting derivative v zero, ending derivative v one, and ending position p one. Rotate a handle to change direction; lengthen it to change the endpoint rate of travel. These are full derivative vectors, not unit directions.",
+      "reason": "Observed endpoint/preview/build sequence motivates Hermite endpoint derivatives, without treating source preview as Hermite proof."
+    },
+    {
+      "sourceBeatId": "M31-026",
+      "mode": "readthrough-correction",
+      "beforeKo": "이 식은 두 가지로 읽을 수 있습니다. 네 다항식 기저를 섞어 새 다항식을 만들었다고 볼 수도 있고, 티마다 달라지는 가중치로 네 점을 섞었다고 볼 수도 있죠. 가중치의 합은 일이지만 음수가 허용됩니다. 모든 가중치가 영 이상이고 합이 일이면 점들의 볼록 껍질 안에 머무르는데, 여기서는 그 보장이 사라집니다.",
+      "afterKo": "이 식은 두 가지로 읽을 수 있습니다. 네 다항식 기저를 섞어 새 다항식을 만들었다고 볼 수도 있고, 티마다 달라지는 가중치로 네 점을 섞었다고 볼 수도 있죠. 가중치의 합은 일이지만 음수가 허용됩니다. 모든 가중치가 영 이상이고 합이 일이면 점들을 고무줄로 팽팽하게 둘러쌌을 때 생기는 볼록 껍질 안에 머무르는데, 여기서는 그 보장이 사라집니다.",
+      "beforeEn": "Read this in two ways: a combination of polynomial basis functions, or a blend of points with weights that change with t. The weights sum to one but may be negative. Nonnegative weights summing to one keep a result inside the points' convex hull. These weights do not provide that guarantee.",
+      "afterEn": "Read this in two ways: a combination of polynomial basis functions, or a blend of points with weights that change with t. The weights sum to one but may be negative. Nonnegative weights summing to one keep a result inside the points' convex hull—the smallest convex enclosure, like a taut rubber band around planar points. These weights do not provide that guarantee.",
+      "reason": "Define convex hull concretely beside its first use without changing weight or overshoot claims."
+    },
+    {
+      "sourceBeatId": "M31-002",
+      "mode": "readthrough-correction",
+      "beforeKo": "곡선 위를 움직이는 점의 위치를 피의 티라고 쓰겠습니다. 티는 곡선을 따라 얼마나 진행했는지를 나타내는 매개변수입니다. 티에 숫자 하나를 넣으면 엑스, 와이, 제트 좌표가 함께 나옵니다. 보통 티를 영에서 일까지 움직이지만, 이 범위 자체가 물리적인 일 초를 뜻하지는 않습니다.",
+      "afterKo": "곡선 위를 움직이는 점의 위치를 피의 티라고 쓰겠습니다. 티는 곡선을 따라 얼마나 진행했는지를 나타내는 매개변수입니다. 티에 숫자 하나를 넣으면 엑스, 와이, 제트 좌표가 함께 나옵니다. 보통 티를 영에서 일까지 움직이지만, 이 범위 자체가 물리적인 일 초를 뜻하지는 않습니다. 곡선의 값을 공간 좌표 대신 색이나 밝기 같은 속성으로 사용할 수도 있어요. 여기서는 움직이는 경로를 중심으로 따라가겠습니다.",
+      "beforeEn": "Write the moving point as p of t. The parameter t describes progress along the curve. One input gives an x, y, and z coordinate together. We often use zero to one, but that interval does not automatically mean one physical second.",
+      "afterEn": "Write the moving point as p of t. The parameter t describes progress along the curve. One input gives an x, y, and z coordinate together. We often use zero to one, but that interval does not automatically mean one physical second. Curve values can also represent properties such as color or intensity rather than spatial coordinates. Here we will follow moving paths.",
+      "reason": "Retain Chapter13 introductory learning role P005: curves also vary nonspatial properties; the actual-game opening remains focused."
+    }
+  ],
+  "readThrough": {
+    "status": "complete-text-review-only",
+    "source": "planning/source-audit.json",
+    "beats": 37,
+    "sourceOrderPreserved": true,
+    "sourceParagraphMappingPreserved": true,
+    "notes": [
+      "Full original teaching content remains in source order; only hypothetical abstract and observed-game bridges edited.",
+      "All game claims are visible actions/results, never proof of commercial curve algorithms.",
+      "Final audio, runtime and final caption composite QA remain pending."
+    ],
+    "audioListeningCompleted": false,
+    "realizedTimingReviewed": false,
+    "koSha256": "7b120575e2ad0f4b99a0b1154ef908ef0f225874b07482814f55108de3770bf7",
+    "enSha256": "c04597ff0237d438e4ac772058615594ae4d293bc362a0fb8c016305f11ad3ae",
+    "completedAt": "2026-11-04T15:39:41.847264+00:00",
+    "method": "Every integrated KO/EN beat read in bounded sequential chunks without relying on truncated output; corrections then regenerated and all changed passages reread. Source mathematics and mapped visual intents compared.",
+    "allKoBeatsRead": true,
+    "allEnBeatsRead": true,
+    "beatCount": 37
+  },
+  "sourceFinal": true,
+  "narrationFinal": false,
+  "sceneBindingsFinal": false,
+  "ttsStarted": false,
+  "remaining": [
+    "Unity runtime and all source-beat scene bindings",
+    "Actual voice duration, phrase-to-motion synchronization and native gameplay listening",
+    "Final moving annotations and caption composite at1080p and375px"
+  ],
+  "validation": {
+    "beatCount": 37,
+    "allIdsOrderSectionsPreserved": true,
+    "paragraphMappingPreserved": true,
+    "allHoldsZero": true,
+    "sourceFinal": true,
+    "narrationFinal": false,
+    "sceneBindingsFinal": false
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "episode": "M33",
+  "slug": "game-math-splines-continuity",
+  "edits": [
+    {
+      "index": 0,
+      "mode": "replace",
+      "ko": "새티스팩토리에서 선로의 끝을 움직여 다음 구간에 연결하면, 휘어진 길이 이어집니다. 긴 경로를 다항식 하나로 만들면 한 부분을 고칠 때 다른 부분까지 영향을 받을 수 있죠. 작은 곡선들을 연결하면 필요한 부분을 따로 다룰 수 있습니다. 오늘은 조각을 잇는 방법에서 시작해, 모양과 움직임이 모두 자연스럽게 이어지는 조건을 찾고, 접선까지 자동으로 정해 보겠습니다.",
+      "en": "In Satisfactory, adjusting a rail endpoint and joining it to the next section creates a continuing curved route. If we design a long path with one polynomial, editing one part can affect distant parts. Connecting smaller curves lets us work on the pieces. We will begin with those joins, find conditions for both shape and motion to continue smoothly, and then generate tangents automatically.",
+      "reason": "Observed joined-rail construction opens spline thesis; retain original global-support issue, local segments and automated tangent plan.",
+      "screen": "NativeSatisfactory258–285 preview/build→completed join. Continue overview over our same track test bed; global polynomial versus piecewise paths is our implementation, not a game diagnostic."
+    },
+    {
+      "index": 8,
+      "mode": "prepend",
+      "ko": "슈퍼 마리오 메이커 투의 트랙에서는 직각으로 꺾인 모서리를 둥근 구간으로 바꿀 수 있습니다. 위치가 이어지는 것과 나아갈 방향까지 매끈하게 이어지는 것은 다르다는 걸 눈으로 볼 수 있죠.",
+      "en": "In Super Mario Maker 2, a right-angle track corner can be changed into a rounded section. We can see why connecting positions and joining travel directions smoothly are different requirements.",
+      "reason": "Actual corner edit visually motivates continuity conditions; no numerical C/G classification asserted for game.",
+      "screen": "Maker2local202–213 actual rightangle→diagonal→roundedcorner. Label incoming/outgoing straight directions. Return to our pair of Hermite/Bezier derivatives for precise C/G tests."
+    },
+    {
+      "index": 17,
+      "mode": "prepend",
+      "ko": "마리오 갤럭시의 스타는 다음 행성으로 향하는 휘어진 비행을 만들어 줍니다. 이런 움직임을 여러 지점을 잇는 우리 경로로 만들려면, 모든 손잡이를 직접 움직이는 방법만 있는 것은 아닙니다.",
+      "en": "A Launch Star in Super Mario Galaxy sends Mario along a curved flight toward the next planet. When building this kind of motion along several points in our own path, adjusting every handle manually is not our only option.",
+      "reason": "Observed goal-directed3D flight motivates authoring an analogous path with automatic tangents; no claim game uses Catmull-Rom orTCB.",
+      "screen": "Galaxy90–104 full launchflightarrival. Then our knot chain computes uniformCatmullRom tangents andTCB; actual game is observational motivation only."
+    },
+    {
+      "index": 42,
+      "mode": "prepend",
+      "ko": "이제 완성된 선로를 따라가는 열차를 보세요. 긴 길의 여러 굽이를 지나가죠. 이런 움직임을 직접 만들 때 어느 값을 확인해야 하는지 말할 수 있겠죠.",
+      "en": "Now watch the train following the completed rails through the bends of a long route. We can say which quantities to check when building motion like this ourselves.",
+      "reason": "Return to actual route traversal while preserving complete original conclusion, no redundant chapter reset.",
+      "screen": "Satisfactory702–730native curve traversal, then same-scene comparison of our C0/C1/G1 examples. Do not show invented derivatives as measurements from game."
+    }
+  ],
+  "bindings": [
+    {
+      "index": 0,
+      "candidate": "M33-G01-build",
+      "speechPrefix": "새티스팩토리에서 선로의 끝을 움직여",
+      "role": "Actual-game abstract: long route built from local sections",
+      "after": "Our piecewise curve test bed retains same visible route idea."
+    },
+    {
+      "index": 8,
+      "candidate": "M33-G02-cornerShort",
+      "speechPrefix": "슈퍼 마리오 메이커 투의 트랙에서는",
+      "role": "Connected position versus rounded direction change",
+      "after": "Our vectors define exact parametric/geometric continuity."
+    },
+    {
+      "index": 17,
+      "candidate": "M33-G03-flight",
+      "speechPrefix": "마리오 갤럭시의 스타는",
+      "role": "Multi-point authored motion motivates automatic tangents",
+      "after": "Our uniformCatmullRom thenTCB implementation, source order preserved."
+    },
+    {
+      "index": 42,
+      "candidate": "M33-G04-train",
+      "speechPrefix": "이제 완성된 선로를 따라가는 열차를",
+      "role": "Actual-game thesis return at conclusion",
+      "after": "Our same-scene C/G comparison closes with implementation choices."
+    }
+  ],
+  "screenOverrides": {},
+  "aliases": {
+    "새티스팩토리": "Satisfactory",
+    "슈퍼 마리오 메이커 투": "슈퍼 마리오 메이커 2",
+    "마리오 갤럭시": "슈퍼 마리오 갤럭시",
+    "베지에": "베지에"
+  },
+  "corrections": [
+    {
+      "index": 7,
+      "reason": "Use directed endpoints to remove spoken parenthesis ambiguity.",
+      "enFrom": "The incoming derivative is three times k minus f, and the outgoing derivative is three times a minus k.",
+      "enTo": "The incoming derivative is three times the vector from f to k, and the outgoing derivative is three times the vector from k to a."
+    },
+    {
+      "index": 11,
+      "reason": "Handle positions are on opposite sides of a knot although derivative directions agree.",
+      "koFrom": "양쪽 손잡이를 같은 방향의 한 직선 위에서 같은 길이로 잡으면 됩니다.",
+      "koTo": "양쪽 손잡이를 매듭점 기준으로 서로 반대쪽의 한 직선 위에, 같은 거리로 놓으면 됩니다."
+    },
+    {
+      "index": 17,
+      "reason": "Remove repeated manual-handle premise at the game-to-automatic-tangent bridge while retaining the question and method.",
+      "koFrom": "이런 움직임을 여러 지점을 잇는 우리 경로로 만들려면, 모든 손잡이를 직접 움직이는 방법만 있는 것은 아닙니다. 이제 구간을 잇는 조건은 알았습니다. 하지만 길을 만들 때 모든 접선을 직접 조절하는 것은 번거롭죠.",
+      "koTo": "이런 움직임을 여러 지점을 잇는 우리 경로로 만들어 보겠습니다. 구간을 잇는 조건은 알았지만, 모든 접선을 직접 조절하는 것은 번거롭죠.",
+      "enFrom": "When building this kind of motion along several points in our own path, adjusting every handle manually is not our only option. We now know how to join the pieces, but adjusting every tangent by hand can be tedious.",
+      "enTo": "Let us build this kind of motion through several points in our own path. We know how to join the pieces, but adjusting every tangent by hand can be tedious."
+    },
+    {
+      "index": 26,
+      "reason": "Tangent is half of the full point difference.",
+      "enFrom": "Since the first tangent is half the next point minus the phantom,",
+      "enTo": "Since the first tangent is half the vector from the phantom to the next point,"
+    },
+    {
+      "index": 29,
+      "reason": "State the y(2)=0 endpoint condition required by the vertical polynomial.",
+      "koFrom": "이 초에 앞쪽 거리 디에 도착하는 포물선입니다.",
+      "koTo": "이 초에 앞쪽 거리 디, 높이 영에 도착하는 포물선입니다.",
+      "enFrom": "reaching height h at one second and forward distance d at two seconds.",
+      "enTo": "reaching height h at one second, then forward distance d at height zero at two seconds."
+    },
+    {
+      "index": 35,
+      "reason": "Make 3(2t-1)^2 audible as a complete squared quantity.",
+      "koFrom": "진행 비율의 도함수는 삼 곱하기 이 티 빼기 일의 제곱이라 음수가 되지 않아요.",
+      "koTo": "진행 비율의 도함수는 이 티에서 일을 뺀 값을 제곱하고 삼을 곱한 것이라 음수가 되지 않아요.",
+      "enFrom": "The derivative of its blend factor is three times two t minus one squared, which is nonnegative.",
+      "enTo": "Its blend derivative is three times the square of the quantity two t minus one, so it is nonnegative."
+    }
+  ],
+  "reviewNotes": [
+    "Full original teaching content remains in source order; only hypothetical abstract and observed-game bridges edited.",
+    "All game claims are visible actions/results, never proof of commercial curve algorithms.",
+    "Final audio, runtime and final caption composite QA remain pending."
+  ]
+}

@@ -14,6 +14,7 @@ namespace Yamyam.GameMath.LightLab {
   [SerializeField] LineRenderer storedLeader;
   [SerializeField] Image atlasMarker;
   [SerializeField] Text storageHeading;
+  [SerializeField] RawImage actualAtlas;
   [SerializeField] bool atlasBuilt;
   void BuildSurfaceStorage(LightLabStage stage,Font font) {
    storageHeading=Text(font,"",44,1035,300,790,130,Yellow);
@@ -21,10 +22,10 @@ namespace Yamyam.GameMath.LightLab {
     foreach(var renderer in stage.GetComponentsInChildren<MeshRenderer>())
      if(renderer.name=="Floor receiving baked shadows")storedSurface=renderer;
     if(!storedSurface)throw new InvalidOperationException("Actual room floor is required for a lightmap UV demonstration.");
-    storageHeading.text="이 바닥의 UV2 → 실제 라이트맵 아틀라스";
+    storageHeading.text="표면의 UV2 → 실제 저장 텍스처";
     storedLeader=Path("Actual surface point to UV chart",Cyan,Vector3.zero,Vector3.zero);
     atlasMarker=Panel(Yellow,0,0,18,18);
-    detail.text="표시는 실제 메시 UV2와 lightmapScaleOffset으로 계산합니다.";
+    detail.text="청록: 바닥 UV2 경계 · 노랑: 선택한 표면 지점";
    } else {
     storageHeading.text="같은 로봇의 정점에 저장한 조명값";
     var points=new List<Vector3>();var colors=new List<Color>();
@@ -62,6 +63,14 @@ namespace Yamyam.GameMath.LightLab {
    var mesh=storedSurface.GetComponent<MeshFilter>().sharedMesh;var uv=mesh.uv2;var vertices=mesh.vertices;var triangles=mesh.triangles;
    if(uv.Length!=vertices.Length)throw new InvalidOperationException("Actual UV2 must match this mesh.");
    var st=storedSurface.lightmapScaleOffset;
+   var map=LightmapSettings.lightmaps[storedSurface.lightmapIndex].lightmapColor;
+   var atlasObject=new GameObject("Actual baked lightmap RGB texture",typeof(RectTransform));
+   atlasObject.transform.SetParent(canvas.transform,false);actualAtlas=atlasObject.AddComponent<RawImage>();actualAtlas.texture=map;
+   var rect=actualAtlas.rectTransform;rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(0,1);
+   rect.anchoredPosition=new Vector2(1080,-390);rect.sizeDelta=new Vector2(360,360f*map.height/map.width);
+   // Display actual stored RGB; no synthetic brightness image or invented lux.
+   // The square atlas retains its native aspect and UV correspondence.
+   actualAtlas.transform.SetSiblingIndex(Mathf.Max(0,atlasMarker.transform.GetSiblingIndex()-1));
    var world=new List<Vector3>();var coords=new List<Vector2>();
    for(int i=0;i<triangles.Length;i+=3) {
     Vector3 p=Vector3.zero;Vector2 q=Vector2.zero;
@@ -76,7 +85,8 @@ namespace Yamyam.GameMath.LightLab {
    storedWorldPoints=world.ToArray();storedAtlasPoints=coords.ToArray();atlasBuilt=true;
   }
   void DrawAtlasEdge(Vector2 a,Vector2 b) {
-   Vector2 start=new Vector2(1080+a.x*450,440+(1-a.y)*280),end=new Vector2(1080+b.x*450,440+(1-b.y)*280);
+   float h=actualAtlas.rectTransform.sizeDelta.y;
+   Vector2 start=new Vector2(1080+a.x*360,390+(1-a.y)*h),end=new Vector2(1080+b.x*360,390+(1-b.y)*h);
    var line=Panel(Cyan,start.x,start.y,(end-start).magnitude,3);line.rectTransform.pivot=new Vector2(0,.5f);
    line.rectTransform.localEulerAngles=new Vector3(0,0,-Mathf.Atan2(end.y-start.y,end.x-start.x)*Mathf.Rad2Deg);
   }
@@ -86,11 +96,12 @@ namespace Yamyam.GameMath.LightLab {
     if(!atlasBuilt){result.text="실제 베이크 데이터 준비 전";atlasMarker.enabled=false;return;}
     int n=Mathf.Min(storedWorldPoints.Length-1,(int)(Mathf.Clamp01(seconds/Cue.duration)*storedWorldPoints.Length));
     var uv=storedAtlasPoints[n];var point=storedWorldPoints[n];
-    atlasMarker.enabled=true;atlasMarker.rectTransform.anchoredPosition=new Vector2(1080+uv.x*450-9,-(440+(1-uv.y)*280-9));
-    var atlasScreen=new Vector3((1080+uv.x*450)/1920,1-(440+(1-uv.y)*280)/1080,1.1f);
+    float h=actualAtlas.rectTransform.sizeDelta.y;
+    atlasMarker.enabled=true;atlasMarker.transform.SetAsLastSibling();atlasMarker.rectTransform.anchoredPosition=new Vector2(1080+uv.x*360-9,-(390+(1-uv.y)*h-9));
+    var atlasScreen=new Vector3((1080+uv.x*360)/1920,1-(390+(1-uv.y)*h)/1080,1.1f);
     storedLeader.SetPositions(new[]{point,cameraRef.ViewportToWorldPoint(atlasScreen)});
     var map=LightmapSettings.lightmaps[storedSurface.lightmapIndex].lightmapColor;
-    result.rectTransform.anchoredPosition=new Vector2(1040,-730);result.fontSize=36;
+    result.rectTransform.anchoredPosition=new Vector2(1480,-440);result.rectTransform.sizeDelta=new Vector2(345,260);result.fontSize=36;
     result.text="실제 아틀라스 #"+storedSurface.lightmapIndex+" · "+map.width+" × "+map.height+"\nUV ("+uv.x.ToString("0.000")+", "+uv.y.ToString("0.000")+")";
    } else {
     if(storedLabels==null)return;
