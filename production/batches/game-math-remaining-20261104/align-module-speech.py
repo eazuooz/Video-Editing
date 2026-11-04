@@ -201,7 +201,7 @@ def main():
             for part in parts:
                 finish=t+(end-begin)*len(part)/size
                 en_cues.append({'scene':sid,'start':t,'end':finish,'text':part,'timingBasis':'reviewed meaning group / actual KO words / English reading proportions','listeningVerified':False});t=finish
-        game=row.get('actualGamePart');game_start=0;game_evidence=None
+        game=row.get('actualGamePart');game_start=0;game_evidence=None;game_end=None;handoff_evidence=None
         if game:
             prefix=game.get('speechTarget',{}).get('prefixKo')
             try:
@@ -212,7 +212,14 @@ def main():
                     assert 0<=game_start<end_frame-start_frame
                 else:game_evidence={'basis':'Opening word group: actual game starts with paragraph, no token explanation flash'}
             except (AssertionError,ValueError) as exc:flags.append({'scene':sid,'type':'unresolved-gameplay-speech-start','detail':repr(exc)})
-        scenes.append({'id':sid,'startFrame':start_frame,'endFrame':end_frame,'shot':cue,'cueEvidence':proof,'valueEvidence':value_evidence,'spokenEnd':e['end'],'sourceAsrCoverage':coverage,'actualGamePart':game,'actualGameStartFrame':game_start,'actualGameStartEvidence':game_evidence})
+            handoff=game.get('speechTarget',{}).get('endBeforeKo')
+            if handoff:
+                try:
+                    when,handoff_evidence=phrase_time(speech,handoff,mapping,owners,speech.find(handoff))
+                    game_end=round(when*60)-start_frame
+                    assert game_start<game_end<=end_frame-start_frame
+                except (AssertionError,ValueError) as exc:flags.append({'scene':sid,'type':'unresolved-gameplay-explanation-handoff','detail':repr(exc)})
+        scenes.append({'id':sid,'startFrame':start_frame,'endFrame':end_frame,'shot':cue,'cueEvidence':proof,'valueEvidence':value_evidence,'spokenEnd':e['end'],'sourceAsrCoverage':coverage,'actualGamePart':game,'actualGameStartFrame':game_start,'actualGameStartEvidence':game_evidence,'actualGameEndFrame':game_end,'actualGameEndEvidence':handoff_evidence})
     report={'createdAt':datetime.now(timezone.utc).isoformat(),'narrationSha256':asr['audio_sha256'],'bindingsSha256':sha(P/'planning/scene-bindings.json'),'timingSha256':sha(A/'narration.timing.json'),'captionReadingAdjustmentsSha256':sha(adjustments_file),'project':P.name,'status':'needs-targeted-review' if flags else 'word-aligned-requires-integrated-review','flags':flags,'scenes':scenes,'ko':ko_cues,'en':en_cues,'humanListening':False,'finalCompositeQa':False}
     OUT.mkdir(parents=True,exist_ok=True);save(OUT/'word-aligned-timeline.json',report)
     if not flags:srt(OUT/'narration.ko.srt',ko_cues);srt(OUT/'narration.en.srt',en_cues)

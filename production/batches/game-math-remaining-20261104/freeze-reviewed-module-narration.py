@@ -15,12 +15,13 @@ P=R/'projects'/a.project;p=read(P/'planning/production-plan.json');assert not p.
 i=read(P/'planning/script-integration.json');review=i['readThrough'];binding=read(P/'planning/scene-bindings.json');mapping=read(P/'planning/bilingual-caption-map.json')
 scripts={l:read(P/f'script/narration.{l}.json') for l in ['ko','en']}
 for l in scripts:assert sha(P/f'script/narration.{l}.json')==review[l+'Sha256']==mapping[l+'Sha256']
-assert (review.get('allBeatsRead') or (review.get('beats')==len(scripts['ko']['scenes']) and review['status'].startswith('full bilingual draft'))) and review['sourceOrderPreserved'] and p['sourceFinal']
+complete_bilingual=(review.get('allKoBeatsRead') and review.get('allEnBeatsRead') and review.get('beatCount')==len(scripts['ko']['scenes']))
+assert (review.get('allBeatsRead') or complete_bilingual or (review.get('beats')==len(scripts['ko']['scenes']) and review['status'].startswith('full bilingual draft'))) and review['sourceOrderPreserved'] and p['sourceFinal']
 assert mapping['status']=='complete-semantic-map' and binding['pendingImplementationBeatCount']==0
 ids=[x['id'] for x in scripts['ko']['scenes']]
 assert ids==[x['id'] for x in scripts['en']['scenes']]==[x['id'] for x in binding['scenes']]
 for s in read(P/'planning/footage-audit.json')['sources']:
- assert s['classification']=='independent-gameplay' and min(s['decodedSize'])>=1080
+ assert s['classification'] in {'independent-gameplay','independent-gameplay-and-menu-operation'} and min(s['decodedSize'])>=1080
  assert s['recordingPermission'] and (s.get('publisherRights') or s.get('rights')) and (R/s['file']).is_file()
 for g in p['nativeGameCueBindings']:
  assert g['playbackRate']==1 and not g['freezePadding'] and not g['loop']

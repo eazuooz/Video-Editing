@@ -65,6 +65,11 @@ def main():
             files+=list((project/'script').glob('*.json'))+list((project/'script').glob('*readthrough*.txt'))
             files+=list((project/'production').glob('*.py'))
             files+=list((project/'production').glob('tts-manifest*.json'))
+            if item['id']=='M21':
+                # These exact coordinate records are the inputs of the already
+                # encoded M21 compositor; they are source data, not video media.
+                files += [project/'production/local/annotation-refined-v2'/(name+'.json') for name in
+                          ('abstract-rock','bonnet','matte-wall','bloom','ceiling','spot-surface','doom-surface')]
             # Stage changes must not silently drop approved source or annotations.
             # Include only the reviewed coordinate records referenced by this plan;
             # native media and exploratory tracking output remain excluded.
