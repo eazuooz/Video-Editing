@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 namespace Yamyam.AnimationSeries {
 [InitializeOnLoad]
 public static class AnimationGridCapture {
- const string MediaRoot = "D:/Github/VideoEditing/projects/animation-assigning/production/local/grid-v1";
+ static string MediaRootFor(string slug) => "D:/Github/VideoEditing/projects/"+slug+"/production/local/grid-v1";
  static string Library => Path.GetFullPath(Application.dataPath + "/../Library");
  static string Request => Path.Combine(Library, "AnimationGridV1.request.json");
  static string Status => Path.Combine(Library, "AnimationGridV1.status.json");
@@ -48,9 +48,9 @@ public static class AnimationGridCapture {
  static AnimationGridCapture() { EditorApplication.update += Poll; EditorApplication.update += WriteCompiledAckWhenIdle; }
  static void WriteCompiledAckWhenIdle() {
   if(EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode) return;
-  var stages=new[]{"AnimationGridStage"}.Select(name=>{
+  var stages=new[]{"AnimationGridStage","AnimationExaggerationStage"}.Select(name=>{
    var type=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("Yamyam.AnimationSeries."+name)).FirstOrDefault(t=>t!=null);
-   return new CompiledStage{stageClass=name,fingerprint=AnimationGridBuildVersion.For(name),
+   return new CompiledStage{stageClass=name,fingerprint=FingerprintFor(name),
     typeAvailable=type!=null && typeof(AnimationLessonStage).IsAssignableFrom(type),
     assemblyMvid=type?.Assembly.ManifestModule.ModuleVersionId.ToString()};
   }).ToArray();
@@ -60,10 +60,15 @@ public static class AnimationGridCapture {
   EditorApplication.update-=WriteCompiledAckWhenIdle;
  }
 
+ static string FingerprintFor(string stageClass) {
+  return stageClass=="AnimationExaggerationStage"?AnimationExaggerationBuildVersion.For(stageClass):AnimationGridBuildVersion.For(stageClass);
+ }
+
  static string StageFor(string slug) {
   switch(slug) {
    case "animation-assigning": return "AnimationGridStage";
-   default: throw new InvalidDataException("Only selected A01 animation-assigning is supported by this capture revision.");
+   case "animation-exaggeration": return "AnimationExaggerationStage";
+   default: throw new InvalidDataException("Only selected A01 and A02 animation stages are supported.");
   }
  }
  static void Validate(Job j) {
@@ -72,7 +77,7 @@ public static class AnimationGridCapture {
   if(!Regex.IsMatch(j.cutId??"", @"^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$")) throw new InvalidDataException("Invalid cut ID.");
   if(j.frames<1 || j.frames>36000) throw new InvalidDataException("Invalid frame count.");
   if(!Regex.IsMatch(j.expectedFingerprint??"", "^[a-f0-9]{64}$")) throw new InvalidDataException("Missing frozen fingerprint.");
-  var root=Path.GetFullPath(MediaRoot).Replace('\\','/').TrimEnd('/')+"/";
+  var root=Path.GetFullPath(MediaRootFor(j.slug)).Replace('\\','/').TrimEnd('/')+"/";
   var output=Path.GetFullPath(j.output??"").Replace('\\','/');
   if(!output.StartsWith(root,StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Output outside this slug's scoped media folder.");
   var tail=output.Substring(root.Length);
@@ -97,7 +102,7 @@ public static class AnimationGridCapture {
   try {
    parsed=JsonUtility.FromJson<Job>(File.ReadAllText(Request)); Validate(parsed);
    // Leave the request pending while a newly written fingerprint awaits compilation.
-   if(parsed.expectedFingerprint!=AnimationGridBuildVersion.For(parsed.stageClass)) return;
+   if(parsed.expectedFingerprint!=FingerprintFor(parsed.stageClass)) return;
    File.Move(Request,Request+".consumed-"+DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
    Start(parsed);
   } catch(Exception e) {
@@ -117,8 +122,26 @@ public static class AnimationGridCapture {
    throw new IOException("Prior capture or partial output preserved; choose a fresh revision directory.");
   Directory.CreateDirectory(j.output);
   job=j; state=new State{status="building",slug=j.slug,cutId=j.cutId,frames=j.frames,output=j.output,presentationId=j.presentationId,
-   compiledSourceFingerprint=AnimationGridBuildVersion.For(j.stageClass)}; Write();
+   compiledSourceFingerprint=FingerprintFor(j.stageClass)}; Write();
   prior=SceneManager.GetActiveScene();
+  // A fresh hidden batch editor starts with one empty, untitled scene. Unity
+  // disallows additive creation in that state. Preserve any interactive,
+  // dirty or populated scene; only give this verified empty batch holder a
+  // new owned path so the actual lesson can still use additive isolation.
+  if(Application.isBatchMode && j.stageClass=="AnimationExaggerationStage" &&
+     SceneManager.sceneCount==1 && prior.IsValid() && prior.isLoaded &&
+     string.IsNullOrEmpty(prior.path)) {
+   var startup=new SceneViewEvidence{path=prior.path,name=prior.name,isDirty=prior.isDirty,
+    roots=prior.GetRootGameObjects().Select(o=>o.name).ToArray()};
+   File.WriteAllText(Path.Combine(j.output,"batch-startup-scene.json"),JsonUtility.ToJson(startup,true));
+   if(prior.isDirty || prior.rootCount!=0)
+    throw new InvalidOperationException("Untitled batch scene contains data; preserve it before capture.");
+   var holder="Assets/VideoScenes/animation-exaggeration/grid-v1/BatchScratch/empty-holder-"+
+    System.Diagnostics.Process.GetCurrentProcess().Id+"-"+DateTime.UtcNow.ToString("yyyyMMddHHmmssfff")+".unity";
+   Directory.CreateDirectory(Path.GetDirectoryName(holder));
+   if(File.Exists(holder) || !EditorSceneManager.SaveScene(prior,holder))
+    throw new IOException("Could not save the verified empty batch holder without overwriting a scene.");
+  }
   scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
   ulong isolatedMask=EditorSceneManager.CalculateAvailableSceneCullingMask();
   if(isolatedMask==0)throw new Exception("No unused scene-culling bit is available; preserve existing scenes.");
@@ -134,6 +157,11 @@ public static class AnimationGridCapture {
   stage=(AnimationLessonStage)go.AddComponent(type);
   stage.slug=j.slug; stage.cutId=j.cutId; stage.frames=j.frames;
   if(stage is AnimationGridStage grid)grid.presentationId=j.presentationId;
+  if(stage is AnimationExaggerationStage exaggeration) {
+   exaggeration.presentationId=j.presentationId;
+   exaggeration.presentationProfilePath=AnimationLessonStage.Root+"/animation-exaggeration-presentations.json";
+   exaggeration.sourceCodeFingerprint=j.expectedFingerprint;
+  }
   stage.Initialize(); stage.camera.targetTexture=target;
   stage.camera.overrideSceneCullingMask=isolatedMask;
   Canvas.ForceUpdateCanvases(); stage.Build(); stage.PrepareKnownGlyphs(); stage.Apply(0); stage.FlushPoses(); stage.RefreshUi();
@@ -144,7 +172,7 @@ public static class AnimationGridCapture {
   if(!RenderPipeline.SupportsRenderRequest(stage.camera,request)) throw new Exception("Active pipeline does not support full camera-stack requests.");
   // Provisional speech timing must not occupy the final editable scene path.
   // Each preflight revision is retained; only full render saves the canonical cut.
-  var sceneRoot="Assets/VideoScenes/animation-assigning/grid-v1/";
+  var sceneRoot="Assets/VideoScenes/"+j.slug+"/grid-v1/";
   var revision=Path.GetFileName(Path.GetDirectoryName(j.output));
   var saved=sceneRoot+(j.command=="preflight"?"Preflight/":"RenderRevisions/")+revision+"/"+j.cutId+".unity";
   var stampPath=saved+".capture-source.json";
@@ -160,6 +188,7 @@ public static class AnimationGridCapture {
    if(!EditorSceneManager.SaveScene(scene,saved)) throw new IOException("Editable scene save failed.");
    File.WriteAllText(stampPath,JsonUtility.ToJson(stamp,true));
   }
+  if(stage is AnimationExaggerationStage) ReopenAndReconstructA02(saved,j);
   state.assets=stage.usedAssetPaths.ToArray(); state.animations=stage.usedAnimationPaths.ToArray();
   cursor=0; prepared=false;
   if(j.command=="render") {
@@ -178,7 +207,10 @@ public static class AnimationGridCapture {
    int f=job.command=="preflight"?job.sampleFrames[cursor]:cursor;
    if(!prepared) {
     stage.Apply(f/60f); stage.FlushPoses(); stage.RefreshUi();
-    if(job.command=="preflight")File.WriteAllText(Path.Combine(job.output,$"pose-{f:D5}.json"),stage.PoseDiagnostic());
+    if(job.command=="preflight") {
+     File.WriteAllText(Path.Combine(job.output,$"pose-{f:D5}.json"),stage.PoseDiagnostic());
+     if(stage is AnimationExaggerationStage a02)File.WriteAllText(Path.Combine(job.output,$"a02-{f:D5}.json"),a02.A02DiagnosticJson());
+    }
     EditorApplication.QueuePlayerLoopUpdate(); prepared=true; return;
    }
    // This isolated D29 stage uses one camera for world and editorial UI.
@@ -195,6 +227,49 @@ public static class AnimationGridCapture {
    if(cursor%120==0) Write();
    if(cursor>=(job.command=="preflight"?job.sampleFrames.Length:job.frames)) Finish(null);
   } catch(Exception e) { Finish(e); }
+ }
+ [Serializable] class ReopenBone { public string name; public Vector3 position; }
+ [Serializable] class ReopenSkin { public string name; public ReopenBone[] bones; }
+ [Serializable] class ReopenPose { public ReopenSkin[] skins; }
+ [Serializable] class ReopenEvidence {
+  public string scene,status,sourceFingerprint,profileJsonSha256;
+  public bool initialSceneClosed,savedSceneReopened,sourceReconstructionPerformed,oldRuntimeCacheUsed;
+  public int comparedBones;
+  public float maxBonePositionError;
+ }
+ static void ReopenAndReconstructA02(string saved,Job j) {
+  string expectedProfile=((AnimationExaggerationStage)stage).profileSnapshotJson;
+  string before=stage.PoseDiagnostic();
+  File.WriteAllText(Path.Combine(j.output,"reopen-before-pose.json"),before);
+  stage=null;
+  if(!EditorSceneManager.CloseScene(scene,true))throw new IOException("Could not close initial A02 capture scene.");
+  scene=EditorSceneManager.OpenScene(saved,OpenSceneMode.Additive);
+  ulong isolatedMask=EditorSceneManager.CalculateAvailableSceneCullingMask();
+  if(isolatedMask==0)throw new InvalidOperationException("No free scene mask for reopened A02 scene.");
+  EditorSceneManager.SetSceneCullingMask(scene,isolatedMask);SceneManager.SetActiveScene(scene);
+  var a02=scene.GetRootGameObjects().SelectMany(o=>o.GetComponentsInChildren<AnimationExaggerationStage>(true)).Single();
+  if(a02.profileSnapshotJson!=expectedProfile || a02.sourceCodeFingerprint!=j.expectedFingerprint)
+   throw new InvalidDataException("Saved A02 scene profile/source differs from the requested frozen capture; existing scene preserved.");
+  a02.RebuildFromSavedSource(target,isolatedMask,0);stage=a02;
+  var after=stage.PoseDiagnostic();
+  File.WriteAllText(Path.Combine(j.output,"reopen-after-pose.json"),after);
+  File.WriteAllText(Path.Combine(j.output,"reopen-stage-diagnostic.json"),a02.A02DiagnosticJson());
+  var left=JsonUtility.FromJson<ReopenPose>(before).skins.SelectMany(s=>s.bones).ToArray();
+  var right=JsonUtility.FromJson<ReopenPose>(after).skins.SelectMany(s=>s.bones).ToArray();
+  if(left.Length!=right.Length)throw new InvalidOperationException("Reopened A02 rig bone count changed.");
+  float error=0;
+  for(int i=0;i<left.Length;i++) {
+   if(left[i].name!=right[i].name)throw new InvalidOperationException("Reopened A02 bone order changed.");
+   error=Mathf.Max(error,Vector3.Distance(left[i].position,right[i].position));
+  }
+  if(error>.001f)throw new InvalidOperationException("Reopened A02 pose changed: "+error);
+  string profileHash;
+  using(var sha=System.Security.Cryptography.SHA256.Create())profileHash=BitConverter.ToString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(a02.profileSnapshotJson))).Replace("-","").ToLowerInvariant();
+  File.WriteAllText(Path.Combine(j.output,"scene-reopen-evidence.json"),JsonUtility.ToJson(new ReopenEvidence {
+   scene=saved,status="source-reconstruction-complete",sourceFingerprint=j.expectedFingerprint,profileJsonSha256=profileHash,
+   initialSceneClosed=true,savedSceneReopened=true,sourceReconstructionPerformed=true,oldRuntimeCacheUsed=false,
+   comparedBones=left.Length,maxBonePositionError=error
+  },true));
  }
  static void Write() {
   File.WriteAllText(Status,JsonUtility.ToJson(state,true));

@@ -1,0 +1,1 @@
+namespace Yamyam.AnimationSeries { public static class AnimationExaggerationBuildVersion { public static string For(string stage) { return stage=="AnimationExaggerationStage"?"eca5cfe8c2bc45c70d6d939bd085cb73eb0205c6e00803f378022af00802c66b":"unknown"; } } }
