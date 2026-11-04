@@ -1,0 +1,31 @@
+"""Collect the exact verified master pair and subtitles for local human review."""
+from pathlib import Path
+import json,shutil,datetime,html
+import audio_pipeline as ap
+H=Path(__file__).resolve().parent;R=H.parents[3];L=H.parent/'local/fighters-v3';D=L/'delivery/output/animation-exaggeration'
+def main():
+ p=ap.read(H/'edit-plan.json');qa=ap.read(L/'edit/structural-verification.json');pixels=ap.read(H/'final-pixel-review.json');audio=ap.read(H/'final-audio-asr-review.json')
+ assert qa['status']=='pass' and pixels['status']=='sampled-pixels-reviewed' and audio['matchedCharacterCoverage']>.95
+ baseline=H.parent/'local/fighters-v2/delivery/output/animation-exaggeration/animation-exaggeration.captioned.mp4';assert ap.sha(baseline)=='e741f807e9788d2aacfa2b0ff48a6b4067e5834932dd4f9e9461cec26f0976f4'
+ D.mkdir(parents=True,exist_ok=True);files=[]
+ for role in ['captioned.mp4','clean.mp4','ko.srt','en.srt']:
+  source=L/('edit/animation-exaggeration-'+role if role.endswith('.mp4') else 'edit/captions.'+role)
+  dest=D/('animation-exaggeration.'+role)
+  if dest.exists():assert ap.sha(dest)==ap.sha(source),'Preserve a previously collected different version'
+  else:shutil.copy2(source,dest)
+  files.append(dict(ap.artifact(dest),role=role,name=dest.name))
+ cap=files[0];stamp=datetime.datetime.now(datetime.timezone.utc).isoformat();duration=p['totalFrames']/60
+ counts=p['measuredScreenTime'];share={k:round(v/p['bodyFrames']*100,2) for k,v in counts.items()}
+ manifest={'episode':'A02','slug':'animation-exaggeration','revision':'fighters-v3','status':'local-delivery-user-review-pending','createdAt':stamp,'directory':ap.relative(D),'format':{'width':1920,'height':1080,'fps':60,'frames':p['totalFrames'],'durationSeconds':duration},'files':files,'captionedMasterSha256':cap['sha256'],'verification':{'structuralFinalPair':'pass','sampledEncodedPixels':pixels['status'],'encodedSpeechCoverage':audio['matchedCharacterCoverage'],'humanFinalViewingAndListening':False},'gameplayShare':p['expectedGameplayShare'],'measuredBodySharePercent':share,'baselinePreserved':ap.artifact(baseline),'platformMutation':False}
+ title='동작의 과장 | 게임 캐릭터는 왜 현실보다 과장되게 움직일까?'
+ links=''.join(f'<li><a href="{f["name"]}" download>{name}</a> <small>{f["bytes"]/1e6:.1f} MB</small></li>' for f,name in zip(files,['한글 자막 영상','자막 없는 영상','한글 자막 SRT','영어 자막 SRT']))
+ buttons=''.join(f'<button data-t="{next(c["startFrame"]/60 for c in p["cuts"] if c["id"]==cid)}">{name}</button>' for cid,name in [('A02-F11','셸미 · 팔과 몸통'),('A02-F21','지오바나 · 실루엣'),('A02-E015','언리얼 · 어깨 제어'),('A02-F31','셸미 · 회전 발차기')])
+ page='''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A02 언리얼 수정 검수본</title><style>body{margin:0;background:#0b0d0b;color:#f4f4ee;font:17px/1.7 'Malgun Gothic',sans-serif}main{max-width:1120px;margin:32px auto;padding:0 20px 48px}h1{font-size:28px;line-height:1.4}a,.brand{color:#e8cf83}video{width:100%;aspect-ratio:16/9;background:#000}small,.meta{color:#b3bab0}button{background:transparent;color:#f4f4ee;border:1px solid #596153;padding:9px;margin:4px;font:inherit;cursor:pointer}code{overflow-wrap:anywhere;font-size:12px}li{padding:5px 0}@media(max-width:600px){h1{font-size:23px}}</style><main><div class="brand">얌얌코딩 · 애니메이션 A02</div><h1>'''+html.escape(title)+'''</h1><p class="meta">1920×1080 · 60fps · 6분 4초 · 전체 검수본</p><video controls playsinline preload="metadata" id="film" src="animation-exaggeration.captioned.mp4"></video><p><a href="animation-exaggeration.captioned.mp4">전체 자막 영상 열기</a></p><p>'''+buttons+'''</p><ul><li>언리얼 Game Animation Sample의 인체형 캐릭터로 어깨 고정과 이동을 크게 비교합니다.</li><li>셸미·지오바나의 동작을 실제 속도로 먼저 보고, 0.25배 분석 구간에서 빨간 상자로 짚습니다.</li><li>수정 대사는 로컬 Qwen의 기존 본인 목소리로 제작했습니다. 기존 설명 음성과 배경음악은 보존했습니다.</li></ul><h2>영상과 자막</h2><ul>'''+links+'''</ul><details><summary>검수 기록</summary><p>전체 파일의 프레임·음성 스트림·자막 검사와 화면 표본 검사를 마쳤습니다. 최종 시청·청취는 사용자 검수 대기입니다.</p><code>'''+cap['sha256']+'''</code><p><a href="delivery-manifest.json">파일 기록</a> · <a href="sources.txt">영상 출처</a></p></details></main><script>document.querySelectorAll('button[data-t]').forEach(b=>b.onclick=()=>{const v=document.getElementById('film');v.currentTime=+b.dataset.t;v.play()})</script></html>'''
+ (D/'index.html').write_text(page,encoding='utf-8')
+ (D/'sources.txt').write_text('영상 출처 · 더보기 맨 아래용\n\nTHE KING OF FIGHTERS XV — Shermie Moveset Exhibition / Cykioh\nhttps://www.youtube.com/watch?v=jdpFemQmbeA\n\nGUILTY GEAR -STRIVE- Open Beta — Giovanna moveset / GameGuyZ\nhttps://www.youtube.com/watch?v=_8V7pd2k1zc\n\nKirby Needle evolution — independently recorded gameplay excerpt\nhttps://www.youtube.com/watch?v=aNEUsTkLa5o\n\n설명용 캐릭터: Epic Games Game Animation Sample / UEFN Mannequin. 어깨·몸통 비교 애니메이션은 별도 제작.\nhttps://dev.epicgames.com/documentation/en-us/unreal-engine/game-animation-sample-project-in-unreal-engine\n\nBGM: Nimbus — Eveningland / YouTube Audio Library\n',encoding='utf-8')
+ ap.save(D/'delivery-manifest.json',manifest)
+ ledger={'episode':'A02','revision':'fighters-v3','status':'local-delivery-user-review-pending','updatedAt':stamp,'directory':ap.relative(D),'index':ap.relative(D/'index.html'),'captioned':cap,'files':files,'manifest':ap.artifact(D/'delivery-manifest.json'),'sourcePlan':ap.artifact(H/'edit-plan.json'),'qa':{'structure':ap.artifact(L/'edit/structural-verification.json'),'pixels':ap.artifact(H/'final-pixel-review.json'),'audio':ap.artifact(H/'final-audio-asr-review.json')},'humanFinalReview':False,'platformMutation':False,'baselinePreserved':manifest['baselinePreserved']}
+ ap.save(H/'local-delivery-ledger.json',ledger)
+ ap.save(H/'checkpoint.json',{'episode':'A02','revision':'fighters-v3','status':'local-delivery-user-review-pending','updatedAt':stamp,'localCaptionedMaster':cap['path'],'captionedMasterSha256':cap['sha256'],'durationSeconds':duration,'measuredScreenTime':counts,'newVoice':'Three paragraphs, local Qwen own voice; original14 PCM unchanged','nextAction':'User reviews this exact local complete captioned master. No platform mutation or next video.','humanFinalReview':False,'baselinePreserved':True,'platformMutation':False})
+ print(json.dumps({'directory':str(D),'sha256':cap['sha256'],'duration':duration,'files':4},ensure_ascii=False))
+if __name__=='__main__':main()
