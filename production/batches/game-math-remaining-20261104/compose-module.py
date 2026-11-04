@@ -129,14 +129,16 @@ def prepare(queue,work):
 def normalized_audio(source,start,frames,target,target_lufs,work,stem):
     n=frames*800;duration=frames/60
     analysis=work/'logs'/(stem+'-loudness.log')
-    base=['-ss',str(start),'-i',str(source),'-t',str(duration),'-vn']
+    base=['-ss',str(start),'-t',str(duration),'-i',str(source),'-vn']
     ff([*base,'-af',f'loudnorm=I={target_lufs}:TP=-2:LRA=11:print_format=json','-f','null','-'],analysis)
     matches=re.findall(r'\{\s*"input_i"[\s\S]+?\}',analysis.read_text(encoding='utf-8'))
     assert matches,'Missing actual source loudness measurement';m=json.loads(matches[-1]);save(work/(stem+'-loudness.json'),m)
     if not math.isfinite(float(m['input_i'])):gain='anull'
     else:gain=f"loudnorm=I={target_lufs}:TP=-2:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true"
     fades='' if stem=='narration' else f',afade=t=in:d=0.06,afade=t=out:st={max(0,duration-.08):.6f}:d=0.08'
-    ff([*base,'-af',gain+f',aresample=48000,apad,atrim=end_sample={n}'+fades,'-ac','2','-c:a','pcm_f32le',target],work/'logs'/(stem+'-audio.log'))
+    ff([*base,'-af',gain+f',aresample=48000,asetpts=N/SR/TB,apad,atrim=end_sample={n}'+fades,'-ac','2','-c:a','pcm_f32le',target],work/'logs'/(stem+'-audio.log'))
+    stream=next(s for s in probe(target)['streams'] if s['codec_type']=='audio')
+    assert stream['time_base']=='1/48000' and int(stream['duration_ts'])==n,('Normalized audio must retain exact sample count',stem,n,stream.get('duration_ts'))
 def silence(target,frames,work,stem):ff(['-f','lavfi','-i','anullsrc=r=48000:cl=stereo','-af',f'atrim=end_sample={frames*800}','-c:a','pcm_f32le',target],work/'logs'/(stem+'-silence.log'))
 def concat(paths,target,work,name,audio=False):
     listing=work/(name+'.ffconcat');assert all("'" not in str(p) for p in paths)

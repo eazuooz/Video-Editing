@@ -1,0 +1,1386 @@
+{
+  "status": "complete-semantic-map",
+  "koSha256": "7b120575e2ad0f4b99a0b1154ef908ef0f225874b07482814f55108de3770bf7",
+  "enSha256": "c04597ff0237d438e4ac772058615594ae4d293bc362a0fb8c016305f11ad3ae",
+  "basis": "Direct side-by-side sentence meaning review. Actual-word timing required next. English subdivisions use reading-length allocation within each corresponding group.",
+  "scenes": [
+    {
+      "id": "000",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "새티스팩토리의 열차를 보세요.",
+          "en": "Watch the train in Satisfactory."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "선로가 휘어지는 동안 열차의 위치와 나아가는 방향이 함께 바뀝니다.",
+          "en": "As the track bends, the train changes both position and travel direction."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이런 길을 숫자로 적고, 그 위의 다음 위치를 구하려면 어떻게 해야 할까요?",
+          "en": "How can we describe such a path numerically and find the next position on it?"
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "먼저 곡선의 표현에서 시작해, 원하는 점을 지나게 만들고, 출발과 도착 방향까지 잡아 보겠습니다.",
+          "en": "We will start with curve representations, then make a curve pass through chosen points, and finally control its departure and arrival directions."
+        }
+      ]
+    },
+    {
+      "id": "001",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "곡선 위를 움직이는 점의 위치를 피의 티라고 쓰겠습니다.",
+          "en": "Write the moving point as p of t."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "티는 곡선을 따라 얼마나 진행했는지를 나타내는 매개변수입니다.",
+          "en": "The parameter t describes progress along the curve."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "티에 숫자 하나를 넣으면 엑스, 와이, 제트 좌표가 함께 나옵니다.",
+          "en": "One input gives an x, y, and z coordinate together."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "보통 티를 영에서 일까지 움직이지만, 이 범위 자체가 물리적인 일 초를 뜻하지는 않습니다.",
+          "en": "We often use zero to one, but that interval does not automatically mean one physical second."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "곡선의 값을 공간 좌표 대신 색이나 밝기 같은 속성으로 사용할 수도 있어요.",
+          "en": "Curve values can also represent properties such as color or intensity rather than spatial coordinates."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "여기서는 움직이는 경로를 중심으로 따라가겠습니다.",
+          "en": "Here we will follow moving paths."
+        }
+      ]
+    },
+    {
+      "id": "002",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "반지름이 일인 원이라면 엑스는 코사인 이 파이 티, 와이는 사인 이 파이 티로 놓을 수 있습니다.",
+          "en": "For a unit circle, let x be cosine of two pi t and y be sine of two pi t."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "티가 사분의 일이면 위쪽, 이분의 일이면 왼쪽에 도착하죠.",
+          "en": "At one quarter we reach the top; at one half, the left."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 2,
+          "ko": "같은 원을 엑스 제곱 더하기 와이 제곱은 일이라고 적을 수도 있지만, 매개변수 표현은 다음 위치를 바로 계산하기 편합니다. 와이를 루트 일 빼기 엑스 제곱으로만 적으면 위쪽 반원만 표현한다는 차이도 있습니다.",
+          "en": "The implicit equation x squared plus y squared equals one describes the same circle. Parametric form directly produces positions, while y equals the square root of one minus x squared gives only the upper semicircle."
+        }
+      ]
+    },
+    {
+      "id": "003",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 각 좌표를 티의 다항식으로 만들어 보겠습니다.",
+          "en": "Now make each coordinate a polynomial in t."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "상수 벡터 씨 영, 씨 일, 씨 이, 씨 삼을 준비하고, 차례로 일, 티, 티 제곱, 티 세제곱을 곱해 더합니다.",
+          "en": "Take coefficient vectors c zero through c three, multiply them by one, t, t squared, and t cubed, and add them."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이것이 삼차 다항식 곡선의 단항식 표현입니다.",
+          "en": "This is the power, or monomial, form of a cubic polynomial curve."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "차수는 더 높일 수 있지만, 높인다고 원하는 모양을 더 쉽게 얻는 것은 아닙니다.",
+          "en": "Higher degree is possible, but it does not automatically make a shape easier to control."
+        }
+      ]
+    },
+    {
+      "id": "004",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기서 매개변수 곡선과 다항식 곡선을 구분해 둘게요.",
+          "en": "Keep parametric curves separate from polynomial curves."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "방금 원에 사용한 사인과 코사인은 다항식이 아닙니다.",
+          "en": "The sine and cosine used for the circle are not polynomials."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "유한한 다항식만으로 움직이는 원의 호를 정확히 표현할 수는 없어요.",
+          "en": "A nonconstant circular arc cannot be represented exactly by finite polynomial coordinates."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다항식의 비를 쓰는 유리 곡선이라는 방법도 있지만, 지금은 더하고 곱해서 계산할 수 있는 다항식 곡선을 따라가겠습니다.",
+          "en": "Ratios of polynomials offer rational curves, but here we follow polynomial curves built from additions and multiplications."
+        }
+      ]
+    },
+    {
+      "id": "005",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "슈퍼 마리오 메이커 투에서는 캐릭터가 올라탄 초록 발판이 세로 트랙을 따라 올라갑니다.",
+          "en": "In Super Mario Maker 2, a green platform carries the character upward along a vertical track."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "길의 모양과 그 길 위의 현재 위치는 서로 나눠 생각할 수 있죠.",
+          "en": "The shape of the route and the object's current position on it can be treated separately."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "같은 움직임을 우리 예제로 만들어 보겠습니다.",
+          "en": "Let us build that distinction in our own example."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "게임에서는 현재 티 값을 보관하고, 시간이 흐를 때 티를 갱신해서 발판의 위치를 계산할 수 있습니다.",
+          "en": "A game can store the current parameter, update it with time, and evaluate the platform position."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "경로를 화면에 그릴 때는 티를 조금씩 바꾸며 얻은 점을 선분으로 연결하면 됩니다.",
+          "en": "To display the path, sample successive parameter values and connect the points with segments."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "간격을 작게 잡거나 많이 휘어진 부분을 더 촘촘히 나누면 모양이 잘 드러납니다.",
+          "en": "Smaller intervals, or extra samples in curved regions, improve the approximation."
+        },
+        {
+          "koStart": 6,
+          "koCount": 1,
+          "enStart": 6,
+          "enCount": 1,
+          "ko": "다만 계수 네 개를 숫자로 직접 고치는 것만으로 원하는 길을 설계하기는 어렵죠.",
+          "en": "Yet editing four coefficient vectors is not a convenient way to design a route."
+        }
+      ]
+    },
+    {
+      "id": "006",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "계산을 행렬로 묶어도 내용은 같습니다.",
+          "en": "The same calculation fits into matrix form."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "네 계수 벡터를 열로 나란히 놓은 행렬 씨에, 일과 티와 티 제곱과 티 세제곱을 담은 열벡터를 곱합니다.",
+          "en": "Place the four coefficient vectors in columns of C, then multiply by the column containing one, t, t squared, and t cubed."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "삼차원 곡선이라면 씨는 세 행 네 열입니다.",
+          "en": "For a 3D curve, C has three rows and four columns."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이 행렬은 물체를 옮기는 공간 변환 행렬이 아니라, 다항식의 계수를 정리한 표입니다.",
+          "en": "It stores polynomial coefficients; it is not a spatial transformation matrix."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "오른쪽 네 숫자도 삼차원 위치와 동차좌표를 뜻하지 않습니다.",
+          "en": "The four entries on the right are not a homogeneous 3D point."
+        }
+      ]
+    },
+    {
+      "id": "007",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "가장 단순한 경우로 돌아가 보죠.",
+          "en": "Return to a simple case."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "시작점을 피 영, 끝점을 피 일이라고 하면, 두 점의 차이 디는 피 일 빼기 피 영입니다.",
+          "en": "With endpoints p zero and p one, define d as their difference."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "피 영 더하기 티 디는 직선 경로가 됩니다.",
+          "en": "p zero plus t d gives the straight path."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "삼차 표현에 넣어도 씨 영은 시작점, 씨 일은 디, 나머지 두 계수는 영이면 충분합니다.",
+          "en": "In cubic notation, c zero is the start, c one is d, and the remaining coefficients are zero."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "디까지 영이면 점 하나에 머무릅니다.",
+          "en": "If d is also zero, the curve stays at a single point."
+        }
+      ]
+    },
+    {
+      "id": "008",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "끝점은 대입만으로 찾을 수 있습니다.",
+          "en": "Endpoints follow by substitution."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "티가 영일 때는 티가 곱해진 항이 사라져 씨 영만 남습니다.",
+          "en": "At t equal to zero, every term containing t disappears, leaving c zero."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "티가 일이면 거듭제곱이 모두 일이므로 네 계수의 합이 도착점입니다.",
+          "en": "At one, all powers are one, so the endpoint is the sum of the four coefficients."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "곡선을 설계할 때는 이 끝점 조건부터 만족시켜야 합니다.",
+          "en": "These are the first constraints a designed curve must satisfy."
+        }
+      ]
+    },
+    {
+      "id": "009",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "같은 곡선을 고정된 모양으로 볼 수도 있고, 움직이는 물체의 경로로 볼 수도 있습니다.",
+          "en": "A curve can be a fixed shape or the path of a moving object."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "후자에서는 위치를 미분하면 진행 방향과 변화량을 알 수 있죠.",
+          "en": "In the second view, differentiating position describes its direction and rate of change."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "삼차 곡선의 일차 도함수는 씨 일 더하기 이 씨 이 티 더하기 삼 씨 삼 티 제곱입니다.",
+          "en": "For a cubic, the first derivative is c one plus two c two t plus three c three t squared."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다시 미분한 이차 도함수는 이 씨 이 더하기 육 씨 삼 티입니다.",
+          "en": "Differentiating again gives two c two plus six c three t."
+        }
+      ]
+    },
+    {
+      "id": "010",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "티가 실제 시간이라면 이 두 도함수는 속도와 가속도입니다.",
+          "en": "If t is physical time, those derivatives are velocity and acceleration."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "티가 단순 진행도라면 실제 시간에 따른 변화도 곱해야 해요.",
+          "en": "If t is only progress, its change with physical time must also be included."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "실제 시간을 타우라고 부르면, 속도는 피의 티에 대한 도함수에 티의 타우에 대한 도함수를 곱합니다.",
+          "en": "Calling physical time tau, velocity is the derivative of p with respect to t multiplied by the derivative of t with respect to tau."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "앞으로 그림에서는 우선 티를 시간처럼 증가시켜, 곡선과 움직임을 함께 보겠습니다.",
+          "en": "For the following demonstrations we first advance t like time."
+        }
+      ]
+    },
+    {
+      "id": "011",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "직선 피 영 더하기 티 디를 미분하면 속도는 디로 일정하고 가속도는 영입니다.",
+          "en": "For the line p zero plus t d, velocity is constant d and acceleration is zero."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "그런데 티 대신 티 제곱을 넣으면 지나가는 선은 그대로인데 처음에는 천천히, 나중에는 빨라집니다.",
+          "en": "Replace t with t squared, and the geometric line stays the same while the motion starts slowly and accelerates."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "같은 시간 간격으로 표시한 점의 간격이 벌어지는 것이 보이죠.",
+          "en": "Equal-time markers spread farther apart."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "경로의 모양과 그 위를 움직이는 속도는 서로 다른 설계 대상입니다.",
+          "en": "The route's shape and the speed along it are separate design choices."
+        }
+      ]
+    },
+    {
+      "id": "012",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "마리오 갤럭시에서는 스타를 타고 다음 행성으로 날아갑니다.",
+          "en": "In Super Mario Galaxy, a Launch Star sends Mario toward the next planet."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "휘어진 길을 지나는 동안 나아가는 방향도 달라지죠.",
+          "en": "His travel direction changes along the curved flight."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이제 우리가 만드는 곡선에서 그 순간의 방향을 구해 보겠습니다.",
+          "en": "Now let us calculate the instantaneous direction on the curve we are building."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "일차 도함수는 곡선에 닿아 나아가는 접선 방향을 가리킵니다.",
+          "en": "The first derivative points along the tangent to the curve."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "길이가 다른 화살표 중에서 방향만 필요하면 도함수를 그 길이로 나누어 단위 접선 벡터를 만듭니다.",
+          "en": "If only direction is needed, divide it by its length to obtain a unit tangent."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "도함수가 영인 지점에서는 이 나눗셈으로 방향을 정할 수 없으니 별도 처리가 필요합니다.",
+          "en": "At a point where the derivative is zero, that division cannot determine a direction and needs separate handling."
+        }
+      ]
+    },
+    {
+      "id": "013",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "얼마나 급하게 휘어지는지도 수로 표현할 수 있습니다.",
+          "en": "Curvature measures how sharply a path bends."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "곡률 카파는 속도와 가속도의 외적 길이를 속도 길이의 세제곱으로 나눈 값입니다. 속도가 영이 아닌 매끄러운 부분에서 사용하는 식이에요.",
+          "en": "Kappa is the length of the cross product of velocity and acceleration divided by speed cubed, on a regular portion with nonzero speed."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "직선은 영이고, 반지름 알인 원은 알의 역수입니다.",
+          "en": "A line has zero curvature; a circle of radius r has curvature one over r."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "작게 도는 원일수록 곡률이 크다는 뜻이죠.",
+          "en": "Smaller circles bend more sharply."
+        }
+      ]
+    },
+    {
+      "id": "014",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 원하는 경로를 어떻게 지정할지 생각해 보겠습니다.",
+          "en": "Now decide how to specify the route we want."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "꼭 지나야 하는 점들을 주고 곡선을 만드는 방법을 보간이라고 합니다.",
+          "en": "Interpolation constructs a curve that passes through prescribed points."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "제어점을 참고하되 반드시 지나지는 않는 근사 방식과 구분하죠.",
+          "en": "Approximation uses control points without necessarily passing through them."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "화면의 네 점을 순서대로 지나는 에스 자 경로를 만들어 보겠습니다.",
+          "en": "Let us build an S-shaped path through the four points shown."
+        }
+      ]
+    },
+    {
+      "id": "015",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "네 점에 티가 영, 삼분의 일, 삼분의 이, 일이 되는 순간을 배정하고, 높이를 각각 이, 삼, 이, 삼으로 놓겠습니다.",
+          "en": "Assign parameter values zero, one third, two thirds, and one, with heights two, three, two, and three."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "어느 점을 지날지뿐 아니라 언제 지날지도 정한 겁니다.",
+          "en": "We have specified not only which points to visit, but also at which parameter values."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이런 매개변수 값의 목록을 여기서는 매듭 벡터라고 부릅니다.",
+          "en": "Here this list of values is the knot vector."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "간격을 균등하게 정할 수도 있고, 이웃 점 사이 거리 비율로 정할 수도 있습니다.",
+          "en": "We can space them uniformly or use distances between neighboring points to choose spacing."
+        }
+      ]
+    },
+    {
+      "id": "016",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "삼차원이라도 한꺼번에 어려운 문제를 풀 필요는 없습니다.",
+          "en": "Even in three dimensions, solve the coordinate problems separately."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "같은 티 목록을 사용해서 엑스 좌표를 보간하고, 와이와 제트도 각각 보간하면 됩니다.",
+          "en": "Use the same parameter values to interpolate x, y, and z."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "다만 매개변수 간격을 바꾸면 같은 공간의 점들을 지나는 곡선도 달라질 수 있습니다.",
+          "en": "Changing those parameter spacings can change the curve through the same spatial points."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "점의 위치만으로 곡선이 저절로 하나 정해지는 것은 아닙니다.",
+          "en": "Point positions alone do not uniquely specify the polynomial."
+        }
+      ]
+    },
+    {
+      "id": "017",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "첫 방법은 에이트켄 보간입니다.",
+          "en": "The first method is Aitken interpolation."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "먼저 두 점씩 직선으로 연결합니다.",
+          "en": "Start with straight interpolants through pairs of points."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "세 점을 맞추고 싶다면 앞의 두 점으로 만든 직선과 뒤의 두 점으로 만든 직선을 다시 섞습니다.",
+          "en": "To fit three points, blend the line through the first pair with the line through the second pair."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "두 직선이 공통으로 지나는 가운데 점에서는 어떤 비율로 섞어도 그 점에 머무르고, 양 끝에서는 해당 직선만 선택되도록 비율을 정합니다.",
+          "en": "Both already agree at the middle point, while the weights select the correct line at each outer endpoint."
+        }
+      ]
+    },
+    {
+      "id": "018",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "그 비율을 식으로 쓰면, 앞쪽 결과에는 끝 시각 빼기 현재 티를, 뒤쪽 결과에는 현재 티 빼기 시작 시각을 곱하고, 전체 시각 간격으로 나눕니다.",
+          "en": "In the formula, multiply the earlier interpolant by the last parameter minus t, and the later one by t minus the first parameter, then divide by the full parameter interval."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "한 단계 올라갈 때마다 보간하는 점이 하나 늘어납니다.",
+          "en": "Each level fits one additional point."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "세 점의 이차 곡선 두 개를 같은 방식으로 섞으면 네 점을 지나는 삼차 곡선이 됩니다.",
+          "en": "Blending two quadratic interpolants this way produces the cubic through four points."
+        }
+      ]
+    },
+    {
+      "id": "019",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 2,
+          "ko": "아까 높이 이, 삼, 이, 삼인 예제를 이 과정으로 계산해 보면 네 점은 정확히 지납니다. 그런데 곡선이 높이 삼을 조금 넘었다가 이보다 낮아지죠.",
+          "en": "Apply this process to the heights two, three, two, and three. The curve passes through all four points, but rises a little above three and falls below two."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "원하는 에스 자보다 불필요하게 튀어나온 겁니다.",
+          "en": "It overshoots our desired S shape."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "점을 정확히 지나는 조건과, 점 사이에서 마음에 드는 모양이 되는 조건은 같지 않습니다.",
+          "en": "Passing exactly through the data does not guarantee the shape we want between samples."
+        }
+      ]
+    },
+    {
+      "id": "020",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "같은 문제를 다른 관점에서 풀어 보면 이 현상의 이유가 더 잘 보입니다.",
+          "en": "A different view helps explain why this happens."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "라그랑주 보간은 각 점에 전용 가중치 함수를 붙입니다.",
+          "en": "Lagrange interpolation gives each sample its own weight function."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "모든 계수를 미지수로 놓고 연립방정식을 풀 수도 있지만, 이번에는 각 가중치가 가져야 할 모양을 직접 만들겠습니다.",
+          "en": "We could solve a linear system for all polynomial coefficients, but instead we will construct the required weight functions directly."
+        }
+      ]
+    },
+    {
+      "id": "021",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "첫 점의 함수는 첫 시각에서 일이 되고, 나머지 세 시각에서는 영이 되어야 합니다.",
+          "en": "The first weight must equal one at the first sample time and zero at the other three."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "두 번째 함수는 두 번째 시각에서만 일이고 나머지는 영입니다.",
+          "en": "The second weight is one only at the second sample, and so on."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 2,
+          "ko": "이렇게 만든 함수들에 실제 높이를 곱해 더하면, 각 지정 시각에는 원하는 높이 하나만 남습니다.",
+          "en": "Multiply each weight by its sample height and add them. At any sample time, only the desired value remains."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "같은 가중치 함수는 다른 좌표에도 그대로 사용할 수 있습니다.",
+          "en": "The same weights work for the other coordinates."
+        }
+      ]
+    },
+    {
+      "id": "022",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "다른 시각에서 영을 만드는 것은 어렵지 않습니다. 현재 티에서 그 시각들을 하나씩 빼서 전부 곱하면 됩니다.",
+          "en": "To make a weight zero at the other sample times, multiply the factors t minus each of those times."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "자기 시각에서는 일이 되어야 하니, 같은 곱을 자기 시각에 대입한 값으로 나눕니다.",
+          "en": "Divide by the same product evaluated at its own sample time, so its value there is one."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "분모가 영이 되지 않도록 서로 다른 매개변수 값들을 사용해야 합니다.",
+          "en": "The sample parameter values must be distinct to keep these denominators nonzero."
+        }
+      ]
+    },
+    {
+      "id": "023",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "영, 삼분의 일, 삼분의 이, 일이라는 값을 대입하면 화면의 네 삼차 기저 함수가 나옵니다.",
+          "en": "Substituting zero, one third, two thirds, and one gives the four cubic basis functions shown."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "첫 함수는 처음에 일로 출발하고, 두 번째와 세 번째는 가운데 자기 차례에 일이 됩니다.",
+          "en": "The first starts at one, and the middle functions reach one at their assigned samples."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "중요한 것은 지정된 네 순간 사이에서 가중치가 음수가 되거나 일을 넘을 수 있다는 점입니다.",
+          "en": "Between those samples, weights can become negative or exceed one."
+        }
+      ]
+    },
+    {
+      "id": "024",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이 네 함수에 이, 삼, 이, 삼을 각각 곱해 더하겠습니다.",
+          "en": "Multiply those four functions by two, three, two, and three."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "정리하면 높이는 십팔 티 세제곱 빼기 이십칠 티 제곱 더하기 십 티 더하기 이입니다.",
+          "en": "The resulting height is eighteen t cubed minus twenty-seven t squared plus ten t plus two."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "티가 이분의 일이면 높이는 이점오가 됩니다.",
+          "en": "At one half it equals two point five."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "에이트켄으로 구한 곡선과 같은 곡선이고, 같은 지나침도 남습니다.",
+          "en": "It is the same curve produced by Aitken interpolation, with the same overshoot."
+        }
+      ]
+    },
+    {
+      "id": "025",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이 식은 두 가지로 읽을 수 있습니다. 네 다항식 기저를 섞어 새 다항식을 만들었다고 볼 수도 있고, 티마다 달라지는 가중치로 네 점을 섞었다고 볼 수도 있죠.",
+          "en": "Read this in two ways: a combination of polynomial basis functions, or a blend of points with weights that change with t."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "가중치의 합은 일이지만 음수가 허용됩니다.",
+          "en": "The weights sum to one but may be negative."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 2,
+          "ko": "모든 가중치가 영 이상이고 합이 일이면 점들을 고무줄로 팽팽하게 둘러쌌을 때 생기는 볼록 껍질 안에 머무르는데, 여기서는 그 보장이 사라집니다.",
+          "en": "Nonnegative weights summing to one keep a result inside the points' convex hull—the smallest convex enclosure, like a taut rubber band around planar points. These weights do not provide that guarantee."
+        }
+      ]
+    },
+    {
+      "id": "026",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "서로 다른 티 값에 점 네 개를 주면, 그 점들을 지나는 최대 삼차 다항식은 하나뿐입니다.",
+          "en": "Four samples at distinct parameter values determine one polynomial of degree at most three."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "만약 두 개가 있다면 둘의 차이는 최대 삼차인데 영이 되는 점이 네 개나 있어야 하죠. 그러려면 차이가 전부 영이어야 합니다.",
+          "en": "If there were two, their difference would have degree at most three but four roots, so it would have to be identically zero."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "그래서 계산법을 바꾸는 것만으로는 지나침을 고칠 수 없습니다.",
+          "en": "Merely changing the evaluation algorithm cannot remove the overshoot."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이제 곡선에 요구하는 조건 자체를 바꿔 보겠습니다.",
+          "en": "We need a different way to specify the curve."
+        }
+      ]
+    },
+    {
+      "id": "027",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "새티스팩토리에서 선로를 이을 때는 연결할 끝을 움직이면 미리 보이는 선로의 굽은 모양도 달라집니다.",
+          "en": "When connecting rails in Satisfactory, moving the proposed endpoint changes the bend of the preview."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "우리 경로도 도착 위치만 맞추는 데서 한 걸음 더 나아가, 양 끝에서 나아갈 방향까지 정해 보겠습니다.",
+          "en": "For our own path, let us go beyond matching destination positions and specify how the curve leaves and reaches its endpoints."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "에르미트 곡선은 중간에 지나야 할 점 두 개 대신, 출발점과 도착점에서의 도함수를 지정합니다.",
+          "en": "A Hermite curve replaces the two intermediate point constraints with endpoint derivatives."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "시작 위치 피 영, 시작 속도 브이 영, 도착 속도 브이 일, 끝 위치 피 일이 네 조건입니다.",
+          "en": "The four conditions are starting position p zero, starting derivative v zero, ending derivative v one, and ending position p one."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "손잡이 화살표를 돌리면 방향이, 길게 늘리면 출발하거나 도착하는 변화량이 바뀝니다.",
+          "en": "Rotate a handle to change direction; lengthen it to change the endpoint rate of travel."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "이 화살표는 방향만 가진 단위 벡터가 아닙니다.",
+          "en": "These are full derivative vectors, not unit directions."
+        }
+      ]
+    },
+    {
+      "id": "028",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "삼차 다항식에 네 조건을 대입해 보죠.",
+          "en": "Substitute the four conditions into a cubic."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "시작 위치를 맞추면 씨 영은 피 영입니다. 시작 도함수를 맞추면 씨 일은 브이 영입니다.",
+          "en": "The start position gives c zero equal to p zero, and the start derivative gives c one equal to v zero."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "끝에서는 계수 네 개의 합이 피 일이고, 씨 일 더하기 이 씨 이 더하기 삼 씨 삼이 브이 일이 되어야 합니다.",
+          "en": "At the end, the coefficient sum equals p one, while c one plus two c two plus three c three equals v one."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "남은 미지수는 씨 이와 씨 삼 두 개입니다.",
+          "en": "Only c two and c three remain unknown."
+        }
+      ]
+    },
+    {
+      "id": "029",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "위치 조건에서 씨 이 더하기 씨 삼은 피 일 빼기 피 영 빼기 브이 영입니다.",
+          "en": "The position condition gives c two plus c three equal to p one minus p zero minus v zero."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "도함수 조건에서는 이 씨 이 더하기 삼 씨 삼은 브이 일 빼기 브이 영이죠.",
+          "en": "The derivative condition gives two c two plus three c three equal to v one minus v zero."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "첫 식을 두 배 해서 빼면 씨 삼을 얻고, 다시 대입하면 씨 이를 얻습니다.",
+          "en": "Subtract twice the first equation to obtain c three, then substitute back for c two."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "화면의 결과는 외울 공식이라기보다 네 조건을 맞춘 연립방정식의 해입니다.",
+          "en": "These coefficients are the solution to our four constraints."
+        }
+      ]
+    },
+    {
+      "id": "030",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 2,
+          "ko": "네 입력을 피 영, 브이 영, 브이 일, 피 일 순서로 열에 넣으면, 고정된 에르미트 기저 행렬을 곱해 단항식 계수를 구할 수 있습니다.",
+          "en": "Put p zero, v zero, v one, and p one in columns. Multiplying by the fixed Hermite basis matrix produces the power-form coefficients."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "매번 같은 곡선을 여러 번 계산한다면 계수를 먼저 만들어 놓을 수 있죠.",
+          "en": "Repeated evaluations can reuse those coefficients."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "반대로 기저 행렬을 티의 거듭제곱 벡터에 먼저 곱하면, 네 입력의 가중치를 바로 얻습니다.",
+          "en": "Or multiply the basis matrix by the powers of t first to obtain four input weights."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "곱하는 묶음만 달라지고 결과는 같습니다.",
+          "en": "The grouping changes, not the result."
+        }
+      ]
+    },
+    {
+      "id": "031",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이 가중치가 에르미트 기저 함수입니다.",
+          "en": "These weights are the Hermite basis functions."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "위치에 붙는 두 함수는 시작과 끝의 몫을 나눠 가지며 합이 일입니다.",
+          "en": "The two position weights share the start and end contributions and sum to one."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "속도에 붙는 두 함수는 양 끝에서 영이지만, 출발과 도착 기울기를 조절합니다.",
+          "en": "The derivative weights vanish at the endpoints but adjust the departure and arrival slopes."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "위치는 점이고 속도는 변위 방향의 벡터라는 차이 때문에, 네 가중치를 전부 위치의 비율처럼 해석하면 안 됩니다.",
+          "en": "Positions are points and derivatives are vectors, so all four weights should not be read as proportions of positions."
+        }
+      ]
+    },
+    {
+      "id": "032",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 2,
+          "ko": "숫자로 확인해 보겠습니다. 시작은 영, 영, 끝은 이, 영으로 놓고, 시작 도함수는 영, 삼, 끝 도함수는 영, 마이너스 삼으로 정합니다.",
+          "en": "For a numerical check, start at zero, zero and end at two, zero. Choose endpoint derivatives zero, three and zero, minus three."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "티가 이분의 일이면 위치 가중치는 각각 이분의 일, 도함수 가중치는 팔분의 일과 마이너스 팔분의 일입니다.",
+          "en": "At t equal to one half, the position weights are both one half, while the derivative weights are one eighth and minus one eighth."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "더하면 일, 영점칠오가 되어 위로 휘어진 길의 가운데에 도착합니다.",
+          "en": "Their sum gives one, zero point seven five, the middle of an upward arch."
+        }
+      ]
+    },
+    {
+      "id": "033",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "같은 삼차 곡선을 단항식 계수로도, 에르미트의 위치와 도함수로도 표현할 수 있습니다.",
+          "en": "The same cubic can be written with power coefficients or with Hermite endpoint positions and derivatives."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "서로 다른 종류의 궤적을 새로 얻은 것이 아니라, 사람이 다루기 편한 입력을 바꾼 것입니다.",
+          "en": "We have changed the controls, not invented a different class of cubic trajectories."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "경로 편집기에서 출발과 도착 방향을 잡는 일이 계수 네 개를 직접 조절하는 것보다 직관적인 이유죠.",
+          "en": "That is why setting departure and arrival directions in a path editor is more intuitive than editing four coefficient vectors."
+        }
+      ]
+    },
+    {
+      "id": "034",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "도착 위치의 가중치인 삼 티 제곱 빼기 이 티 세제곱은 다른 곳에서도 유용합니다.",
+          "en": "The ending-position weight, three t squared minus two t cubed, is useful beyond path design."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "영에서 일로 올라가되 양 끝 기울기가 영이어서, 갑자기 출발하고 멈추는 느낌을 줄일 수 있죠.",
+          "en": "It rises from zero to one with zero slope at both ends, softening the start and stop."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이것이 스무스스텝입니다. 양 끝 속도를 영으로 둔 두 위치 사이의 에르미트 보간으로 볼 수 있습니다.",
+          "en": "This is smoothstep: Hermite interpolation between two values with zero endpoint derivatives."
+        }
+      ]
+    },
+    {
+      "id": "035",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "실제로는 시작값과 끝값 사이를 영부터 일로 바꾼 뒤 범위를 제한해서 스무스스텝을 적용합니다.",
+          "en": "In practice, normalize the input interval to zero through one, clamp it, and apply smoothstep."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "구간 밖에서는 영이나 일을 유지하죠.",
+          "en": "Outside the interval it stays at zero or one."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "속도는 부드럽게 이어지지만, 바깥의 일정한 값과 연결할 때 이차 도함수까지 이어지는 것은 아닙니다.",
+          "en": "Its first derivative joins smoothly, but the second derivative need not match the constant regions."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "가속도까지 설계하고 싶다면 한 단계 더 많은 조건이 필요합니다.",
+          "en": "Controlling endpoint acceleration requires more constraints."
+        }
+      ]
+    },
+    {
+      "id": "036",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "양 끝의 위치, 속도, 가속도를 모두 지정하면 조건은 여섯 개가 되고 다섯째 차수인 다항식으로 맞출 수 있습니다.",
+          "en": "Specifying position, velocity, and acceleration at both ends gives six conditions and can be handled by a quintic."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "오늘의 핵심은 곡선 공식 자체보다 무엇을 입력으로 잡느냐였습니다.",
+          "en": "The central issue today was which quantities we choose to control."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "지나야 할 점을 정하면 보간 문제가 되고, 출발과 도착의 방향과 변화량을 정하면 에르미트 표현이 편리해집니다.",
+          "en": "Prescribed samples lead to interpolation; endpoint directions and rates lead naturally to Hermite form."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다음에는 이 조절을 화면의 손잡이 점으로 옮기는 베지에 곡선을 살펴보겠습니다.",
+          "en": "Next we will turn those controls into the handle points of Bézier curves."
+        }
+      ]
+    }
+  ],
+  "humanListening": false
+}

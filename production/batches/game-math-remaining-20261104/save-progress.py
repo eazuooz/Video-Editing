@@ -60,10 +60,24 @@ def main():
     for item in batch['items']:
         project=ROOT/'projects'/item['slug']
         files += [project/'project.json',project/'planning/production-plan.json',project/'production/tts-manifest.json',project/'production/checkpoint.json',project/'production/review-ledger.json']
-        if include_drafts and item['status']=='source-audit-bilingual-draft-ready':
+        if include_drafts:
             files+=list((project/'planning').glob('*.json'))
             files+=list((project/'script').glob('*.json'))+list((project/'script').glob('*readthrough*.txt'))
             files+=list((project/'production').glob('*.py'))
+            files+=list((project/'production').glob('tts-manifest*.json'))
+            # Stage changes must not silently drop approved source or annotations.
+            # Include only the reviewed coordinate records referenced by this plan;
+            # native media and exploratory tracking output remain excluded.
+            annotations=project/'planning/game-annotation-tracks.json'
+            if annotations.exists():
+                for window in json.loads(annotations.read_text(encoding='utf-8'))['windows']:
+                    if 'trackFile' not in window:
+                        assert item['id']=='M21', 'New module is missing its reviewed track reference'
+                        continue
+                    tracked=(ROOT/window['trackFile']).resolve()
+                    assert tracked.is_relative_to(project.resolve()) and tracked.suffix=='.json'
+                    assert 'annotation-reviewed-' in tracked.parent.name
+                    files.append(tracked)
             # Retain evidence, not full fetched article text or licensed media.
             for pattern in ('*audit.json','*numeric-qa.json','worked-calculations.json'):
                 files+=list((project/'research').glob(pattern))
@@ -97,7 +111,7 @@ def main():
     tree=git('write-tree',env=env).decode().strip()
     report={'baseHead':head,'ownedPaths':owned,'unrelatedStagingPreserved':True,'stage':'source-faithful drafts, actual-game audits and Unity source staging; no final video completion','committed':False}
     if commit:
-        message=b'Build source-faithful math drafts and M21 lighting lab preflight\n' if include_drafts else b'Prepare authorized M21-M33 math lectures and source audit queue\n'
+        message=b'Refine math gameplay guides and source-aligned production checks\n' if include_drafts else b'Prepare authorized M21-M33 math lectures and source audit queue\n'
         new=git('commit-tree',tree,'-p',head,data=message).decode().strip()
         helper=ROOT/'projects/buckshot-roulette-reverse-engineering/production/save-selective-git.py'
         spec=importlib.util.spec_from_file_location('scoped_git_helper',helper);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)

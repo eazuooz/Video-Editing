@@ -17,7 +17,7 @@ P=R/'projects'/args.project;A=P/'production/local'/args.audio_revision;OUT=P/'pr
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
-ALIASES={'tbn':'티비엔','srgb':'에스알지비','bitangent':'비탄젠트','tangent':'접선','brdf':'비알디에프','rgb':'알지비','hlsl':'에이치엘에스엘','sh':'에스에이치','uv':'유브이','phong':'퐁','blinn':'블린','lambert':'램버트','gouraud':'구로','reflect':'리플렉트',
+ALIASES={'tbn':'티비엔','srgb':'에스알지비','bitangent':'비탄젠트','tangent':'접선','handedness':'핸디드니스','bumpmapping':'범프매핑','brdf':'비알디에프','rgb':'알지비','hlsl':'에이치엘에스엘','sh':'에스에이치','uv':'유브이','phong':'퐁','blinn':'블린','lambert':'램버트','gouraud':'구로','reflect':'리플렉트','q':'큐',
          'sx':'에스엑스','sy':'에스와이','sz':'에스제트','m':'미터','doom':'둠',
          'n':'엔','l':'엘','r':'알','v':'브이','h':'에이치','x':'엑스','y':'와이','z':'제트','t':'티','s':'에스','p':'피','d':'디','a':'에이','b':'비','c':'씨','e':'이','k':'케이','i':'아이','j':'제이','w':'더블유','u':'유'}
 DIGITS='영일이삼사오육칠팔구'
@@ -47,6 +47,9 @@ def normalize_owned(s,owners):
     for source,target in [('쉐이딩','셰이딩'),('쉐이더','셰이더'),('세이더','셰이더'),('두 배','이배'),('두배','이배'),('여덟 제곱','팔제곱'),('여덟제곱','팔제곱'),('둠 쓰리','둠삼')]:replace(re.escape(source),target)
     # Korean particles are attached to Latin symbols (e.g. BRDF가, N과).
     # Latin-only boundaries preserve words such as "normal" while matching those.
+    replace(r'%','퍼센트')
+    replace(r'[−–-](?=\s*[0-9a-z])','마이너스')
+    replace(r'\bbump\s+mapping\b','범프매핑')
     for a,b in sorted(ALIASES.items(),key=lambda p:-len(p[0])):replace(r'(?<![a-z])'+re.escape(a)+r'(?![a-z])',b)
     replace(r'\d+(?:\.\d+)?',lambda m:number_ko(m.group()))
     keep=[i for i,c in enumerate(s) if c.isalnum()]
@@ -198,7 +201,18 @@ def main():
             for part in parts:
                 finish=t+(end-begin)*len(part)/size
                 en_cues.append({'scene':sid,'start':t,'end':finish,'text':part,'timingBasis':'reviewed meaning group / actual KO words / English reading proportions','listeningVerified':False});t=finish
-        scenes.append({'id':sid,'startFrame':start_frame,'endFrame':end_frame,'shot':cue,'cueEvidence':proof,'valueEvidence':value_evidence,'spokenEnd':e['end'],'sourceAsrCoverage':coverage,'actualGamePart':row.get('actualGamePart')})
+        game=row.get('actualGamePart');game_start=0;game_evidence=None
+        if game:
+            prefix=game.get('speechTarget',{}).get('prefixKo')
+            try:
+                assert prefix and prefix in speech,'Missing actual game narration prefix'
+                if speech.find(prefix)>0:
+                    when,game_evidence=phrase_time(speech,prefix,mapping,owners,speech.find(prefix))
+                    game_start=round(when*60)-start_frame
+                    assert 0<=game_start<end_frame-start_frame
+                else:game_evidence={'basis':'Opening word group: actual game starts with paragraph, no token explanation flash'}
+            except (AssertionError,ValueError) as exc:flags.append({'scene':sid,'type':'unresolved-gameplay-speech-start','detail':repr(exc)})
+        scenes.append({'id':sid,'startFrame':start_frame,'endFrame':end_frame,'shot':cue,'cueEvidence':proof,'valueEvidence':value_evidence,'spokenEnd':e['end'],'sourceAsrCoverage':coverage,'actualGamePart':game,'actualGameStartFrame':game_start,'actualGameStartEvidence':game_evidence})
     report={'createdAt':datetime.now(timezone.utc).isoformat(),'narrationSha256':asr['audio_sha256'],'bindingsSha256':sha(P/'planning/scene-bindings.json'),'timingSha256':sha(A/'narration.timing.json'),'captionReadingAdjustmentsSha256':sha(adjustments_file),'project':P.name,'status':'needs-targeted-review' if flags else 'word-aligned-requires-integrated-review','flags':flags,'scenes':scenes,'ko':ko_cues,'en':en_cues,'humanListening':False,'finalCompositeQa':False}
     OUT.mkdir(parents=True,exist_ok=True);save(OUT/'word-aligned-timeline.json',report)
     if not flags:srt(OUT/'narration.ko.srt',ko_cues);srt(OUT/'narration.en.srt',en_cues)

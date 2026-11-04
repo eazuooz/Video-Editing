@@ -40,11 +40,20 @@ def main():
     data=re.findall(r'\{\s*"input_i"[\s\S]+?\}',(W/'final-loudness.log').read_text(encoding='utf-8'));assert data;report['actualMixLoudness']=json.loads(data[-1]);report['truePeakWithinLimit']=float(report['actualMixLoudness']['input_tp'])<=-1.3
     assert report['truePeakWithinLimit'],'Encoded true peak exceeds planned ceiling'
     alignment=M.read(queue['wordAlignment']);report['originalPcmUnchanged']=M.sha(P/'production/local/audio-v1/narration.wav')==alignment['narrationSha256'];assert report['originalPcmUnchanged']
-    samples=[]
+    samples=[];reused={}
+    if queue.get('visualReuse'):
+        previous=M.read(Path(queue['visualReuse']['sourceTechnicalReport']));prior=Path(previous['files']['captioned']['path'])
+        assert M.sha(prior)==previous['files']['captioned']['sha256']
+        def video_hash(path):return subprocess.check_output([str(M.FF),'-v','error','-i',str(path),'-map','0:v:0','-c:v','copy','-f','hash','-hash','sha256','-'],text=True,creationflags=M.CREATE).strip()
+        before_hash=video_hash(prior);after_hash=video_hash(cap);assert before_hash==after_hash,'Reuse only unchanged encoded video packets'
+        report['visualReuseEvidence']=dict(sourceReport=queue['visualReuse']['sourceTechnicalReport'],sourceMasterSha256=M.sha(prior),videoPacketHash=after_hash,method='Identical copied video packets, frame count/fps and start time; original final-frame samples reused. Audio verified on new file.')
+        reused={(x['scene'],x['phase']):x for x in previous['samples']}
     # Inspect realised transition, middle and final phase of every lecture beat.
     for s in alignment['scenes']:
         for phase,u in [('opening',.08),('middle',.5),('closing',.9)]:
             frame=120+s['startFrame']+round((s['endFrame']-s['startFrame']-1)*u);png=W/(s['id']+'-'+phase+'.png')
+            if (s['id'],phase) in reused:
+                prior_sample=reused[(s['id'],phase)];assert prior_sample['frame']==frame;png=Path(prior_sample['path']);assert png.is_file()
             if not png.exists():
                 code=run([M.FF,'-loglevel','error','-nostdin','-n','-threads','2','-ss',frame/60,'-i',cap,'-frames:v','1','-threads','1',png],W/(s['id']+'-'+phase+'-extract.log'));assert code==0
             samples.append({'scene':s['id'],'frame':frame,'phase':phase,'path':str(png),'viewed':False})

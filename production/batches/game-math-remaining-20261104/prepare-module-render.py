@@ -25,17 +25,20 @@ out=P/'production/local'/a.revision;assert not out.exists(),'Preserve prior medi
 jobs=[];cuts=[]
 for row in t['scenes']:
  sid=row['id'];frames=row['endFrame']-row['startFrame'];assert frames>0
- shot=dict(row['shot'],durationSeconds=frames/60);game=row.get('actualGamePart');gameframes=0
+ shot=dict(row['shot'],durationSeconds=frames/60);game=row.get('actualGamePart');gameframes=0;game_start=row.get('actualGameStartFrame',0)
  if game:
   assert game['playbackRate']==1 and not game['freezePadding'] and not game['loop']
-  gameframes=min(frames,math.floor((game['sourceOut']-game['sourceIn'])*60+.0001))
+  gameframes=min(frames-game_start,math.floor((game['sourceOut']-game['sourceIn'])*60+.0001))
   assert gameframes>=60,'Reject a token flash of the game'
-  cuts.append(dict(scene=sid,kind='actual-gameplay',sourceId=game['sourceId'],sourceIn=game['sourceIn'],sourceOut=game['sourceIn']+gameframes/60,originalAudioIn=game.get('fullOriginalAudioIn',game['sourceIn']),frames=gameframes,globalStartFrame=row['startFrame'],nativeSpeed=True,freeze=False,loop=False,originalSelectedOut=game['sourceOut'],review='Confirm observed before/action/result survives final cut'))
+  cuts.append(dict(scene=sid,kind='actual-gameplay',sourceId=game['sourceId'],sourceIn=game['sourceIn'],sourceOut=game['sourceIn']+gameframes/60,originalAudioIn=game.get('fullOriginalAudioIn',game['sourceIn']),frames=gameframes,globalStartFrame=row['startFrame']+game_start,nativeSpeed=True,freeze=False,loop=False,originalSelectedOut=game['sourceOut'],speechStartEvidence=row.get('actualGameStartEvidence'),review='Confirm observed before/action/result survives final cut'))
  if frames==gameframes:continue
  shotfile=out/'shots'/(sid+'.json');save(shotfile,shot)
  job=dict(id=episode.lower()+'-body-'+sid,projectSlug=P.name,command='render',expectedFingerprint=marker['fingerprint'],shotFile=str(shotfile),factoryType=factory,output=str(out/'unity'/sid),frames=frames,sampleFrames=[0,frames//2,frames-1],speechTimingVerified=True,sceneId=sid,ffmpeg='C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe')
  jp=out/'jobs'/(sid+'.json');save(jp,job);jobs.append(str(jp))
- cuts.append(dict(scene=sid,kind='explanation',file=str(Path(job['output'])/'unity.mp4'),sourceIn=gameframes/60,frames=frames-gameframes,globalStartFrame=row['startFrame']+gameframes))
+ if game_start>0:cuts.append(dict(scene=sid,kind='explanation',file=str(Path(job['output'])/'unity.mp4'),sourceIn=0,frames=game_start,globalStartFrame=row['startFrame']))
+ after=game_start+gameframes
+ if after<frames:cuts.append(dict(scene=sid,kind='explanation',file=str(Path(job['output'])/'unity.mp4'),sourceIn=after/60,frames=frames-after,globalStartFrame=row['startFrame']+after))
+cuts.sort(key=lambda x:x['globalStartFrame'])
 cursor=0
 for cut in cuts:assert cut['globalStartFrame']==cursor;cursor+=cut['frames']
 assert cursor==t['scenes'][-1]['endFrame']

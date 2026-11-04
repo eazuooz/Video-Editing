@@ -89,7 +89,17 @@ def verified_waiting_math_worker(process, arguments):
         elif selected == (batch/'run-prepared-module-queues.py').resolve():
             statefile=batch/'module-queue-worker.json'
         elif selected == (batch/'finish-m21-media-qa.py').resolve():
-            statefile=m21/'local/render-v3/finite-final-qa.json'
+            revision=value('--revision') or 'render-v3'
+            if not __import__('re').fullmatch(r'render-v\d+',revision):return False
+            statefile=m21/'local'/revision/'finite-final-qa.json'
+        elif selected == (batch/'review-final-mix.py').resolve():
+            queue=Path(value('--queue')).resolve()
+            if not queue.is_relative_to(ROOT/'projects'):return False
+            statefile=queue.parent/'final-mix-review/worker.json'
+        elif selected == (ROOT/'projects/game-math-skinning-normal-map/production/review-suspect-words.py').resolve():
+            statefile=selected.parent/'local/audio-v1/review/targeted-context/worker.json'
+        elif selected == (m21/'fix-audio-frame-tail.py').resolve():
+            statefile=m21/'local/render-v4/composite/worker.json'
         elif selected == (m21/'unity-staging/run-preflight.py').resolve():
             folder = Path(value('--job-folder')).resolve()
             if not folder.is_relative_to(m21/'unity-staging'):

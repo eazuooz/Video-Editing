@@ -1,0 +1,1576 @@
+{
+  "status": "complete-semantic-map",
+  "koSha256": "f311a4835e5a5f95af5bb3b233d912bacc6b061917c4b2e77ac26d922fc6f989",
+  "enSha256": "8d109c1f53868524f04477cb7290dc8e73172ca62b9f8ffb9f98a9642ca16f67",
+  "basis": "Direct side-by-side sentence meaning review. Actual-word timing required next. English subdivisions use reading-length allocation within each corresponding group.",
+  "scenes": [
+    {
+      "id": "000",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "새티스팩토리에서 선로의 끝을 움직여 다음 구간에 연결하면, 휘어진 길이 이어집니다.",
+          "en": "In Satisfactory, adjusting a rail endpoint and joining it to the next section creates a continuing curved route."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "긴 경로를 다항식 하나로 만들면 한 부분을 고칠 때 다른 부분까지 영향을 받을 수 있죠.",
+          "en": "If we design a long path with one polynomial, editing one part can affect distant parts."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "작은 곡선들을 연결하면 필요한 부분을 따로 다룰 수 있습니다.",
+          "en": "Connecting smaller curves lets us work on the pieces."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "오늘은 조각을 잇는 방법에서 시작해, 모양과 움직임이 모두 자연스럽게 이어지는 조건을 찾고, 접선까지 자동으로 정해 보겠습니다.",
+          "en": "We will begin with those joins, find conditions for both shape and motion to continue smoothly, and then generate tangents automatically."
+        }
+      ]
+    },
+    {
+      "id": "001",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "자유도를 늘리는 한 방법은 차수를 올리는 것입니다.",
+          "en": "One option is degree elevation."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "단항식 표현에서는 높은 차수의 계수를 영으로 추가하면 처음에는 같은 곡선이 됩니다.",
+          "en": "In power form, adding a zero higher-order coefficient preserves the curve."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "베지에 표현에서는 끝점을 유지하고 이웃한 제어점을 정해진 비율로 섞어 새 제어점을 만듭니다.",
+          "en": "In Bézier form, keep the endpoints and blend neighboring controls at prescribed ratios to obtain new ones."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "차수 올리기 자체는 모양을 바꾸지 않고, 이후 편집할 여지를 늘립니다.",
+          "en": "Elevation itself preserves the shape while adding controls for later editing."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "양 끝에서 같은 수의 도함수를 지정하는 에르미트 표현은 위치만 지정하는 일차, 속도까지 지정하는 삼차, 가속도까지 지정하는 5차처럼 홀수 차수가 자연스럽습니다.",
+          "en": "Symmetric Hermite constraints naturally use odd degrees: linear for endpoint positions, cubic when adding first derivatives, and quintic when adding second derivatives."
+        }
+      ]
+    },
+    {
+      "id": "002",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "삼차를 사차로 바꾸면 첫 새 내부점은 이전 첫 두 점을 사분의 일과 사분의 삼으로 섞고, 다음은 반씩, 그다음은 사분의 삼과 사분의 일로 섞습니다.",
+          "en": "Elevating a cubic to a quartic blends neighboring controls with one quarter and three quarters, then halves, then three quarters and one quarter."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "하지만 차수를 계속 올리면 계산과 조절이 복잡해지고 한 점의 영향이 전체에 퍼집니다.",
+          "en": "Repeated elevation makes evaluation and editing more complex, while influence remains global."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "등간격의 많은 표본을 높은 차수 하나로 보간할 때는 룽게 현상처럼 불필요한 흔들림이 커질 수도 있죠.",
+          "en": "High-degree interpolation can also oscillate between samples."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "그래서 낮은 차수의 조각을 잇는 스플라인으로 넘어갑니다.",
+          "en": "This motivates splines made from lower-degree pieces."
+        }
+      ]
+    },
+    {
+      "id": "003",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "조각마다 영부터 일까지의 국소 매개변수를 갖게 하겠습니다.",
+          "en": "Give each piece a local parameter from zero through one."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "전체 경로의 에스가 이점삼이라면 정수 부분 이는 세 번째 구간을 고르고, 소수 부분 영점삼은 그 구간의 진행도가 됩니다.",
+          "en": "A global parameter of two point three selects segment two—the third segment—and local progress point three."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "마지막 끝점에서는 예외가 필요합니다. 구간이 엔 개일 때 에스가 엔이면 없는 엔 번 구간을 고르지 않고, 마지막 구간의 진행도 일을 사용합니다.",
+          "en": "At the final endpoint, handle the boundary explicitly: with n segments and s equal to n, choose segment n minus one at local parameter one rather than a nonexistent segment n."
+        }
+      ]
+    },
+    {
+      "id": "004",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "애니메이션에서는 실제 시간을 먼저 이 전체 매개변수로 바꿉니다.",
+          "en": "For animation, map physical time to the global parameter first."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "시간을 에스로 바꾸고, 에스로 구간과 국소 진행도를 찾고, 마지막으로 해당 곡선을 계산하는 세 단계입니다.",
+          "en": "Then select a segment and local progress, and evaluate that curve."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 시간 배치를 바꾸면 같은 길에서도 출발과 정지 속도를 바꿀 수 있죠.",
+          "en": "Changing the time mapping changes motion along the same route."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "에스를 일정하게 늘린다고 실제 이동 거리까지 일정해지는 것은 아닙니다.",
+          "en": "Advancing the parameter uniformly does not guarantee equal distances in space."
+        }
+      ]
+    },
+    {
+      "id": "005",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이웃한 두 구간이 만나는 위치를 매듭점이라고 부르겠습니다.",
+          "en": "Call the shared endpoints knots in this interpolating construction."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "앞 구간의 마지막 위치와 다음 구간의 첫 위치가 같아야 길이 끊기지 않습니다.",
+          "en": "The previous segment must end where the next begins."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "구간이 엔 개면 이런 점은 엔 더하기 하나입니다.",
+          "en": "With n segments there are n plus one such points."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "매듭점 케이는 위치 하나이고, 구간 함수 큐는 진행도를 받아 위치를 계산하는 함수라는 차이를 기억해 주세요.",
+          "en": "A knot k is one position; a segment function q takes local progress and returns a position."
+        }
+      ]
+    },
+    {
+      "id": "006",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "각 매듭점에는 들어오는 도함수와 나가는 도함수가 있습니다. 앞 구간을 마칠 때의 변화량과 다음 구간을 시작할 때의 변화량이죠.",
+          "en": "Each knot has an incoming derivative and an outgoing derivative: how the preceding segment arrives and how the following segment departs."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "위치와 이 두 벡터를 저장하면 각 조각을 에르미트 형식으로 계산할 수 있습니다.",
+          "en": "Store the position and these vectors to evaluate Hermite pieces."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "화면에서 직접 편집할 때는 같은 정보를 베지에 손잡이로 보여 줄 수 있습니다.",
+          "en": "For direct graphical editing, the same information can be displayed as Bézier handles."
+        }
+      ]
+    },
+    {
+      "id": "007",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "들어오는 쪽 손잡이를 에프, 나가는 쪽을 에이라고 하겠습니다.",
+          "en": "Name the incoming handle f and outgoing handle a."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "들어오는 도함수는 케이 빼기 에프의 삼 배, 나가는 도함수는 에이 빼기 케이의 삼 배입니다.",
+          "en": "The incoming derivative is three times the vector from f to k, and the outgoing derivative is three times the vector from k to a."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "따라서 손잡이는 도함수 길이의 삼분의 일에 놓입니다.",
+          "en": "Handle distances therefore equal one third of the derivative magnitude."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "한 끝점을 공유하는 삼차 조각들을 일렬로 저장하면 매듭점은 영, 삼, 육 번처럼 세 칸마다 나타납니다.",
+          "en": "Storing connected cubic controls in one sequence places shared knots at indices zero, three, six, and so on."
+        }
+      ]
+    },
+    {
+      "id": "008",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "슈퍼 마리오 메이커 투의 트랙에서는 직각으로 꺾인 모서리를 둥근 구간으로 바꿀 수 있습니다.",
+          "en": "In Super Mario Maker 2, a right-angle track corner can be changed into a rounded section."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "위치가 이어지는 것과 나아갈 방향까지 매끈하게 이어지는 것은 다르다는 걸 눈으로 볼 수 있죠.",
+          "en": "We can see why connecting positions and joining travel directions smoothly are different requirements."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "그럼 두 벡터가 어느 정도 같아야 매끄러울까요?",
+          "en": "What must agree for a smooth join?"
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "방향과 길이가 모두 같으면 움직임이 자연스럽게 이어집니다.",
+          "en": "Matching both direction and magnitude connects the derivatives."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "방향은 같은데 길이만 다르면 선의 모양은 매끈해 보여도, 같은 속도로 매개변수를 진행할 때 물체의 속력이 갑자기 바뀝니다.",
+          "en": "If directions agree but lengths differ, the shape may look smooth while motion jumps in speed under a uniform parameter clock."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "반대로 양쪽 도함수를 모두 영으로 만들면 모서리에서 완전히 멈춘 다음 다른 방향으로 출발할 수도 있습니다.",
+          "en": "Setting both derivatives to zero can instead stop at a corner before departing in another direction."
+        }
+      ]
+    },
+    {
+      "id": "009",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이 차이를 정확하게 구분하는 말이 매개변수 연속성입니다.",
+          "en": "Parametric continuity distinguishes these cases."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 3,
+          "ko": "씨 영은 위치가 이어지는 것, 씨 일은 위치와 일차 도함수가 이어지는 것, 씨 이는 거기에 이차 도함수까지 이어지는 것입니다.",
+          "en": "C zero joins positions. C one also joins first derivatives. C two additionally joins second derivatives."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "실제 시간을 매개변수로 쓴다면 각각 위치, 속도, 가속도를 연결하는 조건이 됩니다.",
+          "en": "When the parameter is physical time, these correspond to position, velocity, and acceleration."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "높은 차수의 연속성에는 낮은 차수의 조건도 함께 포함됩니다.",
+          "en": "Higher-order continuity includes all lower-order requirements."
+        }
+      ]
+    },
+    {
+      "id": "010",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "씨 일이라고 해서 속도가 변하지 않는 것은 아닙니다.",
+          "en": "C one does not mean constant velocity."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "속도가 바뀌더라도 중간값을 건너뛰며 순간적으로 뛰지 않는다는 뜻이에요.",
+          "en": "Velocity may change, but without an instantaneous jump over intermediate values."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "물리적인 장치를 제어할 때 그런 속도 도약은 유한한 가속도로 만들 수 없습니다. 게임에서도 덜컥거림으로 보일 수 있죠.",
+          "en": "A physical mechanism cannot make such a jump with finite acceleration; an animation may look jerky."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다항식 한 조각 안은 계속 미분해도 매끄러우므로, 주로 확인할 곳은 조각 사이의 연결점입니다.",
+          "en": "Inside each polynomial piece, derivatives remain continuous, so our main concern is the joins."
+        }
+      ]
+    },
+    {
+      "id": "011",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "같은 매개변수 간격의 삼차 구간에서는 씨 일을 만들기 쉽습니다. 들어오는 벡터와 나가는 벡터를 같게 두면 됩니다.",
+          "en": "For cubic segments with equal parameter intervals, C one is straightforward: match the incoming and outgoing derivatives."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "베지에 손잡이로는 케이 빼기 에프가 에이 빼기 케이와 같아야 하죠.",
+          "en": "In handle form, k minus f equals a minus k."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "정리하면 케이는 두 손잡이의 중점입니다.",
+          "en": "Rearranging makes k the midpoint of the two handles."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "양쪽 손잡이를 매듭점 기준으로 서로 반대쪽의 한 직선 위에, 같은 거리로 놓으면 됩니다.",
+          "en": "The handles lie on opposite sides of the knot at equal distances along one line."
+        }
+      ]
+    },
+    {
+      "id": "012",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "씨 이는 그다음 이웃점까지 연결합니다.",
+          "en": "C two involves one more neighboring control."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 2,
+          "ko": "앞 구간의 끝 가속도와 뒤 구간의 시작 가속도를 같게 놓고 공통된 육을 나누면, 화면의 두 연장점이 같아야 한다는 식이 나옵니다.",
+          "en": "Equate the preceding ending acceleration and the following starting acceleration, then cancel the common factor six. This requires the two extended points shown to coincide."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "직접 닿은 손잡이보다 한 변 바깥의 제어 다각형 변을 한 번 더 연장해 보세요.",
+          "en": "Extend each next-to-adjacent control-polygon edge once beyond its handle."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "두 끝이 만나면, 이미 맞춘 씨 일에 더해 씨 이도 만족합니다.",
+          "en": "If their ends meet, the existing C-one join is also C two."
+        }
+      ]
+    },
+    {
+      "id": "013",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "그런데 왼쪽 구간은 이 초, 오른쪽은 일 초에 재생한다면 어떨까요?",
+          "en": "What if the left segment takes two seconds and the right takes one?"
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "같은 손잡이 길이로는 실제 속도가 맞지 않습니다.",
+          "en": "Equal handles no longer match physical velocity."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "구간 도함수를 재생 시간으로 나눠야 실제 속도가 되기 때문이죠.",
+          "en": "Divide each local derivative by its segment duration."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "이 경우 왼쪽 손잡이를 오른쪽의 두 배 길이로 두면 연결점의 실제 속도를 맞출 수 있습니다.",
+          "en": "Here the left handle must be twice the right to match actual velocity at the join."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "가속도는 시간의 제곱으로 나눕니다.",
+          "en": "Acceleration scales by the square of duration."
+        }
+      ]
+    },
+    {
+      "id": "014",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "모양 자체의 매끄러움은 기하 연속성으로 말합니다.",
+          "en": "Geometric continuity describes the shape."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "지 일에서는 영이 아닌 두 접선이 같은 진행 방향을 가리키면 됩니다. 길이는 달라도 괜찮아요.",
+          "en": "For regular G-one joins, nonzero tangents point in the same forward direction; their magnitudes may differ."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "속력 차이는 시간에서 매개변수로 가는 함수의 변화율을 조절해 보상할 수 있습니다.",
+          "en": "A time reparameterization can compensate for the speed difference by changing its derivative."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "위치를 순간이동시키는 것이 아니라, 같은 곳을 통과하는 속도를 바꾸는 것입니다.",
+          "en": "We adjust travel speed, not jump the position mapping."
+        }
+      ]
+    },
+    {
+      "id": "015",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "지 이는 접선 방향에 더해 휘어지는 정도도 이어지는 조건입니다.",
+          "en": "G two also matches bending."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "삼차원에서는 곡률의 숫자만 같아서는 부족하고, 어느 쪽으로 휘는지 담은 곡률 벡터까지 맞춰야 합니다.",
+          "en": "In three dimensions, equal curvature magnitudes alone are insufficient: the curvature vectors, including the bending direction, must agree."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "그래서 옆으로 휘던 길이 갑자기 위로 휘는 경우를 같은 반지름이라는 이유만으로 매끄럽다고 판단하지 않습니다.",
+          "en": "A path turning sideways and then upward is not a G-two join merely because both bends have the same radius."
+        }
+      ]
+    },
+    {
+      "id": "016",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "더 높은 연속성을 요구할수록 자유도는 줄어듭니다.",
+          "en": "Every additional continuity condition consumes freedom."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "삼차 조각 하나를 고정한 뒤 다음 조각의 위치를 맞추면 첫 제어점이, 속도를 맞추면 두 번째가, 가속도를 맞추면 세 번째가 정해집니다.",
+          "en": "Fix one cubic, then matching the next position fixes its first control, matching velocity fixes the second, and matching acceleration fixes the third."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "삼차 도함수까지 맞추면 네 점이 전부 정해져, 같은 다항식을 그대로 이어 간 것이 됩니다.",
+          "en": "Matching the third derivative fixes the fourth as well: it is the continuation of the same polynomial."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다른 모양으로 편집할 여지를 남기면서 삼차 조각을 잇는 기준은 보통 씨 이까지입니다.",
+          "en": "C two is the highest generic continuity that leaves cubic pieces free to differ."
+        }
+      ]
+    },
+    {
+      "id": "017",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "마리오 갤럭시의 스타는 다음 행성으로 향하는 휘어진 비행을 만들어 줍니다.",
+          "en": "A Launch Star in Super Mario Galaxy sends Mario along a curved flight toward the next planet."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이런 움직임을 여러 지점을 잇는 우리 경로로 만들어 보겠습니다.",
+          "en": "Let us build this kind of motion through several points in our own path."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "구간을 잇는 조건은 알았지만, 모든 접선을 직접 조절하는 것은 번거롭죠.",
+          "en": "We know how to join the pieces, but adjusting every tangent by hand can be tedious."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "지나야 할 매듭점만 정하고 접선을 자동으로 만들 수는 없을까요?",
+          "en": "Can we specify only the knots and calculate the tangents automatically?"
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "앞으로 살펴볼 방법들은 새 곡선 공식을 만드는 것이 아니라, 에르미트 곡선에 넣을 접선들을 고르는 방법입니다.",
+          "en": "The following methods choose the derivatives for Hermite pieces rather than creating a new evaluation formula."
+        }
+      ]
+    },
+    {
+      "id": "018",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "가운데 점의 이전 점에서 다음 점으로 향하는 벡터를 접선 방향으로 잡아 보겠습니다.",
+          "en": "Use the vector from the previous knot to the next as the middle tangent direction."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "그 벡터의 절반을 들어오는 쪽과 나가는 쪽에 똑같이 쓰면, 이 장에서 다루는 균일 캐트멀–롬 스플라인이 됩니다.",
+          "en": "Giving both incoming and outgoing tangents half that vector produces the uniform Catmull–Rom construction used here."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "식을 나누어 보면 이전 변 벡터와 다음 변 벡터를 평균한 것과 같습니다.",
+          "en": "Algebraically, this is the average of the incoming and outgoing control-polygon edges."
+        }
+      ]
+    },
+    {
+      "id": "019",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이전 점이 영 영, 가운데가 일 이, 다음이 사 영이라면 접선은 이 영입니다.",
+          "en": "For knots zero zero, one two, and four zero, the tangent is two zero."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "가운데에서 오른쪽을 향하고, 양쪽에 같은 벡터를 쓰므로 씨 일이 이어집니다.",
+          "en": "It points right, and sharing it on both sides gives C-one continuity."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 계산은 이웃 점만 사용해서 조절도 주변 구간에 제한됩니다.",
+          "en": "The local neighbor rule limits the effects of edits to nearby pieces."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다만 매개변수를 균일하게 배정한 이 방식은 점 간격에 따라 고리나 지나침을 만들 수 있어, 결과 경로를 확인해야 합니다.",
+          "en": "This uniform parameterization can still overshoot or form loops for some point arrangements, so inspect the resulting route."
+        }
+      ]
+    },
+    {
+      "id": "020",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "자동으로 만든 곡선을 조금 더 팽팽하게 하거나 한쪽 방향으로 치우치게 만들고 싶을 수 있습니다.",
+          "en": "You may want the automatic curve tighter or biased toward one side."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "그 조절을 장력, 연속성, 편향이라는 세 값으로 제공하는 것이 코차넥–바텔스 스플라인, 줄여서 티씨비 스플라인입니다.",
+          "en": "Kochanek–Bartels, or TCB, splines offer three controls: tension, continuity, and bias."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "세 값을 모두 영으로 놓으면 방금의 균일 캐트멀–롬으로 돌아옵니다.",
+          "en": "Setting all three to zero returns the uniform Catmull–Rom construction just used."
+        }
+      ]
+    },
+    {
+      "id": "021",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "먼저 장력만 바꾸겠습니다.",
+          "en": "Change tension alone first."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 2,
+          "ko": "기본 접선에 일 빼기 장력을 곱하므로, 장력을 일로 올리면 두 접선이 영이 됩니다. 각 매듭점에서 멈췄다가 다음 점으로 출발하는 직선 모양의 구간이 되죠.",
+          "en": "It multiplies the baseline tangents by one minus tension. At one, both become zero, giving straight-shaped pieces that stop at every knot."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "장력이 마이너스 일이면 기본 접선의 두 배입니다.",
+          "en": "At minus one the tangents double."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "일을 넘기면 접선이 뒤집혀 고리가 생길 수 있습니다.",
+          "en": "Values above one reverse the tangents and can introduce loops."
+        }
+      ]
+    },
+    {
+      "id": "022",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "다음은 연속성 값입니다.",
+          "en": "Next is the continuity control."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "영이면 들어오는 접선과 나가는 접선이 같아 씨 일을 유지합니다.",
+          "en": "At zero, incoming and outgoing tangents match, giving C one."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 값을 마이너스 일로 내리고 다른 두 값을 영으로 두면, 각 구간은 이웃 매듭점을 잇는 직선이 되고 그 구간 안에서는 등속으로 움직입니다.",
+          "en": "Set it to minus one with the other controls zero, and each segment becomes a constant-speed straight line to the next knot."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "장력을 일로 만들었던 경우와 모양은 같아도 움직임은 다릅니다.",
+          "en": "Its shape matches the tension-one case, but its motion does not."
+        }
+      ]
+    },
+    {
+      "id": "023",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "연속성은 양쪽 변의 비중을 서로 반대로 바꿉니다.",
+          "en": "Continuity changes the edge weights in opposite ways."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "들어오는 접선에는 이전 변을 일 빼기 씨의 절반, 다음 변을 일 더하기 씨의 절반만큼 넣습니다.",
+          "en": "The incoming tangent uses half of one minus C for the preceding edge and half of one plus C for the next."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "나가는 접선에서는 이 두 비율을 맞바꿉니다.",
+          "en": "The outgoing tangent swaps those weights."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "그래서 두 접선이 서로 달라져 모서리를 만들 수 있습니다.",
+          "en": "The two tangents can therefore differ and create a corner."
+        }
+      ]
+    },
+    {
+      "id": "024",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "편향은 양쪽 접선을 함께 한쪽으로 돌립니다.",
+          "en": "Bias tilts both tangents toward one side together."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이전 변의 비중은 일 더하기 비의 절반, 다음 변은 일 빼기 비의 절반입니다.",
+          "en": "The preceding edge gets half of one plus B, and the following edge half of one minus B."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "양수로 올리면 이전 구간의 방향을 더 따르고, 음수로 내리면 다음 구간의 방향을 더 빨리 반영합니다.",
+          "en": "Positive bias follows the preceding direction more; negative bias anticipates the following direction."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "동일한 매듭점을 지나면서도 방향을 바꾸기 시작하는 느낌이 달라집니다.",
+          "en": "The curve visits the same knots with a different turning behavior."
+        }
+      ]
+    },
+    {
+      "id": "025",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "세 기능을 합칠 때는 각 변의 가중치에 장력, 연속성, 편향의 인수를 함께 곱하면 됩니다.",
+          "en": "Combine the controls by multiplying the tension, continuity, and bias factors into each edge weight."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "긴 식처럼 보이지만, 방금 본 세 다이얼의 역할을 곱으로 묶은 것입니다.",
+          "en": "The formula looks long, but it combines the three roles we just observed."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "모든 매듭점에 같은 값을 쓸 필요도 없습니다. 한 구간의 코너만 바꾸고 싶다면 그 매듭점의 값부터 조절해 볼 수 있습니다.",
+          "en": "Values need not be identical at every knot; adjust the knot near a particular corner when local control is needed."
+        }
+      ]
+    },
+    {
+      "id": "026",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "끝점에서는 한쪽 이웃이 없으니 규칙을 정해야 합니다.",
+          "en": "Endpoints lack one neighbor, so they need a policy."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "시작과 끝에서 쉬게 하고 싶다면 접선을 영으로 둘 수 있습니다. 또는 접선 계산에만 쓰는 가상점을 추가합니다.",
+          "en": "Set the derivatives to zero when the motion should begin and end at rest, or add phantom points used only for tangent calculation."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "첫 접선이 다음 점 빼기 가상점의 절반이므로, 영으로 만들려면 가상점을 시작점이 아니라 다음 점에 겹쳐야 합니다.",
+          "en": "Since the first tangent is half the vector from the phantom to the next point, a zero tangent requires copying the next point—not the start point."
+        }
+      ]
+    },
+    {
+      "id": "027",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "가상점을 사용자가 배치해 출발 방향을 조절할 수도 있습니다.",
+          "en": "Users can place phantom points to control departure."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "또 처음 세 점을 지나는 이차 곡선을 맞춘 뒤 그 끝 도함수를 가져올 수도 있죠.",
+          "en": "Another choice fits a quadratic through the first three knots and uses its endpoint derivative."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "균일한 시각 간격이라면 처음 접선은 마이너스 삼 케이 영 더하기 사 케이 일 빼기 케이 이를 둘로 나눈 값입니다.",
+          "en": "With unit parameter spacing, the first derivative is minus three k zero plus four k one minus k two, divided by two."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "원하는 시작과 정지 방식에 맞춰 이 조건을 선택하면 됩니다.",
+          "en": "Select the boundary rule to match the intended start and finish."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "카디널 스플라인이라는 이름은 보통 이런 끝점 처리 하나가 아니라, 공통 장력으로 접선을 조절하는 보간 곡선 계열을 가리킵니다.",
+          "en": "Cardinal spline usually names a family of interpolating curves with a common tangent-scale control, not this one endpoint policy."
+        }
+      ]
+    },
+    {
+      "id": "028",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 계산을 연결해서 확인해 보겠습니다.",
+          "en": "Now connect the calculations."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "첫 문제는 시각 영, 일, 이에서의 라그랑주 기저입니다. 첫 함수는 티 빼기 일과 티 빼기 이를 곱해 둘로 나눕니다.",
+          "en": "For Lagrange nodes zero, one, and two, the first basis is t minus one times t minus two divided by two."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 2,
+          "ko": "가운데 함수는 마이너스 티 곱하기 티 빼기 이, 마지막은 티 곱하기 티 빼기 일을 둘로 나눈 값입니다.",
+          "en": "The middle is minus t times t minus two. The last is t times t minus one divided by two."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "세 시각을 각각 넣어 자기 차례에만 일이 되는지 확인해 보세요.",
+          "en": "Substitute each node to check that only its own basis equals one."
+        }
+      ]
+    },
+    {
+      "id": "029",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "다음은 원점에서 출발해 일 초에 높이 에이치, 이 초에 앞쪽 거리 디, 높이 영에 도착하는 포물선입니다.",
+          "en": "Next launch from the origin, reaching height h at one second, then forward distance d at height zero at two seconds."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "좌우 이동이 없다면 엑스는 영입니다.",
+          "en": "With no sideways movement, x is zero."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "앞쪽은 등속이므로 제트는 디 티의 절반입니다.",
+          "en": "Constant forward speed gives z equal to d t over two."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "높이를 초기 속도 곱하기 티 더하기 가속도의 절반 곱하기 티 제곱으로 쓰고, 일 초와 이 초 조건을 넣으면 와이는 이 에이치 티 빼기 에이치 티 제곱이 됩니다.",
+          "en": "Substitute the height conditions into initial vertical velocity times t plus half acceleration times t squared; the result is y equal to two h t minus h t squared."
+        }
+      ]
+    },
+    {
+      "id": "030",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "세 번째 예제는 제어점 삼 오, 육 일, 영 삼, 오 오인 베지에 곡선입니다.",
+          "en": "The third example uses controls three five, six one, zero three, and five five."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "티가 영점사일 때 먼저 이웃 점들을 육 대 사의 비율로 섞습니다.",
+          "en": "At t equal to point four, blend neighboring points with weights point six and point four."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "첫 줄은 사점이 삼점사, 삼점육 일점팔, 이 삼점팔입니다.",
+          "en": "The first row is four point two three point four, three point six one point eight, and two three point eight."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "그 결과를 다시 섞고 또 섞으면 최종 위치는 삼점오육, 이점육구육이 됩니다.",
+          "en": "Two more blend levels yield three point five six, two point six nine six."
+        }
+      ]
+    },
+    {
+      "id": "031",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "같은 곡선을 에르미트 형식으로 바꾸면 시작과 끝은 그대로이고, 시작 도함수는 구 마이너스 십이, 끝 도함수는 십오 육입니다.",
+          "en": "The same curve in Hermite form keeps its endpoints, with starting derivative nine minus twelve and ending derivative fifteen six."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "단항식으로 바꾸면 엑스는 삼 더하기 구 티 빼기 이십칠 티 제곱 더하기 이십 티 세제곱, 와이는 오 빼기 십이 티 더하기 십팔 티 제곱 빼기 육 티 세제곱입니다.",
+          "en": "Its power form is x equal to three plus nine t minus twenty-seven t squared plus twenty t cubed, and y equal to five minus twelve t plus eighteen t squared minus six t cubed."
+        }
+      ]
+    },
+    {
+      "id": "032",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여기에 영점사를 대입하면 반복 보간과 같은 위치가 나옵니다.",
+          "en": "Substituting point four reproduces the de Casteljau position."
+        },
+        {
+          "koStart": 1,
+          "koCount": 2,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "미분해서 속도도 확인하죠. 엑스 방향은 구 빼기 오십사 티 더하기 육십 티 제곱, 와이는 마이너스 십이 더하기 삼십육 티 빼기 십팔 티 제곱입니다.",
+          "en": "Differentiate to check velocity: x is nine minus fifty-four t plus sixty t squared; y is minus twelve plus thirty-six t minus eighteen t squared."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "티가 영점사일 때 마이너스 삼, 마이너스 영점사팔이 되어, 그 지점에서 왼쪽으로 조금 내려가는 방향을 가리킵니다.",
+          "en": "At point four it is minus three, minus point four eight, pointing left and slightly downward."
+        }
+      ]
+    },
+    {
+      "id": "033",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "네 번째 문제는 이차 베른슈타인 가중치의 합입니다.",
+          "en": "The fourth check sums the quadratic Bernstein weights."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "일 빼기 티를 제곱한 값을 전개하면 일 빼기 이 티 더하기 티 제곱입니다.",
+          "en": "Expand the first into one minus two t plus t squared."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 2,
+          "ko": "여기에 이 티 빼기 이 티 제곱과 티 제곱을 더하면 티 항과 티 제곱 항이 모두 없어져 일만 남습니다. 볼록 껍질 성질에 필요했던 합이 일이라는 조건을 직접 확인한 것입니다.",
+          "en": "Add two t minus two t squared, then t squared. Both the linear and quadratic terms cancel, leaving one—the partition-of-unity condition used for the convex hull property."
+        }
+      ]
+    },
+    {
+      "id": "034",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "다섯 번째부터는 원하는 움직임에서 제어점을 거꾸로 정합니다.",
+          "en": "For the next checks, choose controls from the desired motion."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "한 점에 계속 머무르려면 모든 제어점을 같은 곳에 놓습니다.",
+          "en": "Keep every control at one point for a constant curve."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "등속 직선이라면 시작부터 끝까지 제어점을 같은 간격으로 배치합니다.",
+          "en": "Space them equally from start to end for a constant-speed line."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "부드럽게 출발하고 멈추는 직선을 원하면 삼차 제어점은 시작, 시작, 끝, 끝입니다.",
+          "en": "For a smooth start and stop along that line, cubic controls are start, start, end, end."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "같은 직선이라도 손잡이 배치가 시간을 바꿉니다.",
+          "en": "Handle placement changes timing even when the line is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "035",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "여덟 번째는 제어점을 시작, 끝, 시작, 끝 순서로 놓는 경우입니다.",
+          "en": "The eighth case alternates controls start, end, start, end."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이러면 왕복할 것 같지만, 계산하면 시작에서 끝으로 계속 나아갑니다.",
+          "en": "It may look as though the particle should reverse, but it moves monotonically toward the end."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "진행 비율의 도함수는 이 티에서 일을 뺀 값을 제곱하고 삼을 곱한 것이라 음수가 되지 않아요.",
+          "en": "Its blend derivative is three times the square of the quantity two t minus one, so it is nonnegative."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "가운데에서만 속도가 영이 됐다가 다시 같은 방향으로 빨라집니다.",
+          "en": "It stops only at the midpoint, then accelerates in the same direction."
+        }
+      ]
+    },
+    {
+      "id": "036",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "아홉 번째는 아까의 포물선을 삼차 베지에 도구로 표현하는 문제입니다.",
+          "en": "The ninth problem represents the earlier projectile using a cubic Bézier tool."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 2,
+          "ko": "전체 이 초를 유의 영부터 일에 대응시키면 높이는 사 에이치 유 곱하기 일 빼기 유, 앞쪽 거리는 디 유입니다.",
+          "en": "Map its two seconds to u from zero to one. Height becomes four h u times one minus u, and forward position d u."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "삼차 계수는 영인 이차 곡선이죠.",
+          "en": "The cubic coefficient is zero."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "변환 공식을 쓰면 양쪽 내부 손잡이의 높이는 모두 사 에이치의 삼분의 일, 앞쪽 위치는 디의 삼분의 일과 삼분의 이가 됩니다.",
+          "en": "Conversion gives both internal handles height four h over three, with forward positions d over three and two d over three."
+        }
+      ]
+    },
+    {
+      "id": "037",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "열 번째는 이미 맞춰 놓은 포물선을 그래픽 편집 도구로 옮기는 문제입니다.",
+          "en": "The tenth problem transfers an already fitted parabola into a graphical curve tool."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "와이는 마이너스 영점삼육사 엑스 제곱 더하기 일점일사오 엑스 더하기 이점일일입니다.",
+          "en": "Its y function is minus point three six four x squared plus one point one four five x plus two point one one."
+        },
+        {
+          "koStart": 2,
+          "koCount": 2,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "엑스의 시작값과 끝값을 유의 영과 일로 바꾸고, 그 엑스 식을 와이에 대입합니다. 이제 각 좌표가 유의 다항식이 되었으니 같은 계수 변환을 쓸 수 있습니다.",
+          "en": "Map the given starting and ending x values to u zero and one, substitute that x expression into y, and use the same power-to-Bézier conversion."
+        }
+      ]
+    },
+    {
+      "id": "038",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "결과를 소수 넷째 자리까지 보면 네 제어점은 화면과 같습니다.",
+          "en": "Rounded to four decimal places, the controls are shown."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "시작과 끝은 원래 포물선 위에 놓이고, 내부 두 점은 그 포물선 위의 표본점이 아니라 접선을 만드는 손잡이입니다.",
+          "en": "The endpoints lie on the parabola, while the interior controls are tangent handles rather than samples of it."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "직접 그려 보면 주어진 구간의 포물선과 겹칩니다.",
+          "en": "Evaluating them reproduces the prescribed interval."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "사진에서 얻은 경로든 물리식으로 얻은 경로든, 다항식으로 정리되면 같은 도구로 옮길 수 있는 것이죠.",
+          "en": "Once a path is expressed as a polynomial, the same conversion works whether it came from fitted observations or a physical formula."
+        }
+      ]
+    },
+    {
+      "id": "039",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "마지막으로 삼 오에서 시작했던 곡선의 영점이부터 영점오 구간을 꺼내 보겠습니다.",
+          "en": "Finally extract point two through point five from the curve starting at three five."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "새 매개변수 유를 쓰면 원래 티는 영점이 더하기 영점삼 유입니다.",
+          "en": "With new parameter u, the original t is point two plus point three u."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "이 식을 위치와 도함수에 넣으면 새 끝점과 손잡이가 나옵니다.",
+          "en": "Substitute into the position and derivatives to obtain the new endpoints and handles."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "도함수에는 구간 폭 영점삼을 곱해야 한다는 점을 다시 확인하세요.",
+          "en": "Remember that derivatives scale by the interval width, point three."
+        }
+      ]
+    },
+    {
+      "id": "040",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "같은 곡선을 반으로 나눌 때는 드 카스텔조 중점들을 모읍니다.",
+          "en": "To split the same curve in half, collect the de Casteljau midpoints."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "왼쪽의 마지막과 오른쪽의 처음은 삼점이오, 이점칠오로 일치합니다.",
+          "en": "The left endpoint and right start coincide at three point two five, two point seven five."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "양쪽 제어점들을 서로 다른 색으로 표시해도 두 곡선은 원래 경로 위에 놓입니다.",
+          "en": "Different control colors still produce pieces on the original path."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "조각별로 다시 영부터 일까지 재생할 때는 시간 배치도 함께 확인해야 합니다.",
+          "en": "When each piece is replayed from zero to one, check the time mapping too."
+        }
+      ]
+    },
+    {
+      "id": "041",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 1,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이 곡선의 차수를 사차로 올리면 제어점은 다섯 개가 됩니다.",
+          "en": "Elevating this curve to quartic degree gives five controls."
+        },
+        {
+          "koStart": 1,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "양 끝은 그대로이고 새 내부점은 오점이오 이, 삼 이, 일점이오 삼점오입니다.",
+          "en": "The endpoints stay, and the new interior controls are five point two five two, three two, and one point two five three point five."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "제어 다각형은 달라져도 곡선은 그대로 겹칩니다.",
+          "en": "The control polygon changes while the curve overlays exactly."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "차수와 제어점 개수가 달라지는 것과, 실제 경로가 달라지는 것은 별개의 일입니다.",
+          "en": "Changing representation degree is not the same as changing the actual path."
+        }
+      ]
+    },
+    {
+      "id": "042",
+      "groups": [
+        {
+          "koStart": 0,
+          "koCount": 2,
+          "enStart": 0,
+          "enCount": 1,
+          "ko": "이제 완성된 선로를 따라가는 열차를 보세요. 긴 길의 여러 굽이를 지나가죠.",
+          "en": "Now watch the train following the completed rails through the bends of a long route."
+        },
+        {
+          "koStart": 2,
+          "koCount": 1,
+          "enStart": 1,
+          "enCount": 1,
+          "ko": "이런 움직임을 직접 만들 때 어느 값을 확인해야 하는지 말할 수 있겠죠.",
+          "en": "We can say which quantities to check when building motion like this ourselves."
+        },
+        {
+          "koStart": 3,
+          "koCount": 1,
+          "enStart": 2,
+          "enCount": 1,
+          "ko": "긴 경로를 만들 때 필요한 것은 큰 공식 하나가 아니었습니다.",
+          "en": "A long path did not require one enormous formula."
+        },
+        {
+          "koStart": 4,
+          "koCount": 1,
+          "enStart": 3,
+          "enCount": 1,
+          "ko": "다루기 쉬운 조각을 만들고, 위치와 방향과 변화량을 어떻게 연결할지 정하는 일이었죠.",
+          "en": "It required manageable pieces and explicit rules for joining their positions, directions, and rates of change."
+        },
+        {
+          "koStart": 5,
+          "koCount": 1,
+          "enStart": 4,
+          "enCount": 1,
+          "ko": "모양만 매끈하면 되는지, 속도와 가속도까지 이어져야 하는지에 따라 조건은 달라집니다.",
+          "en": "The needed continuity depends on whether smooth shape is enough or velocity and acceleration must also connect."
+        },
+        {
+          "koStart": 6,
+          "koCount": 1,
+          "enStart": 5,
+          "enCount": 1,
+          "ko": "이 기준을 알고 나면 손잡이를 직접 움직이든 자동 접선을 쓰든, 왜 그 움직임이 나오는지 확인하며 설계할 수 있습니다.",
+          "en": "With those criteria, manual handles and automatic tangents become understandable design tools."
+        }
+      ]
+    }
+  ],
+  "humanListening": false
+}

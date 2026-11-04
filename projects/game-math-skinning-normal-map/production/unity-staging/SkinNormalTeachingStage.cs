@@ -24,7 +24,7 @@ namespace Yamyam.SkinNormal {
         [NonSerialized] public bool built;public RigProbe lastProbe;
         public Vector3[] exportedTargets=Array.Empty<Vector3>();
         GameObject hero,armGroup,plateGroup;KnightRigAdapter rig;
-        Vector3 heroRest;Quaternion heroRotation;
+        Vector3 heroRest,heroScale;Quaternion heroRotation;
         Mesh armMesh,plateMesh,highPatchMesh;Vector3[] armBind;float[] armWeights;
         Material surface,armMaterial,lineMaterial,heroMaterial;
         Texture2D normalData,heightData,constantNormalData;
@@ -49,7 +49,7 @@ namespace Yamyam.SkinNormal {
             if(first||bounds.size.y<=0)throw new InvalidOperationException("No visible Knight bounds.");
             float scale=3.8f/bounds.size.y;hero.transform.localScale*=scale;
             hero.transform.position=new Vector3(-4.5f,-.3f,0)-new Vector3(bounds.center.x,bounds.min.y,bounds.center.z)*scale;
-            hero.transform.rotation=Quaternion.Euler(0,160,0);heroRest=hero.transform.position;heroRotation=hero.transform.rotation;
+            hero.transform.rotation=Quaternion.Euler(0,160,0);heroRest=hero.transform.position;heroScale=hero.transform.localScale;heroRotation=hero.transform.rotation;
             if(knightMaterialOverride!=null)heroMaterial=knightMaterialOverride;else {var lit=Shader.Find("Universal Render Pipeline/Lit");if(lit==null)throw new InvalidOperationException("URP Lit required for Knight.");heroMaterial=Own(new Material(lit){name="Knight_InstanceMaterial"});heroMaterial.SetColor("_BaseColor",Color.white);heroMaterial.SetFloat("_Smoothness",.35f);if(knightColorTexture!=null)heroMaterial.SetTexture("_BaseMap",knightColorTexture);}
             foreach(var r in hero.GetComponentsInChildren<Renderer>(true))r.sharedMaterial=heroMaterial;
             rig=new KnightRigAdapter(hero,knightClips);rig.SelectActualArmProbe();
@@ -86,7 +86,7 @@ namespace Yamyam.SkinNormal {
         void Dot(Vector3 p,Color c,float size=.10f){GameObject g;if(dotCursor==dots.Count){g=GameObject.CreatePrimitive(PrimitiveType.Sphere);g.name="VertexMarker"+dots.Count;g.transform.SetParent(transform,false);DestroyImmediate(g.GetComponent<Collider>());g.GetComponent<Renderer>().sharedMaterial=lineMaterial;dots.Add(g);owned.Add(g);}else g=dots[dotCursor];dotCursor++;g.SetActive(true);g.transform.position=p;g.transform.localScale=Vector3.one*size;var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",c);g.GetComponent<Renderer>().SetPropertyBlock(block);}
         void Tag(Vector3 point,string text,Color c,Vector2 offset){Text t;if(tagCursor==tags.Count){t=Label("TargetTag"+tags.Count,new Rect(0,0,780,105),40,c);tags.Add(t);}else t=tags[tagCursor];tagCursor++;t.gameObject.SetActive(true);t.text=text;t.color=c;Vector3 v=stageCamera.WorldToViewportPoint(point);float estimated=24;foreach(char ch in text)estimated+=ch>255?40:24;float width=Mathf.Clamp(estimated,240,700);t.rectTransform.sizeDelta=new Vector2(width,105);t.rectTransform.anchoredPosition=new Vector2(Mathf.Clamp(v.x*1920+offset.x,75,1845-width),-Mathf.Clamp((1-v.y)*1080+offset.y,210,640));}
         void Axes(Vector3 origin,Vector3 t,Vector3 b,Vector3 n,float length=.85f){Arrow(origin,origin+t*length,Teal);Arrow(origin,origin+b*length,Green);Arrow(origin,origin+n*length,Blue);Tag(origin+t*length,"T · +u",Teal,new Vector2(8,0));Tag(origin+b*length,"B · +v",Green,new Vector2(8,-65));Tag(origin+n*length,"N · 표면 밖",Blue,new Vector2(-260,0));}
-        void ResetPools(){lineCursor=dotCursor=tagCursor=0;code.text="";readout.text="";explanation.text="";objectLabel.text="같은 캐릭터 · 같은 표면";armGroup.SetActive(false);plateGroup.SetActive(false);hero.SetActive(true);hero.transform.position=heroRest;hero.transform.rotation=heroRotation;rig.Restore();surface.SetTexture("_NormalRGB",normalData);surface.SetFloat("_UseNormal",1);surface.SetFloat("_ShowData",0);surface.SetFloat("_WrongObjectSpace",0);surface.SetFloat("_GreenSign",1);plateGroup.transform.rotation=Quaternion.identity;plateGroup.transform.localScale=Vector3.one;plateGroup.GetComponent<MeshFilter>().sharedMesh=plateMesh;SetPatchUV(false);armMaterial.SetFloat("_WeightTint",0);}
+        void ResetPools(){lineCursor=dotCursor=tagCursor=0;code.text="";readout.text="";explanation.text="";objectLabel.text="같은 캐릭터 · 같은 표면";armGroup.SetActive(false);plateGroup.SetActive(false);hero.SetActive(true);hero.transform.position=heroRest;hero.transform.localScale=heroScale;hero.transform.rotation=heroRotation;rig.Restore();surface.SetTexture("_NormalRGB",normalData);surface.SetFloat("_UseNormal",1);surface.SetFloat("_ShowData",0);surface.SetFloat("_WrongObjectSpace",0);surface.SetFloat("_GreenSign",1);plateGroup.transform.rotation=Quaternion.identity;plateGroup.transform.localScale=Vector3.one;plateGroup.GetComponent<MeshFilter>().sharedMesh=plateMesh;SetPatchUV(false);armMaterial.SetFloat("_WeightTint",0);}
         void FinishPools(){for(int i=lineCursor;i<lines.Count;i++)lines[i].enabled=false;for(int i=dotCursor;i<dots.Count;i++)dots[i].SetActive(false);for(int i=tagCursor;i<tags.Count;i++)tags[i].gameObject.SetActive(false);}
         public void Evaluate(double cueSeconds){
             if(shot.durationSeconds<=0)throw new InvalidOperationException("Bind actual speech duration first.");
@@ -117,7 +117,7 @@ namespace Yamyam.SkinNormal {
                 rig.RotateLocalBone("lowerarm.l",axis,Mathf.Lerp(shot.bendFrom,shot.bendTo,u));
             }
             if(b<=14)ApplySkinning(b,u);else ApplyNormals(b,u);
-            foreach(var r in hero.GetComponentsInChildren<Renderer>(true)){var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",Color.white*(code.text.Length>0?.12f:1));r.SetPropertyBlock(block);}
+            foreach(var r in hero.GetComponentsInChildren<Renderer>(true)){var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",Color.white*(b==6?.65f:code.text.Length>0?.12f:1));r.SetPropertyBlock(block);}
             FinishPools();
         }
         Mesh BuildSleeve(){const int rings=25,sides=16;var m=Own(new Mesh{name="TwoBoneSleeve_KnownWeights"});armBind=new Vector3[rings*sides];armWeights=new float[armBind.Length];var uv=new Vector2[armBind.Length];var colors=new Color[armBind.Length];var indices=new List<int>();
@@ -140,7 +140,7 @@ namespace Yamyam.SkinNormal {
             else if(b==3){armMaterial.SetFloat("_WeightTint",1);readout.text="파랑: 위팔 가중치     초록: 아래팔 가중치";explanation.text="보이는 색은 이 설명용 팔에 지정한 가중치입니다.";}
             else if(b==4||b==5||b==6||b==7){armGroup.SetActive(false);Vec a=new Vec(0,2),d=new Vec(2,0);double lower=b==5?.4+.4*Phase(u,1,2):.4;Vec p=SkinNormalMath.Blend(new[]{a,d},new[]{1-lower,lower});Path(Muted,At(a),At(d));Dot(At(a),Blue);Tag(At(a),"위팔 (0, 2)",Blue,new Vector2(-210,-65));if(Phase(u,1,3)>0||b!=4){Dot(At(d),Green);Tag(At(d),"아래팔 (2, 0)",Green,new Vector2(12,-45));}if(Phase(u,2,3)>0||b!=4){Dot(At(p),Teal,.16f);Tag(At(p),"결과 "+N(p.x)+", "+N(p.y),Teal,new Vector2(-240,-65));}
                 readout.text=N(1-lower)+" × (0, 2) + "+N(lower)+" × (2, 0) = ("+N(p.x)+", "+N(p.y)+")";explanation.text="회전각을 섞는 것이 아니라 옮긴 위치를 섞습니다.";
-                if(b==6){code.text=C("boneIndex",Teal)+" = [위팔, 아래팔]\n"+C("boneWeight",Teal)+" = [0.6, 0.4]\n"+C("sum",Blue)+" = "+C("1.0",Yellow)+"\n\n4개 제한: 구현 설정";}
+                if(b==6){hero.transform.position=heroRest+Vector3.right*2.4f;hero.transform.localScale=heroScale*.7f;code.text=C("boneIndex",Teal)+" = [위팔, 아래팔]\n"+C("boneWeight",Teal)+" = [0.6, 0.4]\n"+C("sum",Blue)+" = "+C("1.0",Yellow)+"\n\n4개 제한: 구현 설정";}
                 if(b==7){int step=Mathf.Min(3,(int)(u*4));string[] rows={"result = 0","for each bone:","  p = matrix × bindPoint","  result += weight × p"};for(int i=0;i<rows.Length;i++)code.text+=(i==step?"▶ ":"   ")+C(rows[i],i==step?Yellow:i==1?Blue:White)+"\n";}
             }
             else if(b==8){Vec n=new Vec(1,1,0).Unit();Affine m=Affine.Identity;m.x=new Vec(2,0,0);Vec wrong=m.Direction(n).Unit(),correct=m.Normal(n);var o=At(new Vec());Arrow(o,o+U(wrong)*1.8f,Red);Arrow(o,o+U(correct)*1.8f,Green);readout.text="비균일 확대: 잘못된 방향 "+wrong+" → 법선 "+correct;explanation.text="방향에는 평행이동 0 · 비균일 확대에는 역전치";}

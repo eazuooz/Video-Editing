@@ -1,9 +1,10 @@
 """Finite M21 encode -> technical QA stage, preserving other jobs and outputs."""
 from pathlib import Path
 from datetime import datetime,timezone
-import importlib.util,json,os,subprocess,time,uuid
+import argparse,importlib.util,json,os,re,subprocess,time,uuid
 import psutil
-R=Path(__file__).resolve().parents[3];P=R/'projects/game-math-shading-lights';Q=P/'production/local/render-v3';L=R/'shared/output/GPU_HANDOFF.json'
+ap=argparse.ArgumentParser();ap.add_argument('--revision',default='render-v3');args=ap.parse_args();assert re.fullmatch(r'render-v\d+',args.revision)
+R=Path(__file__).resolve().parents[3];P=R/'projects/game-math-shading-lights';Q=P/'production/local'/args.revision;L=R/'shared/output/GPU_HANDOFF.json'
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def now():return datetime.now(timezone.utc).isoformat()
 spec=importlib.util.spec_from_file_location('guard',P/'production/run-capture-queue.py');G=importlib.util.module_from_spec(spec);spec.loader.exec_module(G)
@@ -32,7 +33,7 @@ try:
   time.sleep(15)
  s.update(status='checking-final-media');save()
  with (Q/'final-qa.stdout.log').open('w',encoding='utf-8') as out,(Q/'final-qa.stderr.log').open('w',encoding='utf-8') as err:
-  child=subprocess.Popen(['python','-X','utf8',str(P/'production/verify-final-media.py'),'--queue',str(Q/'queue.json'),'--output',str(R/'output/game-math-shading-lights-render-v3')],cwd=R,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));s['qaPid']=child.pid;save();code=child.wait()
+  child=subprocess.Popen(['python','-X','utf8',str(P/'production/verify-final-media.py'),'--queue',str(Q/'queue.json'),'--output',str(R/'output'/f'{P.name}-{args.revision}')],cwd=R,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));s['qaPid']=child.pid;save();code=child.wait()
  if code:raise RuntimeError('Technical QA failed; inspect original evidence')
  s.update(status='technical-QA-ready-content-review-pending',finishedAt=now());save()
 except BaseException as exc:s.update(status='failed-or-blocked',error=repr(exc),finishedAt=now());save();raise

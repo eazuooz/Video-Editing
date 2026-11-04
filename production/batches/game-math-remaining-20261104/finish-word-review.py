@@ -4,7 +4,7 @@ from datetime import datetime,timezone
 import importlib.util,json,os,subprocess,time,uuid,shutil,argparse
 import psutil
 R=Path(__file__).resolve().parents[3];B=Path(__file__).parent
-ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--audio-revision',default='audio-v1');ap.add_argument('--wait-hours',type=float,default=6);args=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--audio-revision',default='audio-v1');ap.add_argument('--reuse-from');ap.add_argument('--wait-hours',type=float,default=6);args=ap.parse_args()
 c=json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf-8-sig'))['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow'] and args.project in c['projectSlugs']
 assert __import__('re').fullmatch(r'audio-v\d+',args.audio_revision)
 P=R/'projects'/args.project;A=P/'production/local'/args.audio_revision
@@ -31,7 +31,11 @@ try:
         c=read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow'] and args.project in c['projectSlugs'];voice=read(A/'finite-worker.json')
         if voice['status']=='failed-or-blocked':raise RuntimeError('Voice did not finish; no replacement synthesis started')
         reason='Existing narration generation is still active'
-        if voice['status']=='voice-generated-review-pending':reason=G.idle_reason()
+        if voice['status']=='voice-generated-review-pending':
+            if args.reuse_from and not (A/'review/reused-pcm-evidence.json').exists():
+                assert __import__('re').fullmatch(r'audio-v\d+',args.reuse_from) and args.reuse_from!=args.audio_revision
+                subprocess.run([str(R/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8',str(B/'reuse-unchanged-word-evidence.py'),'--project',P.name,'--source',args.reuse_from,'--target',args.audio_revision],cwd=R,check=True,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+            reason=G.idle_reason()
         s.update(reason=reason,checkedAt=now());save()
         if reason is None:
             free=int(subprocess.check_output(['nvidia-smi','--query-gpu=memory.free','--format=csv,noheader,nounits'],text=True).splitlines()[0])

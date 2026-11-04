@@ -1,7 +1,7 @@
 """Finite selected-project voice job; wait without touching other applications."""
 from pathlib import Path
 from datetime import datetime,timezone
-import argparse,json,os,subprocess,sys,time
+import argparse,json,os,shutil,subprocess,sys,time
 import psutil
 
 ROOT=Path(__file__).resolve().parents[3]
@@ -22,6 +22,10 @@ def main():
             p=psutil.Process(old['pid'])
             assert abs(p.create_time()-old['createTime'])>.1,'Same finite voice job is already running'
         except psutil.NoSuchProcess:pass
+        assert old.get('status')!='voice-generated-review-pending','Preserve completed narration; use existing evidence'
+        archive=folder/'worker-attempts';archive.mkdir(exist_ok=True);target=archive/f'attempt-{len(list(archive.iterdir()))+1:02}';target.mkdir()
+        for name in ('finite-worker.json','finite-synthesis.stdout.log','finite-synthesis.stderr.log'):
+            if (folder/name).exists():shutil.copy2(folder/name,target/name)
     state={'pid':os.getpid(),'createTime':psutil.Process().create_time(),'project':a.project,'status':'waiting-for-resource-boundary','startedAt':now(),'automationCreated':False,'nextProject':False,'newTtsStarted':False}
     cmd=[str(ROOT/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8',str(ROOT/'production/batches/game-math-remaining-20261104/render-voice.py'),'--project',a.project,'--allow-idle-editors']
     if a.manifest:cmd+=['--manifest',str(manifest)]
@@ -33,14 +37,19 @@ def main():
             result=subprocess.run(cmd+['--check-resources'],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
             state['checkedAt']=now();state['resourceReturnCode']=result.returncode
             state['resourceResult']=(result.stdout+result.stderr)[-6000:];save(statefile,state)
-            if result.returncode==0:break
+            if result.returncode==0:
+                state.update(status='synthesizing',newTtsStarted=True);save(statefile,state)
+                with (folder/'finite-synthesis.stdout.log').open('w',encoding='utf-8') as out,(folder/'finite-synthesis.stderr.log').open('w',encoding='utf-8') as err:
+                    p=subprocess.Popen(cmd+['--synthesize'],cwd=ROOT,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));state['voicePid']=p.pid;save(statefile,state);code=p.wait()
+                if code==0:break
+                error=(folder/'finite-synthesis.stderr.log').read_text(encoding='utf-8')
+                boundary_race='AssertionError: Existing GPU lease preserved; root must coordinate next boundary.' in error
+                if not boundary_race:raise RuntimeError('Voice worker failed; preserve logs/raw takes for diagnosis')
+                archive=folder/'worker-attempts';archive.mkdir(exist_ok=True);target=archive/f'attempt-{len(list(archive.iterdir()))+1:02}';target.mkdir()
+                for name in ('finite-worker.json','finite-synthesis.stdout.log','finite-synthesis.stderr.log'):shutil.copy2(folder/name,target/name)
+                state.update(status='waiting-for-resource-boundary',newTtsStarted=False,boundaryRaceReason='Another finite job took lease after read-only preflight. Renderer rejected before model loading; retry only resource admission.');save(statefile,state)
             if time.monotonic()-started>a.wait_hours*3600:raise RuntimeError('Bounded resource wait ended; all other apps preserved')
             time.sleep(30)
-        state.update(status='synthesizing',newTtsStarted=True);save(statefile,state)
-        with (folder/'finite-synthesis.stdout.log').open('w',encoding='utf-8') as out,(folder/'finite-synthesis.stderr.log').open('w',encoding='utf-8') as err:
-            p=subprocess.Popen(cmd+['--synthesize'],cwd=ROOT,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
-            state['voicePid']=p.pid;save(statefile,state);code=p.wait()
-        if code:raise RuntimeError('Voice worker failed; preserve logs/raw takes for diagnosis')
         state.update(status='voice-generated-review-pending',finishedAt=now(),exitCode=0);save(statefile,state)
     except BaseException as exc:
         state.update(status='failed-or-blocked',error=repr(exc),finishedAt=now());save(statefile,state);raise
