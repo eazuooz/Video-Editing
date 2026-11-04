@@ -228,6 +228,69 @@
       ],
       "fullDecodeQa": false,
       "humanListening": false
+    },
+    {
+      "id": "original-narration-word-alignment",
+      "status": "measured-aligned-final-composite-review-pending",
+      "paragraphs": 79,
+      "koCues": 715,
+      "enCues": 606,
+      "alignmentFlags": [],
+      "briefKoCuesUnder085Seconds": 0,
+      "canonicalTextPreserved": true,
+      "evidence": [
+        {
+          "path": "production/local/edit-v1/word-aligned-timeline.json",
+          "sha256": "74aba144e7e899705304d58de98110c39940230862aa86dc2f5d449575acf3c5"
+        },
+        {
+          "path": "production/local/audio-v1/review/source-full-asr.timestamps.json",
+          "sha256": "388403562104f49fe669a33551b17d4a019f47e5c68a4d5966c0aa2c7029f450"
+        },
+        {
+          "path": "production/local/edit-v1/anchor-refinement.json",
+          "sha256": "c6303e4279f6741d864f3ce7321891ee1c76182059d09cb674b0821b5c3a6aa6"
+        }
+      ],
+      "originalAudioChanged": false,
+      "humanListening": false,
+      "limits": "Timestamp and transcript checks are not perceptual listening. Actual final caption/frame joins require final integrated review."
+    },
+    {
+      "id": "original-narration-pcm-levels",
+      "status": "numerical-pass-listening-pending",
+      "evidence": [
+        {
+          "path": "production/local/audio-v1/review/pcm-quality.json",
+          "sha256": "72a06a9e8c2c38999a195319cdf252801c62ed20d59049ca1706538c10e6e9bf"
+        }
+      ],
+      "scope": "All 79 paragraphs and 78 joins",
+      "sourceFloatPeak": 3.238893508911133,
+      "floatHeadroom": "Values above 1 in FLOAT WAV remain unclipped; final normalization/limiting and AAC true-peak check required.",
+      "flags": [],
+      "humanListening": false
+    },
+    {
+      "id": "dynamic-font-regression",
+      "status": "earlier-full-image-preview-diagnosis-corrected",
+      "finding": "Full-size tool previews appeared to lose glyphs/objects, but independent original-PNG crops and pixel hashes show the source-kind label unchanged and intact in every SH sample. In v9/v10 the supposedly missing hero crop is byte-identical to frame 0. Direct inspection of cropped original v5/v6 labels confirms complete text. The original PNGs do not support the earlier missing-region diagnosis.",
+      "correction": "Discard experimental OS raster/overlay font replacement and restore ordinary editable Unity text with the original 4x MSAA transport. Keep a deliberate line break in the storage summary and enlarge the SH three-line label to protect its final line.",
+      "source": {
+        "path": "production/unity-staging/LightLabCapture.cs",
+        "sha256": "f2f3dd633558c55d82e41f58e911faba033b1d79e4e3227f7dcf686e0b66938b"
+      },
+      "evidence": [
+        {
+          "path": "production/unity-staging/local-preflight-v10/crop-diagnostic.png",
+          "sha256": "f7499873e12c91717b21dc70f1271a3a129dc16b6e149dc6a343276dfa84e31c"
+        },
+        {
+          "path": "production/unity-staging/local-preflight-v10/original-label-crops.png",
+          "sha256": "02c407e06ca10f2d3e6d340c4eef694ba0bde6caae0fe6aaaad59a64ccd915a1"
+        }
+      ],
+      "next": "Review encoded first production scene with actual captions, then full production and integrated QA. Human review remains pending."
     }
   ],
   "localReviewReady": false,

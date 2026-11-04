@@ -107,7 +107,7 @@ namespace Yamyam.GameMath.LightLab {
     if(storedLabels==null)return;
     for(int i=0;i<storedLabels.Length;i++){var c=storedColors[i];storedLabels[i].text="정점 "+(i+1)+"   RGB ("+c.r.ToString("0.00")+", "+c.g.ToString("0.00")+", "+c.b.ToString("0.00")+")";}
     result.rectTransform.anchoredPosition=new Vector2(1040,-710);result.fontSize=38;
-    result.text="저장 이후에는 조명을 다시 계산하지 않고 보간";
+    result.text="저장 이후에는 조명을 다시 계산하지 않고\n보간";
    }
   }
  }

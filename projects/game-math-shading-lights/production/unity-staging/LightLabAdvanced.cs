@@ -96,7 +96,7 @@ namespace Yamyam.GameMath.LightLab {
    advancedStage=stage;advancedFont=font;
    result.gameObject.SetActive(false);detail.gameObject.SetActive(false);
    advancedHeading=Text(font,"",40,1035,285,790,90,AYellow);
-   advancedInfo=Text(font,"",40,1035,748,790,140,Color.white);
+   advancedInfo=Text(font,"",40,1035,748,790,166,Color.white);
    advancedStatus=Text(font,"",40,96,840,900,52,Color.white);
    advancedRayMaterial=new Material(Shader.Find("Universal Render Pipeline/Unlit"));stage.GeneratedObjects.Add(advancedRayMaterial);
    string mode=Cue.diagram.Substring("advanced:".Length);

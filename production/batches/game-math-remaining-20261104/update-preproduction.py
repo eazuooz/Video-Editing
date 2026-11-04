@@ -30,7 +30,16 @@ for item in batch['items']:
         log=(audio/'finite-synthesis.stdout.log').read_text(encoding='utf-8',errors='replace') if (audio/'finite-synthesis.stdout.log').exists() else ''
         finished=set(re.findall(r'^Rendered (\d{3})-',log,re.M))
         stage=f'게임·대본 확정 · Qwen 음성 {len(finished)}/79구간 생성 · 화면 검수 중'
-        if worker.get('status')=='voice-generated-review-pending':stage='79구간 음성 생성 완료 · 실제 발화·자막 시각 검수 중'
+        if worker.get('status')=='voice-generated-review-pending':
+            stage='79구간 음성 생성 완료 · 실제 발화·자막 시각 검수 중'
+            word=load(audio/'finite-word-review.json') if (audio/'finite-word-review.json').exists() else {}
+            if word.get('status')=='waiting-for-current-voice':stage='79구간 음성 완료 · 다른 GPU 작업 종료 대기 후 발화 시각 분석'
+            if word.get('status')=='transcribing-word-timestamps':stage='79구간 음성 완료 · 단어별 발화 시각 분석 중'
+            if word.get('status')=='failed-or-blocked':stage='79구간 음성 완료 · 발화 시각 분석 오류 복구 중'
+            if word.get('status')=='word-evidence-ready-content-review-pending':stage='음성·한영 자막 준비 · 첫 본편 장면 1080p60 인코딩 완료·합성 검사 중'
+            capture=project/'production/local/render-v2/progress.json'
+            if capture.exists():
+                current=load(capture);stage=f'음성·자막 준비 · 설명 장면 {len(current.get("completed",[]))}/78 렌더 · 전체 합성/검수 전'
     if item['id']=='M22':stage='게임 연결·통합 대본·관절/법선 계산 모듈 완료 · Unity 실행 검수 전'
     if item['id']=='M23':stage='게임 연결·통합 대본·파이프라인 계산 모듈 완료 · Unity 실행 검수 전'
     if item['id'] in {'M24','M25','M26'}:stage='게임 3역할 연결·통합 대본·물리 계산 모듈 준비 · Unity 실행 검수 전'
@@ -49,14 +58,15 @@ save(BATCH/'batch.json',batch);save(ROOT/'shared/publishing/video-worklist.json'
 checkpoint=load(BATCH/'checkpoint.json')
 checkpoint['updatedAt']=batch['updatedAt']
 checkpoint['currentWork']=['Complete source audit and bilingual draft: '+', '.join(sorted(reported_complete)),
-                         'M21 v4 grid/vertex/mixed directly inspected; approved voice production and cue preparation',
+                         'M21 narration complete (79 paragraphs, 1917.9200833333307 seconds); original PCM preserved. Full ASR aligned, 715 KO / 606 EN cues, zero alignment flags. Final media and integrated QA pending.',
                          'All 13 integrated bilingual scripts and gameplay bindings exist; M22–M33 staged math/renderer modules compile; M29/M30 numeric model passes 2261 invariants, 10 visual modes implemented but remaining source-beat coverage/runtime QA are pending',
-                         'M21 seven annotation layouts revised and directly inspected at 1080p / 375px; final speech-aligned motion QA remains pending; M22 isolated capture transport compiles, not runtime-tested']
+                         'M21 seven annotation layouts directly inspected at 1080p / 375px; M22/M23 isolated capture transport and finite preflight runner prepared, actual runtime QA pending']
 checkpoint['localReviewReady']=[]
-preflight=ROOT/'projects/game-math-shading-lights/production/unity-staging/local-preflight-v4/progress.json'
+preflights=list((ROOT/'projects/game-math-shading-lights/production/unity-staging').glob('local-preflight-v*/progress.json'))
+preflight=max(preflights,key=lambda p:p.stat().st_mtime) if preflights else ROOT/'missing-preflight'
 if preflight.exists():
     actual=load(preflight)
-    checkpoint['finitePreflightJob']={**actual,'progress':preflight.relative_to(ROOT).as_posix(),'scope':'3 M21 targeted image preflights only','automationCreated':False}
+    checkpoint['finitePreflightJob']={**actual,'progress':preflight.relative_to(ROOT).as_posix(),'scope':'M21 targeted image preflights only','automationCreated':False}
     checkpoint['runningCostlyJobs']=[actual.get('current')] if actual['status']=='running-preflight' else []
     checkpoint['resourceGate']={'status':actual['status'],'reason':actual.get('reason')}
 voice=ROOT/'projects/game-math-shading-lights/production/local/audio-v1/finite-worker.json'
@@ -64,8 +74,27 @@ if voice.exists():
     actual=load(voice);checkpoint['voiceWorker']=actual
     checkpoint['runningCostlyJobs']=['M21 approved voice'] if actual['status']=='synthesizing' else []
     checkpoint['resourceGate']={'status':actual['status'],'lastCheckedAt':actual.get('checkedAt')}
-checkpoint['nextAction']='Complete M21 voice and actual word alignment, then final visual/audio rendering and QA; continue exact M21–M33 scope.'
+word=ROOT/'projects/game-math-shading-lights/production/local/audio-v1/finite-word-review.json'
+if word.exists():
+    actual=load(word);checkpoint['wordReviewWorker']=actual
+    checkpoint['runningCostlyJobs']=['M21 word timestamps'] if actual['status']=='transcribing-word-timestamps' else []
+    checkpoint['resourceGate']={'status':actual['status'],'reason':actual.get('reason'),'lastCheckedAt':actual.get('checkedAt')}
+checkpoint['nextAction']='Review real-caption samples from first exact 1080p60 production clip, then full capture/compositing and QA. Original-PNG crop/pixel evidence corrected the prior false-positive tool-preview diagnosis.'
+if preflight.exists() and load(preflight)['status'] in {'running-preflight','waiting-for-idle-resources'}:
+    actual=load(preflight)
+    checkpoint['runningCostlyJobs']=[actual.get('current','M21 font regression')] if actual['status']=='running-preflight' else []
+    checkpoint['resourceGate']={'status':actual['status'],'reason':actual.get('reason'),'lastCheckedAt':actual.get('checkedAt')}
+    checkpoint['nextAction']='Inspect single-sample capture regression and final-caption/encoder sample, then capture the measured M21 timeline. Font-only experiments did not fix lost 3D/UI regions. Original narration unchanged; remaining authorized lectures continue after scoped resource checks.'
+caption_sample=ROOT/'projects/game-math-shading-lights/production/local/encoder-sample-v1/caption-sample-progress.json'
+if caption_sample.exists():
+    checkpoint['encoderCaptionSample']=load(caption_sample)
+    if checkpoint['encoderCaptionSample']['status']=='waiting-for-scoped-resources':
+        checkpoint['resourceGate']=checkpoint['encoderCaptionSample'];checkpoint['runningCostlyJobs']=[]
+capture=ROOT/'projects/game-math-shading-lights/production/local/render-v2/progress.json'
+if capture.exists():
+    checkpoint['productionCapture']=load(capture)
+    checkpoint['runningCostlyJobs']=[checkpoint['productionCapture'].get('current')] if checkpoint['productionCapture']['status']=='capturing' else []
 checkpoint['lastPlanningCommit']='01f08cc92f3ea5ba6e2234e4c99377edbf9021c6'
-checkpoint['lastProductionCommit']='c5b493124f49c71d1b12f74af2779c24ea4a8ced'
+checkpoint['lastProductionCommit']='9bc7b473eb8fd82e6c682275b56de43d19ce6c81'
 save(BATCH/'checkpoint.json',checkpoint)
 subprocess.run(['python','-X','utf8',str(BATCH/'progress.py')],cwd=ROOT,check=True)

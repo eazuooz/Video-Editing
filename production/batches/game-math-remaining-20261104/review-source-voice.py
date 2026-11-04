@@ -1,4 +1,4 @@
-"""Checkpointed full-paragraph CPU word ASR of completed, original narration.
+"""Checkpointed full-paragraph word ASR of completed, original narration.
 
 Never counts ASR as human listening, rewrites audio, or creates replacement TTS.
 """
@@ -16,13 +16,16 @@ def norm(s):return re.sub(r'[^a-z0-9가-힣]','',s.lower())
 def now():return datetime.now(timezone.utc).isoformat()
 def main():
     global owned
-    ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--transcribe',action='store_true');ap.add_argument('--device',choices=['cpu','cuda'],default='cpu');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--transcribe',action='store_true');ap.add_argument('--device',choices=['cpu','cuda'],default='cpu');ap.add_argument('--lease-id');a=ap.parse_args()
     control=read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
     assert control['productionAllowedNow'] and a.project in control['projectSlugs']
     base=ROOT/'projects'/a.project/'production/local/audio-v1';review=base/'review';review.mkdir(exist_ok=True)
     timing=read(base/'narration.timing.json');voice=base/'narration.wav';voice_hash=sha(voice)
     assert read(base/'tts-gpu-coordination.json')['state']=='finished','Do not overlap costly voice/ASR jobs'
-    assert not (ROOT/'shared/output/GPU_HANDOFF.json').exists(),'Preserve active costly job'
+    if a.lease_id:
+        held=read(LEASE);assert held.get('id')==a.lease_id and held.get('owner')==a.project+'-word-review','Only exact parent-owned lease can be inherited'
+        owned=a.lease_id
+    else:assert not LEASE.exists(),'Preserve active costly job'
     import soundfile as sf
     import numpy as np
     from scipy.signal import resample_poly
@@ -36,20 +39,21 @@ def main():
             completed.append(d)
         else:pending.append((e,path))
     if pending and not a.transcribe:
-        print(json.dumps({'ready':True,'pending':len(pending),'completed':len(completed),'device':'cpu','modelLoaded':False}));return
+        print(json.dumps({'ready':True,'pending':len(pending),'completed':len(completed),'device':a.device,'modelLoaded':False}));return
     if pending:
         os.environ.update(OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',OPENBLAS_NUM_THREADS='2',NUMEXPR_NUM_THREADS='2',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
         if a.device=='cpu':os.environ['CUDA_VISIBLE_DEVICES']=''
-        owned=str(uuid.uuid4())
-        with LEASE.open('x',encoding='utf-8') as f:json.dump({'owner':a.project+'-word-review','id':owned,'pid':os.getpid(),'createdAt':now()},f)
+        if not owned:
+            owned=str(uuid.uuid4())
+            with LEASE.open('x',encoding='utf-8') as f:json.dump({'owner':a.project+'-word-review','id':owned,'pid':os.getpid(),'createdAt':now()},f)
         import torch
         from transformers import AutoModelForSpeechSeq2Seq,AutoProcessor,pipeline
         torch.set_num_threads(2);torch.set_num_interop_threads(1)
         assert not torch.cuda.is_initialized() and (MODEL/'model.safetensors').exists()
         dtype=torch.float32
         if a.device=='cuda':
-            free,total=torch.cuda.mem_get_info();assert free>=6*1024**3,'Insufficient idle headroom for word review'
-            torch.cuda.set_per_process_memory_fraction(4*1024**3/total);dtype=torch.float16
+            free,total=torch.cuda.mem_get_info();assert free>=9*1024**3,'Insufficient idle headroom for word review'
+            torch.cuda.set_per_process_memory_fraction(7*1024**3/total);dtype=torch.float16
         # Word timestamps require decoder cross-attention; eager avoids SDPA's
         # unsupported attention-output path. The original narration stays intact.
         model=AutoModelForSpeechSeq2Seq.from_pretrained(str(MODEL),dtype=dtype,low_cpu_mem_usage=True,use_safetensors=True,attn_implementation='eager').to(a.device).eval()

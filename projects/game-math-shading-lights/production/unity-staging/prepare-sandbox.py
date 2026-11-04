@@ -15,7 +15,7 @@ SOURCE=REPO/'unity/VideoEditing'
 LIBRARY=SOURCE/'Assets/ThirdParty/YamyamAssetLibrary/002-analog-memory-80s-90s-crt-vhs-rooms-godot-unity-blend'
 GUID=re.compile(r'guid:\s*([0-9a-f]{32})')
 PREFABS=['EAThe80_Lamp_Red_01a_PRE.prefab','EAThe80_Robot_Toy_01a_PRE.prefab']
-CODE=sorted(p.name for p in STAGING.glob('LightLab*.cs') if p.name!='LightLabBuildVersion.cs')+['ShadingLab.shader']
+CODE=sorted(p.name for p in STAGING.glob('LightLab*.cs') if p.name!='LightLabBuildVersion.cs')+sorted(p.name for p in STAGING.glob('*.shader'))
 
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def main():

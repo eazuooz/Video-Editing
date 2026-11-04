@@ -71,12 +71,16 @@ def main():
             start=time.monotonic()
             while True:
                 reason=idle_reason();state.update(status='waiting',reason=reason,checkedAt=now(),current=job['id']);save(statefile,state)
-                if reason is None:break
+                if reason is None:
+                    candidate=str(uuid.uuid4())
+                    try:
+                        with LEASE.open('x',encoding='utf-8') as f:json.dump({'owner':P.name+'-capture','id':candidate,'pid':os.getpid(),'createdAt':now()},f)
+                    except FileExistsError:
+                        state['reason']='Another job acquired the shared resource first';save(statefile,state)
+                    else:owned=candidate;break
                 if time.monotonic()-start>a.wait_hours*3600:raise RuntimeError('Bounded resource wait ended')
                 time.sleep(30)
             assert read(marker)['fingerprint']==queue['fingerprint']
-            owned=str(uuid.uuid4())
-            with LEASE.open('x',encoding='utf-8') as f:json.dump({'owner':P.name+'-capture','id':owned,'pid':os.getpid(),'createdAt':now()},f)
             prepare_comparison(job,queue);save(Path(jobpath),job)
             env=os.environ.copy();env['YAMYAM_M21_JOB']=jobpath
             p=subprocess.Popen([queue['unity'],'-batchmode','-job-worker-count','2','-projectPath',queue['sandbox'],'-executeMethod','Yamyam.GameMath.LightLab.LightLabCapture.Run','-logFile',str(qpath.parent/(job['id']+'.unity.log'))],env=env,creationflags=CREATE)

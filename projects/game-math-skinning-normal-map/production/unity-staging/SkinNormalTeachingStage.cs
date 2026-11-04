@@ -9,6 +9,7 @@ namespace Yamyam.SkinNormal {
         public int beatIndex=1;
         public double durationSeconds; // Bind to the approved audio; no invented lecture duration.
         public double[] stepSeconds=Array.Empty<double>();
+        public double[] stepPositions=Array.Empty<double>(); // Matching normalized visual positions, mapped from real spoken anchors.
         public bool expandedTerm=true,useObservedClip=false;
         public string clip="Interact";public float clipIn=0,clipOut=1;
         public float bendFrom=0,bendTo=105;
@@ -87,8 +88,24 @@ namespace Yamyam.SkinNormal {
         void Axes(Vector3 origin,Vector3 t,Vector3 b,Vector3 n,float length=.85f){Arrow(origin,origin+t*length,Teal);Arrow(origin,origin+b*length,Green);Arrow(origin,origin+n*length,Blue);Tag(origin+t*length,"T · +u",Teal,new Vector2(8,0));Tag(origin+b*length,"B · +v",Green,new Vector2(8,-65));Tag(origin+n*length,"N · 표면 밖",Blue,new Vector2(-260,0));}
         void ResetPools(){lineCursor=dotCursor=tagCursor=0;code.text="";readout.text="";explanation.text="";objectLabel.text="같은 캐릭터 · 같은 표면";armGroup.SetActive(false);plateGroup.SetActive(false);hero.SetActive(true);hero.transform.position=heroRest;hero.transform.rotation=heroRotation;rig.Restore();surface.SetTexture("_NormalRGB",normalData);surface.SetFloat("_UseNormal",1);surface.SetFloat("_ShowData",0);surface.SetFloat("_WrongObjectSpace",0);surface.SetFloat("_GreenSign",1);plateGroup.transform.rotation=Quaternion.identity;plateGroup.transform.localScale=Vector3.one;plateGroup.GetComponent<MeshFilter>().sharedMesh=plateMesh;SetPatchUV(false);armMaterial.SetFloat("_WeightTint",0);}
         void FinishPools(){for(int i=lineCursor;i<lines.Count;i++)lines[i].enabled=false;for(int i=dotCursor;i<dots.Count;i++)dots[i].SetActive(false);for(int i=tagCursor;i<tags.Count;i++)tags[i].gameObject.SetActive(false);}
-        public void Evaluate(double cueSeconds){if(shot.durationSeconds<=0)throw new InvalidOperationException("Bind actual speech duration first.");EvaluateNormalized((float)SkinNormalMath.Clamp01(cueSeconds/shot.durationSeconds));}
-        float Phase(float u,int index,int count){if(shot.stepSeconds!=null&&shot.stepSeconds.Length==count+1&&shot.durationSeconds>0){float a=(float)(shot.stepSeconds[index]/shot.durationSeconds),b=(float)(shot.stepSeconds[index+1]/shot.durationSeconds);if(b<=a)throw new InvalidOperationException("Non-increasing speech cue.");return Mathf.Clamp01((u-a)/(b-a));}return Mathf.Clamp01(u*count-index);}
+        public void Evaluate(double cueSeconds){
+            if(shot.durationSeconds<=0)throw new InvalidOperationException("Bind actual speech duration first.");
+            double u=SkinNormalMath.Clamp01(cueSeconds/shot.durationSeconds);
+            if(shot.stepSeconds!=null&&shot.stepSeconds.Length>0){
+                if(shot.stepPositions==null||shot.stepPositions.Length!=shot.stepSeconds.Length||shot.stepSeconds.Length<2)throw new InvalidOperationException("Each real speech anchor needs an explicit visual position.");
+                var times=shot.stepSeconds;var positions=shot.stepPositions;
+                if(Math.Abs(times[0])>1e-8||Math.Abs(times[times.Length-1]-shot.durationSeconds)>.001||Math.Abs(positions[0])>1e-8||Math.Abs(positions[positions.Length-1]-1)>1e-8)throw new InvalidOperationException("Speech/visual maps must span the complete cue.");
+                u=positions[0];
+                for(int i=1;i<times.Length;i++){
+                    if(times[i]<=times[i-1]||positions[i]<positions[i-1]||double.IsNaN(times[i])||double.IsNaN(positions[i]))throw new InvalidOperationException("Non-monotone or invalid speech map.");
+                    if(cueSeconds>=times[i-1])u=positions[i-1]+(positions[i]-positions[i-1])*SkinNormalMath.Clamp01((cueSeconds-times[i-1])/(times[i]-times[i-1]));
+                }
+            }
+            EvaluateNormalized((float)u);
+        }
+        // All transitions, numeric stages and mesh animation share the same
+        // remapped progress; no branch silently continues on a uniform clock.
+        float Phase(float u,int index,int count){return Mathf.Clamp01(u*count-index);}
         public void EvaluateNormalized(float u){
             if(!built)throw new InvalidOperationException("Build first.");u=Mathf.Clamp01(u);ResetPools();term.text=shot.expandedTerm?shot.englishTerm+"\n"+shot.koreanTerm+"\n"+shot.meaning:shot.englishTerm+" · "+shot.koreanTerm;
             sourceKind.text="현재 화면\n우리 구현 · Unity";int b=shot.beatIndex;if(b==0)throw new InvalidOperationException("M22 abstract requires independent gameplay in the parent timeline, not this explanation module.");

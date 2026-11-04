@@ -38,11 +38,14 @@ def main():
         if not control.get('productionAllowedNow') or 'game-math-shading-lights' not in control['projectSlugs']:raise RuntimeError('Selected production authorization changed; stop at safe boundary')
         reason=resource_reason();stable=stable+1 if reason is None else 0
         state.update(reason=reason,checkedAt=datetime.datetime.now(datetime.timezone.utc).isoformat());save(folder/'progress.json',state)
-        if stable>=3:break
+        if stable>=3:
+          candidate=str(uuid.uuid4());LEASE.parent.mkdir(parents=True,exist_ok=True)
+          try:
+            with LEASE.open('x',encoding='utf-8') as file:json.dump({'owner':'game-math-shading-lights-preflight','id':candidate,'pid':os.getpid(),'output':str(folder)},file)
+          except FileExistsError:stable=0;state['reason']='Another job acquired the shared resource first';save(folder/'progress.json',state)
+          else:owned=candidate;break
         if time.monotonic()-started>args.wait_hours*3600:raise RuntimeError('Resources did not become idle within the bounded wait; no job forced or terminated')
-        time.sleep(30)
-      owned=str(uuid.uuid4());LEASE.parent.mkdir(parents=True,exist_ok=True)
-      with LEASE.open('x',encoding='utf-8') as file:json.dump({'owner':'game-math-shading-lights-preflight','id':owned,'pid':os.getpid(),'output':str(folder)},file)
+        time.sleep(5)
       for entry in manifest['jobs']:
         control=read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
         if not control.get('productionAllowedNow'):raise RuntimeError('Production authorization changed')
@@ -53,7 +56,7 @@ def main():
         job=read(Path(entry));state.update(status='running-preflight',current=job['id']);save(folder/'progress.json',state)
         env=os.environ.copy();env['YAMYAM_M21_JOB']=entry
         log=folder/(job['id']+'.unity.log')
-        process=subprocess.Popen([manifest['unity'],'-batchmode','-job-worker-count','2','-projectPath',manifest['sandbox'],'-executeMethod','Yamyam.GameMath.LightLab.LightLabCapture.Run','-logFile',str(log)],env=env,creationflags=subprocess.CREATE_NO_WINDOW)
+        process=subprocess.Popen([manifest['unity'],'-batchmode',*manifest.get('graphicsArgs',[]),'-job-worker-count','2','-projectPath',manifest['sandbox'],'-executeMethod','Yamyam.GameMath.LightLab.LightLabCapture.Run','-logFile',str(log)],env=env,creationflags=subprocess.CREATE_NO_WINDOW)
         state['unityPid']=process.pid;save(folder/'progress.json',state)
         code=process.wait();result=Path(job['output'])/'capture-success.json'
         if code!=0 or not result.exists():state['failed'].append(job['id']);raise RuntimeError('Preflight failed; preserve log and diagnose before next preview')
