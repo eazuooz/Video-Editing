@@ -88,6 +88,8 @@ def verified_waiting_math_worker(process, arguments):
             statefile = queue.parent/('composite/worker.json' if selected.name in {'compose-lecture.py','compose-module.py'} else 'progress.json')
         elif selected == (batch/'run-prepared-module-queues.py').resolve():
             statefile=batch/'module-queue-worker.json'
+        elif selected == (batch/'finish-remaining-speech.py').resolve() and '--run' in arguments:
+            statefile=batch/'local/remaining-speech-worker.json'
         elif selected == (batch/'finish-m21-media-qa.py').resolve():
             revision=value('--revision') or 'render-v3'
             if not __import__('re').fullmatch(r'render-v\d+',revision):return False
@@ -113,6 +115,13 @@ def verified_waiting_math_worker(process, arguments):
             import psutil
             child=psutil.Process(state['childPid'])
             waiting=child.ppid()==process.pid and verified_waiting_math_worker(child,child.cmdline())
+        if selected == (batch/'finish-remaining-speech.py').resolve() and state.get('status')=='waiting-for-finite-child':
+            import psutil
+            try:
+                child=psutil.Process(state['childPid'])
+                waiting=child.ppid()==process.pid and verified_waiting_math_worker(child,child.cmdline())
+            except psutil.NoSuchProcess:
+                waiting=False
         return (state.get('pid') == process.pid
                 and abs(state.get('createTime',0)-process.create_time()) < .1
                 and waiting)

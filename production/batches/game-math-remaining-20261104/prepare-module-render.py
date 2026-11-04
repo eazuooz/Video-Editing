@@ -12,7 +12,12 @@ assert __import__('re').fullmatch(r'audio-v\d+',a.audio_revision) and __import__
 audio=P/'production/local'/a.audio_revision;edit=P/'production/local'/a.audio_revision.replace('audio-','edit-');timeline=edit/'word-aligned-timeline.json';t=read(timeline)
 assert not t['flags'],'Resolve actual speech, caption and phase differences first'
 assert t['bindingsSha256']==sha(P/'planning/scene-bindings.json') and t['narrationSha256']==sha(audio/'narration.wav')
-marker=read(sandbox/'MATH_CAPTURE_SANDBOX.json');module=read(S/'module-plan.json');episode=module.get('episode',module.get('episodeId'));assert __import__('re').fullmatch(r'M(2[2-9]|3[0-3])',episode or '')
+marker=read(sandbox/'MATH_CAPTURE_SANDBOX.json')
+# Some families share their implementation plan at the first episode. The
+# actual episode/slug pair always belongs to the selected production plan.
+episode=read(P/'planning/production-plan.json')['episode']
+assert __import__('re').fullmatch(r'M(2[2-9]|3[0-3])',episode or '') and marker['projectSlug']==P.name
+assert any(i['id']==episode and i['slug']==P.name for i in read(Path(__file__).parent/'batch.json')['items'])
 factories={'game-math-skinning-normal-map':'SkinNormalSceneBuilder','game-math-pipeline-shaders':'PipelineSceneBuilder'}
 # Read the factory from a prepared, source-matched preview for other modules.
 preview_jobs=[]

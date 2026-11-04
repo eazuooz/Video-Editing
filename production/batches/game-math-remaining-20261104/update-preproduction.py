@@ -1,13 +1,19 @@
 """Refresh the exact authorized batch from current persisted media evidence."""
 from pathlib import Path
 from datetime import datetime,timezone
-import json,re,subprocess,psutil
+import json,re,subprocess,psutil,time
 R=Path(__file__).resolve().parents[3];B=Path(__file__).parent
 read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def latest(base,pattern):
  ps=list(base.glob(pattern));return max(ps,key=lambda p:int(re.search(r'-v(\d+)',p.name)[1])) if ps else None
-def state(p):return read(p) if p and p.is_file() else {}
+def state(p):
+ if not p or not p.is_file():return {}
+ for attempt in range(8):
+  try:return read(p)
+  except (PermissionError,json.JSONDecodeError):
+   if attempt==7:raise
+   time.sleep(.15)
 def live(s):
  try:return abs(psutil.Process(s['pid']).create_time()-s['createTime'])<.1
  except (KeyError,psutil.NoSuchProcess):return False
@@ -25,9 +31,17 @@ for item in batch['items']:
   if pv['status']=='images-ready-for-internal-visual-QA':stage+=' 생성·화면 검수 중'
   elif pv['status']=='failed-or-blocked':stage+=' · 실행 오류 확인 중'
   else:stage+=' · GPU 순차 검사 중'
+ elif preview and (preview/'queue.json').is_file():
+  stage+=f' · 추가 Unity 장면 {len(read(preview/"queue.json")["jobs"])}개 검사 대기'
  if voice:
   label={'synthesizing':'음성 생성 중','voice-generated-review-pending':'음성 생성 완료','failed-or-blocked':'음성 작업 오류 확인 중'}.get(voice['status'],'음성 순차 대기')
   stage+=' · '+label+' ('+audio.name+')';voices[item['id']]=voice
+  chunks=[p for p in (audio/'chunks').glob('*.wav') if p.stat().st_size>44]
+  if voice['status']!='voice-generated-review-pending':stage+=f' · 문단 음성 파일 {len(chunks)}/{n}'
+  retake=state(audio/'retake-plan.json')
+  if retake:
+   changed=retake.get('retakeScenes',[])
+   if changed:stage+=f' (기존 음성 {n-len(changed)}개 유지 · {len(changed)}개 재녹음)'
  if words.get('status')=='word-evidence-ready-content-review-pending':stage+=' · 발화 시각 확보'
  if capture:
   stage=f'음성·자막 연결 · 본편 설명 씬 {len(capture.get("completed",[]))}개 렌더'
@@ -56,6 +70,6 @@ for item in batch['items']:
  d['runningCostlyJobs']=running;save(cp,d);evidence[item['id']]=dict(stage=stage,localReviewReady=ready,outputsReady=four,evidence=item['evidence'])
  if pv:previews[item['slug']]=dict(pv,progressPath=(preview/'progress.json').relative_to(R).as_posix())
 batch['updatedAt']=at;save(B/'batch.json',batch);save(R/'shared/publishing/video-worklist.json',work)
-c=read(B/'checkpoint.json');c.update(updatedAt=at,currentWork=[k+': '+v['stage'] for k,v in evidence.items()],localReviewReady=[x['id'] for x in batch['items'] if x['localReviewReady']],outputCandidatesAvailable=[x['id'] for x in batch['items'] if x['outputCandidatesAvailable']],episodeVoiceWorkers=voices,modulePreflights=previews,runningCostlyJobs=active,resourceGate=dict(status='active-owned-work' if active else 'waiting-or-idle',jobs=active),nextAction='Finish exact M21–M33 local productions. Latest revisions and evidence above supersede historical snapshots. No platform mutation.',lastProductionCommit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip())
+c=read(B/'checkpoint.json');c.update(updatedAt=at,status='active-production',currentWorkingEpisodes=sorted({x['episode'] for x in active}),currentWork=[k+': '+v['stage'] for k,v in evidence.items()],localReviewReady=[x['id'] for x in batch['items'] if x['localReviewReady']],outputCandidatesAvailable=[x['id'] for x in batch['items'] if x['outputCandidatesAvailable']],episodeVoiceWorkers=voices,modulePreflights=previews,runningCostlyJobs=active,resourceGate=dict(status='active-owned-work' if active else 'waiting-or-idle',jobs=active),nextAction='Finish exact M21–M33 local productions. Latest revisions and evidence above supersede historical snapshots. No platform mutation.',lastProductionCommit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip())
 save(B/'checkpoint.json',c)
 subprocess.run(['python','-X','utf8',str(B/'progress.py')],cwd=R,check=True)

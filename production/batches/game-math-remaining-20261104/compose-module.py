@@ -15,6 +15,11 @@ CONTROL=json.loads((R/'shared/publishing/video-production-control.json').read_te
 FF=Path('C:/Users/1/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0-full_build/bin/ffmpeg.exe')
 LEASE=R/'shared/output/GPU_HANDOFF.json';CREATE=getattr(subprocess,'CREATE_NO_WINDOW',0)
 VIEW=(192,48,1536,864)
+GAME_LABELS={'_wH_-1saHnw':'슈퍼 마리오 오디세이','4Odvp_TIeQU':'라이더스 리퍼블릭',
+ 'Hu94MHBQCis':'둠 3 (2004)','FRfnXAIbA-M':'타운스케이퍼','AmJ4orxVpss':'포털',
+ 'xPnKcvo8A1E':'포르자 호라이즌 5','YNQ20CKbY8U':'젤다: 왕국의 눈물','T3ncWUwKUns':'비시지',
+ 'd5fiou39Htc':'BeamNG.drive','Eoh7qwVDsbk':'BeamNG.drive','_HVv2GnldbU':'새티스팩토리',
+ 'E-Sj-E0Ssds':'슈퍼 마리오 메이커 2','HALSoFBzIlw':'슈퍼 마리오 갤럭시'}
 BOOK=R/'projects/game-reward-planning/production/final-v1/white-segments'
 
 def module(name,path):
@@ -83,13 +88,17 @@ def annotation_ass(cut,source,out):
     labels=read(P/'planning/game-annotation-tracks.json')
     windows=[r for r in labels['windows'] if r['sourceId']==source['id'] and min(r['end'],cut['sourceOut'])>max(r['start'],cut['sourceIn'])]
     assert windows,'Every selected real-game example needs a reviewed narrated focus'
-    game=source.get('displayGameKo',source['game'])
+    game=source.get('displayGameKo',GAME_LABELS.get(source['id'],source['game']))
+    header_font=C.ImageFont.truetype('C:/Windows/Fonts/malgun.ttf',36)
     C.event(lines,0,dur,'{\\an7\\pos(192,4)\\fs36\\1c&HFFFFFF&}'+game,4)
     C.event(lines,0,dur,'{\\an9\\pos(1728,4)\\fs36\\1c&HFFFFFF&}실제 게임 녹화',4)
     proofs=[]
     for window in windows:
         data=read(R/window['trackFile']);assert data['sourceSha256']==source['sha256']
         assert window['visualQa']['status']=='temporal-samples-reviewed-final-encoded-pending'
+        focus_width=header_font.getlength(data['label'])
+        assert 192+header_font.getlength(game)+24 < 960-focus_width/2, 'Game title overlaps narrated focus label'
+        assert 960+focus_width/2+24 < 1728-header_font.getlength('실제 게임 녹화'), 'Focus label overlaps picture-source kind'
         kfs=data['keyframes'];start=max(cut['sourceIn'],data['start']);end=min(cut['sourceOut'],data['end'])
         C.event(lines,start-cut['sourceIn'],end-cut['sourceIn'],'{\\an8\\pos(960,4)\\fs36\\1c&HC2C773&}'+data['label'],5)
         for a,b in zip(kfs,kfs[1:]):

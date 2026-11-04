@@ -8,7 +8,14 @@ from pathlib import Path
 from datetime import datetime,timezone
 from difflib import SequenceMatcher
 import argparse,hashlib,json,math,re,copy
+from PIL import ImageFont
 R=Path(__file__).resolve().parents[3]
+CAPTION_BOLD=ImageFont.truetype('C:/Windows/Fonts/malgunbd.ttf',48)
+
+def one_caption_line(left,right):
+    # Conservatively measure every character in bold so a later single keyword
+    # emphasis cannot force the fixed caption box up into the game viewport.
+    return CAPTION_BOLD.getlength(left+' '+right)<=1570
 ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--audio-revision',default='audio-v1');args=ap.parse_args()
 c=json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf-8-sig'))['explicitMathRemainingBatch20261104']
 assert c['productionAllowedNow'] and args.project in c['projectSlugs'] and args.project!='game-math-shading-lights'
@@ -18,13 +25,19 @@ def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 ALIASES={'tbn':'티비엔','srgb':'에스알지비','bitangent':'비탄젠트','tangent':'접선','handedness':'핸디드니스','bumpmapping':'범프매핑','brdf':'비알디에프','rgb':'알지비','hlsl':'에이치엘에스엘','sh':'에스에이치','uv':'유브이','phong':'퐁','blinn':'블린','lambert':'램버트','gouraud':'구로','reflect':'리플렉트','q':'큐',
-         'sx':'에스엑스','sy':'에스와이','sz':'에스제트','m':'미터','doom':'둠',
+         'sx':'에스엑스','sy':'에스와이','sz':'에스제트','psi':'피에스아이','km':'킬로미터','kg':'킬로그램','ft':'피트','cos':'코사인','sin':'사인','tan':'탄젠트','m':'미터','doom':'둠',
          'n':'엔','l':'엘','r':'알','v':'브이','h':'에이치','x':'엑스','y':'와이','z':'제트','t':'티','s':'에스','p':'피','d':'디','a':'에이','b':'비','c':'씨','e':'이','k':'케이','i':'아이','j':'제이','w':'더블유','u':'유'}
 DIGITS='영일이삼사오육칠팔구'
 def integer_ko(n):
     n=int(n)
     if n==0:return '영'
-    if n>=10000:return ''.join(DIGITS[int(x)] for x in str(n))
+    if n>=10000:
+        parts=[]
+        for unit in ('','만','억','조','경'):
+            n,group=divmod(n,10000)
+            if group:parts.insert(0,('' if group==1 and unit else integer_ko(group))+unit)
+            if not n:return ''.join(parts)
+        raise ValueError('Number exceeds supported cardinal range')
     out=''
     for power,unit in ((1000,'천'),(100,'백'),(10,'십'),(1,'')):
         d,n=divmod(n,power)
@@ -47,8 +60,18 @@ def normalize_owned(s,owners):
     for source,target in [('쉐이딩','셰이딩'),('쉐이더','셰이더'),('세이더','셰이더'),('두 배','이배'),('두배','이배'),('여덟 제곱','팔제곱'),('여덟제곱','팔제곱'),('둠 쓰리','둠삼')]:replace(re.escape(source),target)
     # Korean particles are attached to Latin symbols (e.g. BRDF가, N과).
     # Latin-only boundaries preserve words such as "normal" while matching those.
+    replace(r'(?<=\d),(?=\d{3}(?:\D|$))','')
+    for symbol,pronunciation in [('θ','세타'),('ω','오메가'),('π','파이')]:replace(symbol,pronunciation)
+    replace(r'(?<![a-z])([a-z])(?=(?:cos|sin|tan)(?![a-z]))',lambda m:m.group(1)+' ')
+    replace(r'(?<![a-z])(?:ix|it|at|bt|et|nt|rt|vt|xy|xz|yz|zt|xt|yt)(?![a-z])',lambda m:' '.join(m.group()))
+    # Adjacent numeric N is a newton unit; standalone N stays the vector name.
+    replace(r'(?<=\d)\s*n(?![a-z])','뉴턴')
+    replace(r'(?<=\d)!','팩토리얼')
+    replace(r'\+','더하기')
+    replace(r'빼기','마이너스')
+    replace(r'절대값','절댓값')
     replace(r'%','퍼센트')
-    replace(r'[−–-](?=\s*[0-9a-z])','마이너스')
+    replace(r'[−–-](?=\s*(?:[0-9a-z]|오메가|세타|파이))','마이너스')
     replace(r'\bbump\s+mapping\b','범프매핑')
     for a,b in sorted(ALIASES.items(),key=lambda p:-len(p[0])):replace(r'(?<![a-z])'+re.escape(a)+r'(?![a-z])',b)
     replace(r'\d+(?:\.\d+)?',lambda m:number_ko(m.group()))
@@ -119,6 +142,7 @@ def main():
     assert bilingual['koSha256']==sha(P/'script/narration.ko.json') and bilingual['enSha256']==sha(P/'script/narration.en.json')
     bilingual_rows={s['id']:s['groups'] for s in bilingual['scenes']}
     adjustments_file=P/'planning/caption-reading-adjustments.json'
+    if not adjustments_file.exists():save(adjustments_file,{'groups':[],'status':'No English caption compression selected; measured reading review follows actual speech.'})
     adjustments={(x['scene'],x['koStart']):x for x in read(adjustments_file)['groups']}
     scenes=[];ko_cues=[];en_cues=[];flags=[];entries=timing['entries']
     for i,e in enumerate(entries):
@@ -160,9 +184,9 @@ def main():
         while i<len(local):
             x=local[i]
             if x['end']-x['start']<.85:
-                if i>0 and not re.search(r'[.!?]$',local[i-1]['text']) and len(local[i-1]['text'])+len(x['text'])<55:
+                if i>0 and not re.search(r'[.!?]$',local[i-1]['text']) and one_caption_line(local[i-1]['text'],x['text']):
                     left=local[i-1];left.update(end=x['end'],text=left['text']+' '+x['text'],spoken=left['spoken']+' '+x['spoken']);left.setdefault('mergedWordEvidence',[]).append(x['evidence']);local.pop(i);i=max(0,i-1);continue
-                if i+1<len(local) and not re.search(r'[.!?]$',x['text']) and len(x['text'])+len(local[i+1]['text'])<55:
+                if i+1<len(local) and not re.search(r'[.!?]$',x['text']) and one_caption_line(x['text'],local[i+1]['text']):
                     right=local.pop(i+1);x.update(end=right['end'],text=x['text']+' '+right['text'],spoken=x['spoken']+' '+right['spoken']);x.setdefault('mergedWordEvidence',[]).append(right['evidence']);continue
             i+=1
         for x in local:
