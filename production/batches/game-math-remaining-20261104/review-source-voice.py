@@ -16,10 +16,11 @@ def norm(s):return re.sub(r'[^a-z0-9가-힣]','',s.lower())
 def now():return datetime.now(timezone.utc).isoformat()
 def main():
     global owned
-    ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--transcribe',action='store_true');ap.add_argument('--device',choices=['cpu','cuda'],default='cpu');ap.add_argument('--lease-id');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--audio-revision',default='audio-v1');ap.add_argument('--transcribe',action='store_true');ap.add_argument('--device',choices=['cpu','cuda'],default='cpu');ap.add_argument('--lease-id');a=ap.parse_args()
     control=read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
     assert control['productionAllowedNow'] and a.project in control['projectSlugs']
-    base=ROOT/'projects'/a.project/'production/local/audio-v1';review=base/'review';review.mkdir(exist_ok=True)
+    assert re.fullmatch(r'audio-v\d+',a.audio_revision)
+    base=ROOT/'projects'/a.project/'production/local'/a.audio_revision;review=base/'review';review.mkdir(exist_ok=True)
     timing=read(base/'narration.timing.json');voice=base/'narration.wav';voice_hash=sha(voice)
     assert read(base/'tts-gpu-coordination.json')['state']=='finished','Do not overlap costly voice/ASR jobs'
     if a.lease_id:

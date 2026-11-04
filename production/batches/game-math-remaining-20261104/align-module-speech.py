@@ -9,10 +9,11 @@ from datetime import datetime,timezone
 from difflib import SequenceMatcher
 import argparse,hashlib,json,math,re,copy
 R=Path(__file__).resolve().parents[3]
-ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);args=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--audio-revision',default='audio-v1');args=ap.parse_args()
 c=json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf-8-sig'))['explicitMathRemainingBatch20261104']
 assert c['productionAllowedNow'] and args.project in c['projectSlugs'] and args.project!='game-math-shading-lights'
-P=R/'projects'/args.project;A=P/'production/local/audio-v1';OUT=P/'production/local/edit-v1'
+assert re.fullmatch(r'audio-v\d+',args.audio_revision)
+P=R/'projects'/args.project;A=P/'production/local'/args.audio_revision;OUT=P/'production/local'/args.audio_revision.replace('audio-','edit-')
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()

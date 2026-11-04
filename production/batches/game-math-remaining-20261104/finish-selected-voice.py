@@ -9,10 +9,12 @@ def now():return datetime.now(timezone.utc).isoformat()
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def save(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--wait-hours',type=float,default=6);a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--manifest');ap.add_argument('--wait-hours',type=float,default=6);a=ap.parse_args()
     control=read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']
     assert a.project in control['projectSlugs'] and control['productionAllowedNow']
-    folder=ROOT/'projects'/a.project/'production/local/audio-v1';folder.mkdir(parents=True,exist_ok=True)
+    manifest=(ROOT/a.manifest).resolve() if a.manifest else ROOT/'projects'/a.project/'production/tts-manifest.json'
+    assert manifest.is_relative_to(ROOT/'projects'/a.project/'production')
+    folder=(ROOT/read(manifest)['tts']['outputDir']).resolve();assert folder.is_relative_to(ROOT/'projects'/a.project/'production/local');folder.mkdir(parents=True,exist_ok=True)
     statefile=folder/'finite-worker.json'
     if statefile.exists():
         old=read(statefile)
@@ -22,6 +24,7 @@ def main():
         except psutil.NoSuchProcess:pass
     state={'pid':os.getpid(),'createTime':psutil.Process().create_time(),'project':a.project,'status':'waiting-for-resource-boundary','startedAt':now(),'automationCreated':False,'nextProject':False,'newTtsStarted':False}
     cmd=[str(ROOT/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8',str(ROOT/'production/batches/game-math-remaining-20261104/render-voice.py'),'--project',a.project,'--allow-idle-editors']
+    if a.manifest:cmd+=['--manifest',str(manifest)]
     started=time.monotonic()
     try:
         while True:

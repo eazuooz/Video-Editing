@@ -4,9 +4,10 @@ from datetime import datetime,timezone
 import importlib.util,json,os,subprocess,time,uuid,shutil,argparse
 import psutil
 R=Path(__file__).resolve().parents[3];B=Path(__file__).parent
-ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--wait-hours',type=float,default=6);args=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('--project',required=True);ap.add_argument('--audio-revision',default='audio-v1');ap.add_argument('--wait-hours',type=float,default=6);args=ap.parse_args()
 c=json.loads((R/'shared/publishing/video-production-control.json').read_text(encoding='utf-8-sig'))['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow'] and args.project in c['projectSlugs']
-P=R/'projects'/args.project;A=P/'production/local/audio-v1'
+assert __import__('re').fullmatch(r'audio-v\d+',args.audio_revision)
+P=R/'projects'/args.project;A=P/'production/local'/args.audio_revision
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def now():return datetime.now(timezone.utc).isoformat()
 statefile=A/'finite-word-review.json';lease=R/'shared/output/GPU_HANDOFF.json';owned=None
@@ -47,7 +48,7 @@ try:
         time.sleep(20)
     s.update(status='transcribing-word-timestamps');save()
     with (A/'word-review.stdout.log').open('w',encoding='utf-8') as out,(A/'word-review.stderr.log').open('w',encoding='utf-8') as err:
-        child=subprocess.Popen([str(R/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8',str(B/'review-source-voice.py'),'--project',P.name,'--transcribe','--device','cuda','--lease-id',owned],cwd=R,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+        child=subprocess.Popen([str(R/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8',str(B/'review-source-voice.py'),'--project',P.name,'--audio-revision',args.audio_revision,'--transcribe','--device','cuda','--lease-id',owned],cwd=R,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
         s['asrPid']=child.pid;save();code=child.wait()
     if code:raise RuntimeError('Word review failed; inspect preserved partial evidence')
     s.update(status='word-evidence-ready-content-review-pending',finishedAt=now());save()

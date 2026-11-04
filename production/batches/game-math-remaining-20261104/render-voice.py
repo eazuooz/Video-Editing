@@ -17,12 +17,14 @@ import uuid
 ROOT = Path(__file__).resolve().parents[3]
 BOOT = argparse.ArgumentParser(add_help=False)
 BOOT.add_argument('--project', required=True)
+BOOT.add_argument('--manifest')
 BOOTARGS, _ = BOOT.parse_known_args()
 SLUG = BOOTARGS.project
 if not __import__('re').fullmatch(r'game-math-[a-z0-9-]+', SLUG):
     raise ValueError('Invalid selected math project')
 PROJECT = ROOT / 'projects' / SLUG
-MANIFEST = PROJECT / 'production/tts-manifest.json'
+MANIFEST = (ROOT / BOOTARGS.manifest).resolve() if BOOTARGS.manifest else PROJECT / 'production/tts-manifest.json'
+assert MANIFEST.is_relative_to(PROJECT/'production'), 'Alternate manifest must belong to this selected project'
 LEASE = ROOT / 'shared/output/GPU_HANDOFF.json'
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 
@@ -72,12 +74,22 @@ def verified_waiting_math_worker(process, arguments):
             slug = value('--project')
             if slug not in read(ROOT/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104']['projectSlugs']:
                 return False
-            statefile = ROOT/'projects'/slug/'production/local/audio-v1'/('finite-worker.json' if selected.name=='finish-selected-voice.py' else 'finite-word-review.json')
-        elif selected in [(m21/'run-capture-queue.py').resolve(), (m21/'compose-lecture.py').resolve(), (batch/'run-module-preflight.py').resolve()]:
+            if selected.name=='finish-selected-voice.py' and value('--manifest'):
+                source_manifest=(ROOT/value('--manifest')).resolve()
+                if not source_manifest.is_relative_to(ROOT/'projects'/slug/'production'):return False
+                audio_dir=(ROOT/read(source_manifest)['tts']['outputDir']).resolve()
+            else:audio_dir=ROOT/'projects'/slug/'production/local'/(value('--audio-revision') or 'audio-v1')
+            if not audio_dir.is_relative_to(ROOT/'projects'/slug/'production/local'):return False
+            statefile = audio_dir/('finite-worker.json' if selected.name=='finish-selected-voice.py' else 'finite-word-review.json')
+        elif selected in [(m21/'run-capture-queue.py').resolve(), (m21/'compose-lecture.py').resolve(), (batch/'run-module-preflight.py').resolve(), (batch/'run-module-render.py').resolve(), (batch/'compose-module.py').resolve()]:
             queue = Path(value('--queue')).resolve()
             if not queue.is_relative_to(ROOT/'projects'):
                 return False
-            statefile = queue.parent/('composite/worker.json' if selected.name=='compose-lecture.py' else 'progress.json')
+            statefile = queue.parent/('composite/worker.json' if selected.name in {'compose-lecture.py','compose-module.py'} else 'progress.json')
+        elif selected == (batch/'run-prepared-module-queues.py').resolve():
+            statefile=batch/'module-queue-worker.json'
+        elif selected == (batch/'finish-m21-media-qa.py').resolve():
+            statefile=m21/'local/render-v3/finite-final-qa.json'
         elif selected == (m21/'unity-staging/run-preflight.py').resolve():
             folder = Path(value('--job-folder')).resolve()
             if not folder.is_relative_to(m21/'unity-staging'):
@@ -86,9 +98,14 @@ def verified_waiting_math_worker(process, arguments):
         if statefile is None or not statefile.is_file():
             return False
         state = read(statefile)
+        waiting=state.get('status') in {'waiting','waiting-for-idle-resources','waiting-for-current-voice','waiting-for-resource-boundary','waiting-for-m21-edit','waiting-for-encoded-master'}
+        if selected == (batch/'run-prepared-module-queues.py').resolve() and state.get('status')=='running-one-preflight':
+            import psutil
+            child=psutil.Process(state['childPid'])
+            waiting=child.ppid()==process.pid and verified_waiting_math_worker(child,child.cmdline())
         return (state.get('pid') == process.pid
                 and abs(state.get('createTime',0)-process.create_time()) < .1
-                and state.get('status') in {'waiting','waiting-for-idle-resources','waiting-for-current-voice','waiting-for-resource-boundary'})
+                and waiting)
     except (ValueError,TypeError,IndexError,KeyError,OSError):
         return False
 
@@ -128,6 +145,7 @@ def unity_import_worker(info, process):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project', required=True)
+    parser.add_argument('--manifest', help='Additive project-owned audio revision; preserves existing approved/raw PCM')
     parser.add_argument('--synthesize', action='store_true', help='Root-coordinated actual GPU synthesis, after source/script review')
     parser.add_argument('--allow-idle-editors', action='store_true', help='Selected Buckshot root choice: preserve inspected idle editor windows, require9GiBfree/util<=40, cap allocator7GiB; never permit render/compute jobs')
     parser.add_argument('--check-resources', action='store_true', help='Inspect resource guard and record baseline only; never load a model or take GPU lease')
@@ -143,11 +161,13 @@ def main():
     if args.synthesize:
         assert all(plan.get(k) is True for k in ['sourceFinal','narrationFinal','sceneBindingsFinal']), 'Finish actual source, narration and inspected gameplay binding before synthesis.'
     derived = {'scenes': [{'id': f"{s['id']}-{n:02d}", 'title': s['title'], 'lines': [line]} for s in script['scenes'] for n, line in enumerate(s['lines'], 1) if line.strip()]}
-    derived_path = PROJECT / 'production/local/audio-v1/narration.lines.ko.json'
+    audio_dir=(ROOT/manifest['tts']['outputDir']).resolve()
+    assert audio_dir.is_relative_to(PROJECT/'production/local')
+    derived_path = audio_dir / 'narration.lines.ko.json'
     save(derived_path, derived)
     render_manifest = json.loads(json.dumps(manifest))
     render_manifest['paths']['script'] = derived_path.relative_to(ROOT).as_posix()
-    render_path = PROJECT / 'production/local/audio-v1/render-manifest.json'
+    render_path = audio_dir / 'render-manifest.json'
     save(render_path, render_manifest)
     sys.path.insert(0, str(ROOT / 'qwen3-tts'))
     import render_narration as worker
