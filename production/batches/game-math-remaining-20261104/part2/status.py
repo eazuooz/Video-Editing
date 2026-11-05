@@ -22,7 +22,10 @@ def refresh():
         ep=item["id"];p=ROOT/"projects"/item["slug"];row=rows[ep]
         master=None; files=item.get("outputs",{})
         if ep in PROJECTS:
-            state,_=select(item);doc=read(p/"planning/part2-delivery-edition.json")
+            try:state,_=select(item)
+            except (OSError, ValueError, KeyError, TypeError, AssertionError) as exc:
+                state="자료 확인 필요 · "+type(exc).__name__
+            doc=read(p/"planning/part2-delivery-edition.json")
             audio=p/"production/local"/doc["audioRevision"]
             wavecount=len(list((audio/"chunks").glob("*-scene.wav")))
             q=p/"production/local/render-v2";rc=snap(q/"progress.json")
@@ -37,6 +40,10 @@ def refresh():
             else: files={}
             state="로컬 일괄 검수 대기" if ready else {"음성":"녹음 대기","음성 생성 또는 GPU 순서 대기":"녹음 진행" if snap(audio/"finite-worker.json").get("status")=="synthesizing" else "녹음 장치 대기"}.get(state,state)
             stage=f"{state} · 음성 {wavecount}/{doc['sceneCount']}문단"
+            inserts=len(list((p/"production/local/part2-game-inserts").glob("*/receipt.json")))
+            if inserts:
+                total=len(read(p/"planning/part2-picture-plan.json")["actualGameScenes"])
+                stage+=f" · 게임 장면 {inserts}/{total}개 편집"
             if prog and not rc:stage+=f" · Unity 시험 장면 {len(prog.get('completed',[]))}개"
             if rc:stage+=f" · 본편 장면 {len(rc.get('completed',[]))}개 렌더"
             item.update(status="local-review-ready" if ready else "active-production",localReviewReady=ready,
@@ -50,6 +57,7 @@ def refresh():
             data.update(stage=stage,updatedAt=now,localReviewReady=ready,outputsReady=allfiles,
                         groupReview={"edition":doc["audioRevision"],"narrationChunks":wavecount,
                                      "reusedTakes":len(doc["copiedTakes"]),"sceneCount":doc["sceneCount"],
+                                     "gameInserts":inserts,
                                      "previewScenes":len(prog.get("completed",[])),"renderScenes":len(rc.get("completed",[])),
                                      "state":state,"localReviewIndex":files.get("index")})
             store(cp,data)

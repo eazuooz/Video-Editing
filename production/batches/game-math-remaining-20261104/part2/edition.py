@@ -15,7 +15,10 @@ def save(path,data):
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 def sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    digest=hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda:stream.read(4*1024*1024),b""):digest.update(block)
+    return digest.hexdigest()
 def passages(source):
     rows={}
     for line in source.read_text("utf8").splitlines():

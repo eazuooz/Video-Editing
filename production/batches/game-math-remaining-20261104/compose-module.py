@@ -51,6 +51,17 @@ def encoder():return ['-c:v','h264_nvenc','-preset','p5','-tune','hq','-rc','vbr
 def video_check(path,frames):
     stream=next(s for s in probe(path)['streams'] if s['codec_type']=='video')
     assert (stream['width'],stream['height'],stream['r_frame_rate'],int(stream['nb_frames']))==(1920,1080,'60/1',frames),str(path)
+
+def prepared_insert(cut,source,track):
+    cache=P/'production/local/part2-game-inserts'/cut['scene']
+    receipt=cache/'receipt.json';picture=cache/'picture.mkv'
+    if not receipt.is_file() or not picture.is_file():return None
+    inputs=dict(sourceSha256=source['sha256'],start=cut['sourceIn'],end=cut['sourceOut'],frames=cut['frames'],
+                filter=game_filters(cut,'track.ass'),annotationSha256=sha(track))
+    actual=read(receipt)
+    if actual['input']!=inputs:return None
+    assert sha(picture)==actual['pictureSha256'],'Cached game insert changed; inspect it before using it'
+    return picture
 def game_filters(cut,annotation):
     x,y,w,h=VIEW
     base=f'scale={w}:{h}:force_original_aspect_ratio=decrease:flags=lanczos,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:black,pad=1920:1080:{x}:{y}:black,setsar=1,fps=60'
@@ -158,8 +169,24 @@ def prepare(queue,work):
         if cut['kind']=='actual-gameplay':
             s=sources[cut['sourceId']];assert sha(R/s['file'])==s['sha256']
             receipts.append(annotation_ass(cut,s,work/f'game-{i:03}.ass'))
+        elif P.name=='game-math-velocity-derivatives' and cut['scene']=='007':
+            frequency_guides(work/f'period-{i:03}.ass',cut['frames']/FPS)
     record={'createdAt':now(),'queueSha256':sha(work.parent/'queue.json'),'narrationSha256':t['narrationSha256'],'captionLayout':layout,'gameAnnotations':receipts,'addedBackgroundMusic':False,'audioChoice':'Original synchronized game audio retained and ducked; source-specific exceptions must be recorded per source. No added lecture BGM.','humanListening':False,'finalVisualQa':False}
     save(work/'preflight.json',record);return sources,record
+
+def frequency_guides(file,duration):
+    # Positions come from the native 1080p four-cycle plot. One crest-to-crest
+    # span is one period, while the longer bracket measures the full interval.
+    lines=C.ass_header()
+    def bracket(left,right,y,label,color,begin):
+        if begin>=duration:return
+        points=[(left,y+10),(left,y),(right,y),(right,y+10)]
+        C.event(lines,begin,duration,r'{\an7\pos(0,0)\p1\bord0\shad0\1c&H'+color+'&}'+stroke_path(points,2.5),3)
+        C.event(lines,begin,duration,r'{\an2\pos('+str((left+right)//2)+','+str(y-4)+r')\fs36\bord2\1c&H'+color+'&}'+label,4)
+    bracket(1169,1313,460,'한 주기 T','C2C773',0.35)
+    bracket(1133,1709,405,'관찰 시간 Δt','83CEE9',1.1)
+    Path(file).write_text('\n'.join(lines)+'\n',encoding='utf-8')
+
 def normalized_audio(source,start,frames,target,target_lufs,work,stem,source_decision=None):
     n=frames*800;duration=frames/60
     analysis=work/'logs'/(stem+'-loudness.log')
@@ -191,11 +218,19 @@ def render(queue,work,sources,receipt,dest):
     segments=work/'segments';segments.mkdir(exist_ok=True);videos=[];audios=[]
     for i,cut in enumerate(queue['cuts']):
         G.authorized();stem=f'{i:03}-{cut["scene"]}';v=segments/(stem+'.mp4');a=segments/(stem+'.wav');n=cut['frames'];duration=n/60
+        picture_start=cut['sourceIn']
         if cut['kind']=='actual-gameplay':
             src=sources[cut['sourceId']];source=R/src['file'];x,y,w,h=VIEW
             vf=game_filters(cut,f'game-{i:03}.ass')
-        else:source=Path(cut['file']);vf='setsar=1,fps=60'
-        ff(['-ss',cut['sourceIn'],'-i',source,'-an','-vf',vf,'-frames:v',n,*encoder(),'-movflags','+faststart',v],work/'logs'/(stem+'-video.log'),work)
+            cached=prepared_insert(cut,src,work/f'game-{i:03}.ass')
+            if cached is not None:
+                picture_source=cached;picture_start=0;vf='setsar=1,fps=60'
+            else:picture_source=source
+        else:
+            picture_source=Path(cut['file']);vf='setsar=1,fps=60'
+            if P.name=='game-math-velocity-derivatives' and cut['scene']=='007':
+                vf+=f',ass=period-{i:03}.ass'
+        ff(['-ss',picture_start,'-i',picture_source,'-an','-vf',vf,'-frames:v',n,*encoder(),'-movflags','+faststart',v],work/'logs'/(stem+'-video.log'),work)
         video_check(v,n)
         if cut['kind']=='actual-gameplay' and not src.get('excludeOriginalAudioReason'):
             sound=src.get('audio',{})
