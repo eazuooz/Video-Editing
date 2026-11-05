@@ -48,9 +48,9 @@ def progressdraw(draw,frame,key,side):
 def compose(ep,key,h,l,v,encoder):
     needed={'A10':('recoil','root'),'A11':('kick','returning'),'A12':('expression','mouth'),
             'A14':('blend','duration','guard','slope'),'A15':('scale','count'),
-            'A16':('range','path','active'),'A18':('head','curves','gaze')}
+            'A16':('range','path','active'),'A17':('fkik','hint'),'A18':('head','curves','gaze')}
     if key not in needed.get(ep,()):return l/(key+'.mp4')
-    motion=read(h/'motion-evidence.json') if ep in ('A10','A11','A14') else {}
+    motion=read(h/'motion-evidence.json') if ep in ('A10','A11','A14','A17') else {}
     collision=read(h/'collision-samples.json') if ep=='A16' else {}
     degrees=read(h/'degrees-by-frame.json') if ep=='A18' else {}
     directory=l/'frames'/key;frames=sorted(directory.glob('*.png'));assert len(frames)==120
@@ -138,6 +138,14 @@ def compose(ep,key,h,l,v,encoder):
                     x=80+i*950;panel(draw,x,703,729,70)
                     status='명중' if track['hit'] else '활성 · 미접촉' if track['enabled'] else '판정 꺼짐'
                     label(draw,x+16,716,f'{n} F    {status}',27,RED if track['hit'] else WHITE)
+            if ep=='A17':
+                # Project the wrist from this exact UE animation and camera, including actor yaw.
+                for side in range(2):
+                    wx,wy,wz=motion[key][side][n]['hand_r'];yaw=math.radians(-16)
+                    px=960+(wx*math.cos(yaw)-wy*math.sin(yaw)+(-79,79)[side])*1920/370
+                    py=540-(wz-105)*1920/370
+                    dot(draw,(px,py),20,GOLD if side==0 and key=='fkik' else MINT)
+                    label(draw,round(px)+25,round(py)-36,'손목',22)
             if ep=='A18':
                 for i in range(2):
                     x=80+i*950;panel(draw,x,651,724,145)
