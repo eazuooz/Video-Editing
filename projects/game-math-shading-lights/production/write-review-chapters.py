@@ -28,7 +28,19 @@ page='''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewpor
 body{max-width:1100px;margin:20px auto;padding:0 16px 32px;background:#101111;color:#fafaf8;font:18px/1.65 system-ui}a{color:#83d5ce}h1{color:#f4d077;margin:.35em 0}h2{font-size:1.18em}video{width:100%;background:#040404}small{color:#ddd}li{margin:.7em 0}nav a{display:inline-block;margin-right:1.1em}
 </style><main><a href="../game-math-remaining-20261104/index.html">전체 13편 제작표</a><h1>M21 · 빛과 셰이딩</h1><p>32분 10초 · 1080p60 · 내부 검수 중</p><video id="v" controls playsinline preload="metadata" src="CAP"></video>
 <nav><a href="CAP">자막 영상</a><a href="SLUG.clean.mp4">자막 없는 영상</a><a href="SLUG.ko.srt">한국어 자막</a><a href="SLUG.en.srt">영어 자막</a></nav><h2>다시 들어볼 구간</h2><p>재생 위치를 누르면 설명 직전부터 들을 수 있어요.</p><ul>ROWS</ul></main>
-<script>const v=document.getElementById("v");document.querySelectorAll("[data-t]").forEach(a=>a.addEventListener("click",e=>{if(e.ctrlKey||e.metaKey||e.shiftKey)return;e.preventDefault();const seek=()=>{v.currentTime=Number(a.dataset.t);v.play().catch(()=>{});};if(v.readyState)seek();else{v.addEventListener("loadedmetadata",seek,{once:true});v.load();}}));</script></html>'''
+<p id="player-help" hidden role="status">재생이 멈추면 <a href="http://127.0.0.1:9347/output/game-math-shading-lights-render-v4/index.html">이 컴퓨터의 브라우저용 검수 링크</a>를 Chrome에서 열어 주세요.</p>
+<script>
+const v=document.getElementById('v'),help=document.getElementById('player-help');
+const showHelp=()=>{help.hidden=false};
+if(location.protocol==='file:'||v.error)showHelp();
+v.addEventListener('error',showHelp);
+document.querySelectorAll('[data-t]').forEach(link=>link.addEventListener('click',event=>{
+  if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+  event.preventDefault();
+  v.currentTime=Number(link.dataset.t);
+  v.play().catch(error=>{if(error.name!=='AbortError')showHelp()});
+}));
+</script></html>'''
 (dest/'index.html').write_text(page.replace('CAP',cap.name).replace('SLUG',P.name).replace('ROWS',''.join(rows)),encoding='utf8')
 (W/'review-seek-evidence.json').write_text(json.dumps(dict(masterSha256=proof['masterSha256'],chapterOrigins=records,approved=False),ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 print('3 master-relative checks;',dest/'index.html')

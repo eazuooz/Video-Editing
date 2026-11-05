@@ -49,7 +49,23 @@ function inset(){const z=r?.inset,t=v.currentTime;if(!z||v.readyState<2||t<z.sta
 const baseDraw=redraw;redraw=()=>{baseDraw();inset()};
 function sync(){if(!r||!r.sound||!sel.checked)return;if(Number.isFinite(snd.duration)&&Math.abs(snd.currentTime-(v.currentTime+r.offset))>.18)snd.currentTime=v.currentTime+r.offset;}
 function pump(){cancelAnimationFrame(cb);redraw();if(v.currentTime>=r.end){v.pause();return}if(!v.paused)cb=requestAnimationFrame(pump);}
-async function play(){if(!r||v.readyState<1)return;if(v.currentTime<r.start-.1||v.currentTime>=r.end-.02)v.currentTime=r.start;try{if(r.sound&&sel.checked){if(snd.readyState<1)snd.load();sync();await Promise.all([v.play(),snd.play()]);sync()}else await v.play();}catch(e){$('err').textContent='재생을 시작할 수 없어요. 브라우저의 파일 접근 또는 미디어 지원을 확인해 주세요.'}}
+async function play(){
+  if(!r)return;
+  const selection=serial;
+  try{
+    if(v.currentTime<r.start-.1||v.currentTime>=r.end-.02)v.currentTime=r.start;
+    const videoPlaying=v.play();
+    if(r.sound&&sel.checked){
+      snd.currentTime=v.currentTime+r.offset;
+      await Promise.all([videoPlaying,snd.play()]);
+      if(selection===serial)sync();
+    }else await videoPlaying;
+  }catch(error){
+    if(selection!==serial||error.name==='AbortError')return;
+    v.pause();snd.pause();
+    $('err').textContent='영상을 열 수 없어요. 검수 링크를 이 컴퓨터의 Chrome에서 열어 주세요.';
+  }
+}
 function choose(){serial++;const token=serial;r=rows[Number(cut.value)];v.pause();snd.pause();cancelAnimationFrame(cb);v.muted=!!r.sound||!sel.checked;snd.muted=!sel.checked;v.src=r.file;
 if(r.sound){snd.src=r.sound;snd.preload='metadata';snd.load()}else {snd.removeAttribute('src');snd.load()}v.onloadedmetadata=()=>{if(token!==serial)return;v.currentTime=r.start;redraw()};v.preload='metadata';v.load();$('speech').textContent=r.speech;$('err').textContent='';redraw();history.replaceState(null,'','#'+r.ep+'-'+r.sid);}
 function setcuts(id){cut.replaceChildren();rows.forEach((r,i)=>{if(r.ep===lesson.value)cut.add(new Option((cut.length+1)+' · '+r.game+' · '+(r.end-r.start).toFixed(0)+'초',i))});if(id!=null&&rows[id]?.ep===lesson.value)cut.value=id;choose()}
