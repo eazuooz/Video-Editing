@@ -4,7 +4,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '../../..');
 const newsReview = process.argv.includes('--newsroom');
-const selected = process.argv.includes('--a01kit') ? {
+const selected = process.argv.includes('--actors') ? {
+  news: ['unreal-engine-6-verse-gameplay','newsroom-v4'],
+} : process.argv.includes('--a01kit') ? {
   kit: ['animation-assigning', 'unreal-kit-v2'],
 } : process.argv.includes('--a03') ? {
   a03: ['animation-breaking-down-attack-animations', 'grid-v1'],
