@@ -22,7 +22,7 @@ assert any(i['id']==episode and i['slug']==P.name for i in read(Path(__file__).p
 factories={'game-math-skinning-normal-map':'SkinNormalSceneBuilder','game-math-pipeline-shaders':'PipelineSceneBuilder'}
 # Read the factory from a prepared, source-matched preview for other modules.
 preview_jobs=[]
-for q in S.glob('local-preflight-v*/queue.json'):
+for q in S.glob('local-preflight-*/queue.json'):
  d=read(q)
  if d['fingerprint']==marker['fingerprint']:preview_jobs.extend(d['jobs'])
 assert preview_jobs,'This exact sandbox needs a prepared diagnostic queue'

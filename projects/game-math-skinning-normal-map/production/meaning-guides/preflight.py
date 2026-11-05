@@ -1,7 +1,9 @@
 from pathlib import Path
 import json
 from prepare import P,read,save
-s=P/'production/unity-staging';mk=read(s/'sandbox-preparation.json');out=s/'local-preflight-meaning-v1';assert not out.exists();out.mkdir()
+import argparse
+ap=argparse.ArgumentParser();ap.add_argument('--revision',type=int,default=1);args=ap.parse_args()
+s=P/'production/unity-staging';mk=read(s/'sandbox-preparation.json');out=s/f'local-preflight-meaning-v{args.revision}';assert not out.exists();out.mkdir()
 plan=read(P/'planning/scene-bindings.json');q=read(s/'local-preflight-v5/queue.json')
 q.update(sandbox=mk['sandbox'],fingerprint=mk['fingerprint'],scope='M22 purpose/surface anchors verified against the same project used for final capture',jobs=[])
 for i in (5,20,28):

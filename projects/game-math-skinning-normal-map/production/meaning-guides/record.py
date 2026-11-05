@@ -4,19 +4,22 @@ import argparse,re
 def mark(stage,review=False):
  m21=P.with_name('game-math-shading-lights');receipt=m21/'publishing/youtube-upload-v7.json';r=read(receipt);sha21=r['video']['sha256']
  stamp=datetime.now(timezone.utc).isoformat();rel=lambda p:p.relative_to(R).as_posix()
+ uploaded=bool(r.get('privateVideoId') and r.get('verifiedPrivacy')=='private')
  for name in ['checkpoint','review-ledger']:
   path=m21/f'production/{name}.json';j=read(path)
   j['reviewedVersion']={'sha256':sha21,'userApproved':True,'scope':'upload private M21 v7','message':'좋아~ 업로드 해줘~','fullContinuousListeningClaimed':False}
-  if name=='checkpoint': j.update(humanReview=True,nextAction='Transfer this SHA256 to the intended Studio channel privately; verify real ID and privacy.',platformReceipt=rel(receipt))
+  if name=='checkpoint': j.update(humanReview=True,nextAction='Private Studio upload verified.' if uploaded else 'Transfer this SHA256 to the intended Studio channel privately; verify real ID and privacy.',platformReceipt=rel(receipt))
   else:j['humanReview']={'status':'approved-v7-for-private-upload','masterSha256':sha21}
   save(path,j)
  cp=P/'production/checkpoint.json';j=read(cp);j.update(stage=stage,updatedAt=stamp,outputsReady=review,localReviewReady=review,humanReview=False)
  j['meaningGuides']=dict(source='10.8 / 10.9',voiceRevision='audio-v4',rules=['meaning-before-values-v1','surface-symbol-guides-v1'],revoiced=sorted(ROWS),unchanged=36-len(ROWS),editorSource=rel(P/'production/unity-staging/SkinNormalMeaningGuides.cs'),preview=rel(P/'production/unity-staging/local-preflight-meaning-v1'))
- j['nextAction']='Local user review only' if review else 'Finish selected source-synchronous Unity / audio alignment, encode and verify four outputs.'
+ q=P/'production/local/render-v2/queue.json';queue=read(q);timeline=read(Path(queue['wordAlignment']))
+ j['meaningGuides'].update(preview=rel(P/'production/unity-staging/local-preflight-meaning-v2'),queue=rel(q),queueSha256=sha(q),alignedSpeechScenes=len(timeline['scenes']),asrTimingFlags=timeline['flags'],framesIncludingEnds=queue['bodyFrames']+720,actualGames=[dict(scene=c['scene'],sourceId=c['sourceId'],frames=c['frames']) for c in queue['cuts'] if c['kind']=='actual-gameplay'])
+ j['nextAction']='Local user review only' if review else 'Resume the existing finite M22 render, encode, verify masters and inspect the final playback.'
  save(cp,j)
  ledger=P/'production/review-ledger.json';j=read(ledger);j['meaningGuides']=dict(stage=stage,at=stamp,userReviewed=False,localFinalReviewReady=review,source=rel(cp));save(ledger,j)
  w=R/'shared/publishing/video-worklist.json';j=read(w);rows={x['id']:x for x in j['rows']};a,b=rows['M21'],rows['M22']
- a.update(reviewStatus='v7 사용자 승인 · 비공개 업로드 요청',humanApproval='현재 v7 검수본 승인',platformStatus='미업로드 · Studio 파일 전송 대기',notes='승인 SHA256 '+sha21+' · 자막 포함 제작 마스터',localMasterAvailable=True)
+ a.update(reviewStatus='v7 사용자 승인 · 비공개 업로드 요청',humanApproval='현재 v7 검수본 승인',platformStatus='비공개 · '+r['privateVideoId'] if uploaded else '미업로드 · Studio 파일 전송 대기',notes='승인 SHA256 '+sha21+' · 자막 포함 제작 마스터',localMasterAvailable=True)
  b.update(productionStatus=stage,reviewStatus='사용자 검수 대기' if review else '내부 제작 중',localMasterAvailable=review,productionComplete=review)
  save(w,j)
  doc=R/'docs/VIDEO_WORKLIST.md';s=doc.read_text('utf-8-sig')

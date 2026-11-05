@@ -70,7 +70,7 @@ namespace Yamyam.SkinNormal {
             readout=Label("CurrentValues",new Rect(75,748,1790,63),44,Teal);
             explanation=Label("Meaning",new Rect(75,817,1790,65),42,White);
             code=Label("CodeAndFormula",new Rect(80,292,850,365),40,White);code.supportRichText=true;
-            objectLabel=Label("SameObject",new Rect(85,205,860,58),40,White);
+            objectLabel=Label("SameObject",new Rect(85,205,1745,64),40,White);
             built=true;
         }
         T Own<T>(T o) where T:UnityEngine.Object {owned.Add(o);return o;}
