@@ -1,0 +1,866 @@
+{
+  "source": "v5 sphere studies and original independent gameplay",
+  "sources": {
+    "radiometry": "https://pbr-book.org/4ed/Radiometry,_Spectra,_and_Color/Radiometry",
+    "vertexInterpolation": "https://learn.microsoft.com/en-us/windows/win32/direct3d9/triangle-interpolation",
+    "reflect": "https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-reflect"
+  },
+  "chapters": [
+    {
+      "scene": "001",
+      "title": [
+        "Physically Based Rendering · PBR",
+        "물리 기반 렌더링"
+      ],
+      "masterSeconds": 40.717,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "002",
+      "title": [
+        "BRDF",
+        "양방향 반사 분포 함수"
+      ],
+      "masterSeconds": 63.65,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "003",
+      "title": [
+        "Direct Lighting",
+        "직접광"
+      ],
+      "masterSeconds": 87.2,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "004",
+      "title": [
+        "Light Source",
+        "광원"
+      ],
+      "masterSeconds": 108.017,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "005",
+      "title": [
+        "Lighting Components",
+        "조명 성분"
+      ],
+      "masterSeconds": 129.883,
+      "equation": "C=C_e+C_s+C_d+C_a",
+      "code": [
+        "color = emit + spec",
+        "      + diffuse + ambient;"
+      ]
+    },
+    {
+      "scene": "006",
+      "title": [
+        "Hadamard Product",
+        "성분별 곱"
+      ],
+      "masterSeconds": 152.967,
+      "equation": "\\mathbf{C}=\\mathbf{C}_{l}\\odot\\mathbf{C}_{m}",
+      "code": [
+        "rgb = lightRGB * materialRGB;"
+      ]
+    },
+    {
+      "scene": "007",
+      "title": [
+        "Specular Reflection",
+        "정반사"
+      ],
+      "masterSeconds": 187.533,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "008",
+      "title": [
+        "Unit Vectors",
+        "단위 벡터"
+      ],
+      "masterSeconds": 207.6,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "009",
+      "title": [
+        "Reflection Vector",
+        "반사 벡터"
+      ],
+      "masterSeconds": 232.1,
+      "equation": "\\mathbf{R}=2(\\mathbf{N}\\cdot\\mathbf{L})\\mathbf{N}-\\mathbf{L}",
+      "code": [
+        "R = reflect(-L, N);"
+      ]
+    },
+    {
+      "scene": "010",
+      "title": [
+        "Reflection Vector",
+        "반사 벡터"
+      ],
+      "masterSeconds": 258.083,
+      "equation": "\\mathbf{R}=2(\\mathbf{N}\\cdot\\mathbf{L})\\mathbf{N}-\\mathbf{L}",
+      "code": [
+        "R = reflect(-L, N);"
+      ]
+    },
+    {
+      "scene": "011",
+      "title": [
+        "Phong Reflection Model",
+        "퐁 반사 모델"
+      ],
+      "masterSeconds": 280.4,
+      "equation": "S=\\max(0,\\mathbf{R}\\cdot\\mathbf{V})^{n}",
+      "code": [
+        "s = pow(max(0, dot(R,V)), n);"
+      ]
+    },
+    {
+      "scene": "012",
+      "title": [
+        "Shininess Exponent",
+        "광택 지수"
+      ],
+      "masterSeconds": 302.617,
+      "equation": "0.8^{2}=0.64,\\quad 0.8^{8}\\simeq0.17",
+      "code": [
+        "s = pow(0.8, exponent);"
+      ]
+    },
+    {
+      "scene": "013",
+      "title": [
+        "Shininess Exponent",
+        "광택 지수"
+      ],
+      "masterSeconds": 326.55,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "014",
+      "title": [
+        "Light Cookie / Gobo",
+        "광원 쿠키 · 고보"
+      ],
+      "masterSeconds": 359.133,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "015",
+      "title": [
+        "Specular Strength & Shininess",
+        "정반사 세기와 광택 지수"
+      ],
+      "masterSeconds": 385.267,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "016",
+      "title": [
+        "Halfway Vector",
+        "하프웨이 벡터"
+      ],
+      "masterSeconds": 407.917,
+      "equation": "\\mathbf{H}=\\frac{\\mathbf{L}+\\mathbf{V}}{\\Vert\\mathbf{L}+\\mathbf{V}\\Vert}",
+      "code": [
+        "H = normalize(L + V);"
+      ]
+    },
+    {
+      "scene": "017",
+      "title": [
+        "Blinn–Phong Reflection",
+        "블린–퐁 반사"
+      ],
+      "masterSeconds": 433.717,
+      "equation": "S=\\max(0,\\mathbf{N}\\cdot\\mathbf{H})^{n}",
+      "code": [
+        "s = pow(max(0, dot(N,H)), n);"
+      ]
+    },
+    {
+      "scene": "018",
+      "title": [
+        "Lambertian Reflection",
+        "램버트 난반사"
+      ],
+      "masterSeconds": 471.883,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "019",
+      "title": [
+        "Lambertian Reflection",
+        "램버트 난반사"
+      ],
+      "masterSeconds": 495.883,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "020",
+      "title": [
+        "Lambertian Reflection",
+        "램버트 난반사"
+      ],
+      "masterSeconds": 520.6,
+      "equation": "d=\\max(0,\\mathbf{N}\\cdot\\mathbf{L})",
+      "code": [
+        "d = max(0, dot(N,L));"
+      ]
+    },
+    {
+      "scene": "021",
+      "title": [
+        "Lambertian Reflection",
+        "램버트 난반사"
+      ],
+      "masterSeconds": 543.917,
+      "equation": "\\mathbf{C}_{d}=(\\mathbf{k}_d\\odot\\mathbf{I})\\max(0,\\cos\\theta)",
+      "code": [
+        "rgb = kd * lightRGB * d;"
+      ]
+    },
+    {
+      "scene": "022",
+      "title": [
+        "Lambertian BRDF",
+        "램버트 BRDF"
+      ],
+      "masterSeconds": 568.817,
+      "equation": "f_r=\\frac{\\rho}{\\pi}",
+      "code": [
+        "brdf = albedo / PI;"
+      ]
+    },
+    {
+      "scene": "023",
+      "title": [
+        "Lambertian BRDF",
+        "램버트 양방향 반사 분포 함수"
+      ],
+      "masterSeconds": 595.017,
+      "equation": "\\mathrm{d}L_o=L_i\\,f_r\\,\\cos\\theta\\,\\mathrm{d}\\omega",
+      "code": [
+        "dLo = Li * brdf * cosTheta * dOmega;"
+      ]
+    },
+    {
+      "scene": "024",
+      "title": [
+        "Ambient Lighting",
+        "환경광"
+      ],
+      "masterSeconds": 616.983,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "025",
+      "title": [
+        "Ambient Lighting",
+        "환경광"
+      ],
+      "masterSeconds": 639.183,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "026",
+      "title": [
+        "Emission",
+        "발광"
+      ],
+      "masterSeconds": 660.95,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "027",
+      "title": [
+        "Emission",
+        "발광"
+      ],
+      "masterSeconds": 699.05,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "028",
+      "title": [
+        "Lighting Components",
+        "조명 성분"
+      ],
+      "masterSeconds": 720.7,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "029",
+      "title": [
+        "Light Visibility",
+        "광원 가시성"
+      ],
+      "masterSeconds": 742.0,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "030",
+      "title": [
+        "Half Lambert",
+        "하프 램버트"
+      ],
+      "masterSeconds": 766.183,
+      "equation": "h=\\left(\\frac{\\mathbf{N}\\cdot\\mathbf{L}+1}{2}\\right)^2",
+      "code": [
+        "t = 0.5*dot(N,L) + 0.5;",
+        "h = t*t;"
+      ]
+    },
+    {
+      "scene": "031",
+      "title": [
+        "Multiple Lights",
+        "여러 광원의 합"
+      ],
+      "masterSeconds": 796.267,
+      "equation": "C=C_e+C_a+\\sum_j(D_j+S_j)",
+      "code": [
+        "color = emission + ambient;",
+        "color += sumDiffuseAndSpecular;"
+      ]
+    },
+    {
+      "scene": "032",
+      "title": [
+        "Local Illumination",
+        "국소 조명"
+      ],
+      "masterSeconds": 816.817,
+      "equation": "C=C_e+C_a+C_d+C_s",
+      "code": [
+        "color = emit + ambient",
+        "      + diffuse + spec;"
+      ]
+    },
+    {
+      "scene": "033",
+      "title": [
+        "Blinn–Phong Reflection",
+        "블린–퐁 반사"
+      ],
+      "masterSeconds": 840.267,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "034",
+      "title": [
+        "Light Visibility",
+        "광원 가시성"
+      ],
+      "masterSeconds": 862.6,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "035",
+      "title": [
+        "Fresnel Effect & Retroreflection",
+        "프레넬 효과와 재귀반사"
+      ],
+      "masterSeconds": 887.083,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "036",
+      "title": [
+        "Anisotropic Reflection",
+        "비등방성 반사"
+      ],
+      "masterSeconds": 909.167,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "037",
+      "title": [
+        "Shading Frequency",
+        "셰이딩 계산 위치"
+      ],
+      "masterSeconds": 929.617,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "038",
+      "title": [
+        "Flat Shading",
+        "플랫 셰이딩"
+      ],
+      "masterSeconds": 947.633,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "039",
+      "title": [
+        "Gouraud Shading",
+        "구로 셰이딩"
+      ],
+      "masterSeconds": 968.55,
+      "equation": "C(P)=\\lambda_0 C_0+\\lambda_1 C_1+\\lambda_2 C_2",
+      "code": [
+        "color = w0*c0 + w1*c1 + w2*c2;"
+      ]
+    },
+    {
+      "scene": "040",
+      "title": [
+        "Gouraud Shading",
+        "구로 셰이딩"
+      ],
+      "masterSeconds": 991.517,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "041",
+      "title": [
+        "Phong Shading",
+        "퐁 셰이딩"
+      ],
+      "masterSeconds": 1014.7,
+      "equation": "\\mathbf{N}(P)=\\frac{\\sum_i\\lambda_i\\mathbf{N}_i}{\\Vert\\sum_i\\lambda_i\\mathbf{N}_i\\Vert}",
+      "code": [
+        "N = normalize(interpolatedN);",
+        "color = shade(N);"
+      ]
+    },
+    {
+      "scene": "042",
+      "title": [
+        "Phong Shading",
+        "퐁 셰이딩"
+      ],
+      "masterSeconds": 1038.983,
+      "equation": "\\left(\\frac{0+1}{2}\\right)^2\\ne\\frac{0^2+1^2}{2}",
+      "code": [
+        "a = pow((0+1)/2.0, 2);",
+        "b = (0*0 + 1*1)/2.0;"
+      ]
+    },
+    {
+      "scene": "043",
+      "title": [
+        "Phong Shading",
+        "퐁 셰이딩"
+      ],
+      "masterSeconds": 1059.75,
+      "equation": "\\sum_i(\\mathbf{k}\\odot\\mathbf{D}_i)=\\mathbf{k}\\odot\\sum_i\\mathbf{D}_i",
+      "code": [
+        "color = material * sumLight;"
+      ]
+    },
+    {
+      "scene": "044",
+      "title": [
+        "Phong Shading",
+        "퐁 셰이딩"
+      ],
+      "masterSeconds": 1082.467,
+      "equation": "0.8(0.2+0.3)=0.16+0.24=0.4",
+      "code": [
+        "color = 0.8 * (0.2 + 0.3);"
+      ]
+    },
+    {
+      "scene": "045",
+      "title": [
+        "Phong Shading",
+        "퐁 셰이딩"
+      ],
+      "masterSeconds": 1112.517,
+      "equation": "C=k_d\\odot D+k_s\\odot S+C_e",
+      "code": [
+        "color = kd*D + ks*S + emission;"
+      ]
+    },
+    {
+      "scene": "046",
+      "title": [
+        "Coordinate Space",
+        "좌표 공간"
+      ],
+      "masterSeconds": 1138.133,
+      "equation": "d=\\mathbf{N}_{w}\\cdot\\mathbf{L}_{w}",
+      "code": [
+        "d = dot(worldN, worldL);"
+      ]
+    },
+    {
+      "scene": "047",
+      "title": [
+        "Light Sources",
+        "광원의 종류"
+      ],
+      "masterSeconds": 1162.533,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "048",
+      "title": [
+        "Point Light",
+        "점 광원"
+      ],
+      "masterSeconds": 1185.267,
+      "equation": "d=\\Vert Q-P\\Vert,\\quad\\mathbf{L}=\\frac{Q-P}{d}",
+      "code": [
+        "delta = lightPos - surfacePos;",
+        "L = delta / length(delta);"
+      ]
+    },
+    {
+      "scene": "049",
+      "title": [
+        "Spot Light",
+        "스폿 광원"
+      ],
+      "masterSeconds": 1219.35,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "050",
+      "title": [
+        "Spot Light",
+        "스폿 광원"
+      ],
+      "masterSeconds": 1242.133,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "051",
+      "title": [
+        "Directional Light",
+        "방향성 광원"
+      ],
+      "masterSeconds": 1265.267,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "052",
+      "title": [
+        "Dirac Delta",
+        "디랙 델타"
+      ],
+      "masterSeconds": 1291.0,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "053",
+      "title": [
+        "Inverse-square Falloff",
+        "역제곱 감쇠"
+      ],
+      "masterSeconds": 1311.667,
+      "equation": "E(2r)=\\frac{1}{4}E(r)",
+      "code": [
+        "E2 = E1 * 0.25;"
+      ]
+    },
+    {
+      "scene": "054",
+      "title": [
+        "Irradiance",
+        "복사조도"
+      ],
+      "masterSeconds": 1333.2,
+      "equation": "E=\\frac{\\mathrm{d}\\Phi_{\\mathrm{in}}}{\\mathrm{d}A}",
+      "code": [
+        "Eavg = incomingPower / area;"
+      ]
+    },
+    {
+      "scene": "055",
+      "title": [
+        "Radiance",
+        "복사휘도"
+      ],
+      "masterSeconds": 1355.983,
+      "equation": "L=\\frac{\\mathrm{d}^2\\Phi}{\\mathrm{d}A_{\\perp}\\,\\mathrm{d}\\omega}",
+      "code": [
+        "Lavg = power / (projArea * omega);"
+      ]
+    },
+    {
+      "scene": "056",
+      "title": [
+        "Solid Angle",
+        "입체각"
+      ],
+      "masterSeconds": 1379.067,
+      "equation": "\\mathrm{d}\\omega=\\frac{|\\cos\\theta_s|\\,\\mathrm{d}A_s}{r^2}",
+      "code": [
+        "dOmega = cosAbs * dA / (r*r);"
+      ]
+    },
+    {
+      "scene": "057",
+      "title": [
+        "Inverse-Square Falloff",
+        "역제곱 감쇠"
+      ],
+      "masterSeconds": 1400.267,
+      "equation": "E=\\frac{I}{r^2}\\quad(r>0)",
+      "code": [
+        "E = intensity / (r*r);"
+      ]
+    },
+    {
+      "scene": "058",
+      "title": [
+        "Linear Attenuation",
+        "선형 감쇠"
+      ],
+      "masterSeconds": 1422.917,
+      "equation": "a=\\min\\!\\left(1,\\max\\!\\left(0,\\frac{r_o-d}{r_o-r_i}\\right)\\right)",
+      "code": [
+        "a = saturate((outer-d)/(outer-inner));"
+      ]
+    },
+    {
+      "scene": "059",
+      "title": [
+        "Spotlight Angular Falloff",
+        "스폿 광원의 각도 감쇠"
+      ],
+      "masterSeconds": 1446.317,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "060",
+      "title": [
+        "Doom 3 Light Volume",
+        "둠 3 광원 영향 영역"
+      ],
+      "masterSeconds": 1482.45,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "061",
+      "title": [
+        "Light Cookie",
+        "광원 쿠키"
+      ],
+      "masterSeconds": 1500.317,
+      "equation": "a=G\\!\\left(\\frac{x}{w},\\frac{y}{w}\\right)F(z)",
+      "code": [
+        "a = gobo(uv) * falloff(z);"
+      ]
+    },
+    {
+      "scene": "062",
+      "title": [
+        "Projective Texture Mapping",
+        "투영 텍스처 매핑"
+      ],
+      "masterSeconds": 1523.933,
+      "equation": "(u,v)=\\left(\\frac{x}{w},\\frac{y}{w}\\right)",
+      "code": [
+        "uv = lightCoord.xy / lightCoord.w;"
+      ]
+    },
+    {
+      "scene": "063",
+      "title": [
+        "Orthographic Projection",
+        "직교 투영"
+      ],
+      "masterSeconds": 1546.75,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "064",
+      "title": [
+        "Orthographic Projection",
+        "직교 투영"
+      ],
+      "masterSeconds": 1572.85,
+      "equation": "u=\\frac{x}{s_x}+\\frac{1}{2},\\quad v=\\frac{1}{2}-\\frac{y}{s_y}",
+      "code": [
+        "u = x/width + 0.5;",
+        "v = 0.5 - y/height;"
+      ]
+    },
+    {
+      "scene": "065",
+      "title": [
+        "Perspective Projection",
+        "원근 투영"
+      ],
+      "masterSeconds": 1597.917,
+      "equation": "(u,v)=\\left(\\frac{x}{w},\\frac{y}{w}\\right),\\quad w=z",
+      "code": [
+        "uv = projected.xy / projected.w;"
+      ]
+    },
+    {
+      "scene": "066",
+      "title": [
+        "Projective Texture Clipping",
+        "투영 텍스처 범위 제한"
+      ],
+      "masterSeconds": 1620.367,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "067",
+      "title": [
+        "Orthographic Projection",
+        "직교 투영"
+      ],
+      "masterSeconds": 1642.75,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "068",
+      "title": [
+        "Light Volume",
+        "광원 영향 영역"
+      ],
+      "masterSeconds": 1673.417,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "069",
+      "title": [
+        "Baked Lighting",
+        "베이크 조명"
+      ],
+      "masterSeconds": 1699.5,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "070",
+      "title": [
+        "Lightmap Atlas",
+        "라이트맵 아틀라스"
+      ],
+      "masterSeconds": 1721.433,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "071",
+      "title": [
+        "Baked Vertex Lighting",
+        "정점에 저장한 조명"
+      ],
+      "masterSeconds": 1744.317,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "072",
+      "title": [
+        "Directional Irradiance",
+        "방향별 복사조도"
+      ],
+      "masterSeconds": 1769.067,
+      "equation": "E=\\int_{\\Omega^+}L_i(\\omega)\\max(0,\\mathbf{N}\\cdot\\omega)\\,\\mathrm{d}\\omega",
+      "code": [
+        "E += Li * max(0, dot(N,wi)) * dOmega;"
+      ]
+    },
+    {
+      "scene": "073",
+      "title": [
+        "Spherical Harmonics · SH",
+        "구면 조화 함수"
+      ],
+      "masterSeconds": 1792.483,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "074",
+      "title": [
+        "Baked Lighting",
+        "베이크 조명"
+      ],
+      "masterSeconds": 1814.65,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "075",
+      "title": [
+        "Mixed Lighting",
+        "혼합 조명"
+      ],
+      "masterSeconds": 1838.45,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "076",
+      "title": [
+        "Light Probe",
+        "라이트 프로브"
+      ],
+      "masterSeconds": 1861.283,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "077",
+      "title": [
+        "Environment Lighting",
+        "환경 조명"
+      ],
+      "masterSeconds": 1886.883,
+      "equation": null,
+      "code": null
+    },
+    {
+      "scene": "078",
+      "title": [
+        "Light and Shading",
+        "빛과 셰이딩"
+      ],
+      "masterSeconds": 1913.15,
+      "equation": null,
+      "code": null
+    }
+  ]
+}
