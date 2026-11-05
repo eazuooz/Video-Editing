@@ -26,6 +26,8 @@ s={'pid':os.getpid(),'createTime':psutil.Process().create_time(),'status':'waiti
 def save():statefile.write_text(json.dumps(s,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 spec=importlib.util.spec_from_file_location('guard',R/'projects/game-math-shading-lights/production/run-capture-queue.py');G=importlib.util.module_from_spec(spec);spec.loader.exec_module(G)
 deadline=time.monotonic()+args.wait_hours*3600
+edition=P/'planning/part2-delivery-edition.json'
+group_cpu=edition.is_file() and read(edition)['audioRevision']==args.audio_revision
 try:
     while True:
         c=read(R/'shared/publishing/video-production-control.json')['explicitMathRemainingBatch20261104'];assert c['productionAllowedNow'] and args.project in c['projectSlugs'];voice=read(A/'finite-worker.json')
@@ -35,9 +37,10 @@ try:
             if args.reuse_from and not (A/'review/reused-pcm-evidence.json').exists():
                 assert __import__('re').fullmatch(r'audio-v\d+',args.reuse_from) and args.reuse_from!=args.audio_revision
                 subprocess.run([str(R/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8',str(B/'reuse-unchanged-word-evidence.py'),'--project',P.name,'--source',args.reuse_from,'--target',args.audio_revision],cwd=R,check=True,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
-            reason=G.idle_reason()
+            reason=None if group_cpu else G.idle_reason()
         s.update(reason=reason,checkedAt=now());save()
         if reason is None:
+            if group_cpu:break
             free=int(subprocess.check_output(['nvidia-smi','--query-gpu=memory.free','--format=csv,noheader,nounits'],text=True).splitlines()[0])
             if free<9216:reason='Word alignment needs 9 GiB idle memory';s.update(reason=reason);save()
             else:
@@ -52,7 +55,8 @@ try:
         time.sleep(20)
     s.update(status='transcribing-word-timestamps');save()
     with (A/'word-review.stdout.log').open('w',encoding='utf-8') as out,(A/'word-review.stderr.log').open('w',encoding='utf-8') as err:
-        child=subprocess.Popen([str(R/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8',str(B/'review-source-voice.py'),'--project',P.name,'--audio-revision',args.audio_revision,'--transcribe','--device','cuda','--lease-id',owned],cwd=R,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+        device=['--device','cpu'] if group_cpu else ['--device','cuda','--lease-id',owned]
+        child=subprocess.Popen([str(R/'qwen3-tts/.venv/Scripts/python.exe'),'-X','utf8',str(B/'review-source-voice.py'),'--project',P.name,'--audio-revision',args.audio_revision,'--transcribe',*device],cwd=R,stdout=out,stderr=err,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
         s['asrPid']=child.pid;save();code=child.wait()
     if code:raise RuntimeError('Word review failed; inspect preserved partial evidence')
     s.update(status='word-evidence-ready-content-review-pending',finishedAt=now());save()

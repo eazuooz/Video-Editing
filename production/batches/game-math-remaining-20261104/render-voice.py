@@ -380,6 +380,13 @@ def main():
             LEASE.unlink()
     atexit.register(release_at_exit)
     try:
+        if edition_path.is_file() and psutil.virtual_memory().available>=8*1024**3:
+            # CPU readback stops at the end of this recording. An absent cache
+            # simply runs the ordinary full-PCM review after assembly.
+            reviewer=Path(__file__).parent/'part2/early_readback.py'
+            with (worker.OUTPUT_DIR/'early-cpu.log').open('a',encoding='utf-8') as log:
+                subprocess.Popen([sys.executable,'-u','-X','utf8',str(reviewer),'--project',SLUG,'--lease-token',state['token']],
+                                 stdout=log,stderr=subprocess.STDOUT,creationflags=CREATE_NO_WINDOW)
         import torch
         torch.cuda.set_per_process_memory_fraction(state['allocatorCapMiB'] / total, 0)
         worker.load_tts_dependencies()
@@ -406,14 +413,7 @@ def main():
         pieces, entries, levels = [], [], []
         position, sr0 = 0.0, None
         stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
-        def speech_level(samples, sr):
-            length = max(1, round(sr * eq['frameMs'] / 1000))
-            assert len(samples) >= length, 'Empty/too-short take must be inspected.'
-            frames = samples[:len(samples)//length*length].reshape(-1, length)
-            rms = np.sqrt(np.mean(frames * frames, axis=1))
-            db = 20 * np.log10(np.maximum(rms, 1e-10))
-            active = db[db >= db.max() - eq['gateBelowPeakDb']]
-            return float(np.median(active))
+        from paragraph_level import level_paragraph,speech_level
         for si, scene in enumerate(script['scenes']):
             local = 0.0
             parts = []
@@ -422,14 +422,12 @@ def main():
                 samples, sr = worker._read_mono(raw)
                 sr0 = sr0 or sr
                 assert sr == sr0
-                before = speech_level(samples, sr)
-                gain_db = max(-eq['maxGainDb'], min(eq['maxGainDb'], eq['targetSpeechFrameMedianDbfs'] - before))
-                levelled = worker._apply_edge_fades(samples * np.float32(10**(gain_db/20)), sr)
+                levelled,before,gain_db=level_paragraph(samples,sr,eq,worker._apply_edge_fades)
                 if n > 1:
                     parts.append(np.zeros(round(gap*sr), dtype=np.float32)); local += gap
                 seconds = len(levelled)/sr
                 entries.append({'index': len(entries)+1, 'scene_id': scene['id'], 'scene_title': scene['title'], 'paragraph': n, 'text': text, 'display_text': scene.get('displayLines', scene['lines'])[n-1], 'text_en': english['scenes'][si]['lines'][n-1], 'start': position+local, 'end': position+local+seconds})
-                levels.append({'id': f"{scene['id']}-{n:02d}", 'rawSha256': digest(raw), 'beforeMedianDbfs': before, 'gainDb': gain_db, 'afterMedianDbfs': speech_level(levelled, sr), 'peak': float(np.abs(levelled).max()), 'seconds': seconds})
+                levels.append({'id': f"{scene['id']}-{n:02d}", 'rawSha256': digest(raw), 'beforeMedianDbfs': before, 'gainDb': gain_db, 'afterMedianDbfs': speech_level(levelled,sr,eq), 'peak': float(np.abs(levelled).max()), 'seconds': seconds})
                 parts.append(levelled); local += seconds
             scene_wav = np.concatenate(parts)
             target = worker.OUTPUT_DIR / 'scenes' / f"{scene['id']}.wav"
