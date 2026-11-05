@@ -55,6 +55,8 @@ def select(row):
     if not (output/"final-mix-review/report.json").is_file():
         if live(snap(output/"final-mix-review/worker.json")):return "최종 음성 대조 중",None
         return "최종 음성 대조",instruction("mix-qa","review-final-mix.py",["--queue",queue,"--device","cpu"],True)
+    if not (output/"part2-delivery-evidence.json").exists():
+        return "재생·게임 장면 점검",instruction("playback-qa","part2/check_delivery.py",[row["id"]],True)
     return "4파일 생성 · 화면과 음성 직접 검수 대기",None
 
 def cycle():
@@ -64,13 +66,20 @@ def cycle():
     statuses={};options=[]
     for ep,row in PROJECTS.items():
         assert row["slug"] in auth["projectSlugs"]
-        state,cmd=select(row);statuses[ep]=state
+        try:
+            state,cmd=select(row)
+        except (OSError, ValueError, KeyError, TypeError, AssertionError) as exc:
+            # A partial file from one renderer must not stall ten other lectures.
+            statuses[ep]="자료 확인 필요 · "+type(exc).__name__
+            save(STATE/(ep+"-selection-error.json"), {"episode":ep,"type":type(exc).__name__,"detail":str(exc)})
+            continue
+        statuses[ep]=state
         if cmd:
             fail=STATE/(ep+"-"+cmd["step"]+"-error.json")
             if fail.is_file():statuses[ep]="점검 필요 · "+cmd["step"];continue
             options.append(dict(episode=ep,**cmd))
     # Prefer finishing a render whose speech is ready to admitting a new voice.
-    order=["media-qa","mix-qa","encode","capture","compose-check","prepare","preview","align","source-words","voice"]
+    order=["playback-qa","media-qa","mix-qa","encode","capture","compose-check","prepare","preview","align","source-words","voice"]
     options.sort(key=lambda row:order.index(row["step"]))
     return dict(statuses=statuses,action=options[0] if options else None,
                 candidateBatchDone=all(s.startswith(("4파일 생성","사용자 일괄")) for s in statuses.values()))

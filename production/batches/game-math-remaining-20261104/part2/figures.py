@@ -61,6 +61,10 @@ def bind(episode):
     save(planfile,plan)
     display=p/"planning/caption-reading-adjustments.json"
     adjustments=read(display) if display.exists() else {"groups":[]}
+    current={ (row["id"],group["koStart"]):group["en"] for row in read(p/"planning/bilingual-caption-map.json")["scenes"]
+              for group in row["groups"] }
+    adjustments["groups"]=[g for g in adjustments.get("groups",[])
+                           if current.get((g["scene"],g["koStart"]))==g["source"]]
     spellings={
         "델타 엑스":"Δx","델타 티":"Δt","델타 브이":"Δv","디 엑스 디 티":"dx/dt",
         "디 와이 디 엑스":"dy/dx","디 디 티":"d/dt","티비엔 기저":"TBN 기저",
