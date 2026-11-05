@@ -43,13 +43,16 @@ def prepare():
         native=R/'GameAnimationSample/Content/YamyamAnimationSeries'/ep
         owned.update(rel(f) for f in native.rglob('*') if f.is_file() and f.suffix in ('.umap','.uasset'))
         summary[ep]=dict(script=rel(h/'production-binding.json'),editableStudies=rel(h/'make_poses.py'),preparedStage=stages)
+        proof=l/'opening-proof/proof.json'
+        if proof.exists() and (proof.parent/'mobile.jpg').is_file():
+            summary[ep]['openingSample']=dict(file=rel(proof),sha256=read(proof)['sha256'],frames=240,width=1920,height=1080,smallFrameChecked=True,includesNarration=False)
     checkpoint['preparedLocalInputs']=summary
     checkpoint['reviewCollectionWithFileFolders']='http://127.0.0.1:9252/'
     checkpoint['currentWork']=['완성된 A01–A06은 통합 검수 목록에 있음','A07–A18 대본·한영 자막 문안·실제 장면과 시연 입력 준비. 각 완성본은 음성·편집·검사 후에만 등록.']
     checkpoint['costlyJobSummary']={'assembledReviewEpisodes':checkpoint['completedLocalDeliveries'],'queue':'A07–A18: serialized voice and native or mathematical studies; assemble, technical review and collect four local files.','humanReview':'pending on the exact locally collected masters'}
     checkpoint['updatedAt']=datetime.now(timezone.utc).isoformat();save(B/'checkpoint.json',checkpoint)
     owned.update(rel(f) for f in (B/'native').glob('*.py'))
-    owned.update(rel(B/name) for name in ('checkpoint.json','footage-catalog.json','register_inputs.py','bind_reviewed_script.py','assemble_episode.py','render_voice.py','readback.py','register_local.py','finish_queue.py','review-collection.cjs') if (B/name).is_file())
+    owned.update(rel(B/name) for name in ('checkpoint.json','footage-catalog.json','register_inputs.py','bind_reviewed_script.py','assemble_episode.py','render_voice.py','readback.py','register_local.py','finish_queue.py','review-collection.cjs','check_opening.py') if (B/name).is_file())
     dest=R/'projects/animation-attack-poses/production/local/series-v1/inputs-commit-spec.json'
     save(dest,dict(rows=rows,table=table,ownedPaths=sorted(owned)))
 if __name__=='__main__':
