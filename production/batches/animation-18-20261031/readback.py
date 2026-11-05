@@ -24,15 +24,22 @@ m=difflib.SequenceMatcher(None,expected,heard,autojunk=False)
 result={'completeAudioSubmitted':True,'noPrompt':True,'humanListening':False,'aacSha256':sha(L/'audio.m4a'),'coverage':sum(b.size for b in m.get_matching_blocks())/len(expected),'differences':[(expected[i:j],heard[k:l]) for code,i,j,k,l in m.get_opcodes() if code!='equal']}
 (L/'encoded-text-review.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
 print(slug,result['coverage'],flush=True)
-if revision=='series-v1' and (P/'production'/revision/'checkpoint.json').is_file():
-    checkpoint=P/'production'/revision/'checkpoint.json'
-    ledger=read(checkpoint)
-    # Keep the small final-AAC evidence with its master while the raw recording stays local.
-    ledger['encodedNarrationReadback']={key:result[key] for key in ('aacSha256','coverage','noPrompt','humanListening')}
-    checkpoint.write_text(json.dumps(ledger,ensure_ascii=False,indent=2)+'\n','utf-8')
+checkpoint=P/'production'/revision/'checkpoint.json'
+pending=L/'picture-checked-delivery.json'
+if revision=='series-v1' and (pending.is_file() or checkpoint.is_file()):
+    ledger=read(pending if pending.is_file() else checkpoint)
     ep=ledger['episode']
     if ep in {f'A{x:02}' for x in range(7,19)}:
         assert result['coverage']>=.94, f'{ep}: inspect the encoded speech differences before registering'
+    if pending.is_file():
+        audio_hash=subprocess.check_output(['ffmpeg','-v','error','-i',L/'audio.m4a','-map','0:a','-c:a','copy','-f','hash','-hash','sha256','-']).decode().strip()
+        assert audio_hash==ledger['technicalChecks']['masters']['captioned']['audio']
+    # Keep the small final-AAC evidence with its master while the raw recording stays local.
+    ledger['encodedNarrationReadback']={key:result[key] for key in ('aacSha256','coverage','noPrompt','humanListening')}
+    temp=checkpoint.with_suffix('.writing')
+    temp.write_text(json.dumps(ledger,ensure_ascii=False,indent=2)+'\n','utf-8')
+    temp.replace(checkpoint)
+    if ep in {f'A{x:02}' for x in range(7,19)}:
         registered=next(row for row in read(R/'shared/publishing/video-worklist.json')['rows'] if row['id']==ep)
         if registered.get('captionedMasterSha256')!=ledger['captionedMasterSha256']:
             registrar=[sys.executable,'-X','utf8',H/'register_local.py']

@@ -1,5 +1,6 @@
 """Run the finite animation batch's voice work only between Discord screen shares."""
 import _thread
+import json
 import os
 from pathlib import Path
 import re
@@ -18,6 +19,8 @@ STREAM = re.compile(r"\[RTCConnection\(([^,]+), stream\)\] (.+)")
 class ShareState:
     def __init__(self):
         self.log = Path(os.environ["APPDATA"]) / "discord/logs/renderer_js.log"
+        policy = json.loads(Path(__file__).with_name("batch.json").read_text("utf-8-sig"))["screenShareVoicePolicy"]
+        self.confirmed_end = policy.get("confirmedEndAtLocal")
         self.file_id = None
         self.offset = 0
         self.sessions = set()
@@ -32,6 +35,8 @@ class ShareState:
                 if not raw.endswith(b"\n"):
                     return stream.tell() - len(raw)
                 line = raw.decode("utf-8", errors="replace")
+                if self.confirmed_end and line[1:24] <= self.confirmed_end:
+                    continue
                 if START in line:
                     self.awaiting_connection = True
                     self.seen_end = False
@@ -40,6 +45,9 @@ class ShareState:
                     continue
                 session, event = match.groups()
                 if event.startswith(("Connecting to RTC server", "RTC connected to media server")):
+                    # Incoming video alone is not a new local screen share.
+                    if self.confirmed_end and not self.awaiting_connection and session not in self.sessions:
+                        continue
                     self.sessions.add(session)
                     self.awaiting_connection = False
                 elif event.startswith("Destroy RTCConnection"):
@@ -59,7 +67,7 @@ class ShareState:
             if info.st_ino != self.file_id or info.st_size < self.offset:
                 self.sessions.clear()
                 self.awaiting_connection = False
-                self.seen_end = False
+                self.seen_end = bool(self.confirmed_end)
                 self.quiet_since = None
                 previous = self.log.with_name("renderer_js.old.log")
                 if previous.exists():

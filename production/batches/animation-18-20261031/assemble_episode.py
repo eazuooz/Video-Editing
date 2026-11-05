@@ -236,6 +236,7 @@ def verify_collect():
  subprocess.run(['node','scripts/collect-video-output.cjs',P.name],cwd=R,check=True)
  dest=L/'delivery/output'/P.name;report=read(P/'production/delivery-output.json');assert all(sha(dest/f['name'])==f['sha256'] for f in report['files'])
  (dest/'sources.txt').write_text('\n'.join(visual['sources'])+'\n',encoding='utf-8');save(dest/'delivery-manifest.json',report)
- save(H/'checkpoint.json',{'episode':EP,'slug':P.name,'revision':'series-v1','status':'local-delivery-user-review-pending','captionedMasterSha256':v['masters']['captioned']['sha256'],'durationSeconds':t['totalFrames']/60,'frames':t['totalFrames'],'gameplayShare':t['gameFrames']/t['bodyFrames'],'bilingualCues':len(read(L/'cue-review.json')),'directory':rel(dest),'files':report['files'],'technicalChecks':v,'sourceSelection':rel(H/'source-selection.json'),'userViewed':False,'wholeHumanListening':False,'platformMutation':False})
+ record=L/'picture-checked-delivery.json' if int(EP[1:])>=8 else H/'checkpoint.json'
+ save(record,{'episode':EP,'slug':P.name,'revision':'series-v1','status':'local-delivery-user-review-pending','captionedMasterSha256':v['masters']['captioned']['sha256'],'durationSeconds':t['totalFrames']/60,'frames':t['totalFrames'],'gameplayShare':t['gameFrames']/t['bodyFrames'],'bilingualCues':len(read(L/'cue-review.json')),'directory':rel(dest),'files':report['files'],'technicalChecks':v,'sourceSelection':rel(H/'source-selection.json'),'userViewed':False,'wholeHumanListening':False,'platformMutation':False})
 if __name__=='__main__':
  {'timing':timing,'mix':mix,'picture':picture,'verify':verify_collect}[sys.argv[2]]()
