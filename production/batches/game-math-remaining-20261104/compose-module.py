@@ -26,6 +26,7 @@ def module(name,path):
     spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 C=module('existing_caption_geometry',R/'projects/buckshot-roulette-reverse-engineering/production/assemble_documentary.py')
 G=module('resource_guard',R/'projects/game-math-shading-lights/production/run-capture-queue.py')
+PIPELINE_FIGURES=module('pipeline_figures',Path(__file__).parent/'part2/pipeline_figures.py') if P.name=='game-math-pipeline-shaders' else None
 def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
 def save(p,d):Path(p).parent.mkdir(parents=True,exist_ok=True);Path(p).write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def sha(p):
@@ -180,6 +181,8 @@ def prepare(queue,work):
         elif P.name=='game-math-pipeline-shaders' and cut['scene']=='020':
             shot=read(work.parent/'shots/020.json')
             clipping_guides(work/f'clip-plane-{i:03}.ass',cut,shot)
+        elif PIPELINE_FIGURES and cut['scene'] in PIPELINE_FIGURES.TEACHING_SCENES:
+            PIPELINE_FIGURES.render(work/f'vertex-{i:03}.ass',cut,t,C,stroke_path,reveal_polyline)
     record={'createdAt':now(),'queueSha256':sha(work.parent/'queue.json'),'narrationSha256':t['narrationSha256'],'captionLayout':layout,'gameAnnotations':receipts,'addedBackgroundMusic':False,'audioChoice':'Original synchronized game audio retained and ducked; source-specific exceptions must be recorded per source. No added lecture BGM.','humanListening':False,'finalVisualQa':False}
     save(work/'preflight.json',record);return sources,record
 
@@ -264,6 +267,8 @@ def render(queue,work,sources,receipt,dest):
                 vf+=f',ass=period-{i:03}.ass'
             if P.name=='game-math-pipeline-shaders' and cut['scene']=='020':
                 vf+=f',ass=clip-plane-{i:03}.ass'
+            if PIPELINE_FIGURES and cut['scene'] in PIPELINE_FIGURES.TEACHING_SCENES:
+                vf+=f',ass=vertex-{i:03}.ass'
         ff(['-ss',picture_start,'-i',picture_source,'-an','-vf',vf,'-frames:v',n,*encoder(),'-movflags','+faststart',v],work/'logs'/(stem+'-video.log'),work)
         video_check(v,n)
         if cut['kind']=='actual-gameplay' and not src.get('excludeOriginalAudioReason'):

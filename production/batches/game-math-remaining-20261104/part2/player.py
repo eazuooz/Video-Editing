@@ -13,8 +13,9 @@ def render(destination,queue):
     scenes={s["id"]:s for s in timeline["scenes"]}
     original=read(project/"planning/scene-bindings.json")["scenes"]
     links=[]
+    figures={**plan.get("additionalTeachingDiagrams",{}),**plan["teachingFigures"]}
     for row in original:
-        sid=row["id"];c=game.get(sid);figure=plan["teachingFigures"].get(sid)
+        sid=row["id"];c=game.get(sid);figure=figures.get(sid)
         if not (c or figure):continue
         frame=(c["globalStartFrame"] if c else scenes[sid]["startFrame"])+120
         sec=frame/60
