@@ -120,6 +120,18 @@ def picture():
   return dst
  for key in visual['rigs']:
   src=L/(key+'.mp4')
+  if key=='outline':
+   from scipy.ndimage import binary_closing,binary_fill_holes
+   directory=L/'frames'/key;prepared=V/'outline-mask.mp4'
+   with (L/'outline-mask.log').open('wb') as log:
+    encoder=subprocess.Popen(['ffmpeg','-v','error','-y','-f','rawvideo','-pix_fmt','rgb24','-s','1920x1080','-r','60','-i','pipe:0','-an',*enc,prepared],stdin=subprocess.PIPE,stderr=log)
+    for file in sorted(directory.glob('*.png')):
+     array=np.asarray(Image.open(file).convert('RGB')).copy();rgb=array[:,960:].astype('int16')
+     orange=(rgb[:,:,0]>rgb[:,:,1]+18)&(rgb[:,:,1]>rgb[:,:,2]+9)&(rgb[:,:,0]>90)
+     region=binary_fill_holes(binary_closing(orange,iterations=3));array[:,960:][region]=[30,35,33]
+     encoder.stdin.write(array.tobytes())
+    encoder.stdin.close();assert encoder.wait()==0
+   src=prepared
   samples=visual.get('studyObservationFrames',{}).get(key,[16,27])
   first,second=samples
   graph=(f'[0:v]split=4[a][b][c][d];[a]trim=start_frame=8:end_frame=63,setpts=PTS-STARTPTS[a0];'
