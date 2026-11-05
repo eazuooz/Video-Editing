@@ -23,6 +23,42 @@ def animation(key,row,data):
  con.close_bracket(False);clip.set_editor_property('enable_root_motion',False);u.EditorAssetLibrary.save_loaded_asset(clip,False);return clip
 def factory():
  f=u.AnimSequenceFactory();f.target_skeleton=u.load_asset(job['skeleton']);return f
+def expose_portrait_eyes(mesh):
+ # Glasses and shirt share one material. Keep the shirt below the neck and the original face/eye materials.
+ slot=mesh.get_material_index('M00_UpperBody');assert slot>=0
+ path=asset_root+'/Materials/PortraitShirt'
+ material=u.load_asset(path)
+ if not material:
+  u.EditorAssetLibrary.make_directory(asset_root+'/Materials')
+  material=u.EditorAssetLibrary.duplicate_asset(mesh.get_material(slot).get_path_name().split('.')[0],path)
+  assert material
+  material.set_editor_property('blend_mode',u.BlendMode.BLEND_MASKED)
+  graph=u.MaterialEditingLibrary
+  create=lambda kind,x,y:graph.create_material_expression(material,kind,x,y)
+  world=create(u.MaterialExpressionWorldPosition,-1300,900)
+  origin=create(u.MaterialExpressionActorPositionWS,-1300,1040)
+  relative=create(u.MaterialExpressionSubtract,-1080,930)
+  component=create(u.MaterialExpressionComponentMask,-860,930)
+  for channel in 'rgba':component.set_editor_property(channel,channel=='b')
+  cutoff=create(u.MaterialExpressionConstant,-860,1090);cutoff.set_editor_property('r',163.)
+  visible=create(u.MaterialExpressionSubtract,-640,980)
+  for src,dest,pin in ((world,relative,'A'),(origin,relative,'B'),(relative,component,''),(cutoff,visible,'A'),(component,visible,'B')):
+   assert graph.connect_material_expressions(src,'',dest,pin)
+  assert graph.connect_material_property(visible,'',u.MaterialProperty.MP_OPACITY_MASK)
+  graph.recompile_material(material);u.EditorAssetLibrary.save_loaded_asset(material,False)
+ if material.get_editor_property('use_material_attributes'):
+  # The vendor cloth is a material-attributes graph. Its bundle otherwise overrides a separate opacity input.
+  graph=u.MaterialEditingLibrary;props=u.MaterialProperty
+  bundle=graph.get_material_property_input_node(material,props.MP_MATERIAL_ATTRIBUTES)
+  assert bundle
+  split=graph.create_material_expression(material,u.MaterialExpressionBreakMaterialAttributes,-380,430)
+  assert graph.connect_material_expressions(bundle,'',split,'')
+  material.set_editor_property('use_material_attributes',False)
+  for output,prop in (('BaseColor','MP_BASE_COLOR'),('Metallic','MP_METALLIC'),('Specular','MP_SPECULAR'),
+                      ('Roughness','MP_ROUGHNESS'),('Normal','MP_NORMAL'),('AmbientOcclusion','MP_AMBIENT_OCCLUSION')):
+   assert graph.connect_material_property(split,output,getattr(props,prop))
+  graph.recompile_material(material);u.EditorAssetLibrary.save_loaded_asset(material,False)
+ mesh.set_material(slot,material)
 def build(key):
  d=json.loads((L/'poses'/f'{key}.json').read_text('utf-8'));level=f'{asset_root}/Levels/{key}';u.EditorAssetLibrary.make_directory(asset_root+'/Levels')
  if not u.EditorAssetLibrary.does_asset_exist(level):
@@ -68,6 +104,7 @@ def build(key):
   yaw=d.get('sideYaws',[d.get('yaw',-73)]*2)[i]
   a=u.EditorLevelLibrary.spawn_actor_from_class(u.SkeletalMeshActor,u.Vector(*xyz),u.Rotator(pitch=0,yaw=yaw,roll=0));a.set_actor_label(f'{key}_{row["side"]}')
   mesh=a.skeletal_mesh_component;mesh.set_skeletal_mesh(u.load_asset(job['mesh']))
+  if d.get('exposeEyes'):expose_portrait_eyes(mesh)
   mesh.set_editor_property('animation_mode',u.AnimationMode.ANIMATION_SINGLE_NODE)
   mesh.set_editor_property('visibility_based_anim_tick_option',u.VisibilityBasedAnimTickOption.ALWAYS_TICK_POSE_AND_REFRESH_BONES);mesh.set_editor_property('bounds_scale',2)
   parent=seq.add_possessable(a);child=seq.add_possessable(mesh);child.set_parent(parent);track=child.add_track(u.MovieSceneSkeletalAnimationTrack);section=track.add_section();section.set_range(0,d['frames'])
