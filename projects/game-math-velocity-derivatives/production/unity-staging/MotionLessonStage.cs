@@ -29,6 +29,7 @@ namespace Yamyam.MathMotion {
         readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
         readonly List<LineRenderer> guides=new List<LineRenderer>();int guideCursor;
         Material guideMaterial;Text diagramLabel;
+        readonly Dictionary<string,Text> vectorLabels=new Dictionary<string,Text>();
         public double previewSeconds;
         [ContextMenu("Preview saved teaching time")] public void PreviewAtTime(){Evaluate(previewSeconds);}
         void OnEnable(){koreanFont=Font.CreateDynamicFontFromOSFont("Malgun Gothic",42);foreach(var label in GetComponentsInChildren<Text>(true))label.font=koreanFont;}
@@ -37,7 +38,7 @@ namespace Yamyam.MathMotion {
             if(movement!=null)return;
             if(shot.steps.Length==0)throw new InvalidOperationException("Explicit source-linked teaching steps required.");
             while(transform.childCount>0)DestroyImmediate(transform.GetChild(0).gameObject);
-            guides.Clear();owned.Clear();guideCursor=0;
+            guides.Clear();owned.Clear();vectorLabels.Clear();guideCursor=0;
             var child=new GameObject("SharedAnalyticMotionStage");child.transform.SetParent(transform,false);
             movement=child.AddComponent<MotionTeachingStage>();movement.shot=shot.motion;movement.subjectPrefab=subjectPrefab;movement.koreanFont=koreanFont;movement.Build();stageCamera=movement.stageCamera;
             var models=new List<MotionShot>{shot.motion};foreach(var step in shot.steps)if(step.useMotionOverride&&step.motionOverride!=null)models.Add(step.motionOverride);movement.FitMotionSubjects(models);
@@ -72,6 +73,8 @@ namespace Yamyam.MathMotion {
             movement.shot.termExpanded=expanded;movement.shot.secantH=step.secantH;movement.shot.showSecant=step.showSecant;movement.shot.showTangent=step.showTangent;
             movement.Evaluate((time-movement.shot.startTime)/(movement.shot.endTime-movement.shot.startTime));
             movement.SetExplanation(step.formula,step.meaning);
+            if(shot.diagramMode=="circle-values"||shot.diagramMode=="orbital-radius"||shot.beatId=="M26-025")
+                movement.FocusOnRightDiagram();
             Diagram(index,fraction,time);
             if(!string.IsNullOrEmpty(shot.guideCaption) && !string.IsNullOrEmpty(shot.diagramMode))
                 diagramLabel.text=shot.guideCaption;
@@ -79,6 +82,17 @@ namespace Yamyam.MathMotion {
         void Path(Color c,params Vector3[] p){LineRenderer line;if(guideCursor==guides.Count){var go=new GameObject("SourceDiagramGuide"+guideCursor);go.transform.SetParent(transform,false);line=go.AddComponent<LineRenderer>();line.sharedMaterial=guideMaterial;line.useWorldSpace=true;line.numCapVertices=5;guides.Add(line);}else line=guides[guideCursor];guideCursor++;line.gameObject.SetActive(true);line.startWidth=line.endWidth=.045f;line.positionCount=p.Length;line.SetPositions(p);var props=new MaterialPropertyBlock();props.SetColor("_BaseColor",c);line.SetPropertyBlock(props);}
         void DiagramArrow(Color color,Vector3 start,Vector3 end){Path(color,start,end);var direction=(end-start).normalized;var side=Vector3.Cross(direction,Vector3.forward).normalized;Path(color,end-direction*.2f+side*.11f,end,end-direction*.2f-side*.11f);}
         void Ring(Color color,Vector3 centre,float radius=.10f){var p=new Vector3[33];for(int i=0;i<p.Length;i++){float a=i*Mathf.PI*2/32;p[i]=centre+new Vector3(Mathf.Cos(a),Mathf.Sin(a),0)*radius;}Path(color,p);}
+        void MarkVector(string symbol,Vector3 target,Vector2 offset,Color color){
+            if(!vectorLabels.TryGetValue(symbol,out Text text)){
+                var go=new GameObject("Diagram symbol "+symbol);go.transform.SetParent(diagramLabel.transform.parent,false);
+                var rt=go.AddComponent<RectTransform>();rt.anchorMin=rt.anchorMax=rt.pivot=new Vector2(0,1);rt.sizeDelta=new Vector2(185,60);
+                text=go.AddComponent<Text>();text.font=koreanFont;text.fontSize=46;text.fontStyle=FontStyle.Bold;
+                text.text=symbol;text.color=color;vectorLabels.Add(symbol,text);
+            }
+            var pixel=stageCamera.WorldToViewportPoint(target);
+            float x=Mathf.Clamp(pixel.x*1920+offset.x,1020,1800),y=Mathf.Clamp((1-pixel.y)*1080+offset.y,185,625);
+            text.rectTransform.anchoredPosition=new Vector2(x,-y);
+        }
         void Diagram(int step,double phase,double time){
             guideCursor=0;diagramLabel.text="";var yellow=new Color(.91f,.812f,.514f);var teal=new Color(.451f,.78f,.761f);var red=new Color(.937f,.522f,.522f);Vector3 o=new Vector3(3,1.3f,-.3f);
             string mode=shot.diagramMode;
@@ -129,7 +143,14 @@ namespace Yamyam.MathMotion {
             }else if(mode=="circle-values"){
                 var model=movement.shot.parameters;double speed=Math.Abs(model.radius*model.omega),acc=model.radius*model.omega*model.omega;
                 var centre=new Vector3(4.6f,2.5f,0);float radius=(float)(model.radius*.19);Ring(teal,centre,radius);double angle=model.omega*time;var at=centre+new Vector3((float)Math.Cos(angle),(float)Math.Sin(angle),0)*radius;Ring(yellow,at);
-                DiagramArrow(red,at,at+(centre-at).normalized*(float)(acc*.018));
+                Vector3 radial=(at-centre).normalized;
+                var vTip=at+new Vector3(-radial.y,radial.x,0)*(float)(model.omega*model.radius*.085);
+                var aTip=at-radial*(float)(acc*.032);
+                DiagramArrow(teal,at,vTip);DiagramArrow(red,at,aTip);
+                MarkVector("v",vTip,new Vector2(9,-45),teal);
+                MarkVector("a_c",aTip,new Vector2(-36,4),red);
+                var opposite=centre-radial*radius;Path(yellow,centre,opposite);
+                MarkVector("r",(centre+opposite)*.5f,new Vector2(6,6),yellow);
                 diagramLabel.text="s="+speed.ToString("0")+" m/s · r="+model.radius.ToString("0")+" m\na="+acc.ToString("0")+" m/s²\n빨강 화살표 축척 고정";
             }else if(mode=="earth-latitude"||mode=="orbital-radius"){
                 var centre=new Vector3(4.8f,2.6f,0);float earth=1.6f;Ring(teal,centre,earth);Path(teal,centre+Vector3.up*2,centre-Vector3.up*2);
@@ -137,11 +158,14 @@ namespace Yamyam.MathMotion {
                     double latitude=step==0?0:phase*Math.PI*.46;float y=(float)Math.Sin(latitude)*earth,rad=(float)Math.Cos(latitude)*earth;Path(yellow,centre+Vector3.up*y,centre+new Vector3(rad,y,0));Ring(yellow,centre+new Vector3(rad,y,0));
                     diagramLabel.text="위도="+(latitude*180/Math.PI).ToString("0")+"°\n자전 반지름=R cos(위도)\n지구 중심이 아닌 자전축까지 거리";
                 }else{
-                    float orbit=earth*(6711f/6371);Ring(yellow,centre,orbit);double angle=phase*Math.PI*2;var satellite=centre+new Vector3((float)Math.Cos(angle),(float)Math.Sin(angle),0)*orbit;Ring(yellow,satellite,.08f);Path(red,centre,satellite);
+                    float orbit=earth*(6711f/6371);Ring(yellow,centre,orbit);double angle=phase*Math.PI*2;var satellite=centre+new Vector3((float)Math.Cos(angle),(float)Math.Sin(angle),0)*orbit;Ring(yellow,satellite,.08f);Path(yellow,centre,satellite);
                     if(!string.IsNullOrEmpty(shot.guideCaption)){
                         Vector3 radial=(satellite-centre).normalized,tangent=new Vector3(-radial.y,radial.x,0);
                         DiagramArrow(teal,satellite,satellite+tangent*.85f);
                         DiagramArrow(red,satellite,satellite-radial*.65f);
+                        MarkVector("v",satellite+tangent*.85f,new Vector2(10,-48),teal);
+                        MarkVector("a_c",satellite-radial*.65f,new Vector2(-48,3),red);
+                        MarkVector("r",(centre+satellite)*.5f,new Vector2(12,12),yellow);
                     }
                     diagramLabel.text="R=6371 km, h=340 km\nr=R+h=6711 km\n반지름 비율은 실제 예제대로";
                 }

@@ -306,13 +306,21 @@ namespace Yamyam.MathMotion {
             details.text=shot.showSecant?"Δt = "+shot.secantH.ToString("0.000")+"\n평균 속도 = "+(shot.graphY?MotionMathModel.SecantVelocity(shot.parameters,t,shot.secantH).y:MotionMathModel.SecantVelocity(shot.parameters,t,shot.secantH).x).ToString("0.000"):
                 shot.parameters.kind==MotionKind.Circle?"r = "+shot.parameters.radius.ToString("0.00")+"   ω = "+shot.parameters.omega.ToString("0.00")+" rad/s\n|v| = "+state.velocity.Length.ToString("0.000")+"   |a| = "+state.acceleration.Length.ToString("0.000"):"값은 현재 해설 모형에서 직접 계산\n화살표 축척은 장면 안에서 고정";
             if(shot.showRiemann)RiemannOverlay(t);
-            GraphLandmark();
+            GraphLandmark(t);
             for(int i=lineCursor;i<lines.Count;i++)lines[i].gameObject.SetActive(false);
         }
-        void GraphLandmark(){
+        void GraphLandmark(double currentTime){
             bool floor=shot.beatId=="M25-012"||shot.beatId=="M25-013";
             bool apex=shot.beatId=="M25-023";
-            graphMark.gameObject.SetActive(floor||apex);
+            bool tangent=shot.beatId=="M26-025";
+            graphMark.gameObject.SetActive(floor||apex||tangent);
+            if(tangent){
+                var s=MotionMathModel.Sample(shot.parameters,currentTime);
+                var point=Plot(currentTime,s.position.x,shot.positionMin,shot.positionMax,PositionBase);
+                string sign=Math.Abs(s.velocity.x)<1e-5?"v = 0":s.velocity.x>0?"v > 0":"v < 0";
+                PlaceDiagramText(graphMark,point,sign,new Vector2(currentTime>(shot.startTime+shot.endTime)/2?-141:12,-9));
+                return;
+            }
             if(!floor&&!apex)return;
             double when=floor?shot.endTime:shot.parameters.timeToApex;
             var endpoint=MotionMathModel.Sample(shot.parameters,when);
@@ -321,6 +329,11 @@ namespace Yamyam.MathMotion {
             Poly(new[]{initial,at},Teal,.036f);
             SecantMarker(at);
             PlaceDiagramText(graphMark,at,floor?"바닥 · 도착":"정점 H, T",new Vector2(floor?-202:14,-8));
+        }
+        public void FocusOnRightDiagram(){
+            subjectAnchor.gameObject.SetActive(false);
+            foreach(var t in new[]{velocityCallout,accelerationCallout,radiusCallout})t.gameObject.SetActive(false);
+            for(int i=0;i<motionGuideCount;i++)lines[i].gameObject.SetActive(false);
         }
         public void SetExplanation(string formula,string meaning){
             formulaBoard.text=formula??"";formulaMeaning.text=meaning??"";

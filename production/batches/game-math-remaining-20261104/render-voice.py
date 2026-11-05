@@ -67,6 +67,33 @@ def selected_probe_parent(process,arguments):
                 any(parent.pid==state['pid'] and abs(parent.create_time()-state['createTime'])<.1 for parent in process.parents()))
     except (ValueError,KeyError,OSError,IndexError,psutil.Error):return False
 
+def earlier_live_course_recorder(slug,authorization):
+    """Two independent read-only probes may pass in the same second.
+
+    Choose the earlier ready lecture before *either* parent launches a model
+    process. The winner must still pass the normal global GPU admission checks.
+    """
+    import psutil
+    ordered=authorization.get('groupReview20261106',{}).get('remaining',[])
+    items=read(ROOT/authorization['batchPlan'])['items']
+    selected=[r['slug'] for r in items if r['id'] in ordered]
+    if slug not in selected:return None
+    for other in selected[:selected.index(slug)]:
+        project=ROOT/'projects'/other
+        try:
+            folder=project/'production/local'/read(project/'planning/part2-delivery-edition.json')['audioRevision']
+            if (folder/'narration.wav').exists():continue
+            state=read(folder/'finite-worker.json')
+            if state.get('status') not in {'waiting-for-resource-boundary','synthesizing'}:continue
+            proc=psutil.Process(state['pid'])
+            if abs(proc.create_time()-state['createTime'])>.1:continue
+            argv=proc.cmdline()
+            entry=ROOT/'production/batches/game-math-remaining-20261104/finish-selected-voice.py'
+            if argv[argv.index('--project')+1]==other and any(Path(a).resolve()==entry for a in argv if a.endswith('.py')):
+                return other
+        except (ValueError,IndexError,KeyError,OSError,psutil.Error):continue
+    return None
+
 def passive_python_host(proc, arguments):
     """Recognise a waiting coordinator, without granting its child a GPU exemption.
 
@@ -248,6 +275,11 @@ def main():
         if Path(manifest['tts']['outputDir']).name != selected_output:
             print('A newer speech edition owns this lecture. Earlier files are preserved.')
             raise SystemExit(88)
+        if args.check_resources and not args.synthesize:
+            ahead=earlier_live_course_recorder(SLUG,authorization)
+            if ahead:
+                print('An earlier active lecture has the next recording turn:',ahead)
+                raise SystemExit(75)
     plan = read(PROJECT / 'planning/production-plan.json')
     if args.synthesize:
         assert all(plan.get(k) is True for k in ['sourceFinal','narrationFinal','sceneBindingsFinal']), 'Finish actual source, narration and inspected gameplay binding before synthesis.'
