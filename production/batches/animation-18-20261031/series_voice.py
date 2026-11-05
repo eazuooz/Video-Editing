@@ -67,6 +67,13 @@ def join_groups(items, output):
         if index < len(items)-1 and end > int(.18*sr):
             signal = signal[:len(signal)-end+int(.18*sr)]
         tail = min(end,int(.18*sr))
+        fade = min(round(.004*sr),len(signal)//2)
+        if fade and len(items)>1:
+            signal = signal.copy()
+            if index:
+                signal[:fade] *= np.linspace(0,1,fade,dtype=np.float32)
+            if index < len(items)-1:
+                signal[-fade:] *= np.linspace(1,0,fade,dtype=np.float32)
         boundaries.append(sum(map(len,pieces))/sr)
         pieces.append(signal)
     temp = output.with_suffix('.assembling.wav')

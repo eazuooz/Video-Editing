@@ -219,6 +219,9 @@ def picture():
          '[a0][b0][c0][d0]concat=n=4:v=1:a=0[out]')
   ff(['-filter_complex_threads','2','-threads','2','-i',src,'-filter_complex',graph,'-map','[out]','-an',*enc,V/(key+'-study.mp4')],'study-'+key)
  with ThreadPoolExecutor(max_workers=2) as pool:files=list(pool.map(lambda job:encode_shot(job,t),enumerate(pieces)))
+ join_picture(t,files,timeline_hash)
+
+def join_picture(t,files,timeline_hash):
  listing=V/'parts.txt';listing.write_text(''.join("file '"+f.name+"'\n" for f in files),encoding='ascii')
  ff(['-f','concat','-safe','0','-i',listing,'-c','copy',L/'body.mp4'],'body')
  args=['-filter_complex_threads','2']
